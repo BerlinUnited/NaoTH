@@ -29,8 +29,6 @@ public class DebugDrawingManagerImpl extends AbstractManagerPlugin<DrawingsConta
   @Override
   public DrawingsContainer convertByteArrayToType(byte[] result) throws IllegalArgumentException
   {
-
-    //ArrayList<Drawable> drawingList = new ArrayList<Drawable>(messages.length);
     DrawingsContainer drawingList = new DrawingsContainer();
 
     String resultAsString = new String(result);

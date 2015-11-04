@@ -34,6 +34,7 @@ MonteCarloSelfLocator::MonteCarloSelfLocator()
   DEBUG_REQUEST_REGISTER("MCSLS:draw_sensor_belief", "", false);
   DEBUG_REQUEST_REGISTER("MCSLS:draw_sensorResetBySensingGoalModel", "", false);
   DEBUG_REQUEST_REGISTER("MCSLS:draw_state", "visualizes the state of the self locator on the field", false);
+  DEBUG_REQUEST_REGISTER("MCSLS:draw_updateByLinePoints", "", false);
 
   // resampling
   DEBUG_REQUEST_REGISTER("MCSLS:resample_sus", "", false);
@@ -45,6 +46,11 @@ MonteCarloSelfLocator::MonteCarloSelfLocator()
   DEBUG_REQUEST_REGISTER("MCSLS:draw_Cluster", "draw the clustered particle set", false);
   DEBUG_REQUEST_REGISTER("MCSLS:draw_position","draw robots position (self locator)", false);
   DEBUG_REQUEST_REGISTER("MCSLS:draw_deviation", "", false);
+
+  DEBUG_REQUEST_REGISTER("MCSLS:state:KIDNAPPED", "", false);
+  DEBUG_REQUEST_REGISTER("MCSLS:state:BLIND", "", false);
+  DEBUG_REQUEST_REGISTER("MCSLS:state:LOCALIZE", "", false);
+  DEBUG_REQUEST_REGISTER("MCSLS:state:TRACKING", "", false);
 
   initializeSampleSet(getFieldInfo().carpetRect, theSampleSet);
   getDebugParameterList().add(&parameters);
@@ -76,7 +82,7 @@ void MonteCarloSelfLocator::execute()
   // (keednapped)
 
   // only in stand, walk or init(!)
-  bool motion_ok = getMotionStatus().currentMotion == motion::stand ||
+  bool motion_ok_kidnap = getMotionStatus().currentMotion == motion::stand ||
                    getMotionStatus().currentMotion == motion::init ||
                    getMotionStatus().currentMotion == motion::walk;
 
@@ -86,22 +92,33 @@ void MonteCarloSelfLocator::execute()
                       !getBodyState().standByRightFoot && // no foot is on the ground
                        getFrameInfo().getTimeSince(getBodyState().foot_state_time) > parameters.maxTimeForLiftUp; // we lose the ground contact for some time
 
-  if(parameters.treatLiftUp && motion_ok && body_lift_up) {
+  if(parameters.treatLiftUp && motion_ok_kidnap && body_lift_up) {
     state = KIDNAPPED;
   }
 
-  bool motion_not_ok = getMotionStatus().currentMotion != motion::stand &&
-                       getMotionStatus().currentMotion != motion::walk;
+  bool last_motion_ok = getMotionStatus().lastMotion == motion::stand ||
+                        getMotionStatus().lastMotion == motion::walk;                    
 
-  bool body_not_upright = getBodyState().fall_down_state != BodyState::upright;
+  bool motion_ok = (getMotionStatus().currentMotion == motion::stand || 
+                    getMotionStatus().currentMotion == motion::walk)
+                   // hack: give stand some time in case the last motion was not walk or stand
+                   // remark: walk is only executed after walk or stand, so this condition is only relevant for stand
+                   && (last_motion_ok || getFrameInfo().getTimeSince(getMotionStatus().time) > 5000); 
+
+  bool body_upright = getBodyState().fall_down_state == BodyState::upright;
 
   if(state != KIDNAPPED) 
   {
-    if(parameters.treatInitState && (motion_not_ok || body_not_upright || getPlayerInfo().gameData.gameState == GameData::penalized)) 
+    if(parameters.treatInitState && (!motion_ok || !body_upright || getPlayerInfo().gameData.gameState == GameData::penalized)) 
     {
       state = BLIND;
     }
   }
+
+  DEBUG_REQUEST("MCSLS:state:KIDNAPPED", state = KIDNAPPED; );
+  DEBUG_REQUEST("MCSLS:state:BLIND", state = BLIND; );
+  DEBUG_REQUEST("MCSLS:state:LOCALIZE", state = LOCALIZE; );
+  DEBUG_REQUEST("MCSLS:state:TRACKING", state = TRACKING; );
 
 
   DEBUG_REQUEST("MCSLS:draw_state",
@@ -151,17 +168,13 @@ void MonteCarloSelfLocator::execute()
       // use prior knowledge
       if(parameters.updateBySituation) //  && lastState == KIDNAPPED
       {
-        if(getSituationStatus().oppHalf) 
+        if(getSituationStatus().oppHalf)
         {
           updateByOppHalf(theSampleSet);
         } 
-        else if(getPlayerInfo().gameData.gameState == GameData::set) 
+        else if(getPlayerInfo().gameData.gameState == GameData::set)
         {
-          if(getPlayerInfo().gameData.playerNumber == 1) { // special apriori for goalie
-            updateByGoalBox(theSampleSet);
-          } else {
-            updateByOwnHalfLookingForward(theSampleSet);
-          }
+          updateByOwnHalfLookingForward(theSampleSet);
         } // check if the game controller was alive in the last 10s ~ 300frames
         else if(getPlayerInfo().gameData.frameNumber > 0 && 
                 getPlayerInfo().gameData.frameNumber + 300 > getFrameInfo().getFrameNumber()) 
@@ -215,16 +228,15 @@ void MonteCarloSelfLocator::execute()
       theSampleSet.resetLikelihood();
       updateBySensors(theSampleSet);
 
+
+      //HACK
       if(parameters.updateBySituation) {
         if(getPlayerInfo().gameData.gameState == GameData::set) 
         {
-          if(getPlayerInfo().gameData.playerNumber == 1) { // special apriori for goalie
-            updateByGoalBox(theSampleSet);
-          } else {
-            updateByOwnHalfLookingForward(theSampleSet);
-          }
+          updateByOwnHalf(theSampleSet);
         }
       }
+
 
       // NOTE: statistics has to be after updates and before resampling
       // NOTE: normalizes the likelihood
@@ -359,7 +371,32 @@ void MonteCarloSelfLocator::updateByGoalPosts(const GoalPercept& goalPercept, Sa
   for(int i = 0; i < goalPercept.getNumberOfSeenPosts(); i++)
   {
     const GoalPercept::GoalPost& seenPost = goalPercept.getPost(i);
-    updateBySingleGoalPost(seenPost, sampleSet);
+    
+    // HACK
+    if(state == TRACKING && parameters.maxAcceptedGoalErrorWhileTracking > 0) {
+
+      const Vector2d* leftGoalPosition = NULL;
+      const Vector2d* rightGoalPosition = NULL;
+
+      if((getRobotPose()*seenPost.position).x > 0)
+      {
+        leftGoalPosition = &(getFieldInfo().opponentGoalPostLeft);
+        rightGoalPosition = &(getFieldInfo().opponentGoalPostRight);
+      } else {
+        // own goals are switched (!)
+        leftGoalPosition = &(getFieldInfo().ownGoalPostRight);
+        rightGoalPosition = &(getFieldInfo().ownGoalPostLeft);
+      }
+
+      Vector2d globalPercept = getRobotPose() * seenPost.position;
+      double min_dist = min((globalPercept - *rightGoalPosition).abs(),(globalPercept - *leftGoalPosition).abs());
+
+      if(min_dist < parameters.maxAcceptedGoalErrorWhileTracking) {
+        updateBySingleGoalPost(seenPost, sampleSet);
+      }
+    } else {
+      updateBySingleGoalPost(seenPost, sampleSet);
+    }
   }
 }
 
@@ -456,8 +493,10 @@ void MonteCarloSelfLocator::updateByLinePoints(const LineGraphPercept& lineGraph
   //const double sigmaAngle    = parameters.goalPostSigmaAngle;
   const double cameraHeight  = getCameraMatrix().translation.z;
 
-  FIELD_DRAWING_CONTEXT;
-  PEN("000000", 10);
+  DEBUG_REQUEST("MCSLS:draw_updateByLinePoints",
+    FIELD_DRAWING_CONTEXT;
+    PEN("000000", 10);
+  );
 
   for(size_t i = 0; i < lineGraphPercept.edgels.size() && i < (size_t)parameters.linePointsMaxNumber; i++) 
   {
@@ -465,7 +504,10 @@ void MonteCarloSelfLocator::updateByLinePoints(const LineGraphPercept& lineGraph
     const Vector2d& seen_point_relative = lineGraphPercept.edgels[idx].point;
 
     Vector2d seen_point_g = getRobotPose()*seen_point_relative;
-    CIRCLE(seen_point_g.x, seen_point_g.y, 20);
+
+    DEBUG_REQUEST("MCSLS:draw_updateByLinePoints",
+      CIRCLE(seen_point_g.x, seen_point_g.y, 20);
+    );
 
     for(size_t s=0; s < sampleSet.size(); s++)
     {
@@ -502,13 +544,26 @@ void MonteCarloSelfLocator::updateByStartPositions(SampleSet& sampleSet) const
   LineDensity leftStartingLine(startLeft, endLeft, -Math::pi_2, parameters.startPositionsSigmaDistance, parameters.startPositionsSigmaAngle);
   LineDensity rightStartingLine(startRight, endRight, Math::pi_2, parameters.startPositionsSigmaDistance, parameters.startPositionsSigmaAngle);
 
-  for(size_t i = 0; i < sampleSet.size(); i++) {
-    if(sampleSet[i].translation.y > 0) {
-      sampleSet[i].likelihood *= leftStartingLine.update(sampleSet[i]);
-    } else {
-      sampleSet[i].likelihood *= rightStartingLine.update(sampleSet[i]);
-    }
+  //  for(size_t i = 0; i < sampleSet.size(); i++) {
+  //    if(sampleSet[i].translation.y > 0) {
+  //      sampleSet[i].likelihood *= leftStartingLine.update(sampleSet[i]);
+  //    } else {
+  //      sampleSet[i].likelihood *= rightStartingLine.update(sampleSet[i]);
+  //    }
+  //  }
+
+  /*---- HACK BEGIN ----*/
+  LineDensity startingLine;
+  if(getPlayerInfo().gameData.playerNumber < 4) {
+      startingLine = leftStartingLine;
+  } else {
+      startingLine = rightStartingLine;
   }
+
+  for(size_t i = 0; i < sampleSet.size(); i++) {
+      sampleSet[i].likelihood *= startingLine.update(sampleSet[i]);
+  }
+  /*---- HACK END ----*/
 
   DEBUG_REQUEST("MCSLS:draw_state",
     FIELD_DRAWING_CONTEXT;
@@ -1004,15 +1059,11 @@ void MonteCarloSelfLocator::drawPosition() const
   {
     switch( getPlayerInfo().gameData.teamColor )
     {
-    case GameData::red:
-      PEN("FF0000", 20);
-      break;
-    case GameData::blue:
-      PEN("0000FF", 20);
-      break;
-    default:
-      PEN("AAAAAA", 20);
-      break;
+    case GameData::red:    PEN("FF0000", 20); break;
+    case GameData::blue:   PEN("0000FF", 20); break;
+    case GameData::yellow: PEN("FFFF00", 20); break;
+    case GameData::black:  PEN("000000", 20); break;
+    default: PEN("AAAAAA", 20); break;
     }
   }
   else
@@ -1044,15 +1095,6 @@ void MonteCarloSelfLocator::drawPosition() const
                  getRobotPose().principleAxisMajor.abs()*2.0,
                  getRobotPose().principleAxisMinor.angle());
   );
-
-  /*
-  static Vector2<double> oldPose = getRobotPose().translation;
-  if((oldPose - getRobotPose().translation).abs() > 100)
-  {
-    PLOT("MCSL:position_trace",getRobotPose().translation.x, getRobotPose().translation.y);
-    oldPose = getRobotPose().translation;
-  }
-  */
 }//end drawPosition
 
 void MonteCarloSelfLocator::draw_sensor_belief() const

@@ -16,27 +16,6 @@ message CMD {
   repeated CMDArg args = 2;
 }
 
-
-message PlayerModel {
-  required int32 number = 1;
-  optional Pose2D poseOnField = 2;
-}
-
-// TeamComm //
-message TeamCommMessage {
-  required int32 playerNumber = 1;
-  required int32 teamNumber = 2;
-  optional bool wasStriker = 3 [default=false];
-  optional bool isPenalized = 4 [default=false];
-  optional double timeSinceBallWasSeen = 5;
-  optional DoubleVector2 ballPosition = 6;
-  optional Pose2D positionOnField = 7;
-  optional PlayerModel opponent = 8;
-  optional bool isFallenDown = 9 [default=false];
-  optional double timeToBall = 10;
-  optional string bodyID = 11; 
-}
-
 // pure RC messages //
 
 message StopwatchItem {
@@ -193,57 +172,6 @@ message BehaviorStateComplete {
 }
 
 
-message XABSLParameter {
-  enum ParamType {
-   Decimal = 0;
-   Boolean = 1;
-   Enum = 2;
-   Unknown = 3;
-  }
-  optional string name = 1 [default="unknown"];
-  optional ParamType type = 2 [default=Unknown];
-  optional double decimalValue = 3;
-  optional bool boolValue = 4;
-  optional string enumValue = 5;
-}
-
-message XABSLAction {
-  enum ActionType {
-   Option = 0;
-   BasicBehavior = 1;
-   DecimalOutputSymbol = 2;
-   BooleanOutputSymbol = 3;
-   EnumOutputSymbol = 4;
-   Unknown = 5; 
-  }
-  optional ActionType type = 1 [default=Unknown];
-  optional string name = 2  [default="unknown"];
-  
-  // for options
-  optional int64 timeOfExecution = 3 [default=0];
-  optional string activeState = 4;
-  
-  optional int64 stateTime = 5;
-  repeated XABSLParameter parameters = 6;
-  
-  repeated XABSLAction activeSubActions = 7;
-  
-  // for parameters
-  optional double decimalValue = 8;
-  optional bool boolValue = 9;
-  optional string enumValue = 10;
-  
-}
-
-message BehaviorStatus {
- optional string agent = 1;
- repeated XABSLAction activeRootActions = 2;
- repeated XABSLParameter inputSymbols = 3;
- repeated XABSLParameter outputSymbols = 4;
- optional uint32 frameNumber = 5;
- optional string errorMessage = 6;
-}
-
 message Module {
  required string name = 1;
  repeated string usedRepresentations = 2;
@@ -265,6 +193,8 @@ message DebugRequest {
   repeated Item requests = 1;
 }
 
+
+// do we need this?
 message FeatureKeyPoint {
   required FloatVector2 pt = 1;
   required float size = 2;

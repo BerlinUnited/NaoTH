@@ -56,7 +56,7 @@ public:
 
   virtual void print(std::ostream& stream) const
   {
-    stream << "Chest: " << buttons[Chest].print() << std::endl;
+    stream << "Chest: " << buttons[Chest].print() << ", timestamp: " << buttons[Chest].timeOfLastEvent << std::endl;
   }
 };
 

@@ -139,7 +139,7 @@ public class BehaviorAnalyzer extends AbstractDialog
         {
           HashMap<String,LogDataFrame> frame = logfile.readFrame(frameNumber);
           if(logFileEventManager != null) {
-            logFileEventManager.fireLogFrameEvent(frame.values(), logfile.getFrameNumber(frameNumber));
+            logFileEventManager.fireLogFrameEvent(frame.values());
           }
         }catch(IOException e)
         {

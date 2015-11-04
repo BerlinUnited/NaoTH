@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import de.naoth.rc.components.videoanalyzer.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.media.*?>
+<?import javafx.scene.shape.*?>
+
+<BorderPane id="rootPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="0.0" minWidth="0.0" prefHeight="300.0" prefWidth="400.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="de.naoth.rc.components.videoanalyzer.VideoPlayerController">
+  <bottom>
+    <HBox prefHeight="46.0" prefWidth="400.0" spacing="10.0" BorderPane.alignment="CENTER">
+      <children>
+        <ToggleButton fx:id="playButton" contentDisplay="CENTER" graphicTextGap="0.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#playPause" prefHeight="32.0" prefWidth="32.0" text=" " textOverrun="CLIP" />
+        <Label id="FXML" fx:id="timeModeIndicator" text="*" />
+        <Slider fx:id="timeSlider" blockIncrement="0.25" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="48.0" prefWidth="282.0" showTickLabels="true" showTickMarks="true" HBox.hgrow="SOMETIMES" />
+        <Label fx:id="timeCodeLabel" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="66.0" text="00:00.00" />
+      </children>
+    </HBox>
+  </bottom>
+  <center>
+    <AnchorPane id="AnchorPane" fx:id="mediaPane" minWidth="400.0" prefHeight="300.0" prefWidth="400.0" style="">
+      <children>
+        <MediaView fx:id="mediaView" fitHeight="180.0" fitWidth="240.0" layoutX="0.0" layoutY="0.0" onMouseClicked="#mediaClicked" onMouseDragged="#mediaViewDragStart" onMouseReleased="#mediaViewDragEnd" />
+        <Rectangle fx:id="zoomPreview" arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="80.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="3.0" style="" translateX="0.0" visible="false" width="100.0" x="0.0" y="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0" />
+      </children>
+    </AnchorPane>
+  </center>
+  <top>
+    <AnchorPane prefHeight="-1.0" prefWidth="-1.0" BorderPane.alignment="CENTER">
+      <children>
+        <Button id="FXML" fx:id="resetZoomButton" disable="true" layoutX="0.0" layoutY="0.0" mnemonicParsing="false" onAction="#resetZoom" text="Reset Zoom" />
+      </children>
+    </AnchorPane>
+  </top>
+</BorderPane>

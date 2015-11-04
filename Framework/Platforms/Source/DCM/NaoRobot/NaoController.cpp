@@ -39,6 +39,9 @@ NaoController::NaoController()
   naoCommandUltraSoundSendData.open(naoCommandUltraSoundSendDataPath);
   naoCommandIRSendData.open(naoCommandIRSendDataPath);
   naoCommandLEDData.open(naoCommandLEDDataPath);
+
+  whistleSensorData.open("/whistleDetector.count");
+
   // end init shared memory
   
 
@@ -106,6 +109,7 @@ NaoController::NaoController()
   registerInput<ButtonData>(*this);
   registerInput<BatteryData>(*this);
   registerInput<UltraSoundReceiveData>(*this);
+  registerInput<WhistlePercept>(*this);
 
   // register command output
   registerOutput<const MotorJointData>(*this);

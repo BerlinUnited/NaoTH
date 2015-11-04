@@ -2,7 +2,8 @@
 option search_for_ball
 {
   bool @force_ball_model_check; // false by default
-  bool @look_around; 
+  bool @look_around;
+  float @look_at_ball_when_distance;
   
   initial state start_search 
   {
@@ -161,7 +162,7 @@ option search_for_ball
         else
           goto search_for_ball_right;
       }
-      else if(state_time > 3000 && vector.abs(x=ball.preview.x, y=ball.preview.y) > 1000)
+      else if(state_time > 3000 && vector.abs(x=ball.preview.x, y=ball.preview.y) > @look_at_ball_when_distance)
         goto look_around_state;
       else
         stay;

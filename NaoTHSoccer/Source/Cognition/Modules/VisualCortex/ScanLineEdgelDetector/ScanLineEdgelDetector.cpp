@@ -240,7 +240,7 @@ ScanLineEdgelPercept::EndPoint ScanLineEdgelDetector::scanForEdgels(int scan_id,
     if(getFieldColorPercept().isFieldColor(pixel.a, pixel.b, pixel.c))
     {
       double greenDensity = movingWindow.getSum()/movingWindow.size();
-      if(greenDensity > 0.3)
+      if(greenDensity > theParameters.minEndPointGreenDensity)
       {
         lastGreenPoint = point;
       }
@@ -249,10 +249,12 @@ ScanLineEdgelPercept::EndPoint ScanLineEdgelDetector::scanForEdgels(int scan_id,
     else
     {
       //HACK break if darker than field
+      /*
       if(pixel.y < getFieldColorPercept().range.getMin().y)
       {
         break;
       }
+      */
       movingWindow.add(0.0);
     }
 

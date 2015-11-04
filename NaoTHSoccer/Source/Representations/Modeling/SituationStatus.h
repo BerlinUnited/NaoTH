@@ -11,14 +11,9 @@
 #include "Tools/DataStructures/Printable.h"
 
 
-/**
- * This is a wrapper Representation for naothmessages::BehaviorStatus in
- * order to make the naothmessages::BehaviorStatus loggable
- */
 class SituationStatus : public naoth::Printable
 {
 public:
-  //standardconstructor
   SituationStatus()
   :
     id(unknown),

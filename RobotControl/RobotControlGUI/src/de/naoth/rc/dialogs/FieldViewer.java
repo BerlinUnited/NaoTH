@@ -5,8 +5,9 @@
  */
 package de.naoth.rc.dialogs;
 
+import com.google.protobuf.InvalidProtocolBufferException;
+import de.naoth.rc.Helper;
 import de.naoth.rc.core.dialog.AbstractDialog;
-import de.naoth.rc.core.dialog.Dialog;
 import de.naoth.rc.core.dialog.DialogPlugin;
 import de.naoth.rc.RobotControl;
 import de.naoth.rc.dataformats.JanusImage;
@@ -27,16 +28,23 @@ import de.naoth.rc.drawingmanager.DrawingListener;
 import de.naoth.rc.manager.DebugDrawingManager;
 import de.naoth.rc.manager.ImageManagerBottom;
 import de.naoth.rc.core.manager.ObjectListener;
+import de.naoth.rc.dataformats.SPLMessage;
+import de.naoth.rc.drawings.FieldDrawingSPL3x4;
+import de.naoth.rc.logmanager.BlackBoard;
+import de.naoth.rc.logmanager.LogDataFrame;
+import de.naoth.rc.logmanager.LogFileEventManager;
+import de.naoth.rc.logmanager.LogFrameListener;
+import de.naoth.rc.manager.DebugDrawingManagerMotion;
 import de.naoth.rc.manager.PlotDataManager;
 import de.naoth.rc.math.Vector2D;
 import de.naoth.rc.messages.Messages.PlotItem;
 import de.naoth.rc.messages.Messages.Plots;
+import de.naoth.rc.messages.Representations;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
-import net.xeoh.plugins.base.annotations.events.Init;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 import org.freehep.graphicsio.emf.EMFExportFileType;
 import org.freehep.graphicsio.java.JAVAExportFileType;
@@ -49,24 +57,26 @@ import org.freehep.util.export.ExportDialog;
  * @author  Heinrich Mellmann
  */
 public class FieldViewer extends AbstractDialog
-  implements ObjectListener<DrawingsContainer>,
-  Dialog
 {
 
-  @PluginImplementation
-  public static class Plugin extends DialogPlugin<FieldViewer>
-  {
-      @InjectPlugin
-      public static RobotControl parent;
-      @InjectPlugin
-      public static DebugDrawingManager debugDrawingManager;
-      @InjectPlugin
-      public static PlotDataManager plotDataManager;
-      @InjectPlugin
-      public static ImageManagerBottom imageManager;
-      @InjectPlugin
-      public static DrawingEventManager drawingEventManager;
-  }//end Plugin
+    @PluginImplementation
+    public static class Plugin extends DialogPlugin<FieldViewer> {
+
+        @InjectPlugin
+        public static RobotControl parent;
+        @InjectPlugin
+        public static DebugDrawingManager debugDrawingManager;
+        @InjectPlugin
+        public static DebugDrawingManagerMotion debugDrawingManagerMotion;
+        @InjectPlugin
+        public static PlotDataManager plotDataManager;
+        @InjectPlugin
+        public static ImageManagerBottom imageManager;
+        @InjectPlugin
+        public static DrawingEventManager drawingEventManager;
+        @InjectPlugin
+        public static LogFileEventManager logFileEventManager;
+    }//end Plugin
   
   private Drawable backgroundDrawing;
 
@@ -74,8 +84,11 @@ public class FieldViewer extends AbstractDialog
   private ImageDrawing imageDrawing;
 
   private final PlotDataListener plotDataListener;
-  private StrokePlot strokePlot;
+  private final LogListener logListener = new LogListener();
+  private final StrokePlot strokePlot;
 
+  private final DrawingsListener drawingsListener = new DrawingsListener();
+  
   // TODO: this is a hack
   private static de.naoth.rc.components.DynamicCanvasPanel canvasExport = null;
   public static de.naoth.rc.components.DynamicCanvasPanel getCanvas() {
@@ -86,7 +99,6 @@ public class FieldViewer extends AbstractDialog
   {
     initComponents();
     
-    // 
     this.cbBackground.setModel(
         new javax.swing.DefaultComboBoxModel(
         new Drawable[] 
@@ -94,6 +106,7 @@ public class FieldViewer extends AbstractDialog
             new FieldDrawingSPL2013(),
             new FieldDrawingSPL2012(),
             new FieldDrawingS3D2011(),
+            new FieldDrawingSPL3x4(),
             new LocalFieldDrawing(),
             new RadarDrawing()
         }
@@ -112,28 +125,24 @@ public class FieldViewer extends AbstractDialog
         public void newDrawing(Drawable drawing) {
             if(drawing != null)
             {
-              if(!btCollectDrawings.isSelected())
-              {
+              if(!btCollectDrawings.isSelected()) {
                 resetView();
               }
               
               fieldCanvas.getDrawingList().add(drawing);
-              FieldViewer.this.repaint();
+              fieldCanvas.repaint();
             }
         }
     });
-  }
-
-  @Init
-  @Override
-  public void init()
-  {
+    
+    // intialize the field
     this.fieldCanvas.getDrawingList().add(0, this.backgroundDrawing);
     this.fieldCanvas.setAntializing(btAntializing.isSelected());
     this.fieldCanvas.repaint();
 
     this.strokePlot = new StrokePlot(300);
   }
+
 
   /** This method is called from within the constructor to
    * initialize the form.
@@ -148,11 +157,11 @@ public class FieldViewer extends AbstractDialog
         coordsPopup = new javax.swing.JDialog();
         jToolBar1 = new javax.swing.JToolBar();
         btReceiveDrawings = new javax.swing.JToggleButton();
+        btLog = new javax.swing.JToggleButton();
         btClean = new javax.swing.JButton();
         cbBackground = new javax.swing.JComboBox();
+        btRotate = new javax.swing.JButton();
         btImageProjection = new javax.swing.JToggleButton();
-        btRotate = new javax.swing.JToggleButton();
-        btRotate180 = new javax.swing.JToggleButton();
         btAntializing = new javax.swing.JCheckBox();
         btCollectDrawings = new javax.swing.JCheckBox();
         btTrace = new javax.swing.JCheckBox();
@@ -193,6 +202,17 @@ public class FieldViewer extends AbstractDialog
         });
         jToolBar1.add(btReceiveDrawings);
 
+        btLog.setText("Log");
+        btLog.setFocusable(false);
+        btLog.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btLog.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btLog.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btLogActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(btLog);
+
         btClean.setText("Clean");
         btClean.setFocusable(false);
         btClean.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
@@ -212,6 +232,18 @@ public class FieldViewer extends AbstractDialog
         });
         jToolBar1.add(cbBackground);
 
+        btRotate.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/naoth/rc/res/rotate_ccw.png"))); // NOI18N
+        btRotate.setToolTipText("Rotate the coordinates by 90°");
+        btRotate.setFocusable(false);
+        btRotate.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btRotate.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btRotate.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btRotateActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(btRotate);
+
         btImageProjection.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/naoth/rc/res/view_icon.png"))); // NOI18N
         btImageProjection.setToolTipText("Image Projection");
         btImageProjection.setFocusable(false);
@@ -223,30 +255,6 @@ public class FieldViewer extends AbstractDialog
             }
         });
         jToolBar1.add(btImageProjection);
-
-        btRotate.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/naoth/rc/res/rotate_ccw.png"))); // NOI18N
-        btRotate.setFocusable(false);
-        btRotate.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        btRotate.setSelectedIcon(new javax.swing.ImageIcon(getClass().getResource("/de/naoth/rc/res/rotate_cw.png"))); // NOI18N
-        btRotate.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        btRotate.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btRotateActionPerformed(evt);
-            }
-        });
-        jToolBar1.add(btRotate);
-
-        btRotate180.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/naoth/rc/res/reload.png"))); // NOI18N
-        btRotate180.setToolTipText("Rotate by 180°");
-        btRotate180.setFocusable(false);
-        btRotate180.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        btRotate180.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        btRotate180.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btRotate180ActionPerformed(evt);
-            }
-        });
-        jToolBar1.add(btRotate180);
 
         btAntializing.setText("Antialiazing");
         btAntializing.setFocusable(false);
@@ -328,7 +336,8 @@ public class FieldViewer extends AbstractDialog
       {
         if(Plugin.parent.checkConnected())
         {
-          Plugin.debugDrawingManager.addListener(this);
+          Plugin.debugDrawingManager.addListener(drawingsListener);
+          Plugin.debugDrawingManagerMotion.addListener(drawingsListener);
           Plugin.plotDataManager.addListener(plotDataListener);
         }
         else
@@ -338,7 +347,8 @@ public class FieldViewer extends AbstractDialog
       }
       else
       {
-        Plugin.debugDrawingManager.removeListener(this);
+        Plugin.debugDrawingManager.removeListener(drawingsListener);
+        Plugin.debugDrawingManagerMotion.removeListener(drawingsListener);
         Plugin.plotDataManager.removeListener(plotDataListener);
       }
     }//GEN-LAST:event_btReceiveDrawingsActionPerformed
@@ -346,7 +356,6 @@ public class FieldViewer extends AbstractDialog
 private void jMenuItemExportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemExportActionPerformed
   
   ExportDialog export = new ExportDialog("FieldViewer", false);
-  
   
   // add the image types for export
   export.addExportFileType(new SVGExportFileType());
@@ -407,31 +416,20 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
         this.fieldCanvas.repaint();
     }//GEN-LAST:event_cbBackgroundActionPerformed
 
-    private void btRotateActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btRotateActionPerformed
-    {//GEN-HEADEREND:event_btRotateActionPerformed
-        if(this.btRotate.isSelected()) {
-            this.fieldCanvas.setRotation(Math.PI*0.5);
-        } else {
-            this.fieldCanvas.setRotation(0);
-        }
+    private void btRotateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btRotateActionPerformed
+        this.fieldCanvas.setRotation(this.fieldCanvas.getRotation() + Math.PI*0.5);
         this.fieldCanvas.repaint();
     }//GEN-LAST:event_btRotateActionPerformed
 
-    private void btRotate180ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btRotate180ActionPerformed
-        if(this.btRotate180.isSelected()) {
-            this.fieldCanvas.setRotation(Math.PI);
+    private void btLogActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btLogActionPerformed
+       
+        if(btLog.isSelected()) {
+            Plugin.logFileEventManager.addListener(logListener);
         } else {
-            this.fieldCanvas.setRotation(0);
+            Plugin.logFileEventManager.removeListener(logListener);
         }
-        this.fieldCanvas.repaint();
-    }//GEN-LAST:event_btRotate180ActionPerformed
+    }//GEN-LAST:event_btLogActionPerformed
 
-  @Override
-  public void errorOccured(String cause)
-  {
-    btReceiveDrawings.setSelected(false);
-    Plugin.debugDrawingManager.removeListener(this);
-  }
   
   void resetView()
   {
@@ -446,24 +444,58 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
   }//end clearView
 
   
-  @Override
-  public void newObjectReceived(DrawingsContainer objectList)
+  private class DrawingsListener implements ObjectListener<DrawingsContainer>
   {
-    if(objectList != null)
+    @Override
+    public void newObjectReceived(DrawingsContainer objectList)
     {
-      if(!this.btCollectDrawings.isSelected())
+      if(objectList != null)
       {
-        resetView();
-      }
-      DrawingCollection drawingCollection = objectList.get(DrawingOnField.class);
-      if(drawingCollection != null) {
-        this.fieldCanvas.getDrawingList().add(drawingCollection);
-      }
+        DrawingCollection drawingCollection = objectList.get(DrawingOnField.class);
+        if(drawingCollection == null || drawingCollection.isEmpty()) {
+            return;
+        }
 
-      repaint();
-    }//end if
-  }//end newObjectReceived
+        if(!btCollectDrawings.isSelected()) {
+          resetView();
+        }
 
+        fieldCanvas.getDrawingList().add(drawingCollection);
+        fieldCanvas.repaint();
+      }
+    }
+
+    @Override
+    public void errorOccured(String cause)
+    {
+      btReceiveDrawings.setSelected(false);
+      Plugin.debugDrawingManager.removeListener(this);
+      Plugin.debugDrawingManagerMotion.removeListener(this);
+    }
+  }
+  
+  public class LogListener implements LogFrameListener {
+
+        @Override
+        public void newFrame(BlackBoard b) {
+            LogDataFrame frame = b.get("TeamMessage");
+            if (frame != null) {
+                try {
+                    DrawingCollection drawings = new DrawingCollection();
+                    Representations.TeamMessage messageCollection = Representations.TeamMessage.parseFrom(frame.getData());
+                    for(Representations.TeamMessage.Data msg : messageCollection.getDataList()) {
+                        SPLMessage spl = new SPLMessage(msg);
+                        spl.draw(drawings, Color.GRAY, false);
+                    }
+                    
+                    TeamCommViewer.Plugin.drawingEventManager.fireDrawingEvent(drawings);
+                    
+                } catch (InvalidProtocolBufferException ex) {
+                    Helper.handleException(ex);
+                }
+            }
+        }
+    }
 
   class PlotDataListener implements ObjectListener<Plots>
   {
@@ -517,7 +549,7 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
       {
         btImageProjection.setSelected(false);
         Plugin.imageManager.removeListener(this);
-      }//end errorOccured
+      }
   }//end ImageListener
 
 
@@ -551,19 +583,20 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
   public void dispose()
   {
     // remove all the registered listeners
-    Plugin.debugDrawingManager.removeListener(this);
+    Plugin.debugDrawingManager.removeListener(drawingsListener);
+    Plugin.debugDrawingManagerMotion.removeListener(drawingsListener);
     Plugin.plotDataManager.removeListener(plotDataListener);
     Plugin.imageManager.removeListener(imageListener);
-  }//end dispose
+  }
   
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JCheckBox btAntializing;
     private javax.swing.JButton btClean;
     private javax.swing.JCheckBox btCollectDrawings;
     private javax.swing.JToggleButton btImageProjection;
+    private javax.swing.JToggleButton btLog;
     private javax.swing.JToggleButton btReceiveDrawings;
-    private javax.swing.JToggleButton btRotate;
-    private javax.swing.JToggleButton btRotate180;
+    private javax.swing.JButton btRotate;
     private javax.swing.JCheckBox btTrace;
     private javax.swing.JComboBox cbBackground;
     private javax.swing.JDialog coordsPopup;

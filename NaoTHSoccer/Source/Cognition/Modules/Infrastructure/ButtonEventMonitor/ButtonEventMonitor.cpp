@@ -22,17 +22,20 @@ void ButtonEventMonitor::update(ButtonEvent& buttonEvent, bool pressed)
 {
   buttonEvent = ButtonEvent::NONE;
 
-  // update button state
-  if(buttonEvent.isPressed != pressed) 
+  // detect change in the status of the button
+  if(buttonEvent.isPressed != pressed)
   {
     buttonEvent = pressed?ButtonEvent::PRESSED:ButtonEvent::RELEASED;
-    buttonEvent.timeOfLastEvent = getFrameInfo().getTime();
     buttonEvent.isPressed = pressed;
   }
 
   // button is pressed not longer than 1s
   if(buttonEvent == ButtonEvent::RELEASED && getFrameInfo().getTime() < buttonEvent.timeOfLastEvent + 1000) {
     buttonEvent = ButtonEvent::CLICKED;
+  }
+
+  if(!(buttonEvent == ButtonEvent::NONE)) {
+    buttonEvent.timeOfLastEvent = getFrameInfo().getTime();
   }
 }
 

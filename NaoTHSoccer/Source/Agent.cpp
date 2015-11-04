@@ -30,6 +30,11 @@ ModuleManager* getModuleManager(Cognition* c)
   return dynamic_cast<ModuleManager*>(c);
 }
 
+ModuleManager* getModuleManager(Motion* m)
+{
+  return dynamic_cast<ModuleManager*>(m);
+}
+
 void deleteCognition(Cognition* cognition)
 {
   delete cognition;

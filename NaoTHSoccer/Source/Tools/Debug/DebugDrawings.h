@@ -64,6 +64,10 @@ public:
     out() << "FillOval:" << x << ":" << y << ":" << radiusX << ":" << radiusY << ":" <<  std::endl;
   }
 
+  void drawOvalRotated(double x,double y,double radiusX,double radiusY,double rotation) {
+    out() << "Oval:" << x << ":" << y << ":" << radiusX << ":" << radiusY << ":" << rotation << ":" <<  std::endl;
+  }
+
   void drawRobot(double x, double y, double rotation){
     out() << "Robot:" << x << ":" << y << ":" << rotation << ":" <<  std::endl;
   }
@@ -108,7 +112,10 @@ template<> class Serializer<DebugDrawings> : public Serializer<DrawingCanvas2D> 
 #define FILLOVAL(x,y,radiusX,radiusY) getDebugDrawings().out() << "FillOval:" << x << ":" << y << ":" << radiusX << ":" << radiusY << ":" <<  std::endl
 #define TEXT_DRAWING(x,y,text) getDebugDrawings().out() << "Text:" << x << ":" << y << ":" << text << ":" <<  std::endl
 #define SIMPLE_PARTICLE(x,y,r) getDebugDrawings().out() << "Particle:" << x << ":" << y << ":" << r << ":" <<  std::endl
-
+// voronoi stuff
+#define FILLPOLYGON(x,y) getDebugDrawings().out() << "FillPolygon:" << x << ":" << y <<":" << std::endl
+#define POLYGON(x,y) getDebugDrawings().out() << "Polygon:" << x << ":" << y <<":" << std::endl
+// voronoi stuff end
 #define PARTICLE(x,y,r,l) \
   LINE(x,y,x + l*cos(r),y + l*sin(r)); \
   CIRCLE(x,y,0.1*l)

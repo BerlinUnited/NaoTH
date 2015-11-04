@@ -179,7 +179,7 @@ void HeadMotionEngine::moveByAngle(const Vector2d& target)
     max_velocity_deg_in_second = max_velocity_deg_in_second_slow;
   }
 
-
+  max_velocity_deg_in_second = min(getHeadMotionRequest().velocity, max_velocity_deg_in_second);
   
   MODIFY("HeadMotionEngine:gotoAngle:max_velocity_deg_in_second", max_velocity_deg_in_second);
   double max_velocity = Math::fromDegrees(max_velocity_deg_in_second)*getRobotInfo().getBasicTimeStepInSecond();

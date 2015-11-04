@@ -138,7 +138,7 @@ void* motionThreadCallback(void* ref)
 #define TO_STRING_INT(x) #x
 #define TO_STRING(x) TO_STRING_INT(x)
 
-int main(int argc, char *argv[])
+int main(int /*argc*/, char **/*argv[]*/)
 {
 
   std::cout << "=========================================="  << std::endl;

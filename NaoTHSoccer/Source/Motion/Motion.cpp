@@ -24,6 +24,7 @@ using namespace naoth;
 
 Motion::Motion()
   : ModuleManagerWithDebug(""),
+    theLogProvider(NULL),
     motionLogger("MotionLog")
 {
 
@@ -75,8 +76,10 @@ Motion::~Motion()
 
 void Motion::init(naoth::ProcessInterface& platformInterface, const naoth::PlatformBase& platform)
 {
-  // TODO: need a better solution for this
+  // try to get the log provider
+  theLogProvider = ModuleManager::getModule("LogProvider");
 
+  // TODO: need a better solution for this
   // load the joint limits from the config 
   JointData::loadJointLimitsFromConfig();
 
@@ -114,6 +117,7 @@ void Motion::init(naoth::ProcessInterface& platformInterface, const naoth::Platf
   platformInterface.registerOutputChanel(getOdometryData());
   platformInterface.registerOutputChanel(getCalibrationData());
   platformInterface.registerOutputChanel(getInertialModel());
+  platformInterface.registerOutputChanel(getBodyStatus());
 
   // messages from cognition to motion
   platformInterface.registerInputChanel(getCameraInfo());
@@ -131,6 +135,11 @@ void Motion::call()
 {
 
   STOPWATCH_START("MotionExecute");
+
+  // run the theLogProvider if avalieble
+  if(theLogProvider) {
+    theLogProvider->execute();
+  }
 
   // process sensor data
   STOPWATCH_START("Motion:processSensorData");
@@ -218,8 +227,30 @@ void Motion::processSensorData()
   //
   theOdometryCalculator->execute();
 
+  // NOTE: highly experimental
+  static double rotationGyroZ = 0.0;
+  if(getCalibrationData().calibrated) {
+    rotationGyroZ -= getGyrometerData().data.z * getRobotInfo().getBasicTimeStepInSecond();
+  } else {
+    rotationGyroZ = 0.0;
+  }
+
+  if(parameter.useGyroRotationOdometry)
+  {
+    PLOT("Motion:rotationZ", rotationGyroZ);
+    getOdometryData().rotation = rotationGyroZ;
+  }
+
   // store the MotorJointData
   theLastMotorJointData = getMotorJointData();
+
+  // update the body status
+  for(int i=0; i < JointData::numOfJoint; i++)
+  {
+    getBodyStatus().currentSum[i] += getSensorJointData().electricCurrent[i];
+  }
+  getBodyStatus().timestamp = getFrameInfo().getTime();
+
 
   debugPlots();
 }//end processSensorData

@@ -86,11 +86,13 @@ private:
     Parameters() : ParameterList("BallDetectorParameters")
     {
       PARAMETER_REGISTER(stepSize) = 2;    
+      PARAMETER_REGISTER(maxBorderBrightness) = 70;
       PARAMETER_REGISTER(minOffsetToFieldY) = 100;
-      PARAMETER_REGISTER(minOffsetToGoalV) = 10;
+      //PARAMETER_REGISTER(minOffsetToGoalV) = 10;
       PARAMETER_REGISTER(minOffsetToFieldV) = 10;
       PARAMETER_REGISTER(mitUVDifference) = 50;
       PARAMETER_REGISTER(thresholdGradientUV) = 6;
+      PARAMETER_REGISTER(thresholdSanityCheck) = 0.5;
       
       syncWithConfig();
     }
@@ -101,32 +103,37 @@ private:
 
 	  int stepSize;
 
+    int maxBorderBrightness;
     int minOffsetToFieldY;
     int minOffsetToFieldV;
-    int minOffsetToGoalV;
+    //int minOffsetToGoalV;
     int mitUVDifference;
     
     int thresholdGradientUV;
+    double thresholdSanityCheck;
 
   } params;
 
 
 private:
   inline bool isOrange(const Pixel& pixel) const {
+    return getFieldColorPercept().isRedColor(pixel);
+    /*
     return
       pixel.y + params.minOffsetToFieldY > getFieldColorPercept().histogramField.y && // brighter than darkest acceptable green
       pixel.v > pixel.u + params.mitUVDifference && // y-u has to be high (this filter out the jerseys)
-      pixel.v > getFieldColorPercept().range.getMax().v + params.minOffsetToFieldV &&
-      pixel.v > getGoalPostHistograms().histogramV.mean + params.minOffsetToGoalV; 
+      pixel.v > getFieldColorPercept().range.getMax().v + params.minOffsetToFieldV;
+//      pixel.v > getGoalPostHistograms().histogramV.mean + params.minOffsetToGoalV; */
   }
 
   bool findMaximumRedPoint(std::vector<Vector2i>& points) const;
   bool scanForEdges(const Vector2i& start, const Vector2d& direction, std::vector<Vector2i>& endpoint) const;
-  void spiderScan(const Vector2i& start, std::vector<Vector2i>& endPoints) const;
+  bool spiderScan(const Vector2i& start, std::vector<Vector2i>& endPoints) const;
   double estimatedBallRadius(const Vector2i& point) const;
   
   void calculateBallPercept(const Vector2i& center, double radius);
   void estimateCircleSimple(const std::vector<Vector2i>& endPoints, Vector2d& center, double& radius) const;
+  bool sanityCheck(const Vector2i& center, double radius);
   
 private: //data members
   std::vector<Vector2i> listOfRedPoints;

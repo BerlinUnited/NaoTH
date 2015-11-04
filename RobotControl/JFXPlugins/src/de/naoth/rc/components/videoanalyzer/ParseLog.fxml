@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane id="AnchorPane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.naoth.rc.components.videoanalyzer.ParseLogController">
+   <children>
+      <ProgressBar fx:id="progress" layoutX="2.0" layoutY="21.0" prefHeight="20.0" prefWidth="585.0" progress="0.53" />
+      <Label layoutX="3.0" layoutY="4.0" prefHeight="15.0" prefWidth="126.0" text="Parsing logfile:" />
+      <Button fx:id="btCancel" layoutX="521.0" layoutY="40.0" mnemonicParsing="false" onAction="#handleCancel" text="Cancel" />
+      <Label fx:id="lblMessage" layoutX="112.0" layoutY="4.0" prefHeight="15.0" prefWidth="476.0" text="Label" />
+   </children>
+</AnchorPane>

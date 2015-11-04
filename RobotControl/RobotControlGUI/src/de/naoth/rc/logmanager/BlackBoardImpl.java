@@ -7,7 +7,9 @@
 package de.naoth.rc.logmanager;
 
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  *
@@ -24,4 +26,12 @@ public class BlackBoardImpl implements BlackBoard {
     public LogDataFrame get(String name) {
         return registry.get(name);
     }
+
+  @Override
+  public Set<String> getNames()
+  {
+    return new LinkedHashSet<>(registry.keySet());
+  }
+    
+    
 }

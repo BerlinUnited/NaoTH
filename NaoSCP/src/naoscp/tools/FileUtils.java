@@ -12,6 +12,7 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.CharBuffer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -30,24 +31,23 @@ public class FileUtils
   
   public static String readFile(File file) throws IOException
   {
-      BufferedReader br = new BufferedReader(new FileReader(file));
-      String line = "";
-      String fileContent = "";
-      while (line != null) {
-          line = br.readLine();
-          if (line != null) {
-              fileContent += line + "\n";
-          }
+      FileReader fr = new FileReader(file);
+      BufferedReader br = new BufferedReader(fr);
+      StringBuilder sb = new StringBuilder();
+
+      while (br.ready()) {
+          sb.append((char)br.read());
       }
+      
       br.close();
-      return fileContent;
+      return sb.toString();
   }
   
   /**
    * recursively delete local dir
    * @param dir File dir
    */
-  public static void deleteDir(File dir)
+  public static void deleteDir(File dir) throws NaoSCPException
   {
     if(dir.isDirectory())
     {
@@ -58,7 +58,9 @@ public class FileUtils
         deleteDir(file);
       }
     }
-    dir.delete();
+    if(!dir.delete()) {
+        throw new NaoSCPException("could not delete " + dir.getAbsolutePath());
+    }
   }//end deleteDir
 
   
@@ -68,20 +70,21 @@ public class FileUtils
    * @param src File source
    * @param dest File destination
    */
-  public static void copyFiles(File src, File dest)
+  public static void copyFiles(File src, File dest) throws NaoSCPException
   {
-    if( ! src.exists() ||  ! src.canRead() || src.getName().equals(".svn") || src.getName().equals(".bzr") || src.getName().equals(".hg") || src.getName().equals(".git"))
+    // ignore versioning files
+    if(src.getName().equals(".svn") || src.getName().equals(".bzr") || src.getName().equals(".hg") || src.getName().equals(".git"))
     {
       return;
     }
+    
     if(src.isDirectory())
     {
       if( ! dest.exists())
       {
         if( ! dest.mkdirs())
         {
-          Logger.getGlobal().log(Level.SEVERE, "copyFiles: Could not create direcotry: " + dest.getAbsolutePath() + ".");
-          return;
+          throw new NaoSCPException("copyFiles: Could not create direcotry: " + dest.getAbsolutePath() + ".");
         }
       }
       String list[] = src.list();
@@ -117,7 +120,7 @@ public class FileUtils
       catch(IOException e)
       {
         e.printStackTrace(System.err);
-        Logger.getGlobal().log(Level.SEVERE, "copyFiles: Unable to copy file: " + src.getAbsolutePath() + " to " + dest.
+        throw new NaoSCPException("copyFiles: Unable to copy file: " + src.getAbsolutePath() + " to " + dest.
         getAbsolutePath() + ".");
       }
     }

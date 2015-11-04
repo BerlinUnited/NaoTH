@@ -127,7 +127,23 @@ bool SPLGameController::update()
       {
         tinfo = dataIn.teams[i];
         teamFound = true;
-        data.teamColor = tinfo.teamColour == TEAM_BLUE ? GameData::blue : GameData::red;
+        switch(tinfo.teamColour)
+        {
+        case TEAM_BLUE:
+            data.teamColor = GameData::blue;
+            break;
+        case TEAM_RED:
+            data.teamColor = GameData::red;
+            break;
+        case TEAM_YELLOW:
+            data.teamColor = GameData::yellow;
+            break;
+        case TEAM_BLACK:
+            data.teamColor = GameData::black;
+            break;
+        default:
+            data.teamColor = GameData::blue;
+        }
         break;
       }
     }
@@ -166,12 +182,12 @@ bool SPLGameController::update()
             || data.gameState == GameData::playing )
         {
           //TODO: check more conditions (time, etc.)
-          data.playMode = (dataIn.kickOffTeam == tinfo.teamColour) ? GameData::kick_off_own : GameData::kick_off_opp;
+          data.playMode = (dataIn.kickOffTeam == tinfo.teamNumber) ? GameData::kick_off_own : GameData::kick_off_opp;
         }
       }
       else if ( dataIn.secondaryState == STATE2_PENALTYSHOOT )
       {
-        data.playMode = (dataIn.kickOffTeam == tinfo.teamColour) ? GameData::penalty_kick_own : GameData::penalty_kick_opp;
+        data.playMode = (dataIn.kickOffTeam == tinfo.teamNumber) ? GameData::penalty_kick_own : GameData::penalty_kick_opp;
       }
       else if ( dataIn.secondaryState == STATE2_OVERTIME )
       {
@@ -265,6 +281,8 @@ void SPLGameController::socketLoop()
                                      sizeof(RoboCupGameControlData),
                                      NULL, NULL);
 
+    bool validPackage = false;
+
     if(receiverAddress != NULL)
     {
       // construct a proper return address from the receiver
@@ -280,15 +298,20 @@ void SPLGameController::socketLoop()
     if(size == sizeof(RoboCupGameControlData))
     {
       g_mutex_lock(dataMutex);
-      if ( update() )
+      validPackage = update();
+      if ( validPackage )
       {
         data.valid = true;
       }
       g_mutex_unlock(dataMutex);
 
-      g_mutex_lock(returnDataMutex);
-      sendData(dataOut);
-      g_mutex_unlock(returnDataMutex);
+      // only send return package if we are sure the initial package was a proper game controller message
+      if(validPackage)
+      {
+        g_mutex_lock(returnDataMutex);
+        sendData(dataOut);
+        g_mutex_unlock(returnDataMutex);
+      }
     }
   }
 }
