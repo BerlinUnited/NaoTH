@@ -44,7 +44,7 @@ void RemoteControlBehavior::execute()
 
 void RemoteControlBehavior::executeDebugCommand(
     const std::string& command, const ArgumentMap& arguments,
-    std::ostream& outstream)
+    std::ostream& /*outstream*/)
 {
 	if(command == "remoteControlRequest_WALK")
 	{
