@@ -57,6 +57,9 @@ public:
     out() << "Text:" << x << ":" << y << ":" << text << ":" <<  std::endl;
   }
 
+  void drawBox(double x0, double y0, double x1, double y1) {
+    out() << "Box:" << x0 << ":" << y0 << ":" << x1 << ":" << y1 << ":" << std::endl;
+  }
   void fillBox(double x0, double y0, double x1, double y1) {
     out() << "FillBox:" << x0 << ":" << y0 << ":" << x1 << ":" << y1 << ":" << std::endl;
   }
@@ -70,6 +73,13 @@ public:
 
   void drawRobot(double x, double y, double rotation){
     out() << "Robot:" << x << ":" << y << ":" << rotation << ":" <<  std::endl;
+  }
+
+  void rotate(double angle) {
+    out() << "Rotation:" << angle << std::endl;
+  }
+  void translate(double x, double y) {
+    out() << "Translation:" << x << ":" << y << std::endl;
   }
   
 
