@@ -90,7 +90,6 @@ private:
   Vector3d theY; // y, y', y''
   double theZ; // z
   Vector2d theErr;
-  bool initialized;
   
   // input: reference ZMP
   std::list<double> refZMPx;

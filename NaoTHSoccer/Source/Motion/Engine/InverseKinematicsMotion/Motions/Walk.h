@@ -28,11 +28,13 @@
 #include "Tools/Debug/DebugPlot.h"
 #include "Tools/Debug/DebugRequest.h"
 #include "Tools/Debug/DebugDrawings.h"
+#include "Representations/Debug/Stopwatch.h"
 
 // tools
 #include <queue>
 #include "Walk/FootStep.h"
 #include "Walk/FootStepPlanner.h"
+#include "Walk/FootStepPlannerOld.h"
 #include "IKPose.h"
 #include "Tools/DataStructures/RingBufferWithSum.h"
 
@@ -68,6 +70,13 @@ public:
     STEP_WALK,
     STEP_CONTROL
   };
+
+  Stopwatch stopwatch;
+
+  Stopwatch stopwatch0;
+  Stopwatch stopwatch1;
+  Stopwatch stopwatch2;
+  Stopwatch stopwatch3;
 
 private:
   /** class describing a single step */
@@ -175,7 +184,7 @@ private: // stabilization
 
   void adaptStepSize(FootStep& step) const;
   void calculateError();
-  void feetStabilize(double (&position)[naoth::JointData::numOfJoint]);
+  void feetStabilize(const Step& executingStep, double (&position)[naoth::JointData::numOfJoint]) const;
 };
 
 #endif // _Walk_H_

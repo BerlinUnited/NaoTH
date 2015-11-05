@@ -16,6 +16,7 @@ using namespace InverseKinematic;
 
 Walk::Walk() : IKMotion(getInverseKinematicsMotionEngineService(), motion::walk, getMotionLock())
 {
+  DEBUG_REQUEST_REGISTER("Walk:draw_step_plan_geometry", "draw all planed steps, zmp and executed com", false);
 }
   
 void Walk::execute()
@@ -39,9 +40,13 @@ void Walk::execute()
   planZMP();
   executeStep();
 
-  FIELD_DRAWING_CONTEXT;
-  stepBuffer.draw(getDebugDrawings());
 
+  DEBUG_REQUEST("Walk:draw_step_plan_geometry",
+    FIELD_DRAWING_CONTEXT;
+    stepBuffer.draw(getDebugDrawings());
+  );
+
+  
   {
     // STABILIZATION
     // HACK: compensate the foot lift movement
@@ -111,7 +116,7 @@ void Walk::execute()
 
   // STABILIZATION
   if(parameters().stabilization.stabilizeFeet) {
-    feetStabilize(getMotorJointData().position);
+    feetStabilize(stepBuffer.first(), getMotorJointData().position);
   }
 
   updateMotionStatus(getMotionStatus());
@@ -137,14 +142,16 @@ void Walk::manageSteps(const MotionRequest& motionRequest)
     // use the current com pose as a basis for start
     CoMFeetPose currentCOMFeetPose = getEngine().getCurrentCoMFeetPose();
     currentCOMFeetPose.localInLeftFoot();
-    currentCOMFeetPose.com.translation.z = parameters().hip.comHeight;
+
+    Vector3d startZMPTarget(currentCOMFeetPose.com.translation);
+    startZMPTarget.z = parameters().hip.comHeight;
     
     // new step (don't move the feet)
     Step& initialStep = stepBuffer.add();
     initialStep.footStep = FootStep(currentCOMFeetPose.feet, FootStep::NONE);
 
     // initialize the zmp buffer with the current com pose
-    initialStep.numberOfCycles = getEngine().zmpControl.init(currentCOMFeetPose.com.translation, currentCOMFeetPose.com.translation);
+    initialStep.numberOfCycles = getEngine().zmpControl.init(currentCOMFeetPose.com.translation, startZMPTarget);
     initialStep.planningCycle = initialStep.numberOfCycles;
   }
 
@@ -184,7 +191,10 @@ void Walk::calculateNewStep(const Step& lastStep, Step& newStep, const WalkReque
     newStep.numberOfCycles = (newStep.footStep.liftingFoot() == FootStep::NONE)?1:parameters().step.duration/getRobotInfo().basicTimeStep;
     newStep.type = STEP_WALK;
 
-    std::cout << "walk stopping ..." << std::endl;
+    // print it only once
+    if(newStep.footStep.liftingFoot() == FootStep::NONE && lastStep.footStep.liftingFoot() != FootStep::NONE) {
+      std::cout << "walk stopping ..." << std::endl;
+    }
     return;
   }
 
@@ -242,9 +252,11 @@ void Walk::planZMP()
   //zmp.z = parameters().hip.comHeight;
   getEngine().zmpControl.push(zmp);
 
-  FIELD_DRAWING_CONTEXT;
-  getDebugDrawings().pen(Color::BLUE, 5.0);
-  getDebugDrawings().drawCircle(zmp.x, zmp.y, 10);
+  DEBUG_REQUEST("Walk:draw_step_plan_geometry",
+    FIELD_DRAWING_CONTEXT;
+    getDebugDrawings().pen(Color::BLUE, 5.0);
+    getDebugDrawings().drawCircle(zmp.x, zmp.y, 10);
+  );
 
   planningStep.planningCycle++;
 }
@@ -262,10 +274,12 @@ void Walk::executeStep()
     return;
   }
 
-  // debug
-  FIELD_DRAWING_CONTEXT;
-  getDebugDrawings().pen(Color::BLUE, 1.0);
-  getDebugDrawings().fillOval(com.x, com.y, 10, 10);
+
+  DEBUG_REQUEST("Walk:draw_step_plan_geometry",
+    FIELD_DRAWING_CONTEXT;
+    getDebugDrawings().pen(Color::BLUE, 1.0);
+    getDebugDrawings().fillOval(com.x, com.y, 10, 10);
+  );
 
   switch(executingStep.footStep.liftingFoot()) 
   {
@@ -315,7 +329,7 @@ Pose3D Walk::calculateLiftingFootPos(const Step& step) const
       step.walkRequest.stepControl.speedDirection,
       step.walkRequest.stepControl.scale);
     }
-    else
+    else if( step.type == STEP_WALK )
     {
       return FootTrajectorGenerator::genTrajectory(
         step.footStep.footBegin(),
@@ -327,6 +341,9 @@ Pose3D Walk::calculateLiftingFootPos(const Step& step) const
         0, // footPitchOffset
         0  // footRollOffset
       );
+    }
+    else {
+      ASSERT(false);
     }
 }
 
@@ -468,17 +485,10 @@ void Walk::calculateError()
 }//end calculateError
 
 
-void Walk::feetStabilize(double (&position)[naoth::JointData::numOfJoint])
+void Walk::feetStabilize(const Step& executingStep, double (&position)[naoth::JointData::numOfJoint]) const
 {
   // calculate the cycle
   // the same as in "FootTrajectorGenerator::genTrajectory"
-  
-  // no stabilization if there are no steps planned
-  if(stepBuffer.empty()) { 
-    return;
-  }
-
-  const Step& executingStep = stepBuffer.first();
   
   // TODO: remove dupication 
   double samplesDoubleSupport = std::max(0, (int) (parameters().step.doubleSupportTime / getRobotInfo().basicTimeStep));
@@ -491,19 +501,11 @@ void Walk::feetStabilize(double (&position)[naoth::JointData::numOfJoint])
   double cycle = executingStep.executingCycle;
   double z = 0;
 
-  if (cycle <= doubleSupportEnd)
-  {
-    z = 0;
-  }
-  else if (cycle <= doubleSupportBegin)
+  if (cycle > doubleSupportEnd && cycle <= doubleSupportBegin)
   {
     double t = 1 - (doubleSupportBegin - cycle) / samplesSingleSupport;
     t = t * Math::pi - Math::pi_2; // scale t
     z = (1 + cos(t * 2))*0.5;
-  }
-  else
-  {
-    z = 0;
   }
 
   const Vector2d& inertial = getInertialModel().orientation;

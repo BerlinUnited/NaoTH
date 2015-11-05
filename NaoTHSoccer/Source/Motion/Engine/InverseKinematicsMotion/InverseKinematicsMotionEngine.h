@@ -153,6 +153,7 @@ public:
 
       int init(const Vector3d& com, const Vector3d& targetZMP)
       {
+        ASSERT(thePreviewController.previewSteps() > 1);
         // TODO: clear it because of the motion can be forced to finish immediately...
         // the idea of keep buffer is to switch zmp control between different motions,
         // such as walk and kick, then maybe we should check if zmp control is used every cycle and etc.
@@ -160,11 +161,15 @@ public:
 
         thePreviewController.init(com, Vector2d(0,0), Vector2d(0,0));
   
-        for (size_t i = 0; i < thePreviewController.previewSteps(); i++) {
-          thePreviewController.push(targetZMP);
+        // NOTE: plan all but one zmp points
+        for (size_t i = 0; i+1 < thePreviewController.previewSteps(); i++) {
+          double t = static_cast<double>(i) / static_cast<double>(thePreviewController.previewSteps()-1);
+          Vector3d zmp = com*(1.0-t) + targetZMP*t;
+          thePreviewController.push(zmp);
         }
+        //ASSERT(thePreviewController.ready());
 
-        return thePreviewController.previewSteps();
+        return thePreviewController.previewSteps()-1;
       }
 
     private:
@@ -253,11 +258,6 @@ private:
   Vector3d theCoMControlResult; // save CoM control result to be reused
   InverseKinematic::CoMFeetPose lastCoMFeetControlPose;
   FrameInfo lastCoMFeetControlFrameInfo;
-
-  PreviewController thePreviewController;
-  Vector3d thePreviewControlCoM;
-  Vector2d thePreviewControldCoM;
-  Vector2d thePreviewControlddCoM;
 
   double rotationStabilizeFactor; // [0, 1] disable ~ enable
 };

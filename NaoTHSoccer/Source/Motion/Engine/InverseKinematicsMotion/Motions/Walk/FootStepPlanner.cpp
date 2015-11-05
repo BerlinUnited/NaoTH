@@ -51,6 +51,11 @@ void FootStepPlanner::updateParameters(const IKParameters& parameters)
 
 FootStep FootStepPlanner::finalStep(const FootStep& lastStep, const WalkRequest& /*req*/)
 {
+  // don't move the feet if they stoped moving once
+  if(lastStep.liftingFoot() == FootStep::NONE) {
+    return zeroStep(lastStep);
+  }
+
   // TODO: check if an actual step is necessary based on the last step
   //       => calculate an actual step only if necessary
 
@@ -94,9 +99,9 @@ FootStep FootStepPlanner::zeroStep(const FootStep& lastStep) const
 
 FootStep FootStepPlanner::firstStep(const InverseKinematic::FeetPose& pose, const Pose2D& offset, const WalkRequest& req)
 {
-  FootStep firstStepRight = calculateNextWalkStep(pose, offset, FootStep::RIGHT, req);
   FootStep firstStepLeft = calculateNextWalkStep(pose, offset, FootStep::LEFT, req);
-
+  FootStep firstStepRight = calculateNextWalkStep(pose, offset, FootStep::RIGHT, req);
+  
   Pose3D leftMove = firstStepLeft.footBegin().invert() * firstStepLeft.footEnd();
   Pose3D rightMove = firstStepRight.footBegin().invert() * firstStepRight.footEnd();
 

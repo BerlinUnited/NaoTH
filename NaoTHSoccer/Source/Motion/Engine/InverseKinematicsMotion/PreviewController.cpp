@@ -29,8 +29,6 @@ PreviewController::PreviewController()
   b = Vector3d(dt*dt*dt/6, dt*dt/2, dt);
 
   setHeight(200); // some initial height
-
-  initialized = false;
 }
 
 void PreviewController::setHeight(double height)
@@ -72,7 +70,7 @@ void PreviewController::loadParameter()
   // read the header
   double length_f(0.0), number_of_entries(0.0);
   ifs >> parameterTimeStep >> length_f >> number_of_entries;
-
+  
   // read the parameters for each height step
   double height(0.0);
   for(int i = 0; i < number_of_entries; i++)
@@ -96,11 +94,6 @@ void PreviewController::update(const std::list<double>& ref, Vector3d&x, double&
 {
   // u = -Ki*err - Ks*X - F*P;
 
-  if(initialized) {
-    double zmp = c*x;
-    err += (zmp - ref.front());
-  }
-
   double u = -parameters->Ki * err - parameters->K*x;
   
   // the preview length is limited by the nomber of parameters and
@@ -114,8 +107,8 @@ void PreviewController::update(const std::list<double>& ref, Vector3d&x, double&
 
   x = A * x + b*u;
 
-  //double zmp = c*x;
-  //err += (zmp - ref.front());
+  double zmp = c*x;
+  err += (zmp - ref.front());
 }
 
 void PreviewController::control(Vector3d& com, Vector2d& dcom, Vector2d& ddcom)
@@ -128,8 +121,6 @@ void PreviewController::control(Vector3d& com, Vector2d& dcom, Vector2d& ddcom)
   update(refZMPx, theX, theErr.x);
   update(refZMPy, theY, theErr.y);
   
-  initialized = true;
-
   //refZMPx.pop_front();
   //refZMPy.pop_front();
   //refZMPz.pop_front();
@@ -166,7 +157,7 @@ void PreviewController::clear()
   refZMPx.clear();
   refZMPy.clear();
   refZMPz.clear();
-  initialized = false;
+
   theErr = Vector2d(0, 0);
 }
 
