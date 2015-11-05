@@ -28,26 +28,14 @@ public:
   FootStep zeroStep(const FootStep& lastStep) const;
 
 private:
-  /**
-   * @param step: the step in WalkRequest::Hip
-   */
-  FootStep calculateNextWalkStep(const InverseKinematic::FeetPose& pose, const Pose2D& offset, FootStep::Foot movingFoot, const WalkRequest& req, bool stepControl = false);
-  FootStep firstStep(const InverseKinematic::FeetPose& pose, const Pose2D& offset, const WalkRequest& req);
+  FootStep calculateNextWalkStep(const InverseKinematic::FeetPose& pose, const Pose2D& offset, const Pose2D& lastStepRequest, FootStep::Foot movingFoot, const WalkRequest& req, bool stepControl = false);
+  FootStep firstStep(const InverseKinematic::FeetPose& pose, const Pose2D& offset, const Pose2D& lastStepRequest, const WalkRequest& req);
 
   void restrictStepSize(Pose2D& step, double character) const;
   void restrictStepSizeControlStep(Pose2D& step, double character) const;
   void restrictStepChange(Pose2D& step, const Pose2D& lastStep) const;
-  
-
-private: // low level calculations
-  /** transform the requested target pose to the hip coordinates */
-  //Pose2D calculateStepRequestInSupportOrigin(const FootStep& lastStep, const WalkRequest& req) const;
-   
-  //void calculateFootStep(FootStep& footStep, const Pose2D& stepRequest, const Pose2D& supportOffset, const Pose2D& targetOffset) const;
-  
 
 private:
-  Pose2D theLastStepSize;
 
   // parameters
   double theMaxTurnInner;

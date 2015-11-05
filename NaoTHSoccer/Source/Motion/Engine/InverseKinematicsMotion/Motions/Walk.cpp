@@ -328,23 +328,23 @@ Pose3D Walk::calculateLiftingFootPos(const Step& step) const
       0, //footRollOffset
       step.walkRequest.stepControl.speedDirection,
       step.walkRequest.stepControl.scale);
-    }
-    else if( step.type == STEP_WALK )
-    {
-      return FootTrajectorGenerator::genTrajectory(
-        step.footStep.footBegin(),
-        step.footStep.footEnd(),
-        step.executingCycle,
-        samplesDoubleSupport,
-        samplesSingleSupport,
-        parameters().step.stepHeight,
-        0, // footPitchOffset
-        0  // footRollOffset
-      );
-    }
-    else {
-      ASSERT(false);
-    }
+  }
+  else if( step.type == STEP_WALK )
+  {
+    return FootTrajectorGenerator::genTrajectory(
+      step.footStep.footBegin(),
+      step.footStep.footEnd(),
+      step.executingCycle,
+      samplesDoubleSupport,
+      samplesSingleSupport,
+      parameters().step.stepHeight,
+      0, // footPitchOffset
+      0  // footRollOffset
+    );
+  }
+
+  ASSERT(false);
+  return Pose3D(); // is never reached
 }
 
 RotationMatrix Walk::calculateBodyRotation(const FeetPose& feet, double pitch) const

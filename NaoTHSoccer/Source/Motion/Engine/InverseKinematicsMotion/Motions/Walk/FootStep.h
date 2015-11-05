@@ -117,12 +117,18 @@ public:
    Pose3D& footEnd() { return theFootEnd; }
    const Pose3D& supFoot() const { return theSupFoot; }
 
+   // calculated and used by the FootStepPlanner
+   const Pose2D& stepRequest() const { return theStepRequest; }
+   Pose2D& stepRequest() { return theStepRequest; }
+
    const Pose2D& offset() const { return theOffset; }
    Pose2D& offset() { return theOffset; }
    
 private:
    Foot theLiftingFoot;
    Pose3D theFootBegin, theFootEnd, theSupFoot;
+
+   Pose2D theStepRequest;
    Pose2D theOffset;
 };
 
