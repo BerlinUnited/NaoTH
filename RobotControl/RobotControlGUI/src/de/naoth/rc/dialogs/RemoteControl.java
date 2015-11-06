@@ -18,12 +18,14 @@ import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 import ca.ubc.cs.wiimote.*;
 import ca.ubc.cs.wiimote.event.*;
+import wiiremotej.*;
+import wiiremotej.event.*;
 
 /**
  *
  * @author Verena
  */
-public class RemoteControl extends AbstractDialog implements WiimoteDiscoveryListener {
+public class RemoteControl extends AbstractDialog{
 
     @PluginImplementation
     public static class Plugin extends DialogPlugin<RemoteControl> {
@@ -46,8 +48,9 @@ public class RemoteControl extends AbstractDialog implements WiimoteDiscoveryLis
     int lastY;
     double lastAlpha;
     int lastThrottle;
-    Wiimote wiimote;
-    WiimoteDiscoverer discoverer;
+//    Wiimote wiimote;
+//    WiimoteDiscoverer discoverer;
+    WiiRemote wiimote;
 
     public RemoteControl() {
 //        w = false;
@@ -532,30 +535,32 @@ public class RemoteControl extends AbstractDialog implements WiimoteDiscoveryLis
         if (!wiimoteConnected) {
             System.setProperty("bulecove.stack", "widcomm");
             System.setProperty("bluecove.jsr82.psm_minimum_off", "true");
-            discoverer = WiimoteDiscoverer.getWiimoteDiscoverer();
-            discoverer.addWiimoteDiscoveryListener(this);
-            discoverer.start();
-        }
-        else
-        {
-            wiimote = null;
-            wiimoteConnectToggle.setSelected(true);
+            try {
+                System.out.println("Please press both 1&2 on your Wiimote to connect to RobotControl");
+                wiimote = WiiRemoteJ.findRemote();
+            } catch (Exception e) {
+                System.out.println("No wiimote found.");
+            }
+            if (wiimote.isConnected()) {
+                System.out.println("Wiimote connected.");
+                wiimoteConnected = true;
+                try
+                {
+                wiimote.setAccelerometerEnabled(true);
+                }
+                catch(Exception e)
+                {
+                    System.out.println("could not activate accelerometer");
+                }
+                wiimote.modulatedVibrateFor(1000, 0);
+                wiimote.addWiiRemoteListener(new CustomWiiRemoteListener(this));
+            }
+        } else {
+            wiimote.disconnect();
+            wiimoteConnected = false;
         }
     }//GEN-LAST:event_wiimoteConnectToggleActionPerformed
 
-    @Override
-    public void wiimoteDiscovered(Wiimote mote) {
-        wiimote = mote;
-        wiimote.addListener(new CustomWiimoteListener(this));
-        wiimoteConnectToggle.setSelected(true);
-        discoverer.stopWiimoteSearch();
-        discoverer.removeWiimoteDiscoveryListener(this);
-        discoverer = null;
-        System.out.println("wiimote discovered");
-        wiimoteConnected = true;
-        wiimote.vibrate(500);
-    }
-    
     private void stopWalking() {
         if (!standbyToggle.isSelected() && Plugin.parent.checkConnected()) {
             Command command = new Command("Cognition:remoteControlRequest_STAND");
@@ -617,31 +622,100 @@ public class RemoteControl extends AbstractDialog implements WiimoteDiscoveryLis
         }
 
     }
-    
-    class CustomWiimoteListener implements WiimoteListener
-    {
+
+    class CustomWiiRemoteListener implements WiiRemoteListener {
+
         RemoteControl main;
-        public CustomWiimoteListener(RemoteControl m)
-        {
+
+        public CustomWiiRemoteListener(RemoteControl m) {
             main = m;
         }
-        
-        @Override
-        public void wiiButtonChange(WiiButtonEvent wbe)
-        {
-            System.out.println(wbe.toString());
+
+        public void buttonInputReceived(WRButtonEvent wrbe) {
+            boolean anyMovement = false;
+            if (wrbe.isOnlyPressed(256)) {
+                main.startWalking(0, -main.throttle, 0);
+                anyMovement = true;
+            }
+            if (wrbe.isOnlyPressed(512)) {
+                main.startWalking(0, main.throttle, 0);
+                anyMovement = true;
+            }
+            if (wrbe.isOnlyPressed(1024)) {
+                main.startWalking(-main.throttle, 0, 0);
+                anyMovement = true;
+            }
+            if (wrbe.isOnlyPressed(2048)) {
+                main.startWalking(main.throttle, 0, 0);
+                anyMovement = true;
+            }
+
+            if (!anyMovement) {
+                main.stopWalking();
+            }
+
+            /*
+             *    1 = 2
+             *    2 = 1
+             *    4 = b
+             *    8 = a
+             *   16 = -
+             *  128 = home
+             *  256 = left
+             *  512 = right
+             * 1024 = down
+             * 2048 = up
+             * 4096 = +
+             */
         }
 
-        @Override
-        public void wiiIRInput(WiiIREvent wire)
-        {
-            System.out.println(wire.toString());
+        public void statusReported(WRStatusEvent wrse) {
+            
         }
-        
-        @Override
-        public void wiiAccelInput(WiiAccelEvent etv)
-        {
-            System.out.println(etv.toString());
+
+        public void accelerationInputReceived(WRAccelerationEvent wrae) {
+//            System.out.println(wrae.getPitch());
+            System.out.println(wrae.getRoll());
+            if(wrae.getRoll() > 0.3)
+            {
+                main.startWalking(0, 0, throttle);
+            }
+            else if(wrae.getRoll() < -0.3)
+            {
+                main.startWalking(0, 0 , -throttle);
+            }
+        }
+
+        public void IRInputReceived(WRIREvent wrire) {
+
+        }
+
+        public void extensionInputReceived(WRExtensionEvent wree) {
+
+        }
+
+        public void extensionConnected(WiiRemoteExtension wre) {
+
+        }
+
+        public void extensionPartiallyInserted() {
+
+        }
+
+        public void extensionUnknown() {
+
+        }
+
+        public void extensionDisconnected(WiiRemoteExtension wre) {
+
+        }
+
+        public void combinedInputReceived(WRCombinedEvent wrce) {
+
+        }
+
+        public void disconnected() {
+
         }
     }
 
