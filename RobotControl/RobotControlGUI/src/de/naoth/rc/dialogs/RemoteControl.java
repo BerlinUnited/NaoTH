@@ -16,17 +16,17 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
+import ca.ubc.cs.wiimote.*;
+import ca.ubc.cs.wiimote.event.*;
 
 /**
  *
  * @author Verena
  */
-public class RemoteControl extends AbstractDialog
-{
+public class RemoteControl extends AbstractDialog implements WiimoteDiscoveryListener {
 
     @PluginImplementation
-    public static class Plugin extends DialogPlugin<RemoteControl>
-    {
+    public static class Plugin extends DialogPlugin<RemoteControl> {
 
         @InjectPlugin
         public static RobotControl parent;
@@ -40,22 +40,25 @@ public class RemoteControl extends AbstractDialog
     int mouseY;
     boolean steeringPanelMousePressed;
     int throttle;
-    boolean w, a, s, d, q, e, shift, strg;
+    //boolean w, a, s, d, q, e, shift, strg;
+    boolean wiimoteConnected;
     int lastX;
     int lastY;
     double lastAlpha;
     int lastThrottle;
+    Wiimote wiimote;
+    WiimoteDiscoverer discoverer;
 
-    public RemoteControl()
-    {
-        w = false;
-        a = false;
-        s = false;
-        d = false;
-        q = false;
-        e = false;
-        shift = false;
-        strg = false;
+    public RemoteControl() {
+//        w = false;
+//        a = false;
+//        s = false;
+//        d = false;
+//        q = false;
+//        e = false;
+//        shift = false;
+//        strg = false;
+        wiimoteConnected = false;
         steeringPanelMousePressed = false;
         throttle = 50;
         lastX = 0;
@@ -75,12 +78,11 @@ public class RemoteControl extends AbstractDialog
      */
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
-    private void initComponents()
-    {
+    private void initComponents() {
 
         jToolBar1 = new javax.swing.JToolBar();
         connectToRobotToggle = new javax.swing.JToggleButton();
-        jToggleButton2 = new javax.swing.JToggleButton();
+        wiimoteConnectToggle = new javax.swing.JToggleButton();
         standbyToggle = new javax.swing.JToggleButton();
         throttleLabel = new javax.swing.JLabel();
         throttleSlider = new javax.swing.JSlider();
@@ -104,30 +106,31 @@ public class RemoteControl extends AbstractDialog
         connectToRobotToggle.setFocusable(false);
         connectToRobotToggle.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         connectToRobotToggle.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        connectToRobotToggle.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
+        connectToRobotToggle.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
                 connectToRobotToggleActionPerformed(evt);
             }
         });
         jToolBar1.add(connectToRobotToggle);
 
-        jToggleButton2.setText("connect to wiimote");
-        jToggleButton2.setFocusable(false);
-        jToggleButton2.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jToggleButton2.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jToolBar1.add(jToggleButton2);
+        wiimoteConnectToggle.setText("connect to wiimote");
+        wiimoteConnectToggle.setFocusable(false);
+        wiimoteConnectToggle.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        wiimoteConnectToggle.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        wiimoteConnectToggle.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                wiimoteConnectToggleActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(wiimoteConnectToggle);
 
         standbyToggle.setSelected(true);
         standbyToggle.setText("standby");
         standbyToggle.setFocusable(false);
         standbyToggle.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         standbyToggle.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        standbyToggle.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
+        standbyToggle.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
                 standbyToggleActionPerformed(evt);
             }
         });
@@ -136,146 +139,113 @@ public class RemoteControl extends AbstractDialog
         throttleLabel.setText("Throttle = 50");
         jToolBar1.add(throttleLabel);
 
-        throttleSlider.addMouseMotionListener(new java.awt.event.MouseMotionAdapter()
-        {
-            public void mouseDragged(java.awt.event.MouseEvent evt)
-            {
+        throttleSlider.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseDragged(java.awt.event.MouseEvent evt) {
                 throttleSliderMouseDragged(evt);
             }
         });
         jToolBar1.add(throttleSlider);
 
         forwardButton.setText("↑");
-        forwardButton.addMouseListener(new java.awt.event.MouseAdapter()
-        {
-            public void mousePressed(java.awt.event.MouseEvent evt)
-            {
+        forwardButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
                 forwardButtonMousePressed(evt);
             }
-            public void mouseReleased(java.awt.event.MouseEvent evt)
-            {
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
                 forwardButtonMouseReleased(evt);
             }
         });
 
         backwardButton.setText("↓");
-        backwardButton.addMouseListener(new java.awt.event.MouseAdapter()
-        {
-            public void mousePressed(java.awt.event.MouseEvent evt)
-            {
+        backwardButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
                 backwardButtonMousePressed(evt);
             }
-            public void mouseReleased(java.awt.event.MouseEvent evt)
-            {
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
                 backwardButtonMouseReleased(evt);
             }
         });
 
         rightButton.setText("→");
-        rightButton.addMouseListener(new java.awt.event.MouseAdapter()
-        {
-            public void mousePressed(java.awt.event.MouseEvent evt)
-            {
+        rightButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
                 rightButtonMousePressed(evt);
             }
-            public void mouseReleased(java.awt.event.MouseEvent evt)
-            {
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
                 rightButtonMouseReleased(evt);
             }
         });
 
         leftButton.setText("←");
-        leftButton.addMouseListener(new java.awt.event.MouseAdapter()
-        {
-            public void mousePressed(java.awt.event.MouseEvent evt)
-            {
+        leftButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
                 leftButtonMousePressed(evt);
             }
-            public void mouseReleased(java.awt.event.MouseEvent evt)
-            {
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
                 leftButtonMouseReleased(evt);
             }
         });
 
         kickButton.setFont(new java.awt.Font("Tahoma", 0, 8)); // NOI18N
         kickButton.setText("Kick!");
-        kickButton.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
+        kickButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
                 kickButtonActionPerformed(evt);
             }
         });
 
         forwardRightButton.setText("↗");
-        forwardRightButton.addMouseListener(new java.awt.event.MouseAdapter()
-        {
-            public void mousePressed(java.awt.event.MouseEvent evt)
-            {
+        forwardRightButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
                 forwardRightButtonMousePressed(evt);
             }
-            public void mouseReleased(java.awt.event.MouseEvent evt)
-            {
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
                 forwardRightButtonMouseReleased(evt);
             }
         });
 
         forwardLeftButton.setText("↖");
-        forwardLeftButton.addMouseListener(new java.awt.event.MouseAdapter()
-        {
-            public void mousePressed(java.awt.event.MouseEvent evt)
-            {
+        forwardLeftButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
                 forwardLeftButtonMousePressed(evt);
             }
-            public void mouseReleased(java.awt.event.MouseEvent evt)
-            {
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
                 forwardLeftButtonMouseReleased(evt);
             }
         });
 
         backwardLeftButton.setText("↙");
-        backwardLeftButton.addMouseListener(new java.awt.event.MouseAdapter()
-        {
-            public void mousePressed(java.awt.event.MouseEvent evt)
-            {
+        backwardLeftButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
                 backwardLeftButtonMousePressed(evt);
             }
-            public void mouseReleased(java.awt.event.MouseEvent evt)
-            {
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
                 backwardLeftButtonMouseReleased(evt);
             }
         });
 
         backwardRightButton.setText("↘");
-        backwardRightButton.addMouseListener(new java.awt.event.MouseAdapter()
-        {
-            public void mousePressed(java.awt.event.MouseEvent evt)
-            {
+        backwardRightButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
                 backwardRightButtonMousePressed(evt);
             }
-            public void mouseReleased(java.awt.event.MouseEvent evt)
-            {
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
                 backwardRightButtonMouseReleased(evt);
             }
         });
 
         steeringPanel.setBackground(new java.awt.Color(153, 153, 153));
         steeringPanel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-        steeringPanel.addMouseMotionListener(new java.awt.event.MouseMotionAdapter()
-        {
-            public void mouseDragged(java.awt.event.MouseEvent evt)
-            {
+        steeringPanel.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseDragged(java.awt.event.MouseEvent evt) {
                 steeringPanelMouseDragged(evt);
             }
         });
-        steeringPanel.addMouseListener(new java.awt.event.MouseAdapter()
-        {
-            public void mousePressed(java.awt.event.MouseEvent evt)
-            {
+        steeringPanel.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
                 steeringPanelMousePressed(evt);
             }
-            public void mouseReleased(java.awt.event.MouseEvent evt)
-            {
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
                 steeringPanelMouseReleased(evt);
             }
         });
@@ -311,27 +281,21 @@ public class RemoteControl extends AbstractDialog
         );
 
         turnLeftButton.setText("↶");
-        turnLeftButton.addMouseListener(new java.awt.event.MouseAdapter()
-        {
-            public void mousePressed(java.awt.event.MouseEvent evt)
-            {
+        turnLeftButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
                 turnLeftButtonMousePressed(evt);
             }
-            public void mouseReleased(java.awt.event.MouseEvent evt)
-            {
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
                 turnLeftButtonMouseReleased(evt);
             }
         });
 
         turnRightButton.setText("↷");
-        turnRightButton.addMouseListener(new java.awt.event.MouseAdapter()
-        {
-            public void mousePressed(java.awt.event.MouseEvent evt)
-            {
+        turnRightButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
                 turnRightButtonMousePressed(evt);
             }
-            public void mouseReleased(java.awt.event.MouseEvent evt)
-            {
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
                 turnRightButtonMouseReleased(evt);
             }
         });
@@ -498,8 +462,7 @@ public class RemoteControl extends AbstractDialog
     {//GEN-HEADEREND:event_steeringPanelMouseDragged
         mouseX = evt.getX();
         mouseY = evt.getY();
-        if (steeringPanelMousePressed)
-        {
+        if (steeringPanelMousePressed) {
             walkTowardsMouse();
         }
     }//GEN-LAST:event_steeringPanelMouseDragged
@@ -522,14 +485,10 @@ public class RemoteControl extends AbstractDialog
     {//GEN-HEADEREND:event_throttleSliderMouseDragged
         throttle = throttleSlider.getValue();
         throttleLabel.setText("Throttle = " + throttle);
-        if (throttle == 0)
-        {
+        if (throttle == 0) {
             stopWalking();
-        }
-        else
-        {
-            if (lastX != 0 || lastY != 0 || lastAlpha != 0)
-            {
+        } else {
+            if (lastX != 0 || lastY != 0 || lastAlpha != 0) {
                 int x = (int) ((double) lastX / lastThrottle * throttle);
                 int y = (int) ((double) lastY / lastThrottle * throttle);
                 int alpha = (int) ((double) lastAlpha / lastThrottle * throttle);
@@ -541,13 +500,10 @@ public class RemoteControl extends AbstractDialog
 
     private void standbyToggleActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_standbyToggleActionPerformed
     {//GEN-HEADEREND:event_standbyToggleActionPerformed
-        if (standbyToggle.isSelected())
-        {
+        if (standbyToggle.isSelected()) {
             Command command = new Command("Cognition:remoteControlRequest_STANDBY");
             Plugin.commandExecutor.executeCommand(new EmptyListener(), command);
-        }
-        else
-        {
+        } else {
             stopWalking();
         }
     }//GEN-LAST:event_standbyToggleActionPerformed
@@ -572,10 +528,36 @@ public class RemoteControl extends AbstractDialog
         stopWalking();
     }//GEN-LAST:event_turnRightButtonMouseReleased
 
-    private void stopWalking()
-    {
-        if (!standbyToggle.isSelected() && Plugin.parent.checkConnected())
+    private void wiimoteConnectToggleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_wiimoteConnectToggleActionPerformed
+        if (!wiimoteConnected) {
+            System.setProperty("bulecove.stack", "widcomm");
+            System.setProperty("bluecove.jsr82.psm_minimum_off", "true");
+            discoverer = WiimoteDiscoverer.getWiimoteDiscoverer();
+            discoverer.addWiimoteDiscoveryListener(this);
+            discoverer.start();
+        }
+        else
         {
+            wiimote = null;
+            wiimoteConnectToggle.setSelected(true);
+        }
+    }//GEN-LAST:event_wiimoteConnectToggleActionPerformed
+
+    @Override
+    public void wiimoteDiscovered(Wiimote mote) {
+        wiimote = mote;
+        wiimote.addListener(new CustomWiimoteListener(this));
+        wiimoteConnectToggle.setSelected(true);
+        discoverer.stopWiimoteSearch();
+        discoverer.removeWiimoteDiscoveryListener(this);
+        discoverer = null;
+        System.out.println("wiimote discovered");
+        wiimoteConnected = true;
+        wiimote.vibrate(500);
+    }
+    
+    private void stopWalking() {
+        if (!standbyToggle.isSelected() && Plugin.parent.checkConnected()) {
             Command command = new Command("Cognition:remoteControlRequest_STAND");
             Plugin.commandExecutor.executeCommand(new EmptyListener(), command);
             lastX = 0;
@@ -584,11 +566,9 @@ public class RemoteControl extends AbstractDialog
         }
     }
 
-    private void startWalking(int x, int y, int degree)
-    {
-        if (!standbyToggle.isSelected() && Plugin.parent.checkConnected())
-        {
-            double alpha = degree*Math.PI/180;
+    private void startWalking(int x, int y, int degree) {
+        if (!standbyToggle.isSelected() && Plugin.parent.checkConnected()) {
+            double alpha = degree * Math.PI / 180;
             Command command = new Command("Cognition:remoteControlRequest_WALK");
             command.addArg("x", "" + x).addArg("y", "" + y).addArg("alpha", "" + alpha);
             Plugin.commandExecutor.executeCommand(new EmptyListener(), command);
@@ -598,103 +578,71 @@ public class RemoteControl extends AbstractDialog
         }
     }
 
-    private void walkTowardsMouse()
-    {
+    private void walkTowardsMouse() {
         double x = mouseX - steeringPanel.getWidth() / 2;
         x = x / (steeringPanel.getWidth() / 2) * (-throttle);
         double y = mouseY - steeringPanel.getHeight() / 2;
         y = y / (steeringPanel.getHeight() / 2) * (-throttle);
         //System.out.println("x = " + x + "; y = " + y + "; mouseX = " + mouseX + "; mouseY = " + mouseY);
-        if (x <= 5 && y >= -5)
-        {
+        if (x <= 5 && y >= -5) {
             x = 0;
         }
-        if (y <= 5 && y >= -5)
-        {
+        if (y <= 5 && y >= -5) {
             y = 0;
         }
-        if (x == 0 && y == 0)
-        {
+        if (x == 0 && y == 0) {
             stopWalking();
-        }
-        else
-        {
+        } else {
             startWalking((int) y, (int) x, 0);
         }
     }
 
-    private void kick()
-    {
-        if (!standbyToggle.isSelected() && Plugin.parent.checkConnected())
-        {
+    private void kick() {
+        if (!standbyToggle.isSelected() && Plugin.parent.checkConnected()) {
             Command command = new Command("Cognition:remoteControlRequest_KICK");
             Plugin.commandExecutor.executeCommand(new EmptyListener(), command);
         }
     }
 
-    private void walkWithKeys()
-    {
-        int x = 0;
-        int y = 0;
-        int alpha = 0;
-        if (w ^ s)
-        {
-            if (w)
-            {
-                x = throttle;
-            }
-            else
-            {
-                x = -throttle;
-            }
+    class EmptyListener implements ObjectListener<byte[]> {
+
+        @Override
+        public void newObjectReceived(byte[] object) {
+
         }
-        if (a ^ d)
-        {
-            if (a)
-            {
-                y = -throttle;
-            }
-            else
-            {
-                y = throttle;
-            }
+
+        @Override
+        public void errorOccured(String cause) {
+
         }
-        if (q ^ e)
-        {
-            if (q)
-            {
-                alpha = throttle;
-            }
-            else
-            {
-                alpha = -throttle;
-            }
-        }
-        if (x != 0 || y != 0 || alpha != 0)
-        {
-            startWalking(x, y, alpha);
-        }
-        else
-        {
-            stopWalking();
-        }
+
     }
-
-    class EmptyListener implements ObjectListener<byte[]>
+    
+    class CustomWiimoteListener implements WiimoteListener
     {
-
-        @Override
-        public void newObjectReceived(byte[] object)
+        RemoteControl main;
+        public CustomWiimoteListener(RemoteControl m)
         {
-
+            main = m;
+        }
+        
+        @Override
+        public void wiiButtonChange(WiiButtonEvent wbe)
+        {
+            System.out.println(wbe.toString());
         }
 
         @Override
-        public void errorOccured(String cause)
+        public void wiiIRInput(WiiIREvent wire)
         {
-
+            System.out.println(wire.toString());
         }
-
+        
+        @Override
+        public void wiiAccelInput(WiiAccelEvent etv)
+        {
+            System.out.println(etv.toString());
+        }
     }
 
 
@@ -706,7 +654,6 @@ public class RemoteControl extends AbstractDialog
     private javax.swing.JButton forwardButton;
     private javax.swing.JButton forwardLeftButton;
     private javax.swing.JButton forwardRightButton;
-    private javax.swing.JToggleButton jToggleButton2;
     private javax.swing.JToolBar jToolBar1;
     private javax.swing.JButton kickButton;
     private javax.swing.JButton leftButton;
@@ -718,5 +665,6 @@ public class RemoteControl extends AbstractDialog
     private javax.swing.JSlider throttleSlider;
     private javax.swing.JButton turnLeftButton;
     private javax.swing.JButton turnRightButton;
+    private javax.swing.JToggleButton wiimoteConnectToggle;
     // End of variables declaration//GEN-END:variables
 }

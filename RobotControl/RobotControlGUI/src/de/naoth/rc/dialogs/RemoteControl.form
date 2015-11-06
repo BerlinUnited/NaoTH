@@ -115,13 +115,16 @@
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="connectToRobotToggleActionPerformed"/>
           </Events>
         </Component>
-        <Component class="javax.swing.JToggleButton" name="jToggleButton2">
+        <Component class="javax.swing.JToggleButton" name="wiimoteConnectToggle">
           <Properties>
             <Property name="text" type="java.lang.String" value="connect to wiimote"/>
             <Property name="focusable" type="boolean" value="false"/>
             <Property name="horizontalTextPosition" type="int" value="0"/>
             <Property name="verticalTextPosition" type="int" value="3"/>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="wiimoteConnectToggleActionPerformed"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JToggleButton" name="standbyToggle">
           <Properties>
