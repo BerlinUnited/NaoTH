@@ -384,9 +384,9 @@ void Walk::updateMotionStatus(MotionStatus& motionStatus) const
     Pose3D plannedlFoot = theCoMFeetPose.feet.left.invert() * lastFeet.left;
     Pose3D plannedrFoot = theCoMFeetPose.feet.right.invert() * lastFeet.right;
 
-    motionStatus.plannedMotion.hip = reduceDimen(plannedHip);
-    motionStatus.plannedMotion.lFoot =  reduceDimen(plannedlFoot);
-    motionStatus.plannedMotion.rFoot = reduceDimen(plannedrFoot);
+    motionStatus.plannedMotion.hip = plannedHip.projectXY();
+    motionStatus.plannedMotion.lFoot =  plannedlFoot.projectXY();
+    motionStatus.plannedMotion.rFoot = plannedrFoot.projectXY();
   }
 
   // step control
