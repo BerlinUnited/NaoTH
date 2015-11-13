@@ -34,7 +34,6 @@
 #include <queue>
 #include "Walk/FootStep.h"
 #include "Walk/FootStepPlanner.h"
-#include "Walk/FootStepPlannerOld.h"
 #include "IKPose.h"
 #include "Tools/DataStructures/RingBufferWithSum.h"
 
