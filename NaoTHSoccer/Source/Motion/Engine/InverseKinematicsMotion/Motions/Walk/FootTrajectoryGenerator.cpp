@@ -119,3 +119,52 @@ Pose3D FootTrajectorGenerator::stepControl(
     return targetFoot;
   }
 }
+
+Pose3D FootTrajectorGenerator::genTrajectoryWithSplines(
+  const Pose3D& oldFoot,
+  const Pose3D& targetFoot,
+  double cycle,
+
+  double duration,
+  double stepHeight,
+  double footPitchOffset,
+  double footRollOffset
+ )
+{
+    double t = cycle/duration;
+
+    // parameter for the step curve
+    // NOTE: xyp is used to interpolate the motion in x/y-plane, while
+    //       zp is for the motion in the z-axis
+
+    vector<Vector2d > vecXY;
+    vecXY.push_back(Vector2d(0.0, 0.0));
+    vecXY.push_back(Vector2d(0.25, (1 - cos(0.25*Math::pi))*0.5));
+    vecXY.push_back(Vector2d(0.5,  (1 - cos(0.5 *Math::pi))*0.5));
+    vecXY.push_back(Vector2d(0.75, (1 - cos(0.75*Math::pi))*0.5));
+    vecXY.push_back(Vector2d(1.0, 1.0));
+    CubicSpline theCubicSplineXY(vecXY);
+
+    vector<Vector2d > vecZ;
+    vecZ.push_back(Vector2d(0.0, 0.0));
+    vecZ.push_back(Vector2d(0.25, (1 - cos(0.25*Math::pi2))*0.5));
+    vecZ.push_back(Vector2d(0.5, 1));
+    vecZ.push_back(Vector2d(0.75, (1 - cos(0.75*Math::pi2))*0.5));
+    vecZ.push_back(Vector2d(1.0, 0.0));
+    CubicSpline theCubicSplineZ(vecZ);
+
+    double xyp = theCubicSplineXY.y(t);
+    double zp  = theCubicSplineZ.y(t);
+
+    Pose3D foot;
+    foot.translation.z = targetFoot.translation.z + zp*stepHeight;
+    foot.translation.x = (1.0 - xyp) * oldFoot.translation.x + xyp * targetFoot.translation.x;
+    foot.translation.y = (1.0 - xyp) * oldFoot.translation.y + xyp * targetFoot.translation.y;
+
+    foot.rotation = RotationMatrix::getRotationX(footRollOffset * zp);
+    foot.rotation.rotateY(Math::sgn(targetFoot.translation.x - oldFoot.translation.x) * footPitchOffset * zp);
+    RotationMatrix rot = RotationMatrix::interpolate(oldFoot.rotation, targetFoot.rotation, xyp);
+    foot.rotation *= rot;
+
+    return foot;
+}
