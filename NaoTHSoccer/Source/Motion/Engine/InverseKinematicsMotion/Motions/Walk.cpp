@@ -17,6 +17,7 @@ using namespace InverseKinematic;
 Walk::Walk() : IKMotion(getInverseKinematicsMotionEngineService(), motion::walk, getMotionLock())
 {
   DEBUG_REQUEST_REGISTER("Walk:draw_step_plan_geometry", "draw all planed steps, zmp and executed com", false);
+  DEBUG_REQUEST_REGISTER("Walk:use_genTrajectoryWithSplines", "uses spline interpolation to parametrize 3D foot trajectory", false);
 }
   
 void Walk::execute()
@@ -331,7 +332,7 @@ Pose3D Walk::calculateLiftingFootPos(const Step& step) const
   }
   else if( step.type == STEP_WALK )
   {
-    return FootTrajectorGenerator::genTrajectory(
+    Pose3D returnPose = FootTrajectorGenerator::genTrajectory(
       step.footStep.footBegin(),
       step.footStep.footEnd(),
       step.executingCycle,
@@ -341,6 +342,32 @@ Pose3D Walk::calculateLiftingFootPos(const Step& step) const
       0, // footPitchOffset
       0  // footRollOffset
     );
+
+    PLOT("Walk:trajectory:cos:x",returnPose.translation.x);
+    PLOT("Walk:trajectory:cos:y",returnPose.translation.y);
+    PLOT("Walk:trajectory:cos:z",returnPose.translation.z);
+
+    DEBUG_REQUEST("Walk:use_genTrajectoryWithSplines",
+      Pose3D returnPose2 = FootTrajectorGenerator::genTrajectoryWithSplines(
+                      step.footStep.footBegin(),
+                      step.footStep.footEnd(),
+                      step.executingCycle,
+                      samplesSingleSupport,
+                      parameters().step.stepHeight,
+                      0, // footPitchOffset
+                      0  // footRollOffset
+      );
+
+      PLOT("Walk:trajectory:spline:x",returnPose2.translation.x);
+      PLOT("Walk:trajectory:spline:y",returnPose2.translation.y);
+      PLOT("Walk:trajectory:spline:z",returnPose2.translation.z);
+
+      PLOT("Walk:trajectory:diff:x",returnPose.translation.x - returnPose2.translation.x);
+      PLOT("Walk:trajectory:diff:y",returnPose.translation.y - returnPose2.translation.y);
+      PLOT("Walk:trajectory:diff:z",returnPose.translation.z - returnPose2.translation.z);
+    );
+
+    return returnPose;
   }
 
   ASSERT(false);
