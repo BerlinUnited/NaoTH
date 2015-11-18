@@ -54,7 +54,7 @@ public:
     edgels.clear();
   }
 
-  virtual void print(std::ostream& stream) const
+  virtual void print(std::ostream& /*stream*/) const
   {
     // TODO: do we need it?
   }
