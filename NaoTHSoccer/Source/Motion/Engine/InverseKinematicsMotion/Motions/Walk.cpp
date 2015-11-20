@@ -17,7 +17,8 @@ using namespace InverseKinematic;
 Walk::Walk() : IKMotion(getInverseKinematicsMotionEngineService(), motion::walk, getMotionLock())
 {
   DEBUG_REQUEST_REGISTER("Walk:draw_step_plan_geometry", "draw all planed steps, zmp and executed com", false);
-  DEBUG_REQUEST_REGISTER("Walk:use_genTrajectoryWithSplines", "uses spline interpolation to parametrize 3D foot trajectory", false);
+  DEBUG_REQUEST_REGISTER("Walk:use_genTrajectoryWithSplines", "use spline interpolation to parametrize 3D foot trajectory", false);
+  DEBUG_REQUEST_REGISTER("Walk:plot_genTrajectoryWithSplines", "plot spline interpolation to parametrize 3D foot trajectory", false);
 }
   
 void Walk::execute()
@@ -308,7 +309,7 @@ void Walk::executeStep()
   PLOT("Walk:trajectory:cos:y",theCoMFeetPose.feet.left.translation.y);
   PLOT("Walk:trajectory:cos:z",theCoMFeetPose.feet.left.translation.z);
 
-  DEBUG_REQUEST("Walk:use_genTrajectoryWithSplines",
+  DEBUG_REQUEST("Walk:plot_genTrajectoryWithSplines",
     if(executingStep.footStep.liftingFoot() == FootStep::LEFT) {
       Pose3D returnPose2 = FootTrajectorGenerator::genTrajectoryWithSplines(
                              executingStep.footStep.footBegin(),
@@ -358,6 +359,18 @@ Pose3D Walk::calculateLiftingFootPos(const Step& step) const
   }
   else if( step.type == STEP_WALK )
   {
+    DEBUG_REQUEST("Walk:use_genTrajectoryWithSplines",
+      return FootTrajectorGenerator::genTrajectoryWithSplines(
+               step.footStep.footBegin(),
+               step.footStep.footEnd(),
+               step.executingCycle,
+               samplesSingleSupport,
+               parameters().step.stepHeight,
+               0, // footPitchOffset
+               0  // footRollOffset
+             );
+    );
+
     return FootTrajectorGenerator::genTrajectory(
       step.footStep.footBegin(),
       step.footStep.footEnd(),
