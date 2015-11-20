@@ -138,19 +138,27 @@ Pose3D FootTrajectorGenerator::genTrajectoryWithSplines(
     //       zp is for the motion in the z-axis
 
     vector<Vector2d > vecXY;
-    vecXY.push_back(Vector2d(0.0, 0.0));
-    vecXY.push_back(Vector2d(0.25, (1 - cos(0.25*Math::pi))*0.5));
-    vecXY.push_back(Vector2d(0.5,  (1 - cos(0.5 *Math::pi))*0.5));
-    vecXY.push_back(Vector2d(0.75, (1 - cos(0.75*Math::pi))*0.5));
+    vecXY.push_back(Vector2d(-0.1, 0.0));
+    vecXY.push_back(Vector2d(0.0,  0.0));
+    vecXY.push_back(Vector2d(0.125, (1 - cos(0.125*Math::pi))*0.5));
+    vecXY.push_back(Vector2d(0.25,  (1 - cos(0.25 *Math::pi))*0.5));
+    vecXY.push_back(Vector2d(0.5,   (1 - cos(0.5  *Math::pi))*0.5));
+    vecXY.push_back(Vector2d(0.75,  (1 - cos(0.75 *Math::pi))*0.5));
+    vecXY.push_back(Vector2d(0.875, (1 - cos(0.875*Math::pi))*0.5));
     vecXY.push_back(Vector2d(1.0, 1.0));
+    vecXY.push_back(Vector2d(1.1, 1.0));
     CubicSpline theCubicSplineXY(vecXY);
 
     vector<Vector2d > vecZ;
-    vecZ.push_back(Vector2d(0.0, 0.0));
-    vecZ.push_back(Vector2d(0.25, (1 - cos(0.25*Math::pi2))*0.5));
-    vecZ.push_back(Vector2d(0.5, 1));
-    vecZ.push_back(Vector2d(0.75, (1 - cos(0.75*Math::pi2))*0.5));
+    vecZ.push_back(Vector2d(-0.1, 0.0));
+    vecZ.push_back(Vector2d(0.0,  0.0));
+    vecZ.push_back(Vector2d(0.125, (1 - cos(0.125*Math::pi2))*0.5));
+    vecZ.push_back(Vector2d(0.25,  (1 - cos(0.25 *Math::pi2))*0.5));
+    vecZ.push_back(Vector2d(0.5,  1));
+    vecZ.push_back(Vector2d(0.75,  (1 - cos(0.75 *Math::pi2))*0.5));
+    vecZ.push_back(Vector2d(0.875, (1 - cos(0.875*Math::pi2))*0.5));
     vecZ.push_back(Vector2d(1.0, 0.0));
+    vecZ.push_back(Vector2d(1.1, 0.0));
     CubicSpline theCubicSplineZ(vecZ);
 
     double xyp = theCubicSplineXY.y(t);
