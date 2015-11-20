@@ -343,9 +343,11 @@ Pose3D Walk::calculateLiftingFootPos(const Step& step) const
       0  // footRollOffset
     );
 
-    PLOT("Walk:trajectory:cos:x",returnPose.translation.x);
-    PLOT("Walk:trajectory:cos:y",returnPose.translation.y);
-    PLOT("Walk:trajectory:cos:z",returnPose.translation.z);
+    if(step.footStep.liftingFoot() == FootStep::LEFT) {
+        PLOT("Walk:trajectory:cos:x",returnPose.translation.x);
+        PLOT("Walk:trajectory:cos:y",returnPose.translation.y);
+        PLOT("Walk:trajectory:cos:z",returnPose.translation.z);
+    }
 
     DEBUG_REQUEST("Walk:use_genTrajectoryWithSplines",
       Pose3D returnPose2 = FootTrajectorGenerator::genTrajectoryWithSplines(
@@ -358,13 +360,15 @@ Pose3D Walk::calculateLiftingFootPos(const Step& step) const
                       0  // footRollOffset
       );
 
-      PLOT("Walk:trajectory:spline:x",returnPose2.translation.x);
-      PLOT("Walk:trajectory:spline:y",returnPose2.translation.y);
-      PLOT("Walk:trajectory:spline:z",returnPose2.translation.z);
+      if(step.footStep.liftingFoot() == FootStep::LEFT) {
+          PLOT("Walk:trajectory:spline:x",returnPose2.translation.x);
+          PLOT("Walk:trajectory:spline:y",returnPose2.translation.y);
+          PLOT("Walk:trajectory:spline:z",returnPose2.translation.z);
 
-      PLOT("Walk:trajectory:diff:x",returnPose.translation.x - returnPose2.translation.x);
-      PLOT("Walk:trajectory:diff:y",returnPose.translation.y - returnPose2.translation.y);
-      PLOT("Walk:trajectory:diff:z",returnPose.translation.z - returnPose2.translation.z);
+          PLOT("Walk:trajectory:diff:x",returnPose.translation.x - returnPose2.translation.x);
+          PLOT("Walk:trajectory:diff:y",returnPose.translation.y - returnPose2.translation.y);
+          PLOT("Walk:trajectory:diff:z",returnPose.translation.z - returnPose2.translation.z);
+      }
     );
 
     return returnPose;
