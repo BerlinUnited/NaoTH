@@ -304,6 +304,32 @@ void Walk::executeStep()
     default: ASSERT(false);
   }
 
+  PLOT("Walk:trajectory:cos:x",theCoMFeetPose.feet.left.translation.x);
+  PLOT("Walk:trajectory:cos:y",theCoMFeetPose.feet.left.translation.y);
+  PLOT("Walk:trajectory:cos:z",theCoMFeetPose.feet.left.translation.z);
+
+  DEBUG_REQUEST("Walk:use_genTrajectoryWithSplines",
+    if(executingStep.footStep.liftingFoot() == FootStep::LEFT) {
+      Pose3D returnPose2 = FootTrajectorGenerator::genTrajectoryWithSplines(
+                             executingStep.footStep.footBegin(),
+                             executingStep.footStep.footEnd(),
+                             executingStep.executingCycle,
+                             executingStep.numberOfCycles,
+                             parameters().step.stepHeight,
+                             0, // footPitchOffset
+                             0  // footRollOffset
+                           );
+
+      PLOT("Walk:trajectory:spline:x",returnPose2.translation.x);
+      PLOT("Walk:trajectory:spline:y",returnPose2.translation.y);
+      PLOT("Walk:trajectory:spline:z",returnPose2.translation.z);
+    } else {
+      PLOT("Walk:trajectory:spline:x",theCoMFeetPose.feet.left.translation.x);
+      PLOT("Walk:trajectory:spline:y",theCoMFeetPose.feet.left.translation.y);
+      PLOT("Walk:trajectory:spline:z",theCoMFeetPose.feet.left.translation.z);
+    }
+  );
+
   theCoMFeetPose.com.translation = com;
   // TODO: check this
   theCoMFeetPose.com.rotation = calculateBodyRotation(theCoMFeetPose.feet, getEngine().getParameters().bodyPitchOffset);
@@ -332,7 +358,7 @@ Pose3D Walk::calculateLiftingFootPos(const Step& step) const
   }
   else if( step.type == STEP_WALK )
   {
-    Pose3D returnPose = FootTrajectorGenerator::genTrajectory(
+    return FootTrajectorGenerator::genTrajectory(
       step.footStep.footBegin(),
       step.footStep.footEnd(),
       step.executingCycle,
@@ -342,36 +368,6 @@ Pose3D Walk::calculateLiftingFootPos(const Step& step) const
       0, // footPitchOffset
       0  // footRollOffset
     );
-
-    if(step.footStep.liftingFoot() == FootStep::LEFT) {
-        PLOT("Walk:trajectory:cos:x",returnPose.translation.x);
-        PLOT("Walk:trajectory:cos:y",returnPose.translation.y);
-        PLOT("Walk:trajectory:cos:z",returnPose.translation.z);
-    }
-
-    DEBUG_REQUEST("Walk:use_genTrajectoryWithSplines",
-      Pose3D returnPose2 = FootTrajectorGenerator::genTrajectoryWithSplines(
-                      step.footStep.footBegin(),
-                      step.footStep.footEnd(),
-                      step.executingCycle,
-                      samplesSingleSupport,
-                      parameters().step.stepHeight,
-                      0, // footPitchOffset
-                      0  // footRollOffset
-      );
-
-      if(step.footStep.liftingFoot() == FootStep::LEFT) {
-          PLOT("Walk:trajectory:spline:x",returnPose2.translation.x);
-          PLOT("Walk:trajectory:spline:y",returnPose2.translation.y);
-          PLOT("Walk:trajectory:spline:z",returnPose2.translation.z);
-
-          PLOT("Walk:trajectory:diff:x",returnPose.translation.x - returnPose2.translation.x);
-          PLOT("Walk:trajectory:diff:y",returnPose.translation.y - returnPose2.translation.y);
-          PLOT("Walk:trajectory:diff:z",returnPose.translation.z - returnPose2.translation.z);
-      }
-    );
-
-    return returnPose;
   }
 
   ASSERT(false);
