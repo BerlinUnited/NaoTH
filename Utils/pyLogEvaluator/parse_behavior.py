@@ -1,8 +1,17 @@
 import struct
+import math
+import sys
 import argparse
 import cPickle
 import os
+
+import matplotlib
 import math2d as m2d
+#matplotlib.use('Qt4Agg')
+#matplotlib.use('TkAgg')
+
+#from matplotlib.backends import qt_compat
+from matplotlib import pyplot as plt
 
 #protobuf
 from CommonTypes_pb2 import *
