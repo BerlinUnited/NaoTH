@@ -1,0 +1,52 @@
+/* Tests sidekick_to_right and sidekick_to_left:
+  Goes to the ball and kicks to the different sides */
+
+option test_walk_step_control
+{
+
+  common decision
+  {
+    if(!body.ready_to_walk || game.current_mode != playing)
+      goto idle;
+  }
+  
+  initial state idle
+  {
+    decision
+    {
+      else if(game.current_mode == playing)
+        goto step_control_right;
+      else
+        stay;
+    }
+    action
+    {
+    }
+  }
+
+  state step_control_right {
+    decision {
+      else if(action_done)
+        goto step_control_left;
+      else
+        stay;
+    }
+    action {
+      situation_abortable = false;
+      sidekick(to = left);
+    }
+  }
+
+  state step_control_left {
+    decision {
+      else if(action_done)
+        goto step_control_right;
+      else
+        stay;
+    }
+    action {
+      situation_abortable = false;
+      sidekick(to = right);
+    }
+  }
+}
