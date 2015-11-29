@@ -24,12 +24,15 @@ PerceptionsVisualizer::PerceptionsVisualizer()
   DEBUG_REQUEST_REGISTER("PerceptionsVisualizer:field:goal_percept", "draw goal percept", false);
   DEBUG_REQUEST_REGISTER("PerceptionsVisualizer:image_px:goal_percept", "draw goal percept", false);
 
+
   DEBUG_REQUEST_REGISTER("PerceptionsVisualizer:field:edgels_percept", "draw edgels percept", false);
   DEBUG_REQUEST_REGISTER("PerceptionsVisualizer:image_px:edgels_percept", "draw edgels percept", false);
+
 
   DEBUG_REQUEST_REGISTER("PerceptionsVisualizer:field:line_percept", "draw line percept", false);
   DEBUG_REQUEST_REGISTER("PerceptionsVisualizer:image:line_percept", "draw line percept", false);
   DEBUG_REQUEST_REGISTER("PerceptionsVisualizer:image_px:line_percept", "draw line percept", false);
+
 
   DEBUG_REQUEST_REGISTER("PerceptionsVisualizer:field:players_percept", "draw players percept", false);
   DEBUG_REQUEST_REGISTER("PerceptionsVisualizer:image_px:players_percept", "draw players percept", false);

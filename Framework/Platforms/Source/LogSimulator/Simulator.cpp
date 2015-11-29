@@ -52,6 +52,8 @@ Simulator::Simulator(const std::string& filePath, bool backendMode, bool realTim
   registerInput<DebugMessageInCognition>(*this);
   registerInput<DebugMessageInMotion>(*this);
   registerOutput<DebugMessageOut>(*this);
+
+  jumpToBegin();
 }
 
 void Simulator::open(const std::string& filePath) 
