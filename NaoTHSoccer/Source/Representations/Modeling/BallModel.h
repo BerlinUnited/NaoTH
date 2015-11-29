@@ -58,7 +58,7 @@ public:
     return frameInfoWhenBallWasSeen;
   }
 
-  const unsigned int getTimeBallIsSeen() const {
+  unsigned int getTimeBallIsSeen() const {
     return timeBallIsSeen;
   }
 

@@ -225,7 +225,7 @@ void PerceptionsVisualizer::execute(CameraInfo::CameraID id)
   );
 
   DEBUG_REQUEST("PerceptionsVisualizer:image_px:edgels_percept",
-    FIELD_DRAWING_CONTEXT;
+    /*FIELD_DRAWING_CONTEXT;
 
     for(size_t i = 0; i < getScanLineEdgelPercept().scanLineEdgels.size(); i++)
     {
@@ -238,7 +238,7 @@ void PerceptionsVisualizer::execute(CameraInfo::CameraID id)
       Vector2d end_dir(10.0,0.0);
       end_dir.rotate(e.end_angle);
       LINE_PX(ColorClasses::red, e.end.x, e.end.y, e.end.x + (int)(end_dir.x+0.5), e.end.y + (int)(end_dir.y+0.5));
-    }//end for
+    }*///end for
   );
 
 
