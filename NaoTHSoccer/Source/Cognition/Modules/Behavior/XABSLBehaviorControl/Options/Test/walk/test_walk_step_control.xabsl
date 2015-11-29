@@ -27,7 +27,7 @@ option test_walk_step_control
   state step_control_right {
     decision {
       else if(action_done)
-        goto step_control_left;
+        goto temp_to_left;
       else
         stay;
     }
@@ -37,10 +37,50 @@ option test_walk_step_control
     }
   }
 
+  state temp_to_left {
+    decision {
+      else
+        goto step_control_left;
+    }
+    action {
+      //motion.type = stand;
+      motion.type = walk;
+      motion.walk_speed.x = 0;
+      motion.walk_speed.y = 0;
+      motion.walk_speed.rot = 0;
+
+      motion.walk.coordinate = hip;
+      motion.walk.style = normal;
+
+      //loook at percept
+      head.control_mode = look_at_ball_percept;
+    }
+  }
+
+  state temp_to_right {
+    decision {
+      else
+        goto step_control_right;
+    }
+    action {
+      //motion.type = stand;
+      motion.type = walk;
+      motion.walk_speed.x = 0;
+      motion.walk_speed.y = 0;
+      motion.walk_speed.rot = 0;
+
+      motion.walk.coordinate = hip;
+      motion.walk.style = normal;
+
+      //loook at percept
+      head.control_mode = look_at_ball_percept;
+    }
+  }
+
   state step_control_left {
     decision {
       else if(action_done)
-        goto step_control_right;
+        goto temp_to_right;
       else
         stay;
     }
