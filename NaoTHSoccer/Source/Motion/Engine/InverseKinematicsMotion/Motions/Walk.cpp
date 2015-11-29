@@ -205,8 +205,7 @@ void Walk::calculateNewStep(const Step& lastStep, Step& newStep, const WalkReque
     || (lastStep.footStep.liftingFoot() == FootStep::RIGHT && walkRequest.stepControl.moveLeftFoot)
     || (lastStep.footStep.liftingFoot() == FootStep::LEFT && !walkRequest.stepControl.moveLeftFoot);
 
-
-  if ( stepControlPossible && walkRequest.stepControl.stepID == stepBuffer.stepId() )
+  if ( stepControlPossible && walkRequest.stepControl.stepID + 1 == stepBuffer.stepId() )
   {
     // step control
     newStep.footStep = theFootStepPlanner.controlStep(lastStep.footStep, walkRequest);
@@ -397,7 +396,7 @@ void Walk::updateMotionStatus(MotionStatus& motionStatus) const
   }
   else
   {
-    motionStatus.stepControl.stepID = stepBuffer.last().id();
+    motionStatus.stepControl.stepID = stepBuffer.last().id() + 1; 
     FootStep::Foot lastMovingFoot = stepBuffer.last().footStep.liftingFoot();
     switch(lastMovingFoot)
     {
