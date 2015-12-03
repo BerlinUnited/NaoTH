@@ -4,8 +4,6 @@ option initial_striker
     decision {
       if(game.own_kickoff)
         goto approach_for_kick_off_kick;
-      else if(vector.abs(x=ball.position.field.x,y=ball.position.field.y) > 200)
-        goto be_striker;
       else if(state_time > 10000)
         goto be_striker;
       else
