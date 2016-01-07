@@ -4,7 +4,6 @@
 package de.naoth.rc.components.behaviorviewer;
 
 import de.naoth.rc.components.behaviorviewer.model.Symbol;
-import de.naoth.rc.messages.Messages;
 import java.util.Enumeration;
 import java.util.HashMap;
 import javax.swing.JTree;
@@ -88,7 +87,7 @@ public class BehaviorTreePanel extends javax.swing.JScrollPane {
     }//end actionToNode
     */
     
-    private JTree newTree = new JTree();
+    private final JTree newTree = new JTree();
     private void createNewTree(DefaultMutableTreeNode root) {
         if (root == null) {
             root = new DefaultMutableTreeNode("Behavior");
@@ -180,10 +179,7 @@ public class BehaviorTreePanel extends javax.swing.JScrollPane {
     private void treeExpanded(TreeExpansionEvent event) {
         if (event.getPath().getLastPathComponent() instanceof DefaultMutableTreeNode) {
             DefaultMutableTreeNode n = (DefaultMutableTreeNode) event.getPath().getLastPathComponent();
-            if (n.getUserObject() instanceof Messages.XABSLAction) {
-                actionExpanded.put(((Messages.XABSLAction) n.getUserObject()).getName(),
-                        Boolean.TRUE);
-            } else if(n.getUserObject() instanceof XABSLAction.OptionExecution) {
+            if(n.getUserObject() instanceof XABSLAction.OptionExecution) {
                 actionExpanded.put(((XABSLAction.OptionExecution) n.getUserObject()).option.name,
                         Boolean.TRUE);
             }
@@ -193,10 +189,7 @@ public class BehaviorTreePanel extends javax.swing.JScrollPane {
     private void treeCollapsed(TreeExpansionEvent event) {
         if (event.getPath().getLastPathComponent() instanceof DefaultMutableTreeNode) {
             DefaultMutableTreeNode n = (DefaultMutableTreeNode) event.getPath().getLastPathComponent();
-            if (n.getUserObject() instanceof Messages.XABSLAction) {
-                actionExpanded.put(((Messages.XABSLAction) n.getUserObject()).getName(),
-                        Boolean.FALSE);
-            } else if(n.getUserObject() instanceof XABSLAction.OptionExecution) {
+            if(n.getUserObject() instanceof XABSLAction.OptionExecution) {
                 actionExpanded.put(((XABSLAction.OptionExecution) n.getUserObject()).option.name,
                         Boolean.FALSE);
             }

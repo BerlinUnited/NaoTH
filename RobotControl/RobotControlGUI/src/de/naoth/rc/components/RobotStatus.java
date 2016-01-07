@@ -21,7 +21,7 @@ import java.util.logging.Logger;
  */
 public class RobotStatus extends javax.swing.JPanel {
 
-    class RingBuffer extends ArrayList<Long> {
+    private class RingBuffer extends ArrayList<Long> {
         private final int size;
         public RingBuffer(int size) {
             this.size = size;
@@ -36,9 +36,7 @@ public class RobotStatus extends javax.swing.JPanel {
             }
             
             return r;
-        }
-
-        
+        }        
     }
     
     private final MessageServer messageServer;
@@ -48,8 +46,7 @@ public class RobotStatus extends javax.swing.JPanel {
     private final RingBuffer timestamps = new RingBuffer(5);
     
     private final Color darkOrange = new Color(255, 130, 0);
-    private final Color magenta = new Color(210, 180, 200);
-    private final Color cyan = new Color(180, 210, 255);
+    
     
     /** Creates new form RobotStatus */
     public RobotStatus(MessageServer messageServer, String ipAddress) {
@@ -59,6 +56,11 @@ public class RobotStatus extends javax.swing.JPanel {
         this.ipAddress = ipAddress;
         
         this.jlAddress.setText(this.ipAddress);
+    }
+    
+    public RobotStatus(MessageServer messageServer, String ipAddress, Color backgroundColor) {
+        this(messageServer, ipAddress);
+        this.setBackground(backgroundColor);
     }
 
     public void setStatus(long timestamp, SPLMessage msg)

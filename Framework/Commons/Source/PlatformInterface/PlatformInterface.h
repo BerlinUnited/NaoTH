@@ -56,11 +56,12 @@ class PlatformInterface:
   public PlatformDataInterface  // 
 {
 private:
-  ProsessEnvironment environment;
+  ProcessEnvironment environment;
 
   //
-  Prosess cognitionProsess;
-  Prosess motionProsess;
+  Process cognitionProcess;
+  Process motionProcess;
+  Process soundProcess;
 
 public:
   PlatformInterface(const std::string& name, unsigned int basicTimeStep)
@@ -84,8 +85,8 @@ public:
     */
   void registerCognition(Callable* cognition)
   {
-    ProcessInterface processInterface(cognitionProsess, environment);
-    cognitionProsess.callback = cognition;
+    ProcessInterface processInterface(cognitionProcess, environment);
+    cognitionProcess.callback = cognition;
 
     if(cognition != NULL) {
       PRINT_DEBUG("[PlatformInterface] register COGNITION callback");
@@ -95,6 +96,23 @@ public:
     }
   }//end registerCognition
 
+  /**
+    * Register callback objects for this platform interface.
+    * @param sound The callback object for the sound cycle or NULL if not active.
+    */
+  void registerSound(Callable* sound)
+  {
+    ProcessInterface processInterface(soundProcess, environment);
+    soundProcess.callback = sound;
+
+    if(sound != NULL) {
+      PRINT_DEBUG("[PlatformInterface] register SOUND callback");
+      sound->init(processInterface, *this);
+    } else {
+      std::cerr << "[PlatformInterface] SOUND callback is NULL" << std::endl;
+    }
+  }//end registerSound
+
 
   /**
     * Register callback objects for this platform interface.
@@ -102,8 +120,8 @@ public:
     */
   void registerMotion(Callable* motion)
   {
-    ProcessInterface processInterface(motionProsess, environment);
-    motionProsess.callback = motion;
+    ProcessInterface processInterface(motionProcess, environment);
+    motionProcess.callback = motion;
 
     if(motion != NULL) {
       PRINT_DEBUG("[PlatformInterface] register MOTION callback");
@@ -114,7 +132,7 @@ public:
   }//end registerMotion
 
   bool cognitionRegistered() {
-    return cognitionProsess.callback != NULL;
+    return cognitionProcess.callback != NULL;
   }
 
   virtual void runCognition()
@@ -129,20 +147,20 @@ public:
 
   virtual void callCognition() {
     if(cognitionRegistered()) {
-      cognitionProsess.callback->call();
+      cognitionProcess.callback->call();
     }
   }
 
   virtual void getCognitionInput() {
-    cognitionProsess.preActions.execute();
+    cognitionProcess.preActions.execute();
   }
 
   virtual void setCognitionOutput() {
-    cognitionProsess.postActions.execute();
+    cognitionProcess.postActions.execute();
   }
 
   bool motionRegistered() {
-    return motionProsess.callback != NULL;
+    return motionProcess.callback != NULL;
   }
 
   virtual void runMotion()
@@ -157,16 +175,16 @@ public:
 
   virtual void callMotion() {
     if(motionRegistered()) {
-      motionProsess.callback->call();
+      motionProcess.callback->call();
     }
   }
 
   virtual void getMotionInput() {
-    motionProsess.preActions.execute();
+    motionProcess.preActions.execute();
   }
 
   virtual void setMotionOutput() {
-    motionProsess.postActions.execute();
+    motionProcess.postActions.execute();
   }
 };//end class PlatformInterface
 

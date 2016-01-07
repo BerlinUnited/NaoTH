@@ -15,10 +15,9 @@ IRSendData::~IRSendData()
 
 void IRSendData::reset()
 {
-  for(int i = 0; i < numOfIRSend; i++)
-  {
+  for(int i = 0; i < numOfIRSend; i++) {
     data[i] = 0;
-  }//end for
+  }
 }//end reset
 
 string IRSendData::getIRSendName(IRSendID id)
@@ -32,9 +31,8 @@ string IRSendData::getIRSendName(IRSendID id)
     case Byte4: return "Byte4"; break;
     case RCByte1: return "RCByte1"; break;
     case RCByte2: return "RCByte2"; break;
-    default:
-      return "Unknown IRSendID";
-  }//end switch
+    default: return "Unknown IRSendID";
+  }
 }//end getIRSendName
 
 IRReceiveData::IRReceiveData()
@@ -49,10 +47,9 @@ IRReceiveData::~IRReceiveData()
 
 void IRReceiveData::reset()
 {
-  for(int i = 0; i < numOfIRReceive; i++)
-  {
+  for(int i = 0; i < numOfIRReceive; i++) {
     data[i] = 0;
-  }//end for
+  }
 }//end reset
   
 string IRReceiveData::getIRReceiveName(IRReceiveID id)
@@ -73,16 +70,14 @@ string IRReceiveData::getIRReceiveName(IRReceiveID id)
     case LeftByte4: return "LeftByte4"; break;
     case LeftRCByte1: return "LeftRCByte1"; break;
     case LeftRCByte2: return "LeftRCByte2"; break;
-    default:
-      return "Unknown IRReceiveID";
-  }//end switch
+    default: return "Unknown IRReceiveID";
+  }
 }//end getIRReceiveName
 
 
 void IRReceiveData::print(ostream& stream) const
 {
-  for(int i = 0; i < numOfIRReceive; i++)
-  {
+  for(int i = 0; i < numOfIRReceive; i++) {
     stream << getIRReceiveName((IRReceiveID)i) << " = " << data[i] << endl;
-  }//end for
+  }
 }//end print

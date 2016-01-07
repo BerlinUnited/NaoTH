@@ -281,6 +281,8 @@ void SPLGameController::socketLoop()
                                      sizeof(RoboCupGameControlData),
                                      NULL, NULL);
 
+    bool validPackage = false;
+
     if(receiverAddress != NULL)
     {
       // construct a proper return address from the receiver
@@ -296,15 +298,20 @@ void SPLGameController::socketLoop()
     if(size == sizeof(RoboCupGameControlData))
     {
       g_mutex_lock(dataMutex);
-      if ( update() )
+      validPackage = update();
+      if ( validPackage )
       {
         data.valid = true;
       }
       g_mutex_unlock(dataMutex);
 
-      g_mutex_lock(returnDataMutex);
-      sendData(dataOut);
-      g_mutex_unlock(returnDataMutex);
+      // only send return package if we are sure the initial package was a proper game controller message
+      if(validPackage)
+      {
+        g_mutex_lock(returnDataMutex);
+        sendData(dataOut);
+        g_mutex_unlock(returnDataMutex);
+      }
     }
   }
 }
