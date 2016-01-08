@@ -11,7 +11,7 @@ from google.protobuf import descriptor_pb2
 DESCRIPTOR = descriptor.FileDescriptor(
   name='CommonTypes.proto',
   package='naothmessages',
-  serialized_pb='\n\x11\x43ommonTypes.proto\x12\rnaothmessages\"$\n\x0c\x46loatVector2\x12\t\n\x01x\x18\x01 \x02(\x02\x12\t\n\x01y\x18\x02 \x02(\x02\"%\n\rDoubleVector2\x12\t\n\x01x\x18\x01 \x02(\x01\x12\t\n\x01y\x18\x02 \x02(\x01\"\"\n\nIntVector2\x12\t\n\x01x\x18\x01 \x02(\x05\x12\t\n\x01y\x18\x02 \x02(\x05\"M\n\x06Pose2D\x12\x31\n\x0btranslation\x18\x01 \x02(\x0b\x32\x1c.naothmessages.DoubleVector2\x12\x10\n\x08rotation\x18\x02 \x02(\x01\"0\n\rDoubleVector3\x12\t\n\x01x\x18\x01 \x02(\x01\x12\t\n\x01y\x18\x02 \x02(\x01\x12\t\n\x01z\x18\x03 \x02(\x01\"\x19\n\x0c\x44oubleVector\x12\t\n\x01v\x18\x01 \x03(\x01\"k\n\x06Pose3D\x12\x31\n\x0btranslation\x18\x01 \x02(\x0b\x32\x1c.naothmessages.DoubleVector3\x12.\n\x08rotation\x18\x02 \x03(\x0b\x32\x1c.naothmessages.DoubleVector3\"\xa5\x02\n\x08GoalPost\x12,\n\tbasePoint\x18\x01 \x01(\x0b\x32\x19.naothmessages.IntVector2\x12.\n\x08position\x18\x02 \x01(\x0b\x32\x1c.naothmessages.DoubleVector2\x12#\n\x05\x63olor\x18\x03 \x01(\x0e\x32\x14.naothmessages.Color\x12.\n\x04type\x18\x04 \x01(\x0e\x32 .naothmessages.GoalPost.PostType\x12\x18\n\x10positionReliable\x18\x05 \x01(\x08\x12\x12\n\nseenHeight\x18\x06 \x01(\x01\"8\n\x08PostType\x12\r\n\trightPost\x10\x00\x12\x0c\n\x08leftPost\x10\x01\x12\x0f\n\x0bunknownPost\x10\x02\"z\n\x0bLineSegment\x12*\n\x04\x62\x61se\x18\x01 \x02(\x0b\x32\x1c.naothmessages.DoubleVector2\x12/\n\tdirection\x18\x02 \x02(\x0b\x32\x1c.naothmessages.DoubleVector2\x12\x0e\n\x06length\x18\x03 \x02(\x01\"\xe6\x01\n\x10\x46ieldLineSegment\x12/\n\x0blineInImage\x18\x01 \x01(\x0b\x32\x1a.naothmessages.LineSegment\x12/\n\x0blineOnField\x18\x02 \x01(\x0b\x32\x1a.naothmessages.LineSegment\x12\x18\n\x10\x62\x65ginExtendCount\x18\x03 \x01(\x05\x12\x16\n\x0e\x65ndExtendCount\x18\x04 \x01(\x05\x12\x11\n\tthickness\x18\x05 \x01(\x01\x12\r\n\x05slope\x18\x06 \x01(\x01\x12\r\n\x05\x61ngle\x18\x07 \x01(\x01\x12\r\n\x05valid\x18\x08 \x01(\x08\"\xdf\x02\n\x0cIntersection\x12\x30\n\nposInImage\x18\x01 \x01(\x0b\x32\x1c.naothmessages.DoubleVector2\x12\x30\n\nposOnField\x18\x02 \x01(\x0b\x32\x1c.naothmessages.DoubleVector2\x12:\n\x04type\x18\x03 \x01(\x0e\x32,.naothmessages.Intersection.IntersectionType\x12\x17\n\x0fsegmentOneIndex\x18\x06 \x01(\r\x12\x17\n\x0fsegmentTwoIndex\x18\x07 \x01(\r\x12\x1a\n\x12segmentOneDistance\x18\x08 \x01(\x01\x12\x1a\n\x12segmentTwoDistance\x18\t \x01(\x01\"E\n\x10IntersectionType\x12\x0b\n\x07unknown\x10\x00\x12\x05\n\x01T\x10\x01\x12\x05\n\x01L\x10\x02\x12\x05\n\x01\x43\x10\x03\x12\x08\n\x04none\x10\x04\x12\x05\n\x01X\x10\x05*\x90\x01\n\x05\x43olor\x12\x08\n\x04none\x10\x00\x12\n\n\x06orange\x10\x01\x12\n\n\x06yellow\x10\x02\x12\x0b\n\x07skyblue\x10\x03\x12\t\n\x05white\x10\x04\x12\x07\n\x03red\x10\x05\x12\x08\n\x04\x62lue\x10\x06\x12\t\n\x05green\x10\x07\x12\t\n\x05\x62lack\x10\x08\x12\x08\n\x04pink\x10\t\x12\x08\n\x04gray\x10\n\x12\x10\n\x0cyellowOrange\x10\x0b*\x1f\n\x08\x43\x61meraID\x12\x07\n\x03top\x10\x00\x12\n\n\x06\x62ottom\x10\x01*\xf1\x02\n\x07JointID\x12\r\n\tHeadPitch\x10\x00\x12\x0b\n\x07HeadYaw\x10\x01\x12\x11\n\rRShoulderRoll\x10\x02\x12\x11\n\rLShoulderRoll\x10\x03\x12\x12\n\x0eRShoulderPitch\x10\x04\x12\x12\n\x0eLShoulderPitch\x10\x05\x12\x0e\n\nRElbowRoll\x10\x06\x12\x0e\n\nLElbowRoll\x10\x07\x12\r\n\tRElbowYaw\x10\x08\x12\r\n\tLElbowYaw\x10\t\x12\x10\n\x0cRHipYawPitch\x10\n\x12\x10\n\x0cLHipYawPitch\x10\x0b\x12\r\n\tRHipPitch\x10\x0c\x12\r\n\tLHipPitch\x10\r\x12\x0c\n\x08RHipRoll\x10\x0e\x12\x0c\n\x08LHipRoll\x10\x0f\x12\x0e\n\nRKneePitch\x10\x10\x12\x0e\n\nLKneePitch\x10\x11\x12\x0f\n\x0bRAnklePitch\x10\x12\x12\x0f\n\x0bLAnklePitch\x10\x13\x12\x0e\n\nRAnkleRoll\x10\x14\x12\x0e\n\nLAnkleRoll\x10\x15\x42\x16\n\x14\x64\x65.naoth.rc.messages')
+  serialized_pb='\n\x11\x43ommonTypes.proto\x12\rnaothmessages\"$\n\x0c\x46loatVector2\x12\t\n\x01x\x18\x01 \x02(\x02\x12\t\n\x01y\x18\x02 \x02(\x02\"%\n\rDoubleVector2\x12\t\n\x01x\x18\x01 \x02(\x01\x12\t\n\x01y\x18\x02 \x02(\x01\"\"\n\nIntVector2\x12\t\n\x01x\x18\x01 \x02(\x05\x12\t\n\x01y\x18\x02 \x02(\x05\"M\n\x06Pose2D\x12\x31\n\x0btranslation\x18\x01 \x02(\x0b\x32\x1c.naothmessages.DoubleVector2\x12\x10\n\x08rotation\x18\x02 \x02(\x01\"0\n\rDoubleVector3\x12\t\n\x01x\x18\x01 \x02(\x01\x12\t\n\x01y\x18\x02 \x02(\x01\x12\t\n\x01z\x18\x03 \x02(\x01\"\x19\n\x0c\x44oubleVector\x12\t\n\x01v\x18\x01 \x03(\x01\"k\n\x06Pose3D\x12\x31\n\x0btranslation\x18\x01 \x02(\x0b\x32\x1c.naothmessages.DoubleVector3\x12.\n\x08rotation\x18\x02 \x03(\x0b\x32\x1c.naothmessages.DoubleVector3\"z\n\x0bLineSegment\x12*\n\x04\x62\x61se\x18\x01 \x02(\x0b\x32\x1c.naothmessages.DoubleVector2\x12/\n\tdirection\x18\x02 \x02(\x0b\x32\x1c.naothmessages.DoubleVector2\x12\x0e\n\x06length\x18\x03 \x02(\x01\"\xdf\x02\n\x0cIntersection\x12\x30\n\nposInImage\x18\x01 \x01(\x0b\x32\x1c.naothmessages.DoubleVector2\x12\x30\n\nposOnField\x18\x02 \x01(\x0b\x32\x1c.naothmessages.DoubleVector2\x12:\n\x04type\x18\x03 \x01(\x0e\x32,.naothmessages.Intersection.IntersectionType\x12\x17\n\x0fsegmentOneIndex\x18\x06 \x01(\r\x12\x17\n\x0fsegmentTwoIndex\x18\x07 \x01(\r\x12\x1a\n\x12segmentOneDistance\x18\x08 \x01(\x01\x12\x1a\n\x12segmentTwoDistance\x18\t \x01(\x01\"E\n\x10IntersectionType\x12\x0b\n\x07unknown\x10\x00\x12\x05\n\x01T\x10\x01\x12\x05\n\x01L\x10\x02\x12\x05\n\x01\x43\x10\x03\x12\x08\n\x04none\x10\x04\x12\x05\n\x01X\x10\x05*\x90\x01\n\x05\x43olor\x12\x08\n\x04none\x10\x00\x12\n\n\x06orange\x10\x01\x12\n\n\x06yellow\x10\x02\x12\x0b\n\x07skyblue\x10\x03\x12\t\n\x05white\x10\x04\x12\x07\n\x03red\x10\x05\x12\x08\n\x04\x62lue\x10\x06\x12\t\n\x05green\x10\x07\x12\t\n\x05\x62lack\x10\x08\x12\x08\n\x04pink\x10\t\x12\x08\n\x04gray\x10\n\x12\x10\n\x0cyellowOrange\x10\x0b*\x1f\n\x08\x43\x61meraID\x12\x07\n\x03top\x10\x00\x12\n\n\x06\x62ottom\x10\x01*\xf1\x02\n\x07JointID\x12\r\n\tHeadPitch\x10\x00\x12\x0b\n\x07HeadYaw\x10\x01\x12\x11\n\rRShoulderRoll\x10\x02\x12\x11\n\rLShoulderRoll\x10\x03\x12\x12\n\x0eRShoulderPitch\x10\x04\x12\x12\n\x0eLShoulderPitch\x10\x05\x12\x0e\n\nRElbowRoll\x10\x06\x12\x0e\n\nLElbowRoll\x10\x07\x12\r\n\tRElbowYaw\x10\x08\x12\r\n\tLElbowYaw\x10\t\x12\x10\n\x0cRHipYawPitch\x10\n\x12\x10\n\x0cLHipYawPitch\x10\x0b\x12\r\n\tRHipPitch\x10\x0c\x12\r\n\tLHipPitch\x10\r\x12\x0c\n\x08RHipRoll\x10\x0e\x12\x0c\n\x08LHipRoll\x10\x0f\x12\x0e\n\nRKneePitch\x10\x10\x12\x0e\n\nLKneePitch\x10\x11\x12\x0f\n\x0bRAnklePitch\x10\x12\x12\x0f\n\x0bLAnklePitch\x10\x13\x12\x0e\n\nRAnkleRoll\x10\x14\x12\x0e\n\nLAnkleRoll\x10\x15\x42\x16\n\x14\x64\x65.naoth.rc.messages')
 
 _COLOR = descriptor.EnumDescriptor(
   name='Color',
@@ -70,8 +70,8 @@ _COLOR = descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=1422,
-  serialized_end=1566,
+  serialized_start=893,
+  serialized_end=1037,
 )
 
 
@@ -92,8 +92,8 @@ _CAMERAID = descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=1568,
-  serialized_end=1599,
+  serialized_start=1039,
+  serialized_end=1070,
 )
 
 
@@ -194,8 +194,8 @@ _JOINTID = descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=1602,
-  serialized_end=1971,
+  serialized_start=1073,
+  serialized_end=1442,
 )
 
 
@@ -237,31 +237,6 @@ RAnkleRoll = 20
 LAnkleRoll = 21
 
 
-_GOALPOST_POSTTYPE = descriptor.EnumDescriptor(
-  name='PostType',
-  full_name='naothmessages.GoalPost.PostType',
-  filename=None,
-  file=DESCRIPTOR,
-  values=[
-    descriptor.EnumValueDescriptor(
-      name='rightPost', index=0, number=0,
-      options=None,
-      type=None),
-    descriptor.EnumValueDescriptor(
-      name='leftPost', index=1, number=1,
-      options=None,
-      type=None),
-    descriptor.EnumValueDescriptor(
-      name='unknownPost', index=2, number=2,
-      options=None,
-      type=None),
-  ],
-  containing_type=None,
-  options=None,
-  serialized_start=652,
-  serialized_end=708,
-)
-
 _INTERSECTION_INTERSECTIONTYPE = descriptor.EnumDescriptor(
   name='IntersectionType',
   full_name='naothmessages.Intersection.IntersectionType',
@@ -295,8 +270,8 @@ _INTERSECTION_INTERSECTIONTYPE = descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=1350,
-  serialized_end=1419,
+  serialized_start=821,
+  serialized_end=890,
 )
 
 
@@ -545,70 +520,6 @@ _POSE3D = descriptor.Descriptor(
 )
 
 
-_GOALPOST = descriptor.Descriptor(
-  name='GoalPost',
-  full_name='naothmessages.GoalPost',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    descriptor.FieldDescriptor(
-      name='basePoint', full_name='naothmessages.GoalPost.basePoint', index=0,
-      number=1, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    descriptor.FieldDescriptor(
-      name='position', full_name='naothmessages.GoalPost.position', index=1,
-      number=2, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    descriptor.FieldDescriptor(
-      name='color', full_name='naothmessages.GoalPost.color', index=2,
-      number=3, type=14, cpp_type=8, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    descriptor.FieldDescriptor(
-      name='type', full_name='naothmessages.GoalPost.type', index=3,
-      number=4, type=14, cpp_type=8, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    descriptor.FieldDescriptor(
-      name='positionReliable', full_name='naothmessages.GoalPost.positionReliable', index=4,
-      number=5, type=8, cpp_type=7, label=1,
-      has_default_value=False, default_value=False,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    descriptor.FieldDescriptor(
-      name='seenHeight', full_name='naothmessages.GoalPost.seenHeight', index=5,
-      number=6, type=1, cpp_type=5, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-    _GOALPOST_POSTTYPE,
-  ],
-  options=None,
-  is_extendable=False,
-  extension_ranges=[],
-  serialized_start=415,
-  serialized_end=708,
-)
-
-
 _LINESEGMENT = descriptor.Descriptor(
   name='LineSegment',
   full_name='naothmessages.LineSegment',
@@ -646,85 +557,8 @@ _LINESEGMENT = descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=710,
-  serialized_end=832,
-)
-
-
-_FIELDLINESEGMENT = descriptor.Descriptor(
-  name='FieldLineSegment',
-  full_name='naothmessages.FieldLineSegment',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    descriptor.FieldDescriptor(
-      name='lineInImage', full_name='naothmessages.FieldLineSegment.lineInImage', index=0,
-      number=1, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    descriptor.FieldDescriptor(
-      name='lineOnField', full_name='naothmessages.FieldLineSegment.lineOnField', index=1,
-      number=2, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    descriptor.FieldDescriptor(
-      name='beginExtendCount', full_name='naothmessages.FieldLineSegment.beginExtendCount', index=2,
-      number=3, type=5, cpp_type=1, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    descriptor.FieldDescriptor(
-      name='endExtendCount', full_name='naothmessages.FieldLineSegment.endExtendCount', index=3,
-      number=4, type=5, cpp_type=1, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    descriptor.FieldDescriptor(
-      name='thickness', full_name='naothmessages.FieldLineSegment.thickness', index=4,
-      number=5, type=1, cpp_type=5, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    descriptor.FieldDescriptor(
-      name='slope', full_name='naothmessages.FieldLineSegment.slope', index=5,
-      number=6, type=1, cpp_type=5, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    descriptor.FieldDescriptor(
-      name='angle', full_name='naothmessages.FieldLineSegment.angle', index=6,
-      number=7, type=1, cpp_type=5, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    descriptor.FieldDescriptor(
-      name='valid', full_name='naothmessages.FieldLineSegment.valid', index=7,
-      number=8, type=8, cpp_type=7, label=1,
-      has_default_value=False, default_value=False,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  options=None,
-  is_extendable=False,
-  extension_ranges=[],
-  serialized_start=835,
-  serialized_end=1065,
+  serialized_start=414,
+  serialized_end=536,
 )
 
 
@@ -794,22 +628,15 @@ _INTERSECTION = descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=1068,
-  serialized_end=1419,
+  serialized_start=539,
+  serialized_end=890,
 )
 
 _POSE2D.fields_by_name['translation'].message_type = _DOUBLEVECTOR2
 _POSE3D.fields_by_name['translation'].message_type = _DOUBLEVECTOR3
 _POSE3D.fields_by_name['rotation'].message_type = _DOUBLEVECTOR3
-_GOALPOST.fields_by_name['basePoint'].message_type = _INTVECTOR2
-_GOALPOST.fields_by_name['position'].message_type = _DOUBLEVECTOR2
-_GOALPOST.fields_by_name['color'].enum_type = _COLOR
-_GOALPOST.fields_by_name['type'].enum_type = _GOALPOST_POSTTYPE
-_GOALPOST_POSTTYPE.containing_type = _GOALPOST;
 _LINESEGMENT.fields_by_name['base'].message_type = _DOUBLEVECTOR2
 _LINESEGMENT.fields_by_name['direction'].message_type = _DOUBLEVECTOR2
-_FIELDLINESEGMENT.fields_by_name['lineInImage'].message_type = _LINESEGMENT
-_FIELDLINESEGMENT.fields_by_name['lineOnField'].message_type = _LINESEGMENT
 _INTERSECTION.fields_by_name['posInImage'].message_type = _DOUBLEVECTOR2
 _INTERSECTION.fields_by_name['posOnField'].message_type = _DOUBLEVECTOR2
 _INTERSECTION.fields_by_name['type'].enum_type = _INTERSECTION_INTERSECTIONTYPE
@@ -821,9 +648,7 @@ DESCRIPTOR.message_types_by_name['Pose2D'] = _POSE2D
 DESCRIPTOR.message_types_by_name['DoubleVector3'] = _DOUBLEVECTOR3
 DESCRIPTOR.message_types_by_name['DoubleVector'] = _DOUBLEVECTOR
 DESCRIPTOR.message_types_by_name['Pose3D'] = _POSE3D
-DESCRIPTOR.message_types_by_name['GoalPost'] = _GOALPOST
 DESCRIPTOR.message_types_by_name['LineSegment'] = _LINESEGMENT
-DESCRIPTOR.message_types_by_name['FieldLineSegment'] = _FIELDLINESEGMENT
 DESCRIPTOR.message_types_by_name['Intersection'] = _INTERSECTION
 
 class FloatVector2(message.Message):
@@ -868,23 +693,11 @@ class Pose3D(message.Message):
   
   # @@protoc_insertion_point(class_scope:naothmessages.Pose3D)
 
-class GoalPost(message.Message):
-  __metaclass__ = reflection.GeneratedProtocolMessageType
-  DESCRIPTOR = _GOALPOST
-  
-  # @@protoc_insertion_point(class_scope:naothmessages.GoalPost)
-
 class LineSegment(message.Message):
   __metaclass__ = reflection.GeneratedProtocolMessageType
   DESCRIPTOR = _LINESEGMENT
   
   # @@protoc_insertion_point(class_scope:naothmessages.LineSegment)
-
-class FieldLineSegment(message.Message):
-  __metaclass__ = reflection.GeneratedProtocolMessageType
-  DESCRIPTOR = _FIELDLINESEGMENT
-  
-  # @@protoc_insertion_point(class_scope:naothmessages.FieldLineSegment)
 
 class Intersection(message.Message):
   __metaclass__ = reflection.GeneratedProtocolMessageType
