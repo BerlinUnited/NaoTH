@@ -1,4 +1,4 @@
-import struct
+import struct, os
 
 # protobuf
 from CommonTypes_pb2 import *
@@ -27,9 +27,7 @@ class Parser:
       message.ParseFromString(data)
     
     return message
-      
-      
-      
+    
 
 class LogReader:
 
@@ -55,13 +53,28 @@ class LogReader:
       self.messages[name] = (position, size, message)
       return message
 
+      
+  class Iterator:
+    def __init__(self, reader):
+      self.idx = -1
+      self.reader = reader
+      
+    def __iter__(self):
+      return self
+    
+    def next(self):
+      self.idx += 1
+      return self.reader[self.idx]
+      
+      
   def __init__(self, path, parser=Parser(), filter = lambda x: x):
+    statinfo = os.stat(path)
+    self.size = statinfo.st_size
     self.log = open(path, "rb")
     self.parser = parser
     self.filter = filter
     
     self.frames = []
-    self.idx = 0
     self.names = []
     
     self.scanPosition = 0
@@ -70,7 +83,7 @@ class LogReader:
     
     
   def __iter__(self):
-    return self
+    return LogReader.Iterator(self)
     
   def __scan(self):
 
@@ -89,6 +102,11 @@ class LogReader:
       return False
     else:
       self.log.seek(self.scanPosition)
+  
+    #if self.idx > 30*100:
+    #  return False
+  
+    last = (self.scanPosition*100) / self.size
   
     try:
       currentFrame = None
@@ -115,13 +133,19 @@ class LogReader:
         # todo: make it more efficient
         if name not in self.names:
           self.names.append(name)
+      
+      new = (self.scanPosition*100) / self.size
+      if new > last:
+        print new
+      
+      #if new > 3:
+      #  raise StopIteration
         
       return True
         
     except StopIteration as ex:
       self.scanPosition = -1
       return False
-      
       
   def readBytes(self, bytes):
     if self.log is None:
@@ -148,24 +172,13 @@ class LogReader:
       c = self.readChar()
     return str
     
-  def next(self):
-    while self.idx >= len(self.frames)-1:
-      if not self.__scanFrame():
-        break
-  
-    if self.idx < len(self.frames)-1:
-      self.idx += 1
-      return self.filter(self.frames[self.idx])
-    else:
-      raise StopIteration
-      
   def __getitem__(self, i):
-    while i >= len(self.frames)-1:
+    while i + 1 >= len(self.frames):
       if not self.__scanFrame():
         break
     
-    if i < len(self.frames)-1:
-      return self.filter(self.frames[self.idx])
+    if i + 1 < len(self.frames):
+      return self.filter(self.frames[i])
     else:
       raise StopIteration
      
