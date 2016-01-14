@@ -7,7 +7,7 @@ from LogReader import Parser
 
 from matplotlib import pyplot
 import numpy
-import Image
+from PIL import Image
 
 
 def parseArguments(argv):
