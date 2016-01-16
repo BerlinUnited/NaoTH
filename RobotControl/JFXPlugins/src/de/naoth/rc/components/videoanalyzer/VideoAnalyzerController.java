@@ -223,16 +223,19 @@ public class VideoAnalyzerController implements Initializable
   {
     this.logfile = logfile;
 
-    frameSlider.valueProperty().removeListener(frameChangeListener);
+    if(this.logfile != null)
+    {
+      frameSlider.valueProperty().removeListener(frameChangeListener);
 
-    frameSlider.setMin(0.0);
-    frameSlider.setMax(logfile.getFrameCount());
-    frameSlider.setValue(0.0);
-    sendLogFrame(0);
+      frameSlider.setMin(0.0);
+      frameSlider.setMax(logfile.getFrameCount());
+      frameSlider.setValue(0.0);
+      sendLogFrame(0);
 
-    frameSlider.valueProperty().addListener(frameChangeListener);
+      frameSlider.valueProperty().addListener(frameChangeListener);
 
-    loadLogfileProperties();
+      loadLogfileProperties();
+    }
   }
 
   public void sendLogFrame(final int frameIdx)

@@ -80,6 +80,15 @@ public class ParseLogController implements Initializable
     progress.progressProperty().bind(service.progressProperty());
     lblMessage.textProperty().bind(service.messageProperty());
     service.start();
+    service.setOnFailed(new EventHandler<WorkerStateEvent>()
+    {
+      @Override
+      public void handle(WorkerStateEvent event)
+      {
+        Stage stage = (Stage) lblMessage.getScene().getWindow();
+        stage.close();
+      }
+    });
     service.setOnCancelled(new EventHandler<WorkerStateEvent>()
     {
 
