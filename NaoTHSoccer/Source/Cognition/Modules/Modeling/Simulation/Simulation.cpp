@@ -17,11 +17,9 @@ Simulation::Simulation()
   DEBUG_REQUEST_REGISTER("Simulation:draw_best_action","best action",false);
   DEBUG_REQUEST_REGISTER("Simulation:draw_potential_field","Draw Potential Field",false);
   DEBUG_REQUEST_REGISTER("Simulation:use_Parameters","use_Parameters",false);
-  DEBUG_REQUEST_REGISTER("Simulation:OppGoal","OppGoal",false);
   DEBUG_REQUEST_REGISTER("Simulation:OwnGoal","OwnGoal",false);
   DEBUG_REQUEST_REGISTER("Simulation:ObstacleLine","ObstacleLine",false);
   
-
   getDebugParameterList().add(&theParameters);
 
   //calculate the actions  
@@ -105,7 +103,7 @@ void Simulation::execute()
     }
   );
   
-  // now decide which action to execture given their consequences
+  // now decide which action to execute given their consequences
   STOPWATCH_START("Simulation:decide");
   size_t best_action = decide(actionsConsequences);
   STOPWATCH_STOP("Simulation:decide");
@@ -238,7 +236,14 @@ void Simulation::simulateConsequences(
       category = COLLISION;
     }
     // inside field
-    else if(getFieldInfo().fieldRect.inside(globalBallEndPosition))
+    // small gap between this and the borders of the goalbox
+    //check y coordinates and 
+    else if(getFieldInfo().fieldRect.inside(globalBallEndPosition) ||
+      (globalBallEndPosition.x <= getFieldInfo().opponentGoalPostRight.x 
+      && globalBallEndPosition.y > getFieldInfo().opponentGoalPostRight.y 
+      && globalBallEndPosition.y < getFieldInfo().opponentGoalPostLeft.y)
+      )
+      //(globalBallEndPosition.y < getFieldInfo().opponentGoalPostRight.y && globalBallEndPosition.y > getFieldInfo().opponentGoalPostLeft.y)
     {
       category = INFIELD;
     }
@@ -291,6 +296,8 @@ size_t Simulation::decide(
     bool ownGoal = false;
     for(std::vector<CategorizedBallPosition>::const_iterator ballPosition = actionsConsequences[i].begin(); ballPosition != actionsConsequences[i].end(); ballPosition++)
     {
+      // this only checks for good actions, all other actions like OWNOUT or COLLISION
+      // are implicitly assumed to be bad as good is not incremented
       if(ballPosition->cat() == INFIELD || ballPosition->cat() == OPPGOAL)
       {
         good++;
@@ -299,7 +306,7 @@ size_t Simulation::decide(
         ownGoal = true;
       }
     }
-    // if an own-goal is detected, ignore the action
+    // if one particle results in an own-goal, ignore the action
     if(ownGoal)
     {
       continue;
@@ -415,6 +422,102 @@ Vector2d Simulation::Action::predict(const Vector2d& ball) const
   return ball + noisyAction;
 }
 
+// exp(x) = lim(n->inf) (1 + x/n)^n
+// for n=256 about 10x faster than exp but around 2.5 % off on x in [-10, 10]
+double Simulation::exp256(const double& x) const
+{
+  double y = 1.0 + x / 256.0;
+  y *= y;
+  y *= y;
+  y *= y;
+  y *= y;
+  y *= y;
+  y *= y;
+  y *= y;
+  y *= y;
+  return y;
+}
+
+double Simulation::gaussian(const double& x, const double& y, const double& muX, const double& muY, const double& sigmaX, const double& sigmaY) const
+{
+  double facX = (x - muX) * (x - muX) / (2.0 * sigmaX * sigmaX);
+  double facY = (y - muY) * (y - muY) / (2.0 * sigmaY * sigmaY);
+  return exp256(-1.0 * (facX + facY));
+}
+
+double Simulation::slope(const double& x, const double& y, const double& slopeX, const double& slopeY) const
+{
+  return slopeX * x + slopeY * y;
+}
+
+double Simulation::evaluateAction(const Vector2d& a) const
+{
+  double xPosOpponentGoal = getFieldInfo().xPosOpponentGoal;
+  double yPosLeftSideline = getFieldInfo().yPosLeftSideline;
+  double xPosOwnGoal = getFieldInfo().xPosOwnGoal;
+
+  double sigmaX = xPosOpponentGoal/2.0;
+  double sigmaY = yPosLeftSideline/2.5;
+  double slopeX = -1.0/xPosOpponentGoal;
+  
+  double f = 0.0;
+  f += slope(a.x, a.y, slopeX, 0.0);
+  f -= gaussian(a.x, a.y, xPosOpponentGoal, 0.0, sigmaX, sigmaY);
+  f += gaussian(a.x, a.y, xPosOwnGoal, 0.0, 1.5*sigmaX, sigmaY);
+  
+  return f;
+}
+
+void Simulation::draw_potential_field() const
+{
+  static const int ySize = 20;
+  static const int xSize = 30;
+  double yWidth = 0.5*getFieldInfo().yFieldLength/(double)ySize;
+  double xWidth = 0.5*getFieldInfo().xFieldLength/(double)xSize;
+
+  FIELD_DRAWING_CONTEXT;
+  Color white(0.0,0.0,1.0,0.5); // transparent
+  Color black(1.0,0.0,0.0,0.5);
+
+  // create new sample set
+  std::vector<double> potential(xSize*ySize);
+  int idx = 0;
+
+  for (int x = 0; x < xSize; x++) {
+    for (int y = 0; y < ySize; y++)
+    {
+      Vector2d point(xWidth*(2*x-xSize+1), yWidth*(2*y-ySize+1));
+      potential[idx] = evaluateAction(point);
+      idx++;
+    }
+  }
+  
+  double maxValue = 0;
+  idx = 0;
+  for (int x = 0; x < xSize; x++) {
+    for (int y = 0; y < ySize; y++)
+    {
+      maxValue = max(maxValue, potential[idx++]);
+    }
+  }
+
+  if(maxValue == 0) return;
+
+  idx = 0;
+  for (int x = 0; x < xSize; x++) {
+    for (int y = 0; y < ySize; y++)
+    {
+      Vector2d point(xWidth*(2*x-xSize+1), yWidth*(2*y-ySize+1));
+      
+      double t = potential[idx++] / maxValue;
+      Color color = black*t + white*(1-t);
+      PEN(color, 20);
+      FILLBOX(point.x - xWidth, point.y - yWidth, point.x+xWidth, point.y+yWidth);
+    }
+  }
+}//end draw_closest_points
+
+/*
 //calcualte according to the rules, without the roboter position, the ball position
 //if it goes outside the field
 Vector2d Simulation::outsideField(const Vector2d& globalPoint) const
@@ -484,77 +587,4 @@ Vector2d Simulation::outsideField(const Vector2d& globalPoint) const
         return Vector2d(point.x, getFieldInfo().yThrowInLineRight);//range check
       }
   }
-}
-
-double Simulation::evaluateAction(const Vector2d& a) const{
-  Vector2d oppGoal(getFieldInfo().xPosOpponentGoal+getFieldInfo().goalDepth, 0.0);
-  Vector2d oppDiff = oppGoal - a;
-
-  double oppValueX = 0.1;
-  double oppValueY = 1;
-  MODIFY("Simulation:oppValueX", oppValueX);
-  MODIFY("Simulation:oppValueY", oppValueY);
-  double value_opp = sqrt(oppValueX*oppDiff.x*oppDiff.x + oppValueY*oppDiff.y*oppDiff.y)+abs(oppDiff.y)+oppDiff.x;
-  //double value_opp = oppValueX*oppDiff.x*oppDiff.x + oppValueY*oppDiff.y*oppDiff.y;
-  //double value_opp = abs(oppDiff.y)+oppDiff.x;
-  //Vector2d ownGoal(getFieldInfo().xPosOwnGoal, 0.0);
-  //Vector2d ownDiff = ownGoal - a;
-  
-  //double ownValueX = 0.01;
-  //double ownValueY = 0.1;
-  //MODIFY("Simulation:ownValueX", ownValueX);
-  //MODIFY("Simulation:ownValueY", ownValueY);
-  //double value_own = ownValueX*ownDiff.x*ownDiff.x + ownValueY*ownDiff.y*ownDiff.y;
-
-  //return value_opp - value_own;
-  return value_opp;
-}
-
-void Simulation::draw_potential_field() const
-{
-  static const int ySize = 20;
-  static const int xSize = 30;
-  double yWidth = 0.5*getFieldInfo().yFieldLength/(double)ySize;
-  double xWidth = 0.5*getFieldInfo().xFieldLength/(double)xSize;
-
-  FIELD_DRAWING_CONTEXT;
-  Color white(0.0,0.0,1.0,0.5); // transparent
-  Color black(1.0,0.0,0.0,0.5);
-
-  // create new sample set
-  std::vector<double> potential(xSize*ySize);
-  int idx = 0;
-
-  for (int x = 0; x < xSize; x++) {
-    for (int y = 0; y < ySize; y++)
-    {
-      Vector2d point(xWidth*(2*x-xSize+1), yWidth*(2*y-ySize+1));
-      potential[idx] = evaluateAction(point);
-      idx++;
-    }
-  }
-  
-  double maxValue = 0;
-  idx = 0;
-  for (int x = 0; x < xSize; x++) {
-    for (int y = 0; y < ySize; y++)
-    {
-      maxValue = max(maxValue, potential[idx++]);
-    }
-  }
-
-  if(maxValue == 0) return;
-
-  idx = 0;
-  for (int x = 0; x < xSize; x++) {
-    for (int y = 0; y < ySize; y++)
-    {
-      Vector2d point(xWidth*(2*x-xSize+1), yWidth*(2*y-ySize+1));
-      
-      double t = potential[idx++] / maxValue;
-      Color color = black*t + white*(1-t);
-      PEN(color, 20);
-      FILLBOX(point.x - xWidth, point.y - yWidth, point.x+xWidth, point.y+yWidth);
-    }
-  }
-}//end draw_closest_points
+}*/
