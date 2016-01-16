@@ -42,9 +42,7 @@ void HeadMotionEngine::execute()
     case HeadMotionRequest::look_at_point: lookAtPoint(); break;
     
     case HeadMotionRequest::look_at_world_point:
-    {
       lookAtWorldPoint(getHeadMotionRequest().targetPointInTheWorld);
-    }
       break;
 
     case HeadMotionRequest::look_at_point_on_the_ground: 
