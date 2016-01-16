@@ -21,6 +21,7 @@
 #include "Tools/Debug/DebugRequest.h"
 #include "Tools/Debug/DebugModify.h"
 #include "Tools/Debug/DebugPlot.h"
+
 BEGIN_DECLARE_MODULE(StrategySymbols)
   REQUIRE(AttentionModel)
   REQUIRE(PlayersModel)
