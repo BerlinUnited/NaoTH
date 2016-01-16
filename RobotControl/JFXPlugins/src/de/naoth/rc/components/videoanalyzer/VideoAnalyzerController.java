@@ -397,10 +397,17 @@ public class VideoAnalyzerController implements Initializable
     {
       if (logfile != null && logfile.getOriginalFile() != null)
       {
-        Path videoPath = file.getAbsoluteFile().toPath();
-        Path basePath = logfile.getOriginalFile().getParentFile().toPath();
-        Path relativeVideoPath = basePath.relativize(videoPath);
-        propLogfile.setProperty(KEY_VIDEO_FILE, relativeVideoPath.toString());
+        try
+        {
+          Path videoPath = file.getAbsoluteFile().toPath();
+          Path basePath = logfile.getOriginalFile().getParentFile().toPath();
+          Path relativeVideoPath = basePath.relativize(videoPath);
+          propLogfile.setProperty(KEY_VIDEO_FILE, relativeVideoPath.toString());
+        }
+        catch(IllegalArgumentException ex)
+        {
+          propLogfile.setProperty(KEY_VIDEO_FILE, file.getAbsolutePath());
+        }
       } else
       {
         propLogfile.setProperty(KEY_VIDEO_FILE, file.getAbsolutePath());
