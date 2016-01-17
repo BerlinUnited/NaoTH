@@ -161,7 +161,7 @@ void BasicTestBehavior::testHead()
 
 
   DEBUG_REQUEST("BasicTestBehavior:head:look_at_ball_modell",
-    if(getFrameInfo().getTimeSince(getBallModel().frameInfoWhenBallWasSeen.getTime()) < 3000)
+    if(getFrameInfo().getTimeSince(getBallModel().getFrameInfoWhenBallWasSeen().getTime()) < 3000)
     {
       Vector2d xp = getBallModel().position;
       double d = 250;
