@@ -55,6 +55,11 @@ public:
   static std::string charToHexString(unsigned char c);
   static int hexCharToInt(char c);
   static char intToHexChar(int n);
+
+public:
+  static Color RED;
+  static Color BLUE;
+  static Color GREEN;
 };//end class Color
 
 /**

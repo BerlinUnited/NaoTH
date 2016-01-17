@@ -14,7 +14,8 @@ project "Commons"
     "../Source/**.cpp",
     "../Source/**.cc",
     "../Source/**.c", 
-    "../Source/**.h"
+    "../Source/**.h",
+    "../Source/**.hpp"
   }
   
 

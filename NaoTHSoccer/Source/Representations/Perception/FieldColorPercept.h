@@ -123,6 +123,10 @@ public:
               normalMax.x*u + normalMax.y*v < distMax;
     }
 
+    inline bool isColor(const Pixel& pixel) const {
+      return isColor(pixel.y, pixel.u, pixel.v);
+    }
+
     inline bool noColor(int y, int u, int v) const {
       //double cromaThreshold = std::max(brightnesConeRadiusBlack, brightnesConeRadiusBlack + brightnesAlpha * (double)(y-brightnesConeOffset));
       return Math::sqr(u - 128) + Math::sqr(v - 128) < brightnessThreshold[y]; //Vector2d(u - 128, v - 128).abs() < brightnessThreshold[y];

@@ -223,16 +223,19 @@ public class VideoAnalyzerController implements Initializable
   {
     this.logfile = logfile;
 
-    frameSlider.valueProperty().removeListener(frameChangeListener);
+    if(this.logfile != null)
+    {
+      frameSlider.valueProperty().removeListener(frameChangeListener);
 
-    frameSlider.setMin(0.0);
-    frameSlider.setMax(logfile.getFrameCount());
-    frameSlider.setValue(0.0);
-    sendLogFrame(0);
+      frameSlider.setMin(0.0);
+      frameSlider.setMax(logfile.getFrameCount());
+      frameSlider.setValue(0.0);
+      sendLogFrame(0);
 
-    frameSlider.valueProperty().addListener(frameChangeListener);
+      frameSlider.valueProperty().addListener(frameChangeListener);
 
-    loadLogfileProperties();
+      loadLogfileProperties();
+    }
   }
 
   public void sendLogFrame(final int frameIdx)
@@ -397,10 +400,17 @@ public class VideoAnalyzerController implements Initializable
     {
       if (logfile != null && logfile.getOriginalFile() != null)
       {
-        Path videoPath = file.getAbsoluteFile().toPath();
-        Path basePath = logfile.getOriginalFile().getParentFile().toPath();
-        Path relativeVideoPath = basePath.relativize(videoPath);
-        propLogfile.setProperty(KEY_VIDEO_FILE, relativeVideoPath.toString());
+        try
+        {
+          Path videoPath = file.getAbsoluteFile().toPath();
+          Path basePath = logfile.getOriginalFile().getParentFile().toPath();
+          Path relativeVideoPath = basePath.relativize(videoPath);
+          propLogfile.setProperty(KEY_VIDEO_FILE, relativeVideoPath.toString());
+        }
+        catch(IllegalArgumentException ex)
+        {
+          propLogfile.setProperty(KEY_VIDEO_FILE, file.getAbsolutePath());
+        }
       } else
       {
         propLogfile.setProperty(KEY_VIDEO_FILE, file.getAbsolutePath());

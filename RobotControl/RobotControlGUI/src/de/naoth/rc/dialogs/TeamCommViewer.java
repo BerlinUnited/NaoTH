@@ -58,6 +58,9 @@ public class TeamCommViewer extends AbstractDialog {
 
     private final Map<String, TeamCommListener.Message> messageMap = Collections.synchronizedMap(new TreeMap<String, TeamCommListener.Message>());
 
+    private final Color magenta = new Color(210, 180, 200);
+    private final Color cyan = new Color(180, 210, 255);
+    
     /**
      * Creates new form TeamCommViewer
      */
@@ -78,6 +81,8 @@ public class TeamCommViewer extends AbstractDialog {
         btListen = new javax.swing.JToggleButton();
         portNumberOwn = new javax.swing.JFormattedTextField();
         portNumberOpponent = new javax.swing.JFormattedTextField();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
 
         robotStatusPanel.setLayout(new java.awt.GridLayout(5, 1, 0, 5));
 
@@ -97,6 +102,10 @@ public class TeamCommViewer extends AbstractDialog {
         portNumberOpponent.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#"))));
         portNumberOpponent.setToolTipText("Opponent team port number");
 
+        jLabel1.setText("Blue:");
+
+        jLabel2.setText("Red:");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -106,11 +115,15 @@ public class TeamCommViewer extends AbstractDialog {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(btListen)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jLabel1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(portNumberOwn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(portNumberOpponent, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 119, Short.MAX_VALUE))
+                        .addGap(0, 62, Short.MAX_VALUE))
                     .addComponent(robotStatusPanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
@@ -121,7 +134,9 @@ public class TeamCommViewer extends AbstractDialog {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btListen)
                     .addComponent(portNumberOwn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(portNumberOpponent, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(portNumberOpponent, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel1)
+                    .addComponent(jLabel2))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(robotStatusPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -157,7 +172,7 @@ public class TeamCommViewer extends AbstractDialog {
                 }
                 
                 listenerOwn.disconnect();
-                listenerOpponent.disconnect();;
+                listenerOpponent.disconnect();
 
                 synchronized (messageMap) {
                     messageMap.clear();
@@ -192,28 +207,24 @@ public class TeamCommViewer extends AbstractDialog {
 
                 DrawingCollection drawings = new DrawingCollection();
 
-                for (Entry<String, TeamCommListener.Message> msg : messageMap.entrySet()) {
-                    final String address = msg.getKey();
-                    final SPLMessage splMessage = msg.getValue().message;
-                    final long timestamp = msg.getValue().timestamp;
-               
+                for (Entry<String, TeamCommListener.Message> msgEntry : messageMap.entrySet()) {
+                    final String address = msgEntry.getKey();
+                    final TeamCommListener.Message msg = msgEntry.getValue();
 
                     SwingUtilities.invokeLater(new Runnable() {
                         @Override
                         public void run() {
                             RobotStatus robotStatus = robotsMap.get(address);
                             if (robotStatus == null) {
-                                robotStatus = new RobotStatus(Plugin.parent.getMessageServer(), address);
-                                robotStatus.setStatus(timestamp, splMessage);
+                                robotStatus = new RobotStatus(Plugin.parent.getMessageServer(), address, msg.isOpponent() ? magenta : cyan);
                                 robotsMap.put(address, robotStatus);
                                 robotStatusPanel.add(robotStatus);
-                            } else {
-                                robotStatus.setStatus(timestamp, splMessage);
                             }
+                            robotStatus.setStatus(msg.timestamp, msg.message);
                         }
                     });
                     
-                    splMessage.draw(drawings, msg.getValue().isOpponent() ? Color.RED : Color.BLUE, msg.getValue().isOpponent());
+                    msg.message.draw(drawings, msg.isOpponent() ? Color.RED : Color.BLUE, msg.isOpponent());
                 }
 
                 TeamCommViewer.Plugin.drawingEventManager.fireDrawingEvent(drawings);
@@ -226,16 +237,18 @@ public class TeamCommViewer extends AbstractDialog {
 
         public class Message {
 
-            public Message(long timestamp, SPLMessage message) {
+            public Message(long timestamp, SPLMessage message, boolean isOpponent) {
                 this.timestamp = timestamp;
                 this.message = message;
+                this.isOpponent = isOpponent;
             }
 
             public final long timestamp;
             public final SPLMessage message;
-
+            private final boolean isOpponent;
+            
             public boolean isOpponent() {
-                return TeamCommListener.this.isOpponent;
+                return isOpponent;
             }
         }
 
@@ -291,7 +304,7 @@ public class TeamCommViewer extends AbstractDialog {
 
                         long timestamp = System.currentTimeMillis();
                         if (address instanceof InetSocketAddress) {
-                            messageMap.put(((InetSocketAddress) address).getHostString(), new Message(timestamp, msg));
+                            messageMap.put(((InetSocketAddress) address).getHostString(), new Message(timestamp, msg, this.isOpponent));
                         }
 
                     } catch (Exception ex) {
@@ -311,6 +324,8 @@ public class TeamCommViewer extends AbstractDialog {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JToggleButton btListen;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JFormattedTextField portNumberOpponent;
     private javax.swing.JFormattedTextField portNumberOwn;
     private javax.swing.JPanel robotStatusPanel;

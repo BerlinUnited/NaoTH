@@ -1619,7 +1619,7 @@ void SimSparkController::get(TeamMessageDataIn& data)
     {
       // TODO: make this faster
       ASSERT(iter->size() < MAX_TEAM_MESSAGE_SIZE); 
-      int len = theBase64Decoder.decode( iter->c_str(), iter->size(), theTeamMessageReceiveBuffer);
+      int len = theBase64Decoder.decode( iter->c_str(), static_cast<int>(iter->size()), theTeamMessageReceiveBuffer);
       
       data.data.push_back( std::string(theTeamMessageReceiveBuffer, len) );
     }

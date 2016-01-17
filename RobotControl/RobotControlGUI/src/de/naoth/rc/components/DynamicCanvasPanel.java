@@ -183,7 +183,9 @@ public class DynamicCanvasPanel extends javax.swing.JPanel
     synchronized(drawingList)
     {
         for (Drawable object : drawingList) {
-          object.draw(g2d);
+          if(object != null) {
+              object.draw(g2d);
+          }
         }
     }
     
