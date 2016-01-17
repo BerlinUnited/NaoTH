@@ -5,7 +5,7 @@ option decide_role
   common decision 
   {
     /** Goalie */
-    if(game.player_number == 1) //&& team.members_alive_count >= 0) //become field player, when all others are "dead"
+    if(game.player_number == 1 && team.members_alive_count > 1) //become field player, when all others are "dead"
     {
       goto goalie;
     }
