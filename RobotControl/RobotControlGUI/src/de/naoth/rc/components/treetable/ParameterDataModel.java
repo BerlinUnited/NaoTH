@@ -105,7 +105,7 @@ public class ParameterDataModel extends AbstractTreeTableModel
         
         switch (column) {
         case 1:
-            ((ParameterDataNode) node).value = aValue;
+            ((ParameterDataNode) node).setValue(aValue);
             break;
         default:
             break;
@@ -115,7 +115,7 @@ public class ParameterDataModel extends AbstractTreeTableModel
     
     public static interface ValueChangedListener
     {
-        abstract void valueChanged(double value);
+        abstract void valueChanged(Object value);
     }
     
     static public class ParameterDataNode 
@@ -124,19 +124,18 @@ public class ParameterDataModel extends AbstractTreeTableModel
         
         private final String name;
         private final List<ParameterDataNode> children;
-        public ValueChangedListener enabledListener;
+        public ValueChangedListener listener;
  
         public ParameterDataNode(String name) {
             this.name = name;
             this.children = new ArrayList<ParameterDataNode>();
         }
         
-        public void setValue(double v) {
-            value = new Double(v);
-        }
-        
-        public void setValue(boolean v) {
-            value = new Boolean(v);
+        public void setValue(Object v) {
+            value = v;
+            if(listener != null) {
+                listener.valueChanged(value);
+            }
         }
         
         public String getName() {

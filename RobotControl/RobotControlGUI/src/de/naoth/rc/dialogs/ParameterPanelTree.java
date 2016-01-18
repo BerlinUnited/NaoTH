@@ -6,7 +6,6 @@
 package de.naoth.rc.dialogs;
 
 import de.naoth.rc.RobotControl;
-import de.naoth.rc.components.treetable.ModifyDataModel;
 import de.naoth.rc.components.treetable.ParameterDataModel;
 import de.naoth.rc.components.treetable.TreeTable;
 import de.naoth.rc.core.dialog.AbstractDialog;
@@ -15,8 +14,6 @@ import de.naoth.rc.core.manager.ObjectListener;
 import de.naoth.rc.core.manager.SwingCommandExecutor;
 import de.naoth.rc.server.Command;
 import java.util.ArrayList;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JScrollPane;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 
@@ -42,8 +39,8 @@ public class ParameterPanelTree extends AbstractDialog
   private int updateSources = 0;
   private final int EXPECTED_SOURCES = 2;
   
-  private ParameterDataModel treeTableModel = new ParameterDataModel();
-  private TreeTable myTreeTable = new TreeTable(treeTableModel);
+  private final ParameterDataModel treeTableModel = new ParameterDataModel();
+  private final TreeTable myTreeTable = new TreeTable(treeTableModel);
   
   public ParameterPanelTree()
   {
@@ -71,37 +68,6 @@ public class ParameterPanelTree extends AbstractDialog
     */
   }//end constructor
 
-    private void updateParameterLists() 
-    {
-        updateSources++;
-
-        if (updateSources == EXPECTED_SOURCES) {
-            
-            ParameterListItem selectedList = null;
-            if (cbParameterId.getSelectedItem() != null) {
-                selectedList = (ParameterListItem) cbParameterId.getSelectedItem();
-            }
-            
-            DefaultComboBoxModel boxModel = new DefaultComboBoxModel();
-            for (ParameterListItem i : parameterLists) {
-                boxModel.addElement(i);
-            }
-            
-            this.cbParameterId.setModel(boxModel);
-            
-            if(selectedList != null) {
-                this.cbParameterId.setSelectedItem(selectedList);
-            } else {
-                this.cbParameterId.setSelectedIndex(0);
-            }
-            
-            parameterLists.clear();
-            updateSources = 0;
-            
-            //System.out.println(selectedList);
-        }
-    }
-
   /** This method is called from within the constructor to
    * initialize the form.
    * WARNING: Do NOT modify this code. The content of this method is
@@ -113,9 +79,6 @@ public class ParameterPanelTree extends AbstractDialog
 
         jToolBar1 = new javax.swing.JToolBar();
         jToggleButtonList = new javax.swing.JToggleButton();
-        cbParameterId = new javax.swing.JComboBox();
-        jToggleButtonRefresh = new javax.swing.JToggleButton();
-        jButtonSend = new javax.swing.JButton();
         jScrollPane = new javax.swing.JScrollPane();
 
         jToolBar1.setFloatable(false);
@@ -132,35 +95,6 @@ public class ParameterPanelTree extends AbstractDialog
         });
         jToolBar1.add(jToggleButtonList);
 
-        cbParameterId.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cbParameterIdActionPerformed(evt);
-            }
-        });
-        jToolBar1.add(cbParameterId);
-
-        jToggleButtonRefresh.setText("Get");
-        jToggleButtonRefresh.setFocusable(false);
-        jToggleButtonRefresh.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jToggleButtonRefresh.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jToggleButtonRefresh.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jToggleButtonRefreshActionPerformed(evt);
-            }
-        });
-        jToolBar1.add(jToggleButtonRefresh);
-
-        jButtonSend.setText("Set");
-        jButtonSend.setFocusable(false);
-        jButtonSend.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jButtonSend.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jButtonSend.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonSendActionPerformed(evt);
-            }
-        });
-        jToolBar1.add(jButtonSend);
-
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -176,26 +110,6 @@ public class ParameterPanelTree extends AbstractDialog
                 .addComponent(jScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 287, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
-
-private void jToggleButtonRefreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButtonRefreshActionPerformed
-  if (jToggleButtonRefresh.isSelected())
-  {
-    if (cbParameterId.getSelectedItem() != null) {
-        getParameterList(((ParameterListItem) cbParameterId.getSelectedItem()));
-    }
-  }
-}//GEN-LAST:event_jToggleButtonRefreshActionPerformed
-
-private void jButtonSendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSendActionPerformed
-  sendParameters();
-}//GEN-LAST:event_jButtonSendActionPerformed
-
-private void cbParameterIdActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_cbParameterIdActionPerformed
-{//GEN-HEADEREND:event_cbParameterIdActionPerformed
-    if (cbParameterId.getSelectedItem() != null) {
-        getParameterList(((ParameterListItem) cbParameterId.getSelectedItem()));
-    }
-}//GEN-LAST:event_cbParameterIdActionPerformed
 
 private void jToggleButtonListActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jToggleButtonListActionPerformed
 {//GEN-HEADEREND:event_jToggleButtonListActionPerformed
@@ -250,31 +164,33 @@ private void jToggleButtonListActionPerformed(java.awt.event.ActionEvent evt)//G
     @Override
     public void newObjectReceived(byte[] object)
     {
-        //treeTableModel = new ParameterDataModel(this.name);
-        //myTreeTable = new TreeTable(treeTableModel);
-        
         String str = new String(object);
         String[] params = str.split("\\n");
         
         for(String p: params) {
-            String[] s = p.split("=");
+            final String[] s = p.split("=");
             ParameterDataModel.ParameterDataNode n = treeTableModel.insertPath(this.name + "." + s[0], "\\.");
             
             try {
-                n.setValue(Double.parseDouble(s[1]));
+                n.setValue(new Double(Double.parseDouble(s[1])));
             } catch (NumberFormatException ex) {
                 try {
-                    n.setValue(Boolean.parseBoolean(s[1]));
+                    n.setValue(new Boolean(Boolean.parseBoolean(s[1])));
                 } catch (NumberFormatException bex) 
                 {
                 }
             }
+            
+            n.listener = new ParameterDataModel.ValueChangedListener() {
+                @Override
+                public void valueChanged(Object value) {
+                    System.out.println(name + "." + s[0] + " = " + value);
+                }
+            };
         }
-        //jScrollPane.setViewportView(myTreeTable);
+        
         myTreeTable.revalidate();
         myTreeTable.repaint();
-        
-        jToggleButtonRefresh.setSelected(false);
     }
     
     @Override
@@ -322,7 +238,6 @@ private void jToggleButtonListActionPerformed(java.awt.event.ActionEvent evt)//G
         }
         
         jToggleButtonList.setSelected(false);
-        //updateParameterLists();
     }
     
     @Override
@@ -332,7 +247,7 @@ private void jToggleButtonListActionPerformed(java.awt.event.ActionEvent evt)//G
     }
   }
 
-
+/*
 private void sendParameters()
 {
   if (Plugin.parent.checkConnected())
@@ -361,21 +276,10 @@ private void sendParameters()
     }//end for
     
     Plugin.commandExecutor.executeCommand(new ParameterListHandlerSet(), cmd);
-    
-    // update everything
-    //listParameters();
-    
-    // this is better, but less robust
-    if (cbParameterId.getSelectedItem() != null) {
-        getParameterList(((ParameterListItem) cbParameterId.getSelectedItem()));
-    }
-  }
-  else
-  {
-    jToggleButtonRefresh.setSelected(false);
   }
 }
-
+*/
+  
 private void listParameters()
 {
     if (Plugin.parent.checkConnected())
@@ -396,11 +300,7 @@ private void listParameters()
       System.out.println(item.getCommandGET());
       Plugin.commandExecutor.executeCommand(new ParameterListHandlerGet(item.name), item.getCommandGET());
     }
-    else
-    {
-      jToggleButtonRefresh.setSelected(false);
-    }
-  }//end refresh
+  }
 
   @Override
   public void dispose()
@@ -409,11 +309,8 @@ private void listParameters()
   }
   
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JComboBox cbParameterId;
-    private javax.swing.JButton jButtonSend;
     private javax.swing.JScrollPane jScrollPane;
     private javax.swing.JToggleButton jToggleButtonList;
-    private javax.swing.JToggleButton jToggleButtonRefresh;
     private javax.swing.JToolBar jToolBar1;
     // End of variables declaration//GEN-END:variables
 }
