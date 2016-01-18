@@ -18,6 +18,10 @@ public class ParameterDataModel extends AbstractTreeTableModel
     public ParameterDataModel() {
         super(new ParameterDataNode("Parameter"));
     }
+    
+    public ParameterDataModel(String rootName) {
+        super(new ParameterDataNode(rootName));
+    }
  
     @Override
     public Object getChild(Object parent, int index) {

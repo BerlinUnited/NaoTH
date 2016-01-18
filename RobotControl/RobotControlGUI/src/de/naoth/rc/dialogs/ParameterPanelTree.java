@@ -98,7 +98,7 @@ public class ParameterPanelTree extends AbstractDialog
             parameterLists.clear();
             updateSources = 0;
             
-            System.out.println(selectedList);
+            //System.out.println(selectedList);
         }
     }
 
@@ -180,7 +180,9 @@ public class ParameterPanelTree extends AbstractDialog
 private void jToggleButtonRefreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButtonRefreshActionPerformed
   if (jToggleButtonRefresh.isSelected())
   {
-    getParameterList();
+    if (cbParameterId.getSelectedItem() != null) {
+        getParameterList(((ParameterListItem) cbParameterId.getSelectedItem()));
+    }
   }
 }//GEN-LAST:event_jToggleButtonRefreshActionPerformed
 
@@ -190,7 +192,9 @@ private void jButtonSendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
 
 private void cbParameterIdActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_cbParameterIdActionPerformed
 {//GEN-HEADEREND:event_cbParameterIdActionPerformed
-    getParameterList();
+    if (cbParameterId.getSelectedItem() != null) {
+        getParameterList(((ParameterListItem) cbParameterId.getSelectedItem()));
+    }
 }//GEN-LAST:event_cbParameterIdActionPerformed
 
 private void jToggleButtonListActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jToggleButtonListActionPerformed
@@ -237,18 +241,24 @@ private void jToggleButtonListActionPerformed(java.awt.event.ActionEvent evt)//G
 
   class ParameterListHandlerGet implements ObjectListener<byte[]>
   {
+    private final String name;
+    
+    public ParameterListHandlerGet(String name) {
+        this.name = name;
+    }
+      
     @Override
     public void newObjectReceived(byte[] object)
     {
-        treeTableModel = new ParameterDataModel();
-        myTreeTable = new TreeTable(treeTableModel);
+        //treeTableModel = new ParameterDataModel(this.name);
+        //myTreeTable = new TreeTable(treeTableModel);
         
         String str = new String(object);
         String[] params = str.split("\\n");
         
         for(String p: params) {
             String[] s = p.split("=");
-            ParameterDataModel.ParameterDataNode n = treeTableModel.insertPath(s[0], "\\.");
+            ParameterDataModel.ParameterDataNode n = treeTableModel.insertPath(this.name + "." + s[0], "\\.");
             
             try {
                 n.setValue(Double.parseDouble(s[1]));
@@ -260,7 +270,9 @@ private void jToggleButtonListActionPerformed(java.awt.event.ActionEvent evt)//G
                 }
             }
         }
-        jScrollPane.setViewportView(myTreeTable);
+        //jScrollPane.setViewportView(myTreeTable);
+        myTreeTable.revalidate();
+        myTreeTable.repaint();
         
         jToggleButtonRefresh.setSelected(false);
     }
@@ -303,11 +315,14 @@ private void jToggleButtonListActionPerformed(java.awt.event.ActionEvent evt)//G
         
         String[] parameterListNames = strResult.split("\n");
         for (String name : parameterListNames) {
-          parameterLists.add(new ParameterListItem(owner, name));
+          ParameterListItem item = new ParameterListItem(owner, name);
+          parameterLists.add(item);
+          
+          getParameterList(item);
         }
         
         jToggleButtonList.setSelected(false);
-        updateParameterLists();
+        //updateParameterLists();
     }
     
     @Override
@@ -351,7 +366,9 @@ private void sendParameters()
     //listParameters();
     
     // this is better, but less robust
-    getParameterList();
+    if (cbParameterId.getSelectedItem() != null) {
+        getParameterList(((ParameterListItem) cbParameterId.getSelectedItem()));
+    }
   }
   else
   {
@@ -372,16 +389,12 @@ private void listParameters()
     }
 }//end listParameters
 
-  private void getParameterList()
+  private void getParameterList(ParameterListItem item)
   {
-    System.out.println("test");
     if (Plugin.parent.checkConnected())
     {
-      if (cbParameterId.getSelectedItem() != null)
-      {
-        Command cmd = ((ParameterListItem) cbParameterId.getSelectedItem()).getCommandGET();
-        Plugin.commandExecutor.executeCommand(new ParameterListHandlerGet(), cmd);
-      }
+      System.out.println(item.getCommandGET());
+      Plugin.commandExecutor.executeCommand(new ParameterListHandlerGet(item.name), item.getCommandGET());
     }
     else
     {
