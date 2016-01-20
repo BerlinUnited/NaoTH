@@ -9,10 +9,7 @@ import java.util.List;
  
 public class ParameterDataModel extends AbstractTreeTableModel 
 {
-    // Spalten Name.
     static protected String[] columnNames = { "Name", "Value" };
- 
-    // Spalten Typen.
     static protected Class<?>[] columnTypes = { TreeTableModel.class, Object.class };
  
     public ParameterDataModel() {
@@ -58,24 +55,24 @@ public class ParameterDataModel extends AbstractTreeTableModel
         String[] nodes = path.split(separator);
         
         ParameterDataNode current = (ParameterDataNode)getRoot();
-        for(int i = 0; i < nodes.length; i++)
+        for(String s: nodes)
         {
             ParameterDataNode matchingNode = null;
             List<ParameterDataNode> childList = current.getChildren();
             
             for(ParameterDataNode child: childList)
             {
-                if(nodes[i].equals(child.getName()))
+                if(s.equals(child.getName()))
                 {
                     matchingNode = child;
                     break;
                 }
             }
 
+            // add a new one
             if(matchingNode == null)
             {
-                // add a new one
-                matchingNode = new ParameterDataNode(nodes[i]);
+                matchingNode = new ParameterDataNode(s);
                 childList.add(matchingNode);
             }
             current = matchingNode;
@@ -84,34 +81,31 @@ public class ParameterDataModel extends AbstractTreeTableModel
         return current;
     }//end insertPath
     
+    Object bb = null;
     
     @Override
     public Object getValueAt(Object node, int column) {
         switch (column) {
-        case 0:
-            return ((ParameterDataNode) node).getName();
-        case 1:
-            return ((ParameterDataNode) node).value;
-        default:
-            break;
+            case 0: return ((ParameterDataNode) node).getName();
+            case 1: return ((ParameterDataNode) node).value;
+            default: break;
         }
         return null;
     }
 
     @Override
     public void setValueAt(Object aValue, Object node, int column) {
-        if(aValue == null)
+        if(aValue == null) {
             return;
+        }
         
         switch (column) {
-        case 1:
-            ((ParameterDataNode) node).setValue(aValue);
+            case 1: ((ParameterDataNode) node).setValue(aValue);
             break;
         default:
             break;
         }
     }
-    
     
     public static interface ValueChangedListener
     {
@@ -123,12 +117,11 @@ public class ParameterDataModel extends AbstractTreeTableModel
         public Object value = null;
         
         private final String name;
-        private final List<ParameterDataNode> children;
+        private final List<ParameterDataNode> children = new ArrayList<ParameterDataNode>();
         public ValueChangedListener listener;
  
         public ParameterDataNode(String name) {
             this.name = name;
-            this.children = new ArrayList<ParameterDataNode>();
         }
         
         public void setValue(Object v) {
@@ -141,7 +134,7 @@ public class ParameterDataModel extends AbstractTreeTableModel
         public String getName() {
             return name;
         }
-
+  
         public List<ParameterDataNode> getChildren() {
             return children;
         }
