@@ -42,9 +42,7 @@ void HeadMotionEngine::execute()
     case HeadMotionRequest::look_at_point: lookAtPoint(); break;
     
     case HeadMotionRequest::look_at_world_point:
-    {
       lookAtWorldPoint(getHeadMotionRequest().targetPointInTheWorld);
-    }
       break;
 
     case HeadMotionRequest::look_at_point_on_the_ground: 
@@ -273,8 +271,8 @@ Vector3d HeadMotionEngine::g(double yaw, double pitch, const Vector3d& pointInWo
         getCameraInfo().getOpticalCenterX(),
         getCameraInfo().getOpticalCenterY());
 
-  Vector3d direction = CameraGeometry::imagePixelToCameraCoords(
-    cameraMatrix, 
+  // projectionPointInImage --> head coordinates
+  Vector3d direction = cameraMatrix.rotation * CameraGeometry::imagePixelToCameraCoords(
     getCameraInfo(),
     projectionPointInImage.x, 
     projectionPointInImage.y);

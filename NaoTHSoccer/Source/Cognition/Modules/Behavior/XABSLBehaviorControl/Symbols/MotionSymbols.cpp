@@ -21,7 +21,7 @@ void MotionSymbols::registerSymbols(xabsl::Engine& engine)
     string str("head.motion_type.");
     str.append(HeadMotionRequest::getName((HeadMotionRequest::HeadMotionID)i));
     engine.registerEnumElement("head.motion_type", str.c_str(), i);
-  }//end for
+  }
 
   // head motion request
   engine.registerEnumeratedOutputSymbol("head.motion_type", "head.motion_type", &setHeadMotionRequest, &getHeadMotionRequestId);
@@ -60,7 +60,7 @@ void MotionSymbols::registerSymbols(xabsl::Engine& engine)
     string str("arm.type.");
     str.append(ArmMotionRequest::getName((ArmMotionRequest::ArmMotionID)i));
     engine.registerEnumElement("arm.type", str.c_str(), i);
-  }//end for
+  }
 
   engine.registerEnumeratedOutputSymbol("arm.type", "arm.type", &setArmRequestId, &getArmRequestId);
 
@@ -71,7 +71,7 @@ void MotionSymbols::registerSymbols(xabsl::Engine& engine)
     string str("motion.type.");
     str.append(motion::getName((motion::MotionID)i));
     engine.registerEnumElement("motion.type", str.c_str(), i);
-  }//end for
+  }
 
   // motion request
   engine.registerEnumeratedOutputSymbol("motion.type", "motion.type", &setMotionRequestId, &getMotionRequestId);
@@ -88,7 +88,7 @@ void MotionSymbols::registerSymbols(xabsl::Engine& engine)
     string str("motion.walk.style.");
     str.append(getWalkStyleName((WalkStyle)i));
     engine.registerEnumElement("motion.walk.style", str.c_str(), i);
-  }//end for
+  }
   engine.registerEnumeratedOutputSymbol("motion.walk.style", "motion.walk.style", (int*)&walkStyle);
 
   // walk offset
@@ -102,7 +102,7 @@ void MotionSymbols::registerSymbols(xabsl::Engine& engine)
     string str("motion.walk.coordinate.");
     str.append(WalkRequest::getCoordinateName((WalkRequest::Coordinate)i));
     engine.registerEnumElement("motion.walk.coordinate", str.c_str(), i);
-  }//end for
+  }
   engine.registerEnumeratedOutputSymbol("motion.walk.coordinate", "motion.walk.coordinate", (int*)&getMotionRequest().walkRequest.coordinate);
   engine.registerBooleanOutputSymbol("motion.walk.stop_with_stand",&getMotionRequest().standardStand);
   engine.registerDecimalOutputSymbol("motion.standHeight",&getMotionRequest().standHeight);
@@ -113,7 +113,7 @@ void MotionSymbols::registerSymbols(xabsl::Engine& engine)
     string str("motion.walk.step_control.foot.");
     str.append(getStepControlFootName((StepControlFoot)i));
     engine.registerEnumElement("motion.walk.step_control.foot", str.c_str(), i);
-  }//end for
+  }
   engine.registerEnumeratedOutputSymbol("motion.walk.step_control.foot", "motion.walk.step_control.foot", (int*)&stepControlFoot);
   engine.registerDecimalOutputSymbol("motion.walk.step_control.target.x", &stepControlRequestTarget.translation.x);
   engine.registerDecimalOutputSymbol("motion.walk.step_control.target.y", &stepControlRequestTarget.translation.y);
