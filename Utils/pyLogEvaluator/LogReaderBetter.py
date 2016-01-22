@@ -158,10 +158,10 @@ class LogReader:
     return data
     
   def readLong(self):
-    return struct.unpack("l", self.readBytes(4))[0]
+    return struct.unpack("=l", self.readBytes(4))[0]
     
   def readChar(self):
-    return struct.unpack("c", self.readBytes(1))[0]
+    return struct.unpack("=c", self.readBytes(1))[0]
     
   # read a '\0' terminated string
   def readString(self):
