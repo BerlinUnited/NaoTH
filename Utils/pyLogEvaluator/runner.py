@@ -1,14 +1,14 @@
 import sys
 import mainscript
 
-part1Cache = None
+cache = None
 if __name__ == "__main__":
     while True:
-        if not part1Cache:
-            part1Cache = mainscript.part1()
+        if not cache:
+          cache = mainscript.init()
         
         try:
-          mainscript.part2(part1Cache)
+          mainscript.run(cache)
         except Exception as ex:
           print ex
         

@@ -28,19 +28,17 @@ JointID["RAnkleRoll"] = 20
 JointID["LAnkleRoll"] = 21
 
 
-def behavior(frame):
+def frameFilter(frame):
   m = None
   try:
     
     if "BehaviorStateComplete" in frame.messages:
-      #print frame["BehaviorStateComplete"].decimal
       m = frame["BehaviorStateComplete"]
     else:
       m = frame["BehaviorStateSparse"]
 
-    #return [m["robot_pose.x"], m["robot_pose.x"], m["fall_down_state"]]
-    
     return [frame["FrameInfo"].time/(1000.0*60), 
+            # older logs don't have body status
             0,#frame["BodyStatus"].currentSum[JointID["RKneePitch"]], 
             0,#frame["BodyStatus"].currentSum[JointID["LKneePitch"]],
             0,#frame["BodyStatus"].currentSum[JointID["RAnklePitch"]], 
@@ -56,14 +54,12 @@ def behavior(frame):
   except KeyError:
     raise StopIteration
 
-def part1():
+def init():
+    fileName = "./game.log"
     parser = BehaviorParseTest.BehaviorParser()
-    #fileName = "./game.log"
-    #fileName = "D:\\RoboCup\\behavior.log\\rc14-game-htwk-qf\\2-half\\6026\\game.log"
-    #fileName = "F:\\151004-1921-Nao6035\\game.log"
-    fileName = "F:\\151004-1919-Nao6029\\game.log"
-    fileName = "F:\\091201-0819-Nao6022\\game.log"
     log = BehaviorParseTest.LogReader(fileName, parser)
+    
+    # enforce the whole log being parsed (this is necessary for older game logs)
     for frame in log:
       if "BehaviorStateComplete" in frame.messages:
         m = frame["BehaviorStateComplete"]
@@ -74,63 +70,34 @@ def part1():
     return log
     
 
-def part2(log):
+def run(log):
     reload(BehaviorParseTest)
     
+    # we want only the frames which contain BehaviorState*
     vlog = filter(lambda f: "BehaviorStateComplete" in f.messages or "BehaviorStateSparse" in f.messages, log)
-    at = map(behavior, vlog)
     
-    a = np.array(at)
-    #da = np.diff(a, axis=1)
+    # apply the filter
+    a = map(frameFilter, vlog)
     
-    stand = [x for x in a if x[5] == 4]
-    walk = [x for x in a if x[5] == 5]
+    # make an numpy array
+    data = np.array(a)
 
-    r = []
-    c = a[0][5]
-    energy = 0
-    f = 0
-    for x in a:
-      if c != x[5]:
-        if x[5] == 5:
-          energy = x[1]
-          f = 1
-        elif c == 5:
-          r.append((x[1]-energy)/f)
-        c = x[5]
-      f = f+1
-        
-    #pyplot.plot(r, label="RKneePitch-stand")
     
+    stand = [x for x in data if x[5] == 4]
+    walk = [x for x in data if x[5] == 5]
+
     d_stand = zip(*stand)
     d_walk = zip(*walk)
+    
+    pyplot.plot(d_stand[0], d_stand[7], ".", label="RKneePitch-stand")
+    pyplot.plot(d_walk[0], d_walk[7], ".", label="RKneePitch-walk")
 
-    bb = zip(*a)
-    pyplot.plot(bb[0], bb[8], label="temperatur right")
-    pyplot.plot(bb[0], bb[7], label="temperatur left")
-    pyplot.plot(bb[0], bb[10], label="game")
-    pyplot.plot(bb[0], bb[5], label="motion")
+    bb = zip(*data)
+    #pyplot.plot(bb[0], bb[8], label="temperatur right")
+    #pyplot.plot(bb[0], bb[7], label="temperatur left")
+    #pyplot.plot(bb[0], bb[10], label="game")
+    #pyplot.plot(bb[0], bb[5], label="motion")
     
-    count = 0
-    s = []
-    for x in bb[9]:
-      if x > 0:
-        count = count + 1
-      else:
-        if count > 0:
-          s.append(count/30)
-        count = 0
-    
-    #pyplot.plot(s, ".", label="striker")
-    
-    #pyplot.plot(bb[0], bb[1]/max(bb[1]), label="current RKneePitch")
-
-    #pyplot.plot(d_stand[0], d_stand[1], ".", label="RKneePitch-stand")
-    #pyplot.plot(d_walk[0], d_walk[1], ".", label="RKneePitch-walk")
-    
-    #pyplot.plot(d_stand[0], d_stand[2], label="LKneePitch")
-    #pyplot.plot(d_stand[0], d_stand[3], label="RAnklePitch")
-    #pyplot.plot(d_stand[0], d_stand[4], label="LAnklePitch")
     pyplot.legend(loc='upper left')
     pyplot.grid()
     pyplot.show()
