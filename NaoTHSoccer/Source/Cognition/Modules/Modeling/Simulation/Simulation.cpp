@@ -77,8 +77,8 @@ void Simulation::execute()
   DEBUG_REQUEST("Simulation:ActionTarget",
     for(size_t i=0; i<action_local.size(); i++)
     {
-      std::vector<CategorizedBallPosition>::const_iterator ballPosition = actionsConsequences[i].begin();
-      for(; ballPosition != actionsConsequences[i].end(); ++ballPosition)
+      std::vector<CategorizedBallPosition>::const_iterator ballPosition = actionsConsequences[i].positions().begin();
+      for(; ballPosition != actionsConsequences[i].positions().end(); ++ballPosition)
       {
         if(ballPosition->cat() == INFIELD)
         {
@@ -125,12 +125,13 @@ void Simulation::execute()
 
 void Simulation::simulateConsequences(
   const Action& action,
-  std::vector<CategorizedBallPosition>& categorizedBallPositions
+  ActionResults& categorizedBallPositions
   ) const
 { 
   // just as a safety measure
-  categorizedBallPositions.clear();
-  categorizedBallPositions.reserve(static_cast<int>(theParameters.numParticles));
+  //categorizedBallPositions.clear();
+  //categorizedBallPositions.reserve(static_cast<int>(theParameters.numParticles));
+  categorizedBallPositions.reset();
 
   // calculate the own goal line
   Vector2d ownGoalDir = (getFieldInfo().ownGoalPostRight - getFieldInfo().ownGoalPostLeft).normalize();
@@ -274,13 +275,87 @@ void Simulation::simulateConsequences(
     }
 
     // save the calculated end position and category, i.e., the consequence
-    CategorizedBallPosition categorizedBallPosition = CategorizedBallPosition(getRobotPose() / globalBallEndPosition, category);
-    categorizedBallPositions.push_back(categorizedBallPosition);
+    //CategorizedBallPosition categorizedBallPosition = CategorizedBallPosition(getRobotPose() / globalBallEndPosition, category);
+    categorizedBallPositions.add(getRobotPose() / globalBallEndPosition, category);
   }
 }
 
+size_t Simulation::decide_smart(const std::vector<ActionResults>& actionsConsequences ) const
+{
+  std::vector<size_t> bestActions;
+
+  for(size_t i=0; i<action_local.size(); i++)
+  {
+    const ActionResults& results = actionsConsequences[i];
+
+    // if an own-goal is detected, ignore the action
+    if(results.categorie(OWNGOAL) > 0) {
+      continue;
+    }
+
+    // ignore actions with too high chance of kicking out
+    double numberOfInfieldPos = results.categorie(INFIELD) + results.categorie(OPPGOAL);
+    double score = numberOfInfieldPos / (double)(results.categorie(NUMBER_OF_BallPositionCategory));
+    if(score <= max(0.0, theParameters.good_threshold_percentage)) {
+      continue;
+    }
+    
+    // there is no other action to compare yet
+    if(bestActions.empty()) {
+      bestActions.push_back(i);
+      continue;
+    }
+
+    // the actio with the highest chnce of scoring the goal is the best
+    if(actionsConsequences[bestActions.front()].categorie(OPPGOAL) < results.categorie(OPPGOAL)) {
+      bestActions.clear();
+      bestActions.push_back(i);
+      continue;
+    }
+
+    if(actionsConsequences[bestActions.front()].categorie(OPPGOAL) == results.categorie(OPPGOAL)) {
+      bestActions.push_back(i);
+      continue;
+    }
+  }
+
+  // there is a clear decision
+  if(bestActions.empty()) {
+    return 0;
+  } else if(bestActions.size() == 1) {
+    return bestActions.front();
+  }
+
+  // choose the best action by potential field
+  size_t best_action = 0;
+  double bestValue = std::numeric_limits<double>::max(); // assuming potential is [0.0, inf]
+  
+  for(std::vector<size_t>::const_iterator it = bestActions.begin(); it != bestActions.end(); ++it)
+  {
+    const ActionResults& results = actionsConsequences[*it];
+
+    double sumPotential = 0.0;
+    for(ActionResults::Positions::const_iterator p = results.positions().begin(); p != results.positions().end(); ++p)
+    {
+      if(p->cat() == INFIELD || p->cat() == OPPGOAL) {
+        sumPotential += evaluateAction(getRobotPose() * p->pos());
+      }
+    }
+
+    sumPotential /= (double)(results.categorie(INFIELD) + results.categorie(OPPGOAL));
+
+    if(sumPotential < bestValue) {
+      best_action = *it;
+      bestValue = sumPotential;
+    }
+  }
+
+  return best_action;
+}
+
+
 size_t Simulation::decide(
-  const std::vector<std::vector<CategorizedBallPosition> >& actionsConsequences
+  const std::vector<ActionResults>& actionsConsequences
 ) const
 {
   // TAKE CARE: This assumes that none is the first action!
@@ -294,7 +369,7 @@ size_t Simulation::decide(
   {
     int good = 0;
     bool ownGoal = false;
-    for(std::vector<CategorizedBallPosition>::const_iterator ballPosition = actionsConsequences[i].begin(); ballPosition != actionsConsequences[i].end(); ballPosition++)
+    for(ActionResults::Positions::const_iterator ballPosition = actionsConsequences[i].positions().begin(); ballPosition != actionsConsequences[i].positions().end(); ballPosition++)
     {
       // this only checks for good actions, all other actions like OWNOUT or COLLISION
       // are implicitly assumed to be bad as good is not incremented
@@ -314,7 +389,7 @@ size_t Simulation::decide(
     // check goal percentage, percentage needs to be exposed
     // the static_cast is messy but I don't know how to get around it
     //goal_percentage = 0.85
-    if(good/static_cast<double>(actionsConsequences[i].size()) > theParameters.good_threshold_percentage)
+    if(good/static_cast<double>(actionsConsequences[i].positions().size()) > theParameters.good_threshold_percentage)
     {
       goodActions.push_back(i);
     }
@@ -328,7 +403,7 @@ size_t Simulation::decide(
     for(std::vector<size_t>::iterator it = goodActions.begin(); it != goodActions.end(); it++)
     {
       int goals = 0;
-      for(std::vector<CategorizedBallPosition>::const_iterator ballPosition = actionsConsequences[*it].begin(); ballPosition != actionsConsequences[*it].end(); ballPosition++)
+      for(std::vector<CategorizedBallPosition>::const_iterator ballPosition = actionsConsequences[*it].positions().begin(); ballPosition != actionsConsequences[*it].positions().end(); ballPosition++)
       {
         if(ballPosition->cat() == OPPGOAL)
         {
@@ -364,18 +439,18 @@ size_t Simulation::decide(
       if(bestActions.size() > 1)
       {
         // find the action with the most goals and the best potential field
-        // THIS IS STILL WRONG BECAUSE BALLS ARE NOT KEPT IN THE GOAL
+        // THIS IS STILL WRONG BECAUSE BALLS ARE NOT KEPT IN THE GOAL <-- what does it mean? (Heinrich)
         best_action = bestActions[0];
         double bestValue = std::numeric_limits<double>::max(); // assuming potential is [0.0, inf]
         for(std::vector<size_t>::iterator it = bestActions.begin(); it != bestActions.end(); it++)
         {
           double sumPotential = 0.0;
-          for(std::vector<CategorizedBallPosition>::const_iterator ballPosition = actionsConsequences[*it].begin(); ballPosition != actionsConsequences[*it].end(); ballPosition++)
+          for(std::vector<CategorizedBallPosition>::const_iterator ballPosition = actionsConsequences[*it].positions().begin(); ballPosition != actionsConsequences[*it].positions().end(); ballPosition++)
           {
             sumPotential += evaluateAction(getRobotPose() * ballPosition->pos());
           }
           // again a static cast because of size_t as I don't know a better solution
-          sumPotential /= static_cast<double>(actionsConsequences[*it].size());
+          sumPotential /= static_cast<double>(actionsConsequences[*it].positions().size());
           if(sumPotential < bestValue)
           {
             best_action = *it;
@@ -392,12 +467,12 @@ size_t Simulation::decide(
       for(std::vector<size_t>::iterator it = goodActions.begin(); it != goodActions.end(); it++)
       {
         double sumPotential = 0.0;
-        for(std::vector<CategorizedBallPosition>::const_iterator ballPosition = actionsConsequences[*it].begin(); ballPosition != actionsConsequences[*it].end(); ballPosition++)
+        for(std::vector<CategorizedBallPosition>::const_iterator ballPosition = actionsConsequences[*it].positions().begin(); ballPosition != actionsConsequences[*it].positions().end(); ballPosition++)
         {
           sumPotential += evaluateAction(getRobotPose() * ballPosition->pos());
         }
         // again a static cast because of size_t as I don't know a better solution
-        sumPotential /= static_cast<double>(actionsConsequences[*it].size());
+        sumPotential /= static_cast<double>(actionsConsequences[*it].positions().size());
         if(sumPotential < bestValue)
         {
           best_action = *it;

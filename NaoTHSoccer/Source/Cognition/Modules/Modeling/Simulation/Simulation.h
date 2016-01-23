@@ -88,18 +88,22 @@ public:
       PARAMETER_REGISTER(sidekick_right.speed_std) = 150;
       PARAMETER_REGISTER(sidekick_right.angle) = -85;
       PARAMETER_REGISTER(sidekick_right.angle_std) = 15;
+
       PARAMETER_REGISTER(sidekick_left.speed) = 750;
       PARAMETER_REGISTER(sidekick_left.speed_std) = 150;
       PARAMETER_REGISTER(sidekick_left.angle) = 85;
       PARAMETER_REGISTER(sidekick_left.angle_std) = 15;
+
       PARAMETER_REGISTER(kick_short.speed) = 780;
       PARAMETER_REGISTER(kick_short.speed_std) = 150;
       PARAMETER_REGISTER(kick_short.angle) = 0.0;
       PARAMETER_REGISTER(kick_short.angle_std) = 10;
+
       PARAMETER_REGISTER(kick_long.speed) = 1020;
       PARAMETER_REGISTER(kick_long.speed_std) = 150;
       PARAMETER_REGISTER(kick_long.angle) = 0.0;
       PARAMETER_REGISTER(kick_long.angle_std) = 10;
+
       PARAMETER_REGISTER(friction) = 0.0275;
 
       PARAMETER_REGISTER(good_threshold_percentage) = 0.85;
@@ -157,7 +161,8 @@ public:
     RIGHTOUT,
     OPPGOAL,
     OWNGOAL,
-    COLLISION
+    COLLISION,
+    NUMBER_OF_BallPositionCategory
   };
 
   class CategorizedBallPosition
@@ -174,16 +179,52 @@ public:
       const Vector2d& pos() const {return ballPosition;} 
   };
 
+  class ActionResults 
+  {
+  public:
+    typedef std::vector<CategorizedBallPosition> Positions;
+  private:
+    Positions ballPositions;
+    // histogram of categories
+    std::vector<int> cat_histogram;
+
+  public:
+    ActionResults() 
+      : cat_histogram(NUMBER_OF_BallPositionCategory+1)
+    {
+    }
+
+    const Positions& positions() const {
+      return ballPositions;
+    }
+
+    const int categorie(BallPositionCategory cat) const {
+      return cat_histogram[cat];
+    }
+
+    void reset() {
+      ballPositions.clear();
+      cat_histogram.clear();
+      cat_histogram.resize(NUMBER_OF_BallPositionCategory+1);
+    }
+
+    void add(const Vector2d& position, BallPositionCategory cat) {
+      ballPositions.push_back(CategorizedBallPosition(position, cat));
+      cat_histogram[cat]++;
+      cat_histogram[NUMBER_OF_BallPositionCategory]++;
+    }
+  };
 
 private:
 
   std::vector<Action> action_local;
-  std::vector<std::vector<CategorizedBallPosition> > actionsConsequences;
+  std::vector<ActionResults> actionsConsequences;
 
 
-  void simulateConsequences(const Action & action, std::vector<CategorizedBallPosition>& categorizedBallPositions) const;
+  void simulateConsequences(const Action & action, ActionResults& categorizedBallPositions) const;
 
-  size_t decide(const std::vector<std::vector<CategorizedBallPosition> >& actionsConsequences) const;
+  size_t decide(const std::vector<ActionResults>& actionsConsequences) const;
+  size_t decide_smart(const std::vector<ActionResults>& actionsConsequences ) const;
 
   //Vector2d outsideField(const Vector2d& relativePoint) const;
 
