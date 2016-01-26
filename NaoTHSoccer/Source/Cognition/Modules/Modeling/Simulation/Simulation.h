@@ -11,14 +11,11 @@
 
 // Representations
 #include "Representations/Infrastructure/FrameInfo.h"
-#include "Representations/Modeling/PlayersModel.h"
 #include "Representations/Modeling/BallModel.h"
 #include "Representations/Modeling/RobotPose.h"
 #include "Representations/Modeling/GoalModel.h"
 #include "Representations/Modeling/RobotPose.h"
-#include "Representations/Modeling/CompassDirection.h"
 #include "Representations/Modeling/KickActionModel.h"
-#include "Representations/Motion/MotionStatus.h"
 #include "Representations/Modeling/ObstacleModel.h"
 
 //Tools
@@ -42,13 +39,10 @@ BEGIN_DECLARE_MODULE(Simulation)
 
   REQUIRE(FrameInfo)
   REQUIRE(FieldInfo)  
-  REQUIRE(PlayerInfo)
   REQUIRE(ObstacleModel)
   REQUIRE(BallModel)
   REQUIRE(RobotPose)
   REQUIRE(SelfLocGoalModel)
-  REQUIRE(CompassDirection)
-  REQUIRE(MotionStatus)
 
   PROVIDE(KickActionModel)
 END_DECLARE_MODULE(Simulation)
