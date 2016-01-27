@@ -306,7 +306,7 @@ size_t Simulation::decide_smart(const std::vector<ActionResults>& actionsConsequ
       continue;
     }
 
-    // the actio with the highest chnce of scoring the goal is the best
+    // the actio with the highest chance of scoring the goal is the best
     if(actionsConsequences[bestActions.front()].categorie(OPPGOAL) < results.categorie(OPPGOAL)) {
       bestActions.clear();
       bestActions.push_back(i);
