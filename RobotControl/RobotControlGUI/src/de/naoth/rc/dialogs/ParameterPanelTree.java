@@ -13,7 +13,6 @@ import de.naoth.rc.core.dialog.DialogPlugin;
 import de.naoth.rc.core.manager.ObjectListener;
 import de.naoth.rc.core.manager.SwingCommandExecutor;
 import de.naoth.rc.server.Command;
-import java.util.ArrayList;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 
@@ -33,12 +32,6 @@ public class ParameterPanelTree extends AbstractDialog
     public static SwingCommandExecutor commandExecutor;
   }
 
-  //needed to synchronize the update procedure
-  private final ArrayList<ParameterListItem> parameterLists = new ArrayList<ParameterListItem>();
-  // number of sources which already performed ther update
-  private int updateSources = 0;
-  private final int EXPECTED_SOURCES = 2;
-  
   private final ParameterDataModel treeTableModel = new ParameterDataModel();
   private final TreeTable myTreeTable = new TreeTable(treeTableModel);
   
@@ -47,26 +40,7 @@ public class ParameterPanelTree extends AbstractDialog
     initComponents();
 	
     jScrollPane.setViewportView(myTreeTable);
-    /*
-    jTextArea.addKeyListener(new KeyAdapter()
-    {
-      @Override
-      public void keyPressed(KeyEvent e)
-      {
-        int key = e.getKeyCode();
-        if (key == KeyEvent.VK_ENTER)
-        {
-          sendParameters();
-          
-          int k = jTextArea.getCaretPosition();
-          if(k > 0) {
-            jTextArea.setCaretPosition(k-1);
-          }
-        }
-      }
-    });
-    */
-  }//end constructor
+  }
 
   /** This method is called from within the constructor to
    * initialize the form.
@@ -155,10 +129,10 @@ private void jToggleButtonListActionPerformed(java.awt.event.ActionEvent evt)//G
 
   class ParameterListHandlerGet implements ObjectListener<byte[]>
   {
-    private final String name;
+    private final ParameterListItem item;
     
-    public ParameterListHandlerGet(String name) {
-        this.name = name;
+    public ParameterListHandlerGet(ParameterListItem item) {
+        this.item = item;
     }
       
     @Override
@@ -169,7 +143,8 @@ private void jToggleButtonListActionPerformed(java.awt.event.ActionEvent evt)//G
         
         for(String p: params) {
             final String[] s = p.split("=");
-            ParameterDataModel.ParameterDataNode n = treeTableModel.insertPath(this.name + "." + s[0], "\\.");
+            ParameterDataModel.ParameterDataNode n = treeTableModel.insertPath(item.name + "." + s[0], "\\.");
+            n.listener = null;
             
             try {
                 n.setValue(new Double(Double.parseDouble(s[1])));
@@ -184,7 +159,11 @@ private void jToggleButtonListActionPerformed(java.awt.event.ActionEvent evt)//G
             n.listener = new ParameterDataModel.ValueChangedListener() {
                 @Override
                 public void valueChanged(Object value) {
-                    System.out.println(name + "." + s[0] + " = " + value);
+                    System.out.println(item.name + "." + s[0] + " = " + value.toString());
+                    
+                    Command cmd = item.getCommandSET();
+                    cmd.addArg(s[0], value.toString());
+                    Plugin.commandExecutor.executeCommand(new ParameterListHandlerSet(), cmd);
                 }
             };
         }
@@ -205,7 +184,7 @@ private void jToggleButtonListActionPerformed(java.awt.event.ActionEvent evt)//G
     @Override
     public void newObjectReceived(byte[] object)
     {
-        // do nothing
+        System.out.println("[Paremeter Set] " + new String(object));
     }
     
     @Override
@@ -232,9 +211,7 @@ private void jToggleButtonListActionPerformed(java.awt.event.ActionEvent evt)//G
         String[] parameterListNames = strResult.split("\n");
         for (String name : parameterListNames) {
           ParameterListItem item = new ParameterListItem(owner, name);
-          parameterLists.add(item);
-          
-          getParameterList(item);
+          Plugin.commandExecutor.executeCommand(new ParameterListHandlerGet(item), item.getCommandGET());
         }
         
         jToggleButtonList.setSelected(false);
@@ -247,39 +224,6 @@ private void jToggleButtonListActionPerformed(java.awt.event.ActionEvent evt)//G
     }
   }
 
-/*
-private void sendParameters()
-{
-  if (Plugin.parent.checkConnected())
-  {
-    Command cmd = ((ParameterListItem) cbParameterId.getSelectedItem()).getCommandSET();
-
-    String text = ""; //this.jTextArea.getText();
-
-    text = text.replaceAll("( |\t)+", "");
-    String[] lines = text.split("(\n)+");
-    for (String l : lines)
-    {
-      String[] splitted = l.split("=");
-      if (splitted.length == 2)
-      {
-        String key = splitted[0].trim();
-        String value = splitted[1].trim();
-        // remove the last ;
-        if (value.charAt(value.length() - 1) == ';')
-        {
-          value = value.substring(0, value.length() - 1);
-        }
-
-        cmd.addArg(key, value);
-      }
-    }//end for
-    
-    Plugin.commandExecutor.executeCommand(new ParameterListHandlerSet(), cmd);
-  }
-}
-*/
-  
 private void listParameters()
 {
     if (Plugin.parent.checkConnected())
@@ -292,15 +236,6 @@ private void listParameters()
       jToggleButtonList.setSelected(false);
     }
 }//end listParameters
-
-  private void getParameterList(ParameterListItem item)
-  {
-    if (Plugin.parent.checkConnected())
-    {
-      System.out.println(item.getCommandGET());
-      Plugin.commandExecutor.executeCommand(new ParameterListHandlerGet(item.name), item.getCommandGET());
-    }
-  }
 
   @Override
   public void dispose()
