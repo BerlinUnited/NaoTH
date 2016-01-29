@@ -13,10 +13,12 @@ import javax.swing.JTable;
 import javax.swing.JTree;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellEditor;
+import javax.swing.tree.TreePath;
  
 public class TreeTable extends JTable {
  
     private final TreeTableCellRenderer tree;
+    private final AbstractTreeTableModel model;
     
     public JTree getTree() {
         return this.tree;
@@ -26,8 +28,12 @@ public class TreeTable extends JTable {
         super();
  
         // JTree erstellen.
+        model = treeTableModel;
         tree = new TreeTableCellRenderer(this, treeTableModel);
         tree.setShowsRootHandles(true);
+        tree.setRootVisible(false);
+        //tree.setEditable(true);
+        tree.setScrollsOnExpand(true);
         
         // Modell setzen.
         super.setModel(new TreeTableModelAdapter(treeTableModel, tree));
@@ -51,6 +57,11 @@ public class TreeTable extends JTable {
  
         // Keine Abstaende.
         setIntercellSpacing(new Dimension(0, 0));
+    }
+    
+    public void expandRoot() {
+        tree.expandPath(new TreePath(model.getRoot()));
+        tree.revalidate();
     }
     
     public void setModel(AbstractTreeTableModel treeTableModel)

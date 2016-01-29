@@ -55,6 +55,9 @@ public class ParameterDataModel extends AbstractTreeTableModel
         String[] nodes = path.split(separator);
         
         ParameterDataNode current = (ParameterDataNode)getRoot();
+        ArrayList<Object> current_path = new ArrayList<>();
+        current_path.add(current);
+        
         for(String s: nodes)
         {
             ParameterDataNode matchingNode = null;
@@ -74,8 +77,11 @@ public class ParameterDataModel extends AbstractTreeTableModel
             {
                 matchingNode = new ParameterDataNode(s);
                 childList.add(matchingNode);
+                fireTreeNodesInserted(this, current_path.toArray(), new int[]{childList.size()-1}, new Object[]{matchingNode});
             }
+            
             current = matchingNode;
+            current_path.add(current);
         }
         
         return current;

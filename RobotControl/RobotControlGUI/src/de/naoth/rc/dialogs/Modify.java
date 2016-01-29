@@ -199,6 +199,8 @@ public class Modify extends AbstractDialog
                   }
                   
                   //myTreeTable.getTree().expandPath(new TreePath(myTreeTable.getTree().getModel().getRoot()));
+                  
+                  myTreeTable.expandRoot();
                   myTreeTable.revalidate();
                   myTreeTable.repaint();
               }

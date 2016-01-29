@@ -33,12 +33,13 @@ public class ParameterPanelTree extends AbstractDialog
   }
 
   private final ParameterDataModel treeTableModel = new ParameterDataModel();
-  private final TreeTable myTreeTable = new TreeTable(treeTableModel);
+  private TreeTable myTreeTable;
   
   public ParameterPanelTree()
   {
     initComponents();
 	
+    myTreeTable = new TreeTable(treeTableModel);
     jScrollPane.setViewportView(myTreeTable);
   }
 
@@ -168,6 +169,7 @@ private void jToggleButtonListActionPerformed(java.awt.event.ActionEvent evt)//G
             };
         }
         
+        myTreeTable.expandRoot();
         myTreeTable.revalidate();
         myTreeTable.repaint();
     }
