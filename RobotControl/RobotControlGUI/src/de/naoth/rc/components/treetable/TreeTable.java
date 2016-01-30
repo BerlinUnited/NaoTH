@@ -4,15 +4,12 @@
  */
 package de.naoth.rc.components.treetable;
 
-import java.awt.Component;
 import java.awt.Dimension;
-import javax.swing.AbstractCellEditor;
-import javax.swing.JCheckBox;
  
 import javax.swing.JTable;
 import javax.swing.JTree;
-import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellEditor;
+import javax.swing.table.TableCellRenderer;
 import javax.swing.tree.TreePath;
  
 public class TreeTable extends JTable {
@@ -69,32 +66,38 @@ public class TreeTable extends JTable {
         super.setModel(new TreeTableModelAdapter(treeTableModel, tree));
     }
     
-    public class MyTableCellRenderer extends DefaultTableCellRenderer
-    {
-        @Override
-        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column)
-        {
-                return super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+    @Override
+    public TableCellEditor getCellEditor(int row, int column)  
+    {  
+        Object value = super.getValueAt(row, column);
+        if (value instanceof Boolean) {  
+            return getDefaultEditor(Boolean.class);  
         }
-    }
-    
-    
-    public class MyTableCellEditor extends AbstractCellEditor implements TableCellEditor 
-    {
-        @Override
-        public Object getCellEditorValue()
-        {
-            return null;
-        }
-
-        @Override
-        public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column)
-        {
-            if(value == null)
-                return null;
-            else
-                return new JCheckBox();
-        }
-        
+        if (value instanceof Double) {  
+            return getDefaultEditor(Double.class);  
+        }  
+        if (value instanceof Integer) {  
+             return getDefaultEditor(Integer.class);  
+        }  
+        // no special case  
+        return super.getCellEditor(row, column);  
+    }  
+ 
+ 
+    @Override
+    public TableCellRenderer getCellRenderer(int row, int column)
+    {  
+        Object value = super.getValueAt(row, column);
+        if (value instanceof Boolean) {  
+            return getDefaultRenderer(Boolean.class);  
+        }  
+        if (value instanceof Double) {  
+            return getDefaultRenderer(Double.class);  
+        }  
+        if (value instanceof Integer) {  
+             return getDefaultRenderer(Integer.class);  
+        }  
+        // no special case  
+        return super.getCellRenderer(row, column);  
     }
 }
