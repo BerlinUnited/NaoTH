@@ -82,7 +82,7 @@ public class NaoSCP extends javax.swing.JFrame {
         SwingTools.setEnabled(this, v);
     }
     
-    private void setupNetwork(File setupDir) throws IOException 
+    private void setupNetwork(File setupDir, int robotNumber) throws IOException 
     {
         NetwokPanel.NetworkConfig cfg = netwokPanel.getNetworkConfig();
             
@@ -102,11 +102,11 @@ public class NaoSCP extends javax.swing.JFrame {
 
         
         tmp = new TemplateFile(new File(utilsPath + "/NaoConfigFiles/etc/conf.d/net"));
-        tmp.set("ETH_ADDR", cfg.getLan().subnet);
+        tmp.set("ETH_ADDR", cfg.getLan().subnet + "." + robotNumber);
         tmp.set("ETH_NETMASK", cfg.getLan().mask);
         tmp.set("ETH_BRD", cfg.getLan().broadcast);
 
-        tmp.set("WLAN_ADDR", cfg.getWlan().subnet);
+        tmp.set("WLAN_ADDR", cfg.getWlan().subnet  + "." + robotNumber);
         tmp.set("WLAN_NETMASK", cfg.getWlan().mask);
         tmp.set("WLAN_BRD", cfg.getWlan().broadcast);
         
@@ -471,15 +471,25 @@ public class NaoSCP extends javax.swing.JFrame {
                             // copy scripts
                             FileUtils.copyFiles(new File(utilsPath + "/NaoConfigFiles"), setupDir);
 
+                            String robotNumberRaw = JOptionPane.showInputDialog(NaoSCP.this, "Robot number");
+                            int robotNr = 100;
+                            try
+                            {
+                              robotNr = Integer.parseInt(robotNumberRaw.trim());
+                            }
+                            catch(NullPointerException | NumberFormatException ex)
+                            {
+                              JOptionPane.showMessageDialog(NaoSCP.this, "Could not parse robot number, defaulting to 100");
+                            }
+                            
                             // copy libs
                             File libDir = chooser.getSelectedFile();
                             FileUtils.copyFiles(libDir, new File(setupDir, "/home/nao/lib"));
                             try {
-                                setupNetwork(setupDir);
+                                setupNetwork(setupDir, robotNr);
                             } catch (IOException ex) {
                                 Logger.getGlobal().log(Level.SEVERE, ex.getMessage());
                             }
-
                             
                             // copy to robot
                             String ip = JOptionPane.showInputDialog(NaoSCP.this, "Robot ip address");
@@ -544,6 +554,19 @@ public class NaoSCP extends javax.swing.JFrame {
             Logger.getGlobal().log(Level.SEVERE, null, ex);
         }
         */
+
+        String robotNumberRaw = JOptionPane.showInputDialog(NaoSCP.this, "Robot number");
+        int robotNr = 0;
+        try
+        {
+          robotNr = Integer.parseInt(robotNumberRaw.trim());
+        }
+        catch(NullPointerException | NumberFormatException ex)
+        {
+          JOptionPane.showMessageDialog(NaoSCP.this, "Could not parse robot number, defaulting to 100");
+        }
+        final int robotNrFinal = robotNr;
+
         new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -560,7 +583,7 @@ public class NaoSCP extends javax.swing.JFrame {
                             Logger.getGlobal().log(Level.SEVERE, "Could not create setup directory: " + setupDir.getAbsolutePath());
                         } else {
                             
-                            setupNetwork(setupDir);
+                            setupNetwork(setupDir, robotNrFinal);
                             
                             FileUtils.copyFiles(new File(utilsPath,"/NaoConfigFiles/init_net.sh"), setupDir);
                             
