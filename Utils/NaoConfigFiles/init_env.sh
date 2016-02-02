@@ -78,7 +78,7 @@ copy ./etc/ld.so.conf /etc/ld.so.conf root 644
 copy ./etc/fstab /etc/fstab root 644
 
 # update the system wide libstdc++
-if [ -d ./home/nao/lib/libstdc++.so ]
+if [ -e ./home/nao/lib/libstdc++.so ]
 then
     mkdir /usr/lib/backup_libst++
     cp /usr/lib/libstdc++.* /usr/lib/backup_libst++/
