@@ -160,7 +160,7 @@ fi
 rm -f /home/nao/bin/naoth.bak
 copy ./home/nao/bin/naoth /home/nao/bin/naoth nao 755
 rm -f /home/nao/bin/libnaosmal.so.bak
-copy ./home/nao/bin/libnaosmal.so /home/nao/bin/libnaosmal.so nao 444
+copy ./home/nao/bin/libnaosmal.so /home/nao/bin/libnaosmal.so nao 755
 
 if [ -d "/home/nao/naoqi/Config" ]; then
   rm -rf /home/nao/naoqi/Config/*
