@@ -86,6 +86,9 @@ public class VideoAnalyzerController implements Initializable
   private Node video;
   @FXML
   private VideoPlayerController videoController;
+  
+  @FXML
+  private Label messageLabel;
 
   @FXML
   private Pane syncPane;
@@ -223,10 +226,12 @@ public class VideoAnalyzerController implements Initializable
   {
     this.logfile = logfile;
 
-    if(this.logfile != null)
-    {
-      frameSlider.valueProperty().removeListener(frameChangeListener);
+    frameSlider.valueProperty().removeListener(frameChangeListener);
 
+    if (this.logfile == null) {
+      messageLabel.setText("Nothing lodaded");
+    } else {
+      messageLabel.setText(logfile.getOriginalFile().getAbsolutePath());
       frameSlider.setMin(0.0);
       frameSlider.setMax(logfile.getFrameCount());
       frameSlider.setValue(0.0);
