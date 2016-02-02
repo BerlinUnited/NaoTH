@@ -2,7 +2,7 @@
 
 import os, sys, getopt
 
-from LogReaderBetter import LogReader
+from LogReader import LogReader
 from LogReader import Parser
 
 from matplotlib import pyplot
@@ -19,12 +19,30 @@ class BehaviorParser(Parser):
   def __init__(self):
     Parser.__init__(self)
     self.symbols = XABSLSymbols()
+    self.options = []
+    self.current_options = {}
+    
+  def parseOption(self, o):
+    
+    if o.type == 0: # Option
+      optionComplete = self.options[o.option.id]
+      self.current_options[optionComplete] = o.option.timeOfExecution
+      
+      for so in o.option.activeSubActions:
+        self.parseOption(so)
+        
     
   def parse(self, name, data):
+    self.current_options = {}
     
     if name == 'BehaviorStateComplete':
       message = Parser.parse(self, name, data)
       
+      #process options
+      for o in message.options:
+        self.options.append(o.name)
+      
+      # process symbols
       for s in message.inputSymbolList.decimal:
         self.symbols.values[s.name] = s.value
         self.symbols.decimalIdToName[s.id] = s.name
@@ -36,14 +54,19 @@ class BehaviorParser(Parser):
       for s in message.inputSymbolList.enumerated:
         self.symbols.values[s.name] = s.value
         self.symbols.enumIdToName[s.id] = s.name
-       
       
-      return self.symbols.values
+      return self.symbols.values, self.current_options
+      
       
     elif name == 'BehaviorStateSparse':
       message = Parser.parse(self, name, data)
       symbols_values = self.symbols.values.copy()
       
+      #process active options
+      for o in message.activeRootActions:
+        self.parseOption(o)
+      
+      #process symbols
       for s in message.inputSymbolList.decimal:
         name = self.symbols.decimalIdToName[s.id]
         symbols_values[name] = s.value
@@ -56,9 +79,11 @@ class BehaviorParser(Parser):
         name = self.symbols.enumIdToName[s.id]
         symbols_values[name] = s.value
       
-      return symbols_values
-      
-    return Parser.parse(self, name, data)
+      return symbols_values, self.current_options
+    
+    else:
+      return Parser.parse(self, name, data)
+    
 
 def behavior(frame):
   try:

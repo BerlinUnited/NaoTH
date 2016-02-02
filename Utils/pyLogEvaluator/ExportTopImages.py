@@ -2,7 +2,7 @@
 
 import os, sys, getopt
 
-from LogReaderBetter import LogReader
+from LogReader import LogReader
 from LogReader import Parser
 
 from matplotlib import pyplot
