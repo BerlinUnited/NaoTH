@@ -30,14 +30,15 @@ JointID["LAnkleRoll"] = 21
 
 def frameFilter(frame):
   m = None
+  o = None
   try:
     
     if "BehaviorStateComplete" in frame.messages:
-      m = frame["BehaviorStateComplete"]
+      m, o = frame["BehaviorStateComplete"]
     else:
-      m = frame["BehaviorStateSparse"]
+      m, o = frame["BehaviorStateSparse"]
 
-    return [frame["FrameInfo"].time/(1000.0*60), 
+    return [frame["FrameInfo"].time/(1000.0), 
             # older logs don't have body status
             frame["BodyStatus"].currentSum[JointID["RKneePitch"]], 
             frame["BodyStatus"].currentSum[JointID["LKneePitch"]],
@@ -104,7 +105,7 @@ def run(log):
     
     # apply the filter
     a = map(frameFilter, vlog)
-    
+   
     # make an numpy array
     data = np.array(a)
     
