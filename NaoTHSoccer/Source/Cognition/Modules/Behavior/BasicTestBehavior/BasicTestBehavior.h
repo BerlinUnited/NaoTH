@@ -30,10 +30,13 @@
 #include "Representations/Infrastructure/JointData.h"
 #include "Representations/Modeling/BodyStatus.h"
 
+#include <Representations/Infrastructure/RemoteControlCommand.h>
+
 // debug
 #include "Tools/Debug/DebugRequest.h"
 #include "Tools/Debug/DebugModify.h"
 //#include "Tools/Debug/DebugDrawings.h"
+
 
 BEGIN_DECLARE_MODULE(BasicTestBehavior)
   PROVIDE(DebugRequest)
@@ -48,6 +51,8 @@ BEGIN_DECLARE_MODULE(BasicTestBehavior)
   REQUIRE(OdometryData)
   //REQUIRE(AttentionModel)
   //REQUIRE(PlayersPercept)
+
+  REQUIRE(RemoteControlCommand)
 
   PROVIDE(HeadMotionRequest)
   PROVIDE(MotionRequest)

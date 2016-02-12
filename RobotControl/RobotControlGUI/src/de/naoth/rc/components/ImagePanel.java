@@ -139,7 +139,9 @@ public class ImagePanel extends javax.swing.JPanel
 
         if(this.showDrawings) {
           for (Drawable d : drawigs) {
-            d.draw(g2d);
+            if(d != null) {
+              d.draw(g2d);
+            }
           }
         }
 

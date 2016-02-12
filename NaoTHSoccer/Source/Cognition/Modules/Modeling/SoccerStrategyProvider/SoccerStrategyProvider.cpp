@@ -132,16 +132,21 @@ Vector2<double> SoccerStrategyProvider::calculateForamtion() const
 
 double SoccerStrategyProvider::estimateTimeToBall() const
 {
-  for( int i=0; i<BALLMODEL_MAX_FUTURE_SECONDS; i++)
+  // no future projection avaliable
+  if(getBallModel().futurePosition.empty()) {
+    return estimateTimeToPoint(getBallModel().positionPreview);
+  }
+
+  // check if we can intercept the ball ;)
+  for( size_t i = 0; i < getBallModel().futurePosition.size(); i++)
   {
     double t = estimateTimeToPoint(getBallModel().futurePosition[i]);
-    if ( t < i )
-    {
+    if ( t < i ) {
       return t; // we can catch the ball
     }
   }
-  return estimateTimeToPoint(getBallModel().futurePosition[BALLMODEL_MAX_FUTURE_SECONDS]);
-  // return estimateTimeToPoint(getBallModel().positionPreview);
+  
+  return estimateTimeToPoint(getBallModel().futurePosition.back());
 }//end estimateTimeToBall
 
 

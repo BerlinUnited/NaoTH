@@ -140,11 +140,11 @@ double BallSymbols::getBallAngle() {
 }
 
 double BallSymbols::getBallTimeSinceLastSeen() {
-  return theInstance->getFrameInfo().getTimeSince(theInstance->getBallModel().frameInfoWhenBallWasSeen.getTime());
+  return theInstance->getFrameInfo().getTimeSince(theInstance->getBallModel().getFrameInfoWhenBallWasSeen().getTime());
 }
 
 double BallSymbols::getBallTimeSeen() {
-  return theInstance->getBallModel().timeBallIsSeen;
+  return theInstance->getBallModel().getTimeBallIsSeen();
 }
 
 double BallSymbols::getTeamBallTimeSinceLastUpdate() {

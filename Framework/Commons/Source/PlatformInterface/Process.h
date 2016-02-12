@@ -22,16 +22,16 @@ namespace naoth
 /*
  *
  */
-class Prosess
+class Process
 {
 public:
-  Prosess() : callback(NULL)
+  Process() : callback(NULL)
   {
   }
 
-  ~Prosess()
+  ~Process()
   {
-    PRINT_DEBUG("destruct Prosess");
+    PRINT_DEBUG("destruct Process");
   }
 
   Callable* callback;
@@ -44,14 +44,14 @@ public:
 /*
  *
  */
-class ProsessEnvironment
+class ProcessEnvironment
 {
 public:
-  ProsessEnvironment()
+  ProcessEnvironment()
   {
   }
 
-  ~ProsessEnvironment()
+  ~ProcessEnvironment()
   {
     PRINT_DEBUG("destruct ProsessEnvironment");
   }

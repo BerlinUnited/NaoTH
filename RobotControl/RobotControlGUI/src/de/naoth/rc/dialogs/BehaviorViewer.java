@@ -193,13 +193,17 @@ public class BehaviorViewer extends AbstractDialog
             
             try
             {
-              Messages.BehaviorStateSparse status = Messages.BehaviorStateSparse.parseFrom(object);
-              final XABSLBehaviorFrame frame = behaviorParser.parseSparse(status);
+              final Messages.BehaviorStateSparse status = Messages.BehaviorStateSparse.parseFrom(object);
               
+             if(status.hasErrorMessage()) {
+                 JOptionPane.showMessageDialog(BehaviorViewer.this, status.getErrorMessage(), "ERROR", JOptionPane.ERROR_MESSAGE);
+                 errorOccured(status.getErrorMessage());
+             }
              
               SwingUtilities.invokeLater(new Runnable() {
                   @Override
                   public void run() {
+                      XABSLBehaviorFrame frame = behaviorParser.parseSparse(status);
                       addFrame(frame);
                   }
               });

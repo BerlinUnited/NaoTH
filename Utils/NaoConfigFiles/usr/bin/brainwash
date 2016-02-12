@@ -4,7 +4,10 @@ mount /dev/brainwasher /media/brainwasher
 cd /media/brainwasher
 sh ./startBrainwashing.sh
 cd /
-umount -l /media/brainwasher
+until umount /media/brainwasher &> /dev/null
+do
+  sleep 0.1
+done
 rmdir /media/brainwasher
 #play something
 sudo -u nao /usr/bin/paplay /home/nao/naoqi/Media/usb_start.wav
