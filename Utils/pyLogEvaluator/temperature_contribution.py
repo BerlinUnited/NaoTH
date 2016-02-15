@@ -189,7 +189,15 @@ def run(log):
             data_scatter_left[2] + data_scatter_right[2],
             data_scatter_left[3] + data_scatter_right[3]]    
 
-    pyplot.scatter(data_scatter[2], data_scatter[3], c=data_scatter[0], marker='o')
+    #pyplot.scatter(data_scatter[2], data_scatter[3], c=data_scatter[0], marker='o')
+    #pyplot.ylabel('ratio walk')
+    #pyplot.xlabel('ratio stand')
+    #pyplot.axis([0,1,0,1])
+
+    pyplot.ylabel('time')
+    pyplot.xlabel('walk ratio')
+    pyplot.plot(data_scatter[3], data_scatter[0],'.')
+    #pyplot.plot(data_scatter[2], data_scatter[0],'.')
 
     #tr_walk  = zip(*walk)
     #
@@ -222,8 +230,5 @@ def run(log):
     #pyplot.plot(bb[0], bb[5], label="motion")
     
     pyplot.legend(loc='upper left')
-    pyplot.ylabel('ratio walk')
-    pyplot.xlabel('ratio stand')
-    pyplot.axis([0,1,0,1])
     #pyplot.grid()
     pyplot.show()
