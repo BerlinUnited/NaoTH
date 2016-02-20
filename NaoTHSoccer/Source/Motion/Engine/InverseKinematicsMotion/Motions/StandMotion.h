@@ -47,6 +47,7 @@ BEGIN_DECLARE_MODULE(StandMotion)
   REQUIRE(CalibrationData)
   REQUIRE(KinematicChainSensor)
   REQUIRE(MotionStatus)
+  PROVIDE(SensorJointData)
 
   REQUIRE(InverseKinematicsMotionEngineService)
 
@@ -67,6 +68,9 @@ public:
     relaxedPoseInitialized(false)
 
   {
+    DEBUG_REQUEST_REGISTER("StandMotion:relax_joints", "set snsor joint data to motor joint data", false);
+    DEBUG_REQUEST_REGISTER("StandMotion:relax_joints_loop", "set snsor joint data to motor joint data", false);
+    DEBUG_REQUEST_REGISTER("StandMotion:relax_init", "set snsor joint data to motor joint data", false);
   }
 
   void calculateTrajectory(const MotionRequest& motionRequest)
@@ -84,7 +88,7 @@ public:
       comHeight = Math::clamp(comHeight, 160.0, 270.0); // valid range
       
       startPose = getEngine().getCurrentCoMFeetPose();
-      targetPose = getStandPose(comHeight, standardStand);
+      targetPose = getStandPose(comHeight, getEngine().getParameters().stand.hipOffsetX, getEngine().getParameters().stand.bodyPitchOffset, standardStand);
 
 	    // HACK: don't do anything if after walk
       if(getMotionStatus().lastMotion == motion::walk) {
@@ -132,6 +136,12 @@ public:
         relaxedPose = getEngine().getHipFeetPoseBasedOnSensor();
       }
 
+      DEBUG_REQUEST("StandMotion:relax_init",
+        relaxData = getSensorJointData();
+        relaxedPose = getEngine().getHipFeetPoseBasedOnSensor();
+        relaxedPoseInitialized = true;
+      );
+
       c = relaxedPose;
     } else {
       InverseKinematic::CoMFeetPose p = getEngine().interpolate(startPose, targetPose, k);
@@ -169,6 +179,20 @@ public:
     getEngine().solveHipFeetIK(c);
     getEngine().copyLegJoints(getMotorJointData().position);
     
+
+    DEBUG_REQUEST("StandMotion:relax_joints_loop",
+      for( int i = naoth::JointData::RHipYawPitch; i<naoth::JointData::LAnkleRoll; i++) {
+        getMotorJointData().position[i] = getSensorJointData().position[i];
+      }
+    );
+
+    DEBUG_REQUEST("StandMotion:relax_joints",
+      for( int i = naoth::JointData::RHipYawPitch; i<naoth::JointData::LAnkleRoll; i++) {
+        getMotorJointData().position[i] = relaxData.position[i];
+      }
+    );
+
+
     /*
     getEngine().gotoArms(
         getMotionStatus(),
@@ -229,6 +253,7 @@ private:
   InverseKinematic::CoMFeetPose targetPose;
   InverseKinematic::CoMFeetPose startPose;
   InverseKinematic::HipFeetPose relaxedPose;
+  JointData relaxData;
   bool relaxedPoseInitialized;
 
 };

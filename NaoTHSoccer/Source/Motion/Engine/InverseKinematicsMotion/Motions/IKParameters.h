@@ -17,8 +17,6 @@ class IKParameters : public ParameterList
 public:
 
   // TODO: what are those parameters?
-  double bodyPitchOffset;
-  double hipOffsetX;
   double footOffsetY;
   
   struct Stand 
@@ -26,6 +24,9 @@ public:
     double speed;
     bool enableStabilization;
     double stiffness;
+
+    double bodyPitchOffset;
+    double hipOffsetX;
   } stand;
 
 
@@ -33,6 +34,9 @@ public:
   {
     struct General
     {
+      double bodyPitchOffset;
+      double hipOffsetX;
+
       double stiffness;
       bool useArm;
 

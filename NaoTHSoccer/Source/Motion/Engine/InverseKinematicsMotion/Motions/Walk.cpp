@@ -482,7 +482,7 @@ void Walk::planStep()
   Step& planningStep = stepBuffer.back();
   ASSERT(planningStep.planningCycle < planningStep.numberOfCyclePerFootStep);
   double zmpOffset = theWalkParameters.hip.ZMPOffsetY + theWalkParameters.hip.ZMPOffsetYByCharacter * (1-planningStep.character);
-  double zmpOffsetX = getEngine().getParameters().hipOffsetX;
+  double zmpOffsetX = theWalkParameters.general.hipOffsetX;
 
 
   // EXPERIMENTAL: correct the ZMP
@@ -512,7 +512,7 @@ void Walk::planStep()
   // better ZMP?
   Vector2d zmp = ZMPPlanner::betterOne(
     planningStep.footStep, 
-    getEngine().getParameters().hipOffsetX, 
+    theWalkParameters.general.hipOffsetX, 
     zmpOffset, 
     planningStep.planningCycle,
     planningStep.samplesDoubleSupport,
@@ -741,7 +741,7 @@ void Walk::stopWalking()
   else
   {
     Pose3D finalLeftFoot = stepBuffer.back().footStep.end().left;
-    CoMFeetPose standPose = getStandPose(theWalkParameters.hip.comHeight);
+    CoMFeetPose standPose = getStandPose(theWalkParameters.hip.comHeight, theWalkParameters.general.hipOffsetX, theWalkParameters.general.bodyPitchOffset);
     standPose.localInLeftFoot();
     Pose3D finalBody = finalLeftFoot * standPose.com;
     // wait for the com stops
@@ -830,7 +830,7 @@ void Walk::updateParameters(Step& step, double character) const
 
   const unsigned int basicTimeStep = getRobotInfo().basicTimeStep;
   
-  step.bodyPitchOffset = Math::fromDegrees(getEngine().getParameters().bodyPitchOffset);
+  step.bodyPitchOffset = Math::fromDegrees(theWalkParameters.general.bodyPitchOffset);
   step.samplesDoubleSupport = std::max(0, (int) (theWalkParameters.step.doubleSupportTime / basicTimeStep));
   step.samplesSingleSupport = std::max(1, (int) (theWalkParameters.step.singleSupportTime / basicTimeStep));
   int extendDoubleSupportByCharacter = std::max(0, (int)((theWalkParameters.step.extendDoubleSupportTimeByCharacter / basicTimeStep)
@@ -913,7 +913,7 @@ void Walk::updateMotionStatus(MotionStatus& motionStatus)
   else
   {
     FeetPose lastFeet = stepBuffer.back().footStep.end();
-    Pose3D lastCom = calculateStableCoMByFeet(lastFeet, Math::fromDegrees(getEngine().getParameters().bodyPitchOffset));
+    Pose3D lastCom = calculateStableCoMByFeet(lastFeet, Math::fromDegrees(theWalkParameters.general.bodyPitchOffset));
 
     Pose3D plannedHip = theCoMFeetPose.com.invert() * lastCom;
     Pose3D plannedlFoot = theCoMFeetPose.feet.left.invert() * lastFeet.left;
@@ -952,8 +952,8 @@ void Walk::updateMotionStatus(MotionStatus& motionStatus)
 
 Pose3D Walk::calculateStableCoMByFeet(FeetPose feet, double pitch) const
 {
-  feet.left.translate(getEngine().getParameters().hipOffsetX, 0 ,0);
-  feet.right.translate(getEngine().getParameters().hipOffsetX, 0 ,0);
+  feet.left.translate(theWalkParameters.general.hipOffsetX, 0 ,0);
+  feet.right.translate(theWalkParameters.general.hipOffsetX, 0 ,0);
   Pose3D com;
   com.rotation = calculateBodyRotation(feet, pitch);
   com.translation = (feet.left.translation + feet.right.translation) * 0.5;
