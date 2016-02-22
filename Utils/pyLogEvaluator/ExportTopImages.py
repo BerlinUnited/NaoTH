@@ -31,11 +31,7 @@ def parseArguments(argv):
       
   return inputfile, outputdir
 
-  
-def getImageTop(frame):
-  # we are only interested in top images
-  message = frame["ImageTop"]
-  
+def imageFromProto(message):
   # read each channel of yuv422 separately
   yuv422 = numpy.fromstring(message.data, dtype=numpy.uint8)
   y = yuv422[0::2]
@@ -54,7 +50,12 @@ def getImageTop(frame):
   
   # convert the image to rgb and save it
   img = Image.fromstring('YCbCr', (message.width, message.height), yuv888.tostring())
-  return [frame.number, img]
+  
+  
+def getImageTop(frame):
+  # we are only interested in top images
+  message = frame["ImageTop"]
+  return [frame.number, imageFromProto(img)]
   
   
 if __name__ == "__main__":
