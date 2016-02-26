@@ -26,7 +26,11 @@ class BehaviorParser(Parser):
     
     if o.type == 0: # Option
       optionComplete = self.options[o.option.id]
-      self.current_options[optionComplete] = o.option.timeOfExecution
+      self.current_options[optionComplete.name] = { 
+        'time': o.option.timeOfExecution,
+        'state': optionComplete.states[o.option.activeState],
+        'stateTime': o.option.stateTime
+      }
       
       for so in o.option.activeSubActions:
         self.parseOption(so)
@@ -39,8 +43,7 @@ class BehaviorParser(Parser):
       message = Parser.parse(self, name, data)
       
       #process options
-      for o in message.options:
-        self.options.append(o.name)
+      self.options = message.options
       
       # process symbols
       for s in message.inputSymbolList.decimal:
@@ -87,12 +90,10 @@ class BehaviorParser(Parser):
 
 def behavior(frame):
   try:
-    m = None
     if "BehaviorStateComplete" in frame.messages:
-      #print frame["BehaviorStateComplete"].decimal
-      m = frame["BehaviorStateComplete"].values
+      m, o = frame["BehaviorStateComplete"]
     else:
-      m = frame["BehaviorStateSparse"].values
+      m, o = frame["BehaviorStateSparse"]
 
     return [m["robot_pose.x"], m["robot_pose.y"], m["fall_down_state"]]
     
@@ -103,27 +104,23 @@ def behavior(frame):
 if __name__ == "__main__":
 
   parser = BehaviorParser()
-  #fileName = "D:\\RoboCup\\log\\2015-go\\io15-lookaround-audience.log"
   fileName = "./game.log"
-  fileName = "D:\\RoboCup\\behavior.log\\rc14-game-htwk-qf\\2-half\\6026\\game.log"
   log = LogReader(fileName, parser)#, filter=headYaw)
   
-  print log.names
+  # we want only the frames which contain BehaviorState
+  b = [behavior(f) for f in log if "BehaviorStateComplete" in f.messages or "BehaviorStateSparse" in f.messages];
   
-  #b = [ headYaw(f) for f in log]
-  vlog = filter(lambda f: "BehaviorStateComplete" in f.messages or "BehaviorStateSparse" in f.messages, log)
-  print len(vlog)
-  b = map(behavior, vlog)
-  #print b
+  upright = filter(lambda m: m[2] == 1, b)
+  fall = filter(lambda m: m[2] != 1, b)
   
-  d = zip(*b)
+  print "step 2"
+  du = zip(*upright)
+  df = zip(*fall)
   
+  pyplot.plot(du[0], du[1], '.')
+  pyplot.plot(df[0], df[1], 'o')
+
   pyplot.ylabel('y')
   pyplot.xlabel('x')
-  pyplot.plot(d[2])
-  #pyplot.plot(d[0], d[2], label="LKneePitch")
-  #pyplot.plot(d[0], d[3], label="RAnklePitch")
-  #pyplot.plot(d[0], d[4], label="LAnklePitch")
-  #pyplot.legend(loc='upper left')
   pyplot.show()
   
