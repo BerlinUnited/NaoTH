@@ -65,11 +65,13 @@ public:
     time(0),
     height(-1000),
     standardStand(true),
-    relaxedPoseInitialized(false)
-
+    relaxedPoseInitialized(false),
+    lastFrameInfo(getFrameInfo()),
+    relaxedJointsValid(false)
   {
     DEBUG_REQUEST_REGISTER("StandMotion:relax_joints", "set snsor joint data to motor joint data", false);
     DEBUG_REQUEST_REGISTER("StandMotion:relax_joints_loop", "set snsor joint data to motor joint data", false);
+    DEBUG_REQUEST_REGISTER("StandMotion:relax_joints_loop_each_second", "set snsor joint data to motor joint data", false);
     DEBUG_REQUEST_REGISTER("StandMotion:relax_init", "set snsor joint data to motor joint data", false);
   }
 
@@ -122,11 +124,6 @@ public:
 
     time += getRobotInfo().basicTimeStep;
 
-    double k = 1.0;
-    if(totalTime > 0 && time < totalTime) {
-      k = Math::clamp(0.5*(1.0-cos(time/totalTime*Math::pi)), 0.0, 1.0);
-    }
-
     InverseKinematic::HipFeetPose c;
 
     if(time > totalTime + getRobotInfo().basicTimeStep*10) {
@@ -143,7 +140,28 @@ public:
       );
 
       c = relaxedPose;
-    } else {
+
+      InverseKinematic::HipFeetPose hipFeetPoseSensor = getEngine().getHipFeetPoseBasedOnSensor();
+      hipFeetPoseSensor.localInLeftFoot();
+
+      InverseKinematic::HipFeetPose target = relaxedPose;
+      target.localInLeftFoot();
+
+      if((hipFeetPoseSensor.hip.translation - target.hip.translation).abs() > 5) {
+          relaxedPoseInitialized = false;
+          relaxedJointsValid = false;
+          setCurrentState(motion::stopped);
+          calculateTrajectory(getMotionRequest());
+
+          totalTime += 1000;
+      }
+
+      PLOT("Stand:hipErrorToTarget",(hipFeetPoseSensor.hip.translation - target.hip.translation).abs());
+    }
+
+    if(totalTime > 0 && time <= totalTime + getRobotInfo().basicTimeStep*10)
+    {
+      double k = Math::clamp(0.5*(1.0-cos(time/totalTime*Math::pi)), 0.0, 1.0);
       InverseKinematic::CoMFeetPose p = getEngine().interpolate(startPose, targetPose, k);
 
       bool solved = false;
@@ -178,7 +196,20 @@ public:
 
     getEngine().solveHipFeetIK(c);
     getEngine().copyLegJoints(getMotorJointData().position);
-    
+
+    DEBUG_REQUEST("StandMotion:relax_joints_loop_each_second",
+      if ((time > totalTime) && (getFrameInfo().getTime() - lastFrameInfo.getTime() > 1000)) {
+        lastFrameInfo = getFrameInfo();
+        relaxedJoints = getSensorJointData();
+        relaxedJointsValid = true;
+      }
+
+      if(relaxedJointsValid) {
+          for( int i = naoth::JointData::RHipYawPitch; i<naoth::JointData::LAnkleRoll; i++) {
+            getMotorJointData().position[i] = relaxedJoints.position[i];
+          }
+      }
+    );
 
     DEBUG_REQUEST("StandMotion:relax_joints_loop",
       for( int i = naoth::JointData::RHipYawPitch; i<naoth::JointData::LAnkleRoll; i++) {
@@ -192,7 +223,6 @@ public:
       }
     );
 
-
     /*
     getEngine().gotoArms(
         getMotionStatus(),
@@ -203,12 +233,15 @@ public:
     PLOT("Stand:hip:x",c.hip.translation.x);
     PLOT("Stand:hip:y",c.hip.translation.y);
     PLOT("Stand:hip:z",c.hip.translation.z);
-
+    PLOT("Stand:time:time", time);
+    PLOT("Stand:time:totalTime", totalTime);
 
     turnOffStiffnessWhenJointIsOutOfRange();
-    
+
     if ( time >= totalTime && getMotionRequest().id != getId() ) {
       setCurrentState(motion::stopped);
+      relaxedJointsValid = false;
+      relaxedPoseInitialized = false;
       return;
     } else {
       setCurrentState(motion::running);
@@ -255,6 +288,9 @@ private:
   InverseKinematic::HipFeetPose relaxedPose;
   JointData relaxData;
   bool relaxedPoseInitialized;
+  FrameInfo lastFrameInfo;
+  JointData relaxedJoints;
+  bool relaxedJointsValid;
 
 };
 
