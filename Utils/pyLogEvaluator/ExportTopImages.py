@@ -50,12 +50,13 @@ def imageFromProto(message):
   
   # convert the image to rgb and save it
   img = Image.fromstring('YCbCr', (message.width, message.height), yuv888.tostring())
+  return img
   
   
 def getImageTop(frame):
   # we are only interested in top images
   message = frame["ImageTop"]
-  return [frame.number, imageFromProto(img)]
+  return [frame.number, imageFromProto(message)]
   
   
 if __name__ == "__main__":
@@ -81,7 +82,7 @@ if __name__ == "__main__":
     img = img.convert('RGB')
     
     if targetdir is not None:
-      img.save(targetdir+"/"+str(f.number)+".png")
+      img.save(targetdir+"/"+str(i)+".png")
     else:
       # show the current image (show the first image or update the data)
       if image is None:
