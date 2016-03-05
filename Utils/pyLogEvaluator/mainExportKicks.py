@@ -2,11 +2,11 @@
 
 import BehaviorParser
 import json
-
+import math
 
 
 def init(fileName):
-    #fileName = "D:\\Projects\\2016-web-video-player\\log\\20150426-Game-NaoDevils\\half1\\150426-1208-Nao6022\\game.log"
+    #fileName = "D:\\AppData\\xampp\\htdocs\\VideoLogLabeling\\log\\2015-07-21-competition-day3-NaoDevils\\half1\\150721-0952-Nao6022\\game.log"
     
     parser = BehaviorParser.BehaviorParser()
     log = BehaviorParser.LogReader(fileName, parser)
@@ -46,50 +46,53 @@ def frameFilter(frame):
 
     # detect the kicks
     action = 'none'
-    if "situation_based_striker" in o:
-      if o["situation_based_striker"]["state"] == "turn":
-        action = 'turn'
-      elif option_state(o, "sidekick", "sidekick_left_foot"):
-        action = 'kick_right'
-      elif option_state(o, "sidekick", "sidekick_right_foot"):
-        action = 'kick_left'
-      elif "fast_forward_kick" in o:
-        action = 'kick_short'
-      elif "kick_with_foot" in o:
-        action = 'kick_long'
-        
-    return [frame["FrameInfo"].time/(1000.0*60), action]
+    if "turn_to_attack_direction" in o:
+      action = 'turn'
+    elif option_state(o, "sidekick", "sidekick_left_foot"):
+      action = 'kick_right'
+    elif option_state(o, "sidekick", "sidekick_right_foot"):
+      action = 'kick_left'
+    elif "fast_forward_kick" in o:
+      action = 'kick_short'
+    elif "kick_with_foot" in o:
+      action = 'kick_long'
+   
+   
+    return [frame["FrameInfo"].time/(1000.0*60), action,
+      m["robot_pose.x"], m["robot_pose.y"], m["robot_pose.rotation"]*math.pi/180,
+      m["ball.position.field.x"], m["ball.position.field.y"]]
     
   except KeyError:
     raise StopIteration
-    
+  
+def add_entry(intervals, begin_data, end_data):
+  pose = {"x":begin_data[2], "y":begin_data[3], "r":begin_data[4]}
+  ball = {"x":begin_data[5], "y":begin_data[6]}
+  t_begin = begin_data[0]*60
+  t_end = end_data[0]*60
+  type = begin_data[1]
+  
+  intervals.append({"type":type, "begin": t_begin, "end": t_end, "pose": pose, "ball": ball})
+  
+  
   
 def run(vlog, fileName):
+    #fileName = "./labels.json"
     
     # apply the filter
     data = map(frameFilter, vlog)
 
     intervals = []
     
-    last_t0 = 0
-    last_state = data[0][1]
-    
-    #offset_log = 149.629
-    #offset_video = 5.41960191
+    last_entry = data[0]
     
     for d in data:
-      if last_state != d[1]:
-        t0 = d[0]*60# seconds in log - offset_log + offset_video # seconds in video
+      # check the state or is last entry
+      if last_entry[1] != d[1] or d[0] == data[-1][0]:
+        add_entry(intervals, last_entry, d)
+        last_entry = d
         
-        if last_state == 'none':
-          intervals.append({"type": "blank", "label":last_state, "begin": last_t0, "end": t0})
-        else:
-          intervals.append({"type": "button", "label":last_state, "begin": last_t0, "end": t0+3})
-        
-        last_t0 = t0
-        last_state = d[1]
-        
-    #"./labels.json"
+    #fileName = "./labels.json"
     with open(fileName, 'w') as outfile:
       json.dump({"intervals" : intervals}, outfile, indent=4, separators=(',', ': '))
     
