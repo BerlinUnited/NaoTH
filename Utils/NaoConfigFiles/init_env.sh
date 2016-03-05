@@ -77,6 +77,14 @@ copy ./etc/ld.so.conf /etc/ld.so.conf root 644
 # copy new fstab
 copy ./etc/fstab /etc/fstab root 644
 
+# update the system wide libstdc++
+if [ -e ./home/nao/lib/libstdc++.so ]
+then
+    mkdir /usr/lib/backup_libst++
+    cp /usr/lib/libstdc++.* /usr/lib/backup_libst++/
+    cp  ./home/nao/lib/libstdc++.* /usr/lib/
+fi
+
 # create the local lib directory
 if [ ! -d /home/nao/lib ]
 then
@@ -152,7 +160,7 @@ fi
 rm -f /home/nao/bin/naoth.bak
 copy ./home/nao/bin/naoth /home/nao/bin/naoth nao 755
 rm -f /home/nao/bin/libnaosmal.so.bak
-copy ./home/nao/bin/libnaosmal.so /home/nao/bin/libnaosmal.so nao 444
+copy ./home/nao/bin/libnaosmal.so /home/nao/bin/libnaosmal.so nao 755
 
 if [ -d "/home/nao/naoqi/Config" ]; then
   rm -rf /home/nao/naoqi/Config/*
@@ -226,7 +234,7 @@ copy ./etc/conf.d/net /etc/conf.d/net root 644
 # Check and Update Runlevel Configuration for Network Services
 chown root:root ./checkRC.sh;
 chmod 744 ./checkRC.sh;
-./checkRC.sh "connman=disable net.eth0=boot net.wlan0=boot";
+./checkRC.sh "connman=disable net.eth0=boot net.wlan0=boot savecache=boot checkpart=disable checkpart-dummy=boot";
 
 # ----------------------
 

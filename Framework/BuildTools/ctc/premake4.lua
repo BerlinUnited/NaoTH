@@ -12,7 +12,8 @@ local cpu_flags = "-m32 -march=i686 -msse -msse2 -mssse3"
 local cross_flags = 
    " --sysroot=" .. crossSystemDir .. "/sysroot/" ..
    " -isystem"   .. crossSystemDir .. "/sysroot/usr/include/" .. 
-   " -L"         .. crossSystemDir .. "/sysroot/usr/lib/"
+   " -L"         .. crossSystemDir .. "/sysroot/usr/lib/" ..
+   " -rpath lib/"
 
    
 -- DEFINE A NEW PLATFORM --
@@ -37,10 +38,10 @@ premake.gcc.platforms.Nao =
 
 if(_OPTIONS["platform"] == "Nao") then
   -- reset compiler path to the cross compiler
-  premake.gcc.cc     = crossDir .. "/bin/" .. linux .. "-gcc"
-  premake.gcc.cxx    = crossDir .. "/bin/" .. linux .. "-g++"
-  premake.gcc.ar     = crossDir .. "/bin/" .. linux .. "-ar"
-  print("INFO: GCC path was changed for cross compiling to")
-  print("> " .. crossDir)
+  --premake.gcc.cc     = crossDir .. "/bin/" .. linux .. "-gcc"
+  --premake.gcc.cxx    = crossDir .. "/bin/" .. linux .. "-g++"
+  --premake.gcc.ar     = crossDir .. "/bin/" .. linux .. "-ar"
+  --print("INFO: GCC path was changed for cross compiling to")
+  --print("> " .. crossDir)
 end
 
