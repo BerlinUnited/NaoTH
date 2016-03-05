@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 #check if the ruby is awaliable and has the right version
 ruby="ruby"
