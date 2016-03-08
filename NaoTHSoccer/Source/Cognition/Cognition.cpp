@@ -78,7 +78,9 @@
 #include "Modules/Modeling/BallLocator/PlainKalmanFilterBallLocator/PlainKalmanFilterBallLocator.h"
 #include "Modules/Modeling/StaticDebugModelProvider/StaticDebugModelProvider.h"
 
+#include "Modules/Modeling/Simulation/SimulationTest.h"
 #include "Modules/Modeling/Simulation/Simulation.h"
+
 
 
 // behavior
@@ -174,6 +176,7 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(KalmanFilterBallLocator);
   REGISTER_MODULE(PlainKalmanFilterBallLocator);
   REGISTER_MODULE(Simulation);
+  REGISTER_MODULE(SimulationTest);
   REGISTER_MODULE(StaticDebugModelProvider);
 
   // behavior

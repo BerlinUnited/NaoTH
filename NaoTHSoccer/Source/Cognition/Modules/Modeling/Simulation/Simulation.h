@@ -42,7 +42,7 @@ BEGIN_DECLARE_MODULE(Simulation)
   REQUIRE(ObstacleModel)
   REQUIRE(BallModel)
   REQUIRE(RobotPose)
-  REQUIRE(SelfLocGoalModel)
+  //REQUIRE(SelfLocGoalModel)
 
   PROVIDE(KickActionModel)
 END_DECLARE_MODULE(Simulation)
