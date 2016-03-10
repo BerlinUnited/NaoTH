@@ -144,9 +144,11 @@ void StrategySymbols::setSituationStatusOppHalf(bool oppHalf){
 	theInstance->getSituationStatus().oppHalf = oppHalf; 
 }
 
+// TODO: check if the model is valid
+// NOTE: what about the default position if the ball was not seen?
 Vector2d StrategySymbols::calculateGoalieGuardPosition()
 {
-  Vector2d ballPos = getRobotPose()*getBallModel().futurePosition[5];
+  Vector2d ballPos = getRobotPose()*getBallModel().getFuturePosition(5);
 
   double groundLineDistance = 500.0;
   MODIFY("StrategySymbols:groundLineDistance", groundLineDistance);
@@ -164,7 +166,7 @@ Vector2d StrategySymbols::calculateGoalieGuardPosition()
 Vector2d StrategySymbols::calculatePenaltyGoalieGuardPosition()
 {
   const Vector2d goalCenter(getFieldInfo().xPosOwnGroundline, 0);
-  const Vector2d& ballPos = getRobotPose()*getBallModel().futurePosition[5];
+  const Vector2d& ballPos = getRobotPose()*getBallModel().getFuturePosition(5);
 
   Math::LineSegment goal2BallLine(goalCenter, ballPos);
 
@@ -401,5 +403,5 @@ double StrategySymbols::defensePoseA() {
 }
 
 int StrategySymbols::getBestAction() {
-   return theInstance->getActionModel().myAction;
+   return theInstance->getKickActionModel().bestAction;
 }

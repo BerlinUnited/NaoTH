@@ -235,7 +235,7 @@ public:
             y = y + 1;
             fehler = fehler + dx;
            }
-           drawPointToImage(image, x, y, a, b, c);
+           if(!drawPointToImage(image, x, y, a, b, c)) break;
         }
       }
       else
@@ -249,7 +249,7 @@ public:
             y = y - 1;
             fehler = fehler + dx;
            }
-           drawPointToImage(image, x, y, a, b, c);
+           if(!drawPointToImage(image, x, y, a, b, c)) break;
         }
       }
     }
@@ -269,7 +269,7 @@ public:
             x = x + 1;
             fehler = fehler + dy;
            }
-           drawPointToImage(image, x, y, a, b, c);
+           if(!drawPointToImage(image, x, y, a, b, c)) break;
         }
       }
       else
@@ -283,7 +283,7 @@ public:
             x = x + 1;
             fehler = fehler - dy;
            }
-           drawPointToImage(image, x, y, a, b, c);
+           if(!drawPointToImage(image, x, y, a, b, c)) break;
         }
       }
     }//end else
@@ -293,7 +293,7 @@ public:
   /*
    * Colors point x,y with the given color (a,b,c)
    */
-  inline static void drawPointToImage(
+  inline static bool drawPointToImage(
     DrawingCanvas& canvas, 
     const int x, 
     const int y,
@@ -304,7 +304,9 @@ public:
     if (x >= 0 && y >=0 && x < (int)canvas.width() && y < (int)canvas.height())
     {
       canvas.drawPoint(x,y,a,b,c);
+      return true;
     }//end if
+    return false;
   }//end drawPointToImage
 
 

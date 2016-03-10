@@ -17,6 +17,7 @@ import de.naoth.rc.messages.Messages;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -29,17 +30,17 @@ public class XABSLProtoParser {
 
     private XABSLBehavior behavior = null;
 
-    public XABSLBehaviorFrame parse(Messages.BehaviorStateSparse status) {
+    public XABSLBehaviorFrame parseSparse(Messages.BehaviorStateSparse status) {
         XABSLBehaviorFrame frame = new XABSLBehaviorFrame(status.getFrameNumber());
 
-        ArrayList<Symbol> inputSymbols = parseSparse(
+        ArrayList<Symbol> inputSymbols = XABSLProtoParser.this.parseSparse(
                 behavior.inputSymbols,
                 status.getInputSymbolList());
         for (Symbol s : inputSymbols) {
             frame.addInputSymbol(s);
         }
 
-        ArrayList<Symbol> outputSymbols = parseSparse(
+        ArrayList<Symbol> outputSymbols = XABSLProtoParser.this.parseSparse(
                 behavior.outputSymbols,
                 status.getOutputSymbolList());
         for (Symbol s : outputSymbols) {
@@ -111,7 +112,44 @@ public class XABSLProtoParser {
             Option protoOption = this.behavior.options.get(a.id);
             a.option = new Option(protoOption); // make a shallow copy
 
-            // TODO: parameters
+            // parse Parameters
+            Iterator<Double> iterDecimal = option_msg.getDecimalParametersList().iterator();
+            Iterator<Boolean> iterBoolean = option_msg.getBooleanParametersList().iterator();
+            Iterator<Integer> iterEnum = option_msg.getEnumeratedParametersList().iterator();
+
+            for(int i = 0; i < a.option.parameters.size(); i++)
+            {
+                Symbol symbol = a.option.parameters.get(i);
+                
+                if(symbol.getDataType() == SymbolType.DECIMAL) {
+                    if(iterDecimal.hasNext()) {
+                        double v = iterDecimal.next().doubleValue();
+                        Symbol.Decimal s = (Symbol.Decimal)symbol;
+                        a.option.parameters.set(i, s.createDecimal(v));
+                    } else {
+                        // todo: exception
+                    }
+                } else if(symbol.getDataType() == SymbolType.BOOL) {
+                    if(iterBoolean.hasNext()) {
+                        boolean v = iterBoolean.next().booleanValue();
+                        Symbol.Boolean s = (Symbol.Boolean)symbol;
+                        a.option.parameters.set(i, s.createBoolean(v));
+                    }else {
+                        // todo: exception
+                    }
+                } else if(symbol.getDataType() == SymbolType.ENUM) {
+                    if(iterEnum.hasNext()) {
+                        int v = iterEnum.next().intValue();
+                        Symbol.Enum s = (Symbol.Enum)symbol;
+                        a.option.parameters.set(i, s.createEnum(s.enumType, v));
+                    }else {
+                        // todo: exception
+                    }
+                } else {
+                    // todo: exception
+                }
+            }
+
             for (Messages.XABSLActionSparse sa : option_msg.getActiveSubActionsList()) {
                 a.activeSubActions.add(parse(sa));
             }
@@ -144,7 +182,7 @@ public class XABSLProtoParser {
         }
     }
 
-    public XABSLBehavior parse(Messages.BehaviorStateComplete behavior_msg) {
+    public XABSLBehavior parseComplete(Messages.BehaviorStateComplete behavior_msg) {
         this.behavior = new XABSLBehavior();
 
         // parse the enumerations first, so they are available when symbols are parsed

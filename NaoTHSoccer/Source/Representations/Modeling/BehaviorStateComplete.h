@@ -1,5 +1,5 @@
 /* 
- * File:   BehaviorStatus.h
+ * File:   BehaviorStateComplete.h
  * Author: thomas
  *
  * Created on 22. march 2010, 09:10

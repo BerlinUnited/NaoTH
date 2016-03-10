@@ -13,6 +13,7 @@
 #include "Representations/Modeling/TeamMessage.h"
 #include "Representations/Modeling/BodyState.h"
 #include "Representations/Motion/MotionStatus.h"
+#include "Representations/Modeling/RoleDecisionModel.h"
 #include "Representations/Modeling/SoccerStrategy.h"
 #include "Representations/Modeling/PlayersModel.h"
 
@@ -24,6 +25,7 @@ BEGIN_DECLARE_MODULE(TeamCommSender)
   REQUIRE(BallModel)
   REQUIRE(BodyState)
   REQUIRE(MotionStatus)
+  REQUIRE(RoleDecisionModel)
   REQUIRE(SoccerStrategy)
   REQUIRE(PlayersModel)
   REQUIRE(TeamMessage)
@@ -45,6 +47,7 @@ public:
                             const BallModel &ballModel,
                             const RobotPose &robotPose,
                             const BodyState &bodyState,
+                            const RoleDecisionModel &roleDecisionModel,
                             const SoccerStrategy &soccerStrategy,
                             const PlayersModel &playersModel,
                             const BatteryData &batteryData,

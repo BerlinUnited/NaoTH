@@ -8,13 +8,9 @@ option fast_forward_kick
     decision
     {
       if(executed_motion.step_control.right_movable && @foot == right)
-      {
         goto kick_with_right_foot;
-      }
       else if(executed_motion.step_control.left_movable && @foot == left)
-      {
         goto kick_with_left_foot;
-      }
       else
         stay;
     }

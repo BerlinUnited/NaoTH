@@ -33,6 +33,7 @@
 #include "Representations/Infrastructure/TeamMessageData.h"
 #include "Representations/Infrastructure/GameData.h"
 #include "Representations/Infrastructure/SoundData.h"
+#include "Representations/Infrastructure/WhistlePercept.h"
 
 // local tools
 #include "Tools/IPCData.h"
@@ -99,6 +100,7 @@ public:
   void get(ButtonData& data) { naoSensorData.get(data); }
   void get(BatteryData& data) { naoSensorData.get(data); }
   void get(UltraSoundReceiveData& data) { naoSensorData.get(data); }
+  void get(WhistlePercept& data) {data.counter = whistleSensorData.data(); }
 
 
   // write directly to the shared memory
@@ -147,7 +149,7 @@ public:
 
 
 protected:
-  virtual MessageQueue* createMessageQueue(const std::string& name)
+  virtual MessageQueue* createMessageQueue(const std::string& /*name*/)
   {
     return new MessageQueue4Threads();
   }
@@ -167,6 +169,10 @@ protected:
   SharedMemoryWriter<Accessor<UltraSoundSendData> > naoCommandUltraSoundSendData;
   SharedMemoryWriter<Accessor<IRSendData> > naoCommandIRSendData;
   SharedMemoryWriter<Accessor<LEDData> > naoCommandLEDData;
+
+  // WhistleDetector --> NaoController
+  SharedMemoryReader<int> whistleSensorData;
+
   // -- end -- shared memory access --
   
   //

@@ -21,6 +21,7 @@ using namespace naoth;
 
 // kind of a HACK, needed by the logsimulator
 extern ModuleManager* getModuleManager(Cognition* c);
+extern ModuleManager* getModuleManager(Motion* m);
 
 #define TO_STRING_INT(x) #x
 #define TO_STRING(x) TO_STRING_INT(x)
@@ -96,16 +97,26 @@ int main(int argc, char** argv)
     return (EXIT_FAILURE);
   }
 
+  ModuleManager* theMotionManager = getModuleManager(theMotion);
+  if(!theMotionManager)
+  {
+    std::cerr << "ERROR: theMotion is not of type ModuleManager" << std::endl;
+    return (EXIT_FAILURE);
+  }
+
   // register a module to provide all the logged data
-  ModuleCreator<LogProvider>* theLogProvider = theCognitionManager->registerModule<LogProvider>(std::string("LogProvider"));
+  ModuleCreator<LogProvider>* theLogProviderCognition = theCognitionManager->registerModule<LogProvider>(std::string("LogProvider"));
+  ModuleCreator<LogProvider>* theLogProviderMotion = theMotionManager->registerModule<LogProvider>(std::string("LogProvider"));
 
   // register processes
   sim.registerCognition((naoth::Callable*)(theCognition));
   sim.registerMotion((naoth::Callable*)(theMotion));
  
-  theLogProvider->setEnabled(true);
-  theLogProvider->getModuleT()->init(sim.logFileScanner, sim.getRepresentations(), sim.getIncludedRepresentations());
+  theLogProviderCognition->setEnabled(true);
+  theLogProviderCognition->getModuleT()->init(sim.logFileScanner, sim.getRepresentations(), sim.getIncludedRepresentations());
   
+  theLogProviderMotion->setEnabled(true);
+  theLogProviderMotion->getModuleT()->init(sim.logFileScanner, sim.getRepresentations(), sim.getIncludedRepresentations());
 
   // start the execution
   sim.main();

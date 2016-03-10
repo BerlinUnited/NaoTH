@@ -25,6 +25,7 @@ GoalDetector::GoalDetector()
   cameraID(CameraInfo::Bottom)
 {
   DEBUG_REQUEST_REGISTER("Vision:GoalDetector:markPostScans","..", false);
+  DEBUG_REQUEST_REGISTER("Vision:GoalDetector:markPosts","..", false);
 
   DEBUG_REQUEST_REGISTER("Vision:GoalDetector:showColorByHistogramBottom","..", false);
   DEBUG_REQUEST_REGISTER("Vision:GoalDetector:showColorByHistogramTop","..", false);
@@ -149,12 +150,6 @@ void GoalDetector::calcuateGoalPosts()
     {
       Math::Line line = cluster.getLine();
 
-      Vector2d begin, end;
-      begin = line.getBase();
-      end = line.getBase() + line.getDirection()*50;
-      DEBUG_REQUEST("Vision:GoalDetector:markPostScans",  
-        LINE_PX(ColorClasses::red, (int)(begin.x+0.5), (int)(begin.y+0.5), (int)(end.x+0.5), (int)(end.y+0.5));
-      );
       GoalPercept::GoalPost post;
       post.directionInImage = line.getDirection();
       post.basePoint = scanForEndPoint(line.getBase(), post.directionInImage);
@@ -171,7 +166,29 @@ void GoalDetector::calcuateGoalPosts()
       post.seenWidth = cluster.getFeatureWidth();
       post.seenHeight = (post.basePoint - post.topPoint).abs();
 
-      getGoalPercept().add(post);
+      DEBUG_REQUEST("Vision:GoalDetector:markPosts",  
+        Vector2i begin;
+        Vector2i end;
+        begin = post.basePoint;
+        end = post.topPoint;
+        Vector2d postNorm = Vector2d(post.topPoint - post.basePoint).normalize().rotateRight() * post.seenWidth * 0.5;
+
+        Vector2i beginL = post.basePoint - postNorm;
+        Vector2i beginR = post.basePoint + postNorm;
+        Vector2i endL = post.topPoint - postNorm;
+        Vector2i endR = post.topPoint + postNorm;
+        ColorClasses::Color col = ColorClasses::green;
+        if(!post.positionReliable) col = ColorClasses::red;
+
+        LINE_PX(col, beginL.x, beginL.y, beginR.x, beginR.y);
+        LINE_PX(col, beginL.x, beginL.y, endL.x, endL.y);
+        LINE_PX(col, beginR.x, beginR.y, endR.x, endR.y);
+        LINE_PX(col, endL.x, endL.y, endR.x, endR.y);
+      );
+      if(post.positionReliable)
+      {
+        getGoalPercept().add(post);
+      }
     }
   }
 }

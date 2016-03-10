@@ -15,29 +15,28 @@
 #include "Representations/Infrastructure/FrameInfo.h"
 #include "Representations/Infrastructure/FieldInfo.h"
 #include "Representations/Modeling/BallModel.h"
-#include "Representations/Modeling/PlayerInfo.h"
 #include "Representations/Modeling/RobotPose.h"
 #include "Representations/Modeling/BodyState.h"
-#include "Representations/Modeling/SoccerStrategy.h"
+#include "Representations/Modeling/PlayerInfo.h"
+#include "Representations/Modeling/RoleDecisionModel.h"
+#include "Representations/Modeling/TeamMessageStatisticsModel.h"
 #include "Representations/Motion/MotionStatus.h"
 
 #include <Tools/DataStructures/ParameterList.h>
 #include "Tools/Debug/DebugParameterList.h"
 
 BEGIN_DECLARE_MODULE(TeamSymbols)
-
-  PROVIDE(DebugParameterList)
-
   REQUIRE(TeamMessage)
   REQUIRE(FrameInfo)
   REQUIRE(BallModel)
   REQUIRE(RobotPose)
   REQUIRE(FieldInfo)
   REQUIRE(BodyState)
-  REQUIRE(SoccerStrategy)
   REQUIRE(MotionStatus)
+  REQUIRE(TeamMessageStatisticsModel)
 
   PROVIDE(PlayerInfo)
+  PROVIDE(RoleDecisionModel)
 END_DECLARE_MODULE(TeamSymbols)
 
 class TeamSymbols: public TeamSymbolsBase
@@ -47,7 +46,6 @@ public:
   TeamSymbols()
   {
     theInstance = this;
-    getDebugParameterList().add(&parameters);
   }
 
   void registerSymbols(xabsl::Engine& engine);
@@ -73,16 +71,16 @@ private:
     int maximumFreshTime;
     int strikerBonusTime;
     int maxBallLostTime;
+    double minFailureProbability;
     
-    virtual ~Parameters() {
-    }
+    virtual ~Parameters() {}
   } parameters;
 
 private:
   static TeamSymbols* theInstance;
   static double getTeamMembersAliveCount();
   static bool calculateIfStriker();
-  static bool calculateIfStrikerByTimeToBall();
+  static bool calculateIfSecondStriker();
   static int whoIsFastestToBall();
   static bool getWasStriker();
   static void setWasStriker(bool striker);

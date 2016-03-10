@@ -17,6 +17,8 @@ import de.naoth.rc.components.behaviorviewer.XABSLBehaviorFrame;
 import de.naoth.rc.components.behaviorviewer.XABSLProtoParser;
 import de.naoth.rc.components.behaviorviewer.model.Symbol;
 import de.naoth.rc.drawingmanager.DrawingEventManager;
+import de.naoth.rc.drawings.Circle;
+import de.naoth.rc.drawings.DrawingCollection;
 import de.naoth.rc.drawings.Robot;
 import de.naoth.rc.logmanager.BlackBoard;
 import de.naoth.rc.logmanager.LogDataFrame;
@@ -26,7 +28,6 @@ import de.naoth.rc.manager.DebugDrawingManager;
 import de.naoth.rc.manager.GenericManagerFactory;
 
 import de.naoth.rc.messages.Messages;
-import de.naoth.rc.messages.Messages.XABSLParameter;
 import de.naoth.rc.server.Command;
 import de.naoth.rc.server.CommandSender;
 import java.awt.Color;
@@ -38,7 +39,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.logging.Level;
@@ -160,15 +160,6 @@ public class BehaviorViewer extends AbstractDialog
     this.behaviorBuffer = new ArrayList<>();
   }
 
-  class SymbolComperator implements Comparator<Messages.XABSLParameter>
-  {
-    @Override
-    public int compare(XABSLParameter o1, XABSLParameter o2) {
-      return o1.getName().compareTo(o2.getName());
-    }
-  }//end SymbolComperator
-
-
   class BehaviorListener implements ObjectListener<byte[]>
   {
         @Override
@@ -178,7 +169,7 @@ public class BehaviorViewer extends AbstractDialog
               Messages.BehaviorStateComplete behavior_msg = Messages.BehaviorStateComplete.parseFrom(object);
               
               behaviorParser = new XABSLProtoParser();
-              currentBehavior =  behaviorParser.parse(behavior_msg);
+              currentBehavior =  behaviorParser.parseComplete(behavior_msg);
             }
             catch(InvalidProtocolBufferException ex)
             {
@@ -202,13 +193,17 @@ public class BehaviorViewer extends AbstractDialog
             
             try
             {
-              Messages.BehaviorStateSparse status = Messages.BehaviorStateSparse.parseFrom(object);
-              final XABSLBehaviorFrame frame = behaviorParser.parse(status);
+              final Messages.BehaviorStateSparse status = Messages.BehaviorStateSparse.parseFrom(object);
               
+             if(status.hasErrorMessage()) {
+                 JOptionPane.showMessageDialog(BehaviorViewer.this, status.getErrorMessage(), "ERROR", JOptionPane.ERROR_MESSAGE);
+                 errorOccured(status.getErrorMessage());
+             }
              
               SwingUtilities.invokeLater(new Runnable() {
                   @Override
                   public void run() {
+                      XABSLBehaviorFrame frame = behaviorParser.parseSparse(status);
                       addFrame(frame);
                   }
               });
@@ -328,7 +323,17 @@ public class BehaviorViewer extends AbstractDialog
      
      Robot robot = new Robot(robot_x, robot_y, robot_r/180.0*Math.PI);
      
-     Plugin.drawingEventManager.fireDrawingEvent(robot);
+     double ball_x = Double.parseDouble(getSymbolValue(frame, "ball.position.field.x"));
+     double ball_y = Double.parseDouble(getSymbolValue(frame, "ball.position.field.y"));
+     double ball_radius = Double.parseDouble(getSymbolValue(frame, "ball.radius"));
+     Circle ball = new Circle((int)ball_x, (int)ball_y,(int)ball_radius);
+     
+        DrawingCollection dc = new DrawingCollection();
+        dc.add(robot);
+        dc.add(ball);
+     
+     Plugin.drawingEventManager.fireDrawingEvent(dc);
+     
     }catch(Exception ex)
     {
         Logger.getLogger(BehaviorViewer.class.getName()).log(Level.SEVERE, null, ex);
@@ -768,7 +773,7 @@ public class BehaviorViewer extends AbstractDialog
         //System.out.println(selectedAgent);
 
         Command command = new Command(setAgentCommand)
-                .addArg(setAgentCommandParam, selectedAgent.toString());
+                .addArg(setAgentCommandParam, selectedAgent);
         sendCommand(command);
       }//end if
     }//GEN-LAST:event_cbAgentsItemStateChanged
@@ -800,7 +805,7 @@ public class BehaviorViewer extends AbstractDialog
   private class LogBehaviorListener implements LogFrameListener
   {
     @Override
-    public void newFrame(BlackBoard b, int frameNumber) {
+    public void newFrame(BlackBoard b) {
         
         try
         {
@@ -808,7 +813,7 @@ public class BehaviorViewer extends AbstractDialog
           Messages.BehaviorStateComplete status = Messages.BehaviorStateComplete.parseFrom(f.getData());
           
           behaviorParser = new XABSLProtoParser();
-          currentBehavior = behaviorParser.parse(status);
+          currentBehavior = behaviorParser.parseComplete(status);
         }
         catch(InvalidProtocolBufferException ex)
         {
@@ -819,7 +824,7 @@ public class BehaviorViewer extends AbstractDialog
         {
           LogDataFrame f = b.get("BehaviorStateSparse");
           Messages.BehaviorStateSparse status = Messages.BehaviorStateSparse.parseFrom(f.getData());
-          final XABSLBehaviorFrame frame = behaviorParser.parse(status);
+          final XABSLBehaviorFrame frame = behaviorParser.parseSparse(status);
           addFrame(frame);
         }
         catch(InvalidProtocolBufferException ex)

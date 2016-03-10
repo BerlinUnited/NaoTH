@@ -27,4 +27,9 @@ public class DrawingCollection implements Drawable
         drawing.draw(g2d);
     }
   }//end draw
+
+    public boolean isEmpty() {
+        return drawables.isEmpty();
+    }
+  
 }//end DrawingCollection

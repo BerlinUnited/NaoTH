@@ -109,7 +109,7 @@ solution "NaoTHSoccer"
   -- additional defines for windows
   if(_OPTIONS["platform"] ~= "Nao" and _ACTION ~= "gmake") then
     configuration {"windows"}
-    defines {"WIN32", "NOMINMAX"}
+    defines {"WIN32", "NOMINMAX", "EIGEN_DONT_ALIGN"}
     buildoptions {"/wd4351", -- disable warning: "...new behavior: elements of array..."
                   "/wd4996", -- disable warning: "...deprecated..."
                   "/wd4290"} -- exception specification ignored (typed stecifications are ignored)
@@ -159,6 +159,9 @@ solution "NaoTHSoccer"
       debugargs { "--sync" }
     dofile (FRAMEWORK_PATH .. "/Platforms/Make/LogSimulator.lua")
       kind "ConsoleApp"
+      links { "NaoTHSoccer", "Commons" }
+    dofile (FRAMEWORK_PATH .. "/Platforms/Make/LogSimulatorJNI.lua")
+      kind "SharedLib"
       links { "NaoTHSoccer", "Commons" }
   end
   

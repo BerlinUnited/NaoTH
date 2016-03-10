@@ -88,6 +88,7 @@ public:
     {
       PARAMETER_REGISTER(edgelSimThreshold) = 0.8;
       PARAMETER_REGISTER(quadCompasSmoothingFactor) = 0.4;
+      PARAMETER_REGISTER(minimalNumberOfPairs) = 0;
 
       syncWithConfig();
     }
@@ -97,6 +98,7 @@ public:
 
     double edgelSimThreshold;
     double quadCompasSmoothingFactor;
+    int minimalNumberOfPairs;
   } parameters;
 
   struct Neighbors {

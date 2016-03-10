@@ -1,0 +1,157 @@
+option situation_based_secondstriker 
+{
+
+  common decision
+  {
+    if(!body.ready_to_walk || game.current_mode != playing)
+      goto idle;
+    else if(situation_abortable && ball.time_since_last_seen > 1500)
+      goto secondstriker_search;
+    else if(situation_abortable && vector.abs(x=ball.preview.x, y=ball.preview.y) > 1800)
+      goto secondstriker_goto_ball;
+  }
+
+  initial state idle {
+    decision {
+      else
+        goto secondstriker_search;
+    }
+    action {
+      situation_abortable = true;
+    }
+  }
+
+  state secondstriker_search {
+    decision {
+      else if(action_done)
+        goto secondstriker_goto_ball;
+      else
+        stay;
+    }
+    action{
+      situation_abortable = true;
+      search_ball();
+    }
+  }
+
+  state secondstriker_goto_ball {
+    decision {
+      else if (action_done) {
+        goto wait_for_firststriker;
+      }
+      else
+        stay;
+    }
+    action{
+      situation_abortable = true;
+      go_to_ball_with_slow_USOA(distance = 1300);
+    }
+  }
+
+  state wait_for_firststriker {
+    decision {
+      else if (state_time > 2000) { //Timeout: First striker is not reacting
+        goto interfere_with_attack;
+      }
+      else 
+        stay;
+    }
+    action {
+      situation_abortable = true;
+    }
+  }
+
+  state interfere_with_attack { //Second striker now acts as a first striker
+    decision{
+      else if(action_done && state_time > 1000 &&
+         ball.preview.x < 280 && abs(value = ball.preview.y) < 50 && vector.abs(x=ball.speed.x, y=ball.speed.y) < 150)
+      {
+        if(obstacle.ultrasound.blockedtime > 100 && obstacle.ultrasound.distance < 400)
+          goto secondstriker_sidekick;
+  
+        else if((   abs(value=attack.direction.preview)<20 && robot_pose.planned.x<3500) 
+                 || abs(value=attack.direction.preview)<12)
+          goto secondstriker_attack;
+        else if(( (abs(value=robot_pose.planned.x)<4000) && abs(value=attack.direction.preview)>90)
+                ||(abs(value=attack.direction.preview)<90 && abs(value=attack.direction.preview)>40))
+          goto secondstriker_sidekick;
+        else if (ball.time_since_last_seen > 1500) {
+          goto secondstriker_search;
+        }
+        else
+          goto secondstriker_turn;
+      }
+      else
+        stay;
+    }
+    action{
+      situation_abortable = true;
+      go_to_ball_with_USOA(distance = 190);
+    }
+  }
+  
+  state secondstriker_turn {
+    decision{
+
+      else if (obstacle.ultrasound.blockedtime > 100 && obstacle.ultrasound.distance < 400) // there is an obstacle
+        goto secondstriker_sidekick;
+      else if((abs(value=attack.direction.preview)<20 && robot_pose.planned.x<3500) || abs(value=attack.direction.preview)<12)
+        goto secondstriker_attack;
+      else if(( (abs(value=robot_pose.planned.x)<4000) && abs(value=attack.direction.preview)>=90)  // far away from goal and the target is behing us
+              ||(abs(value=attack.direction.preview)<90 && abs(value=attack.direction.preview)>40)) // a \in [40, 90] 
+        goto secondstriker_sidekick;
+  
+      else
+        stay;
+    }
+    action{
+      situation_abortable = true;
+      turn_to_attack_direction();
+    }
+  }
+
+  state secondstriker_sidekick {
+    decision {
+      else if(action_done)
+        goto secondstriker_goto_ball;
+      else
+        stay;
+    }
+    action {
+      situation_abortable = true;
+      situation_sidekick();
+    }
+  }
+
+  state secondstriker_sidekick_stable {
+    decision {
+      else if(action_done)
+        goto secondstriker_goto_ball;
+      else
+        stay;
+    }
+    action {
+      situation_abortable = true;
+      situation_sidekick();
+      motion.walk.style = stable;
+    }
+  }
+
+
+  state secondstriker_attack {
+    decision{
+      else if (situation_abortable && (obstacle.ultrasound.blockedtime > 100 && obstacle.ultrasound.distance < 400))
+        goto secondstriker_sidekick;
+      else if(action_done)
+        goto secondstriker_goto_ball;
+      else
+        stay;
+    }
+    action{
+      situation_abortable = true;
+      situation_attack();
+    }
+  }
+
+
+}

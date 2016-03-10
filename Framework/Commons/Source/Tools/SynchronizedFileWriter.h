@@ -8,6 +8,10 @@
 #include <iostream>
 #include <stdio.h>
 
+#ifdef NAO
+#include <unistd.h>
+#endif
+
 class SynchronizedFileWriter
 {
 private:

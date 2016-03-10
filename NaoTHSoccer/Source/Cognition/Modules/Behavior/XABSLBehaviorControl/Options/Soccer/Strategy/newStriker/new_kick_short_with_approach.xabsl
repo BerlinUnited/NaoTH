@@ -1,0 +1,84 @@
+option new_kick_short_with_approach
+{
+  initial state decide
+  {
+    decision {
+      if(ball.preview.y > 0)
+        goto approach_for_right;
+      else
+        goto approach_for_left;
+    }
+    action {
+    }
+  }
+
+  state approach_for_right {
+    decision{
+      if (action_done) 
+          goto attack_with_right_foot;
+      else 
+        stay;
+    }
+    action{
+      go_to_ball_with_foot_dynamic(right=true, distance=160);
+      motion.walk.style = normal;
+    }
+  }
+
+  state attack_with_right_foot {
+    decision {
+      if(action_done)
+        goto done;
+      else
+        stay;
+    }
+    action {
+      situation_abortable = false;
+      fast_forward_kick(foot = right);
+    }
+  }
+
+  state approach_for_left {
+    decision{
+      if (action_done) 
+        goto attack_with_left_foot;
+      else 
+        stay;
+    }
+    action{
+      go_to_ball_with_foot_dynamic(right=false, distance=160);
+      motion.walk.style = normal;
+    }
+  }
+
+  state attack_with_left_foot {
+    decision {
+      if(action_done)
+        goto done;
+      else
+        stay;
+    }
+    action {
+      situation_abortable = false;
+      fast_forward_kick(foot = left);
+    }
+  }
+
+  target state done
+  {
+    decision{
+      stay;
+    }
+    action{
+      //NOTE: this is synchronized with fast_forward_kick()->finished
+      motion.type = stand;
+    
+      motion.walk.stop_with_stand = true;
+      motion.walk.coordinate = hip;
+      motion.walk.style = normal;
+
+      //loook at percept
+      head.control_mode = look_at_ball_percept;
+    }
+  }
+}
