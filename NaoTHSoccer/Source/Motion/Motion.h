@@ -117,20 +117,20 @@ public:
   *
   */
   void init(naoth::ProcessInterface& platformInterface, const naoth::PlatformBase& platform);
-  
+
 private:
   void processSensorData();
-  
+
   void postProcess();
 
   void modifyJointOffsets();
 
 private:
-  
+
   class Parameter : public ParameterList
   {
   public:
-    Parameter() : ParameterList("Motion") 
+    Parameter() : ParameterList("Motion")
     {
       PARAMETER_REGISTER(useGyroRotationOdometry) = true;
 
@@ -140,7 +140,7 @@ private:
     bool useGyroRotationOdometry;
 
   } parameter;
-  
+
 
 private:
   void debugPlots();
@@ -166,8 +166,12 @@ private:
 private:
   std::stringstream debug_answer_stream;
 
+private:
+  RingBuffer<double,100> currentsRingBuffer[naoth::JointData::numOfJoint];
+
+  RingBuffer<double,4> motorJointDataBuffer[naoth::JointData::numOfJoint];
 };
 
 
-#endif  // _Motion_h_ 
+#endif  // _Motion_h_
 
