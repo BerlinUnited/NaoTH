@@ -82,6 +82,14 @@ public:
     DEBUG_REQUEST_REGISTER("StandMotion:relax_init", "set snsor joint data to motor joint data", false);
     DEBUG_REQUEST_REGISTER("StandMotion:relax_joints_continuously", "continuously relax the joints", false);
     DEBUG_REQUEST_REGISTER("StandMotion:use_filtered_motor_joint_commands", "continuously relax the joints using a simple filter", false);
+    DEBUG_REQUEST_REGISTER("StandMotion:add_sine_to_motor_commands", "add a sine to the motor commands while the robot is standing", false);
+
+    // init sine
+    for(int i = naoth::JointData::RHipYawPitch; i <= naoth::JointData::LAnkleRoll; i++) {
+        sine[i] = Sine(Math::fromDegrees(0.08),2*getRobotInfo().getBasicTimeStepInSecond());
+        amplitudes[i] = 0.08;
+        periods[i] = 2*getRobotInfo().getBasicTimeStepInSecond();
+    }
   }
 
   void calculateTrajectory(const MotionRequest& motionRequest)
@@ -232,7 +240,7 @@ public:
         }
 
         MODIFY("StandMotion:relax_joints_continuously:alpha",alpha);
-        for( int i = naoth::JointData::RHipYawPitch; i < naoth::JointData::LAnkleRoll; i++) {
+        for( int i = naoth::JointData::RHipYawPitch; i <= naoth::JointData::LAnkleRoll; i++) {
             getMotorJointData().position[i] = alpha * relaxedMotorJoints.position[i] + (1 - alpha) * getSensorJointData().position[i];
         }
 
@@ -243,7 +251,7 @@ public:
     DEBUG_REQUEST("StandMotion:use_filtered_motor_joint_commands",
       if (isRelaxing) {
         MODIFY("StandMotion:motor_filter:k_i",beta);
-        for( int i = naoth::JointData::RHipYawPitch; i<naoth::JointData::LAnkleRoll; i++) {
+        for( int i = naoth::JointData::RHipYawPitch; i <= naoth::JointData::LAnkleRoll; i++) {
             filter[i].updateFilter(getMotorJointData().position[i],getSensorJointData().position[i]);
             filter[i].setK_i(beta);
 
@@ -256,14 +264,52 @@ public:
       }
     );
 
+    DEBUG_REQUEST("StandMotion:add_sine_to_motor_commands",
+      if (isRelaxing) {
+
+        MODIFY("StandMotion:sine:LHipYawPitch:amplitude[°]",amplitudes[naoth::JointData::LHipYawPitch]);
+        MODIFY("StandMotion:sine:LHipYawPitch:period[s]", periods[naoth::JointData::LHipYawPitch]);
+        MODIFY("StandMotion:sine:RHipPitch:amplitude[°]",amplitudes[naoth::JointData::RHipPitch]);
+        MODIFY("StandMotion:sine:RHipPitch:period[s]", periods[naoth::JointData::RHipPitch]);
+        MODIFY("StandMotion:sine:LHipPitch:amplitude[°]",amplitudes[naoth::JointData::LHipPitch]);
+        MODIFY("StandMotion:sine:LHipPitch:period[s]", periods[naoth::JointData::LHipPitch]);
+        MODIFY("StandMotion:sine:RHipRoll:amplitude[°]",amplitudes[naoth::JointData::RHipRoll]);
+        MODIFY("StandMotion:sine:RHipRoll:period[s]", periods[naoth::JointData::RHipRoll]);
+        MODIFY("StandMotion:sine:LHipRoll:amplitude[°]",amplitudes[naoth::JointData::LHipRoll]);
+        MODIFY("StandMotion:sine:LHipRoll:period[s]", periods[naoth::JointData::LHipRoll]);
+        MODIFY("StandMotion:sine:RKneePitch:amplitude[°]",amplitudes[naoth::JointData::RKneePitch]);
+        MODIFY("StandMotion:sine:RKneePitch:period[s]", periods[naoth::JointData::RKneePitch]);
+        MODIFY("StandMotion:sine:LKneePitch:amplitude[°]",amplitudes[naoth::JointData::LKneePitch]);
+        MODIFY("StandMotion:sine:LKneePitch:period[s]", periods[naoth::JointData::LKneePitch]);
+        MODIFY("StandMotion:sine:RAnklePitch:amplitude[°]",amplitudes[naoth::JointData::RAnklePitch]);
+        MODIFY("StandMotion:sine:RAnklePitch:period[s]", periods[naoth::JointData::RAnklePitch]);
+        MODIFY("StandMotion:sine:LAnklePitch:amplitude[°]",amplitudes[naoth::JointData::LAnklePitch]);
+        MODIFY("StandMotion:sine:LAnklePitch:period[s]", periods[naoth::JointData::LAnklePitch]);
+        MODIFY("StandMotion:sine:RAnkleRoll:amplitude[°]",amplitudes[naoth::JointData::RAnkleRoll]);
+        MODIFY("StandMotion:sine:RAnkleRoll:period[s]", periods[naoth::JointData::RAnkleRoll]);
+        MODIFY("StandMotion:sine:LAnkleRoll:amplitude[°]",amplitudes[naoth::JointData::LAnkleRoll]);
+        MODIFY("StandMotion:sine:LAnkleRoll:period[s]", periods[naoth::JointData::LAnkleRoll]);
+
+        for( int i = naoth::JointData::RHipYawPitch; i <= naoth::JointData::LAnkleRoll; i++) {
+            sine[i].setAmplitude(Math::fromDegrees(amplitudes[i]));
+            sine[i].setPeriod(periods[i]);
+            getMotorJointData().position[i] = getMotorJointData().position[i] + sine[i](getFrameInfo().getTimeInSeconds());
+        }
+      } else {
+        for( int i = naoth::JointData::RHipYawPitch; i <= naoth::JointData::LAnkleRoll; i++) {
+          filter[i].resetFilter();
+        }
+      }
+    );
+
     DEBUG_REQUEST("StandMotion:relax_joints_loop",
-      for( int i = naoth::JointData::RHipYawPitch; i<naoth::JointData::LAnkleRoll; i++) {
+      for( int i = naoth::JointData::RHipYawPitch; i <= naoth::JointData::LAnkleRoll; i++) {
         getMotorJointData().position[i] = getSensorJointData().position[i];
       }
     );
 
     DEBUG_REQUEST("StandMotion:relax_joints",
-      for( int i = naoth::JointData::RHipYawPitch; i<naoth::JointData::LAnkleRoll; i++) {
+      for( int i = naoth::JointData::RHipYawPitch; i <= naoth::JointData::LAnkleRoll; i++) {
         getMotorJointData().position[i] = relaxData.position[i];
       }
     );
@@ -393,6 +439,41 @@ private:
 
   jointFilter filter[naoth::JointData::numOfJoint];
   double beta;
+
+  // used by StandMotion:add_sine_to_motor_commands
+  class Sine{
+  public:
+      Sine():
+        amplitude(0),
+        period(1)
+      {
+      }
+
+      Sine(double amplitude, double period):
+          amplitude(amplitude),
+          period(period)
+      {}
+
+      double operator() (double time){
+          return amplitude * sin(2*M_PI/period * time);
+      }
+
+      void setAmplitude(double a) {
+          amplitude = a;
+      }
+
+      void setPeriod(double T){
+          period = T;
+      }
+
+  private:
+    double amplitude; // [rad]
+    double period; // [s]
+  };
+
+  Sine sine[naoth::JointData::numOfJoint];
+  double amplitudes[naoth::JointData::numOfJoint]; // [°]
+  double periods[naoth::JointData::numOfJoint]; // [s]
 };
 
 #endif  /* _StandMotion_H */
