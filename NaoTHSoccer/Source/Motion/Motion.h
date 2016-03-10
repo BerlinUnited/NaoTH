@@ -53,6 +53,8 @@
 
 #include <Tools/DataStructures/ParameterList.h>
 
+#include <Tools/DataStructures/RingBuffer.h>
+
 BEGIN_DECLARE_MODULE(Motion)
   PROVIDE(StopwatchManager)
   PROVIDE(DebugDrawings)
@@ -163,6 +165,10 @@ private:
 private:
   std::stringstream debug_answer_stream;
 
+private:
+  RingBuffer<double,100> currentsRingBuffer[naoth::JointData::numOfJoint];
+
+  RingBuffer<double,4> motorJointDataBuffer[naoth::JointData::numOfJoint];
 };
 
 
