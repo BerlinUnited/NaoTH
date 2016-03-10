@@ -66,6 +66,7 @@ private:
   ModuleCreator<Simulation>* simulationModule;
 
   void draw_function(const std::vector<Vector3d>& function) const;
+	double globRot;
 };
 
 #endif  /* _SimulationTest_H */
