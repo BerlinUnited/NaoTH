@@ -16,6 +16,7 @@
 
 #include "IKMotion.h"
 #include "Tools/Debug/DebugPlot.h"
+#include "Tools/Debug/DebugModify.h"
 
 #include <ModuleFramework/Module.h>
 
@@ -32,9 +33,12 @@
 #include "Representations/Infrastructure/CalibrationData.h"
 #include "Representations/Infrastructure/FrameInfo.h"
 
+#include <Tools/DataStructures/RingBufferWithSum.h>
+
 BEGIN_DECLARE_MODULE(StandMotion)
   PROVIDE(DebugPlot)
   PROVIDE(DebugRequest)
+  PROVIDE(DebugModify)
 
   REQUIRE(FrameInfo)
 
@@ -66,13 +70,18 @@ public:
     height(-1000),
     standardStand(true),
     relaxedPoseInitialized(false),
+    relaxedJointsValid(false),
     lastFrameInfo(getFrameInfo()),
-    relaxedJointsValid(false)
+    relaxedMotorJointsValid(false),
+    alpha(0.99),
+    beta(0.5)
   {
     DEBUG_REQUEST_REGISTER("StandMotion:relax_joints", "set snsor joint data to motor joint data", false);
     DEBUG_REQUEST_REGISTER("StandMotion:relax_joints_loop", "set snsor joint data to motor joint data", false);
     DEBUG_REQUEST_REGISTER("StandMotion:relax_joints_loop_each_second", "set snsor joint data to motor joint data", false);
     DEBUG_REQUEST_REGISTER("StandMotion:relax_init", "set snsor joint data to motor joint data", false);
+    DEBUG_REQUEST_REGISTER("StandMotion:relax_joints_continuously", "continuously relax the joints", false);
+    DEBUG_REQUEST_REGISTER("StandMotion:use_filtered_motor_joint_commands", "continuously relax the joints using a simple filter", false);
   }
 
   void calculateTrajectory(const MotionRequest& motionRequest)
@@ -122,11 +131,13 @@ public:
   {
     calculateTrajectory(getMotionRequest());
 
-    time += getRobotInfo().basicTimeStep;
-
     InverseKinematic::HipFeetPose c;
 
-    if(time > totalTime + getRobotInfo().basicTimeStep*10) {
+    isRelaxing = false;
+
+    if(time > totalTime + getRobotInfo().basicTimeStep*10) { // the robot is standing and tries to save energy due to relaxing its joints
+
+      isRelaxing = true;
 
       if(!relaxedPoseInitialized) {
         relaxedPoseInitialized = true;
@@ -148,8 +159,10 @@ public:
       target.localInLeftFoot();
 
       if((hipFeetPoseSensor.hip.translation - target.hip.translation).abs() > 5) {
+          isRelaxing = false; //because the stand motion will be restarted
           relaxedPoseInitialized = false;
           relaxedJointsValid = false;
+          relaxedMotorJointsValid = false;
           setCurrentState(motion::stopped);
           calculateTrajectory(getMotionRequest());
 
@@ -198,7 +211,7 @@ public:
     getEngine().copyLegJoints(getMotorJointData().position);
 
     DEBUG_REQUEST("StandMotion:relax_joints_loop_each_second",
-      if ((time > totalTime) && (getFrameInfo().getTime() - lastFrameInfo.getTime() > 1000)) {
+      if (isRelaxing && (getFrameInfo().getTime() - lastFrameInfo.getTime() > 1000)) {
         lastFrameInfo = getFrameInfo();
         relaxedJoints = getSensorJointData();
         relaxedJointsValid = true;
@@ -208,6 +221,38 @@ public:
           for( int i = naoth::JointData::RHipYawPitch; i<naoth::JointData::LAnkleRoll; i++) {
             getMotorJointData().position[i] = relaxedJoints.position[i];
           }
+      }
+    );
+
+    DEBUG_REQUEST("StandMotion:relax_joints_continuously",
+      if(isRelaxing){
+        if(!relaxedMotorJointsValid) {
+          relaxedMotorJointsValid = true;
+          relaxedMotorJoints      = getMotorJointData();
+        }
+
+        MODIFY("StandMotion:relax_joints_continuously:alpha",alpha);
+        for( int i = naoth::JointData::RHipYawPitch; i < naoth::JointData::LAnkleRoll; i++) {
+            getMotorJointData().position[i] = alpha * relaxedMotorJoints.position[i] + (1 - alpha) * getSensorJointData().position[i];
+        }
+
+        relaxedMotorJoints = getMotorJointData();
+      }
+    );
+
+    DEBUG_REQUEST("StandMotion:use_filtered_motor_joint_commands",
+      if (isRelaxing) {
+        MODIFY("StandMotion:motor_filter:k_i",beta);
+        for( int i = naoth::JointData::RHipYawPitch; i<naoth::JointData::LAnkleRoll; i++) {
+            filter[i].updateFilter(getMotorJointData().position[i],getSensorJointData().position[i]);
+            filter[i].setK_i(beta);
+
+            getMotorJointData().position[i] = getMotorJointData().position[i] + filter[i].control();
+        }
+      } else {
+        for( int i = naoth::JointData::RHipYawPitch; i<naoth::JointData::LAnkleRoll; i++) {
+          filter[i].resetFilter();
+        }
       }
     );
 
@@ -236,12 +281,15 @@ public:
     PLOT("Stand:time:time", time);
     PLOT("Stand:time:totalTime", totalTime);
 
-    turnOffStiffnessWhenJointIsOutOfRange();
+    time += getRobotInfo().basicTimeStep;
 
+    turnOffStiffnessWhenJointIsOutOfRange();
+    
     if ( time >= totalTime && getMotionRequest().id != getId() ) {
       setCurrentState(motion::stopped);
-      relaxedJointsValid = false;
-      relaxedPoseInitialized = false;
+      relaxedJointsValid      = false;
+      relaxedPoseInitialized  = false;
+      relaxedMotorJointsValid = false;
       return;
     } else {
       setCurrentState(motion::running);
@@ -288,10 +336,63 @@ private:
   InverseKinematic::HipFeetPose relaxedPose;
   JointData relaxData;
   bool relaxedPoseInitialized;
-  FrameInfo lastFrameInfo;
+  bool isRelaxing;
+
+  // used by relax_joints_loop_each_second
   JointData relaxedJoints;
   bool relaxedJointsValid;
+  FrameInfo lastFrameInfo;
 
+  // used by relax_joints_continuously
+  JointData relaxedMotorJoints;
+  bool relaxedMotorJointsValid;
+  double alpha;
+
+  // used by use_filtered_motor_joint_commands
+  class jointFilter
+  {
+  public:
+      jointFilter() {}
+
+      void updateFilter(double motorData, double sensorData) {
+          motorJointDataBuffer.add(motorData);
+
+          if(motorJointDataBuffer.isFull()){
+              motorToSensorError.add(sensorData - motorJointDataBuffer.first());
+          }
+      }
+
+      double control() {
+        if(motorToSensorError.isFull()){
+          return k_i * motorToSensorError.getAverage();
+        } else {
+          return 0;
+        }
+      }
+
+      void setK_i(double newK_i) {
+          k_i = newK_i;
+      }
+
+      void resetFilter() {
+          motorJointDataBuffer.clear();
+          motorToSensorError.clear();
+      }
+
+      double getLatestError() {
+          if(motorToSensorError.size() >= 1)
+            return motorToSensorError.last();
+          return 0;
+      }
+
+  private:
+      RingBuffer<double,4> motorJointDataBuffer;
+      RingBufferWithSum<double,100> motorToSensorError;
+      double k_i;
+  };
+
+  jointFilter filter[naoth::JointData::numOfJoint];
+  double beta;
 };
 
 #endif  /* _StandMotion_H */
