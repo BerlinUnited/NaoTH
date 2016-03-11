@@ -80,21 +80,32 @@ def imageFromProto(message):
   return img
   
   
-def getImageTop(frame):
+def getImages(frame):
   # we are only interested in top images
-  image = frame["ImageTop"]
-  cm = frame["CameraMatrix"]
-  return [frame.number, imageFromProto(image), cm]
+  imageTop = frame["ImageTop"]
+  imageBottom = frame["Image"]
+  cmBottom = frame["CameraMatrix"]
+  cmTop = frame["CameraMatrixTop"]
+  return [frame.number, imageFromProto(imageBottom), imageFromProto(imageTop), cmBottom, cmTop]
   
+def saveImageToPNG(i, img, cm, targetdir):
+  pitch = getYAngle(cm.pose)
+  roll = getXAngle(cm.pose)
+  meta = PngImagePlugin.PngInfo()
+  meta.add_text("pitch", str(pitch))
+  meta.add_text("roll", str(roll))
+  img.save(targetdir+"/"+str(i)+".png", pnginfo=meta)
   
+
 if __name__ == "__main__":
 
   fileName, targetdir = parseArguments(sys.argv[1:])
-
+  
   # initialize the parser
   myParser = Parser()
   # register the protobuf message name for the 'ImageTop'
   myParser.register("ImageTop", "Image")
+  myParser.register("CameraMatrixTop", "CameraMatrix")
 
   # show the image
   if targetdir is None:
@@ -104,18 +115,25 @@ if __name__ == "__main__":
     image = None
   
   # get all the images from the logfile
-  images = map(getImageTop, LogReader(fileName, myParser))
+  images = map(getImages, LogReader(fileName, myParser))
   
-  for i, img, cm in images:
-    img = img.convert('RGB')
+  for i, imgB, imgT, cmB, cmT in images:
+    imgB = imgB.convert('RGB')
+    imgT = imgT.convert('RGB')
 
     if targetdir is not None:
-      pitch = getYAngle(cm.pose)
-      roll = getXAngle(cm.pose)
-      meta = PngImagePlugin.PngInfo()
-      meta.add_text("pitch", str(pitch))
-      meta.add_text("roll", str(roll))
-      img.save(targetdir+"/"+str(i)+".png", pnginfo=meta)
+    
+      targetTop = targetdir + "/top"
+      targetBottom = targetdir + "/bottom"
+    
+      if not os.path.exists(targetTop):
+        os.makedirs(targetTop)
+      if not os.path.exists(targetBottom):
+        os.makedirs(targetBottom)
+    
+      saveImageToPNG(i, imgB, cmB, targetBottom)
+      saveImageToPNG(i, imgT, cmT, targetTop)
+      
     else:
       # show the current image (show the first image or update the data)
       if image is None:
