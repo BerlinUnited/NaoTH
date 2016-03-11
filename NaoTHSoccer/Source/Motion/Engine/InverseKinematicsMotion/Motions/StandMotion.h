@@ -83,12 +83,32 @@ public:
     DEBUG_REQUEST_REGISTER("StandMotion:relax_joints_continuously", "continuously relax the joints", false);
     DEBUG_REQUEST_REGISTER("StandMotion:use_filtered_motor_joint_commands", "continuously relax the joints using a simple filter", false);
     DEBUG_REQUEST_REGISTER("StandMotion:add_sine_to_motor_commands", "add a sine to the motor commands while the robot is standing", false);
+    DEBUG_REQUEST_REGISTER("StandMotion:add_sine_to_hip","add a sine to the hip-feet-pose while the robot is standing", false);
+    DEBUG_REQUEST_REGISTER("StandMotion:change_stiffness","set the stiffness for each joint with modify", false);
 
     // init sine
     for(int i = naoth::JointData::RHipYawPitch; i <= naoth::JointData::LAnkleRoll; i++) {
         sine[i] = Sine(Math::fromDegrees(0.08),2*getRobotInfo().getBasicTimeStepInSecond());
         amplitudes[i] = 0.08;
         periods[i] = 2*getRobotInfo().getBasicTimeStepInSecond();
+    }
+
+    // init hip sine
+    amplitudeX = 5;
+    periodX    = 5;
+    phaseX     = 0;
+    hipSineX.setAmplitude(amplitudeX);
+    hipSineX.setPeriod(periodX);
+
+    amplitudeY = 5;
+    periodY    = 5;
+    phaseY     = 0;
+    hipSineY.setAmplitude(amplitudeY);
+    hipSineY.setPeriod(periodY);
+
+    // init stiffness
+    for(int i = naoth::JointData::RHipYawPitch; i <= naoth::JointData::LAnkleRoll; i++) {
+        stiffness[i] = 0.7;
     }
   }
 
@@ -166,7 +186,7 @@ public:
       InverseKinematic::HipFeetPose target = relaxedPose;
       target.localInLeftFoot();
 
-      if((hipFeetPoseSensor.hip.translation - target.hip.translation).abs() > 5) {
+      if((hipFeetPoseSensor.hip.translation - target.hip.translation).abs() > 10 /*5*/) {
           isRelaxing = false; //because the stand motion will be restarted
           relaxedPoseInitialized = false;
           relaxedJointsValid = false;
@@ -214,6 +234,30 @@ public:
         getRobotInfo().getBasicTimeStepInSecond(),
         c);
     }
+
+    DEBUG_REQUEST("StandMotion:add_sine_to_hip",
+
+        c.localInLeftFoot();
+        Vector3d x_direction = c.hip.rotation*Vector3d(1,0,0);
+        Vector3d y_direction = c.hip.rotation*Vector3d(0,1,0);
+
+        MODIFY("StandMotion:hip_sine:X:amplitude",amplitudeX);
+        MODIFY("StandMotion:hip_sine:X:period",periodX);
+        MODIFY("StandMotion:hip_sine:X:phase",phaseX);
+        hipSineX.setAmplitude(amplitudeX);
+        hipSineX.setPeriod(periodX);
+        hipSineX.setPhase(phaseX);
+
+        MODIFY("StandMotion:hip_sine:Y:amplitude",amplitudeY);
+        MODIFY("StandMotion:hip_sine:Y:period",periodY);
+        MODIFY("StandMotion:hip_sine:Y:phase",phaseY);
+        hipSineY.setAmplitude(amplitudeY);
+        hipSineY.setPeriod(periodY);
+        hipSineY.setPhase(phaseY);
+
+        c.hip.translation += x_direction * hipSineX(getFrameInfo().getTimeInSeconds());
+        c.hip.translation += y_direction * hipSineY(getFrameInfo().getTimeInSeconds());
+    );
 
     getEngine().solveHipFeetIK(c);
     getEngine().copyLegJoints(getMotorJointData().position);
@@ -302,6 +346,7 @@ public:
       }
     );
 
+
     DEBUG_REQUEST("StandMotion:relax_joints_loop",
       for( int i = naoth::JointData::RHipYawPitch; i <= naoth::JointData::LAnkleRoll; i++) {
         getMotorJointData().position[i] = getSensorJointData().position[i];
@@ -330,6 +375,28 @@ public:
     time += getRobotInfo().basicTimeStep;
 
     turnOffStiffnessWhenJointIsOutOfRange();
+
+    DEBUG_REQUEST("StandMotion:change_stiffness",
+
+      if (isRelaxing) {
+        MODIFY("StandMotion:stiffness:LHipYawPitch",stiffness[naoth::JointData::LHipYawPitch]);
+        MODIFY("StandMotion:stiffness:RHipPitch",stiffness[naoth::JointData::RHipPitch]);
+        MODIFY("StandMotion:stiffness:LHipPitch",stiffness[naoth::JointData::LHipPitch]);
+        MODIFY("StandMotion:stiffness:RHipRoll",stiffness[naoth::JointData::RHipRoll]);
+        MODIFY("StandMotion:stiffness:LHipRoll",stiffness[naoth::JointData::LHipRoll]);
+        MODIFY("StandMotion:stiffness:RKneePitch",stiffness[naoth::JointData::RKneePitch]);
+        MODIFY("StandMotion:stiffness:LKneePitch",stiffness[naoth::JointData::LKneePitch]);
+        MODIFY("StandMotion:stiffness:RAnklePitch",stiffness[naoth::JointData::RAnklePitch]);
+        MODIFY("StandMotion:stiffness:LAnklePitch",stiffness[naoth::JointData::LAnklePitch]);
+        MODIFY("StandMotion:stiffness:RAnkleRoll",stiffness[naoth::JointData::RAnkleRoll]);
+        MODIFY("StandMotion:stiffness:LAnkleRoll",stiffness[naoth::JointData::LAnkleRoll]);
+
+        for( int i = naoth::JointData::RHipYawPitch; i <= naoth::JointData::LAnkleRoll; i++) {
+          getMotorJointData().stiffness[i] = stiffness[i];
+        }
+      }
+    );
+
     
     if ( time >= totalTime && getMotionRequest().id != getId() ) {
       setCurrentState(motion::stopped);
@@ -445,7 +512,8 @@ private:
   public:
       Sine():
         amplitude(0),
-        period(1)
+        period(1),
+        phase(0)
       {
       }
 
@@ -455,7 +523,7 @@ private:
       {}
 
       double operator() (double time){
-          return amplitude * sin(2*M_PI/period * time);
+          return amplitude * sin(2*M_PI/period * time + phase);
       }
 
       void setAmplitude(double a) {
@@ -466,14 +534,32 @@ private:
           period = T;
       }
 
+      void setPhase(double phi){
+          phase = phi;
+      }
+
   private:
     double amplitude; // [rad]
-    double period; // [s]
+    double period;    // [s]
+    double phase;     // [rad]
   };
 
   Sine sine[naoth::JointData::numOfJoint];
   double amplitudes[naoth::JointData::numOfJoint]; // [°]
   double periods[naoth::JointData::numOfJoint]; // [s]
+
+  // used by StandMotion:add_sine_to_hip
+  Sine hipSineX;
+  double amplitudeX;
+  double periodX;
+  double phaseX;
+  Sine hipSineY;
+  double amplitudeY;
+  double periodY;
+  double phaseY;
+
+  // used by StandMotion:change_stiffness
+  double stiffness[naoth::JointData::numOfJoint];
 };
 
 #endif  /* _StandMotion_H */
