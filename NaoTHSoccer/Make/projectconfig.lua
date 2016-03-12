@@ -130,6 +130,7 @@ PATH:includedirs {
 	FRAMEWORK_PATH .. "/Commons/Source/Messages",
 	EXTERN_PATH .. "/include",
 	EXTERN_PATH .. "/include/glib-2.0",
+	EXTERN_PATH .. "/include/gio-unix-2.0",
 	EXTERN_PATH .. "/lib/glib-2.0/include"
 	}
 PATH:libdirs { EXTERN_PATH .. "/lib"}

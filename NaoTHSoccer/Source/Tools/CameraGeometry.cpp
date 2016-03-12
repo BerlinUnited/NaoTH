@@ -10,21 +10,30 @@
 
 using namespace naoth;
 
-Vector3<double> CameraGeometry::imagePixelToCameraCoords(const CameraMatrix& cameraMatrix,
-                                                   const CameraInfo& cameraInfo,
+Vector3d CameraGeometry::imagePixelToCameraCoords( const CameraInfo& cameraInfo,
                                                    const double imgX,
                                                    const double imgY)
 {
   Vector3d pixelVector;
-
   pixelVector.x = cameraInfo.getFocalLength();
-  pixelVector.y = -imgX + cameraInfo.getOpticalCenterX();
-  pixelVector.z = -imgY + cameraInfo.getOpticalCenterY();
-
-  pixelVector = cameraMatrix.rotation * pixelVector;
+  pixelVector.y = cameraInfo.getOpticalCenterX() - imgX;
+  pixelVector.z = cameraInfo.getOpticalCenterY() - imgY;
   return pixelVector;
-}//end imagePixelCameraCoords
+}
 
+Vector2d CameraGeometry::relativePointToCameraAngle( 
+  const CameraMatrix& cameraMatrix,
+  const CameraInfo& /*cameraInfo*/,
+  const Vector3d& point)
+{
+  // vector: O ---> point (in camera coordinates)
+  Vector3d vectorToPoint = cameraMatrix.invert()*point;
+
+  return Vector2d(
+      atan2(vectorToPoint.y, vectorToPoint.x), // angle horizontal
+      atan2(vectorToPoint.z, vectorToPoint.x) // angle vertical
+      );
+}//end relativePointToImageDouble
 
 bool CameraGeometry::relativePointToImage( 
   const CameraMatrix& cameraMatrix,
@@ -66,39 +75,42 @@ bool CameraGeometry::relativePointToImage(
 }//end relativePointToImage
 
 
-Vector2<double> CameraGeometry::angleToPointInImage( const CameraMatrix& cameraMatrix,
-                                               const CameraInfo& cameraInfo,
-                                               const double imgX,
-                                               const double imgY)
+Vector2d CameraGeometry::pixelToAngles( const naoth::CameraInfo& cameraInfo,
+                                        const double imgX,
+                                        const double imgY)
 {
-  Vector3<double> direction = imagePixelToCameraCoords(cameraMatrix, cameraInfo, imgX, imgY);
-  direction.normalize();
-  return Vector2<double>(
-      atan2(direction.y, direction.x), // angle horizontal
-      atan2(direction.z, direction.x) // angle vertical
+  Vector3d pixelVector;
+  pixelVector.x = cameraInfo.getFocalLength();
+  pixelVector.y = -imgX + cameraInfo.getOpticalCenterX();
+  pixelVector.z = -imgY + cameraInfo.getOpticalCenterY();
+
+  return Vector2d(
+      atan2(pixelVector.y, pixelVector.x), // angle horizontal
+      atan2(pixelVector.z, pixelVector.x) // angle vertical
       );
-}//end angleToPointInImage
+}
 
 
 bool CameraGeometry::imagePixelToFieldCoord( const CameraMatrix& cameraMatrix, 
                                        const CameraInfo& cameraInfo,
-                                       const Vector2<double>& imagePoint, 
+                                       const Vector2d& imagePoint, 
                                        const double objectHeight,
-                                       Vector2<double>& result)
+                                       Vector2d& result)
 {
   return imagePixelToFieldCoord(cameraMatrix, cameraInfo, imagePoint.x, imagePoint.y, objectHeight, result);
 }
 
 bool CameraGeometry::imagePixelToFieldCoord( const CameraMatrix& cameraMatrix, 
                                        const CameraInfo& cameraInfo,
-                                       const double& imgX, 
-                                       const double& imgY, 
-                                       const double& objectHeight,
-                                       Vector2<double>& result)
+                                       const double imgX, 
+                                       const double imgY, 
+                                       const double objectHeight,
+                                       Vector2d& result)
 {
   const static double epsilon = 1e-13;
 
-  Vector3<double> pixelVector = imagePixelToCameraCoords(cameraMatrix, cameraInfo, imgX, imgY);
+  // point --> head coordinates
+  Vector3d pixelVector = cameraMatrix.rotation * imagePixelToCameraCoords(cameraInfo, imgX, imgY);
   
   double heightDiff = objectHeight-cameraMatrix.translation.z;
 
@@ -126,20 +138,21 @@ bool CameraGeometry::imagePixelToFieldCoord( const CameraMatrix& cameraMatrix,
 }//end imagePixelToFieldCoord
 
 
-Vector3<double> CameraGeometry::imagePixelToWorld(const CameraMatrix& cameraMatrix,
+Vector3d CameraGeometry::imagePixelToWorld(const CameraMatrix& cameraMatrix,
                                             const CameraInfo& cameraInfo,
                                             const double imgX,
                                             const double imgY,
                                             const double distance)
 {
-  Vector3<double> w = imagePixelToCameraCoords(cameraMatrix, cameraInfo, imgX, imgY);
+  // point --> head coordinates
+  Vector3d w = cameraMatrix.rotation*imagePixelToCameraCoords(cameraInfo, imgX, imgY);
   return cameraMatrix.translation + w.normalize(distance);
-}//end imagePixelToWorld
+}
 
 void CameraGeometry::calculateArtificialHorizon( const Pose3D& cameraMatrix,
                                            const CameraInfo& cameraInfo,
-                                           Vector2<double>& p1,
-                                           Vector2<double>& p2 )
+                                           Vector2d& p1,
+                                           Vector2d& p2 )
 {
   double r31 = cameraMatrix.rotation.c[0].z;
   double r32 = cameraMatrix.rotation.c[1].z;
@@ -159,7 +172,7 @@ void CameraGeometry::calculateArtificialHorizon( const Pose3D& cameraMatrix,
          y2 = (v3 * r33 + r31 * v1 - r32 * v2) / r33;
   
   // Mirror ends of horizon if Camera rotated to the left  
-  if((cameraMatrix.rotation * Vector3<double>(0,0,1)).z < 0)
+  if((cameraMatrix.rotation * Vector3d(0,0,1)).z < 0)
   {
     double t = x1;
     x1 = x2;
@@ -176,10 +189,10 @@ void CameraGeometry::calculateArtificialHorizon( const Pose3D& cameraMatrix,
 }//end calculateArtificialHorizone
 
 
-Vector2<double> CameraGeometry::lookAtPoint(const Vector3<double>& point, double cameraHeight)
+Vector2d CameraGeometry::lookAtPoint(const Vector3d& point, double cameraHeight)
 {
-  Vector3<double> vector;
-  Vector2<double> result;
+  Vector3d vector;
+  Vector2d result;
   double pitch;
   double yaw;
   vector.x = point.x;
