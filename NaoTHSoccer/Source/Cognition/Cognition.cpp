@@ -50,8 +50,10 @@
 #include "Modules/VisualCortex/LineDetector/LineGraphProvider.h"
 #include "Modules/VisualCortex/GoalDetector/GoalFeatureDetector.h"
 #include "Modules/VisualCortex/GoalDetector/GoalFeatureDetectorV2.h"
+#include "Modules/VisualCortex/GoalDetector/GoalFeatureDetectorV2_1.h"
 #include "Modules/VisualCortex/GoalDetector/GoalDetector.h"
 #include "Modules/VisualCortex/GoalDetector/GoalDetectorV2.h"
+#include "Modules/VisualCortex/GoalDetector/GoalDetectorV2_1.h"
 #include "Modules/VisualCortex/GoalDetector/GoalCrossBarDetector.h"
 #include "Modules/VisualCortex/BallDetector/BallDetector.h"
 
@@ -147,8 +149,10 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(LineGraphProvider);
   REGISTER_MODULE(GoalFeatureDetector);
   REGISTER_MODULE(GoalFeatureDetectorV2);
+  REGISTER_MODULE(GoalFeatureDetectorV2_1);
   REGISTER_MODULE(GoalDetector);
   REGISTER_MODULE(GoalDetectorV2);
+  REGISTER_MODULE(GoalDetectorV2_1);
   REGISTER_MODULE(GoalCrossBarDetector);
   REGISTER_MODULE(BallDetector);
 
