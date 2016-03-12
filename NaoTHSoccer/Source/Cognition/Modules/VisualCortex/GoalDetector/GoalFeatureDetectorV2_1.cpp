@@ -248,9 +248,9 @@ void GoalFeatureDetectorV2_1::findEdgelFeatures(const Vector2d& scanDir, const V
                 {
                   for(size_t w = 0; w < weakJumpPoints.size(); w++)
                   {
+                    //add a additional feature from lastedgel to weak edgel
                     if((newEdgel.point - weakJumpPoints[w].point).abs2() > 2)
                     {
-                      //add a feature from lastedgel to weak edgel
                       GoalBarFeature feature;
                       feature.point = Vector2d(lastEdgel.point + weakJumpPoints[w].point) * 0.5;
                       double featureWidth = (weakJumpPoints[w].point - lastEdgel.point).abs();
@@ -270,6 +270,25 @@ void GoalFeatureDetectorV2_1::findEdgelFeatures(const Vector2d& scanDir, const V
                       DEBUG_REQUEST("Vision:GoalFeatureDetectorV2_1:markWeakGradients",
                         LINE_PX(ColorClasses::red, (int)weakJumpPoints[w].point.x - (int)(4*weakJumpPoints[w].direction.x+0.5), (int)weakJumpPoints[w].point.y - (int)(4*weakJumpPoints[w].direction.y+0.5), (int)weakJumpPoints[w].point.x + (int)(4*weakJumpPoints[w].direction.x+0.5), (int)weakJumpPoints[w].point.y + (int)(4*weakJumpPoints[w].direction.y+0.5));
                       );
+                    }
+                    //add a additional feature from between weak edgels
+                    if(w > 0 && (weakJumpPoints[w - 1].point - weakJumpPoints[w].point).abs2() > 2)
+                    {
+                      //add a feature from lastedgel to weak edgel
+                      GoalBarFeature feature;
+                      feature.point = Vector2d(weakJumpPoints[w - 1].point + weakJumpPoints[w].point) * 0.5;
+                      double featureWidth = (weakJumpPoints[w].point - weakJumpPoints[w - 1].point).abs();
+                      feature.begin.point = weakJumpPoints[w - 1].point;
+                      feature.begin.direction = weakJumpPoints[w - 1].direction;
+                      feature.begin.type = weakJumpPoints[w - 1].type;
+                
+                      feature.end.point = weakJumpPoints[w].point;
+                      feature.end.direction = weakJumpPoints[w].direction;
+                      feature.end.type = weakJumpPoints[w].type;
+
+                      feature.direction = (weakJumpPoints[w - 1].direction + weakJumpPoints[w].direction).normalize();
+                      feature.width = featureWidth;
+                      features.push_back(feature);
                     }
                   }
                   for(size_t w = 0; w < weakJumpPoints.size(); w++)

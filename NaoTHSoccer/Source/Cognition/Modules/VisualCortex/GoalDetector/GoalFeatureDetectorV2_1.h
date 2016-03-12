@@ -74,15 +74,15 @@ private:
   class Parameters: public ParameterList
   {
   public:
-    Parameters() : ParameterList("GoalFeatureV2Parameters")
+    Parameters() : ParameterList("GoalFeatureV2_1Parameters")
     {
       PARAMETER_REGISTER(numberOfScanlines) = 9;
       PARAMETER_REGISTER(scanlinesDistance) = 8;
 
       PARAMETER_REGISTER(detectWhiteGoals) = true;
       PARAMETER_REGISTER(threshold) = 140;
-      PARAMETER_REGISTER(thresholdGradient) = 14;
-      PARAMETER_REGISTER(thresholdWeakGradient) = 7;
+      PARAMETER_REGISTER(thresholdGradient) = 24;
+      PARAMETER_REGISTER(thresholdWeakGradient) = 10;
       PARAMETER_REGISTER(thresholdFeatureGradient) = 0.5;
       PARAMETER_REGISTER(maxFeatureWidth) = 213;
 

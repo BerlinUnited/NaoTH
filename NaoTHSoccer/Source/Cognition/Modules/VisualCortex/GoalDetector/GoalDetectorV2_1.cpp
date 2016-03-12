@@ -169,7 +169,8 @@ void GoalDetectorV2_1::calcuateGoalPosts()
       //HACK: inside polygon test seems to fail on that image border
       if(post.basePoint.y >= (int) getImage().height() - 1) post.basePoint.y--;
       post.topPoint = scanForEndPoint(line.getBase(), -post.directionInImage);
-      post.positionReliable = getFieldPercept().getValidField().isInside(post.basePoint);
+      bool postIsInField = getFieldPercept().getValidField().isInside(post.basePoint);
+      post.positionReliable = postIsInField;
       post.seenWidth = cluster.getFeatureWidth();
       post.seenHeight = (post.basePoint - post.topPoint).abs();
 
@@ -207,6 +208,7 @@ void GoalDetectorV2_1::calcuateGoalPosts()
               LINE_PX(col, beginL.x, beginL.y, endL.x, endL.y);
               LINE_PX(col, beginR.x, beginR.y, endR.x, endR.y);
               LINE_PX(col, endL.x, endL.y, endR.x, endR.y);
+              CIRCLE_PX(postIsInField ? ColorClasses::green : ColorClasses::red, (int)(post.basePoint.x+0.5), (int)(post.basePoint.y+0.5), 10);
             }
           );
 
@@ -297,6 +299,7 @@ void GoalDetectorV2_1::calcuateGoalPosts()
               LINE_PX(col, beginL.x, beginL.y, endL.x, endL.y);
               LINE_PX(col, beginR.x, beginR.y, endR.x, endR.y);
               LINE_PX(col, endL.x, endL.y, endR.x, endR.y);
+              CIRCLE_PX(postIsInField ? ColorClasses::green : ColorClasses::red, (int)(post.basePoint.x+0.5), (int)(post.basePoint.y+0.5), 10);
             }
           );
         
