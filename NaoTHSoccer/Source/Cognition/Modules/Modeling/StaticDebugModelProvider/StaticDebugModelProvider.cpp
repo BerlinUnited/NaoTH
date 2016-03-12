@@ -18,6 +18,8 @@ void StaticDebugModelProvider::execute()
   //Roboter
   Pose2D pose;
   double rotation = 0;
+  pose.translation.x = 1000.0;
+  pose.translation.y = -2000.0;
   MODIFY("StaticDebugModelProvider:Robotx", pose.translation.x);
   MODIFY("StaticDebugModelProvider:Roboty", pose.translation.y);
   MODIFY("StaticDebugModelProvider:Robotrot", rotation);
@@ -28,7 +30,7 @@ void StaticDebugModelProvider::execute()
   getSelfLocGoalModel().update(getRobotPose(), getFieldInfo());
  
   //Ball
-  Vector2d ballPosition(1000, -2000);
+  Vector2d ballPosition(0.0, 0.0);
   MODIFY("StaticDebugModelProvider:ballx", ballPosition.x);
   MODIFY("StaticDebugModelProvider:bally", ballPosition.y);
 

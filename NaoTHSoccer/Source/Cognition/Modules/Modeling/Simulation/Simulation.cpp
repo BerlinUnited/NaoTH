@@ -83,9 +83,9 @@ void Simulation::execute()
   possibleBestActions.clear();
   actionsConsequencesBest.clear();
   //Try different Angles for all the actions
-  int angles[] = {-30,-20,-10,0,10,20,30};
-  
-  for(int k = 0; 1 < (sizeof(angles)/sizeof(*angles)); k++){
+  int angles[] = {-30,-20,-10,0,10,20,30}; 
+  //std::vector<int> angles = {-30,-20,-10,0,10,20,30}; /VS2010 does not support this CPP11 feature 
+  for(int k = 0; k < (sizeof(angles)/sizeof(*angles)); k++){
     for(size_t i=0; i < action_local.size(); i++) {      
       action_localTurned[i].action_angle = action_local[i].action_angle+angles[k]; //Set New Angle
       simulateConsequences(action_localTurned[i], actionsConsequencesTurned[i]);
@@ -139,23 +139,34 @@ void Simulation::execute()
   DEBUG_REQUEST("Simulation:draw_best_action",
     FIELD_DRAWING_CONTEXT;
     PEN("FF69B4", 35);
-    std::string name1 = action_local[best_action].name();
-    std::string name2 = action_local[possibleBestActions[0]].name();
-    std::string name3 = action_local[possibleBestActions[1]].name();
-    std::string name4 = action_local[possibleBestActions[2]].name();
-    std::string name5 = action_local[possibleBestActions[3]].name();
-    std::string name6 = action_local[possibleBestActions[4]].name();
-    std::string name7 = action_local[possibleBestActions[5]].name();
-    std::string name8 = action_local[possibleBestActions[6]].name();
 
-    TEXT_DRAWING(getRobotPose().translation.x+100, getRobotPose().translation.y-200, name1);
-    TEXT_DRAWING(getRobotPose().translation.x+100, getRobotPose().translation.y-300, name2);
-    TEXT_DRAWING(getRobotPose().translation.x+100, getRobotPose().translation.y-400, name3);
-    TEXT_DRAWING(getRobotPose().translation.x+100, getRobotPose().translation.y-500, name4);
-    TEXT_DRAWING(getRobotPose().translation.x+100, getRobotPose().translation.y-600, name5);
-    TEXT_DRAWING(getRobotPose().translation.x+100, getRobotPose().translation.y-700, name6);
-    TEXT_DRAWING(getRobotPose().translation.x+100, getRobotPose().translation.y-800, name7);
-    TEXT_DRAWING(getRobotPose().translation.x+100, getRobotPose().translation.y-900, name8);
+    //Draw Decision with Rotation
+    Color color;
+    if(possibleBestActions[veryBest] == 0){
+      color = Color(1.0,1.0,1.0,0.7); //White - None
+    }
+    else if(possibleBestActions[veryBest] == 1){
+      color = Color(255.0/255,172.0/255,18.0/255,0.7); //orange - kick_short
+    }
+    else if(possibleBestActions[veryBest] == 2){
+      color = Color(232.0/255,43.0/255,0.0/255,0.7); //red - kick_long
+    }
+    else if(possibleBestActions[veryBest] == 3){
+      color = Color(0.0/255,13.0/255,191.0/255,0.7); //blue - sidekick_left
+    }
+    else if(possibleBestActions[veryBest] == 4){
+      color = Color(0.0/255,191.0/255,51.0/255,0.7);//green - sidekick_right
+    }
+	  Pose2D q;
+	  q.translation.x = 0.0;
+	  q.translation.y = 0.0;
+    q.rotation = Math::fromDegrees(angles[veryBest]);
+
+	  Vector2d ArrowStart = q * Vector2d(0, 0);
+	  Vector2d ArrowEnd = q * Vector2d(500, 0);
+
+	  PEN(color, 50);
+	  ARROW(ArrowStart.x,ArrowStart.y,ArrowEnd.x,ArrowEnd.y);
   );
 
   DEBUG_REQUEST("Simulation:draw_potential_field",
