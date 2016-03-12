@@ -63,7 +63,7 @@ class StandMotion : private StandMotionBase, public IKMotion
 {
 public:
 
-  StandMotion()
+StandMotion()
   : IKMotion(getInverseKinematicsMotionEngineService(), motion::stand, getMotionLock()),
     totalTime(0),
     time(0),
@@ -85,6 +85,7 @@ public:
     DEBUG_REQUEST_REGISTER("StandMotion:add_sine_to_motor_commands", "add a sine to the motor commands while the robot is standing", false);
     DEBUG_REQUEST_REGISTER("StandMotion:add_sine_to_hip","add a sine to the hip-feet-pose while the robot is standing", false);
     DEBUG_REQUEST_REGISTER("StandMotion:change_stiffness","set the stiffness for each joint with modify", false);
+    DEBUG_REQUEST_REGISTER("StandMotion:stiffness_controller","controll stiffness depending on the motor-sensor-error", false);
 
     // init sine
     for(int i = naoth::JointData::RHipYawPitch; i <= naoth::JointData::LAnkleRoll; i++) {
@@ -397,6 +398,20 @@ public:
       }
     );
 
+    DEBUG_REQUEST("StandMotion:stiffness_controller",
+      if (isRelaxing) {
+        for( int i = naoth::JointData::RHipYawPitch; i <= naoth::JointData::LAnkleRoll; i++) {
+          stiffnessController[i].updateFilter(getMotorJointData().position[i],getSensorJointData().position[i]);
+          getMotorJointData().stiffness[i] = stiffnessController[i].control();
+        }
+
+        PLOT("StandMotion:AverageError:LKneePitch",stiffnessController[naoth::JointData::LKneePitch].getAverageError());
+        PLOT("StandMotion:AverageError:RKneePitch",stiffnessController[naoth::JointData::RKneePitch].getAverageError());
+        PLOT("StandMotion:Control:LKneePitch",stiffnessController[naoth::JointData::LKneePitch].control());
+        PLOT("StandMotion:Control:RKneePitch",stiffnessController[naoth::JointData::RKneePitch].control());
+      }
+    );
+
     
     if ( time >= totalTime && getMotionRequest().id != getId() ) {
       setCurrentState(motion::stopped);
@@ -560,6 +575,55 @@ private:
 
   // used by StandMotion:change_stiffness
   double stiffness[naoth::JointData::numOfJoint];
+
+  // used by StandMotion:stiffness_controller
+  class StiffnessController{
+  public:
+      StiffnessController() {}
+
+      void updateFilter(double motorData, double sensorData) {
+          motorJointDataBuffer.add(motorData);
+
+          if(motorJointDataBuffer.isFull()){
+              motorToSensorError.add(sensorData - motorJointDataBuffer.first());
+          }
+      }
+
+      double control() {
+        if(motorToSensorError.isFull()){
+            // linear function through points [0.08°,0.3] and [2.0°,1]
+            double m = 0.7/1.92;
+            double n = 1-m*2.0;
+
+            double e = fabs(motorToSensorError.getAverage());
+
+            if(e <= Math::fromDegrees(0.08)){
+                return 0.3;
+            } else if(e > Math::fromDegrees(2.0)) {
+                return 1;
+            } else {
+                return m*Math::toDegrees(e) + n;
+            }
+        } else {
+          return 0.7;
+        }
+      }
+
+      double getAverageError() {
+          return motorToSensorError.getAverage();
+      }
+
+      void resetFilter() {
+          motorJointDataBuffer.clear();
+          motorToSensorError.clear();
+      }
+
+  private:
+      RingBuffer<double,4> motorJointDataBuffer;
+      RingBufferWithSum<double,100> motorToSensorError;
+  };
+
+  StiffnessController stiffnessController[naoth::JointData::numOfJoint];
 };
 
 #endif  /* _StandMotion_H */
