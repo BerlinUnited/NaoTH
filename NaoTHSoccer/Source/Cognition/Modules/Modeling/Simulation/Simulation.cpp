@@ -24,14 +24,20 @@ Simulation::Simulation()
 
   //calculate the actions  
   action_local.reserve(KickActionModel::numOfActions);
+  //action_localTurned.reserve(KickActionModel::numOfActions);
 
   action_local.push_back(Action(KickActionModel::none, ActionParams(), theParameters.friction));
   action_local.push_back(Action(KickActionModel::kick_long, theParameters.kick_long, theParameters.friction)); // long
   action_local.push_back(Action(KickActionModel::kick_short, theParameters.kick_short, theParameters.friction)); // short
   action_local.push_back(Action(KickActionModel::sidekick_right, theParameters.sidekick_right, theParameters.friction)); // right
   action_local.push_back(Action(KickActionModel::sidekick_left, theParameters.sidekick_left, theParameters.friction)); // left
-
+  
   actionsConsequences.resize(action_local.size());
+
+  //Turned Action
+  action_localTurned = action_local;
+  actionsConsequencesTurned = actionsConsequences;
+  possibleBestActions.reserve(10);
 }
 
 Simulation::~Simulation(){}
@@ -47,6 +53,7 @@ void Simulation::execute()
     action_local.push_back(Action(KickActionModel::kick_short, theParameters.kick_short, theParameters.friction)); // short
     action_local.push_back(Action(KickActionModel::sidekick_right, theParameters.sidekick_right, theParameters.friction)); // right
     action_local.push_back(Action(KickActionModel::sidekick_left, theParameters.sidekick_left, theParameters.friction)); // left
+
 
     actionsConsequences.resize(action_local.size());
   );
@@ -65,14 +72,33 @@ void Simulation::execute()
     CIRCLE( ball.x, ball.y, 50);
   );
 
-
+  
   // simulate the consequences for all actions
   STOPWATCH_START("Simulation:simulateConsequences");
   for(size_t i=0; i < action_local.size(); i++) {
     simulateConsequences(action_local[i], actionsConsequences[i]);
   }
   STOPWATCH_STOP("Simulation:simulateConsequences");
-   
+
+  possibleBestActions.clear();
+  actionsConsequencesBest.clear();
+  //Try different Angles for all the actions
+  int angles[] = {-30,-20,-10,0,10,20,30};
+  
+  for(int k = 0; 1 < (sizeof(angles)/sizeof(*angles)); k++){
+    for(size_t i=0; i < action_local.size(); i++) {      
+      action_localTurned[i].action_angle = action_local[i].action_angle+angles[k]; //Set New Angle
+      simulateConsequences(action_localTurned[i], actionsConsequencesTurned[i]);
+    }
+    size_t best_action2 = decide(actionsConsequencesTurned);
+    
+    possibleBestActions.push_back(best_action2);
+    actionsConsequencesBest.push_back(actionsConsequencesTurned[best_action2]);
+  }
+  //Todo: Calculate the best of the best
+  //Carefull veryBest is not a normal Action it rather tells us which angle is the best
+  size_t veryBest = decide(actionsConsequencesBest);
+  std::cout << veryBest << std::endl;
   // plot projected actions
   DEBUG_REQUEST("Simulation:ActionTarget",
     for(size_t i=0; i<action_local.size(); i++)
@@ -106,15 +132,30 @@ void Simulation::execute()
   // now decide which action to execute given their consequences
   STOPWATCH_START("Simulation:decide");
   size_t best_action = decide(actionsConsequences);
-  STOPWATCH_STOP("Simulation:decide");
+  STOPWATCH_STOP("Simulation:decide");  
 
   getKickActionModel().bestAction = action_local[best_action].id();
 
   DEBUG_REQUEST("Simulation:draw_best_action",
     FIELD_DRAWING_CONTEXT;
     PEN("FF69B4", 35);
-    std::string name = action_local[best_action].name();
-    TEXT_DRAWING(getRobotPose().translation.x+100, getRobotPose().translation.y-200, name);
+    std::string name1 = action_local[best_action].name();
+    std::string name2 = action_local[possibleBestActions[0]].name();
+    std::string name3 = action_local[possibleBestActions[1]].name();
+    std::string name4 = action_local[possibleBestActions[2]].name();
+    std::string name5 = action_local[possibleBestActions[3]].name();
+    std::string name6 = action_local[possibleBestActions[4]].name();
+    std::string name7 = action_local[possibleBestActions[5]].name();
+    std::string name8 = action_local[possibleBestActions[6]].name();
+
+    TEXT_DRAWING(getRobotPose().translation.x+100, getRobotPose().translation.y-200, name1);
+    TEXT_DRAWING(getRobotPose().translation.x+100, getRobotPose().translation.y-300, name2);
+    TEXT_DRAWING(getRobotPose().translation.x+100, getRobotPose().translation.y-400, name3);
+    TEXT_DRAWING(getRobotPose().translation.x+100, getRobotPose().translation.y-500, name4);
+    TEXT_DRAWING(getRobotPose().translation.x+100, getRobotPose().translation.y-600, name5);
+    TEXT_DRAWING(getRobotPose().translation.x+100, getRobotPose().translation.y-700, name6);
+    TEXT_DRAWING(getRobotPose().translation.x+100, getRobotPose().translation.y-800, name7);
+    TEXT_DRAWING(getRobotPose().translation.x+100, getRobotPose().translation.y-900, name8);
   );
 
   DEBUG_REQUEST("Simulation:draw_potential_field",
