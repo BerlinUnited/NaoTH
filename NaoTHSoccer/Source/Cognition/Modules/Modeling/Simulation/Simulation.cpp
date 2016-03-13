@@ -24,7 +24,6 @@ Simulation::Simulation()
 
   //calculate the actions  
   action_local.reserve(KickActionModel::numOfActions);
-  //action_localTurned.reserve(KickActionModel::numOfActions);
 
   action_local.push_back(Action(KickActionModel::none, ActionParams(), theParameters.friction));
   action_local.push_back(Action(KickActionModel::kick_long, theParameters.kick_long, theParameters.friction)); // long
@@ -33,11 +32,6 @@ Simulation::Simulation()
   action_local.push_back(Action(KickActionModel::sidekick_left, theParameters.sidekick_left, theParameters.friction)); // left
   
   actionsConsequences.resize(action_local.size());
-
-  //Turned Action
-  action_localTurned = action_local;
-  actionsConsequencesTurned = actionsConsequences;
-  possibleBestActions.reserve(10);
 }
 
 Simulation::~Simulation(){}
@@ -80,25 +74,6 @@ void Simulation::execute()
   }
   STOPWATCH_STOP("Simulation:simulateConsequences");
 
-  possibleBestActions.clear();
-  actionsConsequencesBest.clear();
-  //Try different Angles for all the actions
-  int angles[] = {-30,-20,-10,0,10,20,30}; 
-  //std::vector<int> angles = {-30,-20,-10,0,10,20,30}; /VS2010 does not support this CPP11 feature 
-  for(int k = 0; k < (sizeof(angles)/sizeof(*angles)); k++){
-    for(size_t i=0; i < action_local.size(); i++) {      
-      action_localTurned[i].action_angle = action_local[i].action_angle+angles[k]; //Set New Angle
-      simulateConsequences(action_localTurned[i], actionsConsequencesTurned[i]);
-    }
-    size_t best_action2 = decide(actionsConsequencesTurned);
-    
-    possibleBestActions.push_back(best_action2);
-    actionsConsequencesBest.push_back(actionsConsequencesTurned[best_action2]);
-  }
-  //Todo: Calculate the best of the best
-  //Carefull veryBest is not a normal Action it rather tells us which angle is the best
-  size_t veryBest = decide(actionsConsequencesBest);
-  std::cout << veryBest << std::endl;
   // plot projected actions
   DEBUG_REQUEST("Simulation:ActionTarget",
     for(size_t i=0; i<action_local.size(); i++)
@@ -139,34 +114,8 @@ void Simulation::execute()
   DEBUG_REQUEST("Simulation:draw_best_action",
     FIELD_DRAWING_CONTEXT;
     PEN("FF69B4", 35);
-
-    //Draw Decision with Rotation
-    Color color;
-    if(possibleBestActions[veryBest] == 0){
-      color = Color(1.0,1.0,1.0,0.7); //White - None
-    }
-    else if(possibleBestActions[veryBest] == 1){
-      color = Color(255.0/255,172.0/255,18.0/255,0.7); //orange - kick_short
-    }
-    else if(possibleBestActions[veryBest] == 2){
-      color = Color(232.0/255,43.0/255,0.0/255,0.7); //red - kick_long
-    }
-    else if(possibleBestActions[veryBest] == 3){
-      color = Color(0.0/255,13.0/255,191.0/255,0.7); //blue - sidekick_left
-    }
-    else if(possibleBestActions[veryBest] == 4){
-      color = Color(0.0/255,191.0/255,51.0/255,0.7);//green - sidekick_right
-    }
-	  Pose2D q;
-	  q.translation.x = 0.0;
-	  q.translation.y = 0.0;
-    q.rotation = Math::fromDegrees(angles[veryBest]);
-
-	  Vector2d ArrowStart = q * Vector2d(0, 0);
-	  Vector2d ArrowEnd = q * Vector2d(500, 0);
-
-	  PEN(color, 50);
-	  ARROW(ArrowStart.x,ArrowStart.y,ArrowEnd.x,ArrowEnd.y);
+    std::string name = action_local[best_action].name();
+    TEXT_DRAWING(getRobotPose().translation.x+100, getRobotPose().translation.y-200, name);
   );
 
   DEBUG_REQUEST("Simulation:draw_potential_field",

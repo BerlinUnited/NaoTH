@@ -122,15 +122,13 @@ public:
   private:
     KickActionModel::ActionId _id;
     std::string _name;
-
-
-    
-  public:
     double action_speed;
     double action_speed_std;
     double action_angle;
     double action_angle_std;
     double friction;
+    
+  public:
     Action(KickActionModel::ActionId _id, const ActionParams& params, double friction) : 
 		  _id(_id), 
       _name(KickActionModel::getName(_id)),
@@ -214,11 +212,6 @@ private:
 
   std::vector<Action> action_local;  
   std::vector<ActionResults> actionsConsequences;
-
-  std::vector<Action> action_localTurned;
-  std::vector<ActionResults> actionsConsequencesTurned;
-  std::vector<ActionResults> actionsConsequencesBest;
-  std::vector<size_t> possibleBestActions;
 
   void simulateConsequences(const Action & action, ActionResults& categorizedBallPositions) const;
 
