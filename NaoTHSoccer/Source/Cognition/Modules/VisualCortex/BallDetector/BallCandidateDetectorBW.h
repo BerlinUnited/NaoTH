@@ -123,20 +123,23 @@ private:
         candidates.back().value = value;
       }
 
-      for(std::list<BallCandidate>::iterator i = candidates.begin(); i != candidates.end(); ++i)
+
+      bool stop = false;
+      for (std::list<BallCandidate>::iterator i = candidates.begin(); i != candidates.end(); /*nothing*/)
       {
-        // insert
-        if( ((*i).center - center).abs2() < std::max(((*i).radius)*((*i).radius)*4, radius*radius*4)) {
+        if (std::max(std::abs((*i).center.x - center.x), std::abs((*i).center.y - center.y)) < ((*i).radius + radius)) {
           if(value > (*i).value) {
-            (*i).center = center;
-            (*i).radius = radius;
-            (*i).value = value;
+            i = candidates.erase(i);
+          } else {
+            stop = true;
+            ++i;
           }
-          if(candidates.size() > 30) {
-            candidates.pop_front();
-          }
-          return;
+        } else {
+          ++i;
         }
+      }
+      if(stop) {
+        return;
       }
 
       for(std::list<BallCandidate>::iterator i = candidates.begin(); i != candidates.end(); ++i)
@@ -161,7 +164,7 @@ private:
 
 
       if(candidates.size() > 30) {
-        candidates.pop_front();
+        //candidates.pop_front();
       }
     }
 

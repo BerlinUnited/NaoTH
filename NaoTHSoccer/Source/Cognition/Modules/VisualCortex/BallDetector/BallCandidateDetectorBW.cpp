@@ -57,7 +57,6 @@ void BallCandidateDetectorBW::execute(CameraInfo::CameraID id)
 
   best.clear();
 
-  int old_r = radiusEstimation[0]*2/FACTOR;
   for(point.y = 0; point.y < (int)getImage().height()/FACTOR; point.y+=1) 
   {
     int r = radiusEstimation[point.y*FACTOR]*2/FACTOR;
@@ -81,10 +80,12 @@ void BallCandidateDetectorBW::execute(CameraInfo::CameraID id)
     {
       
       int inner  = getIntegral(point.x, point.y, point.x+r, point.y+r);
-      int outer = getIntegral(point.x-so, point.y-so, point.x+r+so, point.y+r+so);
-      double vx = (double)(inner - 2*(outer - inner))/((double)r*r);
 
-      if (inner > (r*r)/2) {
+      if (inner > r*r/2) {
+
+        int outer = getIntegral(point.x-so, point.y-so, point.x+r+so, point.y+r+so);
+        double vx = (double)(inner - 2*(outer - inner))/((double)r*r);
+
         valueMax = vx;
         center.x = (point.x+r/2+1)*FACTOR;
         center.y = (point.y+r/2+1)*FACTOR;
