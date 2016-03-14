@@ -92,6 +92,9 @@ private:
   static double getInertialSensorY();
 
   static bool getBumberLeftPressed();
+  static bool getButtonHeadMiddle();
+  static bool getButtonHeadFront();
+  static bool getButtonHeadRear();
 };
 
 #endif  /* _SENSORSYMBOLS_H */
