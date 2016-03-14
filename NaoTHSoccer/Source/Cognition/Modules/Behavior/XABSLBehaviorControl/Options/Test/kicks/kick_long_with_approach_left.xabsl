@@ -81,6 +81,8 @@ option kick_long_with_approach_left
   target state done
   {
     decision{
+    else if(button.head.pressed.front)
+      goto idle;
     else
       stay;
     }

@@ -76,6 +76,8 @@ option sidekick_left_test
   target state done
   {
     decision {
+    else if(button.head.pressed.front)
+      goto idle;
       else
         stay;
     }

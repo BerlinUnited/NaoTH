@@ -81,6 +81,8 @@ option kick_short_with_approach_right
   target state done
   {
     decision{
+    else if(button.head.pressed.front)
+      goto idle;
     else
       stay;
     }
