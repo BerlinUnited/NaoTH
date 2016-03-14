@@ -278,7 +278,6 @@ void Motion::postProcess()
 
 }//end postProcess
 
-
 void Motion::debugPlots()
 {
 
@@ -323,6 +322,41 @@ void Motion::debugPlots()
     PLOT("Motion:KinematicChain:oriantation:sensor:y", Math::toDegrees(inertialExpected.y) );
   );
 
+  // add currentSum array to the ring buffer
+  for(int i = 0; i < naoth::JointData::numOfJoint; i++){
+      currentsRingBuffer[i].add(getBodyStatus().currentSum[i]);
+  }
+
+  // plot the filtered current (mean filter)
+#define PLOT_CURRENT(name) \
+  if(currentsRingBuffer[JointData::name].isFull()) { \
+    PLOT("Motion:Current:"#name, (currentsRingBuffer[JointData::name].last() - currentsRingBuffer[JointData::name].first()) / currentsRingBuffer[JointData::name].getMaxEntries()); \
+  }
+
+  PLOT_CURRENT(HeadPitch);
+  PLOT_CURRENT(HeadYaw);
+
+  PLOT_CURRENT(RShoulderRoll);
+  PLOT_CURRENT(LShoulderRoll);
+  PLOT_CURRENT(RShoulderPitch);
+  PLOT_CURRENT(LShoulderPitch);
+  PLOT_CURRENT(RElbowRoll);
+  PLOT_CURRENT(LElbowRoll);
+  PLOT_CURRENT(RElbowYaw);
+  PLOT_CURRENT(LElbowYaw);
+
+  PLOT_CURRENT(RHipYawPitch);
+  PLOT_CURRENT(LHipYawPitch);
+  PLOT_CURRENT(RHipPitch);
+  PLOT_CURRENT(LHipPitch);
+  PLOT_CURRENT(RHipRoll);
+  PLOT_CURRENT(LHipRoll);
+  PLOT_CURRENT(RKneePitch);
+  PLOT_CURRENT(LKneePitch);
+  PLOT_CURRENT(RAnklePitch);
+  PLOT_CURRENT(LAnklePitch);
+  PLOT_CURRENT(RAnkleRoll);
+  PLOT_CURRENT(LAnkleRoll);
 
   // plot the requested joint positions
 #define PLOT_JOINT(name) \
@@ -353,11 +387,17 @@ void Motion::debugPlots()
   PLOT_JOINT(RAnkleRoll);
   PLOT_JOINT(LAnkleRoll);
 
+  // buffer motor joint data to determine the error to the corresponding sensor joint data (will be read in 4 cycles)
+  for(int i = 0; i < naoth::JointData::numOfJoint; i++){
+      motorJointDataBuffer[i].add(getMotorJointData().position[i]);
+  }
 
-  
 #define PLOT_JOINT_ERROR(name) \
-  {double e = getMotorJointData().position[JointData::name] - getSensorJointData().position[JointData::name];\
-  PLOT("Motion:MotorJointError:"#name, Math::toDegrees(e));}
+  { if(motorJointDataBuffer[JointData::name].isFull()) { \
+        double e = motorJointDataBuffer[JointData::name].first() - getSensorJointData().position[JointData::name];\
+        PLOT("Motion:MotorJointError:"#name, Math::toDegrees(e)); \
+    } \
+  }
 
   PLOT_JOINT_ERROR(HeadPitch);
   PLOT_JOINT_ERROR(HeadYaw);
