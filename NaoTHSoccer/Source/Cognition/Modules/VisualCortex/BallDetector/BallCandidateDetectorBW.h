@@ -65,6 +65,12 @@ BEGIN_DECLARE_MODULE(BallCandidateDetectorBW)
 END_DECLARE_MODULE(BallCandidateDetectorBW)
 
 
+template <typename Iter>
+Iter nextIter(Iter iter)
+{
+    return ++iter;
+}
+
 class BallCandidateDetectorBW: private BallCandidateDetectorBWBase
 {
 public:
@@ -87,7 +93,83 @@ private:
   static const int FACTOR = 4;
   int integralImage[640/FACTOR][480/FACTOR];
 
+  int getIntegral(int x0, int y0, int x1, int y1) {
+    x0 = std::max(x0-1, 0);
+    y0 = std::max(y0-1, 0);
+    return integralImage[x1][y1] + integralImage[x0][y0] - integralImage[x0][y1] - integralImage[x1][y0];
+  }
+
   double estimatedBallRadius(const Vector2i& point) const;
+
+  class Best {
+  public:
+
+    class BallCandidate 
+    {
+    public:
+      Vector2i center;
+      double radius;
+      double value;
+    };
+
+    std::list<BallCandidate> candidates;
+
+    void add(const Vector2i& center, double radius, double value)
+    {
+      if(candidates.empty()) {
+        candidates.push_back(BallCandidate());
+        candidates.back().center = center;
+        candidates.back().radius = radius;
+        candidates.back().value = value;
+      }
+
+      for(std::list<BallCandidate>::iterator i = candidates.begin(); i != candidates.end(); ++i)
+      {
+        // insert
+        if( ((*i).center - center).abs2() < std::max(((*i).radius)*((*i).radius)*4, radius*radius*4)) {
+          if(value > (*i).value) {
+            (*i).center = center;
+            (*i).radius = radius;
+            (*i).value = value;
+          }
+          if(candidates.size() > 30) {
+            candidates.pop_front();
+          }
+          return;
+        }
+      }
+
+      for(std::list<BallCandidate>::iterator i = candidates.begin(); i != candidates.end(); ++i)
+      {
+        // insert
+        if(value < (*i).value) {
+          i = candidates.insert(i,BallCandidate());
+          (*i).center = center;
+          (*i).radius = radius;
+          (*i).value = value;
+          break;
+        } else if(nextIter(i) == candidates.end()) 
+        {
+          candidates.push_back(BallCandidate());
+          
+          candidates.back().center = center;
+          candidates.back().radius = radius;
+          candidates.back().value = value;
+          break;
+        }
+      }
+
+
+      if(candidates.size() > 30) {
+        candidates.pop_front();
+      }
+    }
+
+    void clear() {
+      candidates.clear();
+    }
+
+  } best;
 
 private:     
   

@@ -18,6 +18,8 @@
 #include "Tools/ImageProcessing/MaximumScan.h"
 #include "Tools/ImageProcessing/Filter.h"
 
+#include <list>
+
 BallCandidateDetectorBW::BallCandidateDetectorBW()
 {
   DEBUG_REQUEST_REGISTER("Vision:BallCandidateDetectorBW:peak_scan:mark_full", "mark the scanned points in image", false);
@@ -40,8 +42,8 @@ void BallCandidateDetectorBW::execute(CameraInfo::CameraID id)
   integralBild();
   
   Vector2i center;
-  int valueMax = 0;
-  int radius = 0;
+  double valueMax = 0;
+  int radius = -1;
 
   Vector2i point;
 
@@ -49,30 +51,47 @@ void BallCandidateDetectorBW::execute(CameraInfo::CameraID id)
 
   point.x = 320;
   for(point.y = 0; point.y < (int)getImage().height(); point.y++){
-    radiusEstimation[point.y] = (int)(estimatedBallRadius(point)+0.5)*2;
+    radiusEstimation[point.y] = (int)(estimatedBallRadius(point)+0.5);
     //CIRCLE_PX(ColorClasses::orange, point.x, point.y, r);
   }
 
+  best.clear();
+
+  int old_r = radiusEstimation[0]*2/FACTOR;
   for(point.y = 0; point.y < (int)getImage().height()/FACTOR; point.y+=1) 
   {
     int r = radiusEstimation[point.y*FACTOR]*2/FACTOR;
-    int so = (int)(r*0.3+0.5);
+    int so = (int)(r*0.1+0.5)*1;
 
-    if (point.y < so || point.y+r+so+1 > 480/FACTOR) {
+    if (r < 3 || point.y < so || point.y+r+so+1 > 480/FACTOR) {
       continue;
     }
 
+    /*
+    if ( old_r != r ) {
+      if(radius > 0) {
+        CIRCLE_PX(ColorClasses::orange, center.x, center.y, radius);
+      }
+      valueMax = 0;
+      radius = -1;
+      old_r = r;
+    }*/
+
     for(point.x = so; point.x + r + so < (int)getImage().width()/FACTOR; point.x+=1) 
     {
-      int v  = integralImage[point.x+r][point.y+r]      +integralImage[point.x][point.y]      -integralImage[point.x][point.y+r]      -integralImage[point.x+r][point.y];
-      int vo = integralImage[point.x+r+so][point.y+r+so]+integralImage[point.x-so][point.y-so]-integralImage[point.x-so][point.y+r+so]-integralImage[point.x+r+so][point.y-so];
-      int vx = v - 2*(vo - v);
+      
+      int inner  = getIntegral(point.x, point.y, point.x+r, point.y+r);
+      int outer = getIntegral(point.x-so, point.y-so, point.x+r+so, point.y+r+so);
+      double vx = (double)(inner - 2*(outer - inner))/((double)r*r);
 
-      if ( vx > valueMax ) {
+      if (inner > (r*r)/2) {
         valueMax = vx;
         center.x = (point.x+r/2+1)*FACTOR;
         center.y = (point.y+r/2+1)*FACTOR;
         radius = radiusEstimation[point.y*FACTOR];
+
+        best.add(center, radius, valueMax);
+
       }
     }
   }
@@ -99,13 +118,25 @@ void BallCandidateDetectorBW::execute(CameraInfo::CameraID id)
     }
   }
   */
+  /*
+  if(radius > 0) {
+    CIRCLE_PX(ColorClasses::orange, center.x, center.y, radius);
+  }
+  */
 
-  CIRCLE_PX(ColorClasses::orange, center.x, center.y, radius);
+  for(std::list<Best::BallCandidate>::iterator i = best.candidates.begin(); i != best.candidates.end(); ++i)
+  {
+    if(getFieldPercept().getValidField().isInside((*i).center)) {
+      //CIRCLE_PX(ColorClasses::red, (*i).center.x, (*i).center.y, (int)((*i).radius));
+      RECT_PX(ColorClasses::red, (*i).center.x - (int)((*i).radius), (*i).center.y - (int)((*i).radius),
+        (*i).center.x + (int)((*i).radius), (*i).center.y + (int)((*i).radius));
+    }
+  }
 }
 
 double BallCandidateDetectorBW::estimatedBallRadius(const Vector2i& point) const
 {
-  double ballRadius = 40.0;
+  double ballRadius = 50.0;
   Vector2d pointOnField;
   if(!CameraGeometry::imagePixelToFieldCoord(
 		  getCameraMatrix(), 
@@ -167,9 +198,10 @@ void BallCandidateDetectorBW::integralBild()
       getImage().get(point.x*FACTOR, point.y*FACTOR, pixel);
       
       integralImage[point.x][point.y] = integralImage[point.x-1][point.y] + integralImage[point.x][point.y-1] - integralImage[point.x-1][point.y-1];
-      if(pixel.y > 40 && getFieldColorPercept().greenHSISeparator.noColor(pixel) 
-                      && !getBodyContour().isOccupied(point)) {
-        integralImage[point.x][point.y] += pixel.y;
+      if(getFieldColorPercept().greenHSISeparator.noColor(pixel) 
+                      //&& !getBodyContour().isOccupied(point)
+        ) {
+        integralImage[point.x][point.y] += 1;//pixel.y;
       }
     }
   }
