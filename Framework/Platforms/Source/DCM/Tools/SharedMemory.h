@@ -16,6 +16,7 @@
 #include <semaphore.h>
 #include <cerrno>
 #include <string>
+#include <algorithm>
 
 #ifndef _SHARED_MEMORY_H_
 #define _SHARED_MEMORY_H_
@@ -121,7 +122,7 @@ public:
 
     const bool swappingReady = theMemory->swappingReady;
     if ( swappingReady ) {
-      swap(theMemory->reading, theMemory->swapping);
+      std::swap(theMemory->reading, theMemory->swapping);
       theMemory->swappingReady = false;
     }
     unlock();
@@ -132,7 +133,7 @@ public:
   void swapWriting()
   {
     if ( trylock() ) {
-      swap(theMemory->writing, theMemory->swapping);
+      std::swap(theMemory->writing, theMemory->swapping);
       theMemory->swappingReady = true;
     }
     unlock();
