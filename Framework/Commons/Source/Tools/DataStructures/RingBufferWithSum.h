@@ -119,6 +119,10 @@ template <class C, int n> class RingBufferWithSum
       return n;
     }
 
+    bool isFull() const {
+      return numberOfEntries == n;
+    }
+
   private:
     int current;
     int numberOfEntries;
