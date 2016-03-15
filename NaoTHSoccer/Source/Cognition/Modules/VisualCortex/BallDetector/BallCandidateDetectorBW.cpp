@@ -102,6 +102,7 @@ void BallCandidateDetectorBW::execute(CameraInfo::CameraID id)
   }
   */
 
+  CANVAS(((cameraID == CameraInfo::Top)?"ImageTop":"ImageBottom"));
   for(std::list<Best::BallCandidate>::iterator i = best.candidates.begin(); i != best.candidates.end(); ++i)
   {
     if(getFieldPercept().getValidField().isInside((*i).center)) {
@@ -111,6 +112,9 @@ void BallCandidateDetectorBW::execute(CameraInfo::CameraID id)
 
       RECT_PX((*i).value >= 1?ColorClasses::red:ColorClasses::orange, (*i).center.x - radius, (*i).center.y - radius,
         (*i).center.x + radius, (*i).center.y + radius);
+
+      PEN("FF0000", 1);
+      CIRCLE((*i).center.x, (*i).center.y, (*i).value*10);
 
       //std::cout << (*i).value << std::endl;
     }
@@ -159,6 +163,34 @@ void BallCandidateDetectorBW::integralBild()
       }
     }
   }
+
+
+  /*
+  // experiment: cut accoring to the histogram
+  int y = 0;
+  int value = 0;
+  int old_value = 160;
+  //MaximumScan<int,double> negativeScan(point.y, -1.2*1e+9);
+
+  CANVAS(((cameraID == CameraInfo::Top)?"ImageTop":"ImageBottom"));
+  for(point.y = 1; point.y < (int)getImage().height()/FACTOR; ++point.y) {
+    value = integralImage[(int)getImage().width()/FACTOR-1][point.y] - integralImage[(int)getImage().width()/FACTOR-1][point.y-1];
+    
+    if(cameraID == CameraInfo::Top) {
+
+      if(value < old_value) {
+        old_value = value;
+        y = point.y;
+      }
+
+      PLOT_GENERIC("integral.y", point.y, value);
+    }
+  }
+
+  PEN("0000FF66", 1);
+  LINE(0, y*FACTOR -FACTOR/2 ,639, y*FACTOR -FACTOR/2);
+  */
+
 
   /*
   for(size_t x = 1; x < getImage().width(); ++x) {

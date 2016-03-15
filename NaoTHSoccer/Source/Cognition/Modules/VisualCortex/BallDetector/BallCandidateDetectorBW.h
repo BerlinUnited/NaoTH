@@ -35,12 +35,15 @@
 
 #include "Representations/Debug/Stopwatch.h"
 #include "Tools/Debug/DebugRequest.h"
+#include "Tools/Debug/DebugPlot.h"
 #include "Tools/Debug/DebugImageDrawings.h"
 #include "Tools/Debug/DebugParameterList.h"
 
 
 BEGIN_DECLARE_MODULE(BallCandidateDetectorBW)
   PROVIDE(DebugRequest)
+  PROVIDE(DebugDrawings)
+  PROVIDE(DebugPlot)
   PROVIDE(DebugImageDrawings)
   PROVIDE(DebugImageDrawingsTop)
   PROVIDE(DebugParameterList)
