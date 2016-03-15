@@ -42,57 +42,34 @@ void BallCandidateDetectorBW::execute(CameraInfo::CameraID id)
   integralBild();
   
   Vector2i center;
-  double valueMax = 0;
-  int radius = -1;
-
   Vector2i point;
-
-  int radiusEstimation[480];
-
-  point.x = 320;
-  for(point.y = 0; point.y < (int)getImage().height(); point.y++){
-    radiusEstimation[point.y] = (int)(estimatedBallRadius(point)+0.5);
-    //CIRCLE_PX(ColorClasses::orange, point.x, point.y, r);
-  }
 
   best.clear();
 
-  for(point.y = 0; point.y < (int)getImage().height()/FACTOR; point.y+=1) 
+  for(point.y = 0; point.y < (int)getImage().height()/FACTOR; ++point.y) 
   {
-    int r = radiusEstimation[point.y*FACTOR]*2/FACTOR;
-    int so = (int)(r*0.1+0.5)*1;
+    double radius = estimatedBallRadius(point.x*FACTOR, point.y*FACTOR);
+    int size = (int)(radius*2.0/FACTOR+0.5);
+    int border = (int)(radius*0.2/FACTOR+0.5);
 
-    if (r < 3 || point.y < so || point.y+r+so+1 > 480/FACTOR) {
+    if (size < 3 || point.y < border || point.y+size+border+1 > 480/FACTOR) {
       continue;
     }
 
-    /*
-    if ( old_r != r ) {
-      if(radius > 0) {
-        CIRCLE_PX(ColorClasses::orange, center.x, center.y, radius);
-      }
-      valueMax = 0;
-      radius = -1;
-      old_r = r;
-    }*/
 
-    for(point.x = so; point.x + r + so < (int)getImage().width()/FACTOR; point.x+=1) 
+    for(point.x = border; point.x + size + border < (int)getImage().width()/FACTOR; ++point.x) 
     {
-      
-      int inner  = getIntegral(point.x, point.y, point.x+r, point.y+r);
+      int inner  = getIntegral(point.x, point.y, point.x+size, point.y+size);
 
-      if (inner > r*r/2) {
+      // at least 50%
+      if (inner*2 > size*size) {
 
-        int outer = getIntegral(point.x-so, point.y-so, point.x+r+so, point.y+r+so);
-        double vx = (double)(inner - 2*(outer - inner))/((double)r*r);
+        int outer = getIntegral(point.x-border, point.y-border, point.x+size+border, point.y+size+border);
+        double value = (double)(inner - (outer - inner))/((double)size*size);
 
-        valueMax = vx;
-        center.x = (point.x+r/2+1)*FACTOR;
-        center.y = (point.y+r/2+1)*FACTOR;
-        radius = radiusEstimation[point.y*FACTOR];
-
-        best.add(center, radius, valueMax);
-
+        center.x = point.x*FACTOR + (int)(radius+0.5);
+        center.y = point.y*FACTOR + (int)(radius+0.5);
+        best.add(center, radius, value);
       }
     }
   }
@@ -129,60 +106,36 @@ void BallCandidateDetectorBW::execute(CameraInfo::CameraID id)
   {
     if(getFieldPercept().getValidField().isInside((*i).center)) {
       //CIRCLE_PX(ColorClasses::red, (*i).center.x, (*i).center.y, (int)((*i).radius));
-      RECT_PX(ColorClasses::red, (*i).center.x - (int)((*i).radius), (*i).center.y - (int)((*i).radius),
-        (*i).center.x + (int)((*i).radius), (*i).center.y + (int)((*i).radius));
+
+      int radius = (int)((*i).radius*1.5 + 0.5);
+
+      RECT_PX((*i).value >= 1?ColorClasses::red:ColorClasses::orange, (*i).center.x - radius, (*i).center.y - radius,
+        (*i).center.x + radius, (*i).center.y + radius);
+
+      //std::cout << (*i).value << std::endl;
     }
   }
 }
 
-double BallCandidateDetectorBW::estimatedBallRadius(const Vector2i& point) const
+double BallCandidateDetectorBW::estimatedBallRadius(int x, int y) const
 {
-  double ballRadius = 50.0;
+  const double ballRadius = 50.0;
   Vector2d pointOnField;
   if(!CameraGeometry::imagePixelToFieldCoord(
 		  getCameraMatrix(), 
 		  getImage().cameraInfo,
-		  point.x, 
-		  point.y, 
+		  x, 
+		  y, 
 		  ballRadius,
 		  pointOnField))
   {
     return -1;
   }
 
-  /*
-  Vector3d upf(pointOnField.x, pointOnField.y, ballRadius*2);
-  Vector2d up;
-  if(!CameraGeometry::relativePointToImage(
-        getCameraMatrix(), 
-		    getImage().cameraInfo,
-        upf,
-        up
-    ))
-  {
-    return -1;
-  }
-
-  Vector3d lof(pointOnField.x, pointOnField.y, 0);
-
-  Vector2d lo;
-  if(!CameraGeometry::relativePointToImage(
-        getCameraMatrix(), 
-		    getImage().cameraInfo,
-        lof,
-        lo
-    ))
-  {
-    return -1;
-  }
-
-  return (up-lo).abs()/2.0;
-  */
-
   Vector3d d = getCameraMatrix().invert()*Vector3d(pointOnField.x, pointOnField.y, ballRadius);
   double cameraBallDistance = d.abs();
   if(cameraBallDistance > ballRadius) {
-    double a = atan2(ballRadius, d.abs());
+    double a = atan2(ballRadius, cameraBallDistance);
     return a / getImage().cameraInfo.getOpeningAngleHeight() * getImage().cameraInfo.resolutionHeight;
   }
   
@@ -202,7 +155,7 @@ void BallCandidateDetectorBW::integralBild()
       if(getFieldColorPercept().greenHSISeparator.noColor(pixel) 
                       //&& !getBodyContour().isOccupied(point)
         ) {
-        integralImage[point.x][point.y] += 1;//pixel.y;
+        integralImage[point.x][point.y]++;//pixel.y;
       }
     }
   }

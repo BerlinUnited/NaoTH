@@ -99,7 +99,7 @@ private:
     return integralImage[x1][y1] + integralImage[x0][y0] - integralImage[x0][y1] - integralImage[x1][y0];
   }
 
-  double estimatedBallRadius(const Vector2i& point) const;
+  double estimatedBallRadius(int x, int y) const;
 
   class Best {
   public:
@@ -107,6 +107,10 @@ private:
     class BallCandidate 
     {
     public:
+      BallCandidate() : radius(-1), value(-1) {}
+      BallCandidate(const Vector2i& center, double radius, double value) 
+        : center(center), radius(radius), value(value)
+      {}
       Vector2i center;
       double radius;
       double value;
@@ -117,12 +121,9 @@ private:
     void add(const Vector2i& center, double radius, double value)
     {
       if(candidates.empty()) {
-        candidates.push_back(BallCandidate());
-        candidates.back().center = center;
-        candidates.back().radius = radius;
-        candidates.back().value = value;
+        candidates.push_back(BallCandidate(center, radius, value));
+        return;
       }
-
 
       bool stop = false;
       for (std::list<BallCandidate>::iterator i = candidates.begin(); i != candidates.end(); /*nothing*/)
@@ -146,26 +147,19 @@ private:
       {
         // insert
         if(value < (*i).value) {
-          i = candidates.insert(i,BallCandidate());
-          (*i).center = center;
-          (*i).radius = radius;
-          (*i).value = value;
+          i = candidates.insert(i,BallCandidate(center, radius, value));
           break;
-        } else if(nextIter(i) == candidates.end()) 
-        {
-          candidates.push_back(BallCandidate());
-          
-          candidates.back().center = center;
-          candidates.back().radius = radius;
-          candidates.back().value = value;
+        } else if(nextIter(i) == candidates.end()) {
+          candidates.push_back(BallCandidate(center, radius, value));
           break;
         }
       }
 
-
+      /*
       if(candidates.size() > 30) {
-        //candidates.pop_front();
+        candidates.pop_front();
       }
+      */
     }
 
     void clear() {
