@@ -102,7 +102,8 @@ void BallCandidateDetectorBW::execute(CameraInfo::CameraID id)
   }
   */
 
-  CANVAS(((cameraID == CameraInfo::Top)?"ImageTop":"ImageBottom"));
+  index = 0;
+  //CANVAS(((cameraID == CameraInfo::Top)?"ImageTop":"ImageBottom"));
   for(std::list<Best::BallCandidate>::iterator i = best.candidates.begin(); i != best.candidates.end(); ++i)
   {
     if(getFieldPercept().getValidField().isInside((*i).center)) {
@@ -110,16 +111,64 @@ void BallCandidateDetectorBW::execute(CameraInfo::CameraID id)
 
       int radius = (int)((*i).radius*1.5 + 0.5);
 
-      RECT_PX((*i).value >= 1?ColorClasses::red:ColorClasses::orange, (*i).center.x - radius, (*i).center.y - radius,
-        (*i).center.x + radius, (*i).center.y + radius);
+      
+      subsampling((*i).center.x - radius, (*i).center.y - radius, (*i).center.x + radius, (*i).center.y + radius);
+      //PEN("FF0000", 1);
+      //CIRCLE((*i).center.x, (*i).center.y, (*i).value*10);
+      //RECT_PX(isBall()?ColorClasses::blue:ColorClasses::red, (*i).center.x - radius, (*i).center.y - radius,
+      //  (*i).center.x + radius, (*i).center.y + radius);
 
-      PEN("FF0000", 1);
-      CIRCLE((*i).center.x, (*i).center.y, (*i).value*10);
+      if(isBall()) { 
+        RECT_PX(ColorClasses::blue, (*i).center.x - radius, (*i).center.y - radius,
+          (*i).center.x + radius, (*i).center.y + radius);
 
+        getBallPercept().ballWasSeen = true;
+        getBallPercept().centerInImage = (*i).center;
+        getBallPercept().radiusInImage = radius;
+      }
       //std::cout << (*i).value << std::endl;
     }
   }
 }
+
+void BallCandidateDetectorBW::subsampling(int x0, int y0, int x1, int y1) 
+{
+  x0 = std::max(0, x0);
+  y0 = std::max(0, y0);
+  x1 = std::min((int)getImage().width()-1, x1);
+  y1 = std::min((int)getImage().height()-1, y1);
+
+  const double size = 12.0;
+  double width_step = static_cast<double>(x1 - x0) / size;
+  double height_step = static_cast<double>(y1 - y0) / size;
+
+  int xi = 0;
+  
+  for(double x = x0 + width_step/2.0; x < x1; x += width_step) {
+    int yi = 0;
+    for(double y = y0 + height_step/2.0; y < y1; y += height_step) {
+      unsigned char yy = getImage().getY((int)(x + 0.5), (int)(y + 0.5));
+
+      //PEN(Color(yy, yy, yy), 1);
+      //FILLBOX(index*25 + xi*2, 10 + yi*2, index*25 + (xi+1)*2, 10 + (yi+1)*2);
+
+      //std::cerr << ((int)yy) << ";";
+
+      sub_img[xi*12 + yi] = yy;
+
+      //POINT_PX(ColorClasses::red, (int)(x + 0.5), (int)(y + 0.5));
+      yi++;
+    }
+    xi++;
+  }
+
+  //std::cerr << "\n";
+  index++;
+  //std::cout << xi << " " << yi << std::endl;
+}
+
+
+
 
 double BallCandidateDetectorBW::estimatedBallRadius(int x, int y) const
 {
@@ -201,3 +250,5 @@ void BallCandidateDetectorBW::integralBild()
   }
   */
 }
+
+
