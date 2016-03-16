@@ -49,7 +49,7 @@ BEGIN_DECLARE_MODULE(SimulationTest)
   REQUIRE(ObstacleModel)
 
   PROVIDE(BallModel) // fake the ball model
-  PROVIDE(RobotPose) // fake the obot pose
+  PROVIDE(RobotPose) // fake the robot pose
 
   REQUIRE(KickActionModel)
 END_DECLARE_MODULE(SimulationTest)
@@ -62,12 +62,24 @@ public:
 
   virtual void execute();
 
+  class MultiColorValue
+  {
+    public:
+      MultiColorValue(size_t n) : values(n,0.0) {}
+      std::vector<double> values;
+      Vector2d position;
+  };
+  std::vector<MultiColorValue> functionMulticolor;
+
 private:
   ModuleCreator<Simulation>* simulationModule;
 
   void draw_function(const std::vector<Vector3d>& function) const;
   void draw_difference(const std::vector<Vector3d>& function)const;
+  void draw_function_multicolor(const std::vector<SimulationTest::MultiColorValue>& function) const;
+
 	double globRot;
+
 };
 
 #endif  /* _SimulationTest_H */

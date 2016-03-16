@@ -38,28 +38,28 @@ void SimulationTest::execute()
 		getRobotPose().isValid = true;
 
 		// iterate over robot pose
+    functionMulticolor.clear();
 		Pose2D p(0.0, getFieldInfo().carpetRect.min());
 		for(p.translation.x = getFieldInfo().carpetRect.min().x; p.translation.x < getFieldInfo().carpetRect.max().x; p.translation.x += 200) 
 		{
 			for(p.translation.y = getFieldInfo().carpetRect.min().y; p.translation.y < getFieldInfo().carpetRect.max().y; p.translation.y += 200) 
 			{
-				p.rotation =  Math::fromDegrees(globRot);
-				getRobotPose() = p;
-				simulationModule->execute();
+        MultiColorValue v(KickActionModel::numOfActions);
+        v.position = p.translation;
 
-        size_t dumb = getKickActionModel().bestAction;
-        size_t smart = getKickActionModel().smartBestAction;
-        if(dumb == smart){
-				  function.push_back(Vector3d(p.translation.x, p.translation.y, 0));
-        }else{
-          function.push_back(Vector3d(p.translation.x, p.translation.y, 1));
+        for(size_t i=0;i<10;i++)
+        {
+				  p.rotation =  Math::fromDegrees(globRot);
+				  getRobotPose() = p;
+				  simulationModule->execute();
+          v.values[getKickActionModel().bestAction]++;
         }
 
+        functionMulticolor.push_back(v);
 			}
 		}
-		;
+    draw_function_multicolor(functionMulticolor);
 		//draw_function(function);
-    draw_difference(function);
 	);
 }//end execute
 
@@ -122,8 +122,6 @@ void SimulationTest::draw_function(const std::vector<Vector3d>& function) const
 	ARROW(ArrowStart.x,ArrowStart.y,ArrowEnd.x,ArrowEnd.y);
 }//end draw_closest_points
 
-
-
 void SimulationTest::draw_difference(const std::vector<Vector3d>& function)const{
   if(function.empty()) {
     return;
@@ -175,3 +173,48 @@ void SimulationTest::draw_difference(const std::vector<Vector3d>& function)const
 	PEN("000000", 50);
 	ARROW(ArrowStart.x,ArrowStart.y,ArrowEnd.x,ArrowEnd.y);
 }
+
+void SimulationTest::draw_function_multicolor(const std::vector<SimulationTest::MultiColorValue>& function) const
+{
+  if(function.empty()) {
+    return;
+  }
+
+  FIELD_DRAWING_CONTEXT;
+  std::vector<Color> colors;
+  colors.push_back(Color(1.0,1.0,1.0,0.7));
+  colors.push_back(Color(255.0/255,172.0/255,18.0/255,0.7));
+  colors.push_back(Color(232.0/255,43.0/255,0.0/255,0.7));
+  colors.push_back(Color(0.0/255,13.0/255,191.0/255,0.7));
+  colors.push_back(Color(0.0/255,191.0/255,51.0/255,0.7));
+
+
+  for(size_t i = 0; i < function.size(); ++i) 
+  {
+    const MultiColorValue& v = function[i];
+    double sum = 0;
+    for(size_t j = 0; j < v.values.size(); ++j) {
+      sum += v.values[j];
+    }
+
+    Color color(0.0,0.0,0.0,0.0);
+    for(size_t j = 0; j < v.values.size(); ++j) {
+      color += v.values[j]/sum*colors[j];
+    }
+
+    PEN(color, 20);
+    FILLBOX(v.position.x - 100, v.position.y - 100, v.position.x+100, v.position.y+100);
+  }
+
+	//Draw Arrow instead
+	Pose2D q;
+	q.translation.x = 0.0;
+	q.translation.y = 0.0;
+	q.rotation = Math::fromDegrees(globRot);
+
+	Vector2d ArrowStart = q * Vector2d(0, 0);
+	Vector2d ArrowEnd = q * Vector2d(500, 0);
+
+	PEN("000000", 50);
+	ARROW(ArrowStart.x,ArrowStart.y,ArrowEnd.x,ArrowEnd.y);
+}//end draw_closest_points
