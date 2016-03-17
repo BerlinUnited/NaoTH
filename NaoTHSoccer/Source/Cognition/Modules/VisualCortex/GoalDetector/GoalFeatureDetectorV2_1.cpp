@@ -125,6 +125,7 @@ void GoalFeatureDetectorV2_1::findEdgelFeatures(const Vector2d& scanDir, const V
 
     Vector2i lastPos;
     bool weakPeakFound = false;
+    bool filterSwitchReady = false;
     while(scanner.getNextWithCheck(pos)) 
     {
       IMG_GET(pos.x, pos.y, pixel);
@@ -142,8 +143,16 @@ void GoalFeatureDetectorV2_1::findEdgelFeatures(const Vector2d& scanDir, const V
       {
         filter.add(pos, parameters.threshold);
       }
-      if(!filter.ready()) {
+      if(!filter.ready()) 
+      {
+        filterSwitchReady = true;
         continue;
+      }
+      bool peakFound = false;
+      if(parameters.useArtificialPoints && pixValue > parameters.threshold && filterSwitchReady)
+      {
+        peakFound = true;
+        peak_point = filter.point();
       }
 
       DEBUG_REQUEST("Vision:GoalFeatureDetectorV2_1:draw_response",
@@ -162,7 +171,6 @@ void GoalFeatureDetectorV2_1::findEdgelFeatures(const Vector2d& scanDir, const V
         }
       );
 
-      bool peakFound = false;
       if(maxScan.add(filter.point(), filter.value()))
       {
         peakFound = true;
@@ -177,7 +185,22 @@ void GoalFeatureDetectorV2_1::findEdgelFeatures(const Vector2d& scanDir, const V
       bool edgeValid = false;
       if(peakFound)
       {
-        Vector2d gradient = parameters.detectWhiteGoals ? calculateGradientY(peak_point) : calculateGradientUV(peak_point);
+        Vector2d upright = getArtificialHorizon().getDirection();
+        upright.rotateRight();
+
+        Vector2d gradient;
+
+        if(parameters.useArtificialPoints && filterSwitchReady)
+        {
+          // assume edge direction along the normal of the horizon for the artificially created jump points
+          // artificial jump points are created, if the images left side is very bright (i.e. the post is only partially seen)
+          gradient = upright;
+          filterSwitchReady = false;
+        }
+        else
+        {
+          gradient = parameters.detectWhiteGoals ? calculateGradientY(peak_point) : calculateGradientUV(peak_point);
+        }
         EdgelD newEdgel;
 
         if(gradient.y < 0)
@@ -207,8 +230,6 @@ void GoalFeatureDetectorV2_1::findEdgelFeatures(const Vector2d& scanDir, const V
           col = ColorClasses::orange;
           peakCol = ColorClasses::pink;
         }
-        Vector2d upright = getArtificialHorizon().getDirection();
-        upright.rotateRight();
 
         //since gradient is normalized we can just check abs(gradient.y) to sort out all not upright edges
         if(fabs(fabs(gradient.y) - fabs(upright.y)) < 0.2)
@@ -244,27 +265,27 @@ void GoalFeatureDetectorV2_1::findEdgelFeatures(const Vector2d& scanDir, const V
                 feature.width = featureWidth;
                 features.push_back(feature);
                 
-                if(weakJumpPoints.size() > 0)
+                if(parameters.useWeakJumpsToo && weakJumpPoints.size() > 0)
                 {
                   for(size_t w = 0; w < weakJumpPoints.size(); w++)
                   {
                     //add a additional feature from lastedgel to weak edgel
                     if((newEdgel.point - weakJumpPoints[w].point).abs2() > 2)
                     {
-                      GoalBarFeature feature;
-                      feature.point = Vector2d(lastEdgel.point + weakJumpPoints[w].point) * 0.5;
+                      GoalBarFeature featureLast2Weak;
+                      featureLast2Weak.point = Vector2d(lastEdgel.point + weakJumpPoints[w].point) * 0.5;
                       double featureWidth = (weakJumpPoints[w].point - lastEdgel.point).abs();
-                      feature.begin.point = lastEdgel.point;
-                      feature.begin.direction = lastEdgel.direction;
-                      feature.begin.type = lastEdgel.type;
+                      featureLast2Weak.begin.point = lastEdgel.point;
+                      featureLast2Weak.begin.direction = lastEdgel.direction;
+                      featureLast2Weak.begin.type = lastEdgel.type;
                 
-                      feature.end.point = weakJumpPoints[w].point;
-                      feature.end.direction = weakJumpPoints[w].direction;
-                      feature.end.type = weakJumpPoints[w].type;
+                      featureLast2Weak.end.point = weakJumpPoints[w].point;
+                      featureLast2Weak.end.direction = weakJumpPoints[w].direction;
+                      featureLast2Weak.end.type = weakJumpPoints[w].type;
 
-                      feature.direction = (lastEdgel.direction + weakJumpPoints[w].direction).normalize();
-                      feature.width = featureWidth;
-                      features.push_back(feature);
+                      featureLast2Weak.direction = (lastEdgel.direction + weakJumpPoints[w].direction).normalize();
+                      featureLast2Weak.width = featureWidth;
+                      features.push_back(featureLast2Weak);
 
                       //feature.weakJumps.push_back(weakJumpPoints[w]);
                       DEBUG_REQUEST("Vision:GoalFeatureDetectorV2_1:markWeakGradients",
@@ -275,48 +296,43 @@ void GoalFeatureDetectorV2_1::findEdgelFeatures(const Vector2d& scanDir, const V
                     if(w > 0 && (weakJumpPoints[w - 1].point - weakJumpPoints[w].point).abs2() > 2)
                     {
                       //add a feature from lastedgel to weak edgel
-                      GoalBarFeature feature;
-                      feature.point = Vector2d(weakJumpPoints[w - 1].point + weakJumpPoints[w].point) * 0.5;
+                      GoalBarFeature featureWeak2Weak;
+                      featureWeak2Weak.point = Vector2d(weakJumpPoints[w - 1].point + weakJumpPoints[w].point) * 0.5;
                       double featureWidth = (weakJumpPoints[w].point - weakJumpPoints[w - 1].point).abs();
-                      feature.begin.point = weakJumpPoints[w - 1].point;
-                      feature.begin.direction = weakJumpPoints[w - 1].direction;
-                      feature.begin.type = weakJumpPoints[w - 1].type;
+                      featureWeak2Weak.begin.point = weakJumpPoints[w - 1].point;
+                      featureWeak2Weak.begin.direction = weakJumpPoints[w - 1].direction;
+                      featureWeak2Weak.begin.type = weakJumpPoints[w - 1].type;
                 
-                      feature.end.point = weakJumpPoints[w].point;
-                      feature.end.direction = weakJumpPoints[w].direction;
-                      feature.end.type = weakJumpPoints[w].type;
+                      featureWeak2Weak.end.point = weakJumpPoints[w].point;
+                      featureWeak2Weak.end.direction = weakJumpPoints[w].direction;
+                      featureWeak2Weak.end.type = weakJumpPoints[w].type;
 
-                      feature.direction = (weakJumpPoints[w - 1].direction + weakJumpPoints[w].direction).normalize();
-                      feature.width = featureWidth;
-                      features.push_back(feature);
+                      featureWeak2Weak.direction = (weakJumpPoints[w - 1].direction + weakJumpPoints[w].direction).normalize();
+                      featureWeak2Weak.width = featureWidth;
+                      features.push_back(featureWeak2Weak);
                     }
                   }
                   for(size_t w = 0; w < weakJumpPoints.size(); w++)
                   {
                     if((newEdgel.point - weakJumpPoints[w].point).abs2() > 2)
                     {
-                      GoalBarFeature feature;
-                      //feature.point = Vector2d(weakJumpPoints[w].point + newEdgel.point) * 0.5;
+                      GoalBarFeature featureWeak2New;
+                      featureWeak2New.point = Vector2d(weakJumpPoints[w].point + newEdgel.point) * 0.5;
                       double featureWidth = (newEdgel.point - weakJumpPoints[w].point).abs();
-                      feature.begin.point = weakJumpPoints[w].point;
-                      feature.begin.direction = weakJumpPoints[w].direction;
-                      feature.begin.type = weakJumpPoints[w].type;
+                      featureWeak2New.begin.point = weakJumpPoints[w].point;
+                      featureWeak2New.begin.direction = weakJumpPoints[w].direction;
+                      featureWeak2New.begin.type = weakJumpPoints[w].type;
                 
-                      feature.end.point = newEdgel.point;
-                      feature.end.direction = newEdgel.direction;
-                      feature.end.type = newEdgel.type;
+                      featureWeak2New.end.point = newEdgel.point;
+                      featureWeak2New.end.direction = newEdgel.direction;
+                      featureWeak2New.end.type = newEdgel.type;
 
-                      feature.direction = (weakJumpPoints[w].direction + newEdgel.direction).normalize();
-                      feature.width = featureWidth;
-                      features.push_back(feature);
+                      featureWeak2New.direction = (weakJumpPoints[w].direction + newEdgel.direction).normalize();
+                      featureWeak2New.width = featureWidth;
+                      features.push_back(featureWeak2New);
                     }
                   }
                 }
-                else
-                {
-
-                }
-
 
                 DEBUG_REQUEST("Vision:GoalFeatureDetectorV2_1:markPeaks",
                   LINE_PX(ColorClasses::blue, (int)lastEdgel.point.x, (int)lastEdgel.point.y, (int)newEdgel.point.x,  (int)newEdgel.point.y);
@@ -341,48 +357,47 @@ void GoalFeatureDetectorV2_1::findEdgelFeatures(const Vector2d& scanDir, const V
         weakJumpPoints.clear();
       }
 
-      if(!peakFound)
+      if(parameters.useWeakJumpsToo)
       {
-        if(maxWeakScan.add(filter.point(), filter.value()))
+        if(!peakFound)
         {
-          weakPeakFound = true;
-          peak_point_weak = peak_point_weak_max;
-        }
-        else if(minWeakScan.add(filter.point(), -filter.value()))
-        {
-          weakPeakFound = true;
-          peak_point_weak = peak_point_weak_min;
-        }
-      }
-
-      if(!edgeValid && weakPeakFound)
-      {
-        Vector2d upright = getArtificialHorizon().getDirection();
-        upright.rotateRight();
-        Vector2d gradientWeak = parameters.detectWhiteGoals ? calculateGradientY(peak_point_weak) : calculateGradientUV(peak_point_weak);
-        if(fabs(fabs(gradientWeak.y) - fabs(upright.y)) < 0.2 && (lastEdgel.point - peak_point_weak).abs2() > 2)
-        {
-          EdgelD weakEdgel;
-
-          if(gradientWeak.y < 0)
+          if(maxWeakScan.add(filter.point(), filter.value()))
           {
-            gradientWeak *= -1;
-            weakEdgel.type = EdgelD::positive; 
+            weakPeakFound = true;
+            peak_point_weak = peak_point_weak_max;
           }
-          else
+          else if(minWeakScan.add(filter.point(), -filter.value()))
           {
-            weakEdgel.type = EdgelD::negative; 
+            weakPeakFound = true;
+            peak_point_weak = peak_point_weak_min;
           }
-          weakEdgel.point = peak_point_weak;
-          weakEdgel.direction = gradientWeak;
-          weakJumpPoints.push_back(weakEdgel);
-          //DEBUG_REQUEST("Vision:GoalFeatureDetectorV2_1:markWeakGradients",
-          //  LINE_PX(ColorClasses::black, peak_point_weak.x - (int)(4*gradientWeak.x+0.5), peak_point_weak.y - (int)(4*gradientWeak.y+0.5), peak_point_weak.x + (int)(4*gradientWeak.x+0.5), peak_point_weak.y + (int)(4*gradientWeak.y+0.5));
-          //);
+        }
+
+        if(!edgeValid && weakPeakFound)
+        {
+          Vector2d upright = getArtificialHorizon().getDirection();
+          upright.rotateRight();
+          Vector2d gradientWeak = parameters.detectWhiteGoals ? calculateGradientY(peak_point_weak) : calculateGradientUV(peak_point_weak);
+          if(fabs(fabs(gradientWeak.y) - fabs(upright.y)) < 0.2 && (lastEdgel.point - peak_point_weak).abs2() > 2)
+          {
+            EdgelD weakEdgel;
+
+            if(gradientWeak.y < 0)
+            {
+              gradientWeak *= -1;
+              weakEdgel.type = EdgelD::positive; 
+            }
+            else
+            {
+              weakEdgel.type = EdgelD::negative; 
+            }
+            weakEdgel.point = peak_point_weak;
+            weakEdgel.direction = gradientWeak;
+            weakJumpPoints.push_back(weakEdgel);
+          }
         }
       }
       weakPeakFound = false;
-
 
     }//end while
   }

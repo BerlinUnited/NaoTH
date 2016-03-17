@@ -79,6 +79,8 @@ private:
       PARAMETER_REGISTER(numberOfScanlines) = 9;
       PARAMETER_REGISTER(scanlinesDistance) = 8;
 
+      PARAMETER_REGISTER(useArtificialPoints) = true;
+      PARAMETER_REGISTER(useWeakJumpsToo) = true;
       PARAMETER_REGISTER(detectWhiteGoals) = true;
       PARAMETER_REGISTER(threshold) = 140;
       PARAMETER_REGISTER(thresholdGradient) = 24;
@@ -95,6 +97,8 @@ private:
     int numberOfScanlines;
     int scanlinesDistance;
 
+    bool useArtificialPoints;
+    bool useWeakJumpsToo;
     bool detectWhiteGoals;
     bool usePrewitt;
     bool useColorFeatures;
