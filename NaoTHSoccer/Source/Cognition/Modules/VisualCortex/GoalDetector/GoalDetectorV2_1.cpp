@@ -26,6 +26,7 @@ GoalDetectorV2_1::GoalDetectorV2_1()
 {
   DEBUG_REQUEST_REGISTER("Vision:GoalDetectorV2_1:markPostScans","..", false);
   DEBUG_REQUEST_REGISTER("Vision:GoalDetectorV2_1:markPosts","..", false);
+  DEBUG_REQUEST_REGISTER("Vision:GoalDetectorV2_1:markUsedFeatures","..", false);
   DEBUG_REQUEST_REGISTER("Vision:GoalDetectorV2_1:markValidPosts","..", true);
   DEBUG_REQUEST_REGISTER("Vision:GoalDetectorV2_1:markInvalidPosts","..", false);
   DEBUG_REQUEST_REGISTER("Vision:GoalDetectorV2_1:markPostCenterLine","..", false);
@@ -110,6 +111,10 @@ void GoalDetectorV2_1::clusterEdgelFeatures()
           pair.point = (e1.point + e2.point)*0.5;
           pair.direction = (e2.direction + e1.direction).normalize();
           pair.width = (e2.width + e1.width)*0.5;
+          pair.begin.point.x = (e1.begin.point.x + e2.begin.point.x)*0.5;
+          pair.begin.point.y = (e1.begin.point.y + e2.begin.point.y)*0.5;
+          pair.end.point.x = (e1.end.point.x + e2.end.point.x)*0.5;
+          pair.end.point.y = (e1.end.point.y + e2.end.point.y)*0.5;
           pairs.push_back(pair);
         }
       }
@@ -127,15 +132,19 @@ void GoalDetectorV2_1::clusterEdgelFeatures()
     {
       Cluster& cluster = clusters[j];
       double s = cluster.sim(e1);
-      if(s > max_sim) {
+      if(s > max_sim) 
+      {
         max_sim = s;
         cluster_idx = j;
       }
     }
 
-    if(max_sim > params.thresholdFeatureSimilarity) {
+    if(max_sim > params.thresholdFeatureSimilarity) 
+    {
       clusters[cluster_idx].add(e1);
-    } else {
+    } 
+    else
+    {
       Cluster cluster;
       cluster.add(e1);
       clusters.push_back(cluster);
@@ -302,9 +311,26 @@ void GoalDetectorV2_1::calcuateGoalPosts()
               CIRCLE_PX(postIsInField ? ColorClasses::green : ColorClasses::red, (int)(post.basePoint.x+0.5), (int)(post.basePoint.y+0.5), 10);
             }
           );
-        
+
+          DEBUG_REQUEST("Vision:GoalDetectorV2_1:markUsedFeatures",
+            ColorClasses::Color col = ColorClasses::green;
+            if(!post.positionReliable) col = ColorClasses::red;
+            if(widthRatio > params.maxBarWidthRatio) col = ColorClasses::blue;
+            if(heightRatio <= params.minGoalHeightRatio) col = ColorClasses::pink;
+            if( (markValidPosts && col == ColorClasses::green) || (markInvalidPosts && col != ColorClasses::green) )
+            {
+              const std::vector<GoalBarFeature >& features = cluster.getFeatures();
+              for(size_t fIdx = 0; fIdx < features.size(); fIdx++)
+              {                    
+                LINE_PX(col, (int)features[fIdx].begin.point.x, (int)features[fIdx].begin.point.y, (int)features[fIdx].end.point.x,  (int)features[fIdx].end.point.y);
+              }
+            }
+          );
+
           post.positionReliable &= widthRatio < params.maxBarWidthRatio;
           post.positionReliable &= heightRatio > params.minGoalHeightRatio;
+
+
         }
       }
       if(post.positionReliable)

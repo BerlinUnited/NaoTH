@@ -152,11 +152,18 @@ private:
       return Math::Line(x, v);
     }
 
-    void add(const GoalBarFeature& postFeature) {
+    void add(const GoalBarFeature& postFeature)
+    {
       features.push_back(postFeature);
       points.push_back(cv::Point2f((float)postFeature.point.x, (float)postFeature.point.y));
       summedWidths += postFeature.width;
     }
+
+    const std::vector<GoalBarFeature >& getFeatures()
+    {
+      return features;
+    }
+
 
     double getFeatureWidth()
     {
