@@ -24,7 +24,7 @@ option sidekick_left_test
   state search {
     decision {
       else if(action_done)
-        goto goto_ball;
+        goto approach_sidekick_to_left;
       else
         stay;
     }
