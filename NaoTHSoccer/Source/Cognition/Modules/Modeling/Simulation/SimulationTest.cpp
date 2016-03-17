@@ -24,7 +24,7 @@ SimulationTest::~SimulationTest(){}
 void SimulationTest::execute()
 {
 	DEBUG_REQUEST("SimulationTest:draw_decision",
-		globRot = globRot+10.0;
+		globRot = globRot+1.0;
 
 		// hack
 		static std::vector<Vector3d> function;
@@ -45,7 +45,7 @@ void SimulationTest::execute()
 			for(p.translation.y = getFieldInfo().carpetRect.min().y; p.translation.y < getFieldInfo().carpetRect.max().y; p.translation.y += 200) 
 			{
         MultiColorValue v(KickActionModel::numOfActions);
-        v.position = p.translation;
+        v.position = p.translation+getBallModel().position; //Draw the ball position later
 
         for(size_t i=0;i<10;i++)
         {
@@ -182,11 +182,11 @@ void SimulationTest::draw_function_multicolor(const std::vector<SimulationTest::
 
   FIELD_DRAWING_CONTEXT;
   std::vector<Color> colors;
-  colors.push_back(Color(1.0,1.0,1.0,0.7));
-  colors.push_back(Color(255.0/255,172.0/255,18.0/255,0.7));
-  colors.push_back(Color(232.0/255,43.0/255,0.0/255,0.7));
-  colors.push_back(Color(0.0/255,13.0/255,191.0/255,0.7));
-  colors.push_back(Color(0.0/255,191.0/255,51.0/255,0.7));
+  colors.push_back(Color(1.0,1.0,0.0,0.7)); //none
+  colors.push_back(Color(255.0/255,172.0/255,18.0/255,0.7));//short
+  colors.push_back(Color(232.0/255,43.0/255,0.0/255,0.7));  //long
+  colors.push_back(Color(0.0/255,13.0/255,191.0/255,0.7));  //left
+  colors.push_back(Color(0.0/255,191.0/255,51.0/255,0.7));  //right
 
 
   for(size_t i = 0; i < function.size(); ++i) 
@@ -202,11 +202,11 @@ void SimulationTest::draw_function_multicolor(const std::vector<SimulationTest::
       color += v.values[j]/sum*colors[j];
     }
 
-    PEN(color, 20);
+    PEN(color, 0);
     FILLBOX(v.position.x - 100, v.position.y - 100, v.position.x+100, v.position.y+100);
   }
 
-	//Draw Arrow instead
+	//Draw Arrow
 	Pose2D q;
 	q.translation.x = 0.0;
 	q.translation.y = 0.0;
@@ -217,4 +217,4 @@ void SimulationTest::draw_function_multicolor(const std::vector<SimulationTest::
 
 	PEN("000000", 50);
 	ARROW(ArrowStart.x,ArrowStart.y,ArrowEnd.x,ArrowEnd.y);
-}//end draw_closest_points
+}
