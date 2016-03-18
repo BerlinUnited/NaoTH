@@ -101,6 +101,7 @@ solution "NaoTHSoccer"
     buildoptions {"-Wno-type-limits"}
     -- some of the protobuf messages are marked as deprecated but are still in use for legacy reasons
     buildoptions {"-Wno-deprecated-declarations"}
+    buildoptions {"-std=c++11"}
     if _OPTIONS["Wno-conversion"] == nil then
 		  buildoptions {"-Wconversion"}
 		  defines { "_NAOTH_CHECK_CONVERSION_" }
