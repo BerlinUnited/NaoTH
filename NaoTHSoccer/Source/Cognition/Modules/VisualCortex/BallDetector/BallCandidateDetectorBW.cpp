@@ -23,12 +23,6 @@
 BallCandidateDetectorBW::BallCandidateDetectorBW()
 {
   DEBUG_REQUEST_REGISTER("Vision:BallCandidateDetectorBW:peak_scan:mark_full", "mark the scanned points in image", false);
-
-  for(size_t x = 0; x < getImage().width()/FACTOR; ++x) {
-    for(size_t y = 0; y < getImage().height()/FACTOR; ++y) {
-      integralImage[x][y] = 0;
-    }
-  }
 }
 
 BallCandidateDetectorBW::~BallCandidateDetectorBW()
@@ -39,33 +33,39 @@ void BallCandidateDetectorBW::execute(CameraInfo::CameraID id)
 {
   cameraID = id;
 
-  integralBild();
-  
+  // todo: check validity of the intergral image
+  if(getGameColorIntegralImage().getWidth() == 0) {
+    return;
+  }
+
+
   Vector2i center;
   Vector2i point;
 
   best.clear();
 
-  for(point.y = 0; point.y < (int)getImage().height()/FACTOR; ++point.y) 
+  // todo: needs a better place
+  const int FACTOR = 4;
+  for(point.y = 0; point.y+1 < (int)getGameColorIntegralImage().getHeight(); ++point.y) 
   {
     double radius = estimatedBallRadius(point.x*FACTOR, point.y*FACTOR);
     int size = (int)(radius*2.0/FACTOR+0.5);
     int border = (int)(radius*0.2/FACTOR+0.5);
 
-    if (size < 3 || point.y < border || point.y+size+border+1 > 480/FACTOR) {
+    if (size < 3 || point.y < border || point.y+size+border+1 >= (int)getGameColorIntegralImage().getHeight()) {
       continue;
     }
 
 
-    for(point.x = border; point.x + size + border < (int)getImage().width()/FACTOR; ++point.x) 
+    for(point.x = border; point.x + size + border+1 < (int)getGameColorIntegralImage().getWidth(); ++point.x) 
     {
-      int inner  = getIntegral(point.x, point.y, point.x+size, point.y+size);
+      int inner = getGameColorIntegralImage().getSumForRect(point.x, point.y, point.x+size, point.y+size);
 
       // at least 50%
       if (inner*2 > size*size) {
 
-        int outer = getIntegral(point.x-border, point.y-border, point.x+size+border, point.y+size+border);
-        double value = (double)(inner - (outer - inner))/((double)size*size);
+        int outer = getGameColorIntegralImage().getSumForRect(point.x-border, point.y-border, point.x+size+border, point.y+size+border);
+        double value = (double)(inner - (outer - inner))/((double)(size+border)*(size+border));
 
         center.x = point.x*FACTOR + (int)(radius+0.5);
         center.y = point.y*FACTOR + (int)(radius+0.5);
@@ -102,8 +102,12 @@ void BallCandidateDetectorBW::execute(CameraInfo::CameraID id)
   }
   */
 
-  index = 0;
-  //CANVAS(((cameraID == CameraInfo::Top)?"ImageTop":"ImageBottom"));
+  index = -1;
+
+  std::list<Best::BallCandidate>::iterator best_element = best.candidates.begin();
+  int best_radius = -1;
+  double maxV = 0;
+  CANVAS(((cameraID == CameraInfo::Top)?"ImageTop":"ImageBottom"));
   for(std::list<Best::BallCandidate>::iterator i = best.candidates.begin(); i != best.candidates.end(); ++i)
   {
     if(getFieldPercept().getValidField().isInside((*i).center)) {
@@ -118,17 +122,35 @@ void BallCandidateDetectorBW::execute(CameraInfo::CameraID id)
       //RECT_PX(isBall()?ColorClasses::blue:ColorClasses::red, (*i).center.x - radius, (*i).center.y - radius,
       //  (*i).center.x + radius, (*i).center.y + radius);
 
-      if(isBall()) { 
+      double v = isBall();
+      if(best_radius < 0 || maxV < v) {
+        maxV = v;
+        index = 0;
+        best_element = i;
+        best_radius = radius;
+      }
+
+      if(v >= 0.5) { 
         RECT_PX(ColorClasses::blue, (*i).center.x - radius, (*i).center.y - radius,
           (*i).center.x + radius, (*i).center.y + radius);
 
         getBallPercept().ballWasSeen = true;
         getBallPercept().centerInImage = (*i).center;
         getBallPercept().radiusInImage = radius;
+      } 
+      else {
+        RECT_PX(ColorClasses::gray, (*i).center.x - radius, (*i).center.y - radius,
+          (*i).center.x + radius, (*i).center.y + radius);
       }
       //std::cout << (*i).value << std::endl;
     }
   }
+
+
+  if(best_element != best.candidates.end()) { 
+    RECT_PX(ColorClasses::red, (*best_element).center.x - best_radius, (*best_element).center.y - best_radius,
+      (*best_element).center.x + best_radius, (*best_element).center.y + best_radius);
+  } 
 }
 
 void BallCandidateDetectorBW::subsampling(int x0, int y0, int x1, int y1) 
@@ -193,62 +215,6 @@ double BallCandidateDetectorBW::estimatedBallRadius(int x, int y) const
   }
   
   return -1;
-}
-
-void BallCandidateDetectorBW::integralBild()
-{
-  Pixel pixel;
-  Vector2i point;
-  for(point.x = 1; point.x < (int)getImage().width()/FACTOR; ++point.x) 
-  {
-    for(point.y = 1; point.y < (int)getImage().height()/FACTOR; ++point.y) {
-      getImage().get(point.x*FACTOR, point.y*FACTOR, pixel);
-      
-      integralImage[point.x][point.y] = integralImage[point.x-1][point.y] + integralImage[point.x][point.y-1] - integralImage[point.x-1][point.y-1];
-      if(getFieldColorPercept().greenHSISeparator.noColor(pixel) 
-                      //&& !getBodyContour().isOccupied(point)
-        ) {
-        integralImage[point.x][point.y]++;//pixel.y;
-      }
-    }
-  }
-
-
-  /*
-  // experiment: cut accoring to the histogram
-  int y = 0;
-  int value = 0;
-  int old_value = 160;
-  //MaximumScan<int,double> negativeScan(point.y, -1.2*1e+9);
-
-  CANVAS(((cameraID == CameraInfo::Top)?"ImageTop":"ImageBottom"));
-  for(point.y = 1; point.y < (int)getImage().height()/FACTOR; ++point.y) {
-    value = integralImage[(int)getImage().width()/FACTOR-1][point.y] - integralImage[(int)getImage().width()/FACTOR-1][point.y-1];
-    
-    if(cameraID == CameraInfo::Top) {
-
-      if(value < old_value) {
-        old_value = value;
-        y = point.y;
-      }
-
-      PLOT_GENERIC("integral.y", point.y, value);
-    }
-  }
-
-  PEN("0000FF66", 1);
-  LINE(0, y*FACTOR -FACTOR/2 ,639, y*FACTOR -FACTOR/2);
-  */
-
-
-  /*
-  for(size_t x = 1; x < getImage().width(); ++x) {
-    for(size_t y = 1; y < getImage().height(); ++y) {
-      int v = (int)(((double)integralImage[x][y])/((double)integralImage[getImage().width()-1][getImage().height()-1])*255);
-      getDebugImageDrawings().drawPointToImage(v,0,0,x,y);
-    }
-  }
-  */
 }
 
 
