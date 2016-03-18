@@ -227,9 +227,21 @@ void PerceptionsVisualizer::execute(CameraInfo::CameraID id)
     }//end for
   );
 
-
   DEBUG_REQUEST("PerceptionsVisualizer:image_px:edgels_percept",
-    // todo
+    /*FIELD_DRAWING_CONTEXT;
+
+    for(size_t i = 0; i < getScanLineEdgelPercept().scanLineEdgels.size(); i++)
+    {
+      const DoubleEdgel& e = getScanLineEdgelPercept().scanLineEdgels[i];
+
+      Vector2d begin_dir(10.0,0.0);
+      begin_dir.rotate(e.begin_angle);
+      LINE_PX(ColorClasses::red, e.begin.x, e.begin.y, e.begin.x + (int)(begin_dir.x+0.5), e.begin.y + (int)(begin_dir.y+0.5));
+
+      Vector2d end_dir(10.0,0.0);
+      end_dir.rotate(e.end_angle);
+      LINE_PX(ColorClasses::red, e.end.x, e.end.y, e.end.x + (int)(end_dir.x+0.5), e.end.y + (int)(end_dir.y+0.5));
+    }*///end for
   );
 
 

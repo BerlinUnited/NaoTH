@@ -2,7 +2,7 @@
 
 import os, sys, getopt
 
-from LogReaderBetter import LogReader
+from LogReader import LogReader
 from LogReader import Parser
 
 from matplotlib import pyplot
@@ -33,7 +33,7 @@ JointID["RAnkleRoll"] = 20
 JointID["LAnkleRoll"] = 21
 
 
-def headYaw(frame):
+def bodyStatus(frame):
   try:
     return [frame["FrameInfo"].time/1000.0, 
             frame["BodyStatus"].currentSum[JointID["RKneePitch"]], 
@@ -47,22 +47,20 @@ def headYaw(frame):
 
 if __name__ == "__main__":
 
-  #fileName = "D:\\RoboCup\\log\\2015-go\\io15-lookaround-audience.log"
   fileName = "./game.log"
-  log = LogReader(fileName)#, filter=headYaw)
+  log = LogReader(fileName)
   
-  print log.names
-  
-  #b = [ headYaw(f) for f in log]
-  b = map(headYaw, log)
-  print "first"
+  #b = [ bodyStatus(f) for f in log]
+  b = map(bodyStatus, log)
   
   d = zip(*b)
   
+  # plot cumilative control current for each joint
   pyplot.plot(d[0], d[1], label="RKneePitch")
   pyplot.plot(d[0], d[2], label="LKneePitch")
   pyplot.plot(d[0], d[3], label="RAnklePitch")
   pyplot.plot(d[0], d[4], label="LAnklePitch")
+  
   pyplot.legend(loc='upper left')
   pyplot.show()
   

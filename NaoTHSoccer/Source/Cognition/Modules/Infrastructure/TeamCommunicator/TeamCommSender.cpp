@@ -56,7 +56,7 @@ void TeamCommSender::fillMessage(const PlayerInfo& playerInfo,
 
   if(ballModel.valid)
   {
-    out.ballAge = frameInfo.getTimeSince(ballModel.frameInfoWhenBallWasSeen.getTime());
+    out.ballAge = frameInfo.getTimeSince(ballModel.getFrameInfoWhenBallWasSeen().getTime());
     out.ballPosition = ballModel.position;
     out.ballVelocity = ballModel.speed;
   }

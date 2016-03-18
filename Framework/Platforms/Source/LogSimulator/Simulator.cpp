@@ -22,14 +22,15 @@
 using namespace std;
 using namespace naoth;
 
-Simulator::Simulator(const std::string& filePath, bool backendMode, bool realTime)
+Simulator::Simulator(const std::string& filePath, bool backendMode, bool realTime, unsigned short port)
 : PlatformInterface("LogSimulator", CYCLE_TIME),
   backendMode(backendMode),
   realTime(realTime),
   logFileScanner(filePath),
   lastFrameTime(0),
   simulatedTime(0),
-  simulatedFrameNumber(0)
+  simulatedFrameNumber(0),
+  debugPort(port)
 {
   // TODO: we need a better solution for it, but now it's the 
   // fastest way to provide stuff for motion
@@ -70,7 +71,7 @@ void Simulator::init()
 {  
   lastFrameTime = 0;
   simulatedTime = 0;
-  theDebugServer.start(5401);
+  theDebugServer.start(debugPort);
   theDebugServer.setTimeOut(0);
 }
 
