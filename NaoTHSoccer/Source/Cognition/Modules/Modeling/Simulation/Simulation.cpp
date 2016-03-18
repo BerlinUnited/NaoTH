@@ -26,10 +26,10 @@ Simulation::Simulation()
   action_local.reserve(KickActionModel::numOfActions);
 
   action_local.push_back(Action(KickActionModel::none, ActionParams(), theParameters.friction));
-  action_local.push_back(Action(KickActionModel::kick_long, theParameters.kick_long, theParameters.friction)); // long
   action_local.push_back(Action(KickActionModel::kick_short, theParameters.kick_short, theParameters.friction)); // short
-  action_local.push_back(Action(KickActionModel::sidekick_right, theParameters.sidekick_right, theParameters.friction)); // right
+  action_local.push_back(Action(KickActionModel::kick_long, theParameters.kick_long, theParameters.friction)); // long
   action_local.push_back(Action(KickActionModel::sidekick_left, theParameters.sidekick_left, theParameters.friction)); // left
+  action_local.push_back(Action(KickActionModel::sidekick_right, theParameters.sidekick_right, theParameters.friction)); // right
   
   actionsConsequences.resize(action_local.size());
 }
@@ -76,15 +76,31 @@ void Simulation::execute()
 
   // plot projected actions
   DEBUG_REQUEST("Simulation:ActionTarget",
+    Color color;
     for(size_t i=0; i<action_local.size(); i++)
     {
+  	  if(i == 0){
+		    color = Color(1.0,1.0,1.0,0.7); //White - None
+	    }
+	    else if(i == 1){
+		    color = Color(255.0/255,172.0/255,18.0/255,0.7); //orange - kick_short
+	    }
+	    else if(i == 2){
+		    color = Color(232.0/255,43.0/255,0.0/255,0.7); //red - kick_long
+	    }
+	    else if(i == 3){
+		    color = Color(0.0/255,13.0/255,191.0/255,0.7); //blue - sidekick_left
+	    }
+	    else if(i == 4){
+		    color = Color(0.0/255,191.0/255,51.0/255,0.7);//green - sidekick_right
+	    }
       std::vector<CategorizedBallPosition>::const_iterator ballPosition = actionsConsequences[i].positions().begin();
       for(; ballPosition != actionsConsequences[i].positions().end(); ++ballPosition)
       {
         if(ballPosition->cat() == INFIELD)
         {
           FIELD_DRAWING_CONTEXT;
-          PEN("009900", 1);
+          PEN(color, 1);
           Vector2d ball = getRobotPose() * ballPosition->pos();
           FILLOVAL(ball.x, ball.y, 50, 50);
         } else if(ballPosition->cat() == OPPGOAL)
