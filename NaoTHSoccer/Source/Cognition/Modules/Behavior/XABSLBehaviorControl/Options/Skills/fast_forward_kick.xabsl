@@ -112,14 +112,17 @@ option fast_forward_kick
     }
     action
     {
-      motion.type = stand; // walk besser?
-      motion.walk.stop_with_stand = true;
+      motion.type = walk;
     
       motion.walk.coordinate = hip;
-      motion.walk.style = normal;
+      motion.walk.style = stable;
       
       //loook at percept
-      head.control_mode = look_at_ball_percept;
+      head.control_mode = none;
+      head.motion_type = look_at_world_point;
+      head.point_in_world.x = ball.percept.x;
+      head.point_in_world.y = ball.percept.y;
+      head.point_in_world.z = ball.radius; // radius of the ball
     }
   }
 }
