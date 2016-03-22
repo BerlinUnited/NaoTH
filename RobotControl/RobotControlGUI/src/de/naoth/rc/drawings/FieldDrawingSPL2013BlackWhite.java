@@ -66,8 +66,8 @@ public class FieldDrawingSPL2013BlackWhite implements Drawable
     
     private final Color fieldColor = new Color(0.0f, 0.0f, 0.0f, 0.0f);
     private final Color goalColor = new Color(0.9f, 0.9f, 0f, 1f);
-    private final Color goalNetColorOwn = new Color(0.5f, 0.5f, 1.0f, 0.7f);
-    private final Color goalNetColorOpp = new Color(1.0f, 0.5f, 0.5f, 0.7f);
+    private final Color goalNetColorOwn = new Color(0.0f, 0.0f, 0.0f, 0.0f);
+    private final Color goalNetColorOpp = new Color(0.0f, 0.0f, 0.0f, 0.0f);
     private final Color lineColor = Color.black;
     
     
@@ -114,9 +114,10 @@ public class FieldDrawingSPL2013BlackWhite implements Drawable
 
         // goal box/net
         g2d.setStroke(new BasicStroke(1.0f));
-        g2d.setColor(goalNetColorOwn);
+        g2d.setColor(lineColor);
         g2d.fillRect(-xLengthHalf-goalpostRadius/2 - goalDepth, -yGoalPostPos, goalDepth, goalWidth);
-
+        g2d.setColor(Color.white);
+        g2d.fillRect(-xLengthHalf-goalpostRadius/2 - goalDepth+20, -yGoalPostPos+20, goalDepth-40, goalWidth-40);
         // goal --- latte :)
         g2d.setColor(goalColor);
         g2d.fillRect(-xLengthHalf-goalpostRadius-goalpostRadius/2, -yGoalPostPos, goalpostRadius*2, goalWidth);
@@ -135,8 +136,10 @@ public class FieldDrawingSPL2013BlackWhite implements Drawable
         
         // goal box/net
         g2d.setStroke(new BasicStroke(1.0f));
-        g2d.setColor(goalNetColorOpp);
+        g2d.setColor(lineColor);
         g2d.fillRect(xLengthHalf+goalpostRadius/2, -yGoalPostPos, goalDepth, goalWidth);
+        g2d.setColor(Color.white);
+        g2d.fillRect(xLengthHalf+goalpostRadius/2+20, -yGoalPostPos+20, goalDepth-40, goalWidth-40);
 
         // goal --- latte :)
         g2d.setColor(goalColor);
