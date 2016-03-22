@@ -45,7 +45,7 @@ void SimulationTest::execute()
 			for(p.translation.y = getFieldInfo().carpetRect.min().y; p.translation.y < getFieldInfo().carpetRect.max().y; p.translation.y += 200) 
 			{
         MultiColorValue v(KickActionModel::numOfActions);
-        v.position = p.translation+getBallModel().position; //Draw the ball position later
+        v.position = p*getBallModel().position; //Draw the ball position later
 
         for(size_t i=0;i<10;i++)
         {
