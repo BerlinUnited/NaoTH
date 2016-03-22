@@ -39,18 +39,19 @@ void SimulationTest::execute()
 
 		// iterate over robot pose
     functionMulticolor.clear();
-		Pose2D p(0.0, getFieldInfo().carpetRect.min());
-		for(p.translation.x = getFieldInfo().carpetRect.min().x; p.translation.x < getFieldInfo().carpetRect.max().x; p.translation.x += 200) 
-		{
-			for(p.translation.y = getFieldInfo().carpetRect.min().y; p.translation.y < getFieldInfo().carpetRect.max().y; p.translation.y += 200) 
+		Vector2d p(getFieldInfo().carpetRect.min());
+
+		for(p.x = getFieldInfo().carpetRect.min().x; p.x < getFieldInfo().carpetRect.max().x; p.x += 200) {
+			for(p.y = getFieldInfo().carpetRect.min().y; p.y < getFieldInfo().carpetRect.max().y; p.y += 200) 
 			{
         MultiColorValue v(KickActionModel::numOfActions);
-        v.position = p*getBallModel().position; //Draw the ball position later
+        v.position = p; //Draw the ball position later
 
-        for(size_t i=0;i<10;i++)
+        for(size_t i=0; i<10; ++i)
         {
-				  p.rotation =  Math::fromDegrees(globRot);
-				  getRobotPose() = p;
+          getRobotPose().translation = p;
+				  getRobotPose().rotation =  Math::fromDegrees(globRot);
+				  
 				  simulationModule->execute();
           v.values[getKickActionModel().bestAction]++;
         }
