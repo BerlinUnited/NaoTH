@@ -173,9 +173,12 @@ public class VideoPlayerController implements Initializable
     Point2D offset = new Point2D(mediaView.getX(), mediaView.getY());
 
     double ratio = 1.0;
+    
     if(media != null)
     {
-      ratio = ((double) media.getWidth()) / mediaView.getFitWidth();
+      double scaleHeight = ((double) media.getHeight()) / mediaView.getFitHeight();
+      double scaleWidth = ((double) media.getWidth()) / mediaView.getFitWidth();
+      ratio = Math.max(scaleHeight, scaleWidth);
     }
     
     Point2D p= paneCoordinates.add(offset).multiply(ratio);
