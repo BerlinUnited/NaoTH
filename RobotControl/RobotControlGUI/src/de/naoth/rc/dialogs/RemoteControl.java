@@ -12,12 +12,9 @@ import de.naoth.rc.core.manager.ObjectListener;
 import de.naoth.rc.core.manager.SwingCommandExecutor;
 import de.naoth.rc.manager.GenericManagerFactory;
 import de.naoth.rc.server.Command;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
-import ca.ubc.cs.wiimote.*;
-import ca.ubc.cs.wiimote.event.*;
+import de.naoth.rc.messages.Representations.RemoteControlCommand;
 import wiiremotej.*;
 import wiiremotej.event.*;
 
@@ -25,7 +22,7 @@ import wiiremotej.event.*;
  *
  * @author Verena
  */
-public class RemoteControl extends AbstractDialog{
+public class RemoteControl extends AbstractDialog {
 
     @PluginImplementation
     public static class Plugin extends DialogPlugin<RemoteControl> {
@@ -544,15 +541,12 @@ public class RemoteControl extends AbstractDialog{
             if (wiimote.isConnected()) {
                 System.out.println("Wiimote connected.");
                 wiimoteConnected = true;
-                try
-                {
-                wiimote.setAccelerometerEnabled(true);
-                }
-                catch(Exception e)
-                {
+                try {
+                    wiimote.setAccelerometerEnabled(true);
+                } catch (Exception e) {
                     System.out.println("could not activate accelerometer");
                 }
-                wiimote.modulatedVibrateFor(1000, 0);
+                wiimote.modulatedVibrateFor(500, 0);
                 wiimote.addWiiRemoteListener(new CustomWiiRemoteListener(this));
             }
         } else {
@@ -561,10 +555,54 @@ public class RemoteControl extends AbstractDialog{
         }
     }//GEN-LAST:event_wiimoteConnectToggleActionPerformed
 
-    private void stopWalking() {
+//    private void stopWalking() {
+//        if (!standbyToggle.isSelected() && Plugin.parent.checkConnected()) {
+//            Command command = new Command("Cognition:remoteControlRequest_STAND");
+//            Plugin.commandExecutor.executeCommand(new EmptyListener(), command);
+//            lastX = 0;
+//            lastY = 0;
+//            lastAlpha = 0;
+//        }
+//    }
+//
+//    private void walk() {
+//        if (!standbyToggle.isSelected() && Plugin.parent.checkConnected()) {
+//            if (lastX != 0 || lastY != 0 || lastAlpha != 0) {
+//                System.out.println("x = " + lastX + ", y = " + lastY + ", alpha = " + lastAlpha);
+//                Command command = new Command("Cognition:remoteControlRequest_WALK");
+//                command.addArg("x", "" + lastX).addArg("y", "" + lastY).addArg("alpha", "" + lastAlpha);
+//                Plugin.commandExecutor.executeCommand(new EmptyListener(), command);
+//            } else {
+//                Command command = new Command("Cognition:remoteControlRequest_STAND");
+//                Plugin.commandExecutor.executeCommand(new EmptyListener(), command);
+//            }
+//        }
+//    }
+//
+//    private void startWalking(int x, int y, int degree) {
+//        if (!standbyToggle.isSelected() && Plugin.parent.checkConnected()) {
+//            double alpha = degree * Math.PI / 180 / 5;
+//            Command command = new Command("Cognition:remoteControlRequest_WALK");
+//            command.addArg("x", "" + x).addArg("y", "" + y).addArg("alpha", "" + alpha);
+//            Plugin.commandExecutor.executeCommand(new EmptyListener(), command);
+//            lastX = x;
+//            lastY = y;
+//            lastAlpha = alpha;
+//        }
+//    }
+    
+        private void stopWalking() {
         if (!standbyToggle.isSelected() && Plugin.parent.checkConnected()) {
-            Command command = new Command("Cognition:remoteControlRequest_STAND");
-            Plugin.commandExecutor.executeCommand(new EmptyListener(), command);
+            RemoteControlCommand.Builder cmd = RemoteControlCommand.newBuilder();
+            cmd.setAction(RemoteControlCommand.ActionType.NONE);
+            cmd.getTargetBuilder()
+                .setRotation(0)
+                .getTranslationBuilder().setX(0).setY(0);
+
+            Command command = new Command("Cognition:representation:set").addArg("RemoteControlCommand", cmd.build().toByteArray());
+
+            Plugin.commandExecutor.executeCommand(new RemoteCommandResultHandler(), command);
+
             lastX = 0;
             lastY = 0;
             lastAlpha = 0;
@@ -574,12 +612,31 @@ public class RemoteControl extends AbstractDialog{
     private void startWalking(int x, int y, int degree) {
         if (!standbyToggle.isSelected() && Plugin.parent.checkConnected()) {
             double alpha = degree * Math.PI / 180;
-            Command command = new Command("Cognition:remoteControlRequest_WALK");
-            command.addArg("x", "" + x).addArg("y", "" + y).addArg("alpha", "" + alpha);
-            Plugin.commandExecutor.executeCommand(new EmptyListener(), command);
+            RemoteControlCommand.Builder cmd = RemoteControlCommand.newBuilder();
+            cmd.setAction(RemoteControlCommand.ActionType.WALK);
+            cmd.getTargetBuilder()
+                .setRotation(degree)
+                .getTranslationBuilder().setX(x).setY(y);
+
+            Command command = new Command("Cognition:representation:set").addArg("RemoteControlCommand", cmd.build().toByteArray());
+
+            Plugin.commandExecutor.executeCommand(new RemoteCommandResultHandler(), command);
+
             lastX = x;
             lastY = y;
             lastAlpha = alpha;
+        }
+    }
+    
+    private void walk() {
+        if (!standbyToggle.isSelected() && Plugin.parent.checkConnected()) {
+            if (lastX != 0 || lastY != 0 || lastAlpha != 0) {
+                //System.out.println("x = " + lastX + ", y = " + lastY + ", alpha = " + lastAlpha);
+                int degree = (int) (lastAlpha / Math.PI * 180);
+                startWalking(lastX, lastY,  degree);
+            } else {
+                stopWalking();
+            }
         }
     }
 
@@ -632,27 +689,6 @@ public class RemoteControl extends AbstractDialog{
         }
 
         public void buttonInputReceived(WRButtonEvent wrbe) {
-            boolean anyMovement = false;
-            if (wrbe.isOnlyPressed(256)) {
-                main.startWalking(0, -main.throttle, 0);
-                anyMovement = true;
-            }
-            if (wrbe.isOnlyPressed(512)) {
-                main.startWalking(0, main.throttle, 0);
-                anyMovement = true;
-            }
-            if (wrbe.isOnlyPressed(1024)) {
-                main.startWalking(-main.throttle, 0, 0);
-                anyMovement = true;
-            }
-            if (wrbe.isOnlyPressed(2048)) {
-                main.startWalking(main.throttle, 0, 0);
-                anyMovement = true;
-            }
-
-            if (!anyMovement) {
-                main.stopWalking();
-            }
 
             /*
              *    1 = 2
@@ -667,22 +703,67 @@ public class RemoteControl extends AbstractDialog{
              * 2048 = up
              * 4096 = +
              */
+            if (wrbe.wasPressed(128)) {
+                main.standbyToggle.doClick();
+            }
+
+            //was pressed
+            if (wrbe.wasPressed(256)) {
+                main.lastY = main.throttle;
+                main.walk();
+            } else if (wrbe.wasPressed(512)) {
+                main.lastY = -main.throttle;
+                main.walk();
+            } else if (wrbe.wasPressed(1024)) {
+                main.lastX = -main.throttle;
+                main.walk();
+            } else if (wrbe.wasPressed(2048)) {
+                main.lastX = main.throttle;
+                main.walk();
+            } //was released
+            else if (wrbe.wasReleased(256)) {
+                main.lastY = 0;
+                main.walk();
+            } else if (wrbe.wasReleased(512)) {
+                main.lastY = 0;
+                main.walk();
+            } else if (wrbe.wasReleased(1024)) {
+                main.lastX = 0;
+                main.walk();
+            } else if (wrbe.wasReleased(2048)) {
+                main.lastX = 0;
+                main.walk();
+            }
         }
 
         public void statusReported(WRStatusEvent wrse) {
-            
+
         }
 
         public void accelerationInputReceived(WRAccelerationEvent wrae) {
-//            System.out.println(wrae.getPitch());
-            System.out.println(wrae.getRoll());
-            if(wrae.getRoll() > 0.3)
-            {
-                main.startWalking(0, 0, throttle);
-            }
-            else if(wrae.getRoll() < -0.3)
-            {
-                main.startWalking(0, 0 , -throttle);
+            if (wrae.getRoll() > 1.0) {
+                double newAlpha = -throttle * Math.PI / 180 / (5);
+                if (lastAlpha != newAlpha) {
+                    main.lastAlpha = newAlpha;
+                    main.walk();
+                }
+            } else if (wrae.getRoll() < -1.0) {
+                double newAlpha = throttle * Math.PI / 180 / (5);
+                if (lastAlpha != newAlpha) {
+                    main.lastAlpha = newAlpha;
+                    main.walk();
+                }
+            } else {
+                double newAlpha = throttle * Math.PI / 180 / 5 * (-wrae.getRoll());
+                if (lastAlpha != newAlpha) {
+                    if (lastX == 0 && lastY == 0) {
+                        main.stopWalking();
+                        main.lastAlpha = newAlpha;
+                    } else {
+                        main.lastAlpha = newAlpha;
+                        walk();
+                    }
+                }
             }
         }
 
@@ -741,4 +822,17 @@ public class RemoteControl extends AbstractDialog{
     private javax.swing.JButton turnRightButton;
     private javax.swing.JToggleButton wiimoteConnectToggle;
     // End of variables declaration//GEN-END:variables
+}
+
+class RemoteCommandResultHandler implements ObjectListener<byte[]> {
+
+    @Override
+    public void newObjectReceived(byte[] object) {
+        System.out.println(new String(object));
+    }
+
+    @Override
+    public void errorOccured(String cause) {
+        System.out.println(cause);
+    }
 }
