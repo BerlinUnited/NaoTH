@@ -109,6 +109,7 @@ function add_gcc_ignore_pragmas(files)
 				 "#pragma GCC diagnostic push\n" ..
 				 "#endif\n" ..
 				 "#pragma GCC diagnostic ignored \"-Wconversion\"\n" ..
+				 "#pragma GCC diagnostic ignored \"-Wunused-parameter\"\n" ..
 				 "#endif\n\n"
 	
 	-- enable the warnings at the end
@@ -118,6 +119,7 @@ function add_gcc_ignore_pragmas(files)
 				 "#pragma GCC diagnostic pop\n" ..
 				 "#else\n" ..
 				 "#pragma GCC diagnostic error \"-Wconversion\"\n" ..
+				 "#pragma GCC diagnostic error \"-Wunused-parameter\"\n" ..
 				 "#endif\n" ..
 				 "#endif\n\n"
 	
