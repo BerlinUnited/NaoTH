@@ -19,25 +19,30 @@ RemoteControlBehavior::RemoteControlBehavior()
 
 void RemoteControlBehavior::execute() 
 {
-	switch(state) 
+	
+	switch(getRemoteControlCommand().action) 
 	{
-	case standby:
+	case RemoteControlCommand::NONE:
 		getMotionRequest().armMotionRequest.id = ArmMotionRequest::arms_none;
 		getMotionRequest().id = motion::init;
 		break;
-	case stand: 
+	case RemoteControlCommand::STAND: 
 		//getMotionRequest().armMotionRequest.id = ArmMotionRequest::arms_down;
 		getMotionRequest().id = motion::stand;
 		break;
-	case walk:
+	case RemoteControlCommand::WALK:
 		getMotionRequest().armMotionRequest.id = ArmMotionRequest::arms_back;
 		getMotionRequest().id = motion::walk;
-		getMotionRequest().walkRequest.target = walkParams;
+		getMotionRequest().walkRequest.target = getRemoteControlCommand().target;
 		break;
-	case kick:
-		getMotionRequest().armMotionRequest.id = ArmMotionRequest::arms_back;
+	case RemoteControlCommand::LOCK_ON_BALL:
+		//getMotionRequest().armMotionRequest.id = ArmMotionRequest::arms_back;
 		//getMotionRequest().id = motion::kick;
-		state = stand;
+		//state = stand;
+		break;
+	case RemoteControlCommand::KICK:
+		break;
+	default:
 		break;
 	}
 }//end execute
@@ -46,7 +51,7 @@ void RemoteControlBehavior::executeDebugCommand(
     const std::string& command, const ArgumentMap& arguments,
     std::ostream& /*outstream*/)
 {
-	if(command == "remoteControlRequest_WALK")
+	/*if(command == "remoteControlRequest_WALK")
 	{
 		double x = 0;
 		double y = 0;
@@ -85,5 +90,5 @@ void RemoteControlBehavior::executeDebugCommand(
 	else if(command == "remoteControlRequest_STANDBY")
 	{
 		state = standby;
-	}
+	}*/
 }

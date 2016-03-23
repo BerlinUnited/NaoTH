@@ -26,6 +26,8 @@
 
 //#include "Representations/Modeling/AttentionModel.h"
 
+#include "Representations/Infrastructure/RemoteControlCommand.h"
+
 #include <Representations/Infrastructure/LEDRequest.h>
 
 // debug
@@ -47,6 +49,7 @@ BEGIN_DECLARE_MODULE(RemoteControlBehavior)
   //REQUIRE(BallModel)
   //REQUIRE(AttentionModel)
   //REQUIRE(PlayersPercept)
+  REQUIRE(RemoteControlCommand)
 
   //PROVIDE(HeadMotionRequest)
   PROVIDE(MotionRequest)

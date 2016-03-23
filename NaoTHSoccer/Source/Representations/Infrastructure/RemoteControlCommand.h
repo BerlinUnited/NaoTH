@@ -23,7 +23,8 @@ public:
     NONE,
     WALK,
     LOCK_ON_BALL,
-    KICK
+    KICK,
+	STAND
   } action;
 
   Pose2D target;
