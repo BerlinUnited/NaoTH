@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 import os, sys, getopt
+import importlib
 
 def parseArguments(argv):
   scriptPath = None
@@ -30,7 +31,7 @@ if __name__ == "__main__":
       print "[ERROR] Expect a name for a module to be loaded"
       sys.exit(-1)
     else:
-      mainscript = __import__(module_name)
+      mainscript = importlib.import_module(module_name)
     
     while True:
         if not cache:
