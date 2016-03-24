@@ -501,8 +501,7 @@ public class RemoteControl extends AbstractDialog {
     private void standbyToggleActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_standbyToggleActionPerformed
     {//GEN-HEADEREND:event_standbyToggleActionPerformed
         if (standbyToggle.isSelected()) {
-            Command command = new Command("Cognition:remoteControlRequest_STANDBY");
-            Plugin.commandExecutor.executeCommand(new EmptyListener(), command);
+            updateRepresentation(0, 0, 0, RemoteControlCommand.ActionType.NONE);
         } else {
             stopWalking();
         }
@@ -590,50 +589,39 @@ public class RemoteControl extends AbstractDialog {
 //            lastAlpha = alpha;
 //        }
 //    }
-    
-        private void stopWalking() {
+    private void updateRepresentation(int x, int y, double alpha, RemoteControlCommand.ActionType action) {
+        RemoteControlCommand.Builder cmd = RemoteControlCommand.newBuilder();
+        cmd.setAction(action);
+        cmd.getTargetBuilder()
+            .setRotation(alpha)
+            .getTranslationBuilder().setX(x).setY(y);
+
+        Command command = new Command("Cognition:representation:set").addArg("RemoteControlCommand", cmd.build().toByteArray());
+
+        Plugin.commandExecutor.executeCommand(new RemoteCommandResultHandler(), command);
+
+        lastX = x;
+        lastY = y;
+        lastAlpha = alpha;
+    }
+
+    private void stopWalking() {
         if (!standbyToggle.isSelected() && Plugin.parent.checkConnected()) {
-            RemoteControlCommand.Builder cmd = RemoteControlCommand.newBuilder();
-            cmd.setAction(RemoteControlCommand.ActionType.NONE);
-            cmd.getTargetBuilder()
-                .setRotation(0)
-                .getTranslationBuilder().setX(0).setY(0);
-
-            Command command = new Command("Cognition:representation:set").addArg("RemoteControlCommand", cmd.build().toByteArray());
-
-            Plugin.commandExecutor.executeCommand(new RemoteCommandResultHandler(), command);
-
-            lastX = 0;
-            lastY = 0;
-            lastAlpha = 0;
+            updateRepresentation(0, 0, 0, RemoteControlCommand.ActionType.STAND);
         }
     }
 
     private void startWalking(int x, int y, int degree) {
         if (!standbyToggle.isSelected() && Plugin.parent.checkConnected()) {
             double alpha = degree * Math.PI / 180;
-            RemoteControlCommand.Builder cmd = RemoteControlCommand.newBuilder();
-            cmd.setAction(RemoteControlCommand.ActionType.WALK);
-            cmd.getTargetBuilder()
-                .setRotation(degree)
-                .getTranslationBuilder().setX(x).setY(y);
-
-            Command command = new Command("Cognition:representation:set").addArg("RemoteControlCommand", cmd.build().toByteArray());
-
-            Plugin.commandExecutor.executeCommand(new RemoteCommandResultHandler(), command);
-
-            lastX = x;
-            lastY = y;
-            lastAlpha = alpha;
+            updateRepresentation(x, y, alpha, RemoteControlCommand.ActionType.WALK);
         }
     }
-    
+
     private void walk() {
         if (!standbyToggle.isSelected() && Plugin.parent.checkConnected()) {
             if (lastX != 0 || lastY != 0 || lastAlpha != 0) {
-                //System.out.println("x = " + lastX + ", y = " + lastY + ", alpha = " + lastAlpha);
-                int degree = (int) (lastAlpha / Math.PI * 180);
-                startWalking(lastX, lastY,  degree);
+                updateRepresentation(lastX, lastY, lastAlpha, RemoteControlCommand.ActionType.WALK);
             } else {
                 stopWalking();
             }
@@ -689,79 +677,84 @@ public class RemoteControl extends AbstractDialog {
         }
 
         public void buttonInputReceived(WRButtonEvent wrbe) {
+            if (wiimoteConnected) {
+                /*
+                 *    1 = 2
+                 *    2 = 1
+                 *    4 = b
+                 *    8 = a
+                 *   16 = -
+                 *  128 = home
+                 *  256 = left
+                 *  512 = right
+                 * 1024 = down
+                 * 2048 = up
+                 * 4096 = +
+                 */
+                if (wrbe.wasPressed(128)) {
+                    main.standbyToggle.doClick();
+                }
 
-            /*
-             *    1 = 2
-             *    2 = 1
-             *    4 = b
-             *    8 = a
-             *   16 = -
-             *  128 = home
-             *  256 = left
-             *  512 = right
-             * 1024 = down
-             * 2048 = up
-             * 4096 = +
-             */
-            if (wrbe.wasPressed(128)) {
-                main.standbyToggle.doClick();
-            }
-
-            //was pressed
-            if (wrbe.wasPressed(256)) {
-                main.lastY = main.throttle;
-                main.walk();
-            } else if (wrbe.wasPressed(512)) {
-                main.lastY = -main.throttle;
-                main.walk();
-            } else if (wrbe.wasPressed(1024)) {
-                main.lastX = -main.throttle;
-                main.walk();
-            } else if (wrbe.wasPressed(2048)) {
-                main.lastX = main.throttle;
-                main.walk();
-            } //was released
-            else if (wrbe.wasReleased(256)) {
-                main.lastY = 0;
-                main.walk();
-            } else if (wrbe.wasReleased(512)) {
-                main.lastY = 0;
-                main.walk();
-            } else if (wrbe.wasReleased(1024)) {
-                main.lastX = 0;
-                main.walk();
-            } else if (wrbe.wasReleased(2048)) {
-                main.lastX = 0;
-                main.walk();
+                //was pressed
+                if (wrbe.wasPressed(256)) {
+                    main.lastY = main.throttle;
+                    main.walk();
+                } else if (wrbe.wasPressed(512)) {
+                    main.lastY = -main.throttle;
+                    main.walk();
+                } else if (wrbe.wasPressed(1024)) {
+                    main.lastX = -main.throttle;
+                    main.walk();
+                } else if (wrbe.wasPressed(2048)) {
+                    main.lastX = main.throttle;
+                    main.walk();
+                } //was released
+                else if (wrbe.wasReleased(256)) {
+                    main.lastY = 0;
+                    main.walk();
+                } else if (wrbe.wasReleased(512)) {
+                    main.lastY = 0;
+                    main.walk();
+                } else if (wrbe.wasReleased(1024)) {
+                    main.lastX = 0;
+                    main.walk();
+                } else if (wrbe.wasReleased(2048)) {
+                    main.lastX = 0;
+                    main.walk();
+                }
             }
         }
 
         public void statusReported(WRStatusEvent wrse) {
+            if (wiimoteConnected) {
 
+            }
         }
 
         public void accelerationInputReceived(WRAccelerationEvent wrae) {
-            if (wrae.getRoll() > 1.0) {
-                double newAlpha = -throttle * Math.PI / 180 / (5);
-                if (lastAlpha != newAlpha) {
-                    main.lastAlpha = newAlpha;
-                    main.walk();
-                }
-            } else if (wrae.getRoll() < -1.0) {
-                double newAlpha = throttle * Math.PI / 180 / (5);
-                if (lastAlpha != newAlpha) {
-                    main.lastAlpha = newAlpha;
-                    main.walk();
-                }
-            } else {
-                double newAlpha = throttle * Math.PI / 180 / 5 * (-wrae.getRoll());
-                if (lastAlpha != newAlpha) {
-                    if (lastX == 0 && lastY == 0) {
-                        main.stopWalking();
+            if (wiimoteConnected) {
+                if (wrae.getRoll() > 1.0) {
+                    double newAlpha = -throttle * Math.PI / 180 / (5);
+                    if (lastAlpha != newAlpha) {
                         main.lastAlpha = newAlpha;
-                    } else {
+                        main.walk();
+                    }
+                } else if (wrae.getRoll() < -1.0) {
+                    double newAlpha = throttle * Math.PI / 180 / (5);
+                    if (lastAlpha != newAlpha) {
                         main.lastAlpha = newAlpha;
-                        walk();
+                        main.walk();
+                    }
+                } else {
+                    double newAlpha = throttle * Math.PI / 180 / 5 * (-wrae.getRoll());
+                    if (lastAlpha != newAlpha) {
+                        if (lastX == 0 && lastY == 0) {
+                            main.stopWalking();
+                            main.lastAlpha = newAlpha;
+                        } else {
+                            main.lastAlpha = newAlpha;
+                            walk();
+                        }
                     }
                 }
             }
@@ -828,7 +821,9 @@ class RemoteCommandResultHandler implements ObjectListener<byte[]> {
 
     @Override
     public void newObjectReceived(byte[] object) {
-        System.out.println(new String(object));
+        if (!new String(object).isEmpty()) {
+            System.out.println(new String(object));
+        }
     }
 
     @Override

@@ -259,6 +259,7 @@ message RemoteControlCommand {
     WALK = 1;
     LOCK_ON_BALL = 2;
     KICK = 3;
+    STAND = 4;
   }
 
   optional ActionType action = 1;

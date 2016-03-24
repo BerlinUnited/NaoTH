@@ -79,7 +79,7 @@ private:
 
 	State state;
 
-	Pose2D walkParams;
+    Pose2D walkParams;
 
 };//end class RemoteControlBehavior
 #endif // _RemoteControlBehavior_H_

@@ -32,6 +32,8 @@ public:
   virtual void print(std::ostream& stream) const
   {
     stream << "RemoteControlCommand" << std::endl;
+    stream << "ActionType = " << action << std::endl;
+    stream << "target = " << target << std::endl;
   }
 };
 
