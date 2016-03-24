@@ -166,7 +166,9 @@ include "Options/Soccer/basic_goali_agent.xabsl";
 include "Options/Test/agent/role_change_test_agent.xabsl";
 include "Options/Test/agent/passive_behavior_test_agent.xabsl";
 
-
+//Test Stuff for Paper
+include "Options/Soccer/longKick_agent.xabsl";
+include "Options/Test/longKick_striker.xabsl";
 
 include "Options/Test/agent/change_state_input_test_agent.xabsl";
  //Useless?
@@ -227,6 +229,9 @@ agent spl_soccer("SPL Soccer", spl_play_soccer);
 agent penalty("Penalty", play_penalty);
 agent simple_penalty_kicker("Simple Penalty Kicker", simple_penalty_kicker_agent);
 agent simple_penalty_goalie("Simple Penalty Goalie", simple_penalty_goalie_agent);
+
+//Test Stuff for Paper
+agent longKick_Striker("Only Long Forward Kick", longKick_agent);
 
 
 /** simple soccer agents **/
