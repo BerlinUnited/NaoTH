@@ -1,5 +1,5 @@
 
-#include "gameColorIntegralImage.h"
+#include "GameColorIntegralImage.h"
 #include <assert.h>
 
 void GameColorIntegralImage::shrinkBBPartPositive(GameColorIntegralImage::BoundingBox &bb, uint &dimension, int length, uint colorCount) const {
