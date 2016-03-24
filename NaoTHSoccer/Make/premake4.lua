@@ -128,6 +128,7 @@ solution "NaoTHSoccer"
       -- may be needed for newer glib2 versions, remove if not needed
       buildoptions {"-Wno-deprecated-declarations"}
       buildoptions {"-Wno-deprecated"}
+	  buildoptions {"-std=c++11"}
       flags { "ExtraWarnings" }
       links {"pthread"}
     
