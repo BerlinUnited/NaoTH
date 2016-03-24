@@ -15,7 +15,7 @@ void* socketLoopWrap(void* c)
 }//end motionLoopWrap
 
 SPLGameController::SPLGameController()
-  :exiting(false), port(GAMECONTROLLER_PORT),
+  :exiting(false), returnPort(GAMECONTROLLER_RETURN_PORT),
     socket(NULL),
     gamecontrollerAddress(NULL),
     socketThread(NULL),
@@ -291,7 +291,7 @@ void SPLGameController::socketLoop()
       {
         g_object_unref(gamecontrollerAddress);
       }
-      gamecontrollerAddress = g_inet_socket_address_new(rawAddress, static_cast<guint16>(port));
+      gamecontrollerAddress = g_inet_socket_address_new(rawAddress, static_cast<guint16>(returnPort));
       g_object_unref(receiverAddress);
     }
 
