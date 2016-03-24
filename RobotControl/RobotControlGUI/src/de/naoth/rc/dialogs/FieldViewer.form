@@ -171,6 +171,12 @@
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btCollectDrawingsActionPerformed"/>
           </Events>
         </Component>
+        <Component class="javax.swing.JCheckBox" name="cbExportOnDrawing">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="ExportOnDrawing"/>
+            <Property name="focusable" type="boolean" value="false"/>
+          </Properties>
+        </Component>
         <Component class="javax.swing.JCheckBox" name="btTrace">
           <Properties>
             <Property name="text" type="java.lang.String" value="Trace"/>

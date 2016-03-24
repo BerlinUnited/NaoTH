@@ -44,6 +44,9 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import javax.imageio.ImageIO;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 import org.freehep.graphicsio.emf.EMFExportFileType;
@@ -164,6 +167,7 @@ public class FieldViewer extends AbstractDialog
         btImageProjection = new javax.swing.JToggleButton();
         btAntializing = new javax.swing.JCheckBox();
         btCollectDrawings = new javax.swing.JCheckBox();
+        cbExportOnDrawing = new javax.swing.JCheckBox();
         btTrace = new javax.swing.JCheckBox();
         jSlider1 = new javax.swing.JSlider();
         drawingPanel = new javax.swing.JPanel();
@@ -277,6 +281,10 @@ public class FieldViewer extends AbstractDialog
             }
         });
         jToolBar1.add(btCollectDrawings);
+
+        cbExportOnDrawing.setText("ExportOnDrawing");
+        cbExportOnDrawing.setFocusable(false);
+        jToolBar1.add(cbExportOnDrawing);
 
         btTrace.setText("Trace");
         btTrace.setFocusable(false);
@@ -443,6 +451,21 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
     }
   }//end clearView
 
+  private void exportCanvasToPNG() {
+      
+      long l = java.lang.System.currentTimeMillis();
+      File file = new File("./fieldViewerExport-"+l+".png");
+      
+      BufferedImage bi = new BufferedImage(this.fieldCanvas.getWidth(), this.fieldCanvas.getHeight(), BufferedImage.TYPE_INT_ARGB);
+      Graphics2D g2d = bi.createGraphics();
+      this.fieldCanvas.paintAll(g2d);
+      
+      try {
+        ImageIO.write(bi, "PNG", file);
+      } catch(IOException ex) {
+          ex.printStackTrace(System.err);
+      }
+  }
   
   private class DrawingsListener implements ObjectListener<DrawingsContainer>
   {
@@ -462,6 +485,10 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
 
         fieldCanvas.getDrawingList().add(drawingCollection);
         fieldCanvas.repaint();
+        
+        if(cbExportOnDrawing.isSelected()) {
+            exportCanvasToPNG();
+        }
       }
     }
 
@@ -599,6 +626,7 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
     private javax.swing.JButton btRotate;
     private javax.swing.JCheckBox btTrace;
     private javax.swing.JComboBox cbBackground;
+    private javax.swing.JCheckBox cbExportOnDrawing;
     private javax.swing.JDialog coordsPopup;
     private javax.swing.JPanel drawingPanel;
     private de.naoth.rc.components.DynamicCanvasPanel fieldCanvas;
