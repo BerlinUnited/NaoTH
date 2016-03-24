@@ -18,6 +18,7 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Point2D;
@@ -29,6 +30,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.media.Media;
@@ -108,6 +110,21 @@ public class VideoPlayerController implements Initializable
       }
     });
     timeCodeText.textProperty().bindBidirectional(timeSlider.valueProperty(), new TimeCodeConverter());
+    timeCodeText.addEventFilter(KeyEvent.KEY_TYPED, (KeyEvent event) ->
+    {
+      
+      if(event.getCharacter().matches("[ p]"))
+      {
+        // play shortcut
+       togglePlay();
+       event.consume();
+      }
+      else if(!event.getCharacter().matches("[0-9:,.]"))
+      {
+        // ignore this key
+        event.consume();;
+      }
+    });
     
     mediaView.fitWidthProperty().bind(mediaPane.widthProperty());
     mediaView.fitHeightProperty().bind(mediaPane.heightProperty());
