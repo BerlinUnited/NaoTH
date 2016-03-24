@@ -20,6 +20,7 @@ import de.naoth.rc.drawings.DrawingsContainer;
 import de.naoth.rc.drawings.FieldDrawingS3D2011;
 import de.naoth.rc.drawings.FieldDrawingSPL2012;
 import de.naoth.rc.drawings.FieldDrawingSPL2013;
+import de.naoth.rc.drawings.FieldDrawingSPL2013BlackWhite;
 import de.naoth.rc.drawings.LocalFieldDrawing;
 import de.naoth.rc.drawings.RadarDrawing;
 import de.naoth.rc.drawings.StrokePlot;
@@ -108,7 +109,8 @@ public class FieldViewer extends AbstractDialog
             new FieldDrawingS3D2011(),
             new FieldDrawingSPL3x4(),
             new LocalFieldDrawing(),
-            new RadarDrawing()
+            new RadarDrawing(),
+            new FieldDrawingSPL2013BlackWhite()
         }
     ));
     
