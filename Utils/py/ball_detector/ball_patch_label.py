@@ -11,6 +11,8 @@ idx = 0
 
 show_size = (10, 10) # width, height
 patch_size = (12, 12) # width, height
+fullscreen = False
+
 
 def patch_pos(x,y):
   return (x*(patch_size[0]+1)-1,y*(patch_size[1]+1)-1)
@@ -71,6 +73,8 @@ if __name__ == "__main__":
       if matplotlib.get_backend() == 'Qt4Agg':
         f_manager = plt.get_current_fig_manager()
         f_manager.window.move(0, 0)
+        if fullscreen:
+          f_manager.window.showMaximized()
       
       plt.show()
       
