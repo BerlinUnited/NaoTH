@@ -42,6 +42,7 @@
 // debug
 #include <Representations/Debug/Stopwatch.h>
 #include <Representations/Infrastructure/FrameInfo.h>
+#include <Representations/Modeling/BodyStatus.h>
 #include "Tools/Debug/DebugRequest.h"
 #include "Tools/Debug/DebugDrawings.h"
 #include "Tools/Debug/DebugImageDrawings.h"
@@ -51,6 +52,8 @@
 #include "Tools/Debug/DebugModify.h"
 
 #include <Tools/DataStructures/ParameterList.h>
+
+#include <Tools/DataStructures/RingBuffer.h>
 
 BEGIN_DECLARE_MODULE(Motion)
   PROVIDE(StopwatchManager)
@@ -72,12 +75,13 @@ BEGIN_DECLARE_MODULE(Motion)
 
   // PROVIDE is needed to update the speed and acceleration
   PROVIDE(MotorJointData) // TODO: check
-  
+
   PROVIDE(RobotInfo)
   PROVIDE(KinematicChainSensor)
   PROVIDE(KinematicChainMotor)
 
   // platform input
+
   REQUIRE(SensorJointData)
   PROVIDE(FrameInfo)
   PROVIDE(InertialSensorData)
@@ -95,6 +99,7 @@ BEGIN_DECLARE_MODULE(Motion)
   PROVIDE(CameraInfoTop)
   PROVIDE(HeadMotionRequest)
   PROVIDE(MotionRequest)
+  PROVIDE(BodyStatus)
 END_DECLARE_MODULE(Motion)
 
 
@@ -113,18 +118,18 @@ public:
   *
   */
   void init(naoth::ProcessInterface& platformInterface, const naoth::PlatformBase& platform);
-  
+
 private:
   void processSensorData();
-  
+
   void postProcess();
 
 private:
-  
+
   class Parameter : public ParameterList
   {
   public:
-    Parameter() : ParameterList("Motion") 
+    Parameter() : ParameterList("Motion")
     {
       PARAMETER_REGISTER(useGyroRotationOdometry) = true;
 
@@ -134,7 +139,7 @@ private:
     bool useGyroRotationOdometry;
 
   } parameter;
-  
+
 
 private:
   void debugPlots();
@@ -160,8 +165,12 @@ private:
 private:
   std::stringstream debug_answer_stream;
 
+private:
+  RingBuffer<double,100> currentsRingBuffer[naoth::JointData::numOfJoint];
+
+  RingBuffer<double,4> motorJointDataBuffer[naoth::JointData::numOfJoint];
 };
 
 
-#endif  // _Motion_h_ 
+#endif  // _Motion_h_
 

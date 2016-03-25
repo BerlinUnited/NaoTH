@@ -64,7 +64,8 @@ public:
     time(0),
     height(-1000),
     standardStand(true),
-    stiffness(0.7)
+    relaxedPoseInitialized(false)
+
   {
   }
 
@@ -102,7 +103,7 @@ public:
 
       // set stiffness
       for( int i = naoth::JointData::RShoulderRoll; i<naoth::JointData::numOfJoint; i++) {
-        getMotorJointData().stiffness[i] = stiffness;
+        getMotorJointData().stiffness[i] = getEngine().getParameters().stand.stiffness;
       }
       // HACK: turn off the hands
       getMotorJointData().stiffness[JointData::LHand] = -1;
@@ -115,17 +116,30 @@ public:
   {
     calculateTrajectory(getMotionRequest());
 
+    time += getRobotInfo().basicTimeStep;
+
     double k = 1.0;
-
     if(totalTime > 0 && time < totalTime) {
-      time = std::min(time + getRobotInfo().basicTimeStep, totalTime);
-      k = 0.5*(1.0-cos(time/totalTime*Math::pi));
+      k = Math::clamp(0.5*(1.0-cos(time/totalTime*Math::pi)), 0.0, 1.0);
     }
-    InverseKinematic::CoMFeetPose p = getEngine().interpolate(startPose, targetPose, k);
 
-    bool solved = false;
-    InverseKinematic::HipFeetPose c = getEngine().controlCenterOfMass(getMotorJointData(), p, solved, false);
+    InverseKinematic::HipFeetPose c;
 
+    if(time > totalTime + getRobotInfo().basicTimeStep*10) {
+
+      if(!relaxedPoseInitialized) {
+        relaxedPoseInitialized = true;
+        relaxedPose = getEngine().getHipFeetPoseBasedOnSensor();
+      }
+
+      c = relaxedPose;
+    } else {
+      InverseKinematic::CoMFeetPose p = getEngine().interpolate(startPose, targetPose, k);
+
+      bool solved = false;
+      c = getEngine().controlCenterOfMass(getMotorJointData(), p, solved, false);
+    }
+    
     /*
     InverseKinematic::HipFeetPose c;
     c.hip = p.com;
@@ -186,24 +200,24 @@ private:
     if ( pos[naoth::JointData::LKneePitch] > getMotorJointData().max[naoth::JointData::LKneePitch] ) {
       stiff[naoth::JointData::LKneePitch] = -1;
     } else {
-      stiff[naoth::JointData::LKneePitch] = stiffness;
+      stiff[naoth::JointData::LKneePitch] = getEngine().getParameters().stand.stiffness;
     }
     if ( pos[naoth::JointData::RKneePitch] > getMotorJointData().max[naoth::JointData::RKneePitch] ) {
       stiff[naoth::JointData::RKneePitch] = -1;
     } else {
-      stiff[naoth::JointData::RKneePitch] = stiffness;
+      stiff[naoth::JointData::RKneePitch] = getEngine().getParameters().stand.stiffness;
     }
 
     // Ankle pitch
     if ( pos[naoth::JointData::LAnklePitch] < getMotorJointData().min[naoth::JointData::LAnklePitch] ) {
       stiff[naoth::JointData::LAnklePitch] = -1;
     } else {
-      stiff[naoth::JointData::LAnklePitch] = stiffness;
+      stiff[naoth::JointData::LAnklePitch] = getEngine().getParameters().stand.stiffness;
     }
     if ( pos[naoth::JointData::RAnklePitch] < getMotorJointData().min[naoth::JointData::RAnklePitch] ) {
       stiff[naoth::JointData::RAnklePitch] = -1;
     } else {
-      stiff[naoth::JointData::RAnklePitch] = stiffness;
+      stiff[naoth::JointData::RAnklePitch] = getEngine().getParameters().stand.stiffness;
     }
   }//end turnOffStiffnessWhenJointIsOutOfRange
 
@@ -214,7 +228,9 @@ private:
   bool standardStand;
   InverseKinematic::CoMFeetPose targetPose;
   InverseKinematic::CoMFeetPose startPose;
-  double stiffness;
+  InverseKinematic::HipFeetPose relaxedPose;
+  bool relaxedPoseInitialized;
+
 };
 
 #endif  /* _StandMotion_H */

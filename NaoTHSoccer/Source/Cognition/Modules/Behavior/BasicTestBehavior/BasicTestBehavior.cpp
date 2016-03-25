@@ -25,13 +25,13 @@ BasicTestBehavior::BasicTestBehavior()
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:standard_stand", "stand as standard or not", true);
 
   // walk
-  DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:walk_forward", "Walk foraward as fast as possible", false);
+  DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:walk_forward", "Walk forward as fast as possible", false);
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:walk_backward", "Walk backward as fast as possible", false);
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:strafe_left", "Set the motion request to 'strafe'.", false);
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:strafe_right", "Set the motion request to 'strafe'.", false);
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:turn_left", "Set the motion request to 'turn_right'.", false);
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:turn_right", "Set the motion request to 'turn_right'.", false);
-  DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:walk_forward", "Walk foraward as fast as possible", false);
+  DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:walk_forward", "Walk forward as fast as possible", false);
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:stepping", "walk with zero speed", false);
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:step_control", "test step control", false);
 
@@ -68,8 +68,8 @@ BasicTestBehavior::BasicTestBehavior()
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:led:HeadRearRight2", "it is what it is...", false);
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:led:all", "it is what it is...", false);
 
-  DEBUG_REQUEST_REGISTER("BasicTestBehavior:arms:01_arms_back", "set arms request to none", false);
-  DEBUG_REQUEST_REGISTER("BasicTestBehavior:arms:02_arms_down", "set arms request to none", false);
+  DEBUG_REQUEST_REGISTER("BasicTestBehavior:arms:01_arms_back", "set arms request to back", false);
+  DEBUG_REQUEST_REGISTER("BasicTestBehavior:arms:02_arms_down", "set arms request to down", false);
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:arms:03_arms_none", "set arms request to none", false);
 }
 
@@ -161,7 +161,7 @@ void BasicTestBehavior::testHead()
 
 
   DEBUG_REQUEST("BasicTestBehavior:head:look_at_ball_modell",
-    if(getFrameInfo().getTimeSince(getBallModel().frameInfoWhenBallWasSeen.getTime()) < 3000)
+    if(getFrameInfo().getTimeSince(getBallModel().getFrameInfoWhenBallWasSeen().getTime()) < 3000)
     {
       Vector2d xp = getBallModel().position;
       double d = 250;
