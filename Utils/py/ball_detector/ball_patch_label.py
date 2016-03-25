@@ -41,7 +41,13 @@ def on_click(event):
       selected[i] = False
       
     plt.draw()
-    
+ 
+def key_pressed(event):
+  
+  if event.key == 'enter':
+    plt.close()
+  elif event.key == 'escape':
+    exit(0)
 
 if __name__ == "__main__":
   f = open("./patches.txt", 'r')
@@ -56,6 +62,7 @@ if __name__ == "__main__":
 
     if i == show_size[0]*show_size[1]:
       plt.connect('button_press_event', on_click)
+      plt.connect("key_press_event", key_pressed)
       plt.imshow(image, cmap=plt.cm.gray, interpolation='nearest')
       plt.xticks(())
       plt.yticks(())
