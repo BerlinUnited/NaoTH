@@ -4,6 +4,7 @@ import os, sys, getopt, math
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.patches as ptc
+import matplotlib
 
 lls = []
 idx = 0
@@ -46,7 +47,7 @@ def key_pressed(event):
   
   if event.key == 'enter':
     plt.close()
-  elif event.key == 'escape':
+  elif event.key == 'escape' or event.key == 'q':
     exit(0)
 
 if __name__ == "__main__":
@@ -66,6 +67,11 @@ if __name__ == "__main__":
       plt.imshow(image, cmap=plt.cm.gray, interpolation='nearest')
       plt.xticks(())
       plt.yticks(())
+      
+      if matplotlib.get_backend() == 'Qt4Agg':
+        f_manager = plt.get_current_fig_manager()
+        f_manager.window.move(0, 0)
+      
       plt.show()
       
       for j in range(0,len(selected)):
