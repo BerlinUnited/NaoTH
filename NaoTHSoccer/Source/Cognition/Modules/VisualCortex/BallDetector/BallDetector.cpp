@@ -45,7 +45,7 @@ void BallDetector::execute(CameraInfo::CameraID id)
   cameraID = id;
 
   getBallPercept().reset();
-  getAllBallPercepts().reset();
+  //getAllBallPercepts().reset();
 
 
   // STEP 1: find the starting point for the search
@@ -324,7 +324,7 @@ void BallDetector::calculateBallPercept(const Vector2i& center, double radius)
 		  getBallPercept().ballWasSeen = projectionOK;
 		  getBallPercept().frameInfoWhenBallWasSeen = getFrameInfo();
 
-          getAllBallPercepts().add(getBallPercept());
+          //getAllBallPercepts().add(getBallPercept());
 
       DEBUG_REQUEST("Vision:BallDetector:draw_ball",
         CIRCLE_PX(ColorClasses::orange, center.x, center.y, (int)(radius+0.5));
