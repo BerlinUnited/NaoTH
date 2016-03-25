@@ -1,19 +1,42 @@
 #ifndef ALLBALLPERCEPTS_H
 #define ALLBALLPERCEPTS_H
 
-#include <Representations/Perception/BallPercept.h>
-
 #include <vector>
+
+#include <Tools/Math/Vector2.h>
+
+#include <Tools/DataStructures/Printable.h>
+#include <Tools/DataStructures/Serializer.h>
+
+#include <Representations/Infrastructure/FrameInfo.h>
 
 class AllBallPercepts : public naoth::Printable
 {
+public:
+    class BallPercept{
+
+    public:
+        Vector2d centerInImage;
+        double   radiusInImage;
+        Vector2d bearingBasedOffsetOnField;
+
+        enum Image {bottom, top} image;
+
+        virtual void print(std::ostream& stream) const
+        {
+            stream << "centerInImage = " << centerInImage << std::endl;
+            stream << "radiusInImage = " << radiusInImage << std::endl;
+            stream << "bearingBasedOffsetOnField = " << bearingBasedOffsetOnField << std::endl;
+        }//end print
+    };
+
 private:
-    std::vector<BallPercept> allBallPercepts;
+    std::vector<AllBallPercepts::BallPercept> allBallPercepts;
 
 public:
     AllBallPercepts(){}
 
-    void add(BallPercept& percept){
+    void add(AllBallPercepts::BallPercept& percept){
         allBallPercepts.push_back(percept);
     }
 
@@ -21,26 +44,27 @@ public:
         allBallPercepts.clear();
     }
 
-    std::vector<BallPercept>::const_iterator begin() const {
+    bool ballWasSeen() const {
+        return allBallPercepts.size() != 0;
+    }
+
+    std::vector<AllBallPercepts::BallPercept>::const_iterator begin() const {
         return allBallPercepts.begin();
     }
 
-    std::vector<BallPercept>::const_iterator end() const {
+    std::vector<AllBallPercepts::BallPercept>::const_iterator end() const {
         return allBallPercepts.end();
     }
 
+    naoth::FrameInfo frameInfoWhenBallWasSeen;
+
     virtual void print(std::ostream& stream) const;
 
-    //typedef std::vector<BallPercept>::const_iterator ABPIterator;
+    typedef std::vector<AllBallPercepts::BallPercept>::const_iterator ConstABPIterator;
+
 };
 
-class AllBallPerceptsTop : public AllBallPercepts
-{
-public:
-  virtual ~AllBallPerceptsTop() {}
-};
-
-/*namespace naoth
+namespace naoth
 {
   template<>
   class Serializer<AllBallPercepts>
@@ -50,9 +74,6 @@ public:
     static void deserialize(std::istream& stream, AllBallPercepts& representation);
   };
 
-  template<>
-  class Serializer<AllBallPerceptsTop> : public Serializer<AllBallPercepts>
-  {};
-}*/
+}
 
 #endif // ALLBALLPERCEPTS_H
