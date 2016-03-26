@@ -23,13 +23,13 @@
 #include "Representations/Infrastructure/FieldInfo.h"
 #include <Representations/Infrastructure/FrameInfo.h>
 #include "Representations/Perception/FieldPercept.h"
-#include "Representations/Perception/BallPercept.h"
 #include "Representations/Perception/FieldColorPercept.h"
 #include "Representations/Perception/CameraMatrix.h"
 #include "Representations/Modeling/KinematicChain.h"
 #include "Representations/Perception/GameColorIntegralImage.h"
 #include "Representations/Perception/BodyContour.h"
 
+#include "Representations/Perception/MultiBallPercept.h"
 
 // tools
 #include "Tools/DoubleCamHelpers.h"
@@ -67,8 +67,7 @@ BEGIN_DECLARE_MODULE(BallCandidateDetectorBW)
   REQUIRE(BodyContour)
   REQUIRE(BodyContourTop)
   
-  PROVIDE(BallPercept)
-  PROVIDE(BallPerceptTop)
+  PROVIDE(MultiBallPercept)
 END_DECLARE_MODULE(BallCandidateDetectorBW)
 
 
@@ -101,6 +100,7 @@ private:
   double sub_img[12*12];
 
   double estimatedBallRadius(int x, int y) const;
+  void addBallPercept(const Vector2i& center, double radius);
 
   double isBall() 
   {
@@ -244,8 +244,6 @@ private:
   DOUBLE_CAM_REQUIRE(BallCandidateDetectorBW, FieldPercept);
   DOUBLE_CAM_REQUIRE(BallCandidateDetectorBW, BodyContour);
   DOUBLE_CAM_PROVIDE(BallCandidateDetectorBW, GameColorIntegralImage);
- 
-  DOUBLE_CAM_PROVIDE(BallCandidateDetectorBW, BallPercept);
           
 };//end class BallCandidateDetectorBW
 

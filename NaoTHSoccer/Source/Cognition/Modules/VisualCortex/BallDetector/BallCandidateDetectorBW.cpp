@@ -134,9 +134,7 @@ void BallCandidateDetectorBW::execute(CameraInfo::CameraID id)
         RECT_PX(ColorClasses::blue, (*i).center.x - radius, (*i).center.y - radius,
           (*i).center.x + radius, (*i).center.y + radius);
 
-        getBallPercept().ballWasSeen = true;
-        getBallPercept().centerInImage = (*i).center;
-        getBallPercept().radiusInImage = radius;
+        addBallPercept((*i).center, radius);
       } 
       else {
         RECT_PX(ColorClasses::gray, (*i).center.x - radius, (*i).center.y - radius,
@@ -217,4 +215,26 @@ double BallCandidateDetectorBW::estimatedBallRadius(int x, int y) const
   return -1;
 }
 
+void BallCandidateDetectorBW::addBallPercept(const Vector2i& center, double radius) 
+{
+  const double ballRadius = 50.0;
+  MultiBallPercept::BallPercept ballPercept;
+  
+  if(CameraGeometry::imagePixelToFieldCoord(
+		  getCameraMatrix(), 
+		  getImage().cameraInfo,
+		  center.x, 
+		  center.y, 
+		  ballRadius,
+		  ballPercept.positionOnField))
+  {
+    
+    ballPercept.cameraId = cameraID;
+    ballPercept.centerInImage = center;
+    ballPercept.radiusInImage = radius;
+
+    getMultiBallPercept().add(ballPercept);
+    getMultiBallPercept().frameInfoWhenBallWasSeen = getFrameInfo();
+  }
+}
 
