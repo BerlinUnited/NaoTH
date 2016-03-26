@@ -92,7 +92,78 @@ private:
   CameraInfo::CameraID cameraID;
 
 private:
-  
+
+  class Best 
+  {
+  public:
+
+    class BallCandidate 
+    {
+    public:
+      BallCandidate() : radius(-1), value(-1) {}
+      BallCandidate(const Vector2i& center, double radius, double value) 
+        : center(center), radius(radius), value(value)
+      {}
+      Vector2i center;
+      double radius;
+      double value;
+    };
+
+    std::list<BallCandidate> candidates;
+
+    void add(const Vector2i& center, double radius, double value)
+    {
+      if(candidates.empty()) {
+        candidates.push_back(BallCandidate(center, radius, value));
+        return;
+      }
+
+      bool stop = false;
+      for (std::list<BallCandidate>::iterator i = candidates.begin(); i != candidates.end(); /*nothing*/)
+      {
+        if (std::max(std::abs((*i).center.x - center.x), std::abs((*i).center.y - center.y)) < ((*i).radius + radius)) {
+          if(value > (*i).value) {
+            i = candidates.erase(i);
+          } else {
+            stop = true;
+            ++i;
+          }
+        } else {
+          ++i;
+        }
+      }
+      if(stop) {
+        return;
+      }
+
+      for(std::list<BallCandidate>::iterator i = candidates.begin(); i != candidates.end(); ++i)
+      {
+        // insert
+        if(value < (*i).value) {
+          i = candidates.insert(i,BallCandidate(center, radius, value));
+          break;
+        } else if(nextIter(i) == candidates.end()) {
+          candidates.push_back(BallCandidate(center, radius, value));
+          break;
+        }
+      }
+
+      /*
+      if(candidates.size() > 30) {
+        candidates.pop_front();
+      }
+      */
+    }
+
+    void clear() {
+      candidates.clear();
+    }
+
+  } best;
+
+private:
+  void calculateCandidates(Best& best) const;
+
   void subsampling(int x0, int y0, int x1, int y1);
   double sub_img[12*12];
 
@@ -162,73 +233,6 @@ private:
 
     return (atan(v)+Math::pi_2)/Math::pi;//v > 0;
   }
-
-  class Best {
-  public:
-
-    class BallCandidate 
-    {
-    public:
-      BallCandidate() : radius(-1), value(-1) {}
-      BallCandidate(const Vector2i& center, double radius, double value) 
-        : center(center), radius(radius), value(value)
-      {}
-      Vector2i center;
-      double radius;
-      double value;
-    };
-
-    std::list<BallCandidate> candidates;
-
-    void add(const Vector2i& center, double radius, double value)
-    {
-      if(candidates.empty()) {
-        candidates.push_back(BallCandidate(center, radius, value));
-        return;
-      }
-
-      bool stop = false;
-      for (std::list<BallCandidate>::iterator i = candidates.begin(); i != candidates.end(); /*nothing*/)
-      {
-        if (std::max(std::abs((*i).center.x - center.x), std::abs((*i).center.y - center.y)) < ((*i).radius + radius)) {
-          if(value > (*i).value) {
-            i = candidates.erase(i);
-          } else {
-            stop = true;
-            ++i;
-          }
-        } else {
-          ++i;
-        }
-      }
-      if(stop) {
-        return;
-      }
-
-      for(std::list<BallCandidate>::iterator i = candidates.begin(); i != candidates.end(); ++i)
-      {
-        // insert
-        if(value < (*i).value) {
-          i = candidates.insert(i,BallCandidate(center, radius, value));
-          break;
-        } else if(nextIter(i) == candidates.end()) {
-          candidates.push_back(BallCandidate(center, radius, value));
-          break;
-        }
-      }
-
-      /*
-      if(candidates.size() > 30) {
-        candidates.pop_front();
-      }
-      */
-    }
-
-    void clear() {
-      candidates.clear();
-    }
-
-  } best;
 
 private:     
   

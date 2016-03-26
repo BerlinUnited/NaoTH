@@ -40,41 +40,18 @@ void BallCandidateDetectorBW::execute(CameraInfo::CameraID id)
   }
 
 
-  Vector2i center;
-  Vector2i point;
 
   best.clear();
+  calculateCandidates(best);
 
-  // todo: needs a better place
-  const int FACTOR = 4;
-  for(point.y = 0; point.y+1 < (int)getGameColorIntegralImage().getHeight(); ++point.y) 
-  {
-    double radius = estimatedBallRadius(point.x*FACTOR, point.y*FACTOR);
-    int size = (int)(radius*2.0/FACTOR+0.5);
-    int border = (int)(radius*0.2/FACTOR+0.5);
-
-    if (size < 3 || point.y <= border || point.y+size+border+1 >= (int)getGameColorIntegralImage().getHeight()) {
-      continue;
+  DEBUG_REQUEST("Vision:BallCandidateDetectorBW:drawCandidates",
+    for(std::list<Best::BallCandidate>::iterator i = best.candidates.begin(); i != best.candidates.end(); ++i) {
+      int radius = (int)((*i).radius + 0.5);
+      RECT_PX(ColorClasses::blue, (*i).center.x - radius, (*i).center.y - radius, (*i).center.x + radius, (*i).center.y + radius);
     }
-
-
-    for(point.x = border + 1; point.x + size + border+1 < (int)getGameColorIntegralImage().getWidth(); ++point.x)
-    {
-      int inner = getGameColorIntegralImage().getSumForRect(point.x, point.y, point.x+size, point.y+size);
-
-      // at least 50%
-      if (inner*2 > size*size) {
-
-        int outer = getGameColorIntegralImage().getSumForRect(point.x-border, point.y-border, point.x+size+border, point.y+size+border);
-        double value = (double)(inner - (outer - inner))/((double)(size+border)*(size+border));
-
-        center.x = point.x*FACTOR + (int)(radius+0.5);
-        center.y = point.y*FACTOR + (int)(radius+0.5);
-        best.add(center, radius, value);
-      }
-    }
-  }
+  );
   
+
   /*
   for(point.y = 0; point.y < (int)getImage().height()/4; point.y+=1) 
   {
@@ -155,6 +132,43 @@ void BallCandidateDetectorBW::execute(CameraInfo::CameraID id)
       }
     }
   //);
+}
+
+void BallCandidateDetectorBW::calculateCandidates(Best& best) const
+{
+  // todo needs a better place
+  const int FACTOR = 4;
+
+  Vector2i center;
+  Vector2i point;
+  
+  for(point.y = 0; point.y+1 < (int)getGameColorIntegralImage().getHeight(); ++point.y) 
+  {
+    double radius = estimatedBallRadius(point.x*FACTOR, point.y*FACTOR);
+    int size = (int)(radius*2.0/FACTOR+0.5);
+    int border = (int)(radius*0.2/FACTOR+0.5);
+
+    if (size < 3 || point.y <= border || point.y+size+border+1 >= (int)getGameColorIntegralImage().getHeight()) {
+      continue;
+    }
+
+
+    for(point.x = border + 1; point.x + size + border+1 < (int)getGameColorIntegralImage().getWidth(); ++point.x)
+    {
+      int inner = getGameColorIntegralImage().getSumForRect(point.x, point.y, point.x+size, point.y+size);
+
+      // at least 50%
+      if (inner*2 > size*size) {
+
+        int outer = getGameColorIntegralImage().getSumForRect(point.x-border, point.y-border, point.x+size+border, point.y+size+border);
+        double value = (double)(inner - (outer - inner))/((double)(size+border)*(size+border));
+
+        center.x = point.x*FACTOR + (int)(radius+0.5);
+        center.y = point.y*FACTOR + (int)(radius+0.5);
+        best.add(center, radius, value);
+      }
+    }
+  }
 }
 
 void BallCandidateDetectorBW::subsampling(int x0, int y0, int x1, int y1) 
