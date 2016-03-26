@@ -85,8 +85,8 @@ StandMotion()
     DEBUG_REQUEST_REGISTER("StandMotion:add_sine_to_motor_commands", "add a sine to the motor commands while the robot is standing", false);
     DEBUG_REQUEST_REGISTER("StandMotion:add_sine_to_hip","add a sine to the hip-feet-pose while the robot is standing", false);
     DEBUG_REQUEST_REGISTER("StandMotion:change_stiffness","set the stiffness for each joint with modify", false);
-    DEBUG_REQUEST_REGISTER("StandMotion:stiffness_controller","controll stiffness depending on the motor-sensor-error", false);
-    DEBUG_REQUEST_REGISTER("StandMotion:online_tuning","try to minimize current consumption using online determined joint offsets", false);
+    DEBUG_REQUEST_REGISTER("StandMotion:stiffness_controller","controll stiffness depending on the motor-sensor-error", true);
+    DEBUG_REQUEST_REGISTER("StandMotion:online_tuning","try to minimize current consumption using online determined joint offsets", true);
 
     // init sine
     for(int i = naoth::JointData::RHipYawPitch; i <= naoth::JointData::LAnkleRoll; i++) {
@@ -188,7 +188,7 @@ StandMotion()
       InverseKinematic::HipFeetPose target = relaxedPose;
       target.localInLeftFoot();
 
-      if((hipFeetPoseSensor.hip.translation - target.hip.translation).abs() > 10 /*5*/) {
+      if((hipFeetPoseSensor.hip.translation - target.hip.translation).abs() > 5) {
           isRelaxing = false; //because the stand motion will be restarted
           relaxedPoseInitialized = false;
           relaxedJointsValid = false;
