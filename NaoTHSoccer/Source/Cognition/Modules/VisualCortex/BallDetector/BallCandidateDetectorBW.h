@@ -95,7 +95,7 @@ private:
   CameraInfo::CameraID cameraID;
 
 private:
-  int index;
+  
   void subsampling(int x0, int y0, int x1, int y1);
   double sub_img[12*12];
 

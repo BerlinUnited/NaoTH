@@ -102,19 +102,17 @@ void BallCandidateDetectorBW::execute(CameraInfo::CameraID id)
   }
   */
 
-  index = -1;
-
   std::list<Best::BallCandidate>::iterator best_element = best.candidates.begin();
   int best_radius = -1;
   double maxV = 0;
   CANVAS(((cameraID == CameraInfo::Top)?"ImageTop":"ImageBottom"));
   for(std::list<Best::BallCandidate>::iterator i = best.candidates.begin(); i != best.candidates.end(); ++i)
   {
-    if(getFieldPercept().getValidField().isInside((*i).center)) {
+    if(getFieldPercept().getValidField().isInside((*i).center)) 
+    {
       //CIRCLE_PX(ColorClasses::red, (*i).center.x, (*i).center.y, (int)((*i).radius));
 
       int radius = (int)((*i).radius*1.5 + 0.5);
-
       
       subsampling((*i).center.x - radius, (*i).center.y - radius, (*i).center.x + radius, (*i).center.y + radius);
       //PEN("FF0000", 1);
@@ -125,7 +123,6 @@ void BallCandidateDetectorBW::execute(CameraInfo::CameraID id)
       double v = isBall();
       if(best_radius < 0 || maxV < v) {
         maxV = v;
-        index = 0;
         best_element = i;
         best_radius = radius;
       }
@@ -140,7 +137,6 @@ void BallCandidateDetectorBW::execute(CameraInfo::CameraID id)
         RECT_PX(ColorClasses::gray, (*i).center.x - radius, (*i).center.y - radius,
           (*i).center.x + radius, (*i).center.y + radius);
       }
-      //std::cout << (*i).value << std::endl;
     }
   }
 
@@ -181,13 +177,7 @@ void BallCandidateDetectorBW::subsampling(int x0, int y0, int x1, int y1)
     }
     xi++;
   }
-
-  //std::cerr << "\n";
-  index++;
-  //std::cout << xi << " " << yi << std::endl;
 }
-
-
 
 
 double BallCandidateDetectorBW::estimatedBallRadius(int x, int y) const
