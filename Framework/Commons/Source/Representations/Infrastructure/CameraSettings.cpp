@@ -15,8 +15,7 @@ CameraSettings::CameraSettings()
 }
 
 CameraSettings::~CameraSettings()
-{ 
-}
+{ }
 
 string CameraSettings::getCameraSettingsName(CameraSettingID id)
 {
@@ -53,6 +52,12 @@ void CameraSettings::print(ostream& stream) const
 }//end print
 
 
+CurrentCameraSettings::CurrentCameraSettings()
+{}
+
+CurrentCameraSettingsTop::CurrentCameraSettingsTop()
+{}
+
 CameraSettingsRequest::CameraSettingsRequest(string configName)
 : ParameterList(configName),
   queryCameraSettings(false)
@@ -64,18 +69,33 @@ CameraSettingsRequest::CameraSettingsRequest(string configName)
   syncWithConfig();
 }
 
-CurrentCameraSettings::CurrentCameraSettings()
-{
-
-}
-
-CurrentCameraSettingsTop::CurrentCameraSettingsTop()
-{
-
-}
-
 CameraSettingsRequestTop::CameraSettingsRequestTop()
   : CameraSettingsRequest("CameraSettingsTop")
 {
+}
+
+CommonCameraSettingsRequest::CommonCameraSettingsRequest(string configName)
+: ParameterList(configName),
+  queryCameraSettings(false)
+{
+  for(int i=0;i<numOfCameraSetting;i++) 
+  {
+    CameraSettings::CameraSettingID id = (CameraSettings::CameraSettingID) i;
+    if
+    (
+      id == CameraSettings::Gain || 
+      id == CameraSettings::Exposure || 
+      id == CameraSettings::Saturation || 
+      id == CameraSettings::Sharpness ||
+      id == CameraSettings::WhiteBalance
+    )
+    {
+      registerParameter(getCameraSettingsName(id), data[i]);
+    }
+  }
+
+  PARAMETER_REGISTER(isActive) = true;
+
+  syncWithConfig();
 }
 

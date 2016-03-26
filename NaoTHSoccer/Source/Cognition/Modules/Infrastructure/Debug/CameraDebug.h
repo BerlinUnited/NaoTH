@@ -37,6 +37,8 @@ BEGIN_DECLARE_MODULE(CameraDebug)
 
   PROVIDE(CameraSettingsRequest)
   PROVIDE(CameraSettingsRequestTop)
+
+  PROVIDE(CommonCameraSettingsRequest)
 END_DECLARE_MODULE(CameraDebug)
 
 
