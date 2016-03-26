@@ -6,6 +6,7 @@ package de.naoth.rc.components.treetable;
 
 import java.awt.Component;
 import java.awt.Graphics;
+import javax.swing.JCheckBox;
  
 import javax.swing.JTable;
 import javax.swing.JTree;
@@ -65,11 +66,12 @@ public class TreeTableCellRenderer extends JTree implements TableCellRenderer {
      */
     @Override
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-        if (isSelected)
+        if (isSelected) {
             setBackground(table.getSelectionBackground());
-        else
+        } else {
             setBackground(table.getBackground());
- 
+        }
+        
         visibleRow = row;
         return this;
     }
