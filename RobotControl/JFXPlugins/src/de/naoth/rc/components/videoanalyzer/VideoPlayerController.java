@@ -10,12 +10,15 @@ import java.io.File;
 import java.net.URL;
 import java.util.Objects;
 import java.util.ResourceBundle;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Point2D;
@@ -23,9 +26,11 @@ import javafx.geometry.Rectangle2D;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
+import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.media.Media;
@@ -58,7 +63,7 @@ public class VideoPlayerController implements Initializable
   @FXML
   private ToggleButton playButton;
   @FXML
-  private Label timeCodeLabel;
+  private TextField timeCodeText;
   
   @FXML
   private Label timeModeIndicator;
@@ -104,7 +109,22 @@ public class VideoPlayerController implements Initializable
         }
       }
     });
-
+    timeCodeText.textProperty().bindBidirectional(timeSlider.valueProperty(), new TimeCodeConverter());
+    timeCodeText.addEventFilter(KeyEvent.KEY_TYPED, (KeyEvent event) ->
+    {
+      
+      if(event.getCharacter().matches("[ p]"))
+      {
+        // play shortcut
+       togglePlay();
+       event.consume();
+      }
+      else if(!event.getCharacter().matches("[0-9:,.]"))
+      {
+        // ignore this key
+        event.consume();;
+      }
+    });
     
     mediaView.fitWidthProperty().bind(mediaPane.widthProperty());
     mediaView.fitHeightProperty().bind(mediaPane.heightProperty());
@@ -386,9 +406,6 @@ public class VideoPlayerController implements Initializable
     {
       time = Duration.ZERO;
     }
-    double minutes = Math.floor(time.toMinutes());
-    double seconds = time.toSeconds() - (minutes * 60);
-    timeCodeLabel.setText(String.format("%02d:%05.2f", (int) minutes, seconds));
     timeSlider.setValue(time.toSeconds());
   }
 
@@ -483,6 +500,57 @@ public class VideoPlayerController implements Initializable
         }
       });
     }
+  }
+  
+  private static class TimeCodeConverter extends StringConverter<Number>
+  {
+    
+    private final Pattern timcodePattern = 
+      Pattern.compile("((?<minutes>[0-9]+)\\:)?(?<seconds>[0-9]+([.,][0-9]*)?)");
 
+    @Override
+    public
+    String toString(Number object)
+    {
+      Duration time = Duration.seconds(object.doubleValue());
+      double minutes = Math.floor(time.toMinutes());
+      double seconds = time.toSeconds() - (minutes * 60);
+      return String.format("%02d:%05.2f", (int) minutes, seconds);
+    }
+
+    @Override
+    public
+    Number fromString(String string)
+    {
+      Matcher m = timcodePattern.matcher(string);
+      if(m.matches())
+      {
+        String minutesRaw = m.group("minutes");
+        String secondsRaw = m.group("seconds");
+        double minutes = 0.0;
+        double seconds = 0.0;
+        try
+        {
+          if(minutesRaw != null && !minutesRaw.isEmpty())
+          {
+            minutes = Double.parseDouble(minutesRaw);
+          }
+          if(secondsRaw != null && !secondsRaw.isEmpty())
+          {
+            seconds = Double.parseDouble(secondsRaw.replace(',', '.'));
+          }
+        }
+        catch(NumberFormatException ex)
+        {
+          Helper.handleException("Could not parse timecode \"" + string + "\"", ex);
+        }
+        return (minutes*60.0) + seconds;
+      }
+      else
+      {
+        return 0.0;
+      }
+    }
+    
   }
 }
