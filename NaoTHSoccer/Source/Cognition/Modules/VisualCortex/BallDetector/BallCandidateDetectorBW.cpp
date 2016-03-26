@@ -125,13 +125,13 @@ void BallCandidateDetectorBW::execute(CameraInfo::CameraID id)
     } 
   );
 
-  //DEBUG_REQUEST("Vision:BallCandidateDetectorBW:drawPercepts",
+  DEBUG_REQUEST("Vision:BallCandidateDetectorBW:drawPercepts",
     for(MultiBallPercept::ConstABPIterator iter = getMultiBallPercept().begin(); iter != getMultiBallPercept().end(); iter++) {
       if((*iter).cameraId == cameraID) {
         CIRCLE_PX(ColorClasses::orange, (int)((*iter).centerInImage.x+0.5), (int)((*iter).centerInImage.y+0.5), (int)((*iter).radiusInImage+0.5));
       }
     }
-  //);
+  );
 }
 
 void BallCandidateDetectorBW::calculateCandidates(Best& best) const
