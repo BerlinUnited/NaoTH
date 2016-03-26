@@ -64,6 +64,8 @@ private:
   bool afterQueryCameraSettings;
 
   FrameInfo timeWhenCameraCalibrationStopped;
+
+  void setCommonCameraSetting(CameraInfo::CameraID cameraId, CameraSettings::CameraSettingID id, int value, bool& changed);
 };
 
 #endif //_CameraDebug_h_

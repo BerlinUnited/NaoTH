@@ -96,26 +96,53 @@ void CameraDebug::execute()
   }
   else
   {
-    getCameraSettingsRequest().data[CameraSettings::AutoExposition] = 0;
-    getCameraSettingsRequest().data[CameraSettings::AutoWhiteBalancing] = 0;
-    getCameraSettingsRequest().data[CameraSettings::Exposure] = getCommonCameraSettingsRequest().data[CameraSettings::Exposure];
-    getCameraSettingsRequest().data[CameraSettings::Gain] = getCommonCameraSettingsRequest().data[CameraSettings::Gain];
-    getCameraSettingsRequest().data[CameraSettings::Saturation] = getCommonCameraSettingsRequest().data[CameraSettings::Saturation];
-    getCameraSettingsRequest().data[CameraSettings::Sharpness] = getCommonCameraSettingsRequest().data[CameraSettings::Sharpness];
-    getCameraSettingsRequest().data[CameraSettings::WhiteBalance] = getCommonCameraSettingsRequest().data[CameraSettings::WhiteBalance];
-    getCameraSettingsRequest().saveToConfig();
-    getCameraSettingsRequestTop().data[CameraSettings::AutoExposition] = 0;
-    getCameraSettingsRequestTop().data[CameraSettings::AutoWhiteBalancing] = 0;
-    getCameraSettingsRequestTop().data[CameraSettings::Exposure] = getCommonCameraSettingsRequest().data[CameraSettings::Exposure];
-    getCameraSettingsRequestTop().data[CameraSettings::Gain] = getCommonCameraSettingsRequest().data[CameraSettings::Gain];
-    getCameraSettingsRequestTop().data[CameraSettings::Saturation] = getCommonCameraSettingsRequest().data[CameraSettings::Saturation];
-    getCameraSettingsRequestTop().data[CameraSettings::Sharpness] = getCommonCameraSettingsRequest().data[CameraSettings::Sharpness];
-    getCameraSettingsRequestTop().data[CameraSettings::WhiteBalance] = getCommonCameraSettingsRequest().data[CameraSettings::WhiteBalance];
-    getCameraSettingsRequestTop().saveToConfig();
+    bool settingsChanged = false;
+    setCommonCameraSetting(CameraInfo::Bottom, CameraSettings::AutoExposition, 0, settingsChanged);
+    setCommonCameraSetting(CameraInfo::Bottom, CameraSettings::AutoWhiteBalancing, 0, settingsChanged);
+    setCommonCameraSetting(CameraInfo::Bottom, CameraSettings::Exposure ,getCommonCameraSettingsRequest().data[CameraSettings::Exposure], settingsChanged);
+    setCommonCameraSetting(CameraInfo::Bottom, CameraSettings::Gain ,getCommonCameraSettingsRequest().data[CameraSettings::Gain], settingsChanged);
+    setCommonCameraSetting(CameraInfo::Bottom, CameraSettings::Saturation ,getCommonCameraSettingsRequest().data[CameraSettings::Saturation], settingsChanged);
+    setCommonCameraSetting(CameraInfo::Bottom, CameraSettings::Sharpness ,getCommonCameraSettingsRequest().data[CameraSettings::Sharpness], settingsChanged);
+    setCommonCameraSetting(CameraInfo::Bottom, CameraSettings::WhiteBalance ,getCommonCameraSettingsRequest().data[CameraSettings::WhiteBalance], settingsChanged);
+
+    setCommonCameraSetting(CameraInfo::Top, CameraSettings::AutoExposition ,0, settingsChanged);
+    setCommonCameraSetting(CameraInfo::Top, CameraSettings::AutoWhiteBalancing ,0, settingsChanged);
+    setCommonCameraSetting(CameraInfo::Top, CameraSettings::Exposure ,getCommonCameraSettingsRequest().data[CameraSettings::Exposure], settingsChanged);
+    setCommonCameraSetting(CameraInfo::Top, CameraSettings::Gain ,getCommonCameraSettingsRequest().data[CameraSettings::Gain], settingsChanged);
+    setCommonCameraSetting(CameraInfo::Top, CameraSettings::Saturation ,getCommonCameraSettingsRequest().data[CameraSettings::Saturation], settingsChanged);
+    setCommonCameraSetting(CameraInfo::Top, CameraSettings::Sharpness ,getCommonCameraSettingsRequest().data[CameraSettings::Sharpness], settingsChanged);
+    setCommonCameraSetting(CameraInfo::Top, CameraSettings::WhiteBalance ,getCommonCameraSettingsRequest().data[CameraSettings::WhiteBalance], settingsChanged);
+
+    if(settingsChanged)
+    {
+      getCameraSettingsRequest().saveToConfig();
+      getCameraSettingsRequestTop().saveToConfig();
+    }
   }
   
 }//end execute
 
+
+void CameraDebug::setCommonCameraSetting(CameraInfo::CameraID cameraId, CameraSettings::CameraSettingID id, int value, bool& changed)
+{
+  if(cameraId == CameraInfo::Bottom)
+  {
+    if(getCameraSettingsRequest().data[id] != value)
+    {
+       getCameraSettingsRequest().data[id] = value;
+       changed = true;
+    }
+  }
+  else
+  {
+    if(getCameraSettingsRequestTop().data[id] != value)
+    {
+       getCameraSettingsRequestTop().data[id] = value;
+       changed = true;
+    }
+  }
+
+}
 
 void CameraDebug::executeDebugCommand(
   const std::string& command, 
