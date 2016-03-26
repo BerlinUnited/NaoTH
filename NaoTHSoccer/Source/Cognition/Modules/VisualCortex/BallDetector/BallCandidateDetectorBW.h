@@ -34,6 +34,7 @@
 #include "Tools/Debug/DebugPlot.h"
 #include "Tools/Debug/DebugImageDrawings.h"
 #include "Tools/Debug/DebugParameterList.h"
+#include "Tools/Debug/DebugModify.h"
 
 
 BEGIN_DECLARE_MODULE(BallCandidateDetectorBW)
@@ -43,6 +44,7 @@ BEGIN_DECLARE_MODULE(BallCandidateDetectorBW)
   PROVIDE(DebugImageDrawings)
   PROVIDE(DebugImageDrawingsTop)
   PROVIDE(DebugParameterList)
+  PROVIDE(DebugModify)
 
   REQUIRE(FieldInfo)
   REQUIRE(FrameInfo)

@@ -40,7 +40,6 @@ void BallCandidateDetectorBW::execute(CameraInfo::CameraID id)
   }
 
 
-
   best.clear();
   calculateCandidates(best);
 
@@ -139,19 +138,22 @@ void BallCandidateDetectorBW::calculateCandidates(Best& best) const
   // todo needs a better place
   const int FACTOR = 4;
 
+  double borderRadiusFactor = 0.2;
+  MODIFY("BallCandidateDetectorBW:borderRadiusFactor", borderRadiusFactor);
+
   Vector2i center;
   Vector2i point;
   
   for(point.y = 0; point.y+1 < (int)getGameColorIntegralImage().getHeight(); ++point.y) 
   {
     double radius = estimatedBallRadius(point.x*FACTOR, point.y*FACTOR);
-    int size = (int)(radius*2.0/FACTOR+0.5);
-    int border = (int)(radius*0.2/FACTOR+0.5);
+    int size   = (int)(radius*2.0/FACTOR+0.5);
+    int border = (int)(radius*borderRadiusFactor/FACTOR+0.5);
 
+    // smalest ball size == 3 => ball size == FACTOR*3 == 12
     if (size < 3 || point.y <= border || point.y+size+border+1 >= (int)getGameColorIntegralImage().getHeight()) {
       continue;
     }
-
 
     for(point.x = border + 1; point.x + size + border+1 < (int)getGameColorIntegralImage().getWidth(); ++point.x)
     {
