@@ -1,24 +1,24 @@
-#include "AllBallPercepts.h"
+#include "MultiBallPercept.h"
 
 #include "Messages/Representations.pb.h"
 #include <google/protobuf/io/zero_copy_stream_impl.h>
 
 using namespace naoth;
 
-void AllBallPercepts::print(std::ostream &stream) const {
+void MultiBallPercept::print(std::ostream &stream) const {
     stream << "ballWasSeen = " << ballWasSeen() << std::endl;
     stream << "frameInfoWhenBallWasSeen:" << frameInfoWhenBallWasSeen << std::endl;
     stream << "----------------------" << std::endl;
-    for(size_t i = 0; i < allBallPercepts.size(); i++) {
+    for(size_t i = 0; i < percepts.size(); i++) {
         stream << "BallPercept Number " << i+1 << ":" << std::endl;
-        allBallPercepts[i].print(stream);
+        percepts[i].print(stream);
         stream << "----------------------" << std::endl;
     }
 }
 
 using namespace naoth;
 
-void Serializer<AllBallPercepts>::serialize(const AllBallPercepts& /*representation*/, std::ostream& /*stream*/)
+void Serializer<MultiBallPercept>::serialize(const MultiBallPercept& /*representation*/, std::ostream& /*stream*/)
 {
   //naothmessages::BallPercept p;
 
@@ -42,7 +42,7 @@ void Serializer<AllBallPercepts>::serialize(const AllBallPercepts& /*representat
 }//end serialize
 
 
-void Serializer<AllBallPercepts>::deserialize(std::istream& /*stream*/, AllBallPercepts& /*representation*/)
+void Serializer<MultiBallPercept>::deserialize(std::istream& /*stream*/, MultiBallPercept& /*representation*/)
 {
   //naothmessages::BallPercept p;
   //google::protobuf::io::IstreamInputStream buf(&stream);
