@@ -22,7 +22,8 @@
 
 BallCandidateDetectorBW::BallCandidateDetectorBW()
 {
-  DEBUG_REQUEST_REGISTER("Vision:BallCandidateDetectorBW:peak_scan:mark_full", "mark the scanned points in image", false);
+  DEBUG_REQUEST_REGISTER("Vision:BallCandidateDetectorBW:drawCandidates", "draw ball candidates", false);
+  DEBUG_REQUEST_REGISTER("Vision:BallCandidateDetectorBW:drawPercepts", "draw ball percepts", false);
 }
 
 BallCandidateDetectorBW::~BallCandidateDetectorBW()
@@ -102,23 +103,18 @@ void BallCandidateDetectorBW::execute(CameraInfo::CameraID id)
   }
   */
 
+
   std::list<Best::BallCandidate>::iterator best_element = best.candidates.begin();
   int best_radius = -1;
   double maxV = 0;
-  CANVAS(((cameraID == CameraInfo::Top)?"ImageTop":"ImageBottom"));
+  
   for(std::list<Best::BallCandidate>::iterator i = best.candidates.begin(); i != best.candidates.end(); ++i)
   {
     if(getFieldPercept().getValidField().isInside((*i).center)) 
     {
-      //CIRCLE_PX(ColorClasses::red, (*i).center.x, (*i).center.y, (int)((*i).radius));
-
       int radius = (int)((*i).radius*1.5 + 0.5);
       
       subsampling((*i).center.x - radius, (*i).center.y - radius, (*i).center.x + radius, (*i).center.y + radius);
-      //PEN("FF0000", 1);
-      //CIRCLE((*i).center.x, (*i).center.y, (*i).value*10);
-      //RECT_PX(isBall()?ColorClasses::blue:ColorClasses::red, (*i).center.x - radius, (*i).center.y - radius,
-      //  (*i).center.x + radius, (*i).center.y + radius);
 
       double v = isBall();
       if(best_radius < 0 || maxV < v) {
@@ -127,24 +123,38 @@ void BallCandidateDetectorBW::execute(CameraInfo::CameraID id)
         best_radius = radius;
       }
 
-      if(v >= 0.5) { 
-        RECT_PX(ColorClasses::blue, (*i).center.x - radius, (*i).center.y - radius,
-          (*i).center.x + radius, (*i).center.y + radius);
-
+      if(v >= 0.5) {
         addBallPercept((*i).center, radius);
-      } 
-      else {
-        RECT_PX(ColorClasses::gray, (*i).center.x - radius, (*i).center.y - radius,
-          (*i).center.x + radius, (*i).center.y + radius);
       }
+
+      DEBUG_REQUEST("Vision:BallCandidateDetectorBW:drawCandidates",
+        //CANVAS(((cameraID == CameraInfo::Top)?"ImageTop":"ImageBottom"));
+        if(v >= 0.5) {
+          RECT_PX(ColorClasses::blue, (*i).center.x - radius, (*i).center.y - radius,
+            (*i).center.x + radius, (*i).center.y + radius);
+        } else {
+          RECT_PX(ColorClasses::gray, (*i).center.x - radius, (*i).center.y - radius,
+            (*i).center.x + radius, (*i).center.y + radius);
+        }
+      );
     }
   }
 
 
-  if(best_element != best.candidates.end()) { 
-    RECT_PX(ColorClasses::red, (*best_element).center.x - best_radius, (*best_element).center.y - best_radius,
-      (*best_element).center.x + best_radius, (*best_element).center.y + best_radius);
-  } 
+  DEBUG_REQUEST("Vision:BallCandidateDetectorBW:drawCandidates",
+    if(best_element != best.candidates.end()) { 
+      RECT_PX(ColorClasses::red, (*best_element).center.x - best_radius, (*best_element).center.y - best_radius,
+        (*best_element).center.x + best_radius, (*best_element).center.y + best_radius);
+    } 
+  );
+
+  //DEBUG_REQUEST("Vision:BallCandidateDetectorBW:drawPercepts",
+    for(MultiBallPercept::ConstABPIterator iter = getMultiBallPercept().begin(); iter != getMultiBallPercept().end(); iter++) {
+      if((*iter).cameraId == cameraID) {
+        CIRCLE_PX(ColorClasses::orange, (int)((*iter).centerInImage.x+0.5), (int)((*iter).centerInImage.y+0.5), (int)((*iter).radiusInImage+0.5));
+      }
+    }
+  //);
 }
 
 void BallCandidateDetectorBW::subsampling(int x0, int y0, int x1, int y1) 

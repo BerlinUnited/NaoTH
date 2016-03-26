@@ -13,22 +13,17 @@
 // common tools
 #include <Tools/ColorClasses.h>
 #include <Tools/Math/Vector2.h>
-#include <Tools/Math/Matrix_nxn.h>
-#include <Tools/Math/PointList.h>
-#include <Tools/DataStructures/Area.h>
-#include <Tools/ImageProcessing/ColorModelConversions.h>
 
 #include <Representations/Infrastructure/Image.h>
-
 #include "Representations/Infrastructure/FieldInfo.h"
 #include <Representations/Infrastructure/FrameInfo.h>
-#include "Representations/Perception/FieldPercept.h"
+
 #include "Representations/Perception/FieldColorPercept.h"
 #include "Representations/Perception/CameraMatrix.h"
-#include "Representations/Modeling/KinematicChain.h"
-#include "Representations/Perception/GameColorIntegralImage.h"
+#include "Representations/Perception/FieldPercept.h"
 #include "Representations/Perception/BodyContour.h"
 
+#include "Representations/Perception/GameColorIntegralImage.h"
 #include "Representations/Perception/MultiBallPercept.h"
 
 // tools
@@ -87,6 +82,8 @@ public:
 
   virtual void execute()
   {
+    getMultiBallPercept().reset();
+
     execute(CameraInfo::Top);
     execute(CameraInfo::Bottom);
   }
