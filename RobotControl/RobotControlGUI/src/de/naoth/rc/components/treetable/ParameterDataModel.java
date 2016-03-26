@@ -7,26 +7,27 @@ package de.naoth.rc.components.treetable;
 import java.util.ArrayList;
 import java.util.List;
  
-public class ModifyDataModel extends AbstractTreeTableModel 
+public class ParameterDataModel extends AbstractTreeTableModel 
 {
-    // Spalten Name.
-    static protected String[] columnNames = { "Modify", "Name", "Value" };
+    static protected String[] columnNames = { "Name", "Value" };
+    static protected Class<?>[] columnTypes = { TreeTableModel.class, Object.class };
  
-    // Spalten Typen.
-    static protected Class<?>[] columnTypes = { Boolean.class, TreeTableModel.class, Double.class };
- 
-    public ModifyDataModel() {
-        super(new ModifyDataNode("Modify"));
+    public ParameterDataModel() {
+        super(new ParameterDataNode("Parameter"));
+    }
+    
+    public ParameterDataModel(String rootName) {
+        super(new ParameterDataNode(rootName));
     }
  
     @Override
     public Object getChild(Object parent, int index) {
-        return ((ModifyDataNode) parent).getChildren().get(index);
+        return ((ParameterDataNode) parent).getChildren().get(index);
     }
  
     @Override
     public int getChildCount(Object parent) {
-        return ((ModifyDataNode) parent).getChildren().size();
+        return ((ParameterDataNode) parent).getChildren().size();
     }
  
     @Override
@@ -49,20 +50,20 @@ public class ModifyDataModel extends AbstractTreeTableModel
         return true; // Important to activate TreeExpandListener
     }
     
-    public ModifyDataNode insertPath(String path, char seperator)
+    public ParameterDataNode insertPath(String path, String separator)
     {
-        String[] nodes = path.split("" + seperator);
+        String[] nodes = path.split(separator);
         
-        ModifyDataNode current = (ModifyDataNode)getRoot();
+        ParameterDataNode current = (ParameterDataNode)getRoot();
         ArrayList<Object> current_path = new ArrayList<>();
         current_path.add(current);
         
         for(String s: nodes)
         {
-            ModifyDataNode matchingNode = null;
-            List<ModifyDataNode> childList = current.getChildren();
+            ParameterDataNode matchingNode = null;
+            List<ParameterDataNode> childList = current.getChildren();
             
-            for(ModifyDataNode child: childList)
+            for(ParameterDataNode child: childList)
             {
                 if(s.equals(child.getName()))
                 {
@@ -71,13 +72,14 @@ public class ModifyDataModel extends AbstractTreeTableModel
                 }
             }
 
+            // add a new one
             if(matchingNode == null)
             {
-                // add a new one
-                matchingNode = new ModifyDataNode(s);
+                matchingNode = new ParameterDataNode(s);
                 childList.add(matchingNode);
                 fireTreeNodesInserted(this, current_path.toArray(), new int[]{childList.size()-1}, new Object[]{matchingNode});
             }
+            
             current = matchingNode;
             current_path.add(current);
         }
@@ -85,80 +87,61 @@ public class ModifyDataModel extends AbstractTreeTableModel
         return current;
     }//end insertPath
     
+    Object bb = null;
     
     @Override
     public Object getValueAt(Object node, int column) {
         switch (column) {
-        case 1:
-            return ((ModifyDataNode) node).getName();
-        case 0:
-            return ((ModifyDataNode) node).enabled;
-        case 2:
-            return ((ModifyDataNode) node).value;
-        default:
-            break;
+            case 0: return ((ParameterDataNode) node).getName();
+            case 1: return ((ParameterDataNode) node).value;
+            default: break;
         }
         return null;
     }
 
     @Override
     public void setValueAt(Object aValue, Object node, int column) {
-        if(aValue == null)
+        if(aValue == null) {
             return;
+        }
         
         switch (column) {
-        case 0:
-            ((ModifyDataNode) node).setEnabled((Boolean) aValue);
-            break;
-        case 2:
-            ((ModifyDataNode) node).setValue((Double)aValue);
+            case 1: ((ParameterDataNode) node).setValue(aValue);
             break;
         default:
             break;
         }
     }
     
-    
     public static interface ValueChangedListener
     {
-        abstract void valueChanged(boolean enabled, double value);
+        abstract void valueChanged(Object value);
     }
     
-    static public class ModifyDataNode 
+    static public class ParameterDataNode 
     {
-        public Boolean enabled = null;
-        public Double value = null;
+        public Object value = null;
         
         private final String name;
-        private final List<ModifyDataNode> children;
-        public ValueChangedListener enabledListener;
+        private final List<ParameterDataNode> children = new ArrayList<ParameterDataNode>();
+        public ValueChangedListener listener;
  
-        public void setEnabled(boolean v)
-        {
-            enabled = v;
-            if(enabledListener != null) 
-                enabledListener.valueChanged(enabled, value);
-        }
-        
-        public void setValue(double v)
-        {
-            enabled = true;
-            value = v;
-            if(enabledListener != null) 
-                enabledListener.valueChanged(enabled, value);
-        }
-                
-        
-        public ModifyDataNode(String name) {
+        public ParameterDataNode(String name) {
             this.name = name;
-            this.children = new ArrayList<ModifyDataNode>();
         }
- 
+        
+        public void setValue(Object v) {
+            value = v;
+            if(listener != null) {
+                listener.valueChanged(value);
+            }
+        }
+        
         public String getName() {
             return name;
         }
-
-        public List<ModifyDataNode> getChildren() {
+  
+        public List<ParameterDataNode> getChildren() {
             return children;
         }
         
