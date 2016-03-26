@@ -53,12 +53,12 @@ void BallCandidateDetectorBW::execute(CameraInfo::CameraID id)
     int size = (int)(radius*2.0/FACTOR+0.5);
     int border = (int)(radius*0.2/FACTOR+0.5);
 
-    if (size < 3 || point.y < border || point.y+size+border+1 >= (int)getGameColorIntegralImage().getHeight()) {
+    if (size < 3 || point.y <= border || point.y+size+border+1 >= (int)getGameColorIntegralImage().getHeight()) {
       continue;
     }
 
 
-    for(point.x = border; point.x + size + border+1 < (int)getGameColorIntegralImage().getWidth(); ++point.x) 
+    for(point.x = border + 1; point.x + size + border+1 < (int)getGameColorIntegralImage().getWidth(); ++point.x)
     {
       int inner = getGameColorIntegralImage().getSumForRect(point.x, point.y, point.x+size, point.y+size);
 

@@ -195,8 +195,8 @@ public:
     minY -= 1;
     minX -= 1;
 
-    assert(minX >= 0);
-		assert(minY >= 0);
+    //assert(minX >= 0);
+        //assert(minY >= 0);
 		assert(maxX < width);
 		assert(maxY < height);
 
