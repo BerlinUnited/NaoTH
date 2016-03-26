@@ -229,6 +229,8 @@ private:
   double evaluateAction(const Vector2d& a) const;
 
   void draw_potential_field() const;
+
+  void draw_actions(const std::vector<ActionResults>& actionsConsequences)const;
 };
 
 #endif  /* _Simulation_H */
