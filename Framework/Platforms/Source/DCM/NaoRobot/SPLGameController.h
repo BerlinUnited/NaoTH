@@ -23,7 +23,7 @@ private:
 
 private:
   bool exiting;
-  int port;
+  int returnPort;
   GSocket* socket;
   GSocketAddress* gamecontrollerAddress;
   GThread* socketThread;
@@ -35,7 +35,7 @@ private:
   GMutex*  dataMutex;
   GMutex* returnDataMutex;
 
-  GError* bindAndListen(unsigned int port = GAMECONTROLLER_PORT);
+  GError* bindAndListen(unsigned int port = GAMECONTROLLER_DATA_PORT);
 
   void sendData(const RoboCupGameControlReturnData& data);
 };
