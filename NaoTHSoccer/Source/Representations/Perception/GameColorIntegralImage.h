@@ -10,7 +10,7 @@
 #include <Tools/Math/Vector2.h>
 
 #ifdef WIN32
-#define uint unsigned int
+typedef unsigned int uint;
 #endif
 
 /**
