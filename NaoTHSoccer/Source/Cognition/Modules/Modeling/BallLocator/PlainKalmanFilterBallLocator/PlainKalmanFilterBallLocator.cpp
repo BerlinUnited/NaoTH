@@ -363,16 +363,18 @@ void PlainKalmanFilterBallLocator::doDebugRequest()
 {
     PLOT("PlainKalmanFilterBallLocator:ModelIsValid", getBallModel().valid);
 
-    if(getMultiBallPercept().ballWasSeen()) {
-        //to check correctness of the prediction
-        DEBUG_REQUEST("PlainKalmanFilterBallLocator:draw_real_ball_percept",
-          FIELD_DRAWING_CONTEXT;
-          PEN("FF0000", 10);
-          for(MultiBallPercept::ConstABPIterator iter = getMultiBallPercept().begin(); iter != getMultiBallPercept().end(); iter++) {
-              CIRCLE((*iter).positionOnField.x, (*iter).positionOnField.y, getFieldInfo().ballRadius-5);
-          }
-        );
-    }
+    
+    //to check correctness of the prediction
+    DEBUG_REQUEST("PlainKalmanFilterBallLocator:draw_real_ball_percept",
+      if(getMultiBallPercept().ballWasSeen()) {
+        FIELD_DRAWING_CONTEXT;
+        PEN("FF0000", 10);
+        for(MultiBallPercept::ConstABPIterator iter = getMultiBallPercept().begin(); iter != getMultiBallPercept().end(); iter++) {
+            CIRCLE((*iter).positionOnField.x, (*iter).positionOnField.y, getFieldInfo().ballRadius-5);
+        }
+      }
+    );
+    
 
     DEBUG_REQUEST("PlainKalmanFilterBallLocator:draw_final_ball",
         FIELD_DRAWING_CONTEXT;
