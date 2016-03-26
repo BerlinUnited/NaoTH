@@ -126,6 +126,7 @@ void GoalFeatureDetectorV2_1::findEdgelFeatures(const Vector2d& scanDir, const V
     Vector2i lastPos;
     bool weakPeakFound = false;
     bool filterSwitchReady = false;
+    bool artificialEndPointSet = false;
     while(scanner.getNextWithCheck(pos)) 
     {
       IMG_GET(pos.x, pos.y, pixel);
@@ -148,6 +149,15 @@ void GoalFeatureDetectorV2_1::findEdgelFeatures(const Vector2d& scanDir, const V
         filterSwitchReady = true;
         continue;
       }
+      if(pixValue > parameters.threshold && pos.x > static_cast<int>(getImage().width() - 3))
+      {
+        if(!artificialEndPointSet)
+        {
+          filterSwitchReady = true;
+          artificialEndPointSet = true;
+        }
+      }
+
       bool peakFound = false;
       if(parameters.useArtificialPoints && pixValue > parameters.threshold && filterSwitchReady)
       {
