@@ -14,7 +14,11 @@ import de.naoth.rc.dataformats.SPLMessage;
 import de.naoth.rc.drawingmanager.DrawingEventManager;
 import de.naoth.rc.drawings.DrawingCollection;
 import java.awt.Color;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
@@ -23,8 +27,11 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.channels.AsynchronousCloseException;
 import java.nio.channels.DatagramChannel;
+import java.text.SimpleDateFormat;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Timer;
@@ -32,7 +39,10 @@ import java.util.TimerTask;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JFileChooser;
 import javax.swing.SwingUtilities;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 
@@ -77,25 +87,18 @@ public class TeamCommViewer extends AbstractDialog {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        RecordTeamCommDialog = new javax.swing.JDialog();
+        TeamComFileChooser = new javax.swing.JFileChooser();
         robotStatusPanel = new javax.swing.JPanel();
         btListen = new javax.swing.JToggleButton();
         portNumberOwn = new javax.swing.JFormattedTextField();
         portNumberOpponent = new javax.swing.JFormattedTextField();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
-        jButton1 = new javax.swing.JButton();
+        jToggleButton1 = new javax.swing.JToggleButton();
 
-        javax.swing.GroupLayout RecordTeamCommDialogLayout = new javax.swing.GroupLayout(RecordTeamCommDialog.getContentPane());
-        RecordTeamCommDialog.getContentPane().setLayout(RecordTeamCommDialogLayout);
-        RecordTeamCommDialogLayout.setHorizontalGroup(
-            RecordTeamCommDialogLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
-        );
-        RecordTeamCommDialogLayout.setVerticalGroup(
-            RecordTeamCommDialogLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
-        );
+        TeamComFileChooser.setDialogType(javax.swing.JFileChooser.SAVE_DIALOG);
+        TeamComFileChooser.setDialogTitle("Saving destination");
+        TeamComFileChooser.setSelectedFile(new File((new SimpleDateFormat("yyyy-MM-dd")).format(new Date())+"_TeamComm.log"));
 
         robotStatusPanel.setLayout(new java.awt.GridLayout(5, 1, 0, 5));
 
@@ -119,7 +122,15 @@ public class TeamCommViewer extends AbstractDialog {
 
         jLabel2.setText("Red:");
 
-        jButton1.setText("Record TeamComm");
+        jToggleButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/naoth/rc/res/play.png"))); // NOI18N
+        jToggleButton1.setText("Record TeamComm");
+        jToggleButton1.setActionCommand("RecordTeamComm");
+        jToggleButton1.setSelectedIcon(new javax.swing.ImageIcon(getClass().getResource("/de/naoth/rc/res/media-record.png"))); // NOI18N
+        jToggleButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jToggleButton1ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -138,9 +149,9 @@ public class TeamCommViewer extends AbstractDialog {
                         .addComponent(jLabel2)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(portNumberOpponent, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jButton1)
-                        .addGap(0, 0, Short.MAX_VALUE))
+                        .addGap(12, 12, 12)
+                        .addComponent(jToggleButton1)
+                        .addGap(0, 148, Short.MAX_VALUE))
                     .addComponent(robotStatusPanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
@@ -148,14 +159,15 @@ public class TeamCommViewer extends AbstractDialog {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btListen)
-                    .addComponent(portNumberOwn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(portNumberOpponent, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel1)
-                    .addComponent(jLabel2)
-                    .addComponent(jButton1))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(btListen)
+                        .addComponent(portNumberOwn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(portNumberOpponent, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel1)
+                        .addComponent(jLabel2))
+                    .addComponent(jToggleButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
                 .addComponent(robotStatusPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
@@ -209,6 +221,43 @@ public class TeamCommViewer extends AbstractDialog {
             ex.printStackTrace(System.err);
         }
     }//GEN-LAST:event_btListenActionPerformed
+
+    LogFile logfile = null;
+    private void jToggleButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButton1ActionPerformed
+        if(jToggleButton1.isSelected()) {
+            if(TeamComFileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+                // if selected file has a file extension - use this, otherwise append ".log" to the filename
+                File dfile = (TeamComFileChooser.getSelectedFile().getName().lastIndexOf(".") == -1) ? 
+                    new File(TeamComFileChooser.getSelectedFile()+".log") : 
+                    TeamComFileChooser.getSelectedFile();
+
+                // TODO: check if file exist
+                // TODO: check if file is writeable
+                // TODO: append on existing file
+                // TODO: use ExtendedFileChooser!?
+                //      new de.naoth.rc.components.ExtendedFileChooser();
+                
+                try {
+                    dfile.createNewFile();
+                    logfile = new LogFile(dfile);
+                    logfile.enable();
+                    jToggleButton1.setSelected(true);
+                } catch (IOException ex) {
+                    Logger.getLogger(TeamCommViewer.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            } else {
+                // file chooser was canceled -> don't toggle state!
+                jToggleButton1.setSelected(false);
+                if(logfile != null) {
+                    logfile.disable();
+                }
+            }
+        } else {
+            if(logfile != null) {
+                logfile.disable();
+            }
+        }
+    }//GEN-LAST:event_jToggleButton1ActionPerformed
 
     @Override
     public void dispose() {
@@ -319,6 +368,10 @@ public class TeamCommViewer extends AbstractDialog {
 
                     try {
                         SPLMessage msg = new SPLMessage(this.readBuffer);
+                        
+                        if(logfile != null) {
+                            logfile.writeSplMessage(msg);
+                        }
 
                         long timestamp = System.currentTimeMillis();
                         if (address instanceof InetSocketAddress) {
@@ -339,13 +392,83 @@ public class TeamCommViewer extends AbstractDialog {
             }
         }
     }//end class TeamCommListener
+    
+    private class LogFile {
+        private File log;
+        private BufferedWriter bw;
+        private boolean writeLog = false;
+        
+        public LogFile(File log) throws IOException {
+            this.log = log;
+            this.bw = new BufferedWriter(new FileWriter(this.log));
+        }
+
+        @Override
+        protected void finalize() throws Throwable {
+            // flush buffer and close
+            if(bw != null) {
+                System.out.println("closing BufferdWriter ...");
+                bw.close();
+            }
+            super.finalize();
+        }
+        
+        public void enable() {
+            System.out.println("Enable log file");
+            this.writeLog = true;
+        }
+        
+        public void disable() {
+            System.out.println("Disable log file");
+            this.writeLog = false;
+            try {
+                this.bw.flush();
+            } catch (IOException ex) {
+                Logger.getLogger(TeamCommViewer.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        
+        public void writeSplMessage(SPLMessage msg) {
+            if(this.writeLog) {
+                Field f[] = SPLMessage.class.getFields();
+                try {
+                    this.bw.write("{");
+                    for (int i = 0; i < f.length; i++) {
+                        Field field = f[i];
+                        // handle numeric fields
+                        if( field.getGenericType() == java.lang.Integer.TYPE ||
+                            field.getGenericType() == java.lang.Short.TYPE ||
+                            field.getGenericType() == java.lang.Byte.TYPE ||
+                            field.getGenericType() == java.lang.Float.TYPE
+                            ) {
+                            this.bw.write("'"+field.getName() + "': " + field.get(msg) + ",");
+                        }
+                        /*
+                        // TODO: how handle array fields?
+                        System.out.println(field.getClass().isPrimitive());
+                        if(field.getName() == "suggestion") {
+                            System.out.println(field.getGenericType().getTypeName());
+                            field.get
+                        }*/
+                    }
+                    this.bw.write("},\n");
+                } catch (IllegalArgumentException ex) {
+                    Logger.getLogger(TeamCommViewer.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (IllegalAccessException ex) {
+                    Logger.getLogger(TeamCommViewer.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (IOException ex) {
+                    Logger.getLogger(TeamCommViewer.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JDialog RecordTeamCommDialog;
+    private javax.swing.JFileChooser TeamComFileChooser;
     private javax.swing.JToggleButton btListen;
-    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JToggleButton jToggleButton1;
     private javax.swing.JFormattedTextField portNumberOpponent;
     private javax.swing.JFormattedTextField portNumberOwn;
     private javax.swing.JPanel robotStatusPanel;
