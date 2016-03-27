@@ -6,6 +6,8 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as ptc
 import matplotlib
 
+import patchReader
+
 lls = []
 idx = 0
 
@@ -52,15 +54,24 @@ def key_pressed(event):
   elif event.key == 'escape' or event.key == 'q':
     exit(0)
 
-if __name__ == "__main__":
-  f = open("./patches.txt", 'r')
-
-  image = np.zeros(((patch_size[1]+1)*show_size[1], (patch_size[0]+1)*show_size[0]))
-
-  i = 0
+def load_from_csv(file):
+  f = open(file, 'r')
+  patches = []
+  
   for line in f:
     s = line.split(';')
     a = np.array(s).astype(float)
+    patches.append(a)
+    
+if __name__ == "__main__":
+  #patches = load_from_csv("./patches.txt")
+  patchdata = patchReader.readAllPatchesFromLog('./ball-move-around-patches.log')
+  
+  image = np.zeros(((patch_size[1]+1)*show_size[1], (patch_size[0]+1)*show_size[0]))
+
+  i = 0
+  for p in patchdata:
+    a = np.array(p).astype(float)
     a = np.transpose(np.reshape(a, patch_size))
 
     if i == show_size[0]*show_size[1]:
