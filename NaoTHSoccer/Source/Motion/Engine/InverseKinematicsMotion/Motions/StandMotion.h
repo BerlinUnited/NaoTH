@@ -70,48 +70,8 @@ StandMotion()
     height(-1000),
     standardStand(true),
     relaxedPoseInitialized(false),
-    relaxedJointsValid(false),
-    lastFrameInfo(getFrameInfo()),
-    relaxedMotorJointsValid(false),
-    alpha(0.99),
-    beta(0.5)
+    lastFrameInfo(getFrameInfo())
   {
-    DEBUG_REQUEST_REGISTER("StandMotion:relax_joints", "set snsor joint data to motor joint data", false);
-    DEBUG_REQUEST_REGISTER("StandMotion:relax_joints_loop", "set snsor joint data to motor joint data", false);
-    DEBUG_REQUEST_REGISTER("StandMotion:relax_joints_loop_each_second", "set snsor joint data to motor joint data", false);
-    DEBUG_REQUEST_REGISTER("StandMotion:relax_init", "set snsor joint data to motor joint data", false);
-    DEBUG_REQUEST_REGISTER("StandMotion:relax_joints_continuously", "continuously relax the joints", false);
-    DEBUG_REQUEST_REGISTER("StandMotion:use_filtered_motor_joint_commands", "continuously relax the joints using a simple filter", false);
-    DEBUG_REQUEST_REGISTER("StandMotion:add_sine_to_motor_commands", "add a sine to the motor commands while the robot is standing", false);
-    DEBUG_REQUEST_REGISTER("StandMotion:add_sine_to_hip","add a sine to the hip-feet-pose while the robot is standing", false);
-    DEBUG_REQUEST_REGISTER("StandMotion:change_stiffness","set the stiffness for each joint with modify", false);
-    DEBUG_REQUEST_REGISTER("StandMotion:stiffness_controller","controll stiffness depending on the motor-sensor-error", true);
-    DEBUG_REQUEST_REGISTER("StandMotion:online_tuning","try to minimize current consumption using online determined joint offsets", true);
-
-    // init sine
-    for(int i = naoth::JointData::RHipYawPitch; i <= naoth::JointData::LAnkleRoll; i++) {
-        sine[i] = Sine(Math::fromDegrees(0.08),2*getRobotInfo().getBasicTimeStepInSecond());
-        amplitudes[i] = 0.08;
-        periods[i] = 2*getRobotInfo().getBasicTimeStepInSecond();
-    }
-
-    // init hip sine
-    amplitudeX = 5;
-    periodX    = 5;
-    phaseX     = 0;
-    hipSineX.setAmplitude(amplitudeX);
-    hipSineX.setPeriod(periodX);
-
-    amplitudeY = 5;
-    periodY    = 5;
-    phaseY     = 0;
-    hipSineY.setAmplitude(amplitudeY);
-    hipSineY.setPeriod(periodY);
-
-    // init stiffness
-    for(int i = naoth::JointData::RHipYawPitch; i <= naoth::JointData::LAnkleRoll; i++) {
-        stiffness[i] = 0.7;
-    }
   }
 
   void calculateTrajectory(const MotionRequest& motionRequest)
@@ -174,12 +134,6 @@ StandMotion()
         relaxedPose = getEngine().getHipFeetPoseBasedOnSensor();
       }
 
-      DEBUG_REQUEST("StandMotion:relax_init",
-        relaxData = getSensorJointData();
-        relaxedPose = getEngine().getHipFeetPoseBasedOnSensor();
-        relaxedPoseInitialized = true;
-      );
-
       c = relaxedPose;
 
       InverseKinematic::HipFeetPose hipFeetPoseSensor = getEngine().getHipFeetPoseBasedOnSensor();
@@ -191,8 +145,6 @@ StandMotion()
       if((hipFeetPoseSensor.hip.translation - target.hip.translation).abs() > 5) {
           isRelaxing = false; //because the stand motion will be restarted
           relaxedPoseInitialized = false;
-          relaxedJointsValid = false;
-          relaxedMotorJointsValid = false;
           setCurrentState(motion::stopped);
           calculateTrajectory(getMotionRequest());
 
@@ -204,8 +156,6 @@ StandMotion()
 
           totalTime += 1000;
       }
-
-      PLOT("Stand:hipErrorToTarget",(hipFeetPoseSensor.hip.translation - target.hip.translation).abs());
     }
 
     if(totalTime > 0 && time <= totalTime + getRobotInfo().basicTimeStep*10)
@@ -243,182 +193,58 @@ StandMotion()
         c);
     }
 
-    DEBUG_REQUEST("StandMotion:add_sine_to_hip",
-
-        c.localInLeftFoot();
-        Vector3d x_direction = c.hip.rotation*Vector3d(1,0,0);
-        Vector3d y_direction = c.hip.rotation*Vector3d(0,1,0);
-
-        MODIFY("StandMotion:hip_sine:X:amplitude",amplitudeX);
-        MODIFY("StandMotion:hip_sine:X:period",periodX);
-        MODIFY("StandMotion:hip_sine:X:phase",phaseX);
-        hipSineX.setAmplitude(amplitudeX);
-        hipSineX.setPeriod(periodX);
-        hipSineX.setPhase(phaseX);
-
-        MODIFY("StandMotion:hip_sine:Y:amplitude",amplitudeY);
-        MODIFY("StandMotion:hip_sine:Y:period",periodY);
-        MODIFY("StandMotion:hip_sine:Y:phase",phaseY);
-        hipSineY.setAmplitude(amplitudeY);
-        hipSineY.setPeriod(periodY);
-        hipSineY.setPhase(phaseY);
-
-        c.hip.translation += x_direction * hipSineX(getFrameInfo().getTimeInSeconds());
-        c.hip.translation += y_direction * hipSineY(getFrameInfo().getTimeInSeconds());
-    );
-
     getEngine().solveHipFeetIK(c);
     getEngine().copyLegJoints(getMotorJointData().position);
 
-    DEBUG_REQUEST("StandMotion:relax_joints_loop_each_second",
-      if (isRelaxing && (getFrameInfo().getTime() - lastFrameInfo.getTime() > 1000)) {
+    // update joint monitors
+    for( int i = naoth::JointData::RHipYawPitch; i <= naoth::JointData::LAnkleRoll; i++) {
+        jointMonitors[i].updateMonitor(getMotorJointData().position[i], getSensorJointData().position[i],getSensorJointData().electricCurrent[i]);
+    }
+ 
+    // control the joint offsets (online tuning) for the knee and ankle pitchs
+    if (isRelaxing) {
+        if(getFrameInfo().getTime() - lastFrameInfo.getTime() > 1000){
+            double currents[4] = {jointMonitors[naoth::JointData::LKneePitch].filteredCurrent(), jointMonitors[naoth::JointData::RKneePitch].filteredCurrent(), jointMonitors[naoth::JointData::LAnklePitch].filteredCurrent(), jointMonitors[naoth::JointData::RAnklePitch].filteredCurrent()};
+
+            // determine max
+            int max_index = 0;
+            for(int i = 1; i < 4; i++){
+                if(currents[i] > currents[max_index]){
+                    max_index = i;
+                }
+            }
+
+            PLOT("Stand:filteredCurrent:LKneePitch", currents[0]);
+            PLOT("Stand:filteredCurrent:RKneePitch", currents[1]);
+            PLOT("Stand:filteredCurrent:LAnklePitch",currents[2]);
+            PLOT("Stand:filteredCurrent:RAnklePitch",currents[3]);
+
+            // if greater than 300 mA
+            if(currents[max_index] > 0.3){
+                switch (max_index){
+                case 0: //LKnee
+                    jointOffsets.increaseOffset(naoth::JointData::LKneePitch);
+                    break;
+                case 1: //RKnee
+                    jointOffsets.increaseOffset(naoth::JointData::RKneePitch);
+                    break;
+                case 2: //LAnklePitch
+                    jointOffsets.decreaseOffset(naoth::JointData::LAnklePitch);
+                    break;
+                case 3: //RAnklePitch
+                    jointOffsets.decreaseOffset(naoth::JointData::RAnklePitch);
+                    break;
+                }
+            }
+            lastFrameInfo = getFrameInfo();
+        }
+
+        for( int i = naoth::JointData::RHipYawPitch; i <= naoth::JointData::LAnkleRoll; i++) {
+            getMotorJointData().position[i] += jointOffsets[i];
+        }
+    } else {
         lastFrameInfo = getFrameInfo();
-        relaxedJoints = getSensorJointData();
-        relaxedJointsValid = true;
-      }
-
-      if(relaxedJointsValid) {
-          for( int i = naoth::JointData::RHipYawPitch; i<naoth::JointData::LAnkleRoll; i++) {
-            getMotorJointData().position[i] = relaxedJoints.position[i];
-          }
-      }
-    );
-
-    DEBUG_REQUEST("StandMotion:relax_joints_continuously",
-      if(isRelaxing){
-        if(!relaxedMotorJointsValid) {
-          relaxedMotorJointsValid = true;
-          relaxedMotorJoints      = getMotorJointData();
-        }
-
-        MODIFY("StandMotion:relax_joints_continuously:alpha",alpha);
-        for( int i = naoth::JointData::RHipYawPitch; i <= naoth::JointData::LAnkleRoll; i++) {
-            getMotorJointData().position[i] = alpha * relaxedMotorJoints.position[i] + (1 - alpha) * getSensorJointData().position[i];
-        }
-
-        relaxedMotorJoints = getMotorJointData();
-      }
-    );
-
-    DEBUG_REQUEST("StandMotion:use_filtered_motor_joint_commands",
-      if (isRelaxing) {
-        MODIFY("StandMotion:motor_filter:k_i",beta);
-        for( int i = naoth::JointData::RHipYawPitch; i <= naoth::JointData::LAnkleRoll; i++) {
-            filter[i].updateFilter(getMotorJointData().position[i],getSensorJointData().position[i]);
-            filter[i].setK_i(beta);
-
-            getMotorJointData().position[i] = getMotorJointData().position[i] + filter[i].control();
-        }
-      } else {
-        for( int i = naoth::JointData::RHipYawPitch; i<naoth::JointData::LAnkleRoll; i++) {
-          filter[i].resetFilter();
-        }
-      }
-    );
-
-    DEBUG_REQUEST("StandMotion:add_sine_to_motor_commands",
-      if (isRelaxing) {
-
-        MODIFY("StandMotion:sine:LHipYawPitch:amplitude[°]",amplitudes[naoth::JointData::LHipYawPitch]);
-        MODIFY("StandMotion:sine:LHipYawPitch:period[s]", periods[naoth::JointData::LHipYawPitch]);
-        MODIFY("StandMotion:sine:RHipPitch:amplitude[°]",amplitudes[naoth::JointData::RHipPitch]);
-        MODIFY("StandMotion:sine:RHipPitch:period[s]", periods[naoth::JointData::RHipPitch]);
-        MODIFY("StandMotion:sine:LHipPitch:amplitude[°]",amplitudes[naoth::JointData::LHipPitch]);
-        MODIFY("StandMotion:sine:LHipPitch:period[s]", periods[naoth::JointData::LHipPitch]);
-        MODIFY("StandMotion:sine:RHipRoll:amplitude[°]",amplitudes[naoth::JointData::RHipRoll]);
-        MODIFY("StandMotion:sine:RHipRoll:period[s]", periods[naoth::JointData::RHipRoll]);
-        MODIFY("StandMotion:sine:LHipRoll:amplitude[°]",amplitudes[naoth::JointData::LHipRoll]);
-        MODIFY("StandMotion:sine:LHipRoll:period[s]", periods[naoth::JointData::LHipRoll]);
-        MODIFY("StandMotion:sine:RKneePitch:amplitude[°]",amplitudes[naoth::JointData::RKneePitch]);
-        MODIFY("StandMotion:sine:RKneePitch:period[s]", periods[naoth::JointData::RKneePitch]);
-        MODIFY("StandMotion:sine:LKneePitch:amplitude[°]",amplitudes[naoth::JointData::LKneePitch]);
-        MODIFY("StandMotion:sine:LKneePitch:period[s]", periods[naoth::JointData::LKneePitch]);
-        MODIFY("StandMotion:sine:RAnklePitch:amplitude[°]",amplitudes[naoth::JointData::RAnklePitch]);
-        MODIFY("StandMotion:sine:RAnklePitch:period[s]", periods[naoth::JointData::RAnklePitch]);
-        MODIFY("StandMotion:sine:LAnklePitch:amplitude[°]",amplitudes[naoth::JointData::LAnklePitch]);
-        MODIFY("StandMotion:sine:LAnklePitch:period[s]", periods[naoth::JointData::LAnklePitch]);
-        MODIFY("StandMotion:sine:RAnkleRoll:amplitude[°]",amplitudes[naoth::JointData::RAnkleRoll]);
-        MODIFY("StandMotion:sine:RAnkleRoll:period[s]", periods[naoth::JointData::RAnkleRoll]);
-        MODIFY("StandMotion:sine:LAnkleRoll:amplitude[°]",amplitudes[naoth::JointData::LAnkleRoll]);
-        MODIFY("StandMotion:sine:LAnkleRoll:period[s]", periods[naoth::JointData::LAnkleRoll]);
-
-        for( int i = naoth::JointData::RHipYawPitch; i <= naoth::JointData::LAnkleRoll; i++) {
-            sine[i].setAmplitude(Math::fromDegrees(amplitudes[i]));
-            sine[i].setPeriod(periods[i]);
-            getMotorJointData().position[i] = getMotorJointData().position[i] + sine[i](getFrameInfo().getTimeInSeconds());
-        }
-      } else {
-        for( int i = naoth::JointData::RHipYawPitch; i <= naoth::JointData::LAnkleRoll; i++) {
-          filter[i].resetFilter();
-        }
-      }
-    );
-
-    DEBUG_REQUEST("StandMotion:online_tuning",
-       for( int i = naoth::JointData::RHipYawPitch; i <= naoth::JointData::LAnkleRoll; i++) {
-         jointMonitors[i].updateMonitor(getMotorJointData().position[i], getSensorJointData().position[i],getSensorJointData().electricCurrent[i]);
-       }
-
-       if (isRelaxing) {
-         if(getFrameInfo().getTime() - lastFrameInfo.getTime() > 1000){
-           double currents[4];// = {jointMonitors[naoth::JointData::LKneePitch].filteredCurrent(), jointMonitors[naoth::JointData::RKneePitch].filteredCurrent(), jointMonitors[naoth::JointData::LAnklePitch].filteredCurrent(), jointMonitors[naoth::JointData::RAnklePitch].filteredCurrent()};
-           currents[0] = jointMonitors[naoth::JointData::LKneePitch].filteredCurrent();
-           currents[1] = jointMonitors[naoth::JointData::RKneePitch].filteredCurrent();
-           currents[2] = jointMonitors[naoth::JointData::LAnklePitch].filteredCurrent();
-           currents[3] = jointMonitors[naoth::JointData::RAnklePitch].filteredCurrent();
-
-           // determine max
-           int max_index = 0;
-           for(int i = 1; i < 4; i++){
-               if(currents[i] > currents[max_index]){
-                   max_index = i;
-               }
-           }
-
-           PLOT("Stand:filteredCurrent:LKneePitch", currents[0]);
-           PLOT("Stand:filteredCurrent:RKneePitch", currents[1]);
-           PLOT("Stand:filteredCurrent:LAnklePitch",currents[2]);
-           PLOT("Stand:filteredCurrent:RAnklePitch",currents[3]);
-
-           // if greater than 300 mA
-           if(currents[max_index] > 0.3){
-               switch (max_index){
-               case 0: //LKnee
-                   jointOffsets.increaseOffset(naoth::JointData::LKneePitch);
-                   break;
-               case 1: //RKnee
-                   jointOffsets.increaseOffset(naoth::JointData::RKneePitch);
-                   break;
-               case 2: //LAnklePitch
-                   jointOffsets.decreaseOffset(naoth::JointData::LAnklePitch);
-                   break;
-               case 3: //RAnklePitch
-                   jointOffsets.decreaseOffset(naoth::JointData::RAnklePitch);
-                   break;
-               }
-           }
-           lastFrameInfo = getFrameInfo();
-         }
-
-         for( int i = naoth::JointData::RHipYawPitch; i <= naoth::JointData::LAnkleRoll; i++) {
-           getMotorJointData().position[i] += jointOffsets[i];
-         }
-       } else {
-           lastFrameInfo = getFrameInfo();
-       }
-    );
-
-    DEBUG_REQUEST("StandMotion:relax_joints_loop",
-      for( int i = naoth::JointData::RHipYawPitch; i <= naoth::JointData::LAnkleRoll; i++) {
-        getMotorJointData().position[i] = getSensorJointData().position[i];
-      }
-    );
-
-    DEBUG_REQUEST("StandMotion:relax_joints",
-      for( int i = naoth::JointData::RHipYawPitch; i <= naoth::JointData::LAnkleRoll; i++) {
-        getMotorJointData().position[i] = relaxData.position[i];
-      }
-    );
+    }
 
     /*
     getEngine().gotoArms(
@@ -437,47 +263,22 @@ StandMotion()
 
     turnOffStiffnessWhenJointIsOutOfRange();
 
-    DEBUG_REQUEST("StandMotion:change_stiffness",
-
-      if (isRelaxing) {
-        MODIFY("StandMotion:stiffness:LHipYawPitch",stiffness[naoth::JointData::LHipYawPitch]);
-        MODIFY("StandMotion:stiffness:RHipPitch",stiffness[naoth::JointData::RHipPitch]);
-        MODIFY("StandMotion:stiffness:LHipPitch",stiffness[naoth::JointData::LHipPitch]);
-        MODIFY("StandMotion:stiffness:RHipRoll",stiffness[naoth::JointData::RHipRoll]);
-        MODIFY("StandMotion:stiffness:LHipRoll",stiffness[naoth::JointData::LHipRoll]);
-        MODIFY("StandMotion:stiffness:RKneePitch",stiffness[naoth::JointData::RKneePitch]);
-        MODIFY("StandMotion:stiffness:LKneePitch",stiffness[naoth::JointData::LKneePitch]);
-        MODIFY("StandMotion:stiffness:RAnklePitch",stiffness[naoth::JointData::RAnklePitch]);
-        MODIFY("StandMotion:stiffness:LAnklePitch",stiffness[naoth::JointData::LAnklePitch]);
-        MODIFY("StandMotion:stiffness:RAnkleRoll",stiffness[naoth::JointData::RAnkleRoll]);
-        MODIFY("StandMotion:stiffness:LAnkleRoll",stiffness[naoth::JointData::LAnkleRoll]);
-
+    // controlling the stiffness of leg joints
+    if (isRelaxing) {
         for( int i = naoth::JointData::RHipYawPitch; i <= naoth::JointData::LAnkleRoll; i++) {
-          getMotorJointData().stiffness[i] = stiffness[i];
-        }
-      }
-    );
-
-    DEBUG_REQUEST("StandMotion:stiffness_controller",
-      if (isRelaxing) {
-        for( int i = naoth::JointData::RHipYawPitch; i <= naoth::JointData::LAnkleRoll; i++) {
-          stiffnessController[i].updateFilter(getMotorJointData().position[i],getSensorJointData().position[i]);
-          getMotorJointData().stiffness[i] = stiffnessController[i].control();
+            stiffnessController[i].updateFilter(getMotorJointData().position[i],getSensorJointData().position[i]);
+            getMotorJointData().stiffness[i] = stiffnessController[i].control();
         }
 
         PLOT("StandMotion:AverageError:LKneePitch",stiffnessController[naoth::JointData::LKneePitch].getAverageError());
         PLOT("StandMotion:AverageError:RKneePitch",stiffnessController[naoth::JointData::RKneePitch].getAverageError());
         PLOT("StandMotion:Control:LKneePitch",stiffnessController[naoth::JointData::LKneePitch].control());
         PLOT("StandMotion:Control:RKneePitch",stiffnessController[naoth::JointData::RKneePitch].control());
-      }
-    );
-
+    }
     
     if ( time >= totalTime && getMotionRequest().id != getId() ) {
       setCurrentState(motion::stopped);
-      relaxedJointsValid      = false;
       relaxedPoseInitialized  = false;
-      relaxedMotorJointsValid = false;
 
       // reset stuff for StandMotion:online_tuning
       jointOffsets.resetOffsets();
@@ -532,116 +333,6 @@ private:
   bool relaxedPoseInitialized;
   bool isRelaxing;
 
-  // used by relax_joints_loop_each_second
-  JointData relaxedJoints;
-  bool relaxedJointsValid;
-  FrameInfo lastFrameInfo;
-
-  // used by relax_joints_continuously
-  JointData relaxedMotorJoints;
-  bool relaxedMotorJointsValid;
-  double alpha;
-
-  // used by use_filtered_motor_joint_commands
-  class jointFilter
-  {
-  public:
-      jointFilter() {}
-
-      void updateFilter(double motorData, double sensorData) {
-          motorJointDataBuffer.add(motorData);
-
-          if(motorJointDataBuffer.isFull()){
-              motorToSensorError.add(sensorData - motorJointDataBuffer.first());
-          }
-      }
-
-      double control() {
-        if(motorToSensorError.isFull()){
-          return k_i * motorToSensorError.getAverage();
-        } else {
-          return 0;
-        }
-      }
-
-      void setK_i(double newK_i) {
-          k_i = newK_i;
-      }
-
-      void resetFilter() {
-          motorJointDataBuffer.clear();
-          motorToSensorError.clear();
-      }
-
-      double getLatestError() {
-          if(motorToSensorError.size() >= 1)
-            return motorToSensorError.last();
-          return 0;
-      }
-
-  private:
-      RingBuffer<double,4> motorJointDataBuffer;
-      RingBufferWithSum<double,100> motorToSensorError;
-      double k_i;
-  };
-
-  jointFilter filter[naoth::JointData::numOfJoint];
-  double beta;
-
-  // used by StandMotion:add_sine_to_motor_commands
-  class Sine{
-  public:
-      Sine():
-        amplitude(0),
-        period(1),
-        phase(0)
-      {
-      }
-
-      Sine(double amplitude, double period):
-          amplitude(amplitude),
-          period(period)
-      {}
-
-      double operator() (double time){
-          return amplitude * sin(2*M_PI/period * time + phase);
-      }
-
-      void setAmplitude(double a) {
-          amplitude = a;
-      }
-
-      void setPeriod(double T){
-          period = T;
-      }
-
-      void setPhase(double phi){
-          phase = phi;
-      }
-
-  private:
-    double amplitude; // [rad]
-    double period;    // [s]
-    double phase;     // [rad]
-  };
-
-  Sine sine[naoth::JointData::numOfJoint];
-  double amplitudes[naoth::JointData::numOfJoint]; // [°]
-  double periods[naoth::JointData::numOfJoint]; // [s]
-
-  // used by StandMotion:add_sine_to_hip
-  Sine hipSineX;
-  double amplitudeX;
-  double periodX;
-  double phaseX;
-  Sine hipSineY;
-  double amplitudeY;
-  double periodY;
-  double phaseY;
-
-  // used by StandMotion:change_stiffness
-  double stiffness[naoth::JointData::numOfJoint];
-
   // used by StandMotion:stiffness_controller
   class StiffnessController{
   public:
@@ -692,6 +383,8 @@ private:
   StiffnessController stiffnessController[naoth::JointData::numOfJoint];
 
   // used by StandMotion:online_tuning
+  FrameInfo lastFrameInfo;
+
   class JointMonitor
   {
   public:
