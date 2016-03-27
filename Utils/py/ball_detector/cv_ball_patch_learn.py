@@ -30,6 +30,7 @@ def learn(X, labels):
   print("Saving...")
   estimator.save("ball_detector_model.dat")
   
+  
   print("Evaluating...")
   image = np.zeros(((patch_size[1]+1)*show_size[1], (patch_size[0]+1)*show_size[0]))
   
@@ -45,7 +46,7 @@ def learn(X, labels):
     evalinput = np.asmatrix(np.float32(X[i,:]))
     ret, result = estimator.predict(evalinput)
     
-    if result > 0:
+    if result[0,0] > 0:
       if labels[i]:
         marker.append(getMarker(x,y,'green'))
       else:

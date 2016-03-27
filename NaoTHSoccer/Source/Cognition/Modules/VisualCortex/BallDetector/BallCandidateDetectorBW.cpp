@@ -24,6 +24,16 @@ BallCandidateDetectorBW::BallCandidateDetectorBW()
 {
   DEBUG_REQUEST_REGISTER("Vision:BallCandidateDetectorBW:drawCandidates", "draw ball candidates", false);
   DEBUG_REQUEST_REGISTER("Vision:BallCandidateDetectorBW:drawPercepts", "draw ball percepts", false);
+
+  // load model from config folder
+  try
+  {
+    model = cv::ml::SVM::load<cv::ml::SVM>("Config/ball_detector_model.dat");
+  }
+  catch(cv::Exception ex)
+  {
+    // ignore
+  }
 }
 
 BallCandidateDetectorBW::~BallCandidateDetectorBW()
@@ -96,20 +106,40 @@ void BallCandidateDetectorBW::execute(CameraInfo::CameraID id)
       p.max = Vector2i((*i).center.x + radius, (*i).center.y + radius);
       subsampling(p.data, p.min.x, p.min.y, p.max.x, p.max.y);
 
-      double v = isBall(p.data);
-      if(best_radius < 0 || maxV < v) {
-        maxV = v;
-        best_element = i;
-        best_radius = radius;
+      bool ballFound = false;
+
+      if(!model || model->empty()) {
+        // use Heinrichs Code
+        double v = isBall(p.data);
+        if(best_radius < 0 || maxV < v) {
+          maxV = v;
+          best_element = i;
+          best_radius = radius;
+        }
+
+        if(v >= 0.5) {
+          ballFound = true;
+        }
+
+      } else {
+        cv::Mat wrappedData(1, 12*12, CV_8UC1, (void*) p.data.data());
+        cv::Mat in;
+        wrappedData.convertTo(in, CV_32F);
+        cv::Mat out;
+        model->predict(in, out);
+        if(out.at<int>(0,0) > 0) {
+          ballFound = true;
+        }
       }
 
-      if(v >= 0.5) {
+      if(ballFound) {
         addBallPercept((*i).center, radius);
       }
 
+
       DEBUG_REQUEST("Vision:BallCandidateDetectorBW:drawCandidates",
         //CANVAS(((cameraID == CameraInfo::Top)?"ImageTop":"ImageBottom"));
-        if(v >= 0.5) {
+        if(ballFound) {
           RECT_PX(ColorClasses::blue, (*i).center.x - radius, (*i).center.y - radius,
             (*i).center.x + radius, (*i).center.y + radius);
         } else {
@@ -117,6 +147,7 @@ void BallCandidateDetectorBW::execute(CameraInfo::CameraID id)
             (*i).center.x + radius, (*i).center.y + radius);
         }
       );
+
     }
   }
 

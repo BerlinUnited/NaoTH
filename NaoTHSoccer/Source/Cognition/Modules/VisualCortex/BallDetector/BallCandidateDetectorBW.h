@@ -37,6 +37,8 @@
 #include "Tools/Debug/DebugParameterList.h"
 #include "Tools/Debug/DebugModify.h"
 
+#include "Tools/naoth_opencv.h"
+
 
 BEGIN_DECLARE_MODULE(BallCandidateDetectorBW)
   PROVIDE(DebugRequest)
@@ -291,6 +293,8 @@ private:
   DOUBLE_CAM_REQUIRE(BallCandidateDetectorBW, GameColorIntegralImage);
 
   DOUBLE_CAM_PROVIDE(BallCandidateDetectorBW, BallCandidates);
+
+  cv::Ptr<cv::ml::SVM> model;
 };//end class BallCandidateDetectorBW
 
 #endif // _BallCandidateDetectorBW_H_
