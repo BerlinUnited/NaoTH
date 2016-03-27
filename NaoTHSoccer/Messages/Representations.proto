@@ -252,3 +252,14 @@ message CameraMatrixCalibration
 {
   repeated DoubleVector2 correctionOffset = 1;
 }
+
+message BallCandidates
+{
+  message Patch 
+  {
+    required IntVector2 min = 1;
+    required IntVector2 max = 2;
+    required bytes data = 5;
+  }
+  repeated Patch patches = 1;
+}

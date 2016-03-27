@@ -25,6 +25,7 @@
 
 #include "Representations/Perception/GameColorIntegralImage.h"
 #include "Representations/Perception/MultiBallPercept.h"
+#include "Representations/Perception/BallCandidates.h"
 
 // tools
 #include "Tools/DoubleCamHelpers.h"
@@ -65,6 +66,8 @@ BEGIN_DECLARE_MODULE(BallCandidateDetectorBW)
   REQUIRE(BodyContourTop)
   
   PROVIDE(MultiBallPercept)
+  PROVIDE(BallCandidates)
+  PROVIDE(BallCandidatesTop)
 END_DECLARE_MODULE(BallCandidateDetectorBW)
 
 
@@ -166,13 +169,12 @@ private:
 private:
   void calculateCandidates(Best& best) const;
 
-  void subsampling(int x0, int y0, int x1, int y1);
-  double sub_img[12*12];
+  void subsampling(std::vector<unsigned char>& data, int x0, int y0, int x1, int y1) const;
 
   double estimatedBallRadius(int x, int y) const;
   void addBallPercept(const Vector2i& center, double radius);
 
-  double isBall() 
+  double isBall(const std::vector<unsigned char>& data) 
   {
     /*
     double b = 900;
@@ -230,7 +232,7 @@ private:
 
     double v = b_svm;
     for(int i = 0; i < 12*12; ++i) {
-      v += sub_img[i]*c_svm[i];
+      v += data[i]*c_svm[i];
     }
 
     return (atan(v)+Math::pi_2)/Math::pi;//v > 0;
@@ -246,8 +248,9 @@ private:
   DOUBLE_CAM_REQUIRE(BallCandidateDetectorBW, FieldColorPercept);
   DOUBLE_CAM_REQUIRE(BallCandidateDetectorBW, FieldPercept);
   DOUBLE_CAM_REQUIRE(BallCandidateDetectorBW, BodyContour);
-  DOUBLE_CAM_PROVIDE(BallCandidateDetectorBW, GameColorIntegralImage);
-          
+  DOUBLE_CAM_REQUIRE(BallCandidateDetectorBW, GameColorIntegralImage);
+
+  DOUBLE_CAM_PROVIDE(BallCandidateDetectorBW, BallCandidates);
 };//end class BallCandidateDetectorBW
 
 #endif // _BallCandidateDetectorBW_H_

@@ -33,6 +33,7 @@ BallCandidateDetectorBW::~BallCandidateDetectorBW()
 void BallCandidateDetectorBW::execute(CameraInfo::CameraID id)
 {
   cameraID = id;
+  getBallCandidates().reset();
 
   // todo: check validity of the intergral image
   if(getGameColorIntegralImage().getWidth() == 0) {
@@ -90,9 +91,12 @@ void BallCandidateDetectorBW::execute(CameraInfo::CameraID id)
     {
       int radius = (int)((*i).radius*1.5 + 0.5);
       
-      subsampling((*i).center.x - radius, (*i).center.y - radius, (*i).center.x + radius, (*i).center.y + radius);
+      BallCandidates::Patch& p = getBallCandidates().nextFreePatch();
+      p.min = Vector2i((*i).center.x - radius, (*i).center.y - radius);
+      p.max = Vector2i((*i).center.x + radius, (*i).center.y + radius);
+      subsampling(p.data, p.min.x, p.min.y, p.max.x, p.max.y);
 
-      double v = isBall();
+      double v = isBall(p.data);
       if(best_radius < 0 || maxV < v) {
         maxV = v;
         best_element = i;
@@ -138,7 +142,7 @@ void BallCandidateDetectorBW::calculateCandidates(Best& best) const
   // todo needs a better place
   const int FACTOR = 4;
 
-  double borderRadiusFactor = 0.2;
+  double borderRadiusFactor = 0.5;
   MODIFY("BallCandidateDetectorBW:borderRadiusFactor", borderRadiusFactor);
 
   Vector2i center;
@@ -150,10 +154,16 @@ void BallCandidateDetectorBW::calculateCandidates(Best& best) const
     int size   = (int)(radius*2.0/FACTOR+0.5);
     int border = (int)(radius*borderRadiusFactor/FACTOR+0.5);
 
+    // HACK
+    if(size < 40/FACTOR) {
+      border = (int)(radius*borderRadiusFactor*4/FACTOR+0.5);
+    }
+
     // smalest ball size == 3 => ball size == FACTOR*3 == 12
     if (size < 3 || point.y <= border || point.y+size+border+1 >= (int)getGameColorIntegralImage().getHeight()) {
       continue;
     }
+    
 
     for(point.x = border + 1; point.x + size + border+1 < (int)getGameColorIntegralImage().getWidth(); ++point.x)
     {
@@ -173,7 +183,7 @@ void BallCandidateDetectorBW::calculateCandidates(Best& best) const
   }
 }
 
-void BallCandidateDetectorBW::subsampling(int x0, int y0, int x1, int y1) 
+void BallCandidateDetectorBW::subsampling(std::vector<unsigned char>& data, int x0, int y0, int x1, int y1) const 
 {
   x0 = std::max(0, x0);
   y0 = std::max(0, y0);
@@ -181,6 +191,8 @@ void BallCandidateDetectorBW::subsampling(int x0, int y0, int x1, int y1)
   y1 = std::min((int)getImage().height()-1, y1);
 
   const double size = 12.0;
+  data.resize((int)(size*size));
+
   double width_step = static_cast<double>(x1 - x0) / size;
   double height_step = static_cast<double>(y1 - y0) / size;
 
@@ -190,15 +202,7 @@ void BallCandidateDetectorBW::subsampling(int x0, int y0, int x1, int y1)
     int yi = 0;
     for(double y = y0 + height_step/2.0; y < y1; y += height_step) {
       unsigned char yy = getImage().getY((int)(x + 0.5), (int)(y + 0.5));
-
-      //PEN(Color(yy, yy, yy), 1);
-      //FILLBOX(index*25 + xi*2, 10 + yi*2, index*25 + (xi+1)*2, 10 + (yi+1)*2);
-
-      //std::cerr << ((int)yy) << ";";
-
-      sub_img[xi*12 + yi] = yy;
-
-      //POINT_PX(ColorClasses::red, (int)(x + 0.5), (int)(y + 0.5));
+      data[xi*12 + yi] = yy;
       yi++;
     }
     xi++;
