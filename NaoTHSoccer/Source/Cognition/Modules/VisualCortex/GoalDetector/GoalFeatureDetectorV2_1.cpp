@@ -138,12 +138,15 @@ void GoalFeatureDetectorV2_1::findEdgelFeatures(const Vector2d& scanDir, const V
 
       if(pixValue > parameters.threshold)
       {
+        //add pixValue to filter if above the threshold
         filter.add(pos, pixValue);
       }
       else
       {
-        filter.add(pos, parameters.threshold);
+        //add half of params.threshold as base level to filter if below or equal to the threshold
+        filter.add(pos, parameters.threshold / 2);
       }
+
       if(!filter.ready()) 
       {
         filterSwitchReady = true;

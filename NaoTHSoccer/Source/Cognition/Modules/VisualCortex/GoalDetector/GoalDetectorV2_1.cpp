@@ -356,7 +356,17 @@ Vector2i GoalDetectorV2_1::scanForEndPoint(const Vector2i& start, const Vector2d
   {
     IMG_GET(pos.x, pos.y, pixel);
     int pixValue = params.detectWhiteGoals ? pixel.y : (int) Math::round(((double) pixel.v - (double)pixel.u) * ((double) pixel.y / 255.0));
-    filter.add(pos, pixValue);
+    
+    if(pixValue > params.threshold)
+    {
+      //add pixValue to filter if above the threshold
+      filter.add(pos, pixValue);
+    }
+    else
+    {
+      //add half of params.threshold as base level to filter if below or equal to the threshold
+      filter.add(pos, params.threshold / 2);
+    }
 
     //collect some values for statisics of colors
     getGoalPostHistograms().increaseChannelValue(pixel);
