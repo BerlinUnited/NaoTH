@@ -54,14 +54,17 @@ public class ModifyDataModel extends AbstractTreeTableModel
         String[] nodes = path.split("" + seperator);
         
         ModifyDataNode current = (ModifyDataNode)getRoot();
-        for(int i = 0; i < nodes.length; i++)
+        ArrayList<Object> current_path = new ArrayList<>();
+        current_path.add(current);
+        
+        for(String s: nodes)
         {
             ModifyDataNode matchingNode = null;
             List<ModifyDataNode> childList = current.getChildren();
             
             for(ModifyDataNode child: childList)
             {
-                if(nodes[i].equals(child.getName()))
+                if(s.equals(child.getName()))
                 {
                     matchingNode = child;
                     break;
@@ -71,10 +74,12 @@ public class ModifyDataModel extends AbstractTreeTableModel
             if(matchingNode == null)
             {
                 // add a new one
-                matchingNode = new ModifyDataNode(nodes[i]);
+                matchingNode = new ModifyDataNode(s);
                 childList.add(matchingNode);
+                fireTreeNodesInserted(this, current_path.toArray(), new int[]{childList.size()-1}, new Object[]{matchingNode});
             }
             current = matchingNode;
+            current_path.add(current);
         }
         
         return current;

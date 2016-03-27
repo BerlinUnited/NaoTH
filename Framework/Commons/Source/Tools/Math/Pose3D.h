@@ -250,6 +250,19 @@ protected:
     return p;
   }//end interpolate
 
+  /**
+  * project to a 2D pose in the XY-plane
+  */
+  Pose2T<DATATYPE> projectXY() const {
+    return Pose2T<DATATYPE>(rotation.getZAngle(), translation.x, translation.y);
+  }
+
+  static Pose3T<DATATYPE> embedXY(const Pose2T<DATATYPE>& p) {
+    return Pose3T<DATATYPE>(
+              RotationMatrix::getRotationZ(p.rotation),
+              Vector3d(p.translation.x, p.translation.y, 0.0)
+            );
+  }
 };//end Pose3T
 
 template <typename DATATYPE>

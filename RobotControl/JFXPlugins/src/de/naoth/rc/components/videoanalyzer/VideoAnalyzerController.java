@@ -96,16 +96,11 @@ public class VideoAnalyzerController implements Initializable
   @FXML
   private Label frameModeIndicator;
   
-  private final ChangeListener<Number> frameChangeListener = new ChangeListener<Number>()
+  private final ChangeListener<Number> frameChangeListener = (ObservableValue<? extends Number> observable, Number oldValue, Number newValue) ->
   {
-
-    @Override
-    public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue)
-    {
-      setVideoTimeFromLogFrame();
-    }
+    setVideoTimeFromLogFrame();
   };
-
+  
   private final Property<Double> timeOffset = new SimpleObjectProperty<>(0.0);
 
   /**
