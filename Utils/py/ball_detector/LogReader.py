@@ -135,8 +135,8 @@ class LogReader:
           self.names.append(name)
       
       new = (self.scanPosition*100) / self.size
-      if new > last:
-        print new
+      #if new > last:
+        #print new
       
       #if new > 3:
       #  raise StopIteration

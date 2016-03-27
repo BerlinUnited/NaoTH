@@ -62,7 +62,7 @@ def getImages(frame):
 def getPatches(frame):
   ballCandidates = frame["BallCandidates"]
   ballCandidatesTop = frame["BallCandidatesTop"]
-  print len(ballCandidates.patches), len(ballCandidatesTop.patches)
+  #print len(ballCandidates.patches), len(ballCandidatesTop.patches)
   return [ballCandidatesTop]
 
   
