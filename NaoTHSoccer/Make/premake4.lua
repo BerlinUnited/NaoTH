@@ -67,6 +67,7 @@ solution "NaoTHSoccer"
     },
     FRAMEWORK_PATH .. "/Commons/Source/Messages/", 
     "../../RobotControl/RobotConnector/src/", 
+    "../../Utils/pyLogEvaluator",
     {COMMONS_MESSAGES}
   )
 
@@ -74,6 +75,7 @@ solution "NaoTHSoccer"
     {"../Messages/Representations.proto"}, 
     "../Source/Messages/", 
     "../../RobotControl/RobotConnector/src/", 
+    "../../Utils/pyLogEvaluator",
     {COMMONS_MESSAGES, "../Messages/"}
   )
 
