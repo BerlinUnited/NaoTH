@@ -45,7 +45,7 @@ public:
         percepts.clear();
     }
 
-    bool ballWasSeen() const {
+    bool wasSeen() const {
         return percepts.size() != 0;
     }
 

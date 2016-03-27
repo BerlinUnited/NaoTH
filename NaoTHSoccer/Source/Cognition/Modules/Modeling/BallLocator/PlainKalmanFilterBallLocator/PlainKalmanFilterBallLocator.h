@@ -10,7 +10,6 @@
 
 #include "Representations/Modeling/OdometryData.h"
 #include "Representations/Modeling/KinematicChain.h"
-#include "Representations/Modeling/KinematicChain.h"
 #include "Representations/Infrastructure/FrameInfo.h"
 #include "Representations/Motion/MotionStatus.h"
 

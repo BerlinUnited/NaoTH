@@ -1,6 +1,7 @@
 #include "ExtendedKalmanFilter4d.h"
 
 ExtendedKalmanFilter4d::ExtendedKalmanFilter4d(const Eigen::Vector4d& state, const Eigen::Matrix2d& processNoiseStdSingleDimension, const Eigen::Matrix2d& measurementNoiseCovariances, const Eigen::Matrix2d& initialStateStdSingleDimension):
+    updated(false),
     x(state)
 {
     Eigen::Matrix2d q;
@@ -33,6 +34,8 @@ ExtendedKalmanFilter4d::~ExtendedKalmanFilter4d()
 
 void ExtendedKalmanFilter4d::predict(const Eigen::Vector2d& u, double dt)
 {
+    updated = false;
+
     // adapt state transition matrix
     F << 1, dt, 0, 0,
          0,  1, 0, 0,
@@ -55,8 +58,11 @@ void ExtendedKalmanFilter4d::predict(const Eigen::Vector2d& u, double dt)
     updateEllipses();
 }
 
-void ExtendedKalmanFilter4d::update(const Eigen::Vector2d& z,const Measurement_Function_H& h)
+void ExtendedKalmanFilter4d::update(const Eigen::Vector2d& z, const Measurement_Function_H& h, const naoth::FrameInfo frameInfo)
 {
+    updated = true;
+    lastUpdateFrame = frameInfo;
+
     Eigen::Vector2d predicted_measurement;
 
     predicted_measurement = getStateInMeasurementSpace(h);
@@ -123,6 +129,14 @@ void ExtendedKalmanFilter4d::setCovarianceOfMeasurementNoise(const Eigen::Matrix
 }
 
 //--- getter ---//
+bool ExtendedKalmanFilter4d::wasUpdated() const
+{
+    return updated;
+}
+
+const naoth::FrameInfo& ExtendedKalmanFilter4d::getLastUpdateFrame() const {
+    return lastUpdateFrame;
+}
 
 const Eigen::Vector4d& ExtendedKalmanFilter4d::getState() const
 {

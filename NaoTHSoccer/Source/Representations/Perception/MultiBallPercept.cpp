@@ -6,7 +6,7 @@
 using namespace naoth;
 
 void MultiBallPercept::print(std::ostream &stream) const {
-    stream << "ballWasSeen = " << ballWasSeen() << std::endl;
+    stream << "wasSeen = " << wasSeen() << std::endl;
     stream << "frameInfoWhenBallWasSeen:" << frameInfoWhenBallWasSeen << std::endl;
     stream << "----------------------" << std::endl;
     for(size_t i = 0; i < percepts.size(); i++) {

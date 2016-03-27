@@ -86,7 +86,6 @@ void PlainKalmanFilterBallLocator::execute()
             //PLOT("PlainKalmanFilterBallLocator:Measurement:Top:horizontal", z(0));
             //PLOT("PlainKalmanFilterBallLocator:Measurement:Top:vertical",   z(1));
 
-            // set camera top in functional
             h.camMat  = getCameraMatrixTop();
             h.camInfo = getCameraInfoTop();
         }
@@ -134,7 +133,7 @@ void PlainKalmanFilterBallLocator::execute()
                 PLOT("PlainKalmanFilterBallLocator:Innovation:y", prediction_error(1));
             );
 
-            (*bestPredictor).update(z,h);
+            (*bestPredictor).update(z,h,getFrameInfo());
         }
     }// end for
 
@@ -188,14 +187,10 @@ void PlainKalmanFilterBallLocator::execute()
         getBallModel().positionPreviewInLFoot = getMotionStatus().plannedMotion.lFoot / ballLeftFoot;
         getBallModel().positionPreviewInRFoot = getMotionStatus().plannedMotion.rFoot / ballRightFoot;
 
-        if(getMultiBallPercept().ballWasSeen())
-        {
-            getBallModel().setFrameInfoWhenBallWasSeen(getFrameInfo());
-        }
+        getBallModel().setFrameInfoWhenBallWasSeen((*bestModel).getLastUpdateFrame());
 
         valid = true;
         getBallModel().valid = valid;
-
 
         // future
         const int BALLMODEL_MAX_FUTURE_SECONDS = 11;
@@ -366,7 +361,7 @@ void PlainKalmanFilterBallLocator::doDebugRequest()
     
     //to check correctness of the prediction
     DEBUG_REQUEST("PlainKalmanFilterBallLocator:draw_real_ball_percept",
-      if(getMultiBallPercept().ballWasSeen()) {
+      if(getMultiBallPercept().wasSeen()) {
         FIELD_DRAWING_CONTEXT;
         PEN("FF0000", 10);
         for(MultiBallPercept::ConstABPIterator iter = getMultiBallPercept().begin(); iter != getMultiBallPercept().end(); iter++) {
@@ -375,15 +370,14 @@ void PlainKalmanFilterBallLocator::doDebugRequest()
       }
     );
     
+    DEBUG_REQUEST("PlainKalmanFilterBallLocator:draw_ball_on_field_after",
+        drawFiltersOnField();
+    );
 
     DEBUG_REQUEST("PlainKalmanFilterBallLocator:draw_final_ball",
         FIELD_DRAWING_CONTEXT;
-        PEN("FF9900", 10);
+        PEN("FF0000", 10);
         CIRCLE( getBallModel().position.x, getBallModel().position.y, getFieldInfo().ballRadius-10);
-    );
-
-    DEBUG_REQUEST("PlainKalmanFilterBallLocator:draw_ball_on_field_after",
-        drawFiltersOnField();
     );
 
     DEBUG_REQUEST("PlainKalmanFilterBallLocator:reloadParameters",
@@ -398,18 +392,17 @@ void PlainKalmanFilterBallLocator::drawFiltersOnField() const {
     {
         if(getBallModel().valid)
         {
-            if(bestModel == iter)
-            {
-                if(getMultiBallPercept().ballWasSeen())
-                    PEN("FF9900", 20);
+            if((*iter).wasUpdated()) {
+                if(bestModel == iter)
+                    PEN("99FF00", 20);
                 else
-                    PEN("0099FF", 20);
+                    PEN("FF9900",20);
             } else {
-                PEN("999999", 20);
+                    PEN("0099FF", 20);
             }
+        } else {
+                PEN("999999", 20);
         }
-        else
-            PEN("999999", 20);
 
         const Eigen::Vector4d& state = (*iter).getState();
 
