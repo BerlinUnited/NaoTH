@@ -142,7 +142,7 @@ StandMotion()
       InverseKinematic::HipFeetPose target = relaxedPose;
       target.localInLeftFoot();
 
-      if((hipFeetPoseSensor.hip.translation - target.hip.translation).abs() > 5) {
+      if((hipFeetPoseSensor.hip.translation - target.hip.translation).abs() > getEngine().getParameters().stand.relax.allowedDeviation) {
           isRelaxing = false; //because the stand motion will be restarted
           relaxedPoseInitialized = false;
           setCurrentState(motion::stopped);
@@ -154,7 +154,7 @@ StandMotion()
             jointMonitors[i].resetAll();
           }
 
-          totalTime += 1000;
+          totalTime += getEngine().getParameters().stand.relax.timeBonusForCorrection;
       }
     }
 
@@ -203,7 +203,8 @@ StandMotion()
  
     // control the joint offsets (online tuning) for the knee and ankle pitchs
     if (isRelaxing) {
-        if(getFrameInfo().getTime() - lastFrameInfo.getTime() > 1000){
+        jointOffsets.setMinimalStep(getEngine().getParameters().stand.relax.jointOffsetTuning.minimalJointStep);
+        if(getFrameInfo().getTime() - lastFrameInfo.getTime() > getEngine().getParameters().stand.relax.jointOffsetTuning.deadTime){
             double currents[4] = {jointMonitors[naoth::JointData::LKneePitch].filteredCurrent(), jointMonitors[naoth::JointData::RKneePitch].filteredCurrent(), jointMonitors[naoth::JointData::LAnklePitch].filteredCurrent(), jointMonitors[naoth::JointData::RAnklePitch].filteredCurrent()};
 
             // determine max
@@ -219,8 +220,8 @@ StandMotion()
             PLOT("Stand:filteredCurrent:LAnklePitch",currents[2]);
             PLOT("Stand:filteredCurrent:RAnklePitch",currents[3]);
 
-            // if greater than 300 mA
-            if(currents[max_index] > 0.3){
+            // if greater than Threshold then try to tune the offsets
+            if(currents[max_index] > getEngine().getParameters().stand.relax.jointOffsetTuning.currentThreshold){
                 switch (max_index){
                 case 0: //LKnee
                     jointOffsets.increaseOffset(naoth::JointData::LKneePitch);
@@ -261,19 +262,25 @@ StandMotion()
 
     time += getRobotInfo().basicTimeStep;
 
+    // TODO: execution order?
     turnOffStiffnessWhenJointIsOutOfRange();
 
     // controlling the stiffness of leg joints
     if (isRelaxing) {
+        double minAngle = getEngine().getParameters().stand.relax.stiffnessControl.minAngle;
+        double maxAngle = getEngine().getParameters().stand.relax.stiffnessControl.maxAngle;
+        double minStiff = getEngine().getParameters().stand.relax.stiffnessControl.minStiffness;
+        double maxStiff = getEngine().getParameters().stand.relax.stiffnessControl.maxStiffness;
+
         for( int i = naoth::JointData::RHipYawPitch; i <= naoth::JointData::LAnkleRoll; i++) {
-            stiffnessController[i].updateFilter(getMotorJointData().position[i],getSensorJointData().position[i]);
-            getMotorJointData().stiffness[i] = stiffnessController[i].control();
+            stiffnessController[i].setMinMaxValues(minAngle,maxAngle,minStiff,maxStiff);
+            getMotorJointData().stiffness[i] = stiffnessController[i].control(jointMonitors[i].getError());
         }
 
-        PLOT("StandMotion:AverageError:LKneePitch",stiffnessController[naoth::JointData::LKneePitch].getAverageError());
-        PLOT("StandMotion:AverageError:RKneePitch",stiffnessController[naoth::JointData::RKneePitch].getAverageError());
-        PLOT("StandMotion:Control:LKneePitch",stiffnessController[naoth::JointData::LKneePitch].control());
-        PLOT("StandMotion:Control:RKneePitch",stiffnessController[naoth::JointData::RKneePitch].control());
+        PLOT("StandMotion:AverageError:LKneePitch",jointMonitors[naoth::JointData::LKneePitch].getError());
+        PLOT("StandMotion:AverageError:RKneePitch",jointMonitors[naoth::JointData::RKneePitch].getError());
+        PLOT("StandMotion:Control:LKneePitch",stiffnessController[naoth::JointData::LKneePitch].control(jointMonitors[naoth::JointData::LKneePitch].getError()));
+        PLOT("StandMotion:Control:RKneePitch",stiffnessController[naoth::JointData::RKneePitch].control(jointMonitors[naoth::JointData::RKneePitch].getError()));
     }
     
     if ( time >= totalTime && getMotionRequest().id != getId() ) {
@@ -333,58 +340,6 @@ private:
   bool relaxedPoseInitialized;
   bool isRelaxing;
 
-  // used by StandMotion:stiffness_controller
-  class StiffnessController{
-  public:
-      StiffnessController() {}
-
-      void updateFilter(double motorData, double sensorData) {
-          motorJointDataBuffer.add(motorData);
-
-          if(motorJointDataBuffer.isFull()){
-              motorToSensorError.add(sensorData - motorJointDataBuffer.first());
-          }
-      }
-
-      double control() {
-        if(motorToSensorError.isFull()){
-            // linear function through points [0.08°,0.3] and [2.0°,1]
-            double m = 0.7/1.92;
-            double n = 1-m*2.0;
-
-            double e = fabs(motorToSensorError.getAverage());
-
-            if(e <= Math::fromDegrees(0.08)){
-                return 0.3;
-            } else if(e > Math::fromDegrees(2.0)) {
-                return 1;
-            } else {
-                return m*Math::toDegrees(e) + n;
-            }
-        } else {
-          return 0.7;
-        }
-      }
-
-      double getAverageError() {
-          return motorToSensorError.getAverage();
-      }
-
-      void resetFilter() {
-          motorJointDataBuffer.clear();
-          motorToSensorError.clear();
-      }
-
-  private:
-      RingBuffer<double,4> motorJointDataBuffer;
-      RingBufferWithSum<double,100> motorToSensorError;
-  };
-
-  StiffnessController stiffnessController[naoth::JointData::numOfJoint];
-
-  // used by StandMotion:online_tuning
-  FrameInfo lastFrameInfo;
-
   class JointMonitor
   {
   public:
@@ -410,7 +365,7 @@ private:
           motorToSensorError.clear();
       }
 
-      double filteredError(){
+      double getError(){
           return motorToSensorError.getAverage();
       }
 
@@ -426,10 +381,56 @@ private:
 
   JointMonitor jointMonitors[naoth::JointData::numOfJoint];
 
+  // used by StandMotion:stiffness_controller
+  class StiffnessController{
+  public:
+      StiffnessController():
+          minAngle(0.08),
+          maxAngle(2),
+          minStiff(0.3),
+          maxStiff(1.0)
+      {}
+
+      double control(double error) {
+          // linear function
+          double m = (maxStiff-minStiff)/(maxAngle-minAngle);
+          double n = maxStiff-m*maxAngle;
+
+          double e = fabs(error);
+
+          if(e <= Math::fromDegrees(minAngle)){
+              return minStiff;
+          } else if(e > Math::fromDegrees(maxAngle)) {
+              return maxStiff;
+          } else {
+              return m*Math::toDegrees(e) + n;
+          }
+      }
+
+      void setMinMaxValues(double minAngle, double maxAngle, double minStiff, double maxStiff){
+          this->minAngle = minAngle;
+          this->maxAngle = maxAngle;
+          this->minStiff = minStiff;
+          this->maxStiff = maxStiff;
+      }
+
+  private:
+      double minAngle, maxAngle, minStiff, maxStiff;
+  };
+
+  StiffnessController stiffnessController[naoth::JointData::numOfJoint];
+
+  // used by StandMotion:online_tuning
+  FrameInfo lastFrameInfo;
+
   class JointOffsets
   {
   public:
       JointOffsets():minimalStep(0.0013962634){}
+
+      void setMinimalStep(double minStep) {
+          minimalStep = minStep;
+      }
 
       void resetOffsets(){
           for(int i = 0; i < naoth::JointData::numOfJoint; i++){
@@ -451,7 +452,7 @@ private:
 
   private:
       JointData offsets;
-      const double minimalStep; // [rad]
+      double minimalStep; // [rad]
   };
 
   JointOffsets jointOffsets;

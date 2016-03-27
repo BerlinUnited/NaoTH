@@ -18,9 +18,22 @@ IKParameters::IKParameters()
   PARAMETER_REGISTER(stand.enableStabilization) = false;
   PARAMETER_REGISTER(stand.stiffness) = 0.7;
 
-  PARAMETER_REGISTER(stand.bodyPitchOffset) = 0;
-  PARAMETER_REGISTER(stand.hipOffsetX) = 0;
-  
+  PARAMETER_REGISTER(stand.bodyPitchOffset) = 0.2;
+  PARAMETER_REGISTER(stand.hipOffsetX) = 15;
+
+  // relax
+  PARAMETER_REGISTER(stand.relax.allowedDeviation)= 5;   // [mm]
+  PARAMETER_REGISTER(stand.relax.timeBonusForCorrection) = 1000; // [ms]
+
+  PARAMETER_REGISTER(stand.relax.jointOffsetTuning.deadTime)         = 1000;         // [ms]
+  PARAMETER_REGISTER(stand.relax.jointOffsetTuning.currentThreshold) = 0.3;          // [A]
+  PARAMETER_REGISTER(stand.relax.jointOffsetTuning.minimalJointStep) = 0.0013962634; // [rad]
+
+  PARAMETER_REGISTER(stand.relax.stiffnessControl.minAngle)     = 0.08; // [°]
+  PARAMETER_REGISTER(stand.relax.stiffnessControl.maxAngle)     = 2;    // [°]
+  PARAMETER_REGISTER(stand.relax.stiffnessControl.minStiffness) = 0.3;
+  PARAMETER_REGISTER(stand.relax.stiffnessControl.maxStiffness) = 1.0;
+
   // walk parameter:
   // General
   PARAMETER_REGISTER(walk.general.bodyPitchOffset) = 0.2;

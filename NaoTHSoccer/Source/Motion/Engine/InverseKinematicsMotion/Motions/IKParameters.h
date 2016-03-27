@@ -27,6 +27,24 @@ public:
 
     double bodyPitchOffset;
     double hipOffsetX;
+
+    struct Relax {
+        double allowedDeviation;
+        double timeBonusForCorrection;
+
+        struct JointOffsetTuning {
+            double deadTime;
+            double currentThreshold;
+            double minimalJointStep;
+        } jointOffsetTuning;
+
+        struct StiffnessControl {
+            double minAngle;
+            double minStiffness;
+            double maxAngle;
+            double maxStiffness;
+        } stiffnessControl;
+    } relax;
   } stand;
 
 
