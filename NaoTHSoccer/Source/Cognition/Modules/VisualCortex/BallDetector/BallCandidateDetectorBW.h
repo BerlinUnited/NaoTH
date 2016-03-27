@@ -294,7 +294,7 @@ private:
 
   DOUBLE_CAM_PROVIDE(BallCandidateDetectorBW, BallCandidates);
 
-  cv::Ptr<cv::ml::SVM> model;
+  cv::Ptr<cv::ml::ANN_MLP> model;
 };//end class BallCandidateDetectorBW
 
 #endif // _BallCandidateDetectorBW_H_

@@ -28,11 +28,12 @@ BallCandidateDetectorBW::BallCandidateDetectorBW()
   // load model from config folder
   try
   {
-    model = cv::ml::SVM::load<cv::ml::SVM>("Config/ball_detector_model.dat");
+    model = cv::Algorithm::load<cv::ml::ANN_MLP>("Config/ball_detector_model.dat");
   }
   catch(cv::Exception ex)
   {
     // ignore
+    std::cerr << "Could not load Config/ball_detector_model.dat" << std::endl;
   }
 }
 
@@ -90,7 +91,6 @@ void BallCandidateDetectorBW::execute(CameraInfo::CameraID id)
   }
   */
 
-
   std::list<Best::BallCandidate>::iterator best_element = best.candidates.begin();
   int best_radius = -1;
   double maxV = 0;
@@ -100,7 +100,7 @@ void BallCandidateDetectorBW::execute(CameraInfo::CameraID id)
     if(getFieldPercept().getValidField().isInside((*i).center)) 
     {
       int radius = (int)((*i).radius*1.5 + 0.5);
-      
+
       BallCandidates::Patch& p = getBallCandidates().nextFreePatch();
       p.min = Vector2i((*i).center.x - radius, (*i).center.y - radius);
       p.max = Vector2i((*i).center.x + radius, (*i).center.y + radius);
@@ -126,10 +126,15 @@ void BallCandidateDetectorBW::execute(CameraInfo::CameraID id)
         cv::Mat in;
         wrappedData.convertTo(in, CV_32F);
         cv::Mat out;
-        model->predict(in, out);
-        if(out.at<int>(0,0) > 0) {
+        if(model->predict(in, out) > 0) {
           ballFound = true;
         }
+
+        if(best_radius < 0 || (ballFound && best_radius > radius)) {
+          best_element = i;
+          best_radius = radius;
+        }
+
       }
 
       if(ballFound) {
@@ -140,7 +145,7 @@ void BallCandidateDetectorBW::execute(CameraInfo::CameraID id)
       DEBUG_REQUEST("Vision:BallCandidateDetectorBW:drawCandidates",
         //CANVAS(((cameraID == CameraInfo::Top)?"ImageTop":"ImageBottom"));
         if(ballFound) {
-          RECT_PX(ColorClasses::blue, (*i).center.x - radius, (*i).center.y - radius,
+          RECT_PX(ColorClasses::orange, (*i).center.x - radius, (*i).center.y - radius,
             (*i).center.x + radius, (*i).center.y + radius);
         } else {
           RECT_PX(ColorClasses::gray, (*i).center.x - radius, (*i).center.y - radius,
