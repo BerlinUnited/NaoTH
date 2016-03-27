@@ -14,9 +14,7 @@ For details, see http://sourceforge.net/projects/libb64
 #include <sstream>
 
 namespace base64 {
-extern "C" {
 #include "cencode.h"
-}
 
 class Encoder
 {
