@@ -197,8 +197,8 @@ StandMotion()
     getEngine().copyLegJoints(getMotorJointData().position);
 
     // update joint monitors
-    for( int i = naoth::JointData::RHipYawPitch; i <= naoth::JointData::LAnkleRoll; i++) {
-        jointMonitors[i].updateMonitor(getMotorJointData().position[i], getSensorJointData().position[i],getSensorJointData().electricCurrent[i]);
+    for( int i = naoth::JointData::RShoulderRoll; i <= naoth::JointData::LAnkleRoll; i++) {
+        jointMonitors[i].updateMonitor(getMotorJointData().position[i] + jointOffsets[i], getSensorJointData().position[i],getSensorJointData().electricCurrent[i]);
     }
  
     // control the joint offsets (online tuning) for the knee and ankle pitchs
@@ -272,7 +272,7 @@ StandMotion()
         double minStiff = getEngine().getParameters().stand.relax.stiffnessControl.minStiffness;
         double maxStiff = getEngine().getParameters().stand.relax.stiffnessControl.maxStiffness;
 
-        for( int i = naoth::JointData::RHipYawPitch; i <= naoth::JointData::LAnkleRoll; i++) {
+        for( int i = naoth::JointData::RShoulderRoll; i <= naoth::JointData::LAnkleRoll; i++) {
             stiffnessController[i].setMinMaxValues(minAngle,maxAngle,minStiff,maxStiff);
             getMotorJointData().stiffness[i] = stiffnessController[i].control(jointMonitors[i].getError());
         }
