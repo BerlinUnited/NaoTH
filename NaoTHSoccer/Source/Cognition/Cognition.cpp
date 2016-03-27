@@ -79,7 +79,7 @@
 #include "Modules/Modeling/StaticDebugModelProvider/StaticDebugModelProvider.h"
 
 #include "Modules/Modeling/Simulation/Simulation.h"
-
+#include "Modules/Modeling/SelfLocator/SituationPriorProvider/SituationPriorProvider.h"
 
 // behavior
 #include "Modules/Behavior/BasicTestBehavior/BasicTestBehavior.h"
@@ -159,6 +159,7 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(PerceptionsVisualizer);
 
   // modeling
+  REGISTER_MODULE(SituationPriorProvider);
   REGISTER_MODULE(BodyStateProvider);
   REGISTER_MODULE(FieldCompass);
   REGISTER_MODULE(UltraSoundObstacleLocator);
