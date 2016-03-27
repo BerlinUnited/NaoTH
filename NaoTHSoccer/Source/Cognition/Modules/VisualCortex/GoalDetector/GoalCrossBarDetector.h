@@ -35,6 +35,8 @@
 #include "Tools/Debug/DebugImageDrawings.h"
 #include "Tools/Debug/DebugParameterList.h"
 
+#include <queue>
+
 BEGIN_DECLARE_MODULE(GoalCrossBarDetector)
   PROVIDE(StopwatchManager)
   PROVIDE(DebugRequest)
@@ -82,6 +84,24 @@ private:
   static const int imageBorderOffset = 5;
   CameraInfo::CameraID cameraID;
 
+  class CrossBarCandidates
+  {
+  public:
+    size_t clusterID;
+    std::queue<size_t> ids;
+    std::queue<double> distances;
+    std::queue<Vector2d> begins;
+    std::queue<Vector2d> ends;
+
+    CrossBarCandidates()
+    {}
+
+    bool exists()
+    {
+      return ids.size() > 0;
+    }
+  };
+
   class Parameters: public ParameterList
   {
   public:
@@ -91,10 +111,13 @@ private:
       PARAMETER_REGISTER(scanlinesDistance) = 20;
       PARAMETER_REGISTER(minGoodPoints) = 3;
 
+      PARAMETER_REGISTER(useArtificialPoints) = false;
+      PARAMETER_REGISTER(useWeakJumpsToo) = false;
       PARAMETER_REGISTER(detectWhiteGoals) = true;
       PARAMETER_REGISTER(useColorFeatures) = false;
       PARAMETER_REGISTER(threshold) = 140;
       PARAMETER_REGISTER(thresholdGradient) = 40;
+      PARAMETER_REGISTER(thresholdWeakGradient) = 20;
       PARAMETER_REGISTER(maxFeatureWidth) = 213;
       PARAMETER_REGISTER(thresholdFeatureGradient) = 0.5;
       PARAMETER_REGISTER(barWidthSimilarity) = 0.25;
@@ -111,11 +134,14 @@ private:
     int scanlinesDistance;
     int minGoodPoints;
 
+    bool useArtificialPoints;
+    bool useWeakJumpsToo;
     bool detectWhiteGoals;
     //bool usePrewitt;
     bool useColorFeatures;
     int threshold;
     int thresholdGradient;
+    int thresholdWeakGradient;
     int maxFeatureWidth;
 
     double thresholdFeatureGradient;
@@ -238,6 +264,7 @@ private:
   bool estimateCrossBarDirection(const GoalPercept::GoalPost& post, Vector2i& start, Vector2d& direction);
   Vector2d getBackProjectedTopPoint(const GoalPercept::GoalPost& post);
   int getBackProjectedTopBarWidth(const GoalPercept::GoalPost& post);
+  int getBackProjectedGoalWidth(const GoalPercept::GoalPost& post, const Vector2d& direction);
   int getBackProjectedPostHeight(const GoalPercept::GoalPost& post);
 
   bool checkProjectedPostDistance(const GoalPercept::GoalPost& post0, const GoalPercept::GoalPost& post1);
