@@ -26,6 +26,9 @@ Image::Image()
   
 {
   yuv422 = new unsigned char[data_size()];
+
+  // initialize the image with gray
+  std::memset(yuv422, 128, data_size());
 }
 
 Image::Image(const Image& orig)

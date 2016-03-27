@@ -25,6 +25,7 @@ BasicTestBehavior::BasicTestBehavior()
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:standard_stand", "stand as standard or not", true);
 
   // walk
+  DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:force", "set the 'force' flag in the motion request true ", false);
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:walk_forward", "Walk forward as fast as possible", false);
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:walk_backward", "Walk backward as fast as possible", false);
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:strafe_left", "Set the motion request to 'strafe'.", false);
@@ -161,7 +162,7 @@ void BasicTestBehavior::testHead()
 
 
   DEBUG_REQUEST("BasicTestBehavior:head:look_at_ball_modell",
-    if(getFrameInfo().getTimeSince(getBallModel().frameInfoWhenBallWasSeen.getTime()) < 3000)
+    if(getFrameInfo().getTimeSince(getBallModel().getFrameInfoWhenBallWasSeen().getTime()) < 3000)
     {
       Vector2d xp = getBallModel().position;
       double d = 250;
@@ -181,6 +182,7 @@ void BasicTestBehavior::testHead()
 void BasicTestBehavior::testMotion() 
 {
   getMotionRequest().walkRequest.target = Pose2D();
+  getMotionRequest().forced = false;
 
   DEBUG_REQUEST("BasicTestBehavior:motion:stand", 
     getMotionRequest().id = motion::stand;
@@ -323,7 +325,11 @@ void BasicTestBehavior::testMotion()
   DEBUG_REQUEST("BasicTestBehavior:motion:play_editor_motionnet",
     getMotionRequest().id = motion::play_editor_motionnet;
   );
-          
+  
+  DEBUG_REQUEST("BasicTestBehavior:motion:force",
+    getMotionRequest().forced = true;
+  );
+  
 }//end testMotion
 
 

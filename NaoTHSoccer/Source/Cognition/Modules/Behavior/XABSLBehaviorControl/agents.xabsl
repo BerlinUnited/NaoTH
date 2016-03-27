@@ -145,6 +145,7 @@ include "Options/Test/agent/sidekick_right_agent.xabsl";
 // Test agents Walk
 include "Options/Test/agent/test_walk_lv1_agent.xabsl";
 include "Options/Test/agent/test_walk_lv2_agent.xabsl";
+include "Options/Test/agent/test_walk_step_control_agent.xabsl";
 include "Options/Test/agent/follow_ball_test_agent.xabsl";
 include "Options/Test/agent/go_to_ball_test_agent.xabsl";
 include "Options/Test/agent/ball_in_fight_test_agent.xabsl";
@@ -196,6 +197,7 @@ include "Options/Test/kicks/sidekick_left_test.xabsl";
 // Test options Walk
 include "Options/Test/walk/test_walk_lv1.xabsl";
 include "Options/Test/walk/test_walk_lv2.xabsl";
+include "Options/Test/walk/test_walk_step_control.xabsl";
 include "Options/Test/walk/walk_square_diagonally.xabsl";
 include "Options/Test/walk/walk_square.xabsl";
 include "Options/Test/walk/walk_circularly_x.xabsl";
@@ -257,6 +259,7 @@ agent kick_short_left("kick_short_left", kick_short_with_approach_left_agent);
 // Test agents Walk
 agent motion_test_walk_lv1("test walk level 1", test_walk_lv1_agent);
 agent motion_test_walk_lv2("test walk level 2", test_walk_lv2_agent);
+agent motion_test_walk_step_control("test walk step control", test_walk_step_control_agent);
 
 agent goto_follow_ball_test("follow_ball_test_agent", follow_ball_test_agent);
 agent goto_ball_in_fight("ball_in_fight_agent", ball_in_fight_test_agent);

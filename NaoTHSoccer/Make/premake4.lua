@@ -67,6 +67,7 @@ solution "NaoTHSoccer"
     },
     FRAMEWORK_PATH .. "/Commons/Source/Messages/", 
     "../../RobotControl/RobotConnector/src/", 
+    "../../Utils/pyLogEvaluator",
     {COMMONS_MESSAGES}
   )
 
@@ -74,6 +75,7 @@ solution "NaoTHSoccer"
     {"../Messages/Representations.proto"}, 
     "../Source/Messages/", 
     "../../RobotControl/RobotConnector/src/", 
+    "../../Utils/pyLogEvaluator",
     {COMMONS_MESSAGES, "../Messages/"}
   )
 
@@ -109,7 +111,7 @@ solution "NaoTHSoccer"
   -- additional defines for windows
   if(_OPTIONS["platform"] ~= "Nao" and _ACTION ~= "gmake") then
     configuration {"windows"}
-    defines {"WIN32", "NOMINMAX"}
+    defines {"WIN32", "NOMINMAX", "EIGEN_DONT_ALIGN"}
     buildoptions {"/wd4351", -- disable warning: "...new behavior: elements of array..."
                   "/wd4996", -- disable warning: "...deprecated..."
                   "/wd4290"} -- exception specification ignored (typed stecifications are ignored)

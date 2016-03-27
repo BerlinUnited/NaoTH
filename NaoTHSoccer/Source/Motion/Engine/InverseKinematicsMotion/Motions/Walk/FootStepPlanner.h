@@ -19,30 +19,23 @@ public:
   
   void updateParameters(const IKParameters& parameters);
 
-  FootStep firstStep(const InverseKinematic::FeetPose& pose,const WalkRequest& req);
+  FootStep nextStep(const FootStep& lastStep, const WalkRequest& req);
 
-  FootStep nextStep(const FootStep& lastStep,const WalkRequest& req);
-
-  FootStep controlStep(const FootStep& lastStep,const WalkRequest& req);
+  FootStep controlStep(const FootStep& lastStep, const WalkRequest& req);
   
+  FootStep finalStep(const FootStep& lastStep, const WalkRequest& req);
+
+  FootStep zeroStep(const FootStep& lastStep) const;
+
 private:
-  Pose2D calculateStep(const FootStep& lastStep,const WalkRequest& req);
+  FootStep calculateNextWalkStep(const InverseKinematic::FeetPose& pose, const Pose2D& offset, const Pose2D& lastStepRequest, FootStep::Foot movingFoot, const WalkRequest& req, bool stepControl = false);
+  FootStep firstStep(const InverseKinematic::FeetPose& pose, const Pose2D& offset, const Pose2D& lastStepRequest, const WalkRequest& req);
 
-  /**
-   * @param step: the step in WalkRequest::Hip
-   */
-  FootStep nextStep(const FootStep& lastStep, Pose2D step, const WalkRequest& req);
-
-  void restrictStepSize(Pose2D& step, const FootStep& lastStep, double character) const;
-  void restrictStepSizeSimple(Pose2D& step, const FootStep& lastStep, double character) const;
-  
+  void restrictStepSize(Pose2D& step, double character) const;
+  void restrictStepSizeControlStep(Pose2D& step, double character) const;
   void restrictStepChange(Pose2D& step, const Pose2D& lastStep) const;
-  void restrictStepChangeNew(Pose2D& step, const Pose2D& lastStep) const;
-  
-  void addStep(FootStep& footStep, Pose2D step, const Pose2D& lastOffset, const Pose2D& offset) const;
-  
+
 private:
-  Pose2D theLastStepSize;
 
   // parameters
   double theMaxTurnInner;
@@ -58,6 +51,7 @@ private:
   double theMaxCtrlTurn;
   double theMaxCtrlLength;
   double theMaxCtrlWidth;
+
 };
 
 #endif // _FOOT_STEP_PLANNER_H

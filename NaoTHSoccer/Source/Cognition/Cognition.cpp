@@ -55,6 +55,9 @@
 #include "Modules/VisualCortex/GoalDetector/GoalCrossBarDetector.h"
 #include "Modules/VisualCortex/BallDetector/BallDetector.h"
 
+#include "Modules/SelfAwareness/FakeCameraMatrixFinder/FakeCameraMatrixFinder.h"
+#include "Modules/VisualCortex/FakeBallDetector/FakeBallDetector.h"
+
 #include "Modules/Perception/VirtualVisionProcessor/VirtualVisionProcessor.h"
 #include "Modules/Perception/PerceptionsVisualizer/PerceptionsVisualizer.h"
 
@@ -72,9 +75,11 @@
 #include "Modules/Modeling/GoalModel/DummyActiveGoalLocator/DummyActiveGoalLocator.h"
 #include "Modules/Modeling/GoalModel/WholeGoalLocator/WholeGoalLocator.h"
 #include "Modules/Modeling/BallLocator/KalmanFilterBallLocator/KalmanFilterBallLocator.h"
+#include "Modules/Modeling/BallLocator/PlainKalmanFilterBallLocator/PlainKalmanFilterBallLocator.h"
 #include "Modules/Modeling/StaticDebugModelProvider/StaticDebugModelProvider.h"
 
 #include "Modules/Modeling/Simulation/Simulation.h"
+
 
 // behavior
 #include "Modules/Behavior/BasicTestBehavior/BasicTestBehavior.h"
@@ -147,6 +152,9 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(GoalCrossBarDetector);
   REGISTER_MODULE(BallDetector);
 
+  REGISTER_MODULE(FakeCameraMatrixFinder);
+  REGISTER_MODULE(FakeBallDetector);
+
   REGISTER_MODULE(VirtualVisionProcessor);
   REGISTER_MODULE(PerceptionsVisualizer);
 
@@ -164,6 +172,7 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(WholeGoalLocator);
   REGISTER_MODULE(DummyActiveGoalLocator);
   REGISTER_MODULE(KalmanFilterBallLocator);
+  REGISTER_MODULE(PlainKalmanFilterBallLocator);
   REGISTER_MODULE(Simulation);
   REGISTER_MODULE(StaticDebugModelProvider);
 
