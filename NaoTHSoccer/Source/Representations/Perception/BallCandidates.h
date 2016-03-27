@@ -46,7 +46,7 @@ public:
     patches.clear();
   }
 
-  virtual void print(std::ostream& stream) const
+  virtual void print(std::ostream& /*stream*/) const
   {
 
   }

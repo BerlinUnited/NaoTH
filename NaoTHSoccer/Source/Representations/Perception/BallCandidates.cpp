@@ -28,7 +28,7 @@ void Serializer<BallCandidates>::serialize(const BallCandidates& r, std::ostream
 }//end serialize
 
 
-void Serializer<BallCandidates>::deserialize(std::istream& stream, BallCandidates& r)
+void Serializer<BallCandidates>::deserialize(std::istream& stream, BallCandidates& /*r*/)
 {
   naothmessages::BallCandidates p;
   google::protobuf::io::IstreamInputStream buf(&stream);
