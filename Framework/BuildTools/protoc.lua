@@ -164,6 +164,8 @@ function invokeprotoc(inputFiles, cppOut, javaOut, ipaths)
           -- touch shadow file in order to remember this build date
           touchShadow(inputFiles[i], time)
       end -- end for each file to compile
+     else
+      print ("ERROR: protoc not sucessful")
      end
     end -- end if compile
 end
