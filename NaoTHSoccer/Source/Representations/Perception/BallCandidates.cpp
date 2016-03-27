@@ -28,11 +28,18 @@ void Serializer<BallCandidates>::serialize(const BallCandidates& r, std::ostream
 }//end serialize
 
 
-void Serializer<BallCandidates>::deserialize(std::istream& stream, BallCandidates& /*r*/)
+void Serializer<BallCandidates>::deserialize(std::istream& stream, BallCandidates& r)
 {
   naothmessages::BallCandidates p;
   google::protobuf::io::IstreamInputStream buf(&stream);
   p.ParseFromZeroCopyStream(&buf);
 
-  
+  r.reset();
+  for(int i = 0; i < p.patches_size(); ++i) {
+    BallCandidates::Patch& patch = r.nextFreePatch();
+    DataConversion::fromMessage(p.patches(i).min(), patch.min);
+    DataConversion::fromMessage(p.patches(i).max(), patch.max);
+    patch.data.resize(p.patches(i).data().size());
+    memcpy(patch.data.data(), p.patches(i).data().data(), p.patches(i).data().size());
+  }
 }//end deserialize
