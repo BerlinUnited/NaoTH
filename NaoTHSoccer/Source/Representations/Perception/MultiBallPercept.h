@@ -27,7 +27,8 @@ public:
         {
             stream << "centerInImage = " << centerInImage << std::endl;
             stream << "radiusInImage = " << radiusInImage << std::endl;
-            stream << "bearingBasedOffsetOnField = " << positionOnField << std::endl;
+            stream << "positionOnField = " << positionOnField << std::endl;
+            stream << "cameraId = " << cameraId << std::endl;
         }
     };
 

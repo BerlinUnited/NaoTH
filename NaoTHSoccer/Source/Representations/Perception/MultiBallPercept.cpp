@@ -18,61 +18,65 @@ void MultiBallPercept::print(std::ostream &stream) const {
 
 using namespace naoth;
 
-void Serializer<MultiBallPercept>::serialize(const MultiBallPercept& /*representation*/, std::ostream& /*stream*/)
+void Serializer<MultiBallPercept>::serialize(const MultiBallPercept& representation, std::ostream& stream)
 {
-  //naothmessages::BallPercept p;
+  naothmessages::MultiBallPercept p;
 
-  //p.set_ballwasseen(representation.ballWasSeen);
-  //
-  //p.mutable_centerinimage()->set_x(representation.centerInImage.x);
-  //p.mutable_centerinimage()->set_y(representation.centerInImage.y);
+  p.mutable_frameinfowhenballwasseen()->set_framenumber(representation.frameInfoWhenBallWasSeen.getFrameNumber());
+  p.mutable_frameinfowhenballwasseen()->set_time(representation.frameInfoWhenBallWasSeen.getTime());
 
-  //p.set_radiusinimage(representation.radiusInImage);
-  //
-  //p.set_ballcolor((naothmessages::Color) representation.ballColor);
+  for(MultiBallPercept::ConstABPIterator iter = representation.begin(); iter != representation.end(); iter++) {
+    naothmessages::MultiBallPercept_BallPercept* bp = p.add_percepts();
 
-  //p.mutable_bearingbasedoffsetonfield()->set_x(representation.bearingBasedOffsetOnField.x);
-  //p.mutable_bearingbasedoffsetonfield()->set_y(representation.bearingBasedOffsetOnField.y);
+    bp->mutable_centerinimage()->set_x((*iter).centerInImage.x);
+    bp->mutable_centerinimage()->set_y((*iter).centerInImage.y);
 
-  //p.mutable_frameinfowhenballwasseen()->set_framenumber(representation.frameInfoWhenBallWasSeen.getFrameNumber());
-  //p.mutable_frameinfowhenballwasseen()->set_time(representation.frameInfoWhenBallWasSeen.getTime());
+    bp->set_radiusinimage((*iter).radiusInImage);
 
-  //google::protobuf::io::OstreamOutputStream buf(&stream);
-  //p.SerializeToZeroCopyStream(&buf);
+    bp->mutable_positiononfield()->set_x((*iter).positionOnField.x);
+    bp->mutable_positiononfield()->set_y((*iter).positionOnField.y);
+  }
+
+  google::protobuf::io::OstreamOutputStream buf(&stream);
+  p.SerializeToZeroCopyStream(&buf);
 }//end serialize
 
 
-void Serializer<MultiBallPercept>::deserialize(std::istream& /*stream*/, MultiBallPercept& /*representation*/)
+void Serializer<MultiBallPercept>::deserialize(std::istream& stream, MultiBallPercept& representation)
 {
-  //naothmessages::BallPercept p;
-  //google::protobuf::io::IstreamInputStream buf(&stream);
-  //p.ParseFromZeroCopyStream(&buf);
+  naothmessages::MultiBallPercept p;
+  google::protobuf::io::IstreamInputStream buf(&stream);
+  p.ParseFromZeroCopyStream(&buf);
 
-  //if(p.has_ballwasseen())
-  //{
-  //  representation.ballWasSeen = p.ballwasseen();
-  //}
-  //if(p.has_centerinimage())
-  //{
-  //  representation.centerInImage.x = p.centerinimage().x();
-  //  representation.centerInImage.y = p.centerinimage().y();
-  //}
-  //if(p.has_radiusinimage())
-  //{
-  //  representation.radiusInImage = p.radiusinimage();
-  //}
-  //if(p.has_ballcolor())
-  //{
-  //  representation.ballColor = (ColorClasses::Color) p.ballcolor();
-  //}
-  //if(p.has_bearingbasedoffsetonfield())
-  //{
-  //  representation.bearingBasedOffsetOnField.x = p.bearingbasedoffsetonfield().x();
-  //  representation.bearingBasedOffsetOnField.y = p.bearingbasedoffsetonfield().y();
-  //}
-  //if(p.has_frameinfowhenballwasseen())
-  //{
-  //  representation.frameInfoWhenBallWasSeen =
-  //    naoth::FrameInfo(p.frameinfowhenballwasseen().time(), p.frameinfowhenballwasseen().framenumber());
-  //}
+  representation.reset();
+
+  if(p.has_frameinfowhenballwasseen()) {
+      representation.frameInfoWhenBallWasSeen.setFrameNumber(p.frameinfowhenballwasseen().framenumber());
+      representation.frameInfoWhenBallWasSeen.setTime(p.frameinfowhenballwasseen().time());
+  }
+
+  for(int i = 0; i < p.percepts_size(); i++){
+    MultiBallPercept::BallPercept ballPercept;
+    const naothmessages::MultiBallPercept::BallPercept& percept = p.percepts(i);
+
+    if(percept.has_centerinimage()){
+        ballPercept.centerInImage.x = percept.centerinimage().x();
+        ballPercept.centerInImage.y = percept.centerinimage().y();
+    }
+
+    if(percept.has_positiononfield()){
+        ballPercept.positionOnField.x = percept.positiononfield().x();
+        ballPercept.positionOnField.y = percept.positiononfield().y();
+    }
+
+    if(percept.has_cameraid()){
+        ballPercept.cameraId = (CameraInfo::CameraID) percept.cameraid();
+    }
+
+    if(percept.has_radiusinimage()){
+        ballPercept.radiusInImage = percept.radiusinimage();
+    }
+
+    representation.add(ballPercept);
+  }
 }//end deserialize
