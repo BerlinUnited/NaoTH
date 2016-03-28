@@ -21,7 +21,7 @@ def getMarker(x,y,c):
 def learn(X, labels):
   #estimator = Perceptron(n_iter=1000, shuffle=True)
   #estimator = SGDClassifier()
-  estimator = svm.SVC(kernel='linear', C=0.001, class_weight='balanced')
+  estimator = svm.SVC(kernel='linear', C=0.001, class_weight='auto')
   #estimator = nn.MLPClassifier()
   
   samples = range(3000,10000)
