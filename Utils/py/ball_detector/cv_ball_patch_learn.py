@@ -42,10 +42,10 @@ def learn(X, labels):
   #estimator = cv2.ml.DTrees_create()
   #estimator = cv2.ml.RTrees_create()
   estimator = cv2.ml.ANN_MLP_create()
-  estimator.setLayerSizes(np.asarray([n_feat,10,5,2]))
+  estimator.setLayerSizes(np.asarray([n_feat,10,10,2]))
   # must be set!!!
   estimator.setActivationFunction(cv2.ml.ANN_MLP_SIGMOID_SYM )
-  #estimator.setTermCriteria((cv2.TERM_CRITERIA_COUNT + cv2.TERM_CRITERIA_EPS, 20000, 0.001))
+  estimator.setTermCriteria((cv2.TERM_CRITERIA_COUNT + cv2.TERM_CRITERIA_EPS, 20000, 0.001))
   #estimator.setTrainMethod(cv2.ml.ANN_MLP_BACKPROP)
   #estimator.setBackpropWeightScale(0.001)
   #estimator.setBackpropMomentumScale(0.0)
