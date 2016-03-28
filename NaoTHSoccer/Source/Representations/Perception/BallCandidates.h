@@ -8,33 +8,38 @@
 #define _BallCandidates_h_
 
 #include <Tools/Math/Vector2.h>
-#include <Tools/Math/Vector3.h>
+#include <Tools/ImageProcessing/ImagePrimitives.h>
 
-#include <Tools/DataStructures/Printable.h>
 #include <Tools/DataStructures/Serializer.h>
 
-#include <Representations/Infrastructure/FrameInfo.h>
 #include <list>
 #include <vector>
 
-class BallCandidates : public naoth::Printable
+class BallCandidates
 {
 public:
   BallCandidates(){}
 
-  class Patch 
+  template<typename T>
+  class PatchT 
   {
   public:
     static const int SIZE = 12;
-    Patch(int) : data(SIZE*SIZE) 
+    PatchT(int) : data(SIZE*SIZE) 
     {}
     Vector2i min;
     Vector2i max;
-    std::vector<unsigned char> data;
+    std::vector<T> data;
   };
+
+  typedef PatchT<unsigned char> Patch;
+  typedef PatchT<Pixel> PatchYUV;
 
   typedef std::list<Patch> PatchesList;
   PatchesList patches;
+
+  typedef std::list<PatchYUV> PatchesYUVList;
+  PatchesYUVList patchesYUV;
 
   Patch& nextFreePatch() {
     patches.emplace_back(0);
@@ -44,11 +49,7 @@ public:
   void reset()
   {
     patches.clear();
-  }
-
-  virtual void print(std::ostream& /*stream*/) const
-  {
-
+    patchesYUV.clear();
   }
 };
 
