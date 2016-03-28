@@ -85,14 +85,17 @@ public:
   BallCandidateDetectorBW();
   ~BallCandidateDetectorBW();
 
-  void execute(CameraInfo::CameraID id);
+  bool execute(CameraInfo::CameraID id);
 
   virtual void execute()
   {
     getMultiBallPercept().reset();
 
-    execute(CameraInfo::Top);
-    execute(CameraInfo::Bottom);
+    // only execute search on top camera if bottom camera did not find anything
+    if(!execute(CameraInfo::Bottom))
+    {
+      execute(CameraInfo::Top);
+    }
   }
  
 private:

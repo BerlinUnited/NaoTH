@@ -42,14 +42,14 @@ BallCandidateDetectorBW::~BallCandidateDetectorBW()
 {
 }
 
-void BallCandidateDetectorBW::execute(CameraInfo::CameraID id)
+bool BallCandidateDetectorBW::execute(CameraInfo::CameraID id)
 {
   cameraID = id;
   getBallCandidates().reset();
 
   // todo: check validity of the intergral image
   if(getGameColorIntegralImage().getWidth() == 0) {
-    return;
+    return false;
   }
 
 
@@ -80,7 +80,7 @@ void BallCandidateDetectorBW::execute(CameraInfo::CameraID id)
     }
   );
 
-
+  return !best.candidates.empty();
 }
 
 void BallCandidateDetectorBW::executeNeuronal()
