@@ -10,13 +10,6 @@ from sklearn import svm
 import sklearn.neural_network as nn
 
 from naoth.util import *
-
-show_size = (50, 30) # width, height
-patch_size = (12, 12) # width, height
-def getMarker(x,y,c):
-  pos = (x*(patch_size[0]+1)-1,y*(patch_size[1]+1)-1)
-  return ptc.Rectangle( pos, width=patch_size[0]+1, height=patch_size[1]+1, alpha=0.3, color=c)
-
   
 def learn(X, labels):
   #estimator = Perceptron(n_iter=1000, shuffle=True)
@@ -37,38 +30,16 @@ def learn(X, labels):
   
   return estimator
 
-def evaluate(X, labels, estimator):  
+def classify(X, labels, estimator):  
   
-  image = np.zeros(((patch_size[1]+1)*show_size[1], (patch_size[0]+1)*show_size[0]))
+  classified = np.zeros(X.shape[0], dtype=np.int)
   
   # classify
-  j = 0
-  marker = []
-  for i in range(4400,4400+show_size[0]*show_size[1]):
-    a = np.transpose(np.reshape(X[i,:], (12,12)))
-    y = j // show_size[0]
-    x = j % show_size[0]
-    image[y*13:y*13+12,x*13:x*13+12] = a
-    
+  for i in range(0, X.shape[0]):
     if estimator.decision_function(X[i,:].reshape(1, -1)) > 0:
-      if labels[i]:
-        marker.append(getMarker(x,y,'green'))
-      else:
-        marker.append(getMarker(x,y,'red'))
-    else:
-      if labels[i]:
-        marker.append(getMarker(x,y,'yellow'))
+      classified[i] = 1;
       
-    j += 1
-    
-  plt.imshow(image, cmap=plt.cm.gray, interpolation='nearest')
-  for m in marker:
-    plt.gca().add_patch(m)
-  plt.xticks(())
-  plt.yticks(())
-  plt.show()
-  
-        
+  return classified
     
 if __name__ == "__main__":
   
@@ -79,7 +50,8 @@ if __name__ == "__main__":
   print("Learning...")
   estimator = learn(X_train, labels_train)
   print("Evaluating...")
-  evaluate(X_eval, labels_eval, estimator)
+  classfied = classify(X_eval, labels_eval, estimator)
+  show_evaluation(X_eval, labels_eval, classfied)
   
 
     
