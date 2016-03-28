@@ -123,7 +123,9 @@ def showPatches():
     
 if __name__ == "__main__":
   
-  file = 'tk1'
+  file = 'patches-approach-ball'
+  if len(sys.argv) > 1:
+    file = sys.argv[1]
   #file = 'patches-ball-sidecick'
   
   patchdata = patchReader.readAllPatchesFromLog('./'+file+'.log')
