@@ -26,6 +26,7 @@
 #include "Representations/Perception/GameColorIntegralImage.h"
 #include "Representations/Perception/MultiBallPercept.h"
 #include "Representations/Perception/BallCandidates.h"
+#include "Representations/Debug/Stopwatch.h"
 
 // tools
 #include "Tools/DoubleCamHelpers.h"
@@ -36,6 +37,7 @@
 #include "Tools/Debug/DebugImageDrawings.h"
 #include "Tools/Debug/DebugParameterList.h"
 #include "Tools/Debug/DebugModify.h"
+
 
 #include "Tools/naoth_opencv.h"
 
@@ -48,6 +50,7 @@ BEGIN_DECLARE_MODULE(BallCandidateDetectorBW)
   PROVIDE(DebugImageDrawingsTop)
   PROVIDE(DebugParameterList)
   PROVIDE(DebugModify)
+  PROVIDE(StopwatchManager)
 
   REQUIRE(FieldInfo)
   REQUIRE(FrameInfo)

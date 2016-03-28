@@ -65,7 +65,10 @@ bool BallCandidateDetectorBW::execute(CameraInfo::CameraID id)
 
   if(useNeuronal && model && !model->empty())
   {
+    STOPWATCH_START("BallCandidateDetectorBW:neuronalClassification");
     executeNeuronal();
+    STOPWATCH_STOP("BallCandidateDetectorBW:neuronalClassification");
+
   }
   else
   {
@@ -80,7 +83,7 @@ bool BallCandidateDetectorBW::execute(CameraInfo::CameraID id)
     }
   );
 
-  return !best.candidates.empty();
+  return getMultiBallPercept().wasSeen();
 }
 
 void BallCandidateDetectorBW::executeNeuronal()
