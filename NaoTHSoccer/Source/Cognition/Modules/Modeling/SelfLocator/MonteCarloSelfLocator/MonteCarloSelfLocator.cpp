@@ -168,34 +168,7 @@ void MonteCarloSelfLocator::execute()
       // use prior knowledge
       if(parameters.updateBySituation) //  && lastState == KIDNAPPED
       {
-        if(getSituationPrior().currentPrior == getSituationPrior().firstReady)
-        {
-          updateByStartPositions(theSampleSet);
-        }
-        else if(getSituationPrior().currentPrior == getSituationPrior().penalizedInSet)
-        {
-          updateByOwnHalfLookingForward(theSampleSet);
-        }
-        else if(getSituationPrior().currentPrior == getSituationPrior().goaliePenalizedInSet)
-        {
-          updateByGoalBox(theSampleSet);
-        }
-        else if(getSituationPrior().currentPrior == getSituationPrior().set)
-        {
-          updateByOwnHalf(theSampleSet);
-        }
-        else if(getSituationPrior().currentPrior == getSituationPrior().playAfterPenalized)
-        {
-          //Todo: dont distinguish the player numbers
-          updateByStartPositions(theSampleSet);
-        }
-        else if(getSituationPrior().currentPrior == getSituationPrior().oppHalf)
-        {
-          updateByOppHalf(theSampleSet);
-        }
-        else{
-          //SituationPrior None
-        }
+        updateBySituation();
       }//end updateBySituation
 
 
@@ -350,6 +323,36 @@ void MonteCarloSelfLocator::updateByOdometry(SampleSet& sampleSet, bool noise) c
   }
 }//end updateByOdometry
 
+void MonteCarloSelfLocator::updateBySituation(){
+  if(getSituationPrior().currentPrior == getSituationPrior().firstReady)
+    {
+      updateByStartPositions(theSampleSet);
+    }
+    else if(getSituationPrior().currentPrior == getSituationPrior().penalizedInSet)
+    {
+      updateByOwnHalfLookingForward(theSampleSet);
+    }
+    else if(getSituationPrior().currentPrior == getSituationPrior().goaliePenalizedInSet)
+    {
+      updateByGoalBox(theSampleSet);
+    }
+    else if(getSituationPrior().currentPrior == getSituationPrior().set)
+    {
+      updateByOwnHalf(theSampleSet);
+    }
+    else if(getSituationPrior().currentPrior == getSituationPrior().playAfterPenalized)
+    {
+      //TODO-BUG: dont distinguish the player numbers
+      updateByStartPositions(theSampleSet);
+    }
+    else if(getSituationPrior().currentPrior == getSituationPrior().oppHalf)
+    {
+      updateByOppHalf(theSampleSet);
+    }
+    else{
+      //SituationPrior None
+    }
+}
 
 bool MonteCarloSelfLocator::updateBySensors(SampleSet& sampleSet) const
 {

@@ -273,6 +273,8 @@ private: // workers
   void updateByOppHalf(SampleSet& sampleSet) const;
   void updateByGoalBox(SampleSet& sampleSet) const;
 
+  void updateBySituation();
+
   void updateByOldPose(SampleSet& sampleSet) const;
   void updateByPose(SampleSet& sampleSet, Pose2D pose, double sigmaDistance, double /*sigmaAngle*/) const;
 
