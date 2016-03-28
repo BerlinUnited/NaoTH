@@ -151,6 +151,9 @@ class LogReader:
     if self.log is None:
       raise StopIteration
     
+    if bytes == 0:
+      return []
+    
     data = self.log.read(bytes)
     if data == '':
       raise StopIteration
