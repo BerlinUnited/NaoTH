@@ -323,7 +323,8 @@ void MonteCarloSelfLocator::updateByOdometry(SampleSet& sampleSet, bool noise) c
   }
 }//end updateByOdometry
 
-void MonteCarloSelfLocator::updateBySituation(){
+void MonteCarloSelfLocator::updateBySituation()
+{
   if(getSituationPrior().currentPrior == getSituationPrior().firstReady)
     {
       updateByStartPositions(theSampleSet);
@@ -342,14 +343,13 @@ void MonteCarloSelfLocator::updateBySituation(){
     }
     else if(getSituationPrior().currentPrior == getSituationPrior().playAfterPenalized)
     {
-      //TODO-BUG: dont distinguish the player numbers
-      updateByStartPositions(theSampleSet);
+      updateBySidePositions(theSampleSet);
     }
     else if(getSituationPrior().currentPrior == getSituationPrior().oppHalf)
     {
       updateByOppHalf(theSampleSet);
     }
-    else{
+    else {
       //SituationPrior None
     }
 }
@@ -545,6 +545,32 @@ void MonteCarloSelfLocator::updateByLinePoints(const LineGraphPercept& lineGraph
   }
 }//end updateByLinePoints
 
+void MonteCarloSelfLocator::updateBySidePositions(SampleSet& sampleSet) const
+{
+  double offserY = 0;
+  Vector2d startLeft(getFieldInfo().xPosOwnPenaltyArea, getFieldInfo().yLength/2.0 - offserY);
+  Vector2d endLeft(                               -500, getFieldInfo().yLength/2.0 - offserY);
+
+  Vector2d startRight(startLeft.x, -startLeft.y);
+  Vector2d endRight(endLeft.x, -endLeft.y);
+
+  LineDensity leftStartingLine(startLeft, endLeft, -Math::pi_2, parameters.startPositionsSigmaDistance, parameters.startPositionsSigmaAngle);
+  LineDensity rightStartingLine(startRight, endRight, Math::pi_2, parameters.startPositionsSigmaDistance, parameters.startPositionsSigmaAngle);
+
+  for(size_t i = 0; i < sampleSet.size(); i++) {
+    if(sampleSet[i].translation.y > 0) {
+       sampleSet[i].likelihood *= leftStartingLine.update(sampleSet[i]);
+    } else {
+      sampleSet[i].likelihood *= rightStartingLine.update(sampleSet[i]);
+    }
+  }
+
+  DEBUG_REQUEST("MCSLS:draw_state",
+    FIELD_DRAWING_CONTEXT;
+    leftStartingLine.draw(getDebugDrawings());
+    rightStartingLine.draw(getDebugDrawings());
+  );
+}
 
 void MonteCarloSelfLocator::updateByStartPositions(SampleSet& sampleSet) const
 {
