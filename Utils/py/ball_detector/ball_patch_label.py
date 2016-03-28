@@ -96,7 +96,13 @@ def load_labels(file):
     with open(file, 'r') as data_file:
       ball_labels = json.load(data_file)
     tmp_labels[ball_labels["ball"]] = 1
-    tmp_labels[ball_labels["noball"]] = 0
+    if ball_labels.has_key("noball"):
+      tmp_labels[ball_labels["noball"]] = 0
+    else:
+      # set all values to 0 since we have to assume everything unmarked is no ball
+      tmp_labels = np.zeros((len(patchdata),))
+      
+    tmp_labels[ball_labels["ball"]] = 1
     
   return tmp_labels
     
