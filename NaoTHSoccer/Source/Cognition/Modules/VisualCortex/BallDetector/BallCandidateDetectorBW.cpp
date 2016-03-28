@@ -23,7 +23,10 @@
 BallCandidateDetectorBW::BallCandidateDetectorBW()
   : useNeuronal(true)
 {
+  DEBUG_REQUEST_REGISTER("Vision:BallCandidateDetectorBW:keyPoints", "draw key points extracted from integral image", false);
+
   DEBUG_REQUEST_REGISTER("Vision:BallCandidateDetectorBW:drawCandidates", "draw ball candidates", false);
+
   DEBUG_REQUEST_REGISTER("Vision:BallCandidateDetectorBW:drawPercepts", "draw ball percepts", false);
 
   // load model from config folder
@@ -56,7 +59,7 @@ bool BallCandidateDetectorBW::execute(CameraInfo::CameraID id)
   best.clear();
   calculateCandidates(best);
 
-  DEBUG_REQUEST("Vision:BallCandidateDetectorBW:drawCandidates",
+  DEBUG_REQUEST("Vision:BallCandidateDetectorBW:keyPoints",
     for(std::list<Best::BallCandidate>::iterator i = best.candidates.begin(); i != best.candidates.end(); ++i) {
       int radius = (int)((*i).radius + 0.5);
       RECT_PX(ColorClasses::blue, (*i).center.x - radius, (*i).center.y - radius, (*i).center.x + radius, (*i).center.y + radius);
@@ -186,8 +189,31 @@ void BallCandidateDetectorBW::executeSVM()
 
 void BallCandidateDetectorBW::calculateCandidates(Best& best) const
 {
+  //
+  // STEP I: find the maximal height minY to be scanned in the image
+  //
+  if(!getFieldPercept().valid) {
+    return;
+  }
+
+  const FieldPercept::FieldPoly& fieldPolygon = getFieldPercept().getValidField();
+
+  // find the top point of the polygon
+  int minY = getImage().height();
+  for(int i = 0; i < fieldPolygon.length ; i++)
+  {
+    if(fieldPolygon.points[i].y < minY && fieldPolygon.points[i].y >= 0) {
+      minY = fieldPolygon.points[i].y;
+    }
+  }
+
+  // double check: polygon is empty
+  if(minY == (int)getImage().height() || minY < 0) {
+    return;
+  }
+
   // todo needs a better place
-  const int FACTOR = 4;
+  const int32_t FACTOR = getGameColorIntegralImage().FACTOR;
 
   double borderRadiusFactor = 0.5;
   MODIFY("BallCandidateDetectorBW:borderRadiusFactor", borderRadiusFactor);
@@ -195,7 +221,7 @@ void BallCandidateDetectorBW::calculateCandidates(Best& best) const
   Vector2i center;
   Vector2i point;
   
-  for(point.y = 0; point.y+1 < (int)getGameColorIntegralImage().getHeight(); ++point.y) 
+  for(point.y = minY/FACTOR; point.y+1 < (int)getGameColorIntegralImage().getHeight(); ++point.y)
   {
     double radius = estimatedBallRadius(point.x*FACTOR, point.y*FACTOR);
     int size   = (int)(radius*2.0/FACTOR+0.5);
@@ -207,27 +233,58 @@ void BallCandidateDetectorBW::calculateCandidates(Best& best) const
     }
 
     // smalest ball size == 3 => ball size == FACTOR*3 == 12
-    if (size < 3 || point.y <= border || point.y+size+border+1 >= (int)getGameColorIntegralImage().getHeight()) {
+    if (size < 12 / FACTOR  || point.y <= border || point.y+size+border+1 >= (int)getGameColorIntegralImage().getHeight()) {
       continue;
     }
     
 
     for(point.x = border + 1; point.x + size + border+1 < (int)getGameColorIntegralImage().getWidth(); ++point.x)
     {
-      int inner = getGameColorIntegralImage().getSumForRect(point.x, point.y, point.x+size, point.y+size);
-
+      int inner = getGameColorIntegralImage().getSumForRect(point.x, point.y, point.x+size, point.y+size, 0);
+      
+      // && greenPoints(point.x*FACTOR, point.y*FACTOR, (point.x+size)*FACTOR, (point.y+size)*FACTOR) < 0.3
       // at least 50%
-      if (inner*2 > size*size) {
-
-        int outer = getGameColorIntegralImage().getSumForRect(point.x-border, point.y-border, point.x+size+border, point.y+size+border);
-        double value = (double)(inner - (outer - inner))/((double)(size+border)*(size+border));
+      if (inner*2 > size*size)
+      {
+        int green = getGameColorIntegralImage().getSumForRect(point.x, point.y, point.x+size, point.y+size, 1);
+        int outer = getGameColorIntegralImage().getSumForRect(point.x-border, point.y-border, point.x+size+border, point.y+size+border, 0);
+        double value = (double)(inner - (outer - inner) - 3*green)/((double)(size+border)*(size+border));
 
         center.x = point.x*FACTOR + (int)(radius+0.5);
         center.y = point.y*FACTOR + (int)(radius+0.5);
+        
         best.add(center, radius, value);
       }
     }
   }
+}
+
+double BallCandidateDetectorBW::greenPoints(int minX, int minY, int maxX, int maxY) const
+{
+  const size_t sampleSize = 21;
+
+  size_t greenPoints = 0;
+  Pixel pixel;
+  for(size_t i = 0; i < sampleSize; i++)
+  {
+    int x = Math::random(minX, maxX);
+    int y = Math::random(minY, maxY);
+    getImage().get(x, y, pixel);
+    
+    if(getFieldColorPercept().greenHSISeparator.isColor(pixel)) {
+      greenPoints++;
+    }
+      
+    DEBUG_REQUEST("Vision:BallDetector:draw_sanity_samples",
+      if(getFieldColorPercept().greenHSISeparator.isColor(pixel)) {
+        POINT_PX(ColorClasses::red, x, y);
+      } else {
+        POINT_PX(ColorClasses::blue, x, y);
+      }
+    );
+  }
+
+  return static_cast<double>(greenPoints) / static_cast<double>(sampleSize);
 }
 
 void BallCandidateDetectorBW::subsampling(std::vector<unsigned char>& data, int x0, int y0, int x1, int y1) const 
