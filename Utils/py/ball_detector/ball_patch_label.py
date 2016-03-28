@@ -64,7 +64,7 @@ def on_click(event):
  
 def key_pressed(event):
   
-  if event.key == 'enter':
+  if event.key == 'enter' or event.key == ' ':
     for i in range(show_size[0]*show_size[1]):
       setMarker(i, 0)
       
