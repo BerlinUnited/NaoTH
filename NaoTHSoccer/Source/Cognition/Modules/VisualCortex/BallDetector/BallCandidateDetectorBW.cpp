@@ -21,6 +21,7 @@
 #include <list>
 
 BallCandidateDetectorBW::BallCandidateDetectorBW()
+  : useNeuronal(true)
 {
   DEBUG_REQUEST_REGISTER("Vision:BallCandidateDetectorBW:drawCandidates", "draw ball candidates", false);
   DEBUG_REQUEST_REGISTER("Vision:BallCandidateDetectorBW:drawPercepts", "draw ball percepts", false);
@@ -28,9 +29,7 @@ BallCandidateDetectorBW::BallCandidateDetectorBW()
   // load model from config folder
   try
   {
-    // uncomment in order to use opencv stuff
-//    model = cv::Algorithm::load<cv::ml::ANN_MLP>("Config/ball_detector_model.dat");
-//    brisk = cv::BRISK::create(30, 0, 0.35f);
+    model = cv::Algorithm::load<cv::ml::ANN_MLP>("Config/ball_detector_model.dat");
   }
   catch(cv::Exception ex)
   {
@@ -63,43 +62,32 @@ void BallCandidateDetectorBW::execute(CameraInfo::CameraID id)
       RECT_PX(ColorClasses::blue, (*i).center.x - radius, (*i).center.y - radius, (*i).center.x + radius, (*i).center.y + radius);
     }
   );
-  
 
-  /*
-  for(point.y = 0; point.y < (int)getImage().height()/4; point.y+=1) 
+  if(useNeuronal && model && !model->empty())
   {
-    int r = radiusEstimation[point.y*4]*2/4;
-    int so = (int)(r*2.0*0.3/4.0+0.5);
-
-    if (point.y - so < 0 || point.y+r+so+1 > 480/4) {
-      continue;
-    }
-
-    for(point.x = so; point.x < (int)getImage().width()/4 - r - so; point.x+=1) 
-    {
-
-      int v  = integralImage[point.x+r][point.y+r]      +integralImage[point.x][point.y]      -integralImage[point.x][point.y+r]      -integralImage[point.x+r][point.y];
-      int vo = integralImage[point.x+r+so][point.y+r+so]+integralImage[point.x-so][point.y-so]-integralImage[point.x-so][point.y+r+so]-integralImage[point.x+r+so][point.y-so];
-      int vx = v - (vo - v);
-
-      int vi = (int)(((double)vx)/((double)valueMax)*255);
-      getDebugImageDrawings().drawPointToImage(v,0,0,point.x*4,point.y*4);
-    }
+    executeNeuronal();
   }
-  */
-  /*
-  if(radius > 0) {
-    CIRCLE_PX(ColorClasses::orange, center.x, center.y, radius);
+  else
+  {
+    executeSVM();
   }
-  */
 
-  std::list<Best::BallCandidate>::iterator best_element = best.candidates.begin();
-  int best_radius = -1;
-  double maxV = 0;
-  
+  DEBUG_REQUEST("Vision:BallCandidateDetectorBW:drawPercepts",
+    for(MultiBallPercept::ConstABPIterator iter = getMultiBallPercept().begin(); iter != getMultiBallPercept().end(); iter++) {
+      if((*iter).cameraId == cameraID) {
+        CIRCLE_PX(ColorClasses::orange, (int)((*iter).centerInImage.x+0.5), (int)((*iter).centerInImage.y+0.5), (int)((*iter).radiusInImage+0.5));
+      }
+    }
+  );
+
+
+}
+
+void BallCandidateDetectorBW::executeNeuronal()
+{
   for(std::list<Best::BallCandidate>::iterator i = best.candidates.begin(); i != best.candidates.end(); ++i)
   {
-    if(getFieldPercept().getValidField().isInside((*i).center)) 
+    if(getFieldPercept().getValidField().isInside((*i).center))
     {
       int radius = (int)((*i).radius*1.5 + 0.5);
 
@@ -109,58 +97,22 @@ void BallCandidateDetectorBW::execute(CameraInfo::CameraID id)
       subsampling(p.data, p.min.x, p.min.y, p.max.x, p.max.y);
 
       bool ballFound = false;
+      cv::Mat wrappedImg(12, 12, CV_8UC1, (void*) p.data.data());
 
-      if(!model || model->empty()) {
-        // use Heinrichs Code
-        double v = isBall(p.data);
-        if(best_radius < 0 || maxV < v) {
-          maxV = v;
-          best_element = i;
-          best_radius = radius;
-        }
+      // make it black white and a 144 wide vector
+      cv::Mat bwImg;
+      cv::adaptiveThreshold(wrappedImg, bwImg, 255, cv::ADAPTIVE_THRESH_MEAN_C, cv::THRESH_BINARY, 11, 2);
 
-        if(v >= 0.5) {
-          ballFound = true;
-        }
+     cv::Mat vector = bwImg.reshape(1, 1); // 1 channel 1 row
 
-      } else {
-        cv::Mat wrappedImg(12, 12, CV_8UC1, (void*) p.data.data());
+      cv::Mat in;
+      vector.convertTo(in, CV_32F);
 
-        // make it black white and a 144 wide vector
-        cv::Mat bwImg;
-        cv::adaptiveThreshold(wrappedImg, bwImg, 255, cv::ADAPTIVE_THRESH_MEAN_C, cv::THRESH_BINARY, 11, 2);
-
-       cv::Mat vector = bwImg.reshape(1, 1); // 1 channel 1 row
-
-        cv::Mat in;
-        vector.convertTo(in, CV_32F);
-
-        // create BRISK feature
-//        cv::KeyPoint kp = cv::KeyPoint(6,6, 7, -1, 100);
-//        cv::Mat inChar;
-//        std::vector<cv::KeyPoint> kpVec;
-//        kpVec.push_back(kp);
-//        brisk->compute(wrappedImg, kpVec, inChar);
-
-//        cv::Mat in;
-//        inChar.convertTo(in, CV_32F);
-
-        cv::Mat out;
-        if(model->predict(in, out) > 0) {
-          ballFound = true;
-        }
-
-        if(best_radius < 0 || (ballFound && best_radius > radius)) {
-          best_element = i;
-          best_radius = radius;
-        }
-
-      }
-
-      if(ballFound) {
+      cv::Mat out;
+      if(model->predict(in, out) > 0) {
+        ballFound = true;
         addBallPercept((*i).center, radius);
       }
-
 
       DEBUG_REQUEST("Vision:BallCandidateDetectorBW:drawCandidates",
         //CANVAS(((cameraID == CameraInfo::Top)?"ImageTop":"ImageBottom"));
@@ -175,20 +127,56 @@ void BallCandidateDetectorBW::execute(CameraInfo::CameraID id)
 
     }
   }
+}
 
+void BallCandidateDetectorBW::executeSVM()
+{
+  std::list<Best::BallCandidate>::iterator best_element = best.candidates.begin();
+  int best_radius = -1;
+  double maxV = 0;
 
+  for(std::list<Best::BallCandidate>::iterator i = best.candidates.begin(); i != best.candidates.end(); ++i)
+  {
+    if(getFieldPercept().getValidField().isInside((*i).center))
+    {
+      int radius = (int)((*i).radius*1.5 + 0.5);
+
+      BallCandidates::Patch& p = getBallCandidates().nextFreePatch();
+      p.min = Vector2i((*i).center.x - radius, (*i).center.y - radius);
+      p.max = Vector2i((*i).center.x + radius, (*i).center.y + radius);
+      subsampling(p.data, p.min.x, p.min.y, p.max.x, p.max.y);
+
+      bool ballFound = false;
+      double v = isBall(p.data);
+
+      if(best_radius < 0 || maxV < v) {
+        maxV = v;
+        best_element = i;
+        best_radius = radius;
+      }
+
+      if(v >= 0.5) {
+        ballFound = true;
+        addBallPercept((*i).center, radius);
+      }
+
+      DEBUG_REQUEST("Vision:BallCandidateDetectorBW:drawCandidates",
+        //CANVAS(((cameraID == CameraInfo::Top)?"ImageTop":"ImageBottom"));
+        if(ballFound) {
+          RECT_PX(ColorClasses::orange, (*i).center.x - radius, (*i).center.y - radius,
+            (*i).center.x + radius, (*i).center.y + radius);
+        } else {
+          RECT_PX(ColorClasses::gray, (*i).center.x - radius, (*i).center.y - radius,
+            (*i).center.x + radius, (*i).center.y + radius);
+        }
+      );
+
+    }
+  }
   DEBUG_REQUEST("Vision:BallCandidateDetectorBW:drawCandidates",
-    if(best_element != best.candidates.end()) { 
+    if(best_element != best.candidates.end()) {
       RECT_PX(ColorClasses::red, (*best_element).center.x - best_radius, (*best_element).center.y - best_radius,
         (*best_element).center.x + best_radius, (*best_element).center.y + best_radius);
-    } 
-  );
-
-  DEBUG_REQUEST("Vision:BallCandidateDetectorBW:drawPercepts",
-    for(MultiBallPercept::ConstABPIterator iter = getMultiBallPercept().begin(); iter != getMultiBallPercept().end(); iter++) {
-      if((*iter).cameraId == cameraID) {
-        CIRCLE_PX(ColorClasses::orange, (int)((*iter).centerInImage.x+0.5), (int)((*iter).centerInImage.y+0.5), (int)((*iter).radiusInImage+0.5));
-      }
     }
   );
 }

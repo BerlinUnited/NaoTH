@@ -176,6 +176,9 @@ private:
   double estimatedBallRadius(int x, int y) const;
   void addBallPercept(const Vector2i& center, double radius);
 
+  void executeNeuronal();
+  void executeSVM();
+
   double isBall(const std::vector<unsigned char>& data) 
   {
     /*
@@ -280,7 +283,9 @@ private:
     return (atan(v)+Math::pi_2)/Math::pi;//v > 0;
   }
 
-private:     
+private:
+
+  bool useNeuronal;
   
   DOUBLE_CAM_PROVIDE(BallCandidateDetectorBW, DebugImageDrawings);
 
@@ -295,7 +300,6 @@ private:
   DOUBLE_CAM_PROVIDE(BallCandidateDetectorBW, BallCandidates);
 
   cv::Ptr<cv::ml::ANN_MLP> model;
-  cv::Ptr<cv::BRISK> brisk;
 };//end class BallCandidateDetectorBW
 
 #endif // _BallCandidateDetectorBW_H_
