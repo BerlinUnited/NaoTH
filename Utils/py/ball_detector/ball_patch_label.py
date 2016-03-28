@@ -7,7 +7,7 @@ import matplotlib.patches as ptc
 import matplotlib
 import json
 
-import patchReader
+import naoth.patchReader as patchReader
 
 
 # todo make class
@@ -123,7 +123,7 @@ def showPatches():
     
 if __name__ == "__main__":
   
-  file = 'patches-approach-ball'
+  file = 'tk1'
   #file = 'patches-ball-sidecick'
   
   patchdata = patchReader.readAllPatchesFromLog('./'+file+'.log')
