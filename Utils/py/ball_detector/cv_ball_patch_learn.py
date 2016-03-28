@@ -72,8 +72,18 @@ def classify(X, labels, estimator):
 if __name__ == "__main__":
   
   # load patches from the file
-  X_train, labels_train = load_data('patches-approach-ball')
-  X_eval, labels_eval = load_data('patches-ball-sidecick')
+  f_train = "patches-approach-ball"
+  f_eval = "patches-ball-sidecick"
+  
+  if len(sys.argv) == 2:
+    f_train = sys.argv[1]
+    f_eval = sys.argv[1]
+  elif len(sys.argv) > 2:
+    f_train = sys.argv[1]
+    f_eval = sys.argv[2]
+  
+  X_train, labels_train = load_data(f_train)
+  X_eval, labels_eval = load_data(f_eval)
   
   print("Learning...")
   estimator = learn(X_train, labels_train)
