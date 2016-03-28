@@ -76,15 +76,6 @@ def key_pressed(event):
   elif event.key == 'escape' or event.key == 'q':
     exit(0)
 
-def load_patches_from_csv(file):
-  f = open(file, 'r')
-  patches = []
-  
-  for line in f:
-    s = line.split(';')
-    a = np.array(s).astype(float)
-    patches.append(a)
-    
 def save_labels(file):
   l = []
   for i, val in enumerate(labels):
@@ -109,7 +100,7 @@ def showPatches():
   image = np.zeros(((patch_size[1]+1)*show_size[1], (patch_size[0]+1)*show_size[0]))
     
   for i in range(show_size[0]*show_size[1]):
-    if i+1 > len(patchdata):
+    if window_idx+i+1 > len(patchdata):
       break
       
     a = np.array(patchdata[window_idx+i]).astype(float)
@@ -123,17 +114,17 @@ def showPatches():
   global image_canvas
   if image_canvas is None:
     image_canvas = fig.gca().imshow(image, cmap=plt.cm.gray, interpolation='nearest')
-    fig.show()
   else:
     image_canvas.set_data(image)
-    fig.canvas.draw()
+  
+  fig.suptitle(str(window_idx)+' - '+str(window_idx+show_size[0]*show_size[1])+' / '+str(len(patchdata)), fontsize=20)
+  fig.canvas.draw()
     
     
 if __name__ == "__main__":
-  #patches = load_patches_from_csv("./patches.txt")
   
-  #file = 'ball-move-around-patches'
   file = 'patches-approach-ball'
+  #file = 'patches-ball-sidecick'
   
   patchdata = patchReader.readAllPatchesFromLog('./'+file+'.log')
   label_file = './'+file+'.json'
