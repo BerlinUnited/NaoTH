@@ -5,6 +5,11 @@
  */
 package de.naoth.rc.dialogs;
 
+import com.google.gson.ExclusionStrategy;
+import com.google.gson.FieldAttributes;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.stream.JsonWriter;
 import de.naoth.rc.Helper;
 import de.naoth.rc.RobotControl;
 import de.naoth.rc.components.RobotStatus;
@@ -18,7 +23,6 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
@@ -369,11 +373,12 @@ public class TeamCommViewer extends AbstractDialog {
                     try {
                         SPLMessage msg = new SPLMessage(this.readBuffer);
                         
+                        long timestamp = System.currentTimeMillis();
+                        
                         if(logfile != null) {
-                            logfile.writeSplMessage(msg);
+                            logfile.writeMessage(msg, timestamp, this.isOpponent);
                         }
 
-                        long timestamp = System.currentTimeMillis();
                         if (address instanceof InetSocketAddress) {
                             messageMap.put(((InetSocketAddress) address).getHostString(), new Message(timestamp, msg, this.isOpponent));
                         }
@@ -395,20 +400,43 @@ public class TeamCommViewer extends AbstractDialog {
     
     private class LogFile {
         private File log;
+        private Gson json;
         private BufferedWriter bw;
+        private JsonWriter jw;
         private boolean writeLog = false;
         
         public LogFile(File log) throws IOException {
             this.log = log;
-            this.bw = new BufferedWriter(new FileWriter(this.log));
+            this.json = new GsonBuilder()
+                // shouldn't be any ... just for safety reasons
+                .disableInnerClassSerialization()
+                // skip Variable "user" in SPLMessage
+                .addSerializationExclusionStrategy(new ExclusionStrategy() {
+                    @Override
+                    public boolean shouldSkipField(FieldAttributes fieldAttributes) {
+                        return fieldAttributes.getName().compareTo("user") == 0;
+                    }
+
+                    @Override
+                    public boolean shouldSkipClass(Class<?> aClass) {
+                        return false;
+                    }
+                })
+                // write NaN value without throwing error/warning
+                .serializeSpecialFloatingPointValues()
+                .create();
+            // use JsonWriter to write the enclosing Json-Array ...
+            this.jw = new JsonWriter(new FileWriter(this.log));
+            // open "global"/"enclosing" Array
+            this.jw.beginArray();
         }
 
         @Override
         protected void finalize() throws Throwable {
             // flush buffer and close
-            if(bw != null) {
-                System.out.println("closing BufferdWriter ...");
-                bw.close();
+            if(this.jw != null) {
+                this.jw.endArray();
+                this.jw.close();
             }
             super.finalize();
         }
@@ -422,40 +450,23 @@ public class TeamCommViewer extends AbstractDialog {
             System.out.println("Disable log file");
             this.writeLog = false;
             try {
-                this.bw.flush();
+                this.jw.flush();
             } catch (IOException ex) {
                 Logger.getLogger(TeamCommViewer.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         
-        public void writeSplMessage(SPLMessage msg) {
+        public void writeMessage(SPLMessage msg, long timestamp, boolean isOpponent) {
             if(this.writeLog) {
-                Field f[] = SPLMessage.class.getFields();
                 try {
-                    this.bw.write("{");
-                    for (int i = 0; i < f.length; i++) {
-                        Field field = f[i];
-                        // handle numeric fields
-                        if( field.getGenericType() == java.lang.Integer.TYPE ||
-                            field.getGenericType() == java.lang.Short.TYPE ||
-                            field.getGenericType() == java.lang.Byte.TYPE ||
-                            field.getGenericType() == java.lang.Float.TYPE
-                            ) {
-                            this.bw.write("'"+field.getName() + "': " + field.get(msg) + ",");
-                        }
-                        /*
-                        // TODO: how handle array fields?
-                        System.out.println(field.getClass().isPrimitive());
-                        if(field.getName() == "suggestion") {
-                            System.out.println(field.getGenericType().getTypeName());
-                            field.get
-                        }*/
-                    }
-                    this.bw.write("},\n");
-                } catch (IllegalArgumentException ex) {
-                    Logger.getLogger(TeamCommViewer.class.getName()).log(Level.SEVERE, null, ex);
-                } catch (IllegalAccessException ex) {
-                    Logger.getLogger(TeamCommViewer.class.getName()).log(Level.SEVERE, null, ex);
+                    this.jw.beginObject();
+                    this.jw.name("timestamp");
+                    this.jw.value(timestamp);
+                    this.jw.name("isOpponent");
+                    this.jw.value(isOpponent);
+                    this.jw.name("spl");
+                    this.jw.jsonValue(this.json.toJson(msg));
+                    this.jw.endObject();
                 } catch (IOException ex) {
                     Logger.getLogger(TeamCommViewer.class.getName()).log(Level.SEVERE, null, ex);
                 }
