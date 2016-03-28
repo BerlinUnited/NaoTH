@@ -115,7 +115,7 @@ def showPatches():
     x = i % show_size[0]
     image[y*13:y*13+12,x*13:x*13+12] = a
     if labels[window_idx+i] < 0:
-      # remember this former invalid column as seenas seen
+      # remember this former invalid column as seen
       labels[window_idx+i]=0
     setMarker(i, labels[window_idx+i])
     

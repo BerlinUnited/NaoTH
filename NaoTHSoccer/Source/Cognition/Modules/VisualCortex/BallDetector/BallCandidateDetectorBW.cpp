@@ -29,6 +29,8 @@ BallCandidateDetectorBW::BallCandidateDetectorBW()
 
   DEBUG_REQUEST_REGISTER("Vision:BallCandidateDetectorBW:drawPercepts", "draw ball percepts", false);
 
+  DEBUG_REQUEST_REGISTER("Vision:BallCandidateDetectorBW:forceBothCameras", "always record both cameras", false);
+
   // load model from config folder
   try
   {

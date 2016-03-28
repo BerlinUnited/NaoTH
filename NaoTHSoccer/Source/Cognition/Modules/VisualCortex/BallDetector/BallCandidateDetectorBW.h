@@ -99,6 +99,12 @@ public:
     {
       execute(CameraInfo::Top);
     }
+    else
+    {
+      DEBUG_REQUEST("Vision:BallCandidateDetectorBW:forceBothCameras",
+        execute(CameraInfo::Top);
+      );
+    }
   }
  
 private:
