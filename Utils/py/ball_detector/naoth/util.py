@@ -81,7 +81,7 @@ def load_data(file):
       ball_labels = json.load(data_file)
     labels[ball_labels["ball"]] = 1
   else:
-    print "ERROR: no label file ", labels_file
+    print "ERROR: no label file ", label_file
     
   return X, labels
 
