@@ -11,7 +11,7 @@
 IKParameters::IKParameters()
 :ParameterList("IKParameters")
 {
-  PARAMETER_REGISTER(bodyPitchOffset) = 0;
+  PARAMETER_ANGLE_REGISTER(bodyPitchOffset) = 0;
   PARAMETER_REGISTER(hipOffsetX) = 10;
   PARAMETER_REGISTER(footOffsetY) = 0;
   
@@ -35,12 +35,10 @@ IKParameters::IKParameters()
   PARAMETER_REGISTER(walk.hip.ZMPOffsetYByCharacter) = 0;
 
   // step geometry
-  PARAMETER_REGISTER(walk.step.singleSupportTime) = 300;
+  PARAMETER_REGISTER(walk.step.duration) = 300;
   PARAMETER_REGISTER(walk.step.doubleSupportTime) = 40;
-  PARAMETER_REGISTER(walk.step.maxExtendDoubleSupportTime) = 20;
-  PARAMETER_REGISTER(walk.step.extendDoubleSupportTimeByCharacter) = 0;
+
   PARAMETER_REGISTER(walk.step.stepHeight) = 10;
-//  PARAMETER_REGISTER(walk.step.curveFactor) = 7;
 
   // step limits
   PARAMETER_REGISTER(walk.limits.maxTurnInner) = 10;
@@ -56,11 +54,13 @@ IKParameters::IKParameters()
   PARAMETER_REGISTER(walk.limits.maxCtrlWidth) = 50;
 
   // Stabilization
-  PARAMETER_REGISTER(walk.stabilization.enableFSRProtection) = true;
-  PARAMETER_REGISTER(walk.stabilization.enableWaitLanding) = false;
-  PARAMETER_REGISTER(walk.stabilization.minFSRProtectionCount) = 0;
-  PARAMETER_REGISTER(walk.stabilization.maxUnsupportedCount) = 0;
-  PARAMETER_REGISTER(walk.stabilization.maxWaitLandingCount) = 20;
+  //PARAMETER_REGISTER(walk.stabilization.enableFSRProtection) = true;
+  //PARAMETER_REGISTER(walk.stabilization.enableWaitLanding) = false;
+  //PARAMETER_REGISTER(walk.stabilization.minFSRProtectionCount) = 0;
+  //PARAMETER_REGISTER(walk.stabilization.maxUnsupportedCount) = 0;
+  //PARAMETER_REGISTER(walk.stabilization.maxWaitLandingCount) = 20;
+
+  PARAMETER_REGISTER(walk.stabilization.emergencyStopError) = 500;
 
   PARAMETER_REGISTER(walk.stabilization.rotationStabilize) = true;
   PARAMETER_REGISTER(walk.stabilization.rotationP.x) = 0;
@@ -95,34 +95,6 @@ IKParameters::IKParameters()
   PARAMETER_REGISTER(arm.walkEnabled) = true;
   PARAMETER_REGISTER(arm.takeBack) = false;
 
-  // kick parameter
-  PARAMETER_REGISTER(kick.shiftSpeed) = 0.05;
-  PARAMETER_REGISTER(kick.time_for_first_preparation) = 500;
-  PARAMETER_REGISTER(kick.retractionSpeed) = 0.05;
-  PARAMETER_REGISTER(kick.takeBackSpeed) = 0.05;
-  PARAMETER_REGISTER(kick.timeToLand) = 500;
-  PARAMETER_REGISTER(kick.stabilization_time) = 100;
-  PARAMETER_REGISTER(kick.strengthOffset) = 32.5;
-
-  PARAMETER_REGISTER(kick.minNumberOfPreKickSteps) = 15;
-  PARAMETER_REGISTER(kick.shiftTime) = 1000;
-  PARAMETER_REGISTER(kick.stopTime) = 1500;
-  PARAMETER_REGISTER(kick.kickSpeed) = 1;
-  PARAMETER_REGISTER(kick.afterKickTime) = 500;
-  PARAMETER_REGISTER(kick.hipHeightOffset) = -10;
-  PARAMETER_REGISTER(kick.footRadius) = 40;
-  PARAMETER_REGISTER(kick.maxDistanceToRetract) = 200;
-  PARAMETER_REGISTER(kick.enableStaticStabilizer) = true;
-
-  PARAMETER_REGISTER(kick.basicXRotationOffset) = 3;
-  PARAMETER_REGISTER(kick.extendedXRotationOffset) = 7;
-  PARAMETER_REGISTER(kick.rotationTime) = 300;
-
-  PARAMETER_REGISTER(kick.knee_pitch_offset) = 0;
-  PARAMETER_REGISTER(kick.ankle_roll_offset) = 0;
-
-  PARAMETER_REGISTER(kick.shiftOffsetYLeft) = 0;
-  PARAMETER_REGISTER(kick.shiftOffsetYRight) = 0;
 
   PARAMETER_REGISTER(balanceCoM.kP) = 0;
   PARAMETER_REGISTER(balanceCoM.kI) = 0;

@@ -76,16 +76,24 @@ private:
   public:
     Parameters() : ParameterList("GoalFeatureV2_1Parameters")
     {
+      //amount of scanlines above plus amount of scanlines below horizon
       PARAMETER_REGISTER(numberOfScanlines) = 9;
+      //distance between scanlines in pixels
       PARAMETER_REGISTER(scanlinesDistance) = 8;
 
-      PARAMETER_REGISTER(useArtificialPoints) = true;
-      PARAMETER_REGISTER(useWeakJumpsToo) = true;
-      PARAMETER_REGISTER(detectWhiteGoals) = true;
+      // minimum brighntess (or UV value) at which jumps shall be detected
+      // - every value below this threshold will be set to half of the threshold 
+      //   before used in the jumps detecting filter
       PARAMETER_REGISTER(threshold) = 140;
+      // minimum strength of a jump to be taken as possible edge point
       PARAMETER_REGISTER(thresholdGradient) = 24;
+      // if the switch useWeakJumpsToo is true than this is ne minimum strenght of a weak jump
+      // - should be near to half of the strength of regular jumps
       PARAMETER_REGISTER(thresholdWeakGradient) = 10;
+      // minimum similarity of the angles from the edges at begin and end of a feature candidate
+      // - (range is [0,1]: 0 - not simmilar, 1 - very simmilar)
       PARAMETER_REGISTER(thresholdFeatureGradient) = 0.5;
+      // maximum length a feature candidate can have
       PARAMETER_REGISTER(maxFeatureWidth) = 213;
 
       syncWithConfig();
@@ -97,12 +105,6 @@ private:
     int numberOfScanlines;
     int scanlinesDistance;
 
-    bool useArtificialPoints;
-    bool useWeakJumpsToo;
-    bool detectWhiteGoals;
-    bool usePrewitt;
-    bool useColorFeatures;
-    bool experimental;
     int threshold;
     int thresholdGradient;
     int thresholdWeakGradient;
@@ -112,6 +114,33 @@ private:
   };
 
   Parameters parameters;
+
+  class Switches: public ParameterList
+  {
+  public:
+    Switches() : ParameterList("GoalFeatureV2_1Switches")
+    {
+      // switch to enable use of artificial jumps
+      // - artificial jumps are created at the left or right border of the image,
+      //   if the pixel vlue is above the threshold
+      PARAMETER_REGISTER(useArtificialPoints) = true;
+      // switch to enable the use of weak jumps
+      PARAMETER_REGISTER(useWeakJumpsToo) = true;
+      // switches between detecting colored or white goals
+      PARAMETER_REGISTER(detectWhiteGoals) = true;
+
+      syncWithConfig();
+    }
+
+    virtual ~Switches() {
+    }
+
+    bool useArtificialPoints;
+    bool useWeakJumpsToo;
+    bool detectWhiteGoals;
+  };
+
+  Switches switchParams;
 
   void findEdgelFeatures(const Vector2d& scanDir, const Vector2i& p1);
   Vector2d calculateGradientUV(const Vector2i& point) const;

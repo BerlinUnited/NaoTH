@@ -36,11 +36,13 @@ GoalFeatureDetectorV2_1::GoalFeatureDetectorV2_1()
   getGoalFeaturePerceptTop().reset(parameters.numberOfScanlines);
 
   getDebugParameterList().add(&parameters);
+  getDebugParameterList().add(&switchParams);
 }
 
 GoalFeatureDetectorV2_1::~GoalFeatureDetectorV2_1()
 {
   getDebugParameterList().remove(&parameters);
+  getDebugParameterList().remove(&switchParams);
 }
 
 bool GoalFeatureDetectorV2_1::execute(CameraInfo::CameraID id)
@@ -130,7 +132,7 @@ void GoalFeatureDetectorV2_1::findEdgelFeatures(const Vector2d& scanDir, const V
     while(scanner.getNextWithCheck(pos)) 
     {
       IMG_GET(pos.x, pos.y, pixel);
-      int pixValue =  parameters.detectWhiteGoals ? pixel.y : (int) Math::round(((double) pixel.v - (double)pixel.u) * ((double) pixel.y / 255.0));
+      int pixValue =  switchParams.detectWhiteGoals ? pixel.y : (int) Math::round(((double) pixel.v - (double)pixel.u) * ((double) pixel.y / 255.0));
 
        DEBUG_REQUEST("Vision:GoalFeatureDetectorV2_1:draw_scanlines",
         POINT_PX(ColorClasses::gray, pos.x, pos.y );
@@ -162,7 +164,7 @@ void GoalFeatureDetectorV2_1::findEdgelFeatures(const Vector2d& scanDir, const V
       }
 
       bool peakFound = false;
-      if(parameters.useArtificialPoints && pixValue > parameters.threshold && filterSwitchReady)
+      if(switchParams.useArtificialPoints && pixValue > parameters.threshold && filterSwitchReady)
       {
         peakFound = true;
         peak_point = filter.point();
@@ -203,7 +205,7 @@ void GoalFeatureDetectorV2_1::findEdgelFeatures(const Vector2d& scanDir, const V
 
         Vector2d gradient;
 
-        if(parameters.useArtificialPoints && filterSwitchReady)
+        if(switchParams.useArtificialPoints && filterSwitchReady)
         {
           // assume edge direction along the normal of the horizon for the artificially created jump points
           // artificial jump points are created, if the images left side is very bright (i.e. the post is only partially seen)
@@ -212,7 +214,7 @@ void GoalFeatureDetectorV2_1::findEdgelFeatures(const Vector2d& scanDir, const V
         }
         else
         {
-          gradient = parameters.detectWhiteGoals ? calculateGradientY(peak_point) : calculateGradientUV(peak_point);
+          gradient = switchParams.detectWhiteGoals ? calculateGradientY(peak_point) : calculateGradientUV(peak_point);
         }
         EdgelD newEdgel;
 
@@ -262,7 +264,7 @@ void GoalFeatureDetectorV2_1::findEdgelFeatures(const Vector2d& scanDir, const V
               feature.point = Vector2d(lastEdgel.point + newEdgel.point) * 0.5;
           
               IMG_GET((int)  feature.point.x, (int)  feature.point.y, pixel);
-              int pixValue =  parameters.detectWhiteGoals ? pixel.y : (int) Math::round(((double) pixel.v - (double)pixel.u) * ((double) pixel.y / 255.0));
+              int pixValue =  switchParams.detectWhiteGoals ? pixel.y : (int) Math::round(((double) pixel.v - (double)pixel.u) * ((double) pixel.y / 255.0));
               if(pixValue > parameters.threshold)
               {
                 double featureWidth = (newEdgel.point - lastEdgel.point).abs();
@@ -278,7 +280,7 @@ void GoalFeatureDetectorV2_1::findEdgelFeatures(const Vector2d& scanDir, const V
                 feature.width = featureWidth;
                 features.push_back(feature);
                 
-                if(parameters.useWeakJumpsToo && weakJumpPoints.size() > 0)
+                if(switchParams.useWeakJumpsToo && weakJumpPoints.size() > 0)
                 {
                   for(size_t w = 0; w < weakJumpPoints.size(); w++)
                   {
@@ -370,7 +372,7 @@ void GoalFeatureDetectorV2_1::findEdgelFeatures(const Vector2d& scanDir, const V
         weakJumpPoints.clear();
       }
 
-      if(parameters.useWeakJumpsToo)
+      if(switchParams.useWeakJumpsToo)
       {
         if(!peakFound)
         {
@@ -390,7 +392,7 @@ void GoalFeatureDetectorV2_1::findEdgelFeatures(const Vector2d& scanDir, const V
         {
           Vector2d upright = getArtificialHorizon().getDirection();
           upright.rotateRight();
-          Vector2d gradientWeak = parameters.detectWhiteGoals ? calculateGradientY(peak_point_weak) : calculateGradientUV(peak_point_weak);
+          Vector2d gradientWeak = switchParams.detectWhiteGoals ? calculateGradientY(peak_point_weak) : calculateGradientUV(peak_point_weak);
           if(fabs(fabs(gradientWeak.y) - fabs(upright.y)) < 0.2 && (lastEdgel.point - peak_point_weak).abs2() > 2)
           {
             EdgelD weakEdgel;

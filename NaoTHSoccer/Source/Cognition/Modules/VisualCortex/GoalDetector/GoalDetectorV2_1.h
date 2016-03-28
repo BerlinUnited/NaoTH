@@ -90,15 +90,25 @@ private:
 
     Parameters() : ParameterList("GoalDetectorV2_1Parameters")
     {
+      // minimum brighntess (or UV value) at which jumps shall be detected
+      // - every value below this threshold will be set to half of the threshold 
+      //   before used in the jumps detecting filter
       PARAMETER_REGISTER(threshold) = 140;
+      // minimum strength of a jump to be taken as possible edge point
       PARAMETER_REGISTER(thresholdGradient) = 7;
+      // minimum amount of matching features needed to build a post canditate
       PARAMETER_REGISTER(minGoodPoints) = 3;
-
+      // switches between detecting colored or white goals
       PARAMETER_REGISTER(detectWhiteGoals) = true;
 
+      // only for colored goal detection: factor for the deviation of the collected color histogram for the post color
       PARAMETER_REGISTER(colorRegionDeviation) = 2;
+      // similarity of the normals between features
       PARAMETER_REGISTER(thresholdFeatureSimilarity) = 0.8;
+      // maximium ration between detected and backprojected width of the goals bars
       PARAMETER_REGISTER(maxBarWidthRatio) = 1.5;
+      // a post must have at least this ratio between detected and backprojected goal post height
+      // (detected height can be bigger but not lower)
       PARAMETER_REGISTER(minGoalHeightRatio) = 0.8;
 
       syncWithConfig();
