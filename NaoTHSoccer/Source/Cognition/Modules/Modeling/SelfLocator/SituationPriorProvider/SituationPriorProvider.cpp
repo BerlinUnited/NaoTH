@@ -7,30 +7,15 @@
 
 #include "SituationPriorProvider.h"
 
-// tools
-#include "Tools/Math/Probabilistics.h"
-#include "Tools/DataStructures/RingBufferWithSum.h"
-#include "../MonteCarloSelfLocator/Tools.h"
-
-using namespace std;
-using namespace mcsl;
-
 SituationPriorProvider::SituationPriorProvider()
 {
   // debug
-  //DEBUG_REQUEST_REGISTER("SPP:updateByOwnHalf", "updateByOwnHalf", false);
-  //DEBUG_REQUEST_REGISTER("SPP:updateByOppHalf", "updateByOppHalf", false);
-  //DEBUG_REQUEST_REGISTER("SPP:updateByOwnHalfLookingForward", "updateByOwnHalfLookingForward", false);
-  //DEBUG_REQUEST_REGISTER("SPP:updateByGoalBox", "updateByGoalBox", false);
-  //DEBUG_REQUEST_REGISTER("SPP:updateByStartPositions", "updateByStartPositions", false);
-  //DEBUG_REQUEST_REGISTER("SPP:updateAfterPenalize", "updateAfterPenalize", false);  
+  DEBUG_REQUEST_REGISTER("SPP:drawPriors", "drawPriors", false);  
   
   lastState = getPlayerInfo().gameData.gameState;
   currentState = getPlayerInfo().gameData.gameState;
 
   startedWalking = false;
-  startedWalking2 = false;
-
 }
 
 SituationPriorProvider::~SituationPriorProvider()
@@ -50,9 +35,8 @@ void SituationPriorProvider::execute()
   //for Debug stuff
   if(getSituationStatus().oppHalf)
   {
-    updateByOppHalf(getSituationPrior().theSampleSet);
+    getSituationPrior().currentPrior = getSituationPrior().oppHalf;
   }
-
   //Init Positions
   else if(getPlayerInfo().gameData.gameState == GameData::ready && lastState == GameData::initial)
   {
@@ -60,91 +44,111 @@ void SituationPriorProvider::execute()
     if(getMotionStatus().currentMotion == motion::walk && startedWalking == false)
     {
       startedWalking = true;
+      getSituationPrior().currentPrior = getSituationPrior().none;
     }
     if(startedWalking == false){
-      updateByStartPositions(getSituationPrior().theSampleSet);
+      getSituationPrior().currentPrior = getSituationPrior().firstReady;
     }
-  }
-  //Penalized in Set or Ready
-  else if(getPlayerInfo().gameData.gameState == GameData::set && lastState == GameData::penalized)
-  {
-      updateByOwnHalfLookingForward(getSituationPrior().theSampleSet);  
   }
   //Penalized in Set or Ready for Goalie
   else if(getPlayerInfo().gameData.playerNumber == 1 && getPlayerInfo().gameData.gameState == GameData::set && lastState == GameData::penalized){
     //The Goalie will be in the own Goal if manually placed in set
-    updateByGoalBox(getSituationPrior().theSampleSet);
+    getSituationPrior().currentPrior = getSituationPrior().goaliePenalizedInSet;
+  }
+  //Penalized in Set or Ready
+  else if(getPlayerInfo().gameData.gameState == GameData::set && lastState == GameData::penalized)
+  {
+    getSituationPrior().currentPrior = getSituationPrior().penalizedInSet;
   }
   //Penalized in Play
-  else if(getPlayerInfo().gameData.gameState == GameData::penalized)
+  else if(getPlayerInfo().gameData.gameState == GameData::playing && lastState == GameData::penalized)
   {
     //Dont update afer the robot started walking
-    if(getMotionStatus().currentMotion == motion::walk && startedWalking2 == false)
+    if(getMotionStatus().currentMotion == motion::walk && startedWalking == false)
     {
-      startedWalking2 = true;
+      startedWalking = true;
+      getSituationPrior().currentPrior = getSituationPrior().none;
     }
-    if(startedWalking2 == false){
-      updateAfterPenalize(getSituationPrior().theSampleSet);
+    if(startedWalking == false){
+      getSituationPrior().currentPrior = getSituationPrior().playAfterPenalized;
     }
   }
-  //Init, Set, Play, Finished
+  //Set
+  else if(getPlayerInfo().gameData.gameState == GameData::set)
+  {
+    getSituationPrior().currentPrior = getSituationPrior().set;
+  }
+  //Play, Finished
   else
   {
-    updateByOwnHalf(getSituationPrior().theSampleSet);
+    getSituationPrior().currentPrior = getSituationPrior().none;
+  }
+
+  DEBUG_REQUEST("SPP:drawPriors",
+    drawPriors();
+  );
+}
+
+void SituationPriorProvider::reset(){
+  //Reset the booleans
+  //Priors will no longer be active after the robot started walking
+  if(getPlayerInfo().gameData.gameState == GameData::initial || getPlayerInfo().gameData.gameState == GameData::playing){
+    startedWalking = false;
   }
 }
 
-void SituationPriorProvider::updateAfterPenalize(SampleSet& sampleSet)const
-{
-  //Todo: make this Parameters again
-  double startPositionsSigmaDistance = 500;
-  double startPositionsSigmaAngle = 0.5;
-
-  double offserY = 0;
-  Vector2d startLeft(getFieldInfo().xPosOwnPenaltyArea, getFieldInfo().yLength/2.0 - offserY);
-  Vector2d endLeft(                               -500, getFieldInfo().yLength/2.0 - offserY);
-
-  Vector2d startRight(startLeft.x, -startLeft.y);
-  Vector2d endRight(endLeft.x, -endLeft.y);
-
-  LineDensity leftStartingLine(startLeft, endLeft, -Math::pi_2, startPositionsSigmaDistance, startPositionsSigmaAngle);
-  LineDensity rightStartingLine(startRight, endRight, Math::pi_2, startPositionsSigmaDistance, startPositionsSigmaAngle);
-
-  /*---- HACK BEGIN ----*/
-  //Todo: should not be devided according to player number BUG
-  LineDensity startingLine;
-  if(getPlayerInfo().gameData.playerNumber < 4) {
-      startingLine = leftStartingLine;
-  } else {
-      startingLine = rightStartingLine;
+void SituationPriorProvider::drawPriors(){
+  if(getSituationPrior().currentPrior == getSituationPrior().none)
+  {
+    FIELD_DRAWING_CONTEXT;
+    PEN("000000", 30);
+    const Vector2d& fieldMin = getFieldInfo().fieldRect.min();
+    const Vector2d& fieldMax = getFieldInfo().fieldRect.max();
+    BOX(fieldMin.x, fieldMin.y, fieldMax.x, fieldMax.y);
+    LINE(fieldMin.x, fieldMin.y, fieldMax.x, fieldMax.y);
+    LINE(fieldMin.x, fieldMax.y, fieldMax.x, fieldMin.y);
   }
+  else if(getSituationPrior().currentPrior == getSituationPrior().firstReady)
+  {
+     //Todo: make this Parameters again
+    double startPositionsSigmaDistance = 500;
+    double startPositionsSigmaAngle = 0.5;
 
-  for(size_t i = 0; i < sampleSet.size(); i++) {
-      sampleSet[i].likelihood *= startingLine.update(sampleSet[i]);
-  }
-  /*---- HACK END ----*/
+    double offserY = 0;
+    Vector2d startLeft(getFieldInfo().xPosOwnPenaltyArea, getFieldInfo().yLength/2.0 - offserY);
+    Vector2d endLeft(                               -500, getFieldInfo().yLength/2.0 - offserY);
 
-  //DEBUG_REQUEST("SPP:updateAfterPenalize",
+    Vector2d startRight(startLeft.x, -startLeft.y);
+    Vector2d endRight(endLeft.x, -endLeft.y);
+
+    LineDensity leftStartingLine(startLeft, endLeft, -Math::pi_2, startPositionsSigmaDistance, startPositionsSigmaAngle);
+    LineDensity rightStartingLine(startRight, endRight, Math::pi_2, startPositionsSigmaDistance, startPositionsSigmaAngle);
+
+    //  for(size_t i = 0; i < sampleSet.size(); i++) {
+    //    if(sampleSet[i].translation.y > 0) {
+    //      sampleSet[i].likelihood *= leftStartingLine.update(sampleSet[i]);
+    //    } else {
+    //      sampleSet[i].likelihood *= rightStartingLine.update(sampleSet[i]);
+    //    }
+    //  }
+
+    /*---- HACK BEGIN ----*/
+    LineDensity startingLine;
+    if(getPlayerInfo().gameData.playerNumber < 4) {
+        startingLine = leftStartingLine;
+    } else {
+        startingLine = rightStartingLine;
+    }
+
+    /*---- HACK END ----*/
+
     FIELD_DRAWING_CONTEXT;
     leftStartingLine.draw(getDebugDrawings());
     rightStartingLine.draw(getDebugDrawings());
-  //);
-}
 
-void SituationPriorProvider::updateByOwnHalfLookingForward(SampleSet& sampleSet)const
-{
-  for(size_t s=0; s < sampleSet.size(); s++)
-  {
-    Sample& sample = sampleSet[s];
-
-    if(!getFieldInfo().ownHalfRect.inside(sample.translation)) {
-      sample.likelihood *= parameters.downWeightFactorOwnHalf;
-    }
-
-    double angleDiff = Math::normalize(sample.rotation - 0);
-    sample.likelihood *=  Math::gaussianProbability(angleDiff, parameters.startPositionsSigmaAngle);
   }
-  //DEBUG_REQUEST("SPP:updateByOwnHalfLookingForward",
+  else if(getSituationPrior().currentPrior == getSituationPrior().penalizedInSet)
+  {
     FIELD_DRAWING_CONTEXT;
     PEN("ff0000", 30);
     const Vector2d& fieldMin = getFieldInfo().ownHalfRect.min();
@@ -152,70 +156,14 @@ void SituationPriorProvider::updateByOwnHalfLookingForward(SampleSet& sampleSet)
     BOX(fieldMin.x, fieldMin.y, fieldMax.x, fieldMax.y);
     LINE(fieldMin.x, fieldMin.y, fieldMax.x, fieldMax.y);
     LINE(fieldMin.x, fieldMax.y, fieldMax.x, fieldMin.y);
-  //);
-}
 
-void SituationPriorProvider::updateByOwnHalf(SampleSet& sampleSet)const
-{
-  for(size_t s=0; s < sampleSet.size(); s++)
-  {
-    Sample& sample = sampleSet[s];
-
-    if(!getFieldInfo().ownHalfRect.inside(sample.translation)) {
-      sample.likelihood *= parameters.downWeightFactorOwnHalf;
-    }
   }
-  //DEBUG_REQUEST("SPP:updateByOwnHalf",
-    FIELD_DRAWING_CONTEXT;
-    PEN("000000", 30);
-    const Vector2d& fieldMin = getFieldInfo().ownHalfRect.min();
-    const Vector2d& fieldMax = getFieldInfo().ownHalfRect.max();
-    BOX(fieldMin.x, fieldMin.y, fieldMax.x, fieldMax.y);
-    LINE(fieldMin.x, fieldMin.y, fieldMax.x, fieldMax.y);
-    LINE(fieldMin.x, fieldMax.y, fieldMax.x, fieldMin.y);
-  //);
-}
-
-void SituationPriorProvider::updateByOppHalf(SampleSet& sampleSet)const
-{
-  for(size_t s=0; s < sampleSet.size(); s++)
+  else if(getSituationPrior().currentPrior == getSituationPrior().goaliePenalizedInSet)
   {
-    Sample& sample = sampleSet[s];
-
-    if(!getFieldInfo().oppHalfRect.inside(sample.translation)) {
-      sample.likelihood *= parameters.downWeightFactorOwnHalf;
-    }
-  }
-  //DEBUG_REQUEST("SPP:updateByOppHalf",
-    FIELD_DRAWING_CONTEXT;
-    PEN("000000", 30);
-    const Vector2d& fieldMin = getFieldInfo().oppHalfRect.min();
-    const Vector2d& fieldMax = getFieldInfo().oppHalfRect.max();
-    BOX(fieldMin.x, fieldMin.y, fieldMax.x, fieldMax.y);
-    LINE(fieldMin.x, fieldMin.y, fieldMax.x, fieldMax.y);
-    LINE(fieldMin.x, fieldMax.y, fieldMax.x, fieldMin.y);
-  //);
-}
-
-void SituationPriorProvider::updateByGoalBox(SampleSet& sampleSet)const
-{
-  static const Geometry::Rect2d ownGoalBox(
+    static const Geometry::Rect2d ownGoalBox(
     Vector2d(getFieldInfo().xPosOwnGroundline, getFieldInfo().yPosRightPenaltyArea) - Vector2d(200, 200), 
     Vector2d(getFieldInfo().xPosOwnPenaltyArea, getFieldInfo().yPosLeftPenaltyArea) + Vector2d(200, 200));
 
-  for(size_t s=0; s < sampleSet.size(); s++)
-  {
-    Sample& sample = sampleSet[s];
-    
-    if(!ownGoalBox.inside(sample.translation)) {
-      sample.likelihood *= parameters.downWeightFactorOwnHalf;
-    }
-    
-    double angleDiff = Math::normalize(sample.rotation - 0);
-    sample.likelihood *=  Math::gaussianProbability(angleDiff, parameters.startPositionsSigmaAngle);
-  }
-
-  //DEBUG_REQUEST("SPP:updateByGoalBox",
     FIELD_DRAWING_CONTEXT;
     PEN("000000", 30);
     const Vector2d& fieldMin = ownGoalBox.min();
@@ -223,59 +171,59 @@ void SituationPriorProvider::updateByGoalBox(SampleSet& sampleSet)const
     BOX(fieldMin.x, fieldMin.y, fieldMax.x, fieldMax.y);
     LINE(fieldMin.x, fieldMin.y, fieldMax.x, fieldMax.y);
     LINE(fieldMin.x, fieldMax.y, fieldMax.x, fieldMin.y);
-  //);
-}
 
-void SituationPriorProvider::updateByStartPositions(SampleSet& sampleSet)const
-{
-  //Todo: make this Parameters again
-  double startPositionsSigmaDistance = 500;
-  double startPositionsSigmaAngle = 0.5;
-
-  double offserY = 0;
-  Vector2d startLeft(getFieldInfo().xPosOwnPenaltyArea, getFieldInfo().yLength/2.0 - offserY);
-  Vector2d endLeft(                               -500, getFieldInfo().yLength/2.0 - offserY);
-
-  Vector2d startRight(startLeft.x, -startLeft.y);
-  Vector2d endRight(endLeft.x, -endLeft.y);
-
-  LineDensity leftStartingLine(startLeft, endLeft, -Math::pi_2, startPositionsSigmaDistance, startPositionsSigmaAngle);
-  LineDensity rightStartingLine(startRight, endRight, Math::pi_2, startPositionsSigmaDistance, startPositionsSigmaAngle);
-
-  //  for(size_t i = 0; i < sampleSet.size(); i++) {
-  //    if(sampleSet[i].translation.y > 0) {
-  //      sampleSet[i].likelihood *= leftStartingLine.update(sampleSet[i]);
-  //    } else {
-  //      sampleSet[i].likelihood *= rightStartingLine.update(sampleSet[i]);
-  //    }
-  //  }
-
-  /*---- HACK BEGIN ----*/
-  LineDensity startingLine;
-  if(getPlayerInfo().gameData.playerNumber < 4) {
-      startingLine = leftStartingLine;
-  } else {
-      startingLine = rightStartingLine;
   }
+  else if(getSituationPrior().currentPrior == getSituationPrior().set)
+  {
+    FIELD_DRAWING_CONTEXT;
+    PEN("000000", 30);
+    const Vector2d& fieldMin = getFieldInfo().ownHalfRect.min();
+    const Vector2d& fieldMax = getFieldInfo().ownHalfRect.max();
+    BOX(fieldMin.x, fieldMin.y, fieldMax.x, fieldMax.y);
+    LINE(fieldMin.x, fieldMin.y, fieldMax.x, fieldMax.y);
+    LINE(fieldMin.x, fieldMax.y, fieldMax.x, fieldMin.y);
 
-  for(size_t i = 0; i < sampleSet.size(); i++) {
-      sampleSet[i].likelihood *= startingLine.update(sampleSet[i]);
   }
-  /*---- HACK END ----*/
+  else if(getSituationPrior().currentPrior == getSituationPrior().playAfterPenalized)
+  {
+    //Todo: make this Parameters again
+    double startPositionsSigmaDistance = 500;
+    double startPositionsSigmaAngle = 0.5;
 
-  //DEBUG_REQUEST("SPP:updateByStartPositions",
+    double offserY = 0;
+    Vector2d startLeft(getFieldInfo().xPosOwnPenaltyArea, getFieldInfo().yLength/2.0 - offserY);
+    Vector2d endLeft(                               -500, getFieldInfo().yLength/2.0 - offserY);
+
+    Vector2d startRight(startLeft.x, -startLeft.y);
+    Vector2d endRight(endLeft.x, -endLeft.y);
+
+    LineDensity leftStartingLine(startLeft, endLeft, -Math::pi_2, startPositionsSigmaDistance, startPositionsSigmaAngle);
+    LineDensity rightStartingLine(startRight, endRight, Math::pi_2, startPositionsSigmaDistance, startPositionsSigmaAngle);
+
+    /*---- HACK BEGIN ----*/
+    //Todo: should not be devided according to player number BUG
+    LineDensity startingLine;
+    if(getPlayerInfo().gameData.playerNumber < 4) {
+        startingLine = leftStartingLine;
+    } else {
+        startingLine = rightStartingLine;
+    }
+    /*---- HACK END ----*/
+
     FIELD_DRAWING_CONTEXT;
     leftStartingLine.draw(getDebugDrawings());
     rightStartingLine.draw(getDebugDrawings());
-  //);
+
+  }
+  else if(getSituationPrior().currentPrior == getSituationPrior().oppHalf)
+  {
+    FIELD_DRAWING_CONTEXT;
+    PEN("000000", 30);
+    const Vector2d& fieldMin = getFieldInfo().oppHalfRect.min();
+    const Vector2d& fieldMax = getFieldInfo().oppHalfRect.max();
+    BOX(fieldMin.x, fieldMin.y, fieldMax.x, fieldMax.y);
+    LINE(fieldMin.x, fieldMin.y, fieldMax.x, fieldMax.y);
+    LINE(fieldMin.x, fieldMax.y, fieldMax.x, fieldMin.y);
+  }
 }
 
-void SituationPriorProvider::reset(){
-  //Reset the booleans
-  if(getPlayerInfo().gameData.gameState == GameData::initial){
-    startedWalking = false;
-  }
-  if(getPlayerInfo().gameData.gameState == GameData::playing){
-    startedWalking2 = false;
-  }
-}

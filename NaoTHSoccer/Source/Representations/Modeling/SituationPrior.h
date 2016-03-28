@@ -7,7 +7,7 @@
 #ifndef _SituationPrior_H
 #define _SituationPrior_H
 
-#include "Cognition/Modules/Modeling/SelfLocator/MonteCarloSelfLocator/SampleSet.h"
+#include <string>
 
 class SituationPrior
 {
@@ -17,7 +17,21 @@ public:
 
   virtual ~SituationPrior() {}
   
-  SampleSet theSampleSet;
+  enum PriorId
+  {
+    none,
+    firstReady,
+    penalizedInSet,
+    goaliePenalizedInSet,
+    playAfterPenalized,
+    oppHalf,
+    set,
+    numOfPriors
+  };
+
+  static std::string getName(PriorId id);
+  
+  PriorId currentPrior;
 };
 
 

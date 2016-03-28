@@ -31,19 +31,12 @@
 #include "Tools/Debug/DebugRequest.h"
 #include "Tools/Debug/DebugModify.h"
 #include "Tools/Debug/DebugDrawings.h"
-#include <Tools/DataStructures/ParameterList.h>
-#include "Tools/Debug/DebugParameterList.h"
-
-// basic tools
-#include "../MonteCarloSelfLocator/SampleSet.h"
-#include "../MonteCarloSelfLocator/CanopyClustering.h"
 
 BEGIN_DECLARE_MODULE(SituationPriorProvider)
   PROVIDE(DebugRequest)
   PROVIDE(DebugPlot)
   PROVIDE(DebugModify)
   PROVIDE(DebugDrawings)
-  PROVIDE(DebugParameterList)
 
   REQUIRE(FieldInfo)
   REQUIRE(FrameInfo)
@@ -66,24 +59,8 @@ public:
  virtual void execute();
 
 private:
-  class Parameters: public ParameterList
-  {
-  public: 
-    Parameters(): ParameterList("SPPParameters")
-    {  
-      PARAMETER_REGISTER(downWeightFactorOwnHalf) = 0.01;      
-      PARAMETER_REGISTER(startPositionsSigmaAngle) = 0.5;
 
-      // load from the file after registering all parameters
-      syncWithConfig();
-    }
-
-    double downWeightFactorOwnHalf;
-    double startPositionsSigmaAngle;
-
-  } parameters;
-
-   class LineDensity {
+  class LineDensity {
   private:
     Math::LineSegment segment;
     double angle; 
@@ -103,12 +80,12 @@ private:
     {
     }
 
-    double update(const Sample& sample) const {
+    /*double update(const Sample& sample) const {
       double distDiff = segment.minDistance(sample.translation);
       double angleDiff = Math::normalize(angle - sample.rotation);
       return Math::gaussianProbability(distDiff, distDeviation) * 
              Math::gaussianProbability(angleDiff, angleDeviation);
-    }
+    }*/
 
     void draw(DrawingCanvas2D& canvas)
     {
@@ -126,20 +103,13 @@ private:
   };
 
   
-  void updateByOwnHalfLookingForward(SampleSet& sampleSet)const;
-  void updateByOwnHalf(SampleSet& sampleSet)const;
-  void updateByOppHalf(SampleSet& sampleSet)const;
-  void updateByGoalBox(SampleSet& sampleSet)const;
-  void updateByStartPositions(SampleSet& sampleSet)const;
-  void updateAfterPenalize(SampleSet& sampleSet)const;
-  
+  void drawPriors();
   void reset();
 
   GameData::GameState lastState;
   GameData::GameState currentState;
 
   bool startedWalking;
-  bool startedWalking2;
 };
 
 #endif  /* _SituationPriorProvider_H */
