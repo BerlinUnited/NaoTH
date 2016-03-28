@@ -1,7 +1,5 @@
 #!/usr/bin/python
 
-import json
-import os, sys, getopt, math
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.patches as ptc
@@ -11,7 +9,7 @@ from sklearn.linear_model import SGDClassifier
 from sklearn import svm
 import sklearn.neural_network as nn
 
-import patchReader
+from naoth.util import *
 
 show_size = (50, 30) # width, height
 patch_size = (12, 12) # width, height
@@ -37,6 +35,9 @@ def learn(X, labels):
   plt.imshow(c, cmap=plt.cm.gray, interpolation='nearest')
   plt.show()
   
+  return estimator
+
+def evaluate(X, labels, estimator):  
   
   image = np.zeros(((patch_size[1]+1)*show_size[1], (patch_size[0]+1)*show_size[0]))
   
@@ -67,39 +68,18 @@ def learn(X, labels):
   plt.yticks(())
   plt.show()
   
-  
-def load_patches_from_csv(file):
-  f = open(file, 'r')
-  patches = []
-  
-  for line in f:
-    s = line.split(';')
-    a = np.array(s).astype(float)
-    patches.append(a)
-
-    
-def load_data(file):
-  patches = patchReader.readAllPatchesFromLog('./'+file+'.log')
- 
-  X = np.array(patches)
-  labels = np.zeros((X.shape[0],))
-  
-  label_file = './'+file+'.json'
-  if os.path.isfile(label_file):
-    with open(label_file, 'r') as data_file:
-      ball_labels = json.load(data_file)
-    labels[ball_labels["ball"]] = 1
-  else:
-    print "ERROR: no label file ", labels_file
-    
-  return X, labels
-    
+        
     
 if __name__ == "__main__":
   
   # load patches from the file
-  X, labels = load_data('patches-approach-ball')
-  learn(X, labels)
+  X_train, labels_train = load_data('patches-approach-ball')
+  X_eval, labels_eval = load_data('patches-ball-sidecick')
+  
+  print("Learning...")
+  estimator = learn(X_train, labels_train)
+  print("Evaluating...")
+  evaluate(X_eval, labels_eval, estimator)
   
 
     
