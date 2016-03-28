@@ -1,7 +1,9 @@
 #include "ExtendedKalmanFilter4d.h"
 
-ExtendedKalmanFilter4d::ExtendedKalmanFilter4d(const Eigen::Vector4d& state, const Eigen::Matrix2d& processNoiseStdSingleDimension, const Eigen::Matrix2d& measurementNoiseCovariances, const Eigen::Matrix2d& initialStateStdSingleDimension):
+ExtendedKalmanFilter4d::ExtendedKalmanFilter4d(const naoth::FrameInfo& frameInfo, const Eigen::Vector4d& state, const Eigen::Matrix2d& processNoiseStdSingleDimension, const Eigen::Matrix2d& measurementNoiseCovariances, const Eigen::Matrix2d& initialStateStdSingleDimension):
     updated(false),
+    lastUpdateFrame(frameInfo),
+    createFrame(frameInfo),
     x(state)
 {
     Eigen::Matrix2d q;

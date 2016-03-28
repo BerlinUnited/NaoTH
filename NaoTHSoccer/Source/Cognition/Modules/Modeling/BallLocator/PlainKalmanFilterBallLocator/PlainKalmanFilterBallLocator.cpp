@@ -112,7 +112,7 @@ void PlainKalmanFilterBallLocator::execute()
         {
             Eigen::Vector4d newState;
             newState << p.x, 0, p.y, 0;
-            filter.push_back(ExtendedKalmanFilter4d(newState, processNoiseStdSingleDimension, measurementNoiseCovariances, initialStateStdSingleDimension));
+            filter.push_back(ExtendedKalmanFilter4d(getFrameInfo(), newState, processNoiseStdSingleDimension, measurementNoiseCovariances, initialStateStdSingleDimension));
         }
         else
         {
@@ -158,10 +158,12 @@ void PlainKalmanFilterBallLocator::execute()
         double evalue = (*bestModel).getEllipseLocation().major * (*bestModel).getEllipseLocation().minor *M_PI;
 
         for(std::vector<ExtendedKalmanFilter4d>::const_iterator iter = ++filter.begin(); iter != filter.end(); ++iter){
-            double temp = (*iter).getEllipseLocation().major * (*iter).getEllipseLocation().minor * M_PI;
-            if(temp < evalue) {
-                evalue = temp;
-                bestModel = iter;
+            if(getFrameInfo().getTimeSince(iter->getFrameOfCreation().getTime()) > 300) {
+              double temp = (*iter).getEllipseLocation().major * (*iter).getEllipseLocation().minor * M_PI;
+              if(temp < evalue) {
+                  evalue = temp;
+                  bestModel = iter;
+              }
             }
         }
 

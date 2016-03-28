@@ -32,7 +32,7 @@ struct Ellipse2d{
 class ExtendedKalmanFilter4d
 {
 public:
-    ExtendedKalmanFilter4d(const Eigen::Vector4d& state, const Eigen::Matrix2d& processNoiseStdSingleDimension, const Eigen::Matrix2d& measurementNoiseCovariances, const Eigen::Matrix2d& initialStateStdSingleDimension);
+    ExtendedKalmanFilter4d(const naoth::FrameInfo& frameInfo, const Eigen::Vector4d& state, const Eigen::Matrix2d& processNoiseStdSingleDimension, const Eigen::Matrix2d& measurementNoiseCovariances, const Eigen::Matrix2d& initialStateStdSingleDimension);
 
     ~ExtendedKalmanFilter4d();
 
@@ -50,6 +50,7 @@ public:
     //--- getter ---//
     bool wasUpdated() const;
     const naoth::FrameInfo& getLastUpdateFrame() const;
+    const naoth::FrameInfo& getFrameOfCreation() const { return createFrame; }
 
     const Eigen::Matrix4d& getProcessCovariance() const;
     const Eigen::Matrix2d& getMeasurementCovariance() const;
@@ -67,6 +68,7 @@ private:
 private:
     bool updated;
     naoth::FrameInfo lastUpdateFrame;
+    naoth::FrameInfo createFrame;
 
     // transformation matrices
     Eigen::Matrix4d F;           // state transition matrix
