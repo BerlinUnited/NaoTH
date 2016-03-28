@@ -15,6 +15,7 @@
 #include "Representations/Perception/FieldColorPercept.h"
 #include "Representations/Perception/ArtificialHorizon.h"
 #include "Representations/Perception/BodyContour.h"
+#include "Representations/Perception/ColorTable64.h"
 
 // Tools
 #include <Tools/Math/Vector2.h>
@@ -56,6 +57,7 @@ BEGIN_DECLARE_MODULE(FieldColorClassifier)
 
   PROVIDE(FieldColorPercept)
   PROVIDE(FieldColorPerceptTop)
+  PROVIDE(ColorTable64)
 END_DECLARE_MODULE(FieldColorClassifier)
 
 //////////////////// END MODULE INTERFACE DECLARATION //////////////////////
