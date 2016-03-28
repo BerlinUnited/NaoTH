@@ -38,6 +38,7 @@ def brisk(img):
 	return des.astype(dtype=np.float32)
 	
 def custom(img):
+	img = img.astype("uint8")
 	img = cv2.adaptiveThreshold(img, 255, cv2.ADAPTIVE_THRESH_MEAN_C,\
 		cv2.THRESH_BINARY,11,2)
 	return img.reshape(1,144)

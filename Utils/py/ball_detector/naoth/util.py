@@ -15,6 +15,24 @@ def getMarker(x,y,c):
   pos = (x*(patch_size[0]+1)-1,y*(patch_size[1]+1)-1)
   return ptc.Rectangle( pos, width=patch_size[0]+1, height=patch_size[1]+1, alpha=0.3, color=c)
 
+def shuffle_and_split(X, labels, ratio):
+  
+  # combine both to the same matrix so shuffling does not disconnect the samples and labels
+  labelsAsMatrix = np.asmatrix(labels).T
+  Y = np.concatenate((X, labelsAsMatrix), axis=1)
+  # do shuffling
+  np.random.shuffle(Y)
+  
+  # split into two
+  splitIdx = Y.shape[0] * ratio
+  
+  Y1 = Y[0:splitIdx,:]
+  Y2 = Y[splitIdx+1:,:]
+  
+  X1, labels1 = np.hsplit(Y1, [X.shape[1]])
+  X2, labels2 = np.hsplit(Y2, [X.shape[1]])
+  
+  return X1, labels1, X2, labels2
 
 def show_evaluation(X, goldstd_response, actual_response):  
   

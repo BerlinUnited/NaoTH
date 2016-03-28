@@ -68,6 +68,38 @@ def classify(X, labels, estimator):
     classified[i] = ret;
       
   return classified
+
+def show_errors_asfeat(X, goldstd_response, actual_response):  
+  
+  image = np.zeros(((patch_size[1]+1)*show_size[1], (patch_size[0]+1)*show_size[0]))
+  
+  errorIdx = list()
+  # count
+  for i in range(0,X.shape[0]):
+    if actual_response[i] != goldstd_response[i]:
+        errorIdx.append(i)	
+      
+  # show errors
+  maxShownErrors = min(len(errorIdx), show_size[0]*show_size[1])
+  shownErrorIdx = errorIdx[0:maxShownErrors]
+  
+  j = 0
+  for i in shownErrorIdx:
+    a = np.transpose(np.reshape(X[i,:], (12,12)))
+    y = j // show_size[0]
+    x = j % show_size[0]
+    
+    # apply feature
+    f = feat.custom(a)
+    
+    image[y*13:y*13+12,x*13:x*13+12] = np.reshape(f, (12,12))
+    j += 1
+    
+  plt.imshow(image, cmap=plt.cm.gray, interpolation='nearest')
+
+  plt.xticks(())
+  plt.yticks(())
+  plt.show()
   
 if __name__ == "__main__":
   
@@ -75,16 +107,24 @@ if __name__ == "__main__":
   f_train = "patches-approach-ball"
   f_eval = "patches-ball-sidecick"
   
+  splitRatio = -1.0
+  
   if len(sys.argv) == 2:
     f_train = sys.argv[1]
     f_eval = sys.argv[1]
+    splitRatio = 0.8
   elif len(sys.argv) > 2:
     f_train = sys.argv[1]
     f_eval = sys.argv[2]
   
-  X_train, labels_train = load_data(f_train)
-  X_eval, labels_eval = load_data(f_eval)
   
+  if splitRatio < 0.0:
+    X_train, labels_train = load_data(f_train)
+    X_eval, labels_eval = load_data(f_eval)
+  else:
+    X_all, labels_all = load_data(f_train)
+    X_train, labels_train, X_eval, labels_eval = shuffle_and_split(X_all, labels_all, splitRatio)
+    
   print("Train size", X_train.shape[0])
   print("Eval size", X_eval.shape[0])
   
@@ -94,8 +134,7 @@ if __name__ == "__main__":
   estimator.save("ball_detector_model.dat")
   print("Evaluating...")
   classfied = classify(X_eval, labels_eval, estimator)
- 
   show_evaluation(X_eval, labels_eval, classfied)
-  
+  #show_errors_asfeat(X_eval, labels_eval, classfied)
 
     
