@@ -18,7 +18,7 @@ IKParameters::IKParameters()
   PARAMETER_REGISTER(stand.enableStabilization) = false;
   PARAMETER_REGISTER(stand.stiffness) = 0.7;
 
-  PARAMETER_REGISTER(stand.bodyPitchOffset) = 0.2;
+  PARAMETER_ANGLE_REGISTER(stand.bodyPitchOffset) = 0.2;
   PARAMETER_REGISTER(stand.hipOffsetX) = 15;
 
   // relax
@@ -36,7 +36,7 @@ IKParameters::IKParameters()
 
   // walk parameter:
   // General
-  PARAMETER_REGISTER(walk.general.bodyPitchOffset) = 0.2;
+  PARAMETER_ANGLE_REGISTER(walk.general.bodyPitchOffset) = 0.2;
   PARAMETER_REGISTER(walk.general.hipOffsetX) = 15;
   PARAMETER_REGISTER(walk.general.stiffness) = 0.7;
   PARAMETER_REGISTER(walk.general.useArm) = false;
