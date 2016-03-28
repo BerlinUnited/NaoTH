@@ -20,7 +20,24 @@ def show_evaluation(X, goldstd_response, actual_response):
   
   image = np.zeros(((patch_size[1]+1)*show_size[1], (patch_size[0]+1)*show_size[0]))
   
-  # classify
+  # count
+  tp = 0.0
+  fp = 0.0
+  fn = 0.0
+  for i in range(0,X.shape[0]):
+    if actual_response[i] ==  1:
+      if goldstd_response[i] == 1:
+	tp = tp + 1.0
+      else:
+	fp = fp + 1.0
+    else:
+      if goldstd_response[i] == 1:
+	fn = fn + 1.0
+	
+  print("precision", tp/(tp+fp))
+  print("recall", tp/(tp+fn))
+      
+  # show
   j = 0
   marker = []
   for i in range(4400,4400+show_size[0]*show_size[1]):
