@@ -77,6 +77,7 @@ public:
 
 private:
   void execute(const CameraInfo::CameraID id);
+  void updateCache();
   void debug();
 
   class Parameters: public ParameterList
@@ -110,6 +111,7 @@ private:
 
 
 private:
+  FieldColorPercept::HSISeparatorOptimized::Parameter cacheParameter;
   UniformGrid uniformGrid; // subsampling of the image
 
   class Histogram2D
