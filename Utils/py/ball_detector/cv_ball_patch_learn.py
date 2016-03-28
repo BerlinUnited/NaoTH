@@ -85,6 +85,9 @@ if __name__ == "__main__":
   X_train, labels_train = load_data(f_train)
   X_eval, labels_eval = load_data(f_eval)
   
+  print("Train size", X_train.shape[0])
+  print("Eval size", X_eval.shape[0])
+  
   print("Learning...")
   estimator = learn(X_train, labels_train)
   print("Saving...")
