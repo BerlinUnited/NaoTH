@@ -30,6 +30,7 @@ SituationPriorProvider::SituationPriorProvider()
 
   startedWalking = false;
   startedWalking2 = false;
+
 }
 
 SituationPriorProvider::~SituationPriorProvider()
@@ -49,7 +50,7 @@ void SituationPriorProvider::execute()
   //for Debug stuff
   if(getSituationStatus().oppHalf)
   {
-    updateByOppHalf();
+    updateByOppHalf(getSituationPrior().theSampleSet);
   }
 
   //Init Positions
@@ -61,18 +62,18 @@ void SituationPriorProvider::execute()
       startedWalking = true;
     }
     if(startedWalking == false){
-      updateByStartPositions();
+      updateByStartPositions(getSituationPrior().theSampleSet);
     }
   }
   //Penalized in Set or Ready
   else if(getPlayerInfo().gameData.gameState == GameData::set && lastState == GameData::penalized)
   {
-      updateByOwnHalfLookingForward();  
+      updateByOwnHalfLookingForward(getSituationPrior().theSampleSet);  
   }
   //Penalized in Set or Ready for Goalie
   else if(getPlayerInfo().gameData.playerNumber == 1 && getPlayerInfo().gameData.gameState == GameData::set && lastState == GameData::penalized){
     //The Goalie will be in the own Goal if manually placed in set
-    updateByGoalBox();
+    updateByGoalBox(getSituationPrior().theSampleSet);
   }
   //Penalized in Play
   else if(getPlayerInfo().gameData.gameState == GameData::penalized)
@@ -83,17 +84,18 @@ void SituationPriorProvider::execute()
       startedWalking2 = true;
     }
     if(startedWalking2 == false){
-      updateAfterPenalize();
+      updateAfterPenalize(getSituationPrior().theSampleSet);
     }
   }
   //Init, Set, Play, Finished
   else
   {
-    updateByOwnHalf();
+    updateByOwnHalf(getSituationPrior().theSampleSet);
   }
 }
 
-void SituationPriorProvider::updateAfterPenalize(){
+void SituationPriorProvider::updateAfterPenalize(SampleSet& sampleSet)const
+{
   //Todo: make this Parameters again
   double startPositionsSigmaDistance = 500;
   double startPositionsSigmaAngle = 0.5;
@@ -108,9 +110,19 @@ void SituationPriorProvider::updateAfterPenalize(){
   LineDensity leftStartingLine(startLeft, endLeft, -Math::pi_2, startPositionsSigmaDistance, startPositionsSigmaAngle);
   LineDensity rightStartingLine(startRight, endRight, Math::pi_2, startPositionsSigmaDistance, startPositionsSigmaAngle);
 
-  //for(size_t i = 0; i < sampleSet.size(); i++) {
-  //    sampleSet[i].likelihood *= startingLine.update(sampleSet[i]);
-  //}
+  /*---- HACK BEGIN ----*/
+  //Todo: should not be devided according to player number BUG
+  LineDensity startingLine;
+  if(getPlayerInfo().gameData.playerNumber < 4) {
+      startingLine = leftStartingLine;
+  } else {
+      startingLine = rightStartingLine;
+  }
+
+  for(size_t i = 0; i < sampleSet.size(); i++) {
+      sampleSet[i].likelihood *= startingLine.update(sampleSet[i]);
+  }
+  /*---- HACK END ----*/
 
   //DEBUG_REQUEST("SPP:updateAfterPenalize",
     FIELD_DRAWING_CONTEXT;
@@ -119,8 +131,19 @@ void SituationPriorProvider::updateAfterPenalize(){
   //);
 }
 
-void SituationPriorProvider::updateByOwnHalfLookingForward()
+void SituationPriorProvider::updateByOwnHalfLookingForward(SampleSet& sampleSet)const
 {
+  for(size_t s=0; s < sampleSet.size(); s++)
+  {
+    Sample& sample = sampleSet[s];
+
+    if(!getFieldInfo().ownHalfRect.inside(sample.translation)) {
+      sample.likelihood *= parameters.downWeightFactorOwnHalf;
+    }
+
+    double angleDiff = Math::normalize(sample.rotation - 0);
+    sample.likelihood *=  Math::gaussianProbability(angleDiff, parameters.startPositionsSigmaAngle);
+  }
   //DEBUG_REQUEST("SPP:updateByOwnHalfLookingForward",
     FIELD_DRAWING_CONTEXT;
     PEN("ff0000", 30);
@@ -132,9 +155,16 @@ void SituationPriorProvider::updateByOwnHalfLookingForward()
   //);
 }
 
-void SituationPriorProvider::updateByOwnHalf()
+void SituationPriorProvider::updateByOwnHalf(SampleSet& sampleSet)const
 {
+  for(size_t s=0; s < sampleSet.size(); s++)
+  {
+    Sample& sample = sampleSet[s];
 
+    if(!getFieldInfo().ownHalfRect.inside(sample.translation)) {
+      sample.likelihood *= parameters.downWeightFactorOwnHalf;
+    }
+  }
   //DEBUG_REQUEST("SPP:updateByOwnHalf",
     FIELD_DRAWING_CONTEXT;
     PEN("000000", 30);
@@ -146,9 +176,16 @@ void SituationPriorProvider::updateByOwnHalf()
   //);
 }
 
-void SituationPriorProvider::updateByOppHalf()
+void SituationPriorProvider::updateByOppHalf(SampleSet& sampleSet)const
 {
+  for(size_t s=0; s < sampleSet.size(); s++)
+  {
+    Sample& sample = sampleSet[s];
 
+    if(!getFieldInfo().oppHalfRect.inside(sample.translation)) {
+      sample.likelihood *= parameters.downWeightFactorOwnHalf;
+    }
+  }
   //DEBUG_REQUEST("SPP:updateByOppHalf",
     FIELD_DRAWING_CONTEXT;
     PEN("000000", 30);
@@ -160,11 +197,23 @@ void SituationPriorProvider::updateByOppHalf()
   //);
 }
 
-void SituationPriorProvider::updateByGoalBox()
+void SituationPriorProvider::updateByGoalBox(SampleSet& sampleSet)const
 {
   static const Geometry::Rect2d ownGoalBox(
     Vector2d(getFieldInfo().xPosOwnGroundline, getFieldInfo().yPosRightPenaltyArea) - Vector2d(200, 200), 
     Vector2d(getFieldInfo().xPosOwnPenaltyArea, getFieldInfo().yPosLeftPenaltyArea) + Vector2d(200, 200));
+
+  for(size_t s=0; s < sampleSet.size(); s++)
+  {
+    Sample& sample = sampleSet[s];
+    
+    if(!ownGoalBox.inside(sample.translation)) {
+      sample.likelihood *= parameters.downWeightFactorOwnHalf;
+    }
+    
+    double angleDiff = Math::normalize(sample.rotation - 0);
+    sample.likelihood *=  Math::gaussianProbability(angleDiff, parameters.startPositionsSigmaAngle);
+  }
 
   //DEBUG_REQUEST("SPP:updateByGoalBox",
     FIELD_DRAWING_CONTEXT;
@@ -177,7 +226,7 @@ void SituationPriorProvider::updateByGoalBox()
   //);
 }
 
-void SituationPriorProvider::updateByStartPositions()
+void SituationPriorProvider::updateByStartPositions(SampleSet& sampleSet)const
 {
   //Todo: make this Parameters again
   double startPositionsSigmaDistance = 500;
@@ -209,9 +258,9 @@ void SituationPriorProvider::updateByStartPositions()
       startingLine = rightStartingLine;
   }
 
-  //for(size_t i = 0; i < sampleSet.size(); i++) {
-  //    sampleSet[i].likelihood *= startingLine.update(sampleSet[i]);
-  //}
+  for(size_t i = 0; i < sampleSet.size(); i++) {
+      sampleSet[i].likelihood *= startingLine.update(sampleSet[i]);
+  }
   /*---- HACK END ----*/
 
   //DEBUG_REQUEST("SPP:updateByStartPositions",

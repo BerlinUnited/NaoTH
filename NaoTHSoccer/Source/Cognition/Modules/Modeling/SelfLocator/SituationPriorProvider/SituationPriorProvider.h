@@ -24,15 +24,15 @@
 #include "Representations/Modeling/BodyState.h"
 #include "Representations/Modeling/SituationStatus.h"
 
+#include "Representations/Modeling/SituationPrior.h"
+
 // debug
 #include "Tools/Debug/DebugPlot.h"
 #include "Tools/Debug/DebugRequest.h"
 #include "Tools/Debug/DebugModify.h"
 #include "Tools/Debug/DebugDrawings.h"
-
-// this are the results :)
-#include "Representations/Modeling/RobotPose.h"
-#include "Representations/Modeling/GoalModel.h"
+#include <Tools/DataStructures/ParameterList.h>
+#include "Tools/Debug/DebugParameterList.h"
 
 // basic tools
 #include "../MonteCarloSelfLocator/SampleSet.h"
@@ -43,6 +43,7 @@ BEGIN_DECLARE_MODULE(SituationPriorProvider)
   PROVIDE(DebugPlot)
   PROVIDE(DebugModify)
   PROVIDE(DebugDrawings)
+  PROVIDE(DebugParameterList)
 
   REQUIRE(FieldInfo)
   REQUIRE(FrameInfo)
@@ -52,6 +53,8 @@ BEGIN_DECLARE_MODULE(SituationPriorProvider)
   REQUIRE(MotionStatus)
   REQUIRE(BodyState)
   REQUIRE(SituationStatus)
+
+  PROVIDE(SituationPrior)
 END_DECLARE_MODULE(SituationPriorProvider)
 
 class SituationPriorProvider: public SituationPriorProviderBase
@@ -63,6 +66,23 @@ public:
  virtual void execute();
 
 private:
+  class Parameters: public ParameterList
+  {
+  public: 
+    Parameters(): ParameterList("SPPParameters")
+    {  
+      PARAMETER_REGISTER(downWeightFactorOwnHalf) = 0.01;      
+      PARAMETER_REGISTER(startPositionsSigmaAngle) = 0.5;
+
+      // load from the file after registering all parameters
+      syncWithConfig();
+    }
+
+    double downWeightFactorOwnHalf;
+    double startPositionsSigmaAngle;
+
+  } parameters;
+
    class LineDensity {
   private:
     Math::LineSegment segment;
@@ -105,12 +125,13 @@ private:
     }
   };
 
-  void updateByOwnHalfLookingForward();
-  void updateByOwnHalf();
-  void updateByOppHalf();
-  void updateByGoalBox();
-  void updateByStartPositions();
-  void updateAfterPenalize();
+  
+  void updateByOwnHalfLookingForward(SampleSet& sampleSet)const;
+  void updateByOwnHalf(SampleSet& sampleSet)const;
+  void updateByOppHalf(SampleSet& sampleSet)const;
+  void updateByGoalBox(SampleSet& sampleSet)const;
+  void updateByStartPositions(SampleSet& sampleSet)const;
+  void updateAfterPenalize(SampleSet& sampleSet)const;
   
   void reset();
 
