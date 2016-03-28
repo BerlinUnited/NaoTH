@@ -168,24 +168,35 @@ void MonteCarloSelfLocator::execute()
       // use prior knowledge
       if(parameters.updateBySituation) //  && lastState == KIDNAPPED
       {
-        if(getSituationStatus().oppHalf)
-        {
-          updateByOppHalf(theSampleSet);
-        } 
-        else if(getPlayerInfo().gameData.gameState == GameData::set)
-        {
-          updateByOwnHalfLookingForward(theSampleSet);
-        } // check if the game controller was alive in the last 10s ~ 300frames
-        else if(getPlayerInfo().gameData.frameNumber > 0 && 
-                getPlayerInfo().gameData.frameNumber + 300 > getFrameInfo().getFrameNumber()) 
+        if(getSituationPrior().currentPrior == getSituationPrior().firstReady)
         {
           updateByStartPositions(theSampleSet);
         }
-        else
+        else if(getSituationPrior().currentPrior == getSituationPrior().penalizedInSet)
+        {
+          updateByOwnHalfLookingForward(theSampleSet);
+        }
+        else if(getSituationPrior().currentPrior == getSituationPrior().goaliePenalizedInSet)
+        {
+          updateByGoalBox(theSampleSet);
+        }
+        else if(getSituationPrior().currentPrior == getSituationPrior().set)
         {
           updateByOwnHalf(theSampleSet);
         }
-      }
+        else if(getSituationPrior().currentPrior == getSituationPrior().playAfterPenalized)
+        {
+          //Todo: dont distinguish the player numbers
+          updateByStartPositions(theSampleSet);
+        }
+        else if(getSituationPrior().currentPrior == getSituationPrior().oppHalf)
+        {
+          updateByOppHalf(theSampleSet);
+        }
+        else{
+          //SituationPrior None
+        }
+      }//end updateBySituation
 
 
       // NOTE: statistics has to be after updates and before resampling

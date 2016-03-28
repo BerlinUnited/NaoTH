@@ -31,6 +31,7 @@
 #include "Representations/Motion/MotionStatus.h"
 #include "Representations/Modeling/BodyState.h"
 #include "Representations/Modeling/SituationStatus.h"
+#include "Representations/Modeling/SituationPrior.h"
 
 // sensor percepts
 #include "Representations/Perception/GoalPercept.h"
@@ -75,6 +76,7 @@ BEGIN_DECLARE_MODULE(MonteCarloSelfLocator)
   REQUIRE(MotionStatus)
   REQUIRE(BodyState)
   REQUIRE(SituationStatus)
+  REQUIRE(SituationPrior)
 
   REQUIRE(GoalPercept)
   REQUIRE(GoalPerceptTop)
