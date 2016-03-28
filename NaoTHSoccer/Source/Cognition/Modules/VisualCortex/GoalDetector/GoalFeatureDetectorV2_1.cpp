@@ -36,11 +36,13 @@ GoalFeatureDetectorV2_1::GoalFeatureDetectorV2_1()
   getGoalFeaturePerceptTop().reset(parameters.numberOfScanlines);
 
   getDebugParameterList().add(&parameters);
+  getDebugParameterList().add(&switchParams);
 }
 
 GoalFeatureDetectorV2_1::~GoalFeatureDetectorV2_1()
 {
   getDebugParameterList().remove(&parameters);
+  getDebugParameterList().remove(&switchParams);
 }
 
 bool GoalFeatureDetectorV2_1::execute(CameraInfo::CameraID id)
