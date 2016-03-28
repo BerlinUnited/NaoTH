@@ -29,6 +29,7 @@
 #include "Tools/Debug/DebugRequest.h"
 #include "Tools/Debug/DebugImageDrawings.h"
 #include "Tools/Debug/DebugParameterList.h"
+#include "Representations/Perception/ColorTable64.h"
 
 
 BEGIN_DECLARE_MODULE(IntegralImageProvider)
@@ -43,6 +44,8 @@ BEGIN_DECLARE_MODULE(IntegralImageProvider)
 
   REQUIRE(FieldColorPercept)
   REQUIRE(FieldColorPerceptTop)
+
+  REQUIRE(ColorTable64)
 
   PROVIDE(GameColorIntegralImage)
   PROVIDE(GameColorIntegralImageTop)
@@ -65,7 +68,6 @@ public:
  
 private:
   CameraInfo::CameraID cameraID;
-  static const int FACTOR = 4;
 
   void integralBild();
 

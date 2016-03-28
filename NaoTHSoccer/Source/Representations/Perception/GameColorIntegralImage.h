@@ -158,10 +158,11 @@ public:
 		}
 	};
 
-	GameColorIntegralImage()
+  GameColorIntegralImage()
 		: integralImage(nullptr)
 		, width(0)
-		, height(0) {
+		, height(0) 
+  {
 	}
 	~GameColorIntegralImage() {
 		delete[] integralImage;
@@ -172,8 +173,8 @@ public:
 			delete[] integralImage;
 			width = _width;
 			height = _height;
-			integralImage = new uint32_t[height*width];
-			memset(integralImage, 0, height*width*sizeof(uint32_t));
+			integralImage = new uint32_t[height*width*MAX_COLOR];
+			memset(integralImage, 0, height*width*MAX_COLOR*sizeof(uint32_t));
 		}
 	}
 
@@ -185,11 +186,11 @@ public:
 		return integralImage;
 	}
 
-	uint getSumForRect(const BoundingBox& bb) const {
-    return getSumForRect(bb.minX, bb.minY, bb.maxX, bb.maxY);
+	uint getSumForRect(const BoundingBox& bb, uint32_t c) const {
+    return getSumForRect(bb.minX, bb.minY, bb.maxX, bb.maxY, c);
   }
 
-  uint getSumForRect(uint minX, uint minY, uint maxX, uint maxY) const {
+  uint getSumForRect(uint minX, uint minY, uint maxX, uint maxY, uint32_t c) const {
 		//maxX = maxX + 1;
 		//maxY = maxY + 1;
     minY -= 1;
@@ -200,10 +201,10 @@ public:
 		assert(maxX < width);
 		assert(maxY < height);
 
-		const uint32_t idx1 = (minY * width + minX);
-		const uint32_t idx2 = (minY * width + maxX);
-		const uint32_t idx3 = (maxY * width + minX);
-		const uint32_t idx4 = (maxY * width + maxX);
+		const uint32_t idx1 = (minY * width + minX)*MAX_COLOR;
+		const uint32_t idx2 = (minY * width + maxX)*MAX_COLOR;
+		const uint32_t idx3 = (maxY * width + minX)*MAX_COLOR;
+		const uint32_t idx4 = (maxY * width + maxX)*MAX_COLOR;
 
 		assert(nullptr != integralImage);
 		const uint32_t *buffer1 = integralImage + idx1;
@@ -211,12 +212,12 @@ public:
 		const uint32_t *buffer3 = integralImage + idx3;
 		const uint32_t *buffer4 = integralImage + idx4;
 
-		const uint32_t sum = buffer1[0] + buffer4[0] - buffer2[0] - buffer3[0];
+		const uint32_t sum = buffer1[c] + buffer4[c] - buffer2[c] - buffer3[c];
 		return sum;
 	}
 
-	double getDensityForRect(const BoundingBox &bb) const {
-		uint count = getSumForRect(bb);
+	double getDensityForRect(const BoundingBox &bb, uint32_t c) const {
+		uint count = getSumForRect(bb, c);
 		return double(count) / double(bb.getArea());
 	}
 
@@ -245,28 +246,33 @@ public:
 		return BoundingBox(0, 0, width - 2, height - 2);
 	}
 
-	BoundingBox getShrunkBBInRect(BoundingBox bb) const;
+	BoundingBox getShrunkBBInRect(BoundingBox bb, uint32_t c) const;
 
 	//BoundingBox getShrunkBBInRect(BoundingBox bb, Color c1, Color c2) const;
 
-	BoundingBox getShrunkBBInRectInDirection(BoundingBox bb, ShrinkDirection direction) const;
+	BoundingBox getShrunkBBInRectInDirection(BoundingBox bb, ShrinkDirection direction, uint32_t c) const;
 
 	//BoundingBox getGrowBBHorizontal(BoundingBox bb, ColorMix c, uint stepSize, double densityThreshold=0.5) const;
 	//BoundingBox getGrowBBVertical  (BoundingBox bb, ColorMix c, uint stepSize, double densityThreshold=0.5) const;
 
+public:
+  static const uint32_t MAX_COLOR = 2;
+  static const int32_t FACTOR = 4;
 
 private:
 	uint32_t* integralImage;
 	uint32_t width, height;
 
-	void shrinkBBPartPositive(BoundingBox &bb, uint &dimension, int length, uint colorCount) const;
-	void shrinkBBPartNegative(BoundingBox &bb, uint &dimension, int length, uint colorCount) const;
+	void shrinkBBPartPositive(BoundingBox &bb, uint &dimension, int length, uint32_t c, uint colorCount) const;
+	void shrinkBBPartNegative(BoundingBox &bb, uint &dimension, int length, uint32_t c, uint colorCount) const;
 
 //	void shrinkBBPartPositive(BoundingBox &bb, uint &dimension, int length, Color c1, Color c2, uint colorCount) const;
 //	void shrinkBBPartNegative(BoundingBox &bb, uint &dimension, int length, Color c1, Color c2, uint colorCount) const;
 };
 
-class GameColorIntegralImageTop : public GameColorIntegralImage {};
+class GameColorIntegralImageTop : public GameColorIntegralImage 
+{
+};
 
 
 inline GameColorIntegralImage::BoundingBox::NodeDirection operator&(GameColorIntegralImage::BoundingBox::NodeDirection bb1, GameColorIntegralImage::BoundingBox::NodeDirection bb2) {

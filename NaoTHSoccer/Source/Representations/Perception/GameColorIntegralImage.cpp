@@ -2,14 +2,14 @@
 #include "GameColorIntegralImage.h"
 #include <assert.h>
 
-void GameColorIntegralImage::shrinkBBPartPositive(GameColorIntegralImage::BoundingBox &bb, uint &dimension, int length, uint colorCount) const {
+void GameColorIntegralImage::shrinkBBPartPositive(GameColorIntegralImage::BoundingBox &bb, uint &dimension, int length, uint32_t c, uint colorCount) const {
 	const uint bound = std::abs((int)(dimension + length));
 	while (length > 1) {
 		length = (int)ceil(length / 2.0);
 		if (dimension + length <= bound) {
 			uint originalDimension = dimension;
 			dimension += length;
-			uint ccSub = getSumForRect(bb);
+			uint ccSub = getSumForRect(bb, c);
 			if (ccSub != colorCount) {
 				dimension = originalDimension;
 			}
@@ -17,14 +17,14 @@ void GameColorIntegralImage::shrinkBBPartPositive(GameColorIntegralImage::Boundi
 	}
 }
 
-void GameColorIntegralImage::shrinkBBPartNegative(GameColorIntegralImage::BoundingBox &bb, uint &dimension, int length, uint colorCount) const {
+void GameColorIntegralImage::shrinkBBPartNegative(GameColorIntegralImage::BoundingBox &bb, uint &dimension, int length, uint32_t c, uint colorCount) const {
 	const uint bound = dimension - length;
 	while (length > 1) {
 		length = (int)ceil(length / 2.0);
 		if (dimension - length >= bound) {
 			uint originalDimension = dimension;
 			dimension -= length;
-			uint ccSub = getSumForRect(bb);
+			uint ccSub = getSumForRect(bb, c);
 			if (ccSub != colorCount) {
 				dimension = originalDimension;
 			}
@@ -67,15 +67,15 @@ void GameColorIntegralImage::shrinkBBPartNegative(GameColorIntegralImage::Boundi
 	}
 }
 */
-GameColorIntegralImage::BoundingBox GameColorIntegralImage::getShrunkBBInRect(BoundingBox bb) const {
-	uint colorCnt = getSumForRect(bb);
+GameColorIntegralImage::BoundingBox GameColorIntegralImage::getShrunkBBInRect(BoundingBox bb, uint32_t c) const {
+	uint colorCnt = getSumForRect(bb, c);
 //	assert(colorCnt > 0);
 
-	shrinkBBPartPositive(bb, bb.minX, bb.getWidth(), colorCnt);
-	shrinkBBPartPositive(bb, bb.minY, bb.getHeight(), colorCnt);
+	shrinkBBPartPositive(bb, bb.minX, bb.getWidth(), colorCnt,c);
+	shrinkBBPartPositive(bb, bb.minY, bb.getHeight(), colorCnt,c);
 
-	shrinkBBPartNegative(bb, bb.maxX, bb.getWidth(), colorCnt);
-	shrinkBBPartNegative(bb, bb.maxY, bb.getHeight(), colorCnt);
+	shrinkBBPartNegative(bb, bb.maxX, bb.getWidth(), colorCnt,c);
+	shrinkBBPartNegative(bb, bb.maxY, bb.getHeight(), colorCnt,c);
 
 	return bb;
 }
@@ -96,20 +96,20 @@ GameColorIntegralImage::BoundingBox GameColorIntegralImage::getShrunkBBInRect(Bo
 	return bb;
 }
 */
-auto GameColorIntegralImage::getShrunkBBInRectInDirection(BoundingBox bb, ShrinkDirection _dir) const -> BoundingBox {
-	uint colorCnt = getSumForRect(bb);
+auto GameColorIntegralImage::getShrunkBBInRectInDirection(BoundingBox bb, ShrinkDirection _dir, uint32_t c) const -> BoundingBox {
+	uint colorCnt = getSumForRect(bb,c);
 
 	if (hasShrinkDirection(_dir, Down)) {
-		shrinkBBPartPositive(bb, bb.minY, bb.getHeight(), colorCnt);
+		shrinkBBPartPositive(bb, bb.minY, bb.getHeight(), colorCnt,c);
 	}
 	if (hasShrinkDirection(_dir, Up)) {
-		shrinkBBPartNegative(bb, bb.maxY, bb.getHeight(), colorCnt);
+		shrinkBBPartNegative(bb, bb.maxY, bb.getHeight(), colorCnt,c);
 	}
 	if (hasShrinkDirection(_dir, Right)) {
-		shrinkBBPartPositive(bb, bb.minX, bb.getWidth(), colorCnt);
+		shrinkBBPartPositive(bb, bb.minX, bb.getWidth(), colorCnt,c);
 	}
 	if (hasShrinkDirection(_dir, Left)) {
-		shrinkBBPartNegative(bb, bb.maxX, bb.getWidth(), colorCnt);
+		shrinkBBPartNegative(bb, bb.maxX, bb.getWidth(), colorCnt,c);
 	}
 
 	return bb;
