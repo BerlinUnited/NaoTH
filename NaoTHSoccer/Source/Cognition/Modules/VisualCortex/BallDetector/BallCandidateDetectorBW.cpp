@@ -29,6 +29,7 @@ BallCandidateDetectorBW::BallCandidateDetectorBW()
   try
   {
     model = cv::Algorithm::load<cv::ml::ANN_MLP>("Config/ball_detector_model.dat");
+    brisk = cv::BRISK::create(30, 0, 0.35f);
   }
   catch(cv::Exception ex)
   {
@@ -122,9 +123,27 @@ void BallCandidateDetectorBW::execute(CameraInfo::CameraID id)
         }
 
       } else {
-        cv::Mat wrappedData(1, 12*12, CV_8UC1, (void*) p.data.data());
+        cv::Mat wrappedImg(12, 12, CV_8UC1, (void*) p.data.data());
+
+        // make it black white and a 144 wide vector
+        cv::Mat bwImg;
+        cv::adaptiveThreshold(wrappedImg, bwImg, 255, cv::ADAPTIVE_THRESH_MEAN_C, cv::THRESH_BINARY, 11, 2);
+
+       cv::Mat vector = bwImg.reshape(1, 1); // 1 channel 1 row
+
         cv::Mat in;
-        wrappedData.convertTo(in, CV_32F);
+        vector.convertTo(in, CV_32F);
+
+        // create BRISK feature
+//        cv::KeyPoint kp = cv::KeyPoint(6,6, 7, -1, 100);
+//        cv::Mat inChar;
+//        std::vector<cv::KeyPoint> kpVec;
+//        kpVec.push_back(kp);
+//        brisk->compute(wrappedImg, kpVec, inChar);
+
+//        cv::Mat in;
+//        inChar.convertTo(in, CV_32F);
+
         cv::Mat out;
         if(model->predict(in, out) > 0) {
           ballFound = true;

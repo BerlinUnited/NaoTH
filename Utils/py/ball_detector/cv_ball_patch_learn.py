@@ -12,6 +12,8 @@ import sklearn.neural_network as nn
 
 import patchReader
 
+
+import naoth.features as feat
 import cv2
 
 show_size = (50, 30) # width, height
@@ -29,18 +31,34 @@ def unroll_responses(responses, class_n):
   
 def learn(X, labels):
   
+  print("Detecting image features")
+  
+  n_feat = 144;
+  samples = np.zeros((0, n_feat), dtype=np.float32)
+  for s in X:
+    img = s.reshape((12,12))
+    f = feat.custom(img)
+    samples = np.vstack([samples, f])
+
+   
+  #estimator = cv2.ml.KNearest_create()
+  #estimator = cv2.ml.SVM_create(
+  #estimator = cv2.ml.DTrees_create()
+  #estimator = cv2.ml.RTrees_create()
   estimator = cv2.ml.ANN_MLP_create()
-  estimator.setLayerSizes(np.asarray([144,10,10,10,2]))
+  estimator.setLayerSizes(np.asarray([n_feat,10,5,2]))
   # must be set!!!
   estimator.setActivationFunction(cv2.ml.ANN_MLP_SIGMOID_SYM )
-  estimator.setTermCriteria((cv2.TERM_CRITERIA_COUNT + cv2.TERM_CRITERIA_EPS, 20000, 0.001))
-  #estimator.setTrainMethod(cv2.ml.ANN_MLP_BACKPROP)
+  estimator.setTermCriteria((cv2.TERM_CRITERIA_COUNT + cv2.TERM_CRITERIA_EPS, 20000, 0.0001))
+  estimator.setTrainMethod(cv2.ml.ANN_MLP_BACKPROP)
   #estimator.setBackpropWeightScale(0.001)
   #estimator.setBackpropMomentumScale(0.0)
   
   responses = np.float32(unroll_responses(labels, 2).reshape(-1, 2))
-  
-  trainData = cv2.ml.TrainData_create(samples=np.float32(X), layout=cv2.ml.ROW_SAMPLE , responses=responses, sampleIdx=np.asarray(range(0,len(X))))
+  #responses = labels
+      
+  trainData = cv2.ml.TrainData_create(samples=samples, 
+    layout=cv2.ml.ROW_SAMPLE , responses=responses)
   
   print("Training...")
   
@@ -61,8 +79,9 @@ def learn(X, labels):
     x = j % show_size[0]
     image[y*13:y*13+12,x*13:x*13+12] = a
     
-    evalinput = np.asmatrix(np.float32(X[i,:]))
+    evalinput = np.asmatrix(np.float32(samples[i,:]))
     ret, result = estimator.predict(evalinput)
+
     if ret > 0:
       #print(ret, result)
       if labels[i]:
@@ -105,7 +124,7 @@ if __name__ == "__main__":
   
   X = np.array(patches)
 
-  labels = np.zeros((X.shape[0],))
+  labels = np.zeros((X.shape[0],), dtype='i')
   labels[ball_labels_log] = 1
   
   learn(X, labels)
