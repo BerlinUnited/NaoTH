@@ -134,17 +134,20 @@ void SituationPriorProvider::drawPriors(){
 
     /*---- HACK BEGIN ----*/
     LineDensity startingLine;
+    FIELD_DRAWING_CONTEXT;
     if(getPlayerInfo().gameData.playerNumber < 4) {
         startingLine = leftStartingLine;
+        leftStartingLine.draw(getDebugDrawings());
     } else {
         startingLine = rightStartingLine;
+        rightStartingLine.draw(getDebugDrawings());
     }
 
     /*---- HACK END ----*/
 
-    FIELD_DRAWING_CONTEXT;
-    leftStartingLine.draw(getDebugDrawings());
-    rightStartingLine.draw(getDebugDrawings());
+    
+    
+    
 
   }
   else if(getSituationPrior().currentPrior == getSituationPrior().penalizedInSet)

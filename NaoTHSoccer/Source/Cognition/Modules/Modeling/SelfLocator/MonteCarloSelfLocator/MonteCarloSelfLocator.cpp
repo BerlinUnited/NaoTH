@@ -607,8 +607,14 @@ void MonteCarloSelfLocator::updateByStartPositions(SampleSet& sampleSet) const
 
   DEBUG_REQUEST("MCSLS:draw_state",
     FIELD_DRAWING_CONTEXT;
-    leftStartingLine.draw(getDebugDrawings());
-    rightStartingLine.draw(getDebugDrawings());
+    if(getPlayerInfo().gameData.playerNumber < 4)
+    {
+      leftStartingLine.draw(getDebugDrawings());
+    }
+    else
+    {
+      rightStartingLine.draw(getDebugDrawings());
+    }    
   );
 }
 

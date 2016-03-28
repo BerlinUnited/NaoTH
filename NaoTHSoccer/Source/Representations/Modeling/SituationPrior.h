@@ -35,5 +35,5 @@ public:
 };
 
 
-#endif  /* _KickActionModel_H */
+#endif  /* _SituationPrior_H */
 
