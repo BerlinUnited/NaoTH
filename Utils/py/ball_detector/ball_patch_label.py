@@ -53,7 +53,7 @@ def on_click(event):
     x = int(event.xdata+0.5) / 13
     i = show_size[0]*y + x
     
-    if labels[window_idx+i] == 0:
+    if labels[window_idx+i] <= 0:
       labels[window_idx+i] = 1
     else:
       labels[window_idx+i] = 0
@@ -78,21 +78,26 @@ def key_pressed(event):
 
 def save_labels(file):
   l = []
+  noball = []
   for i, val in enumerate(labels):
     if val == 1:
       l.append(i)
+    elif val == 0:
+      noball.append(i)
     
   with open(file, 'w') as outfile:
-        json.dump({"ball":l}, outfile)
-    
+        json.dump({"ball":l, "noball":noball}, outfile)    
     
 def load_labels(file):
-  tmp_labels = np.zeros((len(patchdata),))
+  # init with invalid label
+  tmp_labels = np.negative(np.ones((len(patchdata),)))
   
   if os.path.isfile(file):
     with open(file, 'r') as data_file:
       ball_labels = json.load(data_file)
     tmp_labels[ball_labels["ball"]] = 1
+    tmp_labels[ball_labels["noball"]] = 0
+    
   return tmp_labels
     
     
@@ -109,6 +114,9 @@ def showPatches():
     y = i // show_size[0]
     x = i % show_size[0]
     image[y*13:y*13+12,x*13:x*13+12] = a
+    if labels[window_idx+i] < 0:
+      # remember this former invalid column as seenas seen
+      labels[window_idx+i]=0
     setMarker(i, labels[window_idx+i])
     
   global image_canvas
