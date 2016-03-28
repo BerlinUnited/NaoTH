@@ -28,8 +28,9 @@ BallCandidateDetectorBW::BallCandidateDetectorBW()
   // load model from config folder
   try
   {
-    model = cv::Algorithm::load<cv::ml::ANN_MLP>("Config/ball_detector_model.dat");
-    brisk = cv::BRISK::create(30, 0, 0.35f);
+    // uncomment in order to use opencv stuff
+//    model = cv::Algorithm::load<cv::ml::ANN_MLP>("Config/ball_detector_model.dat");
+//    brisk = cv::BRISK::create(30, 0, 0.35f);
   }
   catch(cv::Exception ex)
   {
