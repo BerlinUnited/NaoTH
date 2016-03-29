@@ -117,9 +117,13 @@ void FieldColorClassifier::debug()
       for(unsigned int y = 0; y < getImage().height(); y+=4) {
         getImage().get(x, y, pixel);
 
-        if( getFieldColorPercept().greenHSISeparator.noColor(pixel.y, pixel.u, pixel.v) ) {
-          POINT_PX(ColorClasses::red, x, y);
-        } else if( getFieldColorPercept().greenHSISeparator.isColor(pixel.y, pixel.u, pixel.v) ) {
+        if( getFieldColorPercept().greenHSISeparator.noColor(pixel.y, pixel.u, pixel.v)) {
+          if (pixel.y > parameters.green.brightnesConeOffset) {
+            POINT_PX(ColorClasses::red, x, y);
+          } else {
+            POINT_PX(ColorClasses::yellow, x, y);
+          }
+        } else if( getFieldColorPercept().greenHSISeparator.isColor(pixel.y, pixel.u, pixel.v)) {
           POINT_PX(ColorClasses::green, x, y);
         }
       }
