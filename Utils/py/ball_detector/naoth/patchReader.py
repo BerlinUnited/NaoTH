@@ -66,7 +66,7 @@ def getPatches(frame):
   return [ballCandidatesTop]
 
   
-def readAllPatchesFromLog(fileName):
+def readAllPatchesFromLog(fileName, type = 0):
   # initialize the parser
   myParser = Parser()
   # register the protobuf message name for the 'ImageTop'
@@ -81,13 +81,15 @@ def readAllPatchesFromLog(fileName):
   for frame in LogReader(fileName, myParser):
     ballCandidates = frame["BallCandidates"]
     for p in ballCandidates.patches:
-      data = numpy.fromstring(p.data, dtype=numpy.uint8)
-      patches.append(data);
+      if p.type == type:
+        data = numpy.fromstring(p.data, dtype=numpy.uint8)
+        patches.append(data);
       
     ballCandidatesTop = frame["BallCandidatesTop"]
     for p in ballCandidatesTop.patches:
-      data = numpy.fromstring(p.data, dtype=numpy.uint8)
-      patches.append(data);
+      if p.type == type:
+        data = numpy.fromstring(p.data, dtype=numpy.uint8)
+        patches.append(data);
   
   return patches
   
