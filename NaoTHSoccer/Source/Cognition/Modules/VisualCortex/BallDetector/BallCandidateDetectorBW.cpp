@@ -21,7 +21,7 @@
 #include <list>
 
 BallCandidateDetectorBW::BallCandidateDetectorBW()
-  : useNeuronal(true)
+  : useOpenCVModel(true)
 {
   DEBUG_REQUEST_REGISTER("Vision:BallCandidateDetectorBW:keyPoints", "draw key points extracted from integral image", false);
 
@@ -51,7 +51,7 @@ bool BallCandidateDetectorBW::execute(CameraInfo::CameraID id)
 {
   cameraID = id;
   getBallCandidates().reset();
-  useNeuronal = false;
+  useOpenCVModel = false;
 
   // todo: check validity of the intergral image
   if(getGameColorIntegralImage().getWidth() == 0) {
@@ -69,7 +69,7 @@ bool BallCandidateDetectorBW::execute(CameraInfo::CameraID id)
     }
   );
 
-  if(useNeuronal && model && !model->empty())
+  if(useOpenCVModel && model && !model->empty())
   {
     STOPWATCH_START("BallCandidateDetectorBW:neuronalClassification");
     executeNeuronal();
@@ -108,15 +108,7 @@ void BallCandidateDetectorBW::executeNeuronal()
       bool ballFound = false;
       cv::Mat wrappedImg(12, 12, CV_8UC1, (void*) p.data.data());
 
-      // make it black white and a 144 wide vector
-      cv::Mat bwImg;
-      cv::adaptiveThreshold(wrappedImg, bwImg, 255, cv::ADAPTIVE_THRESH_MEAN_C, cv::THRESH_BINARY, 11, 2);
-
-     cv::Mat vector = bwImg.reshape(1, 1); // 1 channel 1 row
-
-      cv::Mat in;
-      vector.convertTo(in, CV_32F);
-
+      cv::Mat in = createBinaryFeat(wrappedImg);
       cv::Mat out;
       if(model->predict(in, out) > 0) {
         ballFound = true;
@@ -339,9 +331,9 @@ void BallCandidateDetectorBW::subsampling(std::vector<BallCandidates::Classified
   x1 = std::min((int)getImage().width()-1, x1);
   y1 = std::min((int)getImage().height()-1, y1);
 
-  int k1 = sizeof(Pixel);
-  int k2 = sizeof(ColorClasses::Color);
-  int k3 = sizeof(BallCandidates::ClassifiedPixel);
+  //int k1 = sizeof(Pixel);
+  //int k2 = sizeof(ColorClasses::Color);
+  //int k3 = sizeof(BallCandidates::ClassifiedPixel);
 
   const double size = 12.0;
   data.resize((int)(size*size));

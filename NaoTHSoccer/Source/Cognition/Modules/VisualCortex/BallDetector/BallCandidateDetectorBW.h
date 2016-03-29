@@ -194,6 +194,21 @@ private:
   void executeNeuronal();
   void executeSVM();
 
+  cv::Mat createHistoFeat(cv::Mat img)
+  {
+    return cv::Mat();
+  }
+
+  cv::Mat createBinaryFeat(cv::Mat img)
+  {
+    cv::Mat binary;
+    cv::adaptiveThreshold(img, binary, 255, cv::ADAPTIVE_THRESH_MEAN_C, cv::THRESH_BINARY, 11, 2);
+    cv::Mat vector = binary.reshape(1, 1); // 1 channel 1 row
+    cv::Mat result;
+    vector.convertTo(result, CV_32F);
+    return result;
+  }
+
   double isBall(const std::vector<unsigned char>& data) 
   {
     /*
@@ -300,7 +315,7 @@ private:
 
 private:
 
-  bool useNeuronal;
+  bool useOpenCVModel;
   
   DOUBLE_CAM_PROVIDE(BallCandidateDetectorBW, DebugImageDrawings);
 
