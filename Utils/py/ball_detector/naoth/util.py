@@ -18,7 +18,8 @@ def getMarker(x,y,c):
 def shuffle_and_split(X, labels, ratio):
   
   # combine both to the same matrix so shuffling does not disconnect the samples and labels
-  labelsAsMatrix = np.asmatrix(labels).T
+  labelsAsMatrix = np.reshape(labels, (-1,1))
+
   Y = np.concatenate((X, labelsAsMatrix), axis=1)
   # do shuffling
   np.random.shuffle(Y)
@@ -34,10 +35,8 @@ def shuffle_and_split(X, labels, ratio):
   
   return X1, labels1, X2, labels2
 
-def show_evaluation(X, goldstd_response, actual_response):  
-  
-  image = np.zeros(((patch_size[1]+1)*show_size[1], (patch_size[0]+1)*show_size[0]))
-  
+def calc_precision_recall(X, goldstd_response, actual_response):
+
   errorIdx = list()
   # count
   tp = 0.0
@@ -54,9 +53,20 @@ def show_evaluation(X, goldstd_response, actual_response):
       if goldstd_response[i] == 1:
 	fn = fn + 1.0
 	errorIdx.append(i)
-	
-  print("precision", tp/(tp+fp))
-  print("recall", tp/(tp+fn))
+
+  precision = tp/(tp+fp)
+  recall = tp/(tp+fn)
+  
+  return precision, recall, errorIdx
+
+def show_evaluation(X, goldstd_response, actual_response):  
+  
+  image = np.zeros(((patch_size[1]+1)*show_size[1], (patch_size[0]+1)*show_size[0]))
+  
+  precision, recall, errorIdx = calc_precision_recall(X, goldstd_response, actual_response)
+  print("precision", precision)
+  print("recall", recall)
+  
       
   # show errors
   maxShownErrors = min(len(errorIdx), show_size[0]*show_size[1])

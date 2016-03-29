@@ -37,8 +37,12 @@ def brisk(img):
 	keypoints, des = __brisk.compute(img, [kp])
 	return des.astype(dtype=np.float32)
 	
-def custom(img):
-	img = img.astype("uint8")
+def bin1(img):
 	img = cv2.adaptiveThreshold(img, 255, cv2.ADAPTIVE_THRESH_MEAN_C,\
 		cv2.THRESH_BINARY,11,2)
+	return img.reshape(1,144)
+	
+def bin2(img):
+	img = img.astype("uint8")
+	_, img = cv2.threshold(img,0,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
 	return img.reshape(1,144)

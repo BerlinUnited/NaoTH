@@ -23,7 +23,7 @@ def makeTrainData(X, labels, unroll=False):
   samples = np.zeros((0, n_feat), dtype=np.float32)
   for s in X:
     img = s.reshape((12,12))
-    f = feat.custom(img)
+    f = feat.bin1(img)
     samples = np.vstack([samples, f])
   
   if unroll:
@@ -33,16 +33,30 @@ def makeTrainData(X, labels, unroll=False):
     
   return n_feat, samples, responses
   
-def learn(X, labels):
+def learn(X, labels, nLayer1=10, nLayer2=10):
   
   n_feat, samples, responses = makeTrainData(X, labels, True)
+   
+  layers = [n_feat, 2]
+  if nLayer1 < 2 and nLayer2 < 2:
+    # no hidden layers
+    layers = [n_feat, 2]
+  elif nLayer2 < 2:
+    # nLayer1 is single hidden layer
+    layers = [n_feat, nLayer1, 2]
+  elif nLayer1 < 2:
+    # nLayer2 is single hidden layer
+    layers = [n_feat, nLayer2, 2]
+  else:
+    # both are valid hidden layers
+    layers = [n_feat, nLayer1, nLayer2, 2]
    
   #estimator = cv2.ml.KNearest_create()
   #estimator = cv2.ml.SVM_create()
   #estimator = cv2.ml.DTrees_create()
   #estimator = cv2.ml.RTrees_create()
   estimator = cv2.ml.ANN_MLP_create()
-  estimator.setLayerSizes(np.asarray([n_feat,10,10,2]))
+  estimator.setLayerSizes(np.asarray(layers))
   # must be set!!!
   estimator.setActivationFunction(cv2.ml.ANN_MLP_SIGMOID_SYM )
   estimator.setTermCriteria((cv2.TERM_CRITERIA_COUNT + cv2.TERM_CRITERIA_EPS, 20000, 0.001))
@@ -65,8 +79,9 @@ def classify(X, labels, estimator):
   # classify
   for i in range(0, samples.shape[0]):
     ret, result = estimator.predict(np.asmatrix(samples[i,:]))
+    
     classified[i] = ret;
-      
+    
   return classified
 
 def show_errors_asfeat(X, goldstd_response, actual_response):  
@@ -90,7 +105,7 @@ def show_errors_asfeat(X, goldstd_response, actual_response):
     x = j % show_size[0]
     
     # apply feature
-    f = feat.custom(a)
+    f = feat.bin1(a)
     
     image[y*13:y*13+12,x*13:x*13+12] = np.reshape(f, (12,12))
     j += 1
@@ -128,13 +143,31 @@ if __name__ == "__main__":
   print("Train size", X_train.shape[0])
   print("Eval size", X_eval.shape[0])
   
-  print("Learning...")
+  #allEstimators = dict()
+  
+  #for h1 in reversed(range(2, 3)):
+  #  for h2 in range(2, 3):
+  #    print("Learning with layers "  + str((h1, h2)))
+  #    estimator = learn(X_train, labels_train, h1, h2)
+  #    print("Evaluating with layers " + str((h1, h2)))
+  #    classified = classify(X_eval, labels_eval, estimator)
+  #    precision, recall, _ = calc_precision_recall(X_eval, labels_eval, classified)
+  #    allEstimators[estimator] = (precision, recall)
+  #    print("precision: " + str(precision))
+  #    print("recall: " + str(recall))
+  #    print("---------------")
+  #    # funny
+  #    if precision >= 0.99 and recall >= 0.9:
+  #      break
+  #print(allEstimators)
+      
+  print("Learning several layer sizes...")
   estimator = learn(X_train, labels_train)
   print("Saving...")
   estimator.save("ball_detector_model.dat")
   print("Evaluating...")
   classfied = classify(X_eval, labels_eval, estimator)
   show_evaluation(X_eval, labels_eval, classfied)
-  #show_errors_asfeat(X_eval, labels_eval, classfied)
+#  show_errors_asfeat(X_eval, labels_eval, classfied)
 
     
