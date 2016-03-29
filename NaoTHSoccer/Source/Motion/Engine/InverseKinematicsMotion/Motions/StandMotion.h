@@ -158,10 +158,16 @@ StandMotion()
       }
     }
 
-    if(totalTime > 0 && time <= totalTime + getRobotInfo().basicTimeStep*10)
+    if(totalTime >= 0 && time <= totalTime + getRobotInfo().basicTimeStep*10)
     {
-      double k = Math::clamp(0.5*(1.0-cos(time/totalTime*Math::pi)), 0.0, 1.0);
-      InverseKinematic::CoMFeetPose p = getEngine().interpolate(startPose, targetPose, k);
+      InverseKinematic::CoMFeetPose p;
+
+      if(totalTime > 0) {
+          double k = Math::clamp(0.5*(1.0-cos(time/totalTime*Math::pi)), 0.0, 1.0);
+          p = getEngine().interpolate(startPose, targetPose, k);
+      } else {
+          p = targetPose;
+      }
 
       bool solved = false;
       c = getEngine().controlCenterOfMass(getMotorJointData(), p, solved, false);
