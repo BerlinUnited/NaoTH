@@ -269,9 +269,16 @@ message BallCandidates
 {
   message Patch 
   {
+    enum Type {
+      Y = 0;
+      YUV = 1;
+      YUVC = 2;
+    }
     required IntVector2 min = 1;
     required IntVector2 max = 2;
+    optional Type type = 3 [default=Y];
     required bytes data = 5;
   }
+  
   repeated Patch patches = 1;
 }
