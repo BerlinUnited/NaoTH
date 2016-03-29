@@ -38,7 +38,7 @@ def makeTrainData(X, labels, unroll=False):
   
 def learn(X, labels, nLayer1=10, nLayer2=1):
   
-  n_feat, samples, responses = makeTrainData(X, labels, True)
+  n_feat, samples, responses = makeTrainData(X, labels, False)
    
   layers = [n_feat, 2]
   if nLayer1 < 2 and nLayer2 < 2:
@@ -54,14 +54,14 @@ def learn(X, labels, nLayer1=10, nLayer2=1):
     # both are valid hidden layers
     layers = [n_feat, nLayer1, nLayer2, 2]
    
-  #estimator = cv2.ml.KNearest_create()
+  estimator = cv2.ml.KNearest_create()
   #estimator = cv2.ml.SVM_create()
   #estimator = cv2.ml.DTrees_create()
   #estimator = cv2.ml.RTrees_create()
-  estimator = cv2.ml.ANN_MLP_create()
-  estimator.setLayerSizes(np.asarray(layers))
+  #estimator = cv2.ml.ANN_MLP_create()
+  #estimator.setLayerSizes(np.asarray(layers))
   # must be set!!!
-  estimator.setActivationFunction(cv2.ml.ANN_MLP_SIGMOID_SYM )
+  #estimator.setActivationFunction(cv2.ml.ANN_MLP_SIGMOID_SYM )
   #estimator.setTermCriteria((cv2.TERM_CRITERIA_COUNT + cv2.TERM_CRITERIA_EPS, 20000, 0.001))
   #estimator.setTrainMethod(cv2.ml.ANN_MLP_BACKPROP)
   #estimator.setBackpropWeightScale(0.001)
@@ -75,7 +75,7 @@ def learn(X, labels, nLayer1=10, nLayer2=1):
   return estimator
   
 def classify(X, labels, estimator):  
-  n_feat, samples, responses = makeTrainData(X, labels, True)
+  n_feat, samples, responses = makeTrainData(X, labels, False)
   
   classified = np.zeros(samples.shape[0], dtype=np.int)
   
@@ -148,7 +148,7 @@ if __name__ == "__main__":
   
       
   print("Learning several layer sizes...")
-  estimator = learn(X_train, labels_train, 10, 10)
+  estimator = learn(X_train, labels_train, 10)
   print("Saving...")
   estimator.save("ball_detector_model.dat")
   print("Evaluating...")
