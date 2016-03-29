@@ -54,8 +54,13 @@ def calc_precision_recall(X, goldstd_response, actual_response):
 	fn = fn + 1.0
 	errorIdx.append(i)
 
-  precision = tp/(tp+fp)
-  recall = tp/(tp+fn)
+  precision = 0.0
+  if tp+fp > 0:
+    precision = tp/(tp+fp)
+  
+  recall = 0.0
+  if tp+fp > 0:
+    recall = tp/(tp+fn)
   
   return precision, recall, errorIdx
 

@@ -36,36 +36,15 @@ def makeTrainData(X, labels, unroll=False):
     
   return n_feat, samples, responses
   
-def learn(X, labels, nLayer1=10, nLayer2=1):
+def learn(X, labels):
   
   n_feat, samples, responses = makeTrainData(X, labels, False)
-   
-  layers = [n_feat, 2]
-  if nLayer1 < 2 and nLayer2 < 2:
-    # no hidden layers
-    layers = [n_feat, 2]
-  elif nLayer2 < 2:
-    # nLayer1 is single hidden layer
-    layers = [n_feat, nLayer1, 2]
-  elif nLayer1 < 2:
-    # nLayer2 is single hidden layer
-    layers = [n_feat, nLayer2, 2]
-  else:
-    # both are valid hidden layers
-    layers = [n_feat, nLayer1, nLayer2, 2]
-   
-  estimator = cv2.ml.KNearest_create()
-  #estimator = cv2.ml.SVM_create()
-  #estimator = cv2.ml.DTrees_create()
-  #estimator = cv2.ml.RTrees_create()
-  #estimator = cv2.ml.ANN_MLP_create()
-  #estimator.setLayerSizes(np.asarray(layers))
-  # must be set!!!
-  #estimator.setActivationFunction(cv2.ml.ANN_MLP_SIGMOID_SYM )
-  #estimator.setTermCriteria((cv2.TERM_CRITERIA_COUNT + cv2.TERM_CRITERIA_EPS, 20000, 0.001))
-  #estimator.setTrainMethod(cv2.ml.ANN_MLP_BACKPROP)
-  #estimator.setBackpropWeightScale(0.001)
-  #estimator.setBackpropMomentumScale(0.0)
+      
+  estimator = cv2.ml.SVM_create()
+  estimator.setType(cv2.ml.SVM_C_SVC)
+  estimator.setKernel(cv2.ml.SVM_CHI2)
+  #estimator.setC(XXX)
+  #estimator.setGamma(XXX)
   
   trainData = cv2.ml.TrainData_create(samples=samples, 
     layout=cv2.ml.ROW_SAMPLE , responses=responses)
@@ -82,8 +61,7 @@ def classify(X, labels, estimator):
   # classify
   for i in range(0, samples.shape[0]):
     ret, result = estimator.predict(np.asmatrix(samples[i,:]))
-    
-    classified[i] = ret;
+    classified[i] = result[0,0];
     
   return classified
 
@@ -130,7 +108,7 @@ if __name__ == "__main__":
   if len(sys.argv) == 2:
     f_train = sys.argv[1]
     f_eval = sys.argv[1]
-    splitRatio = 0.8
+    splitRatio = 0.5
   elif len(sys.argv) > 2:
     f_train = sys.argv[1]
     f_eval = sys.argv[2]
@@ -147,8 +125,8 @@ if __name__ == "__main__":
   print("Eval size", X_eval.shape[0])
   
       
-  print("Learning several layer sizes...")
-  estimator = learn(X_train, labels_train, 10)
+  print("Learning...")
+  estimator = learn(X_train, labels_train)
   print("Saving...")
   estimator.save("ball_detector_model.dat")
   print("Evaluating...")
