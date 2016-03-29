@@ -51,6 +51,7 @@ bool BallCandidateDetectorBW::execute(CameraInfo::CameraID id)
 {
   cameraID = id;
   getBallCandidates().reset();
+  useNeuronal = false;
 
   // todo: check validity of the intergral image
   if(getGameColorIntegralImage().getWidth() == 0) {
@@ -189,6 +190,22 @@ void BallCandidateDetectorBW::executeSVM()
   );
 }
 
+void BallCandidateDetectorBW::extractPatches()
+{
+  for(std::list<Best::BallCandidate>::iterator i = best.candidates.begin(); i != best.candidates.end(); ++i)
+  {
+    if(getFieldPercept().getValidField().isInside((*i).center))
+    {
+      int radius = (int)((*i).radius*1.5 + 0.5);
+
+      BallCandidates::PatchYUVClassified& q = getBallCandidates().nextFreePatchYUVClassified();
+      q.min = Vector2i((*i).center.x - radius, (*i).center.y - radius);
+      q.max = Vector2i((*i).center.x + radius, (*i).center.y + radius);
+      subsampling(q.data, q.min.x, q.min.y, q.max.x, q.max.y);
+    }
+  }
+}
+
 void BallCandidateDetectorBW::calculateCandidates(Best& best) const
 {
   //
@@ -309,6 +326,45 @@ void BallCandidateDetectorBW::subsampling(std::vector<unsigned char>& data, int 
     for(double y = y0 + height_step/2.0; y < y1; y += height_step) {
       unsigned char yy = getImage().getY((int)(x + 0.5), (int)(y + 0.5));
       data[xi*12 + yi] = yy;
+      yi++;
+    }
+    xi++;
+  }
+}
+
+void BallCandidateDetectorBW::subsampling(std::vector<BallCandidates::ClassifiedPixel>& data, int x0, int y0, int x1, int y1) const 
+{
+  x0 = std::max(0, x0);
+  y0 = std::max(0, y0);
+  x1 = std::min((int)getImage().width()-1, x1);
+  y1 = std::min((int)getImage().height()-1, y1);
+
+  int k1 = sizeof(Pixel);
+  int k2 = sizeof(ColorClasses::Color);
+  int k3 = sizeof(BallCandidates::ClassifiedPixel);
+
+  const double size = 12.0;
+  data.resize((int)(size*size));
+
+  double width_step = static_cast<double>(x1 - x0) / size;
+  double height_step = static_cast<double>(y1 - y0) / size;
+
+  int xi = 0;
+  
+  for(double x = x0 + width_step/2.0; x < x1; x += width_step) {
+    int yi = 0;
+    for(double y = y0 + height_step/2.0; y < y1; y += height_step) {
+      BallCandidates::ClassifiedPixel& p = data[xi*12 + yi];
+      getImage().get((int)(x + 0.5), (int)(y + 0.5), p.pixel);
+
+      if(getFieldColorPercept().greenHSISeparator.noColor(p.pixel)) {
+        p.c = (unsigned char)ColorClasses::white;
+      } else if(getFieldColorPercept().greenHSISeparator.isChroma(p.pixel)) {
+        p.c = (unsigned char)ColorClasses::green;
+      } else {
+        p.c = (unsigned char)ColorClasses::none;
+      }
+
       yi++;
     }
     xi++;

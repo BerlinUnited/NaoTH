@@ -184,12 +184,13 @@ private:
   void calculateCandidates(Best& best) const;
 
   void subsampling(std::vector<unsigned char>& data, int x0, int y0, int x1, int y1) const;
+  void subsampling(std::vector<BallCandidates::ClassifiedPixel>& data, int x0, int y0, int x1, int y1) const;
 
   double estimatedBallRadius(int x, int y) const;
   void addBallPercept(const Vector2i& center, double radius);
 
   double greenPoints(int minX, int minY, int maxX, int maxY) const;
-  
+  void extractPatches();
   void executeNeuronal();
   void executeSVM();
 
