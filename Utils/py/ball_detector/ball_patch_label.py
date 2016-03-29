@@ -113,9 +113,14 @@ def showPatches():
   for i in range(show_size[0]*show_size[1]):
     if window_idx+i+1 > len(patchdata):
       break
-      
-    a = np.array(patchdata[window_idx+i]).astype(float)
-    a = np.transpose(np.reshape(a, patch_size))
+    
+    p = patchdata[window_idx+i]
+    if len(p) == 4*12*12:
+      a = np.array(p[0::4]).astype(float)
+      a = np.transpose(np.reshape(a, patch_size))
+    else:
+      a = np.array(p).astype(float)
+      a = np.transpose(np.reshape(a, patch_size))
 
     y = i // show_size[0]
     x = i % show_size[0]
@@ -138,11 +143,12 @@ def showPatches():
 if __name__ == "__main__":
   
   file = 'patches-approach-ball'
+  file = 'patches-yuv-ball-move-around'
   if len(sys.argv) > 1:
     file = sys.argv[1]
   #file = 'patches-ball-sidecick'
   
-  patchdata = patchReader.readAllPatchesFromLog('./'+file+'.log')
+  patchdata = patchReader.readAllPatchesFromLog('./'+file+'.log', type = 2)
   label_file = './'+file+'.json'
   labels = load_labels(label_file)
   
