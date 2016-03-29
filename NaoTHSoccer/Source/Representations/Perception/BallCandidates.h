@@ -9,6 +9,7 @@
 
 #include <Tools/Math/Vector2.h>
 #include <Tools/ImageProcessing/ImagePrimitives.h>
+#include <Tools/ColorClasses.h>
 
 #include <Tools/DataStructures/Serializer.h>
 
@@ -19,6 +20,13 @@ class BallCandidates
 {
 public:
   BallCandidates(){}
+
+  class ClassifiedPixel
+  {
+  public:
+    Pixel pixel;
+    unsigned char c; // ColorClasses::Color, NOTE: sizeof(ColorClasses::Color) == 4
+  };
 
   template<typename T>
   class PatchT 
@@ -34,6 +42,7 @@ public:
 
   typedef PatchT<unsigned char> Patch;
   typedef PatchT<Pixel> PatchYUV;
+  typedef PatchT<ClassifiedPixel> PatchYUVClassified;
 
   typedef std::list<Patch> PatchesList;
   PatchesList patches;
@@ -41,15 +50,29 @@ public:
   typedef std::list<PatchYUV> PatchesYUVList;
   PatchesYUVList patchesYUV;
 
+  typedef std::list<PatchYUVClassified> PatchYUVClassifiedList;
+  PatchYUVClassifiedList patchesYUVClassified;
+
   Patch& nextFreePatch() {
     patches.emplace_back(0);
     return patches.back();
+  }
+
+  PatchYUV& nextFreePatchYUV() {
+    patchesYUV.emplace_back(0);
+    return patchesYUV.back();
+  }
+
+  PatchYUVClassified& nextFreePatchYUVClassified() {
+    patchesYUVClassified.emplace_back(0);
+    return patchesYUVClassified.back();
   }
 
   void reset()
   {
     patches.clear();
     patchesYUV.clear();
+    patchesYUVClassified.clear();
   }
 };
 
