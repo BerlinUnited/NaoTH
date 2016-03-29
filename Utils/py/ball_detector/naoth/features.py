@@ -46,3 +46,16 @@ def bin2(img):
 	img = img.astype("uint8")
 	_, img = cv2.threshold(img,0,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
 	return img.reshape(1,144)
+
+def histo(img):
+	# normalize by maximum value
+	img = img.astype("float32")
+	_, maxVal, _, _ = cv2.minMaxLoc(img)
+	if maxVal > 0:
+		img = np.divide(img,maxVal)
+	hist = cv2.calcHist([img],[0],None,[32],[0,1])
+	# also normalize the histogram to 0 to 1.0f
+	_, maxHistVal, _, _ = cv2.minMaxLoc(hist)
+	if maxHistVal > 0:
+		hist = np.divide(hist, maxHistVal)
+	return hist.T
