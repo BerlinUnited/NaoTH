@@ -34,7 +34,7 @@ BallCandidateDetectorBW::BallCandidateDetectorBW()
   // load model from config folder
   try
   {
-    model = cv::Algorithm::load<cv::ml::ANN_MLP>("Config/ball_detector_model.dat");
+    model = cv::Algorithm::load<cv::ml::SVM>("Config/ball_detector_model.dat");
   }
   catch(cv::Exception ex)
   {
@@ -108,7 +108,7 @@ void BallCandidateDetectorBW::executeNeuronal()
       bool ballFound = false;
       cv::Mat wrappedImg(12, 12, CV_8UC1, (void*) p.data.data());
 
-      cv::Mat in = createBinaryFeat(wrappedImg);
+      cv::Mat in = createHistoFeat(wrappedImg);
       cv::Mat out;
       if(model->predict(in, out) > 0) {
         ballFound = true;

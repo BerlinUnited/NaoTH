@@ -194,9 +194,33 @@ private:
   void executeNeuronal();
   void executeSVM();
 
-  cv::Mat createHistoFeat(cv::Mat img)
+  cv::Mat createHistoFeat(cv::Mat origImg)
   {
-    return cv::Mat();
+    cv::Mat img;
+    // TODO: necessary?
+    origImg.convertTo(img, CV_32F);
+
+    // normalize by maximum value
+    double maxVal;
+    cv::minMaxLoc(img, nullptr, &maxVal);
+    if(maxVal > 0.0)
+    {
+      img = img / maxVal;
+    }
+
+    // calculate histogram
+    cv::Mat hist;
+    cv::calcHist({img}, {0}, cv::Mat(), hist, {32}, {0.0f, 1.0f});
+
+    // also normalize the histogram to range 0-1.0f
+    double maxHistVal;
+    cv::minMaxLoc(hist, nullptr, &maxHistVal);
+    if(maxHistVal > 0.0)
+    {
+      hist = hist / maxHistVal;
+    }
+
+    return hist;
   }
 
   cv::Mat createBinaryFeat(cv::Mat img)
@@ -329,7 +353,7 @@ private:
 
   DOUBLE_CAM_PROVIDE(BallCandidateDetectorBW, BallCandidates);
 
-  cv::Ptr<cv::ml::ANN_MLP> model;
+  cv::Ptr<cv::ml::SVM> model;
 };//end class BallCandidateDetectorBW
 
 #endif // _BallCandidateDetectorBW_H_
