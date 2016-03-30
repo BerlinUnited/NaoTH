@@ -11,3 +11,4 @@ mkdir $current_date-$current_nao
 
 find -L /tmp -type d -name media -prune -o -name "*.log" -exec cp {} /media/brainwasher/$current_date-$current_nao \;
 
+cp -r /home/nao/naoqi/Config /media/brainwasher/$current_date-$current_nao
