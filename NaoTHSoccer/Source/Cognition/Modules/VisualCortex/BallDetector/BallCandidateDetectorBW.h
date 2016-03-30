@@ -224,8 +224,20 @@ private:
 
     // calculate histogram
     cv::Mat hist;
-    std::vector<cv::Mat> imgVec = {img};
-    cv::calcHist(imgVec, {0}, cv::Mat::ones(img.rows, img.cols, CV_8U), hist, {32}, {0.0f, (float) maxVal});
+    std::vector<cv::Mat> imgVec;
+    imgVec.push_back(img);
+
+    std::vector<int> columnVec;
+    columnVec.push_back(0);
+
+    std::vector<int> binVec;
+    binVec.push_back(32);
+
+    std::vector<float> ranges;
+    ranges.push_back(0.0f);
+    ranges.push_back((float) maxVal);
+
+    cv::calcHist(imgVec, columnVec, cv::Mat::ones(img.rows, img.cols, CV_8U), hist, binVec, ranges);
 
     // also normalize the histogram to range 0-1.0f
     cv::Mat feat;
