@@ -60,7 +60,7 @@ option fast_forward_kick
     decision
     {
       if(state_time > 300 && executed_motion.step_control.right_movable)
-        goto finished; //short_freeze;
+        goto short_freeze;
       else
         stay;
     }
