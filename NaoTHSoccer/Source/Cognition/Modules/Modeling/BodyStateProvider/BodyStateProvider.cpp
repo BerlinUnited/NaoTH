@@ -28,6 +28,7 @@ void BodyStateProvider::execute()
 
   // 
   updateTheLegTemperature();
+  updateIsLiftedUp();
   
 }//end execute
 
