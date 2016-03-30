@@ -108,7 +108,7 @@ if __name__ == "__main__":
   if len(sys.argv) == 2:
     f_train = sys.argv[1]
     f_eval = sys.argv[1]
-    splitRatio = 0.5
+    splitRatio = 0.9
   elif len(sys.argv) > 2:
     f_train = sys.argv[1]
     f_eval = sys.argv[2]
