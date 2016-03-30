@@ -329,7 +329,7 @@ void MonteCarloSelfLocator::updateBySituation()
     {
       updateByStartPositions(theSampleSet);
     }
-    else if(getSituationPrior().currentPrior == getSituationPrior().penalizedInSet)
+    else if(getSituationPrior().currentPrior == getSituationPrior().positionedInSet)
     {
       updateByOwnHalfLookingForward(theSampleSet);
     }

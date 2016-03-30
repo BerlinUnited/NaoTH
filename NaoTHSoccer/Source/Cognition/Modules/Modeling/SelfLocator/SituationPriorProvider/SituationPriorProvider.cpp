@@ -16,6 +16,7 @@ SituationPriorProvider::SituationPriorProvider()
   currentState = getPlayerInfo().gameData.gameState;
 
   startedWalking = false;
+  body_lift_up = false;
 }
 
 SituationPriorProvider::~SituationPriorProvider()
@@ -25,6 +26,8 @@ SituationPriorProvider::~SituationPriorProvider()
 void SituationPriorProvider::execute()
 {
   reset();
+  //get BodyState
+  body_lift_up = isLiftedUp();
 
   //Calculate lastGameState
   if(getPlayerInfo().gameData.gameState != currentState){
@@ -55,10 +58,15 @@ void SituationPriorProvider::execute()
     //The Goalie will be in the own Goal if manually placed in set
     getSituationPrior().currentPrior = getSituationPrior().goaliePenalizedInSet;
   }
-  //Penalized in Set or Ready
-  else if(getPlayerInfo().gameData.gameState == GameData::set && lastState == GameData::penalized)
+  //Positioned in Set, e.g.: Penalized in Set or Ready or manual placement
+  else if(
+    getPlayerInfo().gameData.gameState == GameData::set
+    && lastState == GameData::penalized
+    //localise only of already standing
+    || (wasLiftedUp == true && body_lift_up == false))
   {
-    getSituationPrior().currentPrior = getSituationPrior().penalizedInSet;
+    wasLiftedUp = false;
+    getSituationPrior().currentPrior = getSituationPrior().positionedInSet;
   }
   //Penalized in Play
   else if(getPlayerInfo().gameData.gameState == GameData::playing && lastState == GameData::penalized)
@@ -95,6 +103,19 @@ void SituationPriorProvider::reset(){
   if(getPlayerInfo().gameData.gameState == GameData::initial || getPlayerInfo().gameData.gameState == GameData::playing){
     startedWalking = false;
   }
+}
+
+bool SituationPriorProvider::isLiftedUp(){
+  //this is copied from MonteCarloSelfLocator-execute
+  bool body_lift_up =  getBodyState().fall_down_state == BodyState::upright && 
+                      !getBodyState().standByLeftFoot && 
+                      !getBodyState().standByRightFoot && // no foot is on the ground
+                       getFrameInfo().getTimeSince(getBodyState().foot_state_time) > 500;//parameters.maxTimeForLiftUp;
+  if(body_lift_up){
+    wasLiftedUp = true;
+  }
+
+  return body_lift_up;
 }
 
 void SituationPriorProvider::drawPriors(){
@@ -150,7 +171,7 @@ void SituationPriorProvider::drawPriors(){
     
 
   }
-  else if(getSituationPrior().currentPrior == getSituationPrior().penalizedInSet)
+  else if(getSituationPrior().currentPrior == getSituationPrior().positionedInSet)
   {
     FIELD_DRAWING_CONTEXT;
     PEN("ff0000", 30);
@@ -229,4 +250,3 @@ void SituationPriorProvider::drawPriors(){
     LINE(fieldMin.x, fieldMax.y, fieldMax.x, fieldMin.y);
   }
 }
-

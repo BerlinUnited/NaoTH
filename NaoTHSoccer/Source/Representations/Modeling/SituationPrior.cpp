@@ -7,7 +7,7 @@ std::string SituationPrior::getName(PriorId id)
   {
     case none: return "none";
     case firstReady: return "firstReady";
-    case penalizedInSet: return "penalizedSet";
+    case positionedInSet: return "positionedInSet";
     case goaliePenalizedInSet: return "goaliePenalizedInSet";
     case set: return "set";
     case playAfterPenalized: return "playAfterPenalized";

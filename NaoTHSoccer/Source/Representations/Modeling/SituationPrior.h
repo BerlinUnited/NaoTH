@@ -21,7 +21,7 @@ public:
   {
     none,
     firstReady,
-    penalizedInSet,
+    positionedInSet,
     goaliePenalizedInSet,
     playAfterPenalized,
     oppHalf,

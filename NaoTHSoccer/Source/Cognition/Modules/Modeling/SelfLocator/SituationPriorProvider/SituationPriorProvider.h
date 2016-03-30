@@ -105,11 +105,14 @@ private:
   
   void drawPriors();
   void reset();
+  bool isLiftedUp();
 
   GameData::GameState lastState;
   GameData::GameState currentState;
 
   bool startedWalking;
+  bool wasLiftedUp;
+  bool body_lift_up;
 };
 
 #endif  /* _SituationPriorProvider_H */
