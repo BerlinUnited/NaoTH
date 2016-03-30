@@ -18,35 +18,34 @@ def unroll_responses(responses, class_n):
         new_responses[resp_idx] = 1
         return new_responses
 
-def makeTrainData(X, labels, unroll=False):
+def makeTrainData(X, labels):
   
   testFeat = feat.histo(np.zeros((12,12),dtype=np.float32))
   n_feat = testFeat.shape[1]
   
   samples = np.zeros((X.shape[0], n_feat), dtype=np.float32)
+  i = 0
   for s in X:
     img = s.reshape((12,12))
-    f = feat.histo(img)
-    samples = np.vstack([samples, f])
+    samples[i,:] = feat.histo(img)
+    i += 1
   
-  if unroll:
-    responses = np.float32(unroll_responses(labels, 2).reshape(-1, 2))
-  else:
-    responses = np.int32(labels)
+  responses = np.int32(labels)
     
   return n_feat, samples, responses
   
 def learn(X, labels):
   
-  n_feat, samples, responses = makeTrainData(X, labels, False)
+  n_feat, samples, responses = makeTrainData(X, labels)
       
   estimator = cv2.ml.SVM_create()
   estimator.setType(cv2.ml.SVM_C_SVC)
   estimator.setKernel(cv2.ml.SVM_CHI2)
-  #estimator.setC(XXX)
-  #estimator.setGamma(XXX)
+#  estimator.setTermCriteria((cv2.TERM_CRITERIA_COUNT + cv2.TERM_CRITERIA_EPS, 10000, 1.19209e-07))
+  ##estimator.setC(XXX)
+  ##estimator.setGamma(XXX)
   
-  trainData = cv2.ml.TrainData_create(samples=samples, 
+  trainData = cv2.ml.TrainData_create(samples=samples, \
     layout=cv2.ml.ROW_SAMPLE , responses=responses)
   
   estimator.train(trainData)
@@ -54,7 +53,7 @@ def learn(X, labels):
   return estimator
   
 def classify(X, labels, estimator):  
-  n_feat, samples, responses = makeTrainData(X, labels, False)
+  n_feat, samples, responses = makeTrainData(X, labels)
   
   classified = np.zeros(samples.shape[0], dtype=np.int)
   
