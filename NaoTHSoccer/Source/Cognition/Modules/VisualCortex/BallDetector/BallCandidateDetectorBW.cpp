@@ -41,10 +41,13 @@ BallCandidateDetectorBW::BallCandidateDetectorBW()
     // ignore
     std::cerr << "Could not load Config/ball_detector_model.dat" << std::endl;
   }
+
+  getDebugParameterList().add(&params);
 }
 
 BallCandidateDetectorBW::~BallCandidateDetectorBW()
 {
+  getDebugParameterList().remove(&params);
 }
 
 bool BallCandidateDetectorBW::execute(CameraInfo::CameraID id)

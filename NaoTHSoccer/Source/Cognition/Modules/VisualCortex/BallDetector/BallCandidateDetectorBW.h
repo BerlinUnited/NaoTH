@@ -110,6 +110,24 @@ public:
 private:
   CameraInfo::CameraID cameraID;
 
+  struct Parameters: public ParameterList
+  {
+    Parameters() : ParameterList("BallCandidateDetectorBW")
+    {
+      PARAMETER_REGISTER(classifier.basic_svm) = false;
+      PARAMETER_REGISTER(classifier.cv_svm_histogram) = true;
+      
+      syncWithConfig();
+    }
+
+	  struct Classifier {
+      bool basic_svm;
+      bool cv_svm_histogram;
+    } classifier;
+
+  } params;
+
+
 private:
 
   class Best 
