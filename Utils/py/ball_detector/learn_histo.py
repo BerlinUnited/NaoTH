@@ -39,12 +39,13 @@ def makeTrainData(X, labels, unroll=False):
 def learn(X, labels):
   
   n_feat, samples, responses = makeTrainData(X, labels, False)
-      
+   
+  
   estimator = cv2.ml.SVM_create()
   estimator.setType(cv2.ml.SVM_C_SVC)
-  estimator.setKernel(cv2.ml.SVM_CHI2)
-  #estimator.setC(XXX)
-  #estimator.setGamma(XXX)
+  estimator.setKernel(cv2.ml.SVM_RBF)
+  ##estimator.setC(XXX)
+  ##estimator.setGamma(XXX)
   
   trainData = cv2.ml.TrainData_create(samples=samples, 
     layout=cv2.ml.ROW_SAMPLE , responses=responses)

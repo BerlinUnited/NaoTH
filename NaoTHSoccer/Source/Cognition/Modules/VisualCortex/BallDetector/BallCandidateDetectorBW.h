@@ -218,27 +218,16 @@ private:
     // TODO: necessary?
     origImg.convertTo(img, CV_32FC1);
 
-    // normalize by maximum value
     double maxVal;
     cv::minMaxLoc(img, nullptr, &maxVal);
-    if(maxVal > 0.0)
-    {
-      img = img / maxVal;
-    }
+    maxVal += 1;
 
     // calculate histogram
     cv::Mat hist;
     std::vector<cv::Mat> imgVec = {img};
-    cv::calcHist(imgVec, {0}, cv::Mat::ones(img.rows, img.cols, CV_8U), hist, {32}, {0.0f, 1.0f});
+    cv::calcHist(imgVec, {0}, cv::Mat::ones(img.rows, img.cols, CV_8U), hist, {32}, {0.0f, (float) maxVal});
 
     // also normalize the histogram to range 0-1.0f
-    double maxHistVal;
-    cv::minMaxLoc(hist, nullptr, &maxHistVal);
-    if(maxHistVal > 0.0)
-    {
-      hist = hist / maxHistVal;
-    }
-
     cv::Mat feat;
     cv::transpose(hist, feat);
     return feat;

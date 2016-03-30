@@ -51,11 +51,11 @@ def histo(img):
 	# normalize by maximum value
 	img = img.astype("float32")
 	_, maxVal, _, _ = cv2.minMaxLoc(img)
-	if maxVal > 0:
-		img = np.divide(img,maxVal)
-	hist = cv2.calcHist([img],[0],None,[32],[0,1])
+	hist = cv2.calcHist([img],[0],None,[32],[0.0, maxVal+1])
+	
 	# also normalize the histogram to 0 to 1.0f
 	_, maxHistVal, _, _ = cv2.minMaxLoc(hist)
 	if maxHistVal > 0:
 		hist = np.divide(hist, maxHistVal)
+	
 	return hist.T

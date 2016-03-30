@@ -96,6 +96,7 @@ void BallCandidateDetectorBW::executeOpenCVModel()
     {
       histModel = cv::Algorithm::load<cv::ml::SVM>("Config/model_histo.dat");
       assert(histModel->getSupportVectors().rows > 0);
+      assert(histModel->isTrained());
     }
     catch(cv::Exception ex)
     {
