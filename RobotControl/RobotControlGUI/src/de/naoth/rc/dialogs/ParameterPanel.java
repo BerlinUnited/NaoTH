@@ -13,8 +13,20 @@ import de.naoth.rc.core.manager.SwingCommandExecutor;
 import de.naoth.rc.server.Command;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
+import javax.swing.UIManager;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 
@@ -104,13 +116,23 @@ public class ParameterPanel extends AbstractDialog
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        fcSaveParametersDialog = new de.naoth.rc.components.ExtendedFileChooser();
         jToolBar1 = new javax.swing.JToolBar();
         jToggleButtonList = new javax.swing.JToggleButton();
         cbParameterId = new javax.swing.JComboBox();
         jToggleButtonRefresh = new javax.swing.JToggleButton();
         jButtonSend = new javax.swing.JButton();
+        jSeparator1 = new javax.swing.JToolBar.Separator();
+        btnSave = new javax.swing.JButton();
+        btnPopupMenu = new javax.swing.JToggleButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTextArea = new javax.swing.JTextArea();
+
+        fcSaveParametersDialog.setAcceptAllFileFilterUsed(false);
+        fcSaveParametersDialog.setDialogType(javax.swing.JFileChooser.SAVE_DIALOG);
+        fcSaveParametersDialog.setDialogTitle("Save configuration");
+        fcSaveParametersDialog.setFileFilter(new FileNameExtensionFilter("Config files (*.cfg)", "cfg"));
+        fcSaveParametersDialog.setSelectedFile(new java.io.File("/home/philipp/.cfg"));
 
         jToolBar1.setFloatable(false);
         jToolBar1.setRollover(true);
@@ -154,6 +176,26 @@ public class ParameterPanel extends AbstractDialog
             }
         });
         jToolBar1.add(jButtonSend);
+        jToolBar1.add(jSeparator1);
+
+        btnSave.setText("Save");
+        btnSave.setToolTipText("Saving current configuration.");
+        btnSave.setFocusable(false);
+        btnSave.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btnSave.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btnSave.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSaveActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(btnSave);
+
+        btnPopupMenu.setText("▼");
+        btnPopupMenu.setEnabled(false);
+        btnPopupMenu.setFocusable(false);
+        btnPopupMenu.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btnPopupMenu.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToolBar1.add(btnPopupMenu);
 
         jTextArea.setColumns(20);
         jTextArea.setRows(5);
@@ -163,8 +205,8 @@ public class ParameterPanel extends AbstractDialog
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, 503, Short.MAX_VALUE)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 503, Short.MAX_VALUE)
+            .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, 555, Short.MAX_VALUE)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 555, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -196,6 +238,57 @@ private void jToggleButtonListActionPerformed(java.awt.event.ActionEvent evt)//G
     listParameters();
 }//GEN-LAST:event_jToggleButtonListActionPerformed
 
+    private void btnSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveActionPerformed
+        if(cbParameterId.getSelectedItem() == null) {
+            JOptionPane.showMessageDialog(null, "You have to choose a parameter configuration!", "Error", JOptionPane.ERROR_MESSAGE);
+        } else {
+            // get parameter item
+            ParameterListItem pli = ((ParameterListItem) cbParameterId.getSelectedItem());
+            // set config file to the name of the parameter item
+            fcSaveParametersDialog.setSelectedFile(new java.io.File(pli.name + ".cfg"));
+            // show save dialog
+            if(fcSaveParametersDialog.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+                // TODO: check if file is writeable
+                // if selected file has a file extension - use this, otherwise append ".cfg" to the filename
+                File f = (fcSaveParametersDialog.getSelectedFile().getName().lastIndexOf(".") == -1) ? 
+                    new File(fcSaveParametersDialog.getSelectedFile()+".cfg") : 
+                    fcSaveParametersDialog.getSelectedFile();
+                try {
+                    BufferedWriter bf = new BufferedWriter(new FileWriter(f));
+                    bf.write("["+pli.name+"]");
+                    bf.newLine();
+                    for (Map.Entry<String, String> cfg : this.getText().entrySet()) {
+                        bf.write(cfg.getKey() + "=" + cfg.getValue());
+                        bf.newLine();
+                    }
+                    bf.close();
+                } catch (IOException ex) {
+                    Logger.getLogger(ParameterPanel.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+    }//GEN-LAST:event_btnSaveActionPerformed
+
+    private HashMap<String,String> getText() {
+        HashMap<String, String> result = new HashMap();
+        String text = this.jTextArea.getText();
+        text = text.replaceAll("( |\t)+", "");
+        String[] lines = text.split("(\n)+");
+        for (String l : lines) {
+            String[] splitted = l.split("=");
+            if (splitted.length == 2) {
+                String key = splitted[0].trim();
+                String value = splitted[1].trim();
+                // remove the last ;
+                if (value.charAt(value.length() - 1) == ';') {
+                    value = value.substring(0, value.length() - 1);
+                }
+                result.put(key, value);
+            }
+        }//end for
+        return result;
+    }
+    
   private class ParameterListItem
   {
       public final String owner;
@@ -309,27 +402,9 @@ private void sendParameters()
   if (Plugin.parent.checkConnected())
   {
     Command cmd = ((ParameterListItem) cbParameterId.getSelectedItem()).getCommandSET();
-
-    String text = this.jTextArea.getText();
-
-    text = text.replaceAll("( |\t)+", "");
-    String[] lines = text.split("(\n)+");
-    for (String l : lines)
-    {
-      String[] splitted = l.split("=");
-      if (splitted.length == 2)
-      {
-        String key = splitted[0].trim();
-        String value = splitted[1].trim();
-        // remove the last ;
-        if (value.charAt(value.length() - 1) == ';')
-        {
-          value = value.substring(0, value.length() - 1);
-        }
-
-        cmd.addArg(key, value);
-      }
-    }//end for
+    for (Map.Entry<String, String> cfg : this.getText().entrySet()) {
+        cmd.addArg(cfg.getKey(), cfg.getValue());
+    }
     
     Plugin.commandExecutor.executeCommand(new ParameterListHandlerSet(), cmd);
     
@@ -382,9 +457,13 @@ private void listParameters()
   }
   
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JToggleButton btnPopupMenu;
+    private javax.swing.JButton btnSave;
     private javax.swing.JComboBox cbParameterId;
+    private de.naoth.rc.components.ExtendedFileChooser fcSaveParametersDialog;
     private javax.swing.JButton jButtonSend;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JToolBar.Separator jSeparator1;
     private javax.swing.JTextArea jTextArea;
     private javax.swing.JToggleButton jToggleButtonList;
     private javax.swing.JToggleButton jToggleButtonRefresh;
