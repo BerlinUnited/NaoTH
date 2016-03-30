@@ -23,7 +23,7 @@ def makeTrainData(X, labels, unroll=False):
   testFeat = feat.histo(np.zeros((12,12),dtype=np.float32))
   n_feat = testFeat.shape[1]
   
-  samples = np.zeros((0, n_feat), dtype=np.float32)
+  samples = np.zeros((X.shape[0], n_feat), dtype=np.float32)
   for s in X:
     img = s.reshape((12,12))
     f = feat.histo(img)
@@ -39,13 +39,12 @@ def makeTrainData(X, labels, unroll=False):
 def learn(X, labels):
   
   n_feat, samples, responses = makeTrainData(X, labels, False)
-   
-  
+      
   estimator = cv2.ml.SVM_create()
   estimator.setType(cv2.ml.SVM_C_SVC)
-  estimator.setKernel(cv2.ml.SVM_RBF)
-  ##estimator.setC(XXX)
-  ##estimator.setGamma(XXX)
+  estimator.setKernel(cv2.ml.SVM_CHI2)
+  #estimator.setC(XXX)
+  #estimator.setGamma(XXX)
   
   trainData = cv2.ml.TrainData_create(samples=samples, 
     layout=cv2.ml.ROW_SAMPLE , responses=responses)
