@@ -240,6 +240,13 @@ private:
     cv::calcHist(imgVec, columnVec, cv::Mat::ones(img.rows, img.cols, CV_8U), hist, binVec, ranges);
 
     // also normalize the histogram to range 0-1.0f
+    double maxHistVal;
+    cv::minMaxLoc(hist, nullptr, &maxHistVal);
+    if(maxHistVal > 0)
+    {
+      hist = hist / maxHistVal;
+    }
+
     cv::Mat feat;
     cv::transpose(hist, feat);
     return feat;
