@@ -21,7 +21,6 @@
 #include <list>
 
 BallCandidateDetectorBW::BallCandidateDetectorBW()
-  : useOpenCVModel(true)
 {
   DEBUG_REQUEST_REGISTER("Vision:BallCandidateDetectorBW:keyPoints", "draw key points extracted from integral image", false);
 
@@ -30,17 +29,6 @@ BallCandidateDetectorBW::BallCandidateDetectorBW()
   DEBUG_REQUEST_REGISTER("Vision:BallCandidateDetectorBW:drawPercepts", "draw ball percepts", false);
 
   DEBUG_REQUEST_REGISTER("Vision:BallCandidateDetectorBW:forceBothCameras", "always record both cameras", false);
-
-  // load model from config folder
-  try
-  {
-    model = cv::Algorithm::load<cv::ml::SVM>("Config/ball_detector_model.dat");
-  }
-  catch(cv::Exception ex)
-  {
-    // ignore
-    std::cerr << "Could not load Config/ball_detector_model.dat" << std::endl;
-  }
 
   getDebugParameterList().add(&params);
 }
@@ -54,7 +42,6 @@ bool BallCandidateDetectorBW::execute(CameraInfo::CameraID id)
 {
   cameraID = id;
   getBallCandidates().reset();
-  useOpenCVModel = false;
 
   // todo: check validity of the intergral image
   if(getGameColorIntegralImage().getWidth() == 0) {
@@ -72,17 +59,21 @@ bool BallCandidateDetectorBW::execute(CameraInfo::CameraID id)
     }
   );
 
-  if(useOpenCVModel && model && !model->empty())
+  if(params.classifier.cv_svm_histogram)
   {
     STOPWATCH_START("BallCandidateDetectorBW:neuronalClassification");
     executeOpenCVModel();
     STOPWATCH_STOP("BallCandidateDetectorBW:neuronalClassification");
-
   }
-  else
+  else if(params.classifier.basic_svm)
   {
     executeSVM();
   }
+  else
+  {
+    std::cerr << "no ball detector classifier selected in parameters!" << std::endl;
+  }
+
 
   DEBUG_REQUEST("Vision:BallCandidateDetectorBW:drawPercepts",
     for(MultiBallPercept::ConstABPIterator iter = getMultiBallPercept().begin(); iter != getMultiBallPercept().end(); iter++) {
@@ -97,40 +88,61 @@ bool BallCandidateDetectorBW::execute(CameraInfo::CameraID id)
 
 void BallCandidateDetectorBW::executeOpenCVModel()
 {
-  for(std::list<Best::BallCandidate>::iterator i = best.candidates.begin(); i != best.candidates.end(); ++i)
+
+  if(!histModel || histModel->empty())
   {
-    if(getFieldPercept().getValidField().isInside((*i).center))
+    // load model from config folder
+    try
     {
-      int radius = (int)((*i).radius*1.5 + 0.5);
-
-      BallCandidates::Patch& p = getBallCandidates().nextFreePatch();
-      p.min = Vector2i((*i).center.x - radius, (*i).center.y - radius);
-      p.max = Vector2i((*i).center.x + radius, (*i).center.y + radius);
-      subsampling(p.data, p.min.x, p.min.y, p.max.x, p.max.y);
-
-      bool ballFound = false;
-      cv::Mat wrappedImg(12, 12, CV_8UC1, (void*) p.data.data());
-
-      cv::Mat in = createHistoFeat(wrappedImg);
-      cv::Mat out;
-      if(model->predict(in, out) > 0) {
-        ballFound = true;
-        addBallPercept((*i).center, radius);
-      }
-
-      DEBUG_REQUEST("Vision:BallCandidateDetectorBW:drawCandidates",
-        //CANVAS(((cameraID == CameraInfo::Top)?"ImageTop":"ImageBottom"));
-        if(ballFound) {
-          RECT_PX(ColorClasses::orange, (*i).center.x - radius, (*i).center.y - radius,
-            (*i).center.x + radius, (*i).center.y + radius);
-        } else {
-          RECT_PX(ColorClasses::gray, (*i).center.x - radius, (*i).center.y - radius,
-            (*i).center.x + radius, (*i).center.y + radius);
-        }
-      );
-
+      histModel = cv::Algorithm::load<cv::ml::SVM>("Config/model_histo.dat");
+      assert(histModel->getSupportVectors().rows > 0);
+    }
+    catch(cv::Exception ex)
+    {
+      // ignore
+      std::cerr << "Could not load Config/model_histo.dat" << std::endl;
     }
   }
+
+  if(histModel && !histModel->empty())
+  {
+    for(std::list<Best::BallCandidate>::iterator i = best.candidates.begin(); i != best.candidates.end(); ++i)
+    {
+      if(getFieldPercept().getValidField().isInside((*i).center))
+      {
+        int radius = (int)((*i).radius*1.5 + 0.5);
+
+        BallCandidates::Patch& p = getBallCandidates().nextFreePatch();
+        p.min = Vector2i((*i).center.x - radius, (*i).center.y - radius);
+        p.max = Vector2i((*i).center.x + radius, (*i).center.y + radius);
+        subsampling(p.data, p.min.x, p.min.y, p.max.x, p.max.y);
+
+        bool ballFound = false;
+        cv::Mat wrappedImg(12, 12, CV_8UC1, (void*) p.data.data());
+
+        cv::Mat in = createHistoFeat(wrappedImg);
+
+        cv::Mat out;
+        histModel->predict(in, out, 0);
+        if(out.at<float>(0,0) > 0.0f) {
+          ballFound = true;
+          addBallPercept((*i).center, radius);
+        }
+
+        DEBUG_REQUEST("Vision:BallCandidateDetectorBW:drawCandidates",
+          //CANVAS(((cameraID == CameraInfo::Top)?"ImageTop":"ImageBottom"));
+          if(ballFound) {
+            RECT_PX(ColorClasses::orange, (*i).center.x - radius, (*i).center.y - radius,
+              (*i).center.x + radius, (*i).center.y + radius);
+          } else {
+            RECT_PX(ColorClasses::gray, (*i).center.x - radius, (*i).center.y - radius,
+              (*i).center.x + radius, (*i).center.y + radius);
+          }
+        );
+
+      }
+    }
+  } // end if model valid
 }
 
 void BallCandidateDetectorBW::executeSVM()

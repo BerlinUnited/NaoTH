@@ -114,8 +114,8 @@ private:
   {
     Parameters() : ParameterList("BallCandidateDetectorBW")
     {
-      PARAMETER_REGISTER(classifier.basic_svm) = false;
-      PARAMETER_REGISTER(classifier.cv_svm_histogram) = true;
+      PARAMETER_REGISTER(classifier.basic_svm) = true;
+      PARAMETER_REGISTER(classifier.cv_svm_histogram) = false;
       
       syncWithConfig();
     }
@@ -216,7 +216,7 @@ private:
   {
     cv::Mat img;
     // TODO: necessary?
-    origImg.convertTo(img, CV_32F);
+    origImg.convertTo(img, CV_32FC1);
 
     // normalize by maximum value
     double maxVal;
@@ -228,7 +228,8 @@ private:
 
     // calculate histogram
     cv::Mat hist;
-    cv::calcHist({img}, {0}, cv::Mat(), hist, {32}, {0.0f, 1.0f});
+    std::vector<cv::Mat> imgVec = {img};
+    cv::calcHist(imgVec, {0}, cv::Mat::ones(img.rows, img.cols, CV_8U), hist, {32}, {0.0f, 1.0f});
 
     // also normalize the histogram to range 0-1.0f
     double maxHistVal;
@@ -238,7 +239,9 @@ private:
       hist = hist / maxHistVal;
     }
 
-    return hist;
+    cv::Mat feat;
+    cv::transpose(hist, feat);
+    return feat;
   }
 
   cv::Mat createBinaryFeat(cv::Mat img)
@@ -356,8 +359,6 @@ private:
   }
 
 private:
-
-  bool useOpenCVModel;
   
   DOUBLE_CAM_PROVIDE(BallCandidateDetectorBW, DebugImageDrawings);
 
@@ -371,7 +372,7 @@ private:
 
   DOUBLE_CAM_PROVIDE(BallCandidateDetectorBW, BallCandidates);
 
-  cv::Ptr<cv::ml::SVM> model;
+  cv::Ptr<cv::ml::SVM> histModel;
 };//end class BallCandidateDetectorBW
 
 #endif // _BallCandidateDetectorBW_H_

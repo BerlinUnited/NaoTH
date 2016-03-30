@@ -108,7 +108,7 @@ if __name__ == "__main__":
   if len(sys.argv) == 2:
     f_train = sys.argv[1]
     f_eval = sys.argv[1]
-    splitRatio = 0.9
+    splitRatio = 0.75
   elif len(sys.argv) > 2:
     f_train = sys.argv[1]
     f_eval = sys.argv[2]
@@ -128,9 +128,10 @@ if __name__ == "__main__":
   print("Learning...")
   estimator = learn(X_train, labels_train)
   print("Saving...")
-  estimator.save("ball_detector_model.dat")
+  estimator.save("model_histo.dat")
   print("Evaluating...")
   classfied = classify(X_eval, labels_eval, estimator)
+  print("numballs", len(labels_eval[:] == 1))
   show_evaluation(X_eval, labels_eval, classfied)
 #  show_errors_asfeat(X_eval, labels_eval, classfied)
 
