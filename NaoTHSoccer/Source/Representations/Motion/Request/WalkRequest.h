@@ -98,6 +98,13 @@ public:
 
   }//end print
   
+  void assertValid() const {
+    ASSERT(character <= 1);
+    ASSERT(character >= 0);
+    ASSERT(!Math::isNan(target.translation.x));
+    ASSERT(!Math::isNan(target.translation.y));
+    ASSERT(!Math::isNan(target.rotation));
+  }
 };
 
 namespace naoth
