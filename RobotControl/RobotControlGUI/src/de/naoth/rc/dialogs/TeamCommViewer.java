@@ -102,7 +102,7 @@ public class TeamCommViewer extends AbstractDialog {
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         btnRecord = new javax.swing.JToggleButton();
-        btnReselect = new javax.swing.JButton();
+        btnStopRecording = new javax.swing.JButton();
 
         teamCommFileChooser.setDialogType(javax.swing.JFileChooser.SAVE_DIALOG);
         teamCommFileChooser.setDialogTitle("Log file location");
@@ -141,13 +141,12 @@ public class TeamCommViewer extends AbstractDialog {
             }
         });
 
-        btnReselect.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/naoth/rc/res/reload.png"))); // NOI18N
-        btnReselect.setToolTipText("Select other/new Logfile.");
-        btnReselect.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
-        btnReselect.setEnabled(false);
-        btnReselect.addActionListener(new java.awt.event.ActionListener() {
+        btnStopRecording.setIcon(new javax.swing.ImageIcon(getClass().getResource("/toolbarButtonGraphics/media/Stop24.gif"))); // NOI18N
+        btnStopRecording.setToolTipText("Stops recording and closes log file.");
+        btnStopRecording.setEnabled(false);
+        btnStopRecording.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnReselectActionPerformed(evt);
+                btnStopRecordingActionPerformed(evt);
             }
         });
 
@@ -171,26 +170,25 @@ public class TeamCommViewer extends AbstractDialog {
                         .addGap(12, 12, 12)
                         .addComponent(btnRecord)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnReselect)
-                        .addGap(0, 108, Short.MAX_VALUE))
+                        .addComponent(btnStopRecording)
+                        .addGap(0, 100, Short.MAX_VALUE))
                     .addComponent(robotStatusPanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addGap(20, 20, 20)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(btnStopRecording, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                    .addComponent(btnRecord, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(btListen)
                         .addComponent(portNumberOwn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(portNumberOpponent, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(jLabel1)
-                        .addComponent(jLabel2))
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(btnRecord, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                        .addComponent(btnReselect)))
-                .addGap(18, 18, 18)
+                        .addComponent(jLabel2)))
+                .addGap(27, 27, 27)
                 .addComponent(robotStatusPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
@@ -266,9 +264,18 @@ public class TeamCommViewer extends AbstractDialog {
         }
     }//GEN-LAST:event_btnRecordActionPerformed
 
-    private void btnReselectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReselectActionPerformed
-        this.setLogFile();
-    }//GEN-LAST:event_btnReselectActionPerformed
+    private void btnStopRecordingActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStopRecordingActionPerformed
+        try {
+            logfile.disable();
+            logfile.finalize();
+        } catch (Throwable ex) {
+            Logger.getLogger(TeamCommViewer.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        logfile = null;
+        btnRecord.setSelected(false);
+        setBtnRecordToolTipText(false);
+        btnStopRecording.setEnabled(false);
+    }//GEN-LAST:event_btnStopRecordingActionPerformed
 
     @Override
     public void dispose() {
@@ -298,17 +305,19 @@ public class TeamCommViewer extends AbstractDialog {
             // TODO: check if file is writeable
 
             try {
-                dfile.createNewFile();
+                // make sure there is no open log file ..
                 if(this.logfile != null) {
                     this.logfile.disable();
                     this.logfile.finalize();
                 }
+                // create new log file
+                dfile.createNewFile();
                 logfile = new LogFile(dfile);
                 logfile.enable();
                 btnRecord.setSelected(true);
                 setBtnRecordToolTipText(true);
-                // enable "reselect"-button
-                btnReselect.setEnabled(true);
+                // enable "stop"-button
+                btnStopRecording.setEnabled(true);
                 return true;
             } catch (IOException ex) {
                 Logger.getLogger(TeamCommViewer.class.getName()).log(Level.SEVERE, null, ex);
@@ -331,7 +340,7 @@ public class TeamCommViewer extends AbstractDialog {
         if(!stop) {
             btnRecord.setToolTipText("Start recording to: " + name);
         } else {
-            btnRecord.setToolTipText("Stop recording to: " + name);
+            btnRecord.setToolTipText("Pause recording to: " + name);
         }
         
     }
@@ -552,7 +561,7 @@ public class TeamCommViewer extends AbstractDialog {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JToggleButton btListen;
     private javax.swing.JToggleButton btnRecord;
-    private javax.swing.JButton btnReselect;
+    private javax.swing.JButton btnStopRecording;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JFormattedTextField portNumberOpponent;
