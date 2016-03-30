@@ -63,7 +63,7 @@ private:
     {
       PARAMETER_REGISTER(getup_threshold) = 1.2;
       PARAMETER_REGISTER(foot_threshold) = 1;
-
+      PARAMETER_REGISTER(maxTimeForLiftUp) = 500;
       syncWithConfig();
       //DebugParameterList::getInstance().add(this);
     }
@@ -75,6 +75,7 @@ private:
 
     double foot_threshold;
     double getup_threshold;
+    double maxTimeForLiftUp;
   } theParams;
 
 
