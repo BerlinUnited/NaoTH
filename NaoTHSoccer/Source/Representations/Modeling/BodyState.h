@@ -21,7 +21,8 @@ public:
     standByRightFoot(true),
     foot_state_time(0),
     temperatureLeftLeg(0),
-    temperatureRightLeg(0)
+    temperatureRightLeg(0),
+    isLiftedUp(false)
   {}
 
   ~BodyState(){}
@@ -80,6 +81,8 @@ public:
   double temperatureLeftLeg;
   double temperatureRightLeg;
 
+  //Is the body lifted up
+  bool isLiftedUp;
 
   virtual void print(std::ostream& stream) const
   {

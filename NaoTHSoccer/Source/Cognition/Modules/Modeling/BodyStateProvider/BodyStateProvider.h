@@ -84,6 +84,8 @@ private:
 
   void updateTheLegTemperature();
 
+  void updateIsLiftedUp();
+
   // internal data
   RingBufferWithSum<Vector2<double>, 10> inertialBuffer;
 

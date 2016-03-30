@@ -111,3 +111,11 @@ void BodyStateProvider::updateTheLegTemperature()
   getBodyState().temperatureRightLeg = tempR;
 }//end updateTheLegTemperature
 
+void BodyStateProvider::updateIsLiftedUp(){
+   getBodyState().isLiftedUp =  getBodyState().fall_down_state == BodyState::upright && 
+                      !getBodyState().standByLeftFoot && 
+                      !getBodyState().standByRightFoot && // no foot is on the ground
+                       getFrameInfo().getTimeSince(getBodyState().foot_state_time) > theParams.maxTimeForLiftUp;
+
+ 
+}
