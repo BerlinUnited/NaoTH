@@ -350,7 +350,15 @@ void MonteCarloSelfLocator::updateBySituation()
       updateByOppHalf(theSampleSet);
     }
     else {
-      //SituationPrior None
+      DEBUG_REQUEST("MCSLS:draw_state",
+        FIELD_DRAWING_CONTEXT;
+        PEN("000000", 30);
+        const Vector2d& fieldMin = getFieldInfo().fieldRect.min();
+        const Vector2d& fieldMax = getFieldInfo().fieldRect.max();
+        BOX(fieldMin.x, fieldMin.y, fieldMax.x, fieldMax.y);
+        LINE(fieldMin.x, fieldMin.y, fieldMax.x, fieldMax.y);
+        LINE(fieldMin.x, fieldMax.y, fieldMax.x, fieldMin.y);
+      );
     }
 }
 

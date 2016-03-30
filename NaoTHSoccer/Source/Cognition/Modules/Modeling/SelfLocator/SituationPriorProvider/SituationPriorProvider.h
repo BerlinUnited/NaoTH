@@ -103,7 +103,6 @@ private:
   };
 
   
-  void drawPriors();
   void reset();
   bool isLiftedUp();
 
