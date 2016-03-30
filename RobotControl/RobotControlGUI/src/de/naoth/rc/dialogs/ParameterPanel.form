@@ -15,6 +15,31 @@
         </Property>
       </Properties>
     </Component>
+    <Container class="javax.swing.JPopupMenu" name="popupMenu">
+      <Properties>
+        <Property name="invoker" type="java.awt.Component" editor="org.netbeans.modules.form.ComponentChooserEditor">
+          <ComponentRef name="btnPopupMenu"/>
+        </Property>
+        <Property name="label" type="java.lang.String" value="asdf"/>
+      </Properties>
+      <Events>
+        <EventHandler event="popupMenuWillBecomeInvisible" listener="javax.swing.event.PopupMenuListener" parameters="javax.swing.event.PopupMenuEvent" handler="popupMenuPopupMenuWillBecomeInvisible"/>
+      </Events>
+
+      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout">
+        <Property name="useNullLayout" type="boolean" value="true"/>
+      </Layout>
+      <SubComponents>
+        <MenuItem class="javax.swing.JMenuItem" name="miSaveAll">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Save all"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="miSaveAllActionPerformed"/>
+          </Events>
+        </MenuItem>
+      </SubComponents>
+    </Container>
   </NonVisualComponents>
   <AuxValues>
     <AuxValue name="FormSettings_autoResourcing" type="java.lang.Integer" value="0"/>
@@ -114,11 +139,13 @@
         <Component class="javax.swing.JToggleButton" name="btnPopupMenu">
           <Properties>
             <Property name="text" type="java.lang.String" value="&#x25bc;"/>
-            <Property name="enabled" type="boolean" value="false"/>
             <Property name="focusable" type="boolean" value="false"/>
             <Property name="horizontalTextPosition" type="int" value="0"/>
             <Property name="verticalTextPosition" type="int" value="3"/>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnPopupMenuActionPerformed"/>
+          </Events>
         </Component>
       </SubComponents>
     </Container>

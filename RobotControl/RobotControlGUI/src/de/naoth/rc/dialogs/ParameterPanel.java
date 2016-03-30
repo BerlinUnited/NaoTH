@@ -19,12 +19,14 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.UIManager;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
@@ -117,6 +119,8 @@ public class ParameterPanel extends AbstractDialog
     private void initComponents() {
 
         fcSaveParametersDialog = new de.naoth.rc.components.ExtendedFileChooser();
+        popupMenu = new javax.swing.JPopupMenu();
+        miSaveAll = new javax.swing.JMenuItem();
         jToolBar1 = new javax.swing.JToolBar();
         jToggleButtonList = new javax.swing.JToggleButton();
         cbParameterId = new javax.swing.JComboBox();
@@ -133,6 +137,26 @@ public class ParameterPanel extends AbstractDialog
         fcSaveParametersDialog.setDialogTitle("Save configuration");
         fcSaveParametersDialog.setFileFilter(new FileNameExtensionFilter("Config files (*.cfg)", "cfg"));
         fcSaveParametersDialog.setSelectedFile(new java.io.File("/home/philipp/.cfg"));
+
+        popupMenu.setInvoker(btnPopupMenu);
+        popupMenu.setLabel("asdf");
+        popupMenu.addPopupMenuListener(new javax.swing.event.PopupMenuListener() {
+            public void popupMenuWillBecomeVisible(javax.swing.event.PopupMenuEvent evt) {
+            }
+            public void popupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {
+                popupMenuPopupMenuWillBecomeInvisible(evt);
+            }
+            public void popupMenuCanceled(javax.swing.event.PopupMenuEvent evt) {
+            }
+        });
+
+        miSaveAll.setText("Save all");
+        miSaveAll.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                miSaveAllActionPerformed(evt);
+            }
+        });
+        popupMenu.add(miSaveAll);
 
         jToolBar1.setFloatable(false);
         jToolBar1.setRollover(true);
@@ -191,10 +215,14 @@ public class ParameterPanel extends AbstractDialog
         jToolBar1.add(btnSave);
 
         btnPopupMenu.setText("▼");
-        btnPopupMenu.setEnabled(false);
         btnPopupMenu.setFocusable(false);
         btnPopupMenu.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btnPopupMenu.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btnPopupMenu.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnPopupMenuActionPerformed(evt);
+            }
+        });
         jToolBar1.add(btnPopupMenu);
 
         jTextArea.setColumns(20);
@@ -246,6 +274,10 @@ private void jToggleButtonListActionPerformed(java.awt.event.ActionEvent evt)//G
             ParameterListItem pli = ((ParameterListItem) cbParameterId.getSelectedItem());
             // set config file to the name of the parameter item
             fcSaveParametersDialog.setSelectedFile(new java.io.File(pli.name + ".cfg"));
+            fcSaveParametersDialog.setFileSelectionMode(JFileChooser.FILES_ONLY);
+            fcSaveParametersDialog.setAcceptAllFileFilterUsed(false);
+            fcSaveParametersDialog.setDialogTitle("Save configuration ("+pli.toString()+")");
+            fcSaveParametersDialog.setFileFilter(new FileNameExtensionFilter("Config files (*.cfg)", "cfg"));
             // show save dialog
             if(fcSaveParametersDialog.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
                 // TODO: check if file is writeable
@@ -269,6 +301,52 @@ private void jToggleButtonListActionPerformed(java.awt.event.ActionEvent evt)//G
         }
     }//GEN-LAST:event_btnSaveActionPerformed
 
+    private void btnPopupMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPopupMenuActionPerformed
+        popupMenu.show(this.btnPopupMenu, 0, this.btnPopupMenu.getHeight());
+    }//GEN-LAST:event_btnPopupMenuActionPerformed
+
+    private void popupMenuPopupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {//GEN-FIRST:event_popupMenuPopupMenuWillBecomeInvisible
+        this.btnPopupMenu.setSelected(false);
+    }//GEN-LAST:event_popupMenuPopupMenuWillBecomeInvisible
+
+    private void miSaveAllActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miSaveAllActionPerformed
+        fcSaveParametersDialog.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        fcSaveParametersDialog.setAcceptAllFileFilterUsed(true);
+        fcSaveParametersDialog.setDialogTitle("Save configuration (All)");
+        fcSaveParametersDialog.resetChoosableFileFilters();
+        if(fcSaveParametersDialog.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+            // TODO: check if file is writeable
+            // if selected file has a file extension - use this, otherwise append ".cfg" to the filename
+            File d = fcSaveParametersDialog.getSelectedFile();
+            if(d.isDirectory()) {
+                // TODO: ask to overwrite all existing files!?
+                int oldIdx = cbParameterId.getSelectedIndex();
+
+                // iterate over all listed parameter configurations
+                int n = cbParameterId.getItemCount();
+                String errors = "";
+                for (int i = 0; i < n; i++) {
+                    ParameterListItem next = (ParameterListItem) cbParameterId.getItemAt(i);
+                    Plugin.commandExecutor.executeCommand(new ParameterListHandlerGet(), next.getCommandGET());
+                    if(!this.writeParameterConfig(next, new File(d.getPath()+File.separator+next.owner+"_"+next.name+".cfg"))) {
+                        errors += next.name + "\n";
+                    }
+                }
+                // show error(s), if one/some occurred
+                if(errors.compareTo("") != 0) {
+                    JOptionPane.showMessageDialog(null, "Error(s) occurred: "+errors, "Error", JOptionPane.ERROR_MESSAGE);
+                }
+
+                // reset view (old status)
+                cbParameterId.setSelectedIndex(oldIdx);
+                this.getParameterList();
+
+            } else {
+                JOptionPane.showMessageDialog(null, "The selected file is not a directory!", "Not a directory", JOptionPane.WARNING_MESSAGE);
+            }
+        }
+    }//GEN-LAST:event_miSaveAllActionPerformed
+
     private HashMap<String,String> getText() {
         HashMap<String, String> result = new HashMap();
         String text = this.jTextArea.getText();
@@ -287,6 +365,23 @@ private void jToggleButtonListActionPerformed(java.awt.event.ActionEvent evt)//G
             }
         }//end for
         return result;
+    }
+    
+    private boolean writeParameterConfig(ParameterListItem p, File f) {
+        try {
+            BufferedWriter bf = new BufferedWriter(new FileWriter(f));
+            bf.write("["+p.name+"]");
+            bf.newLine();
+            for (Map.Entry<String, String> cfg : this.getText().entrySet()) {
+                bf.write(cfg.getKey() + "=" + cfg.getValue());
+                bf.newLine();
+            }
+            bf.close();
+            return true;
+        } catch (IOException ex) {
+            Logger.getLogger(ParameterPanel.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
     }
     
   private class ParameterListItem
@@ -468,5 +563,7 @@ private void listParameters()
     private javax.swing.JToggleButton jToggleButtonList;
     private javax.swing.JToggleButton jToggleButtonRefresh;
     private javax.swing.JToolBar jToolBar1;
+    private javax.swing.JMenuItem miSaveAll;
+    private javax.swing.JPopupMenu popupMenu;
     // End of variables declaration//GEN-END:variables
 }
