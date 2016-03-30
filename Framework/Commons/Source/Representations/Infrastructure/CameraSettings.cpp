@@ -94,7 +94,7 @@ CommonCameraSettingsRequest::CommonCameraSettingsRequest(string configName)
     }
   }
 
-  PARAMETER_REGISTER(isActive) = true;
+  PARAMETER_REGISTER(isActive) = false;
 
   syncWithConfig();
 }
