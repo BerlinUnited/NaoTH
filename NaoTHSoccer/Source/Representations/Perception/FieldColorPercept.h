@@ -129,7 +129,7 @@ public:
       return isChroma(pixel.y, pixel.u, pixel.v);
     }
 
-    inline bool isChroma(int y, int u, int v) const {
+    inline bool isChroma(int /*y*/, int u, int v) const {
       return normalMin.x*u + normalMin.y*v > distMin && 
              normalMax.x*u + normalMax.y*v < distMax;
     }
