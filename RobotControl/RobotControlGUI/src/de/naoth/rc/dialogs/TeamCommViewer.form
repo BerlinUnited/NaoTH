@@ -2,13 +2,14 @@
 
 <Form version="1.5" maxVersion="1.7" type="org.netbeans.modules.form.forminfo.JPanelFormInfo">
   <NonVisualComponents>
-    <Component class="javax.swing.JFileChooser" name="TeamComFileChooser">
+    <Component class="de.naoth.rc.components.ExtendedFileChooser" name="teamCommFileChooser">
       <Properties>
         <Property name="dialogType" type="int" value="1"/>
-        <Property name="dialogTitle" type="java.lang.String" value="Saving destination"/>
+        <Property name="dialogTitle" type="java.lang.String" value="Log file location"/>
         <Property name="selectedFile" type="java.io.File" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
           <Connection code="new File((new SimpleDateFormat(&quot;yyyy-MM-dd&quot;)).format(new Date())+&quot;_TeamComm.log&quot;)" type="code"/>
         </Property>
+        <Property name="toolTipText" type="java.lang.String" value=""/>
       </Properties>
     </Component>
   </NonVisualComponents>
@@ -41,8 +42,10 @@
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="portNumberOpponent" min="-2" max="-2" attributes="0"/>
                       <EmptySpace min="-2" pref="12" max="-2" attributes="0"/>
-                      <Component id="jToggleButton1" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace min="0" pref="148" max="32767" attributes="0"/>
+                      <Component id="btnRecord" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="btnReselect" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace min="0" pref="108" max="32767" attributes="0"/>
                   </Group>
                   <Component id="robotStatusPanel" alignment="1" max="32767" attributes="0"/>
               </Group>
@@ -62,7 +65,10 @@
                       <Component id="jLabel1" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="jLabel2" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <Component id="jToggleButton1" pref="0" max="32767" attributes="0"/>
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="btnRecord" alignment="3" pref="0" max="32767" attributes="0"/>
+                      <Component id="btnReselect" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
               </Group>
               <EmptySpace type="separate" max="-2" attributes="0"/>
               <Component id="robotStatusPanel" max="32767" attributes="0"/>
@@ -116,7 +122,7 @@
         <Property name="text" type="java.lang.String" value="Red:"/>
       </Properties>
     </Component>
-    <Component class="javax.swing.JToggleButton" name="jToggleButton1">
+    <Component class="javax.swing.JToggleButton" name="btnRecord">
       <Properties>
         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
           <Image iconType="3" name="/de/naoth/rc/res/play.png"/>
@@ -128,7 +134,22 @@
         </Property>
       </Properties>
       <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jToggleButton1ActionPerformed"/>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnRecordActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="btnReselect">
+      <Properties>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+          <Image iconType="3" name="/de/naoth/rc/res/reload.png"/>
+        </Property>
+        <Property name="toolTipText" type="java.lang.String" value="Select other/new Logfile."/>
+        <Property name="cursor" type="java.awt.Cursor" editor="org.netbeans.modules.form.editors2.CursorEditor">
+          <Color id="Standardcursor"/>
+        </Property>
+        <Property name="enabled" type="boolean" value="false"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnReselectActionPerformed"/>
       </Events>
     </Component>
   </SubComponents>
