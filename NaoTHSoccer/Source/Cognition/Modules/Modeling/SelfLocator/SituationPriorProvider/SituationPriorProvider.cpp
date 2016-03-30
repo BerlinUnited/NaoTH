@@ -8,12 +8,10 @@
 #include "SituationPriorProvider.h"
 
 SituationPriorProvider::SituationPriorProvider()
-{  
+{ 
   lastState = getPlayerInfo().gameData.gameState;
   currentState = getPlayerInfo().gameData.gameState;
-
-  startedWalking = false;
-  body_lift_up = false;
+  walked_after_penalized_or_init = false;
 }
 
 SituationPriorProvider::~SituationPriorProvider()
@@ -22,91 +20,66 @@ SituationPriorProvider::~SituationPriorProvider()
 
 void SituationPriorProvider::execute()
 {
-  reset();
-  //get BodyState
-  body_lift_up = isLiftedUp();
+  //reset prior
+  //getSituationPrior().currentPrior = SituationPrior::none;
 
   //Calculate lastGameState
   if(getPlayerInfo().gameData.gameState != currentState){
     lastState = currentState;
     currentState = getPlayerInfo().gameData.gameState;
   }
+  //std::cout << "CurrentState: " << currentState << std::endl;
+  //std::cout << "LastState: " << lastState << std::endl;
 
-  //for Debug stuff
+  // calculate walked_after_penalized_or_init
+  if(currentState == GameData::set || currentState == GameData::initial || currentState == GameData::penalized){
+    walked_after_penalized_or_init = false;
+  } 
+  if(getMotionStatus().currentMotion == motion::walk){
+    walked_after_penalized_or_init = true;
+  }
+
+  //get BodyState
+  if(getBodyState().isLiftedUp){
+    wasLiftedUp = true;
+  }
+
+  //for penalty kicker
   if(getSituationStatus().oppHalf)
   {
-    getSituationPrior().currentPrior = getSituationPrior().oppHalf;
+    getSituationPrior().currentPrior = SituationPrior::oppHalf;
   }
-  //Init Positions
-  else if(getPlayerInfo().gameData.gameState == GameData::ready && lastState == GameData::initial)
+  //Init Positions and the robot didn't start walking
+  else if(currentState == GameData::ready && lastState == GameData::initial && !walked_after_penalized_or_init)
   {
-    //Dont update afer the robot started walking
-    if(getMotionStatus().currentMotion == motion::walk && startedWalking == false)
-    {
-      startedWalking = true;
-      getSituationPrior().currentPrior = getSituationPrior().none;
-    }
-    if(startedWalking == false){
-      getSituationPrior().currentPrior = getSituationPrior().firstReady;
-    }
-  }
-  //Penalized in Set or Ready for Goalie
-  else if(getPlayerInfo().gameData.playerNumber == 1 && getPlayerInfo().gameData.gameState == GameData::set && lastState == GameData::penalized){
-    //The Goalie will be in the own Goal if manually placed in set
-    getSituationPrior().currentPrior = getSituationPrior().goaliePenalizedInSet;
+    getSituationPrior().currentPrior = SituationPrior::firstReady;
   }
   //Positioned in Set, e.g.: Penalized in Set or Ready or manual placement
-  else if(
-    getPlayerInfo().gameData.gameState == GameData::set
-    && lastState == GameData::penalized
-    //localise only of already standing
-    || (wasLiftedUp == true && body_lift_up == false))
+  else if( (currentState == GameData::set
+          && lastState == GameData::penalized)
+          || wasLiftedUp)
   {
+    //Penalized in Set or Ready for Goalie
+    if(getPlayerInfo().gameData.playerNumber == 1){
+      //The Goalie will be in the own Goal if manually placed in set
+      getSituationPrior().currentPrior = SituationPrior::goaliePenalizedInSet;
+    }
     wasLiftedUp = false;
-    getSituationPrior().currentPrior = getSituationPrior().positionedInSet;
+    getSituationPrior().currentPrior = SituationPrior::positionedInSet;
   }
   //Penalized in Play
-  else if(getPlayerInfo().gameData.gameState == GameData::playing && lastState == GameData::penalized)
+  else if(currentState == GameData::playing && lastState == GameData::penalized && !walked_after_penalized_or_init)
   {
-    //Dont update afer the robot started walking
-    if(getMotionStatus().currentMotion == motion::walk && startedWalking == false)
-    {
-      startedWalking = true;
-      getSituationPrior().currentPrior = getSituationPrior().none;
-    }
-    if(startedWalking == false){
-      getSituationPrior().currentPrior = getSituationPrior().playAfterPenalized;
-    }
+      getSituationPrior().currentPrior = SituationPrior::playAfterPenalized;
   }
   //Set
-  else if(getPlayerInfo().gameData.gameState == GameData::set)
+  else if(currentState == GameData::set)
   {
-    getSituationPrior().currentPrior = getSituationPrior().set;
+    getSituationPrior().currentPrior = SituationPrior::set;
   }
   //Play, Finished
   else
   {
-    getSituationPrior().currentPrior = getSituationPrior().none;
+    getSituationPrior().currentPrior = SituationPrior::none;
   }
-}
-
-void SituationPriorProvider::reset(){
-  //Reset the booleans
-  //Priors will no longer be active after the robot started walking
-  if(getPlayerInfo().gameData.gameState == GameData::initial || getPlayerInfo().gameData.gameState == GameData::playing){
-    startedWalking = false;
-  }
-}
-
-bool SituationPriorProvider::isLiftedUp(){
-  //this is copied from MonteCarloSelfLocator-execute
-  bool body_lift_up =  getBodyState().fall_down_state == BodyState::upright && 
-                      !getBodyState().standByLeftFoot && 
-                      !getBodyState().standByRightFoot && // no foot is on the ground
-                       getFrameInfo().getTimeSince(getBodyState().foot_state_time) > 500;//parameters.maxTimeForLiftUp;
-  if(body_lift_up){
-    wasLiftedUp = true;
-  }
-
-  return body_lift_up;
 }

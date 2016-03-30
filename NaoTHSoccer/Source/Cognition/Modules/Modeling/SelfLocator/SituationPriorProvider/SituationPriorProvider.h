@@ -102,16 +102,12 @@ private:
     }
   };
 
-  
-  void reset();
-  bool isLiftedUp();
-
   GameData::GameState lastState;
   GameData::GameState currentState;
 
-  bool startedWalking;
+  bool walked_after_penalized_or_init;
+
   bool wasLiftedUp;
-  bool body_lift_up;
 };
 
 #endif  /* _SituationPriorProvider_H */
