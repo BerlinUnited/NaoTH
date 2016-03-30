@@ -191,7 +191,7 @@ private:
 
   double greenPoints(int minX, int minY, int maxX, int maxY) const;
   void extractPatches();
-  void executeNeuronal();
+  void executeOpenCVModel();
   void executeSVM();
 
   cv::Mat createHistoFeat(cv::Mat origImg)

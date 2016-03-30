@@ -72,7 +72,7 @@ bool BallCandidateDetectorBW::execute(CameraInfo::CameraID id)
   if(useOpenCVModel && model && !model->empty())
   {
     STOPWATCH_START("BallCandidateDetectorBW:neuronalClassification");
-    executeNeuronal();
+    executeOpenCVModel();
     STOPWATCH_STOP("BallCandidateDetectorBW:neuronalClassification");
 
   }
@@ -92,7 +92,7 @@ bool BallCandidateDetectorBW::execute(CameraInfo::CameraID id)
   return getMultiBallPercept().wasSeen();
 }
 
-void BallCandidateDetectorBW::executeNeuronal()
+void BallCandidateDetectorBW::executeOpenCVModel()
 {
   for(std::list<Best::BallCandidate>::iterator i = best.candidates.begin(); i != best.candidates.end(); ++i)
   {
