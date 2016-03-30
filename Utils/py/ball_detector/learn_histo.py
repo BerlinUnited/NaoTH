@@ -119,6 +119,12 @@ if __name__ == "__main__":
   else:
     X_all, labels_all = load_data(f_train)
     X_train, labels_train, X_eval, labels_eval = shuffle_and_split(X_all, labels_all, splitRatio)
+  
+  # workaround for https://github.com/Itseez/opencv/issues/5054
+  # add another (3rd) class
+  dummyPatch = np.ones(X_train.shape[1])*255
+  X_train = np.vstack([X_train, dummyPatch])
+  labels_train = np.vstack([labels_train, [2]])
     
   print("Train size", X_train.shape[0])
   print("Eval size", X_eval.shape[0])
