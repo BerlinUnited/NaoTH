@@ -95,14 +95,8 @@ public:
     getMultiBallPercept().reset();
 
     // only execute search on top camera if bottom camera did not find anything
-    params.classifier.basic_svm = true;
-    params.classifier.heuristic = false;
-    params.classifier.cv_svm_histogram = false;
     if(!execute(CameraInfo::Bottom))
     {
-      params.classifier.basic_svm = false;
-      params.classifier.heuristic = false;
-      params.classifier.cv_svm_histogram = true;
       execute(CameraInfo::Top);
     }
     else
