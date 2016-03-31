@@ -98,7 +98,7 @@ def show_errors_asfeat(X, goldstd_response, actual_response):
   
 if __name__ == "__main__":
   
-  
+  ballNonBallRation = 3
   splitRatio = 0.75
   
   X_all, labels_all = load_multi_data(sys.argv[1:], -1)
@@ -107,20 +107,33 @@ if __name__ == "__main__":
     exit(0)
 
   X_train, labels_train, X_eval, labels_eval = shuffle_and_split(X_all, labels_all, splitRatio)
+    
+  nonBallIdx_train = [idx for idx in range(len(labels_train)) if labels_train[idx] == 0]
+  ballIdx_train = [idx for idx in range(len(labels_train)) if labels_train[idx] == 1]
+  numberOfBallTrain = len(ballIdx_train)
+  numberOfNonBallTrain = len(nonBallIdx_train)
+  
+  if (numberOfBallTrain*ballNonBallRation) < numberOfNonBallTrain:
+    # limit the number of non-balls
+    allowedNumNonBall = numberOfBallTrain*ballNonBallRation
+    validTrainIdx = np.hstack([nonBallIdx_train[:allowedNumNonBall], ballIdx_train])
+    X_train = X_train[validTrainIdx, :]
+    labels_train =labels_train[validTrainIdx, :]
+  
+  numberOfBallEval = len(labels_eval[np.where(labels_eval == 1)])
+  
+  
+  print("numballs-train", numberOfBallTrain)
+  print("numballs-eval", numberOfBallEval)
   
   # workaround for https://github.com/Itseez/opencv/issues/5054
   # add another (3rd) class
   dummyPatch = np.ones(X_train.shape[1])*255
   X_train = np.vstack([X_train, dummyPatch])
   labels_train = np.vstack([labels_train, [2]])
-    
+  
   print("Train size", X_train.shape[0])
   print("Eval size", X_eval.shape[0])
-  
-  numberOfBallTrain = len(labels_train[np.where(labels_train == 1)])
-  numberOfBallEval = len(labels_eval[np.where(labels_eval == 1)])
-  print("numballs-train", numberOfBallTrain)
-  print("numballs-eval", numberOfBallEval)
       
   print("Learning...")
   estimator = learn(X_train, labels_train)
