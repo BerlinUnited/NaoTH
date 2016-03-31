@@ -77,21 +77,24 @@ def readAllPatchesFromLog(fileName, type = 0):
   # get all the images from the logfile
   #images = map(getPatches, LogReader(fileName, myParser))
   
+  cameraIndex = []
   patches = []
   for frame in LogReader(fileName, myParser):
     ballCandidates = frame["BallCandidates"]
     for p in ballCandidates.patches:
       if p.type == type:
         data = numpy.fromstring(p.data, dtype=numpy.uint8)
-        patches.append(data);
+        patches.append(data)
+        cameraIndex.append([0])
       
     ballCandidatesTop = frame["BallCandidatesTop"]
     for p in ballCandidatesTop.patches:
       if p.type == type:
         data = numpy.fromstring(p.data, dtype=numpy.uint8)
-        patches.append(data);
+        patches.append(data)
+        cameraIndex.append([1])
   
-  return patches
+  return patches, cameraIndex
   
 if __name__ == "__main__":
 

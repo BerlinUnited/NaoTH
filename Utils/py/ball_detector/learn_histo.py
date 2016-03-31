@@ -101,7 +101,11 @@ if __name__ == "__main__":
   
   splitRatio = 0.75
   
-  X_all, labels_all = load_multi_data(sys.argv[1:])
+  X_all, labels_all = load_multi_data(sys.argv[1:], -1)
+  if X_all.shape[0] == 0:
+    print "Nothing to learn"
+    exit(0)
+
   X_train, labels_train, X_eval, labels_eval = shuffle_and_split(X_all, labels_all, splitRatio)
   
   # workaround for https://github.com/Itseez/opencv/issues/5054

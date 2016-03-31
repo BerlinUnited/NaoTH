@@ -102,12 +102,12 @@ def show_evaluation(X, goldstd_response, actual_response):
   plt.yticks(())
   plt.show()
 
-def load_multi_data(args):
+def load_multi_data(args, camera=-1):
   X = None
   labels = None
 
   for a in args:
-    X_local, labels_local = load_data(a.strip())
+    X_local, labels_local = load_data(a.strip(), camera)
     if X == None:
       X = X_local
     else:
@@ -119,13 +119,16 @@ def load_multi_data(args):
       labels = np.append(labels, labels_local)
   return X, labels
     
-def load_data(file):
-  patches = patchReader.readAllPatchesFromLog('./'+file+'.log')
+def load_data(file, camera=-1):
+  patches, cameraIdx = patchReader.readAllPatchesFromLog('./data/'+file+'.log')
+  
+  cameraIdx = np.asarray(cameraIdx)
+  cameraIdx = np.reshape(cameraIdx, (len(cameraIdx), ))
   
   X = np.array(patches)
   labels = np.negative(np.ones((X.shape[0],)))
   
-  label_file = './'+file+'.json'
+  label_file = './data/'+file+'.json'
   if os.path.isfile(label_file):
     with open(label_file, 'r') as data_file:
       ball_labels = json.load(data_file)
@@ -142,8 +145,24 @@ def load_data(file):
     print "ERROR: no label file ", label_file
   
   # filter out invalid labels
-  validIDX = labels[:] >= 0
-  X = X[validIDX]
-  labels = labels[validIDX]
+  validLabelIdx = labels[:] >= 0
+  cameraBottomIdx = cameraIdx[:] == 0
+  cameraTopIdx = cameraIdx[:] == 1
+  
+  validIdx = []
+  if camera == 0:
+    validIdx = np.logical_and(validLabelIdx, cameraBottomIdx)
+  elif camera == 1:
+    
+    validIdx = np.logical_and(validLabelIdx, cameraTopIdx)
+    #print("valid", validIdx)
+    #print("validLabel", validLabelIdx)
+    #print("camera", cameraTopIdx)
+  else:
+    validIdx = validLabelIdx
+    
+  X = X[validIdx]
+  labels = labels[validIdx]
+  
   return X, labels
 
