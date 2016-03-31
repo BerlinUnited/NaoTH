@@ -117,6 +117,10 @@ if __name__ == "__main__":
   print("Train size", X_train.shape[0])
   print("Eval size", X_eval.shape[0])
   
+  numberOfBallTrain = len(labels_train[np.where(labels_train == 1)])
+  numberOfBallEval = len(labels_eval[np.where(labels_eval == 1)])
+  print("numballs-train", numberOfBallTrain)
+  print("numballs-eval", numberOfBallEval)
       
   print("Learning...")
   estimator = learn(X_train, labels_train)
@@ -124,7 +128,7 @@ if __name__ == "__main__":
   estimator.save("model_histo.dat")
   print("Evaluating...")
   classfied = classify(X_eval, labels_eval, estimator)
-  print("numballs", len(labels_eval[:] == 1))
+  
   show_evaluation(X_eval, labels_eval, classfied)
 #  show_errors_asfeat(X_eval, labels_eval, classfied)
 

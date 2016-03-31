@@ -74,7 +74,6 @@ def show_evaluation(X, goldstd_response, actual_response):
 
 
     # show errors
-    print("ERRORS", len(errorIdx))
     maxShownErrors = min(len(errorIdx), show_size[0]*show_size[1])
     shownErrorIdx = errorIdx[0:maxShownErrors]
 
