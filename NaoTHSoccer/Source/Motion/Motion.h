@@ -53,8 +53,6 @@
 
 #include <Tools/DataStructures/ParameterList.h>
 
-#include <Tools/DataStructures/RingBuffer.h>
-
 BEGIN_DECLARE_MODULE(Motion)
   PROVIDE(StopwatchManager)
   PROVIDE(DebugDrawings)
@@ -76,13 +74,14 @@ BEGIN_DECLARE_MODULE(Motion)
   // PROVIDE is needed to update the speed and acceleration
   PROVIDE(MotorJointData) // TODO: check
 
+  PROVIDE(OffsetJointData)
+  
   PROVIDE(RobotInfo)
   PROVIDE(KinematicChainSensor)
   PROVIDE(KinematicChainMotor)
 
   // platform input
-
-  REQUIRE(SensorJointData)
+  PROVIDE(SensorJointData) //REQUIRE(SensorJointData)
   PROVIDE(FrameInfo)
   PROVIDE(InertialSensorData)
   PROVIDE(FSRData)
@@ -123,6 +122,8 @@ private:
   void processSensorData();
 
   void postProcess();
+
+  void modifyJointOffsets();
 
 private:
 
