@@ -102,9 +102,26 @@ def show_evaluation(X, goldstd_response, actual_response):
   plt.yticks(())
   plt.show()
 
+def load_multi_data(args):
+  X = None
+  labels = None
+
+  for a in args:
+    X_local, labels_local = load_data(a.strip())
+    if X == None:
+      X = X_local
+    else:
+      X = np.vstack([X, X_local])
+      
+    if labels == None:      
+      labels = labels_local
+    else:
+      labels = np.append(labels, labels_local)
+  return X, labels
+    
 def load_data(file):
   patches = patchReader.readAllPatchesFromLog('./'+file+'.log')
- 
+  
   X = np.array(patches)
   labels = np.negative(np.ones((X.shape[0],)))
   

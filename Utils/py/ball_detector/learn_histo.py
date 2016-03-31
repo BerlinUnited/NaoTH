@@ -40,7 +40,7 @@ def learn(X, labels):
       
   estimator = cv2.ml.SVM_create()
   estimator.setType(cv2.ml.SVM_C_SVC)
-  estimator.setKernel(cv2.ml.SVM_CHI2)
+  estimator.setKernel(cv2.ml.SVM_RBF)
 #  estimator.setTermCriteria((cv2.TERM_CRITERIA_COUNT + cv2.TERM_CRITERIA_EPS, 10000, 1.19209e-07))
   ##estimator.setC(XXX)
   ##estimator.setGamma(XXX)
@@ -98,27 +98,11 @@ def show_errors_asfeat(X, goldstd_response, actual_response):
   
 if __name__ == "__main__":
   
-  # load patches from the file
-  f_train = "patches-approach-ball"
-  f_eval = "patches-ball-sidecick"
   
-  splitRatio = -1.0
+  splitRatio = 0.75
   
-  if len(sys.argv) == 2:
-    f_train = sys.argv[1]
-    f_eval = sys.argv[1]
-    splitRatio = 0.75
-  elif len(sys.argv) > 2:
-    f_train = sys.argv[1]
-    f_eval = sys.argv[2]
-  
-  
-  if splitRatio < 0.0:
-    X_train, labels_train = load_data(f_train)
-    X_eval, labels_eval = load_data(f_eval)
-  else:
-    X_all, labels_all = load_data(f_train)
-    X_train, labels_train, X_eval, labels_eval = shuffle_and_split(X_all, labels_all, splitRatio)
+  X_all, labels_all = load_multi_data(sys.argv[1:])
+  X_train, labels_train, X_eval, labels_eval = shuffle_and_split(X_all, labels_all, splitRatio)
   
   # workaround for https://github.com/Itseez/opencv/issues/5054
   # add another (3rd) class
