@@ -67,44 +67,35 @@ void PlainKalmanFilterBallLocator::execute()
     doDebugRequestBeforUpdate();
 
     // measurement
-    if(getBallPercept().ballWasSeen || getBallPerceptTop().ballWasSeen) {
+    for(MultiBallPercept::ConstABPIterator iter = getMultiBallPercept().begin(); iter != getMultiBallPercept().end(); iter++) {
 
         Eigen::Vector2d z;
         Vector2d p;
 
-        // allways use the bottom percept if available
-        if(getBallPercept().ballWasSeen)
+        // set correct camera matrix and info in functional
+        if((*iter).cameraId == CameraInfo::Bottom)
         {
-            Vector2d angles = CameraGeometry::pixelToAngles(getCameraInfo(),getBallPercept().centerInImage.x,getBallPercept().centerInImage.y);
+            //PLOT("PlainKalmanFilterBallLocator:Measurement:Bottom:horizontal", z(0));
+            //PLOT("PlainKalmanFilterBallLocator:Measurement:Bottom:vertical",   z(1));
 
-            z << angles.x, angles.y;
-
-            PLOT("PlainKalmanFilterBallLocator:Measurement:Bottom:horizontal", z(0));
-            PLOT("PlainKalmanFilterBallLocator:Measurement:Bottom:vertical",   z(1));
-
-            // set camera bottom in functional
             h.camMat  = getCameraMatrix();
             h.camInfo = getCameraInfo();
-
-            // needed if a new filter has to be created
-            p = getBallPercept().bearingBasedOffsetOnField;
         }
         else 
         {
-            Vector2d angles = CameraGeometry::pixelToAngles(getCameraInfoTop(),getBallPerceptTop().centerInImage.x,getBallPerceptTop().centerInImage.y);
+            //PLOT("PlainKalmanFilterBallLocator:Measurement:Top:horizontal", z(0));
+            //PLOT("PlainKalmanFilterBallLocator:Measurement:Top:vertical",   z(1));
 
-            z << angles.x, angles.y;
-
-            PLOT("PlainKalmanFilterBallLocator:Measurement:Top:horizontal", z(0));
-            PLOT("PlainKalmanFilterBallLocator:Measurement:Top:vertical",   z(1));
-
-            // set camera top in functional
             h.camMat  = getCameraMatrixTop();
             h.camInfo = getCameraInfoTop();
-
-            // needed if a new filter has to be created
-            p = getBallPerceptTop().bearingBasedOffsetOnField;
         }
+
+        // tansform measurement into angles
+        Vector2d angles = CameraGeometry::pixelToAngles(h.camInfo,(*iter).centerInImage.x,(*iter).centerInImage.y);
+        z << angles.x, angles.y;
+
+        // needed if a new filter has to be created
+        p = (*iter).positionOnField;
 
         // find best matching filter
         updateAssociationFunction->determineBestPredictor(filter, z, h);
@@ -121,7 +112,7 @@ void PlainKalmanFilterBallLocator::execute()
         {
             Eigen::Vector4d newState;
             newState << p.x, 0, p.y, 0;
-            filter.push_back(ExtendedKalmanFilter4d(newState, processNoiseStdSingleDimension, measurementNoiseCovariances, initialStateStdSingleDimension));
+            filter.push_back(ExtendedKalmanFilter4d(getFrameInfo(), newState, processNoiseStdSingleDimension, measurementNoiseCovariances, initialStateStdSingleDimension));
         }
         else
         {
@@ -142,9 +133,9 @@ void PlainKalmanFilterBallLocator::execute()
                 PLOT("PlainKalmanFilterBallLocator:Innovation:y", prediction_error(1));
             );
 
-            (*bestPredictor).update(z,h);
+            (*bestPredictor).update(z,h,getFrameInfo());
         }
-    }// end if
+    }// end for
 
 
     // delete some filter if they are to bad
@@ -167,10 +158,12 @@ void PlainKalmanFilterBallLocator::execute()
         double evalue = (*bestModel).getEllipseLocation().major * (*bestModel).getEllipseLocation().minor *M_PI;
 
         for(std::vector<ExtendedKalmanFilter4d>::const_iterator iter = ++filter.begin(); iter != filter.end(); ++iter){
-            double temp = (*iter).getEllipseLocation().major * (*iter).getEllipseLocation().minor * M_PI;
-            if(temp < evalue) {
-                evalue = temp;
-                bestModel = iter;
+            if(getFrameInfo().getTimeSince(iter->getFrameOfCreation().getTime()) > 300) {
+              double temp = (*iter).getEllipseLocation().major * (*iter).getEllipseLocation().minor * M_PI;
+              if(temp < evalue) {
+                  evalue = temp;
+                  bestModel = iter;
+              }
             }
         }
 
@@ -196,14 +189,10 @@ void PlainKalmanFilterBallLocator::execute()
         getBallModel().positionPreviewInLFoot = getMotionStatus().plannedMotion.lFoot / ballLeftFoot;
         getBallModel().positionPreviewInRFoot = getMotionStatus().plannedMotion.rFoot / ballRightFoot;
 
-        if(getBallPercept().ballWasSeen || getBallPerceptTop().ballWasSeen)
-        {
-            getBallModel().setFrameInfoWhenBallWasSeen(getFrameInfo());
-        }
+        getBallModel().setFrameInfoWhenBallWasSeen((*bestModel).getLastUpdateFrame());
 
         valid = true;
         getBallModel().valid = valid;
-
 
         // future
         const int BALLMODEL_MAX_FUTURE_SECONDS = 11;
@@ -371,27 +360,26 @@ void PlainKalmanFilterBallLocator::doDebugRequest()
 {
     PLOT("PlainKalmanFilterBallLocator:ModelIsValid", getBallModel().valid);
 
-    if(getBallPercept().ballWasSeen || getBallPerceptTop().ballWasSeen) {
-        //to check correctness of the prediction
-        DEBUG_REQUEST("PlainKalmanFilterBallLocator:draw_real_ball_percept",
-          FIELD_DRAWING_CONTEXT;
-          PEN("FF0000", 10);
-          if(getBallPercept().ballWasSeen) {
-              CIRCLE(getBallPercept().bearingBasedOffsetOnField.x, getBallPercept().bearingBasedOffsetOnField.y, getFieldInfo().ballRadius-5);
-          } else {
-              CIRCLE(getBallPerceptTop().bearingBasedOffsetOnField.x, getBallPerceptTop().bearingBasedOffsetOnField.y, getFieldInfo().ballRadius-5);
-          }
-        );
-    }
+    
+    //to check correctness of the prediction
+    DEBUG_REQUEST("PlainKalmanFilterBallLocator:draw_real_ball_percept",
+      if(getMultiBallPercept().wasSeen()) {
+        FIELD_DRAWING_CONTEXT;
+        PEN("FF0000", 10);
+        for(MultiBallPercept::ConstABPIterator iter = getMultiBallPercept().begin(); iter != getMultiBallPercept().end(); iter++) {
+            CIRCLE((*iter).positionOnField.x, (*iter).positionOnField.y, getFieldInfo().ballRadius-5);
+        }
+      }
+    );
+    
+    DEBUG_REQUEST("PlainKalmanFilterBallLocator:draw_ball_on_field_after",
+        drawFiltersOnField();
+    );
 
     DEBUG_REQUEST("PlainKalmanFilterBallLocator:draw_final_ball",
         FIELD_DRAWING_CONTEXT;
-        PEN("FF9900", 10);
+        PEN("FF0000", 10);
         CIRCLE( getBallModel().position.x, getBallModel().position.y, getFieldInfo().ballRadius-10);
-    );
-
-    DEBUG_REQUEST("PlainKalmanFilterBallLocator:draw_ball_on_field_after",
-        drawFiltersOnField();
     );
 
     DEBUG_REQUEST("PlainKalmanFilterBallLocator:reloadParameters",
@@ -406,18 +394,17 @@ void PlainKalmanFilterBallLocator::drawFiltersOnField() const {
     {
         if(getBallModel().valid)
         {
-            if(bestModel == iter)
-            {
-                if(getBallPercept().ballWasSeen || getBallPerceptTop().ballWasSeen)
-                    PEN("FF9900", 20);
+            if((*iter).wasUpdated()) {
+                if(bestModel == iter)
+                    PEN("99FF00", 20);
                 else
-                    PEN("0099FF", 20);
+                    PEN("FF9900",20);
             } else {
-                PEN("999999", 20);
+                    PEN("0099FF", 20);
             }
+        } else {
+                PEN("999999", 20);
         }
-        else
-            PEN("999999", 20);
 
         const Eigen::Vector4d& state = (*iter).getState();
 
