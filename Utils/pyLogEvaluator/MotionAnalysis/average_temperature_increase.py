@@ -1,4 +1,4 @@
-import BehaviorParseTest
+import BehaviorParser
 
 from matplotlib import pyplot
 import numpy as np
@@ -75,11 +75,13 @@ def printStatistics(title,stats):
     
 
 def init():
-    fileName = "/home/steffen/NaoTH/Logs/MesseLeipzig/lm15-naodevils-2/"
-    fileName = fileName + "151004-1919-Nao6029"
+    #fileName = "/home/steffen/NaoTH/Logs/MesseLeipzig/lm15-naodevils-2/"
+    #fileName = fileName + "151004-1919-Nao6029"
+    fileName = "/home/steffen/NaoTH/Logs/EuropeanOpen16/2016-03-30-test-naodevils/half1/"
+    fileName = fileName + "160330-1952-Nao6022"
     fileName = fileName + "/game.log"
-    parser = BehaviorParseTest.BehaviorParser()
-    log = BehaviorParseTest.LogReader(fileName, parser)
+    parser = BehaviorParser.BehaviorParser()
+    log = BehaviorParser.LogReader(fileName, parser)
     
     # enforce the whole log being parsed (this is necessary for older game logs)
     for frame in log:
@@ -93,7 +95,7 @@ def init():
     
 
 def run(log):
-    reload(BehaviorParseTest)
+    reload(BehaviorParser)
 
     print log.names
 

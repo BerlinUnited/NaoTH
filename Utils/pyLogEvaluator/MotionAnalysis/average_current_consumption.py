@@ -1,4 +1,4 @@
-import BehaviorParseTest
+import BehaviorParser
 
 from matplotlib import pyplot
 import numpy as np
@@ -39,7 +39,6 @@ def frameFilter(frame):
       m, o = frame["BehaviorStateSparse"]
 
     return [frame["FrameInfo"].time/(1000.0), 
-            # older logs don't have body status
             frame["BodyStatus"].currentSum[JointID["RHipYawPitch"]],
             frame["BodyStatus"].currentSum[JointID["LHipYawPitch"]],
             frame["BodyStatus"].currentSum[JointID["RHipPitch"]],
@@ -86,11 +85,13 @@ def printStatistics(title,stats):
     
 
 def init():
-    fileName = "/home/steffen/NaoTH/Logs/MesseLeipzig/lm15-naodevils-2/"
-    fileName = fileName + "151004-1919-Nao6029"
+    #fileName = "/home/steffen/NaoTH/Logs/MesseLeipzig/lm15-naodevils-2/"
+    #fileName = fileName + "091201-0819-Nao6022"
+    fileName = "/home/steffen/NaoTH/Logs/EuropeanOpen16/2016-03-30-test-naodevils/half1/"
+    fileName = fileName + "160330-1952-Nao6022"
     fileName = fileName + "/game.log"
-    parser = BehaviorParseTest.BehaviorParser()
-    log = BehaviorParseTest.LogReader(fileName, parser)
+    parser = BehaviorParser.BehaviorParser()
+    log = BehaviorParser.LogReader(fileName, parser)
     
     # enforce the whole log being parsed (this is necessary for older game logs)
     for frame in log:
@@ -104,7 +105,7 @@ def init():
     
 
 def run(log):
-    reload(BehaviorParseTest)
+    reload(BehaviorParser)
 
     print log.names
 
@@ -232,29 +233,29 @@ def run(log):
     d_walk_LAnkleRoll_stats = doStatistics(tr_walk[0], tr_walk[12])
     printStatistics("LAnkleRoll - walk", d_walk_LAnkleRoll_stats)
 
-    stand2 = [x for x in data if x[5] == 4]
-    walk2 = [x for x in data if x[5] == 5]
+    stand2 = [x for x in a if x[13] == 4]
+    walk2 = [x for x in a if x[13] == 5]
 
     d_stand = zip(*stand2)
     d_walk = zip(*walk2)
-    
-    pyplot.plot(d_stand[0], d_stand[1], ".", label="RKneePitch-stand")
-    pyplot.plot(d_walk[0], d_walk[1], ".", label="RKneePitch-walk")
+  
+    pyplot.plot(d_stand[0], d_stand[7], ".", label="RKneePitch-stand")
+    pyplot.plot(d_walk[0], d_walk[7], ".", label="RKneePitch-walk")
 
-    pyplot.plot(d_stand[0], d_stand[2], ".", label="LKneePitch-stand")
-    pyplot.plot(d_walk[0], d_walk[2], ".", label="LKneePitch-walk")
+    pyplot.plot(d_stand[0], d_stand[8], ".", label="LKneePitch-stand")
+    pyplot.plot(d_walk[0], d_walk[8], ".", label="LKneePitch-walk")
 
-    pyplot.plot(d_stand[0], d_stand[3], ".", label="RAnklePitch-stand")
-    pyplot.plot(d_walk[0], d_walk[3], ".", label="RAnklePitch-walk")
+    pyplot.plot(d_stand[0], d_stand[9], ".", label="RAnklePitch-stand")
+    pyplot.plot(d_walk[0], d_walk[9], ".", label="RAnklePitch-walk")
     
-    pyplot.plot(d_stand[0], d_stand[4], ".", label="LAnklePitch-stand")
-    pyplot.plot(d_walk[0], d_walk[4], ".", label="LAnklePitch-walk")
+    pyplot.plot(d_stand[0], d_stand[10], ".", label="LAnklePitch-stand")
+    pyplot.plot(d_walk[0], d_walk[10], ".", label="LAnklePitch-walk")
     #bb = zip(*data)
     #pyplot.plot(bb[0], bb[8], label="temperatur right")
     #pyplot.plot(bb[0], bb[7], label="temperatur left")
     #pyplot.plot(bb[0], bb[10], label="game")
     #pyplot.plot(bb[0], bb[5], label="motion")
     
-    #pyplot.legend(loc='upper left')
-    #pyplot.grid()
-    #pyplot.show()
+    pyplot.legend(loc='upper left')
+    pyplot.grid()
+    pyplot.show()

@@ -147,13 +147,14 @@ def plot(data, joints, rows, cols):
 
 
 def init():
-    fileNamePrefix = "/home/steffen/NaoTH/Logs/Stand"
     parser = BehaviorParser.BehaviorParser()
     
-    fileName = fileNamePrefix + "/standard_stand.log"
+    fileNamePrefix = "/home/steffen/NaoTH/Logs/EuropeanOpen16/2016-03-30-test-naodevils/half1/160330-1952-Nao6022"
+    fileName = fileNamePrefix + "/game.log"
     log0 = BehaviorParser.LogReader(fileName, parser)
     
-    fileName = fileNamePrefix + "/stand_stiff_simple_offset_control.log"
+    fileNamePrefix = "/home/steffen/NaoTH/Logs/MesseLeipzig/lm15-naodevils-2/091201-0819-Nao6022"
+    fileName = fileNamePrefix + "/game.log"
     log1 = BehaviorParser.LogReader(fileName, parser)
 
     return [log0, log1]
@@ -165,6 +166,13 @@ def run(log):
     logs = log
 
     print "representations check --- start"
+
+    print "contained representations"
+    i = 0
+    for log in logs:
+        i = i+1
+        print "log no.{}:".format(i)
+        print log.names
 
     # check if all required representations are contained in log
     requiredReps = ['BodyStatus', 'FrameInfo', 'MotionStatus', 'OffsetJointData', 'SensorJointData']
