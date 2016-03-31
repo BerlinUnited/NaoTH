@@ -55,6 +55,7 @@ public class TeamCommViewer extends AbstractDialog {
     private final TeamCommListener listenerOwn = new TeamCommListener(false);
     private final TeamCommListener listenerOpponent = new TeamCommListener(true);
     private final HashMap<String, RobotStatus> robotsMap = new HashMap<>();
+    private final TreeMap<String, RobotStatus> robotsMapSorted = new TreeMap<>();
 
     private final Map<String, TeamCommListener.Message> messageMap = Collections.synchronizedMap(new TreeMap<String, TeamCommListener.Message>());
 
@@ -177,6 +178,7 @@ public class TeamCommViewer extends AbstractDialog {
                 synchronized (messageMap) {
                     messageMap.clear();
                     this.robotsMap.clear();
+                    this.robotsMapSorted.clear();
                     this.robotStatusPanel.removeAll();
                     this.robotStatusPanel.setVisible(false);
                     this.portNumberOwn.setEnabled(true);
@@ -218,7 +220,12 @@ public class TeamCommViewer extends AbstractDialog {
                             if (robotStatus == null) {
                                 robotStatus = new RobotStatus(Plugin.parent.getMessageServer(), address, msg.isOpponent() ? magenta : cyan);
                                 robotsMap.put(address, robotStatus);
-                                robotStatusPanel.add(robotStatus);
+                                robotsMapSorted.put((msg.isOpponent()?"1_":"0_") + msg.message.playerNum, robotStatus);
+                                
+                                robotStatusPanel.removeAll();
+                                for (Entry<String, RobotStatus> entry : robotsMapSorted.entrySet()) {
+                                    robotStatusPanel.add(entry.getValue());
+                                }
                             }
                             robotStatus.setStatus(msg.timestamp, msg.message);
                         }
