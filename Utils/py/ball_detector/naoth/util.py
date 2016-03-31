@@ -15,7 +15,7 @@ def getMarker(x,y,c):
     pos = (x*(patch_size[0]+1)-1,y*(patch_size[1]+1)-1)
     return ptc.Rectangle( pos, width=patch_size[0]+1, height=patch_size[1]+1, alpha=0.3, color=c)
 
-def shuffle_and_split(X, labels, ratio):
+def shuffle_and_split(X, labels, splitRatio=0.75, ballNonBallRatio=-1.0):
 
     # combine both to the same matrix so shuffling does not disconnect the samples and labels
     labelsAsMatrix = np.reshape(labels, (-1,1))
@@ -25,13 +25,27 @@ def shuffle_and_split(X, labels, ratio):
     np.random.shuffle(Y)
 
     # split into two
-    splitIdx = Y.shape[0] * ratio
+    splitIdx = Y.shape[0] * splitRatio
 
     Y1 = Y[0:splitIdx,:]
     Y2 = Y[splitIdx+1:,:]
 
     X1, labels1 = np.hsplit(Y1, [X.shape[1]])
     X2, labels2 = np.hsplit(Y2, [X.shape[1]])
+
+    if ballNonBallRatio >= 1.0:
+        nonBallIdx_train = [idx for idx in range(len(labels1)) if labels1[idx] == 0]
+        ballIdx_train = [idx for idx in range(len(labels1)) if labels1[idx] == 1]
+        numberOfBallTrain = len(ballIdx_train)
+        numberOfNonBallTrain = len(nonBallIdx_train)
+
+        if (numberOfBallTrain*ballNonBallRatio) < numberOfNonBallTrain:
+            # limit the number of non-balls
+            allowedNumNonBall = int(numberOfBallTrain*ballNonBallRatio)
+            limitedNonBalls = nonBallIdx_train[:allowedNumNonBall]
+            validTrainIdx = np.hstack([limitedNonBalls, ballIdx_train])
+            X1 = X1[validTrainIdx,:]
+            labels1 =labels1[validTrainIdx, :]
 
     return X1, labels1, X2, labels2
 
@@ -115,6 +129,39 @@ def show_evaluation(X, goldstd_response, actual_response):
     plt.xticks(())
     plt.yticks(())
     plt.show()
+
+def show_errors_asfeat(X, goldstd_response, actual_response):  
+  
+  image = np.zeros(((patch_size[1]+1)*show_size[1], (patch_size[0]+1)*show_size[0]))
+  
+  errorIdx = list()
+  # count
+  for i in range(0,X.shape[0]):
+    if actual_response[i] != goldstd_response[i]:
+        errorIdx.append(i)	
+      
+  # show errors
+  maxShownErrors = min(len(errorIdx), show_size[0]*show_size[1])
+  shownErrorIdx = errorIdx[0:maxShownErrors]
+  
+  j = 0
+  for i in shownErrorIdx:
+    a = image_from_patch(X[i,:])
+    y = j // show_size[0]
+    x = j % show_size[0]
+    
+    # apply feature
+    f = feat.histo(a)
+    
+    image[y*13:y*13+12,x*13:x*13+12] = np.reshape(f, (12,12))
+    j += 1
+    
+  plt.imshow(image, cmap=plt.cm.gray, interpolation='nearest')
+
+  plt.xticks(())
+  plt.yticks(())
+  plt.show()
+  
 
 def load_data_from_folder(rootdir, camera=-1, type=0):
     locations = list()
