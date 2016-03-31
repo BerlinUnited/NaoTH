@@ -87,10 +87,7 @@ void MonteCarloSelfLocator::execute()
                    getMotionStatus().currentMotion == motion::walk;
 
   // true when the robot was lifted up
-  bool body_lift_up =  getBodyState().fall_down_state == BodyState::upright && 
-                      !getBodyState().standByLeftFoot && 
-                      !getBodyState().standByRightFoot && // no foot is on the ground
-                       getFrameInfo().getTimeSince(getBodyState().foot_state_time) > parameters.maxTimeForLiftUp; // we lose the ground contact for some time
+  bool body_lift_up =  getBodyState().isLiftedUp;
 
   if(parameters.treatLiftUp && motion_ok_kidnap && body_lift_up) {
     state = KIDNAPPED;
