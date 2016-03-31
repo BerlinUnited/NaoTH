@@ -206,7 +206,9 @@ private:
   } best;
 
 private:
-  void calculateCandidates(Best& best) const;
+  void calculateKeyPoints(Best& best) const;
+  void extractPatches();
+
 
   void subsampling(std::vector<unsigned char>& data, int x0, int y0, int x1, int y1) const;
   void subsampling(std::vector<BallCandidates::ClassifiedPixel>& data, int x0, int y0, int x1, int y1) const;
@@ -215,7 +217,6 @@ private:
   void addBallPercept(const Vector2i& center, double radius);
 
   double greenPoints(int minX, int minY, int maxX, int maxY) const;
-  void extractPatches();
   void executeOpenCVModel();
   void executeSVM();
   void executeHeuristic();

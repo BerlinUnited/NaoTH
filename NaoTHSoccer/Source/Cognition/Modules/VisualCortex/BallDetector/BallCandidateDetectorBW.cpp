@@ -23,6 +23,7 @@
 BallCandidateDetectorBW::BallCandidateDetectorBW()
 {
   DEBUG_REQUEST_REGISTER("Vision:BallCandidateDetectorBW:keyPoints", "draw key points extracted from integral image", false);
+  DEBUG_REQUEST_REGISTER("Vision:BallCandidateDetectorBW:extractPatches", "generate YUVC patches", false);
 
   DEBUG_REQUEST_REGISTER("Vision:BallCandidateDetectorBW:drawCandidates", "draw ball candidates", false);
 
@@ -53,7 +54,7 @@ bool BallCandidateDetectorBW::execute(CameraInfo::CameraID id)
 
 
   best.clear();
-  calculateCandidates(best);
+  calculateKeyPoints(best);
 
   DEBUG_REQUEST("Vision:BallCandidateDetectorBW:keyPoints",
     for(std::list<Best::BallCandidate>::iterator i = best.candidates.begin(); i != best.candidates.end(); ++i) {
@@ -61,6 +62,11 @@ bool BallCandidateDetectorBW::execute(CameraInfo::CameraID id)
       RECT_PX(ColorClasses::blue, (*i).center.x - radius, (*i).center.y - radius, (*i).center.x + radius, (*i).center.y + radius);
     }
   );
+
+  DEBUG_REQUEST("Vision:BallCandidateDetectorBW:extractPatches",
+    extractPatches();
+  );
+
 
   if(params.classifier.cv_svm_histogram)
   {
@@ -124,11 +130,6 @@ void BallCandidateDetectorBW::executeOpenCVModel()
         p.min = Vector2i((*i).center.x - radius, (*i).center.y - radius);
         p.max = Vector2i((*i).center.x + radius, (*i).center.y + radius);
         subsampling(p.data, p.min.x, p.min.y, p.max.x, p.max.y);
-
-        BallCandidates::PatchYUVClassified& p1 = getBallCandidates().nextFreePatchYUVClassified();
-        p1.min = Vector2i((*i).center.x - radius, (*i).center.y - radius);
-        p1.max = Vector2i((*i).center.x + radius, (*i).center.y + radius);
-        subsampling(p1.data, p1.min.x, p1.min.y, p1.max.x, p1.max.y);
 
         bool ballFound = false;
         cv::Mat wrappedImg(12, 12, CV_8UC1, (void*) p.data.data());
@@ -286,7 +287,7 @@ void BallCandidateDetectorBW::extractPatches()
   }
 }
 
-void BallCandidateDetectorBW::calculateCandidates(Best& best) const
+void BallCandidateDetectorBW::calculateKeyPoints(Best& best) const
 {
   //
   // STEP I: find the maximal height minY to be scanned in the image
