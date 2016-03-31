@@ -102,7 +102,7 @@ void Walk::execute()
   getEngine().copyLegJoints(getMotorJointData().position);
 
 	// set the stiffness for walking
-  for( int i = JointData::RShoulderRoll; i < JointData::numOfJoint; i++) {
+  for( int i = JointData::RShoulderRoll; i < JointData::LHand; i++) {
     getMotorJointData().stiffness[i] = parameters().general.stiffness;
   }
 
