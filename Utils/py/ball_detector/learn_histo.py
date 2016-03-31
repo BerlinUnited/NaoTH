@@ -94,7 +94,7 @@ if __name__ == "__main__":
   cam = 1
   outfile = "model_histo_top.dat"
   
-  X_all, labels_all = load_multi_data(sys.argv[1:], camera=cam, type=2)
+  X_all, labels_all = load_data_from_folder(sys.argv[1], camera=cam, type=2)
   if X_all.shape[0] == 0:
     print "Nothing to learn"
     exit(0)

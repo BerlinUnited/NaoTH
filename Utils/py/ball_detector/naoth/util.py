@@ -116,6 +116,14 @@ def show_evaluation(X, goldstd_response, actual_response):
     plt.yticks(())
     plt.show()
 
+def load_data_from_folder(rootdir, camera=-1, type=0):
+    locations = list()
+    for subdir, dirs, files in os.walk(rootdir):
+        for file in files:
+            if file.endswith(".json"):
+                locations.append(os.path.join(subdir, file[:-len(".json")]))
+    return load_multi_data(locations, camera, type)
+
 def load_multi_data(args, camera=-1, type=0):
     X = None
     labels = None
