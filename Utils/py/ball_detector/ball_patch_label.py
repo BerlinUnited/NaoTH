@@ -66,10 +66,12 @@ def on_click(event):
  
 def key_pressed(event):
   
-  if event.key == 'enter' or event.key == ' ' \
-    or event.key == 'w'  or event.key == 'a' or event.key == 'd':
-    for i in range(show_size[0]*show_size[1]):
+  for i in range(show_size[0]*show_size[1]):
       setMarker(i, 0)
+      
+  if event.key == 'enter' or event.key == ' ' \
+    or event.key == 'w'  or event.key == 'a' or event.key == 'd' \
+    or event.key =='c' or event.key =='y':
       
     save_labels(label_file)
     global window_idx
@@ -81,6 +83,11 @@ def key_pressed(event):
     elif event.key == 'a':
       if window_idx > 0:
         window_idx -= idxStep
+    elif event.key == 'c':
+      window_idx += (idxStep)*10
+    elif event.key == 'y':
+      if window_idx - (idxStep*10) >= 0:
+        window_idx -= idxStep*10
     else:
       window_idx += idxStep
     showPatches()
