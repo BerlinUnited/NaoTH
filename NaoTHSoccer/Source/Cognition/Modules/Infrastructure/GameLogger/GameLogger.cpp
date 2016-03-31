@@ -7,6 +7,15 @@ GameLogger::GameLogger()
   ignore_init_state(false)
 {
   logfileManager.openFile("/tmp/game.log");
+
+  getDebugParameterList().add(&params);
+}
+
+GameLogger::~GameLogger()
+{
+  logfileManager.closeFile();
+
+  getDebugParameterList().remove(&params);
 }
 
 #define LOGSTUFF(name) \
@@ -50,9 +59,10 @@ void GameLogger::execute()
       LOGSTUFF(ScanLineEdgelPerceptTop);
       LOGSTUFF(BodyStatus);
 
-      LOGSTUFF(BallCandidates);
-      LOGSTUFF(BallCandidatesTop);
-      
+      if(params.logBallCandidates) {
+        LOGSTUFF(BallCandidates);
+        LOGSTUFF(BallCandidatesTop);
+      }
 
       LOGSTUFF(TeamMessage);
 
@@ -67,7 +77,3 @@ void GameLogger::execute()
   }
 }
 
-GameLogger::~GameLogger()
-{
-  logfileManager.closeFile();
-}

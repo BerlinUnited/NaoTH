@@ -20,9 +20,14 @@
 
 #include "Representations/Perception/BallCandidates.h"
 
+// tools
+#include "Tools/Debug/DebugParameterList.h"
+
 using namespace naoth;
 
 BEGIN_DECLARE_MODULE(GameLogger)
+  PROVIDE(DebugParameterList)
+
   REQUIRE(FrameInfo)
   REQUIRE(PlayerInfo)
   REQUIRE(RobotInfo)
@@ -54,6 +59,19 @@ public:
   virtual ~GameLogger();
 
   virtual void execute();
+
+private:
+  struct Parameters: public ParameterList
+  {
+    Parameters() : ParameterList("GameLogger")
+    {
+      PARAMETER_REGISTER(logBallCandidates) = false;
+      
+      syncWithConfig();
+    }
+
+    int logBallCandidates;
+  } params;
 
 private:
   // TODO: make a memory aware LogfileManager that flushes whenever a certain memory
