@@ -18,6 +18,8 @@
 #include "Representations/Modeling/TeamMessage.h"
 #include "Representations/Modeling/BodyStatus.h"
 
+#include "Representations/Perception/BallCandidates.h"
+
 using namespace naoth;
 
 BEGIN_DECLARE_MODULE(GameLogger)
@@ -38,6 +40,9 @@ BEGIN_DECLARE_MODULE(GameLogger)
   REQUIRE(ScanLineEdgelPercept)
   REQUIRE(ScanLineEdgelPerceptTop)
   REQUIRE(BodyStatus)
+
+  REQUIRE(BallCandidates)
+  REQUIRE(BallCandidatesTop)
 
   REQUIRE(TeamMessage)
 END_DECLARE_MODULE(GameLogger)

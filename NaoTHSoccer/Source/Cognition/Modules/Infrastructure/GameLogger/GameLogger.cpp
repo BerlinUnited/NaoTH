@@ -50,6 +50,10 @@ void GameLogger::execute()
       LOGSTUFF(ScanLineEdgelPerceptTop);
       LOGSTUFF(BodyStatus);
 
+      LOGSTUFF(BallCandidates);
+      LOGSTUFF(BallCandidatesTop);
+      
+
       LOGSTUFF(TeamMessage);
 
       something_recorded = true;
