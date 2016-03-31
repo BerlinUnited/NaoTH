@@ -49,17 +49,19 @@ def setMarker(i, v):
 def on_click(event):
 
   if event.xdata != None and event.ydata != None:
-    y = int(event.ydata+0.5) / 13
-    x = int(event.xdata+0.5) / 13
-    i = show_size[0]*y + x
+    y = int(event.ydata+0.5) / (patch_size[1]+1)
+    x = int(event.xdata+0.5) / (patch_size[0]+1)
     
-    if labels[window_idx+i] <= 0:
-      labels[window_idx+i] = 1
-    else:
-      labels[window_idx+i] = 0
+    if y >= 0 and y < show_size[1] and x >= 0 and x < show_size[0]:
+      i = show_size[0]*y + x
       
-    setMarker(i, labels[window_idx+i])
-    plt.draw()
+      if labels[window_idx+i] <= 0:
+        labels[window_idx+i] = 1
+      else:
+        labels[window_idx+i] = 0
+        
+      setMarker(i, labels[window_idx+i])
+      plt.draw()
     
  
 def key_pressed(event):
