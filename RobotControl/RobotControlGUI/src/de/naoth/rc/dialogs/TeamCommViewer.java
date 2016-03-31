@@ -291,35 +291,35 @@ public class TeamCommViewer extends AbstractDialog {
                 new File(teamCommFileChooser.getSelectedFile()+".log") : 
                 teamCommFileChooser.getSelectedFile();
 
-            // TODO: check if file is writeable
+            if(dfile.canWrite()) {
+                try {
+                    // make sure there is no open log file ..
+                    closingLogfile();
 
-            try {
-                // make sure there is no open log file ..
-                closingLogfile();
-                
-                // create new log file
-                dfile.createNewFile();
-                logfile = new LogFileWriter(dfile);
-                logfile.start();
-                
-                btnRecord.setSelected(true);
-                setBtnRecordToolTipText(true);
-                btnStopRecording.setEnabled(true); // enable "stop"-button
-                
-                return true;
-            } catch (IOException ex) {
-                Logger.getLogger(TeamCommViewer.class.getName()).log(Level.SEVERE, null, ex);
-                JOptionPane.showMessageDialog(null, "IO-Error occurred, see application log.", "Exception", JOptionPane.ERROR_MESSAGE);
-            } catch (Throwable ex) {
-                Logger.getLogger(TeamCommViewer.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        } else {
-            // file chooser was canceled
-            if(this.logfile == null) {
-                btnRecord.setSelected(false); // prevent toggling!
-                setBtnRecordToolTipText(false);
+                    // create new log file
+                    dfile.createNewFile();
+                    logfile = new LogFileWriter(dfile);
+                    logfile.start();
+
+                    btnRecord.setSelected(true);
+                    setBtnRecordToolTipText(true);
+                    btnStopRecording.setEnabled(true); // enable "stop"-button
+
+                    return true;
+                } catch (IOException ex) {
+                    Logger.getLogger(TeamCommViewer.class.getName()).log(Level.SEVERE, null, ex);
+                    JOptionPane.showMessageDialog(null, "IO-Error occurred, see application log.", "Exception", JOptionPane.ERROR_MESSAGE);
+                } catch (Throwable ex) {
+                    Logger.getLogger(TeamCommViewer.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            } else {
+                JOptionPane.showMessageDialog(null, "Selected log file is not writeable!", "Not writeable", JOptionPane.ERROR_MESSAGE);
             }
         }
+        
+        btnRecord.setSelected(false); // prevent toggling!
+        setBtnRecordToolTipText(false);
+        
         return false;
     }
     
