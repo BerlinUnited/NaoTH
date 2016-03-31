@@ -2,12 +2,6 @@
 
 import cv2
 import numpy as np
-
-from sklearn.linear_model import Perceptron
-from sklearn.linear_model import SGDClassifier
-from sklearn import svm
-import sklearn.neural_network as nn
-
 import naoth.features as feat
 from naoth.util import *
 

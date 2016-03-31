@@ -135,7 +135,7 @@ def load_multi_data(args, camera=-1, type=0):
 
 def load_data(file, camera=-1, type=0):
     
-    patches, cameraIdx = patchReader.readAllPatchesFromLog('./data/'+file+'.log', type)
+    patches, cameraIdx = patchReader.readAllPatchesFromLog(file+'.log', type)
    
     cameraIdx = np.asarray(cameraIdx)
     cameraIdx = np.reshape(cameraIdx, (len(cameraIdx), ))
@@ -143,7 +143,7 @@ def load_data(file, camera=-1, type=0):
     X = np.array(patches)
     labels = np.negative(np.ones((X.shape[0],)))
 
-    label_file = './data/'+file+'.json'
+    label_file = file+'.json'
     if os.path.isfile(label_file):
         with open(label_file, 'r') as data_file:
             ball_labels = json.load(data_file)
