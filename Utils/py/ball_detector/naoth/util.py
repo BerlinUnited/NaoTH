@@ -45,21 +45,21 @@ def calc_precision_recall(X, goldstd_response, actual_response):
   for i in range(0,X.shape[0]):
     if actual_response[i] ==  1:
       if goldstd_response[i] == 1:
-	tp = tp + 1.0
+        tp = tp + 1.0
       else:
-	fp = fp + 1.0
-	errorIdx.append(i)
+        fp = fp + 1.0
+        errorIdx.append(i)
     else:
       if goldstd_response[i] == 1:
-	fn = fn + 1.0
-	errorIdx.append(i)
+        fn = fn + 1.0
+        errorIdx.append(i)
 
   precision = 0.0
   if tp+fp > 0:
     precision = tp/(tp+fp)
   
   recall = 0.0
-  if tp+fp > 0:
+  if tp+fn > 0:
     recall = tp/(tp+fn)
   
   return precision, recall, errorIdx
@@ -74,6 +74,7 @@ def show_evaluation(X, goldstd_response, actual_response):
   
       
   # show errors
+  print("ERRORS", len(errorIdx))
   maxShownErrors = min(len(errorIdx), show_size[0]*show_size[1])
   shownErrorIdx = errorIdx[0:maxShownErrors]
   
