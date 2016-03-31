@@ -4,11 +4,11 @@
 #include <ModuleFramework/Module.h>
 
 // representations
-#include <Representations/Perception/BallPercept.h>
+// #include <Representations/Perception/BallPercept.h>
+#include <Representations/Perception/MultiBallPercept.h>
 #include "Representations/Modeling/BallModel.h"
 
 #include "Representations/Modeling/OdometryData.h"
-#include "Representations/Modeling/KinematicChain.h"
 #include "Representations/Modeling/KinematicChain.h"
 #include "Representations/Infrastructure/FrameInfo.h"
 #include "Representations/Motion/MotionStatus.h"
@@ -47,8 +47,9 @@ BEGIN_DECLARE_MODULE(PlainKalmanFilterBallLocator)
   REQUIRE(MotionStatus)
   REQUIRE(KinematicChain)
 
-  REQUIRE(BallPercept)
-  REQUIRE(BallPerceptTop)
+//  REQUIRE(BallPercept)
+//  REQUIRE(BallPerceptTop)
+  REQUIRE(MultiBallPercept)
 
 // for extended kalman filter
   REQUIRE(CameraInfo)
