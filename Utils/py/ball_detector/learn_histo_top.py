@@ -9,7 +9,6 @@ from naoth.cvutils import *
 
 def makeTrainData(X, labels):
   
- # testFeat = feat.histoNonGreen(np.zeros((12,12), dtype=np.float32), np.zeros((12,12), dtype=np.uint8))
   testFeat = feat.histo(np.zeros((12,12), dtype=np.float32))
   n_feat = testFeat.shape[1]
   
@@ -18,7 +17,6 @@ def makeTrainData(X, labels):
     img = img_from_patch(s)
     colors = colors_from_patch(s)
     
-    #f = feat.histoNonGreen(img, colors)
     f = feat.histo(img)
     samples = np.vstack([samples, f])
   
@@ -29,7 +27,7 @@ def makeTrainData(X, labels):
 
 if __name__ == "__main__":
   
-  ballNonBallRatio = 10.0
+  ballNonBallRatio = 2.0
   splitRatio = 0.75
   cam = 1
   outfile = "model_histo_top.dat"
