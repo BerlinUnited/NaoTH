@@ -19,7 +19,6 @@ import de.naoth.rc.dataformats.SPLMessage;
 import de.naoth.rc.drawingmanager.DrawingEventManager;
 import de.naoth.rc.drawings.DrawingCollection;
 import java.awt.Color;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -35,19 +34,17 @@ import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.TreeMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
-import javax.swing.filechooser.FileFilter;
-import javax.swing.filechooser.FileNameExtensionFilter;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 
@@ -71,12 +68,14 @@ public class TeamCommViewer extends AbstractDialog {
     private final TeamCommListener listenerOpponent = new TeamCommListener(true);
     private final HashMap<String, RobotStatus> robotsMap = new HashMap<>();
 
-    private final Map<String, TeamCommListener.Message> messageMap = Collections.synchronizedMap(new TreeMap<String, TeamCommListener.Message>());
+    private final Map<String, TeamCommMessage> messageMap = Collections.synchronizedMap(new TreeMap<String, TeamCommMessage>());
 
     private final Color magenta = new Color(210, 180, 200);
     private final Color cyan = new Color(180, 210, 255);
     
-    private LogFile logfile = null;
+    private LogFileWriter logfile = null;
+    private final ConcurrentLinkedQueue<TeamCommMessage> logfileQueue = new ConcurrentLinkedQueue<TeamCommMessage>();
+    private boolean logfileQueueAppend = false;
     
     /**
      * Creates new form TeamCommViewer
@@ -248,7 +247,7 @@ public class TeamCommViewer extends AbstractDialog {
         if(btnRecord.isSelected()) {
             // log file already set; just enable logging
             if(this.logfile != null) {
-                logfile.enable();
+                logfileQueueAppend = true;
                 btnRecord.setSelected(true);
                 setBtnRecordToolTipText(true);
             } else {
@@ -258,20 +257,16 @@ public class TeamCommViewer extends AbstractDialog {
         // release button
         } else {
             if(logfile != null) { // be sure log file is set
-                logfile.disable();
+                logfileQueueAppend = false;
                 setBtnRecordToolTipText(false);
             }
         }
     }//GEN-LAST:event_btnRecordActionPerformed
 
     private void btnStopRecordingActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStopRecordingActionPerformed
-        try {
-            logfile.disable();
-            logfile.finalize();
-        } catch (Throwable ex) {
-            Logger.getLogger(TeamCommViewer.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        logfile = null;
+        // stop log file recording, flush and close logfile, update UI
+        logfileQueueAppend = false;
+        closingLogfile();
         btnRecord.setSelected(false);
         setBtnRecordToolTipText(false);
         btnStopRecording.setEnabled(false);
@@ -279,13 +274,7 @@ public class TeamCommViewer extends AbstractDialog {
 
     @Override
     public void dispose() {
-        if(this.logfile != null) {
-            try {
-                this.logfile.finalize();
-            } catch (Throwable ex) {
-                Logger.getLogger(TeamCommViewer.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
+        closingLogfile();
     }
 
     @Override
@@ -306,18 +295,17 @@ public class TeamCommViewer extends AbstractDialog {
 
             try {
                 // make sure there is no open log file ..
-                if(this.logfile != null) {
-                    this.logfile.disable();
-                    this.logfile.finalize();
-                }
+                closingLogfile();
+                
                 // create new log file
                 dfile.createNewFile();
-                logfile = new LogFile(dfile);
-                logfile.enable();
+                logfile = new LogFileWriter(dfile);
+                logfile.start();
+                
                 btnRecord.setSelected(true);
                 setBtnRecordToolTipText(true);
-                // enable "stop"-button
-                btnStopRecording.setEnabled(true);
+                btnStopRecording.setEnabled(true); // enable "stop"-button
+                
                 return true;
             } catch (IOException ex) {
                 Logger.getLogger(TeamCommViewer.class.getName()).log(Level.SEVERE, null, ex);
@@ -344,6 +332,18 @@ public class TeamCommViewer extends AbstractDialog {
         }
         
     }
+    
+    private void closingLogfile() {
+        if(logfile != null) {
+            try {
+                logfile.close();
+                logfile.join();
+                logfile = null;
+            } catch (InterruptedException ex) {
+                Logger.getLogger(TeamCommViewer.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
 
     private class TeamCommListenTask extends TimerTask {
 
@@ -356,9 +356,9 @@ public class TeamCommViewer extends AbstractDialog {
 
                 DrawingCollection drawings = new DrawingCollection();
 
-                for (Entry<String, TeamCommListener.Message> msgEntry : messageMap.entrySet()) {
+                for (Entry<String, TeamCommMessage> msgEntry : messageMap.entrySet()) {
                     final String address = msgEntry.getKey();
-                    final TeamCommListener.Message msg = msgEntry.getValue();
+                    final TeamCommMessage msg = msgEntry.getValue();
 
                     SwingUtilities.invokeLater(new Runnable() {
                         @Override
@@ -382,25 +382,25 @@ public class TeamCommViewer extends AbstractDialog {
         } // end run
     }
 
-    public class TeamCommListener implements Runnable {
+    
+    public class TeamCommMessage {
 
-        public class Message {
-
-            public Message(long timestamp, SPLMessage message, boolean isOpponent) {
-                this.timestamp = timestamp;
-                this.message = message;
-                this.isOpponent = isOpponent;
-            }
-
-            public final long timestamp;
-            public final SPLMessage message;
-            private final boolean isOpponent;
-            
-            public boolean isOpponent() {
-                return isOpponent;
-            }
+        public TeamCommMessage(long timestamp, SPLMessage message, boolean isOpponent) {
+            this.timestamp = timestamp;
+            this.message = message;
+            this.isOpponent = isOpponent;
         }
 
+        public final long timestamp;
+        public final SPLMessage message;
+        private final boolean isOpponent;
+
+        public boolean isOpponent() {
+            return isOpponent;
+        }
+    }
+    
+    public class TeamCommListener implements Runnable {
         private DatagramChannel channel;
         private Thread trigger;
 
@@ -449,16 +449,16 @@ public class TeamCommViewer extends AbstractDialog {
                     this.readBuffer.flip();
 
                     try {
-                        SPLMessage msg = new SPLMessage(this.readBuffer);
-                        
                         long timestamp = System.currentTimeMillis();
+                        SPLMessage spl_msg = new SPLMessage(this.readBuffer);
+                        TeamCommMessage tc_msg = new TeamCommMessage(timestamp, spl_msg, this.isOpponent);
                         
-                        if(logfile != null) {
-                            logfile.writeMessage(msg, timestamp, this.isOpponent);
+                        if(logfileQueueAppend) {
+                            logfileQueue.add(tc_msg);
                         }
 
                         if (address instanceof InetSocketAddress) {
-                            messageMap.put(((InetSocketAddress) address).getHostString(), new Message(timestamp, msg, this.isOpponent));
+                            messageMap.put(((InetSocketAddress) address).getHostString(), tc_msg);
                         }
 
                     } catch (Exception ex) {
@@ -476,19 +476,19 @@ public class TeamCommViewer extends AbstractDialog {
         }
     }//end class TeamCommListener
     
-    private class LogFile {
-        private File log;
-        private Gson json;
-        private BufferedWriter bw;
+    private class LogFileWriter extends Thread {
+        private final File log;
+        private final Gson json;
         private JsonWriter jw;
-        private boolean writeLog = false;
+        public boolean running = true;
         
-        public LogFile(File log) throws IOException {
+        public LogFileWriter(File log) {
             this.log = log;
             this.json = new GsonBuilder()
                 // shouldn't be any ... just for safety reasons
                 .disableInnerClassSerialization()
                 // skip Variable "user" in SPLMessage
+                /*
                 .addSerializationExclusionStrategy(new ExclusionStrategy() {
                     @Override
                     public boolean shouldSkipField(FieldAttributes fieldAttributes) {
@@ -499,62 +499,51 @@ public class TeamCommViewer extends AbstractDialog {
                     public boolean shouldSkipClass(Class<?> aClass) {
                         return false;
                     }
-                })
+                })*/
                 // write NaN value without throwing error/warning
                 .serializeSpecialFloatingPointValues()
                 .create();
-            // use JsonWriter to write the enclosing Json-Array ...
-            this.jw = new JsonWriter(new FileWriter(this.log));
-            // open "global"/"enclosing" Array
-            this.jw.beginArray();
         }
 
-        @Override
-        protected void finalize() throws Throwable {
-            // TODO: Logfile doesn't get closed, if application is closed!
-            System.err.println("close log file");
-            // flush buffer and close
-            if(this.jw != null) {
+        public void run() {
+            try {
+                // use JsonWriter to write the enclosing Json-Array ...
+                this.jw = new JsonWriter(new FileWriter(this.log));
+                // open "global"/"enclosing" Array
+                this.jw.beginArray();
+                
+                while (running) {
+                    TeamCommMessage msg = logfileQueue.poll();
+                    if(msg != null) {
+                        writeMessage(msg.message, msg.timestamp, msg.isOpponent);
+                    }
+                }
+                
+                // flush buffer and close
                 this.jw.endArray();
                 this.jw.close();
-            }
-            super.finalize();
-        }
-        
-        public void enable() {
-            System.out.println("Enable log file");
-            this.writeLog = true;
-        }
-        
-        public void disable() {
-            System.out.println("Disable log file");
-            this.writeLog = false;
-            try {
-                this.jw.flush();
             } catch (IOException ex) {
                 Logger.getLogger(TeamCommViewer.class.getName()).log(Level.SEVERE, null, ex);
             }
+        }
+        
+        public void close() {
+            running = false;
         }
         
         public String getLogfileName() {
             return this.log != null ? this.log.getName() : "";
         }
         
-        public void writeMessage(SPLMessage msg, long timestamp, boolean isOpponent) {
-            if(this.writeLog) {
-                try {
-                    this.jw.beginObject();
-                    this.jw.name("timestamp");
-                    this.jw.value(timestamp);
-                    this.jw.name("isOpponent");
-                    this.jw.value(isOpponent);
-                    this.jw.name("spl");
-                    this.jw.jsonValue(this.json.toJson(msg));
-                    this.jw.endObject();
-                } catch (IOException ex) {
-                    Logger.getLogger(TeamCommViewer.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
+        public void writeMessage(SPLMessage msg, long timestamp, boolean isOpponent) throws IOException {
+            this.jw.beginObject();
+            this.jw.name("timestamp");
+            this.jw.value(timestamp);
+            this.jw.name("isOpponent");
+            this.jw.value(isOpponent);
+            this.jw.name("spl");
+            this.jw.jsonValue(this.json.toJson(msg));
+            this.jw.endObject();
         }
     }
 
