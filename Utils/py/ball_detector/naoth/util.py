@@ -64,6 +64,20 @@ def calc_precision_recall(X, goldstd_response, actual_response):
 
     return precision, recall, errorIdx
 
+def img_from_patch(p):
+    if len(p) == 4*12*12:
+        a = np.array(p[0::4]).astype(float)
+        a = np.transpose(np.reshape(a, patch_size))
+    else:
+        a = np.array(p).astype(float)
+        a = np.transpose(np.reshape(a, patch_size))
+    return a
+    
+def colors_from_patch(p):
+    a = np.array(p[3::4]).astype(np.uint8)
+    a = np.transpose(np.reshape(a, patch_size))
+    return a
+
 def show_evaluation(X, goldstd_response, actual_response):
 
     image = np.zeros(((patch_size[1]+1)*show_size[1], (patch_size[0]+1)*show_size[0]))
@@ -80,7 +94,7 @@ def show_evaluation(X, goldstd_response, actual_response):
     j = 0
     marker = []
     for i in shownErrorIdx:
-        a = np.transpose(np.reshape(X[i,:], (12,12)))
+        a = img_from_patch(X[i,:])
         y = j // show_size[0]
         x = j % show_size[0]
         image[y*13:y*13+12,x*13:x*13+12] = a
@@ -102,12 +116,12 @@ def show_evaluation(X, goldstd_response, actual_response):
     plt.yticks(())
     plt.show()
 
-def load_multi_data(args, camera=-1):
+def load_multi_data(args, camera=-1, type=0):
     X = None
     labels = None
 
     for a in args:
-        X_local, labels_local = load_data(a.strip(), camera)
+        X_local, labels_local = load_data(a.strip(), camera, type)
         if X == None:
             X = X_local
         else:
@@ -119,9 +133,10 @@ def load_multi_data(args, camera=-1):
             labels = np.append(labels, labels_local)
     return X, labels
 
-def load_data(file, camera=-1):
-    patches, cameraIdx = patchReader.readAllPatchesFromLog('./data/'+file+'.log')
-
+def load_data(file, camera=-1, type=0):
+    
+    patches, cameraIdx = patchReader.readAllPatchesFromLog('./data/'+file+'.log', type)
+   
     cameraIdx = np.asarray(cameraIdx)
     cameraIdx = np.reshape(cameraIdx, (len(cameraIdx), ))
 

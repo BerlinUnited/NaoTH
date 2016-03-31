@@ -71,7 +71,7 @@ bool BallCandidateDetectorBW::execute(CameraInfo::CameraID id)
   if(params.classifier.cv_svm_histogram)
   {
     STOPWATCH_START("BallCandidateDetectorBW:classifcation");
-    executeOpenCVModel();
+    executeOpenCVModel(id);
     STOPWATCH_STOP("BallCandidateDetectorBW:classifcation");
   }
   else if(params.classifier.basic_svm)
@@ -98,15 +98,17 @@ bool BallCandidateDetectorBW::execute(CameraInfo::CameraID id)
   return getMultiBallPercept().wasSeen();
 }
 
-void BallCandidateDetectorBW::executeOpenCVModel()
+void BallCandidateDetectorBW::executeOpenCVModel(CameraInfo::CameraID id)
 {
-
+  cv::Ptr<cv::ml::SVM>& histModel = id == CameraInfo::Top ? histModelTop : histModelBottom;
   if(!histModel || histModel->empty())
   {
     // load model from config folder
+    std::string path = id == CameraInfo::Top ? "Config/model_histo_top.dat" : "Config/model_histo_bottom.dat";
     try
     {
-      histModel = cv::Algorithm::load<cv::ml::SVM>("Config/model_histo.dat");
+
+      histModel = cv::Algorithm::load<cv::ml::SVM>(path);
       assert(histModel->getSupportVectors().rows > 0);
       assert(histModel->isTrained());
       assert(histModel->isClassifier());
@@ -114,7 +116,7 @@ void BallCandidateDetectorBW::executeOpenCVModel()
     catch(cv::Exception ex)
     {
       // ignore
-      std::cerr << "Could not load Config/model_histo.dat" << std::endl;
+      std::cerr << "Could not load " << path << std::endl;
     }
   }
 

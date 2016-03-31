@@ -217,7 +217,7 @@ private:
   void addBallPercept(const Vector2i& center, double radius);
 
   double greenPoints(int minX, int minY, int maxX, int maxY) const;
-  void executeOpenCVModel();
+  void executeOpenCVModel(CameraInfo::CameraID id);
   void executeSVM();
   void executeHeuristic();
 
@@ -395,7 +395,8 @@ private:
 
   DOUBLE_CAM_PROVIDE(BallCandidateDetectorBW, BallCandidates);
 
-  cv::Ptr<cv::ml::SVM> histModel;
+  cv::Ptr<cv::ml::SVM> histModelBottom;
+  cv::Ptr<cv::ml::SVM> histModelTop;
 };//end class BallCandidateDetectorBW
 
 #endif // _BallCandidateDetectorBW_H_

@@ -11,24 +11,21 @@ import sklearn.neural_network as nn
 import naoth.features as feat
 from naoth.util import *
 
-def unroll_responses(responses, class_n):
-        sample_n = len(responses)
-        new_responses = np.zeros(sample_n*class_n, np.int32)
-        resp_idx = np.int32( responses + np.arange(sample_n)*class_n )
-        new_responses[resp_idx] = 1
-        return new_responses
 
 def makeTrainData(X, labels):
   
-  testFeat = feat.histo(np.zeros((12,12),dtype=np.float32))
+ # testFeat = feat.histoNonGreen(np.zeros((12,12), dtype=np.float32), np.zeros((12,12), dtype=np.uint8))
+  testFeat = feat.histo(np.zeros((12,12), dtype=np.float32))
   n_feat = testFeat.shape[1]
   
-  samples = np.zeros((X.shape[0], n_feat), dtype=np.float32)
-  i = 0
+  samples = np.zeros((0, n_feat), dtype=np.float32)
   for s in X:
-    img = s.reshape((12,12))
-    samples[i,:] = feat.histo(img)
-    i += 1
+    img = img_from_patch(s)
+    colors = colors_from_patch(s)
+    
+    #f = feat.histoNonGreen(img, colors)
+    f = feat.histo(img)
+    samples = np.vstack([samples, f])
   
   responses = np.int32(labels)
     
@@ -40,7 +37,7 @@ def learn(X, labels):
       
   estimator = cv2.ml.SVM_create()
   estimator.setType(cv2.ml.SVM_C_SVC)
-  estimator.setKernel(cv2.ml.SVM_RBF)
+  estimator.setKernel(cv2.ml.SVM_CHI2)
 #  estimator.setTermCriteria((cv2.TERM_CRITERIA_COUNT + cv2.TERM_CRITERIA_EPS, 10000, 1.19209e-07))
   ##estimator.setC(XXX)
   ##estimator.setGamma(XXX)
@@ -98,26 +95,29 @@ def show_errors_asfeat(X, goldstd_response, actual_response):
   
 if __name__ == "__main__":
   
-  ballNonBallRation = 3
+  ballNonBallRatio = 10.0
   splitRatio = 0.75
+  cam = 1
+  outfile = "model_histo_top.dat"
   
-  X_all, labels_all = load_multi_data(sys.argv[1:], -1)
+  X_all, labels_all = load_multi_data(sys.argv[1:], camera=cam, type=2)
   if X_all.shape[0] == 0:
     print "Nothing to learn"
     exit(0)
 
   X_train, labels_train, X_eval, labels_eval = shuffle_and_split(X_all, labels_all, splitRatio)
-    
+  
   nonBallIdx_train = [idx for idx in range(len(labels_train)) if labels_train[idx] == 0]
   ballIdx_train = [idx for idx in range(len(labels_train)) if labels_train[idx] == 1]
   numberOfBallTrain = len(ballIdx_train)
   numberOfNonBallTrain = len(nonBallIdx_train)
   
-  if (numberOfBallTrain*ballNonBallRation) < numberOfNonBallTrain:
+  if (numberOfBallTrain*ballNonBallRatio) < numberOfNonBallTrain:
     # limit the number of non-balls
-    allowedNumNonBall = numberOfBallTrain*ballNonBallRation
-    validTrainIdx = np.hstack([nonBallIdx_train[:allowedNumNonBall], ballIdx_train])
-    X_train = X_train[validTrainIdx, :]
+    allowedNumNonBall = int(numberOfBallTrain*ballNonBallRatio)
+    limitedNonBalls = nonBallIdx_train[:allowedNumNonBall]
+    validTrainIdx = np.hstack([limitedNonBalls, ballIdx_train])
+    X_train = X_train[validTrainIdx,:]
     labels_train =labels_train[validTrainIdx, :]
   
   numberOfBallEval = len(labels_eval[np.where(labels_eval == 1)])
@@ -138,7 +138,7 @@ if __name__ == "__main__":
   print("Learning...")
   estimator = learn(X_train, labels_train)
   print("Saving...")
-  estimator.save("model_histo.dat")
+  estimator.save(outfile)
   print("Evaluating...")
   classfied = classify(X_eval, labels_eval, estimator)
   
