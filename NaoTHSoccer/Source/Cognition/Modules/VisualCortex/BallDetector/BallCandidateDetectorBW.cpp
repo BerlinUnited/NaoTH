@@ -212,8 +212,6 @@ void BallCandidateDetectorBW::executeSVM()
 void BallCandidateDetectorBW::executeHeuristic()
 {
   std::list<Best::BallCandidate>::iterator best_element = best.candidates.begin();
-  int best_radius = -1;
-  double maxV = 0;
   std::vector<Vector2i> endPoints;
 
   for(std::list<Best::BallCandidate>::iterator i = best.candidates.begin(); i != best.candidates.end(); ++i)
