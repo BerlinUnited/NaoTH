@@ -300,6 +300,7 @@ public class TeamCommViewer extends AbstractDialog {
                     dfile.createNewFile();
                     logfile = new LogFileWriter(dfile);
                     logfile.start();
+                    logfileQueueAppend = true;
 
                     btnRecord.setSelected(true);
                     setBtnRecordToolTipText(true);
@@ -336,6 +337,7 @@ public class TeamCommViewer extends AbstractDialog {
     private void closingLogfile() {
         if(logfile != null) {
             try {
+                logfileQueueAppend =false;
                 logfile.close();
                 logfile.join();
                 logfile = null;
