@@ -70,9 +70,9 @@ bool BallCandidateDetectorBW::execute(CameraInfo::CameraID id)
 
   if(params.classifier.cv_svm_histogram)
   {
-    STOPWATCH_START("BallCandidateDetectorBW:neuronalClassification");
+    STOPWATCH_START("BallCandidateDetectorBW:classifcation");
     executeOpenCVModel();
-    STOPWATCH_STOP("BallCandidateDetectorBW:neuronalClassification");
+    STOPWATCH_STOP("BallCandidateDetectorBW:classifcation");
   }
   else if(params.classifier.basic_svm)
   {
@@ -138,7 +138,7 @@ void BallCandidateDetectorBW::executeOpenCVModel()
 
         cv::Mat out;
         histModel->predict(in, out, 0);
-        if(out.at<float>(0,0) > 0.0f) {
+        if(out.at<float>(0,0) == 1.0f) {
           ballFound = true;
           addBallPercept((*i).center, radius);
         }
