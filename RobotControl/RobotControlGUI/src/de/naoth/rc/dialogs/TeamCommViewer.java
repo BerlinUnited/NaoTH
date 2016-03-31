@@ -290,8 +290,8 @@ public class TeamCommViewer extends AbstractDialog {
             File dfile = (teamCommFileChooser.getSelectedFile().getName().lastIndexOf(".") == -1) ? 
                 new File(teamCommFileChooser.getSelectedFile()+".log") : 
                 teamCommFileChooser.getSelectedFile();
-
-            if(dfile.canWrite()) {
+            // TODO: how to check if non-existing files are writeable?!
+            if((dfile.exists() && dfile.canWrite()) || !dfile.exists()) {
                 try {
                     // make sure there is no open log file ..
                     closingLogfile();
