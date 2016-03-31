@@ -29,6 +29,7 @@ IKParameters::IKParameters()
   PARAMETER_REGISTER(stand.relax.jointOffsetTuning.currentThreshold) = 0.3;          // [A]
   PARAMETER_REGISTER(stand.relax.jointOffsetTuning.minimalJointStep) = 0.0013962634; // [rad]
 
+  PARAMETER_REGISTER(stand.relax.stiffnessControl.deadTime)     = 100;  // [ms]
   PARAMETER_REGISTER(stand.relax.stiffnessControl.minAngle)     = 0.08; // [°]
   PARAMETER_REGISTER(stand.relax.stiffnessControl.maxAngle)     = 2;    // [°]
   PARAMETER_REGISTER(stand.relax.stiffnessControl.minStiffness) = 0.3;

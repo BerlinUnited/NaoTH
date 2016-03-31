@@ -108,11 +108,11 @@ StandMotion()
 
       // set stiffness
       for( int i = naoth::JointData::RShoulderRoll; i<naoth::JointData::numOfJoint; i++) {
-        getMotorJointData().stiffness[i] = getEngine().getParameters().stand.stiffness;
+        stiffness[i] = getEngine().getParameters().stand.stiffness;
       }
       // HACK: turn off the hands
-      getMotorJointData().stiffness[JointData::LHand] = -1;
-      getMotorJointData().stiffness[JointData::RHand] = -1;
+      stiffness[JointData::LHand] = -1;
+      stiffness[JointData::RHand] = -1;
     }
   }//end calculateTrajectory
 
@@ -273,22 +273,31 @@ StandMotion()
 
     // controlling the stiffness of leg joints
     if (isRelaxing) {
-        double minAngle = getEngine().getParameters().stand.relax.stiffnessControl.minAngle;
-        double maxAngle = getEngine().getParameters().stand.relax.stiffnessControl.maxAngle;
-        double minStiff = getEngine().getParameters().stand.relax.stiffnessControl.minStiffness;
-        double maxStiff = getEngine().getParameters().stand.relax.stiffnessControl.maxStiffness;
+        if(getFrameInfo().getTime() - lastStiffnessUpdate.getTime() > getEngine().getParameters().stand.relax.stiffnessControl.deadTime){
+            double minAngle = getEngine().getParameters().stand.relax.stiffnessControl.minAngle;
+            double maxAngle = getEngine().getParameters().stand.relax.stiffnessControl.maxAngle;
+            double minStiff = getEngine().getParameters().stand.relax.stiffnessControl.minStiffness;
+            double maxStiff = getEngine().getParameters().stand.relax.stiffnessControl.maxStiffness;
 
-        for( int i = naoth::JointData::RShoulderRoll; i <= naoth::JointData::LAnkleRoll; i++) {
-            stiffnessController[i].setMinMaxValues(minAngle,maxAngle,minStiff,maxStiff);
-            getMotorJointData().stiffness[i] = stiffnessController[i].control(jointMonitors[i].getError());
+            for( int i = naoth::JointData::RShoulderRoll; i <= naoth::JointData::LAnkleRoll; i++) {
+                stiffnessController[i].setMinMaxValues(minAngle,maxAngle,minStiff,maxStiff);
+                stiffness[i] = stiffnessController[i].control(jointMonitors[i].getError());
+            }
+
+            lastStiffnessUpdate = getFrameInfo();
         }
-
         PLOT("StandMotion:AverageError:LKneePitch",jointMonitors[naoth::JointData::LKneePitch].getError());
         PLOT("StandMotion:AverageError:RKneePitch",jointMonitors[naoth::JointData::RKneePitch].getError());
         PLOT("StandMotion:Control:LKneePitch",stiffnessController[naoth::JointData::LKneePitch].control(jointMonitors[naoth::JointData::LKneePitch].getError()));
         PLOT("StandMotion:Control:RKneePitch",stiffnessController[naoth::JointData::RKneePitch].control(jointMonitors[naoth::JointData::RKneePitch].getError()));
+    } else {
+        lastStiffnessUpdate = getFrameInfo();
     }
-    
+
+    for( int i = naoth::JointData::RShoulderRoll; i < naoth::JointData::numOfJoint; i++) {
+        getMotorJointData().stiffness[i] = stiffness[i];
+    }
+
     if ( time >= totalTime && getMotionRequest().id != getId() ) {
       setCurrentState(motion::stopped);
       relaxedPoseInitialized  = false;
@@ -388,6 +397,8 @@ private:
   JointMonitor jointMonitors[naoth::JointData::numOfJoint];
 
   // used by StandMotion:stiffness_controller
+  FrameInfo lastStiffnessUpdate;
+
   class StiffnessController{
   public:
       StiffnessController():
@@ -462,6 +473,7 @@ private:
   };
 
   JointOffsets jointOffsets;
+  double stiffness[naoth::JointData::numOfJoint];
 };
 
 #endif  /* _StandMotion_H */

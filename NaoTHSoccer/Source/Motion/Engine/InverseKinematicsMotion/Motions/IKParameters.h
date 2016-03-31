@@ -39,6 +39,7 @@ public:
         } jointOffsetTuning;
 
         struct StiffnessControl {
+            double deadTime;
             double minAngle;
             double minStiffness;
             double maxAngle;
