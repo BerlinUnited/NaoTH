@@ -30,6 +30,9 @@ BallCandidateDetectorBW::BallCandidateDetectorBW()
 
   DEBUG_REQUEST_REGISTER("Vision:BallCandidateDetectorBW:forceBothCameras", "always record both cameras", true);
 
+  DEBUG_REQUEST_REGISTER("Vision:BallCandidateDetectorBW:drawScanlines", "", false);
+  DEBUG_REQUEST_REGISTER("Vision:BallCandidateDetectorBW:drawScanEndPoints", "", false);
+
   getDebugParameterList().add(&params);
 }
 
@@ -68,6 +71,9 @@ bool BallCandidateDetectorBW::execute(CameraInfo::CameraID id)
   else if(params.classifier.basic_svm)
   {
     executeSVM();
+  }
+  else if (params.classifier.heuristic) {
+    executeHeuristic();
   }
   else
   {
@@ -152,6 +158,7 @@ void BallCandidateDetectorBW::executeSVM()
   std::list<Best::BallCandidate>::iterator best_element = best.candidates.begin();
   int best_radius = -1;
   double maxV = 0;
+  std::vector<Vector2i> endPoints;
 
   for(std::list<Best::BallCandidate>::iterator i = best.candidates.begin(); i != best.candidates.end(); ++i)
   {
@@ -173,7 +180,10 @@ void BallCandidateDetectorBW::executeSVM()
         best_radius = radius;
       }
 
-      if(v >= 0.5) {
+      endPoints.clear();
+      Vector2d result = spiderScan((*i).center, endPoints, radius);
+
+      if(v >= 0.5 && result.x > params.minNumberOfJumps) {
         ballFound = true;
         addBallPercept((*i).center, radius);
       }
@@ -198,6 +208,64 @@ void BallCandidateDetectorBW::executeSVM()
     }
   );
 }
+
+void BallCandidateDetectorBW::executeHeuristic()
+{
+  std::list<Best::BallCandidate>::iterator best_element = best.candidates.begin();
+  int best_radius = -1;
+  double maxV = 0;
+  std::vector<Vector2i> endPoints;
+
+  for(std::list<Best::BallCandidate>::iterator i = best.candidates.begin(); i != best.candidates.end(); ++i)
+  {
+    if(getFieldPercept().getValidField().isInside((*i).center))
+    {
+      int radius = (int)((*i).radius*1.5 + 0.5);
+
+      BallCandidates::Patch& p = getBallCandidates().nextFreePatch();
+      p.min = Vector2i((*i).center.x - radius, (*i).center.y - radius);
+      p.max = Vector2i((*i).center.x + radius, (*i).center.y + radius);
+      subsampling(p.data, p.min.x, p.min.y, p.max.x, p.max.y);
+
+      bool ballFound = false;
+      
+      /*
+      int minYpos = 0;
+      unsigned char minY = 255;
+      for(size_t k = 0; k < p.data.size(); ++k) {
+        if(p.data[k] < minY) {
+          minY = p.data[k];
+          minYpos = k;
+        }
+      }
+      // xi*12 + yi
+      Vector2i minPos( minYpos / 12 - 6, minYpos % 12 - 6);
+      */
+
+      endPoints.clear();
+      Vector2d result = spiderScan((*i).center, endPoints, radius);
+
+      if(result.x > params.minNumberOfJumps) {
+        ballFound = true;
+        addBallPercept((*i).center, radius);
+      }
+
+      DEBUG_REQUEST("Vision:BallCandidateDetectorBW:drawCandidates",
+        if(ballFound) {
+          RECT_PX(ColorClasses::orange, (*i).center.x - radius, (*i).center.y - radius,
+            (*i).center.x + radius, (*i).center.y + radius);
+        } else {
+          RECT_PX(ColorClasses::gray, (*i).center.x - radius, (*i).center.y - radius,
+            (*i).center.x + radius, (*i).center.y + radius);
+        }
+      );
+
+    }
+  }
+
+}
+
+
 
 void BallCandidateDetectorBW::extractPatches()
 {
@@ -251,7 +319,7 @@ void BallCandidateDetectorBW::calculateCandidates(Best& best) const
   
   for(point.y = minY/FACTOR; point.y+1 < (int)getGameColorIntegralImage().getHeight(); ++point.y)
   {
-    double radius = estimatedBallRadius(point.x*FACTOR, point.y*FACTOR);
+    double radius = max( 6.0, estimatedBallRadius(point.x*FACTOR, point.y*FACTOR));
     int size   = (int)(radius*2.0/FACTOR+0.5);
     int border = (int)(radius*borderRadiusFactor/FACTOR+0.5);
 
@@ -261,7 +329,7 @@ void BallCandidateDetectorBW::calculateCandidates(Best& best) const
     }
 
     // smalest ball size == 3 => ball size == FACTOR*3 == 12
-    if (size < 12 / FACTOR  || point.y <= border || point.y+size+border+1 >= (int)getGameColorIntegralImage().getHeight()) {
+    if (point.y <= border || point.y+size+border+1 >= (int)getGameColorIntegralImage().getHeight()) {
       continue;
     }
     
@@ -280,7 +348,7 @@ void BallCandidateDetectorBW::calculateCandidates(Best& best) const
 
         center.x = point.x*FACTOR + (int)(radius+0.5);
         center.y = point.y*FACTOR + (int)(radius+0.5);
-        
+
         best.add(center, radius, value);
       }
     }
@@ -428,4 +496,97 @@ void BallCandidateDetectorBW::addBallPercept(const Vector2i& center, double radi
     getMultiBallPercept().frameInfoWhenBallWasSeen = getFrameInfo();
   }
 }
+
+
+Vector2d BallCandidateDetectorBW::spiderScan(const Vector2i& start, std::vector<Vector2i>& endPoints, int max_length) const
+{
+  Vector2d goodBorderPointCount;
+  goodBorderPointCount += scanForEdges(start, Vector2d( 1, 0), endPoints, max_length);
+  goodBorderPointCount += scanForEdges(start, Vector2d(-1, 0), endPoints, max_length);
+  goodBorderPointCount += scanForEdges(start, Vector2d( 0, 1), endPoints, max_length);
+  goodBorderPointCount += scanForEdges(start, Vector2d( 0,-1), endPoints, max_length);
+
+  goodBorderPointCount += scanForEdges(start, Vector2d( 1, 1).normalize(), endPoints, max_length);
+  goodBorderPointCount += scanForEdges(start, Vector2d(-1, 1).normalize(), endPoints, max_length);
+  goodBorderPointCount += scanForEdges(start, Vector2d( 1,-1).normalize(), endPoints, max_length);
+  goodBorderPointCount += scanForEdges(start, Vector2d(-1,-1).normalize(), endPoints, max_length);
+
+  return goodBorderPointCount;
+}
+
+Vector2d BallCandidateDetectorBW::scanForEdges(const Vector2i& start, const Vector2d& direction, std::vector<Vector2i>& points, int max_length) const
+{
+  Vector2i point(start);
+  BresenhamLineScan scanner(point, direction, getImage().cameraInfo);
+
+  // initialize the scanner
+  Vector2i peak_point_min(start);
+  Vector2i peak_point_max(start);
+  MaximumScan<Vector2i,double> negativeScan(peak_point_min, params.thresholdGradientUV);
+  MaximumScan<Vector2i,double> positiveScan(peak_point_max, params.thresholdGradientUV);
+
+  Filter<Prewitt3x1, Vector2i, double, 3> filter;
+
+  Pixel pixel;
+  double stepLength = 0;
+  Vector2i lastPoint(point); // needed for step length
+
+  Vector2i lastJump;
+  double span = 0;
+
+  //int max_length = 6;
+  int jumps = 0;
+  int i = 0;
+  while(scanner.getNextWithCheck(point) && i < max_length)
+  {
+    getImage().get(point.x, point.y, pixel);
+    int f_y = (int)pixel.y;
+
+    filter.add(point, f_y);
+    if(!filter.ready()) {
+      // assume the step length is constant, so we only calculate it in the starting phase of the filter
+      stepLength += Vector2d(point - lastPoint).abs();
+      lastPoint = point;
+      ASSERT(stepLength > 0);
+      continue;
+    }
+
+    DEBUG_REQUEST("Vision:BallCandidateDetectorBW:drawScanlines",
+      POINT_PX(ColorClasses::blue, point.x, point.y);
+    );
+
+
+    // jump down found: begin
+    // NOTE: we scale the filter value with the stepLength to acount for diagonal scans
+    if(negativeScan.add(filter.point(), -filter.value()/stepLength))
+    {
+      DEBUG_REQUEST("Vision:BallCandidateDetectorBW:drawScanlines",
+        POINT_PX(ColorClasses::pink, peak_point_min.x, peak_point_min.y);
+      );
+      points.push_back(peak_point_min);
+
+      span += (peak_point_min-lastJump).abs();
+      lastJump = peak_point_min;
+      jumps++;
+    }
+
+    // end found
+    if(positiveScan.add(filter.point(), filter.value()/stepLength))
+    {
+      DEBUG_REQUEST("Vision:BallCandidateDetectorBW:drawScanlines",
+        POINT_PX(ColorClasses::red, peak_point_max.x, peak_point_max.y);
+      );
+
+      span += (peak_point_min-lastJump).abs();
+      lastJump = peak_point_max;
+      jumps++;
+    }
+
+    i++;
+  }//end while
+
+
+  Vector2d result(jumps, span/(double)jumps);
+  return result; //getFieldColorPercept().isFieldColor(pixel);
+}//end scanForEdges
 

@@ -95,8 +95,14 @@ public:
     getMultiBallPercept().reset();
 
     // only execute search on top camera if bottom camera did not find anything
+    params.classifier.basic_svm = true;
+    params.classifier.heuristic = false;
+    params.classifier.cv_svm_histogram = false;
     if(!execute(CameraInfo::Bottom))
     {
+      params.classifier.basic_svm = false;
+      params.classifier.heuristic = false;
+      params.classifier.cv_svm_histogram = true;
       execute(CameraInfo::Top);
     }
     else
@@ -114,8 +120,12 @@ private:
   {
     Parameters() : ParameterList("BallCandidateDetectorBW")
     {
-      PARAMETER_REGISTER(classifier.basic_svm) = true;
+      PARAMETER_REGISTER(classifier.basic_svm) = false;
       PARAMETER_REGISTER(classifier.cv_svm_histogram) = false;
+      PARAMETER_REGISTER(classifier.heuristic) = true;
+
+      PARAMETER_REGISTER(thresholdGradientUV) = 40;
+      PARAMETER_REGISTER(minNumberOfJumps) = 4;
       
       syncWithConfig();
     }
@@ -123,8 +133,11 @@ private:
 	  struct Classifier {
       bool basic_svm;
       bool cv_svm_histogram;
+      bool heuristic;
     } classifier;
 
+    int thresholdGradientUV;
+    int minNumberOfJumps;
   } params;
 
 
@@ -211,6 +224,13 @@ private:
   void extractPatches();
   void executeOpenCVModel();
   void executeSVM();
+  void executeHeuristic();
+
+private:
+  Vector2d spiderScan(const Vector2i& start, std::vector<Vector2i>& endPoints, int max_length) const;
+  Vector2d scanForEdges(const Vector2i& start, const Vector2d& direction, std::vector<Vector2i>& points, int max_length) const;
+
+private:
 
   cv::Mat createHistoFeat(cv::Mat origImg)
   {
