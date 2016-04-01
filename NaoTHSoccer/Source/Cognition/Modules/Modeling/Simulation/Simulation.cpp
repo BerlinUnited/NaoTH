@@ -261,8 +261,8 @@ void Simulation::simulateConsequences(
 
 size_t Simulation::decide_smart(const std::vector<ActionResults>& actionsConsequences ) const
 {
-  std::vector<size_t> bestActions;        // high goal probability
-  std::vector<size_t> secondbestActions; // low or no goal probability
+  std::vector<size_t> acceptableActions;
+  std::vector<size_t> goalActions;
 
   for(size_t i=0; i<action_local.size(); i++)
   {
@@ -279,38 +279,44 @@ size_t Simulation::decide_smart(const std::vector<ActionResults>& actionsConsequ
     if(score <= max(0.0, theParameters.good_threshold_percentage)) {
       continue;
     }
+    //all actions which are not too bad
+    acceptableActions.push_back(i);
+  }
+  for(size_t i=0; i < acceptableActions.size(); i++)
+  {
+    const ActionResults& results = actionsConsequences[acceptableActions[i]];
 
     // there is no other action to compare yet
-    if(bestActions.empty()) {
-      bestActions.push_back(i);
+    if(goalActions.empty()) {
+      goalActions.push_back(i);
       continue;
     }
 
     // the actio with the highest chance of scoring the goal is the best
-    if(actionsConsequences[bestActions.front()].categorie(OPPGOAL) < results.categorie(OPPGOAL)) {
-      bestActions.clear();
-      bestActions.push_back(i);
+    if(actionsConsequences[goalActions.front()].categorie(OPPGOAL) < results.categorie(OPPGOAL)) {
+      goalActions.clear();
+      goalActions.push_back(i);
       continue;
     }
 
-    if(actionsConsequences[bestActions.front()].categorie(OPPGOAL) == results.categorie(OPPGOAL)) {
-      bestActions.push_back(i);
+    if(actionsConsequences[goalActions.front()].categorie(OPPGOAL) == results.categorie(OPPGOAL)) {
+      goalActions.push_back(i);
       continue;
     }
   }
-
   // there is a clear decision
-  if(bestActions.empty()) {
+  if(acceptableActions.empty()) {
     return 0; //assumes 0 is the turn action
-  } else if(bestActions.size() == 1) {
-      return bestActions.front();
+  }
+  if(actionsConsequences[goalActions.front()].categorie(OPPGOAL) > theParameters.minGoalParticles){
+    return goalActions.front();
   }
 
   // choose the best action by potential field
   size_t best_action = 0;
   double bestValue = std::numeric_limits<double>::max(); // assuming potential is [0.0, inf]
   
-  for(std::vector<size_t>::const_iterator it = bestActions.begin(); it != bestActions.end(); ++it)
+  for(std::vector<size_t>::const_iterator it = acceptableActions.begin(); it != acceptableActions.end(); ++it)
   {
     const ActionResults& results = actionsConsequences[*it];
 
