@@ -21,6 +21,7 @@
 #include <list>
 
 BallCandidateDetectorBW::BallCandidateDetectorBW()
+  : globalNumberOfKeysClassified(0)
 {
   DEBUG_REQUEST_REGISTER("Vision:BallCandidateDetectorBW:keyPoints", "draw key points extracted from integral image", false);
   DEBUG_REQUEST_REGISTER("Vision:BallCandidateDetectorBW:extractPatches", "generate YUVC patches", false);
@@ -42,6 +43,7 @@ BallCandidateDetectorBW::~BallCandidateDetectorBW()
   getDebugParameterList().remove(&params);
 }
 
+
 bool BallCandidateDetectorBW::execute(CameraInfo::CameraID id)
 {
   cameraID = id;
@@ -51,7 +53,6 @@ bool BallCandidateDetectorBW::execute(CameraInfo::CameraID id)
   if(getGameColorIntegralImage().getWidth() == 0) {
     return false;
   }
-
 
   best.clear();
   calculateKeyPoints(best);
@@ -107,7 +108,6 @@ void BallCandidateDetectorBW::executeOpenCVModel(CameraInfo::CameraID id)
     std::string path = id == CameraInfo::Top ? "Config/model_histo_top.dat" : "Config/model_histo_bottom.dat";
     try
     {
-
       histModel = cv::Algorithm::load<cv::ml::SVM>(path);
       assert(histModel->getSupportVectors().rows > 0);
       assert(histModel->isTrained());
@@ -122,10 +122,23 @@ void BallCandidateDetectorBW::executeOpenCVModel(CameraInfo::CameraID id)
 
   if(histModel && !histModel->empty())
   {
-    for(std::list<Best::BallCandidate>::iterator i = best.candidates.begin(); i != best.candidates.end(); ++i)
+    int maxNumberOfKeys = params.classifier.maxNumberOfKeys;
+    // HACK:
+    if(cameraID == CameraInfo::Top) {
+      maxNumberOfKeys += params.classifier.maxNumberOfKeys-globalNumberOfKeysClassified;
+    }
+
+    // the key with the highest score are at the back
+    int index = 0;
+    for(std::list<Best::BallCandidate>::reverse_iterator i = best.candidates.rbegin(); i != best.candidates.rend(); ++i)
     {
       if(getFieldPercept().getValidField().isInside((*i).center))
       {
+        // limit the max amount of evaluated keys
+        if(++index > maxNumberOfKeys) {
+          break;
+        }
+
         int radius = (int)((*i).radius*1.5 + 0.5);
 
         BallCandidates::Patch& p = getBallCandidates().nextFreePatch();
@@ -133,31 +146,23 @@ void BallCandidateDetectorBW::executeOpenCVModel(CameraInfo::CameraID id)
         p.max = Vector2i((*i).center.x + radius, (*i).center.y + radius);
         subsampling(p.data, p.min.x, p.min.y, p.max.x, p.max.y);
 
-        bool ballFound = false;
         cv::Mat wrappedImg(12, 12, CV_8UC1, (void*) p.data.data());
-
         cv::Mat in = createHistoFeat(wrappedImg);
 
         cv::Mat out;
         histModel->predict(in, out, 0);
+        globalNumberOfKeysClassified++;
         if(out.at<float>(0,0) == 1.0f) {
-          ballFound = true;
-          addBallPercept((*i).center, radius);
+          addBallPercept((*i).center, (*i).radius);
         }
 
         DEBUG_REQUEST("Vision:BallCandidateDetectorBW:drawCandidates",
-          //CANVAS(((cameraID == CameraInfo::Top)?"ImageTop":"ImageBottom"));
-          if(ballFound) {
-            RECT_PX(ColorClasses::orange, (*i).center.x - radius, (*i).center.y - radius,
-              (*i).center.x + radius, (*i).center.y + radius);
-          } else {
-            RECT_PX(ColorClasses::gray, (*i).center.x - radius, (*i).center.y - radius,
-              (*i).center.x + radius, (*i).center.y + radius);
-          }
+          RECT_PX(ColorClasses::yellow, (*i).center.x - radius, (*i).center.y - radius,
+            (*i).center.x + radius, (*i).center.y + radius);
         );
-
       }
     }
+
   } // end if model valid
 }
 
@@ -317,9 +322,6 @@ void BallCandidateDetectorBW::calculateKeyPoints(Best& best) const
   // todo needs a better place
   const int32_t FACTOR = getGameColorIntegralImage().FACTOR;
 
-  double borderRadiusFactor = 0.5;
-  MODIFY("BallCandidateDetectorBW:borderRadiusFactor", borderRadiusFactor);
-
   Vector2i center;
   Vector2i point;
   
@@ -327,12 +329,13 @@ void BallCandidateDetectorBW::calculateKeyPoints(Best& best) const
   {
     double radius = max( 6.0, estimatedBallRadius(point.x*FACTOR, point.y*FACTOR));
     int size   = (int)(radius*2.0/FACTOR+0.5);
-    int border = (int)(radius*borderRadiusFactor/FACTOR+0.5);
+    int border = (int)(radius*params.keyDetector.borderRadiusFactorClose/FACTOR+0.5);
 
     // HACK
     if(size < 40/FACTOR) {
-      border = (int)(radius*borderRadiusFactor*4/FACTOR+0.5);
+      border = (int)(radius*params.keyDetector.borderRadiusFactorFar/FACTOR+0.5);
     }
+    border = max( 2, border);
 
     // smalest ball size == 3 => ball size == FACTOR*3 == 12
     if (point.y <= border || point.y+size+border+1 >= (int)getGameColorIntegralImage().getHeight()) {
@@ -348,9 +351,9 @@ void BallCandidateDetectorBW::calculateKeyPoints(Best& best) const
       // at least 50%
       if (inner*2 > size*size)
       {
-        int green = getGameColorIntegralImage().getSumForRect(point.x, point.y, point.x+size, point.y+size, 1);
+        //int green = getGameColorIntegralImage().getSumForRect(point.x, point.y, point.x+size, point.y+size, 1);
         int outer = getGameColorIntegralImage().getSumForRect(point.x-border, point.y-border, point.x+size+border, point.y+size+border, 0);
-        double value = (double)(inner - (outer - inner) - 3*green)/((double)(size+border)*(size+border));
+        double value = (double)(inner - (outer - inner))/((double)(size+border)*(size+border));
 
         center.x = point.x*FACTOR + (int)(radius+0.5);
         center.y = point.y*FACTOR + (int)(radius+0.5);

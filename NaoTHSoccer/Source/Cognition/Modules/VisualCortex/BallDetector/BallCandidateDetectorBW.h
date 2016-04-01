@@ -93,6 +93,7 @@ public:
   virtual void execute()
   {
     getMultiBallPercept().reset();
+    globalNumberOfKeysClassified = 0;
 
     // only execute search on top camera if bottom camera did not find anything
     if(!execute(CameraInfo::Bottom))
@@ -114,13 +115,17 @@ private:
   {
     Parameters() : ParameterList("BallCandidateDetectorBW")
     {
+      
+      PARAMETER_REGISTER(keyDetector.borderRadiusFactorClose) = 0.5;
+      PARAMETER_REGISTER(keyDetector.borderRadiusFactorFar) = 0.8;
+
       PARAMETER_REGISTER(classifier.basic_svm) = false;
-      PARAMETER_REGISTER(classifier.cv_svm_histogram) = false;
-      PARAMETER_REGISTER(classifier.heuristic) = true;
+      PARAMETER_REGISTER(classifier.cv_svm_histogram) = true;
+      PARAMETER_REGISTER(classifier.heuristic) = false;
+      PARAMETER_REGISTER(classifier.maxNumberOfKeys) = 4;
 
       PARAMETER_REGISTER(thresholdGradientUV) = 40;
       PARAMETER_REGISTER(minNumberOfJumps) = 4;
-      
       syncWithConfig();
     }
 
@@ -128,14 +133,22 @@ private:
       bool basic_svm;
       bool cv_svm_histogram;
       bool heuristic;
+      int maxNumberOfKeys;
     } classifier;
+
+    struct KeyDetector {
+      double borderRadiusFactorClose;
+      double borderRadiusFactorFar;
+    } keyDetector;
 
     int thresholdGradientUV;
     int minNumberOfJumps;
+    
   } params;
 
 
 private:
+  int globalNumberOfKeysClassified;
 
   class Best 
   {
