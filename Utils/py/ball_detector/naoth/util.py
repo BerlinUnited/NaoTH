@@ -33,7 +33,7 @@ def shuffle_and_split(X, labels, splitRatio=0.75, ballNonBallRatio=-1.0):
     X1, labels1 = np.hsplit(Y1, [X.shape[1]])
     X2, labels2 = np.hsplit(Y2, [X.shape[1]])
 
-    if ballNonBallRatio >= 1.0:
+    if ballNonBallRatio > 0.0:
         nonBallIdx_train = [idx for idx in range(len(labels1)) if labels1[idx] == 0]
         ballIdx_train = [idx for idx in range(len(labels1)) if labels1[idx] == 1]
         numberOfBallTrain = len(ballIdx_train)

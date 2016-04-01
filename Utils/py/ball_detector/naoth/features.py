@@ -78,3 +78,34 @@ def histoNonGreen(img, colors):
 	feat = np.vstack([histNoGreen, np.float32([[numOfGreen]])])
 	
 	return feat.T
+
+def histoDiff(img, size=16, ksize=3):
+	
+	# get legacy
+	imgFeat = histo(img)
+	
+	# normalize by maximum value
+	img = img.astype("float32")
+	
+	edgeimgX = np.absolute(np.diff(img, axis=0))
+	edgeimgY = np.absolute(np.diff(img, axis=1))
+	
+	minValX, maxValX, _, _ = cv2.minMaxLoc(edgeimgX)
+	histX = cv2.calcHist([edgeimgX],[0],None,[size],[minValX, maxValX+1])
+	
+	minValY, maxValY, _, _ = cv2.minMaxLoc(edgeimgY)
+	histY = cv2.calcHist([edgeimgY],[0],None,[size],[minValY, maxValY+1])
+	
+	# also normalize the histogram to 0 to 1.0f
+	_, maxHistValX, _, _ = cv2.minMaxLoc(histX)
+	if maxHistValX > 0:
+		histX = np.divide(histX, maxHistValX)
+		
+	_, maxHistValY, _, _ = cv2.minMaxLoc(histY)
+	if maxHistValY > 0:
+		histY = np.divide(histY, maxHistValY)
+		
+	
+	#return histX.T
+	return np.hstack([imgFeat, histX.T, histY.T])
+	#return np.hstack([histX.T, histY.T])
