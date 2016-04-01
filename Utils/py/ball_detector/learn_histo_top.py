@@ -14,9 +14,7 @@ def makeTrainData(X, labels):
   
   samples = np.zeros((0, n_feat), dtype=np.float32)
   for s in X:
-    img = img_from_patch(s)
-    colors = colors_from_patch(s)
-    
+    img = img_from_patch(s)    
     f = feat.histo(img)
     samples = np.vstack([samples, f])
   
@@ -27,14 +25,14 @@ def makeTrainData(X, labels):
 
 if __name__ == "__main__":
   
-  ballNonBallRatio = 2.0
+  ballNonBallRatio = 100.0
   splitRatio = 0.75
   cam = 1
   outfile = "model_histo_top.dat"
   
   estimator = cv2.ml.SVM_create()
   estimator.setType(cv2.ml.SVM_C_SVC)
-  estimator.setKernel(cv2.ml.SVM_CHI2)
+  estimator.setKernel(cv2.ml.SVM_RBF)
 #  estimator.setTermCriteria((cv2.TERM_CRITERIA_COUNT + cv2.TERM_CRITERIA_EPS, 10000, 1.19209e-07))
   ##estimator.setC(XXX)
   ##estimator.setGamma(XXX)

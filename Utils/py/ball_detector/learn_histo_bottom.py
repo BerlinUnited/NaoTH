@@ -27,14 +27,14 @@ def makeTrainData(X, labels):
 
 if __name__ == "__main__":
   
-  ballNonBallRatio = 10.0
+  ballNonBallRatio = 30.0
   splitRatio = 0.75
   cam = 0
   outfile = "model_histo_bottom.dat"
   
   estimator = cv2.ml.SVM_create()
   estimator.setType(cv2.ml.SVM_C_SVC)
-  estimator.setKernel(cv2.ml.SVM_CHI2)
+  estimator.setKernel(cv2.ml.SVM_RBF)
 #  estimator.setTermCriteria((cv2.TERM_CRITERIA_COUNT + cv2.TERM_CRITERIA_EPS, 10000, 1.19209e-07))
   ##estimator.setC(XXX)
   ##estimator.setGamma(XXX)
