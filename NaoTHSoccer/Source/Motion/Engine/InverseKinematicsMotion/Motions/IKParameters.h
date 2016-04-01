@@ -17,8 +17,6 @@ class IKParameters : public ParameterList
 public:
 
   // TODO: what are those parameters?
-  double bodyPitchOffset;
-  double hipOffsetX;
   double footOffsetY;
   
   struct Stand 
@@ -26,6 +24,28 @@ public:
     double speed;
     bool enableStabilization;
     double stiffness;
+
+    double bodyPitchOffset;
+    double hipOffsetX;
+
+    struct Relax {
+        double allowedDeviation;
+        double timeBonusForCorrection;
+
+        struct JointOffsetTuning {
+            double deadTime;
+            double currentThreshold;
+            double minimalJointStep;
+        } jointOffsetTuning;
+
+        struct StiffnessControl {
+            double deadTime;
+            double minAngle;
+            double minStiffness;
+            double maxAngle;
+            double maxStiffness;
+        } stiffnessControl;
+    } relax;
   } stand;
 
 
@@ -33,6 +53,9 @@ public:
   {
     struct General
     {
+      double bodyPitchOffset;
+      double hipOffsetX;
+
       double stiffness;
       bool useArm;
 
