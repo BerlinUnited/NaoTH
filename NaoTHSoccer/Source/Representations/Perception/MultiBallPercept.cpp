@@ -35,6 +35,12 @@ void Serializer<MultiBallPercept>::serialize(const MultiBallPercept& representat
 
     bp->mutable_positiononfield()->set_x((*iter).positionOnField.x);
     bp->mutable_positiononfield()->set_y((*iter).positionOnField.y);
+
+    if(iter->cameraId == CameraInfo::Top) {
+      bp->set_cameraid(naothmessages::CameraID::top);
+    } else if(iter->cameraId == CameraInfo::Bottom) {
+      bp->set_cameraid(naothmessages::CameraID::bottom);
+    }
   }
 
   google::protobuf::io::OstreamOutputStream buf(&stream);
