@@ -48,17 +48,24 @@ void GameLogger::execute()
     {
       LOGSTUFF(BehaviorStateSparse);
 
+      // proprioception
       LOGSTUFF(OdometryData);
       LOGSTUFF(CameraMatrix);
       LOGSTUFF(CameraMatrixTop);
-      LOGSTUFF(GoalPercept);
-      LOGSTUFF(GoalPerceptTop);
-      LOGSTUFF(BallPercept);
-      LOGSTUFF(BallPerceptTop);
-      LOGSTUFF(ScanLineEdgelPercept);
-      LOGSTUFF(ScanLineEdgelPerceptTop);
       LOGSTUFF(BodyStatus);
 
+      // perception
+      LOGSTUFF(GoalPercept);
+      LOGSTUFF(GoalPerceptTop);
+
+      LOGSTUFF(MultiBallPercept)
+      
+      //LOGSTUFF(BallPercept);
+      //LOGSTUFF(BallPerceptTop);
+      
+      LOGSTUFF(ScanLineEdgelPercept);
+      LOGSTUFF(ScanLineEdgelPerceptTop);
+      
       if(params.logBallCandidates) {
         LOGSTUFF(BallCandidates);
         LOGSTUFF(BallCandidatesTop);

@@ -19,6 +19,7 @@
 #include "Representations/Modeling/BodyStatus.h"
 
 #include "Representations/Perception/BallCandidates.h"
+#include "Representations/Perception/MultiBallPercept.h"
 
 // tools
 #include "Tools/Debug/DebugParameterList.h"
@@ -45,6 +46,8 @@ BEGIN_DECLARE_MODULE(GameLogger)
   REQUIRE(ScanLineEdgelPercept)
   REQUIRE(ScanLineEdgelPerceptTop)
   REQUIRE(BodyStatus)
+
+  REQUIRE(MultiBallPercept)
 
   REQUIRE(BallCandidates)
   REQUIRE(BallCandidatesTop)
