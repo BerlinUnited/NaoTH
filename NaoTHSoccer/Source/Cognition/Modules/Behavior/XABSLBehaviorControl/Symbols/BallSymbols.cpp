@@ -107,7 +107,7 @@ void BallSymbols::execute()
   ballPerceptSeen = false;
 
   if(theInstance->getMultiBallPercept().wasSeen()) {
-    ballPerceptPos  = getBallModel().position; //HACK
+    ballPerceptPos = theInstance->getMultiBallPercept().begin()->positionOnField; //getBallModel().position; //HACK
     ballPerceptSeen = true;
   }
 
