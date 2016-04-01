@@ -35,6 +35,14 @@ BallCandidateDetectorBW::BallCandidateDetectorBW()
   DEBUG_REQUEST_REGISTER("Vision:BallCandidateDetectorBW:drawScanEndPoints", "", false);
 
   getDebugParameterList().add(&params);
+
+  diffKernelX = cv::Mat::zeros(1, 3, CV_32F);
+  diffKernelX.at<float>(0, 1) = -1.0f;
+  diffKernelX.at<float>(0, 2) = 1.0f;
+
+  diffKernelY = cv::Mat::zeros(3, 1, CV_32F);
+  diffKernelY.at<float>(1, 0) = -1.0f;
+  diffKernelY.at<float>(2, 0) = 1.0f;
 }
 
 BallCandidateDetectorBW::~BallCandidateDetectorBW()

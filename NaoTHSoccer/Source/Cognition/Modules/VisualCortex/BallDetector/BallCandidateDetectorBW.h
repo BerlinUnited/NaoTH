@@ -267,6 +267,90 @@ private:
     return feat;
   }
 
+  cv::Mat createHistoDiffFeat(cv::Mat origImg)
+  {
+    cv::Mat imgFeat = createHistoFeat(origImg);
+    cv::Mat img;
+    // TODO: necessary?
+    origImg.convertTo(img, CV_32FC1);
+
+
+
+    cv::Mat edgeimgX;
+    cv::filter2D(img, edgeimgX, CV_32F, diffKernelX);
+    cv::Mat edgeimgY;
+    cv::filter2D(img, edgeimgY, CV_32F, diffKernelY);
+
+    double minValX,maxValX;
+    cv::minMaxLoc(img, &minValX, &maxValX);
+    maxValX += 1.0;
+
+    double minValY,maxValY;
+    cv::minMaxLoc(img, &minValY, &maxValY);
+    maxValY += 1.0;
+
+
+    std::vector<int> columnVec;
+    columnVec.push_back(0);
+    std::vector<int> binVec;
+    binVec.push_back(32);
+
+    cv::Mat histX;
+    {
+      std::vector<cv::Mat> imgVecX;
+      imgVecX.push_back(edgeimgX);
+      std::vector<float> rangesX;
+      rangesX.push_back((float) minValX);
+      rangesX.push_back((float) maxValX);
+
+      cv::calcHist(imgVecX, columnVec, cv::Mat::ones(edgeimgX.rows, edgeimgX.cols, CV_8U), histX, binVec, rangesX);
+    }
+
+    cv::Mat histY;
+    {
+      std::vector<cv::Mat> imgVecY;
+      imgVecY.push_back(edgeimgY);
+      std::vector<float> rangesY;
+      rangesY.push_back((float) minValY);
+      rangesY.push_back((float) maxValY);
+
+      cv::calcHist(imgVecY, columnVec, cv::Mat::ones(edgeimgY.rows, edgeimgY.cols, CV_8U), histY, binVec, rangesY);
+    }
+    // also normalize the histograms to range 0-1.0f
+    {
+      double maxHistValX;
+      cv::minMaxLoc(histX, nullptr, &maxHistValX);
+      if(maxHistValX > 0)
+      {
+        histX = histX / maxHistValX;
+      }
+    }
+    {
+      double maxHistValY;
+      cv::minMaxLoc(histY, nullptr, &maxHistValY);
+      if(maxHistValY > 0)
+      {
+        histY = histY / maxHistValY;
+      }
+    }
+
+    cv::Mat featX;
+    cv::transpose(histX, featX);
+
+    cv::Mat featY;
+    cv::transpose(histY, featY);
+
+    cv::Mat globalFeat;
+    std::vector<cv::Mat> featParts;
+    featParts.push_back(imgFeat);
+    featParts.push_back(featX);
+    featParts.push_back(featY);
+    cv::hconcat(featParts, globalFeat);
+
+    return globalFeat;
+
+  }
+
   cv::Mat createBinaryFeat(cv::Mat img)
   {
     cv::Mat binary;
@@ -397,6 +481,10 @@ private:
 
   cv::Ptr<cv::ml::SVM> histModelBottom;
   cv::Ptr<cv::ml::SVM> histModelTop;
+
+  cv::Mat diffKernelX;
+  cv::Mat diffKernelY;
+
 };//end class BallCandidateDetectorBW
 
 #endif // _BallCandidateDetectorBW_H_
