@@ -1,6 +1,6 @@
 #!/bin/bash
 
-sudo -u nao /usr/bin/paplay /home/nao/naoqi/Media/usb_stop.wav
+#INFO: file is executed via root!
 
 # set file vars
 infoFile="/home/nao/Config/nao.info"
@@ -14,10 +14,25 @@ current_boot_time=$(</proc/uptime awk '{printf "%d", $1 / 60}')
 # write to systemlog
 logger "Brainwasher:start $current_date, $current_nao"
 
+# write previous volume to systemlog
+current_volume=$(sudo -u nao pactl list sinks | grep Volume | xargs)
+logger "Brainwasher:$current_volume"
+
+# set volume to 88%
+sudo -u nao pactl set-sink-mute 0 false 2> $errorFile
+sudo -u nao pactl set-sink-volume 0 88% 2>> $errorFile
+logger -f $errorFile
+
+# play sound
+sudo -u nao /usr/bin/paplay /home/nao/naoqi/Media/usb_stop.wav
+
+# create directory
 mkdir $current_date-$current_nao
 
+# find log files and copy them to the created directory
 find -L /tmp -type d -name media -prune -o -name "*.log" -exec cp {} /media/brainwasher/$current_date-$current_nao \;
 
+# copy the config directory
 cp -r /home/nao/naoqi/Config /media/brainwasher/$current_date-$current_nao
 
 # create dump folder and log errors
@@ -32,3 +47,5 @@ logger -f $errorFile
 rm $errorFile
 
 logger "Brainwasher:end"
+
+sudo -u nao /usr/bin/paplay /home/nao/naoqi/Media/usb_stop.wav
