@@ -125,7 +125,7 @@ void BallCandidateDetectorBW::executeOpenCVModel(CameraInfo::CameraID id)
     int maxNumberOfKeys = params.classifier.maxNumberOfKeys;
     // HACK:
     if(cameraID == CameraInfo::Top) {
-      maxNumberOfKeys += params.classifier.maxNumberOfKeys-globalNumberOfKeysClassified;
+      maxNumberOfKeys += (params.classifier.maxNumberOfKeys-globalNumberOfKeysClassified)/2;
     }
 
     // the key with the highest score are at the back
