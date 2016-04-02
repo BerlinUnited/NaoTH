@@ -127,9 +127,8 @@ private:
       
       PARAMETER_REGISTER(heuristic.maxGreenInsideRatio) = 0.3;
       PARAMETER_REGISTER(heuristic.minGreenBelowRatio) = 0.5;
-      PARAMETER_REGISTER(heuristic.blackDotsWhiteOffset) = 40;
-      PARAMETER_REGISTER(heuristic.blackDotsWhiteOffsetRatio) = 0.4;
-      PARAMETER_REGISTER(heuristic.blackDotsMinCount) = 10;
+      PARAMETER_REGISTER(heuristic.blackDotsWhiteOffset) = 110;
+      PARAMETER_REGISTER(heuristic.blackDotsMinCount) = 8;
       
 
       PARAMETER_REGISTER(thresholdGradientUV) = 40;
@@ -153,7 +152,6 @@ private:
     struct Heuristics {
       double maxGreenInsideRatio;
       double minGreenBelowRatio;
-      double blackDotsWhiteOffsetRatio;
       int blackDotsWhiteOffset;
       int blackDotsMinCount;
     } heuristic;
