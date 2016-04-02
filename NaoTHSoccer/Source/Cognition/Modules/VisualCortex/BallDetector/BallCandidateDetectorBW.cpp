@@ -334,6 +334,7 @@ void BallCandidateDetectorBW::executeHeuristic()
       Vector2d major, minor;
       moments.getAxes(major, minor);
       if(minor.abs() > 1 && (major.abs() / minor.abs() < params.heuristic.maxMomentAxesRatio)) {
+        c = ColorClasses::skyblue;
         checkAxes = true;
       }
 
