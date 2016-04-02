@@ -329,14 +329,15 @@ void BallCandidateDetectorBW::executeHeuristic()
         }
       }
 
-      /*
+      // check distribution
+      bool checkAxes = false;
       Vector2d major, minor;
       moments.getAxes(major, minor);
-      if(minor.abs() < 1 || (major.abs() / minor.abs() > params.classifier.maxMomentAxesRatio)) {
-        continue;
-      }*/
+      if(minor.abs() > 1 && (major.abs() / minor.abs() < params.heuristic.maxMomentAxesRatio)) {
+        checkAxes = true;
+      }
 
-      if(checkGreenBelow && checkGreenInside && checkBlackDots) {
+      if(checkGreenBelow && checkGreenInside && checkBlackDots && checkAxes) {
         addBallPercept((*i).center, radius);
       }
 
@@ -578,13 +579,17 @@ void BallCandidateDetectorBW::addBallPercept(const Vector2i& center, double radi
 		  ballRadius,
 		  ballPercept.positionOnField))
   {
-    
-    ballPercept.cameraId = cameraID;
-    ballPercept.centerInImage = center;
-    ballPercept.radiusInImage = radius;
+    // HACK: check the global poseition
+    Vector2d ballPositionField = getRobotPose()*ballPercept.positionOnField;
+    if(!params.heuristic.onlyOnField || (getRobotPose().isValid && getFieldInfo().carpetRect.inside(ballPositionField))) 
+    {
+      ballPercept.cameraId = cameraID;
+      ballPercept.centerInImage = center;
+      ballPercept.radiusInImage = radius;
 
-    getMultiBallPercept().add(ballPercept);
-    getMultiBallPercept().frameInfoWhenBallWasSeen = getFrameInfo();
+      getMultiBallPercept().add(ballPercept);
+      getMultiBallPercept().frameInfoWhenBallWasSeen = getFrameInfo();
+    }
   }
 }
 

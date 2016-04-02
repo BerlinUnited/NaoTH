@@ -27,6 +27,7 @@
 #include "Representations/Perception/MultiBallPercept.h"
 #include "Representations/Perception/BallCandidates.h"
 #include "Representations/Debug/Stopwatch.h"
+#include "Representations/Modeling/RobotPose.h"
 
 // tools
 #include "Tools/DoubleCamHelpers.h"
@@ -69,6 +70,9 @@ BEGIN_DECLARE_MODULE(BallCandidateDetectorBW)
 
   REQUIRE(BodyContour)
   REQUIRE(BodyContourTop)
+
+  //hack
+  REQUIRE(RobotPose)
   
   PROVIDE(MultiBallPercept)
   PROVIDE(BallCandidates)
@@ -129,6 +133,8 @@ private:
       PARAMETER_REGISTER(heuristic.minGreenBelowRatio) = 0.5;
       PARAMETER_REGISTER(heuristic.blackDotsWhiteOffset) = 110;
       PARAMETER_REGISTER(heuristic.blackDotsMinCount) = 8;
+      PARAMETER_REGISTER(heuristic.onlyOnField) = false;
+      PARAMETER_REGISTER(heuristic.maxMomentAxesRatio) = 2.0;
       
 
       PARAMETER_REGISTER(thresholdGradientUV) = 40;
@@ -154,6 +160,8 @@ private:
       double minGreenBelowRatio;
       int blackDotsWhiteOffset;
       int blackDotsMinCount;
+      bool onlyOnField;
+      double maxMomentAxesRatio;
     } heuristic;
 
     int thresholdGradientUV;
