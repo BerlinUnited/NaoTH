@@ -123,6 +123,8 @@ private:
       PARAMETER_REGISTER(classifier.cv_svm_histogram) = true;
       PARAMETER_REGISTER(classifier.heuristic) = false;
       PARAMETER_REGISTER(classifier.maxNumberOfKeys) = 4;
+      PARAMETER_REGISTER(classifier.maxMomentAxesRatio) = 2.0;
+      
 
       PARAMETER_REGISTER(thresholdGradientUV) = 40;
       PARAMETER_REGISTER(minNumberOfJumps) = 4;
@@ -134,6 +136,7 @@ private:
       bool cv_svm_histogram;
       bool heuristic;
       int maxNumberOfKeys;
+      double maxMomentAxesRatio;
     } classifier;
 
     struct KeyDetector {
@@ -224,7 +227,7 @@ private:
 
 
   void subsampling(std::vector<unsigned char>& data, int x0, int y0, int x1, int y1) const;
-  void subsampling(std::vector<BallCandidates::ClassifiedPixel>& data, int x0, int y0, int x1, int y1) const;
+  void subsampling(std::vector<BallCandidates::ClassifiedPixel>& data, Moments2<2>& moments, int x0, int y0, int x1, int y1) const;
 
   double estimatedBallRadius(int x, int y) const;
   void addBallPercept(const Vector2i& center, double radius);
