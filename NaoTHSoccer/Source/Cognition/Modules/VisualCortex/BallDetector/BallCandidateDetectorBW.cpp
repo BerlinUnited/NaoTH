@@ -283,12 +283,11 @@ void BallCandidateDetectorBW::executeHeuristic()
         break;
       }
 
-      BallCandidates::Patch& p = getBallCandidates().nextFreePatch();
+      Moments2<2> moments;
+      BallCandidates::PatchYUVClassified& p = getBallCandidates().nextFreePatchYUVClassified();
       p.min = Vector2i((*i).center.x - radius, (*i).center.y - radius);
       p.max = Vector2i((*i).center.x + radius, (*i).center.y + radius);
-      subsampling(p.data, p.min.x, p.min.y, p.max.x, p.max.y);
-
-      
+      subsampling(p.data, moments, p.min.x, p.min.y, p.max.x, p.max.y);
       
       // check green below
       bool checkGreenBelow = false;
@@ -312,12 +311,30 @@ void BallCandidateDetectorBW::executeHeuristic()
 
       // check black dots
       bool checkBlackDots = false;
-      endPoints.clear();
-      Vector2d result = spiderScan((*i).center, endPoints, radius);
-      if(result.x > params.minNumberOfJumps) {
-        c = ColorClasses::orange;
-        checkBlackDots = true;
+      if(p.max.y-p.min.y > 20) 
+      {
+        double blackCount = blackPointsCount(p, params.heuristic.blackDotsWhiteOffset);
+        if(blackCount > params.heuristic.blackDotsMinCount) {
+          checkBlackDots = true;
+          c = ColorClasses::orange;
+        }
+      } 
+      else
+      {
+        endPoints.clear();
+        Vector2d result = spiderScan((*i).center, endPoints, radius);
+        if(result.x > params.minNumberOfJumps) {
+          c = ColorClasses::orange;
+          checkBlackDots = true;
+        }
       }
+
+      /*
+      Vector2d major, minor;
+      moments.getAxes(major, minor);
+      if(minor.abs() < 1 || (major.abs() / minor.abs() > params.classifier.maxMomentAxesRatio)) {
+        continue;
+      }*/
 
       if(checkGreenBelow && checkGreenInside && checkBlackDots) {
         addBallPercept((*i).center, radius);
@@ -569,6 +586,32 @@ void BallCandidateDetectorBW::addBallPercept(const Vector2i& center, double radi
     getMultiBallPercept().add(ballPercept);
     getMultiBallPercept().frameInfoWhenBallWasSeen = getFrameInfo();
   }
+}
+
+
+double BallCandidateDetectorBW::blackPointsCount(BallCandidates::PatchYUVClassified& p, double blackWhiteOffset) const
+{
+  double meanWhite = 0;
+  double whiteCount = 0;
+  for(size_t k = 0; k < p.data.size(); ++k) {
+    if(p.data[k].c == ColorClasses::white) {
+      meanWhite += p.data[k].pixel.y;
+      ++whiteCount;
+    }
+  }
+
+  if(whiteCount > 0) {
+    meanWhite /= whiteCount;
+  }
+
+  double blackCount = 0;
+  for(size_t k = 0; k < p.data.size(); ++k) {
+    if(p.data[k].c != ColorClasses::green && p.data[k].pixel.y < meanWhite*blackWhiteOffset) {
+      ++blackCount;
+    }
+  }
+
+  return blackCount;
 }
 
 

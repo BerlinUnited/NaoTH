@@ -127,6 +127,8 @@ private:
       
       PARAMETER_REGISTER(heuristic.maxGreenInsideRatio) = 0.3;
       PARAMETER_REGISTER(heuristic.minGreenBelowRatio) = 0.5;
+      PARAMETER_REGISTER(heuristic.blackDotsWhiteOffset) = 0.4;
+      PARAMETER_REGISTER(heuristic.blackDotsMinCount) = 10;
       
 
       PARAMETER_REGISTER(thresholdGradientUV) = 40;
@@ -150,6 +152,8 @@ private:
     struct Heuristics {
       double maxGreenInsideRatio;
       double minGreenBelowRatio;
+      double blackDotsWhiteOffset;
+      int blackDotsMinCount;
     } heuristic;
 
     int thresholdGradientUV;
@@ -246,6 +250,7 @@ private:
   void executeHeuristic();
 
 private:
+  double blackPointsCount(BallCandidates::PatchYUVClassified& p, double blackWhiteOffset) const;
   Vector2d spiderScan(const Vector2i& start, std::vector<Vector2i>& endPoints, int max_length) const;
   Vector2d scanForEdges(const Vector2i& start, const Vector2d& direction, std::vector<Vector2i>& points, int max_length) const;
 
