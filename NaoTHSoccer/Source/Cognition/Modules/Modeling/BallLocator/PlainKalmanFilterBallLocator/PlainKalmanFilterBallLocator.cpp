@@ -46,6 +46,15 @@ PlainKalmanFilterBallLocator::~PlainKalmanFilterBallLocator()
 /*--- !!! sometimes nan filters !!! ---*/
 void PlainKalmanFilterBallLocator::execute()
 {
+
+    if(getPlayerInfo().gameData.gameState == GameData::ready || getBodyState().isLiftedUp) {
+        getBallModel().valid = false;
+        filter.clear();
+
+        return;
+    }
+
+
     DEBUG_REQUEST("PlainKalmanFilterBallLocator:remove_all_models",
         filter.clear();
     );
