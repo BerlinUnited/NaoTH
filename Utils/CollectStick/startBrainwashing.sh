@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#INFO: file is executed via root!
+#INFO: file is executed via root on the nao!
 
 # set file vars
 infoFile="/home/nao/Config/nao.info"
@@ -10,6 +10,13 @@ errorFile="/home/nao/brainwasher.log"
 current_date=$(date +"%y%m%d-%H%M")
 current_nao=$(sed -n "2p" $infoFile)
 current_boot_time=$(</proc/uptime awk '{printf "%d", $1 / 60}')
+
+check_for_errors() {
+	if ["$?" -ne 0]
+	then
+		sudo -u nao /usr/bin/paplay /home/nao/naoqi/Media/1.wav
+	fi
+}
 
 # write to systemlog
 logger "Brainwasher:start $current_date, $current_nao"
@@ -33,10 +40,18 @@ logger "Brainwasher:copy files"
 mkdir $current_date-$current_nao
 
 # find log files and copy them to the created directory
-find -L /tmp -type d -name media -prune -o -name "*.log" -exec cp {} /media/brainwasher/$current_date-$current_nao \;
+#find -L /tmp -type d -name media -prune -o -name "*.log" -exec cp {} /media/brainwasher/$current_date-$current_nao \;
+# find log files, create MD5 hashes and copy everything to the created directory
+for f in $(find -L /tmp -type d -name media -prune -o -name "*.log")
+do
+	md5sum $f | sed -e "s/\/tmp\///g" > "$f.md5"
+	cp "$f.md5" $f /media/brainwasher/$current_date-$current_nao/
+	check_for_errors
+done
 
 # copy the config directory
 cp -r /home/nao/naoqi/Config /media/brainwasher/$current_date-$current_nao
+check_for_errors
 
 # create dump folder and log errors
 mkdir -p /media/brainwasher/$current_date-$current_nao/dumps 2> $errorFile
