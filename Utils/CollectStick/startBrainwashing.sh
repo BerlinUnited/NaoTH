@@ -14,6 +14,11 @@ current_boot_time=$(</proc/uptime awk '{printf "%d", $1 / 60}')
 # write to systemlog
 logger "Brainwasher:start $current_date, $current_nao"
 
+# play sound
+sudo -u nao /usr/bin/paplay /home/nao/naoqi/Media/usb_stop.wav
+
+naoth stop
+
 # write previous volume to systemlog
 current_volume=$(sudo -u nao pactl list sinks | grep Volume | xargs)
 logger "Brainwasher:$current_volume"
@@ -23,9 +28,7 @@ sudo -u nao pactl set-sink-mute 0 false 2> $errorFile
 sudo -u nao pactl set-sink-volume 0 88% 2>> $errorFile
 logger -f $errorFile
 
-# play sound
-sudo -u nao /usr/bin/paplay /home/nao/naoqi/Media/usb_stop.wav
-
+logger "Brainwasher:copy files"
 # create directory
 mkdir $current_date-$current_nao
 
@@ -46,6 +49,13 @@ logger -f $errorFile
 # remove error log file
 rm $errorFile
 
+# make sure, everything is written
+sync
+
+logger "Brainwasher:start naoth"
+
+naoth restart
+
 logger "Brainwasher:end"
 
-sudo -u nao /usr/bin/paplay /home/nao/naoqi/Media/usb_stop.wav
+sudo -u nao /usr/bin/paplay /home/nao/naoqi/Media/nicknacknuck.wav
