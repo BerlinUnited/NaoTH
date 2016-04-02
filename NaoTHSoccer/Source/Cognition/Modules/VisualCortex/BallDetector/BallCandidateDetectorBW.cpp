@@ -606,7 +606,7 @@ double BallCandidateDetectorBW::blackPointsCount(BallCandidates::PatchYUVClassif
 
   double blackCount = 0;
   for(size_t k = 0; k < p.data.size(); ++k) {
-    if(p.data[k].c != ColorClasses::green && p.data[k].pixel.y < meanWhite*blackWhiteOffset) {
+    if(p.data[k].c != ColorClasses::green && p.data[k].pixel.y + blackWhiteOffset < meanWhite) {
       ++blackCount;
     }
   }
