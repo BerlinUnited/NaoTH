@@ -8,6 +8,7 @@
 #include <string.h>
 
 #include <Tools/Math/Vector2.h>
+#include <Tools/Debug/NaoTHAssert.h>
 
 #ifdef WIN32
 typedef unsigned int uint;
@@ -191,22 +192,22 @@ public:
   }
 
   uint getSumForRect(uint minX, uint minY, uint maxX, uint maxY, uint32_t c) const {
-		//maxX = maxX + 1;
-		//maxY = maxY + 1;
-    minY -= 1;
-    minX -= 1;
+		maxX = maxX + 1;
+		maxY = maxY + 1;
+    //minY -= 1;
+    //minX -= 1;
 
     //assert(minX >= 0);
-        //assert(minY >= 0);
-		assert(maxX < width);
-		assert(maxY < height);
+    //assert(minY >= 0);
+		ASSERT(maxX < width);
+		ASSERT(maxY < height);
 
 		const uint32_t idx1 = (minY * width + minX)*MAX_COLOR;
 		const uint32_t idx2 = (minY * width + maxX)*MAX_COLOR;
 		const uint32_t idx3 = (maxY * width + minX)*MAX_COLOR;
 		const uint32_t idx4 = (maxY * width + maxX)*MAX_COLOR;
 
-		assert(nullptr != integralImage);
+		ASSERT(nullptr != integralImage);
 		const uint32_t *buffer1 = integralImage + idx1;
 		const uint32_t *buffer2 = integralImage + idx2;
 		const uint32_t *buffer3 = integralImage + idx3;
