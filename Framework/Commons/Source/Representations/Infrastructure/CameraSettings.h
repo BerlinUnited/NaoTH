@@ -61,6 +61,13 @@ namespace naoth
     virtual ~CurrentCameraSettings() {}
   };
 
+  class CurrentCameraSettingsTop : public CameraSettings
+  {
+  public:
+    CurrentCameraSettingsTop();
+    virtual ~CurrentCameraSettingsTop() {}
+  };
+
   class CameraSettingsRequest : public ParameterList, public CameraSettings
   {
   public:
@@ -72,18 +79,25 @@ namespace naoth
 
   };
 
-  class CurrentCameraSettingsTop : public CameraSettings
-  {
-  public:
-    CurrentCameraSettingsTop();
-    virtual ~CurrentCameraSettingsTop() {}
-  };
-
   class CameraSettingsRequestTop : public CameraSettingsRequest
   {
   public:
     CameraSettingsRequestTop();
     virtual ~CameraSettingsRequestTop() {}
+
+  };
+
+  //to be used to set camera setting commonly used for both cameras
+  class CommonCameraSettingsRequest : public ParameterList, public CameraSettings
+  {
+  public:
+    CommonCameraSettingsRequest(std::string configName="CommonCameraSettings");
+    virtual ~CommonCameraSettingsRequest() {}
+
+    /** Set to true to query a real CameraSetting from the Nao camera */
+    bool queryCameraSettings;
+
+    bool isActive;
 
   };
 }

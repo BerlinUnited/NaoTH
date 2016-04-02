@@ -102,7 +102,7 @@ void Walk::execute()
   getEngine().copyLegJoints(getMotorJointData().position);
 
 	// set the stiffness for walking
-  for( int i = JointData::RShoulderRoll; i < JointData::numOfJoint; i++) {
+  for( int i = JointData::RShoulderRoll; i < JointData::LHand; i++) {
     getMotorJointData().stiffness[i] = parameters().general.stiffness;
   }
 
@@ -237,12 +237,12 @@ void Walk::planZMP()
   Vector3d zmp;
   if(planningStep.footStep.liftingFoot() == FootStep::NONE)
   {
-    Pose3D finalBody = calculateStableCoMByFeet(planningStep.footStep.end(), getEngine().getParameters().bodyPitchOffset);
+    Pose3D finalBody = calculateStableCoMByFeet(planningStep.footStep.end(), getEngine().getParameters().walk.general.bodyPitchOffset);
     zmp = finalBody.translation;
   } else {
     // TODO: should it be a part of the Step?
     double zmpOffsetY = parameters().hip.ZMPOffsetY + parameters().hip.ZMPOffsetYByCharacter * (1-planningStep.walkRequest.character);
-    double zmpOffsetX = getEngine().getParameters().hipOffsetX;
+    double zmpOffsetX = getEngine().getParameters().walk.general.hipOffsetX;
 
     Vector2d zmp_simple = ZMPPlanner::simplest(planningStep.footStep, zmpOffsetX, zmpOffsetY);
     zmp = Vector3d(zmp_simple.x, zmp_simple.y, parameters().hip.comHeight);
@@ -304,7 +304,7 @@ void Walk::executeStep()
 
   theCoMFeetPose.com.translation = com;
   // TODO: check this
-  theCoMFeetPose.com.rotation = calculateBodyRotation(theCoMFeetPose.feet, getEngine().getParameters().bodyPitchOffset);
+  theCoMFeetPose.com.rotation = calculateBodyRotation(theCoMFeetPose.feet, getEngine().getParameters().walk.general.bodyPitchOffset);
   executingStep.executingCycle++;
 }
 
@@ -354,8 +354,8 @@ RotationMatrix Walk::calculateBodyRotation(const FeetPose& feet, double pitch) c
 
 Pose3D Walk::calculateStableCoMByFeet(FeetPose feet, double pitch) const
 {
-  feet.left.translate(getEngine().getParameters().hipOffsetX, 0, 0);
-  feet.right.translate(getEngine().getParameters().hipOffsetX, 0, 0);
+  feet.left.translate(getEngine().getParameters().walk.general.hipOffsetX, 0, 0);
+  feet.right.translate(getEngine().getParameters().walk.general.hipOffsetX, 0, 0);
   
   Pose3D com;
   com.rotation = calculateBodyRotation(feet, pitch);
@@ -377,7 +377,7 @@ void Walk::updateMotionStatus(MotionStatus& motionStatus) const
   else
   {
     FeetPose lastFeet = stepBuffer.last().footStep.end();
-    Pose3D lastCom = calculateStableCoMByFeet(lastFeet, getEngine().getParameters().bodyPitchOffset);
+    Pose3D lastCom = calculateStableCoMByFeet(lastFeet, getEngine().getParameters().walk.general.bodyPitchOffset);
 
     Pose3D plannedHip = theCoMFeetPose.com.invert() * lastCom;
     Pose3D plannedlFoot = theCoMFeetPose.feet.left.invert() * lastFeet.left;
