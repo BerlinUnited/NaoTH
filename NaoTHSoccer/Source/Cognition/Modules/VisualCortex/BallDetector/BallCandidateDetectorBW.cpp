@@ -314,7 +314,8 @@ void BallCandidateDetectorBW::executeHeuristic()
       if(p.max.y-p.min.y > 20) 
       {
         double blackCount = blackPointsCount(p, params.heuristic.blackDotsWhiteOffset);
-        if(blackCount > params.heuristic.blackDotsMinCount) {
+        double blackInside = getGameColorIntegralImage().getDensityForRect((p.min.x)/4, (p.min.y)/4, (p.max.x)/4, (p.max.y)/4, 2);
+        if(blackInside > params.heuristic.blackDotsMinRatio || blackCount > params.heuristic.blackDotsMinCount) {
           checkBlackDots = true;
           c = ColorClasses::orange;
         }

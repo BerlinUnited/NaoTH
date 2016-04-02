@@ -135,6 +135,7 @@ private:
       PARAMETER_REGISTER(heuristic.blackDotsMinCount) = 8;
       PARAMETER_REGISTER(heuristic.onlyOnField) = false;
       PARAMETER_REGISTER(heuristic.maxMomentAxesRatio) = 2.0;
+       PARAMETER_REGISTER(heuristic.blackDotsMinRatio) = 0.1;
       
 
       PARAMETER_REGISTER(thresholdGradientUV) = 40;
@@ -160,6 +161,7 @@ private:
       double minGreenBelowRatio;
       int blackDotsWhiteOffset;
       int blackDotsMinCount;
+      double blackDotsMinRatio;
       bool onlyOnField;
       double maxMomentAxesRatio;
     } heuristic;

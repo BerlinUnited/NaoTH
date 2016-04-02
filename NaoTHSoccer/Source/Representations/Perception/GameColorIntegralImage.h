@@ -261,7 +261,7 @@ public:
 	//BoundingBox getGrowBBVertical  (BoundingBox bb, ColorMix c, uint stepSize, double densityThreshold=0.5) const;
 
 public:
-  static const uint32_t MAX_COLOR = 2;
+  static const uint32_t MAX_COLOR = 3;
   static const int32_t FACTOR = 4;
 
 private:
