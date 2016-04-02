@@ -291,7 +291,7 @@ void BallCandidateDetectorBW::executeHeuristic()
       
       // check green below
       bool checkGreenBelow = false;
-      if(getImage().isInside(p.max.x, p.max.y+radius/2)) {
+      if(getImage().isInside(p.max.x + GameColorIntegralImage::FACTOR, p.max.y+radius/2 + GameColorIntegralImage::FACTOR)) {
         double greenBelow = getGameColorIntegralImage().getDensityForRect(p.min.x/4, p.max.y/4, p.max.x/4, (p.max.y+radius/2)/4, 1);
         if(greenBelow > params.heuristic.minGreenBelowRatio) {
           c = ColorClasses::pink;
@@ -314,10 +314,15 @@ void BallCandidateDetectorBW::executeHeuristic()
       if(p.max.y-p.min.y > 20) 
       {
         double blackCount = blackPointsCount(p, params.heuristic.blackDotsWhiteOffset);
-        double blackInside = getGameColorIntegralImage().getDensityForRect((p.min.x)/4, (p.min.y)/4, (p.max.x)/4, (p.max.y)/4, 2);
-        if(blackInside > params.heuristic.blackDotsMinRatio || blackCount > params.heuristic.blackDotsMinCount) {
-          checkBlackDots = true;
-          c = ColorClasses::orange;
+
+        // TODO: fix this dependency
+        if(getImage().isInside(p.max.x + GameColorIntegralImage::FACTOR, p.max.y + GameColorIntegralImage::FACTOR)) {
+          double blackInside = getGameColorIntegralImage().getDensityForRect((p.min.x)/4, (p.min.y)/4, (p.max.x)/4, (p.max.y)/4, 2);
+
+          if(blackInside > params.heuristic.blackDotsMinRatio || blackCount > params.heuristic.blackDotsMinCount) {
+            checkBlackDots = true;
+            c = ColorClasses::orange;
+          }
         }
       } 
       else
@@ -609,6 +614,7 @@ double BallCandidateDetectorBW::blackPointsCount(BallCandidates::PatchYUVClassif
 
   if(whiteCount > 0) {
     meanWhite /= whiteCount;
+    return 0;
   }
 
   double blackCount = 0;
