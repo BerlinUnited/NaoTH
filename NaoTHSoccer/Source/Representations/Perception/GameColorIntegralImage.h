@@ -192,13 +192,14 @@ public:
   }
 
   uint getSumForRect(uint minX, uint minY, uint maxX, uint maxY, uint32_t c) const {
-		maxX = maxX + 1;
-		maxY = maxY + 1;
-    //minY -= 1;
-    //minX -= 1;
+		ASSERT(minX > 0);
+    ASSERT(minY > 0);
+    
+    minY -= 1;
+    minX -= 1;
+    //maxX = maxX + 1;
+		//maxY = maxY + 1;
 
-    //assert(minX >= 0);
-    //assert(minY >= 0);
 		ASSERT(maxX < width);
 		ASSERT(maxY < height);
 
