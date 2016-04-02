@@ -12,9 +12,14 @@ current_nao=$(sed -n "2p" $infoFile)
 current_boot_time=$(</proc/uptime awk '{printf "%d", $1 / 60}')
 
 check_for_errors() {
-	if ["$?" -ne 0]
+	if [ "$?" -ne 0 ]
 	then
 		sudo -u nao /usr/bin/paplay /home/nao/naoqi/Media/1.wav
+		# if argument is available - write to systemlog
+		if [ ! -z "$1" ]
+		then
+			logger "$1"
+		fi
 	fi
 }
 
@@ -46,12 +51,12 @@ for f in $(find -L /tmp -type d -name media -prune -o -name "*.log")
 do
 	md5sum $f | sed -e "s/\/tmp\///g" > "$f.md5"
 	cp "$f.md5" $f /media/brainwasher/$current_date-$current_nao/
-	check_for_errors
+	check_for_errors "Brainwasher:ERROR copying $f"
 done
 
 # copy the config directory
 cp -r /home/nao/naoqi/Config /media/brainwasher/$current_date-$current_nao
-check_for_errors
+check_for_errors "Brainwasher:ERROR copying config"
 
 # create dump folder and log errors
 mkdir -p /media/brainwasher/$current_date-$current_nao/dumps 2> $errorFile
@@ -67,10 +72,11 @@ rm $errorFile
 # make sure, everything is written
 sync
 
-logger "Brainwasher:start naoth"
-
-naoth restart
-
-logger "Brainwasher:end"
+# TODO: check where we are ...
+logger $(pwd)
 
 sudo -u nao /usr/bin/paplay /home/nao/naoqi/Media/nicknacknuck.wav
+
+logger "Brainwasher:END, starting naoth"
+
+naoth restart
