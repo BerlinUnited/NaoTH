@@ -22,7 +22,7 @@ public:
   {
     none,
     kick_short,
-    kick_long,
+    //kick_long,
     sidekick_left,
     sidekick_right,
     numOfActions
