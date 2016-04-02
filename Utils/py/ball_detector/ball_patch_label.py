@@ -166,8 +166,8 @@ if __name__ == "__main__":
     file = sys.argv[1]
   #file = 'patches-ball-sidecick'
   
-  patchdata, _ = patchReader.readAllPatchesFromLog('./data/'+file+'.log', type = 0)
-  label_file = './data/'+file+'.json'
+  patchdata, _ = patchReader.readAllPatchesFromLog(file+'.log', type = 0)
+  label_file = file+'.json'
   labels = load_labels(label_file)
   
   

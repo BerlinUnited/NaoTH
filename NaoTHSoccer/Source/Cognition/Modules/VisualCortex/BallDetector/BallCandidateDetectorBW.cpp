@@ -18,11 +18,15 @@
 #include "Tools/ImageProcessing/MaximumScan.h"
 #include "Tools/ImageProcessing/Filter.h"
 
+#include "Tools/Math/Moments2.h"
+
 #include <list>
 
 BallCandidateDetectorBW::BallCandidateDetectorBW()
+  : globalNumberOfKeysClassified(0)
 {
   DEBUG_REQUEST_REGISTER("Vision:BallCandidateDetectorBW:keyPoints", "draw key points extracted from integral image", false);
+  DEBUG_REQUEST_REGISTER("Vision:BallCandidateDetectorBW:extractPatches", "generate YUVC patches", false);
 
   DEBUG_REQUEST_REGISTER("Vision:BallCandidateDetectorBW:drawCandidates", "draw ball candidates", false);
 
@@ -32,6 +36,7 @@ BallCandidateDetectorBW::BallCandidateDetectorBW()
 
   DEBUG_REQUEST_REGISTER("Vision:BallCandidateDetectorBW:drawScanlines", "", false);
   DEBUG_REQUEST_REGISTER("Vision:BallCandidateDetectorBW:drawScanEndPoints", "", false);
+  DEBUG_REQUEST_REGISTER("Vision:BallCandidateDetectorBW:drawSamples", "", false);
 
   getDebugParameterList().add(&params);
 }
@@ -40,6 +45,7 @@ BallCandidateDetectorBW::~BallCandidateDetectorBW()
 {
   getDebugParameterList().remove(&params);
 }
+
 
 bool BallCandidateDetectorBW::execute(CameraInfo::CameraID id)
 {
@@ -51,9 +57,8 @@ bool BallCandidateDetectorBW::execute(CameraInfo::CameraID id)
     return false;
   }
 
-
   best.clear();
-  calculateCandidates(best);
+  calculateKeyPoints(best);
 
   DEBUG_REQUEST("Vision:BallCandidateDetectorBW:keyPoints",
     for(std::list<Best::BallCandidate>::iterator i = best.candidates.begin(); i != best.candidates.end(); ++i) {
@@ -62,11 +67,16 @@ bool BallCandidateDetectorBW::execute(CameraInfo::CameraID id)
     }
   );
 
+  DEBUG_REQUEST("Vision:BallCandidateDetectorBW:extractPatches",
+    extractPatches();
+  );
+
+
   if(params.classifier.cv_svm_histogram)
   {
-    STOPWATCH_START("BallCandidateDetectorBW:neuronalClassification");
-    executeOpenCVModel();
-    STOPWATCH_STOP("BallCandidateDetectorBW:neuronalClassification");
+    STOPWATCH_START("BallCandidateDetectorBW:classifcation");
+    executeOpenCVModel(id);
+    STOPWATCH_STOP("BallCandidateDetectorBW:classifcation");
   }
   else if(params.classifier.basic_svm)
   {
@@ -80,7 +90,6 @@ bool BallCandidateDetectorBW::execute(CameraInfo::CameraID id)
     std::cerr << "no ball detector classifier selected in parameters!" << std::endl;
   }
 
-
   DEBUG_REQUEST("Vision:BallCandidateDetectorBW:drawPercepts",
     for(MultiBallPercept::ConstABPIterator iter = getMultiBallPercept().begin(); iter != getMultiBallPercept().end(); iter++) {
       if((*iter).cameraId == cameraID) {
@@ -92,15 +101,16 @@ bool BallCandidateDetectorBW::execute(CameraInfo::CameraID id)
   return getMultiBallPercept().wasSeen();
 }
 
-void BallCandidateDetectorBW::executeOpenCVModel()
+void BallCandidateDetectorBW::executeOpenCVModel(CameraInfo::CameraID id)
 {
-
+  cv::Ptr<cv::ml::SVM>& histModel = id == CameraInfo::Top ? histModelTop : histModelBottom;
   if(!histModel || histModel->empty())
   {
     // load model from config folder
+    std::string path = id == CameraInfo::Top ? "Config/model_histo_top.dat" : "Config/model_histo_bottom.dat";
     try
     {
-      histModel = cv::Algorithm::load<cv::ml::SVM>("Config/model_histo.dat");
+      histModel = cv::Algorithm::load<cv::ml::SVM>(path);
       assert(histModel->getSupportVectors().rows > 0);
       assert(histModel->isTrained());
       assert(histModel->isClassifier());
@@ -108,48 +118,85 @@ void BallCandidateDetectorBW::executeOpenCVModel()
     catch(cv::Exception ex)
     {
       // ignore
-      std::cerr << "Could not load Config/model_histo.dat" << std::endl;
+      std::cerr << "Could not load " << path << std::endl;
     }
   }
 
   if(histModel && !histModel->empty())
   {
-    for(std::list<Best::BallCandidate>::iterator i = best.candidates.begin(); i != best.candidates.end(); ++i)
+    int maxNumberOfKeys = params.classifier.maxNumberOfKeys;
+    // HACK:
+    if(cameraID == CameraInfo::Top) {
+      maxNumberOfKeys += (params.classifier.maxNumberOfKeys-globalNumberOfKeysClassified)/2;
+    }
+
+    BallCandidates::Patch p(0);
+    //BallCandidates::PatchYUVClassified pq(0);
+
+    // the key with the highest score are at the back
+    int index = 0;
+    for(std::list<Best::BallCandidate>::reverse_iterator i = best.candidates.rbegin(); i != best.candidates.rend(); ++i)
     {
       if(getFieldPercept().getValidField().isInside((*i).center))
       {
+        
         int radius = (int)((*i).radius*1.5 + 0.5);
 
-        BallCandidates::Patch& p = getBallCandidates().nextFreePatch();
+        //BallCandidates::Patch& p = getBallCandidates().nextFreePatch();
         p.min = Vector2i((*i).center.x - radius, (*i).center.y - radius);
         p.max = Vector2i((*i).center.x + radius, (*i).center.y + radius);
         subsampling(p.data, p.min.x, p.min.y, p.max.x, p.max.y);
 
-        bool ballFound = false;
-        cv::Mat wrappedImg(12, 12, CV_8UC1, (void*) p.data.data());
+        Moments2<2> moments;
+        BallCandidates::PatchYUVClassified& pq = getBallCandidates().nextFreePatchYUVClassified();
+        pq.min = Vector2i((*i).center.x - radius, (*i).center.y - radius);
+        pq.max = Vector2i((*i).center.x + radius, (*i).center.y + radius);
 
+        subsampling(pq.data, moments, p.min.x, p.min.y, p.max.x, p.max.y);
+        Vector2d major, minor;
+        moments.getAxes(major, minor);
+        if(minor.abs() < 1 || (major.abs() / minor.abs() > params.classifier.maxMomentAxesRatio)) {
+          continue;
+        }
+
+        DEBUG_REQUEST("Vision:BallCandidateDetectorBW:drawCandidates",
+          Vector2i center( (pq.min+pq.max)/2 );
+          LINE_PX(ColorClasses::red,
+                  (int)(center.x - major.x), 
+                  (int)(center.y - major.y),
+                  (int)(center.x + major.x), 
+                  (int)(center.y + major.y));
+
+          LINE_PX(ColorClasses::yellow,
+                  (int)(center.x - minor.x), 
+                  (int)(center.y - minor.y),
+                  (int)(center.x + minor.x), 
+                  (int)(center.y + minor.y));
+        );
+
+
+        // limit the max amount of evaluated keys
+        if(++index > maxNumberOfKeys) {
+          break;
+        }
+
+        cv::Mat wrappedImg(12, 12, CV_8UC1, (void*) p.data.data());
         cv::Mat in = createHistoFeat(wrappedImg);
 
         cv::Mat out;
         histModel->predict(in, out, 0);
-        if(out.at<float>(0,0) > 0.0f) {
-          ballFound = true;
-          addBallPercept((*i).center, radius);
+        globalNumberOfKeysClassified++;
+        if(out.at<float>(0,0) == 1.0f) { 
+          addBallPercept((*i).center, (*i).radius);
         }
 
         DEBUG_REQUEST("Vision:BallCandidateDetectorBW:drawCandidates",
-          //CANVAS(((cameraID == CameraInfo::Top)?"ImageTop":"ImageBottom"));
-          if(ballFound) {
-            RECT_PX(ColorClasses::orange, (*i).center.x - radius, (*i).center.y - radius,
-              (*i).center.x + radius, (*i).center.y + radius);
-          } else {
-            RECT_PX(ColorClasses::gray, (*i).center.x - radius, (*i).center.y - radius,
-              (*i).center.x + radius, (*i).center.y + radius);
-          }
+          RECT_PX(ColorClasses::yellow, (*i).center.x - radius, (*i).center.y - radius,
+            (*i).center.x + radius, (*i).center.y + radius);
         );
-
       }
     }
+
   } // end if model valid
 }
 
@@ -209,59 +256,98 @@ void BallCandidateDetectorBW::executeSVM()
   );
 }
 
+
 void BallCandidateDetectorBW::executeHeuristic()
 {
+  int maxNumberOfKeys = params.classifier.maxNumberOfKeys;
+  // HACK:
+  if(cameraID == CameraInfo::Top) {
+    maxNumberOfKeys += (params.classifier.maxNumberOfKeys-globalNumberOfKeysClassified)/2;
+  }
+
   std::list<Best::BallCandidate>::iterator best_element = best.candidates.begin();
   std::vector<Vector2i> endPoints;
 
-  for(std::list<Best::BallCandidate>::iterator i = best.candidates.begin(); i != best.candidates.end(); ++i)
+  ColorClasses::Color c = ColorClasses::gray;// debug
+
+  int index = 0;
+  for(std::list<Best::BallCandidate>::reverse_iterator i = best.candidates.rbegin(); i != best.candidates.rend(); ++i)
   {
     if(getFieldPercept().getValidField().isInside((*i).center))
     {
-      int radius = (int)((*i).radius*1.5 + 0.5);
+      c = ColorClasses::yellow; // debug
+      int radius = (int)((*i).radius + 0.5);
 
-      BallCandidates::Patch& p = getBallCandidates().nextFreePatch();
+      // limit the max amount of evaluated keys
+      if(++index > maxNumberOfKeys) {
+        break;
+      }
+
+      Moments2<2> moments;
+      BallCandidates::PatchYUVClassified& p = getBallCandidates().nextFreePatchYUVClassified();
       p.min = Vector2i((*i).center.x - radius, (*i).center.y - radius);
       p.max = Vector2i((*i).center.x + radius, (*i).center.y + radius);
-      subsampling(p.data, p.min.x, p.min.y, p.max.x, p.max.y);
-
-      bool ballFound = false;
+      subsampling(p.data, moments, p.min.x, p.min.y, p.max.x, p.max.y);
       
-      /*
-      int minYpos = 0;
-      unsigned char minY = 255;
-      for(size_t k = 0; k < p.data.size(); ++k) {
-        if(p.data[k] < minY) {
-          minY = p.data[k];
-          minYpos = k;
+      // check green below
+      bool checkGreenBelow = false;
+      if(getImage().isInside(p.max.x, p.max.y+radius/2)) {
+        double greenBelow = getGameColorIntegralImage().getDensityForRect(p.min.x/4, p.max.y/4, p.max.x/4, (p.max.y+radius/2)/4, 1);
+        if(greenBelow > params.heuristic.minGreenBelowRatio) {
+          c = ColorClasses::pink;
+          checkGreenBelow = true;
         }
       }
-      // xi*12 + yi
-      Vector2i minPos( minYpos / 12 - 6, minYpos % 12 - 6);
-      */
 
-      endPoints.clear();
-      Vector2d result = spiderScan((*i).center, endPoints, radius);
+      // check green inside
+      bool checkGreenInside = false;
+      int offsetY = (p.max.y-p.min.y)/4;
+      int offsetX = (p.max.x-p.min.x)/4;
+      double greenInside = getGameColorIntegralImage().getDensityForRect((p.min.x+offsetX)/4, (p.min.y+offsetY)/4, (p.max.x-offsetX)/4, (p.max.y-offsetY)/4, 1);
+      if(greenInside < params.heuristic.maxGreenInsideRatio) {
+        c = ColorClasses::red;
+        checkGreenInside = true;
+      }
 
-      if(result.x > params.minNumberOfJumps) {
-        ballFound = true;
+      // check black dots
+      bool checkBlackDots = false;
+      if(p.max.y-p.min.y > 20) 
+      {
+        double blackCount = blackPointsCount(p, params.heuristic.blackDotsWhiteOffset);
+        if(blackCount > params.heuristic.blackDotsMinCount) {
+          checkBlackDots = true;
+          c = ColorClasses::orange;
+        }
+      } 
+      else
+      {
+        endPoints.clear();
+        Vector2d result = spiderScan((*i).center, endPoints, radius);
+        if(result.x > params.minNumberOfJumps) {
+          c = ColorClasses::orange;
+          checkBlackDots = true;
+        }
+      }
+
+      /*
+      Vector2d major, minor;
+      moments.getAxes(major, minor);
+      if(minor.abs() < 1 || (major.abs() / minor.abs() > params.classifier.maxMomentAxesRatio)) {
+        continue;
+      }*/
+
+      if(checkGreenBelow && checkGreenInside && checkBlackDots) {
         addBallPercept((*i).center, radius);
       }
 
       DEBUG_REQUEST("Vision:BallCandidateDetectorBW:drawCandidates",
-        if(ballFound) {
-          RECT_PX(ColorClasses::orange, (*i).center.x - radius, (*i).center.y - radius,
-            (*i).center.x + radius, (*i).center.y + radius);
-        } else {
-          RECT_PX(ColorClasses::gray, (*i).center.x - radius, (*i).center.y - radius,
-            (*i).center.x + radius, (*i).center.y + radius);
-        }
+        RECT_PX(c, (*i).center.x - radius, (*i).center.y - radius,
+          (*i).center.x + radius, (*i).center.y + radius);
       );
-
     }
   }
 
-}
+} // end executeHeuristic
 
 
 
@@ -276,12 +362,13 @@ void BallCandidateDetectorBW::extractPatches()
       BallCandidates::PatchYUVClassified& q = getBallCandidates().nextFreePatchYUVClassified();
       q.min = Vector2i((*i).center.x - radius, (*i).center.y - radius);
       q.max = Vector2i((*i).center.x + radius, (*i).center.y + radius);
-      subsampling(q.data, q.min.x, q.min.y, q.max.x, q.max.y);
+      Moments2<2> moments;
+      subsampling(q.data, moments, q.min.x, q.min.y, q.max.x, q.max.y);
     }
   }
 }
 
-void BallCandidateDetectorBW::calculateCandidates(Best& best) const
+void BallCandidateDetectorBW::calculateKeyPoints(Best& best) const
 {
   //
   // STEP I: find the maximal height minY to be scanned in the image
@@ -309,9 +396,6 @@ void BallCandidateDetectorBW::calculateCandidates(Best& best) const
   // todo needs a better place
   const int32_t FACTOR = getGameColorIntegralImage().FACTOR;
 
-  double borderRadiusFactor = 0.5;
-  MODIFY("BallCandidateDetectorBW:borderRadiusFactor", borderRadiusFactor);
-
   Vector2i center;
   Vector2i point;
   
@@ -319,12 +403,14 @@ void BallCandidateDetectorBW::calculateCandidates(Best& best) const
   {
     double radius = max( 6.0, estimatedBallRadius(point.x*FACTOR, point.y*FACTOR));
     int size   = (int)(radius*2.0/FACTOR+0.5);
-    int border = (int)(radius*borderRadiusFactor/FACTOR+0.5);
+    int border = (int)(radius*params.keyDetector.borderRadiusFactorClose/FACTOR+0.5);
+    double radiusGuess = radius + radius*params.keyDetector.borderRadiusFactorClose;
 
     // HACK
     if(size < 40/FACTOR) {
-      border = (int)(radius*borderRadiusFactor*4/FACTOR+0.5);
+      border = (int)(radius*params.keyDetector.borderRadiusFactorFar/FACTOR+0.5);
     }
+    border = max( 2, border);
 
     // smalest ball size == 3 => ball size == FACTOR*3 == 12
     if (point.y <= border || point.y+size+border+1 >= (int)getGameColorIntegralImage().getHeight()) {
@@ -335,19 +421,21 @@ void BallCandidateDetectorBW::calculateCandidates(Best& best) const
     for(point.x = border + 1; point.x + size + border+1 < (int)getGameColorIntegralImage().getWidth(); ++point.x)
     {
       int inner = getGameColorIntegralImage().getSumForRect(point.x, point.y, point.x+size, point.y+size, 0);
+      //int green = getGameColorIntegralImage().getSumForRect(point.x, point.y, point.x+size, point.y+size, 1);
       
+      double greenBelow = getGameColorIntegralImage().getDensityForRect(point.x, point.y+size, point.x+size, point.y+size+border, 1);
+
       // && greenPoints(point.x*FACTOR, point.y*FACTOR, (point.x+size)*FACTOR, (point.y+size)*FACTOR) < 0.3
       // at least 50%
-      if (inner*2 > size*size)
+      if (inner*2 > size*size && greenBelow > 0.3)
       {
-        int green = getGameColorIntegralImage().getSumForRect(point.x, point.y, point.x+size, point.y+size, 1);
-        int outer = getGameColorIntegralImage().getSumForRect(point.x-border, point.y-border, point.x+size+border, point.y+size+border, 0);
-        double value = (double)(inner - (outer - inner) - 3*green)/((double)(size+border)*(size+border));
+        int outer = getGameColorIntegralImage().getSumForRect(point.x-border, point.y+size, point.x+size+border, point.y+size+border, 0);
+        double value = (double)(inner - (outer - inner))/((double)(size+border)*(size+border));
 
         center.x = point.x*FACTOR + (int)(radius+0.5);
         center.y = point.y*FACTOR + (int)(radius+0.5);
 
-        best.add(center, radius, value);
+        best.add(center, radiusGuess, value);
       }
     }
   }
@@ -369,7 +457,7 @@ double BallCandidateDetectorBW::greenPoints(int minX, int minY, int maxX, int ma
       greenPoints++;
     }
       
-    DEBUG_REQUEST("Vision:BallDetector:draw_sanity_samples",
+    DEBUG_REQUEST("Vision:BallCandidateDetectorBW:drawSamples",
       if(getFieldColorPercept().greenHSISeparator.isColor(pixel)) {
         POINT_PX(ColorClasses::red, x, y);
       } else {
@@ -407,7 +495,7 @@ void BallCandidateDetectorBW::subsampling(std::vector<unsigned char>& data, int 
   }
 }
 
-void BallCandidateDetectorBW::subsampling(std::vector<BallCandidates::ClassifiedPixel>& data, int x0, int y0, int x1, int y1) const 
+void BallCandidateDetectorBW::subsampling(std::vector<BallCandidates::ClassifiedPixel>& data, Moments2<2>& moments, int x0, int y0, int x1, int y1) const 
 {
   x0 = std::max(0, x0);
   y0 = std::max(0, y0);
@@ -434,6 +522,11 @@ void BallCandidateDetectorBW::subsampling(std::vector<BallCandidates::Classified
 
       if(getFieldColorPercept().greenHSISeparator.noColor(p.pixel)) {
         p.c = (unsigned char)ColorClasses::white;
+        
+        if(p.pixel.y > getFieldColorPercept().greenHSISeparator.getParams().brightnesConeOffset) {
+          moments.add(Vector2i((int)(x + 0.5), (int)(y + 0.5)));
+        }
+      
       } else if(getFieldColorPercept().greenHSISeparator.isChroma(p.pixel)) {
         p.c = (unsigned char)ColorClasses::green;
       } else {
@@ -493,6 +586,32 @@ void BallCandidateDetectorBW::addBallPercept(const Vector2i& center, double radi
     getMultiBallPercept().add(ballPercept);
     getMultiBallPercept().frameInfoWhenBallWasSeen = getFrameInfo();
   }
+}
+
+
+double BallCandidateDetectorBW::blackPointsCount(BallCandidates::PatchYUVClassified& p, double blackWhiteOffset) const
+{
+  double meanWhite = 0;
+  double whiteCount = 0;
+  for(size_t k = 0; k < p.data.size(); ++k) {
+    if(p.data[k].c == ColorClasses::white) {
+      meanWhite += p.data[k].pixel.y;
+      ++whiteCount;
+    }
+  }
+
+  if(whiteCount > 0) {
+    meanWhite /= whiteCount;
+  }
+
+  double blackCount = 0;
+  for(size_t k = 0; k < p.data.size(); ++k) {
+    if(p.data[k].c != ColorClasses::green && p.data[k].pixel.y + blackWhiteOffset < meanWhite) {
+      ++blackCount;
+    }
+  }
+
+  return blackCount;
 }
 
 

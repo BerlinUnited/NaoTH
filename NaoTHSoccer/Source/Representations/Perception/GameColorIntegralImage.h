@@ -216,6 +216,11 @@ public:
 		return sum;
 	}
 
+  double getDensityForRect(uint minX, uint minY, uint maxX, uint maxY, uint32_t c) const {
+		uint count = getSumForRect(minX, minY, maxX, maxY, c);
+		return double(count) / double((maxX-minX)*(maxY-minY));
+	}
+
 	double getDensityForRect(const BoundingBox &bb, uint32_t c) const {
 		uint count = getSumForRect(bb, c);
 		return double(count) / double(bb.getArea());
