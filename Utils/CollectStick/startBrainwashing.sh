@@ -1,6 +1,9 @@
 #!/bin/bash
 
 #INFO: file is executed via root on the nao!
+#		- plays "usb_stop.wav" in the beginning
+#		- plays "1.wav" if a copy-error occurred (game.log, Config/)
+#		- plays "nicknacknuck.wav" at the end
 
 # set file vars
 infoFile="/home/nao/Config/nao.info"
@@ -72,9 +75,7 @@ rm $errorFile
 # make sure, everything is written
 sync
 
-# TODO: check where we are ...
-logger $(pwd)
-
+# needed to play sound before starting naoth! otherwise the sound could get "lost" (no sound)
 sudo -u nao /usr/bin/paplay /home/nao/naoqi/Media/nicknacknuck.wav
 
 logger "Brainwasher:END, starting naoth"
