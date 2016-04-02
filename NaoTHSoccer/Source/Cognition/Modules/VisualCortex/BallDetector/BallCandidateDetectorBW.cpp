@@ -90,7 +90,6 @@ bool BallCandidateDetectorBW::execute(CameraInfo::CameraID id)
     std::cerr << "no ball detector classifier selected in parameters!" << std::endl;
   }
 
-
   DEBUG_REQUEST("Vision:BallCandidateDetectorBW:drawPercepts",
     for(MultiBallPercept::ConstABPIterator iter = getMultiBallPercept().begin(); iter != getMultiBallPercept().end(); iter++) {
       if((*iter).cameraId == cameraID) {
@@ -294,17 +293,27 @@ void BallCandidateDetectorBW::executeHeuristic()
         //continue;
       }
 
-
       Vector2d result = spiderScan((*i).center, endPoints, radius);
 
       if(result.x > params.minNumberOfJumps) {
         addBallPercept((*i).center, radius);
       }
 
-      DEBUG_REQUEST("Vision:BallCandidateDetectorBW:drawCandidates",
-        RECT_PX(ColorClasses::yellow, (*i).center.x - radius, (*i).center.y - radius,
+
+      //DEBUG_REQUEST("Vision:BallCandidateDetectorBW:drawCandidates",
+        double dd = 0.5;
+        MODIFY("Vision:BallCandidateDetectorBW:minGreen",dd);
+        ColorClasses::Color c = ColorClasses::yellow;
+        if(getImage().isInside(p.max.x, p.max.y+radius/2)) {
+          double greenBelow = getGameColorIntegralImage().getDensityForRect(p.min.x/4, p.max.y/4, p.max.x/4, (p.max.y+radius/2)/4, 1);
+          if(greenBelow > dd) {
+            c = ColorClasses::red;
+          }
+        }
+
+        RECT_PX(c, (*i).center.x - radius, (*i).center.y - radius,
           (*i).center.x + radius, (*i).center.y + radius);
-      );
+      //);
     }
   }
 
