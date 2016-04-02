@@ -281,7 +281,6 @@ private void jToggleButtonListActionPerformed(java.awt.event.ActionEvent evt)//G
             fcSaveParametersDialog.setFileFilter(new FileNameExtensionFilter("Config files (*.cfg)", "cfg"));
             // show save dialog
             if(fcSaveParametersDialog.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
-                // TODO: check if file is writeable
 
                 // if selected file has a file extension - use this, otherwise append ".cfg" to the filename
                 File f = (fcSaveParametersDialog.getSelectedFile().getName().lastIndexOf(".") == -1) ? 
@@ -290,8 +289,15 @@ private void jToggleButtonListActionPerformed(java.awt.event.ActionEvent evt)//G
 
                 // check if file already exist and call back (if)
                 if(!f.exists() || (f.exists() && JOptionPane.showConfirmDialog(this, "File exists, overwrite?", "Overwrite File?", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION)) {
-                    // create file and write parameter configuration to this file
-                    this.writeParameterConfig(pli, f);
+                    try {
+                        new FileWriter(f).close(); // trigger exception (if couldn't write)
+                        
+                        // create file and write parameter configuration to this file
+                        this.writeParameterConfig(pli, f);
+                    } catch (IOException ex) {
+                        Logger.getLogger(ParameterPanel.class.getName()).log(Level.SEVERE, null, ex);
+                        JOptionPane.showMessageDialog(null, "Selected file is not writeable!", "Not writeable", JOptionPane.ERROR_MESSAGE);
+                    }
                 }
             }
         }
@@ -318,21 +324,32 @@ private void jToggleButtonListActionPerformed(java.awt.event.ActionEvent evt)//G
             fcSaveParametersDialog.setDialogTitle("Save configuration (All)");
             fcSaveParametersDialog.resetChoosableFileFilters();
             // show save dialog
-            if(fcSaveParametersDialog.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
-                // TODO: check if file is writeable
-                if(JOptionPane.showConfirmDialog(this, "Existing files get overwritten!\nProceed?", "Overwrite Files?", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+            if(fcSaveParametersDialog.showSaveDialog(this) == JFileChooser.APPROVE_OPTION)
+            {
+                if(JOptionPane.showConfirmDialog(this, "Any existing file will be overwritten!\nProceed?", "Overwrite Files?", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION)
+                {
                     // the selected file should be a directory!
                     File d = fcSaveParametersDialog.getSelectedFile();
-                    if(d.isDirectory()) {
-                        // iterate over all listed parameter configurations
-                        int n = cbParameterId.getItemCount();
-                        for (int i = 0; i < n; i++) {
-                            // retrieve the parameter configurations ..
-                            ParameterListItem next = (ParameterListItem) cbParameterId.getItemAt(i);
-                            Plugin.commandExecutor.executeCommand(new ParameterWriterGet(
-                                next,
-                                new File(d.getPath()+File.separator+next.owner+"_"+next.name+".cfg")
-                            ), next.getCommandGET());
+                    if(d.isDirectory())
+                    {
+                        try {
+                            // trigger exception (if couldn't write)
+                            File f = File.createTempFile("tmp_"+Math.random(), ".tmp", d);
+                            f.delete();
+                            // iterate over all listed parameter configurations
+                            int n = cbParameterId.getItemCount();
+                            for (int i = 0; i < n; i++)
+                            {
+                                // retrieve the parameter configurations ..
+                                ParameterListItem next = (ParameterListItem) cbParameterId.getItemAt(i);
+                                Plugin.commandExecutor.executeCommand(new ParameterWriterGet(
+                                    next,
+                                    new File(d.getPath()+File.separator+next.owner+"_"+next.name+".cfg")
+                                ), next.getCommandGET());
+                            }
+                        } catch (IOException ex) {
+                            Logger.getLogger(ParameterPanel.class.getName()).log(Level.SEVERE, null, ex);
+                            JOptionPane.showMessageDialog(null, "Selected directory is not writeable!", "Not writeable", JOptionPane.ERROR_MESSAGE);
                         }
                     } else {
                         JOptionPane.showMessageDialog(null, "The selected file is not a directory!", "Not a directory", JOptionPane.WARNING_MESSAGE);
