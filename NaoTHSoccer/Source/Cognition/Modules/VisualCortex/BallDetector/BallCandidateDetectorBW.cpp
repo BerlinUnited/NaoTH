@@ -289,15 +289,6 @@ void BallCandidateDetectorBW::executeHeuristic()
       subsampling(p.data, p.min.x, p.min.y, p.max.x, p.max.y);
 
       endPoints.clear();
-      if(greenPoints(p.min.x, p.min.y, p.max.x, p.max.y) > 0.3) {
-        //continue;
-      }
-
-      Vector2d result = spiderScan((*i).center, endPoints, radius);
-
-      if(result.x > params.minNumberOfJumps) {
-        addBallPercept((*i).center, radius);
-      }
 
 
       //DEBUG_REQUEST("Vision:BallCandidateDetectorBW:drawCandidates",
@@ -307,9 +298,24 @@ void BallCandidateDetectorBW::executeHeuristic()
         if(getImage().isInside(p.max.x, p.max.y+radius/2)) {
           double greenBelow = getGameColorIntegralImage().getDensityForRect(p.min.x/4, p.max.y/4, p.max.x/4, (p.max.y+radius/2)/4, 1);
           if(greenBelow > dd) {
-            c = ColorClasses::red;
+            c = ColorClasses::pink;
+
+            int offsetY = (p.max.y-p.min.y)/4;
+            int offsetX = (p.max.x-p.min.x)/4;
+            double greenInside = getGameColorIntegralImage().getDensityForRect((p.min.x+offsetX)/4, (p.min.y+offsetY)/4, (p.max.x-offsetX)/4, (p.max.y-offsetY)/4, 1);
+            if(greenInside < 0.3) {
+              c = ColorClasses::red;
+
+              Vector2d result = spiderScan((*i).center, endPoints, radius);
+
+              if(result.x > params.minNumberOfJumps) {
+                addBallPercept((*i).center, radius);
+              }
+            }
           }
         }
+
+        
 
         RECT_PX(c, (*i).center.x - radius, (*i).center.y - radius,
           (*i).center.x + radius, (*i).center.y + radius);
