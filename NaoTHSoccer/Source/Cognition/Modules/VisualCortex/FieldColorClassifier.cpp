@@ -48,6 +48,20 @@ void FieldColorClassifier::execute(const CameraInfo::CameraID id)
   getFieldColorPercept().greenHSISeparator.set(parameters.green);
   getFieldColorPercept().redHSISeparator.set(parameters.red);
 
+
+  // update cache if parameter have changed
+  if(
+       cacheParameter.brightnesConeOffset      != parameters.green.brightnesConeOffset 
+    || cacheParameter.brightnesConeRadiusBlack != parameters.green.brightnesConeRadiusBlack
+    || cacheParameter.brightnesConeRadiusWhite != parameters.green.brightnesConeRadiusWhite
+    || cacheParameter.colorAngleCenter         != parameters.green.colorAngleCenter 
+    || cacheParameter.colorAngleWith           != parameters.green.colorAngleWith
+    ) 
+  {
+    updateCache();
+    cacheParameter = parameters.green;
+  }
+
   DEBUG_REQUEST("Vision:FieldColorClassifier:CamBottom", if(cameraID == CameraInfo::Bottom) { debug(); } );
   DEBUG_REQUEST("Vision:FieldColorClassifier:CamTop", if(cameraID == CameraInfo::Top) { debug(); } );
 }
@@ -103,9 +117,13 @@ void FieldColorClassifier::debug()
       for(unsigned int y = 0; y < getImage().height(); y+=4) {
         getImage().get(x, y, pixel);
 
-        if( getFieldColorPercept().greenHSISeparator.noColor(pixel.y, pixel.u, pixel.v) ) {
-          POINT_PX(ColorClasses::red, x, y);
-        } else if( getFieldColorPercept().greenHSISeparator.isColor(pixel.y, pixel.u, pixel.v) ) {
+        if( getFieldColorPercept().greenHSISeparator.noColor(pixel.y, pixel.u, pixel.v)) {
+          if (pixel.y > parameters.green.brightnesConeOffset) {
+            POINT_PX(ColorClasses::red, x, y);
+          } else {
+            POINT_PX(ColorClasses::yellow, x, y);
+          }
+        } else if( getFieldColorPercept().greenHSISeparator.isColor(pixel.y, pixel.u, pixel.v)) {
           POINT_PX(ColorClasses::green, x, y);
         }
       }
@@ -150,6 +168,21 @@ void FieldColorClassifier::debug()
   );
 
 }//end execute
+
+
+void FieldColorClassifier::updateCache() {
+  for (int y = 0; y < 256; y += 4) {
+    for (int u = 0; u < 256; u += 4) {
+      for (int v = 0; v < 256; v += 4) {
+        if(getFieldColorPercept().greenHSISeparator.noColor(y, u, v)) {
+          getColorTable64().setColorClass(ColorClasses::white,(unsigned char)y, (unsigned char)u, (unsigned char)v);
+        } else if(getFieldColorPercept().greenHSISeparator.isChroma(y, u, v)) {
+          getColorTable64().setColorClass(ColorClasses::green,(unsigned char)y, (unsigned char)u, (unsigned char)v);
+        }
+      }
+    }
+  }
+}
 
 void FieldColorClassifier::draw_UVSeparator(double angleCenter, double angleWidth) const
 {
