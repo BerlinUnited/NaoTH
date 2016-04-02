@@ -125,6 +125,9 @@ private:
       PARAMETER_REGISTER(classifier.maxNumberOfKeys) = 4;
       PARAMETER_REGISTER(classifier.maxMomentAxesRatio) = 2.0;
       
+      PARAMETER_REGISTER(heuristic.maxGreenInsideRatio) = 0.3;
+      PARAMETER_REGISTER(heuristic.minGreenBelowRatio) = 0.5;
+      
 
       PARAMETER_REGISTER(thresholdGradientUV) = 40;
       PARAMETER_REGISTER(minNumberOfJumps) = 4;
@@ -143,6 +146,11 @@ private:
       double borderRadiusFactorClose;
       double borderRadiusFactorFar;
     } keyDetector;
+
+    struct Heuristics {
+      double maxGreenInsideRatio;
+      double minGreenBelowRatio;
+    } heuristic;
 
     int thresholdGradientUV;
     int minNumberOfJumps;
