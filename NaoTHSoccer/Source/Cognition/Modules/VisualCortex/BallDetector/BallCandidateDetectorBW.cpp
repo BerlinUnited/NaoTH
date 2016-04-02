@@ -273,7 +273,7 @@ void BallCandidateDetectorBW::executeHeuristic()
   {
     if(getFieldPercept().getValidField().isInside((*i).center))
     {
-      int radius = (int)((*i).radius*1.5 + 0.5);
+      int radius = (int)((*i).radius + 0.5);
 
       // limit the max amount of evaluated keys
       if(++index > maxNumberOfKeys) {
@@ -374,6 +374,7 @@ void BallCandidateDetectorBW::calculateKeyPoints(Best& best) const
     double radius = max( 6.0, estimatedBallRadius(point.x*FACTOR, point.y*FACTOR));
     int size   = (int)(radius*2.0/FACTOR+0.5);
     int border = (int)(radius*params.keyDetector.borderRadiusFactorClose/FACTOR+0.5);
+    double radiusGuess = radius + radius*params.keyDetector.borderRadiusFactorClose;
 
     // HACK
     if(size < 40/FACTOR) {
@@ -402,7 +403,7 @@ void BallCandidateDetectorBW::calculateKeyPoints(Best& best) const
         center.x = point.x*FACTOR + (int)(radius+0.5);
         center.y = point.y*FACTOR + (int)(radius+0.5);
 
-        best.add(center, radius, value);
+        best.add(center, radiusGuess, value);
       }
     }
   }
