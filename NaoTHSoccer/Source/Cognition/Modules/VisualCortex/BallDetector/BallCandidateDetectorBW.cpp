@@ -392,10 +392,12 @@ void BallCandidateDetectorBW::calculateKeyPoints(Best& best) const
     {
       int inner = getGameColorIntegralImage().getSumForRect(point.x, point.y, point.x+size, point.y+size, 0);
       //int green = getGameColorIntegralImage().getSumForRect(point.x, point.y, point.x+size, point.y+size, 1);
+      
+      double greenBelow = getGameColorIntegralImage().getDensityForRect(point.x, point.y+size, point.x+size, point.y+size+border, 1);
 
       // && greenPoints(point.x*FACTOR, point.y*FACTOR, (point.x+size)*FACTOR, (point.y+size)*FACTOR) < 0.3
       // at least 50%
-      if (inner*2 > size*size)
+      if (inner*2 > size*size && greenBelow > 0.3)
       {
         int outer = getGameColorIntegralImage().getSumForRect(point.x-border, point.y+size, point.x+size+border, point.y+size+border, 0);
         double value = (double)(inner - (outer - inner))/((double)(size+border)*(size+border));
