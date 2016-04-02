@@ -11,6 +11,10 @@ SituationPriorProvider::SituationPriorProvider()
 { 
   lastState = getPlayerInfo().gameData.gameState;
   currentState = getPlayerInfo().gameData.gameState;
+
+  lastGameControllerState = getPlayerInfo().gameData.gameControllerState;
+  currentGameControllerState = getPlayerInfo().gameData.gameControllerState;
+
   walked_after_penalized_or_init = false;
   wasLiftedUp = false;
 }
@@ -29,6 +33,15 @@ void SituationPriorProvider::execute()
     lastState = currentState;
     currentState = getPlayerInfo().gameData.gameState;
   }
+  //Calculate lastGameControllerState
+  if(getPlayerInfo().gameData.gameControllerState != currentGameControllerState){
+    lastGameControllerState = currentGameControllerState;
+    currentGameControllerState = getPlayerInfo().gameData.gameControllerState;
+  }
+  if(currentGameControllerState == GameData::penalized){
+    stateBeforePenalized = lastGameControllerState;
+  }
+
 
   // calculate walked_after_penalized_or_init
   if(currentState == GameData::set || currentState == GameData::initial || currentState == GameData::penalized){
@@ -66,6 +79,14 @@ void SituationPriorProvider::execute()
     }
     
     getSituationPrior().currentPrior = SituationPrior::positionedInSet;
+  }
+  else if(stateBeforePenalized == GameData::set && lastGameControllerState == GameData::penalized && currentGameControllerState == GameData::set){
+          // && wasLiftedUp
+    //should treat Motion in Set Problem
+    getSituationPrior().currentPrior = SituationPrior::set;
+  }
+  else if(stateBeforePenalized == GameData::playing && lastGameControllerState == GameData::penalized && currentGameControllerState == GameData::ready)  {
+    getSituationPrior().currentPrior = SituationPrior::playAfterPenalized;
   }
   //Penalized in Play
   else if(currentState == GameData::playing && lastState == GameData::penalized && !walked_after_penalized_or_init)
