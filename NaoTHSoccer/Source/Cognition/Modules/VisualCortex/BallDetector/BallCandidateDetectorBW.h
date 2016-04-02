@@ -27,6 +27,7 @@
 #include "Representations/Perception/MultiBallPercept.h"
 #include "Representations/Perception/BallCandidates.h"
 #include "Representations/Debug/Stopwatch.h"
+#include "Representations/Modeling/RobotPose.h"
 
 // tools
 #include "Tools/DoubleCamHelpers.h"
@@ -69,6 +70,9 @@ BEGIN_DECLARE_MODULE(BallCandidateDetectorBW)
 
   REQUIRE(BodyContour)
   REQUIRE(BodyContourTop)
+
+  //hack
+  REQUIRE(RobotPose)
   
   PROVIDE(MultiBallPercept)
   PROVIDE(BallCandidates)
@@ -93,6 +97,7 @@ public:
   virtual void execute()
   {
     getMultiBallPercept().reset();
+    globalNumberOfKeysClassified = 0;
 
     // only execute search on top camera if bottom camera did not find anything
     if(!execute(CameraInfo::Bottom))
@@ -114,13 +119,26 @@ private:
   {
     Parameters() : ParameterList("BallCandidateDetectorBW")
     {
+      
+      PARAMETER_REGISTER(keyDetector.borderRadiusFactorClose) = 0.5;
+      PARAMETER_REGISTER(keyDetector.borderRadiusFactorFar) = 0.8;
+
       PARAMETER_REGISTER(classifier.basic_svm) = false;
-      PARAMETER_REGISTER(classifier.cv_svm_histogram) = false;
-      PARAMETER_REGISTER(classifier.heuristic) = true;
+      PARAMETER_REGISTER(classifier.cv_svm_histogram) = true;
+      PARAMETER_REGISTER(classifier.heuristic) = false;
+      PARAMETER_REGISTER(classifier.maxNumberOfKeys) = 4;
+      PARAMETER_REGISTER(classifier.maxMomentAxesRatio) = 2.0;
+      
+      PARAMETER_REGISTER(heuristic.maxGreenInsideRatio) = 0.3;
+      PARAMETER_REGISTER(heuristic.minGreenBelowRatio) = 0.5;
+      PARAMETER_REGISTER(heuristic.blackDotsWhiteOffset) = 110;
+      PARAMETER_REGISTER(heuristic.blackDotsMinCount) = 8;
+      PARAMETER_REGISTER(heuristic.onlyOnField) = false;
+      PARAMETER_REGISTER(heuristic.maxMomentAxesRatio) = 2.0;
+      
 
       PARAMETER_REGISTER(thresholdGradientUV) = 40;
       PARAMETER_REGISTER(minNumberOfJumps) = 4;
-      
       syncWithConfig();
     }
 
@@ -128,14 +146,32 @@ private:
       bool basic_svm;
       bool cv_svm_histogram;
       bool heuristic;
+      int maxNumberOfKeys;
+      double maxMomentAxesRatio;
     } classifier;
+
+    struct KeyDetector {
+      double borderRadiusFactorClose;
+      double borderRadiusFactorFar;
+    } keyDetector;
+
+    struct Heuristics {
+      double maxGreenInsideRatio;
+      double minGreenBelowRatio;
+      int blackDotsWhiteOffset;
+      int blackDotsMinCount;
+      bool onlyOnField;
+      double maxMomentAxesRatio;
+    } heuristic;
 
     int thresholdGradientUV;
     int minNumberOfJumps;
+    
   } params;
 
 
 private:
+  int globalNumberOfKeysClassified;
 
   class Best 
   {
@@ -206,21 +242,23 @@ private:
   } best;
 
 private:
-  void calculateCandidates(Best& best) const;
+  void calculateKeyPoints(Best& best) const;
+  void extractPatches();
+
 
   void subsampling(std::vector<unsigned char>& data, int x0, int y0, int x1, int y1) const;
-  void subsampling(std::vector<BallCandidates::ClassifiedPixel>& data, int x0, int y0, int x1, int y1) const;
+  void subsampling(std::vector<BallCandidates::ClassifiedPixel>& data, Moments2<2>& moments, int x0, int y0, int x1, int y1) const;
 
   double estimatedBallRadius(int x, int y) const;
   void addBallPercept(const Vector2i& center, double radius);
 
   double greenPoints(int minX, int minY, int maxX, int maxY) const;
-  void extractPatches();
-  void executeOpenCVModel();
+  void executeOpenCVModel(CameraInfo::CameraID id);
   void executeSVM();
   void executeHeuristic();
 
 private:
+  double blackPointsCount(BallCandidates::PatchYUVClassified& p, double blackWhiteOffset) const;
   Vector2d spiderScan(const Vector2i& start, std::vector<Vector2i>& endPoints, int max_length) const;
   Vector2d scanForEdges(const Vector2i& start, const Vector2d& direction, std::vector<Vector2i>& points, int max_length) const;
 
@@ -394,7 +432,8 @@ private:
 
   DOUBLE_CAM_PROVIDE(BallCandidateDetectorBW, BallCandidates);
 
-  cv::Ptr<cv::ml::SVM> histModel;
+  cv::Ptr<cv::ml::SVM> histModelBottom;
+  cv::Ptr<cv::ml::SVM> histModelTop;
 };//end class BallCandidateDetectorBW
 
 #endif // _BallCandidateDetectorBW_H_

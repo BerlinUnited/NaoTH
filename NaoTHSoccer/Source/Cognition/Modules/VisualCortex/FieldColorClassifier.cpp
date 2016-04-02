@@ -175,7 +175,11 @@ void FieldColorClassifier::updateCache() {
     for (int u = 0; u < 256; u += 4) {
       for (int v = 0; v < 256; v += 4) {
         if(getFieldColorPercept().greenHSISeparator.noColor(y, u, v)) {
-          getColorTable64().setColorClass(ColorClasses::white,(unsigned char)y, (unsigned char)u, (unsigned char)v);
+          if(y > getFieldColorPercept().greenHSISeparator.getParams().brightnesConeOffset) {
+            getColorTable64().setColorClass(ColorClasses::white,(unsigned char)y, (unsigned char)u, (unsigned char)v);
+          } else {
+            getColorTable64().setColorClass(ColorClasses::black,(unsigned char)y, (unsigned char)u, (unsigned char)v);
+          }
         } else if(getFieldColorPercept().greenHSISeparator.isChroma(y, u, v)) {
           getColorTable64().setColorClass(ColorClasses::green,(unsigned char)y, (unsigned char)u, (unsigned char)v);
         }

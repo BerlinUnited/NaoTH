@@ -47,7 +47,7 @@ public:
     }
 
     bool wasSeen() const {
-        return percepts.size() != 0;
+      return !percepts.empty();
     }
 
     std::vector<MultiBallPercept::BallPercept>::const_iterator begin() const {

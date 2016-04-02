@@ -15,7 +15,7 @@ def getMarker(x,y,c):
     pos = (x*(patch_size[0]+1)-1,y*(patch_size[1]+1)-1)
     return ptc.Rectangle( pos, width=patch_size[0]+1, height=patch_size[1]+1, alpha=0.3, color=c)
 
-def shuffle_and_split(X, labels, ratio):
+def shuffle_and_split(X, labels, splitRatio=0.75, ballNonBallRatio=-1.0):
 
     # combine both to the same matrix so shuffling does not disconnect the samples and labels
     labelsAsMatrix = np.reshape(labels, (-1,1))
@@ -25,13 +25,27 @@ def shuffle_and_split(X, labels, ratio):
     np.random.shuffle(Y)
 
     # split into two
-    splitIdx = Y.shape[0] * ratio
+    splitIdx = Y.shape[0] * splitRatio
 
     Y1 = Y[0:splitIdx,:]
     Y2 = Y[splitIdx+1:,:]
 
     X1, labels1 = np.hsplit(Y1, [X.shape[1]])
     X2, labels2 = np.hsplit(Y2, [X.shape[1]])
+
+    if ballNonBallRatio >= 1.0:
+        nonBallIdx_train = [idx for idx in range(len(labels1)) if labels1[idx] == 0]
+        ballIdx_train = [idx for idx in range(len(labels1)) if labels1[idx] == 1]
+        numberOfBallTrain = len(ballIdx_train)
+        numberOfNonBallTrain = len(nonBallIdx_train)
+
+        if (numberOfBallTrain*ballNonBallRatio) < numberOfNonBallTrain:
+            # limit the number of non-balls
+            allowedNumNonBall = int(numberOfBallTrain*ballNonBallRatio)
+            limitedNonBalls = nonBallIdx_train[:allowedNumNonBall]
+            validTrainIdx = np.hstack([limitedNonBalls, ballIdx_train])
+            X1 = X1[validTrainIdx,:]
+            labels1 =labels1[validTrainIdx, :]
 
     return X1, labels1, X2, labels2
 
@@ -64,6 +78,20 @@ def calc_precision_recall(X, goldstd_response, actual_response):
 
     return precision, recall, errorIdx
 
+def img_from_patch(p):
+    if len(p) == 4*12*12:
+        a = np.array(p[0::4]).astype(float)
+        a = np.transpose(np.reshape(a, patch_size))
+    else:
+        a = np.array(p).astype(float)
+        a = np.transpose(np.reshape(a, patch_size))
+    return a
+    
+def colors_from_patch(p):
+    a = np.array(p[3::4]).astype(np.uint8)
+    a = np.transpose(np.reshape(a, patch_size))
+    return a
+
 def show_evaluation(X, goldstd_response, actual_response):
 
     image = np.zeros(((patch_size[1]+1)*show_size[1], (patch_size[0]+1)*show_size[0]))
@@ -80,7 +108,7 @@ def show_evaluation(X, goldstd_response, actual_response):
     j = 0
     marker = []
     for i in shownErrorIdx:
-        a = np.transpose(np.reshape(X[i,:], (12,12)))
+        a = img_from_patch(X[i,:])
         y = j // show_size[0]
         x = j % show_size[0]
         image[y*13:y*13+12,x*13:x*13+12] = a
@@ -102,12 +130,53 @@ def show_evaluation(X, goldstd_response, actual_response):
     plt.yticks(())
     plt.show()
 
-def load_multi_data(args, camera=-1):
+def show_errors_asfeat(X, goldstd_response, actual_response):  
+  
+  image = np.zeros(((patch_size[1]+1)*show_size[1], (patch_size[0]+1)*show_size[0]))
+  
+  errorIdx = list()
+  # count
+  for i in range(0,X.shape[0]):
+    if actual_response[i] != goldstd_response[i]:
+        errorIdx.append(i)	
+      
+  # show errors
+  maxShownErrors = min(len(errorIdx), show_size[0]*show_size[1])
+  shownErrorIdx = errorIdx[0:maxShownErrors]
+  
+  j = 0
+  for i in shownErrorIdx:
+    a = image_from_patch(X[i,:])
+    y = j // show_size[0]
+    x = j % show_size[0]
+    
+    # apply feature
+    f = feat.histo(a)
+    
+    image[y*13:y*13+12,x*13:x*13+12] = np.reshape(f, (12,12))
+    j += 1
+    
+  plt.imshow(image, cmap=plt.cm.gray, interpolation='nearest')
+
+  plt.xticks(())
+  plt.yticks(())
+  plt.show()
+  
+
+def load_data_from_folder(rootdir, camera=-1, type=0):
+    locations = list()
+    for subdir, dirs, files in os.walk(rootdir):
+        for file in files:
+            if file.endswith(".json"):
+                locations.append(os.path.join(subdir, file[:-len(".json")]))
+    return load_multi_data(locations, camera, type)
+
+def load_multi_data(args, camera=-1, type=0):
     X = None
     labels = None
 
     for a in args:
-        X_local, labels_local = load_data(a.strip(), camera)
+        X_local, labels_local = load_data(a.strip(), camera, type)
         if X == None:
             X = X_local
         else:
@@ -119,16 +188,17 @@ def load_multi_data(args, camera=-1):
             labels = np.append(labels, labels_local)
     return X, labels
 
-def load_data(file, camera=-1):
-    patches, cameraIdx = patchReader.readAllPatchesFromLog('./data/'+file+'.log')
-
+def load_data(file, camera=-1, type=0):
+    
+    patches, cameraIdx = patchReader.readAllPatchesFromLog(file+'.log', type)
+   
     cameraIdx = np.asarray(cameraIdx)
     cameraIdx = np.reshape(cameraIdx, (len(cameraIdx), ))
 
     X = np.array(patches)
     labels = np.negative(np.ones((X.shape[0],)))
 
-    label_file = './data/'+file+'.json'
+    label_file = file+'.json'
     if os.path.isfile(label_file):
         with open(label_file, 'r') as data_file:
             ball_labels = json.load(data_file)

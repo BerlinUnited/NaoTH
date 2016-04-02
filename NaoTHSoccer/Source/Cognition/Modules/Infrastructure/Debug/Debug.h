@@ -28,6 +28,7 @@
 #include "Representations/Modeling/KinematicChain.h"
 #include "Representations/Modeling/BallModel.h"
 #include "Representations/Perception/CameraMatrix.h"
+#include "Representations/Perception/MultiBallPercept.h"
 
 #include <DebugCommunication/DebugCommandManager.h>
 #include "Tools/Debug/Logger.h"
@@ -75,6 +76,7 @@ BEGIN_DECLARE_MODULE(Debug)
   PROVIDE(CameraInfo)
   PROVIDE(CameraInfoTop)
 
+  REQUIRE(MultiBallPercept)
   
 //  PROVIDE(ColorTable64)
 //  PROVIDE(ColorClassificationModel)
@@ -100,10 +102,16 @@ public:
     {
       PARAMETER_REGISTER(test) = 20;
 
+      PARAMETER_REGISTER(log.onlyWhenBallwasSeen) = false;
+
       syncWithConfig();
     }
 
     double test;
+
+    struct Log {
+      bool onlyWhenBallwasSeen;
+    } log;
 
   } parameter;
 
