@@ -21,7 +21,7 @@ Simulation::Simulation()
   DEBUG_REQUEST_REGISTER("Simulation:ObstacleLine","ObstacleLine",false);
   DEBUG_REQUEST_REGISTER("Simulation:ActionTarget:None","DrawNone",false);
   DEBUG_REQUEST_REGISTER("Simulation:ActionTarget:Short","DrawShortKick",false);
-  DEBUG_REQUEST_REGISTER("Simulation:ActionTarget:Long","DrawLongKick",false);
+  //DEBUG_REQUEST_REGISTER("Simulation:ActionTarget:Long","DrawLongKick",false);
   DEBUG_REQUEST_REGISTER("Simulation:ActionTarget:Left","DrawLeftKick",false);
   DEBUG_REQUEST_REGISTER("Simulation:ActionTarget:Right","DrawRightKick",false);
 
@@ -261,7 +261,8 @@ void Simulation::simulateConsequences(
 
 size_t Simulation::decide_smart(const std::vector<ActionResults>& actionsConsequences ) const
 {
-  std::vector<size_t> bestActions;
+  std::vector<size_t> acceptableActions;
+  std::vector<size_t> goalActions;
 
   for(size_t i=0; i<action_local.size(); i++)
   {
@@ -278,38 +279,44 @@ size_t Simulation::decide_smart(const std::vector<ActionResults>& actionsConsequ
     if(score <= max(0.0, theParameters.good_threshold_percentage)) {
       continue;
     }
-    
+    //all actions which are not too bad
+    acceptableActions.push_back(i);
+  }
+  for(size_t i=0; i < acceptableActions.size(); i++)
+  {
+    const ActionResults& results = actionsConsequences[acceptableActions[i]];
+
     // there is no other action to compare yet
-    if(bestActions.empty()) {
-      bestActions.push_back(i);
+    if(goalActions.empty()) {
+      goalActions.push_back(i);
       continue;
     }
 
     // the actio with the highest chance of scoring the goal is the best
-    if(actionsConsequences[bestActions.front()].categorie(OPPGOAL) < results.categorie(OPPGOAL)) {
-      bestActions.clear();
-      bestActions.push_back(i);
+    if(actionsConsequences[goalActions.front()].categorie(OPPGOAL) < results.categorie(OPPGOAL)) {
+      goalActions.clear();
+      goalActions.push_back(i);
       continue;
     }
 
-    if(actionsConsequences[bestActions.front()].categorie(OPPGOAL) == results.categorie(OPPGOAL)) {
-      bestActions.push_back(i);
+    if(actionsConsequences[goalActions.front()].categorie(OPPGOAL) == results.categorie(OPPGOAL)) {
+      goalActions.push_back(i);
       continue;
     }
   }
-
   // there is a clear decision
-  if(bestActions.empty()) {
-    return 0;
-  } else if(bestActions.size() == 1) {
-    return bestActions.front();
+  if(acceptableActions.empty()) {
+    return 0; //assumes 0 is the turn action
+  }
+  if(actionsConsequences[goalActions.front()].categorie(OPPGOAL) > theParameters.minGoalParticles){
+    return goalActions.front();
   }
 
   // choose the best action by potential field
   size_t best_action = 0;
   double bestValue = std::numeric_limits<double>::max(); // assuming potential is [0.0, inf]
   
-  for(std::vector<size_t>::const_iterator it = bestActions.begin(); it != bestActions.end(); ++it)
+  for(std::vector<size_t>::const_iterator it = acceptableActions.begin(); it != acceptableActions.end(); ++it)
   {
     const ActionResults& results = actionsConsequences[*it];
 
@@ -345,10 +352,10 @@ Vector2d Simulation::Action::predict(const Vector2d& ball) const
   return ball + noisyAction;
 }
 
-// exp(x) = lim(n->inf) (1 + x/n)^n
-// for n=256 about 10x faster than exp but around 2.5 % off on x in [-10, 10]
 double Simulation::exp256(const double& x) const
 {
+  // exp(x) = lim(n->inf) (1 + x/n)^n
+  // for n=256 about 10x faster than exp but around 2.5 % off on x in [-10, 10]
   double y = 1.0 + x / 256.0;
   y *= y;
   y *= y;
@@ -440,8 +447,6 @@ void Simulation::draw_potential_field() const
   }
 }//end draw_closest_points
 
-
-
 void Simulation::draw_actions(const std::vector<ActionResults>& actionsConsequences )const {
 
 DEBUG_REQUEST("Simulation:ActionTarget:None",
@@ -503,40 +508,12 @@ DEBUG_REQUEST("Simulation:ActionTarget:Short",
 		}
 	}
 );
-DEBUG_REQUEST("Simulation:ActionTarget:Long",
-    Color color;
-    color = Color(232.0/255,43.0/255,0.0/255,0.7); //red - kick_long
-		std::vector<CategorizedBallPosition>::const_iterator ballPosition = actionsConsequences[2].positions().begin();
-		for(; ballPosition != actionsConsequences[2].positions().end(); ++ballPosition)
-		{
-			if(ballPosition->cat() == INFIELD)
-			{
-			  FIELD_DRAWING_CONTEXT;
-        Vector2d ball = getRobotPose() * ballPosition->pos();
-        PEN("000000", 1);
-			  FILLOVAL(ball.x, ball.y, 50, 50);
-			  PEN(color, 1);			  
-			  FILLOVAL(ball.x, ball.y, 40, 40);
-			} else if(ballPosition->cat() == OPPGOAL)
-			{
-			  FIELD_DRAWING_CONTEXT;
-			  PEN("336600", 1);
-			  Vector2d ball = getRobotPose() * ballPosition->pos();
-			  FILLOVAL(ball.x, ball.y, 50, 50);
-			} else
-			{
-			  FIELD_DRAWING_CONTEXT;			  
-			  Vector2d ball = getRobotPose() * ballPosition->pos();			  
-        PEN("66FF33", 1);
-        FILLOVAL(ball.x, ball.y, 50, 50);
-			}
-		}
-);
+
 DEBUG_REQUEST("Simulation:ActionTarget:Left",
     Color color;
     color = Color(0.0/255,13.0/255,191.0/255,0.7); //blue - sidekick_left
-		std::vector<CategorizedBallPosition>::const_iterator ballPosition = actionsConsequences[3].positions().begin();
-		for(; ballPosition != actionsConsequences[3].positions().end(); ++ballPosition)
+		std::vector<CategorizedBallPosition>::const_iterator ballPosition = actionsConsequences[2].positions().begin();
+		for(; ballPosition != actionsConsequences[2].positions().end(); ++ballPosition)
 		{
 			if(ballPosition->cat() == INFIELD)
 			{
@@ -564,8 +541,8 @@ DEBUG_REQUEST("Simulation:ActionTarget:Left",
 DEBUG_REQUEST("Simulation:ActionTarget:Right",
   Color color;
   color = Color(0.0/255,191.0/255,51.0/255,0.7);//green - sidekick_right
-	std::vector<CategorizedBallPosition>::const_iterator ballPosition = actionsConsequences[4].positions().begin();
-	for(; ballPosition != actionsConsequences[4].positions().end(); ++ballPosition)
+	std::vector<CategorizedBallPosition>::const_iterator ballPosition = actionsConsequences[3].positions().begin();
+	for(; ballPosition != actionsConsequences[3].positions().end(); ++ballPosition)
 	{
 		if(ballPosition->cat() == INFIELD)
 		{

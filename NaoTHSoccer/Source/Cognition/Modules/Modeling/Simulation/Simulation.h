@@ -93,15 +93,16 @@ public:
       PARAMETER_REGISTER(kick_short.angle) = 8.454482265522328;
       PARAMETER_REGISTER(kick_short.angle_std) = 6.992268841997358;
 
-      PARAMETER_REGISTER(kick_long.speed) = 1020;
-      PARAMETER_REGISTER(kick_long.speed_std) = 150;
-      PARAMETER_REGISTER(kick_long.angle) = 8.454482265522328;
-      PARAMETER_REGISTER(kick_long.angle_std) = 6.992268841997358;
+      //PARAMETER_REGISTER(kick_long.speed) = 1020;
+      //PARAMETER_REGISTER(kick_long.speed_std) = 150;
+      //PARAMETER_REGISTER(kick_long.angle) = 8.454482265522328;
+      //PARAMETER_REGISTER(kick_long.angle_std) = 6.992268841997358;
 
       PARAMETER_REGISTER(friction) = 0.0275;
 
       PARAMETER_REGISTER(good_threshold_percentage) = 0.85;
-      PARAMETER_REGISTER(numParticles) = 30; 
+      PARAMETER_REGISTER(numParticles) = 30;
+      PARAMETER_REGISTER(minGoalParticles) = 9;
       
       syncWithConfig();
     }
@@ -113,6 +114,7 @@ public:
     double friction;
     double good_threshold_percentage;
     double numParticles;
+    double minGoalParticles;
 
   } theParameters;
 
