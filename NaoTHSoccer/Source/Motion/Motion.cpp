@@ -125,6 +125,7 @@ void Motion::init(naoth::ProcessInterface& platformInterface, const naoth::Platf
   platformInterface.registerInputChanel(getCameraMatrixOffset());
   platformInterface.registerInputChanel(getHeadMotionRequest());
   platformInterface.registerInputChanel(getMotionRequest());
+  //platformInterface.registerInputChanel(getBodyState());
 
   std::cout << "[Motion] register end" << std::endl;
 }//end init
