@@ -9,6 +9,8 @@
 #define __BodyState_h_
 
 #include "Tools/DataStructures/Printable.h"
+//#include <Messages/Representations.pb.h>
+//#include <google/protobuf/io/zero_copy_stream_impl.h>
 
 class BodyState : public naoth::Printable
 {
@@ -76,7 +78,6 @@ public:
   // timestamp when any of the feet states changed last time
   unsigned int foot_state_time;
 
-
   // the maximal temperature for each leg
   double temperatureLeftLeg;
   double temperatureRightLeg;
@@ -86,12 +87,38 @@ public:
 
   virtual void print(std::ostream& stream) const
   {
-    stream << "fall_down_state = " << getName(fall_down_state) << std::endl;
-    stream << "fall_down_state_time = " << fall_down_state_time << std::endl;
-    stream << "standByLeftFoot = " << standByLeftFoot << std::endl;
-    stream << "standByRightFoot = " << standByRightFoot << std::endl;
-    stream << "foot_state_time = " << foot_state_time << std::endl;
+      stream << "fall_down_state = " << getName(fall_down_state) << std::endl;
+      stream << "fall_down_state_time = " << fall_down_state_time << std::endl;
+      stream << "standByLeftFoot = " << standByLeftFoot << std::endl;
+      stream << "standByRightFoot = " << standByRightFoot << std::endl;
+      stream << "foot_state_time = " << foot_state_time << std::endl;
+      stream << "isLiftedUp = " << isLiftedUp << std::endl;
   }//end print
+
 };
+
+/*namespace naoth
+{
+template<>
+class Serializer<BodyState>
+{
+public:
+    static void serialize(const BodyState& representation, std::ostream& stream){
+        naothmessages::BodyState message;
+
+        message.set_isliftedup(representation.isLiftedUp);
+
+        google::protobuf::io::OstreamOutputStream buf(&stream);
+        message.SerializePartialToZeroCopyStream(&buf);
+    }
+
+    static void deserialize(std::istream& stream, BodyState& representation){
+        naothmessages::BodyState message;
+        google::protobuf::io::IstreamInputStream buf(&stream);
+        message.ParseFromZeroCopyStream(&buf);
+        representation.isLiftedUp = message.isliftedup();
+    }
+};
+}*/
 
 #endif// __BodyState_h_

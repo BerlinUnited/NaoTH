@@ -79,6 +79,8 @@ private:
 
     FrameInfo lastFrameInfo;
 
+    void updateCool();
+    void updateNormal();
 private:
     std::vector<ExtendedKalmanFilter4d> filter;
     std::vector<ExtendedKalmanFilter4d>::const_iterator bestModel;
@@ -124,15 +126,22 @@ private:
 
             //PARAMETER_REGISTER(ballMass) = 0.026;
             PARAMETER_REGISTER(c_RR) = 0.0245;
-            PARAMETER_REGISTER(area95Threshold) = 1000*1000;
+            PARAMETER_REGISTER(area95Threshold) = 1000*1000*M_PI;
 
             //thresholds for association functions
             PARAMETER_REGISTER(euclidThreshold) = Math::fromDegrees(10);
             PARAMETER_REGISTER(mahalanobisThreshold) = Math::fromDegrees(10);
             PARAMETER_REGISTER(maximumLikelihoodThreshold) = 0.0005;
 
+            //AssymetricalBoolFilte parameters
+            PARAMETER_REGISTER(g0) = 0.01;
+            PARAMETER_REGISTER(g1) = 0.1;
+
             syncWithConfig();
         }
+
+        double g0;
+        double g1;
 
         double processNoiseStdQ00;
         double processNoiseStdQ01;

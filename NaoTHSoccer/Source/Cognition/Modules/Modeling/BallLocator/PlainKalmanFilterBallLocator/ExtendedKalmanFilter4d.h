@@ -23,7 +23,7 @@
 
 #include "MeasurementFunctions.h"
 
-struct Ellipse2d{
+struct Ellipse2d {
     double angle;
     double minor;
     double major;
@@ -93,6 +93,36 @@ private:
 
     Ellipse2d ellipse_location;
     Ellipse2d ellipse_velocity;
+
+public:
+  //HACK: todo put it in a separate file
+  class AssymetricalBoolFilter
+  {
+  private:
+    double g0;
+    double g1;
+    double state;
+
+  public:
+    AssymetricalBoolFilter(double g0, double g1) : g0(g0), g1(g1), state(0.0) 
+    {}
+
+    void setParameter(double g0, double g1) {
+      this->g0 = g0; this->g1 = g1;
+    }
+
+    void update(bool v) {
+      state += v ? g1*(1-state) : -g0*state;
+    }
+
+    double value() {
+      return state;
+    }
+  };
+
+  AssymetricalBoolFilter ballSeenFilter;
+  bool trust_the_ball;
+
 };
 
 #endif // EXTENDEDKALMANFILTER4D_H

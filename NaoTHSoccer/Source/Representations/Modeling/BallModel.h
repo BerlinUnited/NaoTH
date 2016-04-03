@@ -21,7 +21,8 @@ class BallModel : public naoth::Printable
 public:
   BallModel()
     :
-      valid(false)
+      valid(false),
+      knows(false)
     {}
 
   ~BallModel(){}
@@ -42,6 +43,8 @@ public:
 
   // algorithmical calidity of the model: true => the ball locator was able to compute a ball model
   bool valid;
+
+  bool knows;
 
 private:
 
