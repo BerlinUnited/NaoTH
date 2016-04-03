@@ -24,6 +24,10 @@ struct UpdateAssociationFunction{
             threshold = new_threshold;
         }
 
+        double getThreshold() const {
+          return threshold;
+        }
+
         virtual void determineBestPredictor(std::vector<ExtendedKalmanFilter4d>& filter, const Eigen::Vector2d& z, const Measurement_Function_H& h){
             score = initialValue();
             bestPredictor = filter.begin();

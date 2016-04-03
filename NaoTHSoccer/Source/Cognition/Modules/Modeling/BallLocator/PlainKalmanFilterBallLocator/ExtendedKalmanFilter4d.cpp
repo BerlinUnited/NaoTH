@@ -4,7 +4,9 @@ ExtendedKalmanFilter4d::ExtendedKalmanFilter4d(const naoth::FrameInfo& frameInfo
     updated(false),
     lastUpdateFrame(frameInfo),
     createFrame(frameInfo),
-    x(state)
+    x(state),
+    ballSeenFilter(0.01, 0.1), // some default params
+    trust_the_ball(false)
 {
     Eigen::Matrix2d q;
     q = processNoiseStdSingleDimension.cwiseProduct(processNoiseStdSingleDimension);
@@ -27,6 +29,8 @@ ExtendedKalmanFilter4d::ExtendedKalmanFilter4d(const naoth::FrameInfo& frameInfo
 
     x_pre = x;
     x_corr = x;
+
+    updateEllipses();
 }
 
 ExtendedKalmanFilter4d::~ExtendedKalmanFilter4d()
