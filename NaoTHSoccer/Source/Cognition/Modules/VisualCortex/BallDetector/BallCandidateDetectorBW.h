@@ -135,8 +135,9 @@ private:
       PARAMETER_REGISTER(heuristic.blackDotsMinCount) = 8;
       PARAMETER_REGISTER(heuristic.onlyOnField) = false;
       PARAMETER_REGISTER(heuristic.maxMomentAxesRatio) = 2.0;
-       PARAMETER_REGISTER(heuristic.blackDotsMinRatio) = 0.1;
-      
+      PARAMETER_REGISTER(heuristic.blackDotsMinRatio) = 0.1;
+      PARAMETER_REGISTER(heuristic.minBlackDetectionSize) = 20;
+      PARAMETER_REGISTER(heuristic.minBallSizeForSVM) = 20;
 
       PARAMETER_REGISTER(thresholdGradientUV) = 40;
       PARAMETER_REGISTER(minNumberOfJumps) = 4;
@@ -164,6 +165,9 @@ private:
       double blackDotsMinRatio;
       bool onlyOnField;
       double maxMomentAxesRatio;
+
+      int minBlackDetectionSize;
+      int minBallSizeForSVM;
     } heuristic;
 
     int thresholdGradientUV;
@@ -246,7 +250,7 @@ private:
 private:
   void calculateKeyPoints(Best& best) const;
   void extractPatches();
-
+  bool cvClassifyPatch(BallCandidates::Patch& p);
 
   void subsampling(std::vector<unsigned char>& data, int x0, int y0, int x1, int y1) const;
   void subsampling(std::vector<BallCandidates::ClassifiedPixel>& data, Moments2<2>& moments, int x0, int y0, int x1, int y1) const;
