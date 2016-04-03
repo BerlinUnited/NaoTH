@@ -134,59 +134,66 @@ void PlainKalmanFilterBallLocator::execute()
         }*/
 
         // closest model
-        bestModel = filter.begin();
-        double evalue = sqrt(Math::sqr(bestModel->getState()(0)) + Math::sqr(bestModel->getState()(2)));
+        bestModel = filter.end();
+        double evalue = 0;
+
         for(std::vector<ExtendedKalmanFilter4d>::const_iterator iter = ++filter.begin(); iter != filter.end(); ++iter){
             if(iter->trust_the_ball) {
+
               double temp = sqrt(Math::sqr(iter->getState()(0)) + Math::sqr(iter->getState()(2)));
-              if(temp < evalue) {
-                  evalue = temp;
+              if(bestModel == filter.end() || temp < evalue){
                   bestModel = iter;
+                  evalue = temp;
               }
             }
         }
 
-        const Eigen::Vector4d& x = (*bestModel).getState();
+        if (bestModel == filter.end()) {
+            getBallModel().valid = false;
+            getBallModel().knows = false;
+        } else {
+            const Eigen::Vector4d& x = (*bestModel).getState();
 
-        // set ball model representation
-        getBallModel().position.x = x(0);
-        getBallModel().position.y = x(2);
-        getBallModel().speed.x = x(1);
-        getBallModel().speed.y = x(3);
+            // set ball model representation
+            getBallModel().position.x = x(0);
+            getBallModel().position.y = x(2);
+            getBallModel().speed.x = x(1);
+            getBallModel().speed.y = x(3);
 
-        // set preview ball model representation
-        const Pose3D& lFoot = getKinematicChain().theLinks[KinematicChain::LFoot].M;
-        const Pose3D& rFoot = getKinematicChain().theLinks[KinematicChain::RFoot].M;
+            // set preview ball model representation
+            const Pose3D& lFoot = getKinematicChain().theLinks[KinematicChain::LFoot].M;
+            const Pose3D& rFoot = getKinematicChain().theLinks[KinematicChain::RFoot].M;
 
-        Pose2D lFootPose(lFoot.rotation.getZAngle(), lFoot.translation.x, lFoot.translation.y);
-        Pose2D rFootPose(rFoot.rotation.getZAngle(), rFoot.translation.x, rFoot.translation.y);
+            Pose2D lFootPose(lFoot.rotation.getZAngle(), lFoot.translation.x, lFoot.translation.y);
+            Pose2D rFootPose(rFoot.rotation.getZAngle(), rFoot.translation.x, rFoot.translation.y);
 
-        Vector2d ballLeftFoot  = lFootPose/getBallModel().position;
-        Vector2d ballRightFoot = rFootPose/getBallModel().position;
+            Vector2d ballLeftFoot  = lFootPose/getBallModel().position;
+            Vector2d ballRightFoot = rFootPose/getBallModel().position;
 
-        getBallModel().positionPreview = getMotionStatus().plannedMotion.hip / getBallModel().position;
-        getBallModel().positionPreviewInLFoot = getMotionStatus().plannedMotion.lFoot / ballLeftFoot;
-        getBallModel().positionPreviewInRFoot = getMotionStatus().plannedMotion.rFoot / ballRightFoot;
+            getBallModel().positionPreview = getMotionStatus().plannedMotion.hip / getBallModel().position;
+            getBallModel().positionPreviewInLFoot = getMotionStatus().plannedMotion.lFoot / ballLeftFoot;
+            getBallModel().positionPreviewInRFoot = getMotionStatus().plannedMotion.rFoot / ballRightFoot;
 
-        getBallModel().setFrameInfoWhenBallWasSeen((*bestModel).getLastUpdateFrame());
+            getBallModel().setFrameInfoWhenBallWasSeen((*bestModel).getLastUpdateFrame());
 
-        valid = true;
-        getBallModel().valid = valid;
-        getBallModel().knows = bestModel->trust_the_ball;
+            valid = true;
+            getBallModel().valid = valid;
+            getBallModel().knows = bestModel->trust_the_ball;
 
-        // future
-        const int BALLMODEL_MAX_FUTURE_SECONDS = 11;
-        getBallModel().futurePosition.resize(BALLMODEL_MAX_FUTURE_SECONDS);
+            // future
+            const int BALLMODEL_MAX_FUTURE_SECONDS = 11;
+            getBallModel().futurePosition.resize(BALLMODEL_MAX_FUTURE_SECONDS);
 
-        getBallModel().futurePosition[0] = getBallModel().position;
-        ExtendedKalmanFilter4d filter(*bestModel);
-        for(size_t i=1; i < getBallModel().futurePosition.size(); i++)
-        {
-          predict(filter, 1.0); // predict 1s in the future
+            getBallModel().futurePosition[0] = getBallModel().position;
+            ExtendedKalmanFilter4d filter(*bestModel);
+            for(size_t i=1; i < getBallModel().futurePosition.size(); i++)
+            {
+              predict(filter, 1.0); // predict 1s in the future
 
-          const Eigen::Vector4d& x = (*bestModel).getState();
-          Vector2d futurePosition;
-          getBallModel().futurePosition[i] = Vector2d(x(0), x(2));
+              const Eigen::Vector4d& x = (*bestModel).getState();
+              Vector2d futurePosition;
+              getBallModel().futurePosition[i] = Vector2d(x(0), x(2));
+            }
         }
     }
 
