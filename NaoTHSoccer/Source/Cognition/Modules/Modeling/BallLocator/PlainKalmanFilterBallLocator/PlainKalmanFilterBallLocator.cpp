@@ -172,6 +172,7 @@ void PlainKalmanFilterBallLocator::execute()
 
         valid = true;
         getBallModel().valid = valid;
+        getBallModel().knows = bestModel->trust_the_ball;
 
         // future
         const int BALLMODEL_MAX_FUTURE_SECONDS = 11;

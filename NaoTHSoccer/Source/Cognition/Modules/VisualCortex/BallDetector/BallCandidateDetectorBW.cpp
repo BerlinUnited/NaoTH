@@ -20,6 +20,8 @@
 
 #include "Tools/Math/Moments2.h"
 
+
+
 #include <list>
 
 BallCandidateDetectorBW::BallCandidateDetectorBW()
@@ -200,6 +202,44 @@ void BallCandidateDetectorBW::executeOpenCVModel(CameraInfo::CameraID id)
   } // end if model valid
 }
 
+bool BallCandidateDetectorBW::cvClassifyPatch(BallCandidates::Patch& p)
+{
+  cv::Ptr<cv::ml::SVM>& histModel = cameraID == CameraInfo::Top ? histModelTop : histModelBottom;
+  if(!histModel || histModel->empty())
+  {
+    // load model from config folder
+    std::string path = cameraID == CameraInfo::Top ? "Config/model_histo_top.dat" : "Config/model_histo_bottom.dat";
+    try
+    {
+
+      histModel = cv::Algorithm::load<cv::ml::SVM>(path);
+      assert(histModel->getSupportVectors().rows > 0);
+      assert(histModel->isTrained());
+      assert(histModel->isClassifier());
+    }
+    catch(cv::Exception ex)
+    {
+      // ignore
+      std::cerr << "Could not load " << path << std::endl;
+    }
+  }
+
+  if(histModel && !histModel->empty())
+  {
+    cv::Mat wrappedImg(12, 12, CV_8UC1, (void*) p.data.data());
+    cv::Mat in = createHistoFeat(wrappedImg);
+
+    cv::Mat out;
+    histModel->predict(in, out, 0);
+    if(out.at<float>(0,0) == 1.0f) {
+      return true;
+    }
+  } // end if model valid
+
+  return false;
+}
+
+
 void BallCandidateDetectorBW::executeSVM()
 {
   std::list<Best::BallCandidate>::iterator best_element = best.candidates.begin();
@@ -271,6 +311,7 @@ void BallCandidateDetectorBW::executeHeuristic()
   ColorClasses::Color c = ColorClasses::gray;// debug
 
   int index = 0;
+  int svmIndex = 0;
   for(std::list<Best::BallCandidate>::reverse_iterator i = best.candidates.rbegin(); i != best.candidates.rend(); ++i)
   {
     if(getFieldPercept().getValidField().isInside((*i).center))
@@ -289,9 +330,9 @@ void BallCandidateDetectorBW::executeHeuristic()
       p.max = Vector2i((*i).center.x + radius, (*i).center.y + radius);
       subsampling(p.data, moments, p.min.x, p.min.y, p.max.x, p.max.y);
       
-      // check green below
+      // (1) check green below
       bool checkGreenBelow = false;
-      if(getImage().isInside(p.max.x, p.max.y+radius/2)) {
+      if(getImage().isInside(p.max.x, p.max.y+radius/2) && getImage().isInside(p.min.x - GameColorIntegralImage::FACTOR, p.min.y - GameColorIntegralImage::FACTOR)) {
         double greenBelow = getGameColorIntegralImage().getDensityForRect(p.min.x/4, p.max.y/4, p.max.x/4, (p.max.y+radius/2)/4, 1);
         if(greenBelow > params.heuristic.minGreenBelowRatio) {
           c = ColorClasses::pink;
@@ -299,7 +340,7 @@ void BallCandidateDetectorBW::executeHeuristic()
         }
       }
 
-      // check green inside
+      // (2) check green inside
       bool checkGreenInside = false;
       int offsetY = (p.max.y-p.min.y)/4;
       int offsetX = (p.max.x-p.min.x)/4;
@@ -309,27 +350,36 @@ void BallCandidateDetectorBW::executeHeuristic()
         checkGreenInside = true;
       }
 
-      // check black dots
+      // (3) check black dots
       bool checkBlackDots = false;
-      if(p.max.y-p.min.y > 20) 
+      if(p.max.y-p.min.y > params.heuristic.minBlackDetectionSize) 
       {
         double blackCount = blackPointsCount(p, params.heuristic.blackDotsWhiteOffset);
-        if(blackCount > params.heuristic.blackDotsMinCount) {
-          checkBlackDots = true;
-          c = ColorClasses::orange;
+
+        // TODO: fix this dependency
+        if(getImage().isInside(p.min.x - GameColorIntegralImage::FACTOR, p.min.y - GameColorIntegralImage::FACTOR)) {
+          double blackInside = getGameColorIntegralImage().getDensityForRect((p.min.x)/4, (p.min.y)/4, (p.max.x)/4, (p.max.y)/4, 2);
+
+          if(blackInside > params.heuristic.blackDotsMinRatio || blackCount > params.heuristic.blackDotsMinCount) {
+            checkBlackDots = true;
+            c = ColorClasses::orange;
+          }
         }
       } 
-      else
-      {
-        endPoints.clear();
-        Vector2d result = spiderScan((*i).center, endPoints, radius);
-        if(result.x > params.minNumberOfJumps) {
-          c = ColorClasses::orange;
-          checkBlackDots = true;
-        }
+      else if(p.max.y-p.min.y > params.heuristic.minBallSizeForSVM && svmIndex < max(maxNumberOfKeys/2, 1)) {
+          BallCandidates::Patch p(0);
+          radius = (int)((*i).radius*1.2 + 0.5);
+          p.min = Vector2i((*i).center.x - radius, (*i).center.y - radius);
+          p.max = Vector2i((*i).center.x + radius, (*i).center.y + radius);
+          subsampling(p.data, p.min.x, p.min.y, p.max.x, p.max.y);
+          ++svmIndex;
+          
+          if(cvClassifyPatch(p)) {
+            checkBlackDots = true;
+          }
       }
 
-      // check distribution
+      // (4) check distribution
       bool checkAxes = false;
       Vector2d major, minor;
       moments.getAxes(major, minor);
@@ -338,7 +388,8 @@ void BallCandidateDetectorBW::executeHeuristic()
         checkAxes = true;
       }
 
-      if(checkGreenBelow && checkGreenInside && checkBlackDots && checkAxes) {
+      if(checkGreenBelow && checkGreenInside  && checkAxes && checkBlackDots) 
+      {
         addBallPercept((*i).center, radius);
       }
 
@@ -419,7 +470,6 @@ void BallCandidateDetectorBW::calculateKeyPoints(Best& best) const
       continue;
     }
     
-
     for(point.x = border + 1; point.x + size + border+1 < (int)getGameColorIntegralImage().getWidth(); ++point.x)
     {
       int inner = getGameColorIntegralImage().getSumForRect(point.x, point.y, point.x+size, point.y+size, 0);
@@ -608,6 +658,8 @@ double BallCandidateDetectorBW::blackPointsCount(BallCandidates::PatchYUVClassif
 
   if(whiteCount > 0) {
     meanWhite /= whiteCount;
+  } else {
+    return 0;
   }
 
   double blackCount = 0;

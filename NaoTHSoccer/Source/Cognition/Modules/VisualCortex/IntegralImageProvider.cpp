@@ -62,10 +62,13 @@ void IntegralImageProvider::integralBild()
         ++akk[0];
       } else if (c == ColorClasses::green){
         ++akk[1];
+      } else if(c == ColorClasses::black) {
+        ++akk[2];
       }
 
       curRowPtr[0] = akk[0] + prevRowPtr[0];
       curRowPtr[1] = akk[1] + prevRowPtr[1];
+      curRowPtr[2] = akk[2] + prevRowPtr[2];
 
       curRowPtr  += MAX_COLOR;
       prevRowPtr += MAX_COLOR;
@@ -112,10 +115,13 @@ void IntegralImageProvider::integralBildBottom()
         ++akk[0];
       } else if (c == ColorClasses::green || getBodyContour().isOccupied(p)){
         ++akk[1];
+      } else if(c == ColorClasses::black) {
+        ++akk[2];
       }
 
       curRowPtr[0] = akk[0] + prevRowPtr[0];
       curRowPtr[1] = akk[1] + prevRowPtr[1];
+      curRowPtr[2] = akk[2] + prevRowPtr[2];
 
       curRowPtr  += MAX_COLOR;
       prevRowPtr += MAX_COLOR;

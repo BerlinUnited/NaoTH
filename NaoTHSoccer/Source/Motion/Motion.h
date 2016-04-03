@@ -51,6 +51,8 @@
 #include "Tools/Debug/DebugParameterList.h"
 #include "Tools/Debug/DebugModify.h"
 
+//#include <Representations/Modeling/BodyState.h>
+
 #include <Tools/DataStructures/ParameterList.h>
 
 BEGIN_DECLARE_MODULE(Motion)
@@ -67,6 +69,7 @@ BEGIN_DECLARE_MODULE(Motion)
   PROVIDE(OdometryData) // hack
   REQUIRE(InertialModel)
   REQUIRE(CalibrationData)
+  //REQUIRE(BodyState)
 
   PROVIDE(CameraMatrix)// TODO:strange...
   PROVIDE(CameraMatrixTop)// TODO:strange...
@@ -99,6 +102,7 @@ BEGIN_DECLARE_MODULE(Motion)
   PROVIDE(HeadMotionRequest)
   PROVIDE(MotionRequest)
   PROVIDE(BodyStatus)
+  //PROVIDE(BodyState)
 END_DECLARE_MODULE(Motion)
 
 
