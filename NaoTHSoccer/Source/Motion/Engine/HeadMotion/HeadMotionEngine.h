@@ -72,7 +72,7 @@ private:
     {
       
       PARAMETER_REGISTER(max_velocity_deg_in_second_fast) = 60;
-      PARAMETER_REGISTER(max_velocity_deg_in_second_slow) = 120;
+      PARAMETER_REGISTER(max_velocity_deg_in_second_slow) = 90;
       PARAMETER_REGISTER(cutting_velocity) = 40;
       
       syncWithConfig();
