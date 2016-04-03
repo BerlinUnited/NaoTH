@@ -73,16 +73,15 @@ void FieldDetector::execute(CameraInfo::CameraID id)
   }
   else if(getScanLineEdgelPercept().endPoints.size() > 0)
   {
-    vector<Vector2i > points;//(getScanLineEdgelPercept().endPoints.size());
+    vector<Vector2i> points;
 
     for(size_t i = 0; i < getScanLineEdgelPercept().endPoints.size(); i++)
     {
-      const Vector2i& p = getScanLineEdgelPercept().endPoints[i].posInImage;
-      if(p.y < (int) getImage().height() - 6)
+      const ScanLineEdgelPercept::EndPoint& p = getScanLineEdgelPercept().endPoints[i];
+      if(p.greenFound && p.posInImage.y < (int) getImage().height() - 6)
       {
-        points.push_back(p);
+        points.push_back(p.posInImage);
       }
-      //points[i] = getScanLineEdgelPercept().endPoints[i].posInImage;
     }
 
     // move the outer points
@@ -138,15 +137,16 @@ void FieldDetector::execute(CameraInfo::CameraID id)
     // sort points by x value
     sort(points.begin(), points.end(), this->myVecCompareX);
 
+    /*
     // remove points on the edge of the BodyContour
     std::vector<size_t> badPoints;
     for(size_t i = 2; i+2 < points.size(); i++)
     {
       if(points[i].y > 0)
       {
-        Vector2i dummyPoint = points[i];
-        dummyPoint.y += 6;
-        if(getBodyContour().isOccupied(dummyPoint))
+        //Vector2i dummyPoint = points[i];
+        //dummyPoint.y += 6;
+        //if(getBodyContour().isOccupied(dummyPoint))
         {
           badPoints.push_back(i);
         }
@@ -159,8 +159,11 @@ void FieldDetector::execute(CameraInfo::CameraID id)
         // badPoints are ordered so the small indices are removed first
         points.erase(points.begin() + (badPoints[i] - i));
       }
-    }
+    }*/
+
+
     // check outliers but keep first and last point in any case
+    std::vector<size_t> badPoints;
     for(size_t nLoop = 0; nLoop < 5; nLoop++)
     {
       badPoints.clear();

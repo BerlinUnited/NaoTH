@@ -38,6 +38,10 @@ private:
 public:
     MultiBallPercept(){}
 
+    const std::vector<MultiBallPercept::BallPercept>& getPercepts() const {
+      return percepts;
+    }
+
     void add(MultiBallPercept::BallPercept& percept){
         percepts.push_back(percept);
     }

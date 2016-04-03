@@ -1,6 +1,7 @@
 #include "PlainKalmanFilterBallLocator.h"
 
 #include <Eigen/Eigenvalues>
+#include "Tools/Association.h"
 
 PlainKalmanFilterBallLocator::PlainKalmanFilterBallLocator():
      epsilon(10e-6),
@@ -75,76 +76,26 @@ void PlainKalmanFilterBallLocator::execute()
 
     doDebugRequestBeforUpdate();
 
-    // measurement
-    for(MultiBallPercept::ConstABPIterator iter = getMultiBallPercept().begin(); iter != getMultiBallPercept().end(); iter++) {
+    // Heinrich
+    //updateNormal();
+    updateCool();
 
-        Eigen::Vector2d z;
-        Vector2d p;
+    // Heinrich: update the "ball seen values"
+    for(std::vector<ExtendedKalmanFilter4d>::iterator iter = filter.begin(); iter != filter.end(); ++iter){
+      bool updated = iter->getLastUpdateFrame().getFrameNumber() == getFrameInfo().getFrameNumber();
+      (*iter).ballSeenFilter.update(updated);
+      (*iter).trust_the_ball = (*iter).ballSeenFilter.value() > ((*iter).trust_the_ball?0.3:0.7);
 
-        // set correct camera matrix and info in functional
-        if((*iter).cameraId == CameraInfo::Bottom)
-        {
-            //PLOT("PlainKalmanFilterBallLocator:Measurement:Bottom:horizontal", z(0));
-            //PLOT("PlainKalmanFilterBallLocator:Measurement:Bottom:vertical",   z(1));
-
-            h.camMat  = getCameraMatrix();
-            h.camInfo = getCameraInfo();
-        }
-        else 
-        {
-            //PLOT("PlainKalmanFilterBallLocator:Measurement:Top:horizontal", z(0));
-            //PLOT("PlainKalmanFilterBallLocator:Measurement:Top:vertical",   z(1));
-
-            h.camMat  = getCameraMatrixTop();
-            h.camInfo = getCameraInfoTop();
-        }
-
-        // tansform measurement into angles
-        Vector2d angles = CameraGeometry::pixelToAngles(h.camInfo,(*iter).centerInImage.x,(*iter).centerInImage.y);
-        z << angles.x, angles.y;
-
-        // needed if a new filter has to be created
-        p = (*iter).positionOnField;
-
-        // find best matching filter
-        updateAssociationFunction->determineBestPredictor(filter, z, h);
-
-        std::vector<ExtendedKalmanFilter4d>::iterator bestPredictor = updateAssociationFunction->getBestPredictor();
-
-        bool allowJustOneModel = false;
-        DEBUG_REQUEST("PlainKalmanFilterBallLocator:allow_just_one_model",
-            allowJustOneModel = true;
-        );
-
-        // if no suitable filter found create a new one
-        if((!allowJustOneModel && !updateAssociationFunction->inRange()) || bestPredictor == filter.end())
-        {
-            Eigen::Vector4d newState;
-            newState << p.x, 0, p.y, 0;
-            filter.push_back(ExtendedKalmanFilter4d(getFrameInfo(), newState, processNoiseStdSingleDimension, measurementNoiseCovariances, initialStateStdSingleDimension));
-        }
-        else
-        {
-            DEBUG_REQUEST("PlainKalmanFilterBallLocator:draw_assignment",
-                FIELD_DRAWING_CONTEXT;
-                PEN("FF0000", 10);
-                const Eigen::Vector4d state = (*bestPredictor).getState();
-                LINE(p.x,p.y,state(0),state(2));
-                TEXT_DRAWING((p.x+state(0))/2,(p.y+state(2))/2,updateAssociationFunction->getScore());
-            );
-
-            // debug stuff -> should be in a DEBUG_REQUEST
-            DEBUG_REQUEST("PlainKalmanFilterBallLocator:plot_prediction_error",
-                Eigen::Vector2d prediction_error;
-                prediction_error = z - (*bestPredictor).getStateInMeasurementSpace(h);
-
-                PLOT("PlainKalmanFilterBallLocator:Innovation:x", prediction_error(0));
-                PLOT("PlainKalmanFilterBallLocator:Innovation:y", prediction_error(1));
-            );
-
-            (*bestPredictor).update(z,h,getFrameInfo());
-        }
-    }// end for
+      FIELD_DRAWING_CONTEXT;
+      if((*iter).trust_the_ball) {
+        PEN("00FF00", 10);
+      } else {
+        PEN("FF0000", 10);
+      }
+      const Eigen::Vector4d& state = (*iter).getState();
+      CIRCLE( state(0), state(2), (*iter).ballSeenFilter.value()*1000);
+        
+    }
 
 
     // delete some filter if they are to bad
@@ -223,6 +174,156 @@ void PlainKalmanFilterBallLocator::execute()
 
     lastFrameInfo     = getFrameInfo();
     lastRobotOdometry = getOdometryData();
+}
+
+void PlainKalmanFilterBallLocator::updateNormal() 
+{
+  // measurement
+    for(MultiBallPercept::ConstABPIterator iter = getMultiBallPercept().begin(); iter != getMultiBallPercept().end(); iter++) {
+
+        Eigen::Vector2d z;
+        Vector2d p;
+
+        // set correct camera matrix and info in functional
+        if((*iter).cameraId == CameraInfo::Bottom)
+        {
+            //PLOT("PlainKalmanFilterBallLocator:Measurement:Bottom:horizontal", z(0));
+            //PLOT("PlainKalmanFilterBallLocator:Measurement:Bottom:vertical",   z(1));
+
+            h.camMat  = getCameraMatrix();
+            h.camInfo = getCameraInfo();
+        }
+        else 
+        {
+            //PLOT("PlainKalmanFilterBallLocator:Measurement:Top:horizontal", z(0));
+            //PLOT("PlainKalmanFilterBallLocator:Measurement:Top:vertical",   z(1));
+
+            h.camMat  = getCameraMatrixTop();
+            h.camInfo = getCameraInfoTop();
+        }
+
+        // tansform measurement into angles
+        Vector2d angles = CameraGeometry::pixelToAngles(h.camInfo,(*iter).centerInImage.x,(*iter).centerInImage.y);
+        z << angles.x, angles.y;
+
+        // needed if a new filter has to be created
+        p = (*iter).positionOnField;
+
+        // find best matching filter
+        updateAssociationFunction->determineBestPredictor(filter, z, h);
+
+        std::vector<ExtendedKalmanFilter4d>::iterator bestPredictor = updateAssociationFunction->getBestPredictor();
+
+        bool allowJustOneModel = false;
+        DEBUG_REQUEST("PlainKalmanFilterBallLocator:allow_just_one_model",
+            allowJustOneModel = true;
+        );
+
+        // if no suitable filter found create a new one
+        if((!allowJustOneModel && !updateAssociationFunction->inRange()) || bestPredictor == filter.end())
+        {
+            Eigen::Vector4d newState;
+            newState << p.x, 0, p.y, 0;
+            filter.push_back(ExtendedKalmanFilter4d(getFrameInfo(), newState, processNoiseStdSingleDimension, measurementNoiseCovariances, initialStateStdSingleDimension));
+        }
+        else
+        {
+            DEBUG_REQUEST("PlainKalmanFilterBallLocator:draw_assignment",
+                FIELD_DRAWING_CONTEXT;
+                PEN("FF0000", 10);
+                const Eigen::Vector4d state = (*bestPredictor).getState();
+                LINE(p.x,p.y,state(0),state(2));
+                TEXT_DRAWING((p.x+state(0))/2,(p.y+state(2))/2,updateAssociationFunction->getScore());
+            );
+
+            // debug stuff -> should be in a DEBUG_REQUEST
+            DEBUG_REQUEST("PlainKalmanFilterBallLocator:plot_prediction_error",
+                Eigen::Vector2d prediction_error;
+                prediction_error = z - (*bestPredictor).getStateInMeasurementSpace(h);
+
+                PLOT("PlainKalmanFilterBallLocator:Innovation:x", prediction_error(0));
+                PLOT("PlainKalmanFilterBallLocator:Innovation:y", prediction_error(1));
+            );
+
+            (*bestPredictor).update(z,h,getFrameInfo());
+        }
+    }// end for
+}
+
+
+void PlainKalmanFilterBallLocator::updateCool() 
+{
+  // update by percepts
+  // A ~ goal posts
+  // B ~ hypotheses
+  Assoziation sensorAssoziation(getMultiBallPercept().getPercepts().size(), filter.size());
+
+  int i = 0;
+  for(MultiBallPercept::ConstABPIterator iter = getMultiBallPercept().begin(); iter != getMultiBallPercept().end(); iter++) 
+  {
+      // set correct camera matrix and info in functional
+      if((*iter).cameraId == CameraInfo::Bottom) {
+          h.camMat  = getCameraMatrix();
+          h.camInfo = getCameraInfo();
+      } else {
+          h.camMat  = getCameraMatrixTop();
+          h.camInfo = getCameraInfoTop();
+      }
+
+      // tansform measurement into angles
+      Vector2d angles = CameraGeometry::pixelToAngles(h.camInfo,(*iter).centerInImage.x,(*iter).centerInImage.y);
+      Eigen::Vector2d z;
+      z << angles.x, angles.y;
+
+      int x = 0;
+      for(std::vector<ExtendedKalmanFilter4d>::iterator iter = filter.begin(); iter != filter.end(); ++iter)
+      {
+        double confidence = updateAssociationFunction->associationScore(*iter, z, h);
+
+        // store best association for measurement
+        if(confidence > updateAssociationFunction->getThreshold() &&
+          confidence > sensorAssoziation.getW4A(i) && 
+          confidence > sensorAssoziation.getW4B(x))
+        {
+          sensorAssoziation.addAssociation(i, x, confidence);
+        }
+        x++;
+      }
+      i++;
+  }
+
+  i = 0;
+  for(MultiBallPercept::ConstABPIterator iter = getMultiBallPercept().begin(); iter != getMultiBallPercept().end(); iter++) 
+  {
+    int x = sensorAssoziation.getB4A(i); // get hypothesis for measurement
+    if (x != -1)
+    {
+      // set correct camera matrix and info in functional
+      if((*iter).cameraId == CameraInfo::Bottom) {
+          h.camMat  = getCameraMatrix();
+          h.camInfo = getCameraInfo();
+      } else {
+          h.camMat  = getCameraMatrixTop();
+          h.camInfo = getCameraInfoTop();
+      }
+
+      // tansform measurement into angles
+      Vector2d angles = CameraGeometry::pixelToAngles(h.camInfo,(*iter).centerInImage.x,(*iter).centerInImage.y);
+      Eigen::Vector2d z;
+      z << angles.x, angles.y;
+
+      filter[x].update(z,h,getFrameInfo());
+    }
+    else
+    {
+      Vector2d p = (*iter).positionOnField;
+      Eigen::Vector4d newState;
+      newState << p.x, 0, p.y, 0;
+      filter.push_back(ExtendedKalmanFilter4d(getFrameInfo(), newState, processNoiseStdSingleDimension, measurementNoiseCovariances, initialStateStdSingleDimension));
+    }
+    i++;
+  }
+  
 }
 
 void PlainKalmanFilterBallLocator::predict(ExtendedKalmanFilter4d& filter, double dt) const
