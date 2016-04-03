@@ -80,4 +80,4 @@ sudo -u nao /usr/bin/paplay /home/nao/naoqi/Media/nicknacknuck.wav
 
 logger "Brainwasher:END, starting naoth"
 
-naoth restart
+naoth start
