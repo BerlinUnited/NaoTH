@@ -133,8 +133,15 @@ private:
             PARAMETER_REGISTER(mahalanobisThreshold) = Math::fromDegrees(10);
             PARAMETER_REGISTER(maximumLikelihoodThreshold) = 0.0005;
 
+            //AssymetricalBoolFilte parameters
+            PARAMETER_REGISTER(g0) = 0.01;
+            PARAMETER_REGISTER(g1) = 0.1;
+
             syncWithConfig();
         }
+
+        double g0;
+        double g1;
 
         double processNoiseStdQ00;
         double processNoiseStdQ01;
