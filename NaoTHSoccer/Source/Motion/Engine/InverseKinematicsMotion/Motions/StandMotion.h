@@ -127,7 +127,7 @@ StandMotion()
   void execute()
   {
     //ugly
-    bodyStateProvider.execute(getBodyState(),getInertialSensorData(),getFrameInfo(),getFSRData());
+    //bodyStateProvider.execute(getBodyState(),getInertialSensorData(),getFrameInfo(),getFSRData());
 
     InverseKinematic::HipFeetPose c;
 

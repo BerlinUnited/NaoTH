@@ -9,8 +9,7 @@
 #define __BodyState_h_
 
 #include "Tools/DataStructures/Printable.h"
-//#include <Messages/Representations.pb.h>
-//#include <google/protobuf/io/zero_copy_stream_impl.h>
+#include "Tools/DataStructures/Serializer.h"
 
 class BodyState : public naoth::Printable
 {
@@ -97,28 +96,16 @@ public:
 
 };
 
-/*namespace naoth
+namespace naoth
 {
-template<>
-class Serializer<BodyState>
-{
-public:
-    static void serialize(const BodyState& representation, std::ostream& stream){
-        naothmessages::BodyState message;
+    template<>
+    class Serializer<BodyState>
+    {
+    public:
+        static void serialize(const BodyState& representation, std::ostream& stream);
+        static void deserialize(std::istream& stream, BodyState& representation);
+    };
+}
 
-        message.set_isliftedup(representation.isLiftedUp);
-
-        google::protobuf::io::OstreamOutputStream buf(&stream);
-        message.SerializePartialToZeroCopyStream(&buf);
-    }
-
-    static void deserialize(std::istream& stream, BodyState& representation){
-        naothmessages::BodyState message;
-        google::protobuf::io::IstreamInputStream buf(&stream);
-        message.ParseFromZeroCopyStream(&buf);
-        representation.isLiftedUp = message.isliftedup();
-    }
-};
-}*/
 
 #endif// __BodyState_h_
