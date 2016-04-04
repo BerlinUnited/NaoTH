@@ -4,8 +4,7 @@
 #include "Tools/Association.h"
 
 PlainKalmanFilterBallLocator::PlainKalmanFilterBallLocator():
-     epsilon(10e-6),
-     valid(false)
+     epsilon(10e-6)
 {
     // Modify number of models
     DEBUG_REQUEST_REGISTER("PlainKalmanFilterBallLocator:remove_all_models",     "remove all models",                                                             false);
@@ -30,7 +29,7 @@ PlainKalmanFilterBallLocator::PlainKalmanFilterBallLocator():
     // Parameter Related Debug Requests
     DEBUG_REQUEST_REGISTER("PlainKalmanFilterBallLocator:reloadParameters",          "reloads the kalman filter parameters from the kfParameter object", false);
 
-    DEBUG_REQUEST_REGISTER("PlainKalmanFilterBallLocator:trust_the_ball", "..", false);
+    DEBUG_REQUEST_REGISTER("PlainKalmanFilterBallLocator:draw_trust_the_ball", "..", false);
 
     h.ball_height = 32.5;
 
@@ -49,18 +48,33 @@ PlainKalmanFilterBallLocator::~PlainKalmanFilterBallLocator()
 /*--- !!! sometimes nan filters !!! ---*/
 void PlainKalmanFilterBallLocator::execute()
 {
+  // allways reset the model first
+  getBallModel().reset();
 
-    if(getPlayerInfo().gameData.gameState == GameData::ready || getBodyState().isLiftedUp) {
-        getBallModel().valid = false;
-        filter.clear();
-
-        return;
-    }
+  // HACK: no updates in ready or when lifted
+  if(getPlayerInfo().gameData.gameState == GameData::ready || getBodyState().isLiftedUp) {
+    filter.clear();
+    return;
+  }
 
 
     DEBUG_REQUEST("PlainKalmanFilterBallLocator:remove_all_models",
         filter.clear();
     );
+
+    
+    // delete some filter if they are too bad
+    if(filter.size() > 1) {
+        std::vector<ExtendedKalmanFilter4d>::iterator iter = filter.begin();
+        while(iter != filter.end() && filter.size() > 1) {
+            if(!iter->trust_the_ball && (*iter).getEllipseLocation().major * (*iter).getEllipseLocation().minor * M_PI > area95Threshold){
+                iter = filter.erase(iter);
+            } else {
+                ++iter;
+            }
+        }
+    }
+
 
     // apply odometry on the filter state, to keep it in the robot's local coordinate system
     for(std::vector<ExtendedKalmanFilter4d>::iterator iter = filter.begin(); iter != filter.end(); ++iter) {
@@ -71,139 +85,41 @@ void PlainKalmanFilterBallLocator::execute()
 
     // prediction
     double dt = getFrameInfo().getTimeInSeconds() - lastFrameInfo.getTimeInSeconds();
-
+    ASSERT(dt > 0);
     for(std::vector<ExtendedKalmanFilter4d>::iterator iter = filter.begin(); iter != filter.end(); iter++){
       predict(*iter, dt);
     }
 
     doDebugRequestBeforUpdate();
 
-    // Heinrich
-    //updateNormal();
-    updateCool();
+    // sensor update
+    //updateByPerceptsNormal();
+    updateByPerceptsCool();
 
-    // Heinrich: update the "ball seen values"
+
+    // Heinrich: update the "ball seen" values
     for(std::vector<ExtendedKalmanFilter4d>::iterator iter = filter.begin(); iter != filter.end(); ++iter){
       bool updated = iter->getLastUpdateFrame().getFrameNumber() == getFrameInfo().getFrameNumber();
       (*iter).ballSeenFilter.setParameter(kfParameters.g0, kfParameters.g1);
       (*iter).ballSeenFilter.update(updated);
       (*iter).trust_the_ball = (*iter).ballSeenFilter.value() > ((*iter).trust_the_ball?0.3:0.7);
-
-      DEBUG_REQUEST("PlainKalmanFilterBallLocator:trust_the_ball",
-        FIELD_DRAWING_CONTEXT;
-        if((*iter).trust_the_ball) {
-          PEN("00FF00", 10);
-        } else {
-          PEN("FF0000", 10);
-        }
-      
-        const Eigen::Vector4d& state = (*iter).getState();
-        CIRCLE( state(0), state(2), (*iter).ballSeenFilter.value()*1000);
-      );
     }
 
+    // estimate the best model
+    bestModel = selectBestModel();
 
-    // delete some filter if they are to bad
-    if(filter.size() > 1) {
-        std::vector<ExtendedKalmanFilter4d>::iterator iter = filter.begin();
-        while(iter != filter.end() && filter.size() > 1){
-            if(!iter->trust_the_ball && (*iter).getEllipseLocation().major * (*iter).getEllipseLocation().minor * M_PI > area95Threshold){
-                iter = filter.erase(iter);
-            } else {
-                ++iter;
-            }
-        }
+    // fill the ball model representation
+    if (bestModel != filter.end()) {
+      provideBallModel(*bestModel);
     }
-
-    // find the best model for the ball
-    if(!filter.empty())
-    {
-        // find best model
-        //bestModel = filter.begin();
-        //double evalue = (*bestModel).getEllipseLocation().major * (*bestModel).getEllipseLocation().minor *M_PI;
-
-        /*
-        for(std::vector<ExtendedKalmanFilter4d>::const_iterator iter = ++filter.begin(); iter != filter.end(); ++iter){
-            if(getFrameInfo().getTimeSince(iter->getFrameOfCreation().getTime()) > 300) {
-              double temp = (*iter).getEllipseLocation().major * (*iter).getEllipseLocation().minor * M_PI;
-              if(temp < evalue) {
-                  evalue = temp;
-                  bestModel = iter;
-              }
-            }
-        }*/
-
-        // closest model
-        bestModel = filter.end();
-        double evalue = 0;
-
-        for(std::vector<ExtendedKalmanFilter4d>::const_iterator iter = ++filter.begin(); iter != filter.end(); ++iter){
-            if(iter->trust_the_ball) {
-
-              double temp = sqrt(Math::sqr(iter->getState()(0)) + Math::sqr(iter->getState()(2)));
-              if(bestModel == filter.end() || temp < evalue){
-                  bestModel = iter;
-                  evalue = temp;
-              }
-            }
-        }
-
-        if (bestModel == filter.end()) {
-            getBallModel().valid = false;
-            getBallModel().knows = false;
-        } else {
-            const Eigen::Vector4d& x = (*bestModel).getState();
-
-            // set ball model representation
-            getBallModel().position.x = x(0);
-            getBallModel().position.y = x(2);
-            getBallModel().speed.x = x(1);
-            getBallModel().speed.y = x(3);
-
-            // set preview ball model representation
-            const Pose3D& lFoot = getKinematicChain().theLinks[KinematicChain::LFoot].M;
-            const Pose3D& rFoot = getKinematicChain().theLinks[KinematicChain::RFoot].M;
-
-            Pose2D lFootPose(lFoot.rotation.getZAngle(), lFoot.translation.x, lFoot.translation.y);
-            Pose2D rFootPose(rFoot.rotation.getZAngle(), rFoot.translation.x, rFoot.translation.y);
-
-            Vector2d ballLeftFoot  = lFootPose/getBallModel().position;
-            Vector2d ballRightFoot = rFootPose/getBallModel().position;
-
-            getBallModel().positionPreview = getMotionStatus().plannedMotion.hip / getBallModel().position;
-            getBallModel().positionPreviewInLFoot = getMotionStatus().plannedMotion.lFoot / ballLeftFoot;
-            getBallModel().positionPreviewInRFoot = getMotionStatus().plannedMotion.rFoot / ballRightFoot;
-
-            getBallModel().setFrameInfoWhenBallWasSeen((*bestModel).getLastUpdateFrame());
-
-            valid = true;
-            getBallModel().valid = valid;
-            getBallModel().knows = bestModel->trust_the_ball;
-
-            // future
-            const int BALLMODEL_MAX_FUTURE_SECONDS = 11;
-            getBallModel().futurePosition.resize(BALLMODEL_MAX_FUTURE_SECONDS);
-
-            getBallModel().futurePosition[0] = getBallModel().position;
-            ExtendedKalmanFilter4d filter(*bestModel);
-            for(size_t i=1; i < getBallModel().futurePosition.size(); i++)
-            {
-              predict(filter, 1.0); // predict 1s in the future
-
-              const Eigen::Vector4d& x = (*bestModel).getState();
-              Vector2d futurePosition;
-              getBallModel().futurePosition[i] = Vector2d(x(0), x(2));
-            }
-        }
-    }
-
+    
     doDebugRequest();
 
     lastFrameInfo     = getFrameInfo();
     lastRobotOdometry = getOdometryData();
 }
 
-void PlainKalmanFilterBallLocator::updateNormal() 
+void PlainKalmanFilterBallLocator::updateByPerceptsNormal() 
 {
   // measurement
     for(MultiBallPercept::ConstABPIterator iter = getMultiBallPercept().begin(); iter != getMultiBallPercept().end(); iter++) {
@@ -278,7 +194,7 @@ void PlainKalmanFilterBallLocator::updateNormal()
 }
 
 
-void PlainKalmanFilterBallLocator::updateCool() 
+void PlainKalmanFilterBallLocator::updateByPerceptsCool() 
 {
   // update by percepts
   // A ~ goal posts
@@ -467,6 +383,89 @@ void PlainKalmanFilterBallLocator::applyOdometryOnFilterState(ExtendedKalmanFilt
     filter.setCovarianceOfState(new_P);
 }
 
+PlainKalmanFilterBallLocator::Filters::const_iterator PlainKalmanFilterBallLocator::selectBestModel() const
+{
+  /*
+  // find the best model for the ball based on convariance
+  if(!filter.empty())
+  {
+      // find best model
+      Filters::const_iterator bestModel = filter.begin();
+      double evalue = (*bestModel).getEllipseLocation().major * (*bestModel).getEllipseLocation().minor *M_PI;
+
+      for(std::vector<ExtendedKalmanFilter4d>::const_iterator iter = ++filter.begin(); iter != filter.end(); ++iter){
+          if(getFrameInfo().getTimeSince(iter->getFrameOfCreation().getTime()) > 300) {
+            double temp = (*iter).getEllipseLocation().major * (*iter).getEllipseLocation().minor * M_PI;
+            if(temp < evalue) {
+                evalue = temp;
+                bestModel = iter;
+            }
+          }
+      }
+  }
+  */
+
+  // find the best model for the ball: closest hypothesis that is "known"
+  Filters::const_iterator bestModel = filter.end();
+  double value = 0;
+
+  for(std::vector<ExtendedKalmanFilter4d>::const_iterator iter = filter.begin(); iter != filter.end(); ++iter) {
+    if(iter->trust_the_ball) {
+      double temp = Vector2d(iter->getState()(0), iter->getState()(2)).abs();
+      if(bestModel == filter.end() || temp < value){
+          bestModel = iter;
+          value = temp;
+      }
+    }
+  }
+
+  return bestModel;
+}
+
+void PlainKalmanFilterBallLocator::provideBallModel(const ExtendedKalmanFilter4d& model) 
+{
+  getBallModel().valid = true;
+  getBallModel().knows = model.trust_the_ball;
+
+  const Eigen::Vector4d& x = model.getState();
+
+  // set ball model representation
+  getBallModel().position.x = x(0);
+  getBallModel().position.y = x(2);
+  getBallModel().speed.x = x(1);
+  getBallModel().speed.y = x(3);
+
+  //set preview ball model representation
+
+  const Pose3D& lFoot = getKinematicChain().theLinks[KinematicChain::LFoot].M;
+  const Pose3D& rFoot = getKinematicChain().theLinks[KinematicChain::RFoot].M;
+
+  // transform ball model into feet coordinates
+  Vector2d ballLeftFoot  = lFoot.projectXY()/getBallModel().position;
+  Vector2d ballRightFoot = rFoot.projectXY()/getBallModel().position;
+
+  getBallModel().positionPreview = getMotionStatus().plannedMotion.hip / getBallModel().position;
+  getBallModel().positionPreviewInLFoot = getMotionStatus().plannedMotion.lFoot / ballLeftFoot;
+  getBallModel().positionPreviewInRFoot = getMotionStatus().plannedMotion.rFoot / ballRightFoot;
+
+  getBallModel().setFrameInfoWhenBallWasSeen(model.getLastUpdateFrame());
+
+  // predict future ball positions
+  const int BALLMODEL_MAX_FUTURE_SECONDS = 11;
+  getBallModel().futurePosition.resize(BALLMODEL_MAX_FUTURE_SECONDS);
+
+  getBallModel().futurePosition[0] = getBallModel().position;
+  
+  ExtendedKalmanFilter4d modelCopy(model);
+  for(size_t i=1; i < getBallModel().futurePosition.size(); i++)
+  {
+    predict(modelCopy, 1.0); // predict 1s in the future
+
+    const Eigen::Vector4d& x = modelCopy.getState();
+    getBallModel().futurePosition[i] = Vector2d(x(0), x(2));
+  }
+}
+
 void PlainKalmanFilterBallLocator::doDebugRequestBeforPredictionAndUpdate()
 {
     DEBUG_REQUEST("PlainKalmanFilterBallLocator:draw_ball_on_field_before",
@@ -495,7 +494,7 @@ void PlainKalmanFilterBallLocator::doDebugRequestBeforUpdate()
 
 void PlainKalmanFilterBallLocator::doDebugRequest()
 {
-    PLOT("PlainKalmanFilterBallLocator:ModelIsValid", getBallModel().valid);
+    //PLOT("PlainKalmanFilterBallLocator:ModelIsValid", getBallModel().valid);
 
     
     //to check correctness of the prediction
@@ -522,6 +521,21 @@ void PlainKalmanFilterBallLocator::doDebugRequest()
     DEBUG_REQUEST("PlainKalmanFilterBallLocator:reloadParameters",
         reloadParameters();
     );
+
+    DEBUG_REQUEST("PlainKalmanFilterBallLocator:draw_trust_the_ball",
+        FIELD_DRAWING_CONTEXT;
+        for(std::vector<ExtendedKalmanFilter4d>::const_iterator iter = filter.begin(); iter != filter.end(); iter++)
+        {
+          if((*iter).trust_the_ball) {
+            PEN("00FF00", 10);
+          } else {
+            PEN("FF0000", 10);
+          }
+      
+          const Eigen::Vector4d& state = (*iter).getState();
+          CIRCLE( state(0), state(2), (*iter).ballSeenFilter.value()*1000);
+        }
+      );
 }
 
 void PlainKalmanFilterBallLocator::drawFiltersOnField() const {
