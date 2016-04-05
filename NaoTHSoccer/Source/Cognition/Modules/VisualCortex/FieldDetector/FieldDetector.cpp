@@ -40,7 +40,7 @@ void FieldDetector::execute(CameraInfo::CameraID id)
 
   if(simulateField)
   {
-    vector<Vector2i > result;
+    vector<Vector2i> result;
     result.push_back(Vector2i(0,0));
     result.push_back(Vector2i(0,getImage().height()-1));
     result.push_back(Vector2i(getImage().width()-1, getImage().height()-0));
