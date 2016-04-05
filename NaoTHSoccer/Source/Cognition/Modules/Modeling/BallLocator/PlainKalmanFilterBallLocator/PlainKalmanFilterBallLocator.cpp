@@ -67,7 +67,7 @@ void PlainKalmanFilterBallLocator::execute()
     if(filter.size() > 1) {
         std::vector<ExtendedKalmanFilter4d>::iterator iter = filter.begin();
         while(iter != filter.end() && filter.size() > 1) {
-            if(!iter->trust_the_ball && (*iter).getEllipseLocation().major * (*iter).getEllipseLocation().minor * M_PI > area95Threshold){
+          if(!iter->ballSeenFilter.value() && (*iter).getEllipseLocation().major * (*iter).getEllipseLocation().minor * M_PI > area95Threshold){
                 iter = filter.erase(iter);
             } else {
                 ++iter;
@@ -101,8 +101,7 @@ void PlainKalmanFilterBallLocator::execute()
     for(std::vector<ExtendedKalmanFilter4d>::iterator iter = filter.begin(); iter != filter.end(); ++iter){
       bool updated = iter->getLastUpdateFrame().getFrameNumber() == getFrameInfo().getFrameNumber();
       (*iter).ballSeenFilter.setParameter(kfParameters.g0, kfParameters.g1);
-      (*iter).ballSeenFilter.update(updated);
-      (*iter).trust_the_ball = (*iter).ballSeenFilter.value() > ((*iter).trust_the_ball?0.3:0.7);
+      (*iter).ballSeenFilter.update(updated, 0.3, 0.7);
     }
 
     // estimate the best model
@@ -410,7 +409,7 @@ PlainKalmanFilterBallLocator::Filters::const_iterator PlainKalmanFilterBallLocat
   double value = 0;
 
   for(std::vector<ExtendedKalmanFilter4d>::const_iterator iter = filter.begin(); iter != filter.end(); ++iter) {
-    if(iter->trust_the_ball) {
+    if(iter->ballSeenFilter.value()) {
       double temp = Vector2d(iter->getState()(0), iter->getState()(2)).abs();
       if(bestModel == filter.end() || temp < value){
           bestModel = iter;
@@ -425,7 +424,7 @@ PlainKalmanFilterBallLocator::Filters::const_iterator PlainKalmanFilterBallLocat
 void PlainKalmanFilterBallLocator::provideBallModel(const ExtendedKalmanFilter4d& model) 
 {
   getBallModel().valid = true;
-  getBallModel().knows = model.trust_the_ball;
+  getBallModel().knows = model.ballSeenFilter.value();
 
   const Eigen::Vector4d& x = model.getState();
 
@@ -526,7 +525,7 @@ void PlainKalmanFilterBallLocator::doDebugRequest()
         FIELD_DRAWING_CONTEXT;
         for(std::vector<ExtendedKalmanFilter4d>::const_iterator iter = filter.begin(); iter != filter.end(); iter++)
         {
-          if((*iter).trust_the_ball) {
+          if((*iter).ballSeenFilter.value()) {
             PEN("00FF00", 10);
           } else {
             PEN("FF0000", 10);

@@ -23,6 +23,9 @@
 
 #include "MeasurementFunctions.h"
 
+// TODO: remove this
+#include "Tools/Filters/AssymetricalBoolFilter.h"
+
 struct Ellipse2d {
     double angle;
     double minor;
@@ -95,33 +98,9 @@ private:
     Ellipse2d ellipse_velocity;
 
 public:
-  //HACK: todo put it in a separate file
-  class AssymetricalBoolFilter
-  {
-  private:
-    double g0;
-    double g1;
-    double state;
 
-  public:
-    AssymetricalBoolFilter(double g0, double g1) : g0(g0), g1(g1), state(0.0) 
-    {}
-
-    void setParameter(double g0, double g1) {
-      this->g0 = g0; this->g1 = g1;
-    }
-
-    void update(bool v) {
-      state += v ? g1*(1-state) : -g0*state;
-    }
-
-    double value() const {
-      return state;
-    }
-  };
-
-  AssymetricalBoolFilter ballSeenFilter;
-  bool trust_the_ball;
+  // TODO: move this to somewhere else
+  AssymetricalBoolHysteresisFilter ballSeenFilter;
 
 };
 

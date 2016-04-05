@@ -5,8 +5,7 @@ ExtendedKalmanFilter4d::ExtendedKalmanFilter4d(const naoth::FrameInfo& frameInfo
     lastUpdateFrame(frameInfo),
     createFrame(frameInfo),
     x(state),
-    ballSeenFilter(0.01, 0.1), // some default params
-    trust_the_ball(false)
+    ballSeenFilter(0.01, 0.1) // some default params
 {
     Eigen::Matrix2d q;
     q = processNoiseStdSingleDimension.cwiseProduct(processNoiseStdSingleDimension);
