@@ -115,7 +115,7 @@ public:
       state += v ? g1*(1-state) : -g0*state;
     }
 
-    double value() {
+    double value() const {
       return state;
     }
   };

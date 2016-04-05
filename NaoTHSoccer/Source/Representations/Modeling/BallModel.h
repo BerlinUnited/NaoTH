@@ -93,6 +93,7 @@ public:
 
   void reset() {
     valid = false;
+    knows = false;
   }
 
   void resetTimeBallIsSeen() {

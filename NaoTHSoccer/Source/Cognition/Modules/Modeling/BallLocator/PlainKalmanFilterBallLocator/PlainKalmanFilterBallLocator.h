@@ -79,11 +79,10 @@ private:
 
     FrameInfo lastFrameInfo;
 
-    void updateCool();
-    void updateNormal();
 private:
-    std::vector<ExtendedKalmanFilter4d> filter;
-    std::vector<ExtendedKalmanFilter4d>::const_iterator bestModel;
+    typedef std::vector<ExtendedKalmanFilter4d> Filters;
+    Filters filter;
+    Filters::const_iterator bestModel;
 
     const double epsilon; // 10e-6
     double area95Threshold;
@@ -91,11 +90,18 @@ private:
     //double ballMass;
     double c_RR;
 
-    bool valid;
+private:
+    void updateByPerceptsCool();
+    
+    void updateByPerceptsNormal();
 
     void applyOdometryOnFilterState(ExtendedKalmanFilter4d& filter);
 
     void predict(ExtendedKalmanFilter4d& filter, double dt) const;
+
+    Filters::const_iterator selectBestModel() const;
+
+    void provideBallModel(const ExtendedKalmanFilter4d& model);
 
     /*    DEBUG STUFF    */
     void doDebugRequest();
