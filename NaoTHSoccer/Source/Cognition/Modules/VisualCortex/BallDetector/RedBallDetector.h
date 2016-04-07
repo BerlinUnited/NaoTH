@@ -85,7 +85,7 @@ private:
   {
   public:
 
-    Parameters() : ParameterList("RedBallDetectorParameters")
+    Parameters() : ParameterList("RedBallDetector")
     {
       PARAMETER_REGISTER(stepSize) = 2;    
       PARAMETER_REGISTER(maxBorderBrightness) = 70;
