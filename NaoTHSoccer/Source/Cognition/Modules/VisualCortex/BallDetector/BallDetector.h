@@ -1,11 +1,11 @@
 /**
-* @file BallCandidateDetector.h
+* @file BallDetector.h
 *
-* Definition of class BallCandidateDetector
+* Definition of class BallDetector
 */
 
-#ifndef _BallCandidateDetector_H_
-#define _BallCandidateDetector_H_
+#ifndef _BallDetector_H_
+#define _BallDetector_H_
 
 #include <ModuleFramework/Module.h>
 #include <ModuleFramework/Representation.h>
@@ -43,7 +43,7 @@
 #include "Tools/naoth_opencv.h"
 
 
-BEGIN_DECLARE_MODULE(BallCandidateDetector)
+BEGIN_DECLARE_MODULE(BallDetector)
   PROVIDE(DebugRequest)
   PROVIDE(DebugDrawings)
   PROVIDE(DebugPlot)
@@ -77,7 +77,7 @@ BEGIN_DECLARE_MODULE(BallCandidateDetector)
   PROVIDE(MultiBallPercept)
   PROVIDE(BallCandidates)
   PROVIDE(BallCandidatesTop)
-END_DECLARE_MODULE(BallCandidateDetector)
+END_DECLARE_MODULE(BallDetector)
 
 
 template <typename Iter>
@@ -86,11 +86,11 @@ Iter nextIter(Iter iter)
     return ++iter;
 }
 
-class BallCandidateDetector: private BallCandidateDetectorBase
+class BallDetector: private BallDetectorBase
 {
 public:
-  BallCandidateDetector();
-  ~BallCandidateDetector();
+  BallDetector();
+  ~BallDetector();
 
   bool execute(CameraInfo::CameraID id);
 
@@ -106,7 +106,7 @@ public:
     }
     else
     {
-      DEBUG_REQUEST("Vision:BallCandidateDetector:forceBothCameras",
+      DEBUG_REQUEST("Vision:BallDetector:forceBothCameras",
         execute(CameraInfo::Top);
       );
     }
@@ -117,7 +117,7 @@ private:
 
   struct Parameters: public ParameterList
   {
-    Parameters() : ParameterList("BallCandidateDetector")
+    Parameters() : ParameterList("BallDetector")
     {
       
       PARAMETER_REGISTER(keyDetector.borderRadiusFactorClose) = 0.5;
@@ -426,20 +426,20 @@ private:
 
 private:
   
-  DOUBLE_CAM_PROVIDE(BallCandidateDetector, DebugImageDrawings);
+  DOUBLE_CAM_PROVIDE(BallDetector, DebugImageDrawings);
 
   // double cam stuff
-  DOUBLE_CAM_REQUIRE(BallCandidateDetector, Image);
-  DOUBLE_CAM_REQUIRE(BallCandidateDetector, CameraMatrix);
-  DOUBLE_CAM_REQUIRE(BallCandidateDetector, FieldColorPercept);
-  DOUBLE_CAM_REQUIRE(BallCandidateDetector, FieldPercept);
-  DOUBLE_CAM_REQUIRE(BallCandidateDetector, BodyContour);
-  DOUBLE_CAM_REQUIRE(BallCandidateDetector, GameColorIntegralImage);
+  DOUBLE_CAM_REQUIRE(BallDetector, Image);
+  DOUBLE_CAM_REQUIRE(BallDetector, CameraMatrix);
+  DOUBLE_CAM_REQUIRE(BallDetector, FieldColorPercept);
+  DOUBLE_CAM_REQUIRE(BallDetector, FieldPercept);
+  DOUBLE_CAM_REQUIRE(BallDetector, BodyContour);
+  DOUBLE_CAM_REQUIRE(BallDetector, GameColorIntegralImage);
 
-  DOUBLE_CAM_PROVIDE(BallCandidateDetector, BallCandidates);
+  DOUBLE_CAM_PROVIDE(BallDetector, BallCandidates);
 
   cv::Ptr<cv::ml::SVM> histModelBottom;
   cv::Ptr<cv::ml::SVM> histModelTop;
-};//end class BallCandidateDetector
+};//end class BallDetector
 
-#endif // _BallCandidateDetector_H_
+#endif // _BallDetector_H_
