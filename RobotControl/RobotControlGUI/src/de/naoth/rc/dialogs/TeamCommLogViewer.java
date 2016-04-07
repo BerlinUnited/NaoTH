@@ -15,6 +15,8 @@ import de.naoth.rc.core.dialog.DialogPlugin;
 import de.naoth.rc.dataformats.SPLMessage;
 import de.naoth.rc.drawingmanager.DrawingEventManager;
 import de.naoth.rc.drawings.DrawingCollection;
+import de.naoth.rc.logmanager.LogDataFrame;
+import de.naoth.rc.logmanager.LogFileEventManager;
 import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.File;
@@ -27,7 +29,9 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -65,6 +69,8 @@ public class TeamCommLogViewer extends AbstractDialog {
         public static RobotControl parent;
         @InjectPlugin
         public static DrawingEventManager drawingEventManager;
+        @InjectPlugin
+        public static LogFileEventManager logFileEventManager;
     }//end Plugin
     
     private TreeMap<Long, ArrayList<TeamCommMessage>> messages;
@@ -388,9 +394,11 @@ public class TeamCommLogViewer extends AbstractDialog {
                 // put current messages (of the timestamp) to the message drawing "buffer"
                 Long current = timestampsIterator.next();
                 ArrayList<TeamCommMessage> tsmsg = messages.get(current);
+                Collection<LogDataFrame> c = new ArrayList<LogDataFrame>();
                 for (TeamCommMessage teamCommMessage : tsmsg) {
-                    frameMessages.put(teamCommMessage.spl.teamNum + "_"  + teamCommMessage.spl.playerNum, teamCommMessage);
+                    c.add(new LogTeamCommFrame(current, "TeamCommMessage", teamCommMessage));
                 }
+                Plugin.logFileEventManager.fireLogFrameEvent(c);
                 // simulate the delay between the arrival of subsequent messages
                 try {
                     long sleeping = prevTimestamp == 0 ? 0 : (current - prevTimestamp);
@@ -435,7 +443,25 @@ public class TeamCommLogViewer extends AbstractDialog {
             timestampsIterator = timestamps.iterator();
             prevTimestamp = 0;
         }
+    }
+    
+    public class LogTeamCommFrame extends LogDataFrame {
+        private final long number;
+        private final TeamCommMessage data;
         
+        public LogTeamCommFrame(long number, String name, TeamCommMessage data) {
+            super((int) number, name, null);
+            this.data = data;
+            this.number = number;
+        }
+        
+        public TeamCommMessage getTeamCommMessage() {
+            return this.data;
+        }
+        
+        public long getLongNumber() {
+            return this.number;
+        }
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

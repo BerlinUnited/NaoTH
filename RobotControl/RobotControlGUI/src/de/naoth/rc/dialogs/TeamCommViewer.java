@@ -18,6 +18,10 @@ import de.naoth.rc.core.dialog.DialogPlugin;
 import de.naoth.rc.dataformats.SPLMessage;
 import de.naoth.rc.drawingmanager.DrawingEventManager;
 import de.naoth.rc.drawings.DrawingCollection;
+import de.naoth.rc.logmanager.BlackBoard;
+import de.naoth.rc.logmanager.LogDataFrame;
+import de.naoth.rc.logmanager.LogFileEventManager;
+import de.naoth.rc.logmanager.LogFrameListener;
 import java.awt.Color;
 import java.io.File;
 import java.io.FileWriter;
@@ -61,6 +65,8 @@ public class TeamCommViewer extends AbstractDialog {
         public static RobotControl parent;
         @InjectPlugin
         public static DrawingEventManager drawingEventManager;
+        @InjectPlugin
+        public static LogFileEventManager logFileEventManager;
     }//end Plugin
 
     private Timer timerCheckMessages;
@@ -68,6 +74,7 @@ public class TeamCommViewer extends AbstractDialog {
     private final TeamCommListener listenerOpponent = new TeamCommListener(true);
     private final HashMap<String, RobotStatus> robotsMap = new HashMap<>();
     private final TreeMap<String, RobotStatus> robotsMapSorted = new TreeMap<>();
+    private final TeamCommLogListener listenerLog = new TeamCommLogListener();
 
     private final Map<String, TeamCommMessage> messageMap = Collections.synchronizedMap(new TreeMap<String, TeamCommMessage>());
 
@@ -103,6 +110,7 @@ public class TeamCommViewer extends AbstractDialog {
         jLabel2 = new javax.swing.JLabel();
         btnRecord = new javax.swing.JToggleButton();
         btnStopRecording = new javax.swing.JButton();
+        btnListenToLog = new javax.swing.JToggleButton();
 
         teamCommFileChooser.setDialogType(javax.swing.JFileChooser.SAVE_DIALOG);
         teamCommFileChooser.setDialogTitle("Log file location");
@@ -150,6 +158,13 @@ public class TeamCommViewer extends AbstractDialog {
             }
         });
 
+        btnListenToLog.setText("Log");
+        btnListenToLog.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnListenToLogActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -159,7 +174,9 @@ public class TeamCommViewer extends AbstractDialog {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(btListen)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnListenToLog)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(portNumberOwn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -171,7 +188,7 @@ public class TeamCommViewer extends AbstractDialog {
                         .addComponent(btnRecord)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnStopRecording)
-                        .addGap(0, 100, Short.MAX_VALUE))
+                        .addGap(0, 0, Short.MAX_VALUE))
                     .addComponent(robotStatusPanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
@@ -187,7 +204,8 @@ public class TeamCommViewer extends AbstractDialog {
                         .addComponent(portNumberOwn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(portNumberOpponent, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(jLabel1)
-                        .addComponent(jLabel2)))
+                        .addComponent(jLabel2)
+                        .addComponent(btnListenToLog)))
                 .addGap(27, 27, 27)
                 .addComponent(robotStatusPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -273,6 +291,20 @@ public class TeamCommViewer extends AbstractDialog {
         setBtnRecordToolTipText(false);
         btnStopRecording.setEnabled(false);
     }//GEN-LAST:event_btnStopRecordingActionPerformed
+
+    private void btnListenToLogActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnListenToLogActionPerformed
+        if(btnListenToLog.isSelected()) {
+            Plugin.logFileEventManager.addListener(listenerLog);
+            
+            this.timerCheckMessages = new Timer();
+            this.timerCheckMessages.scheduleAtFixedRate(new TeamCommListenTask(), 100, 33);
+            this.portNumberOwn.setEnabled(false);
+            this.portNumberOpponent.setEnabled(false);
+            this.robotStatusPanel.setVisible(true);
+        } else {
+            Plugin.logFileEventManager.removeListener(listenerLog);
+        }
+    }//GEN-LAST:event_btnListenToLogActionPerformed
 
     @Override
     public void dispose() {
@@ -481,6 +513,21 @@ public class TeamCommViewer extends AbstractDialog {
         }
     }//end class TeamCommListener
     
+    /**
+     * Implements a listener for TeamComm log file "player".
+     */
+    public class TeamCommLogListener implements LogFrameListener {
+        @Override
+        public void newFrame(BlackBoard b) {
+            TeamCommLogViewer.LogTeamCommFrame frame = (TeamCommLogViewer.LogTeamCommFrame) b.get("TeamCommMessage");
+            if (frame != null) {
+                TeamCommMessage tc_msg = new TeamCommMessage(frame.getLongNumber(), frame.getTeamCommMessage().spl, frame.getTeamCommMessage().isOpponent);
+                messageMap.put(frame.getTeamCommMessage().spl.teamNum + ".0.0." + frame.getTeamCommMessage().spl.playerNum, tc_msg);
+            }
+        }
+        
+    }
+    
     private class LogFileWriter extends Thread {
         private final File log;
         private final Gson json;
@@ -554,6 +601,7 @@ public class TeamCommViewer extends AbstractDialog {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JToggleButton btListen;
+    private javax.swing.JToggleButton btnListenToLog;
     private javax.swing.JToggleButton btnRecord;
     private javax.swing.JButton btnStopRecording;
     private javax.swing.JLabel jLabel1;
