@@ -14,6 +14,8 @@ import de.naoth.rc.core.dialog.AbstractDialog;
 import de.naoth.rc.core.dialog.DialogPlugin;
 import de.naoth.rc.dataformats.SPLMessage;
 import de.naoth.rc.drawingmanager.DrawingEventManager;
+import de.naoth.rc.drawings.DrawingCollection;
+import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -25,7 +27,14 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.NavigableSet;
+import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -33,6 +42,7 @@ import javax.swing.DefaultListModel;
 import javax.swing.JFileChooser;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
+import javax.swing.ProgressMonitorInputStream;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TreeModelEvent;
@@ -53,17 +63,20 @@ public class TeamCommLogViewer extends AbstractDialog {
 
         @InjectPlugin
         public static RobotControl parent;
-//        @InjectPlugin
-//        public static DrawingEventManager drawingEventManager;
+        @InjectPlugin
+        public static DrawingEventManager drawingEventManager;
     }//end Plugin
     
     private TreeMap<Long, ArrayList<TeamCommMessage>> messages;
+    private final Map<String, TeamCommMessage> frameMessages = Collections.synchronizedMap(new TreeMap<String, TeamCommMessage>());
     private DefaultListModel listMessages = new DefaultListModel();
     
     private DefaultMutableTreeNode treeRootNode;
     private DefaultTreeModel treeModel;
     
-    
+    private Timer teamCommTimer;
+    private TeamCommFrameMessages tcd;
+
     /**
      * Creates new form TeamCommLogViewer
      */
@@ -91,6 +104,13 @@ public class TeamCommLogViewer extends AbstractDialog {
         messageTree = new javax.swing.JTree();
         jToolBar1 = new javax.swing.JToolBar();
         btnTCLF = new javax.swing.JButton();
+        jSeparator1 = new javax.swing.JToolBar.Separator();
+        btnPlay = new javax.swing.JToggleButton();
+        btnStop = new javax.swing.JButton();
+        jSeparator2 = new javax.swing.JToolBar.Separator();
+        skipDelays = new javax.swing.JCheckBox();
+
+        teamCommFileChooser.setApproveButtonText("Open");
 
         jPanel1.setLayout(new java.awt.BorderLayout());
 
@@ -115,6 +135,42 @@ public class TeamCommLogViewer extends AbstractDialog {
             }
         });
         jToolBar1.add(btnTCLF);
+        jToolBar1.add(jSeparator1);
+
+        btnPlay.setIcon(new javax.swing.ImageIcon(getClass().getResource("/toolbarButtonGraphics/media/Play24.gif"))); // NOI18N
+        btnPlay.setToolTipText("Play TeamComm log file");
+        btnPlay.setEnabled(false);
+        btnPlay.setFocusable(false);
+        btnPlay.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btnPlay.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btnPlay.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnPlayActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(btnPlay);
+
+        btnStop.setIcon(new javax.swing.ImageIcon(getClass().getResource("/toolbarButtonGraphics/media/Stop24.gif"))); // NOI18N
+        btnStop.setToolTipText("Stop playing TeamComm log file");
+        btnStop.setEnabled(false);
+        btnStop.setFocusable(false);
+        btnStop.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btnStop.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btnStop.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnStopActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(btnStop);
+        jToolBar1.add(jSeparator2);
+
+        skipDelays.setSelected(true);
+        skipDelays.setText("Skip delays");
+        skipDelays.setToolTipText("Skips delays in the log file (>1s)");
+        skipDelays.setFocusable(false);
+        skipDelays.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
+        skipDelays.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToolBar1.add(skipDelays);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -134,14 +190,17 @@ public class TeamCommLogViewer extends AbstractDialog {
 
     private void btnTCLFActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTCLFActionPerformed
         if(teamCommFileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
-            File f = teamCommFileChooser.getSelectedFile();
-            Gson json = new GsonBuilder().create();
             try {
+                File f = teamCommFileChooser.getSelectedFile();
+                FileInputStream fis = new FileInputStream(f);
+                ProgressMonitorInputStream pmis = new ProgressMonitorInputStream(this, "Reading TeamComm log file", fis);
+                InputStreamReader isr = new InputStreamReader(pmis);
+                Gson json = new GsonBuilder().create();
+                JsonReader jr = new JsonReader(isr);
+            
                 messages = new TreeMap<>();
-                int message_cnt = 0;
-                FileReader fr = new FileReader(f);
-                JsonReader jr = new JsonReader(fr);
-                // TODO: show loading icon / progress bar
+                int message_cnt = 0;                
+                
                 jr.beginArray();
                 while (jr.hasNext()) {
                     TeamCommMessage p = json.fromJson(jr, TeamCommMessage.class);
@@ -153,8 +212,37 @@ public class TeamCommLogViewer extends AbstractDialog {
                     message_cnt++;
                 }
                 jr.endArray();
+                jr.close();
+                
                 // TODO: show somewhere on the UI?!
                 System.out.println("Unique timestamps: " + messages.size() + "; Total messages: " + message_cnt);
+                
+                btnPlay.setEnabled(true);
+                
+                // cancel previous "TeamComm simulation"
+                if(tcd != null) {
+                    tcd.isRunning = false;
+                    // TODO: should thread be interrupted?!?
+                    tcd.notify();
+                    try {
+                        tcd.join();
+                    } catch (InterruptedException ex) {
+                    } finally {
+                        tcd = null;
+                    }
+                }
+                // start a new "TeamComm simulation"
+                tcd = new TeamCommFrameMessages();
+                
+                // schedule drawer ...
+                if(teamCommTimer == null) {
+                    teamCommTimer = new Timer();
+                    teamCommTimer.scheduleAtFixedRate(new TeamCommDrawer(), 100, 33);
+                } else {
+                    synchronized (frameMessages) {
+                        frameMessages.clear();
+                    }
+                }
             } catch (FileNotFoundException ex) {
                 JOptionPane.showMessageDialog(null, "File not found!", "Not found", JOptionPane.WARNING_MESSAGE);
             } catch (IOException ex) {
@@ -163,6 +251,35 @@ public class TeamCommLogViewer extends AbstractDialog {
             showMessages();
         }
     }//GEN-LAST:event_btnTCLFActionPerformed
+
+    private void btnPlayActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPlayActionPerformed
+        if(btnPlay.isSelected()) {
+            btnStop.setEnabled(true);
+            if(tcd != null) {
+                if(tcd.isSuspended()) {
+                    System.out.println("Resume TeamCommFrameMessages");
+                    tcd.resumeThread();
+                } else {
+                    System.out.println("Start TeamCommFrameMessages");
+                    tcd.start();
+                }
+            }
+        } else {
+            btnPlay.setToolTipText("Pause");
+            if(tcd != null) {
+                tcd.suspendThread();
+            }
+        }
+    }//GEN-LAST:event_btnPlayActionPerformed
+
+    private void btnStopActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStopActionPerformed
+        btnStop.setEnabled(false);
+        btnPlay.setSelected(false);
+        if(tcd != null) {
+            tcd.stopThread();
+            System.out.println("Timestamp: "+tcd.prevTimestamp);
+        }
+    }//GEN-LAST:event_btnStopActionPerformed
 
     private void showMessages() {
         // clear previous loaded messages
@@ -183,7 +300,7 @@ public class TeamCommLogViewer extends AbstractDialog {
     public class TeamCommMessage {
 
         public long timestamp;
-        public SPLMessage message;
+        public SPLMessage spl;
         public boolean isOpponent;
 
     }
@@ -223,14 +340,116 @@ public class TeamCommLogViewer extends AbstractDialog {
         }
         
     }
+    
+    private class TeamCommDrawer extends TimerTask {
+
+        @Override
+        public void run() {
+            synchronized (frameMessages) {
+                if (frameMessages.isEmpty()) {
+                    return;
+                }
+
+                DrawingCollection drawings = new DrawingCollection();
+
+                for (Entry<String, TeamCommMessage> msgEntry : frameMessages.entrySet()) {
+                    final TeamCommMessage msg = msgEntry.getValue();
+                    msg.spl.draw(drawings, msg.isOpponent ? Color.RED : Color.BLUE, msg.isOpponent);
+                }
+
+                TeamCommViewer.Plugin.drawingEventManager.fireDrawingEvent(drawings);
+
+            } // end synchronized
+        } // end run
+    }
+    
+    private class TeamCommFrameMessages extends Thread {
+
+        private final NavigableSet<Long> timestamps;
+        private Iterator<Long> timestampsIterator;
+        
+        private long prevTimestamp = 0;
+        
+        private boolean isWaiting = false;
+        private boolean isRunning = true;
+        
+        public TeamCommFrameMessages() {
+            timestamps = messages.navigableKeySet();
+            timestampsIterator = timestamps.iterator();
+        }
+        
+        @Override
+        public void run() {
+            if(timestampsIterator == null) {
+                return;
+            }
+            
+            while (isRunning && timestampsIterator.hasNext()) {
+                // put current messages (of the timestamp) to the message drawing "buffer"
+                Long current = timestampsIterator.next();
+                ArrayList<TeamCommMessage> tsmsg = messages.get(current);
+                for (TeamCommMessage teamCommMessage : tsmsg) {
+                    frameMessages.put(teamCommMessage.spl.teamNum + "_"  + teamCommMessage.spl.playerNum, teamCommMessage);
+                }
+                // simulate the delay between the arrival of subsequent messages
+                try {
+                    long sleeping = prevTimestamp == 0 ? 0 : (current - prevTimestamp);
+                    sleep((skipDelays.isSelected() && sleeping > 1000) || (sleeping < 0) ? 33 : sleeping);
+                } catch (InterruptedException ex) {
+                    // if thread gets interrupted while "sleeping", handle it like a suspension
+                    isWaiting = true;
+                }
+                
+                // suspending loop - it only continues if thread gets "notified"!
+                while (interrupted() || isWaiting) {
+                    isWaiting = true;
+                    try {
+                        synchronized (this) {
+                            wait();
+                        }
+                        isWaiting = false;
+                    } catch (InterruptedException e) {}
+                }
+                
+                prevTimestamp = current;
+            }
+        }
+  
+        public void suspendThread() {
+            System.out.println("thread suspended");
+            interrupt();
+        }
+
+        public synchronized void resumeThread() {
+            System.out.println("thread resume");
+            notify();
+        }
+
+        public boolean isSuspended() {
+            return isWaiting;
+        }
+        
+        public void stopThread() {
+            System.out.println("thread stopped");
+            suspendThread();
+            timestampsIterator = timestamps.iterator();
+            prevTimestamp = 0;
+        }
+        
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JToggleButton btnPlay;
+    private javax.swing.JButton btnStop;
     private javax.swing.JButton btnTCLF;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JToolBar.Separator jSeparator1;
+    private javax.swing.JToolBar.Separator jSeparator2;
     private javax.swing.JToolBar jToolBar1;
     private javax.swing.JTree messageTree;
+    private javax.swing.JCheckBox skipDelays;
     private javax.swing.JFileChooser teamCommFileChooser;
     private javax.swing.JList<String> timestampList;
     // End of variables declaration//GEN-END:variables
