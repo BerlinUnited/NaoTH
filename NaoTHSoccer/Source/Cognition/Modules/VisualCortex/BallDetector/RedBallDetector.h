@@ -1,11 +1,11 @@
 /**
-* @file BallDetector.h
+* @file RedBallDetector.h
 *
-* Definition of class BallDetector
+* Definition of class RedBallDetector
 */
 
-#ifndef _BallDetector_H_
-#define _BallDetector_H_
+#ifndef _RedBallDetector_H_
+#define _RedBallDetector_H_
 
 #include <ModuleFramework/Module.h>
 #include <ModuleFramework/Representation.h>
@@ -40,7 +40,7 @@
 #include "Tools/Debug/DebugParameterList.h"
 
 
-BEGIN_DECLARE_MODULE(BallDetector)
+BEGIN_DECLARE_MODULE(RedBallDetector)
   PROVIDE(DebugRequest)
   PROVIDE(DebugImageDrawings)
   PROVIDE(DebugImageDrawingsTop)
@@ -61,14 +61,14 @@ BEGIN_DECLARE_MODULE(BallDetector)
   PROVIDE(BallPercept)
   PROVIDE(BallPerceptTop)
   //PROVIDE(AllBallPercepts)
-END_DECLARE_MODULE(BallDetector)
+END_DECLARE_MODULE(RedBallDetector)
 
 
-class BallDetector: private BallDetectorBase
+class RedBallDetector: private RedBallDetectorBase
 {
 public:
-  BallDetector();
-  ~BallDetector();
+  RedBallDetector();
+  ~RedBallDetector();
 
   void execute(CameraInfo::CameraID id);
 
@@ -85,7 +85,7 @@ private:
   {
   public:
 
-    Parameters() : ParameterList("BallDetectorParameters")
+    Parameters() : ParameterList("RedBallDetectorParameters")
     {
       PARAMETER_REGISTER(stepSize) = 2;    
       PARAMETER_REGISTER(maxBorderBrightness) = 70;
@@ -143,17 +143,17 @@ private: //data members
 
 private:     
   
-  DOUBLE_CAM_PROVIDE(BallDetector, DebugImageDrawings);
+  DOUBLE_CAM_PROVIDE(RedBallDetector, DebugImageDrawings);
 
   // double cam stuff
-  DOUBLE_CAM_REQUIRE(BallDetector, Image);
-  DOUBLE_CAM_REQUIRE(BallDetector, CameraMatrix);
-  DOUBLE_CAM_REQUIRE(BallDetector, FieldColorPercept);
-  DOUBLE_CAM_REQUIRE(BallDetector, FieldPercept);
+  DOUBLE_CAM_REQUIRE(RedBallDetector, Image);
+  DOUBLE_CAM_REQUIRE(RedBallDetector, CameraMatrix);
+  DOUBLE_CAM_REQUIRE(RedBallDetector, FieldColorPercept);
+  DOUBLE_CAM_REQUIRE(RedBallDetector, FieldPercept);
  
-  DOUBLE_CAM_PROVIDE(BallDetector, BallPercept);
-  //DOUBLE_CAM_PROVIDE(BallDetector, AllBallPercepts);
+  DOUBLE_CAM_PROVIDE(RedBallDetector, BallPercept);
+  //DOUBLE_CAM_PROVIDE(RedBallDetector, AllBallPercepts);
           
-};//end class BallDetector
+};//end class RedBallDetector
 
-#endif // _BallDetector_H_
+#endif // _RedBallDetector_H_
