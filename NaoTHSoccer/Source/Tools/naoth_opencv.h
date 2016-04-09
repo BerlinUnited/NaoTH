@@ -6,7 +6,9 @@
 #pragma GCC diagnostic push
 #endif
 #pragma GCC diagnostic ignored "-Wconversion"
+#if (__GNUC__ == 4 && __GNUC_MINOR__ < 8) || (__GNUC__ == 4 && __GNUC_MINOR__ > 8)
 #pragma GCC diagnostic ignored "-Wfloat-conversion"
+#endif
 #endif
 #include <opencv2/core/core.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
@@ -16,7 +18,9 @@
 #pragma GCC diagnostic push
 #endif
 #pragma GCC diagnostic error "-Wconversion"
+#if (__GNUC__ == 4 && __GNUC_MINOR__ < 8) || (__GNUC__ == 4 && __GNUC_MINOR__ > 8)
 #pragma GCC diagnostic error "-Wfloat-conversion"
+#endif
 #endif
 
 #endif // NAOTH_OPENCV_H
