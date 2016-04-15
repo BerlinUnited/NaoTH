@@ -30,6 +30,8 @@ import de.naoth.rc.manager.DebugDrawingManager;
 import de.naoth.rc.manager.ImageManagerBottom;
 import de.naoth.rc.core.manager.ObjectListener;
 import de.naoth.rc.dataformats.SPLMessage;
+import de.naoth.rc.dialogs.TeamCommLogViewer.LogTeamCommFrame;
+import de.naoth.rc.dialogs.TeamCommViewer.*;
 import de.naoth.rc.drawings.FieldDrawingSPL3x4;
 import de.naoth.rc.logmanager.BlackBoard;
 import de.naoth.rc.logmanager.LogDataFrame;
@@ -45,6 +47,13 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.TreeMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 import org.freehep.graphicsio.emf.EMFExportFileType;
@@ -427,8 +436,17 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
        
         if(btLog.isSelected()) {
             Plugin.logFileEventManager.addListener(logListener);
+            
+            this.timerCheckMessages = new Timer();
+            this.timerCheckMessages.scheduleAtFixedRate(new LogDrawer(), 100, 33);
         } else {
             Plugin.logFileEventManager.removeListener(logListener);
+            if(this.timerCheckMessages != null) {
+                this.timerCheckMessages.cancel();
+                this.timerCheckMessages.purge();
+                this.timerCheckMessages = null;
+            }
+            this.messageMap.clear();
         }
     }//GEN-LAST:event_btLogActionPerformed
 
@@ -476,26 +494,50 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
     }
   }
   
+  private final Map<String, SPLMessage> messageMap = Collections.synchronizedMap(new TreeMap<String, SPLMessage>());
+  private Timer timerCheckMessages;
+  
   public class LogListener implements LogFrameListener {
-
         @Override
         public void newFrame(BlackBoard b) {
-            LogDataFrame frame = b.get("TeamMessage");
+            // try to get both variants of team messages
+            LogDataFrame frame = b.getNames().contains("TeamMessage") ? b.get("TeamMessage")
+                : (b.getNames().contains("TeamCommMessage") ? b.get("TeamCommMessage") : null);
+            DrawingCollection drawings = new DrawingCollection();
+            
             if (frame != null) {
-                try {
-                    DrawingCollection drawings = new DrawingCollection();
-                    Representations.TeamMessage messageCollection = Representations.TeamMessage.parseFrom(frame.getData());
-                    for(Representations.TeamMessage.Data msg : messageCollection.getDataList()) {
-                        SPLMessage spl = new SPLMessage(msg);
-                        spl.draw(drawings, Color.GRAY, false);
+                if(frame instanceof TeamCommLogViewer.LogTeamCommFrame) {
+                    TeamCommViewer.TeamCommMessage msg = ((LogTeamCommFrame) frame).getTeamCommMessage();
+                    messageMap.put(msg.message.teamNum + "_" + msg.message.playerNum, msg.message);
+                } else {
+                    try {
+                        Representations.TeamMessage messageCollection = Representations.TeamMessage.parseFrom(frame.getData());
+                        for(Representations.TeamMessage.Data msg : messageCollection.getDataList()) {
+                            SPLMessage spl = new SPLMessage(msg);
+                            messageMap.put(spl.teamNum + "_" + spl.playerNum, spl);
+                        }
+                    } catch (InvalidProtocolBufferException ex) {
+                        Helper.handleException(ex);
                     }
-                    
-                    TeamCommViewer.Plugin.drawingEventManager.fireDrawingEvent(drawings);
-                    
-                } catch (InvalidProtocolBufferException ex) {
-                    Helper.handleException(ex);
                 }
             }
+        }
+    }
+  
+    public class LogDrawer extends TimerTask {
+        @Override
+        public void run() {
+            synchronized (messageMap) {
+                if (messageMap.isEmpty()) {
+                    return;
+                }
+                DrawingCollection drawings = new DrawingCollection();
+                for (Entry<String, SPLMessage> entry : messageMap.entrySet()) {
+                    SPLMessage msg = entry.getValue();
+                    msg.draw(drawings, msg.teamNum != 4 ? Color.DARK_GRAY : Color.LIGHT_GRAY, msg.teamNum != 4);
+                }
+                TeamCommViewer.Plugin.drawingEventManager.fireDrawingEvent(drawings);
+            } // end synchronized
         }
     }
 

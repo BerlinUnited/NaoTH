@@ -448,12 +448,12 @@ public class TeamCommLogViewer extends AbstractDialog {
         }
   
         public void suspendThread() {
-            System.out.println("thread suspended");
+//            System.out.println("thread suspended");
             interrupt();
         }
 
         public synchronized void resumeThread() {
-            System.out.println("thread resume");
+//            System.out.println("thread resume");
             notify();
         }
 
@@ -462,7 +462,7 @@ public class TeamCommLogViewer extends AbstractDialog {
         }
         
         public void stopThread() {
-            System.out.println("thread stopped");
+//            System.out.println("thread stopped");
             suspendThread();
             timestampsIterator = timestamps.iterator();
             prevTimestamp = 0;
