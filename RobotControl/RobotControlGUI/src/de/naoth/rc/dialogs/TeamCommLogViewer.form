@@ -7,6 +7,37 @@
         <Property name="approveButtonText" type="java.lang.String" value="Open"/>
       </Properties>
     </Component>
+    <Container class="javax.swing.JPopupMenu" name="pmConfig">
+      <Events>
+        <EventHandler event="popupMenuWillBecomeInvisible" listener="javax.swing.event.PopupMenuListener" parameters="javax.swing.event.PopupMenuEvent" handler="pmConfigPopupMenuWillBecomeInvisible"/>
+      </Events>
+
+      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout">
+        <Property name="useNullLayout" type="boolean" value="true"/>
+      </Layout>
+      <SubComponents>
+        <MenuItem class="javax.swing.JCheckBoxMenuItem" name="skipDelays">
+          <Properties>
+            <Property name="selected" type="boolean" value="true"/>
+            <Property name="text" type="java.lang.String" value="skip delays"/>
+            <Property name="toolTipText" type="java.lang.String" value="Skips delays in the log file (&gt;1s)"/>
+          </Properties>
+        </MenuItem>
+        <MenuItem class="javax.swing.JCheckBoxMenuItem" name="loopThrough">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="loop"/>
+            <Property name="toolTipText" type="java.lang.String" value="Starts at the beginning, if end of the log file is reached"/>
+          </Properties>
+        </MenuItem>
+        <MenuItem class="javax.swing.JCheckBoxMenuItem" name="ignoreTimestamps">
+          <Properties>
+            <Property name="selected" type="boolean" value="true"/>
+            <Property name="text" type="java.lang.String" value="ignore timestamps"/>
+            <Property name="toolTipText" type="java.lang.String" value="Ignores the timestamps in the log file"/>
+          </Properties>
+        </MenuItem>
+      </SubComponents>
+    </Container>
   </NonVisualComponents>
   <AuxValues>
     <AuxValue name="FormSettings_autoResourcing" type="java.lang.Integer" value="0"/>
@@ -135,15 +166,16 @@
         </Component>
         <Component class="javax.swing.JToolBar$Separator" name="jSeparator2">
         </Component>
-        <Component class="javax.swing.JCheckBox" name="skipDelays">
+        <Component class="javax.swing.JToggleButton" name="btnConfig">
           <Properties>
-            <Property name="selected" type="boolean" value="true"/>
-            <Property name="text" type="java.lang.String" value="Skip delays"/>
-            <Property name="toolTipText" type="java.lang.String" value="Skips delays in the log file (&gt;1s)"/>
+            <Property name="text" type="java.lang.String" value="Play config"/>
             <Property name="focusable" type="boolean" value="false"/>
-            <Property name="horizontalTextPosition" type="int" value="4"/>
+            <Property name="horizontalTextPosition" type="int" value="0"/>
             <Property name="verticalTextPosition" type="int" value="3"/>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnConfigActionPerformed"/>
+          </Events>
         </Component>
       </SubComponents>
     </Container>
