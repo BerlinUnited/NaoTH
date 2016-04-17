@@ -19,6 +19,7 @@ import de.naoth.rc.drawings.DrawingCollection;
 import de.naoth.rc.logmanager.LogDataFrame;
 import de.naoth.rc.logmanager.LogFileEventManager;
 import java.awt.Color;
+import java.awt.Component;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -43,10 +44,13 @@ import java.util.TimerTask;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.AbstractListModel;
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
 import javax.swing.JFileChooser;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
+import javax.swing.ListModel;
 import javax.swing.ProgressMonitorInputStream;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -77,7 +81,7 @@ public class TeamCommLogViewer extends AbstractDialog {
     private TreeMap<Long, ArrayList<TeamCommMessage>> messages;
     private long messages_cnt;
     private final Map<String, TeamCommMessage> frameMessages = Collections.synchronizedMap(new TreeMap<String, TeamCommMessage>());
-    private DefaultListModel listMessages = new DefaultListModel();
+    private DefaultListModel<Long> listMessages = new DefaultListModel<>();
     
     private DefaultMutableTreeNode treeRootNode;
     private DefaultTreeModel treeModel;
@@ -93,6 +97,7 @@ public class TeamCommLogViewer extends AbstractDialog {
         treeRootNode = new DefaultMutableTreeNode("Messages in Timestamp");
         treeModel = new DefaultTreeModel(treeRootNode);
         treeModel.addTreeModelListener(new TreeUpdater());
+        
     }
 
     /**
@@ -109,6 +114,7 @@ public class TeamCommLogViewer extends AbstractDialog {
         skipDelays = new javax.swing.JCheckBoxMenuItem();
         loopThrough = new javax.swing.JCheckBoxMenuItem();
         ignoreTimestamps = new javax.swing.JCheckBoxMenuItem();
+        startWithSelection = new javax.swing.JCheckBoxMenuItem();
         jPanel1 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         timestampList = new javax.swing.JList<>();
@@ -117,10 +123,10 @@ public class TeamCommLogViewer extends AbstractDialog {
         jToolBar1 = new javax.swing.JToolBar();
         btnTCLF = new javax.swing.JButton();
         jSeparator1 = new javax.swing.JToolBar.Separator();
+        btnConfig = new javax.swing.JToggleButton();
         btnPlay = new javax.swing.JToggleButton();
         btnStop = new javax.swing.JButton();
         jSeparator2 = new javax.swing.JToolBar.Separator();
-        btnConfig = new javax.swing.JToggleButton();
 
         teamCommFileChooser.setApproveButtonText("Open");
 
@@ -144,15 +150,19 @@ public class TeamCommLogViewer extends AbstractDialog {
         pmConfig.add(loopThrough);
 
         ignoreTimestamps.setSelected(true);
-        ignoreTimestamps.setText("ignore timestamps");
-        ignoreTimestamps.setToolTipText("Ignores the timestamps in the log file");
+        ignoreTimestamps.setText("simulate timestamps");
+        ignoreTimestamps.setToolTipText("Simulate the timestamps instead using the timestamps of the log file");
         pmConfig.add(ignoreTimestamps);
+
+        startWithSelection.setSelected(true);
+        startWithSelection.setText("start with selection");
+        startWithSelection.setToolTipText("Begins playing with the selected timestamp");
+        pmConfig.add(startWithSelection);
 
         jPanel1.setLayout(new java.awt.BorderLayout());
 
         timestampList.setModel(listMessages);
         timestampList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-        timestampList.setToolTipText("Message timestamps");
         jScrollPane1.setViewportView(timestampList);
 
         jPanel1.add(jScrollPane1, java.awt.BorderLayout.LINE_START);
@@ -172,6 +182,18 @@ public class TeamCommLogViewer extends AbstractDialog {
         });
         jToolBar1.add(btnTCLF);
         jToolBar1.add(jSeparator1);
+
+        btnConfig.setIcon(new javax.swing.ImageIcon(getClass().getResource("/toolbarButtonGraphics/general/Preferences24.gif"))); // NOI18N
+        btnConfig.setToolTipText("Playing configuration");
+        btnConfig.setFocusable(false);
+        btnConfig.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btnConfig.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btnConfig.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnConfigActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(btnConfig);
 
         btnPlay.setIcon(new javax.swing.ImageIcon(getClass().getResource("/toolbarButtonGraphics/media/Play24.gif"))); // NOI18N
         btnPlay.setToolTipText("Play TeamComm log file");
@@ -200,17 +222,6 @@ public class TeamCommLogViewer extends AbstractDialog {
         jToolBar1.add(btnStop);
         jToolBar1.add(jSeparator2);
 
-        btnConfig.setText("Play config");
-        btnConfig.setFocusable(false);
-        btnConfig.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        btnConfig.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        btnConfig.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnConfigActionPerformed(evt);
-            }
-        });
-        jToolBar1.add(btnConfig);
-
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -230,33 +241,11 @@ public class TeamCommLogViewer extends AbstractDialog {
     private void btnTCLFActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTCLFActionPerformed
         if(teamCommFileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
             try {
-                File f = teamCommFileChooser.getSelectedFile();
-                // show progress window (if necessary)
-                ProgressMonitorInputStream pmis = new ProgressMonitorInputStream(this, "Reading TeamComm log file", new FileInputStream(f));
-                // create/configure Gson-reader
-                Gson json = new GsonBuilder().create();
-                JsonReader jr = new JsonReader(new InputStreamReader(pmis));
-            
-                messages = new TreeMap<>();
-                int message_cnt = 0;                
-                
-                // read the json log file and add each msg to the collection
-                jr.beginArray();
-                while (jr.hasNext()) {
-                    TeamCommMessage p = json.fromJson(jr, TeamCommMessage.class);
-                    if(messages.containsKey(p.timestamp)) {
-                        messages.get(p.timestamp).add(p);
-                    } else {
-                        messages.put(p.timestamp, new ArrayList<TeamCommMessage>(Arrays.asList(p)));
-                    }
-                    message_cnt++;
-                }
-                jr.endArray();
-                jr.close();
+                // read the file
+                this.messages_cnt = readMessagesFromJsonFile(teamCommFileChooser.getSelectedFile());
                 
                 // TODO: show somewhere on the UI?!
-                System.out.println("Unique timestamps: " + messages.size() + "; Total messages: " + message_cnt);
-                this.messages_cnt = message_cnt;
+                System.out.println("Unique timestamps: " + messages.size() + "; Total messages: " + messages_cnt);
                 
                 btnPlay.setEnabled(true);
                 
@@ -285,10 +274,16 @@ public class TeamCommLogViewer extends AbstractDialog {
 
     private void btnPlayActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPlayActionPerformed
         if(btnPlay.isSelected()) {
-            btnStop.setEnabled(true);
             if(teamCommPlayer != null) {
-                if(teamCommPlayer.isSuspended()) {
-                    // resume player
+                btnStop.setEnabled(true);
+                btnPlay.setToolTipText("Pause");
+                messageTree.setEnabled(false); // while "playing" disable message view
+                
+                if(startWithSelection.isSelected() && !timestampList.isSelectionEmpty()) {
+                    teamCommPlayer.setStartingTimestamp(timestampList.getSelectedValue());
+                }
+                
+                if(teamCommPlayer.isSuspended()) { // resume player
                     teamCommPlayer.resumeThread();
                 } else {
                     // if the thread already died - init a new one
@@ -301,20 +296,26 @@ public class TeamCommLogViewer extends AbstractDialog {
             }
         } else {
             // pause player
-            btnPlay.setToolTipText("Pause");
             if(teamCommPlayer != null) {
                 teamCommPlayer.suspendThread();
             }
+            btnPlay.setToolTipText("Play TeamComm log file");
+            messageTree.setEnabled(true);
+            // select/show the last "played" timestamp
+            if(!timestampList.isSelectionEmpty()) { updateTree(timestampList.getSelectedValue()); }
         }
     }//GEN-LAST:event_btnPlayActionPerformed
 
     private void btnStopActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStopActionPerformed
-        btnStop.setEnabled(false);
-        btnPlay.setSelected(false);
         // stop player
         if(teamCommPlayer != null) {
             teamCommPlayer.stopThread();
         }
+        btnStop.setEnabled(false);
+        btnPlay.setSelected(false);
+        messageTree.setEnabled(true);
+        // select/show the last "played" timestamp
+        if(!timestampList.isSelectionEmpty()) { updateTree(timestampList.getSelectedValue()); }
     }//GEN-LAST:event_btnStopActionPerformed
 
     private void btnConfigActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConfigActionPerformed
@@ -325,9 +326,45 @@ public class TeamCommLogViewer extends AbstractDialog {
         btnConfig.setSelected(false);
     }//GEN-LAST:event_pmConfigPopupMenuWillBecomeInvisible
 
+    /**
+     * Reads TeamCommMessages from JSON file and returns the number of read messages.
+     * @param f JSON file with the TeamCommMessages
+     * @return  number of messages
+     * @throws FileNotFoundException
+     * @throws IOException 
+     */
+    private int readMessagesFromJsonFile(File f) throws FileNotFoundException, IOException {
+        // show progress window (if necessary)
+        ProgressMonitorInputStream pmis = new ProgressMonitorInputStream(this, "Reading TeamComm log file", new FileInputStream(f));
+        // create/configure Gson-reader
+        Gson json = new GsonBuilder().create();
+        JsonReader jr = new JsonReader(new InputStreamReader(pmis));
+
+        messages = new TreeMap<>();
+        int message_cnt = 0;                
+
+        // read the json log file and add each msg to the collection
+        jr.beginArray();
+        while (jr.hasNext()) {
+            TeamCommMessage p = json.fromJson(jr, TeamCommMessage.class);
+            if(messages.containsKey(p.timestamp)) {
+                messages.get(p.timestamp).add(p);
+            } else {
+                messages.put(p.timestamp, new ArrayList<TeamCommMessage>(Arrays.asList(p)));
+            }
+            message_cnt++;
+        }
+        jr.endArray();
+        jr.close();
+        
+        return message_cnt;
+    }
+    
+    /**
+     * Shows the timestamps of the read log file in the jList.
+     */
     private void showMessages() {
         // clear previous loaded messages
-        listMessages.clear();
         timestampList.clearSelection();
         timestampList.addListSelectionListener(new SelectionListener());
         
@@ -341,15 +378,21 @@ public class TeamCommLogViewer extends AbstractDialog {
         }
     }
     
+    /**
+     * Updates the tree component and shows the TeamCommMessages of the timestamp.
+     * @param timestamp 
+     */
+    public void updateTree(long timestamp) {
+        System.out.println(timestamp);
+    }
+    
     private class SelectionListener implements ListSelectionListener {
         @Override
         public void valueChanged(ListSelectionEvent lse) {
-//            System.out.println(lse.getSource()); // JList
-            
-            System.out.println(lse.getFirstIndex());
-            System.out.println(((JList)lse.getSource()).getSelectedValue());
-            
-//            messageTree.
+            // only update "message tree", if "active"
+            if(messageTree.isEnabled()) {
+                updateTree((long) ((JList)lse.getSource()).getSelectedValue());
+            }
         }
     }
     
@@ -401,6 +444,9 @@ public class TeamCommLogViewer extends AbstractDialog {
             while (isRunning && timestampsIterator.hasNext()) {
                 // put current messages (of the timestamp) to the message drawing "buffer"
                 Long current = timestampsIterator.next();
+                // selects the currently "viewed" timestamp in the timestampList
+                timestampList.setSelectedValue(current, true);
+                // gets the TeamCommMessages of the current timestamp
                 ArrayList<TeamCommMessage> tsmsg = messages.get(current);
                 Collection<LogDataFrame> c = new ArrayList<>();
                 for (TeamCommMessage teamCommMessage : tsmsg) {
@@ -448,12 +494,10 @@ public class TeamCommLogViewer extends AbstractDialog {
         }
   
         public void suspendThread() {
-//            System.out.println("thread suspended");
             interrupt();
         }
 
         public synchronized void resumeThread() {
-//            System.out.println("thread resume");
             notify();
         }
 
@@ -462,10 +506,22 @@ public class TeamCommLogViewer extends AbstractDialog {
         }
         
         public void stopThread() {
-//            System.out.println("thread stopped");
             suspendThread();
             timestampsIterator = timestamps.iterator();
             prevTimestamp = 0;
+            timestampList.clearSelection();
+        }
+        
+        public void setStartingTimestamp(long timestamp) {
+            if(isWaiting) {
+                // skip everything an move iterator to the given timestamp
+                timestampsIterator = timestamps.iterator();
+                while (timestampsIterator.hasNext()) {
+                    if(timestamp == timestampsIterator.next()) {
+                        break;
+                    }
+                }
+            }
         }
     }
     
@@ -504,7 +560,8 @@ public class TeamCommLogViewer extends AbstractDialog {
     private javax.swing.JTree messageTree;
     private javax.swing.JPopupMenu pmConfig;
     private javax.swing.JCheckBoxMenuItem skipDelays;
+    private javax.swing.JCheckBoxMenuItem startWithSelection;
     private javax.swing.JFileChooser teamCommFileChooser;
-    private javax.swing.JList<String> timestampList;
+    private javax.swing.JList<Long> timestampList;
     // End of variables declaration//GEN-END:variables
 }

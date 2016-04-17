@@ -32,8 +32,15 @@
         <MenuItem class="javax.swing.JCheckBoxMenuItem" name="ignoreTimestamps">
           <Properties>
             <Property name="selected" type="boolean" value="true"/>
-            <Property name="text" type="java.lang.String" value="ignore timestamps"/>
-            <Property name="toolTipText" type="java.lang.String" value="Ignores the timestamps in the log file"/>
+            <Property name="text" type="java.lang.String" value="simulate timestamps"/>
+            <Property name="toolTipText" type="java.lang.String" value="Simulate the timestamps instead using the timestamps of the log file"/>
+          </Properties>
+        </MenuItem>
+        <MenuItem class="javax.swing.JCheckBoxMenuItem" name="startWithSelection">
+          <Properties>
+            <Property name="selected" type="boolean" value="true"/>
+            <Property name="text" type="java.lang.String" value="start with selection"/>
+            <Property name="toolTipText" type="java.lang.String" value="Begins playing with the selected timestamp"/>
           </Properties>
         </MenuItem>
       </SubComponents>
@@ -88,10 +95,9 @@
                   <Connection code="listMessages" type="code"/>
                 </Property>
                 <Property name="selectionMode" type="int" value="0"/>
-                <Property name="toolTipText" type="java.lang.String" value="Message timestamps"/>
               </Properties>
               <AuxValues>
-                <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
+                <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;Long&gt;"/>
               </AuxValues>
             </Component>
           </SubComponents>
@@ -134,6 +140,20 @@
         </Component>
         <Component class="javax.swing.JToolBar$Separator" name="jSeparator1">
         </Component>
+        <Component class="javax.swing.JToggleButton" name="btnConfig">
+          <Properties>
+            <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+              <Image iconType="3" name="/toolbarButtonGraphics/general/Preferences24.gif"/>
+            </Property>
+            <Property name="toolTipText" type="java.lang.String" value="Playing configuration"/>
+            <Property name="focusable" type="boolean" value="false"/>
+            <Property name="horizontalTextPosition" type="int" value="0"/>
+            <Property name="verticalTextPosition" type="int" value="3"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnConfigActionPerformed"/>
+          </Events>
+        </Component>
         <Component class="javax.swing.JToggleButton" name="btnPlay">
           <Properties>
             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
@@ -165,17 +185,6 @@
           </Events>
         </Component>
         <Component class="javax.swing.JToolBar$Separator" name="jSeparator2">
-        </Component>
-        <Component class="javax.swing.JToggleButton" name="btnConfig">
-          <Properties>
-            <Property name="text" type="java.lang.String" value="Play config"/>
-            <Property name="focusable" type="boolean" value="false"/>
-            <Property name="horizontalTextPosition" type="int" value="0"/>
-            <Property name="verticalTextPosition" type="int" value="3"/>
-          </Properties>
-          <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnConfigActionPerformed"/>
-          </Events>
         </Component>
       </SubComponents>
     </Container>
