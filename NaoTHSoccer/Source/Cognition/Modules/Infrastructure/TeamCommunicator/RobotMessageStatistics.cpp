@@ -106,6 +106,7 @@ double RobotMessageStatistics::riemann_integral(double (RobotMessageStatistics::
 		x = newX;
 	}
 	
+	delete[] arguments;
 	return sum;
 
 }
