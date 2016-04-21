@@ -1,6 +1,6 @@
 #!/bin/bash
 
-sudo -u nao /usr/bin/paplay /home/nao/naoqi/Media/usb_stop.wav
+sudo -u nao /usr/bin/paplay /home/nao/naoqi/Media/usb_start.wav
 
 infoFile="/home/nao/Config/nao.info"
 

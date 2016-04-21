@@ -1,5 +1,5 @@
 #!/bin/bash
-sudo -u nao /usr/bin/paplay /home/nao/naoqi/Media/usb_stop.wav
+sudo -u nao /usr/bin/paplay /home/nao/naoqi/Media/usb_start.wav
 
 # stop naoqi and/or naoth if they are to replace
 if [ -f "./deploy/home/nao/bin/naoth" ]; then
