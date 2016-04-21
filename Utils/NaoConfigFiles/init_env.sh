@@ -245,7 +245,9 @@ ldconfig;
 chmod +s /sbin/shutdown
 chmod +s /sbin/reboot
 
-amixer sset 'PCM' 90%
+# set volume to 88%
+sudo -u nao pactl set-sink-mute 0 false
+sudo -u nao pactl set-sink-volume 0 88%
 
 echo "initialization done, shutting down system";
 shutdown -h now
