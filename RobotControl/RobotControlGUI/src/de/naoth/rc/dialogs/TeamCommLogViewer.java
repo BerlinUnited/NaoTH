@@ -20,6 +20,8 @@ import de.naoth.rc.logmanager.LogDataFrame;
 import de.naoth.rc.logmanager.LogFileEventManager;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Font;
+import java.awt.Image;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -47,9 +49,11 @@ import java.util.logging.Logger;
 import javax.swing.AbstractListModel;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
+import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
+import javax.swing.JTree;
 import javax.swing.ListModel;
 import javax.swing.ProgressMonitorInputStream;
 import javax.swing.event.ListSelectionEvent;
@@ -57,6 +61,7 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
@@ -93,11 +98,11 @@ public class TeamCommLogViewer extends AbstractDialog {
      * Creates new form TeamCommLogViewer
      */
     public TeamCommLogViewer() {
-        initComponents();
         treeRootNode = new DefaultMutableTreeNode("Messages in Timestamp");
         treeModel = new DefaultTreeModel(treeRootNode);
-//        treeModel.addTreeModelListener(new TreeUpdater());
-        
+        initComponents();
+        messageTree.setRootVisible(false);
+        messageTree.setCellRenderer(new TreeCellRenderer());
     }
 
     /**
@@ -384,57 +389,113 @@ public class TeamCommLogViewer extends AbstractDialog {
      * @param timestamp 
      */
     public void updateTree(long timestamp) {
-//        System.out.println(timestamp);
-//        treeModel.
-//        messageTree.setEnabled(true);
-//        messageTree.setVisible(true);
-//        System.out.println();
-//        treeRootNode.
+        // clear previous message tree
+        treeRootNode.removeAllChildren();
+        // get all messages for timestamp
         ArrayList<TeamCommMessage> ts_msg = messages.get(timestamp);
-        int msgCnt = 1;
-        for (TeamCommMessage teamCommMessage : ts_msg) {
-            DefaultMutableTreeNode msgNode = new DefaultMutableTreeNode("#"+msgCnt+" message");
-            msgNode.add(new DefaultMutableTreeNode("playerNum: " + teamCommMessage.message.playerNum));
-            msgNode.add(new DefaultMutableTreeNode("teamNum: " + teamCommMessage.message.teamNum));
-            msgNode.add(new DefaultMutableTreeNode("fallen: " + teamCommMessage.message.fallen));
-            
+        for (int i = 0; i < ts_msg.size(); i++) {
+            TeamCommMessage teamCommMessage = ts_msg.get(i);
+            MessageTreeNode msgNode = new MessageTreeNode("#"+(i+1)+" message", teamCommMessage.isOpponent());
+            // add tree nodes for each message field
+            SPLMessage spl = teamCommMessage.message;
+            msgNode.add(new DefaultMutableTreeNode("playerNum=" + spl.playerNum));
+            msgNode.add(new DefaultMutableTreeNode("teamNum=" + spl.teamNum));
+            msgNode.add(new DefaultMutableTreeNode("fallen=" + spl.fallen));
+            msgNode.add(new DefaultMutableTreeNode("pose_x=" + spl.pose_x));
+            msgNode.add(new DefaultMutableTreeNode("pose_y=" + spl.pose_y));
+            msgNode.add(new DefaultMutableTreeNode("pose_a=" + spl.pose_a));
+            msgNode.add(new DefaultMutableTreeNode("walkingTo_x=" + spl.walkingTo_x));
+            msgNode.add(new DefaultMutableTreeNode("walkingTo_y=" + spl.walkingTo_y));
+            msgNode.add(new DefaultMutableTreeNode("shootingTo_x=" + spl.shootingTo_x));
+            msgNode.add(new DefaultMutableTreeNode("shootingTo_y=" + spl.shootingTo_y));
+            msgNode.add(new DefaultMutableTreeNode("ballAge=" + spl.ballAge));
+            msgNode.add(new DefaultMutableTreeNode("ball_x=" + spl.ball_x));
+            msgNode.add(new DefaultMutableTreeNode("ball_y=" + spl.ball_y));
+            msgNode.add(new DefaultMutableTreeNode("ballVel_x=" + spl.ballVel_x));
+            msgNode.add(new DefaultMutableTreeNode("ballVel_y=" + spl.ballVel_y));
+            msgNode.add(new DefaultMutableTreeNode("suggestion=" + Arrays.toString(spl.suggestion)));
+            msgNode.add(new DefaultMutableTreeNode("intention=" + spl.intention));
+            msgNode.add(new DefaultMutableTreeNode("averageWalkSpeed=" + spl.averageWalkSpeed));
+            msgNode.add(new DefaultMutableTreeNode("maxKickDistance=" + spl.maxKickDistance));
+            msgNode.add(new DefaultMutableTreeNode("currentPositionConfidence=" + spl.currentPositionConfidence));
+            msgNode.add(new DefaultMutableTreeNode("currentSideConfidence=" + spl.currentSideConfidence));
+            msgNode.add(new DefaultMutableTreeNode("numOfDataBytes=" + spl.numOfDataBytes));
+            msgNode.add(new DefaultMutableTreeNode("data=" + Arrays.toString(spl.data)));
+//            msgNode.add(new DefaultMutableTreeNode("user=" + spl.user));
             treeRootNode.add(msgNode);
         }
-        messageTree.treeDidChange();
+        // show all messages
+        treeModel.reload();
+        for (int i = 0; i < messageTree.getRowCount(); i++) {
+            messageTree.expandRow(i);
+        }
     }
     
+    /**
+     * 
+     */
     private class SelectionListener implements ListSelectionListener {
         @Override
         public void valueChanged(ListSelectionEvent lse) {
             // only update "message tree" if "active" and fire event only once
             if(messageTree.isEnabled() && !lse.getValueIsAdjusting()) {
-                updateTree((long) ((JList)lse.getSource()).getSelectedValue());
+                updateTree(timestampList.getSelectedValue());
             }
         }
     }
     
-    private class TreeUpdater implements TreeModelListener {
-
-        @Override
-        public void treeNodesChanged(TreeModelEvent tme) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public void treeNodesInserted(TreeModelEvent tme) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public void treeNodesRemoved(TreeModelEvent tme) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public void treeStructureChanged(TreeModelEvent tme) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    private class TreeCellRenderer extends DefaultTreeCellRenderer {
+        private final ImageIcon ico_blue;
+        private final ImageIcon ico_red;
+        
+        public TreeCellRenderer() {
+            super();
+            // message fields shouldn't have an icon
+            this.setLeafIcon(null);
+            // preload icons for "the" message 
+            ImageIcon ico_red = new javax.swing.ImageIcon(getClass().getResource("/de/naoth/rc/res/vrml/textures/button_red.png"));
+            ImageIcon ico_blue = new javax.swing.ImageIcon(getClass().getResource("/de/naoth/rc/res/vrml/textures/button_blue.png"));
+            // scale image ...
+            this.ico_red = scaleImage(ico_red, 24, 24);
+            this.ico_blue = scaleImage(ico_blue, 24, 24);
         }
         
+        @Override
+        public Component getTreeCellRendererComponent(JTree jtree, Object o, boolean bln, boolean bln1, boolean bln2, int i, boolean bln3) {
+            // get the default tree cell
+            Component result = super.getTreeCellRendererComponent(jtree, o, bln, bln1, bln2, i, bln3);
+            // if cell is "the message", set icon and font
+            if(o instanceof MessageTreeNode) {
+                result.setForeground(((MessageTreeNode) o).isOpponent?Color.RED:Color.BLUE);
+                result.setFont(new Font("Sans Serif", Font.BOLD, 11));
+                this.setIcon(((MessageTreeNode) o).isOpponent?this.ico_red:this.ico_blue);
+            } else {
+                // message fields get "normal" font
+                result.setFont(new Font("Sans Serif", Font.PLAIN, 11));
+            }
+            return result;
+        }
+        
+        /**
+         * Scales the given image.
+         * @param img
+         * @param width
+         * @param height
+         * @return 
+         */
+        private ImageIcon scaleImage(ImageIcon img, int width, int height) {
+            Image image = img.getImage(); // transform it
+            Image newimg = image.getScaledInstance(width, height, java.awt.Image.SCALE_SMOOTH); // scale it the smooth way
+            return new ImageIcon(newimg); // transform it back
+        }
+    }
+    
+    private class MessageTreeNode extends DefaultMutableTreeNode {
+        boolean isOpponent;
+        private MessageTreeNode(String string, boolean opponent) {
+            super(string);
+            isOpponent = opponent;
+        }
     }
     
     private class TeamCommPlayer extends Thread {
@@ -511,10 +572,12 @@ public class TeamCommLogViewer extends AbstractDialog {
         }
   
         public void suspendThread() {
+            System.err.println("suspended");
             interrupt();
         }
 
         public synchronized void resumeThread() {
+            System.err.println("resume");
             notify();
         }
 
