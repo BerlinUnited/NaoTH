@@ -96,7 +96,7 @@ public class TeamCommLogViewer extends AbstractDialog {
         initComponents();
         treeRootNode = new DefaultMutableTreeNode("Messages in Timestamp");
         treeModel = new DefaultTreeModel(treeRootNode);
-        treeModel.addTreeModelListener(new TreeUpdater());
+//        treeModel.addTreeModelListener(new TreeUpdater());
         
     }
 
@@ -167,6 +167,7 @@ public class TeamCommLogViewer extends AbstractDialog {
 
         jPanel1.add(jScrollPane1, java.awt.BorderLayout.LINE_START);
 
+        messageTree.setModel(treeModel);
         jScrollPane2.setViewportView(messageTree);
 
         jPanel1.add(jScrollPane2, java.awt.BorderLayout.CENTER);
@@ -383,14 +384,30 @@ public class TeamCommLogViewer extends AbstractDialog {
      * @param timestamp 
      */
     public void updateTree(long timestamp) {
-        System.out.println(timestamp);
+//        System.out.println(timestamp);
+//        treeModel.
+//        messageTree.setEnabled(true);
+//        messageTree.setVisible(true);
+//        System.out.println();
+//        treeRootNode.
+        ArrayList<TeamCommMessage> ts_msg = messages.get(timestamp);
+        int msgCnt = 1;
+        for (TeamCommMessage teamCommMessage : ts_msg) {
+            DefaultMutableTreeNode msgNode = new DefaultMutableTreeNode("#"+msgCnt+" message");
+            msgNode.add(new DefaultMutableTreeNode("playerNum: " + teamCommMessage.message.playerNum));
+            msgNode.add(new DefaultMutableTreeNode("teamNum: " + teamCommMessage.message.teamNum));
+            msgNode.add(new DefaultMutableTreeNode("fallen: " + teamCommMessage.message.fallen));
+            
+            treeRootNode.add(msgNode);
+        }
+        messageTree.treeDidChange();
     }
     
     private class SelectionListener implements ListSelectionListener {
         @Override
         public void valueChanged(ListSelectionEvent lse) {
-            // only update "message tree", if "active"
-            if(messageTree.isEnabled()) {
+            // only update "message tree" if "active" and fire event only once
+            if(messageTree.isEnabled() && !lse.getValueIsAdjusting()) {
                 updateTree((long) ((JList)lse.getSource()).getSelectedValue());
             }
         }
