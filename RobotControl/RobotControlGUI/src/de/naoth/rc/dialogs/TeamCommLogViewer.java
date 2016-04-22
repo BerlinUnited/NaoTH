@@ -9,6 +9,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.*;
+import com.google.gson.stream.MalformedJsonException;
 import de.naoth.rc.RobotControl;
 import de.naoth.rc.core.dialog.AbstractDialog;
 import de.naoth.rc.core.dialog.DialogPlugin;
@@ -245,6 +246,8 @@ public class TeamCommLogViewer extends AbstractDialog {
     private void btnTCLFActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTCLFActionPerformed
         if(teamCommFileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
             try {
+                // before loading new file, cleanup old one
+                resetMessages();
                 // read the file
                 this.messages_cnt = readMessagesFromJsonFile(teamCommFileChooser.getSelectedFile());
                 
@@ -255,6 +258,9 @@ public class TeamCommLogViewer extends AbstractDialog {
                 
                 // cancel previous "TeamComm simulation"
                 stopTeamCommPlayer();
+            } catch (MalformedJsonException ex) {
+                JOptionPane.showMessageDialog(null, "Unknown format!", "Unknown file format!", JOptionPane.WARNING_MESSAGE);
+                return;
             } catch (FileNotFoundException ex) {
                 JOptionPane.showMessageDialog(null, "File not found!", "Not found", JOptionPane.WARNING_MESSAGE);
             } catch (IOException ex) {
@@ -303,6 +309,14 @@ public class TeamCommLogViewer extends AbstractDialog {
         btnConfig.setSelected(false);
     }//GEN-LAST:event_pmConfigPopupMenuWillBecomeInvisible
 
+    private void resetMessages() {
+        messages_cnt = 0;
+        if(messages != null){ messages.clear(); }
+        listMessages.clear();
+        treeRootNode.removeAllChildren();
+        treeModel.reload();
+    }
+    
     /**
      * Stops the TeamCommPlayer.
      */
@@ -331,20 +345,30 @@ public class TeamCommLogViewer extends AbstractDialog {
         JsonReader jr = new JsonReader(new InputStreamReader(pmis));
 
         messages = new TreeMap<>();
-        int message_cnt = 0;                
+        int message_cnt = 0;    
+        int message_fail = 0;
 
         // read the json log file and add each msg to the collection
         jr.beginArray();
         while (jr.hasNext()) {
             TeamCommMessage p = json.fromJson(jr, TeamCommMessage.class);
-            if(!messages.containsKey(p.timestamp)) {
-                messages.put(p.timestamp, new Timestamp(p.timestamp));
+            if(p.message != null) {
+                if(!messages.containsKey(p.timestamp)) {
+                    messages.put(p.timestamp, new Timestamp(p.timestamp));
+                }
+                messages.get(p.timestamp).addMessage(p);
+                message_cnt++;
+            } else {
+                message_fail++;
             }
-            messages.get(p.timestamp).addMessage(p);
-            message_cnt++;
         }
         jr.endArray();
         jr.close();
+        
+        if(message_fail > 0) {
+            // TODO: display, where it is useful?!
+            System.out.println("Failed to read " + message_fail + " messages!");
+        }
         
         return message_cnt;
     }
