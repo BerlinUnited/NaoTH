@@ -91,6 +91,13 @@ public class TeamCommViewer extends AbstractDialog {
      */
     public TeamCommViewer() {
         initComponents();
+        // closes the log file before exiting application
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            @Override
+            public void run() {
+                closingLogfile();
+            }
+        });
     }
 
     /**
