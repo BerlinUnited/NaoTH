@@ -268,7 +268,7 @@ public class TeamCommLogViewer extends AbstractDialog {
                     }
                 }
                 // init teamCommMessage player
-                teamCommPlayer = new TeamCommPlayer();
+//                teamCommPlayer = new TeamCommPlayer();
             } catch (FileNotFoundException ex) {
                 JOptionPane.showMessageDialog(null, "File not found!", "Not found", JOptionPane.WARNING_MESSAGE);
             } catch (IOException ex) {
@@ -280,15 +280,15 @@ public class TeamCommLogViewer extends AbstractDialog {
 
     private void btnPlayActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPlayActionPerformed
         if(btnPlay.isSelected()) {
-            if(teamCommPlayer != null) {
+//            if(teamCommPlayer != null) {
                 btnStop.setEnabled(true);
                 btnPlay.setToolTipText("Pause");
                 messageTree.setEnabled(false); // while "playing" disable message view
-                
+                /*
                 if(startWithSelection.isSelected() && !timestampList.isSelectionEmpty()) {
                     teamCommPlayer.setStartingTimestamp(timestampList.getSelectedValue());
-                }
-                
+                }*/
+                /*
                 if(teamCommPlayer.isSuspended()) { // resume player
                     teamCommPlayer.resumeThread();
                 } else {
@@ -298,12 +298,22 @@ public class TeamCommLogViewer extends AbstractDialog {
                     }
                     // start player
                     teamCommPlayer.start();
-                }
-            }
+                }*/
+                timestampList.setSelectedIndex(0);
+                System.out.println(timestampList.getSelectedValue());
+                teamCommPlayer = new TeamCommPlayer(timestampList.getSelectedIndex());
+                teamCommPlayer.start();
+//            }
         } else {
             // pause player
             if(teamCommPlayer != null) {
+//                teamCommPlayer.suspendThread();
                 teamCommPlayer.suspendThread();
+                try {
+                    teamCommPlayer.join();
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(TeamCommLogViewer.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
             btnPlay.setToolTipText("Play TeamComm log file");
             messageTree.setEnabled(true);
@@ -316,6 +326,11 @@ public class TeamCommLogViewer extends AbstractDialog {
         // stop player
         if(teamCommPlayer != null) {
             teamCommPlayer.stopThread();
+            try {
+                teamCommPlayer.join();
+            } catch (InterruptedException ex) {
+                Logger.getLogger(TeamCommLogViewer.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
         btnStop.setEnabled(false);
         btnPlay.setSelected(false);
@@ -438,7 +453,7 @@ public class TeamCommLogViewer extends AbstractDialog {
         @Override
         public void valueChanged(ListSelectionEvent lse) {
             // only update "message tree" if "active" and fire event only once
-            if(messageTree.isEnabled() && !lse.getValueIsAdjusting()) {
+            if(messageTree.isEnabled() && !lse.getValueIsAdjusting() && !timestampList.isSelectionEmpty()) {
                 updateTree(timestampList.getSelectedValue());
             }
         }
@@ -500,7 +515,8 @@ public class TeamCommLogViewer extends AbstractDialog {
     
     private class TeamCommPlayer extends Thread {
 
-        private final NavigableSet<Long> timestamps;
+        private final ListModel<Long> timestamps;
+        private int it;
         private Iterator<Long> timestampsIterator;
         
         private long prevTimestamp = 0;
@@ -508,22 +524,28 @@ public class TeamCommLogViewer extends AbstractDialog {
         private boolean isWaiting = false;
         private boolean isRunning = true;
         
-        public TeamCommPlayer() {
-            timestamps = messages.navigableKeySet();
-            timestampsIterator = timestamps.iterator();
+        public TeamCommPlayer(int startIndex) {
+//            timestamps = messages.navigableKeySet();
+//            timestampsIterator = timestamps.iterator();
+            timestamps = timestampList.getModel();
+            it = startIndex < 0 ? 0 : startIndex;
         }
         
         @Override
         public void run() {
-            if(timestampsIterator == null) {
+            if(timestamps == null) {
                 return;
             }
             
-            while (isRunning && timestampsIterator.hasNext()) {
+//            messages.navigableKeySet().
+//            timestampList.get
+//            int it = 0;
+            while (isRunning && it < timestamps.getSize()) {
                 // put current messages (of the timestamp) to the message drawing "buffer"
-                Long current = timestampsIterator.next();
+                Long current = timestamps.getElementAt(it);
                 // selects the currently "viewed" timestamp in the timestampList
                 timestampList.setSelectedValue(current, true);
+//                timestampList.setSelectedIndex(it);
                 // gets the TeamCommMessages of the current timestamp
                 ArrayList<TeamCommMessage> tsmsg = messages.get(current);
                 Collection<LogDataFrame> c = new ArrayList<>();
@@ -543,10 +565,11 @@ public class TeamCommLogViewer extends AbstractDialog {
                     sleep((skipDelays.isSelected() && sleeping > 1000) || (sleeping < 0) ? 33 : sleeping);
                 } catch (InterruptedException ex) {
                     // if thread gets interrupted while "sleeping", handle it like a suspension
-                    isWaiting = true;
+//                    isWaiting = true;
                 }
                 
                 // suspending loop - it only continues if thread gets "notified"!
+                /*
                 while (interrupted() || isWaiting) {
                     isWaiting = true;
                     try {
@@ -555,30 +578,32 @@ public class TeamCommLogViewer extends AbstractDialog {
                         }
                         isWaiting = false;
                     } catch (InterruptedException e) {}
-                }
+                }*/
                 
                 prevTimestamp = current;
+                it++;
                 
                 // if we should loop through the log file and reached the end - reset to the beginning
-                if(loopThrough.isSelected() && !timestampsIterator.hasNext()) {
-                    timestampsIterator = timestamps.iterator();
+                if(loopThrough.isSelected() && it >= timestamps.getSize()) {
+                    it = 0;
                     prevTimestamp = 0;
                 }
             }
             
             // end of the log file
             isRunning = false;
-            btnStop.doClick(); // handle it, as if the user clicke the stop button
+//            btnStop.doClick(); // handle it, as if the user clicke the stop button
         }
   
         public void suspendThread() {
-            System.err.println("suspended");
+            isRunning = false;
+//            System.err.println("suspended");
             interrupt();
         }
 
         public synchronized void resumeThread() {
-            System.err.println("resume");
-            notify();
+//            System.err.println("resume");
+//            notify();
         }
 
         public boolean isSuspended() {
@@ -587,7 +612,8 @@ public class TeamCommLogViewer extends AbstractDialog {
         
         public void stopThread() {
             suspendThread();
-            timestampsIterator = timestamps.iterator();
+//            timestampsIterator = timestamps.iterator();
+            it = 0;
             prevTimestamp = 0;
             timestampList.clearSelection();
         }
@@ -595,7 +621,8 @@ public class TeamCommLogViewer extends AbstractDialog {
         public void setStartingTimestamp(long timestamp) {
             if(isWaiting) {
                 // skip everything an move iterator to the given timestamp
-                timestampsIterator = timestamps.iterator();
+                
+//                timestampsIterator = timestamps.iterator();
                 while (timestampsIterator.hasNext()) {
                     if(timestamp == timestampsIterator.next()) {
                         break;
