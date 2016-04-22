@@ -83,9 +83,9 @@ public class TeamCommLogViewer extends AbstractDialog {
         public static LogFileEventManager logFileEventManager;
     }//end Plugin
     
-    private TreeMap<Long, ArrayList<TeamCommMessage>> messages;
+    private TreeMap<Long, Timestamp> messages;
     private long messages_cnt;
-    private final DefaultListModel<Long> listMessages = new DefaultListModel<>();
+    private final DefaultListModel<Timestamp> listMessages = new DefaultListModel<>();
     
     private final DefaultMutableTreeNode treeRootNode;
     private final DefaultTreeModel treeModel;
@@ -337,11 +337,10 @@ public class TeamCommLogViewer extends AbstractDialog {
         jr.beginArray();
         while (jr.hasNext()) {
             TeamCommMessage p = json.fromJson(jr, TeamCommMessage.class);
-            if(messages.containsKey(p.timestamp)) {
-                messages.get(p.timestamp).add(p);
-            } else {
-                messages.put(p.timestamp, new ArrayList<TeamCommMessage>(Arrays.asList(p)));
+            if(!messages.containsKey(p.timestamp)) {
+                messages.put(p.timestamp, new Timestamp(p.timestamp));
             }
+            messages.get(p.timestamp).addMessage(p);
             message_cnt++;
         }
         jr.endArray();
@@ -362,23 +361,22 @@ public class TeamCommLogViewer extends AbstractDialog {
         if(messages == null || messages.size() == 0) {
             JOptionPane.showMessageDialog(null, "No messeges read ...", "No messages", JOptionPane.INFORMATION_MESSAGE);
         } else {
-            for (Map.Entry<Long, ArrayList<TeamCommMessage>> entry : messages.entrySet()) {
-                listMessages.addElement(entry.getKey());
+            for (Map.Entry<Long, Timestamp> entry : messages.entrySet()) {
+                listMessages.addElement(entry.getValue());
             }
         }
     }
     
     /**
      * Updates the tree component and shows the TeamCommMessages of the timestamp.
-     * @param timestamp 
+     * @param ts 
      */
-    public void updateTree(long timestamp) {
+    public void updateTree(Timestamp ts) {
         // clear previous message tree
         treeRootNode.removeAllChildren();
-        // get all messages for timestamp
-        ArrayList<TeamCommMessage> ts_msg = messages.get(timestamp);
-        for (int i = 0; i < ts_msg.size(); i++) {
-            TeamCommMessage teamCommMessage = ts_msg.get(i);
+        
+        for (int i = 0; i < ts.messages.size(); i++) {
+            TeamCommMessage teamCommMessage = ts.messages.get(i);
             MessageTreeNode msgNode = new MessageTreeNode("#"+(i+1)+" message", teamCommMessage.isOpponent());
             // add tree nodes for each message field
             SPLMessage spl = teamCommMessage.message;
@@ -412,6 +410,27 @@ public class TeamCommLogViewer extends AbstractDialog {
         treeModel.reload();
         for (int i = 0; i < messageTree.getRowCount(); i++) {
             messageTree.expandRow(i);
+        }
+    }
+    
+    private class Timestamp {
+        public final long timestamp;
+        public final ArrayList<TeamCommMessage> messages = new ArrayList<>();
+
+        public Timestamp(long ts) {
+            timestamp = ts;
+        }
+        
+        public void addMessage(TeamCommMessage msg) {
+            messages.add(msg);
+        }
+        
+        public int size() {
+            return messages.size();
+        }
+        
+        public String toString() {
+            return timestamp + " ("+messages.size()+")";
         }
     }
     
@@ -484,7 +503,7 @@ public class TeamCommLogViewer extends AbstractDialog {
     
     private class TeamCommPlayer extends Thread {
 
-        private final ListModel<Long> timestamps;
+        private final ListModel<Timestamp> timestamps;
         private int it;
         private long prevTimestamp = 0;
         private boolean isRunning = true;
@@ -501,16 +520,14 @@ public class TeamCommLogViewer extends AbstractDialog {
             }
             while (isRunning && it < timestamps.getSize()) {
                 // put current messages (of the timestamp) to the message drawing "buffer"
-                Long current = timestamps.getElementAt(it);
+                Timestamp current = timestamps.getElementAt(it);
                 // selects the currently "viewed" timestamp in the timestampList
                 timestampList.setSelectedValue(current, true);
-                // gets the TeamCommMessages of the current timestamp
-                ArrayList<TeamCommMessage> tsmsg = messages.get(current);
                 Collection<LogDataFrame> c = new ArrayList<>();
-                for (TeamCommMessage teamCommMessage : tsmsg) {
+                for (TeamCommMessage teamCommMessage : current.messages) {
                     c.add(new LogTeamCommFrame(
                         // replaces the log file timestamp with the current timestamp; robot isn't "DEAD"!
-                        ignoreTimestamps.isSelected() ? System.currentTimeMillis() : current,
+                        ignoreTimestamps.isSelected() ? System.currentTimeMillis() : current.timestamp,
                         "TeamCommMessage",
                         teamCommMessage
                     ));
@@ -518,12 +535,12 @@ public class TeamCommLogViewer extends AbstractDialog {
                 Plugin.logFileEventManager.fireLogFrameEvent(c);
                 // simulate the delay between the arrival of subsequent messages
                 try {
-                    long sleeping = prevTimestamp == 0 ? 0 : (current - prevTimestamp);
+                    long sleeping = prevTimestamp == 0 ? 0 : (current.timestamp - prevTimestamp);
                     // if delays should be skipped, every delay > 1 second is set to 33ms
                     sleep((skipDelays.isSelected() && sleeping > 1000) || (sleeping < 0) ? 33 : sleeping);
                 } catch (InterruptedException ex) {}
                 
-                prevTimestamp = current;
+                prevTimestamp = current.timestamp;
                 it++;
                 
                 // if we should loop through the log file and reached the end - reset to the beginning
@@ -581,6 +598,6 @@ public class TeamCommLogViewer extends AbstractDialog {
     private javax.swing.JCheckBoxMenuItem skipDelays;
     private javax.swing.JCheckBoxMenuItem startWithSelection;
     private javax.swing.JFileChooser teamCommFileChooser;
-    private javax.swing.JList<Long> timestampList;
+    private javax.swing.JList<Timestamp> timestampList;
     // End of variables declaration//GEN-END:variables
 }
