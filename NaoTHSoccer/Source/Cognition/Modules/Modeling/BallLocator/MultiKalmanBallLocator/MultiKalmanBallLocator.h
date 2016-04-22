@@ -1,5 +1,5 @@
-#ifndef PLAINKALMANFILTERBALLLOCATOR_H
-#define PLAINKALMANFILTERBALLLOCATOR_H
+#ifndef MULTIKALMANBALLLOCATOR_H
+#define MULTIKALMANBALLLOCATOR_H
 
 #include <ModuleFramework/Module.h>
 
@@ -30,7 +30,7 @@
 
 //////////////////// BEGIN MODULE INTERFACE DECLARATION ////////////////////
 
-BEGIN_DECLARE_MODULE(PlainKalmanFilterBallLocator)
+BEGIN_DECLARE_MODULE(MultiKalmanBallLocator)
 
 // debug stuff
   PROVIDE(DebugDrawings)
@@ -58,16 +58,16 @@ BEGIN_DECLARE_MODULE(PlainKalmanFilterBallLocator)
   REQUIRE(CameraMatrixTop)
 
   PROVIDE(BallModel)
-END_DECLARE_MODULE(PlainKalmanFilterBallLocator)
+END_DECLARE_MODULE(MultiKalmanBallLocator)
 
 
 //////////////////// END MODULE INTERFACE DECLARATION //////////////////////
 
-class PlainKalmanFilterBallLocator : private PlainKalmanFilterBallLocatorBase
+class MultiKalmanBallLocator : private MultiKalmanBallLocatorBase
 {
 public:
-    PlainKalmanFilterBallLocator();
-    virtual ~PlainKalmanFilterBallLocator();
+    MultiKalmanBallLocator();
+    virtual ~MultiKalmanBallLocator();
 
     virtual void execute();
 
@@ -183,4 +183,4 @@ private:
     Eigen::Matrix2d initialStateStdSingleDimension;
 };
 
-#endif // PLAINKALMANFILTERBALLLOCATOR_H
+#endif // MULTIKALMANBALLLOCATOR_H
