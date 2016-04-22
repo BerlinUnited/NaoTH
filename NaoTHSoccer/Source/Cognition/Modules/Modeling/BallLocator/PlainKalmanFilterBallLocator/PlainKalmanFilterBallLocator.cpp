@@ -45,7 +45,6 @@ PlainKalmanFilterBallLocator::~PlainKalmanFilterBallLocator()
     getDebugParameterList().remove(&kfParameters);
 }
 
-/*--- !!! sometimes nan filters !!! ---*/
 void PlainKalmanFilterBallLocator::execute()
 {
   // allways reset the model first
@@ -57,15 +56,13 @@ void PlainKalmanFilterBallLocator::execute()
     return;
   }
 
-
     DEBUG_REQUEST("PlainKalmanFilterBallLocator:remove_all_models",
         filter.clear();
     );
 
-    
     // delete some filter if they are too bad
     if(filter.size() > 1) {
-        std::vector<ExtendedKalmanFilter4d>::iterator iter = filter.begin();
+        Filters::iterator iter = filter.begin();
         while(iter != filter.end() && filter.size() > 1) {
           if(!iter->ballSeenFilter.value() && (*iter).getEllipseLocation().major * (*iter).getEllipseLocation().minor * M_PI > area95Threshold){
                 iter = filter.erase(iter);
@@ -77,7 +74,7 @@ void PlainKalmanFilterBallLocator::execute()
 
 
     // apply odometry on the filter state, to keep it in the robot's local coordinate system
-    for(std::vector<ExtendedKalmanFilter4d>::iterator iter = filter.begin(); iter != filter.end(); ++iter) {
+    for(Filters::iterator iter = filter.begin(); iter != filter.end(); ++iter) {
         applyOdometryOnFilterState(*iter);
     }
 
@@ -86,7 +83,7 @@ void PlainKalmanFilterBallLocator::execute()
     // prediction
     double dt = getFrameInfo().getTimeInSeconds() - lastFrameInfo.getTimeInSeconds();
     ASSERT(dt > 0);
-    for(std::vector<ExtendedKalmanFilter4d>::iterator iter = filter.begin(); iter != filter.end(); iter++){
+    for(Filters::iterator iter = filter.begin(); iter != filter.end(); iter++){
       predict(*iter, dt);
     }
 
@@ -96,9 +93,8 @@ void PlainKalmanFilterBallLocator::execute()
     //updateByPerceptsNormal();
     updateByPerceptsCool();
 
-
     // Heinrich: update the "ball seen" values
-    for(std::vector<ExtendedKalmanFilter4d>::iterator iter = filter.begin(); iter != filter.end(); ++iter){
+    for(Filters::iterator iter = filter.begin(); iter != filter.end(); ++iter){
       bool updated = iter->getLastUpdateFrame().getFrameNumber() == getFrameInfo().getFrameNumber();
       (*iter).ballSeenFilter.setParameter(kfParameters.g0, kfParameters.g1);
       (*iter).ballSeenFilter.update(updated, 0.3, 0.7);
@@ -154,7 +150,7 @@ void PlainKalmanFilterBallLocator::updateByPerceptsNormal()
         // find best matching filter
         updateAssociationFunction->determineBestPredictor(filter, z, h);
 
-        std::vector<ExtendedKalmanFilter4d>::iterator bestPredictor = updateAssociationFunction->getBestPredictor();
+        Filters::iterator bestPredictor = updateAssociationFunction->getBestPredictor();
 
         bool allowJustOneModel = false;
         DEBUG_REQUEST("PlainKalmanFilterBallLocator:allow_just_one_model",
@@ -166,7 +162,7 @@ void PlainKalmanFilterBallLocator::updateByPerceptsNormal()
         {
             Eigen::Vector4d newState;
             newState << p.x, 0, p.y, 0;
-            filter.push_back(ExtendedKalmanFilter4d(getFrameInfo(), newState, processNoiseStdSingleDimension, measurementNoiseCovariances, initialStateStdSingleDimension));
+            filter.push_back(BallHypothesis(getFrameInfo(), newState, processNoiseStdSingleDimension, measurementNoiseCovariances, initialStateStdSingleDimension));
         }
         else
         {
@@ -198,7 +194,7 @@ void PlainKalmanFilterBallLocator::updateByPerceptsCool()
   // update by percepts
   // A ~ goal posts
   // B ~ hypotheses
-  Assoziation sensorAssoziation(getMultiBallPercept().getPercepts().size(), filter.size());
+  Assoziation sensorAssoziation(static_cast<int>(getMultiBallPercept().getPercepts().size()), static_cast<int>(filter.size()));
 
   int i = 0;
   for(MultiBallPercept::ConstABPIterator iter = getMultiBallPercept().begin(); iter != getMultiBallPercept().end(); iter++) 
@@ -218,7 +214,7 @@ void PlainKalmanFilterBallLocator::updateByPerceptsCool()
       z << angles.x, angles.y;
 
       int x = 0;
-      for(std::vector<ExtendedKalmanFilter4d>::iterator iter = filter.begin(); iter != filter.end(); ++iter)
+      for(Filters::iterator iter = filter.begin(); iter != filter.end(); ++iter)
       {
         double confidence = updateAssociationFunction->associationScore(*iter, z, h);
 
@@ -261,7 +257,7 @@ void PlainKalmanFilterBallLocator::updateByPerceptsCool()
       Vector2d p = (*iter).positionOnField;
       Eigen::Vector4d newState;
       newState << p.x, 0, p.y, 0;
-      filter.push_back(ExtendedKalmanFilter4d(getFrameInfo(), newState, processNoiseStdSingleDimension, measurementNoiseCovariances, initialStateStdSingleDimension));
+      filter.push_back(BallHypothesis(getFrameInfo(), newState, processNoiseStdSingleDimension, measurementNoiseCovariances, initialStateStdSingleDimension));
     }
     i++;
   }
@@ -408,7 +404,7 @@ PlainKalmanFilterBallLocator::Filters::const_iterator PlainKalmanFilterBallLocat
   Filters::const_iterator bestModel = filter.end();
   double value = 0;
 
-  for(std::vector<ExtendedKalmanFilter4d>::const_iterator iter = filter.begin(); iter != filter.end(); ++iter) {
+  for(Filters::const_iterator iter = filter.begin(); iter != filter.end(); ++iter) {
     if(iter->ballSeenFilter.value()) {
       double temp = Vector2d(iter->getState()(0), iter->getState()(2)).abs();
       if(bestModel == filter.end() || temp < value){
@@ -421,7 +417,7 @@ PlainKalmanFilterBallLocator::Filters::const_iterator PlainKalmanFilterBallLocat
   return bestModel;
 }
 
-void PlainKalmanFilterBallLocator::provideBallModel(const ExtendedKalmanFilter4d& model) 
+void PlainKalmanFilterBallLocator::provideBallModel(const BallHypothesis& model)
 {
   getBallModel().valid = true;
   getBallModel().knows = model.ballSeenFilter.value();
@@ -455,7 +451,7 @@ void PlainKalmanFilterBallLocator::provideBallModel(const ExtendedKalmanFilter4d
 
   getBallModel().futurePosition[0] = getBallModel().position;
   
-  ExtendedKalmanFilter4d modelCopy(model);
+  BallHypothesis modelCopy(model);
   for(size_t i=1; i < getBallModel().futurePosition.size(); i++)
   {
     predict(modelCopy, 1.0); // predict 1s in the future
@@ -523,7 +519,7 @@ void PlainKalmanFilterBallLocator::doDebugRequest()
 
     DEBUG_REQUEST("PlainKalmanFilterBallLocator:draw_trust_the_ball",
         FIELD_DRAWING_CONTEXT;
-        for(std::vector<ExtendedKalmanFilter4d>::const_iterator iter = filter.begin(); iter != filter.end(); iter++)
+        for(Filters::const_iterator iter = filter.begin(); iter != filter.end(); iter++)
         {
           if((*iter).ballSeenFilter.value()) {
             PEN("00FF00", 10);
@@ -540,11 +536,11 @@ void PlainKalmanFilterBallLocator::doDebugRequest()
 void PlainKalmanFilterBallLocator::drawFiltersOnField() const {
     FIELD_DRAWING_CONTEXT;
 
-    for(std::vector<ExtendedKalmanFilter4d>::const_iterator iter = filter.begin(); iter != filter.end(); iter++)
+    for(Filters::const_iterator iter = filter.begin(); iter != filter.end(); iter++)
     {
         if(getBallModel().valid)
         {
-            if((*iter).wasUpdated()) {
+            if((*iter).getLastUpdateFrame().getTime() == getFrameInfo().getTime()) {
                 if(bestModel == iter)
                     PEN("99FF00", 20);
                 else
@@ -610,7 +606,7 @@ void PlainKalmanFilterBallLocator::reloadParameters()
     Eigen::Matrix2d processNoiseCovariancesSingleDimension;
     processNoiseCovariancesSingleDimension = processNoiseStdSingleDimension.cwiseProduct(processNoiseStdSingleDimension);
 
-    for(std::vector<ExtendedKalmanFilter4d>::iterator iter = filter.begin(); iter != filter.end(); iter++){
+    for(Filters::iterator iter = filter.begin(); iter != filter.end(); iter++){
         (*iter).setCovarianceOfProcessNoise(processNoiseCovariancesSingleDimension);
         (*iter).setCovarianceOfMeasurementNoise(measurementNoiseCovariances);
     }

@@ -17,9 +17,9 @@
 
 #include "Representations/Perception/CameraMatrix.h"
 
-#include "ExtendedKalmanFilter4d.h"
+#include "BallHypothesis.h"
 #include "UpdateAssociationFunctions.h"
-#include "MeasurementFunctions.h"
+//#include "MeasurementFunctions.h"
 
 // debug
 #include "Tools/Debug/DebugDrawings.h"
@@ -66,7 +66,6 @@ END_DECLARE_MODULE(PlainKalmanFilterBallLocator)
 
 class PlainKalmanFilterBallLocator : private PlainKalmanFilterBallLocatorBase
 {
-
 public:
     PlainKalmanFilterBallLocator();
     virtual ~PlainKalmanFilterBallLocator();
@@ -80,7 +79,7 @@ private:
     FrameInfo lastFrameInfo;
 
 private:
-    typedef std::vector<ExtendedKalmanFilter4d> Filters;
+    typedef std::vector<BallHypothesis> Filters;
     Filters filter;
     Filters::const_iterator bestModel;
 
@@ -101,7 +100,7 @@ private:
 
     Filters::const_iterator selectBestModel() const;
 
-    void provideBallModel(const ExtendedKalmanFilter4d& model);
+    void provideBallModel(const BallHypothesis &model);
 
     /*    DEBUG STUFF    */
     void doDebugRequest();

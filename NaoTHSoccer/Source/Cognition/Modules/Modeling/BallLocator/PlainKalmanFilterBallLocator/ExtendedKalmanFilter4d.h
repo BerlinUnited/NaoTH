@@ -11,9 +11,6 @@
 
 #include <Eigen/Eigen>
 
-//#include <Representations/Perception/BallPercept.h>
-#include "Representations/Infrastructure/FrameInfo.h"
-
 #include <Representations/Perception/CameraMatrix.h>
 #include <Representations/Infrastructure/CameraInfo.h>
 
@@ -23,8 +20,6 @@
 
 #include "MeasurementFunctions.h"
 
-// TODO: remove this
-#include "Tools/Filters/AssymetricalBoolFilter.h"
 
 struct Ellipse2d {
     double angle;
@@ -35,12 +30,12 @@ struct Ellipse2d {
 class ExtendedKalmanFilter4d
 {
 public:
-    ExtendedKalmanFilter4d(const naoth::FrameInfo& frameInfo, const Eigen::Vector4d& state, const Eigen::Matrix2d& processNoiseStdSingleDimension, const Eigen::Matrix2d& measurementNoiseCovariances, const Eigen::Matrix2d& initialStateStdSingleDimension);
+    ExtendedKalmanFilter4d(const Eigen::Vector4d& state, const Eigen::Matrix2d& processNoiseStdSingleDimension, const Eigen::Matrix2d& measurementNoiseCovariances, const Eigen::Matrix2d& initialStateStdSingleDimension);
 
     ~ExtendedKalmanFilter4d();
 
     void predict(const Eigen::Vector2d &u, double dt);
-    void update(const Eigen::Vector2d &z, const Measurement_Function_H& h, const naoth::FrameInfo frameInfo);
+    void update(const Eigen::Vector2d &z, const Measurement_Function_H& h);
 
 public:
 
@@ -49,11 +44,6 @@ public:
     void setCovarianceOfState(const Eigen::Matrix4d& p1);
     void setCovarianceOfProcessNoise(const Eigen::Matrix2d& q);
     void setCovarianceOfMeasurementNoise(const Eigen::Matrix2d& r);
-
-    //--- getter ---//
-    bool wasUpdated() const;
-    const naoth::FrameInfo& getLastUpdateFrame() const;
-    const naoth::FrameInfo& getFrameOfCreation() const { return createFrame; }
 
     const Eigen::Matrix4d& getProcessCovariance() const;
     const Eigen::Matrix2d& getMeasurementCovariance() const;
@@ -69,9 +59,6 @@ private:
     void updateEllipses();
 
 private:
-    bool updated;
-    naoth::FrameInfo lastUpdateFrame;
-    naoth::FrameInfo createFrame;
 
     // transformation matrices
     Eigen::Matrix4d F;           // state transition matrix
@@ -96,12 +83,6 @@ private:
 
     Ellipse2d ellipse_location;
     Ellipse2d ellipse_velocity;
-
-public:
-
-  // TODO: move this to somewhere else
-  AssymetricalBoolHysteresisFilter ballSeenFilter;
-
 };
 
 #endif // EXTENDEDKALMANFILTER4D_H
