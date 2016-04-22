@@ -124,26 +124,7 @@ void ExtendedKalmanFilter4d::setCovarianceOfMeasurementNoise(const Eigen::Matrix
     R << r;
 }
 
-const Eigen::Vector4d& ExtendedKalmanFilter4d::getState() const
-{
-    return x;
-}
-
-const Eigen::Matrix4d& ExtendedKalmanFilter4d::getProcessCovariance() const
-{
-    return P;
-}
-
-const Eigen::Matrix2d& ExtendedKalmanFilter4d::getMeasurementCovariance() const
-{
-    return R;
-}
-
-Eigen::Vector2d ExtendedKalmanFilter4d::getStateInMeasurementSpace(const Measurement_Function_H& h) const
-{
-    return h(x(0),x(2));
-}
-
+//--- getter ---//
 Eigen::Matrix2d ExtendedKalmanFilter4d::getStateCovarianceInMeasurementSpace(const Measurement_Function_H& h) const // horizontal, vertical
 {
     Eigen::Matrix<double,2,4> H_approx;
@@ -194,14 +175,4 @@ void ExtendedKalmanFilter4d::updateEllipses()
         ellipse_velocity.major = std::sqrt(5.99*std::abs(es.eigenvalues()[1]));
         ellipse_velocity.angle = std::atan2(es.eigenvectors()(1,0).real(),es.eigenvectors()(0,0).real());
     }
-}
-
-const Ellipse2d& ExtendedKalmanFilter4d::getEllipseLocation() const
-{
-    return ellipse_location;
-}
-
-const Ellipse2d& ExtendedKalmanFilter4d::getEllipseVelocity() const
-{
-    return ellipse_velocity;
 }

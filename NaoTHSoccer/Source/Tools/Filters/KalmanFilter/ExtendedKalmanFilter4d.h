@@ -45,13 +45,13 @@ public:
     void setCovarianceOfProcessNoise(const Eigen::Matrix2d& q);
     void setCovarianceOfMeasurementNoise(const Eigen::Matrix2d& r);
 
-    const Eigen::Matrix4d& getProcessCovariance() const;
-    const Eigen::Matrix2d& getMeasurementCovariance() const;
-    const Eigen::Vector4d& getState() const;
-    Eigen::Vector2d        getStateInMeasurementSpace(const Measurement_Function_H& h) const; // horizontal, vertical
+    const Eigen::Matrix4d& getProcessCovariance() const { return P; }
+    const Eigen::Matrix2d& getMeasurementCovariance() const { return R; }
+    const Eigen::Vector4d& getState() const { return x; }
+    Eigen::Vector2d        getStateInMeasurementSpace(const Measurement_Function_H& h) const { return h(x(0),x(2)); } // horizontal, vertical
     Eigen::Matrix2d        getStateCovarianceInMeasurementSpace(const Measurement_Function_H& h) const; // horizontal, vertical
-    const Ellipse2d&       getEllipseLocation() const;
-    const Ellipse2d&       getEllipseVelocity() const;
+    const Ellipse2d&       getEllipseLocation() const { return ellipse_location; }
+    const Ellipse2d&       getEllipseVelocity() const { return ellipse_velocity; }
 
 private:
 
