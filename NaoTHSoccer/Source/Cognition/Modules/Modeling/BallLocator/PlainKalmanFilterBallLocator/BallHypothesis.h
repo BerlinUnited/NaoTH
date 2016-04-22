@@ -1,7 +1,7 @@
 #ifndef BALLHYPOTHESIS_H
 #define BALLHYPOTHESIS_H
 
-#include "ExtendedKalmanFilter4d.h"
+#include "Tools/Filters/KalmanFilter/ExtendedKalmanFilter4d.h"
 #include "Tools/Filters/AssymetricalBoolFilter.h"
 #include "Representations/Infrastructure/FrameInfo.h"
 
