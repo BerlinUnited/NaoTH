@@ -13,8 +13,10 @@ For details, see http://sourceforge.net/projects/libb64
 #include <iostream>
 #include <sstream>
 
-namespace base64 {
 #include "cencode.h"
+
+namespace base64 {
+
 
 class Encoder
 {

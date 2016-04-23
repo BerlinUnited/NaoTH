@@ -9,5 +9,6 @@ do
   sleep 0.1
 done
 rmdir /media/brainwasher
+logger "unmount brainwasher, done!"
 #play something
-sudo -u nao /usr/bin/paplay /home/nao/naoqi/Media/usb_start.wav
+sudo -u nao /usr/bin/paplay /home/nao/naoqi/Media/usb_stop.wav

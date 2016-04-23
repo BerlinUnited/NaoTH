@@ -27,7 +27,7 @@ ArmMotionEngine::~ArmMotionEngine()
 void ArmMotionEngine::execute()
 {
   if(!init) {
-    theMotorJointDataOld = getMotorJointData();
+    theMotorJointDataOld = getSensorJointData();
     init = true;
   }
 
