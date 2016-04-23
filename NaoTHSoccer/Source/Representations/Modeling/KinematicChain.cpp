@@ -13,7 +13,9 @@ using namespace naoth;
 using namespace std;
 
 KinematicChain::KinematicChain()
-  : initialized(false)
+  :
+  theLinks(numOfLinks),
+  initialized(false)
 {
   for (int i = 0; i < numOfLinks; i++)
   {
@@ -56,6 +58,10 @@ string KinematicChain::getLinkName(LinkID j)
     FROM_ID_TO_NAME(RAnkle);
     FROM_ID_TO_NAME(RFoot);
     FROM_ID_TO_NAME(Hip);
+    
+    FROM_ID_TO_NAME(CameraTop);
+    FROM_ID_TO_NAME(CameraBottom);
+    
     default: return "Unknown Link";
   }
 }
@@ -75,6 +81,14 @@ void KinematicChain::buildLinkChains()
   // Torso -- Neck -- Head
   theLinks[Torso].connect(theLinks[Neck])
                  .connect(theLinks[Head]);
+ 
+  // Head -- CameraTop
+  theLinks[CameraTop].isVirtual = true;
+  theLinks[Head].connect(theLinks[CameraTop]);
+  // Head -- CameraBottom
+  theLinks[CameraBottom].isVirtual = true;
+  theLinks[Head].connect(theLinks[CameraBottom]);
+
 
   // Torso -- Shoulder -- Bicep -- Elbow -- ForeArm -- Hand
   // Left
@@ -123,6 +137,10 @@ void KinematicChain::initMassesInfo()
 
   for( int i = 0; i<numOfLinks; i++)
   {
+    if(theLinks[i].isVirtual) {
+      continue;
+    }
+
     string name = getLinkName((LinkID)i);
     string keyMass = name+"Mass";
     string keyX = name+"CoG.x";
@@ -282,7 +300,7 @@ void KinematicChain::updateCoM()
     CoM += (theLinks[i].c * theLinks[i].mass);
   }
   CoM/=sumMass;
-}//end updateCoM
+}
 
 Vector2d KinematicChain::calculateZMP() const
 {
@@ -311,7 +329,7 @@ void KinematicChain::print(ostream& stream) const
     stream << getLinkName((LinkID)i) << ": "<< theLinks[i].p <<"\n";
   }
   stream << "CoM: " << CoM << "\n";
-}//end print
+}
 
 
 string KinematicChain::test(const Kinematics::Link& node) const

@@ -22,6 +22,7 @@ Link::Link()
   _mass(0.0),
 
   // public access references
+  isVirtual(false),
   id(_id),
   jointID(_jointID),
   a(_a),
@@ -87,8 +88,8 @@ void Link::updateFromMother()
   }
   // TODO: remove this?
   //        else{
-  //            p = Vector3<double>(0,0,0);
-  //            R = RotationMatrix(Vector3<double>(1,0,0),Vector3<double>(0,1,0),Vector3<double>(0,0,1));
+  //            p = Vector3d(0,0,0);
+  //            R = RotationMatrix(Vector3d(1,0,0),Vector3d(0,1,0),Vector3d(0,0,1));
   //        }
 }//end updateFromMother
 
@@ -111,10 +112,10 @@ void Link::updateAllFromMother()
       // senity check if R is still a kind of a rotation matrix...
       assert(fabs(1.0-fabs(R.det())) < 0.001);
 
-//      Vector3<double> sw = R * a;
-//      Vector3<double> sv = p ^ sw;
-//      Vector3<double> dsv = (w ^ sv) + (v ^ sw);
-//      Vector3<double> dsw = w ^ sw;
+//      Vector3d sw = R * a;
+//      Vector3d sv = p ^ sw;
+//      Vector3d dsv = (w ^ sv) + (v ^ sw);
+//      Vector3d dsw = w ^ sw;
 
       // velocity
 //      w += (sw * (*dq));
@@ -134,20 +135,20 @@ void Link::updateMother()
 
   mother->R = R * Rodrigues(A, A2, -(*(q)));
   mother->p = p - mother->R * b;
-}//end updateMother
+}
 
 void Link::updateCoM()
 {
   c = R * d + p;
 }
 
-void Link::setMass(double m, const Vector3<double>& cog)
+void Link::setMass(double m, const Vector3d& cog)
 {
   _mass = m;
   d = cog;
 }
 
-void Link::setJoint(const Vector3<double>& axis, int JointId)
+void Link::setJoint(const Vector3d& axis, int JointId)
 {
   _a = axis;
   _jointID = JointId;

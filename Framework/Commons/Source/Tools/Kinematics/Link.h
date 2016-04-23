@@ -23,6 +23,7 @@ private:
   Link* _sister;
   Link* _child;
   Link* _mother;
+
   int _jointID;
   Vector3d _a; //joint-axis vector
   RotationMatrix A;
@@ -33,6 +34,7 @@ private:
   Vector3d d; // vector from joint to CoM
 
 public: // public access references
+  bool isVirtual;
   int const & id;
   int const & jointID;
   Vector3d const & a;
@@ -50,10 +52,12 @@ public:
   Vector3d& p; // position in world
   Vector3d v; // linear velocity
   Vector3d dv; // linear acceleration
+
   RotationMatrix& R; // rotation in world
   Vector3d w; // rotation velocity
   Vector3d dw; // rotation acceleration
   Vector3d c; // position of Center of Mass
+
   double *q; // joint-position
   double *dq; // joint velocity
   double *ddq; // joint acceleration
@@ -80,9 +84,9 @@ public:
   //
   void setId(int i){ _id = i; }
 
-  void setMass(double m, const Vector3<double>& cog);
+  void setMass(double m, const Vector3d& cog);
 
-  void setJoint(const Vector3<double>& axis, int JointId);
+  void setJoint(const Vector3d& axis, int JointId);
 
   // set the relative position to mother joint
   void setLink(double x, double y, double z);

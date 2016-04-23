@@ -12,6 +12,7 @@
 #include "Representations/Infrastructure/JointData.h"
 #include "Representations/Infrastructure/Configuration.h"
 
+#include <vector>
 
 class KinematicChain : public naoth::Printable
 {
@@ -44,6 +45,11 @@ public:
     RAnkle,
     RFoot,
     Hip,
+
+    // special links for cameras
+    CameraTop,
+    CameraBottom,
+
     numOfLinks
   };
 
@@ -74,7 +80,7 @@ private:
 
 public:
 
-  Kinematics::Link theLinks[numOfLinks];
+  std::vector<Kinematics::Link> theLinks;
   Vector3d CoM; // center of mass
 
 
