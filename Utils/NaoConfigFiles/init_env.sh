@@ -169,10 +169,12 @@ fi
 cp -r ./home/nao/naoqi/Config/* /home/nao/Config
 chown -R nao:nao /home/nao/naoqi/Config;
 
+# remove any old media files
 if [ -d "/home/nao/naoqi/Media" ]; then
   rm -rf /home/nao/naoqi/Media/*
 fi
 
+# copy the new media files
 cp -r ./home/nao/naoqi/Media/* /home/nao/Media
 chown -R nao:nao /home/nao/naoqi/Media;
 
