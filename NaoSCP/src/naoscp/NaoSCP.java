@@ -480,6 +480,10 @@ public class NaoSCP extends javax.swing.JFrame {
                                 Logger.getGlobal().log(Level.SEVERE, ex.getMessage());
                             }
                             
+                            // set hostname
+                            FileUtils.writeToFile("Nao"+robotNr, new File(setupDir,"/etc/hostname"));
+                            FileUtils.writeToFile("hostname=\"Nao"+robotNr+"\"", new File(setupDir,"/etc/conf.d/hostname"));
+                            
                             // copy to robot
                             String ip = JOptionPane.showInputDialog(NaoSCP.this, "Robot ip address");
                             Scp scp = new Scp(ip, "nao", "nao");
@@ -518,7 +522,9 @@ public class NaoSCP extends javax.swing.JFrame {
     class TemplateFile
     {
         private String text;
+        private final File template;
         TemplateFile(File file) throws IOException {
+            this.template = file;
             this.text = FileUtils.readFile(file);
         }
         
@@ -526,8 +532,14 @@ public class NaoSCP extends javax.swing.JFrame {
             text = text.replace(arg, value);
         }
         
+        // save to a different file
         public void save(File file) throws IOException {
             FileUtils.writeToFile(text, file);
+        }
+        
+        // overwrite th template file
+        public void save() throws IOException {
+            FileUtils.writeToFile(text, this.template);
         }
     }
     
