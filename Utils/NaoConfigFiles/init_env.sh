@@ -231,6 +231,10 @@ copy ./etc/wpa_supplicant/wpa_supplicant.conf /etc/wpa_supplicant/wpa_supplicant
 # Network IP Adresses
 copy ./etc/conf.d/net /etc/conf.d/net root 644
 
+# hostname
+copy ./etc/conf.d/hostname /etc/conf.d/hostname root 644
+copy ./etc/hostname /etc/hostname root 644
+
 # Check and Update Runlevel Configuration for Network Services
 chown root:root ./checkRC.sh;
 chmod 744 ./checkRC.sh;
