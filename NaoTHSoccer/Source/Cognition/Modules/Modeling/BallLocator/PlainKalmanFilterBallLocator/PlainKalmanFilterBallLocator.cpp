@@ -199,7 +199,7 @@ void PlainKalmanFilterBallLocator::updateByPerceptsCool()
   // update by percepts
   // A ~ goal posts
   // B ~ hypotheses
-  Assoziation sensorAssoziation(getMultiBallPercept().getPercepts().size(), filter.size());
+  Assoziation sensorAssoziation(static_cast<int>(getMultiBallPercept().getPercepts().size()), static_cast<int>(filter.size()));
 
   int i = 0;
   for(MultiBallPercept::ConstABPIterator iter = getMultiBallPercept().begin(); iter != getMultiBallPercept().end(); iter++) 
