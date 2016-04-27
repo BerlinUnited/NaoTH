@@ -99,11 +99,9 @@ include "Options/Soccer/Strategy/passive_ball_not_seen.xabsl";
  //unused
 //Goalie
 include "Options/Soccer/Strategy/basic_goalie.xabsl";
-//Striker
-//include "Options/Soccer/Strategy/basic_striker_behavior_rc13.xabsl";
-include "Options/Soccer/Strategy/basic_striker_behavior.xabsl";
-include "Options/Soccer/Strategy/fast_striker_behavior.xabsl";
+//Initial Striker
 include "Options/Soccer/Strategy/initial_striker.xabsl";
+//Situation Based Striker
 include "Options/Soccer/Strategy/situation_based_striker.xabsl";
 include "Options/Soccer/Strategy/situation_based_secondstriker.xabsl";
 include "Options/Soccer/Strategy/Situations/situation_attack.xabsl";
@@ -160,16 +158,10 @@ include "Options/Test/agent/dribble_test_agent.xabsl";
 // Test agents (options) Penalty
 include "Options/Test/agent/penalty_kicker_test_agent.xabsl";
 // Test agents (options) Behaviour Tests
-include "Options/Soccer/basic_striker_agent.xabsl";
-include "Options/Soccer/fast_striker_agent.xabsl";
 include "Options/Soccer/passive_player_agent.xabsl";
 include "Options/Soccer/basic_goali_agent.xabsl";
 include "Options/Test/agent/role_change_test_agent.xabsl";
 include "Options/Test/agent/passive_behavior_test_agent.xabsl";
-
-//Test Stuff for Paper
-include "Options/Soccer/longKick_agent.xabsl";
-include "Options/Test/longKick_striker.xabsl";
 
 include "Options/Test/agent/change_state_input_test_agent.xabsl";
  //Useless?
@@ -233,13 +225,7 @@ agent simple_penalty_kicker("Simple Penalty Kicker", simple_penalty_kicker_agent
 agent simple_penalty_goalie("Simple Penalty Goalie", simple_penalty_goalie_agent);
 
 
-//Test Stuff for Paper
-agent longKick_Striker("Only Long Forward Kick", longKick_agent);
-
-
 /** simple soccer agents **/
-agent role_basic_striker("basic_striker", basic_striker_agent);
-agent role_fast_striker("fast_striker", fast_striker_agent);
 agent role_basic_goali("basic_goali", basic_goali_agent);
 agent role_passive_player("passive_player", passive_player_agent);
 agent role_passive_behavior_test_agent("passive_behavior_test_agent",passive_behavior_test_agent);

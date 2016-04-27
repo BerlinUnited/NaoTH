@@ -97,45 +97,5 @@ option decide_role
       team.is_playing_as_striker = false;
       decide_and_go_to_passive_position();
     }
-  }
-  
- /* state defender
-  {
-    action
-    {
-      team.is_playing_as_striker = false;
-      ball_was_outside_circle = true;
-      spl_playing_defender();
-    }
-  }
-
-  state supporter
-  {
-    action
-    {
-      team.is_playing_as_striker = false;
-      ball_was_outside_circle = true;
-      spl_playing_supporter();
-    }
-  }
-
-  state supporter2
-  {
-    action
-    {
-      team.is_playing_as_striker = false;
-      ball_was_outside_circle = true;
-      spl_playing_supporter();
-    }
-  }
-
-  state initial_striker
-  {
-    action
-    {
-      initial_kick_off();
-    }
-  }*/
-
-  
+  }  
 }
