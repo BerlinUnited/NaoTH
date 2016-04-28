@@ -6,11 +6,14 @@
 package de.naoth.rc.dialogs;
 
 import de.naoth.rc.RobotControl;
+import de.naoth.rc.components.RemoteRobotPanel;
+import de.naoth.rc.components.Test;
 import de.naoth.rc.core.dialog.AbstractDialog;
 import de.naoth.rc.core.dialog.DialogPlugin;
 import de.naoth.rc.core.manager.ObjectListener;
 import de.naoth.rc.core.manager.SwingCommandExecutor;
 import de.naoth.rc.manager.GenericManagerFactory;
+import javax.swing.JButton;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 import net.java.games.input.Component;
@@ -36,6 +39,12 @@ public class RemoteTeamControl extends AbstractDialog {
 
     public RemoteTeamControl() 
     {
+        initComponents();
+        
+        this.robotPanel.add(new RemoteRobotPanel());
+        this.robotPanel.add(new RemoteRobotPanel());
+        this.robotPanel.add(new RemoteRobotPanel());
+        
         
         Controller[] ca = ControllerEnvironment.getDefaultEnvironment().getControllers();
         for(int i =0;i<ca.length;i++){
@@ -78,15 +87,19 @@ public class RemoteTeamControl extends AbstractDialog {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        robotPanel = new javax.swing.JPanel();
+
+        robotPanel.setLayout(new javax.swing.BoxLayout(robotPanel, javax.swing.BoxLayout.LINE_AXIS));
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 589, Short.MAX_VALUE)
+            .addComponent(robotPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 589, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 378, Short.MAX_VALUE)
+            .addComponent(robotPanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -106,5 +119,6 @@ class RemoteCommandResultHandler implements ObjectListener<byte[]> {
 }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JPanel robotPanel;
     // End of variables declaration//GEN-END:variables
 }
