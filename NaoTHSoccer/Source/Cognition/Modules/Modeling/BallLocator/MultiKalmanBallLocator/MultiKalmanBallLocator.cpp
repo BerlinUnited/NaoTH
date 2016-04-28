@@ -1,35 +1,35 @@
-#include "PlainKalmanFilterBallLocator.h"
+#include "MultiKalmanBallLocator.h"
 
 #include <Eigen/Eigenvalues>
 #include "Tools/Association.h"
 
-PlainKalmanFilterBallLocator::PlainKalmanFilterBallLocator():
+MultiKalmanBallLocator::MultiKalmanBallLocator():
      epsilon(10e-6)
 {
     // Modify number of models
-    DEBUG_REQUEST_REGISTER("PlainKalmanFilterBallLocator:remove_all_models",     "remove all models",                                                             false);
-    DEBUG_REQUEST_REGISTER("PlainKalmanFilterBallLocator:allow_just_one_model",  "allows only one model to be generated (all updates are applied to that model)", false);
+    DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:remove_all_models",     "remove all models",                                                             false);
+    DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:allow_just_one_model",  "allows only one model to be generated (all updates are applied to that model)", false);
 
     // Debug Drawings
-    DEBUG_REQUEST_REGISTER("PlainKalmanFilterBallLocator:draw_real_ball_percept",    "draw the real incomming ball percept",                             false);
-    DEBUG_REQUEST_REGISTER("PlainKalmanFilterBallLocator:draw_ball_on_field_before", "draw the modelled ball on the field before prediction and update", false);
-    DEBUG_REQUEST_REGISTER("PlainKalmanFilterBallLocator:draw_ball_on_field",        "draw the modelled ball on the field before update",                false);
-    DEBUG_REQUEST_REGISTER("PlainKalmanFilterBallLocator:draw_ball_on_field_after",  "draw the modelled ball on the field after prediction and update",  false);
-    DEBUG_REQUEST_REGISTER("PlainKalmanFilterBallLocator:draw_assignment",           "draws the assignment of the ball percept to the filter",           false);
-    DEBUG_REQUEST_REGISTER("PlainKalmanFilterBallLocator:draw_final_ball",           "draws the final i.e. best model",                                  false);
+    DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:draw_real_ball_percept",    "draw the real incomming ball percept",                             false);
+    DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:draw_ball_on_field_before", "draw the modelled ball on the field before prediction and update", false);
+    DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:draw_ball_on_field",        "draw the modelled ball on the field before update",                false);
+    DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:draw_ball_on_field_after",  "draw the modelled ball on the field after prediction and update",  false);
+    DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:draw_assignment",           "draws the assignment of the ball percept to the filter",           false);
+    DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:draw_final_ball",           "draws the final i.e. best model",                                  false);
 
     // Plotting Related Debug Requests
-    DEBUG_REQUEST_REGISTER("PlainKalmanFilterBallLocator:plot_prediction_error",     "plots the prediction errors in x (horizontal angle) and y (vertical angle)", false);
+    DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:plot_prediction_error",     "plots the prediction errors in x (horizontal angle) and y (vertical angle)", false);
 
     // Update Association Function Debug Requests
-    DEBUG_REQUEST_REGISTER("PlainKalmanFilterBallLocator:UpdateAssociationFunction:useEuclid",            "minimize Euclidian distance in measurement space",                                false);
-    DEBUG_REQUEST_REGISTER("PlainKalmanFilterBallLocator:UpdateAssociationFunction:useMahalanobis",       "minimize Mahalanobis distance in measurement space (no common covarince matrix)", false);
-    DEBUG_REQUEST_REGISTER("PlainKalmanFilterBallLocator:UpdateAssociationFunction:useMaximumLikelihood", "maximize likelihood of measurement in measurement space ",                         true);
+    DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:UpdateAssociationFunction:useEuclid",            "minimize Euclidian distance in measurement space",                                false);
+    DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:UpdateAssociationFunction:useMahalanobis",       "minimize Mahalanobis distance in measurement space (no common covarince matrix)", false);
+    DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:UpdateAssociationFunction:useMaximumLikelihood", "maximize likelihood of measurement in measurement space ",                         true);
 
     // Parameter Related Debug Requests
-    DEBUG_REQUEST_REGISTER("PlainKalmanFilterBallLocator:reloadParameters",          "reloads the kalman filter parameters from the kfParameter object", false);
+    DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:reloadParameters",          "reloads the kalman filter parameters from the kfParameter object", false);
 
-    DEBUG_REQUEST_REGISTER("PlainKalmanFilterBallLocator:draw_trust_the_ball", "..", false);
+    DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:draw_trust_the_ball", "..", false);
 
     h.ball_height = 32.5;
 
@@ -40,13 +40,12 @@ PlainKalmanFilterBallLocator::PlainKalmanFilterBallLocator():
     reloadParameters();
 }
 
-PlainKalmanFilterBallLocator::~PlainKalmanFilterBallLocator()
+MultiKalmanBallLocator::~MultiKalmanBallLocator()
 {
     getDebugParameterList().remove(&kfParameters);
 }
 
-/*--- !!! sometimes nan filters !!! ---*/
-void PlainKalmanFilterBallLocator::execute()
+void MultiKalmanBallLocator::execute()
 {
   // allways reset the model first
   getBallModel().reset();
@@ -57,17 +56,15 @@ void PlainKalmanFilterBallLocator::execute()
     return;
   }
 
-
-    DEBUG_REQUEST("PlainKalmanFilterBallLocator:remove_all_models",
+    DEBUG_REQUEST("MultiKalmanBallLocator:remove_all_models",
         filter.clear();
     );
 
-    
     // delete some filter if they are too bad
     if(filter.size() > 1) {
-        std::vector<ExtendedKalmanFilter4d>::iterator iter = filter.begin();
+        Filters::iterator iter = filter.begin();
         while(iter != filter.end() && filter.size() > 1) {
-            if(!iter->trust_the_ball && (*iter).getEllipseLocation().major * (*iter).getEllipseLocation().minor * M_PI > area95Threshold){
+          if(!iter->ballSeenFilter.value() && (*iter).getEllipseLocation().major * (*iter).getEllipseLocation().minor * M_PI > area95Threshold){
                 iter = filter.erase(iter);
             } else {
                 ++iter;
@@ -77,7 +74,7 @@ void PlainKalmanFilterBallLocator::execute()
 
 
     // apply odometry on the filter state, to keep it in the robot's local coordinate system
-    for(std::vector<ExtendedKalmanFilter4d>::iterator iter = filter.begin(); iter != filter.end(); ++iter) {
+    for(Filters::iterator iter = filter.begin(); iter != filter.end(); ++iter) {
         applyOdometryOnFilterState(*iter);
     }
 
@@ -86,7 +83,7 @@ void PlainKalmanFilterBallLocator::execute()
     // prediction
     double dt = getFrameInfo().getTimeInSeconds() - lastFrameInfo.getTimeInSeconds();
     ASSERT(dt > 0);
-    for(std::vector<ExtendedKalmanFilter4d>::iterator iter = filter.begin(); iter != filter.end(); iter++){
+    for(Filters::iterator iter = filter.begin(); iter != filter.end(); iter++){
       predict(*iter, dt);
     }
 
@@ -96,13 +93,11 @@ void PlainKalmanFilterBallLocator::execute()
     //updateByPerceptsNormal();
     updateByPerceptsCool();
 
-
     // Heinrich: update the "ball seen" values
-    for(std::vector<ExtendedKalmanFilter4d>::iterator iter = filter.begin(); iter != filter.end(); ++iter){
+    for(Filters::iterator iter = filter.begin(); iter != filter.end(); ++iter){
       bool updated = iter->getLastUpdateFrame().getFrameNumber() == getFrameInfo().getFrameNumber();
       (*iter).ballSeenFilter.setParameter(kfParameters.g0, kfParameters.g1);
-      (*iter).ballSeenFilter.update(updated);
-      (*iter).trust_the_ball = (*iter).ballSeenFilter.value() > ((*iter).trust_the_ball?0.3:0.7);
+      (*iter).ballSeenFilter.update(updated, 0.3, 0.7);
     }
 
     // estimate the best model
@@ -119,7 +114,7 @@ void PlainKalmanFilterBallLocator::execute()
     lastRobotOdometry = getOdometryData();
 }
 
-void PlainKalmanFilterBallLocator::updateByPerceptsNormal() 
+void MultiKalmanBallLocator::updateByPerceptsNormal()
 {
   // measurement
     for(MultiBallPercept::ConstABPIterator iter = getMultiBallPercept().begin(); iter != getMultiBallPercept().end(); iter++) {
@@ -130,16 +125,16 @@ void PlainKalmanFilterBallLocator::updateByPerceptsNormal()
         // set correct camera matrix and info in functional
         if((*iter).cameraId == CameraInfo::Bottom)
         {
-            //PLOT("PlainKalmanFilterBallLocator:Measurement:Bottom:horizontal", z(0));
-            //PLOT("PlainKalmanFilterBallLocator:Measurement:Bottom:vertical",   z(1));
+            //PLOT("MultiKalmanBallLocator:Measurement:Bottom:horizontal", z(0));
+            //PLOT("MultiKalmanBallLocator:Measurement:Bottom:vertical",   z(1));
 
             h.camMat  = getCameraMatrix();
             h.camInfo = getCameraInfo();
         }
         else 
         {
-            //PLOT("PlainKalmanFilterBallLocator:Measurement:Top:horizontal", z(0));
-            //PLOT("PlainKalmanFilterBallLocator:Measurement:Top:vertical",   z(1));
+            //PLOT("MultiKalmanBallLocator:Measurement:Top:horizontal", z(0));
+            //PLOT("MultiKalmanBallLocator:Measurement:Top:vertical",   z(1));
 
             h.camMat  = getCameraMatrixTop();
             h.camInfo = getCameraInfoTop();
@@ -155,10 +150,10 @@ void PlainKalmanFilterBallLocator::updateByPerceptsNormal()
         // find best matching filter
         updateAssociationFunction->determineBestPredictor(filter, z, h);
 
-        std::vector<ExtendedKalmanFilter4d>::iterator bestPredictor = updateAssociationFunction->getBestPredictor();
+        Filters::iterator bestPredictor = updateAssociationFunction->getBestPredictor();
 
         bool allowJustOneModel = false;
-        DEBUG_REQUEST("PlainKalmanFilterBallLocator:allow_just_one_model",
+        DEBUG_REQUEST("MultiKalmanBallLocator:allow_just_one_model",
             allowJustOneModel = true;
         );
 
@@ -167,11 +162,11 @@ void PlainKalmanFilterBallLocator::updateByPerceptsNormal()
         {
             Eigen::Vector4d newState;
             newState << p.x, 0, p.y, 0;
-            filter.push_back(ExtendedKalmanFilter4d(getFrameInfo(), newState, processNoiseStdSingleDimension, measurementNoiseCovariances, initialStateStdSingleDimension));
+            filter.push_back(BallHypothesis(getFrameInfo(), newState, processNoiseStdSingleDimension, measurementNoiseCovariances, initialStateStdSingleDimension));
         }
         else
         {
-            DEBUG_REQUEST("PlainKalmanFilterBallLocator:draw_assignment",
+            DEBUG_REQUEST("MultiKalmanBallLocator:draw_assignment",
                 FIELD_DRAWING_CONTEXT;
                 PEN("FF0000", 10);
                 const Eigen::Vector4d state = (*bestPredictor).getState();
@@ -180,12 +175,12 @@ void PlainKalmanFilterBallLocator::updateByPerceptsNormal()
             );
 
             // debug stuff -> should be in a DEBUG_REQUEST
-            DEBUG_REQUEST("PlainKalmanFilterBallLocator:plot_prediction_error",
+            DEBUG_REQUEST("MultiKalmanBallLocator:plot_prediction_error",
                 Eigen::Vector2d prediction_error;
                 prediction_error = z - (*bestPredictor).getStateInMeasurementSpace(h);
 
-                PLOT("PlainKalmanFilterBallLocator:Innovation:x", prediction_error(0));
-                PLOT("PlainKalmanFilterBallLocator:Innovation:y", prediction_error(1));
+                PLOT("MultiKalmanBallLocator:Innovation:x", prediction_error(0));
+                PLOT("MultiKalmanBallLocator:Innovation:y", prediction_error(1));
             );
 
             (*bestPredictor).update(z,h,getFrameInfo());
@@ -194,7 +189,7 @@ void PlainKalmanFilterBallLocator::updateByPerceptsNormal()
 }
 
 
-void PlainKalmanFilterBallLocator::updateByPerceptsCool() 
+void MultiKalmanBallLocator::updateByPerceptsCool()
 {
   // update by percepts
   // A ~ goal posts
@@ -219,7 +214,7 @@ void PlainKalmanFilterBallLocator::updateByPerceptsCool()
       z << angles.x, angles.y;
 
       int x = 0;
-      for(std::vector<ExtendedKalmanFilter4d>::iterator iter = filter.begin(); iter != filter.end(); ++iter)
+      for(Filters::iterator iter = filter.begin(); iter != filter.end(); ++iter)
       {
         double confidence = updateAssociationFunction->associationScore(*iter, z, h);
 
@@ -262,14 +257,14 @@ void PlainKalmanFilterBallLocator::updateByPerceptsCool()
       Vector2d p = (*iter).positionOnField;
       Eigen::Vector4d newState;
       newState << p.x, 0, p.y, 0;
-      filter.push_back(ExtendedKalmanFilter4d(getFrameInfo(), newState, processNoiseStdSingleDimension, measurementNoiseCovariances, initialStateStdSingleDimension));
+      filter.push_back(BallHypothesis(getFrameInfo(), newState, processNoiseStdSingleDimension, measurementNoiseCovariances, initialStateStdSingleDimension));
     }
     i++;
   }
   
 }
 
-void PlainKalmanFilterBallLocator::predict(ExtendedKalmanFilter4d& filter, double dt) const
+void MultiKalmanBallLocator::predict(ExtendedKalmanFilter4d& filter, double dt) const
 {
     /*
         rolling resistance = rolling resitance coefficient * normal force
@@ -350,7 +345,7 @@ void PlainKalmanFilterBallLocator::predict(ExtendedKalmanFilter4d& filter, doubl
     }
 }
 
-void PlainKalmanFilterBallLocator::applyOdometryOnFilterState(ExtendedKalmanFilter4d& filter)
+void MultiKalmanBallLocator::applyOdometryOnFilterState(ExtendedKalmanFilter4d& filter)
 {
     const Eigen::Vector4d& x = filter.getState();
     Pose2D odometryDelta = lastRobotOdometry - getOdometryData();
@@ -383,7 +378,7 @@ void PlainKalmanFilterBallLocator::applyOdometryOnFilterState(ExtendedKalmanFilt
     filter.setCovarianceOfState(new_P);
 }
 
-PlainKalmanFilterBallLocator::Filters::const_iterator PlainKalmanFilterBallLocator::selectBestModel() const
+MultiKalmanBallLocator::Filters::const_iterator MultiKalmanBallLocator::selectBestModel() const
 {
   /*
   // find the best model for the ball based on convariance
@@ -409,8 +404,8 @@ PlainKalmanFilterBallLocator::Filters::const_iterator PlainKalmanFilterBallLocat
   Filters::const_iterator bestModel = filter.end();
   double value = 0;
 
-  for(std::vector<ExtendedKalmanFilter4d>::const_iterator iter = filter.begin(); iter != filter.end(); ++iter) {
-    if(iter->trust_the_ball) {
+  for(Filters::const_iterator iter = filter.begin(); iter != filter.end(); ++iter) {
+    if(iter->ballSeenFilter.value()) {
       double temp = Vector2d(iter->getState()(0), iter->getState()(2)).abs();
       if(bestModel == filter.end() || temp < value){
           bestModel = iter;
@@ -422,10 +417,10 @@ PlainKalmanFilterBallLocator::Filters::const_iterator PlainKalmanFilterBallLocat
   return bestModel;
 }
 
-void PlainKalmanFilterBallLocator::provideBallModel(const ExtendedKalmanFilter4d& model) 
+void MultiKalmanBallLocator::provideBallModel(const BallHypothesis& model)
 {
   getBallModel().valid = true;
-  getBallModel().knows = model.trust_the_ball;
+  getBallModel().knows = model.ballSeenFilter.value();
 
   const Eigen::Vector4d& x = model.getState();
 
@@ -456,7 +451,7 @@ void PlainKalmanFilterBallLocator::provideBallModel(const ExtendedKalmanFilter4d
 
   getBallModel().futurePosition[0] = getBallModel().position;
   
-  ExtendedKalmanFilter4d modelCopy(model);
+  BallHypothesis modelCopy(model);
   for(size_t i=1; i < getBallModel().futurePosition.size(); i++)
   {
     predict(modelCopy, 1.0); // predict 1s in the future
@@ -466,39 +461,39 @@ void PlainKalmanFilterBallLocator::provideBallModel(const ExtendedKalmanFilter4d
   }
 }
 
-void PlainKalmanFilterBallLocator::doDebugRequestBeforPredictionAndUpdate()
+void MultiKalmanBallLocator::doDebugRequestBeforPredictionAndUpdate()
 {
-    DEBUG_REQUEST("PlainKalmanFilterBallLocator:draw_ball_on_field_before",
+    DEBUG_REQUEST("MultiKalmanBallLocator:draw_ball_on_field_before",
         drawFiltersOnField();
     );
 
-    DEBUG_REQUEST("PlainKalmanFilterBallLocator:UpdateAssociationFunction:useEuclid",
+    DEBUG_REQUEST("MultiKalmanBallLocator:UpdateAssociationFunction:useEuclid",
         updateAssociationFunction = &euclid;
     );
 
-    DEBUG_REQUEST("PlainKalmanFilterBallLocator:UpdateAssociationFunction:useMahalanobis",
+    DEBUG_REQUEST("MultiKalmanBallLocator:UpdateAssociationFunction:useMahalanobis",
         updateAssociationFunction = &mahalanobis;
     );
 
-    DEBUG_REQUEST("PlainKalmanFilterBallLocator:UpdateAssociationFunction:useMaximumLikelihood",
+    DEBUG_REQUEST("MultiKalmanBallLocator:UpdateAssociationFunction:useMaximumLikelihood",
         updateAssociationFunction = &likelihood;
     );
 }
 
-void PlainKalmanFilterBallLocator::doDebugRequestBeforUpdate()
+void MultiKalmanBallLocator::doDebugRequestBeforUpdate()
 {
-    DEBUG_REQUEST("PlainKalmanFilterBallLocator:draw_ball_on_field",
+    DEBUG_REQUEST("MultiKalmanBallLocator:draw_ball_on_field",
         drawFiltersOnField();
     );
 }
 
-void PlainKalmanFilterBallLocator::doDebugRequest()
+void MultiKalmanBallLocator::doDebugRequest()
 {
-    //PLOT("PlainKalmanFilterBallLocator:ModelIsValid", getBallModel().valid);
+    //PLOT("MultiKalmanBallLocator:ModelIsValid", getBallModel().valid);
 
     
     //to check correctness of the prediction
-    DEBUG_REQUEST("PlainKalmanFilterBallLocator:draw_real_ball_percept",
+    DEBUG_REQUEST("MultiKalmanBallLocator:draw_real_ball_percept",
       if(getMultiBallPercept().wasSeen()) {
         FIELD_DRAWING_CONTEXT;
         PEN("FF0000", 10);
@@ -508,25 +503,25 @@ void PlainKalmanFilterBallLocator::doDebugRequest()
       }
     );
     
-    DEBUG_REQUEST("PlainKalmanFilterBallLocator:draw_ball_on_field_after",
+    DEBUG_REQUEST("MultiKalmanBallLocator:draw_ball_on_field_after",
         drawFiltersOnField();
     );
 
-    DEBUG_REQUEST("PlainKalmanFilterBallLocator:draw_final_ball",
+    DEBUG_REQUEST("MultiKalmanBallLocator:draw_final_ball",
         FIELD_DRAWING_CONTEXT;
         PEN("FF0000", 10);
         CIRCLE( getBallModel().position.x, getBallModel().position.y, getFieldInfo().ballRadius-10);
     );
 
-    DEBUG_REQUEST("PlainKalmanFilterBallLocator:reloadParameters",
+    DEBUG_REQUEST("MultiKalmanBallLocator:reloadParameters",
         reloadParameters();
     );
 
-    DEBUG_REQUEST("PlainKalmanFilterBallLocator:draw_trust_the_ball",
+    DEBUG_REQUEST("MultiKalmanBallLocator:draw_trust_the_ball",
         FIELD_DRAWING_CONTEXT;
-        for(std::vector<ExtendedKalmanFilter4d>::const_iterator iter = filter.begin(); iter != filter.end(); iter++)
+        for(Filters::const_iterator iter = filter.begin(); iter != filter.end(); iter++)
         {
-          if((*iter).trust_the_ball) {
+          if((*iter).ballSeenFilter.value()) {
             PEN("00FF00", 10);
           } else {
             PEN("FF0000", 10);
@@ -538,14 +533,14 @@ void PlainKalmanFilterBallLocator::doDebugRequest()
       );
 }
 
-void PlainKalmanFilterBallLocator::drawFiltersOnField() const {
+void MultiKalmanBallLocator::drawFiltersOnField() const {
     FIELD_DRAWING_CONTEXT;
 
-    for(std::vector<ExtendedKalmanFilter4d>::const_iterator iter = filter.begin(); iter != filter.end(); iter++)
+    for(Filters::const_iterator iter = filter.begin(); iter != filter.end(); iter++)
     {
         if(getBallModel().valid)
         {
-            if((*iter).wasUpdated()) {
+            if((*iter).getLastUpdateFrame().getTime() == getFrameInfo().getTime()) {
                 if(bestModel == iter)
                     PEN("99FF00", 20);
                 else
@@ -586,7 +581,7 @@ void PlainKalmanFilterBallLocator::drawFiltersOnField() const {
     }
 }
 
-void PlainKalmanFilterBallLocator::reloadParameters()
+void MultiKalmanBallLocator::reloadParameters()
 {
     // parameters for initializing new filters
     processNoiseStdSingleDimension << kfParameters.processNoiseStdQ00, kfParameters.processNoiseStdQ01,
@@ -611,7 +606,7 @@ void PlainKalmanFilterBallLocator::reloadParameters()
     Eigen::Matrix2d processNoiseCovariancesSingleDimension;
     processNoiseCovariancesSingleDimension = processNoiseStdSingleDimension.cwiseProduct(processNoiseStdSingleDimension);
 
-    for(std::vector<ExtendedKalmanFilter4d>::iterator iter = filter.begin(); iter != filter.end(); iter++){
+    for(Filters::iterator iter = filter.begin(); iter != filter.end(); iter++){
         (*iter).setCovarianceOfProcessNoise(processNoiseCovariancesSingleDimension);
         (*iter).setCovarianceOfMeasurementNoise(measurementNoiseCovariances);
     }

@@ -1,17 +1,17 @@
 #ifndef UPDATEASSOCIATIONFUNCTIONS
 #define UPDATEASSOCIATIONFUNCTIONS
 
-#include "MeasurementFunctions.h"
-#include "ExtendedKalmanFilter4d.h"
+//#include "MeasurementFunctions.h"
+#include "BallHypothesis.h"
 
 struct UpdateAssociationFunction{
     protected:
-        std::vector<ExtendedKalmanFilter4d>::iterator bestPredictor;
+        std::vector<BallHypothesis>::iterator bestPredictor;
         double score;
         double threshold;
 
     public:
-        std::vector<ExtendedKalmanFilter4d>::iterator getBestPredictor() const
+        std::vector<BallHypothesis>::iterator getBestPredictor() const
         {
             return bestPredictor;
         }
@@ -28,11 +28,11 @@ struct UpdateAssociationFunction{
           return threshold;
         }
 
-        virtual void determineBestPredictor(std::vector<ExtendedKalmanFilter4d>& filter, const Eigen::Vector2d& z, const Measurement_Function_H& h){
+        virtual void determineBestPredictor(std::vector<BallHypothesis>& filter, const Eigen::Vector2d& z, const Measurement_Function_H& h){
             score = initialValue();
             bestPredictor = filter.begin();
 
-            for(std::vector<ExtendedKalmanFilter4d>::iterator iter = filter.begin(); iter != filter.end(); ++iter)
+            for(std::vector<BallHypothesis>::iterator iter = filter.begin(); iter != filter.end(); ++iter)
             {
                 double temp = associationScore(*iter,z,h);
 

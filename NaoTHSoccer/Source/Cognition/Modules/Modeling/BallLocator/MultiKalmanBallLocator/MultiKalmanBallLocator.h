@@ -1,5 +1,5 @@
-#ifndef PLAINKALMANFILTERBALLLOCATOR_H
-#define PLAINKALMANFILTERBALLLOCATOR_H
+#ifndef MULTIKALMANBALLLOCATOR_H
+#define MULTIKALMANBALLLOCATOR_H
 
 #include <ModuleFramework/Module.h>
 
@@ -17,9 +17,8 @@
 
 #include "Representations/Perception/CameraMatrix.h"
 
-#include "ExtendedKalmanFilter4d.h"
+#include "BallHypothesis.h"
 #include "UpdateAssociationFunctions.h"
-#include "MeasurementFunctions.h"
 
 // debug
 #include "Tools/Debug/DebugDrawings.h"
@@ -31,7 +30,7 @@
 
 //////////////////// BEGIN MODULE INTERFACE DECLARATION ////////////////////
 
-BEGIN_DECLARE_MODULE(PlainKalmanFilterBallLocator)
+BEGIN_DECLARE_MODULE(MultiKalmanBallLocator)
 
 // debug stuff
   PROVIDE(DebugDrawings)
@@ -59,17 +58,16 @@ BEGIN_DECLARE_MODULE(PlainKalmanFilterBallLocator)
   REQUIRE(CameraMatrixTop)
 
   PROVIDE(BallModel)
-END_DECLARE_MODULE(PlainKalmanFilterBallLocator)
+END_DECLARE_MODULE(MultiKalmanBallLocator)
 
 
 //////////////////// END MODULE INTERFACE DECLARATION //////////////////////
 
-class PlainKalmanFilterBallLocator : private PlainKalmanFilterBallLocatorBase
+class MultiKalmanBallLocator : private MultiKalmanBallLocatorBase
 {
-
 public:
-    PlainKalmanFilterBallLocator();
-    virtual ~PlainKalmanFilterBallLocator();
+    MultiKalmanBallLocator();
+    virtual ~MultiKalmanBallLocator();
 
     virtual void execute();
 
@@ -80,7 +78,7 @@ private:
     FrameInfo lastFrameInfo;
 
 private:
-    typedef std::vector<ExtendedKalmanFilter4d> Filters;
+    typedef std::vector<BallHypothesis> Filters;
     Filters filter;
     Filters::const_iterator bestModel;
 
@@ -101,7 +99,7 @@ private:
 
     Filters::const_iterator selectBestModel() const;
 
-    void provideBallModel(const ExtendedKalmanFilter4d& model);
+    void provideBallModel(const BallHypothesis &model);
 
     /*    DEBUG STUFF    */
     void doDebugRequest();
@@ -185,4 +183,4 @@ private:
     Eigen::Matrix2d initialStateStdSingleDimension;
 };
 
-#endif // PLAINKALMANFILTERBALLLOCATOR_H
+#endif // MULTIKALMANBALLLOCATOR_H

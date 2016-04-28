@@ -11,9 +11,6 @@
 
 #include <Eigen/Eigen>
 
-//#include <Representations/Perception/BallPercept.h>
-#include "Representations/Infrastructure/FrameInfo.h"
-
 #include <Representations/Perception/CameraMatrix.h>
 #include <Representations/Infrastructure/CameraInfo.h>
 
@@ -22,6 +19,7 @@
 #include <Tools/CameraGeometry.h>
 
 #include "MeasurementFunctions.h"
+
 
 struct Ellipse2d {
     double angle;
@@ -32,12 +30,12 @@ struct Ellipse2d {
 class ExtendedKalmanFilter4d
 {
 public:
-    ExtendedKalmanFilter4d(const naoth::FrameInfo& frameInfo, const Eigen::Vector4d& state, const Eigen::Matrix2d& processNoiseStdSingleDimension, const Eigen::Matrix2d& measurementNoiseCovariances, const Eigen::Matrix2d& initialStateStdSingleDimension);
+    ExtendedKalmanFilter4d(const Eigen::Vector4d& state, const Eigen::Matrix2d& processNoiseStdSingleDimension, const Eigen::Matrix2d& measurementNoiseCovariances, const Eigen::Matrix2d& initialStateStdSingleDimension);
 
     ~ExtendedKalmanFilter4d();
 
     void predict(const Eigen::Vector2d &u, double dt);
-    void update(const Eigen::Vector2d &z, const Measurement_Function_H& h, const naoth::FrameInfo frameInfo);
+    void update(const Eigen::Vector2d &z, const Measurement_Function_H& h);
 
 public:
 
@@ -47,18 +45,13 @@ public:
     void setCovarianceOfProcessNoise(const Eigen::Matrix2d& q);
     void setCovarianceOfMeasurementNoise(const Eigen::Matrix2d& r);
 
-    //--- getter ---//
-    bool wasUpdated() const;
-    const naoth::FrameInfo& getLastUpdateFrame() const;
-    const naoth::FrameInfo& getFrameOfCreation() const { return createFrame; }
-
-    const Eigen::Matrix4d& getProcessCovariance() const;
-    const Eigen::Matrix2d& getMeasurementCovariance() const;
-    const Eigen::Vector4d& getState() const;
-    Eigen::Vector2d        getStateInMeasurementSpace(const Measurement_Function_H& h) const; // horizontal, vertical
+    const Eigen::Matrix4d& getProcessCovariance() const { return P; }
+    const Eigen::Matrix2d& getMeasurementCovariance() const { return R; }
+    const Eigen::Vector4d& getState() const { return x; }
+    Eigen::Vector2d        getStateInMeasurementSpace(const Measurement_Function_H& h) const { return h(x(0),x(2)); } // horizontal, vertical
     Eigen::Matrix2d        getStateCovarianceInMeasurementSpace(const Measurement_Function_H& h) const; // horizontal, vertical
-    const Ellipse2d&       getEllipseLocation() const;
-    const Ellipse2d&       getEllipseVelocity() const;
+    const Ellipse2d&       getEllipseLocation() const { return ellipse_location; }
+    const Ellipse2d&       getEllipseVelocity() const { return ellipse_velocity; }
 
 private:
 
@@ -66,9 +59,6 @@ private:
     void updateEllipses();
 
 private:
-    bool updated;
-    naoth::FrameInfo lastUpdateFrame;
-    naoth::FrameInfo createFrame;
 
     // transformation matrices
     Eigen::Matrix4d F;           // state transition matrix
@@ -93,36 +83,6 @@ private:
 
     Ellipse2d ellipse_location;
     Ellipse2d ellipse_velocity;
-
-public:
-  //HACK: todo put it in a separate file
-  class AssymetricalBoolFilter
-  {
-  private:
-    double g0;
-    double g1;
-    double state;
-
-  public:
-    AssymetricalBoolFilter(double g0, double g1) : g0(g0), g1(g1), state(0.0) 
-    {}
-
-    void setParameter(double g0, double g1) {
-      this->g0 = g0; this->g1 = g1;
-    }
-
-    void update(bool v) {
-      state += v ? g1*(1-state) : -g0*state;
-    }
-
-    double value() const {
-      return state;
-    }
-  };
-
-  AssymetricalBoolFilter ballSeenFilter;
-  bool trust_the_ball;
-
 };
 
 #endif // EXTENDEDKALMANFILTER4D_H
