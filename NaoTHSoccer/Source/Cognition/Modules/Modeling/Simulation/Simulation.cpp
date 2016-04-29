@@ -264,7 +264,7 @@ size_t Simulation::decide_smart(const std::vector<ActionResults>& actionsConsequ
   std::vector<size_t> acceptableActions;
   std::vector<size_t> goalActions;
 
-  for(size_t i=0; i<action_local.size(); i++)
+  for(size_t i=0; i<actionsConsequences.size(); i++)
   {
     const ActionResults& results = actionsConsequences[i];
 
