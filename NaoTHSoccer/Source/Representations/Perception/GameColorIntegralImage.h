@@ -8,6 +8,7 @@
 #include <string.h>
 
 #include <Tools/Math/Vector2.h>
+#include <Tools/Debug/NaoTHAssert.h>
 
 #ifdef WIN32
 typedef unsigned int uint;
@@ -191,22 +192,23 @@ public:
   }
 
   uint getSumForRect(uint minX, uint minY, uint maxX, uint maxY, uint32_t c) const {
-		//maxX = maxX + 1;
-		//maxY = maxY + 1;
+		ASSERT(minX > 0);
+    ASSERT(minY > 0);
+    
     minY -= 1;
     minX -= 1;
+    //maxX = maxX + 1;
+		//maxY = maxY + 1;
 
-    //assert(minX >= 0);
-        //assert(minY >= 0);
-		assert(maxX < width);
-		assert(maxY < height);
+		ASSERT(maxX < width);
+		ASSERT(maxY < height);
 
 		const uint32_t idx1 = (minY * width + minX)*MAX_COLOR;
 		const uint32_t idx2 = (minY * width + maxX)*MAX_COLOR;
 		const uint32_t idx3 = (maxY * width + minX)*MAX_COLOR;
 		const uint32_t idx4 = (maxY * width + maxX)*MAX_COLOR;
 
-		assert(nullptr != integralImage);
+		ASSERT(nullptr != integralImage);
 		const uint32_t *buffer1 = integralImage + idx1;
 		const uint32_t *buffer2 = integralImage + idx2;
 		const uint32_t *buffer3 = integralImage + idx3;
@@ -214,6 +216,11 @@ public:
 
 		const uint32_t sum = buffer1[c] + buffer4[c] - buffer2[c] - buffer3[c];
 		return sum;
+	}
+
+  double getDensityForRect(uint minX, uint minY, uint maxX, uint maxY, uint32_t c) const {
+		uint count = getSumForRect(minX, minY, maxX, maxY, c);
+		return double(count) / double((maxX-minX)*(maxY-minY));
 	}
 
 	double getDensityForRect(const BoundingBox &bb, uint32_t c) const {
@@ -256,7 +263,7 @@ public:
 	//BoundingBox getGrowBBVertical  (BoundingBox bb, ColorMix c, uint stepSize, double densityThreshold=0.5) const;
 
 public:
-  static const uint32_t MAX_COLOR = 2;
+  static const uint32_t MAX_COLOR = 3;
   static const int32_t FACTOR = 4;
 
 private:

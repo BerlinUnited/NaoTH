@@ -38,6 +38,10 @@ private:
 public:
     MultiBallPercept(){}
 
+    const std::vector<MultiBallPercept::BallPercept>& getPercepts() const {
+      return percepts;
+    }
+
     void add(MultiBallPercept::BallPercept& percept){
         percepts.push_back(percept);
     }
@@ -47,7 +51,7 @@ public:
     }
 
     bool wasSeen() const {
-        return percepts.size() != 0;
+      return !percepts.empty();
     }
 
     std::vector<MultiBallPercept::BallPercept>::const_iterator begin() const {

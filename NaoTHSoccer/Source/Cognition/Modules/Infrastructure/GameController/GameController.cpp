@@ -20,6 +20,8 @@ void GameController::execute()
   GameData::TeamColor oldTeamColor = getPlayerInfo().gameData.teamColor;
   GameData::PlayMode oldPlayMode = getPlayerInfo().gameData.playMode;
 
+  getPlayerInfo().gameControllerData = getGameData();
+
   readHeadButtons();
   readButtons();
 
@@ -54,7 +56,7 @@ void GameController::execute()
       whistleCountInLastSet = getWhistlePercept().counter;
     }
     else if(getWhistlePercept().counter > whistleCountInLastSet)
-    {
+    {      
       // allow to switch from set to play in beginning with the second frame
       getPlayerInfo().gameData.gameState = GameData::playing;
     }
@@ -92,7 +94,6 @@ void GameController::readHeadButtons()
     }
   }
 }
-
 
 void GameController::readButtons()
 {
