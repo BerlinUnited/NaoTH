@@ -87,16 +87,18 @@ include "Options/Soccer/Strategy/play_soccer.xabsl";
 include "Options/Soccer/Strategy/decide_game_state.xabsl";
 include "Options/Soccer/Strategy/decide_role.xabsl";
 include "Options/Soccer/Strategy/decide_and_go_to_ready_position.xabsl";
-include "Options/Soccer/Strategy/decide_and_go_to_passive_position.xabsl";
-//include "Options/Soccer/Strategy/decide_and_go_to_passive_pos_b.xabsl";
 include "Options/Soccer/Strategy/positioning_for_own_kickoff.xabsl";
 include "Options/Soccer/Strategy/positioning_for_opp_kickoff.xabsl";
-include "Options/Soccer/Strategy/go_to_and_keep_passive_position.xabsl";
-include "Options/Soccer/Strategy/passive_behavior.xabsl";
-include "Options/Soccer/Strategy/passive_ball_seen.xabsl";
-include "Options/Soccer/Strategy/passive_ball_not_seen.xabsl";
 //include "Options/Soccer/Strategy/clear_ball_far_away.xabsl";
- //unused
+
+//Passive Behavior
+include "Options/Soccer/Strategy/passive/decide_and_go_to_passive_position.xabsl";
+include "Options/Soccer/Strategy/passive/passive_behavior.xabsl";
+include "Options/Soccer/Strategy/passive/passive_ball_seen.xabsl";
+include "Options/Soccer/Strategy/passive/passive_ball_not_seen.xabsl";
+include "Options/Soccer/Strategy/passive/go_to_and_keep_passive_position.xabsl";
+//include "Options/Soccer/Strategy/passive/decide_and_go_to_passive_pos_b.xabsl";
+
 //Goalie
 include "Options/Soccer/Strategy/basic_goalie.xabsl";
 //Initial Striker
