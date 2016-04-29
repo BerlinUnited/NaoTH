@@ -121,6 +121,10 @@ void ScanLineEdgelDetector::execute(CameraInfo::CameraID id)
                 point_one.posInImage.x, point_one.posInImage.y,
                 point_two.posInImage.x, point_two.posInImage.y);
       }
+
+      if(!point_two.greenFound) {
+        CIRCLE_PX(ColorClasses::gray, point_two.posInImage.x, point_two.posInImage.y, 7);
+      }
     }
   );
 }//end execute
@@ -147,7 +151,8 @@ ScanLineEdgelPercept::EndPoint ScanLineEdgelDetector::scanForEdgels(int scan_id,
   }
 
   Vector2i point(start);
-  point.y -= step; // make one step
+  // we have no idea what this should be good for, but for now it makes tons of problems
+  //point.y -= step; // make one step
 
   Vector2i last_down_point(point); // needed for the endpoint
   bool begin_found = false;
@@ -243,6 +248,7 @@ ScanLineEdgelPercept::EndPoint ScanLineEdgelDetector::scanForEdgels(int scan_id,
       if(greenDensity > theParameters.minEndPointGreenDensity)
       {
         lastGreenPoint = point;
+        endPoint.greenFound = true;
       }
       movingWindow.add(1.0);
     }

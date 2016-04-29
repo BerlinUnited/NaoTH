@@ -47,11 +47,11 @@ def bin2(img):
 	_, img = cv2.threshold(img,0,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
 	return img.reshape(1,144)
 
-def histo(img):
+def histo(img, size=32):
 	# normalize by maximum value
 	img = img.astype("float32")
 	_, maxVal, _, _ = cv2.minMaxLoc(img)
-	hist = cv2.calcHist([img],[0],None,[32],[0.0, maxVal+1])
+	hist = cv2.calcHist([img],[0],None,[size],[0.0, maxVal+1])
 	
 	# also normalize the histogram to 0 to 1.0f
 	_, maxHistVal, _, _ = cv2.minMaxLoc(hist)
@@ -59,3 +59,22 @@ def histo(img):
 		hist = np.divide(hist, maxHistVal)
 	
 	return hist.T
+	
+def histoNonGreen(img, colors):
+	
+	mask = np.asmatrix(colors != 7, np.uint8)
+	numOfGreen = (12*12) - np.count_nonzero(mask)
+	
+	# normalize by maximum value
+	img = img.astype("float32")
+	_, maxVal, _, _ = cv2.minMaxLoc(img)
+	histNoGreen = cv2.calcHist([img],[0], mask, [32],[0.0, maxVal+1])
+	
+	# also normalize the histogram to 0 to 1.0f
+	_, maxHistVal, _, _ = cv2.minMaxLoc(histNoGreen)
+	if maxHistVal > 0:
+		histNoGreen = np.divide(histNoGreen, maxHistVal)
+		
+	feat = np.vstack([histNoGreen, np.float32([[numOfGreen]])])
+	
+	return feat.T

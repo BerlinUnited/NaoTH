@@ -105,6 +105,10 @@ private:
   GameData::GameState lastState;
   GameData::GameState currentState;
 
+  GameData::GameState currentGameControllerState;
+  GameData::GameState lastGameControllerState;
+  GameData::GameState stateBeforePenalized;
+
   bool walked_after_penalized_or_init;
 
   bool wasLiftedUp;

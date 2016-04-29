@@ -196,6 +196,11 @@ message OdometryData
   required Pose2D pose = 1;
 }
 
+//message BodyState
+//{
+//  optional bool isLiftedUp = 1;
+//}
+
 message BodyStatus
 {
   repeated double currentSum = 1;

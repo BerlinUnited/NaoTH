@@ -18,6 +18,7 @@
 #include <Representations/Infrastructure/FrameInfo.h>
 #include "Representations/Perception/FieldColorPercept.h"
 #include "Representations/Perception/GameColorIntegralImage.h"
+#include "Representations/Perception/BodyContour.h"
 
 // needed?
 //#include "Representations/Perception/FieldPercept.h"
@@ -47,6 +48,9 @@ BEGIN_DECLARE_MODULE(IntegralImageProvider)
 
   REQUIRE(ColorTable64)
 
+  // HACK
+  REQUIRE(BodyContour)
+
   PROVIDE(GameColorIntegralImage)
   PROVIDE(GameColorIntegralImageTop)
 END_DECLARE_MODULE(IntegralImageProvider)
@@ -70,6 +74,7 @@ private:
   CameraInfo::CameraID cameraID;
 
   void integralBild();
+  void integralBildBottom();
 
 private:     
   

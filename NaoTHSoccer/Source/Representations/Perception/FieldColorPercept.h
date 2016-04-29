@@ -143,6 +143,10 @@ public:
       return noColor(pixel.y, pixel.u, pixel.v);
     }
 
+    const Parameter& getParams() const {
+      return p;
+    }
+
     private:
       Parameter p;
       double brightnesAlpha; // calculated
