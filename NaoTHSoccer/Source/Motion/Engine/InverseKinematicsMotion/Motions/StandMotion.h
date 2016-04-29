@@ -32,7 +32,6 @@
 #include "Representations/Modeling/KinematicChain.h"
 #include "Representations/Infrastructure/CalibrationData.h"
 #include "Representations/Infrastructure/FrameInfo.h"
-#include "Representations/Infrastructure/FSRData.h"
 
 #include <Representations/Modeling/BodyState.h>
 
@@ -59,8 +58,7 @@ BEGIN_DECLARE_MODULE(StandMotion)
   REQUIRE(InverseKinematicsMotionEngineService)
 
   // body state
-  REQUIRE(FSRData)
-  PROVIDE(BodyState)
+  REQUIRE(BodyState)
 
   PROVIDE(MotionLock)
   PROVIDE(MotorJointData)
@@ -77,6 +75,7 @@ StandMotion()
     height(-1000),
     standardStand(true),
     relaxedPoseInitialized(false),
+    resetedAfterLifting(false),
     lastFrameInfo(getFrameInfo())
   {
   }
@@ -126,15 +125,16 @@ StandMotion()
 
   void execute()
   {
-    //ugly
-    //bodyStateProvider.execute(getBodyState(),getInertialSensorData(),getFrameInfo(),getFSRData());
-
     InverseKinematic::HipFeetPose c;
 
     isRelaxing = false;
 
+    if(!getBodyState().isLiftedUp){
+        resetedAfterLifting = false;
+    }
+
     // reset stiffness, relaxing flags and joint offsets if the robot is lifted, if relaxedPoseInitialize is true use the relaxedPose
-    if(getBodyState().isLiftedUp)
+    if(getBodyState().isLiftedUp && !resetedAfterLifting)
     {
         // reset stiffness
         for( int i = naoth::JointData::RShoulderRoll; i<naoth::JointData::numOfJoint; i++) {
@@ -147,67 +147,63 @@ StandMotion()
         // reset joint offsets
         jointOffsets.resetOffsets();
 
+        isRelaxing = false;
         relaxedPoseInitialized = false;
+        setCurrentState(motion::stopped);
 
-        // set target HipFeetPose for IK engine
-        double comHeight = (height < 0.0) ? getEngine().getParameters().walk.hip.comHeight : getMotionRequest().standHeight;
-        comHeight = Math::clamp(comHeight, 160.0, 270.0); // valid range
-        InverseKinematic::CoMFeetPose target = getStandPose(comHeight, getEngine().getParameters().stand.hipOffsetX, getEngine().getParameters().stand.bodyPitchOffset, standardStand);
-        bool solved = false;
-        c = getEngine().controlCenterOfMass(getMotorJointData(), target, solved, false);
+        resetedAfterLifting = true;
     }
-    else
-    {
-        calculateTrajectory(getMotionRequest());
 
-        if(time > totalTime + getRobotInfo().basicTimeStep*10) { // the robot is standing and tries to save energy due to relaxing its joints
+    calculateTrajectory(getMotionRequest());
 
-          isRelaxing = true;
+    if(time > totalTime + getRobotInfo().basicTimeStep*10) { // the robot is standing and tries to save energy due to relaxing its joints
 
-          if(!relaxedPoseInitialized) {
+        isRelaxing = true;
+
+        if(!relaxedPoseInitialized) {
             relaxedPoseInitialized = true;
             relaxedPose = getEngine().getHipFeetPoseBasedOnSensor();
-          }
-
-          c = relaxedPose;
-
-          InverseKinematic::HipFeetPose hipFeetPoseSensor = getEngine().getHipFeetPoseBasedOnSensor();
-          hipFeetPoseSensor.localInLeftFoot();
-
-          InverseKinematic::HipFeetPose target = relaxedPose;
-          target.localInLeftFoot();
-
-          if((hipFeetPoseSensor.hip.translation - target.hip.translation).abs() > getEngine().getParameters().stand.relax.allowedDeviation) {
-              isRelaxing = false; //because the stand motion will be restarted
-              relaxedPoseInitialized = false;
-              setCurrentState(motion::stopped);
-              calculateTrajectory(getMotionRequest());
-
-              // reset stuff for StandMotion:online_tuning
-              jointOffsets.resetOffsets();
-              for(int i = 0; i < naoth::JointData::numOfJoint; i++){
-                jointMonitors[i].resetAll();
-              }
-
-              totalTime += getEngine().getParameters().stand.relax.timeBonusForCorrection;
-          }
         }
 
-        if(totalTime >= 0 && time <= totalTime + getRobotInfo().basicTimeStep*10)
-        {
-          InverseKinematic::CoMFeetPose p;
+        c = relaxedPose;
 
-          if(totalTime > 0) {
-              double k = Math::clamp(0.5*(1.0-cos(time/totalTime*Math::pi)), 0.0, 1.0);
-              p = getEngine().interpolate(startPose, targetPose, k);
-          } else {
-              p = targetPose;
-          }
+        InverseKinematic::HipFeetPose hipFeetPoseSensor = getEngine().getHipFeetPoseBasedOnSensor();
+        hipFeetPoseSensor.localInLeftFoot();
 
-          bool solved = false;
-          c = getEngine().controlCenterOfMass(getMotorJointData(), p, solved, false);
+        InverseKinematic::HipFeetPose target = relaxedPose;
+        target.localInLeftFoot();
+
+        if((hipFeetPoseSensor.hip.translation - target.hip.translation).abs() > getEngine().getParameters().stand.relax.allowedDeviation) {
+            isRelaxing = false; //because the stand motion will be restarted
+            relaxedPoseInitialized = false;
+            setCurrentState(motion::stopped);
+            calculateTrajectory(getMotionRequest());
+
+            // reset stuff for StandMotion:online_tuning
+            jointOffsets.resetOffsets();
+            for(int i = 0; i < naoth::JointData::numOfJoint; i++){
+                jointMonitors[i].resetAll();
+            }
+
+            totalTime += getEngine().getParameters().stand.relax.timeBonusForCorrection;
         }
     }
+
+    if(totalTime >= 0 && time <= totalTime + getRobotInfo().basicTimeStep*10)
+    {
+        InverseKinematic::CoMFeetPose p;
+
+        if(totalTime > 0) {
+            double k = Math::clamp(0.5*(1.0-cos(time/totalTime*Math::pi)), 0.0, 1.0);
+            p = getEngine().interpolate(startPose, targetPose, k);
+        } else {
+            p = targetPose;
+        }
+
+        bool solved = false;
+        c = getEngine().controlCenterOfMass(getMotorJointData(), p, solved, false);
+    }
+
     
     /*
     InverseKinematic::HipFeetPose c;
@@ -244,7 +240,7 @@ StandMotion()
     }
  
     // control the joint offsets (online tuning) for the knee and ankle pitchs
-    if (isRelaxing) {
+    if (isRelaxing && !getBodyState().isLiftedUp) {
         jointOffsets.setMinimalStep(getEngine().getParameters().stand.relax.jointOffsetTuning.minimalJointStep);
         if(getFrameInfo().getTime() - lastFrameInfo.getTime() > getEngine().getParameters().stand.relax.jointOffsetTuning.deadTime){
             double currents[4] = {jointMonitors[naoth::JointData::LKneePitch].filteredCurrent(), jointMonitors[naoth::JointData::RKneePitch].filteredCurrent(), jointMonitors[naoth::JointData::LAnklePitch].filteredCurrent(), jointMonitors[naoth::JointData::RAnklePitch].filteredCurrent()};
@@ -308,7 +304,7 @@ StandMotion()
     turnOffStiffnessWhenJointIsOutOfRange();
 
     // controlling the stiffness of leg joints
-    if (isRelaxing) {
+    if (isRelaxing && !getBodyState().isLiftedUp) {
         if(getFrameInfo().getTime() - lastStiffnessUpdate.getTime() > getEngine().getParameters().stand.relax.stiffnessControl.deadTime){
             double minAngle = getEngine().getParameters().stand.relax.stiffnessControl.minAngle;
             double maxAngle = getEngine().getParameters().stand.relax.stiffnessControl.maxAngle;
@@ -390,6 +386,7 @@ private:
   JointData relaxData;
   bool relaxedPoseInitialized;
   bool isRelaxing;
+  bool resetedAfterLifting;
 
   class JointMonitor
   {
@@ -510,88 +507,6 @@ private:
 
   JointOffsets jointOffsets;
   double stiffness[naoth::JointData::numOfJoint];
-
-  //ugly ...
-  class BodyStateProvider
-  {
-  public:
-
-      BodyStateProvider():
-          foot_threshold(1),
-          getup_threshold(1.2),
-          maxTimeForLiftUp(500)
-      {}
-
-      virtual ~BodyStateProvider(){}
-
-      void execute(BodyState& bodyState, const InertialSensorData& inertialSensorData, const FrameInfo& frameInfo, const FSRData& fsrData){
-          // update the fall down state (written by Heinrich Mellmann at 1 am in Magdeburg)
-          updateTheFallDownState(bodyState, inertialSensorData, frameInfo);
-
-          // ... :)
-          updateTheFootState(bodyState, fsrData, frameInfo);
-
-          //
-          updateIsLiftedUp(bodyState, frameInfo);
-      }
-
-      double foot_threshold;
-      double getup_threshold;
-      double maxTimeForLiftUp;
-
-      void updateTheFallDownState(BodyState& bodyState, const InertialSensorData& inertialSensorData, const FrameInfo& frameInfo){
-          BodyState::State old_fall_down_state = bodyState.fall_down_state;
-
-          // buffer the inertial data
-          inertialBuffer.add(inertialSensorData.data);
-
-          Vector2d avg = inertialBuffer.getAverage();
-          double inertialXaverage = avg.x;
-          double inertialYaverage = avg.y;
-
-          bodyState.fall_down_state = BodyState::upright;
-
-          if(inertialXaverage < -getup_threshold) {
-              bodyState.fall_down_state = BodyState::lying_on_left_side;
-          } else if(inertialXaverage >getup_threshold) {
-              bodyState.fall_down_state = BodyState::lying_on_right_side;
-          }
-
-          if(inertialYaverage < -getup_threshold) {
-              bodyState.fall_down_state = BodyState::lying_on_back;
-          } else if(inertialYaverage > getup_threshold) {
-              bodyState.fall_down_state = BodyState::lying_on_front;
-          }
-
-          if(old_fall_down_state != bodyState.fall_down_state) {
-              bodyState.fall_down_state_time = frameInfo.getTime();
-          }
-      }
-
-      void updateTheFootState(BodyState& bodyState, const FSRData& fsrData, const FrameInfo frameInfo) {
-          bool old_standByLeftFoot = bodyState.standByLeftFoot;
-          bool old_standByRightFoot = bodyState.standByRightFoot;
-
-          bodyState.standByLeftFoot = fsrData.forceLeft() > foot_threshold;
-          bodyState.standByRightFoot = fsrData.forceRight() > foot_threshold;
-
-          if(old_standByLeftFoot != bodyState.standByLeftFoot ||
-                  old_standByRightFoot != bodyState.standByRightFoot)
-          {
-              bodyState.foot_state_time = frameInfo.getTime();
-          }
-      }
-
-      void updateIsLiftedUp(BodyState& bodyState, const FrameInfo frameInfo){
-          bodyState.isLiftedUp =  bodyState.fall_down_state == BodyState::upright &&
-                  !bodyState.standByLeftFoot &&
-                  !bodyState.standByRightFoot && // no foot is on the ground
-                  frameInfo.getTimeSince(bodyState.foot_state_time) > maxTimeForLiftUp;
-      }
-      // internal data
-      RingBufferWithSum<Vector2<double>, 10> inertialBuffer;
-
-  } bodyStateProvider;
 
   };
 
