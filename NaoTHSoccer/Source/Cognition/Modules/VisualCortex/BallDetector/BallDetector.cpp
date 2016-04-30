@@ -463,8 +463,8 @@ int BallDetector::calculateKeyPointsBlack(int minX, int minY, int maxX, int maxY
   for(point.y = minY/FACTOR; point.y+1 < maxY/FACTOR; ++point.y)
   {
     // HACK: assume square
-    int radius = (maxX - minX) / 6 / 2; // image coords
-    int size   = ((maxX - minX) / 6)/FACTOR; // integral coords
+    int radius = (maxX - minX) / 5 / 2; // image coords
+    int size   = ((maxX - minX) / 5)/FACTOR; // integral coords
     int border = size / 2;
 
     // smalest ball size == 3 => ball size == FACTOR*3 == 12
@@ -478,12 +478,12 @@ int BallDetector::calculateKeyPointsBlack(int minX, int minY, int maxX, int maxY
       int innerWhite = getGameColorIntegralImage().getSumForRect(point.x, point.y, point.x+size, point.y+size, 0);
       int innerGreen = getGameColorIntegralImage().getSumForRect(point.x, point.y, point.x+size, point.y+size, 1);
 
-      int innerDark = (size*size - innerWhite - innerGreen);
+      int innerDark = ((size+1)*(size+1) - innerWhite - innerGreen);
 
       // at least 50%
-      if (innerDark*3 > size*size)
+      if (innerDark*3 > (size+1)*(size+1) && innerBlack > 0)
       {
-        int outer = getGameColorIntegralImage().getSumForRect(point.x-border, point.y+size, point.x+size+border, point.y+size+border, 2);
+        //int outer = getGameColorIntegralImage().getSumForRect(point.x-border, point.y+size, point.x+size+border, point.y+size+border, 2);
         int outerWhite = getGameColorIntegralImage().getSumForRect(point.x-border, point.y+size, point.x+size+border, point.y+size+border, 0);
 
         double value = (double)(innerDark + outerWhite)/((double)(size+border)*(size+border));
