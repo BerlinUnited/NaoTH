@@ -88,7 +88,7 @@ public:
       PARAMETER_REGISTER(sidekick_left.angle) = 86.170795364136380;
       PARAMETER_REGISTER(sidekick_left.angle_std) = 10.669170653645670;
 
-      PARAMETER_REGISTER(kick_short.speed) = 780;
+      PARAMETER_REGISTER(kick_short.speed) = 1280;
       PARAMETER_REGISTER(kick_short.speed_std) = 150;
       PARAMETER_REGISTER(kick_short.angle) = 8.454482265522328;
       PARAMETER_REGISTER(kick_short.angle_std) = 6.992268841997358;
