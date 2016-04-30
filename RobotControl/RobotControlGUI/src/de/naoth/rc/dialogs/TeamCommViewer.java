@@ -377,8 +377,9 @@ public class TeamCommViewer extends AbstractDialog {
                             robotStatus.setStatus(msg.timestamp, msg.message);
                         }
                     });
-                    
-                    msg.message.draw(drawings, msg.isOpponent() ? Color.RED : Color.BLUE, msg.isOpponent());
+                    if(robotsMap.get(address).showRobot()) {
+                        msg.message.draw(drawings, msg.isOpponent() ? Color.RED : Color.BLUE, msg.isOpponent());
+                    }
                 }
 
                 TeamCommViewer.Plugin.drawingEventManager.fireDrawingEvent(drawings);
