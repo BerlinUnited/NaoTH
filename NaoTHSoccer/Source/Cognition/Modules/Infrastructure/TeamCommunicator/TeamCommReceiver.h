@@ -16,6 +16,7 @@
 #include "Representations/Modeling/RoleDecisionModel.h"
 #include "Representations/Modeling/SoccerStrategy.h"
 #include "Representations/Modeling/PlayersModel.h"
+#include "Representations/Modeling/KickActionModel.h"
 
 #include <Tools/DataStructures/RingBuffer.h>
 
@@ -40,6 +41,7 @@ BEGIN_DECLARE_MODULE(TeamCommReceiver)
   REQUIRE(SoccerStrategy)
   REQUIRE(PlayersModel)
   REQUIRE(BatteryData)
+  REQUIRE(KickActionModel)
 
   PROVIDE(DebugRequest)
   PROVIDE(DebugParameterList)

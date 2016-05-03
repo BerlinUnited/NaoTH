@@ -48,6 +48,7 @@ void TeamCommSender::fillMessage(const PlayerInfo& playerInfo,
                                    const SoccerStrategy& soccerStrategy,
                                    const PlayersModel& playersModel,
                                    const BatteryData &batteryData,
+                                   const KickActionModel &kickActionModel,
                                    TeamMessage::Data &out)
 {
   out.playerNum = playerInfo.gameData.playerNumber;
@@ -100,7 +101,8 @@ void TeamCommSender::fillMessage(const PlayerInfo& playerInfo,
       out.opponents.push_back(opp);
     }
   }
-
+  
+  out.expectedBallPos = kickActionModel.expectedBallPos;
 
 }
 
@@ -109,7 +111,7 @@ void TeamCommSender::createMessage(SPLStandardMessage &msg)
   TeamMessage::Data data;
   fillMessage(getPlayerInfo(), getRobotInfo(), getFrameInfo(), getBallModel(),
               getRobotPose(), getBodyState(), getRoleDecisionModel(), getSoccerStrategy(),
-              getPlayersModel(), getBatteryData(), data);
+              getPlayersModel(), getBatteryData(),getKickActionModel(), data);
   // convert to SPLStandardMessage
   convertToSPLMessage(data, msg);
 }
@@ -148,8 +150,8 @@ void TeamCommSender::convertToSPLMessage(const TeamMessage::Data& teamData, SPLS
   splMsg.walkingTo[0] = splMsg.pose[0];
   splMsg.walkingTo[1] = splMsg.pose[1];
   // TODO: actually set shootingTo when we are shooting to some point
-  splMsg.shootingTo[0] = splMsg.pose[0];
-  splMsg.shootingTo[1] = splMsg.pose[1];
+  splMsg.shootingTo[0] = (float)teamData.expectedBallPos.x;
+  splMsg.shootingTo[1] = (float)teamData.expectedBallPos.y;
 
   // TODO: suggest something
   for(int i = 0; i < SPL_STANDARD_MESSAGE_MAX_NUM_OF_PLAYERS; ++i)
