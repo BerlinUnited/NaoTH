@@ -88,7 +88,7 @@ void Simulation::execute()
   STOPWATCH_STOP("Simulation:decide");  
 
   getKickActionModel().bestAction = action_local[best_action].id();
-  getKickActionModel().expectedBallPos = action_local[best_action].calcExpectedBallPos(getBallModel().positionPreview);
+  getKickActionModel().expectedBallPos = getRobotPose() * action_local[best_action].calcExpectedBallPos(getBallModel().positionPreview);
 
   DEBUG_REQUEST("Simulation:draw_best_action",
     FIELD_DRAWING_CONTEXT;
@@ -96,7 +96,7 @@ void Simulation::execute()
     std::string name = action_local[best_action].name();
     TEXT_DRAWING(getRobotPose().translation.x+100, getRobotPose().translation.y-200, name);
     PEN("000000", 1);
-    Vector2d expectedBallPos = getRobotPose() * getKickActionModel().expectedBallPos;
+    Vector2d expectedBallPos = getKickActionModel().expectedBallPos;
 		FILLOVAL(expectedBallPos.x, expectedBallPos.y, 50, 50);
   );
 
