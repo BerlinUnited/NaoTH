@@ -31,6 +31,7 @@ public:
   static std::string getName(ActionId id);
   
   ActionId bestAction;
+  Vector2d expectedBallPos;
 };
 
 

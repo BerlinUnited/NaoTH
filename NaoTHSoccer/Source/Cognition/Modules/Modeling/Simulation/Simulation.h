@@ -143,6 +143,7 @@ public:
     }
 
     Vector2d predict(const Vector2d& ball) const;
+    Vector2d calcExpectedBallPos(const Vector2d& ball) const;
     KickActionModel::ActionId id() const { return _id; }
     const std::string& name() const { return _name; }
   };
@@ -217,7 +218,6 @@ private:
 
   void simulateConsequences(const Action & action, ActionResults& categorizedBallPositions) const;
 
-  size_t decide(const std::vector<ActionResults>& actionsConsequences) const;
   size_t decide_smart(const std::vector<ActionResults>& actionsConsequences ) const;
 
   //Vector2d outsideField(const Vector2d& relativePoint) const;

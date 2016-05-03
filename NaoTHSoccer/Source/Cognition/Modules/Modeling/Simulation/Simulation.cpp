@@ -88,12 +88,16 @@ void Simulation::execute()
   STOPWATCH_STOP("Simulation:decide");  
 
   getKickActionModel().bestAction = action_local[best_action].id();
+  getKickActionModel().expectedBallPos = action_local[best_action].calcExpectedBallPos(getBallModel().positionPreview);
 
   DEBUG_REQUEST("Simulation:draw_best_action",
     FIELD_DRAWING_CONTEXT;
     PEN("FF69B4", 35);
     std::string name = action_local[best_action].name();
     TEXT_DRAWING(getRobotPose().translation.x+100, getRobotPose().translation.y-200, name);
+    PEN("000000", 1);
+    Vector2d expectedBallPos = getRobotPose() * getKickActionModel().expectedBallPos;
+		FILLOVAL(expectedBallPos.x, expectedBallPos.y, 50, 50);
   );
 
   DEBUG_REQUEST("Simulation:draw_potential_field",
@@ -350,6 +354,15 @@ Vector2d Simulation::Action::predict(const Vector2d& ball) const
   noisyAction.rotate(angle);
 
   return ball + noisyAction;
+}
+
+Vector2d Simulation::Action::calcExpectedBallPos(const Vector2d& ball) const
+{
+  double gforce = Math::g*1e3; // mm/s^2
+  double distance = action_speed*action_speed/friction/gforce/2.0; // friction*mass*gforce*distance = 1/2*mass*speed*speed
+  Vector2d meanAction(distance, 0.0);
+  meanAction.rotate(Math::fromDegrees(action_angle));
+  return ball + meanAction;
 }
 
 double Simulation::exp256(const double& x) const
