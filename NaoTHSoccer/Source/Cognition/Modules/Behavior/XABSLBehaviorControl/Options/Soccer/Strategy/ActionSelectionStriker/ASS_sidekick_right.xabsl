@@ -1,4 +1,4 @@
-option new_sidekick_right
+option ASS_sidekick_right
 {
   initial state approach_sidekick_to_right {
     decision {

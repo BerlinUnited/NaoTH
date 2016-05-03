@@ -1,4 +1,4 @@
-option new_striker_agent {
+option action_selection_striker_agent {
 
   initial state test {    
     action {
@@ -8,7 +8,7 @@ option new_striker_agent {
 
       take_arms_back();
 
-      new_striker();
+      ASS_striker();
 
       // control the arms
       arms_control();
