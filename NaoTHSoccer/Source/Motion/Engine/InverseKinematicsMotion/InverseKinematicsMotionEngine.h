@@ -169,7 +169,7 @@ public:
         }
         //ASSERT(thePreviewController.ready());
 
-        return thePreviewController.previewSteps()-1;
+        return static_cast<int>(thePreviewController.previewSteps())-1;
       }
 
     private:

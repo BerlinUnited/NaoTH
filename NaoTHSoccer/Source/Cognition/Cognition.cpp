@@ -53,7 +53,9 @@
 #include "Modules/VisualCortex/GoalDetector/GoalDetector.h"
 #include "Modules/VisualCortex/GoalDetector/GoalDetectorV2.h"
 #include "Modules/VisualCortex/GoalDetector/GoalCrossBarDetector.h"
+#include "Modules/VisualCortex/BallDetector/RedBallDetector.h"
 #include "Modules/VisualCortex/BallDetector/BallDetector.h"
+#include "Modules/VisualCortex/IntegralImageProvider.h"
 
 #include "Modules/SelfAwareness/FakeCameraMatrixFinder/FakeCameraMatrixFinder.h"
 #include "Modules/VisualCortex/FakeBallDetector/FakeBallDetector.h"
@@ -75,11 +77,11 @@
 #include "Modules/Modeling/GoalModel/DummyActiveGoalLocator/DummyActiveGoalLocator.h"
 #include "Modules/Modeling/GoalModel/WholeGoalLocator/WholeGoalLocator.h"
 #include "Modules/Modeling/BallLocator/KalmanFilterBallLocator/KalmanFilterBallLocator.h"
-#include "Modules/Modeling/BallLocator/PlainKalmanFilterBallLocator/PlainKalmanFilterBallLocator.h"
+#include "Modules/Modeling/BallLocator/MultiKalmanBallLocator/MultiKalmanBallLocator.h"
 #include "Modules/Modeling/StaticDebugModelProvider/StaticDebugModelProvider.h"
 
 #include "Modules/Modeling/Simulation/Simulation.h"
-
+#include "Modules/Modeling/SelfLocator/SituationPriorProvider/SituationPriorProvider.h"
 
 // behavior
 #include "Modules/Behavior/BasicTestBehavior/BasicTestBehavior.h"
@@ -140,6 +142,7 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(CameraMatrixCorrector);
 
   REGISTER_MODULE(HistogramProvider);
+  REGISTER_MODULE(IntegralImageProvider);
   REGISTER_MODULE(SimpleFieldColorClassifier);
   REGISTER_MODULE(FieldColorClassifier);
   REGISTER_MODULE(ScanLineEdgelDetector);
@@ -150,6 +153,8 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(GoalDetector);
   REGISTER_MODULE(GoalDetectorV2);
   REGISTER_MODULE(GoalCrossBarDetector);
+
+  REGISTER_MODULE(RedBallDetector);
   REGISTER_MODULE(BallDetector);
 
   REGISTER_MODULE(FakeCameraMatrixFinder);
@@ -159,6 +164,7 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(PerceptionsVisualizer);
 
   // modeling
+  REGISTER_MODULE(SituationPriorProvider);
   REGISTER_MODULE(BodyStateProvider);
   REGISTER_MODULE(FieldCompass);
   REGISTER_MODULE(UltraSoundObstacleLocator);
@@ -172,7 +178,7 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(WholeGoalLocator);
   REGISTER_MODULE(DummyActiveGoalLocator);
   REGISTER_MODULE(KalmanFilterBallLocator);
-  REGISTER_MODULE(PlainKalmanFilterBallLocator);
+  REGISTER_MODULE(MultiKalmanBallLocator);
   REGISTER_MODULE(Simulation);
   REGISTER_MODULE(StaticDebugModelProvider);
 

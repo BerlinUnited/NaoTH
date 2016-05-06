@@ -63,6 +63,9 @@ void SensorSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalOutputSymbol("path.target_y", &setTargetpointY, &getTargetPointY);
   
   engine.registerBooleanInputSymbol("button.bumper.pressed.left", &getBumberLeftPressed);
+  engine.registerBooleanInputSymbol("button.head.pressed.front", &getButtonHeadFront);
+  engine.registerBooleanInputSymbol("button.head.pressed.middle", &getButtonHeadMiddle);
+  engine.registerBooleanInputSymbol("button.head.pressed.rear", &getButtonHeadRear);
 }//end registerSymbols
 
 SensorSymbols* SensorSymbols::theInstance = NULL;
@@ -81,6 +84,18 @@ bool SensorSymbols::getBumberLeftPressed()
 {
   return (theInstance->getButtonData().eventCounter[ButtonData::LeftFootLeft] > 0) ||
          (theInstance->getButtonData().eventCounter[ButtonData::LeftFootRight] > 0);
+}
+bool SensorSymbols::getButtonHeadFront()
+{
+  return (theInstance->getButtonData().isPressed[ButtonData::HeadFront]);
+}
+bool SensorSymbols::getButtonHeadMiddle()
+{
+  return (theInstance->getButtonData().isPressed[ButtonData::HeadMiddle]);
+}
+bool SensorSymbols::getButtonHeadRear()
+{
+  return (theInstance->getButtonData().isPressed[ButtonData::HeadRear]);
 }
 
 double SensorSymbols::getIRButtonNumber()

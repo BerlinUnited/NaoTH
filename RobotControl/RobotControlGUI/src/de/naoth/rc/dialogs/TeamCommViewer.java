@@ -5,6 +5,11 @@
  */
 package de.naoth.rc.dialogs;
 
+import com.google.gson.ExclusionStrategy;
+import com.google.gson.FieldAttributes;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.stream.JsonWriter;
 import de.naoth.rc.Helper;
 import de.naoth.rc.RobotControl;
 import de.naoth.rc.components.RobotStatus;
@@ -14,6 +19,8 @@ import de.naoth.rc.dataformats.SPLMessage;
 import de.naoth.rc.drawingmanager.DrawingEventManager;
 import de.naoth.rc.drawings.DrawingCollection;
 import java.awt.Color;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -23,15 +30,20 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.channels.AsynchronousCloseException;
 import java.nio.channels.DatagramChannel;
+import java.text.SimpleDateFormat;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.TreeMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
@@ -56,10 +68,14 @@ public class TeamCommViewer extends AbstractDialog {
     private final TeamCommListener listenerOpponent = new TeamCommListener(true);
     private final HashMap<String, RobotStatus> robotsMap = new HashMap<>();
 
-    private final Map<String, TeamCommListener.Message> messageMap = Collections.synchronizedMap(new TreeMap<String, TeamCommListener.Message>());
+    private final Map<String, TeamCommMessage> messageMap = Collections.synchronizedMap(new TreeMap<String, TeamCommMessage>());
 
     private final Color magenta = new Color(210, 180, 200);
     private final Color cyan = new Color(180, 210, 255);
+    
+    private LogFileWriter logfile = null;
+    private final ConcurrentLinkedQueue<TeamCommMessage> logfileQueue = new ConcurrentLinkedQueue<TeamCommMessage>();
+    private boolean logfileQueueAppend = false;
     
     /**
      * Creates new form TeamCommViewer
@@ -77,12 +93,20 @@ public class TeamCommViewer extends AbstractDialog {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        teamCommFileChooser = new de.naoth.rc.components.ExtendedFileChooser();
         robotStatusPanel = new javax.swing.JPanel();
         btListen = new javax.swing.JToggleButton();
         portNumberOwn = new javax.swing.JFormattedTextField();
         portNumberOpponent = new javax.swing.JFormattedTextField();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
+        btnRecord = new javax.swing.JToggleButton();
+        btnStopRecording = new javax.swing.JButton();
+
+        teamCommFileChooser.setDialogType(javax.swing.JFileChooser.SAVE_DIALOG);
+        teamCommFileChooser.setDialogTitle("Log file location");
+        teamCommFileChooser.setSelectedFile(new File((new SimpleDateFormat("yyyy-MM-dd")).format(new Date())+"_TeamComm.log"));
+        teamCommFileChooser.setToolTipText("");
 
         robotStatusPanel.setLayout(new java.awt.GridLayout(5, 1, 0, 5));
 
@@ -106,6 +130,25 @@ public class TeamCommViewer extends AbstractDialog {
 
         jLabel2.setText("Red:");
 
+        btnRecord.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/naoth/rc/res/play.png"))); // NOI18N
+        btnRecord.setText("Record TeamComm");
+        btnRecord.setActionCommand("RecordTeamComm");
+        btnRecord.setSelectedIcon(new javax.swing.ImageIcon(getClass().getResource("/de/naoth/rc/res/media-record.png"))); // NOI18N
+        btnRecord.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnRecordActionPerformed(evt);
+            }
+        });
+
+        btnStopRecording.setIcon(new javax.swing.ImageIcon(getClass().getResource("/toolbarButtonGraphics/media/Stop24.gif"))); // NOI18N
+        btnStopRecording.setToolTipText("Stops recording and closes log file.");
+        btnStopRecording.setEnabled(false);
+        btnStopRecording.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnStopRecordingActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -123,21 +166,28 @@ public class TeamCommViewer extends AbstractDialog {
                         .addComponent(jLabel2)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(portNumberOpponent, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 62, Short.MAX_VALUE))
+                        .addGap(12, 12, 12)
+                        .addComponent(btnRecord)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnStopRecording)
+                        .addGap(0, 100, Short.MAX_VALUE))
                     .addComponent(robotStatusPanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btListen)
-                    .addComponent(portNumberOwn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(portNumberOpponent, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel1)
-                    .addComponent(jLabel2))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(20, 20, 20)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(btnStopRecording, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                    .addComponent(btnRecord, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(btListen)
+                        .addComponent(portNumberOwn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(portNumberOpponent, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel1)
+                        .addComponent(jLabel2)))
+                .addGap(27, 27, 27)
                 .addComponent(robotStatusPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
@@ -192,8 +242,107 @@ public class TeamCommViewer extends AbstractDialog {
         }
     }//GEN-LAST:event_btListenActionPerformed
 
+    private void btnRecordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRecordActionPerformed
+        // button got pressed
+        if(btnRecord.isSelected()) {
+            // log file already set; just enable logging
+            if(this.logfile != null) {
+                logfileQueueAppend = true;
+                btnRecord.setSelected(true);
+                setBtnRecordToolTipText(true);
+            } else {
+                // select log file and enable logging!
+                this.setLogFile();
+            }
+        // release button
+        } else {
+            if(logfile != null) { // be sure log file is set
+                logfileQueueAppend = false;
+                setBtnRecordToolTipText(false);
+            }
+        }
+    }//GEN-LAST:event_btnRecordActionPerformed
+
+    private void btnStopRecordingActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStopRecordingActionPerformed
+        // stop log file recording, flush and close logfile, update UI
+        logfileQueueAppend = false;
+        closingLogfile();
+        btnRecord.setSelected(false);
+        setBtnRecordToolTipText(false);
+        btnStopRecording.setEnabled(false);
+    }//GEN-LAST:event_btnStopRecordingActionPerformed
+
     @Override
     public void dispose() {
+        closingLogfile();
+    }
+
+    @Override
+    public void destroy() {
+        System.err.println("destroy");
+        super.destroy(); //To change body of generated methods, choose Tools | Templates.
+    }
+    
+    private boolean setLogFile() {
+        // open filechooser
+        if(teamCommFileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+            // if selected file has a file extension - use this, otherwise append ".log" to the filename
+            File dfile = (teamCommFileChooser.getSelectedFile().getName().lastIndexOf(".") == -1) ? 
+                new File(teamCommFileChooser.getSelectedFile()+".log") : 
+                teamCommFileChooser.getSelectedFile();
+
+            if(dfile.canWrite()) {
+                try {
+                    // make sure there is no open log file ..
+                    closingLogfile();
+
+                    // create new log file
+                    dfile.createNewFile();
+                    logfile = new LogFileWriter(dfile);
+                    logfile.start();
+
+                    btnRecord.setSelected(true);
+                    setBtnRecordToolTipText(true);
+                    btnStopRecording.setEnabled(true); // enable "stop"-button
+
+                    return true;
+                } catch (IOException ex) {
+                    Logger.getLogger(TeamCommViewer.class.getName()).log(Level.SEVERE, null, ex);
+                    JOptionPane.showMessageDialog(null, "IO-Error occurred, see application log.", "Exception", JOptionPane.ERROR_MESSAGE);
+                } catch (Throwable ex) {
+                    Logger.getLogger(TeamCommViewer.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            } else {
+                JOptionPane.showMessageDialog(null, "Selected log file is not writeable!", "Not writeable", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+        
+        btnRecord.setSelected(false); // prevent toggling!
+        setBtnRecordToolTipText(false);
+        
+        return false;
+    }
+    
+    private void setBtnRecordToolTipText(boolean stop){
+        String name = this.logfile == null ? "<not-set>" : this.logfile.getLogfileName();
+        if(!stop) {
+            btnRecord.setToolTipText("Start recording to: " + name);
+        } else {
+            btnRecord.setToolTipText("Pause recording to: " + name);
+        }
+        
+    }
+    
+    private void closingLogfile() {
+        if(logfile != null) {
+            try {
+                logfile.close();
+                logfile.join();
+                logfile = null;
+            } catch (InterruptedException ex) {
+                Logger.getLogger(TeamCommViewer.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
     }
 
     private class TeamCommListenTask extends TimerTask {
@@ -207,9 +356,9 @@ public class TeamCommViewer extends AbstractDialog {
 
                 DrawingCollection drawings = new DrawingCollection();
 
-                for (Entry<String, TeamCommListener.Message> msgEntry : messageMap.entrySet()) {
+                for (Entry<String, TeamCommMessage> msgEntry : messageMap.entrySet()) {
                     final String address = msgEntry.getKey();
-                    final TeamCommListener.Message msg = msgEntry.getValue();
+                    final TeamCommMessage msg = msgEntry.getValue();
 
                     SwingUtilities.invokeLater(new Runnable() {
                         @Override
@@ -233,25 +382,25 @@ public class TeamCommViewer extends AbstractDialog {
         } // end run
     }
 
-    public class TeamCommListener implements Runnable {
+    
+    public class TeamCommMessage {
 
-        public class Message {
-
-            public Message(long timestamp, SPLMessage message, boolean isOpponent) {
-                this.timestamp = timestamp;
-                this.message = message;
-                this.isOpponent = isOpponent;
-            }
-
-            public final long timestamp;
-            public final SPLMessage message;
-            private final boolean isOpponent;
-            
-            public boolean isOpponent() {
-                return isOpponent;
-            }
+        public TeamCommMessage(long timestamp, SPLMessage message, boolean isOpponent) {
+            this.timestamp = timestamp;
+            this.message = message;
+            this.isOpponent = isOpponent;
         }
 
+        public final long timestamp;
+        public final SPLMessage message;
+        private final boolean isOpponent;
+
+        public boolean isOpponent() {
+            return isOpponent;
+        }
+    }
+    
+    public class TeamCommListener implements Runnable {
         private DatagramChannel channel;
         private Thread trigger;
 
@@ -300,11 +449,16 @@ public class TeamCommViewer extends AbstractDialog {
                     this.readBuffer.flip();
 
                     try {
-                        SPLMessage msg = new SPLMessage(this.readBuffer);
-
                         long timestamp = System.currentTimeMillis();
+                        SPLMessage spl_msg = new SPLMessage(this.readBuffer);
+                        TeamCommMessage tc_msg = new TeamCommMessage(timestamp, spl_msg, this.isOpponent);
+                        
+                        if(logfileQueueAppend) {
+                            logfileQueue.add(tc_msg);
+                        }
+
                         if (address instanceof InetSocketAddress) {
-                            messageMap.put(((InetSocketAddress) address).getHostString(), new Message(timestamp, msg, this.isOpponent));
+                            messageMap.put(((InetSocketAddress) address).getHostString(), tc_msg);
                         }
 
                     } catch (Exception ex) {
@@ -321,14 +475,88 @@ public class TeamCommViewer extends AbstractDialog {
             }
         }
     }//end class TeamCommListener
+    
+    private class LogFileWriter extends Thread {
+        private final File log;
+        private final Gson json;
+        private JsonWriter jw;
+        public boolean running = true;
+        
+        public LogFileWriter(File log) {
+            this.log = log;
+            this.json = new GsonBuilder()
+                // shouldn't be any ... just for safety reasons
+                .disableInnerClassSerialization()
+                // skip Variable "user" in SPLMessage
+                /*
+                .addSerializationExclusionStrategy(new ExclusionStrategy() {
+                    @Override
+                    public boolean shouldSkipField(FieldAttributes fieldAttributes) {
+                        return fieldAttributes.getName().compareTo("user") == 0;
+                    }
+
+                    @Override
+                    public boolean shouldSkipClass(Class<?> aClass) {
+                        return false;
+                    }
+                })*/
+                // write NaN value without throwing error/warning
+                .serializeSpecialFloatingPointValues()
+                .create();
+        }
+
+        public void run() {
+            try {
+                // use JsonWriter to write the enclosing Json-Array ...
+                this.jw = new JsonWriter(new FileWriter(this.log));
+                // open "global"/"enclosing" Array
+                this.jw.beginArray();
+                
+                while (running) {
+                    TeamCommMessage msg = logfileQueue.poll();
+                    if(msg != null) {
+                        writeMessage(msg.message, msg.timestamp, msg.isOpponent);
+                    }
+                }
+                
+                // flush buffer and close
+                this.jw.endArray();
+                this.jw.close();
+            } catch (IOException ex) {
+                Logger.getLogger(TeamCommViewer.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        
+        public void close() {
+            running = false;
+        }
+        
+        public String getLogfileName() {
+            return this.log != null ? this.log.getName() : "";
+        }
+        
+        public void writeMessage(SPLMessage msg, long timestamp, boolean isOpponent) throws IOException {
+            this.jw.beginObject();
+            this.jw.name("timestamp");
+            this.jw.value(timestamp);
+            this.jw.name("isOpponent");
+            this.jw.value(isOpponent);
+            this.jw.name("spl");
+            this.jw.jsonValue(this.json.toJson(msg));
+            this.jw.endObject();
+        }
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JToggleButton btListen;
+    private javax.swing.JToggleButton btnRecord;
+    private javax.swing.JButton btnStopRecording;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JFormattedTextField portNumberOpponent;
     private javax.swing.JFormattedTextField portNumberOwn;
     private javax.swing.JPanel robotStatusPanel;
+    private de.naoth.rc.components.ExtendedFileChooser teamCommFileChooser;
     // End of variables declaration//GEN-END:variables
 
 }

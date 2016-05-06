@@ -21,7 +21,7 @@ void BallSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalInputSymbol("ball.percept.y", &ballPerceptPos.y);
   engine.registerBooleanInputSymbol("ball.was_seen", &ballPerceptSeen);
 
-  engine.registerBooleanInputSymbol("ball.know_where_itis", &ball_know_where_itis);
+  engine.registerBooleanInputSymbol("ball.know_where_itis", &getBallModel().knows);
 
   // model
   engine.registerDecimalInputSymbol("ball.x", &getBallModel().position.x);
@@ -106,11 +106,8 @@ void BallSymbols::execute()
 
   ballPerceptSeen = false;
 
-  if(theInstance->getBallPercept().ballWasSeen) {
-    ballPerceptPos = getBallPercept().bearingBasedOffsetOnField;
-    ballPerceptSeen = true;
-  } else if(theInstance->getBallPerceptTop().ballWasSeen) {
-    ballPerceptPos = getBallPerceptTop().bearingBasedOffsetOnField;
+  if(theInstance->getMultiBallPercept().wasSeen()) {
+    ballPerceptPos = theInstance->getMultiBallPercept().begin()->positionOnField; //getBallModel().position; //HACK
     ballPerceptSeen = true;
   }
 
