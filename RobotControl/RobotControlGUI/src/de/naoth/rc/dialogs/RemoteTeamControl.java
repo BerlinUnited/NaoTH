@@ -7,11 +7,32 @@ package de.naoth.rc.dialogs;
 
 import de.naoth.rc.RobotControl;
 import de.naoth.rc.components.RemoteRobotPanel;
+import de.naoth.rc.components.RobotStatus;
 import de.naoth.rc.core.dialog.AbstractDialog;
 import de.naoth.rc.core.dialog.DialogPlugin;
 import de.naoth.rc.core.manager.ObjectListener;
 import de.naoth.rc.core.manager.SwingCommandExecutor;
+import de.naoth.rc.dataformats.SPLMessage;
+import de.naoth.rc.drawings.DrawingCollection;
 import de.naoth.rc.manager.GenericManagerFactory;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.SocketAddress;
+import java.net.SocketException;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.channels.AsynchronousCloseException;
+import java.nio.channels.DatagramChannel;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.TreeMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.SwingUtilities;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 import net.java.games.input.Component;
@@ -35,14 +56,25 @@ public class RemoteTeamControl extends AbstractDialog {
         public static GenericManagerFactory genericManagerFactory;
     }//end Plugin
 
+    private final Map<String, TeamCommMessage> messageMap = Collections.synchronizedMap(new TreeMap<String, TeamCommMessage>());
+    private final HashMap<String, RemoteRobotPanel> robotsMap = new HashMap<>();
+    private TeamCommListener teamCommListener;
+    private Timer timerCheckMessages;
+    
     public RemoteTeamControl() 
     {
         initComponents();
         
-        this.robotPanel.add(new RemoteRobotPanel());
-        this.robotPanel.add(new RemoteRobotPanel());
-        this.robotPanel.add(new RemoteRobotPanel());
+        try {
+            teamCommListener = new TeamCommListener();
+            teamCommListener.connect(10004);
+        } catch (IOException | InterruptedException ex) {
+            ex.printStackTrace(System.err);
+        }
         
+        
+        this.timerCheckMessages = new Timer();
+        this.timerCheckMessages.scheduleAtFixedRate(new TeamCommListenTask(), 100, 33);
         
         Controller[] ca = ControllerEnvironment.getDefaultEnvironment().getControllers();
         for(int i =0;i<ca.length;i++){
@@ -97,7 +129,7 @@ public class RemoteTeamControl extends AbstractDialog {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(robotPanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(robotPanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 176, Short.MAX_VALUE)
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -115,6 +147,120 @@ class RemoteCommandResultHandler implements ObjectListener<byte[]> {
         System.out.println(cause);
     }
 }
+
+    private class TeamCommListenTask extends TimerTask {
+
+        @Override
+        public void run() {
+            synchronized (messageMap) {
+                if (messageMap.isEmpty()) {
+                    return;
+                }
+
+                for (Map.Entry<String, TeamCommMessage> msgEntry : messageMap.entrySet()) 
+                {
+                    final String address = msgEntry.getKey();
+                    //final TeamCommMessage msg = msgEntry.getValue();
+
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            RemoteRobotPanel robotStatus = robotsMap.get(address);
+                            if (robotStatus == null) {
+                                robotStatus = new RemoteRobotPanel();
+                                robotsMap.put(address, robotStatus);
+                                robotPanel.add(robotStatus);
+                                robotPanel.repaint();
+                            }
+                            // update
+                            //robotStatus.setStatus(msg.timestamp, msg.message);
+                        }
+                    });
+                }
+            } // end synchronized
+        } // end run
+    }
+
+    public class TeamCommListener implements Runnable {
+        private DatagramChannel channel;
+        private Thread trigger;
+
+        private final ByteBuffer readBuffer;
+
+        public TeamCommListener() {
+            this.readBuffer = ByteBuffer.allocateDirect(SPLMessage.SPL_STANDARD_MESSAGE_SIZE);
+            this.readBuffer.order(ByteOrder.LITTLE_ENDIAN);
+        }
+
+        boolean isConnected() {
+            return this.channel != null && this.trigger != null;
+        }
+
+        public void connect(int port) throws IOException, InterruptedException {
+            disconnect();
+
+            this.channel = DatagramChannel.open();
+            this.channel.configureBlocking(true);
+            this.channel.bind(new InetSocketAddress(InetAddress.getByName("0.0.0.0"), port));
+
+            this.trigger = new Thread(this);
+            this.trigger.start();
+        }
+
+        public void disconnect() throws IOException, InterruptedException {
+            if (this.channel != null) {
+                this.channel.close();
+                this.channel = null;
+            }
+            if (this.trigger != null) {
+                this.trigger.join();
+                this.trigger = null;
+            }
+        }
+
+        @Override
+        public void run() {
+            try {
+                while (true) {
+                    this.readBuffer.clear();
+                    SocketAddress address = this.channel.receive(this.readBuffer);
+                    this.readBuffer.flip();
+
+                    try {
+                        long timestamp = System.currentTimeMillis();
+                        SPLMessage spl_msg = new SPLMessage(this.readBuffer);
+                        TeamCommMessage tc_msg = new TeamCommMessage(timestamp, spl_msg);
+                        
+                        if (address instanceof InetSocketAddress) {
+                            messageMap.put(((InetSocketAddress) address).getHostString(), tc_msg);
+                        }
+
+                    } catch (Exception ex) {
+                        Logger.getLogger(TeamCommViewer.class.getName()).log(Level.INFO, null, ex);
+                    }
+
+                }
+            } catch (AsynchronousCloseException ex) {
+                /* socket was closed, that's fine */
+            } catch (SocketException ex) {
+                Logger.getLogger(TeamCommViewer.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (IOException ex) {
+                Logger.getLogger(TeamCommViewer.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }//end class TeamCommListener
+
+    public class TeamCommMessage {
+
+        public TeamCommMessage(long timestamp, SPLMessage message) {
+            this.timestamp = timestamp;
+            this.message = message;
+        }
+
+        public final long timestamp;
+        public final SPLMessage message;
+        
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel robotPanel;
