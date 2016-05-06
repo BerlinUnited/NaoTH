@@ -7,14 +7,13 @@ package de.naoth.rc.dialogs;
 
 import de.naoth.rc.RobotControl;
 import de.naoth.rc.components.RemoteRobotPanel;
-import de.naoth.rc.components.RobotStatus;
 import de.naoth.rc.core.dialog.AbstractDialog;
 import de.naoth.rc.core.dialog.DialogPlugin;
 import de.naoth.rc.core.manager.ObjectListener;
 import de.naoth.rc.core.manager.SwingCommandExecutor;
 import de.naoth.rc.dataformats.SPLMessage;
-import de.naoth.rc.drawings.DrawingCollection;
 import de.naoth.rc.manager.GenericManagerFactory;
+import de.naoth.rc.messages.Representations;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -38,6 +37,8 @@ import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 import net.java.games.input.Component;
 import net.java.games.input.Controller;
 import net.java.games.input.ControllerEnvironment;
+import net.java.games.input.Event;
+import net.java.games.input.EventQueue;
 
 /**
  *
@@ -77,10 +78,14 @@ public class RemoteTeamControl extends AbstractDialog {
         this.timerCheckMessages.scheduleAtFixedRate(new TeamCommListenTask(), 100, 33);
         
         Controller[] ca = ControllerEnvironment.getDefaultEnvironment().getControllers();
-        for(int i =0;i<ca.length;i++){
-
+        for(int i =0;i<ca.length;i++)
+        {
             /* Get the name of the controller */
             System.out.println(ca[i].getName());
+            
+            if(ca[i].getType() == Controller.Type.KEYBOARD) {
+                this.timerCheckMessages.scheduleAtFixedRate(new TestKeyBoardControl(ca[i]), 100, 33);
+            }
             
             System.out.println("Type: "+ca[i].getType().toString());
 
@@ -147,6 +152,81 @@ class RemoteCommandResultHandler implements ObjectListener<byte[]> {
         System.out.println(cause);
     }
 }
+
+    private class TestKeyBoardControl extends TimerTask {
+
+        private final Controller control;
+        public TestKeyBoardControl(Controller control) {
+            this.control = control;
+        }
+        
+        @Override
+        public void run() 
+        {
+            control.poll();
+            EventQueue queue = control.getEventQueue();
+            
+            Representations.RemoteControlCommand.ActionType action = Representations.RemoteControlCommand.ActionType.STAND;
+            int x = 0;
+            int y = 0;
+            double alpha = 0;
+            
+            Event event = new Event();
+            while(queue.getNextEvent(event)) 
+            {
+                System.out.println(event.getComponent().getName() + " - " + event.getValue());
+                Component.Identifier id = event.getComponent().getIdentifier();
+                if(id == Component.Identifier.Key.W) {
+                    action = Representations.RemoteControlCommand.ActionType.WALK;
+                    x += 50;
+                } else if(id == Component.Identifier.Key.S) {
+                    action = Representations.RemoteControlCommand.ActionType.WALK;
+                    x -= 50;
+                } else if(id == Component.Identifier.Key.A) {
+                    action = Representations.RemoteControlCommand.ActionType.WALK;
+                    y += 50;
+                } else if(id == Component.Identifier.Key.D) {
+                    action = Representations.RemoteControlCommand.ActionType.WALK;
+                    y -= 50;
+                }
+            }
+            
+            sendCommand(action, x, y, alpha);
+            
+        }
+        
+    }// end class TestKeyBoardControl
+
+    private void sendCommand(Representations.RemoteControlCommand.ActionType action, int x, int y, double alpha) 
+    {
+        Representations.RemoteControlCommand.Builder cmd = Representations.RemoteControlCommand.newBuilder();
+        cmd.setAction(action);
+        cmd.getTargetBuilder()
+            .setRotation(alpha)
+            .getTranslationBuilder().setX(x).setY(y);
+    
+        try {
+            Sender sender = new Sender();
+            sender.send(cmd.build());
+        } catch (IOException ex) {
+            ex.printStackTrace(System.err);
+        }
+    }
+    
+    public class Sender {
+        private final DatagramChannel channel;
+
+        public Sender() throws IOException {
+            this.channel = DatagramChannel.open();
+            this.channel.configureBlocking(true);
+            //this.channel.bind(new InetSocketAddress(InetAddress.getByName("0.0.0.0"), port));
+        }
+        
+        void send(Representations.RemoteControlCommand rcc) throws IOException {
+            ByteBuffer buffer = ByteBuffer.wrap(rcc.toByteArray());
+            this.channel.send(buffer, new InetSocketAddress(InetAddress.getByName("10.0.4.85"), 10401));
+        }
+    }
 
     private class TeamCommListenTask extends TimerTask {
 
