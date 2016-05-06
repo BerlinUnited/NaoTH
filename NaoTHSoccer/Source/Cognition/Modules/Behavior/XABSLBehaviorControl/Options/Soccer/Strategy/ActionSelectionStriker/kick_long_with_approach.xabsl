@@ -1,4 +1,4 @@
-option ASS_kick_short_with_approach
+option kick_long_with_approach
 {
   initial state decide
   {
@@ -15,7 +15,7 @@ option ASS_kick_short_with_approach
   state approach_for_right {
     decision{
       if (action_done) 
-          goto attack_with_right_foot;
+        goto do_kick_with_right_foot;
       else 
         stay;
     }
@@ -25,7 +25,7 @@ option ASS_kick_short_with_approach
     }
   }
 
-  state attack_with_right_foot {
+ state do_kick_with_right_foot {
     decision {
       if(action_done)
         goto done;
@@ -34,14 +34,14 @@ option ASS_kick_short_with_approach
     }
     action {
       situation_abortable = false;
-      fast_forward_kick(foot = right);
+      kick_with_foot(foot = right);
     }
   }
 
   state approach_for_left {
     decision{
       if (action_done) 
-        goto attack_with_left_foot;
+        goto do_kick_with_left_foot;
       else 
         stay;
     }
@@ -51,7 +51,7 @@ option ASS_kick_short_with_approach
     }
   }
 
-  state attack_with_left_foot {
+  state do_kick_with_left_foot {
     decision {
       if(action_done)
         goto done;
@@ -60,7 +60,7 @@ option ASS_kick_short_with_approach
     }
     action {
       situation_abortable = false;
-      fast_forward_kick(foot = left);
+      kick_with_foot(foot = left);
     }
   }
 
@@ -81,4 +81,5 @@ option ASS_kick_short_with_approach
       head.control_mode = look_at_ball_percept;
     }
   }
+
 }

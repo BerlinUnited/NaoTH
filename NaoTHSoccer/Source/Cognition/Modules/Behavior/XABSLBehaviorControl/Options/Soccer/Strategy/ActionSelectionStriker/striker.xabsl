@@ -1,4 +1,4 @@
-option ASS_striker 
+option striker 
 {
 
   common decision
@@ -91,7 +91,7 @@ option ASS_striker
     }
     action {
       situation_abortable = true;
-      ASS_sidekick_left();
+      sidekick_left();
     }
   }
   state sidekick_right {
@@ -103,7 +103,7 @@ option ASS_striker
     }
     action {
       situation_abortable = true;
-      ASS_sidekick_right();
+      sidekick_right();
     }
   }
 /*
@@ -132,7 +132,7 @@ option ASS_striker
     }
     action{
       situation_abortable = true;
-      ASS_kick_long_with_approach();
+      kick_long_with_approach();
     }
   }
 
@@ -145,7 +145,7 @@ option ASS_striker
     }
     action{
       situation_abortable = true;
-      ASS_kick_short_with_approach();
+      kick_short_with_approach();
     }
   }
 

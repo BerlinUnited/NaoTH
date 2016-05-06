@@ -1,19 +1,19 @@
-option ASS_sidekick_right
+option sidekick_left
 {
-  initial state approach_sidekick_to_right {
+ initial state approach_sidekick_to_left {
     decision {
       if(action_done)
-        goto sidekick_to_right;
+        goto sidekick_to_left;
       else
         stay;
     }
     action {
-      go_to_ball_with_foot_dynamic(right = false, distance = 130, offset.y=-30);
+      //go_to_ball_with_foot(right = true, distance = 130, offset.y=-10);
+      go_to_ball_with_foot_dynamic(right = true, distance = 130, offset.y=-30);
     }
   }
-
-  state sidekick_to_right{
-    decision {
+  state sidekick_to_left {
+    decision{
       if(action_done)
         goto done;
       else
@@ -21,10 +21,9 @@ option ASS_sidekick_right
     }
     action {
       situation_abortable = false;
-      sidekick(to = right);
+      sidekick(to = left);
     }
   }
-
   target state done
   {
     decision {

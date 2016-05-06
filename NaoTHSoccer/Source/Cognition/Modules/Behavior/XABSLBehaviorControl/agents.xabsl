@@ -74,11 +74,11 @@ include "Options/Skills/search_ball.xabsl";
 include "Options/Debug/battery.xabsl";
 include "Options/Debug/show_calibration.xabsl";
 //Action Selection Striker
-include "Options/Soccer/Strategy/ActionSelectionStriker/ASS_striker.xabsl";
-include "Options/Soccer/Strategy/ActionSelectionStriker/ASS_sidekick_left.xabsl";
-include "Options/Soccer/Strategy/ActionSelectionStriker/ASS_sidekick_right.xabsl";
-include "Options/Soccer/Strategy/ActionSelectionStriker/ASS_kick_short_with_approach.xabsl";
-include "Options/Soccer/Strategy/ActionSelectionStriker/ASS_kick_long_with_approach.xabsl";
+include "Options/Soccer/Strategy/ActionSelectionStriker/striker.xabsl";
+include "Options/Soccer/Strategy/ActionSelectionStriker/sidekick_left.xabsl";
+include "Options/Soccer/Strategy/ActionSelectionStriker/sidekick_right.xabsl";
+include "Options/Soccer/Strategy/ActionSelectionStriker/kick_short_with_approach.xabsl";
+include "Options/Soccer/Strategy/ActionSelectionStriker/kick_long_with_approach.xabsl";
 // Soccer
 include "Options/Soccer/spl_play_soccer.xabsl";
 include "Options/Soccer/Strategy/basic_play.xabsl"; //Verschieben
@@ -161,7 +161,7 @@ include "Options/Test/agent/penalty_kicker_test_agent.xabsl";
 // Test agents (options) Behaviour Tests
 include "Options/Soccer/passive_player_agent.xabsl";
 include "Options/Soccer/basic_goali_agent.xabsl";
-include "Options/Soccer/action_selection_striker_agent.xabsl";
+include "Options/Soccer/striker_agent.xabsl";
 include "Options/Test/agent/role_change_test_agent.xabsl";
 include "Options/Test/agent/passive_behavior_test_agent.xabsl";
 
@@ -233,7 +233,7 @@ agent simple_penalty_goalie("Simple Penalty Goalie", simple_penalty_goalie_agent
 agent role_basic_goali("basic_goali", basic_goali_agent);
 agent role_passive_player("passive_player", passive_player_agent);
 
-agent role_action_selection_striker("Action Selection Striker", action_selection_striker_agent);
+agent role_striker("Action Selection Striker", striker_agent);
 
 agent role_passive_behavior_test_agent("passive_behavior_test_agent",passive_behavior_test_agent);
 agent role_penalty_kicker_test("penalty_kicker_test_agent", penalty_kicker_test_agent);
