@@ -15,18 +15,19 @@
 
 CameraMatrixCorrectorV2::CameraMatrixCorrectorV2()
 {
-  DEBUG_REQUEST_REGISTER("CameraMatrix:calibrate_camera_matrix",
+  DEBUG_REQUEST_REGISTER("CameraMatrixV2:calibrate_camera_matrix",
     "calculates the roll and tilt offset of the camera using the goal (it. shoult be exactely 3000mm in front of the robot)", 
     false);
 
-  DEBUG_REQUEST_REGISTER("CameraMatrix:calibrate_camera_matrix1965", "...", false);
+  DEBUG_REQUEST_REGISTER("CameraMatrixV2:calibrate_camera_matrix_line_matching",
+    "calculates the roll and tilt offset of the camera using field lines (it. shoult be exactely 3000mm in front of the robot)",
+    false);
 
-  DEBUG_REQUEST_REGISTER("CameraMatrix:CamTop","",false);
-  DEBUG_REQUEST_REGISTER("CameraMatrix:CamBottom","",false);
+  DEBUG_REQUEST_REGISTER("CameraMatrixV2:CamTop","",false);
+  DEBUG_REQUEST_REGISTER("CameraMatrixV2:CamBottom","",false);
 
-  DEBUG_REQUEST_REGISTER("CameraMatrix:reset_calibration", "set the calibration offsets of the CM to 0", false);
+  DEBUG_REQUEST_REGISTER("CameraMatrixV2:reset_calibration", "set the calibration offsets of the CM to 0", false);
 
-  DEBUG_REQUEST_REGISTER("3DViewer:Robot:Camera", "Show the robot body in the 3D viewer.", false);
 }
 
 CameraMatrixCorrectorV2::~CameraMatrixCorrectorV2()
@@ -39,23 +40,32 @@ void CameraMatrixCorrectorV2::execute(CameraInfo::CameraID id)
 
   CameraInfo::CameraID camera_to_calibrate = CameraInfo::numOfCamera;
 
-  DEBUG_REQUEST("CameraMatrix:CamTop", camera_to_calibrate = CameraInfo::Top; );
-  DEBUG_REQUEST("CameraMatrix:CamBottom", camera_to_calibrate = CameraInfo::Bottom; );
+  DEBUG_REQUEST("CameraMatrixV2:CamTop", camera_to_calibrate = CameraInfo::Top; );
+  DEBUG_REQUEST("CameraMatrixV2:CamBottom", camera_to_calibrate = CameraInfo::Bottom; );
 
-  DEBUG_REQUEST("CameraMatrix:calibrate_camera_matrix", 
+  /*DEBUG_REQUEST("CameraMatrixV2:calibrate_camera_matrix",
     if(cameraID == camera_to_calibrate) {
       calibrate(&CameraMatrixCorrectorV2::projectionError);
   });
-  DEBUG_REQUEST_ON_DEACTIVE("CameraMatrix:calibrate_camera_matrix", 
+  DEBUG_REQUEST_ON_DEACTIVE("CameraMatrixV2:calibrate_camera_matrix",
+    if(cameraID == camera_to_calibrate) {
+      getCameraMatrixOffset().saveToConfig();
+  });*/
+
+  DEBUG_REQUEST("CameraMatrixV2:calibrate_camera_matrix_line_matching",
+    if(cameraID == camera_to_calibrate) {
+      calibrate(&CameraMatrixCorrectorV2::lineMatchingError);
+  });
+  DEBUG_REQUEST_ON_DEACTIVE("CameraMatrixV2:calibrate_camera_matrix_line_matching",
     if(cameraID == camera_to_calibrate) {
       getCameraMatrixOffset().saveToConfig();
   });
 
-  DEBUG_REQUEST("CameraMatrix:reset_calibration", 
+  DEBUG_REQUEST("CameraMatrixV2:reset_calibration",
     if(cameraID == camera_to_calibrate) {
       reset_calibration();
   });
-  DEBUG_REQUEST_ON_DEACTIVE("CameraMatrix:reset_calibration", 
+  DEBUG_REQUEST_ON_DEACTIVE("CameraMatrixV2:reset_calibration",
     if(cameraID == camera_to_calibrate) {
       getCameraMatrixOffset().saveToConfig();
   });
@@ -68,14 +78,64 @@ void CameraMatrixCorrectorV2::reset_calibration()
   getCameraMatrixOffset().correctionOffset[cameraID] = Vector2d();
 }
 
+double CameraMatrixCorrectorV2::lineMatchingError(double offsetX, double offsetY)
+{
+    double total_sum = 0;
+
+    Vector2d offset(offsetX, offsetY);
+
+    CameraMatrix tmpCM = CameraGeometry::calculateCameraMatrix(
+      getKinematicChain(),
+      NaoInfo::robotDimensions.cameraTransform[cameraID].offset,
+      NaoInfo::robotDimensions.cameraTransform[cameraID].rotationY,
+      getCameraMatrixOffset().correctionOffset[cameraID] + offset
+    );
+
+    const CameraInfo& cameraInfo = getCameraInfo();
+
+    std::vector<Vector2d> edgelProjections;
+    edgelProjections.resize(getScanLineEdgelPercept().pairs.size());
+
+    // project edgels pairs to field
+    for(size_t i = 0; i < getScanLineEdgelPercept().pairs.size(); i++)
+    {
+      const EdgelT<double>& edgelOne = getScanLineEdgelPercept().pairs[i];
+
+      CameraGeometry::imagePixelToFieldCoord(
+        tmpCM, cameraInfo,
+        edgelOne.point.x,
+        edgelOne.point.y,
+        0.0,
+        edgelProjections[i]);
+    }
+
+    // for all Egels in edgels
+    for(std::vector<Vector2d>::const_iterator iter = edgelProjections.begin(); iter != edgelProjections.end(); ++iter){
+
+        const Vector2d& seen_point_relative = *iter;
+
+        Pose2D   robotPose;
+        Vector2d seen_point_g = robotPose * seen_point_relative;
+
+        int line_idx = getFieldInfo().fieldLinesTable.getNearestLine(seen_point_g, LinesTable::all_lines);
+
+        // there is no such line
+        if(line_idx == -1) {
+          continue;
+        }
+
+        // get the line
+        const Math::LineSegment& line = getFieldInfo().fieldLinesTable.getLines()[line_idx];
+
+        total_sum += line.minDistance(seen_point_g);
+    }
+
+    return total_sum;
+}
+
 void CameraMatrixCorrectorV2::calibrate(ErrorFunction errorFunction)
 {
   // calibrate the camera matrix
-
-  if (getGoalPercept().getNumberOfSeenPosts() < 2
-      || !getGoalPercept().getPost(0).positionReliable 
-      || !getGoalPercept().getPost(1).positionReliable)
-    return;
 
   Vector2d offset;
   double epsylon = 1e-4;
@@ -116,7 +176,7 @@ void CameraMatrixCorrectorV2::calibrate(ErrorFunction errorFunction)
 }//end calibrate
 
 
-double CameraMatrixCorrectorV2::projectionError(double offsetX, double offsetY)
+/*double CameraMatrixCorrectorV2::projectionError(double offsetX, double offsetY)
 {
   Vector2d offset(offsetX, offsetY);
 
@@ -154,4 +214,4 @@ double CameraMatrixCorrectorV2::projectionError(double offsetX, double offsetY)
     (getFieldInfo().opponentGoalPostRight - rightPosition).abs();
     
   return error;
-}//end projectionError
+}//end projectionError*/

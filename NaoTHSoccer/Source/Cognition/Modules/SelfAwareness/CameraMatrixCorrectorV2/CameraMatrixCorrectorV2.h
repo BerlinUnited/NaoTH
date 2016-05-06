@@ -11,20 +11,23 @@
 #include <ModuleFramework/Module.h>
 
 #include "Representations/Perception/CameraMatrix.h"
-#include "Representations/Perception/GoalPercept.h"
-#include "Representations/Infrastructure/Image.h"
-#include "Representations/Infrastructure/JointData.h"
-#include "Representations/Infrastructure/FSRData.h"
+//#include "Representations/Perception/GoalPercept.h"
+//#include "Representations/Infrastructure/Image.h"
+//#include "Representations/Infrastructure/JointData.h"
+//#include "Representations/Infrastructure/FSRData.h"
 #include "Representations/Infrastructure/FieldInfo.h"
-#include "Representations/Infrastructure/AccelerometerData.h"
+//#include "Representations/Infrastructure/AccelerometerData.h"
 #include "Representations/Infrastructure/FrameInfo.h"
-#include "Representations/Modeling/InertialModel.h"
+//#include "Representations/Modeling/InertialModel.h"
 #include "Representations/Modeling/CameraMatrixOffset.h"
+//#include "Representations/Perception/LineGraphPercept.h"
+#include "Representations/Perception/ScanLineEdgelPercept.h"
 
 // motion stuff
 #include "Representations/Modeling/KinematicChain.h"
 
 #include "Tools/DoubleCamHelpers.h"
+#include "Tools/LinesTable.h"
 
 // debug
 #include "Tools/Debug/DebugRequest.h"
@@ -41,14 +44,17 @@ BEGIN_DECLARE_MODULE(CameraMatrixCorrectorV2)
   PROVIDE(DebugImageDrawingsTop)
   PROVIDE(DebugModify)
   
-  REQUIRE(InertialModel)
-  REQUIRE(Image)
+  //REQUIRE(InertialModel)
+  //REQUIRE(Image)
   REQUIRE(FieldInfo)
-  REQUIRE(AccelerometerData)
+  //REQUIRE(AccelerometerData)
   REQUIRE(FrameInfo)
+  //REQUIRE(LineGraphPercept)
+  REQUIRE(ScanLineEdgelPercept)
+  REQUIRE(ScanLineEdgelPerceptTop)
 
-  REQUIRE(GoalPercept) // needed for calibration of the camera matrix
-  REQUIRE(GoalPerceptTop)
+  //REQUIRE(GoalPercept) // needed for calibration of the camera matrix
+  //REQUIRE(GoalPerceptTop)
   REQUIRE(CameraMatrix)
   REQUIRE(CameraMatrixTop)
 
@@ -84,15 +90,14 @@ private:
   typedef double (CameraMatrixCorrectorV2::*ErrorFunction)(double, double);
 
   void calibrate(ErrorFunction errorFunction);
+  void calibrate2(ErrorFunction errorFunction);
   void reset_calibration();
-  double projectionError(double offsetX, double offsetY);
-  double horizonError(double offsetX, double offsetY);
-
-  void calibrate1965();
+  //double projectionError(double offsetX, double offsetY);
+  double lineMatchingError(double offsetX, double offsetY);
 
   DOUBLE_CAM_PROVIDE(CameraMatrixCorrectorV2,DebugImageDrawings);
   DOUBLE_CAM_REQUIRE(CameraMatrixCorrectorV2,CameraMatrix);
-  DOUBLE_CAM_REQUIRE(CameraMatrixCorrectorV2,GoalPercept);
+  //DOUBLE_CAM_REQUIRE(CameraMatrixCorrectorV2,GoalPercept);
   DOUBLE_CAM_REQUIRE(CameraMatrixCorrectorV2,CameraInfo);
 };
 
