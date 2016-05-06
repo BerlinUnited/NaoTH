@@ -31,6 +31,7 @@
 #include "Representations/Motion/MotionStatus.h"
 #include "Representations/Modeling/BodyState.h"
 #include "Representations/Modeling/SituationStatus.h"
+#include "Representations/Modeling/SituationPrior.h"
 
 // sensor percepts
 #include "Representations/Perception/GoalPercept.h"
@@ -75,6 +76,7 @@ BEGIN_DECLARE_MODULE(MonteCarloSelfLocator)
   REQUIRE(MotionStatus)
   REQUIRE(BodyState)
   REQUIRE(SituationStatus)
+  REQUIRE(SituationPrior)
 
   REQUIRE(GoalPercept)
   REQUIRE(GoalPerceptTop)
@@ -265,11 +267,14 @@ private: // workers
   void updateByLinePoints(const LineGraphPercept& linePercept, SampleSet& sampleSet) const;
 
   // A-Priori knowledge based on the game state
+  void updateBySidePositions(SampleSet& sampleSet) const;
   void updateByStartPositions(SampleSet& sampleSet) const;
   void updateByOwnHalfLookingForward(SampleSet& sampleSet) const;
   void updateByOwnHalf(SampleSet& sampleSet) const;
   void updateByOppHalf(SampleSet& sampleSet) const;
   void updateByGoalBox(SampleSet& sampleSet) const;
+
+  void updateBySituation();
 
   void updateByOldPose(SampleSet& sampleSet) const;
   void updateByPose(SampleSet& sampleSet, Pose2D pose, double sigmaDistance, double /*sigmaAngle*/) const;

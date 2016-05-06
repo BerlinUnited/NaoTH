@@ -132,6 +132,16 @@ public: // function members
     p.v = yuv422[yOffset+3-((x & 1)<<1)];
   }
 
+  inline void get_direct(const int x, const int y, Pixel& p) const
+  {
+    register unsigned int yOffset = PIXEL_SIZE_YUV422 * (y * cameraInfo.resolutionWidth + x);
+
+    p.y = yuv422[yOffset];
+    // ((x & 1)<<1) = 2 if x is odd and 0 if it's even
+    p.u = yuv422[yOffset+1-((x & 1)<<1)];
+    p.v = yuv422[yOffset+3-((x & 1)<<1)];
+  }
+
   inline void set(const int x, const int y, const Pixel& p)
   {
     ASSERT(isInside(x,y));

@@ -26,7 +26,7 @@
 #include "DebugCommunication/DebugServer.h"
 
 #include "Tools/Communication/Broadcast/BroadCaster.h"
-#include "Tools/Communication/Broadcast/BroadCastListener.h"
+#include "Tools/Communication/Broadcast/UDPReceiver.h"
 
 // representations
 #include <Representations/Infrastructure/FrameInfo.h>
@@ -69,8 +69,8 @@ public:
   }
 
   // teamcomm stuff
-  void get(TeamMessageDataIn& data) { theBroadCastListener->receive(data.data); }
-  void set(const TeamMessageDataOut& data) { theBroadCaster->send(data.data); }
+  void get(TeamMessageDataIn& data) { theTeamCommListener->receive(data.data); }
+  void set(const TeamMessageDataOut& data) { theTeamCommSender->send(data.data); }
 
   // gamecontroller stuff
   void get(GameData& data){ theGameController->get(data, NaoTime::getNaoTimeInMilliSeconds()); }
@@ -180,8 +180,8 @@ protected:
   V4lCameraHandler theTopCameraHandler;
   //SoundPlayer theSoundPlayer;
   SoundControl *theSoundHandler;
-  BroadCaster* theBroadCaster;
-  BroadCastListener* theBroadCastListener;
+  BroadCaster* theTeamCommSender;
+  UDPReceiver* theTeamCommListener;
   SPLGameController* theGameController;
   DebugServer* theDebugServer;
 };

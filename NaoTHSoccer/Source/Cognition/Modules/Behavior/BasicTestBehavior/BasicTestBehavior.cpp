@@ -20,11 +20,13 @@ BasicTestBehavior::BasicTestBehavior()
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:head:look_at_ball_modell", "Search for ball if not seen", false);
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:head:look_straight_ahead", "look straight ahead", false);
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:head:goto_angle", "look at specific angle given as Modify", false);
+  DEBUG_REQUEST_REGISTER("BasicTestBehavior:head:LookAtMultiBallPercept", "", false);
 
   // test motion control
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:standard_stand", "stand as standard or not", true);
 
   // walk
+  DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:force", "set the 'force' flag in the motion request true ", false);
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:walk_forward", "Walk forward as fast as possible", false);
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:walk_backward", "Walk backward as fast as possible", false);
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:strafe_left", "Set the motion request to 'strafe'.", false);
@@ -132,6 +134,22 @@ void BasicTestBehavior::testHead()
     }
   );
 
+  DEBUG_REQUEST("BasicTestBehavior:head:LookAtMultiBallPercept",
+    if (getMultiBallPercept().wasSeen()) 
+    {
+      Vector2d pos = (*getMultiBallPercept().begin()).positionOnField;
+      for(MultiBallPercept::ConstABPIterator iter = getMultiBallPercept().begin(); iter != getMultiBallPercept().end(); iter++) {
+        if(pos.abs() > (*iter).positionOnField.abs()) {
+          pos = (*iter).positionOnField;
+        }
+      }
+      getHeadMotionRequest().id = HeadMotionRequest::look_at_world_point;
+      getHeadMotionRequest().targetPointInTheWorld.x = pos.x;
+      getHeadMotionRequest().targetPointInTheWorld.y = pos.y;
+      getHeadMotionRequest().targetPointInTheWorld.z = getFieldInfo().ballRadius;
+    }
+  );
+
   DEBUG_REQUEST("BasicTestBehavior:head:LookAtBall_field",
     if (getBallPercept().ballWasSeen) 
     {
@@ -163,14 +181,9 @@ void BasicTestBehavior::testHead()
   DEBUG_REQUEST("BasicTestBehavior:head:look_at_ball_modell",
     if(getFrameInfo().getTimeSince(getBallModel().getFrameInfoWhenBallWasSeen().getTime()) < 3000)
     {
-      Vector2d xp = getBallModel().position;
-      double d = 250;
-      MODIFY("look_distance",d);
-      xp.normalize(d);
-
       getHeadMotionRequest().id = HeadMotionRequest::look_at_world_point;
-      getHeadMotionRequest().targetPointInTheWorld.x = xp.x; //getBallModel().position.x;
-      getHeadMotionRequest().targetPointInTheWorld.y = xp.y; //getBallModel().position.y;
+      getHeadMotionRequest().targetPointInTheWorld.x = getBallModel().position.x;
+      getHeadMotionRequest().targetPointInTheWorld.y = getBallModel().position.y;
       getHeadMotionRequest().targetPointInTheWorld.z = getFieldInfo().ballRadius;
     }
   );
@@ -181,6 +194,7 @@ void BasicTestBehavior::testHead()
 void BasicTestBehavior::testMotion() 
 {
   getMotionRequest().walkRequest.target = Pose2D();
+  getMotionRequest().forced = false;
 
   DEBUG_REQUEST("BasicTestBehavior:motion:stand", 
     getMotionRequest().id = motion::stand;
@@ -323,7 +337,11 @@ void BasicTestBehavior::testMotion()
   DEBUG_REQUEST("BasicTestBehavior:motion:play_editor_motionnet",
     getMotionRequest().id = motion::play_editor_motionnet;
   );
-          
+  
+  DEBUG_REQUEST("BasicTestBehavior:motion:force",
+    getMotionRequest().forced = true;
+  );
+  
 }//end testMotion
 
 

@@ -51,6 +51,8 @@
 #include "Tools/Debug/DebugParameterList.h"
 #include "Tools/Debug/DebugModify.h"
 
+//#include <Representations/Modeling/BodyState.h>
+
 #include <Tools/DataStructures/ParameterList.h>
 
 BEGIN_DECLARE_MODULE(Motion)
@@ -67,20 +69,22 @@ BEGIN_DECLARE_MODULE(Motion)
   PROVIDE(OdometryData) // hack
   REQUIRE(InertialModel)
   REQUIRE(CalibrationData)
+  //REQUIRE(BodyState)
 
   PROVIDE(CameraMatrix)// TODO:strange...
   PROVIDE(CameraMatrixTop)// TODO:strange...
 
   // PROVIDE is needed to update the speed and acceleration
   PROVIDE(MotorJointData) // TODO: check
+
+  PROVIDE(OffsetJointData)
   
   PROVIDE(RobotInfo)
   PROVIDE(KinematicChainSensor)
   PROVIDE(KinematicChainMotor)
 
   // platform input
-  
-  REQUIRE(SensorJointData)
+  PROVIDE(SensorJointData) //REQUIRE(SensorJointData)
   PROVIDE(FrameInfo)
   PROVIDE(InertialSensorData)
   PROVIDE(FSRData)
@@ -98,6 +102,7 @@ BEGIN_DECLARE_MODULE(Motion)
   PROVIDE(HeadMotionRequest)
   PROVIDE(MotionRequest)
   PROVIDE(BodyStatus)
+  //PROVIDE(BodyState)
 END_DECLARE_MODULE(Motion)
 
 
@@ -116,18 +121,20 @@ public:
   *
   */
   void init(naoth::ProcessInterface& platformInterface, const naoth::PlatformBase& platform);
-  
-private:
-  void processSensorData();
-  
-  void postProcess();
 
 private:
-  
+  void processSensorData();
+
+  void postProcess();
+
+  void modifyJointOffsets();
+
+private:
+
   class Parameter : public ParameterList
   {
   public:
-    Parameter() : ParameterList("Motion") 
+    Parameter() : ParameterList("Motion")
     {
       PARAMETER_REGISTER(useGyroRotationOdometry) = true;
 
@@ -137,7 +144,7 @@ private:
     bool useGyroRotationOdometry;
 
   } parameter;
-  
+
 
 private:
   void debugPlots();
@@ -163,8 +170,12 @@ private:
 private:
   std::stringstream debug_answer_stream;
 
+private:
+  RingBuffer<double,100> currentsRingBuffer[naoth::JointData::numOfJoint];
+
+  RingBuffer<double,4> motorJointDataBuffer[naoth::JointData::numOfJoint];
 };
 
 
-#endif  // _Motion_h_ 
+#endif  // _Motion_h_
 
