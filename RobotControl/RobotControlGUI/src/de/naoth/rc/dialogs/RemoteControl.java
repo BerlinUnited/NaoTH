@@ -15,6 +15,11 @@ import de.naoth.rc.server.Command;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 import de.naoth.rc.messages.Representations.RemoteControlCommand;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.nio.ByteBuffer;
+import java.nio.channels.DatagramChannel;
 import wiiremotej.*;
 import wiiremotej.event.*;
 
@@ -596,10 +601,17 @@ public class RemoteControl extends AbstractDialog {
             .setRotation(alpha)
             .getTranslationBuilder().setX(x).setY(y);
 
-        Command command = new Command("Cognition:representation:set").addArg("RemoteControlCommand", cmd.build().toByteArray());
+        //Command command = new Command("Cognition:representation:set").addArg("RemoteControlCommand", cmd.build().toByteArray());
 
-        Plugin.commandExecutor.executeCommand(new RemoteCommandResultHandler(), command);
+        //Plugin.commandExecutor.executeCommand(new RemoteCommandResultHandler(), command);
 
+        try {
+            Sender sender = new Sender();
+            sender.send(cmd.build());
+        } catch (IOException ex) {
+            ex.printStackTrace(System.err);
+        }
+        
         lastX = x;
         lastY = y;
         lastAlpha = alpha;
@@ -654,6 +666,21 @@ public class RemoteControl extends AbstractDialog {
         }
     }
 
+    public class Sender {
+        private final DatagramChannel channel;
+
+        public Sender() throws IOException {
+            this.channel = DatagramChannel.open();
+            this.channel.configureBlocking(true);
+            //this.channel.bind(new InetSocketAddress(InetAddress.getByName("0.0.0.0"), port));
+        }
+        
+        void send(RemoteControlCommand rcc) throws IOException {
+            ByteBuffer buffer = ByteBuffer.wrap(rcc.toByteArray());
+            this.channel.send(buffer, new InetSocketAddress(InetAddress.getByName("10.0.4.85"), 10401));
+        }
+    }
+    
     class EmptyListener implements ObjectListener<byte[]> {
 
         @Override

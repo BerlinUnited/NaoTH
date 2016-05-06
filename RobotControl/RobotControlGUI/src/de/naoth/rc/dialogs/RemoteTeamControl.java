@@ -7,13 +7,11 @@ package de.naoth.rc.dialogs;
 
 import de.naoth.rc.RobotControl;
 import de.naoth.rc.components.RemoteRobotPanel;
-import de.naoth.rc.components.Test;
 import de.naoth.rc.core.dialog.AbstractDialog;
 import de.naoth.rc.core.dialog.DialogPlugin;
 import de.naoth.rc.core.manager.ObjectListener;
 import de.naoth.rc.core.manager.SwingCommandExecutor;
 import de.naoth.rc.manager.GenericManagerFactory;
-import javax.swing.JButton;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 import net.java.games.input.Component;
