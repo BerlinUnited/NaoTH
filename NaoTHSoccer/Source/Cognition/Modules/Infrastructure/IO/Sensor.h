@@ -44,6 +44,10 @@
 #include <Representations/Infrastructure/FrameInfo.h>
 #include <Representations/Infrastructure/CameraSettings.h>
 
+
+// hack
+#include <Representations/Infrastructure/RemoteControlCommand.h>
+
 using namespace naoth;
 
 BEGIN_DECLARE_MODULE(Sensor)
@@ -67,6 +71,9 @@ BEGIN_DECLARE_MODULE(Sensor)
 
   PROVIDE(TeamMessageDataIn)
   PROVIDE(RemoteMessageDataIn)
+
+  // EVIL HACK
+  PROVIDE(RemoteControlCommand)
 
   PROVIDE(WhistlePercept)
 

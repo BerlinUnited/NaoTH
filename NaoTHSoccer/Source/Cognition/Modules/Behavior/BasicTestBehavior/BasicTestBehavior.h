@@ -56,6 +56,7 @@ BEGIN_DECLARE_MODULE(BasicTestBehavior)
 
   REQUIRE(RemoteControlCommand)
 
+
   PROVIDE(HeadMotionRequest)
   PROVIDE(MotionRequest)
   PROVIDE(SoundPlayData)

@@ -99,6 +99,12 @@ void BasicTestBehavior::execute()
   DEBUG_REQUEST("BasicTestBehavior:arms:03_arms_none", 
     getMotionRequest().armMotionRequest.id = ArmMotionRequest::arms_none;);
 
+
+  if (getRemoteControlCommand().action == RemoteControlCommand::WALK) {
+    getMotionRequest().id = motion::walk;
+    getMotionRequest().walkRequest.target.translation.x = 0;
+  }
+
 }//end execute
 
 void BasicTestBehavior::testHead() 

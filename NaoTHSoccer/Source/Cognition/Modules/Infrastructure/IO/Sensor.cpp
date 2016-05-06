@@ -73,5 +73,11 @@ void Sensor::execute()
 
   GT_TRACE("Sensor:execute() end");
 
+  // EVIL HACK: expect that only RemoteControlCommand are sent though RemoteMessageDataIn
+  if (getRemoteMessageDataIn().data.size() > 0 ) {
+    std::stringstream ss(getRemoteMessageDataIn().data.back());
+    Serializer<RemoteControlCommand>::deserialize(ss, getRemoteControlCommand());
+  }
+
 }//end execute
 
