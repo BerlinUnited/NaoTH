@@ -51,9 +51,9 @@
 #include "Tools/Debug/DebugParameterList.h"
 #include "Tools/Debug/DebugModify.h"
 
-#include <Tools/DataStructures/ParameterList.h>
+//#include <Representations/Modeling/BodyState.h>
 
-#include <Tools/DataStructures/RingBuffer.h>
+#include <Tools/DataStructures/ParameterList.h>
 
 BEGIN_DECLARE_MODULE(Motion)
   PROVIDE(StopwatchManager)
@@ -69,6 +69,7 @@ BEGIN_DECLARE_MODULE(Motion)
   PROVIDE(OdometryData) // hack
   REQUIRE(InertialModel)
   REQUIRE(CalibrationData)
+  //REQUIRE(BodyState)
 
   PROVIDE(CameraMatrix)// TODO:strange...
   PROVIDE(CameraMatrixTop)// TODO:strange...
@@ -76,13 +77,14 @@ BEGIN_DECLARE_MODULE(Motion)
   // PROVIDE is needed to update the speed and acceleration
   PROVIDE(MotorJointData) // TODO: check
 
+  PROVIDE(OffsetJointData)
+  
   PROVIDE(RobotInfo)
   PROVIDE(KinematicChainSensor)
   PROVIDE(KinematicChainMotor)
 
   // platform input
-
-  REQUIRE(SensorJointData)
+  PROVIDE(SensorJointData) //REQUIRE(SensorJointData)
   PROVIDE(FrameInfo)
   PROVIDE(InertialSensorData)
   PROVIDE(FSRData)
@@ -100,6 +102,7 @@ BEGIN_DECLARE_MODULE(Motion)
   PROVIDE(HeadMotionRequest)
   PROVIDE(MotionRequest)
   PROVIDE(BodyStatus)
+  //PROVIDE(BodyState)
 END_DECLARE_MODULE(Motion)
 
 
@@ -123,6 +126,8 @@ private:
   void processSensorData();
 
   void postProcess();
+
+  void modifyJointOffsets();
 
 private:
 

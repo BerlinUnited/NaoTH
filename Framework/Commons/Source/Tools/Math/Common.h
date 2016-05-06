@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <ctime>
 #include <assert.h>
+#include <cmath>
 
 #ifdef WIN32 /* needed for _isnan */
 #include <float.h>
@@ -43,7 +44,7 @@ namespace Math {
 #ifdef WIN32
     return _isnan(static_cast<double> (f)) != 0;
 #else
-    return isnan(static_cast<float> (f));
+    return std::isnan(static_cast<float> (f));
 #endif
   }
 

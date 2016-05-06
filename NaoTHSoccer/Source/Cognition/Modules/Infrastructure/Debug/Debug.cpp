@@ -82,7 +82,14 @@ Debug::~Debug()
 
 void Debug::execute()
 {
-  cognitionLogger.log(getFrameInfo().getFrameNumber());
+  // log only when a ball was seen
+  if(parameter.log.onlyWhenBallwasSeen) {
+    if(getMultiBallPercept().wasSeen()) {
+      cognitionLogger.log(getFrameInfo().getFrameNumber());
+    }
+  } else {
+    cognitionLogger.log(getFrameInfo().getFrameNumber());
+  }
 
   draw3D();
 

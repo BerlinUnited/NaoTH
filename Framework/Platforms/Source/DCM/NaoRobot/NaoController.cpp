@@ -20,8 +20,8 @@ NaoController::NaoController()
     :
     PlatformInterface("Nao", 10),
     theSoundHandler(NULL),
-    theBroadCaster(NULL),
-    theBroadCastListener(NULL),
+    theTeamCommSender(NULL),
+    theTeamCommListener(NULL),
     theDebugServer(NULL)
 {
   // init shared memory
@@ -136,8 +136,8 @@ NaoController::NaoController()
   }
   int teamcomm_port = 10700; // default port
   config.get("teamcomm", "port", teamcomm_port);
-  theBroadCaster = new BroadCaster(interfaceName, teamcomm_port);
-  theBroadCastListener = new BroadCastListener(teamcomm_port, TEAMCOMM_MAX_MSG_SIZE);
+  theTeamCommSender = new BroadCaster(interfaceName, teamcomm_port);
+  theTeamCommListener = new UDPReceiver(teamcomm_port, TEAMCOMM_MAX_MSG_SIZE);
 
   // start the debug server at the default debug port
   std::cout << "[NaoController] " << "Init DebugServer" << endl;
@@ -159,8 +159,8 @@ NaoController::NaoController()
 NaoController::~NaoController()
 {
   delete theSoundHandler;
-  delete theBroadCaster;
-  delete theBroadCastListener;
+  delete theTeamCommSender;
+  delete theTeamCommListener;
   delete theGameController;
   delete theDebugServer;
 }

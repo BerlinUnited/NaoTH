@@ -100,6 +100,8 @@ public:
   unsigned int frameNumber; // indicates when it is updated
 
   GameState gameState;
+  GameState gameControllerState;
+
   unsigned int timeWhenGameStateChanged;
   PenaltyState penaltyState;
   unsigned int msecsTillUnpenalised;

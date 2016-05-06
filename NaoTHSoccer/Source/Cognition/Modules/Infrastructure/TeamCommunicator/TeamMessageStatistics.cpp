@@ -122,7 +122,6 @@ double TeamMessageStatistics::riemann_integral(double (TeamMessageStatistics::*f
 		sum += area;
 		x = newX;
 	}
-	
+	delete[] arguments;
 	return sum;
-
 }

@@ -125,6 +125,7 @@ void Motion::init(naoth::ProcessInterface& platformInterface, const naoth::Platf
   platformInterface.registerInputChanel(getCameraMatrixOffset());
   platformInterface.registerInputChanel(getHeadMotionRequest());
   platformInterface.registerInputChanel(getMotionRequest());
+  //platformInterface.registerInputChanel(getBodyState());
 
   std::cout << "[Motion] register end" << std::endl;
 }//end init
@@ -157,6 +158,8 @@ void Motion::call()
   if(getMotionRequest.calibrateFootTouchDetector)
     theFootTouchCalibrator.execute();
     */
+
+  modifyJointOffsets();
 
   STOPWATCH_START("Motion:postProcess");
   postProcess();
@@ -198,6 +201,11 @@ void Motion::processSensorData()
   if(i != -1)
   {
     THROW("Get ILLEGAL Stiffness: "<<JointData::getJointName(JointData::JointID(i))<<" = "<<getSensorJointData().stiffness[i]);
+  }
+
+  // remove the offset from sensor joint data
+  for( i = 0; i < JointData::numOfJoint; i++){
+      getSensorJointData().position[i] = getSensorJointData().position[i] - getOffsetJointData().position[i];
   }
 
   // calibrate inertia sensors
@@ -272,11 +280,32 @@ void Motion::postProcess()
   }
 #endif
 
+  // apply the offset to motor joint data
+  for( i = 0; i < JointData::numOfJoint; i++){
+      mjd.position[i] = mjd.position[i] + getOffsetJointData().position[i];
+  }
+
   mjd.clamp();
   mjd.updateSpeed(theLastMotorJointData, basicStepInS);
   mjd.updateAcceleration(theLastMotorJointData, basicStepInS);
 
 }//end postProcess
+
+void Motion::modifyJointOffsets()
+{
+    MODIFY("Motion:Offsets:LHipYawPitch", getOffsetJointData().position[JointData::LHipYawPitch]);
+    MODIFY("Motion:Offsets:RHipPitch",    getOffsetJointData().position[JointData::RHipPitch]);
+    MODIFY("Motion:Offsets:LHipPitch",    getOffsetJointData().position[JointData::LHipPitch]);
+    MODIFY("Motion:Offsets:RHipRoll",     getOffsetJointData().position[JointData::RHipRoll]);
+    MODIFY("Motion:Offsets:LHipRoll",     getOffsetJointData().position[JointData::LHipRoll]);
+    MODIFY("Motion:Offsets:RKneePitch",   getOffsetJointData().position[JointData::RKneePitch]);
+    MODIFY("Motion:Offsets:LKneePitch",   getOffsetJointData().position[JointData::LKneePitch]);
+    MODIFY("Motion:Offsets:RAnklePitch",  getOffsetJointData().position[JointData::RAnklePitch]);
+    MODIFY("Motion:Offsets:LAnklePitch",  getOffsetJointData().position[JointData::LAnklePitch]);
+    MODIFY("Motion:Offsets:RAnkleRoll",   getOffsetJointData().position[JointData::RAnkleRoll]);
+    MODIFY("Motion:Offsets:LAnkleRoll",   getOffsetJointData().position[JointData::LAnkleRoll]);
+}
+
 
 void Motion::debugPlots()
 {
