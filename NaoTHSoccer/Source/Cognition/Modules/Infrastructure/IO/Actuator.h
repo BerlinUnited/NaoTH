@@ -47,7 +47,7 @@ BEGIN_DECLARE_MODULE(Actuator)
   REQUIRE(CameraInfoTop)
   REQUIRE(CameraMatrixOffset)
   REQUIRE(GameReturnData)
-  //REQUIRE(BodyState)
+  REQUIRE(BodyState)
 
   // HACK: needed to transform the HeadMotionRequest
   REQUIRE(KinematicChain)
