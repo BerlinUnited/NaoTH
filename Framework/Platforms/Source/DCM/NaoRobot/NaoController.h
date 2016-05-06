@@ -25,12 +25,13 @@
 #include "SPLGameController.h"
 #include "DebugCommunication/DebugServer.h"
 
-#include "Tools/Communication/Broadcast/BroadCaster.h"
-#include "Tools/Communication/Broadcast/UDPReceiver.h"
+#include "Tools/Communication/Network/BroadCaster.h"
+#include "Tools/Communication/Network/UDPReceiver.h"
 
 // representations
 #include <Representations/Infrastructure/FrameInfo.h>
 #include "Representations/Infrastructure/TeamMessageData.h"
+#include "Representations/Infrastructure/RemoteMessageData.h"
 #include "Representations/Infrastructure/GameData.h"
 #include "Representations/Infrastructure/SoundData.h"
 #include "Representations/Infrastructure/WhistlePercept.h"
@@ -72,6 +73,8 @@ public:
   void get(TeamMessageDataIn& data) { theTeamCommListener->receive(data.data); }
   void set(const TeamMessageDataOut& data) { theTeamCommSender->send(data.data); }
 
+  void get(RemoteMessageDataIn& data) { theRemoteCommandListener->receive(data.data); }
+  
   // gamecontroller stuff
   void get(GameData& data){ theGameController->get(data, NaoTime::getNaoTimeInMilliSeconds()); }
   void set(const GameReturnData& data) { theGameController->setReturnData(data); }
@@ -182,6 +185,7 @@ protected:
   SoundControl *theSoundHandler;
   BroadCaster* theTeamCommSender;
   UDPReceiver* theTeamCommListener;
+  UDPReceiver* theRemoteCommandListener;
   SPLGameController* theGameController;
   DebugServer* theDebugServer;
 };

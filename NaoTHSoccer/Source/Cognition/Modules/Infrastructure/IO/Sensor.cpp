@@ -50,6 +50,7 @@ void Sensor::init(naoth::ProcessInterface& platformInterface, const naoth::Platf
   
   REG_INPUT(GPSData);
   REG_INPUT(TeamMessageDataIn);
+  REG_INPUT(RemoteMessageDataIn);
   REG_INPUT(GameData);
   REG_INPUT(DebugMessageInCognition);
 
@@ -71,6 +72,12 @@ void Sensor::execute()
   //getInertialPercept().data = getInertialSensorData().data + getCalibrationData().inertialSensorOffset;
 
   GT_TRACE("Sensor:execute() end");
+
+  // EVIL HACK: expect that only RemoteControlCommand are sent though RemoteMessageDataIn
+  if (getRemoteMessageDataIn().data.size() > 0 ) {
+    std::stringstream ss(getRemoteMessageDataIn().data.back());
+    Serializer<RemoteControlCommand>::deserialize(ss, getRemoteControlCommand());
+  }
 
 }//end execute
 
