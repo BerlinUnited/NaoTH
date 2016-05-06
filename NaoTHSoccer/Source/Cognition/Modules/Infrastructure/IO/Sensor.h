@@ -23,6 +23,7 @@
 #include <Representations/Infrastructure/UltraSoundData.h>
 #include <Representations/Infrastructure/SoundData.h>
 #include <Representations/Infrastructure/TeamMessageData.h>
+#include <Representations/Infrastructure/RemoteMessageData.h>
 #include <Representations/Infrastructure/GameData.h>
 #include <Representations/Infrastructure/RobotInfo.h>
 #include <Representations/Infrastructure/VirtualVision.h>
@@ -65,6 +66,7 @@ BEGIN_DECLARE_MODULE(Sensor)
   PROVIDE(SoundCaptureData)
 
   PROVIDE(TeamMessageDataIn)
+  PROVIDE(RemoteMessageDataIn)
 
   PROVIDE(WhistlePercept)
 
