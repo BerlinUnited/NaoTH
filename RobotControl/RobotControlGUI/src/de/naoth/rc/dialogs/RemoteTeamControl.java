@@ -153,7 +153,16 @@ class RemoteCommandResultHandler implements ObjectListener<byte[]> {
     }
 }
 
+    class RemoteCommand {
+        public Representations.RemoteControlCommand.ActionType action = Representations.RemoteControlCommand.ActionType.STAND;
+        public int x = 0;
+        public int y = 0;
+        public double alpha = 0;
+    }
+
     private class TestKeyBoardControl extends TimerTask {
+
+        HashMap<String, RemoteCommand> commands = new HashMap<>();
 
         private final Controller control;
         public TestKeyBoardControl(Controller control) {
@@ -166,44 +175,73 @@ class RemoteCommandResultHandler implements ObjectListener<byte[]> {
             control.poll();
             EventQueue queue = control.getEventQueue();
             
-            Representations.RemoteControlCommand.ActionType action = Representations.RemoteControlCommand.ActionType.STAND;
-            int x = 0;
-            int y = 0;
-            double alpha = 0;
-            
             Event event = new Event();
+            boolean walk = false;
             while(queue.getNextEvent(event)) 
             {
                 System.out.println(event.getComponent().getName() + " - " + event.getValue());
                 Component.Identifier id = event.getComponent().getIdentifier();
                 if(id == Component.Identifier.Key.W) {
-                    action = Representations.RemoteControlCommand.ActionType.WALK;
-                    x += 50;
+                    if(event.getValue() > 0) {
+                        RemoteCommand c = new RemoteCommand();
+                        c.action = Representations.RemoteControlCommand.ActionType.WALK;
+                        c.x = 50;
+                        commands.put(id.getName(), c);
+                    } else {
+                        commands.remove(id.getName());
+                    }
                 } else if(id == Component.Identifier.Key.S) {
-                    action = Representations.RemoteControlCommand.ActionType.WALK;
-                    x -= 50;
+                    if(event.getValue() > 0) {
+                        RemoteCommand c = new RemoteCommand();
+                        c.action = Representations.RemoteControlCommand.ActionType.WALK;
+                        c.x = -50;
+                        commands.put(id.getName(), c);
+                    } else {
+                        commands.remove(id.getName());
+                    }
                 } else if(id == Component.Identifier.Key.A) {
-                    action = Representations.RemoteControlCommand.ActionType.WALK;
-                    y += 50;
+                    if(event.getValue() > 0) {
+                        RemoteCommand c = new RemoteCommand();
+                        c.action = Representations.RemoteControlCommand.ActionType.WALK;
+                        c.y = 50;
+                        commands.put(id.getName(), c);
+                    } else {
+                        commands.remove(id.getName());
+                    }
                 } else if(id == Component.Identifier.Key.D) {
-                    action = Representations.RemoteControlCommand.ActionType.WALK;
-                    y -= 50;
+                    if(event.getValue() > 0) {
+                        RemoteCommand c = new RemoteCommand();
+                        c.action = Representations.RemoteControlCommand.ActionType.WALK;
+                        c.y = -50;
+                        commands.put(id.getName(), c);
+                    } else {
+                        commands.remove(id.getName());
+                    }
                 }
             }
             
-            sendCommand(action, x, y, alpha);
+            RemoteCommand fc = new RemoteCommand();
+            fc.action = Representations.RemoteControlCommand.ActionType.STAND;
+            for(RemoteCommand c : this.commands.values()) {
+                if(c != null) {
+                    fc.action = c.action;
+                    fc.x += c.x;
+                    fc.y += c.y;
+                }
+            }
+            sendCommand(fc);
             
         }
         
     }// end class TestKeyBoardControl
 
-    private void sendCommand(Representations.RemoteControlCommand.ActionType action, int x, int y, double alpha) 
+    private void sendCommand(RemoteCommand command) 
     {
         Representations.RemoteControlCommand.Builder cmd = Representations.RemoteControlCommand.newBuilder();
-        cmd.setAction(action);
+        cmd.setAction(command.action);
         cmd.getTargetBuilder()
-            .setRotation(alpha)
-            .getTranslationBuilder().setX(x).setY(y);
+            .setRotation(command.alpha)
+            .getTranslationBuilder().setX(command.x).setY(command.y);
     
         try {
             Sender sender = new Sender();
