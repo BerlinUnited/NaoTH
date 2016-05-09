@@ -83,9 +83,7 @@ public class RemoteTeamControl extends AbstractDialog {
             /* Get the name of the controller */
             System.out.println(ca[i].getName());
             
-            if(ca[i].getType() == Controller.Type.KEYBOARD) {
-                this.timerCheckMessages.scheduleAtFixedRate(new TestKeyBoardControl(ca[i]), 100, 33);
-            }
+            registerControl(ca[i]);
             
             System.out.println("Type: "+ca[i].getType().toString());
 
@@ -111,6 +109,18 @@ public class RemoteTeamControl extends AbstractDialog {
             }
         }
 
+    }
+    
+    private void registerControl(Controller controller) {
+        try {
+            if(controller.getType() == Controller.Type.KEYBOARD) {
+                this.timerCheckMessages.scheduleAtFixedRate(new KeyBoardControl(controller), 100, 33);
+            } else if(controller.getType() == Controller.Type.GAMEPAD) {
+                this.timerCheckMessages.scheduleAtFixedRate(new GamePadControl(controller), 100, 33);
+            }
+        } catch(IOException ex) {
+            ex.printStackTrace(System.err);
+        }
     }
 
     /**
@@ -159,14 +169,44 @@ class RemoteCommandResultHandler implements ObjectListener<byte[]> {
         public int y = 0;
         public double alpha = 0;
     }
-
-    private class TestKeyBoardControl extends TimerTask {
-
-        HashMap<String, RemoteCommand> commands = new HashMap<>();
-
+    
+    
+    private abstract class RobotController extends TimerTask
+    {
         private final Controller control;
-        public TestKeyBoardControl(Controller control) {
+        private final DatagramChannel channel;
+        private InetSocketAddress targetAddress = null;
+        
+        protected HashMap<String, RemoteCommand> commands = new HashMap<>();
+        
+        public RobotController(Controller control) throws IOException {
             this.control = control;
+            this.channel = DatagramChannel.open();
+        }
+        
+        public void bind(InetSocketAddress address) {
+            targetAddress = address;
+        }
+        
+        protected void send(RemoteCommand command) 
+        {
+            if(targetAddress == null) {
+                return;
+            }
+            
+            Representations.RemoteControlCommand.Builder cmd = Representations.RemoteControlCommand.newBuilder();
+            cmd.setAction(command.action);
+            cmd.getTargetBuilder()
+                .setRotation(command.alpha)
+                .getTranslationBuilder().setX(command.x).setY(command.y);
+
+            try {
+                ByteBuffer buffer = ByteBuffer.wrap(cmd.build().toByteArray());
+                this.channel.send(buffer, targetAddress);
+                
+            } catch (IOException ex) {
+                ex.printStackTrace(System.err);
+            }
         }
         
         @Override
@@ -176,48 +216,9 @@ class RemoteCommandResultHandler implements ObjectListener<byte[]> {
             EventQueue queue = control.getEventQueue();
             
             Event event = new Event();
-            boolean walk = false;
             while(queue.getNextEvent(event)) 
             {
-                System.out.println(event.getComponent().getName() + " - " + event.getValue());
-                Component.Identifier id = event.getComponent().getIdentifier();
-                if(id == Component.Identifier.Key.W) {
-                    if(event.getValue() > 0) {
-                        RemoteCommand c = new RemoteCommand();
-                        c.action = Representations.RemoteControlCommand.ActionType.WALK;
-                        c.x = 50;
-                        commands.put(id.getName(), c);
-                    } else {
-                        commands.remove(id.getName());
-                    }
-                } else if(id == Component.Identifier.Key.S) {
-                    if(event.getValue() > 0) {
-                        RemoteCommand c = new RemoteCommand();
-                        c.action = Representations.RemoteControlCommand.ActionType.WALK;
-                        c.x = -50;
-                        commands.put(id.getName(), c);
-                    } else {
-                        commands.remove(id.getName());
-                    }
-                } else if(id == Component.Identifier.Key.A) {
-                    if(event.getValue() > 0) {
-                        RemoteCommand c = new RemoteCommand();
-                        c.action = Representations.RemoteControlCommand.ActionType.WALK;
-                        c.y = 50;
-                        commands.put(id.getName(), c);
-                    } else {
-                        commands.remove(id.getName());
-                    }
-                } else if(id == Component.Identifier.Key.D) {
-                    if(event.getValue() > 0) {
-                        RemoteCommand c = new RemoteCommand();
-                        c.action = Representations.RemoteControlCommand.ActionType.WALK;
-                        c.y = -50;
-                        commands.put(id.getName(), c);
-                    } else {
-                        commands.remove(id.getName());
-                    }
-                }
+                update(event);
             }
             
             RemoteCommand fc = new RemoteCommand();
@@ -229,27 +230,78 @@ class RemoteCommandResultHandler implements ObjectListener<byte[]> {
                     fc.y += c.y;
                 }
             }
-            sendCommand(fc);
-            
+            send(fc);
         }
         
-    }// end class TestKeyBoardControl
-
-    private void sendCommand(RemoteCommand command) 
-    {
-        Representations.RemoteControlCommand.Builder cmd = Representations.RemoteControlCommand.newBuilder();
-        cmd.setAction(command.action);
-        cmd.getTargetBuilder()
-            .setRotation(command.alpha)
-            .getTranslationBuilder().setX(command.x).setY(command.y);
-    
-        try {
-            Sender sender = new Sender();
-            sender.send(cmd.build());
-        } catch (IOException ex) {
-            ex.printStackTrace(System.err);
-        }
+        protected abstract void update(Event event);
     }
+    
+    private class GamePadControl extends RobotController 
+    {
+        public GamePadControl(Controller control) throws IOException {
+            super(control);
+        }
+        
+        @Override
+        protected void update(Event event)
+        {
+            System.out.println(event.getComponent().getName() + " - " + event.getValue());
+            Component.Identifier id = event.getComponent().getIdentifier();
+            
+        } 
+    }// end class GamePadControl
+
+    private class KeyBoardControl extends RobotController 
+    {
+        public KeyBoardControl(Controller control) throws IOException {
+            super(control);
+        }
+        
+        @Override
+        protected void update(Event event)
+        {
+            System.out.println(event.getComponent().getName() + " - " + event.getValue());
+            Component.Identifier id = event.getComponent().getIdentifier();
+            if(id == Component.Identifier.Key.W) {
+                if(event.getValue() > 0) {
+                    RemoteCommand c = new RemoteCommand();
+                    c.action = Representations.RemoteControlCommand.ActionType.WALK;
+                    c.x = 50;
+                    commands.put(id.getName(), c);
+                } else {
+                    commands.remove(id.getName());
+                }
+            } else if(id == Component.Identifier.Key.S) {
+                if(event.getValue() > 0) {
+                    RemoteCommand c = new RemoteCommand();
+                    c.action = Representations.RemoteControlCommand.ActionType.WALK;
+                    c.x = -50;
+                    commands.put(id.getName(), c);
+                } else {
+                    commands.remove(id.getName());
+                }
+            } else if(id == Component.Identifier.Key.A) {
+                if(event.getValue() > 0) {
+                    RemoteCommand c = new RemoteCommand();
+                    c.action = Representations.RemoteControlCommand.ActionType.WALK;
+                    c.y = 50;
+                    commands.put(id.getName(), c);
+                } else {
+                    commands.remove(id.getName());
+                }
+            } else if(id == Component.Identifier.Key.D) {
+                if(event.getValue() > 0) {
+                    RemoteCommand c = new RemoteCommand();
+                    c.action = Representations.RemoteControlCommand.ActionType.WALK;
+                    c.y = -50;
+                    commands.put(id.getName(), c);
+                } else {
+                    commands.remove(id.getName());
+                }
+            }
+        } 
+    }// end class KeyBoardControl
+    
     
     public class Sender {
         private final DatagramChannel channel;
@@ -260,7 +312,7 @@ class RemoteCommandResultHandler implements ObjectListener<byte[]> {
             //this.channel.bind(new InetSocketAddress(InetAddress.getByName("0.0.0.0"), port));
         }
         
-        void send(Representations.RemoteControlCommand rcc) throws IOException {
+        void send(Representations.RemoteControlCommand rcc, InetSocketAddress address) throws IOException {
             ByteBuffer buffer = ByteBuffer.wrap(rcc.toByteArray());
             this.channel.send(buffer, new InetSocketAddress(InetAddress.getByName("10.0.4.85"), 10401));
         }
