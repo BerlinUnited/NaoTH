@@ -6,14 +6,7 @@
 
 package de.naoth.rc.components;
 
-import de.naoth.rc.dataformats.SPLMessage;
-import de.naoth.rc.server.MessageServer;
 import java.awt.Color;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
