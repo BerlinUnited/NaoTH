@@ -330,7 +330,7 @@ class RemoteCommandResultHandler implements ObjectListener<byte[]> {
                 for (Map.Entry<String, TeamCommMessage> msgEntry : messageMap.entrySet()) 
                 {
                     final String address = msgEntry.getKey();
-                    //final TeamCommMessage msg = msgEntry.getValue();
+                    final TeamCommMessage msg = msgEntry.getValue();
 
                     SwingUtilities.invokeLater(new Runnable() {
                         @Override
@@ -343,7 +343,7 @@ class RemoteCommandResultHandler implements ObjectListener<byte[]> {
                                 robotPanel.repaint();
                             }
                             // update
-                            //robotStatus.setStatus(msg.timestamp, msg.message);
+                            robotStatus.setStatus(msg.timestamp, msg.message);
                         }
                     });
                 }

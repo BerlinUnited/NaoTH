@@ -6,7 +6,10 @@
 
 package de.naoth.rc.components;
 
+import de.naoth.rc.dataformats.SPLMessage;
 import java.awt.Color;
+import java.util.ArrayList;
+import java.util.Iterator;
 
 /**
  *
@@ -14,14 +17,128 @@ import java.awt.Color;
  */
 public class RemoteRobotPanel extends javax.swing.JPanel {
 
-    public final static long MAX_TIME_BEFORE_DEAD = 5000; //ms
-    private final Color darkOrange = new Color(255, 130, 0);
+    private class RingBuffer extends ArrayList<Long> {
+        private final int size;
+        public RingBuffer(int size) {
+            this.size = size;
+        }
+        
+        @Override
+        public boolean add(Long v) {
+            boolean r = super.add(v);
+            
+            if(size() > size) {
+                remove(0);
+            }
+            
+            return r;
+        }        
+    }
     
+    private final Color darkOrange = new Color(255, 130, 0);
+    public final static long MAX_TIME_BEFORE_DEAD = 5000; //ms
+    private final RingBuffer timestamps = new RingBuffer(5);
     
     public RemoteRobotPanel() {
         initComponents();
     }
+    
+    public void setStatus(long timestamp, SPLMessage msg)
+    {
+      this.jlPlayerNumber.setText("" + msg.playerNum);
+      
+      long currentTime = System.currentTimeMillis();
+      
+      //this.jlTimestamp.setText("" + timeDelta);
+      
+      // don't add the timestamp if it did not change compared to the last time
+      long lastSeen = Long.MIN_VALUE;
+      if(!timestamps.isEmpty()) 
+      {
+        lastSeen = timestamps.get(timestamps.size()-1);
+      }
+      if(lastSeen < timestamp)
+      {
+        timestamps.add(timestamp);
+        lastSeen = timestamp;
+      }
+      double msgPerSecond = calculateMsgPerSecond();
+      if((currentTime - lastSeen) > MAX_TIME_BEFORE_DEAD || msgPerSecond <= 0.0)
+      {
+        this.jlTimestamp.setText("DEAD");
+        this.jlTimestamp.setForeground(Color.red);
+      }
+      else
+      {
+        this.jlTimestamp.setText(String.format("%4.2f msg/s", msgPerSecond));
+        this.jlTimestamp.setForeground(Color.black);
+      }
+      
+      this.jlFallenTime.setText(msg.fallen == 1 ? "FALLEN" : "NOT FALLEN");
+      this.jlBallAge.setText("" + msg.ballAge + "s");
+      
+      jlTemperature.setForeground(Color.black);
+      jlBatteryCharge.setForeground(Color.black);
+      
+      if(msg.user != null)
+      {
+        //Representations.BUUserTeamMessage user = Representations.BUUserTeamMessage.parseFrom(msg.data);
+        jlTemperature.setText(String.format(" %3.1f °C", msg.user.getTemperature()));
+        jlBatteryCharge.setText(String.format("%3.1f%%", msg.user.getBatteryCharge()*100.0f));
+        
+        if(msg.user.getTemperature() >= 60.0f)
+        {
+          jlTemperature.setForeground(darkOrange);
+        }
+        if(msg.user.getTemperature() >= 75.0f)
+        {
+          jlTemperature.setForeground(Color.red);
+        }
+        
+        if(msg.user.getBatteryCharge() <= 0.3f)
+        {
+          jlBatteryCharge.setForeground(darkOrange);
+        }
+        if(msg.user.getBatteryCharge() <= 0.1f)
+        {
+          jlBatteryCharge.setForeground(Color.red);
+        }
 
+        this.jlTeamNumber.setText("" + msg.teamNum);
+      }
+      else
+      {
+        jlTemperature.setText("TEMP ??");
+        jlBatteryCharge.setText("??");
+      }
+    }
+
+    private double calculateMsgPerSecond()
+    {
+      long sumOfDiffs = 0;
+      int numberOfEntries = 0;
+      Iterator<Long> it = timestamps.iterator();
+      if(it.hasNext())
+      {
+        long t1 = it.next();
+        while(it.hasNext())
+        {
+          long t2 = it.next();
+          long diff = t2-t1;
+          if(diff > 0)
+          {
+            sumOfDiffs += (t2-t1);
+            numberOfEntries++;
+          }
+          t1 = t2;
+        }
+      }
+      if(numberOfEntries > 0) {
+        return 1000.0 / ((double) sumOfDiffs / (double) numberOfEntries);
+      } else {
+        return 0.0;
+      }
+    }
 
     /** This method is called from within the constructor to
      * initialize the form.
