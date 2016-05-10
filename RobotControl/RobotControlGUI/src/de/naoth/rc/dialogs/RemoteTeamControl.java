@@ -108,7 +108,6 @@ public class RemoteTeamControl extends AbstractDialog {
                 }
             }
         }
-
     }
     
     private void registerControl(Controller controller) {
@@ -184,6 +183,10 @@ class RemoteCommandResultHandler implements ObjectListener<byte[]> {
             this.channel = DatagramChannel.open();
         }
         
+        public boolean isBound() {
+            return targetAddress != null;
+        }
+        
         public void bind(InetSocketAddress address) {
             targetAddress = address;
         }
@@ -248,6 +251,43 @@ class RemoteCommandResultHandler implements ObjectListener<byte[]> {
             System.out.println(event.getComponent().getName() + " - " + event.getValue());
             Component.Identifier id = event.getComponent().getIdentifier();
             
+            if(!isBound() && event.getComponent().getIdentifier() == Component.Identifier.Button._0) {
+                System.out.println("bind to " + messageMap.keySet().iterator().next());
+                try {
+                    bind(new InetSocketAddress(InetAddress.getByName(messageMap.keySet().iterator().next()), 10401));
+                } catch(IOException ex) {
+                    ex.printStackTrace(System.err);
+                }
+                return;
+            }
+            
+            
+            if(isBound() && id == Component.Identifier.Axis.POV)
+            {
+                if(event.getValue() == 0.25) {
+                    RemoteCommand c = new RemoteCommand();
+                    c.action = Representations.RemoteControlCommand.ActionType.WALK;
+                    c.x = 50;
+                    commands.put(id.getName(), c);
+                } else if(event.getValue() == 0.75) {
+                    RemoteCommand c = new RemoteCommand();
+                    c.action = Representations.RemoteControlCommand.ActionType.WALK;
+                    c.x = -50;
+                    commands.put(id.getName(), c);
+                } else if(event.getValue() == 1.0) {
+                    RemoteCommand c = new RemoteCommand();
+                    c.action = Representations.RemoteControlCommand.ActionType.WALK;
+                    c.y = 50;
+                    commands.put(id.getName(), c);
+                } else if(event.getValue() == 0.5) {
+                    RemoteCommand c = new RemoteCommand();
+                    c.action = Representations.RemoteControlCommand.ActionType.WALK;
+                    c.y = -50;
+                    commands.put(id.getName(), c);
+                } else {
+                    commands.remove(id.getName());
+                }
+            }
         } 
     }// end class GamePadControl
 
