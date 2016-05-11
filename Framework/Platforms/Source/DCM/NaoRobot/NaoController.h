@@ -25,8 +25,8 @@
 #include "SPLGameController.h"
 #include "DebugCommunication/DebugServer.h"
 
-#include "Tools/Communication/Broadcast/BroadCaster.h"
-#include "Tools/Communication/Broadcast/UDPReceiver.h"
+#include "Tools/Communication/Network/BroadCaster.h"
+#include "Tools/Communication/Network/UDPReceiver.h"
 
 // representations
 #include <Representations/Infrastructure/FrameInfo.h>
