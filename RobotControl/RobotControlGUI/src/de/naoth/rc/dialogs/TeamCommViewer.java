@@ -102,7 +102,6 @@ public class TeamCommViewer extends AbstractDialog {
         jLabel2 = new javax.swing.JLabel();
         btnRecord = new javax.swing.JToggleButton();
         btnStopRecording = new javax.swing.JButton();
-        jButton1 = new javax.swing.JButton();
 
         teamCommFileChooser.setDialogType(javax.swing.JFileChooser.SAVE_DIALOG);
         teamCommFileChooser.setDialogTitle("Log file location");
@@ -150,13 +149,6 @@ public class TeamCommViewer extends AbstractDialog {
             }
         });
 
-        jButton1.setText("Test Send");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
-            }
-        });
-
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -178,9 +170,7 @@ public class TeamCommViewer extends AbstractDialog {
                         .addComponent(btnRecord)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnStopRecording)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton1)
-                        .addGap(0, 13, Short.MAX_VALUE))
+                        .addGap(0, 100, Short.MAX_VALUE))
                     .addComponent(robotStatusPanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
@@ -188,17 +178,15 @@ public class TeamCommViewer extends AbstractDialog {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(20, 20, 20)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                        .addComponent(btnStopRecording, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                        .addComponent(btnRecord, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(btListen)
-                            .addComponent(portNumberOwn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(portNumberOpponent, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel1)
-                            .addComponent(jLabel2)))
-                    .addComponent(jButton1))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(btnStopRecording, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                    .addComponent(btnRecord, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(btListen)
+                        .addComponent(portNumberOwn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(portNumberOpponent, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel1)
+                        .addComponent(jLabel2)))
                 .addGap(27, 27, 27)
                 .addComponent(robotStatusPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -283,15 +271,6 @@ public class TeamCommViewer extends AbstractDialog {
         setBtnRecordToolTipText(false);
         btnStopRecording.setEnabled(false);
     }//GEN-LAST:event_btnStopRecordingActionPerformed
-
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        try { 
-            Sender sender = new Sender(10407);
-            sender.send();
-        } catch (IOException ex) {
-            ex.printStackTrace(System.err);
-        }
-    }//GEN-LAST:event_jButton1ActionPerformed
 
     @Override
     public void dispose() {
@@ -418,26 +397,6 @@ public class TeamCommViewer extends AbstractDialog {
 
         public boolean isOpponent() {
             return isOpponent;
-        }
-    }
-    
-    public class Sender {
-        private DatagramChannel channel;
-        private ByteBuffer buffer;
-        
-        public Sender(int port) throws IOException {
-            this.channel = DatagramChannel.open();
-            this.channel.configureBlocking(true);
-            //this.channel.bind(new InetSocketAddress(InetAddress.getByName("0.0.0.0"), port));
-            
-            this.buffer = ByteBuffer.allocateDirect(1024);
-            this.buffer.order(ByteOrder.LITTLE_ENDIAN);
-            this.buffer.putInt(42);
-        }
-        
-        void send() throws IOException {
-            
-            this.channel.send(buffer, new InetSocketAddress(InetAddress.getByName("10.0.4.85"), 10401));
         }
     }
     
@@ -592,7 +551,6 @@ public class TeamCommViewer extends AbstractDialog {
     private javax.swing.JToggleButton btListen;
     private javax.swing.JToggleButton btnRecord;
     private javax.swing.JButton btnStopRecording;
-    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JFormattedTextField portNumberOpponent;
