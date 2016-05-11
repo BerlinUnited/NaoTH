@@ -248,6 +248,7 @@ private:
   } best;
 
 private:
+  int calculateKeyPointsBlack(int minX, int minY, int maxX, int maxY) const;
   void calculateKeyPoints(Best& best) const;
   void extractPatches();
   bool cvClassifyPatch(BallCandidates::Patch& p);
