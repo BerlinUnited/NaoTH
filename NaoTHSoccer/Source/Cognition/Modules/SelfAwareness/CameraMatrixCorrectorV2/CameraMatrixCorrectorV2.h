@@ -33,6 +33,7 @@
 #include "Tools/Debug/DebugRequest.h"
 #include <Tools/Debug/DebugDrawings3D.h>
 #include <Tools/Debug/DebugImageDrawings.h>
+#include "Tools/Debug/DebugDrawings.h"
 #include "Tools/Debug/DebugModify.h"
 
 //////////////////// BEGIN MODULE INTERFACE DECLARATION ////////////////////
@@ -40,21 +41,16 @@
 BEGIN_DECLARE_MODULE(CameraMatrixCorrectorV2)
   PROVIDE(DebugRequest)
   PROVIDE(DebugDrawings3D)
+  PROVIDE(DebugDrawings)
   PROVIDE(DebugImageDrawings)
   PROVIDE(DebugImageDrawingsTop)
   PROVIDE(DebugModify)
   
-  //REQUIRE(InertialModel)
-  //REQUIRE(Image)
   REQUIRE(FieldInfo)
-  //REQUIRE(AccelerometerData)
   REQUIRE(FrameInfo)
-  //REQUIRE(LineGraphPercept)
   REQUIRE(ScanLineEdgelPercept)
   REQUIRE(ScanLineEdgelPerceptTop)
 
-  //REQUIRE(GoalPercept) // needed for calibration of the camera matrix
-  //REQUIRE(GoalPerceptTop)
   REQUIRE(CameraMatrix)
   REQUIRE(CameraMatrixTop)
 
@@ -92,12 +88,11 @@ private:
   void calibrate(ErrorFunction errorFunction);
   void calibrate2(ErrorFunction errorFunction);
   void reset_calibration();
-  //double projectionError(double offsetX, double offsetY);
   double lineMatchingError(double offsetX, double offsetY);
 
   DOUBLE_CAM_PROVIDE(CameraMatrixCorrectorV2,DebugImageDrawings);
   DOUBLE_CAM_REQUIRE(CameraMatrixCorrectorV2,CameraMatrix);
-  //DOUBLE_CAM_REQUIRE(CameraMatrixCorrectorV2,GoalPercept);
+  DOUBLE_CAM_REQUIRE(CameraMatrixCorrectorV2,ScanLineEdgelPercept);
   DOUBLE_CAM_REQUIRE(CameraMatrixCorrectorV2,CameraInfo);
 };
 

@@ -28,6 +28,13 @@ CameraMatrixCorrectorV2::CameraMatrixCorrectorV2()
 
   DEBUG_REQUEST_REGISTER("CameraMatrixV2:reset_calibration", "set the calibration offsets of the CM to 0", false);
 
+  DEBUG_REQUEST_REGISTER("CameraMatrixV2:debug_drawings:draw_projected_edgels",
+    "",
+    false);
+  DEBUG_REQUEST_REGISTER("CameraMatrixV2:debug_drawings:draw_matching_global",
+                         "",
+                         false);
+
 }
 
 CameraMatrixCorrectorV2::~CameraMatrixCorrectorV2()
@@ -107,6 +114,12 @@ double CameraMatrixCorrectorV2::lineMatchingError(double offsetX, double offsetY
         edgelOne.point.y,
         0.0,
         edgelProjections[i]);
+
+      DEBUG_REQUEST("CameraMatrixV2:debug_drawings:draw_projected_edgels",
+        FIELD_DRAWING_CONTEXT;
+        PEN("000000", 10);
+        CIRCLE(edgelProjections[i].x, edgelProjections[i].y, 20);
+      );
     }
 
     // for all Egels in edgels
@@ -115,19 +128,32 @@ double CameraMatrixCorrectorV2::lineMatchingError(double offsetX, double offsetY
         const Vector2d& seen_point_relative = *iter;
 
         Pose2D   robotPose;
-        Vector2d seen_point_g = robotPose * seen_point_relative;
+        Vector2d seen_point_global = robotPose * seen_point_relative;
 
-        int line_idx = getFieldInfo().fieldLinesTable.getNearestLine(seen_point_g, LinesTable::all_lines);
+        DEBUG_REQUEST("CameraMatrixV2:debug_drawings:draw_matching_global",
+          FIELD_DRAWING_CONTEXT;
+          PEN("000000", 10);
+          CIRCLE(seen_point_global.x, seen_point_global.y, 20);
+        );
+
+        LinesTable::NamedPoint line_point_global = getFieldInfo().fieldLinesTable.get_closest_point(seen_point_global, LinesTable::all_lines);
 
         // there is no such line
-        if(line_idx == -1) {
+        if(line_point_global.id == -1) {
           continue;
         }
 
-        // get the line
-        const Math::LineSegment& line = getFieldInfo().fieldLinesTable.getLines()[line_idx];
+        DEBUG_REQUEST("CameraMatrixV2:debug_drawings:draw_matching_global",
+          FIELD_DRAWING_CONTEXT;
+          PEN("000000", 10);
+          CIRCLE(line_point_global.position.x, line_point_global.position.y, 20);
 
-        total_sum += line.minDistance(seen_point_g);
+          LINE(line_point_global.position.x,line_point_global.position.y,seen_point_global.x, seen_point_global.y);
+        );
+
+        // get the line
+
+        total_sum += (seen_point_global - line_point_global.position).abs();
     }
 
     return total_sum;
