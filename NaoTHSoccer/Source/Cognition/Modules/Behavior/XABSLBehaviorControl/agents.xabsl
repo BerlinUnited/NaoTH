@@ -117,6 +117,12 @@ include "Options/Soccer/Penalty/penalty_set_penalized_play.xabsl";
 include "Options/Soccer/simple_penalty_kicker_agent.xabsl";
 include "Options/Soccer/simple_penalty_goalie_agent.xabsl";
 
+// remote
+include "Options/Remote/spl_remote_agent.xabsl";
+include "Options/Remote/spl_remote_decide_gamestate.xabsl";
+include "Options/Remote/spl_remote_play.xabsl";
+
+
 /* Test section */
 // Test agents Head Control
 
@@ -232,6 +238,7 @@ agent penalty("Penalty", play_penalty);
 agent simple_penalty_kicker("Simple Penalty Kicker", simple_penalty_kicker_agent);
 agent simple_penalty_goalie("Simple Penalty Goalie", simple_penalty_goalie_agent);
 
+agent spl_remote("Remote Player", spl_remote_agent);
 
 //Test Stuff for Paper
 agent longKick_Striker("Only Long Forward Kick", longKick_agent);

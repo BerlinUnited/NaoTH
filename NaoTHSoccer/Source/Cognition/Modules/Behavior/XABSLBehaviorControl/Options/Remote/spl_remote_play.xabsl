@@ -1,0 +1,15 @@
+
+option spl_remote_play
+{
+  initial state play
+  {
+    decision
+    {
+      stay;
+    }
+    action
+    {
+      
+    }
+  }
+}
