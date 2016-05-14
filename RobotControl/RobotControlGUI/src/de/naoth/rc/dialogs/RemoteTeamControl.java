@@ -304,7 +304,7 @@ public class RemoteTeamControl extends AbstractDialog {
                     if(Math.abs(event.getValue()) > 0.1) {
                         RemoteCommand c = new RemoteCommand();
                         c.action = Representations.RemoteControlCommand.ActionType.WALK;
-                        c.alpha = 15.0*event.getValue();
+                        c.alpha = -15.0*event.getValue();
                         log("  " + c.alpha);
                         commands.put(id.getName(), c);
                     } else {
