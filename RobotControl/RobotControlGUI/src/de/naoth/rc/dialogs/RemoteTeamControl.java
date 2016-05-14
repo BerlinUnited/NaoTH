@@ -237,6 +237,7 @@ public class RemoteTeamControl extends AbstractDialog {
                         fc.action = c.action;
                         fc.x += c.x;
                         fc.y += c.y;
+                        fc.alpha += c.alpha;
                     }
                 }
                 send(fc);
@@ -271,30 +272,44 @@ public class RemoteTeamControl extends AbstractDialog {
             }
             
             
-            if(isBound() && id == Component.Identifier.Axis.POV)
+            if(isBound())
             {
-                if(event.getValue() == 0.25) {
-                    RemoteCommand c = new RemoteCommand();
-                    c.action = Representations.RemoteControlCommand.ActionType.WALK;
-                    c.x = 50;
-                    commands.put(id.getName(), c);
-                } else if(event.getValue() == 0.75) {
-                    RemoteCommand c = new RemoteCommand();
-                    c.action = Representations.RemoteControlCommand.ActionType.WALK;
-                    c.x = -50;
-                    commands.put(id.getName(), c);
-                } else if(event.getValue() == 1.0) {
-                    RemoteCommand c = new RemoteCommand();
-                    c.action = Representations.RemoteControlCommand.ActionType.WALK;
-                    c.y = 50;
-                    commands.put(id.getName(), c);
-                } else if(event.getValue() == 0.5) {
-                    RemoteCommand c = new RemoteCommand();
-                    c.action = Representations.RemoteControlCommand.ActionType.WALK;
-                    c.y = -50;
-                    commands.put(id.getName(), c);
-                } else {
-                    commands.remove(id.getName());
+                if(id == Component.Identifier.Axis.POV) {
+                    if(event.getValue() == 0.25) {
+                        RemoteCommand c = new RemoteCommand();
+                        c.action = Representations.RemoteControlCommand.ActionType.WALK;
+                        c.x = 50;
+                        commands.put(id.getName(), c);
+                    } else if(event.getValue() == 0.75) {
+                        RemoteCommand c = new RemoteCommand();
+                        c.action = Representations.RemoteControlCommand.ActionType.WALK;
+                        c.x = -50;
+                        commands.put(id.getName(), c);
+                    } else if(event.getValue() == 1.0) {
+                        RemoteCommand c = new RemoteCommand();
+                        c.action = Representations.RemoteControlCommand.ActionType.WALK;
+                        c.y = 50;
+                        commands.put(id.getName(), c);
+                    } else if(event.getValue() == 0.5) {
+                        RemoteCommand c = new RemoteCommand();
+                        c.action = Representations.RemoteControlCommand.ActionType.WALK;
+                        c.y = -50;
+                        commands.put(id.getName(), c);
+                    } else {
+                        commands.remove(id.getName());
+                    }
+                } 
+                else if(id == Component.Identifier.Axis.RX)
+                {
+                    if(Math.abs(event.getValue()) > 0.1) {
+                        RemoteCommand c = new RemoteCommand();
+                        c.action = Representations.RemoteControlCommand.ActionType.WALK;
+                        c.alpha = 15.0*event.getValue();
+                        log("  " + c.alpha);
+                        commands.put(id.getName(), c);
+                    } else {
+                        commands.remove(id.getName());
+                    }
                 }
             }
         } 
