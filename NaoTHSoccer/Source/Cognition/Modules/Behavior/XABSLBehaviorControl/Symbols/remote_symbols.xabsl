@@ -1,0 +1,18 @@
+/** Symbols for accessing sensors*/
+namespace remote("Remote Symbols") {
+  
+  /** The ids of the states */
+  enum remote_control_action {
+    none, 
+    stand, 
+    walk, 
+    kick
+  };
+
+  enum remote_control_action input remote_control.action;
+
+  float input remote_control.target.x;
+  float input remote_control.target.y;
+  float input remote_control.target.rot;
+}
+  
