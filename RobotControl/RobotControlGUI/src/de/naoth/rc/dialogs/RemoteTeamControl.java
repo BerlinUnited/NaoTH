@@ -32,6 +32,8 @@ import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.SwingUtilities;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 import net.java.games.input.Component;
@@ -77,45 +79,23 @@ public class RemoteTeamControl extends AbstractDialog {
         this.timerCheckMessages = new Timer();
         this.timerCheckMessages.scheduleAtFixedRate(new TeamCommListenTask(), 100, 33);
         
-        Controller[] ca = ControllerEnvironment.getDefaultEnvironment().getControllers();
-        for(int i =0;i<ca.length;i++)
+        Controller[] controllers = ControllerEnvironment.getDefaultEnvironment().getControllers();
+        for(Controller c: controllers) 
         {
-            /* Get the name of the controller */
-            System.out.println(ca[i].getName());
-            
-            registerControl(ca[i]);
-            
-            System.out.println("Type: "+ca[i].getType().toString());
-
-            /* Get this controllers components (buttons and axis) */
-            Component[] components = ca[i].getComponents();
-            System.out.println("Component Count: "+components.length);
-            for(int j=0;j<components.length;j++){
-                
-                /* Get the components name */
-                System.out.println("Component "+j+": "+components[j].getName());
-                System.out.println("    Identifier: "+ components[j].getIdentifier().getName());
-                System.out.print("    ComponentType: ");
-                if (components[j].isRelative()) {
-                    System.out.print("Relative");
-                } else {
-                    System.out.print("Absolute");
-                }
-                if (components[j].isAnalog()) {
-                    System.out.print(" Analog");
-                } else {
-                    System.out.print(" Digital");
-                }
-            }
+            registerControl(c);
         }
     }
     
     private void registerControl(Controller controller) {
         try {
             if(controller.getType() == Controller.Type.KEYBOARD) {
-                this.timerCheckMessages.scheduleAtFixedRate(new KeyBoardControl(controller), 100, 33);
+                log("INFO: register keyboard");
+                RobotController rc = new KeyBoardControl(controller);
+                this.timerCheckMessages.scheduleAtFixedRate(rc, 100, 33);
             } else if(controller.getType() == Controller.Type.GAMEPAD) {
-                this.timerCheckMessages.scheduleAtFixedRate(new GamePadControl(controller), 100, 33);
+                log("INFO: register GAMEPAD " + controller.getName());
+                RobotController rc = new GamePadControl(controller);
+                this.timerCheckMessages.scheduleAtFixedRate(rc, 100, 33);
             }
         } catch(IOException ex) {
             ex.printStackTrace(System.err);
@@ -132,35 +112,43 @@ public class RemoteTeamControl extends AbstractDialog {
     private void initComponents() {
 
         robotPanel = new javax.swing.JPanel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        logOutput = new javax.swing.JEditorPane();
 
         robotPanel.setLayout(new javax.swing.BoxLayout(robotPanel, javax.swing.BoxLayout.LINE_AXIS));
+
+        jScrollPane1.setViewportView(logOutput);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(robotPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 589, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(robotPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 344, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 308, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(robotPanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 176, Short.MAX_VALUE)
+            .addComponent(jScrollPane1)
         );
     }// </editor-fold>//GEN-END:initComponents
 
-class RemoteCommandResultHandler implements ObjectListener<byte[]> {
+    class RemoteCommandResultHandler implements ObjectListener<byte[]> {
 
-    @Override
-    public void newObjectReceived(byte[] object) {
-        if (!new String(object).isEmpty()) {
-            System.out.println(new String(object));
+        @Override
+        public void newObjectReceived(byte[] object) {
+            if (!new String(object).isEmpty()) {
+                System.out.println(new String(object));
+            }
+        }
+
+        @Override
+        public void errorOccured(String cause) {
+            System.out.println(cause);
         }
     }
-
-    @Override
-    public void errorOccured(String cause) {
-        System.out.println(cause);
-    }
-}
 
     class RemoteCommand {
         public Representations.RemoteControlCommand.ActionType action = Representations.RemoteControlCommand.ActionType.STAND;
@@ -169,6 +157,19 @@ class RemoteCommandResultHandler implements ObjectListener<byte[]> {
         public double alpha = 0;
     }
     
+    private void log(final String str) {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Document doc = logOutput.getDocument();
+                    doc.insertString(doc.getLength(), str + "\n", null);
+                } catch(BadLocationException exc) {
+                    exc.printStackTrace(System.err);
+                }
+            }
+        });
+    }
     
     private abstract class RobotController extends TimerTask
     {
@@ -189,6 +190,10 @@ class RemoteCommandResultHandler implements ObjectListener<byte[]> {
         
         public void bind(InetSocketAddress address) {
             targetAddress = address;
+        }
+        
+        protected void log(String str) {
+            RemoteTeamControl.this.log(control.getName() + ": " + str);
         }
         
         protected void send(RemoteCommand command) 
@@ -215,25 +220,29 @@ class RemoteCommandResultHandler implements ObjectListener<byte[]> {
         @Override
         public void run() 
         {
-            control.poll();
-            EventQueue queue = control.getEventQueue();
-            
-            Event event = new Event();
-            while(queue.getNextEvent(event)) 
+            if(control.poll())
             {
-                update(event);
-            }
-            
-            RemoteCommand fc = new RemoteCommand();
-            fc.action = Representations.RemoteControlCommand.ActionType.STAND;
-            for(RemoteCommand c : this.commands.values()) {
-                if(c != null) {
-                    fc.action = c.action;
-                    fc.x += c.x;
-                    fc.y += c.y;
+                EventQueue queue = control.getEventQueue();
+
+                Event event = new Event();
+                while(queue.getNextEvent(event)) 
+                {
+                    update(event);
                 }
+
+                RemoteCommand fc = new RemoteCommand();
+                fc.action = Representations.RemoteControlCommand.ActionType.STAND;
+                for(RemoteCommand c : this.commands.values()) {
+                    if(c != null) {
+                        fc.action = c.action;
+                        fc.x += c.x;
+                        fc.y += c.y;
+                    }
+                }
+                send(fc);
+            } else {
+                this.cancel();
             }
-            send(fc);
         }
         
         protected abstract void update(Event event);
@@ -252,7 +261,7 @@ class RemoteCommandResultHandler implements ObjectListener<byte[]> {
             Component.Identifier id = event.getComponent().getIdentifier();
             
             if(!isBound() && event.getComponent().getIdentifier() == Component.Identifier.Button._0) {
-                System.out.println("bind to " + messageMap.keySet().iterator().next());
+                log("bind to " + messageMap.keySet().iterator().next());
                 try {
                     bind(new InetSocketAddress(InetAddress.getByName(messageMap.keySet().iterator().next()), 10401));
                 } catch(IOException ex) {
@@ -473,6 +482,8 @@ class RemoteCommandResultHandler implements ObjectListener<byte[]> {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JEditorPane logOutput;
     private javax.swing.JPanel robotPanel;
     // End of variables declaration//GEN-END:variables
 }
