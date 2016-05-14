@@ -1,15 +1,38 @@
 
 option spl_remote_play
 {
-  initial state play
+  initial state stand
   {
     decision
     {
-      stay;
+      if(remote_control.action == walk)
+        goto walk;
+      else
+        stay;
     }
     action
     {
-      
+      motion.type = stand;
+      head.control_mode = search_for_ball;
+    }
+  }
+
+  state walk
+  {
+    decision
+    {
+      if(state_time > 1000 && remote_control.action != walk)
+        goto stand;
+      else
+        stay;
+    }
+    action
+    {
+      motion.type = walk;
+      motion.walk_speed.x = remote_control.target.x;
+      motion.walk_speed.y = remote_control.target.y;
+      motion.walk_speed.rot = remote_control.target.rot;
+      head.control_mode = search_for_ball;
     }
   }
 }
