@@ -177,7 +177,7 @@ private:
 
   typedef double (CameraMatrixCorrectorV2::*ErrorFunction)(double, double);
 
-  GaussNewtonMinimizer gn_minimizer;
+  GaussNewtonMinimizer<1, 2> gn_minimizer;
 
   void calibrate();
   void reset_calibration();

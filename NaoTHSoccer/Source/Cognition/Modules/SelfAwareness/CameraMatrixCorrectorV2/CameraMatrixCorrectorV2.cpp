@@ -80,9 +80,9 @@ void CameraMatrixCorrectorV2::reset_calibration()
 void CameraMatrixCorrectorV2::calibrate()
 {
   // calibrate the camera matrix
-  Vector2d offset;
+  Eigen::Matrix<double, 2, 1> offset;
 
   offset = gn_minimizer.minimizeOneStep(&lineMatchingError,1e-4);
 
-  getCameraMatrixOffset().correctionOffset[cameraID] += offset;
+  getCameraMatrixOffset().correctionOffset[cameraID] += Vector2d(offset(0),offset(1));
 }//end calibrate
