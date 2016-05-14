@@ -24,7 +24,8 @@ public:
     WALK,
     LOCK_ON_BALL,
     KICK,
-	STAND
+    STAND,
+    NUMBER_OF_ACTION_TYPE
   } action;
 
   Pose2D target;
@@ -35,6 +36,8 @@ public:
     stream << "ActionType = " << action << std::endl;
     stream << "target = " << target << std::endl;
   }
+
+  static std::string getActionName(ActionType id);
 };
 
 

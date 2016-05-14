@@ -36,3 +36,21 @@ void Serializer<RemoteControlCommand>::deserialize(std::istream& stream, RemoteC
   }
   
 }//end deserialize
+
+
+std::string RemoteControlCommand::getActionName(ActionType id) 
+{
+  switch(id) 
+  {
+  case NONE: return "NONE";
+  case WALK: return "WALK";
+  case LOCK_ON_BALL: return "LOCK_ON_BALL";
+  case KICK: return "KICK";
+  case STAND: return "STAND";
+  default: ASSERT(false);
+  }
+
+  ASSERT(false);
+  return "unknown";
+}
+
