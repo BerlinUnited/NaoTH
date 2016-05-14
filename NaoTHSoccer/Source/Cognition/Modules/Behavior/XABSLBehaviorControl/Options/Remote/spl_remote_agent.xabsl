@@ -6,7 +6,7 @@ option spl_remote_agent {
       // react to the game controller and handle fall down
       basic_play();
 
-      play_soccer();
+      spl_remote_decide_gamestate();
 
       // control the arms
       arms_control();
