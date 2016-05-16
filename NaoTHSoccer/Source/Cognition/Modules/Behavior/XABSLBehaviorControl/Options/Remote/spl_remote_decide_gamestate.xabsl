@@ -2,7 +2,9 @@ option spl_remote_decide_gamestate
 {
   common decision
   {
-    if(!body.ready_to_walk)
+    if(remote_control.time_since_update > 1000)
+      goto no_signal;
+    else if(!body.ready_to_walk)
       goto idle;
     else if(game.current_mode != playing &&
             game.current_mode != ready &&
@@ -10,8 +12,23 @@ option spl_remote_decide_gamestate
       goto idle;
   }
   
+  state no_signal
+  {
+    decision
+    {
+      else if(state_time > 2000 && remote_control.time_since_update < 100)
+        goto idle;
+      else
+        stay;
+    }
+    action
+    {
+      motion.type = init;
+      head.control_mode = none;
+    }
+  }
 
-  initial state idle{
+  initial state idle {
     decision{
       else if ( game.current_mode == playing ||
 				        game.current_mode == ready || 
@@ -28,25 +45,6 @@ option spl_remote_decide_gamestate
     decision
     {
       else if(sensor.inertial.calibrated)
-        goto localize;
-      else 
-        stay;
-    }
-    action
-    {
-      show_calibration();
-      motion.type = stand;
-      head.control_mode = look_straight_ahead;
-    }
-  }
-
-  // actualy check for localize
-  state localize
-  {
-    decision
-    {
-      else if((robot_pose.is_valid && state_time > 6000) || 
-        state_time>12000)
       {
         if(game.current_mode == playing)
           goto play;
@@ -57,14 +55,14 @@ option spl_remote_decide_gamestate
         else 
           goto idle;
       }
-      else
+      else 
         stay;
     }
-    action 
+    action
     {
-      head.control_mode = search_for_goal;
-      situationStatusOwnHalf = true;
+      show_calibration();
       motion.type = stand;
+      head.control_mode = look_straight_ahead;
     }
   }
 
@@ -117,8 +115,6 @@ option spl_remote_decide_gamestate
     {
       else if (game.current_mode != playing)
         goto idle;
-      else if(last_state_was_penalized)
-        goto localize; // allways localize after penalized!!!
       else 
         stay;
     }
