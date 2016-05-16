@@ -26,6 +26,7 @@ public:
     KICK_RIGHT,
     KICK_LEFT,
     KICK_FORWARD,
+    BLINK,
     NUMBER_OF_ACTION_TYPE
   } action;
 

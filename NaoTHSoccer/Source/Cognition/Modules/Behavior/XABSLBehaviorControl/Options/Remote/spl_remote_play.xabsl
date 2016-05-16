@@ -15,6 +15,8 @@ option spl_remote_play
         goto sidekick_to_left;  
       else if(remote_control.action == kick_forward)
         goto kick_forward_left_foot; 
+      else if(remote_control.action == blink)
+        goto blink;
       else
         stay;
     }
@@ -81,5 +83,22 @@ option spl_remote_play
       fast_forward_kick(foot = left);
     }
   }
+
+    state blink {
+    decision{
+      if(state_time < 1000)
+        stay;
+      else if(remote_control.action != blink)
+        goto stand;
+      else
+        stay;
+    }
+    action {
+      set_left_ear = (platform.frameNumber % 3 == 0) ? 9 : 0;
+      set_right_ear = (platform.frameNumber % 3 == 0) ? 9 : 0;
+      set_head = 4;
+    }
+  }
+
 
 }
