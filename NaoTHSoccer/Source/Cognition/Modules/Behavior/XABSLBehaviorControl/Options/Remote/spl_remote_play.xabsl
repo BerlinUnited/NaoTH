@@ -42,6 +42,7 @@ option spl_remote_play
       motion.walk_speed.x = remote_control.target.x;
       motion.walk_speed.y = remote_control.target.y;
       motion.walk_speed.rot = remote_control.target.rot;
+      motion.walk.style = (obstacle.ultrasound.blockedtime > 100 && obstacle.ultrasound.distance < 400)?stable:normal;
       head.control_mode = search_for_ball;
     }
   }
