@@ -43,6 +43,14 @@ public class RemoteRobotPanel extends javax.swing.JPanel {
         initComponents();
     }
     
+    public boolean isReadyToBind() {
+        return this.btBind.isSelected();
+    }
+    
+    public void resetReadyToBind() {
+        this.btBind.setSelected(false);
+    }
+    
     public void setStatus(long timestamp, SPLMessage msg)
     {
       this.jlPlayerNumber.setText("" + msg.playerNum);
@@ -159,6 +167,7 @@ public class RemoteRobotPanel extends javax.swing.JPanel {
         jlBatteryCharge = new javax.swing.JLabel();
         jlTemperature = new javax.swing.JLabel();
         jlAddress = new javax.swing.JLabel();
+        btBind = new javax.swing.JToggleButton();
 
         jLabel5.setText("jLabel5");
 
@@ -214,10 +223,23 @@ public class RemoteRobotPanel extends javax.swing.JPanel {
         jlAddress.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/naoth/rc/res/network-idle.png"))); // NOI18N
         jlAddress.setText("-");
         add(jlAddress);
+
+        btBind.setText("BIND");
+        btBind.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btBindActionPerformed(evt);
+            }
+        });
+        add(btBind);
     }// </editor-fold>//GEN-END:initComponents
+
+    private void btBindActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btBindActionPerformed
+        
+    }//GEN-LAST:event_btBindActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JToggleButton btBind;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JLabel jlAddress;

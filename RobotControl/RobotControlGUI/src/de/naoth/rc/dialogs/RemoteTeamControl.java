@@ -290,13 +290,22 @@ public class RemoteTeamControl extends AbstractDialog {
             System.out.println(event.getComponent().getName() + " - " + event.getValue());
             Component.Identifier id = event.getComponent().getIdentifier();
             
-            if(!isBound() && event.getComponent().getIdentifier() == Component.Identifier.Button._0) {
-                log("bind to " + messageMap.keySet().iterator().next());
-                try {
-                    CommandSenderTask sender = bind(new InetSocketAddress(InetAddress.getByName(messageMap.keySet().iterator().next()), 10401));
-                    timerCheckMessages.scheduleAtFixedRate(sender, 100, 100);
-                } catch(IOException ex) {
-                    ex.printStackTrace(System.err);
+            if(!isBound() && event.getComponent().getIdentifier() == Component.Identifier.Button._0) 
+            {
+                for(Map.Entry<String, RemoteRobotPanel> robot: robotsMap.entrySet()) {
+                    if(robot.getValue().isReadyToBind()) 
+                    {
+                        log("bind to " + robot.getKey());
+                    
+                        try {
+                            CommandSenderTask sender = bind(new InetSocketAddress(InetAddress.getByName(robot.getKey()), 10401));
+                            timerCheckMessages.scheduleAtFixedRate(sender, 100, 100);
+                            
+                            robot.getValue().resetReadyToBind();
+                        } catch(IOException ex) {
+                            ex.printStackTrace(System.err);
+                        }
+                    }
                 }
                 return;
             }
