@@ -5,8 +5,16 @@ option spl_remote_play
   {
     decision
     {
-      if(remote_control.action == walk)
+      if(state_time < 1000)
+        stay;
+      else if(remote_control.action == walk)
         goto walk;
+      else if(remote_control.action ==  kick_right)
+        goto sidekick_to_right;
+      else if(remote_control.action ==  kick_left)
+        goto sidekick_to_left;  
+      else if(remote_control.action == kick_forward)
+        goto kick_forward_left_foot; 
       else
         stay;
     }
@@ -21,7 +29,9 @@ option spl_remote_play
   {
     decision
     {
-      if(state_time > 1000 && remote_control.action != walk)
+      if(state_time < 1000)
+        stay;
+      else if(remote_control.action != walk)
         goto stand;
       else
         stay;
@@ -35,4 +45,41 @@ option spl_remote_play
       head.control_mode = search_for_ball;
     }
   }
+
+  state sidekick_to_left {
+    decision{
+      if(action_done)
+        goto stand;
+      else
+        stay;
+    }
+    action {
+      sidekick(to = left);
+    }
+  }
+
+  state sidekick_to_right {
+    decision{
+      if(action_done)
+        goto stand;
+      else
+        stay;
+    }
+    action {
+      sidekick(to = right);
+    }
+  }
+
+  state kick_forward_left_foot {
+    decision {
+      if(action_done)
+        goto stand;
+      else
+        stay;
+    }
+    action {
+      fast_forward_kick(foot = left);
+    }
+  }
+
 }

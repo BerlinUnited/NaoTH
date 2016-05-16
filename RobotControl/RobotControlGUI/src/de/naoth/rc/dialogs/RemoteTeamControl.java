@@ -341,6 +341,33 @@ public class RemoteTeamControl extends AbstractDialog {
                         commands.remove(id.getName());
                     }
                 }
+                else if(id == Component.Identifier.Button._2) {
+                    if(Math.abs(event.getValue()) > 0.0) {
+                        RemoteCommand c = new RemoteCommand();
+                        c.action = Representations.RemoteControlCommand.ActionType.KICK_LEFT;
+                        commands.put(id.getName(), c);
+                    } else {
+                        commands.remove(id.getName());
+                    }
+                }
+                else if(id == Component.Identifier.Button._1) {
+                    if(Math.abs(event.getValue()) > 0.0) {
+                        RemoteCommand c = new RemoteCommand();
+                        c.action = Representations.RemoteControlCommand.ActionType.KICK_RIGHT;
+                        commands.put(id.getName(), c);
+                    } else {
+                        commands.remove(id.getName());
+                    }
+                }
+                else if(id == Component.Identifier.Button._3) {
+                    if(Math.abs(event.getValue()) > 0.0) {
+                        RemoteCommand c = new RemoteCommand();
+                        c.action = Representations.RemoteControlCommand.ActionType.KICK_FORWARD;
+                        commands.put(id.getName(), c);
+                    } else {
+                        commands.remove(id.getName());
+                    }
+                }
             }
         } 
     }// end class GamePadControl
