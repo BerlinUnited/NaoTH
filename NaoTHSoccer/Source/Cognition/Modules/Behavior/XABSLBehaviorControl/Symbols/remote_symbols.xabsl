@@ -6,7 +6,9 @@ namespace remote("Remote Symbols") {
     none, 
     stand, 
     walk, 
-    kick
+    kick_right,
+    kick_left,
+    kick_forward
   };
 
   enum remote_control_action input remote_control.action;

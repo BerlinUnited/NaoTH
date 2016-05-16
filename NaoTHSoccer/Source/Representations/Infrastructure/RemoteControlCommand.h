@@ -21,10 +21,11 @@ public:
   enum ActionType
   {
     NONE,
-    WALK,
-    LOCK_ON_BALL,
-    KICK,
     STAND,
+    WALK,
+    KICK_RIGHT,
+    KICK_LEFT,
+    KICK_FORWARD,
     NUMBER_OF_ACTION_TYPE
   } action;
 

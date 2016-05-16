@@ -291,10 +291,11 @@ message BallCandidates
 message RemoteControlCommand {
   enum ActionType {
     NONE = 0;
-    WALK = 1;
-    LOCK_ON_BALL = 2;
-    KICK = 3;
-    STAND = 4;
+    STAND = 1;
+    WALK = 2;
+    KICK_RIGHT = 3;
+    KICK_LEFT = 4;
+    KICK_FORWARD = 5;
   }
 
   optional ActionType action = 1;

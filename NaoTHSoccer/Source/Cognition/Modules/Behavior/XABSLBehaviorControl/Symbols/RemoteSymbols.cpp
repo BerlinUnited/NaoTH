@@ -10,7 +10,9 @@ void RemoteSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerEnumElement("remote_control_action", "remote_control_action.none", RemoteControlCommand::NONE);
   engine.registerEnumElement("remote_control_action", "remote_control_action.stand", RemoteControlCommand::STAND);
   engine.registerEnumElement("remote_control_action", "remote_control_action.walk", RemoteControlCommand::WALK);
-  engine.registerEnumElement("remote_control_action", "remote_control_action.kick", RemoteControlCommand::KICK);
+  engine.registerEnumElement("remote_control_action", "remote_control_action.kick_right", RemoteControlCommand::KICK_RIGHT);
+  engine.registerEnumElement("remote_control_action", "remote_control_action.kick_left", RemoteControlCommand::KICK_LEFT);
+  engine.registerEnumElement("remote_control_action", "remote_control_action.kick_forward", RemoteControlCommand::KICK_FORWARD);
 
   engine.registerEnumeratedInputSymbol("remote_control.action", "remote_control_action", (int*)(&getRemoteControlCommand().action));
 

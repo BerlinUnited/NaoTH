@@ -35,13 +35,13 @@ void RemoteControlBehavior::execute()
         getMotionRequest().id = motion::walk;
         getMotionRequest().walkRequest.target = getRemoteControlCommand().target;
 		break;
-	case RemoteControlCommand::LOCK_ON_BALL:
+	//case RemoteControlCommand::LOCK_ON_BALL:
 		//getMotionRequest().armMotionRequest.id = ArmMotionRequest::arms_back;
 		//getMotionRequest().id = motion::kick;
 		//state = stand;
-		break;
-	case RemoteControlCommand::KICK:
-		break;
+		//break;
+	//case RemoteControlCommand::KICK:
+		//break;
 	default:
 		break;
 	}
