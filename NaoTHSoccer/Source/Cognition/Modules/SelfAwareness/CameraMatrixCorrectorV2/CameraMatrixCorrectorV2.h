@@ -78,7 +78,7 @@ END_DECLARE_MODULE(CameraMatrixCorrectorV2)
     }                                        \
   }
 
-class CamMatErrorFunction : public ErrorFunction
+class CamMatErrorFunction
 {
 private:
 
@@ -106,10 +106,10 @@ public:
 
     CameraInfo::CameraID cameraID;
 
-    double operator()(double offsetX, double offsetY){
+    double operator()(Eigen::Matrix<double, 1, 2> parameter){
         double total_sum = 0;
 
-        Vector2d offset(offsetX, offsetY);
+        Vector2d offset(parameter(0), parameter(1));
 
         CameraMatrix tmpCM = CameraGeometry::calculateCameraMatrix(
                     kinematicChain,
@@ -177,7 +177,7 @@ private:
 
   typedef double (CameraMatrixCorrectorV2::*ErrorFunction)(double, double);
 
-  GaussNewtonMinimizer<1, 2> gn_minimizer;
+  GaussNewtonMinimizer<1, 2, CamMatErrorFunction> gn_minimizer;
 
   void calibrate();
   void reset_calibration();
