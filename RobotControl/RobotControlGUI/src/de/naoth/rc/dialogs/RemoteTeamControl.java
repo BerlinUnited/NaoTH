@@ -377,6 +377,15 @@ public class RemoteTeamControl extends AbstractDialog {
                         commands.remove(id.getName());
                     }
                 }
+                else if(id == Component.Identifier.Button._4) {
+                    if(Math.abs(event.getValue()) > 0.0) {
+                        RemoteCommand c = new RemoteCommand();
+                        c.action = Representations.RemoteControlCommand.ActionType.BLINK;
+                        commands.put(id.getName(), c);
+                    } else {
+                        commands.remove(id.getName());
+                    }
+                }
             }
         } 
     }// end class GamePadControl

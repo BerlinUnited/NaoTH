@@ -94,9 +94,12 @@ option spl_remote_play
         stay;
     }
     action {
+      motion.type = stand;
+      head.control_mode = search_for_ball;
+
       set_left_ear = (platform.frameNumber % 3 == 0) ? 9 : 0;
       set_right_ear = (platform.frameNumber % 3 == 0) ? 9 : 0;
-      set_head = 4;
+      set_head = (platform.frameNumber % 3 == 0) ? 6 : 0;
     }
   }
 
