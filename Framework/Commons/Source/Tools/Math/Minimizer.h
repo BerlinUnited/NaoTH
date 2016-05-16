@@ -12,11 +12,6 @@
 #include "Tools/Math/Vector2.h"
 #include <Eigen/Eigen>
 
-//class ErrorFunction{
-//public:
-//    virtual double operator()(double, double) = 0;
-//};
-
 template<int numOfFunctions, int numOfParameter, class ErrorFunction>
 class GaussNewtonMinimizer
 {
@@ -33,7 +28,6 @@ private:
 template<int numOfFunctions, int numOfParameters, class ErrorFunction>
 GaussNewtonMinimizer<numOfFunctions, numOfParameters, ErrorFunction>::GaussNewtonMinimizer()
 {
-
 }
 
 template<int numOfFunctions, int numOfParameters, class ErrorFunction>
@@ -73,6 +67,10 @@ Eigen::Matrix<double, numOfParameters, 1> GaussNewtonMinimizer<numOfFunctions, n
 
     //Vector2<double> z_GN = (-((Dg.transpose()*Dg).invert()*Dg.transpose()*w));
     Eigen::Matrix<double, numOfFunctions, numOfParameters> z_GN = -((dg.transpose()*dg).inverse()*dg.transpose()*w);
+
+    //beware the inverse!
+    if(std::isnan(z_GN.norm()))
+        return offset;
 
     //Vector2d z_GN = dg * (-w / (dg * dg));
     offset += z_GN;
