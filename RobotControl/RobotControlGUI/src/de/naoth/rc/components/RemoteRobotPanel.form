@@ -123,5 +123,13 @@
         <Property name="text" type="java.lang.String" value="-"/>
       </Properties>
     </Component>
+    <Component class="javax.swing.JToggleButton" name="btBind">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="BIND"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btBindActionPerformed"/>
+      </Events>
+    </Component>
   </SubComponents>
 </Form>
