@@ -77,7 +77,7 @@ public class RemoteTeamControl extends AbstractDialog {
         
         
         this.timerCheckMessages = new Timer();
-        this.timerCheckMessages.scheduleAtFixedRate(new TeamCommListenTask(), 100, 33);
+        this.timerCheckMessages.scheduleAtFixedRate(new TeamCommListenTask(), 100, 100);
         
         Controller[] controllers = ControllerEnvironment.getDefaultEnvironment().getControllers();
         for(Controller c: controllers) 
@@ -91,11 +91,11 @@ public class RemoteTeamControl extends AbstractDialog {
             if(controller.getType() == Controller.Type.KEYBOARD) {
                 log("INFO: register keyboard");
                 RobotController rc = new KeyBoardControl(controller);
-                this.timerCheckMessages.scheduleAtFixedRate(rc, 100, 33);
+                this.timerCheckMessages.scheduleAtFixedRate(rc, 100, 10);
             } else if(controller.getType() == Controller.Type.GAMEPAD) {
                 log("INFO: register GAMEPAD " + controller.getName());
                 RobotController rc = new GamePadControl(controller);
-                this.timerCheckMessages.scheduleAtFixedRate(rc, 100, 33);
+                this.timerCheckMessages.scheduleAtFixedRate(rc, 100, 10);
             }
         } catch(IOException ex) {
             ex.printStackTrace(System.err);
@@ -157,6 +157,7 @@ public class RemoteTeamControl extends AbstractDialog {
         public double alpha = 0;
     }
     
+    
     private void log(final String str) {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
@@ -171,43 +172,34 @@ public class RemoteTeamControl extends AbstractDialog {
         });
     }
     
-    private abstract class RobotController extends TimerTask
+    private class CommandSenderTask extends TimerTask
     {
-        private final Controller control;
         private final DatagramChannel channel;
-        private InetSocketAddress targetAddress = null;
+        private final InetSocketAddress targetAddress;
+        private RemoteCommand command = new RemoteCommand();
+        private boolean updated = false;
         
-        protected HashMap<String, RemoteCommand> commands = new HashMap<>();
-        
-        public RobotController(Controller control) throws IOException {
-            this.control = control;
+        public CommandSenderTask(InetSocketAddress targetAddress)  throws IOException {
             this.channel = DatagramChannel.open();
+            this.targetAddress = targetAddress;
         }
         
-        public boolean isBound() {
-            return targetAddress != null;
-        }
-        
-        public void bind(InetSocketAddress address) {
-            targetAddress = address;
-        }
-        
-        protected void log(String str) {
-            RemoteTeamControl.this.log(control.getName() + ": " + str);
-        }
-        
-        protected void send(RemoteCommand command) 
+        @Override
+        public void run() 
         {
-            if(targetAddress == null) {
+            if(targetAddress == null || !this.updated) {
                 return;
             }
             
             Representations.RemoteControlCommand.Builder cmd = Representations.RemoteControlCommand.newBuilder();
-            cmd.setAction(command.action);
-            cmd.getTargetBuilder()
-                .setRotation(command.alpha)
-                .getTranslationBuilder().setX(command.x).setY(command.y);
-
+            synchronized(this) {
+                cmd.setAction(command.action);
+                cmd.getTargetBuilder()
+                    .setRotation(command.alpha)
+                    .getTranslationBuilder().setX(command.x).setY(command.y);
+                this.updated = false;
+            }
+            
             try {
                 ByteBuffer buffer = ByteBuffer.wrap(cmd.build().toByteArray());
                 this.channel.send(buffer, targetAddress);
@@ -215,6 +207,40 @@ public class RemoteTeamControl extends AbstractDialog {
             } catch (IOException ex) {
                 ex.printStackTrace(System.err);
             }
+        }
+        
+        public void send(RemoteCommand command) 
+        {
+            synchronized(this) {
+                this.command = command;
+                this.updated = true;
+            }
+        }
+    }
+    
+    
+    private abstract class RobotController extends TimerTask
+    {
+        private final Controller control;
+        private CommandSenderTask commandSender = null;
+        
+        protected HashMap<String, RemoteCommand> commands = new HashMap<>();
+        
+        public RobotController(Controller control) {
+            this.control = control;
+        }
+        
+        public boolean isBound() {
+            return commandSender != null;
+        }
+        
+        public CommandSenderTask bind(InetSocketAddress address) throws IOException{
+            commandSender = new CommandSenderTask(address);
+            return commandSender;
+        }
+        
+        protected void log(String str) {
+            RemoteTeamControl.this.log(control.getName() + ": " + str);
         }
         
         @Override
@@ -230,17 +256,20 @@ public class RemoteTeamControl extends AbstractDialog {
                     update(event);
                 }
 
-                RemoteCommand fc = new RemoteCommand();
-                fc.action = Representations.RemoteControlCommand.ActionType.STAND;
-                for(RemoteCommand c : this.commands.values()) {
-                    if(c != null) {
-                        fc.action = c.action;
-                        fc.x += c.x;
-                        fc.y += c.y;
-                        fc.alpha += c.alpha;
+                if(commandSender != null)
+                {
+                    RemoteCommand remoteCommand = new RemoteCommand();
+                    remoteCommand.action = Representations.RemoteControlCommand.ActionType.STAND;
+                    for(RemoteCommand c : this.commands.values()) {
+                        if(c != null) {
+                            remoteCommand.action = c.action;
+                            remoteCommand.x += c.x;
+                            remoteCommand.y += c.y;
+                            remoteCommand.alpha += c.alpha;
+                        }
                     }
+                    commandSender.send(remoteCommand);
                 }
-                send(fc);
             } else {
                 this.cancel();
             }
@@ -264,7 +293,8 @@ public class RemoteTeamControl extends AbstractDialog {
             if(!isBound() && event.getComponent().getIdentifier() == Component.Identifier.Button._0) {
                 log("bind to " + messageMap.keySet().iterator().next());
                 try {
-                    bind(new InetSocketAddress(InetAddress.getByName(messageMap.keySet().iterator().next()), 10401));
+                    CommandSenderTask sender = bind(new InetSocketAddress(InetAddress.getByName(messageMap.keySet().iterator().next()), 10401));
+                    timerCheckMessages.scheduleAtFixedRate(sender, 100, 100);
                 } catch(IOException ex) {
                     ex.printStackTrace(System.err);
                 }
