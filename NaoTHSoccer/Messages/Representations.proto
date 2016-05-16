@@ -296,6 +296,7 @@ message RemoteControlCommand {
     KICK_RIGHT = 3;
     KICK_LEFT = 4;
     KICK_FORWARD = 5;
+    BLINK = 6;
   }
 
   optional ActionType action = 1;
