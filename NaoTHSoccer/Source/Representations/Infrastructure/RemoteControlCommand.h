@@ -11,6 +11,8 @@
 
 #include <Tools/Math/Pose2D.h>
 
+#include <Representations/Infrastructure/FrameInfo.h>
+
 class RemoteControlCommand : public naoth::Printable
 {
 public:
@@ -30,6 +32,8 @@ public:
   } action;
 
   Pose2D target;
+
+  naoth::FrameInfo frameInfoWhenUpdated;
 
   virtual void print(std::ostream& stream) const
   {
