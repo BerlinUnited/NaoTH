@@ -16,5 +16,7 @@ namespace remote("Remote Symbols") {
   float input remote_control.target.x;
   float input remote_control.target.y;
   float input remote_control.target.rot;
+  
+  float input remote_control.time_since_update;
 }
   

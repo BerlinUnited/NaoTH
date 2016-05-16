@@ -9,11 +9,13 @@
 #include <XabslEngine/XabslEngine.h>
 
 #include "Representations/Infrastructure/RemoteControlCommand.h"
+#include <Representations/Infrastructure/FrameInfo.h>
 
 // tools
 #include "Tools/Math/Common.h"
 
 BEGIN_DECLARE_MODULE(RemoteSymbols)
+  REQUIRE(FrameInfo)
   REQUIRE(RemoteControlCommand)
 END_DECLARE_MODULE(RemoteSymbols)
 
@@ -36,6 +38,8 @@ public:
 
 private:
   static RemoteSymbols* theInstance;
+
+  static double timeSinceUpdate();
 };
 
 #endif  /* _RemoteSymbols_H */

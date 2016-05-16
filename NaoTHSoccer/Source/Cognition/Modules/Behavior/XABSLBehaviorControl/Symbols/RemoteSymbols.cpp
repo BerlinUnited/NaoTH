@@ -20,6 +20,8 @@ void RemoteSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalInputSymbol("remote_control.target.y", &getRemoteControlCommand().target.translation.y);
   engine.registerDecimalInputSymbol("remote_control.target.rot", &getRemoteControlCommand().target.rotation);
 
+  engine.registerDecimalInputSymbol("remote_control.time_since_update", &timeSinceUpdate);
+
 }//end registerSymbols
 
 RemoteSymbols* RemoteSymbols::theInstance = NULL;
@@ -31,4 +33,9 @@ RemoteSymbols::~RemoteSymbols()
 void RemoteSymbols::execute()
 {
 
+}
+
+double RemoteSymbols::timeSinceUpdate()
+{
+  return theInstance->getFrameInfo().getTimeSince(theInstance->getRemoteControlCommand().frameInfoWhenUpdated.getTime());
 }

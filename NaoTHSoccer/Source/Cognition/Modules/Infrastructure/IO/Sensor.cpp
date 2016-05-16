@@ -77,6 +77,8 @@ void Sensor::execute()
   if (getRemoteMessageDataIn().data.size() > 0 ) {
     std::stringstream ss(getRemoteMessageDataIn().data.back());
     Serializer<RemoteControlCommand>::deserialize(ss, getRemoteControlCommand());
+
+    getRemoteControlCommand().frameInfoWhenUpdated = getFrameInfo();
   }
 
 }//end execute
