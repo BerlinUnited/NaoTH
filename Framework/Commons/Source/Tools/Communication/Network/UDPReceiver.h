@@ -1,11 +1,11 @@
 /**
- * @file BroadCastListener.cpp
+ * @file UDPReceiver.cpp
  * @author <a href="mailto:xu@informatik.hu-berlin.de">Xu, Yuan</a>
  *
  */
 
-#ifndef BROADCASTLISTENER_H
-#define BROADCASTLISTENER_H
+#ifndef UDPReceiver_H
+#define UDPReceiver_H
 
 #include <string>
 #include <vector>
@@ -14,15 +14,15 @@
 
 namespace naoth
 {
-class BroadCastListener
+class UDPReceiver
 {
 
 public:
-  BroadCastListener(unsigned int port, unsigned int buffersize=4096);
+  UDPReceiver(unsigned int port, unsigned int buffersize=4096);
 
   void receive(std::vector<std::string>& data);
 
-  virtual ~BroadCastListener();
+  virtual ~UDPReceiver();
 
   void loop();
 
@@ -40,4 +40,4 @@ private:
 } // namespace naoth
 
 
-#endif // BROADCASTLISTENER_H
+#endif // UDPReceiver_H
