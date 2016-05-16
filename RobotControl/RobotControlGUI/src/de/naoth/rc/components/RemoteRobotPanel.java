@@ -38,9 +38,13 @@ public class RemoteRobotPanel extends javax.swing.JPanel {
     private final Color darkOrange = new Color(255, 130, 0);
     public final static long MAX_TIME_BEFORE_DEAD = 5000; //ms
     private final RingBuffer timestamps = new RingBuffer(5);
+    private String ipAddress;
     
-    public RemoteRobotPanel() {
+    public RemoteRobotPanel(String ipAddress) {
         initComponents();
+        
+        this.ipAddress = ipAddress;
+        this.jlAddress.setText(this.ipAddress);
     }
     
     public boolean isReadyToBind() {
