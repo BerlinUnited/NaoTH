@@ -39,8 +39,6 @@ import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 import net.java.games.input.Component;
 import net.java.games.input.Controller;
 import net.java.games.input.ControllerEnvironment;
-import net.java.games.input.Event;
-import net.java.games.input.EventQueue;
 
 /**
  *
@@ -114,10 +112,35 @@ public class RemoteTeamControl extends AbstractDialog {
         robotPanel = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         logOutput = new javax.swing.JEditorPane();
+        jToolBar1 = new javax.swing.JToolBar();
+        filterTeam = new javax.swing.JToggleButton();
+        teamSelectionBox = new javax.swing.JComboBox();
 
         robotPanel.setLayout(new javax.swing.BoxLayout(robotPanel, javax.swing.BoxLayout.LINE_AXIS));
 
         jScrollPane1.setViewportView(logOutput);
+
+        jToolBar1.setFloatable(false);
+        jToolBar1.setRollover(true);
+
+        filterTeam.setText("Filter by Team");
+        filterTeam.setFocusable(false);
+        filterTeam.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        filterTeam.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        filterTeam.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                filterTeamActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(filterTeam);
+
+        teamSelectionBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "0", "1", "2", "3", "4", "5", "6" }));
+        teamSelectionBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                teamSelectionBoxActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(teamSelectionBox);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -127,13 +150,26 @@ public class RemoteTeamControl extends AbstractDialog {
                 .addComponent(robotPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 340, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 308, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(robotPanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 176, Short.MAX_VALUE)
-            .addComponent(jScrollPane1)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(robotPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 154, Short.MAX_VALUE)))
         );
     }// </editor-fold>//GEN-END:initComponents
+
+    private void filterTeamActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_filterTeamActionPerformed
+        updateRoboPanel();
+    }//GEN-LAST:event_filterTeamActionPerformed
+
+    private void teamSelectionBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_teamSelectionBoxActionPerformed
+        updateRoboPanel();
+    }//GEN-LAST:event_teamSelectionBoxActionPerformed
 
     class RemoteCommandResultHandler implements ObjectListener<byte[]> {
 
@@ -248,12 +284,16 @@ public class RemoteTeamControl extends AbstractDialog {
         {
             if(control.poll())
             {
-                EventQueue queue = control.getEventQueue();
-
-                Event event = new Event();
-                while(queue.getNextEvent(event)) 
-                {
-                    update(event);
+                //EventQueue queue = control.getEventQueue();
+                //Event event = new Event();
+                //while(queue.getNextEvent(event)) 
+                //{
+                //    update(event);
+                //}
+                
+                Component[] components = control.getComponents();
+                for(int i=0; i < control.getComponents().length;i++) {
+                    update(components[i]);
                 }
 
                 if(commandSender != null)
@@ -275,7 +315,7 @@ public class RemoteTeamControl extends AbstractDialog {
             }
         }
         
-        protected abstract void update(Event event);
+        protected abstract void update(Component component);
     }
     
     private class GamePadControl extends RobotController 
@@ -285,12 +325,11 @@ public class RemoteTeamControl extends AbstractDialog {
         }
         
         @Override
-        protected void update(Event event)
+        protected void update(Component component)
         {
-            System.out.println(event.getComponent().getName() + " - " + event.getValue());
-            Component.Identifier id = event.getComponent().getIdentifier();
+            Component.Identifier id = component.getIdentifier();
             
-            if(!isBound() && event.getComponent().getIdentifier() == Component.Identifier.Button._0) 
+            if(!isBound() && component.getIdentifier() == Component.Identifier.Button._0) 
             {
                 for(Map.Entry<String, RemoteRobotPanel> robot: robotsMap.entrySet()) {
                     if(robot.getValue().isReadyToBind()) 
@@ -314,59 +353,63 @@ public class RemoteTeamControl extends AbstractDialog {
             if(isBound())
             {
                 if(id == Component.Identifier.Button._2) {
-                    if(Math.abs(event.getValue()) > 0.0) {
+                    if(Math.abs(component.getPollData()) > 0.0) {
                         RemoteCommand c = new RemoteCommand();
                         c.action = Representations.RemoteControlCommand.ActionType.KICK_LEFT;
                         commands.put(id.getName(), c);
                     } else {
                         commands.remove(id.getName());
                     }
+                    System.out.println(component.getName() + " - " + component.getPollData());
                 }
                 else if(id == Component.Identifier.Button._1) {
-                    if(Math.abs(event.getValue()) > 0.0) {
+                    if(Math.abs(component.getPollData()) > 0.0) {
                         RemoteCommand c = new RemoteCommand();
                         c.action = Representations.RemoteControlCommand.ActionType.KICK_RIGHT;
                         commands.put(id.getName(), c);
                     } else {
                         commands.remove(id.getName());
                     }
+                    System.out.println(component.getName() + " - " + component.getPollData());
                 }
                 else if(id == Component.Identifier.Button._3) {
-                    if(Math.abs(event.getValue()) > 0.0) {
+                    if(Math.abs(component.getPollData()) > 0.0) {
                         RemoteCommand c = new RemoteCommand();
                         c.action = Representations.RemoteControlCommand.ActionType.KICK_FORWARD;
                         commands.put(id.getName(), c);
                     } else {
                         commands.remove(id.getName());
                     }
+                    System.out.println(component.getName() + " - " + component.getPollData());
                 }
                 else if(id == Component.Identifier.Button._4) {
-                    if(Math.abs(event.getValue()) > 0.0) {
+                    if(Math.abs(component.getPollData()) > 0.0) {
                         RemoteCommand c = new RemoteCommand();
                         c.action = Representations.RemoteControlCommand.ActionType.BLINK;
                         commands.put(id.getName(), c);
                     } else {
                         commands.remove(id.getName());
                     }
+                    System.out.println(component.getName() + " - " + component.getPollData());
                 }
                 else if(id == Component.Identifier.Axis.POV) 
                 {
-                    if(event.getValue() == 0.25) {
+                    if(component.getPollData() == 0.25) {
                         RemoteCommand c = new RemoteCommand();
                         c.action = Representations.RemoteControlCommand.ActionType.WALK;
                         c.x = 50;
                         commands.put(id.getName(), c);
-                    } else if(event.getValue() == 0.75) {
+                    } else if(component.getPollData() == 0.75) {
                         RemoteCommand c = new RemoteCommand();
                         c.action = Representations.RemoteControlCommand.ActionType.WALK;
                         c.x = -50;
                         commands.put(id.getName(), c);
-                    } else if(event.getValue() == 1.0) {
+                    } else if(component.getPollData() == 1.0) {
                         RemoteCommand c = new RemoteCommand();
                         c.action = Representations.RemoteControlCommand.ActionType.WALK;
                         c.y = 50;
                         commands.put(id.getName(), c);
-                    } else if(event.getValue() == 0.5) {
+                    } else if(component.getPollData() == 0.5) {
                         RemoteCommand c = new RemoteCommand();
                         c.action = Representations.RemoteControlCommand.ActionType.WALK;
                         c.y = -50;
@@ -374,18 +417,20 @@ public class RemoteTeamControl extends AbstractDialog {
                     } else {
                         commands.remove(id.getName());
                     }
+                    System.out.println(component.getName() + " - " + component.getPollData());
                 } 
                 else if(id == Component.Identifier.Axis.RX)
                 {
-                    if(Math.abs(event.getValue()) > 0.2) {
+                    if(Math.abs(component.getPollData()) > 0.2) {
                         RemoteCommand c = new RemoteCommand();
                         c.action = Representations.RemoteControlCommand.ActionType.WALK;
-                        c.alpha = -15.0*event.getValue();
+                        c.alpha = -15.0*component.getPollData();
                         log("  " + c.alpha);
                         commands.put(id.getName(), c);
                     } else {
                         commands.remove(id.getName());
                     }
+                    System.out.println(component.getName() + " - " + component.getPollData());
                 }
             }
         } 
@@ -398,12 +443,11 @@ public class RemoteTeamControl extends AbstractDialog {
         }
         
         @Override
-        protected void update(Event event)
+        protected void update(Component component)
         {
-            System.out.println(event.getComponent().getName() + " - " + event.getValue());
-            Component.Identifier id = event.getComponent().getIdentifier();
+            Component.Identifier id = component.getIdentifier();
             if(id == Component.Identifier.Key.W) {
-                if(event.getValue() > 0) {
+                if(component.getPollData() > 0) {
                     RemoteCommand c = new RemoteCommand();
                     c.action = Representations.RemoteControlCommand.ActionType.WALK;
                     c.x = 50;
@@ -412,7 +456,7 @@ public class RemoteTeamControl extends AbstractDialog {
                     commands.remove(id.getName());
                 }
             } else if(id == Component.Identifier.Key.S) {
-                if(event.getValue() > 0) {
+                if(component.getPollData() > 0) {
                     RemoteCommand c = new RemoteCommand();
                     c.action = Representations.RemoteControlCommand.ActionType.WALK;
                     c.x = -50;
@@ -421,7 +465,7 @@ public class RemoteTeamControl extends AbstractDialog {
                     commands.remove(id.getName());
                 }
             } else if(id == Component.Identifier.Key.A) {
-                if(event.getValue() > 0) {
+                if(component.getPollData() > 0) {
                     RemoteCommand c = new RemoteCommand();
                     c.action = Representations.RemoteControlCommand.ActionType.WALK;
                     c.y = 50;
@@ -430,7 +474,7 @@ public class RemoteTeamControl extends AbstractDialog {
                     commands.remove(id.getName());
                 }
             } else if(id == Component.Identifier.Key.D) {
-                if(event.getValue() > 0) {
+                if(component.getPollData() > 0) {
                     RemoteCommand c = new RemoteCommand();
                     c.action = Representations.RemoteControlCommand.ActionType.WALK;
                     c.y = -50;
@@ -457,6 +501,27 @@ public class RemoteTeamControl extends AbstractDialog {
             this.channel.send(buffer, new InetSocketAddress(InetAddress.getByName("10.0.4.85"), 10401));
         }
     }
+    
+    
+    private void updateRoboPanel() {
+        if(filterTeam.isSelected()) {
+            this.robotPanel.removeAll();
+
+            for (Map.Entry<String, RemoteRobotPanel> msgEntry : robotsMap.entrySet()) 
+            {
+                addPanel(msgEntry.getValue());
+            }
+            this.robotPanel.repaint();
+        }
+    }
+    
+    private void addPanel(RemoteRobotPanel robotStatus) {
+        if(!filterTeam.isSelected() || teamSelectionBox.getSelectedIndex() == robotStatus.getMessage().teamNum)
+        {
+            robotPanel.add(robotStatus);
+            robotPanel.repaint();
+        }
+    }
 
     private class TeamCommListenTask extends TimerTask {
 
@@ -467,20 +532,21 @@ public class RemoteTeamControl extends AbstractDialog {
                     return;
                 }
 
+                
+                
                 for (Map.Entry<String, TeamCommMessage> msgEntry : messageMap.entrySet()) 
                 {
                     final String address = msgEntry.getKey();
                     final TeamCommMessage msg = msgEntry.getValue();
-
+                    
                     SwingUtilities.invokeLater(new Runnable() {
                         @Override
                         public void run() {
                             RemoteRobotPanel robotStatus = robotsMap.get(address);
                             if (robotStatus == null) {
-                                robotStatus = new RemoteRobotPanel(address);
+                                robotStatus = new RemoteRobotPanel(address, msg.message);
                                 robotsMap.put(address, robotStatus);
-                                robotPanel.add(robotStatus);
-                                robotPanel.repaint();
+                                addPanel(robotStatus);
                             }
                             // update
                             robotStatus.setStatus(msg.timestamp, msg.message);
@@ -573,8 +639,11 @@ public class RemoteTeamControl extends AbstractDialog {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JToggleButton filterTeam;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JToolBar jToolBar1;
     private javax.swing.JEditorPane logOutput;
     private javax.swing.JPanel robotPanel;
+    private javax.swing.JComboBox teamSelectionBox;
     // End of variables declaration//GEN-END:variables
 }
