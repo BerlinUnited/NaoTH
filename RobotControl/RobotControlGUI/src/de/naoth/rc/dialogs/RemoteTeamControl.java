@@ -544,7 +544,7 @@ public class RemoteTeamControl extends AbstractDialog {
                         public void run() {
                             RemoteRobotPanel robotStatus = robotsMap.get(address);
                             if (robotStatus == null) {
-                                robotStatus = new RemoteRobotPanel(address, msg.message);
+                                robotStatus = new RemoteRobotPanel(Plugin.parent.getMessageServer(), address, msg.message);
                                 robotsMap.put(address, robotStatus);
                                 addPanel(robotStatus);
                             }

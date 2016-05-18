@@ -7,6 +7,9 @@
 package de.naoth.rc.components;
 
 import de.naoth.rc.dataformats.SPLMessage;
+import de.naoth.rc.server.ConnectionStatusEvent;
+import de.naoth.rc.server.ConnectionStatusListener;
+import de.naoth.rc.server.MessageServer;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -17,6 +20,8 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 
 /**
@@ -46,6 +51,8 @@ public class RemoteRobotPanel extends javax.swing.JPanel {
     private final Color darkOrange = new Color(255, 130, 0);
     public final static long MAX_TIME_BEFORE_DEAD = 5000; //ms
     private final RingBuffer timestamps = new RingBuffer(5);
+    
+    private final MessageServer messageServer;
     private String ipAddress;
     private SPLMessage currentMesage;
     
@@ -59,12 +66,26 @@ public class RemoteRobotPanel extends javax.swing.JPanel {
     private Color colorDanger = new Color(1.0f, 0.0f, 1.0f, 0.5f);
     
     
-    public RemoteRobotPanel(String ipAddress, SPLMessage msg) {
+    public RemoteRobotPanel(MessageServer messageServer, String ipAddress, SPLMessage msg) {
         initComponents();
         
+        this.messageServer = messageServer;
         this.ipAddress = ipAddress;
         this.currentMesage = msg;
         this.jlAddress.setText(this.ipAddress);
+        
+        this.messageServer.addConnectionStatusListener(new ConnectionStatusListener() {
+
+            @Override
+            public void connected(ConnectionStatusEvent event) {
+                connectButton.setEnabled(false);
+            }
+
+            @Override
+            public void disconnected(ConnectionStatusEvent event) {
+                connectButton.setEnabled(true);
+            }
+        });
         
         try {
             nao_body = ImageIO.read(getClass().getResource("/de/naoth/rc/res/nao-nice.png"));
@@ -270,6 +291,7 @@ public class RemoteRobotPanel extends javax.swing.JPanel {
         jlBallAge = new javax.swing.JLabel();
         jlTeamNumber = new javax.swing.JLabel();
         jlTimestamp = new javax.swing.JLabel();
+        connectButton = new javax.swing.JButton();
 
         jLabel5.setText("jLabel5");
 
@@ -310,6 +332,16 @@ public class RemoteRobotPanel extends javax.swing.JPanel {
         jlTimestamp.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/naoth/rc/res/appointment-new.png"))); // NOI18N
         jlTimestamp.setText("DEAD");
 
+        connectButton.setText("Connect");
+        connectButton.setMaximumSize(new java.awt.Dimension(50, 23));
+        connectButton.setMinimumSize(new java.awt.Dimension(50, 23));
+        connectButton.setPreferredSize(new java.awt.Dimension(50, 23));
+        connectButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                connectButtonActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -324,12 +356,14 @@ public class RemoteRobotPanel extends javax.swing.JPanel {
                     .addGroup(layout.createSequentialGroup()
                         .addGap(26, 26, 26)
                         .addComponent(jlAddress, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 34, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 76, Short.MAX_VALUE)
                 .addComponent(jlTimestamp, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(25, 25, 25))
             .addGroup(layout.createSequentialGroup()
                 .addGap(31, 31, 31)
                 .addComponent(btBind, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(connectButton, javax.swing.GroupLayout.PREFERRED_SIZE, 143, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -339,10 +373,12 @@ public class RemoteRobotPanel extends javax.swing.JPanel {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jlBallAge, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jlTeamNumber, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 19, Short.MAX_VALUE)
                 .addComponent(jlAddress, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 67, Short.MAX_VALUE)
-                .addComponent(btBind, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 20, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btBind, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(connectButton, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -355,9 +391,24 @@ public class RemoteRobotPanel extends javax.swing.JPanel {
         
     }//GEN-LAST:event_btBindActionPerformed
 
+    private void connectButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_connectButtonActionPerformed
+        if(!this.messageServer.isConnected())
+        {
+            try
+            {
+                // TODO: fix port 5401
+                this.messageServer.connect(this.ipAddress, 5401);
+            }catch(IOException ex)
+            {
+                Logger.getLogger(RobotStatus.class.getName()).log(Level.SEVERE, "Coult not connect.", ex);
+            }
+        }
+    }//GEN-LAST:event_connectButtonActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JToggleButton btBind;
+    private javax.swing.JButton connectButton;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JLabel jlAddress;
