@@ -7,6 +7,8 @@
 package de.naoth.rc.components;
 
 import de.naoth.rc.dataformats.SPLMessage;
+import de.naoth.rc.server.ConnectionStatusEvent;
+import de.naoth.rc.server.ConnectionStatusListener;
 import de.naoth.rc.server.MessageServer;
 import java.awt.Color;
 import java.io.IOException;
@@ -56,6 +58,19 @@ public class RobotStatus extends javax.swing.JPanel {
         this.ipAddress = ipAddress;
         
         this.jlAddress.setText(this.ipAddress);
+        
+        this.messageServer.addConnectionStatusListener(new ConnectionStatusListener() {
+
+            @Override
+            public void connected(ConnectionStatusEvent event) {
+                connectButton.setEnabled(false);
+            }
+
+            @Override
+            public void disconnected(ConnectionStatusEvent event) {
+                connectButton.setEnabled(true);
+            }
+        });
     }
     
     public RobotStatus(MessageServer messageServer, String ipAddress, Color backgroundColor) {
@@ -131,8 +146,6 @@ public class RobotStatus extends javax.swing.JPanel {
         jlTemperature.setText("TEMP ??");
         jlBatteryCharge.setText("??");
       }
-      
-      this.connectButton.setEnabled(!this.messageServer.isConnected());
     }
     
     private double calculateMsgPerSecond()
