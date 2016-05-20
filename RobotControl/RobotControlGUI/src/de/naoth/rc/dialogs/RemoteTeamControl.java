@@ -14,6 +14,7 @@ import de.naoth.rc.core.manager.SwingCommandExecutor;
 import de.naoth.rc.dataformats.SPLMessage;
 import de.naoth.rc.manager.GenericManagerFactory;
 import de.naoth.rc.messages.Representations;
+import java.awt.Color;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -232,7 +233,7 @@ public class RemoteTeamControl extends AbstractDialog {
         @Override
         public void run() 
         {
-            System.out.println("Command sender running.");
+            //System.out.println("Command sender running.");
             if(targetAddress == null || !this.updated) {
                 return;
             }
@@ -268,7 +269,9 @@ public class RemoteTeamControl extends AbstractDialog {
     private abstract class RobotController extends TimerTask implements RemoteRobotPanel.UnbindListerer
     {
         private final Controller control;
+        
         private CommandSenderTask commandSender = null;
+        protected RemoteRobotPanel robot = null;
         
         protected HashMap<String, RemoteCommand> commands = new HashMap<>();
         
@@ -281,6 +284,7 @@ public class RemoteTeamControl extends AbstractDialog {
         }
         
         public CommandSenderTask bind(RemoteRobotPanel robot) throws IOException{
+            this.robot = robot;
             commandSender = new CommandSenderTask(new InetSocketAddress(InetAddress.getByName(robot.getAddress()), 10401));
             robot.bind(this);
             timerCheckMessages.scheduleAtFixedRate(commandSender, 100, 100);
@@ -292,6 +296,7 @@ public class RemoteTeamControl extends AbstractDialog {
             commandSender.cancel();
             log("unbind from " + commandSender.getAddress());
             commandSender = null;
+            this.robot = null;
         }
         
         protected void log(String str) {
@@ -350,21 +355,41 @@ public class RemoteTeamControl extends AbstractDialog {
         {
             Component.Identifier id = component.getIdentifier();
             
-            if(!isBound() && component.getIdentifier() == Component.Identifier.Button._0) 
+            if(component.getIdentifier() == Component.Identifier.Button._0) 
             {
-                for(Map.Entry<String, RemoteRobotPanel> robot: robotsMap.entrySet()) {
-                    if(robot.getValue().isReadyToBind()) 
+                if(!isBound())
+                {
+                    if(Math.abs(component.getPollData()) > 0.0)
                     {
-                        log("bind to " + robot.getKey());
-                    
-                        try {
-                            bind(robot.getValue());
-                        } catch(IOException ex) {
-                            ex.printStackTrace(System.err);
+                        for(Map.Entry<String, RemoteRobotPanel> robot: robotsMap.entrySet()) {
+                            if(robot.getValue().isReadyToBind()) 
+                            {
+                                log("bind to " + robot.getKey());
+
+                                try {
+                                    bind(robot.getValue());
+                                } catch(IOException ex) {
+                                    ex.printStackTrace(System.err);
+                                }
+                            }
                         }
+                        return;
                     }
                 }
-                return;
+                else
+                {
+                    if(Math.abs(component.getPollData()) > 0.0) {
+                        RemoteCommand c = new RemoteCommand();
+                        c.action = Representations.RemoteControlCommand.ActionType.BLINK;
+                        commands.put(id.getName(), c);
+                        
+                        this.robot.setChestColor(new Color(1.0f,0.0f,0.0f,0.7f));
+                    } else {
+                        commands.remove(id.getName());
+                        this.robot.setChestColor(new Color(0.0f,0.0f,0.0f,0.7f));
+                    }
+                    System.out.println(component.getName() + " - " + component.getPollData());
+                }
             }
             
             
@@ -394,16 +419,6 @@ public class RemoteTeamControl extends AbstractDialog {
                     if(Math.abs(component.getPollData()) > 0.0) {
                         RemoteCommand c = new RemoteCommand();
                         c.action = Representations.RemoteControlCommand.ActionType.KICK_FORWARD;
-                        commands.put(id.getName(), c);
-                    } else {
-                        commands.remove(id.getName());
-                    }
-                    System.out.println(component.getName() + " - " + component.getPollData());
-                }
-                else if(id == Component.Identifier.Button._4) {
-                    if(Math.abs(component.getPollData()) > 0.0) {
-                        RemoteCommand c = new RemoteCommand();
-                        c.action = Representations.RemoteControlCommand.ActionType.BLINK;
                         commands.put(id.getName(), c);
                     } else {
                         commands.remove(id.getName());

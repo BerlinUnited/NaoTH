@@ -67,6 +67,8 @@ public class RemoteRobotPanel extends javax.swing.JPanel {
     
     private UnbindListerer unbindListerer;
     
+    private Color chestColor = new Color(0.0f,0.0f,0.0f,0.7f);
+    
     public RemoteRobotPanel(MessageServer messageServer, String ipAddress, SPLMessage msg) {
         initComponents();
         
@@ -189,6 +191,10 @@ public class RemoteRobotPanel extends javax.swing.JPanel {
       this.repaint();
     }
     
+    public void setChestColor(Color chestColor) {
+        this.chestColor = chestColor;
+        this.repaint();
+    }
     
     @Override
     public synchronized void paintComponent(Graphics g)
@@ -221,7 +227,7 @@ public class RemoteRobotPanel extends javax.swing.JPanel {
       
       // player number
       
-      g2d.setColor(new Color(0.0f,0.0f,0.0f,0.7f));
+      g2d.setColor(chestColor);
       int r = 50;
       g2d.fillOval((int)(wPanel/2)-r, (int)(hPanel*0.5)-r, 2*r, 2*r);
       
