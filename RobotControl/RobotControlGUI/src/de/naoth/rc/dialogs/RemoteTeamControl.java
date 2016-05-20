@@ -312,7 +312,48 @@ public class RemoteTeamControl extends AbstractDialog {
                 Event event = new Event();
                 while(queue.getNextEvent(event)) 
                 {
-                    update(event.getComponent());
+                    Component component = event.getComponent();
+                        
+                    if(component.getIdentifier() == Component.Identifier.Button._0) 
+                    {
+                        if(!isBound())
+                        {
+                            if(Math.abs(component.getPollData()) > 0.0)
+                            {
+                                for(Map.Entry<String, RemoteRobotPanel> robot: robotsMap.entrySet()) {
+                                    if(robot.getValue().isReadyToBind()) 
+                                    {
+                                        log("bind to " + robot.getKey());
+
+                                        try {
+                                            bind(robot.getValue());
+                                        } catch(IOException ex) {
+                                            ex.printStackTrace(System.err);
+                                        }
+                                    }
+                                }
+                                return;
+                            }
+                        }
+                        else
+                        {
+                            if(Math.abs(component.getPollData()) > 0.0) {
+                                RemoteCommand c = new RemoteCommand();
+                                c.action = Representations.RemoteControlCommand.ActionType.BLINK;
+                                commands.put(component.getIdentifier().getName(), c);
+
+                                this.robot.setChestColor(new Color(1.0f,0.0f,0.0f,0.7f));
+                            } else {
+                                commands.remove(component.getIdentifier().getName());
+                                this.robot.setChestColor(new Color(0.0f,0.0f,0.0f,0.7f));
+                            }
+                            System.out.println(component.getName() + " - " + component.getPollData());
+                        }
+                    }
+                    else if(isBound())
+                    {
+                        update(component);
+                    }
                 }
                 
                 /*
@@ -354,119 +395,79 @@ public class RemoteTeamControl extends AbstractDialog {
         protected void update(Component component)
         {
             Component.Identifier id = component.getIdentifier();
-            
-            if(component.getIdentifier() == Component.Identifier.Button._0) 
-            {
-                if(!isBound())
-                {
-                    if(Math.abs(component.getPollData()) > 0.0)
-                    {
-                        for(Map.Entry<String, RemoteRobotPanel> robot: robotsMap.entrySet()) {
-                            if(robot.getValue().isReadyToBind()) 
-                            {
-                                log("bind to " + robot.getKey());
 
-                                try {
-                                    bind(robot.getValue());
-                                } catch(IOException ex) {
-                                    ex.printStackTrace(System.err);
-                                }
-                            }
-                        }
-                        return;
-                    }
+            if(id == Component.Identifier.Button._2) {
+                if(Math.abs(component.getPollData()) > 0.0) {
+                    RemoteCommand c = new RemoteCommand();
+                    c.action = Representations.RemoteControlCommand.ActionType.KICK_LEFT;
+                    commands.put(id.getName(), c);
+                } else {
+                    commands.remove(id.getName());
                 }
-                else
-                {
-                    if(Math.abs(component.getPollData()) > 0.0) {
-                        RemoteCommand c = new RemoteCommand();
-                        c.action = Representations.RemoteControlCommand.ActionType.BLINK;
-                        commands.put(id.getName(), c);
-                        
-                        this.robot.setChestColor(new Color(1.0f,0.0f,0.0f,0.7f));
-                    } else {
-                        commands.remove(id.getName());
-                        this.robot.setChestColor(new Color(0.0f,0.0f,0.0f,0.7f));
-                    }
-                    System.out.println(component.getName() + " - " + component.getPollData());
-                }
+                System.out.println(component.getName() + " - " + component.getPollData());
             }
-            
-            
-            if(isBound())
+            else if(id == Component.Identifier.Button._1) {
+                if(Math.abs(component.getPollData()) > 0.0) {
+                    RemoteCommand c = new RemoteCommand();
+                    c.action = Representations.RemoteControlCommand.ActionType.KICK_RIGHT;
+                    commands.put(id.getName(), c);
+                } else {
+                    commands.remove(id.getName());
+                }
+                System.out.println(component.getName() + " - " + component.getPollData());
+            }
+            else if(id == Component.Identifier.Button._3) {
+                if(Math.abs(component.getPollData()) > 0.0) {
+                    RemoteCommand c = new RemoteCommand();
+                    c.action = Representations.RemoteControlCommand.ActionType.KICK_FORWARD;
+                    commands.put(id.getName(), c);
+                } else {
+                    commands.remove(id.getName());
+                }
+                System.out.println(component.getName() + " - " + component.getPollData());
+            }
+            else if(id == Component.Identifier.Axis.POV) 
             {
-                if(id == Component.Identifier.Button._2) {
-                    if(Math.abs(component.getPollData()) > 0.0) {
-                        RemoteCommand c = new RemoteCommand();
-                        c.action = Representations.RemoteControlCommand.ActionType.KICK_LEFT;
-                        commands.put(id.getName(), c);
-                    } else {
-                        commands.remove(id.getName());
-                    }
-                    System.out.println(component.getName() + " - " + component.getPollData());
+                if(component.getPollData() == 0.25) {
+                    RemoteCommand c = new RemoteCommand();
+                    c.action = Representations.RemoteControlCommand.ActionType.WALK;
+                    c.x = 50;
+                    commands.put(id.getName(), c);
+                } else if(component.getPollData() == 0.75) {
+                    RemoteCommand c = new RemoteCommand();
+                    c.action = Representations.RemoteControlCommand.ActionType.WALK;
+                    c.x = -50;
+                    commands.put(id.getName(), c);
+                } else if(component.getPollData() == 1.0) {
+                    RemoteCommand c = new RemoteCommand();
+                    c.action = Representations.RemoteControlCommand.ActionType.WALK;
+                    c.y = 50;
+                    commands.put(id.getName(), c);
+                } else if(component.getPollData() == 0.5) {
+                    RemoteCommand c = new RemoteCommand();
+                    c.action = Representations.RemoteControlCommand.ActionType.WALK;
+                    c.y = -50;
+                    commands.put(id.getName(), c);
+                } else {
+                    commands.remove(id.getName());
                 }
-                else if(id == Component.Identifier.Button._1) {
-                    if(Math.abs(component.getPollData()) > 0.0) {
-                        RemoteCommand c = new RemoteCommand();
-                        c.action = Representations.RemoteControlCommand.ActionType.KICK_RIGHT;
-                        commands.put(id.getName(), c);
-                    } else {
-                        commands.remove(id.getName());
-                    }
-                    System.out.println(component.getName() + " - " + component.getPollData());
+                System.out.println(component.getName() + " - " + component.getPollData());
+            } 
+            else if(id == Component.Identifier.Axis.RX)
+            {
+                if(Math.abs(component.getPollData()) > 0.2) {
+                    RemoteCommand c = new RemoteCommand();
+                    c.action = Representations.RemoteControlCommand.ActionType.WALK;
+                    c.alpha = -15.0*component.getPollData();
+                    log("  " + c.alpha);
+                    commands.put(id.getName(), c);
+                } else {
+                    commands.remove(id.getName());
                 }
-                else if(id == Component.Identifier.Button._3) {
-                    if(Math.abs(component.getPollData()) > 0.0) {
-                        RemoteCommand c = new RemoteCommand();
-                        c.action = Representations.RemoteControlCommand.ActionType.KICK_FORWARD;
-                        commands.put(id.getName(), c);
-                    } else {
-                        commands.remove(id.getName());
-                    }
-                    System.out.println(component.getName() + " - " + component.getPollData());
-                }
-                else if(id == Component.Identifier.Axis.POV) 
-                {
-                    if(component.getPollData() == 0.25) {
-                        RemoteCommand c = new RemoteCommand();
-                        c.action = Representations.RemoteControlCommand.ActionType.WALK;
-                        c.x = 50;
-                        commands.put(id.getName(), c);
-                    } else if(component.getPollData() == 0.75) {
-                        RemoteCommand c = new RemoteCommand();
-                        c.action = Representations.RemoteControlCommand.ActionType.WALK;
-                        c.x = -50;
-                        commands.put(id.getName(), c);
-                    } else if(component.getPollData() == 1.0) {
-                        RemoteCommand c = new RemoteCommand();
-                        c.action = Representations.RemoteControlCommand.ActionType.WALK;
-                        c.y = 50;
-                        commands.put(id.getName(), c);
-                    } else if(component.getPollData() == 0.5) {
-                        RemoteCommand c = new RemoteCommand();
-                        c.action = Representations.RemoteControlCommand.ActionType.WALK;
-                        c.y = -50;
-                        commands.put(id.getName(), c);
-                    } else {
-                        commands.remove(id.getName());
-                    }
-                    System.out.println(component.getName() + " - " + component.getPollData());
-                } 
-                else if(id == Component.Identifier.Axis.RX)
-                {
-                    if(Math.abs(component.getPollData()) > 0.2) {
-                        RemoteCommand c = new RemoteCommand();
-                        c.action = Representations.RemoteControlCommand.ActionType.WALK;
-                        c.alpha = -15.0*component.getPollData();
-                        log("  " + c.alpha);
-                        commands.put(id.getName(), c);
-                    } else {
-                        commands.remove(id.getName());
-                    }
-                    System.out.println(component.getName() + " - " + component.getPollData());
-                }
+                System.out.println(component.getName() + " - " + component.getPollData());
             }
-        } 
+        }
+
     }// end class GamePadControl
 
     private class KeyBoardControl extends RobotController 
