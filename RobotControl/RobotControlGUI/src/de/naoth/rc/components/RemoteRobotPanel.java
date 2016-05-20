@@ -61,9 +61,9 @@ public class RemoteRobotPanel extends javax.swing.JPanel {
     private BufferedImage battery_ico;
     private BufferedImage temperatur_ico;
     private Color colorInfo = new Color(0.0f, 1.0f, 0.0f, 0.5f);
-    private Color colorInfoBlue = new Color(0.0f, 0.0f, 1.0f, 0.5f);
-    private Color colorWarning = new Color(0.5f, 0.5f, 0.0f, 0.5f);
-    private Color colorDanger = new Color(1.0f, 0.0f, 1.0f, 0.5f);
+    private Color colorInfoBlue = new Color(0.1f, 0.0f, 1.0f, 0.5f);
+    private Color colorWarning = new Color(1.0f, 1.0f, 0.0f, 0.5f);
+    private Color colorDanger = new Color(1.0f, 0.0f, 0.0f, 0.5f);
     
     
     public RemoteRobotPanel(MessageServer messageServer, String ipAddress, SPLMessage msg) {
@@ -147,7 +147,7 @@ public class RemoteRobotPanel extends javax.swing.JPanel {
       }
       
       //this.jlFallenTime.setText(msg.fallen == 1 ? "FALLEN" : "NOT FALLEN");
-      this.jlBallAge.setText("" + msg.ballAge + "s");
+      //this.jlBallAge.setText("" + msg.ballAge + "s");
       
       if(msg.user != null)
       {
@@ -177,6 +177,8 @@ public class RemoteRobotPanel extends javax.swing.JPanel {
           
         this.jlTeamNumber.setText("" + msg.teamNum);
       }
+      
+      this.repaint();
     }
     
     
@@ -209,11 +211,19 @@ public class RemoteRobotPanel extends javax.swing.JPanel {
       g2d.scale(1.0/ratioW, 1.0/ratioH);
       g2d.translate(-(posX + 1), -(posY + 1));
       
+      // player number
       
+      g2d.setColor(new Color(0.0f,0.0f,0.0f,0.7f));
+      int r = 50;
+      g2d.fillOval((int)(wPanel/2)-r, (int)(hPanel*0.5)-r, 2*r, 2*r);
+      
+      g2d.setColor(Color.orange);
       g2d.setFont(new Font("TimesRoman", Font.BOLD, 100));
       String playyerNumber = "" + currentMesage.playerNum;
       FontMetrics fm = g.getFontMetrics();
-      g2d.drawString(playyerNumber, (int)((wPanel-fm.stringWidth(playyerNumber))/2), (int)(hPanel*0.5-20));
+      int y = (fm.getAscent() + ((int)(hPanel+0.5) - (fm.getAscent() + fm.getDescent())) / 2);
+      int x = (int)((wPanel-fm.stringWidth(playyerNumber))/2);
+      g2d.drawString(playyerNumber, x, y);
       
       // temperature
       if(getMessage().user.getTemperature() >= 80.0f){
@@ -239,11 +249,21 @@ public class RemoteRobotPanel extends javax.swing.JPanel {
       double batteryValue = getMessage().user.getBatteryCharge()*hPanel;
       g2d.fillRect((int)(wPanel*0.9), (int)(hPanel-batteryValue), (int)(wPanel), (int)batteryValue);
       
-      //g2d.rotate(Math.PI*0.5);
+      g2d.translate(10, (int)hPanel / 2);
+      g2d.rotate(Math.PI*0.5);
+      g2d.setColor(Color.white);
       g2d.setFont(new Font("TimesRoman", Font.PLAIN, 20));
-      g2d.drawString(String.format("TEMP %3.1f °C", getMessage().user.getTemperature()), 10, (int)hPanel / 2);
-      //g2d.rotate(-Math.PI*0.5);
+      g2d.drawString(String.format("%3.1f °C", getMessage().user.getTemperature()), 0, 0);
+      g2d.rotate(-Math.PI*0.5);
+      g2d.translate(-10, -(int)hPanel / 2);
       
+      g2d.translate((int)(wPanel - 30), (int)hPanel / 2);
+      g2d.rotate(Math.PI*0.5);
+      g2d.setColor(Color.white);
+      g2d.setFont(new Font("TimesRoman", Font.PLAIN, 20));
+      g2d.drawString(String.format("%3.0f%%", getMessage().user.getBatteryCharge()*100), 0,0);
+      g2d.rotate(-Math.PI*0.5);
+      g2d.translate(-(int)(wPanel - 30), -(int)hPanel / 2);
     }//end paintComponent
     
     
@@ -288,7 +308,6 @@ public class RemoteRobotPanel extends javax.swing.JPanel {
         jPanel1 = new javax.swing.JPanel();
         btBind = new javax.swing.JToggleButton();
         jlAddress = new javax.swing.JLabel();
-        jlBallAge = new javax.swing.JLabel();
         jlTeamNumber = new javax.swing.JLabel();
         jlTimestamp = new javax.swing.JLabel();
         connectButton = new javax.swing.JButton();
@@ -318,17 +337,19 @@ public class RemoteRobotPanel extends javax.swing.JPanel {
             }
         });
 
+        jlAddress.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        jlAddress.setForeground(new java.awt.Color(255, 255, 255));
         jlAddress.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/naoth/rc/res/network-idle.png"))); // NOI18N
         jlAddress.setText("-");
 
-        jlBallAge.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/naoth/rc/res/media-record.png"))); // NOI18N
-        jlBallAge.setText("BA");
-        jlBallAge.setToolTipText("Ball age");
-
+        jlTeamNumber.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        jlTeamNumber.setForeground(new java.awt.Color(255, 255, 255));
         jlTeamNumber.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/naoth/rc/res/system-users.png"))); // NOI18N
         jlTeamNumber.setText("TN");
         jlTeamNumber.setToolTipText("Team Number");
 
+        jlTimestamp.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        jlTimestamp.setForeground(new java.awt.Color(255, 255, 255));
         jlTimestamp.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/naoth/rc/res/appointment-new.png"))); // NOI18N
         jlTimestamp.setText("DEAD");
 
@@ -349,41 +370,31 @@ public class RemoteRobotPanel extends javax.swing.JPanel {
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jlBallAge, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(29, 29, 29)
-                        .addComponent(jlTeamNumber, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(45, 45, 45)
+                        .addComponent(jlAddress, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(2, 2, 2)
+                        .addComponent(jlTeamNumber, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jlTimestamp, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(26, 26, 26)
-                        .addComponent(jlAddress, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 76, Short.MAX_VALUE)
-                .addComponent(jlTimestamp, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(25, 25, 25))
-            .addGroup(layout.createSequentialGroup()
-                .addGap(31, 31, 31)
-                .addComponent(btBind, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(connectButton, javax.swing.GroupLayout.PREFERRED_SIZE, 143, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap()
+                        .addComponent(btBind, javax.swing.GroupLayout.PREFERRED_SIZE, 166, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(connectButton, javax.swing.GroupLayout.PREFERRED_SIZE, 169, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(165, 165, 165)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jlBallAge, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jlTeamNumber, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 19, Short.MAX_VALUE)
-                .addComponent(jlAddress, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 20, Short.MAX_VALUE)
+                    .addComponent(jlAddress, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jlTeamNumber, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jlTimestamp, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 313, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btBind, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(connectButton, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jlTimestamp, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(182, 182, 182))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -412,7 +423,6 @@ public class RemoteRobotPanel extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel5;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JLabel jlAddress;
-    private javax.swing.JLabel jlBallAge;
     private javax.swing.JLabel jlTeamNumber;
     private javax.swing.JLabel jlTimestamp;
     // End of variables declaration//GEN-END:variables
