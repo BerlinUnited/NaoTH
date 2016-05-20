@@ -15,7 +15,7 @@ public:
         motorJointDataBuffer.add(motorData);
 
         if(motorJointDataBuffer.isFull()){
-            motorToSensorError.add(fabs(sensorData - motorJointDataBuffer.first()));
+            motorToSensorError.add(sensorData - motorJointDataBuffer.first());
         }
 
         current.add(cumCurrent);

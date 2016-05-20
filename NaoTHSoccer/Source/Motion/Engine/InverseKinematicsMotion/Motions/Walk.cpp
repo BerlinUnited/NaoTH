@@ -129,7 +129,7 @@ void Walk::execute()
       double threshold = M_PI/8;
       MODIFY("Walk:KneeErrorThreshold", threshold);
       for(int i = 0; i < 2; ++i){
-          if(jointMonitor[i].getError() < getSensorJointData().position[naoth::JointData::RKneePitch + i] - getMotorJointData().position[naoth::JointData::RKneePitch + i]
+          if(fabs(jointMonitor[i].getError()) < fabs(getSensorJointData().position[naoth::JointData::RKneePitch + i] - getMotorJointData().position[naoth::JointData::RKneePitch + i])
                   && jointMonitor[i].getError() > threshold)
           {
               getMotorJointData().position[naoth::JointData::RKneePitch + i] = jointMonitor[i].getOldestMotorData();
