@@ -1,0 +1,30 @@
+
+option spl_remote_secondary_actions {
+  
+  initial state idle 
+  {
+    decision {
+      if(remote_control.action == blink)
+        goto blink;
+      else
+        stay;
+    }
+    action {
+    }
+  }
+
+  state blink {
+    decision{
+      if(state_time > 1000 && remote_control.action != blink)
+        goto idle;
+      else
+        stay;
+    }
+    action {
+      set_left_ear = (platform.frameNumber % 3 == 0) ? 9 : 0;
+      set_right_ear = (platform.frameNumber % 3 == 0) ? 9 : 0;
+      set_head = (platform.frameNumber % 3 == 0) ? 6 : 0;
+    }
+  }
+
+}

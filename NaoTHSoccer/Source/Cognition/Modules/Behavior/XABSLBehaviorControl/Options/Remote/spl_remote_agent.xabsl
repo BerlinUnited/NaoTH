@@ -12,10 +12,15 @@ option spl_remote_agent {
       arms_control();
       
       // control head movement according to value of head.control_mode
+      head.control_mode = none;
       head_control();
+
+      spl_remote_secondary_actions();
 
       //hack
       situationStatusOwnHalf = situationStatusOwnHalf || (game.player_number == 1);
+
+      motion.walk.style = stable;
     }
   }
 }
