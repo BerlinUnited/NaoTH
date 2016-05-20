@@ -81,6 +81,11 @@ public class SPLMessage {
 
     public Representations.BUUserTeamMessage user = null;
 
+    public SPLMessage()
+    {
+        user = Representations.BUUserTeamMessage.getDefaultInstance();
+    }
+    
     public SPLMessage(Representations.TeamMessage.Data msg) {
 
         this.averageWalkSpeed = -1;

@@ -65,6 +65,7 @@ public class RemoteRobotPanel extends javax.swing.JPanel {
     private Color colorWarning = new Color(1.0f, 1.0f, 0.0f, 0.5f);
     private Color colorDanger = new Color(1.0f, 0.0f, 0.0f, 0.5f);
     
+    private UnbindListerer unbindListerer;
     
     public RemoteRobotPanel(MessageServer messageServer, String ipAddress, SPLMessage msg) {
         initComponents();
@@ -106,12 +107,19 @@ public class RemoteRobotPanel extends javax.swing.JPanel {
         return this.btBind.isSelected();
     }
     
-    public void resetReadyToBind() {
+    public void bind(UnbindListerer listener) {
+        this.unbindListerer = listener;
         this.btBind.setSelected(false);
+        this.btBind.setText("Unbind");
+        this.btBind.setBackground(Color.green);
     }
     
     public SPLMessage getMessage() {
         return currentMesage;
+    }
+    
+    public String getAddress() {
+        return ipAddress;
     }
     
     public void setStatus(long timestamp, SPLMessage msg)
@@ -295,6 +303,11 @@ public class RemoteRobotPanel extends javax.swing.JPanel {
       }
     }
 
+    public static interface UnbindListerer
+    {
+        public abstract void unbind();
+    }
+
     /** This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is
@@ -399,7 +412,14 @@ public class RemoteRobotPanel extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btBindActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btBindActionPerformed
-        
+        if(this.unbindListerer != null) {
+            this.unbindListerer.unbind();
+            this.btBind.setSelected(false);
+            this.btBind.setText("BIND");
+            this.btBind.setBackground(Color.lightGray);
+        } else {
+            
+        }
     }//GEN-LAST:event_btBindActionPerformed
 
     private void connectButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_connectButtonActionPerformed

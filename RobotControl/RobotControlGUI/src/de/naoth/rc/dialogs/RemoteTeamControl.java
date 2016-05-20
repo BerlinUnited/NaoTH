@@ -39,6 +39,8 @@ import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 import net.java.games.input.Component;
 import net.java.games.input.Controller;
 import net.java.games.input.ControllerEnvironment;
+import net.java.games.input.Event;
+import net.java.games.input.EventQueue;
 
 /**
  *
@@ -73,6 +75,9 @@ public class RemoteTeamControl extends AbstractDialog {
             ex.printStackTrace(System.err);
         }
         
+        // dummy robot
+        robotsMap.put("10.0.4.77", new RemoteRobotPanel(Plugin.parent.getMessageServer(),"10.0.4.77", new SPLMessage()));
+        updateRoboPanel();
         
         this.timerCheckMessages = new Timer();
         this.timerCheckMessages.scheduleAtFixedRate(new TeamCommListenTask(), 100, 100);
@@ -220,9 +225,14 @@ public class RemoteTeamControl extends AbstractDialog {
             this.targetAddress = targetAddress;
         }
         
+        public String getAddress() {
+            return targetAddress.toString();
+        }
+        
         @Override
         public void run() 
         {
+            System.out.println("Command sender running.");
             if(targetAddress == null || !this.updated) {
                 return;
             }
@@ -255,7 +265,7 @@ public class RemoteTeamControl extends AbstractDialog {
     }
     
     
-    private abstract class RobotController extends TimerTask
+    private abstract class RobotController extends TimerTask implements RemoteRobotPanel.UnbindListerer
     {
         private final Controller control;
         private CommandSenderTask commandSender = null;
@@ -270,9 +280,18 @@ public class RemoteTeamControl extends AbstractDialog {
             return commandSender != null;
         }
         
-        public CommandSenderTask bind(InetSocketAddress address) throws IOException{
-            commandSender = new CommandSenderTask(address);
+        public CommandSenderTask bind(RemoteRobotPanel robot) throws IOException{
+            commandSender = new CommandSenderTask(new InetSocketAddress(InetAddress.getByName(robot.getAddress()), 10401));
+            robot.bind(this);
+            timerCheckMessages.scheduleAtFixedRate(commandSender, 100, 100);
             return commandSender;
+        }
+
+        @Override
+        public void unbind() {
+            commandSender.cancel();
+            log("unbind from " + commandSender.getAddress());
+            commandSender = null;
         }
         
         protected void log(String str) {
@@ -284,17 +303,19 @@ public class RemoteTeamControl extends AbstractDialog {
         {
             if(control.poll())
             {
-                //EventQueue queue = control.getEventQueue();
-                //Event event = new Event();
-                //while(queue.getNextEvent(event)) 
-                //{
-                //    update(event);
-                //}
+                EventQueue queue = control.getEventQueue();
+                Event event = new Event();
+                while(queue.getNextEvent(event)) 
+                {
+                    update(event.getComponent());
+                }
                 
+                /*
                 Component[] components = control.getComponents();
                 for(int i=0; i < control.getComponents().length;i++) {
                     update(components[i]);
                 }
+                */
 
                 if(commandSender != null)
                 {
@@ -318,7 +339,7 @@ public class RemoteTeamControl extends AbstractDialog {
         protected abstract void update(Component component);
     }
     
-    private class GamePadControl extends RobotController 
+    private class GamePadControl extends RobotController
     {
         public GamePadControl(Controller control) throws IOException {
             super(control);
@@ -337,10 +358,7 @@ public class RemoteTeamControl extends AbstractDialog {
                         log("bind to " + robot.getKey());
                     
                         try {
-                            CommandSenderTask sender = bind(new InetSocketAddress(InetAddress.getByName(robot.getKey()), 10401));
-                            timerCheckMessages.scheduleAtFixedRate(sender, 100, 100);
-                            
-                            robot.getValue().resetReadyToBind();
+                            bind(robot.getValue());
                         } catch(IOException ex) {
                             ex.printStackTrace(System.err);
                         }
@@ -504,7 +522,8 @@ public class RemoteTeamControl extends AbstractDialog {
     
     
     private void updateRoboPanel() {
-        if(filterTeam.isSelected()) {
+        //if(filterTeam.isSelected()) 
+        {
             this.robotPanel.removeAll();
 
             for (Map.Entry<String, RemoteRobotPanel> msgEntry : robotsMap.entrySet()) 
