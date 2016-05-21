@@ -83,7 +83,15 @@ public:
     
       double stepHeight;
     } step;
+
+
+    // step geometry
+    struct Kick
+    {
+      double stepHeight;
+    } kick;
     
+
     // step limits
     struct Limits
     {

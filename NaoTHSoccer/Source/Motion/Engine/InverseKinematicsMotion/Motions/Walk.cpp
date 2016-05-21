@@ -106,6 +106,9 @@ void Walk::execute()
     getMotorJointData().stiffness[i] = parameters().general.stiffness;
   }
 
+  getMotorJointData().stiffness[JointData::LKneePitch] = 0.7;
+  getMotorJointData().stiffness[JointData::RKneePitch] = 0.7;
+
   // WIEDERLICHER HACK: force the hip joint
   if (getMotorJointData().position[JointData::LHipRoll] < 0) {
     getMotorJointData().position[JointData::LHipRoll] *= parameters().general.hipRollSingleSupFactorLeft;
@@ -322,7 +325,7 @@ Pose3D Walk::calculateLiftingFootPos(const Step& step) const
       step.executingCycle,
       samplesDoubleSupport,
       samplesSingleSupport,
-      parameters().step.stepHeight,
+      parameters().kick.stepHeight,
       0, //footPitchOffset
       0, //footRollOffset
       step.walkRequest.stepControl.speedDirection,

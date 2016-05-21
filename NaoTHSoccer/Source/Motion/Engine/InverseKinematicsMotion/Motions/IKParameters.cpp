@@ -55,7 +55,10 @@ IKParameters::IKParameters()
   PARAMETER_REGISTER(walk.step.duration) = 300;
   PARAMETER_REGISTER(walk.step.doubleSupportTime) = 40;
 
-  PARAMETER_REGISTER(walk.step.stepHeight) = 10;
+  PARAMETER_REGISTER(walk.step.stepHeight) = 15;
+
+  // kick
+  PARAMETER_REGISTER(walk.kick.stepHeight) = 20;
 
   // step limits
   PARAMETER_REGISTER(walk.limits.maxTurnInner) = 10;
