@@ -1,0 +1,16 @@
+
+option spl_remote_play_lock_control
+{
+  initial state stand
+  {
+    decision
+    {
+      stay;
+    }
+    action
+    {
+      motion.type = stand;
+      head.control_mode = search_for_ball;
+    }
+  }
+}
