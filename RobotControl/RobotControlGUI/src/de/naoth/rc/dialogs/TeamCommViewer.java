@@ -104,7 +104,7 @@ public class TeamCommViewer extends AbstractDialog {
             public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
                 float temp = (float)value;
                 if(temp>20) {
-                    float ratio = (temp-20) / 80.0f;
+                    float ratio = (temp-20) / 80.0f; // normalize temp
                     Color c1 = Color.blue; Color c2 = Color.red;
                     int red = (int)(c2.getRed()*ratio+c1.getRed()*(1-ratio));
                     int green = (int)(c2.getGreen()*ratio+c1.getGreen()*(1-ratio));
@@ -119,10 +119,10 @@ public class TeamCommViewer extends AbstractDialog {
         });
         // Battery
         robotStatusTable.getColumnModel().getColumn(7).setCellRenderer(new BatteryRenderer());
+        // sort via Ip
         robotStatusTable.getRowSorter().toggleSortOrder(2);
-        // try to collapse bottom -> doesn't work??!
-        robotStatusSplitPane.getRightComponent().setMinimumSize(new Dimension(0,0));
-        robotStatusSplitPane.setDividerLocation(1.0d);
+        // collapse pane
+        robotStatusSplitPane.setDividerLocation(Integer.MAX_VALUE);/*2000*/
     }
 
     /**
@@ -201,6 +201,9 @@ public class TeamCommViewer extends AbstractDialog {
         jScrollPane2.setViewportView(robotStatusPanel);
 
         robotStatusSplitPane.setLeftComponent(jScrollPane2);
+
+        jScrollPane1.setMinimumSize(new java.awt.Dimension(0, 0));
+        jScrollPane1.setPreferredSize(new java.awt.Dimension(0, 0));
 
         robotStatusTable.setAutoCreateRowSorter(true);
         robotStatusTable.setModel(new RobotTableModel());
@@ -308,6 +311,7 @@ public class TeamCommViewer extends AbstractDialog {
                     this.robotStatusPanel.removeAll();
                     this.robotStatusPanel.setVisible(false);
                     this.robotStatusTable.setVisible(false);
+                    ((RobotTableModel)this.robotStatusTable.getModel()).removeAll();
                     this.portNumberOwn.setEnabled(true);
                     this.portNumberOpponent.setEnabled(true);
                 }
