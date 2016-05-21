@@ -529,7 +529,8 @@ public class RemoteTeamControl extends AbstractDialog {
             } 
             else if(id == Component.Identifier.Axis.RX)
             {
-                if(Math.abs(component.getPollData()) > 0.2) {
+                double dead_radius = 0.32;
+                if(Math.abs(component.getPollData()) > dead_radius) {
                     RemoteCommand c = new RemoteCommand();
                     c.setAction(Representations.RemoteControlCommand.ActionType.WALK);
                     c.alpha = -15.0*component.getPollData();
