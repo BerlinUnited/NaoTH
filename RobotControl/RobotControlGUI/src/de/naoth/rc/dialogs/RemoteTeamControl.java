@@ -14,6 +14,7 @@ import de.naoth.rc.core.manager.SwingCommandExecutor;
 import de.naoth.rc.dataformats.SPLMessage;
 import de.naoth.rc.manager.GenericManagerFactory;
 import de.naoth.rc.messages.Representations;
+import de.naoth.rc.messages.Representations.RemoteControlCommand.SecondActionType;
 import java.awt.Color;
 import java.io.IOException;
 import java.net.InetAddress;
@@ -192,11 +193,59 @@ public class RemoteTeamControl extends AbstractDialog {
         }
     }
 
-    class RemoteCommand {
-        public Representations.RemoteControlCommand.ActionType action = Representations.RemoteControlCommand.ActionType.STAND;
+    static class RemoteCommand 
+    {
+        private Representations.RemoteControlCommand.ControlMode mode = Representations.RemoteControlCommand.ControlMode.DIRECT_CONTROL;
+        private Representations.RemoteControlCommand.ActionType action = Representations.RemoteControlCommand.ActionType.STAND;
+        private Representations.RemoteControlCommand.SecondActionType second_action = Representations.RemoteControlCommand.SecondActionType.SECOND_NONE;
+        
         public int x = 0;
         public int y = 0;
         public double alpha = 0;
+        
+        private boolean modeSet = false;
+        private boolean actionSet = false;
+        private boolean secondActionSet = false;
+
+        public Representations.RemoteControlCommand.ControlMode getMode() {
+            return mode;
+        }
+
+        public void setMode(Representations.RemoteControlCommand.ControlMode mode) {
+            this.mode = mode;
+            this.modeSet = true;
+        }
+
+        public Representations.RemoteControlCommand.ActionType getAction() {
+            return action;
+        }
+
+        public void setAction(Representations.RemoteControlCommand.ActionType action) {
+            this.action = action;
+            this.actionSet = true;
+        }
+
+        public Representations.RemoteControlCommand.SecondActionType getSecond_action() {
+            return second_action;
+        }
+
+        public void setSecond_action(Representations.RemoteControlCommand.SecondActionType second_action) {
+            this.second_action = second_action;
+            this.secondActionSet = true;
+        }
+        
+        
+        public boolean modeIsSet() {
+            return modeSet;
+        }
+        
+        public boolean actionIsSet() {
+            return actionSet;
+        }
+        
+        public boolean secondActionIsSet() {
+            return secondActionSet;
+        }
     }
     
     
@@ -240,10 +289,12 @@ public class RemoteTeamControl extends AbstractDialog {
             
             Representations.RemoteControlCommand.Builder cmd = Representations.RemoteControlCommand.newBuilder();
             synchronized(this) {
-                cmd.setAction(command.action);
+                cmd.setAction(command.getAction());
                 cmd.getTargetBuilder()
                     .setRotation(command.alpha)
                     .getTranslationBuilder().setX(command.x).setY(command.y);
+                cmd.setControlMode(command.getMode());
+                cmd.setSecondAction(command.getSecond_action());
                 this.updated = false;
             }
             
@@ -293,8 +344,8 @@ public class RemoteTeamControl extends AbstractDialog {
 
         @Override
         public void unbind() {
-            commandSender.cancel();
             log("unbind from " + commandSender.getAddress());
+            commandSender.cancel();
             commandSender = null;
             this.robot = null;
         }
@@ -314,7 +365,7 @@ public class RemoteTeamControl extends AbstractDialog {
                 {
                     Component component = event.getComponent();
                         
-                    if(component.getIdentifier() == Component.Identifier.Button._0) 
+                    if(component.getIdentifier() == Component.Identifier.Button._7) 
                     {
                         if(!isBound())
                         {
@@ -339,7 +390,7 @@ public class RemoteTeamControl extends AbstractDialog {
                         {
                             if(Math.abs(component.getPollData()) > 0.0) {
                                 RemoteCommand c = new RemoteCommand();
-                                c.action = Representations.RemoteControlCommand.ActionType.BLINK;
+                                c.setSecond_action(SecondActionType.BLINK);
                                 commands.put(component.getIdentifier().getName(), c);
 
                                 this.robot.setChestColor(new Color(1.0f,0.0f,0.0f,0.7f));
@@ -366,13 +417,23 @@ public class RemoteTeamControl extends AbstractDialog {
                 if(commandSender != null)
                 {
                     RemoteCommand remoteCommand = new RemoteCommand();
-                    remoteCommand.action = Representations.RemoteControlCommand.ActionType.STAND;
+                    remoteCommand.setAction(Representations.RemoteControlCommand.ActionType.STAND);
                     for(RemoteCommand c : this.commands.values()) {
                         if(c != null) {
-                            remoteCommand.action = c.action;
-                            remoteCommand.x += c.x;
-                            remoteCommand.y += c.y;
-                            remoteCommand.alpha += c.alpha;
+                            if(c.actionIsSet()) {
+                                remoteCommand.setAction(c.getAction());
+                                remoteCommand.x += c.x;
+                                remoteCommand.y += c.y;
+                                remoteCommand.alpha += c.alpha;
+                            }
+                            
+                            if(c.modeIsSet()) {
+                                remoteCommand.setMode(c.getMode());
+                            }
+                            
+                            if(c.secondActionIsSet()) {
+                                remoteCommand.setSecond_action(c.getSecond_action());
+                            }
                         }
                     }
                     commandSender.send(remoteCommand);
@@ -394,32 +455,44 @@ public class RemoteTeamControl extends AbstractDialog {
         @Override
         protected void update(Component component)
         {
+            
             Component.Identifier id = component.getIdentifier();
+            System.out.println(id.getName());
+            
+            if(id == Component.Identifier.Button._2) { // (X)
+                if(Math.abs(component.getPollData()) > 0.0) {
+                    RemoteCommand c = new RemoteCommand();
+                    c.setSecond_action(SecondActionType.SAY);
+                    commands.put(id.getName(), c);
+                } else {
+                    commands.remove(id.getName());
+                }
+            }
 
-            if(id == Component.Identifier.Button._2) {
+            if(id == Component.Identifier.Button._4) { // (LB)
                 if(Math.abs(component.getPollData()) > 0.0) {
                     RemoteCommand c = new RemoteCommand();
-                    c.action = Representations.RemoteControlCommand.ActionType.KICK_LEFT;
+                    c.setAction(Representations.RemoteControlCommand.ActionType.KICK_LEFT);
                     commands.put(id.getName(), c);
                 } else {
                     commands.remove(id.getName());
                 }
                 System.out.println(component.getName() + " - " + component.getPollData());
             }
-            else if(id == Component.Identifier.Button._1) {
+            else if(id == Component.Identifier.Button._5) {  // (RB)
                 if(Math.abs(component.getPollData()) > 0.0) {
                     RemoteCommand c = new RemoteCommand();
-                    c.action = Representations.RemoteControlCommand.ActionType.KICK_RIGHT;
+                    c.setAction(Representations.RemoteControlCommand.ActionType.KICK_RIGHT);
                     commands.put(id.getName(), c);
                 } else {
                     commands.remove(id.getName());
                 }
                 System.out.println(component.getName() + " - " + component.getPollData());
             }
-            else if(id == Component.Identifier.Button._3) {
+            else if(id == Component.Identifier.Button._3) {  // (Y)
                 if(Math.abs(component.getPollData()) > 0.0) {
                     RemoteCommand c = new RemoteCommand();
-                    c.action = Representations.RemoteControlCommand.ActionType.KICK_FORWARD;
+                    c.setAction(Representations.RemoteControlCommand.ActionType.KICK_FORWARD);
                     commands.put(id.getName(), c);
                 } else {
                     commands.remove(id.getName());
@@ -430,22 +503,22 @@ public class RemoteTeamControl extends AbstractDialog {
             {
                 if(component.getPollData() == 0.25) {
                     RemoteCommand c = new RemoteCommand();
-                    c.action = Representations.RemoteControlCommand.ActionType.WALK;
+                    c.setAction(Representations.RemoteControlCommand.ActionType.WALK);
                     c.x = 50;
                     commands.put(id.getName(), c);
                 } else if(component.getPollData() == 0.75) {
                     RemoteCommand c = new RemoteCommand();
-                    c.action = Representations.RemoteControlCommand.ActionType.WALK;
+                    c.setAction(Representations.RemoteControlCommand.ActionType.WALK);
                     c.x = -50;
                     commands.put(id.getName(), c);
                 } else if(component.getPollData() == 1.0) {
                     RemoteCommand c = new RemoteCommand();
-                    c.action = Representations.RemoteControlCommand.ActionType.WALK;
+                    c.setAction(Representations.RemoteControlCommand.ActionType.WALK);
                     c.y = 50;
                     commands.put(id.getName(), c);
                 } else if(component.getPollData() == 0.5) {
                     RemoteCommand c = new RemoteCommand();
-                    c.action = Representations.RemoteControlCommand.ActionType.WALK;
+                    c.setAction(Representations.RemoteControlCommand.ActionType.WALK);
                     c.y = -50;
                     commands.put(id.getName(), c);
                 } else {
@@ -457,7 +530,7 @@ public class RemoteTeamControl extends AbstractDialog {
             {
                 if(Math.abs(component.getPollData()) > 0.2) {
                     RemoteCommand c = new RemoteCommand();
-                    c.action = Representations.RemoteControlCommand.ActionType.WALK;
+                    c.setAction(Representations.RemoteControlCommand.ActionType.WALK);
                     c.alpha = -15.0*component.getPollData();
                     log("  " + c.alpha);
                     commands.put(id.getName(), c);
@@ -483,7 +556,7 @@ public class RemoteTeamControl extends AbstractDialog {
             if(id == Component.Identifier.Key.W) {
                 if(component.getPollData() > 0) {
                     RemoteCommand c = new RemoteCommand();
-                    c.action = Representations.RemoteControlCommand.ActionType.WALK;
+                    c.setAction(Representations.RemoteControlCommand.ActionType.WALK);
                     c.x = 50;
                     commands.put(id.getName(), c);
                 } else {
@@ -492,7 +565,7 @@ public class RemoteTeamControl extends AbstractDialog {
             } else if(id == Component.Identifier.Key.S) {
                 if(component.getPollData() > 0) {
                     RemoteCommand c = new RemoteCommand();
-                    c.action = Representations.RemoteControlCommand.ActionType.WALK;
+                    c.setAction(Representations.RemoteControlCommand.ActionType.WALK);
                     c.x = -50;
                     commands.put(id.getName(), c);
                 } else {
@@ -501,7 +574,7 @@ public class RemoteTeamControl extends AbstractDialog {
             } else if(id == Component.Identifier.Key.A) {
                 if(component.getPollData() > 0) {
                     RemoteCommand c = new RemoteCommand();
-                    c.action = Representations.RemoteControlCommand.ActionType.WALK;
+                    c.setAction(Representations.RemoteControlCommand.ActionType.WALK);
                     c.y = 50;
                     commands.put(id.getName(), c);
                 } else {
@@ -510,7 +583,7 @@ public class RemoteTeamControl extends AbstractDialog {
             } else if(id == Component.Identifier.Key.D) {
                 if(component.getPollData() > 0) {
                     RemoteCommand c = new RemoteCommand();
-                    c.action = Representations.RemoteControlCommand.ActionType.WALK;
+                    c.setAction(Representations.RemoteControlCommand.ActionType.WALK);
                     c.y = -50;
                     commands.put(id.getName(), c);
                 } else {

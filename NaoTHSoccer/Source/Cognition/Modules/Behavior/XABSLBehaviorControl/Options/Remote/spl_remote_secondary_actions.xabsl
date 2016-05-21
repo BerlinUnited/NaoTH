@@ -4,8 +4,15 @@ option spl_remote_secondary_actions {
   initial state idle 
   {
     decision {
-      if(remote_control.action == blink)
+      if(remote_control.second_action == blink)
         goto blink;
+      else if(remote_control.second_action == say)
+      {
+        if(random > 0.5)
+          goto say_victory;
+        else
+          goto say_play;
+      }
       else
         stay;
     }
@@ -15,7 +22,7 @@ option spl_remote_secondary_actions {
 
   state blink {
     decision{
-      if(state_time > 1000 && remote_control.action != blink)
+      if(state_time > 1000 && remote_control.second_action != blink)
         goto idle;
       else
         stay;
@@ -24,6 +31,32 @@ option spl_remote_secondary_actions {
       set_left_ear = (platform.frameNumber % 3 == 0) ? 9 : 0;
       set_right_ear = (platform.frameNumber % 3 == 0) ? 9 : 0;
       set_head = (platform.frameNumber % 3 == 0) ? 6 : 0;
+    }
+  }
+
+  state say_victory
+  {
+    decision {
+      if(remote_control.second_action != say)
+        goto idle;
+      else
+        stay;
+    }
+    action {
+      sound.request = victory;
+    }
+  }
+
+  state say_play
+  {
+    decision {
+      if(remote_control.second_action != say)
+        goto idle;
+      else
+        stay;
+    }
+    action {
+      sound.request = playing;
     }
   }
 

@@ -123,6 +123,8 @@ include "Options/Soccer/simple_penalty_goalie_agent.xabsl";
 include "Options/Remote/spl_remote_agent.xabsl";
 include "Options/Remote/spl_remote_decide_gamestate.xabsl";
 include "Options/Remote/spl_remote_play.xabsl";
+include "Options/Remote/spl_remote_play_direct_control.xabsl";
+include "Options/Remote/spl_remote_play_lock_control.xabsl";
 include "Options/Remote/spl_remote_secondary_actions.xabsl";
 
 /* Test section */

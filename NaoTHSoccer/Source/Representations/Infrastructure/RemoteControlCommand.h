@@ -17,8 +17,18 @@ class RemoteControlCommand : public naoth::Printable
 {
 public:
 
-  RemoteControlCommand() : action(NONE)
+  RemoteControlCommand() 
+    : controlMode(DIRECT_CONTROL), 
+      action(NONE), 
+      second_action(SECOND_NONE)
   {}
+
+  enum ControlMode
+  {
+    DIRECT_CONTROL,
+    LOCK_CONTROL,
+    NUMBER_OF_CONTROL_MODE_TYPE
+  } controlMode;
 
   enum ActionType
   {
@@ -28,11 +38,19 @@ public:
     KICK_RIGHT,
     KICK_LEFT,
     KICK_FORWARD,
-    BLINK,
     NUMBER_OF_ACTION_TYPE
   } action;
 
+  enum SecondActionType
+  {
+    SECOND_NONE,
+    BLINK,
+    SAY,
+    NUMBER_OF_SECOND_ACTION_TYPE
+  } second_action;
+
   Pose2D target;
+
 
   naoth::FrameInfo frameInfoWhenUpdated;
 
