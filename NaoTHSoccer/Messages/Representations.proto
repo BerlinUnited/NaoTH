@@ -301,7 +301,8 @@ message RemoteControlCommand {
     WALK = 2;
     KICK_RIGHT = 3;
     KICK_LEFT = 4;
-    KICK_FORWARD = 5;
+    KICK_FORWARD_LEFT = 5;
+    KICK_FORWARD_RIGHT = 6;
   }
   
   enum SecondActionType

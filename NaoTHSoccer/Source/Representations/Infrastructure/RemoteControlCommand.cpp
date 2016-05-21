@@ -57,7 +57,8 @@ std::string RemoteControlCommand::getActionName(ActionType id)
   case WALK: return "WALK";
   case KICK_RIGHT: return "KICK_RIGHT";
   case KICK_LEFT: return "KICK_LEFT";
-  case KICK_FORWARD: return "KICK_FORWARD";
+  case KICK_FORWARD_LEFT: return "KICK_FORWARD_LEFT";
+  case KICK_FORWARD_RIGHT: return "KICK_FORWARD_RIGHT";
   default: ASSERT(false);
   }
 

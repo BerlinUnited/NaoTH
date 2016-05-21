@@ -16,7 +16,8 @@ void RemoteSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerEnumElement("remote_control_action", "remote_control_action.walk", RemoteControlCommand::WALK);
   engine.registerEnumElement("remote_control_action", "remote_control_action.kick_right", RemoteControlCommand::KICK_RIGHT);
   engine.registerEnumElement("remote_control_action", "remote_control_action.kick_left", RemoteControlCommand::KICK_LEFT);
-  engine.registerEnumElement("remote_control_action", "remote_control_action.kick_forward", RemoteControlCommand::KICK_FORWARD);
+  engine.registerEnumElement("remote_control_action", "remote_control_action.kick_forward_left", RemoteControlCommand::KICK_FORWARD_LEFT);
+  engine.registerEnumElement("remote_control_action", "remote_control_action.kick_forward_right", RemoteControlCommand::KICK_FORWARD_RIGHT);
 
   // second action type
   engine.registerEnumElement("remote_control_second_action", "remote_control_second_action.none", RemoteControlCommand::SECOND_NONE);

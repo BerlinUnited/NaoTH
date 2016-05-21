@@ -37,7 +37,8 @@ public:
     WALK,
     KICK_RIGHT,
     KICK_LEFT,
-    KICK_FORWARD,
+    KICK_FORWARD_LEFT,
+    KICK_FORWARD_RIGHT,
     NUMBER_OF_ACTION_TYPE
   } action;
 

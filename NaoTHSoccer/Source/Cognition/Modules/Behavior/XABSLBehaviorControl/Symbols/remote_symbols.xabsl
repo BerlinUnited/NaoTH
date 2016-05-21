@@ -13,7 +13,8 @@ namespace remote("Remote Symbols") {
     walk, 
     kick_right,
     kick_left,
-    kick_forward
+    kick_forward_left,
+    kick_forward_right
   };
 
   enum remote_control_second_action {

@@ -457,7 +457,7 @@ public class RemoteTeamControl extends AbstractDialog {
         {
             
             Component.Identifier id = component.getIdentifier();
-            System.out.println(id.getName());
+            System.out.println(component.getName() + " - " + component.getPollData());
             
             if(id == Component.Identifier.Button._2) { // (X)
                 if(Math.abs(component.getPollData()) > 0.0) {
@@ -487,17 +487,19 @@ public class RemoteTeamControl extends AbstractDialog {
                 } else {
                     commands.remove(id.getName());
                 }
-                System.out.println(component.getName() + " - " + component.getPollData());
             }
-            else if(id == Component.Identifier.Button._3) {  // (Y)
-                if(Math.abs(component.getPollData()) > 0.0) {
+            else if(id == Component.Identifier.Axis.Z) {  // (LT) (RT)
+                if(component.getPollData() > 0.5) { //(LT)
                     RemoteCommand c = new RemoteCommand();
-                    c.setAction(Representations.RemoteControlCommand.ActionType.KICK_FORWARD);
+                    c.setAction(Representations.RemoteControlCommand.ActionType.KICK_FORWARD_LEFT);
                     commands.put(id.getName(), c);
-                } else {
+                } else if(component.getPollData() < -0.5) { //(RT)
+                    RemoteCommand c = new RemoteCommand();
+                    c.setAction(Representations.RemoteControlCommand.ActionType.KICK_FORWARD_RIGHT);
+                    commands.put(id.getName(), c);
+                }else {
                     commands.remove(id.getName());
                 }
-                System.out.println(component.getName() + " - " + component.getPollData());
             }
             else if(id == Component.Identifier.Axis.POV) 
             {
@@ -524,7 +526,6 @@ public class RemoteTeamControl extends AbstractDialog {
                 } else {
                     commands.remove(id.getName());
                 }
-                System.out.println(component.getName() + " - " + component.getPollData());
             } 
             else if(id == Component.Identifier.Axis.RX)
             {
@@ -537,7 +538,6 @@ public class RemoteTeamControl extends AbstractDialog {
                 } else {
                     commands.remove(id.getName());
                 }
-                System.out.println(component.getName() + " - " + component.getPollData());
             }
         }
 
