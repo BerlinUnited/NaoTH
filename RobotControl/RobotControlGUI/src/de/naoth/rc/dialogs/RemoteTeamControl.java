@@ -122,6 +122,7 @@ public class RemoteTeamControl extends AbstractDialog {
         jToolBar1 = new javax.swing.JToolBar();
         filterTeam = new javax.swing.JToggleButton();
         teamSelectionBox = new javax.swing.JComboBox();
+        teamSelectionBoxTwo = new javax.swing.JComboBox();
 
         robotPanel.setLayout(new javax.swing.BoxLayout(robotPanel, javax.swing.BoxLayout.LINE_AXIS));
 
@@ -148,6 +149,14 @@ public class RemoteTeamControl extends AbstractDialog {
             }
         });
         jToolBar1.add(teamSelectionBox);
+
+        teamSelectionBoxTwo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "0", "1", "2", "3", "4", "5", "6" }));
+        teamSelectionBoxTwo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                teamSelectionBoxTwoActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(teamSelectionBoxTwo);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -177,6 +186,10 @@ public class RemoteTeamControl extends AbstractDialog {
     private void teamSelectionBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_teamSelectionBoxActionPerformed
         updateRoboPanel();
     }//GEN-LAST:event_teamSelectionBoxActionPerformed
+
+    private void teamSelectionBoxTwoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_teamSelectionBoxTwoActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_teamSelectionBoxTwoActionPerformed
 
     class RemoteCommandResultHandler implements ObjectListener<byte[]> {
 
@@ -666,7 +679,8 @@ public class RemoteTeamControl extends AbstractDialog {
     }
     
     private void addPanel(RemoteRobotPanel robotStatus) {
-        if(!filterTeam.isSelected() || teamSelectionBox.getSelectedIndex() == robotStatus.getMessage().teamNum)
+        if(!filterTeam.isSelected() || teamSelectionBox.getSelectedIndex() == robotStatus.getMessage().teamNum ||
+            teamSelectionBoxTwo.getSelectedIndex() == robotStatus.getMessage().teamNum)
         {
             robotPanel.add(robotStatus);
             robotPanel.repaint();
@@ -795,5 +809,6 @@ public class RemoteTeamControl extends AbstractDialog {
     private javax.swing.JEditorPane logOutput;
     private javax.swing.JPanel robotPanel;
     private javax.swing.JComboBox teamSelectionBox;
+    private javax.swing.JComboBox teamSelectionBoxTwo;
     // End of variables declaration//GEN-END:variables
 }
