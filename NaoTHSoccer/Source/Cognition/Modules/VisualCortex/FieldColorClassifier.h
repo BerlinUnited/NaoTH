@@ -150,6 +150,7 @@ private:
 
   Histogram2D histogramYCromaArray[CameraInfo::numOfCamera];
   Histogram2D histogramUVArray[CameraInfo::numOfCamera];
+  Histogram2D histogramUVBallArray[CameraInfo::numOfCamera];
 
 private: // debug
   void plot(std::string id, Statistics::HistogramX& histogram) const

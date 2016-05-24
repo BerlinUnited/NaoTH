@@ -5,8 +5,8 @@
  *
  */
 
-#ifndef ROBOT_MESSAGE_DATA_H
-#define ROBOT_MESSAGE_DATA_H
+#ifndef _TeamMessageData_H_
+#define _TeamMessageData_H_
 
 #include <string>
 #include <vector>
@@ -39,6 +39,6 @@ public:
   }
 };
 
-} // namespace naoth
+}
 
-#endif // ROBOT_MESSAGE_DATA_H
+#endif // _TeamMessageData_H_

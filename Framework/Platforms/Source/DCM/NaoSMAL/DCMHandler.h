@@ -62,8 +62,8 @@ private:
     
   //UltraSound
   std::string DCMPath_UltraSoundReceive;
-  std::string DCMPath_UltraSoundReceiveLeft[UltraSoundData::numOfUSEcho];
-  std::string DCMPath_UltraSoundReceiveRight[UltraSoundData::numOfUSEcho];
+  std::string DCMPath_UltraSoundReceiveLeft[UltraSoundReceiveData::numOfUSEcho];
+  std::string DCMPath_UltraSoundReceiveRight[UltraSoundReceiveData::numOfUSEcho];
   std::string DCMPath_UltraSoundSend;
 
   //Body-ID

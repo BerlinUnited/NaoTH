@@ -1,22 +1,22 @@
 /**
- * @file BroadCastListener.cpp
+ * @file UDPReceiver.cpp
  * @author <a href="mailto:xu@informatik.hu-berlin.de">Xu, Yuan</a>
  *
  */
 
-#include "BroadCastListener.h"
+#include "UDPReceiver.h"
 #include "Tools/Debug/NaoTHAssert.h"
 
 using namespace naoth;
 
-void* broadcastlistener_static_loop(void* b)
+void* UDPReceiver_static_loop(void* b)
 {
-  BroadCastListener* bl = static_cast<BroadCastListener*> (b);
+  UDPReceiver* bl = static_cast<UDPReceiver*> (b);
   bl->loop();
   return NULL;
 }
 
-BroadCastListener::BroadCastListener(unsigned int port, unsigned int buffersize)
+UDPReceiver::UDPReceiver(unsigned int port, unsigned int buffersize)
   : exiting(false), socket(NULL),
     socketThread(NULL)
 {
@@ -38,12 +38,12 @@ BroadCastListener::BroadCastListener(unsigned int port, unsigned int buffersize)
   }
 
   g_message("BroadCastLister start thread (%d)", port);
-  socketThread = g_thread_create(broadcastlistener_static_loop, this, true, NULL);
+  socketThread = g_thread_create(UDPReceiver_static_loop, this, true, NULL);
   ASSERT(socketThread != NULL);
   g_thread_set_priority(socketThread, G_THREAD_PRIORITY_LOW);
 }
 
-BroadCastListener::~BroadCastListener()
+UDPReceiver::~UDPReceiver()
 {
   exiting = true;
 
@@ -61,7 +61,7 @@ BroadCastListener::~BroadCastListener()
   delete [] buffer;
 }
 
-GError* BroadCastListener::bindAndListen(unsigned int port)
+GError* UDPReceiver::bindAndListen(unsigned int port)
 {
   GError* err = NULL;
   socket = g_socket_new(G_SOCKET_FAMILY_IPV4, G_SOCKET_TYPE_DATAGRAM, G_SOCKET_PROTOCOL_UDP, &err);
@@ -80,7 +80,7 @@ GError* BroadCastListener::bindAndListen(unsigned int port)
   return err;
 }
 
-void BroadCastListener::receive(std::vector<std::string>& data)
+void UDPReceiver::receive(std::vector<std::string>& data)
 {
   data.clear();
   if ( g_mutex_trylock(messageInMutex) )
@@ -94,7 +94,7 @@ void BroadCastListener::receive(std::vector<std::string>& data)
   }
 }
 
-void BroadCastListener::loop()
+void UDPReceiver::loop()
 {
   if(socket == NULL) {
     return;

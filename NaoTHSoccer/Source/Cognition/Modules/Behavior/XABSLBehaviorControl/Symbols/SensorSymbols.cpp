@@ -123,7 +123,7 @@ double SensorSymbols::simplePassLeftSensor()
 {
   double r = 2550.0;
   // return minimum measurement = closest object
-  for(unsigned int i = 0; i < UltraSoundData::numOfUSEcho; i++)
+  for(size_t i = 0; i < UltraSoundReceiveData::numOfUSEcho; i++)
   {
     if((theInstance->getUltraSoundReceiveData().dataLeft[i] * 1000) < r && theInstance->getUltraSoundReceiveData().dataLeft[i] > 0.2)
     {
@@ -137,7 +137,7 @@ double SensorSymbols::simplePassRightSensor()
 {
   double r = 2550.0;
   // return minimum measurement = closest object
-  for(unsigned int i = 0; i < UltraSoundData::numOfUSEcho; i++)
+  for(size_t i = 0; i < UltraSoundReceiveData::numOfUSEcho; i++)
   {
     if((theInstance->getUltraSoundReceiveData().dataRight[i] * 1000) < r && theInstance->getUltraSoundReceiveData().dataRight[i] > 0.2)
     {
