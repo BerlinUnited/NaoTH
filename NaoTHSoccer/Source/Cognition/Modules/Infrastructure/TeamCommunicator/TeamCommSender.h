@@ -1,7 +1,7 @@
 #ifndef TEAMCOMMSENDER_H
 #define TEAMCOMMSENDER_H
 
-#include <Representations/Modeling/SPLStandardMessage.h>
+#include <MessagesSPL/SPLStandardMessage.h>
 #include <ModuleFramework/Module.h>
 #include <Representations/Infrastructure/FrameInfo.h>
 #include <Representations/Infrastructure/TeamMessageData.h>
