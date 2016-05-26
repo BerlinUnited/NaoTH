@@ -49,6 +49,14 @@ public class RobotStatus extends javax.swing.JPanel {
     
     private final Color darkOrange = new Color(255, 130, 0);
     
+    public byte playerNum;
+    public byte teamNum;
+    public double msgPerSecond;
+    public float ballAge;
+    public float temperature;
+    public float batteryCharge;
+    public byte fallen;
+    public boolean isDead;
     
     /** Creates new form RobotStatus */
     public RobotStatus(MessageServer messageServer, String ipAddress) {
@@ -80,72 +88,32 @@ public class RobotStatus extends javax.swing.JPanel {
 
     public void setStatus(long timestamp, SPLMessage msg)
     {
-      this.jlPlayerNumber.setText("" + msg.playerNum);
-      
-      long currentTime = System.currentTimeMillis();
-      
-      //this.jlTimestamp.setText("" + timeDelta);
-      
-      // don't add the timestamp if it did not change compared to the last time
-      long lastSeen = Long.MIN_VALUE;
-      if(!timestamps.isEmpty()) 
-      {
-        lastSeen = timestamps.get(timestamps.size()-1);
-      }
-      if(lastSeen < timestamp)
-      {
-        timestamps.add(timestamp);
-        lastSeen = timestamp;
-      }
-      double msgPerSecond = calculateMsgPerSecond();
-      if((currentTime - lastSeen) > MAX_TIME_BEFORE_DEAD || msgPerSecond <= 0.0)
-      {
-        this.jlTimestamp.setText("DEAD");
-        this.jlTimestamp.setForeground(Color.red);
-      }
-      else
-      {
-        this.jlTimestamp.setText(String.format("%4.2f msg/s", msgPerSecond));
-        this.jlTimestamp.setForeground(Color.black);
-      }
-      
-      this.jlFallenTime.setText(msg.fallen == 1 ? "FALLEN" : "NOT FALLEN");
-      this.jlBallAge.setText("" + msg.ballAge + "s");
-      
-      jlTemperature.setForeground(Color.black);
-      jlBatteryCharge.setForeground(Color.black);
-      
-      if(msg.user != null)
-      {
-        //Representations.BUUserTeamMessage user = Representations.BUUserTeamMessage.parseFrom(msg.data);
-        jlTemperature.setText(String.format(" %3.1f °C", msg.user.getTemperature()));
-        jlBatteryCharge.setText(String.format("%3.1f%%", msg.user.getBatteryCharge()*100.0f));
-        
-        if(msg.user.getTemperature() >= 60.0f)
-        {
-          jlTemperature.setForeground(darkOrange);
+        this.teamNum = msg.teamNum;
+        this.playerNum = msg.playerNum;
+
+        // don't add the timestamp if it did not change compared to the last time
+        long lastSeen = Long.MIN_VALUE;
+        if (!timestamps.isEmpty()) {
+            lastSeen = timestamps.get(timestamps.size() - 1);
         }
-        if(msg.user.getTemperature() >= 75.0f)
-        {
-          jlTemperature.setForeground(Color.red);
+        if (lastSeen < timestamp) {
+            timestamps.add(timestamp);
+            lastSeen = timestamp;
         }
-        
-        if(msg.user.getBatteryCharge() <= 0.3f)
-        {
-          jlBatteryCharge.setForeground(darkOrange);
-        }
-        if(msg.user.getBatteryCharge() <= 0.1f)
-        {
-          jlBatteryCharge.setForeground(Color.red);
+        this.isDead = ((System.currentTimeMillis() - lastSeen) > MAX_TIME_BEFORE_DEAD || this.msgPerSecond <= 0.0);
+        this.msgPerSecond = calculateMsgPerSecond();
+        this.fallen = msg.fallen;
+        this.ballAge = msg.ballAge;
+
+        if (msg.user != null) {
+            this.temperature = msg.user.getTemperature();
+            this.batteryCharge = msg.user.getBatteryCharge() * 100.0f;
+        } else {
+            this.temperature = -1;
+            this.batteryCharge = -1;
         }
 
-        this.jlTeamNumber.setText("" + msg.teamNum);
-      }
-      else
-      {
-        jlTemperature.setText("TEMP ??");
-        jlBatteryCharge.setText("??");
-      }
+        updatePanelUi();
     }
     
     private double calculateMsgPerSecond()
@@ -177,6 +145,50 @@ public class RobotStatus extends javax.swing.JPanel {
         return 0.0;
       }
     }
+    
+    private void updatePanelUi() {
+        this.jlPlayerNumber.setText("" + this.playerNum);
+        if (this.isDead) {
+            this.jlTimestamp.setText("DEAD");
+            this.jlTimestamp.setForeground(Color.red);
+        } else {
+            this.jlTimestamp.setText(String.format("%4.2f msg/s", this.msgPerSecond));
+            this.jlTimestamp.setForeground(Color.black);
+        }
+        this.jlFallenTime.setText(this.fallen == 1 ? "FALLEN" : "NOT FALLEN");
+        this.jlBallAge.setText("" + this.ballAge + "s");
+        
+        jlTemperature.setForeground(Color.black);
+        jlBatteryCharge.setForeground(Color.black);
+      
+        if (this.temperature == -1 && this.batteryCharge == -1) {
+            jlTemperature.setText("TEMP ??");
+            jlBatteryCharge.setText("??");
+        } else {
+            //Representations.BUUserTeamMessage user = Representations.BUUserTeamMessage.parseFrom(msg.data);
+            jlTemperature.setText(String.format(" %3.1f °C", this.temperature));
+            jlBatteryCharge.setText(String.format("%3.1f%%", this.batteryCharge));
+
+            if (this.temperature >= 60.0f) {
+                jlTemperature.setForeground(darkOrange);
+            }
+            if (this.temperature >= 75.0f) {
+                jlTemperature.setForeground(Color.red);
+            }
+
+            if (this.batteryCharge <= 0.3f) {
+                jlBatteryCharge.setForeground(darkOrange);
+            }
+            if (this.batteryCharge <= 0.1f) {
+                jlBatteryCharge.setForeground(Color.red);
+            }
+
+            
+            this.jlTeamNumber.setText("" + this.teamNum);
+        }
+    }
+    
+    public String getIpAdress() { return ipAddress; }
 
     /** This method is called from within the constructor to
      * initialize the form.
