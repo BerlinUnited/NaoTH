@@ -118,7 +118,28 @@ public class TeamCommViewer extends AbstractDialog {
             }
         });
         // Battery
-        robotStatusTable.getColumnModel().getColumn(7).setCellRenderer(new BatteryRenderer());
+        robotStatusTable.getColumnModel().getColumn(7).setCellRenderer(new DefaultTableCellRenderer(){
+            private final float[] dist = { 0.0f , 1.0f };
+            private final Color[] colors = { Color.red, Color.green };
+
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2d = (Graphics2D) g;
+                float x = Float.parseFloat(getText());
+                if(x == -1) {
+                    this.setOpaque(true);
+                    this.setText("?");
+                } else {
+                    LinearGradientPaint gp = new LinearGradientPaint(0, 0, getWidth(), getHeight(), dist, colors);
+                    g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                    g2d.setPaint(gp);
+                    g2d.fillRect(0, 0, (int)(getWidth()*x/100.0), getHeight());
+                    this.setOpaque(false);
+                    this.setText(String.format("%3.1f%%",x));
+                }
+                super.paintComponent(g2d);
+            }
+        });
         // sort via Ip
         robotStatusTable.getRowSorter().toggleSortOrder(2);
         // collapse pane
@@ -689,29 +710,6 @@ public class TeamCommViewer extends AbstractDialog {
         @Override
         public Class<?> getColumnClass(int columnIndex) {
             return Object.class;
-        }
-    }
-    
-    private class BatteryRenderer extends DefaultTableCellRenderer {
-        private final float[] dist = { 0.0f , 1.0f };
-        private final Color[] colors = { Color.red, Color.green };
-        
-        @Override
-        protected void paintComponent(Graphics g) {
-            Graphics2D g2d = (Graphics2D) g;
-            float x = Float.parseFloat(getText());
-            if(x == -1) {
-                this.setOpaque(true);
-                this.setText("?");
-            } else {
-                LinearGradientPaint gp = new LinearGradientPaint(0, 0, getWidth(), getHeight(), dist, colors);
-                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g2d.setPaint(gp);
-                g2d.fillRect(0, 0, (int)(getWidth()*x/100.0), getHeight());
-                this.setOpaque(false);
-                this.setText(String.format("%3.1f%%",x));
-            }
-            super.paintComponent(g2d);
         }
     }
 
