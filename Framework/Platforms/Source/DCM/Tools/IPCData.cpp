@@ -142,7 +142,7 @@ void NaoSensorData::get(UltraSoundReceiveData& data) const
   unsigned int currentIndex = theUltraSoundReceiveDataIndex;
   data.rawdata = sensorsValue[currentIndex++];
 
-  for(int i = 0; i < UltraSoundData::numOfUSEcho;i++)
+  for(int i = 0; i < UltraSoundReceiveData::numOfUSEcho;i++)
   {
     data.dataLeft[i] = sensorsValue[currentIndex++];
     data.dataRight[i] = sensorsValue[currentIndex++];
@@ -153,4 +153,4 @@ void NaoSensorData::get(UltraSoundReceiveData& data) const
 void NaoSensorData::get(BatteryData& data) const
 {
   data.charge = sensorsValue[thBatteryDataIdex];
-}//end BatteryData
+}

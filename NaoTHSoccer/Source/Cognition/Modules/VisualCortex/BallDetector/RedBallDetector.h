@@ -29,7 +29,7 @@
 #include "Representations/Perception/CameraMatrix.h"
 #include "Representations/Modeling/KinematicChain.h"
 #include "Representations/Perception/Histograms.h"
-//#include "Representations/Perception/AllBallPercepts.h"
+#include "Representations/Perception/MultiBallPercept.h"
 
 // tools
 #include "Tools/DoubleCamHelpers.h"
@@ -60,7 +60,8 @@ BEGIN_DECLARE_MODULE(RedBallDetector)
 
   PROVIDE(BallPercept)
   PROVIDE(BallPerceptTop)
-  //PROVIDE(AllBallPercepts)
+
+  PROVIDE(MultiBallPercept)
 END_DECLARE_MODULE(RedBallDetector)
 
 
@@ -74,6 +75,7 @@ public:
 
   virtual void execute()
   {
+    getMultiBallPercept().reset();
     execute(CameraInfo::Top);
     execute(CameraInfo::Bottom);
   }
@@ -120,12 +122,6 @@ private:
 private:
   inline bool isOrange(const Pixel& pixel) const {
     return getFieldColorPercept().isRedColor(pixel);
-    /*
-    return
-      pixel.y + params.minOffsetToFieldY > getFieldColorPercept().histogramField.y && // brighter than darkest acceptable green
-      pixel.v > pixel.u + params.mitUVDifference && // y-u has to be high (this filter out the jerseys)
-      pixel.v > getFieldColorPercept().range.getMax().v + params.minOffsetToFieldV;
-//      pixel.v > getGoalPostHistograms().histogramV.mean + params.minOffsetToGoalV; */
   }
 
   bool findMaximumRedPoint(std::vector<Vector2i>& points) const;
@@ -152,7 +148,6 @@ private:
   DOUBLE_CAM_REQUIRE(RedBallDetector, FieldPercept);
  
   DOUBLE_CAM_PROVIDE(RedBallDetector, BallPercept);
-  //DOUBLE_CAM_PROVIDE(RedBallDetector, AllBallPercepts);
           
 };//end class RedBallDetector
 

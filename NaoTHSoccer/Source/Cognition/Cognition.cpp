@@ -26,6 +26,8 @@
 #include "Modules/Infrastructure/Debug/DebugExecutor.h"
 #include "Modules/Infrastructure/Debug/Debug.h"
 #include "Modules/Infrastructure/LEDSetter/LEDSetter.h"
+#include "Modules/Infrastructure/UltraSoundControl/UltraSoundControl.h"
+
 #include "Modules/Infrastructure/TeamCommunicator/TeamCommReceiver.h"
 #include "Modules/Infrastructure/TeamCommunicator/TeamCommReceiveEmulator.h"
 #include "Modules/Infrastructure/TeamCommunicator/TeamCommSender.h"
@@ -130,6 +132,7 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(BatteryAlert);
   REGISTER_MODULE(ButtonEventMonitor);
   REGISTER_MODULE(LEDSetter);
+  REGISTER_MODULE(UltraSoundControl);
 
   REGISTER_MODULE(CameraDebug);
   REGISTER_MODULE(CameraInfoSetter);
