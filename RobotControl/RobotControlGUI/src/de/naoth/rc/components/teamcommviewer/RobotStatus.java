@@ -19,7 +19,7 @@ import java.util.logging.Logger;
 public class RobotStatus {
 
     public final static long MAX_TIME_BEFORE_DEAD = 5000; //ms
-    private final RingBuffer timestamps = new RingBuffer(5);
+    private final RingBuffer timestamps = new RingBuffer(10);
     private final MessageServer messageServer;
     public String ipAddress = "";
     public boolean isConnected = false;
@@ -30,6 +30,7 @@ public class RobotStatus {
 
     public byte playerNum;
     public byte teamNum;
+    public Color robotColor = Color.WHITE;
     public double msgPerSecond;
     public float ballAge;
     public float temperature;

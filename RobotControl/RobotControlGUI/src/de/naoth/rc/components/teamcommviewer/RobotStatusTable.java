@@ -23,6 +23,7 @@ public class RobotStatusTable extends javax.swing.JPanel {
      */
     public RobotStatusTable() {
         initComponents();
+        table.getColumnModel().getColumn(0).setCellRenderer(new CellRenderer());
         // msg/s
         table.getColumnModel().getColumn(3).setCellRenderer(new PingRenderer());
         // Temperature
@@ -78,6 +79,10 @@ public class RobotStatusTable extends javax.swing.JPanel {
             this.fireTableDataChanged();
         }
         
+        public RobotStatus getRobot(int rowIndex) {
+            return robots.get(rowIndex);
+        }
+        
         public void removeAll() {
             robots.clear();
             this.fireTableDataChanged();
@@ -128,6 +133,11 @@ public class RobotStatusTable extends javax.swing.JPanel {
 
         @Override
         public Class<?> getColumnClass(int columnIndex) {
+            switch(columnIndex) {
+                case 6: return Float.class;
+                case 7: return Float.class;
+                case 8: return RobotStatus.class;
+            }
             return Object.class;
         }
 
@@ -153,21 +163,42 @@ public class RobotStatusTable extends javax.swing.JPanel {
     }
     
     /**
+     * Renders the table cell with the background color of the robot.
+     */
+    private class CellRenderer extends DefaultTableCellRenderer {
+
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            this.setBackground(((RobotTableModel)table.getModel()).getRobot(row).robotColor);
+            return super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+        }
+    }
+    
+    /**
      * Renders the table cell for the battery value.
      */
     private class BatteryRenderer extends DefaultTableCellRenderer {
 
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            float bat = (float) value;
-            if (bat <= 30.0) {
+            double bat = ((float) value)/100.0;
+            /*
+            // value-based color
+            Color c2 = RobotStatus.COLOR_INFO;
+            Color c1 = RobotStatus.COLOR_DANGER;
+            int red = (int) (c2.getRed() * bat + c1.getRed() * (1 - bat));
+            int green = (int) (c2.getGreen() * bat + c1.getGreen() * (1 - bat));
+            int blue = (int) (c2.getBlue() * bat + c1.getBlue() * (1 - bat));
+            this.setBackground(new Color(red, green, blue));
+            */
+            if (bat <= 0.3) {
                 this.setBackground(RobotStatus.COLOR_DANGER);
-            } else if (bat <= 60.0) {
+            } else if (bat <= 0.6) {
                 this.setBackground(RobotStatus.COLOR_WARNING);
             } else {
                 this.setBackground(RobotStatus.COLOR_INFO);
             }
-
+            
             return super.getTableCellRendererComponent(table, bat == -1 ? "?" : String.format("%3.1f%%", value), isSelected, hasFocus, row, column);
         }
     }

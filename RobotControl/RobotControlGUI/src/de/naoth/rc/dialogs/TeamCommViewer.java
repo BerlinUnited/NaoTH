@@ -398,6 +398,7 @@ public class TeamCommViewer extends AbstractDialog {
                             RobotStatus robotStatus = robotsMap.get(address);
                             if (robotStatus == null) {
                                 robotStatus = new RobotStatus(Plugin.parent.getMessageServer(), address);
+                                robotStatus.robotColor = msg.isOpponent() ? magenta : cyan;
                                 robotsMap.put(address, robotStatus);
                                 robotStatusPanel.add(new RobotStatusPanel(robotStatus, msg.isOpponent() ? magenta : cyan));
                                 robotStatusTable.addRobot(robotStatus);
