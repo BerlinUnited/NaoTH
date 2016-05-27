@@ -1,7 +1,7 @@
 /**
  * @file GameInfo.cpp
  *
- * @author <a href="mailto:xu@informatik.hu-berlin.de">Xu, Yuan</a>
+ * @author <a href="mailto:mellmann@informatik.hu-berlin.de">Mellmann, Heinrich</a>
  * @breief the game information in RoboCup
  */
 
@@ -12,203 +12,206 @@ using namespace naoth;
 using namespace std;
 
 GameData::GameData()
-  :valid(false),
-    frameNumber(0),
-    gameState(initial),
-    timeWhenGameStateChanged(0),
-    penaltyState(none),
-    msecsTillUnpenalised(0),
-    msecsRemaining(600000),
+  : 
+    valid(false),
+    playersPerTeam(0),
+    gameType(roundrobin),
+    gameState(unknown_game_state),
     firstHalf(true),
-    playMode(numOfPlayMode),
-    gameTime(0),
-    timeWhenPlayModeChanged(0),
-    playerNumber(0),
-    teamColor(numOfTeamColor),
-    teamNumber(0),
-    teamName("NaoTH"),
-    numOfPlayers(0)
+    kickOffTeam(-1),
+    secondaryState(normal),
+    dropInTeam(-1),
+    dropInTime(0),
+    secsRemaining(0),
+    secondaryTime(0)
 {
 }
 
-GameData::GameState GameData::gameStateFromString(const std::string& name)
+#define RETURN_VALUE_TO_STR(v) case v: return #v
+
+std::string GameData::toString(TeamColor value)
 {
-  for(int i = 0; i < numOfGameState; i++)
+  switch (value)
   {
-    if(gameStateToString((GameState)i) == name) {
-      return (GameState)i;
-    }
+    RETURN_VALUE_TO_STR(blue);
+    RETURN_VALUE_TO_STR(red);
+    RETURN_VALUE_TO_STR(yellow);
+    RETURN_VALUE_TO_STR(black);
+    RETURN_VALUE_TO_STR(unknown_team_color);
   }
-  return numOfGameState;
+
+  ASSERT(false);
+  return "invalide TeamColor";
 }
 
-std::string GameData::gameStateToString(GameData::GameState gameState)
+std::string GameData::toString(GameType value)
 {
-  switch (gameState)
+  switch (value)
   {
-    case initial: return "initial";
-    case ready: return "ready";
-    case set: return "set";
-    case playing: return "playing";
-    case penalized: return "penalized";
-    case finished: return "finished";
-    default: return "unknown";
+    RETURN_VALUE_TO_STR(roundrobin);
+    RETURN_VALUE_TO_STR(playoff);
+    RETURN_VALUE_TO_STR(dropin);
+  }
+  
+  ASSERT(false);
+  return "invalide GameType";
+}
+
+std::string GameData::toString(GameState value)
+{
+  switch (value)
+  {
+    RETURN_VALUE_TO_STR(initial);
+    RETURN_VALUE_TO_STR(ready);
+    RETURN_VALUE_TO_STR(set);
+    RETURN_VALUE_TO_STR(playing);
+    RETURN_VALUE_TO_STR(finished);
+    RETURN_VALUE_TO_STR(unknown_game_state);
+  }
+  
+  ASSERT(false);
+  return "invalide GameState";
+}
+
+std::string GameData::toString(SecondaryGameState value)
+{
+  switch (value)
+  {
+    RETURN_VALUE_TO_STR(normal);
+    RETURN_VALUE_TO_STR(penaltyshoot);
+    RETURN_VALUE_TO_STR(overtime);
+    RETURN_VALUE_TO_STR(timeout);
+  }
+  
+  ASSERT(false);
+  return "invalide SecondaryGameState";
+}
+
+std::string GameData::toString(PenaltyState value)
+{
+  switch (value)
+  {
+    RETURN_VALUE_TO_STR(none);
+    RETURN_VALUE_TO_STR(illegal_ball_contact);
+    RETURN_VALUE_TO_STR(player_pushing);
+    RETURN_VALUE_TO_STR(illegal_motion_in_set);
+    RETURN_VALUE_TO_STR(inactive_player);
+    RETURN_VALUE_TO_STR(illegal_defender);
+    RETURN_VALUE_TO_STR(leaving_the_field);
+    RETURN_VALUE_TO_STR(kick_off_goal);
+    RETURN_VALUE_TO_STR(request_for_pickup);
+    RETURN_VALUE_TO_STR(coach_motion);
+    RETURN_VALUE_TO_STR(substitute);
+    RETURN_VALUE_TO_STR(manual);
+  }
+  
+  ASSERT(false);
+  return "invalide PenaltyState";
+}
+
+#define RETURN_STING_TO_VALUE(value, str) if(toString(value) == str) return value
+
+GameData::TeamColor GameData::teamColorFromString(const std::string& str)
+{
+  RETURN_STING_TO_VALUE(blue, str);
+  RETURN_STING_TO_VALUE(red, str);
+  RETURN_STING_TO_VALUE(yellow, str);
+  RETURN_STING_TO_VALUE(black, str);
+
+  return unknown_team_color;
+}
+
+void GameData::parseFrom(const spl::RoboCupGameControlData& data, int teamNumber)
+{
+  playersPerTeam  = data.playersPerTeam;
+  gameType        = (GameType)data.gameType;
+  gameState       = (GameState)data.state;
+  firstHalf       = data.firstHalf == 1;
+  kickOffTeam     = data.kickOffTeam;
+  secondaryState  = (SecondaryGameState)data.secondaryState;
+  dropInTeam      = data.dropInTeam;
+
+  // ACHTUNG: casting to signed values - game time can be negative (!)
+  dropInTime      = (int16_t)data.dropInTime;
+  secsRemaining   = (int16_t)data.secsRemaining;
+  secondaryTime   = (int16_t)data.secondaryTime;
+  
+  // team info
+  if(data.teams[0].teamNumber == teamNumber) {
+    parseTeamInfo(ownTeam, data.teams[0]);
+    parseTeamInfo(oppTeam, data.teams[1]);
+  } else if(data.teams[1].teamNumber == teamNumber) {
+    parseTeamInfo(ownTeam, data.teams[1]);
+    parseTeamInfo(oppTeam, data.teams[0]);
+  } else {
+    ASSERT(false);
   }
 }
 
-GameData::PlayMode GameData::playModeFromString(const std::string& name)
+void GameData::parseTeamInfo(TeamInfo& teamInfoDst, const spl::TeamInfo& teamInfoSrc) const
 {
-  for(int i = 0; i < numOfPlayMode; i++)
-  {
-    if(playModeToString((PlayMode)i) == name) {
-      return (PlayMode)i;
-    }
+  teamInfoDst.penaltyShot = teamInfoSrc.penaltyShot;
+  teamInfoDst.score = teamInfoSrc.score;
+  teamInfoDst.teamColour = (TeamColor)teamInfoSrc.teamColour;
+  teamInfoDst.teamNumber = teamInfoSrc.teamNumber;
+
+  teamInfoDst.players.resize(playersPerTeam);
+  for(int i = 0; i < playersPerTeam; i++) {
+    teamInfoDst.players[i].penalty = (PenaltyState)teamInfoSrc.players[i].penalty;
+    teamInfoDst.players[i].secsTillUnpenalised = teamInfoSrc.players[i].secsTillUnpenalised;
   }
-  return numOfPlayMode;
 }
 
-std::string GameData::playModeToString(GameData::PlayMode mode)
-{
-  switch(mode)
-  {
-    case before_kick_off: return "before_kick_off";
-    case kick_off_own: return "kick_off_own";
-    case kick_off_opp: return "kick_off_opp";
-    case play_on: return "play_on";
-    case kick_in_own: return "kick_in_own";
-    case kick_in_opp: return "kick_in_opp";
-    case corner_kick_own: return "corner_kick_own";
-    case corner_kick_opp: return "corner_kick_opp";
-    case goal_kick_own: return "goal_kick_own";
-    case goal_kick_opp: return "goal_kick_opp";
-    case offside_own: return "offside_own";
-    case offside_opp: return "offside_opp";
-    case game_over: return "game_over";
-    case goal_own: return "goal_own";
-    case goal_opp: return "goal_opp";
-    case free_kick_own: return "free_kick_own";
-    case free_kick_opp: return "free_kick_opp";
-    case penalty_kick_own: return "penalty_kick_own";
-    case penalty_kick_opp: return "penalty_kick_opp";
-    default: return "unknown";
-  }
-}//end playModeToString
-
-std::string GameData::teamColorToString(TeamColor teamColor)
-{
-  switch (teamColor)
-  {
-    case red: return "red";
-    case blue: return "blue";
-    case yellow: return "yellow";
-    case black: return "black";
-    default: return "unknown";
-  }
-}//end teamColorToString
-
-GameData::TeamColor GameData::teamColorFromString(const std::string& teamColor)
-{
-  for(int i = 0; i < numOfTeamColor; i++)
-  {
-    if(teamColorToString((TeamColor)i) == teamColor) {
-      return (TeamColor)i;
-    }
-  }
-  return numOfTeamColor;
-}//end teamColorFromString
-
-GameData::TeamColor operator! (const GameData::TeamColor& color)
-{
-  switch(color)
-  {
-    case GameData::blue: return GameData::red;
-    case GameData::red: return GameData::blue;
-    default: return GameData::numOfTeamColor;
-  }
-}//end operator !
 
 void GameData::print(ostream& stream) const
 {
-  stream << "GameData @" << frameNumber<<"\n";
-  stream << "gameState = " << gameStateToString(gameState) << " since "<< timeWhenGameStateChanged << "\n";
-  if ( gameState == penalized )
-  {
-    stream << penaltyStateToString(penaltyState) << " [secsTillUnpenalised = " << msecsTillUnpenalised << "]\n";
-  }
-  stream << (firstHalf?"first":"second") <<" half remains "<< msecsRemaining << "ms\n";
-  stream << "game time = "<< gameTime << "ms\n";
-  stream << "PlayMode = " << playModeToString(playMode) << " since " << timeWhenPlayModeChanged <<"\n";
-  stream << "playerNumber = " << playerNumber << "\n";
-  stream << "teamColor = " << teamColorToString(teamColor) << "\n";
-  stream << "teamNumber = " << teamNumber << "\n";
-  stream << "teamName = "<< teamName << "\n";
-  stream << "numOfPlayers = " << numOfPlayers << "\n";
-}//end print
+  stream << "playersPerTeam = " << playersPerTeam << std::endl;
+  stream << "gameType = "       << toString(gameType) << std::endl;
+  stream << "state = "          << toString(gameState) << std::endl;
+  stream << "firstHalf = "      << firstHalf << std::endl;
+  stream << "kickOffTeam = "    << kickOffTeam << std::endl;
+  stream << "secondaryState = " << toString(secondaryState) << std::endl;
+  stream << "dropInTeam = "     << dropInTeam << std::endl;
+  stream << "dropInTime = "     << dropInTime << std::endl;
+  stream << "secsRemaining = "  << secsRemaining << std::endl;
+  stream << "secondaryTime = "  << secondaryTime << std::endl;
 
-void GameData::loadFromCfg(Configuration& config)
-{
-  if (config.hasKey("player", "NumOfPlayer")) {
-    numOfPlayers = config.getInt("player", "NumOfPlayer");
-  } else {
-    std::cerr << "[GameData] " << "No number of players (NumOfPlayers) given" << std::endl;
+  stream << std::endl;
+  stream << "Own Team:" << std::endl;
+  stream << " |- number = " << ownTeam.teamNumber << std::endl;
+  stream << " |- color = " << toString(ownTeam.teamColour) << std::endl;
+  stream << " |- score = " << ownTeam.score << std::endl;
+  stream << " |- penaltyShot = " << ownTeam.penaltyShot << std::endl;
+  stream << " |- players (penalty, time until unpenalize in s):" << std::endl;
+  for(size_t i = 0; i < ownTeam.players.size(); ++i) {
+    stream << "      |- " << (i+1) << ": " << toString(ownTeam.players[i].penalty) << " - " << ownTeam.players[i].secsTillUnpenalised << std::endl;
   }
 
-  if (config.hasKey("player", "PlayerNumber")) {
-    playerNumber = config.getInt("player", "PlayerNumber");
-  } else {
-    std::cerr << "[GameData] " << "No player number (PlayerNumber) given" << std::endl;
-    playerNumber = 3;
-  }
-
-  if (config.hasKey("player", "TeamColor"))
-  {
-    teamColor = teamColorFromString(config.getString("player", "TeamColor"));
-    if (teamColor == GameData::numOfTeamColor)
-    {
-      teamColor = GameData::red;
-      std::cerr << "[GameData] " << "Invalid team color (TeamColor) \""
-        << config.getString("player", "TeamColor") << "\" given" << std::endl;
-    }
-  } else
-  {
-    std::cerr << "[GameData] " << "No team color (TeamColor) given" << std::endl;
-    teamColor = GameData::red;
-  }
-
-  if (config.hasKey("player", "TeamNumber")) {
-    teamNumber = config.getInt("player", "TeamNumber");
-  } else {
-    std::cerr << "[GameData] " << "No team number (TeamNumber) given" << std::endl;
-    teamNumber = 0;
-  }
-
-  valid = true;
-} // end loadPlayerInfoFromFile
-
-std::string GameData::penaltyStateToString(PenaltyState state)
-{
-  switch (state)
-  {
-    case ball_holding: return "ball_holding";
-    case player_pushing: return "player_pushing";
-    case obstruction: return "obstruction";
-    case inactive_player: return "inactive_player";
-    case illegal_defender: return "illegal_defender";
-    case leaving_the_field: return "leaving_the_field";
-    case playing_with_hands: return "playing_with_hands";
-    case request_for_pickup: return "request_for_pickup";
-    case manual: return "manual";
-    default: return "none";
-  }
-}//end gameStateToString
-
-string GameReturnData::messageToString(GameReturnData::Message msg)
-{
-  switch(msg)
-  {
-    case manual_penalise: return "manual_penalise";
-    case manual_unpenalise: return "manual_unpenalise";
-    default: return "alive";
+  stream << std::endl;
+  stream << "Opp Team:" << std::endl;
+  stream << " |- number = " << oppTeam.teamNumber << std::endl;
+  stream << " |- color = " << toString(oppTeam.teamColour) << std::endl;
+  stream << " |- score = " << oppTeam.score << std::endl;
+  stream << " |- penaltyShot = " << oppTeam.penaltyShot << std::endl;
+  stream << " |- players (penalty, time until unpenalize in s):" << std::endl;
+  for(size_t i = 0; i < oppTeam.players.size(); ++i) {
+    stream << "      |- " << (i+1) << ": " << toString(oppTeam.players[i].penalty) << " - " << oppTeam.players[i].secsTillUnpenalised << std::endl;
   }
 }
+
+
+std::string GameReturnData::toString(Message value)
+{
+  switch (value)
+  {
+    RETURN_VALUE_TO_STR(manual_penalise);
+    RETURN_VALUE_TO_STR(manual_unpenalise);
+    RETURN_VALUE_TO_STR(alive);
+  }
+  
+  ASSERT(false);
+  return "invalide Message";
+}
+
+
 
