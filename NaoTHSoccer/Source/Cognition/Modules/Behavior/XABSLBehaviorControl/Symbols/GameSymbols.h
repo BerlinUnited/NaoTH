@@ -12,10 +12,12 @@
 #include <XabslEngine/XabslEngine.h>
 
 // representations
+#include "Representations/Infrastructure/GameData.h"
 #include "Representations/Modeling/PlayerInfo.h"
 
 BEGIN_DECLARE_MODULE(GameSymbols)
   REQUIRE(PlayerInfo);
+  REQUIRE(GameData);
 END_DECLARE_MODULE(GameSymbols)
 
 class GameSymbols: public GameSymbolsBase
@@ -39,9 +41,7 @@ private:
   static double getPlayerNumber();
   static double getMsecsRemaining();
   static int getGameState();
-  static int getPlayMode();
-  static int getOpponentTeamColor();
-  static int getOwnTeamColor();
+  //static int getPlayMode();
 
 };//end class GameSymbols
 

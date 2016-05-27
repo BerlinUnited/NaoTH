@@ -13,8 +13,6 @@ option decide_game_state
       goto _initial;
     else if(game.state == playing)
       goto playing;
-    else if(game.state == unknown)
-      goto dont_know_what_to_do;
   }
     
   initial state _initial {
@@ -94,14 +92,4 @@ option decide_game_state
     }
   }
 
-  state dont_know_what_to_do {
-    action
-    {
-      game.current_mode = unknown;
-      motion.type = stand;
-      arm.control_mode = normal;
-      head.control_mode = stay_as_forced;
-      last_state_was_penalized = false;
-    }
-  }
 }
