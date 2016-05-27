@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JButton;
 
 /**
  *
@@ -282,19 +283,25 @@ public class RobotStatus extends javax.swing.JPanel {
   }// </editor-fold>//GEN-END:initComponents
 
     private void connectButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_connectButtonActionPerformed
-      if(!this.messageServer.isConnected())
-      {
-        try
-        {
-          // TODO: fix port 5401
-          this.messageServer.connect(this.ipAddress, 5401);
-        }catch(IOException ex)
-        {
-          Logger.getLogger(RobotStatus.class.getName()).log(Level.SEVERE, "Coult not connect.", ex);
-        }
-      }
+        this.connect();
     }//GEN-LAST:event_connectButtonActionPerformed
 
+    public boolean connect() {
+        if (!this.messageServer.isConnected()) {
+            try {
+                // TODO: fix port 5401
+                this.messageServer.connect(this.ipAddress, 5401);
+            } catch (IOException ex) {
+                Logger.getLogger(RobotStatus.class.getName()).log(Level.SEVERE, "Coult not connect.", ex);
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    public JButton getConnectButton() {
+        return this.connectButton;
+    }
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JButton connectButton;
