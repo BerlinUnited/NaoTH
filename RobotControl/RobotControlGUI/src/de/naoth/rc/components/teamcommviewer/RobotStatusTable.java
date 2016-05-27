@@ -1,44 +1,28 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package de.naoth.rc.components.teamcommviewer;
 
-import de.naoth.rc.components.RobotStatus;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.LinearGradientPaint;
-import java.awt.RenderingHints;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.util.Vector;
+import java.util.ArrayList;
 import javax.swing.DefaultRowSorter;
 import javax.swing.JButton;
 import javax.swing.JTable;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 
 /**
- *
  * @author Philipp Strobel <philippstrobel@posteo.de>
  */
 public class RobotStatusTable extends javax.swing.JPanel {
-
+    
     /**
      * Creates new form RobotStatusTable
      */
     public RobotStatusTable() {
         initComponents();
-        
         // msg/s
         table.getColumnModel().getColumn(3).setCellRenderer(new PingRenderer());
         // Temperature
@@ -85,18 +69,12 @@ public class RobotStatusTable extends javax.swing.JPanel {
         );
     }// </editor-fold>//GEN-END:initComponents
 
-    private class RobotTableModel extends AbstractTableModel {
-        private final Vector<RobotStatus> robots = new Vector();
+    private class RobotTableModel extends AbstractTableModel implements RobotStatusListener {
+        private final ArrayList<RobotStatus> robots = new ArrayList<>();
         
         public void addRobot(RobotStatus robot) {
             robots.add(robot);
-            robot.getConnectButton().addChangeListener(new ChangeListener() {
-                @Override
-                public void stateChanged(ChangeEvent e) {
-                    dataChanged();
-                    //((JButton)e.getSource()).isEnabled()
-                }
-            });
+            robot.addListener(this);
             this.fireTableDataChanged();
         }
         
@@ -121,7 +99,7 @@ public class RobotStatusTable extends javax.swing.JPanel {
             switch(columnIndex) {
                 case 0: return robot.teamNum;
                 case 1: return robot.playerNum;
-                case 2: return robot.getIpAdress();
+                case 2: return robot.ipAddress;
                 case 3: return robot.msgPerSecond;
                 case 4: return robot.ballAge;
                 case 5: return robot.isDead?"DEAD":(robot.fallen==1?"FALLEN":"NOT FALLEN");
@@ -152,6 +130,11 @@ public class RobotStatusTable extends javax.swing.JPanel {
         public Class<?> getColumnClass(int columnIndex) {
             return Object.class;
         }
+
+        @Override
+        public void statusChanged() {
+            fireTableDataChanged();
+        }
     }
     
     /**
@@ -170,57 +153,23 @@ public class RobotStatusTable extends javax.swing.JPanel {
     }
     
     /**
-     * Triggers the update of the table view (ui).
-     */
-    public void dataChanged() {
-        ((RobotTableModel)this.table.getModel()).fireTableDataChanged();
-    }
-    
-    /**
      * Renders the table cell for the battery value.
      */
     private class BatteryRenderer extends DefaultTableCellRenderer {
-
-        private final Color colorInfo = new Color(0.0f, 1.0f, 0.0f, 0.5f);
-        private final Color colorInfoBlue = new Color(0.1f, 0.0f, 1.0f, 0.5f);
-        private final Color colorWarning = new Color(1.0f, 1.0f, 0.0f, 0.5f);
-        private final Color colorDanger = new Color(1.0f, 0.0f, 0.0f, 0.5f);
 
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
             float bat = (float) value;
             if (bat <= 30.0) {
-                this.setBackground(colorDanger);
+                this.setBackground(RobotStatus.COLOR_DANGER);
             } else if (bat <= 60.0) {
-                this.setBackground(colorWarning);
+                this.setBackground(RobotStatus.COLOR_WARNING);
             } else {
-                this.setBackground(colorInfo);
+                this.setBackground(RobotStatus.COLOR_INFO);
             }
 
             return super.getTableCellRendererComponent(table, bat == -1 ? "?" : String.format("%3.1f%%", value), isSelected, hasFocus, row, column);
         }
-        /*
-        
-        private final float[] dist = {0.0f, 1.0f};
-        private final Color[] colors = {Color.red, Color.green};
-        
-        @Override
-        protected void paintComponent(Graphics g) {
-            Graphics2D g2d = (Graphics2D) g;
-            float x = Float.parseFloat(getText());
-            if (x == -1) {
-                this.setOpaque(true);
-                this.setText("?");
-            } else {
-                LinearGradientPaint gp = new LinearGradientPaint(0, 0, getWidth(), getHeight(), dist, colors);
-                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g2d.setPaint(gp);
-                g2d.fillRect(0, 0, (int) (getWidth() * x / 100.0), getHeight());
-                this.setOpaque(false);
-                this.setText(String.format("%3.1f%%", x));
-            }
-            super.paintComponent(g2d);
-        }*/
     }
     
     /**
@@ -228,18 +177,16 @@ public class RobotStatusTable extends javax.swing.JPanel {
      */
     private class TemperatureRenderer extends DefaultTableCellRenderer {
 
-        private final Color darkOrange = new Color(255, 130, 0);
-
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
             float temp = (float) value;
             // 60 °C
             if (temp >= 60.0) {
-                this.setBackground(darkOrange);
+                this.setBackground(RobotStatus.COLOR_WARNING);
             }
             // 75 °C
             if (temp >= 75.0) {
-                this.setBackground(Color.red);
+                this.setBackground(RobotStatus.COLOR_DANGER);
             }
 
             return super.getTableCellRendererComponent(table, temp == -1 ? "?" : String.format(" %3.1f °C", value), isSelected, hasFocus, row, column);
@@ -268,8 +215,8 @@ public class RobotStatusTable extends javax.swing.JPanel {
 
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            setEnabled(((RobotStatus)value).getConnectButton().isEnabled());
-            setText("Connect");
+            setEnabled(!((RobotStatus)value).isConnected);
+            setText("Connect" + (!((RobotStatus)value).isConnected?"":"ed"));
             return this;
         }
     }
@@ -291,8 +238,8 @@ public class RobotStatusTable extends javax.swing.JPanel {
 			if (row < table.getRowCount() && row >= 0 && column < table.getColumnCount() && column >= 0) {
                 // only for column 8 (connect button) and if it's enabled
 			    if (column == 8 && ((ButtonRenderer)table.getCellRenderer(row, column)).isEnabled()) {
-                    RobotStatus robot = (RobotStatus)table.getValueAt(row, column);
-                    robot.getConnectButton().doClick();
+                    // let RobotStatus connect to robot (MessageServer)
+                    ((RobotStatus)table.getValueAt(row, column)).connect();
 			    }
 			}
 		}

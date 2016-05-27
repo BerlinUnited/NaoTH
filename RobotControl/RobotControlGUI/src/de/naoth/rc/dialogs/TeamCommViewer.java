@@ -10,19 +10,14 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonWriter;
 import de.naoth.rc.Helper;
 import de.naoth.rc.RobotControl;
-import de.naoth.rc.components.RobotStatus;
+import de.naoth.rc.components.teamcommviewer.RobotStatus;
+import de.naoth.rc.components.teamcommviewer.RobotStatusPanel;
 import de.naoth.rc.core.dialog.AbstractDialog;
 import de.naoth.rc.core.dialog.DialogPlugin;
 import de.naoth.rc.dataformats.SPLMessage;
 import de.naoth.rc.drawingmanager.DrawingEventManager;
 import de.naoth.rc.drawings.DrawingCollection;
 import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.LinearGradientPaint;
-import java.awt.RenderingHints;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -43,16 +38,12 @@ import java.util.Map.Entry;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.TreeMap;
-import java.util.Vector;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
-import javax.swing.JTable;
 import javax.swing.SwingUtilities;
-import javax.swing.table.AbstractTableModel;
-import javax.swing.table.DefaultTableCellRenderer;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 
@@ -406,13 +397,12 @@ public class TeamCommViewer extends AbstractDialog {
                         public void run() {
                             RobotStatus robotStatus = robotsMap.get(address);
                             if (robotStatus == null) {
-                                robotStatus = new RobotStatus(Plugin.parent.getMessageServer(), address, msg.isOpponent() ? magenta : cyan);
+                                robotStatus = new RobotStatus(Plugin.parent.getMessageServer(), address);
                                 robotsMap.put(address, robotStatus);
-                                robotStatusPanel.add(robotStatus);
+                                robotStatusPanel.add(new RobotStatusPanel(robotStatus, msg.isOpponent() ? magenta : cyan));
                                 robotStatusTable.addRobot(robotStatus);
-                            }
-                            robotStatus.setStatus(msg.timestamp, msg.message);
-                            robotStatusTable.dataChanged();
+                            }                            
+                            robotStatus.updateStatus(msg.timestamp, msg.message);
                         }
                     });
                     
