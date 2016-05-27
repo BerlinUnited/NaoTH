@@ -49,8 +49,8 @@ public:
   ~PlayerInfo();
   
   // set from config
-  int playerNumber;
-  int teamNumber;
+  unsigned int playerNumber;
+  unsigned int teamNumber;
   std::string teamName;
 
   // set by game controller

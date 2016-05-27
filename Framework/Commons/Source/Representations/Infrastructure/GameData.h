@@ -81,7 +81,9 @@ public:
   {
     RobotInfo() : penalty(none), secsTillUnpenalised(0) {}
     PenaltyState penalty;             // penalty state of the player
-    unsigned int secsTillUnpenalised; // estimate of time till unpenalised
+
+    // ACHTUNG: time can be negative (!)
+    int secsTillUnpenalised;          // estimate of time till unpenalised
   };
 
   struct TeamInfo
@@ -93,10 +95,10 @@ public:
       penaltyShot(0)
     {}
 
-    int teamNumber;           // unique team number
-    TeamColor teamColour;     // colour of the team
-    int score;                // team's score
-    int penaltyShot;          // penalty shot counter
+    unsigned int teamNumber;        // unique team number
+    TeamColor teamColour;           // colour of the team
+    unsigned int  score;            // team's score
+    unsigned int  penaltyShot;      // penalty shot counter
     std::vector<RobotInfo> players; // the team's players
 
     // NOTE: not used yet
@@ -133,12 +135,12 @@ public:
   GameType gameType;                  // type of the game (GAME_ROUNDROBIN, GAME_PLAYOFF, GAME_DROPIN)
   GameState gameState;                // state of the game (STATE_READY, STATE_PLAYING, etc)
   bool firstHalf;                     // 1 = game in first half, 0 otherwise
-  int kickOffTeam;                    // the team number of the next team to kick off or DROPBALL
+  unsigned int kickOffTeam;           // the team number of the next team to kick off or DROPBALL
   SecondaryGameState secondaryState;  // extra state information - (STATE2_NORMAL, STATE2_PENALTYSHOOT, etc)
-  int dropInTeam;                     // number of team that caused last drop in
+  unsigned int dropInTeam;            // number of team that caused last drop in
+
+  // ACHTUNG: time and can be negative, so it has to be signed (!)
   int dropInTime;                     // number of seconds passed since the last drop in. -1 (0xffff) before first dropin
-  
-  // ACHTUNG: game time and secondary time can be negative (!)
   int secsRemaining;                  // estimate of number of seconds remaining in the half
   int secondaryTime;                  // number of seconds shown as secondary time (remaining ready, until free ball, etc)
   

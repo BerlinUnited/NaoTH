@@ -18,9 +18,9 @@ GameData::GameData()
     gameType(roundrobin),
     gameState(unknown_game_state),
     firstHalf(true),
-    kickOffTeam(-1),
+    kickOffTeam(0),
     secondaryState(normal),
-    dropInTeam(-1),
+    dropInTeam(0),
     dropInTime(0),
     secsRemaining(0),
     secondaryTime(0)
@@ -158,7 +158,9 @@ void GameData::parseTeamInfo(TeamInfo& teamInfoDst, const spl::TeamInfo& teamInf
   teamInfoDst.players.resize(playersPerTeam);
   for(int i = 0; i < playersPerTeam; i++) {
     teamInfoDst.players[i].penalty = (PenaltyState)teamInfoSrc.players[i].penalty;
-    teamInfoDst.players[i].secsTillUnpenalised = teamInfoSrc.players[i].secsTillUnpenalised;
+
+    // ACHTUNG: casting to signed values - time can be negative (!)
+    teamInfoDst.players[i].secsTillUnpenalised = (int8_t)teamInfoSrc.players[i].secsTillUnpenalised;
   }
 }
 
