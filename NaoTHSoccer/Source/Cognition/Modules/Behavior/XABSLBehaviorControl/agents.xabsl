@@ -53,9 +53,6 @@ include "Options/Skills/kick_ball_with_foot.xabsl";
 include "Options/Skills/kick_with_foot.xabsl";
 //
 include "Options/Skills/USOA/go_to_ball_with_USOA.xabsl";
-include "Options/Skills/USOA/go_to_ball_with_slow_USOA.xabsl";
-include "Options/Skills/USOA/go_to_ball_with_foot_and_USOA.xabsl";
-include "Options/Skills/USOA/close_to_ball_with_USOA_situation.xabsl";
 include "Options/Skills/USOA/go_to_point_with_USOA.xabsl";
 //
 include "Options/Skills/search_ball_back_rot.xabsl";
@@ -140,7 +137,6 @@ include "Options/Test/agent/follow_ball_test_agent.xabsl";
 include "Options/Test/agent/go_to_ball_test_agent.xabsl";
 include "Options/Test/agent/ball_in_fight_test_agent.xabsl";
 include "Options/Test/agent/go_to_ball_with_foot_test_agent.xabsl";
-include "Options/Test/agent/go_to_ball_with_foot_and_USOA_test_agent.xabsl";
 include "Options/Test/agent/go_to_ball_with_USOA_test_agent.xabsl";
 include "Options/Test/agent/go_to_point_with_USOA_test_agent.xabsl";
 include "Options/Test/agent/turn_around_ball_test_agent.xabsl";
@@ -188,7 +184,6 @@ include "Options/Test/walk/walk_pirouette.xabsl";
 include "Options/Test/walk/go_to_ball_test.xabsl";
 include "Options/Test/walk/go_to_ball_with_foot_test.xabsl";
 include "Options/Test/walk/ball_fight_test.xabsl";
-include "Options/Test/walk/go_to_ball_with_foot_and_USOA_test.xabsl";
 include "Options/Test/walk/go_to_ball_with_USOA_test.xabsl";
 include "Options/Test/walk/go_to_point_with_USOA_test.xabsl";
 include "Options/Test/walk/test_walk_internal_symbols.xabsl";
@@ -248,7 +243,6 @@ agent goto_clown_walk_test ("clown_walk_test_agent",clown_walk_test_agent);
 agent goto_turn_around_ball_test ("turn_around_ball_test_agent",turn_around_ball_test_agent);
 agent goto_obstacle_test("obstacle_test", obstacle_test_agent);
 agent goto_ball_with_USOA_test_agent("go_to_ball_with_USOA_test_agent", go_to_ball_with_USOA_test_agent);
-agent goto_ball_with_foot_and_USOA_test_agent("go_to_ball_with_foot_and_USOA_test_agent", go_to_ball_with_foot_and_USOA_test_agent);
 agent goto_point_with_USOA_test("go_to_point_with_USOA_test_agent", go_to_point_with_USOA_test_agent);
 
 agent dribble_test_agent("dribble_test_agent", dribble_test_agent);
