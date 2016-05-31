@@ -12,16 +12,8 @@ option decide_role
     /* fallback if everything else is broken */
     else if( (team.members_alive_count <= 1) || (team.calc_if_is_striker))
     {
-      //if(state_time < 20000 &&
-      //   game.own_kickoff && !ball_was_outside_circle)
-      //  goto initial_striker;
-      //else
-        goto striker;
+      goto striker;
     }
-    //else if(team.calc_if_is_the_last)
-    //{
-    //  goto defender;
-    //}
     else if (team.calc_if_is_secondstriker) {
       goto secondstriker;
     }
@@ -47,7 +39,6 @@ option decide_role
       situationStatusOwnHalf = true;
       team.is_playing_as_striker = false;
       ball_was_outside_circle = true;
-      //spl_robust_goalie();
       basic_goalie();
     }
   }

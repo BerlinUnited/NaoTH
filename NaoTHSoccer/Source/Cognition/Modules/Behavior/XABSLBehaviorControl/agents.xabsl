@@ -83,7 +83,6 @@ include "Options/Soccer/Strategy/decide_role.xabsl";
 include "Options/Soccer/Strategy/decide_and_go_to_ready_position.xabsl";
 include "Options/Soccer/Strategy/positioning_for_own_kickoff.xabsl";
 include "Options/Soccer/Strategy/positioning_for_opp_kickoff.xabsl";
-//include "Options/Soccer/Strategy/clear_ball_far_away.xabsl";
 
 //Action Selection Striker
 include "Options/Soccer/Strategy/Striker/striker.xabsl";
