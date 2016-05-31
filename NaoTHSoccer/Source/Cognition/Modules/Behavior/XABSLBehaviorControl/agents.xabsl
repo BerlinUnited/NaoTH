@@ -42,7 +42,7 @@ include "Options/Skills/go_to_ball_with_foot.xabsl";
 include "Options/Skills/go_to_ball_with_foot_dynamic.xabsl";
 include "Options/Skills/go_to_ball_with_right_foot.xabsl";
 include "Options/Skills/go_to_ball_with_left_foot.xabsl";
-include "Options/Skills/go_to_ball_in_fight.xabsl";
+
 //
 include "Options/Skills/kick_direction.xabsl";
 include "Options/Skills/sidekick.xabsl";
@@ -135,7 +135,6 @@ include "Options/Test/agent/test_walk_lv2_agent.xabsl";
 include "Options/Test/agent/test_walk_step_control_agent.xabsl";
 include "Options/Test/agent/follow_ball_test_agent.xabsl";
 include "Options/Test/agent/go_to_ball_test_agent.xabsl";
-include "Options/Test/agent/ball_in_fight_test_agent.xabsl";
 include "Options/Test/agent/go_to_ball_with_foot_test_agent.xabsl";
 include "Options/Test/agent/go_to_ball_with_USOA_test_agent.xabsl";
 include "Options/Test/agent/go_to_point_with_USOA_test_agent.xabsl";
@@ -183,7 +182,6 @@ include "Options/Test/walk/walk_circularly_y.xabsl";
 include "Options/Test/walk/walk_pirouette.xabsl";
 include "Options/Test/walk/go_to_ball_test.xabsl";
 include "Options/Test/walk/go_to_ball_with_foot_test.xabsl";
-include "Options/Test/walk/ball_fight_test.xabsl";
 include "Options/Test/walk/go_to_ball_with_USOA_test.xabsl";
 include "Options/Test/walk/go_to_point_with_USOA_test.xabsl";
 include "Options/Test/walk/test_walk_internal_symbols.xabsl";
@@ -235,7 +233,6 @@ agent motion_test_walk_lv2("test walk level 2", test_walk_lv2_agent);
 agent motion_test_walk_step_control("test walk step control", test_walk_step_control_agent);
 
 agent goto_follow_ball_test("follow_ball_test_agent", follow_ball_test_agent);
-agent goto_ball_in_fight("ball_in_fight_agent", ball_in_fight_test_agent);
 agent goto_ball_test("go_to_ball_test_agent", go_to_ball_test_agent);
 agent goto_arm_back_test("arm_back_test_agent",arm_back_test_agent);
 agent goto_ball_with_foot_test("go_to_ball_with_foot_test_agent", go_to_ball_with_foot_test_agent);
