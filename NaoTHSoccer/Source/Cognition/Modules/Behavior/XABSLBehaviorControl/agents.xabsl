@@ -158,9 +158,6 @@ include "Options/Test/agent/clown_walk_test_agent.xabsl";
 include "Options/Test/agent/obstacle_test_agent.xabsl";
 include "Options/Test/agent/dribble_test_agent.xabsl";
 
-// Test agents (options) Penalty
-include "Options/Test/agent/penalty_kicker_test_agent.xabsl";
-
 // Test agents (options) Behaviour Tests
 include "Options/Test/agent/role_change_test_agent.xabsl";
 
@@ -210,8 +207,7 @@ include "Options/Test/walk/obstacle_test.xabsl";
 include "Options/Test/walk/clown_walk_test.xabsl";
 include "Options/Test/walk/turn_around_ball_test.xabsl";
 include "Options/Test/test_dribble.xabsl";
-// Test options Penalty
-include "Options/Test/penalty/penalty_kicker_test.xabsl";
+
 // Test role change
 include "Options/Test/strategy/role_change_test.xabsl";
 
@@ -233,7 +229,6 @@ agent role_passive_player("passive_player", passive_player_agent);
 agent role_striker("Action Selection Striker", striker_agent);
 
 agent role_passive_behavior_test_agent("passive_behavior_test_agent",passive_behavior_test_agent);
-agent role_penalty_kicker_test("penalty_kicker_test_agent", penalty_kicker_test_agent);
 agent role_change_test ("role_change_test_agent",role_change_test_agent);
 
 /** The Test agents */
