@@ -44,7 +44,6 @@ include "Options/Skills/go_to_ball_with_right_foot.xabsl";
 include "Options/Skills/go_to_ball_with_left_foot.xabsl";
 
 //
-include "Options/Skills/kick_direction.xabsl";
 include "Options/Skills/sidekick.xabsl";
 include "Options/Skills/sidekick_to_left.xabsl";
 include "Options/Skills/sidekick_to_right.xabsl";
@@ -119,8 +118,6 @@ include "Options/Test/agent/searching_for_ball_and_look_around_agent.xabsl";
 // Test agents Arms
 include "Options/Test/agent/arm_back_test_agent.xabsl";
 // Test agents Kicks
-include "Options/Test/agent/kick_direction_test_agent.xabsl";
-include "Options/Test/agent/kick_attack_direction_test_agent.xabsl";
 include "Options/Test/agent/walk_against_ball_test_agent.xabsl";
 include "Options/Test/agent/kick_short_with_approach_left_agent.xabsl";
 include "Options/Test/agent/kick_short_with_approach_right_agent.xabsl";
@@ -161,8 +158,6 @@ include "Options/Test/head/simple_search_ball_test.xabsl";
 include "Options/Test/arm_back_test.xabsl";
 // Test options Kicks
 include "Options/Test/kicks/fast_forward_kick_test.xabsl";
-include "Options/Test/kicks/kick_direction_test.xabsl";
-include "Options/Test/kicks/kick_attack_direction_test.xabsl";
 include "Options/Test/kicks/walk_against_ball_test.xabsl";
 include "Options/Test/kicks/kick_long_with_approach_right.xabsl";
 include "Options/Test/kicks/kick_long_with_approach_left.xabsl";
@@ -216,8 +211,6 @@ agent role_change_test ("role_change_test_agent",role_change_test_agent);
 
 /** The Test agents */
 // Test agents Kicks
-agent kick_direction_test("kick_direction_test_agent", kick_direction_test_agent);
-agent kick_attack_direction_test("kick_attack_direction_test_agent", kick_attack_direction_test_agent);
 agent kick_walk_against_ball_test("walk_against_ball_test_agent", walk_against_ball_test_agent);
 
 agent sidekick_left("sidekick_left", sidekick_left_agent);
