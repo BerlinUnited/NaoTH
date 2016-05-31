@@ -86,12 +86,12 @@ include "Options/Soccer/Strategy/positioning_for_opp_kickoff.xabsl";
 //include "Options/Soccer/Strategy/clear_ball_far_away.xabsl";
 
 //Action Selection Striker
-include "Options/Soccer/Strategy/ActionSelectionStriker/striker.xabsl";
-include "Options/Soccer/Strategy/ActionSelectionStriker/sidekick_left.xabsl";
-include "Options/Soccer/Strategy/ActionSelectionStriker/sidekick_right.xabsl";
-include "Options/Soccer/Strategy/ActionSelectionStriker/kick_short_with_approach.xabsl";
-include "Options/Soccer/Strategy/ActionSelectionStriker/kick_long_with_approach.xabsl";
-include "Options/Soccer/Strategy/ActionSelectionStriker/turn_to_attack_direction.xabsl";
+include "Options/Soccer/Strategy/Striker/striker.xabsl";
+include "Options/Soccer/Strategy/Striker/sidekick_left.xabsl";
+include "Options/Soccer/Strategy/Striker/sidekick_right.xabsl";
+include "Options/Soccer/Strategy/Striker/kick_short_with_approach.xabsl";
+include "Options/Soccer/Strategy/Striker/kick_long_with_approach.xabsl";
+include "Options/Soccer/Strategy/Striker/turn_to_attack_direction.xabsl";
 
 //Passive Behavior
 include "Options/Soccer/Strategy/passive/decide_and_go_to_passive_position.xabsl";
