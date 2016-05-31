@@ -1,0 +1,34 @@
+option turn_to_attack_direction
+{
+  initial state decide {
+    decision{
+      if(attack.direction.preview > 0)
+        goto turn_right_around;
+      else
+        goto turn_left_around;
+    }
+    action{
+    }
+  }
+
+  state turn_right_around {
+    decision {
+      stay;
+    }
+    action {
+      move_around_ball(direction=30, radius=190);
+      motion.walk.style = fast;
+    }
+  }
+
+  state turn_left_around {
+    decision {
+      stay;
+    }
+    action {
+      move_around_ball(direction=-30, radius=190);
+      motion.walk.style = fast;
+    }
+  }
+
+}
