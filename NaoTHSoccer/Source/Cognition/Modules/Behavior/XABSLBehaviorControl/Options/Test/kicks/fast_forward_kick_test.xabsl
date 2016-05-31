@@ -1,5 +1,3 @@
-/* Tests sidekick_to_right and sidekick_to_left:
-  Goes to the ball and kicks to the different sides */
 
 option fast_forward_kick_test
 {
