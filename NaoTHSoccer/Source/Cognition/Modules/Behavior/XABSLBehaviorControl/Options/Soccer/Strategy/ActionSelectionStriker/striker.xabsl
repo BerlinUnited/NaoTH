@@ -106,22 +106,6 @@ option striker
       sidekick_right();
     }
   }
-/*
-//currently unused
-  state sidekick_stable {
-    decision {
-      else if(action_done)
-        goto goto_ball;
-      else
-        stay;
-    }
-    action {
-      situation_abortable = true;
-      situation_sidekick();
-      motion.walk.style = stable;
-    }
-  }
-*/
 
   state long_kick {
     decision{
