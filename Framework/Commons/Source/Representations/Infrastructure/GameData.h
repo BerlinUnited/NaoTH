@@ -114,7 +114,8 @@ public:
   static std::string toString(SecondaryGameState value);
   static std::string toString(PenaltyState value);
 
-  static TeamColor teamColorFromString(const std::string& teamColor);
+  static TeamColor teamColorFromString(const std::string& str);
+  static GameState gameStateFromString(const std::string& str);
 
   virtual void print(std::ostream& stream) const;
   void parseFrom(const spl::RoboCupGameControlData& data, int teamNumber);

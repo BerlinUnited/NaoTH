@@ -121,6 +121,17 @@ GameData::TeamColor GameData::teamColorFromString(const std::string& str)
   return unknown_team_color;
 }
 
+GameData::GameState GameData::gameStateFromString(const std::string& str)
+{
+  RETURN_STING_TO_VALUE(initial, str);
+  RETURN_STING_TO_VALUE(ready, str);
+  RETURN_STING_TO_VALUE(set, str);
+  RETURN_STING_TO_VALUE(playing, str);
+  RETURN_STING_TO_VALUE(finished, str);
+
+  return unknown_game_state;
+}
+
 void GameData::parseFrom(const spl::RoboCupGameControlData& data, int teamNumber)
 {
   playersPerTeam  = data.playersPerTeam;
