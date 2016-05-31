@@ -63,8 +63,6 @@ include "Options/Skills/search_ball_back_rot.xabsl";
 include "Options/Skills/simple_search_ball.xabsl";
 include "Options/Skills/search_ball.xabsl";
 
-//include "Options/Skills/fast_forward_kick_with_right.xabsl";
-//include "Options/Skills/fast_forward_kick_with_left.xabsl";
 //include "Options/Skills/USOA/decide_arm_position_with_USOA.xabsl";
 
 // Debug
@@ -127,7 +125,6 @@ include "Options/Test/agent/searching_for_ball_and_look_around_agent.xabsl";
 // Test agents Arms
 include "Options/Test/agent/arm_back_test_agent.xabsl";
 // Test agents Kicks
-include "Options/Test/agent/fast_forward_kick_test_agent.xabsl";
 include "Options/Test/agent/kick_direction_test_agent.xabsl";
 include "Options/Test/agent/kick_attack_direction_test_agent.xabsl";
 include "Options/Test/agent/walk_against_ball_test_agent.xabsl";
@@ -231,7 +228,6 @@ agent role_change_test ("role_change_test_agent",role_change_test_agent);
 // Test agents Kicks
 agent kick_direction_test("kick_direction_test_agent", kick_direction_test_agent);
 agent kick_attack_direction_test("kick_attack_direction_test_agent", kick_attack_direction_test_agent);
-agent kick_fast_forward_kick_test("fast_forward_kick_test_agent", fast_forward_kick_test_agent);
 agent kick_walk_against_ball_test("walk_against_ball_test_agent", walk_against_ball_test_agent);
 
 agent sidekick_left("sidekick_left", sidekick_left_agent);
