@@ -112,6 +112,13 @@ include "Options/Soccer/Penalty/decide_penalty_role.xabsl";
 include "Options/Soccer/Penalty/penalty_set_penalized_play.xabsl";
 include "Options/Soccer/Penalty/simple_penalty_goalie_agent.xabsl";
 
+// Soccer-Tests
+include "Options/Test/agent/passive_behavior_test_agent.xabsl";
+include "Options/Soccer/Test/passive_player_agent.xabsl";
+include "Options/Soccer/Test/basic_goali_agent.xabsl";
+include "Options/Soccer/Test/striker_agent.xabsl";
+
+
 /* Test section */
 // Test agents Head Control
 
@@ -150,14 +157,13 @@ include "Options/Test/agent/turn_around_ball_test_agent.xabsl";
 include "Options/Test/agent/clown_walk_test_agent.xabsl";
 include "Options/Test/agent/obstacle_test_agent.xabsl";
 include "Options/Test/agent/dribble_test_agent.xabsl";
+
 // Test agents (options) Penalty
 include "Options/Test/agent/penalty_kicker_test_agent.xabsl";
+
 // Test agents (options) Behaviour Tests
-include "Options/Soccer/passive_player_agent.xabsl";
-include "Options/Soccer/basic_goali_agent.xabsl";
-include "Options/Soccer/striker_agent.xabsl";
 include "Options/Test/agent/role_change_test_agent.xabsl";
-include "Options/Test/agent/passive_behavior_test_agent.xabsl";
+
 
 
 include "Options/Test/agent/change_state_input_test_agent.xabsl";
