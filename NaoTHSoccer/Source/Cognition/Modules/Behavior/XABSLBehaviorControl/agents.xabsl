@@ -62,9 +62,6 @@ include "Options/Skills/USOA/go_to_point_with_USOA.xabsl";
 include "Options/Skills/search_ball_back_rot.xabsl";
 include "Options/Skills/simple_search_ball.xabsl";
 include "Options/Skills/search_ball.xabsl";
-//
-//include "Options/Skills/striker_search.xabsl";
-//include "Options/Skills/search_before_passive.xabsl";
 
 //include "Options/Skills/fast_forward_kick_with_right.xabsl";
 //include "Options/Skills/fast_forward_kick_with_left.xabsl";
