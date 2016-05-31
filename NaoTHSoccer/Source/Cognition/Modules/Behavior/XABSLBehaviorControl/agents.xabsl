@@ -113,7 +113,7 @@ include "Options/Soccer/Penalty/penalty_set_penalized_play.xabsl";
 include "Options/Soccer/Penalty/simple_penalty_goalie_agent.xabsl";
 
 // Soccer-Tests
-include "Options/Test/agent/passive_behavior_test_agent.xabsl";
+include "Options/Soccer/Test/passive_behavior_test_agent.xabsl";
 include "Options/Soccer/Test/passive_player_agent.xabsl";
 include "Options/Soccer/Test/basic_goali_agent.xabsl";
 include "Options/Soccer/Test/striker_agent.xabsl";
