@@ -17,6 +17,13 @@ GameController::GameController()
   // TODO: make it parameters?
   // load values from config
   const Configuration& config = naoth::Platform::getInstance().theConfiguration;
+
+  if (config.hasKey("player", "NumOfPlayer")) {
+    getPlayerInfo().playersPerTeam = config.getInt("player", "NumOfPlayer");
+  } else {
+    std::cerr << "[GameData] " << "No number of players (NumOfPlayers) given" << std::endl;
+  }
+
   if (config.hasKey("player", "PlayerNumber")) {
     getPlayerInfo().playerNumber = config.getInt("player", "PlayerNumber");
   } else {

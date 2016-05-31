@@ -43,12 +43,14 @@ public:
 
     teamColor = gameData.ownTeam.teamColour;
     kickoff = (gameData.kickOffTeam == teamNumber);
+    playersPerTeam = gameData.playersPerTeam;
   }
 
   PlayerInfo();
   ~PlayerInfo();
   
   // set from config
+  unsigned int playersPerTeam; // number of players in the team
   unsigned int playerNumber;
   unsigned int teamNumber;
   std::string teamName;
