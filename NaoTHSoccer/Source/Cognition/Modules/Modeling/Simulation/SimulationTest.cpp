@@ -24,8 +24,6 @@ SimulationTest::~SimulationTest(){}
 void SimulationTest::execute()
 {
 	DEBUG_REQUEST("SimulationTest:draw_decision",
-		globRot = globRot+1.0;
-
 		// hack
 		static std::vector<Vector3d> function;
 		function.clear();
@@ -61,6 +59,8 @@ void SimulationTest::execute()
 		}
     draw_function_multicolor(functionMulticolor);
 		//draw_function(function);
+
+    globRot = globRot+10.0;
 	);
 }//end execute
 
