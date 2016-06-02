@@ -66,6 +66,7 @@ include "Options/Debug/show_calibration.xabsl";
 include "Options/Soccer/spl_play_soccer.xabsl";
 include "Options/Soccer/Strategy/basic_play.xabsl"; //Verschieben
 include "Options/Soccer/Strategy/play_soccer.xabsl";
+include "Options/Soccer/Strategy/motion_init_stand_watch.xabsl";
 include "Options/Soccer/Strategy/decide_game_state.xabsl";
 include "Options/Soccer/Strategy/decide_role.xabsl";
 include "Options/Soccer/Strategy/decide_and_go_to_ready_position.xabsl";
