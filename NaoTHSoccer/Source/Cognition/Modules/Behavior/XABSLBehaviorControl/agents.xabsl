@@ -195,8 +195,6 @@ include "Options/Test/change_state_input_test.xabsl";
 /** The soccer competition agent */
 agent spl_soccer("SPL Soccer", spl_play_soccer);
 agent penalty("Penalty", play_penalty);
-agent simple_penalty_goalie("Simple Penalty Goalie", simple_penalty_goalie_agent);
-
 
 
 /** simple soccer agents **/
