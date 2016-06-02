@@ -96,9 +96,7 @@ include "Options/Soccer/Strategy/initial_striker.xabsl";
 // Penalty
 include "Options/Soccer/Penalty/penalty_kicker.xabsl";
 include "Options/Soccer/Penalty/play_penalty.xabsl";
-include "Options/Soccer/Penalty/decide_penalty_role.xabsl";
-include "Options/Soccer/Penalty/penalty_set_penalized_play.xabsl";
-include "Options/Soccer/Penalty/simple_penalty_goalie_agent.xabsl";
+include "Options/Soccer/Penalty/penalty_decide_state_and_role.xabsl";
 
 // Soccer-Tests
 include "Options/Soccer/Test/passive_behavior_test_agent.xabsl";

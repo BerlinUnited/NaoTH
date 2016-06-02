@@ -1,36 +1,36 @@
 /** This is the "main" file for playing */
 
-option penalty_set_penalized_play
+option penalty_decide_state_and_role
 {  
   common decision
   {
     if(!body.ready_to_walk)
       goto idle;
     else if(game.current_mode == playing)
-      goto play;
-    else if(game.current_mode == ready)
-      goto ready;
+    {
+      if(game.player_number == 1)
+        goto play_goalie;
+      else
+        goto play_kicker;
+    }
     else if(true)
       goto idle;
   }
-  
 
-  initial state idle{action{}}  
+  initial state idle{action{}}
   
-  state play {
+  state play_kicker {
     action 
     {
-      //sound.request = (state_time == 0)  ? playing : off;
-      decide_penalty_role();
-      //check_fall_down();
-      last_state_was_penalized = false;
+      penalty_kicker();
     }
   }
 
-  state ready
-  {
+  state play_goalie {
     action 
     {
+      motion.type = stand;
+      head.control_mode = search_for_ball;
     }
   }
 }
