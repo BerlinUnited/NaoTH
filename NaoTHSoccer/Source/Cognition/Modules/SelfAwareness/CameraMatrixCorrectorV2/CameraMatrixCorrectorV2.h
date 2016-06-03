@@ -9,6 +9,7 @@
 #define _CameraMatrixCorrectorV2_h_
 
 #include <ModuleFramework/Module.h>
+#include <ModuleFramework/ModuleManager.h>
 
 #include "Representations/Perception/CameraMatrix.h"
 //#include "Representations/Perception/GoalPercept.h"
@@ -22,6 +23,7 @@
 #include "Representations/Modeling/CameraMatrixOffset.h"
 //#include "Representations/Perception/LineGraphPercept.h"
 #include "Representations/Perception/ScanLineEdgelPercept.h"
+#include "Representations/Perception/LineGraphPercept.h"
 
 // motion stuff
 #include "Representations/Modeling/KinematicChain.h"
@@ -42,18 +44,18 @@
 
 //////////////////// BEGIN MODULE INTERFACE DECLARATION ////////////////////
 
-BEGIN_DECLARE_MODULE(CameraMatrixCorrectorV2)
+BEGIN_DECLARE_MODULE(CamMatErrorFunction)
   PROVIDE(DebugRequest)
   PROVIDE(DebugDrawings3D)
   PROVIDE(DebugDrawings)
   PROVIDE(DebugImageDrawings)
   PROVIDE(DebugImageDrawingsTop)
   PROVIDE(DebugModify)
-  
+
   REQUIRE(FieldInfo)
-  REQUIRE(FrameInfo)
-  REQUIRE(ScanLineEdgelPercept)
-  REQUIRE(ScanLineEdgelPerceptTop)
+//  REQUIRE(FrameInfo)
+
+  REQUIRE(LineGraphPercept)
 
   REQUIRE(CameraMatrix)
   REQUIRE(CameraMatrixTop)
@@ -64,45 +66,46 @@ BEGIN_DECLARE_MODULE(CameraMatrixCorrectorV2)
   REQUIRE(KinematicChain)
 
   PROVIDE(CameraMatrixOffset)
+END_DECLARE_MODULE(CamMatErrorFunction)
+
+BEGIN_DECLARE_MODULE(CameraMatrixCorrectorV2)
+  PROVIDE(DebugRequest)
+  PROVIDE(DebugDrawings3D)
+  PROVIDE(DebugDrawings)
+  PROVIDE(DebugImageDrawings)
+  PROVIDE(DebugImageDrawingsTop)
+  PROVIDE(DebugModify)
+
+  REQUIRE(FrameInfo)
+
+  PROVIDE(CameraMatrixOffset)
 END_DECLARE_MODULE(CameraMatrixCorrectorV2)
 
 //////////////////// END MODULE INTERFACE DECLARATION //////////////////////
 /// \brief The CameraMatrixCorrectorV2 class
 
-#define DOUBLE_CAM_IN_ERROR_FUNCTION(name)      \
-  const name& get##name() const {            \
-    if(cameraID == CameraInfo::Top) {        \
-      return the##name##Top; \
-    } else {                                 \
-      return the##name;      \
-    }                                        \
-  }
-
-class CamMatErrorFunction
+// HACK: shouldn't be a module, should be a service... wait and see what the future holds ;)
+class CamMatErrorFunction : public CamMatErrorFunctionBase
 {
 private:
 
-    const CameraMatrixOffset&      camMatOffset;
-    const KinematicChain&          kinematicChain;
-    const ScanLineEdgelPercept&    theScanLineEdgelPercept;
-    const ScanLineEdgelPerceptTop& theScanLineEdgelPerceptTop;
-    const CameraInfo&              theCameraInfo;
-    const CameraInfoTop&           theCameraInfoTop;
-    const FieldInfo&               fieldInfo;
+    DOUBLE_CAM_REQUIRE(CamMatErrorFunction,CameraMatrix);
+    DOUBLE_CAM_REQUIRE(CamMatErrorFunction,CameraInfo);
 
-    DOUBLE_CAM_IN_ERROR_FUNCTION(ScanLineEdgelPercept);
-    DOUBLE_CAM_IN_ERROR_FUNCTION(CameraInfo);
+    const std::vector<EdgelD>& getEdgelsInImage() const {
+      if(cameraID == CameraInfo::Top) {
+        return getLineGraphPercept().edgelsInImageTop;
+      } else {
+        return getLineGraphPercept().edgelsInImage;
+      }
+    }
 
 public:
-    CamMatErrorFunction(const CameraMatrixOffset& camMatOffset, const KinematicChain& kinematicChain, const ScanLineEdgelPercept& scanLineEdgelPercept, const ScanLineEdgelPerceptTop& scanLineEdgelPerceptTop, const CameraInfo& cameraInfo, const CameraInfoTop& cameraInfoTop, const FieldInfo& fieldInfo):
-        camMatOffset(camMatOffset),
-        kinematicChain(kinematicChain),
-        theScanLineEdgelPercept(scanLineEdgelPercept),
-        theScanLineEdgelPerceptTop(scanLineEdgelPerceptTop),
-        theCameraInfo(cameraInfo),
-        theCameraInfoTop(cameraInfoTop),
-        fieldInfo(fieldInfo)
+    CamMatErrorFunction()
+        : cameraID(CameraInfo::Bottom)
     {}
+
+    void execute(){}
 
     CameraInfo::CameraID cameraID;
 
@@ -112,19 +115,19 @@ public:
         Vector2d offset(parameter(0), parameter(1));
 
         CameraMatrix tmpCM = CameraGeometry::calculateCameraMatrix(
-                    kinematicChain,
+                    getKinematicChain(),
                     NaoInfo::robotDimensions.cameraTransform[cameraID].offset,
                     NaoInfo::robotDimensions.cameraTransform[cameraID].rotationY,
-                    camMatOffset.correctionOffset[cameraID] + offset
+                    getCameraMatrixOffset().correctionOffset[cameraID] + offset
                     );
 
         std::vector<Vector2d> edgelProjections;
-        edgelProjections.resize(getScanLineEdgelPercept().pairs.size());
+        edgelProjections.resize(getEdgelsInImage().size());
 
         // project edgels pairs to field
-        for(size_t i = 0; i < getScanLineEdgelPercept().pairs.size(); i++)
+        for(size_t i = 0; i < getEdgelsInImage().size(); i++)
         {
-            const EdgelT<double>& edgelOne = getScanLineEdgelPercept().pairs[i];
+            const EdgelT<double>& edgelOne = getEdgelsInImage()[i];
 
             CameraGeometry::imagePixelToFieldCoord(
                         tmpCM, getCameraInfo(),
@@ -142,7 +145,7 @@ public:
             Pose2D   robotPose;
             Vector2d seen_point_global = robotPose * seen_point_relative;
 
-            LinesTable::NamedPoint line_point_global = fieldInfo.fieldLinesTable.get_closest_point(seen_point_global, LinesTable::all_lines);
+            LinesTable::NamedPoint line_point_global = getFieldInfo().fieldLinesTable.get_closest_point(seen_point_global, LinesTable::all_lines);
 
             // there is no such line
             if(line_point_global.id == -1) {
@@ -156,7 +159,8 @@ public:
     }
 };
 
-class CameraMatrixCorrectorV2: public CameraMatrixCorrectorV2Base
+// HACK: shouldn't be a ModuleManager but has to be because of the CamMatErrorFunction... see above
+class CameraMatrixCorrectorV2: public CameraMatrixCorrectorV2Base, public ModuleManager
 {
 public:
 
@@ -181,12 +185,14 @@ private:
 
   void calibrate();
   void reset_calibration();
-  CamMatErrorFunction lineMatchingError;
+
+  // CamMatErrorFunction lineMatchingError;
+  ModuleCreator<CamMatErrorFunction>* theCamMatErrorFunction;
 
   DOUBLE_CAM_PROVIDE(CameraMatrixCorrectorV2,DebugImageDrawings);
-  DOUBLE_CAM_REQUIRE(CameraMatrixCorrectorV2,CameraMatrix);
-  DOUBLE_CAM_REQUIRE(CameraMatrixCorrectorV2,ScanLineEdgelPercept);
-  DOUBLE_CAM_REQUIRE(CameraMatrixCorrectorV2,CameraInfo);
+  //DOUBLE_CAM_REQUIRE(CameraMatrixCorrectorV2,CameraMatrix);
+  //DOUBLE_CAM_REQUIRE(CameraMatrixCorrectorV2,ScanLineEdgelPercept);
+  //DOUBLE_CAM_REQUIRE(CameraMatrixCorrectorV2,CameraInfo);
 };
 
 #endif //_CameraMatrixCorrectorV2_h_

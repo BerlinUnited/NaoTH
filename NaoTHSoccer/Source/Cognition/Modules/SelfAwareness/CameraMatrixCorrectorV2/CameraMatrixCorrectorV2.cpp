@@ -12,8 +12,7 @@
 #include "Motion/MorphologyProcessor/ForwardKinematics.h"
 
 
-CameraMatrixCorrectorV2::CameraMatrixCorrectorV2():
-    lineMatchingError(getCameraMatrixOffset(), getKinematicChain(), getScanLineEdgelPercept(), getScanLineEdgelPerceptTop(), getCameraInfo(), getCameraInfoTop(), getFieldInfo())
+CameraMatrixCorrectorV2::CameraMatrixCorrectorV2()
 {
   DEBUG_REQUEST_REGISTER("CameraMatrixV2:calibrate_camera_matrix",
     "calculates the roll and tilt offset of the camera using the goal (it. shoult be exactely 3000mm in front of the robot)", 
@@ -35,6 +34,7 @@ CameraMatrixCorrectorV2::CameraMatrixCorrectorV2():
                          "",
                          false);
 
+  theCamMatErrorFunction = registerModule<CamMatErrorFunction>("CamMatErrorFunction", true);
 }
 
 CameraMatrixCorrectorV2::~CameraMatrixCorrectorV2()
@@ -44,7 +44,7 @@ CameraMatrixCorrectorV2::~CameraMatrixCorrectorV2()
 void CameraMatrixCorrectorV2::execute(CameraInfo::CameraID id)
 {
   cameraID = id;
-  lineMatchingError.cameraID = id;
+  theCamMatErrorFunction->getModuleT()->cameraID = cameraID;
 
   CameraInfo::CameraID camera_to_calibrate = CameraInfo::numOfCamera;
 
@@ -82,7 +82,7 @@ void CameraMatrixCorrectorV2::calibrate()
   // calibrate the camera matrix
   Eigen::Matrix<double, 2, 1> offset;
 
-  offset = gn_minimizer.minimizeOneStep(&lineMatchingError,1e-4);
+  offset = gn_minimizer.minimizeOneStep(theCamMatErrorFunction->getModuleT(),1e-4);
 
   getCameraMatrixOffset().correctionOffset[cameraID] += Vector2d(offset(0),offset(1));
 }//end calibrate
