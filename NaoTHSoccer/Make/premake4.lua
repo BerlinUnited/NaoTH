@@ -157,7 +157,8 @@ solution "NaoTHSoccer"
     dofile (FRAMEWORK_PATH .. "/Platforms/Make/NaoSMAL.lua")
       -- HACK: boost from NaoQI SDK makes problems
       buildoptions {"-Wno-conversion"}
-      -- ACHTUNG: NaoSMAL doesn't build with the flag -std=c++11 (because of Boost)
+     -- ACHTUNG: NaoSMAL doesn't build with the flag -std=c++11 (because of Boost)
+      buildoptions {"-std=gnu++11"}
     dofile (FRAMEWORK_PATH .. "/Platforms/Make/NaoRobot.lua")
       kind "ConsoleApp"
       links { "NaoTHSoccer", "Commons" }
