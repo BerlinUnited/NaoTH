@@ -59,6 +59,10 @@ BasicTestBehavior::BasicTestBehavior()
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:dance", "Let's dance", false);
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:protect_falling", "Don't hurt me!", false);
 
+  // parallelkinematik
+  DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:parallel_stepper", "parallel_stepper", false);
+  DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:parallel_dance", "parallel_dance", false);
+
   // needed by the motion editor
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:play_editor_motionnet", "play the motion editor motion", false);
 
@@ -340,6 +344,14 @@ void BasicTestBehavior::testMotion()
   
   DEBUG_REQUEST("BasicTestBehavior:motion:force",
     getMotionRequest().forced = true;
+  );
+
+
+  DEBUG_REQUEST("BasicTestBehavior:motion:parallel_stepper", 
+    getMotionRequest().id = motion::parallel_stepper;
+  );
+  DEBUG_REQUEST("BasicTestBehavior:motion:parallel_dance", 
+    getMotionRequest().id = motion::parallel_dance;
   );
   
 }//end testMotion
