@@ -82,8 +82,8 @@ void SimulationTest::draw_function_multicolor(const std::vector<SimulationTest::
   FIELD_DRAWING_CONTEXT;
   std::vector<Color> colors;
   colors.push_back(Color(1.0,1.0,0.0,0.7)); //none
-  colors.push_back(Color(255.0/255,172.0/255,18.0/255,0.7));//short
-  colors.push_back(Color(232.0/255,43.0/255,0.0/255,0.7));  //long
+  colors.push_back(Color(0.0/255,234.0/255,255.0/255,0.7));//short
+  colors.push_back(Color(255.0/255,43.0/255,0.0/255,0.7));  //long
   colors.push_back(Color(0.0/255,13.0/255,191.0/255,0.7));  //left
   colors.push_back(Color(0.0/255,191.0/255,51.0/255,0.7));  //right
 
