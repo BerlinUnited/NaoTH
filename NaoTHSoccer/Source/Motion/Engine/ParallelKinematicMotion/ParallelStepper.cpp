@@ -61,16 +61,12 @@ void ParallelStepper::execute()
   MODIFY("ParallelStepper:height", height);
 
 
-
   // hip trajectory
   double y = sin(t) * shift;
 
   // y > 0 ==> left, y < 0 ==> right
-
   // feet trajectory
-  // t \in [pi,2pi]
   double foot_height_left = height * (1.0-cos(2.0*t))*0.5;
-  // t \in [0,pi]
   double foot_height_right = height* (1.0-cos(2.0*t))*0.5;
 
   if(y < 0) { // right
@@ -86,10 +82,8 @@ void ParallelStepper::execute()
 
 
   // x-motion for feet
-
   double step_length = 0;
   MODIFY("ParallelStepper:step_length", step_length);
-
 
   double alpha_x_left = step_length * sin(t+ Math::pi_2);
   double alpha_x_right = step_length * sin(t + Math::pi+Math::pi_2);
@@ -112,7 +106,6 @@ void ParallelStepper::execute()
 
   // apply parallel kinematics to calculate the leg joints
   theParallelKinematic.calculateLegs(poseLeft, poseRight, getMotorJointData());
-
 
   setCurrentState(motion::running);
 }//end execute
