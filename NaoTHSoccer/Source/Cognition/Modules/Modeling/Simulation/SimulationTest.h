@@ -70,15 +70,12 @@ public:
       Vector2d position;
   };
   std::vector<MultiColorValue> functionMulticolor;
+  double globRobotRotation;
+  static const int CELL_WIDTH = 100;
 
 private:
   ModuleCreator<Simulation>* simulationModule;
-
-  void draw_function(const std::vector<Vector3d>& function) const;
-  void draw_difference(const std::vector<Vector3d>& function)const;
   void draw_function_multicolor(const std::vector<SimulationTest::MultiColorValue>& function) const;
-
-	double globRot;
 
 };
 

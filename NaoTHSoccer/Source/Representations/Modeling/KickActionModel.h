@@ -31,7 +31,6 @@ public:
   static std::string getName(ActionId id);
   
   ActionId bestAction;
-  ActionId smartBestAction;
 };
 
 

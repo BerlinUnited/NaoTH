@@ -87,10 +87,7 @@ void Simulation::execute()
   size_t best_action = decide_smart(actionsConsequences);
   STOPWATCH_STOP("Simulation:decide");  
 
-  size_t smart_best_action = decide_smart(actionsConsequences);
-
   getKickActionModel().bestAction = action_local[best_action].id();
-  getKickActionModel().smartBestAction = action_local[smart_best_action].id();
 
   DEBUG_REQUEST("Simulation:draw_best_action",
     FIELD_DRAWING_CONTEXT;

@@ -10,12 +10,10 @@ using namespace naoth;
 using namespace std;
 
 SimulationTest::SimulationTest()
+  : globRobotRotation(0.0)
 {
   simulationModule = registerModule<Simulation>(std::string("Simulation"), true);
 	DEBUG_REQUEST_REGISTER("SimulationTest:draw_decision","draw_decision", false);
-
-	//Set Rotation
-	globRot = 0.0;
 }
 
 SimulationTest::~SimulationTest(){}
@@ -24,9 +22,6 @@ SimulationTest::~SimulationTest(){}
 void SimulationTest::execute()
 {
 	DEBUG_REQUEST("SimulationTest:draw_decision",
-		// hack
-		static std::vector<Vector3d> function;
-		function.clear();
 
 		// ball just in front of the robot
 		getBallModel().position = Vector2d(150, 0);
@@ -39,8 +34,8 @@ void SimulationTest::execute()
     functionMulticolor.clear();
 		Vector2d p(getFieldInfo().carpetRect.min());
 
-		for(p.x = getFieldInfo().carpetRect.min().x; p.x < getFieldInfo().carpetRect.max().x; p.x += 200) {
-			for(p.y = getFieldInfo().carpetRect.min().y; p.y < getFieldInfo().carpetRect.max().y; p.y += 200) 
+		for(p.x = getFieldInfo().carpetRect.min().x+CELL_WIDTH; p.x < getFieldInfo().carpetRect.max().x; p.x += 2*CELL_WIDTH) {
+			for(p.y = getFieldInfo().carpetRect.min().y+CELL_WIDTH; p.y < getFieldInfo().carpetRect.max().y; p.y += 2*CELL_WIDTH) 
 			{
         MultiColorValue v(KickActionModel::numOfActions);
         v.position = p; //Draw the ball position later
@@ -48,132 +43,35 @@ void SimulationTest::execute()
         for(size_t i=0; i<10; ++i)
         {
           getRobotPose().translation = p;
-				  getRobotPose().rotation =  Math::fromDegrees(globRot);
+				  getRobotPose().rotation =  Math::fromDegrees(globRobotRotation);
 				  
+          // run the simulation module
 				  simulationModule->execute();
+
           v.values[getKickActionModel().bestAction]++;
         }
 
         functionMulticolor.push_back(v);
 			}
 		}
-    draw_function_multicolor(functionMulticolor);
-		//draw_function(function);
 
-    globRot = globRot+10.0;
+
+    draw_function_multicolor(functionMulticolor);
+		
+    // Draw arrow indicating robot's orientation
+	  Pose2D q(Math::fromDegrees(globRobotRotation), 0.0, 0.0);
+	  Vector2d arrowStart = q * Vector2d(0, 0);
+	  Vector2d arrowEnd = q * Vector2d(500, 0);
+
+	  PEN("000000", 50);
+	  ARROW(arrowStart.x,arrowStart.y,arrowEnd.x,arrowEnd.y);
+
+
+    globRobotRotation += 10.0;
 	);
 }//end execute
 
-void SimulationTest::draw_function(const std::vector<Vector3d>& function) const
-{
-  if(function.empty()) {
-    return;
-  }
 
-  double maxValue = function.front().z;
-  double minValue = function.front().z;
-  for(size_t i = 0; i < function.size(); ++i) {
-    if(function[i].z > maxValue) {
-      maxValue = function[i].z;
-    } else if(function[i].z < minValue) {
-      minValue = function[i].z;
-    }
-  }
-
-  if(maxValue - minValue == 0) return;
-
-  FIELD_DRAWING_CONTEXT;
-  Color white(1.0,1.0,1.0,0.0); // transparent
-  Color black(0.0,0.0,0.0,1.0);
-
-
-  for(size_t i = 0; i < function.size(); ++i) {
-    double t = (function[i].z - minValue) / (maxValue - minValue);
-    //Color color = black*t + white*(1-t);
-	  Color color;
-
-	  if(function[i].z == 0){
-		  color = Color(1.0,1.0,1.0,0.7); //White - None
-	  }
-	  else if(function[i].z == 1){
-		  color = Color(255.0/255,172.0/255,18.0/255,0.7); //orange - kick_short
-	  }
-	  else if(function[i].z == 2){
-		  color = Color(232.0/255,43.0/255,0.0/255,0.7); //red - kick_long
-	  }
-	  else if(function[i].z == 3){
-		  color = Color(0.0/255,13.0/255,191.0/255,0.7); //blue - sidekick_left
-	  }
-	  else if(function[i].z == 4){
-		  color = Color(0.0/255,191.0/255,51.0/255,0.7);//green - sidekick_right
-	  }
-      PEN(color, 20);
-      FILLBOX(function[i].x - 50, function[i].y - 50, function[i].x+50, function[i].y+50);
-  }
-	//Draw Arrow instead
-	Pose2D q;
-	q.translation.x = 0.0;
-	q.translation.y = 0.0;
-	q.rotation = Math::fromDegrees(globRot);
-
-	Vector2d ArrowStart = q * Vector2d(0, 0);
-	Vector2d ArrowEnd = q * Vector2d(500, 0);
-
-	PEN("000000", 50);
-	ARROW(ArrowStart.x,ArrowStart.y,ArrowEnd.x,ArrowEnd.y);
-}//end draw_closest_points
-
-void SimulationTest::draw_difference(const std::vector<Vector3d>& function)const{
-  if(function.empty()) {
-    return;
-  }
-
-  double maxValue = function.front().z;
-  double minValue = function.front().z;
-  for(size_t i = 0; i < function.size(); ++i)
-  {
-    if(function[i].z > maxValue) {
-      maxValue = function[i].z;
-    } else if(function[i].z < minValue)
-    {
-      minValue = function[i].z;
-    }
-  }
-
-  if(maxValue - minValue == 0) return;
-
-  FIELD_DRAWING_CONTEXT;
-  Color white(1.0,1.0,1.0,0.0); // transparent
-  Color black(0.0,0.0,0.0,1.0);
-
-
-  for(size_t i = 0; i < function.size(); ++i)
-  {
-	  Color color;
-    //Test for difference of kick decisions
-    if(function[i].z == 0)
-    {
-		  color = Color(1.0,1.0,1.0,0.7);//White Kick Decision is the same
-    }
-    else if(function[i].z == 1)
-    {
-      color = Color(0.0,0.0,0.0,0.7); //Black - Kick Decision is not the same
-    }
-      PEN(color, 20);
-      FILLBOX(function[i].x - 50, function[i].y - 50, function[i].x+50, function[i].y+50);
-  }
-  //Draw Arrow
-	Pose2D q;
-	q.translation.x = 0.0;
-	q.translation.y = 0.0;
-	q.rotation = Math::fromDegrees(globRot);
-
-	Vector2d ArrowStart = q * Vector2d(0, 0);
-	Vector2d ArrowEnd = q * Vector2d(500, 0);
-
-	PEN("000000", 50);
-	ARROW(ArrowStart.x,ArrowStart.y,ArrowEnd.x,ArrowEnd.y);
-}
 
 void SimulationTest::draw_function_multicolor(const std::vector<SimulationTest::MultiColorValue>& function) const
 {
@@ -189,6 +87,8 @@ void SimulationTest::draw_function_multicolor(const std::vector<SimulationTest::
   colors.push_back(Color(0.0/255,13.0/255,191.0/255,0.7));  //left
   colors.push_back(Color(0.0/255,191.0/255,51.0/255,0.7));  //right
 
+  // assert that we have enough colors
+  ASSERT(colors.size() >= function[0].values.size());
 
   for(size_t i = 0; i < function.size(); ++i) 
   {
@@ -204,18 +104,6 @@ void SimulationTest::draw_function_multicolor(const std::vector<SimulationTest::
     }
 
     PEN(color, 0);
-    FILLBOX(v.position.x - 100, v.position.y - 100, v.position.x+100, v.position.y+100);
+    FILLBOX(v.position.x-CELL_WIDTH, v.position.y-CELL_WIDTH, v.position.x+CELL_WIDTH, v.position.y+CELL_WIDTH);
   }
-
-	//Draw Arrow
-	Pose2D q;
-	q.translation.x = 0.0;
-	q.translation.y = 0.0;
-	q.rotation = Math::fromDegrees(globRot);
-
-	Vector2d ArrowStart = q * Vector2d(0, 0);
-	Vector2d ArrowEnd = q * Vector2d(500, 0);
-
-	PEN("000000", 50);
-	ARROW(ArrowStart.x,ArrowStart.y,ArrowEnd.x,ArrowEnd.y);
 }
