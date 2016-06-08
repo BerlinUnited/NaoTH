@@ -15,7 +15,7 @@
 
 // representations
 #include "Representations/Modeling/BallModel.h"
-#include "Representations/Perception/BallPercept.h"
+#include "Representations/Perception/MultiBallPercept.h"
 #include "Representations/Modeling/TeamBallModel.h"
 #include "Representations/Infrastructure/FrameInfo.h"
 #include "Representations/Infrastructure/FieldInfo.h"
@@ -28,10 +28,10 @@
 #include "Tools/Debug/DebugRequest.h"
 #include "Tools/Debug/DebugDrawings.h"
 #include "Tools/Debug/DebugPlot.h"
+
 BEGIN_DECLARE_MODULE(BallSymbols)
   REQUIRE(BallModel)
-  REQUIRE(BallPercept)
-  REQUIRE(BallPerceptTop)
+  REQUIRE(MultiBallPercept)
   REQUIRE(FrameInfo)
   REQUIRE(RobotPose)
   REQUIRE(TeamBallModel)

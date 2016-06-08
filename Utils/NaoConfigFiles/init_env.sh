@@ -169,10 +169,12 @@ fi
 cp -r ./home/nao/naoqi/Config/* /home/nao/Config
 chown -R nao:nao /home/nao/naoqi/Config;
 
+# remove any old media files
 if [ -d "/home/nao/naoqi/Media" ]; then
   rm -rf /home/nao/naoqi/Media/*
 fi
 
+# copy the new media files
 cp -r ./home/nao/naoqi/Media/* /home/nao/Media
 chown -R nao:nao /home/nao/naoqi/Media;
 
@@ -231,6 +233,10 @@ copy ./etc/wpa_supplicant/wpa_supplicant.conf /etc/wpa_supplicant/wpa_supplicant
 # Network IP Adresses
 copy ./etc/conf.d/net /etc/conf.d/net root 644
 
+# hostname
+copy ./etc/conf.d/hostname /etc/conf.d/hostname root 644
+copy ./etc/hostname /etc/hostname root 644
+
 # Check and Update Runlevel Configuration for Network Services
 chown root:root ./checkRC.sh;
 chmod 744 ./checkRC.sh;
@@ -245,7 +251,9 @@ ldconfig;
 chmod +s /sbin/shutdown
 chmod +s /sbin/reboot
 
-amixer sset 'PCM' 90%
+# set volume to 88%
+sudo -u nao pactl set-sink-mute 0 false
+sudo -u nao pactl set-sink-volume 0 88%
 
 echo "initialization done, shutting down system";
 shutdown -h now

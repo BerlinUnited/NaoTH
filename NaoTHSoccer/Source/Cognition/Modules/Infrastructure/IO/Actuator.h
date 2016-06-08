@@ -27,6 +27,8 @@
 #include "Representations/Modeling/KinematicChain.h"
 #include "Representations/Modeling/CameraMatrixOffset.h"
 
+#include "Representations/Modeling/BodyState.h"
+
 using namespace naoth;
 
 BEGIN_DECLARE_MODULE(Actuator)
@@ -45,6 +47,7 @@ BEGIN_DECLARE_MODULE(Actuator)
   REQUIRE(CameraInfoTop)
   REQUIRE(CameraMatrixOffset)
   REQUIRE(GameReturnData)
+  REQUIRE(BodyState)
 
   // HACK: needed to transform the HeadMotionRequest
   REQUIRE(KinematicChain)

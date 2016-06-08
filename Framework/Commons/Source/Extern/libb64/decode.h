@@ -13,10 +13,9 @@ Modified for SimSpark (http://simspark.sourceforge.net)
 #include <iostream>
 #include <string>
 
-namespace base64 {
-extern "C" {
 #include "cdecode.h"
-}
+
+namespace base64 {
 
 class Decoder
 {

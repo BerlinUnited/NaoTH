@@ -4,8 +4,8 @@
 * Declaration of class KickActionModel
 */
 
-#ifndef _KickActionModel_H
-#define _KickActionModel_H
+#ifndef _KickActionModel_H_
+#define _KickActionModel_H_
 
 #include <string>
 

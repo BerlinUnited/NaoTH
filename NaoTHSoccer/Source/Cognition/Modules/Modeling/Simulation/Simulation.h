@@ -80,28 +80,29 @@ public:
     {
       PARAMETER_REGISTER(sidekick_right.speed) = 750;
       PARAMETER_REGISTER(sidekick_right.speed_std) = 150;
-      PARAMETER_REGISTER(sidekick_right.angle) = -85;
-      PARAMETER_REGISTER(sidekick_right.angle_std) = 15;
+      PARAMETER_REGISTER(sidekick_right.angle) = -89.657943335302260;
+      PARAMETER_REGISTER(sidekick_right.angle_std) = 10.553726275058064;
 
       PARAMETER_REGISTER(sidekick_left.speed) = 750;
       PARAMETER_REGISTER(sidekick_left.speed_std) = 150;
-      PARAMETER_REGISTER(sidekick_left.angle) = 85;
-      PARAMETER_REGISTER(sidekick_left.angle_std) = 15;
+      PARAMETER_REGISTER(sidekick_left.angle) = 86.170795364136380;
+      PARAMETER_REGISTER(sidekick_left.angle_std) = 10.669170653645670;
 
       PARAMETER_REGISTER(kick_short.speed) = 780;
       PARAMETER_REGISTER(kick_short.speed_std) = 150;
-      PARAMETER_REGISTER(kick_short.angle) = 0.0;
-      PARAMETER_REGISTER(kick_short.angle_std) = 10;
+      PARAMETER_REGISTER(kick_short.angle) = 8.454482265522328;
+      PARAMETER_REGISTER(kick_short.angle_std) = 6.992268841997358;
 
-      PARAMETER_REGISTER(kick_long.speed) = 1020;
-      PARAMETER_REGISTER(kick_long.speed_std) = 150;
-      PARAMETER_REGISTER(kick_long.angle) = 0.0;
-      PARAMETER_REGISTER(kick_long.angle_std) = 10;
+      //PARAMETER_REGISTER(kick_long.speed) = 1020;
+      //PARAMETER_REGISTER(kick_long.speed_std) = 150;
+      //PARAMETER_REGISTER(kick_long.angle) = 8.454482265522328;
+      //PARAMETER_REGISTER(kick_long.angle_std) = 6.992268841997358;
 
       PARAMETER_REGISTER(friction) = 0.0275;
 
       PARAMETER_REGISTER(good_threshold_percentage) = 0.85;
-      PARAMETER_REGISTER(numParticles) = 30; 
+      PARAMETER_REGISTER(numParticles) = 30;
+      PARAMETER_REGISTER(minGoalParticles) = 9;
       
       syncWithConfig();
     }
@@ -113,6 +114,7 @@ public:
     double friction;
     double good_threshold_percentage;
     double numParticles;
+    double minGoalParticles;
 
   } theParameters;
 
@@ -127,7 +129,6 @@ public:
     double action_angle;
     double action_angle_std;
     double friction;
-
     
   public:
     Action(KickActionModel::ActionId _id, const ActionParams& params, double friction) : 
@@ -192,7 +193,7 @@ public:
       return ballPositions;
     }
 
-    const int categorie(BallPositionCategory cat) const {
+    int categorie(BallPositionCategory cat) const {
       return cat_histogram[cat];
     }
 
@@ -211,9 +212,8 @@ public:
 
 private:
 
-  std::vector<Action> action_local;
+  std::vector<Action> action_local;  
   std::vector<ActionResults> actionsConsequences;
-
 
   void simulateConsequences(const Action & action, ActionResults& categorizedBallPositions) const;
 
@@ -231,6 +231,8 @@ private:
   double evaluateAction(const Vector2d& a) const;
 
   void draw_potential_field() const;
+
+  void draw_actions(const std::vector<ActionResults>& actionsConsequences)const;
 };
 
 #endif  /* _Simulation_H */

@@ -67,6 +67,7 @@ solution "NaoTHSoccer"
     },
     FRAMEWORK_PATH .. "/Commons/Source/Messages/", 
     "../../RobotControl/RobotConnector/src/", 
+    "../../Utils/pyLogEvaluator",
     {COMMONS_MESSAGES}
   )
 
@@ -74,6 +75,7 @@ solution "NaoTHSoccer"
     {"../Messages/Representations.proto"}, 
     "../Source/Messages/", 
     "../../RobotControl/RobotConnector/src/", 
+    "../../Utils/pyLogEvaluator",
     {COMMONS_MESSAGES, "../Messages/"}
   )
 
@@ -127,6 +129,7 @@ solution "NaoTHSoccer"
       -- may be needed for newer glib2 versions, remove if not needed
       buildoptions {"-Wno-deprecated-declarations"}
       buildoptions {"-Wno-deprecated"}
+      buildoptions {"-std=c++11"}
       flags { "ExtraWarnings" }
       links {"pthread"}
     
@@ -141,17 +144,25 @@ solution "NaoTHSoccer"
    
   -- base
   dofile (FRAMEWORK_PATH .. "/Commons/Make/Commons.lua")
+    configuration {"Nao"}
+      buildoptions {"-std=c++11"}
+  
   -- core
   dofile "NaoTHSoccer.lua"
+    configuration {"Nao"}
+      buildoptions {"-std=c++11"}
   
   -- set up platforms
   if _OPTIONS["platform"] == "Nao" then
     dofile (FRAMEWORK_PATH .. "/Platforms/Make/NaoSMAL.lua")
       -- HACK: boost from NaoQI SDK makes problems
       buildoptions {"-Wno-conversion"}
+     -- ACHTUNG: NaoSMAL doesn't build with the flag -std=c++11 (because of Boost)
+      buildoptions {"-std=gnu++11"}
     dofile (FRAMEWORK_PATH .. "/Platforms/Make/NaoRobot.lua")
       kind "ConsoleApp"
       links { "NaoTHSoccer", "Commons" }
+      buildoptions {"-std=c++11"}
   else
     dofile (FRAMEWORK_PATH .. "/Platforms/Make/SimSpark.lua")
       kind "ConsoleApp"
