@@ -66,6 +66,9 @@ BEGIN_DECLARE_MODULE(CamMatErrorFunction)
   REQUIRE(KinematicChain)
 
   PROVIDE(CameraMatrixOffset)
+
+  REQUIRE(ScanLineEdgelPercept)
+  REQUIRE(ScanLineEdgelPerceptTop)
 END_DECLARE_MODULE(CamMatErrorFunction)
 
 BEGIN_DECLARE_MODULE(CameraMatrixCorrectorV2)
@@ -91,6 +94,7 @@ private:
 
     DOUBLE_CAM_REQUIRE(CamMatErrorFunction,CameraMatrix);
     DOUBLE_CAM_REQUIRE(CamMatErrorFunction,CameraInfo);
+    DOUBLE_CAM_REQUIRE(CamMatErrorFunction,ScanLineEdgelPercept);
 
     const std::vector<EdgelD>& getEdgelsInImage() const {
       if(cameraID == CameraInfo::Top) {
@@ -103,14 +107,16 @@ private:
 public:
     CamMatErrorFunction()
         : cameraID(CameraInfo::Bottom)
-    {}
+    {
+        DEBUG_REQUEST_REGISTER("CamMatErrorFunction:debug_drawings:draw_projected_edgels", "", false);
+        DEBUG_REQUEST_REGISTER("CamMatErrorFunction:debug_drawings:draw_matching_global", "", false);
+    }
 
     void execute(){}
 
     CameraInfo::CameraID cameraID;
 
     double operator()(Eigen::Matrix<double, 1, 2> parameter){
-        double total_sum = 0;
 
         Vector2d offset(parameter(0), parameter(1));
 
@@ -135,9 +141,16 @@ public:
                         edgelOne.point.y,
                         0.0,
                         edgelProjections[i]);
+
+            DEBUG_REQUEST("CamMatErrorFunction:debug_drawings:draw_projected_edgels",
+                    FIELD_DRAWING_CONTEXT;
+                    PEN("000000", 10);
+                    CIRCLE(edgelProjections[i].x, edgelProjections[i].y, 20);
+            );
         }
 
-        // for all Egels in edgels
+        // determine distance to nearst field line and the total aberration
+        double total_sum = 0;
         for(std::vector<Vector2d>::const_iterator iter = edgelProjections.begin(); iter != edgelProjections.end(); ++iter){
 
             const Vector2d& seen_point_relative = *iter;
@@ -153,6 +166,15 @@ public:
             }
 
             total_sum += (seen_point_global - line_point_global.position).abs();
+
+            DEBUG_REQUEST("CamMatErrorFunction:debug_drawings:draw_matching_global",
+                FIELD_DRAWING_CONTEXT;
+                PEN("000000", 10);
+
+                CIRCLE(seen_point_global.x, seen_point_global.y, 20);
+                CIRCLE(line_point_global.position.x, line_point_global.position.y, 20);
+                LINE(line_point_global.position.x,line_point_global.position.y,seen_point_global.x, seen_point_global.y);
+            );
         }
 
         return total_sum;
@@ -166,7 +188,6 @@ public:
 
   CameraMatrixCorrectorV2();
   ~CameraMatrixCorrectorV2();
-
 
   void execute(CameraInfo::CameraID id);
 
@@ -186,13 +207,9 @@ private:
   void calibrate();
   void reset_calibration();
 
-  // CamMatErrorFunction lineMatchingError;
   ModuleCreator<CamMatErrorFunction>* theCamMatErrorFunction;
 
   DOUBLE_CAM_PROVIDE(CameraMatrixCorrectorV2,DebugImageDrawings);
-  //DOUBLE_CAM_REQUIRE(CameraMatrixCorrectorV2,CameraMatrix);
-  //DOUBLE_CAM_REQUIRE(CameraMatrixCorrectorV2,ScanLineEdgelPercept);
-  //DOUBLE_CAM_REQUIRE(CameraMatrixCorrectorV2,CameraInfo);
 };
 
 #endif //_CameraMatrixCorrectorV2_h_

@@ -18,10 +18,10 @@ class GaussNewtonMinimizer
 public:
     GaussNewtonMinimizer();
 
-    Eigen::Matrix<double, numOfParameter, 1> minimizeOneStep(ErrorFunction *errorFunction, double epsilon);
+    Eigen::Matrix<double, numOfParameter, 1> minimizeOneStep(ErrorFunction& errorFunction, double epsilon);
 
 private:
-    Eigen::Matrix<double, numOfFunctions, numOfParameter> determineJacobian(ErrorFunction *errorFunction, double epsilon);
+    Eigen::Matrix<double, numOfFunctions, numOfParameter> determineJacobian(ErrorFunction& errorFunction, double epsilon);
 
 };
 
@@ -31,7 +31,7 @@ GaussNewtonMinimizer<numOfFunctions, numOfParameters, ErrorFunction>::GaussNewto
 }
 
 template<int numOfFunctions, int numOfParameters, class ErrorFunction>
-Eigen::Matrix<double, numOfFunctions, numOfParameters> GaussNewtonMinimizer<numOfFunctions,  numOfParameters, ErrorFunction>::determineJacobian(ErrorFunction* errorFunction, double epsilon){
+Eigen::Matrix<double, numOfFunctions, numOfParameters> GaussNewtonMinimizer<numOfFunctions,  numOfParameters, ErrorFunction>::determineJacobian(ErrorFunction& errorFunction, double epsilon){
 
     Eigen::Matrix<double, 1, numOfParameters> parameterVector = Eigen::Matrix<double, 1, numOfParameters>::Zero();
     Eigen::Matrix<double, numOfFunctions, numOfParameters> mat;
@@ -44,10 +44,10 @@ Eigen::Matrix<double, numOfFunctions, numOfParameters> GaussNewtonMinimizer<numO
         Eigen::Matrix<double, numOfFunctions,1> dg1,dg2;
 
         parameterVector(p) = epsilon;
-        dg1 << (*errorFunction)(parameterVector);
+        dg1 << errorFunction(parameterVector);
 
         parameterVector(p) = -epsilon;
-        dg2 << (*errorFunction)(parameterVector);
+        dg2 << errorFunction(parameterVector);
 
         mat.col(p) = (dg1-dg2) / (2*epsilon);
     }
@@ -56,14 +56,14 @@ Eigen::Matrix<double, numOfFunctions, numOfParameters> GaussNewtonMinimizer<numO
 }
 
 template<int numOfFunctions, int numOfParameters, class ErrorFunction>
-Eigen::Matrix<double, numOfParameters, 1> GaussNewtonMinimizer<numOfFunctions, numOfParameters, ErrorFunction>::minimizeOneStep(ErrorFunction* errorFunction, double epsilon){
+Eigen::Matrix<double, numOfParameters, 1> GaussNewtonMinimizer<numOfFunctions, numOfParameters, ErrorFunction>::minimizeOneStep(ErrorFunction& errorFunction, double epsilon){
 
     Eigen::Matrix<double, numOfParameters, 1> offset = Eigen::Matrix<double, numOfParameters, 1>::Zero();
 
     Eigen::Matrix<double, numOfFunctions, numOfParameters> dg = determineJacobian(errorFunction, epsilon);
 
     // g(x) - target
-    double w = (*errorFunction)(offset);
+    double w = errorFunction(offset);
 
     //Vector2<double> z_GN = (-((Dg.transpose()*Dg).invert()*Dg.transpose()*w));
     Eigen::Matrix<double, numOfFunctions, numOfParameters> z_GN = -((dg.transpose()*dg).inverse()*dg.transpose()*w);

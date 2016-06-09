@@ -27,13 +27,6 @@ CameraMatrixCorrectorV2::CameraMatrixCorrectorV2()
 
   DEBUG_REQUEST_REGISTER("CameraMatrixV2:reset_calibration", "set the calibration offsets of the CM to 0", false);
 
-  DEBUG_REQUEST_REGISTER("CameraMatrixV2:debug_drawings:draw_projected_edgels",
-    "",
-    false);
-  DEBUG_REQUEST_REGISTER("CameraMatrixV2:debug_drawings:draw_matching_global",
-                         "",
-                         false);
-
   theCamMatErrorFunction = registerModule<CamMatErrorFunction>("CamMatErrorFunction", true);
 }
 
@@ -82,7 +75,7 @@ void CameraMatrixCorrectorV2::calibrate()
   // calibrate the camera matrix
   Eigen::Matrix<double, 2, 1> offset;
 
-  offset = gn_minimizer.minimizeOneStep(theCamMatErrorFunction->getModuleT(),1e-4);
+  offset = gn_minimizer.minimizeOneStep(*(theCamMatErrorFunction->getModuleT()),1e-4);
 
   getCameraMatrixOffset().correctionOffset[cameraID] += Vector2d(offset(0),offset(1));
 }//end calibrate
