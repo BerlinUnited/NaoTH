@@ -24,12 +24,15 @@ PerceptionsVisualizer::PerceptionsVisualizer()
   DEBUG_REQUEST_REGISTER("PerceptionsVisualizer:field:goal_percept", "draw goal percept", false);
   DEBUG_REQUEST_REGISTER("PerceptionsVisualizer:image_px:goal_percept", "draw goal percept", false);
 
+
   DEBUG_REQUEST_REGISTER("PerceptionsVisualizer:field:edgels_percept", "draw edgels percept", false);
   DEBUG_REQUEST_REGISTER("PerceptionsVisualizer:image_px:edgels_percept", "draw edgels percept", false);
+
 
   DEBUG_REQUEST_REGISTER("PerceptionsVisualizer:field:line_percept", "draw line percept", false);
   DEBUG_REQUEST_REGISTER("PerceptionsVisualizer:image:line_percept", "draw line percept", false);
   DEBUG_REQUEST_REGISTER("PerceptionsVisualizer:image_px:line_percept", "draw line percept", false);
+
 
   DEBUG_REQUEST_REGISTER("PerceptionsVisualizer:field:players_percept", "draw players percept", false);
   DEBUG_REQUEST_REGISTER("PerceptionsVisualizer:image_px:players_percept", "draw players percept", false);
@@ -38,7 +41,8 @@ PerceptionsVisualizer::PerceptionsVisualizer()
 
   DEBUG_REQUEST_REGISTER( "PerceptionsVisualizer:image:draw_field_polygon", "draw field boundaries in image", false);
 
-  DEBUG_REQUEST_REGISTER("PerceptionsVisualizer:field:lines_table", "", false);
+  DEBUG_REQUEST_REGISTER("PerceptionsVisualizer:field:field_info", "", false);
+  DEBUG_REQUEST_REGISTER("PerceptionsVisualizer:field:robot_pose", "", false);
 }
 
 void PerceptionsVisualizer::execute()
@@ -50,9 +54,14 @@ void PerceptionsVisualizer::execute()
     execute(CameraInfo::Bottom);
   );
 
-  DEBUG_REQUEST("PerceptionsVisualizer:field:lines_table",
+  DEBUG_REQUEST("PerceptionsVisualizer:field:field_info",
     FIELD_DRAWING_CONTEXT;
-    getFieldInfo().fieldLinesTable.draw(getDebugDrawings());
+    getFieldInfo().draw(getDebugDrawings());
+  );
+
+  DEBUG_REQUEST("PerceptionsVisualizer:field:robot_pose",
+    FIELD_DRAWING_CONTEXT;
+    getRobotPose().draw(getDebugDrawings());
   );
 }
 
@@ -218,38 +227,21 @@ void PerceptionsVisualizer::execute(CameraInfo::CameraID id)
     }//end for
   );
 
-
   DEBUG_REQUEST("PerceptionsVisualizer:image_px:edgels_percept",
-    FIELD_DRAWING_CONTEXT;
+    /*FIELD_DRAWING_CONTEXT;
 
-    CameraMatrix cameraMatrix(getCameraMatrix());
-    DEBUG_REQUEST("PerceptionsVisualizer:field:corrrect_camera_matrix",
-      cameraMatrix.rotateY(getCameraMatrixOffset().offset.y)
-                  .rotateX(getCameraMatrixOffset().offset.x);
-    );
-    
     for(size_t i = 0; i < getScanLineEdgelPercept().scanLineEdgels.size(); i++)
     {
       const DoubleEdgel& e = getScanLineEdgelPercept().scanLineEdgels[i];
-      
-      Vector2d edgelOnFieldBegin = CameraGeometry::angleToPointInImage(
-        getCameraMatrix(),
-        getImage().cameraInfo,
-        e.begin.x,
-        e.begin.y) * 1000;
 
-      PEN("FF0000", 5);
-      CIRCLE(edgelOnFieldBegin.x, edgelOnFieldBegin.y, 10);
+      Vector2d begin_dir(10.0,0.0);
+      begin_dir.rotate(e.begin_angle);
+      LINE_PX(ColorClasses::red, e.begin.x, e.begin.y, e.begin.x + (int)(begin_dir.x+0.5), e.begin.y + (int)(begin_dir.y+0.5));
 
-      Vector2d edgelOnFieldEnd = CameraGeometry::angleToPointInImage(
-        getCameraMatrix(),
-        getImage().cameraInfo,
-        e.end.x,
-        e.end.y) * 1000;
-
-      PEN("0000FF", 5);
-      CIRCLE(edgelOnFieldEnd.x, edgelOnFieldEnd.y, 10);
-    }//end for
+      Vector2d end_dir(10.0,0.0);
+      end_dir.rotate(e.end_angle);
+      LINE_PX(ColorClasses::red, e.end.x, e.end.y, e.end.x + (int)(end_dir.x+0.5), e.end.y + (int)(end_dir.y+0.5));
+    }*///end for
   );
 
 

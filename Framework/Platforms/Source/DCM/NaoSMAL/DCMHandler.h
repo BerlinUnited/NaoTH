@@ -15,23 +15,9 @@
 #include <boost/shared_ptr.hpp>
 #include <alvalue/alvalue.h>
 
-#include <almemoryfastaccess/almemoryfastaccess.h>
-#include <alproxies/almemoryproxy.h>
-#include <alproxies/dcmproxy.h>
-
 #include "Tools/IPCData.h"
 
-
-//
-// this is to suppress the following gcc warning 
-// thrown because by the old version of boost used by naoqi
-// albroker.h and alproxy.h 
-// produce those:
-//   boost/function/function_base.hpp:325: 
-//   warning: dereferencing type-punned pointer will break strict-aliasing rules
-#pragma GCC diagnostic ignored "-Wstrict-aliasing"
-#include <alcommon/albroker.h>
-
+#include "alincludes.h"
 
 namespace naoth
 {
@@ -76,8 +62,8 @@ private:
     
   //UltraSound
   std::string DCMPath_UltraSoundReceive;
-  std::string DCMPath_UltraSoundReceiveLeft[UltraSoundData::numOfUSEcho];
-  std::string DCMPath_UltraSoundReceiveRight[UltraSoundData::numOfUSEcho];
+  std::string DCMPath_UltraSoundReceiveLeft[UltraSoundReceiveData::numOfUSEcho];
+  std::string DCMPath_UltraSoundReceiveRight[UltraSoundReceiveData::numOfUSEcho];
   std::string DCMPath_UltraSoundSend;
 
   //Body-ID

@@ -1,5 +1,5 @@
 #!/bin/bash
-aplay /usr/share/naoqi/wav/chimes_short.wav
+sudo -u nao /usr/bin/paplay /home/nao/naoqi/Media/usb_start.wav
 
 # copy function
 copy(){
@@ -52,6 +52,8 @@ copy ./etc/conf.d/net /etc/conf.d/net root 644
 # restart the network
 /etc/init.d/net.eth0 restart
 /etc/init.d/net.wlan0 restart
+
+/etc/init.d/naoth restart
 
 
 

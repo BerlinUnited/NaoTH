@@ -7,7 +7,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox id="VBox" alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="400.0" prefWidth="576.0" spacing="5.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="de.naoth.rc.components.videoanalyzer.VideoAnalyzerController">
+<VBox id="VBox" alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="400.0" prefWidth="576.0" spacing="5.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.naoth.rc.components.videoanalyzer.VideoAnalyzerController">
   <children>
     <BorderPane VBox.vgrow="ALWAYS">
       <center>
@@ -39,6 +39,7 @@
                 <Label id="txtOffset" fx:id="lblOffset" text="0.0" />
               </children>
             </HBox>
+                  <Label fx:id="messageLabel" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="16.0" prefWidth="169.0" text="Nothing loaded" />
             <HBox>
               <children>
                 <Label text="Log frame" />

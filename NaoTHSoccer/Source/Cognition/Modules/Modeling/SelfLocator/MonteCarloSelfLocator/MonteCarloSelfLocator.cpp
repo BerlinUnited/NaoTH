@@ -47,6 +47,11 @@ MonteCarloSelfLocator::MonteCarloSelfLocator()
   DEBUG_REQUEST_REGISTER("MCSLS:draw_position","draw robots position (self locator)", false);
   DEBUG_REQUEST_REGISTER("MCSLS:draw_deviation", "", false);
 
+  DEBUG_REQUEST_REGISTER("MCSLS:state:KIDNAPPED", "", false);
+  DEBUG_REQUEST_REGISTER("MCSLS:state:BLIND", "", false);
+  DEBUG_REQUEST_REGISTER("MCSLS:state:LOCALIZE", "", false);
+  DEBUG_REQUEST_REGISTER("MCSLS:state:TRACKING", "", false);
+
   initializeSampleSet(getFieldInfo().carpetRect, theSampleSet);
   getDebugParameterList().add(&parameters);
 }
@@ -77,32 +82,40 @@ void MonteCarloSelfLocator::execute()
   // (keednapped)
 
   // only in stand, walk or init(!)
-  bool motion_ok = getMotionStatus().currentMotion == motion::stand ||
+  bool motion_ok_kidnap = getMotionStatus().currentMotion == motion::stand ||
                    getMotionStatus().currentMotion == motion::init ||
                    getMotionStatus().currentMotion == motion::walk;
 
   // true when the robot was lifted up
-  bool body_lift_up =  getBodyState().fall_down_state == BodyState::upright && 
-                      !getBodyState().standByLeftFoot && 
-                      !getBodyState().standByRightFoot && // no foot is on the ground
-                       getFrameInfo().getTimeSince(getBodyState().foot_state_time) > parameters.maxTimeForLiftUp; // we lose the ground contact for some time
+  bool body_lift_up =  getBodyState().isLiftedUp;
 
-  if(parameters.treatLiftUp && motion_ok && body_lift_up) {
+  if(parameters.treatLiftUp && motion_ok_kidnap && body_lift_up) {
     state = KIDNAPPED;
   }
 
-  bool motion_not_ok = getMotionStatus().currentMotion != motion::stand &&
-                       getMotionStatus().currentMotion != motion::walk;
+  bool last_motion_ok = getMotionStatus().lastMotion == motion::stand ||
+                        getMotionStatus().lastMotion == motion::walk;                    
 
-  bool body_not_upright = getBodyState().fall_down_state != BodyState::upright;
+  bool motion_ok = (getMotionStatus().currentMotion == motion::stand || 
+                    getMotionStatus().currentMotion == motion::walk)
+                   // hack: give stand some time in case the last motion was not walk or stand
+                   // remark: walk is only executed after walk or stand, so this condition is only relevant for stand
+                   && (last_motion_ok || getFrameInfo().getTimeSince(getMotionStatus().time) > 5000); 
+
+  bool body_upright = getBodyState().fall_down_state == BodyState::upright;
 
   if(state != KIDNAPPED) 
   {
-    if(parameters.treatInitState && (motion_not_ok || body_not_upright || getPlayerInfo().gameData.gameState == GameData::penalized)) 
+    if(parameters.treatInitState && (!motion_ok || !body_upright || getPlayerInfo().gameData.gameState == GameData::penalized)) 
     {
       state = BLIND;
     }
   }
+
+  DEBUG_REQUEST("MCSLS:state:KIDNAPPED", state = KIDNAPPED; );
+  DEBUG_REQUEST("MCSLS:state:BLIND", state = BLIND; );
+  DEBUG_REQUEST("MCSLS:state:LOCALIZE", state = LOCALIZE; );
+  DEBUG_REQUEST("MCSLS:state:TRACKING", state = TRACKING; );
 
 
   DEBUG_REQUEST("MCSLS:draw_state",
@@ -152,24 +165,8 @@ void MonteCarloSelfLocator::execute()
       // use prior knowledge
       if(parameters.updateBySituation) //  && lastState == KIDNAPPED
       {
-        if(getSituationStatus().oppHalf) 
-        {
-          updateByOppHalf(theSampleSet);
-        } 
-        else if(getPlayerInfo().gameData.gameState == GameData::set) 
-        {
-          updateByOwnHalfLookingForward(theSampleSet);
-        } // check if the game controller was alive in the last 10s ~ 300frames
-        else if(getPlayerInfo().gameData.frameNumber > 0 && 
-                getPlayerInfo().gameData.frameNumber + 300 > getFrameInfo().getFrameNumber()) 
-        {
-          updateByStartPositions(theSampleSet);
-        }
-        else
-        {
-          updateByOwnHalf(theSampleSet);
-        }
-      }
+        updateBySituation();
+      }//end updateBySituation
 
 
       // NOTE: statistics has to be after updates and before resampling
@@ -323,6 +320,44 @@ void MonteCarloSelfLocator::updateByOdometry(SampleSet& sampleSet, bool noise) c
   }
 }//end updateByOdometry
 
+void MonteCarloSelfLocator::updateBySituation()
+{
+  if(getSituationPrior().currentPrior == getSituationPrior().firstReady)
+    {
+      updateByStartPositions(theSampleSet);
+    }
+    else if(getSituationPrior().currentPrior == getSituationPrior().positionedInSet)
+    {
+      updateByOwnHalfLookingForward(theSampleSet);
+    }
+    else if(getSituationPrior().currentPrior == getSituationPrior().goaliePenalizedInSet)
+    {
+      updateByGoalBox(theSampleSet);
+    }
+    else if(getSituationPrior().currentPrior == getSituationPrior().set)
+    {
+      updateByOwnHalf(theSampleSet);
+    }
+    else if(getSituationPrior().currentPrior == getSituationPrior().playAfterPenalized)
+    {
+      updateBySidePositions(theSampleSet);
+    }
+    else if(getSituationPrior().currentPrior == getSituationPrior().oppHalf)
+    {
+      updateByOppHalf(theSampleSet);
+    }
+    else {
+      DEBUG_REQUEST("MCSLS:draw_state",
+        FIELD_DRAWING_CONTEXT;
+        PEN("000000", 30);
+        const Vector2d& fieldMin = getFieldInfo().fieldRect.min();
+        const Vector2d& fieldMax = getFieldInfo().fieldRect.max();
+        BOX(fieldMin.x, fieldMin.y, fieldMax.x, fieldMax.y);
+        LINE(fieldMin.x, fieldMin.y, fieldMax.x, fieldMax.y);
+        LINE(fieldMin.x, fieldMax.y, fieldMax.x, fieldMin.y);
+      );
+    }
+}
 
 bool MonteCarloSelfLocator::updateBySensors(SampleSet& sampleSet) const
 {
@@ -515,8 +550,7 @@ void MonteCarloSelfLocator::updateByLinePoints(const LineGraphPercept& lineGraph
   }
 }//end updateByLinePoints
 
-
-void MonteCarloSelfLocator::updateByStartPositions(SampleSet& sampleSet) const
+void MonteCarloSelfLocator::updateBySidePositions(SampleSet& sampleSet) const
 {
   double offserY = 0;
   Vector2d startLeft(getFieldInfo().xPosOwnPenaltyArea, getFieldInfo().yLength/2.0 - offserY);
@@ -530,7 +564,7 @@ void MonteCarloSelfLocator::updateByStartPositions(SampleSet& sampleSet) const
 
   for(size_t i = 0; i < sampleSet.size(); i++) {
     if(sampleSet[i].translation.y > 0) {
-      sampleSet[i].likelihood *= leftStartingLine.update(sampleSet[i]);
+       sampleSet[i].likelihood *= leftStartingLine.update(sampleSet[i]);
     } else {
       sampleSet[i].likelihood *= rightStartingLine.update(sampleSet[i]);
     }
@@ -540,6 +574,52 @@ void MonteCarloSelfLocator::updateByStartPositions(SampleSet& sampleSet) const
     FIELD_DRAWING_CONTEXT;
     leftStartingLine.draw(getDebugDrawings());
     rightStartingLine.draw(getDebugDrawings());
+  );
+}
+
+void MonteCarloSelfLocator::updateByStartPositions(SampleSet& sampleSet) const
+{
+  double offserY = 0;
+  Vector2d startLeft(getFieldInfo().xPosOwnPenaltyArea, getFieldInfo().yLength/2.0 - offserY);
+  Vector2d endLeft(                               -500, getFieldInfo().yLength/2.0 - offserY);
+
+  Vector2d startRight(startLeft.x, -startLeft.y);
+  Vector2d endRight(endLeft.x, -endLeft.y);
+
+  LineDensity leftStartingLine(startLeft, endLeft, -Math::pi_2, parameters.startPositionsSigmaDistance, parameters.startPositionsSigmaAngle);
+  LineDensity rightStartingLine(startRight, endRight, Math::pi_2, parameters.startPositionsSigmaDistance, parameters.startPositionsSigmaAngle);
+
+  //  for(size_t i = 0; i < sampleSet.size(); i++) {
+  //    if(sampleSet[i].translation.y > 0) {
+  //      sampleSet[i].likelihood *= leftStartingLine.update(sampleSet[i]);
+  //    } else {
+  //      sampleSet[i].likelihood *= rightStartingLine.update(sampleSet[i]);
+  //    }
+  //  }
+
+  /*---- HACK BEGIN ----*/
+  LineDensity startingLine;
+  if(getPlayerInfo().gameData.playerNumber < 4) {
+      startingLine = leftStartingLine;
+  } else {
+      startingLine = rightStartingLine;
+  }
+
+  for(size_t i = 0; i < sampleSet.size(); i++) {
+      sampleSet[i].likelihood *= startingLine.update(sampleSet[i]);
+  }
+  /*---- HACK END ----*/
+
+  DEBUG_REQUEST("MCSLS:draw_state",
+    FIELD_DRAWING_CONTEXT;
+    if(getPlayerInfo().gameData.playerNumber < 4)
+    {
+      leftStartingLine.draw(getDebugDrawings());
+    }
+    else
+    {
+      rightStartingLine.draw(getDebugDrawings());
+    }    
   );
 }
 
@@ -1030,21 +1110,11 @@ void MonteCarloSelfLocator::drawPosition() const
   {
     switch( getPlayerInfo().gameData.teamColor )
     {
-    case GameData::red:
-      PEN("FF0000", 20);
-      break;
-    case GameData::blue:
-      PEN("0000FF", 20);
-      break;
-    case GameData::yellow:
-      PEN("FFFF00", 20);
-      break;
-    case GameData::black:
-      PEN("000000", 20);
-      break;
-    default:
-      PEN("AAAAAA", 20);
-      break;
+    case GameData::red:    PEN("FF0000", 20); break;
+    case GameData::blue:   PEN("0000FF", 20); break;
+    case GameData::yellow: PEN("FFFF00", 20); break;
+    case GameData::black:  PEN("000000", 20); break;
+    default: PEN("AAAAAA", 20); break;
     }
   }
   else
@@ -1076,15 +1146,6 @@ void MonteCarloSelfLocator::drawPosition() const
                  getRobotPose().principleAxisMajor.abs()*2.0,
                  getRobotPose().principleAxisMinor.angle());
   );
-
-  /*
-  static Vector2<double> oldPose = getRobotPose().translation;
-  if((oldPose - getRobotPose().translation).abs() > 100)
-  {
-    PLOT("MCSL:position_trace",getRobotPose().translation.x, getRobotPose().translation.y);
-    oldPose = getRobotPose().translation;
-  }
-  */
 }//end drawPosition
 
 void MonteCarloSelfLocator::draw_sensor_belief() const

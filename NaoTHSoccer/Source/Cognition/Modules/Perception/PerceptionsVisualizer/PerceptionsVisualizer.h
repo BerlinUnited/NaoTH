@@ -29,6 +29,7 @@
 #include "Representations/Infrastructure/CameraInfo.h"
 #include "Representations/Perception/CameraMatrix.h"
 #include "Representations/Modeling/CameraMatrixOffset.h"
+#include "Representations/Modeling/RobotPose.h"
 
 #include "Tools/DoubleCamHelpers.h"
 
@@ -69,6 +70,7 @@ BEGIN_DECLARE_MODULE(PerceptionsVisualizer)
   REQUIRE(PlayersPercept)
   
   REQUIRE(FieldInfo)
+  REQUIRE(RobotPose)
 END_DECLARE_MODULE(PerceptionsVisualizer)
 
 

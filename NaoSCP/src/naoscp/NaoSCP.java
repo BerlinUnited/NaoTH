@@ -5,11 +5,9 @@ package naoscp;
 
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.SftpException;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.net.InetAddress;
+import java.net.URLDecoder;
 import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -19,11 +17,7 @@ import java.util.logging.Logger;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import naoscp.components.NetwokPanel;
-import naoscp.tools.BarProgressMonitor;
-import naoscp.tools.FileUtils;
-import naoscp.tools.NaoSCPException;
-import naoscp.tools.Scp;
-import naoscp.tools.SwingTools;
+import naoscp.tools.*;
 
 /**
  *
@@ -31,11 +25,12 @@ import naoscp.tools.SwingTools;
  */
 public class NaoSCP extends javax.swing.JFrame {
 
-    private final String utilsPath = "./../Utils";
+    private final String projectPath = getBasePath();
+    private final String utilsPath = projectPath + "/Utils";
+    
     private final String deployStickScriptPath = utilsPath + "/DeployStick/startBrainwashing.sh";
     
-    private static final String configlocation = System.getProperty("user.home")
-        + "/.naoth/naoscp/";
+    private static final String configlocation = System.getProperty("user.home") + "/.naoth/naoscp/";
     private final File configPath = new File(configlocation, "config");
     
     private final Properties config = new Properties();
@@ -51,18 +46,43 @@ public class NaoSCP extends javax.swing.JFrame {
         
         try {
             config.load(new FileReader(configPath));
+            config.setProperty("naoscp.naothsoccerpath", projectPath + "/NaoTHSoccer");
             naoTHPanel.setProperties(config);
         } catch(IOException ex) {
             Logger.getGlobal().log(Level.INFO, 
                 "Could not open the config file. It will be created after the first execution.");
         }
     }
+
+    public String getBasePath()
+    {
+      String path = "./..";
+      try
+      {
+        String ResourceName = "naoscp/NaoSCP.class";
+        String programPath = URLDecoder.decode(this.getClass().getClassLoader().getResource(ResourceName).getPath(), "UTF-8");
+        programPath = programPath.replace("file:", "");
+        //path replacement if NaoScp is being started from console directly
+        programPath = programPath.replace("/NaoSCP/dist/NaoSCP.jar!/naoscp/NaoSCP.class", "");
+        //path replacement if NaoScp is started from IDE (Netbeans)
+        programPath = programPath.replace("/NaoSCP/build/classes/naoscp/NaoSCP.class", "");
+        File ProgramDir = new File(programPath);
+        if(ProgramDir.exists())
+        {
+          path = ProgramDir.getAbsolutePath();
+        }
+      }
+      catch(UnsupportedEncodingException ueEx)
+      {
+      }
+      return path;
+    }
     
     public void setEnabledAll(boolean v) {
         SwingTools.setEnabled(this, v);
     }
     
-    private void setupNetwork(File setupDir) throws IOException 
+    private void setupNetwork(File setupDir, int robotNumber) throws IOException 
     {
         NetwokPanel.NetworkConfig cfg = netwokPanel.getNetworkConfig();
             
@@ -82,11 +102,11 @@ public class NaoSCP extends javax.swing.JFrame {
 
         
         tmp = new TemplateFile(new File(utilsPath + "/NaoConfigFiles/etc/conf.d/net"));
-        tmp.set("ETH_ADDR", cfg.getLan().subnet);
+        tmp.set("ETH_ADDR", cfg.getLan().subnet + "." + robotNumber);
         tmp.set("ETH_NETMASK", cfg.getLan().mask);
         tmp.set("ETH_BRD", cfg.getLan().broadcast);
 
-        tmp.set("WLAN_ADDR", cfg.getWlan().subnet);
+        tmp.set("WLAN_ADDR", cfg.getWlan().subnet  + "." + robotNumber);
         tmp.set("WLAN_NETMASK", cfg.getWlan().mask);
         tmp.set("WLAN_BRD", cfg.getWlan().broadcast);
         
@@ -272,7 +292,7 @@ public class NaoSCP extends javax.swing.JFrame {
                         //scp.run("/home/nao/tmp", "./setup.sh");
                         
                         Scp.CommandStream shell =  scp.getShell();
-                        shell.run("su");
+                        shell.run("su", "Password:");
                         shell.run("root");
                         shell.run("cd /home/nao/tmp/");
                         shell.run("./setup.sh", "DONE");
@@ -440,18 +460,32 @@ public class NaoSCP extends javax.swing.JFrame {
                             // copy scripts
                             FileUtils.copyFiles(new File(utilsPath + "/NaoConfigFiles"), setupDir);
 
+                            String robotNumberRaw = JOptionPane.showInputDialog(NaoSCP.this, "Robot number");
+                            int robotNr = 100;
+                            try
+                            {
+                              robotNr = Integer.parseInt(robotNumberRaw.trim());
+                            }
+                            catch(NullPointerException | NumberFormatException ex)
+                            {
+                              JOptionPane.showMessageDialog(NaoSCP.this, "Could not parse robot number, defaulting to 100");
+                            }
+                            
                             // copy libs
                             File libDir = chooser.getSelectedFile();
                             FileUtils.copyFiles(libDir, new File(setupDir, "/home/nao/lib"));
                             try {
-                                setupNetwork(setupDir);
+                                setupNetwork(setupDir, robotNr);
                             } catch (IOException ex) {
                                 Logger.getGlobal().log(Level.SEVERE, ex.getMessage());
                             }
-
+                            
+                            // set hostname
+                            FileUtils.writeToFile("Nao"+robotNr, new File(setupDir,"/etc/hostname"));
+                            FileUtils.writeToFile("hostname=\"Nao"+robotNr+"\"", new File(setupDir,"/etc/conf.d/hostname"));
                             
                             // copy to robot
-                            String ip = JOptionPane.showInputDialog(this, "Robot ip address");
+                            String ip = JOptionPane.showInputDialog(NaoSCP.this, "Robot ip address");
                             Scp scp = new Scp(ip, "nao", "nao");
                             scp.setProgressMonitor(new BarProgressMonitor(jProgressBar));
 
@@ -463,10 +497,15 @@ public class NaoSCP extends javax.swing.JFrame {
                             
                             //scp.runStream("su\nroot\ncd /home/nao/tmp\n./init_env.sh");
                             //scp.run("/home/nao/tmp", "./init_env.sh");
-                            Scp.CommandStream shell = scp.getShell();
-                            shell.run("ls");
-                            shell.close();
+                            //Scp.CommandStream shell = scp.getShell();
+                            //shell.run("ls");
+                            //shell.close();
                             
+                            Scp.CommandStream shell =  scp.getShell();
+                            shell.run("su", "Password:");
+                            shell.run("root");
+                            shell.run("cd /home/nao/tmp/");
+                            shell.run("./init_env.sh", "DONE");
 
                             scp.disconnect();
 
@@ -483,7 +522,9 @@ public class NaoSCP extends javax.swing.JFrame {
     class TemplateFile
     {
         private String text;
+        private final File template;
         TemplateFile(File file) throws IOException {
+            this.template = file;
             this.text = FileUtils.readFile(file);
         }
         
@@ -491,8 +532,14 @@ public class NaoSCP extends javax.swing.JFrame {
             text = text.replace(arg, value);
         }
         
+        // save to a different file
         public void save(File file) throws IOException {
             FileUtils.writeToFile(text, file);
+        }
+        
+        // overwrite th template file
+        public void save() throws IOException {
+            FileUtils.writeToFile(text, this.template);
         }
     }
     
@@ -508,6 +555,19 @@ public class NaoSCP extends javax.swing.JFrame {
             Logger.getGlobal().log(Level.SEVERE, null, ex);
         }
         */
+
+        String robotNumberRaw = JOptionPane.showInputDialog(NaoSCP.this, "Robot number");
+        int robotNr = 0;
+        try
+        {
+          robotNr = Integer.parseInt(robotNumberRaw.trim());
+        }
+        catch(NullPointerException | NumberFormatException ex)
+        {
+          JOptionPane.showMessageDialog(NaoSCP.this, "Could not parse robot number, defaulting to 100");
+        }
+        final int robotNrFinal = robotNr;
+
         new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -524,7 +584,7 @@ public class NaoSCP extends javax.swing.JFrame {
                             Logger.getGlobal().log(Level.SEVERE, "Could not create setup directory: " + setupDir.getAbsolutePath());
                         } else {
                             
-                            setupNetwork(setupDir);
+                            setupNetwork(setupDir, robotNrFinal);
                             
                             FileUtils.copyFiles(new File(utilsPath,"/NaoConfigFiles/init_net.sh"), setupDir);
                             
@@ -540,7 +600,7 @@ public class NaoSCP extends javax.swing.JFrame {
                             scp.chmod(755, "/home/nao/tmp/init_net.sh");
                             
                             Scp.CommandStream shell =  scp.getShell();
-                            shell.run("su");
+                            shell.run("su", "Password:");
                             shell.run("root");
                             shell.run("cd /home/nao/tmp/");
                             shell.run("./init_net.sh", "DONE");

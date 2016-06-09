@@ -139,12 +139,14 @@ public class ImagePanel extends javax.swing.JPanel
 
         if(this.showDrawings) {
           for (Drawable d : drawigs) {
-            d.draw(g2d);
+            if(d != null) {
+              d.draw(g2d);
+            }
           }
         }
 
         // transform the drawing-pane back (nessesary to draw the other components correct)
-        g2d.scale(1.0, 1.0);
+        g2d.scale(1.0/ratioW, 1.0/ratioH);
         g2d.translate(-(posX + 1), -(posY + 1));
     }//end paint
     

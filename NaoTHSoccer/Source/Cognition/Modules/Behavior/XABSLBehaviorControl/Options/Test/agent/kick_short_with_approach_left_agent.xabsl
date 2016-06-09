@@ -1,0 +1,19 @@
+option kick_short_with_approach_left_agent {
+
+  initial state test {    
+    action {
+    
+      // react to the game controller and handle fall down
+      basic_play();
+
+      kick_short_with_approach_left();
+      
+      // control the arms
+      arms_control();
+
+      // control head movement according to value of head.control_mode
+      head_control();
+    }
+  }
+}
+ 

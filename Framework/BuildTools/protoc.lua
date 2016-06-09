@@ -108,19 +108,21 @@ function add_gcc_ignore_pragmas(files)
 	-- this is because "#pragma GCC diagnostic push/pop" was introduced in GCC 4.6
 	local prefix = "// added by NaoTH \n" ..
 				 "#if defined(__GNUC__) && defined(_NAOTH_CHECK_CONVERSION_)\n" ..
-				 "#if __GNUC__ > 3 && __GNUC_MINOR__ > 5\n" ..
+				 "#if (__GNUC__ > 3 && __GNUC_MINOR__ > 5) || (__GNUC__ > 4)\n" ..
 				 "#pragma GCC diagnostic push\n" ..
 				 "#endif\n" ..
 				 "#pragma GCC diagnostic ignored \"-Wconversion\"\n" ..
+				 "#pragma GCC diagnostic ignored \"-Wunused-parameter\"\n" ..
 				 "#endif\n\n"
 	
 	-- enable the warnings at the end
 	local suffix = "\n\n// added by NaoTH \n" ..
 				 "#if defined(__GNUC__) && defined(_NAOTH_CHECK_CONVERSION_)\n" ..
-				 "#if __GNUC__ > 3 && __GNUC_MINOR__ > 5\n" ..
+				 "#if (__GNUC__ > 3 && __GNUC_MINOR__ > 5) || (__GNUC__ > 4)\n" ..
 				 "#pragma GCC diagnostic pop\n" ..
 				 "#else\n" ..
 				 "#pragma GCC diagnostic error \"-Wconversion\"\n" ..
+				 "#pragma GCC diagnostic error \"-Wunused-parameter\"\n" ..
 				 "#endif\n" ..
 				 "#endif\n\n"
 	
@@ -165,6 +167,8 @@ function invokeprotoc(inputFiles, cppOut, javaOut, pythonOut, ipaths)
           -- touch shadow file in order to remember this build date
           touchShadow(inputFiles[i], time)
       end -- end for each file to compile
+     else
+      print ("ERROR: protoc not sucessful")
      end
     end -- end if compile
 end

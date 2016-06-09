@@ -30,7 +30,7 @@ JNIEXPORT void JNICALL Java_de_naoth_rc_logplayer_LogSimulator_openLogFile(JNIEn
   else
   {
     g_type_init();
-    simulator = new Simulator(std::string(inCStr), true, false);
+    simulator = new Simulator(std::string(inCStr), true, false, 4501);
 
     // init the platform
     Platform::getInstance().init(simulator);

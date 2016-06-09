@@ -11,6 +11,9 @@ build.xml
 build-impl.xml
 genfiles.properties
 
+#python
+*.pyc
+
 #
 trace.dump.*
 projectconfig.user.lua

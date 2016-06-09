@@ -1,6 +1,5 @@
 import sys
 import math
-
 class Vector2:
   def __init__(self, x=0, y=0):
     self.x = x
@@ -23,6 +22,14 @@ class Vector2:
       
   def abs(self):
     return math.sqrt(self.x*self.x + self.y*self.y)
+    
+  def __mul__(self, other):
+    if isinstance(other, Vector2):
+      return self.x*other.x + self.y*other.y
+    elif isinstance(other, (int, float, long)):
+      return Vector2(self.x*other, self.y*other)
+    else:
+      return NotImplemented
     
 class Pose2D:
   def __init__(self):

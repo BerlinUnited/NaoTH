@@ -5,6 +5,7 @@
  */
 package de.naoth.rc.dataformats;
 
+import de.naoth.rc.components.ExceptionDialog;
 import de.naoth.rc.tools.BasicReader;
 import de.naoth.rc.logmanager.LogDataFrame;
 import java.io.EOFException;
@@ -49,7 +50,9 @@ public class LogFile implements Serializable
         // plausibility check
         if (currentFrameNumber > -1 && (frameNumber < currentFrameNumber || frameNumber < 0))
         {
-          throw new IOException("corrupt frame number: " + frameNumber + " after " + currentFrameNumber);
+          ExceptionDialog dlg = new ExceptionDialog(null, new IOException("corrupt frame number: " + frameNumber + " after " + currentFrameNumber));
+          dlg.setVisible(true);
+          break;
         }
         if (frameNumber - currentFrameNumber > 30)
         {

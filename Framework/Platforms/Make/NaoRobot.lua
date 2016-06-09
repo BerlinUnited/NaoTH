@@ -9,21 +9,23 @@ project "NaoRobot"
   }
   
   files {
-	"../Source/DCM/NaoRobot/**.cpp", 
-	"../Source/DCM/NaoRobot/**.h",
-	"../Source/DCM/Tools/**.cpp", 
-	"../Source/DCM/Tools/**.h"
-	}
+  "../Source/DCM/NaoRobot/**.cpp", 
+  "../Source/DCM/NaoRobot/**.h",
+  "../Source/DCM/Tools/**.cpp", 
+  "../Source/DCM/Tools/**.h"
+  }
   
   links {
-	"gthread-2.0",
-	"glib-2.0",
-	"gio-2.0",
-	"z",
-	"gmodule-2.0",
-	"gobject-2.0",
-	"protobuf",
-	"asound"
-	}
+    "rt",
+    "gthread-2.0",
+    "glib-2.0",
+    "gio-2.0",
+    "z",
+    "gmodule-2.0",
+    "gobject-2.0",
+    "protobuf",
+    "asound",
+    "pthread"
+  }
 
   targetname "naoth"

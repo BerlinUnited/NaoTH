@@ -117,6 +117,7 @@ void Motion::init(naoth::ProcessInterface& platformInterface, const naoth::Platf
   platformInterface.registerOutputChanel(getOdometryData());
   platformInterface.registerOutputChanel(getCalibrationData());
   platformInterface.registerOutputChanel(getInertialModel());
+  platformInterface.registerOutputChanel(getBodyStatus());
 
   // messages from cognition to motion
   platformInterface.registerInputChanel(getCameraInfo());
@@ -124,6 +125,7 @@ void Motion::init(naoth::ProcessInterface& platformInterface, const naoth::Platf
   platformInterface.registerInputChanel(getCameraMatrixOffset());
   platformInterface.registerInputChanel(getHeadMotionRequest());
   platformInterface.registerInputChanel(getMotionRequest());
+  platformInterface.registerInputChanel(getBodyState());
 
   std::cout << "[Motion] register end" << std::endl;
 }//end init
@@ -156,6 +158,8 @@ void Motion::call()
   if(getMotionRequest.calibrateFootTouchDetector)
     theFootTouchCalibrator.execute();
     */
+
+  modifyJointOffsets();
 
   STOPWATCH_START("Motion:postProcess");
   postProcess();
@@ -199,6 +203,11 @@ void Motion::processSensorData()
     THROW("Get ILLEGAL Stiffness: "<<JointData::getJointName(JointData::JointID(i))<<" = "<<getSensorJointData().stiffness[i]);
   }
 
+  // remove the offset from sensor joint data
+  for( i = 0; i < JointData::numOfJoint; i++){
+      getSensorJointData().position[i] = getSensorJointData().position[i] - getOffsetJointData().position[i];
+  }
+
   // calibrate inertia sensors
   theInertiaSensorCalibrator->execute();
 
@@ -234,11 +243,22 @@ void Motion::processSensorData()
     rotationGyroZ = 0.0;
   }
 
-  PLOT("Motion:rotationZ", rotationGyroZ);
-  getOdometryData().rotation = rotationGyroZ;
+  if(parameter.useGyroRotationOdometry)
+  {
+    PLOT("Motion:rotationZ", rotationGyroZ);
+    getOdometryData().rotation = rotationGyroZ;
+  }
 
   // store the MotorJointData
   theLastMotorJointData = getMotorJointData();
+
+  // update the body status
+  for(int i=0; i < JointData::numOfJoint; i++)
+  {
+    getBodyStatus().currentSum[i] += getSensorJointData().electricCurrent[i];
+  }
+  getBodyStatus().timestamp = getFrameInfo().getTime();
+
 
   debugPlots();
 }//end processSensorData
@@ -260,11 +280,31 @@ void Motion::postProcess()
   }
 #endif
 
+  // apply the offset to motor joint data
+  for( i = 0; i < JointData::numOfJoint; i++){
+      mjd.position[i] = mjd.position[i] + getOffsetJointData().position[i];
+  }
+
   mjd.clamp();
   mjd.updateSpeed(theLastMotorJointData, basicStepInS);
   mjd.updateAcceleration(theLastMotorJointData, basicStepInS);
 
 }//end postProcess
+
+void Motion::modifyJointOffsets()
+{
+    MODIFY("Motion:Offsets:LHipYawPitch", getOffsetJointData().position[JointData::LHipYawPitch]);
+    MODIFY("Motion:Offsets:RHipPitch",    getOffsetJointData().position[JointData::RHipPitch]);
+    MODIFY("Motion:Offsets:LHipPitch",    getOffsetJointData().position[JointData::LHipPitch]);
+    MODIFY("Motion:Offsets:RHipRoll",     getOffsetJointData().position[JointData::RHipRoll]);
+    MODIFY("Motion:Offsets:LHipRoll",     getOffsetJointData().position[JointData::LHipRoll]);
+    MODIFY("Motion:Offsets:RKneePitch",   getOffsetJointData().position[JointData::RKneePitch]);
+    MODIFY("Motion:Offsets:LKneePitch",   getOffsetJointData().position[JointData::LKneePitch]);
+    MODIFY("Motion:Offsets:RAnklePitch",  getOffsetJointData().position[JointData::RAnklePitch]);
+    MODIFY("Motion:Offsets:LAnklePitch",  getOffsetJointData().position[JointData::LAnklePitch]);
+    MODIFY("Motion:Offsets:RAnkleRoll",   getOffsetJointData().position[JointData::RAnkleRoll]);
+    MODIFY("Motion:Offsets:LAnkleRoll",   getOffsetJointData().position[JointData::LAnkleRoll]);
+}
 
 
 void Motion::debugPlots()
@@ -311,6 +351,41 @@ void Motion::debugPlots()
     PLOT("Motion:KinematicChain:oriantation:sensor:y", Math::toDegrees(inertialExpected.y) );
   );
 
+  // add currentSum array to the ring buffer
+  for(int i = 0; i < naoth::JointData::numOfJoint; i++){
+      currentsRingBuffer[i].add(getBodyStatus().currentSum[i]);
+  }
+
+  // plot the filtered current (mean filter)
+#define PLOT_CURRENT(name) \
+  if(currentsRingBuffer[JointData::name].isFull()) { \
+    PLOT("Motion:Current:"#name, (currentsRingBuffer[JointData::name].last() - currentsRingBuffer[JointData::name].first()) / currentsRingBuffer[JointData::name].getMaxEntries()); \
+  }
+
+  PLOT_CURRENT(HeadPitch);
+  PLOT_CURRENT(HeadYaw);
+
+  PLOT_CURRENT(RShoulderRoll);
+  PLOT_CURRENT(LShoulderRoll);
+  PLOT_CURRENT(RShoulderPitch);
+  PLOT_CURRENT(LShoulderPitch);
+  PLOT_CURRENT(RElbowRoll);
+  PLOT_CURRENT(LElbowRoll);
+  PLOT_CURRENT(RElbowYaw);
+  PLOT_CURRENT(LElbowYaw);
+
+  PLOT_CURRENT(RHipYawPitch);
+  PLOT_CURRENT(LHipYawPitch);
+  PLOT_CURRENT(RHipPitch);
+  PLOT_CURRENT(LHipPitch);
+  PLOT_CURRENT(RHipRoll);
+  PLOT_CURRENT(LHipRoll);
+  PLOT_CURRENT(RKneePitch);
+  PLOT_CURRENT(LKneePitch);
+  PLOT_CURRENT(RAnklePitch);
+  PLOT_CURRENT(LAnklePitch);
+  PLOT_CURRENT(RAnkleRoll);
+  PLOT_CURRENT(LAnkleRoll);
 
   // plot the requested joint positions
 #define PLOT_JOINT(name) \
@@ -341,11 +416,17 @@ void Motion::debugPlots()
   PLOT_JOINT(RAnkleRoll);
   PLOT_JOINT(LAnkleRoll);
 
+  // buffer motor joint data to determine the error to the corresponding sensor joint data (will be read in 4 cycles)
+  for(int i = 0; i < naoth::JointData::numOfJoint; i++){
+      motorJointDataBuffer[i].add(getMotorJointData().position[i]);
+  }
 
-  
 #define PLOT_JOINT_ERROR(name) \
-  {double e = getMotorJointData().position[JointData::name] - getSensorJointData().position[JointData::name];\
-  PLOT("Motion:MotorJointError:"#name, Math::toDegrees(e));}
+  { if(motorJointDataBuffer[JointData::name].isFull()) { \
+        double e = motorJointDataBuffer[JointData::name].first() - getSensorJointData().position[JointData::name];\
+        PLOT("Motion:MotorJointError:"#name, Math::toDegrees(e)); \
+    } \
+  }
 
   PLOT_JOINT_ERROR(HeadPitch);
   PLOT_JOINT_ERROR(HeadYaw);

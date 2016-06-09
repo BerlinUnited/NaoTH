@@ -8,6 +8,7 @@
 *.c      text diff=cpp
 *.cc     text diff=cpp
 *.java	 text diff=java
+*.py	 text diff=python
 
 *.lua    text
 *.proto  text
@@ -28,3 +29,5 @@
 *.jpg    binary
 *.jar    binary
 *.zip    binary
+*.wav    binary
+*.mp3    binary

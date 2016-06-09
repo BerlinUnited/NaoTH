@@ -7,77 +7,97 @@
 * Definition of class BallModel
 */
 
-#ifndef __BallModel_h_
-#define __BallModel_h_
+#ifndef _BallModel_h_
+#define _BallModel_h_
 
 #include "Tools/Math/Vector2.h"
 
 #include "Representations/Infrastructure/FrameInfo.h"
 #include <Tools/DataStructures/Printable.h>
-
-#define BALLMODEL_MAX_FUTURE_SECONDS 10
+#include <vector>
 
 class BallModel : public naoth::Printable
 {
-private:
-
-  unsigned int _timeBallIsSeen;
-  naoth::FrameInfo _frameInfoWhenBallWasSeen;
-
 public:
   BallModel()
     :
-      _timeBallIsSeen(0),
-
-      // accessors
-      frameInfoWhenBallWasSeen(_frameInfoWhenBallWasSeen),
-      timeBallIsSeen(_timeBallIsSeen),
-
-      valid(false)
+      valid(false),
+      knows(false)
     {}
 
   ~BallModel(){}
 
+public:
   // The position of the ball relative to the robot (in mm)
-  Vector2<double> position;
+  Vector2d position;
+  // The speed of the ball relative to the robot (in mm/s)
+  Vector2d speed;
 
-  Vector2<double> positionPreview;
-  Vector2<double> positionPreviewInLFoot;
-  Vector2<double> positionPreviewInRFoot;
+  // precalculated ball position in the coordinates of the planed motion (see motionStatus)
+  Vector2d positionPreview;
+  Vector2d positionPreviewInLFoot;
+  Vector2d positionPreviewInRFoot;
 
   /** The estimated position of the ball 0-10s in the future */
-  Vector2<double> futurePosition[BALLMODEL_MAX_FUTURE_SECONDS+1];
+  std::vector<Vector2d> futurePosition;
 
-  // The speed of the ball relative to the robot (in mm/s)
-  Vector2<double> speed;
-
-  // Tells when the ball was seen the last time
-  const naoth::FrameInfo& frameInfoWhenBallWasSeen;
-  // time how long the ball is seen without interruption
-  const unsigned int& timeBallIsSeen;
+  // algorithmical calidity of the model: true => the ball locator was able to compute a ball model
   bool valid;
 
+  bool knows;
+
+private:
+
+  // time how long the ball is seen without interruption
+  unsigned int timeBallIsSeen;
+
+  // Tells when the ball was seen the last time (copied from ballPercept)
+  naoth::FrameInfo frameInfoWhenBallWasSeen;
+
+
+public:
+  
+  const naoth::FrameInfo& getFrameInfoWhenBallWasSeen() const {
+    return frameInfoWhenBallWasSeen;
+  }
+
+  unsigned int getTimeBallIsSeen() const {
+    return timeBallIsSeen;
+  }
 
   void setFrameInfoWhenBallWasSeen(const naoth::FrameInfo& frameInfo)
   {
     if(frameInfo.getFrameNumber() != frameInfoWhenBallWasSeen.getFrameNumber()+1)
-      _timeBallIsSeen = 0;
+      timeBallIsSeen = 0;
     else
     {
       ASSERT(frameInfoWhenBallWasSeen.getTime() < frameInfo.getTime());
-      _timeBallIsSeen += frameInfo.getTimeSince(frameInfoWhenBallWasSeen.getTime());
+      timeBallIsSeen += frameInfo.getTimeSince(frameInfoWhenBallWasSeen.getTime());
     }
 
-    _frameInfoWhenBallWasSeen = frameInfo;
-  }//end setFrameInfoWhenBallWasSeen
-
-  void reset()
-  {
-    valid = false;
+    frameInfoWhenBallWasSeen = frameInfo;
   }
 
-  void resetTimeBallIsSeen(){
-      _timeBallIsSeen = 0;
+  const Vector2d& getFuturePosition(size_t t) const 
+  {
+    if(t < futurePosition.size()) {
+      return futurePosition[t];
+    }
+
+    if(futurePosition.empty()) {
+      return position;
+    }
+
+    return futurePosition.back();
+  }
+
+  void reset() {
+    valid = false;
+    knows = false;
+  }
+
+  void resetTimeBallIsSeen() {
+    timeBallIsSeen = 0;
   }
 
   virtual void print(std::ostream& stream) const
@@ -86,9 +106,9 @@ public:
     stream << "position = " << position << std::endl;
     stream << "speed = " << speed << std::endl;
     stream << "frameInfoWhenBallWasSeen:\n" << frameInfoWhenBallWasSeen << std::endl;
-  }//end print
+  }
 };
 
-#endif// __BallModel_h_
+#endif // _BallModel_h_
 
 
