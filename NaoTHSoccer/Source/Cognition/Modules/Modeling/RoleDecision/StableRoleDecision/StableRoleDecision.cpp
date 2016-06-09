@@ -55,7 +55,10 @@ void StableRoleDecision::execute()
       getRoleDecisionModel().aliveRobots.push_back((int)robotNumber);
     }
 
-    double time_bonus = (int)msg.playerNum==getRoleDecisionModel().firstStriker?parameters.strikerBonusTime:0.0;
+    double time_bonus = 0;
+    if(msg.playerNum==getRoleDecisionModel().firstStriker) {
+      time_bonus = parameters.strikerBonusTime;
+    }
 
     if (robotNumber == getPlayerInfo().gameData.playerNumber && (msg.fallen || msg.isPenalized || 
       msg.ballAge < 0 || msg.ballAge > parameters.maxBallLostTime + time_bonus)) 
