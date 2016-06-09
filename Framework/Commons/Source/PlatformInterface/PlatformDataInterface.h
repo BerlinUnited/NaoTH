@@ -143,10 +143,10 @@ public:
 class PlatformDataInterface
 {
 private:
-  ProsessEnvironment& environment;
+  ProcessEnvironment& environment;
 
 protected:
-  PlatformDataInterface(ProsessEnvironment& environment)
+  PlatformDataInterface(ProcessEnvironment& environment)
     : environment(environment)
   {
   }

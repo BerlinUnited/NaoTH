@@ -55,7 +55,10 @@ public class RobotHealth extends AbstractDialog
   private final Command getFSRDataCommand = new Command("Cognition:representation:getbinary").addArg("FSRData");
   private final Command getSensorJointDataCommand = new Command("Cognition:representation:getbinary").addArg("SensorJointData");
   
-  private final DecimalFormat df = new DecimalFormat  ( "##0.00" );
+  private final DecimalFormat fsr_df = new DecimalFormat  ( "##0.00" );
+  
+  private final DecimalFormat heat_df = new DecimalFormat  ( "##0" );
+  private final DecimalFormat current_df = new DecimalFormat  ( "0000" );
   
   private final FSRDataListener fSRDataListener = new FSRDataListener();
   private final SensorJointDataListener sensorJointDataListener = new SensorJointDataListener();
@@ -272,7 +275,8 @@ public class RobotHealth extends AbstractDialog
                 //double v = sensorJointData.getJointData().getPosition(i)*10;
                 double v = sensorJointData.getElectricCurrent(i)*10;
                 jointPlots[i].setValue(v);
-                jointStates[i].setValue(sensorJointData.getTemperature(i));
+                jointStates[i].setTemperature((int)sensorJointData.getTemperature(i));
+                jointStates[i].setCurrent(sensorJointData.getElectricCurrent(i));
             }
             
             RobotHealth.this.repaint();
@@ -313,7 +317,7 @@ public class RobotHealth extends AbstractDialog
             g2d.setColor(Color.black);
             g2d.drawOval(x-radius, y-radius, radius*2, radius*2);
             
-            g2d.drawString("["+df.format(value)+"]", x+radius+3, y);
+            g2d.drawString("["+fsr_df.format(value)+"]", x+radius+3, y);
         }
     }
     
@@ -323,7 +327,8 @@ public class RobotHealth extends AbstractDialog
         //private final int y;
         private final int radius;
         private final String name;
-        private double value;
+        private int temperature;
+        private double current;
 
         public JointState(String name, int radius) {
             //this.x = x;
@@ -332,19 +337,24 @@ public class RobotHealth extends AbstractDialog
             this.name = name;
         }
         
-        public void setValue(double value)
+        public void setTemperature(int value)
         { 
-            this.value = value; 
+            this.temperature = value; 
+        }
+        
+        public void setCurrent(double value)
+        {
+            this.current = value;
         }
         
         @Override
         public void draw(Graphics2D g2d) 
         {
             //double value = sensorJointData.getJointData().getPosition(i);
-            g2d.setColor(getColorMix(0, 85f, (float)value));
+            g2d.setColor(getColorMix(0, 85f, (float)temperature));
             g2d.fillOval(-radius, -radius, radius*2, radius*2);
             g2d.setColor(Color.black);
-            g2d.drawString(df.format(value), 10, 5);
+            g2d.drawString(heat_df.format(temperature)+"("+current_df.format(current*1000)+")", 10, 5);
             g2d.drawString(name, 10, -10);
         }
     }

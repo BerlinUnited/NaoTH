@@ -18,6 +18,7 @@ public:
   
   /** */
   naoth::GameData gameData;
+  naoth::GameData gameControllerData;
 
   /** */
   unsigned int timeSincePlayModeChanged; // ms

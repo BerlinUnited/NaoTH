@@ -13,18 +13,16 @@ import de.naoth.rc.dataformats.LogFile;
 import de.naoth.rc.logmanager.LogDataFrame;
 import de.naoth.rc.messages.FrameworkRepresentations;
 import de.naoth.rc.messages.Messages;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.Serializable;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Map;
 import java.util.ResourceBundle;
-import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.concurrent.Service;
@@ -79,6 +77,15 @@ public class ParseLogController implements Initializable
     progress.progressProperty().bind(service.progressProperty());
     lblMessage.textProperty().bind(service.messageProperty());
     service.start();
+    service.setOnFailed(new EventHandler<WorkerStateEvent>()
+    {
+      @Override
+      public void handle(WorkerStateEvent event)
+      {
+        Stage stage = (Stage) lblMessage.getScene().getWindow();
+        stage.close();
+      }
+    });
     service.setOnCancelled(new EventHandler<WorkerStateEvent>()
     {
 
@@ -136,7 +143,7 @@ public class ParseLogController implements Initializable
           // cache it
           updateMessage("Saving cached parsed log file");
           updateProgress(-1, -1);
-          try (ObjectOutputStream oo = new ObjectOutputStream(new FileOutputStream(cachedFile)))
+          try (ObjectOutputStream oo = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(cachedFile))))
           {
             oo.writeObject(result);
 

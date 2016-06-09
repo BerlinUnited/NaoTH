@@ -63,6 +63,9 @@ void SensorSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalOutputSymbol("path.target_y", &setTargetpointY, &getTargetPointY);
   
   engine.registerBooleanInputSymbol("button.bumper.pressed.left", &getBumberLeftPressed);
+  engine.registerBooleanInputSymbol("button.head.pressed.front", &getButtonHeadFront);
+  engine.registerBooleanInputSymbol("button.head.pressed.middle", &getButtonHeadMiddle);
+  engine.registerBooleanInputSymbol("button.head.pressed.rear", &getButtonHeadRear);
 }//end registerSymbols
 
 SensorSymbols* SensorSymbols::theInstance = NULL;
@@ -81,6 +84,18 @@ bool SensorSymbols::getBumberLeftPressed()
 {
   return (theInstance->getButtonData().eventCounter[ButtonData::LeftFootLeft] > 0) ||
          (theInstance->getButtonData().eventCounter[ButtonData::LeftFootRight] > 0);
+}
+bool SensorSymbols::getButtonHeadFront()
+{
+  return (theInstance->getButtonData().isPressed[ButtonData::HeadFront]);
+}
+bool SensorSymbols::getButtonHeadMiddle()
+{
+  return (theInstance->getButtonData().isPressed[ButtonData::HeadMiddle]);
+}
+bool SensorSymbols::getButtonHeadRear()
+{
+  return (theInstance->getButtonData().isPressed[ButtonData::HeadRear]);
 }
 
 double SensorSymbols::getIRButtonNumber()
@@ -108,7 +123,7 @@ double SensorSymbols::simplePassLeftSensor()
 {
   double r = 2550.0;
   // return minimum measurement = closest object
-  for(unsigned int i = 0; i < UltraSoundData::numOfUSEcho; i++)
+  for(size_t i = 0; i < UltraSoundReceiveData::numOfUSEcho; i++)
   {
     if((theInstance->getUltraSoundReceiveData().dataLeft[i] * 1000) < r && theInstance->getUltraSoundReceiveData().dataLeft[i] > 0.2)
     {
@@ -122,7 +137,7 @@ double SensorSymbols::simplePassRightSensor()
 {
   double r = 2550.0;
   // return minimum measurement = closest object
-  for(unsigned int i = 0; i < UltraSoundData::numOfUSEcho; i++)
+  for(size_t i = 0; i < UltraSoundReceiveData::numOfUSEcho; i++)
   {
     if((theInstance->getUltraSoundReceiveData().dataRight[i] * 1000) < r && theInstance->getUltraSoundReceiveData().dataRight[i] > 0.2)
     {

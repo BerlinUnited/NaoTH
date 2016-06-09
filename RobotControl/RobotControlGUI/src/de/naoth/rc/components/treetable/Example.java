@@ -22,14 +22,14 @@ public class Example extends JFrame {
  
         setLayout(new GridLayout(0, 1));
  
-        ModifyDataModel treeTableModel = new ModifyDataModel();
+        ParameterDataModel treeTableModel = new ParameterDataModel();
  
-        treeTableModel.insertPath("A:b:n",':').enabled = true;
-        treeTableModel.insertPath("A:c:m",':').enabled = true;
-        treeTableModel.insertPath("A:b:k",':').enabled = true;
-        treeTableModel.insertPath("B:b:n",':').enabled = false;
-        treeTableModel.insertPath("B:c:m",':').enabled = true;
-        treeTableModel.insertPath("B:a:k",':').enabled = true;
+        treeTableModel.insertPath("A:b:n",":").setValue(new Boolean(true));
+        treeTableModel.insertPath("A:c:m",":").setValue(new Double(1.0));
+        treeTableModel.insertPath("A:b:k",":").setValue(new Double(2.0));
+        treeTableModel.insertPath("B:b:n",":").setValue(new Double(1.0));
+        treeTableModel.insertPath("B:c:m",":").setValue(new Double(1.0));
+        treeTableModel.insertPath("B:a:k",":").setValue(new Double(1.0));
         
         
         

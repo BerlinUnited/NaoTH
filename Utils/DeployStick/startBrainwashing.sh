@@ -1,5 +1,11 @@
 #!/bin/bash
-sudo -u nao aplay /home/nao/naoqi/Media/usb_stop.wav
+
+# set volume to 88%
+sudo -u nao pactl set-sink-mute 0 false
+sudo -u nao pactl set-sink-volume 0 88%
+
+# play initial sound
+sudo -u nao /usr/bin/paplay /home/nao/naoqi/Media/usb_start.wav
 
 # stop naoqi and/or naoth if they are to replace
 if [ -f "./deploy/home/nao/bin/naoth" ]; then

@@ -22,6 +22,18 @@ message BallPercept {
   optional FrameInfo frameInfoWhenBallWasSeen = 6;
 }
 
+message MultiBallPercept {
+  message BallPercept {
+    optional DoubleVector2 centerInImage = 1;
+    optional double radiusInImage = 2;
+    optional DoubleVector2 positionOnField = 3;
+    optional CameraID cameraId = 4;
+  }
+  
+  optional FrameInfo frameInfoWhenBallWasSeen = 1;
+  repeated BallPercept percepts = 2;
+}
+
 message GoalPercept {
   message GoalPost {
     enum PostType
@@ -184,6 +196,18 @@ message OdometryData
   required Pose2D pose = 1;
 }
 
+message BodyState
+{
+  optional bool isLiftedUp = 1;
+}
+
+message BodyStatus
+{
+  repeated double currentSum = 1;
+  //repeated double currentSumFiltered = 2;
+  required uint32 timestamp = 3;
+}
+
 message CalibrationData
 {
   optional DoubleVector2 inertialSensorOffset = 1;
@@ -244,4 +268,22 @@ message Opponent {
 message CameraMatrixCalibration
 {
   repeated DoubleVector2 correctionOffset = 1;
+}
+
+message BallCandidates
+{
+  message Patch 
+  {
+    enum Type {
+      Y = 0;
+      YUV = 1;
+      YUVC = 2;
+    }
+    required IntVector2 min = 1;
+    required IntVector2 max = 2;
+    optional Type type = 3 [default=Y];
+    required bytes data = 5;
+  }
+  
+  repeated Patch patches = 1;
 }
