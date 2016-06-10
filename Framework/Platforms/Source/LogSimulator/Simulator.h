@@ -44,7 +44,7 @@
 class Simulator : public PlatformInterface
 {
 public:
-  Simulator(const std::string& filePath, bool backendMode, bool realTime);
+  Simulator(const std::string& filePath, bool backendMode, bool realTime, unsigned short port);
   virtual ~Simulator(){}
 
   virtual std::string getBodyID() const { return "naoth-logsimulator"; }
@@ -153,6 +153,7 @@ public:
 
 private:
   DebugServer theDebugServer;
+  unsigned short debugPort;
 
 public:
   void get(DebugMessageInCognition& data) {

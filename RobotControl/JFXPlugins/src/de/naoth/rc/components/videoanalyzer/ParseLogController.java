@@ -20,12 +20,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.Serializable;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Map;
 import java.util.ResourceBundle;
-import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.concurrent.Service;
@@ -80,6 +77,15 @@ public class ParseLogController implements Initializable
     progress.progressProperty().bind(service.progressProperty());
     lblMessage.textProperty().bind(service.messageProperty());
     service.start();
+    service.setOnFailed(new EventHandler<WorkerStateEvent>()
+    {
+      @Override
+      public void handle(WorkerStateEvent event)
+      {
+        Stage stage = (Stage) lblMessage.getScene().getWindow();
+        stage.close();
+      }
+    });
     service.setOnCancelled(new EventHandler<WorkerStateEvent>()
     {
 

@@ -17,10 +17,13 @@ Simulation::Simulation()
   DEBUG_REQUEST_REGISTER("Simulation:draw_best_action","best action",false);
   DEBUG_REQUEST_REGISTER("Simulation:draw_potential_field","Draw Potential Field",false);
   DEBUG_REQUEST_REGISTER("Simulation:use_Parameters","use_Parameters",false);
-  DEBUG_REQUEST_REGISTER("Simulation:OppGoal","OppGoal",false);
   DEBUG_REQUEST_REGISTER("Simulation:OwnGoal","OwnGoal",false);
   DEBUG_REQUEST_REGISTER("Simulation:ObstacleLine","ObstacleLine",false);
-  
+  DEBUG_REQUEST_REGISTER("Simulation:ActionTarget:None","DrawNone",false);
+  DEBUG_REQUEST_REGISTER("Simulation:ActionTarget:Short","DrawShortKick",false);
+  //DEBUG_REQUEST_REGISTER("Simulation:ActionTarget:Long","DrawLongKick",false);
+  DEBUG_REQUEST_REGISTER("Simulation:ActionTarget:Left","DrawLeftKick",false);
+  DEBUG_REQUEST_REGISTER("Simulation:ActionTarget:Right","DrawRightKick",false);
 
   getDebugParameterList().add(&theParameters);
 
@@ -28,11 +31,11 @@ Simulation::Simulation()
   action_local.reserve(KickActionModel::numOfActions);
 
   action_local.push_back(Action(KickActionModel::none, ActionParams(), theParameters.friction));
-  action_local.push_back(Action(KickActionModel::kick_long, theParameters.kick_long, theParameters.friction)); // long
   action_local.push_back(Action(KickActionModel::kick_short, theParameters.kick_short, theParameters.friction)); // short
-  action_local.push_back(Action(KickActionModel::sidekick_right, theParameters.sidekick_right, theParameters.friction)); // right
+  //action_local.push_back(Action(KickActionModel::kick_long, theParameters.kick_long, theParameters.friction)); // long
   action_local.push_back(Action(KickActionModel::sidekick_left, theParameters.sidekick_left, theParameters.friction)); // left
-
+  action_local.push_back(Action(KickActionModel::sidekick_right, theParameters.sidekick_right, theParameters.friction)); // right
+  
   actionsConsequences.resize(action_local.size());
 }
 
@@ -45,16 +48,16 @@ void Simulation::execute()
     action_local.reserve(KickActionModel::numOfActions);
 
     action_local.push_back(Action(KickActionModel::none, ActionParams(), theParameters.friction));
-    action_local.push_back(Action(KickActionModel::kick_long, theParameters.kick_long, theParameters.friction)); // long
     action_local.push_back(Action(KickActionModel::kick_short, theParameters.kick_short, theParameters.friction)); // short
-    action_local.push_back(Action(KickActionModel::sidekick_right, theParameters.sidekick_right, theParameters.friction)); // right
+    //action_local.push_back(Action(KickActionModel::kick_long, theParameters.kick_long, theParameters.friction)); // long
     action_local.push_back(Action(KickActionModel::sidekick_left, theParameters.sidekick_left, theParameters.friction)); // left
+    action_local.push_back(Action(KickActionModel::sidekick_right, theParameters.sidekick_right, theParameters.friction)); // right
 
     actionsConsequences.resize(action_local.size());
   );
 
   //Proceed with Calculations only if ball is seen in the last 1 second
-  if(!getBallModel().valid || getFrameInfo().getTimeInSeconds() >= getBallModel().frameInfoWhenBallWasSeen.getTimeInSeconds() + 1)
+  if(!getBallModel().valid || getFrameInfo().getTimeInSeconds() >= getBallModel().getFrameInfoWhenBallWasSeen().getTimeInSeconds() + 1)
   {
     return;
   }
@@ -67,48 +70,22 @@ void Simulation::execute()
     CIRCLE( ball.x, ball.y, 50);
   );
 
-
+  
   // simulate the consequences for all actions
   STOPWATCH_START("Simulation:simulateConsequences");
   for(size_t i=0; i < action_local.size(); i++) {
     simulateConsequences(action_local[i], actionsConsequences[i]);
   }
   STOPWATCH_STOP("Simulation:simulateConsequences");
-   
+
   // plot projected actions
-  DEBUG_REQUEST("Simulation:ActionTarget",
-    for(size_t i=0; i<action_local.size(); i++)
-    {
-      std::vector<CategorizedBallPosition>::const_iterator ballPosition = actionsConsequences[i].begin();
-      for(; ballPosition != actionsConsequences[i].end(); ++ballPosition)
-      {
-        if(ballPosition->cat() == INFIELD)
-        {
-          FIELD_DRAWING_CONTEXT;
-          PEN("009900", 1);
-          Vector2d ball = getRobotPose() * ballPosition->pos();
-          FILLOVAL(ball.x, ball.y, 50, 50);
-        } else if(ballPosition->cat() == OPPGOAL)
-        {
-          FIELD_DRAWING_CONTEXT;
-          PEN("336600", 1);
-          Vector2d ball = getRobotPose() * ballPosition->pos();
-          FILLOVAL(ball.x, ball.y, 50, 50);
-        } else
-        {
-          FIELD_DRAWING_CONTEXT;
-          PEN("66FF33", 1);
-          Vector2d ball = getRobotPose() * ballPosition->pos();
-          FILLOVAL(ball.x, ball.y, 50, 50);
-        }
-      }
-    }
-  );
+  draw_actions(actionsConsequences);
+
   
-  // now decide which action to execture given their consequences
+  // now decide which action to execute given their consequences
   STOPWATCH_START("Simulation:decide");
-  size_t best_action = decide(actionsConsequences);
-  STOPWATCH_STOP("Simulation:decide");
+  size_t best_action = decide_smart(actionsConsequences);
+  STOPWATCH_STOP("Simulation:decide");  
 
   getKickActionModel().bestAction = action_local[best_action].id();
 
@@ -127,12 +104,13 @@ void Simulation::execute()
 
 void Simulation::simulateConsequences(
   const Action& action,
-  std::vector<CategorizedBallPosition>& categorizedBallPositions
+  ActionResults& categorizedBallPositions
   ) const
 { 
   // just as a safety measure
-  categorizedBallPositions.clear();
-  categorizedBallPositions.reserve(static_cast<int>(theParameters.numParticles));
+  //categorizedBallPositions.clear();
+  //categorizedBallPositions.reserve(static_cast<int>(theParameters.numParticles));
+  categorizedBallPositions.reset();
 
   // calculate the own goal line
   Vector2d ownGoalDir = (getFieldInfo().ownGoalPostRight - getFieldInfo().ownGoalPostLeft).normalize();
@@ -238,7 +216,14 @@ void Simulation::simulateConsequences(
       category = COLLISION;
     }
     // inside field
-    else if(getFieldInfo().fieldRect.inside(globalBallEndPosition))
+    // small gap between this and the borders of the goalbox
+    //check y coordinates and 
+    else if(getFieldInfo().fieldRect.inside(globalBallEndPosition) ||
+      (globalBallEndPosition.x <= getFieldInfo().opponentGoalPostRight.x 
+      && globalBallEndPosition.y > getFieldInfo().opponentGoalPostRight.y 
+      && globalBallEndPosition.y < getFieldInfo().opponentGoalPostLeft.y)
+      )
+      //(globalBallEndPosition.y < getFieldInfo().opponentGoalPostRight.y && globalBallEndPosition.y > getFieldInfo().opponentGoalPostLeft.y)
     {
       category = INFIELD;
     }
@@ -269,136 +254,88 @@ void Simulation::simulateConsequences(
     }
 
     // save the calculated end position and category, i.e., the consequence
-    CategorizedBallPosition categorizedBallPosition = CategorizedBallPosition(getRobotPose() / globalBallEndPosition, category);
-    categorizedBallPositions.push_back(categorizedBallPosition);
+    //CategorizedBallPosition categorizedBallPosition = CategorizedBallPosition(getRobotPose() / globalBallEndPosition, category);
+    categorizedBallPositions.add(getRobotPose() / globalBallEndPosition, category);
   }
 }
 
-size_t Simulation::decide(
-  const std::vector<std::vector<CategorizedBallPosition> >& actionsConsequences
-) const
+size_t Simulation::decide_smart(const std::vector<ActionResults>& actionsConsequences ) const
 {
-  // TAKE CARE: This assumes that none is the first action!
-  size_t best_action = 0;
+  std::vector<size_t> acceptableActions;
+  std::vector<size_t> goalActions;
 
-  // #### FILTER ####
-  // now remove actions with more than threshold precentage of outs
-  // also remove actions which result in own-goals
-  std::vector<size_t> goodActions;
   for(size_t i=0; i<action_local.size(); i++)
   {
-    int good = 0;
-    bool ownGoal = false;
-    for(std::vector<CategorizedBallPosition>::const_iterator ballPosition = actionsConsequences[i].begin(); ballPosition != actionsConsequences[i].end(); ballPosition++)
-    {
-      if(ballPosition->cat() == INFIELD || ballPosition->cat() == OPPGOAL)
-      {
-        good++;
-      } else if(ballPosition->cat() == OWNGOAL)
-      {
-        ownGoal = true;
-      }
-    }
+    const ActionResults& results = actionsConsequences[i];
+
     // if an own-goal is detected, ignore the action
-    if(ownGoal)
-    {
+    if(results.categorie(OWNGOAL) > 0) {
       continue;
     }
-    // check goal percentage, percentage needs to be exposed
-    // the static_cast is messy but I don't know how to get around it
-    //goal_percentage = 0.85
-    if(good/static_cast<double>(actionsConsequences[i].size()) > theParameters.good_threshold_percentage)
-    {
-      goodActions.push_back(i);
+
+    // ignore actions with too high chance of kicking out
+    double numberOfInfieldPos = results.categorie(INFIELD) + results.categorie(OPPGOAL);
+    double score = numberOfInfieldPos / (double)(results.categorie(NUMBER_OF_BallPositionCategory));
+    if(score <= max(0.0, theParameters.good_threshold_percentage)) {
+      continue;
     }
+    //all actions which are not too bad
+    acceptableActions.push_back(i);
   }
-  // #### EVALUATION ####
-  // only continue evaluation if there are good actions
-  if(goodActions.size() > 0)
+  for(size_t i=0; i < acceptableActions.size(); i++)
   {
-    // now count the goals for the good actions
-    std::map<size_t, int> actionsGoals;
-    for(std::vector<size_t>::iterator it = goodActions.begin(); it != goodActions.end(); it++)
-    {
-      int goals = 0;
-      for(std::vector<CategorizedBallPosition>::const_iterator ballPosition = actionsConsequences[*it].begin(); ballPosition != actionsConsequences[*it].end(); ballPosition++)
-      {
-        if(ballPosition->cat() == OPPGOAL)
-        {
-          goals++;
-        }
-      }
-      if(goals > 0)
-      {
-        actionsGoals.insert(std::pair<size_t, int>(*it, goals));
-      }
+    const ActionResults& results = actionsConsequences[acceptableActions[i]];
+
+    // there is no other action to compare yet
+    if(goalActions.empty()) {
+      goalActions.push_back(i);
+      continue;
     }
-    // if there are goals, the best action is the one with the most goals
-    if(actionsGoals.size() > 0)
-    {
-      // find number of goals for best action(s)
-      int mostGoals = 0;
-      for(std::map<size_t, int>::iterator it = actionsGoals.begin(); it != actionsGoals.end(); it++)
-      {
-        if(it->second > mostGoals)
-        {
-          mostGoals = it->second;
-        }
-      }
-      // now check how many actions lead to this number of goals
-      std::vector<size_t> bestActions;
-      for(std::map<size_t, int>::iterator it = actionsGoals.begin(); it != actionsGoals.end(); it++)
-      {
-        if(it->second == mostGoals)
-        {
-          bestActions.push_back(it->first);
-        }
-      }
-      if(bestActions.size() > 1)
-      {
-        // find the action with the most goals and the best potential field
-        // THIS IS STILL WRONG BECAUSE BALLS ARE NOT KEPT IN THE GOAL
-        best_action = bestActions[0];
-        double bestValue = std::numeric_limits<double>::max(); // assuming potential is [0.0, inf]
-        for(std::vector<size_t>::iterator it = bestActions.begin(); it != bestActions.end(); it++)
-        {
-          double sumPotential = 0.0;
-          for(std::vector<CategorizedBallPosition>::const_iterator ballPosition = actionsConsequences[*it].begin(); ballPosition != actionsConsequences[*it].end(); ballPosition++)
-          {
-            sumPotential += evaluateAction(getRobotPose() * ballPosition->pos());
-          }
-          // again a static cast because of size_t as I don't know a better solution
-          sumPotential /= static_cast<double>(actionsConsequences[*it].size());
-          if(sumPotential < bestValue)
-          {
-            best_action = *it;
-            bestValue = sumPotential;
-          }
-        }
-      } else
-      {
-        best_action = bestActions[0];
-      }
-    } else // else choose the best mean of the potential field values
-    {
-      double bestValue = std::numeric_limits<double>::max(); // assuming potential is [0.0, inf]
-      for(std::vector<size_t>::iterator it = goodActions.begin(); it != goodActions.end(); it++)
-      {
-        double sumPotential = 0.0;
-        for(std::vector<CategorizedBallPosition>::const_iterator ballPosition = actionsConsequences[*it].begin(); ballPosition != actionsConsequences[*it].end(); ballPosition++)
-        {
-          sumPotential += evaluateAction(getRobotPose() * ballPosition->pos());
-        }
-        // again a static cast because of size_t as I don't know a better solution
-        sumPotential /= static_cast<double>(actionsConsequences[*it].size());
-        if(sumPotential < bestValue)
-        {
-          best_action = *it;
-          bestValue = sumPotential;
-        }
-      }
+
+    // the actio with the highest chance of scoring the goal is the best
+    if(actionsConsequences[goalActions.front()].categorie(OPPGOAL) < results.categorie(OPPGOAL)) {
+      goalActions.clear();
+      goalActions.push_back(i);
+      continue;
+    }
+
+    if(actionsConsequences[goalActions.front()].categorie(OPPGOAL) == results.categorie(OPPGOAL)) {
+      goalActions.push_back(i);
+      continue;
     }
   }
+  // there is a clear decision
+  if(acceptableActions.empty()) {
+    return 0; //assumes 0 is the turn action
+  }
+  if(actionsConsequences[goalActions.front()].categorie(OPPGOAL) > theParameters.minGoalParticles){
+    return goalActions.front();
+  }
+
+  // choose the best action by potential field
+  size_t best_action = 0;
+  double bestValue = std::numeric_limits<double>::max(); // assuming potential is [0.0, inf]
+  
+  for(std::vector<size_t>::const_iterator it = acceptableActions.begin(); it != acceptableActions.end(); ++it)
+  {
+    const ActionResults& results = actionsConsequences[*it];
+
+    double sumPotential = 0.0;
+    for(ActionResults::Positions::const_iterator p = results.positions().begin(); p != results.positions().end(); ++p)
+    {
+      if(p->cat() == INFIELD || p->cat() == OPPGOAL) {
+        sumPotential += evaluateAction(getRobotPose() * p->pos());
+      }
+    }
+
+    sumPotential /= (double)(results.categorie(INFIELD) + results.categorie(OPPGOAL));
+
+    if(sumPotential < bestValue) {
+      best_action = *it;
+      bestValue = sumPotential;
+    }
+  }
+
   return best_action;
 }
 
@@ -415,99 +352,50 @@ Vector2d Simulation::Action::predict(const Vector2d& ball) const
   return ball + noisyAction;
 }
 
-//calcualte according to the rules, without the roboter position, the ball position
-//if it goes outside the field
-Vector2d Simulation::outsideField(const Vector2d& globalPoint) const
-{ 
-  Vector2d point = globalPoint;
-
-  //Schusslinie
-  Math::LineSegment shootLine(getBallModel().positionPreview, globalPoint);
-
-  if(getFieldInfo().fieldRect.inside(point)){
-    return point;
-  }
-  else
-      //Nach Prioritäten geordnet - zuerst die Regeln mit dem möglichst schlimmsten Resultat
-  {   //Opponent Groundline Out - Ball einen Meter hinter Roboter mind anstoß höhe. jeweils seite wo ins ausgeht
-      if(point.x > getFieldInfo().xPosOpponentGroundline)
-      { 
-        Vector2d OppOutPoint = getFieldInfo().oppLineSegment.point(getFieldInfo().oppLineSegment.intersection(shootLine));
-        if(OppOutPoint.y < 0)
-        {
-          return Vector2d(0, getFieldInfo().yThrowInLineRight);//range check
-        } else
-        {
-          return Vector2d(0, getFieldInfo().yThrowInLineLeft); 
-        }
-      }
-      //Own Groundline out -  an der seite wo raus geht
-      else if(point.x < getFieldInfo().xPosOwnGroundline)
-      {
-        Vector2d OwnOutPoint = getFieldInfo().ownLineSegment.point(getFieldInfo().ownLineSegment.intersection(shootLine));
-        if(OwnOutPoint.y < 0)
-        {
-          return Vector2d(getFieldInfo().xThrowInLineOwn, getFieldInfo().yThrowInLineRight);//range check
-        } else
-        { 
-          return Vector2d(getFieldInfo().xThrowInLineOwn, getFieldInfo().yThrowInLineLeft); 
-        }
-      }
-      //an der linken Seite raus -> ein meter hinter roboter oder wo ins ausgeht ein meter hinter
-      else if(point.y > getFieldInfo().yPosLeftSideline )
-      {  
-        Vector2d leftOutPoint = getFieldInfo().leftLineSegment.point(getFieldInfo().leftLineSegment.intersection(shootLine));
-        point.x = min(leftOutPoint.x,getRobotPose().translation.x);
-
-        if(point.x-1000 < getFieldInfo().xThrowInLineOwn)
-        { 
-          point.x = getFieldInfo().xThrowInLineOwn;
-        } else
-        { 
-          point.x -= 1000;
-        }
-        return Vector2d(point.x, getFieldInfo().yThrowInLineLeft); //range check
-      }
-      //an der rechten Seite raus -> ein meter hinter roboter oder wo ins ausgeht ein meter hinter
-      else //(point.y < getFieldInfo().yPosRightSideline)
-      { 
-        Vector2d rightOutPoint = getFieldInfo().rightLineSegment.point(getFieldInfo().rightLineSegment.intersection(shootLine));
-        point.x = min(rightOutPoint.x,getRobotPose().translation.x);
-
-        if(point.x-1000 < getFieldInfo().xThrowInLineOwn)
-        {
-          point.x = getFieldInfo().xThrowInLineOwn;
-        } else
-        { 
-          point.x -= 1000;
-        }
-        return Vector2d(point.x, getFieldInfo().yThrowInLineRight);//range check
-      }
-  }
+double Simulation::exp256(const double& x) const
+{
+  // exp(x) = lim(n->inf) (1 + x/n)^n
+  // for n=256 about 10x faster than exp but around 2.5 % off on x in [-10, 10]
+  double y = 1.0 + x / 256.0;
+  y *= y;
+  y *= y;
+  y *= y;
+  y *= y;
+  y *= y;
+  y *= y;
+  y *= y;
+  y *= y;
+  return y;
 }
 
-double Simulation::evaluateAction(const Vector2d& a) const{
-  Vector2d oppGoal(getFieldInfo().xPosOpponentGoal+getFieldInfo().goalDepth, 0.0);
-  Vector2d oppDiff = oppGoal - a;
+double Simulation::gaussian(const double& x, const double& y, const double& muX, const double& muY, const double& sigmaX, const double& sigmaY) const
+{
+  double facX = (x - muX) * (x - muX) / (2.0 * sigmaX * sigmaX);
+  double facY = (y - muY) * (y - muY) / (2.0 * sigmaY * sigmaY);
+  return exp256(-1.0 * (facX + facY));
+}
 
-  double oppValueX = 0.1;
-  double oppValueY = 1;
-  MODIFY("Simulation:oppValueX", oppValueX);
-  MODIFY("Simulation:oppValueY", oppValueY);
-  double value_opp = sqrt(oppValueX*oppDiff.x*oppDiff.x + oppValueY*oppDiff.y*oppDiff.y)+abs(oppDiff.y)+oppDiff.x;
-  //double value_opp = oppValueX*oppDiff.x*oppDiff.x + oppValueY*oppDiff.y*oppDiff.y;
-  //double value_opp = abs(oppDiff.y)+oppDiff.x;
-  //Vector2d ownGoal(getFieldInfo().xPosOwnGoal, 0.0);
-  //Vector2d ownDiff = ownGoal - a;
+double Simulation::slope(const double& x, const double& y, const double& slopeX, const double& slopeY) const
+{
+  return slopeX * x + slopeY * y;
+}
+
+double Simulation::evaluateAction(const Vector2d& a) const
+{
+  double xPosOpponentGoal = getFieldInfo().xPosOpponentGoal;
+  double yPosLeftSideline = getFieldInfo().yPosLeftSideline;
+  double xPosOwnGoal = getFieldInfo().xPosOwnGoal;
+
+  double sigmaX = xPosOpponentGoal/2.0;
+  double sigmaY = yPosLeftSideline/2.5;
+  double slopeX = -1.0/xPosOpponentGoal;
   
-  //double ownValueX = 0.01;
-  //double ownValueY = 0.1;
-  //MODIFY("Simulation:ownValueX", ownValueX);
-  //MODIFY("Simulation:ownValueY", ownValueY);
-  //double value_own = ownValueX*ownDiff.x*ownDiff.x + ownValueY*ownDiff.y*ownDiff.y;
-
-  //return value_opp - value_own;
-  return value_opp;
+  double f = 0.0;
+  f += slope(a.x, a.y, slopeX, 0.0);
+  f -= gaussian(a.x, a.y, xPosOpponentGoal, 0.0, sigmaX, sigmaY);
+  f += gaussian(a.x, a.y, xPosOwnGoal, 0.0, 1.5*sigmaX, sigmaY);
+  
+  return f;
 }
 
 void Simulation::draw_potential_field() const
@@ -558,3 +446,125 @@ void Simulation::draw_potential_field() const
     }
   }
 }//end draw_closest_points
+
+void Simulation::draw_actions(const std::vector<ActionResults>& actionsConsequences )const {
+
+DEBUG_REQUEST("Simulation:ActionTarget:None",
+  Color color;
+  color = color = Color(1.0,1.0,1.0,0.7); //White - None
+	std::vector<CategorizedBallPosition>::const_iterator ballPosition = actionsConsequences[0].positions().begin();
+	for(; ballPosition != actionsConsequences[0].positions().end(); ++ballPosition)
+	{
+		if(ballPosition->cat() == INFIELD)
+		{
+			FIELD_DRAWING_CONTEXT;
+      Vector2d ball = getRobotPose() * ballPosition->pos();
+      PEN("000000", 1);
+		  FILLOVAL(ball.x, ball.y, 50, 50);
+		  PEN(color, 1);			  
+		  FILLOVAL(ball.x, ball.y, 40, 40);
+		} else if(ballPosition->cat() == OPPGOAL)
+		{
+			FIELD_DRAWING_CONTEXT;
+			PEN("336600", 1);
+			Vector2d ball = getRobotPose() * ballPosition->pos();
+			FILLOVAL(ball.x, ball.y, 50, 50);
+		} else //Outside Field
+		{
+			FIELD_DRAWING_CONTEXT;
+			
+			Vector2d ball = getRobotPose() * ballPosition->pos();			
+      PEN("66FF33", 1);
+      FILLOVAL(ball.x, ball.y, 50, 50);
+		}
+	}
+);
+DEBUG_REQUEST("Simulation:ActionTarget:Short",
+  Color color;
+  color = Color(255.0/255,172.0/255,18.0/255,0.7); //orange - kick_short
+	std::vector<CategorizedBallPosition>::const_iterator ballPosition = actionsConsequences[1].positions().begin();
+	for(; ballPosition != actionsConsequences[1].positions().end(); ++ballPosition)
+	{
+		if(ballPosition->cat() == INFIELD)
+		{
+			FIELD_DRAWING_CONTEXT;
+      Vector2d ball = getRobotPose() * ballPosition->pos();
+      PEN("000000", 1);
+			FILLOVAL(ball.x, ball.y, 50, 50);
+			PEN(color, 1);			  
+			FILLOVAL(ball.x, ball.y, 40, 40);
+		} else if(ballPosition->cat() == OPPGOAL)
+		{
+			FIELD_DRAWING_CONTEXT;
+			PEN("336600", 1);
+			Vector2d ball = getRobotPose() * ballPosition->pos();
+			FILLOVAL(ball.x, ball.y, 50, 50);
+		} else
+		{
+			FIELD_DRAWING_CONTEXT;			
+			Vector2d ball = getRobotPose() * ballPosition->pos();			
+      PEN("66FF33", 1);
+      FILLOVAL(ball.x, ball.y, 50, 50);
+		}
+	}
+);
+
+DEBUG_REQUEST("Simulation:ActionTarget:Left",
+    Color color;
+    color = Color(0.0/255,13.0/255,191.0/255,0.7); //blue - sidekick_left
+		std::vector<CategorizedBallPosition>::const_iterator ballPosition = actionsConsequences[2].positions().begin();
+		for(; ballPosition != actionsConsequences[2].positions().end(); ++ballPosition)
+		{
+			if(ballPosition->cat() == INFIELD)
+			{
+			  FIELD_DRAWING_CONTEXT;
+        Vector2d ball = getRobotPose() * ballPosition->pos();
+        PEN("000000", 1);
+			  FILLOVAL(ball.x, ball.y, 50, 50);
+			  PEN(color, 1);			  
+			  FILLOVAL(ball.x, ball.y, 40, 40);
+			} else if(ballPosition->cat() == OPPGOAL)
+			{
+			  FIELD_DRAWING_CONTEXT;
+			  PEN("336600", 1);
+			  Vector2d ball = getRobotPose() * ballPosition->pos();
+			  FILLOVAL(ball.x, ball.y, 50, 50);
+			} else
+			{
+			  FIELD_DRAWING_CONTEXT;			  
+			  Vector2d ball = getRobotPose() * ballPosition->pos();			  
+        PEN("66FF33", 1);
+        FILLOVAL(ball.x, ball.y, 50, 50);
+			}
+		}
+);
+DEBUG_REQUEST("Simulation:ActionTarget:Right",
+  Color color;
+  color = Color(0.0/255,191.0/255,51.0/255,0.7);//green - sidekick_right
+	std::vector<CategorizedBallPosition>::const_iterator ballPosition = actionsConsequences[3].positions().begin();
+	for(; ballPosition != actionsConsequences[3].positions().end(); ++ballPosition)
+	{
+		if(ballPosition->cat() == INFIELD)
+		{
+			FIELD_DRAWING_CONTEXT;
+      Vector2d ball = getRobotPose() * ballPosition->pos();
+      PEN("000000", 1);
+			FILLOVAL(ball.x, ball.y, 50, 50);
+			PEN(color, 1);			
+			FILLOVAL(ball.x, ball.y, 40, 40);
+		} else if(ballPosition->cat() == OPPGOAL)
+		{
+			FIELD_DRAWING_CONTEXT;
+			PEN("336600", 1);
+			Vector2d ball = getRobotPose() * ballPosition->pos();
+			FILLOVAL(ball.x, ball.y, 50, 50);
+		} else
+		{
+			FIELD_DRAWING_CONTEXT;			
+			Vector2d ball = getRobotPose() * ballPosition->pos();			
+      PEN("66FF33", 1);
+      FILLOVAL(ball.x, ball.y, 50, 50);
+		}
+	}
+);
+}

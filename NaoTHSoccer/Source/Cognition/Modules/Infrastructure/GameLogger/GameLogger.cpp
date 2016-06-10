@@ -7,6 +7,15 @@ GameLogger::GameLogger()
   ignore_init_state(false)
 {
   logfileManager.openFile("/tmp/game.log");
+
+  getDebugParameterList().add(&params);
+}
+
+GameLogger::~GameLogger()
+{
+  logfileManager.closeFile();
+
+  getDebugParameterList().remove(&params);
 }
 
 #define LOGSTUFF(name) \
@@ -39,16 +48,28 @@ void GameLogger::execute()
     {
       LOGSTUFF(BehaviorStateSparse);
 
+      // proprioception
       LOGSTUFF(OdometryData);
       LOGSTUFF(CameraMatrix);
       LOGSTUFF(CameraMatrixTop);
+      LOGSTUFF(BodyStatus);
+
+      // perception
       LOGSTUFF(GoalPercept);
       LOGSTUFF(GoalPerceptTop);
-      LOGSTUFF(BallPercept);
-      LOGSTUFF(BallPerceptTop);
+
+      LOGSTUFF(MultiBallPercept)
+      
+      //LOGSTUFF(BallPercept);
+      //LOGSTUFF(BallPerceptTop);
+      
       LOGSTUFF(ScanLineEdgelPercept);
       LOGSTUFF(ScanLineEdgelPerceptTop);
-      LOGSTUFF(BodyStatus);
+      
+      if(params.logBallCandidates) {
+        LOGSTUFF(BallCandidates);
+        LOGSTUFF(BallCandidatesTop);
+      }
 
       LOGSTUFF(TeamMessage);
 
@@ -63,7 +84,3 @@ void GameLogger::execute()
   }
 }
 
-GameLogger::~GameLogger()
-{
-  logfileManager.closeFile();
-}
