@@ -504,7 +504,7 @@ int BallDetector::calculateKeyPointsBlack(int minX, int minY, int maxX, int maxY
     }
   );
 
-  return bestBlack.candidates.size();
+  return static_cast<int>(bestBlack.candidates.size());
 }
 
 void BallDetector::calculateKeyPoints(Best& best) const

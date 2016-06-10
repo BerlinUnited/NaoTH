@@ -56,7 +56,7 @@ void StableRoleDecision::execute()
     }
 
     double time_bonus = 0;
-    if(msg.playerNum==getRoleDecisionModel().firstStriker) {
+    if(msg.playerNum==(unsigned int)getRoleDecisionModel().firstStriker) {
       time_bonus = parameters.strikerBonusTime;
     }
 

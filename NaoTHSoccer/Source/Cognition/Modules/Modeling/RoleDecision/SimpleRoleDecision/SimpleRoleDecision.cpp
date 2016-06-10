@@ -82,6 +82,6 @@ void SimpleRoleDecision::computeStrikers() {
   }//end for
 
   getRoleDecisionModel().firstStriker = playerNearestToBall; 
-  getRoleDecisionModel().wantsToBeStriker = playerNearestToBall == playerNearestToBall;         
+  getRoleDecisionModel().wantsToBeStriker = true;
   PLOT(std::string("SimpleRoleDecision:StrikerDecision"), getRoleDecisionModel().wantsToBeStriker);
 }

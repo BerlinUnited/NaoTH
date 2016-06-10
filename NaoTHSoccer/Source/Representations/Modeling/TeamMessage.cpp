@@ -99,9 +99,10 @@ void Serializer<TeamMessage>::deserialize(std::istream& stream, TeamMessage& r)
 
     for(size_t i=0; i < d.opponents.size(); i++)
     {
-      d.opponents[i].playerNum = msg.user().opponents().Get(i).playernum();
-      DataConversion::fromMessage(msg.user().opponents().Get(i).poseonfield(),
-                                  d.opponents[i].poseOnField);
+      int j = static_cast<int>(i);
+      d.opponents[j].playerNum = msg.user().opponents().Get(j).playernum();
+      DataConversion::fromMessage(msg.user().opponents().Get(j).poseonfield(),
+                                  d.opponents[j].poseOnField);
     }
 
     // add the single team message data to the collection

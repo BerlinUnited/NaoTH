@@ -25,7 +25,17 @@ end
 
 newoption {
    trigger     = "Wno-conversion",
-   description = "Disable te -Wconversion warnin for gCC"
+   description = "Disable the -Wconversion warnin for gCC"
+}
+
+newoption {
+   trigger     = "Wno-misleading-indentation",
+   description = "Disable the -Wmisleading-indentation warning for gcc (6.0+)"
+}
+
+newoption {
+   trigger     = "Wno-ignored-attributes",
+   description = "Disable the -Wignored-attributes warning for gcc (6.0+)"
 }
 
 -- definition of the solution
@@ -138,6 +148,14 @@ solution "NaoTHSoccer"
         defines { "_NAOTH_CHECK_CONVERSION_" }
       end
     
+      if _OPTIONS["Wno-misleading-indentation"] ~= nil then
+        buildoptions {"-Wno-misleading-indentation"}
+      end
+
+      if _OPTIONS["Wno-ignored-attributes"] ~= nil then
+        buildoptions {"-Wno-ignored-attributes"}
+      end
+
       -- Why? OpenCV is always dynamically linked and we can only garantuee that there is one version in Extern (Thomas)
       linkoptions {"-Wl,-rpath \"" .. path.getabsolute(EXTERN_PATH .. "/lib/") .. "\""}
     end
