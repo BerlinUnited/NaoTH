@@ -304,12 +304,8 @@ void BallCandidateDetector::calculateKeyPoints(BestPatchList& best) const
     for(point.x = border + 1; point.x + size + border+1 < (int)getGameColorIntegralImage().getWidth(); ++point.x)
     {
       int inner = getGameColorIntegralImage().getSumForRect(point.x, point.y, point.x+size, point.y+size, 0);
-      //int green = getGameColorIntegralImage().getSumForRect(point.x, point.y, point.x+size, point.y+size, 1);
-      
       double greenBelow = getGameColorIntegralImage().getDensityForRect(point.x, point.y+size, point.x+size, point.y+size+border, 1);
 
-      // && greenPoints(point.x*FACTOR, point.y*FACTOR, (point.x+size)*FACTOR, (point.y+size)*FACTOR) < 0.3
-      // at least 50%
       if (inner*2 > size*size && greenBelow > 0.3)
       {
         int outer = getGameColorIntegralImage().getSumForRect(point.x-border, point.y+size, point.x+size+border, point.y+size+border, 0);
@@ -324,33 +320,6 @@ void BallCandidateDetector::calculateKeyPoints(BestPatchList& best) const
   }
 }
 
-double BallCandidateDetector::greenPoints(int minX, int minY, int maxX, int maxY) const
-{
-  const size_t sampleSize = 21;
-
-  size_t greenPoints = 0;
-  Pixel pixel;
-  for(size_t i = 0; i < sampleSize; i++)
-  {
-    int x = Math::random(minX, maxX);
-    int y = Math::random(minY, maxY);
-    getImage().get(x, y, pixel);
-    
-    if(getFieldColorPercept().greenHSISeparator.isColor(pixel)) {
-      greenPoints++;
-    }
-      
-    DEBUG_REQUEST("Vision:BallCandidateDetector:drawSamples",
-      if(getFieldColorPercept().greenHSISeparator.isColor(pixel)) {
-        POINT_PX(ColorClasses::red, x, y);
-      } else {
-        POINT_PX(ColorClasses::blue, x, y);
-      }
-    );
-  }
-
-  return static_cast<double>(greenPoints) / static_cast<double>(sampleSize);
-}
 
 void BallCandidateDetector::subsampling(std::vector<unsigned char>& data, int x0, int y0, int x1, int y1) const 
 {

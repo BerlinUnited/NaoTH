@@ -173,7 +173,6 @@ private:
   double estimatedBallRadius(int x, int y) const;
   void addBallPercept(const Vector2i& center, double radius);
 
-  double greenPoints(int minX, int minY, int maxX, int maxY) const;
   void executeHeuristic();
 
 private:
