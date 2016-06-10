@@ -165,10 +165,6 @@ private:
 private:
   int calculateKeyPointsBlack(int minX, int minY, int maxX, int maxY) const;
   void calculateKeyPoints(BestPatchList& best) const;
-  void extractPatches();
-
-  void subsampling(std::vector<unsigned char>& data, int x0, int y0, int x1, int y1) const;
-  void subsampling(std::vector<BallCandidates::ClassifiedPixel>& data, Moments2<2>& moments, int x0, int y0, int x1, int y1) const;
 
   double estimatedBallRadius(int x, int y) const;
   void addBallPercept(const Vector2i& center, double radius);
