@@ -15,19 +15,14 @@
 #include <Tools/Math/Vector2.h>
 
 #include <Representations/Infrastructure/Image.h>
-#include "Representations/Infrastructure/FieldInfo.h"
 #include <Representations/Infrastructure/FrameInfo.h>
 
-#include "Representations/Perception/FieldColorPercept.h"
 #include "Representations/Perception/CameraMatrix.h"
 #include "Representations/Perception/FieldPercept.h"
 #include "Representations/Perception/BodyContour.h"
 
 #include "Representations/Perception/GameColorIntegralImage.h"
-#include "Representations/Perception/MultiBallPercept.h"
 #include "Representations/Perception/BallCandidates.h"
-#include "Representations/Debug/Stopwatch.h"
-#include "Representations/Modeling/RobotPose.h"
 
 // tools
 #include "Tools/DoubleCamHelpers.h"
@@ -35,24 +30,21 @@
 // local tools
 #include "Tools/BestPatchList.h"
 
+// debug
 #include "Representations/Debug/Stopwatch.h"
 #include "Tools/Debug/DebugRequest.h"
-#include "Tools/Debug/DebugPlot.h"
 #include "Tools/Debug/DebugImageDrawings.h"
 #include "Tools/Debug/DebugParameterList.h"
 #include "Tools/Debug/DebugModify.h"
 
 BEGIN_DECLARE_MODULE(BallCandidateDetector)
   PROVIDE(DebugRequest)
-  PROVIDE(DebugDrawings)
-  PROVIDE(DebugPlot)
   PROVIDE(DebugImageDrawings)
   PROVIDE(DebugImageDrawingsTop)
   PROVIDE(DebugParameterList)
   PROVIDE(DebugModify)
   PROVIDE(StopwatchManager)
 
-  REQUIRE(FieldInfo)
   REQUIRE(FrameInfo)
 
   REQUIRE(Image)
@@ -62,18 +54,12 @@ BEGIN_DECLARE_MODULE(BallCandidateDetector)
 
   REQUIRE(CameraMatrix)
   REQUIRE(CameraMatrixTop)
+
   REQUIRE(FieldPercept)
   REQUIRE(FieldPerceptTop)
-  REQUIRE(FieldColorPercept)
-  REQUIRE(FieldColorPerceptTop)
+  //REQUIRE(BodyContour)
+  //REQUIRE(BodyContourTop)
 
-  REQUIRE(BodyContour)
-  REQUIRE(BodyContourTop)
-
-  //hack
-  REQUIRE(RobotPose)
-  
-  PROVIDE(MultiBallPercept)
   PROVIDE(BallCandidates)
   PROVIDE(BallCandidatesTop)
 END_DECLARE_MODULE(BallCandidateDetector)
@@ -85,24 +71,14 @@ public:
   BallCandidateDetector();
   ~BallCandidateDetector();
 
-  bool execute(CameraInfo::CameraID id);
+  void execute(CameraInfo::CameraID id);
 
   virtual void execute()
   {
-    getMultiBallPercept().reset();
     globalNumberOfKeysClassified = 0;
 
-    // only execute search on top camera if bottom camera did not find anything
-    if(!execute(CameraInfo::Bottom))
-    {
-      execute(CameraInfo::Top);
-    }
-    else
-    {
-      DEBUG_REQUEST("Vision:BallCandidateDetector:forceBothCameras",
-        execute(CameraInfo::Top);
-      );
-    }
+    execute(CameraInfo::Bottom);
+    execute(CameraInfo::Top);
   }
  
 private:
@@ -118,16 +94,9 @@ private:
 
       PARAMETER_REGISTER(heuristic.maxGreenInsideRatio) = 0.3;
       PARAMETER_REGISTER(heuristic.minGreenBelowRatio) = 0.5;
-      PARAMETER_REGISTER(heuristic.blackDotsWhiteOffset) = 110;
-      PARAMETER_REGISTER(heuristic.blackDotsMinCount) = 8;
-      PARAMETER_REGISTER(heuristic.onlyOnField) = false;
-      PARAMETER_REGISTER(heuristic.maxMomentAxesRatio) = 2.0;
-      PARAMETER_REGISTER(heuristic.blackDotsMinRatio) = 0.1;
+      PARAMETER_REGISTER(heuristic.blackDotsMinCount) = 1;
       PARAMETER_REGISTER(heuristic.minBlackDetectionSize) = 20;
-      PARAMETER_REGISTER(heuristic.minBallSizeForSVM) = 20;
 
-      PARAMETER_REGISTER(thresholdGradientUV) = 40;
-      PARAMETER_REGISTER(minNumberOfJumps) = 4;
       PARAMETER_REGISTER(maxNumberOfKeys) = 4;
       syncWithConfig();
     }
@@ -140,18 +109,11 @@ private:
     struct Heuristics {
       double maxGreenInsideRatio;
       double minGreenBelowRatio;
-      int blackDotsWhiteOffset;
-      int blackDotsMinCount;
       double blackDotsMinRatio;
-      bool onlyOnField;
-      double maxMomentAxesRatio;
 
+      int blackDotsMinCount;
       int minBlackDetectionSize;
-      int minBallSizeForSVM;
     } heuristic;
-
-    int thresholdGradientUV;
-    int minNumberOfJumps;
 
     int maxNumberOfKeys;
     
@@ -167,8 +129,6 @@ private:
   void calculateKeyPoints(BestPatchList& best) const;
 
   double estimatedBallRadius(int x, int y) const;
-  void addBallPercept(const Vector2i& center, double radius);
-
   void executeHeuristic();
 
 private:
@@ -178,9 +138,8 @@ private:
   // double cam stuff
   DOUBLE_CAM_REQUIRE(BallCandidateDetector, Image);
   DOUBLE_CAM_REQUIRE(BallCandidateDetector, CameraMatrix);
-  DOUBLE_CAM_REQUIRE(BallCandidateDetector, FieldColorPercept);
   DOUBLE_CAM_REQUIRE(BallCandidateDetector, FieldPercept);
-  DOUBLE_CAM_REQUIRE(BallCandidateDetector, BodyContour);
+  //DOUBLE_CAM_REQUIRE(BallCandidateDetector, BodyContour);
   DOUBLE_CAM_REQUIRE(BallCandidateDetector, GameColorIntegralImage);
 
   DOUBLE_CAM_PROVIDE(BallCandidateDetector, BallCandidates);

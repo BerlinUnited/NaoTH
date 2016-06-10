@@ -28,16 +28,7 @@ BallCandidateDetector::BallCandidateDetector()
   : globalNumberOfKeysClassified(0)
 {
   DEBUG_REQUEST_REGISTER("Vision:BallCandidateDetector:keyPoints", "draw key points extracted from integral image", false);
-
   DEBUG_REQUEST_REGISTER("Vision:BallCandidateDetector:drawCandidates", "draw ball candidates", false);
-
-  DEBUG_REQUEST_REGISTER("Vision:BallCandidateDetector:drawPercepts", "draw ball percepts", false);
-
-  DEBUG_REQUEST_REGISTER("Vision:BallCandidateDetector:forceBothCameras", "always record both cameras", true);
-
-  DEBUG_REQUEST_REGISTER("Vision:BallCandidateDetector:drawScanlines", "", false);
-  DEBUG_REQUEST_REGISTER("Vision:BallCandidateDetector:drawScanEndPoints", "", false);
-  DEBUG_REQUEST_REGISTER("Vision:BallCandidateDetector:drawSamples", "", false);
 
   getDebugParameterList().add(&params);
 }
@@ -48,14 +39,14 @@ BallCandidateDetector::~BallCandidateDetector()
 }
 
 
-bool BallCandidateDetector::execute(CameraInfo::CameraID id)
+void BallCandidateDetector::execute(CameraInfo::CameraID id)
 {
   cameraID = id;
   getBallCandidates().reset();
 
   // todo: check validity of the intergral image
   if(getGameColorIntegralImage().getWidth() == 0) {
-    return false;
+    return;
   }
 
   best.clear();
@@ -71,16 +62,6 @@ bool BallCandidateDetector::execute(CameraInfo::CameraID id)
   );
 
   executeHeuristic();
-
-  DEBUG_REQUEST("Vision:BallCandidateDetector:drawPercepts",
-    for(MultiBallPercept::ConstABPIterator iter = getMultiBallPercept().begin(); iter != getMultiBallPercept().end(); iter++) {
-      if((*iter).cameraId == cameraID) {
-        CIRCLE_PX(ColorClasses::orange, (int)((*iter).centerInImage.x+0.5), (int)((*iter).centerInImage.y+0.5), (int)((*iter).radiusInImage+0.5));
-      }
-    }
-  );
-
-  return getMultiBallPercept().wasSeen();
 }
 
 
@@ -143,11 +124,6 @@ void BallCandidateDetector::executeHeuristic()
           checkBlackDots = true;
           c = ColorClasses::orange;
         }
-      }
-
-      if(checkGreenBelow && checkGreenInside  && checkBlackDots) 
-      {
-        addBallPercept((*i).center, radius);
       }
 
       DEBUG_REQUEST("Vision:BallCandidateDetector:drawCandidates",
@@ -308,33 +284,6 @@ double BallCandidateDetector::estimatedBallRadius(int x, int y) const
   }
   
   return -1;
-}
-
-void BallCandidateDetector::addBallPercept(const Vector2i& center, double radius) 
-{
-  const double ballRadius = 50.0;
-  MultiBallPercept::BallPercept ballPercept;
-  
-  if(CameraGeometry::imagePixelToFieldCoord(
-		  getCameraMatrix(), 
-		  getImage().cameraInfo,
-		  center.x, 
-		  center.y, 
-		  ballRadius,
-		  ballPercept.positionOnField))
-  {
-    // HACK: check the global poseition
-    Vector2d ballPositionField = getRobotPose()*ballPercept.positionOnField;
-    if(!params.heuristic.onlyOnField || (getRobotPose().isValid && getFieldInfo().carpetRect.inside(ballPositionField))) 
-    {
-      ballPercept.cameraId = cameraID;
-      ballPercept.centerInImage = center;
-      ballPercept.radiusInImage = radius;
-
-      getMultiBallPercept().add(ballPercept);
-      getMultiBallPercept().frameInfoWhenBallWasSeen = getFrameInfo();
-    }
-  }
 }
 
 
