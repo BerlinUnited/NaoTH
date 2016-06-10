@@ -261,11 +261,6 @@ private:
   void executeHeuristic();
 
 private:
-  double blackPointsCount(BallCandidates::PatchYUVClassified& p, double blackWhiteOffset) const;
-  Vector2d spiderScan(const Vector2i& start, std::vector<Vector2i>& endPoints, int max_length) const;
-  Vector2d scanForEdges(const Vector2i& start, const Vector2d& direction, std::vector<Vector2i>& points, int max_length) const;
-
-private:
   
   DOUBLE_CAM_PROVIDE(BallCandidateDetector, DebugImageDrawings);
 

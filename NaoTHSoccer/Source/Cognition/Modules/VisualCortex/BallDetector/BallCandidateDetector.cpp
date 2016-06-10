@@ -146,43 +146,11 @@ void BallCandidateDetector::executeHeuristic()
       bool checkBlackDots = false;
       if(p.max.y-p.min.y > params.heuristic.minBlackDetectionSize) 
       {
-
         int blackSpotCount = calculateKeyPointsBlack((*i).center.x - radius, (*i).center.y - radius, (*i).center.x + radius, (*i).center.y + radius);
         if( blackSpotCount > params.heuristic.blackDotsMinCount ) {
           checkBlackDots = true;
           c = ColorClasses::orange;
         }
-
-        /*
-        double blackCount = blackPointsCount(p, params.heuristic.blackDotsWhiteOffset);
-
-        Vector2i ci = (p.max+p.min) / 2;
-        int offset = (p.max.y-p.min.y) / 4;
-        Vector2i a(p.min.x+offset, p.min.y+offset);
-        Vector2i b(p.max.x-offset, p.max.y-offset);
-
-        // TODO: fix this dependency
-        if(getImage().isInside(p.min.x - GameColorIntegralImage::FACTOR, p.min.y - GameColorIntegralImage::FACTOR)) {
-          
-          a = a/GameColorIntegralImage::FACTOR;
-          b = b/GameColorIntegralImage::FACTOR;
-          ci = ci/GameColorIntegralImage::FACTOR;
-
-          double s1 = getGameColorIntegralImage().getDensityForRect(a.x, a.y, ci.x, ci.y, 2);
-          double s2 = getGameColorIntegralImage().getDensityForRect(ci.x, a.y, b.x, ci.y, 2);
-          double s3 = getGameColorIntegralImage().getDensityForRect(a.x, ci.y, ci.x, b.y, 2);
-          double s4 = getGameColorIntegralImage().getDensityForRect(ci.x, ci.y, b.x, b.y, 2);
-
-          //double blackInside = getGameColorIntegralImage().getDensityForRect((p.min.x)/4, (p.min.y)/4, (p.max.x)/4, (p.max.y)/4, 2);
-
-          //if(blackInside > params.heuristic.blackDotsMinRatio || blackCount > params.heuristic.blackDotsMinCount) {
-          if(s1+s2+s3+s4 > params.heuristic.blackDotsMinRatio || blackCount > params.heuristic.blackDotsMinCount
-          ) {
-            checkBlackDots = true;
-            c = ColorClasses::orange;
-          }
-        }
-        */
       }
 
       // (4) check distribution
@@ -509,123 +477,4 @@ void BallCandidateDetector::addBallPercept(const Vector2i& center, double radius
 }
 
 
-double BallCandidateDetector::blackPointsCount(BallCandidates::PatchYUVClassified& p, double blackWhiteOffset) const
-{
-  double meanWhite = 0;
-  double whiteCount = 0;
-  for(size_t k = 0; k < p.data.size(); ++k) {
-    if(p.data[k].c == ColorClasses::white) {
-      meanWhite += p.data[k].pixel.y;
-      ++whiteCount;
-    }
-  }
-
-  if(whiteCount > 0) {
-    meanWhite /= whiteCount;
-  } else {
-    return 0;
-  }
-
-  double blackCount = 0;
-  for(size_t k = 0; k < p.data.size(); ++k) {
-    if(p.data[k].c != ColorClasses::green && p.data[k].pixel.y + blackWhiteOffset < meanWhite) {
-      ++blackCount;
-    }
-  }
-
-  return blackCount;
-}
-
-
-Vector2d BallCandidateDetector::spiderScan(const Vector2i& start, std::vector<Vector2i>& endPoints, int max_length) const
-{
-  Vector2d goodBorderPointCount;
-  goodBorderPointCount += scanForEdges(start, Vector2d( 1, 0), endPoints, max_length);
-  goodBorderPointCount += scanForEdges(start, Vector2d(-1, 0), endPoints, max_length);
-  goodBorderPointCount += scanForEdges(start, Vector2d( 0, 1), endPoints, max_length);
-  goodBorderPointCount += scanForEdges(start, Vector2d( 0,-1), endPoints, max_length);
-
-  goodBorderPointCount += scanForEdges(start, Vector2d( 1, 1).normalize(), endPoints, max_length);
-  goodBorderPointCount += scanForEdges(start, Vector2d(-1, 1).normalize(), endPoints, max_length);
-  goodBorderPointCount += scanForEdges(start, Vector2d( 1,-1).normalize(), endPoints, max_length);
-  goodBorderPointCount += scanForEdges(start, Vector2d(-1,-1).normalize(), endPoints, max_length);
-
-  return goodBorderPointCount;
-}
-
-Vector2d BallCandidateDetector::scanForEdges(const Vector2i& start, const Vector2d& direction, std::vector<Vector2i>& points, int max_length) const
-{
-  Vector2i point(start);
-  BresenhamLineScan scanner(point, direction, getImage().cameraInfo);
-
-  // initialize the scanner
-  Vector2i peak_point_min(start);
-  Vector2i peak_point_max(start);
-  MaximumScan<Vector2i,double> negativeScan(peak_point_min, params.thresholdGradientUV);
-  MaximumScan<Vector2i,double> positiveScan(peak_point_max, params.thresholdGradientUV);
-
-  Filter<Prewitt3x1, Vector2i, double, 3> filter;
-
-  Pixel pixel;
-  double stepLength = 0;
-  Vector2i lastPoint(point); // needed for step length
-
-  Vector2i lastJump;
-  double span = 0;
-
-  //int max_length = 6;
-  int jumps = 0;
-  int i = 0;
-  while(scanner.getNextWithCheck(point) && i < max_length)
-  {
-    getImage().get(point.x, point.y, pixel);
-    int f_y = (int)pixel.y;
-
-    filter.add(point, f_y);
-    if(!filter.ready()) {
-      // assume the step length is constant, so we only calculate it in the starting phase of the filter
-      stepLength += Vector2d(point - lastPoint).abs();
-      lastPoint = point;
-      ASSERT(stepLength > 0);
-      continue;
-    }
-
-    DEBUG_REQUEST("Vision:BallCandidateDetector:drawScanlines",
-      POINT_PX(ColorClasses::blue, point.x, point.y);
-    );
-
-
-    // jump down found: begin
-    // NOTE: we scale the filter value with the stepLength to acount for diagonal scans
-    if(negativeScan.add(filter.point(), -filter.value()/stepLength))
-    {
-      DEBUG_REQUEST("Vision:BallCandidateDetector:drawScanlines",
-        POINT_PX(ColorClasses::pink, peak_point_min.x, peak_point_min.y);
-      );
-      points.push_back(peak_point_min);
-
-      span += (peak_point_min-lastJump).abs();
-      lastJump = peak_point_min;
-      jumps++;
-    }
-
-    // end found
-    if(positiveScan.add(filter.point(), filter.value()/stepLength))
-    {
-      DEBUG_REQUEST("Vision:BallCandidateDetector:drawScanlines",
-        POINT_PX(ColorClasses::red, peak_point_max.x, peak_point_max.y);
-      );
-
-      span += (peak_point_min-lastJump).abs();
-      lastJump = peak_point_max;
-      jumps++;
-    }
-
-    i++;
-  }//end while
-
-
-  Vector2d result(jumps, span/(double)jumps);
-  return result; //getFieldColorPercept().isFieldColor(pixel);
-}//end scanForEdges
 
