@@ -55,15 +55,11 @@ void BallCandidateDetector::executeHeuristic()
   BestPatchList::iterator best_element = best.begin();
   std::vector<Vector2i> endPoints;
 
-  ColorClasses::Color c = ColorClasses::gray;// debug
-
   int index = 0;
-  int svmIndex = 0;
   for(BestPatchList::reverse_iterator i = best.rbegin(); i != best.rend(); ++i)
   {
     if(getFieldPercept().getValidField().isInside((*i).center))
     {
-      c = ColorClasses::yellow; // debug
       int radius = (int)((*i).radius + 0.5);
 
       // limit the max amount of evaluated keys
@@ -79,7 +75,6 @@ void BallCandidateDetector::executeHeuristic()
       if(getImage().isInside(max.x, max.y+radius/2) && getImage().isInside(min.x - GameColorIntegralImage::FACTOR, min.y - GameColorIntegralImage::FACTOR)) {
         double greenBelow = getGameColorIntegralImage().getDensityForRect(min.x/4, max.y/4, max.x/4, (max.y+radius/2)/4, 1);
         if(greenBelow > params.heuristic.minGreenBelowRatio) {
-          c = ColorClasses::pink;
           checkGreenBelow = true;
         }
       }
@@ -90,7 +85,6 @@ void BallCandidateDetector::executeHeuristic()
       int offsetX = (max.x-min.x)/4;
       double greenInside = getGameColorIntegralImage().getDensityForRect((min.x+offsetX)/4, (min.y+offsetY)/4, (max.x-offsetX)/4, (max.y-offsetY)/4, 1);
       if(greenInside < params.heuristic.maxGreenInsideRatio) {
-        c = ColorClasses::red;
         checkGreenInside = true;
       }
 
@@ -101,13 +95,21 @@ void BallCandidateDetector::executeHeuristic()
         int blackSpotCount = calculateKeyPointsBlack((*i).center.x - radius, (*i).center.y - radius, (*i).center.x + radius, (*i).center.y + radius);
         if( blackSpotCount > params.heuristic.blackDotsMinCount ) {
           checkBlackDots = true;
-          c = ColorClasses::orange;
         }
       }
 
       DEBUG_REQUEST("Vision:BallCandidateDetector:drawCandidates",
-        RECT_PX(c, (*i).center.x - radius, (*i).center.y - radius,
-          (*i).center.x + radius, (*i).center.y + radius);
+        ColorClasses::Color c = ColorClasses::gray;
+        if(checkGreenBelow && checkGreenInside) {
+          c = ColorClasses::orange;
+        } else if(checkGreenBelow || checkGreenInside) {
+          c = ColorClasses::yellow;
+        }
+        RECT_PX(c, min.x, min.y, max.x, max.y);
+
+        if(checkBlackDots) {
+          CIRCLE_PX(ColorClasses::red, (min.x + max.x)/2, (min.y + max.y)/2, (max.x - min.x)/2);
+        }
       );
     }
   }
