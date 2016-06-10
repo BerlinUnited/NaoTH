@@ -32,16 +32,15 @@
 // tools
 #include "Tools/DoubleCamHelpers.h"
 
+// local tools
+#include "Tools/BestPatchList.h"
+
 #include "Representations/Debug/Stopwatch.h"
 #include "Tools/Debug/DebugRequest.h"
 #include "Tools/Debug/DebugPlot.h"
 #include "Tools/Debug/DebugImageDrawings.h"
 #include "Tools/Debug/DebugParameterList.h"
 #include "Tools/Debug/DebugModify.h"
-
-
-#include "Tools/naoth_opencv.h"
-
 
 BEGIN_DECLARE_MODULE(BallCandidateDetector)
   PROVIDE(DebugRequest)
@@ -117,12 +116,6 @@ private:
       PARAMETER_REGISTER(keyDetector.borderRadiusFactorClose) = 0.5;
       PARAMETER_REGISTER(keyDetector.borderRadiusFactorFar) = 0.8;
 
-      PARAMETER_REGISTER(classifier.basic_svm) = false;
-      PARAMETER_REGISTER(classifier.cv_svm_histogram) = true;
-      PARAMETER_REGISTER(classifier.heuristic) = false;
-      PARAMETER_REGISTER(classifier.maxNumberOfKeys) = 4;
-      PARAMETER_REGISTER(classifier.maxMomentAxesRatio) = 2.0;
-      
       PARAMETER_REGISTER(heuristic.maxGreenInsideRatio) = 0.3;
       PARAMETER_REGISTER(heuristic.minGreenBelowRatio) = 0.5;
       PARAMETER_REGISTER(heuristic.blackDotsWhiteOffset) = 110;
@@ -135,16 +128,9 @@ private:
 
       PARAMETER_REGISTER(thresholdGradientUV) = 40;
       PARAMETER_REGISTER(minNumberOfJumps) = 4;
+      PARAMETER_REGISTER(maxNumberOfKeys) = 4;
       syncWithConfig();
     }
-
-	  struct Classifier {
-      bool basic_svm;
-      bool cv_svm_histogram;
-      bool heuristic;
-      int maxNumberOfKeys;
-      double maxMomentAxesRatio;
-    } classifier;
 
     struct KeyDetector {
       double borderRadiusFactorClose;
@@ -166,89 +152,19 @@ private:
 
     int thresholdGradientUV;
     int minNumberOfJumps;
+
+    int maxNumberOfKeys;
     
   } params;
 
 
 private:
   int globalNumberOfKeysClassified;
-
-  class Best 
-  {
-  public:
-
-    class BallCandidate 
-    {
-    public:
-      BallCandidate() : radius(-1), value(-1) {}
-      BallCandidate(const Vector2i& center, double radius, double value) 
-        : center(center), radius(radius), value(value)
-      {}
-      Vector2i center;
-      double radius;
-      double value;
-    };
-
-    std::list<BallCandidate> candidates;
-
-    template <typename Iter>
-    Iter nextIter(Iter iter) {
-        return ++iter;
-    }
-
-    void add(const Vector2i& center, double radius, double value)
-    {
-      if(candidates.empty()) {
-        candidates.push_back(BallCandidate(center, radius, value));
-        return;
-      }
-
-      bool stop = false;
-      for (std::list<BallCandidate>::iterator i = candidates.begin(); i != candidates.end(); /*nothing*/)
-      {
-        if (std::max(std::abs((*i).center.x - center.x), std::abs((*i).center.y - center.y)) < ((*i).radius + radius)) {
-          if(value > (*i).value) {
-            i = candidates.erase(i);
-          } else {
-            stop = true;
-            ++i;
-          }
-        } else {
-          ++i;
-        }
-      }
-      if(stop) {
-        return;
-      }
-
-      for(std::list<BallCandidate>::iterator i = candidates.begin(); i != candidates.end(); ++i)
-      {
-        // insert
-        if(value < (*i).value) {
-          i = candidates.insert(i,BallCandidate(center, radius, value));
-          break;
-        } else if(nextIter(i) == candidates.end()) {
-          candidates.push_back(BallCandidate(center, radius, value));
-          break;
-        }
-      }
-
-      /*
-      if(candidates.size() > 30) {
-        candidates.pop_front();
-      }
-      */
-    }
-
-    void clear() {
-      candidates.clear();
-    }
-
-  } best;
+  BestPatchList best;
 
 private:
   int calculateKeyPointsBlack(int minX, int minY, int maxX, int maxY) const;
-  void calculateKeyPoints(Best& best) const;
+  void calculateKeyPoints(BestPatchList& best) const;
   void extractPatches();
 
   void subsampling(std::vector<unsigned char>& data, int x0, int y0, int x1, int y1) const;
@@ -273,9 +189,6 @@ private:
   DOUBLE_CAM_REQUIRE(BallCandidateDetector, GameColorIntegralImage);
 
   DOUBLE_CAM_PROVIDE(BallCandidateDetector, BallCandidates);
-
-  cv::Ptr<cv::ml::SVM> histModelBottom;
-  cv::Ptr<cv::ml::SVM> histModelTop;
 };//end class BallCandidateDetector
 
 #endif // _BallCandidateDetector_H_

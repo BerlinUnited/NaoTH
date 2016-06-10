@@ -63,7 +63,7 @@ bool BallCandidateDetector::execute(CameraInfo::CameraID id)
   calculateKeyPoints(best);
 
   DEBUG_REQUEST("Vision:BallCandidateDetector:keyPoints",
-    for(std::list<Best::BallCandidate>::iterator i = best.candidates.begin(); i != best.candidates.end(); ++i) {
+    for(BestPatchList::iterator i = best.begin(); i != best.end(); ++i) {
       int radius = (int)((*i).radius + 0.5);
       RECT_PX(ColorClasses::blue, (*i).center.x - radius, (*i).center.y - radius, (*i).center.x + radius, (*i).center.y + radius);
 
@@ -91,20 +91,20 @@ bool BallCandidateDetector::execute(CameraInfo::CameraID id)
 
 void BallCandidateDetector::executeHeuristic()
 {
-  int maxNumberOfKeys = params.classifier.maxNumberOfKeys;
+  int maxNumberOfKeys = params.maxNumberOfKeys;
   // HACK:
   if(cameraID == CameraInfo::Top) {
-    maxNumberOfKeys += (params.classifier.maxNumberOfKeys-globalNumberOfKeysClassified)/2;
+    maxNumberOfKeys += (params.maxNumberOfKeys-globalNumberOfKeysClassified)/2;
   }
 
-  std::list<Best::BallCandidate>::iterator best_element = best.candidates.begin();
+  BestPatchList::iterator best_element = best.begin();
   std::vector<Vector2i> endPoints;
 
   ColorClasses::Color c = ColorClasses::gray;// debug
 
   int index = 0;
   int svmIndex = 0;
-  for(std::list<Best::BallCandidate>::reverse_iterator i = best.candidates.rbegin(); i != best.candidates.rend(); ++i)
+  for(BestPatchList::reverse_iterator i = best.rbegin(); i != best.rend(); ++i)
   {
     if(getFieldPercept().getValidField().isInside((*i).center))
     {
@@ -180,7 +180,7 @@ void BallCandidateDetector::executeHeuristic()
 
 void BallCandidateDetector::extractPatches()
 {
-  for(std::list<Best::BallCandidate>::iterator i = best.candidates.begin(); i != best.candidates.end(); ++i)
+  for(BestPatchList::iterator i = best.begin(); i != best.end(); ++i)
   {
     if(getFieldPercept().getValidField().isInside((*i).center))
     {
@@ -197,7 +197,7 @@ void BallCandidateDetector::extractPatches()
 
 int BallCandidateDetector::calculateKeyPointsBlack(int minX, int minY, int maxX, int maxY) const
 {
-  static Best bestBlack;
+  static BestPatchList bestBlack;
   bestBlack.clear();
 
   // todo needs a better place
@@ -242,18 +242,17 @@ int BallCandidateDetector::calculateKeyPointsBlack(int minX, int minY, int maxX,
     }
   }
 
-
   DEBUG_REQUEST("Vision:BallCandidateDetector:keyPoints",
-    for(std::list<Best::BallCandidate>::iterator i = bestBlack.candidates.begin(); i != bestBlack.candidates.end(); ++i) {
+    for(BestPatchList::iterator i = bestBlack.begin(); i != bestBlack.end(); ++i) {
       int radius = (int)((*i).radius + 0.5);
       RECT_PX(ColorClasses::red, (*i).center.x - radius, (*i).center.y - radius, (*i).center.x + radius, (*i).center.y + radius);
     }
   );
 
-  return bestBlack.candidates.size();
+  return bestBlack.size();
 }
 
-void BallCandidateDetector::calculateKeyPoints(Best& best) const
+void BallCandidateDetector::calculateKeyPoints(BestPatchList& best) const
 {
   //
   // STEP I: find the maximal height minY to be scanned in the image
