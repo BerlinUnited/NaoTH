@@ -75,8 +75,6 @@ public:
 
   virtual void execute()
   {
-    globalNumberOfKeysClassified = 0;
-
     execute(CameraInfo::Bottom);
     execute(CameraInfo::Top);
   }
@@ -121,7 +119,6 @@ private:
 
 
 private:
-  int globalNumberOfKeysClassified;
   BestPatchList best;
 
 private:

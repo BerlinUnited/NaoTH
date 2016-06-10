@@ -11,7 +11,6 @@
 using namespace std;
 
 BallCandidateDetector::BallCandidateDetector()
-  : globalNumberOfKeysClassified(0)
 {
   DEBUG_REQUEST_REGISTER("Vision:BallCandidateDetector:keyPoints", "draw key points extracted from integral image", false);
   DEBUG_REQUEST_REGISTER("Vision:BallCandidateDetector:drawCandidates", "draw ball candidates", false);
@@ -53,12 +52,6 @@ void BallCandidateDetector::execute(CameraInfo::CameraID id)
 
 void BallCandidateDetector::executeHeuristic()
 {
-  int maxNumberOfKeys = params.maxNumberOfKeys;
-  // HACK:
-  if(cameraID == CameraInfo::Top) {
-    maxNumberOfKeys += (params.maxNumberOfKeys-globalNumberOfKeysClassified)/2;
-  }
-
   BestPatchList::iterator best_element = best.begin();
   std::vector<Vector2i> endPoints;
 
@@ -74,7 +67,7 @@ void BallCandidateDetector::executeHeuristic()
       int radius = (int)((*i).radius + 0.5);
 
       // limit the max amount of evaluated keys
-      if(++index > maxNumberOfKeys) {
+      if(++index > params.maxNumberOfKeys) {
         break;
       }
 
