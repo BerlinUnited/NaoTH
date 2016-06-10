@@ -1,4 +1,3 @@
-
 /**
 * @file BallCandidateDetector.cpp
 *
@@ -7,22 +6,9 @@
 */
 
 #include "BallCandidateDetector.h"
-
-#include "Tools/DataStructures/ArrayQueue.h"
 #include "Tools/CameraGeometry.h"
 
-#include <Representations/Infrastructure/CameraInfoConstants.h>
-
-#include "Tools/Math/Geometry.h"
-#include "Tools/ImageProcessing/BresenhamLineScan.h"
-#include "Tools/ImageProcessing/MaximumScan.h"
-#include "Tools/ImageProcessing/Filter.h"
-
-#include "Tools/Math/Moments2.h"
-
-
-
-#include <list>
+using namespace std;
 
 BallCandidateDetector::BallCandidateDetector()
   : globalNumberOfKeysClassified(0)
