@@ -37,11 +37,11 @@ void BallCandidateDetector::execute(CameraInfo::CameraID id)
   best.clear();
   calculateKeyPoints(best);
 
-  executeHeuristic();
+  calculateCandidates();
 }
 
 
-void BallCandidateDetector::executeHeuristic() const
+void BallCandidateDetector::calculateCandidates()
 {
   // todo needs a better place
   const int32_t FACTOR = getGameColorIntegralImage().FACTOR;
@@ -52,6 +52,7 @@ void BallCandidateDetector::executeHeuristic() const
   // needed for calculating black key-points in the ball candidates
   BestPatchList bestBlackKey;
 
+  // NOTE: patches are sorted in the ascending order, so start from the end to get the best patches
   int index = 0;
   for(BestPatchList::reverse_iterator i = best.rbegin(); i != best.rend(); ++i)
   {
@@ -60,7 +61,7 @@ void BallCandidateDetector::executeHeuristic() const
       int radius = (int)((*i).radius + 0.5);
 
       // limit the max amount of evaluated keys
-      if(++index > params.maxNumberOfKeys) {
+      if(index > params.maxNumberOfKeys) {
         break;
       }
 
@@ -90,9 +91,11 @@ void BallCandidateDetector::executeHeuristic() const
       if(max.y-min.y > params.heuristic.minBlackDetectionSize) 
       {
         calculateKeyPointsBlack(bestBlackKey, (*i).center.x - radius, (*i).center.y - radius, (*i).center.x + radius, (*i).center.y + radius);
-        if( (int)bestBlackKey.size() > params.heuristic.blackDotsMinCount ) {
+        if( (int)bestBlackKey.size() >= params.heuristic.blackDotsMinCount ) {
           checkBlackDots = true;
         }
+      } else {
+        //TODO: what to do with small balls?
       }
 
       DEBUG_REQUEST("Vision:BallCandidateDetector:drawCandidates",
@@ -100,7 +103,7 @@ void BallCandidateDetector::executeHeuristic() const
         if(checkGreenBelow && checkGreenInside) {
           c = ColorClasses::orange;
         } else if(checkGreenBelow || checkGreenInside) {
-          c = ColorClasses::yellow;
+          c = ColorClasses::skyblue;
         }
         RECT_PX(c, min.x, min.y, max.x, max.y);
 
@@ -108,6 +111,16 @@ void BallCandidateDetector::executeHeuristic() const
           CIRCLE_PX(ColorClasses::red, (min.x + max.x)/2, (min.y + max.y)/2, (max.x - min.x)/2);
         }
       );
+
+
+      // TODO: provide ball candidates based on above criteria
+      //getBallCandidates();
+
+      // an acceptable candidate found...
+      if(checkGreenBelow && checkGreenInside) {
+        index++;
+      }
+
     }
   }
 
@@ -178,6 +191,7 @@ void BallCandidateDetector::calculateKeyPoints(BestPatchList& best) const
     return;
   }
 
+  // we search for key points only inside the field polygon
   const FieldPercept::FieldPoly& fieldPolygon = getFieldPercept().getValidField();
 
   // find the top point of the polygon
