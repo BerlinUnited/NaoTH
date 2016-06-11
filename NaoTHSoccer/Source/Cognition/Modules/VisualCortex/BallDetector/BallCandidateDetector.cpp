@@ -37,23 +37,20 @@ void BallCandidateDetector::execute(CameraInfo::CameraID id)
   best.clear();
   calculateKeyPoints(best);
 
-  DEBUG_REQUEST("Vision:BallCandidateDetector:keyPoints",
-    for(BestPatchList::iterator i = best.begin(); i != best.end(); ++i) {
-      int radius = (int)((*i).radius + 0.5);
-      RECT_PX(ColorClasses::blue, (*i).center.x - radius, (*i).center.y - radius, (*i).center.x + radius, (*i).center.y + radius);
-
-      calculateKeyPointsBlack((*i).center.x - radius, (*i).center.y - radius, (*i).center.x + radius, (*i).center.y + radius);
-    }
-  );
-
   executeHeuristic();
 }
 
 
-void BallCandidateDetector::executeHeuristic()
+void BallCandidateDetector::executeHeuristic() const
 {
+  // todo needs a better place
+  const int32_t FACTOR = getGameColorIntegralImage().FACTOR;
+
   BestPatchList::iterator best_element = best.begin();
   std::vector<Vector2i> endPoints;
+
+  // needed for calculating black key-points in the ball candidates
+  BestPatchList bestBlackKey;
 
   int index = 0;
   for(BestPatchList::reverse_iterator i = best.rbegin(); i != best.rend(); ++i)
@@ -72,8 +69,8 @@ void BallCandidateDetector::executeHeuristic()
 
       // (1) check green below
       bool checkGreenBelow = false;
-      if(getImage().isInside(max.x, max.y+radius/2) && getImage().isInside(min.x - GameColorIntegralImage::FACTOR, min.y - GameColorIntegralImage::FACTOR)) {
-        double greenBelow = getGameColorIntegralImage().getDensityForRect(min.x/4, max.y/4, max.x/4, (max.y+radius/2)/4, 1);
+      if(getImage().isInside(max.x, max.y+radius/2) && getImage().isInside(min.x - FACTOR, min.y - FACTOR)) {
+        double greenBelow = getGameColorIntegralImage().getDensityForRect(min.x/FACTOR, max.y/FACTOR, max.x/FACTOR, (max.y+radius/2)/FACTOR, 1);
         if(greenBelow > params.heuristic.minGreenBelowRatio) {
           checkGreenBelow = true;
         }
@@ -81,9 +78,9 @@ void BallCandidateDetector::executeHeuristic()
 
       // (2) check green inside
       bool checkGreenInside = false;
-      int offsetY = (max.y-min.y)/4;
-      int offsetX = (max.x-min.x)/4;
-      double greenInside = getGameColorIntegralImage().getDensityForRect((min.x+offsetX)/4, (min.y+offsetY)/4, (max.x-offsetX)/4, (max.y-offsetY)/4, 1);
+      int offsetY = (max.y-min.y)/FACTOR;
+      int offsetX = (max.x-min.x)/FACTOR;
+      double greenInside = getGameColorIntegralImage().getDensityForRect((min.x+offsetX)/FACTOR, (min.y+offsetY)/FACTOR, (max.x-offsetX)/FACTOR, (max.y-offsetY)/FACTOR, 1);
       if(greenInside < params.heuristic.maxGreenInsideRatio) {
         checkGreenInside = true;
       }
@@ -92,8 +89,8 @@ void BallCandidateDetector::executeHeuristic()
       bool checkBlackDots = false;
       if(max.y-min.y > params.heuristic.minBlackDetectionSize) 
       {
-        int blackSpotCount = calculateKeyPointsBlack((*i).center.x - radius, (*i).center.y - radius, (*i).center.x + radius, (*i).center.y + radius);
-        if( blackSpotCount > params.heuristic.blackDotsMinCount ) {
+        calculateKeyPointsBlack(bestBlackKey, (*i).center.x - radius, (*i).center.y - radius, (*i).center.x + radius, (*i).center.y + radius);
+        if( (int)bestBlackKey.size() > params.heuristic.blackDotsMinCount ) {
           checkBlackDots = true;
         }
       }
@@ -117,12 +114,12 @@ void BallCandidateDetector::executeHeuristic()
 } // end executeHeuristic
 
 
-int BallCandidateDetector::calculateKeyPointsBlack(int minX, int minY, int maxX, int maxY) const
+void BallCandidateDetector::calculateKeyPointsBlack(BestPatchList& bestBlack, int minX, int minY, int maxX, int maxY) const
 {
-  static BestPatchList bestBlack;
   bestBlack.clear();
 
   // todo needs a better place
+  // needed to convert between image coordinates and intergral image coordinates
   const int32_t FACTOR = getGameColorIntegralImage().FACTOR;
 
   Vector2i center;
@@ -146,12 +143,12 @@ int BallCandidateDetector::calculateKeyPointsBlack(int minX, int minY, int maxX,
       int innerWhite = getGameColorIntegralImage().getSumForRect(point.x, point.y, point.x+size, point.y+size, 0);
       int innerGreen = getGameColorIntegralImage().getSumForRect(point.x, point.y, point.x+size, point.y+size, 1);
 
+      // number of non-white pixels
       int innerDark = ((size+1)*(size+1) - innerWhite - innerGreen);
 
-      // at least 50%
+      // at least 33% should be non-white and at least one black
       if (innerDark*3 > (size+1)*(size+1) && innerBlack > 0)
       {
-        //int outer = getGameColorIntegralImage().getSumForRect(point.x-border, point.y+size, point.x+size+border, point.y+size+border, 2);
         int outerWhite = getGameColorIntegralImage().getSumForRect(point.x-border, point.y+size, point.x+size+border, point.y+size+border, 0);
 
         double value = (double)(innerDark + outerWhite)/((double)(size+border)*(size+border));
@@ -170,8 +167,6 @@ int BallCandidateDetector::calculateKeyPointsBlack(int minX, int minY, int maxX,
       RECT_PX(ColorClasses::red, (*i).center.x - radius, (*i).center.y - radius, (*i).center.x + radius, (*i).center.y + radius);
     }
   );
-
-  return bestBlack.size();
 }
 
 void BallCandidateDetector::calculateKeyPoints(BestPatchList& best) const
@@ -212,7 +207,7 @@ void BallCandidateDetector::calculateKeyPoints(BestPatchList& best) const
     int border = (int)(radius*params.keyDetector.borderRadiusFactorClose/FACTOR+0.5);
     double radiusGuess = radius + radius*params.keyDetector.borderRadiusFactorClose;
 
-    // HACK
+    // HACK: different parameters depending on size
     if(size < 40/FACTOR) {
       border = (int)(radius*params.keyDetector.borderRadiusFactorFar/FACTOR+0.5);
     }
