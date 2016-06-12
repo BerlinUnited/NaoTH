@@ -138,7 +138,7 @@ void BallCandidateDetector::calculateKeyPointsBlack(BestPatchList& bestBlack, in
   Vector2i center;
   Vector2i point;
   
-  for(point.y = minY/FACTOR; point.y+1 < maxY/FACTOR; ++point.y)
+  for(point.y = minY/FACTOR; point.y < maxY/FACTOR; ++point.y)
   {
     // HACK: assume square
     int radius = (maxX - minX) / 5 / 2; // image coords
@@ -150,7 +150,7 @@ void BallCandidateDetector::calculateKeyPointsBlack(BestPatchList& bestBlack, in
       continue;
     }
     
-    for(point.x = minX/FACTOR + border + 1; point.x + size + border+1 < maxX/FACTOR; ++point.x)
+    for(point.x = minX/FACTOR + border; point.x + size + border < maxX/FACTOR; ++point.x)
     {
       int innerBlack = getGameColorIntegralImage().getSumForRect(point.x, point.y, point.x+size, point.y+size, 2);
       int innerWhite = getGameColorIntegralImage().getSumForRect(point.x, point.y, point.x+size, point.y+size, 0);
@@ -214,9 +214,10 @@ void BallCandidateDetector::calculateKeyPoints(BestPatchList& best) const
   Vector2i center;
   Vector2i point;
   
-  for(point.y = minY/FACTOR; point.y+1 < (int)getGameColorIntegralImage().getHeight(); ++point.y)
+  for(point.y = minY/FACTOR; point.y < (int)getGameColorIntegralImage().getHeight(); ++point.y)
   {
     double radius = max( 6.0, estimatedBallRadius(point.x*FACTOR, point.y*FACTOR));
+    
     int size   = (int)(radius*2.0/FACTOR+0.5);
     int border = (int)(radius*params.keyDetector.borderRadiusFactorClose/FACTOR+0.5);
     double radiusGuess = radius + radius*params.keyDetector.borderRadiusFactorClose;
@@ -228,11 +229,11 @@ void BallCandidateDetector::calculateKeyPoints(BestPatchList& best) const
     border = max( 2, border);
 
     // smalest ball size == 3 => ball size == FACTOR*3 == 12
-    if (point.y <= border || point.y+size+border+1 >= (int)getGameColorIntegralImage().getHeight()) {
+    if (point.y <= border || point.y+size+border >= (int)getGameColorIntegralImage().getHeight()) {
       continue;
     }
     
-    for(point.x = border + 1; point.x + size + border+1 < (int)getGameColorIntegralImage().getWidth(); ++point.x)
+    for(point.x = border; point.x+size+border < (int)getGameColorIntegralImage().getWidth(); ++point.x)
     {
       int inner = getGameColorIntegralImage().getSumForRect(point.x, point.y, point.x+size, point.y+size, 0);
       double greenBelow = getGameColorIntegralImage().getDensityForRect(point.x, point.y+size, point.x+size, point.y+size+border, 1);
