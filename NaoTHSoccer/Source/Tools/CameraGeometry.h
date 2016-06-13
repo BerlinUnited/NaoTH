@@ -126,6 +126,11 @@ public:
     double rotationOffsetY,
     const Vector2d& theCameraCorrectionOffset);
 
+  static Pose3D calculateCameraMatrixFromHeadPose(
+      Pose3D pose,
+      const Vector3d& translationOffset,
+      double rotationOffsetY,
+      const Vector2d& theCameraCorrectionOffset);
   };
 
 #endif //_CameraGeometry_h_

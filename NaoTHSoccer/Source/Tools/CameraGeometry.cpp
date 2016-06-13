@@ -228,3 +228,19 @@ Pose3D CameraGeometry::calculateCameraMatrix(
 
   return pose;
 }//end calculateCameraMatrix
+
+Pose3D CameraGeometry::calculateCameraMatrixFromHeadPose(
+    Pose3D pose,
+    const Vector3d& translationOffset,
+    double rotationOffsetY,
+    const Vector2d& theCameraCorrectionOffset
+  )
+{
+  // transformation from the head to the camera with correction offset
+  pose.translate(translationOffset);
+
+  pose.rotateY(theCameraCorrectionOffset.y + rotationOffsetY) // tilt
+             .rotateX(theCameraCorrectionOffset.x); // roll
+
+  return pose;
+}//end calculateCameraMatrix
