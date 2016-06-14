@@ -1,5 +1,7 @@
 #include <iostream>
 
+#include <Evaluator/BallDetectorEvaluator.h>
+
 /**
  * @brief main function for the evaluator
  * @param argc
@@ -13,6 +15,8 @@ int main(int argc, char** argv)
     std::string type(argv[1]);
     if(type == "ball")
     {
+      BallDetectorEvaluator evaluator(argv[2]);
+      evaluator.execute();
       return 0;
     }
   }
