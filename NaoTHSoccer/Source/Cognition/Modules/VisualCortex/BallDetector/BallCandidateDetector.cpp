@@ -8,6 +8,9 @@
 #include "BallCandidateDetector.h"
 #include "Tools/CameraGeometry.h"
 
+#include "Tools/PatchWork.h"
+#include "Tools/CVClassifier.h"
+
 using namespace std;
 
 BallCandidateDetector::BallCandidateDetector()
@@ -97,6 +100,19 @@ void BallCandidateDetector::calculateCandidates()
       } else {
         //TODO: what to do with small balls?
       }
+
+
+      // test
+      static CVClassifier cvClassifier;
+      
+      BallCandidates::Patch p(0);
+      p.min = min;
+      p.max = max;
+      PatchWork::subsampling(getImage(), p.data, p.min.x, p.min.y, p.max.x, p.max.y);
+      if(cvClassifier.classify(p, cameraID)) {
+        CIRCLE_PX(ColorClasses::white, (min.x + max.x)/2, (min.y + max.y)/2, (max.x - min.x)/2);
+      }
+
 
       DEBUG_REQUEST("Vision:BallCandidateDetector:drawCandidates",
         ColorClasses::Color c = ColorClasses::gray;
