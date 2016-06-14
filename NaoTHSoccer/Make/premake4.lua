@@ -174,6 +174,7 @@ solution "NaoTHSoccer"
     dofile (FRAMEWORK_PATH .. "/Platforms/Make/LogSimulatorJNI.lua")
       kind "SharedLib"
       links { "NaoTHSoccer", "Commons" }
+    dofile ("Evaluator.lua")
   end
   
   
