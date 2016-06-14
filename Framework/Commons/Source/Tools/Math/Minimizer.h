@@ -9,7 +9,8 @@
 #ifndef MINIMIZER_H
 #define MINIMIZER_H
 
-#include "Tools/Math/Vector2.h"
+#include <Tools/Math/Common.h>
+#include <Tools/Math/Vector2.h>
 #include <Eigen/Eigen>
 
 template<int numOfFunctions, int numOfParameter, class ErrorFunction>

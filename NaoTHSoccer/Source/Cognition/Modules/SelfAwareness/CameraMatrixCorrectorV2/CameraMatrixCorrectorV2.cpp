@@ -47,7 +47,7 @@ void CameraMatrixCorrectorV2::execute(CameraInfo::CameraID id)
     //= std::floor(Math::toDegrees(getSensorJointData().position[naoth::HeadYaw] + 90)/18.0 + 0.5);
     CamMatErrorFunction::CalibrationData& c_data = (theCamMatErrorFunction->getModuleT())->calibrationData;
 
-    int current_index = static_cast<int>(std::round((Math::toDegrees(getSensorJointData().position[JointData::HeadYaw]) + 90)/18.0));
+    int current_index = static_cast<int>(((Math::toDegrees(getSensorJointData().position[JointData::HeadYaw]) + 90.0)/18.0) + 0.5);
 
     if(last_index != current_index && current_index >= 0 && current_index <= (int) c_data.size()) {
         c_data[current_index].headPose   = getKinematicChain().theLinks[KinematicChain::Head].M;;
