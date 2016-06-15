@@ -73,8 +73,8 @@ public:
   void set(const TeamMessageDataOut& data) { theTeamCommSender->send(data.data); }
 
   // gamecontroller stuff
-  void get(GameData& data){ theGameController->get(data, NaoTime::getNaoTimeInMilliSeconds()); }
-  void set(const GameReturnData& data) { theGameController->setReturnData(data); }
+  void get(GameData& data){ theGameController->get(data); }
+  void set(const GameReturnData& data) { theGameController->set(data); }
 
   // debug comm
   void get(DebugMessageInCognition& data) { theDebugServer->getDebugMessageInCognition(data); }
@@ -140,7 +140,7 @@ public:
   }
   
 
-  void setCognitionOutput()
+  virtual void setCognitionOutput()
   {
     //STOPWATCH_START("setCognitionOutput");
     PlatformInterface::setCognitionOutput();

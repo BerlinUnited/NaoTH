@@ -86,8 +86,8 @@ private:
   double theSenseTime;
   double theStepTime; // the time of last step in seconds
   
+  SimSparkGameInfo theGameInfo;
   InertialSensorData theInertialSensorData;
-  GameData theGameData;
   SensorJointData theSensorJointData;
   TeamMessageDataOut theTeamMessageDataOut; // message to other robots
   TeamMessageDataIn theTeamMessageDataIn; // message from other robots

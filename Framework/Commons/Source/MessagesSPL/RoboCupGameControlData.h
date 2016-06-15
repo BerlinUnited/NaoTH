@@ -68,6 +68,10 @@
 #define PENALTY_SUBSTITUTE                  14
 #define PENALTY_MANUAL                      15
 
+// NOTE: added by Heinrich
+namespace spl
+{
+
 struct RobotInfo
 {
   uint8_t penalty;              // penalty state of the player
@@ -132,4 +136,5 @@ struct RoboCupGameControlReturnData
 #endif
 };
 
+} // namespace spl
 #endif // ROBOCUPGAMECONTROLDATA_H
