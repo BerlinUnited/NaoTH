@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 import os, sys, getopt, math
+from os.path import dirname
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.patches as ptc
@@ -8,7 +9,6 @@ import matplotlib
 import json
 
 import naoth.patchReader as patchReader
-
 
 # todo make class
 patchdata = None
@@ -157,35 +157,38 @@ def showPatches():
   fig.suptitle(str(window_idx)+' - '+str(window_idx+show_size[0]*show_size[1])+' / '+str(len(patchdata)), fontsize=20)
   fig.canvas.draw()
     
-    
+
+'''
+
+USAGE:
+  python ball_patch_label.py ./data/ball-move-around-patches.log
+
+'''
 if __name__ == "__main__":
-  
-  file = 'patches-approach-ball'
-  file = 'patches-yuv-ball-move-around'
+
   if len(sys.argv) > 1:
-    file = sys.argv[1]
-  #file = 'patches-ball-sidecick'
-  
-  patchdata, _ = patchReader.readAllPatchesFromLog(file+'.log', type = 0)
-  label_file = file+'.json'
+    logFilePath = sys.argv[1]
+
+  # type: 0-'Y', 1-'YUV', 2-'YUVC'
+  patchdata, _ = patchReader.readAllPatchesFromLog(logFilePath, type = 2)
+
+  # load the label file
+  base_file, file_extension = os.path.splitext(logFilePath)
+  label_file = base_file+'.json'
   labels = load_labels(label_file)
-  
-  
+
   window_idx = 0
   showPatches()
   plt.connect('button_press_event', on_click)
   plt.connect("key_press_event", key_pressed)
-  
+
   #fig.gca().xticks(())
   #fig.gca().yticks(())
-      
+
   if matplotlib.get_backend() == 'Qt4Agg':
     f_manager = plt.get_current_fig_manager()
     f_manager.window.move(0, 0)
     if fullscreen:
       f_manager.window.showMaximized()
-  
-  plt.show()
-  
 
-    
+  plt.show()
