@@ -41,6 +41,7 @@ NaoController::NaoController()
   naoCommandLEDData.open(naoCommandLEDDataPath);
 
   whistleSensorData.open("/whistleDetector.count");
+  whistleControlData.open("/whistleDetector.commands");
 
   // end init shared memory
   
