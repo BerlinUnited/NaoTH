@@ -10,6 +10,7 @@
 
 #include "Tools/PatchWork.h"
 #include "Tools/CVClassifier.h"
+#include "Tools/CVHaarClassifier.h"
 
 using namespace std;
 
@@ -103,7 +104,7 @@ void BallCandidateDetector::calculateCandidates()
 
 
       // test
-      static CVClassifier cvClassifier;
+      static CVHaarClassifier cvClassifier;
       
       BallCandidates::Patch p(0);
       p.min = min;
