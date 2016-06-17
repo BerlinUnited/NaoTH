@@ -9,7 +9,6 @@
 
 #include "Tools/naoth_opencv.h"
 #include "Representations/Perception/BallCandidates.h"
-#include "Representations/Infrastructure/CameraInfo.h"
 
 class CVHaarClassifier
 {
@@ -27,8 +26,8 @@ public:
     
     // TODO: magic numbers
     cv::Mat wrappedImg(12, 12, CV_8UC1, (void*) p.data.data());
-    std::vector<Rect> out;
-    face_cascade.detectMultiScale( wrappedImg, out, 1.1, 2, 0|cv::CV_HAAR_SCALE_IMAGE, Size(12,12) );
+    std::vector<cv::Rect> out;
+    cascadeClasifier.detectMultiScale( wrappedImg, out, 1.1, 2, 0|CV_HAAR_SCALE_IMAGE, cv::Size(12,12) );
 
     return !out.empty();
   }

@@ -47,7 +47,8 @@ solution "NaoTHSoccer"
   links {
     "opencv_core",
     "opencv_ml",
-    "opencv_imgproc"
+    "opencv_imgproc",
+    "opencv_objdetect"
 	}
   
   -- set the remository information
