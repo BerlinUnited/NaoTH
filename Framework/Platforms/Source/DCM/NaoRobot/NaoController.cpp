@@ -117,6 +117,7 @@ NaoController::NaoController()
   registerOutput<const LEDData>(*this);
   registerOutput<const IRSendData>(*this);
   registerOutput<const UltraSoundSendData>(*this);
+  registerOutput<const WhistleControl>(*this);
 
 
   /*  INIT DEVICES  */
