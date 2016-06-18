@@ -25,9 +25,10 @@ public:
   {
     
     // TODO: magic numbers
-    cv::Mat wrappedImg(12, 12, CV_8UC1, (void*) p.data.data());
+    cv::Mat wrappedImg(12, 12, CV_8U, (void*) p.data.data());
+    //cv::transpose(wrappedImg, wrappedImg);
     std::vector<cv::Rect> out;
-    cascadeClasifier.detectMultiScale( wrappedImg, out, 1.1, 2, 0|CV_HAAR_SCALE_IMAGE, cv::Size(12,12) );
+    cascadeClasifier.detectMultiScale( wrappedImg, out, 1.01, 0, 0|CV_HAAR_SCALE_IMAGE, cv::Size(12,12) );
 
     return !out.empty();
   }
