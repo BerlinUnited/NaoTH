@@ -10,7 +10,8 @@ project "Evaluator"
   
   files {
 	"../Source/**.cpp",
-	"../Source/**.h"
+	"../Source/**.h",
+	"../Source/**.hpp"
 	}
   
   links {

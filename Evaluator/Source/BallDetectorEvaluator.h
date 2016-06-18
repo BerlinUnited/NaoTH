@@ -8,8 +8,11 @@
 #include <Cognition/Modules/VisualCortex/BallDetector/BallDetector.h>
 
 
-BEGIN_DECLARE_MODULE(BallDetectorEvaluator)
+#include <picojson.h>
 
+BEGIN_DECLARE_MODULE(BallDetectorEvaluator)
+  PROVIDE(BallCandidates)
+  PROVIDE(BallCandidatesTop)
 END_DECLARE_MODULE(BallDetectorEvaluator)
 
 class BallDetectorEvaluator : public ModuleManager, public BallDetectorEvaluatorBase
@@ -24,6 +27,8 @@ private:
   ModuleCreator<BallDetector>* ballDetector;
   LogFileScanner logFileScanner;
   LogFileScanner::FrameIterator currentFrame;
+
+  picojson::value groundTruth;
 };
 
 #endif // BALLDETECTOREVALUATOR_H
