@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include <Evaluator/BallDetectorEvaluator.h>
+#include "BallDetectorEvaluator.h"
 
 /**
  * @brief main function for the evaluator
@@ -21,7 +21,7 @@ int main(int argc, char** argv)
     }
   }
 
-  std::cerr << "usage: evaluator <type> <dir>" << std::endl;
+  std::cerr << "usage: evaluator <type> <logfile>" << std::endl;
   std::cerr << "only \"ball\" is supported as type currently" << std::endl;
   return -1;
 }

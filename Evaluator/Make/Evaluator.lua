@@ -4,12 +4,13 @@ project "Evaluator"
   language "C++"
   
   includedirs {
-	"../Source/"
+	"../Source/",
+	"../../NaoTHSoccer/Source/"
 	}
   
   files {
-	"../Source/Evaluator/**.cpp",
-	"../Source/Evaluator/**.h"
+	"../Source/**.cpp",
+	"../Source/**.h"
 	}
   
   links {
@@ -18,7 +19,9 @@ project "Evaluator"
 	"gobject-2.0",
 	"gmodule-2.0",
 	"gthread-2.0",
-	"protobuf"
+	"protobuf",
+	"NaoTHSoccer",
+	"Commons"
 	}
 	
   targetname "evaluator"
