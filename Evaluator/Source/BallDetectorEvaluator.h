@@ -7,6 +7,7 @@
 #include <ModuleFramework/ModuleManager.h>
 #include <Cognition/Modules/VisualCortex/BallDetector/BallDetector.h>
 
+#include <map>
 
 #include <picojson.h>
 
@@ -28,7 +29,7 @@ private:
   LogFileScanner logFileScanner;
   LogFileScanner::FrameIterator currentFrame;
 
-  picojson::value groundTruth;
+  std::map<int, bool> groundTruth;
 };
 
 #endif // BALLDETECTOREVALUATOR_H

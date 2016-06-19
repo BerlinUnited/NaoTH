@@ -9,6 +9,10 @@
 BallDetectorEvaluator::BallDetectorEvaluator(const std::string &file)
   : file(file), logFileScanner(file)
 {
+  typedef std::vector<picojson::value> array;
+  //typedef std::map<std::string, picojson::value> object;
+
+
   ballDetector = registerModule<BallDetector>("BallDetector", true);
 
   size_t dotPos = file.find_last_of('.');
@@ -17,10 +21,24 @@ BallDetectorEvaluator::BallDetectorEvaluator(const std::string &file)
   std::cout << "loading ground truth from '" << jsonFile << "'" << std::endl;
   std::ifstream groundTruthStream(jsonFile);
 
-  picojson::parse(groundTruth, groundTruthStream);
+  picojson::value parsedJson;
+  picojson::parse(parsedJson, groundTruthStream);
 
   groundTruthStream.close();
 
+  array ballIdx;
+  if(parsedJson.get("ball").is<array>())
+  {
+    ballIdx = parsedJson.get("ball").get<array>();
+  }
+
+  for(picojson::value idx : ballIdx)
+  {
+    if(idx.is<double>())
+    {
+      groundTruth[(int) idx.get<double>()] = true;
+    }
+  }
 }
 
 BallDetectorEvaluator::~BallDetectorEvaluator()
