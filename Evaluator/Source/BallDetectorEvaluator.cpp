@@ -125,6 +125,7 @@ void BallDetectorEvaluator::execute()
   std::cout << "recall: " << recall << std::endl;
 
   std::cout << "=============" << std::endl;
+  std::cout << "Written detailed report to BallEvaluator_output.html" << std::endl;
 
   base64::Encoder base64Encoder(64);
 
