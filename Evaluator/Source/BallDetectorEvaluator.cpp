@@ -137,14 +137,13 @@ void BallDetectorEvaluator::execute()
 
   base64::Encoder base64Encoder(64);
 
-  //TODO: also output a simple HTML file with the actual images
   std::ofstream html;
   html.open("BallEvaluator_output.html");
 
   html << "<html>" << std::endl;
   html << "<head>" << std::endl;
-  // TODO: write some CSS?
   html << "<style>" << std::endl;
+  // CSS
   html << "img.patch {width: 36px; height: 36px}" << std::endl;
   html << "</style>" << std::endl;
   html << "</head>" << std::endl;
