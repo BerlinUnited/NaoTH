@@ -103,7 +103,9 @@ void GameController::execute()
   DEBUG_REQUEST("gamecontroller:play",
     getPlayerInfo().robotState = PlayerInfo::playing;
   );
-
+  DEBUG_REQUEST("gamecontroller:penalized",
+    getPlayerInfo().robotState = PlayerInfo::penalized;
+  );
   
   // remember the whistle counter before set
   if(getPlayerInfo().robotState == PlayerInfo::ready) {
