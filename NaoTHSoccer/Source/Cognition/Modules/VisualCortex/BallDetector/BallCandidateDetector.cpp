@@ -49,7 +49,7 @@ void BallCandidateDetector::calculateCandidates()
   // todo needs a better place
   const int32_t FACTOR = getGameColorIntegralImage().FACTOR;
 
-  BestPatchList::iterator best_element = best.begin();
+  //BestPatchList::iterator best_element = best.begin();
   std::vector<Vector2i> endPoints;
 
   // needed for calculating black key-points in the ball candidates
@@ -93,7 +93,7 @@ void BallCandidateDetector::calculateCandidates()
       bool checkBlackDots = false;
       if(max.y-min.y > params.heuristic.minBlackDetectionSize) 
       {
-        calculateKeyPointsBlack(bestBlackKey, (*i).center.x - radius, (*i).center.y - radius, (*i).center.x + radius, (*i).center.y + radius);
+        calculateKeyPointsBlack(bestBlackKey, min.x, min.y, max.x, max.y);
         if( (int)bestBlackKey.size() >= params.heuristic.blackDotsMinCount ) {
           checkBlackDots = true;
         }
@@ -108,7 +108,7 @@ void BallCandidateDetector::calculateCandidates()
       BallCandidates::Patch p(0);
       p.min = min;
       p.max = max;
-      PatchWork::subsampling(getImage(), p.data, p.min.x, p.min.y, p.max.x, p.max.y);
+      PatchWork::subsampling(getImage(), p.data, p.min.x, p.min.y, p.max.x, p.max.y, 12);
       if(cvClassifier.classify(p, cameraID)) {
         CIRCLE_PX(ColorClasses::white, (min.x + max.x)/2, (min.y + max.y)/2, (max.x - min.x)/2);
       }
