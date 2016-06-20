@@ -6,6 +6,8 @@
 
 #include <Representations/Perception/BallCandidates.h>
 
+#include <Extern/libb64/encode.h>
+
 BallDetectorEvaluator::BallDetectorEvaluator(const std::string &file)
   : file(file), logFileScanner(file),
     truePositives(0), falsePositives(0), falseNegatives(0)
@@ -101,23 +103,40 @@ void BallDetectorEvaluator::execute()
   std::cout << "precision: " << precision << std::endl;
   std::cout << "recall: " << recall << std::endl;
 
+  base64::Encoder base64Encoder(64);
+
   //TODO: also output a simple HTML file with the actual images
-  unsigned int i=0;
+  std::ofstream html;
+  html.open("BallEvaluator_output.html");
+
+  html << "<html>" << std::endl;
+  html << "<head>" << std::endl;
+  // TODO: write some CSS?
+  html << "</head>" << std::endl;
+
+  html << "<body>" << std::endl;
+
+  html << "<h1>Summary</h1>" << std::endl;
+  html << "<p>precision: " << precision << "<br />recall: " << recall << "</p>" << std::endl;
+
+  html << "<h1>False Positives</h1>" << std::endl;
+
   for(std::list<BallCandidates::Patch>::const_iterator it=falsePositivePatches.begin(); it != falsePositivePatches.end(); it++)
   {
-    std::ofstream out;
-    out.open("falsePositive_" + std::to_string(i++) + ".pgm");
-    out << createPGM(*it);
-    out.close();
+    // use a data URI to embed the image in PGM format
+    std::string origPGM = createPGM(*it);
+    html << "<img src=\"data:image/x-portable-graymap;base64," << base64Encoder.encode(origPGM.c_str(), (int) origPGM.size())  << "\" />" << std::endl;
   }
-  i=0;
+
+   html << "<h1>False Negatives</h1>" << std::endl;
   for(std::list<BallCandidates::Patch>::const_iterator it=falseNegativePatches.begin(); it != falseNegativePatches.end(); it++)
   {
-    std::ofstream out;
-    out.open("falseNegative_" + std::to_string(i++) + ".pgm");
-    out << createPGM(*it);
-    out.close();
+    // use a data URI to embed the image in PGM format
+    std::string origPGM = createPGM(*it);
+    html << "<img src=\"data:image/x-portable-graymap;base64," << base64Encoder.encode(origPGM.c_str(), (int) origPGM.size())  << "\" />" << std::endl;
   }
+  html << "</body>" << std::endl;
+  html.close();
 
 }
 
