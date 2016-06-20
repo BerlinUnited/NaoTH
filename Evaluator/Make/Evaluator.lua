@@ -21,6 +21,7 @@ project "Evaluator"
 	"gmodule-2.0",
 	"gthread-2.0",
 	"protobuf",
+	"opencv_imgcodecs",
 	"NaoTHSoccer",
 	"Commons"
 	}

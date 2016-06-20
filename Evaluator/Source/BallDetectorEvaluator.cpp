@@ -8,6 +8,30 @@
 
 #include <Extern/libb64/encode.h>
 
+#include <Tools/naoth_opencv.h>
+
+#if defined(__GNUC__) && defined(_NAOTH_CHECK_CONVERSION_)
+#if (__GNUC__ > 3 && __GNUC_MINOR__ > 5) || (__GNUC__ > 4) // version >= 4.6
+#pragma GCC diagnostic push
+#endif
+#pragma GCC diagnostic ignored "-Wconversion"
+#if (__GNUC__ > 3 && __GNUC_MINOR__ > 8) || (__GNUC__ > 4) // version >= 4.9
+#pragma GCC diagnostic ignored "-Wfloat-conversion"
+#endif
+#endif
+
+#include <opencv2/imgcodecs/imgcodecs.hpp>
+
+#if defined(__GNUC__) && defined(_NAOTH_CHECK_CONVERSION_)
+#if (__GNUC__ > 3 && __GNUC_MINOR__ > 5) || (__GNUC__ > 4)  // version >= 4.6
+#pragma GCC diagnostic push
+#endif
+#pragma GCC diagnostic error "-Wconversion"
+#if (__GNUC__ > 3 && __GNUC_MINOR__ > 8) || (__GNUC__ > 4) // version >= 4.9
+#pragma GCC diagnostic error "-Wfloat-conversion"
+#endif
+#endif
+
 BallDetectorEvaluator::BallDetectorEvaluator(const std::string &file)
   : file(file), logFileScanner(file),
     truePositives(0), falsePositives(0), falseNegatives(0)
@@ -112,6 +136,9 @@ void BallDetectorEvaluator::execute()
   html << "<html>" << std::endl;
   html << "<head>" << std::endl;
   // TODO: write some CSS?
+  html << "<style>" << std::endl;
+  html << "img.patch {width: 36px; height: 36px}" << std::endl;
+  html << "</style>" << std::endl;
   html << "</head>" << std::endl;
 
   html << "<body>" << std::endl;
@@ -123,17 +150,17 @@ void BallDetectorEvaluator::execute()
 
   for(std::list<BallCandidates::Patch>::const_iterator it=falsePositivePatches.begin(); it != falsePositivePatches.end(); it++)
   {
-    // use a data URI to embed the image in PGM format
-    std::string origPGM = createPGM(*it);
-    html << "<img src=\"data:image/x-portable-graymap;base64," << base64Encoder.encode(origPGM.c_str(), (int) origPGM.size())  << "\" />" << std::endl;
+    // use a data URI to embed the image in PNG format
+    std::string imgPNG = createPNG(*it);
+    html << "<img class=\"patch\" src=\"data:image/png;base64," << base64Encoder.encode(imgPNG.c_str(), (int) imgPNG.size())  << "\" />" << std::endl;
   }
 
-   html << "<h1>False Negatives</h1>" << std::endl;
+  html << "<h1>False Negatives</h1>" << std::endl;
   for(std::list<BallCandidates::Patch>::const_iterator it=falseNegativePatches.begin(); it != falseNegativePatches.end(); it++)
   {
-    // use a data URI to embed the image in PGM format
-    std::string origPGM = createPGM(*it);
-    html << "<img src=\"data:image/x-portable-graymap;base64," << base64Encoder.encode(origPGM.c_str(), (int) origPGM.size())  << "\" />" << std::endl;
+    // use a data URI to embed the image in PNG format
+    std::string imgPNG = createPNG(*it);
+    html << "<img class=\"patch\" src=\"data:image/png;base64," << base64Encoder.encode(imgPNG.c_str(), (int) imgPNG.size())  << "\" />" << std::endl;
   }
   html << "</body>" << std::endl;
   html.close();
@@ -192,4 +219,15 @@ std::string BallDetectorEvaluator::createPGM(const BallCandidates::Patch &p)
     str << "\n";
   }
   return str.str();
+}
+
+std::string BallDetectorEvaluator::createPNG(const BallCandidates::Patch &p)
+{
+  cv::Mat wrappedImg(12, 12, CV_8UC1, (void*) p.data.data());
+
+  std::vector<uchar> buffer;
+
+  cv::imencode(".png", wrappedImg, buffer);
+
+  return std::string(buffer.begin(), buffer.end());
 }

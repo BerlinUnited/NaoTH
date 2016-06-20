@@ -35,6 +35,8 @@ private:
    */
   std::string createPGM(const BallCandidates::Patch& p);
 
+  std::string createPNG(const BallCandidates::Patch& p);
+
 private:
   const std::string file;
   LogFileScanner logFileScanner;
