@@ -95,6 +95,8 @@ private:
   static bool getButtonHeadMiddle();
   static bool getButtonHeadFront();
   static bool getButtonHeadRear();
+
+  static bool getisDischarging();
 };
 
 #endif  /* _SENSORSYMBOLS_H */
