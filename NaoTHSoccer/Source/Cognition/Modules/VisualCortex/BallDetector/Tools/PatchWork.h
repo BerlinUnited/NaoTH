@@ -13,7 +13,7 @@
 class PatchWork
 {
 public:
-  static void subsampling(const naoth::Image& image, std::vector<unsigned char>& result, int x0, int y0, int x1, int y1);
+  static void subsampling(const naoth::Image& image, std::vector<unsigned char>& result, int x0, int y0, int x1, int y1, int size);
 };
 
 #endif // _PatchWork_H_
