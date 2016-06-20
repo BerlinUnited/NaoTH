@@ -4,7 +4,7 @@
 #include <fstream>
 
 #include <Representations/Perception/BallCandidates.h>
-
+#include <Cognition/Modules/VisualCortex/BallDetector/Tools/CVClassifier.h>
 
 BallDetectorEvaluator::BallDetectorEvaluator(const std::string &file)
   : file(file), logFileScanner(file)
@@ -12,8 +12,6 @@ BallDetectorEvaluator::BallDetectorEvaluator(const std::string &file)
   typedef std::vector<picojson::value> array;
   //typedef std::map<std::string, picojson::value> object;
 
-
-  ballDetector = registerModule<BallDetector>("BallDetector", true);
 
   size_t dotPos = file.find_last_of('.');
 
@@ -48,37 +46,49 @@ BallDetectorEvaluator::~BallDetectorEvaluator()
 
 void BallDetectorEvaluator::execute()
 {
-  if(ballDetector != NULL)
+  // TODO: allow more classifiers (including the ones that have the actual filter logic)
+  CVClassifier classifier;
+
+  unsigned int patchIdx = 0;
+  // read in each frame
+  for(LogFileScanner::FrameIterator it = logFileScanner.begin(); it != logFileScanner.end(); it++)
   {
-    // read in each frame
-    for(LogFileScanner::FrameIterator it = logFileScanner.begin(); it != logFileScanner.end(); it++)
+    // reset all existing candidates
+    getBallCandidates().reset();
+    getBallCandidatesTop().reset();
+
+    LogFileScanner::Frame frame;
+    logFileScanner.readFrame(*it, frame);
+
+    // deserialize all ball candidates (bottom and top camera)
+    auto frameBallCandidate = frame.find("BallCandidate");
+    auto frameBallCandidateTop = frame.find("BallCandidateTop");
+    if(frameBallCandidate!= frame.end())
     {
-      // reset all existing candidates
-      getBallCandidates().reset();
-      getBallCandidatesTop().reset();
-
-      LogFileScanner::Frame frame;
-      logFileScanner.readFrame(*it, frame);
-
-      // deserialize the ball candidates (bottom and top camera)
-
-      auto frameBallCandidate = frame.find("BallCandidate");
-      auto frameBallCandidateTop = frame.find("BallCandidateTop");
-      if(frameBallCandidate!= frame.end())
-      {
-        std::istrstream stream(frameBallCandidate->second.data.data(), frameBallCandidate->second.data.size());
-        naoth::Serializer<BallCandidates>::deserialize(stream, getBallCandidates());
-      }
-      if(frameBallCandidateTop != frame.end())
-      {
-        std::istrstream stream(frameBallCandidateTop->second.data.data(), frameBallCandidateTop->second.data.size());
-        naoth::Serializer<BallCandidatesTop>::deserialize(stream, getBallCandidatesTop());
-      }
-
-//      std::cout << "Test frame " << *it << std::endl;
-      ballDetector->execute();
-
-
+      std::istrstream stream(frameBallCandidate->second.data.data(), frameBallCandidate->second.data.size());
+      naoth::Serializer<BallCandidates>::deserialize(stream, getBallCandidates());
     }
+    if(frameBallCandidateTop != frame.end())
+    {
+      std::istrstream stream(frameBallCandidateTop->second.data.data(), frameBallCandidateTop->second.data.size());
+      naoth::Serializer<BallCandidatesTop>::deserialize(stream, getBallCandidatesTop());
+    }
+
+    for(const BallCandidates::Patch& p : getBallCandidates().patches)
+    {
+      bool classifiedAsBall = classifier.classify(p, CameraInfo::Bottom);
+
+      std::cout << patchIdx << ":" << classifiedAsBall << std::endl;
+      patchIdx++;
+    }
+
+    for(const BallCandidates::Patch& p : getBallCandidatesTop().patches)
+    {
+      bool classifiedAsBall = classifier.classify(p, CameraInfo::Top);
+      std::cout << patchIdx << ":" << classifiedAsBall << std::endl;
+      patchIdx++;
+    }
+
   }
+
 }

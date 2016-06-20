@@ -25,7 +25,6 @@ public:
   virtual void execute();
 private:
   const std::string file;
-  ModuleCreator<BallDetector>* ballDetector;
   LogFileScanner logFileScanner;
   LogFileScanner::FrameIterator currentFrame;
 
