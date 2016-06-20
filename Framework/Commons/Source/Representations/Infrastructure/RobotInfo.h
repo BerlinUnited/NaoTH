@@ -10,6 +10,8 @@
 #define ROBOTINFO_H
 
 #include "Tools/DataStructures/Printable.h"
+#include "Tools/DataStructures/Serializer.h"
+
 
 namespace naoth
 {
@@ -41,6 +43,14 @@ public:
     stream << "BodyID: " << bodyID << std::endl;
     stream << "basicTimeStep: " << basicTimeStep << std::endl;
   }
+};
+
+template<>
+class Serializer<RobotInfo>
+{
+  public:
+    static void serialize(const RobotInfo& representation, std::ostream& stream);
+    static void deserialize(std::istream& stream, RobotInfo& representation);
 };
 
 } // namespace naoth

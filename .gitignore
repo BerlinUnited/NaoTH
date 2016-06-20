@@ -2,12 +2,17 @@
 dist/
 build/
 private/
-Deploy/
+deploy/
+NaoSCP/tmp/
+XabslEditor/
 
 #java project files
 build.xml
 build-impl.xml
 genfiles.properties
+
+#python
+*.pyc
 
 #
 trace.dump.*
@@ -18,3 +23,6 @@ projectconfig.user.lua
 RobotControl/RobotConnector/src/de/naoth/rc/messages
 NaoTHSoccer/Source/Messages
 Framework/Commons/Source/Messages
+
+#particular files
+behavior-ic.dat

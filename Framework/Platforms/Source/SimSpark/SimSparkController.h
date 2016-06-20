@@ -7,7 +7,7 @@
  */
 
 #ifndef _SIMSPARKCONTROLLER_H
-#define  _SIMSPARKCONTROLLER_H
+#define _SIMSPARKCONTROLLER_H
 
 
 #include <glib.h>
@@ -36,7 +36,6 @@
 
 
 #include <Tools/Communication/SocketStream/SocketStream.h>
-#include "TeamCommEncoder.h"
 
 #include "PlatformInterface/PlatformInterface.h"
 #include <DebugCommunication/DebugCommandExecutor.h>
@@ -44,8 +43,13 @@
 
 #include "sfsexp/SexpParser.h"
 #include <Extern/libb64/decode.h>
+#include <Extern/libb64/encode.h>
+#include <set>
 
 using namespace naoth;
+
+// TODO: make this better
+#define MAX_TEAM_MESSAGE_SIZE 1024
 
 class SimSparkController : public PlatformInterface, DebugCommandExecutor
 {
@@ -57,6 +61,8 @@ private:
   std::map<std::string, JointData::JointID> theJointSensorNameMap;
   std::map<JointData::JointID, std::string> theJointMotorNameMap;
 
+  char* theTeamMessageReceiveBuffer;
+
   char* theImageData;
   unsigned int theImageSize;
   bool isNewImage;
@@ -64,6 +70,7 @@ private:
   VirtualVision theVirtualVision;
   VirtualVisionTop theVirtualVisionTop;
   base64::Decoder theBase64Decoder;
+  base64::Encoder theBase64Encoder;
 
   SensorJointData theLastSensorJointData;
   GyrometerData theGyroData;
@@ -79,8 +86,8 @@ private:
   double theSenseTime;
   double theStepTime; // the time of last step in seconds
   
+  SimSparkGameInfo theGameInfo;
   InertialSensorData theInertialSensorData;
-  GameData theGameData;
   SensorJointData theSensorJointData;
   TeamMessageDataOut theTeamMessageDataOut; // message to other robots
   TeamMessageDataIn theTeamMessageDataIn; // message from other robots
@@ -90,7 +97,8 @@ private:
   std::string theSync;
   bool theSyncMode;
 
-  TeamCommEncoder theTeamCommEncoder;
+  // set of unknown messages to be ignored
+  std::set<std::string> ignore;
 
 public:
   SimSparkController(const std::string& name);
@@ -104,7 +112,7 @@ public:
   virtual std::string getHeadNickName() const;
 
   /////////////////////// init ///////////////////////
-  bool init(const std::string& teamName, unsigned int num, const std::string& server, unsigned int port, bool sync);
+  bool init(const std::string& modelPath, const std::string& teamName, unsigned int num, const std::string& server, unsigned int port, bool sync);
 
   void main();
 

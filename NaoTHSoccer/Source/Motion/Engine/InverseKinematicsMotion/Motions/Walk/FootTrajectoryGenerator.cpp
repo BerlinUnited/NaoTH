@@ -14,17 +14,16 @@ Pose3D FootTrajectorGenerator::genTrajectory(
   const Pose3D& oldFoot, 
   const Pose3D& targetFoot,
   double cycle, 
+
   double samplesDoubleSupport, 
   double samplesSingleSupport, 
-  double extendDoubleSupport,
   double stepHeight, 
   double footPitchOffset,
   double footRollOffset
  )
 {
-  double doubleSupportEnd = samplesDoubleSupport / 2 + extendDoubleSupport;
+  double doubleSupportEnd = samplesDoubleSupport / 2;
   double doubleSupportBegin = samplesDoubleSupport / 2 + samplesSingleSupport;
-  samplesSingleSupport -= extendDoubleSupport;
 
   if (cycle <= doubleSupportEnd)
   {
@@ -63,9 +62,9 @@ Pose3D FootTrajectorGenerator::stepControl(
   const Pose3D& oldFoot, 
   const Pose3D& targetFoot,
   double cycle, 
+
   double samplesDoubleSupport, 
   double samplesSingleSupport, 
-  double extendDoubleSupport,
   double stepHeight, 
   double footPitchOffset, 
   double footRollOffset,
@@ -73,9 +72,8 @@ Pose3D FootTrajectorGenerator::stepControl(
   double scale
   )
 {
-  double doubleSupportEnd = samplesDoubleSupport / 2 + extendDoubleSupport;
+  double doubleSupportEnd = samplesDoubleSupport / 2;
   double doubleSupportBegin = samplesDoubleSupport / 2 + samplesSingleSupport;
-  samplesSingleSupport -= extendDoubleSupport;
 
   if (cycle <= doubleSupportEnd)
   {

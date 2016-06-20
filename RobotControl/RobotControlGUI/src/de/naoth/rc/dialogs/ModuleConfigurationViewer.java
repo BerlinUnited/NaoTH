@@ -10,13 +10,13 @@
 package de.naoth.rc.dialogs;
 
 import de.naoth.rc.RobotControl;
+import de.naoth.rc.components.S20BinaryLookup;
 import de.naoth.rc.components.checkboxtree.SelectableTreeNode;
 import de.naoth.rc.core.dialog.AbstractDialog;
 import de.naoth.rc.core.dialog.DialogPlugin;
 import de.naoth.rc.core.manager.ObjectListener;
 import de.naoth.rc.dataformats.ModuleConfiguration;
 import de.naoth.rc.dataformats.ModuleConfiguration.Node;
-import de.naoth.rc.dialogs.Tools.S20BinaryLookup;
 import de.naoth.rc.manager.GenericManagerFactory;
 import de.naoth.rc.manager.ModuleConfigurationManager;
 import de.naoth.rc.server.Command;

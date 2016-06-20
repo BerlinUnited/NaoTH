@@ -11,17 +11,11 @@
 #include "Tools/DataStructures/Printable.h"
 
 
-/**
- * This is a wrapper Representation for naothmessages::BehaviorStatus in
- * order to make the naothmessages::BehaviorStatus loggable
- */
 class SituationStatus : public naoth::Printable
 {
 public:
-  //standardconstructor
   SituationStatus()
   :
-    id(unknown),
     ownHalf(false),
     oppHalf(false),
     reactiveBallModelNeeded(false)
@@ -29,18 +23,6 @@ public:
   }
 
   ~SituationStatus(){}
-
-  enum StatusID
-  {
-    unknown,
-    after_penalized,
-    dribble,
-    kick,
-    kickoff,
-	  numOfStatus
-  };
-
-  StatusID id;
 
   bool ownHalf; //force selflocator to locate in own half (e.g. after penalized)
   bool oppHalf; //force selflocator to locate in opp half (e.g. for debugging attacksituations)

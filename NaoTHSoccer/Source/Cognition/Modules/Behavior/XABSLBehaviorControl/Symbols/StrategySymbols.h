@@ -13,7 +13,7 @@
 #include "Representations/Modeling/GoalModel.h"
 #include "Representations/Modeling/SoccerStrategy.h"
 #include "Representations/Modeling/SituationStatus.h"
-#include "Representations/Modeling/ActionModel.h"
+#include "Representations/Modeling/KickActionModel.h"
 #include "Representations/Motion/MotionStatus.h"
 #include "Representations/Modeling/CompassDirection.h"
 
@@ -21,6 +21,7 @@
 #include "Tools/Debug/DebugRequest.h"
 #include "Tools/Debug/DebugModify.h"
 #include "Tools/Debug/DebugPlot.h"
+
 BEGIN_DECLARE_MODULE(StrategySymbols)
   REQUIRE(AttentionModel)
   REQUIRE(PlayersModel)
@@ -34,7 +35,7 @@ BEGIN_DECLARE_MODULE(StrategySymbols)
   REQUIRE(SoccerStrategy)
   REQUIRE(MotionStatus)
   REQUIRE(CompassDirection)
-  REQUIRE(ActionModel)
+  REQUIRE(KickActionModel)
 
   PROVIDE(SituationStatus)
   PROVIDE(DebugRequest)

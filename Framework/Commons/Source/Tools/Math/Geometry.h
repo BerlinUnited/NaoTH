@@ -31,7 +31,7 @@ public:
   * @param to The other position.
   * @return the angle from the pose to the position.
   */
-  static double angleTo(const Pose2D& from, const Vector2<double>& to);
+  static double angleTo(const Pose2D& from, const Vector2d& to);
 
   /** 
   * copied from GT07
@@ -40,7 +40,7 @@ public:
   * @param to The other position.
   * @return the distance from the pose to the position.
   */
-  static double distanceTo(const Pose2D& from, const Vector2<double>& to);
+  static double distanceTo(const Pose2D& from, const Vector2d& to);
 
   /** 
   * copied from GT07
@@ -49,7 +49,7 @@ public:
   * @param to The other position.
   * @return the vector from the pose to the position.
   */
-  static Vector2<double> vectorTo(const Pose2D& from, const Vector2<double>& to);
+  static Vector2d vectorTo(const Pose2D& from, const Vector2d& to);
 
   /**
   * copied from GT07
@@ -59,7 +59,7 @@ public:
   * @param fieldCoord absolute field coordinates of a position
   * @return Returns the positon in relative coordinates
   */
-  static Vector2<double> fieldCoordToRelative(const Pose2D& robotPose, const Vector2<double>& fieldCoord);
+  static Vector2d fieldCoordToRelative(const Pose2D& robotPose, const Vector2d& fieldCoord);
 
 
   /**
@@ -70,7 +70,7 @@ public:
   * @param relativeCoord relative coordinates of a position (relative to robot)
   * @return Returns the positon in absolute coordinates
   */
-  static Vector2<double> relativeToFieldCoord(const Pose2D& robotPose, const Vector2<double>& relativeCoord);
+  static Vector2d relativeToFieldCoord(const Pose2D& robotPose, const Vector2d& relativeCoord);
 
 
   /**
@@ -84,11 +84,11 @@ public:
   * @return states whether clipping was necessary (and done)
   */
   static bool getIntersectionPointsOfLineAndRectangle(
-    const Vector2<int>& bottomLeft, 
-    const Vector2<int>& topRight,
+    const Vector2i& bottomLeft, 
+    const Vector2i& topRight,
     const Math::Line& line,
-    Vector2<int>& point1, 
-    Vector2<int>& point2);
+    Vector2i& point1, 
+    Vector2i& point2);
 
   /**
   * Calculated a cricle out of up to 20 points

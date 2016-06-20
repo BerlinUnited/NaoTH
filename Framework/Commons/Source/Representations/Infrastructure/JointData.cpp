@@ -34,13 +34,15 @@ void JointData::loadJointLimitsFromConfig()
     string jointName = JointData::getJointName((JointData::JointID)i);
     
     if (cfg.hasKey("joints", jointName + "Max")) {
-      max[i] = Math::fromDegrees(cfg.getDouble("joints", jointName + "Max"));
+      double v = cfg.getDouble("joints", jointName + "Max");
+      max[i] = (i == LHand || i == RHand)?v:Math::fromDegrees(v);
     } else {
       THROW("JointData: can not get " + jointName + " max angle");
     }
 
     if (cfg.hasKey("joints", jointName + "Min")) {
-      min[i] = Math::fromDegrees(cfg.getDouble("joints", jointName + "Min"));
+      double v = cfg.getDouble("joints", jointName + "Min");
+      min[i] = (i == LHand || i == RHand)?v:Math::fromDegrees(v);
     } else {
       THROW("JointData: can not get " + jointName + " min angle");
     }
@@ -187,9 +189,11 @@ void JointData::updateAcceleration(const JointData& lastData, double dt)
 
 bool JointData::isLegStiffnessOn() const
 {
-  for ( int i=JointData::RHipYawPitch; i<JointData::numOfJoint; i++)
+  for ( int i = JointData::RHipYawPitch; i <= JointData::LAnkleRoll; i++)
   {
-    if ( stiffness[i] < 0 ) return false;
+    if ( stiffness[i] < 0 ) { 
+      return false;
+    }
   }
   return true;
 }
@@ -254,6 +258,23 @@ void MotorJointData::print(ostream& stream) const
   stream << "------------------------" << endl;
   for (int i = 0; i < numOfJoint; i++) {
     stream << getJointName((JointData::JointID) i) << "[" << position[i] << ", " << stiffness[i] << "]" << endl;
+  }
+}//end print
+
+OffsetJointData::OffsetJointData()
+{
+}
+
+OffsetJointData::~OffsetJointData()
+{
+}
+
+void OffsetJointData::print(ostream& stream) const
+{
+  stream << "Joint [offset]" << endl;
+  stream << "------------------------" << endl;
+  for (int i = 0; i < numOfJoint; i++) {
+    stream << getJointName((JointData::JointID) i) << "[" << position[i] << "]" << endl;
   }
 }//end print
 
@@ -339,6 +360,43 @@ void Serializer<MotorJointData>::serialize(const MotorJointData& representation,
 }
 
 void Serializer<MotorJointData>::deserialize(std::istream& stream, MotorJointData& representation)
+{
+  naothmessages::JointData message;
+  google::protobuf::io::IstreamInputStream buf(&stream);
+  message.ParseFromZeroCopyStream(&buf);
+
+  // assure the integrity of the message
+  ASSERT(message.position().size() == JointData::numOfJoint);
+  ASSERT(message.stiffness().size() == JointData::numOfJoint);
+  ASSERT(message.dp().size() == JointData::numOfJoint);
+  ASSERT(message.ddp().size() == JointData::numOfJoint);
+
+  for(int i=0; i < JointData::numOfJoint; i++)
+  {
+    representation.position[i] = message.position(i);
+    representation.stiffness[i] = message.stiffness(i);
+    representation.dp[i] = message.dp(i);
+    representation.ddp[i] = message.ddp(i);
+  }
+}
+
+void Serializer<OffsetJointData>::serialize(const OffsetJointData& representation, std::ostream& stream)
+{
+  naothmessages::JointData message;
+
+  for(int i=0; i < JointData::numOfJoint; i++)
+  {
+    message.add_position(representation.position[i]);
+    message.add_stiffness(representation.stiffness[i]);
+    message.add_dp(representation.dp[i]);
+    message.add_ddp(representation.ddp[i]);
+  }
+
+  google::protobuf::io::OstreamOutputStream buf(&stream);
+  message.SerializeToZeroCopyStream(&buf);
+}
+
+void Serializer<OffsetJointData>::deserialize(std::istream& stream, OffsetJointData& representation)
 {
   naothmessages::JointData message;
   google::protobuf::io::IstreamInputStream buf(&stream);

@@ -75,13 +75,15 @@ private:
   public:
     Parameters() : ParameterList("GoalFeatureParameters")
     {
-      PARAMETER_REGISTER(numberOfScanlines) = 5;
-      PARAMETER_REGISTER(scanlinesDistance) = 6;
+      PARAMETER_REGISTER(numberOfScanlines) = 9;
+      PARAMETER_REGISTER(scanlinesDistance) = 8;
 
+      PARAMETER_REGISTER(detectWhiteGoals) = true;
       PARAMETER_REGISTER(useColorFeatures) = true;
-      PARAMETER_REGISTER(thresholdUV) = 60;
-      PARAMETER_REGISTER(thresholdUVGradient) = 12;
-      PARAMETER_REGISTER(thresholdFeatureGradient) = 0.5;
+      PARAMETER_REGISTER(threshold) = 140;
+      PARAMETER_REGISTER(thresholdGradient) = 30;
+      PARAMETER_REGISTER(thresholdFeatureGradient) = 0.8;
+      PARAMETER_REGISTER(maxFeatureWidth) = 213;
 
       syncWithConfig();
     }
@@ -92,9 +94,12 @@ private:
     int numberOfScanlines;
     int scanlinesDistance;
 
+    bool detectWhiteGoals;
+    bool usePrewitt;
     bool useColorFeatures;
-    int thresholdUV;
-    int thresholdUVGradient;
+    int threshold;
+    int thresholdGradient;
+    int maxFeatureWidth;
 
     double thresholdFeatureGradient;
   };
@@ -106,6 +111,7 @@ private:
   void findfeaturesColor(const Vector2d& scanDir, const Vector2i& p1);
   void findfeaturesDiff(const Vector2d& scanDir, const Vector2i& p1);
   Vector2d calculateGradientUV(const Vector2i& point) const;
+  Vector2d calculateGradientY(const Vector2i& point) const;
 
 private:
   DOUBLE_CAM_PROVIDE(GoalFeatureDetector, DebugImageDrawings);

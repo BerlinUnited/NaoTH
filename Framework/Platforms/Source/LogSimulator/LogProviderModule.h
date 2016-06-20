@@ -15,12 +15,17 @@
 
 
 BEGIN_DECLARE_MODULE(LogProvider)
-  PROVIDE(DebugRequest)
+//  PROVIDE(DebugRequest)
 END_DECLARE_MODULE(LogProvider)
 
 
 class LogProvider: public LogProviderBase, virtual public BlackBoardInterface
 {
+protected:
+  inline DebugRequest& getDebugRequest() {
+    return *(BlackBoardInterface::getBlackBoard().getRepresentation<DataHolder<DebugRequest> >("DebugRequest"));
+  }
+
 private:
   const LogFileScanner::Frame* representations;
   std::set<std::string> exludeMap;

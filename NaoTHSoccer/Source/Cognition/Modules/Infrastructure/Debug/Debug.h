@@ -22,15 +22,13 @@
 #include <Representations/Infrastructure/CameraSettings.h>
 #include <Representations/Infrastructure/FieldInfo.h>
 
-//#include "Representations/Infrastructure/ColorTable64.h"
 //#include "Representations/Modeling/ColorClassificationModel.h"
 //#include "Representations/Motion/Request/MotionRequest.h"
-//#include "Representations/Modeling/RobotPose.h"
-//#include "Representations/Modeling/KinematicChain.h"
-//#include "Representations/Modeling/BallModel.h"
-
-//#include "Representations/Perception/CameraMatrix.h"
-//#include "Representations/Modeling/RobotPose.h"
+#include "Representations/Modeling/RobotPose.h"
+#include "Representations/Modeling/KinematicChain.h"
+#include "Representations/Modeling/BallModel.h"
+#include "Representations/Perception/CameraMatrix.h"
+#include "Representations/Perception/MultiBallPercept.h"
 
 #include <DebugCommunication/DebugCommandManager.h>
 #include "Tools/Debug/Logger.h"
@@ -43,6 +41,9 @@
 #include "Tools/Debug/DebugModify.h"
 
 #include <Tools/DataStructures/ParameterList.h>
+
+// debug
+#include <Tools/Debug/DebugDrawings3D.h>
 
 using namespace naoth;
 
@@ -58,6 +59,7 @@ BEGIN_DECLARE_MODULE(Debug)
   PROVIDE(DebugParameterList)
   PROVIDE(DebugModify)
   PROVIDE(DebugPlot)
+  PROVIDE(DebugDrawings3D)
 
   REQUIRE(FieldInfo)
   REQUIRE(FrameInfo)
@@ -65,13 +67,16 @@ BEGIN_DECLARE_MODULE(Debug)
   PROVIDE(Image)
   PROVIDE(ImageTop)
 
-//  REQUIRE(RobotPose)
-//  REQUIRE(KinematicChain)
-//  REQUIRE(BallModel)
+  // 3D drawings
+  REQUIRE(RobotPose)
+  REQUIRE(KinematicChain)
+  REQUIRE(BallModel)
+  REQUIRE(CameraMatrix)
+  REQUIRE(CameraMatrixTop)
+  PROVIDE(CameraInfo)
+  PROVIDE(CameraInfoTop)
 
-//  PROVIDE(CameraInfoParameter)
-//  REQUIRE(CameraMatrix)
-//  REQUIRE(CameraMatrixTop)
+  REQUIRE(MultiBallPercept)
   
 //  PROVIDE(ColorTable64)
 //  PROVIDE(ColorClassificationModel)
@@ -97,16 +102,25 @@ public:
     {
       PARAMETER_REGISTER(test) = 20;
 
+      PARAMETER_REGISTER(log.onlyWhenBallwasSeen) = false;
+
       syncWithConfig();
     }
 
     double test;
+
+    struct Log {
+      bool onlyWhenBallwasSeen;
+    } log;
 
   } parameter;
 
 private:
   Logger cognitionLogger;
 
+  void draw3D();
+  void drawRobot3D(const Pose3D& robotPose);
+  void drawKinematicChain3D();
 
   void registerLogableRepresentationList()
   {

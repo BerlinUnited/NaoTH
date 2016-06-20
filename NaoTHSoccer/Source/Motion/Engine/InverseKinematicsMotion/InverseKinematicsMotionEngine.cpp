@@ -619,90 +619,6 @@ void InverseKinematicsMotionEngine::copyLegJoints(double (&position)[naoth::Join
 }//end copyLegJoints
 
 
-int InverseKinematicsMotionEngine::controlZMPstart(const ZMPFeetPose& start)
-{
-  // if it is not ready, it should be empty
-  //ASSERT( thePreviewController.count() == 0 );
-  // TODO: clear it because of the motion can be forced to finish immediately...
-  // the idea of keep buffer is to switch zmp control between different motions,
-  // such as walk and kick, then maybe we should check if zmp control is used every cycle and etc.
-  thePreviewController.clear();
-
-  CoMFeetPose currentCoMPose = getCurrentCoMFeetPose();
-  currentCoMPose.localInLeftFoot();
-
-  // here assume the foot movment can not jump
-  // so we can keep them in the same coordinate
-  const Pose3D& trans = start.feet.left;
-  //currentCoMPose.feet.left *= trans;
-  //currentCoMPose.feet.right *= trans;
-  currentCoMPose.com *= trans;
-
-  thePreviewControlCoM = currentCoMPose.com.translation;
-  thePreviewControldCoM = Vector2d(0,0);
-  thePreviewControlddCoM = Vector2d(0,0);
-  thePreviewController.init(currentCoMPose.com.translation, thePreviewControldCoM, thePreviewControlddCoM);
-  
-  unsigned int previewSteps = static_cast<unsigned int> (thePreviewController.previewSteps() - 1);
-  thePreviewController.clear();
-
-  for (unsigned int i = 0; i < previewSteps; i++)
-  {
-    double t = static_cast<double>(i) / previewSteps;
-    Pose3D p = Pose3D::interpolate(currentCoMPose.com, start.zmp, t);
-    thePreviewController.push(p.translation);
-  }
-  return previewSteps;
-}//end controlZMPstart
-
-
-void InverseKinematicsMotionEngine::controlZMPpush(const Vector3d& zmp)
-{
-  thePreviewController.push(zmp);
-}
-
-bool InverseKinematicsMotionEngine::controlZMPpop(Vector3d& com)
-{
-  if ( thePreviewController.ready() )
-  {
-    thePreviewController.control(thePreviewControlCoM, thePreviewControldCoM, thePreviewControlddCoM);
-    com = thePreviewControlCoM;
-    return true;
-  }
-  return false;
-}
-
-bool InverseKinematicsMotionEngine::controlZMPstop(const Vector3d& finalZmp)
-{
-  Vector3d diff = finalZmp - thePreviewControlCoM;
-  bool stoppted = (diff.abs2() < 1) && (thePreviewControldCoM.abs2() < 1) && (thePreviewControlddCoM.abs2() < 1);
-  if ( stoppted )
-  {
-    thePreviewController.clear();
-  }
-  else
-  {
-    controlZMPpush(finalZmp);
-  }
-
-  return stoppted;
-}
-
-Vector3d InverseKinematicsMotionEngine::controlZMPback() const
-{
-  return thePreviewController.back();
-}
-
-Vector3d InverseKinematicsMotionEngine::controlZMPfront() const
-{
-  return thePreviewController.front();
-}
-
-void InverseKinematicsMotionEngine::controlZMPclear()
-{
-  thePreviewController.clear();
-}
-
 double InverseKinematicsMotionEngine::solveHandsIK(
   const Pose3D& chest,
   const Pose3D& leftHand,
@@ -735,7 +651,7 @@ double InverseKinematicsMotionEngine::solveHandsIK(
 
   // STEP 3: copy the calculated joint angles of the arms
   const JointData& jointData = theInverseKinematics.theJointData;
-  for (int i = JointData::RShoulderRoll; i < JointData::RHipYawPitch; i++)
+  for (int i = JointData::RShoulderRoll; i <= JointData::LElbowYaw; i++)
   {
     position[i] = jointData.position[i];
   }

@@ -17,14 +17,35 @@ class IKParameters : public ParameterList
 public:
 
   // TODO: what are those parameters?
-  double bodyPitchOffset;
-  double hipOffsetX;
   double footOffsetY;
   
   struct Stand 
   {
     double speed;
     bool enableStabilization;
+    double stiffness;
+
+    double bodyPitchOffset;
+    double hipOffsetX;
+
+    struct Relax {
+        double allowedDeviation;
+        double timeBonusForCorrection;
+
+        struct JointOffsetTuning {
+            double deadTime;
+            double currentThreshold;
+            double minimalJointStep;
+        } jointOffsetTuning;
+
+        struct StiffnessControl {
+            double deadTime;
+            double minAngle;
+            double minStiffness;
+            double maxAngle;
+            double maxStiffness;
+        } stiffnessControl;
+    } relax;
   } stand;
 
 
@@ -32,6 +53,9 @@ public:
   {
     struct General
     {
+      double bodyPitchOffset;
+      double hipOffsetX;
+
       double stiffness;
       bool useArm;
 
@@ -54,13 +78,10 @@ public:
     // step geometry
     struct Step
     {
-      double singleSupportTime;
-      double doubleSupportTime;
-      double maxExtendDoubleSupportTime;
-      double extendDoubleSupportTimeByCharacter;
+      int duration;
+      int doubleSupportTime;
     
       double stepHeight;
-      //double curveFactor;
     } step;
     
     // step limits
@@ -83,12 +104,14 @@ public:
     struct Stabilization
     {
       // FSR stabilizators
-      bool enableFSRProtection;
-      bool enableWaitLanding;
-      unsigned int minFSRProtectionCount;
+      //bool enableFSRProtection;
+      //bool enableWaitLanding;
+      //unsigned int minFSRProtectionCount;
     
-      int maxUnsupportedCount;
-      int maxWaitLandingCount; // <0 means wait for ever until landing
+      //int maxUnsupportedCount;
+      //int maxWaitLandingCount; // <0 means wait for ever until landing
+
+      double emergencyStopError;
 
       // enable stabilization by rotating the body
       bool rotationStabilize;
@@ -131,62 +154,6 @@ public:
     bool takeBack;
   } arm;
 
-  struct KickParameters 
-  {
-    // 
-    double shiftSpeed;
-
-    //
-    double time_for_first_preparation;
-
-    //
-    double retractionSpeed;
-
-    //
-    double takeBackSpeed;
-
-    //
-    double timeToLand;
-
-    //
-    double stabilization_time;
-
-    // prolongate the kick to make it srtonger or weaker
-    double strengthOffset;
-
-    // minimal number of cycles for the preparation
-    double minNumberOfPreKickSteps;
-    // duration of the shifting to one foot
-    double shiftTime;
-    // duration of the shifting to both feets after the kick
-    double stopTime;
-    // duration of the kicking phase
-    double kickSpeed;
-    // wait a little before taking the foot back after the kick is executed
-    double afterKickTime;
-    // offset of the hip height according to the default one
-    double hipHeightOffset;
-
-    //
-    double footRadius;
-    //
-    double maxDistanceToRetract;
-
-    bool enableStaticStabilizer;
-
-
-    double basicXRotationOffset;
-    double extendedXRotationOffset;
-    double rotationTime;
-
-    double knee_pitch_offset;
-    double ankle_roll_offset;
-
-    // 
-    double shiftOffsetYLeft;
-    double shiftOffsetYRight;
-  } kick;
-  
   struct BalanceCoMParameter 
   {
     double kP;
