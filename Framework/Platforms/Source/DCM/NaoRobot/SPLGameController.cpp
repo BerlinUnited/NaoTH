@@ -108,6 +108,9 @@ void SPLGameController::get(GameData& gameData)
     if(data.valid) {
       gameData = data;
       data.valid = false; // invalidate after copy
+    } else {
+      // no new message received
+      gameData.valid = false;
     }
     g_mutex_unlock(dataMutex);
   }
