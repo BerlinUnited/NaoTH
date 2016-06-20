@@ -116,8 +116,16 @@ void BallDetectorEvaluator::execute()
     }
   }
 
-  double precision = (double) truePositives / ((double) (truePositives + falsePositives));
-  double recall = (double) truePositives / ((double) (truePositives + falseNegatives));
+  double precision = 1.0;
+  if(truePositives + falsePositives > 0)
+  {
+    precision = (double) truePositives / ((double) (truePositives + falsePositives));
+  }
+  double recall = 1.0;
+  if(truePositives + falsePositives > 0)
+  {
+    recall = (double) truePositives / ((double) (truePositives + falseNegatives));
+  }
 
   std::cout << "=============" << std::endl;
 
