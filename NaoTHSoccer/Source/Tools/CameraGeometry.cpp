@@ -228,3 +228,28 @@ Pose3D CameraGeometry::calculateCameraMatrix(
 
   return pose;
 }//end calculateCameraMatrix
+
+
+double CameraGeometry::estimatedBallRadius(const Pose3D& cameraMatrix, const CameraInfo& cameraInfo, const double ballRadius, int x, int y)
+{
+  Vector2d pointOnField;
+  if(!imagePixelToFieldCoord(
+		  cameraMatrix, 
+		  cameraInfo,
+		  x, 
+		  y, 
+		  ballRadius,
+		  pointOnField))
+  {
+    return -1;
+  }
+
+  Vector3d d = cameraMatrix.invert()*Vector3d(pointOnField.x, pointOnField.y, ballRadius);
+  double cameraBallDistance = d.abs();
+  if(cameraBallDistance > ballRadius) {
+    double a = atan2(ballRadius, cameraBallDistance);
+    return a / cameraInfo.getOpeningAngleHeight() * cameraInfo.resolutionHeight;
+  }
+  
+  return -1;
+}

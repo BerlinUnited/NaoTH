@@ -8,7 +8,7 @@
 #define _BallCandidateDetector_H_
 
 #include <ModuleFramework/Module.h>
-#include <ModuleFramework/Representation.h>
+#include <ModuleFramework/ModuleManager.h>
 
 // common tools
 #include <Tools/ColorClasses.h>
@@ -29,6 +29,7 @@
 
 // local tools
 #include "Tools/BestPatchList.h"
+#include "Tools/BallKeyPointExtractor.h"
 
 // debug
 #include "Representations/Debug/Stopwatch.h"
@@ -65,7 +66,7 @@ BEGIN_DECLARE_MODULE(BallCandidateDetector)
 END_DECLARE_MODULE(BallCandidateDetector)
 
 
-class BallCandidateDetector: private BallCandidateDetectorBase
+class BallCandidateDetector: private BallCandidateDetectorBase, private ModuleManager
 {
 public:
   BallCandidateDetector();
@@ -80,8 +81,6 @@ public:
   }
  
 private:
-  CameraInfo::CameraID cameraID;
-
   struct Parameters: public ParameterList
   {
     Parameters() : ParameterList("BallCandidateDetector")
@@ -99,10 +98,7 @@ private:
       syncWithConfig();
     }
 
-    struct KeyDetector {
-      double borderRadiusFactorClose;
-      double borderRadiusFactorFar;
-    } keyDetector;
+    BallKeyPointExtractor::Parameter keyDetector;
 
     struct Heuristics {
       double maxGreenInsideRatio;
@@ -119,21 +115,15 @@ private:
 
 
 private:
+  ModuleCreator<BallKeyPointExtractor>* theBallKeyPointExtractor;
   BestPatchList best;
 
 private:
   void calculateCandidates();
 
-  // scan inside a given region in the image for black keypoints
-  void calculateKeyPointsBlack(BestPatchList& bestBlack, int minX, int minY, int maxX, int maxY) const;
-
-  // scan the integral image for white key points
-  void calculateKeyPoints(BestPatchList& best) const;
-
-  double estimatedBallRadius(int x, int y) const;
-  
 private:
-  
+  CameraInfo::CameraID cameraID;
+
   DOUBLE_CAM_PROVIDE(BallCandidateDetector, DebugImageDrawings);
 
   // double cam stuff
