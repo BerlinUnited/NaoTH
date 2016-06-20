@@ -18,7 +18,7 @@ BallCandidateDetector::BallCandidateDetector()
 {
   DEBUG_REQUEST_REGISTER("Vision:BallCandidateDetector:keyPoints", "draw key points extracted from integral image", false);
   DEBUG_REQUEST_REGISTER("Vision:BallCandidateDetector:drawCandidates", "draw ball candidates", false);
-  DEBUG_REQUEST_REGISTER("Vision:BallDetector:drawPercepts", "draw ball percepts", false);
+  DEBUG_REQUEST_REGISTER("Vision:BallCandidateDetector:drawPercepts", "draw ball percepts", false);
 
   theBallKeyPointExtractor = registerModule<BallKeyPointExtractor>("BallKeyPointExtractor", true);
   getDebugParameterList().add(&params);
@@ -48,7 +48,7 @@ void BallCandidateDetector::execute(CameraInfo::CameraID id)
 
   calculateCandidates();
 
-  DEBUG_REQUEST("Vision:BallDetector:drawPercepts",
+  DEBUG_REQUEST("Vision:BallCandidateDetector:drawPercepts",
     for(MultiBallPercept::ConstABPIterator iter = getMultiBallPercept().begin(); iter != getMultiBallPercept().end(); iter++) {
       if((*iter).cameraId == cameraID) {
         CIRCLE_PX(ColorClasses::orange, (int)((*iter).centerInImage.x+0.5), (int)((*iter).centerInImage.y+0.5), (int)((*iter).radiusInImage+0.5));
@@ -125,11 +125,14 @@ void BallCandidateDetector::calculateCandidates()
 
       if(checkGreenBelow && checkGreenInside)
       {
+        const int patch_size = 12*2; 
+        
         BallCandidates::Patch p(0);
-        p.min = min;
-        p.max = max;
-        PatchWork::subsampling(getImage(), p.data, p.min.x, p.min.y, p.max.x, p.max.y, 24);
-        if(cvClassifier.classify(p)) {
+        p.min = Vector2i((*i).center.x - radius*2, (*i).center.y - radius*2);
+        p.max = Vector2i((*i).center.x + radius*2, (*i).center.y + radius*2);
+
+        PatchWork::subsampling(getImage(), p.data, p.min.x, p.min.y, p.max.x, p.max.y, patch_size);
+        if(cvClassifier.classify(p) > params.haarDetector.minNeighbors) {
           CIRCLE_PX(ColorClasses::white, (min.x + max.x)/2, (min.y + max.y)/2, (max.x - min.x)/2);
         }
       }

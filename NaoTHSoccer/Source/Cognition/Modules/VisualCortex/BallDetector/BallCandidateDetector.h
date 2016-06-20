@@ -79,6 +79,7 @@ public:
 
   virtual void execute()
   {
+    getMultiBallPercept().reset();
     execute(CameraInfo::Bottom);
     execute(CameraInfo::Top);
   }
@@ -97,6 +98,8 @@ private:
       PARAMETER_REGISTER(heuristic.blackDotsMinCount) = 1;
       PARAMETER_REGISTER(heuristic.minBlackDetectionSize) = 20;
 
+      PARAMETER_REGISTER(haarDetector.minNeighbors) = 0;
+
       PARAMETER_REGISTER(maxNumberOfKeys) = 4;
       syncWithConfig();
     }
@@ -111,6 +114,10 @@ private:
       int blackDotsMinCount;
       int minBlackDetectionSize;
     } heuristic;
+
+    struct HaarDetector {
+      int minNeighbors;
+    } haarDetector;
 
     int maxNumberOfKeys;
     
