@@ -106,7 +106,7 @@ void MonteCarloSelfLocator::execute()
 
   if(state != KIDNAPPED) 
   {
-    if(parameters.treatInitState && (!motion_ok || !body_upright || getPlayerInfo().gameData.gameState == GameData::penalized)) 
+    if(parameters.treatInitState && (!motion_ok || !body_upright || getPlayerInfo().robotState == PlayerInfo::penalized)) 
     {
       state = BLIND;
     }
@@ -212,7 +212,7 @@ void MonteCarloSelfLocator::execute()
 
       //HACK
       if(parameters.updateBySituation) {
-        if(getPlayerInfo().gameData.gameState == GameData::set) 
+        if(getPlayerInfo().robotState == PlayerInfo::set) 
         {
           updateByOwnHalf(theSampleSet);
         }
@@ -284,7 +284,7 @@ void MonteCarloSelfLocator::execute()
 
 void MonteCarloSelfLocator::resetLocator()
 {
-  if(parameters.resetOwnHalf && getPlayerInfo().gameData.gameState == GameData::set) {
+  if(parameters.resetOwnHalf && getPlayerInfo().robotState == PlayerInfo::set) {
     initializeSampleSetFixedRotation(getFieldInfo().ownHalfRect, 0, theSampleSet);
   } else {
     initializeSampleSet(getFieldInfo().carpetRect, theSampleSet);
@@ -599,7 +599,7 @@ void MonteCarloSelfLocator::updateByStartPositions(SampleSet& sampleSet) const
 
   /*---- HACK BEGIN ----*/
   LineDensity startingLine;
-  if(getPlayerInfo().gameData.playerNumber < 4) {
+  if(getPlayerInfo().playerNumber < 4) {
       startingLine = leftStartingLine;
   } else {
       startingLine = rightStartingLine;
@@ -612,7 +612,7 @@ void MonteCarloSelfLocator::updateByStartPositions(SampleSet& sampleSet) const
 
   DEBUG_REQUEST("MCSLS:draw_state",
     FIELD_DRAWING_CONTEXT;
-    if(getPlayerInfo().gameData.playerNumber < 4)
+    if(getPlayerInfo().playerNumber < 4)
     {
       leftStartingLine.draw(getDebugDrawings());
     }
@@ -1108,7 +1108,7 @@ void MonteCarloSelfLocator::drawPosition() const
   FIELD_DRAWING_CONTEXT;
   if(getRobotPose().isValid)
   {
-    switch( getPlayerInfo().gameData.teamColor )
+    switch( getPlayerInfo().teamColor )
     {
     case GameData::red:    PEN("FF0000", 20); break;
     case GameData::blue:   PEN("0000FF", 20); break;

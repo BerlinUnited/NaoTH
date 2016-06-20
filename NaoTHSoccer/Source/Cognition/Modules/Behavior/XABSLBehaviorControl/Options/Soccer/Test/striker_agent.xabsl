@@ -1,4 +1,4 @@
-option longKick_agent {
+option striker_agent {
 
   initial state test {    
     action {
@@ -8,7 +8,7 @@ option longKick_agent {
 
       take_arms_back();
 
-      longKick_striker();
+      striker();
 
       // control the arms
       arms_control();

@@ -1,4 +1,4 @@
-option longKick_striker 
+option striker 
 {
 
   common decision
@@ -43,11 +43,11 @@ option longKick_striker
 	      if(attack.best_action == kick_long)
 	        goto long_kick;
 	      else if(attack.best_action == kick_short)
-	        goto turn;
+	        goto short_kick;
 	      else if(attack.best_action == sidekick_left)
-	        goto turn;
+	        goto sidekick_left;
 	      else if(attack.best_action == sidekick_right)
-	        goto turn;
+	        goto sidekick_right;
 	      else
 	        goto turn;
       }
@@ -68,11 +68,11 @@ option longKick_striker
       else if(attack.best_action == kick_long)
         goto long_kick;
       else if(attack.best_action == kick_short)
-        goto turn;
+        goto short_kick;
       else if(attack.best_action == sidekick_left)
-        goto turn;
+        goto sidekick_left;
       else if(attack.best_action == sidekick_right)
-        goto turn;
+        goto sidekick_right;
       else
         stay;
     }
@@ -91,7 +91,7 @@ option longKick_striker
     }
     action {
       situation_abortable = true;
-      new_sidekick_left();
+      sidekick_left();
     }
   }
   state sidekick_right {
@@ -103,28 +103,9 @@ option longKick_striker
     }
     action {
       situation_abortable = true;
-      new_sidekick_right();
+      sidekick_right();
     }
   }
-
-/*
-//currently 
-unused
-  state sidekick_stable {
-    decision {
-      else if(action_done)
-        goto goto_ball;
-      else
-        stay;
-    }
-    action {
-      situation_abortable = true;
-      situation_sidekick();
-      motion.walk.style = stable;
-    }
-  }
-
-*/
 
   state long_kick {
     decision{
@@ -135,7 +116,7 @@ unused
     }
     action{
       situation_abortable = true;
-      new_kick_long_with_approach();
+      kick_long_with_approach();
     }
   }
 
@@ -148,7 +129,7 @@ unused
     }
     action{
       situation_abortable = true;
-      new_kick_short_with_approach();
+      kick_short_with_approach();
     }
   }
 
