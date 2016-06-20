@@ -124,9 +124,6 @@ private:
 private:
   void calculateCandidates();
 
-  // scan inside a given region in the image for black keypoints
-  void calculateKeyPointsBlack(BestPatchList& bestBlack, int minX, int minY, int maxX, int maxY) const;
-
   // scan the integral image for white key points
   void calculateKeyPoints(BestPatchList& best) const;
 
