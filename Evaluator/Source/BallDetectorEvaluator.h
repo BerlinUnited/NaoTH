@@ -25,9 +25,17 @@ public:
 
   virtual void execute();
 
+public:
+  struct ErrorEntry
+  {
+    BallCandidates::Patch patch;
+    unsigned int idx;
+    std::string fileName;
+  };
+
 private:
   unsigned int executeSingleFile(std::string file);
-  void evaluatePatch(const BallCandidates::Patch& p, unsigned int patchIdx, CameraInfo::CameraID camID, const std::set<unsigned int> &expectedBallIdx);
+  void evaluatePatch(const BallCandidates::Patch& p, unsigned int patchIdx, CameraInfo::CameraID camID, const std::set<unsigned int> &expectedBallIdx, std::string fileName);
 
   std::set<unsigned int> loadGroundTruth(std::string file);
 
@@ -50,8 +58,8 @@ private:
 
   unsigned int truePositives, falsePositives, falseNegatives;
 
-  std::list<std::pair<BallCandidates::Patch, unsigned int>> falsePositivePatches;
-  std::list<std::pair<BallCandidates::Patch, unsigned int>> falseNegativePatches;
+  std::list<ErrorEntry> falsePositivePatches;
+  std::list<ErrorEntry> falseNegativePatches;
 };
 
 #endif // BALLDETECTOREVALUATOR_H
