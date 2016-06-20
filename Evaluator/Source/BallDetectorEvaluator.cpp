@@ -2,6 +2,7 @@
 
 #include <strstream>
 #include <fstream>
+#include <sstream>
 
 #include <Representations/Perception/BallCandidates.h>
 
@@ -48,6 +49,8 @@ void BallDetectorEvaluator::execute()
 {
   unsigned int patchIdx = 0;
   truePositives = falseNegatives = falsePositives = 0;
+  falsePositivePatches.clear();
+  falseNegativePatches.clear();
 
   // read in each frame
   for(LogFileScanner::FrameIterator it = logFileScanner.begin(); it != logFileScanner.end(); it++)
@@ -98,6 +101,24 @@ void BallDetectorEvaluator::execute()
   std::cout << "precision: " << precision << std::endl;
   std::cout << "recall: " << recall << std::endl;
 
+  //TODO: also output a simple HTML file with the actual images
+  unsigned int i=0;
+  for(std::list<BallCandidates::Patch>::const_iterator it=falsePositivePatches.begin(); it != falsePositivePatches.end(); it++)
+  {
+    std::ofstream out;
+    out.open("falsePositive_" + std::to_string(i++) + ".pgm");
+    out << createPGM(*it);
+    out.close();
+  }
+  i=0;
+  for(std::list<BallCandidates::Patch>::const_iterator it=falseNegativePatches.begin(); it != falseNegativePatches.end(); it++)
+  {
+    std::ofstream out;
+    out.open("falseNegative_" + std::to_string(i++) + ".pgm");
+    out << createPGM(*it);
+    out.close();
+  }
+
 }
 
 void BallDetectorEvaluator::evaluatePatch(const BallCandidates::Patch &p, unsigned int patchIdx, CameraInfo::CameraID camID)
@@ -116,11 +137,40 @@ void BallDetectorEvaluator::evaluatePatch(const BallCandidates::Patch &p, unsign
   {
     if(actual)
     {
+      falsePositivePatches.push_back(p);
       falsePositives++;
     }
     else
     {
+      falseNegativePatches.push_back(p);
       falseNegatives++;
     }
   }
+}
+
+std::string BallDetectorEvaluator::createPGM(const BallCandidates::Patch &p)
+{
+  std::stringstream str;
+
+  // header (we are gray scale, thus P2)
+  str << "P2\n";
+  // the width and the height of the image
+  str << BallCandidates::Patch::SIZE << "\n" << BallCandidates::Patch::SIZE << "\n";
+  // the maximum value we use
+  str << "255\n";
+
+  // output each pixel
+  for(unsigned int y=0; y < BallCandidates::Patch::SIZE; y++)
+  {
+    for(unsigned int x=0; x < BallCandidates::Patch::SIZE; x++)
+    {
+      str << (int) p.data[x*BallCandidates::Patch::SIZE + y];
+      if(x < BallCandidates::Patch::SIZE - 1)
+      {
+        str << " ";
+      }
+    }
+    str << "\n";
+  }
+  return str.str();
 }

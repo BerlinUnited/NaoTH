@@ -28,6 +28,13 @@ public:
 private:
   void evaluatePatch(const BallCandidates::Patch& p, unsigned int patchIdx, CameraInfo::CameraID camID);
 
+  /**
+   * @brief creates a Portable Graymap image output from a patch
+   * @param p
+   * @return
+   */
+  std::string createPGM(const BallCandidates::Patch& p);
+
 private:
   const std::string file;
   LogFileScanner logFileScanner;
@@ -40,6 +47,9 @@ private:
 
 
   unsigned int truePositives, falsePositives, falseNegatives;
+
+  std::list<BallCandidates::Patch> falsePositivePatches;
+  std::list<BallCandidates::Patch> falseNegativePatches;
 };
 
 #endif // BALLDETECTOREVALUATOR_H
