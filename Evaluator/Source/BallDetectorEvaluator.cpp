@@ -161,11 +161,11 @@ void BallDetectorEvaluator::execute()
   html << "<p>number: " << falsePositives << "</p>" << std::endl;
 
   html << "<div>" << std::endl;
-  for(std::list<BallCandidates::Patch>::const_iterator it=falsePositivePatches.begin(); it != falsePositivePatches.end(); it++)
+  for(std::list<std::pair<BallCandidates::Patch, unsigned int>>::const_iterator it=falsePositivePatches.begin(); it != falsePositivePatches.end(); it++)
   {
     // use a data URI to embed the image in PNG format
-    std::string imgPNG = createPNG(*it);
-    html << "<img class=\"patch\" src=\"data:image/png;base64," << base64Encoder.encode(imgPNG.c_str(), (int) imgPNG.size())  << "\" />" << std::endl;
+    std::string imgPNG = createPNG(it->first);
+    html << "<img class=\"patch\" title=\"patch index " << it->second << "\" src=\"data:image/png;base64," << base64Encoder.encode(imgPNG.c_str(), (int) imgPNG.size())  << "\" />" << std::endl;
   }
   html << "</div>" << std::endl;
 
@@ -174,11 +174,11 @@ void BallDetectorEvaluator::execute()
   html << "<p>number: " << falseNegatives << "</p>" << std::endl;
 
   html << "<div>" << std::endl;
-  for(std::list<BallCandidates::Patch>::const_iterator it=falseNegativePatches.begin(); it != falseNegativePatches.end(); it++)
+  for(std::list<std::pair<BallCandidates::Patch, unsigned int>>::const_iterator it=falseNegativePatches.begin(); it != falseNegativePatches.end(); it++)
   {
     // use a data URI to embed the image in PNG format
-    std::string imgPNG = createPNG(*it);
-    html << "<img class=\"patch\" src=\"data:image/png;base64," << base64Encoder.encode(imgPNG.c_str(), (int) imgPNG.size())  << "\" />" << std::endl;
+    std::string imgPNG = createPNG(it->first);
+    html << "<img class=\"patch\" title=\"patch index " << it->second << "\" src=\"data:image/png;base64," << base64Encoder.encode(imgPNG.c_str(), (int) imgPNG.size())  << "\" />" << std::endl;
   }
   html << "</div>" << std::endl;
   html << "</body>" << std::endl;
@@ -202,12 +202,12 @@ void BallDetectorEvaluator::evaluatePatch(const BallCandidates::Patch &p, unsign
   {
     if(actual)
     {
-      falsePositivePatches.push_back(p);
+      falsePositivePatches.push_back(std::pair<BallCandidates::Patch, unsigned int>(p, patchIdx));
       falsePositives++;
     }
     else
     {
-      falseNegativePatches.push_back(p);
+      falseNegativePatches.push_back(std::pair<BallCandidates::Patch, unsigned int>(p, patchIdx));
       falseNegatives++;
     }
   }

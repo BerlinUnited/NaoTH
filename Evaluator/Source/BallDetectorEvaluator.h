@@ -50,8 +50,8 @@ private:
 
   unsigned int truePositives, falsePositives, falseNegatives;
 
-  std::list<BallCandidates::Patch> falsePositivePatches;
-  std::list<BallCandidates::Patch> falseNegativePatches;
+  std::list<std::pair<BallCandidates::Patch, unsigned int>> falsePositivePatches;
+  std::list<std::pair<BallCandidates::Patch, unsigned int>> falseNegativePatches;
 };
 
 #endif // BALLDETECTOREVALUATOR_H
