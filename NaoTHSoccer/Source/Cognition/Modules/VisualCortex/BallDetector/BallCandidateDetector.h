@@ -23,6 +23,7 @@
 
 #include "Representations/Perception/GameColorIntegralImage.h"
 #include "Representations/Perception/BallCandidates.h"
+#include "Representations/Perception/MultiBallPercept.h"
 
 // tools
 #include "Tools/DoubleCamHelpers.h"
@@ -30,6 +31,7 @@
 // local tools
 #include "Tools/BestPatchList.h"
 #include "Tools/BallKeyPointExtractor.h"
+#include "Tools/CVHaarClassifier.h"
 
 // debug
 #include "Representations/Debug/Stopwatch.h"
@@ -63,6 +65,7 @@ BEGIN_DECLARE_MODULE(BallCandidateDetector)
 
   PROVIDE(BallCandidates)
   PROVIDE(BallCandidatesTop)
+  PROVIDE(MultiBallPercept)
 END_DECLARE_MODULE(BallCandidateDetector)
 
 
@@ -115,11 +118,13 @@ private:
 
 
 private:
+  CVHaarClassifier cvClassifier;
   ModuleCreator<BallKeyPointExtractor>* theBallKeyPointExtractor;
   BestPatchList best;
 
 private:
   void calculateCandidates();
+  void addBallPercept(const Vector2i& center, double radius);
 
 private:
   CameraInfo::CameraID cameraID;

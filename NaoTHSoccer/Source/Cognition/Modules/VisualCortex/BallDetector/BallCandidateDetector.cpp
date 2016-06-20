@@ -11,7 +11,6 @@
 #include "Tools/PatchWork.h"
 #include "Tools/CVClassifier.h"
 #include "Tools/BlackSpotExtractor.h"
-#include "Tools/CVHaarClassifier.h"
 
 using namespace std;
 
@@ -19,6 +18,7 @@ BallCandidateDetector::BallCandidateDetector()
 {
   DEBUG_REQUEST_REGISTER("Vision:BallCandidateDetector:keyPoints", "draw key points extracted from integral image", false);
   DEBUG_REQUEST_REGISTER("Vision:BallCandidateDetector:drawCandidates", "draw ball candidates", false);
+  DEBUG_REQUEST_REGISTER("Vision:BallDetector:drawPercepts", "draw ball percepts", false);
 
   theBallKeyPointExtractor = registerModule<BallKeyPointExtractor>("BallKeyPointExtractor", true);
   getDebugParameterList().add(&params);
@@ -47,6 +47,14 @@ void BallCandidateDetector::execute(CameraInfo::CameraID id)
   theBallKeyPointExtractor->getModuleT()->calculateKeyPoints(best);
 
   calculateCandidates();
+
+  DEBUG_REQUEST("Vision:BallDetector:drawPercepts",
+    for(MultiBallPercept::ConstABPIterator iter = getMultiBallPercept().begin(); iter != getMultiBallPercept().end(); iter++) {
+      if((*iter).cameraId == cameraID) {
+        CIRCLE_PX(ColorClasses::orange, (int)((*iter).centerInImage.x+0.5), (int)((*iter).centerInImage.y+0.5), (int)((*iter).radiusInImage+0.5));
+      }
+    }
+  );
 }
 
 
@@ -115,16 +123,15 @@ void BallCandidateDetector::calculateCandidates()
         //TODO: what to do with small balls?
       }
 
-
-      // test
-      static CVHaarClassifier cvClassifier;
-      
-      BallCandidates::Patch p(0);
-      p.min = min;
-      p.max = max;
-      PatchWork::subsampling(getImage(), p.data, p.min.x, p.min.y, p.max.x, p.max.y, 12);
-      if(cvClassifier.classify(p, cameraID)) {
-        CIRCLE_PX(ColorClasses::white, (min.x + max.x)/2, (min.y + max.y)/2, (max.x - min.x)/2);
+      if(checkGreenBelow && checkGreenInside)
+      {
+        BallCandidates::Patch p(0);
+        p.min = min;
+        p.max = max;
+        PatchWork::subsampling(getImage(), p.data, p.min.x, p.min.y, p.max.x, p.max.y, 24);
+        if(cvClassifier.classify(p)) {
+          CIRCLE_PX(ColorClasses::white, (min.x + max.x)/2, (min.y + max.y)/2, (max.x - min.x)/2);
+        }
       }
 
 
@@ -138,7 +145,7 @@ void BallCandidateDetector::calculateCandidates()
         RECT_PX(c, min.x, min.y, max.x, max.y);
 
         if(checkBlackDots) {
-          CIRCLE_PX(ColorClasses::red, (min.x + max.x)/2, (min.y + max.y)/2, (max.x - min.x)/2);
+          addBallPercept(Vector2i((min.x + max.x)/2, (min.y + max.y)/2), (max.x - min.x)/2);
         }
       );
 
@@ -155,5 +162,27 @@ void BallCandidateDetector::calculateCandidates()
   }
 
 } // end executeHeuristic
+
+void BallCandidateDetector::addBallPercept(const Vector2i& center, double radius) 
+{
+  const double ballRadius = 50.0;
+  MultiBallPercept::BallPercept ballPercept;
+  
+  if(CameraGeometry::imagePixelToFieldCoord(
+		  getCameraMatrix(), 
+		  getImage().cameraInfo,
+		  center.x, 
+		  center.y, 
+		  ballRadius,
+		  ballPercept.positionOnField))
+  {
+    ballPercept.cameraId = cameraID;
+    ballPercept.centerInImage = center;
+    ballPercept.radiusInImage = radius;
+
+    getMultiBallPercept().add(ballPercept);
+    getMultiBallPercept().frameInfoWhenBallWasSeen = getFrameInfo();
+  }
+}
 
 
