@@ -116,9 +116,6 @@ void BallDetectorEvaluator::execute()
     }
   }
 
-
-  std::cout << "true positives: " << truePositives << " false positives: " << falsePositives << " false negatives: " << falseNegatives << std::endl;
-
   double precision = (double) truePositives / ((double) (truePositives + falsePositives));
   double recall = (double) truePositives / ((double) (truePositives + falseNegatives));
 
@@ -126,6 +123,8 @@ void BallDetectorEvaluator::execute()
 
   std::cout << "precision: " << precision << std::endl;
   std::cout << "recall: " << recall << std::endl;
+
+  std::cout << "=============" << std::endl;
 
   base64::Encoder base64Encoder(64);
 
@@ -146,22 +145,33 @@ void BallDetectorEvaluator::execute()
   html << "<h1>Summary</h1>" << std::endl;
   html << "<p>precision: " << precision << "<br />recall: " << recall << "</p>" << std::endl;
 
+  html << "<p>total number of samples: " << patchIdx << "</p>" << std::endl;
+
   html << "<h1>False Positives</h1>" << std::endl;
 
+  html << "<p>number: " << falsePositives << "</p>" << std::endl;
+
+  html << "<div>" << std::endl;
   for(std::list<BallCandidates::Patch>::const_iterator it=falsePositivePatches.begin(); it != falsePositivePatches.end(); it++)
   {
     // use a data URI to embed the image in PNG format
     std::string imgPNG = createPNG(*it);
     html << "<img class=\"patch\" src=\"data:image/png;base64," << base64Encoder.encode(imgPNG.c_str(), (int) imgPNG.size())  << "\" />" << std::endl;
   }
+  html << "</div>" << std::endl;
 
   html << "<h1>False Negatives</h1>" << std::endl;
+
+  html << "<p>number: " << falseNegatives << "</p>" << std::endl;
+
+  html << "<div>" << std::endl;
   for(std::list<BallCandidates::Patch>::const_iterator it=falseNegativePatches.begin(); it != falseNegativePatches.end(); it++)
   {
     // use a data URI to embed the image in PNG format
     std::string imgPNG = createPNG(*it);
     html << "<img class=\"patch\" src=\"data:image/png;base64," << base64Encoder.encode(imgPNG.c_str(), (int) imgPNG.size())  << "\" />" << std::endl;
   }
+  html << "</div>" << std::endl;
   html << "</body>" << std::endl;
   html.close();
 
