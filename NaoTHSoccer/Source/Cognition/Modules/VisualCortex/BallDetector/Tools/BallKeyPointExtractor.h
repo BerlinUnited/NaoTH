@@ -53,14 +53,26 @@ public:
   struct Parameter {
     double borderRadiusFactorClose;
     double borderRadiusFactorFar;
-  } params;
+  };
+
+  BallKeyPointExtractor() : cameraID(CameraInfo::Bottom)
+  {}
 
 public:
 
   // scan the integral image for white key points
   void calculateKeyPoints(BestPatchList& best) const;
 
+  void setParameter(const Parameter& params) {
+    this->params = params;
+  }
+
+  void setCameraId(CameraInfo::CameraID id) {
+    this->cameraID = id;
+  }
+
 private:
+  Parameter params;
   CameraInfo::CameraID cameraID;
 
   // double cam stuff

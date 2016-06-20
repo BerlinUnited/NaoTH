@@ -40,6 +40,9 @@ void BallCandidateDetector::execute(CameraInfo::CameraID id)
   }
 
   best.clear();
+  // update parameter
+  theBallKeyPointExtractor->getModuleT()->setParameter(params.keyDetector);
+  theBallKeyPointExtractor->getModuleT()->setCameraId(cameraID);
   theBallKeyPointExtractor->getModuleT()->calculateKeyPoints(best);
 
   calculateCandidates();

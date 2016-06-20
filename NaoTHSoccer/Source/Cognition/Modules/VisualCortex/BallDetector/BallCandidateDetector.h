@@ -98,10 +98,7 @@ private:
       syncWithConfig();
     }
 
-    struct KeyDetector {
-      double borderRadiusFactorClose;
-      double borderRadiusFactorFar;
-    } keyDetector;
+    BallKeyPointExtractor::Parameter keyDetector;
 
     struct Heuristics {
       double maxGreenInsideRatio;
