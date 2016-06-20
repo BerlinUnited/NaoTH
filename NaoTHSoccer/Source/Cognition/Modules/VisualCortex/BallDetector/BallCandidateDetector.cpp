@@ -19,6 +19,7 @@ BallCandidateDetector::BallCandidateDetector()
   DEBUG_REQUEST_REGISTER("Vision:BallCandidateDetector:keyPoints", "draw key points extracted from integral image", false);
   DEBUG_REQUEST_REGISTER("Vision:BallCandidateDetector:drawCandidates", "draw ball candidates", false);
 
+  theBallKeyPointExtractor = registerModule<BallKeyPointExtractor>("BallKeyPointExtractor", true);
   getDebugParameterList().add(&params);
 }
 
@@ -39,7 +40,7 @@ void BallCandidateDetector::execute(CameraInfo::CameraID id)
   }
 
   best.clear();
-  calculateKeyPoints(best);
+  theBallKeyPointExtractor->getModuleT()->calculateKeyPoints(best);
 
   calculateCandidates();
 }
@@ -150,102 +151,5 @@ void BallCandidateDetector::calculateCandidates()
   }
 
 } // end executeHeuristic
-
-
-void BallCandidateDetector::calculateKeyPoints(BestPatchList& best) const
-{
-  //
-  // STEP I: find the maximal height minY to be scanned in the image
-  //
-  if(!getFieldPercept().valid) {
-    return;
-  }
-
-  // we search for key points only inside the field polygon
-  const FieldPercept::FieldPoly& fieldPolygon = getFieldPercept().getValidField();
-
-  // find the top point of the polygon
-  int minY = getImage().height();
-  for(int i = 0; i < fieldPolygon.length ; i++)
-  {
-    if(fieldPolygon.points[i].y < minY && fieldPolygon.points[i].y >= 0) {
-      minY = fieldPolygon.points[i].y;
-    }
-  }
-
-  // double check: polygon is empty
-  if(minY == (int)getImage().height() || minY < 0) {
-    return;
-  }
-
-  // todo needs a better place
-  const int32_t FACTOR = getGameColorIntegralImage().FACTOR;
-
-  Vector2i center;
-  Vector2i point;
-  
-  for(point.y = minY/FACTOR; point.y < (int)getGameColorIntegralImage().getHeight(); ++point.y)
-  {
-    double radius = max( 6.0, estimatedBallRadius(point.x*FACTOR, point.y*FACTOR));
-    
-    int size   = (int)(radius*2.0/FACTOR+0.5);
-    int border = (int)(radius*params.keyDetector.borderRadiusFactorClose/FACTOR+0.5);
-    double radiusGuess = radius + radius*params.keyDetector.borderRadiusFactorClose;
-
-    // HACK: different parameters depending on size
-    if(size < 40/FACTOR) {
-      border = (int)(radius*params.keyDetector.borderRadiusFactorFar/FACTOR+0.5);
-    }
-    border = max( 2, border);
-
-    // smalest ball size == 3 => ball size == FACTOR*3 == 12
-    if (point.y <= border || point.y+size+border >= (int)getGameColorIntegralImage().getHeight()) {
-      continue;
-    }
-    
-    for(point.x = border; point.x+size+border < (int)getGameColorIntegralImage().getWidth(); ++point.x)
-    {
-      int inner = getGameColorIntegralImage().getSumForRect(point.x, point.y, point.x+size, point.y+size, 0);
-      double greenBelow = getGameColorIntegralImage().getDensityForRect(point.x, point.y+size, point.x+size, point.y+size+border, 1);
-
-      if (inner*2 > size*size && greenBelow > 0.3)
-      {
-        int outer = getGameColorIntegralImage().getSumForRect(point.x-border, point.y+size, point.x+size+border, point.y+size+border, 0);
-        double value = (double)(inner - (outer - inner))/((double)(size+border)*(size+border));
-
-        center.x = point.x*FACTOR + (int)(radius+0.5);
-        center.y = point.y*FACTOR + (int)(radius+0.5);
-
-        best.add(center, radiusGuess, value);
-      }
-    }
-  }
-}
-
-double BallCandidateDetector::estimatedBallRadius(int x, int y) const
-{
-  const double ballRadius = 50.0;
-  Vector2d pointOnField;
-  if(!CameraGeometry::imagePixelToFieldCoord(
-		  getCameraMatrix(), 
-		  getImage().cameraInfo,
-		  x, 
-		  y, 
-		  ballRadius,
-		  pointOnField))
-  {
-    return -1;
-  }
-
-  Vector3d d = getCameraMatrix().invert()*Vector3d(pointOnField.x, pointOnField.y, ballRadius);
-  double cameraBallDistance = d.abs();
-  if(cameraBallDistance > ballRadius) {
-    double a = atan2(ballRadius, cameraBallDistance);
-    return a / getImage().cameraInfo.getOpeningAngleHeight() * getImage().cameraInfo.resolutionHeight;
-  }
-  
-  return -1;
-}
-
 
 

@@ -126,6 +126,12 @@ public:
     double rotationOffsetY,
     const Vector2d& theCameraCorrectionOffset);
 
-  };
+  /**
+    estimate the ball size in image based on given camera matrix and camera info
+  */
+  static double estimatedBallRadius( const Pose3D& cameraMatrix, const naoth::CameraInfo& cameraInfo, const double ballRadius, int x, int y);
+
+
+};
 
 #endif //_CameraGeometry_h_
