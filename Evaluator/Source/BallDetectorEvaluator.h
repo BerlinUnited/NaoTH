@@ -20,13 +20,16 @@ END_DECLARE_MODULE(BallDetectorEvaluator)
 class BallDetectorEvaluator : public ModuleManager, public BallDetectorEvaluatorBase
 {
 public:
-  BallDetectorEvaluator(const std::string& file);
+  BallDetectorEvaluator(const std::string& fileArg);
   virtual ~BallDetectorEvaluator();
 
   virtual void execute();
 
 private:
-  void evaluatePatch(const BallCandidates::Patch& p, unsigned int patchIdx, CameraInfo::CameraID camID);
+  unsigned int executeSingleFile(std::string file);
+  void evaluatePatch(const BallCandidates::Patch& p, unsigned int patchIdx, CameraInfo::CameraID camID, const std::set<unsigned int> &expectedBallIdx);
+
+  std::set<unsigned int> loadGroundTruth(std::string file);
 
   /**
    * @brief creates a Portable Graymap image output from a patch
@@ -38,11 +41,8 @@ private:
   std::string createPNG(const BallCandidates::Patch& p);
 
 private:
-  const std::string file;
-  LogFileScanner logFileScanner;
-  LogFileScanner::FrameIterator currentFrame;
+  const std::string fileArg;
 
-  std::set<unsigned int> expectedBallIdx;
 
   // TODO: allow more classifiers (including the ones that have the more complex filter logic)
   CVClassifier classifier;

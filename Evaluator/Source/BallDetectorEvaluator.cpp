@@ -32,38 +32,11 @@
 #endif
 #endif
 
-BallDetectorEvaluator::BallDetectorEvaluator(const std::string &file)
-  : file(file), logFileScanner(file),
+BallDetectorEvaluator::BallDetectorEvaluator(const std::string &fileArg)
+  : fileArg(fileArg),
     truePositives(0), falsePositives(0), falseNegatives(0)
 {
-  typedef std::vector<picojson::value> array;
-  //typedef std::map<std::string, picojson::value> object;
 
-
-  size_t dotPos = file.find_last_of('.');
-
-  std::string jsonFile = dotPos == std::string::npos ? file : file.substr(0, dotPos) + ".json";
-  std::cout << "loading ground truth from '" << jsonFile << "'" << std::endl;
-  std::ifstream groundTruthStream(jsonFile);
-
-  picojson::value parsedJson;
-  picojson::parse(parsedJson, groundTruthStream);
-
-  groundTruthStream.close();
-
-  array ballIdx;
-  if(parsedJson.get("ball").is<array>())
-  {
-    ballIdx = parsedJson.get("ball").get<array>();
-  }
-
-  for(picojson::value idx : ballIdx)
-  {
-    if(idx.is<double>())
-    {
-      expectedBallIdx.insert((unsigned int) idx.get<double>());
-    }
-  }
 }
 
 BallDetectorEvaluator::~BallDetectorEvaluator()
@@ -73,47 +46,48 @@ BallDetectorEvaluator::~BallDetectorEvaluator()
 
 void BallDetectorEvaluator::execute()
 {
-  unsigned int patchIdx = 0;
+
   truePositives = falseNegatives = falsePositives = 0;
   falsePositivePatches.clear();
   falseNegativePatches.clear();
 
-  // read in each frame
-  for(LogFileScanner::FrameIterator it = logFileScanner.begin(); it != logFileScanner.end(); it++)
+
+  unsigned int totalSize = 0;
+
+
+  if(g_file_test(fileArg.c_str(), G_FILE_TEST_IS_DIR))
   {
-    // reset all existing candidates
-    getBallCandidates().reset();
-    getBallCandidatesTop().reset();
-
-    LogFileScanner::Frame frame;
-    logFileScanner.readFrame(*it, frame);
-
-    // deserialize all ball candidates (bottom and top camera)
-    auto frameBallCandidate = frame.find("BallCandidates");
-    auto frameBallCandidateTop = frame.find("BallCandidatesTop");
-    if(frameBallCandidate!= frame.end())
+    std::string dirlocation = fileArg;
+    if (!g_str_has_suffix(dirlocation.c_str(), "/"))
     {
-      std::istrstream stream(frameBallCandidate->second.data.data(), frameBallCandidate->second.data.size());
-      naoth::Serializer<BallCandidates>::deserialize(stream, getBallCandidates());
-    }
-    if(frameBallCandidateTop != frame.end())
-    {
-      std::istrstream stream(frameBallCandidateTop->second.data.data(), frameBallCandidateTop->second.data.size());
-      naoth::Serializer<BallCandidatesTop>::deserialize(stream, getBallCandidatesTop());
+      dirlocation = dirlocation + "/";
     }
 
-    // The python script will always read the bottom patches first, thus in order to have the correct index
-    // the loops have to bee in the same order.
-
-    for(const BallCandidates::Patch& p : getBallCandidates().patches)
+    GDir* dir = g_dir_open(dirlocation.c_str(), 0, NULL);
+    if (dir != NULL)
     {
-      evaluatePatch(p, patchIdx++, CameraInfo::Bottom);
-    }
+      const gchar* name;
+      while ((name = g_dir_read_name(dir)) != NULL)
+      {
+        if (g_str_has_suffix(name, ".log"))
+        {
+          std::string completeFileName = dirlocation + name;
+          if (g_file_test(completeFileName.c_str(), G_FILE_TEST_EXISTS)
+              && g_file_test(completeFileName.c_str(), G_FILE_TEST_IS_REGULAR))
+          {
+            totalSize += executeSingleFile(completeFileName);
+          }
+        }
 
-    for(const BallCandidates::Patch& p : getBallCandidatesTop().patches)
-    {
-      evaluatePatch(p, patchIdx++, CameraInfo::Bottom);
+
+      }
+      g_dir_close(dir);
     }
+  }
+  else
+  {
+    // only one file
+    totalSize = executeSingleFile(fileArg);
   }
 
   double precision = 1.0;
@@ -153,7 +127,7 @@ void BallDetectorEvaluator::execute()
   html << "<h1>Summary</h1>" << std::endl;
   html << "<p>precision: " << precision << "<br />recall: " << recall << "</p>" << std::endl;
 
-  html << "<p>total number of samples: " << patchIdx << "</p>" << std::endl;
+  html << "<p>total number of samples: " << totalSize << "</p>" << std::endl;
 
   html << "<h1>False Positives</h1>" << std::endl;
 
@@ -185,7 +159,56 @@ void BallDetectorEvaluator::execute()
 
 }
 
-void BallDetectorEvaluator::evaluatePatch(const BallCandidates::Patch &p, unsigned int patchIdx, CameraInfo::CameraID camID)
+unsigned int BallDetectorEvaluator::executeSingleFile(std::string file)
+{
+  LogFileScanner logFileScanner(file);
+
+  std::set<unsigned int> expectedBallIdx = loadGroundTruth(file);
+
+  unsigned int patchIdx = 0;
+
+  // read in each frame
+  for(LogFileScanner::FrameIterator it = logFileScanner.begin(); it != logFileScanner.end(); it++)
+  {
+    // reset all existing candidates
+    getBallCandidates().reset();
+    getBallCandidatesTop().reset();
+
+    LogFileScanner::Frame frame;
+    logFileScanner.readFrame(*it, frame);
+
+    // deserialize all ball candidates (bottom and top camera)
+    auto frameBallCandidate = frame.find("BallCandidates");
+    auto frameBallCandidateTop = frame.find("BallCandidatesTop");
+    if(frameBallCandidate!= frame.end())
+    {
+      std::istrstream stream(frameBallCandidate->second.data.data(), frameBallCandidate->second.data.size());
+      naoth::Serializer<BallCandidates>::deserialize(stream, getBallCandidates());
+    }
+    if(frameBallCandidateTop != frame.end())
+    {
+      std::istrstream stream(frameBallCandidateTop->second.data.data(), frameBallCandidateTop->second.data.size());
+      naoth::Serializer<BallCandidatesTop>::deserialize(stream, getBallCandidatesTop());
+    }
+
+    // The python script will always read the bottom patches first, thus in order to have the correct index
+    // the loops have to bee in the same order.
+
+    for(const BallCandidates::Patch& p : getBallCandidates().patches)
+    {
+      evaluatePatch(p, patchIdx++, CameraInfo::Bottom, expectedBallIdx);
+    }
+
+    for(const BallCandidates::Patch& p : getBallCandidatesTop().patches)
+    {
+      evaluatePatch(p, patchIdx++, CameraInfo::Bottom, expectedBallIdx);
+    }
+  }
+
+  return patchIdx;
+}
+
+void BallDetectorEvaluator::evaluatePatch(const BallCandidates::Patch &p, unsigned int patchIdx, CameraInfo::CameraID camID, const std::set<unsigned int>& expectedBallIdx)
 {
   bool expected = expectedBallIdx.find(patchIdx) != expectedBallIdx.end();
   bool actual = classifier.classify(p, camID);
@@ -210,6 +233,44 @@ void BallDetectorEvaluator::evaluatePatch(const BallCandidates::Patch &p, unsign
       falseNegatives++;
     }
   }
+}
+
+std::set<unsigned int> BallDetectorEvaluator::loadGroundTruth(std::__cxx11::string file)
+{
+  typedef std::vector<picojson::value> array;
+  typedef std::map<std::string, picojson::value> object;
+
+  std::set<unsigned int> expectedBallIdx;
+
+  size_t dotPos = file.find_last_of('.');
+
+  std::string jsonFile = dotPos == std::string::npos ? file : file.substr(0, dotPos) + ".json";
+  std::cout << "loading ground truth from '" << jsonFile << "'" << std::endl;
+  std::ifstream groundTruthStream(jsonFile);
+
+  picojson::value parsedJson;
+  picojson::parse(parsedJson, groundTruthStream);
+
+  groundTruthStream.close();
+
+  array ballIdx;
+  if(parsedJson.is<object>())
+  {
+    if(parsedJson.get("ball").is<array>())
+    {
+      ballIdx = parsedJson.get("ball").get<array>();
+    }
+
+    for(picojson::value idx : ballIdx)
+    {
+      if(idx.is<double>())
+      {
+        expectedBallIdx.insert((unsigned int) idx.get<double>());
+      }
+    }
+  }
+
+  return expectedBallIdx;
 }
 
 std::string BallDetectorEvaluator::createPGM(const BallCandidates::Patch &p)
