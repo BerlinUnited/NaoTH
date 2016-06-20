@@ -6,6 +6,7 @@
 #include <Tools/Logfile/LogFileScanner.h>
 #include <ModuleFramework/ModuleManager.h>
 #include <Cognition/Modules/VisualCortex/BallDetector/BallDetector.h>
+#include <Cognition/Modules/VisualCortex/BallDetector/Tools/CVClassifier.h>
 
 #include <map>
 
@@ -23,12 +24,22 @@ public:
   virtual ~BallDetectorEvaluator();
 
   virtual void execute();
+
+private:
+  void evaluatePatch(const BallCandidates::Patch& p, unsigned int patchIdx, CameraInfo::CameraID camID);
+
 private:
   const std::string file;
   LogFileScanner logFileScanner;
   LogFileScanner::FrameIterator currentFrame;
 
-  std::map<int, bool> groundTruth;
+  std::set<unsigned int> expectedBallIdx;
+
+  // TODO: allow more classifiers (including the ones that have the more complex filter logic)
+  CVClassifier classifier;
+
+
+  unsigned int truePositives, falsePositives, falseNegatives;
 };
 
 #endif // BALLDETECTOREVALUATOR_H

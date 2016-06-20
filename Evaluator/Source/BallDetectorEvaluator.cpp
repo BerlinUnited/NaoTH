@@ -4,10 +4,10 @@
 #include <fstream>
 
 #include <Representations/Perception/BallCandidates.h>
-#include <Cognition/Modules/VisualCortex/BallDetector/Tools/CVClassifier.h>
 
 BallDetectorEvaluator::BallDetectorEvaluator(const std::string &file)
-  : file(file), logFileScanner(file)
+  : file(file), logFileScanner(file),
+    truePositives(0), falsePositives(0), falseNegatives(0)
 {
   typedef std::vector<picojson::value> array;
   //typedef std::map<std::string, picojson::value> object;
@@ -34,7 +34,7 @@ BallDetectorEvaluator::BallDetectorEvaluator(const std::string &file)
   {
     if(idx.is<double>())
     {
-      groundTruth[(int) idx.get<double>()] = true;
+      expectedBallIdx.insert((unsigned int) idx.get<double>());
     }
   }
 }
@@ -46,10 +46,9 @@ BallDetectorEvaluator::~BallDetectorEvaluator()
 
 void BallDetectorEvaluator::execute()
 {
-  // TODO: allow more classifiers (including the ones that have the actual filter logic)
-  CVClassifier classifier;
-
   unsigned int patchIdx = 0;
+  truePositives = falseNegatives = falsePositives = 0;
+
   // read in each frame
   for(LogFileScanner::FrameIterator it = logFileScanner.begin(); it != logFileScanner.end(); it++)
   {
@@ -61,8 +60,8 @@ void BallDetectorEvaluator::execute()
     logFileScanner.readFrame(*it, frame);
 
     // deserialize all ball candidates (bottom and top camera)
-    auto frameBallCandidate = frame.find("BallCandidate");
-    auto frameBallCandidateTop = frame.find("BallCandidateTop");
+    auto frameBallCandidate = frame.find("BallCandidates");
+    auto frameBallCandidateTop = frame.find("BallCandidatesTop");
     if(frameBallCandidate!= frame.end())
     {
       std::istrstream stream(frameBallCandidate->second.data.data(), frameBallCandidate->second.data.size());
@@ -74,21 +73,54 @@ void BallDetectorEvaluator::execute()
       naoth::Serializer<BallCandidatesTop>::deserialize(stream, getBallCandidatesTop());
     }
 
+    // The python script will always read the bottom patches first, thus in order to have the correct index
+    // the loops have to bee in the same order.
+
     for(const BallCandidates::Patch& p : getBallCandidates().patches)
     {
-      bool classifiedAsBall = classifier.classify(p, CameraInfo::Bottom);
-
-      std::cout << patchIdx << ":" << classifiedAsBall << std::endl;
-      patchIdx++;
+      evaluatePatch(p, patchIdx++, CameraInfo::Bottom);
     }
 
     for(const BallCandidates::Patch& p : getBallCandidatesTop().patches)
     {
-      bool classifiedAsBall = classifier.classify(p, CameraInfo::Top);
-      std::cout << patchIdx << ":" << classifiedAsBall << std::endl;
-      patchIdx++;
+      evaluatePatch(p, patchIdx++, CameraInfo::Bottom);
     }
-
   }
 
+
+  std::cout << "true positives: " << truePositives << " false positives: " << falsePositives << " false negatives: " << falseNegatives << std::endl;
+
+  double precision = (double) truePositives / ((double) (truePositives + falsePositives));
+  double recall = (double) truePositives / ((double) (truePositives + falseNegatives));
+
+  std::cout << "=============" << std::endl;
+
+  std::cout << "precision: " << precision << std::endl;
+  std::cout << "recall: " << recall << std::endl;
+
+}
+
+void BallDetectorEvaluator::evaluatePatch(const BallCandidates::Patch &p, unsigned int patchIdx, CameraInfo::CameraID camID)
+{
+  bool expected = expectedBallIdx.find(patchIdx) != expectedBallIdx.end();
+  bool actual = classifier.classify(p, camID);
+
+  if(expected == actual)
+  {
+    if(expected)
+    {
+      truePositives++;
+    }
+  }
+  else
+  {
+    if(actual)
+    {
+      falsePositives++;
+    }
+    else
+    {
+      falseNegatives++;
+    }
+  }
 }
