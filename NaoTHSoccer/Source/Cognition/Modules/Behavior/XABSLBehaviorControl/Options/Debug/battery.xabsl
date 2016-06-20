@@ -4,7 +4,7 @@ option battery {
   initial state ok {
     decision 
     {
-      if(battery.isCharging)
+      if(!battery.isDischarging)
       {
         goto charging;
       }
@@ -30,7 +30,7 @@ option battery {
   {
     decision
     {
-      if(battery.isCharging)
+      if(!battery.isDischarging)
       {
         goto charging;
       }
@@ -55,7 +55,7 @@ option battery {
   {
     decision
     {
-      if(!battery.isCharging)
+      if(battery.isDischarging)
       {
         goto ok;
       }

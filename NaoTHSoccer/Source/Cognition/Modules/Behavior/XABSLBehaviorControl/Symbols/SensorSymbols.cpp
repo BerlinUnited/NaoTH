@@ -67,7 +67,7 @@ void SensorSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerBooleanInputSymbol("button.head.pressed.middle", &getButtonHeadMiddle);
   engine.registerBooleanInputSymbol("button.head.pressed.rear", &getButtonHeadRear);
 
-  engine.registerBooleanInputSymbol("battery.isCharging", &getIsCharging);
+  engine.registerBooleanInputSymbol("battery.isDischarging", &getisDischarging);
 }//end registerSymbols
 
 SensorSymbols* SensorSymbols::theInstance = NULL;
@@ -81,9 +81,9 @@ void SensorSymbols::execute()
 
 }//end execute
 
-bool SensorSymbols::getIsCharging()
+bool SensorSymbols::getisDischarging()
 {
-  return theInstance->getBodyState().isCharging;
+  return theInstance->getBodyState().isDischarging;
 }
 bool SensorSymbols::getBumberLeftPressed()
 {

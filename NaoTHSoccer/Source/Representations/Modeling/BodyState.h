@@ -24,7 +24,7 @@ public:
     temperatureLeftLeg(0),
     temperatureRightLeg(0),
     isLiftedUp(false),
-    isCharging(false)
+    isDischarging(true)
   {}
 
   ~BodyState(){}
@@ -85,7 +85,7 @@ public:
   //Is the body lifted up
   bool isLiftedUp;
 
-  bool isCharging;
+  bool isDischarging;
 
   virtual void print(std::ostream& stream) const
   {
@@ -95,7 +95,7 @@ public:
       stream << "standByRightFoot = " << standByRightFoot << std::endl;
       stream << "foot_state_time = " << foot_state_time << std::endl;
       stream << "isLiftedUp = " << isLiftedUp << std::endl;
-      stream << "isCharging = " << isCharging << std::endl;
+      stream << "isDischarging = " << isDischarging << std::endl;
   }//end print
 
 };

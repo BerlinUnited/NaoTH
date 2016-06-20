@@ -30,10 +30,10 @@ void BodyStateProvider::execute()
   updateTheLegTemperature();
   updateIsLiftedUp();
   
-  if(getBatteryData().current > 0.0){
-    getBodyState().isCharging = true;
+  if(getBatteryData().current < -0.5){
+    getBodyState().isDischarging = true;
   }else{
-    getBodyState().isCharging = false;
+    getBodyState().isDischarging = false;
   }
 
 }//end execute

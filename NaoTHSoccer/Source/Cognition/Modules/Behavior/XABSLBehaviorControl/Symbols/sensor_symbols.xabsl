@@ -82,6 +82,6 @@ namespace sensor("Sensor Symbols") {
   float output path.target_x;
   float output path.target_y;
 
-  bool input battery.isCharging;
+  bool input battery.isDischarging;
 }
   
