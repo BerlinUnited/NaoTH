@@ -90,6 +90,7 @@ include "Options/Soccer/Strategy/passive/go_to_and_keep_passive_position.xabsl";
 
 //Goalie
 include "Options/Soccer/Strategy/basic_goalie.xabsl";
+include "Options/Soccer/Strategy/goalie_watch_ball.xabsl";
 //Initial Striker
 include "Options/Soccer/Strategy/initial_striker.xabsl";
 
