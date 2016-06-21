@@ -44,7 +44,7 @@ option initial_striker
 
   target state be_striker {
     action {
-      //situation_based_striker();
+      //striker();
     }
   }
 }

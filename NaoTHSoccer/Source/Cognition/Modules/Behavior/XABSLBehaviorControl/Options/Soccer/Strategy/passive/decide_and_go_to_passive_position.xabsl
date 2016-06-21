@@ -41,14 +41,11 @@ option decide_and_go_to_passive_position
   // 3
   state goto_passive_position_striker {
     decision {
-      else if(action_done)
-        goto arrived;
       else
         stay;
     }
     action {
       go_to_and_keep_passive_position(
-        //x  =(field.xPosOppPenaltyMark + field.centerCircleRadius)/2, 
         x  = field.centerCircleRadius,
         y  = field.yPosLeftPenaltyArea, 
         rot= 0);
@@ -58,15 +55,11 @@ option decide_and_go_to_passive_position
   // 5
   state goto_passive_position_supporter {
     decision {
-      else if(action_done)
-        goto arrived;
       else
         stay;
     }
     action {
-    //go_to_and_keep_passive_position(x=3200, y=-1000, rot=140);
       go_to_and_keep_passive_position(
-        //x = field.xPosOppPenaltyMark, 
         x  =(field.xPosOppPenaltyMark + field.centerCircleRadius)/2,
         y = field.yPosRightFlank, 
         rot = 140);
@@ -75,8 +68,6 @@ option decide_and_go_to_passive_position
 
   state goto_passive_position_defender {
     decision {
-      else if(action_done)
-        goto arrived;
       else
         stay;
     }
@@ -90,23 +81,14 @@ option decide_and_go_to_passive_position
 
   state goto_passive_position_supporter2{
     decision {
-      else if(action_done)
-        goto arrived;
       else
         stay;
     }
     action {
-    //go_to_and_keep_passive_position(x=-1500, y=-900, rot=0);
       go_to_and_keep_passive_position(
         x = field.xPosOwnPenaltyMark + 500, 
         y = field.yPosLeftGoal, 
         rot=-15);
-    }
-  }
-
-  target state arrived{
-    action {
-      passive_behavior();
     }
   }
 }
