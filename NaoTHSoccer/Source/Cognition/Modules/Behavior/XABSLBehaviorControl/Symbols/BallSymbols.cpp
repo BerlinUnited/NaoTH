@@ -64,9 +64,6 @@ void BallSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalInputSymbol("ball.team.striker.position.x", &getTeamBallModel().strikerPosition.x);
   engine.registerDecimalInputSymbol("ball.team.striker.position.y", &getTeamBallModel().strikerPosition.y);
 
-  //kickoff defender
-  engine.registerBooleanInputSymbol("ball.is_free", &getBallIsFree);
-
   DEBUG_REQUEST_REGISTER("XABSL:BallSymbols:ballLeftFoot", "draw the ball model in left foot's coordinates on field", false);
   DEBUG_REQUEST_REGISTER("XABSL:BallSymbols:ballRightFoot", "draw the ball model in right foot's coordinates on field", false);
   DEBUG_REQUEST_REGISTER("XABSL:StrategySymbols:draw_position_behind_ball", "draw the point behind the ball seen from the opp goal on field", false);
@@ -123,14 +120,6 @@ void BallSymbols::execute()
     // hysteresis
     ball_know_where_itis = ball_seen_filter.value() > (ball_know_where_itis?0.3:0.7);
   }
-
-  //kickoff defender
-  if(getBallModel().valid){
-      if(theInstance->getBallModel().position.y < (fieldInfo.centerCircleRadius - 200) )
-          theInstance->ballFree = true;
-  }
-  else theInstance->ballFree = false;
-
 }//end update
 
 
@@ -164,11 +153,6 @@ double BallSymbols::getTeamBallGoalieTimeSinceLastUpdate() {
 
 double BallSymbols::getTeamBallStrikerTimeSinceLastUpdate() {
   return theInstance->getFrameInfo().getTimeSince(theInstance->getTeamBallModel().strikerTime);
-}
-
-//kickoff defender
-bool BallSymbols::getBallIsFree() {
-  return theInstance->ballFree;
 }
 
 
