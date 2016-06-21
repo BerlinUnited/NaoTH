@@ -50,6 +50,8 @@ class BallSymbols: public BallSymbolsBase
 public:
   BallSymbols() :
     ballPerceptSeen(false),
+    fieldInfo(getFieldInfo()),
+    ballFree(false),
     ball_seen_filter(0.01, 0.1),
     ball_know_where_itis(false)
   {
@@ -96,6 +98,7 @@ private:
   static double getTeamBallTimeSinceLastUpdate();
   static double getTeamBallGoalieTimeSinceLastUpdate();
   static double getTeamBallStrikerTimeSinceLastUpdate();
+  static bool getBallIsFree();
 
   // some local members
   Vector2d ballPositionField;
@@ -105,6 +108,9 @@ private:
 
   Vector2d ballPerceptPos;
   bool ballPerceptSeen;
+
+  const FieldInfo& fieldInfo;
+  bool ballFree;
 
   class AssymetricalBoolFilter
   {

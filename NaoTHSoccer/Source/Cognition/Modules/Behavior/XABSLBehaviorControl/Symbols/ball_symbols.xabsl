@@ -69,6 +69,9 @@ namespace ball_symbols("Ball Symbols") {
   float input ball.team.striker.position.x [mm];
   float input ball.team.striker.position.y [mm];
 
+  /** kickoff defender */
+  bool input ball.is_free;
+
   /** Position of the ball in x direction relative to the left foot */
   float input ball.left_foot.x "mm";
   /** Position of the ball in y direction relative to the left foot */
