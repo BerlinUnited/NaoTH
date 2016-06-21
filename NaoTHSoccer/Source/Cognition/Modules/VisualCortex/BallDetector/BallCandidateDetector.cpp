@@ -131,9 +131,12 @@ void BallCandidateDetector::calculateCandidates()
         p.min = Vector2i((*i).center.x - radius*2, (*i).center.y - radius*2);
         p.max = Vector2i((*i).center.x + radius*2, (*i).center.y + radius*2);
 
-        PatchWork::subsampling(getImage(), p.data, p.min.x, p.min.y, p.max.x, p.max.y, patch_size);
-        if(cvClassifier.classify(p) > params.haarDetector.minNeighbors) {
-          CIRCLE_PX(ColorClasses::white, (min.x + max.x)/2, (min.y + max.y)/2, (max.x - min.x)/2);
+        if(getImage().isInside(p.min.x, p.min.y) && getImage().isInside(p.max.x, p.max.y)) 
+        {
+          PatchWork::subsampling(getImage(), p.data, p.min.x, p.min.y, p.max.x, p.max.y, patch_size);
+          if(cvClassifier.classify(p) > params.haarDetector.minNeighbors) {
+            addBallPercept(Vector2i((min.x + max.x)/2, (min.y + max.y)/2), (max.x - min.x)/2);
+          }
         }
       }
 
@@ -148,7 +151,7 @@ void BallCandidateDetector::calculateCandidates()
         RECT_PX(c, min.x, min.y, max.x, max.y);
 
         if(checkBlackDots) {
-          addBallPercept(Vector2i((min.x + max.x)/2, (min.y + max.y)/2), (max.x - min.x)/2);
+          CIRCLE_PX(ColorClasses::red, (min.x + max.x)/2, (min.y + max.y)/2, (max.x - min.x)/2);
         }
       );
 
