@@ -36,6 +36,7 @@ public:
   virtual ~GameController();
 
 private:
+  void handleDebugRequest();
   void handleButtons();
   void handleHeadButtons();
   void updateLEDs();
