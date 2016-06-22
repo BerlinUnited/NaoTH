@@ -110,6 +110,7 @@ public:
   virtual std::string getBodyNickName() const;
 
   virtual std::string getHeadNickName() const;
+  virtual std::string getRobotName() const { return getBodyNickName(); }
 
   /////////////////////// init ///////////////////////
   bool init(const std::string& modelPath, const std::string& teamName, unsigned int num, const std::string& server, unsigned int port, bool sync);

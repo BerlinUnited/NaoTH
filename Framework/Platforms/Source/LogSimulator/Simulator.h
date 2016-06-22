@@ -50,6 +50,7 @@ public:
   virtual std::string getBodyID() const { return "naoth-logsimulator"; }
   virtual std::string getBodyNickName() const {return "naoth"; }
   virtual std::string getHeadNickName() const {return "naoth"; }
+  virtual std::string getRobotName() const { return "naoth-logsimulator"; }
 
   void main();
 
