@@ -62,6 +62,7 @@ public:
 
   // scan the integral image for white key points
   void calculateKeyPoints(BestPatchList& best) const;
+  BestPatchList::Patch refineKeyPoint(const BestPatchList::Patch& patch) const;
 
   void setParameter(const Parameter& params) {
     this->params = params;
@@ -72,7 +73,7 @@ public:
   }
 
 private:
-  void evaluatePatch(BestPatchList& best, const Vector2i& point, const int size, const int border, const double radius) const
+  void evaluatePatch(BestPatchList& best, const Vector2i& point, const int size, const int border) const
   {
     int inner = getGameColorIntegralImage().getSumForRect(point.x, point.y, point.x+size, point.y+size, 0);
     double greenBelow = getGameColorIntegralImage().getDensityForRect(point.x, point.y+size, point.x+size, point.y+size+border, 1);
