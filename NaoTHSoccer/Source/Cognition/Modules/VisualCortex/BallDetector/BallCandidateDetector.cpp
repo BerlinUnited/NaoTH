@@ -64,22 +64,22 @@ void BallCandidateDetector::calculateCandidates()
   int index = 0;
   for(BestPatchList::reverse_iterator i = best.rbegin(); i != best.rend(); ++i)
   {
-    if(getFieldPercept().getValidField().isInside((*i).center))
+    if(getFieldPercept().getValidField().isInside((*i).min) && getFieldPercept().getValidField().isInside((*i).max))
     {
-      int radius = (int)((*i).radius + 0.5);
+      //int radius = (int)((*i).radius + 0.5);
 
       // limit the max amount of evaluated keys
       if(index > params.maxNumberOfKeys) {
         break;
       }
 
-      Vector2i min((*i).center.x - radius, (*i).center.y - radius);
-      Vector2i max((*i).center.x + radius, (*i).center.y + radius);
+      const Vector2i& min((*i).min);
+      const Vector2i& max((*i).max);
 
       // (1) check green below
       bool checkGreenBelow = false;
-      if(getImage().isInside(max.x, max.y+radius/2) && getImage().isInside(min.x - FACTOR, min.y - FACTOR)) {
-        double greenBelow = getGameColorIntegralImage().getDensityForRect(min.x/FACTOR, max.y/FACTOR, max.x/FACTOR, (max.y+radius/2)/FACTOR, 1);
+      if(getImage().isInside(max.x, max.y+(max.y-min.y)/2) && getImage().isInside(min.x - FACTOR, min.y - FACTOR)) {
+        double greenBelow = getGameColorIntegralImage().getDensityForRect(min.x/FACTOR, max.y/FACTOR, max.x/FACTOR, (max.y+(max.y-min.y)/2)/FACTOR, 1);
         if(greenBelow > params.heuristic.minGreenBelowRatio) {
           checkGreenBelow = true;
         }
@@ -102,8 +102,7 @@ void BallCandidateDetector::calculateCandidates()
 
         DEBUG_REQUEST("Vision:BallCandidateDetector:keyPoints",
           for(BestPatchList::iterator i = bestBlackKey.begin(); i != bestBlackKey.end(); ++i) {
-            int radius = (int)((*i).radius + 0.5);
-            RECT_PX(ColorClasses::red, (*i).center.x - radius, (*i).center.y - radius, (*i).center.x + radius, (*i).center.y + radius);
+            RECT_PX(ColorClasses::red, min.x, min.y, max.x, max.y);
           }
         );
 

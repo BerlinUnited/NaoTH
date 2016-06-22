@@ -39,7 +39,6 @@ void BallKeyPointExtractor::calculateKeyPoints(BestPatchList& best) const
   // todo needs a better place
   const int32_t FACTOR = getGameColorIntegralImage().FACTOR;
 
-  Vector2i center;
   Vector2i point;
   
   for(point.y = minY/FACTOR; point.y < (int)getGameColorIntegralImage().getHeight(); ++point.y)
@@ -51,7 +50,6 @@ void BallKeyPointExtractor::calculateKeyPoints(BestPatchList& best) const
     double radius = max( 6.0, estimatedRadius);
     int size   = (int)(radius*2.0/FACTOR+0.5);
     int border = (int)(radius*params.borderRadiusFactorClose/FACTOR+0.5);
-    double radiusGuess = radius + radius*params.borderRadiusFactorClose;
 
     // HACK: different parameters depending on size
     if(size < 40/FACTOR) {
@@ -66,19 +64,7 @@ void BallKeyPointExtractor::calculateKeyPoints(BestPatchList& best) const
     
     for(point.x = border; point.x+size+border < (int)getGameColorIntegralImage().getWidth(); ++point.x)
     {
-      int inner = getGameColorIntegralImage().getSumForRect(point.x, point.y, point.x+size, point.y+size, 0);
-      double greenBelow = getGameColorIntegralImage().getDensityForRect(point.x, point.y+size, point.x+size, point.y+size+border, 1);
-
-      if (inner*2 > size*size && greenBelow > 0.3)
-      {
-        int outer = getGameColorIntegralImage().getSumForRect(point.x-border, point.y+size, point.x+size+border, point.y+size+border, 0);
-        double value = (double)(inner - (outer - inner))/((double)(size+border)*(size+border));
-
-        center.x = point.x*FACTOR + (int)(radius+0.5);
-        center.y = point.y*FACTOR + (int)(radius+0.5);
-
-        best.add(center, radiusGuess, value);
-      }
+      evaluatePatch(best, point, size, border, radius);
     }
   }
 }
