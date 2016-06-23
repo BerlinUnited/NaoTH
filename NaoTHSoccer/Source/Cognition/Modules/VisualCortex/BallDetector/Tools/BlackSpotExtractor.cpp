@@ -22,7 +22,6 @@ void BlackSpotExtractor::calculateKeyPoints(const GameColorIntegralImage& image,
   for(point.y = minY/FACTOR; point.y < maxY/FACTOR; ++point.y)
   {
     // HACK: assume square
-    int radius = (maxX - minX) / 5 / 2; // image coords
     int size   = ((maxX - minX) / 5)/FACTOR; // integral coords
     int border = size / 2;
 
@@ -47,10 +46,12 @@ void BlackSpotExtractor::calculateKeyPoints(const GameColorIntegralImage& image,
 
         double value = (double)(innerDark + outerWhite)/((double)(size+border)*(size+border));
 
-        center.x = point.x*FACTOR + radius;
-        center.y = point.y*FACTOR + radius;
-
-        bestBlack.add(center, radius, value);
+        bestBlack.add( 
+          (point.x-border)*FACTOR, 
+          (point.y-border)*FACTOR, 
+          (point.x+size+border)*FACTOR, 
+          (point.y+size+border)*FACTOR, 
+          value);
       }
     }
   }

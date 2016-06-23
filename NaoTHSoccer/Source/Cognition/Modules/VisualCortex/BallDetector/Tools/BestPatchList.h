@@ -17,12 +17,12 @@ public:
   class Patch 
   {
   public:
-    Patch() : radius(-1), value(-1) {}
-    Patch(const Vector2i& center, double radius, double value) 
-      : center(center), radius(radius), value(value)
+    Patch() : value(-1) {}
+    Patch(const Vector2i& min, const Vector2i& max, double value) 
+      : min(min), max(max), value(value)
     {}
-    Vector2i center;
-    double radius;
+    Vector2i min;
+    Vector2i max;
     double value;
   };
 
@@ -38,8 +38,12 @@ public:
 
 public:
 
-  void add(const Vector2i& center, double radius, double value) {
-    add(Patch(center, radius, value));
+  void add(int minX, int minY, int maxX, int maxY, double value) {
+    add(Patch(Vector2i(minX,minY), Vector2i(maxX,maxY), value));
+  }
+
+  void add(const Vector2i& min, const Vector2i& max, double value) {
+    add(Patch(min, max, value));
   }
 
   void add(const Patch& patch)
@@ -112,8 +116,19 @@ private:
       return ++iter;
   }
 
+  /*
+  //OLD
   bool overlap(const Patch& one, const Patch& two) {
     return std::max(std::abs(two.center.x - one.center.x), std::abs(two.center.y - one.center.y)) < (two.radius + one.radius);
+  }
+  */
+
+  bool overlap(const Patch& one, const Patch& two) {
+    return 
+      one.min.x < two.max.x && 
+      one.max.x > two.min.x &&
+      one.min.y < two.max.y && 
+      one.max.y > two.min.y;
   }
 
 };

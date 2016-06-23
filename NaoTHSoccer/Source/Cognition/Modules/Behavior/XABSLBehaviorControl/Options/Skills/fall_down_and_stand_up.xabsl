@@ -4,7 +4,10 @@ option fall_down_and_stand_up
   {
     decision
     {
-      if(abs(value=sensor.inertial.y)>30 
+      // HACK: no standup in init
+      if(executed_motion.type == init)
+        stay;
+      else if(abs(value=sensor.inertial.y)>30 
         || fall_down_state == lying_on_left_side
         || fall_down_state == lying_on_right_side)
         goto falling;
