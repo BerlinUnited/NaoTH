@@ -127,8 +127,9 @@ void BallCandidateDetector::calculateCandidates()
         const int patch_size = 12*2; 
         
         BallCandidates::Patch p(0);
-        p.min = Vector2i((*i).center.x - radius*2, (*i).center.y - radius*2);
-        p.max = Vector2i((*i).center.x + radius*2, (*i).center.y + radius*2);
+        int size = ((*i).max.x - (*i).min.x)/2;
+        p.min = (*i).min - Vector2i(size,size);
+        p.max = (*i).max + Vector2i(size,size);
 
         if(getImage().isInside(p.min.x, p.min.y) && getImage().isInside(p.max.x, p.max.y)) 
         {
