@@ -42,13 +42,20 @@ void GameSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalInputSymbol("game.msecsRemaining", &getMsecsRemaining);
   engine.registerBooleanInputSymbol("game.own_kickoff", &getOwnKickOff);
 
+  // HACK: is only true when the game state plaing was set by the game controller
+  //       we assume this message comes with a delay of >10s
+  //       it's used to prevent waiting of additional 10s in case it's opponents kickoff
+  engine.registerBooleanInputSymbol("game.state.playing_is_set_by_game_controller", &getPlayingIsSetByGameController);
+
 }//end registerSymbols
 
 GameSymbols* GameSymbols::theInstance = NULL;
 
+bool GameSymbols::getPlayingIsSetByGameController() {
+  return theInstance->getGameData().valid && theInstance->getGameData().gameState == GameData::playing;
+}
 
-bool GameSymbols::getOwnKickOff()
-{
+bool GameSymbols::getOwnKickOff() {
   return theInstance->getPlayerInfo().kickoff;
 }
 

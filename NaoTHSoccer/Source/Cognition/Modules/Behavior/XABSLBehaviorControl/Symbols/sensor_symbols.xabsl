@@ -83,5 +83,6 @@ namespace sensor("Sensor Symbols") {
   float output path.target_y;
 
   bool input battery.isDischarging;
+  float output whistle.switch;
 }
   

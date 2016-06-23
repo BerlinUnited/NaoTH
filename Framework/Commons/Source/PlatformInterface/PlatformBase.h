@@ -40,6 +40,7 @@ public:
   virtual std::string getBodyID() const = 0;
   virtual std::string getBodyNickName() const = 0;
   virtual std::string getHeadNickName() const = 0;
+  virtual std::string getRobotName() const = 0;
 
   inline const std::string& getName() const { return platformName; }
   inline unsigned int getBasicTimeStep() const { return theBasicTimeStep; }
