@@ -62,6 +62,13 @@ void CameraMatrixCorrectorV2::execute(CameraInfo::CameraID id)
   MODIFY("CameraMatrixV2:OffsetRollBottom",getCameraMatrixOffset().correctionOffset[naoth::CameraInfo::Bottom].x);
   MODIFY("CameraMatrixV2:OffsetTiltBottom",getCameraMatrixOffset().correctionOffset[naoth::CameraInfo::Bottom].y);
 
+  MODIFY("CameraMatrixV2:Head:OffsetRollTop",getCameraMatrixOffset().correctionOffsets[naoth::CameraInfo::Top].head_rot.x);
+  MODIFY("CameraMatrixV2:Head:OffsetPitchTop",getCameraMatrixOffset().correctionOffsets[naoth::CameraInfo::Top].head_rot.y);
+  MODIFY("CameraMatrixV2:Head:OffsetYawTop",getCameraMatrixOffset().correctionOffsets[naoth::CameraInfo::Top].head_rot.z);
+  MODIFY("CameraMatrixV2:Cam:OffsetRollTop",getCameraMatrixOffset().correctionOffsets[naoth::CameraInfo::Top].cam_rot.x);
+  MODIFY("CameraMatrixV2:Cam:OffsetPitchTop",getCameraMatrixOffset().correctionOffsets[naoth::CameraInfo::Top].cam_rot.y);
+  MODIFY("CameraMatrixV2:Cam:OffsetYawTop",getCameraMatrixOffset().correctionOffsets[naoth::CameraInfo::Top].cam_rot.z);
+
   DEBUG_REQUEST("CameraMatrixV2:calibrate_camera_matrix_line_matching",
     if(cameraID == camera_to_calibrate) {
       calibrate();
@@ -91,9 +98,10 @@ void CameraMatrixCorrectorV2::reset_calibration()
 void CameraMatrixCorrectorV2::calibrate()
 {
   // calibrate the camera matrix
-  Eigen::Matrix<double, 2, 1> offset;
+  Eigen::Matrix<double, 6, 1> offset;
 
   offset = gn_minimizer.minimizeOneStep(*(theCamMatErrorFunction->getModuleT()),1e-4);
 
-  getCameraMatrixOffset().correctionOffset[cameraID] += Vector2d(offset(0),offset(1));
+  getCameraMatrixOffset().correctionOffsets[cameraID].head_rot += Vector3d(offset(0),offset(1),offset(2));
+  getCameraMatrixOffset().correctionOffsets[cameraID].cam_rot  += Vector3d(offset(3),offset(4),offset(5));
 }//end calibrate

@@ -132,12 +132,13 @@ public:
 
     CameraInfo::CameraID cameraID;
 
-    double operator()(Eigen::Matrix<double, 1, 2> parameter){
+    double operator()(Eigen::Matrix<double, 1, 6> parameter){
 
         double total_sum  = 0;
         double sample_cnt = 0;
 
-        Vector2d offset(parameter(0), parameter(1));
+        Vector3d offsetHead(parameter(0), parameter(1),parameter(2));
+        Vector3d offsetCam(parameter(3), parameter(4),parameter(5));
 
         for(CalibrationData::const_iterator cd_iter = calibrationData.begin(); cd_iter != calibrationData.end(); ++cd_iter){
 
@@ -146,7 +147,8 @@ public:
                         cd_iter->headPose,
                         NaoInfo::robotDimensions.cameraTransform[cameraID].offset,
                         NaoInfo::robotDimensions.cameraTransform[cameraID].rotationY,
-                        getCameraMatrixOffset().correctionOffset[cameraID] + offset
+                        getCameraMatrixOffset().correctionOffsets[cameraID].head_rot + offsetHead,
+                        getCameraMatrixOffset().correctionOffsets[cameraID].cam_rot + offsetCam
                         );
 
             std::vector<Vector2d> edgelProjections;
@@ -229,7 +231,7 @@ private:
 
   typedef double (CameraMatrixCorrectorV2::*ErrorFunction)(double, double);
 
-  GaussNewtonMinimizer<1, 2, CamMatErrorFunction> gn_minimizer;
+  GaussNewtonMinimizer<1, 6, CamMatErrorFunction> gn_minimizer;
 
   void calibrate();
   void reset_calibration();

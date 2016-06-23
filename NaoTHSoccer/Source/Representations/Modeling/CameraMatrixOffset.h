@@ -41,6 +41,13 @@ public:
 
   Vector2d correctionOffset[naoth::CameraInfo::numOfCamera];
 
+  typedef struct {
+       Vector3d head_rot;
+       Vector3d cam_rot;
+   } Offsets;
+
+   Offsets correctionOffsets[naoth::CameraInfo::numOfCamera];
+
   virtual void print(std::ostream& stream) const
   {
     stream << "x = " << offset.x << std::endl;
@@ -49,6 +56,20 @@ public:
     stream << "Tilt Offset Camera Top: (y)"<< correctionOffset[naoth::CameraInfo::Top].y << " rad" <<  std::endl;
     stream << "Roll Offset Camera Bottom (x): "<< correctionOffset[naoth::CameraInfo::Bottom].x << " rad" << std::endl;
     stream << "Tilt Offset Camera Bottom: (y)"<< correctionOffset[naoth::CameraInfo::Bottom].y << " rad" <<  std::endl;
+
+    stream << "Roll Offset Head Top  (x): "<< correctionOffsets[naoth::CameraInfo::Top].head_rot.x << " rad" << std::endl;
+    stream << "Pitch Offset Head Top (y): "<< correctionOffsets[naoth::CameraInfo::Top].head_rot.y << " rad" << std::endl;
+    stream << "Yaw Offset Head Top   (z): "<< correctionOffsets[naoth::CameraInfo::Top].head_rot.z << " rad" << std::endl;
+    stream << "Roll Offset Camera Top  (x): "<< correctionOffsets[naoth::CameraInfo::Top].cam_rot.x  << " rad" << std::endl;
+    stream << "Pitch Offset Camera Top (y): "<< correctionOffsets[naoth::CameraInfo::Top].cam_rot.y  << " rad" << std::endl;
+    stream << "Yaw Offset Camera Top   (z): "<< correctionOffsets[naoth::CameraInfo::Top].cam_rot.z  << " rad" << std::endl;
+
+    stream << "Roll Offset Head Top  (x): "<< correctionOffsets[naoth::CameraInfo::Bottom].head_rot.x << " rad" << std::endl;
+    stream << "Pitch Offset Head Top (y): "<< correctionOffsets[naoth::CameraInfo::Bottom].head_rot.y << " rad" << std::endl;
+    stream << "Yaw Offset Head Top   (z): "<< correctionOffsets[naoth::CameraInfo::Bottom].head_rot.z << " rad" << std::endl;
+    stream << "Roll Offset Camera Top  (x): "<< correctionOffsets[naoth::CameraInfo::Bottom].cam_rot.x  << " rad" << std::endl;
+    stream << "Pitch Offset Camera Top (y): "<< correctionOffsets[naoth::CameraInfo::Bottom].cam_rot.y  << " rad" << std::endl;
+    stream << "Yaw Offset Camera Top   (z): "<< correctionOffsets[naoth::CameraInfo::Bottom].cam_rot.z  << " rad" << std::endl;
   }
 };
 
