@@ -176,9 +176,9 @@ void TeamCommReceiver::handleMessage(const std::string& data, bool allowOwn)
 
   unsigned int dataTeamNum = (unsigned int)(spl.teamNum);
   unsigned int dataPlayerNum = (unsigned int)(spl.playerNum);
-  if ( dataTeamNum == getPlayerInfo().gameData.teamNumber
+  if ( dataTeamNum == getPlayerInfo().teamNumber
        // ignore our own messages, we are adding it artficially later
-       && (allowOwn || dataPlayerNum != getPlayerInfo().gameData.playerNumber)
+       && (allowOwn || dataPlayerNum != getPlayerInfo().playerNumber)
      )
   {
     TeamMessage::Data msg;

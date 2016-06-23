@@ -45,9 +45,9 @@ SoccerStrategyProvider::SoccerStrategyProvider()
 void SoccerStrategyProvider::execute()
 {
   /*
-	if (getPlayerInfo().gameData.playerNumber != theFormationParameters.num)
+	if (getPlayerInfo().playerNumber != theFormationParameters.num)
   {
-    theFormationParameters = FormationParameters(getPlayerInfo().gameData.playerNumber);
+    theFormationParameters = FormationParameters(getPlayerInfo().playerNumber);
   }
   */
   //
@@ -175,7 +175,7 @@ bool SoccerStrategyProvider::isSomeoneBetweenMeAndPoint(const Vector2d& p) const
   const double dist = p.abs();
   const double dir = p.angle();
 
-  unsigned int myNum = getPlayerInfo().gameData.playerNumber;
+  unsigned int myNum = getPlayerInfo().playerNumber;
   const PlayersModel& players = getPlayersModel();
   unsigned int currentFrameNumber = getFrameInfo().getFrameNumber();
 
@@ -425,7 +425,7 @@ bool SoccerStrategyProvider::isSomethingBetweenPoints(const Vector2d& p1, Vector
   const double dist = p.abs();
   const double dir = p.angle();
 
-  unsigned int myNum = getPlayerInfo().gameData.playerNumber;
+  unsigned int myNum = getPlayerInfo().playerNumber;
   const PlayersModel& players = getPlayersModel();
   unsigned int currentFrameNumber = getFrameInfo().getFrameNumber();
 

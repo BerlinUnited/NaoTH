@@ -52,6 +52,7 @@ public:
   virtual string getBodyID() const { return theBodyID; }
   virtual string getBodyNickName() const { return theBodyNickName; }
   virtual string getHeadNickName() const { return theHeadNickName; }
+  virtual string getRobotName() const { return theRobotName; }
   
   // camera stuff
   void get(Image& data){ theBottomCameraHandler.get(data); } // blocking
@@ -73,8 +74,8 @@ public:
   void set(const TeamMessageDataOut& data) { theTeamCommSender->send(data.data); }
 
   // gamecontroller stuff
-  void get(GameData& data){ theGameController->get(data, NaoTime::getNaoTimeInMilliSeconds()); }
-  void set(const GameReturnData& data) { theGameController->setReturnData(data); }
+  void get(GameData& data){ theGameController->get(data); }
+  void set(const GameReturnData& data) { theGameController->set(data); }
 
   // debug comm
   void get(DebugMessageInCognition& data) { theDebugServer->getDebugMessageInCognition(data); }
@@ -140,7 +141,7 @@ public:
   }
   
 
-  void setCognitionOutput()
+  virtual void setCognitionOutput()
   {
     //STOPWATCH_START("setCognitionOutput");
     PlatformInterface::setCognitionOutput();
@@ -159,6 +160,7 @@ protected:
   std::string theBodyID;
   std::string theBodyNickName;
   std::string theHeadNickName;
+  std::string theRobotName;
 
   // -- begin -- shared memory access --
   // DCM --> NaoController
