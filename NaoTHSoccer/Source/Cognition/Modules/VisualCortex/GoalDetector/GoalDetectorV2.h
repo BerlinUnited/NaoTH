@@ -127,6 +127,8 @@ private:
   private:
     std::vector<cv::Point2f> points;
     std::vector<GoalBarFeature > features;
+    std::vector<GoalBarFeature> pairs;
+
     double summedWidths;
 
   public:

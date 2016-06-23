@@ -92,7 +92,8 @@ void GoalDetectorV2::execute(CameraInfo::CameraID id)
 
 void GoalDetectorV2::clusterEdgelFeatures()
 {
-  std::vector<GoalBarFeature> pairs;
+  pairs.clear();
+
   for(size_t scanIdOne = 0; scanIdOne + 1 < getGoalFeaturePercept().features.size(); scanIdOne++) 
   {
     const std::vector<GoalBarFeature>& scanlineOne = getGoalFeaturePercept().features[scanIdOne];
