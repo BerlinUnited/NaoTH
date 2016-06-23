@@ -169,43 +169,26 @@ void LineGraphProvider::execute(CameraInfo::CameraID id)
     getLineGraphPercept().edgels.push_back(edgel);
   }
 
-  // calculate the LineGraphPercept in image
-  for(size_t j = 0; j < edgelPairs.size(); j++)
+  // neighbors line graph in image
+  for(size_t i = 0; i < edgelNeighbors.size(); i++)
   {
-    const EdgelPair& edgelPair  = edgelPairs[j];
+    bool add_to_percept = false;
 
-    if(cameraID == CameraInfo::Top) {
-        getLineGraphPercept().edgelsInImageTop.push_back(getScanLineEdgelPercept().pairs[edgelPair.left]);
-        getLineGraphPercept().edgelsInImageTop.push_back(getScanLineEdgelPercept().pairs[edgelPair.right]);
-    } else {
-        getLineGraphPercept().edgelsInImage.push_back(getScanLineEdgelPercept().pairs[edgelPair.left]);
-        getLineGraphPercept().edgelsInImage.push_back(getScanLineEdgelPercept().pairs[edgelPair.right]);
+    if(edgelNeighbors[i].left != -1) {
+      add_to_percept = true;
     }
 
-//    for(size_t i = 0; i < edgelNeighbors.size(); i++)
-//    {
-//      const ScanLineEdgelPercept::EdgelPair& edgel = getScanLineEdgelPercept().pairs[i];
-//      bool draw_node = false;
+    if(edgelNeighbors[i].right != -1) {
+      add_to_percept = true;
+    }
 
-//      if(edgelNeighbors[i].left != -1) {
-//        const ScanLineEdgelPercept::EdgelPair& edgel_left = getScanLineEdgelPercept().pairs[edgelNeighbors[i].left];
-//        PEN("000000",0.1);
-//        LINE(edgel.point.x, edgel.point.y, edgel_left.point.x, edgel_left.point.y);
-//        draw_node = true;
-//      }
-
-//      if(edgelNeighbors[i].right != -1) {
-//        const ScanLineEdgelPercept::EdgelPair& edgel_right = getScanLineEdgelPercept().pairs[edgelNeighbors[i].right];
-//        PEN("0000FF",0.1);
-//        LINE(edgel.point.x, edgel.point.y, edgel_right.point.x, edgel_right.point.y);
-//        draw_node = true;
-//      }
-
-//      if(draw_node) {
-//        PEN("FF0000",0.1);
-//        CIRCLE( edgel.point.x, edgel.point.y, 3);
-//      }
-//    }
+    if(add_to_percept) {
+        if(cameraID == CameraInfo::Top) {
+            getLineGraphPercept().edgelsInImageTop.push_back(getScanLineEdgelPercept().pairs[i]);
+        } else {
+            getLineGraphPercept().edgelsInImage.push_back(getScanLineEdgelPercept().pairs[i]);
+        }
+    }
   }
 
   // fill the compas
