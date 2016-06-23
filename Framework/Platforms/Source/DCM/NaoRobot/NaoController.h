@@ -34,6 +34,7 @@
 #include "Representations/Infrastructure/GameData.h"
 #include "Representations/Infrastructure/SoundData.h"
 #include "Representations/Infrastructure/WhistlePercept.h"
+#include "Representations/Infrastructure/WhistleControl.h"
 
 // local tools
 #include "Tools/IPCData.h"
@@ -110,6 +111,7 @@ public:
   void set(const LEDData& data) { naoCommandLEDData.set(data); }
   void set(const IRSendData& data) { naoCommandIRSendData.set(data); }
   void set(const UltraSoundSendData& data) { naoCommandUltraSoundSendData.set(data); }
+  void set(const WhistleControl& data) { whistleControlData.set(data.onOffSwitch); }
 
 
   virtual void getMotionInput()
@@ -174,6 +176,7 @@ protected:
 
   // WhistleDetector --> NaoController
   SharedMemoryReader<int> whistleSensorData;
+  SharedMemoryWriter<Accessor<int> > whistleControlData;
 
   // -- end -- shared memory access --
   
