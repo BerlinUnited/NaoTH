@@ -134,6 +134,8 @@ GameData::GameState SimSparkGameInfo::covertToGameState(SimSparkGameInfo::PlayMo
     case PM_FREE_KICK_RIGHT:
       return GameData::playing;
     case PM_GAME_OVER: return GameData::finished;
+    default:
+      break;
   }
   return GameData::unknown_game_state;
 }

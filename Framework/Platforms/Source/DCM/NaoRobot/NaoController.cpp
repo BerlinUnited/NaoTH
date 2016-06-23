@@ -45,6 +45,11 @@ NaoController::NaoController()
 
   // end init shared memory
   
+  char hostname[128];
+  hostname[127] = '\0';
+  gethostname(hostname, 127);
+  theRobotName = string(hostname);
+  cout << "[NaoController] " << "RobotName: " << theRobotName << endl;
 
   // read the theBodyID and the theBodyNickName from file "nao.info"
   const std::string naoInfoPath = Platform::getInstance().theConfigDirectory + "nao.info";
