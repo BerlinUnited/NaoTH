@@ -305,7 +305,7 @@ Vector2i GoalDetectorV2::scanForEndPoint(const Vector2i& start, const Vector2d& 
   while(footPointScanner.getNextWithCheck(pos))
   {
     IMG_GET(pos.x, pos.y, pixel);
-    int pixValue = params.detectWhiteGoals ? pixel.y : (int) Math::round(((double) pixel.v - (double)pixel.u) * ((double) pixel.y / 255.0));
+    int pixValue = pixel.y;
     filter.add(pos, pixValue);
 
     //collect some values for statisics of colors
