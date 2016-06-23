@@ -15,6 +15,8 @@
 #include "Representations/Perception/CameraMatrix.h"
 #include <Representations/Modeling/KinematicChain.h>
 
+#include <Representations/Modeling/CameraMatrixOffset.h>
+
 /**
 * The class Geometry defines representations for geometric objects and Methods
 * for calculations with such object.
@@ -125,6 +127,13 @@ public:
     const Vector3d& translationOffset,
     double rotationOffsetY,
     const Vector2d& theCameraCorrectionOffset);
+
+  static Pose3D calculateCameraMatrix(
+    const KinematicChain& theKinematicChain,
+    const Vector3d& translationOffset,
+    double rotationOffsetY,
+    const CameraMatrixOffset& theCameraMatrixOffset,
+    const naoth::CameraInfo::CameraID cameraID);
 
   static Pose3D calculateCameraMatrixFromHeadPose(
       Pose3D pose,

@@ -229,6 +229,29 @@ Pose3D CameraGeometry::calculateCameraMatrix(
   return pose;
 }//end calculateCameraMatrix
 
+Pose3D CameraGeometry::calculateCameraMatrix(
+  const KinematicChain& theKinematicChain,
+  const Vector3d& translationOffset,
+  double rotationOffsetY,
+  const CameraMatrixOffset& theCameraMatrixOffset,
+  const naoth::CameraInfo::CameraID cameraID)
+{
+    // get the pose of the head
+    Pose3D pose(theKinematicChain.theLinks[KinematicChain::Head].M);
+
+    pose.rotateZ(theCameraMatrixOffset.correctionOffsets[cameraID].head_rot.z)
+            .rotateY(theCameraMatrixOffset.correctionOffsets[cameraID].head_rot.y)
+            .rotateX(theCameraMatrixOffset.correctionOffsets[cameraID].head_rot.x);
+
+    pose.translate(translationOffset);
+
+    pose.rotateZ(theCameraMatrixOffset.correctionOffsets[cameraID].cam_rot.z)
+            .rotateY(theCameraMatrixOffset.correctionOffsets[cameraID].cam_rot.y + rotationOffsetY) // tilt
+            .rotateX(theCameraMatrixOffset.correctionOffsets[cameraID].cam_rot.x); // roll
+
+    return pose;
+}
+
 Pose3D CameraGeometry::calculateCameraMatrixFromHeadPose(
     Pose3D pose,
     const Vector3d& translationOffset,

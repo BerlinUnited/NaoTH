@@ -62,12 +62,19 @@ void CameraMatrixCorrectorV2::execute(CameraInfo::CameraID id)
   MODIFY("CameraMatrixV2:OffsetRollBottom",getCameraMatrixOffset().correctionOffset[naoth::CameraInfo::Bottom].x);
   MODIFY("CameraMatrixV2:OffsetTiltBottom",getCameraMatrixOffset().correctionOffset[naoth::CameraInfo::Bottom].y);
 
-  MODIFY("CameraMatrixV2:Head:OffsetRollTop",getCameraMatrixOffset().correctionOffsets[naoth::CameraInfo::Top].head_rot.x);
-  MODIFY("CameraMatrixV2:Head:OffsetPitchTop",getCameraMatrixOffset().correctionOffsets[naoth::CameraInfo::Top].head_rot.y);
-  MODIFY("CameraMatrixV2:Head:OffsetYawTop",getCameraMatrixOffset().correctionOffsets[naoth::CameraInfo::Top].head_rot.z);
-  MODIFY("CameraMatrixV2:Cam:OffsetRollTop",getCameraMatrixOffset().correctionOffsets[naoth::CameraInfo::Top].cam_rot.x);
-  MODIFY("CameraMatrixV2:Cam:OffsetPitchTop",getCameraMatrixOffset().correctionOffsets[naoth::CameraInfo::Top].cam_rot.y);
-  MODIFY("CameraMatrixV2:Cam:OffsetYawTop",getCameraMatrixOffset().correctionOffsets[naoth::CameraInfo::Top].cam_rot.z);
+  MODIFY("CameraMatrixV2:Top:Head:OffsetRollTop",getCameraMatrixOffset().correctionOffsets[naoth::CameraInfo::Top].head_rot.x);
+  MODIFY("CameraMatrixV2:Top:Head:OffsetPitchTop",getCameraMatrixOffset().correctionOffsets[naoth::CameraInfo::Top].head_rot.y);
+  MODIFY("CameraMatrixV2:Top:Head:OffsetYawTop",getCameraMatrixOffset().correctionOffsets[naoth::CameraInfo::Top].head_rot.z);
+  MODIFY("CameraMatrixV2:Top:Cam:OffsetRollTop",getCameraMatrixOffset().correctionOffsets[naoth::CameraInfo::Top].cam_rot.x);
+  MODIFY("CameraMatrixV2:Top:Cam:OffsetPitchTop",getCameraMatrixOffset().correctionOffsets[naoth::CameraInfo::Top].cam_rot.y);
+  MODIFY("CameraMatrixV2:Top:Cam:OffsetYawTop",getCameraMatrixOffset().correctionOffsets[naoth::CameraInfo::Top].cam_rot.z);
+
+  MODIFY("CameraMatrixV2:Bottom:Head:OffsetRollBottom",getCameraMatrixOffset().correctionOffsets[naoth::CameraInfo::Bottom].head_rot.x);
+  MODIFY("CameraMatrixV2:Bottom:Head:OffsetPitchBottom",getCameraMatrixOffset().correctionOffsets[naoth::CameraInfo::Bottom].head_rot.y);
+  MODIFY("CameraMatrixV2:Bottom:Head:OffsetYawBottom",getCameraMatrixOffset().correctionOffsets[naoth::CameraInfo::Bottom].head_rot.z);
+  MODIFY("CameraMatrixV2:Bottom:Cam:OffsetRollBottom",getCameraMatrixOffset().correctionOffsets[naoth::CameraInfo::Bottom].cam_rot.x);
+  MODIFY("CameraMatrixV2:Bottom:Cam:OffsetPitchBottom",getCameraMatrixOffset().correctionOffsets[naoth::CameraInfo::Bottom].cam_rot.y);
+  MODIFY("CameraMatrixV2:Bottom:Cam:OffsetYawBottom",getCameraMatrixOffset().correctionOffsets[naoth::CameraInfo::Bottom].cam_rot.z);
 
   DEBUG_REQUEST("CameraMatrixV2:calibrate_camera_matrix_line_matching",
     if(cameraID == camera_to_calibrate) {
@@ -93,6 +100,8 @@ void CameraMatrixCorrectorV2::execute(CameraInfo::CameraID id)
 void CameraMatrixCorrectorV2::reset_calibration()
 {
   getCameraMatrixOffset().correctionOffset[cameraID] = Vector2d();
+  getCameraMatrixOffset().correctionOffsets[cameraID].head_rot = Vector3d();
+  getCameraMatrixOffset().correctionOffsets[cameraID].cam_rot  = Vector3d();
 }
 
 void CameraMatrixCorrectorV2::calibrate()

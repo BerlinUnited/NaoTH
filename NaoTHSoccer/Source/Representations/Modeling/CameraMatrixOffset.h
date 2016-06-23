@@ -57,19 +57,21 @@ public:
     stream << "Roll Offset Camera Bottom (x): "<< correctionOffset[naoth::CameraInfo::Bottom].x << " rad" << std::endl;
     stream << "Tilt Offset Camera Bottom: (y)"<< correctionOffset[naoth::CameraInfo::Bottom].y << " rad" <<  std::endl;
 
-    stream << "Roll Offset Head Top  (x): "<< correctionOffsets[naoth::CameraInfo::Top].head_rot.x << " rad" << std::endl;
-    stream << "Pitch Offset Head Top (y): "<< correctionOffsets[naoth::CameraInfo::Top].head_rot.y << " rad" << std::endl;
-    stream << "Yaw Offset Head Top   (z): "<< correctionOffsets[naoth::CameraInfo::Top].head_rot.z << " rad" << std::endl;
-    stream << "Roll Offset Camera Top  (x): "<< correctionOffsets[naoth::CameraInfo::Top].cam_rot.x  << " rad" << std::endl;
-    stream << "Pitch Offset Camera Top (y): "<< correctionOffsets[naoth::CameraInfo::Top].cam_rot.y  << " rad" << std::endl;
-    stream << "Yaw Offset Camera Top   (z): "<< correctionOffsets[naoth::CameraInfo::Top].cam_rot.z  << " rad" << std::endl;
+    stream << "----------Top-----------" << std::endl;
+    stream << "Roll  Offset Head   (x): "<< correctionOffsets[naoth::CameraInfo::Top].head_rot.x << " rad" << std::endl;
+    stream << "Pitch Offset Head   (y): "<< correctionOffsets[naoth::CameraInfo::Top].head_rot.y << " rad" << std::endl;
+    stream << "Yaw   Offset Head   (z): "<< correctionOffsets[naoth::CameraInfo::Top].head_rot.z << " rad" << std::endl;
+    stream << "Roll  Offset Camera (x): "<< correctionOffsets[naoth::CameraInfo::Top].cam_rot.x  << " rad" << std::endl;
+    stream << "Pitch Offset Camera (y): "<< correctionOffsets[naoth::CameraInfo::Top].cam_rot.y  << " rad" << std::endl;
+    stream << "Yaw   Offset Camera (z): "<< correctionOffsets[naoth::CameraInfo::Top].cam_rot.z  << " rad" << std::endl;
 
-    stream << "Roll Offset Head Top  (x): "<< correctionOffsets[naoth::CameraInfo::Bottom].head_rot.x << " rad" << std::endl;
-    stream << "Pitch Offset Head Top (y): "<< correctionOffsets[naoth::CameraInfo::Bottom].head_rot.y << " rad" << std::endl;
-    stream << "Yaw Offset Head Top   (z): "<< correctionOffsets[naoth::CameraInfo::Bottom].head_rot.z << " rad" << std::endl;
-    stream << "Roll Offset Camera Top  (x): "<< correctionOffsets[naoth::CameraInfo::Bottom].cam_rot.x  << " rad" << std::endl;
-    stream << "Pitch Offset Camera Top (y): "<< correctionOffsets[naoth::CameraInfo::Bottom].cam_rot.y  << " rad" << std::endl;
-    stream << "Yaw Offset Camera Top   (z): "<< correctionOffsets[naoth::CameraInfo::Bottom].cam_rot.z  << " rad" << std::endl;
+    stream << "---------Bottom---------" << std::endl;
+    stream << "Roll  Offset Head   (x): "<< correctionOffsets[naoth::CameraInfo::Bottom].head_rot.x << " rad" << std::endl;
+    stream << "Pitch Offset Head   (y): "<< correctionOffsets[naoth::CameraInfo::Bottom].head_rot.y << " rad" << std::endl;
+    stream << "Yaw   Offset Head   (z): "<< correctionOffsets[naoth::CameraInfo::Bottom].head_rot.z << " rad" << std::endl;
+    stream << "Roll  Offset Camera (x): "<< correctionOffsets[naoth::CameraInfo::Bottom].cam_rot.x  << " rad" << std::endl;
+    stream << "Pitch Offset Camera (y): "<< correctionOffsets[naoth::CameraInfo::Bottom].cam_rot.y  << " rad" << std::endl;
+    stream << "Yaw   Offset Camera (z): "<< correctionOffsets[naoth::CameraInfo::Bottom].cam_rot.z  << " rad" << std::endl;
   }
 };
 
@@ -85,6 +87,8 @@ class Serializer<CameraMatrixOffset>
     naothmessages::CameraMatrixCalibration msg;
     for(int id=0; id < naoth::CameraInfo::numOfCamera; id++) {
       naoth::DataConversion::toMessage(representation.correctionOffset[id], *msg.add_correctionoffset());
+      naoth::DataConversion::toMessage(representation.correctionOffsets[id].head_rot, *msg.add_correctionoffsethead());
+      naoth::DataConversion::toMessage(representation.correctionOffsets[id].cam_rot, *msg.add_correctionoffsetcam());
     }
     google::protobuf::io::OstreamOutputStream buf(&stream);
     msg.SerializeToZeroCopyStream(&buf);
@@ -98,7 +102,9 @@ class Serializer<CameraMatrixOffset>
     
     ASSERT(msg.correctionoffset().size() == naoth::CameraInfo::numOfCamera);
     for(int id=0; id < naoth::CameraInfo::numOfCamera; id++) {
-      naoth::DataConversion::fromMessage(msg.correctionoffset(id), representation.correctionOffset[id]);
+        naoth::DataConversion::fromMessage(msg.correctionoffset(id), representation.correctionOffset[id]);
+        naoth::DataConversion::fromMessage(msg.correctionoffsethead(id), representation.correctionOffsets[id].head_rot);
+        naoth::DataConversion::fromMessage(msg.correctionoffsetcam(id),  representation.correctionOffsets[id].cam_rot);
     }
   }
 };

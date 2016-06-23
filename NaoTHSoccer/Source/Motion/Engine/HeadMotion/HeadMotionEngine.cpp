@@ -263,7 +263,8 @@ Vector3d HeadMotionEngine::g(double yaw, double pitch, const Vector3d& pointInWo
       theKinematicChain,
       NaoInfo::robotDimensions.cameraTransform[getHeadMotionRequest().cameraID].offset,
       NaoInfo::robotDimensions.cameraTransform[getHeadMotionRequest().cameraID].rotationY,
-      getCameraMatrixOffset().correctionOffset[getHeadMotionRequest().cameraID]
+      getCameraMatrixOffset(),
+      getHeadMotionRequest().cameraID
     );
 
   cameraMatrix.timestamp = getSensorJointData().timestamp;
