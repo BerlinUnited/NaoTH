@@ -26,7 +26,7 @@
 #include "Representations/Infrastructure/CalibrationData.h"
 
 #include <Representations/Infrastructure/ButtonData.h>
-
+#include <Representations/Infrastructure/WhistleControl.h>
 // tools
 #include "Tools/Math/Common.h"
 
@@ -43,6 +43,7 @@ BEGIN_DECLARE_MODULE(SensorSymbols)
   REQUIRE(CollisionModel)
   REQUIRE(CalibrationData)
   REQUIRE(ButtonData)
+  PROVIDE(WhistleControl)
 
   PROVIDE(Path)
 END_DECLARE_MODULE(SensorSymbols)
@@ -97,6 +98,9 @@ private:
   static bool getButtonHeadRear();
 
   static bool getisDischarging();
+
+  static double getWhistleSwitch();
+  static void setWhistleSwitch(double whistle);
 };
 
 #endif  /* _SENSORSYMBOLS_H */
