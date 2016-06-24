@@ -34,6 +34,7 @@
 #include "Representations/Infrastructure/GameData.h"
 #include "Representations/Infrastructure/SoundData.h"
 #include "Representations/Infrastructure/WhistlePercept.h"
+#include "Representations/Infrastructure/WhistleControl.h"
 
 // local tools
 #include "Tools/IPCData.h"
@@ -52,6 +53,7 @@ public:
   virtual string getBodyID() const { return theBodyID; }
   virtual string getBodyNickName() const { return theBodyNickName; }
   virtual string getHeadNickName() const { return theHeadNickName; }
+  virtual string getRobotName() const { return theRobotName; }
   
   // camera stuff
   void get(Image& data){ theBottomCameraHandler.get(data); } // blocking
@@ -73,8 +75,8 @@ public:
   void set(const TeamMessageDataOut& data) { theTeamCommSender->send(data.data); }
 
   // gamecontroller stuff
-  void get(GameData& data){ theGameController->get(data, NaoTime::getNaoTimeInMilliSeconds()); }
-  void set(const GameReturnData& data) { theGameController->setReturnData(data); }
+  void get(GameData& data){ theGameController->get(data); }
+  void set(const GameReturnData& data) { theGameController->set(data); }
 
   // debug comm
   void get(DebugMessageInCognition& data) { theDebugServer->getDebugMessageInCognition(data); }
@@ -109,6 +111,7 @@ public:
   void set(const LEDData& data) { naoCommandLEDData.set(data); }
   void set(const IRSendData& data) { naoCommandIRSendData.set(data); }
   void set(const UltraSoundSendData& data) { naoCommandUltraSoundSendData.set(data); }
+  void set(const WhistleControl& data) { whistleControlData.set(data.onOffSwitch); }
 
 
   virtual void getMotionInput()
@@ -140,7 +143,7 @@ public:
   }
   
 
-  void setCognitionOutput()
+  virtual void setCognitionOutput()
   {
     //STOPWATCH_START("setCognitionOutput");
     PlatformInterface::setCognitionOutput();
@@ -159,6 +162,7 @@ protected:
   std::string theBodyID;
   std::string theBodyNickName;
   std::string theHeadNickName;
+  std::string theRobotName;
 
   // -- begin -- shared memory access --
   // DCM --> NaoController
@@ -172,6 +176,7 @@ protected:
 
   // WhistleDetector --> NaoController
   SharedMemoryReader<int> whistleSensorData;
+  SharedMemoryWriter<Accessor<int> > whistleControlData;
 
   // -- end -- shared memory access --
   

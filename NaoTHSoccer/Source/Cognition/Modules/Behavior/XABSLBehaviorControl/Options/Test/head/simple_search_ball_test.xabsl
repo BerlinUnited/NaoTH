@@ -22,7 +22,7 @@ option simple_search_ball_test
         stay;
     }
     action {
-      simple_search_ball();
+      search_ball_simple();
     }
   }
 

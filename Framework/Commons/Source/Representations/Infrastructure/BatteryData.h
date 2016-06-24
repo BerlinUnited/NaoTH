@@ -11,6 +11,8 @@ namespace naoth
   {
   public:
     double charge;
+    double current;
+    double temperature;
 
     BatteryData();
     virtual void print(std::ostream& stream) const;
