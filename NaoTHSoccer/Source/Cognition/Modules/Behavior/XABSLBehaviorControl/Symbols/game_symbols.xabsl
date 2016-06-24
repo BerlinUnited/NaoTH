@@ -50,4 +50,6 @@ namespace game_symbols("Game Control Symbols")
 
   float input game.msecsRemaining;
 
+  bool input game.state.playing_is_set_by_game_controller;
+
 }

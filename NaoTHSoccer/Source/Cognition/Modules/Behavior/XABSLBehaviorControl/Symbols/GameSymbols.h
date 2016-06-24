@@ -37,6 +37,7 @@ public:
 private:
   static GameSymbols* theInstance;
 
+  static bool getPlayingIsSetByGameController();
   static bool getOwnKickOff();
   static double getPlayerNumber();
   static double getMsecsRemaining();
