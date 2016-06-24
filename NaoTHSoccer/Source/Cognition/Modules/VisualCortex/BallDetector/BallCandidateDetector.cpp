@@ -20,6 +20,8 @@ BallCandidateDetector::BallCandidateDetector()
   DEBUG_REQUEST_REGISTER("Vision:BallCandidateDetector:drawCandidates", "draw ball candidates", false);
   DEBUG_REQUEST_REGISTER("Vision:BallCandidateDetector:drawPercepts", "draw ball percepts", false);
 
+  DEBUG_REQUEST_REGISTER("Vision:BallCandidateDetector:lbpDetection", "draw ball percepts", false);
+
   theBallKeyPointExtractor = registerModule<BallKeyPointExtractor>("BallKeyPointExtractor", true);
   getDebugParameterList().add(&params);
 }
@@ -122,14 +124,15 @@ void BallCandidateDetector::calculateCandidates()
         //TODO: what to do with small balls?
       }
 
-      if(checkGreenBelow && checkGreenInside)
+      //if(checkGreenBelow && checkGreenInside)
+      DEBUG_REQUEST("Vision:BallCandidateDetector:lbpDetection",
       {
-        const int patch_size = 12*2; 
+        const int patch_size = 12; 
         
         BallCandidates::Patch p(0);
-        int size = ((*i).max.x - (*i).min.x)/2;
-        p.min = (*i).min - Vector2i(size,size);
-        p.max = (*i).max + Vector2i(size,size);
+        //int size = ((*i).max.x - (*i).min.x)/2;
+        p.min = (*i).min;// - Vector2i(size,size);
+        p.max = (*i).max;// + Vector2i(size,size);
 
         if(getImage().isInside(p.min.x, p.min.y) && getImage().isInside(p.max.x, p.max.y)) 
         {
@@ -138,7 +141,7 @@ void BallCandidateDetector::calculateCandidates()
             addBallPercept(Vector2i((min.x + max.x)/2, (min.y + max.y)/2), (max.x - min.x)/2);
           }
         }
-      }
+      });
 
 
       DEBUG_REQUEST("Vision:BallCandidateDetector:drawCandidates",
