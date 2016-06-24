@@ -9,11 +9,9 @@
 
 SituationPriorProvider::SituationPriorProvider()
 { 
-  lastState = getPlayerInfo().gameData.gameState;
-  currentState = getPlayerInfo().gameData.gameState;
-
-  lastGameControllerState = getPlayerInfo().gameData.gameControllerState;
-  currentGameControllerState = getPlayerInfo().gameData.gameControllerState;
+  lastRobotState = getPlayerInfo().robotState;
+  currentRobotState = getPlayerInfo().robotState;
+  gameStateWhenPenalized = GameData::unknown_game_state;
 
   walked_after_penalized_or_init = false;
   wasLiftedUp = false;
@@ -26,28 +24,26 @@ SituationPriorProvider::~SituationPriorProvider()
 void SituationPriorProvider::execute()
 {
   //reset prior
-  //getSituationPrior().currentPrior = SituationPrior::none;
+  getSituationPrior().currentPrior = SituationPrior::none;
 
-  //Calculate lastGameState
-  if(getPlayerInfo().gameData.gameState != currentState){
-    lastState = currentState;
-    currentState = getPlayerInfo().gameData.gameState;
-  }
-  //Calculate lastGameControllerState
-  if(getPlayerInfo().gameData.gameControllerState != currentGameControllerState){
-    lastGameControllerState = currentGameControllerState;
-    currentGameControllerState = getPlayerInfo().gameData.gameControllerState;
-  }
-  if(currentGameControllerState == GameData::penalized){
-    stateBeforePenalized = lastGameControllerState;
-  }
+  // robot state changed
+  if(getPlayerInfo().robotState != currentRobotState) {
+    lastRobotState = currentRobotState;
+    currentRobotState = getPlayerInfo().robotState;
 
+    if(getPlayerInfo().robotState == PlayerInfo::penalized) {
+      gameStateWhenPenalized = getGameData().gameState;
+    }
+  }
 
   // calculate walked_after_penalized_or_init
-  if(currentState == GameData::set || currentState == GameData::initial || currentState == GameData::penalized){
+  if( currentRobotState == PlayerInfo::set || 
+      currentRobotState == PlayerInfo::initial || 
+      currentRobotState == PlayerInfo::penalized) 
+  {
     walked_after_penalized_or_init = false;
-  } 
-  if(getMotionStatus().currentMotion == motion::walk){
+  }
+  if(getMotionStatus().currentMotion == motion::walk) {
     walked_after_penalized_or_init = true;
     wasLiftedUp = false;
   }
@@ -57,50 +53,38 @@ void SituationPriorProvider::execute()
     wasLiftedUp = true;
   }
 
-  //for penalty kicker
+  // for penalty kicker
   if(getSituationStatus().oppHalf)
   {
     getSituationPrior().currentPrior = SituationPrior::oppHalf;
   }
   //Init Positions and the robot didn't start walking
-  else if(currentState == GameData::ready && lastState == GameData::initial && !walked_after_penalized_or_init)
+  else if(currentRobotState == PlayerInfo::ready && lastRobotState == PlayerInfo::initial && !walked_after_penalized_or_init)
   {
     getSituationPrior().currentPrior = SituationPrior::firstReady;
   }
-  //Positioned in Set, e.g.: Penalized in Set or Ready or manual placement
-  else if( (currentState == GameData::set
-          && lastState == GameData::penalized)
-          || (currentState == GameData::set && wasLiftedUp) )
+  // treat positioning after penalized
+  else if( lastRobotState == PlayerInfo::penalized && !walked_after_penalized_or_init )
   {
-    //Penalized in Set or Ready for Goalie
-    if(getPlayerInfo().gameData.playerNumber == 1){
-      //The Goalie will be in the own Goal if manually placed in set
-      getSituationPrior().currentPrior = SituationPrior::goaliePenalizedInSet;
+    // robot was penalized in set
+    if(gameStateWhenPenalized == GameData::set) 
+    {
+      if(getPlayerInfo().playerNumber == 1) {
+        //The Goalie will be in the own Goal if manually placed in set
+        getSituationPrior().currentPrior = SituationPrior::goaliePenalizedInSet;
+      } else {
+        getSituationPrior().currentPrior = SituationPrior::positionedInSet;
+      }
     }
-    
-    getSituationPrior().currentPrior = SituationPrior::positionedInSet;
-  }
-  else if(stateBeforePenalized == GameData::set && lastGameControllerState == GameData::penalized && currentGameControllerState == GameData::set){
-          // && wasLiftedUp
-    //should treat Motion in Set Problem
-    getSituationPrior().currentPrior = SituationPrior::set;
-  }
-  else if(stateBeforePenalized == GameData::playing && lastGameControllerState == GameData::penalized && currentGameControllerState == GameData::ready)  {
-    getSituationPrior().currentPrior = SituationPrior::playAfterPenalized;
-  }
-  //Penalized in Play
-  else if(currentState == GameData::playing && lastState == GameData::penalized && !walked_after_penalized_or_init)
-  {
+    // robot was penalized in game
+    else if (gameStateWhenPenalized == GameData::playing)
+    {
       getSituationPrior().currentPrior = SituationPrior::playAfterPenalized;
+    }
   }
   //Set
-  else if(currentState == GameData::set)
+  else if(currentRobotState == PlayerInfo::set)
   {
     getSituationPrior().currentPrior = SituationPrior::set;
-  }
-  //Play, Finished
-  else
-  {
-    getSituationPrior().currentPrior = SituationPrior::none;
   }
 }

@@ -133,7 +133,7 @@ def showPatches():
       break
     
     p = patchdata[window_idx+i]
-    if len(p) == 4*12*12:
+    if len(p) == 4*patch_size[0]*patch_size[1]:
       a = np.array(p[0::4]).astype(float)
       a = np.transpose(np.reshape(a, patch_size))
     else:
@@ -142,7 +142,7 @@ def showPatches():
 
     y = i // show_size[0]
     x = i % show_size[0]
-    image[y*13:y*13+12,x*13:x*13+12] = a
+    image[y*(patch_size[1]+1):y*(patch_size[1]+1)+patch_size[1],x*(patch_size[0]+1):x*(patch_size[0]+1)+patch_size[0]] = a
     if labels[window_idx+i] < 0:
       # remember this former invalid column as seen
       labels[window_idx+i]=0

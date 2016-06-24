@@ -12,16 +12,8 @@ option decide_role
     /* fallback if everything else is broken */
     else if( (team.members_alive_count <= 1) || (team.calc_if_is_striker))
     {
-      //if(state_time < 20000 &&
-      //   game.own_kickoff && !ball_was_outside_circle)
-      //  goto initial_striker;
-      //else
-        goto striker;
+      goto striker;
     }
-    //else if(team.calc_if_is_the_last)
-    //{
-    //  goto defender;
-    //}
     else if (team.calc_if_is_secondstriker) {
       goto secondstriker;
     }
@@ -47,7 +39,6 @@ option decide_role
       situationStatusOwnHalf = true;
       team.is_playing_as_striker = false;
       ball_was_outside_circle = true;
-      //spl_robust_goalie();
       basic_goalie();
     }
   }
@@ -58,8 +49,7 @@ option decide_role
     {
       team.is_playing_as_striker = true;
       ball_was_outside_circle = true;
-      //situation_based_striker();
-      new_striker();
+      striker();
       //blinking
       set_left_ear = (platform.frameNumber % 3 == 0) ? 9 : 0;
       set_right_ear = (platform.frameNumber % 3 == 0) ? 9 : 0;
@@ -77,7 +67,7 @@ option decide_role
     {
       team.is_playing_as_striker = false;
       ball_was_outside_circle = true;
-      situation_based_secondstriker();
+      striker();
       
       //blinking
       set_left_ear = (platform.frameNumber % 3 == 0) ? 9 : 0;
@@ -98,44 +88,5 @@ option decide_role
       decide_and_go_to_passive_position();
     }
   }
-  
- /* state defender
-  {
-    action
-    {
-      team.is_playing_as_striker = false;
-      ball_was_outside_circle = true;
-      spl_playing_defender();
-    }
-  }
-
-  state supporter
-  {
-    action
-    {
-      team.is_playing_as_striker = false;
-      ball_was_outside_circle = true;
-      spl_playing_supporter();
-    }
-  }
-
-  state supporter2
-  {
-    action
-    {
-      team.is_playing_as_striker = false;
-      ball_was_outside_circle = true;
-      spl_playing_supporter();
-    }
-  }
-
-  state initial_striker
-  {
-    action
-    {
-      initial_kick_off();
-    }
-  }*/
-
   
 }

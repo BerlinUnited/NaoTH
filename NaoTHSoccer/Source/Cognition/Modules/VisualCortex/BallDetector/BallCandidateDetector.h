@@ -23,6 +23,7 @@
 
 #include "Representations/Perception/GameColorIntegralImage.h"
 #include "Representations/Perception/BallCandidates.h"
+#include "Representations/Perception/MultiBallPercept.h"
 
 // tools
 #include "Tools/DoubleCamHelpers.h"
@@ -30,6 +31,7 @@
 // local tools
 #include "Tools/BestPatchList.h"
 #include "Tools/BallKeyPointExtractor.h"
+#include "Tools/CVHaarClassifier.h"
 
 // debug
 #include "Representations/Debug/Stopwatch.h"
@@ -63,6 +65,7 @@ BEGIN_DECLARE_MODULE(BallCandidateDetector)
 
   PROVIDE(BallCandidates)
   PROVIDE(BallCandidatesTop)
+  PROVIDE(MultiBallPercept)
 END_DECLARE_MODULE(BallCandidateDetector)
 
 
@@ -76,6 +79,7 @@ public:
 
   virtual void execute()
   {
+    getMultiBallPercept().reset();
     execute(CameraInfo::Bottom);
     execute(CameraInfo::Top);
   }
@@ -94,6 +98,8 @@ private:
       PARAMETER_REGISTER(heuristic.blackDotsMinCount) = 1;
       PARAMETER_REGISTER(heuristic.minBlackDetectionSize) = 20;
 
+      PARAMETER_REGISTER(haarDetector.minNeighbors) = 0;
+
       PARAMETER_REGISTER(maxNumberOfKeys) = 4;
       syncWithConfig();
     }
@@ -109,17 +115,23 @@ private:
       int minBlackDetectionSize;
     } heuristic;
 
+    struct HaarDetector {
+      int minNeighbors;
+    } haarDetector;
+
     int maxNumberOfKeys;
     
   } params;
 
 
 private:
+  CVHaarClassifier cvClassifier;
   ModuleCreator<BallKeyPointExtractor>* theBallKeyPointExtractor;
   BestPatchList best;
 
 private:
   void calculateCandidates();
+  void addBallPercept(const Vector2i& center, double radius);
 
 private:
   CameraInfo::CameraID cameraID;

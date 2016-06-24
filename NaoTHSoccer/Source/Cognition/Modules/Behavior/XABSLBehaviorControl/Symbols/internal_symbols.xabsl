@@ -34,6 +34,7 @@ namespace internal_symbols("Internal Symbols") {
     none,
     stay_as_forced,
     look_straight_ahead,
+    look_at_ball,
     search_for_ball,
     search_for_ball_goalie,
     search_for_goal,

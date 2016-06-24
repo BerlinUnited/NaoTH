@@ -38,7 +38,7 @@ void StableRoleDecision::computeStrikers() {
   int firstStriker = std::numeric_limits<int>::max();
   int secondStriker = std::numeric_limits<int>::max();
   bool wantsToBeStriker = true;
-  if (getPlayerInfo().gameData.playerNumber == 1) {
+  if (getPlayerInfo().playerNumber == 1) {
     wantsToBeStriker = false; //Goalie is not considered
   }
 
@@ -58,7 +58,7 @@ void StableRoleDecision::computeStrikers() {
       failureProbability = robotFailure->second;
     }
 
-    if (failureProbability > parameters.minFailureProbability && msg.playerNum != getPlayerInfo().gameData.playerNumber) { //Message is not fresh
+    if (failureProbability > parameters.minFailureProbability && msg.playerNum != getPlayerInfo().playerNumber) { //Message is not fresh
       getRoleDecisionModel().deadRobots.push_back((int)robotNumber);
       continue;
     }
@@ -68,7 +68,7 @@ void StableRoleDecision::computeStrikers() {
 
     double time_bonus = (int)msg.playerNum==getRoleDecisionModel().firstStriker?parameters.strikerBonusTime:0.0;
 
-    if (robotNumber == getPlayerInfo().gameData.playerNumber && (msg.fallen || msg.isPenalized || 
+    if (robotNumber == getPlayerInfo().playerNumber && (msg.fallen || msg.isPenalized || 
       msg.ballAge < 0 || msg.ballAge > parameters.maxBallLostTime + time_bonus)) {
         wantsToBeStriker = false;
     }
@@ -86,7 +86,7 @@ void StableRoleDecision::computeStrikers() {
             secondStriker = robotNumber;
           }
         }
-        if (robotNumber != getPlayerInfo().gameData.playerNumber && msg.timeToBall < ownTimeToBall) { 
+        if (robotNumber != getPlayerInfo().playerNumber && msg.timeToBall < ownTimeToBall) { 
           wantsToBeStriker = false; //Preparation for next round's decision
         }
 

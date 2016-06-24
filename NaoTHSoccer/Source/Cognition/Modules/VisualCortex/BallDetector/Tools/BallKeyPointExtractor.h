@@ -62,6 +62,7 @@ public:
 
   // scan the integral image for white key points
   void calculateKeyPoints(BestPatchList& best) const;
+  BestPatchList::Patch refineKeyPoint(const BestPatchList::Patch& patch) const;
 
   void setParameter(const Parameter& params) {
     this->params = params;
@@ -69,6 +70,27 @@ public:
 
   void setCameraId(CameraInfo::CameraID id) {
     this->cameraID = id;
+  }
+
+private:
+  void evaluatePatch(BestPatchList& best, const Vector2i& point, const int size, const int border) const
+  {
+    int inner = getGameColorIntegralImage().getSumForRect(point.x, point.y, point.x+size, point.y+size, 0);
+    double greenBelow = getGameColorIntegralImage().getDensityForRect(point.x, point.y+size, point.x+size, point.y+size+border, 1);
+
+    if (inner*2 > size*size && greenBelow > 0.3)
+    {
+      int outer = getGameColorIntegralImage().getSumForRect(point.x-border, point.y+size, point.x+size+border, point.y+size+border, 0);
+      double value = (double)(inner - (outer - inner))/((double)(size+border)*(size+border));
+
+      // scale the patch up to the image coordinates
+      best.add( 
+        (point.x-border)*getGameColorIntegralImage().FACTOR, 
+        (point.y-border)*getGameColorIntegralImage().FACTOR, 
+        (point.x+size+border)*getGameColorIntegralImage().FACTOR, 
+        (point.y+size+border)*getGameColorIntegralImage().FACTOR, 
+        value);
+    }
   }
 
 private:
