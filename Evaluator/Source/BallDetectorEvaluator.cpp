@@ -172,7 +172,9 @@ unsigned int BallDetectorEvaluator::executeSingleFile(std::string file)
   unsigned int patchIdx = 0;
 
   // read in each frame
-  for(LogFileScanner::FrameIterator it = logFileScanner.begin(); it != logFileScanner.end(); it++)
+  LogFileScanner::FrameIterator secondLastFrame = logFileScanner.end();
+  secondLastFrame--;
+  for(LogFileScanner::FrameIterator it = logFileScanner.begin(); it != secondLastFrame; it++)
   {
     // reset all existing candidates
     getBallCandidates().reset();
