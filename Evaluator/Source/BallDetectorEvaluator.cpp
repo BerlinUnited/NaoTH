@@ -125,9 +125,11 @@ void BallDetectorEvaluator::execute()
   html << "<body>" << std::endl;
 
   html << "<h1>Summary</h1>" << std::endl;
-  html << "<p>precision: " << precision << "<br />recall: " << recall << "</p>" << std::endl;
+  html << "<p><strong>precision: " << precision << "<br />recall: " << recall << "</strong></p>" << std::endl;
 
-  html << "<p>total number of samples: " << totalSize << "</p>" << std::endl;
+
+  unsigned int numOfBalls = truePositives + falseNegatives;
+  html << "<p>total number of samples: " << totalSize << " (" << numOfBalls << " balls, " << (totalSize - numOfBalls) << " non-balls)</p>" << std::endl;
 
   html << "<h1>False Positives</h1>" << std::endl;
 
@@ -311,6 +313,7 @@ std::string BallDetectorEvaluator::createPGM(const BallCandidates::Patch &p)
 std::string BallDetectorEvaluator::createPNG(const BallCandidates::Patch &p)
 {
   cv::Mat wrappedImg(12, 12, CV_8UC1, (void*) p.data.data());
+  cv::transpose(wrappedImg, wrappedImg);
 
   std::vector<uchar> buffer;
 
