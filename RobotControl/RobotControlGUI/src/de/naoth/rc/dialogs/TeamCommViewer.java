@@ -66,6 +66,7 @@ public class TeamCommViewer extends AbstractDialog {
     private final TeamCommListener listenerOwn = new TeamCommListener(false);
     private final TeamCommListener listenerOpponent = new TeamCommListener(true);
     private final HashMap<String, RobotStatus> robotsMap = new HashMap<>();
+    private final TreeMap<String, RobotStatus> robotsMapSorted = new TreeMap<>();
 
     private final Map<String, TeamCommMessage> messageMap = Collections.synchronizedMap(new TreeMap<String, TeamCommMessage>());
 
@@ -83,6 +84,13 @@ public class TeamCommViewer extends AbstractDialog {
         initComponents();
         // collapse pane
         robotStatusSplitPane.setDividerLocation(Integer.MAX_VALUE);/*2000*/
+        // closes the log file before exiting application
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            @Override
+            public void run() {
+                closingLogfile();
+            }
+        });
     }
 
     /**
@@ -399,8 +407,14 @@ public class TeamCommViewer extends AbstractDialog {
                             if (robotStatus == null) {
                                 robotStatus = new RobotStatus(Plugin.parent.getMessageServer(), address);
                                 robotStatus.robotColor = msg.isOpponent() ? magenta : cyan;
+                                
                                 robotsMap.put(address, robotStatus);
-                                robotStatusPanel.add(new RobotStatusPanel(robotStatus, msg.isOpponent() ? magenta : cyan));
+                                robotsMapSorted.put((msg.isOpponent()?"1_":"0_") + msg.message.playerNum, robotStatus);
+                                
+                                robotStatusPanel.removeAll();
+                                for (Entry<String, RobotStatus> entry : robotsMapSorted.entrySet()) {
+                                    robotStatusPanel.add(new RobotStatusPanel(entry.getValue())); // , msg.isOpponent() ? magenta : cyan
+                                }
                                 robotStatusTable.addRobot(robotStatus);
                             }                            
                             robotStatus.updateStatus(msg.timestamp, msg.message);

@@ -20,9 +20,8 @@ public class RobotStatusPanel extends javax.swing.JPanel implements RobotStatusL
     /** Creates new form RobotStatus */
     public RobotStatusPanel(RobotStatus rs) {
         this.rs = rs;
-        
+        this.setBackground(rs.robotColor);
         rs.addListener(this);
-        
         initComponents();
     }
     

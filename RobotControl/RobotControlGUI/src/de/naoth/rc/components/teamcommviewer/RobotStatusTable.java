@@ -1,7 +1,6 @@
 
 package de.naoth.rc.components.teamcommviewer;
 
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -32,12 +31,12 @@ public class RobotStatusTable extends javax.swing.JPanel {
         table.getColumnModel().getColumn(7).setCellRenderer(new BatteryRenderer());
         // connect button
         table.getColumnModel().getColumn(8).setCellRenderer(new ButtonRenderer());
-        // sort via Ip
+        // sets the mouse listener for the button column (connect button)
+        table.addMouseListener(new JTableButtonMouseListener(table));
+        // sort via Ip (default)
         table.getRowSorter().toggleSortOrder(2);
         // set button column non-sortable
         ((DefaultRowSorter)table.getRowSorter()).setSortable(8, false);
-        // sets the mouse listener for the button column (connect button)
-        table.addMouseListener(new JTableButtonMouseListener(table));
     }
 
     /**
@@ -134,6 +133,8 @@ public class RobotStatusTable extends javax.swing.JPanel {
         @Override
         public Class<?> getColumnClass(int columnIndex) {
             switch(columnIndex) {
+                case 0: return Byte.class;
+                case 1: return Byte.class;
                 case 6: return Float.class;
                 case 7: return Float.class;
                 case 8: return RobotStatus.class;
