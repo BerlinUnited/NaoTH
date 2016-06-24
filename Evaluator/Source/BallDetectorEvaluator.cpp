@@ -182,8 +182,8 @@ unsigned int BallDetectorEvaluator::executeSingleFile(std::string file)
     logFileScanner.readFrame(*it, frame);
 
     // deserialize all ball candidates (bottom and top camera)
-    auto frameBallCandidate = frame.find("BallCandidates");
-    auto frameBallCandidateTop = frame.find("BallCandidatesTop");
+    LogFileScanner::Frame::const_iterator frameBallCandidate = frame.find("BallCandidates");
+    LogFileScanner::Frame::const_iterator frameBallCandidateTop = frame.find("BallCandidatesTop");
     if(frameBallCandidate!= frame.end())
     {
       std::istrstream stream(frameBallCandidate->second.data.data(), frameBallCandidate->second.data.size());
