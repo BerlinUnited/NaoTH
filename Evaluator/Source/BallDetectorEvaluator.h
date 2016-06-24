@@ -37,7 +37,7 @@ private:
   unsigned int executeSingleFile(std::string file);
   void evaluatePatch(const BallCandidates::Patch& p, unsigned int patchIdx, CameraInfo::CameraID camID, const std::set<unsigned int> &expectedBallIdx, std::string fileName);
 
-  std::set<unsigned int> loadGroundTruth(std::string file);
+  int loadGroundTruth(std::string file, std::set<unsigned int> &expectedBallIdx);
 
   /**
    * @brief creates a Portable Graymap image output from a patch

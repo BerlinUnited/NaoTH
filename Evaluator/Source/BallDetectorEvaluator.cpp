@@ -167,7 +167,8 @@ unsigned int BallDetectorEvaluator::executeSingleFile(std::string file)
 {
   LogFileScanner logFileScanner(file);
 
-  std::set<unsigned int> expectedBallIdx = loadGroundTruth(file);
+  std::set<unsigned int> expectedBallIdx;
+  unsigned int maxValidIdx = loadGroundTruth(file, expectedBallIdx);
 
   unsigned int patchIdx = 0;
 
@@ -209,6 +210,11 @@ unsigned int BallDetectorEvaluator::executeSingleFile(std::string file)
     {
       evaluatePatch(p, patchIdx++, CameraInfo::Bottom, expectedBallIdx, file);
     }
+
+    if(patchIdx >= maxValidIdx)
+    {
+      break;
+    }
   }
 
   return patchIdx;
@@ -247,12 +253,13 @@ void BallDetectorEvaluator::evaluatePatch(const BallCandidates::Patch &p, unsign
   }
 }
 
-std::set<unsigned int> BallDetectorEvaluator::loadGroundTruth(std::__cxx11::string file)
+int BallDetectorEvaluator::loadGroundTruth(std::string file, std::set<unsigned int>& expectedBallIdx)
 {
   typedef std::vector<picojson::value> array;
   typedef std::map<std::string, picojson::value> object;
 
-  std::set<unsigned int> expectedBallIdx;
+  int maxValidIdx = 0;
+
 
   size_t dotPos = file.find_last_of('.');
 
@@ -266,6 +273,7 @@ std::set<unsigned int> BallDetectorEvaluator::loadGroundTruth(std::__cxx11::stri
   groundTruthStream.close();
 
   array ballIdx;
+  array noBallIdx;
   if(parsedJson.is<object>())
   {
     if(parsedJson.get("ball").is<array>())
@@ -273,16 +281,33 @@ std::set<unsigned int> BallDetectorEvaluator::loadGroundTruth(std::__cxx11::stri
       ballIdx = parsedJson.get("ball").get<array>();
     }
 
+    if(parsedJson.get("noball").is<array>())
+    {
+      noBallIdx = parsedJson.get("noball").get<array>();
+    }
+
     for(picojson::value idx : ballIdx)
     {
       if(idx.is<double>())
       {
-        expectedBallIdx.insert((unsigned int) idx.get<double>());
+        int idxVal = static_cast<int>(idx.get<double>());
+        expectedBallIdx.insert(idxVal);
+        maxValidIdx = std::max(maxValidIdx, idxVal);
+      }
+    }
+
+    for(picojson::value idx : noBallIdx)
+    {
+      if(idx.is<double>())
+      {
+        int idxVal = static_cast<int>(idx.get<double>());
+        maxValidIdx = std::max(maxValidIdx, idxVal);
       }
     }
   }
 
-  return expectedBallIdx;
+
+  return maxValidIdx;
 }
 
 std::string BallDetectorEvaluator::createPGM(const BallCandidates::Patch &p)
