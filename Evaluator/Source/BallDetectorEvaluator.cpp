@@ -313,7 +313,6 @@ std::string BallDetectorEvaluator::createPGM(const BallCandidates::Patch &p)
 std::string BallDetectorEvaluator::createPNG(const BallCandidates::Patch &p)
 {
   cv::Mat wrappedImg(12, 12, CV_8UC1, (void*) p.data.data());
-  cv::transpose(wrappedImg, wrappedImg);
 
   std::vector<uchar> buffer;
 
