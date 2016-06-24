@@ -24,7 +24,7 @@ public:
   }
 
 
-  int classify(BallCandidates::Patch& p)
+  int classify(const BallCandidates::Patch& p)
   {
     ASSERT(p.data.size() == 12*12);
     // TODO: magic numbers

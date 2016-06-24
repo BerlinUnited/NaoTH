@@ -215,7 +215,7 @@ void BallDetectorEvaluator::evaluatePatch(const BallCandidates::Patch &p, unsign
                                           std::string fileName)
 {
   bool expected = expectedBallIdx.find(patchIdx) != expectedBallIdx.end();
-  bool actual = classifier.classify(p, camID);
+  bool actual = classifier.classify(p) > 0;
 
   if(expected == actual)
   {

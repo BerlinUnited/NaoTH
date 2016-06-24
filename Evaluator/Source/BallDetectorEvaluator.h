@@ -6,7 +6,7 @@
 #include <Tools/Logfile/LogFileScanner.h>
 #include <ModuleFramework/ModuleManager.h>
 #include <Cognition/Modules/VisualCortex/BallDetector/BallDetector.h>
-#include <Cognition/Modules/VisualCortex/BallDetector/Tools/CVClassifier.h>
+#include <Cognition/Modules/VisualCortex/BallDetector/Tools/CVHaarClassifier.h>
 
 #include <map>
 
@@ -53,7 +53,7 @@ private:
 
 
   // TODO: allow more classifiers (including the ones that have the more complex filter logic)
-  CVClassifier classifier;
+  CVHaarClassifier classifier;
 
 
   unsigned int truePositives, falsePositives, falseNegatives;
