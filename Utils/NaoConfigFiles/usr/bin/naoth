@@ -14,7 +14,7 @@ case "$1" in
       else
         echo "removing stalled $PID"
         rm "$PID"
-    fi
+      fi
     fi
 
     echo "starting naoth cognition process"
@@ -27,17 +27,9 @@ case "$1" in
     fi
     ;;
   stop)
-    if [ ! -f "$PID" ]; then
-      echo "NaoTH Cognition not started"
-      exit 2
-    fi
-    OLDPID=`cat /tmp/cognition.pid`
-    echo "killing naoth cognition processes $OLDPID"
-    kill $OLDPID
-    while [ -d "/proc/$OLDPID" ]
-    do
-          sleep 1
-        done
+    echo "killing naoth cognition processes"
+    # send TERM-Signal for 5 secdonds after that send KILL-Signal for 10 seconds
+    start-stop-daemon --stop --quiet --retry TERM/5/KILL/10 --name naoth
     rm $PID
 
     ;;
