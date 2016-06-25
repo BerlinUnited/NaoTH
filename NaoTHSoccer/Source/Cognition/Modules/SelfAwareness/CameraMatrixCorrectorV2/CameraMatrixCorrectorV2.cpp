@@ -23,6 +23,7 @@ CameraMatrixCorrectorV2::CameraMatrixCorrectorV2()
   theCamMatErrorFunction = registerModule<CamMatErrorFunction>("CamMatErrorFunction", true);
   last_idx_yaw   = 0;
   last_idx_pitch = 0;
+  damping = 0.5;
 }
 
 CameraMatrixCorrectorV2::~CameraMatrixCorrectorV2()
@@ -120,8 +121,10 @@ void CameraMatrixCorrectorV2::calibrate()
 
   offset = gn_minimizer.minimizeOneStep(*(theCamMatErrorFunction->getModuleT()),1e-4);
 
-  getCameraMatrixOffset().body_rot += Vector2d(offset(0),offset(1));
-  getCameraMatrixOffset().head_rot += Vector3d(offset(2),offset(3),offset(4));
-  getCameraMatrixOffset().cam_rot[CameraInfo::Top]    += Vector3d(offset(5),offset(6),offset(7));
-  getCameraMatrixOffset().cam_rot[CameraInfo::Bottom] += Vector3d(offset(8),offset(9),offset(10));
+  MODIFY("CameraMatrixV2:damping_factor", damping);
+
+  getCameraMatrixOffset().body_rot += Vector2d(offset(0),offset(1)) * damping;
+  getCameraMatrixOffset().head_rot += Vector3d(offset(2),offset(3),offset(4)) * damping;
+  getCameraMatrixOffset().cam_rot[CameraInfo::Top]    += Vector3d(offset(5),offset(6),offset(7)) * damping;
+  getCameraMatrixOffset().cam_rot[CameraInfo::Bottom] += Vector3d(offset(8),offset(9),offset(10)) * damping;
 }//end calibrate

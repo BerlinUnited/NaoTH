@@ -222,13 +222,21 @@ public:
                     Vector2d seen_point_global = robotPose * seen_point_relative;
 
                     LinesTable::NamedPoint line_point_global = getFieldInfo().fieldLinesTable.get_closest_point(seen_point_global, LinesTable::all_lines);
+                    //LinesTable::NamedPoint corner = getFieldInfo().fieldLinesTable.get_closest_corner_point(seen_point_global);
 
-                    // there is no such line
-                    if(line_point_global.id == -1) {
+                    // there is no such line or point
+                    if(line_point_global.id == -1 /*&& corner.id == -1*/) {
                         continue;
                     }
 
-                    total_sum += (seen_point_global - line_point_global.position).abs();
+                    double dist           = (seen_point_global - line_point_global.position).abs();//(line_point_global.id == -1) ? std::numeric_limits<double>::infinity() : (seen_point_global - line_point_global.position).abs();
+                    //double dist_corner  = (corner.id == -1)            ? std::numeric_limits<double>::infinity() : (seen_point_global - corner.position).abs();
+
+                    //if(dist >= dist_corner) {
+                    //    dist = dist_corner;
+                    //}
+
+                    total_sum += dist;
                 }
             }
         }
@@ -249,6 +257,7 @@ public:
 private:
 
   int last_idx_yaw,last_idx_pitch;
+  double damping;
 
   typedef double (CameraMatrixCorrectorV2::*ErrorFunction)(double, double);
 
