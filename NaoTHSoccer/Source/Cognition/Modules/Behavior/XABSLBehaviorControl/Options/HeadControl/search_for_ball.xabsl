@@ -26,7 +26,7 @@ option search_for_ball
   {
     decision
     {
-      if (ball.was_seen)
+      if (ball.percept.was_seen)
         goto look_at_ball_percept;
       else if (state_time > 2000)
       {
@@ -52,7 +52,7 @@ option search_for_ball
   {
     decision
     {
-      if (ball.was_seen)
+      if (ball.percept.was_seen)
         goto look_at_ball_percept;
       else if(state_time > 1000)
         goto search_for_ball_left_high;
@@ -72,7 +72,7 @@ option search_for_ball
   {
     decision
     {
-      if (ball.was_seen)
+      if (ball.percept.was_seen)
         goto look_at_ball_percept;
       else if(state_time > 1000)
         goto search_for_ball_right;
@@ -92,7 +92,7 @@ option search_for_ball
   {
     decision
     {
-      if (ball.was_seen)
+      if (ball.percept.was_seen)
         goto look_at_ball_percept;
       else if(state_time > 1000)
         goto search_for_ball_left;
@@ -112,7 +112,7 @@ option search_for_ball
   {
     decision
     {
-      if (ball.was_seen)
+      if (ball.percept.was_seen)
         goto look_at_ball_percept;
       else if(state_time > 1000)
         goto search_for_ball_right_high;

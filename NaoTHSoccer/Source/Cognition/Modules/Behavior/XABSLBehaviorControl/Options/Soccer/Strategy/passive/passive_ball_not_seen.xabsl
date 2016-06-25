@@ -3,7 +3,7 @@ option passive_ball_not_seen
 
   common decision 
   {
-    if(ball.was_seen)
+    if(ball.percept.was_seen)
       goto turn_to_ball;
   }
 
