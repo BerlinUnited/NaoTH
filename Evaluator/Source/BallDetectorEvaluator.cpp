@@ -49,23 +49,8 @@ BallDetectorEvaluator::~BallDetectorEvaluator()
 
 void BallDetectorEvaluator::execute()
 {
+  results.clear();
   std::string outFileName = "HaarBallDetector_Evaluation.html";
-
-
-  std::ofstream html;
-  html.open(outFileName);
-
-  html << "<html>" << std::endl;
-  html << "<head>" << std::endl;
-  html << "<style>" << std::endl;
-  // CSS
-  html << "img.patch {width: 36px; height: 36px}" << std::endl;
-  html << "</style>" << std::endl;
-  html << "</head>" << std::endl;
-
-  html << "<body>" << std::endl;
-
-  html << "<h1><a id=\"overview\">Overview</a></h1>" << std::endl;
 
 
   // do experiment for different parameters
@@ -128,6 +113,9 @@ void BallDetectorEvaluator::execute()
       r.recall = (double) r.truePositives / ((double) (r.truePositives + r.falseNegatives));
     }
 
+    results[minNeighbours] = r;
+
+
 
     std::cout << "=============" << std::endl;
     std::cout << "minNeighbours=" << minNeighbours << std::endl;
@@ -138,10 +126,38 @@ void BallDetectorEvaluator::execute()
     std::cout << "=============" << std::endl;
     std::cout << "Written detailed report to " << outFileName << std::endl;
 
-    base64::Encoder base64Encoder(64);
+  }
+
+  outputResults(outFileName);
+
+}
+
+void BallDetectorEvaluator::outputResults(std::string outFileName)
+{
+  base64::Encoder base64Encoder(64);
+
+  std::ofstream html;
+  html.open(outFileName);
+
+  html << "<html>" << std::endl;
+  html << "<head>" << std::endl;
+  html << "<style>" << std::endl;
+  // CSS
+  html << "img.patch {width: 36px; height: 36px}" << std::endl;
+  html << "</style>" << std::endl;
+  html << "</head>" << std::endl;
+
+  html << "<body>" << std::endl;
+
+  html << "<h1><a id=\"overview\">Overview</a></h1>" << std::endl;
+
+  for(std::map<unsigned int, ExperimentResult>::const_iterator it=results.begin();
+      it != results.end(); it++)
+  {
+    const ExperimentResult& r = it->second;
 
 
-    html << "<h1>minNeighbours=" << minNeighbours << "</h1>" << std::endl;
+    html << "<h1>minNeighbours=" << it->first << "</h1>" << std::endl;
 
     html << "<h2>Summary</h2>" << std::endl;
     html << "<p><strong>precision: " << r.precision << "<br />recall: " << r.recall << "</strong></p>" << std::endl;
@@ -179,9 +195,7 @@ void BallDetectorEvaluator::execute()
            << "\" src=\"data:image/png;base64," << base64Encoder.encode(imgPNG.c_str(), (int) imgPNG.size())  << "\" />" << std::endl;
     }
     html << "</div>" << std::endl;
-
   }
-
 
   html << "</body>" << std::endl;
   html.close();

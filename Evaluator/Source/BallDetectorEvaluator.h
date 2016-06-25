@@ -45,11 +45,14 @@ public:
   };
 
 private:
+
   unsigned int executeSingleFile(std::string file, ExperimentResult &r);
   void evaluatePatch(const BallCandidates::Patch& p, unsigned int patchIdx, CameraInfo::CameraID camID,
                      const std::set<unsigned int> &expectedBallIdx, std::string fileName, ExperimentResult &r);
 
   int loadGroundTruth(std::string file, std::set<unsigned int> &expectedBallIdx);
+
+  void outputResults(std::string outFileName);
 
   /**
    * @brief creates a Portable Graymap image output from a patch
