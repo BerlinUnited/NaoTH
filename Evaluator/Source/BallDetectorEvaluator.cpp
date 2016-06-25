@@ -163,7 +163,7 @@ void BallDetectorEvaluator::outputResults(std::string outFileName)
   {
     const ExperimentResult& r = it->second;
     html << "<tr>" << std::endl;
-    html << "<td>" << it->first << "</td>" << std::endl;
+    html << "<td><a href=\"#result_" << it->first <<  "\">" << it->first << "</a></td>" << std::endl;
     html << "<td>" << r.precision << "</td>" << std::endl;
     html << "<td>" << r.recall << "</td>" << std::endl;
     html << "</tr>" << std::endl;
@@ -177,7 +177,7 @@ void BallDetectorEvaluator::outputResults(std::string outFileName)
     const ExperimentResult& r = it->second;
 
 
-    html << "<h1>minNeighbours=" << it->first << "</h1>" << std::endl;
+    html << "<h1><a id=\"result_" << it->first << "\">minNeighbours=" << it->first << "</a></h1>" << std::endl;
 
     html << "<h2>Summary</h2>" << std::endl;
     html << "<p><strong>precision: " << r.precision << "<br />recall: " << r.recall << "</strong></p>" << std::endl;
