@@ -30,6 +30,7 @@ public:
 
     struct Relax {
         double allowedDeviation;
+        double allowedRotationDeviation;
         double timeBonusForCorrection;
 
         struct JointOffsetTuning {

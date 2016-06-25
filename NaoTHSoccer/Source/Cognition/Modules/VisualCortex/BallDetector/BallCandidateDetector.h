@@ -20,8 +20,9 @@
 #include "Representations/Perception/CameraMatrix.h"
 #include "Representations/Perception/FieldPercept.h"
 #include "Representations/Perception/BodyContour.h"
+#include "Representations/Perception/FieldColorPercept.h"
 
-#include "Representations/Perception/GameColorIntegralImage.h"
+#include "Representations/Perception/MultiChannelIntegralImage.h"
 #include "Representations/Perception/BallCandidates.h"
 #include "Representations/Perception/MultiBallPercept.h"
 
@@ -52,8 +53,14 @@ BEGIN_DECLARE_MODULE(BallCandidateDetector)
 
   REQUIRE(Image)
   REQUIRE(ImageTop)
-  PROVIDE(GameColorIntegralImage)
-  PROVIDE(GameColorIntegralImageTop)
+
+  //PROVIDE(GameColorIntegralImage)
+  //PROVIDE(GameColorIntegralImageTop)
+  PROVIDE(BallDetectorIntegralImage)
+  PROVIDE(BallDetectorIntegralImageTop)
+
+  REQUIRE(FieldColorPercept)
+  REQUIRE(FieldColorPerceptTop)
 
   REQUIRE(CameraMatrix)
   REQUIRE(CameraMatrixTop)
@@ -98,7 +105,10 @@ private:
       PARAMETER_REGISTER(heuristic.blackDotsMinCount) = 1;
       PARAMETER_REGISTER(heuristic.minBlackDetectionSize) = 20;
 
+      PARAMETER_REGISTER(haarDetector.execute) = true;
       PARAMETER_REGISTER(haarDetector.minNeighbors) = 0;
+      PARAMETER_REGISTER(haarDetector.windowSize) = 12;
+      PARAMETER_REGISTER(haarDetector.model_file) = "lbp1.xml";
 
       PARAMETER_REGISTER(maxNumberOfKeys) = 4;
       syncWithConfig();
@@ -116,7 +126,10 @@ private:
     } heuristic;
 
     struct HaarDetector {
+      bool execute;
       int minNeighbors;
+      int windowSize;
+      std::string model_file;
     } haarDetector;
 
     int maxNumberOfKeys;
@@ -125,14 +138,15 @@ private:
 
 
 private:
-  CVHaarClassifier cvClassifier;
+  CVHaarClassifier cvHaarClassifier;
   ModuleCreator<BallKeyPointExtractor>* theBallKeyPointExtractor;
   BestPatchList best;
 
 private:
   void calculateCandidates();
   void addBallPercept(const Vector2i& center, double radius);
-
+  void extractPatches();
+  
 private:
   CameraInfo::CameraID cameraID;
 
@@ -143,7 +157,8 @@ private:
   DOUBLE_CAM_REQUIRE(BallCandidateDetector, CameraMatrix);
   DOUBLE_CAM_REQUIRE(BallCandidateDetector, FieldPercept);
   //DOUBLE_CAM_REQUIRE(BallCandidateDetector, BodyContour);
-  DOUBLE_CAM_REQUIRE(BallCandidateDetector, GameColorIntegralImage);
+//  DOUBLE_CAM_REQUIRE(BallCandidateDetector, GameColorIntegralImage);
+  DOUBLE_CAM_REQUIRE(BallCandidateDetector, FieldColorPercept);
 
   DOUBLE_CAM_PROVIDE(BallCandidateDetector, BallCandidates);
 };//end class BallCandidateDetector

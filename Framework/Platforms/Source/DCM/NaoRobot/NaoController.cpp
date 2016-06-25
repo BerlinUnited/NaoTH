@@ -41,6 +41,7 @@ NaoController::NaoController()
   naoCommandLEDData.open(naoCommandLEDDataPath);
 
   whistleSensorData.open("/whistleDetector.count");
+  whistleControlData.open("/whistleDetector.commands");
 
   // end init shared memory
   
@@ -121,6 +122,7 @@ NaoController::NaoController()
   registerOutput<const LEDData>(*this);
   registerOutput<const IRSendData>(*this);
   registerOutput<const UltraSoundSendData>(*this);
+  registerOutput<const WhistleControl>(*this);
 
 
   /*  INIT DEVICES  */

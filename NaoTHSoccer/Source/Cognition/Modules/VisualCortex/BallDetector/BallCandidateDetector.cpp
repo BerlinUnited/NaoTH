@@ -22,6 +22,8 @@ BallCandidateDetector::BallCandidateDetector()
 
   DEBUG_REQUEST_REGISTER("Vision:BallCandidateDetector:lbpDetection", "draw ball percepts", false);
 
+  DEBUG_REQUEST_REGISTER("Vision:BallCandidateDetector:extractPatches", "generate YUVC patches", false);
+
   theBallKeyPointExtractor = registerModule<BallKeyPointExtractor>("BallKeyPointExtractor", true);
   getDebugParameterList().add(&params);
 }
@@ -37,18 +39,16 @@ void BallCandidateDetector::execute(CameraInfo::CameraID id)
   cameraID = id;
   getBallCandidates().reset();
 
-  // todo: check validity of the intergral image
-  if(getGameColorIntegralImage().getWidth() == 0) {
-    return;
-  }
-
   best.clear();
   // update parameter
   theBallKeyPointExtractor->getModuleT()->setParameter(params.keyDetector);
   theBallKeyPointExtractor->getModuleT()->setCameraId(cameraID);
-  theBallKeyPointExtractor->getModuleT()->calculateKeyPoints(best);
+  //theBallKeyPointExtractor->getModuleT()->calculateKeyPoints(best);
+  theBallKeyPointExtractor->getModuleT()->calculateKeyPointsBetter(best);
 
-  calculateCandidates();
+  if(best.size() > 0) {
+    calculateCandidates();
+  }
 
   DEBUG_REQUEST("Vision:BallCandidateDetector:drawPercepts",
     for(MultiBallPercept::ConstABPIterator iter = getMultiBallPercept().begin(); iter != getMultiBallPercept().end(); iter++) {
@@ -57,13 +57,17 @@ void BallCandidateDetector::execute(CameraInfo::CameraID id)
       }
     }
   );
+
+  DEBUG_REQUEST("Vision:BallCandidateDetector:extractPatches",
+    extractPatches();
+  );
 }
 
 
 void BallCandidateDetector::calculateCandidates()
 {
   // todo needs a better place
-  const int32_t FACTOR = getGameColorIntegralImage().FACTOR;
+  const int32_t FACTOR = getBallDetectorIntegralImage().FACTOR;
 
   //BestPatchList::iterator best_element = best.begin();
   std::vector<Vector2i> endPoints;
@@ -90,7 +94,7 @@ void BallCandidateDetector::calculateCandidates()
       // (1) check green below
       bool checkGreenBelow = false;
       if(getImage().isInside(max.x, max.y+(max.y-min.y)/2) && getImage().isInside(min.x - FACTOR, min.y - FACTOR)) {
-        double greenBelow = getGameColorIntegralImage().getDensityForRect(min.x/FACTOR, max.y/FACTOR, max.x/FACTOR, (max.y+(max.y-min.y)/2)/FACTOR, 1);
+        double greenBelow = getBallDetectorIntegralImage().getDensityForRect(min.x/FACTOR, max.y/FACTOR, max.x/FACTOR, (max.y+(max.y-min.y)/2)/FACTOR, 1);
         if(greenBelow > params.heuristic.minGreenBelowRatio) {
           checkGreenBelow = true;
         }
@@ -100,16 +104,17 @@ void BallCandidateDetector::calculateCandidates()
       bool checkGreenInside = false;
       int offsetY = (max.y-min.y)/FACTOR;
       int offsetX = (max.x-min.x)/FACTOR;
-      double greenInside = getGameColorIntegralImage().getDensityForRect((min.x+offsetX)/FACTOR, (min.y+offsetY)/FACTOR, (max.x-offsetX)/FACTOR, (max.y-offsetY)/FACTOR, 1);
+      double greenInside = getBallDetectorIntegralImage().getDensityForRect((min.x+offsetX)/FACTOR, (min.y+offsetY)/FACTOR, (max.x-offsetX)/FACTOR, (max.y-offsetY)/FACTOR, 1);
       if(greenInside < params.heuristic.maxGreenInsideRatio) {
         checkGreenInside = true;
       }
 
       // (3) check black dots
       bool checkBlackDots = false;
+      /*
       if(max.y-min.y > params.heuristic.minBlackDetectionSize) 
       {
-        BlackSpotExtractor::calculateKeyPoints(getGameColorIntegralImage(), bestBlackKey, min.x, min.y, max.x, max.y);
+        BlackSpotExtractor::calculateKeyPoints(getBallDetectorIntegralImage(), bestBlackKey, min.x, min.y, max.x, max.y);
 
         DEBUG_REQUEST("Vision:BallCandidateDetector:keyPoints",
           for(BestPatchList::iterator i = bestBlackKey.begin(); i != bestBlackKey.end(); ++i) {
@@ -123,11 +128,17 @@ void BallCandidateDetector::calculateCandidates()
       } else {
         //TODO: what to do with small balls?
       }
+      */
 
       //if(checkGreenBelow && checkGreenInside)
-      DEBUG_REQUEST("Vision:BallCandidateDetector:lbpDetection",
+      if(params.haarDetector.execute)
       {
-        const int patch_size = 12; 
+        // hack: if the classifier has not been loaded yet
+        if(!cvHaarClassifier.modelLoaded()) {
+          cvHaarClassifier.loadModel(params.haarDetector.model_file);
+        }
+
+        const int patch_size = 12;
         
         BallCandidates::Patch p(0);
         //int size = ((*i).max.x - (*i).min.x)/2;
@@ -137,11 +148,13 @@ void BallCandidateDetector::calculateCandidates()
         if(getImage().isInside(p.min.x, p.min.y) && getImage().isInside(p.max.x, p.max.y)) 
         {
           PatchWork::subsampling(getImage(), p.data, p.min.x, p.min.y, p.max.x, p.max.y, patch_size);
-          if(cvClassifier.classify(p) > params.haarDetector.minNeighbors) {
+          if(cvHaarClassifier.classify(p, params.haarDetector.minNeighbors, params.haarDetector.windowSize) > params.haarDetector.minNeighbors) {
             addBallPercept(Vector2i((min.x + max.x)/2, (min.y + max.y)/2), (max.x - min.x)/2);
           }
         }
-      });
+
+        index++;
+      }
 
 
       DEBUG_REQUEST("Vision:BallCandidateDetector:drawCandidates",
@@ -164,13 +177,41 @@ void BallCandidateDetector::calculateCandidates()
 
       // an acceptable candidate found...
       if(checkGreenBelow && checkGreenInside) {
-        index++;
+        //index++;
       }
 
     }
   }
 
-} // end executeHeuristic
+} // end calculateCandidates
+
+void BallCandidateDetector::extractPatches()
+{
+  int idx = 0;
+  for(BestPatchList::reverse_iterator i = best.rbegin(); i != best.rend(); ++i)
+  {
+    if(idx > 5) {
+      break;
+    }
+    Vector2i min = (*i).min;
+    Vector2i max = (*i).max;
+    int offset = (max.x - min.x)/4;
+    min.x -= offset;
+    min.y -= offset;
+    max.x += offset;
+    max.y += offset;
+
+    if(getFieldPercept().getValidField().isInside(min) && getFieldPercept().getValidField().isInside(max))
+    {
+      BallCandidates::PatchYUVClassified& q = getBallCandidates().nextFreePatchYUVClassified();
+      q.min = min;
+      q.max = max;
+      PatchWork::subsampling(getImage(), getFieldColorPercept(), q.data, q.min.x, q.min.y, q.max.x, q.max.y, 24);
+      
+      idx++;
+    }
+  }
+}
 
 void BallCandidateDetector::addBallPercept(const Vector2i& center, double radius) 
 {

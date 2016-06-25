@@ -173,7 +173,15 @@ StandMotion()
         InverseKinematic::HipFeetPose target = relaxedPose;
         target.localInLeftFoot();
 
-        if((hipFeetPoseSensor.hip.translation - target.hip.translation).abs() > getEngine().getParameters().stand.relax.allowedDeviation) {
+        RotationMatrix hipFeetPoseSensorRot = hipFeetPoseSensor.hip.rotation;
+        RotationMatrix targetRot = target.hip.rotation;
+
+        double rotationErrorX = fabs(hipFeetPoseSensorRot.getXAngle() - targetRot.getXAngle()) > M_PI ? 2*M_PI - fabs(hipFeetPoseSensorRot.getXAngle() - targetRot.getXAngle()) : fabs(hipFeetPoseSensorRot.getXAngle() - targetRot.getXAngle());
+        double rotationErrorY = fabs(hipFeetPoseSensorRot.getYAngle() - targetRot.getYAngle()) > M_PI ? 2*M_PI - fabs(hipFeetPoseSensorRot.getYAngle() - targetRot.getYAngle()) : fabs(hipFeetPoseSensorRot.getYAngle() - targetRot.getYAngle());
+
+        if((  hipFeetPoseSensor.hip.translation - target.hip.translation).abs() > getEngine().getParameters().stand.relax.allowedDeviation
+           || rotationErrorX > getEngine().getParameters().stand.relax.allowedRotationDeviation
+           || rotationErrorY > getEngine().getParameters().stand.relax.allowedRotationDeviation){
             isRelaxing = false; //because the stand motion will be restarted
             relaxedPoseInitialized = false;
             setCurrentState(motion::stopped);

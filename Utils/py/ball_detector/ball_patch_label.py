@@ -71,7 +71,8 @@ def key_pressed(event):
       
   if event.key == 'enter' or event.key == ' ' \
     or event.key == 'w'  or event.key == 'a' or event.key == 'd' \
-    or event.key =='c' or event.key =='y':
+    or event.key =='c' or event.key =='y' \
+    or event.key == '+' or event.key == '-':
       
     save_labels(label_file)
     global window_idx
@@ -88,6 +89,12 @@ def key_pressed(event):
     elif event.key == 'y':
       if window_idx - (idxStep*10) >= 0:
         window_idx -= idxStep*10
+    elif event.key == '+': # select all
+      endIdx = min(idxStep, len(labels) - window_idx)
+      labels[window_idx:window_idx+endIdx] = 1
+    elif event.key == '-': # deselect all
+      endIdx = min(idxStep, len(labels) - window_idx)
+      labels[window_idx:window_idx+endIdx] = 0
     else:
       window_idx += idxStep
     showPatches()
@@ -123,7 +130,7 @@ def load_labels(file):
     tmp_labels[ball_labels["ball"]] = 1
     
   return tmp_labels
-    
+  
     
 def showPatches():
   image = np.zeros(((patch_size[1]+1)*show_size[1], (patch_size[0]+1)*show_size[0]))
