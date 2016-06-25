@@ -112,7 +112,7 @@ void BallDetectorEvaluator::execute()
       {
         r.precision = (double) r.truePositives / ((double) (r.truePositives + r.falsePositives));
       }
-      r.recall = 1.0;
+      r.recall = 0.0;
       if(r.truePositives + r.falsePositives > 0)
       {
         r.recall = (double) r.truePositives / ((double) (r.truePositives + r.falseNegatives));
