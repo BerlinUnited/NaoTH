@@ -98,7 +98,10 @@ private:
       PARAMETER_REGISTER(heuristic.blackDotsMinCount) = 1;
       PARAMETER_REGISTER(heuristic.minBlackDetectionSize) = 20;
 
+      PARAMETER_REGISTER(haarDetector.execute) = true;
       PARAMETER_REGISTER(haarDetector.minNeighbors) = 0;
+      PARAMETER_REGISTER(haarDetector.windowSize) = 12;
+      PARAMETER_REGISTER(haarDetector.model_file) = "lbp1.xml";
 
       PARAMETER_REGISTER(maxNumberOfKeys) = 4;
       syncWithConfig();
@@ -116,7 +119,10 @@ private:
     } heuristic;
 
     struct HaarDetector {
+      bool execute;
       int minNeighbors;
+      int windowSize;
+      std::string model_file;
     } haarDetector;
 
     int maxNumberOfKeys;
@@ -125,7 +131,7 @@ private:
 
 
 private:
-  CVHaarClassifier cvClassifier;
+  CVHaarClassifier cvHaarClassifier;
   ModuleCreator<BallKeyPointExtractor>* theBallKeyPointExtractor;
   BestPatchList best;
 

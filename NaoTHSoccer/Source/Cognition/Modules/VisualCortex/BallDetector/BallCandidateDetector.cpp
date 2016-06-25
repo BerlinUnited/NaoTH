@@ -125,9 +125,14 @@ void BallCandidateDetector::calculateCandidates()
       }
 
       //if(checkGreenBelow && checkGreenInside)
-      DEBUG_REQUEST("Vision:BallCandidateDetector:lbpDetection",
+      if(params.haarDetector.execute)
       {
-        const int patch_size = 12; 
+        // hack: if the classifier has not been loaded yet
+        if(!cvHaarClassifier.modelLoaded()) {
+          cvHaarClassifier.loadModel(params.haarDetector.model_file);
+        }
+
+        const int patch_size = 12;
         
         BallCandidates::Patch p(0);
         //int size = ((*i).max.x - (*i).min.x)/2;
@@ -137,11 +142,13 @@ void BallCandidateDetector::calculateCandidates()
         if(getImage().isInside(p.min.x, p.min.y) && getImage().isInside(p.max.x, p.max.y)) 
         {
           PatchWork::subsampling(getImage(), p.data, p.min.x, p.min.y, p.max.x, p.max.y, patch_size);
-          if(cvClassifier.classify(p) > params.haarDetector.minNeighbors) {
+          if(cvHaarClassifier.classify(p, params.haarDetector.minNeighbors, params.haarDetector.windowSize) > params.haarDetector.minNeighbors) {
             addBallPercept(Vector2i((min.x + max.x)/2, (min.y + max.y)/2), (max.x - min.x)/2);
           }
         }
-      });
+
+        index++;
+      }
 
 
       DEBUG_REQUEST("Vision:BallCandidateDetector:drawCandidates",
@@ -164,7 +171,7 @@ void BallCandidateDetector::calculateCandidates()
 
       // an acceptable candidate found...
       if(checkGreenBelow && checkGreenInside) {
-        index++;
+        //index++;
       }
 
     }
