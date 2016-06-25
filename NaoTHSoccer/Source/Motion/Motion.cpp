@@ -459,18 +459,22 @@ void Motion::debugPlots()
 void Motion::updateCameraMatrix()
 {
   getCameraMatrix() = CameraGeometry::calculateCameraMatrix(
+    getCameraMatrixOffset(),
     getKinematicChainSensor(),
+    getInertialModel(),
+    getSensorJointData(),
     NaoInfo::robotDimensions.cameraTransform[naoth::CameraInfo::Bottom].offset,
     NaoInfo::robotDimensions.cameraTransform[naoth::CameraInfo::Bottom].rotationY,
-    getCameraMatrixOffset(),
     naoth::CameraInfo::Bottom
   );
 
   getCameraMatrixTop() = CameraGeometry::calculateCameraMatrix(
+    getCameraMatrixOffset(),
     getKinematicChainSensor(),
+    getInertialModel(),
+    getSensorJointData(),
     NaoInfo::robotDimensions.cameraTransform[naoth::CameraInfo::Top].offset,
     NaoInfo::robotDimensions.cameraTransform[naoth::CameraInfo::Top].rotationY,
-    getCameraMatrixOffset(),
     naoth::CameraInfo::Top
   );
 

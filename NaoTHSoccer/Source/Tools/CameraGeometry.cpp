@@ -230,46 +230,71 @@ Pose3D CameraGeometry::calculateCameraMatrix(
 }//end calculateCameraMatrix
 
 Pose3D CameraGeometry::calculateCameraMatrix(
-  const KinematicChain& theKinematicChain,
+  const CameraMatrixOffset& theCameraMatrixOffset,
+  const KinematicChain&     theKinematicChain,
+  const InertialModel&      theInertialModel,
+  const SensorJointData&    theSensorJointData,
   const Vector3d& translationOffset,
   double rotationOffsetY,
-  const CameraMatrixOffset& theCameraMatrixOffset,
   const naoth::CameraInfo::CameraID cameraID)
 {
     // get the pose of the head
-    Pose3D pose(theKinematicChain.theLinks[KinematicChain::Head].M);
+    Pose3D chest(theKinematicChain.theLinks[KinematicChain::Torso].M);
 
-    pose.rotateZ(theCameraMatrixOffset.correctionOffsets[cameraID].head_rot.z)
-            .rotateY(theCameraMatrixOffset.correctionOffsets[cameraID].head_rot.y)
-            .rotateX(theCameraMatrixOffset.correctionOffsets[cameraID].head_rot.x);
+    //overwrite rotation using information from the ineratial model
+    chest.rotation = RotationMatrix::getRotationX(theInertialModel.orientation.x + theCameraMatrixOffset.body_rot.x);
+    chest.rotateY(theInertialModel.orientation.y + theCameraMatrixOffset.body_rot.y);
 
-    pose.translate(translationOffset);
+    //translate pose into neck/head
+    chest.translate(Vector3d(0,0,NaoInfo::NeckOffsetZ)); //neck = head
 
-    pose.rotateZ(theCameraMatrixOffset.correctionOffsets[cameraID].cam_rot.z)
-            .rotateY(theCameraMatrixOffset.correctionOffsets[cameraID].cam_rot.y + rotationOffsetY) // tilt
-            .rotateX(theCameraMatrixOffset.correctionOffsets[cameraID].cam_rot.x); // roll
+    //apply rotation of neck angles with offsets
+    chest.rotateZ(theSensorJointData.position[JointData::HeadYaw]   + theCameraMatrixOffset.head_rot.z);
+    chest.rotateY(theSensorJointData.position[JointData::HeadPitch] + theCameraMatrixOffset.head_rot.y);
+    chest.rotateX(theCameraMatrixOffset.head_rot.x);
 
-    return pose;
+    //translate pose into camera
+    chest.translate(translationOffset);
+
+    //apply rotation parameter of the camera
+    chest.rotateZ(theCameraMatrixOffset.cam_rot[cameraID].z)
+            .rotateY(theCameraMatrixOffset.cam_rot[cameraID].y + rotationOffsetY) // tilt
+            .rotateX(theCameraMatrixOffset.cam_rot[cameraID].x); // roll
+
+    return chest;
 }
 
-Pose3D CameraGeometry::calculateCameraMatrixFromHeadPose(
-    Pose3D pose,
+// calculates the location of the camera like in forward kinematics but incorporates different angular offset in the kinematic chain from chest to camera
+Pose3D CameraGeometry::calculateCameraMatrixFromChestPose(
+    Pose3D chest,
     const Vector3d& translationOffset,
     double rotationOffsetY,
+    const Vector2d& theBodyCorrectionOffset,
     const Vector3d& theHeadCorrectionOffset,
-    const Vector3d& theCameraCorrectionOffset
+    const Vector3d& theCameraCorrectionOffset,
+    double headYaw,
+    double headPitch,
+    const InertialModel& theIneratialModel
   )
-{
-    // transformation from the head to the camera with correction offset
-    pose.rotateZ(theHeadCorrectionOffset.z)
-            .rotateY(theHeadCorrectionOffset.y)
-            .rotateX(theHeadCorrectionOffset.x);
+{   //overwrite rotation using information from the ineratial model
+    chest.rotation = RotationMatrix::getRotationX(theIneratialModel.orientation.x + theBodyCorrectionOffset.x);
+    chest.rotateY(theIneratialModel.orientation.y + theBodyCorrectionOffset.y);
 
-    pose.translate(translationOffset);
+    //translate pose into neck/head
+    chest.translate(Vector3d(0,0,NaoInfo::NeckOffsetZ)); //neck = head
 
-    pose.rotateZ(theCameraCorrectionOffset.z)
+    //apply rotation of neck angles with offsets
+    chest.rotateZ(headYaw   + theHeadCorrectionOffset.z);
+    chest.rotateY(headPitch + theHeadCorrectionOffset.y);
+    chest.rotateX(theHeadCorrectionOffset.x);
+
+    //translate pose into camera
+    chest.translate(translationOffset);
+
+    //apply rotation parameter of the camera
+    chest.rotateZ(theCameraCorrectionOffset.z)
             .rotateY(theCameraCorrectionOffset.y + rotationOffsetY) // tilt
             .rotateX(theCameraCorrectionOffset.x); // roll
 
-    return pose;
+    return chest;
 }//end calculateCameraMatrix

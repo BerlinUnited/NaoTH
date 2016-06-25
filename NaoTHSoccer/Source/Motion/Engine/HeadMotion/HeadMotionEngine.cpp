@@ -260,10 +260,12 @@ Vector3d HeadMotionEngine::g(double yaw, double pitch, const Vector3d& pointInWo
   theKinematicChain.theLinks[KinematicChain::Head].updateFromMother();
 
   CameraMatrix cameraMatrix = CameraGeometry::calculateCameraMatrix(
+      getCameraMatrixOffset(),
       theKinematicChain,
+      getInertialModel(),
+      getSensorJointData(),
       NaoInfo::robotDimensions.cameraTransform[getHeadMotionRequest().cameraID].offset,
       NaoInfo::robotDimensions.cameraTransform[getHeadMotionRequest().cameraID].rotationY,
-      getCameraMatrixOffset(),
       getHeadMotionRequest().cameraID
     );
 
