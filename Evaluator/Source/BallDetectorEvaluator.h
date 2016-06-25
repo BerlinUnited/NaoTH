@@ -85,6 +85,16 @@ private:
 
   std::string createPNG(const BallCandidates::Patch& p);
 
+  std::string toID(const ExperimentParameters& params)
+  {
+    return std::to_string(params.minNeighbours) + "_" + std::to_string(params.windowSize);
+  }
+
+  std::string toDesc(const ExperimentParameters& params)
+  {
+    return "minNeighbours=" + std::to_string(params.minNeighbours) + " windowSize=" + std::to_string(params.windowSize);
+  }
+
 private:
   const std::string fileArg;
 
