@@ -5,8 +5,8 @@ project "Evaluator"
   
   includedirs {
 	"../Source/",
-	"../../NaoTHSoccer/Source/",
-	"../../Framework/Commons/Source/"
+	"../../../NaoTHSoccer/Source/",
+	"../../../Framework/Commons/Source/"
 	}
   
   files {

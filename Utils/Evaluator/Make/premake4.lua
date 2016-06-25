@@ -1,7 +1,7 @@
 
 
 -- load the global default settings
-dofile "../../NaoTHSoccer/Make/projectconfig.lua"
+dofile "../../../NaoTHSoccer/Make/projectconfig.lua"
 
 -- load some helpers
 dofile (FRAMEWORK_PATH .. "/BuildTools/info.lua")
@@ -22,7 +22,7 @@ solution "EvaluatorSolution"
   -- global lib path for all configurations
   -- additional includes
   libdirs (PATH["libs"])
-  libdirs ("../../NaoTHSoccer/dist/Native")
+  libdirs ("../../../NaoTHSoccer/dist/Native")
   
   -- global include path for all projects and configurations
   includedirs (PATH["includes"])
