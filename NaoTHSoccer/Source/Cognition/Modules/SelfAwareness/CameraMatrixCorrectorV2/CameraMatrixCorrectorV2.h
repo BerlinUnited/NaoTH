@@ -140,29 +140,30 @@ public:
                     );
                 }
 
+                DEBUG_REQUEST("CamMatErrorFunction:debug_drawings:draw_matching_global",
                 // determine distance to nearst field line and the total aberration
-                for(std::vector<Vector2d>::const_iterator iter = edgelProjections.begin(); iter != edgelProjections.end(); ++iter){
+                    for(std::vector<Vector2d>::const_iterator iter = edgelProjections.begin(); iter != edgelProjections.end(); ++iter){
 
-                    const Vector2d& seen_point_relative = *iter;
+                        const Vector2d& seen_point_relative = *iter;
 
-                    Pose2D   robotPose;
-                    Vector2d seen_point_global = robotPose * seen_point_relative;
+                        Pose2D   robotPose;
+                        Vector2d seen_point_global = robotPose * seen_point_relative;
 
-                    LinesTable::NamedPoint line_point_global = getFieldInfo().fieldLinesTable.get_closest_point(seen_point_global, LinesTable::all_lines);
+                        LinesTable::NamedPoint line_point_global = getFieldInfo().fieldLinesTable.get_closest_point(seen_point_global, LinesTable::all_lines);
 
-                    // there is no such line
-                    if(line_point_global.id == -1) {
-                        continue;
-                    }
+                        // there is no such line
+                        if(line_point_global.id == -1) {
+                            continue;
+                        }
 
-                    DEBUG_REQUEST("CamMatErrorFunction:debug_drawings:draw_matching_global",
                         FIELD_DRAWING_CONTEXT;
                         PEN("000000", 10);
 
                         CIRCLE(seen_point_global.x, seen_point_global.y, 20);
                         LINE(line_point_global.position.x,line_point_global.position.y,seen_point_global.x, seen_point_global.y);
-                    );
-                }
+
+                    }
+                );
             }
         }
     }
