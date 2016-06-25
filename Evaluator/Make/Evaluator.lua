@@ -5,7 +5,8 @@ project "Evaluator"
   
   includedirs {
 	"../Source/",
-	"../../NaoTHSoccer/Source/"
+	"../../NaoTHSoccer/Source/",
+	"../../Framework/Commons/Source/"
 	}
   
   files {
@@ -15,15 +16,20 @@ project "Evaluator"
 	}
   
   links {
+	"naoth-soccer",
+	"commons",
 	"glib-2.0",
 	"gio-2.0",
 	"gobject-2.0",
 	"gmodule-2.0",
 	"gthread-2.0",
 	"protobuf",
+	"opencv_core",
+	"opencv_ml",
+	"opencv_imgproc",
+	"opencv_objdetect",
 	"opencv_imgcodecs",
-	"NaoTHSoccer",
-	"Commons"
+	
 	}
 	
   targetname "evaluator"

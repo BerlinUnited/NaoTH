@@ -2,6 +2,9 @@
 
 #include "BallDetectorEvaluator.h"
 
+#include <glib.h>
+#include <gio/gio.h>
+
 /**
  * @brief main function for the evaluator
  * @param argc
