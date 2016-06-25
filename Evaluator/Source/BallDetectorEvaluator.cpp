@@ -129,12 +129,12 @@ void BallDetectorEvaluator::execute()
       std::cout << "recall: " << r.recall << std::endl;
 
       std::cout << "=============" << std::endl;
-      std::cout << "Written detailed report to " << outFileName << std::endl;
+
 
     }
   }
   outputResults(outFileName);
-
+  std::cout << "Written detailed report to " << outFileName << std::endl;
 }
 
 void BallDetectorEvaluator::outputResults(std::string outFileName)
@@ -150,21 +150,37 @@ void BallDetectorEvaluator::outputResults(std::string outFileName)
   // CSS
   html << "img.patch {width: 36px; height: 36px;}" << std::endl;
   html << "table, th, td {border: 1px solid; border-collapse: collapse; }" << std::endl;
+
+  html << "th.sort-header::-moz-selection { background:transparent; }" << std::endl;
+  html << "th.sort-header::selection      { background:transparent; }" << std::endl;
+  html << "th.sort-header { cursor:pointer; }" << std::endl;
+  html << "table th.sort-header:after {content:''; float:right; margin-top:7px; border-width:0 4px 4px; border-style:solid; border-color:#404040 transparent;  visibility:hidden;}" << std::endl;
+  html << "table th.sort-header:hover:after {visibility:visible;}" << std::endl;
+  html << "table th.sort-up:after, table th.sort-down:after, table th.sort-down:hover:after { visibility:visible; opacity:0.4; }" << std::endl;
+  html << "table th.sort-up:after { border-bottom:none; border-width:4px 4px 0;}" << std::endl;
+
+
   html << "</style>" << std::endl;
+
+  html << "<script src=\"tablesort.js\"></script>" << std::endl;
+  html << "<script src=\"tablesort.number.js\"></script>" << std::endl;
+
   html << "</head>" << std::endl;
 
-  html << "<body>" << std::endl;
+  html << "<body onload=\"if(window.Tablesort) {new Tablesort(document.getElementById('overviewTable'));}\" >" << std::endl;
 
   html << "<h1><a id=\"overview\">Overview</a></h1>" << std::endl;
 
-  html << "<table>" << std::endl;
+  html << "<table id=\"overviewTable\">" << std::endl;
+  html << "<thead>" << std::endl;
   html << "<tr>" << std::endl;
-  html << "<th>" << "minNeighbours" << "</th>" << std::endl;
-  html << "<th>" << "windowSize" << "</th>" << std::endl;
-  html << "<th>" << "precision" << "</th>" << std::endl;
-  html << "<th>" << "recall" << "</th>" << std::endl;
-  html << "<th></th>" << std::endl;
+  html << "<th data-sort-method='number'>" << "minNeighbours" << "</th>" << std::endl;
+  html << "<th data-sort-method='number'>" << "windowSize" << "</th>" << std::endl;
+  html << "<th data-sort-method='number''>" << "precision" << "</th>" << std::endl;
+  html << "<th data-sort-method='number'>" << "recall" << "</th>" << std::endl;
+  html << "<th class='no-sort'></th>" << std::endl;
   html << "</tr>" << std::endl;
+  html << "</thead>" << std::endl;
   for(std::map<ExperimentParameters, ExperimentResult>::const_iterator it=results.begin();
       it != results.end(); it++)
   {
