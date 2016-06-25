@@ -77,9 +77,12 @@ def exportPatches(patchdata, labels, label_names, target_path):
     yuv888 = np.reshape(a, patch_size[0]*patch_size[1])
     gray_image = cv2.cvtColor(yuv888, cv2.COLOR_BGR2GRAY)
     '''
+    
+    # gray (for backgrounds)
+    cv2.imwrite(file_path,a)
 
-    # gray + set green to 0
-    cv2.imwrite(file_path, np.multiply(np.not_equal(b, 7), a))
+    # gray + set green to 0 (used for balls)
+    #cv2.imwrite(file_path, np.multiply(np.not_equal(b, 7), a))
 
 '''
 
