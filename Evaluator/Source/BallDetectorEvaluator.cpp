@@ -143,13 +143,33 @@ void BallDetectorEvaluator::outputResults(std::string outFileName)
   html << "<head>" << std::endl;
   html << "<style>" << std::endl;
   // CSS
-  html << "img.patch {width: 36px; height: 36px}" << std::endl;
+  html << "img.patch {width: 36px; height: 36px;}" << std::endl;
+  html << "table, th, td {border: 1px solid; border-collapse: collapse; }" << std::endl;
   html << "</style>" << std::endl;
   html << "</head>" << std::endl;
 
   html << "<body>" << std::endl;
 
   html << "<h1><a id=\"overview\">Overview</a></h1>" << std::endl;
+
+  html << "<table>" << std::endl;
+  html << "<tr>" << std::endl;
+  html << "<th>" << "minNeighbours" << "</th>" << std::endl;
+  html << "<th>" << "precision" << "</th>" << std::endl;
+  html << "<th>" << "recall" << "</th>" << std::endl;
+  html << "</tr>" << std::endl;
+  for(std::map<unsigned int, ExperimentResult>::const_iterator it=results.begin();
+      it != results.end(); it++)
+  {
+    const ExperimentResult& r = it->second;
+    html << "<tr>" << std::endl;
+    html << "<td>" << it->first << "</td>" << std::endl;
+    html << "<td>" << r.precision << "</td>" << std::endl;
+    html << "<td>" << r.recall << "</td>" << std::endl;
+    html << "</tr>" << std::endl;
+  }
+  html << "</table>" << std::endl;
+
 
   for(std::map<unsigned int, ExperimentResult>::const_iterator it=results.begin();
       it != results.end(); it++)
