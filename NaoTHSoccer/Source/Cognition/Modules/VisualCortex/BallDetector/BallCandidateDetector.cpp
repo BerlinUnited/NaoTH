@@ -19,6 +19,8 @@ BallCandidateDetector::BallCandidateDetector()
   DEBUG_REQUEST_REGISTER("Vision:BallCandidateDetector:keyPoints", "draw key points extracted from integral image", false);
   DEBUG_REQUEST_REGISTER("Vision:BallCandidateDetector:drawCandidates", "draw ball candidates", false);
 
+  DEBUG_REQUEST_REGISTER("Vision:BallCandidateDetector:extractPatches", "generate YUVC patches", false);
+
   theBallKeyPointExtractor = registerModule<BallKeyPointExtractor>("BallKeyPointExtractor", true);
   getDebugParameterList().add(&params);
 }
@@ -46,6 +48,10 @@ void BallCandidateDetector::execute(CameraInfo::CameraID id)
   theBallKeyPointExtractor->getModuleT()->calculateKeyPoints(best);
 
   calculateCandidates();
+
+  DEBUG_REQUEST("Vision:BallCandidateDetector:extractPatches",
+    extractPatches();
+  );
 }
 
 
@@ -115,6 +121,7 @@ void BallCandidateDetector::calculateCandidates()
 
 
       // test
+      /*
       static CVClassifier cvClassifier;
       
       BallCandidates::Patch p(0);
@@ -124,7 +131,7 @@ void BallCandidateDetector::calculateCandidates()
       if(cvClassifier.classify(p, cameraID)) {
         CIRCLE_PX(ColorClasses::white, (min.x + max.x)/2, (min.y + max.y)/2, (max.x - min.x)/2);
       }
-
+      */
 
       DEBUG_REQUEST("Vision:BallCandidateDetector:drawCandidates",
         ColorClasses::Color c = ColorClasses::gray;
@@ -152,6 +159,34 @@ void BallCandidateDetector::calculateCandidates()
     }
   }
 
-} // end executeHeuristic
+} // end calculateCandidates
+
+void BallCandidateDetector::extractPatches()
+{
+  int idx = 0;
+  for(BestPatchList::reverse_iterator i = best.rbegin(); i != best.rend(); ++i)
+  {
+    if(idx > 5) {
+      break;
+    }
+    Vector2i min = (*i).min;
+    Vector2i max = (*i).max;
+    int offset = (max.x - min.x)/4;
+    min.x -= offset;
+    min.y -= offset;
+    max.x += offset;
+    max.y += offset;
+
+    if(getFieldPercept().getValidField().isInside(min) && getFieldPercept().getValidField().isInside(max))
+    {
+      BallCandidates::PatchYUVClassified& q = getBallCandidates().nextFreePatchYUVClassified();
+      q.min = min;
+      q.max = max;
+      PatchWork::subsampling(getImage(), getFieldColorPercept(), q.data, q.min.x, q.min.y, q.max.x, q.max.y, 24);
+      
+      idx++;
+    }
+  }
+}
 
 
