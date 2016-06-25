@@ -13,7 +13,7 @@ int main(int argc, char** argv)
   if(argc > 2)
   {
     std::string type(argv[1]);
-    if(type == "ball")
+    if(type == "ball_haar")
     {
       BallDetectorEvaluator evaluator(argv[2]);
       evaluator.execute();
@@ -22,6 +22,6 @@ int main(int argc, char** argv)
   }
 
   std::cerr << "usage: evaluator <type> <logfile>" << std::endl;
-  std::cerr << "only \"ball\" is supported as type currently" << std::endl;
+  std::cerr << "only \"ball_haar\" is supported as type currently" << std::endl;
   return -1;
 }

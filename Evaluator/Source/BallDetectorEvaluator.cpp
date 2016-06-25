@@ -1,5 +1,7 @@
 #include "BallDetectorEvaluator.h"
 
+#include <glib.h>
+
 #include <strstream>
 #include <fstream>
 #include <sstream>
@@ -33,7 +35,7 @@
 #endif
 
 BallDetectorEvaluator::BallDetectorEvaluator(const std::string &fileArg)
-  : fileArg(fileArg),
+  : fileArg(fileArg), minNeighbours(0),
     truePositives(0), falsePositives(0), falseNegatives(0)
 {
 
@@ -44,122 +46,133 @@ BallDetectorEvaluator::~BallDetectorEvaluator()
 
 }
 
+
 void BallDetectorEvaluator::execute()
 {
+  // make sure output folder exists
+  g_mkdir_with_parents("HaarBallDetector_Evaluation", 0770);
 
-  truePositives = falseNegatives = falsePositives = 0;
-  falsePositivePatches.clear();
-  falseNegativePatches.clear();
-
-
-  unsigned int totalSize = 0;
-
-
-  if(g_file_test(fileArg.c_str(), G_FILE_TEST_IS_DIR))
+  // do experiment for different parameters
+  for(minNeighbours=0; minNeighbours < 6; minNeighbours++)
   {
-    std::string dirlocation = fileArg;
-    if (!g_str_has_suffix(dirlocation.c_str(), "/"))
-    {
-      dirlocation = dirlocation + "/";
-    }
 
-    GDir* dir = g_dir_open(dirlocation.c_str(), 0, NULL);
-    if (dir != NULL)
+    truePositives = falseNegatives = falsePositives = 0;
+    falsePositivePatches.clear();
+    falseNegativePatches.clear();
+
+
+    unsigned int totalSize = 0;
+
+
+    if(g_file_test(fileArg.c_str(), G_FILE_TEST_IS_DIR))
     {
-      const gchar* name;
-      while ((name = g_dir_read_name(dir)) != NULL)
+      std::string dirlocation = fileArg;
+      if (!g_str_has_suffix(dirlocation.c_str(), "/"))
       {
-        if (g_str_has_suffix(name, ".log"))
-        {
-          std::string completeFileName = dirlocation + name;
-          if (g_file_test(completeFileName.c_str(), G_FILE_TEST_EXISTS)
-              && g_file_test(completeFileName.c_str(), G_FILE_TEST_IS_REGULAR))
-          {
-            totalSize += executeSingleFile(completeFileName);
-          }
-        }
-
-
+        dirlocation = dirlocation + "/";
       }
-      g_dir_close(dir);
+
+      GDir* dir = g_dir_open(dirlocation.c_str(), 0, NULL);
+      if (dir != NULL)
+      {
+        const gchar* name;
+        while ((name = g_dir_read_name(dir)) != NULL)
+        {
+          if (g_str_has_suffix(name, ".log"))
+          {
+            std::string completeFileName = dirlocation + name;
+            if (g_file_test(completeFileName.c_str(), G_FILE_TEST_EXISTS)
+                && g_file_test(completeFileName.c_str(), G_FILE_TEST_IS_REGULAR))
+            {
+              totalSize += executeSingleFile(completeFileName);
+            }
+          }
+
+
+        }
+        g_dir_close(dir);
+      }
     }
+    else
+    {
+      // only one file
+      totalSize = executeSingleFile(fileArg);
+    }
+
+    double precision = 1.0;
+    if(truePositives + falsePositives > 0)
+    {
+      precision = (double) truePositives / ((double) (truePositives + falsePositives));
+    }
+    double recall = 1.0;
+    if(truePositives + falsePositives > 0)
+    {
+      recall = (double) truePositives / ((double) (truePositives + falseNegatives));
+    }
+
+    std::string outFileName = "HaarBallDetector_Evaluation/" + std::to_string(minNeighbours) + ".html";
+
+    std::cout << "=============" << std::endl;
+    std::cout << "minNeighbours=" << minNeighbours << std::endl;
+
+    std::cout << "precision: " << precision << std::endl;
+    std::cout << "recall: " << recall << std::endl;
+
+    std::cout << "=============" << std::endl;
+    std::cout << "Written detailed report to " << outFileName << std::endl;
+
+    base64::Encoder base64Encoder(64);
+
+    std::ofstream html;
+    html.open(outFileName);
+
+    html << "<html>" << std::endl;
+    html << "<head>" << std::endl;
+    html << "<style>" << std::endl;
+    // CSS
+    html << "img.patch {width: 36px; height: 36px}" << std::endl;
+    html << "</style>" << std::endl;
+    html << "</head>" << std::endl;
+
+    html << "<body>" << std::endl;
+
+    html << "<h2>Summary</h2>" << std::endl;
+    html << "<p><strong>precision: " << precision << "<br />recall: " << recall << "</strong></p>" << std::endl;
+
+
+    unsigned int numOfBalls = truePositives + falseNegatives;
+    html << "<p>total number of samples: " << totalSize << " (" << numOfBalls << " balls, " << (totalSize - numOfBalls) << " non-balls)</p>" << std::endl;
+
+    html << "<h1>False Positives</h1>" << std::endl;
+
+    html << "<p>number: " << falsePositives << "</p>" << std::endl;
+
+    html << "<div>" << std::endl;
+    for(std::list<ErrorEntry>::const_iterator it=falsePositivePatches.begin(); it != falsePositivePatches.end(); it++)
+    {
+      // use a data URI to embed the image in PNG format
+      std::string imgPNG = createPNG(it->patch);
+      html << "<img class=\"patch\" title=\"" << it->idx << "@" << it->fileName
+           << "\" src=\"data:image/png;base64," << base64Encoder.encode(imgPNG.c_str(), (int) imgPNG.size())  << "\" />" << std::endl;
+    }
+    html << "</div>" << std::endl;
+
+    html << "<h1>False Negatives</h1>" << std::endl;
+
+    html << "<p>number: " << falseNegatives << "</p>" << std::endl;
+
+    html << "<div>" << std::endl;
+    for(std::list<ErrorEntry>::const_iterator it=falseNegativePatches.begin(); it != falseNegativePatches.end(); it++)
+    {
+      // use a data URI to embed the image in PNG format
+      std::string imgPNG = createPNG(it->patch);
+      html << "<img class=\"patch\" title=\"" << it->idx << "@" << it->fileName
+           << "\" src=\"data:image/png;base64," << base64Encoder.encode(imgPNG.c_str(), (int) imgPNG.size())  << "\" />" << std::endl;
+    }
+    html << "</div>" << std::endl;
+    html << "</body>" << std::endl;
+    html.close();
   }
-  else
-  {
-    // only one file
-    totalSize = executeSingleFile(fileArg);
-  }
-
-  double precision = 1.0;
-  if(truePositives + falsePositives > 0)
-  {
-    precision = (double) truePositives / ((double) (truePositives + falsePositives));
-  }
-  double recall = 1.0;
-  if(truePositives + falsePositives > 0)
-  {
-    recall = (double) truePositives / ((double) (truePositives + falseNegatives));
-  }
-
-  std::cout << "=============" << std::endl;
-
-  std::cout << "precision: " << precision << std::endl;
-  std::cout << "recall: " << recall << std::endl;
-
-  std::cout << "=============" << std::endl;
-  std::cout << "Written detailed report to BallEvaluator_output.html" << std::endl;
-
-  base64::Encoder base64Encoder(64);
-
-  std::ofstream html;
-  html.open("BallEvaluator_output.html");
-
-  html << "<html>" << std::endl;
-  html << "<head>" << std::endl;
-  html << "<style>" << std::endl;
-  // CSS
-  html << "img.patch {width: 36px; height: 36px}" << std::endl;
-  html << "</style>" << std::endl;
-  html << "</head>" << std::endl;
-
-  html << "<body>" << std::endl;
-
-  html << "<h1>Summary</h1>" << std::endl;
-  html << "<p><strong>precision: " << precision << "<br />recall: " << recall << "</strong></p>" << std::endl;
-
-
-  unsigned int numOfBalls = truePositives + falseNegatives;
-  html << "<p>total number of samples: " << totalSize << " (" << numOfBalls << " balls, " << (totalSize - numOfBalls) << " non-balls)</p>" << std::endl;
-
-  html << "<h1>False Positives</h1>" << std::endl;
-
-  html << "<p>number: " << falsePositives << "</p>" << std::endl;
-
-  html << "<div>" << std::endl;
-  for(std::list<ErrorEntry>::const_iterator it=falsePositivePatches.begin(); it != falsePositivePatches.end(); it++)
-  {
-    // use a data URI to embed the image in PNG format
-    std::string imgPNG = createPNG(it->patch);
-    html << "<img class=\"patch\" title=\"" << it->idx << "@" << it->fileName
-         << "\" src=\"data:image/png;base64," << base64Encoder.encode(imgPNG.c_str(), (int) imgPNG.size())  << "\" />" << std::endl;
-  }
-  html << "</div>" << std::endl;
-
-  html << "<h1>False Negatives</h1>" << std::endl;
-
-  html << "<p>number: " << falseNegatives << "</p>" << std::endl;
-
-  html << "<div>" << std::endl;
-  for(std::list<ErrorEntry>::const_iterator it=falseNegativePatches.begin(); it != falseNegativePatches.end(); it++)
-  {
-    // use a data URI to embed the image in PNG format
-    std::string imgPNG = createPNG(it->patch);
-    html << "<img class=\"patch\" title=\"" << it->idx << "@" << it->fileName
-         << "\" src=\"data:image/png;base64," << base64Encoder.encode(imgPNG.c_str(), (int) imgPNG.size())  << "\" />" << std::endl;
-  }
-  html << "</div>" << std::endl;
-  html << "</body>" << std::endl;
-  html.close();
 
 }
 
@@ -220,12 +233,13 @@ unsigned int BallDetectorEvaluator::executeSingleFile(std::string file)
   return patchIdx;
 }
 
-void BallDetectorEvaluator::evaluatePatch(const BallCandidates::Patch &p, unsigned int patchIdx, CameraInfo::CameraID camID,
+void BallDetectorEvaluator::evaluatePatch(const BallCandidates::Patch &p, unsigned int patchIdx,
+                                          CameraInfo::CameraID camID,
                                           const std::set<unsigned int>& expectedBallIdx,
                                           std::string fileName)
 {
   bool expected = expectedBallIdx.find(patchIdx) != expectedBallIdx.end();
-  bool actual = classifier.classify(p) > 0;
+  bool actual = classifier.classify(p, minNeighbours) > 0;
 
   if(expected == actual)
   {

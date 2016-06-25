@@ -35,7 +35,8 @@ public:
 
 private:
   unsigned int executeSingleFile(std::string file);
-  void evaluatePatch(const BallCandidates::Patch& p, unsigned int patchIdx, CameraInfo::CameraID camID, const std::set<unsigned int> &expectedBallIdx, std::string fileName);
+  void evaluatePatch(const BallCandidates::Patch& p, unsigned int patchIdx, CameraInfo::CameraID camID,
+                     const std::set<unsigned int> &expectedBallIdx, std::string fileName);
 
   int loadGroundTruth(std::string file, std::set<unsigned int> &expectedBallIdx);
 
@@ -50,13 +51,14 @@ private:
 
 private:
   const std::string fileArg;
-
+  unsigned int minNeighbours;
 
   // TODO: allow more classifiers (including the ones that have the more complex filter logic)
   CVHaarClassifier classifier;
 
 
   unsigned int truePositives, falsePositives, falseNegatives;
+
 
   std::list<ErrorEntry> falsePositivePatches;
   std::list<ErrorEntry> falseNegativePatches;
