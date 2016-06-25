@@ -24,7 +24,7 @@ public:
   }
 
 
-  int classify(BallCandidates::Patch& p)
+  int classify(const BallCandidates::Patch& p, unsigned int minNeighbours=0, unsigned int windowSize=12)
   {
     ASSERT(p.data.size() == 12*12);
     // TODO: magic numbers
@@ -43,10 +43,10 @@ public:
     //ss << "p-" << idx << ".png";
     //cv::imwrite(ss.str(), buffer);
     
-    cascadeClasifier.detectMultiScale( buffer, out, 1.01, 0, 0|CV_HAAR_SCALE_IMAGE, cv::Size(8,8), cv::Size(12,12) );
+    cascadeClasifier.detectMultiScale( buffer, out, 1.01, minNeighbours, 0|CV_HAAR_SCALE_IMAGE, cv::Size(8,8), cv::Size(windowSize,windowSize) );
     
     idx++;
-    return out.size();
+    return static_cast<int>(out.size());
   }
 };
 
