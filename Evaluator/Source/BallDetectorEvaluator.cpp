@@ -1,6 +1,7 @@
 #include "BallDetectorEvaluator.h"
 
 #include <glib.h>
+#include <glib/gstdio.h>
 
 #include <strstream>
 #include <fstream>
@@ -49,8 +50,22 @@ BallDetectorEvaluator::~BallDetectorEvaluator()
 
 void BallDetectorEvaluator::execute()
 {
-  // make sure output folder exists
-  g_mkdir_with_parents("HaarBallDetector_Evaluation", 0770);
+  std::string outFileName = "HaarBallDetector_Evaluation.html";
+
+
+  std::ofstream html;
+  html.open(outFileName);
+
+  html << "<html>" << std::endl;
+  html << "<head>" << std::endl;
+  html << "<style>" << std::endl;
+  // CSS
+  html << "img.patch {width: 36px; height: 36px}" << std::endl;
+  html << "</style>" << std::endl;
+  html << "</head>" << std::endl;
+
+  html << "<body>" << std::endl;
+
 
   // do experiment for different parameters
   for(minNeighbours=0; minNeighbours < 6; minNeighbours++)
@@ -110,7 +125,6 @@ void BallDetectorEvaluator::execute()
       recall = (double) truePositives / ((double) (truePositives + falseNegatives));
     }
 
-    std::string outFileName = "HaarBallDetector_Evaluation/" + std::to_string(minNeighbours) + ".html";
 
     std::cout << "=============" << std::endl;
     std::cout << "minNeighbours=" << minNeighbours << std::endl;
@@ -123,18 +137,8 @@ void BallDetectorEvaluator::execute()
 
     base64::Encoder base64Encoder(64);
 
-    std::ofstream html;
-    html.open(outFileName);
 
-    html << "<html>" << std::endl;
-    html << "<head>" << std::endl;
-    html << "<style>" << std::endl;
-    // CSS
-    html << "img.patch {width: 36px; height: 36px}" << std::endl;
-    html << "</style>" << std::endl;
-    html << "</head>" << std::endl;
-
-    html << "<body>" << std::endl;
+    html << "<h1>minNeighbours=" << minNeighbours << "</h1>" << std::endl;
 
     html << "<h2>Summary</h2>" << std::endl;
     html << "<p><strong>precision: " << precision << "<br />recall: " << recall << "</strong></p>" << std::endl;
@@ -143,7 +147,7 @@ void BallDetectorEvaluator::execute()
     unsigned int numOfBalls = truePositives + falseNegatives;
     html << "<p>total number of samples: " << totalSize << " (" << numOfBalls << " balls, " << (totalSize - numOfBalls) << " non-balls)</p>" << std::endl;
 
-    html << "<h1>False Positives</h1>" << std::endl;
+    html << "<h2>False Positives</h2>" << std::endl;
 
     html << "<p>number: " << falsePositives << "</p>" << std::endl;
 
@@ -170,10 +174,12 @@ void BallDetectorEvaluator::execute()
            << "\" src=\"data:image/png;base64," << base64Encoder.encode(imgPNG.c_str(), (int) imgPNG.size())  << "\" />" << std::endl;
     }
     html << "</div>" << std::endl;
-    html << "</body>" << std::endl;
-    html.close();
+
   }
 
+
+  html << "</body>" << std::endl;
+  html.close();
 }
 
 unsigned int BallDetectorEvaluator::executeSingleFile(std::string file)
