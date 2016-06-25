@@ -36,8 +36,7 @@
 #endif
 
 BallDetectorEvaluator::BallDetectorEvaluator(const std::string &fileArg)
-  : fileArg(fileArg), minNeighbours(0),
-    truePositives(0), falsePositives(0), falseNegatives(0)
+  : fileArg(fileArg), minNeighbours(0)
 {
 
 }
@@ -73,12 +72,14 @@ void BallDetectorEvaluator::execute()
   for(minNeighbours=0; minNeighbours < 6; minNeighbours++)
   {
 
-    truePositives = falseNegatives = falsePositives = 0;
-    falsePositivePatches.clear();
-    falseNegativePatches.clear();
+    ExperimentResult r;
 
-
-    unsigned int totalSize = 0;
+    r.truePositives = 0;
+    r.falseNegatives = 0;
+    r.falsePositives = 0;
+    r.falsePositivePatches.clear();
+    r.falseNegativePatches.clear();
+    r.totalSize = 0;
 
 
     if(g_file_test(fileArg.c_str(), G_FILE_TEST_IS_DIR))
@@ -101,7 +102,7 @@ void BallDetectorEvaluator::execute()
             if (g_file_test(completeFileName.c_str(), G_FILE_TEST_EXISTS)
                 && g_file_test(completeFileName.c_str(), G_FILE_TEST_IS_REGULAR))
             {
-              totalSize += executeSingleFile(completeFileName);
+              r.totalSize += executeSingleFile(completeFileName, r);
             }
           }
 
@@ -113,26 +114,26 @@ void BallDetectorEvaluator::execute()
     else
     {
       // only one file
-      totalSize = executeSingleFile(fileArg);
+      r.totalSize = executeSingleFile(fileArg, r);
     }
 
-    double precision = 1.0;
-    if(truePositives + falsePositives > 0)
+    r.precision = 1.0;
+    if(r.truePositives + r.falsePositives > 0)
     {
-      precision = (double) truePositives / ((double) (truePositives + falsePositives));
+      r.precision = (double) r.truePositives / ((double) (r.truePositives + r.falsePositives));
     }
-    double recall = 1.0;
-    if(truePositives + falsePositives > 0)
+    r.recall = 1.0;
+    if(r.truePositives + r.falsePositives > 0)
     {
-      recall = (double) truePositives / ((double) (truePositives + falseNegatives));
+      r.recall = (double) r.truePositives / ((double) (r.truePositives + r.falseNegatives));
     }
 
 
     std::cout << "=============" << std::endl;
     std::cout << "minNeighbours=" << minNeighbours << std::endl;
 
-    std::cout << "precision: " << precision << std::endl;
-    std::cout << "recall: " << recall << std::endl;
+    std::cout << "precision: " << r.precision << std::endl;
+    std::cout << "recall: " << r.recall << std::endl;
 
     std::cout << "=============" << std::endl;
     std::cout << "Written detailed report to " << outFileName << std::endl;
@@ -143,20 +144,20 @@ void BallDetectorEvaluator::execute()
     html << "<h1>minNeighbours=" << minNeighbours << "</h1>" << std::endl;
 
     html << "<h2>Summary</h2>" << std::endl;
-    html << "<p><strong>precision: " << precision << "<br />recall: " << recall << "</strong></p>" << std::endl;
+    html << "<p><strong>precision: " << r.precision << "<br />recall: " << r.recall << "</strong></p>" << std::endl;
 
 
-    unsigned int numOfBalls = truePositives + falseNegatives;
-    html << "<p>total number of samples: " << totalSize << " (" << numOfBalls << " balls, " << (totalSize - numOfBalls) << " non-balls)</p>" << std::endl;
+    unsigned int numOfBalls = r.truePositives + r.falseNegatives;
+    html << "<p>total number of samples: " << r.totalSize << " (" << numOfBalls << " balls, " << (r.totalSize - numOfBalls) << " non-balls)</p>" << std::endl;
 
     html << "<p><a href=\"#overview\">back to top</a></p>" << std::endl;
 
     html << "<h2>False Positives</h2>" << std::endl;
 
-    html << "<p>number: " << falsePositives << "</p>" << std::endl;
+    html << "<p>number: " << r.falsePositives << "</p>" << std::endl;
 
     html << "<div>" << std::endl;
-    for(std::list<ErrorEntry>::const_iterator it=falsePositivePatches.begin(); it != falsePositivePatches.end(); it++)
+    for(std::list<ErrorEntry>::const_iterator it=r.falsePositivePatches.begin(); it != r.falsePositivePatches.end(); it++)
     {
       // use a data URI to embed the image in PNG format
       std::string imgPNG = createPNG(it->patch);
@@ -167,10 +168,10 @@ void BallDetectorEvaluator::execute()
 
     html << "<h1>False Negatives</h1>" << std::endl;
 
-    html << "<p>number: " << falseNegatives << "</p>" << std::endl;
+    html << "<p>number: " << r.falseNegatives << "</p>" << std::endl;
 
     html << "<div>" << std::endl;
-    for(std::list<ErrorEntry>::const_iterator it=falseNegativePatches.begin(); it != falseNegativePatches.end(); it++)
+    for(std::list<ErrorEntry>::const_iterator it=r.falseNegativePatches.begin(); it != r.falseNegativePatches.end(); it++)
     {
       // use a data URI to embed the image in PNG format
       std::string imgPNG = createPNG(it->patch);
@@ -186,7 +187,7 @@ void BallDetectorEvaluator::execute()
   html.close();
 }
 
-unsigned int BallDetectorEvaluator::executeSingleFile(std::string file)
+unsigned int BallDetectorEvaluator::executeSingleFile(std::string file, ExperimentResult& r)
 {
   LogFileScanner logFileScanner(file);
 
@@ -226,12 +227,12 @@ unsigned int BallDetectorEvaluator::executeSingleFile(std::string file)
 
     for(const BallCandidates::Patch& p : getBallCandidates().patches)
     {
-      evaluatePatch(p, patchIdx++, CameraInfo::Bottom, expectedBallIdx, file);
+      evaluatePatch(p, patchIdx++, CameraInfo::Bottom, expectedBallIdx, file, r);
     }
 
     for(const BallCandidates::Patch& p : getBallCandidatesTop().patches)
     {
-      evaluatePatch(p, patchIdx++, CameraInfo::Bottom, expectedBallIdx, file);
+      evaluatePatch(p, patchIdx++, CameraInfo::Bottom, expectedBallIdx, file, r);
     }
 
     if(patchIdx >= maxValidIdx)
@@ -246,7 +247,8 @@ unsigned int BallDetectorEvaluator::executeSingleFile(std::string file)
 void BallDetectorEvaluator::evaluatePatch(const BallCandidates::Patch &p, unsigned int patchIdx,
                                           CameraInfo::CameraID camID,
                                           const std::set<unsigned int>& expectedBallIdx,
-                                          std::string fileName)
+                                          std::string fileName,
+                                          ExperimentResult& r)
 {
   bool expected = expectedBallIdx.find(patchIdx) != expectedBallIdx.end();
   bool actual = classifier.classify(p, minNeighbours) > 0;
@@ -255,7 +257,7 @@ void BallDetectorEvaluator::evaluatePatch(const BallCandidates::Patch &p, unsign
   {
     if(expected)
     {
-      truePositives++;
+      r.truePositives++;
     }
   }
   else
@@ -266,13 +268,13 @@ void BallDetectorEvaluator::evaluatePatch(const BallCandidates::Patch &p, unsign
     error.fileName = fileName;
     if(actual)
     {
-      falsePositivePatches.push_back(error);
-      falsePositives++;
+      r.falsePositivePatches.push_back(error);
+      r.falsePositives++;
     }
     else
     {
-      falseNegativePatches.push_back(error);
-      falseNegatives++;
+      r.falseNegativePatches.push_back(error);
+      r.falseNegatives++;
     }
   }
 }

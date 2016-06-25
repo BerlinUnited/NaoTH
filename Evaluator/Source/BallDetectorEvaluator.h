@@ -33,10 +33,21 @@ public:
     std::string fileName;
   };
 
+  struct ExperimentResult
+  {
+    unsigned int truePositives, falsePositives, falseNegatives, totalSize;
+
+
+    std::list<ErrorEntry> falsePositivePatches;
+    std::list<ErrorEntry> falseNegativePatches;
+
+    double precision, recall;
+  };
+
 private:
-  unsigned int executeSingleFile(std::string file);
+  unsigned int executeSingleFile(std::string file, ExperimentResult &r);
   void evaluatePatch(const BallCandidates::Patch& p, unsigned int patchIdx, CameraInfo::CameraID camID,
-                     const std::set<unsigned int> &expectedBallIdx, std::string fileName);
+                     const std::set<unsigned int> &expectedBallIdx, std::string fileName, ExperimentResult &r);
 
   int loadGroundTruth(std::string file, std::set<unsigned int> &expectedBallIdx);
 
@@ -56,12 +67,9 @@ private:
   // TODO: allow more classifiers (including the ones that have the more complex filter logic)
   CVHaarClassifier classifier;
 
+  std::map<unsigned int, ExperimentResult> results;
 
-  unsigned int truePositives, falsePositives, falseNegatives;
 
-
-  std::list<ErrorEntry> falsePositivePatches;
-  std::list<ErrorEntry> falseNegativePatches;
 };
 
 #endif // BALLDETECTOREVALUATOR_H
