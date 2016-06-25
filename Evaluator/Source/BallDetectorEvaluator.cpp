@@ -36,7 +36,7 @@
 #endif
 
 BallDetectorEvaluator::BallDetectorEvaluator(const std::string &fileArg)
-  : fileArg(fileArg), minNeighbours(0)
+  : fileArg(fileArg)
 {
 
 }
@@ -54,8 +54,11 @@ void BallDetectorEvaluator::execute()
 
 
   // do experiment for different parameters
-  for(minNeighbours=0; minNeighbours < 6; minNeighbours++)
+  for(unsigned int minNeighbours=0; minNeighbours < 6; minNeighbours++)
   {
+    ExperimentParameters params;
+    params.minNeighbours = minNeighbours;
+    params.windowSize = 12;
 
     ExperimentResult r;
 
@@ -87,7 +90,7 @@ void BallDetectorEvaluator::execute()
             if (g_file_test(completeFileName.c_str(), G_FILE_TEST_EXISTS)
                 && g_file_test(completeFileName.c_str(), G_FILE_TEST_IS_REGULAR))
             {
-              r.totalSize += executeSingleFile(completeFileName, r);
+              r.totalSize += executeSingleFile(completeFileName, params, r);
             }
           }
 
@@ -99,7 +102,7 @@ void BallDetectorEvaluator::execute()
     else
     {
       // only one file
-      r.totalSize = executeSingleFile(fileArg, r);
+      r.totalSize = executeSingleFile(fileArg, params, r);
     }
 
     r.precision = 1.0;
@@ -113,7 +116,7 @@ void BallDetectorEvaluator::execute()
       r.recall = (double) r.truePositives / ((double) (r.truePositives + r.falseNegatives));
     }
 
-    results[minNeighbours] = r;
+    results[params] = r;
 
 
 
@@ -158,12 +161,13 @@ void BallDetectorEvaluator::outputResults(std::string outFileName)
   html << "<th>" << "precision" << "</th>" << std::endl;
   html << "<th>" << "recall" << "</th>" << std::endl;
   html << "</tr>" << std::endl;
-  for(std::map<unsigned int, ExperimentResult>::const_iterator it=results.begin();
+  for(std::map<ExperimentParameters, ExperimentResult>::const_iterator it=results.begin();
       it != results.end(); it++)
   {
+    const ExperimentParameters& params = it->first;
     const ExperimentResult& r = it->second;
     html << "<tr>" << std::endl;
-    html << "<td><a href=\"#result_" << it->first <<  "\">" << it->first << "</a></td>" << std::endl;
+    html << "<td><a href=\"#result_" <<  params.minNeighbours <<  "\">" << params.minNeighbours << "</a></td>" << std::endl;
     html << "<td>" << r.precision << "</td>" << std::endl;
     html << "<td>" << r.recall << "</td>" << std::endl;
     html << "</tr>" << std::endl;
@@ -171,13 +175,14 @@ void BallDetectorEvaluator::outputResults(std::string outFileName)
   html << "</table>" << std::endl;
 
 
-  for(std::map<unsigned int, ExperimentResult>::const_iterator it=results.begin();
+  for(std::map<ExperimentParameters, ExperimentResult>::const_iterator it=results.begin();
       it != results.end(); it++)
   {
+    const ExperimentParameters& params = it->first;
     const ExperimentResult& r = it->second;
 
 
-    html << "<h1><a id=\"result_" << it->first << "\">minNeighbours=" << it->first << "</a></h1>" << std::endl;
+    html << "<h1><a id=\"result_" << params.minNeighbours << "\">minNeighbours=" << params.minNeighbours << "</a></h1>" << std::endl;
 
     html << "<h2>Summary</h2>" << std::endl;
     html << "<p><strong>precision: " << r.precision << "<br />recall: " << r.recall << "</strong></p>" << std::endl;
@@ -221,7 +226,7 @@ void BallDetectorEvaluator::outputResults(std::string outFileName)
   html.close();
 }
 
-unsigned int BallDetectorEvaluator::executeSingleFile(std::string file, ExperimentResult& r)
+unsigned int BallDetectorEvaluator::executeSingleFile(std::string file, const ExperimentParameters& params, ExperimentResult& r)
 {
   LogFileScanner logFileScanner(file);
 
@@ -261,12 +266,12 @@ unsigned int BallDetectorEvaluator::executeSingleFile(std::string file, Experime
 
     for(const BallCandidates::Patch& p : getBallCandidates().patches)
     {
-      evaluatePatch(p, patchIdx++, CameraInfo::Bottom, expectedBallIdx, file, r);
+      evaluatePatch(p, patchIdx++, CameraInfo::Bottom, expectedBallIdx, file, params, r);
     }
 
     for(const BallCandidates::Patch& p : getBallCandidatesTop().patches)
     {
-      evaluatePatch(p, patchIdx++, CameraInfo::Bottom, expectedBallIdx, file, r);
+      evaluatePatch(p, patchIdx++, CameraInfo::Bottom, expectedBallIdx, file, params, r);
     }
 
     if(patchIdx >= maxValidIdx)
@@ -282,10 +287,11 @@ void BallDetectorEvaluator::evaluatePatch(const BallCandidates::Patch &p, unsign
                                           CameraInfo::CameraID camID,
                                           const std::set<unsigned int>& expectedBallIdx,
                                           std::string fileName,
+                                          const ExperimentParameters &params,
                                           ExperimentResult& r)
 {
   bool expected = expectedBallIdx.find(patchIdx) != expectedBallIdx.end();
-  bool actual = classifier.classify(p, minNeighbours) > 0;
+  bool actual = classifier.classify(p, params.minNeighbours) > 0;
 
   if(expected == actual)
   {

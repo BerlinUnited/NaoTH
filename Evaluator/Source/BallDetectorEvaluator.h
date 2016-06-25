@@ -33,6 +33,28 @@ public:
     std::string fileName;
   };
 
+  struct ExperimentParameters
+  {
+    unsigned int minNeighbours;
+    unsigned int windowSize;
+  };
+
+
+  struct cmpExperimentParameters {
+      bool operator()(const ExperimentParameters& a, const ExperimentParameters& b) const {
+        if(a.minNeighbours < b.minNeighbours)
+        {
+          return true;
+        }
+        else if(a.minNeighbours == b.minNeighbours)
+        {
+          return a.windowSize < b.windowSize;
+        }
+        return false;
+      }
+  };
+
+
   struct ExperimentResult
   {
     unsigned int truePositives, falsePositives, falseNegatives, totalSize;
@@ -46,9 +68,9 @@ public:
 
 private:
 
-  unsigned int executeSingleFile(std::string file, ExperimentResult &r);
+  unsigned int executeSingleFile(std::string file, const ExperimentParameters &params, ExperimentResult &r);
   void evaluatePatch(const BallCandidates::Patch& p, unsigned int patchIdx, CameraInfo::CameraID camID,
-                     const std::set<unsigned int> &expectedBallIdx, std::string fileName, ExperimentResult &r);
+                     const std::set<unsigned int> &expectedBallIdx, std::string fileName, const ExperimentParameters &params, ExperimentResult &r);
 
   int loadGroundTruth(std::string file, std::set<unsigned int> &expectedBallIdx);
 
@@ -65,12 +87,13 @@ private:
 
 private:
   const std::string fileArg;
-  unsigned int minNeighbours;
 
   // TODO: allow more classifiers (including the ones that have the more complex filter logic)
   CVHaarClassifier classifier;
 
-  std::map<unsigned int, ExperimentResult> results;
+
+
+  std::map<ExperimentParameters, ExperimentResult, cmpExperimentParameters> results;
 
 
 };
