@@ -146,7 +146,7 @@ public class ImagePanel extends javax.swing.JPanel
         }
 
         // transform the drawing-pane back (nessesary to draw the other components correct)
-        g2d.scale(1.0, 1.0);
+        g2d.scale(1.0/ratioW, 1.0/ratioH);
         g2d.translate(-(posX + 1), -(posY + 1));
     }//end paint
     

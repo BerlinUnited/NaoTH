@@ -50,8 +50,8 @@ void TeamCommSender::fillMessage(const PlayerInfo& playerInfo,
                                    const BatteryData &batteryData,
                                    TeamMessage::Data &out)
 {
-  out.playerNum = playerInfo.gameData.playerNumber;
-  out.teamNumber = playerInfo.gameData.teamNumber;
+  out.playerNum = playerInfo.playerNumber;
+  out.teamNumber = playerInfo.teamNumber;
   out.pose = robotPose;
 
   if(ballModel.valid)
@@ -81,7 +81,7 @@ void TeamCommSender::fillMessage(const PlayerInfo& playerInfo,
   out.timestamp = naoth::NaoTime::getSystemTimeInMilliSeconds(); //frameInfo.getTime();
   out.timeToBall = (unsigned int) soccerStrategy.timeToBall;
   out.wasStriker = roleDecisionModel.wantsToBeStriker;
-  out.isPenalized = playerInfo.gameData.gameState == GameData::penalized;
+  out.isPenalized = playerInfo.robotState == PlayerInfo::penalized;
   out.batteryCharge = (float) batteryData.charge;
   out.temperature =
       (float) std::max(bodyState.temperatureLeftLeg, bodyState.temperatureRightLeg);

@@ -27,9 +27,6 @@ void Sensor::init(naoth::ProcessInterface& platformInterface, const naoth::Platf
   robot.bodyID = platform.getBodyID();
   robot.basicTimeStep = platform.getBasicTimeStep();
   
-  // init player number, team number and etc.
-  getGameData().loadFromCfg( naoth::Platform::getInstance().theConfiguration );
-
   REG_INPUT(Image);
   REG_INPUT(ImageTop);
   REG_INPUT(CurrentCameraSettings);
