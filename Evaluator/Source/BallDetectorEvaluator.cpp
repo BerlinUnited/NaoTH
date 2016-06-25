@@ -66,6 +66,8 @@ void BallDetectorEvaluator::execute()
 
   html << "<body>" << std::endl;
 
+  html << "<h1><a id=\"overview\">Overview</a></h1>" << std::endl;
+
 
   // do experiment for different parameters
   for(minNeighbours=0; minNeighbours < 6; minNeighbours++)
@@ -146,6 +148,8 @@ void BallDetectorEvaluator::execute()
 
     unsigned int numOfBalls = truePositives + falseNegatives;
     html << "<p>total number of samples: " << totalSize << " (" << numOfBalls << " balls, " << (totalSize - numOfBalls) << " non-balls)</p>" << std::endl;
+
+    html << "<p><a href=\"#overview\">back to top</a></p>" << std::endl;
 
     html << "<h2>False Positives</h2>" << std::endl;
 
