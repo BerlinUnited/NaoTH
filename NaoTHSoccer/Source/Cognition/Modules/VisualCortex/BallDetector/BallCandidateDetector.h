@@ -22,7 +22,7 @@
 #include "Representations/Perception/BodyContour.h"
 #include "Representations/Perception/FieldColorPercept.h"
 
-#include "Representations/Perception/GameColorIntegralImage.h"
+#include "Representations/Perception/MultiChannelIntegralImage.h"
 #include "Representations/Perception/BallCandidates.h"
 #include "Representations/Perception/MultiBallPercept.h"
 

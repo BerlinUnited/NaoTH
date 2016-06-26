@@ -7,7 +7,7 @@
 #ifndef _BlackSpotExtractor_H_
 #define _BlackSpotExtractor_H_
 
-#include "Representations/Perception/GameColorIntegralImage.h"
+#include "Representations/Perception/MultiChannelIntegralImage.h"
 #include "BestPatchList.h"
 
 class BlackSpotExtractor
