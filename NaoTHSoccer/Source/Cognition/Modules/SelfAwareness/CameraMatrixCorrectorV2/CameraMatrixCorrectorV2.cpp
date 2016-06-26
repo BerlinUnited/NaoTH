@@ -52,11 +52,19 @@ void CameraMatrixCorrectorV2::execute()
       index.second = current_index_pitch;
 
       if(last_idx_pitch != current_index_pitch || last_idx_yaw != current_index_yaw) {
-          c_data[index].chestPose        = getKinematicChain().theLinks[KinematicChain::Torso].M;
-          c_data[index].lineGraphPercept = getLineGraphPercept();
-          c_data[index].headYaw          = getSensorJointData().position[JointData::HeadYaw];
-          c_data[index].headPitch        = getSensorJointData().position[JointData::HeadPitch];
-          c_data[index].inertialModel    = getInertialModel();
+          std::vector<CamMatErrorFunction::CalibrationDataSample>& data = c_data[index];
+
+          data.push_back((struct CamMatErrorFunction::CalibrationDataSample){getKinematicChain().theLinks[KinematicChain::Torso].M,
+                                                                             getLineGraphPercept(),getInertialModel(),
+                                                                             getSensorJointData().position[JointData::HeadYaw],
+                                                                             getSensorJointData().position[JointData::HeadPitch]
+                                                                            });
+
+//          c_data[index].chestPose        = getKinematicChain().theLinks[KinematicChain::Torso].M;
+//          c_data[index].lineGraphPercept = getLineGraphPercept();
+//          c_data[index].headYaw          = getSensorJointData().position[JointData::HeadYaw];
+//          c_data[index].headPitch        = getSensorJointData().position[JointData::HeadPitch];
+//          c_data[index].inertialModel    = getInertialModel();
 
           last_idx_pitch = current_index_pitch;
           last_idx_yaw   = current_index_yaw;

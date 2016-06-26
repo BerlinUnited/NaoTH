@@ -74,7 +74,7 @@ public:
         double headPitch;
     };
 
-    typedef std::map< std::pair<int, int>, CalibrationDataSample > CalibrationData;
+    typedef std::map< std::pair<int, int>, std::vector<CalibrationDataSample> > CalibrationData;
     CalibrationData calibrationData;
 
 private:
@@ -83,11 +83,11 @@ private:
 
     DOUBLE_CAM_REQUIRE(CamMatErrorFunction,CameraInfo);
 
-    const std::vector<EdgelD>& getEdgelsInImage(CalibrationData::const_iterator& cd_iter) const {
+    const std::vector<EdgelD>& getEdgelsInImage(std::vector<CalibrationDataSample>::const_iterator& sample) const {
       if(cameraID == CameraInfo::Top) {
-        return cd_iter->second.lineGraphPercept.edgelsInImageTop;
+        return sample->lineGraphPercept.edgelsInImageTop;
       } else {
-        return cd_iter->second.lineGraphPercept.edgelsInImage;
+        return sample->lineGraphPercept.edgelsInImage;
       }
     }
 
@@ -105,65 +105,66 @@ public:
         for(int i = 0; i < CameraInfo::numOfCamera; i++){
             cameraID = static_cast<CameraInfo::CameraID>(i);
             for(CalibrationData::const_iterator cd_iter = calibrationData.begin(); cd_iter != calibrationData.end(); ++cd_iter){
-                CameraMatrix tmpCM = CameraGeometry::calculateCameraMatrixFromChestPose(
-                            //cd_iter->kinematicChain,
-                            cd_iter->second.chestPose,
-                            NaoInfo::robotDimensions.cameraTransform[cameraID].offset,
-                            NaoInfo::robotDimensions.cameraTransform[cameraID].rotationY,
-                            getCameraMatrixOffset().body_rot,
-                            getCameraMatrixOffset().head_rot,
-                            getCameraMatrixOffset().cam_rot[cameraID],
-                            cd_iter->second.headYaw,
-                            cd_iter->second.headPitch,
-                            cd_iter->second.inertialModel
-                            );
+                for(std::vector<CalibrationDataSample>::const_iterator sample = cd_iter->second.begin(); sample != cd_iter->second.end(); ++sample) {
+                    CameraMatrix tmpCM = CameraGeometry::calculateCameraMatrixFromChestPose(
+                                sample->chestPose,
+                                NaoInfo::robotDimensions.cameraTransform[cameraID].offset,
+                                NaoInfo::robotDimensions.cameraTransform[cameraID].rotationY,
+                                getCameraMatrixOffset().body_rot,
+                                getCameraMatrixOffset().head_rot,
+                                getCameraMatrixOffset().cam_rot[cameraID],
+                                sample->headYaw,
+                                sample->headPitch,
+                                sample->inertialModel
+                                );
 
-                std::vector<Vector2d> edgelProjections;
-                edgelProjections.resize(getEdgelsInImage(cd_iter).size());
+                    std::vector<Vector2d> edgelProjections;
+                    edgelProjections.resize(getEdgelsInImage(sample).size());
 
-                // draw projected edgels to field
-                for(size_t i = 0; i < getEdgelsInImage(cd_iter).size(); i++)
-                {
-                    const EdgelT<double>& edgelOne = getEdgelsInImage(cd_iter)[i];
+                    // draw projected edgels to field
+                    for(size_t i = 0; i < getEdgelsInImage(sample).size(); i++)
+                    {
+                        const EdgelT<double>& edgelOne = getEdgelsInImage(sample)[i];
 
-                    CameraGeometry::imagePixelToFieldCoord(
-                                tmpCM, getCameraInfo(),
-                                edgelOne.point.x,
-                                edgelOne.point.y,
-                                0.0,
-                                edgelProjections[i]);
+                        CameraGeometry::imagePixelToFieldCoord(
+                                    tmpCM, getCameraInfo(),
+                                    edgelOne.point.x,
+                                    edgelOne.point.y,
+                                    0.0,
+                                    edgelProjections[i]);
 
-                    DEBUG_REQUEST("CamMatErrorFunction:debug_drawings:draw_projected_edgels",
+                        DEBUG_REQUEST("CamMatErrorFunction:debug_drawings:draw_projected_edgels",
+                                FIELD_DRAWING_CONTEXT;
+                                PEN("000000", 10);
+                                CIRCLE(edgelProjections[i].x, edgelProjections[i].y, 20);
+                        );
+                    }
+
+                    DEBUG_REQUEST("CamMatErrorFunction:debug_drawings:draw_matching_global",
+                    // determine distance to nearst field line and the total aberration
+                        for(std::vector<Vector2d>::const_iterator iter = edgelProjections.begin(); iter != edgelProjections.end(); ++iter){
+
+                            const Vector2d& seen_point_relative = *iter;
+
+                            Pose2D   robotPose;
+                            Vector2d seen_point_global = robotPose * seen_point_relative;
+
+                            LinesTable::NamedPoint line_point_global = getFieldInfo().fieldLinesTable.get_closest_point(seen_point_global, LinesTable::all_lines);
+
+                            // there is no such line
+                            if(line_point_global.id == -1) {
+                                continue;
+                            }
+
                             FIELD_DRAWING_CONTEXT;
                             PEN("000000", 10);
-                            CIRCLE(edgelProjections[i].x, edgelProjections[i].y, 20);
+
+                            CIRCLE(seen_point_global.x, seen_point_global.y, 20);
+                            LINE(line_point_global.position.x,line_point_global.position.y,seen_point_global.x, seen_point_global.y);
+
+                        }
                     );
                 }
-
-                DEBUG_REQUEST("CamMatErrorFunction:debug_drawings:draw_matching_global",
-                // determine distance to nearst field line and the total aberration
-                    for(std::vector<Vector2d>::const_iterator iter = edgelProjections.begin(); iter != edgelProjections.end(); ++iter){
-
-                        const Vector2d& seen_point_relative = *iter;
-
-                        Pose2D   robotPose;
-                        Vector2d seen_point_global = robotPose * seen_point_relative;
-
-                        LinesTable::NamedPoint line_point_global = getFieldInfo().fieldLinesTable.get_closest_point(seen_point_global, LinesTable::all_lines);
-
-                        // there is no such line
-                        if(line_point_global.id == -1) {
-                            continue;
-                        }
-
-                        FIELD_DRAWING_CONTEXT;
-                        PEN("000000", 10);
-
-                        CIRCLE(seen_point_global.x, seen_point_global.y, 20);
-                        LINE(line_point_global.position.x,line_point_global.position.y,seen_point_global.x, seen_point_global.y);
-
-                    }
-                );
             }
         }
     }
@@ -182,62 +183,63 @@ public:
         for(int i = 0; i < CameraInfo::numOfCamera; i++){
             cameraID = static_cast<CameraInfo::CameraID>(i);
             for(CalibrationData::const_iterator cd_iter = calibrationData.begin(); cd_iter != calibrationData.end(); ++cd_iter){
+                for(std::vector<CalibrationDataSample>::const_iterator sample = cd_iter->second.begin(); sample != cd_iter->second.end(); ++sample) {
+                    CameraMatrix tmpCM = CameraGeometry::calculateCameraMatrixFromChestPose(
+                                //cd_iter->kinematicChain,
+                                sample->chestPose,
+                                NaoInfo::robotDimensions.cameraTransform[cameraID].offset,
+                                NaoInfo::robotDimensions.cameraTransform[cameraID].rotationY,
+                                getCameraMatrixOffset().body_rot + offsetBody,
+                                getCameraMatrixOffset().head_rot + offsetHead,
+                                getCameraMatrixOffset().cam_rot[cameraID]  + offsetCam[cameraID],
+                                sample->headYaw,
+                                sample->headPitch,
+                                sample->inertialModel
+                                );
 
-                CameraMatrix tmpCM = CameraGeometry::calculateCameraMatrixFromChestPose(
-                            //cd_iter->kinematicChain,
-                            cd_iter->second.chestPose,
-                            NaoInfo::robotDimensions.cameraTransform[cameraID].offset,
-                            NaoInfo::robotDimensions.cameraTransform[cameraID].rotationY,
-                            getCameraMatrixOffset().body_rot + offsetBody,
-                            getCameraMatrixOffset().head_rot + offsetHead,
-                            getCameraMatrixOffset().cam_rot[cameraID]  + offsetCam[cameraID],
-                            cd_iter->second.headYaw,
-                            cd_iter->second.headPitch,
-                            cd_iter->second.inertialModel
-                            );
+                    std::vector<Vector2d> edgelProjections;
+                    edgelProjections.resize(getEdgelsInImage(sample).size());
 
-                std::vector<Vector2d> edgelProjections;
-                edgelProjections.resize(getEdgelsInImage(cd_iter).size());
+                    // project edgels pairs to field
+                    for(size_t i = 0; i < getEdgelsInImage(sample).size(); i++)
+                    {
+                        const EdgelT<double>& edgelOne = getEdgelsInImage(sample)[i];
 
-                // project edgels pairs to field
-                for(size_t i = 0; i < getEdgelsInImage(cd_iter).size(); i++)
-                {
-                    const EdgelT<double>& edgelOne = getEdgelsInImage(cd_iter)[i];
-
-                    CameraGeometry::imagePixelToFieldCoord(
-                                tmpCM, getCameraInfo(),
-                                edgelOne.point.x,
-                                edgelOne.point.y,
-                                0.0,
-                                edgelProjections[i]);
-                }
-
-                sample_cnt += (double) edgelProjections.size();
-
-                // determine distance to nearst field line and the total aberration
-                for(std::vector<Vector2d>::const_iterator iter = edgelProjections.begin(); iter != edgelProjections.end(); ++iter){
-
-                    const Vector2d& seen_point_relative = *iter;
-
-                    Pose2D   robotPose;
-                    Vector2d seen_point_global = robotPose * seen_point_relative;
-
-                    LinesTable::NamedPoint line_point_global = getFieldInfo().fieldLinesTable.get_closest_point(seen_point_global, LinesTable::all_lines);
-                    //LinesTable::NamedPoint corner = getFieldInfo().fieldLinesTable.get_closest_corner_point(seen_point_global);
-
-                    // there is no such line or point
-                    if(line_point_global.id == -1 /*&& corner.id == -1*/) {
-                        continue;
+                        CameraGeometry::imagePixelToFieldCoord(
+                                    tmpCM, getCameraInfo(),
+                                    edgelOne.point.x,
+                                    edgelOne.point.y,
+                                    0.0,
+                                    edgelProjections[i]);
                     }
 
-                    double dist           = (seen_point_global - line_point_global.position).abs();//(line_point_global.id == -1) ? std::numeric_limits<double>::infinity() : (seen_point_global - line_point_global.position).abs();
-                    //double dist_corner  = (corner.id == -1)            ? std::numeric_limits<double>::infinity() : (seen_point_global - corner.position).abs();
+                    sample_cnt += (double) edgelProjections.size();
 
-                    //if(dist >= dist_corner) {
-                    //    dist = dist_corner;
-                    //}
+                    // determine distance to nearst field line and the total aberration
+                    for(std::vector<Vector2d>::const_iterator iter = edgelProjections.begin(); iter != edgelProjections.end(); ++iter){
 
-                    total_sum += dist;
+                        const Vector2d& seen_point_relative = *iter;
+
+                        Pose2D   robotPose;
+                        Vector2d seen_point_global = robotPose * seen_point_relative;
+
+                        LinesTable::NamedPoint line_point_global = getFieldInfo().fieldLinesTable.get_closest_point(seen_point_global, LinesTable::all_lines);
+                        //LinesTable::NamedPoint corner = getFieldInfo().fieldLinesTable.get_closest_corner_point(seen_point_global);
+
+                        // there is no such line or point
+                        if(line_point_global.id == -1 /*&& corner.id == -1*/) {
+                            continue;
+                        }
+
+                        double dist           = (seen_point_global - line_point_global.position).abs();//(line_point_global.id == -1) ? std::numeric_limits<double>::infinity() : (seen_point_global - line_point_global.position).abs();
+                        //double dist_corner  = (corner.id == -1)            ? std::numeric_limits<double>::infinity() : (seen_point_global - corner.position).abs();
+
+                        //if(dist >= dist_corner) {
+                        //    dist = dist_corner;
+                        //}
+
+                        total_sum += dist;
+                    }
                 }
             }
         }
