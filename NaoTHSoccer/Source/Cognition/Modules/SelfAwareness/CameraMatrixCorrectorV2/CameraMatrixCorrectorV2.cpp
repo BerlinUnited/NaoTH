@@ -44,8 +44,8 @@ void CameraMatrixCorrectorV2::execute()
   if(collect_data){
       CamMatErrorFunction::CalibrationData& c_data = (theCamMatErrorFunction->getModuleT())->calibrationData;
 
-      int current_index_yaw   = static_cast<int>((Math::toDegrees(getSensorJointData().position[JointData::HeadYaw])/2.0) + 0.5);
-      int current_index_pitch = static_cast<int>((Math::toDegrees(getSensorJointData().position[JointData::HeadPitch])/2.0) + 0.5);
+      int current_index_yaw   = static_cast<int>((Math::toDegrees(getSensorJointData().position[JointData::HeadYaw])/20.0) + 0.5);
+      int current_index_pitch = static_cast<int>((Math::toDegrees(getSensorJointData().position[JointData::HeadPitch])/5.0) + 0.5);
 
       std::pair<int,int> index;
       index.first  = current_index_yaw;
