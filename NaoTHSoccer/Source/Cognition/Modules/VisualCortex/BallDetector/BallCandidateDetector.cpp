@@ -22,6 +22,8 @@ BallCandidateDetector::BallCandidateDetector()
 
   DEBUG_REQUEST_REGISTER("Vision:BallCandidateDetector:lbpDetection", "draw ball percepts", false);
 
+  DEBUG_REQUEST_REGISTER("Vision:BallCandidateDetector:extractPatches", "generate YUVC patches", false);
+
   theBallKeyPointExtractor = registerModule<BallKeyPointExtractor>("BallKeyPointExtractor", true);
   getDebugParameterList().add(&params);
 }
@@ -56,6 +58,10 @@ void BallCandidateDetector::execute(CameraInfo::CameraID id)
         CIRCLE_PX(ColorClasses::orange, (int)((*iter).centerInImage.x+0.5), (int)((*iter).centerInImage.y+0.5), (int)((*iter).radiusInImage+0.5));
       }
     }
+  );
+
+  DEBUG_REQUEST("Vision:BallCandidateDetector:extractPatches",
+    extractPatches();
   );
 }
 
@@ -177,7 +183,35 @@ void BallCandidateDetector::calculateCandidates()
     }
   }
 
-} // end executeHeuristic
+} // end calculateCandidates
+
+void BallCandidateDetector::extractPatches()
+{
+  int idx = 0;
+  for(BestPatchList::reverse_iterator i = best.rbegin(); i != best.rend(); ++i)
+  {
+    if(idx > 5) {
+      break;
+    }
+    Vector2i min = (*i).min;
+    Vector2i max = (*i).max;
+    int offset = (max.x - min.x)/4;
+    min.x -= offset;
+    min.y -= offset;
+    max.x += offset;
+    max.y += offset;
+
+    if(getFieldPercept().getValidField().isInside(min) && getFieldPercept().getValidField().isInside(max))
+    {
+      BallCandidates::PatchYUVClassified& q = getBallCandidates().nextFreePatchYUVClassified();
+      q.min = min;
+      q.max = max;
+      PatchWork::subsampling(getImage(), getFieldColorPercept(), q.data, q.min.x, q.min.y, q.max.x, q.max.y, 24);
+      
+      idx++;
+    }
+  }
+}
 
 void BallCandidateDetector::addBallPercept(const Vector2i& center, double radius) 
 {

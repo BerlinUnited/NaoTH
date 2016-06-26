@@ -20,6 +20,7 @@
 #include "Representations/Perception/CameraMatrix.h"
 #include "Representations/Perception/FieldPercept.h"
 #include "Representations/Perception/BodyContour.h"
+#include "Representations/Perception/FieldColorPercept.h"
 
 #include "Representations/Perception/GameColorIntegralImage.h"
 #include "Representations/Perception/BallCandidates.h"
@@ -54,6 +55,8 @@ BEGIN_DECLARE_MODULE(BallCandidateDetector)
   REQUIRE(ImageTop)
   PROVIDE(GameColorIntegralImage)
   PROVIDE(GameColorIntegralImageTop)
+  REQUIRE(FieldColorPercept)
+  REQUIRE(FieldColorPerceptTop)
 
   REQUIRE(CameraMatrix)
   REQUIRE(CameraMatrixTop)
@@ -138,7 +141,8 @@ private:
 private:
   void calculateCandidates();
   void addBallPercept(const Vector2i& center, double radius);
-
+  void extractPatches();
+  
 private:
   CameraInfo::CameraID cameraID;
 
@@ -150,6 +154,7 @@ private:
   DOUBLE_CAM_REQUIRE(BallCandidateDetector, FieldPercept);
   //DOUBLE_CAM_REQUIRE(BallCandidateDetector, BodyContour);
   DOUBLE_CAM_REQUIRE(BallCandidateDetector, GameColorIntegralImage);
+  DOUBLE_CAM_REQUIRE(BallCandidateDetector, FieldColorPercept);
 
   DOUBLE_CAM_PROVIDE(BallCandidateDetector, BallCandidates);
 };//end class BallCandidateDetector
