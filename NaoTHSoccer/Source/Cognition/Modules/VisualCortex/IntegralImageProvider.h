@@ -51,8 +51,8 @@ BEGIN_DECLARE_MODULE(IntegralImageProvider)
   // HACK
   REQUIRE(BodyContour)
 
-  PROVIDE(GameColorIntegralImage)
-  PROVIDE(GameColorIntegralImageTop)
+  //PROVIDE(GameColorIntegralImage)
+  //PROVIDE(GameColorIntegralImageTop)
 
   PROVIDE(BallDetectorIntegralImage)
   PROVIDE(BallDetectorIntegralImageTop)

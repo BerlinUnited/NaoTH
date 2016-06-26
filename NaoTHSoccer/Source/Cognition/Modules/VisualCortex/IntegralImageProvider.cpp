@@ -19,10 +19,10 @@ void IntegralImageProvider::execute(CameraInfo::CameraID id)
 {
   cameraID = id;
   if(cameraID == CameraInfo::Bottom) {
-    makeIntegralBild(getGameColorIntegralImage());
+    //makeIntegralBild(getGameColorIntegralImage());
     makeIntegralBild(getBallDetectorIntegralImage());
   } else {
-    makeIntegralBild(getGameColorIntegralImageTop());
+    //makeIntegralBild(getGameColorIntegralImageTop());
     makeIntegralBild(getBallDetectorIntegralImageTop());
   }
 }

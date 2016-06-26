@@ -5,7 +5,6 @@
 */
 
 #include "BallKeyPointExtractor.h"
-#include "Tools/CameraGeometry.h"
 
 using namespace naoth;
 using namespace std;

@@ -17,6 +17,7 @@
 // tools
 #include "BestPatchList.h"
 #include "Tools/DoubleCamHelpers.h"
+#include "Tools/CameraGeometry.h"
 
 // debug
 #include "Representations/Debug/Stopwatch.h"
@@ -180,7 +181,7 @@ void BallKeyPointExtractor::calculateKeyPoints(const ImageType& integralImage, B
       getCameraMatrix(), getImage().cameraInfo, getFieldInfo().ballRadius,
       point.x*FACTOR, point.y*FACTOR);
     
-    double radius = max( 6.0, estimatedRadius);
+    double radius = std::max( 6.0, estimatedRadius);
     int size   = (int)(radius*2.0/FACTOR+0.5);
     int border = (int)(radius*params.borderRadiusFactorClose/FACTOR+0.5);
 
@@ -188,7 +189,7 @@ void BallKeyPointExtractor::calculateKeyPoints(const ImageType& integralImage, B
     if(size < 40/FACTOR) {
       border = (int)(radius*params.borderRadiusFactorFar/FACTOR+0.5);
     }
-    border = max( 2, border);
+    border = std::max( 2, border);
 
     // smalest ball size == 3 => ball size == FACTOR*3 == 12
     if (point.y <= border || point.y+size+border >= (int)integralImage.getHeight()) {
