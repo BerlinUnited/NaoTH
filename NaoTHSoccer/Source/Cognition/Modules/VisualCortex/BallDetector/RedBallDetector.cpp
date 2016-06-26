@@ -45,8 +45,6 @@ void RedBallDetector::execute(CameraInfo::CameraID id)
   cameraID = id;
 
   getBallPercept().reset();
-  //getAllBallPercepts().reset();
-
 
   // STEP 1: find the starting point for the search
   listOfRedPoints.clear();
@@ -296,41 +294,49 @@ bool RedBallDetector::scanForEdges(const Vector2i& start, const Vector2d& direct
 }//end scanForEdges
 
 
-void RedBallDetector::calculateBallPercept(const Vector2i& center, double radius)
+void RedBallDetector::calculateBallPercept(const Vector2i& center, double radius) 
 {
   // calculate the ball
-    bool projectionOK = CameraGeometry::imagePixelToFieldCoord(
-		  getCameraMatrix(), 
-		  getImage().cameraInfo,
-		  center.x, 
-		  center.y, 
-		  getFieldInfo().ballRadius,
-		  getBallPercept().bearingBasedOffsetOnField);
+  bool ballOK = CameraGeometry::imagePixelToFieldCoord(
+		getCameraMatrix(), 
+		getImage().cameraInfo,
+		center.x, 
+		center.y, 
+		getFieldInfo().ballRadius,
+		getBallPercept().bearingBasedOffsetOnField);
 
-    // HACK: don't take to far balls
-    projectionOK = projectionOK && getBallPercept().bearingBasedOffsetOnField.abs2() < 10000*10000; // closer than 10m
+  // HACK: don't take to far balls
+  ballOK = ballOK && getBallPercept().bearingBasedOffsetOnField.abs2() < 10000*10000; // closer than 10m
 
-    // HACK: if the ball center is in image it has to be in the field polygon 
-    Vector2d ballPointToCheck(center.x, center.y - 5);
-    projectionOK = projectionOK && 
-      (!getImage().isInside((int)(ballPointToCheck.x+0.5), (int)(ballPointToCheck.y+0.5)) ||
-        getFieldPercept().getValidField().isInside(ballPointToCheck));
+  // HACK: if the ball center is in image it has to be in the field polygon 
+  Vector2d ballPointToCheck(center.x, center.y - 5);
+  ballOK = ballOK && 
+    (!getImage().isInside((int)(ballPointToCheck.x+0.5), (int)(ballPointToCheck.y+0.5)) ||
+      getFieldPercept().getValidField().isInside(ballPointToCheck));
 
 
-    if(projectionOK) 
-    {
-		  getBallPercept().radiusInImage = radius;
-		  getBallPercept().centerInImage = center;
-		  getBallPercept().ballWasSeen = projectionOK;
-		  getBallPercept().frameInfoWhenBallWasSeen = getFrameInfo();
+  if(ballOK) 
+  {
+    MultiBallPercept::BallPercept ballPercept;
+  
+    ballPercept.cameraId = cameraID;
+    ballPercept.centerInImage = center;
+    ballPercept.radiusInImage = radius;
 
-          //getAllBallPercepts().add(getBallPercept());
+    getMultiBallPercept().add(ballPercept);
+    getMultiBallPercept().frameInfoWhenBallWasSeen = getFrameInfo();
 
-      DEBUG_REQUEST("Vision:RedBallDetector:draw_ball",
-        CIRCLE_PX(ColorClasses::orange, center.x, center.y, (int)(radius+0.5));
-		  );
-    }
+    getBallPercept().radiusInImage = radius;
+    getBallPercept().centerInImage = center;
+    getBallPercept().ballWasSeen = true;
+    getBallPercept().frameInfoWhenBallWasSeen = getFrameInfo();
+
+    DEBUG_REQUEST("Vision:RedBallDetector:draw_ball",
+      CIRCLE_PX(ColorClasses::orange, center.x, center.y, (int)(radius+0.5));
+    );
+  }
 }
+
 
 double RedBallDetector::estimatedBallRadius(const Vector2i& point) const
 {

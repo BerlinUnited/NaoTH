@@ -62,8 +62,8 @@ private:
     
   //UltraSound
   std::string DCMPath_UltraSoundReceive;
-  std::string DCMPath_UltraSoundReceiveLeft[UltraSoundData::numOfUSEcho];
-  std::string DCMPath_UltraSoundReceiveRight[UltraSoundData::numOfUSEcho];
+  std::string DCMPath_UltraSoundReceiveLeft[UltraSoundReceiveData::numOfUSEcho];
+  std::string DCMPath_UltraSoundReceiveRight[UltraSoundReceiveData::numOfUSEcho];
   std::string DCMPath_UltraSoundSend;
 
   //Body-ID
@@ -72,7 +72,9 @@ private:
 
   //Battery
   std::string DCMPath_BatteryCharge;
-
+  std::string DCMPath_BatteryCurrent;
+  std::string DCMPath_BatteryTemperature;
+  
   //State of the devices
   std::string DCMPath_DeviceState;
 

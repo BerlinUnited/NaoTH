@@ -16,6 +16,7 @@
 #include "Representations/Infrastructure/FSRData.h"
 #include "Representations/Infrastructure/FrameInfo.h"
 #include "Representations/Infrastructure/JointData.h"
+#include "Representations/Infrastructure/BatteryData.h"
 
 #include "Representations/Modeling/BodyState.h"
 
@@ -40,6 +41,7 @@ BEGIN_DECLARE_MODULE(BodyStateProvider)
   REQUIRE(FSRData)
   REQUIRE(FrameInfo)
   REQUIRE(SensorJointData)
+  REQUIRE(BatteryData)
 
   PROVIDE(BodyState)
 END_DECLARE_MODULE(BodyStateProvider)

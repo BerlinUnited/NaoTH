@@ -52,8 +52,11 @@ void DCMHandler::init(boost::shared_ptr<ALBroker> pB)
 
   DCMPath_BodyId = "Device/DeviceList/ChestBoard/BodyId";
   DCMPath_BodyNickName = "Device/DeviceList/ChestBoard/BodyNickName";
+  
   DCMPath_BatteryCharge = "Device/SubDeviceList/Battery/Charge/Sensor/Value";
-
+  DCMPath_BatteryCurrent = "Device/SubDeviceList/Battery/Current/Sensor/Value";
+  DCMPath_BatteryTemperature = "Device/SubDeviceList/Battery/Temperature/Sensor/Value";
+  
   initAllSensorData();
 }//end init
 
@@ -394,14 +397,16 @@ void DCMHandler::initAllSensorData()
   //UltraSoundReceiveData
   ASSERT(theUltraSoundReceiveDataIndex == currentIndex);
   allSensorsList[currentIndex++] = DCMPath_UltraSoundReceive; 
-  for(int i = 0; i < UltraSoundData::numOfUSEcho; i++)
+  for(int i = 0; i < UltraSoundReceiveData::numOfUSEcho; i++)
   {
     allSensorsList[currentIndex++] = DCMPath_UltraSoundReceiveLeft[i];
     allSensorsList[currentIndex++] = DCMPath_UltraSoundReceiveRight[i];
   }
 
-  ASSERT(thBatteryDataIdex == currentIndex);
+  ASSERT(theBatteryDataIdex == currentIndex);
   allSensorsList[currentIndex++] = DCMPath_BatteryCharge;
+  allSensorsList[currentIndex++] = DCMPath_BatteryCurrent;
+  allSensorsList[currentIndex++] = DCMPath_BatteryTemperature;
 
   // little senity check
   assert(currentIndex == numOfSensors);
@@ -973,7 +978,6 @@ void DCMHandler::initUltraSoundSend()
     usSendCommands[4].arraySetSize(1);
     usSendCommands[4][0] = 0;
     usSendCommands[5].arraySetSize(1);
-  
     usSendCommands[5][0].arraySetSize(1);
     usSendCommands[5][0][0] = 0.0;
   }
@@ -985,15 +989,18 @@ void DCMHandler::initUltraSoundSend()
 
 void DCMHandler::setUltraSoundSend(const UltraSoundSendData& data, int dcmTime)
 {
-  usSendCommands[4][0] = dcmTime;
-  usSendCommands[5][0][0] = static_cast<double>(data.mode);
-
-  try
+  if(data.mode > 0) // don't send negative vlues
   {
-    al_dcmproxy->setAlias(usSendCommands);
-  }
-  catch(ALError e) {
-    std::cerr << "[NaoSMAL] Failed to set UltraSound: " << e.toString() << endl;
+    usSendCommands[4][0] = dcmTime;
+    usSendCommands[5][0][0] = static_cast<double>(data.mode);
+
+    try
+    {
+      al_dcmproxy->setAlias(usSendCommands);
+    }
+    catch(ALError e) {
+      std::cerr << "[NaoSMAL] Failed to set UltraSound: " << e.toString() << endl;
+    }
   }
 }//end setUltraSoundSend
 

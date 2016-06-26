@@ -66,6 +66,10 @@ void SensorSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerBooleanInputSymbol("button.head.pressed.front", &getButtonHeadFront);
   engine.registerBooleanInputSymbol("button.head.pressed.middle", &getButtonHeadMiddle);
   engine.registerBooleanInputSymbol("button.head.pressed.rear", &getButtonHeadRear);
+
+  engine.registerBooleanInputSymbol("battery.isDischarging", &getisDischarging);
+
+  engine.registerDecimalOutputSymbol("whistle.switch",&setWhistleSwitch, &getWhistleSwitch);
 }//end registerSymbols
 
 SensorSymbols* SensorSymbols::theInstance = NULL;
@@ -79,7 +83,18 @@ void SensorSymbols::execute()
 
 }//end execute
 
+double SensorSymbols::getWhistleSwitch(){
+  return theInstance->getWhistleControl().onOffSwitch;
+}
 
+void SensorSymbols::setWhistleSwitch(double whistle){
+  theInstance->getWhistleControl().onOffSwitch = (int)whistle;
+}
+
+bool SensorSymbols::getisDischarging()
+{
+  return theInstance->getBodyState().isDischarging;
+}
 bool SensorSymbols::getBumberLeftPressed()
 {
   return (theInstance->getButtonData().eventCounter[ButtonData::LeftFootLeft] > 0) ||
@@ -123,7 +138,7 @@ double SensorSymbols::simplePassLeftSensor()
 {
   double r = 2550.0;
   // return minimum measurement = closest object
-  for(unsigned int i = 0; i < UltraSoundData::numOfUSEcho; i++)
+  for(size_t i = 0; i < UltraSoundReceiveData::numOfUSEcho; i++)
   {
     if((theInstance->getUltraSoundReceiveData().dataLeft[i] * 1000) < r && theInstance->getUltraSoundReceiveData().dataLeft[i] > 0.2)
     {
@@ -137,7 +152,7 @@ double SensorSymbols::simplePassRightSensor()
 {
   double r = 2550.0;
   // return minimum measurement = closest object
-  for(unsigned int i = 0; i < UltraSoundData::numOfUSEcho; i++)
+  for(size_t i = 0; i < UltraSoundReceiveData::numOfUSEcho; i++)
   {
     if((theInstance->getUltraSoundReceiveData().dataRight[i] * 1000) < r && theInstance->getUltraSoundReceiveData().dataRight[i] > 0.2)
     {
