@@ -15,7 +15,7 @@ class BlackSpotExtractor
 public:
 
   // scan inside a given region in the image for black keypoints
-  static void calculateKeyPoints(const MultiChannelIntegralImage& image, BestPatchList& bestBlack, int minX, int minY, int maxX, int maxY);
+  static void calculateKeyPoints(const GameColorIntegralImage& image, BestPatchList& bestBlack, int minX, int minY, int maxX, int maxY);
 };
 
 #endif // _BlackSpotExtractor_H_

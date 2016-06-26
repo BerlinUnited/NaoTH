@@ -19,13 +19,13 @@ void IntegralImageProvider::execute(CameraInfo::CameraID id)
 {
   cameraID = id;
   if(cameraID == CameraInfo::Bottom) {
-    integralBildBottom();
+    makeGameColorIntegralBild(getGameColorIntegralImage());
   } else {
-    integralBild();
+    makeGameColorIntegralBild(getGameColorIntegralImageTop());
   }
 }
 
-
+/*
 void IntegralImageProvider::integralBild()
 {
   const int32_t FACTOR = getMultiChannelIntegralImage().FACTOR;
@@ -128,3 +128,4 @@ void IntegralImageProvider::integralBildBottom()
     }
   }
 }
+*/

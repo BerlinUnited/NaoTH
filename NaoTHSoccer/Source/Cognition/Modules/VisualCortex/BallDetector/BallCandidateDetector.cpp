@@ -37,7 +37,7 @@ void BallCandidateDetector::execute(CameraInfo::CameraID id)
   getBallCandidates().reset();
 
   // todo: check validity of the intergral image
-  if(getMultiChannelIntegralImage().getWidth() == 0) {
+  if(getGameColorIntegralImage().getWidth() == 0) {
     return;
   }
 
@@ -58,7 +58,7 @@ void BallCandidateDetector::execute(CameraInfo::CameraID id)
 void BallCandidateDetector::calculateCandidates()
 {
   // todo needs a better place
-  const int32_t FACTOR = getMultiChannelIntegralImage().FACTOR;
+  const int32_t FACTOR = getGameColorIntegralImage().FACTOR;
 
   //BestPatchList::iterator best_element = best.begin();
   std::vector<Vector2i> endPoints;
@@ -85,7 +85,7 @@ void BallCandidateDetector::calculateCandidates()
       // (1) check green below
       bool checkGreenBelow = false;
       if(getImage().isInside(max.x, max.y+(max.y-min.y)/2) && getImage().isInside(min.x - FACTOR, min.y - FACTOR)) {
-        double greenBelow = getMultiChannelIntegralImage().getDensityForRect(min.x/FACTOR, max.y/FACTOR, max.x/FACTOR, (max.y+(max.y-min.y)/2)/FACTOR, 1);
+        double greenBelow = getGameColorIntegralImage().getDensityForRect(min.x/FACTOR, max.y/FACTOR, max.x/FACTOR, (max.y+(max.y-min.y)/2)/FACTOR, 1);
         if(greenBelow > params.heuristic.minGreenBelowRatio) {
           checkGreenBelow = true;
         }
@@ -95,7 +95,7 @@ void BallCandidateDetector::calculateCandidates()
       bool checkGreenInside = false;
       int offsetY = (max.y-min.y)/FACTOR;
       int offsetX = (max.x-min.x)/FACTOR;
-      double greenInside = getMultiChannelIntegralImage().getDensityForRect((min.x+offsetX)/FACTOR, (min.y+offsetY)/FACTOR, (max.x-offsetX)/FACTOR, (max.y-offsetY)/FACTOR, 1);
+      double greenInside = getGameColorIntegralImage().getDensityForRect((min.x+offsetX)/FACTOR, (min.y+offsetY)/FACTOR, (max.x-offsetX)/FACTOR, (max.y-offsetY)/FACTOR, 1);
       if(greenInside < params.heuristic.maxGreenInsideRatio) {
         checkGreenInside = true;
       }
@@ -104,7 +104,7 @@ void BallCandidateDetector::calculateCandidates()
       bool checkBlackDots = false;
       if(max.y-min.y > params.heuristic.minBlackDetectionSize) 
       {
-        BlackSpotExtractor::calculateKeyPoints(getMultiChannelIntegralImage(), bestBlackKey, min.x, min.y, max.x, max.y);
+        BlackSpotExtractor::calculateKeyPoints(getGameColorIntegralImage(), bestBlackKey, min.x, min.y, max.x, max.y);
 
         DEBUG_REQUEST("Vision:BallCandidateDetector:keyPoints",
           for(BestPatchList::iterator i = bestBlackKey.begin(); i != bestBlackKey.end(); ++i) {

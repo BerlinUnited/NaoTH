@@ -110,6 +110,11 @@ private:
 	uint32_t width, height;
 };
 
-class MultiChannelIntegralImageTop : public MultiChannelIntegralImage {};
+
+class GameColorIntegralImage : public MultiChannelIntegralImage { public: static const uint32_t MAX_COLOR = 3; };
+class GameColorIntegralImageTop : public GameColorIntegralImage { };
+
+class BallDetectorIntegralImage : public MultiChannelIntegralImage { public: static const uint32_t MAX_COLOR = 2; };
+class BallDetectorIntegralImageTop : public GameColorIntegralImage { };
 
 #endif

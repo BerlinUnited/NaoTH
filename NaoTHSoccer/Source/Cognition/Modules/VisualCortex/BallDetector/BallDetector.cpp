@@ -55,7 +55,7 @@ bool BallDetector::execute(CameraInfo::CameraID id)
   getBallCandidates().reset();
 
   // todo: check validity of the intergral image
-  if(getMultiChannelIntegralImage().getWidth() == 0) {
+  if(getGameColorIntegralImage().getWidth() == 0) {
     return false;
   }
 
@@ -334,8 +334,8 @@ void BallDetector::executeHeuristic()
       
       // (1) check green below
       bool checkGreenBelow = false;
-      if(getImage().isInside(p.max.x, p.max.y+radius/2) && getImage().isInside(p.min.x - MultiChannelIntegralImage::FACTOR, p.min.y - MultiChannelIntegralImage::FACTOR)) {
-        double greenBelow = getMultiChannelIntegralImage().getDensityForRect(p.min.x/4, p.max.y/4, p.max.x/4, (p.max.y+radius/2)/4, 1);
+      if(getImage().isInside(p.max.x, p.max.y+radius/2) && getImage().isInside(p.min.x - GameColorIntegralImage::FACTOR, p.min.y - GameColorIntegralImage::FACTOR)) {
+        double greenBelow = getGameColorIntegralImage().getDensityForRect(p.min.x/4, p.max.y/4, p.max.x/4, (p.max.y+radius/2)/4, 1);
         if(greenBelow > params.heuristic.minGreenBelowRatio) {
           c = ColorClasses::pink;
           checkGreenBelow = true;
@@ -346,7 +346,7 @@ void BallDetector::executeHeuristic()
       bool checkGreenInside = false;
       int offsetY = (p.max.y-p.min.y)/4;
       int offsetX = (p.max.x-p.min.x)/4;
-      double greenInside = getMultiChannelIntegralImage().getDensityForRect((p.min.x+offsetX)/4, (p.min.y+offsetY)/4, (p.max.x-offsetX)/4, (p.max.y-offsetY)/4, 1);
+      double greenInside = getGameColorIntegralImage().getDensityForRect((p.min.x+offsetX)/4, (p.min.y+offsetY)/4, (p.max.x-offsetX)/4, (p.max.y-offsetY)/4, 1);
       if(greenInside < params.heuristic.maxGreenInsideRatio) {
         c = ColorClasses::red;
         checkGreenInside = true;
@@ -372,18 +372,18 @@ void BallDetector::executeHeuristic()
         Vector2i b(p.max.x-offset, p.max.y-offset);
 
         // TODO: fix this dependency
-        if(getImage().isInside(p.min.x - MultiChannelIntegralImage::FACTOR, p.min.y - MultiChannelIntegralImage::FACTOR)) {
+        if(getImage().isInside(p.min.x - GameColorIntegralImage::FACTOR, p.min.y - GameColorIntegralImage::FACTOR)) {
           
-          a = a/MultiChannelIntegralImage::FACTOR;
-          b = b/MultiChannelIntegralImage::FACTOR;
-          ci = ci/MultiChannelIntegralImage::FACTOR;
+          a = a/GameColorIntegralImage::FACTOR;
+          b = b/GameColorIntegralImage::FACTOR;
+          ci = ci/GameColorIntegralImage::FACTOR;
 
-          double s1 = getMultiChannelIntegralImage().getDensityForRect(a.x, a.y, ci.x, ci.y, 2);
-          double s2 = getMultiChannelIntegralImage().getDensityForRect(ci.x, a.y, b.x, ci.y, 2);
-          double s3 = getMultiChannelIntegralImage().getDensityForRect(a.x, ci.y, ci.x, b.y, 2);
-          double s4 = getMultiChannelIntegralImage().getDensityForRect(ci.x, ci.y, b.x, b.y, 2);
+          double s1 = getGameColorIntegralImage().getDensityForRect(a.x, a.y, ci.x, ci.y, 2);
+          double s2 = getGameColorIntegralImage().getDensityForRect(ci.x, a.y, b.x, ci.y, 2);
+          double s3 = getGameColorIntegralImage().getDensityForRect(a.x, ci.y, ci.x, b.y, 2);
+          double s4 = getGameColorIntegralImage().getDensityForRect(ci.x, ci.y, b.x, b.y, 2);
 
-          //double blackInside = getMultiChannelIntegralImage().getDensityForRect((p.min.x)/4, (p.min.y)/4, (p.max.x)/4, (p.max.y)/4, 2);
+          //double blackInside = getGameColorIntegralImage().getDensityForRect((p.min.x)/4, (p.min.y)/4, (p.max.x)/4, (p.max.y)/4, 2);
 
           //if(blackInside > params.heuristic.blackDotsMinRatio || blackCount > params.heuristic.blackDotsMinCount) {
           if(s1+s2+s3+s4 > params.heuristic.blackDotsMinRatio || blackCount > params.heuristic.blackDotsMinCount
@@ -455,7 +455,7 @@ int BallDetector::calculateKeyPointsBlack(int minX, int minY, int maxX, int maxY
   bestBlack.clear();
 
   // todo needs a better place
-  const int32_t FACTOR = getMultiChannelIntegralImage().FACTOR;
+  const int32_t FACTOR = getGameColorIntegralImage().FACTOR;
 
   Vector2i center;
   Vector2i point;
@@ -468,23 +468,23 @@ int BallDetector::calculateKeyPointsBlack(int minX, int minY, int maxX, int maxY
     int border = size / 2;
 
     // smalest ball size == 3 => ball size == FACTOR*3 == 12
-    if (point.y <= border || point.y+size+border+1 >= (int)getMultiChannelIntegralImage().getHeight()) {
+    if (point.y <= border || point.y+size+border+1 >= (int)getGameColorIntegralImage().getHeight()) {
       continue;
     }
     
     for(point.x = minX/FACTOR + border + 1; point.x + size + border+1 < maxX/FACTOR; ++point.x)
     {
-      int innerBlack = getMultiChannelIntegralImage().getSumForRect(point.x, point.y, point.x+size, point.y+size, 2);
-      int innerWhite = getMultiChannelIntegralImage().getSumForRect(point.x, point.y, point.x+size, point.y+size, 0);
-      int innerGreen = getMultiChannelIntegralImage().getSumForRect(point.x, point.y, point.x+size, point.y+size, 1);
+      int innerBlack = getGameColorIntegralImage().getSumForRect(point.x, point.y, point.x+size, point.y+size, 2);
+      int innerWhite = getGameColorIntegralImage().getSumForRect(point.x, point.y, point.x+size, point.y+size, 0);
+      int innerGreen = getGameColorIntegralImage().getSumForRect(point.x, point.y, point.x+size, point.y+size, 1);
 
       int innerDark = ((size+1)*(size+1) - innerWhite - innerGreen);
 
       // at least 50%
       if (innerDark*3 > (size+1)*(size+1) && innerBlack > 0)
       {
-        //int outer = getMultiChannelIntegralImage().getSumForRect(point.x-border, point.y+size, point.x+size+border, point.y+size+border, 2);
-        int outerWhite = getMultiChannelIntegralImage().getSumForRect(point.x-border, point.y+size, point.x+size+border, point.y+size+border, 0);
+        //int outer = getGameColorIntegralImage().getSumForRect(point.x-border, point.y+size, point.x+size+border, point.y+size+border, 2);
+        int outerWhite = getGameColorIntegralImage().getSumForRect(point.x-border, point.y+size, point.x+size+border, point.y+size+border, 0);
 
         double value = (double)(innerDark + outerWhite)/((double)(size+border)*(size+border));
 
@@ -533,12 +533,12 @@ void BallDetector::calculateKeyPoints(Best& best) const
   }
 
   // todo needs a better place
-  const int32_t FACTOR = getMultiChannelIntegralImage().FACTOR;
+  const int32_t FACTOR = getGameColorIntegralImage().FACTOR;
 
   Vector2i center;
   Vector2i point;
   
-  for(point.y = minY/FACTOR; point.y+1 < (int)getMultiChannelIntegralImage().getHeight(); ++point.y)
+  for(point.y = minY/FACTOR; point.y+1 < (int)getGameColorIntegralImage().getHeight(); ++point.y)
   {
     double radius = max( 6.0, estimatedBallRadius(point.x*FACTOR, point.y*FACTOR));
     int size   = (int)(radius*2.0/FACTOR+0.5);
@@ -552,22 +552,22 @@ void BallDetector::calculateKeyPoints(Best& best) const
     border = max( 2, border);
 
     // smalest ball size == 3 => ball size == FACTOR*3 == 12
-    if (point.y <= border || point.y+size+border+1 >= (int)getMultiChannelIntegralImage().getHeight()) {
+    if (point.y <= border || point.y+size+border+1 >= (int)getGameColorIntegralImage().getHeight()) {
       continue;
     }
     
-    for(point.x = border + 1; point.x + size + border+1 < (int)getMultiChannelIntegralImage().getWidth(); ++point.x)
+    for(point.x = border + 1; point.x + size + border+1 < (int)getGameColorIntegralImage().getWidth(); ++point.x)
     {
-      int inner = getMultiChannelIntegralImage().getSumForRect(point.x, point.y, point.x+size, point.y+size, 0);
-      //int green = getMultiChannelIntegralImage().getSumForRect(point.x, point.y, point.x+size, point.y+size, 1);
+      int inner = getGameColorIntegralImage().getSumForRect(point.x, point.y, point.x+size, point.y+size, 0);
+      //int green = getGameColorIntegralImage().getSumForRect(point.x, point.y, point.x+size, point.y+size, 1);
       
-      double greenBelow = getMultiChannelIntegralImage().getDensityForRect(point.x, point.y+size, point.x+size, point.y+size+border, 1);
+      double greenBelow = getGameColorIntegralImage().getDensityForRect(point.x, point.y+size, point.x+size, point.y+size+border, 1);
 
       // && greenPoints(point.x*FACTOR, point.y*FACTOR, (point.x+size)*FACTOR, (point.y+size)*FACTOR) < 0.3
       // at least 50%
       if (inner*2 > size*size && greenBelow > 0.3)
       {
-        int outer = getMultiChannelIntegralImage().getSumForRect(point.x-border, point.y+size, point.x+size+border, point.y+size+border, 0);
+        int outer = getGameColorIntegralImage().getSumForRect(point.x-border, point.y+size, point.x+size+border, point.y+size+border, 0);
         double value = (double)(inner - (outer - inner))/((double)(size+border)*(size+border));
 
         center.x = point.x*FACTOR + (int)(radius+0.5);

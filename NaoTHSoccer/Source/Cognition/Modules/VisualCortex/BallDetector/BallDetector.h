@@ -58,8 +58,8 @@ BEGIN_DECLARE_MODULE(BallDetector)
 
   REQUIRE(Image)
   REQUIRE(ImageTop)
-  PROVIDE(MultiChannelIntegralImage)
-  PROVIDE(MultiChannelIntegralImageTop)
+  PROVIDE(GameColorIntegralImage)
+  PROVIDE(GameColorIntegralImageTop)
 
   REQUIRE(CameraMatrix)
   REQUIRE(CameraMatrixTop)
@@ -434,7 +434,7 @@ private:
   DOUBLE_CAM_REQUIRE(BallDetector, FieldColorPercept);
   DOUBLE_CAM_REQUIRE(BallDetector, FieldPercept);
   DOUBLE_CAM_REQUIRE(BallDetector, BodyContour);
-  DOUBLE_CAM_REQUIRE(BallDetector, MultiChannelIntegralImage);
+  DOUBLE_CAM_REQUIRE(BallDetector, GameColorIntegralImage);
 
   DOUBLE_CAM_PROVIDE(BallDetector, BallCandidates);
 
