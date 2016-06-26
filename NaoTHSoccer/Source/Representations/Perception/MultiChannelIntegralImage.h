@@ -1,5 +1,5 @@
-#ifndef GAMECOLORINTEGRALIMAGE_H
-#define GAMECOLORINTEGRALIMAGE_H
+#ifndef MultiChannelIntegralImage_H
+#define MultiChannelIntegralImage_H
 
 #include <stdint.h>
 #include <sys/types.h>
@@ -15,16 +15,16 @@ typedef unsigned int uint;
 /**
  * @ingroup representations
  */
-class GameColorIntegralImage {
+class MultiChannelIntegralImage {
 public:
 	
-  GameColorIntegralImage()
+  MultiChannelIntegralImage()
 		: integralImage(nullptr)
 		, width(0)
 		, height(0) 
   {
 	}
-	~GameColorIntegralImage() {
+	~MultiChannelIntegralImage() {
 		delete[] integralImage;
 	}
 
@@ -110,6 +110,6 @@ private:
 	uint32_t width, height;
 };
 
-class GameColorIntegralImageTop : public GameColorIntegralImage {};
+class MultiChannelIntegralImageTop : public MultiChannelIntegralImage {};
 
 #endif
