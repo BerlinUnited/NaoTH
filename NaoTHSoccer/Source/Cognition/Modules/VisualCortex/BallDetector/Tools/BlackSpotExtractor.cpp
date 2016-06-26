@@ -8,7 +8,7 @@
 
 using namespace naoth;
 
-void BlackSpotExtractor::calculateKeyPoints(const GameColorIntegralImage& image, BestPatchList& bestBlack, int minX, int minY, int maxX, int maxY)
+void BlackSpotExtractor::calculateKeyPoints(const MultiChannelIntegralImage& image, BestPatchList& bestBlack, int minX, int minY, int maxX, int maxY)
 {
   bestBlack.clear();
 

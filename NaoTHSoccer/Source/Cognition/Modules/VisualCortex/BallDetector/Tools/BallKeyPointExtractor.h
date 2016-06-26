@@ -10,7 +10,7 @@
 #include <ModuleFramework/Module.h>
 
 #include "Representations/Infrastructure/FieldInfo.h"
-#include "Representations/Perception/GameColorIntegralImage.h"
+#include "Representations/Perception/MultiChannelIntegralImage.h"
 #include "Representations/Perception/FieldPercept.h"
 #include "Representations/Perception/CameraMatrix.h"
 
@@ -35,8 +35,8 @@ BEGIN_DECLARE_MODULE(BallKeyPointExtractor)
 
   REQUIRE(Image)
   REQUIRE(ImageTop)
-  PROVIDE(GameColorIntegralImage)
-  PROVIDE(GameColorIntegralImageTop)
+  PROVIDE(MultiChannelIntegralImage)
+  PROVIDE(MultiChannelIntegralImageTop)
 
   REQUIRE(CameraMatrix)
   REQUIRE(CameraMatrixTop)
@@ -75,20 +75,20 @@ public:
 private:
   void evaluatePatch(BestPatchList& best, const Vector2i& point, const int size, const int border) const
   {
-    int inner = getGameColorIntegralImage().getSumForRect(point.x, point.y, point.x+size, point.y+size, 0);
-    double greenBelow = getGameColorIntegralImage().getDensityForRect(point.x, point.y+size, point.x+size, point.y+size+border, 1);
+    int inner = getMultiChannelIntegralImage().getSumForRect(point.x, point.y, point.x+size, point.y+size, 0);
+    double greenBelow = getMultiChannelIntegralImage().getDensityForRect(point.x, point.y+size, point.x+size, point.y+size+border, 1);
 
     if (inner*2 > size*size && greenBelow > 0.3)
     {
-      int outer = getGameColorIntegralImage().getSumForRect(point.x-border, point.y+size, point.x+size+border, point.y+size+border, 0);
+      int outer = getMultiChannelIntegralImage().getSumForRect(point.x-border, point.y+size, point.x+size+border, point.y+size+border, 0);
       double value = (double)(inner - (outer - inner))/((double)(size+border)*(size+border));
 
       // scale the patch up to the image coordinates
       best.add( 
-        (point.x-border)*getGameColorIntegralImage().FACTOR, 
-        (point.y-border)*getGameColorIntegralImage().FACTOR, 
-        (point.x+size+border)*getGameColorIntegralImage().FACTOR, 
-        (point.y+size+border)*getGameColorIntegralImage().FACTOR, 
+        (point.x-border)*getMultiChannelIntegralImage().FACTOR, 
+        (point.y-border)*getMultiChannelIntegralImage().FACTOR, 
+        (point.x+size+border)*getMultiChannelIntegralImage().FACTOR, 
+        (point.y+size+border)*getMultiChannelIntegralImage().FACTOR, 
         value);
     }
   }
@@ -101,7 +101,7 @@ private:
   DOUBLE_CAM_REQUIRE(BallKeyPointExtractor, Image);
   DOUBLE_CAM_REQUIRE(BallKeyPointExtractor, CameraMatrix);
   DOUBLE_CAM_REQUIRE(BallKeyPointExtractor, FieldPercept);
-  DOUBLE_CAM_REQUIRE(BallKeyPointExtractor, GameColorIntegralImage);
+  DOUBLE_CAM_REQUIRE(BallKeyPointExtractor, MultiChannelIntegralImage);
 };
 
 #endif // _BallKeyPointExtractor_H_

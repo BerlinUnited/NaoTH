@@ -37,11 +37,11 @@ void BallKeyPointExtractor::calculateKeyPoints(BestPatchList& best) const
   }
 
   // todo needs a better place
-  const int32_t FACTOR = getGameColorIntegralImage().FACTOR;
+  const int32_t FACTOR = getMultiChannelIntegralImage().FACTOR;
 
   Vector2i point;
   
-  for(point.y = minY/FACTOR; point.y < (int)getGameColorIntegralImage().getHeight(); ++point.y)
+  for(point.y = minY/FACTOR; point.y < (int)getMultiChannelIntegralImage().getHeight(); ++point.y)
   {
     double estimatedRadius = CameraGeometry::estimatedBallRadius(
       getCameraMatrix(), getImage().cameraInfo, getFieldInfo().ballRadius,
@@ -58,11 +58,11 @@ void BallKeyPointExtractor::calculateKeyPoints(BestPatchList& best) const
     border = max( 2, border);
 
     // smalest ball size == 3 => ball size == FACTOR*3 == 12
-    if (point.y <= border || point.y+size+border >= (int)getGameColorIntegralImage().getHeight()) {
+    if (point.y <= border || point.y+size+border >= (int)getMultiChannelIntegralImage().getHeight()) {
       continue;
     }
     
-    for(point.x = border; point.x+size+border < (int)getGameColorIntegralImage().getWidth(); ++point.x)
+    for(point.x = border; point.x+size+border < (int)getMultiChannelIntegralImage().getWidth(); ++point.x)
     {
       evaluatePatch(best, point, size, border);
     }
@@ -73,7 +73,7 @@ void BallKeyPointExtractor::calculateKeyPoints(BestPatchList& best) const
 BestPatchList::Patch BallKeyPointExtractor::refineKeyPoint(const BestPatchList::Patch& patch) const
 {
   // todo needs a better place
-  const int32_t FACTOR = getGameColorIntegralImage().FACTOR;
+  const int32_t FACTOR = getMultiChannelIntegralImage().FACTOR;
 
   Vector2i min = patch.min / FACTOR;
   Vector2i max = patch.max / FACTOR;
@@ -100,12 +100,12 @@ BestPatchList::Patch BallKeyPointExtractor::refineKeyPoint(const BestPatchList::
       for(point.x = min.x+border; point.x + border + inner_size < max.x; ++point.x)
       {
         int size = inner_size;
-        int inner = getGameColorIntegralImage().getSumForRect(point.x, point.y, point.x+size, point.y+size, 0);
-        double greenBelow = getGameColorIntegralImage().getDensityForRect(point.x, point.y+size, point.x+size, point.y+size+border, 1);
+        int inner = getMultiChannelIntegralImage().getSumForRect(point.x, point.y, point.x+size, point.y+size, 0);
+        double greenBelow = getMultiChannelIntegralImage().getDensityForRect(point.x, point.y+size, point.x+size, point.y+size+border, 1);
 
         if (inner*2 > size*size && greenBelow > 0.3)
         {
-          int outer = getGameColorIntegralImage().getSumForRect(point.x-border, point.y+size, point.x+size+border, point.y+size+border, 0);
+          int outer = getMultiChannelIntegralImage().getSumForRect(point.x-border, point.y+size, point.x+size+border, point.y+size+border, 0);
           double value = (double)(inner - (outer - inner))/((double)(size+border)*(size+border));
 
           // scale the patch up to the image coordinates

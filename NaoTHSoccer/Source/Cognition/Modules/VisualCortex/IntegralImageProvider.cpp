@@ -28,13 +28,13 @@ void IntegralImageProvider::execute(CameraInfo::CameraID id)
 
 void IntegralImageProvider::integralBild()
 {
-  const int32_t FACTOR = getGameColorIntegralImage().FACTOR;
-  const uint32_t MAX_COLOR = GameColorIntegralImage::MAX_COLOR;
+  const int32_t FACTOR = getMultiChannelIntegralImage().FACTOR;
+  const uint32_t MAX_COLOR = MultiChannelIntegralImage::MAX_COLOR;
   const uint imgWidth = getImage().width()/FACTOR;
 	const uint imgHeight = getImage().height()/FACTOR;
-	getGameColorIntegralImage().setDimension(imgWidth, imgHeight);
+	getMultiChannelIntegralImage().setDimension(imgWidth, imgHeight);
 
-  uint32_t* dataPtr = getGameColorIntegralImage().getDataPointer();
+  uint32_t* dataPtr = getMultiChannelIntegralImage().getDataPointer();
 
   uint32_t* prevRowPtr = dataPtr;
 	uint32_t* curRowPtr  = dataPtr + imgWidth*MAX_COLOR;
@@ -78,13 +78,13 @@ void IntegralImageProvider::integralBild()
 
 void IntegralImageProvider::integralBildBottom()
 {
-  const int32_t FACTOR = getGameColorIntegralImage().FACTOR;
-  const uint32_t MAX_COLOR = GameColorIntegralImage::MAX_COLOR;
+  const int32_t FACTOR = getMultiChannelIntegralImage().FACTOR;
+  const uint32_t MAX_COLOR = MultiChannelIntegralImage::MAX_COLOR;
   const uint imgWidth = getImage().width()/FACTOR;
 	const uint imgHeight = getImage().height()/FACTOR;
-	getGameColorIntegralImage().setDimension(imgWidth, imgHeight);
+	getMultiChannelIntegralImage().setDimension(imgWidth, imgHeight);
 
-  uint32_t* dataPtr = getGameColorIntegralImage().getDataPointer();
+  uint32_t* dataPtr = getMultiChannelIntegralImage().getDataPointer();
 
   uint32_t* prevRowPtr = dataPtr;
 	uint32_t* curRowPtr  = dataPtr + imgWidth*MAX_COLOR;

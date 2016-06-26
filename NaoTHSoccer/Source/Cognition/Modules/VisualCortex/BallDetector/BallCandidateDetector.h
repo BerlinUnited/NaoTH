@@ -22,7 +22,7 @@
 #include "Representations/Perception/BodyContour.h"
 #include "Representations/Perception/FieldColorPercept.h"
 
-#include "Representations/Perception/GameColorIntegralImage.h"
+#include "Representations/Perception/MultiChannelIntegralImage.h"
 #include "Representations/Perception/BallCandidates.h"
 
 // tools
@@ -51,8 +51,8 @@ BEGIN_DECLARE_MODULE(BallCandidateDetector)
 
   REQUIRE(Image)
   REQUIRE(ImageTop)
-  PROVIDE(GameColorIntegralImage)
-  PROVIDE(GameColorIntegralImageTop)
+  PROVIDE(MultiChannelIntegralImage)
+  PROVIDE(MultiChannelIntegralImageTop)
   REQUIRE(FieldColorPercept)
   REQUIRE(FieldColorPerceptTop)
 
@@ -135,7 +135,7 @@ private:
   DOUBLE_CAM_REQUIRE(BallCandidateDetector, CameraMatrix);
   DOUBLE_CAM_REQUIRE(BallCandidateDetector, FieldPercept);
   //DOUBLE_CAM_REQUIRE(BallCandidateDetector, BodyContour);
-  DOUBLE_CAM_REQUIRE(BallCandidateDetector, GameColorIntegralImage);
+  DOUBLE_CAM_REQUIRE(BallCandidateDetector, MultiChannelIntegralImage);
   DOUBLE_CAM_REQUIRE(BallCandidateDetector, FieldColorPercept);
 
   DOUBLE_CAM_PROVIDE(BallCandidateDetector, BallCandidates);
