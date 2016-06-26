@@ -41,21 +41,36 @@ public:
     cv::Mat wrappedImg(12, 12, CV_8U, (void*) p.data.data());
     cv::transpose(wrappedImg, wrappedImg);
 
+    
+
     //cv::Mat aux = buffer.colRange(40,44).rowRange(40,44);
     //wrappedImg.copyTo(aux);
 
     cv::Mat aux(buffer(cv::Rect(6,6,12,12)));
-    wrappedImg.copyTo(aux);
+    //wrappedImg.copyTo(aux);
+
+    cv::GaussianBlur(wrappedImg, aux, cv::Size(3,3), 0, 0);
 
     std::vector<cv::Rect> out;
+    std::vector<int> rejectLevels;
+    std::vector<double> levelWeights;
     // TODO: more magic numbers
     //std::stringstream ss;
     //ss << "p-" << idx << ".png";
     //cv::imwrite(ss.str(), buffer);
     
-    cascadeClasifier.detectMultiScale( buffer, out, 1.05, minNeighbours, 0|CV_HAAR_SCALE_IMAGE, cv::Size(10,10), cv::Size(windowSize,windowSize) );
-    
+    //cascadeClasifier.detectMultiScale( buffer, out, rejectLevels, levelWeights, 1.05, minNeighbours, 0|CV_HAAR_SCALE_IMAGE, cv::Size(10,10), cv::Size(windowSize,windowSize) , true);
+    cascadeClasifier.detectMultiScale( buffer, out, 1.05, minNeighbours, 0|CV_HAAR_SCALE_IMAGE, cv::Size(10,10), cv::Size(windowSize,windowSize));
+
     idx++;
+
+    /*
+    for(size_t i = 0; i < levelWeights.size(); i++) {
+      if(levelWeights[i] > 0) {return true;}
+    }
+    return false;
+    */
+    
     return static_cast<int>(out.size());
   }
 };
