@@ -20,7 +20,7 @@ END_DECLARE_MODULE(BallDetectorEvaluator)
 class BallDetectorEvaluator : public ModuleManager, public BallDetectorEvaluatorBase
 {
 public:
-  BallDetectorEvaluator(const std::string& fileArg);
+  BallDetectorEvaluator(const std::string& modelName, const std::string& fileArg);
   virtual ~BallDetectorEvaluator();
 
   virtual void execute();
@@ -96,6 +96,7 @@ private:
   }
 
 private:
+  const std::string modelName;
   const std::string fileArg;
 
   // TODO: allow more classifiers (including the ones that have the more complex filter logic)

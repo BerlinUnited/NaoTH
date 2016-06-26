@@ -35,8 +35,8 @@
 #endif
 #endif
 
-BallDetectorEvaluator::BallDetectorEvaluator(const std::string &fileArg)
-  : fileArg(fileArg)
+BallDetectorEvaluator::BallDetectorEvaluator(const std::string &modelName, const std::string &fileArg)
+  : modelName(modelName), fileArg(fileArg)
 {
 
 }
@@ -52,6 +52,7 @@ void BallDetectorEvaluator::execute()
   results.clear();
   std::string outFileName = "HaarBallDetector_Evaluation.html";
 
+  classifier.loadModel(modelName);
 
   // do experiment for different parameters
   for(unsigned int minNeighbours=0; minNeighbours <= 5; minNeighbours++)
