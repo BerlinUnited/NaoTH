@@ -53,6 +53,7 @@ BEGIN_DECLARE_MODULE(IntegralImageProvider)
 
   PROVIDE(GameColorIntegralImage)
   PROVIDE(GameColorIntegralImageTop)
+
   PROVIDE(BallDetectorIntegralImage)
   PROVIDE(BallDetectorIntegralImageTop)
 END_DECLARE_MODULE(IntegralImageProvider)
@@ -81,7 +82,32 @@ private:
 private:
 
   template<class ImageType>
-  void makeGameColorIntegralBild(ImageType& integralImage) const;
+  void makeIntegralBild(ImageType& integralImage) const;
+
+  void makeChannels(const GameColorIntegralImage& integralImage, const Vector2i& point, uint32_t (&akk) [GameColorIntegralImage::MAX_COLOR]) const {
+    Pixel pixel;
+    getImage().get_direct(point.x, point.y, pixel);
+      
+    ColorClasses::Color c = getColorTable64().getColorClass(pixel.y,pixel.u,pixel.v);
+    if(c == ColorClasses::white) { 
+      ++akk[0];
+    } else if (c == ColorClasses::green || getBodyContour().isOccupied(point)){
+      ++akk[1];
+    } else if(c == ColorClasses::black) {
+      ++akk[2];
+    }
+  }
+
+  void makeChannels(const BallDetectorIntegralImage& integralImage, const Vector2i& point, uint32_t (&akk) [BallDetectorIntegralImage::MAX_COLOR]) const {
+    Pixel pixel;
+    getImage().get_direct(point.x, point.y, pixel);
+
+    if(getFieldColorPercept().greenHSISeparator.isColor(pixel)) {
+      ++akk[1];
+    } else {
+      akk[0] += pixel.y;
+    }
+  }
 
 private:     
   
@@ -95,9 +121,8 @@ private:
 
 
 template<class ImageType>
-void IntegralImageProvider::makeGameColorIntegralBild(ImageType& integralImage) const
+void IntegralImageProvider::makeIntegralBild(ImageType& integralImage) const
 {
-  ASSERT(ImageType::MAX_COLOR >= 3);
   const int32_t FACTOR = integralImage.FACTOR;
   const uint32_t MAX_COLOR = ImageType::MAX_COLOR;
 
@@ -110,7 +135,6 @@ void IntegralImageProvider::makeGameColorIntegralBild(ImageType& integralImage) 
   uint32_t* prevRowPtr = dataPtr;
 	uint32_t* curRowPtr  = dataPtr + imgWidth*MAX_COLOR;
 
-  Pixel pixel;
   Vector2i p;
   
   for(uint16_t y = 1; y < imgHeight; ++y) 
@@ -129,16 +153,8 @@ void IntegralImageProvider::makeGameColorIntegralBild(ImageType& integralImage) 
 #endif
       p.x = x*FACTOR;
       p.y = y*FACTOR;
-      getImage().get_direct(p.x, p.y, pixel);
-      
-      ColorClasses::Color c = getColorTable64().getColorClass(pixel.y,pixel.u,pixel.v);
-      if(c == ColorClasses::white) { 
-        ++akk[0];
-      } else if (c == ColorClasses::green || getBodyContour().isOccupied(p)){
-        ++akk[1];
-      } else if(c == ColorClasses::black) {
-        ++akk[2];
-      }
+
+      makeChannels(integralImage, p, akk);
 
       for(uint32_t i = 0; i < MAX_COLOR; ++i) {
         curRowPtr[i] = akk[i] + prevRowPtr[i];
