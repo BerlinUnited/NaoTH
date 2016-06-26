@@ -30,6 +30,21 @@ public:
     PARAMETER_REGISTER(correctionOffset[naoth::CameraInfo::Bottom].x) = 0;
     PARAMETER_REGISTER(correctionOffset[naoth::CameraInfo::Bottom].y) = 0;
 
+    PARAMETER_REGISTER(body_rot.x) = 0;
+    PARAMETER_REGISTER(body_rot.y) = 0;
+
+    PARAMETER_REGISTER(head_rot.x) = 0;
+    PARAMETER_REGISTER(head_rot.y) = 0;
+    PARAMETER_REGISTER(head_rot.z) = 0;
+
+    PARAMETER_REGISTER(cam_rot[naoth::CameraInfo::Top].x) = 0;
+    PARAMETER_REGISTER(cam_rot[naoth::CameraInfo::Top].y) = 0;
+    PARAMETER_REGISTER(cam_rot[naoth::CameraInfo::Top].z) = 0;
+
+    PARAMETER_REGISTER(cam_rot[naoth::CameraInfo::Bottom].x) = 0;
+    PARAMETER_REGISTER(cam_rot[naoth::CameraInfo::Bottom].y) = 0;
+    PARAMETER_REGISTER(cam_rot[naoth::CameraInfo::Bottom].z) = 0;
+
     syncWithConfig();
   }
   
@@ -49,10 +64,10 @@ public:
   {
     stream << "x = " << offset.x << std::endl;
     stream << "y = " << offset.y << std::endl;
-    stream << "Roll Offset Camera Top (x): "<< correctionOffset[naoth::CameraInfo::Top].x << " rad" << std::endl;
-    stream << "Tilt Offset Camera Top: (y)"<< correctionOffset[naoth::CameraInfo::Top].y << " rad" <<  std::endl;
+    stream << "Roll Offset Camera Top (x):"<< correctionOffset[naoth::CameraInfo::Top].x << " rad" << std::endl;
+    stream << "Tilt Offset Camera Top (y):"<< correctionOffset[naoth::CameraInfo::Top].y << " rad" <<  std::endl;
     stream << "Roll Offset Camera Bottom (x): "<< correctionOffset[naoth::CameraInfo::Bottom].x << " rad" << std::endl;
-    stream << "Tilt Offset Camera Bottom: (y)"<< correctionOffset[naoth::CameraInfo::Bottom].y << " rad" <<  std::endl;
+    stream << "Tilt Offset Camera Bottom (y):"<< correctionOffset[naoth::CameraInfo::Bottom].y << " rad" <<  std::endl;
 
     stream << "----Offsets-------------" << std::endl;
     stream << "----Body----------------" << std::endl;
@@ -61,7 +76,7 @@ public:
     stream << "----Head----------------" << std::endl;
     stream << "Roll  (x): "<< head_rot.x << " rad" << std::endl;
     stream << "Pitch (y): "<< head_rot.y << " rad" << std::endl;
-    stream << "Yaw    z): "<< head_rot.z << " rad" << std::endl;
+    stream << "Yaw   (z): "<< head_rot.z << " rad" << std::endl;
     stream << "----TopCam--------------" << std::endl;
     stream << "Roll  (x): "<< cam_rot[naoth::CameraInfo::Top].x  << " rad" << std::endl;
     stream << "Pitch (y): "<< cam_rot[naoth::CameraInfo::Top].y  << " rad" << std::endl;
