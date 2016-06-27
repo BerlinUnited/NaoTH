@@ -62,6 +62,9 @@ void BallDetectorEvaluator::execute()
     models = findModelNames();
   }
 
+  double bestRecall = 0.0;
+  ExperimentParameters bestRecallParam;
+
   for(std::string modelName : models)
   {
     if(!modelName.empty())
@@ -145,6 +148,19 @@ void BallDetectorEvaluator::execute()
         std::cout << "precision: " << r.precision << std::endl;
         std::cout << "recall: " << r.recall << std::endl;
 
+        if(r.precision >= 0.95 && bestRecall < r.recall)
+        {
+          bestRecallParam = params;
+          bestRecall = r.recall;
+        }
+
+        if(bestRecall > 0.0)
+        {
+          std::cout << "-------------" << std::endl;
+          std::cout << "best recall for precision >= 0.95: " << bestRecall << std::endl;
+          std::cout << toDesc(bestRecallParam) << std::endl;
+        }
+
         std::cout << "=============" << std::endl;
 
 
@@ -192,6 +208,7 @@ void BallDetectorEvaluator::outputResults(std::string outFileName)
   html << "<table id=\"overviewTable\">" << std::endl;
   html << "<thead>" << std::endl;
   html << "<tr>" << std::endl;
+  html << "<th>" << "modelName" << "</th>" << std::endl;
   html << "<th data-sort-method='number'>" << "minNeighbours" << "</th>" << std::endl;
   html << "<th data-sort-method='number'>" << "windowSize" << "</th>" << std::endl;
   html << "<th data-sort-method='number''>" << "precision" << "</th>" << std::endl;
@@ -205,6 +222,7 @@ void BallDetectorEvaluator::outputResults(std::string outFileName)
     const ExperimentParameters& params = it->first;
     const ExperimentResult& r = it->second;
     html << "<tr>" << std::endl;
+    html << "<td>" << params.modelName << "</td>" << std::endl;
     html << "<td>" << params.minNeighbours << "</td>" << std::endl;
     html << "<td>" << params.maxWindowSize << "</td>" << std::endl;
     html << "<td>" << r.precision << "</td>" << std::endl;
