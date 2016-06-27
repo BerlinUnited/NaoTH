@@ -3,6 +3,7 @@ lbp2.xml 2016-06-24-experiment-02 -numPos 1000 -numNeg 600 -numStages 20 -maxFal
 lbp3.xml 2016-06-23-experiment-01 -numPos 1000 -numNeg 2000 -numStages 16 -maxFalseAlarmRate 0.5
 lbp4.xml 2016-06-26-experiment-close-scaled -numPos 1000 -numNeg 2000 -numStages 16 -precalcValBufSize 2024 -precalcIdxBufSize 2024 -featureType LBP -minHitRate 0.995 -maxFalseAlarmRate 0.5
 lbp5.xml 2016-06-27-experiment-merge-01-close-scaled -numPos 1000 -numNeg 2000 -numStages 16 -precalcValBufSize 4024 -precalcIdxBufSize 4024 -featureType LBP -minHitRate 0.995 -maxFalseAlarmRate 0.5
+lbp6.xml 2016-06-27-experiment-merge-01-close-scaled -numPos 1500 -numNeg 5000 -numStages 16 -precalcValBufSize 16024 -precalcIdxBufSize 16024 -featureType LBP -minHitRate 0.995 -maxFalseAlarmRate 0.5
 
 haar1.xml 2016-06-23-experiment-01 -numPos 1000 -numNeg 600 -numStages 20 -maxFalseAlarmRate 0.5
 haar2.xml 2016-06-26-experiment-close-scaled -numPos 1000 -numNeg 2000 -numStages 16 -precalcValBufSize 4024 -precalcIdxBufSize 4024 -featureType HAAR -minHitRate 0.995 -maxFalseAlarmRate 0.5
