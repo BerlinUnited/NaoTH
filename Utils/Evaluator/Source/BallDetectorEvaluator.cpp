@@ -50,7 +50,8 @@ BallDetectorEvaluator::~BallDetectorEvaluator()
 void BallDetectorEvaluator::execute()
 {
   results.clear();
-  std::string outFileName = "HaarBallDetector_Evaluation.html";
+  std::string fileArgBase(g_path_get_basename(fileArg.c_str()));
+  std::string outFileName = fileArgBase + ".html";
 
   std::list<std::string> models;
   if(modelDir.empty())
@@ -326,32 +327,35 @@ std::list<std::string> BallDetectorEvaluator::findModelNames()
 {
   std::list<std::string> result;
   std::string dirlocation = modelDir;
-  if (!g_str_has_suffix(dirlocation.c_str(), "/"))
-  {
-    dirlocation = dirlocation + "/";
-  }
 
-  GDir* dir = g_dir_open(dirlocation.c_str(), 0, NULL);
-  if (dir != NULL)
+  if(g_file_test(modelDir.c_str(), G_FILE_TEST_IS_DIR))
   {
-    const gchar* name;
-    while ((name = g_dir_read_name(dir)) != NULL)
+    GDir* dir = g_dir_open(dirlocation.c_str(), 0, NULL);
+    if (dir != NULL)
     {
-      if (g_str_has_suffix(name, ".xml"))
+      const gchar* name;
+      while ((name = g_dir_read_name(dir)) != NULL)
       {
-        std::string completeFileName = dirlocation + name;
-        if (g_file_test(completeFileName.c_str(), G_FILE_TEST_EXISTS)
-            && g_file_test(completeFileName.c_str(), G_FILE_TEST_IS_REGULAR))
+        if (g_str_has_suffix(name, ".xml"))
         {
-          result.push_back(name);
+          std::string completeFileName = dirlocation + name;
+          if (g_file_test(completeFileName.c_str(), G_FILE_TEST_EXISTS)
+              && g_file_test(completeFileName.c_str(), G_FILE_TEST_IS_REGULAR))
+          {
+            result.push_back(name);
+          }
         }
+
       }
-
-
+      g_dir_close(dir);
     }
-    g_dir_close(dir);
+    result.sort();
   }
-  result.sort();
+  else
+  {
+   std::string baseName(g_path_get_basename(modelDir.c_str()));
+   result.push_back(baseName);
+  }
   return result;
 }
 
