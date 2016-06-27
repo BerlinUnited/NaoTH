@@ -203,7 +203,7 @@ void BallDetectorEvaluator::outputResults(std::string outFileName)
 
   html << "<body onload=\"if(window.Tablesort) {new Tablesort(document.getElementById('overviewTable'));}\" >" << std::endl;
 
-  html << "<h1><a id=\"overview\">Overview (log " << fileArg << ")</a></h1>" << std::endl;
+  html << "<h1><a id=\"overview\">Overview (" << fileArg << ")</a></h1>" << std::endl;
 
   html << "<table id=\"overviewTable\">" << std::endl;
   html << "<thead>" << std::endl;
