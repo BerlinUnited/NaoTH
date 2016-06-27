@@ -10,18 +10,26 @@
  */
 int main(int argc, char** argv)
 {
-  if(argc > 3)
+  if(argc > 2)
   {
     std::string type(argv[1]);
     if(type == "ball")
     {
-      BallDetectorEvaluator evaluator(argv[2], argv[3]);
-      evaluator.execute();
+      if(argc > 3)
+      {
+        BallDetectorEvaluator evaluator(argv[2], argv[3]);
+        evaluator.execute();
+      }
+      else
+      {
+        BallDetectorEvaluator evaluator(argv[2], "");
+        evaluator.execute();
+      }
       return 0;
     }
   }
 
-  std::cerr << "usage: evaluator <type> <model> <logfile>" << std::endl;
+  std::cerr << "usage: evaluator <type> <logfile> [<model-dir>]" << std::endl;
   std::cerr << "only \"ball\" is supported as type currently" << std::endl;
   return -1;
 }

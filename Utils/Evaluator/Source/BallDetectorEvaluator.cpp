@@ -35,8 +35,8 @@
 #endif
 #endif
 
-BallDetectorEvaluator::BallDetectorEvaluator(const std::string &modelName, const std::string &fileArg)
-  : modelName(modelName), fileArg(fileArg)
+BallDetectorEvaluator::BallDetectorEvaluator(const std::string &fileArg, const std::string &modelDir)
+  : fileArg(fileArg), modelDir(modelDir)
 {
 
 }
@@ -52,86 +52,103 @@ void BallDetectorEvaluator::execute()
   results.clear();
   std::string outFileName = "HaarBallDetector_Evaluation.html";
 
-  classifier.loadModel(modelName);
-
-  // do experiment for different parameters
-  for(unsigned int minNeighbours=0; minNeighbours <= 5; minNeighbours++)
+  std::list<std::string> models;
+  if(modelDir.empty())
   {
-    for(unsigned int windowSize=12; windowSize <= 20; windowSize += 2)
+    models.push_back("");
+  }
+  else
+  {
+    models = findModelNames();
+  }
+
+  for(std::string modelName : models)
+  {
+    if(!modelName.empty())
     {
-      ExperimentParameters params;
-      params.minNeighbours = minNeighbours;
-      params.windowSize = windowSize;
+      classifier.loadModel(modelName);
+    }
 
-      ExperimentResult r;
-
-      r.truePositives = 0;
-      r.falseNegatives = 0;
-      r.falsePositives = 0;
-      r.falsePositivePatches.clear();
-      r.falseNegativePatches.clear();
-      r.totalSize = 0;
-
-
-      if(g_file_test(fileArg.c_str(), G_FILE_TEST_IS_DIR))
+    // do experiment for different parameters
+    for(unsigned int minNeighbours=0; minNeighbours <= 5; minNeighbours++)
+    {
+      for(unsigned int windowSize=12; windowSize <= 20; windowSize += 2)
       {
-        std::string dirlocation = fileArg;
-        if (!g_str_has_suffix(dirlocation.c_str(), "/"))
-        {
-          dirlocation = dirlocation + "/";
-        }
+        ExperimentParameters params;
+        params.minNeighbours = minNeighbours;
+        params.maxWindowSize = windowSize;
+        params.modelName = modelName;
 
-        GDir* dir = g_dir_open(dirlocation.c_str(), 0, NULL);
-        if (dir != NULL)
+        ExperimentResult r;
+
+        r.truePositives = 0;
+        r.falseNegatives = 0;
+        r.falsePositives = 0;
+        r.falsePositivePatches.clear();
+        r.falseNegativePatches.clear();
+        r.totalSize = 0;
+
+
+        if(g_file_test(fileArg.c_str(), G_FILE_TEST_IS_DIR))
         {
-          const gchar* name;
-          while ((name = g_dir_read_name(dir)) != NULL)
+          std::string dirlocation = fileArg;
+          if (!g_str_has_suffix(dirlocation.c_str(), "/"))
           {
-            if (g_str_has_suffix(name, ".log"))
-            {
-              std::string completeFileName = dirlocation + name;
-              if (g_file_test(completeFileName.c_str(), G_FILE_TEST_EXISTS)
-                  && g_file_test(completeFileName.c_str(), G_FILE_TEST_IS_REGULAR))
-              {
-                r.totalSize += executeSingleFile(completeFileName, params, r);
-              }
-            }
-
-
+            dirlocation = dirlocation + "/";
           }
-          g_dir_close(dir);
+
+          GDir* dir = g_dir_open(dirlocation.c_str(), 0, NULL);
+          if (dir != NULL)
+          {
+            const gchar* name;
+            while ((name = g_dir_read_name(dir)) != NULL)
+            {
+              if (g_str_has_suffix(name, ".log"))
+              {
+                std::string completeFileName = dirlocation + name;
+                if (g_file_test(completeFileName.c_str(), G_FILE_TEST_EXISTS)
+                    && g_file_test(completeFileName.c_str(), G_FILE_TEST_IS_REGULAR))
+                {
+                  r.totalSize += executeSingleFile(completeFileName, params, r);
+                }
+              }
+
+
+            }
+            g_dir_close(dir);
+          }
         }
+        else
+        {
+          // only one file
+          r.totalSize = executeSingleFile(fileArg, params, r);
+        }
+
+        r.precision = 1.0;
+        if(r.truePositives + r.falsePositives > 0)
+        {
+          r.precision = (double) r.truePositives / ((double) (r.truePositives + r.falsePositives));
+        }
+        r.recall = 0.0;
+        if(r.truePositives + r.falsePositives > 0)
+        {
+          r.recall = (double) r.truePositives / ((double) (r.truePositives + r.falseNegatives));
+        }
+
+        results[params] = r;
+
+
+
+        std::cout << "=============" << std::endl;
+        std::cout << toDesc(params) << std::endl;
+
+        std::cout << "precision: " << r.precision << std::endl;
+        std::cout << "recall: " << r.recall << std::endl;
+
+        std::cout << "=============" << std::endl;
+
+
       }
-      else
-      {
-        // only one file
-        r.totalSize = executeSingleFile(fileArg, params, r);
-      }
-
-      r.precision = 1.0;
-      if(r.truePositives + r.falsePositives > 0)
-      {
-        r.precision = (double) r.truePositives / ((double) (r.truePositives + r.falsePositives));
-      }
-      r.recall = 0.0;
-      if(r.truePositives + r.falsePositives > 0)
-      {
-        r.recall = (double) r.truePositives / ((double) (r.truePositives + r.falseNegatives));
-      }
-
-      results[params] = r;
-
-
-
-      std::cout << "=============" << std::endl;
-      std::cout << toDesc(params) << std::endl;
-
-      std::cout << "precision: " << r.precision << std::endl;
-      std::cout << "recall: " << r.recall << std::endl;
-
-      std::cout << "=============" << std::endl;
-
-
     }
   }
   outputResults(outFileName);
@@ -189,7 +206,7 @@ void BallDetectorEvaluator::outputResults(std::string outFileName)
     const ExperimentResult& r = it->second;
     html << "<tr>" << std::endl;
     html << "<td>" << params.minNeighbours << "</td>" << std::endl;
-    html << "<td>" << params.windowSize << "</td>" << std::endl;
+    html << "<td>" << params.maxWindowSize << "</td>" << std::endl;
     html << "<td>" << r.precision << "</td>" << std::endl;
     html << "<td>" << r.recall << "</td>" << std::endl;
      html << "<td><a href=\"#result_" <<  toID(params) <<  "\">details</a></td>" << std::endl;
@@ -247,6 +264,39 @@ void BallDetectorEvaluator::outputResults(std::string outFileName)
 
   html << "</body>" << std::endl;
   html.close();
+}
+
+std::list<std::string> BallDetectorEvaluator::findModelNames()
+{
+  std::list<std::string> result;
+  std::string dirlocation = modelDir;
+  if (!g_str_has_suffix(dirlocation.c_str(), "/"))
+  {
+    dirlocation = dirlocation + "/";
+  }
+
+  GDir* dir = g_dir_open(dirlocation.c_str(), 0, NULL);
+  if (dir != NULL)
+  {
+    const gchar* name;
+    while ((name = g_dir_read_name(dir)) != NULL)
+    {
+      if (g_str_has_suffix(name, ".xml"))
+      {
+        std::string completeFileName = dirlocation + name;
+        if (g_file_test(completeFileName.c_str(), G_FILE_TEST_EXISTS)
+            && g_file_test(completeFileName.c_str(), G_FILE_TEST_IS_REGULAR))
+        {
+          result.push_back(name);
+        }
+      }
+
+
+    }
+    g_dir_close(dir);
+  }
+  result.sort();
+  return result;
 }
 
 unsigned int BallDetectorEvaluator::executeSingleFile(std::string file, const ExperimentParameters& params, ExperimentResult& r)
@@ -314,7 +364,7 @@ void BallDetectorEvaluator::evaluatePatch(const BallCandidates::Patch &p, unsign
                                           ExperimentResult& r)
 {
   bool expected = expectedBallIdx.find(patchIdx) != expectedBallIdx.end();
-  bool actual = classifier.classify(p, params.minNeighbours, params.windowSize) > 0;
+  bool actual = classifier.classify(p, params.minNeighbours, params.maxWindowSize) > 0;
 
   if(expected == actual)
   {

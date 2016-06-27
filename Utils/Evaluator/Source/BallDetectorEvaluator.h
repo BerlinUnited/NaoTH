@@ -17,10 +17,12 @@ BEGIN_DECLARE_MODULE(BallDetectorEvaluator)
   PROVIDE(BallCandidatesTop)
 END_DECLARE_MODULE(BallDetectorEvaluator)
 
+#define NAOTH_STRUCT_COMPARE(a, b) {if(a < b) {return true;} else if(a > b) {return false;}}
+
 class BallDetectorEvaluator : public ModuleManager, public BallDetectorEvaluatorBase
 {
 public:
-  BallDetectorEvaluator(const std::string& modelName, const std::string& fileArg);
+  BallDetectorEvaluator(const std::string& fileArg, const std::string& modelDir);
   virtual ~BallDetectorEvaluator();
 
   virtual void execute();
@@ -36,20 +38,18 @@ public:
   struct ExperimentParameters
   {
     unsigned int minNeighbours;
-    unsigned int windowSize;
+    unsigned int maxWindowSize;
+
+    std::string modelName;
   };
 
 
   struct cmpExperimentParameters {
       bool operator()(const ExperimentParameters& a, const ExperimentParameters& b) const {
-        if(a.minNeighbours < b.minNeighbours)
-        {
-          return true;
-        }
-        else if(a.minNeighbours == b.minNeighbours)
-        {
-          return a.windowSize < b.windowSize;
-        }
+
+        NAOTH_STRUCT_COMPARE(a.modelName, b.modelName);
+        NAOTH_STRUCT_COMPARE(a.minNeighbours, b.minNeighbours);
+        NAOTH_STRUCT_COMPARE(a.maxWindowSize, b.maxWindowSize);
         return false;
       }
   };
@@ -76,6 +76,8 @@ private:
 
   void outputResults(std::string outFileName);
 
+  std::list<std::string> findModelNames();
+
   /**
    * @brief creates a Portable Graymap image output from a patch
    * @param p
@@ -87,17 +89,17 @@ private:
 
   std::string toID(const ExperimentParameters& params)
   {
-    return std::to_string(params.minNeighbours) + "_" + std::to_string(params.windowSize);
+    return params.modelName + "_" + std::to_string(params.minNeighbours) + "_" + std::to_string(params.maxWindowSize);
   }
 
   std::string toDesc(const ExperimentParameters& params)
   {
-    return "minNeighbours=" + std::to_string(params.minNeighbours) + " windowSize=" + std::to_string(params.windowSize);
+    return "modelName=" + params.modelName + " minNeighbours=" + std::to_string(params.minNeighbours) + " maxWindowSize=" + std::to_string(params.maxWindowSize);
   }
 
 private:
-  const std::string modelName;
   const std::string fileArg;
+  const std::string modelDir;
 
   // TODO: allow more classifiers (including the ones that have the more complex filter logic)
   CVHaarClassifier classifier;
