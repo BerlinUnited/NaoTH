@@ -203,7 +203,7 @@ void BallDetectorEvaluator::outputResults(std::string outFileName)
 
   html << "<body onload=\"if(window.Tablesort) {new Tablesort(document.getElementById('overviewTable'));}\" >" << std::endl;
 
-  html << "<h1><a id=\"overview\">Overview</a></h1>" << std::endl;
+  html << "<h1><a id=\"overview\">Overview (log " << fileArg << ")</a></h1>" << std::endl;
 
   html << "<table id=\"overviewTable\">" << std::endl;
   html << "<thead>" << std::endl;
@@ -500,7 +500,10 @@ std::string BallDetectorEvaluator::createPNG(const BallCandidates::Patch &p)
 
   std::vector<uchar> buffer;
 
-  cv::imencode(".png", wrappedImg, buffer);
+  std::vector<int> params;
+  params.push_back(cv::ImwriteFlags::IMWRITE_PNG_COMPRESSION);
+  params.push_back(9);
+  cv::imencode(".png", wrappedImg, buffer, params);
 
   return std::string(buffer.begin(), buffer.end());
 }

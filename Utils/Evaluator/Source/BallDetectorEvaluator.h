@@ -94,7 +94,7 @@ private:
 
   std::string toDesc(const ExperimentParameters& params)
   {
-    return "modelName=" + params.modelName + " minNeighbours=" + std::to_string(params.minNeighbours) + " maxWindowSize=" + std::to_string(params.maxWindowSize);
+    return params.modelName + " minNeighbours=" + std::to_string(params.minNeighbours) + " maxWindowSize=" + std::to_string(params.maxWindowSize);
   }
 
 private:
