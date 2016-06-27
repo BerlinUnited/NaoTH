@@ -62,8 +62,14 @@ void BallDetectorEvaluator::execute()
     models = findModelNames();
   }
 
-  double bestRecall = 0.0;
-  ExperimentParameters bestRecallParam;
+  double bestRecall90 = 0.0;
+  ExperimentParameters bestRecallParam90;
+
+  double bestRecall95 = 0.0;
+  ExperimentParameters bestRecallParam95;
+
+  double bestRecall99 = 0.0;
+  ExperimentParameters bestRecallParam99;
 
   for(std::string modelName : models)
   {
@@ -148,17 +154,44 @@ void BallDetectorEvaluator::execute()
         std::cout << "precision: " << r.precision << std::endl;
         std::cout << "recall: " << r.recall << std::endl;
 
-        if(r.precision >= 0.95 && bestRecall < r.recall)
+        if(r.precision >= 0.90 && bestRecall90 < r.recall)
         {
-          bestRecallParam = params;
-          bestRecall = r.recall;
+          bestRecallParam90 = params;
+          bestRecall90 = r.recall;
         }
 
-        if(bestRecall > 0.0)
+        if(r.precision >= 0.95 && bestRecall95 < r.recall)
+        {
+          bestRecallParam95 = params;
+          bestRecall95 = r.recall;
+        }
+
+        if(r.precision >= 0.99 && bestRecall99 < r.recall)
+        {
+          bestRecallParam99 = params;
+          bestRecall99 = r.recall;
+        }
+
+        if(bestRecall90 > 0.0)
         {
           std::cout << "-------------" << std::endl;
-          std::cout << "best recall for precision >= 0.95: " << bestRecall << std::endl;
-          std::cout << toDesc(bestRecallParam) << std::endl;
+          std::cout << "best recall for precision >= 0.90: " << bestRecall90 << std::endl;
+          std::cout << toDesc(bestRecallParam90) << std::endl;
+        }
+
+
+        if(bestRecall95 > 0.0)
+        {
+          std::cout << "-------------" << std::endl;
+          std::cout << "best recall for precision >= 0.95: " << bestRecall95 << std::endl;
+          std::cout << toDesc(bestRecallParam95) << std::endl;
+        }
+
+        if(bestRecall99 > 0.0)
+        {
+          std::cout << "-------------" << std::endl;
+          std::cout << "best recall for precision >= 0.99: " << bestRecall99 << std::endl;
+          std::cout << toDesc(bestRecallParam99) << std::endl;
         }
 
         std::cout << "=============" << std::endl;
@@ -184,6 +217,11 @@ void BallDetectorEvaluator::outputResults(std::string outFileName)
   // CSS
   html << "img.patch {width: 36px; height: 36px;}" << std::endl;
   html << "table, th, td {border: 1px solid; border-collapse: collapse; }" << std::endl;
+  html << "td.cLow  {color: #FF0000; font-weight: bold;}" << std::endl;
+  html << "td.cMiddle {color: #FF8806; font-weight: bold;}" << std::endl;
+  html << "td.cGood {color: #94C705; font-weight: bold;}" << std::endl;
+  html << "td.cExcellent {color: #00FF00; font-weight: bold;}" << std::endl;
+
 
   html << "th.sort-header::-moz-selection { background:transparent; }" << std::endl;
   html << "th.sort-header::selection      { background:transparent; }" << std::endl;
@@ -225,8 +263,8 @@ void BallDetectorEvaluator::outputResults(std::string outFileName)
     html << "<td>" << params.modelName << "</td>" << std::endl;
     html << "<td>" << params.minNeighbours << "</td>" << std::endl;
     html << "<td>" << params.maxWindowSize << "</td>" << std::endl;
-    html << "<td>" << r.precision << "</td>" << std::endl;
-    html << "<td>" << r.recall << "</td>" << std::endl;
+    html << "<td class=\"" << precisionClass(r.precision) << "\">" << r.precision << "</td>" << std::endl;
+    html << "<td class=\"" << recallClass(r.recall) << "\">" << r.recall << "</td>" << std::endl;
      html << "<td><a href=\"#result_" <<  toID(params) <<  "\">details</a></td>" << std::endl;
     html << "</tr>" << std::endl;
   }

@@ -97,6 +97,46 @@ private:
     return params.modelName + " minNeighbours=" + std::to_string(params.minNeighbours) + " maxWindowSize=" + std::to_string(params.maxWindowSize);
   }
 
+  std::string precisionClass(double precision)
+  {
+    if(precision < 0.9)
+    {
+      return "cLow";
+    }
+    else if(precision < 0.95)
+    {
+      return "cMiddle";
+    }
+    else if(precision < 0.99)
+    {
+      return "cGood";
+    }
+    else
+    {
+      return "cExcellent";
+    }
+  }
+
+  std::string recallClass(double precision)
+  {
+    if(precision < 0.5)
+    {
+      return "cLow";
+    }
+    else if(precision < 0.75)
+    {
+      return "cMiddle";
+    }
+    else if(precision < 0.90)
+    {
+      return "cGood";
+    }
+    else
+    {
+      return "cExcellent";
+    }
+  }
+
 private:
   const std::string fileArg;
   const std::string modelDir;
