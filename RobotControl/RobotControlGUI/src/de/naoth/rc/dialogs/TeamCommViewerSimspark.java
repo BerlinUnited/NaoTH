@@ -9,13 +9,13 @@ import de.naoth.rc.RobotControl;
 import de.naoth.rc.core.dialog.AbstractDialog;
 import de.naoth.rc.core.dialog.DialogPlugin;
 import de.naoth.rc.drawingmanager.DrawingEventManager;
-import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.text.DefaultCaret;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 
@@ -34,34 +34,17 @@ public class TeamCommViewerSimspark extends AbstractDialog {
         public static DrawingEventManager drawingEventManager;
     }//end Plugin
     
-    private final int port = 3100;
-    private final String ip = "127.0.0.1";
+    private final int port = 3100; // agent = 3100; monitor = 3200
+    private final String host = "127.0.0.1";
+    private TeamCommListener tcl;
     
     /**
      * Creates new form TeamCommViewerSimspark
      */
     public TeamCommViewerSimspark() {
         initComponents();
-        
-//        Socket socket = null;
-//        try {
-            TeamCommListener t1 = new TeamCommListener();
-            t1.start();
-//            t1.join();
-/*
-        } catch (IOException ex) {
-            Logger.getLogger(TeamCommViewerSimspark.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (InterruptedException ex) {
-            Logger.getLogger(TeamCommViewerSimspark.class.getName()).log(Level.SEVERE, null, ex);
-        } finally {
-            if(socket != null) {
-                try {
-                    socket.close();
-                } catch (IOException ex) {
-                    Logger.getLogger(TeamCommViewerSimspark.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-        }*/
+        DefaultCaret caret = (DefaultCaret) jTextArea1.getCaret();
+        caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
     }
 
     /**
@@ -75,54 +58,270 @@ public class TeamCommViewerSimspark extends AbstractDialog {
 
         jScrollPane1 = new javax.swing.JScrollPane();
         jTextArea1 = new javax.swing.JTextArea();
+        jTextField1 = new javax.swing.JTextField();
+        btnSendCommand = new javax.swing.JButton();
+        btnConnect = new javax.swing.JToggleButton();
+
+        jScrollPane1.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 
         jTextArea1.setColumns(20);
         jTextArea1.setRows(5);
         jScrollPane1.setViewportView(jTextArea1);
 
+        btnSendCommand.setText("Send Command");
+        btnSendCommand.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSendCommandActionPerformed(evt);
+            }
+        });
+
+        btnConnect.setText("Connect");
+        btnConnect.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnConnectActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 400, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(btnConnect)
+                .addGap(24, 24, 24)
+                .addComponent(jTextField1, javax.swing.GroupLayout.DEFAULT_SIZE, 128, Short.MAX_VALUE)
+                .addGap(18, 18, 18)
+                .addComponent(btnSendCommand, javax.swing.GroupLayout.PREFERRED_SIZE, 143, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
+            .addComponent(jScrollPane1)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 300, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnConnect)
+                    .addComponent(btnSendCommand))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 269, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
+    private void btnSendCommandActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSendCommandActionPerformed
+        if(!jTextField1.getText().isEmpty() && tcl != null && tcl.isAlive()) {
+            tcl.sendAgentMessage(jTextField1.getText().trim());
+        }
+    }//GEN-LAST:event_btnSendCommandActionPerformed
+
+    private void btnConnectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConnectActionPerformed
+        if (btnConnect.isSelected()) {
+            System.out.println("...");
+            if (tcl != null) {
+                try {
+                    tcl.disconnect();
+                    tcl.join();
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(TeamCommViewerSimspark.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+
+            tcl = new TeamCommListener();
+            tcl.start();
+        } else {
+            if (tcl != null) {
+                try {
+                    tcl.disconnect();
+                    tcl.join();
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(TeamCommViewerSimspark.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            tcl = null;
+        }
+    }//GEN-LAST:event_btnConnectActionPerformed
+
     private class TeamCommListener extends Thread {
+
+        private DataInputStream in;
+        private DataOutputStream out;
         private Socket socket;
+        private boolean isRunning;
+  
         public TeamCommListener() {
             try {
-                this.socket = new Socket(ip, port);
+                this.socket = new Socket(host, port);
+                this.socket.setTcpNoDelay(true);
+                
+                in = new DataInputStream(socket.getInputStream());
+                out = new DataOutputStream(socket.getOutputStream());
+                
+                System.out.println("Connected to "+host+":"+port);
+                isRunning = true;
             } catch (IOException ex) {
                 Logger.getLogger(TeamCommViewerSimspark.class.getName()).log(Level.SEVERE, null, ex);
+                System.out.println("Couldn't connect!");
             }
 ;
         }
         
         public void run() {
             if(socket == null) { return; }
-            try {
-                BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                System.out.println("listening");
-                while(true) {
-                    String input = in.readLine();
-                    if(input == null) { break; }
-                    jTextArea1.append("got something ");
-                    System.out.println("got something");
+            // use another rsg... ?
+            sendAgentMessage("(scene rsg/agent/nao/nao.rsg 0)(syn)");
+            System.out.println(getServerMessage());
+            sendAgentMessage("(init (unum 0)(teamname NaoTH))(syn)");
+            System.out.println(getServerMessage());
+            
+            
+            System.out.println("listening");
+            
+            while(isRunning) {
+                try {
+                    sleep(1);
+                    
+//                    System.out.println("next ...");
+                    sendAgentMessage("(syn)");
+                    String msg = getServerMessage();
+                    if (msg != null) {
+                        jTextArea1.append(msg + "\n");
+//                        jScrollPane1.
+//                        System.out.println(msg);
+                    }
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(TeamCommViewerSimspark.class.getName()).log(Level.SEVERE, null, ex);
                 }
+            }
+        }
+        
+        public void disconnect() {
+            isRunning = false;
+            try {
+                socket.close();
             } catch (IOException ex) {
                 Logger.getLogger(TeamCommViewerSimspark.class.getName()).log(Level.SEVERE, null, ex);
             }
+            System.out.println("disconnected");
         }
+
+        /**
+         * Sends an agent message to the server.
+         * <p/>
+         * This method formats an agent message (String of SimSpark effector
+         * messages) according to the network protocol and sends it to the
+         * server.
+         * <p/>
+         * The content of the agent message is not validated.
+         *
+         * @param msg Agent message with effector commands.
+         */
+        public void sendAgentMessage(String msg) {
+
+            byte[] body = msg.getBytes();
+
+            //comments by the authors of magma from Offenburg:
+            // FIXME: this is to compensate a server bug that clients responding too
+            // quickly get problems
+            // long runtime = 0;
+            // boolean slowedDown = false;
+            // long slowDownTime = 0;
+            // int minWaitTime = 1000000;
+            // do {
+            // runtime = System.nanoTime() - startTime;
+            // if (runtime < minWaitTime && !slowedDown) {
+            // slowDownTime = minWaitTime - runtime;
+            // slowedDown = true;
+            // }
+            // } while (runtime < minWaitTime);
+            // if (slowedDown) {
+            // logger.log(Level.FINE, "slowedDown sending message by: {0}",
+            // slowDownTime);
+            // }
+            // Header of the message, specifies the length of the message:
+            // "The length prefix is a 32 bit unsigned integer in network order, i.e. big 
+            // endian notation with the most significant bits transferred first." 
+            // (cited from 
+            // http://simspark.sourceforge.net/wiki/index.php/Network_Protocol, 14.1.2012)
+            int len = body.length;
+            int byte0 = (len >> 24) & 0xFF;
+            int byte1 = (len >> 16) & 0xFF;
+            int byte2 = (len >> 8) & 0xFF;
+            int byte3 = len & 0xFF;
+
+            try {
+                out.writeByte((byte) byte0);
+                out.writeByte((byte) byte1);
+                out.writeByte((byte) byte2);
+                out.writeByte((byte) byte3);
+                out.write(body);
+                out.flush();
+            } catch (IOException e) {
+                System.out.println("Error writing to socket. Has the server been shut down?");
+            }
+            if(msg != "(syn)") {
+                System.out.println("sended msg: "+msg);
+            }
+        }
+
+        /**
+         * Receives a server message and returns it.
+         * <p/>
+         * This method listens (blocking) for the next SimSpark message from the
+         * server, removes the header concerning the SimSpark network protocol
+         * and returns the server message (String of perceptor messages). <br>
+         * If the server has sent more then one message since the last call of
+         * this method, the oldest is returned, that means the messages are
+         * provided always in chronological order.
+         * <p/>
+         * @return The raw server message (String of concatenated perceptor
+         * messages).
+         */
+        public String getServerMessage() {
+
+            String msg = "keine Nachricht";
+            byte[] result;
+            int length;
+//            System.out.println("trying to get msg");
             
+            try {
+//                System.out.println("available: " + in.available());
+                if(in.available() == 0) { return null; }
+                int byte0 = in.read();
+//                System.out.println("got byte0: "+byte0);
+                int byte1 = in.read();
+//                System.out.println("got byte1: "+byte1);
+                int byte2 = in.read();
+//                System.out.println("got byte2: "+byte2);
+                int byte3 = in.read();
+//                System.out.println("got byte3: "+byte3);
+                length = byte0 << 24 | byte1 << 16 | byte2 << 8 | byte3; // analyzes
+                // the header
+                int total = 0;
+
+                if (length < 0) {
+                    // server was shutdown
+                    System.out.println("Server ist down.");
+                }
+
+                result = new byte[length];
+                while (total < length) {
+                    total += in.read(result, total, length - total);
+                }
+
+                msg = new String(result, 0, length, "UTF-8");
+            } catch (IOException e) {
+                System.out.println("Error when reading from socket. Has the server been shut down?");
+                return null;
+            }
+
+            return msg;
+        }
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JToggleButton btnConnect;
+    private javax.swing.JButton btnSendCommand;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextArea jTextArea1;
+    private javax.swing.JTextField jTextField1;
     // End of variables declaration//GEN-END:variables
 }
