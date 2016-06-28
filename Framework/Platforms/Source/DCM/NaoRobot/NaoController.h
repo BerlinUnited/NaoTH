@@ -53,6 +53,7 @@ public:
   virtual string getBodyID() const { return theBodyID; }
   virtual string getBodyNickName() const { return theBodyNickName; }
   virtual string getHeadNickName() const { return theHeadNickName; }
+  virtual string getRobotName() const { return theRobotName; }
   
   // camera stuff
   void get(Image& data){ theBottomCameraHandler.get(data); } // blocking
@@ -161,6 +162,7 @@ protected:
   std::string theBodyID;
   std::string theBodyNickName;
   std::string theHeadNickName;
+  std::string theRobotName;
 
   // -- begin -- shared memory access --
   // DCM --> NaoController

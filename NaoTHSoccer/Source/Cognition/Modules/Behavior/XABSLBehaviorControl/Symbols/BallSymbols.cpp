@@ -64,7 +64,6 @@ void BallSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalInputSymbol("ball.team.striker.position.x", &getTeamBallModel().strikerPosition.x);
   engine.registerDecimalInputSymbol("ball.team.striker.position.y", &getTeamBallModel().strikerPosition.y);
 
-
   DEBUG_REQUEST_REGISTER("XABSL:BallSymbols:ballLeftFoot", "draw the ball model in left foot's coordinates on field", false);
   DEBUG_REQUEST_REGISTER("XABSL:BallSymbols:ballRightFoot", "draw the ball model in right foot's coordinates on field", false);
   DEBUG_REQUEST_REGISTER("XABSL:StrategySymbols:draw_position_behind_ball", "draw the point behind the ball seen from the opp goal on field", false);
@@ -155,4 +154,5 @@ double BallSymbols::getTeamBallGoalieTimeSinceLastUpdate() {
 double BallSymbols::getTeamBallStrikerTimeSinceLastUpdate() {
   return theInstance->getFrameInfo().getTimeSince(theInstance->getTeamBallModel().strikerTime);
 }
+
 

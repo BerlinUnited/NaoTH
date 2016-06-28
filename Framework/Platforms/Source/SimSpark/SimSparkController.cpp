@@ -999,7 +999,7 @@ bool SimSparkController::updateGameInfo(const sexp_t* sexp)
           // try SimSpark play mode
           SimSparkGameInfo::PlayMode playMode = SimSparkGameInfo::getPlayModeByName(pm);
           if(playMode != SimSparkGameInfo::numOfPlayMode) {
-            GameData::GameState state = SimSparkGameInfo::covertToGameState(playMode);
+            state = SimSparkGameInfo::covertToGameState(playMode);
           }
         }
         else
