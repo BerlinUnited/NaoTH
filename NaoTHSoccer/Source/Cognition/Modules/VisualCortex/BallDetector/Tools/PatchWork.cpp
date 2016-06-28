@@ -84,7 +84,7 @@ void PatchWork::toPatch(const BallCandidates::PatchYUVClassified &src, BallCandi
       it != src.data.end(); it++)
   {
     const BallCandidates::ClassifiedPixel& origPixel = *it;
-    target.data.push_back(origPixel.c);
+    target.data.push_back(origPixel.pixel.y);
   }
 }
 
