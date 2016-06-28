@@ -47,11 +47,11 @@ void CameraMatrixCorrectorV2::execute()
   DEBUG_REQUEST_ON_DEACTIVE("CameraMatrixV2:collect_calibration_data",
     head_state = look_left;
     last_head_state = initial;
+    getHeadMotionRequest().id = HeadMotionRequest::hold;
   );
 
   if(collect_data){
       // head control states
-      getHeadMotionRequest().id = HeadMotionRequest::goto_angle;
 
       double yaw = 0;
       double pitch = 0;
@@ -68,11 +68,11 @@ void CameraMatrixCorrectorV2::execute()
           break;
       case look_left_down:
           yaw = 88;
-          pitch = -14;
+          pitch = 10;
           break;
       case look_right_down:
           yaw = -88;
-          pitch = -14;
+          pitch = 10;
           break;
       default:
           break;
@@ -81,10 +81,11 @@ void CameraMatrixCorrectorV2::execute()
       getHeadMotionRequest().id = HeadMotionRequest::goto_angle;
       getHeadMotionRequest().targetJointPosition.x = Math::fromDegrees(yaw);
       getHeadMotionRequest().targetJointPosition.y = Math::fromDegrees(pitch);
-      getHeadMotionRequest().velocity = 30;
+      getHeadMotionRequest().velocity = 10;
+      MODIFY("CameraMatrixV2:collecting_velocity", getHeadMotionRequest().velocity);
 
       // state transitions
-      target_reached = (fabs(Math::toDegrees(getSensorJointData().position[JointData::HeadYaw]) - yaw) < 1) && (fabs(Math::toDegrees(getSensorJointData().position[JointData::HeadPitch]) - pitch) < 1);
+      target_reached = (fabs(Math::toDegrees(getSensorJointData().position[JointData::HeadYaw]) - yaw) < 2) && (fabs(Math::toDegrees(getSensorJointData().position[JointData::HeadPitch]) - pitch) < 2);
 
       if(target_reached){
           if(head_state == look_left && last_head_state == initial){
@@ -115,7 +116,7 @@ void CameraMatrixCorrectorV2::execute()
       if(last_head_state != initial) {
           CamMatErrorFunction::CalibrationData& c_data = (theCamMatErrorFunction->getModuleT())->calibrationData;
 
-          int current_index_yaw   = static_cast<int>((Math::toDegrees(getSensorJointData().position[JointData::HeadYaw])/20.0) + 0.5);
+          int current_index_yaw   = static_cast<int>((Math::toDegrees(getSensorJointData().position[JointData::HeadYaw])/15.0) + 0.5);
           int current_index_pitch = static_cast<int>((Math::toDegrees(getSensorJointData().position[JointData::HeadPitch])/5.0) + 0.5);
 
           std::pair<int,int> index;
