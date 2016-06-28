@@ -19,7 +19,7 @@ void BallSymbols::registerSymbols(xabsl::Engine& engine)
   // percept
   engine.registerDecimalInputSymbol("ball.percept.x", &ballPerceptPos.x);
   engine.registerDecimalInputSymbol("ball.percept.y", &ballPerceptPos.y);
-  engine.registerBooleanInputSymbol("ball.was_seen", &ballPerceptSeen);
+  engine.registerBooleanInputSymbol("ball.percept.was_seen", &ballPerceptSeen);
 
   engine.registerBooleanInputSymbol("ball.know_where_itis", &getBallModel().knows);
 
