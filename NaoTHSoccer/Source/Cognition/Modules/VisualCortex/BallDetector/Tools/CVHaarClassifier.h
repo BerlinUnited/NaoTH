@@ -45,7 +45,7 @@ public:
     else if(p.data.size() == 24*24)
     {
       cv::Mat wrappedImg(24, 24, CV_8U, (void*) p.data.data());
-      cv::resize(wrappedImg, img, cv::Size(12,12), 0, 0, cv::INTER_CUBIC);
+      cv::resize(wrappedImg, img, cv::Size(12,12));
     }
     else if(p.data.size() == 36*36)
     {
@@ -58,7 +58,7 @@ public:
     }
     // TODO: magic numbers
     cv::transpose(img, img);
-
+    //cv::flip(img,img, 1);
 
     //cv::Mat aux = buffer.colRange(40,44).rowRange(40,44);
     //wrappedImg.copyTo(aux);
