@@ -35,7 +35,10 @@
 
 #include <Representations/Modeling/BodyState.h>
 
-#include <Tools/DataStructures/RingBufferWithSum.h>
+//tools
+#include "Tools/JointMonitor.h"
+#include "Tools/JointOffsets.h"
+#include "Tools/StiffnessController.h"
 
 BEGIN_DECLARE_MODULE(StandMotion)
   PROVIDE(DebugPlot)
@@ -176,8 +179,8 @@ StandMotion()
         RotationMatrix hipFeetPoseSensorRot = hipFeetPoseSensor.hip.rotation;
         RotationMatrix targetRot = target.hip.rotation;
 
-        double rotationErrorX = fabs(hipFeetPoseSensorRot.getXAngle() - targetRot.getXAngle()) > M_PI ? 2*M_PI - fabs(hipFeetPoseSensorRot.getXAngle() - targetRot.getXAngle()) : fabs(hipFeetPoseSensorRot.getXAngle() - targetRot.getXAngle());
-        double rotationErrorY = fabs(hipFeetPoseSensorRot.getYAngle() - targetRot.getYAngle()) > M_PI ? 2*M_PI - fabs(hipFeetPoseSensorRot.getYAngle() - targetRot.getYAngle()) : fabs(hipFeetPoseSensorRot.getYAngle() - targetRot.getYAngle());
+        double rotationErrorX = fabs(hipFeetPoseSensorRot.getXAngle() - targetRot.getXAngle()) > Math::pi ? Math::pi2 - fabs(hipFeetPoseSensorRot.getXAngle() - targetRot.getXAngle()) : fabs(hipFeetPoseSensorRot.getXAngle() - targetRot.getXAngle());
+        double rotationErrorY = fabs(hipFeetPoseSensorRot.getYAngle() - targetRot.getYAngle()) > Math::pi ? Math::pi2 - fabs(hipFeetPoseSensorRot.getYAngle() - targetRot.getYAngle()) : fabs(hipFeetPoseSensorRot.getYAngle() - targetRot.getYAngle());
 
         if((  hipFeetPoseSensor.hip.translation - target.hip.translation).abs() > getEngine().getParameters().stand.relax.allowedDeviation
            || rotationErrorX > getEngine().getParameters().stand.relax.allowedRotationDeviation
@@ -396,123 +399,14 @@ private:
   bool isRelaxing;
   bool resetedAfterLifting;
 
-  class JointMonitor
-  {
-  public:
-      JointMonitor() {}
-
-      void updateMonitor(double motorData, double sensorData, double cumCurrent) {
-          motorJointDataBuffer.add(motorData);
-
-          if(motorJointDataBuffer.isFull()){
-              motorToSensorError.add(sensorData - motorJointDataBuffer.first());
-          }
-
-          current.add(cumCurrent);
-      }
-
-      void resetAll() {
-          motorJointDataBuffer.clear();
-          motorToSensorError.clear();
-          current.clear();
-      }
-
-      void resetError() {
-          motorToSensorError.clear();
-      }
-
-      double getError(){
-          return motorToSensorError.getAverage();
-      }
-
-      double filteredCurrent(){
-          return current.getAverage();
-      }
-
-  private:
-      RingBuffer<double,4> motorJointDataBuffer;
-      RingBufferWithSum<double,100> motorToSensorError;
-      RingBufferWithSum<double,200> current;
-  };
-
   JointMonitor jointMonitors[naoth::JointData::numOfJoint];
 
   // used by StandMotion:stiffness_controller
   FrameInfo lastStiffnessUpdate;
-
-  class StiffnessController{
-  public:
-      StiffnessController():
-          minAngle(0.08),
-          maxAngle(2),
-          minStiff(0.3),
-          maxStiff(1.0)
-      {}
-
-      double control(double error) {
-          // linear function
-          double m = (maxStiff-minStiff)/(maxAngle-minAngle);
-          double n = maxStiff-m*maxAngle;
-
-          double e = fabs(error);
-
-          if(e <= Math::fromDegrees(minAngle)){
-              return minStiff;
-          } else if(e > Math::fromDegrees(maxAngle)) {
-              return maxStiff;
-          } else {
-              return m*Math::toDegrees(e) + n;
-          }
-      }
-
-      void setMinMaxValues(double minAngle, double maxAngle, double minStiff, double maxStiff){
-          this->minAngle = minAngle;
-          this->maxAngle = maxAngle;
-          this->minStiff = minStiff;
-          this->maxStiff = maxStiff;
-      }
-
-  private:
-      double minAngle, maxAngle, minStiff, maxStiff;
-  };
-
   StiffnessController stiffnessController[naoth::JointData::numOfJoint];
 
   // used by StandMotion:online_tuning
   FrameInfo lastFrameInfo;
-
-  class JointOffsets
-  {
-  public:
-      JointOffsets():minimalStep(0.0013962634){}
-
-      void setMinimalStep(double minStep) {
-          minimalStep = minStep;
-      }
-
-      void resetOffsets(){
-          for(int i = 0; i < naoth::JointData::numOfJoint; i++){
-              offsets.position[i] = 0;
-          }
-      }
-
-      void increaseOffset(int i){
-          offsets.position[i] += minimalStep;
-      }
-
-      void decreaseOffset(int i){
-          offsets.position[i] -= minimalStep;
-      }
-
-      double operator [](int i){
-          return offsets.position[i];
-      }
-
-  private:
-      JointData offsets;
-      double minimalStep; // [rad]
-  };
-
   JointOffsets jointOffsets;
   double stiffness[naoth::JointData::numOfJoint];
 
