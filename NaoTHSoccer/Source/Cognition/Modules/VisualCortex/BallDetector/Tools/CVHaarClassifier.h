@@ -36,12 +36,29 @@ public:
 
   int classify(const BallCandidates::Patch& p, unsigned int minNeighbours=0, unsigned int windowSize=12)
   {
-    ASSERT(p.data.size() == 12*12);
+    cv::Mat img;
+    if(p.data.size() == 12*12)
+    {
+      cv::Mat wrappedImg(12, 12, CV_8U, (void*) p.data.data());
+      img = wrappedImg; // only copies the header, not the image itself;
+    }
+    else if(p.data.size() == 24*24)
+    {
+      cv::Mat wrappedImg(24, 24, CV_8U, (void*) p.data.data());
+      cv::resize(wrappedImg, img, cv::Size(12,12), 0, 0, cv::INTER_CUBIC);
+    }
+    else if(p.data.size() == 36*36)
+    {
+      cv::Mat wrappedImg(36, 36, CV_8U, (void*) p.data.data());
+      cv::resize(wrappedImg, img, cv::Size(12,12));
+    }
+    else
+    {
+      ASSERT(p.data.size() == 12*12 || p.data.size() == 24*24 || p.data.size() == 36*36);
+    }
     // TODO: magic numbers
-    cv::Mat wrappedImg(12, 12, CV_8U, (void*) p.data.data());
-    cv::transpose(wrappedImg, wrappedImg);
+    cv::transpose(img, img);
 
-    
 
     //cv::Mat aux = buffer.colRange(40,44).rowRange(40,44);
     //wrappedImg.copyTo(aux);
@@ -49,7 +66,7 @@ public:
     cv::Mat aux(buffer(cv::Rect(6,6,12,12)));
     //wrappedImg.copyTo(aux);
 
-    cv::GaussianBlur(wrappedImg, aux, cv::Size(3,3), 0, 0);
+    cv::GaussianBlur(img, aux, cv::Size(3,3), 0, 0);
 
     std::vector<cv::Rect> out;
     std::vector<int> rejectLevels;
