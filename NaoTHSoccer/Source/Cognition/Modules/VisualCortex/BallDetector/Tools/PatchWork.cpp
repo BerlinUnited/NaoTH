@@ -88,12 +88,15 @@ void PatchWork::toPatch(const BallCandidates::PatchYUVClassified &src, BallCandi
   }
 }
 
-std::vector<BallCandidates::Patch> PatchWork::toPatchList(const std::vector<BallCandidates::PatchYUVClassified> &src)
+BallCandidates::PatchesList PatchWork::toPatchList(const BallCandidates::PatchYUVClassifiedList &src)
 {
-  std::vector<BallCandidates::Patch> result(src.size());
-  for(size_t i=0; i < src.size(); i++)
+  std::list<BallCandidates::Patch> result;
+  for(BallCandidates::PatchYUVClassifiedList::const_iterator it=src.begin();
+      it != src.end(); it++)
   {
-    toPatch(src[i], result[i]);
+    BallCandidates::Patch p;
+    toPatch(*it, p);
+    result.push_back(p);
   }
   return result;
 }

@@ -20,7 +20,7 @@ public:
   static void subsampling(const naoth::Image& image, const FieldColorPercept& fielColorPercept, std::vector<BallCandidates::ClassifiedPixel>& result, int x0, int y0, int x1, int y1, int size);
 
   static void toPatch(const BallCandidates::PatchYUVClassified& src, BallCandidates::Patch& target);
-  static std::vector<BallCandidates::Patch> toPatchList(const std::vector<BallCandidates::PatchYUVClassified>& src);
+  static BallCandidates::PatchesList toPatchList(const BallCandidates::PatchYUVClassifiedList &src);
 };
 
 #endif // _PatchWork_H_
