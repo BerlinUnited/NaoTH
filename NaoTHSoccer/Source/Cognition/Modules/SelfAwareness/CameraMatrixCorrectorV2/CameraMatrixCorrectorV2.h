@@ -18,6 +18,8 @@
 
 #include "Representations/Modeling/KinematicChain.h"
 
+#include "Representations/Motion/Request/HeadMotionRequest.h"
+
 #include "Tools/DoubleCamHelpers.h"
 #include "Tools/CameraGeometry.h"
 #include <Tools/NaoInfo.h>
@@ -55,6 +57,7 @@ BEGIN_DECLARE_MODULE(CameraMatrixCorrectorV2)
   REQUIRE(SensorJointData)
   REQUIRE(InertialModel)
 
+  PROVIDE(HeadMotionRequest)
   PROVIDE(CameraMatrixOffset)
 END_DECLARE_MODULE(CameraMatrixCorrectorV2)
 
@@ -258,6 +261,8 @@ public:
   void execute();
 
 private:
+
+  enum {initial, look_left, look_right, look_right_down, look_left_down} head_state, last_head_state;
 
   int last_idx_yaw,last_idx_pitch;
   double damping;

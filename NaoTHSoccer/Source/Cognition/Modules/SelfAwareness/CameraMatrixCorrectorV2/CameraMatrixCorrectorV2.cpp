@@ -24,6 +24,9 @@ CameraMatrixCorrectorV2::CameraMatrixCorrectorV2()
   last_idx_yaw   = 0;
   last_idx_pitch = 0;
   damping = 0.1;
+
+  head_state      = look_left;
+  last_head_state = initial;
 }
 
 CameraMatrixCorrectorV2::~CameraMatrixCorrectorV2()
@@ -41,33 +44,102 @@ void CameraMatrixCorrectorV2::execute()
     collect_data = true;
   );
 
+  DEBUG_REQUEST_ON_DEACTIVE("CameraMatrixV2:collect_calibration_data",
+    head_state = look_left;
+    last_head_state = initial;
+  );
+
   if(collect_data){
-      CamMatErrorFunction::CalibrationData& c_data = (theCamMatErrorFunction->getModuleT())->calibrationData;
+      // head control states
+      getHeadMotionRequest().id = HeadMotionRequest::goto_angle;
 
-      int current_index_yaw   = static_cast<int>((Math::toDegrees(getSensorJointData().position[JointData::HeadYaw])/20.0) + 0.5);
-      int current_index_pitch = static_cast<int>((Math::toDegrees(getSensorJointData().position[JointData::HeadPitch])/5.0) + 0.5);
+      double yaw = 0;
+      double pitch = 0;
+      bool   target_reached = false;
 
-      std::pair<int,int> index;
-      index.first  = current_index_yaw;
-      index.second = current_index_pitch;
+      switch (head_state){
+      case look_left:
+          yaw = 88;
+          pitch = 0;
+          break;
+      case look_right:
+          yaw = -88;
+          pitch = 0;
+          break;
+      case look_left_down:
+          yaw = 88;
+          pitch = -14;
+          break;
+      case look_right_down:
+          yaw = -88;
+          pitch = -14;
+          break;
+      default:
+          break;
+      }
 
-      if(last_idx_pitch != current_index_pitch || last_idx_yaw != current_index_yaw) {
-          std::vector<CamMatErrorFunction::CalibrationDataSample>& data = c_data[index];
+      getHeadMotionRequest().id = HeadMotionRequest::goto_angle;
+      getHeadMotionRequest().targetJointPosition.x = Math::fromDegrees(yaw);
+      getHeadMotionRequest().targetJointPosition.y = Math::fromDegrees(pitch);
+      getHeadMotionRequest().velocity = 30;
 
-          data.push_back((struct CamMatErrorFunction::CalibrationDataSample){getKinematicChain().theLinks[KinematicChain::Torso].M,
-                                                                             getLineGraphPercept(),getInertialModel(),
-                                                                             getSensorJointData().position[JointData::HeadYaw],
-                                                                             getSensorJointData().position[JointData::HeadPitch]
-                                                                            });
+      // state transitions
+      target_reached = (fabs(Math::toDegrees(getSensorJointData().position[JointData::HeadYaw]) - yaw) < 1) && (fabs(Math::toDegrees(getSensorJointData().position[JointData::HeadPitch]) - pitch) < 1);
 
-//          c_data[index].chestPose        = getKinematicChain().theLinks[KinematicChain::Torso].M;
-//          c_data[index].lineGraphPercept = getLineGraphPercept();
-//          c_data[index].headYaw          = getSensorJointData().position[JointData::HeadYaw];
-//          c_data[index].headPitch        = getSensorJointData().position[JointData::HeadPitch];
-//          c_data[index].inertialModel    = getInertialModel();
+      if(target_reached){
+          if(head_state == look_left && last_head_state == initial){
+              head_state = look_right;
+              last_head_state = look_left;
+          } else if (head_state == look_right && last_head_state == look_left){
+              head_state = look_left;
+              last_head_state = look_right;
+          } else if (head_state == look_left && last_head_state == look_right){
+              head_state = look_left_down;
+              last_head_state = look_left;
+          } else if (head_state == look_left_down && last_head_state == look_left){
+              head_state = look_right_down;
+              last_head_state = look_left_down;
+          } else if (head_state == look_right_down && last_head_state == look_left_down){
+              head_state = look_left_down;
+              last_head_state = look_right_down;
+          } else if (head_state == look_left_down && last_head_state == look_right_down){
+              head_state = look_left;
+              last_head_state = look_left_down;
+          } else if (head_state == look_left && last_head_state == look_left_down){
+              head_state = look_right;
+              last_head_state = look_left;
+          }
+      }
 
-          last_idx_pitch = current_index_pitch;
-          last_idx_yaw   = current_index_yaw;
+      // collecting data
+      if(last_head_state != initial) {
+          CamMatErrorFunction::CalibrationData& c_data = (theCamMatErrorFunction->getModuleT())->calibrationData;
+
+          int current_index_yaw   = static_cast<int>((Math::toDegrees(getSensorJointData().position[JointData::HeadYaw])/20.0) + 0.5);
+          int current_index_pitch = static_cast<int>((Math::toDegrees(getSensorJointData().position[JointData::HeadPitch])/5.0) + 0.5);
+
+          std::pair<int,int> index;
+          index.first  = current_index_yaw;
+          index.second = current_index_pitch;
+
+          if(last_idx_pitch != current_index_pitch || last_idx_yaw != current_index_yaw) {
+              std::vector<CamMatErrorFunction::CalibrationDataSample>& data = c_data[index];
+
+              data.push_back((struct CamMatErrorFunction::CalibrationDataSample){getKinematicChain().theLinks[KinematicChain::Torso].M,
+                                                                                 getLineGraphPercept(),getInertialModel(),
+                                                                                 getSensorJointData().position[JointData::HeadYaw],
+                                                                                 getSensorJointData().position[JointData::HeadPitch]
+                                                                                });
+
+    //          c_data[index].chestPose        = getKinematicChain().theLinks[KinematicChain::Torso].M;
+    //          c_data[index].lineGraphPercept = getLineGraphPercept();
+    //          c_data[index].headYaw          = getSensorJointData().position[JointData::HeadYaw];
+    //          c_data[index].headPitch        = getSensorJointData().position[JointData::HeadPitch];
+    //          c_data[index].inertialModel    = getInertialModel();
+
+              last_idx_pitch = current_index_pitch;
+              last_idx_yaw   = current_index_yaw;
+          }
       }
   }
 
