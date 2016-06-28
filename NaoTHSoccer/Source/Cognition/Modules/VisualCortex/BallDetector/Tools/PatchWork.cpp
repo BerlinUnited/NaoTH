@@ -87,3 +87,13 @@ void PatchWork::toPatch(const BallCandidates::PatchYUVClassified &src, BallCandi
     target.data.push_back(origPixel.c);
   }
 }
+
+std::vector<BallCandidates::Patch> PatchWork::toPatchList(const std::vector<BallCandidates::PatchYUVClassified> &src)
+{
+  std::vector<BallCandidates::Patch> result(src.size());
+  for(size_t i=0; i < src.size(); i++)
+  {
+    toPatch(src[i], result[i]);
+  }
+  return result;
+}
