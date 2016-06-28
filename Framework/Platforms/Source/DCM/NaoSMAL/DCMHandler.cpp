@@ -200,11 +200,12 @@ void DCMHandler::initInertialSensor()
 
 void DCMHandler::initIRReceive()
 {
-  DCMPath_IRReceive[IRReceiveData::LeftBeacon] =  "Device/SubDeviceList/IR/BeaconCode/Left/Sensor/Value";
-  DCMPath_IRReceive[IRReceiveData::LeftByte1] = "Device/SubDeviceList/IR/RobotCode/Left/Byte1/Sensor/Value";
-  DCMPath_IRReceive[IRReceiveData::LeftByte2] = "Device/SubDeviceList/IR/RobotCode/Left/Byte2/Sensor/Value";
-  DCMPath_IRReceive[IRReceiveData::LeftByte3] = "Device/SubDeviceList/IR/RobotCode/Left/Byte3/Sensor/Value";
-  DCMPath_IRReceive[IRReceiveData::LeftByte4] = "Device/SubDeviceList/IR/RobotCode/Left/Byte4/Sensor/Value";
+  DCMPath_IRReceive[IRReceiveData::LeftBeacon] =  "Device/SubDeviceList/IR/LIRC/Data/uInt8/Byte/Sensor/Value";
+  DCMPath_IRReceive[IRReceiveData::LeftByte1] = "Device/SubDeviceList/IR/LIRC/Data/uInt32/Byte1/Sensor/Value";
+  DCMPath_IRReceive[IRReceiveData::LeftByte2] = "Device/SubDeviceList/IR/LIRC/Data/uInt32/Byte2/Sensor/Value";
+  DCMPath_IRReceive[IRReceiveData::LeftByte3] = "Device/SubDeviceList/IR/LIRC/Data/uInt32/Byte3/Sensor/Value";
+  DCMPath_IRReceive[IRReceiveData::LeftByte4] = "Device/SubDeviceList/IR/LIRC/Data/uInt32/Byte4/Sensor/Value";
+  
   DCMPath_IRReceive[IRReceiveData::LeftRCByte1] = "Device/SubDeviceList/IR/RC5Code/Left/Byte1/Sensor/Value";
   DCMPath_IRReceive[IRReceiveData::LeftRCByte2] = "Device/SubDeviceList/IR/RC5Code/Left/Byte2/Sensor/Value";
 
