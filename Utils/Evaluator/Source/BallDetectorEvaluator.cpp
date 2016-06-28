@@ -8,6 +8,7 @@
 #include <sstream>
 
 #include <Representations/Perception/BallCandidates.h>
+#include <Cognition/Modules/VisualCortex/BallDetector/Tools/PatchWork.h>
 
 #include <Extern/libb64/encode.h>
 
@@ -394,17 +395,37 @@ unsigned int BallDetectorEvaluator::executeSingleFile(std::string file, const Ex
       naoth::Serializer<BallCandidatesTop>::deserialize(stream, getBallCandidatesTop());
     }
 
+
+    BallCandidates::PatchesList bottomPatches;
+    if(!getBallCandidates().patchesYUVClassified.empty())
+    {
+      bottomPatches = PatchWork::toPatchList(getBallCandidates().patchesYUVClassified);
+    }
+    else if(!getBallCandidates().patches.empty())
+    {
+      bottomPatches = getBallCandidates().patches;
+    }
+
+    BallCandidates::PatchesList topPatches;
+    if(!getBallCandidatesTop().patchesYUVClassified.empty())
+    {
+      topPatches = PatchWork::toPatchList(getBallCandidatesTop().patchesYUVClassified);
+    }
+    else if(!getBallCandidatesTop().patches.empty())
+    {
+      topPatches = getBallCandidatesTop().patches;
+    }
+
     // The python script will always read the bottom patches first, thus in order to have the correct index
     // the loops have to bee in the same order.
-
-    for(const BallCandidates::Patch& p : getBallCandidates().patches)
+    for(const BallCandidates::Patch& p : bottomPatches)
     {
       evaluatePatch(p, patchIdx++, CameraInfo::Bottom, expectedBallIdx, file, params, r);
     }
 
-    for(const BallCandidates::Patch& p : getBallCandidatesTop().patches)
+    for(const BallCandidates::Patch& p : topPatches)
     {
-      evaluatePatch(p, patchIdx++, CameraInfo::Bottom, expectedBallIdx, file, params, r);
+      evaluatePatch(p, patchIdx++, CameraInfo::Top, expectedBallIdx, file, params, r);
     }
 
     if(patchIdx >= maxValidIdx)
@@ -538,7 +559,21 @@ std::string BallDetectorEvaluator::createPGM(const BallCandidates::Patch &p)
 
 std::string BallDetectorEvaluator::createPNG(const BallCandidates::Patch &p)
 {
-  cv::Mat wrappedImg(12, 12, CV_8UC1, (void*) p.data.data());
+  cv::Mat wrappedImg;
+  if(p.data.size() == 12*12)
+  {
+    wrappedImg = cv::Mat(12, 12, CV_8UC1, (void*) p.data.data());
+  }
+  else if(p.data.size() == 24*24)
+  {
+    wrappedImg = cv::Mat(24, 24, CV_8UC1, (void*) p.data.data());
+  }
+  else if(p.data.size() == 36*36)
+  {
+    wrappedImg = cv::Mat(36, 36, CV_8UC1, (void*) p.data.data());
+  }
+  cv::transpose(wrappedImg, wrappedImg);
+  //cv::flip(wrappedImg,wrappedImg, 1);
 
   std::vector<uchar> buffer;
 
