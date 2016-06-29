@@ -14,7 +14,7 @@ IKParameters::IKParameters()
   PARAMETER_REGISTER(footOffsetY) = 0;
   
   // stand parameter
-  PARAMETER_REGISTER(stand.speed) = 0.04;
+  PARAMETER_REGISTER(stand.speed) = 0.01;
   PARAMETER_REGISTER(stand.enableStabilization) = false;
   PARAMETER_REGISTER(stand.stiffness) = 0.7;
 
