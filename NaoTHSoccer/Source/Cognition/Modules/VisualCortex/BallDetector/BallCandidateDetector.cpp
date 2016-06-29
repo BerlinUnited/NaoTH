@@ -138,7 +138,7 @@ void BallCandidateDetector::calculateCandidates()
           cvHaarClassifier.loadModel(params.haarDetector.model_file);
         }
 
-        const int patch_size = 12;
+        const int patch_size = 16;
         
         BallCandidates::Patch p(0);
         //int size = ((*i).max.x - (*i).min.x)/2;
