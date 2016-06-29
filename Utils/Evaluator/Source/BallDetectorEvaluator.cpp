@@ -445,21 +445,34 @@ void BallDetectorEvaluator::evaluatePatch(const BallCandidates::Patch &p, unsign
                                           ExperimentResult& r)
 {
   // resize patch if necessary
-  cv::Mat img;
+  cv::Mat wrappedImg;
   if(p.data.size() == 12*12)
   {
-    cv::Mat wrappedImg(12, 12, CV_8U, (void*) p.data.data());
-    img = wrappedImg; // only copies the header, not the image itself;
+    wrappedImg = cv::Mat(12, 12, CV_8U, (void*) p.data.data());
+  }
+  else if(p.data.size() == 16*16)
+  {
+    wrappedImg = cv::Mat(16, 16, CV_8U, (void*) p.data.data());
   }
   else if(p.data.size() == 24*24)
   {
-    cv::Mat wrappedImg(24, 24, CV_8U, (void*) p.data.data());
-    cv::resize(wrappedImg, img, cv::Size(12,12));
+    wrappedImg = cv::Mat(24, 24, CV_8U, (void*) p.data.data());
   }
   else if(p.data.size() == 36*36)
   {
-    cv::Mat wrappedImg(36, 36, CV_8U, (void*) p.data.data());
-    cv::resize(wrappedImg, img, cv::Size(12,12));
+    wrappedImg = cv::Mat(36, 36, CV_8U, (void*) p.data.data());
+  }
+
+  const unsigned int patchSize = 16;
+
+  cv::Mat img;
+  if(wrappedImg.cols == patchSize && wrappedImg.rows == patchSize)
+  {
+    wrappedImg = img; // only copies the header, not the image itself
+  }
+  else
+  {
+    cv::resize(wrappedImg, img, cv::Size(patchSize,patchSize));
   }
 
   BallCandidates::Patch resizedPatch;
