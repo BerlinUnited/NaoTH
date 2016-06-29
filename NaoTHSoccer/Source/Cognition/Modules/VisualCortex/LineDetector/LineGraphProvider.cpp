@@ -169,6 +169,28 @@ void LineGraphProvider::execute(CameraInfo::CameraID id)
     getLineGraphPercept().edgels.push_back(edgel);
   }
 
+  // neighbors line graph in image
+  for(size_t i = 0; i < edgelNeighbors.size(); i++)
+  {
+    bool add_to_percept = false;
+
+    if(edgelNeighbors[i].left != -1) {
+      add_to_percept = true;
+    }
+
+    if(edgelNeighbors[i].right != -1) {
+      add_to_percept = true;
+    }
+
+    if(add_to_percept) {
+        if(cameraID == CameraInfo::Top) {
+            getLineGraphPercept().edgelsInImageTop.push_back(getScanLineEdgelPercept().pairs[i]);
+        } else {
+            getLineGraphPercept().edgelsInImage.push_back(getScanLineEdgelPercept().pairs[i]);
+        }
+    }
+  }
+
   // fill the compas
   if((int)edgelPairs.size() > parameters.minimalNumberOfPairs)
   {
