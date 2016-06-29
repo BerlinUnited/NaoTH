@@ -73,7 +73,7 @@ private:
       syncWithConfig();
     }
 
-    int logBallCandidates;
+    bool logBallCandidates;
     bool logBodyStatus;
   } params;
 
