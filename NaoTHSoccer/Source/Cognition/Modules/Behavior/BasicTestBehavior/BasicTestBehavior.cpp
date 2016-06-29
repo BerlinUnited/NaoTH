@@ -228,8 +228,11 @@ void BasicTestBehavior::testHead()
     MODIFY("BasicTestBehavior:head:headYaw_deg",yaw);
     double pitch = -14;
     MODIFY("BasicTestBehavior:head:headPitch_deg",pitch);
+    double velocity = 300;
+    MODIFY("BasicTestBehavior:head:headVelocity",velocity);
     getHeadMotionRequest().targetJointPosition.x = Math::fromDegrees(yaw);
     getHeadMotionRequest().targetJointPosition.y = Math::fromDegrees(pitch);
+    getHeadMotionRequest().velocity = velocity;
   );
 
 
