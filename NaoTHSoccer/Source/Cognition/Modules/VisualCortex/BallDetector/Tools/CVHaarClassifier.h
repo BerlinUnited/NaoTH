@@ -18,7 +18,7 @@ private:
   int idx;
 
 public:
-  CVHaarClassifier() : buffer(28, 28, CV_8UC1, cv::Scalar(128)) {
+  CVHaarClassifier() : buffer(24, 24, CV_8UC1, cv::Scalar(128)) {
     //setLoadModel("experiment1.xml");
     idx = 0;
   }
@@ -46,7 +46,7 @@ public:
     //cv::Mat aux = buffer.colRange(40,44).rowRange(40,44);
     //wrappedImg.copyTo(aux);
 
-    cv::Mat aux(buffer(cv::Rect(6,6,16,16)));
+    cv::Mat aux(buffer(cv::Rect(4,4,16,16)));
     //wrappedImg.copyTo(aux);
 
     cv::GaussianBlur(wrappedImg, aux, cv::Size(3,3), 0, 0);
@@ -60,7 +60,7 @@ public:
     //cv::imwrite(ss.str(), buffer);
     
     //cascadeClasifier.detectMultiScale( buffer, out, rejectLevels, levelWeights, 1.05, minNeighbours, 0|CV_HAAR_SCALE_IMAGE, cv::Size(10,10), cv::Size(windowSize,windowSize) , true);
-    cascadeClasifier.detectMultiScale( buffer, out, 1.05, minNeighbours, 0|CV_HAAR_SCALE_IMAGE, cv::Size(10,10), cv::Size(windowSize,windowSize));
+    cascadeClasifier.detectMultiScale( buffer, out, 1.05, minNeighbours, 0|CV_HAAR_SCALE_IMAGE, cv::Size(13,13), cv::Size(windowSize,windowSize));
 
     idx++;
 
