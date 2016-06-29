@@ -69,11 +69,12 @@ private:
     Parameters() : ParameterList("GameLogger")
     {
       PARAMETER_REGISTER(logBallCandidates) = false;
-      
+      PARAMETER_REGISTER(logBodyStatus) = false;
       syncWithConfig();
     }
 
     int logBallCandidates;
+    bool logBodyStatus;
   } params;
 
 private:
