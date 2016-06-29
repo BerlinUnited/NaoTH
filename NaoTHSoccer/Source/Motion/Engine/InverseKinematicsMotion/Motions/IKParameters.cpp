@@ -14,7 +14,7 @@ IKParameters::IKParameters()
   PARAMETER_REGISTER(footOffsetY) = 0;
   
   // stand parameter
-  PARAMETER_REGISTER(stand.speed) = 0.04;
+  PARAMETER_REGISTER(stand.speed) = 0.01;
   PARAMETER_REGISTER(stand.enableStabilization) = false;
   PARAMETER_REGISTER(stand.stiffness) = 0.7;
 
@@ -22,14 +22,17 @@ IKParameters::IKParameters()
   PARAMETER_REGISTER(stand.hipOffsetX) = 15;
 
   // relax
+  PARAMETER_REGISTER(stand.relax.enable) = true;
   PARAMETER_REGISTER(stand.relax.allowedDeviation) = 5;   // [mm]
-  PARAMETER_REGISTER(stand.relax.allowedRotationDeviation) = 0.08726646259;   // [rad] ~ 5°
+  PARAMETER_REGISTER(stand.relax.allowedRotationDeviation) = Math::fromDegrees(5);// [rad] todo: PARAMETER_ANGLE_REGISTER
   PARAMETER_REGISTER(stand.relax.timeBonusForCorrection)   = 1000; // [ms]
 
+  PARAMETER_REGISTER(stand.relax.jointOffsetTuning.enable) = true;
   PARAMETER_REGISTER(stand.relax.jointOffsetTuning.deadTime)         = 1000;         // [ms]
   PARAMETER_REGISTER(stand.relax.jointOffsetTuning.currentThreshold) = 0.3;          // [A]
   PARAMETER_REGISTER(stand.relax.jointOffsetTuning.minimalJointStep) = 0.0013962634; // [rad]
 
+  PARAMETER_REGISTER(stand.relax.stiffnessControl.enable) = true;
   PARAMETER_REGISTER(stand.relax.stiffnessControl.deadTime)     = 100;  // [ms]
   PARAMETER_REGISTER(stand.relax.stiffnessControl.minAngle)     = 0.08; // [°]
   PARAMETER_REGISTER(stand.relax.stiffnessControl.maxAngle)     = 2;    // [°]

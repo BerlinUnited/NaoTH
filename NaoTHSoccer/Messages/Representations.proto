@@ -268,6 +268,9 @@ message Opponent {
 message CameraMatrixCalibration
 {
   repeated DoubleVector2 correctionOffset = 1;
+  optional DoubleVector2 correctionOffsetBody = 2;
+  optional DoubleVector3 correctionOffsetHead = 3;
+  repeated DoubleVector3 correctionOffsetCam  = 4;
 }
 
 message BallCandidates

@@ -111,6 +111,8 @@ private:
       PARAMETER_REGISTER(haarDetector.model_file) = "lbp1.xml";
 
       PARAMETER_REGISTER(maxNumberOfKeys) = 4;
+      PARAMETER_REGISTER(numberOfExportBestPatches) = 2;
+      
       syncWithConfig();
     }
 
@@ -133,7 +135,8 @@ private:
     } haarDetector;
 
     int maxNumberOfKeys;
-    
+    int numberOfExportBestPatches;
+
   } params;
 
 
