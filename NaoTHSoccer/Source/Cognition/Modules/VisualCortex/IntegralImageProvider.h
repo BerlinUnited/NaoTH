@@ -84,7 +84,7 @@ private:
   template<class ImageType>
   void makeIntegralBild(ImageType& integralImage) const;
 
-  void makeChannels(const GameColorIntegralImage& integralImage, const Vector2i& point, uint32_t (&akk) [GameColorIntegralImage::MAX_COLOR]) const {
+  void makeChannels(const GameColorIntegralImage& /*integralImage*/, const Vector2i& point, uint32_t (&akk) [GameColorIntegralImage::MAX_COLOR]) const {
     Pixel pixel;
     getImage().get_direct(point.x, point.y, pixel);
       
@@ -98,7 +98,7 @@ private:
     }
   }
 
-  void makeChannels(const BallDetectorIntegralImage& integralImage, const Vector2i& point, uint32_t (&akk) [BallDetectorIntegralImage::MAX_COLOR]) const {
+  void makeChannels(const BallDetectorIntegralImage& /*integralImage*/, const Vector2i& point, uint32_t (&akk) [BallDetectorIntegralImage::MAX_COLOR]) const {
     Pixel pixel;
     getImage().get_direct(point.x, point.y, pixel);
 

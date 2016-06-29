@@ -18,6 +18,7 @@ BallCandidateDetector::BallCandidateDetector()
 {
   DEBUG_REQUEST_REGISTER("Vision:BallCandidateDetector:keyPoints", "draw key points extracted from integral image", false);
   DEBUG_REQUEST_REGISTER("Vision:BallCandidateDetector:drawCandidates", "draw ball candidates", false);
+  DEBUG_REQUEST_REGISTER("Vision:BallCandidateDetector:refinePatches", "draw refined ball key points", false);
   DEBUG_REQUEST_REGISTER("Vision:BallCandidateDetector:drawPercepts", "draw ball percepts", false);
 
   DEBUG_REQUEST_REGISTER("Vision:BallCandidateDetector:lbpDetection", "draw ball percepts", false);
@@ -50,6 +51,13 @@ void BallCandidateDetector::execute(CameraInfo::CameraID id)
     calculateCandidates();
   }
 
+  DEBUG_REQUEST("Vision:BallCandidateDetector:refinePatches",
+    for(BestPatchList::reverse_iterator i = best.rbegin(); i != best.rend(); ++i) {
+      BestPatchList::Patch p = theBallKeyPointExtractor->getModuleT()->refineKeyPoint(*i);
+      RECT_PX(ColorClasses::red, p.min.x, p.min.y, p.max.x, p.max.y);
+    }
+  );
+
   DEBUG_REQUEST("Vision:BallCandidateDetector:drawPercepts",
     for(MultiBallPercept::ConstABPIterator iter = getMultiBallPercept().begin(); iter != getMultiBallPercept().end(); iter++) {
       if((*iter).cameraId == cameraID) {
@@ -61,6 +69,10 @@ void BallCandidateDetector::execute(CameraInfo::CameraID id)
   DEBUG_REQUEST("Vision:BallCandidateDetector:extractPatches",
     extractPatches();
   );
+
+  if(params.numberOfExportBestPatches > 0) {
+    extractPatches();
+  }
 }
 
 
@@ -138,7 +150,7 @@ void BallCandidateDetector::calculateCandidates()
           cvHaarClassifier.loadModel(params.haarDetector.model_file);
         }
 
-        const int patch_size = 12;
+        const int patch_size = 16;
         
         BallCandidates::Patch p(0);
         //int size = ((*i).max.x - (*i).min.x)/2;
@@ -148,7 +160,7 @@ void BallCandidateDetector::calculateCandidates()
         if(getImage().isInside(p.min.x, p.min.y) && getImage().isInside(p.max.x, p.max.y)) 
         {
           PatchWork::subsampling(getImage(), p.data, p.min.x, p.min.y, p.max.x, p.max.y, patch_size);
-          if(cvHaarClassifier.classify(p, params.haarDetector.minNeighbors, params.haarDetector.windowSize) > params.haarDetector.minNeighbors) {
+          if(cvHaarClassifier.classify(p, params.haarDetector.minNeighbors, params.haarDetector.windowSize) > 0) {
             addBallPercept(Vector2i((min.x + max.x)/2, (min.y + max.y)/2), (max.x - min.x)/2);
           }
         }
@@ -185,12 +197,13 @@ void BallCandidateDetector::calculateCandidates()
 
 } // end calculateCandidates
 
+
 void BallCandidateDetector::extractPatches()
 {
   int idx = 0;
   for(BestPatchList::reverse_iterator i = best.rbegin(); i != best.rend(); ++i)
   {
-    if(idx > 5) {
+    if(idx >= params.numberOfExportBestPatches) {
       break;
     }
     Vector2i min = (*i).min;

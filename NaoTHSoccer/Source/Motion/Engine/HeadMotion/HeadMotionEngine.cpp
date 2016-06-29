@@ -254,17 +254,21 @@ void HeadMotionEngine::moveByAngle(const Vector2d& target)
 // needed by lookAtWorldPoint
 Vector3d HeadMotionEngine::g(double yaw, double pitch, const Vector3d& pointInWorld)
 {
-  theJointData.position[JointData::HeadYaw] = getMotorJointData().position[JointData::HeadYaw] + yaw;
+  theJointData.position[JointData::HeadYaw]   = getMotorJointData().position[JointData::HeadYaw]   + yaw;
   theJointData.position[JointData::HeadPitch] = getMotorJointData().position[JointData::HeadPitch] + pitch;
   theKinematicChain.theLinks[KinematicChain::Neck].updateFromMother();
   theKinematicChain.theLinks[KinematicChain::Head].updateFromMother();
 
-  CameraMatrix cameraMatrix = CameraGeometry::calculateCameraMatrix(
-      theKinematicChain,
-      NaoInfo::robotDimensions.cameraTransform[getHeadMotionRequest().cameraID].offset,
-      NaoInfo::robotDimensions.cameraTransform[getHeadMotionRequest().cameraID].rotationY,
-      getCameraMatrixOffset().correctionOffset[getHeadMotionRequest().cameraID]
-    );
+  CameraMatrix cameraMatrix = CameraGeometry::calculateCameraMatrixFromChestPose(
+              theKinematicChain.theLinks[KinematicChain::Torso].M,
+              NaoInfo::robotDimensions.cameraTransform[getHeadMotionRequest().cameraID].offset,
+              NaoInfo::robotDimensions.cameraTransform[getHeadMotionRequest().cameraID].rotationY,
+              getCameraMatrixOffset().body_rot,
+              getCameraMatrixOffset().head_rot,
+              getCameraMatrixOffset().cam_rot[getHeadMotionRequest().cameraID],
+              theJointData.position[JointData::HeadYaw],
+              theJointData.position[JointData::HeadPitch],
+              getInertialModel());
 
   cameraMatrix.timestamp = getSensorJointData().timestamp;
 
