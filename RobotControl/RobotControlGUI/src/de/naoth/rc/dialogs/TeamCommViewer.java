@@ -83,7 +83,7 @@ public class TeamCommViewer extends AbstractDialog {
     public TeamCommViewer() {
         initComponents();
         // collapse pane
-        robotStatusSplitPane.setDividerLocation(Integer.MAX_VALUE);/*2000*/
+        robotStatusSplitPane.setDividerLocation(0);/*2000 / Integer.MAX_VALUE*/
         // closes the log file before exiting application
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
@@ -164,6 +164,7 @@ public class TeamCommViewer extends AbstractDialog {
         robotStatusSplitPane.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
         robotStatusSplitPane.setOneTouchExpandable(true);
 
+        robotStatusPanel.setMinimumSize(new java.awt.Dimension(0, 0));
         robotStatusPanel.setLayout(new java.awt.GridLayout(5, 1, 0, 5));
         jScrollPane2.setViewportView(robotStatusPanel);
 
