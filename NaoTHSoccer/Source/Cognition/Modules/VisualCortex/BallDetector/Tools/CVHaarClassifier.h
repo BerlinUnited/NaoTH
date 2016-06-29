@@ -18,7 +18,7 @@ private:
   int idx;
 
 public:
-  CVHaarClassifier() : buffer(24, 24, CV_8UC1, cv::Scalar(128)) {
+  CVHaarClassifier() : buffer(28, 28, CV_8UC1, cv::Scalar(128)) {
     //setLoadModel("experiment1.xml");
     idx = 0;
   }
@@ -36,9 +36,9 @@ public:
 
   int classify(const BallCandidates::Patch& p, unsigned int minNeighbours=0, unsigned int windowSize=12)
   {
-    ASSERT(p.data.size() == 12*12);
+    ASSERT(p.data.size() == 16*16);
     // TODO: magic numbers
-    cv::Mat wrappedImg(12, 12, CV_8U, (void*) p.data.data());
+    cv::Mat wrappedImg(16, 16, CV_8U, (void*) p.data.data());
     cv::transpose(wrappedImg, wrappedImg);
 
     
@@ -46,7 +46,7 @@ public:
     //cv::Mat aux = buffer.colRange(40,44).rowRange(40,44);
     //wrappedImg.copyTo(aux);
 
-    cv::Mat aux(buffer(cv::Rect(6,6,12,12)));
+    cv::Mat aux(buffer(cv::Rect(6,6,16,16)));
     //wrappedImg.copyTo(aux);
 
     cv::GaussianBlur(wrappedImg, aux, cv::Size(3,3), 0, 0);
