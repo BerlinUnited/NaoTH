@@ -131,7 +131,9 @@ StandMotion()
       if(interpolateToStandPose() && state_time > totalTime+static_cast<int>(getRobotInfo().basicTimeStep*100)) {
         if(getMotionRequest().id != getId())  {
           setCurrentState(motion::stopped);
-        } else if (!getBodyState().isLiftedUp && getEngine().getParameters().stand.relax.enable) {
+        } else if (!getBodyState().isLiftedUp
+                   && getEngine().getParameters().stand.relax.enable
+                   && relaxedPoseIsStillOk() ) { //only relax if a valid stand pose is reached
           state = Relax;
         }
       }
