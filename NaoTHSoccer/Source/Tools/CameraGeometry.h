@@ -131,7 +131,10 @@ public:
     const Vector2d& theCameraCorrectionOffset);
 
   static Pose3D calculateCameraMatrix(
-          const CameraMatrixOffset& theCameraMatrixOffset, const KinematicChain& theKinematicChain, const InertialModel &theInertialModel, const naoth::SensorJointData &theSensorJointData,
+    const CameraMatrixOffset& theCameraMatrixOffset,
+    const KinematicChain& theKinematicChain,
+    const InertialModel &theInertialModel,
+    const naoth::SensorJointData &theSensorJointData,
     const Vector3d& translationOffset,
     double rotationOffsetY,
     const naoth::CameraInfo::CameraID cameraID);
@@ -146,6 +149,13 @@ public:
       double headYaw,
       double headPitch,
       const InertialModel& theInertialModel);
-  };
+
+  /**
+    estimate the ball size in image based on given camera matrix and camera info
+  */
+  static double estimatedBallRadius( const Pose3D& cameraMatrix, const naoth::CameraInfo& cameraInfo, const double ballRadius, int x, int y);
+
+
+};
 
 #endif //_CameraGeometry_h_
