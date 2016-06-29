@@ -444,8 +444,29 @@ void BallDetectorEvaluator::evaluatePatch(const BallCandidates::Patch &p, unsign
                                           const ExperimentParameters &params,
                                           ExperimentResult& r)
 {
+  // resize patch if necessary
+  cv::Mat img;
+  if(p.data.size() == 12*12)
+  {
+    cv::Mat wrappedImg(12, 12, CV_8U, (void*) p.data.data());
+    img = wrappedImg; // only copies the header, not the image itself;
+  }
+  else if(p.data.size() == 24*24)
+  {
+    cv::Mat wrappedImg(24, 24, CV_8U, (void*) p.data.data());
+    cv::resize(wrappedImg, img, cv::Size(12,12));
+  }
+  else if(p.data.size() == 36*36)
+  {
+    cv::Mat wrappedImg(36, 36, CV_8U, (void*) p.data.data());
+    cv::resize(wrappedImg, img, cv::Size(12,12));
+  }
+
+  BallCandidates::Patch resizedPatch;
+  resizedPatch.data = std::vector<unsigned char>(img.begin<unsigned char>(), img.end<unsigned char>());
+
   bool expected = expectedBallIdx.find(patchIdx) != expectedBallIdx.end();
-  bool actual = classifier.classify(p, params.minNeighbours, params.maxWindowSize) > 0;
+  bool actual = classifier.classify(resizedPatch, params.minNeighbours, params.maxWindowSize) > 0;
 
   if(expected == actual)
   {
