@@ -332,28 +332,26 @@ public class TeamCommViewer extends AbstractDialog {
                 new File(teamCommFileChooser.getSelectedFile()+".log") : 
                 teamCommFileChooser.getSelectedFile();
 
-            if(dfile.canWrite()) {
-                try {
-                    // make sure there is no open log file ..
-                    closingLogfile();
+            // make sure there is no open log file ..
+            closingLogfile();
+            
+            try {
+                // create new log file
+                dfile.createNewFile();
+                new FileWriter(dfile).close(); // trigger exception (if couldn't write)
 
-                    // create new log file
-                    dfile.createNewFile();
-                    logfile = new LogFileWriter(dfile);
-                    logfile.start();
+                dfile.createNewFile();
+                logfile = new LogFileWriter(dfile);
+                logfile.start();
+                logfileQueueAppend = true;
 
-                    btnRecord.setSelected(true);
-                    setBtnRecordToolTipText(true);
-                    btnStopRecording.setEnabled(true); // enable "stop"-button
+                btnRecord.setSelected(true);
+                setBtnRecordToolTipText(true);
+                btnStopRecording.setEnabled(true); // enable "stop"-button
 
-                    return true;
-                } catch (IOException ex) {
-                    Logger.getLogger(TeamCommViewer.class.getName()).log(Level.SEVERE, null, ex);
-                    JOptionPane.showMessageDialog(null, "IO-Error occurred, see application log.", "Exception", JOptionPane.ERROR_MESSAGE);
-                } catch (Throwable ex) {
-                    Logger.getLogger(TeamCommViewer.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            } else {
+                return true;
+            } catch (IOException ex) {
+                Logger.getLogger(TeamCommViewer.class.getName()).log(Level.SEVERE, null, ex);
                 JOptionPane.showMessageDialog(null, "Selected log file is not writeable!", "Not writeable", JOptionPane.ERROR_MESSAGE);
             }
         }
