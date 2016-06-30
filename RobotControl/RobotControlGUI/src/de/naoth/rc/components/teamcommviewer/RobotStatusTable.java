@@ -5,6 +5,11 @@ import java.awt.Component;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.swing.DefaultRowSorter;
 import javax.swing.JButton;
 import javax.swing.JTable;
@@ -17,11 +22,35 @@ import javax.swing.table.TableCellRenderer;
  */
 public class RobotStatusTable extends javax.swing.JPanel {
     
+    public final List<Column> COLUMNS = Arrays.asList(
+        new Column(
+            "#TN", // name/heading
+            Byte.class, // column type
+            (RobotStatus r)->r.teamNum, // column value
+            new CellRenderer(), // column renderer
+            true // sortable
+        ),
+        new Column("#PN",Byte.class,(RobotStatus r) -> r.playerNum,null,true),
+        new Column("IP",String.class,(RobotStatus r) -> r.ipAddress,null,true),
+        new Column("msg/s", Double.class, (RobotStatus r) -> r.msgPerSecond, new PingRenderer(), true),
+        new Column("BallAge (s)", Float.class, (RobotStatus r) -> r.ballAge, null, true),
+        new Column("State", String.class, (RobotStatus r) -> (r.isDead ? "DEAD" : (r.fallen == 1 ? "FALLEN" : "NOT FALLEN")), null, true),
+        new Column("Temperature", Float.class, (RobotStatus r) -> r.temperature, new TemperatureRenderer(), true),
+        new Column("Battery", Float.class, (RobotStatus r) -> r.batteryCharge, new BatteryRenderer(), true),
+        new Column("TimeToBall", Float.class, (RobotStatus r) -> r.timeToBall, null, true),
+        new Column("wantToBeStriker", Boolean.class, (RobotStatus r) -> r.wantsToBeStriker, null, true),
+        new Column("wasStriker", Boolean.class, (RobotStatus r) -> r.wasStriker, null, true),
+        new Column("isPenalized", Boolean.class, (RobotStatus r) -> r.isPenalized, null, true),
+        new Column("", RobotStatus.class, (RobotStatus r) -> r, new ButtonRenderer(), false)
+    );
+    
     /**
      * Creates new form RobotStatusTable
      */
     public RobotStatusTable() {
         initComponents();
+        addColumn("");
+        /*
         table.getColumnModel().getColumn(0).setCellRenderer(new CellRenderer());
         // msg/s
         table.getColumnModel().getColumn(3).setCellRenderer(new PingRenderer());
@@ -30,13 +59,15 @@ public class RobotStatusTable extends javax.swing.JPanel {
         // Battery
         table.getColumnModel().getColumn(7).setCellRenderer(new BatteryRenderer());
         // connect button
-        table.getColumnModel().getColumn(8).setCellRenderer(new ButtonRenderer());
+        table.getColumnModel().getColumn(12).setCellRenderer(new ButtonRenderer());
         // sets the mouse listener for the button column (connect button)
         table.addMouseListener(new JTableButtonMouseListener(table));
         // sort via Ip (default)
         table.getRowSorter().toggleSortOrder(2);
         // set button column non-sortable
-        ((DefaultRowSorter)table.getRowSorter()).setSortable(8, false);
+        ((DefaultRowSorter)table.getRowSorter()).setSortable(12, false);
+//        ((RobotTableModel)table.getModel()).
+        */
     }
 
     /**
@@ -69,8 +100,28 @@ public class RobotStatusTable extends javax.swing.JPanel {
         );
     }// </editor-fold>//GEN-END:initComponents
 
+    public static class Column {
+        public Column(String name, 
+                      Class<?> type, 
+                      Function<RobotStatus, Object> value,
+                      TableCellRenderer renderer,
+                      boolean sortable
+        ){
+            this.name = name;
+            this.type = type;
+            this.value = value;
+            this.renderer = renderer;
+        }
+        public String name;
+        public Class<?> type;
+        public Function<RobotStatus, Object> value;
+        public TableCellRenderer renderer;
+        public boolean sortable = true;
+    }
+    
     private class RobotTableModel extends AbstractTableModel implements RobotStatusListener {
         private final ArrayList<RobotStatus> robots = new ArrayList<>();
+        public final ArrayList<Integer> columns = new ArrayList<>();
         
         public void addRobot(RobotStatus robot) {
             robots.add(robot);
@@ -94,52 +145,23 @@ public class RobotStatusTable extends javax.swing.JPanel {
 
         @Override
         public int getColumnCount() {
-            return 9;
+            return columns.size();
         }
 
         @Override
         public Object getValueAt(int rowIndex, int columnIndex) {
             RobotStatus robot = robots.get(rowIndex);
-            switch(columnIndex) {
-                case 0: return robot.teamNum;
-                case 1: return robot.playerNum;
-                case 2: return robot.ipAddress;
-                case 3: return robot.msgPerSecond;
-                case 4: return robot.ballAge;
-                case 5: return robot.isDead?"DEAD":(robot.fallen==1?"FALLEN":"NOT FALLEN");
-                case 6: return robot.temperature;
-                case 7: return robot.batteryCharge;
-                case 8: return robot;
-                default: return null;
-            }
+            return COLUMNS.get(columns.get(columnIndex)).value.apply(robot);
         }
 
         @Override
-        public String getColumnName(int column) {
-            switch(column) {
-                case 0: return "#TN";
-                case 1: return "#PN";
-                case 2: return "IP";
-                case 3: return "msg/s";
-                case 4: return "BallAge (s)";
-                case 5: return "State";
-                case 6: return "Temperature";
-                case 7: return "Battery";
-                case 8: return "";
-                default: return null;
-            }
+        public String getColumnName(int columnIndex) {
+            return COLUMNS.get(columns.get(columnIndex)).name;
         }
 
         @Override
         public Class<?> getColumnClass(int columnIndex) {
-            switch(columnIndex) {
-                case 0: return Byte.class;
-                case 1: return Byte.class;
-                case 6: return Float.class;
-                case 7: return Float.class;
-                case 8: return RobotStatus.class;
-            }
-            return Object.class;
+            return COLUMNS.get(columns.get(columnIndex)).type;
         }
 
         @Override
@@ -161,6 +183,33 @@ public class RobotStatusTable extends javax.swing.JPanel {
      */
     public void removeAll() {
         ((RobotTableModel)this.table.getModel()).removeAll();
+    }
+    
+    /**
+     * Adds a column by name (heading) to the table.
+     * @param name name of the column
+     */
+    public void addColumn(String name) {
+        // tries to find the (predefined) column
+        List<Column> column = COLUMNS.stream().filter((Column c)->(c.name!=null&&c.name.equals(name))).collect(Collectors.toList());
+        // check if name is in the columns-list
+        if(!column.isEmpty()) {
+            // set up needed vars
+            RobotTableModel model = ((RobotTableModel)table.getModel());
+            Column col = column.get(0);
+            // add the index to the lookup list
+            model.columns.add(COLUMNS.indexOf(col));
+            // notify the table of the change
+            model.fireTableStructureChanged();
+            // add cell renderer if available
+            if(col.renderer != null) {
+                table.getColumnModel().getColumn(model.columns.size()-1).setCellRenderer(col.renderer);
+            }
+            // set sortable attribute
+            if(!col.sortable) {
+                ((DefaultRowSorter)table.getRowSorter()).setSortable(model.columns.size()-1, false);
+            }
+        }
     }
     
     /**

@@ -12,6 +12,15 @@
         <Property name="toolTipText" type="java.lang.String" value=""/>
       </Properties>
     </Component>
+    <Container class="javax.swing.JPopupMenu" name="pmAdditionalColumns">
+      <Events>
+        <EventHandler event="popupMenuWillBecomeInvisible" listener="javax.swing.event.PopupMenuListener" parameters="javax.swing.event.PopupMenuEvent" handler="pmAdditionalColumnsPopupMenuWillBecomeInvisible"/>
+      </Events>
+
+      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout">
+        <Property name="useNullLayout" type="boolean" value="true"/>
+      </Layout>
+    </Container>
   </NonVisualComponents>
   <AuxValues>
     <AuxValue name="FormSettings_autoResourcing" type="java.lang.Integer" value="0"/>
@@ -46,7 +55,9 @@
                       <Component id="btnRecord" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="btnStopRecording" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace min="0" pref="124" max="32767" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="btnAddtionalColumns" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                   </Group>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
@@ -57,16 +68,19 @@
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="1" max="-2" attributes="0">
-                  <Component id="btnStopRecording" alignment="0" pref="0" max="32767" attributes="0"/>
-                  <Component id="btnRecord" alignment="0" pref="0" max="32767" attributes="0"/>
-                  <Group type="103" groupAlignment="3" attributes="0">
-                      <Component id="btListen" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="portNumberOwn" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="portNumberOpponent" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="jLabel1" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="jLabel2" alignment="3" min="-2" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="1" attributes="0">
+                  <Group type="103" groupAlignment="1" max="-2" attributes="0">
+                      <Component id="btnStopRecording" alignment="0" pref="0" max="32767" attributes="0"/>
+                      <Component id="btnRecord" alignment="0" pref="0" max="32767" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="btListen" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="portNumberOwn" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="portNumberOpponent" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="jLabel1" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="jLabel2" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
                   </Group>
+                  <Component id="btnAddtionalColumns" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace type="separate" max="-2" attributes="0"/>
               <Component id="jPanel2" max="32767" attributes="0"/>
@@ -202,5 +216,13 @@
         </Container>
       </SubComponents>
     </Container>
+    <Component class="javax.swing.JToggleButton" name="btnAddtionalColumns">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="I"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnAddtionalColumnsActionPerformed"/>
+      </Events>
+    </Component>
   </SubComponents>
 </Form>
