@@ -66,6 +66,7 @@ void SituationPriorProvider::execute()
   // treat positioning after penalized
   else if( lastRobotState == PlayerInfo::penalized && !walked_after_penalized_or_init )
   {
+    std::cout << "test" << std::endl;
     // robot was penalized in set
     if(gameStateWhenPenalized == GameData::set) 
     {
@@ -77,7 +78,7 @@ void SituationPriorProvider::execute()
       }
     }
     // robot was penalized in game
-    else if (gameStateWhenPenalized == GameData::playing)
+    else //if (gameStateWhenPenalized == GameData::playing)
     {
       getSituationPrior().currentPrior = SituationPrior::playAfterPenalized;
     }
