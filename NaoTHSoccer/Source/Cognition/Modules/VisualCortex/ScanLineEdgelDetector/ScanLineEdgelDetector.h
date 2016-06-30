@@ -136,6 +136,10 @@ private:
 
     pair.point = Vector2d(begin.point + end.point)*0.5;
     pair.direction = (begin.direction - end.direction).normalize();
+
+    // hack:
+    pair.width = Vector2d(begin.point - end.point).abs();
+
     getScanLineEdgelPercept().pairs.push_back(pair);
   }
 
