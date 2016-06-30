@@ -82,6 +82,23 @@ void GameController::execute()
       returnMessage = GameReturnData::alive;
     }
   }
+
+  // remember the whistle counter before set
+  //if(getPlayerInfo().robotState == PlayerInfo::ready) {
+  //  lastWhistleCount = getWhistlePercept().counter;
+  //}
+  // whistle overrides gamecontroller when in set
+  if(getGameData().gameState == GameData::set)
+  {
+    // switch from set to play
+    if(getWhistlePercept().counter > lastWhistleCount) {
+      getPlayerInfo().robotState = PlayerInfo::playing;
+    }
+  }
+  else {
+    // remember the last whistle count
+    lastWhistleCount = getWhistlePercept().counter;
+  }
   
   // keep the manual penalized state
   if(returnMessage == GameReturnData::manual_penalise) {
@@ -106,19 +123,6 @@ void GameController::execute()
   DEBUG_REQUEST("gamecontroller:penalized",
     getPlayerInfo().robotState = PlayerInfo::penalized;
   );
-  
-  // remember the whistle counter before set
-  if(getPlayerInfo().robotState == PlayerInfo::ready) {
-    lastWhistleCount = getWhistlePercept().counter;
-  }
-  // whistle overrides gamecontroller when in set
-  else if(getGameData().gameState == GameData::set)
-  {
-    // switch from set to play
-    if(getWhistlePercept().counter > lastWhistleCount) {
-      getPlayerInfo().robotState = PlayerInfo::playing;
-    }
-  }
 
 
   if(  oldRobotState != getPlayerInfo().robotState
