@@ -161,7 +161,7 @@ ScanLineEdgelPercept::EndPoint ScanLineEdgelDetector::scanForEdgels(int scan_id,
   int t_edge = theParameters.brightness_threshold_top;
   // HACK (TEST): make it dependend on the angle of the camera in the future
   if(cameraID == CameraInfo::Bottom) {
-    int t_edge = theParameters.brightness_threshold_bottom;
+    t_edge = theParameters.brightness_threshold_bottom;
   }
 
   Vector2i lastGreenPoint(point); // HACK
