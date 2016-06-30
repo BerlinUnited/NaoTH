@@ -22,6 +22,8 @@ LineGraphProvider::LineGraphProvider()
 
   DEBUG_REQUEST_REGISTER("Vision:LineGraphProvider:draw_compas", "draw compas direcion based on the edgel directions", false);
 
+  DEBUG_REQUEST_REGISTER("Vision:LineGraphProvider:draw_line_graph", "", false);
+
   getDebugParameterList().add(&parameters);
 }
 
@@ -166,8 +168,34 @@ void LineGraphProvider::execute(CameraInfo::CameraID id)
     edgel.point = Vector2d(edgelLeft + edgelRight)*0.5;
     edgel.direction = (edgelRight - edgelLeft).normalize(); // is it correct?
 
-    getLineGraphPercept().edgels.push_back(edgel);
+
+    //HACK: don't accept too smal edgels
+    if(edgel.point.abs() < 2000) {
+
+      const ScanLineEdgelPercept::EdgelPair& el = getScanLineEdgelPercept().pairs[edgelPair.left];
+      const ScanLineEdgelPercept::EdgelPair& er = getScanLineEdgelPercept().pairs[edgelPair.right];
+      if(el.width > 3 || er.width > 3) {
+        getLineGraphPercept().edgels.push_back(edgel);
+        
+        DEBUG_REQUEST("Vision:LineGraphProvider:draw_line_graph",
+          FIELD_DRAWING_CONTEXT;
+          PEN("FF0000",2);
+          CIRCLE( edgel.point.x, edgel.point.y, 25);
+        );
+      }
+
+    } else {
+      getLineGraphPercept().edgels.push_back(edgel);
+
+      DEBUG_REQUEST("Vision:LineGraphProvider:draw_line_graph",
+        FIELD_DRAWING_CONTEXT;
+        PEN("000000",2);
+        CIRCLE( edgel.point.x, edgel.point.y, 25);
+      );
+    }
   }
+
+  
 
   // neighbors line graph in image
   for(size_t i = 0; i < edgelNeighbors.size(); i++)
