@@ -52,7 +52,10 @@ void GameLogger::execute()
       LOGSTUFF(OdometryData);
       LOGSTUFF(CameraMatrix);
       LOGSTUFF(CameraMatrixTop);
-      LOGSTUFF(BodyStatus);
+      if(params.logBodyStatus)
+      {
+        LOGSTUFF(BodyStatus);
+      }
 
       // perception
       LOGSTUFF(GoalPercept);
