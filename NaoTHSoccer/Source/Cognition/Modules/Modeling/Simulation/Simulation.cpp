@@ -313,7 +313,12 @@ size_t Simulation::decide_smart(const std::vector<ActionResults>& actionsConsequ
     return 0; //assumes 0 is the turn action
   }
   if(actionsConsequences[goalActions.front()].categorie(OPPGOAL) > theParameters.minGoalParticles){
-    return goalActions.front();
+    //HACK: dont return turn if kicks would be good enough 
+    //Hopefully fixes the problem with not shooting goal if ball is assumed already inside opp goal
+    if(goalActions.size() > 1 && goalActions.front() == 0){
+      return goalActions[1]; 
+    }else
+      return goalActions.front();
   }
 
   // choose the best action by potential field
