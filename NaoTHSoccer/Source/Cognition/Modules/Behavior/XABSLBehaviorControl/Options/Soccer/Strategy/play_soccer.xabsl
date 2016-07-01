@@ -28,7 +28,10 @@ option play_soccer
     decision
     {
       else if(sensor.inertial.calibrated)
-        goto localize;
+        if(last_state_was_penalized)
+          goto localize_after_penalized; // always localize after penalized!!!)
+        else
+          goto localize;
       else 
         stay;
     }
@@ -156,8 +159,6 @@ option play_soccer
     {
       else if (game.current_mode != playing)
         goto idle;
-      else if(last_state_was_penalized)
-        goto localize_after_penalized; // always localize after penalized!!!
       else 
         stay;
     }
