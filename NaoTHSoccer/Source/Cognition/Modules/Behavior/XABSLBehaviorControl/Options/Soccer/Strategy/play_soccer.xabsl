@@ -28,7 +28,7 @@ option play_soccer
     decision
     {
       else if(sensor.inertial.calibrated)
-        if(last_state_was_penalized)
+        if(last_state_was_penalized && game.player_number != 1 ) // the goalie has no passive position
           goto localize_after_penalized; // always localize after penalized!!!)
         else
           goto localize;
