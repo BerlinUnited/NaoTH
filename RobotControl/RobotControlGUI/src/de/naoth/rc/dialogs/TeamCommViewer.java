@@ -426,15 +426,21 @@ public class TeamCommViewer extends AbstractDialog {
     }
     
     private void addAdditionalColumnsToPopupMenu() {
-        for (Iterator<RobotStatusTable.Column> it = robotStatusTable.COLUMNS.iterator(); it.hasNext();) {
+        for (Iterator<RobotStatusTable.Column> it = robotStatusTable.ALL_COLUMNS.iterator(); it.hasNext();) {
             RobotStatusTable.Column col = it.next();
             if(col.name == null || col.name.isEmpty()) { continue; }
             JCheckBoxMenuItem item = new JCheckBoxMenuItem(col.name);
+//            item.setSelected(true);
             item.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
+                    JCheckBoxMenuItem item = (JCheckBoxMenuItem)e.getSource();
+                    if(item.isSelected()) {
+                        robotStatusTable.addColumn(e.getActionCommand());
+                    } else {
+                        robotStatusTable.removeColumn(e.getActionCommand());
+                    }
                     System.out.println("clicked: " + e.getActionCommand());
-                    robotStatusTable.addColumn(e.getActionCommand());
                 }
             });
             pmAdditionalColumns.add(item);

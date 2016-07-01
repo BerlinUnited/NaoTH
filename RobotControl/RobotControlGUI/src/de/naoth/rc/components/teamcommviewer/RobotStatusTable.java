@@ -9,20 +9,25 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import javax.swing.DefaultRowSorter;
 import javax.swing.JButton;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
 
 /**
  * @author Philipp Strobel <philippstrobel@posteo.de>
  */
 public class RobotStatusTable extends javax.swing.JPanel {
     
-    public final List<Column> COLUMNS = Arrays.asList(
+    /**
+     * A list of all available columns.
+     */
+    public final List<Column> ALL_COLUMNS = Arrays.asList(
         new Column(
             "#TN", // name/heading
             Byte.class, // column type
@@ -49,25 +54,8 @@ public class RobotStatusTable extends javax.swing.JPanel {
      */
     public RobotStatusTable() {
         initComponents();
+        // the button column is added by default
         addColumn("");
-        /*
-        table.getColumnModel().getColumn(0).setCellRenderer(new CellRenderer());
-        // msg/s
-        table.getColumnModel().getColumn(3).setCellRenderer(new PingRenderer());
-        // Temperature
-        table.getColumnModel().getColumn(6).setCellRenderer(new TemperatureRenderer());
-        // Battery
-        table.getColumnModel().getColumn(7).setCellRenderer(new BatteryRenderer());
-        // connect button
-        table.getColumnModel().getColumn(12).setCellRenderer(new ButtonRenderer());
-        // sets the mouse listener for the button column (connect button)
-        table.addMouseListener(new JTableButtonMouseListener(table));
-        // sort via Ip (default)
-        table.getRowSorter().toggleSortOrder(2);
-        // set button column non-sortable
-        ((DefaultRowSorter)table.getRowSorter()).setSortable(12, false);
-//        ((RobotTableModel)table.getModel()).
-        */
     }
 
     /**
@@ -87,6 +75,7 @@ public class RobotStatusTable extends javax.swing.JPanel {
         table.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_LAST_COLUMN);
         table.setRowSelectionAllowed(false);
         scrollPane.setViewportView(table);
+        table.setColumnModel(new DefaultTableColumnModel());
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -100,6 +89,9 @@ public class RobotStatusTable extends javax.swing.JPanel {
         );
     }// </editor-fold>//GEN-END:initComponents
 
+    /**
+     * Container class, which summarize the data to adding the column.
+     */
     public static class Column {
         public Column(String name, 
                       Class<?> type, 
@@ -117,11 +109,17 @@ public class RobotStatusTable extends javax.swing.JPanel {
         public Function<RobotStatus, Object> value;
         public TableCellRenderer renderer;
         public boolean sortable = true;
+        
+        public String toString() {
+            return name;
+        }
     }
     
     private class RobotTableModel extends AbstractTableModel implements RobotStatusListener {
         private final ArrayList<RobotStatus> robots = new ArrayList<>();
-        public final ArrayList<Integer> columns = new ArrayList<>();
+        
+        public void RobotTableModel() {
+        }
         
         public void addRobot(RobotStatus robot) {
             robots.add(robot);
@@ -137,33 +135,37 @@ public class RobotStatusTable extends javax.swing.JPanel {
             robots.clear();
             this.fireTableDataChanged();
         }
-        
-        @Override
-        public int getRowCount() {
-            return robots.size();
-        }
 
         @Override
         public int getColumnCount() {
-            return columns.size();
+            return ALL_COLUMNS.size();
         }
-
+        
         @Override
-        public Object getValueAt(int rowIndex, int columnIndex) {
-            RobotStatus robot = robots.get(rowIndex);
-            return COLUMNS.get(columns.get(columnIndex)).value.apply(robot);
+        public int getRowCount() {
+            return robots == null ? 0 : robots.size();
         }
 
         @Override
         public String getColumnName(int columnIndex) {
-            return COLUMNS.get(columns.get(columnIndex)).name;
+            return ALL_COLUMNS.get(columnIndex).name;
         }
 
         @Override
         public Class<?> getColumnClass(int columnIndex) {
-            return COLUMNS.get(columns.get(columnIndex)).type;
+            return ALL_COLUMNS.get(columnIndex).type;
+        }
+        
+        @Override
+        public Object getValueAt(int rowIndex, int columnIndex) {
+            RobotStatus robot = robots.get(rowIndex);
+            return ALL_COLUMNS.get(columnIndex).value.apply(robot);
         }
 
+        /**
+         * Notifies the table, that some cell data changed.
+         * RobotStatus calls this method (listener).
+         */
         @Override
         public void statusChanged() {
             fireTableDataChanged();
@@ -191,25 +193,38 @@ public class RobotStatusTable extends javax.swing.JPanel {
      */
     public void addColumn(String name) {
         // tries to find the (predefined) column
-        List<Column> column = COLUMNS.stream().filter((Column c)->(c.name!=null&&c.name.equals(name))).collect(Collectors.toList());
+        List<Column> column = ALL_COLUMNS.stream().filter((Column c)->(c.name!=null&&c.name.equals(name))).collect(Collectors.toList());
         // check if name is in the columns-list
-        if(!column.isEmpty()) {
-            // set up needed vars
-            RobotTableModel model = ((RobotTableModel)table.getModel());
-            Column col = column.get(0);
-            // add the index to the lookup list
-            model.columns.add(COLUMNS.indexOf(col));
-            // notify the table of the change
-            model.fireTableStructureChanged();
-            // add cell renderer if available
-            if(col.renderer != null) {
-                table.getColumnModel().getColumn(model.columns.size()-1).setCellRenderer(col.renderer);
-            }
-            // set sortable attribute
-            if(!col.sortable) {
-                ((DefaultRowSorter)table.getRowSorter()).setSortable(model.columns.size()-1, false);
-            }
+        if(column.isEmpty()) {
+            return;
         }
+        // gets the column definition
+        Column col = column.get(0);
+        // creates the new table column and sets the attributes
+        TableColumn tc = new TableColumn();
+        tc.setModelIndex(ALL_COLUMNS.indexOf(col)); // corresponding model index!
+        tc.setIdentifier(col.name);
+        tc.setHeaderValue(col.name);
+        if(col.renderer != null) {
+            tc.setCellRenderer(col.renderer);
+        }
+        TableColumnModel tcm = table.getColumnModel();
+        tcm.addColumn(tc);
+        
+        // TODO: set sortable attribute
+//        ((DefaultRowSorter)table.getRowSorter()).setSortable(tcm.getColumnCount()-1, col.sortable);
+
+        // makes the button column the last column
+        tcm.moveColumn(tcm.getColumnIndex(""), tcm.getColumnCount()-1);
+    }
+    
+    /**
+     * Removes the column.
+     * @param name the heading/name of the column
+     */
+    public void removeColumn(String name) {
+        TableColumnModel tcm = table.getColumnModel();
+        tcm.removeColumn(tcm.getColumn(tcm.getColumnIndex(name)));
     }
     
     /**
