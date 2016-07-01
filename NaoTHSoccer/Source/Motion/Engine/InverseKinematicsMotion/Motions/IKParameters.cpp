@@ -16,6 +16,7 @@ IKParameters::IKParameters()
   // stand parameter
   PARAMETER_REGISTER(stand.speed) = 0.04;
   PARAMETER_REGISTER(stand.enableStabilization) = true;
+  PARAMETER_REGISTER(stand.enableStabilizationRC16) = false;
   PARAMETER_REGISTER(stand.stiffness) = 0.7;
 
   PARAMETER_ANGLE_REGISTER(stand.bodyPitchOffset) = 0.2;
@@ -59,7 +60,10 @@ IKParameters::IKParameters()
   PARAMETER_REGISTER(walk.step.duration) = 300;
   PARAMETER_REGISTER(walk.step.doubleSupportTime) = 40;
 
-  PARAMETER_REGISTER(walk.step.stepHeight) = 10;
+  PARAMETER_REGISTER(walk.step.stepHeight) = 15;
+
+  // kick
+  PARAMETER_REGISTER(walk.kick.stepHeight) = 20;
 
   // step limits
   PARAMETER_REGISTER(walk.limits.maxTurnInner) = 10;
@@ -84,6 +88,7 @@ IKParameters::IKParameters()
   PARAMETER_REGISTER(walk.stabilization.emergencyStopError) = 500;
 
   PARAMETER_REGISTER(walk.stabilization.rotationStabilize) = true;
+  PARAMETER_REGISTER(walk.stabilization.rotationStabilizeRC16) = false;
   PARAMETER_REGISTER(walk.stabilization.rotationP.x) = 0;
   PARAMETER_REGISTER(walk.stabilization.rotationP.y) = 0;
   PARAMETER_REGISTER(walk.stabilization.rotationVelocityP.x) = 0;

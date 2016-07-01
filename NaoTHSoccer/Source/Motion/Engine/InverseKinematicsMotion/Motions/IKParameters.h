@@ -23,6 +23,7 @@ public:
   {
     double speed;
     bool enableStabilization;
+    bool enableStabilizationRC16;
     double stiffness;
 
     double bodyPitchOffset;
@@ -88,7 +89,15 @@ public:
     
       double stepHeight;
     } step;
+
+
+    // step geometry
+    struct Kick
+    {
+      double stepHeight;
+    } kick;
     
+
     // step limits
     struct Limits
     {
@@ -120,6 +129,7 @@ public:
 
       // enable stabilization by rotating the body
       bool rotationStabilize;
+      bool rotationStabilizeRC16;
 
       // enable the PD-control for the feet
       bool stabilizeFeet;
