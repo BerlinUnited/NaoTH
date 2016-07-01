@@ -251,14 +251,23 @@ StandMotion()
   void applyPose(const InverseKinematic::HipFeetPose& tc) 
   {
     InverseKinematic::HipFeetPose c(tc);
-    if(getCalibrationData().calibrated && getEngine().getParameters().stand.enableStabilization)
+    if(getCalibrationData().calibrated)
     {
       c.localInLeftFoot();
-      getEngine().rotationStabilize(
-        getInertialModel(),
-        getGyrometerData(),
-        getRobotInfo().getBasicTimeStepInSecond(),
-        c);
+
+      if(getEngine().getParameters().stand.enableStabilization) {
+        getEngine().rotationStabilize(
+          getInertialModel(),
+          getGyrometerData(),
+          getRobotInfo().getBasicTimeStepInSecond(),
+          c);
+      } else if(getEngine().getParameters().stand.enableStabilizationRC16) {
+        getEngine().rotationStabilizeRC16(
+          getInertialSensorData(),
+          getGyrometerData(),
+          getRobotInfo().getBasicTimeStepInSecond(),
+          c);
+      }
     }
 
     getEngine().solveHipFeetIK(c);
