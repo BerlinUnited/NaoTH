@@ -81,8 +81,38 @@ void LineGraphProvider::execute(CameraInfo::CameraID id)
       }
 
       if(draw_node) {
-        PEN("FF0000",0.1);
-        CIRCLE( edgel.point.x, edgel.point.y, 3);
+        PEN("00FF00",0.1);
+        Vector2d pointOnField;
+        if(CameraGeometry::imagePixelToFieldCoord(
+            getCameraMatrix(), getCameraInfo(),
+            edgel.point, 
+            0.0, 
+            pointOnField)) 
+        {
+          //if(pointOnField.abs() < 2500) {
+            if(edgelNeighbors[i].left != -1 ) {
+              const ScanLineEdgelPercept::EdgelPair& el = getScanLineEdgelPercept().pairs[edgelNeighbors[i].left];
+              //if(el.width <= 3) {
+              if(el.projectedWidth < 30) {
+                PEN("FF0000",0.1);
+              }
+              CIRCLE( edgel.point.x, edgel.point.y, el.projectedWidth / 20);
+            }
+            if(edgelNeighbors[i].right != -1) {
+              const ScanLineEdgelPercept::EdgelPair& er = getScanLineEdgelPercept().pairs[edgelNeighbors[i].right];
+              //if(er.width <= 3) {
+              if(er.projectedWidth < 30) {
+                PEN("FF0000",0.1);
+              }
+              CIRCLE( edgel.point.x, edgel.point.y, er.projectedWidth / 20);
+            }
+          //}
+          //else {
+          //  PEN("0000FF",0.1);
+          //}
+        }
+        PEN("000000",0.1);
+        CIRCLE( edgel.point.x, edgel.point.y, 1);
       }
     }
   );
@@ -170,11 +200,12 @@ void LineGraphProvider::execute(CameraInfo::CameraID id)
 
 
     //HACK: don't accept too smal edgels
-    if(edgel.point.abs() < 2000) {
+    //if(edgel.point.abs() < 2000) {
 
       const ScanLineEdgelPercept::EdgelPair& el = getScanLineEdgelPercept().pairs[edgelPair.left];
       const ScanLineEdgelPercept::EdgelPair& er = getScanLineEdgelPercept().pairs[edgelPair.right];
-      if(el.width > 3 || er.width > 3) {
+//      if(el.width > 3 || er.width > 3) {
+      if(el.projectedWidth > parameters.maximalProjectedLineWidth && er.projectedWidth > parameters.maximalProjectedLineWidth) {
         getLineGraphPercept().edgels.push_back(edgel);
         
         DEBUG_REQUEST("Vision:LineGraphProvider:draw_line_graph",
@@ -184,15 +215,15 @@ void LineGraphProvider::execute(CameraInfo::CameraID id)
         );
       }
 
-    } else {
-      getLineGraphPercept().edgels.push_back(edgel);
+    //} else {
+    //  getLineGraphPercept().edgels.push_back(edgel);
 
-      DEBUG_REQUEST("Vision:LineGraphProvider:draw_line_graph",
-        FIELD_DRAWING_CONTEXT;
-        PEN("000000",2);
-        CIRCLE( edgel.point.x, edgel.point.y, 25);
-      );
-    }
+    //  DEBUG_REQUEST("Vision:LineGraphProvider:draw_line_graph",
+    //    FIELD_DRAWING_CONTEXT;
+    //    PEN("000000",2);
+    //    CIRCLE( edgel.point.x, edgel.point.y, 25);
+    //  );
+    //}
   }
 
   
