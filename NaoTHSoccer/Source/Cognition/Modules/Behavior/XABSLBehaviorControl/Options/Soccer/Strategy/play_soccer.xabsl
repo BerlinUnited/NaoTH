@@ -68,6 +68,45 @@ option play_soccer
     }
   }
 
+
+  state localize_after_penalized
+  {
+    decision
+    {
+      else if((robot_pose.is_valid && state_time > 6000) || 
+        state_time>12000)
+      {
+        goto goto_position_after_penalized;
+      }
+      else
+        stay;
+    }
+    action 
+    {
+      head.control_mode = search_for_goal;
+      situationStatusOwnHalf = true;
+      motion.type = stand;
+    }
+  }
+
+  state goto_position_after_penalized
+  {
+    decision
+    {
+      else if(ball.know_where_itis)
+      {
+        goto play;
+      }
+      else
+        stay;
+    }
+    action 
+    {
+      decide_and_go_to_passive_position_after_penalized();
+    }
+  }
+
+
   state ready
   {
     decision
@@ -118,7 +157,7 @@ option play_soccer
       else if (game.current_mode != playing)
         goto idle;
       else if(last_state_was_penalized)
-        goto localize; // always localize after penalized!!!
+        goto localize_after_penalized; // always localize after penalized!!!
       else 
         stay;
     }
