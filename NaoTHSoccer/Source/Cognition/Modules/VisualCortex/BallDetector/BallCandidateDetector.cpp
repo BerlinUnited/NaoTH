@@ -25,6 +25,8 @@ BallCandidateDetector::BallCandidateDetector()
 
   DEBUG_REQUEST_REGISTER("Vision:BallCandidateDetector:extractPatches", "generate YUVC patches", false);
 
+  DEBUG_REQUEST_REGISTER("Vision:BallCandidateDetector:keyPointsBlack", "draw black key points extracted from integral image", false);
+
   theBallKeyPointExtractor = registerModule<BallKeyPointExtractor>("BallKeyPointExtractor", true);
   getDebugParameterList().add(&params);
 }
@@ -73,6 +75,21 @@ void BallCandidateDetector::execute(CameraInfo::CameraID id)
   if(params.numberOfExportBestPatches > 0) {
     extractPatches();
   }
+
+  DEBUG_REQUEST("Vision:BallCandidateDetector:keyPointsBlack",  
+    BestPatchList bbest;
+    for(BestPatchList::reverse_iterator i = best.rbegin(); i != best.rend(); ++i) {
+      bbest.clear();
+      BlackSpotExtractor::calculateKeyPointsBlackBetter(getBallDetectorIntegralImage(), bbest, (*i).min.x, (*i).min.y, (*i).max.x, (*i).max.y);
+      int idx = 0;
+      for(BestPatchList::reverse_iterator j = bbest.rbegin(); j != bbest.rend(); ++j) {
+        RECT_PX(ColorClasses::red, (*j).min.x, (*j).min.y, (*j).max.x, (*j).max.y);
+        if(++idx > 3) {
+          break;
+        }
+      }
+    }
+  );
 }
 
 

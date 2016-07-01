@@ -33,6 +33,7 @@
 #include "Tools/BestPatchList.h"
 #include "Tools/BallKeyPointExtractor.h"
 #include "Tools/CVHaarClassifier.h"
+#include "Tools/BlackSpotExtractor.h"
 
 // debug
 #include "Representations/Debug/Stopwatch.h"
