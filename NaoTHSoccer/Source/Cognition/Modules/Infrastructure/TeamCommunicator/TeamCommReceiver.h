@@ -25,7 +25,7 @@
 #include "Tools/Debug/DebugParameterList.h"
 #include "Tools/Debug/DebugPlot.h"
 
-#include <Representations/Modeling/SPLStandardMessage.h>
+#include <MessagesSPL/SPLStandardMessage.h>
 
 BEGIN_DECLARE_MODULE(TeamCommReceiver)
   REQUIRE(FrameInfo)

@@ -51,7 +51,7 @@ void MultiKalmanBallLocator::execute()
   getBallModel().reset();
 
   // HACK: no updates in ready or when lifted
-  if(getPlayerInfo().gameData.gameState == GameData::ready || getBodyState().isLiftedUp) {
+  if(getPlayerInfo().robotState == PlayerInfo::ready || getBodyState().isLiftedUp) {
     filter.clear();
     return;
   }

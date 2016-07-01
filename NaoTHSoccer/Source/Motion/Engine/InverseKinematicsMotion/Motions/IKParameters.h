@@ -29,16 +29,21 @@ public:
     double hipOffsetX;
 
     struct Relax {
+
+        bool   enable;
         double allowedDeviation;
+        double allowedRotationDeviation;
         double timeBonusForCorrection;
 
         struct JointOffsetTuning {
+            bool   enable;
             double deadTime;
             double currentThreshold;
             double minimalJointStep;
         } jointOffsetTuning;
 
         struct StiffnessControl {
+            bool   enable;
             double deadTime;
             double minAngle;
             double minStiffness;
@@ -83,7 +88,15 @@ public:
     
       double stepHeight;
     } step;
+
+
+    // step geometry
+    struct Kick
+    {
+      double stepHeight;
+    } kick;
     
+
     // step limits
     struct Limits
     {

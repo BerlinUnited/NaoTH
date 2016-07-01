@@ -74,6 +74,8 @@ public:
   {
     getProbabilisticQuadCompas().reset();
     getLineGraphPercept().edgels.clear();
+    getLineGraphPercept().edgelsInImage.clear();
+    getLineGraphPercept().edgelsInImageTop.clear();
 
     execute(CameraInfo::Bottom);
     execute(CameraInfo::Top);

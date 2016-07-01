@@ -36,10 +36,13 @@ public:
   class EdgelPair : public EdgelT<double>
   {
   public:
-    EdgelPair() : begin(-1), end(-1), id(-1) {}
+    EdgelPair() : begin(-1), end(-1), id(-1), width(0) {}
     int begin;
     int end;
     int id;
+
+    // hack
+    double width;
   };
 
   std::vector<EdgelPair> pairs; // this depends on edgels

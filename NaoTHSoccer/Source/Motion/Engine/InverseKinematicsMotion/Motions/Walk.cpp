@@ -322,7 +322,7 @@ Pose3D Walk::calculateLiftingFootPos(const Step& step) const
       step.executingCycle,
       samplesDoubleSupport,
       samplesSingleSupport,
-      parameters().step.stepHeight,
+      parameters().kick.stepHeight,
       0, //footPitchOffset
       0, //footRollOffset
       step.walkRequest.stepControl.speedDirection,

@@ -19,7 +19,7 @@ void BallSymbols::registerSymbols(xabsl::Engine& engine)
   // percept
   engine.registerDecimalInputSymbol("ball.percept.x", &ballPerceptPos.x);
   engine.registerDecimalInputSymbol("ball.percept.y", &ballPerceptPos.y);
-  engine.registerBooleanInputSymbol("ball.was_seen", &ballPerceptSeen);
+  engine.registerBooleanInputSymbol("ball.percept.was_seen", &ballPerceptSeen);
 
   engine.registerBooleanInputSymbol("ball.know_where_itis", &getBallModel().knows);
 
@@ -63,7 +63,6 @@ void BallSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalInputSymbol("ball.team.striker.time_since_last_update", &getTeamBallStrikerTimeSinceLastUpdate);
   engine.registerDecimalInputSymbol("ball.team.striker.position.x", &getTeamBallModel().strikerPosition.x);
   engine.registerDecimalInputSymbol("ball.team.striker.position.y", &getTeamBallModel().strikerPosition.y);
-
 
   DEBUG_REQUEST_REGISTER("XABSL:BallSymbols:ballLeftFoot", "draw the ball model in left foot's coordinates on field", false);
   DEBUG_REQUEST_REGISTER("XABSL:BallSymbols:ballRightFoot", "draw the ball model in right foot's coordinates on field", false);
@@ -155,4 +154,5 @@ double BallSymbols::getTeamBallGoalieTimeSinceLastUpdate() {
 double BallSymbols::getTeamBallStrikerTimeSinceLastUpdate() {
   return theInstance->getFrameInfo().getTimeSince(theInstance->getTeamBallModel().strikerTime);
 }
+
 

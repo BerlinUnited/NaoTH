@@ -10,7 +10,8 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonWriter;
 import de.naoth.rc.Helper;
 import de.naoth.rc.RobotControl;
-import de.naoth.rc.components.RobotStatus;
+import de.naoth.rc.components.teamcommviewer.RobotStatus;
+import de.naoth.rc.components.teamcommviewer.RobotStatusPanel;
 import de.naoth.rc.core.dialog.AbstractDialog;
 import de.naoth.rc.core.dialog.DialogPlugin;
 import de.naoth.rc.dataformats.SPLMessage;
@@ -65,6 +66,7 @@ public class TeamCommViewer extends AbstractDialog {
     private final TeamCommListener listenerOwn = new TeamCommListener(false);
     private final TeamCommListener listenerOpponent = new TeamCommListener(true);
     private final HashMap<String, RobotStatus> robotsMap = new HashMap<>();
+    private final TreeMap<String, RobotStatus> robotsMapSorted = new TreeMap<>();
 
     private final Map<String, TeamCommMessage> messageMap = Collections.synchronizedMap(new TreeMap<String, TeamCommMessage>());
 
@@ -80,6 +82,15 @@ public class TeamCommViewer extends AbstractDialog {
      */
     public TeamCommViewer() {
         initComponents();
+        // collapse pane
+        robotStatusSplitPane.setDividerLocation(Integer.MAX_VALUE);/*2000*/
+        // closes the log file before exiting application
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            @Override
+            public void run() {
+                closingLogfile();
+            }
+        });
     }
 
     /**
@@ -92,7 +103,6 @@ public class TeamCommViewer extends AbstractDialog {
     private void initComponents() {
 
         teamCommFileChooser = new de.naoth.rc.components.ExtendedFileChooser();
-        robotStatusPanel = new javax.swing.JPanel();
         btListen = new javax.swing.JToggleButton();
         portNumberOwn = new javax.swing.JFormattedTextField();
         portNumberOpponent = new javax.swing.JFormattedTextField();
@@ -100,13 +110,16 @@ public class TeamCommViewer extends AbstractDialog {
         jLabel2 = new javax.swing.JLabel();
         btnRecord = new javax.swing.JToggleButton();
         btnStopRecording = new javax.swing.JButton();
+        jPanel2 = new javax.swing.JPanel();
+        robotStatusSplitPane = new javax.swing.JSplitPane();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        robotStatusPanel = new javax.swing.JPanel();
+        robotStatusTable = new de.naoth.rc.components.teamcommviewer.RobotStatusTable();
 
         teamCommFileChooser.setDialogType(javax.swing.JFileChooser.SAVE_DIALOG);
         teamCommFileChooser.setDialogTitle("Log file location");
         teamCommFileChooser.setSelectedFile(new File((new SimpleDateFormat("yyyy-MM-dd")).format(new Date())+"_TeamComm.log"));
         teamCommFileChooser.setToolTipText("");
-
-        robotStatusPanel.setLayout(new java.awt.GridLayout(5, 1, 0, 5));
 
         btListen.setText("Listen to TeamComm");
         btListen.addActionListener(new java.awt.event.ActionListener() {
@@ -147,6 +160,31 @@ public class TeamCommViewer extends AbstractDialog {
             }
         });
 
+        robotStatusSplitPane.setBorder(null);
+        robotStatusSplitPane.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
+        robotStatusSplitPane.setOneTouchExpandable(true);
+
+        robotStatusPanel.setLayout(new java.awt.GridLayout(5, 1, 0, 5));
+        jScrollPane2.setViewportView(robotStatusPanel);
+
+        robotStatusSplitPane.setLeftComponent(jScrollPane2);
+        robotStatusSplitPane.setRightComponent(robotStatusTable);
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
+            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addComponent(robotStatusSplitPane, javax.swing.GroupLayout.DEFAULT_SIZE, 838, Short.MAX_VALUE))
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 452, Short.MAX_VALUE)
+            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addComponent(robotStatusSplitPane, javax.swing.GroupLayout.DEFAULT_SIZE, 452, Short.MAX_VALUE))
+        );
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -154,6 +192,7 @@ public class TeamCommViewer extends AbstractDialog {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(btListen)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -168,8 +207,7 @@ public class TeamCommViewer extends AbstractDialog {
                         .addComponent(btnRecord)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnStopRecording)
-                        .addGap(0, 100, Short.MAX_VALUE))
-                    .addComponent(robotStatusPanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(0, 124, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -185,8 +223,9 @@ public class TeamCommViewer extends AbstractDialog {
                         .addComponent(portNumberOpponent, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(jLabel1)
                         .addComponent(jLabel2)))
-                .addGap(27, 27, 27)
-                .addComponent(robotStatusPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
+                .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -210,6 +249,7 @@ public class TeamCommViewer extends AbstractDialog {
                 this.portNumberOwn.setEnabled(false);
                 this.portNumberOpponent.setEnabled(false);
                 this.robotStatusPanel.setVisible(true);
+                this.robotStatusTable.setVisible(true);
 
             } else {
 
@@ -227,6 +267,8 @@ public class TeamCommViewer extends AbstractDialog {
                     this.robotsMap.clear();
                     this.robotStatusPanel.removeAll();
                     this.robotStatusPanel.setVisible(false);
+                    this.robotStatusTable.setVisible(false);
+                    this.robotStatusTable.removeAll();
                     this.portNumberOwn.setEnabled(true);
                     this.portNumberOpponent.setEnabled(true);
                 }
@@ -363,11 +405,19 @@ public class TeamCommViewer extends AbstractDialog {
                         public void run() {
                             RobotStatus robotStatus = robotsMap.get(address);
                             if (robotStatus == null) {
-                                robotStatus = new RobotStatus(Plugin.parent.getMessageServer(), address, msg.isOpponent() ? magenta : cyan);
+                                robotStatus = new RobotStatus(Plugin.parent.getMessageServer(), address);
+                                robotStatus.robotColor = msg.isOpponent() ? magenta : cyan;
+                                
                                 robotsMap.put(address, robotStatus);
-                                robotStatusPanel.add(robotStatus);
-                            }
-                            robotStatus.setStatus(msg.timestamp, msg.message);
+                                robotsMapSorted.put((msg.isOpponent()?"1_":"0_") + msg.message.playerNum, robotStatus);
+                                
+                                robotStatusPanel.removeAll();
+                                for (Entry<String, RobotStatus> entry : robotsMapSorted.entrySet()) {
+                                    robotStatusPanel.add(new RobotStatusPanel(entry.getValue())); // , msg.isOpponent() ? magenta : cyan
+                                }
+                                robotStatusTable.addRobot(robotStatus);
+                            }                            
+                            robotStatus.updateStatus(msg.timestamp, msg.message);
                         }
                     });
                     
@@ -551,9 +601,13 @@ public class TeamCommViewer extends AbstractDialog {
     private javax.swing.JButton btnStopRecording;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JFormattedTextField portNumberOpponent;
     private javax.swing.JFormattedTextField portNumberOwn;
     private javax.swing.JPanel robotStatusPanel;
+    private javax.swing.JSplitPane robotStatusSplitPane;
+    private de.naoth.rc.components.teamcommviewer.RobotStatusTable robotStatusTable;
     private de.naoth.rc.components.ExtendedFileChooser teamCommFileChooser;
     // End of variables declaration//GEN-END:variables
 

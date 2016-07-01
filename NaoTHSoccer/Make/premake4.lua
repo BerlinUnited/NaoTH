@@ -28,6 +28,16 @@ newoption {
    description = "Disable te -Wconversion warnin for gCC"
 }
 
+newoption {
+   trigger     = "Wno-misleading-indentation",
+   description = "Disable the -Wmisleading-indentation warning/error for gcc (6.0+)"
+}
+
+newoption {
+   trigger     = "Wno-ignored-attributes",
+   description = "Disable the -Wignored-attributes warning/error for gcc (6.0+)"
+}
+
 -- definition of the solution
 solution "NaoTHSoccer"
   platforms {"Native", "Nao"}
@@ -47,7 +57,8 @@ solution "NaoTHSoccer"
   links {
     "opencv_core",
     "opencv_ml",
-    "opencv_imgproc"
+    "opencv_imgproc",
+    "opencv_objdetect"
 	}
   
   -- set the remository information
@@ -137,6 +148,14 @@ solution "NaoTHSoccer"
         buildoptions {"-Wconversion"}
         defines { "_NAOTH_CHECK_CONVERSION_" }
       end
+
+      if _OPTIONS["Wno-misleading-indentation"] ~= nil then
+        buildoptions {"-Wno-misleading-indentation"}
+      end
+
+      if _OPTIONS["Wno-ignored-attributes"] ~= nil then
+        buildoptions {"-Wno-ignored-attributes"}
+      end
     
       -- Why? OpenCV is always dynamically linked and we can only garantuee that there is one version in Extern (Thomas)
       linkoptions {"-Wl,-rpath \"" .. path.getabsolute(EXTERN_PATH .. "/lib/") .. "\""}
@@ -157,7 +176,8 @@ solution "NaoTHSoccer"
     dofile (FRAMEWORK_PATH .. "/Platforms/Make/NaoSMAL.lua")
       -- HACK: boost from NaoQI SDK makes problems
       buildoptions {"-Wno-conversion"}
-      -- ACHTUNG: NaoSMAL doesn't build with the flag -std=c++11 (because of Boost)
+     -- ACHTUNG: NaoSMAL doesn't build with the flag -std=c++11 (because of Boost)
+      buildoptions {"-std=gnu++11"}
     dofile (FRAMEWORK_PATH .. "/Platforms/Make/NaoRobot.lua")
       kind "ConsoleApp"
       links { "NaoTHSoccer", "Commons" }

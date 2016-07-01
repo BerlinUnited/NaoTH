@@ -72,7 +72,9 @@ private:
 
   //Battery
   std::string DCMPath_BatteryCharge;
-
+  std::string DCMPath_BatteryCurrent;
+  std::string DCMPath_BatteryTemperature;
+  
   //State of the devices
   std::string DCMPath_DeviceState;
 

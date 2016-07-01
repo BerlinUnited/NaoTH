@@ -23,7 +23,7 @@ option clown_walk_test
 
   state stand {
     decision {
-      else if (ball.was_seen)
+      else if (ball.percept.was_seen)
         goto walk_to_ball_far_away;
       else
         stay;
