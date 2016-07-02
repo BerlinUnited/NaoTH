@@ -10,7 +10,7 @@ using namespace naoth;
 using namespace std;
 
 Simulation::Simulation()
-  : obstacleFilter(0.01, 0.1)
+ // : obstacleFilter(0.01, 0.1)
 {
   DEBUG_REQUEST_REGISTER("Simulation:draw_ball","draw_ball", false);
   DEBUG_REQUEST_REGISTER("Simulation:draw_goal_collisions", "", false);
@@ -44,8 +44,8 @@ Simulation::~Simulation(){}
 
 void Simulation::execute()
 {
-  obstacleFilter.setParameter(theParameters.obstacleFilter.g0, theParameters.obstacleFilter.g1);
-  obstacleFilter.update(getObstacleModel().frontDistance < 400, 0.3, 0.7);
+  //obstacleFilter.setParameter(theParameters.obstacleFilter.g0, theParameters.obstacleFilter.g1);
+  //obstacleFilter.update(getObstacleModel().frontDistance < 400, 0.3, 0.7);
 
   DEBUG_REQUEST("Simulation:use_Parameters",
     action_local.clear();
@@ -195,6 +195,7 @@ void Simulation::simulateConsequences(
     
     // Obstacle Detection
     bool obstacleCollision = false;
+    /*
     if(obstacleFilter.value() && getObstacleModel().blockedTime > 100)
     {
       obstacleCollision = true;
@@ -206,6 +207,7 @@ void Simulation::simulateConsequences(
              obstacleLine.end().x, obstacleLine.end().y);
       );
     }
+    */
 
     // now categorize the position
     BallPositionCategory category = INFIELD;

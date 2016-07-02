@@ -220,7 +220,7 @@ public:
   };
 
 private:
-  AssymetricalBoolHysteresisFilter obstacleFilter;
+  //AssymetricalBoolHysteresisFilter obstacleFilter;
 
   std::vector<Action> action_local;  
   std::vector<ActionResults> actionsConsequences;
