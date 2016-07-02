@@ -23,6 +23,7 @@
 #include "Tools/DoubleCamHelpers.h"
 #include "Tools/ImageProcessing/Edgel.h"
 #include "Tools/ImageProcessing/MaximumScan.h"
+#include "Tools/CameraGeometry.h"
 #include "Tools/ColorClasses.h"
 #include <Tools/Math/Vector2.h>
 
@@ -139,6 +140,31 @@ private:
 
     // hack:
     pair.width = Vector2d(begin.point - end.point).abs();
+
+    bool widthProjected = false;
+    Vector2d beginPointOnField;
+    Vector2d endPointOnField;
+    if(CameraGeometry::imagePixelToFieldCoord(
+        getCameraMatrix(), getCameraInfo(),
+        begin.point, 
+        0.0, 
+        beginPointOnField)) 
+    {
+      if(CameraGeometry::imagePixelToFieldCoord(
+          getCameraMatrix(), getCameraInfo(),
+          end.point, 
+          0.0, 
+          endPointOnField)) 
+      {
+        widthProjected = true;
+      }
+    }
+    pair.projectedWidth = 0.0;
+    if(widthProjected)
+    {
+      pair.projectedWidth = Vector2d(beginPointOnField - endPointOnField).abs();
+    }
+    
 
     getScanLineEdgelPercept().pairs.push_back(pair);
   }

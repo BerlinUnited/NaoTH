@@ -87,8 +87,8 @@ void GameController::execute()
   //if(getPlayerInfo().robotState == PlayerInfo::ready) {
   //  lastWhistleCount = getWhistlePercept().counter;
   //}
-  // whistle overrides gamecontroller when in set
-  if(getGameData().gameState == GameData::set)
+  // whistle overrides gamecontroller when in set and were are not penalized (e.g. for motion in set)
+  if(getGameData().gameState == GameData::set && getPlayerInfo().robotState != PlayerInfo::penalized)
   {
     // switch from set to play
     if(getWhistlePercept().counter > lastWhistleCount) {
@@ -99,7 +99,7 @@ void GameController::execute()
     // remember the last whistle count
     lastWhistleCount = getWhistlePercept().counter;
   }
-  
+
   // keep the manual penalized state
   if(returnMessage == GameReturnData::manual_penalise) {
     getPlayerInfo().robotState = PlayerInfo::penalized;
