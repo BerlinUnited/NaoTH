@@ -113,6 +113,10 @@ private:
 
       PARAMETER_REGISTER(maxNumberOfKeys) = 4;
       PARAMETER_REGISTER(numberOfExportBestPatches) = 2;
+
+      PARAMETER_REGISTER(blackKeysCheck.enable) = false;
+      PARAMETER_REGISTER(blackKeysCheck.minSizeToCheck) = 60;
+      PARAMETER_REGISTER(blackKeysCheck.minValue) = 20;
       
       syncWithConfig();
     }
@@ -135,11 +139,33 @@ private:
       std::string model_file;
     } haarDetector;
 
+    struct BlackKeysCheck {
+      bool enable;
+      int minSizeToCheck;
+      int minValue;
+    } blackKeysCheck;
+
     int maxNumberOfKeys;
     int numberOfExportBestPatches;
 
   } params;
 
+
+private:
+
+  bool blackKeysOK(const BestPatchList::Patch& patch) 
+  {
+    static BestPatchList bbest;
+    bbest.clear();
+    BlackSpotExtractor::calculateKeyPointsBlackBetter(getBallDetectorIntegralImage(), bbest, patch.min.x, patch.min.y, patch.max.x, patch.max.y);
+
+    if(bbest.size() == 0) {
+      return false;
+    }
+
+    BestPatchList::reverse_iterator b = bbest.rbegin();
+    return (*b).value > params.blackKeysCheck.minValue;
+  }
 
 private:
   CVHaarClassifier cvHaarClassifier;

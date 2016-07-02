@@ -87,14 +87,16 @@ int BlackSpotExtractor::calculateKeyPointsBlackBetter(const BallDetectorIntegral
 
       int innerGreen = image.getSumForRect(point.x, point.y, point.x+size, point.y+size, 1);
 
-      double value = (double)(outer - inner - innerGreen*255)/((double)(size+border)*(size+border));
+      if(innerGreen == 0) {
+        double value = (double)(outer - inner)/((double)(size+border)*(size+border));
 
-      bestBlack.add( 
-          (point.x-border)*FACTOR, 
-          (point.y-border)*FACTOR, 
-          (point.x+size+border)*FACTOR, 
-          (point.y+size+border)*FACTOR, 
-          value);
+        bestBlack.add( 
+            (point.x-border)*FACTOR, 
+            (point.y-border)*FACTOR, 
+            (point.x+size+border)*FACTOR, 
+            (point.y+size+border)*FACTOR, 
+            value);
+      }
     }
   }
 
