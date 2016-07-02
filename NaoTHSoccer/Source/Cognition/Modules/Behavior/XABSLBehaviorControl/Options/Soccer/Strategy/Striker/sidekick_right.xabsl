@@ -8,7 +8,7 @@ option sidekick_right
         stay;
     }
     action {
-      go_to_ball_with_foot_dynamic(right = false, distance = 130, offset.y=-30);
+      go_to_ball_with_foot_dynamic(right = false, distance = 140, offset.y=-30);
     }
   }
 

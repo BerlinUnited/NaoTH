@@ -9,7 +9,7 @@ option sidekick_left
     }
     action {
       //go_to_ball_with_foot(right = true, distance = 130, offset.y=-10);
-      go_to_ball_with_foot_dynamic(right = true, distance = 130, offset.y=-30);
+      go_to_ball_with_foot_dynamic(right = true, distance = 140, offset.y=-30);
     }
   }
   state sidekick_to_left {
