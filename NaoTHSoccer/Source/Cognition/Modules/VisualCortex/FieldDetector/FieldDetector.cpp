@@ -120,7 +120,8 @@ void FieldDetector::execute(CameraInfo::CameraID id)
     vector<Vector2i> result = ConvexHull::convexHull(points);
     
     // create the polygon
-    FieldPercept::FieldPoly fieldPoly;
+    static FieldPercept::FieldPoly fieldPoly;
+    fieldPoly.clear();
 
     for(size_t i = 0; i < result.size(); i++)
     {
@@ -176,7 +177,8 @@ void FieldDetector::execute(CameraInfo::CameraID id)
         
         vector<Vector2i> resultCheck = ConvexHull::convexHull(pointsCheck);
         
-        FieldPercept::FieldPoly fieldPolyCheck;
+        static FieldPercept::FieldPoly fieldPolyCheck;
+        fieldPolyCheck.clear();
         for(size_t j = 0; j < resultCheck.size(); j++)
         {
           fieldPolyCheck.add(resultCheck[j]);
@@ -196,7 +198,7 @@ void FieldDetector::execute(CameraInfo::CameraID id)
         }
         result = ConvexHull::convexHull(points);
         // clear old polygon
-        fieldPoly = FieldPercept::FieldPoly();
+        fieldPoly.clear();
         for(size_t i = 0; i < result.size(); i++)
         {
           fieldPoly.add(result[i]);
