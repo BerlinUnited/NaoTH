@@ -7,7 +7,7 @@ option search_ball
     decision {
       if(ball.know_where_itis)
         goto finish;
-      else if(state_time > 3000)
+      else if(state_time > 1500)
       {
         goto start;
       }
