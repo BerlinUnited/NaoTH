@@ -437,7 +437,7 @@ bool InverseKinematicsMotionEngine::rotationStabilizeRC16(
   double timeDelta,
   InverseKinematic::HipFeetPose& p)
 {
-  const double alpha = 0.5;
+  const double alpha = 0.2;
   Vector2d gyro = Vector2d(theGyrometerData.data.x, theGyrometerData.data.y);
   static Vector2d filteredGyro = gyro;
   filteredGyro = filteredGyro * (1.0f - alpha) + gyro * alpha;
