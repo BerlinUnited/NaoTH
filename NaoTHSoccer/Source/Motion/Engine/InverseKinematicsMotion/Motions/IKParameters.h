@@ -76,7 +76,7 @@ public:
     {
       double comHeight;
       double comHeightOffset;
-      double comRotationOffsetX;
+      double comStepOffsetY;
       double ZMPOffsetY;
       double ZMPOffsetYByCharacter;
     } hip;

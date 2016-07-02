@@ -73,7 +73,8 @@ void FieldDetector::execute(CameraInfo::CameraID id)
   }
   else if(getScanLineEdgelPercept().endPoints.size() > 0)
   {
-    vector<Vector2i> points;
+    static vector<Vector2i> points;
+    points.clear();
 
     for(size_t i = 0; i < getScanLineEdgelPercept().endPoints.size(); i++)
     {
@@ -163,7 +164,8 @@ void FieldDetector::execute(CameraInfo::CameraID id)
 
 
     // check outliers but keep first and last point in any case
-    std::vector<size_t> badPoints;
+    static std::vector<size_t> badPoints;
+    badPoints.clear();
     for(size_t nLoop = 0; nLoop < 5; nLoop++)
     {
       badPoints.clear();
