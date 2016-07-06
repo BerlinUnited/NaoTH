@@ -12,6 +12,8 @@ import java.util.stream.Collectors;
 import javax.swing.DefaultRowSorter;
 import javax.swing.JButton;
 import javax.swing.JTable;
+import javax.swing.event.RowSorterEvent;
+import javax.swing.event.RowSorterListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableColumnModel;
@@ -25,6 +27,36 @@ import javax.swing.table.TableColumnModel;
 public class RobotStatusTable extends javax.swing.JPanel {
     
     /**
+     * Container class, which summarize the data to adding the column.
+     */
+    public static class Column {
+        public Column(String name, 
+                      Class<?> type, 
+                      Function<RobotStatus, Object> value,
+                      TableCellRenderer renderer,
+                      boolean sortable,
+                      boolean showbydefault
+        ){
+            this.name = name;
+            this.type = type;
+            this.value = value;
+            this.renderer = renderer;
+            this.sortable = sortable;
+            this.showbydefault = showbydefault;
+        }
+        public String name;
+        public Class<?> type;
+        public Function<RobotStatus, Object> value;
+        public TableCellRenderer renderer;
+        public boolean sortable;
+        public boolean showbydefault;
+        
+        public String toString() {
+            return name;
+        }
+    }
+    
+    /**
      * A list of all available columns.
      */
     public final List<Column> ALL_COLUMNS = Arrays.asList(
@@ -33,20 +65,21 @@ public class RobotStatusTable extends javax.swing.JPanel {
             Byte.class, // column type
             (RobotStatus r)->r.teamNum, // column value
             new CellRenderer(), // column renderer
-            true // sortable
+            true, // sortable
+            true  // show by default?
         ),
-        new Column("#PN",Byte.class,(RobotStatus r) -> r.playerNum,null,true),
-        new Column("IP",String.class,(RobotStatus r) -> r.ipAddress,null,true),
-        new Column("msg/s", Double.class, (RobotStatus r) -> r.msgPerSecond, new PingRenderer(), true),
-        new Column("BallAge (s)", Float.class, (RobotStatus r) -> r.ballAge, null, true),
-        new Column("State", String.class, (RobotStatus r) -> (r.isDead ? "DEAD" : (r.fallen == 1 ? "FALLEN" : "NOT FALLEN")), null, true),
-        new Column("Temperature", Float.class, (RobotStatus r) -> r.temperature, new TemperatureRenderer(), true),
-        new Column("Battery", Float.class, (RobotStatus r) -> r.batteryCharge, new BatteryRenderer(), true),
-        new Column("TimeToBall", Float.class, (RobotStatus r) -> r.timeToBall, null, true),
-        new Column("wantToBeStriker", Boolean.class, (RobotStatus r) -> r.wantsToBeStriker, null, true),
-        new Column("wasStriker", Boolean.class, (RobotStatus r) -> r.wasStriker, null, true),
-        new Column("isPenalized", Boolean.class, (RobotStatus r) -> r.isPenalized, null, true),
-        new Column("", RobotStatus.class, (RobotStatus r) -> r, new ButtonRenderer(), false)
+        new Column("#PN",Byte.class,(RobotStatus r) -> r.playerNum,null,true,true),
+        new Column("IP",String.class,(RobotStatus r) -> r.ipAddress,null,true,true),
+        new Column("msg/s", Double.class, (RobotStatus r) -> r.msgPerSecond, new PingRenderer(), true,true),
+        new Column("BallAge (s)", Float.class, (RobotStatus r) -> r.ballAge, null, true,true),
+        new Column("State", String.class, (RobotStatus r) -> (r.isDead ? "DEAD" : (r.fallen == 1 ? "FALLEN" : "NOT FALLEN")), null, true,true),
+        new Column("Temperature", Float.class, (RobotStatus r) -> r.temperature, new TemperatureRenderer(), true,true),
+        new Column("Battery", Float.class, (RobotStatus r) -> r.batteryCharge, new BatteryRenderer(), true,true),
+        new Column("TimeToBall", Float.class, (RobotStatus r) -> r.timeToBall, null, true,false),
+        new Column("wantToBeStriker", Boolean.class, (RobotStatus r) -> r.wantsToBeStriker, null, true,false),
+        new Column("wasStriker", Boolean.class, (RobotStatus r) -> r.wasStriker, null, true,false),
+        new Column("isPenalized", Boolean.class, (RobotStatus r) -> r.isPenalized, null, true,false),
+        new Column("", RobotStatus.class, (RobotStatus r) -> r, new ButtonRenderer(), false,true)
     );
     
     /**
@@ -89,36 +122,10 @@ public class RobotStatusTable extends javax.swing.JPanel {
         );
     }// </editor-fold>//GEN-END:initComponents
 
-    /**
-     * Container class, which summarize the data to adding the column.
-     */
-    public static class Column {
-        public Column(String name, 
-                      Class<?> type, 
-                      Function<RobotStatus, Object> value,
-                      TableCellRenderer renderer,
-                      boolean sortable
-        ){
-            this.name = name;
-            this.type = type;
-            this.value = value;
-            this.renderer = renderer;
-        }
-        public String name;
-        public Class<?> type;
-        public Function<RobotStatus, Object> value;
-        public TableCellRenderer renderer;
-        public boolean sortable = true;
-        
-        public String toString() {
-            return name;
-        }
-    }
-    
     private class RobotTableModel extends AbstractTableModel implements RobotStatusListener {
         private final ArrayList<RobotStatus> robots = new ArrayList<>();
         
-        public void RobotTableModel() {
+        public RobotTableModel() {
         }
         
         public void addRobot(RobotStatus robot) {
@@ -208,11 +215,11 @@ public class RobotStatusTable extends javax.swing.JPanel {
         if(col.renderer != null) {
             tc.setCellRenderer(col.renderer);
         }
+        // set sortable attribute; referenced via model index
+        ((DefaultRowSorter)table.getRowSorter()).setSortable(ALL_COLUMNS.indexOf(col), col.sortable);
+        
         TableColumnModel tcm = table.getColumnModel();
         tcm.addColumn(tc);
-        
-        // TODO: set sortable attribute
-//        ((DefaultRowSorter)table.getRowSorter()).setSortable(tcm.getColumnCount()-1, col.sortable);
 
         // makes the button column the last column
         tcm.moveColumn(tcm.getColumnIndex(""), tcm.getColumnCount()-1);

@@ -430,7 +430,12 @@ public class TeamCommViewer extends AbstractDialog {
             RobotStatusTable.Column col = it.next();
             if(col.name == null || col.name.isEmpty()) { continue; }
             JCheckBoxMenuItem item = new JCheckBoxMenuItem(col.name);
-//            item.setSelected(true);
+            // TODO: save configuration?!
+            // shows the default columns
+            if(col.showbydefault) {
+                robotStatusTable.addColumn(col.name);
+                item.setSelected(true);
+            }
             item.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
@@ -440,7 +445,6 @@ public class TeamCommViewer extends AbstractDialog {
                     } else {
                         robotStatusTable.removeColumn(e.getActionCommand());
                     }
-                    System.out.println("clicked: " + e.getActionCommand());
                 }
             });
             pmAdditionalColumns.add(item);
