@@ -2,7 +2,9 @@ option spl_remote_decide_gamestate
 {
   common decision
   {
-    if(!body.ready_to_walk)
+    if(remote_control.time_since_update > 1000)
+      goto no_signal;
+    else if(!body.ready_to_walk)
       goto idle;
     else if(game.current_mode != playing &&
             game.current_mode != ready &&
@@ -10,7 +12,7 @@ option spl_remote_decide_gamestate
       goto idle;
   }
   
-  state no_signal
+  state no_signal 
   {
     decision
     {
