@@ -12,8 +12,6 @@ import java.util.stream.Collectors;
 import javax.swing.DefaultRowSorter;
 import javax.swing.JButton;
 import javax.swing.JTable;
-import javax.swing.event.RowSorterEvent;
-import javax.swing.event.RowSorterListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableColumnModel;
@@ -89,6 +87,8 @@ public class RobotStatusTable extends javax.swing.JPanel {
         initComponents();
         // the button column is added by default
         addColumn("");
+        // sets the mouse listener for the button column (connect button)
+        table.addMouseListener(new JTableButtonMouseListener(table));
     }
 
     /**
@@ -283,13 +283,13 @@ public class RobotStatusTable extends javax.swing.JPanel {
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
             float temp = (float) value;
-            // 60 °C
-            if (temp >= 60.0) {
-                this.setBackground(RobotStatus.COLOR_WARNING);
-            }
-            // 75 °C
-            if (temp >= 75.0) {
+            
+            if (temp >= 75.0) { // 75 °C
                 this.setBackground(RobotStatus.COLOR_DANGER);
+            } else if (temp >= 60.0) { // 60 °C
+                this.setBackground(RobotStatus.COLOR_WARNING);
+            } else {
+                this.setBackground(null);
             }
 
             return super.getTableCellRendererComponent(table, temp == -1 ? "?" : String.format(" %3.1f °C", value), isSelected, hasFocus, row, column);
@@ -340,10 +340,10 @@ public class RobotStatusTable extends javax.swing.JPanel {
 
 			if (row < table.getRowCount() && row >= 0 && column < table.getColumnCount() && column >= 0) {
                 // only for column 8 (connect button) and if it's enabled
-			    if (column == 8 && ((ButtonRenderer)table.getCellRenderer(row, column)).isEnabled()) {
+                if(table.getCellRenderer(row, column) instanceof ButtonRenderer && ((ButtonRenderer)table.getCellRenderer(row, column)).isEnabled()) {
                     // let RobotStatus connect to robot (MessageServer)
                     ((RobotStatus)table.getValueAt(row, column)).connect();
-			    }
+                }
 			}
 		}
 	}
