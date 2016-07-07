@@ -27,16 +27,16 @@ public class TeamCommViewerSimspark extends AbstractDialog {
 
     @PluginImplementation
     public static class Plugin extends DialogPlugin<TeamCommViewerSimspark> {
-
         @InjectPlugin
         public static RobotControl parent;
-        @InjectPlugin
-        public static DrawingEventManager drawingEventManager;
     }//end Plugin
     
-    private final int port = 3100; // agent = 3100; monitor = 3200
+//    private final int port = 3100; // agent = 3100; monitor = 3200
+    private final int port_agent = 3100;
+    private final int port_monitor = 3200;
+    
     private final String host = "127.0.0.1";
-    private TeamCommListener tcl;
+    private Simspark simspark_comm;
     
     /**
      * Creates new form TeamCommViewerSimspark
@@ -108,99 +108,67 @@ public class TeamCommViewerSimspark extends AbstractDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnSendCommandActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSendCommandActionPerformed
-        if(!jTextField1.getText().isEmpty() && tcl != null && tcl.isAlive()) {
-            tcl.sendAgentMessage(jTextField1.getText().trim());
+        if(!jTextField1.getText().isEmpty() && simspark_comm != null && simspark_comm.isAlive()) {
+            simspark_comm.sendAgentMessage(jTextField1.getText().trim());
         }
     }//GEN-LAST:event_btnSendCommandActionPerformed
 
     private void btnConnectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConnectActionPerformed
         if (btnConnect.isSelected()) {
-            System.out.println("...");
-            if (tcl != null) {
-                try {
-                    tcl.disconnect();
-                    tcl.join();
-                } catch (InterruptedException ex) {
-                    Logger.getLogger(TeamCommViewerSimspark.class.getName()).log(Level.SEVERE, null, ex);
+            try {
+                System.out.println("...");
+                
+                if (simspark_comm != null) {
+                    simspark_comm.disconnect();
+                    simspark_comm.join();
                 }
+                
+//                simspark_comm = new SimsparkAgent();
+//                simspark_comm.connect(host, port_agent);
+                simspark_comm = new SimsparkMonitor();
+                simspark_comm.connect(host, port_monitor);
+                simspark_comm.start();
+                
+            } catch (IOException | InterruptedException ex) {
+                Logger.getLogger(TeamCommViewerSimspark.class.getName()).log(Level.SEVERE, null, ex);
             }
-
-            tcl = new TeamCommListener();
-            tcl.start();
         } else {
-            if (tcl != null) {
+            if (simspark_comm != null) {
                 try {
-                    tcl.disconnect();
-                    tcl.join();
-                } catch (InterruptedException ex) {
+                    simspark_comm.disconnect();
+                    simspark_comm.join();
+                } catch (InterruptedException | IOException ex) {
                     Logger.getLogger(TeamCommViewerSimspark.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
-            tcl = null;
+            simspark_comm = null;
         }
     }//GEN-LAST:event_btnConnectActionPerformed
 
-    private class TeamCommListener extends Thread {
+    private class Simspark extends Thread {
+        protected DataInputStream in;
+        protected DataOutputStream out;
+        protected Socket socket;
+        protected boolean isRunning;
+        
+        public Simspark() {
+        }
+        
+        public void connect(String host, int port) throws IOException {
+            socket = new Socket(host, port);
+//            this.socket.setTcpNoDelay(true);
 
-        private DataInputStream in;
-        private DataOutputStream out;
-        private Socket socket;
-        private boolean isRunning;
-  
-        public TeamCommListener() {
-            try {
-                this.socket = new Socket(host, port);
-                this.socket.setTcpNoDelay(true);
-                
-                in = new DataInputStream(socket.getInputStream());
-                out = new DataOutputStream(socket.getOutputStream());
-                
-                System.out.println("Connected to "+host+":"+port);
-                isRunning = true;
-            } catch (IOException ex) {
-                Logger.getLogger(TeamCommViewerSimspark.class.getName()).log(Level.SEVERE, null, ex);
-                System.out.println("Couldn't connect!");
-            }
-;
+            in = new DataInputStream(socket.getInputStream());
+            out = new DataOutputStream(socket.getOutputStream());
+
+            isRunning = true;
         }
         
-        public void run() {
-            if(socket == null) { return; }
-            // use another rsg... ?
-            sendAgentMessage("(scene rsg/agent/nao/nao.rsg 0)(syn)");
-            System.out.println(getServerMessage());
-            sendAgentMessage("(init (unum 0)(teamname NaoTH))(syn)");
-            System.out.println(getServerMessage());
-            
-            
-            System.out.println("listening");
-            
-            while(isRunning) {
-                try {
-                    sleep(1);
-                    
-//                    System.out.println("next ...");
-                    sendAgentMessage("(syn)");
-                    String msg = getServerMessage();
-                    if (msg != null) {
-                        jTextArea1.append(msg + "\n");
-//                        jScrollPane1.
-//                        System.out.println(msg);
-                    }
-                } catch (InterruptedException ex) {
-                    Logger.getLogger(TeamCommViewerSimspark.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-        }
-        
-        public void disconnect() {
+        public void disconnect() throws IOException {
             isRunning = false;
-            try {
-                socket.close();
-            } catch (IOException ex) {
-                Logger.getLogger(TeamCommViewerSimspark.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            System.out.println("disconnected");
+            in.close();
+            out.close();
+            socket.close();
         }
 
         /**
@@ -213,6 +181,7 @@ public class TeamCommViewerSimspark extends AbstractDialog {
          * The content of the agent message is not validated.
          *
          * @param msg Agent message with effector commands.
+         * @param out
          */
         public void sendAgentMessage(String msg) {
 
@@ -272,27 +241,21 @@ public class TeamCommViewerSimspark extends AbstractDialog {
          * this method, the oldest is returned, that means the messages are
          * provided always in chronological order.
          * <p/>
+         * @param in
          * @return The raw server message (String of concatenated perceptor
          * messages).
          */
         public String getServerMessage() {
-
             String msg = "keine Nachricht";
             byte[] result;
             int length;
-//            System.out.println("trying to get msg");
-            
+
             try {
-//                System.out.println("available: " + in.available());
                 if(in.available() == 0) { return null; }
                 int byte0 = in.read();
-//                System.out.println("got byte0: "+byte0);
                 int byte1 = in.read();
-//                System.out.println("got byte1: "+byte1);
                 int byte2 = in.read();
-//                System.out.println("got byte2: "+byte2);
                 int byte3 = in.read();
-//                System.out.println("got byte3: "+byte3);
                 length = byte0 << 24 | byte1 << 16 | byte2 << 8 | byte3; // analyzes
                 // the header
                 int total = 0;
@@ -306,16 +269,79 @@ public class TeamCommViewerSimspark extends AbstractDialog {
                 while (total < length) {
                     total += in.read(result, total, length - total);
                 }
-
                 msg = new String(result, 0, length, "UTF-8");
             } catch (IOException e) {
                 System.out.println("Error when reading from socket. Has the server been shut down?");
                 return null;
             }
-
             return msg;
         }
     }
+    
+    private class SimsparkAgent extends Simspark {
+        public void run() {
+            if(socket == null) { return; }
+            // use another rsg... ?
+            sendAgentMessage("(scene rsg/agent/nao/nao.rsg 0)(syn)");
+            System.out.println(getServerMessage());
+            sendAgentMessage("(init (unum 0)(teamname NaoTH))(syn)");
+            System.out.println(getServerMessage());
+            
+            
+            System.out.println("listening");
+            
+            while(isRunning) {
+                try {
+                    sleep(1);
+                    
+//                    System.out.println("next ...");
+                    sendAgentMessage("(syn)");
+                    String msg = getServerMessage();
+                    if (msg != null) {
+                        jTextArea1.append(msg + "\n");
+//                        jScrollPane1.
+//                        System.out.println(msg);
+                    }
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(TeamCommViewerSimspark.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+    }
+    
+    private class SimsparkMonitor extends Simspark {
+
+        public void run() {
+            if(socket == null) { return; }
+            // use another rsg... ?
+            /*
+            sendAgentMessage("(scene rsg/agent/nao/nao.rsg 0)(syn)");
+            System.out.println(getServerMessage());
+            sendAgentMessage("(init (unum 0)(teamname NaoTH))(syn)");
+            System.out.println(getServerMessage());
+            */
+            
+            System.out.println("listening");
+            
+            while(isRunning) {
+                try {
+                    sleep(1);
+                    
+//                    System.out.println("next ...");
+//                    sendAgentMessage("(syn)");
+                    String msg = getServerMessage();
+                    if (msg != null) {
+                        jTextArea1.append(msg + "\n");
+//                        jScrollPane1.
+//                        System.out.println(msg);
+                    }
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(TeamCommViewerSimspark.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+    }
+    
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JToggleButton btnConnect;
