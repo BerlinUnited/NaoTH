@@ -13,6 +13,7 @@
 
 #include <opencv2/core/core.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
+#include <opencv2/objdetect/objdetect.hpp>
 #include <opencv2/ml/ml.hpp>
 
 #if defined(__GNUC__) && defined(_NAOTH_CHECK_CONVERSION_)

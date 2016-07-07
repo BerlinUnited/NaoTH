@@ -5,12 +5,19 @@ import java.awt.Component;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import javax.swing.DefaultRowSorter;
 import javax.swing.JButton;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
 
 /**
  * @author Philipp Strobel <philippstrobel@posteo.de>
@@ -18,25 +25,70 @@ import javax.swing.table.TableCellRenderer;
 public class RobotStatusTable extends javax.swing.JPanel {
     
     /**
+     * Container class, which summarize the data to adding the column.
+     */
+    public static class Column {
+        public Column(String name, 
+                      Class<?> type, 
+                      Function<RobotStatus, Object> value,
+                      TableCellRenderer renderer,
+                      boolean sortable,
+                      boolean showbydefault
+        ){
+            this.name = name;
+            this.type = type;
+            this.value = value;
+            this.renderer = renderer;
+            this.sortable = sortable;
+            this.showbydefault = showbydefault;
+        }
+        public String name;
+        public Class<?> type;
+        public Function<RobotStatus, Object> value;
+        public TableCellRenderer renderer;
+        public boolean sortable;
+        public boolean showbydefault;
+        
+        public String toString() {
+            return name;
+        }
+    }
+    
+    /**
+     * A list of all available columns.
+     */
+    public final List<Column> ALL_COLUMNS = Arrays.asList(
+        new Column(
+            "#TN", // name/heading
+            Byte.class, // column type
+            (RobotStatus r)->r.teamNum, // column value
+            new CellRenderer(), // column renderer
+            true, // sortable
+            true  // show by default?
+        ),
+        new Column("#PN",Byte.class,(RobotStatus r) -> r.playerNum,null,true,true),
+        new Column("IP",String.class,(RobotStatus r) -> r.ipAddress,null,true,true),
+        new Column("msg/s", Double.class, (RobotStatus r) -> r.msgPerSecond, new PingRenderer(), true,true),
+        new Column("BallAge (s)", Float.class, (RobotStatus r) -> r.ballAge, null, true,true),
+        new Column("State", String.class, (RobotStatus r) -> (r.isDead ? "DEAD" : (r.fallen == 1 ? "FALLEN" : "NOT FALLEN")), null, true,true),
+        new Column("Temperature", Float.class, (RobotStatus r) -> r.temperature, new TemperatureRenderer(), true,true),
+        new Column("Battery", Float.class, (RobotStatus r) -> r.batteryCharge, new BatteryRenderer(), true,true),
+        new Column("TimeToBall", Float.class, (RobotStatus r) -> r.timeToBall, null, true,false),
+        new Column("wantToBeStriker", Boolean.class, (RobotStatus r) -> r.wantsToBeStriker, null, true,false),
+        new Column("wasStriker", Boolean.class, (RobotStatus r) -> r.wasStriker, null, true,false),
+        new Column("isPenalized", Boolean.class, (RobotStatus r) -> r.isPenalized, null, true,false),
+        new Column("", RobotStatus.class, (RobotStatus r) -> r, new ButtonRenderer(), false,true)
+    );
+    
+    /**
      * Creates new form RobotStatusTable
      */
     public RobotStatusTable() {
         initComponents();
-        table.getColumnModel().getColumn(0).setCellRenderer(new CellRenderer());
-        // msg/s
-        table.getColumnModel().getColumn(3).setCellRenderer(new PingRenderer());
-        // Temperature
-        table.getColumnModel().getColumn(6).setCellRenderer(new TemperatureRenderer());
-        // Battery
-        table.getColumnModel().getColumn(7).setCellRenderer(new BatteryRenderer());
-        // connect button
-        table.getColumnModel().getColumn(8).setCellRenderer(new ButtonRenderer());
+        // the button column is added by default
+        addColumn("");
         // sets the mouse listener for the button column (connect button)
         table.addMouseListener(new JTableButtonMouseListener(table));
-        // sort via Ip (default)
-        table.getRowSorter().toggleSortOrder(2);
-        // set button column non-sortable
-        ((DefaultRowSorter)table.getRowSorter()).setSortable(8, false);
     }
 
     /**
@@ -56,6 +108,7 @@ public class RobotStatusTable extends javax.swing.JPanel {
         table.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_LAST_COLUMN);
         table.setRowSelectionAllowed(false);
         scrollPane.setViewportView(table);
+        table.setColumnModel(new DefaultTableColumnModel());
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -72,6 +125,9 @@ public class RobotStatusTable extends javax.swing.JPanel {
     private class RobotTableModel extends AbstractTableModel implements RobotStatusListener {
         private final ArrayList<RobotStatus> robots = new ArrayList<>();
         
+        public RobotTableModel() {
+        }
+        
         public void addRobot(RobotStatus robot) {
             robots.add(robot);
             robot.addListener(this);
@@ -86,62 +142,37 @@ public class RobotStatusTable extends javax.swing.JPanel {
             robots.clear();
             this.fireTableDataChanged();
         }
-        
-        @Override
-        public int getRowCount() {
-            return robots.size();
-        }
 
         @Override
         public int getColumnCount() {
-            return 9;
+            return ALL_COLUMNS.size();
+        }
+        
+        @Override
+        public int getRowCount() {
+            return robots == null ? 0 : robots.size();
         }
 
         @Override
-        public Object getValueAt(int rowIndex, int columnIndex) {
-            RobotStatus robot = robots.get(rowIndex);
-            switch(columnIndex) {
-                case 0: return robot.teamNum;
-                case 1: return robot.playerNum;
-                case 2: return robot.ipAddress;
-                case 3: return robot.msgPerSecond;
-                case 4: return robot.ballAge;
-                case 5: return robot.isDead?"DEAD":(robot.fallen==1?"FALLEN":"NOT FALLEN");
-                case 6: return robot.temperature;
-                case 7: return robot.batteryCharge;
-                case 8: return robot;
-                default: return null;
-            }
-        }
-
-        @Override
-        public String getColumnName(int column) {
-            switch(column) {
-                case 0: return "#TN";
-                case 1: return "#PN";
-                case 2: return "IP";
-                case 3: return "msg/s";
-                case 4: return "BallAge (s)";
-                case 5: return "State";
-                case 6: return "Temperature";
-                case 7: return "Battery";
-                case 8: return "";
-                default: return null;
-            }
+        public String getColumnName(int columnIndex) {
+            return ALL_COLUMNS.get(columnIndex).name;
         }
 
         @Override
         public Class<?> getColumnClass(int columnIndex) {
-            switch(columnIndex) {
-                case 0: return Byte.class;
-                case 1: return Byte.class;
-                case 6: return Float.class;
-                case 7: return Float.class;
-                case 8: return RobotStatus.class;
-            }
-            return Object.class;
+            return ALL_COLUMNS.get(columnIndex).type;
+        }
+        
+        @Override
+        public Object getValueAt(int rowIndex, int columnIndex) {
+            RobotStatus robot = robots.get(rowIndex);
+            return ALL_COLUMNS.get(columnIndex).value.apply(robot);
         }
 
+        /**
+         * Notifies the table, that some cell data changed.
+         * RobotStatus calls this method (listener).
+         */
         @Override
         public void statusChanged() {
             fireTableDataChanged();
@@ -161,6 +192,46 @@ public class RobotStatusTable extends javax.swing.JPanel {
      */
     public void removeAll() {
         ((RobotTableModel)this.table.getModel()).removeAll();
+    }
+    
+    /**
+     * Adds a column by name (heading) to the table.
+     * @param name name of the column
+     */
+    public void addColumn(String name) {
+        // tries to find the (predefined) column
+        List<Column> column = ALL_COLUMNS.stream().filter((Column c)->(c.name!=null&&c.name.equals(name))).collect(Collectors.toList());
+        // check if name is in the columns-list
+        if(column.isEmpty()) {
+            return;
+        }
+        // gets the column definition
+        Column col = column.get(0);
+        // creates the new table column and sets the attributes
+        TableColumn tc = new TableColumn();
+        tc.setModelIndex(ALL_COLUMNS.indexOf(col)); // corresponding model index!
+        tc.setIdentifier(col.name);
+        tc.setHeaderValue(col.name);
+        if(col.renderer != null) {
+            tc.setCellRenderer(col.renderer);
+        }
+        // set sortable attribute; referenced via model index
+        ((DefaultRowSorter)table.getRowSorter()).setSortable(ALL_COLUMNS.indexOf(col), col.sortable);
+        
+        TableColumnModel tcm = table.getColumnModel();
+        tcm.addColumn(tc);
+
+        // makes the button column the last column
+        tcm.moveColumn(tcm.getColumnIndex(""), tcm.getColumnCount()-1);
+    }
+    
+    /**
+     * Removes the column.
+     * @param name the heading/name of the column
+     */
+    public void removeColumn(String name) {
+        TableColumnModel tcm = table.getColumnModel();
+        tcm.removeColumn(tcm.getColumn(tcm.getColumnIndex(name)));
     }
     
     /**
@@ -212,13 +283,13 @@ public class RobotStatusTable extends javax.swing.JPanel {
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
             float temp = (float) value;
-            // 60 °C
-            if (temp >= 60.0) {
-                this.setBackground(RobotStatus.COLOR_WARNING);
-            }
-            // 75 °C
-            if (temp >= 75.0) {
+            
+            if (temp >= 75.0) { // 75 °C
                 this.setBackground(RobotStatus.COLOR_DANGER);
+            } else if (temp >= 60.0) { // 60 °C
+                this.setBackground(RobotStatus.COLOR_WARNING);
+            } else {
+                this.setBackground(null);
             }
 
             return super.getTableCellRendererComponent(table, temp == -1 ? "?" : String.format(" %3.1f °C", value), isSelected, hasFocus, row, column);
@@ -269,10 +340,10 @@ public class RobotStatusTable extends javax.swing.JPanel {
 
 			if (row < table.getRowCount() && row >= 0 && column < table.getColumnCount() && column >= 0) {
                 // only for column 8 (connect button) and if it's enabled
-			    if (column == 8 && ((ButtonRenderer)table.getCellRenderer(row, column)).isEnabled()) {
+                if(table.getCellRenderer(row, column) instanceof ButtonRenderer && ((ButtonRenderer)table.getCellRenderer(row, column)).isEnabled()) {
                     // let RobotStatus connect to robot (MessageServer)
                     ((RobotStatus)table.getValueAt(row, column)).connect();
-			    }
+                }
 			}
 		}
 	}
