@@ -55,7 +55,8 @@ void Walk::execute()
     {
       tmp.localInRightFoot();
       theCoMFeetPose.com.translation.z += parameters().hip.comHeightOffset * tmp.feet.left.translation.z;
-      theCoMFeetPose.com.rotateX( parameters().hip.comRotationOffsetX *tmp.feet.left.translation.z );
+      theCoMFeetPose.com.translation.y -= parameters().hip.comStepOffsetY *tmp.feet.left.translation.z;
+      //theCoMFeetPose.com.rotateX( parameters().hip.comRotationOffsetX *tmp.feet.left.translation.z );
 
       PLOT("Walk:theCoMFeetPose:total_rotationY",tmp.com.rotation.getYAngle());
     } 
@@ -63,7 +64,8 @@ void Walk::execute()
     {
       tmp.localInLeftFoot();
       theCoMFeetPose.com.translation.z += parameters().hip.comHeightOffset * tmp.feet.right.translation.z;
-      theCoMFeetPose.com.rotateX( -parameters().hip.comRotationOffsetX*tmp.feet.right.translation.z );
+      theCoMFeetPose.com.translation.y += parameters().hip.comStepOffsetY *tmp.feet.left.translation.z;
+      //theCoMFeetPose.com.rotateX( -parameters().hip.comRotationOffsetX*tmp.feet.right.translation.z );
 
       PLOT("Walk:theCoMFeetPose:total_rotationY",tmp.com.rotation.getYAngle());
     }
@@ -93,6 +95,22 @@ void Walk::execute()
       
     getEngine().rotationStabilize(
       getInertialModel(),
+      getGyrometerData(),
+      getRobotInfo().getBasicTimeStepInSecond(),
+      c);
+  } 
+  else if(getCalibrationData().calibrated && parameters().stabilization.rotationStabilizeRC16)
+  {
+    if(stepBuffer.first().footStep.liftingFoot() == FootStep::LEFT) {
+      c.localInRightFoot();
+    } else if(stepBuffer.first().footStep.liftingFoot() == FootStep::RIGHT) {
+      c.localInLeftFoot();
+    } else {
+      c.localInHip();
+    }
+    
+    getEngine().rotationStabilizeRC16(
+      getInertialSensorData(),
       getGyrometerData(),
       getRobotInfo().getBasicTimeStepInSecond(),
       c);

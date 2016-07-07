@@ -29,7 +29,7 @@ int main(int argc, char** argv)
 
   string teamName = "NaoTH";
   gchar* optTeamName = NULL;
-  unsigned int num = 0; // zero means get a number from server
+  unsigned int playerNumber = 0; // zero means get a number from server
   string server = "localhost";
   string modelPath = "rsg/agent/naov4/nao.rsg";
   gchar* optModelPath = NULL;
@@ -38,7 +38,7 @@ int main(int argc, char** argv)
   gboolean sync = false;
   
   GOptionEntry entries[] = {
-    {"num",'n', 0, G_OPTION_ARG_INT, &num, "player number", "0"},
+    {"num",'n', 0, G_OPTION_ARG_INT, &playerNumber, "player number", "0"},
     {"team", 't', 0, G_OPTION_ARG_STRING, &optTeamName, "team name", "NaoTH"},
     {"server", 's', 0, G_OPTION_ARG_STRING, &optServer, "server host", "localhost"},
     {"model_path", 0, 0, G_OPTION_ARG_STRING, &optModelPath, "path for the model of the robot", "rsg/agent/naov4/nao.rsg"},
@@ -91,7 +91,7 @@ int main(int argc, char** argv)
   
   SimSparkController theController(MAKE_NAME(PLATFORM_NAME));
 
-  if (!theController.init(modelPath, teamName, num, server, port, sync > 0))
+  if (!theController.init(modelPath, teamName, playerNumber, server, port, sync > 0))
   {
     cerr << "NaoTH SimSpark (SPL) initialization failed!" << endl;
     return EXIT_FAILURE;

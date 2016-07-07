@@ -22,6 +22,7 @@
 #include "Representations/Infrastructure/CalibrationData.h"
 #include <Representations/Infrastructure/GyrometerData.h>
 #include "Representations/Modeling/InertialModel.h"
+#include <Representations/Infrastructure/InertialSensorData.h>
 
 // debug
 #include "Tools/Debug/DebugModify.h"
@@ -38,6 +39,8 @@
 #include "Tools/DataStructures/RingBufferWithSum.h"
 #include "JointMonitor.h"
 
+using namespace naoth;
+
 BEGIN_DECLARE_MODULE(Walk)
   PROVIDE(DebugModify)
   PROVIDE(DebugPlot)
@@ -49,6 +52,7 @@ BEGIN_DECLARE_MODULE(Walk)
   REQUIRE(InverseKinematicsMotionEngineService)
   REQUIRE(MotionRequest)
 
+  REQUIRE(InertialSensorData)
   REQUIRE(CalibrationData)
   REQUIRE(InertialModel)
   REQUIRE(GyrometerData)

@@ -84,6 +84,11 @@ public: // function members
     return yuv422[PIXEL_SIZE_YUV422 * (y * cameraInfo.resolutionWidth + x)];
   }
 
+  inline unsigned char getY_direct(const int x, const int y) const {
+    //ASSERT(isInside(x,y));
+    return yuv422[PIXEL_SIZE_YUV422 * (y * cameraInfo.resolutionWidth + x)];
+  }
+
   inline unsigned char getU(const int x, const int y) const {
     ASSERT(isInside(x,y));
     return yuv422[PIXEL_SIZE_YUV422 * (y * cameraInfo.resolutionWidth + x) + 1-((x & 1)<<1)];
