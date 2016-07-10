@@ -13,8 +13,6 @@ option decide_game_state
       goto _initial;
     else if(game.state == playing)
       goto playing;
-    else if(game.state == unknown)
-      goto dont_know_what_to_do;
   }
     
   initial state _initial {
@@ -24,6 +22,7 @@ option decide_game_state
       motion.type = init;
       arm.control_mode = normal;
       head.control_mode = stay_as_forced;
+      whistle.switch = 0;  //whistledetector off
       situationStatusOwnHalf = true;
       last_state_was_penalized = false;
     }
@@ -36,6 +35,7 @@ option decide_game_state
       motion.type = stand;
       arm.control_mode = back;
       head.control_mode = stay_as_forced;
+      whistle.switch = 0;  //whistledetector off
       treat_lifted();
       fall_down_and_stand_up();
       last_state_was_penalized = false;
@@ -50,6 +50,7 @@ option decide_game_state
       motion.type = stand;
       arm.control_mode = back;
       head.control_mode = stay_as_forced;
+      whistle.switch = 1; //whistledetector on
       treat_lifted();
       situationStatusOwnHalf = true;
       last_state_was_penalized = false;
@@ -64,6 +65,7 @@ option decide_game_state
       motion.type = stand;
       arm.control_mode = back;
       head.control_mode = stay_as_forced;
+      whistle.switch = 0;  //whistledetector off
       treat_lifted();
       fall_down_and_stand_up();
       //achtung: don't set false
@@ -78,6 +80,7 @@ option decide_game_state
       motion.type = stand;
       arm.control_mode = normal;
       head.control_mode = (state_time < 2000) ? look_straight_ahead : stay_as_forced;
+      whistle.switch = 0;  //whistledetector off
       situationStatusOwnHalf = true;
       last_state_was_penalized = true;
     }
@@ -90,18 +93,9 @@ option decide_game_state
       motion.type = stand;
       arm.control_mode = normal;
       head.control_mode = stay_as_forced;
+      whistle.switch = 0;  //whistledetector off
       last_state_was_penalized = false;
     }
   }
 
-  state dont_know_what_to_do {
-    action
-    {
-      game.current_mode = unknown;
-      motion.type = stand;
-      arm.control_mode = normal;
-      head.control_mode = stay_as_forced;
-      last_state_was_penalized = false;
-    }
-  }
 }

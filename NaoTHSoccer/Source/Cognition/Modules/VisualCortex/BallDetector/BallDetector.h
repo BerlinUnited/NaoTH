@@ -23,7 +23,7 @@
 #include "Representations/Perception/FieldPercept.h"
 #include "Representations/Perception/BodyContour.h"
 
-#include "Representations/Perception/GameColorIntegralImage.h"
+#include "Representations/Perception/MultiChannelIntegralImage.h"
 #include "Representations/Perception/MultiBallPercept.h"
 #include "Representations/Perception/BallCandidates.h"
 #include "Representations/Debug/Stopwatch.h"
@@ -79,12 +79,6 @@ BEGIN_DECLARE_MODULE(BallDetector)
   PROVIDE(BallCandidatesTop)
 END_DECLARE_MODULE(BallDetector)
 
-
-template <typename Iter>
-Iter nextIter(Iter iter)
-{
-    return ++iter;
-}
 
 class BallDetector: private BallDetectorBase
 {
@@ -197,6 +191,11 @@ private:
 
     std::list<BallCandidate> candidates;
 
+    template <typename Iter>
+    Iter nextIter(Iter iter) {
+        return ++iter;
+    }
+
     void add(const Vector2i& center, double radius, double value)
     {
       if(candidates.empty()) {
@@ -248,6 +247,7 @@ private:
   } best;
 
 private:
+  int calculateKeyPointsBlack(int minX, int minY, int maxX, int maxY) const;
   void calculateKeyPoints(Best& best) const;
   void extractPatches();
   bool cvClassifyPatch(BallCandidates::Patch& p);

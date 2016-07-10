@@ -102,12 +102,9 @@ private:
     }
   };
 
-  GameData::GameState lastState;
-  GameData::GameState currentState;
-
-  GameData::GameState currentGameControllerState;
-  GameData::GameState lastGameControllerState;
-  GameData::GameState stateBeforePenalized;
+  PlayerInfo::RobotState lastRobotState;
+  PlayerInfo::RobotState currentRobotState;
+  GameData::GameState gameStateWhenPenalized;
 
   bool walked_after_penalized_or_init;
 

@@ -43,7 +43,7 @@ void SimpleRoleDecision::computeStrikers() {
     const unsigned int number = i->first;
 
     if((getFrameInfo().getTimeSince(i->second.frameInfo.getTime()) < parameters.maximumFreshTime) && // the message is fresh...
-        number != getPlayerInfo().gameData.playerNumber && // its not me...
+        number != getPlayerInfo().playerNumber && // its not me...
         messageData.wasStriker // the guy wants to be striker...
         ) {
       getRoleDecisionModel().firstStriker = number; // let him go :)      
@@ -82,6 +82,6 @@ void SimpleRoleDecision::computeStrikers() {
   }//end for
 
   getRoleDecisionModel().firstStriker = playerNearestToBall; 
-  getRoleDecisionModel().wantsToBeStriker = playerNearestToBall == playerNearestToBall;         
+  getRoleDecisionModel().wantsToBeStriker = true;
   PLOT(std::string("SimpleRoleDecision:StrikerDecision"), getRoleDecisionModel().wantsToBeStriker);
 }

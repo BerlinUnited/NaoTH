@@ -53,7 +53,7 @@ copy ./etc/conf.d/net /etc/conf.d/net root 644
 /etc/init.d/net.eth0 restart
 /etc/init.d/net.wlan0 restart
 
-/etc/init.d/naoth restart
+naoth restart
 
 
 

@@ -24,7 +24,7 @@ option basic_goalie
      decision 
      {
        else if (ball.distance < 1500 && ball.time_since_last_seen < 1000
-               && ball.position.field.x < -4000)
+               && ball.position.field.x <= field.xPosOwnPenaltyMark)
          goto clear_ball;
        else if (action_done)
        {
@@ -44,9 +44,7 @@ option basic_goalie
       else if (ball.distance < 1500 && ball.time_since_last_seen < 1000)
         goto clear_ball;
       else if ((ball.distance < 4000) && (normalize(angle=atan2(y = ball.preview.y, x = ball.preview.x)) > 10))
-         goto rotate;
-      else if (ball.time_since_last_seen > 1000)
-        goto go_to_strategy_point;
+         goto watch_ball;
       else 
         stay;
 	  }
@@ -56,24 +54,15 @@ option basic_goalie
 	  }
 	}  
 
-  state rotate {
+  state watch_ball {
     decision {
-      else if (ball.time_seen > 3000)
+      else if (!ball.know_where_itis)
         goto go_to_strategy_point;
-      else if (normalize(angle=atan2(y = ball.preview.y, x = ball.preview.x)) < 5)
-        goto stand_and_look_at_ball;
       else 
         stay;
     }
     action {
-      motion.type = walk;
-      motion.walk_speed.x = 0;
-      motion.walk_speed.y = 0;
-      motion.walk.coordinate = hip;
-
-      motion.walk_speed.rot = normalize(angle=atan2(y = ball.preview.y, x = ball.preview.x));
- 
-      head.control_mode = search_for_ball_goalie;
+      goalie_watch_ball();
     }
   }
 
@@ -90,8 +79,7 @@ option basic_goalie
      }
      action {
        team.is_playing_as_striker = true;
-       //basic_striker_behavior();
-       situation_based_striker();
+       striker();
      }
   }
   

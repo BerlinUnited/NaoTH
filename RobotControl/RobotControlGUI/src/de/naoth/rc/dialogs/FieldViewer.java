@@ -10,7 +10,6 @@ import de.naoth.rc.Helper;
 import de.naoth.rc.core.dialog.AbstractDialog;
 import de.naoth.rc.core.dialog.DialogPlugin;
 import de.naoth.rc.RobotControl;
-import de.naoth.rc.dataformats.JanusImage;
 import de.naoth.rc.components.PNGExportFileType;
 import de.naoth.rc.components.PlainPDFExportFileType;
 import de.naoth.rc.drawings.Drawable;
@@ -43,8 +42,10 @@ import de.naoth.rc.messages.Messages.Plots;
 import de.naoth.rc.messages.Representations;
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import javax.imageio.ImageIO;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 import org.freehep.graphicsio.emf.EMFExportFileType;
@@ -80,9 +81,8 @@ public class FieldViewer extends AbstractDialog
     }//end Plugin
   
   private Drawable backgroundDrawing;
-
-  private final ImageListener imageListener;
-  private ImageDrawing imageDrawing;
+  private DrawingBuffer drawingBuffer = new DrawingBuffer(100);
+  private DrawingBuffer drawingEventBuffer = new DrawingBuffer(100);
 
   private final PlotDataListener plotDataListener;
   private final LogListener logListener = new LogListener();
@@ -115,8 +115,7 @@ public class FieldViewer extends AbstractDialog
     ));
     
     this.backgroundDrawing = (Drawable)this.cbBackground.getSelectedItem();
-
-    this.imageListener = new ImageListener();
+    
     this.plotDataListener = new PlotDataListener();
     
     this.fieldCanvas.setToolTipText("");
@@ -128,17 +127,18 @@ public class FieldViewer extends AbstractDialog
             if(drawing != null)
             {
               if(!btCollectDrawings.isSelected()) {
-                resetView();
+                drawingEventBuffer.clear();
               }
               
-              fieldCanvas.getDrawingList().add(drawing);
+              drawingEventBuffer.add(drawing);
               fieldCanvas.repaint();
             }
         }
     });
     
     // intialize the field
-    this.fieldCanvas.getDrawingList().add(0, this.backgroundDrawing);
+    //this.fieldCanvas.getDrawingList().add(0, this.backgroundDrawing);
+    resetView();
     this.fieldCanvas.setAntializing(btAntializing.isSelected());
     this.fieldCanvas.repaint();
 
@@ -163,9 +163,9 @@ public class FieldViewer extends AbstractDialog
         btClean = new javax.swing.JButton();
         cbBackground = new javax.swing.JComboBox();
         btRotate = new javax.swing.JButton();
-        btImageProjection = new javax.swing.JToggleButton();
         btAntializing = new javax.swing.JCheckBox();
         btCollectDrawings = new javax.swing.JCheckBox();
+        cbExportOnDrawing = new javax.swing.JCheckBox();
         btTrace = new javax.swing.JCheckBox();
         jSlider1 = new javax.swing.JSlider();
         drawingPanel = new javax.swing.JPanel();
@@ -246,18 +246,6 @@ public class FieldViewer extends AbstractDialog
         });
         jToolBar1.add(btRotate);
 
-        btImageProjection.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/naoth/rc/res/view_icon.png"))); // NOI18N
-        btImageProjection.setToolTipText("Image Projection");
-        btImageProjection.setFocusable(false);
-        btImageProjection.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        btImageProjection.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        btImageProjection.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btImageProjectionActionPerformed(evt);
-            }
-        });
-        jToolBar1.add(btImageProjection);
-
         btAntializing.setText("Antialiazing");
         btAntializing.setFocusable(false);
         btAntializing.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
@@ -279,6 +267,10 @@ public class FieldViewer extends AbstractDialog
             }
         });
         jToolBar1.add(btCollectDrawings);
+
+        cbExportOnDrawing.setText("ExportOnDrawing");
+        cbExportOnDrawing.setFocusable(false);
+        jToolBar1.add(cbExportOnDrawing);
 
         btTrace.setText("Trace");
         btTrace.setFocusable(false);
@@ -372,24 +364,6 @@ private void jMenuItemExportActionPerformed(java.awt.event.ActionEvent evt) {//G
 
 
 
-private void btImageProjectionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btImageProjectionActionPerformed
-    if(btImageProjection.isSelected())
-      {
-        if(Plugin.parent.checkConnected())
-        {
-          Plugin.imageManager.addListener(imageListener);
-        }
-        else
-        {
-          btReceiveDrawings.setSelected(false);
-        }
-      }
-      else
-      {
-        Plugin.imageManager.removeListener(imageListener);
-      }
-}//GEN-LAST:event_btImageProjectionActionPerformed
-
 private void btAntializingActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btAntializingActionPerformed
   this.fieldCanvas.setAntializing(btAntializing.isSelected());
   this.fieldCanvas.repaint();
@@ -433,18 +407,35 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
     }//GEN-LAST:event_btLogActionPerformed
 
   
-  void resetView()
+  final void resetView()
   {
     this.fieldCanvas.getDrawingList().clear();
     this.fieldCanvas.getDrawingList().add(0, this.backgroundDrawing);
     if(btTrace.isSelected()) {
         this.fieldCanvas.getDrawingList().add(this.strokePlot);
     }
-    if(imageDrawing != null) {
-        this.fieldCanvas.getDrawingList().add(imageDrawing);
-    }
-  }//end clearView
+    
+    this.drawingBuffer.clear();
+    this.fieldCanvas.getDrawingList().add(drawingBuffer);
+    this.drawingEventBuffer.clear();
+    this.fieldCanvas.getDrawingList().add(drawingEventBuffer);
+  }//end resetView
 
+  private void exportCanvasToPNG() {
+      
+      long l = java.lang.System.currentTimeMillis();
+      File file = new File("./fieldViewerExport-"+l+".png");
+      
+      BufferedImage bi = new BufferedImage(this.fieldCanvas.getWidth(), this.fieldCanvas.getHeight(), BufferedImage.TYPE_INT_ARGB);
+      Graphics2D g2d = bi.createGraphics();
+      this.fieldCanvas.paintAll(g2d);
+      
+      try {
+        ImageIO.write(bi, "PNG", file);
+      } catch(IOException ex) {
+          ex.printStackTrace(System.err);
+      }
+  }
   
   private class DrawingsListener implements ObjectListener<DrawingsContainer>
   {
@@ -459,11 +450,15 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
         }
 
         if(!btCollectDrawings.isSelected()) {
-          resetView();
+          drawingBuffer.clear();
         }
 
-        fieldCanvas.getDrawingList().add(drawingCollection);
+        drawingBuffer.add(drawingCollection);
         fieldCanvas.repaint();
+        
+        if(cbExportOnDrawing.isSelected()) {
+            exportCanvasToPNG();
+        }
       }
     }
 
@@ -506,7 +501,7 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
     {
       btReceiveDrawings.setSelected(false);
       Plugin.plotDataManager.removeListener(this);
-    }//end errorOccured
+    }
 
     @Override
     public void newObjectReceived(Plots data)
@@ -530,57 +525,27 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
       } //end for
     }//end newObjectReceived
   }//end class PlotDataListener
-
-  class ImageListener implements ObjectListener<JanusImage>
-  {
-      @Override
-      public void newObjectReceived(JanusImage object)
-      {
-        if(imageDrawing == null)
-        {
-          imageDrawing = new ImageDrawing(object.getRgb());
-          fieldCanvas.getDrawingList().add(imageDrawing);
-        }else
-        {
-          imageDrawing.setImage(object.getRgb());
-        }
-      }//end newObjectReceived
-
-      @Override
-      public void errorOccured(String cause)
-      {
-        btImageProjection.setSelected(false);
-        Plugin.imageManager.removeListener(this);
-      }
-  }//end ImageListener
-
-
-    private class ImageDrawing implements Drawable
+    
+    class DrawingBuffer extends DrawingCollection
     {
-      protected BufferedImage image;
-      
-      public ImageDrawing(BufferedImage image)
-      {
-          this.image = image;
-      }
-
-      @Override
-      public void draw(Graphics2D g2d)
-      {
-        if(image != null)
-        {
-          g2d.rotate(Math.PI*0.5);
-          g2d.drawImage(image, new AffineTransform(1, 0, 0, 1, -image.getWidth()/2, -image.getHeight()/2), null);
-          g2d.rotate(-Math.PI*0.5);
+        private int maxNumberOfEnties;
+        public DrawingBuffer(int maxNumberOfEnties) {
+            this.maxNumberOfEnties = maxNumberOfEnties;
         }
-      }//end draw
-
-      public void setImage(BufferedImage image)
-      {
-          this.image = image;
-      }
-    }//end class ImageDrawing
-
+        
+        @Override
+        public void add(Drawable d) {
+            if(maxNumberOfEnties > 0 && this.drawables.size() >= maxNumberOfEnties) {
+                this.drawables.remove(0);
+            }
+            super.add(d);
+        }
+        
+        public void clear() {
+            this.drawables.clear();
+        }
+    }
+    
   @Override
   public void dispose()
   {
@@ -588,19 +553,18 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
     Plugin.debugDrawingManager.removeListener(drawingsListener);
     Plugin.debugDrawingManagerMotion.removeListener(drawingsListener);
     Plugin.plotDataManager.removeListener(plotDataListener);
-    Plugin.imageManager.removeListener(imageListener);
   }
   
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JCheckBox btAntializing;
     private javax.swing.JButton btClean;
     private javax.swing.JCheckBox btCollectDrawings;
-    private javax.swing.JToggleButton btImageProjection;
     private javax.swing.JToggleButton btLog;
     private javax.swing.JToggleButton btReceiveDrawings;
     private javax.swing.JButton btRotate;
     private javax.swing.JCheckBox btTrace;
     private javax.swing.JComboBox cbBackground;
+    private javax.swing.JCheckBox cbExportOnDrawing;
     private javax.swing.JDialog coordsPopup;
     private javax.swing.JPanel drawingPanel;
     private de.naoth.rc.components.DynamicCanvasPanel fieldCanvas;
