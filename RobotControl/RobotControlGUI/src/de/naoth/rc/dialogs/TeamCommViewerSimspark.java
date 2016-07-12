@@ -8,13 +8,17 @@ package de.naoth.rc.dialogs;
 import de.naoth.rc.RobotControl;
 import de.naoth.rc.core.dialog.AbstractDialog;
 import de.naoth.rc.core.dialog.DialogPlugin;
+import de.naoth.rc.dataformats.Sexp;
 import de.naoth.rc.drawingmanager.DrawingEventManager;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.HashMap;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.SwingUtilities;
 import javax.swing.text.DefaultCaret;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
@@ -56,17 +60,14 @@ public class TeamCommViewerSimspark extends AbstractDialog {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jScrollPane1 = new javax.swing.JScrollPane();
-        jTextArea1 = new javax.swing.JTextArea();
         jTextField1 = new javax.swing.JTextField();
         btnSendCommand = new javax.swing.JButton();
         btnConnect = new javax.swing.JToggleButton();
-
-        jScrollPane1.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-
-        jTextArea1.setColumns(20);
-        jTextArea1.setRows(5);
-        jScrollPane1.setViewportView(jTextArea1);
+        jTabbedPane1 = new javax.swing.JTabbedPane();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jTextArea1 = new javax.swing.JTextArea();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        jTable1 = new javax.swing.JTable();
 
         btnSendCommand.setText("Send Command");
         btnSendCommand.addActionListener(new java.awt.event.ActionListener() {
@@ -82,6 +83,41 @@ public class TeamCommViewerSimspark extends AbstractDialog {
             }
         });
 
+        jScrollPane1.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+
+        jTextArea1.setColumns(20);
+        jTextArea1.setRows(5);
+        jScrollPane1.setViewportView(jTextArea1);
+
+        jTabbedPane1.addTab("MonitorComm", jScrollPane1);
+
+        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "Name", "Data"
+            }
+        ) {
+            Class[] types = new Class [] {
+                java.lang.String.class, java.lang.String.class
+            };
+            boolean[] canEdit = new boolean [] {
+                false, false
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jScrollPane2.setViewportView(jTable1);
+
+        jTabbedPane1.addTab("MonitorInfo", jScrollPane2);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -93,7 +129,7 @@ public class TeamCommViewerSimspark extends AbstractDialog {
                 .addGap(18, 18, 18)
                 .addComponent(btnSendCommand, javax.swing.GroupLayout.PREFERRED_SIZE, 143, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
-            .addComponent(jScrollPane1)
+            .addComponent(jTabbedPane1)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -103,7 +139,7 @@ public class TeamCommViewerSimspark extends AbstractDialog {
                     .addComponent(btnConnect)
                     .addComponent(btnSendCommand))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 269, Short.MAX_VALUE))
+                .addComponent(jTabbedPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 269, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -313,27 +349,58 @@ public class TeamCommViewerSimspark extends AbstractDialog {
 
         public void run() {
             if(socket == null) { return; }
-            // use another rsg... ?
-            /*
-            sendAgentMessage("(scene rsg/agent/nao/nao.rsg 0)(syn)");
-            System.out.println(getServerMessage());
-            sendAgentMessage("(init (unum 0)(teamname NaoTH))(syn)");
-            System.out.println(getServerMessage());
-            */
-            
-            System.out.println("listening");
             
             while(isRunning) {
                 try {
                     sleep(1);
-                    
-//                    System.out.println("next ...");
-//                    sendAgentMessage("(syn)");
-                    String msg = getServerMessage();
+                    final String msg = getServerMessage();
                     if (msg != null) {
-                        jTextArea1.append(msg + "\n");
-//                        jScrollPane1.
-//                        System.out.println(msg);
+                        SwingUtilities.invokeLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                Sexp parser = new Sexp(msg);
+                                List<Object> attributes = parser.parseSexp();
+//                                System.out.println(attributes.toString());
+                                updateInfo(attributes);
+
+                                jTextArea1.append(msg + "\n");
+                            }
+                            
+                            public void updateInfo(List<Object> info) {
+                                if(!info.isEmpty()) {
+                                    Object o = info.get(0);
+                                    if(o instanceof String) {
+                                        switch((String)o) {
+                                            case "FieldLength": System.out.println("FieldLength = " + info.get(1));break;
+                                            case "FieldWidth": break;
+                                            case "FieldHeight": break;
+                                            case "GoalWidth": break;
+                                            case "GoalDepth": break;
+                                            case "GoalHeight": break;
+                                            case "BorderSize": break;
+                                            case "FreeKickDistance": break;
+                                            case "WaitBeforeKickOff": break;
+                                            case "AgentRadius": break;
+                                            case "BallRadius": break;
+                                            case "BallMass": break;
+                                            case "RuleGoalPauseTime": break;
+                                            case "RuleKickInPauseTime": break;
+                                            case "RuleHalfTime": break;
+                                            case "play_modes": break;
+                                            case "time": break;
+                                            case "half": break;
+                                            case "score_left": break;
+                                            case "score_right": break;
+                                            case "play_mode": break;
+                                        }
+                                    } else {
+                                        for (Object object : info) {
+                                            updateInfo((List<Object>) object);
+                                        }
+                                    }
+                                }
+                            }
+                        });
                     }
                 } catch (InterruptedException ex) {
                     Logger.getLogger(TeamCommViewerSimspark.class.getName()).log(Level.SEVERE, null, ex);
@@ -347,6 +414,9 @@ public class TeamCommViewerSimspark extends AbstractDialog {
     private javax.swing.JToggleButton btnConnect;
     private javax.swing.JButton btnSendCommand;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JTabbedPane jTabbedPane1;
+    private javax.swing.JTable jTable1;
     private javax.swing.JTextArea jTextArea1;
     private javax.swing.JTextField jTextField1;
     // End of variables declaration//GEN-END:variables
