@@ -9,16 +9,16 @@ import de.naoth.rc.RobotControl;
 import de.naoth.rc.core.dialog.AbstractDialog;
 import de.naoth.rc.core.dialog.DialogPlugin;
 import de.naoth.rc.dataformats.Sexp;
-import de.naoth.rc.drawingmanager.DrawingEventManager;
+import de.naoth.rc.dataformats.SimsparkState;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
-import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.SwingUtilities;
+import javax.swing.table.TableModel;
 import javax.swing.text.DefaultCaret;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
@@ -41,6 +41,7 @@ public class TeamCommViewerSimspark extends AbstractDialog {
     
     private final String host = "127.0.0.1";
     private Simspark simspark_comm;
+    private final SimsparkState sim_state = new SimsparkState();
     
     /**
      * Creates new form TeamCommViewerSimspark
@@ -49,6 +50,7 @@ public class TeamCommViewerSimspark extends AbstractDialog {
         initComponents();
         DefaultCaret caret = (DefaultCaret) jTextArea1.getCaret();
         caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
+        addTableContent();
     }
 
     /**
@@ -93,7 +95,27 @@ public class TeamCommViewerSimspark extends AbstractDialog {
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null}
             },
             new String [] {
                 "Name", "Data"
@@ -125,7 +147,7 @@ public class TeamCommViewerSimspark extends AbstractDialog {
             .addGroup(layout.createSequentialGroup()
                 .addComponent(btnConnect)
                 .addGap(24, 24, 24)
-                .addComponent(jTextField1, javax.swing.GroupLayout.DEFAULT_SIZE, 128, Short.MAX_VALUE)
+                .addComponent(jTextField1)
                 .addGap(18, 18, 18)
                 .addComponent(btnSendCommand, javax.swing.GroupLayout.PREFERRED_SIZE, 143, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -181,6 +203,31 @@ public class TeamCommViewerSimspark extends AbstractDialog {
         }
     }//GEN-LAST:event_btnConnectActionPerformed
 
+    private void addTableContent() {
+        TableModel model = jTable1.getModel();
+        model.setValueAt("time",        0, 0);
+        model.setValueAt("play_mode",   1, 0);
+        model.setValueAt("score_left",  2, 0);
+        model.setValueAt("score_right", 3, 0);
+        model.setValueAt("half",        4, 0);
+        model.setValueAt("FieldLength", 5, 0);
+        model.setValueAt("FieldWidth",  6, 0);
+        model.setValueAt("FieldHeight", 7, 0);
+        model.setValueAt("GoalWidth",   8, 0);
+        model.setValueAt("GoalDepth",   9, 0);
+        model.setValueAt("GoalHeight", 10, 0);
+        model.setValueAt("BorderSize", 11, 0);
+        model.setValueAt("FreeKickDistance", 12, 0);
+        model.setValueAt("WaitBeforeKickOff",13, 0);
+        model.setValueAt("AgentRadius",14, 0);
+        model.setValueAt("BallRadius", 15, 0);
+        model.setValueAt("BallMass",   16, 0);
+        model.setValueAt("RuleGoalPauseTime",17, 0);
+        model.setValueAt("RuleKickInPauseTime", 18, 0);
+        model.setValueAt("RuleHalfTime",     19, 0);
+        model.setValueAt("play_modes",       20, 0);
+    }
+    
     private class Simspark extends Thread {
         protected DataInputStream in;
         protected DataOutputStream out;
@@ -360,9 +407,8 @@ public class TeamCommViewerSimspark extends AbstractDialog {
                             public void run() {
                                 Sexp parser = new Sexp(msg);
                                 List<Object> attributes = parser.parseSexp();
-//                                System.out.println(attributes.toString());
                                 updateInfo(attributes);
-
+                                updateTable();
                                 jTextArea1.append(msg + "\n");
                             }
                             
@@ -370,34 +416,19 @@ public class TeamCommViewerSimspark extends AbstractDialog {
                                 if(!info.isEmpty()) {
                                     Object o = info.get(0);
                                     if(o instanceof String) {
-                                        switch((String)o) {
-                                            case "FieldLength": System.out.println("FieldLength = " + info.get(1));break;
-                                            case "FieldWidth": break;
-                                            case "FieldHeight": break;
-                                            case "GoalWidth": break;
-                                            case "GoalDepth": break;
-                                            case "GoalHeight": break;
-                                            case "BorderSize": break;
-                                            case "FreeKickDistance": break;
-                                            case "WaitBeforeKickOff": break;
-                                            case "AgentRadius": break;
-                                            case "BallRadius": break;
-                                            case "BallMass": break;
-                                            case "RuleGoalPauseTime": break;
-                                            case "RuleKickInPauseTime": break;
-                                            case "RuleHalfTime": break;
-                                            case "play_modes": break;
-                                            case "time": break;
-                                            case "half": break;
-                                            case "score_left": break;
-                                            case "score_right": break;
-                                            case "play_mode": break;
-                                        }
+                                        sim_state.set((String)o, info.size() == 1?true:(info.size()==2?info.get(1):info.subList(1, info.size())));
                                     } else {
                                         for (Object object : info) {
                                             updateInfo((List<Object>) object);
                                         }
                                     }
+                                }
+                            }
+                            
+                            public void updateTable() {
+                                TableModel model = jTable1.getModel();
+                                for (int i = 0; i < model.getRowCount(); i++) {
+                                    model.setValueAt(sim_state.get(model.getValueAt(i, 0)), i, 1);
                                 }
                             }
                         });
