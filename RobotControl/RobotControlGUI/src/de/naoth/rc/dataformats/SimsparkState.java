@@ -43,13 +43,13 @@ public class SimsparkState extends HashMap<String, Object>{
             case "RuleGoalPauseTime":
             case "RuleKickInPauseTime":
             case "RuleHalfTime":
-            case "time":
             case "half":
             case "score_left":
             case "score_right":
             case "play_mode":
                 replace(key, Integer.parseInt((String) value));
                 break;
+            case "time":
             case "GoalWidth":
             case "GoalDepth":
             case "GoalHeight":
