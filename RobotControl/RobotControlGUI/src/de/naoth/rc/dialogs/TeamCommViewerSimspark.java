@@ -8,12 +8,17 @@ package de.naoth.rc.dialogs;
 import de.naoth.rc.RobotControl;
 import de.naoth.rc.core.dialog.AbstractDialog;
 import de.naoth.rc.core.dialog.DialogPlugin;
+import de.naoth.rc.dataformats.SPLMessage;
 import de.naoth.rc.dataformats.Sexp;
 import de.naoth.rc.dataformats.SimsparkState;
+import de.naoth.rc.dialogs.TeamCommViewer.TeamCommMessage;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.util.Base64;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -33,6 +38,8 @@ public class TeamCommViewerSimspark extends AbstractDialog {
     public static class Plugin extends DialogPlugin<TeamCommViewerSimspark> {
         @InjectPlugin
         public static RobotControl parent;
+//        @InjectPlugin
+//        public static TeamCommViewer teamComm;
     }//end Plugin
     
 //    private final int port = 3100; // agent = 3100; monitor = 3200
@@ -97,6 +104,7 @@ public class TeamCommViewerSimspark extends AbstractDialog {
         jButton3 = new javax.swing.JButton();
         cmd = new javax.swing.JComboBox<>();
         jButton4 = new javax.swing.JButton();
+        jCheckBox1 = new javax.swing.JCheckBox();
 
         btnSendCommand.setText("Send Command");
         btnSendCommand.addActionListener(new java.awt.event.ActionListener() {
@@ -378,6 +386,9 @@ public class TeamCommViewerSimspark extends AbstractDialog {
             }
         });
 
+        jCheckBox1.setSelected(true);
+        jCheckBox1.setToolTipText("Show monitor messages in MonitorCommunication tab.");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -386,6 +397,8 @@ public class TeamCommViewerSimspark extends AbstractDialog {
                 .addComponent(btnConnect)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButton4)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jCheckBox1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(cmd, 0, 1, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -396,11 +409,13 @@ public class TeamCommViewerSimspark extends AbstractDialog {
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnConnect)
-                    .addComponent(btnSendCommand)
-                    .addComponent(cmd, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton4))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(btnConnect)
+                        .addComponent(btnSendCommand)
+                        .addComponent(cmd, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jButton4))
+                    .addComponent(jCheckBox1, javax.swing.GroupLayout.Alignment.TRAILING))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jTabbedPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 337, Short.MAX_VALUE))
         );
@@ -644,7 +659,7 @@ public class TeamCommViewerSimspark extends AbstractDialog {
             }
             return msg;
         }
-    }
+    } // end class Simspark
     
     private class SimsparkAgent extends Simspark {
         public void run() {
@@ -675,7 +690,7 @@ public class TeamCommViewerSimspark extends AbstractDialog {
                 }
             }
         }
-    }
+    } // end class SimsparkAgent
     
     private class SimsparkMonitor extends Simspark {
 
@@ -687,50 +702,90 @@ public class TeamCommViewerSimspark extends AbstractDialog {
                     sleep(1);
                     final String msg = getServerMessage();
                     if (msg != null) {
-                        SwingUtilities.invokeLater(new Runnable() {
-                            @Override
-                            public void run() {
-                                Sexp parser = new Sexp(msg);
-                                jTextArea1.append(msg + "\n");
-                                List<Object> attributes = parser.parseSexp();
-                                updateInfo(attributes);
-                                updateTable();
-                            }
-                            
-                            public void updateInfo(List<Object> info) {
-                                if(!info.isEmpty()) {
-                                    Object o = info.get(0);
-                                    if(o instanceof String) {
-                                        sim_state.set((String)o, info.size() == 1?true:(info.size()==2?info.get(1):info.subList(1, info.size())));
-                                    } else {
-                                        for (Object object : info) {
-                                            updateInfo((List<Object>) object);
-                                        }
-                                    }
-                                }
-                            }
-                            
-                            public void updateTable() {
-                                TableModel model = jTable1.getModel();
-                                for (int i = 0; i < model.getRowCount(); i++) {
-                                    model.setValueAt(sim_state.get(model.getValueAt(i, 0)), i, 1);
-                                }
-                                
-                                if(cmd_play_mode.getItemCount()==0 && sim_state.get("play_modes") != null) {
-                                    for (String item : (List<String>)sim_state.get("play_modes")) {
-                                        cmd_play_mode.addItem(item);
-                                    }
-                                }
-                            }
-                        });
+                        SimsparkStateUpdater r = new SimsparkStateUpdater(msg);
+                        SwingUtilities.invokeLater(r);
                     }
                 } catch (InterruptedException ex) {
                     Logger.getLogger(TeamCommViewerSimspark.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         }
-    }
+    } // end class SimsparkMonitor
     
+    private class SimsparkStateUpdater implements Runnable {
+
+        private final ByteBuffer readBuffer;
+        private final String msg;
+        
+        public SimsparkStateUpdater(String msg) {
+            this.readBuffer = ByteBuffer.allocateDirect(SPLMessage.SPL_STANDARD_MESSAGE_SIZE);
+            this.readBuffer.order(ByteOrder.LITTLE_ENDIAN);
+            this.msg = msg;
+        }
+        
+        @Override
+        public void run() {
+            Sexp parser = new Sexp(msg);
+            if (jCheckBox1.isSelected()) {
+                jTextArea1.append(msg + "\n");
+            }
+            List<Object> attributes = parser.parseSexp();
+            updateInfo(attributes);
+            updateTable();
+        }
+
+        public void updateInfo(List<Object> info) {
+            if (!info.isEmpty()) {
+                Object o = info.get(0);
+                if (o instanceof String) {
+                    sim_state.set((String) o, info.size() == 1 ? true : (info.size() == 2 ? info.get(1) : info.subList(1, info.size())));
+//                    System.out.println("|"+o+"|");
+//                    System.out.println((((String) o).equals("messages")));
+                    if(((String) o).equals("messages")) {
+                        updateTeamComm(info.subList(1, info.size()));
+                    }
+                } else {
+                    for (Object object : info) {
+                        updateInfo((List<Object>) object);
+                    }
+                }
+            }
+        }
+
+        public void updateTable() {
+            TableModel model = jTable1.getModel();
+            for (int i = 0; i < model.getRowCount(); i++) {
+                model.setValueAt(sim_state.get(model.getValueAt(i, 0)), i, 1);
+            }
+
+            if (cmd_play_mode.getItemCount() == 0 && sim_state.get("play_modes") != null) {
+                for (String item : (List<String>) sim_state.get("play_modes")) {
+                    cmd_play_mode.addItem(item);
+                }
+            }
+        }
+
+        public void updateTeamComm(List<Object> l) {
+//            System.out.println("parse?");
+            for (Object object : l) {
+                String message = (String)object;
+//                ByteBuffer b = ByteBuffer.wrap(Base64.getDecoder().decode(message));
+//                System.out.println(message + "" + (char)b.get());
+                try {
+                    byte[] b = Base64.getDecoder().decode(message);
+                    this.readBuffer.clear();
+                    this.readBuffer.put(b);
+                    this.readBuffer.flip();
+                    SPLMessage spl = new SPLMessage(this.readBuffer);
+                    // TODO: add spl msg to TeamCommViewer ?!?
+//                    TeamCommMessage tc_msg = Plugin.teamComm.new TeamCommMessage(System.currentTimeMillis(), spl, false);
+//                    Plugin.teamComm.messageMap.put("127.0.0.1",tc_msg);
+                } catch (Exception ex) {
+                    Logger.getLogger(TeamCommViewerSimspark.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+    } // end class SimsparkStateUpdater
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JToggleButton btnConnect;
@@ -747,6 +802,7 @@ public class TeamCommViewerSimspark extends AbstractDialog {
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
+    private javax.swing.JCheckBox jCheckBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;

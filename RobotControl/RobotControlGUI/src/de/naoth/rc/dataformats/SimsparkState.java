@@ -32,6 +32,7 @@ public class SimsparkState extends HashMap<String, Object>{
         put("RuleKickInPauseTime", null);
         put("RuleHalfTime", null);
         put("play_modes", null);
+        put("messages", null);
     }
     
     public void set(String key, Object value) {
@@ -61,6 +62,7 @@ public class SimsparkState extends HashMap<String, Object>{
                 replace(key, Double.parseDouble((String)value));
                 break;
             case "play_modes":
+            case "messages":
                 replace(key, (value instanceof List ? value:null));
                 break;
         }
