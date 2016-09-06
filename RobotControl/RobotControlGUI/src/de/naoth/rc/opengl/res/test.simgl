@@ -1,0 +1,9 @@
+PATH /src/res/ /src/glsl/
+
+
+SHADER modelShader vertex_shader.glsl texture_FS.glsl
+:UNIFORM light.position 100 50 -40
+:UNIFORM light.intensities 1 0.6 0.75
+
+
+OBJ ground ground.obj modelShader

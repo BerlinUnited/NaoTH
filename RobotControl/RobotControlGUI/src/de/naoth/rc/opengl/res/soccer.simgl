@@ -1,0 +1,17 @@
+PATH /src/res/ /src/glsl/
+
+SHADER skyShader sky_VS.glsl sky_FS.glsl
+
+SHADER modelShader vertex_shader.glsl texture_FS.glsl
+:UNIFORM light.position 100 50 -40
+:UNIFORM light.intensities 1 0.6 0.75
+
+SHADER shadowShader shadow_VS.glsl shadow_FS.glsl
+:UNIFORM light.position 100 50 -40
+:UNIFORM light.intensities 1 1 1
+
+SHADER colorShader vertex_shader.glsl color_FS.glsl
+
+
+
+OBJ field field.obj modelShader
