@@ -7,10 +7,12 @@ import com.jogamp.opengl.GLEventListener;
 import com.jogamp.opengl.GLProfile;
 import com.jogamp.opengl.awt.GLCanvas;
 import com.jogamp.opengl.util.FPSAnimator;
-import de.naoth.rc.opengl.file.GLScene;
-import de.naoth.rc.opengl.model.GLObject;
-import de.naoth.rc.opengl.representations.Point3f;
-import de.naoth.rc.opengl.representations.Vector3f;
+import com.simgl.Camera;
+import com.simgl.Computable;
+import com.simgl.file.GLScene;
+import com.simgl.model.GLObject;
+import com.simgl.representations.Point3f;
+import com.simgl.representations.Vector3f;
 
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;

@@ -1,446 +1,291 @@
-/**
- * @author <a href="xu@informatik.hu-berlin.de">Xu, Yuan</a>
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
  */
 package de.naoth.rc.dialogs;
 
-import com.sun.j3d.exp.swing.JCanvas3D;
-import de.naoth.rc.Helper;
+import com.jogamp.opengl.GL3;
+import com.jogamp.opengl.GLAutoDrawable;
+import com.jogamp.opengl.GLCapabilities;
+import com.jogamp.opengl.GLEventListener;
+import com.jogamp.opengl.GLProfile;
+import com.jogamp.opengl.awt.GLCanvas;
+import com.jogamp.opengl.util.FPSAnimator;
+import com.simgl.Camera;
+import com.simgl.Computable;
+import com.simgl.file.GLScene;
+import com.simgl.model.GLObject;
+import com.simgl.representations.Point3f;
+import com.simgl.representations.Vector3f;
 import de.naoth.rc.RobotControl;
 import de.naoth.rc.core.dialog.AbstractDialog;
 import de.naoth.rc.core.dialog.DialogPlugin;
-import de.naoth.rc.core.manager.ObjectListener;
-import de.naoth.rc.dataformats.JanusImage;
-import de.naoth.rc.drawings3d.OrbitBehavior;
-import de.naoth.rc.drawings3d.Scene;
-import de.naoth.rc.drawings3d.VirtualWorld;
-import de.naoth.rc.manager.ImageManagerBottom;
-import de.naoth.rc.manager.ImageManagerTop;
-import de.naoth.rc.manager.ThreeDimensionSceneManager;
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import javax.imageio.ImageIO;
-import javax.media.j3d.Appearance;
-import javax.media.j3d.BoundingSphere;
-import javax.media.j3d.BranchGroup;
-import javax.media.j3d.GraphicsConfigTemplate3D;
-import javax.media.j3d.ImageComponent2D;
-import javax.media.j3d.PhysicalBody;
-import javax.media.j3d.PhysicalEnvironment;
-import javax.media.j3d.QuadArray;
-import javax.media.j3d.Shape3D;
-import javax.media.j3d.Texture2D;
-import javax.media.j3d.TextureAttributes;
-import javax.media.j3d.TransformGroup;
-import javax.media.j3d.View;
-import javax.media.j3d.ViewPlatform;
-import javax.vecmath.Point3d;
-import javax.vecmath.Point3f;
-import javax.vecmath.TexCoord2f;
-import javax.vecmath.Vector3d;
-import javax.vecmath.Vector3f;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.util.LinkedList;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 
-//@PluginImplementation
-public class GLViewer extends AbstractDialog
-        implements ObjectListener<Scene>
-{
+/**
+ *
+ * @author robert
+ */
+public class GLViewer extends AbstractDialog {
     
-  
   @PluginImplementation
-  public static class Plugin extends DialogPlugin<GLViewer>
-  {
-      @InjectPlugin
-      public static RobotControl parent;
-      @InjectPlugin
-      public static ThreeDimensionSceneManager threeDimensionSceneManager;
-      @InjectPlugin
-      public static ImageManagerBottom imageManager;
-      @InjectPlugin
-      public static ImageManagerTop imageTopManager;
+  public static class Plugin extends DialogPlugin<GLViewer> {
+    @InjectPlugin
+    public static RobotControl parent;
   }//end Plugin
-  
-  
-  private VirtualWorld vw;
-  private JCanvas3D canvas;
-  private final BoundingSphere globalBounds = new BoundingSphere(new Point3d(0, 0, 0), Double.MAX_VALUE);
-  // Entities
-  private Scene activeScene;
-  private static boolean java3dAvailable = true;
 
-  private ObjectListener imageListener;
-  private ObjectListener imageListenerTop;
-  
-  private JanusImage image;
-  private JanusImage imageTop;
 
-  /** Creates new form ThreeDimensionViewer */
-  public GLViewer()
-  {
-    super();
-    initComponents();
-    if (java3dAvailable)
-    {
-      try
-      {
-        vw = VirtualWorld.get();
-//        GraphicsConfigTemplate3D template = new GraphicsConfigTemplate3D();
-//
-//        GraphicsConfiguration gconf = GraphicsEnvironment.getLocalGraphicsEnvironment()
-//          .getDefaultScreenDevice().getBestConfiguration(template);
-//
-//        canvas = new Canvas3D(gconf);
-        canvas = new JCanvas3D(new GraphicsConfigTemplate3D());
-      } catch (java.lang.UnsatisfiedLinkError e)
-      {
-        Helper.handleException("Java 3D is not installed!\n" +
-                "Visit https://java3d.dev.java.net", new Exception(e));
-        java3dAvailable = false;
-      }
+    /**
+     * Creates new form GLViewer
+     */
+    public GLViewer() {
+        initComponents();
+        
+        System.out.println("GLVIEWER");
+       
+        GLCapabilities caps = new GLCapabilities(GLProfile.getGL2GL3());
+       
+        final GLCanvas canvas = new GLCanvas(caps);
+        
+        Input inputListener = new Input();
+        canvas.addKeyListener((KeyListener)inputListener);
+        canvas.addMouseListener((MouseListener)inputListener);
+        
+        GLDraw gLEventListener = new GLDraw(canvas, inputListener);
+        openGLPanel.addGLEventListener(gLEventListener);
+        
+        canvas.setSize(openGLPanel.getWidth(), openGLPanel.getHeight());
+        canvas.addGLEventListener(gLEventListener);
+        
+        openGLPanel.add(canvas);
     }
-  }
 
-  /** This method is called from within the constructor to
-   * initialize the form.
-   * WARNING: Do NOT modify this code. The content of this method is
-   * always regenerated by the Form Editor.
-   */
-  @SuppressWarnings("unchecked")
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do.GLDraw gLEventListener = new de.naoth.rc.opengl.GLDraw(canvas, inputListener);
+         NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jPanelCanvas = new javax.swing.JPanel();
-        jToolBar = new javax.swing.JToolBar();
-        jToggleButtonUpdate = new javax.swing.JToggleButton();
-        jCheckBoxField = new javax.swing.JCheckBox();
-        jCheckBoxImage = new javax.swing.JCheckBox();
-        cbUseFieldViewer = new javax.swing.JCheckBox();
-
-        javax.swing.GroupLayout jPanelCanvasLayout = new javax.swing.GroupLayout(jPanelCanvas);
-        jPanelCanvas.setLayout(jPanelCanvasLayout);
-        jPanelCanvasLayout.setHorizontalGroup(
-            jPanelCanvasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
-        );
-        jPanelCanvasLayout.setVerticalGroup(
-            jPanelCanvasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 269, Short.MAX_VALUE)
-        );
-
-        jToolBar.setFloatable(false);
-        jToolBar.setRollover(true);
-
-        jToggleButtonUpdate.setText("Update");
-        jToggleButtonUpdate.setToolTipText("Update scene from robot.");
-        jToggleButtonUpdate.setFocusable(false);
-        jToggleButtonUpdate.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jToggleButtonUpdate.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jToggleButtonUpdate.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jToggleButtonUpdateActionPerformed(evt);
-            }
-        });
-        jToolBar.add(jToggleButtonUpdate);
-
-        jCheckBoxField.setSelected(true);
-        jCheckBoxField.setText("Field");
-        jCheckBoxField.setToolTipText("Show the soccer field.");
-        jCheckBoxField.setFocusable(false);
-        jCheckBoxField.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
-        jCheckBoxField.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jCheckBoxFieldActionPerformed(evt);
-            }
-        });
-        jToolBar.add(jCheckBoxField);
-
-        jCheckBoxImage.setText("Image");
-        jCheckBoxImage.setToolTipText("Receive image from camera of robot.");
-        jCheckBoxImage.setFocusable(false);
-        jCheckBoxImage.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
-        jCheckBoxImage.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jCheckBoxImage.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jCheckBoxImageActionPerformed(evt);
-            }
-        });
-        jToolBar.add(jCheckBoxImage);
-
-        cbUseFieldViewer.setText("Use FieldViewer");
-        cbUseFieldViewer.setFocusable(false);
-        cbUseFieldViewer.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
-        cbUseFieldViewer.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jToolBar.add(cbUseFieldViewer);
+        openGLPanel = new de.naoth.rc.components.OpenGLPanel();
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jToolBar, javax.swing.GroupLayout.DEFAULT_SIZE, 400, Short.MAX_VALUE)
-            .addComponent(jPanelCanvas, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(openGLPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 424, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(jToolBar, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanelCanvas, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(openGLPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
-  private void jCheckBoxFieldActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jCheckBoxFieldActionPerformed
-  {//GEN-HEADEREND:event_jCheckBoxFieldActionPerformed
-    vw.enableField(jCheckBoxField.isSelected());
-  }//GEN-LAST:event_jCheckBoxFieldActionPerformed
 
-  private void jToggleButtonUpdateActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jToggleButtonUpdateActionPerformed
-  {//GEN-HEADEREND:event_jToggleButtonUpdateActionPerformed
-    if (jToggleButtonUpdate.isSelected())
-    {
-      if (Plugin.parent.checkConnected())
-      {
-        Plugin.threeDimensionSceneManager.addListener(this);
-      } else
-      {
-        jToggleButtonUpdate.setSelected(false);
-      }
-    } else
-    {
-      Plugin.threeDimensionSceneManager.removeListener(this);
-    }
-  }//GEN-LAST:event_jToggleButtonUpdateActionPerformed
-
-  private void jCheckBoxImageActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jCheckBoxImageActionPerformed
-  {//GEN-HEADEREND:event_jCheckBoxImageActionPerformed
-    if (jCheckBoxImage.isSelected())
-    {
-      if (Plugin.parent.checkConnected())
-      {
-        Plugin.imageManager.addListener(imageListener);
-        Plugin.imageTopManager.addListener(imageListenerTop);
-      } else
-      {
-        jCheckBoxImage.setSelected(false);
-      }
-    } else
-    {
-      Plugin.imageManager.removeListener(imageListener);
-      Plugin.imageTopManager.removeListener(imageListenerTop);
-      image = null;
-      imageTop = null;
-    }
-  }//GEN-LAST:event_jCheckBoxImageActionPerformed
-
-  @Override
-  public void init()
-  {
-    if (!java3dAvailable)
-    {
-      jToggleButtonUpdate.setEnabled(false);
-      jCheckBoxField.setEnabled(false);
-      return;
-    }
-
-    jPanelCanvas.add(canvas);
-    canvas.setSize(1, 1);
-    jPanelCanvas.addComponentListener(new ComponentListener()
-    {
-      @Override
-      public void componentResized(ComponentEvent e)
-      {
-        try
-        {
-          canvas.setSize(jPanelCanvas.getSize());
-        } catch (IllegalArgumentException ex)
-        {
-        }
-      }
-
-      @Override
-      public void componentMoved(ComponentEvent e){}
-
-      @Override
-      public void componentShown(ComponentEvent e){}
-
-      @Override
-      public void componentHidden(ComponentEvent e){}
-    });
-
-
-    createViewBranch(new Vector3f(2, 0, 0.5f));
-
-    imageListener = new ObjectListener<JanusImage>()
-    {
-
-      @Override
-      public void newObjectReceived(JanusImage object)
-      {
-        image = object;
-      }
-
-      @Override
-      public void errorOccured(String cause)
-      {
-        jCheckBoxImage.setSelected(false);
-        GLViewer.Plugin.imageManager.removeListener(imageListener);
-        image = null;
-      }
-    };
-    
-    imageListenerTop = new ObjectListener<JanusImage>()
-    {
-
-      @Override
-      public void newObjectReceived(JanusImage object)
-      {
-        imageTop = object;
-      }
-
-      @Override
-      public void errorOccured(String cause)
-      {
-        jCheckBoxImage.setSelected(false);
-        GLViewer.Plugin.imageTopManager.removeListener(imageListenerTop);
-        imageTop = null;
-      }
-    };
-    
-  }
-
-  private void createViewBranch(Vector3f homeViewPos)
-  {
-    BranchGroup viewBranch = new BranchGroup();
-
-    TransformGroup viewTG = new TransformGroup();
-    viewTG.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
-
-    ViewPlatform vp = new ViewPlatform();
-
-    View view = new View();
-    view.setPhysicalBody(new PhysicalBody());
-    view.setPhysicalEnvironment(new PhysicalEnvironment());
-
-    view.attachViewPlatform(vp);
-    // View renders into the off-screen Canvas3D
-    view.addCanvas3D(canvas.getOffscreenCanvas3D());
-
-    OrbitBehavior orbit = new OrbitBehavior(canvas, viewTG, view);
-    orbit.setSchedulingBounds(globalBounds);
-    orbit.setClippingEnabled(false);
-
-    orbit.setViewingTransform(new Point3d(homeViewPos), new Point3d(0, 0, 0),
-            new Vector3d(0, 0, 1), new Point3d(0, 0, 0));
-
-    viewTG.addChild(vp);
-    viewTG.addChild(orbit);
-
-    viewBranch.addChild(viewTG);
-    vw.add(viewBranch);
-  }
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JCheckBox cbUseFieldViewer;
-    private javax.swing.JCheckBox jCheckBoxField;
-    private javax.swing.JCheckBox jCheckBoxImage;
-    private javax.swing.JPanel jPanelCanvas;
-    private javax.swing.JToggleButton jToggleButtonUpdate;
-    private javax.swing.JToolBar jToolBar;
+    private de.naoth.rc.components.OpenGLPanel openGLPanel;
     // End of variables declaration//GEN-END:variables
+}
 
-  @Override
-  public void newObjectReceived(Scene object)
-  {
-    if (object == activeScene)
-    {
-      return;
+final class GLDraw implements GLEventListener, Computable{
+    private FPSAnimator animator;
+
+    private GLCanvas canvas;
+    private Input inputListener;
+    
+    private GL3 gl;
+    
+    private LinkedList<GLObject> runQueue;
+    private Camera camera;
+    private Point3f camPos = new Point3f(10,5,40);
+
+    public GLDraw(GLCanvas canvas, Input inputListener) {
+        this.canvas = canvas;
+        this.inputListener = inputListener;
     }
 
-    // attach the image of camera
-    object.addCameraImage(image, "bottom");
-    object.addCameraImage(imageTop, "top");
-    
-    if(this.cbUseFieldViewer.isSelected() && FieldViewer.getCanvas() != null)
-    {
-        object.addChild(createFieldViewertexture());
+    @Override
+    public void init(GLAutoDrawable drawable) {
+        System.out.println("TEST");
+        gl = drawable.getGL().getGL3();
+        
+    	String scenePath = System.getProperty("user.dir").replaceAll("\\\\", "/") + "/src/de/naoth/rc/opengl/res/";
+    	GLScene scene = new GLScene(gl, scenePath + "scene.simgl");
+    	runQueue = scene.getModelList();      
+
+        gl.glEnable(GL3.GL_DEPTH_TEST);
+
+        animator = new FPSAnimator(drawable, 60);
+        animator.start();
+
+        camera = new Camera(Camera.FOCUS_MODE, camPos, new Point3f(0, 2, 0), new Point3f(0,1,0), canvas);
+    }
+
+    @Override
+    public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
+        camera.reshape();
+    }
+
+    @Override
+    public void dispose(GLAutoDrawable drawable) {
+        animator.stop();
+        
+        for (GLObject each: runQueue) {
+        	each.dispose();
+        }
+    }
+
+    @Override
+    public void display(GLAutoDrawable drawable) {    	
+        gl.glEnable(GL3.GL_BLEND);
+        gl.glBlendFunc(GL3.GL_SRC_ALPHA, GL3.GL_ONE_MINUS_SRC_ALPHA);
+
+        gl.glClearColor(0.0f, 0.0f, 1.0f, 1.0f);
+        //gl.glClearColor((float)Math.random(), (float)Math.random(), (float)Math.random(), 1.0f);
+        gl.glClear(GL3.GL_COLOR_BUFFER_BIT | GL3.GL_DEPTH_BUFFER_BIT);
+        
+        
+        
+        
+    	if(inputListener.a) {
+    		camera.rotateRight(-0.02f);
+    	}
+    	if(inputListener.d) {
+    		camera.rotateRight(0.02f);
+    	}
+    	if(inputListener.w) {  		
+    		camera.rotateUp(-0.02f);
+    	}
+    	if(inputListener.s) {
+    		camera.rotateUp(0.02f);
+    	}
+    	if(inputListener.f) {
+    		camera.setMode(Camera.FLY_MODE);
+    	}
+    	if(inputListener.r) {
+    		camera.setFocus(new Vector3f(0,2,0));
+    	}
+    	if(inputListener.up) {
+    		camera.moveForward(1);
+    	}
+    	if(inputListener.down) {
+    		camera.moveForward(-1);
+    	}
+    	if(inputListener.escape) {
+    		camera = new Camera(Camera.FOCUS_MODE, camPos, new Point3f(0, 2, 0), new Point3f(0,1,0), canvas);
+    	}
+    	
+    	camera.review();
+
+
+        for (GLObject each: runQueue) {
+            each.display(camera.getCameraMatrix());
+        }
     }
     
-    vw.add(object);
-    if (activeScene != null)
-    {
-      activeScene.detach();
-    }
-    activeScene = object;
     
-    //exportScreenshotToPNG(new File("test3d_" + (kkk++) + ".png"));
-  }
-  
-  
-  private Shape3D createFieldViewertexture()
-  {
-    float width = 3.7f; // in m
-    float height = 2.7f; // in m
-    int width_px = (int)(width*2000); // 1mm^2 ~ 1px
-    int height_px = (int)(height*2000); // 1mm^2 ~ 1px
+    //Computeable impl
+    
+	@Override
+	public float compute(int x, int z) {
+		return (float) (Math.sin(x) + Math.sin(z)) / 2;
+	}
 
-    // create the texture image
-    BufferedImage image = new BufferedImage(height_px, width_px, BufferedImage.TYPE_INT_RGB);
-    Graphics2D g2d = image.createGraphics();
-    g2d.setColor(new Color(0.9f,0.9f,0.9f));
-    g2d.fillRect(0, 0, height_px, width_px);
-    FieldViewer.getCanvas().paintDrawings(g2d, height_px/2, width_px/2, -Math.PI*0.5, 0.5);
+}
 
-    // create the texture appearence
-    ImageComponent2D imageComponent = new ImageComponent2D(ImageComponent2D.FORMAT_RGB, image);
-    Texture2D tex = new Texture2D(Texture2D.INTENSITY, Texture2D.RGB, imageComponent.getWidth(), imageComponent.getHeight());
-    tex.setImage(0, imageComponent);
-    TextureAttributes texAttr = new TextureAttributes();
-    texAttr.setPerspectiveCorrectionMode(TextureAttributes.NICEST);
-    Appearance app = new Appearance();
-    app.setTexture(tex);
-    app.setTextureAttributes(texAttr);
 
-    // create the geometry for the texture
-    QuadArray rect = new QuadArray(4, QuadArray.COORDINATES | QuadArray.TEXTURE_COORDINATE_2);
-    rect.setCoordinate(0, new Point3f(-width,  height, 0.0001f));
-    rect.setCoordinate(1, new Point3f(-width, -height, 0.0001f));
-    rect.setCoordinate(2, new Point3f( width, -height, 0.0001f));
-    rect.setCoordinate(3, new Point3f( width,  height, 0.0001f));
+final class Input implements KeyListener, MouseListener {
+	
+	public boolean w,a,s,d,r,f,
+				   up,down,right,left,
+				   escape;
+	
+	public Input() {
+		w = a = s = d = r = f = up = down = right = left = escape = false;
+	}
+	
+	//KEYLISTENER
+	
+	@Override
+	public void keyTyped(KeyEvent e) {
+	}
 
-    rect.setTextureCoordinate(0, 0, new TexCoord2f(1.0f, 1.0f));
-    rect.setTextureCoordinate(0, 1, new TexCoord2f(0.0f, 1.0f));
-    rect.setTextureCoordinate(0, 2, new TexCoord2f(0.0f, 0.0f));
-    rect.setTextureCoordinate(0, 3, new TexCoord2f(1.0f, 0.0f));
+	@Override
+	public void keyPressed(KeyEvent e) {
+		switch(e.getKeyCode()) {
+		case KeyEvent.VK_W: w=true; break;
+		case KeyEvent.VK_A: a=true; break;
+		case KeyEvent.VK_S: s=true; break;
+		case KeyEvent.VK_D: d=true; break;
+		case KeyEvent.VK_R: r=true; break;
+		case KeyEvent.VK_F: f=true; break;
+		case KeyEvent.VK_UP: up=true; break;
+		case KeyEvent.VK_DOWN: down=true; break;
+		case KeyEvent.VK_RIGHT: right=true; break;
+		case KeyEvent.VK_LEFT: left=true; break;
+		case KeyEvent.VK_ESCAPE: escape=true; break;
+		}		
+	}
 
-    // create the 3D shape representing the image object
-    return new Shape3D(rect, app);
-  }
+	@Override
+	public void keyReleased(KeyEvent e) {
+		switch(e.getKeyCode()) {
+		case KeyEvent.VK_W: w=false; break;
+		case KeyEvent.VK_A: a=false; break;
+		case KeyEvent.VK_S: s=false;break;
+		case KeyEvent.VK_D: d=false;break;
+		case KeyEvent.VK_R: r=false; break;
+		case KeyEvent.VK_F: f=false; break;
+		case KeyEvent.VK_UP: up=false; break;
+		case KeyEvent.VK_DOWN: down=false; break;
+		case KeyEvent.VK_RIGHT: right=false; break;
+		case KeyEvent.VK_LEFT: left=false; break;
+		case KeyEvent.VK_ESCAPE: escape=false; break;
+		}
+	}
+	
+	
+	//MOUSELISTENER
 
-  private void exportScreenshotToPNG(File file) {
-    BufferedImage image = new BufferedImage(canvas.getWidth(), canvas.getHeight(), BufferedImage.TYPE_INT_RGB);
-    Graphics2D g2d = image.createGraphics();
-    canvas.paintAll(g2d);
-    try{
-        ImageIO.write(image, "PNG", file);
-    }catch(Exception e){}
-  }
-  
-  @Override
-  public void errorOccured(String cause)
-  {
-    jToggleButtonUpdate.setSelected(false);
-    Plugin.threeDimensionSceneManager.removeListener(this);
-//    Helper.handleException(cause, null);
-  }
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		
+	}
 
-  @Override
-  public void dispose()
-  {
-    Plugin.threeDimensionSceneManager.removeListener(this);
-    Plugin.imageManager.removeListener(imageListener);
-    Plugin.imageTopManager.removeListener(imageListenerTop);
-    //System.out.println("Dispose is not implemented for: " + this.getClass().getName());
-  }//end dispose
+	@Override
+	public void mousePressed(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+	
 }
