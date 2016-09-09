@@ -61,7 +61,7 @@ public class GLViewer extends AbstractDialog {
         GLDraw gLEventListener = new GLDraw(canvas, inputListener);
         openGLPanel.addGLEventListener(gLEventListener);
         
-        canvas.setSize(openGLPanel.getWidth(), openGLPanel.getHeight());
+        
         canvas.addGLEventListener(gLEventListener);
         
         openGLPanel.add(canvas);
@@ -78,23 +78,92 @@ public class GLViewer extends AbstractDialog {
     private void initComponents() {
 
         openGLPanel = new de.naoth.rc.components.OpenGLPanel();
+        jToolBar = new javax.swing.JToolBar();
+        jToggleButtonUpdate = new javax.swing.JToggleButton();
+        jCheckBoxField = new javax.swing.JCheckBox();
+        jCheckBoxImage = new javax.swing.JCheckBox();
+        cbUseFieldViewer = new javax.swing.JCheckBox();
+
+        jToolBar.setFloatable(false);
+        jToolBar.setRollover(true);
+
+        jToggleButtonUpdate.setText("Update");
+        jToggleButtonUpdate.setToolTipText("Update scene from robot.");
+        jToggleButtonUpdate.setFocusable(false);
+        jToggleButtonUpdate.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jToggleButtonUpdate.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToggleButtonUpdate.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jToggleButtonUpdateActionPerformed(evt);
+            }
+        });
+        jToolBar.add(jToggleButtonUpdate);
+
+        jCheckBoxField.setSelected(true);
+        jCheckBoxField.setText("Field");
+        jCheckBoxField.setToolTipText("Show the soccer field.");
+        jCheckBoxField.setFocusable(false);
+        jCheckBoxField.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
+        jCheckBoxField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCheckBoxFieldActionPerformed(evt);
+            }
+        });
+        jToolBar.add(jCheckBoxField);
+
+        jCheckBoxImage.setText("Image");
+        jCheckBoxImage.setToolTipText("Receive image from camera of robot.");
+        jCheckBoxImage.setFocusable(false);
+        jCheckBoxImage.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
+        jCheckBoxImage.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jCheckBoxImage.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCheckBoxImageActionPerformed(evt);
+            }
+        });
+        jToolBar.add(jCheckBoxImage);
+
+        cbUseFieldViewer.setText("Use FieldViewer");
+        cbUseFieldViewer.setFocusable(false);
+        cbUseFieldViewer.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
+        cbUseFieldViewer.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToolBar.add(cbUseFieldViewer);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jToolBar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(openGLPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 424, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGap(0, 0, Short.MAX_VALUE)
-                .addComponent(openGLPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(jToolBar, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(openGLPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 269, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
+    private void jToggleButtonUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButtonUpdateActionPerformed
+        //Do something
+    }//GEN-LAST:event_jToggleButtonUpdateActionPerformed
+
+    private void jCheckBoxFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxFieldActionPerformed
+        //Do something
+    }//GEN-LAST:event_jCheckBoxFieldActionPerformed
+
+    private void jCheckBoxImageActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxImageActionPerformed
+        //Do something
+    }//GEN-LAST:event_jCheckBoxImageActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JCheckBox cbUseFieldViewer;
+    private javax.swing.JCheckBox jCheckBoxField;
+    private javax.swing.JCheckBox jCheckBoxImage;
+    private javax.swing.JToggleButton jToggleButtonUpdate;
+    private javax.swing.JToolBar jToolBar;
     private de.naoth.rc.components.OpenGLPanel openGLPanel;
     // End of variables declaration//GEN-END:variables
 }
@@ -129,7 +198,7 @@ final class GLDraw implements GLEventListener, Computable{
 
         animator = new FPSAnimator(drawable, 60);
         animator.start();
-
+       
         camera = new Camera(Camera.FOCUS_MODE, camPos, new Point3f(0, 2, 0), new Point3f(0,1,0), canvas);
     }
 
@@ -148,7 +217,7 @@ final class GLDraw implements GLEventListener, Computable{
     }
 
     @Override
-    public void display(GLAutoDrawable drawable) {    	
+    public void display(GLAutoDrawable drawable) {
         gl.glEnable(GL3.GL_BLEND);
         gl.glBlendFunc(GL3.GL_SRC_ALPHA, GL3.GL_ONE_MINUS_SRC_ALPHA);
 
