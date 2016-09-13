@@ -9,10 +9,8 @@ import com.jogamp.opengl.GLCapabilities;
 import com.jogamp.opengl.GLEventListener;
 import com.jogamp.opengl.GLProfile;
 import com.jogamp.opengl.awt.GLCanvas;
-import com.jogamp.opengl.awt.GLJPanel;
 import com.jogamp.opengl.util.FPSAnimator;
 import com.simgl.Camera;
-import com.simgl.Computable;
 import com.simgl.file.GLScene;
 import com.simgl.model.GLObject;
 import com.simgl.representations.Point3f;
@@ -23,8 +21,6 @@ import de.naoth.rc.core.dialog.DialogPlugin;
 import de.naoth.rc.manager.ImageManagerBottom;
 import de.naoth.rc.manager.ImageManagerTop;
 import de.naoth.rc.manager.ThreeDimensionSceneManager;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -209,7 +205,7 @@ public class GLViewer extends AbstractDialog
   
 }
 
-final class GLEventListenerImpl implements GLEventListener, Computable{
+final class GLEventListenerImpl implements GLEventListener{
     private FPSAnimator animator;
 
     private final Input inputListener;
@@ -307,13 +303,6 @@ final class GLEventListenerImpl implements GLEventListener, Computable{
         }
     }
     
-    
-    //Computeable impl
-    
-	@Override
-	public float compute(int x, int z) {
-		return (float) (Math.sin(x) + Math.sin(z)) / 2;
-	}
 }
 
 

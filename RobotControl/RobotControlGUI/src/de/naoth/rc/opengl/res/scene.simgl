@@ -12,24 +12,24 @@ SHADER shadowShader shadow_VS.glsl shadow_FS.glsl
 
 SHADER colorShader vertex_shader.glsl color_FS.glsl
 
-OBJ sky sky.obj skyShader
+OBJ sky sky.obj skyShader sky.png
 :SCALE 12 12 12
 
-OBJ ball ball.obj modelShader
+OBJ ball ball.obj modelShader ball.png
 :OFFSET 4 0.2 0
 OBJ ballShadow ball.obj shadowShader
 :OFFSET 4 0.2 0
 
-OBJ ground ground.obj modelShader
+OBJ ground ground.obj modelShader ground.png
 
 # field
-OBJ leftStick cylinder.obj modelShader
+OBJ leftStick cylinder.obj modelShader cylinder.png
 :OFFSET 0 0 4
-OBJ leftStickShadow cylinder.obj shadowShader
+OBJ leftStickShadow cylinder.obj shadowShader cylinder.png
 :OFFSET 0 0 4
-OBJ rightStick cylinder.obj modelShader
+OBJ rightStick cylinder.obj modelShader cylinder.png
 :OFFSET 0 0 -4
-OBJ rightStickShadow cylinder.obj shadowShader
+OBJ rightStickShadow cylinder.obj shadowShader cylinder.png
 :OFFSET 0 0 -4
 OBJ outline outline.obj colorShader
 :OFFSET 0 0.01 0
@@ -37,75 +37,75 @@ OBJ outline outline.obj colorShader
 :UNIFORM light.intensities 1 0.6 0.75
 
 # trees
-OBJ tree1 palm02.obj modelShader
+OBJ tree1 palm02.obj modelShader palm02.png
 :OFFSET -5 0 -40
-OBJ tree2 palm02.obj modelShader
+OBJ tree2 palm02.obj modelShader palm02.png
 :OFFSET -20 0 -10
 :ROTATION 1 0 1 0
-OBJ tree3 palm02.obj modelShader
+OBJ tree3 palm02.obj modelShader palm02.png
 :OFFSET -2 0 -60
 :ROTATION 2 0 1 0
-OBJ tree4 palm02.obj modelShader
+OBJ tree4 palm02.obj modelShader palm02.png
 :OFFSET 5 0 -10
 :ROTATION 3 0 1 0
-OBJ tree5 palm02.obj modelShader
+OBJ tree5 palm02.obj modelShader palm02.png
 :OFFSET 25 0 -30
 :ROTATION 3 0 1 0
-OBJ tree6 palm02.obj modelShader
+OBJ tree6 palm02.obj modelShader palm02.png
 :OFFSET 30 0 -25
 :ROTATION 2 0 1 0
-OBJ tree7 palm02.obj modelShader
+OBJ tree7 palm02.obj modelShader palm02.png
 :OFFSET 20 0 -35
 :ROTATION 1.5 0 1 0
-OBJ tree8 palm02.obj modelShader
+OBJ tree8 palm02.obj modelShader palm02.png
 :OFFSET 8 0 -30
 :ROTATION 0.5 0 1 0
-OBJ tree9 palm02.obj modelShader
+OBJ tree9 palm02.obj modelShader palm02.png
 :OFFSET 20 0 -32
 :ROTATION 1 0 1 0
-OBJ tree10 palm02.obj modelShader
+OBJ tree10 palm02.obj modelShader palm02.png
 :OFFSET 35 0 -34
 :ROTATION 1.5 0 1 0
-OBJ tree11 palm02.obj modelShader
+OBJ tree11 palm02.obj modelShader palm02.png
 :OFFSET 16 0 -48
 :ROTATION 2.8 0 1 0
-OBJ tree12 palm02.obj modelShader
+OBJ tree12 palm02.obj modelShader palm02.png
 :OFFSET -20 0 -20
 :ROTATION 3.5 0 1 0
-OBJ tree13 palm02.obj modelShader
+OBJ tree13 palm02.obj modelShader palm02.png
 :OFFSET -40 0 -28
 :ROTATION 1.8 0 1 0
-OBJ tree14 palm02.obj modelShader
+OBJ tree14 palm02.obj modelShader palm02.png
 :OFFSET -3 0 -24
 :ROTATION 2.5 0 1 0
-OBJ tree15 palm02.obj modelShader
+OBJ tree15 palm02.obj modelShader palm02.png
 :OFFSET -8 0 -18
 :ROTATION 0.8 0 1 0
-OBJ tree16 palm02.obj modelShader
+OBJ tree16 palm02.obj modelShader palm02.png
 :OFFSET 0 0 -18
 :ROTATION 2.8 0 1 0
-OBJ tree17 palm02.obj modelShader
+OBJ tree17 palm02.obj modelShader palm02.png
 :OFFSET -11 0 -50
 :ROTATION 3.5 0 1 0
-OBJ tree18 palm02.obj modelShader
+OBJ tree18 palm02.obj modelShader palm02.png
 :OFFSET -14 0 -22
 :ROTATION 1.8 0 1 0
-OBJ tree19 palm02.obj modelShader
+OBJ tree19 palm02.obj modelShader palm02.png
 :OFFSET 2 0 -30
 :ROTATION 2.5 0 1 0
-OBJ tree20 palm02.obj modelShader
+OBJ tree20 palm02.obj modelShader palm02.png
 :OFFSET -14 0 -18
 :ROTATION 0.8 0 1 0
-OBJ tree21 palm02.obj modelShader
+OBJ tree21 palm02.obj modelShader palm02.png
 :OFFSET 12 0 -30
 :ROTATION 3.5 0 1 0
-OBJ tree22 palm02.obj modelShader
+OBJ tree22 palm02.obj modelShader palm02.png
 :OFFSET -4 0 -22
 :ROTATION 1.8 0 1 0
-OBJ tree23 palm02.obj modelShader
+OBJ tree23 palm02.obj modelShader palm02.png
 :OFFSET -30 0 -24
 :ROTATION 2.5 0 1 0
-OBJ tree24 palm02.obj modelShader
+OBJ tree24 palm02.obj modelShader palm02.png
 :OFFSET -8 0 -18
 :ROTATION 0.8 0 1 0
 
@@ -184,67 +184,67 @@ OBJ shadowTree24 palm02.obj shadowShader
 
 
 # grass shadow
-OBJ shadowGrass1 grass01.obj shadowShader
+OBJ shadowGrass1 grass01.obj shadowShader grass01.png
 :OFFSET -5 0 20
-OBJ shadowGrass2 grass02.obj shadowShader
+OBJ shadowGrass2 grass02.obj shadowShader grass02.png
 :OFFSET -3 0 10
-OBJ shadowGrass3 grass02.obj shadowShader
+OBJ shadowGrass3 grass02.obj shadowShader grass02.png
 :OFFSET 0 0 15
-OBJ shadowGrass4 grass01.obj shadowShader
+OBJ shadowGrass4 grass01.obj shadowShader grass01.png
 :OFFSET -15 0 25
-OBJ shadowGrass5 grass02.obj shadowShader
+OBJ shadowGrass5 grass02.obj shadowShader grass02.png
 :OFFSET 12 0 10
-OBJ shadowGrass6 grass01.obj shadowShader
+OBJ shadowGrass6 grass01.obj shadowShader grass01.png
 :OFFSET -2 0 25
-OBJ shadowGrass7 grass01.obj shadowShader
+OBJ shadowGrass7 grass01.obj shadowShader grass01.png
 :OFFSET -9 0 0
-OBJ shadowGrass8 grass02.obj shadowShader
+OBJ shadowGrass8 grass02.obj shadowShader grass02.png
 :OFFSET -11 0 -2
-OBJ shadowGrass9 grass01.obj shadowShader
+OBJ shadowGrass9 grass01.obj shadowShader grass01.png
 :OFFSET -15 0 2
-OBJ shadowGrass10 grass02.obj shadowShader
+OBJ shadowGrass10 grass02.obj shadowShader grass02.png
 :OFFSET 9 0 -1
-OBJ shadowGrass11 grass01.obj shadowShader
+OBJ shadowGrass11 grass01.obj shadowShader grass01.png
 :OFFSET 8 0 10
-OBJ shadowGrass12 grass02.obj shadowShader
+OBJ shadowGrass12 grass02.obj shadowShader grass02.png
 :OFFSET 13 0 1
-OBJ shadowGrass13 grass01.obj shadowShader
+OBJ shadowGrass13 grass01.obj shadowShader grass01.png
 :OFFSET 4 0 20
-OBJ shadowGrass14 grass01.obj shadowShader
+OBJ shadowGrass14 grass01.obj shadowShader grass01.png
 :OFFSET -5 0 -20
-OBJ shadowGrass15 grass02.obj shadowShader
+OBJ shadowGrass15 grass02.obj shadowShader grass02.png
 :OFFSET -3 0 -10
-OBJ shadowGrass16 grass01.obj shadowShader
+OBJ shadowGrass16 grass01.obj shadowShader grass01.png
 :OFFSET 0 0 -15
-OBJ shadowGrass17 grass01.obj shadowShader
+OBJ shadowGrass17 grass01.obj shadowShader grass01.png
 :OFFSET -15 0 -25
-OBJ shadowGrass18 grass01.obj shadowShader
+OBJ shadowGrass18 grass01.obj shadowShader grass01.png
 :OFFSET 12 0 -10
-OBJ shadowGrass19 grass01.obj shadowShader
+OBJ shadowGrass19 grass01.obj shadowShader grass01.png
 :OFFSET -1 0 -25
-OBJ shadowGrass20 grass01.obj shadowShader
+OBJ shadowGrass20 grass01.obj shadowShader grass01.png
 :OFFSET -9 0 -40
-OBJ shadowGrass21 grass01.obj shadowShader
+OBJ shadowGrass21 grass01.obj shadowShader grass01.png
 :OFFSET -1 0 -25
-OBJ shadowGrass22 grass02.obj shadowShader
+OBJ shadowGrass22 grass02.obj shadowShader grass02.png
 :OFFSET -9 0 -40
-OBJ shadowGrass23 grass01.obj shadowShader
+OBJ shadowGrass23 grass01.obj shadowShader grass01.png
 :OFFSET -22 0 -35
-OBJ shadowGrass24 grass01.obj shadowShader
+OBJ shadowGrass24 grass01.obj shadowShader grass01.png
 :OFFSET -1 0 -25
-OBJ shadowGrass25 grass02.obj shadowShader
+OBJ shadowGrass25 grass02.obj shadowShader grass02.png
 :OFFSET -9 0 -40
-OBJ shadowGrass26 grass02.obj shadowShader
+OBJ shadowGrass26 grass02.obj shadowShader grass02.png
 :OFFSET -22 0 -35
-OBJ shadowGrass27 grass01.obj shadowShader
+OBJ shadowGrass27 grass01.obj shadowShader grass01.png
 :OFFSET 0 0 -30
-OBJ shadowGrass28 grass01.obj shadowShader
+OBJ shadowGrass28 grass01.obj shadowShader grass01.png
 :OFFSET 22 0 -45
-OBJ shadowGrass29 grass02.obj shadowShader
+OBJ shadowGrass29 grass02.obj shadowShader grass02.png
 :OFFSET 8 0 -10
-OBJ shadowGrass30 grass01.obj shadowShader
+OBJ shadowGrass30 grass01.obj shadowShader grass01.png
 :OFFSET 13 0 -15
-OBJ shadowGrass31 grass01.obj shadowShader
+OBJ shadowGrass31 grass01.obj shadowShader grass01.png
 :OFFSET 4 0 -20
 
 # grass
@@ -312,5 +312,5 @@ OBJ grass31 grass01.obj modelShader
 :OFFSET 4 0 -20
 
 
-OBJ netShadow net.obj shadowShader
-OBJ net net.obj modelShader
+OBJ netShadow net.obj shadowShader net.png
+OBJ net net.obj modelShader 
