@@ -12,8 +12,8 @@ SHADER shadowShader shadow_VS.glsl shadow_FS.glsl
 
 SHADER colorShader vertex_shader.glsl color_FS.glsl
 
-OBJ sky sky.obj skyShader sky.png
-:SCALE 12 12 12
+#OBJ sky sky.obj skyShader sky.png
+#:SCALE 12 12 12
 
 OBJ ball ball.obj modelShader ball.png
 :OFFSET 4 0.2 0

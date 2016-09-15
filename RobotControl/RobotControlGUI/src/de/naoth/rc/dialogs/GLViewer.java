@@ -10,17 +10,18 @@ import com.jogamp.opengl.GLEventListener;
 import com.jogamp.opengl.GLProfile;
 import com.jogamp.opengl.awt.GLCanvas;
 import com.jogamp.opengl.util.FPSAnimator;
-import com.simgl.Camera;
-import com.simgl.file.GLScene;
-import com.simgl.model.GLObject;
-import com.simgl.representations.Point3f;
-import com.simgl.representations.Vector3f;
+import de.naoth.rc.opengl.Camera;
+import de.naoth.rc.opengl.file.GLScene;
+import de.naoth.rc.opengl.model.GLObject;
+import de.naoth.rc.opengl.representations.Point3f;
+import de.naoth.rc.opengl.representations.Vector3f;
 import de.naoth.rc.RobotControl;
 import de.naoth.rc.core.dialog.AbstractDialog;
 import de.naoth.rc.core.dialog.DialogPlugin;
 import de.naoth.rc.manager.ImageManagerBottom;
 import de.naoth.rc.manager.ImageManagerTop;
 import de.naoth.rc.manager.ThreeDimensionSceneManager;
+import de.naoth.rc.opengl.drawings.FieldSPL2013;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -229,16 +230,22 @@ final class GLEventListenerImpl implements GLEventListener{
     public void init(GLAutoDrawable drawable) {
         gl = drawable.getGL().getGL3();
         
+
     	String scenePath = System.getProperty("user.dir").replaceAll("\\\\", "/") + "/src/de/naoth/rc/opengl/res/";
     	GLScene scene = new GLScene(gl, scenePath + "scene.simgl");
-    	runQueue = scene.getModelList();      
+    	runQueue = scene.getModelList();
 
+        /*
+        this.runQueue = new LinkedList<GLObject>();
+        
+        this.runQueue.add(new FieldSPL2013(gl).getDrawable());
+        */
         gl.glEnable(GL3.GL_DEPTH_TEST);
 
         animator = new FPSAnimator(drawable, 60);
         animator.start();
        
-        camera = new Camera(Camera.FOCUS_MODE, camPos, new Point3f(0, 2, 0), new Point3f(0,1,0), canvas.getWidth(), canvas.getHeight());
+        camera = new Camera(Camera.FOCUS_MODE, camPos, new Point3f(0, 0, 0), new Point3f(0,1,0), canvas.getWidth(), canvas.getHeight());
     }
 
     @Override
@@ -292,7 +299,7 @@ final class GLEventListenerImpl implements GLEventListener{
     		camera.moveForward(-1);
     	}
     	if(inputListener.escape) {
-    		camera = new Camera(Camera.FOCUS_MODE, camPos, new Point3f(0, 2, 0), new Point3f(0,1,0), canvas.getWidth(), canvas.getHeight());
+    		camera = new Camera(Camera.FOCUS_MODE, camPos, new Point3f(0, 0, 0), new Point3f(0,1,0), canvas.getWidth(), canvas.getHeight());
     	}
     	
     	camera.review();
