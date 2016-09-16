@@ -9,10 +9,12 @@ import java.util.LinkedList;
 
 import com.jogamp.opengl.GL3;
 import de.naoth.rc.opengl.Shader;
+import de.naoth.rc.opengl.drawings.GLDrawable;
 import de.naoth.rc.opengl.model.GLClone;
 import de.naoth.rc.opengl.model.GLModel;
 import de.naoth.rc.opengl.model.GLObject;
 import de.naoth.rc.opengl.model.GLTexturedModel;
+import de.naoth.rc.opengl.representations.Point3f;
 
 
 public class GLScene {
@@ -32,18 +34,37 @@ public class GLScene {
 	private LinkedList<GLObject> runQueue;
 	
 	
-	public GLScene(GL3 gl, String sceneFileName) {
+	public GLScene(GL3 gl) {
 		this.gl = gl;
 		pathList = new LinkedList<String>();
 		shader = new HashMap<String, Shader>();
 		models = new HashMap<String, GLModel>();
 		objects = new HashMap<String, GLObject>();
 		runQueue = new LinkedList<GLObject>();
-		
-		parseSceneFile(sceneFileName);
 	}
-	
-	
+    
+    public void add(String sceneFileName) {
+        parseSceneFile(sceneFileName);         
+    }
+    
+    public void add(final GLDrawable newModel) {
+        
+        final Shader newShader = newModel.getShader(gl);
+        
+        new Thread(new Runnable() {
+            
+            @Override
+        	public void run() {
+                GLTexturedModel newGLObject = new GLTexturedModel(gl, newModel.getTexture(), newModel.getGLData(), newShader);
+                Point3f scale = newModel.getScale();
+                newGLObject.getModelMatrix().scale(scale.x, scale.y, scale.z);
+                runQueue.add(newGLObject);
+            }
+            
+        }).start();
+    }
+    
+	//TODO rethink this mess
     private void parseSceneFile(String sceneFileName) {    	
     	BufferedReader bufferedReader = null;
     	
@@ -122,7 +143,7 @@ public class GLScene {
             		}
             	}
             	
-            	shader.put(token[1], new Shader(gl, path, token[2], token[3]));
+            	shader.put(token[1], new Shader(gl, System.getProperty("user.dir").replaceAll("\\\\", "/") + path, token[2], token[3]));
             	lastElement = token[1];
             	
             } else if (line.startsWith("PATH")) {
@@ -162,7 +183,7 @@ public class GLScene {
    		}
     }
     
-    public LinkedList<GLObject> getModelList() {
+    public LinkedList<GLObject> getRunQueue() {
     	return runQueue;
     }
 }

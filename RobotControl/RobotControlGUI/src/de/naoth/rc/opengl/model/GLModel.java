@@ -11,7 +11,7 @@ import java.nio.IntBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
-public class GLModel implements GLDrawable, GLObject{
+public class GLModel implements GLObject{
 	protected String name;
 	
     protected GL3 gl;
@@ -28,8 +28,6 @@ public class GLModel implements GLDrawable, GLObject{
     protected int[] tbo; //Texture Buffer Object
     
     private boolean initialized = false;
-    
-    protected Thread thread;
     
     public GLModel(GL3 gl, Shader shader) {
     	name = String.valueOf(System.currentTimeMillis());
@@ -55,13 +53,8 @@ public class GLModel implements GLDrawable, GLObject{
     
     public GLModel(GL3 gl, final GLFile glFile, Shader shader) {
     	this(gl, shader);
-    	
-        this.thread = new Thread(new Runnable() {
-        	public void run() {        	   
-        		glData = glFile.buildGLData();
-            }
-        });
-        thread.start();
+    	      	   
+        glData = glFile.buildGLData();
     }
 
     protected void initializeBuffers() {
@@ -85,9 +78,6 @@ public class GLModel implements GLDrawable, GLObject{
     
     @Override
     public void display(Matrix4 cameraMatrix) {
-    	if(this.thread != null && !(this.thread.getState() == State.TERMINATED)) {
-    		return;
-    	}
     	if(!initialized) {
     		initializeBuffers();
     		initialized = true;

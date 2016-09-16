@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-public class GLClone implements GLDrawable, GLObject {
+public class GLClone implements GLObject {
 	private GL3 gl;
 	
     private GLModel model;

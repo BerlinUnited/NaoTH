@@ -5,6 +5,7 @@ import java.nio.IntBuffer;
 
 import com.jogamp.opengl.GL3;
 import de.naoth.rc.opengl.Shader;
+import de.naoth.rc.opengl.file.GLData;
 import de.naoth.rc.opengl.file.GLFile;
 import de.naoth.rc.opengl.file.Texture;
 
@@ -18,16 +19,22 @@ public class GLTexturedModel extends GLModel implements GLObject {
 	public GLTexturedModel(GL3 gl, final Texture texture, final GLFile glFile, Shader shader) {
 		super(gl, shader);
 		
-        super.thread = new Thread(new Runnable() {
-        	public void run() {        	   
-        		glData = glFile.buildGLData();
+        glData = glFile.buildGLData();
         		
-        		textureBuffer = texture.getTextureBuffer();
-        		texHeight = texture.getHeight();
-        		texWidth = texture.getWidth();
-            }
-        });
-        super.thread.start();
+        textureBuffer = texture.getTextureBuffer();
+        texHeight = texture.getHeight();
+        texWidth = texture.getWidth();
+
+	}
+    
+    	public GLTexturedModel(GL3 gl, final Texture texture, final GLData modelData, Shader shader) {
+		super(gl, shader);
+		     	   
+        glData = modelData;
+        	
+        textureBuffer = texture.getTextureBuffer();
+        texHeight = texture.getHeight();
+        texWidth = texture.getWidth();
 	}
 	
 	

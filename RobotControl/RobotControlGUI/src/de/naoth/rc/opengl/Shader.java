@@ -129,9 +129,9 @@ public class Shader{
         InputStream inputStream = null;
 
         try {
-            inputStream = new FileInputStream(System.getProperty("user.dir").replaceAll("\\\\", "/") + filename);
+            inputStream = new FileInputStream(filename);
         } catch (FileNotFoundException e) {
-            System.err.println("Unable to find the shader file " + System.getProperty("user.dir").replaceAll("\\\\", "/") + filename);
+            System.err.println("Unable to find the shader file " + filename);
         }
         if (inputStream == null) {
             System.err.println("Problem with InputStream");
