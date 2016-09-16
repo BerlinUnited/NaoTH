@@ -28,7 +28,7 @@ public class ExampleGLDrawable extends GLDrawable{
     public Shader getShader(GL3 gl) {
         Shader shader = new Shader(gl, super.pathToGLSL, "vertex_shader.glsl", "texture_FS.glsl");
         shader.setGlobalUniform("light.position", new float[]{0f, 50f, 0f});
-        shader.setGlobalUniform("light.intensities", new float[]{1f, 1f, 1f});
+        shader.setGlobalUniform("light.intensities", new float[]{5f, 5f, 5f});
         return shader;
     }
     
