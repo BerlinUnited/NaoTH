@@ -55,10 +55,20 @@ public class GLScene {
             
             @Override
         	public void run() {
-                GLTexturedModel newGLObject = new GLTexturedModel(gl, newModel.getTexture(), newModel.getGLData(), newShader);
+                GLObject newGLObject;
+                
+                if(newModel.getTexture() == null) {
+                   System.out.println("HELLO");
+                   newGLObject = new GLModel(gl, newModel.getGLData(), newShader);
+                } else {
+                   newGLObject = new GLTexturedModel(gl, newModel.getTexture(), newModel.getGLData(), newShader);
+
+                }
                 Point3f scale = newModel.getScale();
                 newGLObject.getModelMatrix().scale(scale.x, scale.y, scale.z);
+                
                 runQueue.add(newGLObject);
+                System.out.println("READY");
             }
             
         }).start();

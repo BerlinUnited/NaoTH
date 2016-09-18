@@ -42,7 +42,8 @@ public class GLModel implements GLObject{
         this.modelMatrix = new Matrix4();
 
         this.shader = shader;
-        setShaderUniform("modelMatrix", modelMatrix);
+        
+        this.shaderUniforms.put("modelMatrix", this.modelMatrix);
     }
     
     public GLModel(GL3 gl, GLData glData, Shader shader) {

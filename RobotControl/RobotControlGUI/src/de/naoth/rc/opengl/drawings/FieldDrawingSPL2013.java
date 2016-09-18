@@ -43,7 +43,7 @@ public class FieldDrawingSPL2013 extends ExampleGLDrawable {
 
     @Override
     public GLData getGLData() {
-        return new ObjFile(pathToRER, "soccer_field.obj").buildGLData();
+        return new ObjFile(pathToRES, "soccer_field.obj").buildGLData();
     }
 
     @Override

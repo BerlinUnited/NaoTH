@@ -21,8 +21,7 @@ import de.naoth.rc.core.dialog.DialogPlugin;
 import de.naoth.rc.manager.ImageManagerBottom;
 import de.naoth.rc.manager.ImageManagerTop;
 import de.naoth.rc.manager.ThreeDimensionSceneManager;
-import de.naoth.rc.opengl.drawings.ExampleGLDrawable;
-import de.naoth.rc.opengl.drawings.FieldDrawingSPL2013;
+import de.naoth.rc.opengl.drawings.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -239,14 +238,11 @@ final class GLEventListenerImpl implements GLEventListener{
         //scene.add(scenePath + "scene.simgl");
         //scene.add(new ExampleGLDrawable());
         scene.add(new FieldDrawingSPL2013());
-        
+        scene.add(new Head());
+        scene.add(new Torso());
+       
     	runQueue = scene.getRunQueue();
 
-        /*
-        this.runQueue = new LinkedList<GLObject>();
-        
-        this.runQueue.add(new FieldSPL2013(gl).getDrawable());
-        */
         gl.glEnable(GL3.GL_DEPTH_TEST);
 
         animator = new FPSAnimator(drawable, 60);
