@@ -66,7 +66,7 @@ public class GLTexturedModel extends GLModel implements GLObject {
     }
     
 	@Override
-    protected void bindBuffer() {
+    protected void bind() {
         // texture image buffer
         gl.glActiveTexture(GL3.GL_TEXTURE0);
         gl.glBindTexture(GL3.GL_TEXTURE_2D, tbo[0]);
@@ -86,7 +86,7 @@ public class GLTexturedModel extends GLModel implements GLObject {
     }
 	
 	@Override
-    protected void unbindBuffer() {
+    protected void unbind() {
         // texture image buffer
         gl.glBindTexture(GL3.GL_TEXTURE_2D, 0);
         // index buffer

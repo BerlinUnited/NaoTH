@@ -87,7 +87,7 @@ public class GLModel implements GLObject{
     	this.shader.setGlobalUniform("cameraMatrix", cameraMatrix);
     	this.shader.bind(gl);
     	
-        bindBuffer();
+        bind();
 
         for (Map.Entry<String, Object> entry: this.shaderUniforms.entrySet()) {
             shader.setUniform(gl, entry.getKey(), entry.getValue());
@@ -95,7 +95,7 @@ public class GLModel implements GLObject{
         // draw the triangles
         gl.glDrawElements(GL3.GL_TRIANGLES, glData.getIndexCount(), GL3.GL_UNSIGNED_INT, 0);
 
-        unbindBuffer();
+        unbind();
         this.shader.unbind(gl);
     }
     
@@ -109,7 +109,7 @@ public class GLModel implements GLObject{
         shader.destroy(gl);
     }
     
-    protected void bindBuffer() {
+    protected void bind() {
         // index buffer
         gl.glBindBuffer(GL3.GL_ELEMENT_ARRAY_BUFFER, ibo[0]);
 
@@ -122,7 +122,7 @@ public class GLModel implements GLObject{
         gl.glVertexAttribPointer(1, 3, GL3.GL_FLOAT, false, 24, 12);
     }
 
-    protected void unbindBuffer() {
+    protected void unbind() {
         // index buffer
         gl.glBindBuffer(GL3.GL_ELEMENT_ARRAY_BUFFER, 0);
         // vertex+normal buffer

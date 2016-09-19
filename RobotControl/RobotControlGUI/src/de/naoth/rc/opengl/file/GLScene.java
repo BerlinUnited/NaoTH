@@ -16,66 +16,98 @@ import de.naoth.rc.opengl.model.GLObject;
 import de.naoth.rc.opengl.model.GLTexturedModel;
 import de.naoth.rc.opengl.representations.Point3f;
 
-
 public class GLScene {
-	private GL3 gl;
-	
-	private static final char OBJ = 'O';
-	private static final char SHADER = 'S';
-	
-	private LinkedList<String> pathList;
-	
-	private HashMap<String, Shader> shader;
-	
-	private HashMap<String, GLModel> models;
-	
-	private HashMap<String, GLObject> objects;
-	
-	private LinkedList<GLObject> runQueue;
-	
-	
-	public GLScene(GL3 gl) {
-		this.gl = gl;
-		pathList = new LinkedList<String>();
-		shader = new HashMap<String, Shader>();
-		models = new HashMap<String, GLModel>();
-		objects = new HashMap<String, GLObject>();
-		runQueue = new LinkedList<GLObject>();
-	}
-    
-    public void add(String sceneFileName) {
-        parseSceneFile(sceneFileName);         
-    }
-    
-    public void add(final GLDrawable newModel) {
-        
-        final Shader newShader = newModel.getShader(gl);
-        
-        new Thread(new Runnable() {
-            
-            @Override
-        	public void run() {
-                GLObject newGLObject;
-                
-                if(newModel.getTexture() == null) {
-                   System.out.println("HELLO");
-                   newGLObject = new GLModel(gl, newModel.getGLData(), newShader);
-                } else {
-                   newGLObject = new GLTexturedModel(gl, newModel.getTexture(), newModel.getGLData(), newShader);
 
+    private final GL3 gl;
+
+    private static final char OBJ = 'O';
+    private static final char SHADER = 'S';
+
+    private final LinkedList<GLObject> runQueue;
+    //private final HashMap<String,GLObject> objects;
+
+    private final Shader standardTexturedModelShader;
+    private final Shader standardModelShader;
+
+    private final String pathToGLSL = System.getProperty("user.dir").replaceAll("\\\\", "/") + "/src/de/naoth/rc/opengl/glsl/";
+
+    public GLScene(GL3 gl) {
+        this.gl = gl;
+
+        this.runQueue = new LinkedList();
+
+        standardTexturedModelShader = new Shader(gl, pathToGLSL, "vertex_shader.glsl", "texture_FS.glsl");
+        standardModelShader = new Shader(gl, pathToGLSL, "color_VS.glsl", "color_FS.glsl");
+
+        standardTexturedModelShader.setGlobalUniform("light.position", new float[]{0f, 50f, 0f});
+        standardTexturedModelShader.setGlobalUniform("light.intensities", new float[]{1f, 1f, 1f});
+
+        standardModelShader.setGlobalUniform("light.position", new float[]{0f, 50f, 0f});
+        standardModelShader.setGlobalUniform("light.intensities", new float[]{1f, 1f, 1f});
+    }
+
+    public void add(String sceneFileName) {
+        parseSceneFile(sceneFileName);
+    }
+
+    public void add(final GLDrawable newModel) {
+
+        final Shader newModelShader = newModel.getShader(gl);
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                GLObject newGLObject;
+                Texture texture = newModel.getTexture();
+
+                if (texture == null) {
+                    if (newModelShader == null) {
+                        newGLObject = new GLModel(gl, newModel.getGLData(), standardModelShader);
+                    } else {
+                        newGLObject = new GLModel(gl, newModel.getGLData(), newModelShader);
+                    }
+                    
+                } else {
+                    if (newModelShader == null) {
+                        newGLObject = new GLTexturedModel(gl, texture, newModel.getGLData(), standardTexturedModelShader);
+                    } else {
+                       newGLObject = new GLTexturedModel(gl, texture, newModel.getGLData(), newModelShader); 
+                    }
                 }
                 Point3f scale = newModel.getScale();
                 newGLObject.getModelMatrix().scale(scale.x, scale.y, scale.z);
-                
+
                 runQueue.add(newGLObject);
-                System.out.println("READY");
             }
-            
+
         }).start();
     }
-    
-	//TODO rethink this mess
-    private void parseSceneFile(String sceneFileName) {    	
+
+    public void add(GLDrawable[] scene) {
+        for (GLDrawable each : scene) {
+            this.add(each);
+        }
+    }
+
+    //TODO
+    private void parseSceneFile(String sceneFileName) {
+        System.err.println("ERROR while parsing " + sceneFileName + ", scene files are currently not supported!");
+        /*        
+        HashMap<String, Shader> shader;
+	
+        HashMap<String, GLModel> models;
+	
+        HashMap<String, GLObject> objects;
+        
+        LinkedList<String> pathList;
+        
+        pathList = new LinkedList();
+		shader = new HashMap();
+		models = new HashMap();
+		objects = new HashMap();
+
+
+        
     	BufferedReader bufferedReader = null;
     	
     	try {
@@ -191,9 +223,10 @@ public class GLScene {
     	catch(IOException io){
     		System.out.println("Can't close: " + sceneFileName);
    		}
+         */
     }
-    
+
     public LinkedList<GLObject> getRunQueue() {
-    	return runQueue;
+        return runQueue;
     }
 }

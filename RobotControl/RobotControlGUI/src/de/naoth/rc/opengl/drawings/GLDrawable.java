@@ -30,6 +30,10 @@ public abstract class GLDrawable {
         return null;
     }
     
+    public float[] getColor() {
+        return new float[]{0f, 0f, 0f, 0f};
+    }
+    
     public GLData getGLData() {
         return null;
     }

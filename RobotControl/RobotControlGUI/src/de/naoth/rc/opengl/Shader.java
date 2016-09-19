@@ -235,7 +235,7 @@ public class Shader{
         }
 
     }
-    //TODO cache uniform location
+
     private void setUniform(GL3 gl3, String name, float[] val) {
         int id = gl3.glGetUniformLocation(progId, name);
         if (id == -1) {

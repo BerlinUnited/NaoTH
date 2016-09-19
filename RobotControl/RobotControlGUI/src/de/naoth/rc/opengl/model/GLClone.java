@@ -44,7 +44,7 @@ public class GLClone implements GLObject {
 		this.shader.setGlobalUniform("cameraMatrix", cameraMatrix);
     	this.shader.bind(gl);
     	
-        model.bindBuffer();
+        model.bind();
 
         for (Map.Entry<String, Object> entry : this.shaderUniforms.entrySet()) {
             shader.setUniform(gl, entry.getKey(), entry.getValue());
@@ -52,7 +52,7 @@ public class GLClone implements GLObject {
         // draw the triangles
         gl.glDrawElements(GL3.GL_TRIANGLES, model.getData().getIndexCount(), GL3.GL_UNSIGNED_INT, 0);
 
-        model.unbindBuffer();
+        model.unbind();
         this.shader.unbind(gl);
     }
 

@@ -26,7 +26,7 @@ public class Torso extends GLDrawable {
         
     @Override
     public GLData getGLData() {
-        return new ObjFile(pathToRES, "torso.obj").buildGLData();
+        return new ObjFile(pathToRES, "Torso.obj").buildGLData();
     }
     
     @Override

@@ -14,7 +14,7 @@ import de.naoth.rc.opengl.file.ObjFile;
  *
  * @author robert
  */
-public class Head extends GLDrawable {
+public class RThigh extends GLDrawable {
     
     @Override
     public Shader getShader(GL3 gl) {
@@ -26,11 +26,11 @@ public class Head extends GLDrawable {
         
     @Override
     public GLData getGLData() {
-        return new ObjFile(pathToRES, "Head.obj").buildGLData();
+        return new ObjFile(pathToRES, "RThigh.obj").buildGLData();
     }
     
     @Override
     public String getName() {
-        return "Head";
+        return "RThigh";
     }
 }
