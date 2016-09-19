@@ -323,7 +323,11 @@ final class GLEventListenerImpl implements GLEventListener {
         camera.review();
 
         for (GLObject each : scene.getRunQueue()) {
+            each.bindShader();
+            each.bind();
             each.display(camera.getCameraMatrix());
+            each.unbind();
+            each.unbindShader();
         }
     }
 

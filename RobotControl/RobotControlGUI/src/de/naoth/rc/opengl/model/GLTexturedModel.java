@@ -9,7 +9,7 @@ import de.naoth.rc.opengl.file.GLData;
 import de.naoth.rc.opengl.file.GLFile;
 import de.naoth.rc.opengl.file.Texture;
 
-public class GLTexturedModel extends GLModel implements GLObject {
+public class GLTexturedModel extends GLModel{
 	
 	protected ByteBuffer textureBuffer;
 	protected int texHeight;
@@ -66,7 +66,11 @@ public class GLTexturedModel extends GLModel implements GLObject {
     }
     
 	@Override
-    protected void bind() {
+    public void bind() {
+        if(!super.initialized) {
+    		initializeBuffers();
+    		super.initialized = true;
+    	}
         // texture image buffer
         gl.glActiveTexture(GL3.GL_TEXTURE0);
         gl.glBindTexture(GL3.GL_TEXTURE_2D, tbo[0]);
@@ -86,7 +90,7 @@ public class GLTexturedModel extends GLModel implements GLObject {
     }
 	
 	@Override
-    protected void unbind() {
+    public void unbind() {
         // texture image buffer
         gl.glBindTexture(GL3.GL_TEXTURE_2D, 0);
         // index buffer

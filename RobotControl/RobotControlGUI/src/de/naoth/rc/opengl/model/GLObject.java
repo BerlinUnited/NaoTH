@@ -4,13 +4,21 @@ import de.naoth.rc.opengl.representations.Matrix4;
 
 public interface GLObject {
     
-    void display(Matrix4 viewPoint);
+    void bind();
     
-    void reshape();
+    void unbind();
+    
+    void bindShader();
+    
+    void unbindShader();
+    
+    void display(Matrix4 viewPoint);
     
     void dispose();
 	
 	public Matrix4 getModelMatrix();
     
     public void setShaderUniform(String name, Object object);
+    
+    public boolean isReady();
 }

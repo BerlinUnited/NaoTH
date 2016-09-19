@@ -24,7 +24,9 @@ public class GLScene {
     private static final char SHADER = 'S';
 
     private final LinkedList<GLObject> runQueue;
-    //private final HashMap<String,GLObject> objects;
+
+    private final HashMap<GLDrawable, GLObject> objects;
+    private final HashMap<GLDrawable, Boolean> glDrawableObjectAllreadyCreated;
 
     private final Shader standardTexturedModelShader;
     private final Shader standardModelShader;
@@ -35,6 +37,8 @@ public class GLScene {
         this.gl = gl;
 
         this.runQueue = new LinkedList();
+        this.objects = new HashMap();
+        this.glDrawableObjectAllreadyCreated = new HashMap();
 
         standardTexturedModelShader = new Shader(gl, pathToGLSL, "vertex_shader.glsl", "texture_FS.glsl");
         standardModelShader = new Shader(gl, pathToGLSL, "color_VS.glsl", "color_FS.glsl");
@@ -51,36 +55,70 @@ public class GLScene {
     }
 
     public void add(final GLDrawable newModel) {
-
         final Shader newModelShader = newModel.getShader(gl);
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                GLObject newGLObject;
-                Texture texture = newModel.getTexture();
+        if (glDrawableObjectAllreadyCreated.containsKey(newModel)) {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    GLObject newGLObject;
+                    while (true){
+                        if(objects.containsKey(newModel)) break;
+                    }
+                    newGLObject = objects.get(newModel);
 
-                if (texture == null) {
                     if (newModelShader == null) {
-                        newGLObject = new GLModel(gl, newModel.getGLData(), standardModelShader);
+                        if (newGLObject.getClass().isInstance(GLTexturedModel.class)) {
+                            newGLObject = new GLClone(gl, newGLObject, standardModelShader);
+                        } else {
+                            newGLObject = new GLClone(gl, newGLObject, standardTexturedModelShader);
+                        }
                     } else {
-                        newGLObject = new GLModel(gl, newModel.getGLData(), newModelShader);
+                        newGLObject = new GLClone(gl, newGLObject, newModelShader);
                     }
                     
-                } else {
-                    if (newModelShader == null) {
+                    while (true){
+                        if(newGLObject.isReady()) break;
+                    }
+                    runQueue.add(newGLObject);
+                }
+
+            }).start();
+
+        } else {
+            glDrawableObjectAllreadyCreated.put(newModel, true);
+
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    GLObject newGLObject;
+                    Texture texture = newModel.getTexture();
+
+                    if (texture == null) {
+                        if (newModelShader == null) {
+                            newGLObject = new GLModel(gl, newModel.getGLData(), standardModelShader);
+                        } else {
+                            newGLObject = new GLModel(gl, newModel.getGLData(), newModelShader);
+                        }
+
+                    } else if (newModelShader == null) {
                         newGLObject = new GLTexturedModel(gl, texture, newModel.getGLData(), standardTexturedModelShader);
                     } else {
-                       newGLObject = new GLTexturedModel(gl, texture, newModel.getGLData(), newModelShader); 
+                        newGLObject = new GLTexturedModel(gl, texture, newModel.getGLData(), newModelShader);
                     }
+
+                    objects.put(newModel, newGLObject);
+
+                    Point3f scale = newModel.getScale();
+                    newGLObject.getModelMatrix().scale(scale.x, scale.y, scale.z);
+
+                    runQueue.add(newGLObject);
+
                 }
-                Point3f scale = newModel.getScale();
-                newGLObject.getModelMatrix().scale(scale.x, scale.y, scale.z);
 
-                runQueue.add(newGLObject);
-            }
+            }).start();
+        }
 
-        }).start();
     }
 
     public void add(GLDrawable[] scene) {

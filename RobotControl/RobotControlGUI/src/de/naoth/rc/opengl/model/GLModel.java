@@ -6,7 +6,6 @@ import de.naoth.rc.opengl.file.GLFile;
 import de.naoth.rc.opengl.representations.Matrix4;
 import com.jogamp.opengl.GL3;
 
-import java.lang.Thread.State;
 import java.nio.IntBuffer;
 import java.util.HashMap;
 import java.util.Map;
@@ -18,16 +17,16 @@ public class GLModel implements GLObject{
 
     protected GLData glData;
 
-    private Shader shader;
-    private Map<String, Object> shaderUniforms;
+    protected Shader shader;
+    protected Map<String, Object> shaderUniforms;
     
-    private Matrix4 modelMatrix;
+    protected Matrix4 modelMatrix;
 
     protected int[] vbo; //Vertex Buffer Object
     protected int[] ibo; //Index Buffer Object
     protected int[] tbo; //Texture Buffer Object
     
-    private boolean initialized = false;
+    protected boolean initialized = false;
     
     public GLModel(GL3 gl, Shader shader) {
     	name = String.valueOf(System.currentTimeMillis());
@@ -79,29 +78,10 @@ public class GLModel implements GLObject{
     
     @Override
     public void display(Matrix4 cameraMatrix) {
-    	if(!initialized) {
-    		initializeBuffers();
-    		initialized = true;
-    	}
-    	
-    	this.shader.setGlobalUniform("cameraMatrix", cameraMatrix);
-    	this.shader.bind(gl);
-    	
-        bind();
+    	shader.setUniform(gl, "cameraMatrix", cameraMatrix);
 
-        for (Map.Entry<String, Object> entry: this.shaderUniforms.entrySet()) {
-            shader.setUniform(gl, entry.getKey(), entry.getValue());
-        }
         // draw the triangles
         gl.glDrawElements(GL3.GL_TRIANGLES, glData.getIndexCount(), GL3.GL_UNSIGNED_INT, 0);
-
-        unbind();
-        this.shader.unbind(gl);
-    }
-    
-    @Override
-    public void reshape() {
-    	// TODO Auto-generated method stub	
     }
     
     @Override
@@ -109,7 +89,12 @@ public class GLModel implements GLObject{
         shader.destroy(gl);
     }
     
-    protected void bind() {
+    @Override
+    public void bind() {
+        if(!initialized) {
+    		initializeBuffers();
+    		initialized = true;
+    	}
         // index buffer
         gl.glBindBuffer(GL3.GL_ELEMENT_ARRAY_BUFFER, ibo[0]);
 
@@ -122,7 +107,8 @@ public class GLModel implements GLObject{
         gl.glVertexAttribPointer(1, 3, GL3.GL_FLOAT, false, 24, 12);
     }
 
-    protected void unbind() {
+    @Override
+    public void unbind() {
         // index buffer
         gl.glBindBuffer(GL3.GL_ELEMENT_ARRAY_BUFFER, 0);
         // vertex+normal buffer
@@ -150,6 +136,21 @@ public class GLModel implements GLObject{
         shaderUniforms.put(name, object);
     }
     
+    @Override
+    public void bindShader(){
+        this.shader.bind(gl);
+
+        for (Map.Entry<String, Object> entry: this.shaderUniforms.entrySet()) {
+            shader.setUniform(gl, entry.getKey(), entry.getValue());
+        }
+    }
+    
+    @Override
+    public void unbindShader(){
+        this.shader.unbind(gl);
+    }
+    
+    @Override
     public boolean isReady(){
     	return initialized;
     }
