@@ -18,6 +18,10 @@ import de.naoth.rc.core.dialog.DialogPlugin;
 import de.naoth.rc.dataformats.SPLMessage;
 import de.naoth.rc.drawingmanager.DrawingEventManager;
 import de.naoth.rc.drawings.DrawingCollection;
+import de.naoth.rc.logmanager.BlackBoard;
+import de.naoth.rc.logmanager.LogDataFrame;
+import de.naoth.rc.logmanager.LogFileEventManager;
+import de.naoth.rc.logmanager.LogFrameListener;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -53,9 +57,12 @@ import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.MenuElement;
+import javax.swing.JToggleButton;
 import javax.swing.SwingUtilities;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
+
+// TODO: clean-up imports!
 
 /**
  *
@@ -70,6 +77,9 @@ public class TeamCommViewer extends AbstractDialog {
         public static RobotControl parent;
         @InjectPlugin
         public static DrawingEventManager drawingEventManager;
+        // TODO: do we need LogFileEventManager
+        @InjectPlugin
+        public static LogFileEventManager logFileEventManager;
     }//end Plugin
 
     private Timer timerCheckMessages;
@@ -289,6 +299,7 @@ public class TeamCommViewer extends AbstractDialog {
                 this.robotStatusPanel.setVisible(true);
                 this.robotStatusTable.setVisible(true);
 
+//                startListen(new TeamCommListenTask(), this.btnListenToLog);
             } else {
 
                 if(this.timerCheckMessages != null) {
@@ -310,6 +321,7 @@ public class TeamCommViewer extends AbstractDialog {
                     this.portNumberOwn.setEnabled(true);
                     this.portNumberOpponent.setEnabled(true);
                 }
+//                this.stopListen();
             }
         } catch (NumberFormatException ex) {
             Helper.handleException("Invalid port number", ex);
@@ -334,7 +346,7 @@ public class TeamCommViewer extends AbstractDialog {
             }
         // release button
         } else {
-            if(logfile != null) { // be sure log file is set
+            if(logfile != null) { // make sure log file is set
                 logfileQueueAppend = false;
                 setBtnRecordToolTipText(false);
             }
@@ -360,6 +372,42 @@ public class TeamCommViewer extends AbstractDialog {
         btnAddtionalColumns.setSelected(false);
     }//GEN-LAST:event_pmAdditionalColumnsPopupMenuWillBecomeInvisible
 
+    private void startListen(TimerTask tt, JToggleButton btn) {
+        this.timerCheckMessages = new Timer();
+        this.timerCheckMessages.scheduleAtFixedRate(tt, 100, 33);
+        
+        this.portNumberOwn.setEnabled(false);
+        this.portNumberOpponent.setEnabled(false);
+        this.robotStatusPanel.setVisible(true);
+        
+        // only listen either log or network
+        btn.setEnabled(false);
+    }
+    
+    private void stopListen() {
+        // stop timer
+        if(this.timerCheckMessages != null) {
+            this.timerCheckMessages.cancel();
+            this.timerCheckMessages.purge();
+            this.timerCheckMessages = null;
+        }
+        
+        // clear collections and "enable" UI
+        synchronized (messageMap) {
+            this.messageMap.clear();
+            this.robotsMap.clear();
+            this.robotsMapSorted.clear();
+            
+            this.robotStatusPanel.removeAll();
+            this.robotStatusPanel.setVisible(false);
+            
+            this.portNumberOwn.setEnabled(true);
+            this.portNumberOpponent.setEnabled(true);
+            
+            this.btListen.setEnabled(true);
+        }
+    }
+    
     @Override
     public void dispose() {
         closingLogfile();
@@ -422,6 +470,7 @@ public class TeamCommViewer extends AbstractDialog {
     private void closingLogfile() {
         if(logfile != null) {
             try {
+                logfileQueueAppend =false;
                 logfile.close();
                 logfile.join();
                 logfile = null;
@@ -507,8 +556,10 @@ public class TeamCommViewer extends AbstractDialog {
                             robotStatus.updateStatus(msg.timestamp, msg.message);
                         }
                     });
-                    
-                    msg.message.draw(drawings, msg.isOpponent() ? Color.RED : Color.BLUE, msg.isOpponent());
+                    /*
+                    if(robotsMap.get(address).showRobot()) {
+                        msg.message.draw(drawings, msg.isOpponent() ? Color.RED : Color.BLUE, msg.isOpponent());
+                    }*/
                 }
 
                 TeamCommViewer.Plugin.drawingEventManager.fireDrawingEvent(drawings);
@@ -533,7 +584,7 @@ public class TeamCommViewer extends AbstractDialog {
         public boolean isOpponent() {
             return isOpponent;
         }
-    }
+    }// end class TeamCommMessage
     
     public class TeamCommListener implements Runnable {
         private DatagramChannel channel;
@@ -588,7 +639,7 @@ public class TeamCommViewer extends AbstractDialog {
                         SPLMessage spl_msg = new SPLMessage(this.readBuffer);
                         TeamCommMessage tc_msg = new TeamCommMessage(timestamp, spl_msg, this.isOpponent);
                         
-                        if(logfileQueueAppend) {
+                        if(logfileQueueAppend) { // only write to queue if requested!
                             logfileQueue.add(tc_msg);
                         }
 
@@ -611,6 +662,30 @@ public class TeamCommViewer extends AbstractDialog {
         }
     }//end class TeamCommListener
     
+    /**
+     * Implements a listener for TeamComm log file "player".
+     */
+    public class TeamCommLogListener implements LogFrameListener {
+        @Override
+        public void newFrame(BlackBoard b) {
+            // get the message(s) from the blackboard
+            TeamCommLogViewer.LogTeamCommFrame frame = (TeamCommLogViewer.LogTeamCommFrame) b.get("TeamCommMessage");
+            if (frame != null) {
+                // have to create new message to (evtl.) replace the timestamp (if ignoring timestamp is selected)
+                TeamCommMessage tc_msg = new TeamCommMessage(frame.getLongNumber(), frame.getTeamCommMessage().message, frame.getTeamCommMessage().isOpponent);
+                // make sure, there is an spl message!
+                if(tc_msg.message != null) {
+                    // enable log recording from log file, thus one can extract snippets of the log file
+                    if(logfileQueueAppend) { // only write to queue if requested!
+                        logfileQueue.add(tc_msg);
+                    }
+                    // create "virtual" ip address
+                    messageMap.put(tc_msg.message.teamNum + ".0.0." + tc_msg.message.playerNum, tc_msg);
+                }
+            }
+        }
+    }//end class TeamCommLogListener
+    
     private class LogFileWriter extends Thread {
         private final File log;
         private final Gson json;
@@ -620,23 +695,7 @@ public class TeamCommViewer extends AbstractDialog {
         public LogFileWriter(File log) {
             this.log = log;
             this.json = new GsonBuilder()
-                // shouldn't be any ... just for safety reasons
-                .disableInnerClassSerialization()
-                // skip Variable "user" in SPLMessage
-                /*
-                .addSerializationExclusionStrategy(new ExclusionStrategy() {
-                    @Override
-                    public boolean shouldSkipField(FieldAttributes fieldAttributes) {
-                        return fieldAttributes.getName().compareTo("user") == 0;
-                    }
-
-                    @Override
-                    public boolean shouldSkipClass(Class<?> aClass) {
-                        return false;
-                    }
-                })*/
-                // write NaN value without throwing error/warning
-                .serializeSpecialFloatingPointValues()
+                .serializeSpecialFloatingPointValues() // write NaN value without throwing error/warning
                 .create();
         }
 
@@ -650,7 +709,7 @@ public class TeamCommViewer extends AbstractDialog {
                 while (running) {
                     TeamCommMessage msg = logfileQueue.poll();
                     if(msg != null) {
-                        writeMessage(msg.message, msg.timestamp, msg.isOpponent);
+                        writeMessage(msg);
                     }
                 }
                 
@@ -670,17 +729,11 @@ public class TeamCommViewer extends AbstractDialog {
             return this.log != null ? this.log.getName() : "";
         }
         
-        public void writeMessage(SPLMessage msg, long timestamp, boolean isOpponent) throws IOException {
-            this.jw.beginObject();
-            this.jw.name("timestamp");
-            this.jw.value(timestamp);
-            this.jw.name("isOpponent");
-            this.jw.value(isOpponent);
-            this.jw.name("spl");
+        public void writeMessage(TeamCommMessage msg) throws IOException {
+            System.out.println(msg.timestamp);
             this.jw.jsonValue(this.json.toJson(msg));
-            this.jw.endObject();
         }
-    }
+    }//end class LogFileWriter
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JToggleButton btListen;
