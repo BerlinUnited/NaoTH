@@ -18,6 +18,10 @@ import de.naoth.rc.core.dialog.DialogPlugin;
 import de.naoth.rc.dataformats.SPLMessage;
 import de.naoth.rc.drawingmanager.DrawingEventManager;
 import de.naoth.rc.drawings.DrawingCollection;
+import de.naoth.rc.logmanager.BlackBoard;
+import de.naoth.rc.logmanager.LogDataFrame;
+import de.naoth.rc.logmanager.LogFileEventManager;
+import de.naoth.rc.logmanager.LogFrameListener;
 import java.awt.Color;
 import java.io.File;
 import java.io.FileWriter;
@@ -44,6 +48,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.JToggleButton;
 import javax.swing.SwingUtilities;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
@@ -61,6 +66,8 @@ public class TeamCommViewer extends AbstractDialog {
         public static RobotControl parent;
         @InjectPlugin
         public static DrawingEventManager drawingEventManager;
+        @InjectPlugin
+        public static LogFileEventManager logFileEventManager;
     }//end Plugin
 
     private Timer timerCheckMessages;
@@ -68,6 +75,7 @@ public class TeamCommViewer extends AbstractDialog {
     private final TeamCommListener listenerOpponent = new TeamCommListener(true);
     private final HashMap<String, RobotStatus> robotsMap = new HashMap<>();
     private final TreeMap<String, RobotStatus> robotsMapSorted = new TreeMap<>();
+    private final TeamCommLogListener listenerLog = new TeamCommLogListener();
 
     private final Map<String, TeamCommMessage> messageMap = Collections.synchronizedMap(new TreeMap<String, TeamCommMessage>());
 
@@ -83,6 +91,13 @@ public class TeamCommViewer extends AbstractDialog {
      */
     public TeamCommViewer() {
         initComponents();
+        // closes the log file before exiting application
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            @Override
+            public void run() {
+                closingLogfile();
+            }
+        });
     }
 
     /**
@@ -103,6 +118,7 @@ public class TeamCommViewer extends AbstractDialog {
         jLabel2 = new javax.swing.JLabel();
         btnRecord = new javax.swing.JToggleButton();
         btnStopRecording = new javax.swing.JButton();
+        btnListenToLog = new javax.swing.JToggleButton();
 
         teamCommFileChooser.setDialogType(javax.swing.JFileChooser.SAVE_DIALOG);
         teamCommFileChooser.setDialogTitle("Log file location");
@@ -150,6 +166,13 @@ public class TeamCommViewer extends AbstractDialog {
             }
         });
 
+        btnListenToLog.setText("Log");
+        btnListenToLog.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnListenToLogActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -159,7 +182,9 @@ public class TeamCommViewer extends AbstractDialog {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(btListen)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnListenToLog)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(portNumberOwn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -171,7 +196,7 @@ public class TeamCommViewer extends AbstractDialog {
                         .addComponent(btnRecord)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnStopRecording)
-                        .addGap(0, 100, Short.MAX_VALUE))
+                        .addGap(0, 0, Short.MAX_VALUE))
                     .addComponent(robotStatusPanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
@@ -187,7 +212,8 @@ public class TeamCommViewer extends AbstractDialog {
                         .addComponent(portNumberOwn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(portNumberOpponent, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(jLabel1)
-                        .addComponent(jLabel2)))
+                        .addComponent(jLabel2)
+                        .addComponent(btnListenToLog)))
                 .addGap(27, 27, 27)
                 .addComponent(robotStatusPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -208,32 +234,12 @@ public class TeamCommViewer extends AbstractDialog {
                     listenerOpponent.connect(portOpponent);
                 }
 
-                this.timerCheckMessages = new Timer();
-                this.timerCheckMessages.scheduleAtFixedRate(new TeamCommListenTask(), 100, 33);
-                this.portNumberOwn.setEnabled(false);
-                this.portNumberOpponent.setEnabled(false);
-                this.robotStatusPanel.setVisible(true);
-
-            } else {
-
-                if(this.timerCheckMessages != null) {
-                    this.timerCheckMessages.cancel();
-                    this.timerCheckMessages.purge();
-                    this.timerCheckMessages = null;
-                }
-                
+                startListen(new TeamCommListenTask(), this.btnListenToLog);
+            } else {                
                 listenerOwn.disconnect();
                 listenerOpponent.disconnect();
 
-                synchronized (messageMap) {
-                    messageMap.clear();
-                    this.robotsMap.clear();
-                    this.robotsMapSorted.clear();
-                    this.robotStatusPanel.removeAll();
-                    this.robotStatusPanel.setVisible(false);
-                    this.portNumberOwn.setEnabled(true);
-                    this.portNumberOpponent.setEnabled(true);
-                }
+                this.stopListen();
             }
         } catch (NumberFormatException ex) {
             Helper.handleException("Invalid port number", ex);
@@ -258,7 +264,7 @@ public class TeamCommViewer extends AbstractDialog {
             }
         // release button
         } else {
-            if(logfile != null) { // be sure log file is set
+            if(logfile != null) { // make sure log file is set
                 logfileQueueAppend = false;
                 setBtnRecordToolTipText(false);
             }
@@ -274,6 +280,55 @@ public class TeamCommViewer extends AbstractDialog {
         btnStopRecording.setEnabled(false);
     }//GEN-LAST:event_btnStopRecordingActionPerformed
 
+    private void btnListenToLogActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnListenToLogActionPerformed
+        if(btnListenToLog.isSelected()) {
+            // start log listener and update UI
+            Plugin.logFileEventManager.addListener(listenerLog);
+            startListen(new TeamCommListenTask(), this.btListen);
+        } else {
+            // stop log listener and update UI
+            Plugin.logFileEventManager.removeListener(listenerLog);
+            this.stopListen();
+        }
+    }//GEN-LAST:event_btnListenToLogActionPerformed
+
+    private void startListen(TimerTask tt, JToggleButton btn) {
+        this.timerCheckMessages = new Timer();
+        this.timerCheckMessages.scheduleAtFixedRate(tt, 100, 33);
+        
+        this.portNumberOwn.setEnabled(false);
+        this.portNumberOpponent.setEnabled(false);
+        this.robotStatusPanel.setVisible(true);
+        
+        // only listen either log or network
+        btn.setEnabled(false);
+    }
+    
+    private void stopListen() {
+        // stop timer
+        if(this.timerCheckMessages != null) {
+            this.timerCheckMessages.cancel();
+            this.timerCheckMessages.purge();
+            this.timerCheckMessages = null;
+        }
+        
+        // clear collections and "enable" UI
+        synchronized (messageMap) {
+            this.messageMap.clear();
+            this.robotsMap.clear();
+            this.robotsMapSorted.clear();
+            
+            this.robotStatusPanel.removeAll();
+            this.robotStatusPanel.setVisible(false);
+            
+            this.portNumberOwn.setEnabled(true);
+            this.portNumberOpponent.setEnabled(true);
+            
+            this.btListen.setEnabled(true);
+            this.btnListenToLog.setEnabled(true);
+        }
+    }
+    
     @Override
     public void dispose() {
         closingLogfile();
@@ -404,7 +459,7 @@ public class TeamCommViewer extends AbstractDialog {
         public boolean isOpponent() {
             return isOpponent;
         }
-    }
+    }// end class TeamCommMessage
     
     public class TeamCommListener implements Runnable {
         private DatagramChannel channel;
@@ -459,7 +514,7 @@ public class TeamCommViewer extends AbstractDialog {
                         SPLMessage spl_msg = new SPLMessage(this.readBuffer);
                         TeamCommMessage tc_msg = new TeamCommMessage(timestamp, spl_msg, this.isOpponent);
                         
-                        if(logfileQueueAppend) {
+                        if(logfileQueueAppend) { // only write to queue if requested!
                             logfileQueue.add(tc_msg);
                         }
 
@@ -482,6 +537,30 @@ public class TeamCommViewer extends AbstractDialog {
         }
     }//end class TeamCommListener
     
+    /**
+     * Implements a listener for TeamComm log file "player".
+     */
+    public class TeamCommLogListener implements LogFrameListener {
+        @Override
+        public void newFrame(BlackBoard b) {
+            // get the message(s) from the blackboard
+            TeamCommLogViewer.LogTeamCommFrame frame = (TeamCommLogViewer.LogTeamCommFrame) b.get("TeamCommMessage");
+            if (frame != null) {
+                // have to create new message to (evtl.) replace the timestamp (if ignoring timestamp is selected)
+                TeamCommMessage tc_msg = new TeamCommMessage(frame.getLongNumber(), frame.getTeamCommMessage().message, frame.getTeamCommMessage().isOpponent);
+                // make sure, there is an spl message!
+                if(tc_msg.message != null) {
+                    // enable log recording from log file, thus one can extract snippets of the log file
+                    if(logfileQueueAppend) { // only write to queue if requested!
+                        logfileQueue.add(tc_msg);
+                    }
+                    // create "virtual" ip address
+                    messageMap.put(tc_msg.message.teamNum + ".0.0." + tc_msg.message.playerNum, tc_msg);
+                }
+            }
+        }
+    }//end class TeamCommLogListener
+    
     private class LogFileWriter extends Thread {
         private final File log;
         private final Gson json;
@@ -491,23 +570,7 @@ public class TeamCommViewer extends AbstractDialog {
         public LogFileWriter(File log) {
             this.log = log;
             this.json = new GsonBuilder()
-                // shouldn't be any ... just for safety reasons
-                .disableInnerClassSerialization()
-                // skip Variable "user" in SPLMessage
-                /*
-                .addSerializationExclusionStrategy(new ExclusionStrategy() {
-                    @Override
-                    public boolean shouldSkipField(FieldAttributes fieldAttributes) {
-                        return fieldAttributes.getName().compareTo("user") == 0;
-                    }
-
-                    @Override
-                    public boolean shouldSkipClass(Class<?> aClass) {
-                        return false;
-                    }
-                })*/
-                // write NaN value without throwing error/warning
-                .serializeSpecialFloatingPointValues()
+                .serializeSpecialFloatingPointValues() // write NaN value without throwing error/warning
                 .create();
         }
 
@@ -521,7 +584,7 @@ public class TeamCommViewer extends AbstractDialog {
                 while (running) {
                     TeamCommMessage msg = logfileQueue.poll();
                     if(msg != null) {
-                        writeMessage(msg.message, msg.timestamp, msg.isOpponent);
+                        writeMessage(msg);
                     }
                 }
                 
@@ -541,20 +604,15 @@ public class TeamCommViewer extends AbstractDialog {
             return this.log != null ? this.log.getName() : "";
         }
         
-        public void writeMessage(SPLMessage msg, long timestamp, boolean isOpponent) throws IOException {
-            this.jw.beginObject();
-            this.jw.name("timestamp");
-            this.jw.value(timestamp);
-            this.jw.name("isOpponent");
-            this.jw.value(isOpponent);
-            this.jw.name("spl");
+        public void writeMessage(TeamCommMessage msg) throws IOException {
+            System.out.println(msg.timestamp);
             this.jw.jsonValue(this.json.toJson(msg));
-            this.jw.endObject();
         }
-    }
+    }//end class LogFileWriter
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JToggleButton btListen;
+    private javax.swing.JToggleButton btnListenToLog;
     private javax.swing.JToggleButton btnRecord;
     private javax.swing.JButton btnStopRecording;
     private javax.swing.JLabel jLabel1;
