@@ -12,12 +12,15 @@ import de.naoth.rc.Helper;
 import de.naoth.rc.RobotControl;
 import de.naoth.rc.components.teamcommviewer.RobotStatus;
 import de.naoth.rc.components.teamcommviewer.RobotStatusPanel;
+import de.naoth.rc.components.teamcommviewer.RobotStatusTable;
 import de.naoth.rc.core.dialog.AbstractDialog;
 import de.naoth.rc.core.dialog.DialogPlugin;
 import de.naoth.rc.dataformats.SPLMessage;
 import de.naoth.rc.drawingmanager.DrawingEventManager;
 import de.naoth.rc.drawings.DrawingCollection;
 import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -30,9 +33,13 @@ import java.nio.ByteOrder;
 import java.nio.channels.AsynchronousCloseException;
 import java.nio.channels.DatagramChannel;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Timer;
@@ -41,8 +48,11 @@ import java.util.TreeMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.MenuElement;
 import javax.swing.SwingUtilities;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
@@ -83,7 +93,7 @@ public class TeamCommViewer extends AbstractDialog {
     public TeamCommViewer() {
         initComponents();
         // collapse pane
-        robotStatusSplitPane.setDividerLocation(Integer.MAX_VALUE);/*2000*/
+        robotStatusSplitPane.setDividerLocation(0);/*2000, Integer.MAX_VALUE*/
         // closes the log file before exiting application
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
@@ -91,6 +101,8 @@ public class TeamCommViewer extends AbstractDialog {
                 closingLogfile();
             }
         });
+        // add additional columns to popup menu
+        addAdditionalColumnsToPopupMenu();
     }
 
     /**
@@ -103,6 +115,7 @@ public class TeamCommViewer extends AbstractDialog {
     private void initComponents() {
 
         teamCommFileChooser = new de.naoth.rc.components.ExtendedFileChooser();
+        pmAdditionalColumns = new javax.swing.JPopupMenu();
         btListen = new javax.swing.JToggleButton();
         portNumberOwn = new javax.swing.JFormattedTextField();
         portNumberOpponent = new javax.swing.JFormattedTextField();
@@ -115,11 +128,22 @@ public class TeamCommViewer extends AbstractDialog {
         jScrollPane2 = new javax.swing.JScrollPane();
         robotStatusPanel = new javax.swing.JPanel();
         robotStatusTable = new de.naoth.rc.components.teamcommviewer.RobotStatusTable();
+        btnAddtionalColumns = new javax.swing.JToggleButton();
 
         teamCommFileChooser.setDialogType(javax.swing.JFileChooser.SAVE_DIALOG);
         teamCommFileChooser.setDialogTitle("Log file location");
         teamCommFileChooser.setSelectedFile(new File((new SimpleDateFormat("yyyy-MM-dd")).format(new Date())+"_TeamComm.log"));
         teamCommFileChooser.setToolTipText("");
+
+        pmAdditionalColumns.addPopupMenuListener(new javax.swing.event.PopupMenuListener() {
+            public void popupMenuWillBecomeVisible(javax.swing.event.PopupMenuEvent evt) {
+            }
+            public void popupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {
+                pmAdditionalColumnsPopupMenuWillBecomeInvisible(evt);
+            }
+            public void popupMenuCanceled(javax.swing.event.PopupMenuEvent evt) {
+            }
+        });
 
         btListen.setText("Listen to TeamComm");
         btListen.addActionListener(new java.awt.event.ActionListener() {
@@ -164,6 +188,9 @@ public class TeamCommViewer extends AbstractDialog {
         robotStatusSplitPane.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
         robotStatusSplitPane.setOneTouchExpandable(true);
 
+        jScrollPane2.setMinimumSize(new java.awt.Dimension(0, 0));
+        jScrollPane2.setPreferredSize(new java.awt.Dimension(0, 22));
+
         robotStatusPanel.setLayout(new java.awt.GridLayout(5, 1, 0, 5));
         jScrollPane2.setViewportView(robotStatusPanel);
 
@@ -180,10 +207,18 @@ public class TeamCommViewer extends AbstractDialog {
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 452, Short.MAX_VALUE)
+            .addGap(0, 472, Short.MAX_VALUE)
             .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addComponent(robotStatusSplitPane, javax.swing.GroupLayout.DEFAULT_SIZE, 452, Short.MAX_VALUE))
+                .addComponent(robotStatusSplitPane, javax.swing.GroupLayout.DEFAULT_SIZE, 472, Short.MAX_VALUE))
         );
+
+        btnAddtionalColumns.setIcon(new javax.swing.ImageIcon(getClass().getResource("/toolbarButtonGraphics/general/Preferences16.gif"))); // NOI18N
+        btnAddtionalColumns.setToolTipText("Add/Remove columns from RobotStatusTable");
+        btnAddtionalColumns.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAddtionalColumnsActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -195,7 +230,7 @@ public class TeamCommViewer extends AbstractDialog {
                     .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(btListen)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(portNumberOwn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -203,27 +238,30 @@ public class TeamCommViewer extends AbstractDialog {
                         .addComponent(jLabel2)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(portNumberOpponent, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(12, 12, 12)
+                        .addGap(18, 18, 18)
                         .addComponent(btnRecord)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnStopRecording)
-                        .addGap(0, 124, Short.MAX_VALUE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnAddtionalColumns)
+                        .addGap(0, 68, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(20, 20, 20)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addComponent(btnStopRecording, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                    .addComponent(btnRecord, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(btnStopRecording, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(btListen)
-                        .addComponent(portNumberOwn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(portNumberOpponent, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(jLabel1)
-                        .addComponent(jLabel2)))
-                .addGap(18, 18, 18)
+                        .addComponent(portNumberOwn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel2)
+                        .addComponent(portNumberOpponent, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(btnRecord, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(btnAddtionalColumns, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
@@ -312,6 +350,16 @@ public class TeamCommViewer extends AbstractDialog {
         btnStopRecording.setEnabled(false);
     }//GEN-LAST:event_btnStopRecordingActionPerformed
 
+    private void btnAddtionalColumnsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddtionalColumnsActionPerformed
+        if(btnAddtionalColumns.isSelected()) {
+            pmAdditionalColumns.show(btnAddtionalColumns, 0, btnAddtionalColumns.getHeight());
+        }
+    }//GEN-LAST:event_btnAddtionalColumnsActionPerformed
+
+    private void pmAdditionalColumnsPopupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {//GEN-FIRST:event_pmAdditionalColumnsPopupMenuWillBecomeInvisible
+        btnAddtionalColumns.setSelected(false);
+    }//GEN-LAST:event_pmAdditionalColumnsPopupMenuWillBecomeInvisible
+
     @Override
     public void dispose() {
         closingLogfile();
@@ -331,28 +379,26 @@ public class TeamCommViewer extends AbstractDialog {
                 new File(teamCommFileChooser.getSelectedFile()+".log") : 
                 teamCommFileChooser.getSelectedFile();
 
-            if(dfile.canWrite()) {
-                try {
-                    // make sure there is no open log file ..
-                    closingLogfile();
+            // make sure there is no open log file ..
+            closingLogfile();
+            
+            try {
+                // create new log file
+                dfile.createNewFile();
+                new FileWriter(dfile).close(); // trigger exception (if couldn't write)
 
-                    // create new log file
-                    dfile.createNewFile();
-                    logfile = new LogFileWriter(dfile);
-                    logfile.start();
+                dfile.createNewFile();
+                logfile = new LogFileWriter(dfile);
+                logfile.start();
+                logfileQueueAppend = true;
 
-                    btnRecord.setSelected(true);
-                    setBtnRecordToolTipText(true);
-                    btnStopRecording.setEnabled(true); // enable "stop"-button
+                btnRecord.setSelected(true);
+                setBtnRecordToolTipText(true);
+                btnStopRecording.setEnabled(true); // enable "stop"-button
 
-                    return true;
-                } catch (IOException ex) {
-                    Logger.getLogger(TeamCommViewer.class.getName()).log(Level.SEVERE, null, ex);
-                    JOptionPane.showMessageDialog(null, "IO-Error occurred, see application log.", "Exception", JOptionPane.ERROR_MESSAGE);
-                } catch (Throwable ex) {
-                    Logger.getLogger(TeamCommViewer.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            } else {
+                return true;
+            } catch (IOException ex) {
+                Logger.getLogger(TeamCommViewer.class.getName()).log(Level.SEVERE, null, ex);
                 JOptionPane.showMessageDialog(null, "Selected log file is not writeable!", "Not writeable", JOptionPane.ERROR_MESSAGE);
             }
         }
@@ -382,6 +428,47 @@ public class TeamCommViewer extends AbstractDialog {
             } catch (InterruptedException ex) {
                 Logger.getLogger(TeamCommViewer.class.getName()).log(Level.SEVERE, null, ex);
             }
+        }
+    }
+    
+    private void saveColumnConfiguration() {
+        ArrayList<String> items = new ArrayList<>();
+        for (MenuElement item : pmAdditionalColumns.getSubElements()) {
+            if(((JCheckBoxMenuItem)item).isSelected()) {
+                items.add(((JCheckBoxMenuItem)item).getActionCommand());
+            }
+        }
+        Plugin.parent.getConfig().setProperty(this.getClass().getName()+".ColumnConfig", items.stream().collect(Collectors.joining("|")));
+    }
+    
+    private void addAdditionalColumnsToPopupMenu() {
+        // try to get column configuration
+        String columnConfigStr = Plugin.parent.getConfig().getProperty(this.getClass().getName()+".ColumnConfig", "");
+        List<String> columnConfig = columnConfigStr.isEmpty() ? null : Arrays.asList(columnConfigStr.split("\\|"));
+        // add all available columns to configuration popup menu
+        for (Iterator<RobotStatusTable.Column> it = robotStatusTable.ALL_COLUMNS.iterator(); it.hasNext();) {
+            RobotStatusTable.Column col = it.next();
+            // skip "empty" columns, e.g. the connect-button column
+            if(col.name == null || col.name.isEmpty()) { continue; }
+            JCheckBoxMenuItem item = new JCheckBoxMenuItem(col.name);
+            // shows the default columns or - if set - the saved column configuration
+            if((columnConfig == null && col.showbydefault) || (columnConfig != null && columnConfig.contains(col.name))) {
+                robotStatusTable.addColumn(col.name);
+                item.setSelected(true);
+            }
+            item.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    JCheckBoxMenuItem item = (JCheckBoxMenuItem)e.getSource();
+                    if(item.isSelected()) {
+                        robotStatusTable.addColumn(e.getActionCommand());
+                    } else {
+                        robotStatusTable.removeColumn(e.getActionCommand());
+                    }
+                    saveColumnConfiguration();
+                }
+            });
+            pmAdditionalColumns.add(item);
         }
     }
 
@@ -597,12 +684,14 @@ public class TeamCommViewer extends AbstractDialog {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JToggleButton btListen;
+    private javax.swing.JToggleButton btnAddtionalColumns;
     private javax.swing.JToggleButton btnRecord;
     private javax.swing.JButton btnStopRecording;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JPopupMenu pmAdditionalColumns;
     private javax.swing.JFormattedTextField portNumberOpponent;
     private javax.swing.JFormattedTextField portNumberOwn;
     private javax.swing.JPanel robotStatusPanel;
