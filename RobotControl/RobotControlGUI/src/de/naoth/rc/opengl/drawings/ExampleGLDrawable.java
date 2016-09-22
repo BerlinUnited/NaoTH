@@ -8,6 +8,7 @@ package de.naoth.rc.opengl.drawings;
 import de.naoth.rc.opengl.file.GLData;
 import de.naoth.rc.opengl.file.ObjFile;
 import de.naoth.rc.opengl.file.Texture;
+import de.naoth.rc.opengl.representations.Point3f;
 
 
 /**
@@ -29,5 +30,9 @@ public class ExampleGLDrawable extends GLDrawable{
     public GLData getGLData() {
         return new ObjFile(pathToRES, "ball.obj").buildGLData();
     }
-    
+
+    @Override
+    public Point3f getPos() {
+        return new Point3f(((float)Math.random() * 9)-4.5f, 0.2f, ((float)Math.random() * 6)-3f);
+    }    
 }

@@ -154,4 +154,9 @@ public class GLModel implements GLObject{
     public boolean isReady(){
     	return initialized;
     }
+
+    @Override
+    public Shader getShader() {
+       return this.shader;
+    }
 }

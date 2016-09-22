@@ -6,7 +6,7 @@ package de.naoth.rc.manager;
 import de.naoth.rc.core.manager.AbstractManagerPlugin;
 import de.naoth.rc.opengl.drawings.ExampleGLDrawable;
 import de.naoth.rc.opengl.drawings.GLDrawable;
-import de.naoth.rc.opengl.file.GLScene;
+import de.naoth.rc.opengl.Scene;
 import de.naoth.rc.server.Command;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -33,36 +33,40 @@ public class GLViewerSceneManagerImpl extends AbstractManagerPlugin<GLDrawable[]
             if (!str.isEmpty()) {
                 try {
                     String[] tokens = str.split(" ");
+                    System.out.println(drawablePackageName + "." + tokens[1]);
                     // get the class of the drawing
-                    Class drawingClass = Class.forName(drawablePackageName + "." + tokens[0]);
+                    Class drawingClass = Class.forName(drawablePackageName + "." + tokens[1]);
                     // get the constructor which takes String[] as parameter
-                    Constructor constructor = drawingClass.getConstructor(tokens.getClass());
+                    Constructor constructor = drawingClass.getConstructor();
                     // create new Drawing
+                    /*
                     Object drawing = constructor.newInstance(new Object[]{
                         tokens
                     });
+                    */
+                    Object drawing = constructor.newInstance();
                     if (drawing instanceof GLDrawable) {
                         scene[i] = (GLDrawable) drawing;
                     }
                 } catch (InstantiationException ex) {
-                    Logger.getLogger(GLViewerSceneManagerImpl.class.getName()).log(Level.SEVERE, null, ex);
+                    //Logger.getLogger(GLViewerSceneManagerImpl.class.getName()).log(Level.SEVERE, null, ex);
                 } catch (IllegalAccessException ex) {
-                    Logger.getLogger(GLViewerSceneManagerImpl.class.getName()).log(Level.SEVERE, null, ex);
+                    //Logger.getLogger(GLViewerSceneManagerImpl.class.getName()).log(Level.SEVERE, null, ex);
                 } catch (InvocationTargetException ex) {
-                    Logger.getLogger(GLViewerSceneManagerImpl.class.getName()).log(Level.SEVERE, null, ex);
+                    //Logger.getLogger(GLViewerSceneManagerImpl.class.getName()).log(Level.SEVERE, null, ex);
                 } catch (NoSuchMethodException ex) {
-                    Logger.getLogger(GLViewerSceneManagerImpl.class.getName()).log(Level.SEVERE, null, ex);
+                    //Logger.getLogger(GLViewerSceneManagerImpl.class.getName()).log(Level.SEVERE, null, ex);
                 } catch (SecurityException ex) {
-                    Logger.getLogger(GLViewerSceneManagerImpl.class.getName()).log(Level.SEVERE, null, ex);
+                    //Logger.getLogger(GLViewerSceneManagerImpl.class.getName()).log(Level.SEVERE, null, ex);
                 } catch (ClassNotFoundException ex) {
-                    Logger.getLogger(GLViewerSceneManagerImpl.class.getName()).log(Level.SEVERE, null, ex);
+                    //Logger.getLogger(GLViewerSceneManagerImpl.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
             if (scene[i] == null) {
                 scene[i] = new ExampleGLDrawable();
             }
         }
-        
+
         return scene;
     }
 

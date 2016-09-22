@@ -11,7 +11,7 @@ import com.jogamp.opengl.GLProfile;
 import com.jogamp.opengl.awt.GLCanvas;
 import com.jogamp.opengl.util.FPSAnimator;
 import de.naoth.rc.opengl.Camera;
-import de.naoth.rc.opengl.file.GLScene;
+import de.naoth.rc.opengl.Scene;
 import de.naoth.rc.opengl.model.GLObject;
 import de.naoth.rc.opengl.representations.Point3f;
 import de.naoth.rc.opengl.representations.Vector3f;
@@ -28,6 +28,8 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.LinkedList;
+import java.util.Map;
+import java.util.Map.Entry;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 
@@ -49,7 +51,7 @@ public class GLViewer extends AbstractDialog
     }//end Plugin
 
     private final GLCanvas canvas;
-    
+
     private GLEventListenerImpl glImpl;
 
     /**
@@ -166,7 +168,15 @@ public class GLViewer extends AbstractDialog
 
   private void jToggleButtonUpdateActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jToggleButtonUpdateActionPerformed
   {//GEN-HEADEREND:event_jToggleButtonUpdateActionPerformed
-      //TODO do something
+      if (jToggleButtonUpdate.isSelected()) {
+          if (Plugin.parent.checkConnected()) {
+              Plugin.glViewerSceneManager.addListener(this);
+          } else {
+              jToggleButtonUpdate.setSelected(false);
+          }
+      } else {
+          Plugin.glViewerSceneManager.removeListener(this);
+      }
   }//GEN-LAST:event_jToggleButtonUpdateActionPerformed
 
   private void jCheckBoxImageActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jCheckBoxImageActionPerformed
@@ -207,12 +217,14 @@ public class GLViewer extends AbstractDialog
 
     @Override
     public void newObjectReceived(GLDrawable[] object) {
-        glImpl.scene.add(object);
+        glImpl.dynamicScene.clean();
+        System.out.println("newObjectReceived");
+        glImpl.dynamicScene.add(object);
     }
 
     @Override
     public void errorOccured(String cause) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        System.err.println(cause);
     }
 
 }
@@ -228,10 +240,14 @@ final class GLEventListenerImpl implements GLEventListener {
     private Camera camera;
 
     private final GLCanvas canvas;
-    
-    public GLScene scene;
+
+    public Scene dynamicScene, staticScene;
 
     private final Point3f camPos = new Point3f(20, 30, 40);
+
+    private boolean changed = false;
+
+    private boolean reshaped = false;
 
     public GLEventListenerImpl(Input inputListener, GLCanvas canvas) {
         this.canvas = canvas;
@@ -245,12 +261,43 @@ final class GLEventListenerImpl implements GLEventListener {
 
         String scenePath = System.getProperty("user.dir").replaceAll("\\\\", "/") + "/src/de/naoth/rc/opengl/res/";
 
-        scene = new GLScene(gl);
+        this.dynamicScene = new Scene(gl);
+        this.staticScene = new Scene(gl);
 
         //scene.add(scenePath + "scene.simgl");
         //scene.add(new ExampleGLDrawable());
-        scene.add(new FieldDrawingSPL2013());
-        scene.add(new Head());
+        this.staticScene.add(new FieldDrawingSPL2013());
+        
+        /*
+        this.staticScene.add(new ExampleGLDrawable());
+        this.staticScene.add(new ExampleGLDrawable());
+        this.staticScene.add(new ExampleGLDrawable());
+        this.staticScene.add(new ExampleGLDrawable());
+        this.staticScene.add(new ExampleGLDrawable());
+        this.staticScene.add(new ExampleGLDrawable());
+        this.staticScene.add(new ExampleGLDrawable());
+        this.staticScene.add(new ExampleGLDrawable());
+        this.staticScene.add(new ExampleGLDrawable());
+        this.staticScene.add(new ExampleGLDrawable());
+        this.staticScene.add(new ExampleGLDrawable());
+        this.staticScene.add(new ExampleGLDrawable());
+        this.staticScene.add(new ExampleGLDrawable());
+        this.staticScene.add(new ExampleGLDrawable());
+        this.staticScene.add(new ExampleGLDrawable());
+        this.staticScene.add(new ExampleGLDrawable());
+        this.staticScene.add(new ExampleGLDrawable());
+        this.staticScene.add(new ExampleGLDrawable());
+        this.staticScene.add(new ExampleGLDrawable());
+        this.staticScene.add(new ExampleGLDrawable());
+        this.staticScene.add(new ExampleGLDrawable());
+        this.staticScene.add(new ExampleGLDrawable());
+        this.staticScene.add(new ExampleGLDrawable());
+        this.staticScene.add(new ExampleGLDrawable());
+        this.staticScene.add(new ExampleGLDrawable());
+        this.staticScene.add(new ExampleGLDrawable());
+        this.staticScene.add(new ExampleGLDrawable());
+        */
+        //scene.add(new Head());
         /*
         scene.add(new Torso());
         scene.add(new LThigh());
@@ -260,7 +307,6 @@ final class GLEventListenerImpl implements GLEventListener {
         scene.add(new LShinebone());
         scene.add(new RShinebone());
          */
-
         gl.glEnable(GL3.GL_DEPTH_TEST);
 
         animator = new FPSAnimator(drawable, 60);
@@ -271,63 +317,69 @@ final class GLEventListenerImpl implements GLEventListener {
 
     @Override
     public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
-        camera.reshape(width, height);
+        this.camera.reshape(width, height);
+        this.reshaped = true;
     }
 
     @Override
     public void dispose(GLAutoDrawable drawable) {
-        animator.stop();
-
-        for (GLObject each : scene.getRunQueue()) {
-            each.dispose();
-        }
+        this.animator.stop();
+        this.dynamicScene.dispose();
     }
 
     @Override
     public void display(GLAutoDrawable drawable) {
-        gl.glEnable(GL3.GL_BLEND);
-        gl.glBlendFunc(GL3.GL_SRC_ALPHA, GL3.GL_ONE_MINUS_SRC_ALPHA);
-
-        gl.glClearColor(0.839f, 0.851f, 0.875f, 1.0f);
-        //gl.glClearColor((float)Math.random(), (float)Math.random(), (float)Math.random(), 1.0f);
-        gl.glClear(GL3.GL_COLOR_BUFFER_BIT | GL3.GL_DEPTH_BUFFER_BIT);
-
         if (inputListener.a) {
             camera.rotateRight(-0.02f);
+            this.changed = true;
         }
         if (inputListener.d) {
             camera.rotateRight(0.02f);
+            this.changed = true;
         }
         if (inputListener.w) {
             camera.rotateUp(-0.02f);
+            this.changed = true;
         }
         if (inputListener.s) {
             camera.rotateUp(0.02f);
+            this.changed = true;
         }
         if (inputListener.f) {
             camera.setMode(Camera.FLY_MODE);
+            this.changed = true;
         }
         if (inputListener.r) {
             camera.setFocus(new Vector3f(0, 2, 0));
+            this.changed = true;
         }
         if (inputListener.up) {
             camera.moveForward(1);
+            this.changed = true;
         }
         if (inputListener.down) {
             camera.moveForward(-1);
+            this.changed = true;
         }
         if (inputListener.escape) {
             camera = new Camera(Camera.FOCUS_MODE, camPos, new Point3f(0, 0, 0), new Point3f(0, 1, 0), canvas.getWidth(), canvas.getHeight());
+            this.changed = true;
         }
 
-        camera.review();
+        if (true || this.reshaped || this.changed || !this.dynamicScene.bufferIsEmpty() || !this.staticScene.bufferIsEmpty()) {
+            this.changed = this.reshaped = false;
 
-        for (GLObject each : scene.getRunQueue()) {
-            each.bindShader();
-            each.bind();
-            each.display(camera.getCameraMatrix());
-            each.unbind();
-            each.unbindShader();
+            gl.glEnable(GL3.GL_BLEND);
+            gl.glBlendFunc(GL3.GL_SRC_ALPHA, GL3.GL_ONE_MINUS_SRC_ALPHA);
+
+            gl.glClearColor(0.839f, 0.851f, 0.875f, 1.0f);
+            //gl.glClearColor((float)Math.random(), (float)Math.random(), (float)Math.random(), 1.0f);
+            gl.glClear(GL3.GL_COLOR_BUFFER_BIT | GL3.GL_DEPTH_BUFFER_BIT);
+
+            this.camera.review();
+
+            this.dynamicScene.draw(camera.getCameraMatrix());
+            this.staticScene.draw(camera.getCameraMatrix());
         }
     }
 

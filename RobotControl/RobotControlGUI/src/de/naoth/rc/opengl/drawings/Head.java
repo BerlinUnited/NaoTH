@@ -5,8 +5,6 @@
  */
 package de.naoth.rc.opengl.drawings;
 
-import com.jogamp.opengl.GL3;
-import de.naoth.rc.opengl.Shader;
 import de.naoth.rc.opengl.file.GLData;
 import de.naoth.rc.opengl.file.ObjFile;
 
@@ -15,14 +13,6 @@ import de.naoth.rc.opengl.file.ObjFile;
  * @author robert
  */
 public class Head extends GLDrawable {
-    
-    @Override
-    public Shader getShader(GL3 gl) {
-        Shader shader = new Shader(gl, super.pathToGLSL, "color_VS.glsl", "color_FS.glsl");
-        shader.setGlobalUniform("light.position", new float[]{0f, 50f, 0f});
-        shader.setGlobalUniform("light.intensities", new float[]{1f, 1f, 1f});
-        return shader;
-    }
         
     @Override
     public GLData getGLData() {

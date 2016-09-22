@@ -19,7 +19,7 @@ import java.awt.image.BufferedImage;
  *
  * @author robert
  */
-public class FieldDrawingSPL2013 extends ExampleGLDrawable {
+public class FieldDrawingSPL2013 extends GLDrawable {
 
     int xLength = 9000;
     int yLength = 6000;

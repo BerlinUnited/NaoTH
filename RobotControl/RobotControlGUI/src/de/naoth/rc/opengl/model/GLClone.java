@@ -29,6 +29,18 @@ public class GLClone implements GLObject {
 
         this.shaderUniforms.put("modelMatrix", modelMatrix);
     }
+    
+    public GLClone(GL3 gl, GLObject model) {
+        this.gl = gl;
+
+        this.shaderUniforms = new HashMap<>();
+        this.model = model;
+        this.shader = model.getShader();
+
+        this.modelMatrix = new Matrix4();
+
+        this.shaderUniforms.put("modelMatrix", modelMatrix);
+    }
 
     //GLObject impl
     @Override
@@ -78,5 +90,10 @@ public class GLClone implements GLObject {
     @Override
     public boolean isReady() {
         return this.model.isReady();
+    }
+    
+    @Override
+    public Shader getShader() {
+       return this.shader;
     }
 }

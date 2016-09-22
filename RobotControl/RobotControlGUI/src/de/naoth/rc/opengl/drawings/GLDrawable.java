@@ -17,13 +17,14 @@ import de.naoth.rc.opengl.representations.Point3f;
  */
 public abstract class GLDrawable {
     
-    public String pathToRES = System.getProperty("user.dir").replaceAll("\\\\", "/") + "/src/de/naoth/rc/opengl/res/";
-    
-    public String pathToGLSL = System.getProperty("user.dir").replaceAll("\\\\", "/") + "/src/de/naoth/rc/opengl/glsl/";
-    
+    public String pathToRES = System.getProperty("user.dir").replaceAll("\\\\", "/") + "/src/de/naoth/rc/opengl/res/";    
     
     public String getName() {
         return String.valueOf(System.currentTimeMillis());
+    }
+    
+    public Shader getShader(GL3 gl) {
+        return null;
     }
     
     public Texture getTexture() {
@@ -38,11 +39,11 @@ public abstract class GLDrawable {
         return null;
     }
     
-    public Shader getShader(GL3 gl) {
-        return null;
-    }
-    
     public Point3f getScale() {
         return new Point3f(1f,1f,1f);
+    }
+    
+    public Point3f getPos() {
+        return new Point3f();
     }
 }
