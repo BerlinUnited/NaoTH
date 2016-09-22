@@ -29,9 +29,11 @@ void TeamCommReceiver::execute()
   for(vector<string>::const_iterator iter = teamMessageData.data.begin();
       iter != teamMessageData.data.end(); ++iter)
   {
+//      std::cout << (*iter) << std::endl;
     if(usingDelayBuffer) {
       delayBuffer.add(*iter);
     } else {
+//        std::cout << "handle msg: " << (*iter) <<  std::endl;
       handleMessage(*iter);
     }
   }
@@ -139,6 +141,7 @@ bool TeamCommReceiver::parseTeamMessage(const SPLStandardMessage& spl, TeamMessa
         msg.timestamp = userData.timestamp();
         msg.bodyID = userData.bodyid();
         msg.wasStriker = userData.wasstriker();
+        msg.wantsToBeStriker = userData.wantstobestriker();
         msg.timeToBall = userData.timetoball();
         msg.isPenalized = userData.ispenalized();
         msg.batteryCharge = userData.batterycharge();
@@ -172,6 +175,8 @@ void TeamCommReceiver::handleMessage(const std::string& data, bool allowOwn)
   if(!parseSPLStandardMessage(data, spl)) {
     return;
   }
+//  std::cout << "msg parsed: " << data  << std::endl;
+//  std::cout << ((unsigned int)spl.currentSideConfidence) << "|" << spl.numOfDataBytes << "|" << data.size() << std::endl;
 
   unsigned int dataTeamNum = (unsigned int)(spl.teamNum);
   unsigned int dataPlayerNum = (unsigned int)(spl.playerNum);

@@ -148,7 +148,7 @@ void Simulation::simulateConsequences(
   // virtual ultrasound obstacle line
   Math::LineSegment obstacleLine(getRobotPose() * Vector2d(400, 200), getRobotPose() * Vector2d(400, -200));
   // now generate predictions and categorize
-  for(size_t j=0; j < theParameters.numParticles; j++) 
+  for(double j=0; j < theParameters.numParticles; j++)
   {
     // predict and calculate shoot line
     Vector2d globalBallEndPosition = getRobotPose() * action.predict(getBallModel().positionPreview);

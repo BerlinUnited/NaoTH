@@ -293,6 +293,13 @@ bool SimSparkController::init(const std::string& modelPath, const std::string& t
   //DEBUG_REQUEST_REGISTER("SimSparkController:beam", "beam to start pose", false);
   //REGISTER_DEBUG_COMMAND("beam", "beam to given pose", this);
 
+
+  Configuration& config = Platform::getInstance().theConfiguration;
+  // if player number wasn't set by configuration -> use the number from the simulation
+  if(config.getInt("player", "PlayerNumber") == 0) {
+    config.setInt("player", "PlayerNumber", theGameInfo.playerNumber);
+  }
+
   theLastSenseTime = NaoTime::getNaoTimeInMilliSeconds();
   theLastActTime = theLastSenseTime;
   calculateNextActTime();
@@ -1460,6 +1467,8 @@ void SimSparkController::say()
   if ( g_mutex_trylock(theCognitionOutputMutex) )
   {
     if (!theTeamMessageDataOut.data.empty()) {
+//        theTeamMessageDataOut.print(std::cout);
+//        std::cout << theTeamMessageDataOut.data << std::endl;
       theActData << "(say " << theTeamMessageDataOut.data << ")";
     }
     g_mutex_unlock(theCognitionOutputMutex);
@@ -1504,6 +1513,7 @@ bool SimSparkController::hear(const sexp_t* sexp)
   SexpParser::parseValue(sexp, msg);
 
   if ( !msg.empty() && msg != ""){
+//      std::cout << "msg.size(): " << msg.size() << std::endl;
     theTeamMessageDataIn.data.push_back(msg);
   }
 //  std::cout << "hear message : " << time << ' ' << direction << ' ' << dir << ' ' << msg << std::endl;
@@ -1607,7 +1617,7 @@ void SimSparkController::get(TeamMessageDataIn& data)
       // TODO: make this faster
       ASSERT(iter->size() < MAX_TEAM_MESSAGE_SIZE); 
       int len = theBase64Decoder.decode( iter->c_str(), static_cast<int>(iter->size()), theTeamMessageReceiveBuffer);
-      
+//      std::cout << "decoded msg length: " << len << std::endl;
       data.data.push_back( std::string(theTeamMessageReceiveBuffer, len) );
     }
   }

@@ -2,6 +2,8 @@
 * @file StableRoleDecision.h
 *
 * @author <a href="mailto:schahin.tofangchi@hu-berlin.de">Schahin Tofangchi</a>
+*
+* Compute which player should be a striker
 */
 
 #ifndef _StableRoleDecision_h_
@@ -9,8 +11,6 @@
 
 #include <ModuleFramework/Module.h>
 #include <XabslEngine/XabslEngine.h>
-
-#include "Cognition/Modules/Modeling/RoleDecision/RoleDecision.h"
 
 #include "Representations/Modeling/TeamMessage.h"
 #include "Representations/Infrastructure/FrameInfo.h"
@@ -44,19 +44,16 @@ END_DECLARE_MODULE(StableRoleDecision)
 
 //////////////////// END MODULE INTERFACE DECLARATION //////////////////////
 
-class StableRoleDecision : public StableRoleDecisionBase, public RoleDecision
+class StableRoleDecision : public StableRoleDecisionBase
 {
 public: 
 
   StableRoleDecision();
   virtual ~StableRoleDecision();
 
-  /** executes the module */
   virtual void execute();
-
-  void computeStrikers();
   
-protected:
+private:
   class Parameters: public ParameterList
   {
   public: 

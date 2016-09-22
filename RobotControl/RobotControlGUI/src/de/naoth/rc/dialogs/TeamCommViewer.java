@@ -68,7 +68,7 @@ public class TeamCommViewer extends AbstractDialog {
     private final HashMap<String, RobotStatus> robotsMap = new HashMap<>();
     private final TreeMap<String, RobotStatus> robotsMapSorted = new TreeMap<>();
 
-    private final Map<String, TeamCommMessage> messageMap = Collections.synchronizedMap(new TreeMap<String, TeamCommMessage>());
+    public final Map<String, TeamCommMessage> messageMap = Collections.synchronizedMap(new TreeMap<String, TeamCommMessage>());
 
     private final Color magenta = new Color(210, 180, 200);
     private final Color cyan = new Color(180, 210, 255);

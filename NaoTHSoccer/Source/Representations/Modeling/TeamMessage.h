@@ -45,6 +45,7 @@ public:
         bodyID("unknown"),
         timeToBall(std::numeric_limits<unsigned int>::max()),
         wasStriker(false),
+        wantsToBeStriker(false),
         isPenalized(false),
         batteryCharge(0.0f),
         temperature(0.0f),
@@ -85,7 +86,8 @@ public:
     // BEGIN BERLIN UNITED SPECIFIC
     std::string bodyID;
     unsigned int timeToBall;
-    bool wasStriker;
+    bool wasStriker; //TODO: deprecated - rename to isPlayingStriker
+    bool wantsToBeStriker;
     bool isPenalized;
     std::vector<Opponent> opponents;
     float batteryCharge;
@@ -95,13 +97,14 @@ public:
 
   };
 
-  std::map<unsigned int, Data> data;
+  typedef std::map<unsigned int, Data> PlayerMessageMap;
+  PlayerMessageMap data;
 
   virtual ~TeamMessage() {}
 
   virtual void print(std::ostream& stream) const
   {
-    for(std::map<unsigned int, Data>::const_iterator i=data.begin();
+    for(PlayerMessageMap::const_iterator i=data.begin();
         i != data.end(); ++i)
     {
       const Data& d = i->second;

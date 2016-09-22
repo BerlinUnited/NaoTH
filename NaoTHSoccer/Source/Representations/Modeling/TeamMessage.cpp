@@ -29,10 +29,11 @@ void Serializer<TeamMessage>::serialize(const TeamMessage& r, std::ostream& stre
     userMsg->set_bodyid(d.bodyID);
     userMsg->set_timetoball(d.timeToBall);
     userMsg->set_wasstriker(d.wasStriker);
+    userMsg->set_wantstobestriker(d.wantsToBeStriker);
     userMsg->set_ispenalized(d.isPenalized);
     userMsg->set_batterycharge(d.batteryCharge);
     userMsg->set_temperature(d.temperature);
-    for(unsigned int i=0; i < d.opponents.size(); i++)
+    for(size_t i=0; i < d.opponents.size(); i++)
     {
       const TeamMessage::Opponent& rOpp = d.opponents[i];
       naothmessages::Opponent* opp = userMsg->add_opponents();
@@ -86,6 +87,7 @@ void Serializer<TeamMessage>::deserialize(std::istream& stream, TeamMessage& r)
     }
     d.timestamp = msg.user().timestamp();
     d.wasStriker = msg.user().wasstriker();
+    d.wantsToBeStriker = msg.user().wantstobestriker();
     d.isPenalized = msg.user().ispenalized();
     d.batteryCharge = msg.user().batterycharge();
     d.temperature = msg.user().temperature();
@@ -95,11 +97,12 @@ void Serializer<TeamMessage>::deserialize(std::istream& stream, TeamMessage& r)
 
     d.opponents = std::vector<TeamMessage::Opponent>(msg.user().opponents_size());
 
-    for(unsigned int i=0; i < d.opponents.size(); i++)
+    for(size_t i=0; i < d.opponents.size(); i++)
     {
-      d.opponents[i].playerNum = msg.user().opponents().Get(i).playernum();
-      DataConversion::fromMessage(msg.user().opponents().Get(i).poseonfield(),
-                                  d.opponents[i].poseOnField);
+      int j = static_cast<int>(i);
+      d.opponents[j].playerNum = msg.user().opponents().Get(j).playernum();
+      DataConversion::fromMessage(msg.user().opponents().Get(j).poseonfield(),
+                                  d.opponents[j].poseOnField);
     }
 
     // add the single team message data to the collection
