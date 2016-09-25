@@ -5,13 +5,14 @@
  */
 package de.naoth.rc.dialogs;
 
-import com.google.protobuf.InvalidProtocolBufferException;
-import de.naoth.rc.Helper;
 import de.naoth.rc.core.dialog.AbstractDialog;
 import de.naoth.rc.core.dialog.DialogPlugin;
 import de.naoth.rc.RobotControl;
 import de.naoth.rc.components.PNGExportFileType;
 import de.naoth.rc.components.PlainPDFExportFileType;
+import de.naoth.rc.components.teamcomm.TeamCommListener;
+import de.naoth.rc.components.teamcomm.TeamCommManager;
+import de.naoth.rc.components.teamcomm.TeamCommMessage;
 import de.naoth.rc.drawings.Drawable;
 import de.naoth.rc.drawings.DrawingCollection;
 import de.naoth.rc.drawings.DrawingOnField;
@@ -29,31 +30,25 @@ import de.naoth.rc.manager.DebugDrawingManager;
 import de.naoth.rc.manager.ImageManagerBottom;
 import de.naoth.rc.core.manager.ObjectListener;
 import de.naoth.rc.dataformats.SPLMessage;
-import de.naoth.rc.dialogs.TeamCommLogViewer.LogTeamCommFrame;
-import de.naoth.rc.dialogs.TeamCommViewer.*;
 import de.naoth.rc.drawings.FieldDrawingSPL3x4;
-import de.naoth.rc.logmanager.BlackBoard;
-import de.naoth.rc.logmanager.LogDataFrame;
 import de.naoth.rc.logmanager.LogFileEventManager;
-import de.naoth.rc.logmanager.LogFrameListener;
 import de.naoth.rc.manager.DebugDrawingManagerMotion;
 import de.naoth.rc.manager.PlotDataManager;
 import de.naoth.rc.math.Vector2D;
 import de.naoth.rc.messages.Messages.PlotItem;
 import de.naoth.rc.messages.Messages.Plots;
-import de.naoth.rc.messages.Representations;
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.TreeMap;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.stream.Collectors;
 import javax.imageio.ImageIO;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
@@ -87,6 +82,8 @@ public class FieldViewer extends AbstractDialog
         public static DrawingEventManager drawingEventManager;
         @InjectPlugin
         public static LogFileEventManager logFileEventManager;
+        @InjectPlugin
+        public static TeamCommManager teamcommManager;
     }//end Plugin
   
   private Drawable backgroundDrawing;
@@ -94,10 +91,12 @@ public class FieldViewer extends AbstractDialog
   private DrawingBuffer drawingEventBuffer = new DrawingBuffer(100);
 
   private final PlotDataListener plotDataListener;
-  private final LogListener logListener = new LogListener();
   private final StrokePlot strokePlot;
 
+  private final Map<String, SPLMessage> messageBuffer = Collections.synchronizedMap(new TreeMap<String, SPLMessage>());
+  private final Timer timerCheckMessages = new Timer();
   private final DrawingsListener drawingsListener = new DrawingsListener();
+  private final TeamCommMessageListener teamcommListener = new TeamCommMessageListener();
   
   // TODO: this is a hack
   private static de.naoth.rc.components.DynamicCanvasPanel canvasExport = null;
@@ -145,6 +144,9 @@ public class FieldViewer extends AbstractDialog
         }
     });
     
+    Plugin.teamcommManager.addListener(teamcommListener);
+    this.timerCheckMessages.scheduleAtFixedRate(new TeamCommMessageDrawer(), 100, 33);
+    
     // intialize the field
     //this.fieldCanvas.getDrawingList().add(0, this.backgroundDrawing);
     resetView();
@@ -168,7 +170,6 @@ public class FieldViewer extends AbstractDialog
         coordsPopup = new javax.swing.JDialog();
         jToolBar1 = new javax.swing.JToolBar();
         btReceiveDrawings = new javax.swing.JToggleButton();
-        btLog = new javax.swing.JToggleButton();
         btClean = new javax.swing.JButton();
         cbBackground = new javax.swing.JComboBox();
         btRotate = new javax.swing.JButton();
@@ -212,17 +213,6 @@ public class FieldViewer extends AbstractDialog
             }
         });
         jToolBar1.add(btReceiveDrawings);
-
-        btLog.setText("Log");
-        btLog.setFocusable(false);
-        btLog.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        btLog.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        btLog.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btLogActionPerformed(evt);
-            }
-        });
-        jToolBar1.add(btLog);
 
         btClean.setText("Clean");
         btClean.setFocusable(false);
@@ -406,25 +396,6 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
         this.fieldCanvas.repaint();
     }//GEN-LAST:event_btRotateActionPerformed
 
-    private void btLogActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btLogActionPerformed
-       
-        if(btLog.isSelected()) {
-            Plugin.logFileEventManager.addListener(logListener);
-            
-            this.timerCheckMessages = new Timer();
-            this.timerCheckMessages.scheduleAtFixedRate(new LogDrawer(), 100, 33);
-        } else {
-            Plugin.logFileEventManager.removeListener(logListener);
-            if(this.timerCheckMessages != null) {
-                this.timerCheckMessages.cancel();
-                this.timerCheckMessages.purge();
-                this.timerCheckMessages = null;
-            }
-            this.messageMap.clear();
-        }
-    }//GEN-LAST:event_btLogActionPerformed
-
-  
   final void resetView()
   {
     this.fieldCanvas.getDrawingList().clear();
@@ -437,6 +408,7 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
     this.fieldCanvas.getDrawingList().add(drawingBuffer);
     this.drawingEventBuffer.clear();
     this.fieldCanvas.getDrawingList().add(drawingEventBuffer);
+    messageBuffer.clear();
   }//end resetView
 
   private void exportCanvasToPNG() {
@@ -489,49 +461,36 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
     }
   }
   
-  private final Map<String, SPLMessage> messageMap = Collections.synchronizedMap(new TreeMap<String, SPLMessage>());
-  private Timer timerCheckMessages;
-  
-  public class LogListener implements LogFrameListener {
+    /**
+     * Waits for new TeamCommMessages and writes them to the "message-buffer".
+     */
+    public class TeamCommMessageListener implements TeamCommListener {
+
         @Override
-        public void newFrame(BlackBoard b) {
-            // try to get both variants of team messages
-            LogDataFrame frame = b.getNames().contains("TeamMessage") ? b.get("TeamMessage")
-                : (b.getNames().contains("TeamCommMessage") ? b.get("TeamCommMessage") : null);
-            DrawingCollection drawings = new DrawingCollection();
-            
-            if (frame != null) {
-                if(frame instanceof TeamCommLogViewer.LogTeamCommFrame) {
-                    TeamCommViewer.TeamCommMessage msg = ((LogTeamCommFrame) frame).getTeamCommMessage();
-                    messageMap.put(msg.message.teamNum + "_" + msg.message.playerNum, msg.message);
-                } else {
-                    try {
-                        Representations.TeamMessage messageCollection = Representations.TeamMessage.parseFrom(frame.getData());
-                        for(Representations.TeamMessage.Data msg : messageCollection.getDataList()) {
-                            SPLMessage spl = new SPLMessage(msg);
-                            messageMap.put(spl.teamNum + "_" + spl.playerNum, spl);
-                        }
-                    } catch (InvalidProtocolBufferException ex) {
-                        Helper.handleException(ex);
-                    }
-                }
+        public void newTeamCommMessages(List<TeamCommMessage> messages) {
+            synchronized (messageBuffer) {
+                // "convert" list to map using team/player number as key
+                messageBuffer.putAll(messages.stream().collect(Collectors.toMap(
+                    m -> m.address == null ? m.message.teamNum+".0.0."+m.message.playerNum : m.address,
+                    m -> m.message
+                )));
             }
         }
     }
   
-    public class LogDrawer extends TimerTask {
+    /**
+     * Draws periodically all buffered TeamCommMessages.
+     */
+    public class TeamCommMessageDrawer extends TimerTask {
         @Override
         public void run() {
-            synchronized (messageMap) {
-                if (messageMap.isEmpty()) {
-                    return;
+            synchronized (messageBuffer) {
+                if (!messageBuffer.isEmpty()) {
+                    DrawingCollection drawings = new DrawingCollection();
+                    // draw every message
+                    messageBuffer.forEach((k,v) -> { v.draw(drawings, v.teamNum != 4 ? Color.DARK_GRAY : Color.LIGHT_GRAY, v.teamNum != 4); });
+                    Plugin.drawingEventManager.fireDrawingEvent(drawings);
                 }
-                DrawingCollection drawings = new DrawingCollection();
-                for (Entry<String, SPLMessage> entry : messageMap.entrySet()) {
-                    SPLMessage msg = entry.getValue();
-                    msg.draw(drawings, msg.teamNum != 4 ? Color.DARK_GRAY : Color.LIGHT_GRAY, msg.teamNum != 4);
-                }
-                TeamCommViewer.Plugin.drawingEventManager.fireDrawingEvent(drawings);
             } // end synchronized
         }
     }
@@ -595,13 +554,13 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
     Plugin.debugDrawingManager.removeListener(drawingsListener);
     Plugin.debugDrawingManagerMotion.removeListener(drawingsListener);
     Plugin.plotDataManager.removeListener(plotDataListener);
+    Plugin.teamcommManager.removeListener(teamcommListener);
   }
   
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JCheckBox btAntializing;
     private javax.swing.JButton btClean;
     private javax.swing.JCheckBox btCollectDrawings;
-    private javax.swing.JToggleButton btLog;
     private javax.swing.JToggleButton btReceiveDrawings;
     private javax.swing.JButton btRotate;
     private javax.swing.JCheckBox btTrace;

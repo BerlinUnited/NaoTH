@@ -5,43 +5,27 @@
  */
 package de.naoth.rc.dialogs;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.stream.JsonWriter;
 import de.naoth.rc.Helper;
 import de.naoth.rc.RobotControl;
+import de.naoth.rc.components.teamcommviewer.TeamCommLogger;
+import de.naoth.rc.components.teamcomm.TeamCommManager;
 import de.naoth.rc.components.teamcommviewer.RobotStatus;
 import de.naoth.rc.components.teamcommviewer.RobotStatusPanel;
 import de.naoth.rc.components.teamcommviewer.RobotStatusTable;
+import de.naoth.rc.components.teamcomm.TeamCommMessage;
+import de.naoth.rc.components.teamcommviewer.RobotTeamCommListener;
 import de.naoth.rc.core.dialog.AbstractDialog;
 import de.naoth.rc.core.dialog.DialogPlugin;
-import de.naoth.rc.dataformats.SPLMessage;
-import de.naoth.rc.drawingmanager.DrawingEventManager;
-import de.naoth.rc.drawings.DrawingCollection;
-import de.naoth.rc.logmanager.BlackBoard;
-import de.naoth.rc.logmanager.LogDataFrame;
-import de.naoth.rc.logmanager.LogFileEventManager;
-import de.naoth.rc.logmanager.LogFrameListener;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.SocketAddress;
-import java.net.SocketException;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.channels.AsynchronousCloseException;
-import java.nio.channels.DatagramChannel;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -49,15 +33,12 @@ import java.util.Map.Entry;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.TreeMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
 import javax.swing.MenuElement;
-import javax.swing.JToggleButton;
 import javax.swing.SwingUtilities;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
@@ -72,30 +53,49 @@ public class TeamCommViewer extends AbstractDialog {
 
     @PluginImplementation
     public static class Plugin extends DialogPlugin<TeamCommViewer> {
-
         @InjectPlugin
         public static RobotControl parent;
         @InjectPlugin
-        public static DrawingEventManager drawingEventManager;
-        // TODO: do we need LogFileEventManager
-        @InjectPlugin
-        public static LogFileEventManager logFileEventManager;
+        public static TeamCommManager teamcommManager;
     }//end Plugin
 
     private Timer timerCheckMessages;
-    private final TeamCommListener listenerOwn = new TeamCommListener(false);
-    private final TeamCommListener listenerOpponent = new TeamCommListener(true);
-    private final HashMap<String, RobotStatus> robotsMap = new HashMap<>();
+    
+    /**
+     * The robot-TeamCommProvider for our own team.
+     */
+    private final RobotTeamCommListener listenerOwn = new RobotTeamCommListener(false);
+    
+    /**
+     * The robot-TeamCommProvider for our own team.
+     */
+    private final RobotTeamCommListener listenerOpponent = new RobotTeamCommListener(true);
+
+    /**
+     * Receiver for the TeamMessages.
+     */
+    private final TeamCommMessageListener teamcommListener = new TeamCommMessageListener();
+    
+    /**
+     * Buffer, which stores the last TeamCommMessage of every robot.
+     */
+    public final Map<String, TeamCommMessage> messageBuffer = Collections.synchronizedMap(new TreeMap<String, TeamCommMessage>());
+    
+    /**
+     * Container for storing the current status of each robot.
+     */
     private final TreeMap<String, RobotStatus> robotsMapSorted = new TreeMap<>();
 
-    public final Map<String, TeamCommMessage> messageMap = Collections.synchronizedMap(new TreeMap<String, TeamCommMessage>());
-
+    /**
+     * Logger object, for logging TeamCommMessages.
+     */
+    private final TeamCommLogger log = new TeamCommLogger();
+    
+    /**
+     * Some colors ...
+     */
     private final Color magenta = new Color(210, 180, 200);
     private final Color cyan = new Color(180, 210, 255);
-    
-    private LogFileWriter logfile = null;
-    private final ConcurrentLinkedQueue<TeamCommMessage> logfileQueue = new ConcurrentLinkedQueue<TeamCommMessage>();
-    private boolean logfileQueueAppend = false;
     
     /**
      * Creates new form TeamCommViewer
@@ -104,13 +104,6 @@ public class TeamCommViewer extends AbstractDialog {
         initComponents();
         // collapse pane
         robotStatusSplitPane.setDividerLocation(0);/*2000, Integer.MAX_VALUE*/
-        // closes the log file before exiting application
-        Runtime.getRuntime().addShutdownHook(new Thread() {
-            @Override
-            public void run() {
-                closingLogfile();
-            }
-        });
         // add additional columns to popup menu
         addAdditionalColumnsToPopupMenu();
     }
@@ -278,66 +271,69 @@ public class TeamCommViewer extends AbstractDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btListenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btListenActionPerformed
-
         try {
+            // start listening to TeamComm ...
             if (this.btListen.isSelected()) {
+                // get own port number and start/connect robot TeamCommProvider
                 String ownPortRaw = portNumberOwn.getText().trim();
                 if(!ownPortRaw.isEmpty()) {
                     int portOwn = Integer.parseInt(ownPortRaw);
                     listenerOwn.connect(portOwn);
                 }
+                // get opponent port number and start/connect robot TeamCommProvider
                 String opponentPortRaw = portNumberOpponent.getText().trim();
                 if (!opponentPortRaw.isEmpty()) {
                     int portOpponent = Integer.parseInt(opponentPortRaw);
                     listenerOpponent.connect(portOpponent);
                 }
-
+                // listen to TeamCommMessages
+                Plugin.teamcommManager.addListener(teamcommListener);
+                // start/schedule UI-updater
                 this.timerCheckMessages = new Timer();
                 this.timerCheckMessages.scheduleAtFixedRate(new TeamCommListenTask(), 100, 33);
+                // update UI
                 this.portNumberOwn.setEnabled(false);
                 this.portNumberOpponent.setEnabled(false);
                 this.robotStatusPanel.setVisible(true);
                 this.robotStatusTable.setVisible(true);
-
-//                startListen(new TeamCommListenTask(), this.btnListenToLog);
             } else {
-
+                // stops/disconnects the robot TeamCommProvider
+                listenerOwn.disconnect();
+                listenerOpponent.disconnect();
+                // remove TeamCommMessage listener
+                Plugin.teamcommManager.removeListener(teamcommListener);
+                // stop UI-updater
                 if(this.timerCheckMessages != null) {
                     this.timerCheckMessages.cancel();
                     this.timerCheckMessages.purge();
                     this.timerCheckMessages = null;
                 }
-                
-                listenerOwn.disconnect();
-                listenerOpponent.disconnect();
-
-                synchronized (messageMap) {
-                    messageMap.clear();
-                    this.robotsMap.clear();
-                    this.robotStatusPanel.removeAll();
-                    this.robotStatusPanel.setVisible(false);
-                    this.robotStatusTable.setVisible(false);
-                    this.robotStatusTable.removeAll();
-                    this.portNumberOwn.setEnabled(true);
-                    this.portNumberOpponent.setEnabled(true);
+                // clear collections and "enable" UI
+                synchronized (messageBuffer) {
+                    this.messageBuffer.clear();
                 }
-//                this.stopListen();
+                this.robotsMapSorted.clear();
+                // update UI
+                this.robotStatusPanel.removeAll();
+                this.robotStatusPanel.setVisible(false);
+                this.robotStatusTable.setVisible(false);
+                this.robotStatusTable.removeAll();
+                this.portNumberOwn.setEnabled(true);
+                this.portNumberOpponent.setEnabled(true);
             }
         } catch (NumberFormatException ex) {
             Helper.handleException("Invalid port number", ex);
-        } catch (InterruptedException ex) {
-            ex.printStackTrace(System.err);
-        } catch (IOException ex) {
-            ex.printStackTrace(System.err);
+        } catch (IOException | InterruptedException ex) {
+            Logger.getLogger(TeamCommViewer.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_btListenActionPerformed
 
     private void btnRecordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRecordActionPerformed
-        // button got pressed
+        // record-button got pressed
         if(btnRecord.isSelected()) {
             // log file already set; just enable logging
-            if(this.logfile != null) {
-                logfileQueueAppend = true;
+            if(this.log.isActive()) {
+                this.log.resumeLogging();
                 btnRecord.setSelected(true);
                 setBtnRecordToolTipText(true);
             } else {
@@ -346,17 +342,14 @@ public class TeamCommViewer extends AbstractDialog {
             }
         // release button
         } else {
-            if(logfile != null) { // make sure log file is set
-                logfileQueueAppend = false;
-                setBtnRecordToolTipText(false);
-            }
+            this.log.pauseLogging();
         }
     }//GEN-LAST:event_btnRecordActionPerformed
 
     private void btnStopRecordingActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStopRecordingActionPerformed
-        // stop log file recording, flush and close logfile, update UI
-        logfileQueueAppend = false;
-        closingLogfile();
+        // stop log file recording, flush and close logfile
+        this.log.stopLogging();
+        // ... update UI
         btnRecord.setSelected(false);
         setBtnRecordToolTipText(false);
         btnStopRecording.setEnabled(false);
@@ -372,53 +365,12 @@ public class TeamCommViewer extends AbstractDialog {
         btnAddtionalColumns.setSelected(false);
     }//GEN-LAST:event_pmAdditionalColumnsPopupMenuWillBecomeInvisible
 
-    private void startListen(TimerTask tt, JToggleButton btn) {
-        this.timerCheckMessages = new Timer();
-        this.timerCheckMessages.scheduleAtFixedRate(tt, 100, 33);
-        
-        this.portNumberOwn.setEnabled(false);
-        this.portNumberOpponent.setEnabled(false);
-        this.robotStatusPanel.setVisible(true);
-        
-        // only listen either log or network
-        btn.setEnabled(false);
-    }
-    
-    private void stopListen() {
-        // stop timer
-        if(this.timerCheckMessages != null) {
-            this.timerCheckMessages.cancel();
-            this.timerCheckMessages.purge();
-            this.timerCheckMessages = null;
-        }
-        
-        // clear collections and "enable" UI
-        synchronized (messageMap) {
-            this.messageMap.clear();
-            this.robotsMap.clear();
-            this.robotsMapSorted.clear();
-            
-            this.robotStatusPanel.removeAll();
-            this.robotStatusPanel.setVisible(false);
-            
-            this.portNumberOwn.setEnabled(true);
-            this.portNumberOpponent.setEnabled(true);
-            
-            this.btListen.setEnabled(true);
-        }
-    }
-    
     @Override
     public void dispose() {
-        closingLogfile();
+        // TODO: should we stop all listener-threads?!
+        this.log.stopLogging();
     }
 
-    @Override
-    public void destroy() {
-        System.err.println("destroy");
-        super.destroy(); //To change body of generated methods, choose Tools | Templates.
-    }
-    
     private boolean setLogFile() {
         // open filechooser
         if(teamCommFileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
@@ -427,27 +379,14 @@ public class TeamCommViewer extends AbstractDialog {
                 new File(teamCommFileChooser.getSelectedFile()+".log") : 
                 teamCommFileChooser.getSelectedFile();
 
-            // make sure there is no open log file ..
-            closingLogfile();
-            
-            try {
-                // create new log file
-                dfile.createNewFile();
-                new FileWriter(dfile).close(); // trigger exception (if couldn't write)
-
-                dfile.createNewFile();
-                logfile = new LogFileWriter(dfile);
-                logfile.start();
-                logfileQueueAppend = true;
-
+            // set log file, start logging and update ui
+            if(this.log.setLogFile(dfile)) {
+                this.log.startLogging();
                 btnRecord.setSelected(true);
                 setBtnRecordToolTipText(true);
                 btnStopRecording.setEnabled(true); // enable "stop"-button
 
                 return true;
-            } catch (IOException ex) {
-                Logger.getLogger(TeamCommViewer.class.getName()).log(Level.SEVERE, null, ex);
-                JOptionPane.showMessageDialog(null, "Selected log file is not writeable!", "Not writeable", JOptionPane.ERROR_MESSAGE);
             }
         }
         
@@ -458,26 +397,13 @@ public class TeamCommViewer extends AbstractDialog {
     }
     
     private void setBtnRecordToolTipText(boolean stop){
-        String name = this.logfile == null ? "<not-set>" : this.logfile.getLogfileName();
+        String name = this.log.isActive() ? this.log.getLogfile().getName() : "<not-set>";
         if(!stop) {
             btnRecord.setToolTipText("Start recording to: " + name);
         } else {
             btnRecord.setToolTipText("Pause recording to: " + name);
         }
         
-    }
-    
-    private void closingLogfile() {
-        if(logfile != null) {
-            try {
-                logfileQueueAppend =false;
-                logfile.close();
-                logfile.join();
-                logfile = null;
-            } catch (InterruptedException ex) {
-                Logger.getLogger(TeamCommViewer.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
     }
     
     private void saveColumnConfiguration() {
@@ -490,6 +416,11 @@ public class TeamCommViewer extends AbstractDialog {
         Plugin.parent.getConfig().setProperty(this.getClass().getName()+".ColumnConfig", items.stream().collect(Collectors.joining("|")));
     }
     
+    /**
+     * Adds table column configuration popup-menu.
+     * The column configuration is read from the config file and is applied to the robot status table.
+     * For each possible column, a action listener is added for updating the table and saving "new" configuration.
+     */
     private void addAdditionalColumnsToPopupMenu() {
         // try to get column configuration
         String columnConfigStr = Plugin.parent.getConfig().getProperty(this.getClass().getName()+".ColumnConfig", "");
@@ -520,220 +451,74 @@ public class TeamCommViewer extends AbstractDialog {
             pmAdditionalColumns.add(item);
         }
     }
+    
+    /**
+     * Waits for new TeamCommMessages and writes them to the "message-buffer".
+     */
+    public class TeamCommMessageListener implements de.naoth.rc.components.teamcomm.TeamCommListener {
 
+        @Override
+        public void newTeamCommMessages(List<TeamCommMessage> messages) {
+            if (!messages.isEmpty()) {
+                synchronized (messageBuffer) {
+                    // "convert" list to map using address as key
+                    messageBuffer.putAll(messages.stream().collect(Collectors.toMap(
+                        m -> m.address == null ? m.message.teamNum+".0.0."+m.message.playerNum : m.address,
+                        m -> m
+                    )));
+                }
+            }
+        }
+    }
+
+    /**
+     * Iterates periodically over message-buffer and updates the robotStatus and the UI.
+     */
     private class TeamCommListenTask extends TimerTask {
 
         @Override
         public void run() {
-            synchronized (messageMap) {
-                if (messageMap.isEmpty()) {
+            synchronized (messageBuffer) {
+                if (messageBuffer.isEmpty()) {
                     return;
                 }
-
-                DrawingCollection drawings = new DrawingCollection();
-
-                for (Entry<String, TeamCommMessage> msgEntry : messageMap.entrySet()) {
+                for (Entry<String, TeamCommMessage> msgEntry : messageBuffer.entrySet()) {
                     final String address = msgEntry.getKey();
                     final TeamCommMessage msg = msgEntry.getValue();
 
                     SwingUtilities.invokeLater(new Runnable() {
                         @Override
                         public void run() {
-                            RobotStatus robotStatus = robotsMap.get(address);
+                            String key = msg.message.teamNum + "_" + msg.message.playerNum;
+                            RobotStatus robotStatus = robotsMapSorted.get(key);
+                            // ... new robot ...
                             if (robotStatus == null) {
                                 robotStatus = new RobotStatus(Plugin.parent.getMessageServer(), address);
                                 robotStatus.robotColor = msg.isOpponent() ? magenta : cyan;
-                                
-                                robotsMap.put(address, robotStatus);
-                                robotsMapSorted.put((msg.isOpponent()?"1_":"0_") + msg.message.playerNum, robotStatus);
-                                
+                                // adds RobotStatus to a container
+                                robotsMapSorted.put(key, robotStatus);
+                                // clears the panel-view
                                 robotStatusPanel.removeAll();
-                                for (Entry<String, RobotStatus> entry : robotsMapSorted.entrySet()) {
-                                    robotStatusPanel.add(new RobotStatusPanel(entry.getValue())); // , msg.isOpponent() ? magenta : cyan
-                                }
+                                // re-inserts all robotStatus to make sure the robots are ordered
+                                robotsMapSorted.entrySet().stream().forEach((entry) -> {
+                                    robotStatusPanel.add(new RobotStatusPanel(entry.getValue()));
+                                });
+                                // adds the robotStatus to the table-view
                                 robotStatusTable.addRobot(robotStatus);
-                            }                            
+                            }
+                            // updates the robotStatus
                             robotStatus.updateStatus(msg.timestamp, msg.message);
                         }
                     });
                     /*
                     if(robotsMap.get(address).showRobot()) {
                         msg.message.draw(drawings, msg.isOpponent() ? Color.RED : Color.BLUE, msg.isOpponent());
-                    }*/
-                }
-
-                TeamCommViewer.Plugin.drawingEventManager.fireDrawingEvent(drawings);
-
+                    }
+                    //*/
+                } // end for
             } // end synchronized
         } // end run
     }
-
-    
-    public class TeamCommMessage {
-
-        public TeamCommMessage(long timestamp, SPLMessage message, boolean isOpponent) {
-            this.timestamp = timestamp;
-            this.message = message;
-            this.isOpponent = isOpponent;
-        }
-
-        public final long timestamp;
-        public final SPLMessage message;
-        private final boolean isOpponent;
-
-        public boolean isOpponent() {
-            return isOpponent;
-        }
-    }// end class TeamCommMessage
-    
-    public class TeamCommListener implements Runnable {
-        private DatagramChannel channel;
-        private Thread trigger;
-
-        private final ByteBuffer readBuffer;
-
-        private final boolean isOpponent;
-
-        public TeamCommListener(boolean isOpponent) {
-            this.readBuffer = ByteBuffer.allocateDirect(SPLMessage.SPL_STANDARD_MESSAGE_SIZE);
-            this.readBuffer.order(ByteOrder.LITTLE_ENDIAN);
-            this.isOpponent = isOpponent;
-        }
-
-        boolean isConnected() {
-            return this.channel != null && this.trigger != null;
-        }
-
-        public void connect(int port) throws IOException, InterruptedException {
-            disconnect();
-
-            this.channel = DatagramChannel.open();
-            this.channel.configureBlocking(true);
-            this.channel.bind(new InetSocketAddress(InetAddress.getByName("0.0.0.0"), port));
-
-            this.trigger = new Thread(this);
-            this.trigger.start();
-        }
-
-        public void disconnect() throws IOException, InterruptedException {
-            if (this.channel != null) {
-                this.channel.close();
-                this.channel = null;
-            }
-            if (this.trigger != null) {
-                this.trigger.join();
-                this.trigger = null;
-            }
-        }
-
-        @Override
-        public void run() {
-            try {
-                while (true) {
-                    this.readBuffer.clear();
-                    SocketAddress address = this.channel.receive(this.readBuffer);
-                    this.readBuffer.flip();
-
-                    try {
-                        long timestamp = System.currentTimeMillis();
-                        SPLMessage spl_msg = new SPLMessage(this.readBuffer);
-                        TeamCommMessage tc_msg = new TeamCommMessage(timestamp, spl_msg, this.isOpponent);
-                        
-                        if(logfileQueueAppend) { // only write to queue if requested!
-                            logfileQueue.add(tc_msg);
-                        }
-
-                        if (address instanceof InetSocketAddress) {
-                            messageMap.put(((InetSocketAddress) address).getHostString(), tc_msg);
-                        }
-
-                    } catch (Exception ex) {
-                        Logger.getLogger(TeamCommViewer.class.getName()).log(Level.INFO, null, ex);
-                    }
-
-                }
-            } catch (AsynchronousCloseException ex) {
-                /* socket was closed, that's fine */
-            } catch (SocketException ex) {
-                Logger.getLogger(TeamCommViewer.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (IOException ex) {
-                Logger.getLogger(TeamCommViewer.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-    }//end class TeamCommListener
-    
-    /**
-     * Implements a listener for TeamComm log file "player".
-     */
-    public class TeamCommLogListener implements LogFrameListener {
-        @Override
-        public void newFrame(BlackBoard b) {
-            // get the message(s) from the blackboard
-            TeamCommLogViewer.LogTeamCommFrame frame = (TeamCommLogViewer.LogTeamCommFrame) b.get("TeamCommMessage");
-            if (frame != null) {
-                // have to create new message to (evtl.) replace the timestamp (if ignoring timestamp is selected)
-                TeamCommMessage tc_msg = new TeamCommMessage(frame.getLongNumber(), frame.getTeamCommMessage().message, frame.getTeamCommMessage().isOpponent);
-                // make sure, there is an spl message!
-                if(tc_msg.message != null) {
-                    // enable log recording from log file, thus one can extract snippets of the log file
-                    if(logfileQueueAppend) { // only write to queue if requested!
-                        logfileQueue.add(tc_msg);
-                    }
-                    // create "virtual" ip address
-                    messageMap.put(tc_msg.message.teamNum + ".0.0." + tc_msg.message.playerNum, tc_msg);
-                }
-            }
-        }
-    }//end class TeamCommLogListener
-    
-    private class LogFileWriter extends Thread {
-        private final File log;
-        private final Gson json;
-        private JsonWriter jw;
-        public boolean running = true;
-        
-        public LogFileWriter(File log) {
-            this.log = log;
-            this.json = new GsonBuilder()
-                .serializeSpecialFloatingPointValues() // write NaN value without throwing error/warning
-                .create();
-        }
-
-        public void run() {
-            try {
-                // use JsonWriter to write the enclosing Json-Array ...
-                this.jw = new JsonWriter(new FileWriter(this.log));
-                // open "global"/"enclosing" Array
-                this.jw.beginArray();
-                
-                while (running) {
-                    TeamCommMessage msg = logfileQueue.poll();
-                    if(msg != null) {
-                        writeMessage(msg);
-                    }
-                }
-                
-                // flush buffer and close
-                this.jw.endArray();
-                this.jw.close();
-            } catch (IOException ex) {
-                Logger.getLogger(TeamCommViewer.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-        
-        public void close() {
-            running = false;
-        }
-        
-        public String getLogfileName() {
-            return this.log != null ? this.log.getName() : "";
-        }
-        
-        public void writeMessage(TeamCommMessage msg) throws IOException {
-            System.out.println(msg.timestamp);
-            this.jw.jsonValue(this.json.toJson(msg));
-        }
-    }//end class LogFileWriter
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JToggleButton btListen;

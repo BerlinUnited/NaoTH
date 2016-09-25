@@ -8,64 +8,43 @@ package de.naoth.rc.dialogs;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
-import com.google.gson.*;
 import com.google.gson.stream.MalformedJsonException;
 import de.naoth.rc.RobotControl;
+import de.naoth.rc.components.teamcomm.TeamCommMessage;
 import de.naoth.rc.core.dialog.AbstractDialog;
 import de.naoth.rc.core.dialog.DialogPlugin;
 import de.naoth.rc.dataformats.SPLMessage;
-import de.naoth.rc.dialogs.TeamCommViewer.TeamCommMessage;
-import de.naoth.rc.drawingmanager.DrawingEventManager;
-import de.naoth.rc.drawings.DrawingCollection;
-import de.naoth.rc.logmanager.LogDataFrame;
-import de.naoth.rc.logmanager.LogFileEventManager;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
 import java.awt.Image;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.NavigableSet;
-import java.util.Set;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.AbstractListModel;
-import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
-import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JTree;
 import javax.swing.ListModel;
 import javax.swing.ProgressMonitorInputStream;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.event.TreeModelEvent;
-import javax.swing.event.TreeModelListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
+import de.naoth.rc.components.teamcomm.TeamCommManager;
+import java.util.List;
 
 /**
  *
@@ -75,13 +54,10 @@ public class TeamCommLogViewer extends AbstractDialog {
 
     @PluginImplementation
     public static class Plugin extends DialogPlugin<TeamCommLogViewer> {
-
         @InjectPlugin
         public static RobotControl parent;
         @InjectPlugin
-        public static DrawingEventManager drawingEventManager;
-        @InjectPlugin
-        public static LogFileEventManager logFileEventManager;
+        public static TeamCommManager teamcomm;
     }//end Plugin
     
     private TreeMap<Long, Timestamp> messages;
@@ -547,16 +523,17 @@ public class TeamCommLogViewer extends AbstractDialog {
                 Timestamp current = timestamps.getElementAt(it);
                 // selects the currently "viewed" timestamp in the timestampList
                 timestampList.setSelectedValue(current, true);
-                Collection<LogDataFrame> c = new ArrayList<>();
+                List<TeamCommMessage> c = new ArrayList<>();
                 for (TeamCommMessage teamCommMessage : current.messages) {
-                    c.add(new LogTeamCommFrame(
+                    c.add(new TeamCommMessage(
                         // replaces the log file timestamp with the current timestamp; robot isn't "DEAD"!
                         ignoreTimestamps.isSelected() ? System.currentTimeMillis() : current.timestamp,
-                        "TeamCommMessage",
-                        teamCommMessage
-                    ));
+                        teamCommMessage.address,
+                        teamCommMessage.message,
+                        teamCommMessage.isOpponent())
+                    );
                 }
-                Plugin.logFileEventManager.fireLogFrameEvent(c);
+                Plugin.teamcomm.receivedMessages(c);
                 // simulate the delay between the arrival of subsequent messages
                 try {
                     long sleeping = prevTimestamp == 0 ? 0 : (current.timestamp - prevTimestamp);
@@ -585,25 +562,6 @@ public class TeamCommLogViewer extends AbstractDialog {
         }
     }
     
-    public class LogTeamCommFrame extends LogDataFrame {
-        private final long number;
-        private final TeamCommMessage data;
-        
-        public LogTeamCommFrame(long number, String name, TeamCommMessage data) {
-            super((int) number, name, null);
-            this.data = data;
-            this.number = number;
-        }
-        
-        public TeamCommMessage getTeamCommMessage() {
-            return this.data;
-        }
-        
-        public long getLongNumber() {
-            return this.number;
-        }
-    }
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JToggleButton btnConfig;
     private javax.swing.JToggleButton btnPlay;
