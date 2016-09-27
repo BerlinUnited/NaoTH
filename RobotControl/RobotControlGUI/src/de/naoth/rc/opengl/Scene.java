@@ -1,45 +1,44 @@
 package de.naoth.rc.opengl;
 
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.Iterator;
 
 import com.jogamp.opengl.GL3;
-import de.naoth.rc.opengl.Shader;
 import de.naoth.rc.opengl.drawings.GLDrawable;
 import de.naoth.rc.opengl.file.Texture;
 import de.naoth.rc.opengl.model.GLClone;
+import de.naoth.rc.opengl.model.GLComplex;
 import de.naoth.rc.opengl.model.GLModel;
 import de.naoth.rc.opengl.model.GLObject;
 import de.naoth.rc.opengl.model.GLTexturedModel;
-import de.naoth.rc.opengl.representations.Matrix4;
+import de.naoth.rc.opengl.representations.GLCache;
 import de.naoth.rc.opengl.representations.Point3f;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-public class Scene {
-    private final GL3 gl;
+public class Scene implements GLComplex {
 
-    private final ConcurrentLinkedQueue<GLObject> runQueue;
+    protected final GL3 gl;
 
-    private final ConcurrentLinkedQueue<GLDrawable> drawableBuffer;
+    protected ConcurrentLinkedQueue<GLObject> displayQueue;
 
-    private final HashMap<String, GLObject> objects;
-    private final HashMap<String, Boolean> glDrawableObjectAllreadyCreated;
+    protected ConcurrentLinkedQueue<GLDrawable> drawableBuffer;
+
+    GLCache glCache;
 
     private final Shader standardTexturedModelShader;
     private final Shader standardModelShader;
 
     private final String pathToGLSL = System.getProperty("user.dir").replaceAll("\\\\", "/") + "/src/de/naoth/rc/opengl/glsl/";
 
-    public Scene(GL3 gl) {
+    public Scene(GL3 gl, GLCache glCache, ConcurrentLinkedQueue<GLObject> displayQueue) {
         this.gl = gl;
 
-        this.runQueue = new ConcurrentLinkedQueue();
-        this.drawableBuffer = new ConcurrentLinkedQueue();
+        this.displayQueue = displayQueue;
+        this.glCache = glCache;
 
-        this.objects = new HashMap();
-        this.glDrawableObjectAllreadyCreated = new HashMap();
+        this.drawableBuffer = new ConcurrentLinkedQueue();
 
         standardTexturedModelShader = new Shader(gl, pathToGLSL, "vertex_shader.glsl", "texture_FS.glsl");
         standardModelShader = new Shader(gl, pathToGLSL, "color_VS.glsl", "color_FS.glsl");
@@ -54,8 +53,8 @@ public class Scene {
     public void add(final GLDrawable newModel) {
         final Shader newModelShader = newModel.getShader(gl);
 
-        if (!glDrawableObjectAllreadyCreated.containsKey(newModel.getClass().getName())) {
-            glDrawableObjectAllreadyCreated.put(newModel.getClass().getName(), true);
+        if (!glCache.isTouched(newModel.getClass().getName())) {
+            glCache.touch(newModel.getClass().getName());
 
             new Thread(new Runnable() {
                 @Override
@@ -80,30 +79,12 @@ public class Scene {
                     Point3f scale = newModel.getScale();
                     newGLObject.getModelMatrix().scale(scale.x, scale.y, scale.z);
 
-                    objects.put(newModel.getClass().getName(), newGLObject);
-
+                    glCache.put(newModel.getClass().getName(), newGLObject);
                 }
 
             }).start();
         }
-
         this.drawableBuffer.add(newModel);
-
-        /*
-        else if (objects.containsKey(newModel)) {
-            GLObject newGLObject = objects.get(newModel);
-
-                    if (newModelShader == null) {
-                        newGLObject = new GLClone(gl, newGLObject);
-                    } else {
-                        newGLObject = new GLClone(gl, newGLObject, newModelShader);
-                    }
-                    
-            runQueue.add(newGLObject);
-        } else {
-            drawableBuffer.add(newModel);
-        }
-         */
     }
 
     public void add(GLDrawable[] scene) {
@@ -112,14 +93,15 @@ public class Scene {
         }
     }
 
-    public void draw(Matrix4 cameraMatrix) {
-        for(Iterator<GLDrawable> iterator = drawableBuffer.iterator(); iterator.hasNext();) {
+    @Override
+    public void update() {
+        for (Iterator<GLDrawable> iterator = drawableBuffer.iterator(); iterator.hasNext();) {
             GLDrawable each = iterator.next();
-            
-            if (objects.containsKey(each.getClass().getName())) {
+
+            if (glCache.containsKey(each.getClass().getName())) {
                 iterator.remove();
                 Shader shader = each.getShader(gl);
-                GLObject newGLObject = objects.get(each.getClass().getName());
+                GLObject newGLObject = glCache.get(each.getClass().getName());
 
                 if (shader == null) {
                     newGLObject = new GLClone(gl, newGLObject);
@@ -127,35 +109,20 @@ public class Scene {
                     newGLObject = new GLClone(gl, newGLObject, shader);
                 }
                 Point3f scale = each.getScale();
-                Point3f pos  = each.getPos();
+                Point3f pos = each.getPos();
                 newGLObject.getModelMatrix().scale(scale.x, scale.y, scale.z);
                 newGLObject.getModelMatrix().translate(pos.x, pos.y, pos.z);
-                
-                
-                runQueue.add(newGLObject);
-            }
-        }
 
-        for (GLObject each : runQueue) {
-            each.bindShader();
-            each.bind();
-            each.display(cameraMatrix);
-            each.unbind();
-            each.unbindShader();
+                this.displayQueue.add(newGLObject);
+                
+            }
         }
     }
 
     public void clean() {
-        this.runQueue.clear();
         this.drawableBuffer.clear();
     }
 
-    public void dispose() {
-        for (Entry<String, GLObject> each: objects.entrySet()) {
-            each.getValue().dispose();
-        }
-    }
-    
     public boolean bufferIsEmpty() {
         return drawableBuffer.isEmpty();
     }

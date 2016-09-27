@@ -38,7 +38,6 @@ public class ObjFile implements GLFile {
         textureData = new ArrayList<>();
 
         this.objFileName = objFileName;
-        this.path = path;
     }
 
     private void parseObjFile(String objFilename) {
@@ -158,7 +157,7 @@ public class ObjFile implements GLFile {
         }
     }
 
-    public String getObjName() { 
+    public String getName() { 
     	return objName;
     }
 

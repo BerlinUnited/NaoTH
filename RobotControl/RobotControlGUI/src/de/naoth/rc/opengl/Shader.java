@@ -18,6 +18,7 @@ import java.util.Map;
  */
 
 public class Shader{
+    
     public final char VERTEX_SHADER = 'V';
     public final char FRAGMENT_SHADER = 'F';
 

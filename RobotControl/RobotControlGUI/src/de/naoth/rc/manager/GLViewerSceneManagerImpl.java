@@ -6,12 +6,9 @@ package de.naoth.rc.manager;
 import de.naoth.rc.core.manager.AbstractManagerPlugin;
 import de.naoth.rc.opengl.drawings.ExampleGLDrawable;
 import de.naoth.rc.opengl.drawings.GLDrawable;
-import de.naoth.rc.opengl.Scene;
 import de.naoth.rc.server.Command;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 
 @PluginImplementation

@@ -12,7 +12,6 @@ import com.jogamp.opengl.awt.GLCanvas;
 import com.jogamp.opengl.util.FPSAnimator;
 import de.naoth.rc.opengl.Camera;
 import de.naoth.rc.opengl.Scene;
-import de.naoth.rc.opengl.model.GLObject;
 import de.naoth.rc.opengl.representations.Point3f;
 import de.naoth.rc.opengl.representations.Vector3f;
 import de.naoth.rc.RobotControl;
@@ -23,13 +22,14 @@ import de.naoth.rc.manager.GLViewerSceneManager;
 import de.naoth.rc.manager.ImageManagerBottom;
 import de.naoth.rc.manager.ImageManagerTop;
 import de.naoth.rc.opengl.drawings.*;
+import de.naoth.rc.opengl.model.GLObject;
+import de.naoth.rc.opengl.representations.GLCache;
+import de.naoth.rc.opengl.representations.Matrix4;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 
@@ -218,6 +218,8 @@ public class GLViewer extends AbstractDialog
     @Override
     public void newObjectReceived(GLDrawable[] object) {
         glImpl.dynamicScene.clean();
+        glImpl.dynamicDisplayQueue.clear();
+        
         System.out.println("newObjectReceived");
         glImpl.dynamicScene.add(object);
     }
@@ -242,6 +244,8 @@ final class GLEventListenerImpl implements GLEventListener {
     private final GLCanvas canvas;
 
     public Scene dynamicScene, staticScene;
+    public ConcurrentLinkedQueue<GLObject> dynamicDisplayQueue, staticDisplayQueue;
+    public GLCache glCache;
 
     private final Point3f camPos = new Point3f(20, 30, 40);
 
@@ -261,14 +265,19 @@ final class GLEventListenerImpl implements GLEventListener {
 
         String scenePath = System.getProperty("user.dir").replaceAll("\\\\", "/") + "/src/de/naoth/rc/opengl/res/";
 
-        this.dynamicScene = new Scene(gl);
-        this.staticScene = new Scene(gl);
+        this.dynamicDisplayQueue = new ConcurrentLinkedQueue();
+        this.staticDisplayQueue = new ConcurrentLinkedQueue();
+        
+        this.glCache = new GLCache();
+
+        this.dynamicScene = new Scene(gl, glCache, dynamicDisplayQueue);
+        this.staticScene = new Scene(gl, glCache, staticDisplayQueue);
 
         //scene.add(scenePath + "scene.simgl");
         //scene.add(new ExampleGLDrawable());
         this.staticScene.add(new FieldDrawingSPL2013());
+
         
-        /*
         this.staticScene.add(new ExampleGLDrawable());
         this.staticScene.add(new ExampleGLDrawable());
         this.staticScene.add(new ExampleGLDrawable());
@@ -296,7 +305,7 @@ final class GLEventListenerImpl implements GLEventListener {
         this.staticScene.add(new ExampleGLDrawable());
         this.staticScene.add(new ExampleGLDrawable());
         this.staticScene.add(new ExampleGLDrawable());
-        */
+         
         //scene.add(new Head());
         /*
         scene.add(new Torso());
@@ -324,7 +333,6 @@ final class GLEventListenerImpl implements GLEventListener {
     @Override
     public void dispose(GLAutoDrawable drawable) {
         this.animator.stop();
-        this.dynamicScene.dispose();
     }
 
     @Override
@@ -378,8 +386,26 @@ final class GLEventListenerImpl implements GLEventListener {
 
             this.camera.review();
 
-            this.dynamicScene.draw(camera.getCameraMatrix());
-            this.staticScene.draw(camera.getCameraMatrix());
+            Matrix4 cameraMatrix = camera.getCameraMatrix();
+
+            this.dynamicScene.update();
+            this.staticScene.update();
+
+            for (GLObject each : staticDisplayQueue) {
+                each.bindShader();
+                each.bind();
+                each.display(cameraMatrix);
+                each.unbind();
+                each.unbindShader();
+            }
+
+            for (GLObject each : dynamicDisplayQueue) {
+                each.bindShader();
+                each.bind();
+                each.display(cameraMatrix);
+                each.unbind();
+                each.unbindShader();
+            }
         }
     }
 
