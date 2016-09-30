@@ -44,6 +44,8 @@ public class RobotStatus {
     public boolean wasStriker;
     public boolean isPenalized;
     
+    public boolean showOnField = true;
+    
     /**
      * Creates new form RobotStatus
      */

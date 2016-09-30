@@ -514,13 +514,10 @@ public class TeamCommViewer extends AbstractDialog {
                             robotStatus.updateStatus(msg.timestamp, msg.message);
                         }
                     });
-                    // draw robots on the FieldViewer
-                    msg.message.draw(drawings, msg.isOpponent() ? magenta : cyan, msg.isOpponent());
-                    /*
-                    if(robotsMap.get(address).showRobot()) {
+                    // if enabled, draw robots on the FieldViewer otherwise not
+                    if(robotsMapSorted.get(address) == null || robotsMapSorted.get(address).showOnField) {
                         msg.message.draw(drawings, msg.isOpponent() ? Color.RED : Color.BLUE, msg.isOpponent());
                     }
-                    //*/
                 } // end for
                 Plugin.drawingEventManager.fireDrawingEvent(drawings);
             } // end synchronized
