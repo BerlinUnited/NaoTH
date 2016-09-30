@@ -16,6 +16,8 @@ import de.naoth.rc.components.teamcomm.TeamCommMessage;
 import de.naoth.rc.components.teamcommviewer.RobotTeamCommListener;
 import de.naoth.rc.core.dialog.AbstractDialog;
 import de.naoth.rc.core.dialog.DialogPlugin;
+import de.naoth.rc.drawingmanager.DrawingEventManager;
+import de.naoth.rc.drawings.DrawingCollection;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -55,6 +57,8 @@ public class TeamCommViewer extends AbstractDialog {
     public static class Plugin extends DialogPlugin<TeamCommViewer> {
         @InjectPlugin
         public static RobotControl parent;
+        @InjectPlugin
+        public static DrawingEventManager drawingEventManager;
         @InjectPlugin
         public static TeamCommManager teamcommManager;
     }//end Plugin
@@ -482,21 +486,21 @@ public class TeamCommViewer extends AbstractDialog {
                 if (messageBuffer.isEmpty()) {
                     return;
                 }
+                DrawingCollection drawings = new DrawingCollection();
                 for (Entry<String, TeamCommMessage> msgEntry : messageBuffer.entrySet()) {
                     final String address = msgEntry.getKey();
                     final TeamCommMessage msg = msgEntry.getValue();
-
+                    
                     SwingUtilities.invokeLater(new Runnable() {
                         @Override
                         public void run() {
-                            String key = msg.message.teamNum + "_" + msg.message.playerNum;
-                            RobotStatus robotStatus = robotsMapSorted.get(key);
+                            RobotStatus robotStatus = robotsMapSorted.get(address);
                             // ... new robot ...
                             if (robotStatus == null) {
                                 robotStatus = new RobotStatus(Plugin.parent.getMessageServer(), address);
                                 robotStatus.robotColor = msg.isOpponent() ? magenta : cyan;
                                 // adds RobotStatus to a container
-                                robotsMapSorted.put(key, robotStatus);
+                                robotsMapSorted.put(address, robotStatus);
                                 // clears the panel-view
                                 robotStatusPanel.removeAll();
                                 // re-inserts all robotStatus to make sure the robots are ordered
@@ -510,12 +514,15 @@ public class TeamCommViewer extends AbstractDialog {
                             robotStatus.updateStatus(msg.timestamp, msg.message);
                         }
                     });
+                    // draw robots on the FieldViewer
+                    msg.message.draw(drawings, msg.isOpponent() ? magenta : cyan, msg.isOpponent());
                     /*
                     if(robotsMap.get(address).showRobot()) {
                         msg.message.draw(drawings, msg.isOpponent() ? Color.RED : Color.BLUE, msg.isOpponent());
                     }
                     //*/
                 } // end for
+                Plugin.drawingEventManager.fireDrawingEvent(drawings);
             } // end synchronized
         } // end run
     }

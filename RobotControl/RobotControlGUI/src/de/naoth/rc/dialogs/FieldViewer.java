@@ -10,9 +10,6 @@ import de.naoth.rc.core.dialog.DialogPlugin;
 import de.naoth.rc.RobotControl;
 import de.naoth.rc.components.PNGExportFileType;
 import de.naoth.rc.components.PlainPDFExportFileType;
-import de.naoth.rc.components.teamcomm.TeamCommListener;
-import de.naoth.rc.components.teamcomm.TeamCommManager;
-import de.naoth.rc.components.teamcomm.TeamCommMessage;
 import de.naoth.rc.drawings.Drawable;
 import de.naoth.rc.drawings.DrawingCollection;
 import de.naoth.rc.drawings.DrawingOnField;
@@ -29,7 +26,6 @@ import de.naoth.rc.drawingmanager.DrawingListener;
 import de.naoth.rc.manager.DebugDrawingManager;
 import de.naoth.rc.manager.ImageManagerBottom;
 import de.naoth.rc.core.manager.ObjectListener;
-import de.naoth.rc.dataformats.SPLMessage;
 import de.naoth.rc.drawings.FieldDrawingSPL3x4;
 import de.naoth.rc.logmanager.LogFileEventManager;
 import de.naoth.rc.manager.DebugDrawingManagerMotion;
@@ -42,13 +38,6 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.stream.Collectors;
 import javax.imageio.ImageIO;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
@@ -82,8 +71,6 @@ public class FieldViewer extends AbstractDialog
         public static DrawingEventManager drawingEventManager;
         @InjectPlugin
         public static LogFileEventManager logFileEventManager;
-        @InjectPlugin
-        public static TeamCommManager teamcommManager;
     }//end Plugin
   
   private Drawable backgroundDrawing;
@@ -93,10 +80,7 @@ public class FieldViewer extends AbstractDialog
   private final PlotDataListener plotDataListener;
   private final StrokePlot strokePlot;
 
-  private final Map<String, SPLMessage> messageBuffer = Collections.synchronizedMap(new TreeMap<String, SPLMessage>());
-  private final Timer timerCheckMessages = new Timer();
   private final DrawingsListener drawingsListener = new DrawingsListener();
-  private final TeamCommMessageListener teamcommListener = new TeamCommMessageListener();
   
   // TODO: this is a hack
   private static de.naoth.rc.components.DynamicCanvasPanel canvasExport = null;
@@ -143,9 +127,6 @@ public class FieldViewer extends AbstractDialog
             }
         }
     });
-    
-    Plugin.teamcommManager.addListener(teamcommListener);
-    this.timerCheckMessages.scheduleAtFixedRate(new TeamCommMessageDrawer(), 100, 33);
     
     // intialize the field
     //this.fieldCanvas.getDrawingList().add(0, this.backgroundDrawing);
@@ -408,7 +389,6 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
     this.fieldCanvas.getDrawingList().add(drawingBuffer);
     this.drawingEventBuffer.clear();
     this.fieldCanvas.getDrawingList().add(drawingEventBuffer);
-    messageBuffer.clear();
   }//end resetView
 
   private void exportCanvasToPNG() {
@@ -460,40 +440,6 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
       Plugin.debugDrawingManagerMotion.removeListener(this);
     }
   }
-  
-    /**
-     * Waits for new TeamCommMessages and writes them to the "message-buffer".
-     */
-    public class TeamCommMessageListener implements TeamCommListener {
-
-        @Override
-        public void newTeamCommMessages(List<TeamCommMessage> messages) {
-            synchronized (messageBuffer) {
-                // "convert" list to map using team/player number as key
-                messageBuffer.putAll(messages.stream().collect(Collectors.toMap(
-                    m -> m.address == null ? m.message.teamNum+".0.0."+m.message.playerNum : m.address,
-                    m -> m.message
-                )));
-            }
-        }
-    }
-  
-    /**
-     * Draws periodically all buffered TeamCommMessages.
-     */
-    public class TeamCommMessageDrawer extends TimerTask {
-        @Override
-        public void run() {
-            synchronized (messageBuffer) {
-                if (!messageBuffer.isEmpty()) {
-                    DrawingCollection drawings = new DrawingCollection();
-                    // draw every message
-                    messageBuffer.forEach((k,v) -> { v.draw(drawings, v.teamNum != 4 ? Color.DARK_GRAY : Color.LIGHT_GRAY, v.teamNum != 4); });
-                    Plugin.drawingEventManager.fireDrawingEvent(drawings);
-                }
-            } // end synchronized
-        }
-    }
 
   class PlotDataListener implements ObjectListener<Plots>
   {
@@ -554,7 +500,6 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
     Plugin.debugDrawingManager.removeListener(drawingsListener);
     Plugin.debugDrawingManagerMotion.removeListener(drawingsListener);
     Plugin.plotDataManager.removeListener(plotDataListener);
-    Plugin.teamcommManager.removeListener(teamcommListener);
   }
   
     // Variables declaration - do not modify//GEN-BEGIN:variables

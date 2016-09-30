@@ -16,6 +16,7 @@ import java.nio.channels.DatagramChannel;
 import java.util.Collections;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 
 /**
@@ -23,8 +24,12 @@ import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
  * @author Philipp Strobel <philippstrobel@posteo.de>
  */
 public class RobotTeamCommListener implements Runnable {
-        @InjectPlugin
-        public static TeamCommManager teamcommManager;
+        
+        @PluginImplementation
+        public static class Plugin implements net.xeoh.plugins.base.Plugin {
+            @InjectPlugin
+            public static TeamCommManager teamcommManager;
+        }//end Plugin
         
         private DatagramChannel channel;
         
@@ -79,8 +84,8 @@ public class RobotTeamCommListener implements Runnable {
                         SPLMessage spl_msg = new SPLMessage(this.readBuffer);
                         TeamCommMessage tc_msg = new TeamCommMessage(timestamp, ((InetSocketAddress) address).getHostString(), spl_msg, this.isOpponent);
 
-                        if (address instanceof InetSocketAddress) {
-                            teamcommManager.receivedMessages(Collections.singletonList(tc_msg));
+                        if (address instanceof InetSocketAddress && Plugin.teamcommManager != null) {
+                            Plugin.teamcommManager.receivedMessages(Collections.singletonList(tc_msg));
                         }
 
                     } catch (Exception ex) {
