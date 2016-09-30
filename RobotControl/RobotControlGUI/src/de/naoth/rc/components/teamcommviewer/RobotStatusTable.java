@@ -105,7 +105,7 @@ public class RobotStatusTable extends javax.swing.JPanel {
 
         table.setAutoCreateRowSorter(true);
         table.setModel(new RobotTableModel());
-        table.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_LAST_COLUMN);
+        table.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
         table.setRowSelectionAllowed(false);
         scrollPane.setViewportView(table);
         table.setColumnModel(new DefaultTableColumnModel());

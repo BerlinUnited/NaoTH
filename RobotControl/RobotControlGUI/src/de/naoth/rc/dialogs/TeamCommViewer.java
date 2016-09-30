@@ -123,19 +123,20 @@ public class TeamCommViewer extends AbstractDialog {
 
         teamCommFileChooser = new de.naoth.rc.components.ExtendedFileChooser();
         pmAdditionalColumns = new javax.swing.JPopupMenu();
+        toolbarPanel = new javax.swing.JPanel();
         btListen = new javax.swing.JToggleButton();
-        portNumberOwn = new javax.swing.JFormattedTextField();
-        portNumberOpponent = new javax.swing.JFormattedTextField();
         jLabel1 = new javax.swing.JLabel();
+        portNumberOwn = new javax.swing.JFormattedTextField();
         jLabel2 = new javax.swing.JLabel();
+        portNumberOpponent = new javax.swing.JFormattedTextField();
         btnRecord = new javax.swing.JToggleButton();
         btnStopRecording = new javax.swing.JButton();
-        jPanel2 = new javax.swing.JPanel();
+        btnAddtionalColumns = new javax.swing.JToggleButton();
+        contentPanel = new javax.swing.JPanel();
         robotStatusSplitPane = new javax.swing.JSplitPane();
         jScrollPane2 = new javax.swing.JScrollPane();
         robotStatusPanel = new javax.swing.JPanel();
         robotStatusTable = new de.naoth.rc.components.teamcommviewer.RobotStatusTable();
-        btnAddtionalColumns = new javax.swing.JToggleButton();
 
         teamCommFileChooser.setDialogType(javax.swing.JFileChooser.SAVE_DIALOG);
         teamCommFileChooser.setDialogTitle("Log file location");
@@ -152,72 +153,64 @@ public class TeamCommViewer extends AbstractDialog {
             }
         });
 
+        setLayout(new java.awt.BorderLayout());
+
+        toolbarPanel.setMaximumSize(new java.awt.Dimension(10, 10));
+        toolbarPanel.setLayout(new javax.swing.BoxLayout(toolbarPanel, javax.swing.BoxLayout.LINE_AXIS));
+
         btListen.setText("Listen to TeamComm");
         btListen.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btListenActionPerformed(evt);
             }
         });
+        toolbarPanel.add(btListen);
+
+        jLabel1.setText("Blue:");
+        toolbarPanel.add(jLabel1);
 
         portNumberOwn.setColumns(6);
         portNumberOwn.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#"))));
         portNumberOwn.setText("10004");
         portNumberOwn.setToolTipText("Own team port number");
+        portNumberOwn.setMinimumSize(new java.awt.Dimension(76, 19));
+        toolbarPanel.add(portNumberOwn);
+
+        jLabel2.setText("Red:");
+        toolbarPanel.add(jLabel2);
 
         portNumberOpponent.setColumns(6);
         portNumberOpponent.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#"))));
         portNumberOpponent.setToolTipText("Opponent team port number");
-
-        jLabel1.setText("Blue:");
-
-        jLabel2.setText("Red:");
+        portNumberOpponent.setMinimumSize(new java.awt.Dimension(76, 19));
+        toolbarPanel.add(portNumberOpponent);
 
         btnRecord.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/naoth/rc/res/play.png"))); // NOI18N
         btnRecord.setText("Record TeamComm");
         btnRecord.setActionCommand("RecordTeamComm");
+        btnRecord.setMaximumSize(new java.awt.Dimension(193, 25));
+        btnRecord.setMinimumSize(new java.awt.Dimension(193, 25));
+        btnRecord.setPreferredSize(new java.awt.Dimension(193, 25));
         btnRecord.setSelectedIcon(new javax.swing.ImageIcon(getClass().getResource("/de/naoth/rc/res/media-record.png"))); // NOI18N
         btnRecord.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnRecordActionPerformed(evt);
             }
         });
+        toolbarPanel.add(btnRecord);
 
         btnStopRecording.setIcon(new javax.swing.ImageIcon(getClass().getResource("/toolbarButtonGraphics/media/Stop24.gif"))); // NOI18N
         btnStopRecording.setToolTipText("Stops recording and closes log file.");
         btnStopRecording.setEnabled(false);
+        btnStopRecording.setMaximumSize(new java.awt.Dimension(58, 25));
+        btnStopRecording.setMinimumSize(new java.awt.Dimension(58, 25));
+        btnStopRecording.setPreferredSize(new java.awt.Dimension(58, 25));
         btnStopRecording.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnStopRecordingActionPerformed(evt);
             }
         });
-
-        robotStatusSplitPane.setBorder(null);
-        robotStatusSplitPane.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
-        robotStatusSplitPane.setOneTouchExpandable(true);
-
-        jScrollPane2.setMinimumSize(new java.awt.Dimension(0, 0));
-        jScrollPane2.setPreferredSize(new java.awt.Dimension(0, 22));
-
-        robotStatusPanel.setLayout(new java.awt.GridLayout(5, 1, 0, 5));
-        jScrollPane2.setViewportView(robotStatusPanel);
-
-        robotStatusSplitPane.setLeftComponent(jScrollPane2);
-        robotStatusSplitPane.setRightComponent(robotStatusTable);
-
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
-            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addComponent(robotStatusSplitPane, javax.swing.GroupLayout.DEFAULT_SIZE, 838, Short.MAX_VALUE))
-        );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 472, Short.MAX_VALUE)
-            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addComponent(robotStatusSplitPane, javax.swing.GroupLayout.DEFAULT_SIZE, 472, Short.MAX_VALUE))
-        );
+        toolbarPanel.add(btnStopRecording);
 
         btnAddtionalColumns.setIcon(new javax.swing.ImageIcon(getClass().getResource("/toolbarButtonGraphics/general/Preferences16.gif"))); // NOI18N
         btnAddtionalColumns.setToolTipText("Add/Remove columns from RobotStatusTable");
@@ -226,52 +219,40 @@ public class TeamCommViewer extends AbstractDialog {
                 btnAddtionalColumnsActionPerformed(evt);
             }
         });
+        toolbarPanel.add(btnAddtionalColumns);
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
-        this.setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(btListen)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(portNumberOwn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel2)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(portNumberOpponent, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(btnRecord)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnStopRecording)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnAddtionalColumns)
-                        .addGap(0, 68, Short.MAX_VALUE)))
-                .addContainerGap())
+        add(toolbarPanel, java.awt.BorderLayout.NORTH);
+
+        robotStatusSplitPane.setBorder(null);
+        robotStatusSplitPane.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
+        robotStatusSplitPane.setOneTouchExpandable(true);
+
+        jScrollPane2.setMinimumSize(new java.awt.Dimension(0, 0));
+        jScrollPane2.setPreferredSize(new java.awt.Dimension(0, 22));
+
+        robotStatusPanel.setMinimumSize(new java.awt.Dimension(0, 0));
+        robotStatusPanel.setLayout(new java.awt.GridLayout(5, 1, 0, 5));
+        jScrollPane2.setViewportView(robotStatusPanel);
+
+        robotStatusSplitPane.setLeftComponent(jScrollPane2);
+        robotStatusSplitPane.setRightComponent(robotStatusTable);
+
+        javax.swing.GroupLayout contentPanelLayout = new javax.swing.GroupLayout(contentPanel);
+        contentPanel.setLayout(contentPanelLayout);
+        contentPanelLayout.setHorizontalGroup(
+            contentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
+            .addGroup(contentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addComponent(robotStatusSplitPane, javax.swing.GroupLayout.DEFAULT_SIZE, 867, Short.MAX_VALUE))
         );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(btnStopRecording, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(btListen)
-                        .addComponent(jLabel1)
-                        .addComponent(portNumberOwn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jLabel2)
-                        .addComponent(portNumberOpponent, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(btnRecord, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(btnAddtionalColumns, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
+        contentPanelLayout.setVerticalGroup(
+            contentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 518, Short.MAX_VALUE)
+            .addGroup(contentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addComponent(robotStatusSplitPane, javax.swing.GroupLayout.DEFAULT_SIZE, 518, Short.MAX_VALUE))
         );
+
+        add(contentPanel, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
 
     private void btListenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btListenActionPerformed
@@ -468,7 +449,8 @@ public class TeamCommViewer extends AbstractDialog {
                     // "convert" list to map using address as key
                     messageBuffer.putAll(messages.stream().collect(Collectors.toMap(
                         m -> m.address == null ? m.message.teamNum+".0.0."+m.message.playerNum : m.address,
-                        m -> m
+                        m -> m,
+                        (m1, m2) -> m2 // if two messages are from the same robot, take the last one
                     )));
                 }
             }
@@ -529,9 +511,9 @@ public class TeamCommViewer extends AbstractDialog {
     private javax.swing.JToggleButton btnAddtionalColumns;
     private javax.swing.JToggleButton btnRecord;
     private javax.swing.JButton btnStopRecording;
+    private javax.swing.JPanel contentPanel;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JPopupMenu pmAdditionalColumns;
     private javax.swing.JFormattedTextField portNumberOpponent;
@@ -540,6 +522,7 @@ public class TeamCommViewer extends AbstractDialog {
     private javax.swing.JSplitPane robotStatusSplitPane;
     private de.naoth.rc.components.teamcommviewer.RobotStatusTable robotStatusTable;
     private de.naoth.rc.components.ExtendedFileChooser teamCommFileChooser;
+    private javax.swing.JPanel toolbarPanel;
     // End of variables declaration//GEN-END:variables
 
 }
