@@ -193,6 +193,7 @@ public class RobotStatusPanel extends javax.swing.JPanel implements RobotStatusL
             this.jlTeamNumber.setText("" + rs.teamNum);
         }
         connectButton.setEnabled(!rs.isConnected);
+        cbShowRobot.setSelected(rs.showOnField);
         this.repaint();
     }
     

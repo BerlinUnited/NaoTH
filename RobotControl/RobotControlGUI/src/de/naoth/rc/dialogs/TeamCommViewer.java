@@ -45,8 +45,6 @@ import javax.swing.SwingUtilities;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 
-// TODO: clean-up imports!
-
 /**
  *
  * @author Heinrich Mellmann

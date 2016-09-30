@@ -11,10 +11,12 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.swing.DefaultRowSorter;
 import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JOptionPane;
 import javax.swing.JTable;
-import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableColumnModel;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
@@ -33,7 +35,8 @@ public class RobotStatusTable extends javax.swing.JPanel {
                       Function<RobotStatus, Object> value,
                       TableCellRenderer renderer,
                       boolean sortable,
-                      boolean showbydefault
+                      boolean showbydefault,
+                      boolean editable
         ){
             this.name = name;
             this.type = type;
@@ -41,6 +44,7 @@ public class RobotStatusTable extends javax.swing.JPanel {
             this.renderer = renderer;
             this.sortable = sortable;
             this.showbydefault = showbydefault;
+            this.editable = editable;
         }
         public String name;
         public Class<?> type;
@@ -48,6 +52,7 @@ public class RobotStatusTable extends javax.swing.JPanel {
         public TableCellRenderer renderer;
         public boolean sortable;
         public boolean showbydefault;
+        public boolean editable;
         
         public String toString() {
             return name;
@@ -64,20 +69,22 @@ public class RobotStatusTable extends javax.swing.JPanel {
             (RobotStatus r)->r.teamNum, // column value
             new CellRenderer(), // column renderer
             true, // sortable
-            true  // show by default?
+            true, // show by default?
+            false
         ),
-        new Column("#PN",Byte.class,(RobotStatus r) -> r.playerNum,null,true,true),
-        new Column("IP",String.class,(RobotStatus r) -> r.ipAddress,null,true,true),
-        new Column("msg/s", Double.class, (RobotStatus r) -> r.msgPerSecond, new PingRenderer(), true,true),
-        new Column("BallAge (s)", Float.class, (RobotStatus r) -> r.ballAge, null, true,true),
-        new Column("State", String.class, (RobotStatus r) -> (r.isDead ? "DEAD" : (r.fallen == 1 ? "FALLEN" : "NOT FALLEN")), null, true,true),
-        new Column("Temperature", Float.class, (RobotStatus r) -> r.temperature, new TemperatureRenderer(), true,true),
-        new Column("Battery", Float.class, (RobotStatus r) -> r.batteryCharge, new BatteryRenderer(), true,true),
-        new Column("TimeToBall", Float.class, (RobotStatus r) -> r.timeToBall, null, true,false),
-        new Column("wantToBeStriker", Boolean.class, (RobotStatus r) -> r.wantsToBeStriker, null, true,false),
-        new Column("wasStriker", Boolean.class, (RobotStatus r) -> r.wasStriker, null, true,false),
-        new Column("isPenalized", Boolean.class, (RobotStatus r) -> r.isPenalized, null, true,false),
-        new Column("", RobotStatus.class, (RobotStatus r) -> r, new ButtonRenderer(), false,true)
+        new Column("#PN",Byte.class,(RobotStatus r) -> r.playerNum,null,true,true,false),
+        new Column("IP",String.class,(RobotStatus r) -> r.ipAddress,null,true,true,false),
+        new Column("msg/s", Double.class, (RobotStatus r) -> r.msgPerSecond, new PingRenderer(), true,true,false),
+        new Column("BallAge (s)", Float.class, (RobotStatus r) -> r.ballAge, null, true,true,false),
+        new Column("State", String.class, (RobotStatus r) -> (r.isDead ? "DEAD" : (r.fallen == 1 ? "FALLEN" : "NOT FALLEN")), null, true,true,false),
+        new Column("Temperature", Float.class, (RobotStatus r) -> r.temperature, new TemperatureRenderer(), true,true,false),
+        new Column("Battery", Float.class, (RobotStatus r) -> r.batteryCharge, new BatteryRenderer(), true,true,false),
+        new Column("TimeToBall", Float.class, (RobotStatus r) -> r.timeToBall, null, true,false,false),
+        new Column("wantToBeStriker", Boolean.class, (RobotStatus r) -> r.wantsToBeStriker, null, true,false,false),
+        new Column("wasStriker", Boolean.class, (RobotStatus r) -> r.wasStriker, null, true,false,false),
+        new Column("isPenalized", Boolean.class, (RobotStatus r) -> r.isPenalized, null, true,false,false),
+        new Column("show on field", Boolean.class, (RobotStatus r) -> r.showOnField, null, true,false,true),
+        new Column("", RobotStatus.class, (RobotStatus r) -> r, new ButtonRenderer(), false,true,false)
     );
     
     /**
@@ -89,6 +96,7 @@ public class RobotStatusTable extends javax.swing.JPanel {
         addColumn("");
         // sets the mouse listener for the button column (connect button)
         table.addMouseListener(new JTableButtonMouseListener(table));
+        ((JComponent) table.getDefaultRenderer(Boolean.class)).setOpaque(true);
     }
 
     /**
@@ -122,7 +130,7 @@ public class RobotStatusTable extends javax.swing.JPanel {
         );
     }// </editor-fold>//GEN-END:initComponents
 
-    private class RobotTableModel extends AbstractTableModel implements RobotStatusListener {
+    private class RobotTableModel extends DefaultTableModel implements RobotStatusListener {
         private final ArrayList<RobotStatus> robots = new ArrayList<>();
         
         public RobotTableModel() {
@@ -169,6 +177,13 @@ public class RobotStatusTable extends javax.swing.JPanel {
             return ALL_COLUMNS.get(columnIndex).value.apply(robot);
         }
 
+        @Override
+        public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
+            if(ALL_COLUMNS.get(columnIndex).editable) {
+                robots.get(rowIndex).showOnField = (boolean)aValue;
+            }
+        }
+
         /**
          * Notifies the table, that some cell data changed.
          * RobotStatus calls this method (listener).
@@ -176,6 +191,11 @@ public class RobotStatusTable extends javax.swing.JPanel {
         @Override
         public void statusChanged() {
             fireTableDataChanged();
+        }
+
+        @Override
+        public boolean isCellEditable(int row, int columnIndex) {
+            return ALL_COLUMNS.get(columnIndex).editable;
         }
     }
     
@@ -342,7 +362,10 @@ public class RobotStatusTable extends javax.swing.JPanel {
                 // only for column 8 (connect button) and if it's enabled
                 if(table.getCellRenderer(row, column) instanceof ButtonRenderer && ((ButtonRenderer)table.getCellRenderer(row, column)).isEnabled()) {
                     // let RobotStatus connect to robot (MessageServer)
-                    ((RobotStatus)table.getValueAt(row, column)).connect();
+                    if(!((RobotStatus)table.getValueAt(row, column)).connect()) {
+                        // show dialog on error
+                        JOptionPane.showMessageDialog(null, "Couldn't connect!", "Couldn't connect", JOptionPane.WARNING_MESSAGE);
+                    }
                 }
 			}
 		}
