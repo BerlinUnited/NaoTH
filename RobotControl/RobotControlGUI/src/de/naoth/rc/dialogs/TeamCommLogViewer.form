@@ -191,6 +191,10 @@
         </Component>
         <Component class="javax.swing.JToolBar$Separator" name="jSeparator2">
         </Component>
+        <Component class="javax.swing.JLabel" name="lblMessages">
+        </Component>
+        <Component class="javax.swing.JLabel" name="lblTimestamps">
+        </Component>
       </SubComponents>
     </Container>
   </SubComponents>

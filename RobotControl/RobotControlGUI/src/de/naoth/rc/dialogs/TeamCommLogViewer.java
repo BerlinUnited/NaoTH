@@ -107,6 +107,8 @@ public class TeamCommLogViewer extends AbstractDialog {
         btnPlay = new javax.swing.JToggleButton();
         btnStop = new javax.swing.JButton();
         jSeparator2 = new javax.swing.JToolBar.Separator();
+        lblMessages = new javax.swing.JLabel();
+        lblTimestamps = new javax.swing.JLabel();
 
         teamCommFileChooser.setApproveButtonText("Open");
 
@@ -202,6 +204,8 @@ public class TeamCommLogViewer extends AbstractDialog {
         });
         jToolBar1.add(btnStop);
         jToolBar1.add(jSeparator2);
+        jToolBar1.add(lblMessages);
+        jToolBar1.add(lblTimestamps);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -227,8 +231,10 @@ public class TeamCommLogViewer extends AbstractDialog {
                 // read the file
                 this.messages_cnt = readMessagesFromJsonFile(teamCommFileChooser.getSelectedFile());
                 
-                // TODO: show somewhere on the UI?!
-                System.out.println("Unique timestamps: " + messages.size() + "; Total messages: " + messages_cnt);
+                this.lblMessages.setToolTipText("Total messages");
+                this.lblMessages.setText(" M: "+String.valueOf(messages.size())+" ");
+                this.lblTimestamps.setToolTipText("Unique timestamps");
+                this.lblTimestamps.setText(" T:"+String.valueOf(messages_cnt)+" ");
                 
                 btnPlay.setEnabled(true);
                 
@@ -574,6 +580,8 @@ public class TeamCommLogViewer extends AbstractDialog {
     private javax.swing.JToolBar.Separator jSeparator1;
     private javax.swing.JToolBar.Separator jSeparator2;
     private javax.swing.JToolBar jToolBar1;
+    private javax.swing.JLabel lblMessages;
+    private javax.swing.JLabel lblTimestamps;
     private javax.swing.JCheckBoxMenuItem loopThrough;
     private javax.swing.JTree messageTree;
     private javax.swing.JPopupMenu pmConfig;
