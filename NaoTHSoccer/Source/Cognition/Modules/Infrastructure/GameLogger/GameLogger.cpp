@@ -6,7 +6,7 @@ GameLogger::GameLogger()
   lastCompleteFrameNumber(0),
   ignore_init_state(false)
 {
-  logfileManager.openFile("/tmp/game.log");
+  logfileManager.openFile("/log/game.log");
 
   getDebugParameterList().add(&params);
 }
