@@ -273,7 +273,8 @@ public class RobotStatusTable extends javax.swing.JPanel {
 
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            this.setBackground(((RobotTableModel)table.getModel()).getRobot(row).robotColor);
+            // if the table is sorted, we need to convert the ui row index to the (internal) model index to get the color of the "correct" robot
+            this.setBackground(((RobotTableModel)table.getModel()).getRobot(table.getRowSorter().convertRowIndexToModel(row)).robotColor);
             return super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
         }
     }
