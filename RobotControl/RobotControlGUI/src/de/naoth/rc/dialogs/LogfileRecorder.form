@@ -175,9 +175,12 @@
     </Component>
     <Component class="javax.swing.JTextField" name="txtTempFile">
       <Properties>
-        <Property name="text" type="java.lang.String" value="/tmp/cognition.log"/>
+        <Property name="text" type="java.lang.String" value="/log/cognition.log"/>
         <Property name="toolTipText" type="java.lang.String" value="Path to store the logfile on the robot."/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="txtTempFileActionPerformed"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel2">
       <Properties>

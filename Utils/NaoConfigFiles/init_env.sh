@@ -5,7 +5,7 @@ copy(){
   local from="$1"
   local to="$2"
   local owner="$3"
-  local rights="$4"
+  local rights="$4"  
   
   if [ -f ${from} ]
   then
@@ -35,6 +35,17 @@ copy(){
     return 1
   fi
 }
+
+# ----------- logging directory -----------
+
+# check if log dir exists
+if [ ! -d /log ]
+then
+  mkdir /log
+fi
+
+# copy fstab
+copy ./etc/fstab /etc/fstab root 755
 
 # -----------  video driver -----------
 
