@@ -6,6 +6,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -240,7 +241,18 @@ public class RobotStatusTable extends javax.swing.JPanel {
         
         TableColumnModel tcm = table.getColumnModel();
         tcm.addColumn(tc);
-
+        
+        // move column to "correct" index
+        int columnIndex = ALL_COLUMNS.indexOf(col);
+        Enumeration<TableColumn> tableColumns = tcm.getColumns();
+        while(tableColumns.hasMoreElements()) {
+            TableColumn tableColumn = tableColumns.nextElement();
+            if(tableColumn.getModelIndex() > columnIndex) {
+                tcm.moveColumn(tcm.getColumnCount()-1, tcm.getColumnIndex(tableColumn.getIdentifier()));
+                break;
+            }
+        }
+        
         // makes the button column the last column
         tcm.moveColumn(tcm.getColumnIndex(""), tcm.getColumnCount()-1);
     }
