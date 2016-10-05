@@ -17,6 +17,7 @@ import bibliothek.gui.dock.common.perspective.CPerspective;
 import bibliothek.gui.dock.common.perspective.CStackPerspective;
 import bibliothek.gui.dock.common.perspective.SingleCDockablePerspective;
 import bibliothek.gui.dock.common.theme.ThemeMap;
+import de.naoth.rc.core.dialog.DialogMenu;
 import java.awt.DefaultKeyboardFocusManager;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
@@ -37,12 +38,10 @@ import javax.swing.KeyStroke;
 public class DialogRegistry {
 
     private JFrame parent = null;
-    private final JMenu menu;
+    private final DialogMenu menu;
     private final CControl control;
 
-    private final ArrayList<String> allDialogNames = new ArrayList<String>();
-
-    public DialogRegistry(JFrame parent, JMenu menu) {
+    public DialogRegistry(JFrame parent, DialogMenu menu) {
         this.parent = parent;
         this.menu = menu;
 
@@ -116,18 +115,7 @@ public class DialogRegistry {
         
         // register a menu entry 
         if (this.menu != null) {
-            int insertPoint = Collections.binarySearch(allDialogNames, dialogName);
-            if (insertPoint < 0) {
-                JMenuItem newItem = new JMenuItem(dialogName);
-                newItem.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        dockDialog(dialog);
-                    }
-                });
-                menu.insert(newItem, -(insertPoint + 1));
-                allDialogNames.add(-(insertPoint + 1), dialogName);
-            }
+            this.menu.add(dialog);
         }
     }//end registerDialog
 

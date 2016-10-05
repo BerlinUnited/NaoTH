@@ -8,6 +8,7 @@ package de.naoth.rc;
 import de.naoth.rc.core.dialog.Dialog;
 import bibliothek.gui.DockUI;
 import bibliothek.gui.dock.util.laf.Nimbus6u10;
+import de.naoth.rc.core.dialog.DialogMenu;
 import de.naoth.rc.server.ConnectionDialog;
 import de.naoth.rc.server.ConnectionStatusEvent;
 import de.naoth.rc.server.ConnectionStatusListener;
@@ -23,6 +24,7 @@ import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
+import javax.swing.JMenu;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
@@ -107,7 +109,7 @@ public class RobotControlImpl extends javax.swing.JFrame
     });
     
     // set up a list of all dialogs
-    this.dialogRegistry = new DialogRegistry(this, dialogsMenu);
+    this.dialogRegistry = new DialogRegistry(this, (DialogMenu)dialogsMenu);
 
     
     // initialize the message server
@@ -218,7 +220,7 @@ public class RobotControlImpl extends javax.swing.JFrame
         resetLayoutMenuItem = new javax.swing.JMenuItem();
         jSeparator1 = new javax.swing.JSeparator();
         exitMenuItem = new javax.swing.JMenuItem();
-        dialogsMenu = new javax.swing.JMenu();
+        dialogsMenu = new DialogMenu(dialogRegistry);
         helpMenu = new javax.swing.JMenu();
         aboutMenuItem = new javax.swing.JMenuItem();
 

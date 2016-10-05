@@ -66,6 +66,9 @@
             <Property name="mnemonic" type="int" value="100"/>
             <Property name="text" type="java.lang.String" value="Dialogs"/>
           </Properties>
+          <AuxValues>
+            <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new DialogMenu(dialogRegistry)"/>
+          </AuxValues>
         </Menu>
         <Menu class="javax.swing.JMenu" name="helpMenu">
           <Properties>
