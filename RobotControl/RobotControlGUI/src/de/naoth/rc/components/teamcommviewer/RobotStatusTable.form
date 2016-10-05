@@ -40,7 +40,6 @@
             <Property name="columnModel" type="javax.swing.table.TableColumnModel" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
               <Connection code="new DefaultTableColumnModel()" type="code"/>
             </Property>
-            <Property name="rowSelectionAllowed" type="boolean" value="false"/>
           </Properties>
         </Component>
       </SubComponents>

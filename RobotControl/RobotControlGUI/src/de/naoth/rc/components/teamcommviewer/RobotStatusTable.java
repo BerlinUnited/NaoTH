@@ -4,10 +4,10 @@ package de.naoth.rc.components.teamcommviewer;
 import java.awt.Component;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Vector;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.swing.DefaultRowSorter;
@@ -15,9 +15,9 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
+import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableColumnModel;
-import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
@@ -115,7 +115,6 @@ public class RobotStatusTable extends javax.swing.JPanel {
         table.setAutoCreateRowSorter(true);
         table.setModel(new RobotTableModel());
         table.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
-        table.setRowSelectionAllowed(false);
         scrollPane.setViewportView(table);
         table.setColumnModel(new DefaultTableColumnModel());
 
@@ -131,8 +130,8 @@ public class RobotStatusTable extends javax.swing.JPanel {
         );
     }// </editor-fold>//GEN-END:initComponents
 
-    private class RobotTableModel extends DefaultTableModel implements RobotStatusListener {
-        private final ArrayList<RobotStatus> robots = new ArrayList<>();
+    private class RobotTableModel extends AbstractTableModel implements RobotStatusListener {
+        private final Vector<RobotStatus> robots = new Vector<>();
         
         public RobotTableModel() {
         }
@@ -140,7 +139,7 @@ public class RobotStatusTable extends javax.swing.JPanel {
         public void addRobot(RobotStatus robot) {
             robots.add(robot);
             robot.addListener(this);
-            this.fireTableDataChanged();
+            this.fireTableRowsInserted(robots.size()-1, robots.size()-1);
         }
         
         public RobotStatus getRobot(int rowIndex) {
@@ -148,8 +147,9 @@ public class RobotStatusTable extends javax.swing.JPanel {
         }
         
         public void removeAll() {
+            int lastRow = robots.size()-1;
             robots.clear();
-            this.fireTableDataChanged();
+            this.fireTableRowsDeleted(0, lastRow);
         }
 
         @Override
@@ -190,8 +190,9 @@ public class RobotStatusTable extends javax.swing.JPanel {
          * RobotStatus calls this method (listener).
          */
         @Override
-        public void statusChanged() {
-            fireTableDataChanged();
+        public void statusChanged(RobotStatus changed) {
+            int idx = robots.indexOf(changed);
+            this.fireTableRowsUpdated(idx, idx);
         }
 
         @Override

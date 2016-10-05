@@ -137,7 +137,7 @@ public class RobotStatus {
     
     private void statusChanged() {
         for (RobotStatusListener l : listener) {
-            l.statusChanged();
+            l.statusChanged(this);
         }
     }
     

@@ -142,7 +142,7 @@ public class RobotStatusPanel extends javax.swing.JPanel implements RobotStatusL
     }//GEN-LAST:event_cbShowRobotActionPerformed
 
     @Override
-    public void statusChanged() {
+    public void statusChanged(RobotStatus changed) {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
