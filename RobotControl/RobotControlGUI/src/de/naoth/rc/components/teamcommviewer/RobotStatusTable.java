@@ -149,7 +149,9 @@ public class RobotStatusTable extends javax.swing.JPanel {
         public void removeAll() {
             int lastRow = robots.size()-1;
             robots.clear();
-            this.fireTableRowsDeleted(0, lastRow);
+            if(lastRow >= 0) {
+                this.fireTableRowsDeleted(0, lastRow);
+            }
         }
 
         @Override
