@@ -36,17 +36,6 @@ copy(){
   fi
 }
 
-# ----------- logging directory -----------
-
-# check if log dir exists
-if [ ! -d /log ]
-then
-  mkdir /log
-fi
-
-# copy fstab
-copy ./etc/fstab /etc/fstab root 755
-
 # -----------  video driver -----------
 
 # copy the video driver
@@ -84,6 +73,12 @@ copy ./etc/naoqi/autoload.ini /etc/naoqi/autoload.ini root 644
 
 # copy ld.so.conf
 copy ./etc/ld.so.conf /etc/ld.so.conf root 644
+
+# check if log dir exists
+if [ ! -d /log ]
+then
+  mkdir /log
+fi
 
 # copy new fstab
 copy ./etc/fstab /etc/fstab root 644
