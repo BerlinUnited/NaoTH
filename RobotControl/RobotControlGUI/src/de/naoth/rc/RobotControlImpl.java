@@ -110,7 +110,6 @@ public class RobotControlImpl extends javax.swing.JFrame
     
     // set up a list of all dialogs
     this.dialogRegistry = new DialogRegistry(this, (DialogMenu)dialogsMenu);
-
     
     // initialize the message server
     this.messageServer = new MessageServer();
@@ -220,7 +219,7 @@ public class RobotControlImpl extends javax.swing.JFrame
         resetLayoutMenuItem = new javax.swing.JMenuItem();
         jSeparator1 = new javax.swing.JSeparator();
         exitMenuItem = new javax.swing.JMenuItem();
-        dialogsMenu = new DialogMenu(dialogRegistry);
+        dialogsMenu = new DialogMenu();
         helpMenu = new javax.swing.JMenu();
         aboutMenuItem = new javax.swing.JMenuItem();
 

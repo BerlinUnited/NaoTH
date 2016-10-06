@@ -24,11 +24,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
 import javax.swing.JFrame;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
 
 /**
@@ -44,6 +40,7 @@ public class DialogRegistry {
     public DialogRegistry(JFrame parent, DialogMenu menu) {
         this.parent = parent;
         this.menu = menu;
+        this.menu.setDialogRegistry(this);
 
         this.control = new CControl(this.parent);
         control.setTheme(ThemeMap.KEY_ECLIPSE_THEME);
