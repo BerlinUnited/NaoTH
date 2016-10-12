@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package de.naoth.rc.dataformats;
 
 import java.io.BufferedReader;
@@ -11,9 +6,7 @@ import java.io.Reader;
 import java.io.StreamTokenizer;
 import java.io.StringReader;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.stream.Collectors;
 
 /**
  *
@@ -22,6 +15,9 @@ import java.util.stream.Collectors;
 public class Sexp {
     SexpTokenizer t;
 
+    public Sexp() {
+    }
+    
     public Sexp(String expr) {
         setExpression(expr);
     }

@@ -1,38 +1,38 @@
 
 package de.naoth.rc.dataformats;
 
-import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  *
  * @author Philipp Strobel <philippstrobel@posteo.de>
  */
-public class SimsparkState extends HashMap<String, Object>{
-
+public class SimsparkState {
+    private final ConcurrentHashMap<String, Object> data = new ConcurrentHashMap<>();
     public SimsparkState() {
-        put("time", null);
-        put("play_mode", null);
-        put("score_left", null);
-        put("score_right", null);
-        put("half", null);
-        put("FieldLength", null);
-        put("FieldWidth", null);
-        put("FieldHeight", null);
-        put("GoalWidth", null);
-        put("GoalDepth", null);
-        put("GoalHeight", null);
-        put("BorderSize", null);
-        put("FreeKickDistance", null);
-        put("WaitBeforeKickOff", null);
-        put("AgentRadius", null);
-        put("BallRadius", null);
-        put("BallMass", null);
-        put("RuleGoalPauseTime", null);
-        put("RuleKickInPauseTime", null);
-        put("RuleHalfTime", null);
-        put("play_modes", null);
-        put("messages", null);
+        data.put("time", "");
+        data.put("play_mode", "");
+        data.put("score_left", "");
+        data.put("score_right", "");
+        data.put("half", "");
+        data.put("FieldLength", "");
+        data.put("FieldWidth", "");
+        data.put("FieldHeight", "");
+        data.put("GoalWidth", "");
+        data.put("GoalDepth", "");
+        data.put("GoalHeight", "");
+        data.put("BorderSize", "");
+        data.put("FreeKickDistance", "");
+        data.put("WaitBeforeKickOff", "");
+        data.put("AgentRadius", "");
+        data.put("BallRadius", "");
+        data.put("BallMass", "");
+        data.put("RuleGoalPauseTime", "");
+        data.put("RuleKickInPauseTime", "");
+        data.put("RuleHalfTime", "");
+        data.put("play_modes", "");
+        data.put("messages", "");
     }
     
     public void set(String key, Object value) {
@@ -48,7 +48,7 @@ public class SimsparkState extends HashMap<String, Object>{
             case "score_left":
             case "score_right":
             case "play_mode":
-                replace(key, Integer.parseInt((String) value));
+                data.replace(key, Integer.parseInt((String) value));
                 break;
             case "time":
             case "GoalWidth":
@@ -59,29 +59,30 @@ public class SimsparkState extends HashMap<String, Object>{
             case "AgentRadius":
             case "BallRadius":
             case "BallMass":
-                replace(key, Double.parseDouble((String)value));
+                data.replace(key, Double.parseDouble((String)value));
                 break;
             case "play_modes":
             case "messages":
-                replace(key, (value instanceof List ? value:null));
+                data.replace(key, (value instanceof List ? value:null));
                 break;
         }
     }
 
-    @Override
     public Object get(Object key) {
         if(key == "play_mode") {
             return getPlayMode();
         }
-        return super.get(key);
+        return data.get(key);
     }
 
     public String getPlayMode() {
-        if(super.get("play_mode") != null && super.get("play_modes") != null){
-            if(((List<String>)super.get("play_modes")).size() > (int)super.get("play_mode")) {
-                return ((List<String>)super.get("play_modes")).get((int)super.get("play_mode"));
+        Integer playmode = (Integer) data.get("play_mode");
+        List<String> playmodes = (List<String>) data.get("play_modes");
+        if(playmode != null && playmodes != null){
+            if(playmodes.size() > playmode) {
+                return playmodes.get(playmode);
             }
         }
-        return super.get("play_mode")+"";
+        return playmode.toString();
     }
 }
