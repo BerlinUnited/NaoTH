@@ -11,8 +11,9 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.ImageIcon;
+import javax.swing.JOptionPane;
 import javax.swing.table.TableModel;
-import javax.swing.text.DefaultCaret;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 
@@ -34,14 +35,13 @@ public class Simspark extends AbstractDialog {
     private final String host = "127.0.0.1";
     private SimsparkMonitor simspark_comm;
     private Timer timerUpdater;
+    private final ImageIcon connectionIcon = new javax.swing.ImageIcon(getClass().getResource("/de/naoth/rc/res/network-idle.png"));
     
     /**
      * Creates new form TeamCommViewerSimspark
      */
     public Simspark() {
         initComponents();
-//        DefaultCaret caret = (DefaultCaret) jTextArea1.getCaret();
-//        caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
         addTableContent();
         jTable1.getColumnModel().getColumn(0).setWidth(20);
         jTable1.getColumnModel().getColumn(0).setPreferredWidth(20);
@@ -56,22 +56,6 @@ public class Simspark extends AbstractDialog {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        simspark_toolbar = new javax.swing.JToolBar();
-        tb_monitor = new javax.swing.JToggleButton();
-        tb_agent = new javax.swing.JToggleButton();
-        layer = new javax.swing.JLayeredPane();
-        monitorPanel = new javax.swing.JPanel();
-        jPanel5 = new javax.swing.JPanel();
-        btnConnect = new javax.swing.JToggleButton();
-        jPanel7 = new javax.swing.JPanel();
-        tf_monitor_ip = new javax.swing.JTextField(host);
-        jLabel10 = new javax.swing.JLabel();
-        tf_monitor_port = new javax.swing.JTextField(String.valueOf(port_monitor));
-        jTabbedPane1 = new javax.swing.JTabbedPane();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
-        jScrollPane3 = new javax.swing.JScrollPane();
-        jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         cmd_ball_x = new javax.swing.JTextField();
@@ -94,142 +78,24 @@ public class Simspark extends AbstractDialog {
         jPanel4 = new javax.swing.JPanel();
         jLabel9 = new javax.swing.JLabel();
         jButton3 = new javax.swing.JButton();
+        simspark_toolbar = new javax.swing.JToolBar();
+        tb_monitor = new javax.swing.JToggleButton();
+        tb_agent = new javax.swing.JToggleButton();
+        layer = new javax.swing.JLayeredPane();
+        monitorPanel = new javax.swing.JPanel();
+        jPanel5 = new javax.swing.JPanel();
+        btnConnect = new javax.swing.JToggleButton();
+        input_panel = new javax.swing.JPanel();
+        tf_monitor_ip = new javax.swing.JTextField(host);
+        jLabel10 = new javax.swing.JLabel();
+        tf_monitor_port = new javax.swing.JTextField(String.valueOf(port_monitor));
+        jScrollPane2 = new javax.swing.JScrollPane();
+        jTable1 = new javax.swing.JTable();
         jPanel6 = new javax.swing.JPanel();
         btnSendCommand = new javax.swing.JButton();
         cmd = new javax.swing.JComboBox<>();
-        jButton4 = new javax.swing.JButton();
         agentPanel = new javax.swing.JPanel();
         lbl_todo = new javax.swing.JLabel();
-
-        setLayout(new java.awt.BorderLayout());
-
-        simspark_toolbar.setFloatable(false);
-        simspark_toolbar.setRollover(true);
-
-        tb_monitor.setSelected(true);
-        tb_monitor.setText("Monitor");
-        tb_monitor.setFocusable(false);
-        tb_monitor.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        tb_monitor.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        tb_monitor.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                tb_monitorActionPerformed(evt);
-            }
-        });
-        simspark_toolbar.add(tb_monitor);
-
-        tb_agent.setText("Agent");
-        tb_agent.setFocusable(false);
-        tb_agent.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        tb_agent.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        tb_agent.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                tb_agentActionPerformed(evt);
-            }
-        });
-        simspark_toolbar.add(tb_agent);
-
-        add(simspark_toolbar, java.awt.BorderLayout.PAGE_START);
-
-        monitorPanel.setLayout(new java.awt.BorderLayout());
-
-        jPanel5.setPreferredSize(new java.awt.Dimension(711, 25));
-
-        btnConnect.setText("Connect");
-        btnConnect.setFocusable(false);
-        btnConnect.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        btnConnect.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        btnConnect.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnConnectActionPerformed(evt);
-            }
-        });
-
-        jPanel7.setLayout(new javax.swing.BoxLayout(jPanel7, javax.swing.BoxLayout.LINE_AXIS));
-
-        tf_monitor_ip.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
-        tf_monitor_ip.setPreferredSize(new java.awt.Dimension(200, 19));
-        jPanel7.add(tf_monitor_ip);
-
-        jLabel10.setText(":");
-        jPanel7.add(jLabel10);
-
-        tf_monitor_port.setHorizontalAlignment(javax.swing.JTextField.LEFT);
-        tf_monitor_port.setToolTipText("");
-        tf_monitor_port.setMinimumSize(new java.awt.Dimension(36, 19));
-        tf_monitor_port.setPreferredSize(new java.awt.Dimension(19, 19));
-        jPanel7.add(tf_monitor_port);
-
-        javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
-        jPanel5.setLayout(jPanel5Layout);
-        jPanel5Layout.setHorizontalGroup(
-            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel5Layout.createSequentialGroup()
-                .addComponent(btnConnect)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel7, javax.swing.GroupLayout.DEFAULT_SIZE, 720, Short.MAX_VALUE)
-                .addContainerGap())
-        );
-        jPanel5Layout.setVerticalGroup(
-            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel5Layout.createSequentialGroup()
-                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(btnConnect, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-
-        monitorPanel.add(jPanel5, java.awt.BorderLayout.NORTH);
-
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null}
-            },
-            new String [] {
-                "Name", "Data"
-            }
-        ) {
-            Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class
-            };
-            boolean[] canEdit = new boolean [] {
-                false, false
-            };
-
-            public Class getColumnClass(int columnIndex) {
-                return types [columnIndex];
-            }
-
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
-            }
-        });
-        jTable1.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_LAST_COLUMN);
-        jScrollPane2.setViewportView(jTable1);
-
-        jTabbedPane1.addTab("MonitorInfo", jScrollPane2);
-
-        jScrollPane3.setEnabled(false);
 
         jLabel1.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
         jLabel1.setText("Ballposition");
@@ -395,6 +261,144 @@ public class Simspark extends AbstractDialog {
                 .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
+        setLayout(new java.awt.BorderLayout());
+
+        simspark_toolbar.setFloatable(false);
+        simspark_toolbar.setRollover(true);
+
+        tb_monitor.setSelected(true);
+        tb_monitor.setText("Monitor");
+        tb_monitor.setFocusable(false);
+        tb_monitor.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
+        tb_monitor.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        tb_monitor.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                tb_monitorActionPerformed(evt);
+            }
+        });
+        simspark_toolbar.add(tb_monitor);
+
+        tb_agent.setText("Agent");
+        tb_agent.setFocusable(false);
+        tb_agent.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        tb_agent.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        tb_agent.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                tb_agentActionPerformed(evt);
+            }
+        });
+        simspark_toolbar.add(tb_agent);
+
+        add(simspark_toolbar, java.awt.BorderLayout.PAGE_START);
+
+        monitorPanel.setLayout(new java.awt.BorderLayout());
+
+        jPanel5.setPreferredSize(new java.awt.Dimension(711, 25));
+
+        btnConnect.setText("Connect");
+        btnConnect.setFocusable(false);
+        btnConnect.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btnConnect.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btnConnect.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnConnectActionPerformed(evt);
+            }
+        });
+
+        input_panel.setLayout(new javax.swing.BoxLayout(input_panel, javax.swing.BoxLayout.LINE_AXIS));
+
+        tf_monitor_ip.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        tf_monitor_ip.setPreferredSize(new java.awt.Dimension(200, 19));
+        tf_monitor_ip.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                tf_monitor_ipActionPerformed(evt);
+            }
+        });
+        input_panel.add(tf_monitor_ip);
+
+        jLabel10.setText(":");
+        input_panel.add(jLabel10);
+
+        tf_monitor_port.setHorizontalAlignment(javax.swing.JTextField.LEFT);
+        tf_monitor_port.setToolTipText("");
+        tf_monitor_port.setMinimumSize(new java.awt.Dimension(36, 19));
+        tf_monitor_port.setPreferredSize(new java.awt.Dimension(19, 19));
+        tf_monitor_port.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                tf_monitor_portActionPerformed(evt);
+            }
+        });
+        input_panel.add(tf_monitor_port);
+
+        javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
+        jPanel5.setLayout(jPanel5Layout);
+        jPanel5Layout.setHorizontalGroup(
+            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel5Layout.createSequentialGroup()
+                .addComponent(btnConnect)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(input_panel, javax.swing.GroupLayout.DEFAULT_SIZE, 630, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+        jPanel5Layout.setVerticalGroup(
+            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel5Layout.createSequentialGroup()
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(btnConnect, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(input_panel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        monitorPanel.add(jPanel5, java.awt.BorderLayout.NORTH);
+
+        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null}
+            },
+            new String [] {
+                "Name", "Data"
+            }
+        ) {
+            Class[] types = new Class [] {
+                java.lang.String.class, java.lang.String.class
+            };
+            boolean[] canEdit = new boolean [] {
+                false, false
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jTable1.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_LAST_COLUMN);
+        jScrollPane2.setViewportView(jTable1);
+
+        monitorPanel.add(jScrollPane2, java.awt.BorderLayout.CENTER);
+
         btnSendCommand.setText("Send Command");
         btnSendCommand.setFocusable(false);
         btnSendCommand.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
@@ -413,94 +417,22 @@ public class Simspark extends AbstractDialog {
             }
         });
 
-        jButton4.setText("Clear");
-        jButton4.setToolTipText("Clears the MonitorCommunication tab.");
-        jButton4.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton4ActionPerformed(evt);
-            }
-        });
-
         javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
         jPanel6.setLayout(jPanel6Layout);
         jPanel6Layout.setHorizontalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 279, Short.MAX_VALUE)
-            .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(jPanel6Layout.createSequentialGroup()
-                    .addGap(68, 68, 68)
-                    .addComponent(btnSendCommand)
-                    .addContainerGap(69, Short.MAX_VALUE)))
-            .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(jPanel6Layout.createSequentialGroup()
-                    .addGap(73, 73, 73)
-                    .addComponent(cmd, 0, 132, Short.MAX_VALUE)
-                    .addGap(74, 74, 74)))
-            .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(jPanel6Layout.createSequentialGroup()
-                    .addGap(105, 105, 105)
-                    .addComponent(jButton4)
-                    .addContainerGap(105, Short.MAX_VALUE)))
+            .addGroup(jPanel6Layout.createSequentialGroup()
+                .addComponent(cmd, 0, 0, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btnSendCommand))
         );
         jPanel6Layout.setVerticalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 117, Short.MAX_VALUE)
-            .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(jPanel6Layout.createSequentialGroup()
-                    .addGap(46, 46, 46)
-                    .addComponent(btnSendCommand)
-                    .addContainerGap(46, Short.MAX_VALUE)))
-            .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(jPanel6Layout.createSequentialGroup()
-                    .addGap(46, 46, 46)
-                    .addComponent(cmd, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(47, Short.MAX_VALUE)))
-            .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(jPanel6Layout.createSequentialGroup()
-                    .addGap(46, 46, 46)
-                    .addComponent(jButton4)
-                    .addContainerGap(46, Short.MAX_VALUE)))
+            .addComponent(btnSendCommand, javax.swing.GroupLayout.Alignment.TRAILING)
+            .addComponent(cmd, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
 
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap())
-            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(jPanel1Layout.createSequentialGroup()
-                    .addGap(110, 110, 110)
-                    .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(431, Short.MAX_VALUE)))
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(396, Short.MAX_VALUE))
-            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(jPanel1Layout.createSequentialGroup()
-                    .addGap(135, 135, 135)
-                    .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(234, Short.MAX_VALUE)))
-        );
-
-        jScrollPane3.setViewportView(jPanel1);
-
-        jTabbedPane1.addTab("MonitorCommands", jScrollPane3);
-
-        monitorPanel.add(jTabbedPane1, java.awt.BorderLayout.CENTER);
+        monitorPanel.add(jPanel6, java.awt.BorderLayout.SOUTH);
 
         agentPanel.setLayout(new java.awt.BorderLayout());
 
@@ -530,35 +462,49 @@ public class Simspark extends AbstractDialog {
 
     private void btnSendCommandActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSendCommandActionPerformed
         if(!((String)cmd.getSelectedItem()).isEmpty() && simspark_comm != null && simspark_comm.isAlive()) {
-            simspark_comm.sendAgentMessage(((String)cmd.getSelectedItem()).trim());
+            simspark_comm.sendAgentMessage(((String)cmd.getEditor().getItem()).trim());
         }
     }//GEN-LAST:event_btnSendCommandActionPerformed
 
     private void btnConnectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConnectActionPerformed
-        try {
-            if (btnConnect.isSelected()) {
-                tf_monitor_ip.setEnabled(false);
-                tf_monitor_port.setEnabled(false);
-                    if (simspark_comm != null) {
+        if (btnConnect.isSelected()) {
+                if (simspark_comm != null) {
+                    try {
                         simspark_comm.disconnect();
+                    } catch (IOException | InterruptedException ex) {
+                        Logger.getLogger(Simspark.class.getName()).log(Level.SEVERE, null, ex);
                     }
+                }
+                try {
                     simspark_comm = new SimsparkMonitor();
                     simspark_comm.connect(tf_monitor_ip.getText().trim(), Integer.parseInt(tf_monitor_port.getText().trim()));
 
                     // start/schedule UI-updater
                     this.timerUpdater = new Timer();
                     this.timerUpdater.scheduleAtFixedRate(new UpdateTableTask(simspark_comm.state), 100, 33);
-            } else {
-                if (simspark_comm != null) {
-                    simspark_comm.disconnect();
+
+                    // update UI
+                    tb_monitor.setIcon(connectionIcon);
+                    tf_monitor_ip.setEnabled(false);
+                    tf_monitor_port.setEnabled(false);
+                } catch (IOException ex) {
+                    JOptionPane.showMessageDialog(null, "Couldn't connect!", "Couldn't connect", JOptionPane.WARNING_MESSAGE);
+                    simspark_comm = null;
+                    btnConnect.setSelected(false);
                 }
-                simspark_comm = null;
-                tf_monitor_ip.setEnabled(true);
-                tf_monitor_port.setEnabled(true);
+        } else {
+            if (simspark_comm != null) {
+                try {
+                    simspark_comm.disconnect();
+                } catch (IOException | InterruptedException ex) {
+                    Logger.getLogger(Simspark.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
-        } catch (IOException | InterruptedException ex) {
-                Logger.getLogger(Simspark.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            simspark_comm = null;
+            tb_monitor.setIcon(null);
+            tf_monitor_ip.setEnabled(true);
+            tf_monitor_port.setEnabled(true);
+        }
     }//GEN-LAST:event_btnConnectActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
@@ -590,12 +536,11 @@ public class Simspark extends AbstractDialog {
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void cmdActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdActionPerformed
-        // TODO add your handling code here:
+        if(evt.getActionCommand().equals("comboBoxEdited")) {
+            // "click the connect button"
+            btnSendCommand.doClick();
+        }
     }//GEN-LAST:event_cmdActionPerformed
-
-    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
-//        jTextArea1.setText("");
-    }//GEN-LAST:event_jButton4ActionPerformed
 
     private void tb_monitorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tb_monitorActionPerformed
         if(tb_monitor.isSelected()) {
@@ -616,6 +561,16 @@ public class Simspark extends AbstractDialog {
             tb_monitor.setSelected(true);
         }
     }//GEN-LAST:event_tb_agentActionPerformed
+
+    private void tf_monitor_ipActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tf_monitor_ipActionPerformed
+        // "click the connect button"
+        btnConnect.doClick();
+    }//GEN-LAST:event_tf_monitor_ipActionPerformed
+
+    private void tf_monitor_portActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tf_monitor_portActionPerformed
+        // "click the connect button"
+        btnConnect.doClick();
+    }//GEN-LAST:event_tf_monitor_portActionPerformed
 
     private void addTableContent() {
         TableModel model = jTable1.getModel();
@@ -683,10 +638,10 @@ public class Simspark extends AbstractDialog {
     private javax.swing.JTextField cmd_ball_y;
     private javax.swing.JTextField cmd_ball_z;
     private javax.swing.JComboBox<String> cmd_play_mode;
+    private javax.swing.JPanel input_panel;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel2;
@@ -697,16 +652,12 @@ public class Simspark extends AbstractDialog {
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
-    private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
-    private javax.swing.JPanel jPanel7;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JScrollPane jScrollPane3;
-    private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTable jTable1;
     private javax.swing.JLayeredPane layer;
     private javax.swing.JLabel lbl_todo;
