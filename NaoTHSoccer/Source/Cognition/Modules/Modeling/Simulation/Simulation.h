@@ -206,6 +206,11 @@ public:
       return cat_histogram[cat];
     }
 
+    double likelihood(BallPositionCategory cat) const {
+      ASSERT(cat_histogram[NUMBER_OF_BallPositionCategory] > 0);
+      return static_cast<double>(cat_histogram[cat]) / static_cast<double>(cat_histogram[NUMBER_OF_BallPositionCategory]);
+    }
+
     void reset() {
       ballPositions.clear();
       cat_histogram.clear();
@@ -227,7 +232,6 @@ private:
 
   void simulateConsequences(const Action & action, ActionResults& categorizedBallPositions) const;
 
-  size_t decide(const std::vector<ActionResults>& actionsConsequences) const;
   size_t decide_smart(const std::vector<ActionResults>& actionsConsequences ) const;
 
   //Vector2d outsideField(const Vector2d& relativePoint) const;

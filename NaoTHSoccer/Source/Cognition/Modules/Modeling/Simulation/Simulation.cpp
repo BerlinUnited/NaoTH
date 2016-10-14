@@ -286,15 +286,15 @@ size_t Simulation::decide_smart(const std::vector<ActionResults>& actionsConsequ
     }
 
     // ignore actions with too high chance of kicking out
-    double numberOfInfieldPos = results.categorie(INFIELD) + results.categorie(OPPGOAL);
-    double score = numberOfInfieldPos / (double)(results.categorie(NUMBER_OF_BallPositionCategory));
+    double score = results.likelihood(INFIELD) + results.likelihood(OPPGOAL);
     if(score <= max(0.0, theParameters.good_threshold_percentage)) {
       continue;
     }
+
     //all actions which are not too bad
     acceptableActions.push_back(i);
   }
-  for(size_t i=0; i < acceptableActions.size(); i++)
+  for(size_t i = 0; i < acceptableActions.size(); ++i)
   {
     const ActionResults& results = actionsConsequences[acceptableActions[i]];
 
@@ -320,6 +320,7 @@ size_t Simulation::decide_smart(const std::vector<ActionResults>& actionsConsequ
   if(acceptableActions.empty()) {
     return 0; //assumes 0 is the turn action
   }
+  //TODO: replace by actionsConsequences[goalActions.front()].likelihood(OPPGOAL)
   if(actionsConsequences[goalActions.front()].categorie(OPPGOAL) > theParameters.minGoalParticles){
     return goalActions.front();
   }
