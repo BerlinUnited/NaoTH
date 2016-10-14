@@ -404,6 +404,7 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
         } else {
             Plugin.logFileEventManager.removeListener(logListener);
         }
+        fieldCanvas.getTest();
     }//GEN-LAST:event_btLogActionPerformed
 
   
