@@ -71,14 +71,15 @@ void FieldDetector::execute(CameraInfo::CameraID id)
       }
     );    
   }
-  else if(getScanLineEdgelPercept().endPoints.size() > 0)
+  else if(!getScanLineEdgelPercept().endPoints.empty())
   {
-    vector<Vector2i> points;
+    static vector<Vector2i> points;
+    points.clear();
 
     for(size_t i = 0; i < getScanLineEdgelPercept().endPoints.size(); i++)
     {
       const ScanLineEdgelPercept::EndPoint& p = getScanLineEdgelPercept().endPoints[i];
-      if(p.greenFound && p.posInImage.y < (int) getImage().height() - 6)
+      if(p.greenFound && p.posInImage.y < static_cast<int>(getImage().height()) - 6)
       {
         points.push_back(p.posInImage);
       }
@@ -102,13 +103,13 @@ void FieldDetector::execute(CameraInfo::CameraID id)
       points.push_back(p1);
       points.push_back(p2);
 
-      if(getScanLineEdgelPercept().endPoints.front().posInImage.y < (int) getImage().height() - 6)
+      if(getScanLineEdgelPercept().endPoints.front().posInImage.y < static_cast<int>(getImage().height()) - 6)
       {
         points.push_back(Vector2i(0, getScanLineEdgelPercept().endPoints.front().posInImage.y));
         points.push_back(Vector2i(0, getImage().height() - 1));
       }
 
-      if(getScanLineEdgelPercept().endPoints.back().posInImage.y < (int) getImage().height() - 6)
+      if(getScanLineEdgelPercept().endPoints.back().posInImage.y < static_cast<int>(getImage().height()) - 6)
       {
         points.push_back(Vector2i(getImage().width() - 1, getScanLineEdgelPercept().endPoints.back().posInImage.y));
         points.push_back(Vector2i(getImage().width() - 1, getImage().height() - 1));
@@ -119,7 +120,8 @@ void FieldDetector::execute(CameraInfo::CameraID id)
     vector<Vector2i> result = ConvexHull::convexHull(points);
     
     // create the polygon
-    FieldPercept::FieldPoly fieldPoly;
+    static FieldPercept::FieldPoly fieldPoly;
+    fieldPoly.clear();
 
     for(size_t i = 0; i < result.size(); i++)
     {
@@ -135,7 +137,7 @@ void FieldDetector::execute(CameraInfo::CameraID id)
     );    
 
     // sort points by x value
-    sort(points.begin(), points.end(), this->myVecCompareX);
+    std::sort(points.begin(), points.end(), cmpVectorInstance);
 
     /*
     // remove points on the edge of the BodyContour
@@ -163,7 +165,8 @@ void FieldDetector::execute(CameraInfo::CameraID id)
 
 
     // check outliers but keep first and last point in any case
-    std::vector<size_t> badPoints;
+    static std::vector<size_t> badPoints;
+    badPoints.clear();
     for(size_t nLoop = 0; nLoop < 5; nLoop++)
     {
       badPoints.clear();
@@ -174,7 +177,8 @@ void FieldDetector::execute(CameraInfo::CameraID id)
         
         vector<Vector2i> resultCheck = ConvexHull::convexHull(pointsCheck);
         
-        FieldPercept::FieldPoly fieldPolyCheck;
+        static FieldPercept::FieldPoly fieldPolyCheck;
+        fieldPolyCheck.clear();
         for(size_t j = 0; j < resultCheck.size(); j++)
         {
           fieldPolyCheck.add(resultCheck[j]);
@@ -185,7 +189,7 @@ void FieldDetector::execute(CameraInfo::CameraID id)
         }
       }
       // remove outliers
-      if(badPoints.size() > 0)
+      if(!badPoints.empty())
       {
         for(size_t i = 0; i < badPoints.size(); i++)
         {
@@ -194,7 +198,7 @@ void FieldDetector::execute(CameraInfo::CameraID id)
         }
         result = ConvexHull::convexHull(points);
         // clear old polygon
-        fieldPoly = FieldPercept::FieldPoly();
+        fieldPoly.clear();
         for(size_t i = 0; i < result.size(); i++)
         {
           fieldPoly.add(result[i]);
@@ -247,8 +251,3 @@ void FieldDetector::execute(CameraInfo::CameraID id)
     );    
   }
 }//end execute
-
-bool FieldDetector::myVecCompareX(const Vector2i &first, const Vector2i &second) 
-{ 
-  return (first.x<second.x); 
-}

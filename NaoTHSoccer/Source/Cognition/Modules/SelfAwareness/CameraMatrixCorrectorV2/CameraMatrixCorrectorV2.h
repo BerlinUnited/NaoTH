@@ -68,7 +68,18 @@ END_DECLARE_MODULE(CameraMatrixCorrectorV2)
 class CamMatErrorFunction : public CamMatErrorFunctionBase
 {
 public:
-    struct CalibrationDataSample{
+    struct CalibrationDataSample {
+        CalibrationDataSample(
+          const Pose3D& chestPose,
+          const LineGraphPercept& lineGraphPercept,
+          const InertialModel& inertialModel,
+          double headYaw,
+          double headPitch) 
+          : chestPose(chestPose), lineGraphPercept(lineGraphPercept), inertialModel(inertialModel), headYaw(headYaw), headPitch(headPitch)
+        {
+
+        }
+
         //KinematicChain   kinematicChain;
         Pose3D chestPose; //work around, can't copy kinematic chain
         LineGraphPercept lineGraphPercept;

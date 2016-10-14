@@ -23,6 +23,7 @@ public:
   {
     double speed;
     bool enableStabilization;
+    bool enableStabilizationRC16;
     double stiffness;
 
     double bodyPitchOffset;
@@ -75,7 +76,7 @@ public:
     {
       double comHeight;
       double comHeightOffset;
-      double comRotationOffsetX;
+      double comStepOffsetY;
       double ZMPOffsetY;
       double ZMPOffsetYByCharacter;
     } hip;
@@ -128,6 +129,7 @@ public:
 
       // enable stabilization by rotating the body
       bool rotationStabilize;
+      bool rotationStabilizeRC16;
 
       // enable the PD-control for the feet
       bool stabilizeFeet;

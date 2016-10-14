@@ -16,7 +16,7 @@ option turn_to_attack_direction
       stay;
     }
     action {
-      move_around_ball(direction=30, radius=190);
+      move_around_ball(direction=30, radius=210);
       motion.walk.style = fast;
     }
   }
@@ -26,7 +26,7 @@ option turn_to_attack_direction
       stay;
     }
     action {
-      move_around_ball(direction=-30, radius=190);
+      move_around_ball(direction=-30, radius=210);
       motion.walk.style = fast;
     }
   }

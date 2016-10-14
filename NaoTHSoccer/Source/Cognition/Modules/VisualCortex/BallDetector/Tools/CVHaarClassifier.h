@@ -16,6 +16,7 @@ private:
   cv::CascadeClassifier cascadeClasifier;
   cv::Mat buffer;
   int idx;
+  std::vector<cv::Rect> out;
 
 public:
   CVHaarClassifier() : buffer(24, 24, CV_8UC1, cv::Scalar(128)) {
@@ -36,6 +37,8 @@ public:
 
   int classify(const BallCandidates::Patch& p, unsigned int minNeighbours=0, unsigned int windowSize=12)
   {
+    out.clear();
+
     ASSERT(p.data.size() == 16*16);
     // TODO: magic numbers
     cv::Mat wrappedImg(16, 16, CV_8U, (void*) p.data.data());
@@ -51,9 +54,9 @@ public:
 
     cv::GaussianBlur(wrappedImg, aux, cv::Size(3,3), 0, 0);
 
-    std::vector<cv::Rect> out;
-    std::vector<int> rejectLevels;
-    std::vector<double> levelWeights;
+   
+    //std::vector<int> rejectLevels;
+    //std::vector<double> levelWeights;
     // TODO: more magic numbers
     //std::stringstream ss;
     //ss << "p-" << idx << ".png";
