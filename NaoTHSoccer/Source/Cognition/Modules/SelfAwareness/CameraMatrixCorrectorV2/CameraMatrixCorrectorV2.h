@@ -129,7 +129,7 @@ public:
                                 getCameraMatrixOffset().cam_rot[cameraID],
                                 sample->headYaw,
                                 sample->headPitch,
-                                sample->inertialModel
+                                sample->inertialModel.orientation
                                 );
 
                     std::vector<Vector2d> edgelProjections;
@@ -208,7 +208,7 @@ public:
                                 getCameraMatrixOffset().cam_rot[cameraID]  + offsetCam[cameraID],
                                 sample->headYaw,
                                 sample->headPitch,
-                                sample->inertialModel
+                                sample->inertialModel.orientation
                                 );
 
                     std::vector<Vector2d> edgelProjections;
