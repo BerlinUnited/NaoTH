@@ -20,6 +20,7 @@ Simulation::Simulation()
   DEBUG_REQUEST_REGISTER("Simulation:use_Parameters","use_Parameters",false);
   DEBUG_REQUEST_REGISTER("Simulation:OwnGoal","OwnGoal",false);
   DEBUG_REQUEST_REGISTER("Simulation:ObstacleLine","ObstacleLine",false);
+
   DEBUG_REQUEST_REGISTER("Simulation:ActionTarget:None","DrawNone",false);
   DEBUG_REQUEST_REGISTER("Simulation:ActionTarget:Short","DrawShortKick",false);
   //DEBUG_REQUEST_REGISTER("Simulation:ActionTarget:Long","DrawLongKick",false);
@@ -82,8 +83,13 @@ void Simulation::execute()
   }
   STOPWATCH_STOP("Simulation:simulateConsequences");
 
+
   // plot projected actions
-  draw_actions(actionsConsequences);
+  DEBUG_REQUEST("Simulation:ActionTarget:None", draw_action_results(actionsConsequences[0], Color(1.0,1.0,1.0,0.7)); );
+  DEBUG_REQUEST("Simulation:ActionTarget:Short", draw_action_results(actionsConsequences[1], Color(255.0/255,172.0/255,18.0/255,0.7)); );
+  //DEBUG_REQUEST("Simulation:ActionTarget:Long", draw_action_results(actionsConsequences[-1], Color(1.0,1.0,1.0,0.7)); );
+  DEBUG_REQUEST("Simulation:ActionTarget:Left", draw_action_results(actionsConsequences[2], Color(0.0/255,13.0/255,191.0/255,0.7)); );
+  DEBUG_REQUEST("Simulation:ActionTarget:Right", draw_action_results(actionsConsequences[3], Color(0.0/255,191.0/255,51.0/255,0.7)); );
 
   
   // now decide which action to execute given their consequences
@@ -157,7 +163,7 @@ void Simulation::simulateConsequences(
     // check if collision detection with goal has to be performed
     // if the ball start and end positions are inside of the field, you don't need to check
     if(!getFieldInfo().fieldRect.inside(globalBallEndPosition) || !getFieldInfo().fieldRect.inside(globalBallStartPosition))
-    {
+	{
       // collide with goal
       double t_min = shootLine.getLength();
       bool collisionWithGoal = false;
@@ -428,16 +434,12 @@ void Simulation::draw_potential_field() const
     }
   }
   
-  double maxValue = 0;
-  idx = 0;
-  for (int x = 0; x < xSize; x++) {
-    for (int y = 0; y < ySize; y++)
-    {
-      maxValue = max(maxValue, potential[idx++]);
-    }
-  }
+  // TODO: replace by std::minmax_element in C++11
+  double maxValue = *std::max_element(potential.begin(), potential.end());
+  double minValue = *std::min_element(potential.begin(), potential.end());
+  double range = maxValue - minValue;
 
-  if(maxValue == 0) return;
+  if(range == 0) { return; }
 
   idx = 0;
   for (int x = 0; x < xSize; x++) {
@@ -445,7 +447,7 @@ void Simulation::draw_potential_field() const
     {
       Vector2d point(xWidth*(2*x-xSize+1), yWidth*(2*y-ySize+1));
       
-      double t = potential[idx++] / maxValue;
+      double t = (potential[idx++] - minValue) / range;
       Color color = black*t + white*(1-t);
       PEN(color, 20);
       FILLBOX(point.x - xWidth, point.y - yWidth, point.x+xWidth, point.y+yWidth);
@@ -453,124 +455,30 @@ void Simulation::draw_potential_field() const
   }
 }//end draw_closest_points
 
-void Simulation::draw_actions(const std::vector<ActionResults>& actionsConsequences )const {
 
-DEBUG_REQUEST("Simulation:ActionTarget:None",
-  Color color;
-  color = color = Color(1.0,1.0,1.0,0.7); //White - None
-	std::vector<CategorizedBallPosition>::const_iterator ballPosition = actionsConsequences[0].positions().begin();
-	for(; ballPosition != actionsConsequences[0].positions().end(); ++ballPosition)
-	{
-		if(ballPosition->cat() == INFIELD)
-		{
-			FIELD_DRAWING_CONTEXT;
-      Vector2d ball = getRobotPose() * ballPosition->pos();
+void Simulation::draw_action_results(const ActionResults& actionsResults, const Color& color) const 
+{
+  FIELD_DRAWING_CONTEXT;
+  std::vector<CategorizedBallPosition>::const_iterator ballPosition = actionsResults.positions().begin();
+  for(; ballPosition != actionsResults.positions().end(); ++ballPosition)
+  {
+    Vector2d ball = getRobotPose() * ballPosition->pos();
+	  if(ballPosition->cat() == INFIELD)
+	  {
       PEN("000000", 1);
 		  FILLOVAL(ball.x, ball.y, 50, 50);
 		  PEN(color, 1);			  
 		  FILLOVAL(ball.x, ball.y, 40, 40);
-		} else if(ballPosition->cat() == OPPGOAL)
-		{
-			FIELD_DRAWING_CONTEXT;
-			PEN("336600", 1);
-			Vector2d ball = getRobotPose() * ballPosition->pos();
-			FILLOVAL(ball.x, ball.y, 50, 50);
-		} else //Outside Field
-		{
-			FIELD_DRAWING_CONTEXT;
-			
-			Vector2d ball = getRobotPose() * ballPosition->pos();			
+	  } 
+    else if(ballPosition->cat() == OPPGOAL)
+	  {
+		  PEN("336600", 1);
+		  FILLOVAL(ball.x, ball.y, 50, 50);
+	  } 
+    else //Outside Field
+	  {		
       PEN("66FF33", 1);
       FILLOVAL(ball.x, ball.y, 50, 50);
-		}
-	}
-);
-DEBUG_REQUEST("Simulation:ActionTarget:Short",
-  Color color;
-  color = Color(255.0/255,172.0/255,18.0/255,0.7); //orange - kick_short
-	std::vector<CategorizedBallPosition>::const_iterator ballPosition = actionsConsequences[1].positions().begin();
-	for(; ballPosition != actionsConsequences[1].positions().end(); ++ballPosition)
-	{
-		if(ballPosition->cat() == INFIELD)
-		{
-			FIELD_DRAWING_CONTEXT;
-      Vector2d ball = getRobotPose() * ballPosition->pos();
-      PEN("000000", 1);
-			FILLOVAL(ball.x, ball.y, 50, 50);
-			PEN(color, 1);			  
-			FILLOVAL(ball.x, ball.y, 40, 40);
-		} else if(ballPosition->cat() == OPPGOAL)
-		{
-			FIELD_DRAWING_CONTEXT;
-			PEN("336600", 1);
-			Vector2d ball = getRobotPose() * ballPosition->pos();
-			FILLOVAL(ball.x, ball.y, 50, 50);
-		} else
-		{
-			FIELD_DRAWING_CONTEXT;			
-			Vector2d ball = getRobotPose() * ballPosition->pos();			
-      PEN("66FF33", 1);
-      FILLOVAL(ball.x, ball.y, 50, 50);
-		}
-	}
-);
-
-DEBUG_REQUEST("Simulation:ActionTarget:Left",
-    Color color;
-    color = Color(0.0/255,13.0/255,191.0/255,0.7); //blue - sidekick_left
-		std::vector<CategorizedBallPosition>::const_iterator ballPosition = actionsConsequences[2].positions().begin();
-		for(; ballPosition != actionsConsequences[2].positions().end(); ++ballPosition)
-		{
-			if(ballPosition->cat() == INFIELD)
-			{
-			  FIELD_DRAWING_CONTEXT;
-        Vector2d ball = getRobotPose() * ballPosition->pos();
-        PEN("000000", 1);
-			  FILLOVAL(ball.x, ball.y, 50, 50);
-			  PEN(color, 1);			  
-			  FILLOVAL(ball.x, ball.y, 40, 40);
-			} else if(ballPosition->cat() == OPPGOAL)
-			{
-			  FIELD_DRAWING_CONTEXT;
-			  PEN("336600", 1);
-			  Vector2d ball = getRobotPose() * ballPosition->pos();
-			  FILLOVAL(ball.x, ball.y, 50, 50);
-			} else
-			{
-			  FIELD_DRAWING_CONTEXT;			  
-			  Vector2d ball = getRobotPose() * ballPosition->pos();			  
-        PEN("66FF33", 1);
-        FILLOVAL(ball.x, ball.y, 50, 50);
-			}
-		}
-);
-DEBUG_REQUEST("Simulation:ActionTarget:Right",
-  Color color;
-  color = Color(0.0/255,191.0/255,51.0/255,0.7);//green - sidekick_right
-	std::vector<CategorizedBallPosition>::const_iterator ballPosition = actionsConsequences[3].positions().begin();
-	for(; ballPosition != actionsConsequences[3].positions().end(); ++ballPosition)
-	{
-		if(ballPosition->cat() == INFIELD)
-		{
-			FIELD_DRAWING_CONTEXT;
-      Vector2d ball = getRobotPose() * ballPosition->pos();
-      PEN("000000", 1);
-			FILLOVAL(ball.x, ball.y, 50, 50);
-			PEN(color, 1);			
-			FILLOVAL(ball.x, ball.y, 40, 40);
-		} else if(ballPosition->cat() == OPPGOAL)
-		{
-			FIELD_DRAWING_CONTEXT;
-			PEN("336600", 1);
-			Vector2d ball = getRobotPose() * ballPosition->pos();
-			FILLOVAL(ball.x, ball.y, 50, 50);
-		} else
-		{
-			FIELD_DRAWING_CONTEXT;			
-			Vector2d ball = getRobotPose() * ballPosition->pos();			
-      PEN("66FF33", 1);
-      FILLOVAL(ball.x, ball.y, 50, 50);
-		}
-	}
-);
+	  }
+  }
 }

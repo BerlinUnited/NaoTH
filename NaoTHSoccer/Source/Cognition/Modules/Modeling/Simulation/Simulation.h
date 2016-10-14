@@ -242,7 +242,7 @@ private:
 
   void draw_potential_field() const;
 
-  void draw_actions(const std::vector<ActionResults>& actionsConsequences)const;
+  void draw_action_results(const ActionResults& actionsConsequences, const Color& color)const;
 };
 
 #endif  /* _Simulation_H */
