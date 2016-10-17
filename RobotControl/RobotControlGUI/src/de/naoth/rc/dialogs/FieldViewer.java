@@ -163,6 +163,7 @@ public class FieldViewer extends AbstractDialog
         btClean = new javax.swing.JButton();
         cbBackground = new javax.swing.JComboBox();
         btRotate = new javax.swing.JButton();
+        btFit = new javax.swing.JButton();
         btAntializing = new javax.swing.JCheckBox();
         btCollectDrawings = new javax.swing.JCheckBox();
         cbExportOnDrawing = new javax.swing.JCheckBox();
@@ -245,6 +246,17 @@ public class FieldViewer extends AbstractDialog
             }
         });
         jToolBar1.add(btRotate);
+
+        btFit.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/freehep/swing/images/0_MoveCursor.gif"))); // NOI18N
+        btFit.setToolTipText("Fit drawings to viewport");
+        btFit.setFocusable(false);
+        btFit.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btFit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btFitActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(btFit);
 
         btAntializing.setText("Antialiazing");
         btAntializing.setFocusable(false);
@@ -398,14 +410,16 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
     }//GEN-LAST:event_btRotateActionPerformed
 
     private void btLogActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btLogActionPerformed
-       
         if(btLog.isSelected()) {
             Plugin.logFileEventManager.addListener(logListener);
         } else {
             Plugin.logFileEventManager.removeListener(logListener);
         }
-        fieldCanvas.getTest();
     }//GEN-LAST:event_btLogActionPerformed
+
+    private void btFitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btFitActionPerformed
+        fieldCanvas.fitToViewport();
+    }//GEN-LAST:event_btFitActionPerformed
 
   
   final void resetView()
@@ -426,7 +440,6 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
       
       long l = java.lang.System.currentTimeMillis();
       File file = new File("./fieldViewerExport-"+l+".png");
-      
       BufferedImage bi = new BufferedImage(this.fieldCanvas.getWidth(), this.fieldCanvas.getHeight(), BufferedImage.TYPE_INT_ARGB);
       Graphics2D g2d = bi.createGraphics();
       this.fieldCanvas.paintAll(g2d);
@@ -560,6 +573,7 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
     private javax.swing.JCheckBox btAntializing;
     private javax.swing.JButton btClean;
     private javax.swing.JCheckBox btCollectDrawings;
+    private javax.swing.JButton btFit;
     private javax.swing.JToggleButton btLog;
     private javax.swing.JToggleButton btReceiveDrawings;
     private javax.swing.JButton btRotate;

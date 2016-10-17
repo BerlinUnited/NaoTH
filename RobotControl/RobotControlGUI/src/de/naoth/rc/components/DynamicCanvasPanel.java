@@ -7,21 +7,13 @@ package de.naoth.rc.components;
 
 import de.naoth.rc.drawings.Arrow;
 import de.naoth.rc.drawings.Drawable;
+import de.naoth.rc.drawings.BoundingBox;
 import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.Composite;
-import java.awt.Font;
-import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.GraphicsConfiguration;
-import java.awt.Image;
-import java.awt.Paint;
 import java.awt.Point;
-import java.awt.Rectangle;
 import java.awt.RenderingHints;
-import java.awt.Shape;
-import java.awt.Stroke;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -29,20 +21,11 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
-import java.awt.font.FontRenderContext;
-import java.awt.font.GlyphVector;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
-import java.awt.image.BufferedImage;
-import java.awt.image.BufferedImageOp;
-import java.awt.image.ImageObserver;
-import java.awt.image.RenderedImage;
-import java.awt.image.renderable.RenderableImage;
-import java.text.AttributedCharacterIterator;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 /**
  *
@@ -179,388 +162,19 @@ public class DynamicCanvasPanel extends javax.swing.JPanel
     paintDrawings(g2d, offsetX, offsetY, rotation, scale);
   }
   
-  private class myGraphics extends Graphics2D {
-      
-      public int max_width = 0;
-      public int max_height = 0;
-      public int left = 0;
-      public int right = 0;
-      public int top = 0;
-      public int bottom = 0;
-
-        @Override
-        public void draw(Shape s) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public boolean drawImage(Image img, AffineTransform xform, ImageObserver obs) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public void drawImage(BufferedImage img, BufferedImageOp op, int x, int y) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public void drawRenderedImage(RenderedImage img, AffineTransform xform) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public void drawRenderableImage(RenderableImage img, AffineTransform xform) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public void drawString(String str, int x, int y) {
-            // TODO: drawString
-        }
-
-        @Override
-        public void drawString(String str, float x, float y) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public void drawString(AttributedCharacterIterator iterator, int x, int y) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public void drawString(AttributedCharacterIterator iterator, float x, float y) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public void drawGlyphVector(GlyphVector g, float x, float y) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public void fill(Shape s) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public boolean hit(Rectangle rect, Shape s, boolean onStroke) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public GraphicsConfiguration getDeviceConfiguration() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public void setComposite(Composite comp) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public void setPaint(Paint paint) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public void setStroke(Stroke s) {
-        }
-
-        @Override
-        public void setRenderingHint(RenderingHints.Key hintKey, Object hintValue) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public Object getRenderingHint(RenderingHints.Key hintKey) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public void setRenderingHints(Map<?, ?> hints) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public void addRenderingHints(Map<?, ?> hints) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public RenderingHints getRenderingHints() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public void translate(int x, int y) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public void translate(double tx, double ty) {
-            // TODO:translate
-        }
-
-        @Override
-        public void rotate(double theta) {
-            // TODO: rotate
-        }
-
-        @Override
-        public void rotate(double theta, double x, double y) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public void scale(double sx, double sy) {
-            // TODO: scale
-        }
-
-        @Override
-        public void shear(double shx, double shy) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public void transform(AffineTransform Tx) {
-            // TODO: transform ?!?
-        }
-
-        @Override
-        public void setTransform(AffineTransform Tx) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public AffineTransform getTransform() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public Paint getPaint() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public Composite getComposite() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public void setBackground(Color color) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public Color getBackground() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public Stroke getStroke() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public void clip(Shape s) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public FontRenderContext getFontRenderContext() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public Graphics create() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public Color getColor() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public void setColor(Color c) {/*ignore*/}
-
-        @Override
-        public void setPaintMode() {}
-
-        @Override
-        public void setXORMode(Color c1) {
-        }
-
-        @Override
-        public Font getFont() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public void setFont(Font font) {
-        }
-
-        @Override
-        public FontMetrics getFontMetrics(Font f) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public Rectangle getClipBounds() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public void clipRect(int x, int y, int width, int height) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public void setClip(int x, int y, int width, int height) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public Shape getClip() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public void setClip(Shape clip) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public void copyArea(int x, int y, int width, int height, int dx, int dy) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public void drawLine(int x1, int y1, int x2, int y2) {
-            if(x1 < left) { left = x1; }
-            if(x2 < left) { left = x2; }
-            if(y1 < top) { top = y1; }
-            if(y2 < top) { top = y2; }
-            // TODO
-        }
-
-        @Override
-        public void fillRect(int x, int y, int width, int height) {
-            if(x < left) { left = x; }
-            if(y < top) { top = y; }
-            if(x+width > right) { right = x+width; }
-            if(y+height > bottom) { bottom = y+height; }
-            if(max_width < width) { max_width = width; }
-            if(max_height < height) { height = height; }
-        }
-
-        @Override
-        public void clearRect(int x, int y, int width, int height) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public void drawRoundRect(int x, int y, int width, int height, int arcWidth, int arcHeight) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public void fillRoundRect(int x, int y, int width, int height, int arcWidth, int arcHeight) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public void drawOval(int x, int y, int width, int height) {
-            if(x < left) { left = x; }
-            if(y < top) { top = y; }
-            // TODO: drawOval
-        }
-
-        @Override
-        public void fillOval(int x, int y, int width, int height) {
-            if(x < left) { left = x; }
-            if(y < top) { top = y; }
-            // TODO: fillOval
-        }
-
-        @Override
-        public void drawArc(int x, int y, int width, int height, int startAngle, int arcAngle) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public void fillArc(int x, int y, int width, int height, int startAngle, int arcAngle) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public void drawPolyline(int[] xPoints, int[] yPoints, int nPoints) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public void drawPolygon(int[] xPoints, int[] yPoints, int nPoints) {
-            // TODO: drawPolygon
-        }
-
-        @Override
-        public void fillPolygon(int[] xPoints, int[] yPoints, int nPoints) {
-            // TODO: fillPolygon
-        }
-
-        @Override
-        public boolean drawImage(Image img, int x, int y, ImageObserver observer) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public boolean drawImage(Image img, int x, int y, int width, int height, ImageObserver observer) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public boolean drawImage(Image img, int x, int y, Color bgcolor, ImageObserver observer) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public boolean drawImage(Image img, int x, int y, int width, int height, Color bgcolor, ImageObserver observer) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public boolean drawImage(Image img, int dx1, int dy1, int dx2, int dy2, int sx1, int sy1, int sx2, int sy2, ImageObserver observer) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public boolean drawImage(Image img, int dx1, int dy1, int dx2, int dy2, int sx1, int sy1, int sx2, int sy2, Color bgcolor, ImageObserver observer) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public void dispose() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public String toString() {
-            return String.format("left: %d; right: %d; top: %d; bottom: %d", left, right, top, bottom);
-        }
-  }
-  
-  public void getTest() {
-      myGraphics t = new myGraphics();
-      paintDrawings(t, offsetX, offsetY, rotation, scale);
-      // calculate scale and "add" a 10px margin
-        double scale_x = ((double)this.getWidth()-10)/(t.right - t.left);
-        double scale_y = ((double)this.getHeight()-10)/(t.bottom - t.top);
+    public void fitToViewport() {
+        BoundingBox bb = new BoundingBox();
+        paintDrawings(bb, offsetX, offsetY, rotation, scale);
+        // "add" a 10px margin and calculate scale
+        double scale_x = ((double) this.getWidth() - 10) / (bb.getWidth());
+        double scale_y = ((double) this.getHeight() - 10) / (bb.getHeight());
         setScale(scale_x < scale_y ? scale_x : scale_y);
-        setOffsetX(getWidth()/2.);
-        setOffsetY(getHeight()/2.);
+        // center drawings
+        setOffsetX(getWidth() / 2.);
+        setOffsetY(getHeight() / 2.);
+        // repaint everything
         repaint();
-  }
+    }
   
   public void paintDrawings(Graphics2D g2d, double x, double y, double r, double s) 
   {
