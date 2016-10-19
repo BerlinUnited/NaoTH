@@ -243,6 +243,7 @@ private:
   double slope(const double& x, const double& y, const double& slopeX, const double& slopeY) const;
 
   double evaluateAction(const Vector2d& a) const;
+  double evaluateAction(const ActionResults& results) const;
 
   void draw_potential_field() const;
 

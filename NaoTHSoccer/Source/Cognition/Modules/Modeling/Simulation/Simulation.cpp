@@ -274,9 +274,9 @@ void Simulation::simulateConsequences(
 size_t Simulation::decide_smart(const std::vector<ActionResults>& actionsConsequences ) const
 {
   std::vector<size_t> acceptableActions;
-  std::vector<size_t> goalActions;
 
-  for(size_t i=0; i<action_local.size(); i++)
+  // select acceptable actions
+  for(size_t i = 0; i < actionsConsequences.size(); ++i)
   {
     const ActionResults& results = actionsConsequences[i];
 
@@ -294,61 +294,78 @@ size_t Simulation::decide_smart(const std::vector<ActionResults>& actionsConsequ
     //all actions which are not too bad
     acceptableActions.push_back(i);
   }
+
+  // no acceptable actions
+  if(acceptableActions.empty()) {
+    return 0; //assumes 0 is the turn action
+  }
+  // there is a clear decision
+  if(acceptableActions.size() == 1) {
+    return acceptableActions.front();
+  }
+
+  // select the subset of actions with highest goal chance
+  std::vector<size_t> goalActions;
   for(size_t i = 0; i < acceptableActions.size(); ++i)
   {
     const ActionResults& results = actionsConsequences[acceptableActions[i]];
 
+    // chance of scoring a goal must be significant
+    if(results.categorie(OPPGOAL) < theParameters.minGoalParticles) {
+      continue;
+    }
+
     // there is no other action to compare yet
     if(goalActions.empty()) {
-      goalActions.push_back(i);
+      goalActions.push_back(acceptableActions[i]);
       continue;
     }
 
     // the actio with the highest chance of scoring the goal is the best
     if(actionsConsequences[goalActions.front()].categorie(OPPGOAL) < results.categorie(OPPGOAL)) {
       goalActions.clear();
-      goalActions.push_back(i);
+      goalActions.push_back(acceptableActions[i]);
       continue;
     }
 
     if(actionsConsequences[goalActions.front()].categorie(OPPGOAL) == results.categorie(OPPGOAL)) {
-      goalActions.push_back(i);
+      goalActions.push_back(acceptableActions[i]);
       continue;
     }
   }
-  // there is a clear decision
-  if(acceptableActions.empty()) {
-    return 0; //assumes 0 is the turn action
-  }
-  //TODO: replace by actionsConsequences[goalActions.front()].likelihood(OPPGOAL)
-  if(actionsConsequences[goalActions.front()].categorie(OPPGOAL) > theParameters.minGoalParticles){
+
+  // go for the goal action!
+  if(goalActions.size() == 1) {
     return goalActions.front();
   }
 
-  // choose the best action by potential field
-  size_t best_action = 0;
-  double bestValue = std::numeric_limits<double>::max(); // assuming potential is [0.0, inf]
-  
-  for(std::vector<size_t>::const_iterator it = acceptableActions.begin(); it != acceptableActions.end(); ++it)
+  // no goal actions => select one of the acceptable actions based on strategic value
+  if(goalActions.empty()) 
   {
-    const ActionResults& results = actionsConsequences[*it];
-
-    double sumPotential = 0.0;
-    for(ActionResults::Positions::const_iterator p = results.positions().begin(); p != results.positions().end(); ++p)
+    size_t best_action = 0;
+    double bestValue = std::numeric_limits<double>::max(); // assuming potential is [0.0, inf]
+    for(std::vector<size_t>::const_iterator it = acceptableActions.begin(); it != acceptableActions.end(); ++it)
     {
-      if(p->cat() == INFIELD || p->cat() == OPPGOAL) {
-        sumPotential += evaluateAction(getRobotPose() * p->pos());
+      double potential = evaluateAction(actionsConsequences[*it]);
+      if(potential < bestValue) {
+        best_action = *it;
+        bestValue = potential;
       }
     }
-
-    sumPotential /= (double)(results.categorie(INFIELD) + results.categorie(OPPGOAL));
-
-    if(sumPotential < bestValue) {
+    return best_action;
+  }
+  
+  // find min of goalActions
+  size_t best_action = 0;
+  double bestValue = std::numeric_limits<double>::max(); // assuming potential is [0.0, inf]
+  for(std::vector<size_t>::const_iterator it = goalActions.begin(); it != goalActions.end(); ++it)
+  {
+    double potential = evaluateAction(actionsConsequences[*it]);
+    if(potential < bestValue) {
       best_action = *it;
-      bestValue = sumPotential;
+      bestValue = potential;
     }
   }
-
   return best_action;
 }
 
@@ -409,6 +426,23 @@ double Simulation::evaluateAction(const Vector2d& a) const
   f += gaussian(a.x, a.y, xPosOwnGoal, 0.0, 1.5*sigmaX, sigmaY);
   
   return f;
+}
+
+double Simulation::evaluateAction(const ActionResults& results) const
+{
+  double sumPotential = 0.0;
+  double numberOfActions = 0.0;
+  for(ActionResults::Positions::const_iterator p = results.positions().begin(); p != results.positions().end(); ++p)
+  {
+    if(p->cat() == INFIELD || p->cat() == OPPGOAL) {
+      sumPotential += evaluateAction(getRobotPose() * p->pos());
+      numberOfActions++;
+    }
+  }
+
+  ASSERT(numberOfActions > 0);
+  sumPotential /= numberOfActions;
+  return sumPotential;
 }
 
 void Simulation::draw_potential_field() const
