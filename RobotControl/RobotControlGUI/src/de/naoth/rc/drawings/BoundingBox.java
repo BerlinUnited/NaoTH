@@ -1,5 +1,7 @@
 package de.naoth.rc.drawings;
 
+import java.awt.AlphaComposite;
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Composite;
 import java.awt.Font;
@@ -17,6 +19,7 @@ import java.awt.font.FontRenderContext;
 import java.awt.font.GlyphVector;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
+import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.awt.image.BufferedImageOp;
 import java.awt.image.ImageObserver;
@@ -26,7 +29,7 @@ import java.text.AttributedCharacterIterator;
 import java.util.Map;
 
 /**
- * Generates a bounding box.
+ * Generates a bounding box of the applied drawings.
  * If something is drawn on this "graphics", a bounding box is calculated,
  * which encloses the complete drawing.
  * @author Philipp Strobel <philippstrobel@posteo.de>
@@ -35,7 +38,16 @@ public class BoundingBox extends Graphics2D {
 
     private Rectangle2D.Double boundingBox = new Rectangle2D.Double(0, 0, 0, 0);
 
-    private void update(float x, float y, float width, float height) {
+    private AffineTransform transform = new AffineTransform();
+    private Font font = new Font(Font.DIALOG, Font.PLAIN, 12);
+    private Color background;
+    private Color foreground;
+    private Stroke stroke = new BasicStroke();
+    private Paint paint;
+    private Composite composite = AlphaComposite.SrcOver;
+    private RenderingHints hints = new RenderingHints(null);
+
+    private void update(double x, double y, double width, double height) {
         if (x < boundingBox.x) {
             boundingBox.x = x;
         }
@@ -82,30 +94,48 @@ public class BoundingBox extends Graphics2D {
     public Rectangle2D getBoundingBox() {
         return boundingBox;
     }
-
+    
     @Override
     public void draw(Shape s) {
         this.update(s.getBounds().x, s.getBounds().y, s.getBounds().width, s.getBounds().height);
     }
+    
+    public void drawImage(BufferedImage img, BufferedImageOp op, double x, double y) {
+        BufferedImage out = op.filter(img, null);
+        this.update(x, y, out.getWidth(), out.getHeight());
+    }
 
     @Override
     public boolean drawImage(Image img, AffineTransform xform, ImageObserver obs) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        // INFO: don't know if that's a correct implementation!?
+        drawImage(new BufferedImage(img.getWidth(null), img.getHeight(null), 0), 
+                  new AffineTransformOp(xform, null), 
+                  xform.getTranslateX(), 
+                  xform.getTranslateY());
+        return true;
     }
 
     @Override
     public void drawImage(BufferedImage img, BufferedImageOp op, int x, int y) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        this.drawImage(img, op, x, y);
     }
 
     @Override
     public void drawRenderedImage(RenderedImage img, AffineTransform xform) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        // INFO: don't know if that's a correct implementation!?
+        this.drawImage(new BufferedImage(img.getWidth(), img.getHeight(), 0),
+                       new AffineTransformOp(xform, null),
+                       xform.getTranslateX(),
+                       xform.getTranslateY());
     }
 
     @Override
     public void drawRenderableImage(RenderableImage img, AffineTransform xform) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        // INFO: don't know if that's a correct implementation!?
+        this.drawImage(new BufferedImage((int)img.getWidth(), (int)img.getHeight(), 0),
+                       new AffineTransformOp(xform, null),
+                       xform.getTranslateX(),
+                       xform.getTranslateY());
     }
 
     @Override
@@ -145,7 +175,8 @@ public class BoundingBox extends Graphics2D {
 
     @Override
     public boolean hit(Rectangle rect, Shape s, boolean onStroke) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        // INFO: hopefully this isn't a much needed functionality ?!
+        return true;
     }
 
     @Override
@@ -155,112 +186,134 @@ public class BoundingBox extends Graphics2D {
 
     @Override
     public void setComposite(Composite comp) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if(comp != null) {
+            this.composite = comp;
+        }
     }
 
     @Override
     public void setPaint(Paint paint) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if(paint != null) {
+            this.paint = paint;
+        }
     }
 
     @Override
     public void setStroke(Stroke s) {
-        // TODO: ?!
+        if(s != null) {
+            this.stroke = s;
+        }
     }
 
     @Override
     public void setRenderingHint(RenderingHints.Key hintKey, Object hintValue) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        this.hints.put(hintKey, hintValue);
     }
 
     @Override
     public Object getRenderingHint(RenderingHints.Key hintKey) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return this.hints.get(hintKey);
     }
 
     @Override
     public void setRenderingHints(Map<?, ?> hints) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        this.hints = new RenderingHints((Map<RenderingHints.Key, ?>) hints);
     }
 
     @Override
     public void addRenderingHints(Map<?, ?> hints) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        this.hints.add((RenderingHints) hints);
     }
 
     @Override
     public RenderingHints getRenderingHints() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return this.hints;
     }
 
     @Override
     public void translate(int x, int y) {
         boundingBox = (Rectangle2D.Double) AffineTransform.getTranslateInstance(x, y).createTransformedShape(boundingBox).getBounds2D();
+        this.transform.translate(x, y);
     }
 
     @Override
     public void translate(double tx, double ty) {
         boundingBox = (Rectangle2D.Double) AffineTransform.getTranslateInstance(tx, ty).createTransformedShape(boundingBox).getBounds2D();
+        this.transform.translate(tx, ty);
     }
 
     @Override
     public void rotate(double theta) {
         boundingBox = (Rectangle2D.Double) AffineTransform.getRotateInstance(theta).createTransformedShape(boundingBox).getBounds2D();
+        this.transform.rotate(theta);
     }
 
     @Override
     public void rotate(double theta, double x, double y) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        AffineTransform af = new AffineTransform();
+        af.rotate(theta, x, y);
+        boundingBox = (Rectangle2D.Double) af.createTransformedShape(boundingBox).getBounds2D();
+        this.transform.rotate(theta, x, y);
     }
 
     @Override
     public void scale(double sx, double sy) {
-        // TODO: scale
+        // INFO: if we scale something, we should also scale all drawings!
+//        boundingBox = (Rectangle2D.Double) AffineTransform.getScaleInstance(sx, sy).createTransformedShape(boundingBox).getBounds2D();
+        this.transform.scale(sx, sy);
     }
 
     @Override
     public void shear(double shx, double shy) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+//        boundingBox = (Rectangle2D.Double) AffineTransform.getShearInstance(shx, shy).createTransformedShape(boundingBox).getBounds2D();
+        this.transform.shear(shx, shy);
     }
 
     @Override
     public void transform(AffineTransform Tx) {
-        // TODO: transform ?!?
+        // INFO: the transform could include some scaling (see scale()) - currently ignoring
+//        boundingBox = (Rectangle2D.Double) Tx.createTransformedShape(boundingBox).getBounds2D();
+        this.transform.concatenate(Tx);
     }
 
     @Override
     public void setTransform(AffineTransform Tx) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        // INFO: the transform could include some scaling (see scale()) - currently ignoring
+//        boundingBox = (Rectangle2D.Double) Tx.createTransformedShape(boundingBox).getBounds2D();
+        this.transform = Tx;
     }
 
     @Override
     public AffineTransform getTransform() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return this.transform;
     }
 
     @Override
     public Paint getPaint() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if(this.paint == null) {
+            return foreground;
+        }
+        return paint;
     }
 
     @Override
     public Composite getComposite() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return this.composite;
     }
 
     @Override
     public void setBackground(Color color) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        this.background = color;
     }
 
     @Override
     public Color getBackground() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return this.background;
     }
 
     @Override
     public Stroke getStroke() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return this.stroke;
     }
 
     @Override
@@ -270,42 +323,56 @@ public class BoundingBox extends Graphics2D {
 
     @Override
     public FontRenderContext getFontRenderContext() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return new FontRenderContext(this.transform, true, true);
     }
 
     @Override
     public Graphics create() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try {
+            return (Graphics)clone();
+        } catch (CloneNotSupportedException ex) {
+        }
+        return null;
     }
 
     @Override
     public Color getColor() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return this.foreground;
     }
 
     @Override
-    public void setColor(Color c) {/*ignore*/
+    public void setColor(Color c) {
+        this.foreground = c;
     }
 
     @Override
     public void setPaintMode() {
+        setComposite(AlphaComposite.SrcOver);
     }
 
     @Override
     public void setXORMode(Color c1) {
+        if(c1 != null) {
+            // TODO: setXORMode
+//            setComposite(new XORComposite(c1, sd));
+        }
     }
 
     @Override
     public Font getFont() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return this.font;
     }
 
     @Override
     public void setFont(Font font) {
+        if(font != null) {
+            this.font = font;
+        }
     }
 
     @Override
     public FontMetrics getFontMetrics(Font f) {
+//        return FontDesignMetrics.getMetrics(font);
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -335,9 +402,7 @@ public class BoundingBox extends Graphics2D {
     }
 
     @Override
-    public void copyArea(int x, int y, int width, int height, int dx, int dy) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+    public void copyArea(int x, int y, int width, int height, int dx, int dy) { /* ignoring */ }
 
     @Override
     public void drawLine(int x1, int y1, int x2, int y2) {
@@ -351,44 +416,42 @@ public class BoundingBox extends Graphics2D {
 
     @Override
     public void clearRect(int x, int y, int width, int height) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        this.update(x, y, width, height);
     }
 
     @Override
     public void drawRoundRect(int x, int y, int width, int height, int arcWidth, int arcHeight) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        this.update(x, y, width, height);
     }
 
     @Override
     public void fillRoundRect(int x, int y, int width, int height, int arcWidth, int arcHeight) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        this.update(x, y, width, height);
     }
 
     @Override
     public void drawOval(int x, int y, int width, int height) {
-        this.update(x, y, 0, 0);
-        // TODO: drawOval
+        this.update(x, y, width, height);
     }
 
     @Override
     public void fillOval(int x, int y, int width, int height) {
-        this.update(x, y, 0, 0);
-        // TODO: fillOval
+        this.update(x, y, width, height);
     }
 
     @Override
     public void drawArc(int x, int y, int width, int height, int startAngle, int arcAngle) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        // TODO: drawArc
     }
 
     @Override
     public void fillArc(int x, int y, int width, int height, int startAngle, int arcAngle) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        // TODO: fillArc
     }
 
     @Override
     public void drawPolyline(int[] xPoints, int[] yPoints, int nPoints) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        // TODO: drawPolyline
     }
 
     @Override
@@ -403,36 +466,52 @@ public class BoundingBox extends Graphics2D {
 
     @Override
     public boolean drawImage(Image img, int x, int y, ImageObserver observer) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if(img != null) {
+            this.update(x, y, img.getWidth(observer), img.getHeight(observer));
+        }
+        return true;
     }
 
     @Override
     public boolean drawImage(Image img, int x, int y, int width, int height, ImageObserver observer) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if(img != null) {
+            this.update(x, y, width, height);
+        }
+        return true;
     }
 
     @Override
     public boolean drawImage(Image img, int x, int y, Color bgcolor, ImageObserver observer) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if(img != null) {
+            this.update(x, y, img.getWidth(observer), img.getHeight(observer));
+        }
+        return true;
     }
 
     @Override
     public boolean drawImage(Image img, int x, int y, int width, int height, Color bgcolor, ImageObserver observer) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if(img != null) {
+            this.update(x, y, width, height);
+        }
+        return true;
     }
 
     @Override
     public boolean drawImage(Image img, int dx1, int dy1, int dx2, int dy2, int sx1, int sy1, int sx2, int sy2, ImageObserver observer) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if(img != null && dx1 != dx2 && dy1 != dy2) {
+            this.update(Math.min(dx1, dx2), Math.min(dy1, dy2), Math.max(dx1, dx2)-Math.min(dx1,dx2), Math.max(dy1, dy2)-Math.min(dy1,dy2));
+        }
+        return true;
     }
 
     @Override
     public boolean drawImage(Image img, int dx1, int dy1, int dx2, int dy2, int sx1, int sy1, int sx2, int sy2, Color bgcolor, ImageObserver observer) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if(img != null && dx1 != dx2 && dy1 != dy2) {
+            this.update(Math.min(dx1, dx2), Math.min(dy1, dy2), Math.max(dx1, dx2)-Math.min(dx1,dx2), Math.max(dy1, dy2)-Math.min(dy1,dy2));
+        }
+        return true;
     }
 
     @Override
-    public void dispose() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+    public void dispose() { /* ignoring */ }
 }
