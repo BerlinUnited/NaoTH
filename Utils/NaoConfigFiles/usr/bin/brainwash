@@ -1,4 +1,5 @@
 #!/bin/bash
+COUNTER=100 # ~ 10 seconds
 mkdir /media/brainwasher
 mount /dev/brainwasher /media/brainwasher
 cd /media/brainwasher
@@ -7,6 +8,16 @@ cd /
 until umount /media/brainwasher &> /dev/null
 do
   sleep 0.1
+  ((COUNTER--))
+  # max. "COUNTER" attempts to unmount device, otherwise force unmount and break -> prevent infinite loop
+  if [ $COUNTER -le 0 ]
+  then
+    # play error sound
+    sudo -u nao /usr/bin/paplay /usr/share/naoqi/wav/outch.wav
+    # force unmounting
+    umount -l /media/brainwasher &> /dev/null
+    break
+  fi
 done
 rmdir /media/brainwasher
 logger "unmount brainwasher, done!"
