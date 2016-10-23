@@ -23,8 +23,8 @@ public abstract class GLDrawable {
         return String.valueOf(System.currentTimeMillis());
     }
     
-    public Shader getShader(GL3 gl) {
-        return null;
+    public String getShader() {
+        return "TexturedModelShader";
     }
     
     public Texture getTexture() {

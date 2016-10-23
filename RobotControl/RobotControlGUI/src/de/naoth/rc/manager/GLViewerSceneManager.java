@@ -12,7 +12,7 @@ import de.naoth.rc.opengl.drawings.GLDrawable;
  *
  * @author Heinrich Mellmann
  */
-public interface GLViewerSceneManager extends ManagerPlugin<GLDrawable[]>
+public interface GLViewerSceneManager extends ManagerPlugin<String[][]>
 {
 
 }

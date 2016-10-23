@@ -9,24 +9,28 @@ import java.util.ArrayList;
 import de.naoth.rc.opengl.representations.Point2f;
 import de.naoth.rc.opengl.representations.Point3f;
 
-
+/**
+ * This .obj Loader parses only vertex, normal, texture and index attributes,
+ * it doesn't support materials or multiple objects in one file.
+ * @author robert
+ */
 public class ObjFile implements GLFile {
-    private String objName;
+    protected String objName;
     
-    private ArrayList<Integer> glIndexData;
+    protected ArrayList<Integer> glIndexData;
 
-    private ArrayList<Point3f> glVertexData;
-    private ArrayList<Point3f> normalData;
-    private ArrayList<Point2f> textureData;
+    protected ArrayList<Point3f> glVertexData;
+    protected ArrayList<Point3f> normalData;
+    protected ArrayList<Point2f> textureData;
     
-    private ArrayList<Point3f> glNormalData;
-    private ArrayList<Point2f> glTextureData;
+    protected ArrayList<Point3f> glNormalData;
+    protected ArrayList<Point2f> glTextureData;
     
-    private boolean hasNormal = false;
-    private boolean hasTexture = false;
+    protected boolean hasNormal = false;
+    protected boolean hasTexture = false;
     
-    private String path;
-    private String objFileName;
+    protected String path;
+    protected String objFileName;
 
     public ObjFile(String path, String objFileName) {
     	this.path = path;
@@ -157,18 +161,12 @@ public class ObjFile implements GLFile {
         }
     }
 
+    @Override
     public String getName() { 
     	return objName;
     }
 
-    public ArrayList<Point3f> getNormalData() {
-        return normalData;
-    }
-
-    public ArrayList<Point2f> getTextureData() {
-    	return textureData;
-    }
-
+    @Override
     public GLData buildGLData() {
     	parseObjFile(this.path + this.objFileName);
     	if(hasTexture) {

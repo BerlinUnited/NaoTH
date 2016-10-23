@@ -21,6 +21,7 @@ import de.naoth.rc.core.manager.ObjectListener;
 import de.naoth.rc.manager.GLViewerSceneManager;
 import de.naoth.rc.manager.ImageManagerBottom;
 import de.naoth.rc.manager.ImageManagerTop;
+import de.naoth.rc.opengl.Shader;
 import de.naoth.rc.opengl.drawings.*;
 import de.naoth.rc.opengl.model.GLObject;
 import de.naoth.rc.opengl.representations.GLCache;
@@ -29,13 +30,16 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 
 //@PluginImplementation
-public class GLViewer extends AbstractDialog
-    implements ObjectListener<GLDrawable[]> {
+public class GLViewer extends AbstractDialog {
 
     @PluginImplementation
     public static class Plugin extends DialogPlugin<GLViewer> {
@@ -170,12 +174,12 @@ public class GLViewer extends AbstractDialog
   {//GEN-HEADEREND:event_jToggleButtonUpdateActionPerformed
       if (jToggleButtonUpdate.isSelected()) {
           if (Plugin.parent.checkConnected()) {
-              Plugin.glViewerSceneManager.addListener(this);
+              Plugin.glViewerSceneManager.addListener(glImpl);
           } else {
               jToggleButtonUpdate.setSelected(false);
           }
       } else {
-          Plugin.glViewerSceneManager.removeListener(this);
+          Plugin.glViewerSceneManager.removeListener(glImpl);
       }
   }//GEN-LAST:event_jToggleButtonUpdateActionPerformed
 
@@ -203,7 +207,7 @@ public class GLViewer extends AbstractDialog
         this.canvas.addKeyListener((KeyListener) inputListener);
         this.canvas.addMouseListener((MouseListener) inputListener);
 
-        glImpl = new GLEventListenerImpl(inputListener, canvas);
+        glImpl = new GLEventListenerImpl(inputListener, canvas, this);
 
         this.canvas.addGLEventListener(glImpl);
 
@@ -215,23 +219,9 @@ public class GLViewer extends AbstractDialog
         System.out.println("Dispose is not implemented for: " + this.getClass().getName());
     }//end dispose
 
-    @Override
-    public void newObjectReceived(GLDrawable[] object) {
-        glImpl.dynamicScene.clean();
-        glImpl.dynamicDisplayQueue.clear();
-        
-        System.out.println("newObjectReceived");
-        glImpl.dynamicScene.add(object);
-    }
-
-    @Override
-    public void errorOccured(String cause) {
-        System.err.println(cause);
-    }
-
 }
 
-final class GLEventListenerImpl implements GLEventListener {
+final class GLEventListenerImpl implements GLEventListener, ObjectListener<String[][]> {
 
     private FPSAnimator animator;
 
@@ -247,75 +237,70 @@ final class GLEventListenerImpl implements GLEventListener {
     public ConcurrentLinkedQueue<GLObject> dynamicDisplayQueue, staticDisplayQueue;
     public GLCache glCache;
 
+    public ConcurrentLinkedQueue<String[]> newObjectReceived;
+
     private final Point3f camPos = new Point3f(20, 30, 40);
 
     private boolean changed = false;
 
     private boolean reshaped = false;
+    GLViewer TEST;
 
-    public GLEventListenerImpl(Input inputListener, GLCanvas canvas) {
+    private final String pathToGLSL = System.getProperty("user.dir").replaceAll("\\\\", "/") + "/src/de/naoth/rc/opengl/glsl/";
+    private final String scenePath = System.getProperty("user.dir").replaceAll("\\\\", "/") + "/src/de/naoth/rc/opengl/res/";
+
+    public GLEventListenerImpl(Input inputListener, GLCanvas canvas, GLViewer TEST) {
+        this.newObjectReceived = new ConcurrentLinkedQueue();
+
+        this.TEST = TEST;
         this.canvas = canvas;
 
         this.inputListener = inputListener;
+
+        this.dynamicDisplayQueue = new ConcurrentLinkedQueue();
+        this.staticDisplayQueue = new ConcurrentLinkedQueue();
+
+        this.glCache = new GLCache();
+    }
+
+    @Override
+    public void newObjectReceived(String[][] object) {
+        for (String[] object1 : object) {
+            newObjectReceived.add(object1);
+        }
+
+    }
+
+    @Override
+    public void errorOccured(String cause) {
+        System.err.println(cause);
     }
 
     @Override
     public void init(GLAutoDrawable drawable) {
         gl = drawable.getGL().getGL3();
 
-        String scenePath = System.getProperty("user.dir").replaceAll("\\\\", "/") + "/src/de/naoth/rc/opengl/res/";
+        Shader standardTexturedModelShader = new Shader(gl, pathToGLSL, "vertex_shader.glsl", "texture_FS.glsl");
+        Shader standardModelShader = new Shader(gl, pathToGLSL, "color_VS.glsl", "color_FS.glsl");
 
-        this.dynamicDisplayQueue = new ConcurrentLinkedQueue();
-        this.staticDisplayQueue = new ConcurrentLinkedQueue();
-        
-        this.glCache = new GLCache();
+        standardTexturedModelShader.setGlobalUniform("light.position", new float[]{0f, 50f, 0f});
+        standardTexturedModelShader.setGlobalUniform("light.intensities", new float[]{1f, 1f, 1f});
+
+        standardModelShader.setGlobalUniform("light.position", new float[]{0f, 50f, 0f});
+        standardModelShader.setGlobalUniform("light.intensities", new float[]{1f, 1f, 1f});
+
+        this.glCache.putShader("ModelShader", standardModelShader);
+        this.glCache.putShader("TexturedModelShader", standardTexturedModelShader);
 
         this.dynamicScene = new Scene(gl, glCache, dynamicDisplayQueue);
         this.staticScene = new Scene(gl, glCache, staticDisplayQueue);
 
-        //scene.add(scenePath + "scene.simgl");
-        //scene.add(new ExampleGLDrawable());
-        this.staticScene.add(new FieldDrawingSPL2013());
-
+        String[][] object = new String[1][1];
+        object[0][0] = GLDrawable2.class.getPackage().getName() + ".Field";
+        this.newObjectReceived(object);
         
-        this.staticScene.add(new ExampleGLDrawable());
-        this.staticScene.add(new ExampleGLDrawable());
-        this.staticScene.add(new ExampleGLDrawable());
-        this.staticScene.add(new ExampleGLDrawable());
-        this.staticScene.add(new ExampleGLDrawable());
-        this.staticScene.add(new ExampleGLDrawable());
-        this.staticScene.add(new ExampleGLDrawable());
-        this.staticScene.add(new ExampleGLDrawable());
-        this.staticScene.add(new ExampleGLDrawable());
-        this.staticScene.add(new ExampleGLDrawable());
-        this.staticScene.add(new ExampleGLDrawable());
-        this.staticScene.add(new ExampleGLDrawable());
-        this.staticScene.add(new ExampleGLDrawable());
-        this.staticScene.add(new ExampleGLDrawable());
-        this.staticScene.add(new ExampleGLDrawable());
-        this.staticScene.add(new ExampleGLDrawable());
-        this.staticScene.add(new ExampleGLDrawable());
-        this.staticScene.add(new ExampleGLDrawable());
-        this.staticScene.add(new ExampleGLDrawable());
-        this.staticScene.add(new ExampleGLDrawable());
-        this.staticScene.add(new ExampleGLDrawable());
-        this.staticScene.add(new ExampleGLDrawable());
-        this.staticScene.add(new ExampleGLDrawable());
-        this.staticScene.add(new ExampleGLDrawable());
-        this.staticScene.add(new ExampleGLDrawable());
-        this.staticScene.add(new ExampleGLDrawable());
-        this.staticScene.add(new ExampleGLDrawable());
-         
-        //scene.add(new Head());
-        /*
-        scene.add(new Torso());
-        scene.add(new LThigh());
-        scene.add(new RThigh());
-        scene.add(new LFoot());
-        scene.add(new RFoot());
-        scene.add(new LShinebone());
-        scene.add(new RShinebone());
-         */
+        
+
         gl.glEnable(GL3.GL_DEPTH_TEST);
 
         animator = new FPSAnimator(drawable, 60);
@@ -337,6 +322,11 @@ final class GLEventListenerImpl implements GLEventListener {
 
     @Override
     public void display(GLAutoDrawable drawable) {
+        for (String[] each : newObjectReceived) {
+            dynamicScene.add(each);
+        }
+        newObjectReceived.clear();
+
         if (inputListener.a) {
             camera.rotateRight(-0.02f);
             this.changed = true;
