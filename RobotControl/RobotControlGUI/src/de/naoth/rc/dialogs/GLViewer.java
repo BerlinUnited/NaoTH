@@ -26,7 +26,6 @@ import de.naoth.rc.opengl.drawings.*;
 import de.naoth.rc.opengl.model.GLObject;
 import de.naoth.rc.opengl.representations.GLCache;
 import de.naoth.rc.opengl.representations.Matrix4;
-import de.naoth.rc.opengl.representations.Point2f;
 import java.awt.MouseInfo;
 import java.awt.Point;
 import java.awt.event.KeyEvent;
@@ -35,8 +34,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 
@@ -238,12 +235,10 @@ final class GLEventListenerImpl implements GLEventListener, ObjectListener<Strin
 
     private final Point3f camPos = new Point3f(20, 30, 40);
 
-    private boolean changed = false;
-
-    private boolean reshaped = false;
-
     private final String pathToGLSL = System.getProperty("user.dir").replaceAll("\\\\", "/") + "/src/de/naoth/rc/opengl/glsl/";
     private final String scenePath = System.getProperty("user.dir").replaceAll("\\\\", "/") + "/src/de/naoth/rc/opengl/res/";
+
+    private InputModifier inputModifier;
 
     public GLEventListenerImpl(GLCanvas canvas) {
         this.newObjectReceived = new ConcurrentLinkedQueue();
@@ -293,40 +288,33 @@ final class GLEventListenerImpl implements GLEventListener, ObjectListener<Strin
 
         gl.glEnable(GL3.GL_DEPTH_TEST);
 
-        animator = new FPSAnimator(drawable, 60);
-        //animator.start();
-
         camera = new Camera(Camera.FOCUS_MODE, camPos, new Point3f(0, 0, 0), new Point3f(0, 1, 0), canvas.getWidth(), canvas.getHeight());
-        InputModifier inputModifier = new InputModifier(this, camera);
+        this.inputModifier = new InputModifier(this, camera);
         this.canvas.addKeyListener((KeyListener) inputModifier);
         this.canvas.addMouseListener((MouseListener) inputModifier);
         new Thread(inputModifier).start();
 
+        animator = new FPSAnimator(drawable, 60);
+        animator.start();
     }
 
     @Override
     public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
         this.camera.reshape(width, height);
-        this.draw();
     }
 
     @Override
     public void dispose(GLAutoDrawable drawable) {
-        //this.animator.stop();
+        this.animator.stop();
     }
 
     @Override
     public void display(GLAutoDrawable drawable) {
-        this.draw();
-    }
 
-    synchronized public void draw() {
         for (String[] each : newObjectReceived) {
             dynamicScene.add(each);
         }
         newObjectReceived.clear();
-
-        this.changed = this.reshaped = false;
 
         gl.glEnable(GL3.GL_BLEND);
         gl.glBlendFunc(GL3.GL_SRC_ALPHA, GL3.GL_ONE_MINUS_SRC_ALPHA);
@@ -357,13 +345,12 @@ final class GLEventListenerImpl implements GLEventListener, ObjectListener<Strin
             each.unbind();
             each.unbindShader();
         }
-
     }
 
 }
 
 final class InputModifier implements KeyListener, MouseListener, Runnable {
-    
+
     GLEventListenerImpl glImpl;
     Camera camera;
 
