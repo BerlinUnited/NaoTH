@@ -283,11 +283,11 @@ final class GLEventListenerImpl implements GLEventListener, ObjectListener<Strin
         this.staticScene = new Scene(gl, glCache, staticDisplayQueue);
 
         String[][] object = new String[1][1];
-        object[0][0] = GLDrawable2.class.getPackage().getName() + ".Field";
+        object[0][0] = GLDrawable.class.getPackage().getName() + ".Field";
         this.newObjectReceived(object);
         
         object = new String[1][1];
-        object[0][0] = GLDrawable2.class.getPackage().getName() + ".Head";
+        object[0][0] = GLDrawable.class.getPackage().getName() + ".Head";
         this.newObjectReceived(object);
 
         gl.glEnable(GL3.GL_DEPTH_TEST);

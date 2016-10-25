@@ -3,7 +3,7 @@ package de.naoth.rc.opengl;
 import java.util.Iterator;
 
 import com.jogamp.opengl.GL3;
-import de.naoth.rc.opengl.drawings.GLDrawable2;
+import de.naoth.rc.opengl.drawings.GLDrawable;
 import de.naoth.rc.opengl.model.GLClone;
 import de.naoth.rc.opengl.model.GLComplex;
 import de.naoth.rc.opengl.model.GLModel;
@@ -24,7 +24,7 @@ public class Scene implements GLComplex {
 
     protected ConcurrentLinkedQueue<GLObject> displayQueue;
 
-    protected ConcurrentLinkedQueue<GLDrawable2> drawableBuffer;
+    protected ConcurrentLinkedQueue<GLDrawable> drawableBuffer;
 
     protected GLCache glCache;
 
@@ -52,8 +52,8 @@ public class Scene implements GLComplex {
                         Constructor constructor = drawingClass.getConstructor(String[].class);
                         // create new Drawing
                         Object drawing = constructor.newInstance(new Object[]{args});
-                        if (drawing instanceof GLDrawable2) {
-                            GLDrawable2 newDrawable = (GLDrawable2) drawing;
+                        if (drawing instanceof GLDrawable) {
+                            GLDrawable newDrawable = (GLDrawable) drawing;
                             Primitive[] toCreate = newDrawable.getPrimitives();
 
                             for (Primitive each : toCreate) {
@@ -106,8 +106,8 @@ public class Scene implements GLComplex {
     @Override
     public void update() {
 
-        for (Iterator<GLDrawable2> iterator = drawableBuffer.iterator(); iterator.hasNext();) {
-            GLDrawable2 each = iterator.next();
+        for (Iterator<GLDrawable> iterator = drawableBuffer.iterator(); iterator.hasNext();) {
+            GLDrawable each = iterator.next();
             iterator.remove();
 
             for (Primitive primitive : each.getPrimitives()) {

@@ -8,7 +8,8 @@ package de.naoth.rc.opengl.drawings;
 import de.naoth.rc.opengl.file.GLData;
 import de.naoth.rc.opengl.file.ObjFile;
 import de.naoth.rc.opengl.file.Texture;
-import de.naoth.rc.opengl.representations.Point3f;
+import de.naoth.rc.opengl.representations.Matrix4;
+import de.naoth.rc.opengl.representations.Primitive;
 
 
 /**
@@ -17,22 +18,20 @@ import de.naoth.rc.opengl.representations.Point3f;
  */
 public class ExampleGLDrawable extends GLDrawable{
     
-    public ExampleGLDrawable() {
-
+    public ExampleGLDrawable(String args[]) {
+        super("example", 1);
+        
+        GLData mesh;
+        Matrix4 offset;
+        
+         mesh = new ObjFile(super.pathToRES, "ball.obj").buildGLData();
+        
+        //Offset
+        offset = new Matrix4();
+        offset.translate(((float)Math.random() * 9)-4.5f, 0.2f, ((float)Math.random() * 6)-3f);
+        offset.scale(0.2f, 0.2f, 0.2f);
+        
+        super.primitives[0] = new Primitive("head", mesh, "ColorShader", offset, new Texture(super.pathToRES, "replacement.png"));
     }
     
-    @Override
-    public Texture getTexture() {
-        return new Texture(super.pathToRES, "replacement.png");
-    }
-    
-    @Override
-    public GLData getGLData() {
-        return new ObjFile(pathToRES, "ball.obj").buildGLData();
-    }
-
-    @Override
-    public Point3f getPos() {
-        return new Point3f(((float)Math.random() * 9)-4.5f, 0.2f, ((float)Math.random() * 6)-3f);
-    }    
 }

@@ -4,7 +4,7 @@
 package de.naoth.rc.manager;
 
 import de.naoth.rc.core.manager.AbstractManagerPlugin;
-import de.naoth.rc.opengl.drawings.GLDrawable2;
+import de.naoth.rc.opengl.drawings.GLDrawable;
 import de.naoth.rc.server.Command; 
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 
@@ -12,7 +12,7 @@ import net.xeoh.plugins.base.annotations.PluginImplementation;
 public class GLViewerSceneManagerImpl extends AbstractManagerPlugin<String[][]>
     implements GLViewerSceneManager {
 
-    private final String drawablePackageName = GLDrawable2.class.getPackage().getName();
+    private final String drawablePackageName = GLDrawable.class.getPackage().getName();
 
     @Override
     public String[][] convertByteArrayToType(byte[] result) throws IllegalArgumentException {

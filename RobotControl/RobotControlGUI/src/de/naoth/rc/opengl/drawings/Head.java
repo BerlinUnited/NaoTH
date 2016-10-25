@@ -15,7 +15,7 @@ import de.naoth.rc.opengl.representations.Primitive;
  *
  * @author robert
  */
-public class Head extends GLDrawable2 {
+public class Head extends GLDrawable {
     
     public Head(String[] args) {
         super("head", 2);

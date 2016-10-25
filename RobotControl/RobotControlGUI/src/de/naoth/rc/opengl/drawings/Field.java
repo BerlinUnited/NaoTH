@@ -18,7 +18,7 @@ import java.awt.image.BufferedImage;
  *
  * @author robert
  */
-public class Field extends GLDrawable2 {
+public class Field extends GLDrawable {
 
     int xLength = 9000;
     int yLength = 6000;
