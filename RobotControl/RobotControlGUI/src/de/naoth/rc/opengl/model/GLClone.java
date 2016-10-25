@@ -29,7 +29,7 @@ public class GLClone implements GLObject {
         this.modelMatrix = new Matrix4();
     }
     
-    public GLClone(GL3 gl, GLObject model) {
+    public GLClone(GL3 gl, GLObject model,  Map<String, Object> shaderUniforms) {
         this.gl = gl;
 
         this.shaderUniforms = new HashMap<>();
@@ -38,8 +38,8 @@ public class GLClone implements GLObject {
 
         this.modelMatrix = new Matrix4();
 
-        for (Entry<String, Object> entry : model.getShaderUniforms().entrySet()) {
-            shaderUniforms.put(entry.getKey(), entry.getValue());            
+        for (Entry<String, Object> entry : shaderUniforms.entrySet()) {
+            this.shaderUniforms.put(entry.getKey(), entry.getValue());            
         }
         
         this.shaderUniforms.put("modelMatrix", modelMatrix);

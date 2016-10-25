@@ -1,5 +1,5 @@
 /**
- * @author <a href="xu:mellmann@informatik.hu-berlin.de">Xu, Yuan</a>
+ * @author Robert Martin
  */
 package de.naoth.rc.manager;
 

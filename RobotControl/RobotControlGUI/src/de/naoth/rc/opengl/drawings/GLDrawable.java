@@ -27,4 +27,9 @@ public class GLDrawable {
     public Primitive[] getPrimitives() {
         return primitives;
     } 
+    
+    
+    public void update(String[] args) {
+        
+    }
 }

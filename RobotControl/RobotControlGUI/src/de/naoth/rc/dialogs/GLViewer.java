@@ -252,10 +252,9 @@ final class GLEventListenerImpl implements GLEventListener, ObjectListener<Strin
 
     @Override
     public void newObjectReceived(String[][] object) {
-        for (String[] object1 : object) {
-            newObjectReceived.add(object1);
+        for (String[] obj : object) {
+            newObjectReceived.add(obj);
         }
-
     }
 
     @Override
@@ -282,12 +281,96 @@ final class GLEventListenerImpl implements GLEventListener, ObjectListener<Strin
         this.dynamicScene = new Scene(gl, glCache, dynamicDisplayQueue);
         this.staticScene = new Scene(gl, glCache, staticDisplayQueue);
 
+        //Test messages
         String[][] object = new String[1][1];
         object[0][0] = GLDrawable.class.getPackage().getName() + ".Field";
         this.newObjectReceived(object);
-        
+
         object = new String[1][1];
         object[0][0] = GLDrawable.class.getPackage().getName() + ".Head";
+        this.newObjectReceived(object);
+
+        object = new String[1][1];
+        object[0][0] = GLDrawable.class.getPackage().getName() + ".ExampleGLDrawable";
+        this.newObjectReceived(object);
+
+        object = new String[1][1];
+        object[0][0] = GLDrawable.class.getPackage().getName() + ".ExampleGLDrawable";
+        this.newObjectReceived(object);
+
+        object = new String[1][1];
+        object[0][0] = GLDrawable.class.getPackage().getName() + ".ExampleGLDrawable";
+        this.newObjectReceived(object);
+
+        object = new String[1][1];
+        object[0][0] = GLDrawable.class.getPackage().getName() + ".ExampleGLDrawable";
+        this.newObjectReceived(object);
+
+        object = new String[1][1];
+        object[0][0] = GLDrawable.class.getPackage().getName() + ".ExampleGLDrawable";
+        this.newObjectReceived(object);
+
+        object = new String[1][1];
+        object[0][0] = GLDrawable.class.getPackage().getName() + ".ExampleGLDrawable";
+        this.newObjectReceived(object);
+
+        object = new String[1][1];
+        object[0][0] = GLDrawable.class.getPackage().getName() + ".ExampleGLDrawable";
+        this.newObjectReceived(object);
+        object = new String[1][1];
+        object[0][0] = GLDrawable.class.getPackage().getName() + ".ExampleGLDrawable";
+        this.newObjectReceived(object);
+
+        object = new String[1][1];
+        object[0][0] = GLDrawable.class.getPackage().getName() + ".ExampleGLDrawable";
+        this.newObjectReceived(object);
+
+        object = new String[1][1];
+        object[0][0] = GLDrawable.class.getPackage().getName() + ".ExampleGLDrawable";
+        this.newObjectReceived(object);
+
+        object = new String[1][1];
+        object[0][0] = GLDrawable.class.getPackage().getName() + ".ExampleGLDrawable";
+        this.newObjectReceived(object);
+
+        object = new String[1][1];
+        object[0][0] = GLDrawable.class.getPackage().getName() + ".ExampleGLDrawable";
+        this.newObjectReceived(object);
+
+        object = new String[1][1];
+        object[0][0] = GLDrawable.class.getPackage().getName() + ".ExampleGLDrawable";
+        this.newObjectReceived(object);
+
+        object = new String[1][1];
+        object[0][0] = GLDrawable.class.getPackage().getName() + ".ExampleGLDrawable";
+        this.newObjectReceived(object);
+
+        object = new String[1][1];
+        object[0][0] = GLDrawable.class.getPackage().getName() + ".ExampleGLDrawable";
+        this.newObjectReceived(object);
+
+        object = new String[1][1];
+        object[0][0] = GLDrawable.class.getPackage().getName() + ".ExampleGLDrawable";
+        this.newObjectReceived(object);
+
+        object = new String[1][1];
+        object[0][0] = GLDrawable.class.getPackage().getName() + ".ExampleGLDrawable";
+        this.newObjectReceived(object);
+
+        object = new String[1][1];
+        object[0][0] = GLDrawable.class.getPackage().getName() + ".ExampleGLDrawable";
+        this.newObjectReceived(object);
+
+        object = new String[1][1];
+        object[0][0] = GLDrawable.class.getPackage().getName() + ".ExampleGLDrawable";
+        this.newObjectReceived(object);
+
+        object = new String[1][1];
+        object[0][0] = GLDrawable.class.getPackage().getName() + ".ExampleGLDrawable";
+        this.newObjectReceived(object);
+
+        object = new String[1][1];
+        object[0][0] = GLDrawable.class.getPackage().getName() + ".ExampleGLDrawable";
         this.newObjectReceived(object);
 
         gl.glEnable(GL3.GL_DEPTH_TEST);
