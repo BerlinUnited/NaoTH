@@ -13,6 +13,7 @@ import de.naoth.rc.opengl.representations.GLCache;
 import de.naoth.rc.opengl.representations.Primitive;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -25,9 +26,7 @@ public class Scene implements GLComplex {
 
     protected ConcurrentLinkedQueue<GLDrawable2> drawableBuffer;
 
-    GLCache glCache;
-
-    private final String pathToGLSL = System.getProperty("user.dir").replaceAll("\\\\", "/") + "/src/de/naoth/rc/opengl/glsl/";
+    protected GLCache glCache;
 
     public Scene(GL3 gl, GLCache glCache, ConcurrentLinkedQueue<GLObject> displayQueue) {
         this.gl = gl;
@@ -58,11 +57,24 @@ public class Scene implements GLComplex {
                             Primitive[] toCreate = newDrawable.getPrimitives();
 
                             for (Primitive each : toCreate) {
-                                if (each.texture == null) {
-                                    glCache.put(each.id, new GLModel(gl, each.mesh, glCache.getShader(each.shader)));
-                                } else {
-                                    glCache.put(each.id, new GLTexturedModel(gl, each.texture, each.mesh, glCache.getShader(each.shader)));
+                                GLObject newModel;
+                                
+                                Shader shader = glCache.getShader(each.shader);
+                                if(shader == null) {
+                                    System.err.println("Shader " + each.shader + " is not registered!");
                                 }
+                                
+                                
+                                if (each.texture == null) {
+                                    newModel = new GLModel(gl, each.mesh, shader);
+                                } else {
+                                    newModel = new GLTexturedModel(gl, each.texture, each.mesh, shader);
+                                }
+                                //set model properties as shader uniforms
+                                for(Entry<String, Object> property: each.properties.entrySet()) {
+                                    newModel.setShaderUniform(property.getKey(), property.getValue());
+                                }
+                                glCache.put(each.id, newModel);
                             }
                             drawableBuffer.add(newDrawable);
                         }

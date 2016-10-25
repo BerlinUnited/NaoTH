@@ -2,6 +2,7 @@ package de.naoth.rc.opengl.model;
 
 import de.naoth.rc.opengl.Shader;
 import de.naoth.rc.opengl.representations.Matrix4;
+import java.util.Map;
 
 public interface GLObject {
     
@@ -22,6 +23,8 @@ public interface GLObject {
     public Shader getShader();
     
     public void setShaderUniform(String name, Object object);
+    
+    public Map<String, Object> getShaderUniforms();
     
     public boolean isReady();
 }

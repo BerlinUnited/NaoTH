@@ -276,7 +276,7 @@ final class GLEventListenerImpl implements GLEventListener, ObjectListener<Strin
         standardModelShader.setGlobalUniform("light.position", new float[]{0f, 50f, 0f});
         standardModelShader.setGlobalUniform("light.intensities", new float[]{1f, 1f, 1f});
 
-        this.glCache.putShader("ModelShader", standardModelShader);
+        this.glCache.putShader("ColorShader", standardModelShader);
         this.glCache.putShader("TexturedModelShader", standardTexturedModelShader);
 
         this.dynamicScene = new Scene(gl, glCache, dynamicDisplayQueue);
@@ -284,6 +284,10 @@ final class GLEventListenerImpl implements GLEventListener, ObjectListener<Strin
 
         String[][] object = new String[1][1];
         object[0][0] = GLDrawable2.class.getPackage().getName() + ".Field";
+        this.newObjectReceived(object);
+        
+        object = new String[1][1];
+        object[0][0] = GLDrawable2.class.getPackage().getName() + ".Head";
         this.newObjectReceived(object);
 
         gl.glEnable(GL3.GL_DEPTH_TEST);

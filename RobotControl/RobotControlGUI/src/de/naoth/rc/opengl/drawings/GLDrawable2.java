@@ -11,17 +11,20 @@ import de.naoth.rc.opengl.representations.Primitive;
  *
  * @author robert
  */
-public abstract class GLDrawable2 {
+public class GLDrawable2 {
+    
+    public String id;
     
     protected Primitive[] primitives = null;
     
     protected String pathToRES = System.getProperty("user.dir").replaceAll("\\\\", "/") + "/src/de/naoth/rc/opengl/res/";  
     
-    public Primitive[] getPrimitives() {
-        return primitives;
+    public GLDrawable2(String id, int number) {
+        this.id = id;
+        this.primitives = new Primitive[number];
     }
     
-    public void update() {
-        
-    }    
+    public Primitive[] getPrimitives() {
+        return primitives;
+    } 
 }

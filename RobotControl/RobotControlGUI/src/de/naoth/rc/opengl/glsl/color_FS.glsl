@@ -7,15 +7,16 @@ uniform struct Light {
    vec3 intensities; //color of the light
 } light;
 
+uniform vec4 color;
+
 in vec3 fragNormal;
 in vec3 fragVert;
-
 
 out vec4 finalColor;
 
 void main()
 {
-    vec4 vertexColor = vec4(0.0f, 0.0f, 1.0f, 1.0f);
+    vec4 vertexColor = color;//vec4(1.0f,1.0f,1.0f,1.0f);
     //calculate normal in world coordinates
     mat3 normalMatrix = transpose(inverse(mat3(modelMatrix)));
     vec3 normal = normalize(normalMatrix * fragNormal);

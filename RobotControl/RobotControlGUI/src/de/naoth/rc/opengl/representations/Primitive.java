@@ -5,9 +5,10 @@
  */
 package de.naoth.rc.opengl.representations;
 
-import de.naoth.rc.opengl.Shader;
 import de.naoth.rc.opengl.file.GLData;
 import de.naoth.rc.opengl.file.Texture;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *
@@ -25,7 +26,11 @@ public class Primitive {
     
     public String shader = null;
     
+    public Map<String, Object> properties;
+    
     public Primitive(String id, GLData mesh, String shader) {
+        this.properties = new HashMap();
+        
         this.id = id;
         this.mesh = mesh;
         this.shader = shader;
@@ -40,5 +45,5 @@ public class Primitive {
     public Primitive(String id, GLData mesh, String shader, Matrix4 offset, Texture texture) {
         this(id, mesh, shader, offset);
         this.texture = texture;
-    }    
+    }
 }

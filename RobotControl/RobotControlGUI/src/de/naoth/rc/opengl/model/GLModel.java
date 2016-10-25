@@ -139,7 +139,6 @@ public class GLModel implements GLObject{
     @Override
     public void bindShader(){
         this.shader.bind(gl);
-
         for (Map.Entry<String, Object> entry: this.shaderUniforms.entrySet()) {
             shader.setUniform(gl, entry.getKey(), entry.getValue());
         }
@@ -158,5 +157,10 @@ public class GLModel implements GLObject{
     @Override
     public Shader getShader() {
        return this.shader;
+    }
+    
+    @Override
+    public Map<String, Object> getShaderUniforms() {
+        return this.shaderUniforms;
     }
 }

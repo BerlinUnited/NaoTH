@@ -5,7 +5,7 @@ package de.naoth.rc.manager;
 
 import de.naoth.rc.core.manager.AbstractManagerPlugin;
 import de.naoth.rc.opengl.drawings.GLDrawable2;
-import de.naoth.rc.server.Command;
+import de.naoth.rc.server.Command; 
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 
 @PluginImplementation

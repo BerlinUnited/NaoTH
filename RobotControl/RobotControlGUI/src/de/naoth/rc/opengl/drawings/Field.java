@@ -28,9 +28,8 @@ public class Field extends GLDrawable2 {
     int yLengthHalf = yLength / 2 + boundary;    
     
     public Field(String[] args) {
-        
-        super.primitives = new Primitive[1];
-        
+        super("field", 1);
+                
         //Draw texture        
         Drawable field2D = new de.naoth.rc.drawings.FieldDrawingSPL2013();
 

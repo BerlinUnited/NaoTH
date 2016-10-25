@@ -6,6 +6,7 @@ import com.jogamp.opengl.GL3;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 public class GLClone implements GLObject {
 
@@ -26,8 +27,6 @@ public class GLClone implements GLObject {
         this.shader = shader;
 
         this.modelMatrix = new Matrix4();
-
-        this.shaderUniforms.put("modelMatrix", modelMatrix);
     }
     
     public GLClone(GL3 gl, GLObject model) {
@@ -39,6 +38,10 @@ public class GLClone implements GLObject {
 
         this.modelMatrix = new Matrix4();
 
+        for (Entry<String, Object> entry : model.getShaderUniforms().entrySet()) {
+            shaderUniforms.put(entry.getKey(), entry.getValue());            
+        }
+        
         this.shaderUniforms.put("modelMatrix", modelMatrix);
     }
 
@@ -84,7 +87,7 @@ public class GLClone implements GLObject {
 
     @Override
     public void unbindShader() {
-        this.shader.unbind(gl);
+        model.unbindShader();
     }
 
     @Override
@@ -95,5 +98,10 @@ public class GLClone implements GLObject {
     @Override
     public Shader getShader() {
        return this.shader;
+    }
+
+    @Override
+    public Map<String, Object> getShaderUniforms() {
+        return this.shaderUniforms;
     }
 }
