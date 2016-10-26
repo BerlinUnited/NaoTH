@@ -12,7 +12,7 @@ import net.xeoh.plugins.base.annotations.PluginImplementation;
 public class GLViewerSceneManagerImpl extends AbstractManagerPlugin<String[][]>
     implements GLViewerSceneManager {
 
-    private final String drawablePackageName = GLDrawable.class.getPackage().getName();
+    private final String drawablePackageName = GLDrawable.class.getPackage().getName()+".";
 
     @Override
     public String[][] convertByteArrayToType(byte[] result) throws IllegalArgumentException {
@@ -27,7 +27,7 @@ public class GLViewerSceneManagerImpl extends AbstractManagerPlugin<String[][]>
             if (!str.isEmpty()) {
                 String[] tokens = str.split(" ");
                 
-                tokens[0] = drawablePackageName + tokens[0];
+                tokens[0] = drawablePackageName + tokens[1];
                 
                 scene[i] = tokens;
             }

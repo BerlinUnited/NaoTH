@@ -253,6 +253,7 @@ final class GLEventListenerImpl implements GLEventListener, ObjectListener<Strin
     @Override
     public void newObjectReceived(String[][] object) {
         for (String[] obj : object) {
+            //System.out.println("new Object: " + obj[0]);
             newObjectReceived.add(obj);
         }
     }
@@ -285,11 +286,24 @@ final class GLEventListenerImpl implements GLEventListener, ObjectListener<Strin
         String[][] object = new String[1][1];
         object[0][0] = GLDrawable.class.getPackage().getName() + ".Field";
         this.newObjectReceived(object);
-
+        /*
         object = new String[1][1];
         object[0][0] = GLDrawable.class.getPackage().getName() + ".Head";
         this.newObjectReceived(object);
+        
+        object = new String[1][1];
+        object[0][0] = GLDrawable.class.getPackage().getName() + ".Torso";
+        this.newObjectReceived(object);
+        
+        object = new String[1][1];
+        object[0][0] = GLDrawable.class.getPackage().getName() + ".LBicep";
+        this.newObjectReceived(object);
 
+        object = new String[1][1];
+        object[0][0] = GLDrawable.class.getPackage().getName() + ".LForeArm";
+        this.newObjectReceived(object);
+         */
+ /*
         object = new String[1][1];
         object[0][0] = GLDrawable.class.getPackage().getName() + ".ExampleGLDrawable";
         this.newObjectReceived(object);
@@ -372,7 +386,7 @@ final class GLEventListenerImpl implements GLEventListener, ObjectListener<Strin
         object = new String[1][1];
         object[0][0] = GLDrawable.class.getPackage().getName() + ".ExampleGLDrawable";
         this.newObjectReceived(object);
-
+         */
         gl.glEnable(GL3.GL_DEPTH_TEST);
 
         camera = new Camera(Camera.FOCUS_MODE, camPos, new Point3f(0, 0, 0), new Point3f(0, 1, 0), canvas.getWidth(), canvas.getHeight());
@@ -397,11 +411,14 @@ final class GLEventListenerImpl implements GLEventListener, ObjectListener<Strin
 
     @Override
     public void display(GLAutoDrawable drawable) {
-
-        for (String[] each : newObjectReceived) {
-            dynamicScene.add(each);
+        if (!newObjectReceived.isEmpty()) {
+            this.dynamicScene.clean();
+            this.dynamicDisplayQueue.clear();
+            for (String[] each : newObjectReceived) {
+                dynamicScene.add(each);
+            }
+            newObjectReceived.clear();
         }
-        newObjectReceived.clear();
 
         gl.glEnable(GL3.GL_BLEND);
         gl.glBlendFunc(GL3.GL_SRC_ALPHA, GL3.GL_ONE_MINUS_SRC_ALPHA);

@@ -175,4 +175,10 @@ public class Matrix4 {
     	return new Matrix4(this.matrix.clone());
     }
     
+    public void transpose() {
+        float[] tempMat = new float[16];
+        FloatUtil.transposeMatrix(this.matrix, tempMat);
+        this.matrix = tempMat;
+    }
+    
 }
