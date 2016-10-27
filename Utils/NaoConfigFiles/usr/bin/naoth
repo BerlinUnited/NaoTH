@@ -5,7 +5,7 @@ PID="/tmp/cognition.pid"
 case "$1" in
   start)
     if [ -f "$PID" ]; then
-      OLDPID=`cat /tmp/cognition.pid`
+      OLDPID=`cat $PID`
       echo "old pid is $OLDPID"
       kill -0 $OLDPID
       if [ "$?" -eq 0 ]; then
@@ -28,10 +28,25 @@ case "$1" in
     ;;
   stop)
     echo "killing naoth cognition processes"
-    # send TERM-Signal for 5 secdonds after that send KILL-Signal for 10 seconds
-    start-stop-daemon --stop --quiet --retry TERM/5/KILL/10 --name naoth
+    # first try to kill naoth based on the PID file
+    if [ -f "$PID" ]; then
+      OLDPID=`cat $PID`
+      kill $OLDPID
+      sleep 1
+    fi
+    # ... afterwards kill all existing naoth processes (and exclude this script!)
+    PIDS=`pidof -x -o %PPID naoth`
+    if [[ ! -z $PIDS ]]; then
+      kill $PIDS  # send TERM signal
+      sleep 5
+      # if there are still existing naoth instances, kill them "hard"
+      PIDS=`pidof -x -o %PPID naoth`
+      if [[ ! -z $PIDS ]]; then
+        kill -9 $PIDS  # send KILL signal
+      fi
+    fi
+    # remove PID-file
     rm $PID
-
     ;;
   restart)
     $0 stop
@@ -39,7 +54,7 @@ case "$1" in
     $0 start
     ;;
   *)
-    echo "Usage: /etc/init.d/naoqi {start|stop|restart}"
+    echo "Usage: /etc/init.d/naoth {start|stop|restart}"
     exit 1
     ;;
 
