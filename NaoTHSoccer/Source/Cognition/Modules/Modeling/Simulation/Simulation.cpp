@@ -148,7 +148,7 @@ void Simulation::simulateConsequences(
   // virtual ultrasound obstacle line
   Math::LineSegment obstacleLine(getRobotPose() * Vector2d(400, 200), getRobotPose() * Vector2d(400, -200));
   // now generate predictions and categorize
-  for(size_t j=0; j < theParameters.numParticles; j++) 
+  for(size_t j=0; j < static_cast<size_t>(theParameters.numParticles); j++)
   {
     // predict and calculate shoot line
     Vector2d globalBallEndPosition = getRobotPose() * action.predict(getBallModel().positionPreview);
@@ -238,7 +238,7 @@ void Simulation::simulateConsequences(
     {
       category = OWNGOAL;
     }
-    //Opponent Groundline Out - Ball einen Meter hinter Roboter mind anstoß höhe. jeweils seite wo ins ausgeht
+    //Opponent Groundline Out - Ball einen Meter hinter Roboter mind anstoï¿½ hï¿½he. jeweils seite wo ins ausgeht
     else if(globalBallEndPosition.x > getFieldInfo().xPosOpponentGroundline)
     {
       category = OPPOUT;
