@@ -102,8 +102,19 @@ public class SimsparkMonitor extends Simspark {
             List<TeamCommMessage> c = new ArrayList<>();
             ByteBuffer readBuffer = ByteBuffer.allocateDirect(SPLMessage.SPL_STANDARD_MESSAGE_SIZE);
             readBuffer.order(ByteOrder.LITTLE_ENDIAN);
+            // iterate over available messages
             for (Object object : messages) {
-                String message = (String) object;
+                List<Object> msg_list = (List<Object>) object;
+                // retrieve additional message infos
+                int side = 0; String ip = "127.0.0.1";
+                for (Object info : msg_list.subList(1, msg_list.size())) {
+                    switch(((List<String>)info).get(0)) {
+                        // 0 - None, 1 - left, 2 - right
+                        case "side": side = Integer.parseInt(((List<String>)info).get(1)); break;
+                        case "ip": ip = ((List<String>)info).get(1); break;
+                    }
+                }
+                String message = (String) msg_list.get(0);
                 try {
                     byte[] b = Base64.getDecoder().decode(message);
                     readBuffer.clear();
@@ -112,9 +123,10 @@ public class SimsparkMonitor extends Simspark {
                     SPLMessage spl = new SPLMessage(readBuffer);
                     c.add(new TeamCommMessage(
                         System.currentTimeMillis(),
-                        spl.teamNum + "." + spl.playerNum,
+                        // see SimSparkController.cpp, ~line: 280, "calculate debug communicaiton port"
+                        String.format("%s:%d", ip, ((side==1?5400:5500)+spl.playerNum)),
                         spl,
-                        spl.teamNum == 4)
+                        spl.teamNum == 4) // TOOD: can we set anywhere our team number?!?
                     );
                 } catch (Exception ex) {
                     Logger.getLogger(SimsparkMonitor.class.getName()).log(Level.SEVERE, null, ex);
