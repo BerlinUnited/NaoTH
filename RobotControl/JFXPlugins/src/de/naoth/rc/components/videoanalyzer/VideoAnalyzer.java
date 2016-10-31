@@ -8,6 +8,7 @@ package de.naoth.rc.components.videoanalyzer;
 import de.naoth.rc.RobotControl;
 import de.naoth.rc.core.dialog.AbstractJFXDialog;
 import de.naoth.rc.core.dialog.DialogPlugin;
+import de.naoth.rc.core.dialog.RCDialog;
 import de.naoth.rc.core.manager.SwingCommandExecutor;
 import de.naoth.rc.logmanager.LogFileEventManager;
 import java.io.Serializable;
@@ -28,6 +29,7 @@ import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 public class VideoAnalyzer extends AbstractJFXDialog
 {
 
+  @RCDialog(category = "Log", name = "VideoAnalyzer")
   @PluginImplementation
   public static class Plugin extends DialogPlugin<VideoAnalyzer>
   {
