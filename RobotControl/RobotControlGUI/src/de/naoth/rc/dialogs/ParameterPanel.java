@@ -8,6 +8,7 @@ package de.naoth.rc.dialogs;
 import de.naoth.rc.RobotControl;
 import de.naoth.rc.core.dialog.AbstractDialog;
 import de.naoth.rc.core.dialog.DialogPlugin;
+import de.naoth.rc.core.dialog.RCDialog;
 import de.naoth.rc.core.manager.ObjectListener;
 import de.naoth.rc.core.manager.SwingCommandExecutor;
 import de.naoth.rc.server.Command;
@@ -39,6 +40,7 @@ import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 public class ParameterPanel extends AbstractDialog
 {
 
+  @RCDialog(category = "Configure", name = "Parameter")
   @PluginImplementation
   public static class Plugin extends DialogPlugin<ParameterPanel>
   {

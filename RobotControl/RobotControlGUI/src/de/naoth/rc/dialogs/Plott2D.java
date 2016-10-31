@@ -11,6 +11,7 @@ import de.naoth.rc.components.PNGExportFileType;
 import de.naoth.rc.components.PlainPDFExportFileType;
 import de.naoth.rc.core.dialog.AbstractDialog;
 import de.naoth.rc.core.dialog.DialogPlugin;
+import de.naoth.rc.core.dialog.RCDialog;
 import de.naoth.rc.core.manager.ObjectListener;
 import de.naoth.rc.manager.GenericManagerFactory;
 import de.naoth.rc.manager.PlotDataManagerImpl;
@@ -34,6 +35,7 @@ import org.freehep.util.export.ExportDialog;
  */
 public class Plott2D extends AbstractDialog {
 
+    @RCDialog(category = "View", name = "Plot 2D")
     @PluginImplementation
     public static class Plugin extends DialogPlugin<Plott2D> {
 

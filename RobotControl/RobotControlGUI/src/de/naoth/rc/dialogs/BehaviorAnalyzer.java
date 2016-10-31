@@ -6,6 +6,7 @@ package de.naoth.rc.dialogs;
 
 import de.naoth.rc.Helper;
 import de.naoth.rc.core.dialog.AbstractDialog;
+import de.naoth.rc.core.dialog.RCDialog;
 import de.naoth.rc.logmanager.LogDataFrame;
 import de.naoth.rc.logmanager.LogFileEventManager;
 import java.awt.event.MouseWheelEvent;
@@ -27,6 +28,7 @@ import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
  *
  * @author Heinrich
  */
+@RCDialog(category = "Log", name = "BehaviorAnalyzer")
 @PluginImplementation
 public class BehaviorAnalyzer extends AbstractDialog 
 {

@@ -12,6 +12,8 @@ import de.naoth.rc.Helper;
 import de.naoth.rc.RobotControl;
 import de.naoth.rc.components.ExtendedFileChooser;
 import de.naoth.rc.core.dialog.AbstractDialog;
+import de.naoth.rc.core.dialog.DialogPlugin;
+import de.naoth.rc.core.dialog.RCDialog;
 import de.naoth.rc.core.manager.ObjectListener;
 import de.naoth.rc.core.manager.SwingCommandExecutor;
 import de.naoth.rc.scp.Scp;
@@ -38,14 +40,16 @@ import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
  *
  * @author thomas
  */
-@PluginImplementation
 public class LogfileRecorder extends AbstractDialog
 {
-
-  @InjectPlugin
-  public RobotControl parent;
-  @InjectPlugin
-  public static SwingCommandExecutor commandExecutor;
+  @RCDialog(category = "Log", name = "Recorder")
+  @PluginImplementation
+  public static class Plugin extends DialogPlugin<LogfileRecorder> {
+    @InjectPlugin
+    static public RobotControl parent;
+    @InjectPlugin
+    static public SwingCommandExecutor commandExecutor;
+  }
   
   //private MessageServer server;
   private LoggerItem selectedLog;
@@ -168,13 +172,13 @@ public class LogfileRecorder extends AbstractDialog
       .addArg("off");
 
     //server.executeSingleCommand(this, cmdOff);
-    commandExecutor.executeCommand(new DefaultHandler(), cmdOff);
+    Plugin.commandExecutor.executeCommand(new DefaultHandler(), cmdOff);
     
     // close file on robot
     Command cmdClose = selectedLog.getCommand()
       .addArg("close");
     //server.executeSingleCommand(this, cmdClose);
-    commandExecutor.executeCommand(new DefaultHandler(), cmdClose);
+    Plugin.commandExecutor.executeCommand(new DefaultHandler(), cmdClose);
   }
 
   /** This method is called from within the constructor to
@@ -335,13 +339,13 @@ public class LogfileRecorder extends AbstractDialog
     private void btNewActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btNewActionPerformed
     {//GEN-HEADEREND:event_btNewActionPerformed
 
-      if(parent.checkConnected())
+      if(Plugin.parent.checkConnected())
       {
         Command openCMD = selectedLog.getCommand()
           .addArg("open", txtTempFile.getText());
         
         //server.executeSingleCommand(this, openCMD);
-        commandExecutor.executeCommand(new UpdateLogListHandler(), openCMD);
+        Plugin.commandExecutor.executeCommand(new UpdateLogListHandler(), openCMD);
         
         btNew.setEnabled(false);
         btRecord.setEnabled(true);
@@ -357,7 +361,7 @@ public class LogfileRecorder extends AbstractDialog
     private void btRecordActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btRecordActionPerformed
     {//GEN-HEADEREND:event_btRecordActionPerformed
 
-      if(parent.checkConnected())
+      if(Plugin.parent.checkConnected())
       {
         
         if(btRecord.isSelected() && stringSelectionPanel.getSelection().isEmpty())
@@ -375,7 +379,7 @@ public class LogfileRecorder extends AbstractDialog
           {
               Command cmdActivate = selectedLog.getCommand().addArg("deactive", item);
               //server.executeSingleCommand(this, cmdActivate);
-              commandExecutor.executeCommand(new DefaultHandler(), cmdActivate);
+              Plugin.commandExecutor.executeCommand(new DefaultHandler(), cmdActivate);
           }
 
           // active all selected items
@@ -384,7 +388,7 @@ public class LogfileRecorder extends AbstractDialog
           {
               Command cmdActivate = selectedLog.getCommand().addArg("activate", item);
               //server.executeSingleCommand(this, cmdActivate);
-              commandExecutor.executeCommand(new DefaultHandler(), cmdActivate);
+              Plugin.commandExecutor.executeCommand(new DefaultHandler(), cmdActivate);
           }
           
           // remember selected stuff
@@ -397,7 +401,7 @@ public class LogfileRecorder extends AbstractDialog
         Command cmdOnOff = selectedLog.getCommand()
           .addArg((btRecord.isSelected() ? "on" : "off"));
         //server.executeSingleCommand(this, cmdOnOff);
-        commandExecutor.executeCommand(new DefaultHandler(), cmdOnOff);
+        Plugin.commandExecutor.executeCommand(new DefaultHandler(), cmdOnOff);
         
         // disable the controls once the recording started
         if(btRecord.isSelected())
@@ -413,7 +417,7 @@ public class LogfileRecorder extends AbstractDialog
     private void btSaveActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btSaveActionPerformed
     {//GEN-HEADEREND:event_btSaveActionPerformed
 
-      if(parent.checkConnected())
+      if(Plugin.parent.checkConnected())
       {
         // get the name of the file to download
         String fileName = new File(this.txtTempFile.getText()).getName();
@@ -434,7 +438,7 @@ public class LogfileRecorder extends AbstractDialog
     private void btCloseActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btCloseActionPerformed
     {//GEN-HEADEREND:event_btCloseActionPerformed
 
-      if(parent.checkConnected())
+      if(Plugin.parent.checkConnected())
       {
         close();
 
@@ -509,7 +513,7 @@ public class LogfileRecorder extends AbstractDialog
           FileOutputStream out = new FileOutputStream(this.store);
           SftpProgressMonitor monitor = new MyProgressMonitor();
 
-          scp = new Scp(parent.getMessageServer().getAddress().getAddress().getHostAddress());
+          scp = new Scp(Plugin.parent.getMessageServer().getAddress().getAddress().getHostAddress());
           scp.c.get(name, out, monitor);
 
           out.close();

@@ -14,6 +14,7 @@ import de.naoth.rc.core.dialog.AbstractDialog;
 import de.naoth.rc.core.dialog.DialogPlugin;
 import de.naoth.rc.RobotControl;
 import de.naoth.rc.components.checkboxtree.SelectableTreeNode;
+import de.naoth.rc.core.dialog.RCDialog;
 import de.naoth.rc.core.manager.ObjectListener;
 import de.naoth.rc.core.manager.SwingCommandExecutor;
 import de.naoth.rc.core.manager.SwingCommandListener;
@@ -32,6 +33,7 @@ import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 public class DebugRequestPanel extends AbstractDialog
 {
 
+    @RCDialog(category = "Debug", name = "DebugRequest")
     @PluginImplementation
     public static class Plugin extends DialogPlugin<DebugRequestPanel>
     {

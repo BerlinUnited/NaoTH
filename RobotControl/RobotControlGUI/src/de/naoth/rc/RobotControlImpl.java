@@ -16,9 +16,7 @@ import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.io.*;
-import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -107,7 +105,7 @@ public class RobotControlImpl extends javax.swing.JFrame
     });
     
     // set up a list of all dialogs
-    this.dialogRegistry = new DialogRegistry(this, dialogsMenu);
+    this.dialogRegistry = new DialogRegistry(this, this.menuBar);
 
     
     // initialize the message server
@@ -218,7 +216,6 @@ public class RobotControlImpl extends javax.swing.JFrame
         resetLayoutMenuItem = new javax.swing.JMenuItem();
         jSeparator1 = new javax.swing.JSeparator();
         exitMenuItem = new javax.swing.JMenuItem();
-        dialogsMenu = new javax.swing.JMenu();
         helpMenu = new javax.swing.JMenu();
         aboutMenuItem = new javax.swing.JMenuItem();
 
@@ -326,10 +323,6 @@ public class RobotControlImpl extends javax.swing.JFrame
 
         menuBar.add(mainControlMenu);
 
-        dialogsMenu.setMnemonic('d');
-        dialogsMenu.setText("Dialogs");
-        menuBar.add(dialogsMenu);
-
         helpMenu.setMnemonic('h');
         helpMenu.setText("Help");
 
@@ -341,6 +334,9 @@ public class RobotControlImpl extends javax.swing.JFrame
             }
         });
         helpMenu.add(aboutMenuItem);
+
+        helpMenu.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
+        menuBar.add(javax.swing.Box.createHorizontalGlue());
 
         menuBar.add(helpMenu);
 
@@ -511,7 +507,6 @@ public class RobotControlImpl extends javax.swing.JFrame
     private javax.swing.JMenuItem aboutMenuItem;
     private javax.swing.JButton btManager;
     private javax.swing.JMenuItem connectMenuItem;
-    private javax.swing.JMenu dialogsMenu;
     private javax.swing.JMenuItem disconnectMenuItem;
     private javax.swing.JMenuItem exitMenuItem;
     private javax.swing.JMenu helpMenu;

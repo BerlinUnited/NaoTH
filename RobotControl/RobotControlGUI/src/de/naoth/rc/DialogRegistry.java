@@ -17,6 +17,7 @@ import bibliothek.gui.dock.common.perspective.CPerspective;
 import bibliothek.gui.dock.common.perspective.CStackPerspective;
 import bibliothek.gui.dock.common.perspective.SingleCDockablePerspective;
 import bibliothek.gui.dock.common.theme.ThemeMap;
+import de.naoth.rc.core.dialog.RCDialog;
 import java.awt.DefaultKeyboardFocusManager;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
@@ -25,8 +26,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
+import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
 
@@ -37,24 +40,26 @@ import javax.swing.KeyStroke;
 public class DialogRegistry {
 
     private JFrame parent = null;
-    private final JMenu menu;
     private final CControl control;
 
+    private final JMenuBar menuBar;
+    
+    private final HashMap<String, JMenu> menus = new HashMap<String, JMenu>();
     private final ArrayList<String> allDialogNames = new ArrayList<String>();
 
-    public DialogRegistry(JFrame parent, JMenu menu) {
+    public DialogRegistry(JFrame parent, JMenuBar menuBar) {
         this.parent = parent;
-        this.menu = menu;
+        this.menuBar = menuBar;
 
         this.control = new CControl(this.parent);
         control.setTheme(ThemeMap.KEY_ECLIPSE_THEME);
         this.parent.add(control.getContentArea());
-     
+        
         // install a global tab listener
         DefaultKeyboardFocusManager.getCurrentKeyboardFocusManager().
             addKeyEventPostProcessor(new TabKeyController(this.control));
     }
-
+    
     private class DialogFactory implements SingleCDockableFactory {
 
         private final Dialog dialog;
@@ -109,25 +114,47 @@ public class DialogRegistry {
     }
 
     public void registerDialog(final Dialog dialog) {
-        String dialogName = dialog.getDisplayName();
+        
+        String name = dialog.getDisplayName();
+        String category = dialog.getCategory();
 
         // register a factory
-        this.control.addSingleDockableFactory(dialogName, new DialogFactory(dialog));
+        this.control.addSingleDockableFactory(name, new DialogFactory(dialog));
         
-        // register a menu entry 
-        if (this.menu != null) {
-            int insertPoint = Collections.binarySearch(allDialogNames, dialogName);
-            if (insertPoint < 0) {
-                JMenuItem newItem = new JMenuItem(dialogName);
-                newItem.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        dockDialog(dialog);
-                    }
-                });
-                menu.insert(newItem, -(insertPoint + 1));
-                allDialogNames.add(-(insertPoint + 1), dialogName);
+        
+        // process anotation RCDialog
+        if (dialog.getClass().isAnnotationPresent(RCDialog.class)) {
+            RCDialog annotation = (RCDialog)dialog.getClass().getAnnotation(RCDialog.class);
+            
+            if(!annotation.name().isEmpty()) {
+                name = annotation.name();
             }
+            
+            if(!annotation.category().isEmpty()) {
+                category = annotation.category();
+            }
+        } 
+        
+        // create a new submenu if necessary
+        JMenu menu = this.menus.get(category);
+        if(menu == null) {
+            menu = new JMenu(category, false);
+            this.menus.put(category, menu);
+            menuBar.add(menu,1);
+        }
+        
+        // register a menu entry
+        int insertPoint = Collections.binarySearch(allDialogNames, name);
+        if (insertPoint < 0) {
+            JMenuItem newItem = new JMenuItem(name);
+            newItem.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    dockDialog(dialog);
+                }
+            });
+            menu.insert(newItem, -(insertPoint + 1));
+            allDialogNames.add(-(insertPoint + 1), name);
         }
     }//end registerDialog
 
