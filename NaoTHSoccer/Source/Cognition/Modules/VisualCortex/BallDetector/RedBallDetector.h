@@ -56,7 +56,7 @@ BEGIN_DECLARE_MODULE(RedBallDetector)
   REQUIRE(FieldColorPerceptTop)
   REQUIRE(FieldInfo)
   REQUIRE(FrameInfo)
-  REQUIRE(GoalPostHistograms)
+  REQUIRE(GoalPostHistograms) // is this still needed?
 
   PROVIDE(BallPercept)
   PROVIDE(BallPerceptTop)
