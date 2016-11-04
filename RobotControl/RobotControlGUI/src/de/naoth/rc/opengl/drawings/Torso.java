@@ -64,5 +64,16 @@ public class Torso extends GLDrawable {
 
         super.primitives[2].properties.put("color", secondaryColor);
     }
+    
+    public void update(String args[]) {
+        Matrix4 offset = new Matrix4();//this.parseTransform3D(args, 2);
+        offset.scale(0.2f, 0.2f, 0.2f);
+        offset.translate(Float.parseFloat(args[2]), Float.parseFloat(args[3]), Float.parseFloat(args[4]));
+        
+        
+        super.primitives[0].offset = offset;
+        super.primitives[1].offset = offset;
+        super.primitives[2].offset = offset;
+    }
 
 }

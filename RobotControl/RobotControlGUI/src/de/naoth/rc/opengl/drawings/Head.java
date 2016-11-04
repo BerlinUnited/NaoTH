@@ -9,8 +9,6 @@ import de.naoth.rc.opengl.file.GLData;
 import de.naoth.rc.opengl.file.ObjFile;
 import de.naoth.rc.opengl.representations.Matrix4;
 import de.naoth.rc.opengl.representations.Primitive;
-import java.util.zip.DataFormatException;
-import javax.media.j3d.Transform3D;
 
 /**
  *
@@ -26,23 +24,21 @@ public class Head extends GLDrawable {
 
         GLData mesh;
         Matrix4 offset;
-
-        /**
-         * *********************
-         * load head *********************
-         */
-        mesh = new ObjFile(super.pathToRES, "head.obj").buildGLData();
-
+        
         //Offset
         offset = new Matrix4();
+
+        /**
+         * load head
+         */
+        mesh = new ObjFile(super.pathToRES, "head.obj").buildGLData();
 
         super.primitives[0] = new Primitive("head", mesh, "ColorShader", offset);
 
         super.primitives[0].properties.put("color", primaryColor);
 
         /**
-         * *********************
-         * load colored head piece *********************
+         * load colored head piece
          */
         mesh = new ObjFile(super.pathToRES, "head_top.obj").buildGLData();
 
@@ -53,13 +49,16 @@ public class Head extends GLDrawable {
 
     @Override
     public void update(String[] args) {
+        /*
         for (String arg : args) {
             System.out.print(arg + " ");
         }
         System.out.println();
+        */
 
-        Matrix4 offset = this.parseTransform3D(args, 2);
-        //offset.translate(Float.parseFloat(args[2]), Float.parseFloat(args[3]), Float.parseFloat(args[4]));
+        Matrix4 offset = new Matrix4();//this.parseTransform3D(args, 2);
+        offset.scale(0.2f, 0.2f, 0.2f);
+        offset.translate(Float.parseFloat(args[2]), Float.parseFloat(args[3]), Float.parseFloat(args[4]));
        
         super.primitives[0].offset = offset;
         super.primitives[1].offset = offset;
@@ -84,9 +83,7 @@ public class Head extends GLDrawable {
         m[15] = 1;
         Matrix4 t3d = new Matrix4(m);
         
-        //t3d.transpose();
         return t3d;
-
     }
 
 }

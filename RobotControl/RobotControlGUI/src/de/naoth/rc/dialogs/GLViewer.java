@@ -282,111 +282,65 @@ final class GLEventListenerImpl implements GLEventListener, ObjectListener<Strin
         this.dynamicScene = new Scene(gl, glCache, dynamicDisplayQueue);
         this.staticScene = new Scene(gl, glCache, staticDisplayQueue);
 
-        //Test messages
-        String[][] object = new String[1][1];
-        object[0][0] = GLDrawable.class.getPackage().getName() + ".Field";
-        this.newObjectReceived(object);
-        /*
-        object = new String[1][1];
-        object[0][0] = GLDrawable.class.getPackage().getName() + ".Head";
-        this.newObjectReceived(object);
-        
-        object = new String[1][1];
-        object[0][0] = GLDrawable.class.getPackage().getName() + ".Torso";
-        this.newObjectReceived(object);
-        
-        object = new String[1][1];
-        object[0][0] = GLDrawable.class.getPackage().getName() + ".LBicep";
-        this.newObjectReceived(object);
+        // test messages
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                double x = 0;
 
-        object = new String[1][1];
-        object[0][0] = GLDrawable.class.getPackage().getName() + ".LForeArm";
-        this.newObjectReceived(object);
-         */
- /*
-        object = new String[1][1];
-        object[0][0] = GLDrawable.class.getPackage().getName() + ".ExampleGLDrawable";
-        this.newObjectReceived(object);
+                while (true) {
+                    String[][] messages = new String[1][];
+                    String[] message;
+                    int i = 0;
+                    /*
+                    x=x+0.01;
+                    message = new String[]{GLDrawable.class.getPackage().getName() + ".Field"};
+                    messages[i++] = message;
 
-        object = new String[1][1];
-        object[0][0] = GLDrawable.class.getPackage().getName() + ".ExampleGLDrawable";
-        this.newObjectReceived(object);
+                    message = new String[]{GLDrawable.class.getPackage().getName() + ".Torso", "Torso", String.valueOf(g((double) x)), String.valueOf(f((double) x)+6), "3"};
+                    messages[i++] = message;
 
-        object = new String[1][1];
-        object[0][0] = GLDrawable.class.getPackage().getName() + ".ExampleGLDrawable";
-        this.newObjectReceived(object);
+                    message = new String[]{GLDrawable.class.getPackage().getName() + ".LBicep", "LBicep", "1.4", "2", "6"};
+                    messages[i++] = message;
 
-        object = new String[1][1];
-        object[0][0] = GLDrawable.class.getPackage().getName() + ".ExampleGLDrawable";
-        this.newObjectReceived(object);
+                    message = new String[]{GLDrawable.class.getPackage().getName() + ".LForeArm", "LForeArm", "1", "3", "2"};
+                    messages[i++] = message;
 
-        object = new String[1][1];
-        object[0][0] = GLDrawable.class.getPackage().getName() + ".ExampleGLDrawable";
-        this.newObjectReceived(object);
+                    message = new String[]{GLDrawable.class.getPackage().getName() + ".Head", "Head" , String.valueOf(f((double) x)), "2", String.valueOf(g((double) x))};
+                    messages[i++] = message;
+                    
+                    message = new String[]{GLDrawable.class.getPackage().getName() + ".ExampleGLDrawable"};
+                    messages[i++] = message;
+                     */
+                    message = new String[]{GLDrawable.class.getPackage().getName() + ".Field"};
+                    messages[i++] = message;
+                    
+                    newObjectReceived(messages);
 
-        object = new String[1][1];
-        object[0][0] = GLDrawable.class.getPackage().getName() + ".ExampleGLDrawable";
-        this.newObjectReceived(object);
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException ex) {
+                    }
+                    break;
+                }
 
-        object = new String[1][1];
-        object[0][0] = GLDrawable.class.getPackage().getName() + ".ExampleGLDrawable";
-        this.newObjectReceived(object);
-        object = new String[1][1];
-        object[0][0] = GLDrawable.class.getPackage().getName() + ".ExampleGLDrawable";
-        this.newObjectReceived(object);
+            }
 
-        object = new String[1][1];
-        object[0][0] = GLDrawable.class.getPackage().getName() + ".ExampleGLDrawable";
-        this.newObjectReceived(object);
+            public float f(double x) {
+                //double y = Math.pow((Math.cos(x)),2) + Math.pow((Math.sin(x)),2);
+                double y = Math.sin(x) * 5;
 
-        object = new String[1][1];
-        object[0][0] = GLDrawable.class.getPackage().getName() + ".ExampleGLDrawable";
-        this.newObjectReceived(object);
+                return (float) y;
+            }
 
-        object = new String[1][1];
-        object[0][0] = GLDrawable.class.getPackage().getName() + ".ExampleGLDrawable";
-        this.newObjectReceived(object);
+            public float g(double x) {
+                double y = Math.cos(x) * 5;
 
-        object = new String[1][1];
-        object[0][0] = GLDrawable.class.getPackage().getName() + ".ExampleGLDrawable";
-        this.newObjectReceived(object);
+                return (float) y;
+            }
 
-        object = new String[1][1];
-        object[0][0] = GLDrawable.class.getPackage().getName() + ".ExampleGLDrawable";
-        this.newObjectReceived(object);
+        }).start();
 
-        object = new String[1][1];
-        object[0][0] = GLDrawable.class.getPackage().getName() + ".ExampleGLDrawable";
-        this.newObjectReceived(object);
-
-        object = new String[1][1];
-        object[0][0] = GLDrawable.class.getPackage().getName() + ".ExampleGLDrawable";
-        this.newObjectReceived(object);
-
-        object = new String[1][1];
-        object[0][0] = GLDrawable.class.getPackage().getName() + ".ExampleGLDrawable";
-        this.newObjectReceived(object);
-
-        object = new String[1][1];
-        object[0][0] = GLDrawable.class.getPackage().getName() + ".ExampleGLDrawable";
-        this.newObjectReceived(object);
-
-        object = new String[1][1];
-        object[0][0] = GLDrawable.class.getPackage().getName() + ".ExampleGLDrawable";
-        this.newObjectReceived(object);
-
-        object = new String[1][1];
-        object[0][0] = GLDrawable.class.getPackage().getName() + ".ExampleGLDrawable";
-        this.newObjectReceived(object);
-
-        object = new String[1][1];
-        object[0][0] = GLDrawable.class.getPackage().getName() + ".ExampleGLDrawable";
-        this.newObjectReceived(object);
-
-        object = new String[1][1];
-        object[0][0] = GLDrawable.class.getPackage().getName() + ".ExampleGLDrawable";
-        this.newObjectReceived(object);
-         */
         gl.glEnable(GL3.GL_DEPTH_TEST);
 
         camera = new Camera(Camera.FOCUS_MODE, camPos, new Point3f(0, 0, 0), new Point3f(0, 1, 0), canvas.getWidth(), canvas.getHeight());
