@@ -299,6 +299,12 @@ bool SimSparkController::init(const std::string& modelPath, const std::string& t
   if(config.getInt("player", "PlayerNumber") == 0) {
     config.setInt("player", "PlayerNumber", theGameInfo.playerNumber);
   }
+  // if team name wasn't set by configuration -> use the name from the simulation
+  if (!config.hasKey("player", "TeamName"))
+  {
+    config.setString("player", "TeamName", theGameInfo.teamName);
+  }
+  cout << "Player number: " << theGameInfo.playerNumber << endl;
 
   theLastSenseTime = NaoTime::getNaoTimeInMilliSeconds();
   theLastActTime = theLastSenseTime;

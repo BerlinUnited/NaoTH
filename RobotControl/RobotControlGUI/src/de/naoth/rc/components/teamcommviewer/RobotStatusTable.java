@@ -378,7 +378,7 @@ public class RobotStatusTable extends javax.swing.JPanel {
                 // only for column 8 (connect button) and if it's enabled
                 if(table.getCellRenderer(row, column) instanceof ButtonRenderer && ((ButtonRenderer)table.getCellRenderer(row, column)).isEnabled()) {
                     // let RobotStatus connect to robot (MessageServer)
-                    if(!((RobotStatus)table.getValueAt(row, column)).connect()) {
+                    if(!((RobotTableModel)table.getModel()).getRobot(table.getRowSorter().convertRowIndexToModel(row)).connect()) {
                         // show dialog on error
                         JOptionPane.showMessageDialog(null, "Couldn't connect!", "Couldn't connect", JOptionPane.WARNING_MESSAGE);
                     }

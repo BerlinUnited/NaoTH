@@ -144,8 +144,19 @@ public class RobotStatus {
     public boolean connect() {
         if (!this.messageServer.isConnected()) {
             try {
-                // TODO: fix port 5401
-                this.messageServer.connect(this.ipAddress, 5401);
+                String host = this.ipAddress;
+                int port = 5401;
+                // if the ip address contains a ':', the port is included!
+                if(host.contains(":")){
+                    String[] parts = host.split(":");
+                    host = parts[0];
+                    // if we can't parse the port, ignore it
+                    try {
+                        port = Integer.parseInt(parts[1]);
+                    } catch (Exception e) {
+                    }
+                }
+                this.messageServer.connect(host, port);
             } catch (IOException ex) {
                 Logger.getLogger(RobotStatusPanel.class.getName()).log(Level.SEVERE, "Coult not connect.", ex);
                 return false;
