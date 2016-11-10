@@ -47,6 +47,7 @@ public class DynamicCanvasPanel extends javax.swing.JPanel
   private double dragOffsetX;
   private double dragOffsetY;
   private boolean antializing;
+  private boolean fitToViewport = false;
   
   private final List<Drawable> drawingList = Collections.synchronizedList(new ArrayList<Drawable>());
 
@@ -108,21 +109,24 @@ public class DynamicCanvasPanel extends javax.swing.JPanel
   int oldHeight = 0;
   private void formComponentResized(java.awt.event.ComponentEvent evt)//GEN-FIRST:event_formComponentResized
   {//GEN-HEADEREND:event_formComponentResized
-      if(oldWidth != 0 && oldHeight != 0)
-      {
-          double sw = ((double)this.getWidth()) / ((double)oldWidth);
-          double sh = ((double)this.getHeight()) / ((double)oldHeight);
-          
-          double s = (Math.abs(sh-1.0) < Math.abs(sw-1.0))? sw: sh;
-          
-          this.scale *= s;
-          this.offsetX = (int)( ((double)this.offsetX) * s +0.5);
-          this.offsetY = (int)( ((double)this.offsetY) * s +0.5);
+      if(this.fitToViewport) {
+          fitToViewport();
+      } else {
+        if(oldWidth != 0 && oldHeight != 0)
+        {
+            double sw = ((double)this.getWidth()) / ((double)oldWidth);
+            double sh = ((double)this.getHeight()) / ((double)oldHeight);
+
+            double s = (Math.abs(sh-1.0) < Math.abs(sw-1.0))? sw: sh;
+
+            this.scale *= s;
+            this.offsetX = (int)( ((double)this.offsetX) * s +0.5);
+            this.offsetY = (int)( ((double)this.offsetY) * s +0.5);
+        }
+
+        oldWidth = this.getWidth();
+        oldHeight = this.getHeight();
       }
-      
-      oldWidth = this.getWidth();
-      oldHeight = this.getHeight();
-      
       this.repaint();
   }//GEN-LAST:event_formComponentResized
 
@@ -434,7 +438,18 @@ public class DynamicCanvasPanel extends javax.swing.JPanel
   {
     this.showCoordinates = showCoordinates;
   }
+  
+  
     
   // </editor-fold>
+
+    public boolean isFitToViewport() {
+        return fitToViewport;
+    }
+
+    public void setFitToViewport(boolean fitToViewport) {
+        this.fitToViewport = fitToViewport;
+        fitToViewport();
+    }
 }//end DynamicCanvasPanel
 

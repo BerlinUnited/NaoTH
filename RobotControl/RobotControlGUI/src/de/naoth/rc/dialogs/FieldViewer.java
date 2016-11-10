@@ -42,6 +42,8 @@ import de.naoth.rc.messages.Messages.Plots;
 import de.naoth.rc.messages.Representations;
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -141,6 +143,16 @@ public class FieldViewer extends AbstractDialog
     resetView();
     this.fieldCanvas.setAntializing(btAntializing.isSelected());
     this.fieldCanvas.repaint();
+    
+    this.fieldCanvas.addMouseListener(new MouseAdapter() {
+        @Override
+        public void mouseClicked(MouseEvent e) {
+            if (e.getClickCount() == 2 && !e.isConsumed()) {
+                e.consume();
+                fieldCanvas.fitToViewport();
+            }
+        }
+    });
 
     this.strokePlot = new StrokePlot(300);
   }
@@ -163,7 +175,7 @@ public class FieldViewer extends AbstractDialog
         btClean = new javax.swing.JButton();
         cbBackground = new javax.swing.JComboBox();
         btRotate = new javax.swing.JButton();
-        btFit = new javax.swing.JButton();
+        btFitToView = new javax.swing.JToggleButton();
         btAntializing = new javax.swing.JCheckBox();
         btCollectDrawings = new javax.swing.JCheckBox();
         cbExportOnDrawing = new javax.swing.JCheckBox();
@@ -247,16 +259,16 @@ public class FieldViewer extends AbstractDialog
         });
         jToolBar1.add(btRotate);
 
-        btFit.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/freehep/swing/images/0_MoveCursor.gif"))); // NOI18N
-        btFit.setToolTipText("Fit drawings to viewport");
-        btFit.setFocusable(false);
-        btFit.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        btFit.addActionListener(new java.awt.event.ActionListener() {
+        btFitToView.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/freehep/swing/images/0_MoveCursor.gif"))); // NOI18N
+        btFitToView.setFocusable(false);
+        btFitToView.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btFitToView.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btFitToView.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btFitActionPerformed(evt);
+                btFitToViewActionPerformed(evt);
             }
         });
-        jToolBar1.add(btFit);
+        jToolBar1.add(btFitToView);
 
         btAntializing.setText("Antialiazing");
         btAntializing.setFocusable(false);
@@ -406,6 +418,10 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
 
     private void btRotateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btRotateActionPerformed
         this.fieldCanvas.setRotation(this.fieldCanvas.getRotation() + Math.PI*0.5);
+        // TODO: should this be inside the DynamicCanvasPanel?
+        if(this.fieldCanvas.isFitToViewport()) {
+            this.fieldCanvas.fitToViewport();
+        }
         this.fieldCanvas.repaint();
     }//GEN-LAST:event_btRotateActionPerformed
 
@@ -417,9 +433,9 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
         }
     }//GEN-LAST:event_btLogActionPerformed
 
-    private void btFitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btFitActionPerformed
-        fieldCanvas.fitToViewport();
-    }//GEN-LAST:event_btFitActionPerformed
+    private void btFitToViewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btFitToViewActionPerformed
+        fieldCanvas.setFitToViewport(this.btFitToView.isSelected());
+    }//GEN-LAST:event_btFitToViewActionPerformed
 
   
   final void resetView()
@@ -573,7 +589,7 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
     private javax.swing.JCheckBox btAntializing;
     private javax.swing.JButton btClean;
     private javax.swing.JCheckBox btCollectDrawings;
-    private javax.swing.JButton btFit;
+    private javax.swing.JToggleButton btFitToView;
     private javax.swing.JToggleButton btLog;
     private javax.swing.JToggleButton btReceiveDrawings;
     private javax.swing.JButton btRotate;
