@@ -57,6 +57,8 @@ public:
   void computeStrikers();
   
 protected:
+  bool isRobotDead(uint robotNumber);
+
   class Parameters: public ParameterList
   {
   public: 
