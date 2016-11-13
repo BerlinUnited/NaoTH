@@ -6,7 +6,7 @@
 
 #include "StableRoleDecision.h"
 #include <PlatformInterface/Platform.h>
-#include  <Tools/DataConversion.h>
+#include <Tools/DataConversion.h>
 
 #include <math.h>
 #include <list>
@@ -25,88 +25,79 @@ StableRoleDecision::~StableRoleDecision()
 }
 
 void StableRoleDecision::execute() {
-
-  computeStrikers();
+    getRoleDecisionModel().resetRobotStates();
+    computeStrikers();
 
 }//end execute
 
-void StableRoleDecision::computeStrikers() {
-  
-  getRoleDecisionModel().aliveRobots = *(new std::list<int>());
-  getRoleDecisionModel().deadRobots = *(new std::list<int>());
+void StableRoleDecision::computeStrikers()
+{
+    // container storing robots, which want to be striker, and their time to ball
+    std::map<unsigned int, unsigned int> possible_striker;
 
-  int firstStriker = std::numeric_limits<int>::max();
-  int secondStriker = std::numeric_limits<int>::max();
-  bool wantsToBeStriker = true;
-  if (getPlayerInfo().playerNumber == 1) {
-    wantsToBeStriker = false; //Goalie is not considered
-  }
+    // iterate over all robots(messages)
+    TeamMessage const& tm = getTeamMessage();
+    for (std::map<unsigned int, TeamMessage::Data>::const_iterator i=tm.data.begin(); i != tm.data.end(); ++i) {
+        unsigned int robotNumber = i->first;
+        const TeamMessage::Data& msg = i->second;
 
-  TeamMessage const& tm = getTeamMessage();
+        // if striker lost the ball, he gets a time bonus before he lost the ball completely ...
+        double loose_ball_bonus = msg.playerNum==getRoleDecisionModel().firstStriker?parameters.strikerBonusTime:0.0;
 
-  double ownTimeToBall = getSoccerStrategy().timeToBall;
-  // if i'm striker, i get a time bonus!
-  if (getPlayerInfo().isPlayingStriker)
-    ownTimeToBall -= 300;
+        // check if the robot is able to play and sees the ball
+        bool isRobotInactive = msg.fallen
+                || msg.isPenalized
+                || msg.ballAge < 0 //Ball hasn't been seen
+                || (msg.ballAge + getFrameInfo().getTimeSince(msg.frameInfo.getTime()) > parameters.maxBallLostTime + loose_ball_bonus); //Ball isn't fresh
 
-  for (std::map<unsigned int, TeamMessage::Data>::const_iterator i=tm.data.begin(); i != tm.data.end(); ++i) {
-    unsigned int robotNumber = i->first;
-    const TeamMessage::Data& msg = i->second;
+        // ignore "DEAD" and inactive robots
+        if(isRobotDead(robotNumber) || isRobotInactive) { continue; }
 
-    // ignore "DEAD" robots, update corresponding lists
-    if (isRobotDead(robotNumber)) { //Message is not fresh
-      getRoleDecisionModel().deadRobots.push_back((int)robotNumber);
-      continue;
-    } else {
-      getRoleDecisionModel().aliveRobots.push_back((int)robotNumber);
-    }
+        // for all active robots, which sees the ball AND previously announced to want to be striker ...
+        if (msg.wasStriker) {
+            // ... remember them as possible striker
+            possible_striker[robotNumber] = msg.timeToBall;
+        }
+    }//end for
 
-    // if striker lost the ball, he gets a time bonus before he "really" lost the ball ...
-    double loose_ball_bonus = (int)msg.playerNum==getRoleDecisionModel().firstStriker?parameters.strikerBonusTime:0.0;
+    // i want to be striker, if i'm not the goalie and i'm "active" (not fallen/panelized, see the ball)!!!
+    getRoleDecisionModel().wantsToBeStriker = !getPlayerInfo().isGoalie() && amIactive();
 
-    // if i'm "inactive", i don't want to be striker
-    if (robotNumber == getPlayerInfo().playerNumber && (msg.fallen || msg.isPenalized || 
-      msg.ballAge < 0 || msg.ballAge > parameters.maxBallLostTime + loose_ball_bonus)) {
-        wantsToBeStriker = false;
-    }
+    // if i'm striker, i get a time bonus!
+    double ownTimeToBall = getSoccerStrategy().timeToBall - (getPlayerInfo().isPlayingStriker?300:0);
 
-    // for all active robots, which sees the ball ...
-    if (!msg.fallen
-      && !msg.isPenalized
-      && msg.ballAge >= 0 //Ball has been seen
-      && msg.ballAge + getFrameInfo().getTimeSince(msg.frameInfo.getTime()) < parameters.maxBallLostTime + loose_ball_bonus) { //Ball is fresh
-
-        // ... and previously announced to want to be striker ...
-        if (msg.wasStriker) { //Decision of the current round
-          if ((int)robotNumber < firstStriker) { //If two robots want to be striker, the one with a smaller number is favoured
-            firstStriker = robotNumber;
-          }
-          else if ((int)robotNumber < secondStriker) {
-            secondStriker = robotNumber;
-          }
+    // clear for new striker decision
+    getRoleDecisionModel().resetStriker();
+    // set the new striker
+    for (auto it = possible_striker.cbegin(); it != possible_striker.cend(); ++it) {
+        //If two robots want to be striker, the one with a smaller number is favoured => is the first in the map!!
+        if(getRoleDecisionModel().firstStriker == std::numeric_limits<int>::max()) {
+            getRoleDecisionModel().firstStriker = it->first;
+        } else if (getRoleDecisionModel().secondStriker == std::numeric_limits<int>::max()) {
+            getRoleDecisionModel().secondStriker = it->first;
         }
         // if there's a robot closer to the ball than myself, i don't want to be striker!
-        if (robotNumber != getPlayerInfo().playerNumber && msg.timeToBall < ownTimeToBall) { 
-          wantsToBeStriker = false; //Preparation for next round's decision
+        if(it->second < ownTimeToBall) {
+            getRoleDecisionModel().wantsToBeStriker = false;
         }
+    }
 
-      }
-  }//end for
-  
-  getRoleDecisionModel().firstStriker = firstStriker;
-  getRoleDecisionModel().secondStriker = secondStriker;
-  getRoleDecisionModel().wantsToBeStriker = wantsToBeStriker;
-
-  PLOT(std::string("StableRoleDecision:FirstStrikerDecision"), firstStriker);
-  PLOT(std::string("StableRoleDecision:SecondStrikerDecision"), secondStriker);
-
+    PLOT(std::string("StableRoleDecision:FirstStrikerDecision"), getRoleDecisionModel().firstStriker);
+    PLOT(std::string("StableRoleDecision:SecondStrikerDecision"), getRoleDecisionModel().secondStriker);
 }
 
-bool StableRoleDecision::isRobotDead(uint robotNumber) {
+bool StableRoleDecision::isRobotDead(unsigned int robotNumber) {
     double failureProbability = 0.0;
     std::map<unsigned int, double>::const_iterator robotFailure = getTeamMessageStatisticsModel().failureProbabilities.find(robotNumber);
     if (robotFailure != getTeamMessageStatisticsModel().failureProbabilities.end()) {
       failureProbability = robotFailure->second;
     }
-    return failureProbability > parameters.minFailureProbability && robotNumber != getPlayerInfo().playerNumber;
+    bool isDead = failureProbability > parameters.minFailureProbability && robotNumber != getPlayerInfo().playerNumber;
+    // update dead/alive lists
+    if (isDead) { //Message is not fresh
+      getRoleDecisionModel().deadRobots.push_back(robotNumber);
+    } else {
+      getRoleDecisionModel().aliveRobots.push_back(robotNumber);
+    }
+    return isDead;
 }

@@ -58,12 +58,12 @@ void TeamSymbols::setWasStriker(bool striker)
 
 bool TeamSymbols::calculateIfStriker()
 {
-  return theInstance->getRoleDecisionModel().firstStriker == (int)theInstance->getPlayerInfo().playerNumber;
+  return theInstance->getRoleDecisionModel().firstStriker == theInstance->getPlayerInfo().playerNumber;
 }
 
 bool TeamSymbols::calculateIfSecondStriker()
 {
-  return theInstance->getRoleDecisionModel().secondStriker == (int)theInstance->getPlayerInfo().playerNumber;
+  return theInstance->getRoleDecisionModel().secondStriker == theInstance->getPlayerInfo().playerNumber;
 }
 
 TeamSymbols::~TeamSymbols()

@@ -19,6 +19,8 @@
 #include "Representations/Modeling/RoleDecisionModel.h"
 #include "Representations/Modeling/SoccerStrategy.h"
 #include "Representations/Modeling/TeamMessageStatisticsModel.h"
+#include "Representations/Modeling/BodyState.h"
+#include "Representations/Modeling/BallModel.h"
 
 #include <Tools/DataStructures/ParameterList.h>
 #include "Tools/Debug/DebugParameterList.h"
@@ -38,6 +40,8 @@ BEGIN_DECLARE_MODULE(StableRoleDecision)
   REQUIRE(SoccerStrategy)
   REQUIRE(TeamMessage)
   REQUIRE(TeamMessageStatisticsModel)
+  REQUIRE(BodyState)
+  REQUIRE(BallModel)
 
   PROVIDE(RoleDecisionModel)
 END_DECLARE_MODULE(StableRoleDecision)
@@ -57,7 +61,18 @@ public:
   void computeStrikers();
   
 protected:
-  bool isRobotDead(uint robotNumber);
+  bool isRobotDead(unsigned int robotNumber);
+
+  bool amIactive() {
+      return getBodyState().fall_down_state == BodyState::upright
+          && getPlayerInfo().robotState != PlayerInfo::penalized
+          && getBallModel().valid
+          && (getFrameInfo().getTimeSince(getBallModel().getFrameInfoWhenBallWasSeen().getTime()) < parameters.maxBallLostTime + myStrikerBonusTime());
+  }
+
+  int myStrikerBonusTime() {
+      return getRoleDecisionModel().firstStriker == getPlayerInfo().playerNumber ? parameters.strikerBonusTime:0;
+  }
 
   class Parameters: public ParameterList
   {
