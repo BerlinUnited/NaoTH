@@ -8,6 +8,7 @@
 #define _KickActionModel_H_
 
 #include <string>
+#include <Tools/Math/Vector2.h>
 
 class KickActionModel
 {
