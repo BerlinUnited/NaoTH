@@ -115,6 +115,7 @@ StandMotion()
 
     // update joint monitors
     for( int i = naoth::JointData::RShoulderRoll; i <= naoth::JointData::LAnkleRoll; i++) {
+        // are the jointOffsets applied twice? Doesn't getMotorJointData contain the offsets already?
         jointMonitors[i].updateMonitor(getMotorJointData().position[i] + jointOffsets[i], getSensorJointData().position[i],getSensorJointData().electricCurrent[i]);
     }
 
@@ -128,7 +129,7 @@ StandMotion()
         lastState = state;
       }
       
-      if(interpolateToStandPose() && state_time > totalTime+static_cast<int>(getRobotInfo().basicTimeStep*100)) {
+      if(interpolateToStandPose() && static_cast<double>(state_time) > totalTime+static_cast<int>(getRobotInfo().basicTimeStep*100)) {
         if(getMotionRequest().id != getId())  {
           setCurrentState(motion::stopped);
         } else if (!getBodyState().isLiftedUp
@@ -251,14 +252,23 @@ StandMotion()
   void applyPose(const InverseKinematic::HipFeetPose& tc) 
   {
     InverseKinematic::HipFeetPose c(tc);
-    if(getCalibrationData().calibrated && getEngine().getParameters().stand.enableStabilization)
+    if(getCalibrationData().calibrated)
     {
       c.localInLeftFoot();
-      getEngine().rotationStabilize(
-        getInertialModel(),
-        getGyrometerData(),
-        getRobotInfo().getBasicTimeStepInSecond(),
-        c);
+
+      if(getEngine().getParameters().stand.enableStabilization) {
+        getEngine().rotationStabilize(
+          getInertialModel(),
+          getGyrometerData(),
+          getRobotInfo().getBasicTimeStepInSecond(),
+          c);
+      } else if(getEngine().getParameters().stand.enableStabilizationRC16) {
+        getEngine().rotationStabilizeRC16(
+          getInertialSensorData(),
+          getGyrometerData(),
+          getRobotInfo().getBasicTimeStepInSecond(),
+          c);
+      }
     }
 
     getEngine().solveHipFeetIK(c);

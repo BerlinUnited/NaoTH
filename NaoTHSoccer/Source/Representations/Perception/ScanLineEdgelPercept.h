@@ -43,6 +43,7 @@ public:
 
     // hack
     double width;
+    double projectedWidth;
   };
 
   std::vector<EdgelPair> pairs; // this depends on edgels

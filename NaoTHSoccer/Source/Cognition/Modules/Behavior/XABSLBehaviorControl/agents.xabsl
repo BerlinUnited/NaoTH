@@ -83,6 +83,7 @@ include "Options/Soccer/Strategy/Striker/turn_to_attack_direction.xabsl";
 
 //Passive Behavior
 include "Options/Soccer/Strategy/passive/decide_and_go_to_passive_position.xabsl";
+include "Options/Soccer/Strategy/passive/decide_and_go_to_passive_position_after_penalized.xabsl";
 include "Options/Soccer/Strategy/passive/passive_behavior.xabsl";
 include "Options/Soccer/Strategy/passive/passive_ball_seen.xabsl";
 include "Options/Soccer/Strategy/passive/passive_ball_not_seen.xabsl";
