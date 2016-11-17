@@ -145,6 +145,7 @@ void GameController::handleDebugRequest()
   if(debugState != getPlayerInfo().robotState) {
     getPlayerInfo().robotState = debugState;
 
+    // NOTE: logic is reverted in relation to button interface
     switch (getPlayerInfo().robotState)
     {
     case PlayerInfo::initial:
@@ -153,12 +154,12 @@ void GameController::handleDebugRequest()
     case PlayerInfo::playing:
     case PlayerInfo::finished: 
     {
-      returnMessage = GameReturnData::manual_penalise;
+      returnMessage = GameReturnData::manual_unpenalise;
       break;
     }
     case PlayerInfo::penalized:
     {
-      returnMessage = GameReturnData::manual_unpenalise;
+      returnMessage = GameReturnData::manual_penalise;
       break;
     }
     default:
