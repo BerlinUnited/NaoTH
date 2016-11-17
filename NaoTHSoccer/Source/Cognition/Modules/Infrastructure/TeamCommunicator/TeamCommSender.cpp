@@ -101,8 +101,16 @@ void TeamCommSender::fillMessage(const PlayerInfo& playerInfo,
       out.opponents.push_back(opp);
     }
   }
+  //Send the calculated expected ballPos only if robot is striker
+  if (PlayerInfo().isPlayingStriker){
+	  out.expectedBallPos = kickActionModel.expectedBallPos; //Todo check if it is in global coordinates
+  }
+  else{
+	  //Dummy Values is the robots own position in global coordinates
+	  out.expectedBallPos.x = robotPose.translation.x;
+	  out.expectedBallPos.y = robotPose.translation.y;
+  }
   
-  out.expectedBallPos = kickActionModel.expectedBallPos;
 
 }
 

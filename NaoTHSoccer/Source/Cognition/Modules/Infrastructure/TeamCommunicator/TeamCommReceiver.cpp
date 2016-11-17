@@ -128,6 +128,10 @@ bool TeamCommReceiver::parseTeamMessage(const SPLStandardMessage& spl, TeamMessa
 
   msg.fallen = (spl.fallen == 1);
 
+  msg.expectedBallPos.x = spl.shootingTo[0];
+  msg.expectedBallPos.x = spl.shootingTo[1];
+
+
   // check if we can deserialize the user defined data
   if(spl.numOfDataBytes > 0 && spl.numOfDataBytes <= SPL_STANDARD_MESSAGE_DATA_SIZE)
   {
