@@ -54,7 +54,8 @@ public:
       valid(false),
       gameTime(0),
       playerNumber(0),
-      playersPerTeam(1), // at least one player
+      // HACK: this number sed to be set by a parameter
+      playersPerTeam(5), 
       teamName("unknown"),
       playLeftSide(true),
       gameState(naoth::GameData::unknown_game_state)
@@ -63,7 +64,7 @@ public:
 public:
   bool valid;
   unsigned int gameTime;
-  unsigned int playerNumber;
+  unsigned int playerNumber; 
   int playersPerTeam;
   std::string teamName;
   bool playLeftSide;

@@ -23,7 +23,9 @@ GameData::GameData()
     dropInTeam(0),
     dropInTime(0),
     secsRemaining(0),
-    secondaryTime(0)
+    secondaryTime(0),
+    // HACK: for more info see declaration
+    newPlayerNumber(0)
 {
 }
 
