@@ -29,13 +29,7 @@ DebugServer::DebugServer()
   m_executing = g_mutex_new();
   m_abort = g_mutex_new();
 
-  m_received_messages_cognition = g_mutex_new();
-  m_received_messages_motion = g_mutex_new();
-
-  commands = g_async_queue_new();
   answers = g_async_queue_new();
-
-  g_async_queue_ref(commands);
   g_async_queue_ref(answers);
 }
 
@@ -51,16 +45,12 @@ DebugServer::~DebugServer()
     g_thread_join(connectionThread);
   }
 
-  clearBothQueues();
+  clearQueues();
   comm.disconnect();
 
   g_mutex_free(m_executing);
   g_mutex_free(m_abort);
 
-  g_mutex_free(m_received_messages_cognition);
-  g_mutex_free(m_received_messages_motion);
-
-  g_async_queue_unref(commands);
   g_async_queue_unref(answers);
 }
 
@@ -84,9 +74,6 @@ void DebugServer::start(unsigned short port)
 
 void DebugServer::run()
 {
-  g_async_queue_ref(commands);
-  g_async_queue_ref(answers);
-
   while(true)
   {
     // check if the stop is requested
@@ -130,9 +117,6 @@ void DebugServer::run()
     // TODO: do we really need this here?
     g_thread_yield();
   } // end while true
-
-  g_async_queue_unref(commands);
-  g_async_queue_unref(answers);
 }//end run
 
 
@@ -147,34 +131,29 @@ void DebugServer::receive()
     {
       // parse and sort the messages
 
-      DebugMessageIn::Message message;
-      parseCommand(msg, message);
-      message.id = id;
+      DebugMessageIn::Message* message = new DebugMessageIn::Message();
+      parseCommand(msg, *message);
+      message->id = id;
 
-      std::size_t p = message.command.find(':');
-      std::string base(message.command.substr(0,p));
-      std::string subcmd(message.command.substr(p+1));
+      std::size_t p = message->command.find(':');
+      std::string base(message->command.substr(0,p));
+      std::string subcmd(message->command.substr(p+1));
 
       if(base == "Cognition") 
       {
-        message.command = subcmd;
-        g_mutex_lock(m_received_messages_cognition);
+        message->command = subcmd;
         received_messages_cognition.push(message);
-        g_mutex_unlock(m_received_messages_cognition);
       } 
       else if (base == "Motion") 
       {
-        message.command = subcmd;
-        g_mutex_lock(m_received_messages_motion);
+        message->command = subcmd;
         received_messages_motion.push(message);
-        g_mutex_unlock(m_received_messages_motion);
       } 
       else 
       {
         received_messages_cognition.push(message);
       }
       g_string_free(msg, true);
-      //g_async_queue_push(commands, msg);
     }
     counter++;
   } while(msg != NULL && counter < 50); // max of 50 messages
@@ -197,7 +176,6 @@ void DebugServer::send()
         g_warning("could not send message");
         disconnect();
       }
-      //g_string_free(answer, true);
       delete answer;
     }
   }//end for
@@ -207,7 +185,7 @@ void DebugServer::disconnect()
 {
   // stop executing (so it's not messing up with our queues)
   g_mutex_lock(m_executing);
-  clearBothQueues();
+  clearQueues();
   g_mutex_unlock(m_executing);
 
   // all commands are "answered", disconnect
@@ -218,35 +196,15 @@ void DebugServer::disconnect()
 void DebugServer::getDebugMessageInCognition(DebugMessageIn& buffer)
 {
   buffer.messages.clear();
-
-  g_mutex_lock(m_received_messages_cognition);
-
-  // parse messages
-  while (!received_messages_cognition.empty())
-  {
-    buffer.messages.push_back(received_messages_cognition.front());
-    received_messages_cognition.pop();
-  }
-
-  g_mutex_unlock(m_received_messages_cognition);
-}//end getDebugMessageIn
+  received_messages_cognition.copy(buffer);
+}
 
 
 void DebugServer::getDebugMessageInMotion(DebugMessageIn& buffer)
 {
   buffer.messages.clear();
-
-  g_mutex_lock(m_received_messages_motion);
-
-  // parse messages
-  while (!received_messages_motion.empty())
-  {
-    buffer.messages.push_back(received_messages_motion.front());
-    received_messages_motion.pop();
-  }
-
-  g_mutex_unlock(m_received_messages_motion);
-}//end getDebugMessageIn
+  received_messages_motion.copy(buffer);
+}
 
 
 void DebugServer::setDebugMessageOut(const DebugMessageOut& buffer)
@@ -259,9 +217,9 @@ void DebugServer::setDebugMessageOut(const DebugMessageOut& buffer)
   }
 
   g_mutex_unlock(m_executing);
-}//end getDebugMessageOut
+}
 
-
+// TODO: serializer?
 void DebugServer::parseCommand(GString* cmdRaw, DebugMessageIn::Message& command) const
 {
   naothmessages::CMD cmd;
@@ -284,20 +242,15 @@ void DebugServer::parseCommand(GString* cmdRaw, DebugMessageIn::Message& command
 }//end parseCommand
 
 
-void DebugServer::clearBothQueues()
+void DebugServer::clearQueues()
 {
-  while (g_async_queue_length(commands) > 0)
-  {
-    GString* tmp = (GString*) g_async_queue_pop(commands);
-    g_string_free(tmp, true);
+  while (g_async_queue_length(answers) > 0) {
+    delete (DebugMessageOut::Message*) g_async_queue_pop(answers);
   }
 
-  while (g_async_queue_length(answers) > 0)
-  {
-    delete (DebugMessageOut::Message*) g_async_queue_pop(answers);
-    //g_string_free(tmp, true);
-  }
-}//end clearBothQueues
+  received_messages_cognition.clear();
+  received_messages_motion.clear();
+}
 
 void* DebugServer::connection_thread_static(void* ref)
 {

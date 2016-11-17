@@ -11,6 +11,7 @@
 
 // Tools
 //#include "Tools/TemplateUtility.h"
+#include <algorithm>
 #include "Tools/NaoInfo.h"
 
 #include "InverseKinematics.h"

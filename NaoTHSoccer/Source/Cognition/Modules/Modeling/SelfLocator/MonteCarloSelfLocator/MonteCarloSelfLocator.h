@@ -31,6 +31,7 @@
 #include "Representations/Motion/MotionStatus.h"
 #include "Representations/Modeling/BodyState.h"
 #include "Representations/Modeling/SituationStatus.h"
+#include "Representations/Modeling/SituationPrior.h"
 
 // sensor percepts
 #include "Representations/Perception/GoalPercept.h"
@@ -75,6 +76,7 @@ BEGIN_DECLARE_MODULE(MonteCarloSelfLocator)
   REQUIRE(MotionStatus)
   REQUIRE(BodyState)
   REQUIRE(SituationStatus)
+  REQUIRE(SituationPrior)
 
   REQUIRE(GoalPercept)
   REQUIRE(GoalPerceptTop)
@@ -113,7 +115,7 @@ private: // local types
   class Parameters: public ParameterList
   {
   public: 
-    Parameters(): ParameterList("MCSLSParameters")
+    Parameters(): ParameterList("MCSLParameters")
     {
       PARAMETER_REGISTER(thresholdCanopy) = 900;
       PARAMETER_REGISTER(resamplingThreshhold) = 0.01;
@@ -152,6 +154,8 @@ private: // local types
 
       PARAMETER_REGISTER(resampleSUS) = false;
       PARAMETER_REGISTER(resampleGT07) = true;
+
+      PARAMETER_REGISTER(maxAcceptedGoalErrorWhileTracking) = 0;
 
       // load from the file after registering all parameters
       syncWithConfig();
@@ -192,6 +196,8 @@ private: // local types
 
     bool resampleSUS;
     bool resampleGT07;
+
+    double maxAcceptedGoalErrorWhileTracking;
   } parameters;
 
   class LineDensity {
@@ -202,6 +208,10 @@ private: // local types
     double angleDeviation;
 
   public:
+    LineDensity()
+    {
+    }
+
     LineDensity(
       const Vector2d& start, const Vector2d& end, 
       double angle, double distDeviation, double angleDeviation)
@@ -257,11 +267,14 @@ private: // workers
   void updateByLinePoints(const LineGraphPercept& linePercept, SampleSet& sampleSet) const;
 
   // A-Priori knowledge based on the game state
+  void updateBySidePositions(SampleSet& sampleSet) const;
   void updateByStartPositions(SampleSet& sampleSet) const;
   void updateByOwnHalfLookingForward(SampleSet& sampleSet) const;
   void updateByOwnHalf(SampleSet& sampleSet) const;
   void updateByOppHalf(SampleSet& sampleSet) const;
   void updateByGoalBox(SampleSet& sampleSet) const;
+
+  void updateBySituation();
 
   void updateByOldPose(SampleSet& sampleSet) const;
   void updateByPose(SampleSet& sampleSet, Pose2D pose, double sigmaDistance, double /*sigmaAngle*/) const;

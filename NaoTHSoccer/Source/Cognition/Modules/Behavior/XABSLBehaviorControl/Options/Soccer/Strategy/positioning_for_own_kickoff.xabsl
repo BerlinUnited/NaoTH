@@ -54,7 +54,10 @@ option positioning_for_own_kickoff
     {
       
 //go_to_point_with_USOA(x=-2500, y=-900, rot=0);
-      go_to_point_with_USOA(x=(field.xPosOwnPenaltyArea+field.xPosOwnPenaltyMark)/2, y=field.yPosLeftGoal,rot=0);
+      go_to_point_with_USOA(
+        x=field.xPosOwnPenaltyMark + 500, 
+        y=field.yPosLeftGoal,
+        rot=0);
       head.control_mode = look_around;
     }
   }
@@ -71,7 +74,7 @@ option positioning_for_own_kickoff
     {
       //go_to_point_with_USOA(x=-500, y=300, rot=-5);
       //300 is the assumed margin of error, should prevent robot from stepping into circle
-      go_to_point_with_USOA(x=-300, y=0, rot=0);
+      go_to_point_with_USOA(x=-400, y=0, rot=0);
       head.control_mode = look_around;
     }
   }

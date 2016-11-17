@@ -13,6 +13,7 @@
 #include "Representations/Modeling/BallModel.h"
 #include "Representations/Modeling/BodyState.h"
 #include "Representations/Motion/MotionStatus.h"
+#include "Representations/Modeling/RoleDecisionModel.h"
 #include "Representations/Modeling/SoccerStrategy.h"
 #include "Representations/Modeling/PlayersModel.h"
 
@@ -22,6 +23,8 @@
 #include "Tools/Debug/DebugRequest.h"
 #include "Tools/Debug/DebugParameterList.h"
 #include "Tools/Debug/DebugPlot.h"
+
+#include <MessagesSPL/SPLStandardMessage.h>
 
 BEGIN_DECLARE_MODULE(TeamCommReceiver)
   REQUIRE(FrameInfo)
@@ -33,6 +36,7 @@ BEGIN_DECLARE_MODULE(TeamCommReceiver)
   REQUIRE(BallModel)
   REQUIRE(BodyState)
   REQUIRE(MotionStatus)
+  REQUIRE(RoleDecisionModel)
   REQUIRE(SoccerStrategy)
   REQUIRE(PlayersModel)
   REQUIRE(BatteryData)
@@ -74,6 +78,8 @@ private:
   } parameters;
 
 private:
+  bool parseSPLStandardMessage(const std::string& data, SPLStandardMessage& msg) const;
+  bool parseTeamMessage(const SPLStandardMessage& msg, TeamMessage::Data& teamMsg) const;
   void handleMessage(const std::string& data, bool allowOwn = false);
   
   bool monotonicTimeStamp(const TeamMessage::Data& data) const

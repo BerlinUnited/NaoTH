@@ -24,27 +24,29 @@ public:
   class EndPoint
   {
   public:
-    EndPoint():color(ColorClasses::none), ScanLineID(0), valid(false){}
+    EndPoint():color(ColorClasses::none), ScanLineID(0), valid(false), greenFound(false){}
     Vector2i posInImage;
     Vector2d posOnField;
     ColorClasses::Color color;
     unsigned int ScanLineID;
     bool valid;
+    bool greenFound;
   };
 
   class EdgelPair : public EdgelT<double>
   {
   public:
-    EdgelPair() : begin(-1), end(-1), id(-1) {}
+    EdgelPair() : begin(-1), end(-1), id(-1), width(0) {}
     int begin;
     int end;
     int id;
+
+    // hack
+    double width;
+    double projectedWidth;
   };
 
-  /** */
-  std::vector<DoubleEdgel> scanLineEdgels;
-
-  std::vector<EdgelPair> pairs;
+  std::vector<EdgelPair> pairs; // this depends on edgels
   std::vector<Edgel> edgels;
 
   /** */
@@ -55,22 +57,12 @@ public:
     endPoints.clear();
     pairs.clear();
     edgels.clear();
-    scanLineEdgels.clear();
   }
 
-  virtual void print(std::ostream& stream) const
+  virtual void print(std::ostream& /*stream*/) const
   {
-    stream << "ScanLine Edgels:" << std::endl << "------" << std::endl;
-    for(size_t i = 0; i < scanLineEdgels.size(); i++)
-    {
-      stream << "Edgel " << i << std::endl;
-      stream << "  Begin = " << scanLineEdgels[i].begin << " angle = " << scanLineEdgels[i].begin_angle << std::endl;
-      stream << "  Center = " << scanLineEdgels[i].center << " angle = " << scanLineEdgels[i].center_angle << std::endl;
-      stream << "  End = " << scanLineEdgels[i].end << " angle = " << scanLineEdgels[i].end_angle << std::endl;
-      stream << "  ScanLine = " << scanLineEdgels[i].ScanLineID << " run = " << scanLineEdgels[i].runID << std::endl;
-      stream << "  is valid = " << (scanLineEdgels[i].valid ? "true" : "false") << std::endl;
-    }
-  }//end print
+    // TODO: do we need it?
+  }
 };
 
 class ScanLineEdgelPerceptTop : public ScanLineEdgelPercept

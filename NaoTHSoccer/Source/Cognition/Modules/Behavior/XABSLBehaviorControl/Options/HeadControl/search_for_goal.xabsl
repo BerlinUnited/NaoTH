@@ -22,7 +22,7 @@ option search_for_goal
   {
     decision
     {
-      if (state_time > 1000)
+      if (!robot_pose.is_valid || state_time > 1000)
         goto search_for_goal_right;
       else
         stay;
@@ -83,7 +83,7 @@ state search_for_goal_left
     decision
     {
       if ((goal.own.time_since_seen < 1000 && @own) ||
-          (goal.opp.time_since_seen < 1000 && @opp))        
+          (goal.opp.time_since_seen < 1000 && @opp))
         stay;
       else
         goto search_for_goal_right;

@@ -1,13 +1,6 @@
 /* Symbols for accessing the data from the game controller object */
-namespace game_symbols("Game Control Symbols") {
-
-  /* Enumeration for team colors */
-  enum game.team_color
-  {
-    red,
-    blue
-  };
-  
+namespace game_symbols("Game Control Symbols") 
+{
   /* Enumeration for game states */
   enum game.state
   {
@@ -16,11 +9,11 @@ namespace game_symbols("Game Control Symbols") {
     set,
     playing,
     penalized,
-    finished,
-    unknown
+    finished
   };
 
   /* Enumeration for play mode */
+  /*
   enum game.playmode
   {
     before_kick_off,
@@ -41,19 +34,13 @@ namespace game_symbols("Game Control Symbols") {
     free_kick_own,
     free_kick_opp,
     unknownLocalPlayMode
-  };
+  };*/
 
   /* State of the game */
   enum game.state input game.state;
 
   /* Play mode of the game */
-  enum game.playmode input game.playmode;
-  
-  /* Own team color */
-  enum game.team_color input game.own_team_color;
-  
-  /* Opponent team color */
-  enum game.team_color input game.opponent_team_color;
+  //enum game.playmode input game.playmode;
   
   /* my number */
   float input game.player_number;
@@ -62,5 +49,7 @@ namespace game_symbols("Game Control Symbols") {
   bool input game.own_kickoff;
 
   float input game.msecsRemaining;
+
+  bool input game.state.playing_is_set_by_game_controller;
 
 }

@@ -16,7 +16,9 @@
 class LineGraphPercept
 { 
 public:
-  std::vector<Edgel> edgels;
+  std::vector<Edgel>  edgels;
+  std::vector<EdgelD> edgelsInImage;
+  std::vector<EdgelD> edgelsInImageTop;
 };
 
 #endif // _LineGraphPercept_h_

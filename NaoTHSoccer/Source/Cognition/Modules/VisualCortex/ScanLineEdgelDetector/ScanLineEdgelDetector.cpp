@@ -121,6 +121,10 @@ void ScanLineEdgelDetector::execute(CameraInfo::CameraID id)
                 point_one.posInImage.x, point_one.posInImage.y,
                 point_two.posInImage.x, point_two.posInImage.y);
       }
+
+      if(!point_two.greenFound) {
+        CIRCLE_PX(ColorClasses::gray, point_two.posInImage.x, point_two.posInImage.y, 7);
+      }
     }
   );
 }//end execute
@@ -147,16 +151,17 @@ ScanLineEdgelPercept::EndPoint ScanLineEdgelDetector::scanForEdgels(int scan_id,
   }
 
   Vector2i point(start);
-  point.y -= step; // make one step
+  // we have no idea what this should be good for, but for now it makes tons of problems
+  //point.y -= step; // make one step
 
   Vector2i last_down_point(point); // needed for the endpoint
   bool begin_found = false;
 
   // calculate the threashold
-  int t_edge = theParameters.brightness_threshold * 2;
+  int t_edge = theParameters.brightness_threshold_top;
   // HACK (TEST): make it dependend on the angle of the camera in the future
   if(cameraID == CameraInfo::Bottom) {
-    t_edge *= 4;
+    t_edge = theParameters.brightness_threshold_bottom;
   }
 
   Vector2i lastGreenPoint(point); // HACK
@@ -240,19 +245,22 @@ ScanLineEdgelPercept::EndPoint ScanLineEdgelDetector::scanForEdgels(int scan_id,
     if(getFieldColorPercept().isFieldColor(pixel.a, pixel.b, pixel.c))
     {
       double greenDensity = movingWindow.getSum()/movingWindow.size();
-      if(greenDensity > 0.3)
+      if(greenDensity > theParameters.minEndPointGreenDensity)
       {
         lastGreenPoint = point;
+        endPoint.greenFound = true;
       }
       movingWindow.add(1.0);
     }
     else
     {
       //HACK break if darker than field
+      /*
       if(pixel.y < getFieldColorPercept().range.getMin().y)
       {
         break;
       }
+      */
       movingWindow.add(0.0);
     }
 
@@ -363,10 +371,11 @@ ColorClasses::Color ScanLineEdgelDetector::estimateColorOfSegment(const Vector2i
 Vector2d ScanLineEdgelDetector::calculateGradient(const Vector2i& point) const
 {
   Vector2d gradient;
+  static const int offset = 1;
 
   // no angle at the border (shouldn't happen)
-  if( point.x < 1 || point.x + 2 > (int)getImage().width() ||
-      point.y < 1 || point.y + 2 > (int)getImage().height() ) {
+  if( point.x < offset || point.x + offset + 1 > (int)getImage().width() ||
+      point.y < offset || point.y + offset + 1 > (int)getImage().height() ) {
     return gradient;
   }
 
@@ -374,20 +383,20 @@ Vector2d ScanLineEdgelDetector::calculateGradient(const Vector2i& point) const
   //and calculate gradient in x and y direction by that means
   
   gradient.x =
-       getImage().getY(point.x-1, point.y+1)
-    +2*getImage().getY(point.x  , point.y+1)
-    +  getImage().getY(point.x+1, point.y+1)
-    -  getImage().getY(point.x-1, point.y-1)
-    -2*getImage().getY(point.x  , point.y-1)
-    -  getImage().getY(point.x+1, point.y-1);
+       getImage().getY_direct(point.x-offset, point.y+offset)
+    +2*getImage().getY_direct(point.x       , point.y+offset)
+    +  getImage().getY_direct(point.x+offset, point.y+offset)
+    -  getImage().getY_direct(point.x-offset, point.y-offset)
+    -2*getImage().getY_direct(point.x       , point.y-offset)
+    -  getImage().getY_direct(point.x+offset, point.y-offset);
 
   gradient.y =
-       getImage().getY(point.x-1, point.y-1)
-    +2*getImage().getY(point.x-1, point.y  )
-    +  getImage().getY(point.x-1, point.y+1)
-    -  getImage().getY(point.x+1, point.y-1)
-    -2*getImage().getY(point.x+1, point.y  )
-    -  getImage().getY(point.x+1, point.y+1);
+       getImage().getY_direct(point.x-offset, point.y-offset)
+    +2*getImage().getY_direct(point.x-offset, point.y       )
+    +  getImage().getY_direct(point.x-offset, point.y+offset)
+    -  getImage().getY_direct(point.x+offset, point.y-offset)
+    -2*getImage().getY_direct(point.x+offset, point.y       )
+    -  getImage().getY_direct(point.x+offset, point.y+offset);
 
   //calculate the angle of the gradient
   return gradient.normalize();

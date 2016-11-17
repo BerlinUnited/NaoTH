@@ -138,7 +138,7 @@ void* motionThreadCallback(void* ref)
 #define TO_STRING_INT(x) #x
 #define TO_STRING(x) TO_STRING_INT(x)
 
-int main(int argc, char *argv[])
+int main(int /*argc*/, char **/*argv[]*/)
 {
 
   std::cout << "=========================================="  << std::endl;
@@ -157,8 +157,9 @@ int main(int argc, char *argv[])
 
   // init glib
   g_type_init();
-  if (!g_thread_supported())
+  if (!g_thread_supported()) {
     g_thread_init(NULL);
+  }
 
   // react on "kill" and segmentation fault
   struct sigaction saKill;
@@ -188,7 +189,6 @@ int main(int argc, char *argv[])
 
   // create the controller
   NaoController theController;
-  
   naoth::init_agent(theController);
 
 

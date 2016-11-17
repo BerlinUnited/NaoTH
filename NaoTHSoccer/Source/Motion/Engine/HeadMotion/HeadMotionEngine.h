@@ -19,6 +19,7 @@
 #include <Representations/Infrastructure/RobotInfo.h>
 #include <Representations/Infrastructure/CameraInfo.h>
 #include "Representations/Modeling/InertialModel.h"
+#include "Representations/Infrastructure/InertialSensorData.h"
 #include "Representations/Modeling/KinematicChain.h"
 #include "Representations/Motion/Request/HeadMotionRequest.h"
 #include <Representations/Infrastructure/JointData.h>
@@ -30,15 +31,18 @@
 #include "Tools/Debug/DebugModify.h"
 #include <Tools/Debug/DebugRequest.h>
 #include <Tools/Debug/DebugDrawings.h>
+#include "Tools/Debug/DebugParameterList.h"
 
 BEGIN_DECLARE_MODULE(HeadMotionEngine)
   PROVIDE(DebugModify)
   PROVIDE(DebugRequest)
   PROVIDE(DebugDrawings)
+  PROVIDE(DebugParameterList)
 
 
   REQUIRE(RobotInfo)
   REQUIRE(InertialModel)
+  REQUIRE(InertialSensorData)
   REQUIRE(KinematicChainSensor)
   REQUIRE(HeadMotionRequest)
   REQUIRE(SensorJointData)
@@ -57,11 +61,30 @@ END_DECLARE_MODULE(HeadMotionEngine)
 class HeadMotionEngine: private HeadMotionEngineBase
 {
 public:
-  /** constructor */
   HeadMotionEngine();
-  ~HeadMotionEngine(){};
+  ~HeadMotionEngine();
 
   void execute();
+
+
+private:
+  struct Parameters: public ParameterList
+  {
+    Parameters() : ParameterList("HeadMotionEngine")
+    {
+      
+      PARAMETER_REGISTER(max_velocity_deg_in_second_fast) = 60;
+      PARAMETER_REGISTER(max_velocity_deg_in_second_slow) = 90;
+      PARAMETER_REGISTER(cutting_velocity) = 40;
+      
+      syncWithConfig();
+    }
+
+	  double max_velocity_deg_in_second_fast;
+    double max_velocity_deg_in_second_slow;
+    double cutting_velocity;
+    
+  } params;
 
 private:
 

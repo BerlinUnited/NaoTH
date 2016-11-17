@@ -23,6 +23,7 @@
 #include "Tools/DoubleCamHelpers.h"
 #include "Tools/ImageProcessing/Edgel.h"
 #include "Tools/ImageProcessing/MaximumScan.h"
+#include "Tools/CameraGeometry.h"
 #include "Tools/ColorClasses.h"
 #include <Tools/Math/Vector2.h>
 
@@ -81,11 +82,13 @@ public:
   public:
     Parameters() : ParameterList("ScanLineParameters")
     {
-      PARAMETER_REGISTER(brightness_threshold) = 6;
+      PARAMETER_REGISTER(brightness_threshold_top) = 6*2;
+      PARAMETER_REGISTER(brightness_threshold_bottom) = 6*4;
       PARAMETER_REGISTER(scanline_count) = 31;
       PARAMETER_REGISTER(pixel_border_y) = 3;
       PARAMETER_REGISTER(green_sampling_points) = 3;
       PARAMETER_REGISTER(double_edgel_angle_threshold) = 0.2;
+      PARAMETER_REGISTER(minEndPointGreenDensity) = 0.3;
 
       syncWithConfig();
       //DebugParameterList::getInstance().add(this);
@@ -95,12 +98,14 @@ public:
       //DebugParameterList::getInstance().remove(this);
     }
 
-    int brightness_threshold; // threshold for detection of the jumps in the Y channel
+    int brightness_threshold_top; // threshold for detection of the jumps in the Y channel
+    int brightness_threshold_bottom;
     int scanline_count; // number of scanlines
     int pixel_border_y; // don't scan the lower lines in the image
     int green_sampling_points; // number of the random samples to determine whether a segment is green 
 
     double double_edgel_angle_threshold;
+    double minEndPointGreenDensity;
   } theParameters;
 
 private:
@@ -132,6 +137,35 @@ private:
 
     pair.point = Vector2d(begin.point + end.point)*0.5;
     pair.direction = (begin.direction - end.direction).normalize();
+
+    // hack:
+    pair.width = Vector2d(begin.point - end.point).abs();
+
+    bool widthProjected = false;
+    Vector2d beginPointOnField;
+    Vector2d endPointOnField;
+    if(CameraGeometry::imagePixelToFieldCoord(
+        getCameraMatrix(), getCameraInfo(),
+        begin.point, 
+        0.0, 
+        beginPointOnField)) 
+    {
+      if(CameraGeometry::imagePixelToFieldCoord(
+          getCameraMatrix(), getCameraInfo(),
+          end.point, 
+          0.0, 
+          endPointOnField)) 
+      {
+        widthProjected = true;
+      }
+    }
+    pair.projectedWidth = 0.0;
+    if(widthProjected)
+    {
+      pair.projectedWidth = Vector2d(beginPointOnField - endPointOnField).abs();
+    }
+    
+
     getScanLineEdgelPercept().pairs.push_back(pair);
   }
 

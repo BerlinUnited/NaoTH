@@ -21,6 +21,7 @@ using namespace naoth;
 
 // kind of a HACK, needed by the logsimulator
 extern ModuleManager* getModuleManager(Cognition* c);
+extern ModuleManager* getModuleManager(Motion* m);
 
 #define TO_STRING_INT(x) #x
 #define TO_STRING(x) TO_STRING_INT(x)
@@ -53,6 +54,7 @@ int main(int argc, char** argv)
   
   bool backendMode = false;
   bool realTime = false;
+  unsigned short port = 5401;
 
   char* logpath = getenv("NAOTH_LOGFILE");
   if(logpath == NULL && argc > 1) {
@@ -60,26 +62,43 @@ int main(int argc, char** argv)
   }
 
   // search for parameters
-  for (int i = 1; i < argc - 1; i++) {
+  for (int i = 1; i <= argc - 1; i++) {
     if (strcmp(argv[i], "-b") == 0) {
       backendMode = true;
     }
     if (strcmp(argv[i], "-r") == 0) {
       realTime = true;
     }
+    if (strcmp(argv[i], "-h") == 0) {
+        std::cout << "syntax: (-b)? (-r)? (-h)? (-p <port number>)? <logfile>" << std::endl;
+        std::cout << "\"-b\" enable the backend mode which is only used by LogfilePlayer of RobotControl" << std::endl;
+        std::cout << "\"-r\" play and loop the logfile according to the time recorded in the FrameInfo of the logfile" << std::endl;
+        std::cout << "\"-p\" debug port number, range of valid values: [1,65535]" << std::endl;
+        std::cout << "\"-h\" help" << std::endl;
+        return (EXIT_SUCCESS);
+    }
+    if (strcmp(argv[i], "-p") == 0) {
+      port = (unsigned short) strtol(argv[++i],0,10);
+      if (port == 0) {
+          cerr << "invalid port number" << endl;
+          return (EXIT_FAILURE);
+      }
+    }
   }
 
   if(logpath == NULL)
   {
     cerr << "You need to give the path to the logfile as argument" << endl;
-    cerr << "arguments: (-b)? (-r)? <logfile>" << endl;
+    cerr << "arguments: (-b)? (-r)? (-h)? (-p <port number>)? <logfile>" << endl;
     cerr << "\"-b\" enable the backend mode which is only used by LogfilePlayer of RobotControl" << endl;
     cerr << "\"-r\" play and loop the logfile according to the time recorded in the FrameInfo of the logfile" << endl;
+    cerr << "\"-p\" debug port number, range of valid values: [1,65535]" << std::endl;
+    cerr << "\"-h\" help" << endl;
     return (EXIT_FAILURE);
   }
   
   // create the simulator instance
-  Simulator sim(logpath, backendMode, realTime);
+  Simulator sim(logpath, backendMode, realTime, port);
   
   // init the platform
   Platform::getInstance().init(&sim);
@@ -96,16 +115,26 @@ int main(int argc, char** argv)
     return (EXIT_FAILURE);
   }
 
+  ModuleManager* theMotionManager = getModuleManager(theMotion);
+  if(!theMotionManager)
+  {
+    std::cerr << "ERROR: theMotion is not of type ModuleManager" << std::endl;
+    return (EXIT_FAILURE);
+  }
+
   // register a module to provide all the logged data
-  ModuleCreator<LogProvider>* theLogProvider = theCognitionManager->registerModule<LogProvider>(std::string("LogProvider"));
+  ModuleCreator<LogProvider>* theLogProviderCognition = theCognitionManager->registerModule<LogProvider>(std::string("LogProvider"));
+  ModuleCreator<LogProvider>* theLogProviderMotion = theMotionManager->registerModule<LogProvider>(std::string("LogProvider"));
 
   // register processes
   sim.registerCognition((naoth::Callable*)(theCognition));
   sim.registerMotion((naoth::Callable*)(theMotion));
  
-  theLogProvider->setEnabled(true);
-  theLogProvider->getModuleT()->init(sim.logFileScanner, sim.getRepresentations(), sim.getIncludedRepresentations());
+  theLogProviderCognition->setEnabled(true);
+  theLogProviderCognition->getModuleT()->init(sim.logFileScanner, sim.getRepresentations(), sim.getIncludedRepresentations());
   
+  theLogProviderMotion->setEnabled(true);
+  theLogProviderMotion->getModuleT()->init(sim.logFileScanner, sim.getRepresentations(), sim.getIncludedRepresentations());
 
   // start the execution
   sim.main();

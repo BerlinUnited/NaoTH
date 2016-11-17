@@ -22,6 +22,8 @@ LineGraphProvider::LineGraphProvider()
 
   DEBUG_REQUEST_REGISTER("Vision:LineGraphProvider:draw_compas", "draw compas direcion based on the edgel directions", false);
 
+  DEBUG_REQUEST_REGISTER("Vision:LineGraphProvider:draw_line_graph", "", false);
+
   getDebugParameterList().add(&parameters);
 }
 
@@ -79,8 +81,38 @@ void LineGraphProvider::execute(CameraInfo::CameraID id)
       }
 
       if(draw_node) {
-        PEN("FF0000",0.1);
-        CIRCLE( edgel.point.x, edgel.point.y, 3);
+        PEN("00FF00",0.1);
+        Vector2d pointOnField;
+        if(CameraGeometry::imagePixelToFieldCoord(
+            getCameraMatrix(), getCameraInfo(),
+            edgel.point, 
+            0.0, 
+            pointOnField)) 
+        {
+          //if(pointOnField.abs() < 2500) {
+            if(edgelNeighbors[i].left != -1 ) {
+              const ScanLineEdgelPercept::EdgelPair& el = getScanLineEdgelPercept().pairs[edgelNeighbors[i].left];
+              //if(el.width <= 3) {
+              if(el.projectedWidth < 30) {
+                PEN("FF0000",0.1);
+              }
+              CIRCLE( edgel.point.x, edgel.point.y, el.projectedWidth / 20);
+            }
+            if(edgelNeighbors[i].right != -1) {
+              const ScanLineEdgelPercept::EdgelPair& er = getScanLineEdgelPercept().pairs[edgelNeighbors[i].right];
+              //if(er.width <= 3) {
+              if(er.projectedWidth < 30) {
+                PEN("FF0000",0.1);
+              }
+              CIRCLE( edgel.point.x, edgel.point.y, er.projectedWidth / 20);
+            }
+          //}
+          //else {
+          //  PEN("0000FF",0.1);
+          //}
+        }
+        PEN("000000",0.1);
+        CIRCLE( edgel.point.x, edgel.point.y, 1);
       }
     }
   );
@@ -166,19 +198,71 @@ void LineGraphProvider::execute(CameraInfo::CameraID id)
     edgel.point = Vector2d(edgelLeft + edgelRight)*0.5;
     edgel.direction = (edgelRight - edgelLeft).normalize(); // is it correct?
 
-    getLineGraphPercept().edgels.push_back(edgel);
+
+    //HACK: don't accept too smal edgels
+    //if(edgel.point.abs() < 2000) {
+
+      const ScanLineEdgelPercept::EdgelPair& el = getScanLineEdgelPercept().pairs[edgelPair.left];
+      const ScanLineEdgelPercept::EdgelPair& er = getScanLineEdgelPercept().pairs[edgelPair.right];
+//      if(el.width > 3 || er.width > 3) {
+      if(el.projectedWidth > parameters.maximalProjectedLineWidth && er.projectedWidth > parameters.maximalProjectedLineWidth) {
+        getLineGraphPercept().edgels.push_back(edgel);
+        
+        DEBUG_REQUEST("Vision:LineGraphProvider:draw_line_graph",
+          FIELD_DRAWING_CONTEXT;
+          PEN("FF0000",2);
+          CIRCLE( edgel.point.x, edgel.point.y, 25);
+        );
+      }
+
+    //} else {
+    //  getLineGraphPercept().edgels.push_back(edgel);
+
+    //  DEBUG_REQUEST("Vision:LineGraphProvider:draw_line_graph",
+    //    FIELD_DRAWING_CONTEXT;
+    //    PEN("000000",2);
+    //    CIRCLE( edgel.point.x, edgel.point.y, 25);
+    //  );
+    //}
+  }
+
+  
+
+  // neighbors line graph in image
+  for(size_t i = 0; i < edgelNeighbors.size(); i++)
+  {
+    bool add_to_percept = false;
+
+    if(edgelNeighbors[i].left != -1) {
+      add_to_percept = true;
+    }
+
+    if(edgelNeighbors[i].right != -1) {
+      add_to_percept = true;
+    }
+
+    if(add_to_percept) {
+        if(cameraID == CameraInfo::Top) {
+            getLineGraphPercept().edgelsInImageTop.push_back(getScanLineEdgelPercept().pairs[i]);
+        } else {
+            getLineGraphPercept().edgelsInImage.push_back(getScanLineEdgelPercept().pairs[i]);
+        }
+    }
   }
 
   // fill the compas
-  getProbabilisticQuadCompas().setSmoothing(parameters.quadCompasSmoothingFactor);
-  for(size_t j = 0; j < edgelPairs.size(); j++)
+  if((int)edgelPairs.size() > parameters.minimalNumberOfPairs)
   {
-    const EdgelPair& edgelPair = edgelPairs[j];
-    const Vector2d& edgelLeft = edgelProjections[edgelPair.left];
-    const Vector2d& edgelRight = edgelProjections[edgelPair.right];
+    getProbabilisticQuadCompas().setSmoothing(parameters.quadCompasSmoothingFactor);
+    for(size_t j = 0; j < edgelPairs.size(); j++)
+    {
+      const EdgelPair& edgelPair = edgelPairs[j];
+      const Vector2d& edgelLeft = edgelProjections[edgelPair.left];
+      const Vector2d& edgelRight = edgelProjections[edgelPair.right];
 
-    double r = (edgelLeft - edgelRight).angle();
-    getProbabilisticQuadCompas().add(r, edgelPair.sim);
+      double r = (edgelLeft - edgelRight).angle();
+      getProbabilisticQuadCompas().add(r, edgelPair.sim);
+    }
   }
 
 
@@ -240,6 +324,10 @@ void LineGraphProvider::calculatePairsAndNeigbors(
   for(unsigned int i = 0; i < edgels.size(); i++)
   {
     const ScanLineEdgelPercept::EdgelPair& edgelOne = edgels[i];
+
+    if(getScanLineEdgelPercept().endPoints[edgelOne.id].posInImage.y > edgelOne.point.y) {
+      continue;
+    }
     
     int j_max = -1;
     double s_max = 0.0;
@@ -247,6 +335,10 @@ void LineGraphProvider::calculatePairsAndNeigbors(
     for(size_t j = i+1; j < edgels.size(); j++) 
     {
       const ScanLineEdgelPercept::EdgelPair& edgelTwo = edgels[j];
+
+      if(getScanLineEdgelPercept().endPoints[edgelTwo.id].posInImage.y > edgelTwo.point.y) {
+        continue;
+      }
 
       if(edgelTwo.id == edgelOne.id + 1 || edgelOne.id == edgelTwo.id + 1)
       {

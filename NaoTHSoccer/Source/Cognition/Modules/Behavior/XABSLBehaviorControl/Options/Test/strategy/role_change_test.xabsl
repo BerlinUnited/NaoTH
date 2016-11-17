@@ -26,8 +26,12 @@ option role_change_test
     decision 
     {
       else if( team.members_alive_count != 0 &&
-               !team.calc_if_is_striker)
-        goto defender;
+               !team.calc_if_is_striker) {
+        if ( team.calc_if_is_secondstriker)
+          goto secondstriker;
+        else
+          goto defender;
+      }
       else
         stay;
     }
@@ -41,6 +45,32 @@ option role_change_test
     }
   }
 
+  state secondstriker 
+  { 
+    decision 
+    {
+      else if( team.members_alive_count != 0 &&
+               !team.calc_if_is_secondstriker) {
+        if (team.calc_if_is_striker)
+          goto striker;
+        else
+          goto defender;
+      }
+      else
+        stay;
+    }
+    action {
+      team.is_playing_as_striker = false;
+      // show striker
+      motion.type = stand;
+      head.control_mode = search_for_ball;
+      set_left_ear = platform.frameNumber % 3;
+      set_right_ear = platform.frameNumber % 3;
+      set_head = 4;
+    }
+  }
+
+
   state defender 
   { 
     decision 
@@ -48,6 +78,8 @@ option role_change_test
       else if( team.members_alive_count == 0 ||
                team.calc_if_is_striker)
         goto striker;
+     else if ( team.calc_if_is_secondstriker)
+       goto secondstriker;
       else 
         stay;
     }

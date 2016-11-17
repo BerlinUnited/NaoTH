@@ -1,0 +1,29 @@
+#!/sbin/runscript
+
+description="NaoTH init script"
+
+depends(){
+    after naoqi
+}
+
+PID="/tmp/cognition.pid"
+
+start(){
+  ebegin "starting naoth"
+    naoth start
+  eend $?
+}
+
+stop(){
+  ebegin "stopping naoth"
+    naoth stop
+  eend $?
+}
+
+restart(){
+  stop
+  sleep 2
+  start
+}
+
+

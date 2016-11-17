@@ -2,6 +2,10 @@
 #include "Color.h"
 #include "Tools/Math/Common.h"
 
+Color Color::RED   = Color(1.0, 0.0, 0.0, 1.0);
+Color Color::BLUE  = Color(0.0, 0.0, 1.0, 1.0);
+Color Color::GREEN = Color(0.0, 1.0, 0.0, 1.0);
+
 std::ostream& operator<<(std::ostream& stream, const Color& color)
 {
   stream << color.toString();

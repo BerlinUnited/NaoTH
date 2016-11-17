@@ -34,8 +34,10 @@
 #include "Representations/Motion/MotionStatus.h"
 #include "Representations/Modeling/OdometryData.h"
 #include <Representations/Modeling/InertialModel.h>
+#include <Representations/Modeling/BodyStatus.h>
 #include <Representations/Perception/CameraMatrix.h>
 #include <Representations/Perception/CameraMatrixBuffer.h>
+#include <Representations/Infrastructure/WhistlePercept.h>
 
 // others
 #include <Representations/Infrastructure/FrameInfo.h>
@@ -64,6 +66,8 @@ BEGIN_DECLARE_MODULE(Sensor)
 
   PROVIDE(TeamMessageDataIn)
 
+  PROVIDE(WhistlePercept)
+
   PROVIDE(GPSData)
   PROVIDE(GameData)
   PROVIDE(RobotInfo)
@@ -78,7 +82,7 @@ BEGIN_DECLARE_MODULE(Sensor)
   PROVIDE(CameraMatrixBuffer)
   PROVIDE(CameraMatrixBufferTop)
   PROVIDE(CalibrationData)
-  
+  PROVIDE(BodyStatus)
 END_DECLARE_MODULE(Sensor)
 
 class Sensor : public SensorBase

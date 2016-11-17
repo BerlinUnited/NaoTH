@@ -20,8 +20,8 @@ NaoController::NaoController()
     :
     PlatformInterface("Nao", 10),
     theSoundHandler(NULL),
-    theBroadCaster(NULL),
-    theBroadCastListener(NULL),
+    theTeamCommSender(NULL),
+    theTeamCommListener(NULL),
     theDebugServer(NULL)
 {
   // init shared memory
@@ -39,8 +39,17 @@ NaoController::NaoController()
   naoCommandUltraSoundSendData.open(naoCommandUltraSoundSendDataPath);
   naoCommandIRSendData.open(naoCommandIRSendDataPath);
   naoCommandLEDData.open(naoCommandLEDDataPath);
+
+  whistleSensorData.open("/whistleDetector.count");
+  whistleControlData.open("/whistleDetector.commands");
+
   // end init shared memory
   
+  char hostname[128];
+  hostname[127] = '\0';
+  gethostname(hostname, 127);
+  theRobotName = string(hostname);
+  cout << "[NaoController] " << "RobotName: " << theRobotName << endl;
 
   // read the theBodyID and the theBodyNickName from file "nao.info"
   const std::string naoInfoPath = Platform::getInstance().theConfigDirectory + "nao.info";
@@ -106,12 +115,14 @@ NaoController::NaoController()
   registerInput<ButtonData>(*this);
   registerInput<BatteryData>(*this);
   registerInput<UltraSoundReceiveData>(*this);
+  registerInput<WhistlePercept>(*this);
 
   // register command output
   registerOutput<const MotorJointData>(*this);
   registerOutput<const LEDData>(*this);
   registerOutput<const IRSendData>(*this);
   registerOutput<const UltraSoundSendData>(*this);
+  registerOutput<const WhistleControl>(*this);
 
 
   /*  INIT DEVICES  */
@@ -132,8 +143,8 @@ NaoController::NaoController()
   }
   int teamcomm_port = 10700; // default port
   config.get("teamcomm", "port", teamcomm_port);
-  theBroadCaster = new BroadCaster(interfaceName, teamcomm_port);
-  theBroadCastListener = new BroadCastListener(teamcomm_port, TEAMCOMM_MAX_MSG_SIZE);
+  theTeamCommSender = new BroadCaster(interfaceName, teamcomm_port);
+  theTeamCommListener = new UDPReceiver(teamcomm_port, TEAMCOMM_MAX_MSG_SIZE);
 
   // start the debug server at the default debug port
   std::cout << "[NaoController] " << "Init DebugServer" << endl;
@@ -155,8 +166,8 @@ NaoController::NaoController()
 NaoController::~NaoController()
 {
   delete theSoundHandler;
-  delete theBroadCaster;
-  delete theBroadCastListener;
+  delete theTeamCommSender;
+  delete theTeamCommListener;
   delete theGameController;
   delete theDebugServer;
 }

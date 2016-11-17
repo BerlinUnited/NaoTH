@@ -1,8 +1,12 @@
 #include "GameController.h"
 
 #include "Tools/Debug/DebugRequest.h"
+#include <PlatformInterface/Platform.h>
 
 GameController::GameController()
+  : 
+  lastWhistleCount(0),
+  returnMessage(GameReturnData::alive)
 {
   DEBUG_REQUEST_REGISTER("gamecontroller:play", "force the play state", false);
   DEBUG_REQUEST_REGISTER("gamecontroller:penalized", "force the penalized state", false);
@@ -10,60 +14,211 @@ GameController::GameController()
   DEBUG_REQUEST_REGISTER("gamecontroller:ready", "force the ready state", false);
   DEBUG_REQUEST_REGISTER("gamecontroller:set", "force the set state", false);
 
-  getPlayerInfo().gameData.gameState = GameData::initial;
+  // TODO: make it parameters?
+  // load values from config
+  const Configuration& config = naoth::Platform::getInstance().theConfiguration;
+
+  if (config.hasKey("player", "NumOfPlayer")) {
+    getPlayerInfo().playersPerTeam = config.getInt("player", "NumOfPlayer");
+  } else {
+    std::cerr << "[GameData] " << "No number of players (NumOfPlayers) given" << std::endl;
+  }
+
+  if (config.hasKey("player", "PlayerNumber")) {
+    getPlayerInfo().playerNumber = config.getInt("player", "PlayerNumber");
+  } else {
+    std::cerr << "[PlayerInfo] " << "No player number (PlayerNumber) given" << std::endl;
+    getPlayerInfo().playerNumber = 3;
+  }
+
+  if (config.hasKey("player", "TeamNumber")) {
+    getPlayerInfo().teamNumber = config.getInt("player", "TeamNumber");
+  } else {
+    std::cerr << "[PlayerInfo] " << "No team number (TeamNumber) given" << std::endl;
+    getPlayerInfo().teamNumber = 0;
+  }
+
+  if (config.hasKey("player", "TeamName")) {
+    getPlayerInfo().teamName = config.getString("player", "TeamName");
+  } else {
+    std::cerr << "[PlayerInfo] " << "No team name (TeamName) given" << std::endl;
+    getPlayerInfo().teamName = "unknown";
+  }
+
+  // NOTE: default team color is red
+  getPlayerInfo().teamColor = GameData::red;
+  if (config.hasKey("player", "TeamColor"))
+  {
+    getPlayerInfo().teamColor = GameData::teamColorFromString(config.getString("player", "TeamColor"));
+    if (getPlayerInfo().teamColor == GameData::unknown_team_color)
+    {
+      std::cerr << "[GameData] " << "Invalid team color (TeamColor) \""
+        << config.getString("player", "TeamColor") << "\" given" << std::endl;
+    }
+  } else {
+    std::cerr << "[GameData] " << "No team color (TeamColor) given" << std::endl;
+  }
 }
 
 void GameController::execute()
 {
-  GameData::GameState oldState = getPlayerInfo().gameData.gameState;
-  GameData::TeamColor oldTeamColor = getPlayerInfo().gameData.teamColor;
-  GameData::PlayMode oldPlayMode = getPlayerInfo().gameData.playMode;
+  PlayerInfo::RobotState oldRobotState = getPlayerInfo().robotState;
+  GameData::TeamColor oldTeamColor = getPlayerInfo().teamColor;
 
-  readHeadButtons();
-  readButtons();
+  // try update from the game controller message
+  if ( getGameData().valid ) 
+  {
+    getPlayerInfo().update(getGameData());
 
-  // TODO: what about the getGameData().frameNumber? it seems to be never set
-  if ( getGameData().valid ) {
-    getPlayerInfo().gameData = getGameData();
-    getPlayerInfo().gameData.frameNumber = getFrameInfo().getFrameNumber();
+    // reset return message if old message was accepted
+    if( returnMessage == GameReturnData::manual_penalise
+        && getGameData().getOwnRobotInfo(getPlayerInfo().playerNumber).penalty != GameData::none)
+    {
+      returnMessage = GameReturnData::alive;
+    }
+    else if(returnMessage == GameReturnData::manual_unpenalise
+            && getGameData().getOwnRobotInfo(getPlayerInfo().playerNumber).penalty == GameData::none)
+    {
+      returnMessage = GameReturnData::alive;
+    }
   }
 
+  // remember the whistle counter before set
+  //if(getPlayerInfo().robotState == PlayerInfo::ready) {
+  //  lastWhistleCount = getWhistlePercept().counter;
+  //}
+  // whistle overrides gamecontroller when in set and were are not penalized (e.g. for motion in set)
+  if(getGameData().gameState == GameData::set && getPlayerInfo().robotState != PlayerInfo::penalized)
+  {
+    // switch from set to play
+    if(getWhistlePercept().counter > lastWhistleCount) {
+      getPlayerInfo().robotState = PlayerInfo::playing;
+    }
+  }
+  else {
+    // remember the last whistle count
+    lastWhistleCount = getWhistlePercept().counter;
+  }
+
+  // keep the manual penalized state
+  if(returnMessage == GameReturnData::manual_penalise) {
+    getPlayerInfo().robotState = PlayerInfo::penalized;
+  }
+
+  handleButtons();
+  handleHeadButtons();
+  
   DEBUG_REQUEST("gamecontroller:initial",
-    getPlayerInfo().gameData.gameState = GameData::initial;
+    getPlayerInfo().robotState = PlayerInfo::initial;
   );
   DEBUG_REQUEST("gamecontroller:ready",
-    getPlayerInfo().gameData.gameState = GameData::ready;
+    getPlayerInfo().robotState = PlayerInfo::ready;
   );
   DEBUG_REQUEST("gamecontroller:set",
-    getPlayerInfo().gameData.gameState = GameData::set;
+    getPlayerInfo().robotState = PlayerInfo::set;
   );
   DEBUG_REQUEST("gamecontroller:play",
-    getPlayerInfo().gameData.gameState = GameData::playing;
+    getPlayerInfo().robotState = PlayerInfo::playing;
   );
   DEBUG_REQUEST("gamecontroller:penalized",
-    getPlayerInfo().gameData.gameState = GameData::penalized;
+    getPlayerInfo().robotState = PlayerInfo::penalized;
   );
 
-  if(oldState != getPlayerInfo().gameData.gameState
-    || oldTeamColor != getPlayerInfo().gameData.teamColor
-    || oldPlayMode != getPlayerInfo().gameData.playMode
-    || getPlayerInfo().gameData.gameState == GameData::initial)
+
+  if(  oldRobotState != getPlayerInfo().robotState
+    || oldTeamColor  != getPlayerInfo().teamColor
+    || getPlayerInfo().robotState == PlayerInfo::initial)
   {
     updateLEDs();
   }
-  
+
+  // provide the return message
+  getGameReturnData().team = getPlayerInfo().teamNumber;
+  getGameReturnData().player = getPlayerInfo().playerNumber;
+  getGameReturnData().message = returnMessage;
 } // end execute
 
-void GameController::readHeadButtons()
+
+void GameController::handleButtons()
+{
+  if (getButtonState()[ButtonState::Chest] == ButtonEvent::CLICKED)
+  {
+    switch (getPlayerInfo().robotState)
+    {
+    case PlayerInfo::initial:
+    case PlayerInfo::ready:
+    case PlayerInfo::set:
+    case PlayerInfo::playing:
+    case PlayerInfo::finished:
+    {
+      getPlayerInfo().robotState = PlayerInfo::penalized;
+      returnMessage = GameReturnData::manual_penalise;
+      break;
+    }
+    case PlayerInfo::penalized:
+    {
+      getPlayerInfo().robotState = PlayerInfo::playing;
+      returnMessage = GameReturnData::manual_unpenalise;
+      break;
+    }
+    default:
+      ASSERT(false);
+    }
+  }
+
+  // re-set team color or kickoff in initial
+  if (getPlayerInfo().robotState == PlayerInfo::initial)
+  {
+    if ( getButtonState()[ButtonState::LeftFoot] == ButtonEvent::PRESSED )
+    {
+      // switch team color
+      GameData::TeamColor oldColor = getPlayerInfo().teamColor;
+      if (oldColor == GameData::blue) {
+        getPlayerInfo().teamColor = GameData::red;
+      } else if (oldColor == GameData::red) {
+        getPlayerInfo().teamColor = GameData::yellow;
+      } else if (oldColor == GameData::yellow) {
+        getPlayerInfo().teamColor = GameData::black;
+      } else if (oldColor == GameData::black) {
+        getPlayerInfo().teamColor = GameData::blue;
+      } else { // set to red by default
+        getPlayerInfo().teamColor = GameData::red;
+      }
+    }
+
+    if ( getButtonState()[ButtonState::RightFoot] == ButtonEvent::PRESSED )
+    {
+      // switch kick off team
+      getPlayerInfo().kickoff = !getPlayerInfo().kickoff;
+    }
+  }
+
+  // go back from penalized to initial both foot bumpers are pressed for more than 1s
+  else if (getPlayerInfo().robotState == PlayerInfo::penalized &&
+    (  getButtonState()[ButtonState::LeftFoot].isPressed && 
+       getFrameInfo().getTimeSince(getButtonState()[ButtonState::LeftFoot].timeOfLastEvent) > 1000 )
+    &&
+    (  getButtonState()[ButtonState::RightFoot].isPressed && 
+       getFrameInfo().getTimeSince(getButtonState()[ButtonState::RightFoot].timeOfLastEvent) > 1000 )
+    )
+  {
+    getPlayerInfo().robotState = PlayerInfo::initial;
+    returnMessage = GameReturnData::manual_unpenalise;
+  }
+
+} // end handleButtons
+
+
+void GameController::handleHeadButtons()
 {
   getSoundPlayData().mute = true;
   getSoundPlayData().soundFile = "";
 
 
-  if(getButtonState().buttons[ButtonState::HeadMiddle] == ButtonEvent::CLICKED
-     && getPlayerInfo().gameData.gameState == GameData::initial)
+  if(   getButtonState().buttons[ButtonState::HeadMiddle] == ButtonEvent::CLICKED
+     && getPlayerInfo().robotState == PlayerInfo::initial)
   {
-    unsigned int playerNumber = getPlayerInfo().gameData.playerNumber;
+    int playerNumber = getPlayerInfo().playerNumber;
     if(playerNumber <= 9)
     {
       std::stringstream ssWav;
@@ -74,93 +229,6 @@ void GameController::readHeadButtons()
     }
   }
 }
-
-void GameController::readButtons()
-{
-  // default return message if old message was accepted
-  if(getGameReturnData().message == GameReturnData::manual_penalise
-     && getGameData().penaltyState != GameData::none)
-  {
-    getGameReturnData().message = GameReturnData::alive;
-  }
-  else if(getGameReturnData().message == GameReturnData::manual_unpenalise
-          && getGameData().penaltyState == GameData::none)
-  {
-    getGameReturnData().message = GameReturnData::alive;
-  }
-
-  // state change?
-  
-  if (getButtonState()[ButtonState::Chest] == ButtonEvent::CLICKED)
-  {
-    switch (getPlayerInfo().gameData.gameState)
-    {
-    case GameData::initial :
-    {
-      getPlayerInfo().gameData.gameState = GameData::penalized;
-      getPlayerInfo().gameData.timeWhenGameStateChanged = getFrameInfo().getTime();
-      getGameReturnData().message = GameReturnData::manual_penalise;
-      break;
-    }
-    case GameData::playing :
-    {
-      getPlayerInfo().gameData.gameState = GameData::penalized;
-      getPlayerInfo().gameData.timeWhenGameStateChanged = getFrameInfo().getTime();
-      getGameReturnData().message = GameReturnData::manual_penalise;
-      break;
-    }
-    case GameData::penalized :
-    {
-      getPlayerInfo().gameData.gameState = GameData::playing;
-      getPlayerInfo().gameData.timeWhenGameStateChanged = getFrameInfo().getTime();
-      getGameReturnData().message = GameReturnData::manual_unpenalise;
-      break;
-    }
-    default:
-      // always go back to play as default
-      getPlayerInfo().gameData.gameState = GameData::playing;
-      getPlayerInfo().gameData.timeWhenGameStateChanged = getFrameInfo().getTime();
-      break;
-    }
-  }
-
-  // re-set team color or kickoff in initial
-  if (getPlayerInfo().gameData.gameState == GameData::initial)
-  {
-    if ( getButtonState()[ButtonState::LeftFoot] == ButtonEvent::PRESSED )
-    {
-      // switch team color
-      GameData::TeamColor oldColor = getPlayerInfo().gameData.teamColor;
-      if (oldColor == GameData::blue) {
-        getPlayerInfo().gameData.teamColor = GameData::red;
-      } else if (oldColor == GameData::red) {
-        getPlayerInfo().gameData.teamColor = GameData::blue;
-      }
-    }
-
-    if ( getButtonState()[ButtonState::RightFoot] == ButtonEvent::PRESSED )
-    {
-      // switch kick off team
-      if ( getPlayerInfo().gameData.playMode == GameData::kick_off_own ) {
-        getPlayerInfo().gameData.playMode = GameData::kick_off_opp;
-      } else {
-        getPlayerInfo().gameData.playMode = GameData::kick_off_own;
-      }
-    }
-  }
-  // go back from penalized to initial both foot bumpers are pressed for more than 1s
-  else if (getPlayerInfo().gameData.gameState == GameData::penalized &&
-    (  getButtonState()[ButtonState::LeftFoot].isPressed && 
-       getFrameInfo().getTimeSince(getButtonState()[ButtonState::LeftFoot].timeOfLastEvent) > 1000 )
-    &&
-    (  getButtonState()[ButtonState::RightFoot].isPressed && 
-       getFrameInfo().getTimeSince(getButtonState()[ButtonState::RightFoot].timeOfLastEvent) > 1000 )
-    )
-  {
-    getPlayerInfo().gameData.gameState = GameData::initial;
-  }
-
-} // end readButtons
 
 void GameController::updateLEDs()
 {
@@ -183,19 +251,19 @@ void GameController::updateLEDs()
   }
 
   // show game state in torso
-  switch (getPlayerInfo().gameData.gameState)
+  switch (getPlayerInfo().robotState)
   {
-    case GameData::ready :
+    case PlayerInfo::ready:
         getGameControllerLEDRequest().request.theMultiLED[LEDData::ChestButton][LEDData::BLUE] = 1.0;
       break;
-    case GameData::set :
+    case PlayerInfo::set:
         getGameControllerLEDRequest().request.theMultiLED[LEDData::ChestButton][LEDData::GREEN] = 1.0;
       getGameControllerLEDRequest().request.theMultiLED[LEDData::ChestButton][LEDData::RED] = 1.0;
       break;
-    case GameData::playing :
+    case PlayerInfo::playing:
         getGameControllerLEDRequest().request.theMultiLED[LEDData::ChestButton][LEDData::GREEN] = 1.0;
       break;
-    case GameData::penalized :
+    case PlayerInfo::penalized:
         getGameControllerLEDRequest().request.theMultiLED[LEDData::ChestButton][LEDData::RED] = 1.0;
       break;
     default:
@@ -203,21 +271,31 @@ void GameController::updateLEDs()
   }
 
   // show team color on left foot
-  if (getPlayerInfo().gameData.teamColor == GameData::red)
+  if (getPlayerInfo().teamColor == GameData::red)
   {
-    getGameControllerLEDRequest().request.theMultiLED[LEDData::FootLeft][LEDData::RED] = 1.0;
+    getGameControllerLEDRequest().request.theMultiLED[LEDData::FootLeft][LEDData::RED] = 0.3;
+    getGameControllerLEDRequest().request.theMultiLED[LEDData::FootLeft][LEDData::BLUE] = 0.1;
   }
-  else if (getPlayerInfo().gameData.teamColor == GameData::blue)
+  else if (getPlayerInfo().teamColor == GameData::blue)
   {
     getGameControllerLEDRequest().request.theMultiLED[LEDData::FootLeft][LEDData::BLUE] = 1.0;
   }
+  else if(getPlayerInfo().teamColor == GameData::yellow)
+  {
+    getGameControllerLEDRequest().request.theMultiLED[LEDData::FootLeft][LEDData::RED] = 1.0;
+    getGameControllerLEDRequest().request.theMultiLED[LEDData::FootLeft][LEDData::GREEN] = 1.0;
+  }
+  else if(getPlayerInfo().teamColor == GameData::black)
+  {
+      // LED off
+  }
 
   // show kickoff state on right foot and head in initial, ready and set
-  if (getPlayerInfo().gameData.gameState == GameData::initial
-    || getPlayerInfo().gameData.gameState == GameData::ready
-    || getPlayerInfo().gameData.gameState == GameData::set)
+  if (getPlayerInfo().robotState == PlayerInfo::initial
+    || getPlayerInfo().robotState == PlayerInfo::ready
+    || getPlayerInfo().robotState == PlayerInfo::set)
   {
-    if (getPlayerInfo().gameData.playMode == GameData::kick_off_own)
+    if (getPlayerInfo().kickoff)
     {
       getGameControllerLEDRequest().request.theMultiLED[LEDData::FootRight][LEDData::RED] = 0.7;
       getGameControllerLEDRequest().request.theMultiLED[LEDData::FootRight][LEDData::GREEN] = 1.0;

@@ -18,6 +18,7 @@ import java.awt.event.ComponentEvent;
 import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -222,7 +223,7 @@ public class RobotControlImpl extends javax.swing.JFrame
         aboutMenuItem = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("RobotControl for Nao");
+        setTitle("RobotControl for Nao v2015");
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 formWindowClosing(evt);
@@ -417,7 +418,7 @@ public class RobotControlImpl extends javax.swing.JFrame
   /**
    * @param args the command line arguments
    */
-  public static void main(String args[])
+  public static void main(final String args[])
   {
     java.awt.EventQueue.invokeLater(new Runnable()
     {
@@ -431,11 +432,11 @@ public class RobotControlImpl extends javax.swing.JFrame
             Logger.getLogger(RobotControlImpl.class.getName()).log(Level.SEVERE, null, 
                     "Could not create the configuration path: \"" + configlocation + "\".");
         }
-          
+        
         final JSPFProperties props = new JSPFProperties();
-        props.setProperty(PluginManager.class, "cache.enabled", "true");
-        props.setProperty(PluginManager.class, "cache.mode", "stong"); //optional
-        props.setProperty(PluginManager.class, "cache.file", configlocation+"robot-control.jspf.cache");
+        props.setProperty(PluginManager.class, "cache.enabled", "false");
+//        props.setProperty(PluginManager.class, "cache.mode", "strong"); //optional
+//        props.setProperty(PluginManager.class, "cache.file", configlocation+"robot-control.jspf.cache");
 
         PluginManager pluginManager = PluginManagerFactory.createPluginManager(props);
 
@@ -443,11 +444,45 @@ public class RobotControlImpl extends javax.swing.JFrame
         {
           // make sure the main frame if loaded first
           pluginManager.addPluginsFrom(new ClassURI(RobotControlImpl.class).toURI());
-          
-          //
-          pluginManager.addPluginsFrom(new URI("classpath://*"));
 
-          //
+          File selfFile = new File(RobotControlImpl.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+          // load all plugins from 
+          pluginManager.addPluginsFrom(selfFile.toURI());
+
+          // NOTE: this is very slow to search in the whole classpath
+          //pluginManager.addPluginsFrom(new URI("classpath://*"));
+          
+          // JFX plugins
+          {
+            File parentDir = selfFile.getParentFile();
+            while(parentDir != null && !"robotcontrol".equalsIgnoreCase(parentDir.getName()))
+            {
+              parentDir = parentDir.getParentFile();
+            }
+            if(parentDir != null)
+            {
+              File jfxCandidate = new File(parentDir, "JFXPlugins/dist");
+              File[] jarFiles = jfxCandidate.listFiles(new FileFilter()
+              {
+                @Override
+                public boolean accept(File pathname)
+                {
+                  return pathname.isFile() && pathname.getName().endsWith(".jar");
+                }
+              });
+              if(jarFiles != null)
+              {
+                for (File j : jarFiles)
+                {
+                  pluginManager.addPluginsFrom(j.toURI());
+                }
+              }
+            }
+          }
+          
+          
+          
+          // relative "plugins/" directory
           File workingDirectoryPlugin = new File("plugins/");
           if(workingDirectoryPlugin.isDirectory())
           {
@@ -547,8 +582,7 @@ public class RobotControlImpl extends javax.swing.JFrame
     try {
       this.dialogRegistry.loadFromFile(layoutFile);
     } catch(FileNotFoundException ex) {
-      Logger.getLogger(RobotControlImpl.class.getName()).log(Level.INFO, 
-              "Could not find the layout file: " + layoutFile.getAbsolutePath());
+      Logger.getLogger(RobotControlImpl.class.getName()).log(Level.INFO, "Could not find the layout file: {0}", layoutFile.getAbsolutePath());
     } catch(IOException ex) {
         Helper.handleException("Error while reading the layout file.", ex);
     }

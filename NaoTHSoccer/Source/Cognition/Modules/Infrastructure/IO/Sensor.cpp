@@ -27,9 +27,6 @@ void Sensor::init(naoth::ProcessInterface& platformInterface, const naoth::Platf
   robot.bodyID = platform.getBodyID();
   robot.basicTimeStep = platform.getBasicTimeStep();
   
-  // init player number, team number and etc.
-  getGameData().loadFromCfg( naoth::Platform::getInstance().theConfiguration );
-
   REG_INPUT(Image);
   REG_INPUT(ImageTop);
   REG_INPUT(CurrentCameraSettings);
@@ -53,12 +50,15 @@ void Sensor::init(naoth::ProcessInterface& platformInterface, const naoth::Platf
   REG_INPUT(GameData);
   REG_INPUT(DebugMessageInCognition);
 
+  REG_INPUT(WhistlePercept);
+
   platformInterface.registerBufferedInputChanel(getCameraMatrixBuffer());
   platformInterface.registerBufferedInputChanel(getCameraMatrixBufferTop());
   platformInterface.registerInputChanel(getMotionStatus());
   platformInterface.registerInputChanel(getOdometryData());
   platformInterface.registerInputChanel(getCalibrationData());
   platformInterface.registerInputChanel(getInertialModel());
+  platformInterface.registerInputChanel(getBodyStatus());
 }//end init
 
 

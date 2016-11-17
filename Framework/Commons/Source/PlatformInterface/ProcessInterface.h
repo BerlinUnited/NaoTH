@@ -27,7 +27,7 @@ namespace naoth
 class ProcessInterface
 {
 public:
-  ProcessInterface(Prosess& process, ProsessEnvironment& environment)
+  ProcessInterface(Process& process, ProcessEnvironment& environment)
     : process(process), environment(environment)
   {
 
@@ -97,8 +97,8 @@ private:
   }
 
 
-  Prosess& process;
-  ProsessEnvironment& environment;
+  Process& process;
+  ProcessEnvironment& environment;
 };// end ProsessInterface
 
 }// namespace naoth
