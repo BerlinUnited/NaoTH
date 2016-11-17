@@ -151,8 +151,8 @@ public:
 	  {
     }
 
-    Vector2d predict(const Vector2d& ball) const;
-    Vector2d calcExpectedBallPos(const Vector2d& ball) const;
+    //Vector2d predict(const Vector2d& ball) const;
+	Vector2d predict(const Vector2d& ball, bool noise) const;
     KickActionModel::ActionId id() const { return _id; }
     const std::string& name() const { return _name; }
   };

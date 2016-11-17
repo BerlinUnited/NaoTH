@@ -92,7 +92,7 @@ void Simulation::execute()
   STOPWATCH_STOP("Simulation:decide");  
 
   getKickActionModel().bestAction = action_local[best_action].id();
-  getKickActionModel().expectedBallPos = getRobotPose() * action_local[best_action].calcExpectedBallPos(getBallModel().positionPreview);
+  getKickActionModel().expectedBallPos = getRobotPose() * action_local[best_action].predict(getBallModel().positionPreview, false);
 
   DEBUG_REQUEST("Simulation:draw_best_action",
     FIELD_DRAWING_CONTEXT;
@@ -155,7 +155,8 @@ void Simulation::simulateConsequences(
   for(size_t j=0; j < static_cast<size_t>(theParameters.numParticles); j++)
   {
     // predict and calculate shoot line
-    Vector2d globalBallEndPosition = getRobotPose() * action.predict(getBallModel().positionPreview);
+    Vector2d globalBallEndPosition = getRobotPose() * action.predict(getBallModel().positionPreview, true);
+
     Math::LineSegment shootLine(globalBallStartPosition, globalBallEndPosition);
 
     // check if collision detection with goal has to be performed
@@ -355,25 +356,24 @@ size_t Simulation::decide_smart(const std::vector<ActionResults>& actionsConsequ
 }
 
 //correction of distance in percentage, angle in degrees
-Vector2d Simulation::Action::predict(const Vector2d& ball) const
+Vector2d Simulation::Action::predict(const Vector2d& ball, bool noise) const
 {
-  double gforce = Math::g*1e3; // mm/s^2
-  double speed = Math::generateGaussianNoise(action_speed, action_speed_std);
-  double distance = speed*speed/friction/gforce/2.0; // friction*mass*gforce*distance = 1/2*mass*speed*speed
-  double angle = Math::generateGaussianNoise(Math::fromDegrees(action_angle), Math::fromDegrees(action_angle_std)); 
-  Vector2d noisyAction(distance, 0.0);
-  noisyAction.rotate(angle);
+	double gforce = Math::g*1e3; // mm/s^2
+	double distance;
+	double angle;
+	if (noise){
+		double speed = Math::generateGaussianNoise(action_speed, action_speed_std);
+		angle = Math::generateGaussianNoise(Math::fromDegrees(action_angle), Math::fromDegrees(action_angle_std));
+		distance = speed*speed / friction / gforce / 2.0; // friction*mass*gforce*distance = 1/2*mass*speed*speed
+	}
+	else{
+		distance = action_speed*action_speed / friction / gforce / 2.0; // friction*mass*gforce*distance = 1/2*mass*speed*speed
+		angle = Math::fromDegrees(action_angle);
+	}  
+  Vector2d predictedAction(distance, 0.0);
+  predictedAction.rotate(angle);
 
-  return ball + noisyAction;
-}
-
-Vector2d Simulation::Action::calcExpectedBallPos(const Vector2d& ball) const
-{
-  double gforce = Math::g*1e3; // mm/s^2
-  double distance = action_speed*action_speed/friction/gforce/2.0; // friction*mass*gforce*distance = 1/2*mass*speed*speed
-  Vector2d meanAction(distance, 0.0);
-  meanAction.rotate(Math::fromDegrees(action_angle));
-  return ball + meanAction;
+  return ball + predictedAction;
 }
 
 double Simulation::exp256(const double& x) const
