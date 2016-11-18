@@ -417,6 +417,10 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
         this.backgroundDrawing = (Drawable)this.cbBackground.getSelectedItem();
         this.fieldCanvas.getDrawingList().set(0, this.backgroundDrawing);
         this.fieldCanvas.repaint();
+        // TODO: should this be inside the DynamicCanvasPanel?
+        if(this.fieldCanvas.isFitToViewport()) {
+            this.fieldCanvas.fitToViewport();
+        }
     }//GEN-LAST:event_cbBackgroundActionPerformed
 
     private void btRotateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btRotateActionPerformed
