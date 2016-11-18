@@ -42,7 +42,7 @@ public class ModuleConfigurationViewer extends AbstractDialog
   implements ObjectListener<ModuleConfiguration>
 {
 
-  @RCDialog(category = "Configure", name = "Modules")
+  @RCDialog(category = RCDialog.Category.Configure, name = "Modules")
   @PluginImplementation
   public static class Plugin extends DialogPlugin<ModuleConfigurationViewer>
   {
