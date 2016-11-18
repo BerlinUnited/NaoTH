@@ -62,7 +62,7 @@ import org.freehep.util.export.ExportDialog;
 public class FieldViewer extends AbstractDialog
 {
 
-    @RCDialog(category = "View", name = "Field")
+    @RCDialog(category = RCDialog.Category.View, name = "Field")
     @PluginImplementation
     public static class Plugin extends DialogPlugin<FieldViewer> {
 
