@@ -121,6 +121,7 @@ public class FieldViewer extends AbstractDialog
     this.plotDataListener = new PlotDataListener();
     
     this.fieldCanvas.setToolTipText("");
+    this.fieldCanvas.setFitToViewport(this.btFitToView.isSelected());
     canvasExport = this.fieldCanvas;
     
     Plugin.drawingEventManager.addListener(new DrawingListener() {
@@ -260,6 +261,8 @@ public class FieldViewer extends AbstractDialog
         jToolBar1.add(btRotate);
 
         btFitToView.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/freehep/swing/images/0_MoveCursor.gif"))); // NOI18N
+        btFitToView.setSelected(true);
+        btFitToView.setToolTipText("auto-zoom canvas on resizing and rotation");
         btFitToView.setFocusable(false);
         btFitToView.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btFitToView.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
