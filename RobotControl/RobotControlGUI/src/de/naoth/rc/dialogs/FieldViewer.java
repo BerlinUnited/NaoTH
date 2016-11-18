@@ -236,7 +236,7 @@ public class FieldViewer extends AbstractDialog
         });
         jToolBar1.add(cbBackground);
 
-        btRotate.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/naoth/rc/res/ball_24.gif"))); // NOI18N
+        btRotate.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/naoth/rc/res/rotate_ccw.png"))); // NOI18N
         btRotate.setToolTipText("Rotate the coordinates by 90°");
         btRotate.setFocusable(false);
         btRotate.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
