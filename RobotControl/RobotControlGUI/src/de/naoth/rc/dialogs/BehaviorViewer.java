@@ -67,7 +67,7 @@ public class BehaviorViewer extends AbstractDialog
   implements  Dialog
 {
 
-  @RCDialog(category = "Status", name = "Behavior")
+  @RCDialog(category = RCDialog.Category.Status, name = "Behavior")
   @PluginImplementation
   public static class Plugin extends DialogPlugin<BehaviorViewer>
   {

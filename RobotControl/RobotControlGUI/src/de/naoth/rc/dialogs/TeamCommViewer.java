@@ -54,7 +54,7 @@ import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
  */
 public class TeamCommViewer extends AbstractDialog {
 
-    @RCDialog(category = "Team", name = "Communication Viewer")
+    @RCDialog(category = RCDialog.Category.Team, name = "Communication Viewer")
     @PluginImplementation
     public static class Plugin extends DialogPlugin<TeamCommViewer> {
 

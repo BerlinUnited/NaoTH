@@ -108,7 +108,8 @@ public class DialogRegistry {
         
         String name = dialog.getDisplayName();
         String category = dialog.getCategory();
-
+        char mnemonic = 0;
+        
         // register a factory
         this.control.addSingleDockableFactory(name, new DialogFactory(dialog));
         
@@ -121,13 +122,13 @@ public class DialogRegistry {
                 name = annotation.name();
             }
             
-            if(!annotation.category().isEmpty()) {
-                category = annotation.category();
-            }
+            category = annotation.category().name();
+            mnemonic = annotation.category().mnemonic();
         } 
         
         // create menu item (should never return null)
-        JMenuItem item = menuBar.addDialog(name, category);
+        
+        JMenuItem item = menuBar.addDialog(name, category, mnemonic);
         item.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

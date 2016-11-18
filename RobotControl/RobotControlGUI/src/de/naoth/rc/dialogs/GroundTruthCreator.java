@@ -36,7 +36,7 @@ import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
  */
 public class GroundTruthCreator extends AbstractDialog
 {
-    @RCDialog(category = "Tools", name = "GroundTruthCreator")
+    @RCDialog(category = RCDialog.Category.Tools, name = "GroundTruthCreator")
     @PluginImplementation
     public static class Plugin extends DialogPlugin<GroundTruthCreator> {
     @InjectPlugin

@@ -78,7 +78,7 @@ public class GroundTruthReader extends AbstractDialog {
     Map<Integer,MissmatchSaver> missmatches;
    
 
-    @RCDialog(category = "Tools", name = "GroundTruthReader")
+    @RCDialog(category = RCDialog.Category.Tools, name = "GroundTruthReader")
     @PluginImplementation
     public static class Plugin extends DialogPlugin<GroundTruthReader> {
 

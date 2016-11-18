@@ -20,15 +20,12 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.UIManager;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
@@ -40,7 +37,7 @@ import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 public class ParameterPanel extends AbstractDialog
 {
 
-  @RCDialog(category = "Configure", name = "Parameter")
+  @RCDialog(category = RCDialog.Category.Configure, name = "Parameter")
   @PluginImplementation
   public static class Plugin extends DialogPlugin<ParameterPanel>
   {

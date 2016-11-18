@@ -14,10 +14,14 @@ public class MainMenuBar extends JMenuBar {
     private final HashMap<String, JMenu> menus = new HashMap<String, JMenu>();
     private final HashMap<String, JMenuItem> menuItems = new HashMap<String, JMenuItem>();
     
-    public JMenuItem addDialog(String name, String category) {
+    
+    public JMenuItem addDialog(String name, String category, char mnemonic) {
         JMenu menu = this.menus.get(category);
         if(menu == null) {
             menu = new JMenu(category, false);
+            if(Character.isLetter(mnemonic)) {
+                menu.setMnemonic(mnemonic);
+            }
             this.menus.put(category, menu);
             this.add(menu,1);
         }

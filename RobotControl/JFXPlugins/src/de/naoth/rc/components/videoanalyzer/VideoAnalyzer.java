@@ -29,7 +29,7 @@ import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 public class VideoAnalyzer extends AbstractJFXDialog
 {
 
-  @RCDialog(category = "Log", name = "VideoAnalyzer")
+  @RCDialog(category = RCDialog.Category.Log, name = "VideoAnalyzer")
   @PluginImplementation
   public static class Plugin extends DialogPlugin<VideoAnalyzer>
   {
