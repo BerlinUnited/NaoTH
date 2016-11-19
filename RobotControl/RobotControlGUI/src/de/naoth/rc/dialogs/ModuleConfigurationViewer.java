@@ -490,11 +490,10 @@ public class ModuleConfigurationViewer extends AbstractDialog
         ArrayList<ListComponent> notRequiredButEx = new ArrayList<ListComponent>();
         ArrayList<ListComponent> notProvidedButEx = new ArrayList<ListComponent>();
         ArrayList<ListComponent> fatalErrors = new ArrayList<ListComponent>();
-        int counterErr = 0;
-        int counterRep = 0;
-        int counter = 0;            //counters for the different types of errors and warnings for the description
-        int counterPro = 0;
-        int counterReq = 0;
+        int counterErr = 0;     //counters for the different types of errors and warnings for the description
+        int counterRep = 0;         
+        int counterWarnings = 0;
+        
         for (Node n : this.moduleGraph.getNodeList())
         {
             if (n.isEnabled() && (n.getType() == ModuleConfiguration.NodeType.Represenation))
@@ -504,42 +503,23 @@ public class ModuleConfigurationViewer extends AbstractDialog
                 {
                     boolean req = n.isProvide();
                     boolean prov = n.isRequire();
-                    if (!req && !prov)
+                    if (req && !prov)
                     {
-                        //nor provided nor required
+                        //Neither provided nor required
                         counterErr++;
-                        fatalErrors.add(new ListComponent(n, ("FATAL ERROR: " + n.getName() + " is nor provided nor required")));
+                        fatalErrors.add(new ListComponent(n, ("FATAL ERROR: " + n.getName() + " is required but not provided ")));
                     }
-                    else
+                    else if(prov && !req)
                     {
-                        if (!prov)
+                        if (n.provide.isEmpty())//This should probably not be a warning
                         {
-                            //not provided
-                            counterPro++;
-                            counter++;
-                            if (n.require.isEmpty())
-                            {
-                                notProvided.add(new ListComponent(n, ("Code Error: " + n.getName() + " is not provided (no existing modules)")));
-                            }
-                            else
-                            {
-                                notProvidedButEx.add(new ListComponent(n, ("Config Error: " + n.getName() + " is not provided (all modules deactivated)")));
-                            }
-
+                            //provided but not required from any module activated or not
+                            //notRequired.add(new ListComponent(n, ("Code Warning: " + n.getName() + " is not required (no existing modules)")));
                         }
-                        if (!req)
+                        else
                         {
-                            //not required
-                            counterReq++;
-                            counter++;
-                            if (n.provide.isEmpty())
-                            {
-                                notRequired.add(new ListComponent(n, ("Code Warning: " + n.getName() + " is not required (no existing modules)")));
-                            }
-                            else
-                            {
-                                notProvidedButEx.add(new ListComponent(n, ("Config Warning: " + n.getName() + " is not required (all modules deactivated)")));
-                            }
+                            counterWarnings++;
+                            notProvidedButEx.add(new ListComponent(n, ("Warning: " + n.getName() + " is provided but not required")));
                         }
                     }
                 }
@@ -555,9 +535,9 @@ public class ModuleConfigurationViewer extends AbstractDialog
 
                 //description
                 String s = "";
-                if (counter != 0)
+                if (counterWarnings != 0)
                 {
-                    s = "[" + counter + " Issues: " + counterPro + " not provided, " + counterReq + " not required]\n" + s;
+                    s = "[" + counterWarnings + " Warnings]\n" + s;
                 }
                 if (counterErr != 0)
                 {
@@ -613,7 +593,7 @@ public class ModuleConfigurationViewer extends AbstractDialog
         {
             ignorelist = new ArrayList<String>();
 
-            updateIgnorelist("src/de/naoth/rc/dialogs/moduleIntergretyIgnorelist");
+            updateIgnorelist("src/de/naoth/rc/dialogs/moduleIntegrityIgnorelist");
         }
 
         public boolean isOnIgnorelist(String name)
