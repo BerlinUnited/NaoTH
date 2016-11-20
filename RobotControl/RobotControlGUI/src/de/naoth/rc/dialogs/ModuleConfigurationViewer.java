@@ -347,8 +347,8 @@ public class ModuleConfigurationViewer extends AbstractDialog
     }//end for
 
     // update the combo boxes
-    Collections.sort(modules, new CormpareIgnoreCase());
-    Collections.sort(representations, new CormpareIgnoreCase());
+    Collections.sort(modules, new CompareIgnoreCase());
+    Collections.sort(representations, new CompareIgnoreCase());
     this.cbModules.setModel(new javax.swing.DefaultComboBoxModel(modules.toArray()));
     this.cbRepresentations.setModel(new javax.swing.DefaultComboBoxModel(representations.toArray()));
     this.cbModulesSearch.revalidateModel();
@@ -360,7 +360,7 @@ public class ModuleConfigurationViewer extends AbstractDialog
   }//end newObjectReceived
   
   
-  public class CormpareIgnoreCase implements Comparator<Object> {
+  public class CompareIgnoreCase implements Comparator<Object> {
     public int compare(Object o1, Object o2) {
         String s1 = o1.toString().toLowerCase();
         String s2 = o2.toString().toLowerCase();
