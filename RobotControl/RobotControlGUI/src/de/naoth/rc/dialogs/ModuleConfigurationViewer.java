@@ -96,8 +96,7 @@ public class ModuleConfigurationViewer extends AbstractDialog
      */
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
-    private void initComponents()
-    {
+    private void initComponents() {
 
         fileChooser = new de.naoth.rc.components.ExtendedFileChooser();
         jToolBar1 = new javax.swing.JToolBar();
@@ -112,13 +111,15 @@ public class ModuleConfigurationViewer extends AbstractDialog
         jSplitPane1 = new javax.swing.JSplitPane();
         modulePanel = new de.naoth.rc.components.SimpleModulePanel();
         jSplitPane2 = new javax.swing.JSplitPane();
-        jSplitPane3 = new javax.swing.JSplitPane();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        errorList = new javax.swing.JList();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        checkDescription = new javax.swing.JTextArea();
         jScrollPane = new javax.swing.JScrollPane();
         moduleConfigTree = new de.naoth.rc.components.checkboxtree.CheckboxTree();
+        errorPanel = new javax.swing.JPanel();
+        jToolBar2 = new javax.swing.JToolBar();
+        jLCheckedRepresentations = new javax.swing.JLabel();
+        btErrors = new javax.swing.JToggleButton();
+        btWarnings = new javax.swing.JToggleButton();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        errorList = new javax.swing.JList();
 
         jToolBar1.setFloatable(false);
         jToolBar1.setRollover(true);
@@ -127,10 +128,8 @@ public class ModuleConfigurationViewer extends AbstractDialog
         jToggleButtonRefresh.setFocusable(false);
         jToggleButtonRefresh.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jToggleButtonRefresh.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jToggleButtonRefresh.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
+        jToggleButtonRefresh.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jToggleButtonRefreshActionPerformed(evt);
             }
         });
@@ -141,10 +140,8 @@ public class ModuleConfigurationViewer extends AbstractDialog
         btExport.setFocusable(false);
         btExport.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btExport.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        btExport.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
+        btExport.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btExportActionPerformed(evt);
             }
         });
@@ -155,10 +152,8 @@ public class ModuleConfigurationViewer extends AbstractDialog
         btSave.setFocusable(false);
         btSave.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btSave.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        btSave.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
+        btSave.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btSaveActionPerformed(evt);
             }
         });
@@ -169,20 +164,16 @@ public class ModuleConfigurationViewer extends AbstractDialog
         btSend.setFocusable(false);
         btSend.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btSend.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        btSend.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
+        btSend.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btSendActionPerformed(evt);
             }
         });
         jToolBar1.add(btSend);
 
         cbProcess.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Cognition", "Motion" }));
-        cbProcess.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
+        cbProcess.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cbProcessActionPerformed(evt);
             }
         });
@@ -190,10 +181,8 @@ public class ModuleConfigurationViewer extends AbstractDialog
 
         cbModules.setEditable(true);
         cbModules.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "<empty>" }));
-        cbModules.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
+        cbModules.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cbModulesActionPerformed(evt);
             }
         });
@@ -201,10 +190,8 @@ public class ModuleConfigurationViewer extends AbstractDialog
 
         cbRepresentations.setEditable(true);
         cbRepresentations.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "<empty>" }));
-        cbRepresentations.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
+        cbRepresentations.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cbRepresentationsActionPerformed(evt);
             }
         });
@@ -215,10 +202,8 @@ public class ModuleConfigurationViewer extends AbstractDialog
         errorIgnoreToggle.setFocusable(false);
         errorIgnoreToggle.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         errorIgnoreToggle.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        errorIgnoreToggle.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
+        errorIgnoreToggle.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
                 errorIgnoreToggleActionPerformed(evt);
             }
         });
@@ -231,36 +216,46 @@ public class ModuleConfigurationViewer extends AbstractDialog
         jSplitPane2.setDividerLocation(300);
         jSplitPane2.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
 
-        jSplitPane3.setDividerLocation(240);
-        jSplitPane3.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
+        jScrollPane.setBorder(null);
+        jScrollPane.setPreferredSize(new java.awt.Dimension(200, 322));
+        jScrollPane.setViewportView(moduleConfigTree);
+
+        jSplitPane2.setTopComponent(jScrollPane);
+
+        errorPanel.setLayout(new java.awt.BorderLayout());
+
+        jToolBar2.setFloatable(false);
+        jToolBar2.setRollover(true);
+
+        jLCheckedRepresentations.setText("0 Cheched Representations ");
+        jToolBar2.add(jLCheckedRepresentations);
+
+        btErrors.setText("Errors");
+        btErrors.setFocusable(false);
+        btErrors.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btErrors.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToolBar2.add(btErrors);
+
+        btWarnings.setText("Warnings");
+        btWarnings.setFocusable(false);
+        btWarnings.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btWarnings.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToolBar2.add(btWarnings);
+
+        errorPanel.add(jToolBar2, java.awt.BorderLayout.NORTH);
 
         errorList.setToolTipText("");
         errorList.setSelectionBackground(new java.awt.Color(255, 255, 255));
-        errorList.addMouseListener(new java.awt.event.MouseAdapter()
-        {
-            public void mouseClicked(java.awt.event.MouseEvent evt)
-            {
+        errorList.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
                 errorListMouseClicked(evt);
             }
         });
         jScrollPane2.setViewportView(errorList);
 
-        jSplitPane3.setLeftComponent(jScrollPane2);
+        errorPanel.add(jScrollPane2, java.awt.BorderLayout.CENTER);
 
-        checkDescription.setColumns(20);
-        checkDescription.setRows(5);
-        checkDescription.setText("<not connected>");
-        jScrollPane1.setViewportView(checkDescription);
-
-        jSplitPane3.setRightComponent(jScrollPane1);
-
-        jSplitPane2.setTopComponent(jSplitPane3);
-
-        jScrollPane.setBorder(null);
-        jScrollPane.setPreferredSize(new java.awt.Dimension(200, 322));
-        jScrollPane.setViewportView(moduleConfigTree);
-
-        jSplitPane2.setRightComponent(jScrollPane);
+        jSplitPane2.setBottomComponent(errorPanel);
 
         jSplitPane1.setRightComponent(jSplitPane2);
 
@@ -534,6 +529,7 @@ public class ModuleConfigurationViewer extends AbstractDialog
                 errorList.setListData(listComponents.toArray());
 
                 //description
+                /*
                 String s = "";
                 if (counterWarnings != 0)
                 {
@@ -546,9 +542,17 @@ public class ModuleConfigurationViewer extends AbstractDialog
                 s = "[" + counterRep + " enabled Representations checked]\n" + s;
                 s = String.format(s);
                 checkDescription.setText(s);
+                */
+                updateModuleErrorStatus(counterRep, counterErr, counterWarnings);
             }
         }
 
+    }
+    
+    private void updateModuleErrorStatus(int numberChecked, int numberErrors, int numberWarnings) {
+        this.jLCheckedRepresentations.setText(String.format("%d Checked", numberChecked));
+        this.btErrors.setText(String.format("%d Errors", numberErrors));
+        this.btWarnings.setText(String.format("%d Warnings", numberErrors));
     }
 
     public boolean isOnIgnorelist(String name)
@@ -814,24 +818,26 @@ public class ModuleConfigurationViewer extends AbstractDialog
     }//end dispose
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JToggleButton btErrors;
     private javax.swing.JButton btExport;
     private javax.swing.JButton btSave;
     private javax.swing.JButton btSend;
+    private javax.swing.JToggleButton btWarnings;
     private javax.swing.JComboBox cbModules;
     private javax.swing.JComboBox cbProcess;
     private javax.swing.JComboBox cbRepresentations;
-    private javax.swing.JTextArea checkDescription;
     private javax.swing.JToggleButton errorIgnoreToggle;
     private javax.swing.JList errorList;
+    private javax.swing.JPanel errorPanel;
     private de.naoth.rc.components.ExtendedFileChooser fileChooser;
+    private javax.swing.JLabel jLCheckedRepresentations;
     private javax.swing.JScrollPane jScrollPane;
-    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JSplitPane jSplitPane1;
     private javax.swing.JSplitPane jSplitPane2;
-    private javax.swing.JSplitPane jSplitPane3;
     private javax.swing.JToggleButton jToggleButtonRefresh;
     private javax.swing.JToolBar jToolBar1;
+    private javax.swing.JToolBar jToolBar2;
     private de.naoth.rc.components.checkboxtree.CheckboxTree moduleConfigTree;
     private de.naoth.rc.components.SimpleModulePanel modulePanel;
     // End of variables declaration//GEN-END:variables
