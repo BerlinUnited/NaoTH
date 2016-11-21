@@ -28,6 +28,16 @@ newoption {
    description = "Disable te -Wconversion warnin for gCC"
 }
 
+newoption {
+   trigger     = "Wno-misleading-indentation",
+   description = "Disable the -Wmisleading-indentation warning/error for gcc (6.0+)"
+}
+
+newoption {
+   trigger     = "Wno-ignored-attributes",
+   description = "Disable the -Wignored-attributes warning/error for gcc (6.0+)"
+}
+
 -- definition of the solution
 solution "NaoTHSoccer"
   platforms {"Native", "Nao"}
@@ -47,7 +57,8 @@ solution "NaoTHSoccer"
   links {
     "opencv_core",
     "opencv_ml",
-    "opencv_imgproc"
+    "opencv_imgproc",
+    "opencv_objdetect"
 	}
   
   -- set the remository information
@@ -136,6 +147,14 @@ solution "NaoTHSoccer"
       if _OPTIONS["Wno-conversion"] == nil then
         buildoptions {"-Wconversion"}
         defines { "_NAOTH_CHECK_CONVERSION_" }
+      end
+
+      if _OPTIONS["Wno-misleading-indentation"] ~= nil then
+        buildoptions {"-Wno-misleading-indentation"}
+      end
+
+      if _OPTIONS["Wno-ignored-attributes"] ~= nil then
+        buildoptions {"-Wno-ignored-attributes"}
       end
     
       -- Why? OpenCV is always dynamically linked and we can only garantuee that there is one version in Extern (Thomas)

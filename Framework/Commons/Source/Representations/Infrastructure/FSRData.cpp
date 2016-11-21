@@ -53,10 +53,19 @@ void FSRData::print(ostream& stream) const
 
 double FSRData::forceLeft() const
 {
+  int max_i = LFsrFL;
+  for( int i=LFsrFL; i<=LFsrBR; i++)
+  {
+      if(force[i] > force[max_i])
+      {
+          max_i = i;
+      }
+  }
+
   double f = 0;
   for ( int i=LFsrFL; i<=LFsrBR; i++)
   {
-    if ( valid[i] )// check if the sensor is valid
+    if ( valid[i] && i != max_i)// check if the sensor is valid
     {
       f += force[i];
     }
@@ -66,10 +75,19 @@ double FSRData::forceLeft() const
 
 double FSRData::forceRight() const
 {
+  int max_i = RFsrFL;
+  for( int i=RFsrFL; i<=RFsrBR; i++)
+  {
+      if(force[i] > force[max_i])
+      {
+          max_i = i;
+      }
+  }
+
   double f = 0;
   for (int i = RFsrFL; i <= RFsrBR; i++)
   {
-    if ( valid[i] )// check if the sensor is valid
+    if ( valid[i] && i != max_i)// check if the sensor is valid
     {
       f += force[i];
     }

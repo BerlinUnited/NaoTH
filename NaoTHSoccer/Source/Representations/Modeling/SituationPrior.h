@@ -8,8 +8,9 @@
 #define _SituationPrior_H
 
 #include <string>
+#include <Tools/DataStructures/Printable.h>
 
-class SituationPrior
+class SituationPrior : public naoth::Printable
 {
 public:
 
@@ -30,7 +31,9 @@ public:
   };
 
   static std::string getName(PriorId id);
-  
+
+  virtual void print(std::ostream& stream) const;
+
   PriorId currentPrior;
 };
 

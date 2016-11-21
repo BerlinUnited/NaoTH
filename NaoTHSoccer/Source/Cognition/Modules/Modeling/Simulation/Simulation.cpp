@@ -10,6 +10,7 @@ using namespace naoth;
 using namespace std;
 
 Simulation::Simulation()
+ // : obstacleFilter(0.01, 0.1)
 {
   DEBUG_REQUEST_REGISTER("Simulation:draw_ball","draw_ball", false);
   DEBUG_REQUEST_REGISTER("Simulation:draw_goal_collisions", "", false);
@@ -43,6 +44,9 @@ Simulation::~Simulation(){}
 
 void Simulation::execute()
 {
+  //obstacleFilter.setParameter(theParameters.obstacleFilter.g0, theParameters.obstacleFilter.g1);
+  //obstacleFilter.update(getObstacleModel().frontDistance < 400, 0.3, 0.7);
+
   DEBUG_REQUEST("Simulation:use_Parameters",
     action_local.clear();
     action_local.reserve(KickActionModel::numOfActions);
@@ -144,7 +148,7 @@ void Simulation::simulateConsequences(
   // virtual ultrasound obstacle line
   Math::LineSegment obstacleLine(getRobotPose() * Vector2d(400, 200), getRobotPose() * Vector2d(400, -200));
   // now generate predictions and categorize
-  for(size_t j=0; j < theParameters.numParticles; j++) 
+  for(size_t j=0; j < static_cast<size_t>(theParameters.numParticles); j++)
   {
     // predict and calculate shoot line
     Vector2d globalBallEndPosition = getRobotPose() * action.predict(getBallModel().positionPreview);
@@ -191,7 +195,8 @@ void Simulation::simulateConsequences(
     
     // Obstacle Detection
     bool obstacleCollision = false;
-    if(getObstacleModel().frontDistance < 400 && getObstacleModel().blockedTime > 100)
+    /*
+    if(obstacleFilter.value() && getObstacleModel().blockedTime > 100)
     {
       obstacleCollision = true;
       // draw obstacle line
@@ -202,6 +207,7 @@ void Simulation::simulateConsequences(
              obstacleLine.end().x, obstacleLine.end().y);
       );
     }
+    */
 
     // now categorize the position
     BallPositionCategory category = INFIELD;
@@ -232,7 +238,7 @@ void Simulation::simulateConsequences(
     {
       category = OWNGOAL;
     }
-    //Opponent Groundline Out - Ball einen Meter hinter Roboter mind anstoß höhe. jeweils seite wo ins ausgeht
+    //Opponent Groundline Out - Ball einen Meter hinter Roboter mind anstoï¿½ hï¿½he. jeweils seite wo ins ausgeht
     else if(globalBallEndPosition.x > getFieldInfo().xPosOpponentGroundline)
     {
       category = OPPOUT;

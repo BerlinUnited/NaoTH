@@ -19,22 +19,24 @@ void IntegralImageProvider::execute(CameraInfo::CameraID id)
 {
   cameraID = id;
   if(cameraID == CameraInfo::Bottom) {
-    integralBildBottom();
+    //makeIntegralBild(getGameColorIntegralImage());
+    makeIntegralBild(getBallDetectorIntegralImage());
   } else {
-    integralBild();
+    //makeIntegralBild(getGameColorIntegralImageTop());
+    makeIntegralBild(getBallDetectorIntegralImageTop());
   }
 }
 
-
+/*
 void IntegralImageProvider::integralBild()
 {
-  const int32_t FACTOR = getGameColorIntegralImage().FACTOR;
-  const uint32_t MAX_COLOR = GameColorIntegralImage::MAX_COLOR;
+  const int32_t FACTOR = getMultiChannelIntegralImage().FACTOR;
+  const uint32_t MAX_COLOR = MultiChannelIntegralImage::MAX_COLOR;
   const uint imgWidth = getImage().width()/FACTOR;
 	const uint imgHeight = getImage().height()/FACTOR;
-	getGameColorIntegralImage().setDimension(imgWidth, imgHeight);
+	getMultiChannelIntegralImage().setDimension(imgWidth, imgHeight);
 
-  uint32_t* dataPtr = getGameColorIntegralImage().getDataPointer();
+  uint32_t* dataPtr = getMultiChannelIntegralImage().getDataPointer();
 
   uint32_t* prevRowPtr = dataPtr;
 	uint32_t* curRowPtr  = dataPtr + imgWidth*MAX_COLOR;
@@ -43,7 +45,7 @@ void IntegralImageProvider::integralBild()
   
   for(uint16_t y = 1; y < imgHeight; ++y) 
   {
-    uint16_t akk[MAX_COLOR] = { 0 };
+    uint32_t akk[MAX_COLOR] = { 0 };
 
     prevRowPtr += MAX_COLOR;
     curRowPtr  += MAX_COLOR;
@@ -66,9 +68,9 @@ void IntegralImageProvider::integralBild()
         ++akk[2];
       }
 
-      curRowPtr[0] = akk[0] + prevRowPtr[0];
-      curRowPtr[1] = akk[1] + prevRowPtr[1];
-      curRowPtr[2] = akk[2] + prevRowPtr[2];
+      for(uint32_t i = 0; i < MAX_COLOR; ++i) {
+        curRowPtr[i] = akk[i] + prevRowPtr[i];
+      }
 
       curRowPtr  += MAX_COLOR;
       prevRowPtr += MAX_COLOR;
@@ -78,13 +80,13 @@ void IntegralImageProvider::integralBild()
 
 void IntegralImageProvider::integralBildBottom()
 {
-  const int32_t FACTOR = getGameColorIntegralImage().FACTOR;
-  const uint32_t MAX_COLOR = GameColorIntegralImage::MAX_COLOR;
+  const int32_t FACTOR = getMultiChannelIntegralImage().FACTOR;
+  const uint32_t MAX_COLOR = MultiChannelIntegralImage::MAX_COLOR;
   const uint imgWidth = getImage().width()/FACTOR;
 	const uint imgHeight = getImage().height()/FACTOR;
-	getGameColorIntegralImage().setDimension(imgWidth, imgHeight);
+	getMultiChannelIntegralImage().setDimension(imgWidth, imgHeight);
 
-  uint32_t* dataPtr = getGameColorIntegralImage().getDataPointer();
+  uint32_t* dataPtr = getMultiChannelIntegralImage().getDataPointer();
 
   uint32_t* prevRowPtr = dataPtr;
 	uint32_t* curRowPtr  = dataPtr + imgWidth*MAX_COLOR;
@@ -94,7 +96,7 @@ void IntegralImageProvider::integralBildBottom()
   
   for(uint16_t y = 1; y < imgHeight; ++y) 
   {
-    uint16_t akk[MAX_COLOR] = { 0 };
+    uint32_t akk[MAX_COLOR] = { 0 };
 
     prevRowPtr += MAX_COLOR;
     curRowPtr  += MAX_COLOR;
@@ -119,12 +121,13 @@ void IntegralImageProvider::integralBildBottom()
         ++akk[2];
       }
 
-      curRowPtr[0] = akk[0] + prevRowPtr[0];
-      curRowPtr[1] = akk[1] + prevRowPtr[1];
-      curRowPtr[2] = akk[2] + prevRowPtr[2];
+      for(uint32_t i = 0; i < MAX_COLOR; ++i) {
+        curRowPtr[i] = akk[i] + prevRowPtr[i];
+      }
 
       curRowPtr  += MAX_COLOR;
       prevRowPtr += MAX_COLOR;
     }
   }
 }
+*/

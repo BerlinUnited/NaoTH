@@ -180,6 +180,12 @@ public:
   
   void solveHipFeetIK(const InverseKinematic::HipFeetPose& p);
   
+  bool rotationStabilizeRC16(
+    //const InertialModel& theInertialModel,
+    const naoth::InertialSensorData& theInertialSensorData,
+    const GyrometerData& theGyrometerData,
+    double timeDelta,
+    InverseKinematic::HipFeetPose& p);
 
   bool rotationStabilize(
     const InertialModel& theInertialModel,
@@ -195,20 +201,22 @@ public:
     const naoth::GyrometerData& theGyrometerData,
     double (&position)[naoth::JointData::numOfJoint]);
 
+  /*
   bool rotationStabilize(
     const InertialModel& theInertialModel,
     const GyrometerData& theGyrometerData,
     Pose3D& hip);
-
+  */
   /**
    * @return if stabilizer is working
    */
+  /*
   bool rotationStabilize(
     const naoth::RobotInfo& theRobotInfo,
     const GroundContactModel& theGroundContactModel,
     const naoth::InertialSensorData& theInertialSensorData,
     Pose3D& hip);
-
+  */
 
   void copyLegJoints(double (&position)[naoth::JointData::numOfJoint]) const;
   

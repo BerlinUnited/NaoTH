@@ -10,19 +10,14 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonWriter;
 import de.naoth.rc.Helper;
 import de.naoth.rc.RobotControl;
-import de.naoth.rc.components.RobotStatus;
+import de.naoth.rc.components.teamcommviewer.RobotStatus;
+import de.naoth.rc.components.teamcommviewer.RobotStatusPanel;
 import de.naoth.rc.core.dialog.AbstractDialog;
 import de.naoth.rc.core.dialog.DialogPlugin;
 import de.naoth.rc.dataformats.SPLMessage;
 import de.naoth.rc.drawingmanager.DrawingEventManager;
 import de.naoth.rc.drawings.DrawingCollection;
 import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.LinearGradientPaint;
-import java.awt.RenderingHints;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -43,16 +38,12 @@ import java.util.Map.Entry;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.TreeMap;
-import java.util.Vector;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
-import javax.swing.JTable;
 import javax.swing.SwingUtilities;
-import javax.swing.table.AbstractTableModel;
-import javax.swing.table.DefaultTableCellRenderer;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 
@@ -75,6 +66,7 @@ public class TeamCommViewer extends AbstractDialog {
     private final TeamCommListener listenerOwn = new TeamCommListener(false);
     private final TeamCommListener listenerOpponent = new TeamCommListener(true);
     private final HashMap<String, RobotStatus> robotsMap = new HashMap<>();
+    private final TreeMap<String, RobotStatus> robotsMapSorted = new TreeMap<>();
 
     private final Map<String, TeamCommMessage> messageMap = Collections.synchronizedMap(new TreeMap<String, TeamCommMessage>());
 
@@ -90,60 +82,15 @@ public class TeamCommViewer extends AbstractDialog {
      */
     public TeamCommViewer() {
         initComponents();
-        
-        // msg/s
-        robotStatusTable.getColumnModel().getColumn(3).setCellRenderer(new DefaultTableCellRenderer(){
-            @Override
-            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-                return super.getTableCellRendererComponent(table, String.format("%4.2f", value), isSelected, hasFocus, row, column);
-            }
-        });
-        // Temperature
-        robotStatusTable.getColumnModel().getColumn(6).setCellRenderer(new DefaultTableCellRenderer(){
-            @Override
-            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-                float temp = (float)value;
-                if(temp>20) {
-                    float ratio = (temp-20) / 80.0f; // normalize temp
-                    Color c1 = Color.blue; Color c2 = Color.red;
-                    int red = (int)(c2.getRed()*ratio+c1.getRed()*(1-ratio));
-                    int green = (int)(c2.getGreen()*ratio+c1.getGreen()*(1-ratio));
-                    int blue = (int)(c2.getBlue()*ratio+c1.getBlue()*(1-ratio));
-                    this.setForeground(new Color(red, green, blue));
-                } else {
-                    this.setForeground(Color.black);
-                }
-                
-                return super.getTableCellRendererComponent(table, temp==-1?"?":String.format(" %3.1f °C", value), isSelected, hasFocus, row, column);
-            }
-        });
-        // Battery
-        robotStatusTable.getColumnModel().getColumn(7).setCellRenderer(new DefaultTableCellRenderer(){
-            private final float[] dist = { 0.0f , 1.0f };
-            private final Color[] colors = { Color.red, Color.green };
-
-            @Override
-            protected void paintComponent(Graphics g) {
-                Graphics2D g2d = (Graphics2D) g;
-                float x = Float.parseFloat(getText());
-                if(x == -1) {
-                    this.setOpaque(true);
-                    this.setText("?");
-                } else {
-                    LinearGradientPaint gp = new LinearGradientPaint(0, 0, getWidth(), getHeight(), dist, colors);
-                    g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                    g2d.setPaint(gp);
-                    g2d.fillRect(0, 0, (int)(getWidth()*x/100.0), getHeight());
-                    this.setOpaque(false);
-                    this.setText(String.format("%3.1f%%",x));
-                }
-                super.paintComponent(g2d);
-            }
-        });
-        // sort via Ip
-        robotStatusTable.getRowSorter().toggleSortOrder(2);
         // collapse pane
         robotStatusSplitPane.setDividerLocation(Integer.MAX_VALUE);/*2000*/
+        // closes the log file before exiting application
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            @Override
+            public void run() {
+                closingLogfile();
+            }
+        });
     }
 
     /**
@@ -167,8 +114,7 @@ public class TeamCommViewer extends AbstractDialog {
         robotStatusSplitPane = new javax.swing.JSplitPane();
         jScrollPane2 = new javax.swing.JScrollPane();
         robotStatusPanel = new javax.swing.JPanel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        robotStatusTable = new javax.swing.JTable();
+        robotStatusTable = new de.naoth.rc.components.teamcommviewer.RobotStatusTable();
 
         teamCommFileChooser.setDialogType(javax.swing.JFileChooser.SAVE_DIALOG);
         teamCommFileChooser.setDialogTitle("Log file location");
@@ -222,17 +168,7 @@ public class TeamCommViewer extends AbstractDialog {
         jScrollPane2.setViewportView(robotStatusPanel);
 
         robotStatusSplitPane.setLeftComponent(jScrollPane2);
-
-        jScrollPane1.setMinimumSize(new java.awt.Dimension(0, 0));
-        jScrollPane1.setPreferredSize(new java.awt.Dimension(0, 0));
-
-        robotStatusTable.setAutoCreateRowSorter(true);
-        robotStatusTable.setModel(new RobotTableModel());
-        robotStatusTable.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_LAST_COLUMN);
-        robotStatusTable.setRowSelectionAllowed(false);
-        jScrollPane1.setViewportView(robotStatusTable);
-
-        robotStatusSplitPane.setRightComponent(jScrollPane1);
+        robotStatusSplitPane.setRightComponent(robotStatusTable);
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -332,7 +268,7 @@ public class TeamCommViewer extends AbstractDialog {
                     this.robotStatusPanel.removeAll();
                     this.robotStatusPanel.setVisible(false);
                     this.robotStatusTable.setVisible(false);
-                    ((RobotTableModel)this.robotStatusTable.getModel()).removeAll();
+                    this.robotStatusTable.removeAll();
                     this.portNumberOwn.setEnabled(true);
                     this.portNumberOpponent.setEnabled(true);
                 }
@@ -469,13 +405,19 @@ public class TeamCommViewer extends AbstractDialog {
                         public void run() {
                             RobotStatus robotStatus = robotsMap.get(address);
                             if (robotStatus == null) {
-                                robotStatus = new RobotStatus(Plugin.parent.getMessageServer(), address, msg.isOpponent() ? magenta : cyan);
+                                robotStatus = new RobotStatus(Plugin.parent.getMessageServer(), address);
+                                robotStatus.robotColor = msg.isOpponent() ? magenta : cyan;
+                                
                                 robotsMap.put(address, robotStatus);
-                                robotStatusPanel.add(robotStatus);
-                                ((RobotTableModel)robotStatusTable.getModel()).addRobot(robotStatus);
-                            }
-                            robotStatus.setStatus(msg.timestamp, msg.message);
-                            ((RobotTableModel)robotStatusTable.getModel()).fireTableDataChanged();
+                                robotsMapSorted.put((msg.isOpponent()?"1_":"0_") + msg.message.playerNum, robotStatus);
+                                
+                                robotStatusPanel.removeAll();
+                                for (Entry<String, RobotStatus> entry : robotsMapSorted.entrySet()) {
+                                    robotStatusPanel.add(new RobotStatusPanel(entry.getValue())); // , msg.isOpponent() ? magenta : cyan
+                                }
+                                robotStatusTable.addRobot(robotStatus);
+                            }                            
+                            robotStatus.updateStatus(msg.timestamp, msg.message);
                         }
                     });
                     
@@ -652,66 +594,6 @@ public class TeamCommViewer extends AbstractDialog {
             this.jw.endObject();
         }
     }
-    
-    private class RobotTableModel extends AbstractTableModel {
-        private final Vector<RobotStatus> robots = new Vector();
-        
-        public void addRobot(RobotStatus robot) {
-            robots.add(robot);
-            this.fireTableDataChanged();
-        }
-        
-        public void removeAll() {
-            robots.clear();
-            this.fireTableDataChanged();
-        }
-        
-        @Override
-        public int getRowCount() {
-            return robots.size();
-        }
-
-        @Override
-        public int getColumnCount() {
-            return 8;
-        }
-
-        @Override
-        public Object getValueAt(int rowIndex, int columnIndex) {
-            RobotStatus robot = robots.get(rowIndex);
-            switch(columnIndex) {
-                case 0: return robot.teamNum;
-                case 1: return robot.playerNum;
-                case 2: return robot.getIpAdress();
-                case 3: return robot.msgPerSecond;
-                case 4: return robot.ballAge;
-                case 5: return robot.isDead?"DEAD":(robot.fallen==1?"FALLEN":"NOT FALLEN");
-                case 6: return robot.temperature;
-                case 7: return robot.batteryCharge;
-                default: return null;
-            }
-        }
-
-        @Override
-        public String getColumnName(int column) {
-            switch(column) {
-                case 0: return "#TN";
-                case 1: return "#PN";
-                case 2: return "IP";
-                case 3: return "msg/s";
-                case 4: return "BallAge (s)";
-                case 5: return "State";
-                case 6: return "Temperature";
-                case 7: return "Battery";
-                default: return null;
-            }
-        }
-
-        @Override
-        public Class<?> getColumnClass(int columnIndex) {
-            return Object.class;
-        }
-    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JToggleButton btListen;
@@ -720,13 +602,12 @@ public class TeamCommViewer extends AbstractDialog {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel2;
-    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JFormattedTextField portNumberOpponent;
     private javax.swing.JFormattedTextField portNumberOwn;
     private javax.swing.JPanel robotStatusPanel;
     private javax.swing.JSplitPane robotStatusSplitPane;
-    private javax.swing.JTable robotStatusTable;
+    private de.naoth.rc.components.teamcommviewer.RobotStatusTable robotStatusTable;
     private de.naoth.rc.components.ExtendedFileChooser teamCommFileChooser;
     // End of variables declaration//GEN-END:variables
 

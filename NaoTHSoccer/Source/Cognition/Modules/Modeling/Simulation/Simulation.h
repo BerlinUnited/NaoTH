@@ -26,6 +26,7 @@
 #include <Tools/Debug/DebugParameterList.h>
 #include "Tools/Debug/DebugModify.h"
 #include <Representations/Debug/Stopwatch.h>
+#include "Tools/Filters/AssymetricalBoolFilter.h"
 
 // Debug
 #include <Tools/Debug/DebugRequest.h>
@@ -104,16 +105,24 @@ public:
       PARAMETER_REGISTER(numParticles) = 30;
       PARAMETER_REGISTER(minGoalParticles) = 9;
       
+      PARAMETER_REGISTER(obstacleFilter.g0) = 0.01;
+      PARAMETER_REGISTER(obstacleFilter.g1) = 0.1;
+
       syncWithConfig();
     }
     
+    struct ObstacleFilter {
+      double g0;
+      double g1;
+    } obstacleFilter;
+
     ActionParams sidekick_right;
     ActionParams sidekick_left;
     ActionParams kick_short;
     ActionParams kick_long;
     double friction;
     double good_threshold_percentage;
-    double numParticles;
+    double numParticles; //should be size_t
     double minGoalParticles;
 
   } theParameters;
@@ -211,6 +220,7 @@ public:
   };
 
 private:
+  //AssymetricalBoolHysteresisFilter obstacleFilter;
 
   std::vector<Action> action_local;  
   std::vector<ActionResults> actionsConsequences;
