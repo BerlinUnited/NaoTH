@@ -8,6 +8,7 @@
 #define _KickActionModel_H_
 
 #include <string>
+#include <Tools/Math/Vector2.h>
 
 class KickActionModel
 {
@@ -31,6 +32,7 @@ public:
   static std::string getName(ActionId id);
   
   ActionId bestAction;
+  Vector2d expectedBallPos;
 };
 
 

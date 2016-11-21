@@ -10,6 +10,7 @@
 #ifndef _Geometry_h_
 #define _Geometry_h_
 
+#include <algorithm>
 #include "Tools/Math/Pose2D.h"
 #include "Tools/Math/Common.h"
 #include "Tools/Math/Line.h"

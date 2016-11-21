@@ -127,7 +127,7 @@ public:
     for (size_t i = 0; i < N; ++i)
       for (size_t j = 0; j <N; ++j, ++m)
         content[i][j] = *m;
-      return *this;
+    return *this;
   }
   //----------------------------------------------------------------------------
   /**
@@ -227,7 +227,7 @@ public:
     for (size_t i = 0; i < N; ++i)
       for (size_t j = 0; j < N; ++j)
         res[i][j] = (*this)[j][i];
-      return res;
+    return res;
   }
   //------------------------------------------------------------------------------
   /**
