@@ -35,7 +35,7 @@ import org.freehep.util.export.ExportDialog;
  */
 public class Plott2D extends AbstractDialog {
 
-    @RCDialog(category = "View", name = "Plot 2D")
+    @RCDialog(category = RCDialog.Category.View, name = "Plot 2D")
     @PluginImplementation
     public static class Plugin extends DialogPlugin<Plott2D> {
 

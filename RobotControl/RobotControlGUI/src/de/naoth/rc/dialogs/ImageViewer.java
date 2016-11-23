@@ -33,7 +33,7 @@ import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 public class ImageViewer extends AbstractDialog
 {
    
-  @RCDialog(category = "View", name = "Image")
+  @RCDialog(category = RCDialog.Category.View, name = "Image")
   @PluginImplementation
   public static class Plugin extends DialogPlugin<ImageViewer> {
     @InjectPlugin

@@ -24,12 +24,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import javax.swing.JFrame;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
 
@@ -41,13 +36,9 @@ public class DialogRegistry {
 
     private JFrame parent = null;
     private final CControl control;
+    private final MainMenuBar menuBar;
 
-    private final JMenuBar menuBar;
-    
-    private final HashMap<String, JMenu> menus = new HashMap<String, JMenu>();
-    private final ArrayList<String> allDialogNames = new ArrayList<String>();
-
-    public DialogRegistry(JFrame parent, JMenuBar menuBar) {
+    public DialogRegistry(JFrame parent, MainMenuBar menuBar) {
         this.parent = parent;
         this.menuBar = menuBar;
 
@@ -117,7 +108,8 @@ public class DialogRegistry {
         
         String name = dialog.getDisplayName();
         String category = dialog.getCategory();
-
+        char mnemonic = 0;
+        
         // register a factory
         this.control.addSingleDockableFactory(name, new DialogFactory(dialog));
         
@@ -130,32 +122,19 @@ public class DialogRegistry {
                 name = annotation.name();
             }
             
-            if(!annotation.category().isEmpty()) {
-                category = annotation.category();
-            }
+            category = annotation.category().name();
+            mnemonic = annotation.category().mnemonic();
         } 
         
-        // create a new submenu if necessary
-        JMenu menu = this.menus.get(category);
-        if(menu == null) {
-            menu = new JMenu(category, false);
-            this.menus.put(category, menu);
-            menuBar.add(menu,1);
-        }
+        // create menu item (should never return null)
         
-        // register a menu entry
-        int insertPoint = Collections.binarySearch(allDialogNames, name);
-        if (insertPoint < 0) {
-            JMenuItem newItem = new JMenuItem(name);
-            newItem.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    dockDialog(dialog);
-                }
-            });
-            menu.insert(newItem, -(insertPoint + 1));
-            allDialogNames.add(-(insertPoint + 1), name);
-        }
+        JMenuItem item = menuBar.addDialog(name, category, mnemonic);
+        item.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dockDialog(dialog);
+            }
+        });
     }//end registerDialog
 
     public void dockDialog(Dialog dialog) {

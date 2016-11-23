@@ -33,7 +33,7 @@ import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 public class DebugRequestPanel extends AbstractDialog
 {
 
-    @RCDialog(category = "Debug", name = "DebugRequest")
+    @RCDialog(category = RCDialog.Category.Debug, name = "DebugRequest")
     @PluginImplementation
     public static class Plugin extends DialogPlugin<DebugRequestPanel>
     {

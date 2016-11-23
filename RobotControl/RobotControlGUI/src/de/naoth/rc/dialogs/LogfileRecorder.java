@@ -42,7 +42,7 @@ import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
  */
 public class LogfileRecorder extends AbstractDialog
 {
-  @RCDialog(category = "Log", name = "Recorder")
+  @RCDialog(category = RCDialog.Category.Log, name = "Recorder")
   @PluginImplementation
   public static class Plugin extends DialogPlugin<LogfileRecorder> {
     @InjectPlugin

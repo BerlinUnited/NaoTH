@@ -7,6 +7,7 @@ package de.naoth.rc.components;
 
 import de.naoth.rc.drawings.Arrow;
 import de.naoth.rc.drawings.Drawable;
+import de.naoth.rc.drawings.BoundingBox;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
@@ -46,6 +47,7 @@ public class DynamicCanvasPanel extends javax.swing.JPanel
   private double dragOffsetX;
   private double dragOffsetY;
   private boolean antializing;
+  private boolean fitToViewport = false;
   
   private final List<Drawable> drawingList = Collections.synchronizedList(new ArrayList<Drawable>());
 
@@ -107,21 +109,24 @@ public class DynamicCanvasPanel extends javax.swing.JPanel
   int oldHeight = 0;
   private void formComponentResized(java.awt.event.ComponentEvent evt)//GEN-FIRST:event_formComponentResized
   {//GEN-HEADEREND:event_formComponentResized
-      if(oldWidth != 0 && oldHeight != 0)
-      {
-          double sw = ((double)this.getWidth()) / ((double)oldWidth);
-          double sh = ((double)this.getHeight()) / ((double)oldHeight);
-          
-          double s = (Math.abs(sh-1.0) < Math.abs(sw-1.0))? sw: sh;
-          
-          this.scale *= s;
-          this.offsetX = (int)( ((double)this.offsetX) * s +0.5);
-          this.offsetY = (int)( ((double)this.offsetY) * s +0.5);
+      if(this.fitToViewport) {
+          fitToViewport();
+      } else {
+        if(oldWidth != 0 && oldHeight != 0)
+        {
+            double sw = ((double)this.getWidth()) / ((double)oldWidth);
+            double sh = ((double)this.getHeight()) / ((double)oldHeight);
+
+            double s = (Math.abs(sh-1.0) < Math.abs(sw-1.0))? sw: sh;
+
+            this.scale *= s;
+            this.offsetX = (int)( ((double)this.offsetX) * s +0.5);
+            this.offsetY = (int)( ((double)this.offsetY) * s +0.5);
+        }
+
+        oldWidth = this.getWidth();
+        oldHeight = this.getHeight();
       }
-      
-      oldWidth = this.getWidth();
-      oldHeight = this.getHeight();
-      
       this.repaint();
   }//GEN-LAST:event_formComponentResized
 
@@ -161,6 +166,19 @@ public class DynamicCanvasPanel extends javax.swing.JPanel
     paintDrawings(g2d, offsetX, offsetY, rotation, scale);
   }
   
+    public void fitToViewport() {
+        BoundingBox bb = new BoundingBox();
+        paintDrawings(bb, offsetX, offsetY, rotation, scale);
+        // "add" a 10px margin and calculate scale
+        double scale_x = ((double) this.getWidth() - 10) / (bb.getWidth());
+        double scale_y = ((double) this.getHeight() - 10) / (bb.getHeight());
+        setScale(scale_x < scale_y ? scale_x : scale_y);
+        // center drawings
+        setOffsetX(getWidth() / 2.);
+        setOffsetY(getHeight() / 2.);
+        // repaint everything
+        repaint();
+    }
   
   public void paintDrawings(Graphics2D g2d, double x, double y, double r, double s) 
   {
@@ -420,7 +438,18 @@ public class DynamicCanvasPanel extends javax.swing.JPanel
   {
     this.showCoordinates = showCoordinates;
   }
+  
+  
     
   // </editor-fold>
+
+    public boolean isFitToViewport() {
+        return fitToViewport;
+    }
+
+    public void setFitToViewport(boolean fitToViewport) {
+        this.fitToViewport = fitToViewport;
+        fitToViewport();
+    }
 }//end DynamicCanvasPanel
 

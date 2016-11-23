@@ -23,7 +23,7 @@ import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
  */
 public class ParameterPanelTree extends AbstractDialog
 {
-  @RCDialog(category = "Configure", name = "ParameterTree")
+  @RCDialog(category = RCDialog.Category.Configure, name = "ParameterTree")
   @PluginImplementation
   public static class Plugin extends DialogPlugin<ParameterPanelTree>
   {

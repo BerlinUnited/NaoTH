@@ -105,7 +105,7 @@ public class RobotControlImpl extends javax.swing.JFrame
     });
     
     // set up a list of all dialogs
-    this.dialogRegistry = new DialogRegistry(this, this.menuBar);
+    this.dialogRegistry = new DialogRegistry(this, this.mainMenuBar);
 
     
     // initialize the message server
@@ -209,7 +209,7 @@ public class RobotControlImpl extends javax.swing.JFrame
         lblReceivedBytesS = new javax.swing.JLabel();
         lblSentBytesS = new javax.swing.JLabel();
         lblFramesS = new javax.swing.JLabel();
-        menuBar = new javax.swing.JMenuBar();
+        mainMenuBar = new de.naoth.rc.MainMenuBar();
         mainControlMenu = new javax.swing.JMenu();
         connectMenuItem = new javax.swing.JMenuItem();
         disconnectMenuItem = new javax.swing.JMenuItem();
@@ -321,7 +321,7 @@ public class RobotControlImpl extends javax.swing.JFrame
         });
         mainControlMenu.add(exitMenuItem);
 
-        menuBar.add(mainControlMenu);
+        mainMenuBar.add(mainControlMenu);
 
         helpMenu.setMnemonic('h');
         helpMenu.setText("Help");
@@ -336,11 +336,11 @@ public class RobotControlImpl extends javax.swing.JFrame
         helpMenu.add(aboutMenuItem);
 
         helpMenu.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
-        menuBar.add(javax.swing.Box.createHorizontalGlue());
+        mainMenuBar.add(javax.swing.Box.createHorizontalGlue());
 
-        menuBar.add(helpMenu);
+        mainMenuBar.add(helpMenu);
 
-        setJMenuBar(menuBar);
+        setJMenuBar(mainMenuBar);
 
         setSize(new java.awt.Dimension(974, 626));
         setLocationRelativeTo(null);
@@ -516,7 +516,7 @@ public class RobotControlImpl extends javax.swing.JFrame
     private javax.swing.JLabel lblReceivedBytesS;
     private javax.swing.JLabel lblSentBytesS;
     private javax.swing.JMenu mainControlMenu;
-    private javax.swing.JMenuBar menuBar;
+    private de.naoth.rc.MainMenuBar mainMenuBar;
     private javax.swing.JMenuItem resetLayoutMenuItem;
     private javax.swing.JPanel statusPanel;
     // End of variables declaration//GEN-END:variables

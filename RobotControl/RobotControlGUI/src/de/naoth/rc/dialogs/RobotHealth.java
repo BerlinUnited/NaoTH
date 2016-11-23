@@ -43,7 +43,7 @@ import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 public class RobotHealth extends AbstractDialog
 {
 
-  @RCDialog(category = "Status", name = "RobotHealth")
+  @RCDialog(category = RCDialog.Category.Status, name = "RobotHealth")
   @PluginImplementation
   public static class Plugin extends DialogPlugin<RobotHealth>
   {

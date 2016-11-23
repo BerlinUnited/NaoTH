@@ -51,7 +51,7 @@ import javax.swing.ListModel;
  */
 public class RepresentationInspector extends AbstractDialog {
 
-    @RCDialog(category = "Status", name = "Representations")
+    @RCDialog(category = RCDialog.Category.Status, name = "Representations")
     @PluginImplementation
     public static class Plugin extends DialogPlugin<RepresentationInspector> {
 

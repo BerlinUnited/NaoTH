@@ -40,7 +40,7 @@ public class Modify extends AbstractDialog
     
     Command commandToExecute = null;
 
-    @RCDialog(category = "Debug", name = "Modify")
+    @RCDialog(category = RCDialog.Category.Debug, name = "Modify")
     @PluginImplementation
     public static class Plugin extends DialogPlugin<Modify>
     {

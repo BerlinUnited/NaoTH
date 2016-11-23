@@ -51,7 +51,7 @@ public class ThreeDimensionViewer extends AbstractDialog
         implements ObjectListener<Scene>
 {
     
-  @RCDialog(category = "View", name = "3D")
+  @RCDialog(category = RCDialog.Category.View, name = "3D")
   @PluginImplementation
   public static class Plugin extends DialogPlugin<ThreeDimensionViewer>
   {

@@ -32,7 +32,7 @@ public class StopwatchViewer extends AbstractDialog
   implements ObjectListener<HashMap<String, Integer>>
 {
 
-  @RCDialog(category = "Status", name = "Stopwatch")
+  @RCDialog(category = RCDialog.Category.Status, name = "Stopwatch")
   @PluginImplementation
   public static class Plugin extends DialogPlugin<StopwatchViewer>
   {
