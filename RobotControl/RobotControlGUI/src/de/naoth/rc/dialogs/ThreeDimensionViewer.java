@@ -8,6 +8,7 @@ import de.naoth.rc.Helper;
 import de.naoth.rc.RobotControl;
 import de.naoth.rc.core.dialog.AbstractDialog;
 import de.naoth.rc.core.dialog.DialogPlugin;
+import de.naoth.rc.core.dialog.RCDialog;
 import de.naoth.rc.core.manager.ObjectListener;
 import de.naoth.rc.dataformats.JanusImage;
 import de.naoth.rc.drawings3d.OrbitBehavior;
@@ -50,7 +51,7 @@ public class ThreeDimensionViewer extends AbstractDialog
         implements ObjectListener<Scene>
 {
     
-  
+  @RCDialog(category = RCDialog.Category.View, name = "3D")
   @PluginImplementation
   public static class Plugin extends DialogPlugin<ThreeDimensionViewer>
   {

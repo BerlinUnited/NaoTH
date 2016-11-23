@@ -12,6 +12,7 @@ import de.naoth.rc.core.dialog.DialogPlugin;
 import de.naoth.rc.RobotControl;
 import de.naoth.rc.components.PNGExportFileType;
 import de.naoth.rc.components.PlainPDFExportFileType;
+import de.naoth.rc.core.dialog.RCDialog;
 import de.naoth.rc.drawings.Drawable;
 import de.naoth.rc.drawings.DrawingCollection;
 import de.naoth.rc.drawings.DrawingOnField;
@@ -61,6 +62,7 @@ import org.freehep.util.export.ExportDialog;
 public class FieldViewer extends AbstractDialog
 {
 
+    @RCDialog(category = RCDialog.Category.View, name = "Field")
     @PluginImplementation
     public static class Plugin extends DialogPlugin<FieldViewer> {
 
