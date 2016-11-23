@@ -37,7 +37,7 @@ import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 public class LogfileInspector extends AbstractDialog 
 {
 
-  @RCDialog(category = "Log", name = "Inspector")
+  @RCDialog(category = RCDialog.Category.Log, name = "Inspector")
   @PluginImplementation
   public static class Plugin extends DialogPlugin<LogfileInspector> {
     //@InjectPlugin
