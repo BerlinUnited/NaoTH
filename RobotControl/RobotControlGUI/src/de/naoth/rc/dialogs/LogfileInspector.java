@@ -11,22 +11,19 @@ import de.naoth.rc.components.FileDrop;
 import de.naoth.rc.core.dialog.AbstractDialog;
 import de.naoth.rc.core.dialog.DialogPlugin;
 import de.naoth.rc.core.dialog.RCDialog;
+import de.naoth.rc.dataformats.LogFile;
 import de.naoth.rc.logmanager.LogFileEventManager;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
-import java.io.DataInputStream;
-import java.io.EOFException;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.RandomAccessFile;
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import javax.swing.ImageIcon;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.SwingWorker;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 
@@ -45,33 +42,23 @@ public class LogfileInspector extends AbstractDialog
     @InjectPlugin
     static public LogFileEventManager logFileEventManager;
   }
-  
-  private HashMap<Integer, Integer> framePosition;
-  private ArrayList<LogFileFrame> frameList;
-  private int minFrame = Integer.MAX_VALUE;
-  private int maxFrame = Integer.MIN_VALUE;
 
-  /** The logfile opened to filter data from it. */
-  private File openedFile;
-
-  private InputStream inputStream = null;
-  RandomAccessFile raf = null;
+  private LogFile logFile = null;
 
   /** Creates new form LogfileInspector */
   public LogfileInspector() {
       initComponents();
 
       fileChooser.setFileFilter(new LogFileFilter());
-      framePosition = new HashMap<Integer, Integer>();
-      frameList = new ArrayList<LogFileFrame>();
-
+      
       this.jSlider1.addMouseWheelListener(new MouseWheelListener() {
               @Override
               public void mouseWheelMoved(MouseWheelEvent e) {
-                      if(e.getWheelRotation() > 0)
+                      if(e.getWheelRotation() > 0) {
                         jSlider1.setValue(jSlider1.getValue() + 1);
-                      else
+                      } else {
                         jSlider1.setValue(jSlider1.getValue() - 1);
+                      }
               }
       });
 
@@ -85,10 +72,10 @@ public class LogfileInspector extends AbstractDialog
 
   private void reset()
   {
-    this.framePosition.clear();
-    this.frameList.clear();
-    this.minFrame = Integer.MAX_VALUE;
-    this.maxFrame = Integer.MIN_VALUE;
+      if(logFile != null) {
+          logFile.close();
+      }
+      this.jSlider1.setEnabled(false);
   }
 
   @Override
@@ -220,243 +207,63 @@ public class LogfileInspector extends AbstractDialog
     }//GEN-LAST:event_openMenuButtonActionPerformed
 
     private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jSlider1StateChanged
-      LogFileFrame frame = this.frameList.get(this.jSlider1.getValue());
-      if(frame != null)
-      {
-        System.out.println(frame.number + " - " + frame.position);
+        //System.out.println(frame.number + " - " + frame.position);
         try
         {
-          HashMap<String,LogDataFrame> f = readFrame(frame, new BasicReader(this.raf));
-          if(Plugin.logFileEventManager != null) {
+          HashMap<String,LogDataFrame> f = this.logFile.readFrame(this.jSlider1.getValue());
+
+          StringBuilder sb = new StringBuilder();
+          sb.append(this.jSlider1.getValue()).append('\n');
+          for(String s: f.keySet()) {
+              sb.append(s).append('\n');
+          }
+          this.jTextArea1.setText(sb.toString());
+          
+          if(Plugin.logFileEventManager != null) {  
             Plugin.logFileEventManager.fireLogFrameEvent(f.values());
           }
         }catch(IOException e)
         {
           System.err.println("Couldn't read the a frame: " + e);
         }
-      }//end if
     }//GEN-LAST:event_jSlider1StateChanged
 
     
     private void openFile(File f) {
         
-        ImageIcon loading = new ImageIcon(getClass().getResource("/de/naoth/rc/res/ball_24.gif"));
-        String[] options = {"Cancel"};
+        // TODO: in progress
+        //ImageIcon loading = new ImageIcon(getClass().getResource("/de/naoth/rc/res/ball_24.gif"));
+        //String[] options = {"Cancel"};
         //JOptionPane.showOptionDialog(this, f.getPath(), "Loading...", JOptionPane.NO_OPTION, JOptionPane.PLAIN_MESSAGE, loading, options , options[0]);
-        JOptionPane jp = new JOptionPane(f.getPath(), JOptionPane.NO_OPTION, JOptionPane.PLAIN_MESSAGE, loading, options , options[0]);
-        JDialog dialog = jp.createDialog(null, "Loading...");
-        dialog.setModal(true);
-        dialog.setVisible(true);
+        //JOptionPane jp = new JOptionPane(f.getPath(), JOptionPane.NO_OPTION, JOptionPane.PLAIN_MESSAGE, loading, options , options[0]);
+        //JDialog dialog = jp.createDialog(null, "Loading...");
+        //dialog.setModal(true);
+        //dialog.setVisible(true);
         
-        this.openedFile = f;
         this.jSlider1.setEnabled(false);
         
-        if(this.openedFile != null && this.openedFile.exists()) 
+        if(f.exists()) 
         {
-            this.fileNameLabel.setText("Selected logfile:" + this.openedFile.getAbsolutePath());
+            this.fileNameLabel.setText("Selected logfile:" + f.getAbsolutePath());
      
-            try{
+            try {
                 // clear the old file
                 reset();
 
-                FileInputStream file_input = new FileInputStream (this.openedFile);
-                this.inputStream = new DataInputStream (file_input);
+                logFile = new LogFile(f);
 
-                parseLogFile(new BasicReader(this.inputStream));
-                this.inputStream.close();
+                this.jSlider1.setEnabled(true);
+                this.jSlider1.setValue(0);
+                this.jSlider1.setMinimum(0);
+                this.jSlider1.setMaximum(logFile.getFrameCount()-1);
 
-                this.raf = new RandomAccessFile(this.openedFile, "r");
-
-                if(minFrame < maxFrame)
-                {
-                  this.jSlider1.setEnabled(true);
-                  this.jSlider1.setValue(0);
-                  this.jSlider1.setMinimum(0);
-                  this.jSlider1.setMaximum(frameList.size()-1);
-                }
-                
-              }catch(IOException e)
-              {
+            } catch(IOException e) {
                 e.printStackTrace(System.err);
-              }
-              //this.parent.setTriggerConnect(false);
+            }
         }
-        
-        dialog.dispose();
+        //dialog.dispose();
     }
-    
-    private void parseLogFile(BasicReader data_in) throws IOException
-    {
-      int currentFrameNumber = -1;
-      int currentFrameSize = 0;
-      int currentFramePos = 0;
-
-      HashMap<String,LogDataFrame> currentFrame = new HashMap<String,LogDataFrame>();
-
-      while(true)
-      {
-        try
-        {
-          int fragmentFrameSize = 0;
-          
-          int frameNumber = readInt(data_in);
-          fragmentFrameSize += 4;
-
-          // plausibility check
-          if(frameNumber < currentFrameNumber || frameNumber < 0) {
-            throw new IOException("corrupt frame number: " + frameNumber + " after " + currentFrameNumber);
-          }
-
-          if(currentFrameNumber >= 0 && frameNumber - currentFrameNumber > 30) {
-            System.out.println("frame jump: " + currentFrameNumber + " -> " + frameNumber);
-          }
-
-          String currentName = readString(data_in);
-          System.out.println(currentName);
-          fragmentFrameSize += currentName.length() + 1;
-          
-          int currentSize = readInt(data_in);
-          fragmentFrameSize += 4;
-          fragmentFrameSize += currentSize;
-
-          this.minFrame = Math.min(this.minFrame, frameNumber);
-          this.maxFrame = Math.max(this.maxFrame, frameNumber);
-
-          if(currentFrameNumber != frameNumber && currentFrameNumber != -1)
-          {
-            LogFileFrame lff = new LogFileFrame(currentFrameNumber,currentFrameSize,currentFramePos);
-            
-            framePosition.put(frameList.size(), currentFrameNumber);
-            frameList.add(lff);
-            
-            currentFramePos += currentFrameSize;
-            currentFrameSize = 0;
-
-            currentFrame = new HashMap<String,LogDataFrame>();
-          }//end if
-
-          currentFrameSize += fragmentFrameSize;
-          currentFrameNumber = frameNumber;
-
-          byte[] buffer = new byte[currentSize];
-          long skippedSize = data_in.read(buffer);
-          //data_in.skip(currentSize);
-
-          LogDataFrame logDataFrame = new LogDataFrame(currentFrameNumber, currentName, buffer);
-          currentFrame.put(currentName, logDataFrame);
-        }
-        catch (EOFException eof) {
-          System.out.println ("End of File");
-          break;
-        }
-      }//end while
-    }//end parseLogFile
-
-    
-  private HashMap<String,LogDataFrame> readFrame(LogFileFrame frame, BasicReader is) throws IOException
-  {
-    // jump to the begin of the frame
-    is.seek(frame.position);
-
-    int numberOfReadBytes = 0;
-
-    jTextArea1.setText("Frame " + frame.number + "\n");
-    
-    HashMap<String,LogDataFrame> currentFrame = new HashMap<>();
-    
-    while(numberOfReadBytes < frame.size)
-    {
-      int frameNumber = readInt(is);
-      numberOfReadBytes += 4;
-
-      if(frameNumber != frame.number) {
-        throw new IOException("corrupt frame number: " + frameNumber + " expected " + frame.number);
-      }
-      
-      String currentName = readString(is);
-      numberOfReadBytes += currentName.length()+1;
-      int currentSize = readInt(is);
-      numberOfReadBytes += 4;
-
-      jTextArea1.append(currentName + "\n");
-      
-      byte[] buffer = new byte[currentSize];
-      numberOfReadBytes += is.read(buffer);
-      
-      LogDataFrame logDataFrame = new LogDataFrame(frameNumber, currentName, buffer);
-      currentFrame.put(currentName, logDataFrame);
-    }//end while
-    
-    return currentFrame;
-  }//end readFrame
-  
-
-  
-  private String readString(BasicReader is) throws IOException, EOFException
-  {
-    StringBuilder sb = new StringBuilder();
-    int c = is.read();
-    while(((char)c) != '\0')
-    {
-      if(c == -1) throw new EOFException();
-      sb.append((char)c);
-      c = is.read();
-    }
-
-    return sb.toString();
-  }//end readString
-  
-  private int readInt(BasicReader is) throws IOException
-  {
-    byte[] buffer = new byte[4];
-    int numberOfBytes = is.read(buffer);
-
-    if(numberOfBytes != 4) throw new EOFException();
-
-    int result =
-        (0xff000000 & buffer[3] << 32)|
-        (0x00ff0000 & buffer[2] << 16)|
-        (0x0000ff00 & buffer[1] << 8) |
-        (0x000000ff & buffer[0]);
-
-    return result;
-  }//end readInt
-
-
-  
-  class BasicReader
-  {
-    private InputStream streamReader = null;
-    private RandomAccessFile rafReader = null;
-    
-    public BasicReader(InputStream streamReader)
-    {
-      this.streamReader = streamReader;
-    }
-    
-    public BasicReader(RandomAccessFile rafReader)
-    {
-      this.rafReader = rafReader;
-    }
-            
-    public int read(byte[] buffer) throws IOException
-    {
-      return (streamReader == null)?this.rafReader.read(buffer):this.streamReader.read(buffer);
-    }
-    public int read()  throws IOException
-    {
-      return (streamReader == null)?this.rafReader.read():this.streamReader.read();
-    }
-    public long skip(int size) throws IOException
-    {
-      return (streamReader == null)?this.rafReader.skipBytes(size):this.streamReader.skip(size);
-    }
-    public void seek(long size) throws IOException
-    {
-      this.rafReader.seek(size);
-    }
-  }//end class BasicReader
-
+ 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel avaliableRepresentations;
@@ -469,20 +276,16 @@ public class LogfileInspector extends AbstractDialog
     private javax.swing.JButton openMenuButton;
     // End of variables declaration//GEN-END:variables
 
-
-  class LogFileFrame
+    // TODO: in progress
+  public class LogReadWorker extends SwingWorker<LogFile, Void> 
   {
-    final int number;
-    final int size;
-    final int position;
+    @Override
+    protected LogFile doInBackground() throws Exception {
 
-    public LogFileFrame(int number, int size, int position) {
-      this.number = number;
-      this.size = size;
-      this.position = position;
+      setProgress(100);
+      return null;
     }
   }
-
 
   private class LogFileFilter extends javax.swing.filechooser.FileFilter
   {
