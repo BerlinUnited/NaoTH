@@ -30,6 +30,7 @@ import de.naoth.rc.manager.DebugDrawingManager;
 import de.naoth.rc.manager.ImageManagerBottom;
 import de.naoth.rc.core.manager.ObjectListener;
 import de.naoth.rc.dataformats.SPLMessage;
+import de.naoth.rc.drawings.Circle;
 import de.naoth.rc.drawings.FieldDrawingSPL3x4;
 import de.naoth.rc.logmanager.BlackBoard;
 import de.naoth.rc.logmanager.LogDataFrame;
@@ -84,7 +85,6 @@ public class FieldViewer extends AbstractDialog
         public static LogFileEventManager logFileEventManager;
     }//end Plugin
   
-  private Drawable backgroundDrawing;
   private DrawingBuffer drawingBuffer = new DrawingBuffer(100);
   private DrawingBuffer drawingEventBuffer = new DrawingBuffer(100);
 
@@ -118,10 +118,9 @@ public class FieldViewer extends AbstractDialog
         }
     ));
     
-    this.backgroundDrawing = (Drawable)this.cbBackground.getSelectedItem();
-    
     this.plotDataListener = new PlotDataListener();
     
+    this.fieldCanvas.setBackgroundDrawing((Drawable)this.cbBackground.getSelectedItem());
     this.fieldCanvas.setToolTipText("");
     this.fieldCanvas.setFitToViewport(this.btFitToView.isSelected());
     canvasExport = this.fieldCanvas;
@@ -142,10 +141,10 @@ public class FieldViewer extends AbstractDialog
     });
     
     // intialize the field
-    //this.fieldCanvas.getDrawingList().add(0, this.backgroundDrawing);
     resetView();
     this.fieldCanvas.setAntializing(btAntializing.isSelected());
     this.fieldCanvas.repaint();
+    
     
     this.fieldCanvas.addMouseListener(new MouseAdapter() {
         @Override
@@ -416,8 +415,7 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
 
     private void cbBackgroundActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_cbBackgroundActionPerformed
     {//GEN-HEADEREND:event_cbBackgroundActionPerformed
-        this.backgroundDrawing = (Drawable)this.cbBackground.getSelectedItem();
-        this.fieldCanvas.getDrawingList().set(0, this.backgroundDrawing);
+        this.fieldCanvas.setBackgroundDrawing((Drawable)this.cbBackground.getSelectedItem());
         this.fieldCanvas.repaint();
         // TODO: should this be inside the DynamicCanvasPanel?
         if(this.fieldCanvas.isFitToViewport()) {
@@ -450,7 +448,6 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
   final void resetView()
   {
     this.fieldCanvas.getDrawingList().clear();
-    this.fieldCanvas.getDrawingList().add(0, this.backgroundDrawing);
     if(btTrace.isSelected()) {
         this.fieldCanvas.getDrawingList().add(this.strokePlot);
     }
