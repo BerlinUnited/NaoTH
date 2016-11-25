@@ -27,12 +27,13 @@ public class MemoryMapReader extends BasicReader
   public MemoryMapReader(FileChannel channel) throws IOException
   {
     this.memoryMapped = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size());
-    this.channel = null;
+    this.channel = channel;
   }
 
   @Override
   public void close() throws IOException {
       if(channel != null) {
+          this.memoryMapped = null;
           channel.close();
       }
   }
