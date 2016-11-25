@@ -34,14 +34,12 @@ public class LogFile implements Serializable
   {
     this.originalFile = new File(originalFile);
     getReader();
-    //this.raf = new RandomAccessFile(this.openedFile, "r");
   }
   
   public LogFile(File originalFile) throws IOException
   {
     this.originalFile = originalFile;
     getReader();
-    //this.raf = new RandomAccessFile(this.openedFile, "r");
   }
 
   private void scan(BasicReader data_in) throws IOException
@@ -54,6 +52,7 @@ public class LogFile implements Serializable
     long numberOfBytesRead = 0;
     int lastReportedProgress = 0;
     final long logfielSize = this.originalFile.length();
+    Frame currentFrame = null;
     
     try
     {
@@ -85,11 +84,14 @@ public class LogFile implements Serializable
 
         if (currentFrameNumber != frameNumber && currentFrameNumber != -1)
         {
-          Frame frame = new Frame(currentFrameNumber, currentFrameSize, currentFramePos);
-          frameList.add(frame);
+          if(currentFrame != null) {
+              frameList.add(currentFrame);
+          }
+          
+          currentFrame = new Frame(currentFrameNumber, currentFrameSize, currentFramePos);
           currentFramePos += currentFrameSize;
           currentFrameSize = 0;
-        } //end if
+        }
         
         currentFrameSize += fragmentFrameSize;
         currentFrameNumber = frameNumber;
@@ -196,11 +198,9 @@ public class LogFile implements Serializable
     if (reader == null)
     {
       FileChannel channel = FileChannel.open(originalFile.toPath());
-      if (channel.size() >= Integer.MAX_VALUE)
-      {
+      if (channel.size() >= Integer.MAX_VALUE) {
         reader = new RandomAccessReader(originalFile);
-      } else
-      {
+      } else {
         reader = new MemoryMapReader(channel);
       }
       scan(reader);
