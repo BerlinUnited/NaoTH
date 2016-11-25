@@ -12,7 +12,7 @@
 #include "Representations/Perception/CameraMatrix.h"
 #include <Tools/CameraGeometry.h>
 
-#include <Eigen/Eigen>
+#include <Tools/naoth_eigen.h>
 
 BEGIN_DECLARE_MODULE(FakeBallDetector)
   PROVIDE(DebugRequest)

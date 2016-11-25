@@ -82,23 +82,6 @@ void GameController::execute()
       returnMessage = GameReturnData::alive;
     }
   }
-
-  // remember the whistle counter before set
-  //if(getPlayerInfo().robotState == PlayerInfo::ready) {
-  //  lastWhistleCount = getWhistlePercept().counter;
-  //}
-  // whistle overrides gamecontroller when in set
-  if(getGameData().gameState == GameData::set)
-  {
-    // switch from set to play
-    if(getWhistlePercept().counter > lastWhistleCount) {
-      getPlayerInfo().robotState = PlayerInfo::playing;
-    }
-  }
-  else {
-    // remember the last whistle count
-    lastWhistleCount = getWhistlePercept().counter;
-  }
   
   // keep the manual penalized state
   if(returnMessage == GameReturnData::manual_penalise) {
@@ -107,22 +90,21 @@ void GameController::execute()
 
   handleButtons();
   handleHeadButtons();
+  handleDebugRequest();  
+
   
-  DEBUG_REQUEST("gamecontroller:initial",
-    getPlayerInfo().robotState = PlayerInfo::initial;
-  );
-  DEBUG_REQUEST("gamecontroller:ready",
-    getPlayerInfo().robotState = PlayerInfo::ready;
-  );
-  DEBUG_REQUEST("gamecontroller:set",
-    getPlayerInfo().robotState = PlayerInfo::set;
-  );
-  DEBUG_REQUEST("gamecontroller:play",
-    getPlayerInfo().robotState = PlayerInfo::playing;
-  );
-  DEBUG_REQUEST("gamecontroller:penalized",
-    getPlayerInfo().robotState = PlayerInfo::penalized;
-  );
+  // remember the whistle counter before set
+  if(getPlayerInfo().robotState == PlayerInfo::ready) {
+    lastWhistleCount = getWhistlePercept().counter;
+  }
+  // whistle overrides gamecontroller when in set
+  else if(getGameData().gameState == GameData::set)
+  {
+    // switch from set to play
+    if(getWhistlePercept().counter > lastWhistleCount) {
+      getPlayerInfo().robotState = PlayerInfo::playing;
+    }
+  }
 
 
   if(  oldRobotState != getPlayerInfo().robotState
@@ -137,6 +119,55 @@ void GameController::execute()
   getGameReturnData().player = getPlayerInfo().playerNumber;
   getGameReturnData().message = returnMessage;
 } // end execute
+
+
+void GameController::handleDebugRequest()
+{
+  PlayerInfo::RobotState debugState = getPlayerInfo().robotState;
+
+  DEBUG_REQUEST("gamecontroller:initial",
+    debugState = PlayerInfo::initial;
+  );
+  DEBUG_REQUEST("gamecontroller:ready",
+    debugState = PlayerInfo::ready;
+  );
+  DEBUG_REQUEST("gamecontroller:set",
+    debugState = PlayerInfo::set;
+  );
+  DEBUG_REQUEST("gamecontroller:play",
+    debugState = PlayerInfo::playing;
+  );
+  DEBUG_REQUEST("gamecontroller:penalized",
+    debugState = PlayerInfo::penalized;
+  );
+
+  // NOTE: same behavior as the button interface
+  if(debugState != getPlayerInfo().robotState) {
+    getPlayerInfo().robotState = debugState;
+
+    // NOTE: logic is reverted in relation to button interface
+    switch (getPlayerInfo().robotState)
+    {
+    case PlayerInfo::initial:
+    case PlayerInfo::ready:
+    case PlayerInfo::set:
+    case PlayerInfo::playing:
+    case PlayerInfo::finished: 
+    {
+      returnMessage = GameReturnData::manual_unpenalise;
+      break;
+    }
+    case PlayerInfo::penalized:
+    {
+      returnMessage = GameReturnData::manual_penalise;
+      break;
+    }
+    default:
+      ASSERT(false);
+    }
+  }
+
+} // end handleDebugRequest
 
 
 void GameController::handleButtons()

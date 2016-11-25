@@ -18,3 +18,5 @@ haar6.xml 2016-06-29-experiment-outdoor-merge -numPos 4500 -numNeg 3000 -numStag
 haar7.xml 2016-06-29-experiment-outdoor-merge-mega -bg negative.txt -numPos 7500 -numNeg 4000 -numStages 20 -precalcValBufSize 32024 -precalcIdxBufSize 32024 -featureType HAAR -minHitRate 0.995 -maxFalseAlarmRate 0.5 -w 12 -h 12 -mode ALL -numThreads 1
 
 haar9.xml 2016-06-30-experiment-outdoor-merge-better
+
+haar10.xml 2016-06-30-experiment-outdoor-merge-better -numPos 4500 -numNeg 3000 -numStages 23 -precalcValBufSize 32024 -precalcIdxBufSize 32024 -featureType HAAR -minHitRate 0.995 -maxFalseAlarmRate 0.5 -w 12 -h 12 -mode ALL -numThreads 12

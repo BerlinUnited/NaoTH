@@ -56,7 +56,7 @@ option basic_goalie
 
   state watch_ball {
     decision {
-      else if (ball.time_seen > 3000)
+      else if (!ball.know_where_itis)
         goto go_to_strategy_point;
       else 
         stay;

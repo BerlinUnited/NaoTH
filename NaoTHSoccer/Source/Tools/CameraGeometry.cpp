@@ -274,11 +274,11 @@ Pose3D CameraGeometry::calculateCameraMatrixFromChestPose(
     const Vector3d& theCameraCorrectionOffset,
     double headYaw,
     double headPitch,
-    const InertialModel& theIneratialModel
+    const Vector2d& bodyRotation
   )
 {   //overwrite rotation using information from the ineratial model
-    chest.rotation = RotationMatrix::getRotationX(theIneratialModel.orientation.x + theBodyCorrectionOffset.x);
-    chest.rotateY(theIneratialModel.orientation.y + theBodyCorrectionOffset.y);
+    chest.rotation = RotationMatrix::getRotationX(bodyRotation.x + theBodyCorrectionOffset.x);
+    chest.rotateY(bodyRotation.y + theBodyCorrectionOffset.y);
 
     //translate pose into neck/head
     chest.translate(Vector3d(0,0,NaoInfo::NeckOffsetZ)); //neck = head

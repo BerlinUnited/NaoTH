@@ -11,7 +11,8 @@
 
 #include <Tools/Math/Common.h>
 #include <Tools/Math/Vector2.h>
-#include <Eigen/Eigen>
+
+#include <Tools/naoth_eigen.h>
 
 template<int numOfFunctions, int numOfParameter, class ErrorFunction>
 class GaussNewtonMinimizer
