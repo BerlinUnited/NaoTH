@@ -14,6 +14,7 @@ import de.naoth.rc.components.teamcommviewer.RobotStatus;
 import de.naoth.rc.components.teamcommviewer.RobotStatusPanel;
 import de.naoth.rc.core.dialog.AbstractDialog;
 import de.naoth.rc.core.dialog.DialogPlugin;
+import de.naoth.rc.core.dialog.RCDialog;
 import de.naoth.rc.dataformats.SPLMessage;
 import de.naoth.rc.drawingmanager.DrawingEventManager;
 import de.naoth.rc.drawings.DrawingCollection;
@@ -53,6 +54,7 @@ import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
  */
 public class TeamCommViewer extends AbstractDialog {
 
+    @RCDialog(category = RCDialog.Category.Team, name = "Communication Viewer")
     @PluginImplementation
     public static class Plugin extends DialogPlugin<TeamCommViewer> {
 

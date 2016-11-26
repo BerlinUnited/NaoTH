@@ -12,6 +12,7 @@ import de.naoth.rc.core.dialog.DialogPlugin;
 import de.naoth.rc.RobotControl;
 import de.naoth.rc.components.PNGExportFileType;
 import de.naoth.rc.components.PlainPDFExportFileType;
+import de.naoth.rc.core.dialog.RCDialog;
 import de.naoth.rc.drawings.Drawable;
 import de.naoth.rc.drawings.DrawingCollection;
 import de.naoth.rc.drawings.DrawingOnField;
@@ -29,6 +30,7 @@ import de.naoth.rc.manager.DebugDrawingManager;
 import de.naoth.rc.manager.ImageManagerBottom;
 import de.naoth.rc.core.manager.ObjectListener;
 import de.naoth.rc.dataformats.SPLMessage;
+import de.naoth.rc.drawings.Circle;
 import de.naoth.rc.drawings.FieldDrawingSPL3x4;
 import de.naoth.rc.logmanager.BlackBoard;
 import de.naoth.rc.logmanager.LogDataFrame;
@@ -42,6 +44,8 @@ import de.naoth.rc.messages.Messages.Plots;
 import de.naoth.rc.messages.Representations;
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -61,6 +65,7 @@ import org.freehep.util.export.ExportDialog;
 public class FieldViewer extends AbstractDialog
 {
 
+    @RCDialog(category = RCDialog.Category.View, name = "Field")
     @PluginImplementation
     public static class Plugin extends DialogPlugin<FieldViewer> {
 
@@ -80,7 +85,6 @@ public class FieldViewer extends AbstractDialog
         public static LogFileEventManager logFileEventManager;
     }//end Plugin
   
-  private Drawable backgroundDrawing;
   private DrawingBuffer drawingBuffer = new DrawingBuffer(100);
   private DrawingBuffer drawingEventBuffer = new DrawingBuffer(100);
 
@@ -114,11 +118,11 @@ public class FieldViewer extends AbstractDialog
         }
     ));
     
-    this.backgroundDrawing = (Drawable)this.cbBackground.getSelectedItem();
-    
     this.plotDataListener = new PlotDataListener();
     
+    this.fieldCanvas.setBackgroundDrawing((Drawable)this.cbBackground.getSelectedItem());
     this.fieldCanvas.setToolTipText("");
+    this.fieldCanvas.setFitToViewport(this.btFitToView.isSelected());
     canvasExport = this.fieldCanvas;
     
     Plugin.drawingEventManager.addListener(new DrawingListener() {
@@ -137,10 +141,20 @@ public class FieldViewer extends AbstractDialog
     });
     
     // intialize the field
-    //this.fieldCanvas.getDrawingList().add(0, this.backgroundDrawing);
     resetView();
     this.fieldCanvas.setAntializing(btAntializing.isSelected());
     this.fieldCanvas.repaint();
+    
+    
+    this.fieldCanvas.addMouseListener(new MouseAdapter() {
+        @Override
+        public void mouseClicked(MouseEvent e) {
+            if (e.getClickCount() == 2 && !e.isConsumed()) {
+                e.consume();
+                fieldCanvas.fitToViewport();
+            }
+        }
+    });
 
     this.strokePlot = new StrokePlot(300);
   }
@@ -163,6 +177,7 @@ public class FieldViewer extends AbstractDialog
         btClean = new javax.swing.JButton();
         cbBackground = new javax.swing.JComboBox();
         btRotate = new javax.swing.JButton();
+        btFitToView = new javax.swing.JToggleButton();
         btAntializing = new javax.swing.JCheckBox();
         btCollectDrawings = new javax.swing.JCheckBox();
         cbExportOnDrawing = new javax.swing.JCheckBox();
@@ -245,6 +260,19 @@ public class FieldViewer extends AbstractDialog
             }
         });
         jToolBar1.add(btRotate);
+
+        btFitToView.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/freehep/swing/images/0_MoveCursor.gif"))); // NOI18N
+        btFitToView.setSelected(true);
+        btFitToView.setToolTipText("auto-zoom canvas on resizing and rotation");
+        btFitToView.setFocusable(false);
+        btFitToView.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btFitToView.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btFitToView.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btFitToViewActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(btFitToView);
 
         btAntializing.setText("Antialiazing");
         btAntializing.setFocusable(false);
@@ -387,18 +415,24 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
 
     private void cbBackgroundActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_cbBackgroundActionPerformed
     {//GEN-HEADEREND:event_cbBackgroundActionPerformed
-        this.backgroundDrawing = (Drawable)this.cbBackground.getSelectedItem();
-        this.fieldCanvas.getDrawingList().set(0, this.backgroundDrawing);
+        this.fieldCanvas.setBackgroundDrawing((Drawable)this.cbBackground.getSelectedItem());
         this.fieldCanvas.repaint();
+        // TODO: should this be inside the DynamicCanvasPanel?
+        if(this.fieldCanvas.isFitToViewport()) {
+            this.fieldCanvas.fitToViewport();
+        }
     }//GEN-LAST:event_cbBackgroundActionPerformed
 
     private void btRotateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btRotateActionPerformed
         this.fieldCanvas.setRotation(this.fieldCanvas.getRotation() + Math.PI*0.5);
+        // TODO: should this be inside the DynamicCanvasPanel?
+        if(this.fieldCanvas.isFitToViewport()) {
+            this.fieldCanvas.fitToViewport();
+        }
         this.fieldCanvas.repaint();
     }//GEN-LAST:event_btRotateActionPerformed
 
     private void btLogActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btLogActionPerformed
-       
         if(btLog.isSelected()) {
             Plugin.logFileEventManager.addListener(logListener);
         } else {
@@ -406,11 +440,14 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
         }
     }//GEN-LAST:event_btLogActionPerformed
 
+    private void btFitToViewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btFitToViewActionPerformed
+        fieldCanvas.setFitToViewport(this.btFitToView.isSelected());
+    }//GEN-LAST:event_btFitToViewActionPerformed
+
   
   final void resetView()
   {
     this.fieldCanvas.getDrawingList().clear();
-    this.fieldCanvas.getDrawingList().add(0, this.backgroundDrawing);
     if(btTrace.isSelected()) {
         this.fieldCanvas.getDrawingList().add(this.strokePlot);
     }
@@ -425,7 +462,6 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
       
       long l = java.lang.System.currentTimeMillis();
       File file = new File("./fieldViewerExport-"+l+".png");
-      
       BufferedImage bi = new BufferedImage(this.fieldCanvas.getWidth(), this.fieldCanvas.getHeight(), BufferedImage.TYPE_INT_ARGB);
       Graphics2D g2d = bi.createGraphics();
       this.fieldCanvas.paintAll(g2d);
@@ -559,6 +595,7 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
     private javax.swing.JCheckBox btAntializing;
     private javax.swing.JButton btClean;
     private javax.swing.JCheckBox btCollectDrawings;
+    private javax.swing.JToggleButton btFitToView;
     private javax.swing.JToggleButton btLog;
     private javax.swing.JToggleButton btReceiveDrawings;
     private javax.swing.JButton btRotate;

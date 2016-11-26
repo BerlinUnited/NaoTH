@@ -1,4 +1,8 @@
 #!/bin/bash
+# set volume to 88%
+sudo -u nao pactl set-sink-mute 0 false
+sudo -u nao pactl set-sink-volume 0 88%
+# play initial sound
 sudo -u nao /usr/bin/paplay /home/nao/naoqi/Media/usb_start.wav
 
 # copy function
