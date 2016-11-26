@@ -47,43 +47,31 @@ class UKF {
                 Eigen::Block<Eigen::Matrix<double,dim_state,1> > velocity(){
                     return Eigen::Block<Eigen::Matrix<double,dim_state,1> >(this->derived(), 3, 0, 3, 1);
                 }
-//                Eigen::Vector3d velocity(){
-//                    return this->segment(3,3);
-//                }
 
                 Eigen::Block<Eigen::Matrix<double,dim_state,1> > acceleration(){
                     return Eigen::Block<Eigen::Matrix<double,dim_state,1> >(this->derived(), 6, 0, 3, 1);
                 }
-//                Eigen::Vector3d acceleration(){ // gravity adjusted
-//                    return this->segment(6,3);
-//                }
 
                 Eigen::Block<Eigen::Matrix<double,dim_state,1> > gravity(){
                     return Eigen::Block<Eigen::Matrix<double,dim_state,1> >(this->derived(), 9, 0, 3, 1);
                 }
-//                Eigen::Vector3d gravity(){
-//                    return this->segment(9,3);
-//                }
-
-//                Eigen::Quaterniond rotation(){
-//                    Eigen::Vector4d q = this->segment(15,4);
-//                    return Eigen::Quaterniond(q);
-//                }
-
-//                Eigen::Vector3d rotational_velocity(){
-//                    return this->segment(19,3);
-//                }
 
                 Eigen::Block<Eigen::Matrix<double,dim_state,1> > bias_acceleration(){
                     return Eigen::Block<Eigen::Matrix<double,dim_state,1> >(this->derived(), 12, 0, 3, 1);
                 }
-//                Eigen::Vector3d bias_acceleration(){
-//                    return this->segment(12,3);
-//                }
 
-//                Eigen::Vector3d bias_rotational_velocity(){
-//                    return this->segment(22,3);
-//                }
+                Eigen::Block<Eigen::Matrix<double,dim_state,1> > rotation(){
+                    //eigen's order of components of a quaterion: x,y,z,w
+                    return Eigen::Block<Eigen::Matrix<double,dim_state,1> >(this->derived(), 15, 0, 4, 1);
+                }
+
+                Eigen::Block<Eigen::Matrix<double,dim_state,1> > rotational_velocity(){
+                    return Eigen::Block<Eigen::Matrix<double,dim_state,1> >(this->derived(), 19, 0, 3, 1);
+                }
+
+                Eigen::Block<Eigen::Matrix<double,dim_state,1> > bias_rotational_velocity(){
+                    return Eigen::Block<Eigen::Matrix<double,dim_state,1> >(this->derived(), 22, 0, 3, 1);
+                }
 
                 State& operator=(Eigen::Matrix<double,dim_state,1> rhs) {
                     this->Eigen::Matrix<double,dim_state,1>::operator=(rhs);
@@ -143,9 +131,9 @@ public:
 
 private:
 
-    UKF<15,3> ukf;
+    UKF<25,6> ukf;
 
-    typedef UKF<15,3>::Measurement Measurement;
+    typedef UKF<25,6>::Measurement Measurement;
 
 
 };

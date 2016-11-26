@@ -6,12 +6,15 @@
 IMUModel::IMUModel()
 {
     // initial state
-    ukf.state = Eigen::Matrix<double,15,1>::Zero();
+    ukf.state = Eigen::Matrix<double,25,1>::Zero();
 
     // assume gravity align with z axis
-    ukf.state.gravity()(2) = -9.81;
+    // ukf.state.gravity()(2) = -9.81;
 
-    ukf.P = Eigen::Matrix<double,15,15>::Identity();
+    // assume zero rotation
+    ukf.state.rotation()(3) = 1;
+
+    ukf.P = Eigen::Matrix<double,25,25>::Identity();
 
     DEBUG_REQUEST_REGISTER("IMUModel:reset_filter", "reset filter", false);
 }
@@ -30,7 +33,7 @@ void IMUModel::execute(){
     ukf.generateSigmaPoints();
 
     Measurement z;
-    z << getAccelerometerData().data.x, getAccelerometerData().data.y, getAccelerometerData().data.z/*, 9.81*//*, getGyrometerData().data.x, getGyrometerData().data.y, getGyrometerData().data.z*/;
+    z << getAccelerometerData().data.x, getAccelerometerData().data.y, getAccelerometerData().data.z/*, 9.81*/, getGyrometerData().data.x, getGyrometerData().data.y, getGyrometerData().data.z;
 
     ukf.update(z);
 
@@ -39,12 +42,15 @@ void IMUModel::execute(){
 
 void IMUModel::resetFilter(){
     // initial state
-    ukf.state = Eigen::Matrix<double,15,1>::Zero();
+    ukf.state = Eigen::Matrix<double,25,1>::Zero();
 
     // assume gravity align with z axis
-    ukf.state.gravity()(2) = -9.81;
+    // ukf.state.gravity()(2) = -9.81;
 
-    ukf.P = Eigen::Matrix<double,15,15>::Identity();
+    // assume zero rotation
+    ukf.state.rotation()(3) = 1;
+
+    ukf.P = Eigen::Matrix<double,25,25>::Identity();
 }
 
 void IMUModel::writeIMUData(){
@@ -60,13 +66,28 @@ void IMUModel::writeIMUData(){
     getIMUData().acceleration.y = ukf.state.acceleration()(1);
     getIMUData().acceleration.z = ukf.state.acceleration()(2);
 
+    getIMUData().gravity.x = ukf.state.gravity()(0);
+    getIMUData().gravity.y = ukf.state.gravity()(1);
+    getIMUData().gravity.z = ukf.state.gravity()(2);
+
     getIMUData().bias_acceleration.x = ukf.state.bias_acceleration()(0);
     getIMUData().bias_acceleration.y = ukf.state.bias_acceleration()(1);
     getIMUData().bias_acceleration.z = ukf.state.bias_acceleration()(2);
 
-    getIMUData().gravity.x = ukf.state.gravity()(0);
-    getIMUData().gravity.y = ukf.state.gravity()(1);
-    getIMUData().gravity.z = ukf.state.gravity()(2);
+    Eigen::Quaterniond q;
+    q = Eigen::Quaterniond(Eigen::Vector4d(ukf.state.rotation()));
+    Eigen::Vector3d angles = q.toRotationMatrix().eulerAngles(0,1,2);
+    getIMUData().rotation.x = angles(0);
+    getIMUData().rotation.y = angles(1);
+    getIMUData().rotation.z = angles(2);
+
+    getIMUData().rotational_velocity.x = ukf.state.rotational_velocity()(0);
+    getIMUData().rotational_velocity.y = ukf.state.rotational_velocity()(1);
+    getIMUData().rotational_velocity.z = ukf.state.rotational_velocity()(2);
+
+    getIMUData().bias_rotational_velocity.x = ukf.state.bias_rotational_velocity()(0);
+    getIMUData().bias_rotational_velocity.y = ukf.state.bias_rotational_velocity()(1);
+    getIMUData().bias_rotational_velocity.z = ukf.state.bias_rotational_velocity()(2);
 }
 
 //template <int dim_state, int dim_measurement>
@@ -146,7 +167,7 @@ void UKF <dim_state, dim_measurement>::update(Measurement z){
 
     Eigen::Matrix<double,dim_state,dim_state> P_wiki;
     Eigen::Matrix<double,dim_state,dim_state> P_gh;
-    P_wiki     = P - K*Pzz*K.transpose(); // https://en.m.wikipedia.org/wiki/Kalman_filter
+    P_wiki   = P - K*Pzz*K.transpose(); // https://en.m.wikipedia.org/wiki/Kalman_filter
     P_gh     = P - Pxz*Pzz.inverse()*Pxz.transpose(); // from "Performance and Implementation Aspects of Nonlinear Filtering" by Gustaf Hendeby
 
     P = P_wiki;
@@ -155,23 +176,29 @@ void UKF <dim_state, dim_measurement>::update(Measurement z){
 template <int dim_state, int dim_measurement>
 void UKF<dim_state, dim_measurement>::transitionFunction(State& state, double dt){
     // rotational_velocity to quaterion
-//    double norm_rv = state.rotational_velocity().norm();
+    double norm_rv = state.rotational_velocity().norm();
+    Eigen::Quaterniond rotation_increment;
+    if(norm_rv > 0) {
+        rotation_increment = Eigen::Quaterniond (
+                                std::cos(norm_rv/2*dt),
+                                state.rotational_velocity()(0)/norm_rv*std::sin(norm_rv*dt/2),
+                                state.rotational_velocity()(1)/norm_rv*std::sin(norm_rv*dt/2),
+                                state.rotational_velocity()(2)/norm_rv*std::sin(norm_rv*dt/2));
+    } else {
+        // zero rotation quaterion
+        rotation_increment = Eigen::Quaterniond(1,0,0,0);
+    }
 
-//    Eigen::Quaterniond rotation_increment(
-//                            std::cos(norm_rv/2*dt),
-//                            state.rotational_velocity()(0)/norm_rv*std::sin(norm_rv*dt/2),
-//                            state.rotational_velocity()(1)/norm_rv*std::sin(norm_rv*dt/2),
-//                            state.rotational_velocity()(2)/norm_rv*std::sin(norm_rv*dt/2));
+    Eigen::Quaterniond rotation = Eigen::Quaterniond(Eigen::Vector4d(state.rotation()));
+    state.rotation() = (rotation_increment*rotation).coeffs(); // continue rotation assuming constant velocity
 
-//    state.rotation() = rotation_increment*state.rotation(); // continue rotation assuming constant velocity
+    // the other vectorial entities don't rotate with the sensor frame -> rotate in other direction
+    rotation_increment = rotation_increment.inverse();
 
-//    // the other vectorial entities don't rotate with the sensor frame -> rotate in other direction
-//    rotation_increment = rotation_increment.inverse();
-
-//    state.gravity()      = rotation_increment._transformVector(state.gravity());
-//    state.acceleration() = rotation_increment._transformVector(state.acceleration());
-//    state.velocity()     = rotation_increment._transformVector(state.velocity());
-//    state.location()     = rotation_increment._transformVector(state.location());
+    state.gravity()      = rotation_increment._transformVector(state.gravity());
+    state.acceleration() = rotation_increment._transformVector(state.acceleration());
+    state.velocity()     = rotation_increment._transformVector(state.velocity());
+    state.location()     = rotation_increment._transformVector(state.location());
 
     state.location() = state.location() + state.velocity()*dt + state.acceleration()*dt*dt/2;
     state.velocity() = state.velocity() + state.acceleration()*dt;
@@ -181,11 +208,11 @@ template <int dim_state, int dim_measurement>
 typename UKF<dim_state, dim_measurement>::Measurement UKF<dim_state, dim_measurement>::stateToMeasurementSpaceFunction(State& state){
 
     // state to measurement function
-    Eigen::Vector3d acceleration_in_measurement_space        = state.gravity() + state.acceleration() + state.bias_acceleration();
-    //Eigen::Vector3d rotational_velocity_in_measurement_space = state.rotational_velocity() + state.bias_rotational_velocity();
+    Eigen::Vector3d acceleration_in_measurement_space        = /*state.gravity() +*/ state.acceleration() + state.bias_acceleration();
+    Eigen::Vector3d rotational_velocity_in_measurement_space = state.rotational_velocity() + state.bias_rotational_velocity();
 
     Measurement return_val;
-    return_val << acceleration_in_measurement_space/*, 9.81*//*, state.gravity().norm()*//*, rotational_velocity_in_measurement_space*/;
+    return_val << acceleration_in_measurement_space/*, 9.81*//*, state.gravity().norm()*/, rotational_velocity_in_measurement_space;
 
     return return_val;
 }
