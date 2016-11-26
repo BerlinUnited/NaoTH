@@ -65,6 +65,7 @@ Motion::Motion()
   theSupportPolygonGenerator = registerModule<SupportPolygonGenerator>("SupportPolygonGenerator", true);
   theOdometryCalculator = registerModule<OdometryCalculator>("OdometryCalculator", true);
   theKinematicChainProvider = registerModule<KinematicChainProviderMotion>("KinematicChainProvider", true);
+  theIMUModel = registerModule<IMUModel>("IMUModel", true);
 
   theMotionEngine = registerModule<MotionEngine>("MotionEngine", true);
 }
@@ -210,6 +211,9 @@ void Motion::processSensorData()
 
   // calibrate inertia sensors
   theInertiaSensorCalibrator->execute();
+
+  //
+  theIMUModel->execute();
 
   //TODO: introduce calibrated versions of the data
   // correct the sensors
