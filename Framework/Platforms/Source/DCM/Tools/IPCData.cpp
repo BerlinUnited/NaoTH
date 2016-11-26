@@ -156,4 +156,5 @@ void NaoSensorData::get(BatteryData& data) const
   data.charge = sensorsValue[currentIndex++];
   data.current = sensorsValue[currentIndex++];
   data.temperature = sensorsValue[currentIndex++];
+  data.headTemperature = sensorsValue[currentIndex++];
 }

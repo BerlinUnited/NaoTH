@@ -75,6 +75,8 @@ private:
   std::string DCMPath_BatteryCurrent;
   std::string DCMPath_BatteryTemperature;
   
+  std::string DCMPath_HeadTemperature;
+
   //State of the devices
   std::string DCMPath_DeviceState;
 

@@ -33,7 +33,7 @@ const unsigned int theIRReceiveDataIndex = theInertialSensorDataIndex + 2; // in
 const unsigned int theButtonDataIndex = theIRReceiveDataIndex + IRReceiveData::numOfIRReceive;
 const unsigned int theUltraSoundReceiveDataIndex = theButtonDataIndex + ButtonData::numOfButtons;
 const unsigned int theBatteryDataIdex = theUltraSoundReceiveDataIndex + 1 + 2 * UltraSoundReceiveData::numOfUSEcho; // 
-const unsigned int numOfSensors = theBatteryDataIdex + 3; // charge, current, temperature
+const unsigned int numOfSensors = theBatteryDataIdex + 3 + 1; // charge, current, temperature
 
 /** 
 * data written by libnaoth

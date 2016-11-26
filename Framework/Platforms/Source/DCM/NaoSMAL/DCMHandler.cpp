@@ -56,7 +56,7 @@ void DCMHandler::init(boost::shared_ptr<ALBroker> pB)
   DCMPath_BatteryCharge = "Device/SubDeviceList/Battery/Charge/Sensor/Value";
   DCMPath_BatteryCurrent = "Device/SubDeviceList/Battery/Current/Sensor/Value";
   DCMPath_BatteryTemperature = "Device/SubDeviceList/Battery/Temperature/Sensor/Value";
-  
+  DCMPath_HeadTemperature = "Device/SubDeviceList/Head/Temperature/Sensor/Value";
   initAllSensorData();
 }//end init
 
@@ -407,6 +407,8 @@ void DCMHandler::initAllSensorData()
   allSensorsList[currentIndex++] = DCMPath_BatteryCharge;
   allSensorsList[currentIndex++] = DCMPath_BatteryCurrent;
   allSensorsList[currentIndex++] = DCMPath_BatteryTemperature;
+
+  allSensorsList[currentIndex++] = DCMPath_HeadTemperature;
 
   // little senity check
   assert(currentIndex == numOfSensors);
