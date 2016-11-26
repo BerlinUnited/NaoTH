@@ -6,6 +6,9 @@
 #include <strstream>
 #include <fstream>
 #include <sstream>
+#include <string>
+
+#include <CTML/CTML.h>
 
 #include <Representations/Perception/BallCandidates.h>
 #include <Cognition/Modules/VisualCortex/BallDetector/Tools/PatchWork.h>
@@ -210,68 +213,64 @@ void BallDetectorEvaluator::outputResults(std::string outFileName)
 {
   base64::Encoder base64Encoder(64);
 
+  CTML::Document doc;
   std::ofstream html;
   html.open(outFileName);
 
-  html << "<html>" << std::endl;
-  html << "<head>" << std::endl;
-  html << "<style>" << std::endl;
-  // CSS
-  html << "img.patch {width: 36px; height: 36px;}" << std::endl;
-  html << "table, th, td {border: 1px solid; border-collapse: collapse; }" << std::endl;
-  html << "td.cLow  {color: #FF0000; font-weight: bold;}" << std::endl;
-  html << "td.cMiddle {color: #FF8806; font-weight: bold;}" << std::endl;
-  html << "td.cGood {color: #94C705; font-weight: bold;}" << std::endl;
-  html << "td.cExcellent {color: #00FF00; font-weight: bold;}" << std::endl;
+  doc.AddNodeToHead(CTML::Node("style",
+    "img.patch {width: 36px; height: 36px;}\n"
+    "table, th, td {border: 1px solid; border-collapse: collapse; }\n"
+    "td.cLow  {color: #FF0000; font-weight: bold;}\n"
+    "td.cMiddle {color: #FF8806; font-weight: bold;}\n"
+    "td.cGood {color: #94C705; font-weight: bold;}\n"
+    "td.cExcellent {color: #00FF00; font-weight: bold;}\n"
+    "th.sort-header::-moz-selection { background:transparent; }\n"
+    "th.sort-header::selection      { background:transparent; }\n"
+    "th.sort-header { cursor:pointer; }\n"
+    "table th.sort-header:after {content:''; float:right; margin-top:7px; border-width:0 4px 4px; border-style:solid; border-color:#404040 transparent;  visibility:hidden;}\n"
+    "table th.sort-header:hover:after {visibility:visible;}\n"
+    "table th.sort-up:after, table th.sort-down:after, table th.sort-down:hover:after { visibility:visible; opacity:0.4; }\n"
+    "table th.sort-up:after { border-bottom:none; border-width:4px 4px 0;}"));
+  doc.AddNodeToHead(CTML::Node("script").SetAttribute("src", "tablesort.js"));
+  doc.AddNodeToHead(CTML::Node("script").SetAttribute("src", "tablesort.number.js"));
+  doc.AddNodeToHead(CTML::Node("script", "window.onload = function () {if(window.Tablesort) {new Tablesort(document.getElementById('overviewTable'));}}"));
 
+  doc.AddNodeToBody(CTML::Node("h1").AppendChild(CTML::Node("a", "Overview (" + fileArg + ")").SetAttribute("id", "overview")));
 
-  html << "th.sort-header::-moz-selection { background:transparent; }" << std::endl;
-  html << "th.sort-header::selection      { background:transparent; }" << std::endl;
-  html << "th.sort-header { cursor:pointer; }" << std::endl;
-  html << "table th.sort-header:after {content:''; float:right; margin-top:7px; border-width:0 4px 4px; border-style:solid; border-color:#404040 transparent;  visibility:hidden;}" << std::endl;
-  html << "table th.sort-header:hover:after {visibility:visible;}" << std::endl;
-  html << "table th.sort-up:after, table th.sort-down:after, table th.sort-down:hover:after { visibility:visible; opacity:0.4; }" << std::endl;
-  html << "table th.sort-up:after { border-bottom:none; border-width:4px 4px 0;}" << std::endl;
+  CTML::Node overviewTable("table");
+  overviewTable.SetAttribute("id", "overviewTable");
 
+  CTML::Node thead("thead");
+  CTML::Node headRow("tr");
+  headRow.AppendChild(CTML::Node("th", "modelName"));
+  headRow.AppendChild(CTML::Node("th", "minNeighbours").SetAttribute("data-sort-method", "number"));
+  headRow.AppendChild(CTML::Node("th", "windowSize").SetAttribute("data-sort-method", "number"));
+  headRow.AppendChild(CTML::Node("th", "precision").SetAttribute("data-sort-method", "number"));
+  headRow.AppendChild(CTML::Node("th", "recall").SetAttribute("data-sort-method", "number"));
+  headRow.AppendChild(CTML::Node("th", "").SetAttribute("class", "no-sort"));
 
-  html << "</style>" << std::endl;
+  thead.AppendChild(headRow);
+  overviewTable.AppendChild(thead);
 
-  html << "<script src=\"tablesort.js\"></script>" << std::endl;
-  html << "<script src=\"tablesort.number.js\"></script>" << std::endl;
-
-  html << "</head>" << std::endl;
-
-  html << "<body onload=\"if(window.Tablesort) {new Tablesort(document.getElementById('overviewTable'));}\" >" << std::endl;
-
-  html << "<h1><a id=\"overview\">Overview (" << fileArg << ")</a></h1>" << std::endl;
-
-  html << "<table id=\"overviewTable\">" << std::endl;
-  html << "<thead>" << std::endl;
-  html << "<tr>" << std::endl;
-  html << "<th>" << "modelName" << "</th>" << std::endl;
-  html << "<th data-sort-method='number'>" << "minNeighbours" << "</th>" << std::endl;
-  html << "<th data-sort-method='number'>" << "windowSize" << "</th>" << std::endl;
-  html << "<th data-sort-method='number''>" << "precision" << "</th>" << std::endl;
-  html << "<th data-sort-method='number'>" << "recall" << "</th>" << std::endl;
-  html << "<th class='no-sort'></th>" << std::endl;
-  html << "</tr>" << std::endl;
-  html << "</thead>" << std::endl;
   for(std::map<ExperimentParameters, ExperimentResult>::const_iterator it=results.begin();
       it != results.end(); it++)
   {
     const ExperimentParameters& params = it->first;
     const ExperimentResult& r = it->second;
-    html << "<tr>" << std::endl;
-    html << "<td>" << params.modelName << "</td>" << std::endl;
-    html << "<td>" << params.minNeighbours << "</td>" << std::endl;
-    html << "<td>" << params.maxWindowSize << "</td>" << std::endl;
-    html << "<td class=\"" << precisionClass(r.precision) << "\">" << r.precision << "</td>" << std::endl;
-    html << "<td class=\"" << recallClass(r.recall) << "\">" << r.recall << "</td>" << std::endl;
-     html << "<td><a href=\"#result_" <<  toID(params) <<  "\">details</a></td>" << std::endl;
-    html << "</tr>" << std::endl;
+
+    CTML::Node tr("tr");
+    tr.AppendChild(CTML::Node("td", params.modelName));
+    tr.AppendChild(CTML::Node("td", std::to_string(params.minNeighbours)));
+    tr.AppendChild(CTML::Node("td", std::to_string(params.maxWindowSize)));
+    tr.AppendChild(CTML::Node("td", std::to_string(r.precision)).SetAttribute("class", precisionClass(r.precision)));
+    tr.AppendChild(CTML::Node("td", std::to_string(r.recall)).SetAttribute("class", recallClass(r.recall)));
+    tr.AppendChild(CTML::Node("td").AppendChild(CTML::Node("a", "details").SetAttribute("href", "#result_" + toID(params))));
+
+    overviewTable.AppendChild(tr);
   }
-  html << "</table>" << std::endl;
 
+
+  doc.AddNodeToBody(overviewTable);
 
   for(std::map<ExperimentParameters, ExperimentResult>::const_iterator it=results.begin();
       it != results.end(); it++)
@@ -279,48 +278,59 @@ void BallDetectorEvaluator::outputResults(std::string outFileName)
     const ExperimentParameters& params = it->first;
     const ExperimentResult& r = it->second;
 
-
-    html << "<h1><a id=\"result_" << toID(params) << "\">" << toDesc(params) << "</a></h1>" << std::endl;
-
-    html << "<h2>Summary</h2>" << std::endl;
-    html << "<p><strong>precision: " << r.precision << "<br />recall: " << r.recall << "</strong></p>" << std::endl;
+    doc.AddNodeToBody(CTML::Node("h1").AppendChild(CTML::Node("a", toDesc(params)).SetAttribute("id", "result_" + toID(params))));
+    doc.AddNodeToBody(CTML::Node("h2", "Summary"));
+    doc.AddNodeToBody(CTML::Node("p")
+                      .AppendChild(CTML::Node("strong", "precision: " + std::to_string(r.precision)))
+                      .AppendChild(CTML::Node("br"))
+                      .AppendChild(CTML::Node("strong", "recall: " + std::to_string(r.recall)))
+    );
 
 
     unsigned int numOfBalls = r.truePositives + r.falseNegatives;
-    html << "<p>total number of samples: " << r.totalSize << " (" << numOfBalls << " balls, " << (r.totalSize - numOfBalls) << " non-balls)</p>" << std::endl;
 
-    html << "<p><a href=\"#overview\">back to top</a></p>" << std::endl;
+    doc.AddNodeToBody(CTML::Node("p", "total number of samples: " + std::to_string(r.totalSize)
+                                 + " (" + std::to_string(numOfBalls) + " balls, "
+                                 + std::to_string(r.totalSize - numOfBalls) + " non-balls)"));
 
-    html << "<h2>False Positives</h2>" << std::endl;
+    doc.AddNodeToBody(CTML::Node("p").AppendChild(CTML::Node("a", "back to top").SetAttribute("href", "#overview")));
 
-    html << "<p>number: " << r.falsePositives << "</p>" << std::endl;
+    doc.AddNodeToBody(CTML::Node("h2", "False Positives"));
+    doc.AddNodeToBody(CTML::Node("p", "number: " + std::to_string(r.falsePositives)));
 
-    html << "<div>" << std::endl;
+    CTML::Node divFP("div");
+
     for(std::list<ErrorEntry>::const_iterator it=r.falsePositivePatches.begin(); it != r.falsePositivePatches.end(); it++)
     {
       // use a data URI to embed the image in PNG format
       std::string imgPNG = createPNG(it->patch);
-      html << "<img class=\"patch\" title=\"" << it->idx << "@" << it->fileName
-           << "\" src=\"data:image/png;base64," << base64Encoder.encode(imgPNG.c_str(), (int) imgPNG.size())  << "\" />" << std::endl;
+      divFP.AppendChild(CTML::Node("img")
+                        .SetAttribute("title", std::to_string(it->idx) + "@" + it->fileName)
+                        .SetAttribute("src", "data:image/png;base64," + base64Encoder.encode(imgPNG.c_str(), (int) imgPNG.size()))
+      );
     }
-    html << "</div>" << std::endl;
+    doc.AddNodeToBody(divFP);
 
-    html << "<h1>False Negatives</h1>" << std::endl;
+    doc.AddNodeToBody(CTML::Node("h2", "False Negatives"));
+    doc.AddNodeToBody(CTML::Node("p", "number: " + std::to_string(r.falseNegatives)));
 
-    html << "<p>number: " << r.falseNegatives << "</p>" << std::endl;
+    CTML::Node divFN("div");
 
-    html << "<div>" << std::endl;
     for(std::list<ErrorEntry>::const_iterator it=r.falseNegativePatches.begin(); it != r.falseNegativePatches.end(); it++)
     {
       // use a data URI to embed the image in PNG format
       std::string imgPNG = createPNG(it->patch);
-      html << "<img class=\"patch\" title=\"" << it->idx << "@" << it->fileName
-           << "\" src=\"data:image/png;base64," << base64Encoder.encode(imgPNG.c_str(), (int) imgPNG.size())  << "\" />" << std::endl;
+      divFN.AppendChild(CTML::Node("img")
+                        .SetAttribute("title", std::to_string(it->idx) + "@" + it->fileName)
+                        .SetAttribute("src", "data:image/png;base64," + base64Encoder.encode(imgPNG.c_str(), (int) imgPNG.size()))
+      );
     }
-    html << "</div>" << std::endl;
+
+    doc.AddNodeToBody(divFN);
   }
 
-  html << "</body>" << std::endl;
+  html << doc.ToString(CTML::Readability::MULTILINE);
+
   html.close();
 }
 
