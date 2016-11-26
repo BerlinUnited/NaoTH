@@ -14,8 +14,10 @@ do
   then
     # play error sound
     sudo -u nao /usr/bin/paplay /usr/share/naoqi/wav/outch.wav
+    # kill all process accessing mount point
+    fuser -c -k /media/brainwasher &> /dev/null
     # force unmounting
-    umount -l /media/brainwasher &> /dev/null
+    umount -f /media/brainwasher &> /dev/null
     break
   fi
 done
