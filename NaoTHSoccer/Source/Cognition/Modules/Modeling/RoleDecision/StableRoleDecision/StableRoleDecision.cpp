@@ -60,11 +60,15 @@ void StableRoleDecision::computeStrikers()
         }
     }//end for
 
+    // get my own message
+    auto ownMessage = tm.data.at(getPlayerInfo().playerNumber);
     // i want to be striker, if i'm not the goalie and i'm "active" (not fallen/panelized, see the ball)!!!
-    getRoleDecisionModel().wantsToBeStriker = !getPlayerInfo().isGoalie() && amIactive();
+    getRoleDecisionModel().wantsToBeStriker = ownMessage.playerNum != 1
+                                              && !(ownMessage.fallen || ownMessage.isPenalized || ownMessage.ballAge < 0
+                                              || (ownMessage.ballAge + getFrameInfo().getTimeSince(ownMessage.frameInfo.getTime()) > parameters.maxBallLostTime + (getPlayerInfo().playerNumber==getRoleDecisionModel().firstStriker?parameters.strikerBonusTime:0.0)));
 
     // if i'm striker, i get a time bonus!
-    double ownTimeToBall = getSoccerStrategy().timeToBall - (getPlayerInfo().isPlayingStriker?300:0);
+    double ownTimeToBall = ownMessage.timeToBall - (ownMessage.wasStriker?300:0);
 
     // clear for new striker decision
     getRoleDecisionModel().resetStriker();
