@@ -68,7 +68,9 @@ void StableRoleDecision::computeStrikers()
                                               || (ownMessage.ballAge + getFrameInfo().getTimeSince(ownMessage.frameInfo.getTime()) > parameters.maxBallLostTime + (getPlayerInfo().playerNumber==getRoleDecisionModel().firstStriker?parameters.strikerBonusTime:0.0)));
 
     // if i'm striker, i get a time bonus!
-    double ownTimeToBall = ownMessage.timeToBall - (ownMessage.wasStriker?300:0);
+    // NOTE: ownTimeToBall can be negative if the robot is close to ball (!)
+    double ownTimeToBall = static_cast<double>(ownMessage.timeToBall) - (ownMessage.wasStriker?300.0:0.0);
+
 
     // clear for new striker decision
     getRoleDecisionModel().resetStriker();
