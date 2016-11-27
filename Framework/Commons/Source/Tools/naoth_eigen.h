@@ -3,6 +3,7 @@
 
 #if defined(__GNUC__) && (__GNUC__ >= 6)
 #pragma GCC diagnostic ignored "-Wmisleading-indentation"
+#pragma GCC diagnostic ignored "-Wignored-attributes"
 #endif
 
 #include <Eigen/Eigen>

@@ -10,6 +10,7 @@ import de.naoth.rc.components.treetable.ParameterDataModel;
 import de.naoth.rc.components.treetable.TreeTable;
 import de.naoth.rc.core.dialog.AbstractDialog;
 import de.naoth.rc.core.dialog.DialogPlugin;
+import de.naoth.rc.core.dialog.RCDialog;
 import de.naoth.rc.core.manager.ObjectListener;
 import de.naoth.rc.core.manager.SwingCommandExecutor;
 import de.naoth.rc.server.Command;
@@ -22,7 +23,7 @@ import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
  */
 public class ParameterPanelTree extends AbstractDialog
 {
-
+  @RCDialog(category = RCDialog.Category.Configure, name = "ParameterTree")
   @PluginImplementation
   public static class Plugin extends DialogPlugin<ParameterPanelTree>
   {
