@@ -35,7 +35,7 @@ public:
   ActionId bestAction;
   Vector2d expectedBallPos;
 
-  virtual void KickActionModel::print(std::ostream& stream) const
+  virtual void print(std::ostream& stream) const
   {
 	  stream << "expectedBallPos.x = " << expectedBallPos.x << std::endl;
 	  stream << "expectedBallPos.y = " << expectedBallPos.y << std::endl;
