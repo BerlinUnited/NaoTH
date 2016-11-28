@@ -25,17 +25,10 @@ import de.naoth.rc.server.CommandSender;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.ActionListener;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Scanner;
 import javax.swing.DefaultListCellRenderer;
-import javax.swing.JPanel;
 import javax.swing.JCheckBox;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
@@ -523,9 +516,7 @@ public class ModuleConfigurationViewer extends AbstractDialog
      */
     public void makeCheck()
     {
-        IgnoreList ignore = new IgnoreList();
         errorList.removeAll();
-        
         ArrayList<ListComponent> notification = new ArrayList<ListComponent>();
         ArrayList<ListComponent> warnings = new ArrayList<ListComponent>();
         ArrayList<ListComponent> errors = new ArrayList<ListComponent>();
@@ -571,11 +562,6 @@ public class ModuleConfigurationViewer extends AbstractDialog
         this.btNotification.setText(String.format("%d Notifications", numberNotifications));
     }
 
-    public boolean isOnIgnorelist(String name)
-    {
-        return false;
-    }
-
     /**
      * saves a warning for a nor required or not provided representation and a
      * reference to this representation
@@ -589,7 +575,7 @@ public class ModuleConfigurationViewer extends AbstractDialog
         }
         
         private Node n;
-        private String message;
+        private final String message;
         private Level level = Level.NOTE;
 
         public static ListComponent error(Node n, String message) {
@@ -633,88 +619,6 @@ public class ModuleConfigurationViewer extends AbstractDialog
         }
     }
     
-
-    class IgnoreList
-    {
-
-        ArrayList<String> ignorelist;
-
-        public IgnoreList()
-        {
-            ignorelist = new ArrayList<String>();
-
-            updateIgnorelist("src/de/naoth/rc/dialogs/moduleIntegrityIgnorelist");
-        }
-
-        public boolean isOnIgnorelist(String name)
-        {
-            if (!btNotification.isSelected())
-            {
-                return false;
-            }
-            if (ignorelist.isEmpty())
-            {
-                return false;
-            }
-            return ignorelist.contains(name);
-        }
-
-        public void updateIgnorelist(String s)
-        {
-            Scanner scanner;
-            scanner = getScanner(s);
-            if (scanner != null)
-            {
-                while (scanner.hasNextLine())
-                {
-                    ignorelist.add(scanner.nextLine());
-                }
-            }
-            else
-            {
-                System.out.println("sth went wrong here");
-            }
-        }
-
-        private Scanner getScanner(String s)
-        {
-            Scanner scanner;
-            String charsetName = "ISO-8859-1";
-            try
-            {
-                // first try to read file from local file system
-                File file = new File(s);
-                if (file.exists())
-                {
-                    scanner = new Scanner(file, charsetName);
-                    scanner.useLocale(java.util.Locale.US);
-                    return scanner;
-                }
-
-                // next try for files included in jar
-                URL url = getClass().getResource(s);
-
-                // or URL from web
-                if (url == null)
-                {
-                    url = new URL(s);
-                }
-
-                URLConnection site = url.openConnection();
-                InputStream is = site.getInputStream();
-                scanner = new Scanner(is, charsetName);
-                scanner.useLocale(java.util.Locale.US);
-                return scanner;
-            }
-            catch (IOException ioe)
-            {
-                System.err.println("Could not open " + s);
-                return null;
-            }
-        }
-
-    }
-
     public class CormpareIgnoreCase implements Comparator<Object>
     {
 
