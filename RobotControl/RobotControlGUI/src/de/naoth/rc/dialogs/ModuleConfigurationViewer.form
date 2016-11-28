@@ -20,7 +20,7 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Component id="jToolBar1" alignment="0" pref="639" max="32767" attributes="0"/>
+          <Component id="jToolBar1" alignment="0" pref="672" max="32767" attributes="0"/>
           <Component id="jSplitPane1" alignment="1" pref="0" max="32767" attributes="0"/>
       </Group>
     </DimensionLayout>
@@ -133,18 +133,6 @@
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="cbRepresentationsActionPerformed"/>
           </Events>
         </Component>
-        <Component class="javax.swing.JToggleButton" name="errorIgnoreToggle">
-          <Properties>
-            <Property name="selected" type="boolean" value="true"/>
-            <Property name="text" type="java.lang.String" value="ignorelist enabled"/>
-            <Property name="focusable" type="boolean" value="false"/>
-            <Property name="horizontalTextPosition" type="int" value="0"/>
-            <Property name="verticalTextPosition" type="int" value="3"/>
-          </Properties>
-          <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="errorIgnoreToggleActionPerformed"/>
-          </Events>
-        </Component>
       </SubComponents>
     </Container>
     <Container class="javax.swing.JSplitPane" name="jSplitPane1">
@@ -166,6 +154,7 @@
           <Properties>
             <Property name="dividerLocation" type="int" value="300"/>
             <Property name="orientation" type="int" value="0"/>
+            <Property name="oneTouchExpandable" type="boolean" value="true"/>
           </Properties>
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JSplitPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JSplitPaneSupportLayout$JSplitPaneConstraintsDescription">
@@ -221,26 +210,41 @@
 
                   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBoxLayout"/>
                   <SubComponents>
-                    <Component class="javax.swing.JLabel" name="jLCheckedRepresentations">
-                      <Properties>
-                        <Property name="text" type="java.lang.String" value="0 Cheched Representations "/>
-                      </Properties>
-                    </Component>
                     <Component class="javax.swing.JToggleButton" name="btErrors">
                       <Properties>
+                        <Property name="selected" type="boolean" value="true"/>
                         <Property name="text" type="java.lang.String" value="Errors"/>
                         <Property name="focusable" type="boolean" value="false"/>
                         <Property name="horizontalTextPosition" type="int" value="0"/>
                         <Property name="verticalTextPosition" type="int" value="3"/>
                       </Properties>
+                      <Events>
+                        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btErrorsActionPerformed"/>
+                      </Events>
                     </Component>
                     <Component class="javax.swing.JToggleButton" name="btWarnings">
                       <Properties>
+                        <Property name="selected" type="boolean" value="true"/>
                         <Property name="text" type="java.lang.String" value="Warnings"/>
                         <Property name="focusable" type="boolean" value="false"/>
                         <Property name="horizontalTextPosition" type="int" value="0"/>
                         <Property name="verticalTextPosition" type="int" value="3"/>
                       </Properties>
+                      <Events>
+                        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btWarningsActionPerformed"/>
+                      </Events>
+                    </Component>
+                    <Component class="javax.swing.JToggleButton" name="btNotification">
+                      <Properties>
+                        <Property name="selected" type="boolean" value="true"/>
+                        <Property name="text" type="java.lang.String" value="Notification"/>
+                        <Property name="focusable" type="boolean" value="false"/>
+                        <Property name="horizontalTextPosition" type="int" value="0"/>
+                        <Property name="verticalTextPosition" type="int" value="3"/>
+                      </Properties>
+                      <Events>
+                        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btNotificationActionPerformed"/>
+                      </Events>
                     </Component>
                   </SubComponents>
                 </Container>
@@ -264,7 +268,7 @@
                         </Property>
                       </Properties>
                       <Events>
-                        <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="errorListMouseClicked"/>
+                        <EventHandler event="valueChanged" listener="javax.swing.event.ListSelectionListener" parameters="javax.swing.event.ListSelectionEvent" handler="errorListValueChanged"/>
                       </Events>
                     </Component>
                   </SubComponents>

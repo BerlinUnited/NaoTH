@@ -21,6 +21,7 @@ import de.naoth.rc.manager.GenericManagerFactory;
 import de.naoth.rc.manager.ModuleConfigurationManager;
 import de.naoth.rc.server.Command;
 import de.naoth.rc.server.CommandSender;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -32,8 +33,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Scanner;
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.JPanel;
 import javax.swing.JCheckBox;
+import javax.swing.JList;
 import javax.swing.JOptionPane;
 import net.xeoh.plugins.base.annotations.events.Init;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
@@ -50,7 +53,6 @@ public class ModuleConfigurationViewer extends AbstractDialog
     @PluginImplementation
     public static class Plugin extends DialogPlugin<ModuleConfigurationViewer>
     {
-
         @InjectPlugin
         public static RobotControl parent;
         @InjectPlugin
@@ -80,6 +82,45 @@ public class ModuleConfigurationViewer extends AbstractDialog
         this.modulePanel.setTree(moduleConfigTree);
         this.modulePanel.setProcessName((String) cbProcess.getSelectedItem());
 
+        this.errorList.setCellRenderer(new DefaultListCellRenderer() {
+            final Color error   = new Color(1.0f, 0.0f, 0.0f, 0.3f);
+            final Color warning = new Color(1.0f, 1.0f, 0.0f, 0.4f);
+            final Color info    = Color.white;
+
+            @Override
+            public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+              Component component = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+
+              if(isSelected) {
+                //component.setBackground(lightBlue);
+              } else {
+                switch(((ListComponent)value).getLevel())
+                {
+                    case ERROR: 
+                        component.setBackground(error);
+                        break;
+                    case WARNING:
+                        component.setBackground(warning);
+                        break;
+                    case NOTE:
+                    default:
+                        component.setBackground(info);
+                }
+                
+              }
+              return component;
+            }
+        });
+        
+        /*
+        ArrayList<ListComponent> listComponents = new ArrayList<ListComponent>();
+        Node n = null;
+        listComponents.add(ListComponent.error(null, "wefwefw"));
+        listComponents.add(ListComponent.warning(null, "wefwefw2"));
+        listComponents.add(ListComponent.error(null, "wefwefw3"));
+        listComponents.add(ListComponent.info(null, "wefwefw"));
+        errorList.setListData(listComponents.toArray());
+        */
     }
 
     @Init
@@ -107,7 +148,6 @@ public class ModuleConfigurationViewer extends AbstractDialog
         cbProcess = new javax.swing.JComboBox();
         cbModules = new javax.swing.JComboBox();
         cbRepresentations = new javax.swing.JComboBox();
-        errorIgnoreToggle = new javax.swing.JToggleButton();
         jSplitPane1 = new javax.swing.JSplitPane();
         modulePanel = new de.naoth.rc.components.SimpleModulePanel();
         jSplitPane2 = new javax.swing.JSplitPane();
@@ -115,9 +155,9 @@ public class ModuleConfigurationViewer extends AbstractDialog
         moduleConfigTree = new de.naoth.rc.components.checkboxtree.CheckboxTree();
         errorPanel = new javax.swing.JPanel();
         jToolBar2 = new javax.swing.JToolBar();
-        jLCheckedRepresentations = new javax.swing.JLabel();
         btErrors = new javax.swing.JToggleButton();
         btWarnings = new javax.swing.JToggleButton();
+        btNotification = new javax.swing.JToggleButton();
         jScrollPane2 = new javax.swing.JScrollPane();
         errorList = new javax.swing.JList();
 
@@ -197,24 +237,13 @@ public class ModuleConfigurationViewer extends AbstractDialog
         });
         jToolBar1.add(cbRepresentations);
 
-        errorIgnoreToggle.setSelected(true);
-        errorIgnoreToggle.setText("ignorelist enabled");
-        errorIgnoreToggle.setFocusable(false);
-        errorIgnoreToggle.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        errorIgnoreToggle.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        errorIgnoreToggle.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                errorIgnoreToggleActionPerformed(evt);
-            }
-        });
-        jToolBar1.add(errorIgnoreToggle);
-
         jSplitPane1.setDividerLocation(600);
         jSplitPane1.setResizeWeight(1.0);
         jSplitPane1.setLeftComponent(modulePanel);
 
         jSplitPane2.setDividerLocation(300);
         jSplitPane2.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
+        jSplitPane2.setOneTouchExpandable(true);
 
         jScrollPane.setBorder(null);
         jScrollPane.setPreferredSize(new java.awt.Dimension(200, 322));
@@ -227,28 +256,49 @@ public class ModuleConfigurationViewer extends AbstractDialog
         jToolBar2.setFloatable(false);
         jToolBar2.setRollover(true);
 
-        jLCheckedRepresentations.setText("0 Cheched Representations ");
-        jToolBar2.add(jLCheckedRepresentations);
-
+        btErrors.setSelected(true);
         btErrors.setText("Errors");
         btErrors.setFocusable(false);
         btErrors.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btErrors.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btErrors.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btErrorsActionPerformed(evt);
+            }
+        });
         jToolBar2.add(btErrors);
 
+        btWarnings.setSelected(true);
         btWarnings.setText("Warnings");
         btWarnings.setFocusable(false);
         btWarnings.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btWarnings.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btWarnings.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btWarningsActionPerformed(evt);
+            }
+        });
         jToolBar2.add(btWarnings);
+
+        btNotification.setSelected(true);
+        btNotification.setText("Notification");
+        btNotification.setFocusable(false);
+        btNotification.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btNotification.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btNotification.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btNotificationActionPerformed(evt);
+            }
+        });
+        jToolBar2.add(btNotification);
 
         errorPanel.add(jToolBar2, java.awt.BorderLayout.NORTH);
 
         errorList.setToolTipText("");
         errorList.setSelectionBackground(new java.awt.Color(255, 255, 255));
-        errorList.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                errorListMouseClicked(evt);
+        errorList.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
+            public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
+                errorListValueChanged(evt);
             }
         });
         jScrollPane2.setViewportView(errorList);
@@ -263,7 +313,7 @@ public class ModuleConfigurationViewer extends AbstractDialog
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, 639, Short.MAX_VALUE)
+            .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, 672, Short.MAX_VALUE)
             .addComponent(jSplitPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
@@ -278,12 +328,9 @@ public class ModuleConfigurationViewer extends AbstractDialog
     private void jToggleButtonRefreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButtonRefreshActionPerformed
         if (Plugin.parent.checkConnected())
         {
-            if (jToggleButtonRefresh.isSelected())
-            {
+            if (jToggleButtonRefresh.isSelected()) {
                 Plugin.moduleConfigurationManager.addListener(this);
-            }
-            else
-            {
+            } else {
                 Plugin.moduleConfigurationManager.removeListener(this);
             }
         }
@@ -381,36 +428,32 @@ public class ModuleConfigurationViewer extends AbstractDialog
         }
     }//GEN-LAST:event_cbRepresentationsActionPerformed
 
-    private void errorListMouseClicked(java.awt.event.MouseEvent evt)//GEN-FIRST:event_errorListMouseClicked
-    {//GEN-HEADEREND:event_errorListMouseClicked
+    private void btNotificationActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btNotificationActionPerformed
+    {//GEN-HEADEREND:event_btNotificationActionPerformed
+        if (Plugin.parent.checkConnected()) {
+            makeCheck();
+        }
+    }//GEN-LAST:event_btNotificationActionPerformed
+
+    private void btErrorsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btErrorsActionPerformed
+        if (Plugin.parent.checkConnected()) {
+            makeCheck();
+        }
+    }//GEN-LAST:event_btErrorsActionPerformed
+
+    private void btWarningsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btWarningsActionPerformed
+        if (Plugin.parent.checkConnected()) {
+            makeCheck();
+        }
+    }//GEN-LAST:event_btWarningsActionPerformed
+
+    private void errorListValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_errorListValueChanged
         if (errorList.getSelectedValue() != null)
         {
             ListComponent c = (ListComponent) errorList.getSelectedValue();
             modulePanel.setNode(c.getNode());
         }
-    }//GEN-LAST:event_errorListMouseClicked
-
-    private void errorIgnoreToggleActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_errorIgnoreToggleActionPerformed
-    {//GEN-HEADEREND:event_errorIgnoreToggleActionPerformed
-        if (errorIgnoreToggle.isSelected())
-        {
-            errorIgnoreToggle.setText("ignorelist enabled");
-        }
-        else
-        {
-            errorIgnoreToggle.setText("ignorelist disabled");
-        }
-        if (Plugin.parent.checkConnected())
-        {
-            makeCheck();
-        }
-    }//GEN-LAST:event_errorIgnoreToggleActionPerformed
-
-    @Override
-    public JPanel getPanel()
-    {
-        return this;
-    }//end getPanel
+    }//GEN-LAST:event_errorListValueChanged
 
     @Override
     public void errorOccured(String cause)
@@ -480,79 +523,50 @@ public class ModuleConfigurationViewer extends AbstractDialog
     {
         IgnoreList ignore = new IgnoreList();
         errorList.removeAll();
-        ArrayList<ListComponent> notRequired = new ArrayList<ListComponent>();
-        ArrayList<ListComponent> notProvided = new ArrayList<ListComponent>();
-        ArrayList<ListComponent> notRequiredButEx = new ArrayList<ListComponent>();
-        ArrayList<ListComponent> notProvidedButEx = new ArrayList<ListComponent>();
-        ArrayList<ListComponent> fatalErrors = new ArrayList<ListComponent>();
-        int counterErr = 0;     //counters for the different types of errors and warnings for the description
-        int counterRep = 0;         
-        int counterWarnings = 0;
+        
+        ArrayList<ListComponent> notification = new ArrayList<ListComponent>();
+        ArrayList<ListComponent> warnings = new ArrayList<ListComponent>();
+        ArrayList<ListComponent> errors = new ArrayList<ListComponent>();
         
         for (Node n : this.moduleGraph.getNodeList())
         {
             if (n.isEnabled() && (n.getType() == ModuleConfiguration.NodeType.Represenation))
             {
-                counterRep++;
-                if (!ignore.isOnIgnorelist(n.getName()))
-                {
-                    boolean req = n.isProvide();
-                    boolean prov = n.isRequire();
-                    if (req && !prov)
-                    {
-                        //Neither provided nor required
-                        counterErr++;
-                        fatalErrors.add(new ListComponent(n, ("FATAL ERROR: " + n.getName() + " is required but not provided ")));
-                    }
-                    else if(prov && !req)
-                    {
-                        if (n.provide.isEmpty())//This should probably not be a warning
-                        {
-                            //provided but not required from any module activated or not
-                            //notRequired.add(new ListComponent(n, ("Code Warning: " + n.getName() + " is not required (no existing modules)")));
-                        }
-                        else
-                        {
-                            counterWarnings++;
-                            notProvidedButEx.add(new ListComponent(n, ("Warning: " + n.getName() + " is provided but not required")));
-                        }
-                    }
+                boolean required = n.isProvide();
+                boolean provided = n.isRequire();
+                if(n.require.isEmpty()) {
+                    notification.add(ListComponent.note(n, n.getName() + " is required but not provided ("+n.require.size()+")"));
+                } else if(n.provide.isEmpty()) {
+                    notification.add(ListComponent.note(n, n.getName() + " is provided but not required ("+n.provide.size()+")"));
+                } else if (required && !provided) {
+                    errors.add(ListComponent.error(n, n.getName() + " is required but not provided ("+n.require.size()+")"));
+                } else if(provided && !required) {
+                    warnings.add(ListComponent.warning(n, n.getName() + " is provided but not required ("+n.provide.size()+")"));
                 }
 
                 //put data into errorList
                 ArrayList<ListComponent> listComponents = new ArrayList<ListComponent>();
-                listComponents.addAll(fatalErrors);
-                listComponents.addAll(notProvided);
-                listComponents.addAll(notProvidedButEx);
-                listComponents.addAll(notRequired);
-                listComponents.addAll(notRequiredButEx);
+                if(this.btErrors.isSelected()) {
+                    listComponents.addAll(errors);
+                }
+                if(this.btWarnings.isSelected()) {
+                    listComponents.addAll(warnings);
+                }
+                if(this.btNotification.isSelected()) {
+                    listComponents.addAll(notification);
+                }
                 errorList.setListData(listComponents.toArray());
 
-                //description
-                /*
-                String s = "";
-                if (counterWarnings != 0)
-                {
-                    s = "[" + counterWarnings + " Warnings]\n" + s;
-                }
-                if (counterErr != 0)
-                {
-                    s = "[" + counterErr + " FATAL ERRORS]\n" + s;
-                }
-                s = "[" + counterRep + " enabled Representations checked]\n" + s;
-                s = String.format(s);
-                checkDescription.setText(s);
-                */
-                updateModuleErrorStatus(counterRep, counterErr, counterWarnings);
+                updateModuleErrorStatus(errors.size(), warnings.size(), notification.size());
             }
         }
 
     }
     
-    private void updateModuleErrorStatus(int numberChecked, int numberErrors, int numberWarnings) {
-        this.jLCheckedRepresentations.setText(String.format("%d Checked", numberChecked));
+    private void updateModuleErrorStatus(int numberErrors, int numberWarnings, int numberNotifications) {
         this.btErrors.setText(String.format("%d Errors", numberErrors));
-        this.btWarnings.setText(String.format("%d Warnings", numberErrors));
+        this.btWarnings.setText(String.format("%d Warnings", numberWarnings));
+        this.btNotification.setText(String.format("%d Notifications", numberNotifications));
     }
 
     public boolean isOnIgnorelist(String name)
@@ -564,12 +578,37 @@ public class ModuleConfigurationViewer extends AbstractDialog
      * saves a warning for a nor required or not provided representation and a
      * reference to this representation
      */
-    class ListComponent
+    static class ListComponent
     {
-
+        enum Level {
+            NOTE,
+            WARNING,
+            ERROR
+        }
+        
         private Node n;
         private String message;
+        private Level level = Level.NOTE;
 
+        public static ListComponent error(Node n, String message) {
+            return new ListComponent(Level.ERROR, n, message);
+        }
+        
+        public static ListComponent note(Node n, String message) {
+            return new ListComponent(Level.NOTE, n, message);
+        }
+        
+        public static ListComponent warning(Node n, String message) {
+            return new ListComponent(Level.WARNING, n, message);
+        }
+        
+        public ListComponent(Level level, Node n, String message)
+        {
+            this.n = n;
+            this.level = level;
+            this.message = level.name() + ": " + message;
+        }
+        
         public ListComponent(Node n, String message)
         {
             this.n = n;
@@ -580,6 +619,10 @@ public class ModuleConfigurationViewer extends AbstractDialog
         {
             return n;
         }
+        
+        public Level getLevel() {
+            return level;
+        }
 
         @Override
         public String toString()
@@ -587,6 +630,7 @@ public class ModuleConfigurationViewer extends AbstractDialog
             return message;
         }
     }
+    
 
     class IgnoreList
     {
@@ -602,7 +646,7 @@ public class ModuleConfigurationViewer extends AbstractDialog
 
         public boolean isOnIgnorelist(String name)
         {
-            if (!errorIgnoreToggle.isSelected())
+            if (!btNotification.isSelected())
             {
                 return false;
             }
@@ -820,17 +864,16 @@ public class ModuleConfigurationViewer extends AbstractDialog
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JToggleButton btErrors;
     private javax.swing.JButton btExport;
+    private javax.swing.JToggleButton btNotification;
     private javax.swing.JButton btSave;
     private javax.swing.JButton btSend;
     private javax.swing.JToggleButton btWarnings;
     private javax.swing.JComboBox cbModules;
     private javax.swing.JComboBox cbProcess;
     private javax.swing.JComboBox cbRepresentations;
-    private javax.swing.JToggleButton errorIgnoreToggle;
     private javax.swing.JList errorList;
     private javax.swing.JPanel errorPanel;
     private de.naoth.rc.components.ExtendedFileChooser fileChooser;
-    private javax.swing.JLabel jLCheckedRepresentations;
     private javax.swing.JScrollPane jScrollPane;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JSplitPane jSplitPane1;
