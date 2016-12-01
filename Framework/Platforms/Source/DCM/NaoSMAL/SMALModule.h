@@ -51,10 +51,12 @@ public:
   virtual void init();
   virtual void exit();
 
+  // 
+  void slowDcmUpdate();
+
   //
   void motionCallbackPre();
   void motionCallbackPost();
-
   
 private:
   // needed by theDCMHandler 
@@ -118,6 +120,9 @@ private:
   // syncronize with NaoController
   sem_t* sem;
 
+  // sync with slowDCM
+  pthread_t slowDCM;
+  bool slowDCMupdateCanRun;
 
   // sitdown motion in case the Controller dies
   bool command_data_available;

@@ -380,7 +380,7 @@ public class ImageViewer extends AbstractDialog
         }
         
         Canvas canvasBottom = objectList.get("ImageBottom");
-        if (canvasTop != null) {
+        if (canvasBottom != null) {
           ImageViewer.this.imageCanvasBottom.getDrawingList().add(canvasBottom);
         }
         
