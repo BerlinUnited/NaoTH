@@ -63,7 +63,6 @@ public class ImageViewer extends AbstractDialog
     this.imageCanvasBottom.setVisible(false);
     this.imageCanvasTop.setVisible(false);
     
-    this.timestampOfTheLastImage = 0;
     this.drawingsListener = new DrawingsListener();
     this.imageListenerBottom = new ImageListenerBottom();
     this.imageListenerTop = new ImageListenerTop();
