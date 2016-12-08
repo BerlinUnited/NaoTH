@@ -43,7 +43,6 @@ class UKF {
                     return Eigen::Block<Eigen::Matrix<double,dim_state,1> >(this->derived(), 0, 0, 3, 1);
                 }
 
-
                 Eigen::Block<Eigen::Matrix<double,dim_state,1> > velocity(){
                     return Eigen::Block<Eigen::Matrix<double,dim_state,1> >(this->derived(), 3, 0, 3, 1);
                 }
@@ -131,9 +130,9 @@ public:
 
 private:
 
-    UKF<25,6> ukf;
+    UKF<25,7> ukf;
 
-    typedef UKF<25,6>::Measurement Measurement;
+    typedef UKF<25,7>::Measurement Measurement;
 
 
 };

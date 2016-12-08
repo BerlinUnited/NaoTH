@@ -9,12 +9,74 @@ IMUModel::IMUModel()
     ukf.state = Eigen::Matrix<double,25,1>::Zero();
 
     // assume gravity align with z axis
-    // ukf.state.gravity()(2) = -9.81;
+    ukf.state.gravity()(2) = -9.81;
 
     // assume zero rotation
     ukf.state.rotation()(3) = 1;
 
+    // initial state covariance
     ukf.P = Eigen::Matrix<double,25,25>::Identity();
+
+    // set covariance matrix of process noise
+    ukf.Q = Eigen::Matrix<double,25,25>::Identity();
+
+    // location (x,y,z) [m]
+    ukf.Q(0,0) = 0.0001;
+    ukf.Q(1,1) = 0.0001;
+    ukf.Q(2,2) = 0.0001;
+
+    // velocity (x,y,z) [m/s]
+    ukf.Q(3,3) = 0.001;
+    ukf.Q(4,4) = 0.001;
+    ukf.Q(5,5) = 0.001;
+
+    // acceleration (x,y,z) [m/s^2]
+    ukf.Q(6,6) = 0.01;
+    ukf.Q(7,7) = 0.01;
+    ukf.Q(8,8) = 0.01;
+
+    // gravity (x,y,z) [m/s^2], too small?
+    ukf.Q(9,9)   = 0.000001;
+    ukf.Q(10,10) = 0.000001;
+    ukf.Q(11,11) = 0.000001;
+
+    // bias_acceleration (x,y,z) [m/s^2], too small?
+    ukf.Q(12,12) = 0.000001;
+    ukf.Q(13,13) = 0.000001;
+    ukf.Q(14,14) = 0.000001;
+
+    // rotation quaterion (x,y,z,w) [rad]?
+    ukf.Q(15,15) = 0.001;
+    ukf.Q(16,16) = 0.001;
+    ukf.Q(17,17) = 0.001;
+    ukf.Q(18,18) = 0.001;
+
+    // rotational_velocity (x,y,z) [rad/s], too small?
+    ukf.Q(19,19) = 0.1;
+    ukf.Q(20,20) = 0.1;
+    ukf.Q(21,21) = 0.1;
+
+    // bias_rotational_velocity (x,y,z) [m/s^2], too small?
+    ukf.Q(22,22) = 0.000001;
+    ukf.Q(23,23) = 0.000001;
+    ukf.Q(24,24) = 0.000001;
+
+    // set covariance matrix of measurement noise
+    // TODO: determine experimentally
+    ukf.R = Eigen::Matrix<double,7,7>::Identity();
+
+    // acceleration (x,y,z) [m/s^2]
+    ukf.R(0,0) = 0.001;
+    ukf.R(1,1) = 0.001;
+    ukf.R(2,2) = 0.001;
+
+    // rotational_velocity (x,y,z) [rad/s]
+    ukf.R(3,3) = 0.001;
+    ukf.R(4,4) = 0.001;
+    ukf.R(5,5) = 0.001;
+
+    // magnitude of gravity
+    ukf.R(6,6) = 0.00001;
 
     DEBUG_REQUEST_REGISTER("IMUModel:reset_filter", "reset filter", false);
 }
@@ -33,7 +95,7 @@ void IMUModel::execute(){
     ukf.generateSigmaPoints();
 
     Measurement z;
-    z << getAccelerometerData().data.x, getAccelerometerData().data.y, getAccelerometerData().data.z/*, 9.81*/, getGyrometerData().data.x, getGyrometerData().data.y, getGyrometerData().data.z;
+    z << getAccelerometerData().data.x, getAccelerometerData().data.y, getAccelerometerData().data.z, getGyrometerData().data.x, getGyrometerData().data.y, getGyrometerData().data.z, 9.81;
 
     ukf.update(z);
 
@@ -45,7 +107,7 @@ void IMUModel::resetFilter(){
     ukf.state = Eigen::Matrix<double,25,1>::Zero();
 
     // assume gravity align with z axis
-    // ukf.state.gravity()(2) = -9.81;
+    ukf.state.gravity()(2) = -9.81;
 
     // assume zero rotation
     ukf.state.rotation()(3) = 1;
@@ -66,6 +128,8 @@ void IMUModel::writeIMUData(){
     getIMUData().acceleration.y = ukf.state.acceleration()(1);
     getIMUData().acceleration.z = ukf.state.acceleration()(2);
 
+    getIMUData().acceleration_sensor = getAccelerometerData().data;
+
     getIMUData().gravity.x = ukf.state.gravity()(0);
     getIMUData().gravity.y = ukf.state.gravity()(1);
     getIMUData().gravity.z = ukf.state.gravity()(2);
@@ -84,6 +148,8 @@ void IMUModel::writeIMUData(){
     getIMUData().rotational_velocity.x = ukf.state.rotational_velocity()(0);
     getIMUData().rotational_velocity.y = ukf.state.rotational_velocity()(1);
     getIMUData().rotational_velocity.z = ukf.state.rotational_velocity()(2);
+
+    getIMUData().rotational_velocity_sensor = getGyrometerData().data;
 
     getIMUData().bias_rotational_velocity.x = ukf.state.bias_rotational_velocity()(0);
     getIMUData().bias_rotational_velocity.y = ukf.state.bias_rotational_velocity()(1);
@@ -121,7 +187,7 @@ void UKF<dim_state, dim_measurement>::predict(double dt){
     }
 
     state = mean;
-    P     = cov;
+    P     = cov + Q;
 }
 
 template <int dim_state, int dim_measurement>
@@ -148,6 +214,8 @@ void UKF <dim_state, dim_measurement>::update(Measurement z){
         Pzz += 1/(2*(dim_state + lambda)) * (sigmaMeasurements[i] - predicted_z) * (sigmaMeasurements[i] - predicted_z).transpose();
         Pzz += 1/(2*(dim_state + lambda)) * (sigmaMeasurements[i + dim_state] - predicted_z) * (sigmaMeasurements[i + dim_state] - predicted_z).transpose();
     }
+
+    Pzz += R;
 
     // calculate state-measurement cross-covariance
     Eigen::Matrix<double, dim_state, dim_measurement> Pxz;
@@ -208,11 +276,11 @@ template <int dim_state, int dim_measurement>
 typename UKF<dim_state, dim_measurement>::Measurement UKF<dim_state, dim_measurement>::stateToMeasurementSpaceFunction(State& state){
 
     // state to measurement function
-    Eigen::Vector3d acceleration_in_measurement_space        = /*state.gravity() +*/ state.acceleration() + state.bias_acceleration();
+    Eigen::Vector3d acceleration_in_measurement_space        = state.gravity() + state.acceleration() + state.bias_acceleration();
     Eigen::Vector3d rotational_velocity_in_measurement_space = state.rotational_velocity() + state.bias_rotational_velocity();
 
     Measurement return_val;
-    return_val << acceleration_in_measurement_space/*, 9.81*//*, state.gravity().norm()*/, rotational_velocity_in_measurement_space;
+    return_val << acceleration_in_measurement_space, rotational_velocity_in_measurement_space, state.gravity().norm();
 
     return return_val;
 }
@@ -226,12 +294,6 @@ void UKF<dim_state, dim_measurement>::generateSigmaPoints(){
     // HACK: ensure positiv semidefinity of P
     // P = 0.5*P+0.5*P.transpose();
     // P = P + 10E-4*Eigen::Matrix<double,dim_state,dim_state>::Identity();
-
-//    Eigen::LDLT<Eigen::Matrix<double,dim_state,dim_state> > choleskyDecompositionOfCov(P); // compute the Cholesky decomposition of A
-//    Eigen::Matrix<double,dim_state,dim_state> L = choleskyDecompositionOfCov.matrixL();
-//    Eigen::Matrix<double,dim_state,dim_state> D = choleskyDecompositionOfCov.vectorD().asDiagonal();
-//    D = D.array().sqrt();
-//    Eigen::Matrix<double,dim_state,dim_state> sqrtP = L * D * L.transpose();
 
     Eigen::LLT<Eigen::Matrix<double,dim_state,dim_state> > choleskyDecompositionOfCov(P); // compute the Cholesky decomposition of A
     Eigen::Matrix<double,dim_state,dim_state> L = choleskyDecompositionOfCov.matrixL();
