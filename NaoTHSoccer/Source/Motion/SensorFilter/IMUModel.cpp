@@ -17,6 +17,16 @@ IMUModel::IMUModel()
     // initial state covariance
     ukf.P = Eigen::Matrix<double,25,25>::Identity();
 
+    // bias_acceleration (x,y,z) [m/s^2], too small?
+    ukf.P(12,12) = 0.000001;
+    ukf.P(13,13) = 0.000001;
+    ukf.P(14,14) = 0.000001;
+
+    // bias_rotational_velocity (x,y,z) [m/s^2], too small?
+    ukf.P(22,22) = 0.000001;
+    ukf.P(23,23) = 0.000001;
+    ukf.P(24,24) = 0.000001;
+
     // set covariance matrix of process noise
     ukf.Q = Eigen::Matrix<double,25,25>::Identity();
 
@@ -63,20 +73,16 @@ IMUModel::IMUModel()
 
     // set covariance matrix of measurement noise
     // TODO: determine experimentally
-    ukf.R = Eigen::Matrix<double,7,7>::Identity();
+    ukf.R = Eigen::Matrix<double,7,7>();
 
-    // acceleration (x,y,z) [m/s^2]
-    ukf.R(0,0) = 0.001;
-    ukf.R(1,1) = 0.001;
-    ukf.R(2,2) = 0.001;
-
-    // rotational_velocity (x,y,z) [rad/s]
-    ukf.R(3,3) = 0.001;
-    ukf.R(4,4) = 0.001;
-    ukf.R(5,5) = 0.001;
-
-    // magnitude of gravity
-    ukf.R(6,6) = 0.00001;
+    // measured covariance of acceleration and rotational velocity (motion log, 60 seconds)
+    ukf.R << 5.074939351879890342e-04, -1.561730283237946278e-05,  1.012849085655689321e-04, -3.078687958578659292e-08, -1.132513004663809251e-06, -6.485352375515866273e-07, 0,
+            -1.561730283237946278e-05,  2.570436087068024501e-04, -4.159091012580820026e-05, -3.013278205585369588e-07,  1.736820285922189584e-06, -4.599219827687661978e-07, 0,
+             1.012849085655689321e-04, -4.159091012580820026e-05,  4.727921819788054878e-04,  5.523361976811979815e-07, -1.730307422507887473e-07, -3.030009469390110280e-07, 0,
+            -3.078687958578659292e-08, -3.013278205585369588e-07,  5.523361976811979815e-07,  3.434758685147043306e-06, -8.299226917536411892e-08,  5.842662059539863827e-08, 0,
+            -1.132513004663809251e-06,  1.736820285922189584e-06, -1.730307422507887473e-07, -8.299226917536411892e-08,  1.006052718494827880e-05,  1.346681994776136150e-06, 0,
+            -6.485352375515866273e-07, -4.599219827687661978e-07, -3.030009469390110280e-07,  5.842662059539863827e-08,  1.346681994776136150e-06,  3.242298821157115427e-06, 0,
+             0                       ,  0                       ,  0                       ,  0                       ,  0                       ,  0                       , 1e-9;
 
     DEBUG_REQUEST_REGISTER("IMUModel:reset_filter", "reset filter", false);
 }
@@ -276,7 +282,7 @@ template <int dim_state, int dim_measurement>
 typename UKF<dim_state, dim_measurement>::Measurement UKF<dim_state, dim_measurement>::stateToMeasurementSpaceFunction(State& state){
 
     // state to measurement function
-    Eigen::Vector3d acceleration_in_measurement_space        = state.gravity() + state.acceleration() + state.bias_acceleration();
+    Eigen::Vector3d acceleration_in_measurement_space        = /*state.gravity() +*/ state.acceleration() + state.bias_acceleration();
     Eigen::Vector3d rotational_velocity_in_measurement_space = state.rotational_velocity() + state.bias_rotational_velocity();
 
     Measurement return_val;
