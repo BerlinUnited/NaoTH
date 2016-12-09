@@ -51,25 +51,21 @@ class UKF {
                     return Eigen::Block<Eigen::Matrix<double,dim_state,1> >(this->derived(), 6, 0, 3, 1);
                 }
 
-                Eigen::Block<Eigen::Matrix<double,dim_state,1> > gravity(){
-                    return Eigen::Block<Eigen::Matrix<double,dim_state,1> >(this->derived(), 9, 0, 3, 1);
-                }
-
                 Eigen::Block<Eigen::Matrix<double,dim_state,1> > bias_acceleration(){
-                    return Eigen::Block<Eigen::Matrix<double,dim_state,1> >(this->derived(), 12, 0, 3, 1);
+                    return Eigen::Block<Eigen::Matrix<double,dim_state,1> >(this->derived(), 9, 0, 3, 1);
                 }
 
                 Eigen::Block<Eigen::Matrix<double,dim_state,1> > rotation(){
                     //eigen's order of components of a quaterion: x,y,z,w
-                    return Eigen::Block<Eigen::Matrix<double,dim_state,1> >(this->derived(), 15, 0, 4, 1);
+                    return Eigen::Block<Eigen::Matrix<double,dim_state,1> >(this->derived(), 12, 0, 4, 1);
                 }
 
                 Eigen::Block<Eigen::Matrix<double,dim_state,1> > rotational_velocity(){
-                    return Eigen::Block<Eigen::Matrix<double,dim_state,1> >(this->derived(), 19, 0, 3, 1);
+                    return Eigen::Block<Eigen::Matrix<double,dim_state,1> >(this->derived(), 16, 0, 3, 1);
                 }
 
                 Eigen::Block<Eigen::Matrix<double,dim_state,1> > bias_rotational_velocity(){
-                    return Eigen::Block<Eigen::Matrix<double,dim_state,1> >(this->derived(), 22, 0, 3, 1);
+                    return Eigen::Block<Eigen::Matrix<double,dim_state,1> >(this->derived(), 19, 0, 3, 1);
                 }
 
                 State& operator=(Eigen::Matrix<double,dim_state,1> rhs) {
@@ -101,7 +97,7 @@ class UKF {
     private:
         const double alpha  = 10E-3;
         const double kapa   = 0;
-        const double beta   = 0;
+        const double beta   = 2;
         const double lambda = alpha * alpha * (dim_state + kapa) - dim_state;
 
         std::vector<State> sigmaPoints;
@@ -130,9 +126,9 @@ public:
 
 private:
 
-    UKF<25,7> ukf;
+    UKF<22,6> ukf;
 
-    typedef UKF<25,7>::Measurement Measurement;
+    typedef UKF<22,6>::Measurement Measurement;
 
 
 };
