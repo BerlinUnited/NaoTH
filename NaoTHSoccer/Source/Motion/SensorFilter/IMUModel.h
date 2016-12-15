@@ -4,9 +4,12 @@
 #include <ModuleFramework/Module.h>
 
 #include "Tools/Debug/DebugRequest.h"
+#include "Tools/Debug/DebugPlot.h"
 
 #include <Representations/Infrastructure/GyrometerData.h>
 #include <Representations/Infrastructure/AccelerometerData.h>
+
+#include "Representations/Infrastructure/FrameInfo.h"
 #include <Representations/Modeling/IMUData.h>
 
 #include <Tools/naoth_eigen.h>
@@ -22,6 +25,9 @@
 BEGIN_DECLARE_MODULE(IMUModel)
 
     PROVIDE(DebugRequest)
+    PROVIDE(DebugPlot)
+
+    REQUIRE(FrameInfo)
 
     REQUIRE(GyrometerData)
     REQUIRE(AccelerometerData)
@@ -123,6 +129,7 @@ public:
     void execute();
     void writeIMUData();
     void resetFilter();
+    void plots();
 
 private:
 

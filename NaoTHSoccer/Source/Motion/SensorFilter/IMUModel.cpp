@@ -99,6 +99,8 @@ void IMUModel::execute(){
     ukf.update(z);
 
     writeIMUData();
+
+    plots();
 }
 
 void IMUModel::resetFilter(){
@@ -109,6 +111,16 @@ void IMUModel::resetFilter(){
     ukf.state.rotation()(3) = 1;
 
     ukf.P = Eigen::Matrix<double,22,22>::Identity();
+
+    // bias_acceleration (x,y,z) [m/s^2], too small?
+    ukf.P(9,9) = 0.000001;
+    ukf.P(10,10) = 0.000001;
+    ukf.P(11,11) = 0.000001;
+
+    // bias_rotational_velocity (x,y,z) [m/s^2], too small?
+    ukf.P(19,19) = 0.000001;
+    ukf.P(20,20) = 0.000001;
+    ukf.P(21,21) = 0.000001;
 }
 
 void IMUModel::writeIMUData(){
@@ -146,6 +158,39 @@ void IMUModel::writeIMUData(){
     getIMUData().bias_rotational_velocity.x = ukf.state.bias_rotational_velocity()(0);
     getIMUData().bias_rotational_velocity.y = ukf.state.bias_rotational_velocity()(1);
     getIMUData().bias_rotational_velocity.z = ukf.state.bias_rotational_velocity()(2);
+}
+
+void IMUModel::plots(){
+    PLOT("IMUModel:State:location:x", ukf.state.location()(0));
+    PLOT("IMUModel:State:location:y", ukf.state.location()(1));
+    PLOT("IMUModel:State:location:z", ukf.state.location()(2));
+
+    PLOT("IMUModel:State:velocity:x", ukf.state.velocity()(0));
+    PLOT("IMUModel:State:velocity:y", ukf.state.velocity()(1));
+    PLOT("IMUModel:State:velocity:z", ukf.state.velocity()(2));
+
+    PLOT("IMUModel:State:acceleration:x", ukf.state.acceleration()(0));
+    PLOT("IMUModel:State:acceleration:y", ukf.state.acceleration()(1));
+    PLOT("IMUModel:State:acceleration:z", ukf.state.acceleration()(2));
+
+    PLOT("IMUModel:Measurement:acceleration:x", getAccelerometerData().data.x);
+    PLOT("IMUModel:Measurement:acceleration:y", getAccelerometerData().data.y);
+    PLOT("IMUModel:Measurement:acceleration:z", getAccelerometerData().data.z);
+
+    Eigen::Quaterniond q;
+    q = Eigen::Quaterniond(Eigen::Vector4d(ukf.state.rotation()));
+    Eigen::Vector3d angles = q.toRotationMatrix().eulerAngles(0,1,2);
+    PLOT("IMUModel:State:rotation:x", angles(0));
+    PLOT("IMUModel:State:rotation:y", angles(1));
+    PLOT("IMUModel:State:rotation:z", angles(2));
+
+    PLOT("IMUModel:State:rotational_velocity:x", ukf.state.rotational_velocity()(0));
+    PLOT("IMUModel:State:rotational_velocity:y", ukf.state.rotational_velocity()(1));
+    PLOT("IMUModel:State:rotational_velocity:z", ukf.state.rotational_velocity()(2));
+
+    PLOT("IMUModel:Measurement:rotational_velocity:x", getGyrometerData().data.x);
+    PLOT("IMUModel:Measurement:rotational_velocity:y", getGyrometerData().data.y);
+    PLOT("IMUModel:Measurement:rotational_velocity:z", getGyrometerData().data.z);
 }
 
 //template <int dim_state, int dim_measurement>
