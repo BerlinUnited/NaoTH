@@ -96,11 +96,19 @@ solution "NaoTHSoccer"
     defines { "DEBUG" }
     defines { "BOOST_SIGNALS_NO_DEPRECATION_WARNING" }
     flags { "Symbols", "FatalWarnings" }
+    buildoptions {"-Wno-deprecated-declarations"} -- following buildoptions are for macOS
+    buildoptions {"-std=c++11"}
+    buildoptions {"-Wno-deprecated-register"}
+    buildoptions {"-Wno-logical-op-parentheses"}
   
   configuration { "OptDebug" }
     defines { "DEBUG" }
     defines { "BOOST_SIGNALS_NO_DEPRECATION_WARNING" }
     flags { "Optimize", "FatalWarnings" }
+    buildoptions {"-Wno-deprecated-declarations"} -- following buildoptions are for macOS
+    buildoptions {"-std=c++11"}
+    buildoptions {"-Wno-deprecated-register"}
+    buildoptions {"-Wno-logical-op-parentheses"}
   
   configuration{"Native"}
     targetdir "../dist/Native"
@@ -130,7 +138,7 @@ solution "NaoTHSoccer"
     debugdir "$(SolutionDir).."
   end
   
-  configuration {"linux"}
+  configuration {"linux", "macosx"}
     if(_ACTION == "gmake") then
       -- "position-independent code" needed to compile shared libraries.
       -- In our case it's only the NaoSMAL. So, we probably don't need this one.
@@ -141,7 +149,7 @@ solution "NaoTHSoccer"
       buildoptions {"-Wno-deprecated-declarations"}
       buildoptions {"-Wno-deprecated"}
       buildoptions {"-std=c++11"}
-      flags { "ExtraWarnings" }
+      --flags { "ExtraWarnings" }
       links {"pthread"}
     
       if _OPTIONS["Wno-conversion"] == nil then
