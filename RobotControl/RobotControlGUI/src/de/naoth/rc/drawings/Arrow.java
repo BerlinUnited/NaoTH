@@ -14,10 +14,10 @@ import java.awt.Polygon;
  */
 public class Arrow implements Drawable
 {
-    private int x0;
-    private int y0;
-    private int x1;
-    private int y1;
+    private final int x0;
+    private final int y0;
+    private final int x1;
+    private final int y1;
 
     public Arrow(
             int x0,
@@ -42,33 +42,47 @@ public class Arrow implements Drawable
     @Override
     public void draw(Graphics2D g2d)
     {
-        BasicStroke stroke = (BasicStroke)g2d.getStroke();
-        float lineWidth = stroke.getLineWidth();
-        drawArrow(g2d, x0, y0, x1, y1, lineWidth);
-        g2d.setStroke(stroke);
-    }//end draw
+        g2d.drawLine(x0, y0, x1, y1);
+        
+        // draw arrow head
+        BasicStroke oldStroke = (BasicStroke)g2d.getStroke();
+        float lineWidth = oldStroke.getLineWidth();
+        
+        g2d.setStroke(new BasicStroke(1f));
+        
+        
+        double lineAngle=Math.atan2(x1-x0, y1-y0);
+        
+        g2d.translate(x1,y1);
+        g2d.rotate(-lineAngle);
+        drawArrowHead(g2d, (int)(lineWidth*2+0.5), (int)(lineWidth*4+0.5));
+        g2d.rotate(lineAngle);
+        g2d.translate(-x1,-y1);
+        
+        g2d.setStroke(oldStroke);
+    }
     
-    public static void drawArrow(Graphics2D g2d, int xCenter, int yCenter, int x, int y, float stroke) {
-      int size = (int)(stroke);
-      double aDir=Math.atan2(xCenter-x, yCenter-y);
-      g2d.setStroke(new BasicStroke(stroke));
-      g2d.drawLine(x,y, xCenter,yCenter);
-      g2d.setStroke(new BasicStroke(1f));
-      
-      x -= xCor(size*2,aDir);
-      y -= yCor(size*2,aDir);
+    private void drawArrowHead(Graphics2D g2d, int width, int height) {
 
-      int i1= size*2+(int)(stroke*2);
-      int i2= size+(int)stroke;
-      Polygon tmpPoly=new Polygon(
-              new int[]{x, x+xCor(i1,aDir+.5), x+xCor(i2,aDir), x+xCor(i1,aDir-.5), x},
-              new int[]{y, y+yCor(i1,aDir+.5), y+yCor(i2,aDir), y+yCor(i1,aDir-.5), y},
-              5
-              );
-      g2d.drawPolygon(tmpPoly);
-      g2d.fillPolygon(tmpPoly);
-   }//end drawArrow
+        double arrowAngle = 2.1;
+        int xOffset = (int)(width * Math.sin(arrowAngle)+0.5);
+        int yOffset = (int)(width * Math.cos(arrowAngle)+0.5);
+        
+        Polygon arrowHead = new Polygon(
+                new int[]{0, -xOffset, 0, xOffset, 0},
+                new int[]{-height/2, yOffset-height/2, height/2, yOffset-height/2, -height/2},
+                5 );
+       
+       g2d.fillPolygon(arrowHead);
+    } 
     
-   private static int yCor(int len, double dir) {return (int)(len * Math.cos(dir));}
-   private static int xCor(int len, double dir) {return (int)(len * Math.sin(dir));}
+   private void drawArrowHeadSimple(Graphics2D g2d, int width, int height) {
+       Polygon arrowHead = new Polygon(
+                new int[]{0       ,   width/2,  -width/2, 0},
+                new int[]{height  , 0, 0, height},
+                4 );
+       
+       g2d.fillPolygon(arrowHead);
+   }
+
 }//end class Arrow
