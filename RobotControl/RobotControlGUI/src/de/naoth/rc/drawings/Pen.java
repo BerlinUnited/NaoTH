@@ -27,9 +27,10 @@ public class Pen implements Drawable {
         this.stroke = stroke;
     }
 
+    @Override
     public void draw(Graphics2D g2d) {
         g2d.setColor(color);
         g2d.setStroke(stroke);
-    }//end draw
+    }
 }//end class Pen
 
