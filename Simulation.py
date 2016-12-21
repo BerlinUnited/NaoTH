@@ -8,37 +8,68 @@ import helperFunctions as h
 import Action as A
 import potentialField as pf
 
-def simulateConsequences(action, pose): #Todo Check for Collisions with opp goal and if ball is out
-  action_consequencesI = [m2d.Vector2()]*A.numParticles
-  goal, owngoal = 0
+def simulateConsequences(action, pose,ballPosition, ActionResults): #Todo Check for Collisions with opp goal and if ball is out
+
+  goal = owngoal = infield = out = 0
+  goalBackSide1 = ((oppGoalBackLeft.x,oppGoalBackLeft.y),(oppGoalBackRight.x,oppGoalBackRight.y))
+  goalBackSide2 = ((opponentGoalPostLeft.x,opponentGoalPostLeft.y),(oppGoalBackLeft.x,oppGoalBackLeft.y))
+  goalBackSide3 = ((opponentGoalPostRight.x,opponentGoalPostRight.y),(oppGoalBackRight.x,oppGoalBackRight.y))
+
   for i in range(0, A.numParticles):
-    action_consequencesI[i] = pose * action.predict(ballPosition)
+    newBallPos = pose * action.predict(ballPosition)
+    newBallPosGlobal = pose * newBallPos
+    globalBallPos = pose * ballPosition
+    shootline = ((globalBallPos.x,globalBallPos.y),(newBallPosGlobal.x,newBallPosGlobal.y))
+    shootlineLength = h.distance(shootline)
 
     #if ball is not in field check for collisions with oppGoal and shorten the ball
-    #Todo use those checks to shorten the ball later - needs other algorithm for that
+    #Todo use those checks to shorten the ball later
     #Check if ball hits the goal contruction for each particle
-    intersection1 = h.intersect(ballPosition,action_consequencesI[i], oppGoalBackLeft,oppGoalBackRight)
-    intersection2 = h.intersect(ballPosition,action_consequencesI[i], opponentGoalPostLeft,oppGoalBackLeft)
-    intersection3 = h.intersect(ballPosition,action_consequencesI[i], opponentGoalPostRight,oppGoalBackRight)
+    intersection1 = h.line_intersection(shootline, goalBackSide1)
+    intersection2 = h.line_intersection(shootline, goalBackSide2)
+    intersection3 = h.line_intersection(shootline, goalBackSide3)
 
     #Obstacle currently not used
 
 
     #Check if particle scores a goal
-    intersectionOppGoal = h.intersect(ballPosition,action_consequencesI[i], opponentGoalPostLeft,opponentGoalPostRight)
-    if(intersectionOppGoal and ballPosition.x < oppGoalBackLeft and ballPosition.y < oppGoalBackLeft and ballPosition.y > oppGoalBackRight):
-      goal +=1
-
+    intersectionOppGoal = h.intersect(ballPosition,ballPosition, opponentGoalPostLeft,opponentGoalPostRight)
     #Check if ball hits the own goal
-    intersectionOwnGoal = h.intersect(ballPosition,action_consequencesI[i], ownGoalPostLeft,ownGoalPostRight)
-    if(intersectionOwnGoal):
-      owngoal +=1
+    intersectionOwnGoal = h.intersect(ballPosition,ballPosition , ownGoalPostLeft,ownGoalPostRight)
+    category = "INFIELD"
+    if intersectionOppGoal and newBallPosGlobal.x < oppGoalBackLeft and oppGoalBackRight <newBallPosGlobal.y < oppGoalBackLeft and newBallPosGlobal.y:
+      category = "OPPGOAL"
+    elif -4500 < newBallPosGlobal.x < 4500  and -3000 < newBallPosGlobal.y < 3000:
+      infield +=1
+    elif intersectionOwnGoal:
+      category = "OWNGOAL"
+    else:
+      category = "OUT"
+    ActionResults.append(A.CategorizedBallPosition(newBallPos,category))
 
-  ActionConsequences.append(action_consequencesI)
-  return ActionConsequences
+  #ActionConsequences.append(action_consequencesI)
+  return ActionResults
 
 def decide_smart(ActionConsequences):
-  #First simple evaluate by potential field
+
+  numberOfInfieldPos = 0
+  acceptableActions = []
+  score = 0
+  for action in ActionConsequences:
+    for i in range(0, A.numParticles):
+      if action[i].category == "OWNGOAL":
+        continue
+      elif action[i].category == "INFIELD" or action[i].category == "OPPGOAL":
+        numberOfInfieldPos += 1
+
+    score = numberOfInfieldPos/30 #30=number particles
+    if score <= max(0.0,A.good_threshold_percentage):
+      continue
+    acceptableActions.append(action)
+
+
+
+  #Evaluate by potential field
   sumPotentialList = []
   for action in ActionConsequences:
     sumPotential = 0
@@ -56,6 +87,7 @@ def decide_smart(ActionConsequences):
   return minIndex
 
 def drawActions(): #Todo draw good looking field
+
   plt.clf()
   h.drawField()
 
@@ -86,13 +118,16 @@ if __name__ == "__main__":
   ActionList = [sidekick_right,sidekick_left, kick_short]
 
   while True:
-    ActionConsequences = []
+    ActionConsequences = []#results for all actions and particles
+    ActionResults = []#ActionResults holds the information per particle for one action
 
     #Simulate Consequences
     for action in ActionList:
-      ActionConsequences = simulateConsequences(action,pose)
+      ActionResults = simulateConsequences(action,pose,ballPosition, ActionResults)
+      ActionConsequences.append(ActionResults)
+
 
     #Decide best action
-    bestAction = decide_smart(ActionConsequences)
+    #bestAction = decide_smart(ActionConsequences)
 
-    drawActions()
+    #drawActions()
