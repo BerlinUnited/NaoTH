@@ -102,12 +102,22 @@ void Simulation::execute()
 
   DEBUG_REQUEST("Simulation:draw_best_action",
     FIELD_DRAWING_CONTEXT;
+    /*
     PEN("FF69B4", 35);
     std::string name = action_local[best_action].name();
     TEXT_DRAWING(getRobotPose().translation.x+100, getRobotPose().translation.y-200, name);
+    */
     PEN("000000", 1);
     Vector2d expectedBallPos = getKickActionModel().expectedBallPos;
-		FILLOVAL(expectedBallPos.x, expectedBallPos.y, 50, 50);
+    FILLOVAL(expectedBallPos.x, expectedBallPos.y, 50, 50);
+    
+    Vector2d globalBall = getRobotPose() *getBallModel().positionPreview;
+    Vector2d action_vector = (expectedBallPos - globalBall).normalize();
+    Vector2d from = globalBall + action_vector*100;
+    Vector2d to = globalBall + action_vector*350;
+    
+    PEN("FF0000", 50);
+    ARROW(from.x, from.y, to.x, to.y);
   );
 
   DEBUG_REQUEST("Simulation:draw_potential_field",
