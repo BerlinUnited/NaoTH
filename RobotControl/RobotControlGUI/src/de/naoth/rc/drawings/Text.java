@@ -4,6 +4,7 @@
 
 package de.naoth.rc.drawings;
 
+import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 
@@ -13,10 +14,12 @@ import java.awt.geom.AffineTransform;
  */
 public class Text implements Drawable
 {
-  private int x;
-  private int y;
-  private String text;
+  private final int x;
+  private final int y;
+  private final String text;
 
+  private final Font myFont = new Font ("Courier New", Font.PLAIN, 250);
+  
   public Text(String[] args)
   {
     this.x = (int)(Double.parseDouble(args[1]));
@@ -30,13 +33,17 @@ public class Text implements Drawable
     this.text = text;
   }
 
+  @Override
   public void draw(Graphics2D g2d)
   {
-    g2d.scale(10, 10);
+    Font oldFont = g2d.getFont();
+    g2d.setFont (myFont);
     g2d.transform(new AffineTransform(1,0,0,-1,0,0));
-    g2d.drawString(text, x/10, -y/10);
+    g2d.drawString(text, x, -y);
     g2d.transform(new AffineTransform(1,0,0,-1,0,0));
-    g2d.scale(0.1, 0.1);
+    
+    // IMPORTANT: reset the font
+    g2d.setFont(oldFont);
   }
 }//end Circle
 
