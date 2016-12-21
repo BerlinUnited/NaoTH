@@ -39,6 +39,9 @@ yPosRightSideline =       -yPosLeftSideline
 opponentGoalPostLeft = m2d.Vector2(xPosOpponentGoal+25,yPosLeftGoalpost)
 opponentGoalPostRight = m2d.Vector2(xPosOpponentGoal+25,yPosRightGoalpost)
 
+ownGoalPostLeft = m2d.Vector2(xPosOwnGoal+25,yPosLeftGoalpost)
+ownGoalPostRight = m2d.Vector2(xPosOwnGoal+25,yPosRightGoalpost)
+
 #From Simulation.cpp
 oppGoalBackLeft = m2d.Vector2(opponentGoalPostLeft.x + goalDepth, opponentGoalPostLeft.y)
 oppGoalBackRight= m2d.Vector2(opponentGoalPostRight.x + goalDepth,opponentGoalPostRight.y)
