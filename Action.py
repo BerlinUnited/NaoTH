@@ -4,7 +4,7 @@ import math2d as m2d
 
 numParticles = 30
 friction = 0.0275
-
+good_threshold_percentage = 0.85
 
 class Action:
   def __init__(self,name, speed=0.0, speed_std=0.0, angle=0.0, angle_std=0.0):
@@ -25,3 +25,7 @@ class Action:
 
     return ball + noisyAction
 
+class CategorizedBallPosition:
+  def __init__(self,ballPos,category):
+    self.ballPos = ballPos
+    self.category = category
