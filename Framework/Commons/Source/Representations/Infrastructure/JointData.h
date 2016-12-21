@@ -69,7 +69,7 @@ class JointData
     double dp[numOfJoint]; // speed
     double ddp[numOfJoint]; // acceleration
 
-    // joint limits
+    // HACK: joint limits
     static double min[numOfJoint];
     static double max[numOfJoint];
 

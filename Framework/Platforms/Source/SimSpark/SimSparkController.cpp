@@ -1326,13 +1326,18 @@ void SimSparkController::get(VirtualVisionTop& data)
 
 void SimSparkController::get(GameData& data)
 {
+  data.valid = theGameInfo.valid;
+
   if ( theGameInfo.valid )
   {
     data.gameState = theGameInfo.gameState;
     data.secsRemaining = theGameInfo.getRemainingTimeInHalf();
 
+    data.newPlayerNumber = theGameInfo.playerNumber;
+
     data.ownTeam.teamNumber = theGameInfo.getTeamNumber();
     data.ownTeam.teamColour = theGameInfo.getTeamColor();
+    data.ownTeam.players.resize(theGameInfo.playersPerTeam);
 
     // todo set opponent team info
 
