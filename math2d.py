@@ -39,6 +39,9 @@ class Pose2D:
   def __init__(self):
     self.translation = Vector2()
     self.rotation = 0
+  def __init__(self,x,y,rotation):
+    self.translation = Vector2(x,y)
+    self.rotation = rotation
 
   def __mul__(self, other):
     return other.rotate(self.rotation) + self.translation
