@@ -1,24 +1,18 @@
 from matplotlib import pyplot as plt
 from matplotlib.patches import Circle
-
+import math
 def line_intersection(line1, line2):
-    xdiff = (line1[0].x - line1[1].x, line2[0].x - line2[1].x)
-    ydiff = (line1[0].y - line1[1].y, line2[0].y - line2[1].y)
-
-    #xdiff = (line1[0][0] - line1[1][0], line2[0][0] - line2[1][0])
-    #ydiff = (line1[0][1] - line1[1][1], line2[0][1] - line2[1][1])
+    xdiff = (line1[0][0] - line1[1][0], line2[0][0] - line2[1][0])
+    ydiff = (line1[0][1] - line1[1][1], line2[0][1] - line2[1][1])
 
     def det(a, b):
         return a[0] * b[1] - a[1] * b[0]
-
-    def detv2(a,b):#takes vectors
-      return a.x * b.y - a.y * b.x
 
     div = det(xdiff, ydiff)
     if div == 0:
        raise Exception('lines do not intersect')
 
-    d = (detv2(line1[0],line1[1]), detv2(line2[0],line2[1]))
+    d = (det(line1[0],line1[1]), det(line2[0],line2[1]))
     x = det(d, xdiff) / div
     y = det(d, ydiff) / div
     return x, y
@@ -67,3 +61,9 @@ def drawField():
   ax.set_ylim([-3700,3700])
   ax.set_axis_bgcolor('green')
   ax.set_aspect("equal")
+
+def distance(line):
+    y = line[1][1]-line[0][1]
+    x = line[1][0]-line[0][0]
+    ans=y*y+x*x
+    return math.sqrt(ans)
