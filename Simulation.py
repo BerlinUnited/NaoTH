@@ -10,17 +10,29 @@ import potentialField as pf
 
 def simulateConsequences(action, pose): #Todo Check for Collisions with opp goal and if ball is out
   action_consequencesI = [m2d.Vector2()]*A.numParticles
+  goal, owngoal = 0
   for i in range(0, A.numParticles):
     action_consequencesI[i] = pose * action.predict(ballPosition)
+
+    #if ball is not in field check for collisions with oppGoal and shorten the ball
+    #Todo use those checks to shorten the ball later - needs other algorithm for that
     #Check if ball hits the goal contruction for each particle
     intersection1 = h.intersect(ballPosition,action_consequencesI[i], oppGoalBackLeft,oppGoalBackRight)
     intersection2 = h.intersect(ballPosition,action_consequencesI[i], opponentGoalPostLeft,oppGoalBackLeft)
     intersection3 = h.intersect(ballPosition,action_consequencesI[i], opponentGoalPostRight,oppGoalBackRight)
-    #Todo use those checks to shorten the ball later - needs other algorithm for that
+
+    #Obstacle currently not used
+
+
+    #Check if particle scores a goal
+    intersectionOppGoal = h.intersect(ballPosition,action_consequencesI[i], opponentGoalPostLeft,opponentGoalPostRight)
+    if(intersectionOppGoal and ballPosition.x < oppGoalBackLeft and ballPosition.y < oppGoalBackLeft and ballPosition.y > oppGoalBackRight):
+      goal +=1
+
     #Check if ball hits the own goal
     intersectionOwnGoal = h.intersect(ballPosition,action_consequencesI[i], ownGoalPostLeft,ownGoalPostRight)
-    #Check if particle scores a goal
-
+    if(intersectionOwnGoal):
+      owngoal +=1
 
   ActionConsequences.append(action_consequencesI)
   return ActionConsequences
