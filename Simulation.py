@@ -11,15 +11,15 @@ import potentialField as pf
 def simulateConsequences(action, pose,ballPosition, ActionResults): #Todo Check for Collisions with opp goal and if ball is out
 
   goal = owngoal = infield = out = 0
-  goalBackSide1 = ((oppGoalBackLeft.x,oppGoalBackLeft.y),(oppGoalBackRight.x,oppGoalBackRight.y))
-  goalBackSide2 = ((opponentGoalPostLeft.x,opponentGoalPostLeft.y),(oppGoalBackLeft.x,oppGoalBackLeft.y))
-  goalBackSide3 = ((opponentGoalPostRight.x,opponentGoalPostRight.y),(oppGoalBackRight.x,oppGoalBackRight.y))
+  goalBackSide1 = m2d.LineSegment(oppGoalBackLeft.x,oppGoalBackLeft.y,oppGoalBackRight.x,oppGoalBackRight.y)
+  goalBackSide2 = m2d.LineSegment(opponentGoalPostLeft.x,opponentGoalPostLeft.y,oppGoalBackLeft.x,oppGoalBackLeft.y)
+  goalBackSide3 = m2d.LineSegment(opponentGoalPostRight.x,opponentGoalPostRight.y,oppGoalBackRight.x,oppGoalBackRight.y)
 
   for i in range(0, A.numParticles):
     newBallPos = pose * action.predict(ballPosition)
     newBallPosGlobal = pose * newBallPos
     globalBallPos = pose * ballPosition
-    shootline = ((globalBallPos.x,globalBallPos.y),(newBallPosGlobal.x,newBallPosGlobal.y))
+    shootline = m2d.LineSegment(globalBallPos.x,globalBallPos.y,newBallPosGlobal.x,newBallPosGlobal.y)
     shootlineLength = h.distance(shootline)
 
     #if ball is not in field check for collisions with oppGoal and shorten the ball
