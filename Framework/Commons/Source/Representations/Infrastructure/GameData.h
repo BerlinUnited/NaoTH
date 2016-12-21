@@ -147,6 +147,10 @@ public:
   
   TeamInfo ownTeam;
   TeamInfo oppTeam;
+
+  // HACK: thi is only provided by SimSpark - find a better solution
+  // if this is set to anything other than 0, the actual player number will change
+  unsigned int newPlayerNumber;
 };
 
 class GameReturnData: public Printable

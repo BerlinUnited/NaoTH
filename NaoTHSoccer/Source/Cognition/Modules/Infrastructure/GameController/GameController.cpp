@@ -68,6 +68,11 @@ void GameController::execute()
   // try update from the game controller message
   if ( getGameData().valid ) 
   {
+    // HACK: needed by SimSpark - overide the player number
+    if(getGameData().newPlayerNumber > 0) {
+      getPlayerInfo().playerNumber = getGameData().newPlayerNumber;
+    }
+
     getPlayerInfo().update(getGameData());
 
     // reset return message if old message was accepted
