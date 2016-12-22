@@ -467,7 +467,7 @@ void Motion::updateCameraMatrix()
               getCameraMatrixOffset().cam_rot[naoth::CameraInfo::Bottom],
               getSensorJointData().position[JointData::HeadYaw],
               getSensorJointData().position[JointData::HeadPitch],
-              getInertialModel());
+              getInertialModel().orientation);
 
   getCameraMatrixTop() = CameraGeometry::calculateCameraMatrixFromChestPose(
               getKinematicChainSensor().theLinks[KinematicChain::Torso].M,
@@ -478,7 +478,7 @@ void Motion::updateCameraMatrix()
               getCameraMatrixOffset().cam_rot[naoth::CameraInfo::Top],
               getSensorJointData().position[JointData::HeadYaw],
               getSensorJointData().position[JointData::HeadPitch],
-              getInertialModel());
+              getInertialModel().orientation);
 
   getCameraMatrix().timestamp = getSensorJointData().timestamp;
   getCameraMatrix().valid = true;

@@ -27,8 +27,9 @@ public class Translation implements Drawable
     this.y = Float.parseFloat(args[2]);
   }
 
+  @Override
   public void draw(Graphics2D g2d)
   {
     g2d.translate(x,y);
-  }//end draw
+  }
 }//end class Rotation

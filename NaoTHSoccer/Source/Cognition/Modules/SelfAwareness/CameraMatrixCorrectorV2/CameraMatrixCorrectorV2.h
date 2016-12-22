@@ -28,6 +28,7 @@
 #include "Tools/Debug/DebugRequest.h"
 #include "Tools/Debug/DebugDrawings.h"
 #include "Tools/Debug/DebugModify.h"
+#include "Tools/Debug/DebugParameterList.h"
 
 #include <Tools/Math/Minimizer.h>
 
@@ -50,6 +51,7 @@ BEGIN_DECLARE_MODULE(CameraMatrixCorrectorV2)
   PROVIDE(DebugRequest)
   PROVIDE(DebugDrawings)
   PROVIDE(DebugModify)
+  PROVIDE(DebugParameterList)
 
   // data needed for calibration
   REQUIRE(LineGraphPercept)
@@ -129,7 +131,7 @@ public:
                                 getCameraMatrixOffset().cam_rot[cameraID],
                                 sample->headYaw,
                                 sample->headPitch,
-                                sample->inertialModel
+                                sample->inertialModel.orientation
                                 );
 
                     std::vector<Vector2d> edgelProjections;
@@ -208,7 +210,7 @@ public:
                                 getCameraMatrixOffset().cam_rot[cameraID]  + offsetCam[cameraID],
                                 sample->headYaw,
                                 sample->headPitch,
-                                sample->inertialModel
+                                sample->inertialModel.orientation
                                 );
 
                     std::vector<Vector2d> edgelProjections;

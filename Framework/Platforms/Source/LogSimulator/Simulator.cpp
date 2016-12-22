@@ -177,9 +177,9 @@ void Simulator::main()
 
 void Simulator::play(bool loop)
 {
-  #ifdef WIN32
+#ifdef WIN32
   //cerr << "Play-Support now yet enabled under Windows" << endl;
-  #else
+#else
   // set terminal to non-blocking...
   const int fd = fileno(stdin);
   const int fcflags = fcntl(fd,F_GETFL);
@@ -189,7 +189,7 @@ void Simulator::play(bool loop)
     cerr << "\"Play\" capatibility not available on this terminal" << endl;
     return;
   }
-  #endif //WIN32
+#endif //WIN32
 
   int c = -1;
   while(c != 'l' && c != 'p' && c != '\n' && c != 's' && c != 'q' && c !='x')
@@ -201,27 +201,29 @@ void Simulator::play(bool loop)
     unsigned int calculationTime = NaoTime::getNaoTimeInMilliSeconds() - startTime;
     unsigned int maxTimeToWait = realTime?simulatedTime - simulatedTimeBefore:33;
 
-    // wait at leas 5ms but max 1s
+    // wait at least 5ms but max 1s
     unsigned int waitTime = Math::clamp((int)maxTimeToWait - (int)calculationTime, 5, 1000);
 
 
-    #ifdef WIN32
+#ifdef WIN32
     Sleep(waitTime);
-    if(_kbhit())
-    #else
+    if(_kbhit()) {
+      c = getInput();
+    }
+#else
     // wait some time
     usleep(waitTime * 1000);
-    #endif
     c = getInput();
+#endif
 
     if(!loop && currentFrame == logFileScanner.last()) {
       break;
     }
   }//while
 
-  #ifdef WIN32
+#ifdef WIN32
   //cerr << "Play-Support now yet enabled under Windows" << endl;
-  #else
+#else
   // set back to blocking
   if (fcntl(fd,F_SETFL,fcflags) <0)
   {
@@ -229,7 +231,7 @@ void Simulator::play(bool loop)
     cerr << "terminating since this is a serious error" << endl;
     exit(EXIT_FAILURE);
   }
-  #endif //WIN32
+#endif //WIN32
 }//end play
 
 void Simulator::stepForward()

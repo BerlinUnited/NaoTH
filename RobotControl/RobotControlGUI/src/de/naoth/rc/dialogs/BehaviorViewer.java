@@ -16,6 +16,7 @@ import de.naoth.rc.components.behaviorviewer.XABSLBehavior;
 import de.naoth.rc.components.behaviorviewer.XABSLBehaviorFrame;
 import de.naoth.rc.components.behaviorviewer.XABSLProtoParser;
 import de.naoth.rc.components.behaviorviewer.model.Symbol;
+import de.naoth.rc.core.dialog.RCDialog;
 import de.naoth.rc.drawingmanager.DrawingEventManager;
 import de.naoth.rc.drawings.Circle;
 import de.naoth.rc.drawings.DrawingCollection;
@@ -66,6 +67,7 @@ public class BehaviorViewer extends AbstractDialog
   implements  Dialog
 {
 
+  @RCDialog(category = RCDialog.Category.Status, name = "Behavior")
   @PluginImplementation
   public static class Plugin extends DialogPlugin<BehaviorViewer>
   {
