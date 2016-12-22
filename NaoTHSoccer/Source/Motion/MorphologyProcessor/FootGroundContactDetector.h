@@ -49,8 +49,8 @@ public:
 
 private:
 
-  RingBufferWithSum<double, 100> leftFSRBuffer;
-  RingBufferWithSum<double, 100> rightFSRBuffer;
+  RingBufferWithSum<double, 10> leftFSRBuffer;
+  RingBufferWithSum<double, 10> rightFSRBuffer;
 
   class Parameters: public ParameterList
   {
@@ -58,8 +58,9 @@ private:
 
       Parameters(DebugParameterList& list) : ParameterList("FootGroundContactParameters"), list(&list)
     {
-      PARAMETER_REGISTER(left) = 3;
-      PARAMETER_REGISTER(right) = 3;
+      // experimental - probably needs some calibration (while playing?)
+      PARAMETER_REGISTER(left) = 0.3;
+      PARAMETER_REGISTER(right) = 0.3;
 
       syncWithConfig();
 

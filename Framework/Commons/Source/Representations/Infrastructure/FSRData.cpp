@@ -12,7 +12,6 @@ FSRData::FSRData()
   {
     force[i] = 0.0;
     data[i] = 0.0;
-    valid[i] = true;
   }
 }
 
@@ -44,55 +43,8 @@ void FSRData::print(ostream& stream) const
   {
     stream  << getFSRName((FSRID)i) << " : " 
             << force[i] << " , " 
-            << data[i] << " "
-            << (valid[i]?"\n":"INVALID!!\n");
+            << data[i] << " ";
   }
-  stream << "Force Left: " << forceLeft() << std::endl;
-  stream << "Force Right: " << forceRight() << std::endl;
-}
-
-double FSRData::forceLeft() const
-{
-  int max_i = LFsrFL;
-  for( int i=LFsrFL; i<=LFsrBR; i++)
-  {
-      if(force[i] > force[max_i])
-      {
-          max_i = i;
-      }
-  }
-
-  double f = 0;
-  for ( int i=LFsrFL; i<=LFsrBR; i++)
-  {
-    if ( valid[i] && i != max_i)// check if the sensor is valid
-    {
-      f += force[i];
-    }
-  }
-  return f;
-}
-
-double FSRData::forceRight() const
-{
-  int max_i = RFsrFL;
-  for( int i=RFsrFL; i<=RFsrBR; i++)
-  {
-      if(force[i] > force[max_i])
-      {
-          max_i = i;
-      }
-  }
-
-  double f = 0;
-  for (int i = RFsrFL; i <= RFsrBR; i++)
-  {
-    if ( valid[i] && i != max_i)// check if the sensor is valid
-    {
-      f += force[i];
-    }
-  }
-  return f;
 }
 
 void Serializer<FSRData>::serialize(const FSRData& representation, std::ostream& stream)
@@ -102,7 +54,6 @@ void Serializer<FSRData>::serialize(const FSRData& representation, std::ostream&
   {
     msg.add_force(representation.force[i]);
     msg.add_data(representation.data[i]);
-    msg.add_valid(representation.valid[i]);
   }
 
   google::protobuf::io::OstreamOutputStream buf(&stream);
@@ -118,16 +69,5 @@ void Serializer<FSRData>::deserialize(std::istream& stream, FSRData& representat
   {
     representation.force[i] = msg.force(i);
     representation.data[i] = msg.data(i);
-    representation.valid[i] = msg.valid(i);
   }
 }
-
-double FSRData::forceOf(FSRID fsrId) const 
-{
-  // check if the sensor is valid
-  if (valid[fsrId]) {
-    return force[fsrId];
-  }
-  return -1;
-}
-

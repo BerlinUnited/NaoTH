@@ -22,7 +22,6 @@ SupportPolygonGenerator::SupportPolygonGenerator()
   theFSRPos = getFSRPositions().pos;
   theLink = getKinematicChainSensor().theLinks;
 
-
   string leftFootTouchDetectorCfg("1 1 1 1 -5");
   string rightFootTouchDetectorCfg("1 1 1 1 -5");
   const Configuration& cfg = Platform::getInstance().theConfiguration;

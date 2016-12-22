@@ -36,16 +36,6 @@ namespace naoth
 
     double force[numOfFSR]; // the force that applied to the sensor
     double data[numOfFSR]; // the data read from the platform directly
-    bool valid[numOfFSR]; // if the sensor data is valid
-
-    /** total force on left foot */ //without the biggest one
-    double forceLeft() const;
-
-    /** total force on right foot */ //without the biggest one
-    double forceRight() const;
-    
-    /** Returns the force value of the given sensor or -1 if its value is invalid. */
-    double forceOf(FSRID fsrId) const;
 
     FSRData();
     ~FSRData();

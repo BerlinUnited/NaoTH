@@ -32,35 +32,37 @@ void FootGroundContactDetector::execute()
   leftFSRBuffer.add(forceLeft);
   rightFSRBuffer.add(forceRight);
 
-  if(forceLeft < footParams.left) {
+  if(leftFSRBuffer.getAverage() < footParams.left)
+  {
     getGroundContactModel().leftGroundContact = false;
-  } else {
+  } 
+  else 
+  {
     getGroundContactModel().leftGroundContact = true;
   }
 
-  if(forceRight < footParams.right)
+  if(rightFSRBuffer.getAverage() < footParams.right) 
   {
     getGroundContactModel().rightGroundContact = false;
-  } else {
+  } 
+  else 
+  {
     getGroundContactModel().rightGroundContact = true;
   }
 
-  
-  if(leftFSRBuffer.getAverage() < footParams.left)
+  if (getGroundContactModel().leftGroundContact
+      || getGroundContactModel().rightGroundContact) 
   {
-    getGroundContactModel().leftGroundContactAverage = false;
-  } else {
-    getGroundContactModel().leftGroundContactAverage = true;
+    getGroundContactModel().supportFoot = getGroundContactModel().leftGroundContact
+                                        < getGroundContactModel().rightGroundContact
+                                        ? false
+                                        : true;
   }
 
-  if(rightFSRBuffer.getAverage() < footParams.right) {
-    getGroundContactModel().rightGroundContactAverage = false;
-  } else {
-    getGroundContactModel().rightGroundContactAverage = true;
-  }
-
-  PLOT("FootGroundContactDetector:leftGroundContact", getGroundContactModel().leftGroundContact);
-  PLOT("FootGroundContactDetector:rightGroundContact", getGroundContactModel().rightGroundContact);
+  PLOT("FootGroundContactDetector:leftGroundContact", 
+      getGroundContactModel().leftGroundContact ? 1 : 0);
+  PLOT("FootGroundContactDetector:rightGroundContact", 
+       getGroundContactModel().rightGroundContact ? 1 : 0);
 
   PLOT("FootGroundContactDetector:leftFSRBuffer", leftFSRBuffer.getAverage());
   PLOT("FootGroundContactDetector:rightFSRBuffer", rightFSRBuffer.getAverage());

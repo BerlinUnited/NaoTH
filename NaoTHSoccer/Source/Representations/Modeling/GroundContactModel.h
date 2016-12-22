@@ -14,9 +14,8 @@ public:
 
   bool leftGroundContact;
   bool rightGroundContact;
+  bool supportFoot;
 
-  bool leftGroundContactAverage;
-  bool rightGroundContactAverage;
 };
 
 #endif // _GroundContactModel_h_

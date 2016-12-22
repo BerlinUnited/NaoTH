@@ -62,7 +62,6 @@ Motion::Motion()
   theInertiaSensorCalibrator = registerModule<InertiaSensorCalibrator>("InertiaSensorCalibrator", true);
   theInertiaSensorFilterBH = registerModule<InertiaSensorFilter>("InertiaSensorFilter", true);
     theFootGroundContactDetector = registerModule<FootGroundContactDetector>("FootGroundContactDetector", true);
-    theStandingOnFeetDetector = registerModule<StandingOnFeetDetector>("StandingOnFeetDetector", true);
   theSupportPolygonGenerator = registerModule<SupportPolygonGenerator>("SupportPolygonGenerator", true);
   theOdometryCalculator = registerModule<OdometryCalculator>("OdometryCalculator", true);
   theKinematicChainProvider = registerModule<KinematicChainProviderMotion>("KinematicChainProvider", true);
@@ -224,9 +223,6 @@ void Motion::processSensorData()
   //
   theFootGroundContactDetector->execute();
     
-  //
-  theStandingOnFeetDetector->execute();
-
   //
   theKinematicChainProvider->execute();
 

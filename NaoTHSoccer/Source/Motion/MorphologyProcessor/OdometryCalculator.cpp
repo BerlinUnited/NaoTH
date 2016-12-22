@@ -29,41 +29,8 @@ void OdometryCalculator::execute()
   // TODO: make it better
   OdometryData& od = getOdometryData();
   const KinematicChain& kc = getKinematicChainSensor();
-  const FSRData& fsr = getFSRData();
 
-
-  static bool lastFootChoiceValid = true;
-
-  // simple support foot detection: the foot which has greater force is the support foot.
-  double leftForce = 0;
-  double rightForce = 0;
-  for (int i = FSRData::LFsrFL; i <= FSRData::LFsrBR; i++) {
-    if ( fsr.valid[i] ){
-      leftForce += fsr.force[i];
-    }
-  }
-  for (int i = FSRData::RFsrFL; i <= FSRData::RFsrBR; i++) {
-    if ( fsr.valid[i] ){
-      rightForce += fsr.force[i];
-    }
-  }
-
-  if ( leftForce <=0 && rightForce <= 0 ) 
-  {
-    if(lastFootChoiceValid) {
-      lastFootChoiceValid = false;
-    } else {
-      return;
-    }
-  } else {
-    lastFootChoiceValid = true;
-  }
-
-  if (leftForce > rightForce) {
-      supportFoot = true;
-  } else if (leftForce < rightForce) {
-      supportFoot = false;
-  }
+  supportFoot = getGroundContactModel().supportFoot;
 
   if ( init ) {
     //TODO

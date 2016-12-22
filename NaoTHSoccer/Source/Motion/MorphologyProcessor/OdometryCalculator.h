@@ -14,12 +14,13 @@
 #include <Representations/Infrastructure/FSRData.h>
 #include "Representations/Modeling/OdometryData.h"
 #include "Representations/Modeling/KinematicChain.h"
+#include "Representations/Modeling/GroundContactModel.h"
 
 // tools
 #include <Tools/Math/Pose3D.h>
 
 BEGIN_DECLARE_MODULE(OdometryCalculator)
-  REQUIRE(FSRData)
+  REQUIRE(GroundContactModel)
   REQUIRE(KinematicChainSensor)
 
   PROVIDE(OdometryData)
