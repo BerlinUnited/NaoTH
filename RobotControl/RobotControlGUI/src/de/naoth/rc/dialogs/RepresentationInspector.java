@@ -71,7 +71,7 @@ public class RepresentationInspector extends AbstractDialog {
         return representationOwner + ":representation:list";
     }
 
-    private String getRepresentationBase() {
+    private String getRepresentationPrint() {
         return representationOwner + ":representation:print";
     }
 
@@ -111,7 +111,7 @@ public class RepresentationInspector extends AbstractDialog {
                                 prefix = getRepresentationBinary();
                                 currentHandler = new DataHandlerBinary((String) o);
                             } else {
-                                prefix = getRepresentationBase();
+                                prefix = getRepresentationPrint();
                                 currentHandler = new DataHandlerPrint();
                             }
 
