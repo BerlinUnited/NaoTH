@@ -6,6 +6,7 @@
 
 package de.naoth.rc.components;
 
+import de.naoth.rc.components.teamcommviewer.RobotStatus;
 import de.naoth.rc.dataformats.SPLMessage;
 import de.naoth.rc.server.ConnectionStatusEvent;
 import de.naoth.rc.server.ConnectionStatusListener;

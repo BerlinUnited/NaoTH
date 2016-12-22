@@ -9,6 +9,7 @@ import de.naoth.rc.RobotControl;
 import de.naoth.rc.components.RemoteRobotPanel;
 import de.naoth.rc.core.dialog.AbstractDialog;
 import de.naoth.rc.core.dialog.DialogPlugin;
+import de.naoth.rc.core.dialog.RCDialog;
 import de.naoth.rc.core.manager.ObjectListener;
 import de.naoth.rc.core.manager.SwingCommandExecutor;
 import de.naoth.rc.dataformats.SPLMessage;
@@ -50,6 +51,7 @@ import net.java.games.input.EventQueue;
  */
 public class RemoteTeamControl extends AbstractDialog {
 
+    @RCDialog(category = RCDialog.Category.Debug, name = "RemoteControl")
     @PluginImplementation
     public static class Plugin extends DialogPlugin<RemoteTeamControl> {
 
@@ -77,9 +79,9 @@ public class RemoteTeamControl extends AbstractDialog {
             ex.printStackTrace(System.err);
         }
         
-        // dummy robot
-        robotsMap.put("10.0.4.77", new RemoteRobotPanel(Plugin.parent.getMessageServer(),"10.0.4.77", new SPLMessage()));
-        updateRoboPanel();
+        // dummy robot for tests
+        //robotsMap.put("10.0.4.77", new RemoteRobotPanel(Plugin.parent.getMessageServer(),"10.0.4.77", new SPLMessage()));
+        //updateRoboPanel();
         
         this.timerCheckMessages = new Timer();
         this.timerCheckMessages.scheduleAtFixedRate(new TeamCommListenTask(), 100, 100);
@@ -90,6 +92,16 @@ public class RemoteTeamControl extends AbstractDialog {
             registerControl(c);
         }
     }
+
+    @Override
+    public void dispose() {
+        try {
+            teamCommListener.disconnect();
+        } catch (IOException | InterruptedException ex) {
+            ex.printStackTrace(System.err);
+        }
+    }
+    
     
     private void registerControl(Controller controller) {
         try {
