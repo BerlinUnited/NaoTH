@@ -94,8 +94,8 @@ public class BehaviorViewer extends AbstractDialog
   private final Command reloadBehaviorCommand = new Command("Cognition:behavior:reload");
   private final Command getAgentCommand = new Command("Cognition:behavior:get_agent");
   
-  private final Command getBehaviorStateComplete = new Command("Cognition:representation:getbinary").addArg("BehaviorStateComplete");
-  private final Command getBehaviorStateSparse = new Command("Cognition:representation:getbinary").addArg("BehaviorStateSparse");
+  private final Command getBehaviorStateComplete = new Command("Cognition:representation:get").addArg("BehaviorStateComplete");
+  private final Command getBehaviorStateSparse = new Command("Cognition:representation:get").addArg("BehaviorStateSparse");
   
 
   private final Command getListOfAgents = new Command("Cognition:behavior:list_agents");
