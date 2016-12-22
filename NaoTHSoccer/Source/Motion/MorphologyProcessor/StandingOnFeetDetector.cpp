@@ -1,8 +1,8 @@
 /**
  * @file StandingOnFeetDetector.cpp
  *
- * @author <a href="mailto:xu@informatik.hu-berlin.de">Xu, Yuan</a>
- * detect if the foot touch the ground
+ * @author Yigit Can Akcay
+ * Detect if feet have contact to the ground
  */
 
 #include "StandingOnFeetDetector.h"
@@ -61,38 +61,4 @@ void StandingOnFeetDetector::execute()
         getGroundContactModel().rightGroundContactAverage = true;
     }
     
-    PLOT("StandingOnFeetDetector:leftGroundContact", getGroundContactModel().leftGroundContact);
-    PLOT("StandingOnFeetDetector:rightGroundContact", getGroundContactModel().rightGroundContact);
-    
-    PLOT("StandingOnFeetDetector:leftFSRBuffer", leftFSRBuffer.getAverage());
-    PLOT("StandingOnFeetDetector:rightFSRBuffer", rightFSRBuffer.getAverage());
-    
-    /*
-     // use the current to estimate the ground contact
-     {
-     static RingBufferWithSum<double, 10> currentBufferLeft;
-     static RingBufferWithSum<double, 10> currentBufferRight;
-     
-     double currentLeftLeg = theBlackBoard.theSensorJointData.electricCurrent[JointData::LHipPitch]
-     + theBlackBoard.theSensorJointData.electricCurrent[JointData::LHipRoll]
-     + theBlackBoard.theSensorJointData.electricCurrent[JointData::LKneePitch]
-     + theBlackBoard.theSensorJointData.electricCurrent[JointData::LAnklePitch]
-     + theBlackBoard.theSensorJointData.electricCurrent[JointData::LAnkleRoll];
-     
-     currentBufferLeft.add(currentLeftLeg);
-     
-     double currentRightLeg = theBlackBoard.theSensorJointData.electricCurrent[JointData::RHipPitch]
-     + theBlackBoard.theSensorJointData.electricCurrent[JointData::RHipRoll]
-     + theBlackBoard.theSensorJointData.electricCurrent[JointData::RKneePitch]
-     + theBlackBoard.theSensorJointData.electricCurrent[JointData::RAnklePitch]
-     + theBlackBoard.theSensorJointData.electricCurrent[JointData::RAnkleRoll];
-     
-     currentBufferRight.add(currentRightLeg);
-     
-     PLOT("Motion:currentLeg:left", currentBufferLeft.getAverage() );
-     PLOT("Motion:currentLeg:right", currentBufferRight.getAverage() );
-     }
-     */
-    
 }//end update
-

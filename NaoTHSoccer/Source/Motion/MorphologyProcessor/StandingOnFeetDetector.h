@@ -1,8 +1,8 @@
 /**
- * @file StandingOnFeetDetector.h
+ * @file StandingOnFeetDetector.cpp
  *
- * @author <a href="mailto:xu@informatik.hu-berlin.de">Xu, Yuan</a>
- * detect if the foot touch the ground
+ * @author Yigit Can Akcay
+ * Detect if feet have contact to the ground
  */
 
 #ifndef _StandingOnFeetDetector_H
@@ -56,7 +56,7 @@ private:
     {
     public:
         
-        Parameters(DebugParameterList& list) : ParameterList("FootGroundContactParameters"), list(&list)
+        Parameters(DebugParameterList& list) : ParameterList("StandingOnFeetParameters"), list(&list)
         {
             PARAMETER_REGISTER(left) = 3;
             PARAMETER_REGISTER(right) = 3;
@@ -84,4 +84,3 @@ private:
 };
 
 #endif  /* _StandingOnFeetDetector_H */
-

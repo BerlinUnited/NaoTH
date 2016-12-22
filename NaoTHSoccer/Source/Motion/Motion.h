@@ -20,6 +20,7 @@
 #include "MorphologyProcessor/OdometryCalculator.h"
 //#include "MorphologyProcessor/FootTouchCalibrator.h"
 #include "MorphologyProcessor/FootGroundContactDetector.h"
+#include "MorphologyProcessor/StandingOnFeetDetector.h"
 #include "MorphologyProcessor/KinematicChainProviderMotion.h"
 #include "SensorFilter/InertiaSensorCalibrator.h"
 #include "SensorFilter/InertiaSensorFilter.h"
@@ -156,6 +157,7 @@ private:
   ModuleCreator<InertiaSensorCalibrator>* theInertiaSensorCalibrator;
   ModuleCreator<InertiaSensorFilter>* theInertiaSensorFilterBH;
   ModuleCreator<FootGroundContactDetector>* theFootGroundContactDetector;
+  ModuleCreator<StandingOnFeetDetector>* theStandingOnFeetDetector;
   ModuleCreator<SupportPolygonGenerator>* theSupportPolygonGenerator;
   ModuleCreator<OdometryCalculator>* theOdometryCalculator;
   ModuleCreator<KinematicChainProviderMotion>* theKinematicChainProvider;
