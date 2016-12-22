@@ -53,8 +53,8 @@ void FootGroundContactDetector::execute()
   if (getGroundContactModel().leftGroundContact
       || getGroundContactModel().rightGroundContact) 
   {
-    getGroundContactModel().supportFoot = getGroundContactModel().leftGroundContact
-                                        < getGroundContactModel().rightGroundContact
+    getGroundContactModel().supportFoot = leftFSRBuffer.getAverage()
+                                        < rightFSRBuffer.getAverage()
                                         ? false
                                         : true;
   }
