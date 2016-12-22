@@ -29,12 +29,12 @@
 BEGIN_DECLARE_MODULE(FootGroundContactDetector)
 
   REQUIRE(FrameInfo)
+  REQUIRE(FSRData)
 
   PROVIDE(DebugPlot)
   PROVIDE(DebugRequest)
   PROVIDE(DebugParameterList)
 
-  PROVIDE(FSRData)
   PROVIDE(GroundContactModel)
 END_DECLARE_MODULE(FootGroundContactDetector)
 
@@ -60,7 +60,6 @@ private:
     {
       PARAMETER_REGISTER(left) = 3;
       PARAMETER_REGISTER(right) = 3;
-      PARAMETER_REGISTER(invalid) = 100;
 
       syncWithConfig();
 
@@ -76,7 +75,6 @@ private:
 
     double left;
     double right;
-    double invalid;
   };
 
   Parameters footParams;

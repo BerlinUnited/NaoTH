@@ -20,27 +20,25 @@ FootGroundContactDetector::~FootGroundContactDetector()
 void FootGroundContactDetector::execute()
 {
 
-  // check wether the sensory values look valid
-  // usually, broken sensors return large values
-  for(int i = 0; i < naoth::FSRData::numOfFSR; i++)
+  double forceLeft  = 0;
+  double forceRight = 0;
+
+  for (int i = 0; i < 4; i++)
   {
-    if(getFSRData().data[i] > footParams.invalid)
-      getFSRData().valid[i] = false;
-    else
-      getFSRData().valid[i] = true;
-  }//end for
+    forceLeft  += getFSRData().data[i];
+    forceRight += getFSRData().data[i+4];
+  }
 
+  leftFSRBuffer.add(forceLeft);
+  rightFSRBuffer.add(forceRight);
 
-  leftFSRBuffer.add(getFSRData().forceLeft());
-  rightFSRBuffer.add(getFSRData().forceRight());
-
-  if(getFSRData().forceLeft() < footParams.left) {
+  if(forceLeft < footParams.left) {
     getGroundContactModel().leftGroundContact = false;
   } else {
     getGroundContactModel().leftGroundContact = true;
   }
 
-  if(getFSRData().forceRight() < footParams.right)
+  if(forceRight < footParams.right)
   {
     getGroundContactModel().rightGroundContact = false;
   } else {
