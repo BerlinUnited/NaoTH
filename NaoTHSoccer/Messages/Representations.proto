@@ -290,3 +290,15 @@ message BallCandidates
   
   repeated Patch patches = 1;
 }
+
+message RemoteControlCommand {
+  enum ActionType {
+    NONE = 0;
+    WALK = 1;
+    LOCK_ON_BALL = 2;
+    KICK = 3;
+  }
+
+  optional ActionType action = 1;
+  optional Pose2D target = 2;
+}

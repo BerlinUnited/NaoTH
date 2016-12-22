@@ -55,7 +55,7 @@ void TeamCommReceiver::execute()
   TeamCommSender::fillMessage(getPlayerInfo(), getRobotInfo(), getFrameInfo(),
                               getBallModel(), getRobotPose(), getBodyState(),
                               getRoleDecisionModel(), getSoccerStrategy(), getPlayersModel(),
-                              getBatteryData(),
+                              getBatteryData(),getKickActionModel(),
                               ownTeamData);
   // we don't have the right player number in the beginning, wait to send
   // one to ourself until we have a valid one
@@ -127,6 +127,10 @@ bool TeamCommReceiver::parseTeamMessage(const SPLStandardMessage& spl, TeamMessa
   msg.ballVelocity.y = spl.ballVel[1];
 
   msg.fallen = (spl.fallen == 1);
+
+  msg.expectedBallPos.x = spl.shootingTo[0];
+  msg.expectedBallPos.x = spl.shootingTo[1];
+
 
   // check if we can deserialize the user defined data
   if(spl.numOfDataBytes > 0 && spl.numOfDataBytes <= SPL_STANDARD_MESSAGE_DATA_SIZE)
