@@ -70,7 +70,9 @@ void Sensor::execute()
 
   GT_TRACE("Sensor:execute() end");
 
+  // TODO: this needs to be cleaned up together with the whole debug network communication infrastructure
   // EVIL HACK: expect that only RemoteControlCommand are sent though RemoteMessageDataIn
+  // read only the last message
   if (getRemoteMessageDataIn().data.size() > 0 ) {
     std::stringstream ss(getRemoteMessageDataIn().data.back());
     Serializer<RemoteControlCommand>::deserialize(ss, getRemoteControlCommand());

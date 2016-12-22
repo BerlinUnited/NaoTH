@@ -268,7 +268,8 @@ Vector3d HeadMotionEngine::g(double yaw, double pitch, const Vector3d& pointInWo
               getCameraMatrixOffset().cam_rot[getHeadMotionRequest().cameraID],
               theJointData.position[JointData::HeadYaw],
               theJointData.position[JointData::HeadPitch],
-              getInertialModel());
+              getInertialModel().orientation
+  );
 
   cameraMatrix.timestamp = getSensorJointData().timestamp;
 

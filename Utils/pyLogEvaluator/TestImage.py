@@ -29,7 +29,7 @@ def imageFromProto(message):
   yuv888 = yuv888.reshape(message.height,message.width,3)
   
   # convert the image to rgb and save it
-  img = Image.fromstring('YCbCr', (message.width, message.height), yuv888.tostring())
+  img = Image.frombytes('YCbCr', (message.width, message.height), yuv888.tostring())
   return img
 
   

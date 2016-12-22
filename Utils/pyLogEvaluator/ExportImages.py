@@ -17,12 +17,12 @@ def parseArguments(argv):
   try:
     opts, args = getopt.getopt(argv,"hi:o:",["ifile=","outdir="])
   except getopt.GetoptError:
-    print 'ExportTopImages.py -i <input file> -o <output directory>'
+    print 'ExportImages.py -i <input file> -o <output directory>'
     sys.exit(2)
     
   for opt, arg in opts:
     if opt == '-h':
-      print 'ExportTopImages.py -i <input file> -o <output directory>'
+      print 'ExportImages.py -i <input file> -o <output directory>'
       sys.exit()
     elif opt in ("-i", "--ifile"):
       inputfile = arg
@@ -143,4 +143,3 @@ if __name__ == "__main__":
       fig.canvas.draw()
     
     print i
-  

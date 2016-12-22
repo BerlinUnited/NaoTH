@@ -77,7 +77,7 @@ public class DebugDrawingManagerImpl extends AbstractManagerPlugin<DrawingsConta
   @Override
   public Command getCurrentCommand()
   {
-    return new Command("Cognition:representation:getbinary").addArg("DebugDrawings");
+    return new Command("Cognition:representation:get").addArg("DebugDrawings");
   }
 
 }//end class DebugDrawingManager
