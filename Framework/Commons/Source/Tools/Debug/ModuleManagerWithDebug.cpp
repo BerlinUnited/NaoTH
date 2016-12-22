@@ -23,9 +23,11 @@ ModuleManagerWithDebug::ModuleManagerWithDebug(const std::string& name)
   commandModulesStopwatch = prefix + "modules:stopwatch";
 
   commandRepresentationList = prefix + "representation:list";
-  commandRepresentationGet = prefix + "representation:get"; // deprecated: change to Print
+  commandRepresentationPrint = prefix + "representation:print"; // deprecated: change to Print
+
+  commandRepresentationGet = prefix + "representation:get"; // deprecated: change to Get
   commandRepresentationSet = prefix + "representation:set";
-  commandRepresentationGetbinary = prefix + "representation:getbinary"; // deprecated: change to Get
+  
 
   commandDebugRequestSet = prefix + "debugrequest:set";
 
@@ -40,13 +42,13 @@ ModuleManagerWithDebug::ModuleManagerWithDebug(const std::string& name)
 
 
   REGISTER_DEBUG_COMMAND(commandRepresentationList, 
-    "Stream out the list of all registered representations", this);
-  REGISTER_DEBUG_COMMAND(commandRepresentationGet, 
-    "Stream out all the representations listet", this);
+    "List all registered representations", this);
+  REGISTER_DEBUG_COMMAND(commandRepresentationPrint, 
+    "Print all the representations listet", this);
   REGISTER_DEBUG_COMMAND(commandRepresentationSet, 
-    "deserialize listed representations onto the blackboard", this);
-  REGISTER_DEBUG_COMMAND(commandRepresentationGetbinary, 
-    "Stream out serialized represenation", this);
+    "Deserialize listed representations onto the blackboard", this);
+  REGISTER_DEBUG_COMMAND(commandRepresentationGet, 
+    "Return serialized represenations", this);
 
 
   REGISTER_DEBUG_COMMAND(prefix + "debugrequest:set",
@@ -72,7 +74,7 @@ void ModuleManagerWithDebug::executeDebugCommand(const std::string& command,
     modulesStopwatch(outstream);
   } else if (command == commandRepresentationList) {
     representationList(outstream);
-  } else if (command == commandRepresentationGet)
+  } else if (command == commandRepresentationPrint)
   {
     std::map<std::string, std::string>::const_iterator iter;
     for (iter = arguments.begin(); iter != arguments.end(); ++iter)
@@ -88,7 +90,7 @@ void ModuleManagerWithDebug::executeDebugCommand(const std::string& command,
       setRepresentation(outstream, iter->first, iter->second);
     }
   }
-  else if (command == commandRepresentationGetbinary)
+  else if (command == commandRepresentationGet)
   {
     DebugCommandManager::ArgumentMap::const_iterator iter;
     for (iter = arguments.begin(); iter != arguments.end(); ++iter)

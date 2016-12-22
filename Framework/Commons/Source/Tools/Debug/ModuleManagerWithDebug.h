@@ -40,9 +40,9 @@ private:
   std::string commandModulesStopwatch;
 
   std::string commandRepresentationList;
-  std::string commandRepresentationGet; // deprecated: change to Print
+  std::string commandRepresentationPrint;
+  std::string commandRepresentationGet;
   std::string commandRepresentationSet;
-  std::string commandRepresentationGetbinary; // deprecated: change to Get
 
 
   std::string commandDebugRequestSet;

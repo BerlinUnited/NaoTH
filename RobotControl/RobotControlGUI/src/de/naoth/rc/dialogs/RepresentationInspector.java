@@ -72,11 +72,11 @@ public class RepresentationInspector extends AbstractDialog {
     }
 
     private String getRepresentationBase() {
-        return representationOwner + ":representation:get";
+        return representationOwner + ":representation:print";
     }
 
     private String getRepresentationBinary() {
-        return representationOwner + ":representation:getbinary";
+        return representationOwner + ":representation:get";
     }
 
     private ObjectListener<byte[]> currentHandler;
