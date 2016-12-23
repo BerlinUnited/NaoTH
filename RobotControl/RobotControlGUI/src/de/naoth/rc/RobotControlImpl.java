@@ -16,6 +16,7 @@ import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.io.*;
+import java.lang.reflect.Field;
 import java.net.URISyntaxException;
 import java.util.Properties;
 import java.util.logging.Level;
@@ -56,11 +57,42 @@ public class RobotControlImpl extends javax.swing.JFrame
   // remember the window position and size to restore it later
   private Rectangle defaultWindowBounds = new Rectangle();
   
+  
+  
+  // HACK: set the path to the native libs
+  static 
+  {
+    try
+    {
+        String separator = System.getProperty("path.separator");
+        String path = System.getProperty("java.library.path", "./bin" );
+        
+        System.setProperty("java.library.path", path 
+            + separator + "./bin/linux32" 
+            + separator + "./bin/linux64"
+            + separator + "./bin/win32"
+            + separator + "./bin/win64"
+            + separator + "./bin/macos"
+        );
+
+        Field fieldSysPath = ClassLoader.class.getDeclaredField( "sys_paths" );
+        fieldSysPath.setAccessible( true );
+        fieldSysPath.set( null, null );
+
+        Logger.getLogger(RobotControlImpl.class.getName()).log(Level.INFO, 
+            "Set java.library.path={0}", System.getProperty("java.library.path", "./bin" ));
+    } catch(IllegalAccessException | NoSuchFieldException  ex) {
+        System.err.println("[ERROR] could not set the java.library.path");
+        ex.printStackTrace(System.err);
+    }
+  }
+  
+  
   /**
    * Creates new form RobotControlGUI
    */
   public RobotControlImpl()
-  {
+  {  
     splashScreenMessage("Welcome to RobotControl");
     try
     {
