@@ -264,21 +264,21 @@ public class RemoteRobotPanel extends javax.swing.JPanel {
       double batteryValue = getMessage().user.getBatteryCharge()*hPanel;
       g2d.fillRect((int)(wPanel*0.9), (int)(hPanel-batteryValue), (int)(wPanel), (int)batteryValue);
       
-      g2d.translate(10, (int)hPanel / 2);
+      g2d.translate(5, (int)hPanel / 2);
       g2d.rotate(Math.PI*0.5);
       g2d.setColor(Color.white);
-      g2d.setFont(new Font("TimesRoman", Font.PLAIN, 20));
+      g2d.setFont(new Font("TimesRoman", Font.PLAIN, 18));
       g2d.drawString(String.format("%3.1f °C", getMessage().user.getTemperature()), 0, 0);
       g2d.rotate(-Math.PI*0.5);
-      g2d.translate(-10, -(int)hPanel / 2);
+      g2d.translate(-5, -(int)hPanel / 2);
       
-      g2d.translate((int)(wPanel - 30), (int)hPanel / 2);
+      g2d.translate((int)(wPanel - 17), (int)hPanel / 2);
       g2d.rotate(Math.PI*0.5);
       g2d.setColor(Color.white);
-      g2d.setFont(new Font("TimesRoman", Font.PLAIN, 20));
+      g2d.setFont(new Font("TimesRoman", Font.PLAIN, 18));
       g2d.drawString(String.format("%3.0f%%", getMessage().user.getBatteryCharge()*100), 0,0);
       g2d.rotate(-Math.PI*0.5);
-      g2d.translate(-(int)(wPanel - 30), -(int)hPanel / 2);
+      g2d.translate(-(int)(wPanel - 17), -(int)hPanel / 2);
     }//end paintComponent
     
     
@@ -323,14 +323,18 @@ public class RemoteRobotPanel extends javax.swing.JPanel {
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
+        java.awt.GridBagConstraints gridBagConstraints;
 
         jLabel5 = new javax.swing.JLabel();
         jPanel1 = new javax.swing.JPanel();
-        btBind = new javax.swing.JToggleButton();
+        labelPanel = new javax.swing.JPanel();
+        filler1 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0));
         jlAddress = new javax.swing.JLabel();
         jlTeamNumber = new javax.swing.JLabel();
         jlTimestamp = new javax.swing.JLabel();
+        buttonPanel = new javax.swing.JPanel();
         connectButton = new javax.swing.JButton();
+        btBind = new javax.swing.JToggleButton();
 
         jLabel5.setText("jLabel5");
 
@@ -349,29 +353,54 @@ public class RemoteRobotPanel extends javax.swing.JPanel {
         setMaximumSize(new java.awt.Dimension(400, 600));
         setMinimumSize(new java.awt.Dimension(200, 300));
         setPreferredSize(new java.awt.Dimension(200, 300));
+        setLayout(new java.awt.BorderLayout());
 
-        btBind.setText("BIND");
-        btBind.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btBindActionPerformed(evt);
-            }
-        });
+        labelPanel.setOpaque(false);
+        labelPanel.setLayout(new java.awt.GridBagLayout());
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.weightx = 0.2;
+        labelPanel.add(filler1, gridBagConstraints);
 
         jlAddress.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         jlAddress.setForeground(new java.awt.Color(255, 255, 255));
         jlAddress.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/naoth/rc/res/network-idle.png"))); // NOI18N
-        jlAddress.setText("-");
+        jlAddress.setText("127.0.0.1");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.weightx = 0.8;
+        labelPanel.add(jlAddress, gridBagConstraints);
 
         jlTeamNumber.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         jlTeamNumber.setForeground(new java.awt.Color(255, 255, 255));
         jlTeamNumber.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/naoth/rc/res/system-users.png"))); // NOI18N
         jlTeamNumber.setText("TN");
         jlTeamNumber.setToolTipText("Team Number");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.weightx = 0.8;
+        labelPanel.add(jlTeamNumber, gridBagConstraints);
 
         jlTimestamp.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         jlTimestamp.setForeground(new java.awt.Color(255, 255, 255));
         jlTimestamp.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/naoth/rc/res/appointment-new.png"))); // NOI18N
         jlTimestamp.setText("DEAD");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.weightx = 0.8;
+        labelPanel.add(jlTimestamp, gridBagConstraints);
+
+        add(labelPanel, java.awt.BorderLayout.NORTH);
+
+        buttonPanel.setOpaque(false);
+        buttonPanel.setLayout(new java.awt.GridLayout());
 
         connectButton.setText("Connect");
         connectButton.setMaximumSize(new java.awt.Dimension(50, 23));
@@ -382,40 +411,17 @@ public class RemoteRobotPanel extends javax.swing.JPanel {
                 connectButtonActionPerformed(evt);
             }
         });
+        buttonPanel.add(connectButton);
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
-        this.setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(45, 45, 45)
-                        .addComponent(jlAddress, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(2, 2, 2)
-                        .addComponent(jlTeamNumber, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jlTimestamp, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(btBind, javax.swing.GroupLayout.PREFERRED_SIZE, 166, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(connectButton, javax.swing.GroupLayout.PREFERRED_SIZE, 169, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jlAddress, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jlTeamNumber, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jlTimestamp, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 313, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btBind, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(connectButton, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap())
-        );
+        btBind.setText("BIND");
+        btBind.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btBindActionPerformed(evt);
+            }
+        });
+        buttonPanel.add(btBind);
+
+        add(buttonPanel, java.awt.BorderLayout.SOUTH);
     }// </editor-fold>//GEN-END:initComponents
 
     private void btBindActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btBindActionPerformed
@@ -446,12 +452,15 @@ public class RemoteRobotPanel extends javax.swing.JPanel {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JToggleButton btBind;
+    private javax.swing.JPanel buttonPanel;
     private javax.swing.JButton connectButton;
+    private javax.swing.Box.Filler filler1;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JLabel jlAddress;
     private javax.swing.JLabel jlTeamNumber;
     private javax.swing.JLabel jlTimestamp;
+    private javax.swing.JPanel labelPanel;
     // End of variables declaration//GEN-END:variables
 
 }
