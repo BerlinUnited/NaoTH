@@ -43,6 +43,7 @@ class UKF {
         void predict(double dt);
         void update(Measurement z);
 
+    // state in global reference frame
     class State : public Eigen::Matrix<double,dim_state,1> {
         public:
                 Eigen::Block<Eigen::Matrix<double,dim_state,1> > location(){
@@ -78,7 +79,42 @@ class UKF {
                     this->Eigen::Matrix<double,dim_state,1>::operator=(rhs);
                     return *this;
                 }
+
+                Eigen::Matrix<double, dim_state-1,1> toCovarianceCompatibleState(){
+                    Eigen::Matrix<double, dim_state-1,1> return_val;
+                    Eigen::AngleAxisd rotation;
+                    Eigen::Vector3d rotation_vector;
+
+                    rotation = Eigen::AngleAxisd(Eigen::Quaterniond(Eigen::Vector4d(this->rotation())));
+
+                    rotation_vector = rotation.angle()*rotation.axis();
+
+                    return_val << this->location(),
+                                  this->velocity(),
+                                  this->acceleration(),
+                                  this->bias_acceleration(),
+                                  rotation_vector,
+                                  this->rotational_velocity(),
+                                  this->bias_rotational_velocity();
+
+                    return return_val;
+                }
     };
+
+    State toFullState(Eigen::Matrix<double, dim_state-1,1> covarianceCompatibleState){
+        State return_val;
+
+        Eigen::Vector3d rotation_vector;
+        rotation_vector << covarianceCompatibleState(12,0), covarianceCompatibleState(13,0), covarianceCompatibleState(14,0);
+
+        Eigen::Quaterniond rotation = Eigen::Quaterniond(Eigen::AngleAxisd(rotation_vector.norm(), rotation_vector.normalized()));
+
+        return_val << covarianceCompatibleState.block(0,0,12,1), //location,velocity,acceleration
+                      rotation.coeffs(),
+                      covarianceCompatibleState.block(15,0,dim_state - 1 - 15, 1);
+
+        return return_val;
+    }
 
     public:
 
@@ -107,6 +143,7 @@ class UKF {
         const double lambda = alpha * alpha * (dim_state + kapa) - dim_state;
 
         std::vector<State> sigmaPoints;
+        std::vector<Eigen::Vector3d> rotational_differences;
 
     public:
         State state;
@@ -116,9 +153,9 @@ class UKF {
         void generateSigmaPoints();
 
         // covariances
-        Eigen::Matrix<double,dim_state,dim_state> Q;             // covariance matrix of process noise
+        Eigen::Matrix<double,dim_state-1,dim_state-1> Q;         // covariance matrix of process noise
         Eigen::Matrix<double,dim_measurement,dim_measurement> R; // covariance matrix of measurement noise
-        Eigen::Matrix<double,dim_state,dim_state> P;             // covariance matrix of current state
+        Eigen::Matrix<double,dim_state-1,dim_state-1> P;         // covariance matrix of current state
 };
 
 class IMUModel: private IMUModelBase
