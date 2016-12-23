@@ -90,7 +90,7 @@ solution "NaoTHSoccer"
     {COMMONS_MESSAGES, "../Messages/"}
   )
 
-  
+  print ("operation system: " .. os.get())
   
   configuration { "Debug" }
     defines { "DEBUG" }
@@ -163,7 +163,7 @@ solution "NaoTHSoccer"
     linkoptions {"-Wl,-rpath \"" .. path.getabsolute(EXTERN_PATH .. "/lib/") .. "\""}
   
   
-  configuration {"macos", "gmake"}
+  configuration {"macosx", "gmake"}
     defines { "BOOST_SIGNALS_NO_DEPRECATION_WARNING" }
     buildoptions {"-std=c++11"}
     -- disable some warnings
