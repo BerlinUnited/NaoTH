@@ -163,7 +163,7 @@ solution "NaoTHSoccer"
     linkoptions {"-Wl,-rpath \"" .. path.getabsolute(EXTERN_PATH .. "/lib/") .. "\""}
   
   
-  configuration {"macosx", "gmake"}
+  configuration {"macosx"}
     defines { "BOOST_SIGNALS_NO_DEPRECATION_WARNING" }
     buildoptions {"-std=c++11"}
     -- disable some warnings
