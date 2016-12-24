@@ -44,7 +44,12 @@ solution "NaoTHSoccer"
   configurations {"OptDebug", "Debug", "Release"}
   location "../build"
   
-  print("generating solution NaoTHSoccer for platform " .. PLATFORM)
+  
+  print("INFO: generating solution NaoTHSoccer")
+  print("  PLATFORM = " .. PLATFORM)
+  print("  OS = " .. os.get())
+  print("  ACTION = " .. _ACTION)
+  
   
   -- global lib path for all configurations
   -- additional includes
@@ -89,8 +94,6 @@ solution "NaoTHSoccer"
     "../../Utils/pyLogEvaluator",
     {COMMONS_MESSAGES, "../Messages/"}
   )
-
-  print ("operation system: " .. os.get())
   
   configuration { "Debug" }
     defines { "DEBUG" }
@@ -171,8 +174,11 @@ solution "NaoTHSoccer"
     buildoptions {"-Wno-deprecated-register"}
     buildoptions {"-Wno-logical-op-parentheses"}
     -- use clang on macOS
-    premake.gcc.cc = 'clang'
-    premake.gcc.cxx = 'clang++'
+    -- NOTE: configuration doesn't affect these settings, they NEED to be in a if
+    if os.is("macosx") then
+      premake.gcc.cc = 'clang'
+      premake.gcc.cxx = 'clang++'
+    end
 
 
   -- commons
