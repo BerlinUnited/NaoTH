@@ -170,7 +170,9 @@ solution "NaoTHSoccer"
     buildoptions {"-Wno-deprecated-declarations"}
     buildoptions {"-Wno-deprecated-register"}
     buildoptions {"-Wno-logical-op-parentheses"}
-    buildoptions {"CXX=clang++"}
+    -- use clang on macOS
+    premake.gcc.cc = 'clang'
+    premake.gcc.cxx = 'clang++'
 
 
   -- commons
