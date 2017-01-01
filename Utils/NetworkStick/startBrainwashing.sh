@@ -1,5 +1,9 @@
 #!/bin/bash
-sudo -u nao /usr/bin/paplay /home/nao/naoqi/Media/usb_stop.wav
+# set volume to 88%
+sudo -u nao pactl set-sink-mute 0 false
+sudo -u nao pactl set-sink-volume 0 88%
+# play initial sound
+sudo -u nao /usr/bin/paplay /home/nao/naoqi/Media/usb_start.wav
 
 # copy function
 copy(){
@@ -53,7 +57,7 @@ copy ./etc/conf.d/net /etc/conf.d/net root 644
 /etc/init.d/net.eth0 restart
 /etc/init.d/net.wlan0 restart
 
-/etc/init.d/naoth restart
+naoth restart
 
 
 

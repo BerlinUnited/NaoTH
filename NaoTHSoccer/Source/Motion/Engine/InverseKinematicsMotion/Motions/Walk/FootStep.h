@@ -6,10 +6,11 @@
 */
 
 #ifndef _FOOTSTEP_H
-#define  _FOOTSTEP_H
+#define _FOOTSTEP_H
 
 #include <Tools/Math/Pose2D.h>
 #include "../IKPose.h"
+#include "Tools/Debug/DebugDrawings.h"
 
 class FootStep
 {
@@ -90,24 +91,24 @@ public:
   }//end end
 
   // TODO
-  /*
-  void draw() const
+  void draw(DrawingCanvas2D& canvas) const
   {
     // foot begin
-    TRANSLATION(footBegin.translation.x, footBegin.translation.y);
-    ROTATION(footBegin.rotation.getZAngle());
-    ARROW(0,0,100,0);
-    ROTATION(-footBegin.rotation.getZAngle());
-    TRANSLATION(-footBegin.translation.x, -footBegin.translation.y);
+    canvas.translate(theFootBegin.translation.x, theFootBegin.translation.y);
+    canvas.rotate(theFootBegin.rotation.getZAngle());
+    canvas.pen(Color::BLUE, 1.0);
+    canvas.drawBox(-50, -30, 50, 30);
+    canvas.rotate(-theFootBegin.rotation.getZAngle());
+    canvas.translate(-theFootBegin.translation.x, -theFootBegin.translation.y);
 
     // foot end
-    TRANSLATION(footEnd.translation.x, footEnd.translation.y);
-    ROTATION(footEnd.rotation.getZAngle());
-    ARROW(0,0,100,0);
-    ROTATION(-footEnd.rotation.getZAngle());
-    TRANSLATION(-footEnd.translation.x, -footEnd.translation.y);
+    canvas.translate(theFootEnd.translation.x, theFootEnd.translation.y);
+    canvas.rotate(theFootEnd.rotation.getZAngle());
+    canvas.pen(Color::RED, 10.0);
+    canvas.drawBox(-50, -30, 50, 30);
+    canvas.rotate(-theFootEnd.rotation.getZAngle());
+    canvas.translate(-theFootEnd.translation.x, -theFootEnd.translation.y);
   }//end draw
-   */
    
    Foot liftingFoot() const { return theLiftingFoot; }
    
@@ -116,12 +117,18 @@ public:
    Pose3D& footEnd() { return theFootEnd; }
    const Pose3D& supFoot() const { return theSupFoot; }
 
+   // calculated and used by the FootStepPlanner
+   const Pose2D& stepRequest() const { return theStepRequest; }
+   Pose2D& stepRequest() { return theStepRequest; }
+
    const Pose2D& offset() const { return theOffset; }
    Pose2D& offset() { return theOffset; }
    
 private:
    Foot theLiftingFoot;
    Pose3D theFootBegin, theFootEnd, theSupFoot;
+
+   Pose2D theStepRequest;
    Pose2D theOffset;
 };
 

@@ -48,15 +48,16 @@ void TeamCommSender::fillMessage(const PlayerInfo& playerInfo,
                                    const SoccerStrategy& soccerStrategy,
                                    const PlayersModel& playersModel,
                                    const BatteryData &batteryData,
+                                   const KickActionModel &kickActionModel,
                                    TeamMessage::Data &out)
 {
-  out.playerNum = playerInfo.gameData.playerNumber;
-  out.teamNumber = playerInfo.gameData.teamNumber;
+  out.playerNum = playerInfo.playerNumber;
+  out.teamNumber = playerInfo.teamNumber;
   out.pose = robotPose;
 
   if(ballModel.valid)
   {
-    out.ballAge = frameInfo.getTimeSince(ballModel.frameInfoWhenBallWasSeen.getTime());
+    out.ballAge = frameInfo.getTimeSince(ballModel.getFrameInfoWhenBallWasSeen().getTime());
     out.ballPosition = ballModel.position;
     out.ballVelocity = ballModel.speed;
   }
@@ -81,7 +82,7 @@ void TeamCommSender::fillMessage(const PlayerInfo& playerInfo,
   out.timestamp = naoth::NaoTime::getSystemTimeInMilliSeconds(); //frameInfo.getTime();
   out.timeToBall = (unsigned int) soccerStrategy.timeToBall;
   out.wasStriker = roleDecisionModel.wantsToBeStriker;
-  out.isPenalized = playerInfo.gameData.gameState == GameData::penalized;
+  out.isPenalized = playerInfo.robotState == PlayerInfo::penalized;
   out.batteryCharge = (float) batteryData.charge;
   out.temperature =
       (float) std::max(bodyState.temperatureLeftLeg, bodyState.temperatureRightLeg);
@@ -100,7 +101,16 @@ void TeamCommSender::fillMessage(const PlayerInfo& playerInfo,
       out.opponents.push_back(opp);
     }
   }
-
+  //Send the calculated expected ballPos only if robot is striker
+  if (playerInfo.isPlayingStriker){
+	  out.expectedBallPos = kickActionModel.expectedBallPos; //Todo check if it is in global coordinates
+  }
+  else{
+	  //Dummy Values is the robots own position in global coordinates
+	  out.expectedBallPos.x = robotPose.translation.x;
+	  out.expectedBallPos.y = robotPose.translation.y;
+  }
+  
 
 }
 
@@ -109,7 +119,7 @@ void TeamCommSender::createMessage(SPLStandardMessage &msg)
   TeamMessage::Data data;
   fillMessage(getPlayerInfo(), getRobotInfo(), getFrameInfo(), getBallModel(),
               getRobotPose(), getBodyState(), getRoleDecisionModel(), getSoccerStrategy(),
-              getPlayersModel(), getBatteryData(), data);
+              getPlayersModel(), getBatteryData(),getKickActionModel(), data);
   // convert to SPLStandardMessage
   convertToSPLMessage(data, msg);
 }
@@ -148,8 +158,8 @@ void TeamCommSender::convertToSPLMessage(const TeamMessage::Data& teamData, SPLS
   splMsg.walkingTo[0] = splMsg.pose[0];
   splMsg.walkingTo[1] = splMsg.pose[1];
   // TODO: actually set shootingTo when we are shooting to some point
-  splMsg.shootingTo[0] = splMsg.pose[0];
-  splMsg.shootingTo[1] = splMsg.pose[1];
+  splMsg.shootingTo[0] = (float)teamData.expectedBallPos.x;
+  splMsg.shootingTo[1] = (float)teamData.expectedBallPos.y;
 
   // TODO: suggest something
   for(int i = 0; i < SPL_STANDARD_MESSAGE_MAX_NUM_OF_PLAYERS; ++i)

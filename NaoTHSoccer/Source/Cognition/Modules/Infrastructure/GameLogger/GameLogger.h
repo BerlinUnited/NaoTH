@@ -18,9 +18,17 @@
 #include "Representations/Modeling/TeamMessage.h"
 #include "Representations/Modeling/BodyStatus.h"
 
+#include "Representations/Perception/BallCandidates.h"
+#include "Representations/Perception/MultiBallPercept.h"
+
+// tools
+#include "Tools/Debug/DebugParameterList.h"
+
 using namespace naoth;
 
 BEGIN_DECLARE_MODULE(GameLogger)
+  PROVIDE(DebugParameterList)
+
   REQUIRE(FrameInfo)
   REQUIRE(PlayerInfo)
   REQUIRE(RobotInfo)
@@ -39,6 +47,11 @@ BEGIN_DECLARE_MODULE(GameLogger)
   REQUIRE(ScanLineEdgelPerceptTop)
   REQUIRE(BodyStatus)
 
+  REQUIRE(MultiBallPercept)
+
+  REQUIRE(BallCandidates)
+  REQUIRE(BallCandidatesTop)
+
   REQUIRE(TeamMessage)
 END_DECLARE_MODULE(GameLogger)
 
@@ -49,6 +62,20 @@ public:
   virtual ~GameLogger();
 
   virtual void execute();
+
+private:
+  struct Parameters: public ParameterList
+  {
+    Parameters() : ParameterList("GameLogger")
+    {
+      PARAMETER_REGISTER(logBallCandidates) = false;
+      PARAMETER_REGISTER(logBodyStatus) = false;
+      syncWithConfig();
+    }
+
+    bool logBallCandidates;
+    bool logBodyStatus;
+  } params;
 
 private:
   // TODO: make a memory aware LogfileManager that flushes whenever a certain memory

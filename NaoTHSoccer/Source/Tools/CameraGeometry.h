@@ -10,10 +10,14 @@
 #define _CameraGeometry_h_
 
 #include "Tools/Math/Pose3D.h"
+#include "Tools/NaoInfo.h"
 
 #include "Representations/Infrastructure/CameraInfo.h"
 #include "Representations/Perception/CameraMatrix.h"
 #include <Representations/Modeling/KinematicChain.h>
+#include "Representations/Modeling/InertialModel.h"
+
+#include <Representations/Modeling/CameraMatrixOffset.h>
 
 /**
 * The class Geometry defines representations for geometric objects and Methods
@@ -30,11 +34,13 @@ public:
    * transform a point in image coordinates to the camera coordinates
    * i.e., a direction vector to the point in the image is calculated
    */
-  static Vector3<double> imagePixelToCameraCoords( const CameraMatrix& cameraMatrix,
-                                                   const naoth::CameraInfo& cameraInfo,
-                                                   const double imgX,
-                                                   const double imgY);
+  static Vector3d imagePixelToCameraCoords( const naoth::CameraInfo& cameraInfo,
+                                            const double imgX,
+                                            const double imgY);
 
+  static Vector2d relativePointToCameraAngle( const CameraMatrix& cameraMatrix,
+                                              const naoth::CameraInfo& cameraInfo,
+                                              const Vector3d& point);
 
   /**
   * the same as relativePointToImage but without rounding to int
@@ -54,16 +60,15 @@ public:
    */
   static bool relativePointToImage( const CameraMatrix& cameraMatrix,
                                     const naoth::CameraInfo& cameraInfo,
-                                    const Vector3<double>& point,
+                                    const Vector3d& point,
                                     Vector2i& pointInImage);
 
   /** 
    * Calculates the angles to a point in the image
    */
-  static Vector2<double> angleToPointInImage( const CameraMatrix& cameraMatrix,
-                                              const naoth::CameraInfo& cameraInfo,
-                                              const double imgX,
-                                              const double imgY);
+  static Vector2d pixelToAngles( const naoth::CameraInfo& cameraInfo,
+                                 const double imgX,
+                                 const double imgY);
 
 
   /**
@@ -71,9 +76,9 @@ public:
   */
   static bool imagePixelToFieldCoord( const CameraMatrix& cameraMatrix, 
                                        const naoth::CameraInfo& cameraInfo,
-                                       const Vector2<double>& imagePoint, 
+                                       const Vector2d& imagePoint, 
                                        const double objectHeight,
-                                       Vector2<double>& result);
+                                       Vector2d& result);
 
   /** 
    * Calculates from a given Pixel in the Image and the Camera Matrix the Point, 
@@ -83,10 +88,10 @@ public:
    */
   static bool imagePixelToFieldCoord(  const CameraMatrix& cameraMatrix, 
                                        const naoth::CameraInfo& cameraInfo,
-                                       const double& imgX, 
-                                       const double& imgY, 
-                                       const double& objectHeight,
-                                       Vector2<double>& result);
+                                       const double imgX, 
+                                       const double imgY, 
+                                       const double objectHeight,
+                                       Vector2d& result);
 
 
 
@@ -95,7 +100,7 @@ public:
    * the orthogonal projection of pointInWorld to the line defined by origin of the camera 
    * and the direction given by the point in the image
    */
-  static Vector3<double> imagePixelToWorld( const CameraMatrix& cameraMatrix,
+  static Vector3d imagePixelToWorld( const CameraMatrix& cameraMatrix,
                                             const naoth::CameraInfo& cameraInfo,
                                             const double imgX,
                                             const double imgY,
@@ -107,8 +112,8 @@ public:
    */
   static void calculateArtificialHorizon(  const Pose3D& cameraMatrix,
                                            const naoth::CameraInfo& cameraInfo,
-                                           Vector2<double>& p1,
-                                           Vector2<double>& p2);
+                                           Vector2d& p1,
+                                           Vector2d& p2);
 
   /**
    * calculation of the angles from the head of the robot to a given point in
@@ -125,6 +130,32 @@ public:
     double rotationOffsetY,
     const Vector2d& theCameraCorrectionOffset);
 
-  };
+  static Pose3D calculateCameraMatrix(
+    const CameraMatrixOffset& theCameraMatrixOffset,
+    const KinematicChain& theKinematicChain,
+    const InertialModel &theInertialModel,
+    const naoth::SensorJointData &theSensorJointData,
+    const Vector3d& translationOffset,
+    double rotationOffsetY,
+    const naoth::CameraInfo::CameraID cameraID);
+
+  static Pose3D calculateCameraMatrixFromChestPose(
+      Pose3D chest,
+      const Vector3d& translationOffset,
+      double rotationOffsetY,
+      const Vector2d &theBodyCorrectionOffset,
+      const Vector3d &theHeadCorrectionOffset,
+      const Vector3d &theCameraCorrectionOffset,
+      double headYaw,
+      double headPitch,
+      const Vector2d& bodyRotation);
+
+  /**
+    estimate the ball size in image based on given camera matrix and camera info
+  */
+  static double estimatedBallRadius( const Pose3D& cameraMatrix, const naoth::CameraInfo& cameraInfo, const double ballRadius, int x, int y);
+
+
+};
 
 #endif //_CameraGeometry_h_

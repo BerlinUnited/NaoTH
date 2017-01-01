@@ -16,6 +16,7 @@ import de.naoth.rc.components.behaviorviewer.XABSLBehavior;
 import de.naoth.rc.components.behaviorviewer.XABSLBehaviorFrame;
 import de.naoth.rc.components.behaviorviewer.XABSLProtoParser;
 import de.naoth.rc.components.behaviorviewer.model.Symbol;
+import de.naoth.rc.core.dialog.RCDialog;
 import de.naoth.rc.drawingmanager.DrawingEventManager;
 import de.naoth.rc.drawings.Circle;
 import de.naoth.rc.drawings.DrawingCollection;
@@ -66,6 +67,7 @@ public class BehaviorViewer extends AbstractDialog
   implements  Dialog
 {
 
+  @RCDialog(category = RCDialog.Category.Status, name = "Behavior")
   @PluginImplementation
   public static class Plugin extends DialogPlugin<BehaviorViewer>
   {
@@ -92,8 +94,8 @@ public class BehaviorViewer extends AbstractDialog
   private final Command reloadBehaviorCommand = new Command("Cognition:behavior:reload");
   private final Command getAgentCommand = new Command("Cognition:behavior:get_agent");
   
-  private final Command getBehaviorStateComplete = new Command("Cognition:representation:getbinary").addArg("BehaviorStateComplete");
-  private final Command getBehaviorStateSparse = new Command("Cognition:representation:getbinary").addArg("BehaviorStateSparse");
+  private final Command getBehaviorStateComplete = new Command("Cognition:representation:get").addArg("BehaviorStateComplete");
+  private final Command getBehaviorStateSparse = new Command("Cognition:representation:get").addArg("BehaviorStateSparse");
   
 
   private final Command getListOfAgents = new Command("Cognition:behavior:list_agents");

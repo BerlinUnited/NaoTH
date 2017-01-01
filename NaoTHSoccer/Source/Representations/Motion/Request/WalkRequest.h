@@ -5,8 +5,8 @@
 * Definition of the class Cognition
 */
 
-#ifndef __WalkRequest_h_
-#define __WalkRequest_h_
+#ifndef _WalkRequest_h_
+#define _WalkRequest_h_
 
 #include <string>
 #include <Tools/Math/Pose2D.h>
@@ -61,7 +61,11 @@ public:
     bool moveLeftFoot; // it should also match
     Pose2D target; // in coordinate
     unsigned int time; // in ms
-    double speedDirection; //TODO: what is that?
+    //angle (in radiant) of the speed of the foot at the end of the controlled step
+    //e.g., kick to left => speedDirection = Math::toRadiant(-90)
+    double speedDirection;
+    // time scale for the step trajectory (0..1], 
+    // e.g., scale = 1 => normal step trajectory, scale < 1 => faster step
     double scale;
   };
 
@@ -98,6 +102,13 @@ public:
 
   }//end print
   
+  void assertValid() const {
+    ASSERT(character <= 1);
+    ASSERT(character >= 0);
+    ASSERT(!Math::isNan(target.translation.x));
+    ASSERT(!Math::isNan(target.translation.y));
+    ASSERT(!Math::isNan(target.rotation));
+  }
 };
 
 namespace naoth
@@ -114,5 +125,5 @@ namespace naoth
 }
 
 
-#endif // __WalkRequest_h_
+#endif // _WalkRequest_h_
 

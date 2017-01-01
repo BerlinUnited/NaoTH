@@ -2,60 +2,61 @@
 * @file Walk.h
 *
 * @author <a href="mailto:xu@informatik.hu-berlin.de">Xu, Yuan</a>
+* @author <a href="mailto:mellmann@informatik.hu-berlin.de">Heinrich, Mellmann</a>
+* @author <a href="mailto:kaden@informatik.hu-berlin.de">Steffen, Kaden</a>
 *
 */
 
-#ifndef _IK_MOTION_H_
-#define _IK_MOTION_H_
+#ifndef _Walk_H_
+#define _Walk_H_
 
 #include "IKMotion.h"
-#include "Walk/FootStep.h"
-#include "Walk/FootStepPlanner.h"
-#include <list>
-
-#include "Tools/DataStructures/RingBufferWithSum.h"
-
 #include <ModuleFramework/Module.h>
 
 // representations
-#include <Representations/Infrastructure/RobotInfo.h>
-#include "Representations/Modeling/GroundContactModel.h"
-#include "Representations/Motion/Request/MotionRequest.h"
-#include "Representations/Modeling/KinematicChain.h"
-#include <Representations/Infrastructure/GyrometerData.h>
-#include <Representations/Infrastructure/InertialSensorData.h>
-#include "Representations/Modeling/InertialModel.h"
-#include "Representations/Modeling/SupportPolygon.h"
-#include <Representations/Infrastructure/JointData.h>
-#include "Representations/Motion/MotionStatus.h"
-#include "Representations/Infrastructure/CalibrationData.h"
 #include "Representations/Infrastructure/FrameInfo.h"
+#include "Representations/Motion/Request/MotionRequest.h"
+#include "Representations/Motion/MotionStatus.h"
+#include <Representations/Infrastructure/JointData.h>
+
+#include "Representations/Infrastructure/CalibrationData.h"
+#include <Representations/Infrastructure/GyrometerData.h>
+#include "Representations/Modeling/InertialModel.h"
+#include <Representations/Infrastructure/InertialSensorData.h>
 
 // debug
 #include "Tools/Debug/DebugModify.h"
 #include "Tools/Debug/DebugPlot.h"
+#include "Tools/Debug/DebugRequest.h"
+#include "Tools/Debug/DebugDrawings.h"
+#include "Representations/Debug/Stopwatch.h"
+
+// tools
+#include <queue>
+#include "Walk/FootStep.h"
+#include "Walk/FootStepPlanner.h"
+#include "IKPose.h"
+#include "Tools/DataStructures/RingBufferWithSum.h"
+
+using namespace naoth;
 
 BEGIN_DECLARE_MODULE(Walk)
   PROVIDE(DebugModify)
   PROVIDE(DebugPlot)
   PROVIDE(DebugRequest)
+  PROVIDE(DebugDrawings)
 
   REQUIRE(FrameInfo)
-
   REQUIRE(RobotInfo)
-  REQUIRE(GroundContactModel)
-  REQUIRE(MotionRequest)
-  REQUIRE(KinematicChainSensor)
-  REQUIRE(KinematicChainMotor)
-  REQUIRE(GyrometerData)
-  REQUIRE(InertialModel)
-  REQUIRE(InertialSensorData)
-  REQUIRE(SupportPolygon)
-  REQUIRE(SensorJointData)
-  REQUIRE(CalibrationData)
-
   REQUIRE(InverseKinematicsMotionEngineService)
-  
+  REQUIRE(MotionRequest)
+
+  REQUIRE(InertialSensorData)
+  REQUIRE(CalibrationData)
+  REQUIRE(InertialModel)
+  REQUIRE(GyrometerData)
+  REQUIRE(KinematicChainSensor)
+
   PROVIDE(MotionLock)
   PROVIDE(MotionStatus)
   PROVIDE(MotorJointData)
@@ -66,137 +67,127 @@ class Walk: private WalkBase, public IKMotion
 public:
   Walk();
   
-  /** */
-  void execute();
+  virtual void execute();
+
+  enum StepType {
+    STEP_WALK,
+    STEP_CONTROL
+  };
+
+  Stopwatch stopwatch;
+
+  Stopwatch stopwatch0;
+  Stopwatch stopwatch1;
+  Stopwatch stopwatch2;
+  Stopwatch stopwatch3;
 
 private:
   /** class describing a single step */
-  struct Step 
+  class Step 
   {
-    Step():
+  private:
+    unsigned int _id;
+
+  public:
+    Step(unsigned int _id)
+      :
+      _id(_id),
+
       planningCycle(0),
       executingCycle(0),
-      lifted(false),
-      character(-1),
-      bodyPitchOffset(0.0),
-      samplesDoubleSupport(0),
-      samplesSingleSupport(0),
-      extendDoubleSupport(0),
-      numberOfCyclePerFootStep(0),
-      stepControlling(false),
-      speedDirection(0),
-      scale(1.0)
+
+      type(STEP_WALK)
     {}
 
+    FootStep footStep;
+
+    // step duration
+    int numberOfCycles;
+
+    // running parameters indicating how far the step is processed
     int planningCycle;
     int executingCycle;
-    bool lifted;
-    FootStep footStep;
-    double character;
-    
-    // parameters
-    // calcualted parameters of walk
-    double bodyPitchOffset;
-    int samplesDoubleSupport;
-    int samplesSingleSupport;
-    int extendDoubleSupport;
-    int numberOfCyclePerFootStep;
 
-    // only for step control
-    bool stepControlling;
-    double speedDirection;
-    double scale;
+    StepType type;
+    // store the request which has been used to create this step
+    WalkRequest walkRequest;
+
+    unsigned int id() const { return _id; }
+    bool isPlanned() const { return planningCycle >= numberOfCycles; }
+    bool isExecuted() const { return executingCycle >= numberOfCycles; }
   };
 
-  /** */
-  void feetStabilize(double (&position)[naoth::JointData::numOfJoint]);
-
-  /** */
-  bool FSRProtection();
+  class StepBuffer
+  {
+  private:
+    unsigned int id;
+    std::list<Step> steps;
   
-  /** */
-  bool waitLanding();
-  
-  /** */
-  void plan(const MotionRequest& motionRequest);
-  
-  /** */
-  void walk(const WalkRequest& req);
-  
-  /** */
-  void stopWalking();
+  public:
+    StepBuffer() : id(0) {}
 
-  /** */
-  void stopWalkingWithoutStand();
-  
-  /** */
-  bool canStop() const;
-  
-  /** */
-  void updateParameters(Step& step, double character) const;
+    inline Step& add() {
+      steps.push_back(Step(id++));
+      return steps.back();
+    }
 
-  /** calculate the COM error */
-  void calculateError();
+    // deligated accessors
+    inline const Step& first() const { return steps.front(); }
+    inline Step& first() { return steps.front(); }
+    inline const Step& last() const { return steps.back(); }
+    inline Step& last() { return steps.back(); }
+    inline bool empty() const { return steps.empty(); }
+    inline void pop() { return steps.pop_front(); }
+    inline unsigned int stepId() const { return id; }
 
-  /** */
-  void manageSteps(const WalkRequest& req);
-
-  /** */
-  void planStep();
-
-  /** */
-  InverseKinematic::CoMFeetPose executeStep();
-
-  /** */
-  RotationMatrix calculateBodyRotation(const InverseKinematic::FeetPose& feet, double pitch) const;
-
-  /** */
-  void updateMotionStatus(MotionStatus& motionStatus);
-  
-  /** */
-  Pose3D calculateStableCoMByFeet(InverseKinematic::FeetPose feet, double pitch) const;
-
-  /** */
-  void addStep(const Step& step);
-
-  /** */
-  void adaptStepSize(FootStep& step) const;
-
+    void draw(DrawingCanvas2D& canvas) const
+    {
+      for(std::list<Step>::const_iterator i = steps.begin(); i != steps.end(); ++i) {
+        i->footStep.draw(canvas);
+      }
+    }
+  };
 
 private:
-  // TODO: does it have to be static?
-  static unsigned int theStepID; // use for step control
-
-  const IKParameters::Walk& theWalkParameters;
-  
-  InverseKinematic::CoMFeetPose theCoMFeetPose;
-  
-  int theWaitLandingCount;
-  int theUnsupportedCount;
-  
-  bool isStopping;
-  bool stoppingStepFinished;
-  WalkRequest stoppingRequest;
-  
-  std::list<Step> stepBuffer;
-  
+  StepBuffer stepBuffer;
   FootStepPlanner theFootStepPlanner;
+  InverseKinematic::CoMFeetPose theCoMFeetPose;
+
+  const IKParameters::Walk& parameters() const {
+    return getEngine().getParameters().walk;
+  }
+
+private:
+
+  void manageSteps(const MotionRequest& motionRequest);
+  // step creators
+  void calculateNewStep(const Step& lastStep, Step& step, const WalkRequest& motionRequest);// const;
 
 
+  void planZMP();
+  void executeStep();
+
+  Pose3D calculateLiftingFootPos(const Step& step) const;
+  RotationMatrix calculateBodyRotation(const InverseKinematic::FeetPose& feet, double pitch) const;
+  Pose3D calculateStableCoMByFeet(InverseKinematic::FeetPose feet, double pitch) const;
+
+  void updateMotionStatus(MotionStatus& motionStatus) const;
+
+
+private: // stabilization
   // observe the com error
   RingBufferWithSum<double, 100> com_errors;
   Vector3d currentComError;
   RingBufferWithSum<Vector3d, 100> currentComErrorBuffer;
-
-  //
-  RingBufferWithSum<Vector2<double>, 100> corrections;
-
 
   // a buffer of CoMFeetPoses requested in the past
   // needed by stabilization
   RingBuffer<InverseKinematic::CoMFeetPose, 10> commandPoseBuffer;
   RingBuffer<FootStep::Foot, 10> commandFootIdBuffer;
 
+  void adaptStepSize(FootStep& step) const;
+  void calculateError();
+  void feetStabilize(const Step& executingStep, double (&position)[naoth::JointData::numOfJoint]) const;
 };
 
-#endif // _IK_MOTION_H_
+#endif // _Walk_H_

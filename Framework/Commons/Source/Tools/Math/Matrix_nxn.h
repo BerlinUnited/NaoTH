@@ -15,8 +15,8 @@
 //------------------------------------------------------------------------------
 // Ensure that memory version (use stack or heap) ist defined
 #if !defined(MATRIX_NXN_STACK) && !defined(MATRIX_NXN_HEAP)
-#error Define MATRIX_NXN_STACK if you'd like Matrix_nxn to use stack memory or \
-MATRIX_NXN_HEAP if you'd like Matrix_nxn to use heap memory!
+#error Define MATRIX_NXN_STACK if you like Matrix_nxn to use stack memory or \
+MATRIX_NXN_HEAP if you like Matrix_nxn to use heap memory!
 #endif
 //------------------------------------------------------------------------------
 // Forward-Deklarationen
@@ -127,7 +127,7 @@ public:
     for (size_t i = 0; i < N; ++i)
       for (size_t j = 0; j <N; ++j, ++m)
         content[i][j] = *m;
-      return *this;
+    return *this;
   }
   //----------------------------------------------------------------------------
   /**
@@ -227,7 +227,7 @@ public:
     for (size_t i = 0; i < N; ++i)
       for (size_t j = 0; j < N; ++j)
         res[i][j] = (*this)[j][i];
-      return res;
+    return res;
   }
   //------------------------------------------------------------------------------
   /**
@@ -361,7 +361,7 @@ public:
     {
       Vector_n<T, N> e;
       e[i] = (T)1;
-      res[i] = *this.solve(e);
+      res[i] = (*this).solve(e);
     }
     return res.transpose();
   }

@@ -34,7 +34,7 @@ void TeamMessageStatistics::execute() {
         PLOT(std::string("MessageStatistics:Robot(")+DataConversion::toStr(robotNumber)+std::string("):MessageInterval"), currentMessageInterval);
 
         //Update statistics for the whole team
-        if (robotNumber == getPlayerInfo().gameData.playerNumber) {
+        if (robotNumber == getPlayerInfo().playerNumber) {
           continue; //Don't consider our own messages
         }
         double old_amountOfMessages = getTeamMessageStatisticsModel().amountOfMessages++;
@@ -122,7 +122,6 @@ double TeamMessageStatistics::riemann_integral(double (TeamMessageStatistics::*f
 		sum += area;
 		x = newX;
 	}
-	
+	delete[] arguments;
 	return sum;
-
 }

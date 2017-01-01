@@ -28,6 +28,16 @@ newoption {
    description = "Disable te -Wconversion warnin for gCC"
 }
 
+newoption {
+   trigger     = "Wno-misleading-indentation",
+   description = "Disable the -Wmisleading-indentation warning/error for gcc (6.0+)"
+}
+
+newoption {
+   trigger     = "Wno-ignored-attributes",
+   description = "Disable the -Wignored-attributes warning/error for gcc (6.0+)"
+}
+
 -- definition of the solution
 solution "NaoTHSoccer"
   platforms {"Native", "Nao"}
@@ -47,7 +57,8 @@ solution "NaoTHSoccer"
   links {
     "opencv_core",
     "opencv_ml",
-    "opencv_imgproc"
+    "opencv_imgproc",
+    "opencv_objdetect"
 	}
   
   -- set the remository information
@@ -67,6 +78,7 @@ solution "NaoTHSoccer"
     },
     FRAMEWORK_PATH .. "/Commons/Source/Messages/", 
     "../../RobotControl/RobotConnector/src/", 
+    "../../Utils/pyLogEvaluator",
     {COMMONS_MESSAGES}
   )
 
@@ -74,6 +86,7 @@ solution "NaoTHSoccer"
     {"../Messages/Representations.proto"}, 
     "../Source/Messages/", 
     "../../RobotControl/RobotConnector/src/", 
+    "../../Utils/pyLogEvaluator",
     {COMMONS_MESSAGES, "../Messages/"}
   )
 
@@ -109,7 +122,7 @@ solution "NaoTHSoccer"
   -- additional defines for windows
   if(_OPTIONS["platform"] ~= "Nao" and _ACTION ~= "gmake") then
     configuration {"windows"}
-    defines {"WIN32", "NOMINMAX"}
+    defines {"WIN32", "NOMINMAX", "EIGEN_DONT_ALIGN"}
     buildoptions {"/wd4351", -- disable warning: "...new behavior: elements of array..."
                   "/wd4996", -- disable warning: "...deprecated..."
                   "/wd4290"} -- exception specification ignored (typed stecifications are ignored)
@@ -127,12 +140,21 @@ solution "NaoTHSoccer"
       -- may be needed for newer glib2 versions, remove if not needed
       buildoptions {"-Wno-deprecated-declarations"}
       buildoptions {"-Wno-deprecated"}
+      buildoptions {"-std=c++11"}
       flags { "ExtraWarnings" }
       links {"pthread"}
     
       if _OPTIONS["Wno-conversion"] == nil then
         buildoptions {"-Wconversion"}
         defines { "_NAOTH_CHECK_CONVERSION_" }
+      end
+
+      if _OPTIONS["Wno-misleading-indentation"] ~= nil then
+        buildoptions {"-Wno-misleading-indentation"}
+      end
+
+      if _OPTIONS["Wno-ignored-attributes"] ~= nil then
+        buildoptions {"-Wno-ignored-attributes"}
       end
     
       -- Why? OpenCV is always dynamically linked and we can only garantuee that there is one version in Extern (Thomas)
@@ -141,17 +163,25 @@ solution "NaoTHSoccer"
    
   -- base
   dofile (FRAMEWORK_PATH .. "/Commons/Make/Commons.lua")
+    configuration {"Nao"}
+      buildoptions {"-std=c++11"}
+  
   -- core
   dofile "NaoTHSoccer.lua"
+    configuration {"Nao"}
+      buildoptions {"-std=c++11"}
   
   -- set up platforms
   if _OPTIONS["platform"] == "Nao" then
     dofile (FRAMEWORK_PATH .. "/Platforms/Make/NaoSMAL.lua")
       -- HACK: boost from NaoQI SDK makes problems
       buildoptions {"-Wno-conversion"}
+     -- ACHTUNG: NaoSMAL doesn't build with the flag -std=c++11 (because of Boost)
+      buildoptions {"-std=gnu++11"}
     dofile (FRAMEWORK_PATH .. "/Platforms/Make/NaoRobot.lua")
       kind "ConsoleApp"
       links { "NaoTHSoccer", "Commons" }
+      buildoptions {"-std=c++11"}
   else
     dofile (FRAMEWORK_PATH .. "/Platforms/Make/SimSpark.lua")
       kind "ConsoleApp"

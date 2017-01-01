@@ -2,8 +2,10 @@
 #define SPLGAMECONTROLLER_H
 
 #include <gio/gio.h>
-#include "RoboCupGameControlData.h"
+#include <MessagesSPL/RoboCupGameControlData.h>
 #include "Representations/Infrastructure/GameData.h"
+
+using namespace spl;
 
 class SPLGameController
 {
@@ -12,9 +14,8 @@ public:
 
   ~SPLGameController();
 
-  bool get(naoth::GameData& gameData, unsigned int time);
-
-  void setReturnData(const naoth::GameReturnData& data);
+  void get(naoth::GameData& gameData);
+  void set(const naoth::GameReturnData& data);
 
   void socketLoop();
 
@@ -23,10 +24,11 @@ private:
 
 private:
   bool exiting;
-  int port;
+  int returnPort;
   GSocket* socket;
   GSocketAddress* gamecontrollerAddress;
   GThread* socketThread;
+
   RoboCupGameControlData dataIn;
   RoboCupGameControlReturnData dataOut;
 
@@ -35,7 +37,7 @@ private:
   GMutex*  dataMutex;
   GMutex* returnDataMutex;
 
-  GError* bindAndListen(unsigned int port = GAMECONTROLLER_PORT);
+  GError* bindAndListen(unsigned int port = GAMECONTROLLER_DATA_PORT);
 
   void sendData(const RoboCupGameControlReturnData& data);
 };

@@ -429,6 +429,65 @@ void InverseKinematicsMotionEngine::feetStabilize(
 }//end feetStabilize
 
 
+
+bool InverseKinematicsMotionEngine::rotationStabilizeRC16(
+  //const InertialModel& theInertialModel,
+  const naoth::InertialSensorData& /*theInertialSensorData*/,
+  const GyrometerData& theGyrometerData,
+  double timeDelta,
+  InverseKinematic::HipFeetPose& p)
+{
+  const double alpha = 0.5;
+  Vector2d gyro = Vector2d(theGyrometerData.data.x, theGyrometerData.data.y);
+  static Vector2d filteredGyro = gyro;
+  filteredGyro = filteredGyro * (1.0f - alpha) + gyro * alpha;
+
+  const double observerMeasurementDelay = 40;
+  const int frameDelay = static_cast<int>(observerMeasurementDelay / (timeDelta*1000));
+
+  static RingBuffer<Vector2d, 10> buffer;
+  static Vector2d lastGyroError;
+  static RotationMatrix lastBodyRotationMatrix = p.hip.rotation;
+
+  const RotationMatrix relativeRotation = p.hip.rotation.invert() * lastBodyRotationMatrix;
+  lastBodyRotationMatrix = p.hip.rotation;
+
+  const double rotationY = atan2(relativeRotation.c[2].x, relativeRotation.c[2].z);
+  buffer.add(Vector2d(relativeRotation.getXAngle(), rotationY));
+
+  if(buffer.isFull() && frameDelay > 0 && frameDelay < buffer.size())
+  {
+    const Vector2d requestedVelocity = (buffer[frameDelay-1] - buffer[frameDelay]) / timeDelta;
+    const Vector2d error = requestedVelocity - filteredGyro;
+    const Vector2d errorDerivative = (error - lastGyroError) / timeDelta;
+
+    double correctionY = getParameters().walk.stabilization.rotationVelocityP.y * error.y + 
+                         getParameters().walk.stabilization.rotationD.y * errorDerivative.y;
+
+    double correctionX = getParameters().walk.stabilization.rotationVelocityP.x * error.x + 
+                         getParameters().walk.stabilization.rotationD.x * errorDerivative.x;
+
+    //const Vector2d& inertial = theInertialSensorData.data;
+    //correctionX += getParameters().walk.stabilization.rotationP.x * inertial.x;
+    //correctionY += getParameters().walk.stabilization.rotationP.y * inertial.y;
+
+    //p.localInHip();
+    //p.hip.rotateX(correctionX);
+    //p.hip.rotateY(correctionY);
+
+    double height = NaoInfo::ThighLength + NaoInfo::TibiaLength + NaoInfo::FootHeight;
+    p.hip.translate(0, 0, -height);
+    p.hip.rotateX(correctionX);
+    p.hip.rotateY(correctionY);
+    p.hip.translate(0, 0, height);
+
+    lastGyroError = error;
+  }
+
+  return true;
+}
+
+
 bool InverseKinematicsMotionEngine::rotationStabilize(
   const InertialModel& theInertialModel,
   const GyrometerData& theGyrometerData,
@@ -479,6 +538,7 @@ bool InverseKinematicsMotionEngine::rotationStabilize(
   return true;
 }
 
+/*
 bool InverseKinematicsMotionEngine::rotationStabilize(
   const InertialModel& theInertialModel,
   const GyrometerData& theGyrometerData,
@@ -523,8 +583,9 @@ bool InverseKinematicsMotionEngine::rotationStabilize(
   lastGyro = gyro;
   return true;
 }//end rotationStabilize
+*/
 
-
+/*
 bool InverseKinematicsMotionEngine::rotationStabilize(
   const RobotInfo& theRobotInfo,
   const GroundContactModel& theGroundContactModel,
@@ -589,6 +650,7 @@ bool InverseKinematicsMotionEngine::rotationStabilize(
 
   return isWorking;
 }//end rotationStabilize
+*/
 
 void InverseKinematicsMotionEngine::solveHipFeetIK(const InverseKinematic::HipFeetPose& p)
 {
@@ -618,90 +680,6 @@ void InverseKinematicsMotionEngine::copyLegJoints(double (&position)[naoth::Join
   position[JointData::RHipYawPitch] = hipYawPitch;
 }//end copyLegJoints
 
-
-int InverseKinematicsMotionEngine::controlZMPstart(const ZMPFeetPose& start)
-{
-  // if it is not ready, it should be empty
-  //ASSERT( thePreviewController.count() == 0 );
-  // TODO: clear it because of the motion can be forced to finish immediately...
-  // the idea of keep buffer is to switch zmp control between different motions,
-  // such as walk and kick, then maybe we should check if zmp control is used every cycle and etc.
-  thePreviewController.clear();
-
-  CoMFeetPose currentCoMPose = getCurrentCoMFeetPose();
-  currentCoMPose.localInLeftFoot();
-
-  // here assume the foot movment can not jump
-  // so we can keep them in the same coordinate
-  const Pose3D& trans = start.feet.left;
-  //currentCoMPose.feet.left *= trans;
-  //currentCoMPose.feet.right *= trans;
-  currentCoMPose.com *= trans;
-
-  thePreviewControlCoM = currentCoMPose.com.translation;
-  thePreviewControldCoM = Vector2d(0,0);
-  thePreviewControlddCoM = Vector2d(0,0);
-  thePreviewController.init(currentCoMPose.com.translation, thePreviewControldCoM, thePreviewControlddCoM);
-  
-  unsigned int previewSteps = static_cast<unsigned int> (thePreviewController.previewSteps() - 1);
-  thePreviewController.clear();
-
-  for (unsigned int i = 0; i < previewSteps; i++)
-  {
-    double t = static_cast<double>(i) / previewSteps;
-    Pose3D p = Pose3D::interpolate(currentCoMPose.com, start.zmp, t);
-    thePreviewController.push(p.translation);
-  }
-  return previewSteps;
-}//end controlZMPstart
-
-
-void InverseKinematicsMotionEngine::controlZMPpush(const Vector3d& zmp)
-{
-  thePreviewController.push(zmp);
-}
-
-bool InverseKinematicsMotionEngine::controlZMPpop(Vector3d& com)
-{
-  if ( thePreviewController.ready() )
-  {
-    thePreviewController.control(thePreviewControlCoM, thePreviewControldCoM, thePreviewControlddCoM);
-    com = thePreviewControlCoM;
-    return true;
-  }
-  return false;
-}
-
-bool InverseKinematicsMotionEngine::controlZMPstop(const Vector3d& finalZmp)
-{
-  Vector3d diff = finalZmp - thePreviewControlCoM;
-  bool stoppted = (diff.abs2() < 1) && (thePreviewControldCoM.abs2() < 1) && (thePreviewControlddCoM.abs2() < 1);
-  if ( stoppted )
-  {
-    thePreviewController.clear();
-  }
-  else
-  {
-    controlZMPpush(finalZmp);
-  }
-
-  return stoppted;
-}
-
-Vector3d InverseKinematicsMotionEngine::controlZMPback() const
-{
-  return thePreviewController.back();
-}
-
-Vector3d InverseKinematicsMotionEngine::controlZMPfront() const
-{
-  return thePreviewController.front();
-}
-
-void InverseKinematicsMotionEngine::controlZMPclear()
-{
-  thePreviewController.clear();
-}
 
 double InverseKinematicsMotionEngine::solveHandsIK(
   const Pose3D& chest,

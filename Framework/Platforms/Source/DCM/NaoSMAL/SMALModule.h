@@ -14,9 +14,6 @@
 #include "Tools/SharedMemoryIO.h"
 #include "Tools/BasicMotion.h"
 
-#include "DCMHandler.h"
-
-#include <alcommon/almodule.h>
 
 //
 // This is to suppress the following gcc warning 
@@ -26,7 +23,12 @@
 //   boost/function/function_base.hpp:325: 
 //   warning: dereferencing type-punned pointer will break strict-aliasing rules
 #pragma GCC diagnostic ignored "-Wstrict-aliasing"
+#pragma GCC diagnostic ignored "-Wunused-local-typedefs"
+#include "DCMHandler.h"
+
+#include <alcommon/almodule.h>
 #include <alcommon/alproxy.h>
+
 
 #define SMAL_VERSION "42"
 
@@ -49,10 +51,12 @@ public:
   virtual void init();
   virtual void exit();
 
+  // 
+  void slowDcmUpdate();
+
   //
   void motionCallbackPre();
   void motionCallbackPost();
-
   
 private:
   // needed by theDCMHandler 
@@ -116,6 +120,9 @@ private:
   // syncronize with NaoController
   sem_t* sem;
 
+  // sync with slowDCM
+  pthread_t slowDCM;
+  bool slowDCMupdateCanRun;
 
   // sitdown motion in case the Controller dies
   bool command_data_available;

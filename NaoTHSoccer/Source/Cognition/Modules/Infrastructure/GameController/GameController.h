@@ -15,12 +15,13 @@
 using namespace naoth;
 
 BEGIN_DECLARE_MODULE(GameController)
+  PROVIDE(DebugRequest)
+  
   REQUIRE(ButtonState)
   REQUIRE(GameData)
   REQUIRE(FrameInfo)
   REQUIRE(WhistlePercept)
 
-  PROVIDE(DebugRequest)
   PROVIDE(GameReturnData)
   PROVIDE(GameControllerLEDRequest)
   PROVIDE(PlayerInfo)
@@ -35,12 +36,14 @@ public:
   virtual ~GameController();
 
 private:
-  void readButtons();
-  void readHeadButtons();
+  void handleDebugRequest();
+  void handleButtons();
+  void handleHeadButtons();
   void updateLEDs();
 
 private:
-  int whistleCountInLastSet;
+  int lastWhistleCount;
+  GameReturnData::Message returnMessage;
 };
 
 #endif // GAMECONTROLLER_H

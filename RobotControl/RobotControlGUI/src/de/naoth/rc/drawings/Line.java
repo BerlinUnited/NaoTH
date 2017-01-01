@@ -12,10 +12,10 @@ import java.awt.Graphics2D;
  */
 public class Line implements Drawable
 {
-    private int x0;
-    private int y0;
-    private int x1;
-    private int y1;
+    private final int x0;
+    private final int y0;
+    private final int x1;
+    private final int y1;
 
   public Line(int x0, int y0, int x1, int y1)
   {
@@ -35,6 +35,7 @@ public class Line implements Drawable
         this.y1 = (int)(Double.parseDouble(args[4]));
     }
 
+    @Override
     public void draw(Graphics2D g2d)
     {
         g2d.drawLine(x1, y1, x0, y0);
