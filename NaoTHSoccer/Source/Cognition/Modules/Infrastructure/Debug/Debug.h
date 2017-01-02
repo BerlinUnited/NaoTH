@@ -100,23 +100,22 @@ public:
   public:
     Parameter() : ParameterList("DebugParameter") 
     {
-      PARAMETER_REGISTER(test) = 20;
-
       PARAMETER_REGISTER(log.onlyWhenBallwasSeen) = false;
+      PARAMETER_REGISTER(log.skipTimeMS) = 0;
 
       syncWithConfig();
     }
 
-    double test;
-
     struct Log {
       bool onlyWhenBallwasSeen;
+      int skipTimeMS;
     } log;
 
   } parameter;
 
 private:
   Logger cognitionLogger;
+  FrameInfo lastLogFrameInfo;
 
   void draw3D();
   void drawRobot3D(const Pose3D& robotPose);
