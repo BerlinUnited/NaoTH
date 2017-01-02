@@ -13,6 +13,8 @@
 #include "Tools/DataStructures/Printable.h"
 #include "Tools/DataStructures/Serializer.h"
 
+#include <type_traits>
+
 namespace naoth
 {
 template<>
@@ -25,19 +27,6 @@ public:
   static void deserialize(std::istream& stream, Representation& representation) {
     representation.deserialize(stream);
   }
-};
-
-// experimental <-- this can be replaced by std::is_base_of in the future
-template<class B, class D>
-struct is_base_of
-{
-  template<typename T> struct dummy {};
-  struct Child : D, dummy<int> {};
-
-  static B* Check (B*);
-  template<class T> static char Check (dummy<T>*);
-
-  static const bool value = (sizeof(Check((Child*)0)) == sizeof(B*));
 };
 }
 
@@ -64,7 +53,7 @@ public:
    * wrap the print, fromDataStream and toDataStream of the data member 
    */
   virtual void print(std::ostream& stream) const {
-    if(naoth::is_base_of<Printable,T>::value) {
+    if(std::is_base_of<Printable,T>::value) {
       Printable* p = (Printable*)(&data);
       p->print(stream);
     } else {
@@ -73,7 +62,7 @@ public:
   }
 
   virtual bool serializable() const {
-    return !naoth::is_base_of<naoth::EmptySerializer,naoth::Serializer<T> >::value;
+    return !std::is_base_of<naoth::EmptySerializer,naoth::Serializer<T> >::value;
   }
 
   void serialize(MsgOut<Representation>::type& msg) const {
