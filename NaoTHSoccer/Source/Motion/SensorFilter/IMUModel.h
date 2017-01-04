@@ -80,6 +80,44 @@ class UKF {
                     return *this;
                 }
 
+                // add other to this state, i.e., the resulting rotation describes a rotation which rotates at first by "this" and then by "other"
+                State& operator +=(State /*const*/& other){
+                    Eigen::Quaterniond temp_rotation = other.getRotationAsQuaternion() * this->getRotationAsQuaternion();
+                    Eigen::Matrix<double,dim_state,1>::operator+=(other);
+
+                    // replace with correct rotation
+                    this->rotation() = temp_rotation.coeffs();
+
+                    return *this;
+                }
+
+                // TODO: make it more beautiful
+                State& operator +=(const Eigen::CwiseBinaryOp<Eigen::internal::scalar_product_op<double, double>,
+                                                              const Eigen::CwiseNullaryOp<Eigen::internal::scalar_constant_op<double>, const Eigen::Matrix<double, 22, 1, 0, 22, 1> >,
+                                                              const Eigen::Matrix<double, 22, 1, 0, 22, 1> > other){
+                    // use + operator of states base class
+                    *this = *this + other;
+                    return *this;
+                }
+
+                State operator-() const{
+                    State temp = *this;
+                    Eigen::Quaterniond temp_rotation = temp.getRotationAsQuaternion();
+
+                    // invert directions
+                    temp = Eigen::Matrix<double, dim_state,1>::operator-(temp);
+
+                    // replace with correct inverse rotation
+                    temp.rotation() = temp_rotation.inverse().coeffs();
+
+                    return temp;
+                }
+
+                Eigen::Quaterniond getRotationAsQuaternion() /*const*/ {
+                    Eigen::Quaterniond return_val = Eigen::Quaterniond(Eigen::Vector4d(rotation()));
+                    return return_val;
+                }
+
                 Eigen::Matrix<double, dim_state-1,1> toCovarianceCompatibleState(){
                     Eigen::Matrix<double, dim_state-1,1> return_val;
                     Eigen::AngleAxisd rotation;
@@ -107,7 +145,14 @@ class UKF {
         Eigen::Vector3d rotation_vector;
         rotation_vector << covarianceCompatibleState(12,0), covarianceCompatibleState(13,0), covarianceCompatibleState(14,0);
 
-        Eigen::Quaterniond rotation = Eigen::Quaterniond(Eigen::AngleAxisd(rotation_vector.norm(), rotation_vector.normalized()));
+        Eigen::Quaterniond rotation;
+
+        if(rotation_vector.norm() > 0) {
+            rotation = Eigen::Quaterniond(Eigen::AngleAxisd(rotation_vector.norm(), rotation_vector.normalized()));
+        } else {
+            // zero rotation quaternion
+            rotation = Eigen::Quaterniond(1,0,0,0);
+        }
 
         return_val << covarianceCompatibleState.block(0,0,12,1), //location,velocity,acceleration
                       rotation.coeffs(),

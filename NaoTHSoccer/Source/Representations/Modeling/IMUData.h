@@ -31,6 +31,8 @@ public:
   Vector3d rotational_velocity_sensor;
   Vector3d bias_rotational_velocity;
 
+  Vector2d orientation;
+
   virtual void print(std::ostream& stream) const {
 
       stream << std::setprecision(6);
@@ -71,6 +73,9 @@ public:
       stream << "x : " << bias_rotational_velocity.x << " rad/s"<< std::endl;
       stream << "y : " << bias_rotational_velocity.y << " rad/s"<< std::endl;
       stream << "z : " << bias_rotational_velocity.z << " rad/s"<< std::endl;
+      stream << "----orientation--------------" << std::endl;
+      stream << "x : " << Math::toDegrees(orientation.x) << " °"<< std::endl;
+      stream << "y : " << Math::toDegrees(orientation.y) << " °"<< std::endl;
   }
 };
 
