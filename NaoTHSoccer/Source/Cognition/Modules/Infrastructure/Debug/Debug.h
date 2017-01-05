@@ -101,7 +101,7 @@ public:
     Parameter() : ParameterList("DebugParameter") 
     {
       PARAMETER_REGISTER(log.onlyWhenBallwasSeen) = false;
-      PARAMETER_REGISTER(log.skipTimeMS) = 0;
+      PARAMETER_REGISTER(log.skipTimeMS) = 100; // record abouth 10 fps by default
 
       syncWithConfig();
     }
