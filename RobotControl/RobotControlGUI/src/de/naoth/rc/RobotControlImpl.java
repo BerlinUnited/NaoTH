@@ -67,13 +67,24 @@ public class RobotControlImpl extends javax.swing.JFrame
         String separator = System.getProperty("path.separator");
         String path = System.getProperty("java.library.path", "./bin" );
         
-        System.setProperty("java.library.path", path 
-            + separator + "./bin/linux32" 
-            + separator + "./bin/linux64"
-            + separator + "./bin/win32"
-            + separator + "./bin/win64"
-            + separator + "./bin/macos"
-        );
+        String arch = System.getProperty("os.arch").toLowerCase();
+        String name = System.getProperty("os.name").toLowerCase();
+        
+        if("linux".equals(name)) {
+            if("amd64".equals(arch)) {
+                path += separator + "./bin/linux64";
+            } else {
+                path += separator + "./bin/linux32";
+            }
+        } else {
+            path += separator + "./bin/win32"
+                  + separator + "./bin/win64"
+                  + separator + "./bin/macos";
+        }
+        
+        System.setProperty("java.library.path", path );
+        
+        System.getProperties().list(System.out);
 
         Field fieldSysPath = ClassLoader.class.getDeclaredField( "sys_paths" );
         fieldSysPath.setAccessible( true );
