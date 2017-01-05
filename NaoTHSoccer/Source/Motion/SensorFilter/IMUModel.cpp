@@ -21,12 +21,12 @@ void IMUModel::execute(){
     // don't generate sigma points again because the process noise would be applied a second time
     // ukf.generateSigmaPoints();
 
-    Eigen::Quaterniond rotation_acc_to_gravity;
+//    Eigen::Quaterniond rotation_acc_to_gravity;
     Eigen::Vector3d acceleration = Eigen::Vector3d(getAccelerometerData().data.x, getAccelerometerData().data.y, getAccelerometerData().data.z);
-    rotation_acc_to_gravity.setFromTwoVectors(acceleration,Eigen::Vector3d(0,0,-1));
+//    rotation_acc_to_gravity.setFromTwoVectors(acceleration,Eigen::Vector3d(0,0,-1));
 
     Measurement z;
-    z << acceleration, getGyrometerData().data.x, getGyrometerData().data.y, getGyrometerData().data.z, rotation_acc_to_gravity.coeffs();
+    z << acceleration, getGyrometerData().data.x, getGyrometerData().data.y, getGyrometerData().data.z; //, rotation_acc_to_gravity.coeffs();
 
     ukf.update(z);
 
@@ -182,12 +182,12 @@ void UKF <dim_state, dim_state_cov, dim_measurement, dim_measurement_cov>::updat
     Measurement predicted_z;
     // calculate predicted measurement z (weighted mean of sigma points)
     for(typename std::vector<Measurement>::iterator i = sigmaMeasurements.begin(); i != sigmaMeasurements.end(); ++i){
-        rotations.push_back((*i).getRotationAsQuaternion());
+//        rotations.push_back((*i).getRotationAsQuaternion());
         predicted_z += 1.0 / sigmaMeasurements.size() * (*i);
     }
 
     // more correct determination of the mean rotation
-    predicted_z.rotation() = averageRotation(rotations, rotations.back()).coeffs();
+//    predicted_z.rotation() = averageRotation(rotations, rotations.back()).coeffs();
 
     // calculate current measurement covariance
     Eigen::Matrix<double, dim_measurement_cov, dim_measurement_cov> Pzz = Eigen::Matrix<double, dim_measurement_cov, dim_measurement_cov>::Zero();
@@ -196,8 +196,8 @@ void UKF <dim_state, dim_state_cov, dim_measurement, dim_measurement_cov>::updat
     for(typename std::vector<Measurement>::iterator i = sigmaMeasurements.begin(); i != sigmaMeasurements.end(); ++i){
         Eigen::Matrix<double, dim_measurement_cov,1> temp((*i).toCovarianceCompatibleState() - pz_compatible);
         // replace wrong rotational difference
-        Eigen::AngleAxis<double> error((*i).getRotationAsQuaternion() * predicted_z.getRotationAsQuaternion().inverse());
-        temp.block(6,0,3,1) = error.angle() * error.axis();
+//        Eigen::AngleAxis<double> error((*i).getRotationAsQuaternion() * predicted_z.getRotationAsQuaternion().inverse());
+//        temp.block(6,0,3,1) = error.angle() * error.axis();
         Pzz += 1.0 / sigmaPoints.size() * (temp)*(temp).transpose();
     }
 
@@ -216,8 +216,8 @@ void UKF <dim_state, dim_state_cov, dim_measurement, dim_measurement_cov>::updat
 
         Eigen::Matrix<double, dim_measurement_cov,1> temp2(sigmaMeasurements[i].toCovarianceCompatibleState() - pz_compatible);
         // replace wrong rotational difference
-        error = Eigen::AngleAxis<double>(sigmaMeasurements[i].getRotationAsQuaternion() * predicted_z.getRotationAsQuaternion().inverse());
-        temp2.block(6,0,3,1) = error.angle() * error.axis();
+//        error = Eigen::AngleAxis<double>(sigmaMeasurements[i].getRotationAsQuaternion() * predicted_z.getRotationAsQuaternion().inverse());
+//        temp2.block(6,0,3,1) = error.angle() * error.axis();
 
         Pxz += 1.0 / sigmaPoints.size() * (temp1) * (temp2).transpose();
     }
@@ -230,8 +230,8 @@ void UKF <dim_state, dim_state_cov, dim_measurement, dim_measurement_cov>::updat
 
     Eigen::Matrix<double, dim_measurement_cov,1> z_innovation = z.toCovarianceCompatibleState() - predicted_z.toCovarianceCompatibleState();
     // replace wrong rotational difference
-    Eigen::AngleAxis<double> error(z.getRotationAsQuaternion() * predicted_z.getRotationAsQuaternion().inverse());
-    z_innovation.block(6,0,3,1) = error.angle() * error.axis();
+//    Eigen::AngleAxis<double> error(z.getRotationAsQuaternion() * predicted_z.getRotationAsQuaternion().inverse());
+//    z_innovation.block(6,0,3,1) = error.angle() * error.axis();
 
     State state_innovation = toFullState(K*(z_innovation));
 
@@ -286,7 +286,7 @@ typename UKF<dim_state, dim_state_cov, dim_measurement, dim_measurement_cov>::Me
     rotation_in_measurement_space.setFromTwoVectors(acceleration_in_measurement_space,Eigen::Vector3d(0,0,-1));
 
     Measurement return_val;
-    return_val << acceleration_in_measurement_space, rotational_velocity_in_measurement_space, rotation_in_measurement_space.coeffs();
+    return_val << acceleration_in_measurement_space, rotational_velocity_in_measurement_space;//rotation_in_measurement_space.coeffs();
 
     return return_val;
 }
