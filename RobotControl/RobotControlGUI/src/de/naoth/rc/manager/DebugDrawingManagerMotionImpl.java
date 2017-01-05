@@ -77,7 +77,7 @@ public class DebugDrawingManagerMotionImpl extends AbstractManagerPlugin<Drawing
   @Override
   public Command getCurrentCommand()
   {
-    return new Command("Motion:representation:getbinary").addArg("DebugDrawings");
+    return new Command("Motion:representation:get").addArg("DebugDrawings");
   }
 
 }//end class DebugDrawingManager

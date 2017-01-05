@@ -108,6 +108,11 @@ void BasicTestBehavior::execute()
     getMotionRequest().armMotionRequest.id = ArmMotionRequest::arms_none;);
 
 
+  if (getRemoteControlCommand().action == RemoteControlCommand::WALK) {
+    getMotionRequest().id = motion::walk;
+    getMotionRequest().walkRequest.target.translation.x = 0;
+  }
+
   DEBUG_REQUEST("BasicTestBehavior:start_whistle",
   if(getWhistleControl().onOffSwitch != 1)
   {

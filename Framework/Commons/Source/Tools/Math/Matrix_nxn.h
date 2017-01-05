@@ -361,7 +361,7 @@ public:
     {
       Vector_n<T, N> e;
       e[i] = (T)1;
-      res[i] = *this.solve(e);
+      res[i] = (*this).solve(e);
     }
     return res.transpose();
   }

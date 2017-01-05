@@ -40,8 +40,10 @@ private:
   std::string commandModulesStopwatch;
 
   std::string commandRepresentationList;
+  std::string commandRepresentationPrint;
   std::string commandRepresentationGet;
-  std::string commandRepresentationGetbinary;
+  std::string commandRepresentationSet;
+
 
   std::string commandDebugRequestSet;
   
@@ -52,6 +54,7 @@ private:
                    const std::map<std::string,std::string>& arguments);
   void modulesStopwatch(std::ostream& outstream);
   
+  void setRepresentation(std::ostream &outstream, const std::string& name, const std::string& data);
   void printRepresentation(std::ostream& outstream, const std::string& name, bool binary);
   void representationList(std::ostream& outstream);
 };
