@@ -37,6 +37,69 @@ END_DECLARE_MODULE(IMUModel)
 
 template <int dim_state, int dim_state_cov, int dim_measurement, int dim_measurement_cov>
 class UKF {
+    public:
+        UKF():
+            Q(Eigen::Matrix<double,dim_state_cov,dim_state_cov>::Identity()),
+            P(Eigen::Matrix<double,dim_state_cov,dim_state_cov>::Identity())
+        {
+            // bias_acceleration (x,y,z) [m/s^2], too small?
+//            P(9,9)   = 10e-10;
+//            P(10,10) = 10e-10;
+//            P(11,11) = 10e-10;
+
+            // bias_rotational_velocity (x,y,z) [m/s^2], too small?
+//            P(18,18) = 10e-10;
+//            P(19,19) = 10e-10;
+//            P(20,20) = 10e-10;
+
+            // set covariance matrix of process noise
+            // location (x,y,z) [m]
+            Q(0,0) = 0.0001;
+            Q(1,1) = 0.0001;
+            Q(2,2) = 0.0001;
+
+            // velocity (x,y,z) [m/s]
+            Q(3,3) = 0.001;
+            Q(4,4) = 0.001;
+            Q(5,5) = 0.001;
+
+            // acceleration (x,y,z) [m/s^2]
+            Q(6,6) = 0.01;
+            Q(7,7) = 0.01;
+            Q(8,8) = 0.01;
+
+            // bias_acceleration (x,y,z) [m/s^2], too small?
+//            Q(9,9)   = 10e-10;
+//            Q(10,10) = 10e-10;
+//            Q(11,11) = 10e-10;
+
+            // rotation (x,y,z) [rad]?
+            Q(9,9) = 0.001;
+            Q(10,10) = 0.001;
+            Q(11,11) = 0.001;
+
+            // rotational_velocity (x,y,z) [rad/s], too small?
+            Q(12,12) = 0.1;
+            Q(13,13) = 0.1;
+            Q(14,14) = 0.1;
+
+            // bias_rotational_velocity (x,y,z) [m/s^2], too small?
+//            Q(18,18) = 10e-10;
+//            Q(19,19) = 10e-10;
+//            Q(20,20) = 10e-10;
+
+            // set covariance matrix of measurement noise
+            // measured covariance of acceleration and rotational velocity (motion log, 60 seconds)
+            R << 5.074939351879890342e-04, -1.561730283237946278e-05,  1.012849085655689321e-04, -3.078687958578659292e-08, -1.132513004663809251e-06, -6.485352375515866273e-07, 0   , 0   , 0   ,
+                -1.561730283237946278e-05,  2.570436087068024501e-04, -4.159091012580820026e-05, -3.013278205585369588e-07,  1.736820285922189584e-06, -4.599219827687661978e-07, 0   , 0   , 0   ,
+                 1.012849085655689321e-04, -4.159091012580820026e-05,  4.727921819788054878e-04,  5.523361976811979815e-07, -1.730307422507887473e-07, -3.030009469390110280e-07, 0   , 0   , 0   ,
+                -3.078687958578659292e-08, -3.013278205585369588e-07,  5.523361976811979815e-07,  3.434758685147043306e-06, -8.299226917536411892e-08,  5.842662059539863827e-08, 0   , 0   , 0   ,
+                -1.132513004663809251e-06,  1.736820285922189584e-06, -1.730307422507887473e-07, -8.299226917536411892e-08,  1.006052718494827880e-05,  1.346681994776136150e-06, 0   , 0   , 0   ,
+                -6.485352375515866273e-07, -4.599219827687661978e-07, -3.030009469390110280e-07,  5.842662059539863827e-08,  1.346681994776136150e-06,  3.242298821157115427e-06, 0   , 0   , 0   ,
+                 0                       ,  0                       ,  0                       ,  0                       ,  0                       ,  0                       , 0.01, 0   , 0   ,
+                 0                       ,  0                       ,  0                       ,  0                       ,  0                       ,  0                       , 0   , 0.01, 0   ,
+                 0                       ,  0                       ,  0                       ,  0                       ,  0                       ,  0                       , 0   , 0   , 0.01;
+        }
 
     public:
         // measurement, local
@@ -78,6 +141,7 @@ class UKF {
             }
         };
 
+        void reset();
         void predict(double dt);
         void update(Measurement z);
 
@@ -100,22 +164,22 @@ class UKF {
                         return Eigen::Block<Eigen::Matrix<double,dim_state,1> >(this->derived(), 6, 0, 3, 1);
                     }
 
-                    Eigen::Block<Eigen::Matrix<double,dim_state,1> > bias_acceleration(){
-                        return Eigen::Block<Eigen::Matrix<double,dim_state,1> >(this->derived(), 9, 0, 3, 1);
-                    }
+//                    Eigen::Block<Eigen::Matrix<double,dim_state,1> > bias_acceleration(){
+//                        return Eigen::Block<Eigen::Matrix<double,dim_state,1> >(this->derived(), 9, 0, 3, 1);
+//                    }
 
                     Eigen::Block<Eigen::Matrix<double,dim_state,1> > rotation(){
                         //eigen's order of components of a quaterion: x,y,z,w
-                        return Eigen::Block<Eigen::Matrix<double,dim_state,1> >(this->derived(), 12, 0, 4, 1);
+                        return Eigen::Block<Eigen::Matrix<double,dim_state,1> >(this->derived(), 9, 0, 4, 1);
                     }
 
                     Eigen::Block<Eigen::Matrix<double,dim_state,1> > rotational_velocity(){
-                        return Eigen::Block<Eigen::Matrix<double,dim_state,1> >(this->derived(), 16, 0, 3, 1);
+                        return Eigen::Block<Eigen::Matrix<double,dim_state,1> >(this->derived(), 13, 0, 3, 1);
                     }
 
-                    Eigen::Block<Eigen::Matrix<double,dim_state,1> > bias_rotational_velocity(){
-                        return Eigen::Block<Eigen::Matrix<double,dim_state,1> >(this->derived(), 19, 0, 3, 1);
-                    }
+//                    Eigen::Block<Eigen::Matrix<double,dim_state,1> > bias_rotational_velocity(){
+//                        return Eigen::Block<Eigen::Matrix<double,dim_state,1> >(this->derived(), 19, 0, 3, 1);
+//                    }
 
                     State& operator=(Eigen::Matrix<double,dim_state,1> rhs) {
                         this->Eigen::Matrix<double,dim_state,1>::operator=(rhs);
@@ -135,8 +199,8 @@ class UKF {
 
                     // TODO: make it more beautiful
                     State& operator +=(const Eigen::CwiseBinaryOp<Eigen::internal::scalar_product_op<double, double>,
-                                                                  const Eigen::CwiseNullaryOp<Eigen::internal::scalar_constant_op<double>, const Eigen::Matrix<double, 22, 1, 0, 22, 1> >,
-                                                                  const Eigen::Matrix<double, 22, 1, 0, 22, 1> > other){
+                                                                  const Eigen::CwiseNullaryOp<Eigen::internal::scalar_constant_op<double>, const Eigen::Matrix<double, dim_state, 1, 0, dim_state, 1> >,
+                                                                  const Eigen::Matrix<double, dim_state, 1, 0, dim_state, 1> > other){
                         // use + operator of states base class
                         *this = *this + other;
                         return *this;
@@ -172,20 +236,21 @@ class UKF {
                         return_val << this->location(),
                                       this->velocity(),
                                       this->acceleration(),
-                                      this->bias_acceleration(),
+                                      //this->bias_acceleration(),
                                       rotation_vector,
-                                      this->rotational_velocity(),
-                                      this->bias_rotational_velocity();
+                                      this->rotational_velocity();
+                                      //this->bias_rotational_velocity();
 
                         return return_val;
                     }
         };
 
+        // TODO: get rid of direct matrix access
         State toFullState(Eigen::Matrix<double, dim_state_cov,1> covarianceCompatibleState){
             State return_val;
 
             Eigen::Vector3d rotation_vector;
-            rotation_vector << covarianceCompatibleState(12,0), covarianceCompatibleState(13,0), covarianceCompatibleState(14,0);
+            rotation_vector << covarianceCompatibleState(9,0), covarianceCompatibleState(10,0), covarianceCompatibleState(11,0);
 
             Eigen::Quaterniond rotation;
 
@@ -196,9 +261,9 @@ class UKF {
                 rotation = Eigen::Quaterniond(1,0,0,0);
             }
 
-            return_val << covarianceCompatibleState.block(0,0,12,1), //location,velocity,acceleration
+            return_val << covarianceCompatibleState.block(0,0,9,1), //location,velocity,acceleration
                           rotation.coeffs(),
-                          covarianceCompatibleState.block(15,0,dim_state_cov - 15, 1);
+                          covarianceCompatibleState.block(12,0,dim_state_cov - 12, 1);
 
             return return_val;
         }
@@ -282,14 +347,14 @@ public:
 
     void execute();
     void writeIMUData();
-    void resetFilter();
     void plots();
 
 private:
+    FrameInfo lastFrameInfo;
 
-    UKF<22,21,10,9> ukf;
+    UKF<16,15,10,9> ukf;
 
-    typedef UKF<22,21,10,9>::Measurement Measurement;
+    typedef UKF<16,15,10,9>::Measurement Measurement;
 
 
 };
