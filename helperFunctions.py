@@ -1,7 +1,9 @@
 from matplotlib import pyplot as plt
 from matplotlib.patches import Circle
 import math
-def line_intersection(line1, line2):
+import math2d as m2d
+
+def line_intersection(line1, line2):#Todo implement this algorithm for type linesegments
     xdiff = (line1[0][0] - line1[1][0], line2[0][0] - line2[1][0])
     ydiff = (line1[0][1] - line1[1][1], line2[0][1] - line2[1][1])
 
@@ -13,6 +15,22 @@ def line_intersection(line1, line2):
        raise Exception('lines do not intersect')
 
     d = (det(line1[0],line1[1]), det(line2[0],line2[1]))
+    x = det(d, xdiff) / div
+    y = det(d, ydiff) / div
+    return x, y
+
+def line_intersection2(line1, line2):#Todo implement this algorithm for type linesegments
+    xdiff = (line1.point1X - line1.point2X, line2.point1X - line2.point2X)
+    ydiff = (line1.point1Y - line1.point2Y, line2.point1Y - line2.point2Y)
+
+    def det(a, b):
+        return a[0] * b[1] - a[1] * b[0]
+
+    div = det(xdiff, ydiff)
+    if div == 0:
+       raise Exception('lines do not intersect')
+
+    d = (det(line1.point1X, line1.point2X, line1[1]), det(line2[0],line2[1]))
     x = det(d, xdiff) / div
     y = det(d, ydiff) / div
     return x, y
@@ -63,7 +81,9 @@ def drawField():
   ax.set_aspect("equal")
 
 def distance(line):
-    y = line[1][1]-line[0][1]
-    x = line[1][0]-line[0][0]
+    y = line.point2Y - line.point1Y
+    x = line.point2X - line.point1X
+    #y = line[1][1]-line[0][1]
+    #x = line[1][0]-line[0][0]
     ans=y*y+x*x
     return math.sqrt(ans)

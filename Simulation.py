@@ -1,4 +1,7 @@
+import matplotlib
+matplotlib.use('Qt4Agg')
 from matplotlib import pyplot as plt
+from matplotlib.patches import Circle
 import math2d as m2d
 import numpy as np
 import math
@@ -8,15 +11,19 @@ import helperFunctions as h
 import Action as A
 import potentialField as pf
 
-def simulateConsequences(action, pose,ballPosition, ActionResults): #Todo Check for Collisions with opp goal and if ball is out
+def simulateConsequences(action, pose,ballPosition): #Todo Check for Collisions with opp goal and if ball is out
+
+  categorizedBallPosList = []
 
   goal = owngoal = infield = out = 0
+  catHist = [0]*len(A.Categories)
   goalBackSide1 = m2d.LineSegment(oppGoalBackLeft.x,oppGoalBackLeft.y,oppGoalBackRight.x,oppGoalBackRight.y)
   goalBackSide2 = m2d.LineSegment(opponentGoalPostLeft.x,opponentGoalPostLeft.y,oppGoalBackLeft.x,oppGoalBackLeft.y)
   goalBackSide3 = m2d.LineSegment(opponentGoalPostRight.x,opponentGoalPostRight.y,oppGoalBackRight.x,oppGoalBackRight.y)
 
   for i in range(0, A.numParticles):
-    newBallPos = pose * action.predict(ballPosition)
+
+    newBallPos = action.predict(ballPosition)
     newBallPosGlobal = pose * newBallPos
     globalBallPos = pose * ballPosition
     shootline = m2d.LineSegment(globalBallPos.x,globalBallPos.y,newBallPosGlobal.x,newBallPosGlobal.y)
@@ -25,9 +32,10 @@ def simulateConsequences(action, pose,ballPosition, ActionResults): #Todo Check 
     #if ball is not in field check for collisions with oppGoal and shorten the ball
     #Todo use those checks to shorten the ball later
     #Check if ball hits the goal contruction for each particle
-    intersection1 = h.line_intersection(shootline, goalBackSide1)
-    intersection2 = h.line_intersection(shootline, goalBackSide2)
-    intersection3 = h.line_intersection(shootline, goalBackSide3)
+    #Todo compile error
+    #intersection1 = h.line_intersection(shootline, goalBackSide1)
+    #intersection2 = h.line_intersection(shootline, goalBackSide2)
+    #intersection3 = h.line_intersection(shootline, goalBackSide3)
 
     #Obstacle currently not used
 
@@ -45,15 +53,16 @@ def simulateConsequences(action, pose,ballPosition, ActionResults): #Todo Check 
       category = "OWNGOAL"
     else:
       category = "OUT"
-    ActionResults.append(A.CategorizedBallPosition(newBallPos,category))
+    catHist[A.Categories.index(category)] += 1
+    categorizedBallPosList.append(A.CategorizedBallPosition(newBallPosGlobal,category))
 
-  #ActionConsequences.append(action_consequencesI)
-  return ActionResults
+  return categorizedBallPosList,catHist
 
-def decide_smart(ActionConsequences):
+def decide_smart(ActionConsequences,catHist):
 
   numberOfInfieldPos = 0
   acceptableActions = []
+  goalActions = []
   score = 0
   for action in ActionConsequences:
     for i in range(0, A.numParticles):
@@ -67,14 +76,17 @@ def decide_smart(ActionConsequences):
       continue
     acceptableActions.append(action)
 
-
+    for action in acceptableActions:
+      if goalActions == []:
+        goalActions.append(action)
+        continue
 
   #Evaluate by potential field
   sumPotentialList = []
   for action in ActionConsequences:
     sumPotential = 0
     for i in range(0, A.numParticles):
-      sumPotential += pf.evaluateAction(action[i].x, action[i].y)
+      sumPotential += pf.evaluateAction(action[i].ballPos.x, action[i].ballPos.y)
 
     sumPotentialList.append(sumPotential)
 
@@ -86,15 +98,16 @@ def decide_smart(ActionConsequences):
       minIndex = i
   return minIndex
 
-def drawActions(): #Todo draw good looking field
+def drawActions(ActionConsequences):
 
   plt.clf()
   h.drawField()
-
+  ax = plt.gca()
+  ax.add_artist(Circle(xy=(1000, 2000),radius=100, fill=False, edgecolor='white')) # should be robotpos * ballpos
   plotColor = ['ro','go','bo']
   for idx,action in enumerate(ActionConsequences):
     for i in range(0, A.numParticles):
-      plt.plot(action[i].x, action[i].y, plotColor[idx])
+      plt.plot(action[i].ballPos.x, action[i].ballPos.y, plotColor[idx])
 
   plt.pause(0.001)
   #plt.show()
@@ -117,17 +130,23 @@ if __name__ == "__main__":
 
   ActionList = [sidekick_right,sidekick_left, kick_short]
 
+  #Todo make categorie a enum or so
+
   while True:
+    categorizedBallPosList = []#Each Entry holds the information per particle for one action
     ActionConsequences = []#results for all actions and particles
-    ActionResults = []#ActionResults holds the information per particle for one action
+    catHist = [] #histogramm of results for all actions
 
     #Simulate Consequences
     for action in ActionList:
-      ActionResults = simulateConsequences(action,pose,ballPosition, ActionResults)
-      ActionConsequences.append(ActionResults)
+      categorizedBallPosList, hist = simulateConsequences(action, pose, ballPosition)
 
+      ActionConsequences.append(categorizedBallPosList)
+      catHist.append(hist) # Todo use that somewhere
 
     #Decide best action
-    #bestAction = decide_smart(ActionConsequences)
+    bestAction = decide_smart(ActionConsequences,catHist)
+    print ActionList[bestAction].name
 
-    #drawActions()
+    drawActions(ActionConsequences)
+    #break

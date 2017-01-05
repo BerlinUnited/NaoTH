@@ -25,7 +25,11 @@ class Action:
 
     return ball + noisyAction
 
+#This class is a containter for a particlePos and its coresponding category
 class CategorizedBallPosition:
   def __init__(self,ballPos,category):
     self.ballPos = ballPos
     self.category = category
+
+
+Categories = ["INFIELD", "OPPOUT", "OWNOUT", "LEFTOUT", "RIGHTOUT", "OPPGOAL", "OWNGOAL", "COLLISION","OUT", "NUMBER_OF_BallPositionCategory"]
