@@ -124,9 +124,6 @@ void Walk::execute()
     getMotorJointData().stiffness[i] = parameters().general.stiffness;
   }
 
-  getMotorJointData().stiffness[JointData::LKneePitch] = 0.7;
-  getMotorJointData().stiffness[JointData::RKneePitch] = 0.7;
-
   // WIEDERLICHER HACK: force the hip joint
   if (getMotorJointData().position[JointData::LHipRoll] < 0) {
     getMotorJointData().position[JointData::LHipRoll] *= parameters().general.hipRollSingleSupFactorLeft;
