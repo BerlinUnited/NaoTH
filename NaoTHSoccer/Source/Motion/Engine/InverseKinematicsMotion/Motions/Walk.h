@@ -37,7 +37,6 @@
 #include "Walk/FootStepPlanner.h"
 #include "IKPose.h"
 #include "Tools/DataStructures/RingBufferWithSum.h"
-#include "JointMonitor.h"
 
 using namespace naoth;
 
@@ -57,8 +56,6 @@ BEGIN_DECLARE_MODULE(Walk)
   REQUIRE(InertialModel)
   REQUIRE(GyrometerData)
   REQUIRE(KinematicChainSensor)
-
-  REQUIRE(SensorJointData)
 
   PROVIDE(MotionLock)
   PROVIDE(MotionStatus)
@@ -191,9 +188,6 @@ private: // stabilization
   void adaptStepSize(FootStep& step) const;
   void calculateError();
   void feetStabilize(const Step& executingStep, double (&position)[naoth::JointData::numOfJoint]) const;
-
-private: // efficiency
-  JointMonitor/*<1,1>*/ jointMonitor[2];
 };
 
 #endif // _Walk_H_

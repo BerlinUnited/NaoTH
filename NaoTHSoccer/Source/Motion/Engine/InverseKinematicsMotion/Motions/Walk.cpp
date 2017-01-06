@@ -140,24 +140,6 @@ void Walk::execute()
     feetStabilize(stepBuffer.first(), getMotorJointData().position);
   }
 
-  // update jointMonitor
-  for(int i = 0; i < 2; ++i){
-      jointMonitor[i].updateMonitor(getMotorJointData().position[naoth::JointData::RKneePitch + i], getSensorJointData().position[naoth::JointData::RKneePitch + i], 0);
-  }
-
-  // cut knee joints if error becomes to big
-  if(jointMonitor[0].motorJointDataBufferIsFull()){
-      double threshold = M_PI/8;
-      MODIFY("Walk:KneeErrorThreshold", threshold);
-      for(int i = 0; i < 2; ++i){
-          if(fabs(jointMonitor[i].getError()) < fabs(getSensorJointData().position[naoth::JointData::RKneePitch + i] - getMotorJointData().position[naoth::JointData::RKneePitch + i])
-                  && jointMonitor[i].getError() > threshold)
-          {
-              getMotorJointData().position[naoth::JointData::RKneePitch + i] = jointMonitor[i].getOldestMotorData();
-          }
-      }
-  }
-
   updateMotionStatus(getMotionStatus());
 
   if(getMotionRequest().id != getId() && getEngine().zmpControl.is_stationary()) {
