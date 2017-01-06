@@ -430,8 +430,13 @@ public class RemoteRobotPanel extends javax.swing.JPanel {
             this.btBind.setSelected(false);
             this.btBind.setText("BIND");
             this.btBind.setBackground(Color.lightGray);
+        } 
+        
+        // ready to bind
+        if(this.btBind.isSelected()) {
+            this.btBind.setToolTipText("Press \"START\" on your remote control to bind it to this robot.");
         } else {
-            
+            this.btBind.setToolTipText("Press to bind your game pad to this robot.");
         }
     }//GEN-LAST:event_btBindActionPerformed
 

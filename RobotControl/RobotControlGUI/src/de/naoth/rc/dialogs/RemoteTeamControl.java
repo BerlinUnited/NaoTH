@@ -66,7 +66,7 @@ public class RemoteTeamControl extends AbstractDialog {
     private final Map<String, TeamCommMessage> messageMap = Collections.synchronizedMap(new TreeMap<String, TeamCommMessage>());
     private final HashMap<String, RemoteRobotPanel> robotsMap = new HashMap<>();
     private TeamCommListener teamCommListener;
-    private Timer timerCheckMessages;
+    private final Timer timerCheckMessages;
     
     public RemoteTeamControl() 
     {
