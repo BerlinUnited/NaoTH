@@ -801,6 +801,7 @@ public class BehaviorViewer extends AbstractDialog
             btReceive.setEnabled(true);
             Plugin.logFileEventManager.removeListener(logBehaviorListener);
         }
+        revalidate();
     }//GEN-LAST:event_btReceiveLogDataActionPerformed
 
   
