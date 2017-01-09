@@ -23,7 +23,6 @@ DebugServer::DebugServer()
   : 
   lastSendTime(0),
   lastReceiveTime(0),
-  connectionThread(NULL),
   abort(false)
 {
   answers = g_async_queue_new();
@@ -39,8 +38,8 @@ DebugServer::~DebugServer()
   }
 
   // wait for connectionThread to stop
-  if(connectionThread != NULL) {
-    g_thread_join(connectionThread);
+  if(connectionThread.joinable()) {
+    connectionThread.join();
   }
 
   clearQueues();
@@ -61,10 +60,7 @@ void DebugServer::start(unsigned short port)
   GError* err = NULL;
   g_debug("Starting debug server thread");
    
-  connectionThread = g_thread_create(connection_thread_static, this, true, &err);
-  if(err) {
-    g_warning("Could not start debug server thread: %s", err->message);
-  }
+  connectionThread = std::thread([this] {this->run();});
 }//end start
 
 void DebugServer::run()
@@ -244,11 +240,5 @@ void DebugServer::clearQueues()
 
   received_messages_cognition.clear();
   received_messages_motion.clear();
-}
-
-void* DebugServer::connection_thread_static(void* ref)
-{
-  static_cast<DebugServer*>(ref)->run();
-  return NULL;
 }
 
