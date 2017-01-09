@@ -26,7 +26,6 @@ UDPReceiver::UDPReceiver(unsigned int port, unsigned int buffersize)
   if (!g_thread_supported()) {
     g_thread_init(NULL);
   }
-  messageInMutex = g_mutex_new();
 
   GError* err = bindAndListen(port);
 
@@ -51,7 +50,6 @@ UDPReceiver::~UDPReceiver()
   {
     g_thread_join(socketThread);
   }
-  g_mutex_free(messageInMutex);
 
   if(socket != NULL)
   {
@@ -83,14 +81,14 @@ GError* UDPReceiver::bindAndListen(unsigned int port)
 void UDPReceiver::receive(std::vector<std::string>& data)
 {
   data.clear();
-  if ( g_mutex_trylock(messageInMutex) )
+  std::unique_lock<std::mutex> lock(messageInMutex, std::try_to_lock);
+  if ( lock.owns_lock())
   {
     if ( !messageIn.empty() )
     {
       data = messageIn;
       messageIn.clear();
     }
-    g_mutex_unlock(messageInMutex);
   }
 }
 
@@ -106,9 +104,8 @@ void UDPReceiver::loop()
                                      bufferSize, NULL, NULL);
     if(result > 0)
     {
-      g_mutex_lock(messageInMutex);
+      std::lock_guard<std::mutex> lock(messageInMutex);
       messageIn.push_back(std::string(buffer, result));
-      g_mutex_unlock(messageInMutex);
     }
   }
 }

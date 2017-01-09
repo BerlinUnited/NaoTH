@@ -12,6 +12,8 @@
 #include <glib.h>
 #include <gio/gio.h>
 
+#include <mutex>
+
 namespace naoth
 {
 class UDPReceiver
@@ -33,7 +35,7 @@ private:
   char* buffer;
   GThread* socketThread;
   std::vector<std::string> messageIn;
-  GMutex*  messageInMutex;
+  std::mutex messageInMutex;
 
   GError* bindAndListen(unsigned int port);
 };
