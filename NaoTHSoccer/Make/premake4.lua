@@ -117,12 +117,8 @@ solution "NaoTHSoccer"
     buildoptions {"-Wno-type-limits"}
     -- some of the protobuf messages are marked as deprecated but are still in use for legacy reasons
     buildoptions {"-Wno-deprecated-declarations"}
+    buildoptions {"-Wconversion"}
     buildoptions {"-std=c++11"}
-    if _OPTIONS["Wno-conversion"] == nil then
-      -- enable the conversion warning by default
-		  buildoptions {"-Wconversion"}
-		  defines { "_NAOTH_CHECK_CONVERSION_" }
-    end
 
     
   -- additional defines for visual studio
@@ -151,7 +147,6 @@ solution "NaoTHSoccer"
   
     if _OPTIONS["Wno-conversion"] == nil then
       buildoptions {"-Wconversion"}
-      defines { "_NAOTH_CHECK_CONVERSION_" }
     end
 
     if _OPTIONS["Wno-misleading-indentation"] ~= nil then
