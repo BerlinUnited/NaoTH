@@ -5,6 +5,8 @@
 #include <MessagesSPL/RoboCupGameControlData.h>
 #include "Representations/Infrastructure/GameData.h"
 
+#include <mutex>
+
 using namespace spl;
 
 class SPLGameController
@@ -34,8 +36,8 @@ private:
 
   unsigned int lastGetTime;
   naoth::GameData data;
-  GMutex*  dataMutex;
-  GMutex* returnDataMutex;
+  std::mutex  dataMutex;
+  std::mutex returnDataMutex;
 
   GError* bindAndListen(unsigned int port = GAMECONTROLLER_DATA_PORT);
 

@@ -19,9 +19,7 @@ SPLGameController::SPLGameController()
     socket(NULL),
     gamecontrollerAddress(NULL),
     socketThread(NULL),
-    lastGetTime(0),
-    dataMutex(NULL),
-    returnDataMutex(NULL)
+    lastGetTime(0)
 {
   GError* err = bindAndListen();
   if(err)
@@ -46,8 +44,6 @@ SPLGameController::SPLGameController()
     if (!g_thread_supported()) {
       g_thread_init(NULL);
     }
-    dataMutex = g_mutex_new();
-    returnDataMutex = g_mutex_new();
 
     g_message("SPLGameController start socket thread");
     socketThread = g_thread_create(socketLoopWrap, this, true, NULL);
@@ -103,7 +99,8 @@ bool SPLGameController::update()
 
 void SPLGameController::get(GameData& gameData)
 {
-  if ( g_mutex_trylock(dataMutex) )
+  std::unique_lock<std::mutex> lock(dataMutex, std::try_to_lock);
+  if ( lock.owns_lock() )
   {
     if(data.valid) {
       gameData = data;
@@ -112,18 +109,17 @@ void SPLGameController::get(GameData& gameData)
       // no new message received
       gameData.valid = false;
     }
-    g_mutex_unlock(dataMutex);
   }
 }
 
 void SPLGameController::set(const naoth::GameReturnData& data)
 {
-  if ( g_mutex_trylock(returnDataMutex) )
+  std::unique_lock<std::mutex> lock(returnDataMutex, std::try_to_lock);
+  if ( lock.owns_lock() )
   {
     dataOut.player = (uint8_t)data.player;
     dataOut.team = (uint8_t)data.team;
     dataOut.message = data.message;
-    g_mutex_unlock(returnDataMutex);
   }
 }
 
@@ -132,8 +128,6 @@ SPLGameController::~SPLGameController()
   exiting = true;
 
   g_thread_join(socketThread);
-  g_mutex_free(dataMutex);
-  g_mutex_free(returnDataMutex);
 
   if(socket != NULL) {
     g_object_unref(socket);
@@ -188,16 +182,16 @@ void SPLGameController::socketLoop()
 
     if(size == sizeof(RoboCupGameControlData))
     {
-      g_mutex_lock(dataMutex);
-      bool validPackage = update();
-      g_mutex_unlock(dataMutex);
-
+      bool validPackage = false;
+      {
+        std::lock_guard<std::mutex> lock(dataMutex);
+        validPackage = update();
+      }
       // only send return package if we are sure the initial package was a proper game controller message
       if(validPackage)
       {
-        g_mutex_lock(returnDataMutex);
+        std::lock_guard<std::mutex> lock(returnDataMutex);
         sendData(dataOut);
-        g_mutex_unlock(returnDataMutex);
       }
     }
   }
