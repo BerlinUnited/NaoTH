@@ -7,7 +7,10 @@
 #pragma GCC diagnostic push
 // ignore warnings
 #pragma GCC diagnostic ignored "-Wconversion"
+
+#if (__GNUC__ > 3 && __GNUC_MINOR__ > 8) || (__GNUC__ > 4) // version >= 4.9
 #pragma GCC diagnostic ignored "-Wfloat-conversion"
+#endif
 #endif
 
 #include <opencv2/core/core.hpp>
