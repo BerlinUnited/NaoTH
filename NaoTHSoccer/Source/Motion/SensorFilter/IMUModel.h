@@ -331,7 +331,7 @@ class UKF {
                 for (typename std::vector<Eigen::Vector3d >::iterator i = rotational_differences.begin(); i != rotational_differences.end(); ++i){
                     averaged_rotational_difference += *i;
                 }
-                averaged_rotational_difference = 1/rotational_differences.size() * averaged_rotational_difference;
+                averaged_rotational_difference = 1.0 / static_cast<double>(rotational_differences.size()) * averaged_rotational_difference;
 
                 mean = Eigen::Quaterniond(Eigen::AngleAxis<double>(averaged_rotational_difference.norm(), averaged_rotational_difference.normalized())) * mean;
                 if(averaged_rotational_difference.norm() < 10e-4){

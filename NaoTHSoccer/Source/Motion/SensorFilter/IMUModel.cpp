@@ -1,10 +1,6 @@
 #include "IMUModel.h"
 
-//TODO: remove pragma
-#pragma GCC diagnostic ignored "-Wconversion"
-
-IMUModel::IMUModel()
-{
+IMUModel::IMUModel(){
     DEBUG_REQUEST_REGISTER("IMUModel:reset_filter", "reset filter", false);
 }
 
@@ -146,7 +142,7 @@ void UKF<dim_state, dim_state_cov, dim_measurement, dim_measurement_cov>::predic
     // calculate new state (weighted mean of sigma points)
     for(typename std::vector<State>::iterator i = sigmaPoints.begin(); i != sigmaPoints.end(); ++i){
         rotations.push_back((*i).getRotationAsQuaternion());
-        mean += 1.0 / sigmaPoints.size() * (*i);
+        mean += 1.0 / static_cast<double>(sigmaPoints.size()) * (*i);
     }
 
     // more correct determination of the mean rotation
@@ -162,9 +158,11 @@ void UKF<dim_state, dim_state_cov, dim_measurement, dim_measurement_cov>::predic
         // replace wrong rotational difference
         Eigen::AngleAxis<double> error((*i).getRotationAsQuaternion() * mean.getRotationAsQuaternion().inverse());
         temp.block(12,0,3,1) = error.angle() * error.axis();
-        cov += 1.0 / sigmaPoints.size() * (temp)*(temp).transpose();
+        cov += 1.0 / static_cast<double>(sigmaPoints.size()) * (temp)*(temp).transpose();
     }
 
+    //assert (mean.allFinite());
+    //assert (cov.allFinite());
     state = mean;
     P     = cov/* + Q*/; // process covariance is applied before the process model (while generating the sigma points)
 }
@@ -183,7 +181,7 @@ void UKF <dim_state, dim_state_cov, dim_measurement, dim_measurement_cov>::updat
     // calculate predicted measurement z (weighted mean of sigma points)
     for(typename std::vector<Measurement>::iterator i = sigmaMeasurements.begin(); i != sigmaMeasurements.end(); ++i){
 //        rotations.push_back((*i).getRotationAsQuaternion());
-        predicted_z += 1.0 / sigmaMeasurements.size() * (*i);
+        predicted_z += 1.0 / static_cast<double>(sigmaMeasurements.size()) * (*i);
     }
 
     // more correct determination of the mean rotation
@@ -198,7 +196,7 @@ void UKF <dim_state, dim_state_cov, dim_measurement, dim_measurement_cov>::updat
         // replace wrong rotational difference
 //        Eigen::AngleAxis<double> error((*i).getRotationAsQuaternion() * predicted_z.getRotationAsQuaternion().inverse());
 //        temp.block(6,0,3,1) = error.angle() * error.axis();
-        Pzz += 1.0 / sigmaPoints.size() * (temp)*(temp).transpose();
+        Pzz += 1.0 / static_cast<double>(sigmaPoints.size()) * (temp)*(temp).transpose();
     }
 
     // apply measurement noise covariance
@@ -219,7 +217,7 @@ void UKF <dim_state, dim_state_cov, dim_measurement, dim_measurement_cov>::updat
 //        error = Eigen::AngleAxis<double>(sigmaMeasurements[i].getRotationAsQuaternion() * predicted_z.getRotationAsQuaternion().inverse());
 //        temp2.block(6,0,3,1) = error.angle() * error.axis();
 
-        Pxz += 1.0 / sigmaPoints.size() * (temp1) * (temp2).transpose();
+        Pxz += 1.0 / static_cast<double>(sigmaPoints.size()) * (temp1) * (temp2).transpose();
     }
 
     // calculate kalman gain
@@ -237,11 +235,14 @@ void UKF <dim_state, dim_state_cov, dim_measurement, dim_measurement_cov>::updat
 
     state += state_innovation;
 
+    //assert (state.allFinite());
+
     Eigen::Matrix<double,dim_state_cov,dim_state_cov> P_wiki;
     P_wiki   = P - K*Pzz*K.transpose(); // https://en.m.wikipedia.org/wiki/Kalman_filter
     //P_gh     = P - Pxz*Pzz.inverse()*Pxz.transpose(); // from "Performance and Implementation Aspects of Nonlinear Filtering" by Gustaf Hendeby
 
     P = P_wiki;
+    //assert (P.allFinite());
 }
 
 template <int dim_state, int dim_state_cov, int dim_measurement, int dim_measurement_cov>
@@ -304,6 +305,8 @@ void UKF<dim_state, dim_state_cov, dim_measurement, dim_measurement_cov>::genera
     Eigen::LLT<Eigen::Matrix<double,dim_state_cov,dim_state_cov> > choleskyDecompositionOfCov(P+Q); // apply Q befor the process model
     Eigen::Matrix<double,dim_state_cov,dim_state_cov> L = choleskyDecompositionOfCov.matrixL();
 
+    //assert (L.allFinite());
+
     for(int i = 0; i < dim_state_cov; i++){
         State noise = toFullState(std::sqrt(2*dim_state_cov) * L.col(i));
 
@@ -317,6 +320,3 @@ void UKF<dim_state, dim_state_cov, dim_measurement, dim_measurement_cov>::genera
         sigmaPoints[i + dim_state_cov] += state;
     }
 }
-
-
-#pragma GCC diagnostic pop
