@@ -30,7 +30,7 @@ void* broadcaster_static_loop(void* b)
 
 BroadCaster::BroadCaster(const std::string& interfaceName, unsigned int port)
  :exiting(false), socket(NULL), broadcastAddress(NULL),
-    socketThread(NULL), messageMutex(NULL), messageCond(NULL),
+    socketThread(NULL),
     interfaceName(interfaceName), port(port),
     messagesWithoutInterface(0),
     // try to query broadcast address in every frame
@@ -48,9 +48,6 @@ BroadCaster::BroadCaster(const std::string& interfaceName, unsigned int port)
 
   if (!g_thread_supported())
     g_thread_init(NULL);
-
-  messageMutex = g_mutex_new();
-  messageCond = g_cond_new();
 
   g_socket_set_blocking(socket, true);
   int broadcastFlag = 1;
@@ -89,13 +86,11 @@ bool BroadCaster::queryBroadcastAddress()
 BroadCaster::~BroadCaster()
 {
   exiting = true;
-  g_cond_signal(messageCond); // tell socket thread to exit
+  messageCond.notify_all(); // tell socket thread to exit
 
   if ( socketThread ) {
     g_thread_join(socketThread);
   }
-  g_mutex_free(messageMutex);
-  g_cond_free(messageCond);
 
   if(broadcastAddress != NULL) {
     g_object_unref(broadcastAddress);
@@ -108,10 +103,11 @@ void BroadCaster::send(const std::string& data)
     return;
   }
 
-  if ( g_mutex_trylock(messageMutex) ) {
+  std::unique_lock<std::mutex> lock(messageMutex, std::try_to_lock);
+  if ( lock.owns_lock() ) {
     message = data;
-    g_cond_signal(messageCond); // tell socket thread to send
-    g_mutex_unlock(messageMutex);
+    lock.unlock();
+    messageCond.notify_all();
   }
 }
 
@@ -121,10 +117,11 @@ void BroadCaster::send(std::list<std::string>& msgs)
     return;
   }
 
-  if ( g_mutex_trylock(messageMutex) ) {
+  std::unique_lock<std::mutex> lock(messageMutex, std::try_to_lock);
+  if ( lock.owns_lock() ) {
     messages = msgs;
-    g_cond_signal(messageCond); // tell socket thread to send
-    g_mutex_unlock(messageMutex);
+    lock.unlock();
+    messageCond.notify_all(); // tell socket thread to sends
   }
 }
 
@@ -132,11 +129,11 @@ void BroadCaster::loop()
 {
   while(!exiting)
   {
-    g_mutex_lock(messageMutex);
+    std::unique_lock<std::mutex> lock(messageMutex);
     // wait until it is necessary to send data
     while ( message.empty() && messages.empty() && !exiting )
     {
-      g_cond_wait(messageCond, messageMutex);
+      messageCond.wait(lock);
     }
 
     // send data via socket
@@ -152,7 +149,6 @@ void BroadCaster::loop()
     }
     messages.clear();
 
-    g_mutex_unlock(messageMutex);
   }
 }
 
