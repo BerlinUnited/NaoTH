@@ -19,6 +19,8 @@
 #include <map>
 #include <queue>
 
+#include <mutex>
+
 class DebugServer
 {
 public:
@@ -102,8 +104,8 @@ private:
   Channel received_messages_cognition;
   Channel received_messages_motion;
 
-  GMutex* m_executing;
-  GMutex* m_abort;
+  std::mutex m_executing;
+  std::mutex m_abort;
 
   bool abort;
 

@@ -26,9 +26,6 @@ DebugServer::DebugServer()
   connectionThread(NULL),
   abort(false)
 {
-  m_executing = g_mutex_new();
-  m_abort = g_mutex_new();
-
   answers = g_async_queue_new();
   g_async_queue_ref(answers);
 }
@@ -36,9 +33,10 @@ DebugServer::DebugServer()
 DebugServer::~DebugServer()
 {
   // notify the connectionThread to stop
-  g_mutex_lock(m_abort);
-  abort = true;
-  g_mutex_unlock(m_abort);
+  {
+    std::lock_guard<std::mutex> lock(m_abort);
+    abort = true;
+  }
 
   // wait for connectionThread to stop
   if(connectionThread != NULL) {
@@ -47,9 +45,6 @@ DebugServer::~DebugServer()
 
   clearQueues();
   comm.disconnect();
-
-  g_mutex_free(m_executing);
-  g_mutex_free(m_abort);
 
   g_async_queue_unref(answers);
 }
@@ -77,13 +72,12 @@ void DebugServer::run()
   while(true)
   {
     // check if the stop is requested
-    g_mutex_lock(m_abort);
-    if(abort) {
-      g_mutex_unlock(m_abort);
-      break;
+    {
+      std::lock_guard<std::mutex> lock(m_abort);
+      if(abort) {
+        break;
+      }
     }
-    g_mutex_unlock(m_abort);
-
     
     if(comm.isConnected()) 
     {
@@ -184,10 +178,10 @@ void DebugServer::send()
 void DebugServer::disconnect()
 {
   // stop executing (so it's not messing up with our queues)
-  g_mutex_lock(m_executing);
-  clearQueues();
-  g_mutex_unlock(m_executing);
-
+  {
+    std::lock_guard<std::mutex> lock(m_executing);
+    clearQueues();
+  }
   // all commands are "answered", disconnect
   comm.disconnect();
 }
@@ -209,14 +203,14 @@ void DebugServer::getDebugMessageInMotion(DebugMessageIn& buffer)
 
 void DebugServer::setDebugMessageOut(const DebugMessageOut& buffer)
 {
-  g_mutex_lock(m_executing);
-
-  for(std::list<DebugMessageOut::Message*>::const_iterator iter = buffer.answers.begin(); iter != buffer.answers.end(); ++iter)
   {
-    g_async_queue_push(answers, *iter);
-  }
+    std::lock_guard<std::mutex> lock(m_executing);
 
-  g_mutex_unlock(m_executing);
+    for(std::list<DebugMessageOut::Message*>::const_iterator iter = buffer.answers.begin(); iter != buffer.answers.end(); ++iter)
+    {
+      g_async_queue_push(answers, *iter);
+    }
+  }
 }
 
 // TODO: serializer?
