@@ -53,8 +53,8 @@ public class RobotHealth extends AbstractDialog
       public static GenericManagerFactory genericManagerFactory;
   }//end Plugin
     
-  private final Command getFSRDataCommand = new Command("Cognition:representation:getbinary").addArg("FSRData");
-  private final Command getSensorJointDataCommand = new Command("Cognition:representation:getbinary").addArg("SensorJointData");
+  private final Command getFSRDataCommand = new Command("Cognition:representation:get").addArg("FSRData");
+  private final Command getSensorJointDataCommand = new Command("Cognition:representation:get").addArg("SensorJointData");
   
   private final DecimalFormat fsr_df = new DecimalFormat  ( "##0.00" );
   

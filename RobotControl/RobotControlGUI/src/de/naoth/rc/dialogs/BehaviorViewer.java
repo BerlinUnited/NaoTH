@@ -94,8 +94,8 @@ public class BehaviorViewer extends AbstractDialog
   private final Command reloadBehaviorCommand = new Command("Cognition:behavior:reload");
   private final Command getAgentCommand = new Command("Cognition:behavior:get_agent");
   
-  private final Command getBehaviorStateComplete = new Command("Cognition:representation:getbinary").addArg("BehaviorStateComplete");
-  private final Command getBehaviorStateSparse = new Command("Cognition:representation:getbinary").addArg("BehaviorStateSparse");
+  private final Command getBehaviorStateComplete = new Command("Cognition:representation:get").addArg("BehaviorStateComplete");
+  private final Command getBehaviorStateSparse = new Command("Cognition:representation:get").addArg("BehaviorStateSparse");
   
 
   private final Command getListOfAgents = new Command("Cognition:behavior:list_agents");
@@ -801,6 +801,7 @@ public class BehaviorViewer extends AbstractDialog
             btReceive.setEnabled(true);
             Plugin.logFileEventManager.removeListener(logBehaviorListener);
         }
+        revalidate();
     }//GEN-LAST:event_btReceiveLogDataActionPerformed
 
   
@@ -825,9 +826,11 @@ public class BehaviorViewer extends AbstractDialog
         try
         {
           LogDataFrame f = b.get("BehaviorStateSparse");
-          Messages.BehaviorStateSparse status = Messages.BehaviorStateSparse.parseFrom(f.getData());
-          final XABSLBehaviorFrame frame = behaviorParser.parseSparse(status);
-          addFrame(frame);
+          if(f != null) {
+            Messages.BehaviorStateSparse status = Messages.BehaviorStateSparse.parseFrom(f.getData());
+            final XABSLBehaviorFrame frame = behaviorParser.parseSparse(status);
+            addFrame(frame);
+          }
         }
         catch(InvalidProtocolBufferException ex)
         {

@@ -6,7 +6,6 @@
 package de.naoth.rc.drawings;
 
 import java.awt.Graphics2D;
-import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 
 /**
@@ -38,6 +37,7 @@ public class ImageDrawing implements Drawable
   }
 
 
+  @Override
   public void draw(Graphics2D g2d)
   {
     if(image != null)

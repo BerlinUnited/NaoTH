@@ -55,10 +55,10 @@ public class BoundingBox extends Graphics2D {
             boundingBox.y = y;
         }
         if (x + width > boundingBox.x + boundingBox.width) {
-            boundingBox.width += (x + width - boundingBox.x + boundingBox.width);
+            boundingBox.width += (x + width - (boundingBox.x + boundingBox.width));
         }
         if (y + height > boundingBox.y + boundingBox.height) {
-            boundingBox.height += (y + height - boundingBox.y + boundingBox.height);
+            boundingBox.height += (y + height - (boundingBox.y + boundingBox.height));
         }
     }
     

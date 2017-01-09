@@ -63,7 +63,6 @@ public class ImageViewer extends AbstractDialog
     this.imageCanvasBottom.setVisible(false);
     this.imageCanvasTop.setVisible(false);
     
-    this.timestampOfTheLastImage = 0;
     this.drawingsListener = new DrawingsListener();
     this.imageListenerBottom = new ImageListenerBottom();
     this.imageListenerTop = new ImageListenerTop();
@@ -380,7 +379,7 @@ public class ImageViewer extends AbstractDialog
         }
         
         Canvas canvasBottom = objectList.get("ImageBottom");
-        if (canvasTop != null) {
+        if (canvasBottom != null) {
           ImageViewer.this.imageCanvasBottom.getDrawingList().add(canvasBottom);
         }
         
