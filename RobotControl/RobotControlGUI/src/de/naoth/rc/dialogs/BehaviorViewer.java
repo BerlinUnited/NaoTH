@@ -801,6 +801,7 @@ public class BehaviorViewer extends AbstractDialog
             btReceive.setEnabled(true);
             Plugin.logFileEventManager.removeListener(logBehaviorListener);
         }
+        revalidate();
     }//GEN-LAST:event_btReceiveLogDataActionPerformed
 
   
@@ -825,9 +826,11 @@ public class BehaviorViewer extends AbstractDialog
         try
         {
           LogDataFrame f = b.get("BehaviorStateSparse");
-          Messages.BehaviorStateSparse status = Messages.BehaviorStateSparse.parseFrom(f.getData());
-          final XABSLBehaviorFrame frame = behaviorParser.parseSparse(status);
-          addFrame(frame);
+          if(f != null) {
+            Messages.BehaviorStateSparse status = Messages.BehaviorStateSparse.parseFrom(f.getData());
+            final XABSLBehaviorFrame frame = behaviorParser.parseSparse(status);
+            addFrame(frame);
+          }
         }
         catch(InvalidProtocolBufferException ex)
         {
