@@ -54,19 +54,19 @@ class UKF {
 
             // set covariance matrix of process noise
             // location (x,y,z) [m]
-            Q(0,0) = 0.0001;
-            Q(1,1) = 0.0001;
-            Q(2,2) = 0.0001;
+//            Q(0,0) = 0.0001;
+//            Q(1,1) = 0.0001;
+//            Q(2,2) = 0.0001;
 
             // velocity (x,y,z) [m/s]
-            Q(3,3) = 0.001;
-            Q(4,4) = 0.001;
-            Q(5,5) = 0.001;
+//            Q(3,3) = 0.001;
+//            Q(4,4) = 0.001;
+//            Q(5,5) = 0.001;
 
             // acceleration (x,y,z) [m/s^2]
-            Q(6,6) = 0.01;
-            Q(7,7) = 0.01;
-            Q(8,8) = 0.01;
+            Q(0,0) = 0.01;
+            Q(1,1) = 0.01;
+            Q(2,2) = 0.01;
 
             // bias_acceleration (x,y,z) [m/s^2], too small?
 //            Q(9,9)   = 10e-10;
@@ -74,14 +74,14 @@ class UKF {
 //            Q(11,11) = 10e-10;
 
             // rotation (x,y,z) [rad]?
-            Q(9,9) = 0.001;
-            Q(10,10) = 0.001;
-            Q(11,11) = 0.001;
+            Q(3,3) = 0.001;
+            Q(4,4) = 0.001;
+            Q(5,5) = 0.001;
 
             // rotational_velocity (x,y,z) [rad/s], too small?
-            Q(12,12) = 0.1;
-            Q(13,13) = 0.1;
-            Q(14,14) = 0.1;
+            Q(6,6) = 0.1;
+            Q(7,7) = 0.1;
+            Q(8,8) = 0.1;
 
             // bias_rotational_velocity (x,y,z) [m/s^2], too small?
 //            Q(18,18) = 10e-10;
@@ -155,16 +155,16 @@ class UKF {
                         rotation()(3,0) = 1;
                     }
 
-                    Eigen::Block<Eigen::Matrix<double,dim_state,1> > location(){
-                        return Eigen::Block<Eigen::Matrix<double,dim_state,1> >(this->derived(), 0, 0, 3, 1);
-                    }
+//                    Eigen::Block<Eigen::Matrix<double,dim_state,1> > location(){
+//                        return Eigen::Block<Eigen::Matrix<double,dim_state,1> >(this->derived(), 0, 0, 3, 1);
+//                    }
 
-                    Eigen::Block<Eigen::Matrix<double,dim_state,1> > velocity(){
-                        return Eigen::Block<Eigen::Matrix<double,dim_state,1> >(this->derived(), 3, 0, 3, 1);
-                    }
+//                    Eigen::Block<Eigen::Matrix<double,dim_state,1> > velocity(){
+//                        return Eigen::Block<Eigen::Matrix<double,dim_state,1> >(this->derived(), 3, 0, 3, 1);
+//                    }
 
                     Eigen::Block<Eigen::Matrix<double,dim_state,1> > acceleration(){
-                        return Eigen::Block<Eigen::Matrix<double,dim_state,1> >(this->derived(), 6, 0, 3, 1);
+                        return Eigen::Block<Eigen::Matrix<double,dim_state,1> >(this->derived(), 0, 0, 3, 1);
                     }
 
 //                    Eigen::Block<Eigen::Matrix<double,dim_state,1> > bias_acceleration(){
@@ -173,11 +173,11 @@ class UKF {
 
                     Eigen::Block<Eigen::Matrix<double,dim_state,1> > rotation(){
                         //eigen's order of components of a quaterion: x,y,z,w
-                        return Eigen::Block<Eigen::Matrix<double,dim_state,1> >(this->derived(), 9, 0, 4, 1);
+                        return Eigen::Block<Eigen::Matrix<double,dim_state,1> >(this->derived(), 3, 0, 4, 1);
                     }
 
                     Eigen::Block<Eigen::Matrix<double,dim_state,1> > rotational_velocity(){
-                        return Eigen::Block<Eigen::Matrix<double,dim_state,1> >(this->derived(), 13, 0, 3, 1);
+                        return Eigen::Block<Eigen::Matrix<double,dim_state,1> >(this->derived(), 7, 0, 3, 1);
                     }
 
 //                    Eigen::Block<Eigen::Matrix<double,dim_state,1> > bias_rotational_velocity(){
@@ -236,8 +236,8 @@ class UKF {
 
                         rotation_vector = rotation.angle()*rotation.axis();
 
-                        return_val << this->location(),
-                                      this->velocity(),
+                        return_val << //this->location(),
+                                      //this->velocity(),
                                       this->acceleration(),
                                       //this->bias_acceleration(),
                                       rotation_vector,
@@ -253,7 +253,7 @@ class UKF {
             State return_val;
 
             Eigen::Vector3d rotation_vector;
-            rotation_vector << covarianceCompatibleState(9,0), covarianceCompatibleState(10,0), covarianceCompatibleState(11,0);
+            rotation_vector << covarianceCompatibleState(3,0), covarianceCompatibleState(4,0), covarianceCompatibleState(5,0);
 
             Eigen::Quaterniond rotation;
 
@@ -264,9 +264,10 @@ class UKF {
                 rotation = Eigen::Quaterniond(1,0,0,0);
             }
 
-            return_val << covarianceCompatibleState.block(0,0,9,1), //location,velocity,acceleration
+            return_val << //covarianceCompatibleState.block(0,0,6,1), //location, velocity,
+                          covarianceCompatibleState.block(0,0,3,1), //acceleration
                           rotation.coeffs(),
-                          covarianceCompatibleState.block(12,0,dim_state_cov - 12, 1);
+                          covarianceCompatibleState.block(6,0,3,1); //rotational, velocity
 
             return return_val;
         }
@@ -355,9 +356,9 @@ public:
 private:
     FrameInfo lastFrameInfo;
 
-    UKF<16,15,6,6> ukf;
+    UKF<10,9,6,6> ukf;
 
-    typedef UKF<16,15,6,6>::Measurement Measurement;
+    typedef UKF<10,9,6,6>::Measurement Measurement;
 
 
 };

@@ -34,13 +34,13 @@ void IMUModel::execute(){
 }
 
 void IMUModel::writeIMUData(){
-    getIMUData().location.x = ukf.state.location()(0,0);
-    getIMUData().location.y = ukf.state.location()(1,0);
-    getIMUData().location.z = ukf.state.location()(2,0);
+//    getIMUData().location.x = ukf.state.location()(0,0);
+//    getIMUData().location.y = ukf.state.location()(1,0);
+//    getIMUData().location.z = ukf.state.location()(2,0);
 
-    getIMUData().velocity.x = ukf.state.velocity()(0,0);
-    getIMUData().velocity.y = ukf.state.velocity()(1,0);
-    getIMUData().velocity.z = ukf.state.velocity()(2,0);
+//    getIMUData().velocity.x = ukf.state.velocity()(0,0);
+//    getIMUData().velocity.y = ukf.state.velocity()(1,0);
+//    getIMUData().velocity.z = ukf.state.velocity()(2,0);
 
     getIMUData().acceleration.x = ukf.state.acceleration()(0,0);
     getIMUData().acceleration.y = ukf.state.acceleration()(1,0);
@@ -84,13 +84,13 @@ void IMUModel::writeIMUData(){
 }
 
 void IMUModel::plots(){
-    PLOT("IMUModel:State:location:x", ukf.state.location()(0,0));
-    PLOT("IMUModel:State:location:y", ukf.state.location()(1,0));
-    PLOT("IMUModel:State:location:z", ukf.state.location()(2,0));
+//    PLOT("IMUModel:State:location:x", ukf.state.location()(0,0));
+//    PLOT("IMUModel:State:location:y", ukf.state.location()(1,0));
+//    PLOT("IMUModel:State:location:z", ukf.state.location()(2,0));
 
-    PLOT("IMUModel:State:velocity:x", ukf.state.velocity()(0,0));
-    PLOT("IMUModel:State:velocity:y", ukf.state.velocity()(1,0));
-    PLOT("IMUModel:State:velocity:z", ukf.state.velocity()(2,0));
+//    PLOT("IMUModel:State:velocity:x", ukf.state.velocity()(0,0));
+//    PLOT("IMUModel:State:velocity:y", ukf.state.velocity()(1,0));
+//    PLOT("IMUModel:State:velocity:z", ukf.state.velocity()(2,0));
 
     PLOT("IMUModel:State:acceleration:x", ukf.state.acceleration()(0,0));
     PLOT("IMUModel:State:acceleration:y", ukf.state.acceleration()(1,0));
@@ -157,7 +157,7 @@ void UKF<dim_state, dim_state_cov, dim_measurement, dim_measurement_cov>::predic
         temp = (*i).toCovarianceCompatibleState() - m_compatible;
         // replace wrong rotational difference
         Eigen::AngleAxis<double> error((*i).getRotationAsQuaternion() * mean.getRotationAsQuaternion().inverse());
-        temp.block(12,0,3,1) = error.angle() * error.axis();
+        temp.block(3,0,3,1) = error.angle() * error.axis();
         cov += 1.0 / static_cast<double>(sigmaPoints.size()) * (temp)*(temp).transpose();
     }
 
@@ -167,6 +167,7 @@ void UKF<dim_state, dim_state_cov, dim_measurement, dim_measurement_cov>::predic
     P     = cov/* + Q*/; // process covariance is applied before the process model (while generating the sigma points)
 }
 
+// TODO: get rid of direct matrix accesses
 template <int dim_state, int dim_state_cov, int dim_measurement, int dim_measurement_cov>
 void UKF <dim_state, dim_state_cov, dim_measurement, dim_measurement_cov>::update(Measurement z){
     std::vector<Measurement> sigmaMeasurements;
@@ -210,7 +211,7 @@ void UKF <dim_state, dim_state_cov, dim_measurement, dim_measurement_cov>::updat
         Eigen::Matrix<double, dim_state_cov,1> temp1(sigmaPoints[i].toCovarianceCompatibleState() - state_compatible);
         // replace wrong rotational difference
         Eigen::AngleAxis<double> error(sigmaPoints[i].getRotationAsQuaternion() * state.getRotationAsQuaternion().inverse());
-        temp1.block(12,0,3,1) = error.angle() * error.axis();
+        temp1.block(3,0,3,1) = error.angle() * error.axis();
 
         Eigen::Matrix<double, dim_measurement_cov,1> temp2(sigmaMeasurements[i].toCovarianceCompatibleState() - pz_compatible);
         // replace wrong rotational difference
@@ -268,18 +269,20 @@ void UKF<dim_state, dim_state_cov, dim_measurement, dim_measurement_cov>::transi
     // TODO: compare with rotation_increment*rotation which sounds more reasonable
     state.rotation() = (rotation*rotation_increment).coeffs(); // follows paper
 
+    state.acceleration() = rotation_increment.inverse()._transformVector(state.acceleration());
+
     // linear motion model
-    state.location() = state.location() + state.velocity()*dt + state.acceleration()*dt*dt/2;
-    state.velocity() = state.velocity() + state.acceleration()*dt;
+//    state.location() = state.location() + state.velocity()*dt + state.acceleration()*dt*dt/2;
+//    state.velocity() = state.velocity() + state.acceleration()*dt;
 }
 
 template <int dim_state, int dim_state_cov, int dim_measurement, int dim_measurement_cov>
 typename UKF<dim_state, dim_state_cov, dim_measurement, dim_measurement_cov>::Measurement UKF<dim_state, dim_state_cov, dim_measurement, dim_measurement_cov>::stateToMeasurementSpaceFunction(State& state){
-    Eigen::Quaterniond rotation = Eigen::Quaterniond(Eigen::Vector4d(state.rotation()));
+    //Eigen::Quaterniond rotation = Eigen::Quaterniond(Eigen::Vector4d(state.rotation()));
 
     // state to measurement function
     // transform acceleration part of the state into local measurement space (the robot's body frame = frame of accelerometer), the bias is already in this frame
-    Eigen::Vector3d acceleration_in_measurement_space        = rotation.inverse()._transformVector(state.acceleration()) /*+ state.bias_acceleration()*/; // TODO: check for rotation._transformVector(...) ...
+    Eigen::Vector3d acceleration_in_measurement_space        = state.acceleration() /*+ state.bias_acceleration()*/; // TODO: check for rotation._transformVector(...) ...
     Eigen::Vector3d rotational_velocity_in_measurement_space = state.rotational_velocity() /*+ state.bias_rotational_velocity()*/;
 
     // rotation from  acceleration to (0,0,-1)
