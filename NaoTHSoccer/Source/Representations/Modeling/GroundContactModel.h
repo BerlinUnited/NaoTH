@@ -18,4 +18,18 @@ public:
 
 };
 
+namespace naoth
+{
+  template<>
+  class Serializer<GroundContactModel>
+  {
+  public:
+    static void serialize(const GroundContactModel& representation,
+                          std::ostream& stream);
+    static void deserialize(std::istream& stream,
+                            GroundContactModel& representation);
+  };
+}
+
+
 #endif // _GroundContactModel_h_
