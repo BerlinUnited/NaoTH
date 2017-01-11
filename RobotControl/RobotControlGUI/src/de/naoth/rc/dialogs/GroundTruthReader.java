@@ -4,6 +4,7 @@ import com.google.protobuf.InvalidProtocolBufferException;
 import de.naoth.rc.RobotControl;
 import de.naoth.rc.core.dialog.AbstractDialog;
 import de.naoth.rc.core.dialog.DialogPlugin;
+import de.naoth.rc.core.dialog.RCDialog;
 import de.naoth.rc.logplayer.LogSimulator;
 import de.naoth.rc.logplayer.LogSimulator.LogSimulatorManager;
 import de.naoth.rc.manager.GenericManagerFactory;
@@ -77,6 +78,7 @@ public class GroundTruthReader extends AbstractDialog {
     Map<Integer,MissmatchSaver> missmatches;
    
 
+    @RCDialog(category = RCDialog.Category.Tools, name = "GroundTruthReader")
     @PluginImplementation
     public static class Plugin extends DialogPlugin<GroundTruthReader> {
 

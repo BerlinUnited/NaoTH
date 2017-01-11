@@ -6,10 +6,15 @@
  */
 
 #ifndef _SIMSPARK_GAME_INFO_H
-#define  _SIMSPARK_GAME_INFO_H
+#define _SIMSPARK_GAME_INFO_H
 
 #include <Representations/Infrastructure/GameData.h>
 #include <string>
+
+#define STR_TI_LEFT "left"
+#define STR_TI_RIGHT "right"
+#define LEFT_TEAM_COLOR naoth::GameData::blue
+#define RIGHT_TEAM_COLOR naoth::GameData::red
 
 class SimSparkGameInfo
 {
@@ -38,12 +43,76 @@ public:
     numOfPlayMode, /*!< no play mode, this must be the last entry */
   };
 
-  static naoth::GameData::TeamColor getTeamColorByName(const std::string& name);
+  static naoth::GameData::TeamColor getTeamColorBySide(const std::string& name);
 
   static PlayMode getPlayModeByName(const std::string& name);
   static std::string getPlayModeName(SimSparkGameInfo::PlayMode pm);
+  static naoth::GameData::GameState covertToGameState(PlayMode pm);
 
-  static naoth::GameData::PlayMode covertPlayMode(PlayMode pm, naoth::GameData::TeamColor team);
+public:
+  SimSparkGameInfo() :
+      valid(false),
+      gameTime(0),
+      playerNumber(0),
+      // HACK: this number sed to be set by a parameter
+      playersPerTeam(5), 
+      teamName("unknown"),
+      playLeftSide(true),
+      gameState(naoth::GameData::unknown_game_state)
+  {}
+
+public:
+  bool valid;
+  unsigned int gameTime;
+  unsigned int playerNumber; 
+  int playersPerTeam;
+  std::string teamName;
+  bool playLeftSide;
+
+  naoth::GameData::GameState gameState;
+
+
+  static const unsigned int half_time = 5 * 60;
+
+  bool firstHalf() const { return gameTime < half_time; }
+
+  unsigned int getRemainingTimeInHalf() const {
+    if ( firstHalf() ) {
+      return half_time - gameTime;
+    } else {
+     return half_time*2 - gameTime;
+    }
+  }
+
+  unsigned int getTeamNumber() const
+  {
+    if ( playLeftSide ) {
+      return 0;
+    } else {
+      return 1;
+    }
+  }
+
+  void updateBySideName(const std::string& name)
+  {
+    if ( name == STR_TI_LEFT ) {
+      playLeftSide = true;
+    } else if ( name == STR_TI_RIGHT ) {
+      playLeftSide = false;
+    } else {
+      ASSERT(false);
+    }
+  }
+
+  naoth::GameData::TeamColor getTeamColor() const
+  {
+    if ( playLeftSide ) {
+      return LEFT_TEAM_COLOR;
+    } else {
+      return RIGHT_TEAM_COLOR;
+    }
+  }
+
 };
 
 #endif  /* _SIMSPARK_GAME_INFO_H */

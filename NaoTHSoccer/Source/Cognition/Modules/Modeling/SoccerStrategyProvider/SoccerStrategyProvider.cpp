@@ -45,9 +45,9 @@ SoccerStrategyProvider::SoccerStrategyProvider()
 void SoccerStrategyProvider::execute()
 {
   /*
-	if (getPlayerInfo().gameData.playerNumber != theFormationParameters.num)
+	if (getPlayerInfo().playerNumber != theFormationParameters.num)
   {
-    theFormationParameters = FormationParameters(getPlayerInfo().gameData.playerNumber);
+    theFormationParameters = FormationParameters(getPlayerInfo().playerNumber);
   }
   */
   //
@@ -141,7 +141,7 @@ double SoccerStrategyProvider::estimateTimeToBall() const
   for( size_t i = 0; i < getBallModel().futurePosition.size(); i++)
   {
     double t = estimateTimeToPoint(getBallModel().futurePosition[i]);
-    if ( t < i ) {
+    if ( t < static_cast<double>(i) ) {
       return t; // we can catch the ball
     }
   }
@@ -175,7 +175,7 @@ bool SoccerStrategyProvider::isSomeoneBetweenMeAndPoint(const Vector2d& p) const
   const double dist = p.abs();
   const double dir = p.angle();
 
-  unsigned int myNum = getPlayerInfo().gameData.playerNumber;
+  unsigned int myNum = getPlayerInfo().playerNumber;
   const PlayersModel& players = getPlayersModel();
   unsigned int currentFrameNumber = getFrameInfo().getFrameNumber();
 
@@ -425,7 +425,7 @@ bool SoccerStrategyProvider::isSomethingBetweenPoints(const Vector2d& p1, Vector
   const double dist = p.abs();
   const double dir = p.angle();
 
-  unsigned int myNum = getPlayerInfo().gameData.playerNumber;
+  unsigned int myNum = getPlayerInfo().playerNumber;
   const PlayersModel& players = getPlayersModel();
   unsigned int currentFrameNumber = getFrameInfo().getFrameNumber();
 

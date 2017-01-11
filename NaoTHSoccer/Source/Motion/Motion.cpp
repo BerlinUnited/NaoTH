@@ -458,19 +458,27 @@ void Motion::debugPlots()
 
 void Motion::updateCameraMatrix()
 {
-  getCameraMatrix() = CameraGeometry::calculateCameraMatrix(
-    getKinematicChainSensor(),
-    NaoInfo::robotDimensions.cameraTransform[naoth::CameraInfo::Bottom].offset,
-    NaoInfo::robotDimensions.cameraTransform[naoth::CameraInfo::Bottom].rotationY,
-    getCameraMatrixOffset().correctionOffset[naoth::CameraInfo::Bottom]
-  );
+  getCameraMatrix() = CameraGeometry::calculateCameraMatrixFromChestPose(
+              getKinematicChainSensor().theLinks[KinematicChain::Torso].M,
+              NaoInfo::robotDimensions.cameraTransform[naoth::CameraInfo::Bottom].offset,
+              NaoInfo::robotDimensions.cameraTransform[naoth::CameraInfo::Bottom].rotationY,
+              getCameraMatrixOffset().body_rot,
+              getCameraMatrixOffset().head_rot,
+              getCameraMatrixOffset().cam_rot[naoth::CameraInfo::Bottom],
+              getSensorJointData().position[JointData::HeadYaw],
+              getSensorJointData().position[JointData::HeadPitch],
+              getInertialModel().orientation);
 
-  getCameraMatrixTop() = CameraGeometry::calculateCameraMatrix(
-    getKinematicChainSensor(),
-    NaoInfo::robotDimensions.cameraTransform[naoth::CameraInfo::Top].offset,
-    NaoInfo::robotDimensions.cameraTransform[naoth::CameraInfo::Top].rotationY,
-    getCameraMatrixOffset().correctionOffset[naoth::CameraInfo::Top]
-  );
+  getCameraMatrixTop() = CameraGeometry::calculateCameraMatrixFromChestPose(
+              getKinematicChainSensor().theLinks[KinematicChain::Torso].M,
+              NaoInfo::robotDimensions.cameraTransform[naoth::CameraInfo::Top].offset,
+              NaoInfo::robotDimensions.cameraTransform[naoth::CameraInfo::Top].rotationY,
+              getCameraMatrixOffset().body_rot,
+              getCameraMatrixOffset().head_rot,
+              getCameraMatrixOffset().cam_rot[naoth::CameraInfo::Top],
+              getSensorJointData().position[JointData::HeadYaw],
+              getSensorJointData().position[JointData::HeadPitch],
+              getInertialModel().orientation);
 
   getCameraMatrix().timestamp = getSensorJointData().timestamp;
   getCameraMatrix().valid = true;

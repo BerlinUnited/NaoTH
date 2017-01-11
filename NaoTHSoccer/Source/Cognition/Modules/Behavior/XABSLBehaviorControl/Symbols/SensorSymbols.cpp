@@ -66,6 +66,10 @@ void SensorSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerBooleanInputSymbol("button.head.pressed.front", &getButtonHeadFront);
   engine.registerBooleanInputSymbol("button.head.pressed.middle", &getButtonHeadMiddle);
   engine.registerBooleanInputSymbol("button.head.pressed.rear", &getButtonHeadRear);
+
+  engine.registerBooleanInputSymbol("battery.isDischarging", &getisDischarging);
+
+  engine.registerDecimalOutputSymbol("whistle.switch",&setWhistleSwitch, &getWhistleSwitch);
 }//end registerSymbols
 
 SensorSymbols* SensorSymbols::theInstance = NULL;
@@ -79,7 +83,18 @@ void SensorSymbols::execute()
 
 }//end execute
 
+double SensorSymbols::getWhistleSwitch(){
+  return theInstance->getWhistleControl().onOffSwitch;
+}
 
+void SensorSymbols::setWhistleSwitch(double whistle){
+  theInstance->getWhistleControl().onOffSwitch = (int)whistle;
+}
+
+bool SensorSymbols::getisDischarging()
+{
+  return theInstance->getBodyState().isDischarging;
+}
 bool SensorSymbols::getBumberLeftPressed()
 {
   return (theInstance->getButtonData().eventCounter[ButtonData::LeftFootLeft] > 0) ||

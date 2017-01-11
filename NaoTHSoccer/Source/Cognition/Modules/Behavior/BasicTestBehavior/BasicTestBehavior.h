@@ -31,10 +31,16 @@
 #include "Representations/Infrastructure/JointData.h"
 #include "Representations/Modeling/BodyStatus.h"
 
+#include <Representations/Infrastructure/RemoteControlCommand.h>
+
+#include <Representations/Infrastructure/WhistlePercept.h>
+#include "Representations/Infrastructure/WhistleControl.h"
+
 // debug
 #include "Tools/Debug/DebugRequest.h"
 #include "Tools/Debug/DebugModify.h"
 //#include "Tools/Debug/DebugDrawings.h"
+
 
 BEGIN_DECLARE_MODULE(BasicTestBehavior)
   PROVIDE(DebugRequest)
@@ -50,12 +56,17 @@ BEGIN_DECLARE_MODULE(BasicTestBehavior)
   REQUIRE(OdometryData)
   //REQUIRE(AttentionModel)
   //REQUIRE(PlayersPercept)
+  REQUIRE(WhistlePercept)
+
+  REQUIRE(RemoteControlCommand)
+
 
   PROVIDE(HeadMotionRequest)
   PROVIDE(MotionRequest)
   PROVIDE(SoundPlayData)
   PROVIDE(BehaviorLEDRequest)
   PROVIDE(BodyStatus)
+  PROVIDE(WhistleControl)
 END_DECLARE_MODULE(BasicTestBehavior)
 
 class BasicTestBehavior: public BasicTestBehaviorBase
@@ -67,6 +78,10 @@ public:
   virtual void execute();
 
 private:
+  int lastWhistleCount;
+  int idleCounter;
+  bool isWalking;
+
   void testHead();
   void testMotion();
   void testLED();

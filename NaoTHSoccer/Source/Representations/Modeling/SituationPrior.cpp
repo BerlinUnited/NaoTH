@@ -15,3 +15,8 @@ std::string SituationPrior::getName(PriorId id)
     default: return "unknown prior";
   }
 }
+
+void SituationPrior::print(std::ostream &stream) const
+{
+  stream << "currentPrior=" << getName(currentPrior) << std::endl;
+}

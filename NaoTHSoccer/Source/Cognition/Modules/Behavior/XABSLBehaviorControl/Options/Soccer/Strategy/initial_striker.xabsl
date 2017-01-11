@@ -4,7 +4,9 @@ option initial_striker
     decision {
       if(game.own_kickoff)
         goto approach_for_kick_off_kick;
-      else if(state_time > 10000)
+      else if((ball.know_where_itis && vector.abs(x=ball.x, y=ball.y) < (field.centerCircleRadius - 200)) 
+              || state_time > 10000
+              || game.state.playing_is_set_by_game_controller)
         goto be_striker;
       else
         stay;
@@ -44,7 +46,7 @@ option initial_striker
 
   target state be_striker {
     action {
-      //situation_based_striker();
+      //striker();
     }
   }
 }
