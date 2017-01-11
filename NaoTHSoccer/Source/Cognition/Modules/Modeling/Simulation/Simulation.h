@@ -11,14 +11,11 @@
 
 // Representations
 #include "Representations/Infrastructure/FrameInfo.h"
-#include "Representations/Modeling/PlayersModel.h"
 #include "Representations/Modeling/BallModel.h"
 #include "Representations/Modeling/RobotPose.h"
 #include "Representations/Modeling/GoalModel.h"
 #include "Representations/Modeling/RobotPose.h"
-#include "Representations/Modeling/CompassDirection.h"
 #include "Representations/Modeling/KickActionModel.h"
-#include "Representations/Motion/MotionStatus.h"
 #include "Representations/Modeling/ObstacleModel.h"
 
 //Tools
@@ -29,6 +26,7 @@
 #include <Tools/Debug/DebugParameterList.h>
 #include "Tools/Debug/DebugModify.h"
 #include <Representations/Debug/Stopwatch.h>
+#include "Tools/Filters/AssymetricalBoolFilter.h"
 
 // Debug
 #include <Tools/Debug/DebugRequest.h>
@@ -42,13 +40,10 @@ BEGIN_DECLARE_MODULE(Simulation)
 
   REQUIRE(FrameInfo)
   REQUIRE(FieldInfo)  
-  REQUIRE(PlayerInfo)
   REQUIRE(ObstacleModel)
   REQUIRE(BallModel)
   REQUIRE(RobotPose)
-  REQUIRE(SelfLocGoalModel)
-  REQUIRE(CompassDirection)
-  REQUIRE(MotionStatus)
+  //REQUIRE(SelfLocGoalModel)
 
   PROVIDE(KickActionModel)
 END_DECLARE_MODULE(Simulation)
@@ -86,35 +81,49 @@ public:
     {
       PARAMETER_REGISTER(sidekick_right.speed) = 750;
       PARAMETER_REGISTER(sidekick_right.speed_std) = 150;
-      PARAMETER_REGISTER(sidekick_right.angle) = -85;
-      PARAMETER_REGISTER(sidekick_right.angle_std) = 15;
+      PARAMETER_REGISTER(sidekick_right.angle) = -89.657943335302260;
+      PARAMETER_REGISTER(sidekick_right.angle_std) = 10.553726275058064;
+
       PARAMETER_REGISTER(sidekick_left.speed) = 750;
       PARAMETER_REGISTER(sidekick_left.speed_std) = 150;
-      PARAMETER_REGISTER(sidekick_left.angle) = 85;
-      PARAMETER_REGISTER(sidekick_left.angle_std) = 15;
-      PARAMETER_REGISTER(kick_short.speed) = 780;
+      PARAMETER_REGISTER(sidekick_left.angle) = 86.170795364136380;
+      PARAMETER_REGISTER(sidekick_left.angle_std) = 10.669170653645670;
+
+      PARAMETER_REGISTER(kick_short.speed) = 1280;
       PARAMETER_REGISTER(kick_short.speed_std) = 150;
-      PARAMETER_REGISTER(kick_short.angle) = 0.0;
-      PARAMETER_REGISTER(kick_short.angle_std) = 10;
-      PARAMETER_REGISTER(kick_long.speed) = 1020;
-      PARAMETER_REGISTER(kick_long.speed_std) = 150;
-      PARAMETER_REGISTER(kick_long.angle) = 0.0;
-      PARAMETER_REGISTER(kick_long.angle_std) = 10;
+      PARAMETER_REGISTER(kick_short.angle) = 8.454482265522328;
+      PARAMETER_REGISTER(kick_short.angle_std) = 6.992268841997358;
+
+      //PARAMETER_REGISTER(kick_long.speed) = 1020;
+      //PARAMETER_REGISTER(kick_long.speed_std) = 150;
+      //PARAMETER_REGISTER(kick_long.angle) = 8.454482265522328;
+      //PARAMETER_REGISTER(kick_long.angle_std) = 6.992268841997358;
+
       PARAMETER_REGISTER(friction) = 0.0275;
 
       PARAMETER_REGISTER(good_threshold_percentage) = 0.85;
-      PARAMETER_REGISTER(numParticles) = 30; 
+      PARAMETER_REGISTER(numParticles) = 30;
+      PARAMETER_REGISTER(minGoalParticles) = 9;
       
+      PARAMETER_REGISTER(obstacleFilter.g0) = 0.01;
+      PARAMETER_REGISTER(obstacleFilter.g1) = 0.1;
+
       syncWithConfig();
     }
     
+    struct ObstacleFilter {
+      double g0;
+      double g1;
+    } obstacleFilter;
+
     ActionParams sidekick_right;
     ActionParams sidekick_left;
     ActionParams kick_short;
     ActionParams kick_long;
     double friction;
     double good_threshold_percentage;
-    double numParticles;
+    double numParticles; //should be size_t
+    double minGoalParticles;
 
   } theParameters;
 
@@ -129,7 +138,6 @@ public:
     double action_angle;
     double action_angle_std;
     double friction;
-
     
   public:
     Action(KickActionModel::ActionId _id, const ActionParams& params, double friction) : 
@@ -143,7 +151,8 @@ public:
 	  {
     }
 
-    Vector2d predict(const Vector2d& ball) const;
+    //Vector2d predict(const Vector2d& ball) const;
+	Vector2d predict(const Vector2d& ball, bool noise) const;
     KickActionModel::ActionId id() const { return _id; }
     const std::string& name() const { return _name; }
   };
@@ -157,7 +166,8 @@ public:
     RIGHTOUT,
     OPPGOAL,
     OWNGOAL,
-    COLLISION
+    COLLISION,
+    NUMBER_OF_BallPositionCategory
   };
 
   class CategorizedBallPosition
@@ -174,16 +184,56 @@ public:
       const Vector2d& pos() const {return ballPosition;} 
   };
 
+  class ActionResults 
+  {
+  public:
+    typedef std::vector<CategorizedBallPosition> Positions;
+  private:
+    Positions ballPositions;
+    // histogram of categories
+    std::vector<int> cat_histogram;
+
+  public:
+    ActionResults() 
+      : cat_histogram(NUMBER_OF_BallPositionCategory+1)
+    {
+    }
+
+    const Positions& positions() const {
+      return ballPositions;
+    }
+
+    int categorie(BallPositionCategory cat) const {
+      return cat_histogram[cat];
+    }
+
+    double likelihood(BallPositionCategory cat) const {
+      ASSERT(cat_histogram[NUMBER_OF_BallPositionCategory] > 0);
+      return static_cast<double>(cat_histogram[cat]) / static_cast<double>(cat_histogram[NUMBER_OF_BallPositionCategory]);
+    }
+
+    void reset() {
+      ballPositions.clear();
+      cat_histogram.clear();
+      cat_histogram.resize(NUMBER_OF_BallPositionCategory+1);
+    }
+
+    void add(const Vector2d& position, BallPositionCategory cat) {
+      ballPositions.push_back(CategorizedBallPosition(position, cat));
+      cat_histogram[cat]++;
+      cat_histogram[NUMBER_OF_BallPositionCategory]++;
+    }
+  };
 
 private:
+  //AssymetricalBoolHysteresisFilter obstacleFilter;
 
-  std::vector<Action> action_local;
-  std::vector<std::vector<CategorizedBallPosition> > actionsConsequences;
+  std::vector<Action> action_local;  
+  std::vector<ActionResults> actionsConsequences;
 
+  void simulateConsequences(const Action & action, ActionResults& categorizedBallPositions) const;
 
-  void simulateConsequences(const Action & action, std::vector<CategorizedBallPosition>& categorizedBallPositions) const;
-
-  size_t decide(const std::vector<std::vector<CategorizedBallPosition> >& actionsConsequences) const;
+  size_t decide_smart(const std::vector<ActionResults>& actionsConsequences ) const;
 
   //Vector2d outsideField(const Vector2d& relativePoint) const;
 
@@ -194,8 +244,11 @@ private:
   double slope(const double& x, const double& y, const double& slopeX, const double& slopeY) const;
 
   double evaluateAction(const Vector2d& a) const;
+  double evaluateAction(const ActionResults& results) const;
 
   void draw_potential_field() const;
+
+  void draw_action_results(const ActionResults& actionsConsequences, const Color& color)const;
 };
 
 #endif  /* _Simulation_H */

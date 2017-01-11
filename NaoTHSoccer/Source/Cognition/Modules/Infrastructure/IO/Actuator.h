@@ -19,6 +19,7 @@
 #include <Representations/Infrastructure/TeamMessageData.h>
 #include <Representations/Infrastructure/DebugMessage.h>
 #include <Representations/Infrastructure/GameData.h>
+#include "Representations/Infrastructure/WhistleControl.h"
 
 #include "Representations/Motion/Request/HeadMotionRequest.h"
 #include "Representations/Motion/MotionStatus.h"
@@ -26,6 +27,9 @@
 
 #include "Representations/Modeling/KinematicChain.h"
 #include "Representations/Modeling/CameraMatrixOffset.h"
+
+#include "Representations/Modeling/BodyState.h"
+
 
 using namespace naoth;
 
@@ -45,6 +49,8 @@ BEGIN_DECLARE_MODULE(Actuator)
   REQUIRE(CameraInfoTop)
   REQUIRE(CameraMatrixOffset)
   REQUIRE(GameReturnData)
+  REQUIRE(BodyState)
+  REQUIRE(WhistleControl)
 
   // HACK: needed to transform the HeadMotionRequest
   REQUIRE(KinematicChain)

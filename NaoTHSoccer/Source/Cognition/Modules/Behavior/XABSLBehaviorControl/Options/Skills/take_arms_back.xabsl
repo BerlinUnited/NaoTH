@@ -1,6 +1,6 @@
 option take_arms_back{
 
-common decision
+  common decision
   {
     if(!body.ready_to_walk || game.current_mode != playing)
       goto idle;
@@ -20,27 +20,27 @@ common decision
     }
   }
 
-// is needed after the stand up motion
-state take_arms_normal{
-  decision{
-    else if(state_time>1000)
-      goto take_arms_back;
-    else
-      stay;
-  }
-  action{
-    arm.control_mode = normal;
-  }
-}
-
-initial state take_arms_back{
-  decision{
-    else
-      stay;
-  }
-  action{
-    arm.control_mode = back;
-  }
-}
+	// is needed after the stand up motion
+	state take_arms_normal{
+	  decision{
+	    else if(state_time>1000)
+	      goto take_arms_back;
+	    else
+	      stay;
+	  }
+	  action{
+	    arm.control_mode = normal;
+	  }
+	}
+	
+	initial state take_arms_back{
+	  decision{
+	    else
+	      stay;
+	  }
+	  action{
+	    arm.control_mode = back;
+	  }
+	}
 
 }

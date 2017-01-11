@@ -10,21 +10,6 @@ using namespace naoth;
 const double UltraSoundReceiveData::MIN_DIST = 0.25 * 1000.0;
 const double UltraSoundReceiveData::INVALIDE = 2.55 * 1000.0;
 
-UltraSoundData::UltraSoundData()
-{
-}
-
-UltraSoundData::~UltraSoundData()
-{
-  
-}
-
-UltraSoundReceiveData::UltraSoundReceiveData()
-{
-  rawdata = INVALIDE;
-  init();
-}
-
 void UltraSoundReceiveData::init()
 {
   rawdata = INVALIDE;
@@ -46,9 +31,6 @@ void UltraSoundReceiveData::print(std::ostream& stream) const
     stream << "data[" << i << "]: left = " << dataLeft[i] << " , "  << "right = " << dataRight[i] << std::endl;
   }
 }
-
-UltraSoundReceiveData::~UltraSoundReceiveData(){}
-
 
 
 void Serializer<UltraSoundReceiveData>::deserialize(std::istream& stream, UltraSoundReceiveData& representation)
@@ -88,26 +70,10 @@ void Serializer<UltraSoundReceiveData>::serialize(const UltraSoundReceiveData& r
 }//end serialize
 
 
-UltraSoundSendData::UltraSoundSendData()
-{
-  mode = 1;
-}
-
-void UltraSoundSendData::setMode(unsigned int _mode)
-{
-  mode = _mode;
-}
-
-
 void UltraSoundSendData::print(std::ostream& stream) const
 {
   stream 
     << "UltraSoundSendData" << std::endl
     << "---------------------" << std::endl
     << "mode = " << mode << std::endl;
-}
-
-UltraSoundSendData::~UltraSoundSendData()
-{
-
 }

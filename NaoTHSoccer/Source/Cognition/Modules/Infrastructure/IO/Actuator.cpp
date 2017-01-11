@@ -29,11 +29,14 @@ void Actuator::init(naoth::ProcessInterface& platformInterface, const naoth::Pla
   REG_OUTPUT(DebugMessageOut);
   REG_OUTPUT(GameReturnData);
 
+  REG_OUTPUT(WhistleControl);
+
   platformInterface.registerOutputChanel(getCameraInfo());
   platformInterface.registerOutputChanel(getCameraInfoTop());
   platformInterface.registerOutputChanel(getCameraMatrixOffset());
   platformInterface.registerOutputChanel(getHeadMotionRequest());
   platformInterface.registerOutputChanel(getMotionRequest());
+  platformInterface.registerOutputChanel(getBodyState());
 }//end init
 
 void Actuator::execute()

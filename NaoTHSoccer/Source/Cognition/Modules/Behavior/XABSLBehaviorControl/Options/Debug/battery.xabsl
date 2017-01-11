@@ -4,7 +4,11 @@ option battery {
   initial state ok {
     decision 
     {
-      if(platform.battery <= 0.05)
+      if(!battery.isDischarging)
+      {
+        goto charging;
+      }
+      else if(platform.battery <= 0.05)
       {
         goto low_warn;
       }
@@ -26,7 +30,11 @@ option battery {
   {
     decision
     {
-      if(platform.battery > 0.05)
+      if(!battery.isDischarging)
+      {
+        goto charging;
+      }
+      else if(platform.battery > 0.05)
       {
         goto ok;
       }
@@ -41,6 +49,26 @@ option battery {
       set_right_ear = 0;
       //sound.request = (state_time == 0 || platform.battery == 0) 
       //  ? battery_low : off;
+    }
+  }
+  state charging
+  {
+    decision
+    {
+      if(battery.isDischarging)
+      {
+        goto ok;
+      }
+      else
+      {
+        stay;
+      }
+    }
+    action
+    {
+      set_left_ear = (platform.frameNumber % 30 < 15) ? 9 : 0;
+      set_right_ear = (platform.frameNumber % 30 < 15) ? 9 : 0;
+      set_head = (platform.frameNumber % 30 < 15) ? ((robot_pose.x < 0) ? 3 : 6) : 0;
     }
   }
   

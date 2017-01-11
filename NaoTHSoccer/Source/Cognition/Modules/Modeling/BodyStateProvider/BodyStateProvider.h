@@ -16,6 +16,7 @@
 #include "Representations/Infrastructure/FSRData.h"
 #include "Representations/Infrastructure/FrameInfo.h"
 #include "Representations/Infrastructure/JointData.h"
+#include "Representations/Infrastructure/BatteryData.h"
 
 #include "Representations/Modeling/BodyState.h"
 
@@ -40,6 +41,7 @@ BEGIN_DECLARE_MODULE(BodyStateProvider)
   REQUIRE(FSRData)
   REQUIRE(FrameInfo)
   REQUIRE(SensorJointData)
+  REQUIRE(BatteryData)
 
   PROVIDE(BodyState)
 END_DECLARE_MODULE(BodyStateProvider)
@@ -63,7 +65,7 @@ private:
     {
       PARAMETER_REGISTER(getup_threshold) = 1.2;
       PARAMETER_REGISTER(foot_threshold) = 1;
-
+      PARAMETER_REGISTER(maxTimeForLiftUp) = 500;
       syncWithConfig();
       //DebugParameterList::getInstance().add(this);
     }
@@ -75,6 +77,7 @@ private:
 
     double foot_threshold;
     double getup_threshold;
+    double maxTimeForLiftUp;
   } theParams;
 
 
@@ -83,6 +86,8 @@ private:
   void updateTheFootState();
 
   void updateTheLegTemperature();
+
+  void updateIsLiftedUp();
 
   // internal data
   RingBufferWithSum<Vector2<double>, 10> inertialBuffer;

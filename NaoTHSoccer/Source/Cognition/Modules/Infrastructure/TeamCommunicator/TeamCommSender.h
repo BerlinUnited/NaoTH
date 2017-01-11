@@ -1,7 +1,7 @@
 #ifndef TEAMCOMMSENDER_H
 #define TEAMCOMMSENDER_H
 
-#include <Representations/Modeling/SPLStandardMessage.h>
+#include <MessagesSPL/SPLStandardMessage.h>
 #include <ModuleFramework/Module.h>
 #include <Representations/Infrastructure/FrameInfo.h>
 #include <Representations/Infrastructure/TeamMessageData.h>
@@ -16,6 +16,7 @@
 #include "Representations/Modeling/RoleDecisionModel.h"
 #include "Representations/Modeling/SoccerStrategy.h"
 #include "Representations/Modeling/PlayersModel.h"
+#include "Representations/Modeling/KickActionModel.h"
 
 BEGIN_DECLARE_MODULE(TeamCommSender)
   REQUIRE(FrameInfo)
@@ -30,6 +31,7 @@ BEGIN_DECLARE_MODULE(TeamCommSender)
   REQUIRE(PlayersModel)
   REQUIRE(TeamMessage)
   REQUIRE(BatteryData)
+  REQUIRE(KickActionModel)
 
   PROVIDE(TeamMessageDataOut)
 END_DECLARE_MODULE(TeamCommSender)
@@ -51,6 +53,7 @@ public:
                             const SoccerStrategy &soccerStrategy,
                             const PlayersModel &playersModel,
                             const BatteryData &batteryData,
+                            const KickActionModel &kickActionModel,
                             TeamMessage::Data &out);
 
  static void convertToSPLMessage(const TeamMessage::Data& teamMsg, SPLStandardMessage& splMsg);

@@ -7,6 +7,15 @@ GameLogger::GameLogger()
   ignore_init_state(false)
 {
   logfileManager.openFile("/tmp/game.log");
+
+  getDebugParameterList().add(&params);
+}
+
+GameLogger::~GameLogger()
+{
+  logfileManager.closeFile();
+
+  getDebugParameterList().remove(&params);
 }
 
 #define LOGSTUFF(name) \
@@ -34,21 +43,36 @@ void GameLogger::execute()
 
     // NOTE: don't record if the internal state of the plyer is set to initial
     //       in this case only first frame of the initial-phase is recorded
-    if( (getPlayerInfo().gameData.gameState != GameData::initial || !ignore_init_state) && 
+    if( (getPlayerInfo().robotState != PlayerInfo::initial || !ignore_init_state) && 
         getBehaviorStateSparse().state.framenumber() == getFrameInfo().getFrameNumber())
     {
       LOGSTUFF(BehaviorStateSparse);
 
+      // proprioception
       LOGSTUFF(OdometryData);
       LOGSTUFF(CameraMatrix);
       LOGSTUFF(CameraMatrixTop);
+      if(params.logBodyStatus)
+      {
+        LOGSTUFF(BodyStatus);
+      }
+
+      // perception
       LOGSTUFF(GoalPercept);
       LOGSTUFF(GoalPerceptTop);
-      LOGSTUFF(BallPercept);
-      LOGSTUFF(BallPerceptTop);
+
+      LOGSTUFF(MultiBallPercept)
+      
+      //LOGSTUFF(BallPercept);
+      //LOGSTUFF(BallPerceptTop);
+      
       LOGSTUFF(ScanLineEdgelPercept);
       LOGSTUFF(ScanLineEdgelPerceptTop);
-      LOGSTUFF(BodyStatus);
+      
+      if(params.logBallCandidates) {
+        LOGSTUFF(BallCandidates);
+        LOGSTUFF(BallCandidatesTop);
+      }
 
       LOGSTUFF(TeamMessage);
 
@@ -59,11 +83,7 @@ void GameLogger::execute()
       LOGSTUFF(FrameInfo);
     }
 
-    ignore_init_state = (getPlayerInfo().gameData.gameState == GameData::initial);
+    ignore_init_state = (getPlayerInfo().robotState == PlayerInfo::initial);
   }
 }
 
-GameLogger::~GameLogger()
-{
-  logfileManager.closeFile();
-}

@@ -19,9 +19,9 @@ void BallSymbols::registerSymbols(xabsl::Engine& engine)
   // percept
   engine.registerDecimalInputSymbol("ball.percept.x", &ballPerceptPos.x);
   engine.registerDecimalInputSymbol("ball.percept.y", &ballPerceptPos.y);
-  engine.registerBooleanInputSymbol("ball.was_seen", &ballPerceptSeen);
+  engine.registerBooleanInputSymbol("ball.percept.was_seen", &ballPerceptSeen);
 
-  engine.registerBooleanInputSymbol("ball.know_where_itis", &ball_know_where_itis);
+  engine.registerBooleanInputSymbol("ball.know_where_itis", &getBallModel().knows);
 
   // model
   engine.registerDecimalInputSymbol("ball.x", &getBallModel().position.x);
@@ -64,7 +64,6 @@ void BallSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalInputSymbol("ball.team.striker.position.x", &getTeamBallModel().strikerPosition.x);
   engine.registerDecimalInputSymbol("ball.team.striker.position.y", &getTeamBallModel().strikerPosition.y);
 
-
   DEBUG_REQUEST_REGISTER("XABSL:BallSymbols:ballLeftFoot", "draw the ball model in left foot's coordinates on field", false);
   DEBUG_REQUEST_REGISTER("XABSL:BallSymbols:ballRightFoot", "draw the ball model in right foot's coordinates on field", false);
   DEBUG_REQUEST_REGISTER("XABSL:StrategySymbols:draw_position_behind_ball", "draw the point behind the ball seen from the opp goal on field", false);
@@ -106,11 +105,8 @@ void BallSymbols::execute()
 
   ballPerceptSeen = false;
 
-  if(theInstance->getBallPercept().ballWasSeen) {
-    ballPerceptPos = getBallPercept().bearingBasedOffsetOnField;
-    ballPerceptSeen = true;
-  } else if(theInstance->getBallPerceptTop().ballWasSeen) {
-    ballPerceptPos = getBallPerceptTop().bearingBasedOffsetOnField;
+  if(theInstance->getMultiBallPercept().wasSeen()) {
+    ballPerceptPos = theInstance->getMultiBallPercept().begin()->positionOnField; //getBallModel().position; //HACK
     ballPerceptSeen = true;
   }
 
@@ -158,4 +154,5 @@ double BallSymbols::getTeamBallGoalieTimeSinceLastUpdate() {
 double BallSymbols::getTeamBallStrikerTimeSinceLastUpdate() {
   return theInstance->getFrameInfo().getTimeSince(theInstance->getTeamBallModel().strikerTime);
 }
+
 

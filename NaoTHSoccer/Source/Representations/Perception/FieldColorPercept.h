@@ -8,6 +8,7 @@
 #ifndef FIELDCOLORPERCEPT_H
 #define FIELDCOLORPERCEPT_H
 
+#include <algorithm>
 #include <Tools/DataStructures/Printable.h>
 #include <Tools/Math/Common.h>
 #include <Representations/Infrastructure/FrameInfo.h>
@@ -118,13 +119,20 @@ public:
     }
 
     inline bool isColor(int y, int u, int v) const {
-      return !noColor(y,u,v) && 
-              normalMin.x*u + normalMin.y*v > distMin && 
-              normalMax.x*u + normalMax.y*v < distMax;
+      return !noColor(y,u,v) && isChroma(y,u,v);
     }
 
     inline bool isColor(const Pixel& pixel) const {
       return isColor(pixel.y, pixel.u, pixel.v);
+    }
+
+    inline bool isChroma(const Pixel& pixel) const {
+      return isChroma(pixel.y, pixel.u, pixel.v);
+    }
+
+    inline bool isChroma(int /*y*/, int u, int v) const {
+      return normalMin.x*u + normalMin.y*v > distMin && 
+             normalMax.x*u + normalMax.y*v < distMax;
     }
 
     inline bool noColor(int y, int u, int v) const {
@@ -134,6 +142,10 @@ public:
 
     inline bool noColor(const Pixel& pixel) const {
       return noColor(pixel.y, pixel.u, pixel.v);
+    }
+
+    const Parameter& getParams() const {
+      return p;
     }
 
     private:

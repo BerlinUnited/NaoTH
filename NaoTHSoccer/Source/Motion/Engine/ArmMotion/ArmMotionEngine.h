@@ -86,7 +86,7 @@ private:
 
 private:
   bool init;
-  naoth::MotorJointData theMotorJointDataOld;
+  naoth::JointData theMotorJointDataOld;
   naoth::JointData theJointData;
 
   naoth::SensorJointData theSensorJointData;

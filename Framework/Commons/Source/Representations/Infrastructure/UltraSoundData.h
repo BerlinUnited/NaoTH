@@ -9,12 +9,14 @@
 #define _ULTRASOUNDDATA_H
 
 #include <ostream>
+#include <vector>
+
 #include "Tools/DataStructures/Printable.h"
 #include "Tools/DataStructures/Serializer.h"
 
 namespace naoth
 {
-  class UltraSoundData : public Printable
+  class UltraSoundReceiveData
   {
   public:
     enum UltraSoundEchoID
@@ -22,15 +24,10 @@ namespace naoth
       numOfUSEcho = 10
     };
 
-    UltraSoundData();
-    virtual ~UltraSoundData();
-  };
-
-  class UltraSoundReceiveData: public UltraSoundData
-  {
-  public:
-    UltraSoundReceiveData();
-    virtual ~UltraSoundReceiveData();
+    UltraSoundReceiveData() : rawdata(INVALIDE) {
+      init();
+    }
+    virtual ~UltraSoundReceiveData() {}
 
     virtual void print(std::ostream& stream) const;
     void init();
@@ -53,13 +50,15 @@ namespace naoth
   };
 
 
-  class UltraSoundSendData: public UltraSoundData
+  class UltraSoundSendData
   {
   public:
-    UltraSoundSendData();
-    virtual ~UltraSoundSendData();
+    UltraSoundSendData() : mode(-1) {}
+    virtual ~UltraSoundSendData() {}
 
-    void setMode(unsigned int mode);
+    void setMode(int _mode) {
+      mode = _mode;
+    }
 
     /*
     Simple modes:
@@ -93,7 +92,7 @@ namespace naoth
 
     // this value is written to 
     // Device/SubDeviceList/US/Actuator/Value
-    unsigned int mode;
+    int mode;
   };
 
 

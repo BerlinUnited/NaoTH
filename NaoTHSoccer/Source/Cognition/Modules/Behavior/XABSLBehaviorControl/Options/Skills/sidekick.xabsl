@@ -9,7 +9,9 @@ option sidekick
   {
     decision
     {
-		  if(@to == right)
+      if(executed_motion.type != walk)
+        stay;
+		  else if(@to == right)
 		    goto sidekick_left_foot;
 		  else
 		    goto sidekick_right_foot;
