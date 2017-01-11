@@ -17,7 +17,7 @@ solution "EvaluatorSolution"
   platforms {"Native"}
   configurations {"OptDebug", "Debug", "Release"}
   location "../build"
-  targetdir "../"
+  targetdir "../dist"
 
   -- global lib path for all configurations
   -- additional includes
