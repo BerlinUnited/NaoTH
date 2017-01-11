@@ -28,6 +28,14 @@ solution "EvaluatorSolution"
   includedirs (PATH["includes"])
 
   
+  configuration { "Debug" }
+    defines { "DEBUG" }
+    flags { "Symbols", "FatalWarnings" }
+  
+  configuration { "OptDebug" }
+    defines { "DEBUG" }
+    flags { "Optimize", "FatalWarnings" }
+	
   -- additional defines for visual studio
   configuration {"windows", "vs*"}
     defines {"WIN32", "NOMINMAX", "EIGEN_DONT_ALIGN"}
