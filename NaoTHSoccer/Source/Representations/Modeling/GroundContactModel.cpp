@@ -17,7 +17,5 @@ void Serializer<GroundContactModel>::serialize(const GroundContactModel& represe
 
   p.set_leftgroundcontact(representation.leftGroundContact);
   p.set_rightgroundcontact(representation.rightGroundContact);
-
-  p.set_leftgroundcontactaverage(representation.leftGroundContactAverage);
-  p.set_rightgroundcontactaverage(representation.rightGroundContactAverage);
+  p.set_leftgroundcontactaverage(representation.supportFoot);
 }
