@@ -1,3 +1,5 @@
+// TODO: depricated - not used now, do we need it?
+
 /**
 * @file SupportPolygonGenerator.h
 *

@@ -1,3 +1,6 @@
+// TODO: depricated - not used now, do we need it?
+
+
 /**
 * @file SupportPolygonGenerator.cpp
 *
@@ -18,7 +21,8 @@ SupportPolygonGenerator::SupportPolygonGenerator()
   REGISTER_DEBUG_COMMAND("CalibrateFootTouchDetector", "Calibrate Foot Touch Detector", this);
 
   // HACK: do remove ;)
-  theFSRData = getFSRData().force;
+  // NOTE: it was getFSRData().force (was removed due to deprecation)
+  theFSRData = getFSRData().data;
   theFSRPos = getFSRPositions().pos;
   theLink = getKinematicChainSensor().theLinks;
 

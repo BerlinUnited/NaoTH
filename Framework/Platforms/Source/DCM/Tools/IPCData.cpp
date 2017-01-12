@@ -44,11 +44,8 @@ void NaoSensorData::get(SensorJointData& data) const
 void NaoSensorData::get(FSRData& data) const
 {
   unsigned int currentIndex = theFSRDataIndex;
-  for (int i = 0; i < FSRData::numOfFSR; i++) 
-  {
+  for (int i = 0; i < FSRData::numOfFSR; i++) {
     data.data[i] = sensorsValue[currentIndex++];
-    // The value returned for each FSR is similar to Kg in NaoQi 1.3.17
-    data.force[i] = data.data[i] * Math::g;
   }
 }//end FSRData
 

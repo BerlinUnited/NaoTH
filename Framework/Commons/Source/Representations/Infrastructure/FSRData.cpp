@@ -10,7 +10,7 @@ FSRData::FSRData()
 {
   for(int i=0;i<numOfFSR;i++)
   {
-    force[i] = 0.0;
+//    force[i] = 0.0;
     data[i] = 0.0;
   }
 }
@@ -42,7 +42,7 @@ void FSRData::print(ostream& stream) const
   for(int i = 0; i < numOfFSR; i++)
   {
     stream  << getFSRName((FSRID)i) << " : " 
-            << force[i] << " , " 
+//            << force[i] << " , " 
             << data[i] << " ";
   }
 }
@@ -52,7 +52,7 @@ void Serializer<FSRData>::serialize(const FSRData& representation, std::ostream&
   naothmessages::FSRData msg;
   for(size_t i=0; i<FSRData::numOfFSR; i++)
   {
-    msg.add_force(representation.force[i]);
+//    msg.add_force(representation.force[i]);
     msg.add_data(representation.data[i]);
   }
 
@@ -67,7 +67,7 @@ void Serializer<FSRData>::deserialize(std::istream& stream, FSRData& representat
   msg.ParseFromZeroCopyStream(&buf);
   for (int i = 0; i < FSRData::numOfFSR; i++)
   {
-    representation.force[i] = msg.force(i);
+//    representation.force[i] = msg.force(i);
     representation.data[i] = msg.data(i);
   }
 }

@@ -34,7 +34,7 @@ namespace naoth
       numOfFSR
     };
 
-    double force[numOfFSR]; // the force that applied to the sensor
+    //double force[numOfFSR]; // the force that applied to the sensor
     double data[numOfFSR]; // the data read from the platform directly
 
     FSRData();
