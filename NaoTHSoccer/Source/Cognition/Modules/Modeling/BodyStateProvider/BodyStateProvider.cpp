@@ -40,8 +40,8 @@ void BodyStateProvider::execute()
 
 void BodyStateProvider::updateTheFootState()
 {
-  bool old_standByLeftFoot = getGroundContactModel().leftGroundContact;
-  bool old_standByRightFoot = getGroundContactModel().rightGroundContact;
+  bool old_standByLeftFoot = getBodyState().standByLeftFoot;
+  bool old_standByRightFoot = getBodyState().standByRightFoot;
 
   getBodyState().standByLeftFoot = getGroundContactModel().leftGroundContact;
   getBodyState().standByRightFoot = getGroundContactModel().rightGroundContact;
