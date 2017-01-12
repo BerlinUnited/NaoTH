@@ -1,5 +1,8 @@
 #include "IMUModel.h"
 
+//TODO: remove pragma, problem with eigens optimization stuff "because conversion sequence for the argument is better"
+#pragma GCC diagnostic ignored "-Wconversion"
+
 IMUModel::IMUModel(){
     DEBUG_REQUEST_REGISTER("IMUModel:reset_filter", "reset filter", false);
 }
@@ -22,7 +25,8 @@ void IMUModel::execute(){
 //    rotation_acc_to_gravity.setFromTwoVectors(acceleration,Eigen::Vector3d(0,0,-1));
 
     Measurement z;
-    z << acceleration, getGyrometerData().data.x, getGyrometerData().data.y, getGyrometerData().data.z; //, rotation_acc_to_gravity.coeffs();
+    // gyro z axis seems to measure in opposite direction (turning left measures negative angular velocity, should be positive)
+    z << acceleration, getGyrometerData().data.x, getGyrometerData().data.y, -getGyrometerData().data.z; //, rotation_acc_to_gravity.coeffs();
 
     ukf.update(z);
 
@@ -70,17 +74,17 @@ void IMUModel::writeIMUData(){
 //    getIMUData().bias_rotational_velocity.z = ukf.state.bias_rotational_velocity()(2,0);
 
     // from inertiasensorfilter
-    // getIMUData().orientation = Vector2d(atan2(q.toRotationMatrix()(2,1),  q.toRotationMatrix()(2,2)),
-    //                                     atan2(-q.toRotationMatrix()(2,0), q.toRotationMatrix()(2,2)));
+    getIMUData().orientation = Vector2d(atan2(q.toRotationMatrix()(2,1),  q.toRotationMatrix()(2,2)),
+                                        atan2(-q.toRotationMatrix()(2,0), q.toRotationMatrix()(2,2)));
 
-    Eigen::Vector3d new_z = q._transformVector(Eigen::Vector3d(0,0,1));
-    Eigen::Vector3d temp;
+//    Eigen::Vector3d new_z = q._transformVector(Eigen::Vector3d(0,0,1));
+//    Eigen::Vector3d temp;
 
-    temp << 0, new_z(1), new_z(2);
-    getIMUData().orientation.x = std::acos(1/temp.norm()*(temp.transpose()*Eigen::Vector3d(0,0,1))(0,0));
+//    temp << 0, new_z(1), new_z(2);
+//    getIMUData().orientation.x = std::acos(1/temp.norm()*(temp.transpose()*Eigen::Vector3d(0,0,1))(0,0));
 
-    temp << new_z(0), 0, new_z(2);
-    getIMUData().orientation.y = std::acos(1/temp.norm()*(temp.transpose()*Eigen::Vector3d(0,0,1))(0,0));
+//    temp << new_z(0), 0, new_z(2);
+//    getIMUData().orientation.y = std::acos(1/temp.norm()*(temp.transpose()*Eigen::Vector3d(0,0,1))(0,0));
 }
 
 void IMUModel::plots(){
@@ -110,6 +114,26 @@ void IMUModel::plots(){
     PLOT("IMUModel:State:rotation:x", angles(0));
     PLOT("IMUModel:State:rotation:y", angles(1));
     PLOT("IMUModel:State:rotation:z", angles(2));
+
+    Eigen::AngleAxisd temp(q);
+    Eigen::Vector3d temp2(temp.angle()*temp.axis());
+
+    Vector3d rot_vec(temp2(0),temp2(1),temp2(2));
+    Pose3D pose(RotationMatrix(rot_vec));
+    pose.translation = Vector3d(0,0,250);
+
+    Vector3d xAxis = Vector3<double>(60, 0, 0);
+    Vector3d yAxis = Vector3<double>(0, 60, 0);
+    Vector3d zAxis = Vector3<double>(0, 0, 60);
+
+    xAxis = pose * xAxis;
+    yAxis = pose * yAxis;
+    zAxis = pose * zAxis;
+
+    BOX_3D("FFA07A", 15, 15, 30, pose);
+    LINE_3D(ColorClasses::red, pose.translation, xAxis);
+    LINE_3D(ColorClasses::green, pose.translation, yAxis);
+    LINE_3D(ColorClasses::blue, pose.translation, zAxis);
 
     PLOT("IMUModel:State:rotational_velocity:x", ukf.state.rotational_velocity()(0,0));
     PLOT("IMUModel:State:rotational_velocity:y", ukf.state.rotational_velocity()(1,0));
@@ -323,3 +347,5 @@ void UKF<dim_state, dim_state_cov, dim_measurement, dim_measurement_cov>::genera
         sigmaPoints[i + dim_state_cov] += state;
     }
 }
+
+#pragma GCC diagnostic pop

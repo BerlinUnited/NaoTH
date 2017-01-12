@@ -5,6 +5,7 @@
 
 #include "Tools/Debug/DebugRequest.h"
 #include "Tools/Debug/DebugPlot.h"
+#include "Tools/Debug/DebugDrawings3D.h"
 
 #include <Representations/Infrastructure/GyrometerData.h>
 #include <Representations/Infrastructure/AccelerometerData.h>
@@ -25,6 +26,7 @@
 BEGIN_DECLARE_MODULE(IMUModel)
 
     PROVIDE(DebugRequest)
+    PROVIDE(DebugDrawings3D)
     PROVIDE(DebugPlot)
 
     REQUIRE(FrameInfo)
@@ -208,6 +210,13 @@ class UKF {
                         *this = *this + other;
                         return *this;
                     }
+
+//                    State& operator +=(const Eigen::CwiseUnaryOp<Eigen::internal::scalar_multiple_op<double>,
+//                                                                 const Eigen::Matrix<double, dim_state, 1, 0, dim_state, 1> > other){
+//                        // use + operator of states base class
+//                        *this = *this + other;
+//                        return *this;
+//                    }
 
                     State operator-() const{
                         State temp = *this;
