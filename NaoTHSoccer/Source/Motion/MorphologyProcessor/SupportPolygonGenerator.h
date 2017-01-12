@@ -1,4 +1,5 @@
 // TODO: depricated - not used now, do we need it?
+#ifdef _deprecated_
 
 /**
 * @file SupportPolygonGenerator.h
@@ -73,3 +74,5 @@ private:
 
 #endif  /* _SupportPolygonGenerator_h_ */
 
+
+#endif

@@ -7,30 +7,24 @@ using namespace std;
 
 
 FSRData::FSRData()
+  : 
+  dataLeft(numOfFSR,0),
+  dataRight(numOfFSR,0)
 {
-  for(int i=0;i<numOfFSR;i++)
-  {
-//    force[i] = 0.0;
-    data[i] = 0.0;
-  }
 }
 
 FSRData::~FSRData()
 {
 }
 
-const string FSRData::getFSRName(FSRID fsr) // static
+const string FSRData::getFSRName(SensorID fsr) // static
 {
   switch(fsr)
   {
-    case LFsrFL: return string("LFsrFL");
-    case LFsrFR: return string("LFsrFR");
-    case LFsrBL: return string("LFsrBL");
-    case LFsrBR: return string("LFsrBR");
-    case RFsrFL: return string("RFsrFL");
-    case RFsrFR: return string("RFsrFR");
-    case RFsrBL: return string("RFsrBL");
-    case RFsrBR: return string("RFsrBR");
+    case FrontLeft: return string("FrontLeft");
+    case FrontRight: return string("FrontRight");
+    case RearLeft: return string("RearLeft");
+    case RearRight: return string("RearRight");
     default: return string("Unknown FSR");
   }
 }
@@ -38,22 +32,30 @@ const string FSRData::getFSRName(FSRID fsr) // static
 void FSRData::print(ostream& stream) const
 {
   stream << "Name : force(N) , data"<< std::endl;
-  
-  for(int i = 0; i < numOfFSR; i++)
-  {
-    stream  << getFSRName((FSRID)i) << " : " 
-//            << force[i] << " , " 
-            << data[i] << " ";
+  stream << "Left:"<< std::endl;
+  for(int i = 0; i < numOfFSR; i++) {
+    stream  << getFSRName((SensorID)i) << " : " 
+            << dataLeft[i] << " ";
+  }
+
+  stream << "Right:"<< std::endl;
+  for(int i = 0; i < numOfFSR; i++) {
+    stream  << getFSRName((SensorID)i) << " : " 
+            << dataRight[i] << " ";
   }
 }
 
 void Serializer<FSRData>::serialize(const FSRData& representation, std::ostream& stream)
 {
   naothmessages::FSRData msg;
-  for(size_t i=0; i<FSRData::numOfFSR; i++)
-  {
+
+  // NOTE: deprecated to support logs before 12.01.2017
+  for(size_t i=0; i<FSRData::numOfFSR; i++) {
 //    msg.add_force(representation.force[i]);
-    msg.add_data(representation.data[i]);
+    msg.add_data(representation.dataLeft[i]);
+  }
+  for(size_t i=0; i<FSRData::numOfFSR; i++) {
+    msg.add_data(representation.dataRight[i]);
   }
 
   google::protobuf::io::OstreamOutputStream buf(&stream);
@@ -65,9 +67,12 @@ void Serializer<FSRData>::deserialize(std::istream& stream, FSRData& representat
   google::protobuf::io::IstreamInputStream buf(&stream);
   naothmessages::FSRData msg;
   msg.ParseFromZeroCopyStream(&buf);
-  for (int i = 0; i < FSRData::numOfFSR; i++)
-  {
+
+
+  // NOTE: deprecated to support logs before 12.01.2017
+  for (int i = 0; i < FSRData::numOfFSR; i++) {
 //    representation.force[i] = msg.force(i);
-    representation.data[i] = msg.data(i);
+    representation.dataLeft[i] = msg.data(i);
+    representation.dataRight[i] = msg.data(FSRData::numOfFSR+i);
   }
 }

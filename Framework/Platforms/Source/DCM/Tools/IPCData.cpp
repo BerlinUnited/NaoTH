@@ -45,7 +45,10 @@ void NaoSensorData::get(FSRData& data) const
 {
   unsigned int currentIndex = theFSRDataIndex;
   for (int i = 0; i < FSRData::numOfFSR; i++) {
-    data.data[i] = sensorsValue[currentIndex++];
+    data.dataLeft[i] = sensorsValue[currentIndex++];
+  }
+  for (int i = 0; i < FSRData::numOfFSR; i++) {
+    data.dataRight[i] = sensorsValue[currentIndex++];
   }
 }//end FSRData
 

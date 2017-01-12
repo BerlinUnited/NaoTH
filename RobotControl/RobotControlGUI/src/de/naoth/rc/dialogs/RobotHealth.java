@@ -240,7 +240,7 @@ public class RobotHealth extends AbstractDialog
                     FrameworkRepresentations.FSRData.parseFrom(object);
 
             for(int i = 0; i < theFSRStates.length; i++) {
-                theFSRStates[i].setValue(fsrData.getForce(i));
+                theFSRStates[i].setValue(fsrData.getData(i));
             }
             RobotHealth.this.repaint();
           }

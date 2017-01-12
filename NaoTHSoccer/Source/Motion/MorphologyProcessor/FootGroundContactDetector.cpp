@@ -22,9 +22,9 @@ void FootGroundContactDetector::execute()
   double forceLeft  = 0;
   double forceRight = 0;
 
-  for (int i = 0; i < 4; i++) {
-    forceLeft  += getFSRData().data[i];
-    forceRight += getFSRData().data[i+4];
+  for (int i = 0; i < FSRData::numOfFSR; i++) {
+    forceLeft  += getFSRData().dataLeft[i];
+    forceRight += getFSRData().dataRight[i];
   }
 
   leftFSRBuffer.add(forceLeft);

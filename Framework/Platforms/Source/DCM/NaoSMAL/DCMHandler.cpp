@@ -158,14 +158,15 @@ void DCMHandler::initSensorJoint()
 // fsr
 void DCMHandler::initFSR()
 {
-  DCMPath_FSR[FSRData::LFsrFL] = "Device/SubDeviceList/LFoot/FSR/FrontLeft/Sensor/Value";
-  DCMPath_FSR[FSRData::LFsrFR] = "Device/SubDeviceList/LFoot/FSR/FrontRight/Sensor/Value";
-  DCMPath_FSR[FSRData::LFsrBL] = "Device/SubDeviceList/LFoot/FSR/RearLeft/Sensor/Value";
-  DCMPath_FSR[FSRData::LFsrBR] = "Device/SubDeviceList/LFoot/FSR/RearRight/Sensor/Value";
-  DCMPath_FSR[FSRData::RFsrFL] = "Device/SubDeviceList/RFoot/FSR/FrontLeft/Sensor/Value";
-  DCMPath_FSR[FSRData::RFsrFR] = "Device/SubDeviceList/RFoot/FSR/FrontRight/Sensor/Value";
-  DCMPath_FSR[FSRData::RFsrBL] = "Device/SubDeviceList/RFoot/FSR/RearLeft/Sensor/Value";
-  DCMPath_FSR[FSRData::RFsrBR] = "Device/SubDeviceList/RFoot/FSR/RearRight/Sensor/Value";
+  DCMPath_FSR_Left[FSRData::LFsrFL] = "Device/SubDeviceList/LFoot/FSR/FrontLeft/Sensor/Value";
+  DCMPath_FSR_Left[FSRData::LFsrFR] = "Device/SubDeviceList/LFoot/FSR/FrontRight/Sensor/Value";
+  DCMPath_FSR_Left[FSRData::LFsrBL] = "Device/SubDeviceList/LFoot/FSR/RearLeft/Sensor/Value";
+  DCMPath_FSR_Left[FSRData::LFsrBR] = "Device/SubDeviceList/LFoot/FSR/RearRight/Sensor/Value";
+  
+  DCMPath_FSR_Right[FSRData::RFsrFL] = "Device/SubDeviceList/RFoot/FSR/FrontLeft/Sensor/Value";
+  DCMPath_FSR_Right[FSRData::RFsrFR] = "Device/SubDeviceList/RFoot/FSR/FrontRight/Sensor/Value";
+  DCMPath_FSR_Right[FSRData::RFsrBL] = "Device/SubDeviceList/RFoot/FSR/RearLeft/Sensor/Value";
+  DCMPath_FSR_Right[FSRData::RFsrBR] = "Device/SubDeviceList/RFoot/FSR/RearRight/Sensor/Value";
 }//end initFSR
 
 
@@ -355,9 +356,11 @@ void DCMHandler::initAllSensorData()
 
   //FSRData
   ASSERT(theFSRDataIndex == currentIndex);
-  for(int i=0;i<FSRData::numOfFSR;i++)
-  {
-    allSensorsList[currentIndex++] = DCMPath_FSR[i];
+  for(int i=0;i<FSRData::numOfFSR;i++) {
+    allSensorsList[currentIndex++] = DCMPath_FSR_Left[i];
+  }
+  for(int i=0;i<FSRData::numOfFSR;i++) {
+    allSensorsList[currentIndex++] = DCMPath_FSR_Right[i];
   }
 
   //AccelerometerData
