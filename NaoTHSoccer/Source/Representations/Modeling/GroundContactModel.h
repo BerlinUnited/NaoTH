@@ -7,6 +7,8 @@
 #ifndef _GroundContactModel_h_
 #define _GroundContactModel_h_
 
+#include "Tools/DataStructures/Serializer.h"
+
 class GroundContactModel
 {
 public:

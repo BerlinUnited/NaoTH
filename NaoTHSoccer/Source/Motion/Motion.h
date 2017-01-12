@@ -38,6 +38,7 @@
 #include <Representations/Infrastructure/AccelerometerData.h>
 #include <Representations/Infrastructure/GyrometerData.h>
 #include <Representations/Infrastructure/DebugMessage.h>
+#include "Representations/Modeling/GroundContactModel.h"
 
 // debug
 #include <Representations/Debug/Stopwatch.h>
@@ -56,6 +57,8 @@
 #include <Tools/DataStructures/ParameterList.h>
 
 BEGIN_DECLARE_MODULE(Motion)
+  REQUIRE(GroundContactModel)
+
   PROVIDE(StopwatchManager)
   PROVIDE(DebugDrawings)
   PROVIDE(DebugImageDrawings)

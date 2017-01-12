@@ -13,31 +13,23 @@ using namespace naoth;
 
 void Serializer<GroundContactModel>::serialize(const GroundContactModel& representation, std::ostream& stream)
 {
-  naothmessages::GroundContactModel p;
+  naothmessages::GroundContactModel message;
+  google::protobuf::io::OstreamOutputStream buf(&stream);
 
-  p.set_leftgroundcontact(representation.leftGroundContact);
-  p.set_rightgroundcontact(representation.rightGroundContact);
-  p.set_supportfoot(representation.supportFoot);
+  message.set_leftgroundcontact(representation.leftGroundContact);
+  message.set_rightgroundcontact(representation.rightGroundContact);
+  message.set_supportfoot(representation.supportFoot);
+
+  message.SerializePartialToZeroCopyStream(&buf);
 } // end serialize
 
 void Serializer<GroundContactModel>::deserialize(std::istream& stream,GroundContactModel& representation)
 {
-  naothmessages::GroundContactModel p;
+  naothmessages::GroundContactModel message;
   google::protobuf::io::IstreamInputStream buf(&stream);
-  p.ParseFromZeroCopyStream(&buf);
+  message.ParseFromZeroCopyStream(&buf);
 
-  if (p.has_leftgroundcontact())
-  {
-    representation.leftGroundContact = p.leftgroundcontact();
-  }
-
-  if (p.has_rightgroundcontact())
-  {
-    representation.rightGroundContact = p.rightgroundcontact();
-  }
-
-  if (p.has_supportfoot())
-  {
-    representation.supportFoot = p.supportfoot();
-  }
-} // end deserialize
+  representation.leftGroundContact = message.leftgroundcontact();
+  representation.rightGroundContact = message.rightgroundcontact();
+  representation.supportFoot = message.supportfoot();
+}// end deserialize
