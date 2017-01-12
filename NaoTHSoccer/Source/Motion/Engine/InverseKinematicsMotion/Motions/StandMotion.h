@@ -39,6 +39,7 @@
 #include "Tools/JointMonitor.h"
 #include "Tools/JointOffsets.h"
 #include "Tools/StiffnessController.h"
+#include "Tools/DataStructures/Spline.h"
 
 BEGIN_DECLARE_MODULE(StandMotion)
   PROVIDE(DebugPlot)
@@ -92,16 +93,29 @@ StandMotion()
     time(0),
     height(-1000),
     standardStand(true),
+    stiffnessIsReady(false),
     relaxedPoseInitialized(false),
     resetedAfterLifting(false),
     lastFrameInfo(getFrameInfo())
   {
+    std::vector<double> X, Y;
+    X.push_back(0.0);
+    X.push_back(0.5);
+    X.push_back(1.0);
+
+    Y.push_back(0.0);
+    Y.push_back(0.5);
+    Y.push_back(1.0);
+
+    interpolationSpline.set_boundary(tk::spline::first_deriv,0.0, tk::spline::first_deriv,0.0, false);
+    interpolationSpline.set_points(X,Y);
   }
 
 
   void execute()
   {
     setCurrentState(motion::running);
+    double stiffDelta = getRobotInfo().getBasicTimeStepInSecond();
 
     // reset internal stiffness buffer
     // set stiffness from parameters
@@ -111,7 +125,6 @@ StandMotion()
     // HACK: turn off the hands
     stiffness[JointData::LHand] = -1;
     stiffness[JointData::RHand] = -1;
-
 
     // update joint monitors
     for( int i = naoth::JointData::RShoulderRoll; i <= naoth::JointData::LAnkleRoll; i++) {
@@ -124,12 +137,18 @@ StandMotion()
     switch(state) 
     {
     case GotoStandPose:
+      {
       if(lastState != state) {
         calcStandPose();
         lastState = state;
+        stiffnessIsReady = false;
       }
       
-      if(interpolateToStandPose()) {
+      bool d = interpolateToPose();
+      PLOT("StandMotion:stiffnessIsReady",stiffnessIsReady);
+      PLOT("StandMotion:interpolateToPose",d);
+
+      if(stiffnessIsReady && d) {
         if(getMotionRequest().id != getId())  {
           setCurrentState(motion::stopped);
 
@@ -141,12 +160,19 @@ StandMotion()
           state = Relax;
         }
       }
-
+      }
       break;
 
     case Relax:
       // initialize relax on fist execution
       if(lastState != state) {
+
+        startPose = getEngine().getCurrentCoMFeetPose();
+        targetPose = getEngine().getCoMFeetPoseBasedOnSensor();
+        time = 0;
+        totalTime = 100;
+
+
         relaxedPose = getEngine().getHipFeetPoseBasedOnSensor();
         lastState = state;
 
@@ -157,23 +183,26 @@ StandMotion()
         }
       }
 
-      if ( getMotionRequest().id != getId()
-        || getBodyState().isLiftedUp
-        || height != getMotionRequest().standHeight // requested height changed
-        || standardStand != getMotionRequest().standardStand 
-        || !relaxedPoseIsStillOk()) 
-      {
-        state = GotoStandPose;
-      }
+      if(interpolateToPose()) {
 
-      applyPose(relaxedPose);
+        if ( getMotionRequest().id != getId()
+          || getBodyState().isLiftedUp
+          || height != getMotionRequest().standHeight // requested height changed
+          || standardStand != getMotionRequest().standardStand
+          || !relaxedPoseIsStillOk())
+        {
+          state = GotoStandPose;
+        }
 
-      if(getEngine().getParameters().stand.relax.jointOffsetTuning.enable){
-        tuneJointOffsets();
-      }
+        applyPose(relaxedPose);
 
-      if(getEngine().getParameters().stand.relax.stiffnessControl.enable){
-        tuneStiffness();
+        if(getEngine().getParameters().stand.relax.jointOffsetTuning.enable){
+          tuneJointOffsets();
+        }
+
+        if(getEngine().getParameters().stand.relax.stiffnessControl.enable){
+          tuneStiffness();
+        }
       }
       break;
     };
@@ -185,10 +214,12 @@ StandMotion()
       state_time += getRobotInfo().basicTimeStep;
     }
 
-    // set stiffness from buffer
+    // apply stiffness from buffer
+    /*
     for( int i = naoth::JointData::RShoulderRoll; i < naoth::JointData::numOfJoint; i++) {
       getMotorJointData().stiffness[i] = stiffness[i];
-    }
+    }*/
+    stiffnessIsReady = setStiffness(getMotorJointData(), getSensorJointData(), stiffness, stiffDelta, naoth::JointData::RHipYawPitch, naoth::JointData::LWristYaw);
 
     //turnOffStiffnessWhenJointIsOutOfRange();
   }
@@ -204,7 +235,7 @@ StandMotion()
     double comHeight = (height < 0.0) ? getEngine().getParameters().walk.hip.comHeight : getMotionRequest().standHeight;
     comHeight = Math::clamp(comHeight, 160.0, 270.0); // valid range
       
-    startPose  = getEngine().getCurrentCoMFeetPose();
+    startPose  = getEngine().getCoMFeetPoseBasedOnModel();//getEngine().getCurrentCoMFeetPose();
     targetPose = getStandPose(comHeight, getEngine().getParameters().stand.hipOffsetX, getEngine().getParameters().stand.bodyPitchOffset, standardStand);
 
 	  // HACK: don't do anything if after walk
@@ -224,7 +255,7 @@ StandMotion()
   }
 
 
-  bool interpolateToStandPose() 
+  bool interpolateToPose()
   {
     // execute the stand motion
     if(totalTime >= 0 && time <= totalTime)
@@ -232,7 +263,9 @@ StandMotion()
         InverseKinematic::CoMFeetPose p;
 
         if(totalTime > 0) {
-            double k = Math::clamp(0.5*(1.0-cos(time/totalTime*Math::pi)), 0.0, 1.0);
+            double t = time/totalTime;
+            //double k = Math::clamp(0.5*(1.0-cos(t*Math::pi)), 0.0, 1.0);
+            double k = interpolationSpline(t);
             p = getEngine().interpolate(startPose, targetPose, k);
         } else {
             p = targetPose;
@@ -294,10 +327,10 @@ StandMotion()
         }
       }
 
-      PLOT("Stand:filteredCurrent:LKneePitch", currents[0]);
-      PLOT("Stand:filteredCurrent:RKneePitch", currents[1]);
-      PLOT("Stand:filteredCurrent:LAnklePitch",currents[2]);
-      PLOT("Stand:filteredCurrent:RAnklePitch",currents[3]);
+      PLOT("StandMotion:filteredCurrent:LKneePitch", currents[0]);
+      PLOT("StandMotion:filteredCurrent:RKneePitch", currents[1]);
+      PLOT("StandMotion:filteredCurrent:LAnklePitch",currents[2]);
+      PLOT("StandMotion:filteredCurrent:RAnklePitch",currents[3]);
 
       // if greater than Threshold then try to tune the offsets
       if(currents[max_index] > getEngine().getParameters().stand.relax.jointOffsetTuning.currentThreshold){
@@ -347,26 +380,23 @@ StandMotion()
 
   bool relaxedPoseIsStillOk() 
   {
-    InverseKinematic::CoMFeetPose hipFeetPoseSensor = getEngine().getCoMFeetPoseBasedOnSensor();
-    hipFeetPoseSensor.localInLeftFoot();
+    InverseKinematic::CoMFeetPose currentPose = getEngine().getCurrentCoMFeetPose();
+    currentPose.localInLeftFoot();
 
-    // height is the value from the motion request
-    InverseKinematic::CoMFeetPose target = getStandPose((height < 0.0) ? getEngine().getParameters().walk.hip.comHeight : getMotionRequest().standHeight, getEngine().getParameters().stand.hipOffsetX, getEngine().getParameters().stand.bodyPitchOffset, standardStand);
+    // NOTE: calculated while going to the stand pose
+    InverseKinematic::CoMFeetPose target(targetPose);
     target.localInLeftFoot();
 
-    RotationMatrix hipFeetPoseSensorRot = hipFeetPoseSensor.com.rotation;
-    RotationMatrix targetRot = target.com.rotation;
+    PLOT("StandMotion:Deviations:Distance", (currentPose.com.translation - target.com.translation).abs());
+    PLOT("StandMotion:Deviations:RotationX", Math::toDegrees(fabs(currentPose.com.rotation.getXAngle() - target.com.rotation.getXAngle())));
+    PLOT("StandMotion:Deviations:RotationY", Math::toDegrees(fabs(currentPose.com.rotation.getYAngle() - target.com.rotation.getYAngle())));
 
-    double rotationErrorX = fabs(hipFeetPoseSensorRot.getXAngle() - targetRot.getXAngle());
-    double rotationErrorY = fabs(hipFeetPoseSensorRot.getYAngle() - targetRot.getYAngle());
+    double max_rotation_error = getEngine().getParameters().stand.relax.allowedRotationDeviation;
+    double max_translation_error = getEngine().getParameters().stand.relax.allowedDeviation;
 
-    PLOT("StandMotion:Deviations:Distance",(hipFeetPoseSensor.com.translation - target.com.translation).abs());
-    PLOT("StandMotion:Deviations:RotationY",Math::toDegrees(rotationErrorY));
-    PLOT("StandMotion:Deviations:RotationX",Math::toDegrees(rotationErrorX));
-
-    return !( (hipFeetPoseSensor.com.translation - target.com.translation).abs() > getEngine().getParameters().stand.relax.allowedDeviation
-              || rotationErrorX > getEngine().getParameters().stand.relax.allowedRotationDeviation
-              || rotationErrorY > getEngine().getParameters().stand.relax.allowedRotationDeviation);
+    return   (currentPose.com.translation - target.com.translation).abs() < max_translation_error
+      && fabs(currentPose.com.rotation.getXAngle() - target.com.rotation.getXAngle()) < max_rotation_error
+      && fabs(currentPose.com.rotation.getYAngle() - target.com.rotation.getYAngle()) < max_rotation_error;
   }
 
 
@@ -400,16 +430,19 @@ private:
     }
   }//end turnOffStiffnessWhenJointIsOutOfRange
 
+
 private:
+  tk::spline interpolationSpline;
 
   double totalTime;
   double time;
   double height;
   bool standardStand;
+  
+  bool stiffnessIsReady;
 
   InverseKinematic::CoMFeetPose targetPose;
   InverseKinematic::CoMFeetPose startPose;
-
 
   InverseKinematic::HipFeetPose relaxedPose;
   JointData relaxData;
