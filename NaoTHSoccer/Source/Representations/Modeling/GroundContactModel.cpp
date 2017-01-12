@@ -18,7 +18,8 @@ void Serializer<GroundContactModel>::serialize(const GroundContactModel& represe
 
   message.set_leftgroundcontact(representation.leftGroundContact);
   message.set_rightgroundcontact(representation.rightGroundContact);
-  message.set_supportfoot(representation.supportFoot);
+
+  message.set_supportfoot((naothmessages::GroundContactModel_Foot)representation.supportFoot);
 
   message.SerializePartialToZeroCopyStream(&buf);
 } // end serialize
@@ -31,5 +32,6 @@ void Serializer<GroundContactModel>::deserialize(std::istream& stream,GroundCont
 
   representation.leftGroundContact = message.leftgroundcontact();
   representation.rightGroundContact = message.rightgroundcontact();
-  representation.supportFoot = message.supportfoot();
+
+  representation.supportFoot = (GroundContactModel::Foot)message.supportfoot();
 }// end deserialize

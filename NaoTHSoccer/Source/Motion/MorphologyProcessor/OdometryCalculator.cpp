@@ -12,7 +12,6 @@ using namespace naoth;
 
 OdometryCalculator::OdometryCalculator()
   :
-  supportFoot(false),
   init(false)
 {
 
@@ -30,7 +29,7 @@ void OdometryCalculator::execute()
   OdometryData& od = getOdometryData();
   const KinematicChain& kc = getKinematicChainSensor();
 
-  supportFoot = getGroundContactModel().supportFoot;
+  GroundContactModel::Foot supportFoot = getGroundContactModel().supportFoot;
 
   if ( init ) {
     //TODO
@@ -38,9 +37,9 @@ void OdometryCalculator::execute()
     //  PLOT("OdometryCalculator.support_foot",static_cast<double>(supportFoot));
     //  );
 
-    const Pose3D& lastFoot = supportFoot ? lastLeftFoot : lastRightFoot;
+    const Pose3D& lastFoot = (supportFoot == GroundContactModel::LEFT) ? lastLeftFoot : lastRightFoot;
 
-    KinematicChain::LinkID footId = supportFoot ? KinematicChain::LFoot : KinematicChain::RFoot;
+    KinematicChain::LinkID footId = (supportFoot == GroundContactModel::LEFT) ? KinematicChain::LFoot : KinematicChain::RFoot;
     const Pose3D& foot = kc.theLinks[footId].M;
     const Pose3D& hip = kc.theLinks[KinematicChain::Hip].M;
 

@@ -12,12 +12,17 @@
 class GroundContactModel
 {
 public:
+  enum Foot {
+    LEFT,
+    RIGHT,
+    NONE
+  };
+
   GroundContactModel() : leftGroundContact(false), rightGroundContact(false) {}
 
   bool leftGroundContact;
   bool rightGroundContact;
-  bool supportFoot;
-
+  Foot supportFoot;
 };
 
 namespace naoth

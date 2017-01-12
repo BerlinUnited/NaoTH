@@ -35,7 +35,6 @@ public:
   void execute();
 
 private:
-    bool supportFoot; // TRUE: left foot; FALSE: right foot;
     bool init;
     Pose3D lastLeftFoot, lastRightFoot, lastHip;
 };

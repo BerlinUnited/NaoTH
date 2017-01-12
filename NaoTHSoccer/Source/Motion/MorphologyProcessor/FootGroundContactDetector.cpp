@@ -16,15 +16,13 @@ FootGroundContactDetector::~FootGroundContactDetector()
 {
 }
 
-
 void FootGroundContactDetector::execute()
 {
 
   double forceLeft  = 0;
   double forceRight = 0;
 
-  for (int i = 0; i < 4; i++)
-  {
+  for (int i = 0; i < 4; i++) {
     forceLeft  += getFSRData().data[i];
     forceRight += getFSRData().data[i+4];
   }
@@ -32,37 +30,20 @@ void FootGroundContactDetector::execute()
   leftFSRBuffer.add(forceLeft);
   rightFSRBuffer.add(forceRight);
 
-  if(leftFSRBuffer.getMedian() < footParams.left)
-  {
-    getGroundContactModel().leftGroundContact = false;
-  } 
-  else 
-  {
-    getGroundContactModel().leftGroundContact = true;
+  getGroundContactModel().leftGroundContact  = leftFSRBuffer.getMedian() > footParams.left;
+  getGroundContactModel().rightGroundContact = rightFSRBuffer.getMedian() > footParams.right;
+
+
+  if (!getGroundContactModel().leftGroundContact && !getGroundContactModel().rightGroundContact) {
+    getGroundContactModel().supportFoot = GroundContactModel::NONE;
+  } else if(rightFSRBuffer.getMedian() > leftFSRBuffer.getMedian()) {
+    getGroundContactModel().supportFoot = GroundContactModel::RIGHT;
+  } else {
+    getGroundContactModel().supportFoot = GroundContactModel::LEFT;
   }
 
-  if(rightFSRBuffer.getMedian() < footParams.right)
-  {
-    getGroundContactModel().rightGroundContact = false;
-  } 
-  else 
-  {
-    getGroundContactModel().rightGroundContact = true;
-  }
-
-  if (getGroundContactModel().leftGroundContact
-      || getGroundContactModel().rightGroundContact) 
-  {
-    getGroundContactModel().supportFoot = leftFSRBuffer.getMedian()
-                                        < rightFSRBuffer.getMedian()
-                                        ? false
-                                        : true;
-  }
-
-  PLOT("FootGroundContactDetector:leftGroundContact", 
-      getGroundContactModel().leftGroundContact ? 1 : 0);
-  PLOT("FootGroundContactDetector:rightGroundContact", 
-       getGroundContactModel().rightGroundContact ? 1 : 0);
+  PLOT("FootGroundContactDetector:leftGroundContact", getGroundContactModel().leftGroundContact);
+  PLOT("FootGroundContactDetector:rightGroundContact", getGroundContactModel().rightGroundContact);
 
   PLOT("FootGroundContactDetector:leftFSRBuffer", leftFSRBuffer.getAverage());
   PLOT("FootGroundContactDetector:rightFSRBuffer", rightFSRBuffer.getAverage());
