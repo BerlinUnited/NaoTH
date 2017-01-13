@@ -10,11 +10,10 @@ import Action as A
 import potentialField as pf
 
 
-def simulateConsequences(action, pose, ballPosition): # Todo Check for Collisions with opp goal and if ball is out
+def simulateConsequences(action, pose, ballPosition):  # Todo Check for Collisions with opp goal and if ball is out
 
     categorizedBallPosList = []
 
-    goal = owngoal = infield = out = 0
     catHist = [0]*len(A.Categories)
     goalBackSide1 = m2d.LineSegment(oppGoalBackLeft.x,oppGoalBackLeft.y,oppGoalBackRight.x,oppGoalBackRight.y)
     goalBackSide2 = m2d.LineSegment(opponentGoalPostLeft.x,opponentGoalPostLeft.y,oppGoalBackLeft.x,oppGoalBackLeft.y)
@@ -38,7 +37,6 @@ def simulateConsequences(action, pose, ballPosition): # Todo Check for Collision
 
         # Obstacle currently not used
 
-
         # Check if particle scores a goal
         intersectionOppGoal = h.intersect(ballPosition,ballPosition, opponentGoalPostLeft,opponentGoalPostRight)
         # Check if ball hits the own goal
@@ -47,7 +45,7 @@ def simulateConsequences(action, pose, ballPosition): # Todo Check for Collision
         if intersectionOppGoal and newBallPosGlobal.x < oppGoalBackLeft and oppGoalBackRight <newBallPosGlobal.y < oppGoalBackLeft and newBallPosGlobal.y:
             category = "OPPGOAL"
         elif -4500 < newBallPosGlobal.x < 4500  and -3000 < newBallPosGlobal.y < 3000:
-            infield +=1
+            category = "INFIELD"
         elif intersectionOwnGoal:
             category = "OWNGOAL"
         else:
