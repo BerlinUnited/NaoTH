@@ -32,6 +32,10 @@
 #include <vector>
 #include <algorithm>
 
+// unnamed namespace only because the implementation is in this
+// header file and we don't want to export symbols to the obj files
+namespace
+{
 namespace tk
 {
 
@@ -451,4 +455,5 @@ double spline::deriv(int order, double x) const
 
 
 } // namespace tk
+}
 #endif /* TK_SPLINE_H */
