@@ -126,8 +126,8 @@ void IntegralImageProvider::makeIntegralBild(ImageType& integralImage) const
   const int32_t FACTOR = integralImage.FACTOR;
   const uint32_t MAX_COLOR = ImageType::MAX_COLOR;
 
-  const uint imgWidth = getImage().width()/FACTOR;
-	const uint imgHeight = getImage().height()/FACTOR;
+  const uint32_t imgWidth = getImage().width()/FACTOR;
+	const uint32_t imgHeight = getImage().height()/FACTOR;
 	integralImage.setDimension(imgWidth, imgHeight);
 
   uint32_t* dataPtr = integralImage.getDataPointer();
