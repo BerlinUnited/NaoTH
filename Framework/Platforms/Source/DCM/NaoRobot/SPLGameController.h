@@ -6,6 +6,7 @@
 #include "Representations/Infrastructure/GameData.h"
 
 #include <mutex>
+#include <thread>
 
 using namespace spl;
 
@@ -29,7 +30,7 @@ private:
   int returnPort;
   GSocket* socket;
   GSocketAddress* gamecontrollerAddress;
-  GThread* socketThread;
+  std::thread socketThread;
 
   RoboCupGameControlData dataIn;
   RoboCupGameControlReturnData dataOut;

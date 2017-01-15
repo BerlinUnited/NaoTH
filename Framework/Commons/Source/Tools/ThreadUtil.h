@@ -28,6 +28,7 @@ public:
      int errCode;
      struct sched_param param;
 
+     // query the policy we use
      errCode = pthread_getschedparam(t.native_handle(), &policy, &param);
      if(errCode == 0)
      {

@@ -3,22 +3,15 @@
 #include <PlatformInterface/Platform.h>
 #include <sys/socket.h>
 #include "Tools/Communication/NetAddr.h"
+#include <Tools/ThreadUtil.h>
 
 using namespace naoth;
 using namespace std;
-
-void* socketLoopWrap(void* c)
-{
-  SPLGameController* ctr = static_cast<SPLGameController*> (c);
-  ctr->socketLoop();
-  return NULL;
-}
 
 SPLGameController::SPLGameController()
   :exiting(false), returnPort(GAMECONTROLLER_RETURN_PORT),
     socket(NULL),
     gamecontrollerAddress(NULL),
-    socketThread(NULL),
     lastGetTime(0)
 {
   GError* err = bindAndListen();
@@ -46,9 +39,8 @@ SPLGameController::SPLGameController()
     }
 
     g_message("SPLGameController start socket thread");
-    socketThread = g_thread_create(socketLoopWrap, this, true, NULL);
-    ASSERT(socketThread != NULL);
-    g_thread_set_priority(socketThread, G_THREAD_PRIORITY_LOW);
+    socketThread = std::thread([this] {this->socketLoop();});
+    ThreadUtil::setPriority(socketThread, ThreadUtil::Priority::lowest);
   }
 }
 
@@ -127,7 +119,10 @@ SPLGameController::~SPLGameController()
 {
   exiting = true;
 
-  g_thread_join(socketThread);
+  if(socketThread.joinable())
+  {
+    socketThread.join();
+  }
 
   if(socket != NULL) {
     g_object_unref(socket);
