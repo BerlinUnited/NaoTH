@@ -6,6 +6,8 @@
 
 #include "BroadCaster.h"
 
+#include <Tools/ThreadUtil.h>
+
 #ifndef WIN32
 #include <sys/socket.h>
 #else
@@ -21,16 +23,9 @@ typedef int socklen_t;
 using namespace std;
 using namespace naoth;
 
-void* broadcaster_static_loop(void* b)
-{
-  BroadCaster* bc = static_cast<BroadCaster*> (b);
-  bc->loop();
-  return NULL;
-}
 
 BroadCaster::BroadCaster(const std::string& interfaceName, unsigned int port)
  :exiting(false), socket(NULL), broadcastAddress(NULL),
-    socketThread(NULL),
     interfaceName(interfaceName), port(port),
     messagesWithoutInterface(0),
     // try to query broadcast address in every frame
@@ -60,9 +55,8 @@ BroadCaster::BroadCaster(const std::string& interfaceName, unsigned int port)
 
   queryBroadcastAddress();
 
-  socketThread = g_thread_create(broadcaster_static_loop, this, true, NULL);
-  ASSERT(socketThread != NULL);
-  g_thread_set_priority(socketThread, G_THREAD_PRIORITY_LOW);
+  socketThread = std::thread([this]{this->loop();});
+  ThreadUtil::setPriority(socketThread, ThreadUtil::Priority::lowest);
 }
 
 bool BroadCaster::queryBroadcastAddress()
@@ -88,8 +82,9 @@ BroadCaster::~BroadCaster()
   exiting = true;
   messageCond.notify_all(); // tell socket thread to exit
 
-  if ( socketThread ) {
-    g_thread_join(socketThread);
+  if(socketThread.joinable())
+  {
+    socketThread.join();
   }
 
   if(broadcastAddress != NULL) {

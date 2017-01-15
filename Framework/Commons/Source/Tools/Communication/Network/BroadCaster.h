@@ -12,6 +12,7 @@
 #include <glib.h>
 #include <gio/gio.h>
 
+#include <thread>
 #include <mutex>
 #include <condition_variable>
 
@@ -40,7 +41,7 @@ private:
   bool exiting;
   GSocket* socket;
   GSocketAddress* broadcastAddress;
-  GThread* socketThread;
+  std::thread socketThread;
   std::mutex  messageMutex;
   std::condition_variable messageCond;
   std::string message;
