@@ -57,7 +57,6 @@ void DebugServer::start(unsigned short port)
     g_thread_init(NULL);
   }
 
-  GError* err = NULL;
   g_debug("Starting debug server thread");
    
   connectionThread = std::thread([this] {this->run();});
