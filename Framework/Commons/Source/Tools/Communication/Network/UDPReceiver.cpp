@@ -7,25 +7,16 @@
 #include "UDPReceiver.h"
 #include "Tools/Debug/NaoTHAssert.h"
 
+#include <Tools/ThreadUtil.h>
+
 using namespace naoth;
 
-void* UDPReceiver_static_loop(void* b)
-{
-  UDPReceiver* bl = static_cast<UDPReceiver*> (b);
-  bl->loop();
-  return NULL;
-}
 
 UDPReceiver::UDPReceiver(unsigned int port, unsigned int buffersize)
-  : exiting(false), socket(NULL),
-    socketThread(NULL)
+  : exiting(false), socket(NULL)
 {
   bufferSize = buffersize;
   buffer = new char[buffersize];
-
-  if (!g_thread_supported()) {
-    g_thread_init(NULL);
-  }
 
   GError* err = bindAndListen(port);
 
@@ -37,18 +28,18 @@ UDPReceiver::UDPReceiver(unsigned int port, unsigned int buffersize)
   }
 
   g_message("BroadCastLister start thread (%d)", port);
-  socketThread = g_thread_create(UDPReceiver_static_loop, this, true, NULL);
-  ASSERT(socketThread != NULL);
-  g_thread_set_priority(socketThread, G_THREAD_PRIORITY_LOW);
+
+  socketThread = std::thread([this]{this->loop();});
+  ThreadUtil::setPriority(socketThread, ThreadUtil::Priority::lowest);
 }
 
 UDPReceiver::~UDPReceiver()
 {
   exiting = true;
 
-  if ( socketThread )
+  if(socketThread.joinable())
   {
-    g_thread_join(socketThread);
+    socketThread.join();
   }
 
   if(socket != NULL)

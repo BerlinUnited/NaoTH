@@ -13,6 +13,7 @@
 #include <gio/gio.h>
 
 #include <mutex>
+#include <thread>
 
 namespace naoth
 {
@@ -33,7 +34,7 @@ private:
   bool exiting;
   GSocket* socket;
   char* buffer;
-  GThread* socketThread;
+  std::thread socketThread;
   std::vector<std::string> messageIn;
   std::mutex messageInMutex;
 
