@@ -11,11 +11,12 @@
 #include <glib-object.h>
 #include <signal.h>
 //#include <rttools/rtthread.h>
+#include <atomic>
 
 
 using namespace naoth;
 
-gint framesSinceCognitionLastSeen;
+std::atomic_int framesSinceCognitionLastSeen;
 
 void got_signal(int t)
 {
@@ -78,31 +79,16 @@ class TestThread : public RtThread
 } motionRtThread;
 */
 
-void* cognitionThreadCallback(void* ref)
-{
-  NaoController* theController = static_cast<NaoController*> (ref);
-
-  while(true) {
-    theController->runCognition();
-    g_atomic_int_set(&framesSinceCognitionLastSeen, 0);
-
-    g_thread_yield();
-  }
-
-  return NULL;
-}//end cognitionThreadCallback
-
-
 void* motionThreadCallback(void* ref)
 {
-  g_atomic_int_set(&framesSinceCognitionLastSeen, 0);
+  framesSinceCognitionLastSeen = 0;
 
   NaoController* theController = static_cast<NaoController*> (ref);
 
   //Stopwatch stopwatch;
   while(true)
   {
-    if(g_atomic_int_get(&framesSinceCognitionLastSeen) > 4000)
+    if(framesSinceCognitionLastSeen > 4000)
     {
       std::cerr << std::endl;
       std::cerr << "+==================================+" << std::endl;
@@ -120,7 +106,7 @@ void* motionThreadCallback(void* ref)
 
       ASSERT(false && "Cognition seems to be dead");
     }//end if
-    g_atomic_int_inc(&framesSinceCognitionLastSeen);
+    framesSinceCognitionLastSeen++;
 
     theController->runMotion();
     
@@ -198,7 +184,7 @@ int main(int /*argc*/, char **/*argv[]*/)
 
 
   // create the motion thread
-  // !!we use here a pthread directly, because glib doesn't support priorities
+  // !!we use here a pthread directly, because std::thread doesn't support priorities
   pthread_t motionThread;
   pthread_create(&motionThread, 0, motionThreadCallback, (void*)&theController);
 
@@ -207,21 +193,16 @@ int main(int /*argc*/, char **/*argv[]*/)
   param.sched_priority = 50;
   pthread_setschedparam(motionThread, SCHED_FIFO, &param);
 
-  /*
-  GThread* motionThread = g_thread_create(motionThreadCallback, &theController, true, &err);
-  if(err)
-  {
-    g_warning("Could not create motion thread: %s", err->message);
-  }
-  g_thread_set_priority(motionThread, G_THREAD_PRIORITY_HIGH);
-  */
   
-  GError* err = NULL;
-  GThread* cognitionThread = g_thread_create(cognitionThreadCallback, (void*)&theController, true, &err);
-  if(err)
+  std::thread cognitionThread = std::thread([&theController]
   {
-    g_warning("Could not create cognition thread: %s", err->message);
-  }
+    while(true) {
+      theController.runCognition();
+      framesSinceCognitionLastSeen = 0;
+      std::this_thread::yield();
+    }
+  });
+
 
 
   //if(motionThread != NULL)
@@ -230,9 +211,9 @@ int main(int /*argc*/, char **/*argv[]*/)
     //g_thread_join(motionThread);
   }
 
-  if(cognitionThread != NULL)
+  if(cognitionThread.joinable())
   {
-    g_thread_join(cognitionThread);
+    cognitionThread.join();
   }
 
   return 0;
