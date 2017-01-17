@@ -312,7 +312,7 @@ public class RobotHealth extends AbstractDialog
         @Override
         public void draw(Graphics2D g2d) 
         {
-            g2d.setColor(getColor(0, 12.5f, (float)value));
+            g2d.setColor(getColor(0, 1.27f, (float)value));
             g2d.fillOval(x-radius, y-radius, radius*2, radius*2);
             
             g2d.setColor(Color.black);
