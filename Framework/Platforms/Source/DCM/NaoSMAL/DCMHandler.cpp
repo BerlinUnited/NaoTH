@@ -158,15 +158,15 @@ void DCMHandler::initSensorJoint()
 // fsr
 void DCMHandler::initFSR()
 {
-  DCMPath_FSR_Left[FSRData::LFsrFL] = "Device/SubDeviceList/LFoot/FSR/FrontLeft/Sensor/Value";
-  DCMPath_FSR_Left[FSRData::LFsrFR] = "Device/SubDeviceList/LFoot/FSR/FrontRight/Sensor/Value";
-  DCMPath_FSR_Left[FSRData::LFsrBL] = "Device/SubDeviceList/LFoot/FSR/RearLeft/Sensor/Value";
-  DCMPath_FSR_Left[FSRData::LFsrBR] = "Device/SubDeviceList/LFoot/FSR/RearRight/Sensor/Value";
+  DCMPath_FSR_Left[FSRData::FrontLeft]   = "Device/SubDeviceList/LFoot/FSR/FrontLeft/Sensor/Value";
+  DCMPath_FSR_Left[FSRData::FrontRight]  = "Device/SubDeviceList/LFoot/FSR/FrontRight/Sensor/Value";
+  DCMPath_FSR_Left[FSRData::RearLeft]    = "Device/SubDeviceList/LFoot/FSR/RearLeft/Sensor/Value";
+  DCMPath_FSR_Left[FSRData::RearRight]   = "Device/SubDeviceList/LFoot/FSR/RearRight/Sensor/Value";
   
-  DCMPath_FSR_Right[FSRData::RFsrFL] = "Device/SubDeviceList/RFoot/FSR/FrontLeft/Sensor/Value";
-  DCMPath_FSR_Right[FSRData::RFsrFR] = "Device/SubDeviceList/RFoot/FSR/FrontRight/Sensor/Value";
-  DCMPath_FSR_Right[FSRData::RFsrBL] = "Device/SubDeviceList/RFoot/FSR/RearLeft/Sensor/Value";
-  DCMPath_FSR_Right[FSRData::RFsrBR] = "Device/SubDeviceList/RFoot/FSR/RearRight/Sensor/Value";
+  DCMPath_FSR_Right[FSRData::FrontLeft]  = "Device/SubDeviceList/RFoot/FSR/FrontLeft/Sensor/Value";
+  DCMPath_FSR_Right[FSRData::FrontRight] = "Device/SubDeviceList/RFoot/FSR/FrontRight/Sensor/Value";
+  DCMPath_FSR_Right[FSRData::RearLeft]   = "Device/SubDeviceList/RFoot/FSR/RearLeft/Sensor/Value";
+  DCMPath_FSR_Right[FSRData::RearRight]  = "Device/SubDeviceList/RFoot/FSR/RearRight/Sensor/Value";
 }//end initFSR
 
 
