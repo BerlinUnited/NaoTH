@@ -7,7 +7,6 @@
  */
 
 #include "PathPlanner.h"
-//#include <iostream>
 
 PathPlanner::PathPlanner() 
 :
@@ -23,6 +22,18 @@ PathPlanner::PathPlanner()
   // Go to ball (XABSL: go_to_ball)
   DEBUG_REQUEST_REGISTER("PathPlanner:motion:go_to_ball",
                          "Go to the ball", false);
+  // Go to ball with left foot (XABSL: go_to_ball_with_foot decision left)
+  DEBUG_REQUEST_REGISTER("PathPlanner:motion:go_to_ball_left_foot",
+                         "Go to the ball with the left foot", false);
+  // Go to ball with right foot (XABSL: go_to_ball_with_foot decision right)
+  DEBUG_REQUEST_REGISTER("PathPlanner:motion:go_to_ball_right_foot",
+                         "Go to the ball with the right foot", false);
+  // Go to ball with left foot dynamic (XABSL: go_to_ball_with_foot_dynamic decision left)
+  DEBUG_REQUEST_REGISTER("PathPlanner:motion:go_to_ball_left_foot_dynamic",
+                         "Go to the ball with the left foot dynamically", false);
+  // Go to ball with right foot dynamic (XABSL: go_to_ball_with_foot_dynamic decision right)
+  DEBUG_REQUEST_REGISTER("PathPlanner:motion:go_to_ball_right_foot_dynamic",
+                         "Go to the ball with the right foot dynamically", false);
   // Search for the ball
   DEBUG_REQUEST_REGISTER("PathPlanner:head:Search",
                          "Search for the ball", false);
@@ -57,20 +68,82 @@ void PathPlanner::execute()
     if (getMultiBallPercept().wasSeen())
     {
       Vector2d preview = getBallModel().positionPreview;
-      Vector2d pos     = getBallModel().position;
       double ballRad   = getMultiBallPercept().getPercepts().at(0).radiusInImage;
       getMotionRequest().id                               = motion::walk;
       getMotionRequest().walkRequest.coordinate           = WalkRequest::Hip;
       getMotionRequest().walkRequest.character            = 0.5;
-      getMotionRequest().walkRequest.target.translation.x = std::max(0.7 * (pos.x - ballRad), 0.0);
+      getMotionRequest().walkRequest.target.translation.x = std::max(0.7 * (preview.x - ballRad), 0.0);
       getMotionRequest().walkRequest.target.translation.y = preview.y;
       getMotionRequest().walkRequest.target.rotation      = preview.abs() > 250
                                                           ? preview.angle()
                                                           : 0;
-      /*std::cout << "preview.x: "   << preview.x                           << std::endl
-                << "pos.x: "       << pos.x                               << std::endl
-                << "ballRad: "     << ballRad                             << std::endl
-                << "translate x: " << 0.7 * (preview.x - pos.x - ballRad) << std::endl;*/
+    }
+  );
+
+  // Go to ball with left foot (XABSL: go_to_ball_with_foot decision left)
+  DEBUG_REQUEST(
+    "PathPlanner:motion:go_to_ball_left_foot",
+    if (getMultiBallPercept().wasSeen())
+    {
+      Vector2d preview = getBallModel().positionPreviewInLFoot;
+      double ballRad   = getMultiBallPercept().getPercepts().at(0).radiusInImage;
+      getMotionRequest().id                               = motion::walk;
+      getMotionRequest().walkRequest.coordinate           = WalkRequest::LFoot;
+      getMotionRequest().walkRequest.character            = 1.0;
+      getMotionRequest().walkRequest.target.translation.x = std::max(0.7 * (preview.x - ballRad), 0.0);
+      getMotionRequest().walkRequest.target.translation.y = preview.y; // + offset.y (what is it?)
+      getMotionRequest().walkRequest.target.rotation      = 0;
+    }
+  );
+  // Go to ball with right foot (XABSL: go_to_ball_with_foot decision right)
+  DEBUG_REQUEST(
+    "PathPlanner:motion:go_to_ball_right_foot",
+    if (getMultiBallPercept().wasSeen())
+    {
+      Vector2d preview = getBallModel().positionPreviewInRFoot;
+      double ballRad   = getMultiBallPercept().getPercepts().at(0).radiusInImage;
+      getMotionRequest().id                               = motion::walk;
+      getMotionRequest().walkRequest.coordinate           = WalkRequest::RFoot;
+      getMotionRequest().walkRequest.character            = 1.0;
+      getMotionRequest().walkRequest.target.translation.x = std::max(0.7 * (preview.x - ballRad), 0.0);
+      getMotionRequest().walkRequest.target.translation.y = preview.y; // + offset.y (what is it?)
+      getMotionRequest().walkRequest.target.rotation      = 0;
+    }
+  );
+  // Go to ball with left foot dynamic (XABSL: go_to_ball_with_foot_dynamic decision left)
+  DEBUG_REQUEST(
+    "PathPlanner:motion:go_to_ball_left_foot_dynamic",
+    if (getMultiBallPercept().wasSeen())
+    {
+      Vector2d preview = getBallModel().positionPreviewInLFoot;
+      double ballRad   = getMultiBallPercept().getPercepts().at(0).radiusInImage;
+      getMotionRequest().id                               = motion::walk;
+      getMotionRequest().walkRequest.coordinate           = WalkRequest::LFoot;
+      getMotionRequest().walkRequest.character            = 1.0;
+      getMotionRequest().walkRequest.target.translation.x =
+          0.7 * (preview.x - std::abs(preview.y/* + offset.y*/) - ballRad);
+      getMotionRequest().walkRequest.target.translation.y = 0.7 * (preview.y/* + offset.y*/);
+      getMotionRequest().walkRequest.target.rotation      = preview.abs() > 250
+                                                          ? preview.angle()
+                                                          : 0;
+    }
+  );
+  // Go to ball with right foot dynamic (XABSL: go_to_ball_with_foot_dynamic decision right)
+  DEBUG_REQUEST(
+    "PathPlanner:motion:go_to_ball_right_foot_dynamic",
+    if (getMultiBallPercept().wasSeen())
+    {
+      Vector2d preview = getBallModel().positionPreviewInRFoot;
+      double ballRad   = getMultiBallPercept().getPercepts().at(0).radiusInImage;
+      getMotionRequest().id                               = motion::walk;
+      getMotionRequest().walkRequest.coordinate           = WalkRequest::RFoot;
+      getMotionRequest().walkRequest.character            = 1.0;
+      getMotionRequest().walkRequest.target.translation.x =
+          0.7 * (preview.x - std::abs(preview.y/* + offset.y*/) - ballRad);
+      getMotionRequest().walkRequest.target.translation.y = 0.7 * (preview.y/* + offset.y*/);
+      getMotionRequest().walkRequest.target.rotation      = preview.abs() > 250
+                                                          ? preview.angle()
+                                                          : 0;
     }
   );
 
