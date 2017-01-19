@@ -25,7 +25,7 @@ end
 
 newoption {
    trigger     = "Wno-conversion",
-   description = "Disable te -Wconversion warnin for gCC"
+   description = "Disable the -Wconversion warning for gcc"
 }
 
 newoption {
