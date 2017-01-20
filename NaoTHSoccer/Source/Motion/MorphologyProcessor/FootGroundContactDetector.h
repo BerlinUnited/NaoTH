@@ -1,12 +1,13 @@
 /**
 * @file FootGroundContactDetector.h
 *
-* @author <a href="mailto:xu@informatik.hu-berlin.de">Xu, Yuan</a>
+* @author <a href="mailto:mellmann@informatik.hu-berlin.de">Heinrich, Mellmann</a>
+* @author <a href="mailto:yigit.akcay@icloud.com">Yigit, Akcay</a>
 * detect if the foot touch the ground
 */
 
-#ifndef _FootGroundContactDetector_H
-#define _FootGroundContactDetector_H
+#ifndef _FootGroundContactDetector_H_
+#define _FootGroundContactDetector_H_
 
 
 #include <ModuleFramework/Module.h>
@@ -56,30 +57,20 @@ private:
   {
   public:
 
-      Parameters(DebugParameterList& list) : ParameterList("FootGroundContactParameters"), list(&list)
+    Parameters() : ParameterList("FootGroundContactParameters")
     {
       // experimental - probably needs some calibration (while playing?)
       PARAMETER_REGISTER(left) = 0.3;
       PARAMETER_REGISTER(right) = 0.3;
 
       syncWithConfig();
-
-      this->list->add(this);
     }
-
-    ~Parameters()
-    {
-      list->remove(this);
-    }
-
-    DebugParameterList* list;
 
     double left;
     double right;
   };
 
   Parameters footParams;
-
 };
 
 #endif  /* _FootGroundContactDetector_H */
