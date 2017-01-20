@@ -1,6 +1,6 @@
 from matplotlib import pyplot as plt
 from matplotlib.patches import Circle
-from fieldInfo import *
+from field_info import *
 
 plt.clf()
 ax = plt.gca()
