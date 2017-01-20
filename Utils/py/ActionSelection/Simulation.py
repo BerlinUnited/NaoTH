@@ -1,5 +1,3 @@
-import matplotlib
-matplotlib.use('Qt4Agg')
 from matplotlib import pyplot as plt
 from matplotlib.patches import Circle
 import math
@@ -10,7 +8,7 @@ import Action as A
 import potentialField as pf
 
 
-def simulateConsequences(action, pose, ballPosition):  # Todo Check for Collisions with opp goal and if ball is out
+def simulate_consequences(action, pose, ballPosition):  # Todo Check for Collisions with opp goal and if ball is out
 
     categorizedBallPosList = []
 
@@ -97,26 +95,26 @@ def decide_smart(ActionConsequences,catHist):
     return minIndex
 
 
-def drawActions(ActionConsequences):
+def draw_actions(ActionConsequences):
 
-  plt.clf()
-  h.drawField()
-  ax = plt.gca()
-  ax.add_artist(Circle(xy=(1000, 2000),radius=100, fill=False, edgecolor='white')) # should be robotpos * ballpos
-  plotColor = ['ro','go','bo']
-  for idx,action in enumerate(ActionConsequences):
-    for i in range(0, A.numParticles):
-      plt.plot(action[i].ballPos.x, action[i].ballPos.y, plotColor[idx])
+    plt.clf()
+    h.drawField()
+    ax = plt.gca()
+    ax.add_artist(Circle(xy=(1000, 2000), radius=100, fill=False, edgecolor='white'))  # should be robotpos * ballpos
+    plot_color = ['ro', 'go', 'bo']
+    for idx,action in enumerate(ActionConsequences):
+        for i in range(0, A.numParticles):
+            plt.plot(action[i].ballPos.x, action[i].ballPos.y, plot_color[idx])
 
-  plt.pause(0.001)
-  # plt.show()
+    plt.pause(0.001)
+    # plt.show()
 
 if __name__ == "__main__":
 
     plt.show(block=False)
 
     # Robot Position
-    pose = m2d.Pose2D(1000.0, 2000.0, math.radians(0))  ## unexpected argument?? why
+    pose = m2d.Pose2D(1000.0, 2000.0, math.radians(0))  # unexpected argument?? why
 
     # Ball Position
     ballPosition = m2d.Vector2()
@@ -131,19 +129,19 @@ if __name__ == "__main__":
 
     while True:
         categorizedBallPosList = []  # Each Entry holds the information per particle for one action
-        ActionConsequences = []  # results for all actions and particles
-        catHist = []  # histogram of results for all actions
+        Action_consequences = []  # results for all actions and particles
+        cat_hist = []  # histogram of results for all actions
 
         # Simulate Consequences
         for action in ActionList:
-            categorizedBallPosList, hist = simulateConsequences(action, pose, ballPosition)
+            categorizedBallPosList, hist = simulate_consequences(action, pose, ballPosition)
 
-            ActionConsequences.append(categorizedBallPosList)
-            catHist.append(hist)  # Todo use that somewhere
+            Action_consequences.append(categorizedBallPosList)
+            cat_hist.append(hist)  # Todo use that somewhere
 
         # Decide best action
-        bestAction = decide_smart(ActionConsequences, catHist)
+        bestAction = decide_smart(Action_consequences, cat_hist)
         print ActionList[bestAction].name
 
-        drawActions(ActionConsequences)
+        draw_actions(Action_consequences)
         # break
