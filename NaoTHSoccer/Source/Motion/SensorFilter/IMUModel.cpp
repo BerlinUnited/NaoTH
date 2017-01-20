@@ -20,13 +20,13 @@ void IMUModel::execute(){
     // don't generate sigma points again because the process noise would be applied a second time
     // ukf.generateSigmaPoints();
 
-//    Eigen::Quaterniond rotation_acc_to_gravity;
+    Eigen::Quaterniond rotation_acc_to_gravity;
     Eigen::Vector3d acceleration = Eigen::Vector3d(getAccelerometerData().data.x, getAccelerometerData().data.y, getAccelerometerData().data.z);
-//    rotation_acc_to_gravity.setFromTwoVectors(acceleration,Eigen::Vector3d(0,0,-1));
+    rotation_acc_to_gravity.setFromTwoVectors(acceleration,Eigen::Vector3d(0,0,-1));
 
     Measurement z;
     // gyro z axis seems to measure in opposite direction (turning left measures negative angular velocity, should be positive)
-    z << acceleration, getGyrometerData().data.x, getGyrometerData().data.y, -getGyrometerData().data.z; //, rotation_acc_to_gravity.coeffs();
+    z << acceleration, getGyrometerData().data.x, getGyrometerData().data.y, -getGyrometerData().data.z, rotation_acc_to_gravity.coeffs();
 
     ukf.update(z);
 
@@ -119,7 +119,8 @@ void IMUModel::plots(){
     Eigen::Vector3d temp2(temp.angle()*temp.axis());
 
     Vector3d rot_vec(temp2(0),temp2(1),temp2(2));
-    Pose3D pose(RotationMatrix(rot_vec));
+    RotationMatrix rot(rot_vec);
+    Pose3D pose(rot);
     pose.translation = Vector3d(0,0,250);
 
     Vector3d xAxis = Vector3<double>(60, 0, 0);
@@ -205,12 +206,12 @@ void UKF <dim_state, dim_state_cov, dim_measurement, dim_measurement_cov>::updat
     Measurement predicted_z;
     // calculate predicted measurement z (weighted mean of sigma points)
     for(typename std::vector<Measurement>::iterator i = sigmaMeasurements.begin(); i != sigmaMeasurements.end(); ++i){
-//        rotations.push_back((*i).getRotationAsQuaternion());
+        rotations.push_back((*i).getRotationAsQuaternion());
         predicted_z += 1.0 / static_cast<double>(sigmaMeasurements.size()) * (*i);
     }
 
     // more correct determination of the mean rotation
-//    predicted_z.rotation() = averageRotation(rotations, rotations.back()).coeffs();
+    predicted_z.rotation() = averageRotation(rotations, rotations.back()).coeffs();
 
     // calculate current measurement covariance
     Eigen::Matrix<double, dim_measurement_cov, dim_measurement_cov> Pzz = Eigen::Matrix<double, dim_measurement_cov, dim_measurement_cov>::Zero();
@@ -219,8 +220,8 @@ void UKF <dim_state, dim_state_cov, dim_measurement, dim_measurement_cov>::updat
     for(typename std::vector<Measurement>::iterator i = sigmaMeasurements.begin(); i != sigmaMeasurements.end(); ++i){
         Eigen::Matrix<double, dim_measurement_cov,1> temp((*i).toCovarianceCompatibleState() - pz_compatible);
         // replace wrong rotational difference
-//        Eigen::AngleAxis<double> error((*i).getRotationAsQuaternion() * predicted_z.getRotationAsQuaternion().inverse());
-//        temp.block(6,0,3,1) = error.angle() * error.axis();
+        Eigen::AngleAxis<double> error((*i).getRotationAsQuaternion() * predicted_z.getRotationAsQuaternion().inverse());
+        temp.block(6,0,3,1) = error.angle() * error.axis();
         Pzz += 1.0 / static_cast<double>(sigmaPoints.size()) * (temp)*(temp).transpose();
     }
 
@@ -239,8 +240,8 @@ void UKF <dim_state, dim_state_cov, dim_measurement, dim_measurement_cov>::updat
 
         Eigen::Matrix<double, dim_measurement_cov,1> temp2(sigmaMeasurements[i].toCovarianceCompatibleState() - pz_compatible);
         // replace wrong rotational difference
-//        error = Eigen::AngleAxis<double>(sigmaMeasurements[i].getRotationAsQuaternion() * predicted_z.getRotationAsQuaternion().inverse());
-//        temp2.block(6,0,3,1) = error.angle() * error.axis();
+        error = Eigen::AngleAxis<double>(sigmaMeasurements[i].getRotationAsQuaternion() * predicted_z.getRotationAsQuaternion().inverse());
+        temp2.block(6,0,3,1) = error.angle() * error.axis();
 
         Pxz += 1.0 / static_cast<double>(sigmaPoints.size()) * (temp1) * (temp2).transpose();
     }
@@ -253,8 +254,8 @@ void UKF <dim_state, dim_state_cov, dim_measurement, dim_measurement_cov>::updat
 
     Eigen::Matrix<double, dim_measurement_cov,1> z_innovation = z.toCovarianceCompatibleState() - predicted_z.toCovarianceCompatibleState();
     // replace wrong rotational difference
-//    Eigen::AngleAxis<double> error(z.getRotationAsQuaternion() * predicted_z.getRotationAsQuaternion().inverse());
-//    z_innovation.block(6,0,3,1) = error.angle() * error.axis();
+    Eigen::AngleAxis<double> error(z.getRotationAsQuaternion() * predicted_z.getRotationAsQuaternion().inverse());
+    z_innovation.block(6,0,3,1) = error.angle() * error.axis();
 
     State state_innovation = toFullState(K*(z_innovation));
 
@@ -302,8 +303,6 @@ void UKF<dim_state, dim_state_cov, dim_measurement, dim_measurement_cov>::transi
 
 template <int dim_state, int dim_state_cov, int dim_measurement, int dim_measurement_cov>
 typename UKF<dim_state, dim_state_cov, dim_measurement, dim_measurement_cov>::Measurement UKF<dim_state, dim_state_cov, dim_measurement, dim_measurement_cov>::stateToMeasurementSpaceFunction(State& state){
-    //Eigen::Quaterniond rotation = Eigen::Quaterniond(Eigen::Vector4d(state.rotation()));
-
     // state to measurement function
     // transform acceleration part of the state into local measurement space (the robot's body frame = frame of accelerometer), the bias is already in this frame
     Eigen::Vector3d acceleration_in_measurement_space        = state.acceleration() /*+ state.bias_acceleration()*/; // TODO: check for rotation._transformVector(...) ...
@@ -314,7 +313,7 @@ typename UKF<dim_state, dim_state_cov, dim_measurement, dim_measurement_cov>::Me
     rotation_in_measurement_space.setFromTwoVectors(acceleration_in_measurement_space,Eigen::Vector3d(0,0,-1));
 
     Measurement return_val;
-    return_val << acceleration_in_measurement_space, rotational_velocity_in_measurement_space;//rotation_in_measurement_space.coeffs();
+    return_val << acceleration_in_measurement_space, rotational_velocity_in_measurement_space, rotation_in_measurement_space.coeffs();
 
     return return_val;
 }

@@ -92,15 +92,15 @@ class UKF {
 
             // set covariance matrix of measurement noise
             // measured covariance of acceleration and rotational velocity (motion log, 60 seconds)
-            R << 5.074939351879890342e-04, -1.561730283237946278e-05,  1.012849085655689321e-04, -3.078687958578659292e-08, -1.132513004663809251e-06, -6.485352375515866273e-07,// 0   , 0   , 0   ,
-                -1.561730283237946278e-05,  2.570436087068024501e-04, -4.159091012580820026e-05, -3.013278205585369588e-07,  1.736820285922189584e-06, -4.599219827687661978e-07,// 0   , 0   , 0   ,
-                 1.012849085655689321e-04, -4.159091012580820026e-05,  4.727921819788054878e-04,  5.523361976811979815e-07, -1.730307422507887473e-07, -3.030009469390110280e-07,// 0   , 0   , 0   ,
-                -3.078687958578659292e-08, -3.013278205585369588e-07,  5.523361976811979815e-07,  3.434758685147043306e-06, -8.299226917536411892e-08,  5.842662059539863827e-08,// 0   , 0   , 0   ,
-                -1.132513004663809251e-06,  1.736820285922189584e-06, -1.730307422507887473e-07, -8.299226917536411892e-08,  1.006052718494827880e-05,  1.346681994776136150e-06,// 0   , 0   , 0   ,
-                -6.485352375515866273e-07, -4.599219827687661978e-07, -3.030009469390110280e-07,  5.842662059539863827e-08,  1.346681994776136150e-06,  3.242298821157115427e-06;// 0   , 0   , 0   ,
-//                 0                       ,  0                       ,  0                       ,  0                       ,  0                       ,  0                       , 0.01, 0   , 0   ,
-//                 0                       ,  0                       ,  0                       ,  0                       ,  0                       ,  0                       , 0   , 0.01, 0   ,
-//                 0                       ,  0                       ,  0                       ,  0                       ,  0                       ,  0                       , 0   , 0   , 0.01;
+            R << 5.074939351879890342e-04, -1.561730283237946278e-05,  1.012849085655689321e-04, -3.078687958578659292e-08, -1.132513004663809251e-06, -6.485352375515866273e-07, 0   , 0   , 0   ,
+                -1.561730283237946278e-05,  2.570436087068024501e-04, -4.159091012580820026e-05, -3.013278205585369588e-07,  1.736820285922189584e-06, -4.599219827687661978e-07, 0   , 0   , 0   ,
+                 1.012849085655689321e-04, -4.159091012580820026e-05,  4.727921819788054878e-04,  5.523361976811979815e-07, -1.730307422507887473e-07, -3.030009469390110280e-07, 0   , 0   , 0   ,
+                -3.078687958578659292e-08, -3.013278205585369588e-07,  5.523361976811979815e-07,  3.434758685147043306e-06, -8.299226917536411892e-08,  5.842662059539863827e-08, 0   , 0   , 0   ,
+                -1.132513004663809251e-06,  1.736820285922189584e-06, -1.730307422507887473e-07, -8.299226917536411892e-08,  1.006052718494827880e-05,  1.346681994776136150e-06, 0   , 0   , 0   ,
+                -6.485352375515866273e-07, -4.599219827687661978e-07, -3.030009469390110280e-07,  5.842662059539863827e-08,  1.346681994776136150e-06,  3.242298821157115427e-06, 0   , 0   , 0   ,
+                 0                       ,  0                       ,  0                       ,  0                       ,  0                       ,  0                       , 10e-7, 0   , 0   ,
+                 0                       ,  0                       ,  0                       ,  0                       ,  0                       ,  0                       , 0   , 10e-7, 0   ,
+                 0                       ,  0                       ,  0                       ,  0                       ,  0                       ,  0                       , 0   , 0   , 10e-7;
         }
 
     public:
@@ -108,7 +108,7 @@ class UKF {
         class Measurement : public Eigen::Matrix<double, dim_measurement,1> {
         public:
             Measurement(): Eigen::Matrix<double,dim_measurement,1>(Eigen::Matrix<double,dim_measurement,1>::Zero()){
-                //rotation(3,0) = 1;
+                rotation()(3,0) = 1;
             }
 
             Eigen::Block<Eigen::Matrix<double,dim_measurement,1> > acceleration(){
@@ -119,30 +119,29 @@ class UKF {
                 return Eigen::Block<Eigen::Matrix<double,dim_measurement,1> >(this->derived(), 3, 0, 3, 1);
             }
 
-//            Eigen::Block<Eigen::Matrix<double,dim_measurement,1> > rotation(){
-//                //eigen's order of components of a quaterion: x,y,z,w
-//                return Eigen::Block<Eigen::Matrix<double,dim_measurement,1> >(this->derived(), 6, 0, 4, 1);
-//            }
+            Eigen::Block<Eigen::Matrix<double,dim_measurement,1> > rotation(){
+                //eigen's order of components of a quaterion: x,y,z,w
+                return Eigen::Block<Eigen::Matrix<double,dim_measurement,1> >(this->derived(), 6, 0, 4, 1);
+            }
 
-//            Eigen::Quaterniond getRotationAsQuaternion() /*const*/ {
-//                return Eigen::Quaterniond(Eigen::Vector4d(rotation()));
-//            }
+            Eigen::Quaterniond getRotationAsQuaternion() /*const*/ {
+                return Eigen::Quaterniond(Eigen::Vector4d(rotation()));
+            }
 
             Eigen::Matrix<double, dim_measurement_cov,1> toCovarianceCompatibleState(){
-//                Eigen::Matrix<double, dim_measurement_cov,1> return_val;
-//                Eigen::AngleAxisd rotation;
-//                Eigen::Vector3d rotation_vector;
+                Eigen::Matrix<double, dim_measurement_cov,1> return_val;
+                Eigen::AngleAxisd rotation;
+                Eigen::Vector3d rotation_vector;
 
-//                rotation = Eigen::AngleAxisd(Eigen::Quaterniond(Eigen::Vector4d(this->rotation())));
+                rotation = Eigen::AngleAxisd(Eigen::Quaterniond(Eigen::Vector4d(this->rotation())));
 
-//                rotation_vector = rotation.angle()*rotation.axis();
+                rotation_vector = rotation.angle()*rotation.axis();
 
-//                return_val << this->acceleration(),
-//                              this->rotational_velocity(),
-//                              rotation_vector;
+                return_val << this->acceleration(),
+                              this->rotational_velocity(),
+                              rotation_vector;
 
-//                return return_val;
-                return *this;
+                return return_val;
             }
         };
 
@@ -365,9 +364,9 @@ public:
 private:
     FrameInfo lastFrameInfo;
 
-    UKF<10,9,6,6> ukf;
+    UKF<10,9,10,9> ukf;
 
-    typedef UKF<10,9,6,6>::Measurement Measurement;
+    typedef UKF<10,9,10,9>::Measurement Measurement;
 
 
 };
