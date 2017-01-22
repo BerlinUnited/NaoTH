@@ -1,8 +1,6 @@
 import math2d as m2d
 
 
-# class FieldInfo:
-#    def __init__(self):
 x_length = 9000
 y_length = 6000
 x_field_length = x_length + 2*700
@@ -43,3 +41,11 @@ own_goalpost_right = m2d.Vector2(x_own_goal+25, y_right_goalpost)
 # From Simulation.cpp
 opp_goal_back_left = m2d.Vector2(opponent_goalpost_left.x + goal_depth, opponent_goalpost_left.y)
 opp_goal_back_right = m2d.Vector2(opponent_goalpost_right.x + goal_depth, opponent_goalpost_right.y)
+
+
+# Definition of Line Segments used for intersection checking
+goal_back_side = m2d.LineSegment(opp_goal_back_left, opp_goal_back_right)
+goal_left_side = m2d.LineSegment(opponent_goalpost_left, opp_goal_back_left)
+goal_right_side = m2d.LineSegment(opponent_goalpost_right, opp_goal_back_right)
+opponent_goal_line = m2d.LineSegment(opponent_goalpost_left, opponent_goalpost_right)
+own_goal_line = m2d.LineSegment(own_goalpost_left, own_goalpost_right)
