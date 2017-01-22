@@ -1,6 +1,10 @@
 import math
 
 
+def clamp(x, minimum, maximum):
+    return max(minimum, min(x, maximum))
+
+
 class Vector2:
     def __init__(self, x=0, y=0):
         self.x = x
@@ -31,6 +35,9 @@ class Vector2:
         else:
             return NotImplemented
 
+    def __div__(self, fraction):
+        return Vector2(self.x/fraction, self.y/fraction)
+
     def __str__(self):
         return str(self.x) + " " + str(self.y)
 
@@ -51,9 +58,40 @@ class Pose2D:
         return p
 
 
-class LineSegment:
-    def __init__(self, point1_x, point1_y, point2_x, point2_y):
-        self.point1_x = point1_x
-        self.point1_y = point1_y
-        self.point2_x = point2_x
-        self.point2_y = point2_y
+class LineSegment(object):
+    def __init__(self, begin, end):
+        self.base = begin
+        self.direction = end-self.base
+        self.length = Vector2.abs(self.direction)
+        self.direction /= Vector2.abs(self.direction)
+
+    def __str__(self):
+        return str("Begin: " + str(self.base)) + " End: " + str(self.base+self.direction*self.length)
+
+    def begin(self):
+        return self.base
+
+    def end(self):
+        return self.base+self.direction*self.length
+
+    def point(self, t):
+        return self.base + self.direction*t
+
+    def project(self, p):
+        return self.direction*p - self.direction*self.base
+
+    def projection(self, p):
+        return self.point(self.project(p))
+
+    def intersection(self, other):
+        normal = Vector2(-other.direction.y, other.direction.x)
+        t = normal*self.direction
+        if t == 0:
+            return float('Inf')
+        t = clamp(t, 0.0, self.length)
+        return normal*(other.base-self.base)/t
+
+    def intersect(self, other):
+        normal = Vector2(-other.direction.y, other.direction.x)
+        t = normal*self.direction
+        return 0.0 <= t <= self.length
