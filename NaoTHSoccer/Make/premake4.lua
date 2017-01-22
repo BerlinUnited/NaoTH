@@ -48,7 +48,7 @@ solution "NaoTHSoccer"
   print("INFO: generating solution NaoTHSoccer")
   print("  PLATFORM = " .. PLATFORM)
   print("  OS = " .. os.get())
-  print("  ACTION = " .. _ACTION)
+  print("  ACTION = " .. (_ACTION or "NONE"))
   
   
   -- global lib path for all configurations
