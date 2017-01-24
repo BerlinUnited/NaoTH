@@ -36,7 +36,7 @@ BEGIN_DECLARE_MODULE(PathPlanner)
   REQUIRE(BallPercept)
   REQUIRE(BallPerceptTop)
   REQUIRE(MultiBallPercept)
-  REQUIRE(BallModel)
+  PROVIDE(BallModel)
   REQUIRE(OdometryData)
 
   PROVIDE(HeadMotionRequest)

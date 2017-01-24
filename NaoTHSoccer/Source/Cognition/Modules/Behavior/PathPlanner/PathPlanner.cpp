@@ -1,13 +1,11 @@
 /**
  * @file PathPlanner.cpp
  *
- * @author <a href="mailto:mellmann@informatik.hu-berlin.de">Heinrich Mellmann</a>
- * @author <a href="mailto:goehring@informatik.hu-berlin.de">Daniel Goehring</a>
+ * @author <a href="mailto:akcayyig@hu-berlin.de">Yigit Can Akcay</a>
  * Implementation of class PathPlanner
  */
 
 #include "PathPlanner.h"
-#include <iostream>
 
 PathPlanner::PathPlanner()
 {
@@ -18,9 +16,10 @@ PathPlanner::PathPlanner()
   // Walk
   DEBUG_REQUEST_REGISTER("PathPlanner:motion:walk_forward",
                          "Walk forward", false);
-  // Go to ball with right foot
-  DEBUG_REQUEST_REGISTER("PathPlanner:motion:go_to_ball",
-                         "Go to the ball with the right or left foot.", false);
+  // Go to ball with right or left foot (when close to ball, approach for attack)
+  //XABSL: go_to_ball_foot_dynamic
+  DEBUG_REQUEST_REGISTER("PathPlanner:motion:go_to_ball_foot_dynamic",
+                         "Go to the ball with the right or left foot, close to the ball, before attacking.", true);
   // Search for the ball
   DEBUG_REQUEST_REGISTER("PathPlanner:head:search",
                          "Search for the ball", false);
@@ -33,13 +32,6 @@ PathPlanner::PathPlanner()
 
 void PathPlanner::execute() 
 {
-  // reset some stuff by default
-  getMotionRequest().forced = false;
-  getMotionRequest().standHeight = -1; // sit in a stable position
-
-  getMotionRequest().walkRequest.target = Pose2D();
-  getMotionRequest().forced = false;
-
   // Stand still
   DEBUG_REQUEST("PathPlanner:motion:stand",
                 getMotionRequest().id = motion::stand;
@@ -47,12 +39,20 @@ void PathPlanner::execute()
 
   // Walk forward
   DEBUG_REQUEST("PathPlanner:motion:walk_forward",
+                // reset some stuff by default
+                getMotionRequest().forced = false;
+                getMotionRequest().standHeight = -1; // sit in a stable position
+                getMotionRequest().walkRequest.target = Pose2D();
+                getMotionRequest().forced = false;
+
+                // walk forward
                 getMotionRequest().id = motion::walk;
                 getMotionRequest().walkRequest.target.translation.x = 500;
                 );
 
-  // Go to ball with right or left foot
-  DEBUG_REQUEST("PathPlanner:motion:go_to_ball",
+  // Go to ball with right or left foot (when close to ball, approach for attack)
+  // XABSL: go_to_ball_foot_dynamic
+  DEBUG_REQUEST("PathPlanner:motion:go_to_ball_foot_dynamic",
                 if (getBallModel().goto_ball_right && !getBallModel().goto_ball_left)
                 {
                   PathPlanner::goToBallRight(getBallModel().goto_distance, getBallModel().goto_yOffset);
@@ -61,6 +61,10 @@ void PathPlanner::execute()
                 {
                   PathPlanner::goToBallLeft(getBallModel().goto_distance, getBallModel().goto_yOffset);
                 }
+
+                // reset, so the XABSL state can change when it wants to
+                getBallModel().goto_ball_right = false;
+                getBallModel().goto_ball_left = false;
                 );
 
 
@@ -141,7 +145,7 @@ void PathPlanner::goToBallRight(int distance, int yOffset)
   getMotionRequest().walkRequest.character  = 0.5; // stable
 
   getMotionRequest().walkRequest.target.translation.x =
-    0.7 * (preview.x - std::abs(preview.y + yOffset)) - distance - ballRad;
+    0.7 * (preview.x - std::abs(preview.y + yOffset) - distance - ballRad);
   getMotionRequest().walkRequest.target.translation.y =
     0.7 * (preview.y + yOffset);
   getMotionRequest().walkRequest.target.rotation =
@@ -157,9 +161,9 @@ void PathPlanner::goToBallLeft(int distance, int yOffset)
   getMotionRequest().walkRequest.character  = 0.5; // stable
 
   getMotionRequest().walkRequest.target.translation.x =
-  0.7 * (preview.x - std::abs(preview.y + yOffset)) - distance - ballRad;
+  0.7 * (preview.x - std::abs(preview.y - yOffset) - distance - ballRad);
   getMotionRequest().walkRequest.target.translation.y =
-  0.7 * (preview.y + yOffset);
+  0.7 * (preview.y - yOffset);
   getMotionRequest().walkRequest.target.rotation =
   preview.abs() > 250 ? preview.angle() : 0.0;
 }
