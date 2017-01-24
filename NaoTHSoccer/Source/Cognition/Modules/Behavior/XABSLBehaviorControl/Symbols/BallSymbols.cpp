@@ -64,13 +64,6 @@ void BallSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalInputSymbol("ball.team.striker.position.x", &getTeamBallModel().strikerPosition.x);
   engine.registerDecimalInputSymbol("ball.team.striker.position.y", &getTeamBallModel().strikerPosition.y);
 
-  // go to with right or left foot
-  engine.registerBooleanOutputSymbol("ball.goto_ball_right", &getBallModel().goto_ball_right);
-  engine.registerBooleanOutputSymbol("ball.goto_ball_left", &getBallModel().goto_ball_left);
-  // distance and yOffset
-  engine.registerDecimalOutputSymbol("ball.goto_distance", &getBallModel().goto_distance);
-  engine.registerDecimalOutputSymbol("ball.goto_yOffset", &getBallModel().goto_yOffset);
-
   DEBUG_REQUEST_REGISTER("XABSL:BallSymbols:ballLeftFoot", "draw the ball model in left foot's coordinates on field", false);
   DEBUG_REQUEST_REGISTER("XABSL:BallSymbols:ballRightFoot", "draw the ball model in right foot's coordinates on field", false);
   DEBUG_REQUEST_REGISTER("XABSL:StrategySymbols:draw_position_behind_ball", "draw the point behind the ball seen from the opp goal on field", false);

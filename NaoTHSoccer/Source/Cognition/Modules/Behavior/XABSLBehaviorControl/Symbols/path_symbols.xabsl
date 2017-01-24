@@ -1,0 +1,7 @@
+/** Symbols for the PathPlanner Module */
+namespace path_symbols("PathPlanner Symbols") {
+  bool output path.goto_ball_right;
+  bool output path.goto_ball_left;
+  float output path.goto_distance;
+  float output path.goto_yOffset;
+}

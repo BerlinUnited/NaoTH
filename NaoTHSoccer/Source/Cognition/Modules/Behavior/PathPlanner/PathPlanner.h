@@ -22,6 +22,8 @@
 #include "Representations/Motion/Request/MotionRequest.h"
 #include "Representations/Motion/MotionStatus.h"
 
+#include "Representations/Modeling/PathModel.h"
+
 // debug
 #include "Tools/Debug/DebugRequest.h"
 #include "Tools/Debug/DebugModify.h"
@@ -38,6 +40,8 @@ BEGIN_DECLARE_MODULE(PathPlanner)
   REQUIRE(MultiBallPercept)
   PROVIDE(BallModel)
   REQUIRE(OdometryData)
+
+  REQUIRE(PathModel)
 
   PROVIDE(HeadMotionRequest)
   PROVIDE(MotionRequest)

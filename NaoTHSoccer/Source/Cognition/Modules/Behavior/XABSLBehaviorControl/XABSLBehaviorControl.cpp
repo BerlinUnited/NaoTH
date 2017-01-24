@@ -52,6 +52,7 @@ XABSLBehaviorControl::XABSLBehaviorControl()
   REGISTER_MODULE(StrategySymbols, true);
   REGISTER_MODULE(SoundSymbols, true);
   REGISTER_MODULE(LineSymbols, true);
+  REGISTER_MODULE(PathSymbols, true);
   
 
   // load the behavior from config
@@ -244,6 +245,7 @@ void XABSLBehaviorControl::registerXABSLSymbols()
     XABSL_REGISTER_SYMBOLS(StrategySymbols);
     XABSL_REGISTER_SYMBOLS(SoundSymbols);
     XABSL_REGISTER_SYMBOLS(LineSymbols);
+    XABSL_REGISTER_SYMBOLS(PathSymbols);
   }
 }//end registerXABSLSymbols
 
@@ -259,6 +261,8 @@ void XABSLBehaviorControl::updateXABSLSymbols()
     theMotionSymbols->execute();
     theLineSymbols->execute();
     theStrategySymbols->execute();
+    // right now, not doing anything
+    thePathSymbols->execute();
   }
 }//end updateXABSLSymbols
 

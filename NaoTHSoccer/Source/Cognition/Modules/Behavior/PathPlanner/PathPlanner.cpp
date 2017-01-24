@@ -53,18 +53,18 @@ void PathPlanner::execute()
   // Go to ball with right or left foot (when close to ball, approach for attack)
   // XABSL: go_to_ball_foot_dynamic
   DEBUG_REQUEST("PathPlanner:motion:go_to_ball_foot_dynamic",
-                if (getBallModel().goto_ball_right && !getBallModel().goto_ball_left)
+                if (    getPathModel().goto_ball_right
+                    && !getPathModel().goto_ball_left)
                 {
-                  PathPlanner::goToBallRight(getBallModel().goto_distance, getBallModel().goto_yOffset);
+                  PathPlanner::goToBallRight(getPathModel().goto_distance,
+                                             getPathModel().goto_yOffset);
                 }
-                else if (!getBallModel().goto_ball_right && getBallModel().goto_ball_left)
+                else if (  !getPathModel().goto_ball_right
+                         && getPathModel().goto_ball_left)
                 {
-                  PathPlanner::goToBallLeft(getBallModel().goto_distance, getBallModel().goto_yOffset);
+                  PathPlanner::goToBallLeft(getPathModel().goto_distance,
+                                            getPathModel().goto_yOffset);
                 }
-
-                // reset, so the XABSL state can change when it wants to
-                getBallModel().goto_ball_right = false;
-                getBallModel().goto_ball_left = false;
                 );
 
 

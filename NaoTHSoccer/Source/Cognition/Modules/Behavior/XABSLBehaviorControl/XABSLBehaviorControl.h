@@ -45,6 +45,7 @@
 #include "Symbols/StrategySymbols.h"
 #include "Symbols/SoundSymbols.h"
 #include "Symbols/LineSymbols.h"
+#include "Symbols/PathSymbols.h"
 
 
 // ErrorHandler
@@ -156,6 +157,7 @@ private:
   ModuleCreator<StrategySymbols>* theStrategySymbols;
   ModuleCreator<SoundSymbols>* theSoundSymbols;
   ModuleCreator<LineSymbols>* theLineSymbols;
+  ModuleCreator<PathSymbols>* thePathSymbols;
 };
 
 #endif  /* _XABSLBehaviorControl_H */

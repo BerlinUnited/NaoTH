@@ -47,10 +47,10 @@ option go_to_ball_with_foot_dynamic
       motion.walk_speed.rot = (vector.abs(x=ball.preview.right_foot.x, y=ball.preview.right_foot.y) > 250) ? atan2(y = ball.preview.right_foot.y, x = ball.preview.right_foot.x) : 0;
       */
 
-    ball.goto_ball_right    = true;
-    ball.goto_ball_left     = false;
-    ball.goto_distance      = @distance;
-    ball.goto_yOffset       = @offset.y;
+    path.goto_ball_right    = true;
+    path.goto_ball_left     = false;
+    path.goto_distance      = @distance;
+    path.goto_yOffset       = @offset.y;
     }
   }
 
@@ -78,10 +78,10 @@ option go_to_ball_with_foot_dynamic
       motion.walk_speed.rot = (vector.abs(x=ball.preview.left_foot.x, y=ball.preview.left_foot.y) > 250) ? atan2(y = ball.preview.left_foot.y, x = ball.preview.left_foot.x) : 0;
       */
 
-    ball.goto_ball_right    = false;
-    ball.goto_ball_left     = true;
-    ball.goto_distance      = @distance;
-    ball.goto_yOffset       = @offset.y;
+    path.goto_ball_right    = false;
+    path.goto_ball_left     = true;
+    path.goto_distance      = @distance;
+    path.goto_yOffset       = @offset.y;
     }
   }
 
@@ -109,10 +109,10 @@ option go_to_ball_with_foot_dynamic
       motion.walk_speed.rot = 0;
       */
 
-    ball.goto_ball_right    = true;
-    ball.goto_ball_left     = false;
-    ball.goto_distance      = @distance;
-    ball.goto_yOffset       = @offset.y;
+    path.goto_ball_right    = true;
+    path.goto_ball_left     = false;
+    path.goto_distance      = @distance;
+    path.goto_yOffset       = @offset.y;
     }
   }
 
@@ -139,10 +139,10 @@ option go_to_ball_with_foot_dynamic
       motion.walk_speed.y = 0.7*(ball.preview.left_foot.y - @offset.y);
       motion.walk_speed.rot = 0;*/
 
-    ball.goto_ball_right    = true;
-    ball.goto_ball_left     = false;
-    ball.goto_distance      = @distance;
-    ball.goto_yOffset       = @offset.y;
+    path.goto_ball_right    = true;
+    path.goto_ball_left     = false;
+    path.goto_distance      = @distance;
+    path.goto_yOffset       = @offset.y;
     }
   }
 }
