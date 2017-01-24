@@ -34,6 +34,7 @@ BEGIN_DECLARE_MODULE(PathPlanner)
   REQUIRE(FieldInfo)
   REQUIRE(MotionStatus)
   REQUIRE(BallPercept)
+  REQUIRE(BallPerceptTop)
   REQUIRE(MultiBallPercept)
   REQUIRE(BallModel)
   REQUIRE(OdometryData)
@@ -50,8 +51,10 @@ public:
 
   virtual void execute();
 
+  void goToBallRight(int distance, int yOffset);
+  void goToBallLeft(int distance, int yOffset);
+  
 private:
-  bool isWalking;
 };
 
 #endif // _PathPlanner_H_

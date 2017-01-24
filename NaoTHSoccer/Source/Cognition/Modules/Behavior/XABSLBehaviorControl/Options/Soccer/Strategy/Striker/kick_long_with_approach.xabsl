@@ -20,8 +20,13 @@ option kick_long_with_approach
         stay;
     }
     action{
-      go_to_ball_with_foot_dynamic(right=true, distance=160);
-      motion.walk.style = normal;
+      //go_to_ball_with_foot_dynamic(right=true, distance=160);
+      //motion.walk.style = normal;
+      
+      ball.goto_ball_right    = true;
+      ball.goto_ball_left     = false;
+      ball.goto_distance = 160;
+      ball.goto_yOffset  = 0;
     }
   }
 
@@ -46,8 +51,13 @@ option kick_long_with_approach
         stay;
     }
     action{
-      go_to_ball_with_foot_dynamic(right=false, distance=160);
-      motion.walk.style = normal;
+      //go_to_ball_with_foot_dynamic(right=false, distance=160);
+      //motion.walk.style = normal;
+      
+      ball.goto_ball_right    = false;
+      ball.goto_ball_left     = true;
+      ball.goto_distance = 160;
+      ball.goto_yOffset  = 0;
     }
   }
 
