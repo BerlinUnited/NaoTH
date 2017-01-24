@@ -78,5 +78,11 @@ namespace ball_symbols("Ball Symbols") {
   float input ball.right_foot.x "mm";
   /** Position of the ball in y direction relative to the right foot */
   float input ball.right_foot.y "mm";
+
+  /** Go to the ball with right or left foot for Cognition/Behavior/PathPlanner */
+  bool output ball.goto_ball_right;
+  bool output ball.goto_ball_left;
+  float output ball.goto_distance;
+  float output ball.goto_yOffset;
 }
   
