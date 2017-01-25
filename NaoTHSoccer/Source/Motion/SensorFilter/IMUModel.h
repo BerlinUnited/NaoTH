@@ -37,7 +37,127 @@ BEGIN_DECLARE_MODULE(IMUModel)
     PROVIDE(IMUData)
 END_DECLARE_MODULE(IMUModel)
 
-template <int dim_state, int dim_state_cov, int dim_measurement, int dim_measurement_cov>
+// state in global reference frame
+template <int dim_state, int dim_state_cov>
+class State : public Eigen::Matrix<double,dim_state,1> {
+    public:
+            State(): Eigen::Matrix<double,dim_state,1>(Eigen::Matrix<double,dim_state,1>::Zero()){
+                rotation()(3,0) = 1;
+            }
+
+            Eigen::Block<Eigen::Matrix<double,dim_state,1> > acceleration(){
+                return Eigen::Block<Eigen::Matrix<double,dim_state,1> >(this->derived(), 0, 0, 3, 1);
+            }
+
+            Eigen::Block<Eigen::Matrix<double,dim_state,1> > rotation(){
+                //eigen's order of components of a quaterion: x,y,z,w
+                return Eigen::Block<Eigen::Matrix<double,dim_state,1> >(this->derived(), 3, 0, 4, 1);
+            }
+
+            Eigen::Block<Eigen::Matrix<double,dim_state,1> > rotational_velocity(){
+                return Eigen::Block<Eigen::Matrix<double,dim_state,1> >(this->derived(), 7, 0, 3, 1);
+            }
+
+            State& operator=(Eigen::Matrix<double,dim_state,1> rhs) {
+                this->Eigen::Matrix<double,dim_state,1>::operator=(rhs);
+                return *this;
+            }
+
+            // add other to this state, i.e., the resulting rotation describes a rotation which rotates at first by "this" and then by "other"
+            // eigen vectorization and alignment problem: other should be a reference
+            State& operator +=(State other){
+                Eigen::Quaterniond temp_rotation = other.getRotationAsQuaternion() * this->getRotationAsQuaternion();
+                Eigen::Matrix<double,dim_state,1>::operator+=(other);
+
+                // replace with correct rotation
+                this->rotation() = temp_rotation.coeffs();
+
+                return *this;
+            }
+
+            State operator-() const{
+                State temp = *this;
+                Eigen::Quaterniond temp_rotation = temp.getRotationAsQuaternion();
+
+                // invert directions
+                temp = Eigen::Matrix<double, dim_state,1>::operator-();
+
+                // replace with correct inverse rotation
+                temp.rotation() = temp_rotation.inverse().coeffs();
+
+                return temp;
+            }
+
+            Eigen::Quaterniond getRotationAsQuaternion() /*const*/ {
+                Eigen::Quaterniond return_val = Eigen::Quaterniond(Eigen::Vector4d(rotation()));
+                return return_val;
+            }
+
+            Eigen::Matrix<double, dim_state_cov,1> toCovarianceCompatibleState(){
+                Eigen::Matrix<double, dim_state_cov,1> return_val;
+                Eigen::AngleAxisd rotation;
+                Eigen::Vector3d rotation_vector;
+
+                rotation = Eigen::AngleAxisd(Eigen::Quaterniond(Eigen::Vector4d(this->rotation())));
+
+                rotation_vector = rotation.angle()*rotation.axis();
+
+                return_val << this->acceleration(),
+                              rotation_vector,
+                              this->rotational_velocity();
+
+                return return_val;
+            }
+
+            State scale(double s){
+                State temp;
+                temp << s * (*this);
+                return temp;
+            }
+};
+
+template <int dim_measurement, int dim_measurement_cov>
+class Measurement : public Eigen::Matrix<double, dim_measurement,1> {
+public:
+    Measurement(): Eigen::Matrix<double,dim_measurement,1>(Eigen::Matrix<double,dim_measurement,1>::Zero()){
+        rotation()(3,0) = 1;
+    }
+
+    Eigen::Block<Eigen::Matrix<double,dim_measurement,1> > acceleration(){
+        return Eigen::Block<Eigen::Matrix<double,dim_measurement,1> >(this->derived(), 0, 0, 3, 1);
+    }
+
+    Eigen::Block<Eigen::Matrix<double,dim_measurement,1> > rotational_velocity(){
+        return Eigen::Block<Eigen::Matrix<double,dim_measurement,1> >(this->derived(), 3, 0, 3, 1);
+    }
+
+    Eigen::Block<Eigen::Matrix<double,dim_measurement,1> > rotation(){
+        //eigen's order of components of a quaterion: x,y,z,w
+        return Eigen::Block<Eigen::Matrix<double,dim_measurement,1> >(this->derived(), 6, 0, 4, 1);
+    }
+
+    Eigen::Quaterniond getRotationAsQuaternion() /*const*/ {
+        return Eigen::Quaterniond(Eigen::Vector4d(rotation()));
+    }
+
+    Eigen::Matrix<double, dim_measurement_cov,1> toCovarianceCompatibleMeasurement(){
+        Eigen::Matrix<double, dim_measurement_cov,1> return_val;
+        Eigen::AngleAxisd rotation;
+        Eigen::Vector3d rotation_vector;
+
+        rotation = Eigen::AngleAxisd(Eigen::Quaterniond(Eigen::Vector4d(this->rotation())));
+
+        rotation_vector = rotation.angle()*rotation.axis();
+
+        return_val << this->acceleration(),
+                      this->rotational_velocity(),
+                      rotation_vector;
+
+        return return_val;
+    }
+};
+
+template <int dim_state, int dim_state_cov, int dim_measurement, int dim_measurement_cov, class S = State<dim_state,dim_state_cov>, class M = Measurement<dim_measurement,dim_measurement_cov> >
 class UKF {
     public:
         UKF():
@@ -98,167 +218,20 @@ class UKF {
                 -3.078687958578659292e-08, -3.013278205585369588e-07,  5.523361976811979815e-07,  3.434758685147043306e-06, -8.299226917536411892e-08,  5.842662059539863827e-08, 0   , 0   , 0   ,
                 -1.132513004663809251e-06,  1.736820285922189584e-06, -1.730307422507887473e-07, -8.299226917536411892e-08,  1.006052718494827880e-05,  1.346681994776136150e-06, 0   , 0   , 0   ,
                 -6.485352375515866273e-07, -4.599219827687661978e-07, -3.030009469390110280e-07,  5.842662059539863827e-08,  1.346681994776136150e-06,  3.242298821157115427e-06, 0   , 0   , 0   ,
-                 0                       ,  0                       ,  0                       ,  0                       ,  0                       ,  0                       , 10e-7, 0   , 0   ,
-                 0                       ,  0                       ,  0                       ,  0                       ,  0                       ,  0                       , 0   , 10e-7, 0   ,
-                 0                       ,  0                       ,  0                       ,  0                       ,  0                       ,  0                       , 0   , 0   , 10e-7;
+                 0                       ,  0                       ,  0                       ,  0                       ,  0                       ,  0                       , 10e-11, 0   , 0   ,
+                 0                       ,  0                       ,  0                       ,  0                       ,  0                       ,  0                       , 0   , 10e-11, 0   ,
+                 0                       ,  0                       ,  0                       ,  0                       ,  0                       ,  0                       , 0   , 0   , 10e-11;
         }
 
     public:
-        // measurement, local
-        class Measurement : public Eigen::Matrix<double, dim_measurement,1> {
-        public:
-            Measurement(): Eigen::Matrix<double,dim_measurement,1>(Eigen::Matrix<double,dim_measurement,1>::Zero()){
-                rotation()(3,0) = 1;
-            }
-
-            Eigen::Block<Eigen::Matrix<double,dim_measurement,1> > acceleration(){
-                return Eigen::Block<Eigen::Matrix<double,dim_measurement,1> >(this->derived(), 0, 0, 3, 1);
-            }
-
-            Eigen::Block<Eigen::Matrix<double,dim_measurement,1> > rotational_velocity(){
-                return Eigen::Block<Eigen::Matrix<double,dim_measurement,1> >(this->derived(), 3, 0, 3, 1);
-            }
-
-            Eigen::Block<Eigen::Matrix<double,dim_measurement,1> > rotation(){
-                //eigen's order of components of a quaterion: x,y,z,w
-                return Eigen::Block<Eigen::Matrix<double,dim_measurement,1> >(this->derived(), 6, 0, 4, 1);
-            }
-
-            Eigen::Quaterniond getRotationAsQuaternion() /*const*/ {
-                return Eigen::Quaterniond(Eigen::Vector4d(rotation()));
-            }
-
-            Eigen::Matrix<double, dim_measurement_cov,1> toCovarianceCompatibleState(){
-                Eigen::Matrix<double, dim_measurement_cov,1> return_val;
-                Eigen::AngleAxisd rotation;
-                Eigen::Vector3d rotation_vector;
-
-                rotation = Eigen::AngleAxisd(Eigen::Quaterniond(Eigen::Vector4d(this->rotation())));
-
-                rotation_vector = rotation.angle()*rotation.axis();
-
-                return_val << this->acceleration(),
-                              this->rotational_velocity(),
-                              rotation_vector;
-
-                return return_val;
-            }
-        };
 
         void reset();
         void predict(double dt);
-        void update(Measurement z);
-
-        // state in global reference frame
-        class State : public Eigen::Matrix<double,dim_state,1> {
-            public:
-                    State(): Eigen::Matrix<double,dim_state,1>(Eigen::Matrix<double,dim_state,1>::Zero()){
-                        rotation()(3,0) = 1;
-                    }
-
-//                    Eigen::Block<Eigen::Matrix<double,dim_state,1> > location(){
-//                        return Eigen::Block<Eigen::Matrix<double,dim_state,1> >(this->derived(), 0, 0, 3, 1);
-//                    }
-
-//                    Eigen::Block<Eigen::Matrix<double,dim_state,1> > velocity(){
-//                        return Eigen::Block<Eigen::Matrix<double,dim_state,1> >(this->derived(), 3, 0, 3, 1);
-//                    }
-
-                    Eigen::Block<Eigen::Matrix<double,dim_state,1> > acceleration(){
-                        return Eigen::Block<Eigen::Matrix<double,dim_state,1> >(this->derived(), 0, 0, 3, 1);
-                    }
-
-//                    Eigen::Block<Eigen::Matrix<double,dim_state,1> > bias_acceleration(){
-//                        return Eigen::Block<Eigen::Matrix<double,dim_state,1> >(this->derived(), 9, 0, 3, 1);
-//                    }
-
-                    Eigen::Block<Eigen::Matrix<double,dim_state,1> > rotation(){
-                        //eigen's order of components of a quaterion: x,y,z,w
-                        return Eigen::Block<Eigen::Matrix<double,dim_state,1> >(this->derived(), 3, 0, 4, 1);
-                    }
-
-                    Eigen::Block<Eigen::Matrix<double,dim_state,1> > rotational_velocity(){
-                        return Eigen::Block<Eigen::Matrix<double,dim_state,1> >(this->derived(), 7, 0, 3, 1);
-                    }
-
-//                    Eigen::Block<Eigen::Matrix<double,dim_state,1> > bias_rotational_velocity(){
-//                        return Eigen::Block<Eigen::Matrix<double,dim_state,1> >(this->derived(), 19, 0, 3, 1);
-//                    }
-
-                    State& operator=(Eigen::Matrix<double,dim_state,1> rhs) {
-                        this->Eigen::Matrix<double,dim_state,1>::operator=(rhs);
-                        return *this;
-                    }
-
-                    // add other to this state, i.e., the resulting rotation describes a rotation which rotates at first by "this" and then by "other"
-                    State& operator +=(State /*const*/& other){
-                        Eigen::Quaterniond temp_rotation = other.getRotationAsQuaternion() * this->getRotationAsQuaternion();
-                        Eigen::Matrix<double,dim_state,1>::operator+=(other);
-
-                        // replace with correct rotation
-                        this->rotation() = temp_rotation.coeffs();
-
-                        return *this;
-                    }
-
-                    // TODO: make it more beautiful
-                    State& operator +=(const Eigen::CwiseBinaryOp<Eigen::internal::scalar_product_op<double, double>,
-                                                                  const Eigen::CwiseNullaryOp<Eigen::internal::scalar_constant_op<double>, const Eigen::Matrix<double, dim_state, 1, 0, dim_state, 1> >,
-                                                                  const Eigen::Matrix<double, dim_state, 1, 0, dim_state, 1> > other){
-                        // use + operator of states base class
-                        *this = *this + other;
-                        return *this;
-                    }
-
-//                    State& operator +=(const Eigen::CwiseUnaryOp<Eigen::internal::scalar_multiple_op<double>,
-//                                                                 const Eigen::Matrix<double, dim_state, 1, 0, dim_state, 1> > other){
-//                        // use + operator of states base class
-//                        *this = *this + other;
-//                        return *this;
-//                    }
-
-                    State operator-() const{
-                        State temp = *this;
-                        Eigen::Quaterniond temp_rotation = temp.getRotationAsQuaternion();
-
-                        // invert directions
-                        temp = Eigen::Matrix<double, dim_state,1>::operator-();
-
-                        // replace with correct inverse rotation
-                        temp.rotation() = temp_rotation.inverse().coeffs();
-
-                        return temp;
-                    }
-
-                    Eigen::Quaterniond getRotationAsQuaternion() /*const*/ {
-                        Eigen::Quaterniond return_val = Eigen::Quaterniond(Eigen::Vector4d(rotation()));
-                        return return_val;
-                    }
-
-                    Eigen::Matrix<double, dim_state_cov,1> toCovarianceCompatibleState(){
-                        Eigen::Matrix<double, dim_state_cov,1> return_val;
-                        Eigen::AngleAxisd rotation;
-                        Eigen::Vector3d rotation_vector;
-
-                        rotation = Eigen::AngleAxisd(Eigen::Quaterniond(Eigen::Vector4d(this->rotation())));
-
-                        rotation_vector = rotation.angle()*rotation.axis();
-
-                        return_val << //this->location(),
-                                      //this->velocity(),
-                                      this->acceleration(),
-                                      //this->bias_acceleration(),
-                                      rotation_vector,
-                                      this->rotational_velocity();
-                                      //this->bias_rotational_velocity();
-
-                        return return_val;
-                    }
-        };
+        void update(M z);
 
         // TODO: get rid of direct matrix accesses
-        State toFullState(Eigen::Matrix<double, dim_state_cov,1> covarianceCompatibleState){
-            State return_val;
+        S toFullState(Eigen::Matrix<double, dim_state_cov,1> covarianceCompatibleState){
+            S return_val;
 
             Eigen::Vector3d rotation_vector;
             rotation_vector << covarianceCompatibleState(3,0), covarianceCompatibleState(4,0), covarianceCompatibleState(5,0);
@@ -272,8 +245,7 @@ class UKF {
                 rotation = Eigen::Quaterniond(1,0,0,0);
             }
 
-            return_val << //covarianceCompatibleState.block(0,0,6,1), //location, velocity,
-                          covarianceCompatibleState.block(0,0,3,1), //acceleration
+            return_val << covarianceCompatibleState.block(0,0,3,1), //acceleration
                           rotation.coeffs(),
                           covarianceCompatibleState.block(6,0,3,1); //rotational, velocity
 
@@ -306,13 +278,13 @@ class UKF {
         const double beta   = 2;
         const double lambda = alpha * alpha * (dim_state + kapa) - dim_state;
 
-        std::vector<State> sigmaPoints;
+        std::vector<S> sigmaPoints;
 
     public:
-        State state;
+        S state;
 
-        void transitionFunction(State &state, double dt);          // state transition function
-        Measurement stateToMeasurementSpaceFunction(State& state); // state to measurement transformation function
+        void transitionFunction(S &state, double dt); // state transition function
+        M stateToMeasurementSpaceFunction(S& state);  // state to measurement transformation function
         void generateSigmaPoints();
 
         // covariances
@@ -366,7 +338,7 @@ private:
 
     UKF<10,9,10,9> ukf;
 
-    typedef UKF<10,9,10,9>::Measurement Measurement;
+    typedef Measurement<10,9> IMU_Measurement;
 
 
 };
