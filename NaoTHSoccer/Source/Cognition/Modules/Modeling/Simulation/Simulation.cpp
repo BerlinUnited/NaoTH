@@ -150,6 +150,8 @@ void Simulation::simulateConsequences(
          ownGoalLineGlobal.end().x,ownGoalLineGlobal.end().y);
   );
 
+  //WHY is this even here??? move to fieldInfo or so
+
   // calculate opponent goal lines and box
   Vector2d oppGoalBackLeft(getFieldInfo().opponentGoalPostLeft.x + getFieldInfo().goalDepth, getFieldInfo().opponentGoalPostLeft.y);
   Vector2d oppGoalBackRight(getFieldInfo().opponentGoalPostRight.x + getFieldInfo().goalDepth, getFieldInfo().opponentGoalPostRight.y);
