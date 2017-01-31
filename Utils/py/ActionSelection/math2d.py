@@ -63,7 +63,8 @@ class LineSegment(object):
         self.base = begin
         self.direction = end-self.base
         self.length = Vector2.abs(self.direction)
-        self.direction /= Vector2.abs(self.direction)
+        if Vector2.abs(self.direction) != 0:
+            self.direction /= Vector2.abs(self.direction)
 
     def __str__(self):
         return str("Begin: " + str(self.base)) + " End: " + str(self.base+self.direction*self.length)
@@ -88,8 +89,11 @@ class LineSegment(object):
         t = normal*self.direction
         if t == 0:
             return float('Inf')
+
+        t = normal*(other.base-self.base)/t
         t = clamp(t, 0.0, self.length)
-        return normal*(other.base-self.base)/t
+
+        return t
 
     def intersect(self, other):
         normal = Vector2(-other.direction.y, other.direction.x)
