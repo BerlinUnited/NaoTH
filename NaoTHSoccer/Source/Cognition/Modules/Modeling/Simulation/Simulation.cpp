@@ -137,6 +137,8 @@ void Simulation::simulateConsequences(
   categorizedBallPositions.reset();
 
   // calculate the own goal line
+
+  //TODO move to field Info as well
   Vector2d ownGoalDir = (getFieldInfo().ownGoalPostRight - getFieldInfo().ownGoalPostLeft).normalize();
   Vector2d ownLeftEndpoint = getFieldInfo().ownGoalPostLeft + ownGoalDir*(getFieldInfo().goalpostRadius + getFieldInfo().ballRadius);
   Vector2d ownRightEndpoint = getFieldInfo().ownGoalPostRight - ownGoalDir*(getFieldInfo().goalpostRadius + getFieldInfo().ballRadius);
@@ -149,20 +151,12 @@ void Simulation::simulateConsequences(
     LINE(ownGoalLineGlobal.begin().x,ownGoalLineGlobal.begin().y,
          ownGoalLineGlobal.end().x,ownGoalLineGlobal.end().y);
   );
-
-  //WHY is this even here??? move to fieldInfo or so
-
-  // calculate opponent goal lines and box
-  Vector2d oppGoalBackLeft(getFieldInfo().opponentGoalPostLeft.x + getFieldInfo().goalDepth, getFieldInfo().opponentGoalPostLeft.y);
-  Vector2d oppGoalBackRight(getFieldInfo().opponentGoalPostRight.x + getFieldInfo().goalDepth, getFieldInfo().opponentGoalPostRight.y);
   
   vector<Math::LineSegment> goalBackSides;
   goalBackSides.reserve(3);
-  goalBackSides.push_back(Math::LineSegment(oppGoalBackLeft, oppGoalBackRight));
-  goalBackSides.push_back(Math::LineSegment(getFieldInfo().opponentGoalPostLeft, oppGoalBackLeft));
-  goalBackSides.push_back(Math::LineSegment(getFieldInfo().opponentGoalPostRight, oppGoalBackRight));
-
-  Geometry::Rect2d oppGoalBox(oppGoalBackRight, getFieldInfo().opponentGoalPostLeft);
+  goalBackSides.push_back(Math::LineSegment(getFieldInfo().oppGoalBackLeft, getFieldInfo().oppGoalBackRight));
+  goalBackSides.push_back(Math::LineSegment(getFieldInfo().opponentGoalPostLeft, getFieldInfo().oppGoalBackLeft));
+  goalBackSides.push_back(Math::LineSegment(getFieldInfo().opponentGoalPostRight, getFieldInfo().oppGoalBackRight));
    
   // current ball position
   Vector2d globalBallStartPosition = getRobotPose() * getBallModel().positionPreview;
@@ -204,9 +198,9 @@ void Simulation::simulateConsequences(
           FIELD_DRAWING_CONTEXT;
         
           PEN("000000", 10);
-          BOX(oppGoalBox.min().x,oppGoalBox.min().y,oppGoalBox.max().x,oppGoalBox.max().y);
+		  BOX(getFieldInfo().oppGoalBox.min().x, getFieldInfo().oppGoalBox.min().y, getFieldInfo().oppGoalBox.max().x, getFieldInfo().oppGoalBox.max().y);
 
-          if(oppGoalBox.inside(globalBallEndPosition)) {
+		  if (getFieldInfo().oppGoalBox.inside(globalBallEndPosition)) {
             PEN("0000AA66", 1);
           } else {
             PEN("FF00AA66", 1);
@@ -235,7 +229,7 @@ void Simulation::simulateConsequences(
     // now categorize the position
     BallPositionCategory category = INFIELD;
     // goal!!
-    if(oppGoalBox.inside(globalBallEndPosition)) 
+	if (getFieldInfo().oppGoalBox.inside(globalBallEndPosition))
     {
       category = OPPGOAL;
     }
