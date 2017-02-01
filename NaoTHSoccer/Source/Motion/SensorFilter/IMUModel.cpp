@@ -128,7 +128,7 @@ void IMUModel::plots(){
     LINE_3D(ColorClasses::green, pose.translation, yAxis);
     LINE_3D(ColorClasses::blue, pose.translation, zAxis);
 
-    LINE_3D(ColorClasses::black, pose.translation, gravity);
+    LINE_3D(ColorClasses::black, pose.translation, pose.translation + gravity);
 
     PLOT("IMUModel:State:rotational_velocity:x", ukf.state.rotational_velocity()(0,0));
     PLOT("IMUModel:State:rotational_velocity:y", ukf.state.rotational_velocity()(1,0));
@@ -251,6 +251,10 @@ void UKF <dim_state, dim_state_cov, dim_measurement, dim_measurement_cov,S,M>::u
 
     S state_innovation(K*z_innovation);
 
+    // HACK
+    // TODO reduce measurement space dimensionality by one, rotation around z axis isn't measured => screws things up
+    state_innovation(5,0) = 0.0;
+
     state += state_innovation;
 
     //assert (state.allFinite());
@@ -292,14 +296,14 @@ M UKF<dim_state, dim_state_cov, dim_measurement, dim_measurement_cov, S, M>::sta
     Eigen::Vector3d acceleration_in_measurement_space        = state.acceleration() /*+ state.bias_acceleration()*/; // TODO: check for rotation._transformVector(...) ...
     Eigen::Vector3d rotational_velocity_in_measurement_space = state.rotational_velocity() /*+ state.bias_rotational_velocity()*/;
 
-    // rotation from  acceleration to (0,0,-1)
-    Eigen::Quaterniond rotation;
-    rotation.setFromTwoVectors(acceleration_in_measurement_space,Eigen::Vector3d(0,0,-1));
-    Eigen::AngleAxisd angle_axis(rotation);
-    Eigen::Vector3d rotation_in_measurement_space(angle_axis.angle() * angle_axis.axis());
+    // determine rotation around x and y axis
+    Eigen::Quaterniond q;
+    q.setFromTwoVectors(state.getRotationAsQuaternion().inverse()._transformVector(Eigen::Vector3d(0,0,-1)),Eigen::Vector3d(0,0,-1));
+    Eigen::AngleAxisd temp(q);
+    Eigen::Vector3d   rotation_in_measurement_space(temp.angle() * temp.axis());
 
     M return_val;
-    return_val << acceleration_in_measurement_space,  rotation_in_measurement_space, rotational_velocity_in_measurement_space;
+    return_val << acceleration_in_measurement_space, rotation_in_measurement_space, rotational_velocity_in_measurement_space;
 
     return return_val;
 }
