@@ -1,7 +1,19 @@
 /** Symbols for the PathPlanner Module */
 namespace path_symbols("PathPlanner Symbols") {
-  bool output path.goto_ball_right;
-  bool output path.goto_ball_left;
+  enum path.type
+  {
+    go_to_ball_right,
+    go_to_ball_left,
+    move_around_ball,
+    fast_forward_right,
+    fast_forward_left
+  };
+
+  enum path.type output path.type;
+  
   float output path.goto_distance;
   float output path.goto_yOffset;
+
+  float output path.move_around_ball_direction;
+  float output path.move_around_ball_radius;
 }

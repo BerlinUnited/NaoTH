@@ -13,12 +13,25 @@ public:
    PathModel() {}
   ~PathModel() {}
 
-  // Go to Ball with right or left foot (depending on XABSL decision)
-  bool goto_ball_right;
-  bool goto_ball_left;
+  enum PathType
+  {
+    none,
+    go_to_ball_right,
+    go_to_ball_left,
+    move_around_ball,
+    fast_forward_right,
+    fast_forward_left
+  };
+
+  PathType pathType = PathType::none;
+
   // distance and yOffset parameters (set by XABSL)
   double goto_distance;
   double goto_yOffset;
+  
+  // Move around ball
+  double move_around_ball_direction;
+  double move_around_ball_radius;
 };
 
 #endif /* _PathModel_H_ */

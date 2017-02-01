@@ -41,7 +41,7 @@ BEGIN_DECLARE_MODULE(PathPlanner)
   PROVIDE(BallModel)
   REQUIRE(OdometryData)
 
-  REQUIRE(PathModel)
+  PROVIDE(PathModel)
 
   PROVIDE(HeadMotionRequest)
   PROVIDE(MotionRequest)
@@ -55,8 +55,14 @@ public:
 
   virtual void execute();
 
-  void goToBallRight(int distance, int yOffset);
-  void goToBallLeft(int distance, int yOffset);
+  void goToBallRight(double distance, double yOffset);
+  void goToBallLeft(double distance, double yOffset);
+  void moveAroundBall(double direction, double radius);
+  void fastForwardRight();
+  void fastForwardLeft();
+
+  // Helping functions
+  void lookAtBall();
   
 private:
 };

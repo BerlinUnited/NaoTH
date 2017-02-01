@@ -58,7 +58,7 @@ public:
     {}
 
     unsigned int stepID; // it should match the current step id in walk, otherwise it will not be accepted
-    bool moveLeftFoot; // it should also match
+    bool moveLeftFoot; // it should also match, false = rightfoot
     Pose2D target; // in coordinate
     unsigned int time; // in ms
     //angle (in radiant) of the speed of the foot at the end of the controlled step
