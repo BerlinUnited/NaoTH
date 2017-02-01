@@ -25,7 +25,7 @@ end
 
 newoption {
    trigger     = "Wno-conversion",
-   description = "Disable te -Wconversion warnin for gCC"
+   description = "Disable the -Wconversion warning for gcc"
 }
 
 newoption {
@@ -48,7 +48,7 @@ solution "NaoTHSoccer"
   print("INFO: generating solution NaoTHSoccer")
   print("  PLATFORM = " .. PLATFORM)
   print("  OS = " .. os.get())
-  print("  ACTION = " .. _ACTION)
+  print("  ACTION = " .. (_ACTION or "NONE"))
   
   
   -- global lib path for all configurations

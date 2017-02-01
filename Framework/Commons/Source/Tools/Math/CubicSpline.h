@@ -51,8 +51,12 @@ public:
     }
   }
 
+  double operator()(double x) const {
+    return y(x);
+  }
+
   // calculate y by given x
-  double y(double x)
+  double y(double x) const
   {
     int n = static_cast<int> (theSamples.size());
     ASSERT(n >= 3);
