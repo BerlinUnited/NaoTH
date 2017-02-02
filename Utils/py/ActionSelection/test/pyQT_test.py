@@ -15,8 +15,8 @@ from matplotlib import pyplot as plt
 import math
 import field_info as field
 import tools as tools
-import Action as a
-import potentialField as pf
+import action as a
+import potential_field as pf
 import math2d as m2d
 
 program_name = os.path.basename(sys.argv[0])
