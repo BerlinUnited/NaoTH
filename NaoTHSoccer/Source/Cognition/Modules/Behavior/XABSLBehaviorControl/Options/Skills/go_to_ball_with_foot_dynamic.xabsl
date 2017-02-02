@@ -107,7 +107,7 @@ option go_to_ball_with_foot_dynamic
       motion.walk_speed.rot = 0;
       */
 
-    path.type = path.type.go_to_ball_right;
+    path.type = path.type.none;
     path.goto_distance      = @distance;
     path.goto_yOffset       = @offset.y;
     }
@@ -136,7 +136,7 @@ option go_to_ball_with_foot_dynamic
       motion.walk_speed.y = 0.7*(ball.preview.left_foot.y - @offset.y);
       motion.walk_speed.rot = 0;*/
 
-    path.type = path.type.go_to_ball_left;
+    path.type = path.type.none;
     path.goto_distance      = @distance;
     path.goto_yOffset       = @offset.y;
     }

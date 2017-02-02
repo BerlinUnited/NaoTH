@@ -39,7 +39,7 @@ option fast_forward_kick
     }
     action
     {
-      motion.type = walk;
+      /*motion.type = walk;
       
       motion.walk.coordinate = right_foot;
       motion.walk.style = fast;
@@ -53,7 +53,9 @@ option fast_forward_kick
       motion.walk.step_control.scale = 0.7;
 
       //loook at percept
-      head.control_mode = look_at_ball_percept;
+      head.control_mode = look_at_ball_percept;*/
+      
+      path.type = path.type.fast_forward_right;
     }
   }
 
@@ -68,7 +70,7 @@ option fast_forward_kick
     }
     action
     {
-      motion.type = walk;
+      /*motion.type = walk;
       
       motion.walk.coordinate = left_foot;
       motion.walk.style = fast;
@@ -82,7 +84,9 @@ option fast_forward_kick
       motion.walk.step_control.scale = 0.7;
 
       //loook at percept
-      head.control_mode = look_at_ball_percept;
+      head.control_mode = look_at_ball_percept;*/
+      
+      path.type = path.type.fast_forward_left;
     }
   }
 
@@ -122,6 +126,9 @@ option fast_forward_kick
       
       //loook at percept
       head.control_mode = look_at_ball_percept;
+
+      
+      path.type = path.type.none;
     }
   }
 }

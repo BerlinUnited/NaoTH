@@ -55,11 +55,11 @@ public:
 
   virtual void execute();
 
-  void goToBallRight(double distance, double yOffset);
-  void goToBallLeft(double distance, double yOffset);
+  void goToBall(double distance, double yOffset);
   void moveAroundBall(double direction, double radius);
-  void fastForwardRight();
-  void fastForwardLeft();
+  void fastForwardKick();
+  void kickWithFoot();
+  void sidekick();
 
   // Helping functions
   void lookAtBall();

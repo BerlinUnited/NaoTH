@@ -10,11 +10,17 @@
 void PathSymbols::registerSymbols(xabsl::Engine& engine)
 {
   // PathType
+  engine.registerEnumElement("path.type", "path.type.none", PathModel::none);
   engine.registerEnumElement("path.type", "path.type.go_to_ball_right", PathModel::go_to_ball_right);
   engine.registerEnumElement("path.type", "path.type.go_to_ball_left", PathModel::go_to_ball_left);
   engine.registerEnumElement("path.type", "path.type.move_around_ball", PathModel::move_around_ball);
   engine.registerEnumElement("path.type", "path.type.fast_forward_right", PathModel::fast_forward_right);
   engine.registerEnumElement("path.type", "path.type.fast_forward_left", PathModel::fast_forward_left);
+  engine.registerEnumElement("path.type", "path.type.kick_with_foot_right", PathModel::kick_with_foot_right);
+  engine.registerEnumElement("path.type", "path.type.kick_with_foot_left", PathModel::kick_with_foot_left);
+  engine.registerEnumElement("path.type", "path.type.sidekick_left", PathModel::sidekick_left);
+  engine.registerEnumElement("path.type", "path.type.sidekick_right", PathModel::sidekick_right);
+
 
   engine.registerEnumeratedOutputSymbol("path.type", "path.type", (int*)&getPathModel().pathType);
 

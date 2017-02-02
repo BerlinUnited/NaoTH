@@ -116,7 +116,7 @@ option kick_with_foot
     }
     action
     {
-      motion.type = walk;
+      /*motion.type = walk;
       
       motion.walk.coordinate = right_foot;
 
@@ -136,7 +136,8 @@ option kick_with_foot
       head.motion_type = look_at_world_point;
       head.point_in_world.x = ball.percept.x;
       head.point_in_world.y = ball.percept.y;
-      head.point_in_world.z = ball.radius; // radius of the ball
+      head.point_in_world.z = ball.radius; // radius of the ball*/
+      path.type = path.type.kick_with_foot_right;
     }
   }
 
@@ -151,7 +152,7 @@ option kick_with_foot
     }
     action
     {
-      motion.type = walk;
+      /*motion.type = walk;
       
       motion.walk.coordinate = left_foot;
 
@@ -171,7 +172,9 @@ option kick_with_foot
       head.motion_type = look_at_world_point;
       head.point_in_world.x = ball.percept.x;
       head.point_in_world.y = ball.percept.y;
-      head.point_in_world.z = ball.radius; // radius of the ball
+      head.point_in_world.z = ball.radius; // radius of the ball*/
+      
+      path.type = path.type.kick_with_foot_left;
     }
   }
 
@@ -221,6 +224,8 @@ option kick_with_foot
       head.point_in_world.x = ball.percept.x;
       head.point_in_world.y = ball.percept.y;
       head.point_in_world.z = ball.radius; // radius of the ball
+
+      path.type = path.type.none;
     }
   }
 

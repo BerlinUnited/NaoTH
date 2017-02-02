@@ -20,7 +20,11 @@ public:
     go_to_ball_left,
     move_around_ball,
     fast_forward_right,
-    fast_forward_left
+    fast_forward_left,
+    kick_with_foot_right,
+    kick_with_foot_left,
+    sidekick_left,
+    sidekick_right
   };
 
   PathType pathType = PathType::none;

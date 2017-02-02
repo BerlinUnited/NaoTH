@@ -34,8 +34,7 @@ option kick_short_with_approach
     }
     action {
       situation_abortable = false;
-      //fast_forward_kick(foot = right);
-      path.type = path.type.fast_forward_right;
+      fast_forward_kick(foot = right);
     }
   }
 
@@ -62,7 +61,6 @@ option kick_short_with_approach
     action {
       situation_abortable = false;
       fast_forward_kick(foot = left);
-      path.type = path.type.fast_forward_left;
     }
   }
 

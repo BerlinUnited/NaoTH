@@ -39,7 +39,7 @@ option sidekick
     }
     action
     {
-      motion.type = walk;
+     /* motion.type = walk;
       
       motion.walk.coordinate = left_foot;
       motion.walk.style = fast;
@@ -57,7 +57,9 @@ option sidekick
       motion.walk_speed.rot = 0;
 
       //loook at percept
-      head.control_mode = look_at_ball_percept;
+      head.control_mode = look_at_ball_percept;*/
+      
+      path.type = path.type.sidekick_left;
     }
   }
 
@@ -73,7 +75,7 @@ option sidekick
     }
     action
     {
-      motion.type = walk;
+      /*motion.type = walk;
       
       motion.walk.coordinate = right_foot;
       motion.walk.style = fast;
@@ -91,7 +93,9 @@ option sidekick
       motion.walk_speed.rot = 0;
 
       //look at percept
-      head.control_mode = look_at_ball_percept;
+      head.control_mode = look_at_ball_percept;*/
+      
+      path.type = path.type.sidekick_right;
     }
   }
 
@@ -133,6 +137,8 @@ option sidekick
 
       //loook at percept
       head.control_mode = look_at_ball_percept;
+
+      path.type = path.type.none;
     }
   }
 }
