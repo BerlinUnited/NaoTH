@@ -4,46 +4,47 @@ import math
 import field_info as field
 import tools as tools
 import action as a
-import potentialfield as pf
+import potential_field as pf
 import math2d as m2d
 
 
 def simulate_consequences(action, pose, ball_position):  # Todo Check for Collisions with opp goal and if ball is out
 
     categorized_ball_pos_list = []
-
     cat_hist = [0]*len(a.Categories)
-    # goal_back_side1 = m2d.LineSegment(oppGoalBackLeft.x, oppGoalBackLeft.y, oppGoalBackRight.x, oppGoalBackRight.y)
-    # goal_back_side2 = m2d.LineSegment(opponentGoalPostLeft.x, opponentGoalPostLeft.y, oppGoalBackLeft.x, oppGoalBackLeft.y)
-    # goal_back_side3 = m2d.LineSegment(opponentGoalPostRight.x, opponentGoalPostRight.y, oppGoalBackRight.x, oppGoalBackRight.y)
+
+    # calculate the own goal line
+    own_goal_dir = m2d.Vector2(field.own_goalpost_right - field.own_goalpost_left).normalize()
+    own_left_endpoint = m2d.Vector2(field.own_goalpost_left + own_goal_dir*(field.goalpost_radius + field.ball_radius))
+    own_right_endpoint = m2d.Vector2(field.own_goalpost_right - own_goal_dir*(field.goalpost_radius + field.ball_radius))
+
+    ownGoalLineGlobal = m2d.LineSegment(own_left_endpoint, own_right_endpoint);
 
     for i in range(0, a.num_particles):
 
         new_ball_pos = action.predict(ball_position)
         new_ball_pos_global = pose * new_ball_pos
-        # global_ball_pos = pose * ball_position
-        # shootline = m2d.LineSegment(global_ball_pos.x, global_ball_pos.y, new_ball_pos_global.x, new_ball_pos_global.y)
-        # shootline_length = tools.distance(shootline)
+        global_ball_pos = pose * ball_position
+        shootline = m2d.LineSegment(global_ball_pos, new_ball_pos_global)
+        #shootline = sympy.Segment(sympy.Point(global_ball_pos.x, global_ball_pos.y), sympy.Point(new_ball_pos_global.x, new_ball_pos_global.y))
 
-        # if ball is not in field check for collisions with oppGoal and shorten the ball
-        # Todo use those checks to shorten the ball later
-        # Check if ball hits the goal contruction for each particle
-        # Todo compile error
-        # intersection1 = h.line_intersection(shootline, goalBackSide1)
-        # intersection2 = h.line_intersection(shootline, goalBackSide2)
-        # intersection3 = h.line_intersection(shootline, goalBackSide3)
+        # if ball is not in field check for collisions with oppGoal and shorten the ball Todo test it
+        if shootline.intersection(field.goal_back_side):
+            intersection = shootline.intersection(field.goal_back_side)
+            print intersection
+            #shootline = sympy.Segment(sympy.Point(global_ball_pos.x, global_ball_pos.y), sympy.Point(intersection[0],intersection[1]))
+        #elif shootline.intersection(field.goal_left_side):
+            #intersection = shootline.intersection(field.goal_left_side)[0]
+            #shootline = sympy.Segment(sympy.Point(global_ball_pos.x, global_ball_pos.y), sympy.Point(intersection[0],intersection[1]))
+        #elif shootline.intersection(field.goal_right_side):
+            #intersection = shootline.intersection(field.goal_right_side)[0]
+            #shootline = sympy.Segment(sympy.Point(global_ball_pos.x, global_ball_pos.y), sympy.Point(intersection[0],intersection[1]))
 
-        # Obstacle currently not used
-
-        # Check if particle scores a goal
-        intersection_opp_goal = tools.intersect(ball_position, ball_position, field.opponent_goalpost_left, field.opponent_goalpost_right)
-        # Check if ball hits the own goal
-        intersection_own_goal = tools.intersect(ball_position, ball_position, field.own_goalpost_left, field.own_goalpost_right)
-        if intersection_opp_goal and new_ball_pos_global.x < field.opp_goal_back_left and field.opp_goal_back_right < new_ball_pos_global.y < field.opp_goal_back_left and new_ball_pos_global.y:
+        if shootline.intersection(field.opponent_goal_line):
             category = "OPPGOAL"
         elif -4500 < new_ball_pos_global.x < 4500 and -3000 < new_ball_pos_global.y < 3000:
             category = "INFIELD"
-        elif intersection_own_goal:
+        elif shootline.intersection(field.own_goal_line):
             category = "OWNGOAL"
         else:
             category = "OUT"
