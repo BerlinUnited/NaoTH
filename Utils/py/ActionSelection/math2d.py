@@ -105,3 +105,18 @@ class LineSegment(object):
         normal = Vector2(-other.direction.y, other.direction.x)
         t = normal*self.direction
         return 0.0 <= t <= self.length
+
+
+class Rect2d:
+    def __init__(self, a, b):
+        self.minimum = Vector2(min(a.x, b.x), min(a.y, b.y))
+        self.maximum = Vector2(max(a.x, b.x), max(a.y, b.y))
+
+    def inside(self, p):
+        return self.maximum.x >= p.x >= self.minimum.x and self.maximum.y >= p.y >= self.minimum.y
+
+    def min(self):
+        return self.minimum
+
+    def max(self):
+        return self.maximum
