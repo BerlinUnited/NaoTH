@@ -43,10 +43,10 @@ PathPlanner::PathPlanner()
   // XABSL: side_kick
   DEBUG_REQUEST_REGISTER("PathPlanner:motion:sidekick",
                          "Sidekick the ball to the left or right.", true);
-  DEBUG_REQUEST_REGISTER("PathPlanner:test:sidekick_test_right",
-                         "TEST: Sidekick the ball to the left.", false);
-  DEBUG_REQUEST_REGISTER("PathPlanner:test:sidekick_test_left",
+  DEBUG_REQUEST_REGISTER("PathPlanner:test:sidekick_test_to_right",
                          "TEST: Sidekick the ball to the right.", false);
+  DEBUG_REQUEST_REGISTER("PathPlanner:test:sidekick_test_to_left",
+                         "TEST: Sidekick the ball to the left.", false);
 
   // ------ Helpers ------
   // Stand
@@ -84,7 +84,7 @@ void PathPlanner::execute()
                 double distance = 160.0;
                 MODIFY("PathPlanner:test:goto_distance", distance);
                 double yOffset  = 0.0;
-                MODIFY("PathPlanner:test:yOffset", yOffset);
+                MODIFY("PathPlanner:test:goto_yOffset", yOffset);
                 getPathModel().pathType = PathModel::PathType::go_to_ball_right;
                 PathPlanner::goToBall(distance, yOffset);
                 );
@@ -160,12 +160,12 @@ void PathPlanner::execute()
                 }
                 );
   // TEST
-  DEBUG_REQUEST("PathPlanner:test:sidekick_test_right",
-                getPathModel().pathType = PathModel::PathType::sidekick_right;
+  DEBUG_REQUEST("PathPlanner:test:sidekick_test_to_right",
+                getPathModel().pathType = PathModel::PathType::sidekick_left;
                 PathPlanner::sidekick();
                 );
-  DEBUG_REQUEST("PathPlanner:test:sidekick_test_left",
-                getPathModel().pathType = PathModel::PathType::sidekick_left;
+  DEBUG_REQUEST("PathPlanner:test:sidekick_test_to_left",
+                getPathModel().pathType = PathModel::PathType::sidekick_right;
                 PathPlanner::sidekick();
                 );
 
