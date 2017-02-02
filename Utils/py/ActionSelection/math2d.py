@@ -41,6 +41,12 @@ class Vector2:
     def __str__(self):
         return str(self.x) + " " + str(self.y)
 
+    def normalize(self):
+        if Vector2.abs(self) != 0:
+            return self / Vector2.abs(self)
+        else:
+            return self
+
 
 class Pose2D:
 
