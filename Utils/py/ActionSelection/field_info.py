@@ -1,5 +1,6 @@
 import math2d as m2d
 
+ball_radius = 100
 
 x_length = 9000
 y_length = 6000
