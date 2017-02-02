@@ -43,6 +43,10 @@ PathPlanner::PathPlanner()
   // XABSL: side_kick
   DEBUG_REQUEST_REGISTER("PathPlanner:motion:sidekick",
                          "Sidekick the ball to the left or right.", true);
+  DEBUG_REQUEST_REGISTER("PathPlanner:test:sidekick_test_right",
+                         "TEST: Sidekick the ball to the left.", false);
+  DEBUG_REQUEST_REGISTER("PathPlanner:test:sidekick_test_left",
+                         "TEST: Sidekick the ball to the right.", false);
 
   // ------ Helpers ------
   // Stand
@@ -155,7 +159,15 @@ void PathPlanner::execute()
                   PathPlanner::sidekick();
                 }
                 );
-
+  // TEST
+  DEBUG_REQUEST("PathPlanner:test:sidekick_test_right",
+                getPathModel().pathType = PathModel::PathType::sidekick_right;
+                PathPlanner::sidekick();
+                );
+  DEBUG_REQUEST("PathPlanner:test:sidekick_test_left",
+                getPathModel().pathType = PathModel::PathType::sidekick_left;
+                PathPlanner::sidekick();
+                );
 
   // ------ Helpers ------
   // Stand still
@@ -307,7 +319,8 @@ void PathPlanner::moveAroundBall(double direction, double radius)
 {
   lookAtBall();
 
-  Vector2d ballPrev        = getBallModel().positionPreview;
+  Vector2d ballPrev = getBallModel().positionPreview;
+
   if (getBallModel().positionPreview.angle() > 30)
   {
     getMotionRequest().id = motion::walk;
@@ -344,9 +357,9 @@ void PathPlanner::fastForwardKick()
 
   lookAtBall();
 
-  getMotionRequest().id                                 = motion::walk;
-  getMotionRequest().walkRequest.stepControl.stepID     = getMotionStatus().stepControl.stepID;
-  getMotionRequest().walkRequest.character              = 1.0; // fast!
+  getMotionRequest().id                             = motion::walk;
+  getMotionRequest().walkRequest.stepControl.stepID = getMotionStatus().stepControl.stepID;
+  getMotionRequest().walkRequest.character          = 1.0; // fast!
 
   if (getPathModel().pathType == PathModel::PathType::fast_forward_right)
   {
@@ -377,9 +390,9 @@ void PathPlanner::kickWithFoot()
 
   lookAtBall();
 
-  getMotionRequest().id = motion::walk;
-  getMotionRequest().walkRequest.stepControl.stepID     = getMotionStatus().stepControl.stepID;
-  getMotionRequest().walkRequest.character              = 1.0; // fast!
+  getMotionRequest().id                             = motion::walk;
+  getMotionRequest().walkRequest.stepControl.stepID = getMotionStatus().stepControl.stepID;
+  getMotionRequest().walkRequest.character          = 1.0; // fast!
 
   if (getPathModel().pathType == PathModel::PathType::kick_with_foot_right)
   {
@@ -409,9 +422,9 @@ void PathPlanner::sidekick()
 
   lookAtBall();
 
-  getMotionRequest().id = motion::walk;
-  getMotionRequest().walkRequest.stepControl.stepID     = getMotionStatus().stepControl.stepID;
-  getMotionRequest().walkRequest.character              = 1.0; // fast!
+  getMotionRequest().id                             = motion::walk;
+  getMotionRequest().walkRequest.stepControl.stepID = getMotionStatus().stepControl.stepID;
+  getMotionRequest().walkRequest.character          = 1.0; // fast!
 
   if (getPathModel().pathType == PathModel::PathType::sidekick_right)
   {
