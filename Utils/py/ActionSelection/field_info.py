@@ -36,17 +36,14 @@ y_right_sideline = -y_left_sideline
 opponent_goalpost_left = m2d.Vector2(x_opponent_goal+25, y_left_goalpost)
 opponent_goalpost_right = m2d.Vector2(x_opponent_goal+25, y_right_goalpost)
 
-own_goalpost_left = m2d.Vector2(x_own_goal+25, y_left_goalpost)
-own_goalpost_right = m2d.Vector2(x_own_goal+25, y_right_goalpost)
+own_goalpost_left = m2d.Vector2(x_own_goal-25, y_left_goalpost)
+own_goalpost_right = m2d.Vector2(x_own_goal-25, y_right_goalpost)
 
 # From Simulation.cpp
 opp_goal_back_left = m2d.Vector2(opponent_goalpost_left.x + goal_depth, opponent_goalpost_left.y)
 opp_goal_back_right = m2d.Vector2(opponent_goalpost_right.x + goal_depth, opponent_goalpost_right.y)
 
 
-# Definition of Line Segments used for intersection checking
-goal_back_side = m2d.LineSegment(opp_goal_back_left, opp_goal_back_right)
-goal_left_side = m2d.LineSegment(opponent_goalpost_left, opp_goal_back_left)
-goal_right_side = m2d.LineSegment(opponent_goalpost_right, opp_goal_back_right)
-opponent_goal_line = m2d.LineSegment(opponent_goalpost_left, opponent_goalpost_right)
-own_goal_line = m2d.LineSegment(own_goalpost_left, own_goalpost_right)
+field_rect = m2d.Rect2d(m2d.Vector2(-x_length*0.5, -y_length*0.5), m2d.Vector2(x_length*0.5, y_length*0.5))
+
+

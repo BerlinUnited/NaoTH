@@ -16,7 +16,7 @@ class Action:
         self.angle_std = angle_std
         self.name = name
 
-    def predict(self, ball):
+    def predict(self, ball): # Todo make noise conditional
         gforce = 9.80620 * 1e3  # mm/s^2
 
         speed = np.random.normal(self.speed, self.speed_std)
@@ -35,5 +35,4 @@ class CategorizedBallPosition:
         self.ball_pos = ball_pos
         self.category = category
 
-
-Categories = ["INFIELD", "OPPOUT", "OWNOUT", "LEFTOUT", "RIGHTOUT", "OPPGOAL", "OWNGOAL", "COLLISION", "OUT", "NUMBER_OF_BallPositionCategory"]
+Categories = ["INFIELD", "OPPOUT", "OWNOUT", "LEFTOUT", "RIGHTOUT", "OPPGOAL", "OWNGOAL", "COLLISION", "NUMBER_OF_BallPositionCategory"]

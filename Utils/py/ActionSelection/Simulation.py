@@ -8,48 +8,88 @@ import potential_field as pf
 import math2d as m2d
 
 
-def simulate_consequences(action, pose, ball_position):  # Todo Check for Collisions with opp goal and if ball is out
+def simulate_consequences(action, pose, ball_position):
 
     categorized_ball_pos_list = []
     cat_hist = [0]*len(a.Categories)
 
     # calculate the own goal line
-    own_goal_dir = m2d.Vector2(field.own_goalpost_right - field.own_goalpost_left).normalize()
-    own_left_endpoint = m2d.Vector2(field.own_goalpost_left + own_goal_dir*(field.goalpost_radius + field.ball_radius))
-    own_right_endpoint = m2d.Vector2(field.own_goalpost_right - own_goal_dir*(field.goalpost_radius + field.ball_radius))
+    own_goal_dir = (field.own_goalpost_right - field.own_goalpost_left).normalize()
 
-    ownGoalLineGlobal = m2d.LineSegment(own_left_endpoint, own_right_endpoint);
+    own_left_endpoint = field.own_goalpost_left + own_goal_dir*(field.goalpost_radius + field.ball_radius)
+    own_right_endpoint = field.own_goalpost_right - own_goal_dir*(field.goalpost_radius + field.ball_radius)
 
+    own_goal_line_global = m2d.LineSegment(own_left_endpoint, own_right_endpoint)
+
+    # calculate opponent goal lines and box
+    opp_goal_back_left = m2d.Vector2(field.opponent_goalpost_left.x + field.goal_depth, field.opponent_goalpost_left.y)
+    opp_goal_back_right = m2d.Vector2(field.opponent_goalpost_right.x + field.goal_depth, field.opponent_goalpost_right.y)
+
+    # Maybe add list of goal backsides here
+    goal_backsides = ([])
+    goal_backsides.append(m2d.LineSegment(opp_goal_back_left, opp_goal_back_right))
+    goal_backsides.append(m2d.LineSegment(field.opponent_goalpost_left, opp_goal_back_left))
+    goal_backsides.append(m2d.LineSegment(field.opponent_goalpost_right, opp_goal_back_right))
+
+    opp_goal_box = m2d.Rect2d(opp_goal_back_right, field.opponent_goalpost_left)
+
+    # current ball position
+    global_ball_start_position = pose * ball_position
+
+    # virtual ultrasound obstacle line
+    obstacle_line = m2d.LineSegment(pose * m2d.Vector2(400, 200), pose * m2d.Vector2(400, -200))
+
+    # now generate predictions and categorize
     for i in range(0, a.num_particles):
+        # predict and calculate shoot line
+        global_ball_end_position = pose * action.predict(ball_position)
 
-        new_ball_pos = action.predict(ball_position)
-        new_ball_pos_global = pose * new_ball_pos
-        global_ball_pos = pose * ball_position
-        shootline = m2d.LineSegment(global_ball_pos, new_ball_pos_global)
-        #shootline = sympy.Segment(sympy.Point(global_ball_pos.x, global_ball_pos.y), sympy.Point(new_ball_pos_global.x, new_ball_pos_global.y))
+        shootline = m2d.LineSegment(global_ball_start_position, global_ball_end_position)
 
-        # if ball is not in field check for collisions with oppGoal and shorten the ball Todo test it
-        if shootline.intersection(field.goal_back_side):
-            intersection = shootline.intersection(field.goal_back_side)
-            print intersection
-            #shootline = sympy.Segment(sympy.Point(global_ball_pos.x, global_ball_pos.y), sympy.Point(intersection[0],intersection[1]))
-        #elif shootline.intersection(field.goal_left_side):
-            #intersection = shootline.intersection(field.goal_left_side)[0]
-            #shootline = sympy.Segment(sympy.Point(global_ball_pos.x, global_ball_pos.y), sympy.Point(intersection[0],intersection[1]))
-        #elif shootline.intersection(field.goal_right_side):
-            #intersection = shootline.intersection(field.goal_right_side)[0]
-            #shootline = sympy.Segment(sympy.Point(global_ball_pos.x, global_ball_pos.y), sympy.Point(intersection[0],intersection[1]))
+        # check if collision detection with goal has to be performed
+        # if the ball start and end positions are inside of the field, you don't need to check
+        collision_with_goal = False
+        t_min = 0  # dummy value
+        if not field.field_rect.inside(global_ball_end_position) or not field.field_rect.inside(global_ball_start_position):
+            t_min = shootline.length
+            for side in goal_backsides:
+                t = shootline.intersection(side)
+                if 0 <= t < t_min and side.intersect(shootline):
+                    t_min = t
+                    collision_with_goal = True
 
-        if shootline.intersection(field.opponent_goal_line):
+            print(collision_with_goal)  # Todo Test if its working correctly - It's not
+
+        # if there are collisions with the back goal lines, calulate where the ball will stop
+        if collision_with_goal:
+            shootline = m2d.LineSegment(global_ball_start_position, shootline.point(t_min-field.ball_radius))
+            global_ball_end_position = shootline.end()
+
+        # Obstacle Detection
+        obstacle_collision = False
+
+        if opp_goal_box.inside(global_ball_end_position):
             category = "OPPGOAL"
-        elif -4500 < new_ball_pos_global.x < 4500 and -3000 < new_ball_pos_global.y < 3000:
+        # Todo add Collision
+        elif obstacle_collision and obstacle_line.intersect(shootline) and shootline.intersect(obstacle_line):
+            category = "COLLISION"
+        elif (field.field_rect.inside(global_ball_end_position) or
+                global_ball_end_position.x <= field.opponent_goalpost_right.x and
+                field.opponent_goalpost_left.y < global_ball_end_position.y > field.opponent_goalpost_right.y):
             category = "INFIELD"
-        elif shootline.intersection(field.own_goal_line):
+        elif shootline.intersect(own_goal_line_global) and own_goal_line_global.intersect(shootline):
             category = "OWNGOAL"
-        else:
-            category = "OUT"
+        elif global_ball_end_position.x > field.x_opponent_groundline:
+            category = "OPPOUT"
+        elif global_ball_end_position.x < field.x_opponent_groundline:
+            category = "OWNOUT"
+        elif global_ball_end_position.y > field.y_left_sideline:
+            category = "LEFTOUT"
+        elif global_ball_end_position.y < field.y_right_sideline:
+            category = "RIGHTOUT"
         cat_hist[a.Categories.index(category)] += 1
-        categorized_ball_pos_list.append(a.CategorizedBallPosition(new_ball_pos_global, category))
+        # Todo: write ball end pos in local coordinates
+        categorized_ball_pos_list.append(a.CategorizedBallPosition(global_ball_end_position, category))
 
     return categorized_ball_pos_list, cat_hist
 
