@@ -132,16 +132,20 @@ public:
     Measurement(): Eigen::Matrix<double,dim_measurement,1>(Eigen::Matrix<double,dim_measurement,1>::Zero()){
     }
 
+    Measurement(Eigen::Matrix<double,dim_measurement,1> z): Eigen::Matrix<double,dim_measurement,1>(z){
+    }
+
     Eigen::Block<Eigen::Matrix<double,dim_measurement,1> > acceleration(){
         return Eigen::Block<Eigen::Matrix<double,dim_measurement,1> >(this->derived(), 0, 0, 3, 1);
     }
 
     Eigen::Block<Eigen::Matrix<double,dim_measurement,1> > rotation(){
-        return Eigen::Block<Eigen::Matrix<double,dim_measurement,1> >(this->derived(), 3, 0, 3, 1);
+        return Eigen::Block<Eigen::Matrix<double,dim_measurement,1> >(this->derived(), 3, 0, 2, 1);
     }
 
     Eigen::Quaterniond getRotationAsQuaternion() /*const*/ {
-        Eigen::Vector3d   rot(rotation());
+        Eigen::Vector3d   rot;
+        rot << rotation(), 0;
         Eigen::AngleAxisd rot2;
         if(rot.norm() > 0){
             rot2 = Eigen::AngleAxisd(rot.norm(), rot.normalized());
@@ -152,7 +156,7 @@ public:
     }
 
     Eigen::Block<Eigen::Matrix<double,dim_measurement,1> > rotational_velocity(){
-        return Eigen::Block<Eigen::Matrix<double,dim_measurement,1> >(this->derived(), 6, 0, 3, 1);
+        return Eigen::Block<Eigen::Matrix<double,dim_measurement,1> >(this->derived(), 5, 0, 3, 1);
     }
 };
 
@@ -219,15 +223,15 @@ class UKF {
 //                -6.485352375515866273e-07, -4.599219827687661978e-07, -3.030009469390110280e-07, 0     , 0     , 0     ,  5.842662059539863827e-08,  1.346681994776136150e-06,  3.242298821157115427e-06;
 
             // synthetic measurement covariance matrix used for testing
-            R << 10e-5, 0, 0, 0, 0, 0, 0, 0, 0,
-                 0, 10e-5, 0, 0, 0, 0, 0, 0, 0,
-                 0, 0, 10e-5, 0, 0, 0, 0, 0, 0,
-                 0, 0, 0, 10e-5, 0, 0, 0, 0, 0,
-                 0, 0, 0, 0, 10e-5, 0, 0, 0, 0,
-                 0, 0, 0, 0, 0, 10e-5, 0, 0, 0,
-                 0, 0, 0, 0, 0, 0, 10e-5, 0, 0,
-                 0, 0, 0, 0, 0, 0, 0, 10e-5, 0,
-                 0, 0, 0, 0, 0, 0, 0, 0, 10e-5;
+            R << 10e-5, 0, 0, 0, 0, 0, 0, 0,
+                 0, 10e-5, 0, 0, 0, 0, 0, 0,
+                 0, 0, 10e-5, 0, 0, 0, 0, 0,
+                 0, 0, 0, 10e-5, 0, 0, 0, 0,
+                 0, 0, 0, 0, 10e-5, 0, 0, 0,
+                 0, 0, 0, 0, 0, 10e-5, 0, 0,
+                 0, 0, 0, 0, 0, 0, 10e-5, 0,
+                 0, 0, 0, 0, 0, 0, 0, 10e-5;
+
         }
 
     public:
@@ -269,6 +273,7 @@ class UKF {
 
         void transitionFunction(S &state, double dt); // state transition function
         M stateToMeasurementSpaceFunction(S& state);  // state to measurement transformation function
+        S measurementToStateSpaceFunction(M& measurement);
         void generateSigmaPoints();
 
         // covariances
@@ -323,9 +328,9 @@ public:
 private:
     FrameInfo lastFrameInfo;
 
-    UKF<9,9,9,9> ukf;
+    UKF<9,9,8,8> ukf;
 
-    typedef Measurement<9,9> IMU_Measurement;
+    typedef Measurement<8,8> IMU_Measurement;
 
     Eigen::Vector3d quaternionToRotationVector(const Eigen::Quaterniond& q) const{
         Eigen::AngleAxisd temp(q);

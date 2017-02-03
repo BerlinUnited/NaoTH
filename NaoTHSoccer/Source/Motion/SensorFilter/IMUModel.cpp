@@ -24,9 +24,11 @@ void IMUModel::execute(){
     Eigen::Vector3d acceleration = Eigen::Vector3d(getAccelerometerData().data.x, getAccelerometerData().data.y, getAccelerometerData().data.z);
     rotation_acc_to_gravity.setFromTwoVectors(acceleration,Eigen::Vector3d(0,0,-1));
 
+    Eigen::Vector3d temp(quaternionToRotationVector(rotation_acc_to_gravity));
+
     IMU_Measurement z;
     // gyro z axis seems to measure in opposite direction (turning left measures negative angular velocity, should be positive)
-    z << acceleration, quaternionToRotationVector(rotation_acc_to_gravity), getGyrometerData().data.x, getGyrometerData().data.y, -getGyrometerData().data.z;
+    z << acceleration, temp(0), temp(1), getGyrometerData().data.x, getGyrometerData().data.y, -getGyrometerData().data.z;
 
     ukf.update(z);
 
@@ -205,7 +207,8 @@ void UKF <dim_state, dim_state_cov, dim_measurement, dim_measurement_cov,S,M>::u
     }
 
     // more correct determination of the mean rotation
-    predicted_z.rotation() = averageRotation(rotations, rotations.back());
+    Eigen::Vector3d rotational_mean = averageRotation(rotations, rotations.back());
+    predicted_z.rotation() << rotational_mean(0), rotational_mean(1);
 
     // calculate current measurement covariance
     Eigen::Matrix<double, dim_measurement_cov, dim_measurement_cov> Pzz = Eigen::Matrix<double, dim_measurement_cov, dim_measurement_cov>::Zero();
@@ -214,7 +217,7 @@ void UKF <dim_state, dim_state_cov, dim_measurement, dim_measurement_cov,S,M>::u
         Eigen::Matrix<double, dim_measurement_cov,1> temp((*i)- predicted_z);
         // replace wrong rotational difference
         Eigen::AngleAxis<double> error((*i).getRotationAsQuaternion() * predicted_z.getRotationAsQuaternion().inverse());
-        temp.block(3,0,3,1) = error.angle() * error.axis();
+        temp.block(3,0,2,1) << error.angle() * error.axis()(0), error.angle() * error.axis()(1);
         Pzz += 1.0 / static_cast<double>(sigmaPoints.size()) * (temp)*(temp).transpose();
     }
 
@@ -233,7 +236,7 @@ void UKF <dim_state, dim_state_cov, dim_measurement, dim_measurement_cov,S,M>::u
         Eigen::Matrix<double, dim_measurement_cov,1> temp2(sigmaMeasurements[i] - predicted_z);
         // replace wrong rotational difference
         error = Eigen::AngleAxis<double>(sigmaMeasurements[i].getRotationAsQuaternion() * predicted_z.getRotationAsQuaternion().inverse());
-        temp2.block(3,0,3,1) = error.angle() * error.axis();
+        temp2.block(3,0,2,1) << error.angle() * error.axis()(0), error.angle() * error.axis()(1);
 
         Pxz += 1.0 / static_cast<double>(sigmaPoints.size()) * (temp1) * (temp2).transpose();
     }
@@ -247,12 +250,11 @@ void UKF <dim_state, dim_state_cov, dim_measurement, dim_measurement_cov,S,M>::u
     Eigen::Matrix<double, dim_measurement_cov,1> z_innovation = z - predicted_z;
     // replace wrong rotational difference
     Eigen::AngleAxis<double> error(z.getRotationAsQuaternion() * predicted_z.getRotationAsQuaternion().inverse());
-    z_innovation.block(3,0,3,1) = error.angle() * error.axis();
+    z_innovation.block(3,0,2,1) << error.angle() * error.axis()(0), error.angle() * error.axis()(1);
 
     S state_innovation(K*z_innovation);
 
-    // HACK
-    // TODO reduce measurement space dimensionality by one, rotation around z axis isn't measured => screws things up
+    // HACK: z rotation is only measured by gyrometer => so the fifth row of K should be almost zero except for two entries
     state_innovation(5,0) = 0.0;
 
     state += state_innovation;
@@ -303,7 +305,15 @@ M UKF<dim_state, dim_state_cov, dim_measurement, dim_measurement_cov, S, M>::sta
     Eigen::Vector3d   rotation_in_measurement_space(temp.angle() * temp.axis());
 
     M return_val;
-    return_val << acceleration_in_measurement_space, rotation_in_measurement_space, rotational_velocity_in_measurement_space;
+    return_val << acceleration_in_measurement_space, rotation_in_measurement_space(0), rotation_in_measurement_space(1), rotational_velocity_in_measurement_space;
+
+    return return_val;
+}
+
+template <int dim_state, int dim_state_cov, int dim_measurement, int dim_measurement_cov, class S, class M>
+S UKF<dim_state, dim_state_cov, dim_measurement, dim_measurement_cov, S, M>::measurementToStateSpaceFunction (M& z){
+    S return_val;
+    return_val << z.acceleration(), z.rotation(), 0, z.rotational_velocity();
 
     return return_val;
 }
