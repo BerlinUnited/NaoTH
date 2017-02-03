@@ -246,7 +246,6 @@ void Simulation::simulateConsequences(
       && globalBallEndPosition.y > getFieldInfo().opponentGoalPostRight.y 
       && globalBallEndPosition.y < getFieldInfo().opponentGoalPostLeft.y)
       )
-      //(globalBallEndPosition.y < getFieldInfo().opponentGoalPostRight.y && globalBallEndPosition.y > getFieldInfo().opponentGoalPostLeft.y)
     {
       category = INFIELD;
     }
@@ -255,7 +254,7 @@ void Simulation::simulateConsequences(
     {
       category = OWNGOAL;
     }
-    //Opponent Groundline Out - Ball einen Meter hinter Roboter mind ansto� h�he. jeweils seite wo ins ausgeht
+    //Opponent Groundline Out - Ball einen Meter hinter Roboter mind anstoss hoehe. jeweils seite wo ins ausgeht
     else if(globalBallEndPosition.x > getFieldInfo().xPosOpponentGroundline)
     {
       category = OPPOUT;
@@ -266,7 +265,7 @@ void Simulation::simulateConsequences(
       category = OWNOUT;
     }
     //an der linken Seite raus -> ein meter hinter roboter oder wo ins ausgeht ein meter hinter
-    else if(globalBallEndPosition.y > getFieldInfo().yPosLeftSideline )
+    else if(globalBallEndPosition.y > getFieldInfo().yPosLeftSideline)
     {  
       category = LEFTOUT;
     }
