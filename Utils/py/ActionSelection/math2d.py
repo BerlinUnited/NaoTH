@@ -63,6 +63,9 @@ class Pose2D:
         p.translation = (Vector2() - self.translation).rotate(p.rotation)
         return p
 
+    def __div__(self, point):
+        return (point - self.translation).rotate(-self.rotation)
+
 
 class LineSegment(object):
     def __init__(self, begin, end):

@@ -8,10 +8,21 @@ import potential_field as pf
 import math2d as m2d
 
 
-def simulate_consequences(action, pose, ball_position):
+class State:
+    def __init__(self):
+        self.pose = m2d.Pose2D()
+        self.pose.translation = m2d.Vector2(4200, 300)
+        self.pose.rotation = math.radians(0)
 
-    categorized_ball_pos_list = []
-    cat_hist = [0]*len(a.Categories)
+        self.ball_position = m2d.Vector2(100.0, 0.0)
+
+        self.obstacle_list = ([])  # is in global coordinates
+        self.obstacle_list.append(m2d.Vector2(2000, 2000))
+
+
+def simulate_consequences(action, categorized_ball_positions, state):
+
+    categorized_ball_positions.reset()
 
     # calculate the own goal line
     own_goal_dir = (field.own_goalpost_right - field.own_goalpost_left).normalize()
@@ -34,15 +45,15 @@ def simulate_consequences(action, pose, ball_position):
     opp_goal_box = m2d.Rect2d(opp_goal_back_right, field.opponent_goalpost_left)
 
     # current ball position
-    global_ball_start_position = pose * ball_position
+    global_ball_start_position = state.pose * state.ball_position
 
     # virtual ultrasound obstacle line
-    obstacle_line = m2d.LineSegment(pose * m2d.Vector2(400, 200), pose * m2d.Vector2(400, -200))
+    obstacle_line = m2d.LineSegment(state.pose * m2d.Vector2(400, 200), state.pose * m2d.Vector2(400, -200))
 
     # now generate predictions and categorize
     for i in range(0, a.num_particles):
         # predict and calculate shoot line
-        global_ball_end_position = pose * action.predict(ball_position)
+        global_ball_end_position = state.pose * action.predict(state.ball_position)
 
         shootline = m2d.LineSegment(global_ball_start_position, global_ball_end_position)
 
@@ -53,12 +64,10 @@ def simulate_consequences(action, pose, ball_position):
         if not field.field_rect.inside(global_ball_end_position) or not field.field_rect.inside(global_ball_start_position):
             t_min = shootline.length
             for side in goal_backsides:
-                t = shootline.intersection(side)
-                if 0 <= t < t_min and side.intersect(shootline):
+                t = shootline.line_intersection(side)
+                if 0 <= t < t_min:
                     t_min = t
                     collision_with_goal = True
-
-            print(collision_with_goal)  # Todo Test if its working correctly - It's not
 
         # if there are collisions with the back goal lines, calulate where the ball will stop
         if collision_with_goal:
@@ -67,10 +76,15 @@ def simulate_consequences(action, pose, ball_position):
 
         # Obstacle Detection
         obstacle_collision = False
+        for obstacle in state.obstacle_list:
+            dist = math.sqrt((state.pose.translation.x-obstacle.x)**2 - (state.pose.translation.y-obstacle.y)**2)
+            # check for distance and rotation
+            if dist < 400 and shootline.intersect(obstacle_line):
+                obstacle_collision = False
 
+        category = "INFIELD"
         if opp_goal_box.inside(global_ball_end_position):
             category = "OPPGOAL"
-        # Todo add Collision
         elif obstacle_collision and obstacle_line.intersect(shootline) and shootline.intersect(obstacle_line):
             category = "COLLISION"
         elif (field.field_rect.inside(global_ball_end_position) or
@@ -87,19 +101,21 @@ def simulate_consequences(action, pose, ball_position):
             category = "LEFTOUT"
         elif global_ball_end_position.y < field.y_right_sideline:
             category = "RIGHTOUT"
-        cat_hist[a.Categories.index(category)] += 1
-        # Todo: write ball end pos in local coordinates
-        categorized_ball_pos_list.append(a.CategorizedBallPosition(global_ball_end_position, category))
 
-    return categorized_ball_pos_list, cat_hist
+        categorized_ball_positions.add(state.pose / global_ball_end_position, category)
+    # print(categorized_ball_positions.ball_positions[0].ball_pos)
+    return categorized_ball_positions
 
 
-def decide_smart(action_consequences, cat_hist):  # does not behave like cpp function
+def decide_smart(action_consequences):  # Todo does not behave like cpp function
+
+    acceptable_actions = []
 
     number_infield_pos = 0
-    acceptable_actions = []
     goal_actions = []
     # score = 0
+
+    # select acceptable actions
     for action in action_consequences:
         for i in range(0, a.num_particles):
             if action[i].category == "OWNGOAL":
@@ -135,31 +151,25 @@ def decide_smart(action_consequences, cat_hist):  # does not behave like cpp fun
     return min_index
 
 
-def draw_actions(action_consequences):
-
+def draw_actions(actions_consequences, state):
     plt.clf()
     tools.draw_field()
     ax = plt.gca()
-    ax.add_artist(Circle(xy=(1000, 2000), radius=100, fill=False, edgecolor='white'))  # should be robot pos * ball pos
+    ax.add_artist(Circle(xy=(state.pose.translation.x, state.pose.translation.y), radius=100, fill=False, edgecolor='white'))
     plot_color = ['ro', 'go', 'bo']
-    for idx, action in enumerate(action_consequences):
-        for i in range(0, a.num_particles):
-            plt.plot(action[i].ball_pos.x, action[i].ball_pos.y, plot_color[idx])
 
+    for idx, consequence in enumerate(actions_consequences):
+        for particle in consequence.positions():
+            ball_pos = state.pose * particle.ball_pos
+            plt.plot(ball_pos.x, ball_pos.y, plot_color[idx])
+    plt.draw()
     plt.pause(0.001)
 
 
 def main():
     plt.show(block=False)
 
-    # Robot Position
-    pose = m2d.Pose2D()
-    pose.translation = m2d.Vector2(1000, 2000)
-    pose.rotation = math.radians(0)
-    # Ball Position
-    ball_position = m2d.Vector2()
-    ball_position.x = 0.0
-    ball_position.y = 0.0
+    s = State()
 
     sidekick_right = a.Action("sidekick_right", 750, 150, -89.657943335302260, 10.553726275058064)
     sidekick_left = a.Action("sidekick_left", 750, 150, 86.170795364136380, 10.669170653645670)
@@ -168,22 +178,17 @@ def main():
     action_list = [sidekick_right, sidekick_left, kick_short]
 
     while True:
-        action_consequences = []  # results for all actions and particles
-        cat_hist = []  # histogram of results for all actions
-
+        actions_consequences = []
         # Simulate Consequences
         for action in action_list:
-            categorized_ball_pos_list, hist = simulate_consequences(action, pose, ball_position)
-
-            action_consequences.append(categorized_ball_pos_list)
-            cat_hist.append(hist)  # Todo use that somewhere
+            single_consequence = a.ActionResults([])
+            actions_consequences.append(simulate_consequences(action, single_consequence, s))
 
         # Decide best action
         # best_action = decide_smart(action_consequences, cat_hist)
         # print action_list[best_action].name
 
-        draw_actions(action_consequences)
-        # break
+        draw_actions(actions_consequences, s)
 
 
 if __name__ == "__main__":
