@@ -101,6 +101,14 @@ class LineSegment(object):
 
         return t
 
+    def line_intersection(self, other):
+        normal = Vector2(-other.direction.y, other.direction.x)
+        t = normal*self.direction
+        if t == 0:
+            return float('Inf')
+        else:
+            return normal*(other.base-self.base)/t
+
     def intersect(self, other):
         normal = Vector2(-other.direction.y, other.direction.x)
         t = normal*self.direction
