@@ -8,12 +8,12 @@ x_field_length = x_length + 2*700
 y_field_length = y_length + 2*700
 x_penalty_area_length = 600
 y_penalty_area_length = 2200
-center_circle_radius = 600
+center_circle_radius = 750
 x_penalty_mark_distance = 1300
 
-field_lines_width = 50
+field_lines_width = 2.33513514  # was originally 50 changed because of python plot stuff
 
-goal_width = 1400
+goal_width = 1500
 goal_height = 800
 goal_depth = 500
 goalpost_radius = 50
