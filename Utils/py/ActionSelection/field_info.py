@@ -6,10 +6,14 @@ x_length = 9000
 y_length = 6000
 x_field_length = x_length + 2*700
 y_field_length = y_length + 2*700
+
 x_penalty_area_length = 600
 y_penalty_area_length = 2200
+
 center_circle_radius = 750
+
 x_penalty_mark_distance = 1300
+penalty_cross_radius = 50
 
 field_lines_width = 2.33513514  # was originally 50 changed because of python plot stuff
 
@@ -17,9 +21,11 @@ goal_width = 1500
 goal_height = 800
 goal_depth = 500
 goalpost_radius = 50
+
 x_opponent_groundline = x_length / 2
 x_own_groundline = -x_opponent_groundline
 x_opponent_goal = x_opponent_groundline
+
 x_own_goal = -x_opponent_goal
 x_opponent_penalty_area = x_opponent_groundline - x_penalty_area_length
 x_own_penalty_area = -x_opponent_penalty_area
