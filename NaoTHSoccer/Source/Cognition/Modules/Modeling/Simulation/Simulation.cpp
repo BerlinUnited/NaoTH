@@ -291,7 +291,7 @@ size_t Simulation::decide_smart(const std::vector<ActionResults>& actionsConsequ
     const ActionResults& results = actionsConsequences[i];
 
     // if an own-goal is detected, ignore the action
-    if(results.categorie(OWNGOAL) > 0) {
+    if(results.category(OWNGOAL) > 0) {
       continue;
     }
 
@@ -321,7 +321,7 @@ size_t Simulation::decide_smart(const std::vector<ActionResults>& actionsConsequ
     const ActionResults& results = actionsConsequences[acceptableActions[i]];
 
     // chance of scoring a goal must be significant
-    if(results.categorie(OPPGOAL) < theParameters.minGoalParticles) {
+    if(results.category(OPPGOAL) < theParameters.minGoalParticles) {
       continue;
     }
 
@@ -332,13 +332,13 @@ size_t Simulation::decide_smart(const std::vector<ActionResults>& actionsConsequ
     }
 
     // the actio with the highest chance of scoring the goal is the best
-    if(actionsConsequences[goalActions.front()].categorie(OPPGOAL) < results.categorie(OPPGOAL)) {
+    if(actionsConsequences[goalActions.front()].category(OPPGOAL) < results.category(OPPGOAL)) {
       goalActions.clear();
       goalActions.push_back(acceptableActions[i]);
       continue;
     }
 
-    if(actionsConsequences[goalActions.front()].categorie(OPPGOAL) == results.categorie(OPPGOAL)) {
+    if(actionsConsequences[goalActions.front()].category(OPPGOAL) == results.category(OPPGOAL)) {
       goalActions.push_back(acceptableActions[i]);
       continue;
     }
