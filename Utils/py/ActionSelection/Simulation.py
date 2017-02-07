@@ -107,48 +107,84 @@ def simulate_consequences(action, categorized_ball_positions, state):
     return categorized_ball_positions
 
 
-def decide_smart(action_consequences):  # Todo does not behave like cpp function
+def decide_smart(actions_consequences):  # Todo does not behave like cpp function
 
     acceptable_actions = []
-
-    number_infield_pos = 0
-    goal_actions = []
-    # score = 0
-
     # select acceptable actions
-    for action in action_consequences:
-        for i in range(0, a.num_particles):
-            if action[i].category == "OWNGOAL":
-                continue
-            elif action[i].category == "INFIELD" or action[i].category == "OPPGOAL":
-                number_infield_pos += 1
+    for i, results in enumerate(actions_consequences):
+        # if an own-goal is detected, ignore the action
+        if results.category("OWNGOAL") > 0:
+            continue
 
-        score = number_infield_pos/30  # 30=number particles
+        # ignore actions with too high chance of kicking out
+        score = results.likelihood("INFIELD") + results.likelihood("OPPGOAL")
         if score <= max(0.0, a.good_threshold_percentage):
             continue
-        acceptable_actions.append(action)
 
-    for action in acceptable_actions:
-        if not goal_actions:
-            goal_actions.append(action)
+        # all actions which are not too bad
+        acceptable_actions.append(i)
+    print(acceptable_actions)
+
+    # no acceptable actions
+    if len(acceptable_actions) == 0:
+        return 0  # assumes 0 is the turn action
+
+    # there is a clear decision
+    if len(acceptable_actions) == 1:
+        return acceptable_actions[0]
+
+    # select the subset of actions with highest goal chance
+    goal_actions = []
+    for index in acceptable_actions:
+        results = actions_consequences[index]
+
+        # chance of scoring a goal must be significant
+        if results.category("OPPGOAL") < a.minGoalParticles:
             continue
 
-    # Evaluate by potential field
-    sum_potential_list = []
-    for action in action_consequences:
-        sum_potential = 0
-        for i in range(0, a.num_particles):
-            sum_potential += pf.evaluate_action(action[i].ball_pos.x, action[i].ball_pos.y)
+        # there is no other action to compare yet
+        if len(goal_actions) == 0:
+            goal_actions.append(index)
+            continue
 
-        sum_potential_list.append(sum_potential)
+        # the action with the highest chance of scoring the goal is the best
+        if actions_consequences[goal_actions[0]].categorie("OPPGOAL") < results.categorie("OPPGOAL"):
+            goal_actions = []
+            goal_actions.append(index)
+            continue
 
-    min_potential = 10000
-    min_index = 0
-    for i in range(0, len(sum_potential_list)):
-        if sum_potential_list[i] < min_potential:
-            min_potential = sum_potential_list[i]
-            min_index = i
-    return min_index
+        if actions_consequences[goal_actions[0]].categorie("OPPGOAL") == results.categorie("OPPGOAL"):
+            goal_actions.append(index)
+            continue
+
+    # go for the goal action!
+    if len(goal_actions) == 1:
+        return goal_actions[0]
+
+    # no goal actions => select one of the acceptable actions based on strategic value
+    if len(goal_actions) == 0:
+        best_action = 0
+        best_value = float("inf") # assuming potential is [0.0, inf]
+        for index in acceptable_actions:
+            # Todo rewrite evaluate_action for Argument of type ActionResults
+            # potential = pf.evaluate_action(actions_consequences[index])
+            potential = 10
+            if potential < best_value:
+                best_action = index
+                best_value = potential
+        return best_action
+
+    # find min of goalActions
+    best_action = 0
+    best_value = float("inf") # assuming potential is [0.0, inf]
+    for index in goal_actions:
+        # Todo rewrite evaluate_action for Argument of type ActionResults
+        # potential = pf.evaluate_action(actions_consequences[index])
+        potential = 10
+        if potential < best_value:
+            best_action = index
+            best_value = potential
+    return best_action
 
 
 def draw_actions(actions_consequences, state):
@@ -184,9 +220,11 @@ def main():
             single_consequence = a.ActionResults([])
             actions_consequences.append(simulate_consequences(action, single_consequence, s))
 
+        # actions_consequences is now a list of ActionResults
+
         # Decide best action
-        # best_action = decide_smart(action_consequences, cat_hist)
-        # print action_list[best_action].name
+        best_action = decide_smart(actions_consequences)
+        print(action_list[best_action].name)
 
         draw_actions(actions_consequences, s)
 

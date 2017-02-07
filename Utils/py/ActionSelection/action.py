@@ -5,6 +5,7 @@ import math2d as m2d
 num_particles = 30
 friction = 0.0275
 good_threshold_percentage = 0.85
+minGoalParticles = 9
 
 
 class Action:
