@@ -4,9 +4,9 @@ import field_info as f
 import matplotlib as mpl
 
 
-def draw_field():  # Todo use field_info
+def draw_field():
 
-    mpl.rcParams['lines.linewidth'] = 2
+    mpl.rcParams['lines.linewidth'] = 2.33513514  # was 2 before
     mpl.rcParams['axes.color_cycle'] = ['white']
 
     ax = plt.gca()
