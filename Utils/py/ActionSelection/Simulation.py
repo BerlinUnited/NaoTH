@@ -11,7 +11,7 @@ import math2d as m2d
 class State:
     def __init__(self):
         self.pose = m2d.Pose2D()
-        self.pose.translation = m2d.Vector2(4200, 300)
+        self.pose.translation = m2d.Vector2(4200, 0)
         self.pose.rotation = math.radians(0)
 
         self.ball_position = m2d.Vector2(100.0, 0.0)
@@ -103,11 +103,11 @@ def simulate_consequences(action, categorized_ball_positions, state):
             category = "RIGHTOUT"
 
         categorized_ball_positions.add(state.pose / global_ball_end_position, category)
-    # print(categorized_ball_positions.ball_positions[0].ball_pos)
+
     return categorized_ball_positions
 
 
-def decide_smart(actions_consequences):  # Todo does not behave like cpp function
+def decide_smart(actions_consequences, state):
 
     acceptable_actions = []
     # select acceptable actions
@@ -123,7 +123,6 @@ def decide_smart(actions_consequences):  # Todo does not behave like cpp functio
 
         # all actions which are not too bad
         acceptable_actions.append(i)
-    print(acceptable_actions)
 
     # no acceptable actions
     if len(acceptable_actions) == 0:
@@ -149,7 +148,7 @@ def decide_smart(actions_consequences):  # Todo does not behave like cpp functio
 
         # the action with the highest chance of scoring the goal is the best
         if actions_consequences[goal_actions[0]].categorie("OPPGOAL") < results.categorie("OPPGOAL"):
-            goal_actions = []
+            goal_actions = ([])
             goal_actions.append(index)
             continue
 
@@ -164,11 +163,9 @@ def decide_smart(actions_consequences):  # Todo does not behave like cpp functio
     # no goal actions => select one of the acceptable actions based on strategic value
     if len(goal_actions) == 0:
         best_action = 0
-        best_value = float("inf") # assuming potential is [0.0, inf]
+        best_value = float("inf")  # assuming potential is [0.0, inf]
         for index in acceptable_actions:
-            # Todo rewrite evaluate_action for Argument of type ActionResults
-            # potential = pf.evaluate_action(actions_consequences[index])
-            potential = 10
+            potential = pf.evaluate_action2(actions_consequences[index], state)
             if potential < best_value:
                 best_action = index
                 best_value = potential
@@ -176,11 +173,9 @@ def decide_smart(actions_consequences):  # Todo does not behave like cpp functio
 
     # find min of goalActions
     best_action = 0
-    best_value = float("inf") # assuming potential is [0.0, inf]
+    best_value = float("inf")  # assuming potential is [0.0, inf]
     for index in goal_actions:
-        # Todo rewrite evaluate_action for Argument of type ActionResults
-        # potential = pf.evaluate_action(actions_consequences[index])
-        potential = 10
+        potential = pf.evaluate_action2(actions_consequences[index], state)
         if potential < best_value:
             best_action = index
             best_value = potential
@@ -205,7 +200,7 @@ def draw_actions(actions_consequences, state):
 def main():
     plt.show(block=False)
 
-    s = State()
+    state = State()
 
     sidekick_right = a.Action("sidekick_right", 750, 150, -89.657943335302260, 10.553726275058064)
     sidekick_left = a.Action("sidekick_left", 750, 150, 86.170795364136380, 10.669170653645670)
@@ -218,15 +213,15 @@ def main():
         # Simulate Consequences
         for action in action_list:
             single_consequence = a.ActionResults([])
-            actions_consequences.append(simulate_consequences(action, single_consequence, s))
+            actions_consequences.append(simulate_consequences(action, single_consequence, state))
 
         # actions_consequences is now a list of ActionResults
 
         # Decide best action
-        best_action = decide_smart(actions_consequences)
+        best_action = decide_smart(actions_consequences, state)
         print(action_list[best_action].name)
 
-        draw_actions(actions_consequences, s)
+        draw_actions(actions_consequences, state)
 
 
 if __name__ == "__main__":
