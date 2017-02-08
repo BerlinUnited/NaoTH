@@ -1,6 +1,7 @@
 import numpy as np
 import field_info as field
 
+
 def gaussian(x, y, mu_x, mu_y, sigma_x, sigma_y):
     fac_x = np.power(x - mu_x, 2.0) / (2.0 * sigma_x * sigma_x)
     fac_y = np.power(y - mu_y, 2.0) / (2.0 * sigma_y * sigma_y)

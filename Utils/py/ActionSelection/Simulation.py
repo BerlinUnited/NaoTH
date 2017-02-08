@@ -53,7 +53,7 @@ def simulate_consequences(action, categorized_ball_positions, state):
     # now generate predictions and categorize
     for i in range(0, a.num_particles):
         # predict and calculate shoot line
-        global_ball_end_position = state.pose * action.predict(state.ball_position)
+        global_ball_end_position = state.pose * action.predict(state.ball_position, False)
 
         shootline = m2d.LineSegment(global_ball_start_position, global_ball_end_position)
 
