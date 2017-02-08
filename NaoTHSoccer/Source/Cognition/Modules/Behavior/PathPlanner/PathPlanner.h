@@ -60,7 +60,7 @@ public:
   void fastForwardKick();
   void kickWithFoot();
   void sidekick();
-
+  
   // Helping functions
   void lookAtBall();
   

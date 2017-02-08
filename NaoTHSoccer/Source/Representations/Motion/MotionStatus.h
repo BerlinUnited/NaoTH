@@ -68,6 +68,7 @@ public:
   PlannedMotion plannedMotion;
   StepControlStatus stepControl;
 
+
   virtual void print(std::ostream& stream) const
   {
     stream << "time = " << time << '\n';

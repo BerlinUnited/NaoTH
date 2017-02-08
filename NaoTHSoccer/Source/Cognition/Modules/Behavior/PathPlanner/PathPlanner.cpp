@@ -12,7 +12,7 @@ PathPlanner::PathPlanner()
   // Go to ball with right or left foot (when close to ball, approach for attack)
   //XABSL: go_to_ball_foot_dynamic
   DEBUG_REQUEST_REGISTER("PathPlanner:motion:go_to_ball_foot_dynamic",
-                         "Go to the ball with the right or left foot, close to the ball, before attacking.", true);
+                         "Go to the ball with the right or left foot, close to the ball, before attacking.", false);
   DEBUG_REQUEST_REGISTER("PathPlanner:test:go_to_ball_foot_dynamic_test_right",
                          "TEST: Go to the ball with the right foot, close to the ball, before attacking.", false);
   DEBUG_REQUEST_REGISTER("PathPlanner:test:go_to_ball_foot_dynamic_test_left",
@@ -20,13 +20,13 @@ PathPlanner::PathPlanner()
   // Move around the ball
   // XABSL: move_around_ball
   DEBUG_REQUEST_REGISTER("PathPlanner:motion:move_around_ball",
-                         "Move around the ball.", true);
+                         "Move around the ball.", false);
   DEBUG_REQUEST_REGISTER("PathPlanner:test:move_around_ball_test",
                          "TEST: Move around the ball.", false);
   // Fast forward kick
   // XABSL: fast_forward_kick (used with short approach)
   DEBUG_REQUEST_REGISTER("PathPlanner:motion:fast_forward_kick",
-                         "Fast forward and kick with right or left foot.", true);
+                         "Fast forward and kick with right or left foot.", false);
   DEBUG_REQUEST_REGISTER("PathPlanner:test:fast_forward_kick_test_right",
                          "TEST: Fast forward and kick with right foot.", false);
   DEBUG_REQUEST_REGISTER("PathPlanner:test:fast_forward_kick_test_left",
@@ -34,7 +34,7 @@ PathPlanner::PathPlanner()
   // Kick with foot
   // XABSL: kick_with_foot (used with long approach)
   DEBUG_REQUEST_REGISTER("PathPlanner:motion:kick_with_foot",
-                         "Approach the ball from a distance and kick with right or left foot.", true);
+                         "Approach the ball from a distance and kick with right or left foot.", false);
   DEBUG_REQUEST_REGISTER("PathPlanner:test:kick_with_foot_test_right",
                          "TEST: Approach the ball from a distance and kick with right foot.", false);
   DEBUG_REQUEST_REGISTER("PathPlanner:test:kick_with_foot_test_left",
@@ -42,7 +42,7 @@ PathPlanner::PathPlanner()
   // Side kick to left or right
   // XABSL: side_kick
   DEBUG_REQUEST_REGISTER("PathPlanner:motion:sidekick",
-                         "Sidekick the ball to the left or right.", true);
+                         "Sidekick the ball to the left or right.", false);
   DEBUG_REQUEST_REGISTER("PathPlanner:test:sidekick_test_to_right",
                          "TEST: Sidekick the ball to the right.", false);
   DEBUG_REQUEST_REGISTER("PathPlanner:test:sidekick_test_to_left",

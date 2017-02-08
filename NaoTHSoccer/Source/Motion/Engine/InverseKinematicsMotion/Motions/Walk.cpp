@@ -197,10 +197,11 @@ void Walk::calculateNewStep(const Step& lastStep, Step& newStep, const WalkReque
 
   // STABILIZATION
   bool do_emergency_stop = com_errors.size() == com_errors.getMaxEntries() && com_errors.getAverage() > parameters().stabilization.emergencyStopError;
-  if ( getMotionRequest().id != getId() || do_emergency_stop)
+  if ( getMotionRequest().id != getId() || do_emergency_stop
+      || walkRequest.stepControl.stepID + 1 != stepBuffer.stepId())
   {
     // try to make a last step to align the feet if it is required
-    if ( getMotionRequest().standardStand ) {
+    if ( getMotionRequest().standardStand) {
       newStep.footStep = theFootStepPlanner.finalStep(lastStep.footStep, walkRequest);
     } else {
       newStep.footStep = theFootStepPlanner.zeroStep(lastStep.footStep);
@@ -334,7 +335,7 @@ Pose3D Walk::calculateLiftingFootPos(const Step& step) const
 
   if ( step.type == STEP_CONTROL )
   {
-    return FootTrajectorGenerator::stepControl(  
+    /*return FootTrajectorGenerator::stepControl(
       step.footStep.footBegin(),
       step.footStep.footEnd(),
       step.executingCycle,
@@ -344,7 +345,17 @@ Pose3D Walk::calculateLiftingFootPos(const Step& step) const
       0, //footPitchOffset
       0, //footRollOffset
       step.walkRequest.stepControl.speedDirection,
-      step.walkRequest.stepControl.scale);
+      step.walkRequest.stepControl.scale);*/
+    return FootTrajectorGenerator::genTrajectory(
+      step.footStep.footBegin(),
+      step.footStep.footEnd(),
+      step.executingCycle,
+      samplesDoubleSupport,
+      samplesSingleSupport,
+      parameters().step.stepHeight,
+      0, // footPitchOffset
+      0  // footRollOffset
+    );
   }
   else if( step.type == STEP_WALK )
   {
