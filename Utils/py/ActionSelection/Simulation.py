@@ -6,6 +6,7 @@ import tools as tools
 import action as a
 import potential_field as pf
 import math2d as m2d
+import numpy as np
 
 
 class State:
@@ -185,21 +186,24 @@ def decide_smart(actions_consequences, state):
 def draw_actions(actions_consequences, state):
     plt.clf()
     tools.draw_field()
-    ax = plt.gca()
-    ax.add_artist(Circle(xy=(state.pose.translation.x, state.pose.translation.y), radius=100, fill=False, edgecolor='white'))
-    plot_color = ['ro', 'go', 'bo']
 
-    for idx, consequence in enumerate(actions_consequences):
+    axes = plt.gca()
+    axes.add_artist(Circle(xy=(state.pose.translation.x, state.pose.translation.y), radius=100, fill=False, edgecolor='white'))
+    x = np.array([])
+    y = np.array([])
+
+    for consequence in actions_consequences:
         for particle in consequence.positions():
-            ball_pos = state.pose * particle.ball_pos
-            plt.plot(ball_pos.x, ball_pos.y, plot_color[idx])
-    plt.draw()
-    plt.pause(0.001)
+            ball_pos = state.pose * particle.ball_pos  # transform in global coordinates
+
+            x = np.append(x, [ball_pos.x])
+            y = np.append(y, [ball_pos.y])
+
+    plt.scatter(x, y, c='r', alpha=0.5)
+    plt.pause(0.0001)
 
 
 def main():
-    plt.show(block=False)
-
     state = State()
 
     sidekick_right = a.Action("sidekick_right", 750, 150, -89.657943335302260, 10.553726275058064)
@@ -207,6 +211,7 @@ def main():
     kick_short = a.Action("kick_short", 780, 150, 8.454482265522328, 6.992268841997358)
 
     action_list = [sidekick_right, sidekick_left, kick_short]
+
 
     while True:
         actions_consequences = []
@@ -219,7 +224,7 @@ def main():
 
         # Decide best action
         best_action = decide_smart(actions_consequences, state)
-        print(action_list[best_action].name)
+        # print(action_list[best_action].name)
 
         draw_actions(actions_consequences, state)
 
