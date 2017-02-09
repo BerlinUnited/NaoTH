@@ -1,26 +1,12 @@
 import math
-
-import action as a
-import field_info as field
 import numpy as np
-import potential_field as pf
 from matplotlib import pyplot as plt
 from matplotlib.patches import Circle
-
+import action as a
+import field_info as field
+import potential_field as pf
 import math2d as m2d
-import tools as t
-
-
-class State:
-    def __init__(self):
-        self.pose = m2d.Pose2D()
-        self.pose.translation = m2d.Vector2(4200, 0)
-        self.pose.rotation = math.radians(0)
-
-        self.ball_position = m2d.Vector2(100.0, 0.0)
-
-        self.obstacle_list = ([])  # is in global coordinates
-        self.obstacle_list.append(m2d.Vector2(2000, 2000))
+import tools as tools
 
 
 def simulate_consequences(action, categorized_ball_positions, state):
@@ -80,10 +66,11 @@ def simulate_consequences(action, categorized_ball_positions, state):
         # Obstacle Detection
         obstacle_collision = False
         for obstacle in state.obstacle_list:
-            dist = math.sqrt((state.pose.translation.x-obstacle.x)**2 - (state.pose.translation.y-obstacle.y)**2)
+            dist = math.sqrt((state.pose.translation.x-obstacle.x)**2 + (state.pose.translation.y-obstacle.y)**2)
             # check for distance and rotation
+            # Todo it's wrong: Now if obstacle is near, then obstacle is in front of the robt
             if dist < 400 and shootline.intersect(obstacle_line):
-                obstacle_collision = False
+                obstacle_collision = True
 
         category = "INFIELD"
         if opp_goal_box.inside(global_ball_end_position):
@@ -150,12 +137,12 @@ def decide_smart(actions_consequences, state):
             continue
 
         # the action with the highest chance of scoring the goal is the best
-        if actions_consequences[goal_actions[0]].categorie("OPPGOAL") < results.categorie("OPPGOAL"):
+        if actions_consequences[goal_actions[0]].category("OPPGOAL") < results.category("OPPGOAL"):
             goal_actions = ([])
             goal_actions.append(index)
             continue
 
-        if actions_consequences[goal_actions[0]].categorie("OPPGOAL") == results.categorie("OPPGOAL"):
+        if actions_consequences[goal_actions[0]].category("OPPGOAL") == results.category("OPPGOAL"):
             goal_actions.append(index)
             continue
 
@@ -187,7 +174,7 @@ def decide_smart(actions_consequences, state):
 
 def draw_actions(actions_consequences, state):
     plt.clf()
-    t.draw_field()
+    tools.draw_field()
 
     axes = plt.gca()
     axes.add_artist(Circle(xy=(state.pose.translation.x, state.pose.translation.y), radius=100, fill=False, edgecolor='white'))
