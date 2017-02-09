@@ -54,7 +54,7 @@ def simulate_consequences(action, categorized_ball_positions, state):
     # now generate predictions and categorize
     for i in range(0, a.num_particles):
         # predict and calculate shoot line
-        global_ball_end_position = state.pose * action.predict(state.ball_position, False)
+        global_ball_end_position = state.pose * action.predict(state.ball_position, True)
 
         shootline = m2d.LineSegment(global_ball_start_position, global_ball_end_position)
 
@@ -211,7 +211,6 @@ def main():
     kick_short = a.Action("kick_short", 780, 150, 8.454482265522328, 6.992268841997358)
 
     action_list = [sidekick_right, sidekick_left, kick_short]
-
 
     while True:
         actions_consequences = []

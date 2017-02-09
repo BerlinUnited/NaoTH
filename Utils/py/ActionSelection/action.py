@@ -17,9 +17,9 @@ class Action:
         self.angle_std = angle_std
         self.name = name
 
-    def predict(self, ball, noise_condition):
+    def predict(self, ball, noise):
         gforce = 9.80620 * 1e3  # mm/s^2
-        if not noise_condition:
+        if noise:
             speed = np.random.normal(self.speed, self.speed_std)
             angle = np.random.normal(math.radians(self.angle), math.radians(self.angle_std))
             distance = speed * speed / friction / gforce / 2.0  # friction*mass*gforce*distance = 1/2*mass*speed*speed
