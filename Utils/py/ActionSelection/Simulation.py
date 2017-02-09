@@ -206,11 +206,12 @@ def draw_actions(actions_consequences, state):
 def main():
     state = State()
 
-    sidekick_right = a.Action("sidekick_right", 750, 150, -89.657943335302260, 10.553726275058064)
-    sidekick_left = a.Action("sidekick_left", 750, 150, 86.170795364136380, 10.669170653645670)
+    no_action = a.Action("none", 0, 0, 0, 0)
     kick_short = a.Action("kick_short", 780, 150, 8.454482265522328, 6.992268841997358)
+    sidekick_left = a.Action("sidekick_left", 750, 150, 86.170795364136380, 10.669170653645670)
+    sidekick_right = a.Action("sidekick_right", 750, 150, -89.657943335302260, 10.553726275058064)
 
-    action_list = [sidekick_right, sidekick_left, kick_short]
+    action_list = [no_action, kick_short, sidekick_left, sidekick_right]
 
     while True:
         actions_consequences = []

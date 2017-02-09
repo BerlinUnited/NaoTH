@@ -19,6 +19,8 @@ class Action:
 
     def predict(self, ball, noise):
         gforce = 9.80620 * 1e3  # mm/s^2
+        if self.speed == 0:  # means action is none
+            return ball
         if noise:
             speed = np.random.normal(self.speed, self.speed_std)
             angle = np.random.normal(math.radians(self.angle), math.radians(self.angle_std))
