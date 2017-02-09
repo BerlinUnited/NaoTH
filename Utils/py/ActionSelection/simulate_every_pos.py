@@ -14,7 +14,6 @@ class State:
         self.ball_position = m2d.Vector2(100.0, 0.0)
 
         self.obstacle_list = ([])  # is in global coordinates
-        # self.obstacle_list.append(m2d.Vector2(2000, 2000))
 
     def update_pos(self, glob_pos, rotation):
         self.pose.translation = glob_pos
