@@ -9,7 +9,7 @@
 #ifndef EXTENDEDKALMANFILTER4D_H
 #define EXTENDEDKALMANFILTER4D_H
 
-#include <Eigen/Eigen>
+#include <Tools/naoth_eigen.h>
 
 #include <Representations/Perception/CameraMatrix.h>
 #include <Representations/Infrastructure/CameraInfo.h>

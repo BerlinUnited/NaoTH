@@ -57,8 +57,8 @@ BEGIN_DECLARE_MODULE(BallCandidateDetector)
 
   //PROVIDE(GameColorIntegralImage)
   //PROVIDE(GameColorIntegralImageTop)
-  PROVIDE(BallDetectorIntegralImage)
-  PROVIDE(BallDetectorIntegralImageTop)
+  REQUIRE(BallDetectorIntegralImage)
+  REQUIRE(BallDetectorIntegralImageTop)
 
   REQUIRE(FieldColorPercept)
   REQUIRE(FieldColorPerceptTop)

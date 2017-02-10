@@ -60,7 +60,7 @@ void StableRoleDecision::execute()
       time_bonus = parameters.strikerBonusTime;
     }
 
-    if (robotNumber == getPlayerInfo().playerNumber && (msg.fallen || msg.isPenalized ||
+    if (robotNumber == getPlayerInfo().playerNumber && (msg.fallen || msg.isPenalized || 
       msg.ballAge < 0 || msg.ballAge > parameters.maxBallLostTime + time_bonus)) 
     {
       wantsToBeStriker = false;
@@ -83,7 +83,7 @@ void StableRoleDecision::execute()
       }
 
       // another player is closer than me
-      if ( robotNumber != getPlayerInfo().playerNumber && msg.timeToBall < ownTimeToBall ) {
+      if ( robotNumber != getPlayerInfo().playerNumber && msg.timeToBall < ownTimeToBall ) { 
         wantsToBeStriker = false; //Preparation for next round's decision
       }
     }

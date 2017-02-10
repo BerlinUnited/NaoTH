@@ -141,7 +141,7 @@ double SoccerStrategyProvider::estimateTimeToBall() const
   for( size_t i = 0; i < getBallModel().futurePosition.size(); i++)
   {
     double t = estimateTimeToPoint(getBallModel().futurePosition[i]);
-    if ( t < (double)i ) {
+    if ( t < static_cast<double>(i) ) {
       return t; // we can catch the ball
     }
   }

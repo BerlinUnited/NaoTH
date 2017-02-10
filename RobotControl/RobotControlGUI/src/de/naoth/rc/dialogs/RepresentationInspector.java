@@ -14,6 +14,7 @@ import com.google.protobuf.Descriptors.Descriptor;
 import de.naoth.rc.RobotControl;
 import de.naoth.rc.core.dialog.AbstractDialog;
 import de.naoth.rc.core.dialog.DialogPlugin;
+import de.naoth.rc.core.dialog.RCDialog;
 import de.naoth.rc.core.manager.ObjectListener;
 import de.naoth.rc.core.manager.SwingCommandExecutor;
 import de.naoth.rc.logmanager.BlackBoard;
@@ -50,6 +51,7 @@ import javax.swing.ListModel;
  */
 public class RepresentationInspector extends AbstractDialog {
 
+    @RCDialog(category = RCDialog.Category.Status, name = "Representations")
     @PluginImplementation
     public static class Plugin extends DialogPlugin<RepresentationInspector> {
 
@@ -69,12 +71,12 @@ public class RepresentationInspector extends AbstractDialog {
         return representationOwner + ":representation:list";
     }
 
-    private String getRepresentationBase() {
-        return representationOwner + ":representation:get";
+    private String getRepresentationPrint() {
+        return representationOwner + ":representation:print";
     }
 
     private String getRepresentationBinary() {
-        return representationOwner + ":representation:getbinary";
+        return representationOwner + ":representation:get";
     }
 
     private ObjectListener<byte[]> currentHandler;
@@ -109,7 +111,7 @@ public class RepresentationInspector extends AbstractDialog {
                                 prefix = getRepresentationBinary();
                                 currentHandler = new DataHandlerBinary((String) o);
                             } else {
-                                prefix = getRepresentationBase();
+                                prefix = getRepresentationPrint();
                                 currentHandler = new DataHandlerPrint();
                             }
 

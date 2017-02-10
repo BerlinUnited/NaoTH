@@ -115,6 +115,7 @@ StandMotion()
 
     // update joint monitors
     for( int i = naoth::JointData::RShoulderRoll; i <= naoth::JointData::LAnkleRoll; i++) {
+        // are the jointOffsets applied twice? Doesn't getMotorJointData contain the offsets already?
         jointMonitors[i].updateMonitor(getMotorJointData().position[i] + jointOffsets[i], getSensorJointData().position[i],getSensorJointData().electricCurrent[i]);
     }
 
@@ -128,10 +129,13 @@ StandMotion()
         lastState = state;
       }
       
-      if(interpolateToStandPose() && state_time > totalTime+static_cast<int>(getRobotInfo().basicTimeStep*100)) {
+      if(interpolateToStandPose()) {
         if(getMotionRequest().id != getId())  {
           setCurrentState(motion::stopped);
-        } else if (!getBodyState().isLiftedUp
+
+          // HACK: wait about 1s before going to relax mode
+        } else if (static_cast<double>(state_time) > totalTime+static_cast<double>(getRobotInfo().basicTimeStep*100)
+                   && !getBodyState().isLiftedUp
                    && getEngine().getParameters().stand.relax.enable
                    && relaxedPoseIsStillOk() ) { //only relax if a valid stand pose is reached
           state = Relax;
@@ -183,7 +187,7 @@ StandMotion()
 
     // set stiffness from buffer
     for( int i = naoth::JointData::RShoulderRoll; i < naoth::JointData::numOfJoint; i++) {
-        getMotorJointData().stiffness[i] = stiffness[i];
+      getMotorJointData().stiffness[i] = stiffness[i];
     }
 
     //turnOffStiffnessWhenJointIsOutOfRange();

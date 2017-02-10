@@ -432,7 +432,7 @@ void InverseKinematicsMotionEngine::feetStabilize(
 
 bool InverseKinematicsMotionEngine::rotationStabilizeRC16(
   //const InertialModel& theInertialModel,
-  const naoth::InertialSensorData& theInertialSensorData,
+  const naoth::InertialSensorData& /*theInertialSensorData*/,
   const GyrometerData& theGyrometerData,
   double timeDelta,
   InverseKinematic::HipFeetPose& p)

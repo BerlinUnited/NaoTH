@@ -83,6 +83,8 @@ public:
      */
     bool fallen;
 
+    Vector2d expectedBallPos;
+
     // BEGIN BERLIN UNITED SPECIFIC
     std::string bodyID;
     unsigned int timeToBall;
@@ -125,6 +127,9 @@ public:
       stream << "isPenalized: " << (d.isPenalized ? "yes" : "no") << std::endl;
       stream << "fallenDown: " << (d.fallen ? "yes" : "no") << std::endl;
       stream << "team number: " << d.teamNumber << std::endl;
+       stream << "\texpectedBallPos (x; y) = "
+         << d.expectedBallPos.x << "; "
+             << d.expectedBallPos.y << std::endl;
       for(unsigned int i=0; i < d.opponents.size(); i++)
       {
         stream << "opponent " << d.opponents[i].playerNum << " : "

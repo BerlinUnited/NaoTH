@@ -959,7 +959,7 @@ void MonteCarloSelfLocator::resampleGT07(SampleSet& sampleSet, bool noise) const
     sum += oldSampleSet[m].likelihood * (double)oldSampleSet.size();
 
     // select the particle to copy
-    while((double)count < sum && count < oldSampleSet.size())
+    while(static_cast<double>(count) < sum && count < oldSampleSet.size())
     {
       if (n >= oldSampleSet.size() - numberOfPartiklesToResample) break;
       

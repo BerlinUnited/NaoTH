@@ -23,6 +23,16 @@ import javax.swing.tree.TreeCellRenderer;
  */
 public class XABSLActionSparseTreeCellRenderer implements TreeCellRenderer {
 
+    JLabel label = new JLabel("null");
+    StringBuilder text = new StringBuilder();
+    
+    private Component makeCellRenderer(Color color, Font font, String text) {
+        label.setText(text);
+        label.setForeground(color);
+        label.setFont(font);
+        return label;
+    }
+    
     @Override
     public Component getTreeCellRendererComponent(JTree tree, Object value, boolean selected, boolean expanded, boolean leaf, int row, boolean hasFocus) {
         if (value != null) {
@@ -31,8 +41,8 @@ public class XABSLActionSparseTreeCellRenderer implements TreeCellRenderer {
             // default values for color and font
             Color color = Color.black;
             Font font = PLAIN_FONT;
-            StringBuilder text = new StringBuilder();
-
+            text.setLength(0);
+            
             if (n.getUserObject() instanceof XABSLAction) {
                 XABSLAction a = (XABSLAction) n.getUserObject();
 
@@ -58,7 +68,7 @@ public class XABSLActionSparseTreeCellRenderer implements TreeCellRenderer {
                     Symbol s = ((XABSLAction.SymbolAssignement) a).symbol;
 
                     text.append(s.name);
-                    text.append("=");
+                    text.append('=');
                     if (s instanceof Symbol.Boolean) {
                         text.append(((Symbol.Boolean) s).value);
                     } else if (s instanceof Symbol.Decimal) {
@@ -75,9 +85,9 @@ public class XABSLActionSparseTreeCellRenderer implements TreeCellRenderer {
                 color = Color.DARK_GRAY;
                 font = ITALIC_FONT;
 
-                text.append("@");
+                text.append('@');
                 text.append(s.name);
-                text.append("=");
+                text.append('=');
                 if (s instanceof Symbol.Boolean) {
                     text.append(((Symbol.Boolean) s).value);
                 } else if (s instanceof Symbol.Decimal) {
@@ -89,12 +99,9 @@ public class XABSLActionSparseTreeCellRenderer implements TreeCellRenderer {
                 text.append(n.getUserObject().toString());
             }
 
-            JLabel label = new JLabel(text.toString());
-            label.setForeground(color);
-            label.setFont(font);
-            return label;
+            return makeCellRenderer(color, font, text.toString());
         } else {
-            return new JLabel("null");
+            return makeCellRenderer(Color.red, PLAIN_FONT, "null");
         }
     }
 }
