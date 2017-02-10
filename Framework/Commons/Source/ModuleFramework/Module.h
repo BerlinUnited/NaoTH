@@ -202,7 +202,7 @@ std::string get_sub_core_module_path(std::string fullpath);
   template<> class IF<M>: public StaticRegistry<M>            \
   {                                                           \
   public:                                                     \
-    typedef M ModuleType;                                     \
+    /*typedef M ModuleType; --> this line causes trouble for auto-completion in QtCreator */  \
     virtual const Module* getModule() const {                 \
       assert(false); return NULL;                             \
     }                                                         \

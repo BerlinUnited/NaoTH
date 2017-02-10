@@ -16,9 +16,7 @@ import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.io.*;
-import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -107,7 +105,7 @@ public class RobotControlImpl extends javax.swing.JFrame
     });
     
     // set up a list of all dialogs
-    this.dialogRegistry = new DialogRegistry(this, dialogsMenu);
+    this.dialogRegistry = new DialogRegistry(this, this.mainMenuBar);
 
     
     // initialize the message server
@@ -211,14 +209,13 @@ public class RobotControlImpl extends javax.swing.JFrame
         lblReceivedBytesS = new javax.swing.JLabel();
         lblSentBytesS = new javax.swing.JLabel();
         lblFramesS = new javax.swing.JLabel();
-        menuBar = new javax.swing.JMenuBar();
+        mainMenuBar = new de.naoth.rc.MainMenuBar();
         mainControlMenu = new javax.swing.JMenu();
         connectMenuItem = new javax.swing.JMenuItem();
         disconnectMenuItem = new javax.swing.JMenuItem();
         resetLayoutMenuItem = new javax.swing.JMenuItem();
         jSeparator1 = new javax.swing.JSeparator();
         exitMenuItem = new javax.swing.JMenuItem();
-        dialogsMenu = new javax.swing.JMenu();
         helpMenu = new javax.swing.JMenu();
         aboutMenuItem = new javax.swing.JMenuItem();
 
@@ -324,11 +321,7 @@ public class RobotControlImpl extends javax.swing.JFrame
         });
         mainControlMenu.add(exitMenuItem);
 
-        menuBar.add(mainControlMenu);
-
-        dialogsMenu.setMnemonic('d');
-        dialogsMenu.setText("Dialogs");
-        menuBar.add(dialogsMenu);
+        mainMenuBar.add(mainControlMenu);
 
         helpMenu.setMnemonic('h');
         helpMenu.setText("Help");
@@ -342,9 +335,12 @@ public class RobotControlImpl extends javax.swing.JFrame
         });
         helpMenu.add(aboutMenuItem);
 
-        menuBar.add(helpMenu);
+        helpMenu.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
+        mainMenuBar.add(javax.swing.Box.createHorizontalGlue());
 
-        setJMenuBar(menuBar);
+        mainMenuBar.add(helpMenu);
+
+        setJMenuBar(mainMenuBar);
 
         setSize(new java.awt.Dimension(974, 626));
         setLocationRelativeTo(null);
@@ -418,7 +414,7 @@ public class RobotControlImpl extends javax.swing.JFrame
   /**
    * @param args the command line arguments
    */
-  public static void main(String args[])
+  public static void main(final String args[])
   {
     java.awt.EventQueue.invokeLater(new Runnable()
     {
@@ -432,7 +428,7 @@ public class RobotControlImpl extends javax.swing.JFrame
             Logger.getLogger(RobotControlImpl.class.getName()).log(Level.SEVERE, null, 
                     "Could not create the configuration path: \"" + configlocation + "\".");
         }
-          
+        
         final JSPFProperties props = new JSPFProperties();
         props.setProperty(PluginManager.class, "cache.enabled", "false");
 //        props.setProperty(PluginManager.class, "cache.mode", "strong"); //optional
@@ -444,15 +440,17 @@ public class RobotControlImpl extends javax.swing.JFrame
         {
           // make sure the main frame if loaded first
           pluginManager.addPluginsFrom(new ClassURI(RobotControlImpl.class).toURI());
-          
-          //
-          pluginManager.addPluginsFrom(new URI("classpath://*"));
 
+          File selfFile = new File(RobotControlImpl.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+          // load all plugins from 
+          pluginManager.addPluginsFrom(selfFile.toURI());
+
+          // NOTE: this is very slow to search in the whole classpath
+          //pluginManager.addPluginsFrom(new URI("classpath://*"));
+          
           // JFX plugins
-          URL selfJarURL = RobotControlImpl.class.getProtectionDomain().getCodeSource().getLocation();
-          if(selfJarURL != null)
           {
-            File parentDir = new File(selfJarURL.toURI()).getParentFile();
+            File parentDir = selfFile.getParentFile();
             while(parentDir != null && !"robotcontrol".equalsIgnoreCase(parentDir.getName()))
             {
               parentDir = parentDir.getParentFile();
@@ -509,7 +507,6 @@ public class RobotControlImpl extends javax.swing.JFrame
     private javax.swing.JMenuItem aboutMenuItem;
     private javax.swing.JButton btManager;
     private javax.swing.JMenuItem connectMenuItem;
-    private javax.swing.JMenu dialogsMenu;
     private javax.swing.JMenuItem disconnectMenuItem;
     private javax.swing.JMenuItem exitMenuItem;
     private javax.swing.JMenu helpMenu;
@@ -519,7 +516,7 @@ public class RobotControlImpl extends javax.swing.JFrame
     private javax.swing.JLabel lblReceivedBytesS;
     private javax.swing.JLabel lblSentBytesS;
     private javax.swing.JMenu mainControlMenu;
-    private javax.swing.JMenuBar menuBar;
+    private de.naoth.rc.MainMenuBar mainMenuBar;
     private javax.swing.JMenuItem resetLayoutMenuItem;
     private javax.swing.JPanel statusPanel;
     // End of variables declaration//GEN-END:variables
@@ -580,8 +577,7 @@ public class RobotControlImpl extends javax.swing.JFrame
     try {
       this.dialogRegistry.loadFromFile(layoutFile);
     } catch(FileNotFoundException ex) {
-      Logger.getLogger(RobotControlImpl.class.getName()).log(Level.INFO, 
-              "Could not find the layout file: " + layoutFile.getAbsolutePath());
+      Logger.getLogger(RobotControlImpl.class.getName()).log(Level.INFO, "Could not find the layout file: {0}", layoutFile.getAbsolutePath());
     } catch(IOException ex) {
         Helper.handleException("Error while reading the layout file.", ex);
     }

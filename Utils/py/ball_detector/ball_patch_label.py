@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 import os, sys, getopt, math
+from os.path import dirname
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.patches as ptc
@@ -8,7 +9,6 @@ import matplotlib
 import json
 
 import naoth.patchReader as patchReader
-
 
 # todo make class
 patchdata = None
@@ -71,7 +71,8 @@ def key_pressed(event):
       
   if event.key == 'enter' or event.key == ' ' \
     or event.key == 'w'  or event.key == 'a' or event.key == 'd' \
-    or event.key =='c' or event.key =='y':
+    or event.key =='c' or event.key =='y' \
+    or event.key == '+' or event.key == '-':
       
     save_labels(label_file)
     global window_idx
@@ -88,6 +89,12 @@ def key_pressed(event):
     elif event.key == 'y':
       if window_idx - (idxStep*10) >= 0:
         window_idx -= idxStep*10
+    elif event.key == '+': # select all
+      endIdx = min(idxStep, len(labels) - window_idx)
+      labels[window_idx:window_idx+endIdx] = 1
+    elif event.key == '-': # deselect all
+      endIdx = min(idxStep, len(labels) - window_idx)
+      labels[window_idx:window_idx+endIdx] = 0
     else:
       window_idx += idxStep
     showPatches()
@@ -123,7 +130,7 @@ def load_labels(file):
     tmp_labels[ball_labels["ball"]] = 1
     
   return tmp_labels
-    
+  
     
 def showPatches():
   image = np.zeros(((patch_size[1]+1)*show_size[1], (patch_size[0]+1)*show_size[0]))
@@ -133,7 +140,7 @@ def showPatches():
       break
     
     p = patchdata[window_idx+i]
-    if len(p) == 4*12*12:
+    if len(p) == 4*patch_size[0]*patch_size[1]:
       a = np.array(p[0::4]).astype(float)
       a = np.transpose(np.reshape(a, patch_size))
     else:
@@ -142,7 +149,7 @@ def showPatches():
 
     y = i // show_size[0]
     x = i % show_size[0]
-    image[y*13:y*13+12,x*13:x*13+12] = a
+    image[y*(patch_size[1]+1):y*(patch_size[1]+1)+patch_size[1],x*(patch_size[0]+1):x*(patch_size[0]+1)+patch_size[0]] = a
     if labels[window_idx+i] < 0:
       # remember this former invalid column as seen
       labels[window_idx+i]=0
@@ -157,35 +164,38 @@ def showPatches():
   fig.suptitle(str(window_idx)+' - '+str(window_idx+show_size[0]*show_size[1])+' / '+str(len(patchdata)), fontsize=20)
   fig.canvas.draw()
     
-    
+
+'''
+
+USAGE:
+  python ball_patch_label.py ./data/ball-move-around-patches.log
+
+'''
 if __name__ == "__main__":
-  
-  file = 'patches-approach-ball'
-  file = 'patches-yuv-ball-move-around'
+
   if len(sys.argv) > 1:
-    file = sys.argv[1]
-  #file = 'patches-ball-sidecick'
-  
-  patchdata, _ = patchReader.readAllPatchesFromLog(file+'.log', type = 0)
-  label_file = file+'.json'
+    logFilePath = sys.argv[1]
+
+  # type: 0-'Y', 1-'YUV', 2-'YUVC'
+  patchdata, _ = patchReader.readAllPatchesFromLog(logFilePath, type = 2)
+
+  # load the label file
+  base_file, file_extension = os.path.splitext(logFilePath)
+  label_file = base_file+'.json'
   labels = load_labels(label_file)
-  
-  
+
   window_idx = 0
   showPatches()
   plt.connect('button_press_event', on_click)
   plt.connect("key_press_event", key_pressed)
-  
+
   #fig.gca().xticks(())
   #fig.gca().yticks(())
-      
+
   if matplotlib.get_backend() == 'Qt4Agg':
     f_manager = plt.get_current_fig_manager()
     f_manager.window.move(0, 0)
     if fullscreen:
       f_manager.window.showMaximized()
-  
-  plt.show()
-  
 
-    
+  plt.show()

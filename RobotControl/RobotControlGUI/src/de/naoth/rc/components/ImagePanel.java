@@ -9,6 +9,7 @@ import de.naoth.rc.drawings.Drawable;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
@@ -135,6 +136,7 @@ public class ImagePanel extends javax.swing.JPanel
         g2d.translate((posX + 1), (posY + 1));
         g2d.scale(ratioW, ratioH);
 
+        g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
         g2d.drawImage(backgroundImage, 0, 0, (int) wImg, (int) hImg, this);
 
         if(this.showDrawings) {
@@ -166,6 +168,14 @@ public class ImagePanel extends javax.swing.JPanel
           Graphics2D g2d = bi.createGraphics();
           g2d.drawImage(this.backgroundImage, 0, 0, width, height, this);
 
+          if(this.showDrawings) {
+            for (Drawable d : drawigs) {
+              if(d != null) {
+                d.draw(g2d);
+              }
+            }
+          }
+          
           ImageIO.write(bi, "PNG", file);
 
           /*

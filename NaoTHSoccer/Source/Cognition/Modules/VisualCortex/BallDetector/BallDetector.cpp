@@ -307,7 +307,7 @@ void BallDetector::executeHeuristic()
     maxNumberOfKeys += (params.classifier.maxNumberOfKeys-globalNumberOfKeysClassified)/2;
   }
 
-  std::list<Best::BallCandidate>::iterator best_element = best.candidates.begin();
+  //std::list<Best::BallCandidate>::iterator best_element = best.candidates.begin();
   std::vector<Vector2i> endPoints;
 
   ColorClasses::Color c = ColorClasses::gray;// debug
@@ -504,7 +504,7 @@ int BallDetector::calculateKeyPointsBlack(int minX, int minY, int maxX, int maxY
     }
   );
 
-  return bestBlack.candidates.size();
+  return static_cast<int>(bestBlack.candidates.size());
 }
 
 void BallDetector::calculateKeyPoints(Best& best) const

@@ -55,7 +55,7 @@ void TeamCommReceiver::execute()
   TeamCommSender::fillMessage(getPlayerInfo(), getRobotInfo(), getFrameInfo(),
                               getBallModel(), getRobotPose(), getBodyState(),
                               getRoleDecisionModel(), getSoccerStrategy(), getPlayersModel(),
-                              getBatteryData(),
+                              getBatteryData(),getKickActionModel(),
                               ownTeamData);
   // we don't have the right player number in the beginning, wait to send
   // one to ourself until we have a valid one
@@ -128,6 +128,10 @@ bool TeamCommReceiver::parseTeamMessage(const SPLStandardMessage& spl, TeamMessa
 
   msg.fallen = (spl.fallen == 1);
 
+  msg.expectedBallPos.x = spl.shootingTo[0];
+  msg.expectedBallPos.x = spl.shootingTo[1];
+
+
   // check if we can deserialize the user defined data
   if(spl.numOfDataBytes > 0 && spl.numOfDataBytes <= SPL_STANDARD_MESSAGE_DATA_SIZE)
   {
@@ -176,9 +180,9 @@ void TeamCommReceiver::handleMessage(const std::string& data, bool allowOwn)
 
   unsigned int dataTeamNum = (unsigned int)(spl.teamNum);
   unsigned int dataPlayerNum = (unsigned int)(spl.playerNum);
-  if ( dataTeamNum == getPlayerInfo().gameData.teamNumber
+  if ( dataTeamNum == getPlayerInfo().teamNumber
        // ignore our own messages, we are adding it artficially later
-       && (allowOwn || dataPlayerNum != getPlayerInfo().gameData.playerNumber)
+       && (allowOwn || dataPlayerNum != getPlayerInfo().playerNumber)
      )
   {
     TeamMessage::Data msg;

@@ -26,6 +26,7 @@
 #include <Tools/Debug/DebugParameterList.h>
 #include "Tools/Debug/DebugModify.h"
 #include <Representations/Debug/Stopwatch.h>
+#include "Tools/Filters/AssymetricalBoolFilter.h"
 
 // Debug
 #include <Tools/Debug/DebugRequest.h>
@@ -88,7 +89,7 @@ public:
       PARAMETER_REGISTER(sidekick_left.angle) = 86.170795364136380;
       PARAMETER_REGISTER(sidekick_left.angle_std) = 10.669170653645670;
 
-      PARAMETER_REGISTER(kick_short.speed) = 780;
+      PARAMETER_REGISTER(kick_short.speed) = 1280;
       PARAMETER_REGISTER(kick_short.speed_std) = 150;
       PARAMETER_REGISTER(kick_short.angle) = 8.454482265522328;
       PARAMETER_REGISTER(kick_short.angle_std) = 6.992268841997358;
@@ -104,16 +105,24 @@ public:
       PARAMETER_REGISTER(numParticles) = 30;
       PARAMETER_REGISTER(minGoalParticles) = 9;
       
+      PARAMETER_REGISTER(obstacleFilter.g0) = 0.01;
+      PARAMETER_REGISTER(obstacleFilter.g1) = 0.1;
+
       syncWithConfig();
     }
     
+    struct ObstacleFilter {
+      double g0;
+      double g1;
+    } obstacleFilter;
+
     ActionParams sidekick_right;
     ActionParams sidekick_left;
     ActionParams kick_short;
     ActionParams kick_long;
     double friction;
     double good_threshold_percentage;
-    double numParticles;
+    double numParticles; //should be size_t
     double minGoalParticles;
 
   } theParameters;
@@ -142,7 +151,8 @@ public:
 	  {
     }
 
-    Vector2d predict(const Vector2d& ball) const;
+    //Vector2d predict(const Vector2d& ball) const;
+	Vector2d predict(const Vector2d& ball, bool noise) const;
     KickActionModel::ActionId id() const { return _id; }
     const std::string& name() const { return _name; }
   };
@@ -197,6 +207,11 @@ public:
       return cat_histogram[cat];
     }
 
+    double likelihood(BallPositionCategory cat) const {
+      ASSERT(cat_histogram[NUMBER_OF_BallPositionCategory] > 0);
+      return static_cast<double>(cat_histogram[cat]) / static_cast<double>(cat_histogram[NUMBER_OF_BallPositionCategory]);
+    }
+
     void reset() {
       ballPositions.clear();
       cat_histogram.clear();
@@ -211,13 +226,13 @@ public:
   };
 
 private:
+  //AssymetricalBoolHysteresisFilter obstacleFilter;
 
   std::vector<Action> action_local;  
   std::vector<ActionResults> actionsConsequences;
 
   void simulateConsequences(const Action & action, ActionResults& categorizedBallPositions) const;
 
-  size_t decide(const std::vector<ActionResults>& actionsConsequences) const;
   size_t decide_smart(const std::vector<ActionResults>& actionsConsequences ) const;
 
   //Vector2d outsideField(const Vector2d& relativePoint) const;
@@ -229,10 +244,11 @@ private:
   double slope(const double& x, const double& y, const double& slopeX, const double& slopeY) const;
 
   double evaluateAction(const Vector2d& a) const;
+  double evaluateAction(const ActionResults& results) const;
 
   void draw_potential_field() const;
 
-  void draw_actions(const std::vector<ActionResults>& actionsConsequences)const;
+  void draw_action_results(const ActionResults& actionsConsequences, const Color& color)const;
 };
 
 #endif  /* _Simulation_H */

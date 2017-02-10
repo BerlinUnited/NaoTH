@@ -152,5 +152,8 @@ void NaoSensorData::get(UltraSoundReceiveData& data) const
 
 void NaoSensorData::get(BatteryData& data) const
 {
-  data.charge = sensorsValue[thBatteryDataIdex];
+  unsigned int currentIndex = theBatteryDataIdex;
+  data.charge = sensorsValue[currentIndex++];
+  data.current = sensorsValue[currentIndex++];
+  data.temperature = sensorsValue[currentIndex++];
 }

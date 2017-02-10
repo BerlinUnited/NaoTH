@@ -56,8 +56,6 @@ protected:
   void changeMotion(Module* m);
 
 private:
-  //MotionBlackBoard& theBlackBoard;
-
   Module* currentlyExecutedMotion;
   ModuleCreator<EmptyMotion>* theEmptyMotion;
   

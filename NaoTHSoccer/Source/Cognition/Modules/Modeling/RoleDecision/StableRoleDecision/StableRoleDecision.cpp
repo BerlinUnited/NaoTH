@@ -30,7 +30,7 @@ void StableRoleDecision::execute()
 
   bool wantsToBeStriker = true;
   //Goalie is not considered
-  if (getPlayerInfo().gameData.playerNumber == 1) {
+  if (getPlayerInfo().playerNumber == 1) {
     wantsToBeStriker = false; 
   }
 
@@ -48,7 +48,7 @@ void StableRoleDecision::execute()
 
     double failureProbability = getTeamMessageStatisticsModel().getFailureProbability(robotNumber);
 
-    if (failureProbability > parameters.minFailureProbability && msg.playerNum != getPlayerInfo().gameData.playerNumber) { //Message is not fresh
+    if (failureProbability > parameters.minFailureProbability && msg.playerNum != getPlayerInfo().playerNumber) { //Message is not fresh
       getRoleDecisionModel().deadRobots.push_back((int)robotNumber);
       continue;
     } else {
@@ -60,7 +60,7 @@ void StableRoleDecision::execute()
       time_bonus = parameters.strikerBonusTime;
     }
 
-    if (robotNumber == getPlayerInfo().gameData.playerNumber && (msg.fallen || msg.isPenalized || 
+    if (robotNumber == getPlayerInfo().playerNumber && (msg.fallen || msg.isPenalized || 
       msg.ballAge < 0 || msg.ballAge > parameters.maxBallLostTime + time_bonus)) 
     {
       wantsToBeStriker = false;
@@ -83,7 +83,7 @@ void StableRoleDecision::execute()
       }
 
       // another player is closer than me
-      if ( robotNumber != getPlayerInfo().gameData.playerNumber && msg.timeToBall < ownTimeToBall ) { 
+      if ( robotNumber != getPlayerInfo().playerNumber && msg.timeToBall < ownTimeToBall ) { 
         wantsToBeStriker = false; //Preparation for next round's decision
       }
     }

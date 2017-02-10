@@ -41,7 +41,7 @@ FieldInfo::FieldInfo() : ParameterList("FieldInfo")
   calculateValues();
 
   // calculate the field lines
-  fieldLinesTable.create_closestPoinsTable(xFieldLength,yFieldLength);
+  fieldLinesTable.create_closestPointsTable(xFieldLength,yFieldLength);
   fieldLinesTable.create_closestCornerPoinsTable(xFieldLength,yFieldLength);
 }
 

@@ -35,7 +35,10 @@
 
 #include <Representations/Modeling/BodyState.h>
 
-#include <Tools/DataStructures/RingBufferWithSum.h>
+//tools
+#include "Tools/JointMonitor.h"
+#include "Tools/JointOffsets.h"
+#include "Tools/StiffnessController.h"
 
 BEGIN_DECLARE_MODULE(StandMotion)
   PROVIDE(DebugPlot)
@@ -67,9 +70,24 @@ END_DECLARE_MODULE(StandMotion)
 class StandMotion : private StandMotionBase, public IKMotion
 {
 public:
+  enum State {
+    GotoStandPose,
+    Relax
+  };
+
+  State state;
+  State lastState;
+  time_t state_time;
+
+public:
 
 StandMotion()
   : IKMotion(getInverseKinematicsMotionEngineService(), motion::stand, getMotionLock()),
+    
+    state(GotoStandPose),
+    lastState(Relax),//HACK: need to be different from state (another enum value would require a default case in the switch statement)
+    state_time(0),
+  
     totalTime(0),
     time(0),
     height(-1000),
@@ -80,116 +98,136 @@ StandMotion()
   {
   }
 
-  void calculateTrajectory(const MotionRequest& motionRequest)
-  {
-    // standing
-    if ( isStopped()
-        || height != motionRequest.standHeight // requested height changed
-        || standardStand != motionRequest.standardStand ) 
-    {
-      standardStand = motionRequest.standardStand;
-      height = motionRequest.standHeight;
-
-      // init pose
-      double comHeight = (height < 0.0) ? getEngine().getParameters().walk.hip.comHeight : motionRequest.standHeight;
-      comHeight = Math::clamp(comHeight, 160.0, 270.0); // valid range
-      
-      startPose = getEngine().getCurrentCoMFeetPose();
-      targetPose = getStandPose(comHeight, getEngine().getParameters().stand.hipOffsetX, getEngine().getParameters().stand.bodyPitchOffset, standardStand);
-
-	    // HACK: don't do anything if after walk
-      if(getMotionStatus().lastMotion == motion::walk) {
-        targetPose = startPose;
-      }
-
-      targetPose.localInCoM();
-      startPose.localInCoM();
-
-      double speed = getEngine().getParameters().stand.speed;
-      double distLeft = (targetPose.feet.left.translation - startPose.feet.left.translation).abs();
-      double distRight = (targetPose.feet.right.translation - startPose.feet.right.translation).abs();
-      double distMax = std::max(distLeft, distRight);
-      totalTime = distMax / speed;
-      time = 0;
-
-      // set stiffness
-      for( int i = naoth::JointData::RShoulderRoll; i<naoth::JointData::numOfJoint; i++) {
-        stiffness[i] = getEngine().getParameters().stand.stiffness;
-      }
-      // HACK: turn off the hands
-      stiffness[JointData::LHand] = -1;
-      stiffness[JointData::RHand] = -1;
-    }
-  }//end calculateTrajectory
-
 
   void execute()
   {
-    InverseKinematic::HipFeetPose c;
+    setCurrentState(motion::running);
 
-    isRelaxing = false;
+    // reset internal stiffness buffer
+    // set stiffness from parameters
+    for( int i = naoth::JointData::RShoulderRoll; i<naoth::JointData::numOfJoint; i++) {
+      stiffness[i] = getEngine().getParameters().stand.stiffness;
+    }
+    // HACK: turn off the hands
+    stiffness[JointData::LHand] = -1;
+    stiffness[JointData::RHand] = -1;
 
-    if(!getBodyState().isLiftedUp){
-        resetedAfterLifting = false;
+
+    // update joint monitors
+    for( int i = naoth::JointData::RShoulderRoll; i <= naoth::JointData::LAnkleRoll; i++) {
+        // are the jointOffsets applied twice? Doesn't getMotorJointData contain the offsets already?
+        jointMonitors[i].updateMonitor(getMotorJointData().position[i] + jointOffsets[i], getSensorJointData().position[i],getSensorJointData().electricCurrent[i]);
     }
 
-    // reset stiffness, relaxing flags and joint offsets if the robot is lifted, if relaxedPoseInitialize is true use the relaxedPose
-    if(getBodyState().isLiftedUp && !resetedAfterLifting)
+    PLOT("StandMotion:State",state);
+
+    switch(state) 
     {
-        // reset stiffness
-        for( int i = naoth::JointData::RShoulderRoll; i<naoth::JointData::numOfJoint; i++) {
-          stiffness[i] = getEngine().getParameters().stand.stiffness;
-        }
-        // HACK: turn off the hands
-        stiffness[JointData::LHand] = -1;
-        stiffness[JointData::RHand] = -1;
+    case GotoStandPose:
+      if(lastState != state) {
+        calcStandPose();
+        lastState = state;
+      }
+      
+      if(interpolateToStandPose()) {
+        if(getMotionRequest().id != getId())  {
+          setCurrentState(motion::stopped);
 
-        // reset joint offsets
+          // HACK: wait about 1s before going to relax mode
+        } else if (static_cast<double>(state_time) > totalTime+static_cast<double>(getRobotInfo().basicTimeStep*100)
+                   && !getBodyState().isLiftedUp
+                   && getEngine().getParameters().stand.relax.enable
+                   && relaxedPoseIsStillOk() ) { //only relax if a valid stand pose is reached
+          state = Relax;
+        }
+      }
+
+      break;
+
+    case Relax:
+      // initialize relax on fist execution
+      if(lastState != state) {
+        relaxedPose = getEngine().getHipFeetPoseBasedOnSensor();
+        lastState = state;
+
+        // reset stuff for StandMotion:online_tuning
         jointOffsets.resetOffsets();
+        for(int i = 0; i < naoth::JointData::numOfJoint; i++){
+            jointMonitors[i].resetAll();
+        }
+      }
 
-        isRelaxing = false;
-        relaxedPoseInitialized = false;
-        setCurrentState(motion::stopped);
+      if ( getMotionRequest().id != getId()
+        || getBodyState().isLiftedUp
+        || height != getMotionRequest().standHeight // requested height changed
+        || standardStand != getMotionRequest().standardStand 
+        || !relaxedPoseIsStillOk()) 
+      {
+        state = GotoStandPose;
+      }
 
-        resetedAfterLifting = true;
+      applyPose(relaxedPose);
+
+      if(getEngine().getParameters().stand.relax.jointOffsetTuning.enable){
+        tuneJointOffsets();
+      }
+
+      if(getEngine().getParameters().stand.relax.stiffnessControl.enable){
+        tuneStiffness();
+      }
+      break;
+    };
+
+    // update the time of the current step
+    if(lastState != state) {
+      state_time = 0;
+    } else {
+      state_time += getRobotInfo().basicTimeStep;
     }
 
-    calculateTrajectory(getMotionRequest());
-
-    if(time > totalTime + getRobotInfo().basicTimeStep*10) { // the robot is standing and tries to save energy due to relaxing its joints
-
-        isRelaxing = true;
-
-        if(!relaxedPoseInitialized) {
-            relaxedPoseInitialized = true;
-            relaxedPose = getEngine().getHipFeetPoseBasedOnSensor();
-        }
-
-        c = relaxedPose;
-
-        InverseKinematic::HipFeetPose hipFeetPoseSensor = getEngine().getHipFeetPoseBasedOnSensor();
-        hipFeetPoseSensor.localInLeftFoot();
-
-        InverseKinematic::HipFeetPose target = relaxedPose;
-        target.localInLeftFoot();
-
-        if((hipFeetPoseSensor.hip.translation - target.hip.translation).abs() > getEngine().getParameters().stand.relax.allowedDeviation) {
-            isRelaxing = false; //because the stand motion will be restarted
-            relaxedPoseInitialized = false;
-            setCurrentState(motion::stopped);
-            calculateTrajectory(getMotionRequest());
-
-            // reset stuff for StandMotion:online_tuning
-            jointOffsets.resetOffsets();
-            for(int i = 0; i < naoth::JointData::numOfJoint; i++){
-                jointMonitors[i].resetAll();
-            }
-
-            totalTime += getEngine().getParameters().stand.relax.timeBonusForCorrection;
-        }
+    // set stiffness from buffer
+    for( int i = naoth::JointData::RShoulderRoll; i < naoth::JointData::numOfJoint; i++) {
+      getMotorJointData().stiffness[i] = stiffness[i];
     }
 
-    if(totalTime >= 0 && time <= totalTime + getRobotInfo().basicTimeStep*10)
+    //turnOffStiffnessWhenJointIsOutOfRange();
+  }
+
+
+  void calcStandPose() 
+  {
+    // initialize standing
+    standardStand = getMotionRequest().standardStand;
+    height = getMotionRequest().standHeight;
+
+    // init pose
+    double comHeight = (height < 0.0) ? getEngine().getParameters().walk.hip.comHeight : getMotionRequest().standHeight;
+    comHeight = Math::clamp(comHeight, 160.0, 270.0); // valid range
+      
+    startPose  = getEngine().getCurrentCoMFeetPose();
+    targetPose = getStandPose(comHeight, getEngine().getParameters().stand.hipOffsetX, getEngine().getParameters().stand.bodyPitchOffset, standardStand);
+
+	  // HACK: don't do anything if after walk
+    if(getMotionStatus().lastMotion == motion::walk) {
+      targetPose = startPose;
+    }
+
+    targetPose.localInCoM();
+    startPose.localInCoM();
+
+    double speed = getEngine().getParameters().stand.speed;
+    double distLeft = (targetPose.feet.left.translation - startPose.feet.left.translation).abs();
+    double distRight = (targetPose.feet.right.translation - startPose.feet.right.translation).abs();
+    double distMax = std::max(distLeft, distRight);
+    totalTime = distMax / speed;
+    time = 0;
+  }
+
+
+  bool interpolateToStandPose() 
+  {
+    // execute the stand motion
+    if(totalTime >= 0 && time <= totalTime)
     {
         InverseKinematic::CoMFeetPose p;
 
@@ -201,149 +239,136 @@ StandMotion()
         }
 
         bool solved = false;
-        c = getEngine().controlCenterOfMass(getMotorJointData(), p, solved, false);
+        InverseKinematic::HipFeetPose c = getEngine().controlCenterOfMass(getMotorJointData(), p, solved, false);
+
+        applyPose(c);
+        time += getRobotInfo().basicTimeStep;
+
+        return false;
     }
 
-    
-    /*
-    InverseKinematic::HipFeetPose c;
-    c.hip = p.com;
-    c.hip.translation = Vector3d();
-    c.feet = p.feet;
+    // done
+    return true;
+  }
 
-    getEngine().controlCenterOfMassCool(getMotorJointData(), p, c, true, solved, false);
-    */
 
-    if(getCalibrationData().calibrated && getEngine().getParameters().stand.enableStabilization)
+  void applyPose(const InverseKinematic::HipFeetPose& tc) 
+  {
+    InverseKinematic::HipFeetPose c(tc);
+    if(getCalibrationData().calibrated)
     {
-      /*
-      getEngine().rotationStabilize(
-        getRobotInfo(),
-        getGroundContactModel(),
-        getInertialSensorData(),
-        c.hip);*/
-
       c.localInLeftFoot();
-      getEngine().rotationStabilize(
-        getInertialModel(),
-        getGyrometerData(),
-        getRobotInfo().getBasicTimeStepInSecond(),
-        c);
+
+      if(getEngine().getParameters().stand.enableStabilization) {
+        getEngine().rotationStabilize(
+          getInertialModel(),
+          getGyrometerData(),
+          getRobotInfo().getBasicTimeStepInSecond(),
+          c);
+      } else if(getEngine().getParameters().stand.enableStabilizationRC16) {
+        getEngine().rotationStabilizeRC16(
+          getInertialSensorData(),
+          getGyrometerData(),
+          getRobotInfo().getBasicTimeStepInSecond(),
+          c);
+      }
     }
 
     getEngine().solveHipFeetIK(c);
     getEngine().copyLegJoints(getMotorJointData().position);
+  }
 
-    // update joint monitors
-    for( int i = naoth::JointData::RShoulderRoll; i <= naoth::JointData::LAnkleRoll; i++) {
-        jointMonitors[i].updateMonitor(getMotorJointData().position[i] + jointOffsets[i], getSensorJointData().position[i],getSensorJointData().electricCurrent[i]);
-    }
- 
-    // control the joint offsets (online tuning) for the knee and ankle pitchs
-    if (isRelaxing && !getBodyState().isLiftedUp) {
-        jointOffsets.setMinimalStep(getEngine().getParameters().stand.relax.jointOffsetTuning.minimalJointStep);
-        if(getFrameInfo().getTime() - lastFrameInfo.getTime() > getEngine().getParameters().stand.relax.jointOffsetTuning.deadTime){
-            double currents[4] = {jointMonitors[naoth::JointData::LKneePitch].filteredCurrent(), jointMonitors[naoth::JointData::RKneePitch].filteredCurrent(), jointMonitors[naoth::JointData::LAnklePitch].filteredCurrent(), jointMonitors[naoth::JointData::RAnklePitch].filteredCurrent()};
 
-            // determine max
-            int max_index = 0;
-            for(int i = 1; i < 4; i++){
-                if(currents[i] > currents[max_index]){
-                    max_index = i;
-                }
-            }
+  void tuneJointOffsets()
+  {
+    jointOffsets.setMinimalStep(getEngine().getParameters().stand.relax.jointOffsetTuning.minimalJointStep);
 
-            PLOT("Stand:filteredCurrent:LKneePitch", currents[0]);
-            PLOT("Stand:filteredCurrent:RKneePitch", currents[1]);
-            PLOT("Stand:filteredCurrent:LAnklePitch",currents[2]);
-            PLOT("Stand:filteredCurrent:RAnklePitch",currents[3]);
+    if(getFrameInfo().getTime() - lastFrameInfo.getTime() > getEngine().getParameters().stand.relax.jointOffsetTuning.deadTime){
+      double currents[4] = {jointMonitors[naoth::JointData::LKneePitch].filteredCurrent(), jointMonitors[naoth::JointData::RKneePitch].filteredCurrent(), jointMonitors[naoth::JointData::LAnklePitch].filteredCurrent(), jointMonitors[naoth::JointData::RAnklePitch].filteredCurrent()};
 
-            // if greater than Threshold then try to tune the offsets
-            if(currents[max_index] > getEngine().getParameters().stand.relax.jointOffsetTuning.currentThreshold){
-                switch (max_index){
-                case 0: //LKnee
-                    jointOffsets.increaseOffset(naoth::JointData::LKneePitch);
-                    break;
-                case 1: //RKnee
-                    jointOffsets.increaseOffset(naoth::JointData::RKneePitch);
-                    break;
-                case 2: //LAnklePitch
-                    jointOffsets.decreaseOffset(naoth::JointData::LAnklePitch);
-                    break;
-                case 3: //RAnklePitch
-                    jointOffsets.decreaseOffset(naoth::JointData::RAnklePitch);
-                    break;
-                }
-            }
-            lastFrameInfo = getFrameInfo();
+      // determine max
+      int max_index = 0;
+      for(int i = 1; i < 4; i++){
+        if(currents[i] > currents[max_index]){
+          max_index = i;
         }
-
-        for( int i = naoth::JointData::RHipYawPitch; i <= naoth::JointData::LAnkleRoll; i++) {
-            getMotorJointData().position[i] += jointOffsets[i];
-        }
-    } else {
-        lastFrameInfo = getFrameInfo();
-    }
-
-    /*
-    getEngine().gotoArms(
-        getMotionStatus(),
-        getInertialModel(),
-        getRobotInfo(),
-        c, getMotorJointData().position);
-    */
-    PLOT("Stand:hip:x",c.hip.translation.x);
-    PLOT("Stand:hip:y",c.hip.translation.y);
-    PLOT("Stand:hip:z",c.hip.translation.z);
-    PLOT("Stand:time:time", time);
-    PLOT("Stand:time:totalTime", totalTime);
-
-    time += getRobotInfo().basicTimeStep;
-
-    // TODO: execution order?
-    turnOffStiffnessWhenJointIsOutOfRange();
-
-    // controlling the stiffness of leg joints
-    if (isRelaxing && !getBodyState().isLiftedUp) {
-        if(getFrameInfo().getTime() - lastStiffnessUpdate.getTime() > getEngine().getParameters().stand.relax.stiffnessControl.deadTime){
-            double minAngle = getEngine().getParameters().stand.relax.stiffnessControl.minAngle;
-            double maxAngle = getEngine().getParameters().stand.relax.stiffnessControl.maxAngle;
-            double minStiff = getEngine().getParameters().stand.relax.stiffnessControl.minStiffness;
-            double maxStiff = getEngine().getParameters().stand.relax.stiffnessControl.maxStiffness;
-
-            for( int i = naoth::JointData::RShoulderRoll; i <= naoth::JointData::LAnkleRoll; i++) {
-                stiffnessController[i].setMinMaxValues(minAngle,maxAngle,minStiff,maxStiff);
-                stiffness[i] = stiffnessController[i].control(jointMonitors[i].getError());
-            }
-
-            lastStiffnessUpdate = getFrameInfo();
-        }
-        PLOT("StandMotion:AverageError:LKneePitch",jointMonitors[naoth::JointData::LKneePitch].getError());
-        PLOT("StandMotion:AverageError:RKneePitch",jointMonitors[naoth::JointData::RKneePitch].getError());
-        PLOT("StandMotion:Control:LKneePitch",stiffnessController[naoth::JointData::LKneePitch].control(jointMonitors[naoth::JointData::LKneePitch].getError()));
-        PLOT("StandMotion:Control:RKneePitch",stiffnessController[naoth::JointData::RKneePitch].control(jointMonitors[naoth::JointData::RKneePitch].getError()));
-    } else {
-        lastStiffnessUpdate = getFrameInfo();
-    }
-
-    for( int i = naoth::JointData::RShoulderRoll; i < naoth::JointData::numOfJoint; i++) {
-        getMotorJointData().stiffness[i] = stiffness[i];
-    }
-
-    if ( time >= totalTime && getMotionRequest().id != getId() ) {
-      setCurrentState(motion::stopped);
-      relaxedPoseInitialized = false;
-
-      // reset stuff for StandMotion:online_tuning
-      jointOffsets.resetOffsets();
-      for(int i = 0; i < naoth::JointData::numOfJoint; i++){
-          jointMonitors[i].resetAll();
       }
-      return;
-    } else {
-      setCurrentState(motion::running);
+
+      PLOT("Stand:filteredCurrent:LKneePitch", currents[0]);
+      PLOT("Stand:filteredCurrent:RKneePitch", currents[1]);
+      PLOT("Stand:filteredCurrent:LAnklePitch",currents[2]);
+      PLOT("Stand:filteredCurrent:RAnklePitch",currents[3]);
+
+      // if greater than Threshold then try to tune the offsets
+      if(currents[max_index] > getEngine().getParameters().stand.relax.jointOffsetTuning.currentThreshold){
+        switch (max_index){
+        case 0: //LKnee
+          jointOffsets.increaseOffset(naoth::JointData::LKneePitch);
+          break;
+        case 1: //RKnee
+          jointOffsets.increaseOffset(naoth::JointData::RKneePitch);
+          break;
+        case 2: //LAnklePitch
+          jointOffsets.decreaseOffset(naoth::JointData::LAnklePitch);
+          break;
+        case 3: //RAnklePitch
+          jointOffsets.decreaseOffset(naoth::JointData::RAnklePitch);
+          break;
+        }
+      }
+      lastFrameInfo = getFrameInfo();
     }
-  }//end execute
+
+    for( int i = naoth::JointData::RHipYawPitch; i <= naoth::JointData::LAnkleRoll; i++) {
+      getMotorJointData().position[i] += jointOffsets[i];
+    }
+  }
+
+  void tuneStiffness()
+  {
+      double minAngle = getEngine().getParameters().stand.relax.stiffnessControl.minAngle;
+      double maxAngle = getEngine().getParameters().stand.relax.stiffnessControl.maxAngle;
+      double minStiff = getEngine().getParameters().stand.relax.stiffnessControl.minStiffness;
+      double maxStiff = getEngine().getParameters().stand.relax.stiffnessControl.maxStiffness;
+
+      for( int i = naoth::JointData::RShoulderRoll; i <= naoth::JointData::LAnkleRoll; i++) {
+          stiffnessController[i].setMinMaxValues(minAngle,maxAngle,minStiff,maxStiff);
+          stiffness[i] = stiffnessController[i].control(jointMonitors[i].getError());
+      }
+
+      lastStiffnessUpdate = getFrameInfo();
+
+      PLOT("StandMotion:AverageError:LKneePitch",jointMonitors[naoth::JointData::LKneePitch].getError());
+      PLOT("StandMotion:AverageError:RKneePitch",jointMonitors[naoth::JointData::RKneePitch].getError());
+      PLOT("StandMotion:Control:LKneePitch",stiffnessController[naoth::JointData::LKneePitch].control(jointMonitors[naoth::JointData::LKneePitch].getError()));
+      PLOT("StandMotion:Control:RKneePitch",stiffnessController[naoth::JointData::RKneePitch].control(jointMonitors[naoth::JointData::RKneePitch].getError()));
+  }
+
+
+  bool relaxedPoseIsStillOk() 
+  {
+    InverseKinematic::CoMFeetPose hipFeetPoseSensor = getEngine().getCoMFeetPoseBasedOnSensor();
+    hipFeetPoseSensor.localInLeftFoot();
+
+    // height is the value from the motion request
+    InverseKinematic::CoMFeetPose target = getStandPose((height < 0.0) ? getEngine().getParameters().walk.hip.comHeight : getMotionRequest().standHeight, getEngine().getParameters().stand.hipOffsetX, getEngine().getParameters().stand.bodyPitchOffset, standardStand);
+    target.localInLeftFoot();
+
+    RotationMatrix hipFeetPoseSensorRot = hipFeetPoseSensor.com.rotation;
+    RotationMatrix targetRot = target.com.rotation;
+
+    double rotationErrorX = fabs(hipFeetPoseSensorRot.getXAngle() - targetRot.getXAngle());
+    double rotationErrorY = fabs(hipFeetPoseSensorRot.getYAngle() - targetRot.getYAngle());
+
+    PLOT("StandMotion:Deviations:Distance",(hipFeetPoseSensor.com.translation - target.com.translation).abs());
+    PLOT("StandMotion:Deviations:RotationY",Math::toDegrees(rotationErrorY));
+    PLOT("StandMotion:Deviations:RotationX",Math::toDegrees(rotationErrorX));
+
+    return !( (hipFeetPoseSensor.com.translation - target.com.translation).abs() > getEngine().getParameters().stand.relax.allowedDeviation
+              || rotationErrorX > getEngine().getParameters().stand.relax.allowedRotationDeviation
+              || rotationErrorY > getEngine().getParameters().stand.relax.allowedRotationDeviation);
+  }
+
 
 private:
   void turnOffStiffnessWhenJointIsOutOfRange()
@@ -376,135 +401,30 @@ private:
   }//end turnOffStiffnessWhenJointIsOutOfRange
 
 private:
+
   double totalTime;
   double time;
   double height;
   bool standardStand;
+
   InverseKinematic::CoMFeetPose targetPose;
   InverseKinematic::CoMFeetPose startPose;
+
+
   InverseKinematic::HipFeetPose relaxedPose;
   JointData relaxData;
   bool relaxedPoseInitialized;
   bool isRelaxing;
   bool resetedAfterLifting;
 
-  class JointMonitor
-  {
-  public:
-      JointMonitor() {}
-
-      void updateMonitor(double motorData, double sensorData, double cumCurrent) {
-          motorJointDataBuffer.add(motorData);
-
-          if(motorJointDataBuffer.isFull()){
-              motorToSensorError.add(sensorData - motorJointDataBuffer.first());
-          }
-
-          current.add(cumCurrent);
-      }
-
-      void resetAll() {
-          motorJointDataBuffer.clear();
-          motorToSensorError.clear();
-          current.clear();
-      }
-
-      void resetError() {
-          motorToSensorError.clear();
-      }
-
-      double getError(){
-          return motorToSensorError.getAverage();
-      }
-
-      double filteredCurrent(){
-          return current.getAverage();
-      }
-
-  private:
-      RingBuffer<double,4> motorJointDataBuffer;
-      RingBufferWithSum<double,100> motorToSensorError;
-      RingBufferWithSum<double,200> current;
-  };
-
   JointMonitor jointMonitors[naoth::JointData::numOfJoint];
 
   // used by StandMotion:stiffness_controller
   FrameInfo lastStiffnessUpdate;
-
-  class StiffnessController{
-  public:
-      StiffnessController():
-          minAngle(0.08),
-          maxAngle(2),
-          minStiff(0.3),
-          maxStiff(1.0)
-      {}
-
-      double control(double error) {
-          // linear function
-          double m = (maxStiff-minStiff)/(maxAngle-minAngle);
-          double n = maxStiff-m*maxAngle;
-
-          double e = fabs(error);
-
-          if(e <= Math::fromDegrees(minAngle)){
-              return minStiff;
-          } else if(e > Math::fromDegrees(maxAngle)) {
-              return maxStiff;
-          } else {
-              return m*Math::toDegrees(e) + n;
-          }
-      }
-
-      void setMinMaxValues(double minAngle, double maxAngle, double minStiff, double maxStiff){
-          this->minAngle = minAngle;
-          this->maxAngle = maxAngle;
-          this->minStiff = minStiff;
-          this->maxStiff = maxStiff;
-      }
-
-  private:
-      double minAngle, maxAngle, minStiff, maxStiff;
-  };
-
   StiffnessController stiffnessController[naoth::JointData::numOfJoint];
 
   // used by StandMotion:online_tuning
   FrameInfo lastFrameInfo;
-
-  class JointOffsets
-  {
-  public:
-      JointOffsets():minimalStep(0.0013962634){}
-
-      void setMinimalStep(double minStep) {
-          minimalStep = minStep;
-      }
-
-      void resetOffsets(){
-          for(int i = 0; i < naoth::JointData::numOfJoint; i++){
-              offsets.position[i] = 0;
-          }
-      }
-
-      void increaseOffset(int i){
-          offsets.position[i] += minimalStep;
-      }
-
-      void decreaseOffset(int i){
-          offsets.position[i] -= minimalStep;
-      }
-
-      double operator [](int i){
-          return offsets.position[i];
-      }
-
-  private:
-      JointData offsets;
-      double minimalStep; // [rad]
-  };
-
   JointOffsets jointOffsets;
   double stiffness[naoth::JointData::numOfJoint];
 
