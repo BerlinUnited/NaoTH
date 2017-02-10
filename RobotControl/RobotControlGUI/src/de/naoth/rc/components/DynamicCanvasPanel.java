@@ -236,6 +236,7 @@ public class DynamicCanvasPanel extends javax.swing.JPanel
     }
   }
   
+  
   void drawCoordinateSystem(Graphics2D g2d, int x, int y)
   {
     AffineTransform tx = new AffineTransform();
@@ -254,13 +255,11 @@ public class DynamicCanvasPanel extends javax.swing.JPanel
     g2d.setStroke(new BasicStroke(2.0f));
     g2d.setColor(Color.red);
     g2d.drawString("X", (int)p3.getX(), (int)p3.getY());
-    //g2d.drawLine((int)p0.getX(), (int)p0.getY(), (int)p1.getX(), (int)p1.getY());
-    Arrow.drawArrow(g2d, (int)p0.getX(), (int)p0.getY(), (int)p1.getX(), (int)p1.getY(), 2.0f);
+    new Arrow((int)p0.getX(), (int)p0.getY(), (int)p1.getX(), (int)p1.getY()).draw(g2d);
     
     g2d.setColor(Color.black);
     g2d.drawString("Y", (int)p4.getX(), (int)p4.getY());
-    //g2d.drawLine((int)p0.getX(), (int)p0.getY(), (int)p2.getX(), (int)p2.getY());
-    Arrow.drawArrow(g2d, (int)p0.getX(), (int)p0.getY(), (int)p2.getX(), (int)p2.getY(), 2.0f);
+    new Arrow((int)p0.getX(), (int)p0.getY(), (int)p2.getX(), (int)p2.getY()).draw(g2d);
   }
   
   public Point.Double canvasCoordinatesToInternal(Point.Double p)
