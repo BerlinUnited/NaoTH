@@ -1,10 +1,10 @@
 /**
-* @file StableRoleDecision.h
+* @file CleanRoleDecision.h
 *
 * @author <a href="mailto:schahin.tofangchi@hu-berlin.de">Schahin Tofangchi</a>
 */
 
-#include "StableRoleDecision.h"
+#include "CleanRoleDecision.h"
 #include <PlatformInterface/Platform.h>
 #include <Tools/DataConversion.h>
 
@@ -14,23 +14,23 @@
 using namespace std;
 
 
-StableRoleDecision::StableRoleDecision()
+CleanRoleDecision::CleanRoleDecision()
 {
   getDebugParameterList().add(&parameters);
 }
 
-StableRoleDecision::~StableRoleDecision()
+CleanRoleDecision::~CleanRoleDecision()
 {
   getDebugParameterList().remove(&parameters);
 }
 
-void StableRoleDecision::execute() {
+void CleanRoleDecision::execute() {
     getRoleDecisionModel().resetRobotStates();
     computeStrikers();
 
 }//end execute
 
-void StableRoleDecision::computeStrikers()
+void CleanRoleDecision::computeStrikers()
 {
     // container storing robots, which want to be striker, and their time to ball
     std::map<unsigned int, unsigned int> possible_striker;
@@ -88,11 +88,11 @@ void StableRoleDecision::computeStrikers()
         }
     }
 
-    PLOT(std::string("StableRoleDecision:FirstStrikerDecision"), getRoleDecisionModel().firstStriker);
-    PLOT(std::string("StableRoleDecision:SecondStrikerDecision"), getRoleDecisionModel().secondStriker);
+    PLOT(std::string("CleanRoleDecision:FirstStrikerDecision"), getRoleDecisionModel().firstStriker);
+    PLOT(std::string("CleanRoleDecision:SecondStrikerDecision"), getRoleDecisionModel().secondStriker);
 }
 
-bool StableRoleDecision::isRobotDead(unsigned int robotNumber) {
+bool CleanRoleDecision::isRobotDead(unsigned int robotNumber) {
     double failureProbability = 0.0;
     std::map<unsigned int, double>::const_iterator robotFailure = getTeamMessageStatisticsModel().failureProbabilities.find(robotNumber);
     if (robotFailure != getTeamMessageStatisticsModel().failureProbabilities.end()) {

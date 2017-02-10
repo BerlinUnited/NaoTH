@@ -1,16 +1,14 @@
 /**
-* @file StableRoleDecision.h
+* @file CleanRoleDecision.h
 *
 * @author <a href="mailto:schahin.tofangchi@hu-berlin.de">Schahin Tofangchi</a>
 */
 
-#ifndef _StableRoleDecision_h_
-#define _StableRoleDecision_h_
+#ifndef _CleanRoleDecision_h_
+#define _CleanRoleDecision_h_
 
 #include <ModuleFramework/Module.h>
 #include <XabslEngine/XabslEngine.h>
-
-#include "Cognition/Modules/Modeling/RoleDecision/RoleDecision.h"
 
 #include "Representations/Modeling/TeamMessage.h"
 #include "Representations/Infrastructure/FrameInfo.h"
@@ -29,7 +27,7 @@
 
 //////////////////// BEGIN MODULE INTERFACE DECLARATION ////////////////////
 
-BEGIN_DECLARE_MODULE(StableRoleDecision)
+BEGIN_DECLARE_MODULE(CleanRoleDecision)
   PROVIDE(DebugPlot)
   PROVIDE(DebugRequest)
   PROVIDE(DebugParameterList)
@@ -44,16 +42,16 @@ BEGIN_DECLARE_MODULE(StableRoleDecision)
   REQUIRE(BallModel)
 
   PROVIDE(RoleDecisionModel)
-END_DECLARE_MODULE(StableRoleDecision)
+END_DECLARE_MODULE(CleanRoleDecision)
 
 //////////////////// END MODULE INTERFACE DECLARATION //////////////////////
 
-class StableRoleDecision : public StableRoleDecisionBase, public RoleDecision
+class CleanRoleDecision : public CleanRoleDecisionBase
 {
 public: 
 
-  StableRoleDecision();
-  virtual ~StableRoleDecision();
+  CleanRoleDecision();
+  virtual ~CleanRoleDecision();
 
   /** executes the module */
   virtual void execute();
@@ -77,7 +75,7 @@ protected:
   class Parameters: public ParameterList
   {
   public: 
-    Parameters(): ParameterList("StableRoleDecision")
+    Parameters(): ParameterList("CleanRoleDecision")
     {
       PARAMETER_REGISTER(maximumFreshTime) = 2000;
       PARAMETER_REGISTER(strikerBonusTime) = 4000;
@@ -98,4 +96,4 @@ protected:
 
 };
 
-#endif //__StableRoleDecision_h_
+#endif //__CleanRoleDecision_h_
