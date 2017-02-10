@@ -16,33 +16,33 @@ class RoleDecisionModel: public naoth::Printable
 {
 public:
 
-  int firstStriker;
-  int secondStriker;
+  unsigned int firstStriker;
+  unsigned int secondStriker;
 
-  std::list<int> aliveRobots;
-  std::list<int> deadRobots;
+  std::list<unsigned int> aliveRobots;
+  std::list<unsigned int> deadRobots;
 
   bool wantsToBeStriker;
 
   RoleDecisionModel():
-    firstStriker(-1),
-    secondStriker(-1),
+    firstStriker(std::numeric_limits<int>::max()),
+    secondStriker(std::numeric_limits<int>::max()),
     wantsToBeStriker(false)
   {
-    aliveRobots = *(new std::list<int>());
-    deadRobots = *(new std::list<int>());
+    //aliveRobots = *(new std::list<int>());
+    //deadRobots = *(new std::list<int>());
   }
 
   virtual void print(std::ostream& stream) const {
 
-    if (firstStriker != -1) {
+    if (firstStriker != std::numeric_limits<int>::max()) {
       stream << "First Striker: " << "Robot No. " << firstStriker << "\n";
     }
     else {
       stream << "Currently no first striker in use.\n";
     }
 
-    if (secondStriker != -1) {
+    if (secondStriker != std::numeric_limits<int>::max()) {
       stream << "Second Striker: " << "Robot No. " << secondStriker << "\n";
     }
     else {
@@ -57,17 +57,25 @@ public:
     }
     
     stream << "The following robots are considered ALIVE:\n";
-    for (std::list<int>::const_iterator iter = aliveRobots.begin(); iter != aliveRobots.end(); iter++) {
+    for (std::list<unsigned int>::const_iterator iter = aliveRobots.begin(); iter != aliveRobots.end(); iter++) {
       stream << "Robot " << *iter << std::endl;
     }
     stream << "\nThe following robots are considered DEAD:\n";    
-    for (std::list<int>::const_iterator iter = deadRobots.begin(); iter != deadRobots.end(); iter++) {
+    for (std::list<unsigned int>::const_iterator iter = deadRobots.begin(); iter != deadRobots.end(); iter++) {
       stream << "Robot " << *iter << std::endl;
     }
 
   }
 
+  void resetRobotStates() {
+      aliveRobots.clear();
+      deadRobots.clear();
+  }
 
+  void resetStriker() {
+      firstStriker = std::numeric_limits<int>::max();
+      secondStriker = std::numeric_limits<int>::max();
+  }
 };
 
 
