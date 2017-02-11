@@ -39,6 +39,11 @@ def simulate_consequences(action, categorized_ball_positions, state):
     # virtual ultrasound obstacle line
     obstacle_line = m2d.LineSegment(state.pose * m2d.Vector2(400, 200), state.pose * m2d.Vector2(400, -200))
 
+    # Todo: Test of expectedBallpos - this position is still wrong - we need to calculate this after replacing the particles
+    mean_test_list_x = []
+    mean_test_list_y = []
+    # Todo: make list here and add global_ball_end_position to that list after resizing
+    # Todo: in the end calc 2d mean of list -> cmp to calculation without noise
     # now generate predictions and categorize
     for i in range(0, a.num_particles):
         # predict and calculate shoot line
@@ -92,8 +97,12 @@ def simulate_consequences(action, categorized_ball_positions, state):
         elif global_ball_end_position.y < field.y_right_sideline:
             category = "RIGHTOUT"
 
-        categorized_ball_positions.add(state.pose / global_ball_end_position, category)
+        local_test_pos = state.pose / global_ball_end_position
+        mean_test_list_x.append(local_test_pos.x)
+        mean_test_list_y.append(local_test_pos.y)
 
+        categorized_ball_positions.add(state.pose / global_ball_end_position, category)
+    categorized_ball_positions.expected_ball_pos = m2d.Vector2(np.mean(mean_test_list_x), np.mean(mean_test_list_y))
     return categorized_ball_positions
 
 

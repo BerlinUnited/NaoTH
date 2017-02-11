@@ -51,5 +51,3 @@ opp_goal_back_right = m2d.Vector2(opponent_goalpost_right.x + goal_depth, oppone
 
 
 field_rect = m2d.Rect2d(m2d.Vector2(-x_length*0.5, -y_length*0.5), m2d.Vector2(x_length*0.5, y_length*0.5))
-
-

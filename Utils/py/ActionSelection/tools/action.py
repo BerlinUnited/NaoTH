@@ -56,6 +56,7 @@ class ActionResults:
     def __init__(self, categorized_ball_position_list):
         self.ball_positions = categorized_ball_position_list  # type is list of CategorizedBallPosition
         self.cat_histogram = [0]*len(Categories)  # type is list
+        self.expected_ball_pos = m2d.Vector2()  # should be in local coordinates
 
     def positions(self):
         # returns a list of CategorizedBallPosition
