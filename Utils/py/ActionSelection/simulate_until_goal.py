@@ -66,8 +66,7 @@ def main():
 
     action_list = [no_action, kick_short, sidekick_left, sidekick_right]
 
-    # Todo break if turn state is reached e.g. when
-    # Todo: Maybe do several decision cycles(histogramm of decisions) not just one to get rid of accidental decisions
+    # Todo: Maybe do several decision cycles(histogram of decisions) not just one to get rid of accidental decisions
     num_kicks = 0
     num_turn_degrees = 0
     while True:
@@ -97,23 +96,25 @@ def main():
 
         if not action_list[best_action].name == "none":
 
+            print(str(state.pose * expected_ball_pos) + " Decision: " + str(action_list[best_action].name))
+            draw_robot_walk(actions_consequences, state, state.pose * expected_ball_pos)
+
             # update the robots position
             rotation = np.arctan2(expected_ball_pos.y, expected_ball_pos.x)
             state.pose.translation = state.pose * expected_ball_pos
             state.pose.rotation = rotation
 
             num_kicks += 1
-            print(str(state.pose.translation) + " Decision: " + str(action_list[best_action].name))
-            draw_robot_walk(actions_consequences, state, state.pose * expected_ball_pos)
 
         elif goal_scored:
             print("Goal Scored")
             break
         elif action_list[best_action].name == "none":
-            state.pose.rotation += math.radians(10)  # -= 1 is better in some cases
-
-            print(str(state.pose.translation) + " Decision: " + str(action_list[best_action].name))
+            # Todo implement turning in the correct direction
+            print(str(state.pose * expected_ball_pos) + " Decision: " + str(action_list[best_action].name))
             draw_robot_walk(actions_consequences, state, state.pose * expected_ball_pos)
+
+            state.pose.rotation += math.radians(10)  # -= 1 is better in some cases
             num_turn_degrees += 1
 
     print("Num Kicks: " + str(num_kicks))
