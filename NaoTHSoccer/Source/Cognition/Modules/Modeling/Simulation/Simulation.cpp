@@ -98,6 +98,7 @@ void Simulation::execute()
   STOPWATCH_STOP("Simulation:decide");  
 
   getKickActionModel().bestAction = action_local[best_action].id();
+  //Arghhh BUG: this expected ball pos is not affected by goal boarders/ obstacles
   getKickActionModel().expectedBallPos = getRobotPose() * action_local[best_action].predict(getBallModel().positionPreview, false);
 
   DEBUG_REQUEST("Simulation:draw_best_action",
