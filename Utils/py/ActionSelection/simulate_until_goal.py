@@ -3,7 +3,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 from matplotlib.patches import Circle
 from tools import action as a
-from tools import Simulation as S
+from tools import Simulation as Sim
 from tools import math2d as m2d
 from tools import tools
 from tools import field_info as field
@@ -76,10 +76,10 @@ def main():
         # Simulate Consequences
         for action in action_list:
             single_consequence = a.ActionResults([])
-            actions_consequences.append(S.simulate_consequences(action, single_consequence, state))
+            actions_consequences.append(Sim.simulate_consequences(action, single_consequence, state))
 
         # Decide best action
-        best_action = S.decide_smart(actions_consequences, state)
+        best_action = Sim.decide_smart(actions_consequences, state)
 
         # expected_ball_pos should be in local coordinates for rotation calculations
         expected_ball_pos = actions_consequences[best_action].expected_ball_pos

@@ -1,6 +1,6 @@
 import math
 from tools import action as a
-from tools import Simulation as S
+from tools import Simulation as Sim
 from tools import math2d as m2d
 from tools import field_info as field
 
@@ -45,12 +45,12 @@ def main():
         # Simulate Consequences
         for action in action_list:
             single_consequence = a.ActionResults([])
-            actions_consequences.append(S.simulate_consequences(action, single_consequence, state))
+            actions_consequences.append(Sim.simulate_consequences(action, single_consequence, state))
 
         # actions_consequences is now a list of ActionResults
 
         # Decide best action
-        best_action = S.decide_smart(actions_consequences, state)
+        best_action = Sim.decide_smart(actions_consequences, state)
         pos_list_labeled.append([state.pose.translation, action_list[best_action].name])
         # print(str(state.pose.translation) + " - " + str(action_list[best_action].name))
 

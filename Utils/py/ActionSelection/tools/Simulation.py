@@ -1,12 +1,9 @@
 import math
 import numpy as np
-from matplotlib import pyplot as plt
-from matplotlib.patches import Circle
 import action as a
 import field_info as field
 import potential_field as pf
 import math2d as m2d
-import tools as tools
 
 
 def simulate_consequences(action, categorized_ball_positions, state):
@@ -39,11 +36,9 @@ def simulate_consequences(action, categorized_ball_positions, state):
     # virtual ultrasound obstacle line
     obstacle_line = m2d.LineSegment(state.pose * m2d.Vector2(400, 200), state.pose * m2d.Vector2(400, -200))
 
-    # Todo: Test of expectedBallpos - this position is still wrong - we need to calculate this after replacing the particles
     mean_test_list_x = []
     mean_test_list_y = []
-    # Todo: make list here and add global_ball_end_position to that list after resizing
-    # Todo: in the end calc 2d mean of list -> cmp to calculation without noise
+
     # now generate predictions and categorize
     for i in range(0, a.num_particles):
         # predict and calculate shoot line
@@ -73,7 +68,7 @@ def simulate_consequences(action, categorized_ball_positions, state):
         for obstacle in state.obstacle_list:
             dist = math.sqrt((state.pose.translation.x-obstacle.x)**2 + (state.pose.translation.y-obstacle.y)**2)
             # check for distance and rotation
-            # Todo it's wrong: Now if obstacle is near, then obstacle is in front of the robt
+            # Todo it's wrong: Now if obstacle is near, then obstacle is in front of the robot
             if dist < 400 and shootline.intersect(obstacle_line):
                 obstacle_collision = True
 
@@ -179,23 +174,3 @@ def decide_smart(actions_consequences, state):
             best_action = index
             best_value = potential
     return best_action
-
-
-def draw_actions(actions_consequences, state):
-    plt.clf()
-    tools.draw_field()
-
-    axes = plt.gca()
-    axes.add_artist(Circle(xy=(state.pose.translation.x, state.pose.translation.y), radius=100, fill=False, edgecolor='white'))
-    x = np.array([])
-    y = np.array([])
-
-    for consequence in actions_consequences:
-        for particle in consequence.positions():
-            ball_pos = state.pose * particle.ball_pos  # transform in global coordinates
-
-            x = np.append(x, [ball_pos.x])
-            y = np.append(y, [ball_pos.y])
-
-    plt.scatter(x, y, c='r', alpha=0.5)
-    plt.pause(0.0001)

@@ -1,7 +1,11 @@
 import math
+import numpy as np
+from matplotlib import pyplot as plt
+from matplotlib.patches import Circle
 from tools import action as a
-from tools import Simulation as S
+from tools import Simulation as Sim
 from tools import math2d as m2d
+from tools import tools
 
 
 class State:
@@ -13,6 +17,26 @@ class State:
         self.ball_position = m2d.Vector2(100.0, 0.0)
 
         self.obstacle_list = ([])  # is in global coordinates
+
+
+def draw_actions(actions_consequences, state):
+    plt.clf()
+    tools.draw_field()
+
+    axes = plt.gca()
+    axes.add_artist(Circle(xy=(state.pose.translation.x, state.pose.translation.y), radius=100, fill=False, edgecolor='white'))
+    x = np.array([])
+    y = np.array([])
+
+    for consequence in actions_consequences:
+        for particle in consequence.positions():
+            ball_pos = state.pose * particle.ball_pos  # transform in global coordinates
+
+            x = np.append(x, [ball_pos.x])
+            y = np.append(y, [ball_pos.y])
+
+    plt.scatter(x, y, c='r', alpha=0.5)
+    plt.pause(0.0001)
 
 
 def main():
@@ -30,15 +54,15 @@ def main():
         # Simulate Consequences
         for action in action_list:
             single_consequence = a.ActionResults([])
-            actions_consequences.append(S.simulate_consequences(action, single_consequence, state))
+            actions_consequences.append(Sim.simulate_consequences(action, single_consequence, state))
 
         # actions_consequences is now a list of ActionResults
 
         # Decide best action
-        best_action = S.decide_smart(actions_consequences, state)
+        best_action = Sim.decide_smart(actions_consequences, state)
         # print(action_list[best_action].name)
 
-        S.draw_actions(actions_consequences, state)
+        draw_actions(actions_consequences, state)
 
 
 if __name__ == "__main__":
