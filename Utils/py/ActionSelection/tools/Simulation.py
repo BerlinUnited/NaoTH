@@ -78,8 +78,8 @@ def simulate_consequences(action, categorized_ball_positions, state):
         elif obstacle_collision and obstacle_line.intersect(shootline) and shootline.intersect(obstacle_line):
             category = "COLLISION"
         elif (field.field_rect.inside(global_ball_end_position) or
-                global_ball_end_position.x <= field.opponent_goalpost_right.x and
-                field.opponent_goalpost_left.y < global_ball_end_position.y > field.opponent_goalpost_right.y):
+                  (global_ball_end_position.x <= field.opponent_goalpost_right.x and
+                field.opponent_goalpost_left.y > global_ball_end_position.y > field.opponent_goalpost_right.y)):
             category = "INFIELD"
         elif shootline.intersect(own_goal_line_global) and own_goal_line_global.intersect(shootline):
             category = "OWNGOAL"
@@ -91,6 +91,8 @@ def simulate_consequences(action, categorized_ball_positions, state):
             category = "LEFTOUT"
         elif global_ball_end_position.y < field.y_right_sideline:
             category = "RIGHTOUT"
+        else:
+            category = "INFIELD"
 
         local_test_pos = state.pose / global_ball_end_position
         mean_test_list_x.append(local_test_pos.x)
