@@ -19,12 +19,14 @@ class State:
         self.obstacle_list = ([])  # is in global coordinates
 
 
-def draw_actions(actions_consequences, state):
+def draw_actions(actions_consequences, state, best_action):
     plt.clf()
     tools.draw_field()
 
     axes = plt.gca()
     axes.add_artist(Circle(xy=(state.pose.translation.x, state.pose.translation.y), radius=100, fill=False, edgecolor='white'))
+    axes.text(0, 0, best_action, fontsize=12)
+
     x = np.array([])
     y = np.array([])
 
@@ -60,9 +62,8 @@ def main():
 
         # Decide best action
         best_action = Sim.decide_smart(actions_consequences, state)
-        # print(action_list[best_action].name)
 
-        draw_actions(actions_consequences, state)
+        draw_actions(actions_consequences, state, action_list[best_action].name)
 
 
 if __name__ == "__main__":
