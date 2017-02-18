@@ -47,12 +47,22 @@ class Vector2:
         else:
             return self
 
+    def normalize_length(self, length):
+        if self.x == 0 and self.y == 0:
+            return Vector2(self.x, self.y)
+        else:
+            return (Vector2(self.x, self.y)*length) / self.abs()
+
+    def rotate_right(self):
+        x = self.x
+        y = self.y
+        return Vector2(y, -x)
+
 
 class Pose2D:
-
-    def __init__(self):
-        self.translation = Vector2()
-        self.rotation = 0
+    def __init__(self, translation=Vector2(), rotation=0):
+        self.translation = translation
+        self.rotation = rotation
 
     def __mul__(self, other):
         return other.rotate(self.rotation) + self.translation
