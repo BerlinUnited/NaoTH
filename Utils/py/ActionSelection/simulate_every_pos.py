@@ -21,8 +21,10 @@ class State:
 
 
 def main():
+    # This takes hours
     state = State()
 
+    cell_width = 100
     no_action = a.Action("none", 0, 0, 0, 0)
     kick_short = a.Action("kick_short", 780, 150, 8.454482265522328, 6.992268841997358)
     sidekick_left = a.Action("sidekick_left", 750, 150, 86.170795364136380, 10.669170653645670)
@@ -30,33 +32,29 @@ def main():
 
     action_list = [no_action, kick_short, sidekick_left, sidekick_right]
 
-    pos_list = []
-    pos_list_labeled = []
+    with open('decision-simulate_every_pos.txt', 'w') as f:
+        # xrange is only slightly faster in python 2.7
+        for rot in range(0, 360, 90):
+            for x in range(int(-field.x_field_length*0.5)+cell_width, int(field.x_field_length*0.5), 2*cell_width):
+                for y in range(int(-field.y_field_length*0.5)+cell_width, int(field.y_field_length*0.5), 2*cell_width):
+                    state.update_pos(m2d.Vector2(x, y), rotation=rot)
+                    actions_consequences = []
+                    # Simulate Consequences
+                    for action in action_list:
+                        single_consequence = a.ActionResults([])
+                        actions_consequences.append(Sim.simulate_consequences(action, single_consequence, state))
 
-    # xrange is only slightly faster in python 2.7
-    for x in range(int(-field.x_field_length*0.5), int(field.x_field_length*0.5), 50):
-        for y in range(int(-field.y_field_length*0.5), int(field.y_field_length*0.5), 50):
-            pos_list.append(m2d.Vector2(x, y))
+                    # Decide best action
+                    best_action = Sim.decide_smart(actions_consequences, state)
 
-    for pos in pos_list:
-        # the rotation should be fixed for all pos
-        state.update_pos(pos, rotation=0)
-        actions_consequences = []
-        # Simulate Consequences
-        for action in action_list:
-            single_consequence = a.ActionResults([])
-            actions_consequences.append(Sim.simulate_consequences(action, single_consequence, state))
-
-        # actions_consequences is now a list of ActionResults
-
-        # Decide best action
-        best_action = Sim.decide_smart(actions_consequences, state)
-        pos_list_labeled.append([state.pose.translation, action_list[best_action].name])
-        # print(str(state.pose.translation) + " - " + str(action_list[best_action].name))
-
-    # Todo do some statistics
-    # Todo find a good solution for not always recomputing the whole list or faster compuation
-    # print(pos_list_labeled)
+                    f.write('{}\t'.format(rot))
+                    f.write('{}\t'.format(x))
+                    f.write('{}\t'.format(y))
+                    f.write('{}\n'.format(best_action))
 
 if __name__ == "__main__":
+    '''
+        This should show the same behavior as the SimulationTest Module
+        Note: in front of the goalposts the real robot also uses it's US Sensors, i think???
+    '''
     main()

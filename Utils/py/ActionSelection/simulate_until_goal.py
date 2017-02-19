@@ -7,32 +7,26 @@ from tools import Simulation as Sim
 from tools import math2d as m2d
 from tools import tools
 from tools import field_info as field
-
-'''
-This should be the same as the thing working on the Nao
-That means: kick if it's possible else turn
-
-So first thing is just turn in a fixed direction
-TODO: later: calculate: attack_direction
-'''
+from tools import raw_attack_direction_provider as attack_dir
 
 
 class State:
     def __init__(self):
         self.pose = m2d.Pose2D()
-        self.pose.translation = m2d.Vector2(-4000, -2400)
-        self.pose.rotation = math.radians(0)
+        self.pose.translation = m2d.Vector2(-4000, -700)
+        self.pose.rotation = math.radians(-40)
 
         self.ball_position = m2d.Vector2(100.0, 0.0)
 
         self.obstacle_list = ([])  # is in global coordinates
 
+    # Todo use this everywhere
     def update_pos(self, glob_pos, rotation):
         self.pose.translation = glob_pos
         self.pose.rotation = rotation
 
 
-def draw_robot_walk(actions_consequences, state, expected_ball_pos):
+def draw_robot_walk(actions_consequences, state, expected_ball_pos, best_action):
     plt.clf()
     axes = plt.gca()
     origin = state.pose.translation
@@ -44,7 +38,7 @@ def draw_robot_walk(actions_consequences, state, expected_ball_pos):
     axes.add_artist(Circle(xy=(state.pose.translation.x, state.pose.translation.y), radius=100, fill=False, edgecolor='white'))
     axes.add_artist(Circle(xy=(expected_ball_pos.x, expected_ball_pos.y), radius=120, fill=True, edgecolor='blue'))
     axes.arrow(origin.x, origin.y, arrow_head.x, arrow_head.y, head_width=100, head_length=100, fc='k', ec='k')
-
+    axes.text(0, 0, best_action, fontsize=12)
     for consequence in actions_consequences:
         for particle in consequence.positions():
             ball_pos = state.pose * particle.ball_pos  # transform in global coordinates
@@ -69,7 +63,8 @@ def main():
     # Todo: Maybe do several decision cycles(histogram of decisions) not just one to get rid of accidental decisions
     num_kicks = 0
     num_turn_degrees = 0
-    while True:
+    goal_scored = False
+    while not goal_scored:
 
         actions_consequences = []
         # Simulate Consequences
@@ -92,34 +87,48 @@ def main():
 
         # Assert that expected_ball_pos is inside field or inside opp goal
         if not inside_field and not goal_scored:
+            print("Error")
+            # For histogram -> note the this position doesnt manage a goal
             break
 
         if not action_list[best_action].name == "none":
 
             print(str(state.pose * expected_ball_pos) + " Decision: " + str(action_list[best_action].name))
-            draw_robot_walk(actions_consequences, state, state.pose * expected_ball_pos)
+            draw_robot_walk(actions_consequences, state, state.pose * expected_ball_pos, action_list[best_action].name)
 
             # update the robots position
             rotation = np.arctan2(expected_ball_pos.y, expected_ball_pos.x)
+            print(math.degrees(rotation))
             state.pose.translation = state.pose * expected_ball_pos
-            state.pose.rotation = rotation
+            state.pose.rotation += rotation
 
             num_kicks += 1
 
-        elif goal_scored:
-            print("Goal Scored")
-            break
         elif action_list[best_action].name == "none":
-            # Todo implement turning in the correct direction
             print(str(state.pose * expected_ball_pos) + " Decision: " + str(action_list[best_action].name))
-            draw_robot_walk(actions_consequences, state, state.pose * expected_ball_pos)
+            draw_robot_walk(actions_consequences, state, state.pose * expected_ball_pos, action_list[best_action].name)
 
-            state.pose.rotation += math.radians(10)  # -= 1 is better in some cases
+            attack_direction = attack_dir.get_attack_direction(state)
+            # Todo: can run in a deadlock for some reason
+            if attack_direction > 0:
+                state.pose.rotation += math.radians(10)  # Should be turn right
+                print("Robot turns right - global rotation turns left")
+            else:
+                state.pose.rotation -= math.radians(10)  # Should be turn left
+                print("Robot turns left - global rotation turns right")
+
             num_turn_degrees += 1
 
     print("Num Kicks: " + str(num_kicks))
     print("Num Turns: " + str(num_turn_degrees))
 
-    # raw_input("Press Enter to continue...")
 if __name__ == "__main__":
+    '''
+    Should Simulate the real robot behavior, that means turn incrementally
+    -> i dont account for difference in speed of cognition and motion
+    Todo: make a histogram
+
+    Histogram:
+    Pos.x | Pos.y | Action None | kick short | kick left | kick right
+    '''
     main()

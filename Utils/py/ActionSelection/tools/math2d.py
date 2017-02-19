@@ -58,6 +58,9 @@ class Vector2:
         y = self.y
         return Vector2(y, -x)
 
+    def angle(self):
+        return math.atan2(self.y, self.x)
+
 
 class Pose2D:
     def __init__(self, translation=Vector2(), rotation=0):

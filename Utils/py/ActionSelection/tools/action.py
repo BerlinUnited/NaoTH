@@ -36,6 +36,7 @@ class Action:
         return ball + noisy_action
 
 Categories = ["INFIELD", "OPPOUT", "OWNOUT", "LEFTOUT", "RIGHTOUT", "OPPGOAL", "OWNGOAL", "COLLISION", "NUMBER_OF_BallPositionCategory"]
+histogram = [0]*50  # Assumes that 50 is the max number of kicks till goal
 
 
 # This class is a container for a particlePos and its corresponding category
