@@ -46,7 +46,7 @@ def calculate_potential_field(point, target_point):
     ff = field_f.abs() * 0.8  # should be double precision
 
     if player_f.abs() > ff:
-        player_f.normalize_length(ff)
+        player_f = player_f.normalize_length(ff)
 
     return field_f + player_f
 
