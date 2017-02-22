@@ -1,11 +1,11 @@
 from matplotlib import pyplot as plt
 from matplotlib.patches import Circle
 import math
-import field_info as field
+from tools import field_info as field
 import tools as tools
-import action as a
-import potential_field as pf
-import math2d as m2d
+from tools import action as a
+from tools import potential_field as pf
+from tools import math2d as m2d
 import numpy as np
 
 

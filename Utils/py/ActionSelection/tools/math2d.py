@@ -85,8 +85,8 @@ class LineSegment(object):
         self.base = begin
         self.direction = end-self.base
         self.length = Vector2.abs(self.direction)
-        if Vector2.abs(self.direction) != 0:
-            self.direction /= Vector2.abs(self.direction)
+        if self.direction.abs() != 0:
+            self.direction /= self.direction.abs()
 
     def __str__(self):
         return str("Begin: " + str(self.base)) + " End: " + str(self.base+self.direction*self.length)
@@ -98,13 +98,15 @@ class LineSegment(object):
         return self.base+self.direction*self.length
 
     def point(self, t):
+        t = clamp(t, 0.0, self.length)
         return self.base + self.direction*t
 
     def project(self, p):
         return self.direction*p - self.direction*self.base
 
     def projection(self, p):
-        return self.point(self.project(p))
+        t = self.direction*p - self.direction*self.base
+        return self.point(t)
 
     def intersection(self, other):
         normal = Vector2(-other.direction.y, other.direction.x)

@@ -1,6 +1,7 @@
 import math2d as m2d
 import math
 import field_info as field
+
 '''
 This class calculates the raw attack direction the way it's implemented in the PotentialFieldProvider.cpp
 
@@ -36,33 +37,33 @@ def calculate_potential_field(point, target_point):
     field_f = global_exponential_attractor(target_point, point)
     # we are repelled by the opponents
     player_f = m2d.Vector2(0, 0)
+    player_f.abs()
     # NOT Implemented yet
 
     # my self - NOTE this differs from the cpp Implementation in order to factor in the robots own position
     player_f -= compact_exponential_repeller(m2d.Vector2(0, 0), point)
 
-    # CPP-TODO: remove magic normalization
-    # Works correctly - PyCharms duck typing is bullshit
-    ff = field_f.abs() * 0.8  # should be double precision
+    # field_f is of type Vector2
+    ff = field_f.abs() * 0.8
 
     if player_f.abs() > ff:
         player_f = player_f.normalize_length(ff)
 
     return field_f + player_f
+    # return field_f
 
 
-# Todo probaby make every goal pos relative to the robot positions
 def get_goal_target(state, point):
-    goal_post_offset = 200.0  # Todo check me
+    goal_post_offset = 200.0
 
     # normalized vector from left post to the right
-    left_to_right = (state.pose / field.opponent_goalpost_left - state.pose / field.opponent_goalpost_right).normalize()
+    left_to_right = (state.pose / field.opponent_goalpost_right - state.pose / field.opponent_goalpost_left).normalize()
     # a normal vector pointing from the goal towards the field
     goal_normal = left_to_right
     goal_normal.rotate_right()
 
     # the endpoints of our line are a shortened version of the goal line
-    # Todo make sense of that stuff
+
     left_endpoint = (state.pose / field.opponent_goalpost_left) + left_to_right * goal_post_offset
     right_endpoint = (state.pose / field.opponent_goalpost_right) - left_to_right * goal_post_offset
 
@@ -76,8 +77,8 @@ def get_goal_target(state, point):
     # simple linear algebra: <l-p,r-p>/(||l-p||*||r-p||)
     goal_angle_cos = (state.pose / field.opponent_goalpost_left-point).normalize()*(state.pose / field.opponent_goalpost_right - point).normalize()
 
-    goal_line_offset_front = 100.0  # Todo check me
-    goal_line_offset_back = 100.0  # Todo check me
+    goal_line_offset_front = 100.0
+    goal_line_offset_back = 100.0
     # asymetric quadratic scale
     # goalAngleCos = -1 => t = -goalLineOffsetBack
     # goalAngleCos =  1 => t =  goalLineOffsetFront;
@@ -99,7 +100,4 @@ def get_attack_direction(state):
     target_point = get_goal_target(state, ball_relative)
 
     attack_direction = calculate_potential_field(ball_relative, target_point)  # ignore obstacle for now
-
-    attack_direction_value = math.degrees(attack_direction.angle())
-
-    return attack_direction_value
+    return attack_direction
