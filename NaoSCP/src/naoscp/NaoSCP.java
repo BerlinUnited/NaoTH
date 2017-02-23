@@ -354,7 +354,7 @@ public class NaoSCP extends javax.swing.JFrame {
 
         File dir;
         
-        if (this.usbPanel.hasPath()) {
+        if (this.usbPanel.hasSelection()) {
             int dialogResult = JOptionPane.showConfirmDialog(null, "Your selected path is " + this.usbPanel.getUSBPath(), "Warning", 1);
             if (dialogResult == JOptionPane.YES_OPTION) {
                 dir = new File(this.usbPanel.getUSBPath());
@@ -419,12 +419,15 @@ public class NaoSCP extends javax.swing.JFrame {
                         }
 
                         FileUtils.writeToFile(backup_tag, new File(deployDir, "comment.txt"));
+                        
+                        // unmount usb storage device if selected
+                        usbPanel.closeUSBStorageDevice();
 
                         Logger.getGlobal().log(Level.INFO, "DONE");
                     } catch (NaoSCPException | IOException ex) {
                         Logger.getGlobal().log(Level.SEVERE, ex.getMessage());
                     }
-
+                    
                     setEnabledAll(true);
                 }
             }).start();

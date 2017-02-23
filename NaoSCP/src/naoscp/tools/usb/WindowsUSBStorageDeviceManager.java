@@ -14,13 +14,13 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import naoscp.components.USBPanel;
-import static naoscp.tools.usb.USBStorageDeviceFinder.executeCommand;
+import static naoscp.tools.usb.USBStorageDeviceManager.executeCommand;
 
 /**
  *
  * @author Robert Martin
  */
-public class WindowsUSBStorageDeviceFinder extends USBStorageDeviceFinder {
+public class WindowsUSBStorageDeviceManager extends USBStorageDeviceManager {
     
     private static final String DEVICE_LIST_CMD = "wmic logicaldisk where drivetype=2 get deviceid,volumename";
     private final static Pattern DEVICE_LIST_PATTERN = Pattern.compile("(\\w:)\\s+(.+)");
@@ -28,8 +28,20 @@ public class WindowsUSBStorageDeviceFinder extends USBStorageDeviceFinder {
     @Override
     public List<USBStorageDevice> getUSBStorageDevices() {
        
-        BufferedReader output = executeCommand(DEVICE_LIST_CMD);
+        BufferedReader output = null;
+        try {
+            output = executeCommand(DEVICE_LIST_CMD);
+        } catch (IOException ex) {
+            Logger.getGlobal().log(Level.WARNING, "USBPanel: Error while executing " + DEVICE_LIST_CMD);
+        } catch (InterruptedException ex) {
+            
+        }
         LinkedList<USBStorageDevice> usbDevices = new LinkedList<>();
+        
+        if(output == null) {
+            return usbDevices;
+        }
+        
         String outputLine;
 
         try {

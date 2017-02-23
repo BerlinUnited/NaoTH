@@ -19,7 +19,7 @@ import naoscp.components.USBPanel;
  *
  * @author Robert Matin
  */
-public class LinuxUSBStorageDeviceFinder extends USBStorageDeviceFinder{
+public class LinuxUSBStorageDeviceManager extends USBStorageDeviceManager{
     
     private final static String USB_PROPTERTY = "ID_USB_DRIVER=usb-storage";
     private final static String PROPERTY_CHECK_CMD = "udevadm info -q property -n ";
@@ -31,9 +31,20 @@ public class LinuxUSBStorageDeviceFinder extends USBStorageDeviceFinder{
     public List<USBStorageDevice> getUSBStorageDevices() {
         
         
-        BufferedReader output = executeCommand(DEVICE_LIST_CMD);
+        BufferedReader output = null;
+        try {
+            output = executeCommand(DEVICE_LIST_CMD);
+        } catch (IOException ex) {
+            Logger.getGlobal().log(Level.WARNING, "USBPanel: Error while executing " + DEVICE_LIST_CMD);
+        } catch (InterruptedException ex) {
+            
+        }
 
         LinkedList<USBStorageDevice> usbDevices = new LinkedList<>();
+        
+        if(output == null) {
+            return usbDevices;
+        }
 
         String outputLine;
 
@@ -46,7 +57,19 @@ public class LinuxUSBStorageDeviceFinder extends USBStorageDeviceFinder{
                     String device = matcher.group(1);
                     String mountPoint = matcher.group(2);
                     
-                    BufferedReader out = executeCommand(PROPERTY_CHECK_CMD + device);
+                    BufferedReader out = null;
+                    try {
+                        out = executeCommand(PROPERTY_CHECK_CMD + device);
+                    } catch (IOException ex) {
+                        Logger.getGlobal().log(Level.WARNING, "USBPanel: Error while executing " + PROPERTY_CHECK_CMD);
+                    } catch (InterruptedException ex) {
+                        
+                    }
+                    
+                    if(out == null) {
+                        return usbDevices;
+                    }
+                  
                     
                     String property;
                     while ((property = out.readLine()) != null) {
@@ -66,8 +89,25 @@ public class LinuxUSBStorageDeviceFinder extends USBStorageDeviceFinder{
     }
     
     @Override
-    public void unmount(USBStorageDevice usbStorageDevice) {
-        executeCommand("umount " + usbStorageDevice.getDeviceID());
+    public void unmount(USBStorageDevice usbStorageDevice) {        
+        try {
+            executeCommand("umount " + usbStorageDevice.getDeviceID());
+        } catch (IOException ex) {
+            Logger.getGlobal().log(Level.WARNING, "USBPanel: Error while executing umount " + usbStorageDevice.getDeviceID());
+        } catch (InterruptedException ex) {
+            
+        }
+        
+        // Check if device is really unmounted
+        for (USBStorageDevice storageDevice : this.getUSBStorageDevices()) {
+            if(storageDevice.getDeviceID().matches(usbStorageDevice.getDeviceID())){
+                Logger.getGlobal().log(Level.WARNING, "USBPanel: Couldn't unmout " + usbStorageDevice.toString());
+                return;
+            }
+        }
+        
+        Logger.getGlobal().log(Level.INFO, usbStorageDevice.toString() + " successfully unmounted!");
+       
     }
     
 }

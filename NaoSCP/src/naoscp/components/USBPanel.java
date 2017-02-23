@@ -5,55 +5,63 @@
  */
 package naoscp.components;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.LinkedList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import naoscp.tools.usb.LinuxUSBStorageDeviceFinder;
+import naoscp.tools.usb.LinuxUSBStorageDeviceManager;
 import naoscp.tools.usb.USBStorageDevice;
-import naoscp.tools.usb.USBStorageDeviceFinder;
-import naoscp.tools.usb.WindowsUSBStorageDeviceFinder;
+import naoscp.tools.usb.USBStorageDeviceManager;
+import naoscp.tools.usb.WindowsUSBStorageDeviceManager;
 
 /**
  *
  * @author Robert Martin
  */
 public class USBPanel extends javax.swing.JPanel {
-    
-    private String selectedUSBStorageDevicePath = null;
-    
-    private USBStorageDeviceFinder usbStorageDeviceFinder;
+
+    private USBStorageDevice selectedUSBStorageDevice = null;
+
+    private USBStorageDeviceManager usbStorageDeviceManager;
 
     /**
      * Creates new form USBPanel
      */
     public USBPanel() {
         initComponents();
-        
+
         if (System.getProperty("os.name").startsWith("Linux")) {
-            this.usbStorageDeviceFinder = new LinuxUSBStorageDeviceFinder();
-        } else if (System.getProperty("os.name").startsWith("Windows")){
-            this.usbStorageDeviceFinder = new WindowsUSBStorageDeviceFinder();            
+            this.usbStorageDeviceManager = new LinuxUSBStorageDeviceManager();
+        } else if (System.getProperty("os.name").startsWith("Windows")) {
+            this.unmountCheckBox.setVisible(false);
+            this.usbStorageDeviceManager = new WindowsUSBStorageDeviceManager();
+        } else {
+            this.setVisible(false);
         }
-        else {
-            this.setEnabled(false);
-            this.usbSelectBox.setEnabled(false);
-            this.refreshButton.setEnabled(false);
-            this.jLabel1.setEnabled(false);
-        }
-       
+
     }
-    
-    public boolean hasPath() {
-        return this.selectedUSBStorageDevicePath != null;
+
+    public boolean hasSelection() {
+        return this.selectedUSBStorageDevice != null;
     }
-    
+
     public String getUSBPath() {
-        return this.selectedUSBStorageDevicePath;
+        if(this.hasSelection()) {
+            return this.selectedUSBStorageDevice.getMountPoint();
+        }
+        return null;
+    }
+
+    public void closeUSBStorageDevice() {
+        if (this.unmountCheckBox.isSelected() && this.hasSelection()) {
+            this.usbStorageDeviceManager.unmount(this.selectedUSBStorageDevice);
+            
+            this.refresh();
+        }
+    }
+    
+    public void refresh() {
+        this.usbSelectBox.removeAllItems();
+
+        for (USBStorageDevice usbStorageDevice : usbStorageDeviceManager.getUSBStorageDevices()) {
+            this.usbSelectBox.addItem(usbStorageDevice);
+        }
     }
 
     /**
@@ -67,7 +75,8 @@ public class USBPanel extends javax.swing.JPanel {
 
         refreshButton = new javax.swing.JButton();
         usbSelectBox = new javax.swing.JComboBox<>();
-        jLabel1 = new javax.swing.JLabel();
+        tippLabel = new javax.swing.JLabel();
+        unmountCheckBox = new javax.swing.JCheckBox();
 
         refreshButton.setText("Refresh");
         refreshButton.addActionListener(new java.awt.event.ActionListener() {
@@ -82,8 +91,10 @@ public class USBPanel extends javax.swing.JPanel {
             }
         });
 
-        jLabel1.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
-        jLabel1.setText("Select the deploy stick:");
+        tippLabel.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
+        tippLabel.setText("Select the deploy stick:");
+
+        unmountCheckBox.setText("unmount");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -96,19 +107,24 @@ public class USBPanel extends javax.swing.JPanel {
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addGap(0, 167, Short.MAX_VALUE)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(refreshButton, javax.swing.GroupLayout.Alignment.TRAILING))))
+                            .addComponent(tippLabel, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addComponent(unmountCheckBox)
+                                .addGap(18, 18, 18)
+                                .addComponent(refreshButton)))))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel1)
+                .addComponent(tippLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(usbSelectBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(refreshButton, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(refreshButton, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(unmountCheckBox))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -116,21 +132,18 @@ public class USBPanel extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void refreshButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_refreshButtonActionPerformed
-        this.usbSelectBox.removeAllItems();
-        
-        for(USBStorageDevice usbStorageDevice : usbStorageDeviceFinder.getUSBStorageDevices()) {
-             this.usbSelectBox.addItem(usbStorageDevice);
-        }
+        this.refresh();
     }//GEN-LAST:event_refreshButtonActionPerformed
 
     private void usbSelectBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_usbSelectBoxActionPerformed
-        this.selectedUSBStorageDevicePath = ((USBStorageDevice) this.usbSelectBox.getSelectedItem()).getMountPoint();
+        this.selectedUSBStorageDevice = (USBStorageDevice) this.usbSelectBox.getSelectedItem();
     }//GEN-LAST:event_usbSelectBoxActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel jLabel1;
     private javax.swing.JButton refreshButton;
+    private javax.swing.JLabel tippLabel;
+    private javax.swing.JCheckBox unmountCheckBox;
     private javax.swing.JComboBox<USBStorageDevice> usbSelectBox;
     // End of variables declaration//GEN-END:variables
 }

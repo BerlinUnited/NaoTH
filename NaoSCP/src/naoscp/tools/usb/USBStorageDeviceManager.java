@@ -15,28 +15,26 @@ import java.util.List;
  *
  * @author Robert Martin
  */
-public abstract class USBStorageDeviceFinder {
-    
+public abstract class USBStorageDeviceManager {
+
     public List<USBStorageDevice> getUSBStorageDevices() {
         return new LinkedList<>();
     }
-    
-    static BufferedReader executeCommand(String command) {
+
+    static BufferedReader executeCommand(String command) throws IOException, InterruptedException {
         BufferedReader reader = null;
 
         Process p;
-        try {
-            p = Runtime.getRuntime().exec(command);
-            p.waitFor();
-            reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
-        } catch (IOException | InterruptedException e) {
-        }
+
+        p = Runtime.getRuntime().exec(command);
+        p.waitFor();
+        reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
 
         return reader;
     }
-    
+
     public void unmount(USBStorageDevice usbStorageDevice) {
-        
+
     }
- 
+
 }
