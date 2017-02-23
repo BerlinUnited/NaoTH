@@ -13,6 +13,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import naoscp.tools.usb.LinuxUSBStorageDeviceFinder;
+import naoscp.tools.usb.USBStorageDevice;
+import naoscp.tools.usb.USBStorageDeviceFinder;
+import naoscp.tools.usb.WindowsUSBStorageDeviceFinder;
 
 /**
  *
@@ -20,7 +24,9 @@ import java.util.regex.Pattern;
  */
 public class USBPanel extends javax.swing.JPanel {
     
-    private String path = null;
+    private String selectedUSBStorageDevicePath = null;
+    
+    private USBStorageDeviceFinder usbStorageDeviceFinder;
 
     /**
      * Creates new form USBPanel
@@ -28,7 +34,12 @@ public class USBPanel extends javax.swing.JPanel {
     public USBPanel() {
         initComponents();
         
-        if(!System.getProperty("os.name").matches("Linux")) {
+        if (System.getProperty("os.name").startsWith("Linux")) {
+            this.usbStorageDeviceFinder = new LinuxUSBStorageDeviceFinder();
+        } else if (System.getProperty("os.name").startsWith("Windows")){
+            this.usbStorageDeviceFinder = new WindowsUSBStorageDeviceFinder();            
+        }
+        else {
             this.setEnabled(false);
             this.usbSelectBox.setEnabled(false);
             this.refreshButton.setEnabled(false);
@@ -38,30 +49,11 @@ public class USBPanel extends javax.swing.JPanel {
     }
     
     public boolean hasPath() {
-        if(this.path != null) {
-            return true;
-        }
-        return false;
+        return this.selectedUSBStorageDevicePath != null;
     }
     
     public String getUSBPath() {
-        return this.path;
-    }
-    
-    private BufferedReader executeCommand(String command) {
-
-        BufferedReader reader = null;
-
-        Process p;
-        try {
-            p = Runtime.getRuntime().exec(command);
-            p.waitFor();
-            reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
-        } catch (IOException | InterruptedException e) {
-        }
-
-        return reader;
-
+        return this.selectedUSBStorageDevicePath;
     }
 
     /**
@@ -124,62 +116,21 @@ public class USBPanel extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void refreshButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_refreshButtonActionPerformed
-        String USB_PROPTERTY = "ID_USB_DRIVER=usb-storage";
-        String PROPERTY_CHECK_CMD = "udevadm info -q property -n ";
-
-        String DEVICE_LIST_CMD = "df ";
-        Pattern DEVICE_LIST_PATTERN = Pattern.compile("^(\\/[^ ]+)[^%]+%[ ]+(.+)$");
-
-        BufferedReader output = this.executeCommand(DEVICE_LIST_CMD);
-
-        LinkedList<String> usbDevices = new LinkedList<>();
-
-        String outputLine;
-
-        try {
-            while ((outputLine = output.readLine()) != null) {
-
-                Matcher matcher = DEVICE_LIST_PATTERN.matcher(outputLine);
-
-                if (matcher.matches()) {
-                    String device = matcher.group(1);
-                    String mountPoint = matcher.group(2);
-                    BufferedReader out = this.executeCommand(PROPERTY_CHECK_CMD + device);
-                    
-                    boolean isUSBDevice = false;
-                    String property;
-                    while ((property = out.readLine()) != null) {
-                        if (property.matches(USB_PROPTERTY)) {
-                            isUSBDevice = true;
-                            break;
-                        }
-                    }
-
-                    if (isUSBDevice) {
-                        usbDevices.add(mountPoint);
-                    }
-                }
-
-            }
-        } catch (IOException ex) {
-            Logger.getLogger(USBPanel.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
         this.usbSelectBox.removeAllItems();
-
-        for (String path : usbDevices) {
-            this.usbSelectBox.addItem(path);
+        
+        for(USBStorageDevice usbStorageDevice : usbStorageDeviceFinder.getUSBStorageDevices()) {
+             this.usbSelectBox.addItem(usbStorageDevice);
         }
     }//GEN-LAST:event_refreshButtonActionPerformed
 
     private void usbSelectBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_usbSelectBoxActionPerformed
-        this.path = (String) this.usbSelectBox.getSelectedItem();
+        this.selectedUSBStorageDevicePath = ((USBStorageDevice) this.usbSelectBox.getSelectedItem()).getMountPoint();
     }//GEN-LAST:event_usbSelectBoxActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel1;
     private javax.swing.JButton refreshButton;
-    private javax.swing.JComboBox<String> usbSelectBox;
+    private javax.swing.JComboBox<USBStorageDevice> usbSelectBox;
     // End of variables declaration//GEN-END:variables
 }
