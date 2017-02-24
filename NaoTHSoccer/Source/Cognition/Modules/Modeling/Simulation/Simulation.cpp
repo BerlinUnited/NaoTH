@@ -41,7 +41,10 @@ Simulation::Simulation()
   actionsConsequences.resize(action_local.size());
 }
 
-Simulation::~Simulation(){}
+Simulation::~Simulation()
+{
+  getDebugParameterList().remove(&theParameters);
+}
 
 void Simulation::execute()
 {
