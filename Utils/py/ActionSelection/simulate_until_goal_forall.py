@@ -62,10 +62,10 @@ def main():
     action_list = [no_action, kick_short, sidekick_left, sidekick_right]
 
     # Todo: Maybe do several decision cycles(histogram of decisions) not just one to get rid of accidental decisions
-    for rot in range(0, 90, 90):
-        for x in range(int(-field.x_length*0.5)+4*cell_width, int(field.x_length*0.5)-4*cell_width, 2*cell_width):
-            for y in range(int(-field.y_length*0.5)+4*cell_width, int(field.y_length*0.5)-4*cell_width, 2*cell_width):
-                print("x: " + str(x) + " y: " + str(y))
+    for rot in range(0, 360, 10):
+        for x in range(int(-field.x_length*0.5)+cell_width, int(field.x_length*0.5), 2*cell_width):
+            for y in range(int(-field.y_length*0.5)+cell_width, int(field.y_length*0.5), 2*cell_width):
+                print("Start position x: " + str(x) + " y: " + str(y) + " Rotation: " + str(rot))
                 state.update_pos(m2d.Vector2(x, y), rotation=rot)
                 num_kicks = 0
                 num_turn_degrees = 0
@@ -92,14 +92,38 @@ def main():
                     goal_scored = opp_goal_box.inside(state.pose * expected_ball_pos)
                     inside_field = field.field_rect.inside(state.pose * expected_ball_pos)
 
-                    # Assert that expected_ball_pos is inside field or inside opp goal
-                    if not inside_field and not goal_scored:
-                        # print("Error")
-                        a.histogram[0] += 1
-                        # For histogram -> note the this position doesnt manage a goal
-                        continue
+                    if max_turn_credit <= 0:  # FIXME
+                        print("x: " + str(x) + " y: " + str(y) + " - Credit: " + str(max_turn_credit))
+                        a.histogram[50-1] += 1  # means oscillation or 10 times turning by rot degrees wasn't enough
+                        break
 
-                    if not action_list[best_action].name == "none":
+                    # Assert that expected_ball_pos is inside field or inside opp goal
+                    # HACK: the real robot would shoot out
+                    elif not inside_field and not goal_scored:
+
+                        print("Bad position x: " + str(state.pose.translation.x) + " y: " + str(state.pose.translation.y) + " Rotation: " + str(state.pose.rotation))
+                        a.histogram[0] += 1
+                        # For histogram -> note the this position doesnt manage a goal - would shoot outside field
+                        # print("Should continue")
+                        # Solution for expected ball Pos outside field is to turn
+                        # Todo note those positions and manually check them
+                        attack_direction = attack_dir.get_attack_direction(state)
+                        attack_direction = math.degrees((attack_direction.angle()))
+                        # Todo: can run in a deadlock for some reason
+                        # Hack: abort if max_turn_credit is 0
+                        if attack_direction > 0:
+                            state.pose.rotation += math.radians(15)  # Should be turn right
+                            max_turn_credit -= 10  # FIXME
+                            # print("Robot turns right - global rotation turns left")
+                        else:
+                            state.pose.rotation -= math.radians(15)  # Should be turn left
+                            max_turn_credit -= 10  # FIXME
+                            # print("Robot turns left - global rotation turns right")
+
+                        num_turn_degrees += 1
+                        # continue
+
+                    elif not action_list[best_action].name == "none":
                         max_turn_credit = 100  # FIXME
                         # print(str(state.pose * expected_ball_pos) + " Decision: " + str(action_list[best_action].name))
                         # draw_robot_walk(actions_consequences, state, state.pose * expected_ball_pos, action_list[best_action].name)
@@ -117,22 +141,23 @@ def main():
                         # draw_robot_walk(actions_consequences, state, state.pose * expected_ball_pos, action_list[best_action].name)
 
                         attack_direction = attack_dir.get_attack_direction(state)
+                        attack_direction = math.degrees((attack_direction.angle()))
                         # Todo: can run in a deadlock for some reason
                         # Hack: abort if max_turn_credit is 0
                         if attack_direction > 0:
                             state.pose.rotation += math.radians(15)  # Should be turn right
                             max_turn_credit -= 10  # FIXME
-                            print("Robot turns right - global rotation turns left")
+                            #print("Robot turns right - global rotation turns left")
                         else:
                             state.pose.rotation -= math.radians(15)  # Should be turn left
                             max_turn_credit -= 10  # FIXME
-                            print("Robot turns left - global rotation turns right")
+                            #print("Robot turns left - global rotation turns right")
 
                         num_turn_degrees += 1
-                if max_turn_credit <= 0:  # FIXME
-                    print("x: " + str(x) + " y: " + str(y) + " - Stuck")
-                    a.histogram[0] += 1
-                    continue
+                    else:
+                        print("HUGE ERROR")
+                        break
+
                 a.histogram[num_kicks] += 1
                 # print("Num Kicks: " + str(num_kicks))
                 # print("Num Turns: " + str(num_turn_degrees))
@@ -142,12 +167,4 @@ def main():
         f.write('{}\t'.format(a.histogram))
 
 if __name__ == "__main__":
-    '''
-    Should Simulate the real robot behavior, that means turn incrementally
-    -> i dont account for difference in speed of cognition and motion
-    Todo: make a histogram
-
-    Histogram:
-    Pos.x | Pos.y | Action None | kick short | kick left | kick right
-    '''
     main()
