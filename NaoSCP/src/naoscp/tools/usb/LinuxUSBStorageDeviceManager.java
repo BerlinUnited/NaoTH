@@ -1,7 +1,4 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
  */
 package naoscp.tools.usb;
 
@@ -61,7 +58,7 @@ public class LinuxUSBStorageDeviceManager extends USBStorageDeviceManager{
                     try {
                         out = executeCommand(PROPERTY_CHECK_CMD + device);
                     } catch (IOException ex) {
-                        Logger.getGlobal().log(Level.WARNING, "USBPanel: Error while executing " + PROPERTY_CHECK_CMD);
+                        Logger.getGlobal().log(Level.WARNING, "USBPanel: Error while executing " + PROPERTY_CHECK_CMD + device);
                     } catch (InterruptedException ex) {
                         
                     }
