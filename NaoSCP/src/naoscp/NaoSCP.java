@@ -238,7 +238,7 @@ public class NaoSCP extends javax.swing.JFrame {
         gridBagConstraints.gridy = 3;
         getContentPane().add(txtDeployTag, gridBagConstraints);
 
-        usbPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("USB Stick"));
+        usbPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("USB Storage Device"));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
