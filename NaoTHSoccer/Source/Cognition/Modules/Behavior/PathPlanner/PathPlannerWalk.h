@@ -55,18 +55,33 @@ public:
 
   virtual void execute();
 
+  void execute_step_list();
+
+private:
+  std::size_t last_stepID; // aka stepID_count
+  struct Step {
+    std::size_t ID;
+    float x;
+    float y;
+    float rotation;
+  };
+  std::vector<Step> step_list;
+
   enum Foot
   {
     Right,
     Left
   };
 
-  void walk_forward();
-  unsigned int lastStepID;
-  Foot executionFoot;
-  bool firstStep;
+  unsigned int last_stepcontrol_stepID;
+  Foot foot_to_be_used;
 
-private:
+  void stand();
+  void add(PathPlannerWalk::Step step);
+  void pop_step();
+  PathPlannerWalk::Step new_step(float x, float y, float rotation);
+  PathPlannerWalk::Step new_step(std::size_t ID, float x, float y, float rotation);
+  float towards_ball(const char x_or_y);
 };
 
 #endif // _PathPlannerWalk_H_
