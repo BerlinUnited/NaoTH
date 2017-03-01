@@ -46,13 +46,6 @@ public:
 
   bool knows;
 
-  // Go to Ball with right or left foot (depending on XABSL decision)
-  bool goto_ball_right;
-  bool goto_ball_left;
-  // distance and yOffset parameters (set by XABSL)
-  double goto_distance;
-  double goto_yOffset;
-
 private:
 
   // time how long the ball is seen without interruption

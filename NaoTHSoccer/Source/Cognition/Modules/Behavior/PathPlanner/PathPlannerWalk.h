@@ -58,12 +58,11 @@ public:
   void execute_step_list();
 
 private:
-  std::size_t last_stepID; // aka stepID_count
   struct Step {
-    std::size_t ID;
     float x;
     float y;
     float rotation;
+    float character;
   };
   std::vector<Step> step_list;
 
@@ -72,16 +71,24 @@ private:
     Right,
     Left
   };
-
-  unsigned int last_stepcontrol_stepID;
+  // used to alternate between left and right foot when walking
+  // inside execute_steplist()
+  // everywhere else, indicates the last foot that has been moved
   Foot foot_to_be_used;
 
+  unsigned int last_stepcontrol_stepID;
+
   void stand();
+  void look_at_ball();
+  
+  float towards_ball(const char x_or_y);
+  float towards_ball(const char x_or_y, const char for_left_or_right_foot);
+  char approximate_foot_with(std::size_t approximate_steps_to_ball);
+
   void add(PathPlannerWalk::Step step);
   void pop_step();
   PathPlannerWalk::Step new_step(float x, float y, float rotation);
-  PathPlannerWalk::Step new_step(std::size_t ID, float x, float y, float rotation);
-  float towards_ball(const char x_or_y);
+  PathPlannerWalk::Step new_step(float x, float y, float rotation, float character);
 };
 
 #endif // _PathPlannerWalk_H_
