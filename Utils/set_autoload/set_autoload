@@ -10,12 +10,14 @@ fi
 minimal=autoload_minimal.ini
 full=autoload_full.ini
 
+# place templates here
 template_path=/etc/naoqi/templates/
+
 target=/etc/naoqi/autoload.ini
 
 ############## MAIN ###################
 function mainFunc() {
-  cp $target $target.bak
+  #cp $target $target.bak
   cp $template_path$1 $target
 }
 
