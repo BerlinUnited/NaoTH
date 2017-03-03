@@ -22,6 +22,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.UIDefaults;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.plaf.nimbus.NimbusLookAndFeel;
@@ -65,7 +66,19 @@ public class RobotControlImpl extends javax.swing.JFrame
     try
     {
       //UIManager.setLookAndFeel(new PlasticXPLookAndFeel());
-      UIManager.setLookAndFeel(new NimbusLookAndFeel());
+      UIManager.setLookAndFeel(new NimbusLookAndFeel() 
+      {
+                @Override
+        public UIDefaults getDefaults()
+        {
+          UIDefaults defaults = super.getDefaults();
+          if(isHighDPI())
+          {
+            defaults.put("defaultFont", new Font(Font.SANS_SERIF, Font.PLAIN, 18));
+          }
+          return defaults;
+        }
+      });
       // set explicitely the Nimbus colors to be used
       DockUI.getDefaultDockUI().registerColors("javax.swing.plaf.nimbus.NimbusLookAndFeel", new Nimbus6u10());
     }
@@ -600,4 +613,12 @@ public class RobotControlImpl extends javax.swing.JFrame
   {
     lblFramesS.setText(String.format("Frames/s: %4.2f", fps));
   }
+  
+  @Override
+  public boolean isHighDPI() 
+  {
+      return Toolkit.getDefaultToolkit().getScreenSize().width > 2000;
+  }
+  
+  
 }
