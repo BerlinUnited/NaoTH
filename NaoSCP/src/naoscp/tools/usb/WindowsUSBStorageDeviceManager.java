@@ -20,7 +20,7 @@ import static naoscp.tools.usb.USBStorageDeviceManager.executeCommand;
 public class WindowsUSBStorageDeviceManager extends USBStorageDeviceManager {
     
     private static final String DEVICE_LIST_CMD = "wmic logicaldisk where drivetype=2 get deviceid,volumename";
-    private final static Pattern DEVICE_LIST_PATTERN = Pattern.compile("(\\w:)\\s+(\\S+)");
+    private final static Pattern DEVICE_LIST_PATTERN = Pattern.compile("(\\w:)\\s+(\\S+).*");
     
     @Override
     public List<USBStorageDevice> getUSBStorageDevices() {
