@@ -208,7 +208,6 @@ int main(int /*argc*/, char **/*argv[]*/)
   //if(motionThread != NULL)
   {
     pthread_join(motionThread, NULL);
-    //g_thread_join(motionThread);
   }
 
   if(cognitionThread.joinable())
