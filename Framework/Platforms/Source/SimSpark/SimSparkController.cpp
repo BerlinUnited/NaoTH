@@ -112,10 +112,6 @@ SimSparkController::SimSparkController(const std::string& name)
   theJointMotorNameMap[JointData::RAnklePitch] = "rle5";
   theJointMotorNameMap[JointData::RAnkleRoll] = "rle6";
 
-  if (!g_thread_supported()) {
-    g_thread_init(NULL);
-  }
-
   theCognitionInputMutex = g_mutex_new();
   theCognitionOutputMutex = g_mutex_new();
   theCognitionInputCond = g_cond_new();
@@ -387,27 +383,6 @@ void SimSparkController::callCognition()
   }
 }//end callCognition
 
-void* motionLoopWrap(void* c)
-{
-  SimSparkController* ctr = static_cast<SimSparkController*> (c);
-  ctr->motionLoop();
-  return NULL;
-}//end motionLoopWrap
-
-void* senseLoopWrap(void* c)
-{
-  SimSparkController* ctr = static_cast<SimSparkController*> (c);
-  ctr->senseLoop();
-  return NULL;
-}
-
-void* actLoopWrap(void* c)
-{
-  SimSparkController* ctr = static_cast<SimSparkController*> (c);
-  ctr->actLoop();
-  return NULL;
-}
-
 void SimSparkController::senseLoop()
 {
   while( true )
@@ -476,19 +451,21 @@ void SimSparkController::multiThreadsMain()
 {
   cout << "SimSpark Controller runs in multi-threads" << endl;
 
-  GThread* senseThread = g_thread_create(senseLoopWrap, this, true, NULL);
-  GThread* actThread = g_thread_create(actLoopWrap, this, true, NULL);
-  GThread* motionThread = g_thread_create(motionLoopWrap, this, true, NULL);
-
-  ASSERT(senseThread != NULL);
-  ASSERT(actThread != NULL);
-  ASSERT(motionThread != NULL);
+  std::thread senseThread = std::thread([this]{this->senseLoop();});
+  std::thread actThread = std::thread([this]{this->actLoop();});
+  std::thread motionThread = std::thread([this]{this->motionLoop();});
 
   cognitionLoop();
 
-  g_thread_join(motionThread);
-  g_thread_join(actThread);
-  g_thread_join(senseThread);
+  if(motionThread.joinable()) {
+    motionThread.join();
+  }
+  if(actThread.joinable()) {
+    actThread.join();
+  }
+  if(senseThread.joinable()) {
+    senseThread.join();
+  }
 }//end multiThreadsMain
 
 void SimSparkController::getMotionInput()
