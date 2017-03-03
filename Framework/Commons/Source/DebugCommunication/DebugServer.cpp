@@ -53,10 +53,6 @@ void DebugServer::start(unsigned short port)
 {
   comm.init(port);
 
-  if (!g_thread_supported()) {
-    g_thread_init(NULL);
-  }
-
   g_debug("Starting debug server thread");
    
   connectionThread = std::thread([this] {this->run();});
@@ -104,7 +100,7 @@ void DebugServer::run()
     g_usleep(1000);
 
     // TODO: do we really need this here?
-    g_thread_yield();
+    std::this_thread::yield();
   } // end while true
 }//end run
 

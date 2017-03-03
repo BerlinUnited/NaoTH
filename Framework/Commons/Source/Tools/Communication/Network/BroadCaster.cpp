@@ -41,9 +41,6 @@ BroadCaster::BroadCaster(const std::string& interfaceName, unsigned int port)
     return;
   }
 
-  if (!g_thread_supported())
-    g_thread_init(NULL);
-
   g_socket_set_blocking(socket, true);
   int broadcastFlag = 1;
   

@@ -143,9 +143,6 @@ int main(int /*argc*/, char **/*argv[]*/)
 
   // init glib
   g_type_init();
-  if (!g_thread_supported()) {
-    g_thread_init(NULL);
-  }
 
   // react on "kill" and segmentation fault
   struct sigaction saKill;
