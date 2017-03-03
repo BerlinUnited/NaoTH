@@ -69,7 +69,7 @@ void LogFileScanner::scanFile()
 
     if((int)currentFrameNumber < lastFrameNumber && lastFrameNumber != -1) {
       std::cerr << "[LogFileScanner] Frame " << currentFrameNumber << ": "
-                << "The frame number is smaler that the previous " << lastFrameNumber << std::endl;
+                << "The frame number is smaller than the previous " << lastFrameNumber << std::endl;
       break;
     }
 

@@ -12,7 +12,6 @@ Modified for SimSpark (http://simspark.sourceforge.net)
 #pragma GCC diagnostic push
 // ignore warnings
 #pragma GCC diagnostic ignored "-Wconversion"
-#pragma GCC diagnostic ignored "-Wfloat-conversion"
 #endif
 
 #include "cencode.h"

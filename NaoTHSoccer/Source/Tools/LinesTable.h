@@ -271,7 +271,7 @@ public:
 
 
 
-  void create_closestPoinsTable(double fieldWidth, double fieldLength)
+  void create_closestPointsTable(double fieldWidth, double fieldLength)
   {
     yWidth = 0.5*fieldLength/(double)(ySize-1);
     xWidth = 0.5*fieldWidth/(double)(xSize-1);
