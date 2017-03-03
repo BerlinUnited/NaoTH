@@ -245,10 +245,9 @@ bool SimSparkController::init(const std::string& modelPath, const std::string& t
 
   theSync = sync?"(syn)":"";
   theSyncMode = sync;
-  // connect to the simulator
 
-  if(!connect(server, port))
-  {
+  // connect to the simulator
+  if(!connect(server, port)) {
     std::cerr << "SimSparkController could not connect" << std::endl;
     return false;
   }
