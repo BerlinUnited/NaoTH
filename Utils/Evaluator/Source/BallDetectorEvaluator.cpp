@@ -519,6 +519,7 @@ void BallDetectorEvaluator::evaluatePatch(const BallCandidates::Patch &p, unsign
 
 int BallDetectorEvaluator::loadGroundTruth(std::string file, std::set<unsigned int>& expectedBallIdx)
 {
+  // TODO: replace it with ModernJSON
   typedef std::vector<picojson::value> array;
   typedef std::map<std::string, picojson::value> object;
 
