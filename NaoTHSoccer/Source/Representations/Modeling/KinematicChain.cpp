@@ -160,6 +160,9 @@ void KinematicChain::initMassesInfo()
     sumMass += theLinks[i].mass;
   }
 
+  // sanity check
+  // mass config is not valid
+  ASSERT(sumMass > 0);
   // the value of total mass in SDK is NOT correct
 //  ASSERT(sumMass == NaoInfo::TotalMass);
 }//end initMassesInfo
