@@ -60,8 +60,8 @@ private:
     Parameters() : ParameterList("FootGroundContactParameters")
     {
       // experimental - probably needs some calibration (while playing?)
-      PARAMETER_REGISTER(left) = 0.3;
-      PARAMETER_REGISTER(right) = 0.3;
+      PARAMETER_REGISTER(left) = 0.1;
+      PARAMETER_REGISTER(right) = 0.1;
 
       syncWithConfig();
     }
