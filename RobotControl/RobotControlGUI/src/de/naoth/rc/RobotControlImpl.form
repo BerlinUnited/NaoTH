@@ -167,9 +167,6 @@
           <Properties>
             <Property name="text" type="java.lang.String" value="Running Manager --"/>
             <Property name="toolTipText" type="java.lang.String" value="Shows the number of currently registered Manager"/>
-            <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
-              <Border info="null"/>
-            </Property>
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btManagerActionPerformed"/>

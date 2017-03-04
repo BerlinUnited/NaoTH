@@ -2,8 +2,7 @@
 
 PID="/tmp/cognition.pid"
 
-case "$1" in
-  start)
+function start_function() {
     if [ -f "$PID" ]; then
       OLDPID=`cat $PID`
       echo "old pid is $OLDPID"
@@ -25,8 +24,9 @@ case "$1" in
     else
       su -c 'nohup /etc/init.d/cognition-common 2>&1 | logger &' nao
     fi
-    ;;
-  stop)
+}
+
+function stop_function() {
     echo "killing naoth cognition processes"
     # first try to kill naoth based on the PID file
     if [ -f "$PID" ]; then
@@ -47,11 +47,19 @@ case "$1" in
     fi
     # remove PID-file
     rm $PID
+}
+
+case "$1" in
+  start)
+    start_function
+    ;;
+  stop)
+    stop_function
     ;;
   restart)
-    $0 stop
+    stop_function
     sleep 5
-    $0 start
+    start_function
     ;;
   *)
     echo "Usage: /etc/init.d/naoth {start|stop|restart}"
