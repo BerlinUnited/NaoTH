@@ -14,7 +14,7 @@ step_list({}),
 foot_to_be_used(PathPlannerWalk::Foot::Right),
 last_stepcontrol_stepID(0)
 {
-  DEBUG_REQUEST_REGISTER("PathPlanner:walk:walk_to_ball",
+  DEBUG_REQUEST_REGISTER("PathPlanner:walk:walk_to_ball_and_kick_forward",
                          "Walk to the ball with alternating steps.", false);
   DEBUG_REQUEST_REGISTER("PathPlanner:walk:execute_steplist",
                          "Experimental", true);
@@ -24,7 +24,7 @@ last_stepcontrol_stepID(0)
 
 void PathPlannerWalk::execute()
 {
-  DEBUG_REQUEST("PathPlanner:walk:walk_to_ball",
+  DEBUG_REQUEST("PathPlanner:walk:walk_to_ball_and_kick_forward",
                 look_at_ball();
 
                 static char foot;
@@ -45,10 +45,10 @@ void PathPlannerWalk::execute()
                     executed_once = true;
 
                     approximate_steps_to_ball = (distance - ballRad - step_size) / 40.0;
-                    // check how many steps with the step_size are left
+                    // check how many steps are possible the step_size and
                     // position right or left foot in front of the ball
                     // according to the check
-                    foot = approximate_foot_with(approximate_steps_to_ball);
+                    foot = find_foot_with(approximate_steps_to_ball);
                   }
                   add(new_step(step_size,
                                towards_ball('y', foot),
@@ -161,7 +161,7 @@ float PathPlannerWalk::towards_ball(const char x_or_y, const char for_left_or_ri
   }
   return 0.0;
 }
-char PathPlannerWalk::approximate_foot_with(const std::size_t approximate_steps_to_ball) {
+char PathPlannerWalk::find_foot_with(const std::size_t approximate_steps_to_ball) {
   if (approximate_steps_to_ball % 2 == 0) {
     if (foot_to_be_used == Right) {
       return 'r';

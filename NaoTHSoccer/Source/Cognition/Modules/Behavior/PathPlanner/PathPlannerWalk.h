@@ -80,10 +80,10 @@ private:
 
   void stand();
   void look_at_ball();
-  
+
   float towards_ball(const char x_or_y);
   float towards_ball(const char x_or_y, const char for_left_or_right_foot);
-  char approximate_foot_with(std::size_t approximate_steps_to_ball);
+  char find_foot_with(std::size_t approximate_steps_to_ball);
 
   void add(PathPlannerWalk::Step step);
   void pop_step();
