@@ -15,6 +15,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import naoscp.components.DeployDialog;
 import naoscp.components.NetwokPanel;
 import naoscp.tools.*;
 
@@ -127,7 +128,6 @@ public class NaoSCP extends javax.swing.JFrame {
         btInintRobot = new javax.swing.JButton();
         txtRobotNumber = new javax.swing.JFormattedTextField();
         txtDeployTag = new javax.swing.JTextField();
-        usbPanel = new naoscp.components.USBPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("NaoSCP 1.0");
@@ -238,15 +238,6 @@ public class NaoSCP extends javax.swing.JFrame {
         gridBagConstraints.gridy = 3;
         getContentPane().add(txtDeployTag, gridBagConstraints);
 
-        usbPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("USB Storage Device"));
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.gridwidth = 7;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.PAGE_START;
-        getContentPane().add(usbPanel, gridBagConstraints);
-
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
@@ -333,40 +324,16 @@ public class NaoSCP extends javax.swing.JFrame {
         throw new NaoSCPException("Robot is not reachable.");
     }
     
-    private File chooseFile() {
-        return chooseFile(".");
-    }
-    private File chooseFile(String currDir) {
-        JFileChooser chooser = new JFileChooser();
-        chooser.setCurrentDirectory(new File(currDir));
-        chooser.setDialogTitle("Select NaoController Directory");
-        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        chooser.setAcceptAllFileFilterUsed(false);
-
-        if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
-            return chooser.getSelectedFile();
-        }
-        return null;
-    }
 
     private void btWriteToStickActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btWriteToStickActionPerformed
+          
         this.logTextPanel.clear();
-
-        File dir;
         
-        if (this.usbPanel.hasSelection()) {
-            int dialogResult = JOptionPane.showConfirmDialog(null, "Your selected path is " + this.usbPanel.getUSBPath(), "Warning", 1);
-            if (dialogResult == JOptionPane.YES_OPTION) {
-                dir = new File(this.usbPanel.getUSBPath());
-            } else {
-                dir = chooseFile(this.usbPanel.getUSBPath());
-            }
-        } else {
-            dir = chooseFile();
-        }
+        final DeployDialog deployDialog = new DeployDialog(this);
 
-        if (dir != null) {
-            final File targetDir = dir;
+        if (deployDialog.showOpenDialog() == DeployDialog.OPTION.APPROVE) {
+            
+            final File targetDir = deployDialog.getSelectedFile();
 
             new Thread(new Runnable() {
                 @Override
@@ -421,7 +388,7 @@ public class NaoSCP extends javax.swing.JFrame {
                         FileUtils.writeToFile(backup_tag, new File(deployDir, "comment.txt"));
                         
                         // unmount usb storage device if selected
-                        usbPanel.closeUSBStorageDevice();
+                        deployDialog.closeUSBStorageDevice();
 
                         Logger.getGlobal().log(Level.INFO, "DONE");
                     } catch (NaoSCPException | IOException ex) {
@@ -431,7 +398,7 @@ public class NaoSCP extends javax.swing.JFrame {
                     setEnabledAll(true);
                 }
             }).start();
-        }
+        }    
     }//GEN-LAST:event_btWriteToStickActionPerformed
 
     private void btInintRobotActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btInintRobotActionPerformed
@@ -685,6 +652,5 @@ public class NaoSCP extends javax.swing.JFrame {
     private naoscp.components.NetwokPanel netwokPanel;
     private javax.swing.JTextField txtDeployTag;
     private javax.swing.JFormattedTextField txtRobotNumber;
-    private naoscp.components.USBPanel usbPanel;
     // End of variables declaration//GEN-END:variables
 }
