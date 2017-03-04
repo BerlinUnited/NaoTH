@@ -43,8 +43,8 @@ void BodyStateProvider::updateTheFootState()
   bool old_standByLeftFoot = getBodyState().standByLeftFoot;
   bool old_standByRightFoot = getBodyState().standByRightFoot;
 
-  getBodyState().standByLeftFoot = getFSRData().forceLeft() > theParams.foot_threshold;
-  getBodyState().standByRightFoot = getFSRData().forceRight() > theParams.foot_threshold;
+  getBodyState().standByLeftFoot = getGroundContactModel().leftGroundContact;
+  getBodyState().standByRightFoot = getGroundContactModel().rightGroundContact;
 
   if(old_standByLeftFoot != getBodyState().standByLeftFoot ||
      old_standByRightFoot != getBodyState().standByRightFoot)
