@@ -25,8 +25,8 @@ void FootGroundContactDetector::execute()
   leftFSRBuffer.add(Math::median(getFSRData().dataLeft));
   rightFSRBuffer.add(Math::median(getFSRData().dataRight));
 
-  getGroundContactModel().leftGroundContact  = leftFSRBuffer.getMedian() > footParams.left;
-  getGroundContactModel().rightGroundContact = rightFSRBuffer.getMedian() > footParams.right;
+  getGroundContactModel().leftGroundContact  = leftFSRBuffer.getAverage() > footParams.left;
+  getGroundContactModel().rightGroundContact = rightFSRBuffer.getAverage() > footParams.right;
 
 
   if (!getGroundContactModel().leftGroundContact && !getGroundContactModel().rightGroundContact) {
