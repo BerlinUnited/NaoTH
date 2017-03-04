@@ -1,5 +1,6 @@
 /*
  */
+
 package naoscp;
 
 import com.jcraft.jsch.JSchException;
@@ -270,7 +271,7 @@ public class NaoSCP extends javax.swing.JFrame {
                         // send stuff to robot
                         String robotIp = getIpAddress();
                         Scp scp = new Scp(robotIp, "nao", "nao");
-
+                        
                         scp.setProgressMonitor(new BarProgressMonitor(jProgressBar));
 
                         scp.mkdir("/home/nao/tmp"); // just in case it doesn't exist
@@ -463,9 +464,9 @@ public class NaoSCP extends javax.swing.JFrame {
                             }
 
                             // set hostname
-                            FileUtils.writeToFile("Nao" + robotNr, new File(setupDir, "/etc/hostname"));
-                            FileUtils.writeToFile("hostname=\"Nao" + robotNr + "\"", new File(setupDir, "/etc/conf.d/hostname"));
-
+                            FileUtils.writeToFile("nao"+robotNr, new File(setupDir,"/etc/hostname"));
+                            FileUtils.writeToFile("hostname=\"nao"+robotNr+"\"", new File(setupDir,"/etc/conf.d/hostname"));
+                            
                             // copy to robot
                             String ip = JOptionPane.showInputDialog(NaoSCP.this, "Robot ip address");
                             Scp scp = new Scp(ip, "nao", "nao");
