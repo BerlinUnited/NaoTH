@@ -24,6 +24,6 @@ public class USBStorageDevice {
     }
     
     public String toString() {
-        return this.deviceID + " " + this.mountPoint;
+        return this.deviceID + " (" + this.mountPoint + ")";
     }
 }
