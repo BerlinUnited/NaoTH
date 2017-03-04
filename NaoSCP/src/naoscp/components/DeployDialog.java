@@ -45,6 +45,9 @@ public class DeployDialog extends javax.swing.JDialog {
     
     public OPTION showOpenDialog() {
         this.usbPanel.refresh();
+
+        this.unmountButton.setVisible(this.usbPanel.hasSelection());        
+        
         this.setVisible(true);
         
         return this.option;

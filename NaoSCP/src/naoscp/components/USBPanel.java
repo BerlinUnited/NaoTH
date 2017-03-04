@@ -74,6 +74,9 @@ public class USBPanel extends javax.swing.JPanel {
 
         if (usbStorageDevices.isEmpty()) {
             Logger.getGlobal().log(Level.WARNING, "Couldn't find any USB storage device!");
+            this.usbSelectBox.setEnabled(false);
+            this.tippLabel.setText("Couldn't find any USB storage device!");
+            this.tippLabel.setForeground(new java.awt.Color(255, 51, 51));
             return false;
         } else {
             for (USBStorageDevice usbStorageDevice : usbStorageDeviceManager.getUSBStorageDevices()) {
