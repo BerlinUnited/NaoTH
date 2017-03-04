@@ -481,8 +481,8 @@ public class NaoSCP extends javax.swing.JFrame {
                             }
                             
                             // set hostname
-                            FileUtils.writeToFile("Nao"+robotNr, new File(setupDir,"/etc/hostname"));
-                            FileUtils.writeToFile("hostname=\"Nao"+robotNr+"\"", new File(setupDir,"/etc/conf.d/hostname"));
+                            FileUtils.writeToFile("nao"+robotNr, new File(setupDir,"/etc/hostname"));
+                            FileUtils.writeToFile("hostname=\"nao"+robotNr+"\"", new File(setupDir,"/etc/conf.d/hostname"));
                             
                             // copy to robot
                             String ip = JOptionPane.showInputDialog(NaoSCP.this, "Robot ip address");
