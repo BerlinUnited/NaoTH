@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import naoscp.tools.usb.LinuxUSBStorageDeviceManager;
+import naoscp.tools.usb.OSXUSBStorageDeviceManager;
 import naoscp.tools.usb.USBStorageDevice;
 import naoscp.tools.usb.USBStorageDeviceManager;
 import naoscp.tools.usb.WindowsUSBStorageDeviceManager;
@@ -25,12 +26,20 @@ public class USBPanel extends javax.swing.JPanel {
      */
     public USBPanel() {
         initComponents();
+        
+        String os = System.getProperty("os.name");
 
-        if (System.getProperty("os.name").startsWith("Linux")) {
+        if (os.startsWith("Linux")) {
             this.usbStorageDeviceManager = new LinuxUSBStorageDeviceManager();
-        } else if (System.getProperty("os.name").startsWith("Windows")) {
+            
+        } else if (os.startsWith("Windows")) {
             this.unmountCheckBox.setVisible(false);
             this.usbStorageDeviceManager = new WindowsUSBStorageDeviceManager();
+         
+        } else if (os.contains("OS X")) {
+            this.unmountCheckBox.setVisible(false);
+            this.usbStorageDeviceManager = new OSXUSBStorageDeviceManager();
+            
         } else {
             this.setVisible(false);
         }
