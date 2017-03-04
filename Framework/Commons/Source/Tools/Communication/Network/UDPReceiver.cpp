@@ -22,12 +22,12 @@ UDPReceiver::UDPReceiver(unsigned int port, unsigned int buffersize)
 
   if(err)
   {
-    g_warning("could not initialize TeamCommSocket properly: %s", err->message);
+    std::cout << "[WARN] could not initialize TeamCommSocket properly: " << err->message << std::endl;;
     g_error_free(err);
     return;
   }
 
-  g_message("BroadCastLister start thread (%d)", port);
+  std::cout << "[INFO] BroadCastLister start thread (" << port << ")" << std::endl;
 
   socketThread = std::thread([this]{this->loop();});
   ThreadUtil::setPriority(socketThread, ThreadUtil::Priority::lowest);

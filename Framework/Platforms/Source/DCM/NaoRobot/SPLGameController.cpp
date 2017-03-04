@@ -17,7 +17,7 @@ SPLGameController::SPLGameController()
   GError* err = bindAndListen();
   if(err)
   {
-    g_warning("could not listen for SPLGameController: %s", err->message);
+    std::cout << "[WARN] could not listen for SPLGameController: " << err->message << std::endl;
     socket = NULL;
     g_error_free(err);
   }
@@ -33,7 +33,7 @@ SPLGameController::SPLGameController()
     dataOut.player = 0;
     dataOut.message = GAMECONTROLLER_RETURN_MSG_ALIVE;
 
-    g_message("SPLGameController start socket thread");
+    std::cout << "[INFO] SPLGameController start socket thread" << std::endl;
     socketThread = std::thread([this] {this->socketLoop();});
     ThreadUtil::setPriority(socketThread, ThreadUtil::Priority::lowest);
   }
@@ -135,10 +135,10 @@ void SPLGameController::sendData(const RoboCupGameControlReturnData& data)
   {
     gssize result = g_socket_send_to(socket, gamecontrollerAddress, (char*)(&data), sizeof(data), NULL, &error);
     if ( result != sizeof(data) ) {
-      g_warning("SPLGameController::returnData, sended size = %d", result);
+      std::cout << "[WARN] SPLGameController::returnData, sended size = " <<  result << std::endl;
     }
     if (error) {
-      g_warning("g_socket_send_to error: %s", error->message);
+      std::cout << "[WARN] g_socket_send_to error: " << error->message << std::endl;
       g_error_free(error);
     }
   }

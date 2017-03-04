@@ -36,7 +36,7 @@ BroadCaster::BroadCaster(const std::string& interfaceName, unsigned int port)
 
   if(err)
   {
-    g_warning("could not initialize BroadCaster properly: %s", err->message);
+    std::cout << "[WARN] could not initialize BroadCaster properly: " << err->message << std::endl;
     g_error_free(err);
     return;
   }
@@ -67,10 +67,9 @@ bool BroadCaster::queryBroadcastAddress()
     }
     broadcastAddress = g_inet_socket_address_new(address, static_cast<unsigned short>(port));
     g_object_unref(address);
-    g_message("BroadCaster configured (%s, %s, %d)", interfaceName.c_str(), broadcast.c_str(), port);
+    std::cout << "[INFO] BroadCaster configured (" << interfaceName << ", " << broadcast << ", " << port << ")" << std::endl;
     return true;
   }
-//  g_message("BroadCaster was not able to determine broadcast address (%s, %d)", interfaceName.c_str(), port);
   return false;
 }
 
@@ -166,12 +165,12 @@ void BroadCaster::socketSend(const std::string& data)
   int result = static_cast<int> (g_socket_send_to(socket, broadcastAddress, data.c_str(), data.size(), NULL, &error));
   if (error)
   {
-    g_warning("g_socket_send_to error: %s", error->message);
+    std::cout << "[WARN] g_socket_send_to error: " << error->message << std::endl;
     g_error_free(error);
   }
   else if ( result != static_cast<int>(data.size()) )
   {
-    g_warning("broadcast error, sended size = %d", result);
+    std::cout << "[WARN] broadcast error, sended size = " << result << std::endl;
   }
 }
 

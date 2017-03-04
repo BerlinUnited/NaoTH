@@ -53,7 +53,7 @@ void DebugServer::start(unsigned short port)
 {
   comm.init(port);
 
-  g_debug("Starting debug server thread");
+  std::cout << "[INFO] Starting debug server thread" << std::endl;
    
   connectionThread = std::thread([this] {this->run();});
 }//end start
@@ -81,10 +81,10 @@ void DebugServer::run()
         receive();
 
       } catch(const char* msg) {
-        g_warning("debug server exception: %s", msg);
+        std::cout << "[WARN] debug server exception: " << msg << std::endl;
         disconnect();
       } catch(...) {
-        g_warning("unexpected exception in debug server");
+        std::cout << "[WARN] unexpected exception in debug server" << std::endl;
         disconnect();
       }
     }
@@ -158,7 +158,7 @@ void DebugServer::send()
     {
       if(!comm.sendMessage(answer->id, answer->data.data(), answer->data.size()))
       {
-        g_warning("could not send message");
+        std::cout << "[WARN] could not send message" << std::endl;
         disconnect();
       }
       delete answer;

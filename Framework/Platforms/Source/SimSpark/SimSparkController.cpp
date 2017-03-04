@@ -119,7 +119,8 @@ SimSparkController::SimSparkController(const std::string& name)
   if (err)
   {
     socket = NULL;
-    g_warning("Could not create a socket. This is a fatal error and communication is available. Error message:\n%s", err->message);
+    std::cout << "[WARN] Could not create a socket. This is a fatal error and communication is available. Error message:"
+              << std::endl << err->message << std::endl;
     g_error_free (err);
   }
 
@@ -200,12 +201,12 @@ bool SimSparkController::connect(const std::string& host, int port)
   }
 
   if(error) {
-    g_warning("Could not connect:\n%s", error->message);
+    std::cout  << "[WARN] Could not connect:" << std::endl << error->message << std::endl;
     g_error_free(error);
   }
 
   if (conn_error) {
-    g_warning("Could not connect:\n%s", conn_error->message);
+    std::cout << "[WARN] Could not connect:" << std::endl << conn_error->message << std::endl;
     g_error_free(conn_error);
   }
 
