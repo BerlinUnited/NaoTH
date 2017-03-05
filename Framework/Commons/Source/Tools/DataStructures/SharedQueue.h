@@ -66,6 +66,26 @@ namespace naoth
       return true;
     }
 
+    /**
+     * @brief Try to retrieve an item from the queue. This will *not* block until an item is available.
+     * If the queue is empty or shut-down it will return immediatly with "false" as a result.
+     * @param item
+     * @return
+     */
+    bool try_pop(T& item)
+    {
+      std::unique_lock<std::mutex> lock(queueMutex);
+      if(isShutdown && queue.empty())
+      {
+        return false;
+      }
+      item.swap(queue.front());
+      queue.pop();
+      lock.unlock();
+
+      return true;
+    }
+
     void push(T&& item)
     {
       std::unique_lock<std::mutex> lock(queueMutex);
@@ -92,6 +112,24 @@ namespace naoth
 
         addedCondition.notify_all();
       }
+    }
+
+    /**
+     * @brief Remove all entries from the queue but do not shut it down.
+     */
+    void clear()
+    {
+      std::unique_lock<std::mutex> lock(queueMutex);
+      while(!queue.empty())
+      {
+        queue.pop();
+      }
+    }
+
+    size_t size()
+    {
+      std::unique_lock<std::mutex> lock(queueMutex);
+      return queue.size();
     }
 
 
