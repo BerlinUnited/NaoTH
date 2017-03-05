@@ -25,8 +25,6 @@ DebugServer::DebugServer()
   lastReceiveTime(0),
   abort(false)
 {
-  answers = g_async_queue_new();
-  g_async_queue_ref(answers);
 }
 
 DebugServer::~DebugServer()
@@ -44,8 +42,6 @@ DebugServer::~DebugServer()
 
   clearQueues();
   comm.disconnect();
-
-  g_async_queue_unref(answers);
 }
 
 
@@ -149,19 +145,17 @@ void DebugServer::send()
 {
   // NOTE: the size of the queue may change during this loop,
   //       so save it befor the execution
-  int size = g_async_queue_length(answers);
-  for(int i = 0; i < size && g_async_queue_length(answers) > 0; i++)
+  size_t size = answers.size();
+  for(int i = 0; i < size && !answers.empty(); i++)
   {
-    DebugMessageOut::Message* answer = (DebugMessageOut::Message*) g_async_queue_pop(answers);
-
-    if(answer != NULL)
+    std::shared_ptr<DebugMessageOut::Message> answer;
+    if(answers.try_pop(answer))
     {
       if(!comm.sendMessage(answer->id, answer->data.data(), answer->data.size()))
       {
         std::cout << "[WARN] could not send message" << std::endl;
         disconnect();
       }
-      delete answer;
     }
   }//end for
 }//end sendAll
@@ -197,9 +191,9 @@ void DebugServer::setDebugMessageOut(const DebugMessageOut& buffer)
   {
     std::lock_guard<std::mutex> lock(m_executing);
 
-    for(std::list<DebugMessageOut::Message*>::const_iterator iter = buffer.answers.begin(); iter != buffer.answers.end(); ++iter)
+    for(std::list<std::shared_ptr<DebugMessageOut::Message>>::const_iterator iter = buffer.answers.begin(); iter != buffer.answers.end(); ++iter)
     {
-      g_async_queue_push(answers, *iter);
+      answers.push(*iter);
     }
   }
 }
@@ -229,9 +223,7 @@ void DebugServer::parseCommand(GString* cmdRaw, DebugMessageIn::Message& command
 
 void DebugServer::clearQueues()
 {
-  while (g_async_queue_length(answers) > 0) {
-    delete (DebugMessageOut::Message*) g_async_queue_pop(answers);
-  }
+  answers.clear();
 
   received_messages_cognition.clear();
   received_messages_motion.clear();

@@ -98,7 +98,20 @@ namespace naoth
       queue.emplace(item);
       lock.unlock();
       addedCondition.notify_one();
+    }
 
+    void push(const T& item)
+    {
+      std::unique_lock<std::mutex> lock(queueMutex);
+
+      if(isShutdown)
+      {
+        return;
+      }
+
+      queue.push(item);
+      lock.unlock();
+      addedCondition.notify_one();
     }
 
     void shutdown()
@@ -124,6 +137,12 @@ namespace naoth
       {
         queue.pop();
       }
+    }
+
+    bool empty()
+    {
+      std::unique_lock<std::mutex> lock(queueMutex);
+      return queue.empty();
     }
 
     size_t size()

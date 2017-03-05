@@ -12,6 +12,7 @@
 #include <map>
 #include <list>
 #include <vector>
+#include <memory>
 
 namespace naoth
 {
@@ -47,13 +48,13 @@ public:
     std::vector<char> data;
   };
 
-  std::list<Message*> answers;
+  std::list<std::shared_ptr<Message>> answers;
 
   void addResponse(int id, std::stringstream& str) {
     long length = (long)str.tellp(); length = length < 0 ? 0 : length;
   
     // NOTE: the objects are deleted later by the DebugServer
-    Message* msg = new Message(id, length);
+    std::shared_ptr<Message> msg = std::make_shared<Message>(id, length);
 
     if(length > 0) {
       str.read(msg->data.data(), msg->data.size());

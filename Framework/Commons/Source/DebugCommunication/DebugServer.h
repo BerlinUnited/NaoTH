@@ -12,6 +12,7 @@
 //#include <libb64/decode.h>
 //#include <libb64/encode.h>
 #include <Tools/DataStructures/DestructureSentinel.h>
+#include <Tools/DataStructures/SharedQueue.h>
 #include <Representations/Infrastructure/DebugMessage.h>
 
 #include "DebugCommunicator.h"
@@ -21,6 +22,8 @@
 
 #include <thread>
 #include <mutex>
+
+#include <memory>
 
 class DebugServer
 {
@@ -42,7 +45,7 @@ public:
   void getDebugMessageInCognition(naoth::DebugMessageIn& buffer);
   void getDebugMessageInMotion(naoth::DebugMessageIn& buffer);
 
-  void setDebugMessageOut(const naoth::DebugMessageOut& buffer);
+  void setDebugMessageOut(const naoth::DebugMessageOut &buffer);
 
 private:
 
@@ -101,7 +104,7 @@ private:
 
   std::thread connectionThread;
 
-  GAsyncQueue* answers; // outgoing messages
+  naoth::SharedQueue<std::shared_ptr<naoth::DebugMessageOut::Message>> answers; // outgoing messages
   Channel received_messages_cognition;
   Channel received_messages_motion;
 
