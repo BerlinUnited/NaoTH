@@ -24,16 +24,16 @@ public:
     const std::string& command, const std::map<std::string, std::string>& arguments,
     std::ostream &outstream);
 
-  /** add a representation then it can be logged,
-   */
+  /** 
+  * add a representation to be logged
+  */
   template<class T> void addRepresentation(const T* representation, std::string name)
   {
-    if(streamables.find(name) == streamables.end())
+    if(representations.find(name) == representations.end())
     {
-      streamables[name] = representation;
-      serializers[name] = new naoth::SerializerWrapper<T>();
+      representations[name] = new naoth::SerializerWrapper<T>(representation);
     }
-  }//end addRepresentation
+  }
 
   void log(unsigned int frameNum);
 
@@ -46,10 +46,12 @@ protected:
 private:
 
   LogfileManager < 30 > logfileManager;
+  typedef std::map<std::string, naoth::VoidSerializer*> RepresentationsMap;
+  RepresentationsMap representations;
+
+  //
   std::string command;
   std::string description;
-  std::map<std::string, const void*> streamables;
-  std::map<std::string, naoth::VoidSerializer*> serializers;
   
   std::set<std::string> activeRepresentations;
   bool activated;

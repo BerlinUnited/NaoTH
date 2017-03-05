@@ -9,8 +9,6 @@
 #include "SMALModule.h"
 
 #include "Tools/NaoTime.h"
-#include <glib.h>
-#include <glib-object.h>
 #include <fstream>
 #include <cstdlib>
 
@@ -49,35 +47,12 @@ void* slowDCMCycle(void* ref)
     SMALModule* smalModule = (SMALModule*)ref;
     smalModule->slowDcmUpdate();
 
-    g_thread_yield();
+    pthread_yield();
     usleep(1000);
   }
   
   return NULL;
 }
-
-void* shutdownCallback(void* /*ref*/)
-{
-  // play a sound that the user knows we recognized his shutdown request
-  system("/usr/bin/paplay /usr/share/naoqi/wav/bip_gentle.wav");
-
-  // stop the user program
-  std::cout << "stopping naoth" << std::endl;
-  system("naoth stop");
-
-  sleep(5);
-
-  // we are the child process, do a blocking call to shutdown
-  system("/sbin/shutdown -h now");
-  std::cout << "System shutdown requested" << std::endl;
-
-  // await termination
-  while(true) {
-    sleep(100);
-  }
-
-  return NULL;
-}//end soundThreadCallback
 
 
 SMALModule::SMALModule(boost::shared_ptr<ALBroker> pBroker, const std::string& pName )
@@ -109,6 +84,9 @@ SMALModule::SMALModule(boost::shared_ptr<ALBroker> pBroker, const std::string& p
 
 SMALModule::~SMALModule()
 {
+  if(shutdownCallbackThread.joinable()) {
+    shutdownCallbackThread.join();
+  }
 }
 
 std::string SMALModule::version()
@@ -220,6 +198,27 @@ void SMALModule::init()
   pthread_create(&slowDCM, 0, slowDCMCycle, (void*)this);
 }//end init
 
+void SMALModule::shutdownCallback()
+{
+  // play a sound that the user knows we recognized his shutdown request
+  system("/usr/bin/paplay /usr/share/naoqi/wav/bip_gentle.wav");
+
+  // stop the user program
+  std::cout << "stopping naoth" << std::endl;
+  system("naoth stop");
+
+  sleep(5);
+
+  // we are the child process, do a blocking call to shutdown
+  system("/sbin/shutdown -h now");
+  std::cout << "System shutdown requested" << std::endl;
+
+  // await termination
+  while(true) {
+    sleep(100);
+  }
+
+}//end soundThreadCallback
 
 void SMALModule::slowDcmUpdate()
 {
@@ -375,12 +374,7 @@ void SMALModule::motionCallbackPost()
   {
     shutdown_requested = true;
 
-    GError* err = NULL;
-    g_thread_create(shutdownCallback, 0, true, &err);
-    if(err)
-    {
-      g_warning("Could not shutdown thread: %s", err->message);
-    }
+    shutdownCallbackThread = std::thread([this]{this->shutdownCallback();});
   }
 
   // save the data for the emergency case

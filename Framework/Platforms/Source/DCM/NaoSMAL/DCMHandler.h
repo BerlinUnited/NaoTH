@@ -42,7 +42,8 @@ private:
   std::string DCMPath_SensorJointTemperature[JointData::numOfJoint];
     
   //FSR
-  std::string DCMPath_FSR[FSRData::numOfFSR];
+  std::string DCMPath_FSR_Left[FSRData::numOfFSR];
+  std::string DCMPath_FSR_Right[FSRData::numOfFSR];
 
   //Accelerometer
   std::string DCMPath_Accelerometer[3+3];

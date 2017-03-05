@@ -83,7 +83,9 @@ private:
   LogfileManager < 30 > logfileManager;
 
   unsigned int lastCompleteFrameNumber;
-  bool ignore_init_state;
+  
+  PlayerInfo::RobotState oldState;
+  bool firstRecording;
 };
 
 #endif // GAMELOGGER_H
