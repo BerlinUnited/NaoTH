@@ -112,7 +112,7 @@ void DebugServer::receive()
     {
       // parse and sort the messages
 
-      DebugMessageIn::Message* message = new DebugMessageIn::Message();
+      std::shared_ptr<DebugMessageIn::Message> message = std::make_shared<DebugMessageIn::Message>();
       parseCommand(msg, *message);
       message->id = id;
 

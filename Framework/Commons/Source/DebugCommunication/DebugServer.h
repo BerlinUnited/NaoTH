@@ -52,46 +52,39 @@ private:
   class Channel
   {
   private:
-    GAsyncQueue* message_queue;
+    naoth::SharedQueue<std::shared_ptr<naoth::DebugMessageIn::Message>> message_queue;
 
   public:
     Channel()
     {
-      message_queue = g_async_queue_new();
-      g_async_queue_ref(message_queue);
     }
 
     ~Channel()
     {
-      g_async_queue_unref(message_queue);
     }
 
-    void push(naoth::DebugMessageIn::Message* message) {
-      g_async_queue_push(message_queue, message);
+    void push(std::shared_ptr<naoth::DebugMessageIn::Message> message) {
+      message_queue.push(message);
     }
 
     void copy(naoth::DebugMessageIn& buffer)
     {
       // NOTE: during the loop the received_messages_cognition may change
       //       so there is a chance we would not stop
-      int size = g_async_queue_length(message_queue);
-      for(int i = 0; i < size && g_async_queue_length(message_queue) > 0; i++)
+      size_t size = message_queue.size();
+      for(size_t i = 0; i < size && !message_queue.empty(); i++)
       {
-        naoth::DebugMessageIn::Message* message = (naoth::DebugMessageIn::Message*) g_async_queue_pop(message_queue);
-
-        if(message != NULL)
+        std::shared_ptr<naoth::DebugMessageIn::Message> message;
+        if(message_queue.try_pop(message))
         {
           buffer.messages.push_back(*message);
-          delete message;
         }
       }//end for
     }//end getDebugMessageIn
 
     void clear()
     {
-      while (g_async_queue_length(message_queue) > 0) {
-        delete (naoth::DebugMessageIn::Message*) g_async_queue_pop(message_queue);
-      }
+      message_queue.clear();
     }
   };
 
