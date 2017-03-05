@@ -146,7 +146,7 @@ void DebugServer::send()
   // NOTE: the size of the queue may change during this loop,
   //       so save it befor the execution
   size_t size = answers.size();
-  for(int i = 0; i < size && !answers.empty(); i++)
+  for(size_t i = 0; i < size && !answers.empty(); i++)
   {
     std::shared_ptr<DebugMessageOut::Message> answer;
     if(answers.try_pop(answer))
