@@ -34,7 +34,8 @@
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
                       <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace min="0" pref="399" max="32767" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="progressLabel" max="32767" attributes="0"/>
                   </Group>
                   <Component id="txtTempFile" alignment="0" pref="507" max="32767" attributes="0"/>
                   <Group type="102" alignment="0" attributes="0">
@@ -45,7 +46,7 @@
                       <Component id="cbSelectionScheme" min="-2" pref="135" max="-2" attributes="0"/>
                   </Group>
                   <Component id="jProgressBar" alignment="0" pref="507" max="32767" attributes="0"/>
-                  <Component id="stringSelectionPanel" alignment="0" pref="507" max="32767" attributes="0"/>
+                  <Component id="stringSelectionPanel" alignment="0" pref="511" max="32767" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
@@ -56,7 +57,10 @@
           <Group type="102" alignment="0" attributes="0">
               <Component id="tbLog" min="-2" pref="32" max="-2" attributes="0"/>
               <EmptySpace type="separate" max="-2" attributes="0"/>
-              <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                  <Component id="jLabel1" max="32767" attributes="0"/>
+                  <Component id="progressLabel" max="32767" attributes="0"/>
+              </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="txtTempFile" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
@@ -211,6 +215,11 @@
     <Component class="javax.swing.JLabel" name="jLabel3">
       <Properties>
         <Property name="text" type="java.lang.String" value="Selection Scheme:"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="progressLabel">
+      <Properties>
+        <Property name="horizontalAlignment" type="int" value="11"/>
       </Properties>
     </Component>
   </SubComponents>

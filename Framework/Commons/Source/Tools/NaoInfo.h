@@ -83,7 +83,8 @@ public:
   static const double FSRMinForce;
   static const double FSRMaxForce;
 
-  static const Vector3d FSRPositions[naoth::FSRData::numOfFSR];
+  static const Vector3d FSRPositionsLeft[naoth::FSRData::numOfFSR];
+  static const Vector3d FSRPositionsRight[naoth::FSRData::numOfFSR];
   
   static const RobotDimensions robotDimensions;
 

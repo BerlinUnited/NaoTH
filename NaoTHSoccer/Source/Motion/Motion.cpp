@@ -58,11 +58,11 @@ Motion::Motion()
   REGISTER_DEBUG_COMMAND("modify:release", 
     "release a modifiable value (i.e. the value will not be overwritten anymore)", &getDebugModify());
 
-  // register the modeules
+  // register the modules
   theInertiaSensorCalibrator = registerModule<InertiaSensorCalibrator>("InertiaSensorCalibrator", true);
   theInertiaSensorFilterBH = registerModule<InertiaSensorFilter>("InertiaSensorFilter", true);
-  theFootGroundContactDetector = registerModule<FootGroundContactDetector>("FootGroundContactDetector", true);
-  theSupportPolygonGenerator = registerModule<SupportPolygonGenerator>("SupportPolygonGenerator", true);
+    theFootGroundContactDetector = registerModule<FootGroundContactDetector>("FootGroundContactDetector", true);
+  //theSupportPolygonGenerator = registerModule<SupportPolygonGenerator>("SupportPolygonGenerator", true);
   theOdometryCalculator = registerModule<OdometryCalculator>("OdometryCalculator", true);
   theKinematicChainProvider = registerModule<KinematicChainProviderMotion>("KinematicChainProvider", true);
   theIMUModel = registerModule<IMUModel>("IMUModel", true);
@@ -119,6 +119,7 @@ void Motion::init(naoth::ProcessInterface& platformInterface, const naoth::Platf
   platformInterface.registerOutputChanel(getCalibrationData());
   platformInterface.registerOutputChanel(getInertialModel());
   platformInterface.registerOutputChanel(getBodyStatus());
+  platformInterface.registerOutputChanel(getGroundContactModel());
 
   // messages from cognition to motion
   platformInterface.registerInputChanel(getCameraInfo());
@@ -226,12 +227,12 @@ void Motion::processSensorData()
 
   //
   theFootGroundContactDetector->execute();
-
+    
   //
   theKinematicChainProvider->execute();
 
   //
-  theSupportPolygonGenerator->execute();
+//  theSupportPolygonGenerator->execute();
 
   //
   updateCameraMatrix();

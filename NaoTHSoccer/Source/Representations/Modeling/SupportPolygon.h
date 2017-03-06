@@ -1,3 +1,6 @@
+// TODO: depricated - not used now, do we need it?
+
+
 /** 
 * @file SupportPolygon.h
 * Declaration of class SupportPolygon.
@@ -6,7 +9,7 @@
 */
 
 #ifndef _SUPPORTPOLYGON_H
-#define  _SUPPORTPOLYGON_H
+#define _SUPPORTPOLYGON_H
 
 #include <ostream>
 #include <vector>
