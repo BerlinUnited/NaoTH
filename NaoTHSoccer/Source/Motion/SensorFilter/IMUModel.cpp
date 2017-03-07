@@ -24,11 +24,9 @@ void IMUModel::execute(){
     Eigen::Vector3d acceleration = Eigen::Vector3d(getAccelerometerData().data.x, getAccelerometerData().data.y, getAccelerometerData().data.z);
     rotation_acc_to_gravity.setFromTwoVectors(acceleration,Eigen::Vector3d(0,0,-1));
 
-    Eigen::Vector3d temp(quaternionToRotationVector(rotation_acc_to_gravity));
-
     IMU_Measurement z;
     // gyro z axis seems to measure in opposite direction (turning left measures negative angular velocity, should be positive)
-    z << acceleration, temp(0), temp(1), getGyrometerData().data.x, getGyrometerData().data.y, -getGyrometerData().data.z;
+    z << quaternionToRotationVector(rotation_acc_to_gravity), getGyrometerData().data.x, getGyrometerData().data.y, -getGyrometerData().data.z;
 
     ukf.update(z);
 
@@ -48,9 +46,9 @@ void IMUModel::writeIMUData(){
 //    getIMUData().velocity.y = ukf.state.velocity()(1,0);
 //    getIMUData().velocity.z = ukf.state.velocity()(2,0);
 
-    getIMUData().acceleration.x = ukf.state.acceleration()(0,0);
-    getIMUData().acceleration.y = ukf.state.acceleration()(1,0);
-    getIMUData().acceleration.z = ukf.state.acceleration()(2,0);
+//    getIMUData().acceleration.x = ukf.state.acceleration()(0,0);
+//    getIMUData().acceleration.y = ukf.state.acceleration()(1,0);
+//    getIMUData().acceleration.z = ukf.state.acceleration()(2,0);
 
     getIMUData().acceleration_sensor = getAccelerometerData().data;
 
@@ -90,9 +88,9 @@ void IMUModel::writeIMUData(){
 }
 
 void IMUModel::plots(){
-    PLOT("IMUModel:State:acceleration:x", ukf.state.acceleration()(0,0));
-    PLOT("IMUModel:State:acceleration:y", ukf.state.acceleration()(1,0));
-    PLOT("IMUModel:State:acceleration:z", ukf.state.acceleration()(2,0));
+//    PLOT("IMUModel:State:acceleration:x", ukf.state.acceleration()(0,0));
+//    PLOT("IMUModel:State:acceleration:y", ukf.state.acceleration()(1,0));
+//    PLOT("IMUModel:State:acceleration:z", ukf.state.acceleration()(2,0));
 
     PLOT("IMUModel:Measurement:acceleration:x", getAccelerometerData().data.x);
     PLOT("IMUModel:Measurement:acceleration:y", getAccelerometerData().data.y);
@@ -118,7 +116,9 @@ void IMUModel::plots(){
     Vector3d zAxis = Vector3<double>(0, 0, 60);
 
     // plot gravity
-    Eigen::Vector3d temp3 = ukf.state.getRotationAsQuaternion()._transformVector(ukf.state.acceleration());
+    Eigen::Vector3d acceleration;
+    acceleration << getAccelerometerData().data.x, getAccelerometerData().data.y, getAccelerometerData().data.z;
+    Eigen::Vector3d temp3 = ukf.state.getRotationAsQuaternion()._transformVector(acceleration);
     Vector3d gravity(6*temp3(0),6*temp3(1),6*temp3(2));
 
     xAxis = pose * xAxis;

@@ -44,9 +44,9 @@ public:
 private:
     FrameInfo lastFrameInfo;
 
-    UKF<9,9,8,8,State<9,9>,Measurement<8,8> > ukf;
+    UKF<6,6,6,6,State<6,6,Measurement<6,6> >,Measurement<6,6> > ukf;
 
-    typedef Measurement<8,8> IMU_Measurement;
+    typedef Measurement<6,6> IMU_Measurement;
 
     Eigen::Vector3d quaternionToRotationVector(const Eigen::Quaterniond& q) const{
         Eigen::AngleAxisd temp(q);
