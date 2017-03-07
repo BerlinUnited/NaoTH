@@ -66,21 +66,9 @@ public class RobotControlImpl extends javax.swing.JFrame
     try
     {
       //UIManager.setLookAndFeel(new PlasticXPLookAndFeel());
-      UIManager.setLookAndFeel(new NimbusLookAndFeel() 
-      {
-                @Override
-        public UIDefaults getDefaults()
-        {
-          UIDefaults defaults = super.getDefaults();
-          if(isHighDPI())
-          {
-            defaults.put("defaultFont", new Font(Font.SANS_SERIF, Font.PLAIN, 18));
-          }
-          return defaults;
-        }
-      });
+      UIManager.setLookAndFeel(new CustomNimbusLookAndFeel(RobotControlImpl.this));
       // set explicitely the Nimbus colors to be used
-      DockUI.getDefaultDockUI().registerColors("javax.swing.plaf.nimbus.NimbusLookAndFeel", new Nimbus6u10());
+      DockUI.getDefaultDockUI().registerColors("de.naoth.rc.CustomNimbusLookAndFeel", new Nimbus6u10());
     }
     catch(UnsupportedLookAndFeelException ex)
     {
