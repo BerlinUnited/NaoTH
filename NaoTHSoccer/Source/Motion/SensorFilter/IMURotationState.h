@@ -54,6 +54,10 @@ class State : public Eigen::Matrix<double,dim_state,1> {
             return Eigen::Block<Eigen::Matrix<double,dim_state,1> >(this->derived(), 3, 0, 3, 1);
         }
 
+        Eigen::Block<Eigen::Matrix<double,dim_state,1> > bias_rotational_velocity(){
+            return Eigen::Block<Eigen::Matrix<double,dim_state,1> >(this->derived(), 6, 0, 3, 1);
+        }
+
         // unary operator
         State operator-() const{
             State temp = *this;
@@ -100,12 +104,6 @@ class State : public Eigen::Matrix<double,dim_state,1> {
             return *this;
         }
 
-        State scale(double s){
-            State temp;
-            temp << s * (*this);
-            return temp;
-        }
-
         // functions requiered by the unscented kalman filter
         // TODO: should these functions be part of the filter?
 
@@ -127,13 +125,16 @@ class State : public Eigen::Matrix<double,dim_state,1> {
             Eigen::AngleAxisd  new_angle_axis(new_rotation);
 
             this->rotation() = new_angle_axis.angle() * new_angle_axis.axis();
+
+            this->rotational_velocity() = this->rotational_velocity() - this->bias_rotational_velocity();
+            this->bias_rotational_velocity() = this->bias_rotational_velocity();
         }
 
         // state to measurement transformation function
         M asMeasurement() {
             // state to measurement function
             // transform acceleration part of the state into local measurement space (the robot's body frame = frame of accelerometer), the bias is already in this frame
-            Eigen::Vector3d rotational_velocity_in_measurement_space = rotational_velocity() /*+ state.bias_rotational_velocity()*/;
+            Eigen::Vector3d rotational_velocity_in_measurement_space = rotational_velocity();// + bias_rotational_velocity();
 
             // determine rotation around x and y axis
             Eigen::Quaterniond q;

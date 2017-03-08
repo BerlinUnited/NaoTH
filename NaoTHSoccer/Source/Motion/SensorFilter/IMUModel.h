@@ -44,7 +44,7 @@ public:
 private:
     FrameInfo lastFrameInfo;
 
-    UKF<6,6,6,6,State<6,6,Measurement<6,6> >,Measurement<6,6> > ukf;
+    UKF<9,9,6,6,State<9,9,Measurement<6,6> >,Measurement<6,6> > ukf;
 
     typedef Measurement<6,6> IMU_Measurement;
 

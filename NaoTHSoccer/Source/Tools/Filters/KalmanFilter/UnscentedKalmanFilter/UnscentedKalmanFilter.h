@@ -41,9 +41,9 @@ class UKF {
             Q(5,5) = 0.1;
 
             // bias_rotational_velocity (x,y,z) [m/s^2], too small?
-//            Q(18,18) = 10e-10;
-//            Q(19,19) = 10e-10;
-//            Q(20,20) = 10e-10;
+            Q(6,6) = 10e-10;
+            Q(7,7) = 10e-10;
+            Q(8,8) = 10e-10;
 
             // set covariance matrix of measurement noise
             // measured covariance of acceleration and rotational velocity (motion log, 60 seconds)
@@ -83,7 +83,7 @@ class UKF {
             // calculate new state (weighted mean of sigma points)
             for(typename std::vector<S>::iterator i = sigmaPoints.begin(); i != sigmaPoints.end(); ++i){
                 rotations.push_back((*i).getRotationAsQuaternion());
-                mean += (*i).scale(1.0 / static_cast<double>(sigmaPoints.size()));
+                mean += 1.0 / static_cast<double>(sigmaPoints.size()) * (*i);
             }
 
             // more correct determination of the mean rotation

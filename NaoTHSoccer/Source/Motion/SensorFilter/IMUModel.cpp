@@ -69,9 +69,9 @@ void IMUModel::writeIMUData(){
 
     getIMUData().rotational_velocity_sensor = getGyrometerData().data;
 
-//    getIMUData().bias_rotational_velocity.x = ukf.state.bias_rotational_velocity()(0,0);
-//    getIMUData().bias_rotational_velocity.y = ukf.state.bias_rotational_velocity()(1,0);
-//    getIMUData().bias_rotational_velocity.z = ukf.state.bias_rotational_velocity()(2,0);
+    getIMUData().bias_rotational_velocity.x = ukf.state.bias_rotational_velocity()(0,0);
+    getIMUData().bias_rotational_velocity.y = ukf.state.bias_rotational_velocity()(1,0);
+    getIMUData().bias_rotational_velocity.z = ukf.state.bias_rotational_velocity()(2,0);
 
     // from inertiasensorfilter
     getIMUData().orientation = Vector2d(atan2(q.toRotationMatrix()(2,1),  q.toRotationMatrix()(2,2)),
