@@ -5,4 +5,4 @@ rm -f  ../build/*.config ../build/*.includes ../build/*.creator ../build/*.user 
 
 ./generateMakefile.sh
 premake4 qtc27
-premake4 --platform="Nao" qtc27
+#premake4 --platform="Nao" qtc27
