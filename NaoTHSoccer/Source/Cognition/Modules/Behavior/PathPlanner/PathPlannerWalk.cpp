@@ -44,7 +44,7 @@ void PathPlannerWalk::execute()
                   if (!executed_once) {
                     executed_once = true;
 
-                    approximate_steps_to_ball = (distance - ballRad - step_size) / 40.0;
+                    approximate_steps_to_ball = static_cast<std::size_t>((distance - ballRad - step_size) / 40.0);
                     // check how many steps are possible with the step_size and
                     // position right or left foot in front of the ball
                     // according to the check
