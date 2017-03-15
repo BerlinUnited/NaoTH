@@ -30,10 +30,6 @@ public:
     Measurement(): Eigen::Matrix<double,dim_measurement,1>(Eigen::Matrix<double,dim_measurement,1>::Zero()){
     }
 
-    // create state from vector
-    Measurement(Eigen::Matrix<double,dim_measurement,1> z): Eigen::Matrix<double,dim_measurement,1>(z){
-    }
-
     Eigen::Block<Eigen::Matrix<double,dim_measurement,1> > rotation(){
         return Eigen::Block<Eigen::Matrix<double,dim_measurement,1> >(this->derived(), 0, 0, 3, 1);
     }

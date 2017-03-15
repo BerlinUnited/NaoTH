@@ -4,6 +4,7 @@
 #include <Tools/naoth_eigen.h>
 
 #include <vector>
+#include <Eigen/StdVector>
 
 // TODO: remove pragma
 #pragma GCC diagnostic ignored "-Wconversion"
@@ -21,6 +22,8 @@ class UKF {
 //        };
 
     public:
+        EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+
         UKF():
             Q(Eigen::Matrix<double,dim_state_cov,dim_state_cov>::Identity()),
             P(Eigen::Matrix<double,dim_state_cov,dim_state_cov>::Identity())
@@ -74,14 +77,14 @@ class UKF {
 
         void predict(double dt){
             // transit the sigma points to the next state
-            for (typename std::vector<S>::iterator i = sigmaPoints.begin(); i != sigmaPoints.end(); i++){
+            for (typename std::vector<S, Eigen::aligned_allocator<S> >::iterator i = sigmaPoints.begin(); i != sigmaPoints.end(); i++){
                 (*i).predict(dt);
             }
 
-            std::vector<Eigen::Quaterniond> rotations;
+            std::vector<Eigen::Quaterniond, Eigen::aligned_allocator<Eigen::Quaterniond> > rotations;
             S mean;
             // calculate new state (weighted mean of sigma points)
-            for(typename std::vector<S>::iterator i = sigmaPoints.begin(); i != sigmaPoints.end(); ++i){
+            for(typename std::vector<S, Eigen::aligned_allocator<S> >::iterator i = sigmaPoints.begin(); i != sigmaPoints.end(); ++i){
                 rotations.push_back((*i).getRotationAsQuaternion());
                 mean += 1.0 / static_cast<double>(sigmaPoints.size()) * (*i);
             }
@@ -93,7 +96,7 @@ class UKF {
             Eigen::Matrix<double, dim_state_cov, dim_state_cov> cov = Eigen::Matrix<double, dim_state_cov, dim_state_cov>::Zero();
             S temp;
 
-            for(typename std::vector<S>::iterator i = sigmaPoints.begin(); i != sigmaPoints.end(); ++i){
+            for(typename std::vector<S, Eigen::aligned_allocator<S> >::iterator i = sigmaPoints.begin(); i != sigmaPoints.end(); ++i){
                 temp = (*i) - mean;
                 cov += 1.0 / static_cast<double>(sigmaPoints.size()) * (temp)*(temp).transpose();
             }
@@ -104,19 +107,19 @@ class UKF {
             P     = cov/* + Q*/; // process covariance is applied before the process model (while generating the sigma points)
         }
 
-        void update(M z){
-            std::vector<M> sigmaMeasurements;
+        void update(M& z){
+            std::vector<M, Eigen::aligned_allocator<M> > sigmaMeasurements;
 
             // map sigma points to measurement space
-            for (typename std::vector<S>::iterator i = sigmaPoints.begin(); i != sigmaPoints.end(); i++){
+            for (typename std::vector<S, Eigen::aligned_allocator<S> >::iterator i = sigmaPoints.begin(); i != sigmaPoints.end(); i++){
                 sigmaMeasurements.push_back((*i).asMeasurement());
             }
 
             // calculate predicted measurement z (weighted mean of sigma points)
-            std::vector<Eigen::Quaterniond> rotations;
+            std::vector<Eigen::Quaterniond, Eigen::aligned_allocator<Eigen::Quaterniond> > rotations;
             M predicted_z;
 
-            for(typename std::vector<M>::iterator i = sigmaMeasurements.begin(); i != sigmaMeasurements.end(); ++i){
+            for(typename std::vector<M, Eigen::aligned_allocator<M> >::iterator i = sigmaMeasurements.begin(); i != sigmaMeasurements.end(); ++i){
                 rotations.push_back((*i).getRotationAsQuaternion());
                 predicted_z += 1.0 / static_cast<double>(sigmaMeasurements.size()) * (*i);
             }
@@ -129,7 +132,7 @@ class UKF {
             Eigen::Matrix<double, dim_measurement_cov, dim_measurement_cov> Pzz = Eigen::Matrix<double, dim_measurement_cov, dim_measurement_cov>::Zero();
             M temp;
 
-            for(typename std::vector<M>::iterator i = sigmaMeasurements.begin(); i != sigmaMeasurements.end(); ++i){
+            for(typename std::vector<M, Eigen::aligned_allocator<M> >::iterator i = sigmaMeasurements.begin(); i != sigmaMeasurements.end(); ++i){
                 temp = (*i) - predicted_z;
                 Pzz += 1.0 / static_cast<double>(sigmaPoints.size()) * (temp)*(temp).transpose();
             }
@@ -175,7 +178,7 @@ class UKF {
         const double beta   = 2;
         const double lambda = alpha * alpha * (dim_state + kapa) - dim_state;
 
-        std::vector<S> sigmaPoints;
+        std::vector<S, Eigen::aligned_allocator<S> > sigmaPoints;
 
     public:
         S state;
@@ -209,13 +212,14 @@ class UKF {
 
         // TODO: check whether this concept of averageing can be applied directly on the rotations (average axis and average angle)
         // TODO: adjust maximum of iterations
-        Eigen::Vector3d averageRotation(std::vector<Eigen::Quaterniond> rotations, Eigen::Quaterniond mean){
-            std::vector<Eigen::Vector3d> rotational_differences;
+        Eigen::Vector3d averageRotation(std::vector<Eigen::Quaterniond, Eigen::aligned_allocator<Eigen::Quaterniond> >& rotations, const Eigen::Quaterniond& m){
+            Eigen::Quaterniond mean(m);
+            std::vector<Eigen::Vector3d, Eigen::aligned_allocator<Eigen::Vector3d> > rotational_differences;
 
             for(int i = 0; i < 10; ++i){
                 // calculate difference between the mean and the sigma points rotation by means of a rotation
                 rotational_differences.clear();
-                for (typename std::vector<Eigen::Quaterniond>::iterator i = rotations.begin(); i != rotations.end(); ++i){
+                for (typename std::vector<Eigen::Quaterniond, Eigen::aligned_allocator<Eigen::Quaterniond> >::iterator i = rotations.begin(); i != rotations.end(); ++i){
                     Eigen::AngleAxis<double> rotational_difference = Eigen::AngleAxis<double>((*i) * mean.inverse());
 
                     // store as rotation vector representation
@@ -224,7 +228,7 @@ class UKF {
 
                 // average difference quaternions in their 3d vectorial representation (length = angle, direction = axis)
                 Eigen::Vector3d averaged_rotational_difference = Eigen::Vector3d::Zero();
-                for (typename std::vector<Eigen::Vector3d >::iterator i = rotational_differences.begin(); i != rotational_differences.end(); ++i){
+                for (typename std::vector<Eigen::Vector3d, Eigen::aligned_allocator<Eigen::Vector3d> >::iterator i = rotational_differences.begin(); i != rotational_differences.end(); ++i){
                     averaged_rotational_difference += *i;
                 }
                 averaged_rotational_difference = 1.0 / static_cast<double>(rotational_differences.size()) * averaged_rotational_difference;

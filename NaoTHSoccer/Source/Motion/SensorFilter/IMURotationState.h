@@ -12,7 +12,7 @@
 // state in global reference frame
 template <int dim_state, int dim_state_cov, class M>
 class State : public Eigen::Matrix<double,dim_state,1> {
-    public:
+    public: // constructors
         // This constructor allows you to construct MyVectorType from Eigen expressions
         template<typename OtherDerived>
         State(const Eigen::MatrixBase<OtherDerived>& other)
@@ -31,15 +31,16 @@ class State : public Eigen::Matrix<double,dim_state,1> {
         State(): Eigen::Matrix<double,dim_state,1>(Eigen::Matrix<double,dim_state,1>::Zero()){
         }
 
-        // create state from vector
-        State(Eigen::Matrix<double,dim_state,1> x): Eigen::Matrix<double,dim_state,1>(x){
-        }
-
+    public: // accessors
         Eigen::Block<Eigen::Matrix<double,dim_state,1> > rotation(){
             return Eigen::Block<Eigen::Matrix<double,dim_state,1> >(this->derived(), 0, 0, 3, 1);
         }
 
-        Eigen::Quaterniond getRotationAsQuaternion() /*const*/ {
+        const Eigen::Block<const Eigen::Matrix<double,dim_state,1> > rotation() const{
+            return Eigen::Block<const Eigen::Matrix<double,dim_state,1> >(this->derived(), 0, 0, 3, 1);
+        }
+
+        Eigen::Quaterniond getRotationAsQuaternion() const {
             Eigen::Vector3d   rot(rotation());
             Eigen::AngleAxisd rot2;
             if(rot.norm() > 0){
@@ -93,7 +94,7 @@ class State : public Eigen::Matrix<double,dim_state,1> {
 
         // add other to this state, i.e., the resulting rotation describes a rotation which rotates at first by "other" and then by "this"
         // eigen vectorization and alignment problem: other should be a reference
-        State& operator +=(State other){
+        State& operator +=(const State& other){
             Eigen::Quaterniond temp_rotation = this->getRotationAsQuaternion() * other.getRotationAsQuaternion();
             Eigen::Matrix<double,dim_state,1>::operator+=(other);
 
