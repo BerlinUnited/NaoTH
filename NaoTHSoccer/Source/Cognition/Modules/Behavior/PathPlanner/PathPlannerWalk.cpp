@@ -30,10 +30,10 @@ void PathPlannerWalk::execute()
                 static char foot;
                 std::size_t approximate_steps_to_ball;
                 static bool executed_once   = false;
-                float step_size             = 40.0;
+                double step_size             = 40.0;
                 Vector2d preview            = getBallModel().positionPreview;
-                float distance              = preview.abs();
-                float ballRad               = 70.0;
+                double distance              = preview.abs();
+                double ballRad               = 70.0;
 
                 if (distance > 700) {
                   add(new_step(step_size,
@@ -115,16 +115,16 @@ void PathPlannerWalk::add(PathPlannerWalk::Step step) {
     step_list.push_back(step);
   }
 }
-PathPlannerWalk::Step PathPlannerWalk::new_step(float x,
-                                                float y,
-                                                float rotation) {
+PathPlannerWalk::Step PathPlannerWalk::new_step(double x,
+                                                double y,
+                                                double rotation) {
   Step newStep = {x, y, rotation, 0.5};
   return newStep;
 }
-PathPlannerWalk::Step PathPlannerWalk::new_step(float x,
-                                                float y,
-                                                float rotation,
-                                                float character) {
+PathPlannerWalk::Step PathPlannerWalk::new_step(double x,
+                                                double y,
+                                                double rotation,
+                                                double character) {
   Step newStep = {x, y, rotation, character};
   return newStep;
 }
@@ -133,7 +133,7 @@ void PathPlannerWalk::pop_step() {
   step_list.erase(step_list.begin());
 }
 
-float PathPlannerWalk::towards_ball(const char x_or_y) {
+double PathPlannerWalk::towards_ball(const char x_or_y) {
   double ballRad    = getBallPercept().radiusInImage;
   Vector2d preview  = getBallModel().positionPreview;
   switch (x_or_y) {
@@ -143,7 +143,7 @@ float PathPlannerWalk::towards_ball(const char x_or_y) {
   }
   return 0.0;
 }
-float PathPlannerWalk::towards_ball(const char x_or_y, const char for_left_or_right_foot) {
+double PathPlannerWalk::towards_ball(const char x_or_y, const char for_left_or_right_foot) {
   double ballRad = getBallPercept().radiusInImage;
   Vector2d preview;
   switch (for_left_or_right_foot) {

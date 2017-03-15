@@ -59,10 +59,10 @@ public:
 
 private:
   struct Step {
-    float x;
-    float y;
-    float rotation;
-    float character;
+    double x;
+    double y;
+    double rotation;
+    double character;
   };
   std::vector<Step> step_list;
 
@@ -81,14 +81,14 @@ private:
   void stand();
   void look_at_ball();
 
-  float towards_ball(const char x_or_y);
-  float towards_ball(const char x_or_y, const char for_left_or_right_foot);
+  double towards_ball(const char x_or_y);
+  double towards_ball(const char x_or_y, const char for_left_or_right_foot);
   char find_foot_with(std::size_t approximate_steps_to_ball);
 
   void add(PathPlannerWalk::Step step);
   void pop_step();
-  PathPlannerWalk::Step new_step(float x, float y, float rotation);
-  PathPlannerWalk::Step new_step(float x, float y, float rotation, float character);
+  PathPlannerWalk::Step new_step(double x, double y, double rotation);
+  PathPlannerWalk::Step new_step(double x, double y, double rotation, double character);
 };
 
 #endif // _PathPlannerWalk_H_
