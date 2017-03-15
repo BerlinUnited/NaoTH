@@ -6,8 +6,9 @@
 *
 */
 
-#include <glib.h>
 #include "SharedMemory.h"
+
+#include <mutex>
 
 namespace naoth
 {
@@ -31,14 +32,12 @@ template<class V>
 class SharedMemoryWriter
 {
 public:
-  SharedMemoryWriter() : mutex(NULL)
+  SharedMemoryWriter()
   {
-    mutex = g_mutex_new();
   }
 
   ~SharedMemoryWriter()
   {
-    g_mutex_free(mutex);
     memory.close();
   }
 
@@ -54,15 +53,14 @@ public:
   template<class T>
   void set(const T& data)
   { 
-    g_mutex_lock(mutex);
+    std::lock_guard<std::mutex> lock(_mutex);
     // copy the data into the shared memory
     memory.writing()->set(data);
     memory.swapWriting();
-    g_mutex_unlock(mutex);
   }
 
 private:
- GMutex* mutex;
+ std::mutex _mutex;
  SharedMemory<V> memory;
 };//end class SharedMemoryWriter
 
@@ -71,14 +69,12 @@ template<class V>
 class SharedMemoryReader
 {
 public:
-  SharedMemoryReader() : mutex(NULL)
+  SharedMemoryReader()
   {
-    mutex = g_mutex_new();
   }
 
   ~SharedMemoryReader()
   {
-    g_mutex_free(mutex);
     memory.close();
   }
 
@@ -94,9 +90,8 @@ public:
   template<class T>
   void get(T& data) const 
   { 
-    g_mutex_lock(mutex);
+    std::lock_guard<std::mutex> lock(_mutex);
     memory.reading()->get(data);
-    g_mutex_unlock(mutex);
   }
 
   // delegate
@@ -104,7 +99,7 @@ public:
   inline const V& data() { return *memory.reading(); }
 
 private:
- GMutex* mutex;
+ mutable std::mutex _mutex;
  SharedMemory<V> memory;
 };//end class SharedMemoryReader
 

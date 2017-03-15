@@ -131,7 +131,7 @@ solution "NaoTHSoccer"
     debugdir "$(SolutionDir).."
   
   
-  configuration {"linux", "gmake"}
+  configuration {"Native", "linux", "gmake"}
     -- "position-independent code" needed to compile shared libraries.
     -- In our case it's only the NaoSMAL. So, we probably don't need this one.
     -- Premake4 automatically includes -fPIC if a project is declared as a SharedLib.
