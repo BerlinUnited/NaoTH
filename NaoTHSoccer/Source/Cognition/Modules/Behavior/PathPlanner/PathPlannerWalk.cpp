@@ -64,8 +64,8 @@ void PathPlannerWalk::execute()
                   if (!executed_once) {
                     executed_once = true;
 
-                    if (   foot == 'r' && foot_to_be_used == Right
-                        || foot == 'l' && foot_to_be_used == Left) {
+                    if (   (foot == 'r' && foot_to_be_used == Right)
+                        || (foot == 'l' && foot_to_be_used == Left)) {
                       std::cout << "correcting!" << std::endl;
                       // 30.0 instead of step_size (40.0) because
                       // sometimes that would cause hitting the ball by
