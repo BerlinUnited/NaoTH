@@ -170,7 +170,7 @@ solution "NaoTHSoccer"
     buildoptions {"-Wno-logical-op-parentheses"}
     -- use clang on macOS
     -- NOTE: configuration doesn't affect these settings, they NEED to be in a if
-    if os.is("macosx") then
+    if (os.is("macosx") and _OPTIONS["platform"] ~= "Nao") then
       premake.gcc.cc = 'clang'
       premake.gcc.cxx = 'clang++'
     end
