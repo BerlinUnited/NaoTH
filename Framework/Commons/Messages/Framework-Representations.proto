@@ -88,9 +88,13 @@ message RobotInfo {
 }
 
 message FSRData {
-  repeated double force = 1;
+  repeated double force = 1 [deprecated=true];
   repeated double data = 2;
-  repeated bool valid = 3;
+  repeated bool valid = 3 [deprecated=true];
+  
+  // should we separate them in the future?
+  //repeated double dataLeft = 4;
+  //repeated double dataRight = 5;
 }
 
 message AccelerometerData {

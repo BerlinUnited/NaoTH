@@ -1,3 +1,7 @@
+// TODO: depricated - not used now, do we need it?
+
+
+
 /**
 * @file FootTouchDetector.h
 *
@@ -6,7 +10,7 @@
 */
 
 #ifndef _FOOTTOUCHDETECTOR_H
-#define  _FOOTTOUCHDETECTOR_H
+#define _FOOTTOUCHDETECTOR_H
 
 #include "Tools/LinearClassifier.h"
 #include <Representations/Infrastructure/FSRData.h>
