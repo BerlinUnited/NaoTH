@@ -101,7 +101,7 @@ public class PlayerNumberPanel extends javax.swing.JPanel {
         try {
             playerCfg.readFromFile(new File(configFile, "player.cfg"));
         } catch (IOException ex) {
-            Logger.getGlobal().log(Level.SEVERE, "Could not load player.cfg\n" + ex.getMessage());
+            Logger.getGlobal().log(Level.WARNING, "Could not load player.cfg\n" + ex.getMessage());
             ex.printStackTrace(System.err);
         }
         

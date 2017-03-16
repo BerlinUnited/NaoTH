@@ -30,7 +30,6 @@ import de.naoth.rc.manager.DebugDrawingManager;
 import de.naoth.rc.manager.ImageManagerBottom;
 import de.naoth.rc.core.manager.ObjectListener;
 import de.naoth.rc.dataformats.SPLMessage;
-import de.naoth.rc.drawings.Circle;
 import de.naoth.rc.drawings.FieldDrawingSPL3x4;
 import de.naoth.rc.logmanager.BlackBoard;
 import de.naoth.rc.logmanager.LogDataFrame;
@@ -50,6 +49,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
+import javax.swing.SwingUtilities;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 import org.freehep.graphicsio.emf.EMFExportFileType;
@@ -93,6 +93,9 @@ public class FieldViewer extends AbstractDialog
   private final StrokePlot strokePlot;
 
   private final DrawingsListener drawingsListener = new DrawingsListener();
+  
+  // this is ued as an exportbuffer when the field issaved as image
+  private BufferedImage exportBuffer = null;
   
   // TODO: this is a hack
   private static de.naoth.rc.components.DynamicCanvasPanel canvasExport = null;
@@ -462,12 +465,15 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
       
       long l = java.lang.System.currentTimeMillis();
       File file = new File("./fieldViewerExport-"+l+".png");
-      BufferedImage bi = new BufferedImage(this.fieldCanvas.getWidth(), this.fieldCanvas.getHeight(), BufferedImage.TYPE_INT_ARGB);
-      Graphics2D g2d = bi.createGraphics();
+      
+      if(exportBuffer == null || exportBuffer.getWidth() != this.fieldCanvas.getWidth() || exportBuffer.getHeight() != this.fieldCanvas.getHeight()) {
+        exportBuffer = new BufferedImage(this.fieldCanvas.getWidth(), this.fieldCanvas.getHeight(), BufferedImage.TYPE_INT_ARGB);
+      }
+      Graphics2D g2d = exportBuffer.createGraphics();
       this.fieldCanvas.paintAll(g2d);
       
       try {
-        ImageIO.write(bi, "PNG", file);
+        ImageIO.write(exportBuffer, "PNG", file);
       } catch(IOException ex) {
           ex.printStackTrace(System.err);
       }
@@ -493,7 +499,11 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
         fieldCanvas.repaint();
         
         if(cbExportOnDrawing.isSelected()) {
-            exportCanvasToPNG();
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    exportCanvasToPNG();
+                }
+            });
         }
       }
     }

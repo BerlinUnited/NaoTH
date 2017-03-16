@@ -100,73 +100,82 @@ public class XABSLProtoParser {
     }
 
     public XABSLAction parse(Messages.XABSLActionSparse action_msg) {
-        if (action_msg.getType() == Messages.XABSLActionSparse.ActionType.Option) {
-            Messages.XABSLActiveOptionSparse option_msg = action_msg.getOption();
-            XABSLAction.OptionExecution a = new XABSLAction.OptionExecution();
-
-            a.activeState = option_msg.getActiveState();
-            a.timeOfExecution = option_msg.getTimeOfExecution();
-            a.stateTime = option_msg.getStateTime();
-            a.id = option_msg.getId();
-
-            Option protoOption = this.behavior.options.get(a.id);
-            a.option = new Option(protoOption); // make a shallow copy
-
-            // parse Parameters
-            Iterator<Double> iterDecimal = option_msg.getDecimalParametersList().iterator();
-            Iterator<Boolean> iterBoolean = option_msg.getBooleanParametersList().iterator();
-            Iterator<Integer> iterEnum = option_msg.getEnumeratedParametersList().iterator();
-
-            for(int i = 0; i < a.option.parameters.size(); i++)
+        if (null != action_msg.getType()) switch (action_msg.getType()) {
+            case Option:
             {
-                Symbol symbol = a.option.parameters.get(i);
+                Messages.XABSLActiveOptionSparse option_msg = action_msg.getOption();
+                XABSLAction.OptionExecution a = new XABSLAction.OptionExecution();
                 
-                if(symbol.getDataType() == SymbolType.DECIMAL) {
-                    if(iterDecimal.hasNext()) {
-                        double v = iterDecimal.next().doubleValue();
-                        Symbol.Decimal s = (Symbol.Decimal)symbol;
-                        a.option.parameters.set(i, s.createDecimal(v));
+                a.activeState = option_msg.getActiveState();
+                a.timeOfExecution = option_msg.getTimeOfExecution();
+                a.stateTime = option_msg.getStateTime();
+                a.id = option_msg.getId();
+                
+                Option protoOption = this.behavior.options.get(a.id);
+                a.option = new Option(protoOption); // make a shallow copy
+                
+                // parse Parameters
+                Iterator<Double> iterDecimal = option_msg.getDecimalParametersList().iterator();
+                Iterator<Boolean> iterBoolean = option_msg.getBooleanParametersList().iterator();
+                Iterator<Integer> iterEnum = option_msg.getEnumeratedParametersList().iterator();
+                
+                for(int i = 0; i < a.option.parameters.size(); i++)
+                {
+                    Symbol symbol = a.option.parameters.get(i);
+                    
+                    if(symbol.getDataType() == SymbolType.DECIMAL) {
+                        if(iterDecimal.hasNext()) {
+                            double v = iterDecimal.next();
+                            Symbol.Decimal s = (Symbol.Decimal)symbol;
+                            a.option.parameters.set(i, s.createDecimal(v));
+                        } else {
+                            // todo: exception
+                        }
+                    } else if(symbol.getDataType() == SymbolType.BOOL) {
+                        if(iterBoolean.hasNext()) {
+                            boolean v = iterBoolean.next();
+                            Symbol.Boolean s = (Symbol.Boolean)symbol;
+                            a.option.parameters.set(i, s.createBoolean(v));
+                        }else {
+                            // todo: exception
+                        }
+                    } else if(symbol.getDataType() == SymbolType.ENUM) {
+                        if(iterEnum.hasNext()) {
+                            int v = iterEnum.next();
+                            Symbol.Enum s = (Symbol.Enum)symbol;
+                            a.option.parameters.set(i, s.createEnum(s.enumType, v));
+                        }else {
+                            // todo: exception
+                        }
                     } else {
                         // todo: exception
                     }
-                } else if(symbol.getDataType() == SymbolType.BOOL) {
-                    if(iterBoolean.hasNext()) {
-                        boolean v = iterBoolean.next().booleanValue();
-                        Symbol.Boolean s = (Symbol.Boolean)symbol;
-                        a.option.parameters.set(i, s.createBoolean(v));
-                    }else {
-                        // todo: exception
-                    }
-                } else if(symbol.getDataType() == SymbolType.ENUM) {
-                    if(iterEnum.hasNext()) {
-                        int v = iterEnum.next().intValue();
-                        Symbol.Enum s = (Symbol.Enum)symbol;
-                        a.option.parameters.set(i, s.createEnum(s.enumType, v));
-                    }else {
-                        // todo: exception
-                    }
-                } else {
-                    // todo: exception
                 }
+                
+                for (Messages.XABSLActionSparse sa : option_msg.getActiveSubActionsList()) {
+                    a.activeSubActions.add(parse(sa));
+                }
+                
+                return a;
             }
-
-            for (Messages.XABSLActionSparse sa : option_msg.getActiveSubActionsList()) {
-                a.activeSubActions.add(parse(sa));
+            case SymbolAssignement:
+            {
+                XABSLAction.SymbolAssignement a = new XABSLAction.SymbolAssignement();
+                
+                SymbolKey key = new SymbolKey(parse(action_msg.getSymbol().getType()),
+                    action_msg.getSymbol().getId());
+                
+                a.symbol = parse(behavior.outputSymbols.get(key), action_msg.getSymbol());
+                return a;
             }
-
-            return a;
-        } else if (action_msg.getType() == Messages.XABSLActionSparse.ActionType.SymbolAssignement) {
-            XABSLAction.SymbolAssignement a = new XABSLAction.SymbolAssignement();
-            
-            SymbolKey key = new SymbolKey(parse(action_msg.getSymbol().getType()), 
-                action_msg.getSymbol().getId());
-                    
-            a.symbol = parse(behavior.outputSymbols.get(key), action_msg.getSymbol());
-            return a;
-        } else if (action_msg.getType() == Messages.XABSLActionSparse.ActionType.BasicBehavior) {
-            XABSLAction.BasicBehaviorExecution a = new XABSLAction.BasicBehaviorExecution();
-            a.name = "Some Basic Behavior (not supported yet)";
-            return a;
+            case BasicBehavior:
+            {
+                XABSLAction.BasicBehaviorExecution a = new XABSLAction.BasicBehaviorExecution();
+                a.name = "Some Basic Behavior (not supported yet)";
+                return a;
+            }
+            default:
+                break;
         }
 
         return null;
@@ -202,8 +211,7 @@ public class XABSLProtoParser {
         return this.behavior;
     }
 
-    public Map<SymbolKey, Symbol> parse(
-            Messages.SymbolValueList valueList) {
+    public Map<SymbolKey, Symbol> parse(Messages.SymbolValueList valueList) {
         Map<SymbolKey, Symbol> result = new HashMap<>();
 
         for (Messages.SymbolValueList.DoubleSymbol s_msg : valueList.getDecimalList()) {

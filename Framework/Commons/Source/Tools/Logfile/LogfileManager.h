@@ -3,8 +3,8 @@
  * @author: thomas
  */
 
-#ifndef __LogfileManager_h_
-#define __LogfileManager_h_
+#ifndef _LogfileManager_h_
+#define _LogfileManager_h_
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -37,10 +37,13 @@ public:
    *                       flush() on your own.
    */
   LogfileManager(bool alwaysWriteOut)
-    : alwaysWriteOut(alwaysWriteOut)
+    : 
+    alwaysWriteOut(alwaysWriteOut),
+    writtenBytes(0)
   {
 
   }
+
   ~LogfileManager()
   {
     closeFile();
@@ -51,6 +54,7 @@ public:
     closeFile();
     dataBuffer.clear();
     outFile.open(filePath, ios::out | ios::binary);
+    writtenBytes = 0;
   }
   
   void closeFile()
@@ -101,13 +105,24 @@ public:
       for (int i = length - 1; i >= 0; i--)
       {
         LogfileEntry& e = dataBuffer.getEntry(i);
+        
         outFile.write((const char*)(&e.frameNumber), sizeof(unsigned int));
+        writtenBytes += sizeof(unsigned int);
+
         outFile << e.name << '\0';
+        writtenBytes += e.name.size() + 1;
+
         // size of data block
-        size_t dataSize = e.data.str().size();
+        //size_t dataSize = e.data.str().size();
+        long dataSize = (long)e.data.tellp(); dataSize = dataSize < 0 ? 0 : dataSize;
         outFile.write((const char* ) &dataSize, 4);
+        writtenBytes += 4;
+
         // the data itself
-        outFile.write((const char *) e.data.str().c_str(), dataSize);
+        //outFile.write((const char *) e.data.str().c_str(), dataSize);
+        outFile << e.data.rdbuf();
+        writtenBytes += dataSize;
+        
         // clear string buffer
         e.data.clear();
         e.data.str("");
@@ -120,14 +135,23 @@ public:
     }//end if
   }//end flush
 
+  size_t getWrittentBytesCount() const {
+    return writtenBytes;
+  }
+
+  bool is_ready() const {
+    return outFile.is_open() && !outFile.fail();
+  }
+
 
 private:  
   ofstream outFile;
   RingBuffer<LogfileEntry, maxSize> dataBuffer;
   bool alwaysWriteOut;
+  size_t writtenBytes;
 };
 
-#endif //__LogfileManager_h_
+#endif //_LogfileManager_h_
 
 
 

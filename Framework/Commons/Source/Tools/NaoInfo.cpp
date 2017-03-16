@@ -19,12 +19,16 @@ const double NaoInfo::FSRMinForce = 0;
 const double NaoInfo::FSRMaxForce = 250;// It is 25 in NAO DOC;
 
 
-const Vector3d NaoInfo::FSRPositions[naoth::FSRData::numOfFSR] =
+const Vector3d NaoInfo::FSRPositionsLeft[naoth::FSRData::numOfFSR] =
 {
   Vector3d( 70.1, 30,-46),
   Vector3d( 70.1,-23,-46),
   Vector3d(-30.4, 30,-46),
-  Vector3d(-29.8,-19,-46),
+  Vector3d(-29.8,-19,-46)
+};
+
+const Vector3d NaoInfo::FSRPositionsRight[naoth::FSRData::numOfFSR] =
+{
   Vector3d( 70.1, 23,-46),
   Vector3d( 70.1,-30,-46),
   Vector3d(-29.8, 19,-46),

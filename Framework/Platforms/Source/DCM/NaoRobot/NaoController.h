@@ -20,7 +20,6 @@
 
 //
 #include "V4lCameraHandler.h"
-//#include "SoundPlayer.h"
 #include "SoundControl.h"
 #include "SPLGameController.h"
 #include "DebugCommunication/DebugServer.h"
@@ -31,6 +30,7 @@
 // representations
 #include <Representations/Infrastructure/FrameInfo.h>
 #include "Representations/Infrastructure/TeamMessageData.h"
+#include "Representations/Infrastructure/RemoteMessageData.h"
 #include "Representations/Infrastructure/GameData.h"
 #include "Representations/Infrastructure/SoundData.h"
 #include "Representations/Infrastructure/WhistlePercept.h"
@@ -66,7 +66,6 @@ public:
   // sound
   void set(const SoundPlayData& data) 
   { 
-    //if(data.soundFile.size() > 0) theSoundPlayer.play(data.soundFile); 
     theSoundHandler->setSoundData(data);
   }
 
@@ -74,6 +73,8 @@ public:
   void get(TeamMessageDataIn& data) { theTeamCommListener->receive(data.data); }
   void set(const TeamMessageDataOut& data) { theTeamCommSender->send(data.data); }
 
+  void get(RemoteMessageDataIn& data) { theRemoteCommandListener->receive(data.data); }
+  
   // gamecontroller stuff
   void get(GameData& data){ theGameController->get(data); }
   void set(const GameReturnData& data) { theGameController->set(data); }
@@ -183,10 +184,10 @@ protected:
   //
   V4lCameraHandler theBottomCameraHandler;
   V4lCameraHandler theTopCameraHandler;
-  //SoundPlayer theSoundPlayer;
   SoundControl *theSoundHandler;
   BroadCaster* theTeamCommSender;
   UDPReceiver* theTeamCommListener;
+  UDPReceiver* theRemoteCommandListener;
   SPLGameController* theGameController;
   DebugServer* theDebugServer;
 };

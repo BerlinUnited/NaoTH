@@ -112,20 +112,6 @@ SimSparkController::SimSparkController(const std::string& name)
   theJointMotorNameMap[JointData::RAnklePitch] = "rle5";
   theJointMotorNameMap[JointData::RAnkleRoll] = "rle6";
 
-  if (!g_thread_supported()) {
-    g_thread_init(NULL);
-  }
-
-  theCognitionInputMutex = g_mutex_new();
-  theCognitionOutputMutex = g_mutex_new();
-  theCognitionInputCond = g_cond_new();
-
-  theTimeMutex = g_mutex_new();
-  theTimeCond = g_cond_new();
-  theSensorDataMutex = g_mutex_new();
-  theSensorDataCond = g_cond_new();
-  theActDataMutex = g_mutex_new();
-
   maxJointAbsSpeed = Math::fromDegrees(351.77);
 
   GError *err = NULL;
@@ -133,7 +119,8 @@ SimSparkController::SimSparkController(const std::string& name)
   if (err)
   {
     socket = NULL;
-    g_warning("Could not create a socket. This is a fatal error and communication is available. Error message:\n%s", err->message);
+    std::cout << "[WARN] Could not create a socket. This is a fatal error and communication is available. Error message:"
+              << std::endl << err->message << std::endl;
     g_error_free (err);
   }
 
@@ -143,16 +130,6 @@ SimSparkController::SimSparkController(const std::string& name)
 
 SimSparkController::~SimSparkController()
 {
-  g_mutex_free(theCognitionInputMutex);
-  g_mutex_free(theCognitionOutputMutex);
-  g_cond_free(theCognitionInputCond);
-
-  g_mutex_free(theTimeMutex);
-  g_cond_free(theTimeCond);
-  g_mutex_free(theSensorDataMutex);
-  g_cond_free(theSensorDataCond);
-  g_mutex_free(theActDataMutex);
-
   if (socket != NULL) {
     g_socket_close(socket, NULL);
   }
@@ -224,12 +201,12 @@ bool SimSparkController::connect(const std::string& host, int port)
   }
 
   if(error) {
-    g_warning("Could not connect:\n%s", error->message);
+    std::cout  << "[WARN] Could not connect:" << std::endl << error->message << std::endl;
     g_error_free(error);
   }
 
   if (conn_error) {
-    g_warning("Could not connect:\n%s", conn_error->message);
+    std::cout << "[WARN] Could not connect:" << std::endl << conn_error->message << std::endl;
     g_error_free(conn_error);
   }
 
@@ -245,10 +222,9 @@ bool SimSparkController::init(const std::string& modelPath, const std::string& t
 
   theSync = sync?"(syn)":"";
   theSyncMode = sync;
-  // connect to the simulator
 
-  if(!connect(server, port))
-  {
+  // connect to the simulator
+  if(!connect(server, port)) {
     std::cerr << "SimSparkController could not connect" << std::endl;
     return false;
   }
@@ -356,12 +332,13 @@ void SimSparkController::motionLoop()
 {
   while ( !exiting )
   {
-    g_mutex_lock(theSensorDataMutex);
-    g_cond_wait(theSensorDataCond, theSensorDataMutex);
-    string data = theSensorData;
-    theSensorData = "";
-    g_mutex_unlock(theSensorDataMutex);
-
+    std::string data;
+    {
+      std::unique_lock<std::mutex> lock(theSensorDataMutex);
+      theSensorDataCond.wait(lock);
+      data = theSensorData;
+      theSensorData = "";
+    }
     updateSensors(data);
     PlatformInterface::runMotion();
   }
@@ -388,27 +365,6 @@ void SimSparkController::callCognition()
   }
 }//end callCognition
 
-void* motionLoopWrap(void* c)
-{
-  SimSparkController* ctr = static_cast<SimSparkController*> (c);
-  ctr->motionLoop();
-  return NULL;
-}//end motionLoopWrap
-
-void* senseLoopWrap(void* c)
-{
-  SimSparkController* ctr = static_cast<SimSparkController*> (c);
-  ctr->senseLoop();
-  return NULL;
-}
-
-void* actLoopWrap(void* c)
-{
-  SimSparkController* ctr = static_cast<SimSparkController*> (c);
-  ctr->actLoop();
-  return NULL;
-}
-
 void SimSparkController::senseLoop()
 {
   while( true )
@@ -419,30 +375,33 @@ void SimSparkController::senseLoop()
       break;
     }
 
-    g_mutex_lock(theSensorDataMutex);
-    if ( !theSensorData.empty() )
     {
-      cerr<<"[Warning] the sensor data @ " << theLastSenseTime << " is dropped!"<<endl;
+      std::unique_lock<std::mutex> lock(theSensorDataMutex);
+      if ( !theSensorData.empty() )
+      {
+        cerr<<"[Warning] the sensor data @ " << theLastSenseTime << " is dropped!"<<endl;
+      }
+      theSensorData = data;
     }
-    theSensorData = data;
-    g_mutex_unlock(theSensorDataMutex);
-    g_cond_signal(theTimeCond);
-    g_cond_signal(theSensorDataCond);
+    theTimeCond.notify_one();
+    theSensorDataCond.notify_one();
   }
 
   exiting = true;
-  g_cond_signal(theSensorDataCond); // tell motion to exit
-  g_cond_signal(theTimeCond); // tell act loop to exit
-  g_cond_signal(theCognitionInputCond); // tell cognition to exit
+  theSensorDataCond.notify_one(); // tell motion to exit
+  theTimeCond.notify_one(); // tell act loop to exit
+  theCognitionInputCond.notify_one(); // tell cognition to exit
 }
 
 void SimSparkController::actLoop()
 {
-  while( !exiting ){
-    g_mutex_lock(theTimeMutex);
-    g_cond_wait(theTimeCond, theTimeMutex);
-    calculateNextActTime();
-    g_mutex_unlock(theTimeMutex);
+  while( !exiting )
+  {
+    {
+      std::unique_lock<std::mutex> lock(theTimeMutex);
+      theTimeCond.wait(lock);
+      calculateNextActTime();
+    }
     unsigned int now = NaoTime::getNaoTimeInMilliSeconds();
     if ( theNextActTime > now )
     {
@@ -454,13 +413,13 @@ void SimSparkController::actLoop()
 #endif
     }
     act();
-  }
+  } // end while not exiting
 }
 
 void SimSparkController::act()
 {
   // send command
-  g_mutex_lock(theActDataMutex);
+  std::unique_lock<std::mutex> lock(theActDataMutex);
   try{
     theSocket << theActData.str() << theSync << send;
     theActData.str("");
@@ -470,26 +429,27 @@ void SimSparkController::act()
     cerr<<"can not send data to server, because of "<<exp.what()<<endl;
   }
 
-  g_mutex_unlock(theActDataMutex);
 }
 
 void SimSparkController::multiThreadsMain()
 {
   cout << "SimSpark Controller runs in multi-threads" << endl;
 
-  GThread* senseThread = g_thread_create(senseLoopWrap, this, true, NULL);
-  GThread* actThread = g_thread_create(actLoopWrap, this, true, NULL);
-  GThread* motionThread = g_thread_create(motionLoopWrap, this, true, NULL);
-
-  ASSERT(senseThread != NULL);
-  ASSERT(actThread != NULL);
-  ASSERT(motionThread != NULL);
+  std::thread senseThread = std::thread([this]{this->senseLoop();});
+  std::thread actThread = std::thread([this]{this->actLoop();});
+  std::thread motionThread = std::thread([this]{this->motionLoop();});
 
   cognitionLoop();
 
-  g_thread_join(motionThread);
-  g_thread_join(actThread);
-  g_thread_join(senseThread);
+  if(motionThread.joinable()) {
+    motionThread.join();
+  }
+  if(actThread.joinable()) {
+    actThread.join();
+  }
+  if(senseThread.joinable()) {
+    senseThread.join();
+  }
 }//end multiThreadsMain
 
 void SimSparkController::getMotionInput()
@@ -507,33 +467,32 @@ void SimSparkController::setMotionOutput()
 {
   PlatformInterface::setMotionOutput();
 
-  g_mutex_lock(theActDataMutex);
-  say();
-  autoBeam();
-  jointControl();
-  theActData << theSync;
-  g_mutex_unlock(theActDataMutex);
+  {
+    std::unique_lock<std::mutex> lock(theActDataMutex);
+    say();
+    autoBeam();
+    jointControl();
+    theActData << theSync;
+  }
 }
 
 void SimSparkController::getCognitionInput()
 {
-  g_mutex_lock(theCognitionInputMutex);
+  std::unique_lock<std::mutex> lock(theCognitionInputMutex);
   while (!isNewImage && !isNewVirtualVision && !exiting )
   {
-    g_cond_wait(theCognitionInputCond, theCognitionInputMutex);
+    theCognitionInputCond.wait(lock);
   }
 
   PlatformInterface::getCognitionInput();
   isNewVirtualVision = false;
   isNewImage = false;
-  g_mutex_unlock(theCognitionInputMutex);
 }
 
 void SimSparkController::setCognitionOutput()
 {
-  g_mutex_lock(theCognitionOutputMutex);
+  std::unique_lock<std::mutex> lock(theCognitionOutputMutex);
   PlatformInterface::setCognitionOutput();
-  g_mutex_unlock(theCognitionOutputMutex);
 }
 
 bool SimSparkController::getSensorData(std::string& data)
@@ -561,92 +520,92 @@ bool SimSparkController::updateSensors(std::string& msg)
   pcont = init_continuation(c);
   sexp = iparse_sexp(c, msg.size(), pcont);
 
-  g_mutex_lock(theCognitionInputMutex);
-
-  // clear FSR data, since if there is no FSR data, it means no touch
-  for (int i = 0; i < FSRData::numOfFSR; i++)
   {
-    theFSRData.data[i] = 0;
-  }
+    std::unique_lock<std::mutex> lock(theCognitionInputMutex);
 
-  while(sexp)
-  {
-    const sexp_t* t = sexp->list;
-    if (SexpParser::isVal(t))
+    // clear FSR data, since if there is no FSR data, it means no touch
+    for (int i = 0; i < FSRData::numOfFSR; i++)
     {
-      bool ok = true;
-      string name(t->val);
-      if ("HJ" == name) { ok = updateHingeJoint(t->next); }
-      else if ("FRP" == name) { ok = updateFSR(t->next); }
-      else if ("BottomCamera" == name || "See" == name)
-      {
-        theVirtualVision.clear();
-        ok = updateSee(theVirtualVision, t->next);
-        if ( ok ) { 
-          isNewVirtualVision = true;
-        }
-        
-        //HACK: assume the image is behind of "See"
-        int offset = paseImage(pcont->lastPos);
-        pcont->lastPos = &(pcont->lastPos[offset]);
-        isNewImage = offset > 0;
-      }
-      else if ("TopCamera" == name)
-      {
-        theVirtualVisionTop.clear();
-        ok = updateSee(theVirtualVisionTop, t->next);
-        if ( ok ) {
-          isNewVirtualVision = true;
-        }
-      }
-      else if ("time" == name)
-      {
-        ok = SexpParser::parseGivenValue(t->next, "now", theSenseTime); // time
-        theStepTime = theSenseTime - lastSenseTime;
-        theFrameInfo.setTime( static_cast<unsigned int>(theSenseTime * 1000.0) );
-        if ( static_cast<unsigned int>(theStepTime*100)*10 > getBasicTimeStep() ) {
-          cerr<<"warning: the step is "<<theStepTime<<" s"<<endl;
-        }
-      } 
-      else if ("GYR" == name) { ok = updateGyro(t->next); } // gyro rate
-      else if ("ACC" == name) { ok = updateAccelerometer(t->next); }
-      else if ("GS" == name) { ok = updateGameInfo(t->next); } // game state
-      else if ("hear" == name) { ok = hear(t->next); } // hear
-      else if ("IMU" == name) { ok = updateIMU(t->next); } // interial sensor data
-      else if ("IMG" == name)
-      {
-        // HACK: image parsing is very slow in Windows
-        // thus we parse the image separately (cf. the case "See")
-        //ok = updateImage(t->next); // image from camera
-        //if (ok) isNewImage = true;
-      }
-      else if ("GPS" == name) { ok = updateGPS(t->next); }
-      else if ("BAT" == name) { ok = updateBattery(t->next); }
-      else 
-      {
-        if( ignore.find(name) == ignore.end() ) // new unknown message
-        {
-          cerr << "[SimSparkController] Perception unknow name: " << name << endl;
-          ignore.insert(name);
-        }
-      }
-      
-      if (!ok) {
-        cerr << "[SimSparkController] Perception update failed: " << name << endl;
-        return false;
-      }
+      theFSRData.data[i] = 0;
     }
-    destroy_sexp(sexp);
-    sexp = iparse_sexp(c, msg.size(), pcont);
-  }//end while
 
-  updateInertialSensor();
+    while(sexp)
+    {
+      const sexp_t* t = sexp->list;
+      if (SexpParser::isVal(t))
+      {
+        bool ok = true;
+        string name(t->val);
+        if ("HJ" == name) { ok = updateHingeJoint(t->next); }
+        else if ("FRP" == name) { ok = updateFSR(t->next); }
+        else if ("BottomCamera" == name || "See" == name)
+        {
+          theVirtualVision.clear();
+          ok = updateSee(theVirtualVision, t->next);
+          if ( ok ) {
+            isNewVirtualVision = true;
+          }
 
-  if ( isNewImage || isNewVirtualVision ){
-    g_cond_signal(theCognitionInputCond);
+          //HACK: assume the image is behind of "See"
+          int offset = paseImage(pcont->lastPos);
+          pcont->lastPos = &(pcont->lastPos[offset]);
+          isNewImage = offset > 0;
+        }
+        else if ("TopCamera" == name)
+        {
+          theVirtualVisionTop.clear();
+          ok = updateSee(theVirtualVisionTop, t->next);
+          if ( ok ) {
+            isNewVirtualVision = true;
+          }
+        }
+        else if ("time" == name)
+        {
+          ok = SexpParser::parseGivenValue(t->next, "now", theSenseTime); // time
+          theStepTime = theSenseTime - lastSenseTime;
+          theFrameInfo.setTime( static_cast<unsigned int>(theSenseTime * 1000.0) );
+          if ( static_cast<unsigned int>(theStepTime*100)*10 > getBasicTimeStep() ) {
+            cerr<<"warning: the step is "<<theStepTime<<" s"<<endl;
+          }
+        }
+        else if ("GYR" == name) { ok = updateGyro(t->next); } // gyro rate
+        else if ("ACC" == name) { ok = updateAccelerometer(t->next); }
+        else if ("GS" == name) { ok = updateGameInfo(t->next); } // game state
+        else if ("hear" == name) { ok = hear(t->next); } // hear
+        else if ("IMU" == name) { ok = updateIMU(t->next); } // interial sensor data
+        else if ("IMG" == name)
+        {
+          // HACK: image parsing is very slow in Windows
+          // thus we parse the image separately (cf. the case "See")
+          //ok = updateImage(t->next); // image from camera
+          //if (ok) isNewImage = true;
+        }
+        else if ("GPS" == name) { ok = updateGPS(t->next); }
+        else if ("BAT" == name) { ok = updateBattery(t->next); }
+        else
+        {
+          if( ignore.find(name) == ignore.end() ) // new unknown message
+          {
+            cerr << "[SimSparkController] Perception unknow name: " << name << endl;
+            ignore.insert(name);
+          }
+        }
+
+        if (!ok) {
+          cerr << "[SimSparkController] Perception update failed: " << name << endl;
+          return false;
+        }
+      }
+      destroy_sexp(sexp);
+      sexp = iparse_sexp(c, msg.size(), pcont);
+    }//end while
+
+    updateInertialSensor();
+
+    if ( isNewImage || isNewVirtualVision ){
+      theCognitionInputCond.notify_one();
+    }
   }
-  g_mutex_unlock(theCognitionInputMutex);
-
   destroy_sexp(sexp);
   destroy_continuation(pcont);
 
@@ -1326,13 +1285,18 @@ void SimSparkController::get(VirtualVisionTop& data)
 
 void SimSparkController::get(GameData& data)
 {
+  data.valid = theGameInfo.valid;
+
   if ( theGameInfo.valid )
   {
     data.gameState = theGameInfo.gameState;
     data.secsRemaining = theGameInfo.getRemainingTimeInHalf();
 
+    data.newPlayerNumber = theGameInfo.playerNumber;
+
     data.ownTeam.teamNumber = theGameInfo.getTeamNumber();
     data.ownTeam.teamColour = theGameInfo.getTeamColor();
+    data.ownTeam.players.resize(theGameInfo.playersPerTeam);
 
     // todo set opponent team info
 
@@ -1457,12 +1421,14 @@ void SimSparkController::say()
     return;
   }
 
-  if ( g_mutex_trylock(theCognitionOutputMutex) )
   {
-    if (!theTeamMessageDataOut.data.empty()) {
-      theActData << "(say " << theTeamMessageDataOut.data << ")";
+    std::unique_lock<std::mutex> lock(theCognitionOutputMutex, std::try_to_lock);
+    if (lock.owns_lock())
+    {
+      if (!theTeamMessageDataOut.data.empty()) {
+        theActData << "(say " << theTeamMessageDataOut.data << ")";
+      }
     }
-    g_mutex_unlock(theCognitionOutputMutex);
   }
 }
 

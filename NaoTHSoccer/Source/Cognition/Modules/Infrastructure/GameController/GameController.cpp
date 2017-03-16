@@ -13,6 +13,7 @@ GameController::GameController()
   DEBUG_REQUEST_REGISTER("gamecontroller:initial", "force the initial state", false);
   DEBUG_REQUEST_REGISTER("gamecontroller:ready", "force the ready state", false);
   DEBUG_REQUEST_REGISTER("gamecontroller:set", "force the set state", false);
+  DEBUG_REQUEST_REGISTER("gamecontroller:finished", "force the finished state", false);
 
   // TODO: make it parameters?
   // load values from config
@@ -68,6 +69,11 @@ void GameController::execute()
   // try update from the game controller message
   if ( getGameData().valid ) 
   {
+    // HACK: needed by SimSpark - overide the player number
+    if(getGameData().newPlayerNumber > 0) {
+      getPlayerInfo().playerNumber = getGameData().newPlayerNumber;
+    }
+
     getPlayerInfo().update(getGameData());
 
     // reset return message if old message was accepted
@@ -139,6 +145,9 @@ void GameController::handleDebugRequest()
   );
   DEBUG_REQUEST("gamecontroller:penalized",
     debugState = PlayerInfo::penalized;
+  );
+  DEBUG_REQUEST("gamecontroller:finished",
+    debugState = PlayerInfo::finished;
   );
 
   // NOTE: same behavior as the button interface

@@ -47,6 +47,7 @@ void Sensor::init(naoth::ProcessInterface& platformInterface, const naoth::Platf
   
   REG_INPUT(GPSData);
   REG_INPUT(TeamMessageDataIn);
+  REG_INPUT(RemoteMessageDataIn);
   REG_INPUT(GameData);
   REG_INPUT(DebugMessageInCognition);
 
@@ -59,6 +60,7 @@ void Sensor::init(naoth::ProcessInterface& platformInterface, const naoth::Platf
   platformInterface.registerInputChanel(getCalibrationData());
   platformInterface.registerInputChanel(getInertialModel());
   platformInterface.registerInputChanel(getBodyStatus());
+  platformInterface.registerInputChanel(getGroundContactModel());
 }//end init
 
 
@@ -68,6 +70,14 @@ void Sensor::execute()
   //getInertialPercept().data = getInertialSensorData().data + getCalibrationData().inertialSensorOffset;
 
   GT_TRACE("Sensor:execute() end");
+
+  // TODO: this needs to be cleaned up together with the whole debug network communication infrastructure
+  // EVIL HACK: expect that only RemoteControlCommand are sent though RemoteMessageDataIn
+  // read only the last message
+  if (getRemoteMessageDataIn().data.size() > 0 ) {
+    std::stringstream ss(getRemoteMessageDataIn().data.back());
+    Serializer<RemoteControlCommand>::deserialize(ss, getRemoteControlCommand());
+  }
 
 }//end execute
 

@@ -131,8 +131,8 @@ public class DebugRequestPanel extends AbstractDialog
     if (btRefresh.isSelected())
     {
       if (Plugin.parent.checkConnected()) {
-        Plugin.commandExecutor.executeCommand(debugRequestUpdaterCognition, new Command("Cognition:representation:getbinary").addArg("DebugRequest"));
-        Plugin.commandExecutor.executeCommand(debugRequestUpdaterMotion, new Command("Motion:representation:getbinary").addArg("DebugRequest"));
+        Plugin.commandExecutor.executeCommand(debugRequestUpdaterCognition, new Command("Cognition:representation:get").addArg("DebugRequest"));
+        Plugin.commandExecutor.executeCommand(debugRequestUpdaterMotion, new Command("Motion:representation:get").addArg("DebugRequest"));
       } else {
         btRefresh.setSelected(false);
         btUpdate.setSelected(false);
@@ -144,8 +144,8 @@ public class DebugRequestPanel extends AbstractDialog
         if (btUpdate.isSelected())
         {
           if (Plugin.parent.checkConnected()) {
-            Plugin.commandExecutor.executeCommand(debugRequestUpdaterCognition, new Command("Cognition:representation:getbinary").addArg("DebugRequest"));
-            Plugin.commandExecutor.executeCommand(debugRequestUpdaterMotion, new Command("Motion:representation:getbinary").addArg("DebugRequest"));
+            Plugin.commandExecutor.executeCommand(debugRequestUpdaterCognition, new Command("Cognition:representation:get").addArg("DebugRequest"));
+            Plugin.commandExecutor.executeCommand(debugRequestUpdaterMotion, new Command("Motion:representation:get").addArg("DebugRequest"));
           } else {
             btRefresh.setSelected(false);
             btUpdate.setSelected(false);

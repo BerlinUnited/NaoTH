@@ -22,6 +22,7 @@ NaoController::NaoController()
     theSoundHandler(NULL),
     theTeamCommSender(NULL),
     theTeamCommListener(NULL),
+    theRemoteCommandListener(NULL),
     theDebugServer(NULL)
 {
   // init shared memory
@@ -96,6 +97,8 @@ NaoController::NaoController()
   // teamcomm
   registerInput<TeamMessageDataIn>(*this);
   registerOutput<const TeamMessageDataOut>(*this);
+  
+  registerInput<RemoteMessageDataIn>(*this);
 
   // debug comm
   registerInput<DebugMessageInCognition>(*this);
@@ -130,7 +133,6 @@ NaoController::NaoController()
   Platform::getInstance().init(this);
 
   std::cout << "[NaoController] " << "Init SoundHandler" <<endl;
-  //theSoundPlayer.play("penalized");
   theSoundHandler = new SoundControl();
 
   // create the teamcomm
@@ -145,6 +147,8 @@ NaoController::NaoController()
   config.get("teamcomm", "port", teamcomm_port);
   theTeamCommSender = new BroadCaster(interfaceName, teamcomm_port);
   theTeamCommListener = new UDPReceiver(teamcomm_port, TEAMCOMM_MAX_MSG_SIZE);
+  
+  theRemoteCommandListener = new UDPReceiver(10401, 4096);
 
   // start the debug server at the default debug port
   std::cout << "[NaoController] " << "Init DebugServer" << endl;
