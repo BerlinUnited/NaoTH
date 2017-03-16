@@ -1,4 +1,4 @@
-import math2d as m2d
+from naoth import math2d as m2d
 import math
 import field_info as field
 

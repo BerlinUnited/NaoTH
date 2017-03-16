@@ -1,4 +1,4 @@
-import math2d as m2d
+from naoth import math2d as m2d
 
 ball_radius = 100
 

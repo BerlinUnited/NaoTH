@@ -1,7 +1,7 @@
 import math
 from tools import action as a
 from tools import Simulation as Sim
-from tools import math2d as m2d
+from naoth  import math2d as m2d
 from tools import field_info as field
 
 

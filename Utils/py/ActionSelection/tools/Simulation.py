@@ -3,7 +3,7 @@ import numpy as np
 import action as a
 import field_info as field
 import potential_field as pf
-import math2d as m2d
+from naoth import math2d as m2d
 
 
 def simulate_consequences(action, categorized_ball_positions, state):

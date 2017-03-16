@@ -1,7 +1,7 @@
 from __future__ import division
 import numpy as np
 import math
-import math2d as m2d
+from naoth import math2d as m2d
 
 num_particles = 30
 friction = 0.0275
