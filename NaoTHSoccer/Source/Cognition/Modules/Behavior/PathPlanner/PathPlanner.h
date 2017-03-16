@@ -1,9 +1,9 @@
 /**
-* @file PathPlanner.h
-*
-* @author <a href="mailto:akcayyig@hu-berlin.de">Yigit Can Akcay</a>
-* Definition of class PathPlanner
-*/
+ * @file PathPlanner.h
+ *
+ * @author <a href="mailto:akcayyig@hu-berlin.de">Yigit Can Akcay</a>
+ * Definition of class PathPlanner
+ */
 
 #ifndef _PathPlanner_H_
 #define _PathPlanner_H_
@@ -29,22 +29,22 @@
 #include "Tools/Debug/DebugModify.h"
 
 BEGIN_DECLARE_MODULE(PathPlanner)
-  PROVIDE(DebugRequest)
-  PROVIDE(DebugModify)
+PROVIDE(DebugRequest)
+PROVIDE(DebugModify)
 
-  REQUIRE(FrameInfo)
-  REQUIRE(FieldInfo)
-  REQUIRE(MotionStatus)
-  REQUIRE(BallPercept)
-  REQUIRE(BallPerceptTop)
-  REQUIRE(MultiBallPercept)
-  PROVIDE(BallModel)
-  REQUIRE(OdometryData)
+REQUIRE(FrameInfo)
+REQUIRE(FieldInfo)
+REQUIRE(MotionStatus)
+REQUIRE(BallPercept)
+REQUIRE(BallPerceptTop)
+REQUIRE(MultiBallPercept)
+PROVIDE(BallModel)
+REQUIRE(OdometryData)
 
-  PROVIDE(PathModel)
+PROVIDE(PathModel)
 
-  PROVIDE(HeadMotionRequest)
-  PROVIDE(MotionRequest)
+PROVIDE(HeadMotionRequest)
+PROVIDE(MotionRequest)
 END_DECLARE_MODULE(PathPlanner)
 
 class PathPlanner: public PathPlannerBase
@@ -55,16 +55,40 @@ public:
 
   virtual void execute();
 
-  void goToBall(double distance, double yOffset);
-  void moveAroundBall(double direction, double radius);
-  void fastForwardKick();
-  void kickWithFoot();
-  void sidekick();
-  
-  // Helping functions
-  void lookAtBall();
-  
+  void execute_step_list();
+
 private:
+  struct Step {
+    double x;
+    double y;
+    double rotation;
+    double character;
+  };
+  std::vector<Step> step_list;
+
+  enum Foot
+  {
+    Right,
+    Left
+  };
+  // used to alternate between left and right foot when walking
+  // inside execute_steplist()
+  // everywhere else, indicates the last foot that has been moved
+  Foot foot_to_be_used;
+
+  unsigned int last_stepcontrol_stepID;
+
+  void stand();
+  void look_at_ball();
+
+  double towards_ball(const char x_or_y);
+  double towards_ball(const char x_or_y, const char for_left_or_right_foot);
+  char find_foot_with(std::size_t approximate_steps_to_ball);
+
+  void add(PathPlanner::Step step);
+  void pop_step();
+  PathPlanner::Step new_step(double x, double y, double rotation);
+  PathPlanner::Step new_step(double x, double y, double rotation, double character);
 };
 
 #endif // _PathPlanner_H_
