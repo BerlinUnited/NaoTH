@@ -180,6 +180,7 @@ char PathPlanner::find_foot_with(const std::size_t approximate_steps_to_ball) {
 void PathPlanner::execute_step_list() {
   if (step_list.size() > 0) {
     getMotionRequest().walkRequest.stepControl.stepID = getMotionStatus().stepControl.stepID;
+    std::cout << "getMotionStatus().stepControl.stepID = " << getMotionStatus().stepControl.stepID << std::endl;
 
     getMotionRequest().id                                           = motion::walk;
     getMotionRequest().standardStand                                = false;
@@ -209,7 +210,7 @@ void PathPlanner::execute_step_list() {
       getMotionRequest().walkRequest.stepControl.moveLeftFoot = true; // false = right foot
     }
   } else {
-    //stand();  // <-- bad for debugging, probably good for "production"
+    stand();  // <-- bad for debugging, probably good for "production"
   }
 
   if (getMotionStatus().stepControl.stepID < last_stepcontrol_stepID) {
