@@ -520,14 +520,13 @@ bool SimSparkController::updateSensors(std::string& msg)
   pcont = init_continuation(c);
   sexp = iparse_sexp(c, msg.size(), pcont);
 
-  {
-    std::unique_lock<std::mutex> lock(theCognitionInputMutex);
+  std::unique_lock<std::mutex> lock(theCognitionInputMutex);
 
-    // clear FSR data, since if there is no FSR data, it means no touch
-    for (int i = 0; i < FSRData::numOfFSR; i++)
-    {
-      theFSRData.data[i] = 0;
-    }
+  // clear FSR data, since if there is no FSR data, it means no touch
+  for (int i = 0; i < FSRData::numOfFSR; i++) {
+    theFSRData.dataLeft[i] = 0;
+    theFSRData.dataRight[i] = 0;
+  }
 
     while(sexp)
     {
@@ -605,7 +604,7 @@ bool SimSparkController::updateSensors(std::string& msg)
     if ( isNewImage || isNewVirtualVision ){
       theCognitionInputCond.notify_one();
     }
-  }
+  
   destroy_sexp(sexp);
   destroy_continuation(pcont);
 
@@ -1045,33 +1044,40 @@ bool SimSparkController::updateFSR(const sexp_t* sexp)
     return false;
   }
 
+  const FSRData::SensorID id0 = FSRData::RearLeft;
+  const FSRData::SensorID id1 = FSRData::RearRight;
+  const FSRData::SensorID id2 = FSRData::FrontLeft;
+  const FSRData::SensorID id3 = FSRData::FrontRight;
+  
+  double f = F[2] / 4;
+  double fx = f * ( C[1]*1000 + 30);
+  double fy = f * (-C[0]*1000);
 
-  FSRData::FSRID id0, id1, id2, id3;
   if ("lf" == name)
   {
-    id0 = FSRData::LFsrBL;
-    id1 = FSRData::LFsrBR;
-    id2 = FSRData::LFsrFL;
-    id3 = FSRData::LFsrFR;
-  } else if ("rf" == name)
+    const Vector3d* positions = NaoInfo::FSRPositionsLeft;
+    std::vector<double>& values = theFSRData.dataLeft;
+
+    calFSRForce(f, fx, fy, positions, values, id0, id1, id2);
+    calFSRForce(f, fx, fy, positions, values, id1, id2, id3);
+    calFSRForce(f, fx, fy, positions, values, id2, id3, id0);
+    calFSRForce(f, fx, fy, positions, values, id3, id0, id1);
+  } 
+  else if ("rf" == name)
   {
-    id0 = FSRData::RFsrBL;
-    id1 = FSRData::RFsrBR;
-    id2 = FSRData::RFsrFL;
-    id3 = FSRData::RFsrFR;
-  } else
+    const Vector3d* positions = NaoInfo::FSRPositionsRight;
+    std::vector<double>& values = theFSRData.dataRight;
+
+    calFSRForce(f, fx, fy, positions, values, id0, id1, id2);
+    calFSRForce(f, fx, fy, positions, values, id1, id2, id3);
+    calFSRForce(f, fx, fy, positions, values, id2, id3, id0);
+    calFSRForce(f, fx, fy, positions, values, id3, id0, id1);
+  } 
+  else
   {
     cerr << "unknow ForceResistancePerceptor name: " << name << endl;
     return false;
   }
-
-  double f = F[2] / 4;
-  double fx = f * (C[1]*1000 + 30);
-  double fy = f * (-C[0]*1000);
-  calFSRForce(f, fx, fy, id0, id1, id2);
-  calFSRForce(f, fx, fy, id1, id2, id3);
-  calFSRForce(f, fx, fy, id2, id3, id0);
-  calFSRForce(f, fx, fy, id3, id0, id1);
 
   return true;
 }
@@ -1082,12 +1088,16 @@ Vector3d SimSparkController::decomposeForce(double f, double fx, double fy, cons
   return A.invert() * Vector3d(f, fx, fy);
 }
 
-void SimSparkController::calFSRForce(double f, double x, double y, FSRData::FSRID id0, FSRData::FSRID id1, FSRData::FSRID id2)
+void SimSparkController::calFSRForce(
+  double f, double x, double y,
+  const Vector3d* positions,
+  std::vector<double>& values,
+  FSRData::SensorID id0, FSRData::SensorID id1, FSRData::SensorID id2)
 {
-  Vector3d F = decomposeForce(f, x, y, NaoInfo::FSRPositions[id0], NaoInfo::FSRPositions[id1], NaoInfo::FSRPositions[id2]);
-  theFSRData.data[id0] += F.x;
-  theFSRData.data[id1] += F.y;
-  theFSRData.data[id2] += F.z;
+  Vector3d F = decomposeForce(f, x, y, positions[id0], positions[id1], positions[id2]);
+  values[id0] += F.x;
+  values[id1] += F.y;
+  values[id2] += F.z;
 }
 
 bool SimSparkController::updateSee(VirtualVision& virtualVision, const sexp_t* sexp)
@@ -1261,10 +1271,6 @@ void SimSparkController::get(GyrometerData& data)
 
 void SimSparkController::get(FSRData& data)
 {
-  for (int i = 0; i < FSRData::numOfFSR; i++)
-  {
-    theFSRData.force[i] = Math::clamp(theFSRData.data[i], 0.0, 25.0);
-  }
   data = theFSRData;
 }
 
