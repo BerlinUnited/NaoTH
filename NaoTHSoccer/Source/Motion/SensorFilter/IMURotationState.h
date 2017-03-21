@@ -1,7 +1,7 @@
 #ifndef IMUROTATIONSTATE_H
 #define IMUROTATIONSTATE_H
 
-#include <Tools/naoth_eigen.h>
+#include "Tools/Filters/KalmanFilter/UnscentedKalmanFilter/UKFStateRotationBase.h"
 
 // TODO: remove pragma
 #pragma GCC diagnostic ignored "-Wconversion"
@@ -10,100 +10,45 @@
 #pragma GCC diagnostic pop
 
 // state in global reference frame
-template <int dim_state, int dim_state_cov, class M>
-class State : public Eigen::Matrix<double,dim_state,1> {
+template <class M, int dim, int dim_cov = dim, int rotation_index = 0>
+class State : public UKFStateRotationBase<State<M, dim, dim_cov>, rotation_index, dim>{
     public: // constructors
         // This constructor allows you to construct MyVectorType from Eigen expressions
         template<typename OtherDerived>
         State(const Eigen::MatrixBase<OtherDerived>& other)
-            : Eigen::Matrix<double,dim_state,1>(other)
+            : UKFStateRotationBase<State<M, dim, dim_cov>, rotation_index, dim>(other)
         { }
 
+        // inital state (zero rotation, zero angular velocity)
+        State(): UKFStateRotationBase<State<M, dim, dim_cov>, rotation_index, dim>(){
+        }
+
+        // "down casting"
+        State(const UKFStateRotationBase<State<M, dim, dim_cov>, rotation_index, dim>& other):
+            UKFStateRotationBase<State<M, dim, dim_cov>, rotation_index, dim>(other)
+        {}
+
+    public: // operators
         // This method allows you to assign Eigen expressions to MyVectorType
+        // TODO: needed?
         template<typename OtherDerived>
         State& operator=(const Eigen::MatrixBase <OtherDerived>& other)
         {
-            this->Eigen::Matrix<double,dim_state,1>::operator=(other);
+            this->UKFStateRotationBase<State<M, dim, dim_cov>, rotation_index, dim>::operator=(other);
             return *this;
-        }
-
-        // inital state (zero rotation, zero angular velocity)
-        State(): Eigen::Matrix<double,dim_state,1>(Eigen::Matrix<double,dim_state,1>::Zero()){
         }
 
     public: // accessors
-        Eigen::Block<Eigen::Matrix<double,dim_state,1> > rotation(){
-            return Eigen::Block<Eigen::Matrix<double,dim_state,1> >(this->derived(), 0, 0, 3, 1);
+
+        Eigen::Block<Eigen::Matrix<double,dim,1> > rotational_velocity(){
+            return UKFStateRotationBase<State<M, dim, dim_cov>, rotation_index, dim>::accessElements(3,0,3,1);
         }
 
-        const Eigen::Block<const Eigen::Matrix<double,dim_state,1> > rotation() const{
-            return Eigen::Block<const Eigen::Matrix<double,dim_state,1> >(this->derived(), 0, 0, 3, 1);
+        Eigen::Block<Eigen::Matrix<double,dim,1> > bias_rotational_velocity(){
+            return UKFStateRotationBase<State<M, dim, dim_cov>, rotation_index, dim>::accessElements(6,0,3,1);
         }
 
-        Eigen::Quaterniond getRotationAsQuaternion() const {
-            Eigen::Vector3d   rot(rotation());
-            Eigen::AngleAxisd rot2;
-            if(rot.norm() > 0){
-                rot2 = Eigen::AngleAxisd(rot.norm(), rot.normalized());
-            } else {
-                rot2 = Eigen::AngleAxisd(0, Eigen::Vector3d::UnitX());
-            }
-            return Eigen::Quaterniond(rot2);
-        }
-
-        Eigen::Block<Eigen::Matrix<double,dim_state,1> > rotational_velocity(){
-            return Eigen::Block<Eigen::Matrix<double,dim_state,1> >(this->derived(), 3, 0, 3, 1);
-        }
-
-        Eigen::Block<Eigen::Matrix<double,dim_state,1> > bias_rotational_velocity(){
-            return Eigen::Block<Eigen::Matrix<double,dim_state,1> >(this->derived(), 6, 0, 3, 1);
-        }
-
-        // unary operator
-        State operator-() const{
-            State temp = *this;
-            Eigen::Quaterniond temp_rotation = temp.getRotationAsQuaternion();
-
-            // invert directions
-            temp = Eigen::Matrix<double, dim_state,1>::operator-();
-
-            // replace with correct inverse rotation
-            Eigen::AngleAxisd rot(temp_rotation.inverse());
-            temp.rotation() = rot.angle()*rot.axis();
-
-            return temp;
-        }
-
-        // binary operators
-        State operator-(const State& other) const{
-            State temp(*this);
-            temp -= other;
-            return temp;
-        }
-
-        State& operator -=(const State& other){
-            *this += -other;
-            return *this;
-        }
-
-        State operator+(const State& other) const{
-            State temp(*this);
-            temp += other;
-            return temp;
-        }
-
-        // add other to this state, i.e., the resulting rotation describes a rotation which rotates at first by "other" and then by "this"
-        // eigen vectorization and alignment problem: other should be a reference
-        State& operator +=(const State& other){
-            Eigen::Quaterniond temp_rotation = this->getRotationAsQuaternion() * other.getRotationAsQuaternion();
-            Eigen::Matrix<double,dim_state,1>::operator+=(other);
-
-            // replace with correct rotation
-            Eigen::AngleAxisd rot(temp_rotation);
-            this->rotation() = rot.angle() * rot.axis();
-
-            return *this;
-        }
+    public:
 
         // functions requiered by the unscented kalman filter
         // TODO: should these functions be part of the filter?
@@ -122,7 +67,7 @@ class State : public Eigen::Matrix<double,dim_state,1> {
 
             // continue rotation assuming constant velocity
             // TODO: compare with rotation_increment*rotation which sounds more reasonable
-            Eigen::Quaterniond new_rotation = getRotationAsQuaternion() * rotation_increment; // follows paper
+            Eigen::Quaterniond new_rotation = this->getRotationAsQuaternion() * rotation_increment; // follows paper
             Eigen::AngleAxisd  new_angle_axis(new_rotation);
 
             this->rotation() = new_angle_axis.angle() * new_angle_axis.axis();
@@ -139,7 +84,7 @@ class State : public Eigen::Matrix<double,dim_state,1> {
 
             // determine rotation around x and y axis
             Eigen::Quaterniond q;
-            q.setFromTwoVectors(getRotationAsQuaternion().inverse()._transformVector(Eigen::Vector3d(0,0,-1)),Eigen::Vector3d(0,0,-1));
+            q.setFromTwoVectors(this->getRotationAsQuaternion().inverse()._transformVector(Eigen::Vector3d(0,0,-1)),Eigen::Vector3d(0,0,-1));
             Eigen::AngleAxisd temp(q);
             Eigen::Vector3d   rotation_in_measurement_space(temp.angle() * temp.axis());
 

@@ -76,15 +76,6 @@ void IMUModel::writeIMUData(){
     // from inertiasensorfilter
     getIMUData().orientation = Vector2d(atan2(q.toRotationMatrix()(2,1),  q.toRotationMatrix()(2,2)),
                                         atan2(-q.toRotationMatrix()(2,0), q.toRotationMatrix()(2,2)));
-
-//    Eigen::Vector3d new_z = q._transformVector(Eigen::Vector3d(0,0,1));
-//    Eigen::Vector3d temp;
-
-//    temp << 0, new_z(1), new_z(2);
-//    getIMUData().orientation.x = std::acos(1/temp.norm()*(temp.transpose()*Eigen::Vector3d(0,0,1))(0,0));
-
-//    temp << new_z(0), 0, new_z(2);
-//    getIMUData().orientation.y = std::acos(1/temp.norm()*(temp.transpose()*Eigen::Vector3d(0,0,1))(0,0));
 }
 
 void IMUModel::plots(){
