@@ -21,7 +21,6 @@ Walk::Walk() : IKMotion(getInverseKinematicsMotionEngineService(), motion::walk,
   
 void Walk::execute()
 {
-  std::cout << "stepBuffer.stepId() = " << stepBuffer.stepId() << std::endl;
   // check the integrity 
   getMotionRequest().walkRequest.assertValid();
 
@@ -199,8 +198,7 @@ void Walk::calculateNewStep(const Step& lastStep, Step& newStep, const WalkReque
   // STABILIZATION
   bool do_emergency_stop = com_errors.size() == com_errors.getMaxEntries() && com_errors.getAverage() > parameters().stabilization.emergencyStopError;
   if ( getMotionRequest().id != getId() || do_emergency_stop
-      //|| walkRequest.stepControl.stepID + 1 != stepBuffer.stepId())
-      )
+      || walkRequest.stepControl.stepID + 1 != stepBuffer.stepId())
   {
     // try to make a last step to align the feet if it is required
     if ( getMotionRequest().standardStand) {

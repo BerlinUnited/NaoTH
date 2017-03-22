@@ -85,13 +85,6 @@ void PathPlanner::execute()
                 );
 }
 
-void PathPlanner::stand() {
-  getMotionRequest().id = motion::stand;
-  getMotionRequest().standardStand = true;
-  getMotionRequest().walkRequest.stepControl.target.translation.x = 0.0;
-  getMotionRequest().walkRequest.stepControl.target.translation.y = 0.0;
-  getMotionRequest().walkRequest.stepControl.target.rotation      = 0.0;
-}
 void PathPlanner::look_at_ball()
 {
   if (getBallPercept().ballWasSeen || getBallPerceptTop().ballWasSeen)
@@ -110,11 +103,7 @@ void PathPlanner::look_at_ball()
   }
 }
 
-void PathPlanner::add(PathPlanner::Step step) {
-  if (step_list.size() == 0) {
-    step_list.push_back(step);
-  }
-}
+
 PathPlanner::Step PathPlanner::new_step(double x,
                                                 double y,
                                                 double rotation) {
@@ -127,6 +116,11 @@ PathPlanner::Step PathPlanner::new_step(double x,
                                                 double character) {
   Step newStep = {x, y, rotation, character};
   return newStep;
+}
+void PathPlanner::add(PathPlanner::Step step) {
+  if (step_list.size() == 0) {
+    step_list.push_back(step);
+  }
 }
 void PathPlanner::pop_step() {
   assert(!step_list.empty());
@@ -179,8 +173,13 @@ char PathPlanner::find_foot_with(const std::size_t approximate_steps_to_ball) {
 
 void PathPlanner::execute_step_list() {
   if (step_list.size() > 0) {
-    getMotionRequest().walkRequest.stepControl.stepID = getMotionStatus().stepControl.stepID;
-    std::cout << "getMotionStatus().stepControl.stepID = " << getMotionStatus().stepControl.stepID << std::endl;
+    if (getMotionRequest().id == motion::stand) {
+      // give a small head start for the first step, otherwise
+      // zero steps of the walk engine are too fast
+      getMotionRequest().walkRequest.stepControl.stepID = getMotionStatus().stepControl.stepID + 3;
+    } else {
+      getMotionRequest().walkRequest.stepControl.stepID = getMotionStatus().stepControl.stepID;
+    }
 
     getMotionRequest().id                                           = motion::walk;
     getMotionRequest().standardStand                                = false;
@@ -193,7 +192,7 @@ void PathPlanner::execute_step_list() {
 
     // stepID higher than the last one means, stepControl request with the
     // last_stepcontrol_stepID has been accepted
-    // switch foot_to_be_used
+    // switch the foot_to_be_used
     if (last_stepcontrol_stepID < getMotionStatus().stepControl.stepID)
     {
       pop_step();
@@ -201,16 +200,10 @@ void PathPlanner::execute_step_list() {
       foot_to_be_used         = foot_to_be_used == Right ? Left : Right;
     }
 
-    if (foot_to_be_used == Right)
-    {
-      getMotionRequest().walkRequest.stepControl.moveLeftFoot = false; // false = right foot
-    }
-    else
-    {
-      getMotionRequest().walkRequest.stepControl.moveLeftFoot = true; // false = right foot
-    }
+    // false means right foot
+    getMotionRequest().walkRequest.stepControl.moveLeftFoot = foot_to_be_used == Right ? false : true;
   } else {
-    stand();  // <-- bad for debugging, probably good for "production"
+    getMotionRequest().id = motion::stand;
   }
 
   if (getMotionStatus().stepControl.stepID < last_stepcontrol_stepID) {

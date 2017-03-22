@@ -78,7 +78,6 @@ private:
 
   unsigned int last_stepcontrol_stepID;
 
-  void stand();
   void look_at_ball();
 
   double towards_ball(const char x_or_y);
