@@ -1,12 +1,12 @@
 /**
-* @file PathPlannerXABSL.h
+* @file TestPathPlannerXABSL.h
 *
 * @author <a href="mailto:akcayyig@hu-berlin.de">Yigit Can Akcay</a>
-* Definition of class PathPlannerXABSL
+* Definition of class TestPathPlannerXABSL
 */
 
-#ifndef _PathPlannerXABSL_H_
-#define _PathPlannerXABSL_H_
+#ifndef _TestPathPlannerXABSL_H_
+#define _TestPathPlannerXABSL_H_
 
 #include <ModuleFramework/Module.h>
 
@@ -28,7 +28,7 @@
 #include "Tools/Debug/DebugRequest.h"
 #include "Tools/Debug/DebugModify.h"
 
-BEGIN_DECLARE_MODULE(PathPlannerXABSL)
+BEGIN_DECLARE_MODULE(TestPathPlannerXABSL)
   PROVIDE(DebugRequest)
   PROVIDE(DebugModify)
 
@@ -45,13 +45,13 @@ BEGIN_DECLARE_MODULE(PathPlannerXABSL)
 
   PROVIDE(HeadMotionRequest)
   PROVIDE(MotionRequest)
-END_DECLARE_MODULE(PathPlannerXABSL)
+END_DECLARE_MODULE(TestPathPlannerXABSL)
 
-class PathPlannerXABSL: public PathPlannerXABSLBase
+class TestPathPlannerXABSL: public TestPathPlannerXABSLBase
 {
 public:
-  PathPlannerXABSL();
-  ~PathPlannerXABSL(){};
+  TestPathPlannerXABSL();
+  ~TestPathPlannerXABSL(){};
 
   virtual void execute();
 
@@ -67,4 +67,4 @@ public:
 private:
 };
 
-#endif // _PathPlannerXABSL_H_
+#endif // _TestPathPlannerXABSL_H_

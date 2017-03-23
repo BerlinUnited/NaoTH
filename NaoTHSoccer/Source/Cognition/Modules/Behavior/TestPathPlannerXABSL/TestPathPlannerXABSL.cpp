@@ -1,182 +1,182 @@
 /**
- * @file PathPlannerXABSL.cpp
+ * @file TestPathPlannerXABSL.cpp
  *
  * @author <a href="mailto:akcayyig@hu-berlin.de">Yigit Can Akcay</a>
- * Implementation of class PathPlannerXABSL
+ * Implementation of class TestPathPlannerXABSL
  */
 
-#include "PathPlannerXABSL.h"
+#include "TestPathPlannerXABSL.h"
 
-PathPlannerXABSL::PathPlannerXABSL()
+TestPathPlannerXABSL::TestPathPlannerXABSL()
 {
   // Go to ball with right or left foot (when close to ball, approach for attack)
   //XABSL: go_to_ball_foot_dynamic
-  DEBUG_REQUEST_REGISTER("PathPlannerXABSL:motion:go_to_ball_foot_dynamic",
+  DEBUG_REQUEST_REGISTER("TestPathPlannerXABSL:motion:go_to_ball_foot_dynamic",
                          "Go to the ball with the right or left foot, close to the ball, before attacking.", false);
-  DEBUG_REQUEST_REGISTER("PathPlannerXABSL:test:go_to_ball_foot_dynamic_test_right",
+  DEBUG_REQUEST_REGISTER("TestPathPlannerXABSL:test:go_to_ball_foot_dynamic_test_right",
                          "TEST: Go to the ball with the right foot, close to the ball, before attacking.", false);
-  DEBUG_REQUEST_REGISTER("PathPlannerXABSL:test:go_to_ball_foot_dynamic_test_left",
+  DEBUG_REQUEST_REGISTER("TestPathPlannerXABSL:test:go_to_ball_foot_dynamic_test_left",
                          "TEST: Go to the ball with the left foot, close to the ball, before attacking.", false);
   // Move around the ball
   // XABSL: move_around_ball
-  DEBUG_REQUEST_REGISTER("PathPlannerXABSL:motion:move_around_ball",
+  DEBUG_REQUEST_REGISTER("TestPathPlannerXABSL:motion:move_around_ball",
                          "Move around the ball.", false);
-  DEBUG_REQUEST_REGISTER("PathPlannerXABSL:test:move_around_ball_test",
+  DEBUG_REQUEST_REGISTER("TestPathPlannerXABSL:test:move_around_ball_test",
                          "TEST: Move around the ball.", false);
   // Fast forward kick
   // XABSL: fast_forward_kick (used with short approach)
-  DEBUG_REQUEST_REGISTER("PathPlannerXABSL:motion:fast_forward_kick",
+  DEBUG_REQUEST_REGISTER("TestPathPlannerXABSL:motion:fast_forward_kick",
                          "Fast forward and kick with right or left foot.", false);
-  DEBUG_REQUEST_REGISTER("PathPlannerXABSL:test:fast_forward_kick_test_right",
+  DEBUG_REQUEST_REGISTER("TestPathPlannerXABSL:test:fast_forward_kick_test_right",
                          "TEST: Fast forward and kick with right foot.", false);
-  DEBUG_REQUEST_REGISTER("PathPlannerXABSL:test:fast_forward_kick_test_left",
+  DEBUG_REQUEST_REGISTER("TestPathPlannerXABSL:test:fast_forward_kick_test_left",
                          "TEST: Fast forward and kick with left foot.", false);
   // Kick with foot
   // XABSL: kick_with_foot (used with long approach)
-  DEBUG_REQUEST_REGISTER("PathPlannerXABSL:motion:kick_with_foot",
+  DEBUG_REQUEST_REGISTER("TestPathPlannerXABSL:motion:kick_with_foot",
                          "Approach the ball from a distance and kick with right or left foot.", false);
-  DEBUG_REQUEST_REGISTER("PathPlannerXABSL:test:kick_with_foot_test_right",
+  DEBUG_REQUEST_REGISTER("TestPathPlannerXABSL:test:kick_with_foot_test_right",
                          "TEST: Approach the ball from a distance and kick with right foot.", false);
-  DEBUG_REQUEST_REGISTER("PathPlannerXABSL:test:kick_with_foot_test_left",
+  DEBUG_REQUEST_REGISTER("TestPathPlannerXABSL:test:kick_with_foot_test_left",
                          "Approach the ball from a distance and kick with left foot.", false);
   // Side kick to left or right
   // XABSL: side_kick
-  DEBUG_REQUEST_REGISTER("PathPlannerXABSL:motion:sidekick",
+  DEBUG_REQUEST_REGISTER("TestPathPlannerXABSL:motion:sidekick",
                          "Sidekick the ball to the left or right.", false);
-  DEBUG_REQUEST_REGISTER("PathPlannerXABSL:test:sidekick_test_to_right",
+  DEBUG_REQUEST_REGISTER("TestPathPlannerXABSL:test:sidekick_test_to_right",
                          "TEST: Sidekick the ball to the right.", false);
-  DEBUG_REQUEST_REGISTER("PathPlannerXABSL:test:sidekick_test_to_left",
+  DEBUG_REQUEST_REGISTER("TestPathPlannerXABSL:test:sidekick_test_to_left",
                          "TEST: Sidekick the ball to the left.", false);
 
   // ------ Helpers ------
   // Stand
-  DEBUG_REQUEST_REGISTER("PathPlannerXABSL:helper:stand",
+  DEBUG_REQUEST_REGISTER("TestPathPlannerXABSL:helper:stand",
                          "Stand still", false);
 
   // Walk
-  DEBUG_REQUEST_REGISTER("PathPlannerXABSL:helper:walk_forward",
+  DEBUG_REQUEST_REGISTER("TestPathPlannerXABSL:helper:walk_forward",
                          "Walk forward", false);
   // Search for the ball
-  DEBUG_REQUEST_REGISTER("PathPlannerXABSL:helper:search",
+  DEBUG_REQUEST_REGISTER("TestPathPlannerXABSL:helper:search",
                          "Search for the ball", false);
   // Turn right or left
-  DEBUG_REQUEST_REGISTER("PathPlannerXABSL:helper:turn_left", "Turn left.", false);
-  DEBUG_REQUEST_REGISTER("PathPlannerXABSL:helper:turn_right", "Turn right.", false);
+  DEBUG_REQUEST_REGISTER("TestPathPlannerXABSL:helper:turn_left", "Turn left.", false);
+  DEBUG_REQUEST_REGISTER("TestPathPlannerXABSL:helper:turn_right", "Turn right.", false);
   // Look straight ahead
-  DEBUG_REQUEST_REGISTER("PathPlannerXABSL:helper:look_straight_ahead", "Look straight ahead.", false);
+  DEBUG_REQUEST_REGISTER("TestPathPlannerXABSL:helper:look_straight_ahead", "Look straight ahead.", false);
   // ------ Helpers ------
 }
 
-void PathPlannerXABSL::execute() 
+void TestPathPlannerXABSL::execute() 
 {
   // Go to ball with right or left foot (when close to ball, approach for attack)
   // XABSL: go_to_ball_foot_dynamic
-  DEBUG_REQUEST("PathPlannerXABSL:motion:go_to_ball_foot_dynamic",
+  DEBUG_REQUEST("TestPathPlannerXABSL:motion:go_to_ball_foot_dynamic",
                 if (   getPathModel().pathType == PathModel::PathType::go_to_ball_left
                     || getPathModel().pathType == PathModel::PathType::go_to_ball_right)
                 {
-                  PathPlannerXABSL::goToBall(getPathModel().goto_distance,
+                  TestPathPlannerXABSL::goToBall(getPathModel().goto_distance,
                                         getPathModel().goto_yOffset);
                 }
                 );
   // TEST
-  DEBUG_REQUEST("PathPlannerXABSL:test:go_to_ball_foot_dynamic_test_right",
+  DEBUG_REQUEST("TestPathPlannerXABSL:test:go_to_ball_foot_dynamic_test_right",
                 double distance = 160.0;
-                MODIFY("PathPlannerXABSL:test:goto_distance", distance);
+                MODIFY("TestPathPlannerXABSL:test:goto_distance", distance);
                 double yOffset  = 0.0;
-                MODIFY("PathPlannerXABSL:test:goto_yOffset", yOffset);
+                MODIFY("TestPathPlannerXABSL:test:goto_yOffset", yOffset);
                 getPathModel().pathType = PathModel::PathType::go_to_ball_right;
-                PathPlannerXABSL::goToBall(distance, yOffset);
+                TestPathPlannerXABSL::goToBall(distance, yOffset);
                 );
-  DEBUG_REQUEST("PathPlannerXABSL:test:go_to_ball_foot_dynamic_test_left",
+  DEBUG_REQUEST("TestPathPlannerXABSL:test:go_to_ball_foot_dynamic_test_left",
                 double distance = 160.0;
-                MODIFY("PathPlannerXABSL:test:goto_distance", distance);
+                MODIFY("TestPathPlannerXABSL:test:goto_distance", distance);
                 double yOffset  = 0.0;
-                MODIFY("PathPlannerXABSL:test:goto_yOffset", yOffset);
+                MODIFY("TestPathPlannerXABSL:test:goto_yOffset", yOffset);
                 getPathModel().pathType = PathModel::PathType::go_to_ball_left;
-                PathPlannerXABSL::goToBall(distance, yOffset);
+                TestPathPlannerXABSL::goToBall(distance, yOffset);
                 );
   // Move around the ball
   // XABSL: move_around_ball
-  DEBUG_REQUEST("PathPlannerXABSL:motion:move_around_ball",
+  DEBUG_REQUEST("TestPathPlannerXABSL:motion:move_around_ball",
                 if (getPathModel().pathType == PathModel::PathType::move_around_ball)
                 {
-                  PathPlannerXABSL::moveAroundBall(getPathModel().move_around_ball_direction,
+                  TestPathPlannerXABSL::moveAroundBall(getPathModel().move_around_ball_direction,
                                               getPathModel().move_around_ball_radius);
                 }
                 );
   // TEST
-  DEBUG_REQUEST("PathPlannerXABSL:test:move_around_ball_test",
+  DEBUG_REQUEST("TestPathPlannerXABSL:test:move_around_ball_test",
                 double direction = Math::fromDegrees(30.0);
-                MODIFY("PathPlannerXABSL:test:move_around_ball_direction", direction);
+                MODIFY("TestPathPlannerXABSL:test:move_around_ball_direction", direction);
                 double radius    = 210.0;
-                MODIFY("PathPlannerXABSL:test:move_around_ball_radius", radius);
+                MODIFY("TestPathPlannerXABSL:test:move_around_ball_radius", radius);
 
-                PathPlannerXABSL::moveAroundBall(direction, radius);
+                TestPathPlannerXABSL::moveAroundBall(direction, radius);
                 );
   // Fast forward kick
   // XABSL: fast_forward_kick
-  DEBUG_REQUEST("PathPlannerXABSL:motion:fast_forward_kick",
+  DEBUG_REQUEST("TestPathPlannerXABSL:motion:fast_forward_kick",
                 if (   getPathModel().pathType == PathModel::PathType::fast_forward_right
                     || getPathModel().pathType == PathModel::PathType::fast_forward_left)
                 {
-                  PathPlannerXABSL::fastForwardKick();
+                  TestPathPlannerXABSL::fastForwardKick();
                 }
                 );
   // TEST
-  DEBUG_REQUEST("PathPlannerXABSL:test:fast_forward_kick_test_right",
+  DEBUG_REQUEST("TestPathPlannerXABSL:test:fast_forward_kick_test_right",
                 getPathModel().pathType = PathModel::PathType::fast_forward_right;
-                PathPlannerXABSL::fastForwardKick();
+                TestPathPlannerXABSL::fastForwardKick();
                 );
-  DEBUG_REQUEST("PathPlannerXABSL:test:fast_forward_kick_test_left",
+  DEBUG_REQUEST("TestPathPlannerXABSL:test:fast_forward_kick_test_left",
                 getPathModel().pathType = PathModel::PathType::fast_forward_left;
-                PathPlannerXABSL::fastForwardKick();
+                TestPathPlannerXABSL::fastForwardKick();
                 );
   // Kick with foot
   // XABSL: kick_with_foot (used with long approach)
-  DEBUG_REQUEST("PathPlannerXABSL:motion:kick_with_foot",
+  DEBUG_REQUEST("TestPathPlannerXABSL:motion:kick_with_foot",
                 if (   getPathModel().pathType == PathModel::PathType::kick_with_foot_right
                     || getPathModel().pathType == PathModel::PathType::kick_with_foot_left)
                 {
-                  PathPlannerXABSL::kickWithFoot();
+                  TestPathPlannerXABSL::kickWithFoot();
                 }
                 );
   // TEST
-  DEBUG_REQUEST("PathPlannerXABSL:test:kick_with_foot_test_right",
+  DEBUG_REQUEST("TestPathPlannerXABSL:test:kick_with_foot_test_right",
                 getPathModel().pathType = PathModel::PathType::kick_with_foot_right;
-                PathPlannerXABSL::kickWithFoot();
+                TestPathPlannerXABSL::kickWithFoot();
                 );
-  DEBUG_REQUEST("PathPlannerXABSL:test:kick_with_foot_test_left",
+  DEBUG_REQUEST("TestPathPlannerXABSL:test:kick_with_foot_test_left",
                 getPathModel().pathType = PathModel::PathType::kick_with_foot_left;
-                PathPlannerXABSL::kickWithFoot();
+                TestPathPlannerXABSL::kickWithFoot();
                 );
   // Side kick to left or right
   // XABSL: side_kick
-  DEBUG_REQUEST("PathPlannerXABSL:motion:sidekick",
+  DEBUG_REQUEST("TestPathPlannerXABSL:motion:sidekick",
                 if (   getPathModel().pathType == PathModel::PathType::sidekick_left
                     || getPathModel().pathType == PathModel::PathType::sidekick_right)
                 {
-                  PathPlannerXABSL::sidekick();
+                  TestPathPlannerXABSL::sidekick();
                 }
                 );
   // TEST
-  DEBUG_REQUEST("PathPlannerXABSL:test:sidekick_test_to_right",
+  DEBUG_REQUEST("TestPathPlannerXABSL:test:sidekick_test_to_right",
                 getPathModel().pathType = PathModel::PathType::sidekick_left;
-                PathPlannerXABSL::sidekick();
+                TestPathPlannerXABSL::sidekick();
                 );
-  DEBUG_REQUEST("PathPlannerXABSL:test:sidekick_test_to_left",
+  DEBUG_REQUEST("TestPathPlannerXABSL:test:sidekick_test_to_left",
                 getPathModel().pathType = PathModel::PathType::sidekick_right;
-                PathPlannerXABSL::sidekick();
+                TestPathPlannerXABSL::sidekick();
                 );
 
   // ------ Helpers ------
   // Stand still
-  DEBUG_REQUEST("PathPlannerXABSL:helper:stand",
+  DEBUG_REQUEST("TestPathPlannerXABSL:helper:stand",
                 getMotionRequest().id = motion::stand;
                 );
 
   // Walk forward
-  DEBUG_REQUEST("PathPlannerXABSL:helper:walk_forward",
+  DEBUG_REQUEST("TestPathPlannerXABSL:helper:walk_forward",
                 // reset some stuff by default
                 getMotionRequest().forced = false;
                 getMotionRequest().standHeight = -1; // sit in a stable position
@@ -187,12 +187,12 @@ void PathPlannerXABSL::execute()
                 getMotionRequest().id = motion::walk;
                 getMotionRequest().walkRequest.target.translation.x = 500;
                 );
-  DEBUG_REQUEST("PathPlannerXABSL:helper:turn_left",
+  DEBUG_REQUEST("TestPathPlannerXABSL:helper:turn_left",
                 getHeadMotionRequest().id = HeadMotionRequest::look_straight_ahead;
                 getMotionRequest().id = motion::walk;
                 getMotionRequest().walkRequest.target.rotation = Math::fromDegrees(60);
                 );
-  DEBUG_REQUEST("PathPlannerXABSL:helper:turn_right",
+  DEBUG_REQUEST("TestPathPlannerXABSL:helper:turn_right",
                 getHeadMotionRequest().id = HeadMotionRequest::look_straight_ahead;
                 getMotionRequest().id = motion::walk;
                 getMotionRequest().walkRequest.target.rotation = Math::fromDegrees(-60);
@@ -203,7 +203,7 @@ void PathPlannerXABSL::execute()
   // ------ HEAD ------
 
   // Search for the ball
-  DEBUG_REQUEST("PathPlannerXABSL:helper:search",
+  DEBUG_REQUEST("TestPathPlannerXABSL:helper:search",
     // Ball hasn't been seen before
     if (   !getBallPercept().ballWasSeen
         && !getBallPerceptTop().ballWasSeen
@@ -252,7 +252,7 @@ void PathPlannerXABSL::execute()
       getHeadMotionRequest().targetPointInTheWorld.z = getFieldInfo().ballRadius;
     }
   );
-  DEBUG_REQUEST("PathPlannerXABSL:helper:look_straight_ahead",
+  DEBUG_REQUEST("TestPathPlannerXABSL:helper:look_straight_ahead",
                 getHeadMotionRequest().id = HeadMotionRequest::look_straight_ahead;
                 );
   // ------ HEAD ------
@@ -263,7 +263,7 @@ void PathPlannerXABSL::execute()
 double clip(double n, double lower, double upper) {
   return std::max(lower, std::min(n, upper));
 }
-void PathPlannerXABSL::lookAtBall()
+void TestPathPlannerXABSL::lookAtBall()
 {
   if (getBallPercept().ballWasSeen || getBallPerceptTop().ballWasSeen)
   {
@@ -283,7 +283,7 @@ void PathPlannerXABSL::lookAtBall()
 // ------ Helping Functions ------
 
 
-void PathPlannerXABSL::goToBall(double distance, double yOffset)
+void TestPathPlannerXABSL::goToBall(double distance, double yOffset)
 {
   double ballRad   = getBallPercept().radiusInImage;
   Vector2d preview;
@@ -315,7 +315,7 @@ void PathPlannerXABSL::goToBall(double distance, double yOffset)
   getMotionRequest().walkRequest.target.rotation =
   preview.abs() > 250 ? preview.angle() : 0.0;
 }
-void PathPlannerXABSL::moveAroundBall(double direction, double radius)
+void TestPathPlannerXABSL::moveAroundBall(double direction, double radius)
 {
   lookAtBall();
 
@@ -351,7 +351,7 @@ void PathPlannerXABSL::moveAroundBall(double direction, double radius)
     }
   }
 }
-void PathPlannerXABSL::fastForwardKick()
+void TestPathPlannerXABSL::fastForwardKick()
 {
   Vector2d ballPrev;
 
@@ -384,7 +384,7 @@ void PathPlannerXABSL::fastForwardKick()
   getMotionRequest().walkRequest.stepControl.time                 = 300;
   getMotionRequest().walkRequest.stepControl.scale                = 0.7;
 }
-void PathPlannerXABSL::kickWithFoot()
+void TestPathPlannerXABSL::kickWithFoot()
 {
   Vector2d ballPrev;
 
@@ -416,7 +416,7 @@ void PathPlannerXABSL::kickWithFoot()
   getMotionRequest().walkRequest.stepControl.time                 = 300;
   getMotionRequest().walkRequest.stepControl.scale                = 0.7;
 }
-void PathPlannerXABSL::sidekick()
+void TestPathPlannerXABSL::sidekick()
 {
   Vector2d ballPrev;
 
