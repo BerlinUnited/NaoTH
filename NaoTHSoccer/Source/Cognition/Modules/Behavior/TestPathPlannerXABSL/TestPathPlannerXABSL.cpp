@@ -181,7 +181,6 @@ void TestPathPlannerXABSL::execute()
                 getMotionRequest().forced = false;
                 getMotionRequest().standHeight = -1; // sit in a stable position
                 getMotionRequest().walkRequest.target = Pose2D();
-                getMotionRequest().forced = false;
 
                 // walk forward
                 getMotionRequest().id = motion::walk;

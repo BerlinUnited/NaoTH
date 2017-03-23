@@ -174,14 +174,13 @@ char PathPlanner::find_foot_with(const std::size_t approximate_steps_to_ball) {
 void PathPlanner::execute_step_list() {
   if (step_list.size() > 0) {
     if (getMotionRequest().id == motion::stand) {
-      // give a small head start for the first step, otherwise
-      // zero steps of the walk engine are too fast
-      getMotionRequest().walkRequest.stepControl.stepID = getMotionStatus().stepControl.stepID + 3;
-    } else {
-      getMotionRequest().walkRequest.stepControl.stepID = getMotionStatus().stepControl.stepID;
+      last_stepcontrol_stepID = 0;
+      if (getMotionStatus().currentMotionState == motion::stopped) {
+        getMotionRequest().id = motion::walk;
+      }
     }
+    getMotionRequest().walkRequest.stepControl.stepID = getMotionStatus().stepControl.stepID;
 
-    getMotionRequest().id                                           = motion::walk;
     getMotionRequest().standardStand                                = false;
     getMotionRequest().walkRequest.stepControl.time                 = 300;
     getMotionRequest().walkRequest.coordinate                       = WalkRequest::Hip;
