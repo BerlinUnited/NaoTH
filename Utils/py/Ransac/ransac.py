@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 iterations = 50
 threshDist = 0.4
 inlierRatio = 1/6
-lineCount = 4
+lineCount = 3
 
 line_samples = [i for i in np.arange(0,10,0.1)]
 
