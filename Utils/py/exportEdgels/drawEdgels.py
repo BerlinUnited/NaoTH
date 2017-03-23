@@ -26,15 +26,17 @@ def animate(i, edgels, log):
 # init plot
 fig = plt.figure()
 
+point_size = 5
+
 ax = fig.add_subplot(2,1,1)
 ax.set_xlim([0, 640])
 ax.set_ylim([-480, 0])
-edgels = plt.scatter([], [])
+edgels = plt.scatter([], [], point_size)
 
 ax = fig.add_subplot(2,1,2)
 ax.set_xlim([0, 640])
 ax.set_ylim([-480, 0])
-edgelsBottom = plt.scatter([], [])
+edgelsBottom = plt.scatter([], [], point_size)
 
 # init parser
 logParser = Parser()
