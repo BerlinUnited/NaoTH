@@ -13,7 +13,6 @@ namespace naoth
     double charge;
     double current;
     double temperature;
-    double headTemperature;
 
     BatteryData();
     virtual void print(std::ostream& stream) const;
@@ -23,4 +22,3 @@ namespace naoth
 }
 
 #endif  /* _BATTERY_DATA_H */
-

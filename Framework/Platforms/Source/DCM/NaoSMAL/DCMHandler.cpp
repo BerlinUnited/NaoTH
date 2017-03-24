@@ -17,7 +17,7 @@ DCMHandler::~DCMHandler()
 {}
 
 void DCMHandler::init(boost::shared_ptr<ALBroker> pB)
-{  
+{
   pBroker = pB;
 
   //connect to DCM
@@ -53,7 +53,7 @@ void DCMHandler::init(boost::shared_ptr<ALBroker> pB)
 
   DCMPath_BodyId = "Device/DeviceList/ChestBoard/BodyId";
   DCMPath_BodyNickName = "Device/DeviceList/ChestBoard/BodyNickName";
-  
+
   DCMPath_BatteryCharge = "Device/SubDeviceList/Battery/Charge/Sensor/Value";
   DCMPath_BatteryCurrent = "Device/SubDeviceList/Battery/Current/Sensor/Value";
   DCMPath_BatteryTemperature = "Device/SubDeviceList/Battery/Temperature/Sensor/Value";
@@ -84,7 +84,7 @@ void DCMHandler::getJointPositionLimits(JointData& jointData)
 
     const ALValue al_joint_max = getFromALMemory(joint_max_path);
     const ALValue al_joint_min = getFromALMemory(joint_min_path);
-    
+
     jointData.min[i] = float(al_joint_min);
     jointData.max[i] = float(al_joint_max);
   }
@@ -144,7 +144,7 @@ void DCMHandler::initSensorJoint()
   for(int i=0;i<JointData::numOfJoint;i++)
   {
     DCMPath_SensorJointPosition[(JointData::JointID) i] =
-     "Device/SubDeviceList/" + JointData::getJointName((JointData::JointID) i) + "/Position/Sensor/Value"; 
+     "Device/SubDeviceList/" + JointData::getJointName((JointData::JointID) i) + "/Position/Sensor/Value";
 
     DCMPath_SensorJointElectricCurrent[(JointData::JointID) i] =
       "Device/SubDeviceList/" + JointData::getJointName((JointData::JointID) i) + "/ElectricCurrent/Sensor/Value";
@@ -162,7 +162,7 @@ void DCMHandler::initFSR()
   DCMPath_FSR_Left[FSRData::FrontRight]  = "Device/SubDeviceList/LFoot/FSR/FrontRight/Sensor/Value";
   DCMPath_FSR_Left[FSRData::RearLeft]    = "Device/SubDeviceList/LFoot/FSR/RearLeft/Sensor/Value";
   DCMPath_FSR_Left[FSRData::RearRight]   = "Device/SubDeviceList/LFoot/FSR/RearRight/Sensor/Value";
-  
+
   DCMPath_FSR_Right[FSRData::FrontLeft]  = "Device/SubDeviceList/RFoot/FSR/FrontLeft/Sensor/Value";
   DCMPath_FSR_Right[FSRData::FrontRight] = "Device/SubDeviceList/RFoot/FSR/FrontRight/Sensor/Value";
   DCMPath_FSR_Right[FSRData::RearLeft]   = "Device/SubDeviceList/RFoot/FSR/RearLeft/Sensor/Value";
@@ -242,7 +242,7 @@ void DCMHandler::initButton()
 void DCMHandler::initUltraSoundReceive()
 {
   DCMPath_UltraSoundReceive = "Device/SubDeviceList/US/Sensor/Value";
-  
+
   DCMPath_UltraSoundReceiveLeft[0] = "Device/SubDeviceList/US/Left/Sensor/Value";
   DCMPath_UltraSoundReceiveLeft[1] = "Device/SubDeviceList/US/Left/Sensor/Value1";
   DCMPath_UltraSoundReceiveLeft[2] = "Device/SubDeviceList/US/Left/Sensor/Value2";
@@ -400,7 +400,7 @@ void DCMHandler::initAllSensorData()
 
   //UltraSoundReceiveData
   ASSERT(theUltraSoundReceiveDataIndex == currentIndex);
-  allSensorsList[currentIndex++] = DCMPath_UltraSoundReceive; 
+  allSensorsList[currentIndex++] = DCMPath_UltraSoundReceive;
   for(int i = 0; i < UltraSoundReceiveData::numOfUSEcho; i++)
   {
     allSensorsList[currentIndex++] = DCMPath_UltraSoundReceiveLeft[i];
@@ -412,6 +412,8 @@ void DCMHandler::initAllSensorData()
   allSensorsList[currentIndex++] = DCMPath_BatteryCurrent;
   allSensorsList[currentIndex++] = DCMPath_BatteryTemperature;
 
+  //CpuData
+  ASSERT(theCpuTemperatureIndex == currentIndex);
   allSensorsList[currentIndex++] = DCMPath_HeadTemperature;
 
   // little senity check
@@ -482,7 +484,7 @@ void DCMHandler::initMotorJoint()
 
     allMotorPositionCommands.arraySetSize(6);
     allMotorHardnessCommands.arraySetSize(6);
-    
+
     allMotorPositionCommands[0] = string("MPos");
     allMotorHardnessCommands[0] = string("MHard");
     allMotorPositionCommands[1] = string("ClearAll");
@@ -665,7 +667,7 @@ void DCMHandler::initIRSend()
 void DCMHandler::setIRSend(const IRSendData& data, int dcmTime)
 {
   if ( !data.changed ) return;
-  
+
   irCommands[4][0] = dcmTime;
 
   for(int i=0;i<IRSendData::numOfIRSend;i++)
@@ -732,5 +734,3 @@ void DCMHandler::setUltraSoundSend(const UltraSoundSendData& data, int dcmTime)
     }
   }
 }//end setUltraSoundSend
-
-
