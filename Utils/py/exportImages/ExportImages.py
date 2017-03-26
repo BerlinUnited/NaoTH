@@ -22,7 +22,9 @@ def parse_arguments(argv):
     except getopt.GetoptError:
         print('ExportImages.py -i <input file> -o <output directory>')
         sys.exit(2)
-        
+    if opts == []:
+        print('ExportImages.py -i <input file>')
+        sys.exit(2)    
     for opt, arg in opts:
         if opt == '-h':
             print('ExportImages.py -i <input file> -o <output directory>')
