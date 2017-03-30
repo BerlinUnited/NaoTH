@@ -29,13 +29,15 @@ void PathPlanner::execute()
 
                 static char foot;
                 std::size_t approximate_steps_to_ball;
-                static bool executed_once   = false;
-                double step_size             = 40.0;
-                Vector2d preview            = getBallModel().positionPreview;
-                double distance              = preview.abs();
-                double ballRad               = 70.0;
+                static bool executed_once = false;
+                double step_size          = 40.0;
+                Vector2d preview          = getBallModel().positionPreview;
+                double distance           = preview.abs();
+                double ballRad            = 70.0;
+                bool ballWasSeen          = getBallModel().valid;
 
                 if (distance > 700) {
+                  std::cout << towards_ball('r') << std::endl;
                   add(new_step(step_size,
                                0.0,
                                towards_ball('r')
@@ -73,8 +75,11 @@ void PathPlanner::execute()
                       add(new_step(30.0, 0.0, 0.0));
                     }
                   }
-                  // kick the ball forward
-                  add(new_step(500.0, 0.0, 0.0, 1.0));
+                  if (ballWasSeen)
+                  {
+                    // kick the ball forward
+                    add(new_step(500.0, 0.0, 0.0, 1.0));
+                  }
                 }
                 );
   DEBUG_REQUEST("PathPlanner:walk:add_forward_step",
@@ -175,12 +180,10 @@ void PathPlanner::execute_step_list() {
   if (step_list.size() > 0) {
     if (getMotionRequest().id == motion::stand) {
       last_stepcontrol_stepID = 0;
-      if (getMotionStatus().currentMotionState == motion::stopped) {
-        getMotionRequest().id = motion::walk;
-      }
     }
     getMotionRequest().walkRequest.stepControl.stepID = getMotionStatus().stepControl.stepID;
 
+    getMotionRequest().id = motion::walk;
     getMotionRequest().standardStand                                = false;
     getMotionRequest().walkRequest.stepControl.time                 = 300;
     getMotionRequest().walkRequest.coordinate                       = WalkRequest::Hip;
