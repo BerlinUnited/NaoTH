@@ -299,7 +299,7 @@ namespace Math {
   //Just a wrapper for nth_element -> median is index = values.size()/2
   template<typename T>
   T max(const std::vector<T>& values) {
-    return std::max(values.begin(), values.end());
+    return *std::max_element(values.begin(), values.end());
   }
 
 }//end namespace Math
