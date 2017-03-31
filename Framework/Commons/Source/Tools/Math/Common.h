@@ -298,11 +298,8 @@ namespace Math {
   // NOTE: the input vector is copied and sorted internally, this can be slow for large vectors
   //Just a wrapper for nth_element -> median is index = values.size()/2
   template<typename T>
-  T get_nth_element(std::vector<T> values, size_t index) {
-    if (values.size() <= index) { return 0; }
-
-    std::nth_element(values.begin(), values.begin() + index, values.end());
-    return values[index];
+  T max(const std::vector<T>& values) {
+    return std::max(values.begin(), values.end());
   }
 
 }//end namespace Math
