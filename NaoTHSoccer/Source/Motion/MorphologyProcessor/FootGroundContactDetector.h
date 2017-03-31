@@ -63,7 +63,6 @@ private:
       PARAMETER_REGISTER(left) = 0.1;
       PARAMETER_REGISTER(right) = 0.1;
       PARAMETER_REGISTER(useMaxMedian) = false;
-      PARAMETER_REGISTER(useMax) = true;
 
       syncWithConfig();
     }
@@ -71,7 +70,6 @@ private:
     double left;
     double right;
     bool useMaxMedian;
-    bool useMax;
   };
 
   Parameters footParams;

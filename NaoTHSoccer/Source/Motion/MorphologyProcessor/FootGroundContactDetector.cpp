@@ -25,15 +25,10 @@ void FootGroundContactDetector::execute()
     leftFSRBuffer.add(Math::medianMax(getFSRData().dataLeft));
     rightFSRBuffer.add(Math::medianMax(getFSRData().dataRight));
   }
-  else if (footParams.useMax){
+  else {
     //Maximum of FSR Sensors
-    leftFSRBuffer.add(Math::get_nth_element(getFSRData().dataLeft, getFSRData().dataLeft.size()));
-    rightFSRBuffer.add(Math::get_nth_element(getFSRData().dataRight, getFSRData().dataRight.size()));
-  }
-  else{
-    //Median
-    leftFSRBuffer.add(Math::get_nth_element(getFSRData().dataLeft, getFSRData().dataLeft.size() / 2));
-    rightFSRBuffer.add(Math::get_nth_element(getFSRData().dataRight, getFSRData().dataRight.size() / 2));
+    leftFSRBuffer.add(Math::max(getFSRData().dataLeft));
+    rightFSRBuffer.add(Math::max(getFSRData().dataRight));
   }
 
 
