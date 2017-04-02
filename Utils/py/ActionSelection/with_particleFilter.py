@@ -54,7 +54,9 @@ def main():
     # Todo change the directions of the best action/ or all actions
     # Sample is element of [0, 360)
     # Sample is evaluated by simulating the consequences and calculating the best actions
-    # TODO: Problem: we only have the best one and not a sorted list of actions
+    # TODO: Problem: decide function gives only the best action and not a sorted list of actions
+    # as far as I understand it we need that in order to resample the worst n samples and eventually converge
+    # i dont know what the best way to do that is
     while True:
         actions_consequences = []
         # Simulate Consequences
