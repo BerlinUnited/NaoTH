@@ -60,7 +60,7 @@ def main():
 
     action_list = [no_action, kick_short, sidekick_left, sidekick_right]
 
-    # Todo: Maybe do several decision cycles(histogram of decisions) not just one to get rid of accidental decisions
+    # Todo: Maybe do several decision cycles not just one to get rid of accidental decisions
     num_kicks = 0
     num_turn_degrees = 0
     goal_scored = False
@@ -124,11 +124,6 @@ def main():
 
 if __name__ == "__main__":
     '''
-    Should Simulate the real robot behavior, that means turn incrementally
-    -> i dont account for difference in speed of cognition and motion
-    Todo: make a histogram
-
-    Histogram:
-    Pos.x | Pos.y | Action None | kick short | kick left | kick right
+    TODO: Should Simulate the real robot behavior, that means turn incrementally
     '''
     main()
