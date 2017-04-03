@@ -14,6 +14,10 @@ import math
 import math3d as m3
 import math2d as m2
 
+# TODO: parse as argument
+LOGFILE = "/home/robert/logs/090917-1208-Nao0212/game.log"
+
+
 def parseVector3(msg):
     return m3.Vector3(msg.x,msg.y,msg.z)
 
@@ -102,7 +106,7 @@ logParser = Parser()
 logParser.register("ScanLineEdgelPerceptTop", "ScanLineEdgelPercept")
 logParser.register("CameraMatrixTop", "CameraMatrix")
 
-log = iter(LogReader("/home/robert/logs/090917-1208-Nao0212/game.log", logParser, getEdgels))
+log = iter(LogReader(LOGFILE, logParser, getEdgels))
 
 
 # start animation
