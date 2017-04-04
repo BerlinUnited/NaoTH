@@ -19,6 +19,8 @@ import math
 import math3d as m3
 import math2d as m2
 
+from ransac import Ransac
+
 def parseVector3(msg):
     return m3.Vector3(msg.x,msg.y,msg.z)
 
@@ -71,8 +73,8 @@ def projectEdgel(x,y,cMatrix):
 def animate(i, log, edgelsPlotTop, edgelsPlot, projectedEdgelsPlot):
     msg = log.next()
 
-    edgelFrame = [(edgel.point.x, -edgel.point.y) for edgel in msg[1].edgels]
-    edgelsPlotTop.set_offsets(edgelFrame)
+    edgelFrameTop = [(edgel.point.x, -edgel.point.y) for edgel in msg[1].edgels]
+    edgelsPlotTop.set_offsets(edgelFrameTop)
 
     edgelFrame = [(edgel.point.x, -edgel.point.y) for edgel in msg[2].edgels]
     edgelsPlot.set_offsets(edgelFrame)
@@ -80,9 +82,9 @@ def animate(i, log, edgelsPlotTop, edgelsPlot, projectedEdgelsPlot):
     projectedEdgelsPlot.set_offsets(msg[3] + msg[4])
 
     # It's time to get things done
-
-
-
+    ransac = Ransac(50, 0.4, 1/6)
+    bestParameter1, bestParameter2, outlier = ransac.getOutlier(edgelFrameTop)
+    print(bestParameter1, bestParameter2, outlier)
 
 # init plot
 plt.close('all')
