@@ -1,5 +1,10 @@
 #!/usr/bin/python
 
+import argparse
+parser = argparse.ArgumentParser(description='script to display edgels from log files')
+parser.add_argument("logfile", help='log file to draw edgels from')
+args = parser.parse_args()
+
 from naoth.LogReader import LogReader
 from naoth.LogReader import Parser
 
@@ -13,10 +18,6 @@ import math
 
 import math3d as m3
 import math2d as m2
-
-# TODO: parse as argument
-LOGFILE = "/home/robert/logs/090917-1208-Nao0212/game.log"
-
 
 def parseVector3(msg):
     return m3.Vector3(msg.x,msg.y,msg.z)
@@ -106,7 +107,7 @@ logParser = Parser()
 logParser.register("ScanLineEdgelPerceptTop", "ScanLineEdgelPercept")
 logParser.register("CameraMatrixTop", "CameraMatrix")
 
-log = iter(LogReader(LOGFILE, logParser, getEdgels))
+log = iter(LogReader(args.logfile, logParser, getEdgels))
 
 
 # start animation
