@@ -94,6 +94,7 @@
 #include "Modules/Behavior/XABSLBehaviorControl/XABSLBehaviorControl.h"
 #include "Modules/Behavior/TestPathPlannerXABSL/TestPathPlannerXABSL.h"
 #include "Modules/Behavior/PathPlanner/PathPlanner.h"
+#include "Modules/Behavior/PrimitiveManeuvers/PrimitiveManeuvers.h"
 
 using namespace std;
 
@@ -199,6 +200,7 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(XABSLBehaviorControl);
   REGISTER_MODULE(TestPathPlannerXABSL);
   REGISTER_MODULE(PathPlanner);
+  REGISTER_MODULE(PrimitiveManeuvers);
 
   REGISTER_MODULE(TeamCommSender);
   
