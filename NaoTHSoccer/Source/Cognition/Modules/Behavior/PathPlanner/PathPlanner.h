@@ -81,7 +81,7 @@ private:
   void look_at_ball();
 
   double towards_ball(const char x_or_y);
-  double towards_ball(const char x_or_y, const char for_left_or_right_foot);
+  double towards_ball(const char x_y_or_rot, const char for_left_or_right_foot);
   char find_foot_with(std::size_t approximate_steps_to_ball);
 
   void add(PathPlanner::Step step);

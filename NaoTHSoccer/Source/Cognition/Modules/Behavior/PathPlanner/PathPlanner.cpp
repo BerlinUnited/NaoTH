@@ -26,6 +26,7 @@ void PathPlanner::execute()
 {
   DEBUG_REQUEST("PathPlanner:walk:walk_to_ball_and_kick_forward",
                 look_at_ball();
+                getMotionRequest().armMotionRequest.id = ArmMotionRequest::arms_back;
 
                 static char foot;
                 std::size_t approximate_steps_to_ball;
@@ -78,7 +79,7 @@ void PathPlanner::execute()
                   if (ballWasSeen)
                   {
                     // kick the ball forward
-                    add(new_step(500.0, 0.0, 0.0, 1.0));
+                    //add(new_step(500.0, 0.0, 0.0, 1.0));
                   }
                 }
                 );
@@ -142,7 +143,7 @@ double PathPlanner::towards_ball(const char x_or_y) {
   }
   return 0.0;
 }
-double PathPlanner::towards_ball(const char x_or_y, const char for_left_or_right_foot) {
+double PathPlanner::towards_ball(const char x_y_or_rot, const char for_left_or_right_foot) {
   double ballRad = getBallPercept().radiusInImage;
   Vector2d preview;
   switch (for_left_or_right_foot) {
@@ -153,7 +154,7 @@ double PathPlanner::towards_ball(const char x_or_y, const char for_left_or_right
       preview = getBallModel().positionPreviewInLFoot;
       break;
   }
-  switch (x_or_y) {
+  switch (x_y_or_rot) {
     case 'x': return 0.7 * (preview.x - std::abs(preview.y) - ballRad);
     case 'y': return 0.7 * (preview.y);
     case 'r': return preview.abs() > 250 ? preview.angle() : 0.0;
