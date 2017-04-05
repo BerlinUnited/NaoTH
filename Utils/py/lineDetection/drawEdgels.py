@@ -16,8 +16,8 @@ import random
 
 import math
 
-import math3d as m3
-import math2d as m2
+import naoth.math3d as m3
+import naoth.math2d as m2
 
 from ransac import Ransac
 
