@@ -14,7 +14,7 @@ step_list({}),
 foot_to_be_used(PrimitiveManeuvers::Foot::Right),
 last_stepcontrol_stepID(0)
 {
-  DEBUG_REQUEST_REGISTER("PrimitiveManeuvers:walk_to_point", "Walks to the given point.", false);
+  DEBUG_REQUEST_REGISTER("PrimitiveManeuvers:walk_to_ball", "Walks to the ball.", true);
   DEBUG_REQUEST_REGISTER("PrimitiveManeuvers:execute_step_list", "Executes the step list", true);
 }
 
@@ -25,88 +25,65 @@ void PrimitiveManeuvers::execute()
                 PrimitiveManeuvers::execute_step_list();
                 );
 
-  DEBUG_REQUEST("PrimitiveManeuvers:walk_to_point",
+  DEBUG_REQUEST("PrimitiveManeuvers:walk_to_ball",
                 prepare_walk();
-                double x = 0.0f;
-                double y = 0.0f;
-                //if(!PrimitiveManeuvers::MWalk_to_point(x, y)) {}
 
-                static const Vector2d relativeCoord = getMotionStatus().plannedMotion.hip/Vector2d(x, y);
-                static const double angle = Geometry::angleTo(getRobotPose(), Vector2d(x, y));
+                if(PrimitiveManeuvers::MWalk_to_ball(Foot::Right))
+                {
 
-                std::cout << angle << " -- " << relativeCoord.x << ", "
-                << relativeCoord.y << std::endl;
+                }
                 );
 }
 
 // Primitive Maneuvers
-bool PrimitiveManeuvers::MWalk_to_point(double x, double y)
+bool PrimitiveManeuvers::MWalk_to_ball(Foot foot)
 {
-  //Vector2d relativeCoord = getRobotPose()*Vector2d(x, y);
-
-  // Rotate completely first
-  if (PrimitiveManeuvers::MRotate_towards_point(x, y))
-  {
-    /*if (   relativeCoord.x != 0.0f
-        || relativeCoord.y != 0.0f)
-    {
-      if (relativeCoord.x > 40.0f)
-      {
-        add(new_step(40.0f, 0.0f, 0.0f));
-      }
-      else
-      {
-        add(new_step(relativeCoord.x, 0.0f, 0.0f));
-      }
-    }
-    else
-    {
-      return true;
-    }*/
+  Vector2d pos;
+  switch (foot) {
+    case Foot::Left:  pos = getBallModel().positionPreviewInLFoot; break;
+    case Foot::Right: pos = getBallModel().positionPreviewInRFoot; break;
+    case Foot::NONE:  pos = getBallModel().positionPreview; break;
   }
+  double rotation = pos.angle();
 
-  return false;
-}
+  Vector2d step = limit_step(Vector2d(pos.x, rotation));
 
-bool PrimitiveManeuvers::MRotate_towards_point(double x, double y)
-{
-  static const Vector2d relativeCoord = getRobotPose()*Vector2d(x, y);
-  static const double angle = Geometry::angleTo(relativeCoord,
-                                                Vector2d(x, y));
-
-  static double angleDelta  = 0.0f;
-
-  std::cout << angle << std::endl;
-
-  if (std::abs(angleDelta) < std::abs(angle))
+  if (pos.abs() > 220)
   {
-    if (add(new_step(0.0f, 0.0f, angle/10)))
-    {
-      std::cout << angle << " --- " << angleDelta << std::endl;
-      angleDelta += angle/10.0f;
-    }
+    add(new_step(step.x, 0.0f, step.y));
+  }
+  else if (foot_to_be_used != foot)
+  {
+    add(new_step(step.x, 0.0f, step.y));
   }
   else
   {
     return true;
   }
-
   return false;
 }
 
+Vector2d PrimitiveManeuvers::limit_step(Vector2d step)
+{
+  // taken out of the stepplanner
+  // 0.75 because 0.5 * character(usually 0.5) + 0.5 (also out of stepplanner)
+  double maxStepTurn     = Math::fromDegrees(30) * 0.75;
+  double maxStep         = 40.0f;
+  double stepTurn        = Math::clamp(step.y, -maxStepTurn, maxStepTurn);
+  double stepX           = Math::clamp(step.x, -maxStep, maxStep) * cos(stepTurn/maxStepTurn * Math::pi/2);
 
-
+  return Vector2d(stepX, stepTurn);
+}
 
 // Stepcontrol
 void PrimitiveManeuvers::prepare_walk()
 {
   // Look at the ball
-  /*if (getBallPercept().ballWasSeen || getBallPerceptTop().ballWasSeen)
+  if (getMultiBallPercept().wasSeen())
   {
     Vector2d pos = (*getMultiBallPercept().begin()).positionOnField;
     for(MultiBallPercept::ConstABPIterator iter = getMultiBallPercept().begin(); iter != getMultiBallPercept().end(); iter++) {
-      if(pos.abs() > (*iter).positionOnField.abs())
-      {
+      if(pos.abs() > (*iter).positionOnField.abs()) {
         pos = (*iter).positionOnField;
       }
     }
@@ -114,7 +91,7 @@ void PrimitiveManeuvers::prepare_walk()
     getHeadMotionRequest().targetPointInTheWorld.x = pos.x;
     getHeadMotionRequest().targetPointInTheWorld.y = pos.y;
     getHeadMotionRequest().targetPointInTheWorld.z = getFieldInfo().ballRadius;
-  }*/
+  }
 
 
   // Put arms to the back

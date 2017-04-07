@@ -10,29 +10,29 @@
 
 #include <ModuleFramework/Module.h>
 
-
 #include "Tools/Math/Geometry.h"
-
-// representations
-#include "Representations/Infrastructure/FrameInfo.h"
-#include "Representations/Infrastructure/FieldInfo.h"
-#include "Representations/Motion/Request/HeadMotionRequest.h"
-#include "Representations/Motion/Request/MotionRequest.h"
-#include "Representations/Motion/MotionStatus.h"
-#include "Representations/Modeling/RobotPose.h"
 
 // debug
 #include "Tools/Debug/DebugRequest.h"
 #include "Tools/Debug/DebugModify.h"
 
+// representations
+#include "Representations/Infrastructure/FieldInfo.h"
+#include "Representations/Motion/Request/HeadMotionRequest.h"
+#include "Representations/Motion/Request/MotionRequest.h"
+#include "Representations/Motion/MotionStatus.h"
+#include "Representations/Perception/MultiBallPercept.h"
+#include "Representations/Modeling/BallModel.h"
+
+
 BEGIN_DECLARE_MODULE(PrimitiveManeuvers)
 PROVIDE(DebugRequest)
 PROVIDE(DebugModify)
 
-REQUIRE(FrameInfo)
 REQUIRE(FieldInfo)
-REQUIRE(RobotPose)
+REQUIRE(MultiBallPercept)
 REQUIRE(MotionStatus)
+REQUIRE(BallModel)
 
 PROVIDE(MotionRequest)
 PROVIDE(HeadMotionRequest)
@@ -49,14 +49,23 @@ public:
   void execute_step_list();
 
 private:
+  // NONE means hip
+  enum Foot
+  {
+    Right,
+    Left,
+    NONE
+  };
+
   // Primitive Maneuvers
 
-  // Walks to the point (x, y) in global coordinates
-  // If destination has been reached, returns true
-  bool MWalk_to_point(double x, double y);
-  // Rotates towards the point (x, y) in global coordinates
-  // If completely rotated, return true
-  bool MRotate_towards_point(double x, double y);
+  // Walks to the ball
+  // returns true if reached
+  bool MWalk_to_ball(Foot foot);
+
+  // Limit steps depending on rotation
+  // returns Vector2d with x component stepX and y component stepRotation
+  Vector2d limit_step(Vector2d step);
 
   // Stepcontrol
   struct Step {
@@ -67,11 +76,6 @@ private:
   };
   std::vector<Step> step_list;
 
-  enum Foot
-  {
-    Right,
-    Left
-  };
   // used to alternate between left and right foot when walking
   // inside execute_steplist()
   // everywhere else, indicates the last foot that has been moved
