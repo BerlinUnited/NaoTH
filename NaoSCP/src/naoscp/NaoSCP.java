@@ -344,7 +344,7 @@ public class NaoSCP extends javax.swing.JFrame {
         
         final DeployDialog deployDialog = new DeployDialog(this);
 
-        if (deployDialog.showOpenDialog() == DeployDialog.OPTION.APPROVE) {
+        if (deployDialog.showOpenDialog(this) == DeployDialog.OPTION.APPROVE) {
             
             final File targetDir = deployDialog.getSelectedFile();
 
