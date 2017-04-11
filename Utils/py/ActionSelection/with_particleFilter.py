@@ -57,12 +57,16 @@ def main():
     # TODO: Problem: decide function gives only the best action and not a sorted list of actions
     # as far as I understand it we need that in order to resample the worst n samples and eventually converge
     # i dont know what the best way to do that is
+
+    # For Particle Filter:
+    a.num_particles = 1
+    # TODO: Create n random numbers here:
     while True:
         actions_consequences = []
         # Simulate Consequences
-        for action in action_list:
-            single_consequence = a.ActionResults([])
-            actions_consequences.append(Sim.simulate_consequences(action, single_consequence, state))
+
+        single_consequence = a.ActionResults([])
+        actions_consequences.append(Sim.simulate_consequences(kick_short, single_consequence, state))
 
         # actions_consequences is now a list of ActionResults
 
