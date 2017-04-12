@@ -25,9 +25,7 @@ StableRoleDecision::~StableRoleDecision()
 }
 
 void StableRoleDecision::execute() {
-
   computeStrikers();
-
 }//end execute
 
 void StableRoleDecision::computeStrikers() {
@@ -47,10 +45,9 @@ void StableRoleDecision::computeStrikers() {
   double ownTimeToBall = getSoccerStrategy().timeToBall;
   if (getPlayerInfo().isPlayingStriker)
     ownTimeToBall -= 300;
-
-  for (std::map<unsigned int, TeamMessage::Data>::const_iterator i=tm.data.begin(); i != tm.data.end(); ++i) {
-    unsigned int robotNumber = i->first;
-    const TeamMessage::Data& msg = i->second;
+  for(auto const &it : tm.data) {
+    unsigned int robotNumber = it.first;
+    const TeamMessageData& msg = it.second;
 
     double failureProbability = 0.0;
     std::map<unsigned int, double>::const_iterator robotFailure = getTeamMessageStatisticsModel().failureProbabilities.find(robotNumber);
@@ -58,7 +55,7 @@ void StableRoleDecision::computeStrikers() {
       failureProbability = robotFailure->second;
     }
 
-    if (failureProbability > parameters.minFailureProbability && msg.playerNum != getPlayerInfo().playerNumber) { //Message is not fresh
+    if (failureProbability > parameters.minFailureProbability && msg.playerNumber != getPlayerInfo().playerNumber) { //Message is not fresh
       getRoleDecisionModel().deadRobots.push_back((int)robotNumber);
       continue;
     }
@@ -66,7 +63,7 @@ void StableRoleDecision::computeStrikers() {
       getRoleDecisionModel().aliveRobots.push_back((int)robotNumber);
     }
 
-    double time_bonus = (int)msg.playerNum==getRoleDecisionModel().firstStriker?parameters.strikerBonusTime:0.0;
+    double time_bonus = (int)msg.playerNumber==getRoleDecisionModel().firstStriker?parameters.strikerBonusTime:0.0;
 
     if (robotNumber == getPlayerInfo().playerNumber && (msg.fallen || msg.isPenalized || 
       msg.ballAge < 0 || msg.ballAge > parameters.maxBallLostTime + time_bonus)) {
@@ -78,7 +75,7 @@ void StableRoleDecision::computeStrikers() {
       && msg.ballAge >= 0 //Ball has been seen
       && msg.ballAge + getFrameInfo().getTimeSince(msg.frameInfo.getTime()) < parameters.maxBallLostTime + time_bonus) { //Ball is fresh
 
-        if (msg.wasStriker) { //Decision of the current round
+        if (msg.wantsToBeStriker) { //Decision of the current round
           if ((int)robotNumber < firstStriker) { //If two robots want to be striker, the one with a smaller number is favoured
             firstStriker = robotNumber;
           }
