@@ -16,6 +16,7 @@ last_stepcontrol_stepID(0)
 {
   DEBUG_REQUEST_REGISTER("PrimitiveManeuvers:walk_to_ball", "Walks to the ball.", true);
   DEBUG_REQUEST_REGISTER("PrimitiveManeuvers:execute_step_list", "Executes the step list", true);
+  DEBUG_REQUEST_REGISTER("PrimitiveManeuvers:move_around_ball", "Moves around the ball.", false);
 }
 
 void PrimitiveManeuvers::execute()
@@ -33,6 +34,15 @@ void PrimitiveManeuvers::execute()
 
                 }
                 );
+
+  DEBUG_REQUEST("PrimitiveManeuvers:move_around_ball",
+                prepare_walk();
+
+                if (PrimitiveManeuvers::MMove_around_ball(Foot::Left, false))
+                {
+
+                }
+                );
 }
 
 // Primitive Maneuvers
@@ -46,15 +56,16 @@ bool PrimitiveManeuvers::MWalk_to_ball(Foot foot)
   }
   double rotation = pos.angle();
 
-  Vector2d step = limit_step(Vector2d(pos.x, rotation));
+  Vector3d step = limit_step(Vector3d(pos.x, 0.0f, rotation));
 
   if (pos.abs() > 220)
   {
-    add(new_step(step.x, 0.0f, step.y));
+    add(new_step(step));
   }
   else if (foot_to_be_used != foot)
+  //else if ((getBallModel().positionPreviewInRFoot.x < getBallModel().positionPreviewInLFoot.x && foot == Foot::Right) || (getBallModel().positionPreviewInLFoot.x < getBallModel().positionPreviewInRFoot.x && foot == Foot::Left))
   {
-    add(new_step(step.x, 0.0f, step.y));
+    add(new_step(step));
   }
   else
   {
@@ -63,16 +74,34 @@ bool PrimitiveManeuvers::MWalk_to_ball(Foot foot)
   return false;
 }
 
-Vector2d PrimitiveManeuvers::limit_step(Vector2d step)
+bool PrimitiveManeuvers::MMove_around_ball(Foot foot, bool go_right)
+{
+  Vector2d ballPos    = getBallModel().positionPreview;
+  double ballRotation = foot == Foot::Right ? getBallModel().positionPreviewInRFoot.angle() :
+                                              getBallModel().positionPreviewInLFoot.angle();
+  double radius       = 300.0f; // 300 is close to the ball
+  // Move around the ball right or left way
+  double direction    = go_right == true ? -100.0f : 100.0f;
+
+  Vector3d step = limit_step(Vector3d((ballPos.abs() - radius) * std::cos(ballRotation),
+                                      direction,
+                                      ballRotation));
+  add(new_step(step));
+
+  return false;
+}
+
+Vector3d PrimitiveManeuvers::limit_step(Vector3d step)
 {
   // taken out of the stepplanner
   // 0.75 because 0.5 * character(usually 0.5) + 0.5 (also out of stepplanner)
   double maxStepTurn     = Math::fromDegrees(30) * 0.75;
   double maxStep         = 40.0f;
-  double stepTurn        = Math::clamp(step.y, -maxStepTurn, maxStepTurn);
+  double stepTurn        = Math::clamp(step.z, -maxStepTurn, maxStepTurn);
   double stepX           = Math::clamp(step.x, -maxStep, maxStep) * cos(stepTurn/maxStepTurn * Math::pi/2);
+  double stepY           = Math::clamp(step.y, -maxStep, maxStep) * cos(stepTurn/maxStepTurn * Math::pi/2);
 
-  return Vector2d(stepX, stepTurn);
+  return Vector3d(stepX, stepY, stepTurn);
 }
 
 // Stepcontrol
@@ -98,6 +127,10 @@ void PrimitiveManeuvers::prepare_walk()
   getMotionRequest().armMotionRequest.id = ArmMotionRequest::arms_back;
 }
 
+PrimitiveManeuvers::Step PrimitiveManeuvers::new_step(Vector3d step) {
+  Step newStep = {step.x, step.y, step.z, 0.5};
+  return newStep;
+}
 PrimitiveManeuvers::Step PrimitiveManeuvers::new_step(double x,
                                                       double y,
                                                       double rotation) {
@@ -139,6 +172,24 @@ void PrimitiveManeuvers::execute_step_list() {
     getMotionRequest().walkRequest.stepControl.target.rotation      = step_list.at(0).rotation;
     getMotionRequest().walkRequest.character                        = step_list.at(0).character;
 
+    // sync foot_to_be_used with the movableFoot
+    switch (getMotionStatus().stepControl.moveableFoot)
+    {
+      case MotionStatus::StepControlStatus::LEFT:
+        foot_to_be_used = Foot::Left;
+        break;
+      case MotionStatus::StepControlStatus::RIGHT:
+        foot_to_be_used = Foot::Right;
+        break;
+        // TODO: choose foot more intelligently when both feet are usable
+      case MotionStatus::StepControlStatus::BOTH:
+        foot_to_be_used = Foot::Right;
+        break;
+      case MotionStatus::StepControlStatus::NONE:
+        foot_to_be_used = Foot::Right;
+        break;
+    }
+
     // stepID higher than the last one means, stepControl request with the
     // last_stepcontrol_stepID has been accepted
     // switch the foot_to_be_used
@@ -153,9 +204,5 @@ void PrimitiveManeuvers::execute_step_list() {
     getMotionRequest().walkRequest.stepControl.moveLeftFoot = foot_to_be_used == Right ? false : true;
   } else {
     getMotionRequest().id = motion::stand;
-  }
-
-  if (getMotionStatus().stepControl.stepID < last_stepcontrol_stepID) {
-    last_stepcontrol_stepID = getMotionStatus().stepControl.stepID;
   }
 }

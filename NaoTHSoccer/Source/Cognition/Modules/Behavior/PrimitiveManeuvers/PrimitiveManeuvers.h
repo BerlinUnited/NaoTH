@@ -62,10 +62,12 @@ private:
   // Walks to the ball
   // returns true if reached
   bool MWalk_to_ball(Foot foot);
+  // Moves around the ball
+  bool MMove_around_ball(Foot foot, bool go_right);
 
   // Limit steps depending on rotation
   // returns Vector2d with x component stepX and y component stepRotation
-  Vector2d limit_step(Vector2d step);
+  Vector3d limit_step(Vector3d step);
 
   // Stepcontrol
   struct Step {
@@ -87,6 +89,7 @@ private:
 
   bool add(PrimitiveManeuvers::Step step);
   void pop_step();
+  PrimitiveManeuvers::Step new_step(Vector3d step);
   PrimitiveManeuvers::Step new_step(double x, double y, double rotation);
   PrimitiveManeuvers::Step new_step(double x, double y, double rotation,
                                     double character);
