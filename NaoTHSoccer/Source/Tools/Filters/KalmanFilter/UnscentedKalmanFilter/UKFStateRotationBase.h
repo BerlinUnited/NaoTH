@@ -38,6 +38,10 @@ public:
         return Eigen::Block<Eigen::Matrix<double,dim_state,1> >(this->derived(), i, j, rows, columns);
     }
 
+    const Eigen::Block<const Eigen::Matrix<double,dim_state,1> > accessElements(int i, int j, int rows, int columns) const{
+        return Eigen::Block<const Eigen::Matrix<double,dim_state,1> >(this->derived(), i, j, rows, columns);
+    }
+
     Eigen::Quaterniond getRotationAsQuaternion() const {
         Eigen::Vector3d   rot(rotation());
         Eigen::AngleAxisd rot2;

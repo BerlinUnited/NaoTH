@@ -20,15 +20,25 @@ void IMUModel::execute(){
     // don't generate sigma points again because the process noise would be applied a second time
     // ukf.generateSigmaPoints();
 
-    Eigen::Quaterniond rotation_acc_to_gravity;
-    Eigen::Vector3d acceleration = Eigen::Vector3d(getAccelerometerData().data.x, getAccelerometerData().data.y, getAccelerometerData().data.z);
-    rotation_acc_to_gravity.setFromTwoVectors(acceleration,Eigen::Vector3d(0,0,-1));
+    //Eigen::Vector3d acceleration = Eigen::Vector3d(getAccelerometerData().data.x, getAccelerometerData().data.y, getAccelerometerData().data.z);
 
-    IMU_Measurement z;
-    // gyro z axis seems to measure in opposite direction (turning left measures negative angular velocity, should be positive)
-    z << quaternionToRotationVector(rotation_acc_to_gravity), getGyrometerData().data.x, getGyrometerData().data.y, -getGyrometerData().data.z;
+    // TODO: empirical determination
+    /*if(fabs(acceleration.norm() - 9.81) < 1){ // use acceleration
+        Eigen::Quaterniond rotation_acc_to_gravity;
+        rotation_acc_to_gravity.setFromTwoVectors(acceleration,Eigen::Vector3d(0,0,-1));
 
-    ukf.update(z);
+        IMU_RotationMeasurement z;
+        // gyro z axis seems to measure in opposite direction (turning left measures negative angular velocity, should be positive)
+        z << quaternionToRotationVector(rotation_acc_to_gravity), getGyrometerData().data.x, getGyrometerData().data.y, -getGyrometerData().data.z;
+
+        ukf.update(z);
+    } else { // use only gyro meter*/
+        IMU_RotVelMeasurement z;
+        // gyro z axis seems to measure in opposite direction (turning left measures negative angular velocity, should be positive)
+        z << getGyrometerData().data.x, getGyrometerData().data.y, -getGyrometerData().data.z;
+
+        ukf.update(z);
+    //}
 
     writeIMUData();
 

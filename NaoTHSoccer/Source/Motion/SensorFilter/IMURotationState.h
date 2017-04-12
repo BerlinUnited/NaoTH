@@ -10,42 +10,40 @@
 #pragma GCC diagnostic pop
 
 // state in global reference frame
-template <class M, int dim, int dim_cov = dim, int rotation_index = 0>
-class State : public UKFStateRotationBase<State<M, dim, dim_cov>, rotation_index, dim>{
+template <class M1, class M2, int dim, int dim_cov = dim, int rotation_index = 0>
+class State : public UKFStateRotationBase<State<M1, M2, dim, dim_cov>, rotation_index, dim>{
     public: // constructors
         // This constructor allows you to construct MyVectorType from Eigen expressions
         template<typename OtherDerived>
         State(const Eigen::MatrixBase<OtherDerived>& other)
-            : UKFStateRotationBase<State<M, dim, dim_cov>, rotation_index, dim>(other)
+            : UKFStateRotationBase<State<M1, M2, dim, dim_cov>, rotation_index, dim>(other)
         { }
 
         // inital state (zero rotation, zero angular velocity)
-        State(): UKFStateRotationBase<State<M, dim, dim_cov>, rotation_index, dim>(){
+        State(): UKFStateRotationBase<State<M1, M2, dim, dim_cov>, rotation_index, dim>(){
         }
 
         // "down casting"
-        State(const UKFStateRotationBase<State<M, dim, dim_cov>, rotation_index, dim>& other):
-            UKFStateRotationBase<State<M, dim, dim_cov>, rotation_index, dim>(other)
+        State(const UKFStateRotationBase<State<M1, M2, dim, dim_cov>, rotation_index, dim>& other):
+            UKFStateRotationBase<State<M1, M2, dim, dim_cov>, rotation_index, dim>(other)
         {}
-
-    public: // operators
-        // This method allows you to assign Eigen expressions to MyVectorType
-        // TODO: needed?
-        template<typename OtherDerived>
-        State& operator=(const Eigen::MatrixBase <OtherDerived>& other)
-        {
-            this->UKFStateRotationBase<State<M, dim, dim_cov>, rotation_index, dim>::operator=(other);
-            return *this;
-        }
 
     public: // accessors
 
         Eigen::Block<Eigen::Matrix<double,dim,1> > rotational_velocity(){
-            return UKFStateRotationBase<State<M, dim, dim_cov>, rotation_index, dim>::accessElements(3,0,3,1);
+            return UKFStateRotationBase<State<M1, M2, dim, dim_cov>, rotation_index, dim>::accessElements(3,0,3,1);
+        }
+
+        const Eigen::Block<const Eigen::Matrix<double,dim,1> > rotational_velocity() const{
+            return UKFStateRotationBase<State<M1, M2, dim, dim_cov>, rotation_index, dim>::accessElements(3,0,3,1);
         }
 
         Eigen::Block<Eigen::Matrix<double,dim,1> > bias_rotational_velocity(){
-            return UKFStateRotationBase<State<M, dim, dim_cov>, rotation_index, dim>::accessElements(6,0,3,1);
+            return UKFStateRotationBase<State<M1, M2, dim, dim_cov>, rotation_index, dim>::accessElements(6,0,3,1);
+        }
+
+        const Eigen::Block<const Eigen::Matrix<double,dim,1> > bias_rotational_velocity() const{
+            return UKFStateRotationBase<State<M1, M2, dim, dim_cov>, rotation_index, dim>::accessElements(6,0,3,1);
         }
 
     public:
@@ -77,7 +75,8 @@ class State : public UKFStateRotationBase<State<M, dim, dim_cov>, rotation_index
         }
 
         // state to measurement transformation function
-        M asMeasurement() {
+        // HACK: add return type as parameter to enable overloading...
+        M1 asMeasurement(const M1& z) const {
             // state to measurement function
             // transform acceleration part of the state into local measurement space (the robot's body frame = frame of accelerometer), the bias is already in this frame
             Eigen::Vector3d rotational_velocity_in_measurement_space = rotational_velocity();// + bias_rotational_velocity();
@@ -88,9 +87,16 @@ class State : public UKFStateRotationBase<State<M, dim, dim_cov>, rotation_index
             Eigen::AngleAxisd temp(q);
             Eigen::Vector3d   rotation_in_measurement_space(temp.angle() * temp.axis());
 
-            M return_val;
+            M1 return_val(z); // HACK: prevent "unused parameter" warning
             return_val << rotation_in_measurement_space, rotational_velocity_in_measurement_space;
 
+            return return_val;
+        }
+
+        // HACK: add return type as parameter to enable overloading...
+        M2 asMeasurement(const M2& z) const {
+            M2 return_val(z);
+            return_val << rotational_velocity();
             return return_val;
         }
 };

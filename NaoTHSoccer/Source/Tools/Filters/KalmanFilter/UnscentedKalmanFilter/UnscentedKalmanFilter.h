@@ -12,7 +12,7 @@
     #include <Eigen/Dense>
 #pragma GCC diagnostic pop
 
-template <int dim_state, int dim_state_cov, int dim_measurement, int dim_measurement_cov, class S, class M>
+template <int dim_state, int dim_state_cov, int dim_measurement, int dim_measurement_cov, class S>
 class UKF {
     public:
 // TODO: enable different updates like only acceleration and rotation or all three
@@ -98,19 +98,22 @@ class UKF {
             P     = cov/* + Q*/; // process covariance is applied before the process model (while generating the sigma points)
         }
 
+        template<typename M>
         void update(M& z){
             std::vector<M, Eigen::aligned_allocator<M> > sigmaMeasurements;
 
             // map sigma points to measurement space
             for (typename std::vector<S, Eigen::aligned_allocator<S> >::iterator i = sigmaPoints.begin(); i != sigmaPoints.end(); i++){
-                sigmaMeasurements.push_back((*i).asMeasurement());
+                sigmaMeasurements.push_back((*i).asMeasurement(z));
             }
 
             // calculate predicted measurement z (weighted mean of sigma points)
             M predicted_z = M::calcMean(sigmaMeasurements);
 
             // calculate current measurement covariance
-            Eigen::Matrix<double, dim_measurement_cov, dim_measurement_cov> Pzz = Eigen::Matrix<double, dim_measurement_cov, dim_measurement_cov>::Zero();
+            Eigen::MatrixXd Pzz = Eigen::MatrixXd::Zero(z.rows(),z.rows());
+            //        Eigen::MatrixXd rotational_differences;
+            //        rotational_differences.resize(3,rotations.size());
             M temp;
 
             for(typename std::vector<M, Eigen::aligned_allocator<M> >::iterator i = sigmaMeasurements.begin(); i != sigmaMeasurements.end(); ++i){
@@ -119,10 +122,11 @@ class UKF {
             }
 
             // apply measurement noise covariance
-            Eigen::Matrix<double, dim_measurement_cov, dim_measurement_cov> Pvv = Pzz + R;
+            // TODO: use correct measurement noise covariance matrix R
+            Eigen::MatrixXd Pvv = Pzz/* + R*/;
 
             // calculate state-measurement cross-covariance
-            Eigen::Matrix<double, dim_state_cov, dim_measurement_cov> Pxz = Eigen::Matrix<double, dim_state_cov, dim_measurement_cov>::Zero();
+            Eigen::MatrixXd Pxz = Eigen::MatrixXd::Zero(state.rows(),z.rows());
             S temp1;
             M temp2;
 
@@ -134,8 +138,7 @@ class UKF {
             }
 
             // calculate kalman gain
-            Eigen::Matrix<double, dim_state_cov, dim_measurement_cov> K;
-            K = Pxz*Pvv.inverse();
+            Eigen::MatrixXd K = Pxz*Pvv.inverse();
 
             // calculate new state and covariance
             M z_innovation = z - predicted_z;
