@@ -88,9 +88,9 @@ def animate(i, log, edgelsPlotTop, edgelsPlot, projectedEdgelsPlot):
     projectedEdgelsPlot.set_offsets(msg[3] + msg[4])
 
     # It's time to get things done
-    #ransac = Ransac(50, 0.4, 1/6)
-    #bestParameter1, bestParameter2, outlier = ransac.getOutlier(edgelFrameTop)
-    #print(bestParameter1, bestParameter2, outlier)
+    ransac = Ransac(50, 0.4, 1/6)
+    bestParameter1, bestParameter2, outlier = ransac.getOutlier(edgelFrameTop)
+    print(bestParameter1, bestParameter2, outlier)
 
 # init plot
 plt.close('all')

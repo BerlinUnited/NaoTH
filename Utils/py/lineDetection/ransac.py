@@ -4,7 +4,7 @@ import math
 import random
 
 # TODO: Get rid of that
-LINECOUNT = 3
+LINECOUNT = 1
 
 class Ransac:
 
@@ -14,6 +14,9 @@ class Ransac:
         self.inlierRatio = inlierRatio
 
     def getOutlier(self, data):
+        if not data:
+            return None, None, None
+
         bestParameter1 = 0
         bestParameter2 = 0
         bestIn = []
@@ -36,19 +39,24 @@ class Ransac:
                     inlier.append(point)
                 else:
                     outlier.append(point)
-            print("INLIER:", len(inlier))
 
 
             if len(inlier) >= math.floor(self.inlierRatio * len(data)) and len(inlier) > len(bestIn):
                 bestIn = inlier
                 bestOut = outlier
 
-                # create line out of smaple
-                m = (sampleB[1]-sampleA[1]) / (sampleB[0] - sampleA[0])
-                b = sampleB[1] - (m * sampleB[0])
+                # create line out of sample
+                x = sampleB[0] - sampleA[0]
+                if x:
+                    m = (sampleB[1] - sampleA[1]) / x
+                    b = sampleB[1] - (m * sampleB[0])
 
-                bestParameter1 = m
-                bestParameter2 = b
+                    bestParameter1 = m
+                    bestParameter2 = b
+                else:
+                    # vertical line
+                    bestParameter1 = sampleA[0]
+                    bestParameter2 = None
 
                 #data = inlier
 
