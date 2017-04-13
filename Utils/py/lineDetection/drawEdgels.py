@@ -3,6 +3,7 @@
 import argparse
 parser = argparse.ArgumentParser(description='script to display edgels from log files')
 parser.add_argument("logfile", help='log file to draw edgels from')
+parser.add_argument("--direction", help="show direction", action="store_true")
 args = parser.parse_args()
 
 from naoth.LogReader import LogReader
@@ -74,17 +75,22 @@ def animate(i, log, edgelsPlotTop, edgelsPlot, projectedEdgelsPlot):
     msg = log.next()
 
     edgelFrameTop = [(edgel.point.x, -edgel.point.y) for edgel in msg[1].edgels]
+    #edgelRotationsTop = [(edgel.direction.x, edgel.direction.y) for edgel in msg[1].edgels]
     edgelsPlotTop.set_offsets(edgelFrameTop)
+    if args.direction:
+        edgelsPlotTop.set_UVC([edgel.direction.x for edgel in msg[1].edgels], [edgel.direction.y for edgel in msg[1].edgels])
 
     edgelFrame = [(edgel.point.x, -edgel.point.y) for edgel in msg[2].edgels]
     edgelsPlot.set_offsets(edgelFrame)
+    if args.direction:
+        edgelsPlot.set_UVC([edgel.direction.x for edgel in msg[2].edgels], [edgel.direction.y for edgel in msg[2].edgels])
 
     projectedEdgelsPlot.set_offsets(msg[3] + msg[4])
 
     # It's time to get things done
-    ransac = Ransac(50, 0.4, 1/6)
-    bestParameter1, bestParameter2, outlier = ransac.getOutlier(edgelFrameTop)
-    print(bestParameter1, bestParameter2, outlier)
+    #ransac = Ransac(50, 0.4, 1/6)
+    #bestParameter1, bestParameter2, outlier = ransac.getOutlier(edgelFrameTop)
+    #print(bestParameter1, bestParameter2, outlier)
 
 # init plot
 plt.close('all')
@@ -95,12 +101,18 @@ point_size = 5
 ax = fig.add_subplot(2,2,1, aspect='equal')
 ax.set_xlim([0, 640])
 ax.set_ylim([-480, 0])
-edgelsPlotTop = plt.scatter([], [], point_size)
+if args.direction:
+    edgelsPlotTop = ax.quiver([1,1], [1,1], [1,1], [0,0], pivot='mid', color='b', units='dots', scale=0.1)
+else:
+    edgelsPlotTop = plt.scatter([], [], point_size)
 
 ax = fig.add_subplot(2,2,3, aspect='equal')
 ax.set_xlim([0, 640])
 ax.set_ylim([-480, 0])
-edgelsPlot = plt.scatter([], [], point_size)
+if args.direction:
+    edgelsPlot = ax.quiver([1,1], [1,1], [1,1], [0,0], pivot='mid', color='b', units='dots', scale=0.1)
+else:
+    edgelsPlot = plt.scatter([], [], point_size)
 
 ax = fig.add_subplot(1,2,2, aspect='equal')
 ax.set_xlim([-10000, 10000])
