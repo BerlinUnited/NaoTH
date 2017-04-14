@@ -63,7 +63,11 @@ private:
   // returns true if reached
   bool MWalk_to_ball(Foot foot);
   // Moves around the ball
+  // returns true when ???
   bool MMove_around_ball(Foot foot, bool go_right);
+  // Walks back until the ball is seen
+  // and approaches the ball towards the enemy goal
+  bool MWalk_back_approach(Foot foot);
 
   // Limit steps depending on rotation
   // returns Vector2d with x component stepX and y component stepRotation
