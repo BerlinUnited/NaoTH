@@ -178,13 +178,16 @@ solution "NaoTHSoccer"
 
   -- commons
   dofile (FRAMEWORK_PATH .. "/Commons/Make/Commons.lua")
+    vpaths { ["*"] = FRAMEWORK_PATH .. "/Commons/Source" }
   
   -- core
   dofile "NaoTHSoccer.lua"
+    vpaths { ["*"] = "../Source" }
   
   -- set up platforms
   if _OPTIONS["platform"] == "Nao" then
     dofile (FRAMEWORK_PATH .. "/Platforms/Make/NaoSMAL.lua")
+      vpaths { ["*"] = FRAMEWORK_PATH .. "/Platforms/Source/NaoSMAL" }
       -- HACK: boost from NaoQI SDK makes problems
       buildoptions {"-Wno-conversion"}
       defines { "BOOST_SIGNALS_NO_DEPRECATION_WARNING" }
@@ -193,16 +196,20 @@ solution "NaoTHSoccer"
     dofile (FRAMEWORK_PATH .. "/Platforms/Make/NaoRobot.lua")
       kind "ConsoleApp"
       links { "NaoTHSoccer", "Commons" }
+      vpaths { ["*"] = FRAMEWORK_PATH .. "/Platforms/Source/NaoRobot" }
   else
     dofile (FRAMEWORK_PATH .. "/Platforms/Make/SimSpark.lua")
       kind "ConsoleApp"
       links { "NaoTHSoccer", "Commons" }
+      vpaths { ["*"] = FRAMEWORK_PATH .. "/Platforms/Source/SimSpark" }
       debugargs { "--sync" }
     dofile (FRAMEWORK_PATH .. "/Platforms/Make/LogSimulator.lua")
       kind "ConsoleApp"
       links { "NaoTHSoccer", "Commons" }
+      vpaths { ["*"] = FRAMEWORK_PATH .. "/Platforms/Source/LogSimulator" }
     dofile (FRAMEWORK_PATH .. "/Platforms/Make/LogSimulatorJNI.lua")
       kind "SharedLib"
       links { "NaoTHSoccer", "Commons" }
+      vpaths { ["*"] = FRAMEWORK_PATH .. "/Platforms/Source/LogSimulatorJNI" }
   end
   
