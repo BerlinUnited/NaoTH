@@ -21,6 +21,7 @@
 #include "Representations/Motion/Request/HeadMotionRequest.h"
 #include "Representations/Motion/Request/MotionRequest.h"
 #include "Representations/Motion/MotionStatus.h"
+#include "Representations/Perception/BallPercept.h"
 #include "Representations/Perception/MultiBallPercept.h"
 #include "Representations/Modeling/BallModel.h"
 
@@ -30,6 +31,7 @@ PROVIDE(DebugRequest)
 PROVIDE(DebugModify)
 
 REQUIRE(FieldInfo)
+REQUIRE(BallPercept)
 REQUIRE(MultiBallPercept)
 REQUIRE(MotionStatus)
 REQUIRE(BallModel)
@@ -70,7 +72,7 @@ private:
   bool MWalk_back_approach(Foot foot);
 
   // Limit steps depending on rotation
-  // returns Vector2d with x component stepX and y component stepRotation
+  // returns Vector3d where z is the rotation
   Vector3d limit_step(Vector3d step);
 
   // Stepcontrol
@@ -82,9 +84,8 @@ private:
   };
   std::vector<Step> step_list;
 
-  // used to alternate between left and right foot when walking
-  // inside execute_steplist()
-  // everywhere else, indicates the last foot that has been moved
+  // used to alternate between left and right foot 
+  // when walking inside execute_steplist()
   Foot foot_to_be_used;
 
   unsigned int last_stepcontrol_stepID;
