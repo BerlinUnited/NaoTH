@@ -71,16 +71,16 @@ def projectEdgel(x,y,cMatrix):
     result.y = result.y + cMatrix.translation.y
     return (result.x, result.y)
 
-def animate(i, log, edgelsPlotTop, edgelsPlot, projectedEdgelsPlot):
+def animate(i, log, edgelsPlotTop, linePlotTop, edgelsPlot, projectedEdgelsPlot):
     msg = log.next()
 
-    edgelFrameTop = [(edgel.point.x, -edgel.point.y) for edgel in msg[1].edgels]
+    edgelFrameTop = [(edgel.point.x, -edgel.point.y, edgel.direction.x, edgel.direction.y) for edgel in msg[1].edgels]
     #edgelRotationsTop = [(edgel.direction.x, edgel.direction.y) for edgel in msg[1].edgels]
     edgelsPlotTop.set_offsets(edgelFrameTop)
     if args.direction:
         edgelsPlotTop.set_UVC([edgel.direction.x for edgel in msg[1].edgels], [edgel.direction.y for edgel in msg[1].edgels])
 
-    edgelFrame = [(edgel.point.x, -edgel.point.y) for edgel in msg[2].edgels]
+    edgelFrame = [(edgel.point.x, -edgel.point.y, edgel.direction.x, edgel.direction.y) for edgel in msg[2].edgels]
     edgelsPlot.set_offsets(edgelFrame)
     if args.direction:
         edgelsPlot.set_UVC([edgel.direction.x for edgel in msg[2].edgels], [edgel.direction.y for edgel in msg[2].edgels])
@@ -88,10 +88,14 @@ def animate(i, log, edgelsPlotTop, edgelsPlot, projectedEdgelsPlot):
     projectedEdgelsPlot.set_offsets(msg[3] + msg[4])
 
     # It's time to get things done
-    ransac = Ransac(50, 0.4, 1/6)
+    ransac = Ransac(11, 20, 0.7)
     bestParameter1, bestParameter2, outlier = ransac.getOutlier(edgelFrameTop)
-    print(bestParameter1, bestParameter2, outlier)
 
+    if bestParameter2:
+        linePlotTop.set_data([(0, 640), (bestParameter2, 640 * bestParameter1 + bestParameter2)])
+    elif bestParameter1:
+        #vertical line
+        linePlotTop.set_data([(bestParameter1, bestParameter1), (-480, 0)])
 # init plot
 plt.close('all')
 fig = plt.figure()
@@ -105,6 +109,9 @@ if args.direction:
     edgelsPlotTop = ax.quiver([1,1], [1,1], [1,1], [0,0], pivot='mid', color='b', units='dots', scale=0.1)
 else:
     edgelsPlotTop = plt.scatter([], [], point_size)
+
+#linePlotTop = plt.scatter([], [], point_size)
+linePlotTop = ax.plot([],[], 'r')[0]
 
 ax = fig.add_subplot(2,2,3, aspect='equal')
 ax.set_xlim([0, 640])
@@ -129,5 +136,5 @@ log = iter(LogReader(args.logfile, logParser, getEdgels))
 
 
 # start animation
-ani = animation.FuncAnimation(fig, animate, frames=100, fargs=(log, edgelsPlotTop, edgelsPlot, projectedEdgelsPlot), interval = 60)
+ani = animation.FuncAnimation(fig, animate, frames=100, fargs=(log, edgelsPlotTop, linePlotTop, edgelsPlot, projectedEdgelsPlot), interval = 60)
 plt.show()

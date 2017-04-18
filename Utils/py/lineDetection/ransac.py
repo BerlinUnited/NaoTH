@@ -3,9 +3,6 @@ from numpy import linalg as LA
 import math
 import random
 
-# TODO: Get rid of that
-LINECOUNT = 1
-
 class Ransac:
 
     def __init__(self, iterations, threshDist, inlierRatio):
@@ -13,9 +10,66 @@ class Ransac:
         self.threshDist = threshDist
         self.inlierRatio = inlierRatio
 
+        self.cluster = []
+
+    def unit_vector(self, vector):
+        return vector / np.linalg.norm(vector)
+
+    def angle_between(self, v1, v2):
+        v1_u = self.unit_vector(v1)
+        v2_u = self.unit_vector(v2)
+        return np.clip(np.dot(v1_u, v2_u), -1.0, 1.0)
+
+    def buildCluster(self, data):
+        # canopy clustering
+        self.cluster = []
+
+        # loose angle
+        t1 = math.cos(math.radians(10))
+        # tight angle
+        t2 = math.cos(math.radians(5))
+
+        startPoint = data.pop()
+        edgelList = data
+        currCluster = [startPoint]
+        self.cluster.append(currCluster)
+
+        while 1:
+            newEdgelList = []
+            startOrientation = (startPoint[2], startPoint[3])
+
+            for edgel in edgelList:
+                orientation = (edgel[2], edgel[3])
+
+                cos_angle = self.angle_between(startOrientation, orientation)
+
+                if cos_angle > t2:
+                    currCluster.append(edgel)
+                elif cos_angle > t1:
+                    currCluster.append(edgel)
+                    newEdgelList.append(edgel)
+                else:
+                    newEdgelList.append(edgel)
+
+            if not newEdgelList:
+                break
+            startPoint = newEdgelList.pop()
+            currCluster = [startPoint]
+            self.cluster.append(currCluster)
+            edgelList = newEdgelList
+
     def getOutlier(self, data):
         if not data:
             return None, None, None
+
+        self.buildCluster(data)
+
+        data = max(self.cluster, key=len)
+
+        #print(len(data), len(max(self.cluster, key=len)))
+
+
+        print(len(data))
 
         bestParameter1 = 0
         bestParameter2 = 0
@@ -23,16 +77,27 @@ class Ransac:
         bestOut = []
 
         for i in range(self.iterations):
+            # ----------
+            # Prediction
+            # ----------
+
             # pick two random points
             pick = random.sample(range(0, len(data)), 2)
             sampleA = data[pick[0]]
+            sampleA = (sampleA[0], sampleA[1])
             sampleB = data[pick[1]]
+            sampleB = (sampleB[0], sampleB[1])
+
+            # ----
+            # Test
+            # ----
 
             # calculate distances of all pointes to the line
             inlier = []
             outlier = []
             lineVec = np.subtract(sampleB, sampleA)
-            for point in data:
+            for edgel in data:
+                point = (edgel[0], edgel[1])
                 d = LA.norm(np.cross(lineVec, np.subtract(sampleA, point))) / LA.norm(lineVec)
 
                 if abs(d) <= self.threshDist:
@@ -40,8 +105,11 @@ class Ransac:
                 else:
                     outlier.append(point)
 
+            #print(len(inlier))
 
             if len(inlier) >= math.floor(self.inlierRatio * len(data)) and len(inlier) > len(bestIn):
+                print("Found something", len(data), self.inlierRatio, self.inlierRatio * len(data))
+
                 bestIn = inlier
                 bestOut = outlier
 
@@ -92,7 +160,7 @@ if __name__ == '__main__':
 
     ransac = Ransac(50, 0.4, 1/6)
 
-    for i in range(LINECOUNT):
+    for i in range(3):
         # run ransac
         bestParameter1, bestParameter2, outlier = ransac.getOutlier(outlier)
 
