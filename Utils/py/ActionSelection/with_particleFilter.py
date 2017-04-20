@@ -7,30 +7,34 @@ from tools import action as a
 from tools import Simulation as Sim
 from naoth import math2d as m2d
 from tools import tools
+import time
 
 
 class State:
     def __init__(self):
         self.pose = m2d.Pose2D()
         self.pose.translation = m2d.Vector2(0, 0)
-        self.pose.rotation = math.radians(-35)
+        self.pose.rotation = math.radians(0)
 
         self.ball_position = m2d.Vector2(100.0, 0.0)
 
         self.obstacle_list = ([])  # is in global coordinates
 
 
-def draw_actions(actions_consequences, state, best_action, angle):
+def draw_actions(actions_consequences, state, best_action, normal_angle, better_angle, angle_list):
     plt.clf()
     tools.draw_field()
 
-    origin = state.pose.translation
-    arrow_head = m2d.Vector2(500, 0).rotate(math.radians(angle))
-
     axes = plt.gca()
     axes.add_artist(Circle(xy=(state.pose.translation.x, state.pose.translation.y), radius=100, fill=False, edgecolor='white'))
-    axes.arrow(origin.x, origin.y, arrow_head.x, arrow_head.y, head_width=100, head_length=100, fc='k', ec='k')
     axes.text(0, 0, best_action, fontsize=12)
+
+    origin = state.pose.translation
+    # arrow_head = m2d.Vector2(500, 0).rotate(math.radians(normal_angle + better_angle))
+
+    for angle in angle_list:
+        arrow_head = m2d.Vector2(500, 0).rotate(state.pose.rotation + math.radians(normal_angle + angle))
+        axes.arrow(origin.x, origin.y, arrow_head.x, arrow_head.y, head_width=100, head_length=100, fc='k', ec='k')
 
     x = np.array([])
     y = np.array([])
@@ -55,8 +59,9 @@ def main():
     sidekick_right = a.Action("sidekick_right", 750, 150, -89.657943335302260, 10.553726275058064)
 
     action_list = [no_action, kick_short, sidekick_left, sidekick_right]
+
     num_particles = 30
-    num_angle_particle = 20
+    num_angle_particle = 30
     angle_list = np.random.randint(low=0, high=360, size=num_angle_particle)
     ####################################################################################################################
     while True:
@@ -71,37 +76,41 @@ def main():
 
         # Decide best action
         best_action = Sim.decide_smart(actions_consequences, state)
+
         ####################################################################################################################
+        # Do it more than once for one simulation cycle
+        for i in xrange(0, 20):
+            # Modify angle of best action with particle Filter
+            bla_num_particles = 1
+            improved_action = copy.deepcopy(action_list[best_action])
 
-        # Modify angle of best action with particle Filter
-        bla_num_particles = 1
-        improved_action = copy.deepcopy(action_list[best_action])
-        # improved_action = action_list[best_action]  # Todo: should be a copy
+            improved_actions_consequences = []
+            for angle in angle_list:
+                # Set the angle for the kick to angle
+                improved_action.angle = angle
 
-        improved_actions_consequences = []
-        for angle in angle_list:
-            # Set the angle for the kick to angle
-            improved_action.angle = angle
+                # Simulate Consequences
+                improved_single_consequence = a.ActionResults([])
+                improved_actions_consequences.append(Sim.simulate_consequences(improved_action, improved_single_consequence, state, bla_num_particles))
 
-            # Simulate Consequences
-            improved_single_consequence = a.ActionResults([])
-            improved_actions_consequences.append(Sim.simulate_consequences(improved_action, improved_single_consequence, state, bla_num_particles))
+            # actions_consequences is now a list of ActionResults of one action with different angles
 
-        # actions_consequences is now a list of ActionResults of one action with different angles
+            # Decide best action
+            improved_best_action = Sim.decide_smart(improved_actions_consequences, state)
+            # print("Best Action: " + str(improved_best_action) + " with angle: " + str(angle_list[improved_best_action]))
 
-        # Decide best action
-        improved_best_action = Sim.decide_smart(improved_actions_consequences, state)
-        print("Best Action: " + str(improved_best_action) + " with angle: " + str(angle_list[improved_best_action]))
+            # Resampling - just take the best and get new samples near them + some random sample from a uniform distribution
+            mu = angle_list[improved_best_action]  # mean of best angle
+            test = (np.random.random(10) - 0.5) * 2  # returns 10 values between -1 and 1
+            new_angle_list = (test + mu) % 360
+            # new_angle_list = np.append(new_angle_list, np.random.randint(low=0, high=360, size=5))  # Add random particles
+            new_angle_list = np.append(new_angle_list, np.repeat(angle_list[improved_best_action], 15))
 
-        # Resampling - just take the best and get new samples near them + some random sample from a uniform distribution
-        mu, sigma = angle_list[improved_best_action], 20  # mean and standard deviation of best angle
-        new_angle_list = (np.random.randint(low=int(mu - sigma), high=int(mu + sigma), size=15) % 360)  # uniform maybe better normal dist
-        new_angle_list = np.append(new_angle_list, np.random.randint(low=0, high=360, size=4))  # Add random particles
-        new_angle_list = np.append(new_angle_list, angle_list[improved_best_action])  # Add best angle
+            angle_list = new_angle_list
 
-        # Todo Visualize -> seems to switch between - happens if action jumps
-        draw_actions(actions_consequences, state, action_list[best_action].name, angle_list[improved_best_action])
-        angle_list = new_angle_list
+        # print(angle_list[improved_best_action])
+        draw_actions(actions_consequences, state, action_list[best_action].name, action_list[best_action].angle,  angle_list[improved_best_action], angle_list)
+
 
 if __name__ == "__main__":
     main()
