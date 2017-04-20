@@ -6,7 +6,7 @@ import potential_field as pf
 from naoth import math2d as m2d
 
 
-def simulate_consequences(action, categorized_ball_positions, state):
+def simulate_consequences(action, categorized_ball_positions, state, num_particles):  # TODO: change that everywhere
 
     categorized_ball_positions.reset()
 
@@ -40,7 +40,7 @@ def simulate_consequences(action, categorized_ball_positions, state):
     mean_test_list_y = []
 
     # now generate predictions and categorize
-    for i in range(0, a.num_particles):
+    for i in range(0, num_particles):
         # predict and calculate shoot line
         global_ball_end_position = state.pose * action.predict(state.ball_position, True)
 
