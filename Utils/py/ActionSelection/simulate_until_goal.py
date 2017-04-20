@@ -99,8 +99,9 @@ def main():
             # update the robots position
             rotation = np.arctan2(expected_ball_pos.y, expected_ball_pos.x)
             print(math.degrees(rotation))
-            state.pose.translation = state.pose * expected_ball_pos
-            state.pose.rotation += rotation
+            state.update_pos(state.pose * expected_ball_pos, state.pose.rotation + rotation)
+            ##state.pose.translation = state.pose * expected_ball_pos
+            ##state.pose.rotation += rotation
 
             num_kicks += 1
 
@@ -111,10 +112,12 @@ def main():
             attack_direction = attack_dir.get_attack_direction(state)
             # Todo: can run in a deadlock for some reason
             if attack_direction > 0:
-                state.pose.rotation += math.radians(10)  # Should be turn right
+                state.update_pos(state.pose.translation, state.pose.rotation + math.radians(10)) # Should be turn right
+                #state.pose.rotation += math.radians(10)  # Should be turn right
                 print("Robot turns right - global rotation turns left")
             else:
-                state.pose.rotation -= math.radians(10)  # Should be turn left
+                state.update_pos(state.pose.translation, state.pose.rotation - math.radians(10)) # Should be turn left
+                #state.pose.rotation -= math.radians(10)  # Should be turn left
                 print("Robot turns left - global rotation turns right")
 
             num_turn_degrees += 1
