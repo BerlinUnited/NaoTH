@@ -70,7 +70,7 @@ def main():
         # Simulate Consequences
         for action in action_list:
             single_consequence = a.ActionResults([])
-            actions_consequences.append(Sim.simulate_consequences(action, single_consequence, state))
+            actions_consequences.append(Sim.simulate_consequences(action, single_consequence, state, a.num_particles))
 
         # Decide best action
         best_action = Sim.decide_smart(actions_consequences, state)
