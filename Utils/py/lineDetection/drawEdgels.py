@@ -22,6 +22,8 @@ import naoth.math2d as m2
 
 from ransac import Ransac
 
+from cluster import Cluster
+
 def parseVector3(msg):
     return m3.Vector3(msg.x,msg.y,msg.z)
 
@@ -87,15 +89,36 @@ def animate(i, log, edgelsPlotTop, linePlotTop, edgelsPlot, projectedEdgelsPlot)
 
     projectedEdgelsPlot.set_offsets(msg[3] + msg[4])
 
+    #####################################
     # It's time to get things done
-    ransac = Ransac(11, 20, 0.7)
-    bestParameter1, bestParameter2, outlier = ransac.getOutlier(edgelFrameTop)
 
+    ransac = Ransac(11, 5, 0.1)
+
+    if 0:
+        cluster = Cluster.buildCluster(edgelFrameTop)
+        data = max(cluster, key=len)
+
+        # test cluster
+        edgelsPlotTop.set_offsets(data)
+
+    else:
+        data = edgelFrameTop
+
+    bestParameter1, bestParameter2, outlier = ransac.getOutlier(data)
+
+
+    # draw lines
     if bestParameter2:
         linePlotTop.set_data([(0, 640), (bestParameter2, 640 * bestParameter1 + bestParameter2)])
     elif bestParameter1:
         #vertical line
         linePlotTop.set_data([(bestParameter1, bestParameter1), (-480, 0)])
+
+    #
+    #####################################
+
+
+
 # init plot
 plt.close('all')
 fig = plt.figure()
