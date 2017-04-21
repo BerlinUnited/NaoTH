@@ -1423,7 +1423,7 @@ void SimSparkController::say()
   }
 
   // make sure all robot have chance to say something
-  if ( ( static_cast<int>(floor(theSenseTime*1000/getBasicTimeStep()/2)) % theGameInfo.playersPerTeam) +1 != theGameInfo.playersPerTeam ) {
+  if ( ( static_cast<int>(floor(theSenseTime*1000/getBasicTimeStep()/2)) % theGameInfo.playersPerTeam) +1 != theGameInfo.playerNumber ) {
     return;
   }
 
