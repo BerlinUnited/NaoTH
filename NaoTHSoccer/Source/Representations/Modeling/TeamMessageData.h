@@ -67,7 +67,6 @@ public:
 
     TeamMessageData();
     TeamMessageData(FrameInfo fi);
-    TeamMessageData(const TeamMessageData& other); // copy constructor!
 
     virtual ~TeamMessageData() {}
 

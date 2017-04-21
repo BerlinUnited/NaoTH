@@ -26,33 +26,6 @@ TeamMessageData::TeamMessageData(FrameInfo fi):
     temperature(0.0)
 {}
 
-TeamMessageData::TeamMessageData(const TeamMessageData &other):
-    frameInfo(other.frameInfo),
-    /* SPL-Message-Fields ****************************************************/
-    playerNumber(other.playerNumber),
-    teamNumber(other.teamNumber),
-    fallen(other.fallen),
-    pose(other.pose),
-    walkingTo(other.walkingTo),
-    ballAge(other.ballAge),
-    ballPosition(other.ballPosition),
-    ballVelocity(other.ballVelocity),
-    suggestion(other.suggestion),
-    intention(other.intention),
-    averageWalkSpeed(other.averageWalkSpeed),
-    maxKickDistance(other.maxKickDistance),
-    positionConfidence(other.positionConfidence),
-    sideConfidence(other.sideConfidence),
-    /* BU-Fields *************************************************************/
-    timestamp(other.timestamp),
-    bodyID(other.bodyID),
-    wantsToBeStriker(other.wantsToBeStriker),
-    timeToBall(other.timeToBall),
-    isPenalized(other.isPenalized),
-    batteryCharge(other.batteryCharge),
-    temperature(other.temperature)
-{}
-
 SPLStandardMessage TeamMessageData::createSplMessage() const
 {
     SPLStandardMessage spl;
