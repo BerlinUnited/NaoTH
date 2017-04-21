@@ -71,8 +71,6 @@ TeamSymbols::~TeamSymbols()
 /** the robot which is closest to own goal is defined as the last one */
 bool TeamSymbols::calculateIfTheLast()
 {
-  TeamMessage const& tm = theInstance->getTeamMessage();
-
   // initialize with own values
   double shortestDistance = (theInstance->getRobotPose().translation - theInstance->getFieldInfo().ownGoalCenter).abs();
 

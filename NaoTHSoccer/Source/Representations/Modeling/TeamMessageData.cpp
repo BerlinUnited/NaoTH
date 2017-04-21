@@ -1,26 +1,29 @@
 #include "TeamMessageData.h"
 
+#include <limits>
+
 TeamMessageData::TeamMessageData():TeamMessageData(FrameInfo())
 {}
 
 TeamMessageData::TeamMessageData(FrameInfo fi):
     frameInfo(fi),
     /* SPL-Message-Fields ****************************************************/
-    timestamp(0),
     playerNumber(0),
     teamNumber(0),
+    fallen(false),
+    ballAge(-1),
     suggestion(SPL_STANDARD_MESSAGE_MAX_NUM_OF_PLAYERS, 0),
     intention(0),
-    averageWalkSpeed(200),
+    averageWalkSpeed(160),
     maxKickDistance(3000),
     positionConfidence(0),
     sideConfidence(0),
-    ballAge(-1),
-    fallen(false),
+    
     /* BU-Fields *************************************************************/
+    timestamp(0),
     bodyID("unknown"),
-    timeToBall(std::numeric_limits<unsigned int>::max()),
     wantsToBeStriker(false),
+    timeToBall(std::numeric_limits<unsigned int>::max()),
     isPenalized(false),
     batteryCharge(0.0),
     temperature(0.0)

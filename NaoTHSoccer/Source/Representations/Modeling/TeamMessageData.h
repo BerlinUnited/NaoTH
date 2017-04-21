@@ -13,17 +13,17 @@
  * [ - do the same for (de-)serialization: serialize()/deserialize() ]
  */
 
-#include <limits>
+
 #include <vector>
 
-#include "Tools/NaoTime.h"
 #include "Tools/DataStructures/Printable.h"
 #include "Tools/Math/Vector2.h"
 #include "Tools/Math/Pose2D.h"
-#include "Tools/DataStructures/Serializer.h"
+//#include "Tools/DataStructures/Serializer.h"
 #include "MessagesSPL/SPLStandardMessage.h"
+
+// needed by BUUserTeamMessage
 #include "Messages/Representations.pb.h"
-#include "Representations/Infrastructure/GameData.h"
 #include "Representations/Infrastructure/FrameInfo.h"
 
 using namespace naoth;
@@ -104,13 +104,14 @@ private:
     void parseFromSplMessageData(const unsigned char *data, uint16_t size);
 };
 
+/*
 namespace naoth {
 template<> class Serializer<TeamMessageData>
 {
 public:
-    static void serialize(const TeamMessageData& representation, std::ostream& stream) {/*TODO?*/}
-    static void deserialize(std::istream& stream, TeamMessageData& representation) {/*TODO?*/}
+    static void serialize(const TeamMessageData& representation, std::ostream& stream);
+    static void deserialize(std::istream& stream, TeamMessageData& representation);
 };
-}
+}*/
 
 #endif // TEAMMESSAGEDATA_H

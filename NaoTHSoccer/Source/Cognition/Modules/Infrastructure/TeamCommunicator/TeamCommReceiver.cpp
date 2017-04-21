@@ -52,9 +52,8 @@ void TeamCommReceiver::execute()
 
   // wait until we got a valid playnumber
   if(getPlayerInfo().playerNumber > 0) {
-      // copying our own (old) message to the inbox
-      TeamMessageData msg(getTeamMessageData());
-      getTeamMessage().data[msg.playerNumber] = msg;
+    // copying our own (old) message to the inbox
+    getTeamMessage().data[getTeamMessageData().playerNumber] = getTeamMessageData();
   }
 
   // marking the begin of the outgoing message
