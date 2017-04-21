@@ -305,21 +305,33 @@ public class NaoSCP extends javax.swing.JFrame {
         NetwokPanel.NetworkConfig cfg = netwokPanel.getNetworkConfig();
 
         String lan = cfg.getLan().subnet + "." + txtRobotNumber.getText();
+        
         Logger.getGlobal().log(Level.INFO, "check " + lan);
-        InetAddress iAddr = InetAddress.getByName(lan);
-        if (!iAddr.isReachable(2500)) {
-            Logger.getGlobal().log(Level.WARNING, lan + " not reachable");
-        } else {
-            return lan;
+        
+        try{
+            InetAddress iAddr = InetAddress.getByName(lan);
+            
+            if (!iAddr.isReachable(2500)) {
+                Logger.getGlobal().log(Level.WARNING, lan + " not reachable");
+            } else {
+                return lan;
+            }
+        } catch (UnknownHostException uh) {
+            Logger.getGlobal().log(Level.WARNING, "Unknown host: " + lan);
         }
 
         String wlan = cfg.getWlan().subnet + "." + txtRobotNumber.getText();
         Logger.getGlobal().log(Level.INFO, "check " + wlan);
-        InetAddress iAddr2 = InetAddress.getByName(wlan);
-        if (!iAddr2.isReachable(2500)) {
-            Logger.getGlobal().log(Level.WARNING, wlan + " not reachable");
-        } else {
-            return wlan;
+        
+        try{        
+            InetAddress iAddr2 = InetAddress.getByName(wlan);
+            if (!iAddr2.isReachable(2500)) {
+                Logger.getGlobal().log(Level.WARNING, wlan + " not reachable");
+            } else {
+                return wlan;
+            }
+        } catch (UnknownHostException uh) {
+            Logger.getGlobal().log(Level.WARNING, "Unknown host: " + wlan);
         }
 
         throw new NaoSCPException("Robot is not reachable.");
@@ -332,7 +344,7 @@ public class NaoSCP extends javax.swing.JFrame {
         
         final DeployDialog deployDialog = new DeployDialog(this);
 
-        if (deployDialog.showOpenDialog() == DeployDialog.OPTION.APPROVE) {
+        if (deployDialog.showOpenDialog(this) == DeployDialog.OPTION.APPROVE) {
             
             final File targetDir = deployDialog.getSelectedFile();
 
