@@ -1447,7 +1447,8 @@ bool SimSparkController::hear(const sexp_t* sexp)
     return false;
   }
 
-  sexp = sexp->next;
+  // in new simspark version (0.6.8+) an additional "team" field was added!
+  sexp = sexp->next; // direction or teamname
   /*
   std::string direction;
   double dir;
@@ -1474,6 +1475,13 @@ bool SimSparkController::hear(const sexp_t* sexp)
   sexp = sexp->next;
   string msg;
   SexpParser::parseValue(sexp, msg);
+
+  // we got the "correct" msg value, if we - at least - got the SPL-message size!
+  if(msg.size() < (sizeof(SPLStandardMessage) - SPL_STANDARD_MESSAGE_DATA_SIZE)) {
+      // ... otherwise we have to read another field/value! (simspark 0.6.8+)
+      sexp = sexp->next;
+      SexpParser::parseValue(sexp, msg);
+  }
 
   if ( !msg.empty() && msg != ""){
     theTeamMessageDataIn.data.push_back(msg);
