@@ -13,6 +13,7 @@
 #include <XabslEngine/XabslEngine.h>
 
 #include "Representations/Modeling/TeamMessage.h"
+#include "Representations/Modeling/TeamMessageData.h"
 #include "Representations/Infrastructure/FrameInfo.h"
 #include "Representations/Infrastructure/FieldInfo.h"
 #include "Representations/Modeling/PlayerInfo.h"
@@ -38,6 +39,8 @@ BEGIN_DECLARE_MODULE(StableRoleDecision)
   REQUIRE(SoccerStrategy)
   REQUIRE(TeamMessage)
   REQUIRE(TeamMessageStatisticsModel)
+
+  PROVIDE(TeamMessageData)
 
   PROVIDE(RoleDecisionModel)
 END_DECLARE_MODULE(StableRoleDecision)

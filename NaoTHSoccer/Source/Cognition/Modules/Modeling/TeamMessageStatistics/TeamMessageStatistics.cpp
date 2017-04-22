@@ -16,10 +16,10 @@ TeamMessageStatistics::~TeamMessageStatistics()
 
 void TeamMessageStatistics::execute() {   
   //Check, from which robots we have received a message, and update the corresponding statistics
-  for (std::map<unsigned int, TeamMessage::Data>::const_iterator i = getTeamMessage().data.begin(); i != getTeamMessage().data.end(); ++i) {
-    unsigned int robotNumber = i->first;
+  for(auto const &it : getTeamMessage().data) {
+    unsigned int robotNumber = it.first;
     unsigned int receiveTime = getFrameInfo().getTime();
-    unsigned int receiveTime_sender = i->second.frameInfo.getTime();
+    unsigned int receiveTime_sender = it.second.frameInfo.getTime();
     std::map<unsigned int, RobotMessageStatistics*>::const_iterator r = robotMap.find(robotNumber);
     if (r != robotMap.end()) {
       if ((*r->second).lastMessageReceived_sender < receiveTime_sender) {
