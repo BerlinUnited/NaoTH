@@ -170,6 +170,7 @@ void TeamMessageData::print(std::ostream &stream) const
 TeamMessageCustom::TeamMessageCustom() :
   timestamp(0),
   bodyID("unknown"),
+  wasStriker(false),
   wantsToBeStriker(false),
   timeToBall(std::numeric_limits<unsigned int>::max()),
   isPenalized(false),
@@ -185,7 +186,8 @@ void TeamMessageCustom::print(std::ostream &stream) const
     << "\t" << "bodyID: " << bodyID << "\n"
     << "\t" << "Timestamp: " << timestamp << "\n"
     << "\t" << "TimeToBall: " << timeToBall << "\n"
-    << "\t" << "wasStriker: " << (wantsToBeStriker ? "yes" : "no") << "\n"
+    << "\t" << "wasStriker: " << (wasStriker ? "yes" : "no") << "\n"
+    << "\t" << "wantsToBeStriker: " << (wantsToBeStriker ? "yes" : "no") << "\n"
     << "\t" << "isPenalized: " << (isPenalized ? "yes" : "no") << "\n"
     << "\t" << "batteryCharge: " << batteryCharge << "\n"
     << "\t" << "temperature: " << temperature << "\n"
@@ -198,9 +200,10 @@ naothmessages::BUUserTeamMessage TeamMessageCustom::toProto() const
 {
     naothmessages::BUUserTeamMessage userMsg;
     userMsg.set_bodyid(bodyID);
-    userMsg.set_wasstriker(wantsToBeStriker);
+    userMsg.set_wasstriker(wasStriker);
+    userMsg.set_wantstobestriker(wantsToBeStriker);
     userMsg.set_timestamp(timestamp);
-    userMsg.set_timetoball((unsigned int)timeToBall);
+    userMsg.set_timetoball(timeToBall);
     userMsg.set_ispenalized(isPenalized);
     userMsg.set_batterycharge((float)batteryCharge);
     userMsg.set_temperature((float)temperature);
@@ -211,7 +214,8 @@ void TeamMessageCustom::parseFromProto(const naothmessages::BUUserTeamMessage &u
 {
     timestamp = userData.timestamp();
     bodyID = userData.bodyid();
-    wantsToBeStriker = userData.wasstriker();
+    wasStriker = userData.wasstriker();
+    wantsToBeStriker = userData.wantstobestriker();
     timeToBall = userData.timetoball();
     isPenalized = userData.ispenalized();
     batteryCharge = userData.batterycharge();

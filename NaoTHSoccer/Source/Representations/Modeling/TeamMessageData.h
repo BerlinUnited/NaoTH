@@ -42,8 +42,9 @@ public:
 
   unsigned long long timestamp; // timestamp in ms when the message was send; 0 if it wasn't send
   std::string bodyID;         // the body ID of the robot
+  bool wasStriker;
   bool wantsToBeStriker;
-  double timeToBall;          // the shorest time, in which the robot can reach the ball [ms]
+  unsigned int timeToBall;          // the shorest time, in which the robot can reach the ball [ms]
   bool isPenalized;           // whether the robot is penalized, or not
   double batteryCharge;       // the battery charge
   double temperature;         // the max. temperature of the left or right leg!

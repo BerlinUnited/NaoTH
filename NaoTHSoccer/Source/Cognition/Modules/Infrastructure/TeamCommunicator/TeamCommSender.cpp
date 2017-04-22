@@ -41,7 +41,7 @@ void TeamCommSender::fillMessageBeforeSending() const
     msg.playerNumber = getPlayerInfo().playerNumber;
     msg.teamNumber = getPlayerInfo().teamNumber;
     msg.pose = getRobotPose();
-    msg.intention = getRoleDecisionModel().wantsToBeStriker ? 3 : (getPlayerInfo().playerNumber == 1 ? 1 : 0);
+    msg.intention = getPlayerInfo().isPlayingStriker ? 3 : (getPlayerInfo().playerNumber == 1 ? 1 : 0);
     msg.positionConfidence = 100;
     msg.sideConfidence = 100;
     if(getBallModel().valid) {
@@ -62,8 +62,11 @@ void TeamCommSender::fillMessageBeforeSending() const
     // TODO: can we make it more separate?
     msg.custom.timestamp = naoth::NaoTime::getSystemTimeInMilliSeconds();
     msg.custom.wantsToBeStriker = getRoleDecisionModel().wantsToBeStriker;
+    msg.custom.wasStriker = getPlayerInfo().isPlayingStriker; // intention
+
     msg.custom.bodyID = getRobotInfo().bodyID;
-    msg.custom.timeToBall = getSoccerStrategy().timeToBall;
+    ASSERT(getSoccerStrategy().timeToBall >= 0);
+    msg.custom.timeToBall = (unsigned int)getSoccerStrategy().timeToBall;
     msg.custom.isPenalized = getPlayerInfo().robotState == PlayerInfo::penalized;
     msg.custom.batteryCharge = getBatteryData().charge;
     msg.custom.temperature = std::max(getBodyState().temperatureLeftLeg, getBodyState().temperatureRightLeg);

@@ -48,6 +48,7 @@ bool TeamSymbols::getWasStriker()
 void TeamSymbols::setWasStriker(bool striker)
 {
   theInstance->getPlayerInfo().isPlayingStriker = striker;
+
   // priorize the decision to become a striker by the goalie
   if (striker && theInstance->getPlayerInfo().playerNumber == 1) {
     theInstance->getRoleDecisionModel().wantsToBeStriker = true;

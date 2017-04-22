@@ -29,8 +29,6 @@ public:
     secondStriker(std::numeric_limits<int>::max()),
     wantsToBeStriker(false)
   {
-    //aliveRobots = *(new std::list<int>());
-    //deadRobots = *(new std::list<int>());
   }
 
   virtual void print(std::ostream& stream) const {
