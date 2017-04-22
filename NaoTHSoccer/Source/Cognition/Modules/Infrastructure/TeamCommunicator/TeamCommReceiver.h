@@ -61,9 +61,6 @@ private:
 
 private:
   void handleMessage(const std::string& data);
-
-  // unpack the message and perform contextual validity checks
-  bool unpackMessage(const std::string& data, TeamMessageData& msg) const;
   
   // TODO: move this into SPLStandardMessage.h or some other more suitable place
   /** Parses the informations of the string (spl message) and updates the corresponding fields of this object.

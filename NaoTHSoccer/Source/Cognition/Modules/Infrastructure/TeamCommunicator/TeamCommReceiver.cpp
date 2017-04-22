@@ -67,50 +67,46 @@ void TeamCommReceiver::execute()
 
 void TeamCommReceiver::handleMessage(const std::string& data)
 {
-  TeamMessageData msg;
-  if (unpackMessage(data, msg)) {
-    // copy the message to the blackboard
-    getTeamMessage().data[msg.playerNumber] = msg;
-  }
-  else {
-    droppedMessages++;
-  }
-}
-
-bool TeamCommReceiver::unpackMessage(const std::string& data, TeamMessageData& msg) const
-{
   SPLStandardMessage spl;
   // only legal SPL messages
   if (!parseFromSplMessageString(data, spl)) {
-    return false;
+    droppedMessages++;
+    return;
   }
 
   // only messages from own "team"
   if (spl.teamNum != (int)getPlayerInfo().teamNumber) {
-    return false;
+    droppedMessages++;
+    return;
   }
 
   // ignore own messages
   if (spl.playerNum == (int)getPlayerInfo().playerNumber) {
-    return false;
+    //droppedMessages++;
+    return;
   }
 
   // unpack the message and make sure the user part can be parsed
+  TeamMessageData msg;
   if (!msg.parseFromSplMessage(spl)) {
-    return false;
+    droppedMessages++;
+    return;
   }
 
   // make sure it's really our message
   if (msg.custom.key != NAOTH_TEAMCOMM_MESAGE_KEY) {
-    return false;
+    droppedMessages++;
+    return;
   }
 
   // make sure the time step is monotonically rising
   if (parameters.monotonicTimestampCheck && !monotonicTimeStamp(msg)) {
-    return false;
+    droppedMessages++;
+    return;
   }
 
-  return true;
+  // copy the message to the blackboard
+  getTeamMessage().data[msg.playerNumber] = msg;
 }
 
 bool TeamCommReceiver::parseFromSplMessageString(const std::string &data, SPLStandardMessage& spl)
