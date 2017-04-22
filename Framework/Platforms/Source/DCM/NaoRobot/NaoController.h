@@ -20,7 +20,6 @@
 
 //
 #include "V4lCameraHandler.h"
-//#include "SoundPlayer.h"
 #include "SoundControl.h"
 #include "SPLGameController.h"
 #include "DebugCommunication/DebugServer.h"
@@ -67,7 +66,6 @@ public:
   // sound
   void set(const SoundPlayData& data) 
   { 
-    //if(data.soundFile.size() > 0) theSoundPlayer.play(data.soundFile); 
     theSoundHandler->setSoundData(data);
   }
 
@@ -186,7 +184,6 @@ protected:
   //
   V4lCameraHandler theBottomCameraHandler;
   V4lCameraHandler theTopCameraHandler;
-  //SoundPlayer theSoundPlayer;
   SoundControl *theSoundHandler;
   BroadCaster* theTeamCommSender;
   UDPReceiver* theTeamCommListener;

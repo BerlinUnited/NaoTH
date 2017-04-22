@@ -133,7 +133,6 @@ NaoController::NaoController()
   Platform::getInstance().init(this);
 
   std::cout << "[NaoController] " << "Init SoundHandler" <<endl;
-  //theSoundPlayer.play("penalized");
   theSoundHandler = new SoundControl();
 
   // create the teamcomm
