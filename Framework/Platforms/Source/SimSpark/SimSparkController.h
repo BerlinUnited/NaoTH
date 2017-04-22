@@ -10,7 +10,6 @@
 #define _SIMSPARKCONTROLLER_H
 
 
-#include <glib.h>
 #include <map>
 
 #include <Representations/Infrastructure/JointData.h>
@@ -34,7 +33,7 @@
 
 
 #include "SimSparkGameInfo.h"
-
+#include "MessagesSPL/SPLStandardMessage.h"
 
 #include <Tools/Communication/SocketStream/SocketStream.h>
 
@@ -46,6 +45,8 @@
 #include <Extern/libb64/decode.h>
 #include <Extern/libb64/encode.h>
 #include <set>
+#include <mutex>
+#include <condition_variable>
 
 using namespace naoth;
 
@@ -192,7 +193,10 @@ private:
 
   Vector3d decomposeForce(double f, double fx, double fy, const Vector3d& c0, const Vector3d& c1, const Vector3d& c2);
 
-  void calFSRForce(double f, double x, double y, FSRData::FSRID id0, FSRData::FSRID id1, FSRData::FSRID id2);
+  void calFSRForce(double f, double x, double y, 
+              const Vector3d* positions,
+              std::vector<double>& values,
+              FSRData::SensorID id0, FSRData::SensorID id1, FSRData::SensorID id2);
 
   void say();
 
@@ -227,9 +231,9 @@ public:
 
 private:
   // members for threads
-  GMutex*  theCognitionInputMutex;
-  GMutex*  theCognitionOutputMutex;
-  GCond* theCognitionInputCond;
+  std::mutex  theCognitionInputMutex;
+  std::mutex  theCognitionOutputMutex;
+  std::condition_variable theCognitionInputCond;
   double maxJointAbsSpeed;
   bool exiting;
 
@@ -238,14 +242,14 @@ private:
   unsigned int theLastSenseTime;
   unsigned int theNextActTime;
   void calculateNextActTime();
-  GCond* theTimeCond;
-  GMutex* theTimeMutex;
+  std::condition_variable theTimeCond;
+  std::mutex theTimeMutex;
 
   std::string theSensorData;
-  GMutex* theSensorDataMutex;
-  GCond* theSensorDataCond;
+  std::mutex theSensorDataMutex;
+  std::condition_variable theSensorDataCond;
 
-  GMutex*  theActDataMutex;
+  std::mutex  theActDataMutex;
   std::stringstream theActData;
   void act();
 

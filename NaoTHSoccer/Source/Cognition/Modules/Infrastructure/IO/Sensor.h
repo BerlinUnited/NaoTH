@@ -43,6 +43,7 @@
 // others
 #include <Representations/Infrastructure/FrameInfo.h>
 #include <Representations/Infrastructure/CameraSettings.h>
+#include "Representations/Modeling/GroundContactModel.h"
 
 
 // hack
@@ -92,6 +93,7 @@ BEGIN_DECLARE_MODULE(Sensor)
   PROVIDE(CameraMatrixBufferTop)
   PROVIDE(CalibrationData)
   PROVIDE(BodyStatus)
+  PROVIDE(GroundContactModel)
 END_DECLARE_MODULE(Sensor)
 
 class Sensor : public SensorBase
