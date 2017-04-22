@@ -28,6 +28,8 @@
 
 using namespace naoth;
 
+// this key is sent with every team message to indicate that the message belongs to us
+#define NAOTH_TEAMCOMM_MESAGE_KEY "naoth"
 
 // this message is communicated as the user part of the standard spl message
 class TeamMessageCustom : public naoth::Printable 
@@ -35,6 +37,8 @@ class TeamMessageCustom : public naoth::Printable
 
 public:
   TeamMessageCustom();
+
+  std::string key; // key making shur that the message was sent by one of our robots
 
   unsigned long long timestamp; // timestamp in ms when the message was send; 0 if it wasn't send
   std::string bodyID;         // the body ID of the robot
@@ -44,9 +48,6 @@ public:
   double batteryCharge;       // the battery charge
   double temperature;         // the max. temperature of the left or right leg!
   // opponents ?
-
-  /** Parses the SPL user data to a protobuf message and sets the data accordingly. */
-  void parseFromArray(const unsigned char *data, uint16_t size);
 
   /** Sets the data according to the protobuf message. */
   void parseFromProto(const naothmessages::BUUserTeamMessage& userData);

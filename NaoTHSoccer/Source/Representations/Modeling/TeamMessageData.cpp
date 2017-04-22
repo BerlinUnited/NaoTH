@@ -121,10 +121,27 @@ bool TeamMessageData::parseFromSplMessage(const SPLStandardMessage &spl)
     sideConfidence = spl.currentSideConfidence;
 
     // parses the user-defined part of a SplMessage
-    custom.parseFromArray(spl.data, spl.numOfDataBytes);
+    ASSERT(spl.numOfDataBytes <= SPL_STANDARD_MESSAGE_DATA_SIZE);
+    naothmessages::BUUserTeamMessage userData;
+    
+    try
+    {
+      if (userData.ParseFromArray(spl.data, spl.numOfDataBytes)) {
+          custom.parseFromProto(userData);
+      } else {
+        return false;
+      }
+    } 
+    catch (...) {
+      // well, this is not one of our messages, ignore
 
-    // return "success"
-    return true;
+      // TODO: we might want to maintain a list of robots which send
+      // non-compliant messages in order to avoid overhead when trying to parse it
+      //std::cout << "could not parse custom part" << std::endl;
+      return false;
+    }
+
+    return true; // return "success"
 }
 
 void TeamMessageData::print(std::ostream &stream) const
@@ -199,26 +216,6 @@ void TeamMessageCustom::parseFromProto(const naothmessages::BUUserTeamMessage &u
     isPenalized = userData.ispenalized();
     batteryCharge = userData.batterycharge();
     temperature = userData.temperature();
+    key = userData.key();
 }
-
-void TeamMessageCustom::parseFromArray(const unsigned char* data, uint16_t size)
-{
-    // check if we can deserialize the user defined data
-    if(size > 0 && size <= SPL_STANDARD_MESSAGE_DATA_SIZE)
-    {
-        naothmessages::BUUserTeamMessage userData;
-        try
-        {
-          if(userData.ParseFromArray(data, size)) {
-            parseFromProto(userData);
-          }
-        } catch(...) {
-            // well, this is not one of our messages, ignore
-
-            // TODO: we might want to maintain a list of robots which send
-            // non-compliant messages in order to avoid overhead when trying to parse it
-        }
-    }
-}
-
 

@@ -8,7 +8,7 @@ using namespace std;
 
 TeamCommSender::TeamCommSender()
   :lastSentTimestamp(0),
-    send_interval(400)
+   send_interval(400)
 {
   naoth::Configuration& config = naoth::Platform::getInstance().theConfiguration;
   if ( config.hasKey("teamcomm", "send_interval") )
@@ -67,4 +67,6 @@ void TeamCommSender::fillMessageBeforeSending() const
     msg.custom.isPenalized = getPlayerInfo().robotState == PlayerInfo::penalized;
     msg.custom.batteryCharge = getBatteryData().charge;
     msg.custom.temperature = std::max(getBodyState().temperatureLeftLeg, getBodyState().temperatureRightLeg);
+    // TODO: shall we put it into config?
+    msg.custom.key = NAOTH_TEAMCOMM_MESAGE_KEY;
 }

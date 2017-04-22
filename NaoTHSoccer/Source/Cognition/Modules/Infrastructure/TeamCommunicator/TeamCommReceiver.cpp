@@ -67,23 +67,50 @@ void TeamCommReceiver::execute()
 
 void TeamCommReceiver::handleMessage(const std::string& data)
 {
-  SPLStandardMessage spl;
-  if (parseFromSplMessageString(data, spl))
-  {
-    // copy new data to the blackboard if it's a message from our team
-    if (  spl.teamNum == (int)getPlayerInfo().teamNumber && // only messages from own "team"
-         (spl.playerNum != (int)getPlayerInfo().playerNumber)) // accept own messages
-    {
-      TeamMessageData msg;
-      msg.parseFromSplMessage(spl);
-      if (!parameters.monotonicTimestampCheck || monotonicTimeStamp(msg)) {
-        getTeamMessage().data[msg.playerNumber] = msg;
-      }
-      else {
-        droppedMessages++;
-      }
-    }
+  TeamMessageData msg;
+  if (unpackMessage(data, msg)) {
+    // copy the message to the blackboard
+    getTeamMessage().data[msg.playerNumber] = msg;
   }
+  else {
+    droppedMessages++;
+  }
+}
+
+bool TeamCommReceiver::unpackMessage(const std::string& data, TeamMessageData& msg) const
+{
+  SPLStandardMessage spl;
+  // only legal SPL messages
+  if (!parseFromSplMessageString(data, spl)) {
+    return false;
+  }
+
+  // only messages from own "team"
+  if (spl.teamNum != (int)getPlayerInfo().teamNumber) {
+    return false;
+  }
+
+  // ignore own messages
+  if (spl.playerNum == (int)getPlayerInfo().playerNumber) {
+    return false;
+  }
+
+  // unpack the message and make sure the user part can be parsed
+  if (!msg.parseFromSplMessage(spl)) {
+    return false;
+  }
+
+  // make sure it's really our message
+  if (msg.custom.key != NAOTH_TEAMCOMM_MESAGE_KEY) {
+    return false;
+  }
+
+  // make sure the time step is monotonically rising
+  if (parameters.monotonicTimestampCheck && !monotonicTimeStamp(msg)) {
+    return false;
+  }
+
+  return true;
 }
 
 bool TeamCommReceiver::parseFromSplMessageString(const std::string &data, SPLStandardMessage& spl)
@@ -105,6 +132,11 @@ bool TeamCommReceiver::parseFromSplMessageString(const std::string &data, SPLSta
       spl.version != SPL_STANDARD_MESSAGE_STRUCT_VERSION)
   {
     std::cout << "invalid header/version" << std::endl;
+    return false;
+  }
+
+  // check if the size of the user part is meaningfull 
+  if (spl.numOfDataBytes > SPL_STANDARD_MESSAGE_DATA_SIZE) {
     return false;
   }
 
