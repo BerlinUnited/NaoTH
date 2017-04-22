@@ -22,7 +22,7 @@ void Serializer<TeamMessage>::serialize(const TeamMessage& r, std::ostream& stre
     DataConversion::toMessage(d.ballPosition, *(msg->mutable_ballposition()));
     DataConversion::toMessage(d.ballVelocity, *(msg->mutable_ballvelocity()));
     msg->set_fallen(d.fallen);
-    msg->mutable_user()->CopyFrom(d.getBUUserTeamMessage());
+    msg->mutable_user()->CopyFrom(d.custom.toProto());
     msg->mutable_frameinfo()->set_framenumber(d.frameInfo.getFrameNumber());
     msg->mutable_frameinfo()->set_time(d.frameInfo.getTime());
     /*
@@ -68,7 +68,7 @@ void Serializer<TeamMessage>::deserialize(std::istream& stream, TeamMessage& r)
     DataConversion::fromMessage(msg.ballvelocity(), d.ballVelocity);
     d.fallen = msg.fallen();
 
-    d.parseFromBUUserTeamMessage(msg.user());
+    d.custom.parseFromProto(msg.user());
 
     d.frameInfo.setFrameNumber(msg.frameinfo().framenumber());
     d.frameInfo.setTime(msg.frameinfo().time());

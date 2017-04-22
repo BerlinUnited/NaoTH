@@ -39,9 +39,8 @@ public:
             d.print(stream);
             stream << "------------------------" << std::endl;
         }
-        stream << "------------------------"  << std::endl;
         stream << "active team-members: " << data.size() << std::endl;
-    }//end print
+    }
 };
 
 namespace naoth {

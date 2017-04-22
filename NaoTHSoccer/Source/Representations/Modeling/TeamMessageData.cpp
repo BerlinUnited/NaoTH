@@ -2,6 +2,9 @@
 
 #include <limits>
 
+using namespace naoth;
+
+
 TeamMessageData::TeamMessageData():TeamMessageData(FrameInfo())
 {}
 
@@ -17,16 +20,7 @@ TeamMessageData::TeamMessageData(FrameInfo fi):
     averageWalkSpeed(160),
     maxKickDistance(3000),
     positionConfidence(0),
-    sideConfidence(0),
-    
-    /* BU-Fields *************************************************************/
-    timestamp(0),
-    bodyID("unknown"),
-    wantsToBeStriker(false),
-    timeToBall(std::numeric_limits<unsigned int>::max()),
-    isPenalized(false),
-    batteryCharge(0.0),
-    temperature(0.0)
+    sideConfidence(0)
 {}
 
 SPLStandardMessage TeamMessageData::createSplMessage() const
@@ -68,10 +62,11 @@ SPLStandardMessage TeamMessageData::createSplMessage() const
     spl.averageWalkSpeed = (int16_t) averageWalkSpeed;
     spl.maxKickDistance = (int16_t) maxKickDistance;
 
+    // TODO: 
     // user defined data
-    naothmessages::BUUserTeamMessage userMsg = getBUUserTeamMessage();
+    naothmessages::BUUserTeamMessage userMsg = custom.toProto();
     int userSize = userMsg.ByteSize();
-    if(spl.numOfDataBytes < SPL_STANDARD_MESSAGE_DATA_SIZE) {
+    if (userSize < SPL_STANDARD_MESSAGE_DATA_SIZE) {
         spl.numOfDataBytes = (uint16_t) userSize;
         userMsg.SerializeToArray(spl.data, userSize);
     } else {
@@ -126,7 +121,7 @@ bool TeamMessageData::parseFromSplMessage(const SPLStandardMessage &spl)
     sideConfidence = spl.currentSideConfidence;
 
     // parses the user-defined part of a SplMessage
-    parseFromSplMessageData(spl.data, spl.numOfDataBytes);
+    custom.parseFromArray(spl.data, spl.numOfDataBytes);
 
     // return "success"
     return true;
@@ -134,11 +129,9 @@ bool TeamMessageData::parseFromSplMessage(const SPLStandardMessage &spl)
 
 void TeamMessageData::print(std::ostream &stream) const
 {
-    stream << "TeamMessageData from " << playerNumber << " ["<<bodyID<<"]"<<"\n";
-    frameInfo.print(stream);
-    stream << "Message: "<<"\n"
-           << "\t" << "Timestamp: " << timestamp <<"\n"
-           << "\t" << "Pos (x; y; rotation) = "
+    stream << "TeamMessageData from " << playerNumber << "\n";
+    //frameInfo.print(stream);
+    stream << "\t" << "Pos (x; y; rotation) = "
                    << pose.translation.x << "; "
                    << pose.translation.y << "; "
                    << pose.rotation <<"\n"
@@ -146,20 +139,45 @@ void TeamMessageData::print(std::ostream &stream) const
                    << ballPosition.x << "; "
                    << ballPosition.y <<"\n"
            << "\t" << "TimeSinceBallwasSeen: " << ballAge <<"\n"
-           << "\t" << "TimeToBall: "<< timeToBall <<"\n"
-           << "\t" << "wasStriker: " << (wantsToBeStriker ? "yes" : "no") <<"\n"
-           << "\t" << "isPenalized: " << (isPenalized ? "yes" : "no") <<"\n"
            << "\t" << "fallenDown: " << (fallen ? "yes" : "no") <<"\n"
            << "\t" << "team number: " << teamNumber <<"\n"
            << "\t" << "expectedBallPos (x; y) = "
                    << shootingTo.x << "; "
                    << shootingTo.y <<"\n"
-           // TODO: add some more infos ???
           ;
-    stream << std::endl;
+    
+    custom.print(stream);
 }//end print
 
-naothmessages::BUUserTeamMessage TeamMessageData::getBUUserTeamMessage() const
+
+TeamMessageCustom::TeamMessageCustom() :
+  timestamp(0),
+  bodyID("unknown"),
+  wantsToBeStriker(false),
+  timeToBall(std::numeric_limits<unsigned int>::max()),
+  isPenalized(false),
+  batteryCharge(0.0),
+  temperature(0.0)
+{
+}
+
+void TeamMessageCustom::print(std::ostream &stream) const
+{
+  stream << "TeamMessageCustom \n";
+  stream
+    << "\t" << "bodyID: " << bodyID << "\n"
+    << "\t" << "Timestamp: " << timestamp << "\n"
+    << "\t" << "TimeToBall: " << timeToBall << "\n"
+    << "\t" << "wasStriker: " << (wantsToBeStriker ? "yes" : "no") << "\n"
+    << "\t" << "isPenalized: " << (isPenalized ? "yes" : "no") << "\n"
+    << "\t" << "batteryCharge: " << batteryCharge << "\n"
+    << "\t" << "temperature: " << temperature << "\n"
+    ;
+  stream << std::endl;
+}//end print
+
+
+naothmessages::BUUserTeamMessage TeamMessageCustom::toProto() const
 {
     naothmessages::BUUserTeamMessage userMsg;
     userMsg.set_bodyid(bodyID);
@@ -172,7 +190,7 @@ naothmessages::BUUserTeamMessage TeamMessageData::getBUUserTeamMessage() const
     return userMsg;
 }
 
-void TeamMessageData::parseFromBUUserTeamMessage(const naothmessages::BUUserTeamMessage &userData)
+void TeamMessageCustom::parseFromProto(const naothmessages::BUUserTeamMessage &userData)
 {
     timestamp = userData.timestamp();
     bodyID = userData.bodyid();
@@ -183,7 +201,7 @@ void TeamMessageData::parseFromBUUserTeamMessage(const naothmessages::BUUserTeam
     temperature = userData.temperature();
 }
 
-void TeamMessageData::parseFromSplMessageData(const unsigned char* data, uint16_t size)
+void TeamMessageCustom::parseFromArray(const unsigned char* data, uint16_t size)
 {
     // check if we can deserialize the user defined data
     if(size > 0 && size <= SPL_STANDARD_MESSAGE_DATA_SIZE)
@@ -191,10 +209,9 @@ void TeamMessageData::parseFromSplMessageData(const unsigned char* data, uint16_
         naothmessages::BUUserTeamMessage userData;
         try
         {
-            if(userData.ParseFromArray(data, size))
-            {
-                parseFromBUUserTeamMessage(userData);
-            }
+          if(userData.ParseFromArray(data, size)) {
+            parseFromProto(userData);
+          }
         } catch(...) {
             // well, this is not one of our messages, ignore
 
@@ -203,3 +220,5 @@ void TeamMessageData::parseFromSplMessageData(const unsigned char* data, uint16_
         }
     }
 }
+
+

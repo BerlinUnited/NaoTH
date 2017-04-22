@@ -65,27 +65,27 @@ void StableRoleDecision::computeStrikers() {
 
     double time_bonus = (int)msg.playerNumber==getRoleDecisionModel().firstStriker?parameters.strikerBonusTime:0.0;
 
-    if (robotNumber == getPlayerInfo().playerNumber && (msg.fallen || msg.isPenalized || 
+    if (robotNumber == getPlayerInfo().playerNumber && (msg.fallen || msg.custom.isPenalized ||
       msg.ballAge < 0 || msg.ballAge > parameters.maxBallLostTime + time_bonus)) {
         wantsToBeStriker = false;
     }
 
     if (!msg.fallen
-      && !msg.isPenalized
+      && !msg.custom.isPenalized
       && msg.ballAge >= 0 //Ball has been seen
       && msg.ballAge + getFrameInfo().getTimeSince(msg.frameInfo.getTime()) < parameters.maxBallLostTime + time_bonus) { //Ball is fresh
 
-        if (msg.wantsToBeStriker) { //Decision of the current round
-          if ((int)robotNumber < firstStriker) { //If two robots want to be striker, the one with a smaller number is favoured
-            firstStriker = robotNumber;
-          }
-          else if ((int)robotNumber < secondStriker) {
-            secondStriker = robotNumber;
-          }
+      if (msg.custom.wantsToBeStriker) { //Decision of the current round
+        if ((int)robotNumber < firstStriker) { //If two robots want to be striker, the one with a smaller number is favoured
+          firstStriker = robotNumber;
         }
-        if (robotNumber != getPlayerInfo().playerNumber && msg.timeToBall < ownTimeToBall) { 
-          wantsToBeStriker = false; //Preparation for next round's decision
+        else if ((int)robotNumber < secondStriker) {
+          secondStriker = robotNumber;
         }
+      }
+      if (robotNumber != getPlayerInfo().playerNumber && msg.custom.timeToBall < ownTimeToBall) {
+        wantsToBeStriker = false; //Preparation for next round's decision
+      }
 
       }
   }//end for

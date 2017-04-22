@@ -44,7 +44,7 @@ void SimpleRoleDecision::computeStrikers() {
 
     if((getFrameInfo().getTimeSince(messageData.frameInfo.getTime()) < parameters.maximumFreshTime) && // the message is fresh...
         number != getPlayerInfo().playerNumber && // its not me...
-        messageData.wantsToBeStriker // the guy wants to be striker...
+        messageData.custom.wantsToBeStriker // the guy wants to be striker...
         ) {
       getRoleDecisionModel().firstStriker = number; // let him go :)      
       PLOT(std::string("SimpleRoleDecision:StrikerDecision"), 0);
@@ -58,10 +58,10 @@ void SimpleRoleDecision::computeStrikers() {
       const TeamMessageData& messageData = it.second;
       const unsigned int number = it.first;
 
-    double time_bonus = messageData.wantsToBeStriker?parameters.strikerBonusTime:0.0; //At this point, the only robot that may still have been a striker is us
+      double time_bonus = messageData.custom.wantsToBeStriker ? parameters.strikerBonusTime : 0.0; //At this point, the only robot that may still have been a striker is us
 
     if (!messageData.fallen
-      && !messageData.isPenalized
+      && !messageData.custom.isPenalized
       && number != 1 // goalie is not considered
       && getFrameInfo().getTimeSince(messageData.frameInfo.getTime()) < parameters.maximumFreshTime // its fresh
       && (messageData.ballAge >= 0 && messageData.ballAge < parameters.maxBallLostTime+time_bonus )// the guy sees the ball
@@ -70,7 +70,7 @@ void SimpleRoleDecision::computeStrikers() {
       double ballDistance = ballPos.abs();
 
       // striker bonus
-      if (messageData.wantsToBeStriker)
+      if (messageData.custom.wantsToBeStriker)
         ballDistance -= 100;
 
       // remember the closest guy

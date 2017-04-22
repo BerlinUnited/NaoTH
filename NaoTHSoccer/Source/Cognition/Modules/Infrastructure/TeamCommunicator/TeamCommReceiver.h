@@ -72,12 +72,12 @@ private:
   bool monotonicTimeStamp(const TeamMessageData& data) const
   {
     return 
-           // it's probably not our message (playing dropin => accept in any case)
-           data.timestamp == 0 ||
-           // the new message is monotonic => accept
-           data.timestamp > getTeamMessage().data[data.playerNumber].timestamp ||
-           // the new message is much older than the current one => weird => reset
-           data.timestamp + parameters.monotonicTimestampCheckResetTime < getTeamMessage().data[data.playerNumber].timestamp;
+      // it's probably not our message (playing dropin => accept in any case)
+      data.custom.timestamp == 0 ||
+      // the new message is monotonic => accept
+      data.custom.timestamp > getTeamMessage().data[data.playerNumber].custom.timestamp ||
+      // the new message is much older than the current one => weird => reset
+      data.custom.timestamp + parameters.monotonicTimestampCheckResetTime < getTeamMessage().data[data.playerNumber].custom.timestamp;
   }
 
   RingBuffer<std::string, 100> delayBuffer;

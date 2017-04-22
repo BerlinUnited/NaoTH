@@ -87,8 +87,8 @@ bool TeamSymbols::calculateIfTheLast()
 
     if ((theInstance->getFrameInfo().getTimeSince(messageData.frameInfo.getTime())
          < theInstance->parameters.maximumFreshTime) && // alive?
-        !messageData.isPenalized && // not penalized?
-        !messageData.wantsToBeStriker &&
+        !messageData.custom.isPenalized && // not penalized?
+        !messageData.custom.wantsToBeStriker &&
         number != 1 && // no goalie
         // we are already considered by the initial values
         messageData.playerNumber != theInstance->getPlayerInfo().playerNumber

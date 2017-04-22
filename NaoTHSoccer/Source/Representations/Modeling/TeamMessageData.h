@@ -28,6 +28,35 @@
 
 using namespace naoth;
 
+
+// this message is communicated as the user part of the standard spl message
+class TeamMessageCustom : public naoth::Printable 
+{
+
+public:
+  TeamMessageCustom();
+
+  unsigned long long timestamp; // timestamp in ms when the message was send; 0 if it wasn't send
+  std::string bodyID;         // the body ID of the robot
+  bool wantsToBeStriker;
+  double timeToBall;          // the shorest time, in which the robot can reach the ball [ms]
+  bool isPenalized;           // whether the robot is penalized, or not
+  double batteryCharge;       // the battery charge
+  double temperature;         // the max. temperature of the left or right leg!
+  // opponents ?
+
+  /** Parses the SPL user data to a protobuf message and sets the data accordingly. */
+  void parseFromArray(const unsigned char *data, uint16_t size);
+
+  /** Sets the data according to the protobuf message. */
+  void parseFromProto(const naothmessages::BUUserTeamMessage& userData);
+
+  /** Creates a protobuf message with the registered data. */
+  naothmessages::BUUserTeamMessage toProto() const;
+
+  void print(std::ostream &stream) const;
+};
+
 class TeamMessageData : public naoth::Printable
 {
 public:
@@ -51,18 +80,9 @@ public:
     int maxKickDistance;        // the maximum distance that the ball rolls after a strong kick by the robot (mm)
     unsigned int positionConfidence; // current confidence of a robot about its self-location (0-100%); dummy value: currently always 100%
     unsigned int sideConfidence; // current confidence of a robot about playing in the right direction (0-100%); dummy value: currently always 100%
-    /*************************************************************************/
-    /* BU-Message-Fields *****************************************************/
-    /*************************************************************************/
-    unsigned long long timestamp; // timestamp in ms when the message was send; 0 if it wasn't send
-    std::string bodyID;         // the body ID of the robot
-    bool wantsToBeStriker;
-    double timeToBall;          // the shorest time, in which the robot can reach the ball [ms]
-    bool isPenalized;           // whether the robot is penalized, or not
-    double batteryCharge;       // the battery charge
-    double temperature;         // the max. temperature of the left or right leg!
-    // opponents ?
-    /*************************************************************************/
+    
+    // custom BU-Message-Fields
+    TeamMessageCustom custom;
     /*** END +++ TEAMMESSAGEFIELDS *******************************************/
 
     TeamMessageData();
@@ -84,27 +104,21 @@ public:
     /** Parses the informations of the spl message and updates the corresponding fields of this object. */
     bool parseFromSplMessage(const SPLStandardMessage &spl);
 
-    /** Creates a protobuf message with the registered data. */
-    naothmessages::BUUserTeamMessage getBUUserTeamMessage() const;
-
-    /** Sets the data according to the protobuf message. */
-    void parseFromBUUserTeamMessage(const naothmessages::BUUserTeamMessage& userData);
-
     //TODO: do we need to reset the values?! (see TeamCommReceiver::execute())
     //void clear();
 
 private:
     /** Parses the SPL user data to a protobuf message and sets the data accordingly. */
-    void parseFromSplMessageData(const unsigned char *data, uint16_t size);
+    //void parseFromSplMessageData(const unsigned char *data, uint16_t size);
 };
 
 /*
 namespace naoth {
-template<> class Serializer<TeamMessageData>
+template<> class Serializer<TeamMessageCustom>
 {
 public:
-    static void serialize(const TeamMessageData& representation, std::ostream& stream);
-    static void deserialize(std::istream& stream, TeamMessageData& representation);
+  static void serialize(const TeamMessageCustom& representation, std::ostream& stream);
+  static void deserialize(std::istream& stream, TeamMessageCustom& representation);
 };
 }*/
 

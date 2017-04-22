@@ -38,7 +38,6 @@ void TeamCommSender::execute()
 void TeamCommSender::fillMessageBeforeSending() const
 {
     TeamMessageData& msg = getTeamMessageData();
-    msg.timestamp = naoth::NaoTime::getSystemTimeInMilliSeconds();
     msg.playerNumber = getPlayerInfo().playerNumber;
     msg.teamNumber = getPlayerInfo().teamNumber;
     msg.pose = getRobotPose();
@@ -59,10 +58,13 @@ void TeamCommSender::fillMessageBeforeSending() const
     msg.fallen = getBodyState().fall_down_state != BodyState::upright;
     msg.walkingTo = getRobotPose().translation;
     msg.shootingTo = getPlayerInfo().isPlayingStriker ? getKickActionModel().expectedBallPos : getRobotPose().translation;
-    msg.wantsToBeStriker = getRoleDecisionModel().wantsToBeStriker;
-    msg.bodyID = getRobotInfo().bodyID;
-    msg.timeToBall = getSoccerStrategy().timeToBall;
-    msg.isPenalized = getPlayerInfo().robotState == PlayerInfo::penalized;
-    msg.batteryCharge = getBatteryData().charge;
-    msg.temperature = std::max(getBodyState().temperatureLeftLeg, getBodyState().temperatureRightLeg);
+
+    // TODO: can we make it more separate?
+    msg.custom.timestamp = naoth::NaoTime::getSystemTimeInMilliSeconds();
+    msg.custom.wantsToBeStriker = getRoleDecisionModel().wantsToBeStriker;
+    msg.custom.bodyID = getRobotInfo().bodyID;
+    msg.custom.timeToBall = getSoccerStrategy().timeToBall;
+    msg.custom.isPenalized = getPlayerInfo().robotState == PlayerInfo::penalized;
+    msg.custom.batteryCharge = getBatteryData().charge;
+    msg.custom.temperature = std::max(getBodyState().temperatureLeftLeg, getBodyState().temperatureRightLeg);
 }
