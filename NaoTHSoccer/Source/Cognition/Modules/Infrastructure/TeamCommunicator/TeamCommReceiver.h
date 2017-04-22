@@ -60,8 +60,15 @@ private:
   } parameters;
 
 private:
-  void handleMessage(const std::string& data, bool allowOwn = false);
+  void handleMessage(const std::string& data);
   
+  // TODO: move this into SPLStandardMessage.h or some other more suitable place
+  /** Parses the informations of the string (spl message) and updates the corresponding fields of this object.
+  *  A player/team number different than 0 defines which messages of a player/team are only parsed (restricted to this number).
+  *  If the number is negative, the messages of the player/team are ignored instead of restricted!
+  */
+  static bool parseFromSplMessageString(const std::string &data, SPLStandardMessage& spl);
+
   bool monotonicTimeStamp(const TeamMessageData& data) const
   {
     return 

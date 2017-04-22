@@ -82,13 +82,7 @@ public:
     std::string createSplMessageString() const;
 
     /** Parses the informations of the spl message and updates the corresponding fields of this object. */
-    bool parseFromSplMessage(const SPLStandardMessage &spl, int team = 0, int player = 0);
-
-    /** Parses the informations of the string (spl message) and updates the corresponding fields of this object.
-     *  A player/team number different than 0 defines which messages of a player/team are only parsed (restricted to this number).
-     *  If the number is negative, the messages of the player/team are ignored instead of restricted!
-     */
-    bool parseFromSplMessageString(const std::string &data, int team = 0, int player = 0);
+    bool parseFromSplMessage(const SPLStandardMessage &spl);
 
     /** Creates a protobuf message with the registered data. */
     naothmessages::BUUserTeamMessage getBUUserTeamMessage() const;

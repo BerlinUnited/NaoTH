@@ -71,8 +71,7 @@ SPLStandardMessage TeamMessageData::createSplMessage() const
     // user defined data
     naothmessages::BUUserTeamMessage userMsg = getBUUserTeamMessage();
     int userSize = userMsg.ByteSize();
-    if(spl.numOfDataBytes < SPL_STANDARD_MESSAGE_DATA_SIZE)
-    {
+    if(spl.numOfDataBytes < SPL_STANDARD_MESSAGE_DATA_SIZE) {
         spl.numOfDataBytes = (uint16_t) userSize;
         userMsg.SerializeToArray(spl.data, userSize);
     } else {
@@ -93,18 +92,10 @@ std::string TeamMessageData::createSplMessageString() const
     return msg;
 }
 
-bool TeamMessageData::parseFromSplMessage(const SPLStandardMessage &spl, int team, int player)
+bool TeamMessageData::parseFromSplMessage(const SPLStandardMessage &spl)
 {
     playerNumber = spl.playerNum;
     teamNumber = spl.teamNum;
-
-    if( (team > 0 && teamNumber != team) ||        // only parse messages from this "team"
-        (team < 0 && teamNumber == abs(team)) ||   // ignore messages from this "team"
-        (player > 0 && playerNumber != player) ||  // only parse messages from this "player"
-        (player < 0 && playerNumber == abs(player))// ignore messages from this "player"
-    ) {
-        return false;
-    }
 
     // parses the standard fields of a SplMessage
     pose.translation.x = spl.pose[0];
@@ -139,32 +130,6 @@ bool TeamMessageData::parseFromSplMessage(const SPLStandardMessage &spl, int tea
 
     // return "success"
     return true;
-}
-
-bool TeamMessageData::parseFromSplMessageString(const std::string &data, int team, int player)
-{
-    SPLStandardMessage spl;
-
-    // invalid message size
-    if(data.size() > sizeof(SPLStandardMessage)) {
-        std::cout << "invalid size" << std::endl;
-      return false;
-    }
-
-    // convert back to struct
-    memcpy(&spl, data.c_str(), data.size());
-
-    // furter sanity check for header and version
-    if(spl.header[0] != 'S' ||
-       spl.header[1] != 'P' ||
-       spl.header[2] != 'L' ||
-       spl.header[3] != ' ' ||
-       spl.version != SPL_STANDARD_MESSAGE_STRUCT_VERSION)
-    {
-        std::cout << "invalid header/version" << std::endl;
-      return false;
-    }
-    return parseFromSplMessage(spl, team, player);
 }
 
 void TeamMessageData::print(std::ostream &stream) const

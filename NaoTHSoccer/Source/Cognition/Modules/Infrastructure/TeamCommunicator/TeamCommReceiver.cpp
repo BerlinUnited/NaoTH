@@ -23,17 +23,15 @@ TeamCommReceiver::~TeamCommReceiver()
 
 void TeamCommReceiver::execute()
 {
-  // get all incoming messages
-  const naoth::TeamMessageDataIn& teamMessageData = getTeamMessageDataIn();
-
   bool usingDelayBuffer = false;
   DEBUG_REQUEST("TeamCommReceiver:artificial_delay",
     usingDelayBuffer = true;
   );
 
-  for(auto const &it: teamMessageData.data) {
+  // process all incomming messages
+  for (auto const &it : getTeamMessageDataIn().data) {
     if(usingDelayBuffer) {
-      delayBuffer.add(it);
+      delayBuffer.add(it); // can be used for debugging
     } else {
       handleMessage(it);
     }
@@ -51,9 +49,13 @@ void TeamCommReceiver::execute()
   }
 
   // wait until we got a valid playnumber
-  if(getPlayerInfo().playerNumber > 0) {
+  if (getPlayerInfo().playerNumber > 0 && 
+      getTeamMessageData().frameInfo.getFrameNumber() + 1 == getFrameInfo().getFrameNumber() &&
+      getTeamMessageData().playerNumber == getPlayerInfo().playerNumber &&
+      getTeamMessageData().teamNumber == getPlayerInfo().teamNumber) 
+  {
     // copying our own (old) message to the inbox
-    getTeamMessage().data[getTeamMessageData().playerNumber] = getTeamMessageData();
+    getTeamMessage().data[getPlayerInfo().playerNumber] = getTeamMessageData();
   }
 
   // marking the begin of the outgoing message
@@ -63,21 +65,48 @@ void TeamCommReceiver::execute()
   PLOT("TeamCommReceiver:droppedMessages", droppedMessages);
 }
 
-void TeamCommReceiver::handleMessage(const std::string& data, bool allowOwn)
+void TeamCommReceiver::handleMessage(const std::string& data)
 {
-    // init message data container
-    TeamMessageData msg;
-    // parse only own team messages
-    int parseTeam = getPlayerInfo().teamNumber;
-    int parsePlayer = (allowOwn ? 1 : -1) * getPlayerInfo().playerNumber;
-    // parsing ...
-
-    if(msg.parseFromSplMessageString(data, parseTeam, parsePlayer)) {
-        // copy new data to the blackboard if it's a message from our team
-        if(!parameters.monotonicTimestampCheck || monotonicTimeStamp(msg)) {
-            getTeamMessage().data[msg.playerNumber] = msg;
-        } else {
-            droppedMessages++;
-        }
+  SPLStandardMessage spl;
+  if (parseFromSplMessageString(data, spl))
+  {
+    // copy new data to the blackboard if it's a message from our team
+    if (  spl.teamNum == (int)getPlayerInfo().teamNumber && // only messages from own "team"
+         (spl.playerNum != (int)getPlayerInfo().playerNumber)) // accept own messages
+    {
+      TeamMessageData msg;
+      msg.parseFromSplMessage(spl);
+      if (!parameters.monotonicTimestampCheck || monotonicTimeStamp(msg)) {
+        getTeamMessage().data[msg.playerNumber] = msg;
+      }
+      else {
+        droppedMessages++;
+      }
     }
+  }
+}
+
+bool TeamCommReceiver::parseFromSplMessageString(const std::string &data, SPLStandardMessage& spl)
+{
+  // invalid message size
+  if (data.size() > sizeof(SPLStandardMessage)) {
+    std::cout << "invalid size" << std::endl;
+    return false;
+  }
+
+  // convert back to struct
+  memcpy(&spl, data.c_str(), data.size());
+
+  // furter sanity check for header and version
+  if (spl.header[0] != 'S' ||
+      spl.header[1] != 'P' ||
+      spl.header[2] != 'L' ||
+      spl.header[3] != ' ' ||
+      spl.version != SPL_STANDARD_MESSAGE_STRUCT_VERSION)
+  {
+    std::cout << "invalid header/version" << std::endl;
+    return false;
+  }
+
+  return true;
 }
