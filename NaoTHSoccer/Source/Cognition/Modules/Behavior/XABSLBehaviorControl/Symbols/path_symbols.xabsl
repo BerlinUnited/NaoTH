@@ -3,9 +3,14 @@ namespace path_symbols("PathPlanner Symbols") {
   enum path.type
   {
     none,
+    go_to_ball,
     go_to_ball_right,
     go_to_ball_left,
+    go_to_ball_dynamic_right,
+    go_to_ball_dynamic_left,
     move_around_ball,
+    walk_back_approach,
+    prepare_walk_back_approach,
     fast_forward_right,
     fast_forward_left,
     kick_with_foot_right,

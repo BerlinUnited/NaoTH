@@ -1,0 +1,169 @@
+option test_primitivemaneuvers
+{
+  common decision
+  {
+    if(!body.ready_to_walk || game.current_mode != playing)
+      goto idle;
+  }
+  
+
+  initial state idle
+  {
+    decision
+    {
+      else if(game.current_mode == playing)
+        goto play;
+      else
+        stay;
+    }
+    action
+    {
+    }
+  }
+
+  state play
+  {
+    decision
+    {
+      else if(ball.time_since_last_seen > 1000)
+        goto search_ball;
+      else 
+        goto walk_to_ball;
+    }
+    action 
+    {
+      head.control_mode = search_for_ball;
+    }
+  }
+
+  state walk_to_ball 
+  {
+    decision 
+    {
+      else if(ball.time_since_last_seen > 1000)
+        goto search_ball;
+      else if(ball.distance < 400)
+        goto move_around_ball_left;
+      else 
+        stay; 
+    }
+    action 
+    {
+      motion.type = walk;
+      path.type = path.type.go_to_ball;
+      
+      head.control_mode = look_at_ball_percept;
+    }
+  }
+
+  state move_around_ball_left
+  {
+    decision 
+    {
+      else if(ball.time_since_last_seen > 1000)
+        goto search_ball;
+      else if (state_time > 10000)
+        goto move_around_ball_right;
+      else
+        stay;
+    }
+    action
+    {
+      motion.type = walk;
+      path.type = path.type.move_around_ball;
+      path.move_around_ball_direction = -30;
+      path.move_around_ball_radius    = 210;
+
+      head.control_mode = look_at_ball_percept;
+    }
+  }
+  
+  state move_around_ball_right
+  {
+    decision 
+    {
+      else if(ball.time_since_last_seen > 1000)
+        goto search_ball;
+      else if (state_time > 10000)
+        goto prepare_walk_back_approach;
+      else
+        stay;
+    }
+    action
+    {
+      motion.type = walk;
+      path.type = path.type.move_around_ball;
+      path.move_around_ball_direction = 30;
+      path.move_around_ball_radius    = 210;
+
+      head.control_mode = look_at_ball_percept;
+    }
+  }
+
+  state prepare_walk_back_approach
+  {
+    decision
+    {
+      else if(ball.preview.x < 10)
+        goto walk_back_approach;
+      else
+        stay;
+    }
+    action
+    {
+      motion.type = walk;
+      path.type = prepare_walk_back_approach;
+      path.goto_distance = 160;
+      
+
+      head.control_mode = look_at_ball_percept;
+    }
+  }
+
+   state walk_back_approach
+   {
+     decision
+     {
+       else if(ball.preview.right_foot.x < 200 && abs(value=ball.preview.right_foot.y) < 5)
+         goto done;
+       else
+         stay;
+     }
+     action
+     {
+       motion.type = walk;
+       path.type = go_to_ball_dynamic_right;
+       
+       head.control_mode = look_at_ball_percept;
+     }
+   }
+      
+  state done
+  {
+    decision
+    {
+      else
+        stay;
+    }
+    action
+    {
+    motion.type = stand;
+    }
+  }
+  
+  state search_ball
+  {
+    decision
+    {
+      else if(ball.time_seen > 300 && ball.time_since_last_seen == 0)
+        goto play;
+      else
+        stay;
+    }
+    action 
+    {
+      head.control_mode = search_for_ball;
+      motion.type = stand;
+    }
+  }
+}

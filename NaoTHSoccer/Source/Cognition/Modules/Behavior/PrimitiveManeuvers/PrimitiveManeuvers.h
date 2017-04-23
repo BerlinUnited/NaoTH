@@ -24,6 +24,8 @@
 #include "Representations/Perception/BallPercept.h"
 #include "Representations/Perception/MultiBallPercept.h"
 #include "Representations/Modeling/BallModel.h"
+#include "Representations/Modeling/PathModel.h"
+#include "Representations/Debug/Stopwatch.h"
 
 
 BEGIN_DECLARE_MODULE(PrimitiveManeuvers)
@@ -36,8 +38,10 @@ REQUIRE(MultiBallPercept)
 REQUIRE(MotionStatus)
 REQUIRE(BallModel)
 
+PROVIDE(PathModel)
 PROVIDE(MotionRequest)
 PROVIDE(HeadMotionRequest)
+PROVIDE(StopwatchManager)
 END_DECLARE_MODULE(PrimitiveManeuvers)
 
 class PrimitiveManeuvers: public PrimitiveManeuversBase
@@ -62,14 +66,12 @@ private:
   // Primitive Maneuvers
 
   // Walks to the ball
-  // returns true if reached
-  bool MWalk_to_ball(Foot foot);
+  void MWalk_to_ball(Foot foot);
   // Moves around the ball
-  // returns true when ???
-  bool MMove_around_ball(Foot foot, bool go_right);
+  void MMove_around_ball(double direction, double radius);
   // Walks back until the ball is seen
   // and approaches the ball towards the enemy goal
-  bool MWalk_back_approach(Foot foot);
+  void MWalk_to_ball_dynamic(Foot foot);
 
   // Limit steps depending on rotation
   // returns Vector3d where z is the rotation

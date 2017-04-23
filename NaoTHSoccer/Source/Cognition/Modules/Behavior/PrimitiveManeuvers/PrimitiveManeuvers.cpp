@@ -14,10 +14,11 @@ step_list({}),
 foot_to_be_used(PrimitiveManeuvers::Foot::Right),
 last_stepcontrol_stepID(0)
 {
-  DEBUG_REQUEST_REGISTER("PrimitiveManeuvers:execute_step_list", "Executes the step list", true);
-  DEBUG_REQUEST_REGISTER("PrimitiveManeuvers:walk_to_ball", "Walks to the ball.", true);
+  DEBUG_REQUEST_REGISTER("PrimitiveManeuvers:execute_step_list", "Executes the step list", false);
+  DEBUG_REQUEST_REGISTER("PrimitiveManeuvers:walk_to_ball", "Walks to the ball.", false);
   DEBUG_REQUEST_REGISTER("PrimitiveManeuvers:move_around_ball", "Moves around the ball.", false);
-  DEBUG_REQUEST_REGISTER("PrimitiveManeuvers:walk_back_approach", "Walks back till ball seen, then approaches", false);
+  DEBUG_REQUEST_REGISTER("PrimitiveManeuvers:go_to_ball_dynamic_right", "Walks to the ball.", false);
+  DEBUG_REQUEST_REGISTER("PrimitiveManeuvers:go_to_ball_dynamic_left", "Walks to the ball.", false);
 
   // Helpers
   DEBUG_REQUEST_REGISTER("PrimitiveManeuvers:helper:forward", "Walks forward.", false);
@@ -30,6 +31,46 @@ last_stepcontrol_stepID(0)
 
 void PrimitiveManeuvers::execute()
 {
+  STOPWATCH_START("PrimitiveManeuvers");
+  PrimitiveManeuvers::execute_step_list();
+  if (getPathModel().pathType == PathModel::PathType::go_to_ball_left)
+  {
+    PrimitiveManeuvers::MWalk_to_ball(Foot::Left);
+  }
+  else if (getPathModel().pathType == PathModel::PathType::go_to_ball_right)
+  {
+    PrimitiveManeuvers::MWalk_to_ball(Foot::Right);
+  }
+  else if (getPathModel().pathType == PathModel::PathType::go_to_ball)
+  {
+    PrimitiveManeuvers::MWalk_to_ball(Foot::NONE);
+  }
+  else if (getPathModel().pathType == PathModel::PathType::move_around_ball)
+  {
+    PrimitiveManeuvers::MMove_around_ball(getPathModel().move_around_ball_direction, getPathModel().move_around_ball_radius);
+  }
+  else if (getPathModel().pathType == PathModel::PathType::go_to_ball_dynamic_left)
+  {
+    PrimitiveManeuvers::MWalk_to_ball_dynamic(Foot::Left);
+  }
+  else if (getPathModel().pathType == PathModel::PathType::go_to_ball_dynamic_right)
+  {
+    PrimitiveManeuvers::MWalk_to_ball_dynamic(Foot::Right);
+  }
+  else if (getPathModel().pathType == PathModel::PathType::prepare_walk_back_approach)
+  {
+    if (std::abs(getBallModel().positionPreview.y) < 300)
+    {
+      add(new_step(0.0, 40.0, 0.0));
+    }
+    else
+    {
+      add(new_step(40.0, 0.0, 0.0));
+    }
+  }
+  STOPWATCH_STOP("PrimitiveManeuvers");
+
+  // DEBUG REQUESTS
   // Execute step list
   DEBUG_REQUEST("PrimitiveManeuvers:execute_step_list",
 	PrimitiveManeuvers::execute_step_list();
@@ -43,9 +84,13 @@ void PrimitiveManeuvers::execute()
 	prepare_walk();
 	PrimitiveManeuvers::MMove_around_ball(Foot::Right, true);
   );
-  DEBUG_REQUEST("PrimitiveManeuvers:walk_back_approach",
+  DEBUG_REQUEST("PrimitiveManeuvers:go_to_ball_dynamic_right",
 	prepare_walk();
-	PrimitiveManeuvers::MWalk_back_approach(Foot::Right);
+	PrimitiveManeuvers::MWalk_to_ball_dynamic(Foot::Right);
+  );
+  DEBUG_REQUEST("PrimitiveManeuvers:go_to_ball_dynamic_left",
+    prepare_walk();
+  PrimitiveManeuvers::MWalk_to_ball_dynamic(Foot::Left);
   );
 
   // Helpers
@@ -70,7 +115,7 @@ void PrimitiveManeuvers::execute()
 }
 
 // Primitive Maneuvers
-bool PrimitiveManeuvers::MWalk_to_ball(Foot foot)
+void PrimitiveManeuvers::MWalk_to_ball(Foot foot)
 {
   Vector2d ballPos;
   switch (foot) {
@@ -79,50 +124,80 @@ bool PrimitiveManeuvers::MWalk_to_ball(Foot foot)
     case Foot::NONE:  ballPos = getBallModel().positionPreview; break;
   }
   double ballRotation = ballPos.angle();
-  double ballDistance = ballPos.abs();
+  //double ballDistance = ballPos.abs();
 
-  Vector3d step = limit_step(Vector3d(ballPos.x, 0.0f, ballRotation));
+  Vector3d step = limit_step(Vector3d(ballPos.x - getPathModel().goto_distance, 0.0f, ballRotation));
 
-  if (ballDistance > 220.0f)
-  {
-    add(new_step(step));
-  }
-  else if ((getBallModel().positionPreviewInRFoot.x < getBallModel().positionPreviewInLFoot.x && foot == Foot::Right) 
+  add(new_step(step));
+
+  /*// Add a correcting step if neccessary
+  if ((getBallModel().positionPreviewInRFoot.x < getBallModel().positionPreviewInLFoot.x && foot == Foot::Right) 
         || (getBallModel().positionPreviewInLFoot.x < getBallModel().positionPreviewInRFoot.x && foot == Foot::Left))
   {
-    // Add a correcting step if neccessary
     add(new_step(step));
-  }
-  else
-  {
-    return true;
-  }
-  return false;
+  }*/
 }
 
-// TODO: needs a case where it returns true, or maybe control that from another place (if (...) {Move_around_ball()})
-bool PrimitiveManeuvers::MMove_around_ball(Foot foot, bool go_right)
+void PrimitiveManeuvers::MMove_around_ball(double direction, double radius)
+{
+  Vector2d ballPos = getBallModel().positionPreview;
+ 
+  double ballRotation = ballPos.angle();
+  double ballDistance = ballPos.abs();
+
+  double min1;
+  double min2;
+  double max1;
+  double max2;
+  if (direction <= 0)
+  {
+    min1 = 0.0;
+    min2 = 0.0;
+    max1 = 45.0;
+    max2 = 100.0;
+  }
+  else {
+    min1 = -45;
+    min2 = -100;
+    max1 = 0;
+    max2 = 0;
+  }
+  double stepX = (ballDistance - radius) * std::cos(ballRotation);
+  double stepY = Math::clamp(radius * std::tan(Math::clamp(Math::toDegrees(-direction), min1, max1)), min2, max2) * std::cos(ballRotation);
+
+  add(new_step(limit_step(Vector3d(stepX, stepY, ballRotation))));
+}
+
+void PrimitiveManeuvers::MWalk_to_ball_dynamic(Foot foot)
 {
   Vector2d ballPos;
   switch (foot) {
   case Foot::Left:  ballPos = getBallModel().positionPreviewInLFoot; break;
   case Foot::Right: ballPos = getBallModel().positionPreviewInRFoot; break;
-  case Foot::NONE:  ballPos = getBallModel().positionPreview; break;
   }
-  double ballRotation = ballPos.angle();
-  double ballDistance = ballPos.abs();
-  double radius       = ballDistance > 200 ? ballDistance : 200.0f;		// 200 is close to the ball
-  double direction    = go_right == true ? -100.0f : 100.0f;			// Move around the ball right or left way
-  
-  Vector3d step = limit_step(Vector3d((ballDistance - radius) * std::cos(ballRotation),
-                                      direction,
-                                      ballRotation));
-  add(new_step(step));
 
-  return false;
+  double ballRadius = 50.0;
+
+  double stepX = 0.0;
+  double stepY = 0.0;
+
+  if (foot == Foot::Right)
+  {
+    stepX = ballPos.x - std::abs(ballPos.y + getPathModel().goto_yOffset) - getPathModel().goto_distance - ballRadius;
+    stepY = ballPos.y + getPathModel().goto_yOffset;
+  }
+  else if (foot == Foot::Left)
+  {
+    stepX = ballPos.x - std::abs(ballPos.y - getPathModel().goto_yOffset) - getPathModel().goto_distance - ballRadius;
+    stepY = ballPos.y - getPathModel().goto_yOffset;
+  }
+
+  double stepRotation = ballPos.abs() > 250 ? ballPos.angle() : 0;
+
+  add(new_step(limit_step(Vector3d(stepX, stepY, stepRotation))));
 }
 
-bool PrimitiveManeuvers::MWalk_back_approach(Foot foot)
+/*void PrimitiveManeuvers::MKick(Foot foot)
 {
 	Vector3d step;
 	Vector2d ballPos;
@@ -142,12 +217,7 @@ bool PrimitiveManeuvers::MWalk_back_approach(Foot foot)
 		step = limit_step(Vector3d(0.0f, ballPos.y, 0.0f));
 		add(new_step(step));
 	}
-	else
-	{
-		return true;
-	}
-  return false;
-}
+}*/
 
 Vector3d PrimitiveManeuvers::limit_step(Vector3d step)
 {
@@ -218,6 +288,7 @@ void PrimitiveManeuvers::pop_step() {
 
 void PrimitiveManeuvers::execute_step_list() {
   if (step_list.size() > 0) {
+    STOPWATCH_START("PrimitiveManeuvers:execute_steplist");
     if (getMotionRequest().id == motion::stand) {
       last_stepcontrol_stepID = 0;
     }
@@ -243,8 +314,15 @@ void PrimitiveManeuvers::execute_step_list() {
         break;
         // TODO: choose foot more intelligently when both feet are usable
       case MotionStatus::StepControlStatus::BOTH:
-        foot_to_be_used = Foot::Right;
-        break;
+			  if (step_list.at(0).y > 0.0f || step_list.at(0).rotation > 0.0f)
+			  {
+				  foot_to_be_used = Foot::Left;
+			  }
+			  else
+			  {
+				  foot_to_be_used = Foot::Right;
+			  }
+			  break;
       case MotionStatus::StepControlStatus::NONE:
         foot_to_be_used = Foot::Right;
         break;
@@ -262,6 +340,7 @@ void PrimitiveManeuvers::execute_step_list() {
 
     // false means right foot
     getMotionRequest().walkRequest.stepControl.moveLeftFoot = foot_to_be_used == Right ? false : true;
+    STOPWATCH_STOP("PrimitiveManeuvers:execute_steplist");
   } 
   else 
   {

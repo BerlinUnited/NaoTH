@@ -1,5 +1,5 @@
 // go to ball while avoiding obstacles using ultra sonic 
-option go_to_ball_with_USOA
+option primitivemaneuvers_go_to_ball
 {
   float @distance;
 
@@ -22,15 +22,17 @@ option go_to_ball_with_USOA
     action 
     {
       //go_to_ball(distance=@distance);
-      head.control_mode = search_for_ball;
+      head.control_mode = look_at_ball_percept;
 
       motion.type = walk;
-      motion.walk.coordinate = hip;
+      /*motion.walk.coordinate = hip;
       motion.walk.style = fast;
       
       motion.walk_speed.x = max(value0=(0.7*(ball.preview.x - @distance)), value1=0);
       motion.walk_speed.y = ball.preview.y;
-      motion.walk_speed.rot = (vector.abs(x=ball.preview.x, y=ball.preview.y) > 250) ? atan2(y = ball.preview.y, x = ball.preview.x) : 0;
+      motion.walk_speed.rot = (vector.abs(x=ball.preview.x, y=ball.preview.y) > 250) ? atan2(y = ball.preview.y, x = ball.preview.x) : 0;*/
+
+      path.type = go_to_ball;
     }
   }
 
@@ -111,15 +113,17 @@ option go_to_ball_with_USOA
 
     action{
       //go_to_ball(distance=@distance);
-      head.control_mode = search_for_ball;
+      head.control_mode = look_at_ball_percept;
 
       motion.type = walk;
-      motion.walk.coordinate = hip;
+      /*motion.walk.coordinate = hip;
       motion.walk.style = stable;
 
       motion.walk_speed.x = max(value0=(0.7*(ball.preview.x - @distance - ball.radius)), value1=0);
       motion.walk_speed.y = ball.preview.y;
-      motion.walk_speed.rot = (vector.abs(x=ball.preview.x, y=ball.preview.y) > 250) ? atan2(y = ball.preview.y, x = ball.preview.x) : 0;
+      motion.walk_speed.rot = (vector.abs(x=ball.preview.x, y=ball.preview.y) > 250) ? atan2(y = ball.preview.y, x = ball.preview.x) : 0;*/
+
+      path.type = go_to_ball;
     }
   }
 }
