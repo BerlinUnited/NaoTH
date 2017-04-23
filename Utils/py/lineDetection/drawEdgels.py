@@ -95,12 +95,19 @@ def getEdgels(frame):
 
     # project edgels to robot coordinate system
     cameraMatrixTop = parseCameraMatrix(frame["CameraMatrixTop"])
-    projectedEdgelsTopA = [ projectEdgel(edgel.point.x, edgel.point.y, cameraMatrixTop) for edgel in edgelsTopA]
-    projectedEdgelsTopB = [ projectEdgel(edgel.point.x, edgel.point.y, cameraMatrixTop) for edgel in edgelsTopB]
+
+    projectedEdgelsTopA = []
+    for edgel in edgelsTopA:
+        projectedPos = projectEdgel(edgel.point.x, edgel.point.y, cameraMatrixTop)
+        projectedEdgelsTopA.append( (projectedPos[0], projectedPos[1],  edgel.direction.x, edgel.direction.y) )
+    projectedEdgelsTopB = []
+    for edgel in edgelsTopB:
+        projectedPos = projectEdgel(edgel.point.x, edgel.point.y, cameraMatrixTop)
+        projectedEdgelsTopB.append( (projectedPos[0], projectedPos[1],  edgel.direction.x, edgel.direction.y) )
 
     cameraMatrix = parseCameraMatrix(frame["CameraMatrix"])
-    projectedEdgelsA = [ projectEdgel(edgel.point.x, edgel.point.y, cameraMatrix) for edgel in edgelsA]
-    projectedEdgelsB = [ projectEdgel(edgel.point.x, edgel.point.y, cameraMatrix) for edgel in edgelsB]
+    projectedEdgelsA = [ (projectEdgel(edgel.point.x, edgel.point.y, cameraMatrix), edgel.direction.x, edgel.direction.y)  for edgel in edgelsA]
+    projectedEdgelsB = [ (projectEdgel(edgel.point.x, edgel.point.y, cameraMatrix), edgel.direction.x, edgel.direction.y)  for edgel in edgelsB]
 
     return (frame.number, (edgelsTopA, edgelsTopB), (edgelsA, edgelsB), (projectedEdgelsTopA, projectedEdgelsTopB), (projectedEdgelsA, projectedEdgelsB))
 

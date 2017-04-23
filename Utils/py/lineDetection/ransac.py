@@ -10,6 +10,18 @@ class Ransac:
         self.threshDist = threshDist
         self.minInlier = minInlier
 
+        self.threshAngle = math.radians(10)
+
+    @staticmethod
+    def __unit_vector(vector):
+        return vector / np.linalg.norm(vector)
+
+    @staticmethod
+    def __angle_between(v1, v2):
+        v1_u = Ransac.__unit_vector(v1)
+        v2_u = Ransac.__unit_vector(v2)
+        return math.acos(np.clip(np.dot(v1_u, v2_u), -1.0, 1.0))
+
     def getOutlier(self, data):
         if not len(data) > 2:
             return None, None, None, data, None, None
@@ -29,13 +41,20 @@ class Ransac:
             # pick two random points
             pick = random.sample(range(0, len(data)), 2)
             sampleA = data[pick[0]]
+            sampleA_direction = (sampleA[2], sampleA[3])
             sampleA = (sampleA[0], sampleA[1])
             sampleB = data[pick[1]]
+            sampleB_direction = (sampleB[2], sampleB[3])
             sampleB = (sampleB[0], sampleB[1])
 
             # ----
             # Test
             # ----
+
+            if Ransac.__angle_between(sampleA_direction, sampleB_direction) > self.threshAngle:
+                continue
+
+            lineNormal = (sampleA_direction[0] + sampleB_direction[0], sampleA_direction[1] + sampleB_direction[1])
 
             # calculate distances of all pointes to the line
             inlier = []
@@ -48,11 +67,16 @@ class Ransac:
             minY = data[0][1]
 
             for edgel in data:
+                direction = (edgel[2], edgel[3])
+                if Ransac.__angle_between(lineNormal, direction) > self.threshDist:
+                    outlier.append(edgel)
+                    continue
+
                 point = (edgel[0], edgel[1])
                 d = LA.norm(np.cross(lineVec, np.subtract(sampleA, point))) / LA.norm(lineVec)
 
                 if abs(d) <= self.threshDist:
-                    inlier.append(point)
+                    inlier.append(edgel)
 
                     # find endpoints
                     if edgel[0] > maxX:
@@ -64,7 +88,7 @@ class Ransac:
                     elif edgel[1] < minY:
                         minY = edgel[1]
                 else:
-                    outlier.append(point)
+                    outlier.append(edgel)
 
             #print(len(inlier))
 
@@ -96,7 +120,7 @@ class Ransac:
         return bestParameter1, bestParameter2, bestIn, bestOut, x_range, y_range
 
 
-# test
+# test TODO: Doesn't work, because lack of edgel directions
 if __name__ == '__main__':
     import matplotlib.pyplot as plt
 
