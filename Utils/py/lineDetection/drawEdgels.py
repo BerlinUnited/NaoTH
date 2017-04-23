@@ -51,9 +51,12 @@ class LinePlot:
 
     def clean(self):
         if self.lineCount < len(self.plotLines):
-            for i in range(self.lineCount, len(self.plotLines)-1):
+            for i in range(self.lineCount, len(self.plotLines)):
                 self.plotLines[i].set_data([], [])
         self.lineCount = 0
+
+
+
 
 def parseVector3(msg):
     return m3.Vector3(msg.x,msg.y,msg.z)
@@ -123,13 +126,14 @@ def animate(i, log, edgelsPlotTop, linePlot, edgelsPlot, projectedEdgelsPlot):
 
     #####################################
     # It's time to get things done
-    linePlot.clean()
     data = msg[3]
 
     param1, param2 = line_detector.detectLines(data)
 
     for i in range(len(param1)):
         linePlot.add_line(param1[i], param2[i])
+
+    linePlot.clean()
 
 # init plot
 plt.close('all')
@@ -170,5 +174,5 @@ log = iter(LogReader(args.logfile, logParser, getEdgels))
 
 
 # start animation
-ani = animation.FuncAnimation(fig, animate, frames=100, fargs=(log, edgelsPlotTop, linePlot, edgelsPlot, projectedEdgelsPlot), interval = 60)
+ani = animation.FuncAnimation(fig, animate, frames=100, fargs=(log, edgelsPlotTop, linePlot, edgelsPlot, projectedEdgelsPlot), interval = 33)
 plt.show()

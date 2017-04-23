@@ -51,7 +51,7 @@ class Ransac:
             #print(len(inlier))
 
             if len(inlier) >= self.minInlier and len(inlier) > len(bestIn):
-                print("Found something", len(inlier))
+                #print("Found something", len(inlier))
 
                 bestIn = inlier
                 bestOut = outlier
@@ -71,7 +71,7 @@ class Ransac:
 
                 #data = inlier
 
-        print("PARAMETER:", bestParameter1, bestParameter2, "\nINLIER:", len(bestIn))
+        #print("PARAMETER:", bestParameter1, bestParameter2, "\nINLIER:", len(bestIn))
 
         return bestParameter1, bestParameter2, bestIn, bestOut
 
