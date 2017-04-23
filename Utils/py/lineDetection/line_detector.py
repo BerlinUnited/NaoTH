@@ -6,7 +6,7 @@ from ransac import Ransac
 #from cluster import Cluster
 
 # Ransac: iterations, threshDist, minInlier
-ransac = Ransac(20, 100, 12)
+ransac = Ransac(20, 50, 12)
 
 def detectLines(edgelFrame):
     data = edgelFrame

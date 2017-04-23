@@ -72,16 +72,30 @@ def parseCameraMatrix(matrixFrame):
 def getEdgels(frame):
     edgelFrameTop = frame["ScanLineEdgelPerceptTop"]
 
+    edgelsTopA = []
+    edgelsTopB = []
+    for pair in edgelFrameTop.pairs:
+        edgelsTopA.append(edgelFrameTop.edgels[pair.begin])
+        edgelsTopB.append(edgelFrameTop.edgels[pair.end])
+
     edgelFrame = frame["ScanLineEdgelPercept"]
+
+    edgelsA = []
+    edgelsB = []
+    for pair in edgelFrame.pairs:
+        edgelsA.append(edgelFrame.edgels[pair.begin])
+        edgelsB.append(edgelFrame.edgels[pair.end])
 
     # project edgels to robot coordinate system
     cameraMatrixTop = parseCameraMatrix(frame["CameraMatrixTop"])
-    projectedEdgelsTop = [ projectEdgel(edgel.point.x, edgel.point.y, cameraMatrixTop) for edgel in edgelFrameTop.edgels]
+    projectedEdgelsTopA = [ projectEdgel(edgel.point.x, edgel.point.y, cameraMatrixTop) for edgel in edgelsTopA]
+    projectedEdgelsTopB = [ projectEdgel(edgel.point.x, edgel.point.y, cameraMatrixTop) for edgel in edgelsTopB]
 
     cameraMatrix = parseCameraMatrix(frame["CameraMatrix"])
-    projectedEdgels = [ projectEdgel(edgel.point.x, edgel.point.y, cameraMatrix) for edgel in edgelFrame.edgels]
+    projectedEdgelsA = [ projectEdgel(edgel.point.x, edgel.point.y, cameraMatrix) for edgel in edgelsA]
+    projectedEdgelsB = [ projectEdgel(edgel.point.x, edgel.point.y, cameraMatrix) for edgel in edgelsB]
 
-    return (frame.number, edgelFrameTop, edgelFrame, projectedEdgelsTop, projectedEdgels)
+    return (frame.number, (edgelsTopA, edgelsTopB), (edgelsA, edgelsB), (projectedEdgelsTopA, projectedEdgelsTopB), (projectedEdgelsA, projectedEdgelsB))
 
 def getFocalLength():
     resolutionWidth = 640
@@ -110,24 +124,39 @@ def projectEdgel(x,y,cMatrix):
 def animate(i, log, edgelsPlotTop, linePlot, edgelsPlot, projectedEdgelsPlot):
     msg = log.next()
 
-    edgelFrameTop = [(edgel.point.x, -edgel.point.y, edgel.direction.x, edgel.direction.y) for edgel in msg[1].edgels]
+    edgelFrameTopA = [(edgel.point.x, -edgel.point.y, edgel.direction.x, edgel.direction.y) for edgel in msg[1][0]]
+    edgelFrameTopB = [(edgel.point.x, -edgel.point.y, edgel.direction.x, edgel.direction.y) for edgel in msg[1][1]]
     #edgelRotationsTop = [(edgel.direction.x, edgel.direction.y) for edgel in msg[1].edgels]
-    edgelsPlotTop.set_offsets(edgelFrameTop)
+    edgelsPlotTop[0].set_offsets(edgelFrameTopA)
+    edgelsPlotTop[1].set_offsets(edgelFrameTopB)
     if args.direction:
-        edgelsPlotTop.set_UVC([edgel.direction.x for edgel in msg[1].edgels], [edgel.direction.y for edgel in msg[1].edgels])
+        edgelsPlotTop[0].set_UVC([edgel.direction.x for edgel in msg[1][0]], [edgel.direction.y for edgel in msg[1][0]])
+        edgelsPlotTop[1].set_UVC([edgel.direction.x for edgel in msg[1][0]], [edgel.direction.y for edgel in msg[1][1]])
 
-    edgelFrame = [(edgel.point.x, -edgel.point.y, edgel.direction.x, edgel.direction.y) for edgel in msg[2].edgels]
-    edgelsPlot.set_offsets(edgelFrame)
+    edgelFrameA = [(edgel.point.x, -edgel.point.y, edgel.direction.x, edgel.direction.y) for edgel in msg[2][0]]
+    edgelFrameB = [(edgel.point.x, -edgel.point.y, edgel.direction.x, edgel.direction.y) for edgel in msg[2][1]]
+    edgelsPlot[0].set_offsets(edgelFrameA)
+    edgelsPlot[1].set_offsets(edgelFrameB)
     if args.direction:
-        edgelsPlot.set_UVC([edgel.direction.x for edgel in msg[2].edgels], [edgel.direction.y for edgel in msg[2].edgels])
+        edgelsPlot[0].set_UVC([edgel.direction.x for edgel in msg[2][1]], [edgel.direction.y for edgel in msg[2][0]])
+        edgelsPlot[1].set_UVC([edgel.direction.x for edgel in msg[2][1]], [edgel.direction.y for edgel in msg[2][1]])
 
     #projectedEdgelsPlot.set_offsets(msg[3] + msg[4])
-    projectedEdgelsPlot.set_offsets(msg[3])
+    projectedEdgelsPlot[0].set_offsets(msg[3][0])
+    projectedEdgelsPlot[1].set_offsets(msg[3][1])
 
     #####################################
     # It's time to get things done
-    data = msg[3]
 
+    # A
+    data = msg[3][0]
+    param1, param2 = line_detector.detectLines(data)
+
+    for i in range(len(param1)):
+        linePlot.add_line(param1[i], param2[i])
+
+    # B
+    data = msg[3][1]
     param1, param2 = line_detector.detectLines(data)
 
     for i in range(len(param1)):
@@ -145,22 +174,24 @@ ax = fig.add_subplot(2,2,1, aspect='equal')
 ax.set_xlim([0, 640])
 ax.set_ylim([-480, 0])
 if args.direction:
-    edgelsPlotTop = ax.quiver([1,1], [1,1], [1,1], [0,0], pivot='mid', color='b', units='dots', scale=0.1)
+    edgelsPlotTop = [ax.quiver([1,1], [1,1], [1,1], [0,0], pivot='mid', units='dots', scale=0.1),
+        ax.quiver([1,1], [1,1], [1,1], [0,0], pivot='mid', color='r', units='dots', scale=0.1)]
 else:
-    edgelsPlotTop = plt.scatter([], [], point_size)
+    edgelsPlotTop = [plt.scatter([], [], point_size), plt.scatter([], [], point_size)]
 
 ax = fig.add_subplot(2,2,3, aspect='equal')
 ax.set_xlim([0, 640])
 ax.set_ylim([-480, 0])
 if args.direction:
-    edgelsPlot = ax.quiver([1,1], [1,1], [1,1], [0,0], pivot='mid', color='b', units='dots', scale=0.1)
+    edgelsPlot = [ax.quiver([1,1], [1,1], [1,1], [0,0], pivot='mid', units='dots', scale=0.1),
+        ax.quiver([1,1], [1,1], [1,1], [0,0], pivot='mid', color='r', units='dots', scale=0.1)]
 else:
-    edgelsPlot = plt.scatter([], [], point_size)
+    edgelsPlot = [plt.scatter([], [], point_size), plt.scatter([], [], point_size)]
 
 ax = fig.add_subplot(1,2,2, aspect='equal')
 ax.set_xlim([-10000, 10000])
 ax.set_ylim([-10000, 10000])
-projectedEdgelsPlot = plt.scatter([], [], point_size, color='black')
+projectedEdgelsPlot = [plt.scatter([], [], point_size, color='black'), plt.scatter([], [], point_size, color='red')]
 
 linePlot = LinePlot(ax, (-10000, 10000), (-10000, 10000))
 
