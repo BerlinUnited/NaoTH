@@ -41,21 +41,25 @@ public:
     IMUModel();
 
     void execute();
-    void writeIMUData();
+    void writeIMUData(double dt);
     void plots();
 
 private:
     FrameInfo lastFrameInfo;
 
-    UKF<9,9,6,6,State<RotationMeasurement<6>, Measurement<3>,9> > ukf;
+    UKF<6,6,RotationState<RotationMeasurement<6>, Measurement<3>,6> > ukf_rot;
+    UKF<3,3,State<Measurement<3>, 3> > ukf_acc_global;
 
     typedef RotationMeasurement<6> IMU_RotationMeasurement;
     typedef Measurement<3>         IMU_RotVelMeasurement;
+    typedef Measurement<3>         IMU_AccMeasurementGlobal;
 
     Eigen::Vector3d quaternionToRotationVector(const Eigen::Quaterniond& q) const{
         Eigen::AngleAxisd temp(q);
         return temp.angle() * temp.axis();
     }
+
+    bool updated_by_both;
 };
 
 #endif // IMUMODEL_H

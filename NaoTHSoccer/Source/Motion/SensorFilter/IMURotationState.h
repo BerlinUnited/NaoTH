@@ -9,45 +9,35 @@
     #include <Eigen/Dense>
 #pragma GCC diagnostic pop
 
-// state in global reference frame
+// state for rotation and rotational velocity
 template <class M1, class M2, int dim, int dim_cov = dim, int rotation_index = 0>
-class State : public UKFStateRotationBase<State<M1, M2, dim, dim_cov>, rotation_index, dim>{
+class RotationState : public UKFStateRotationBase<RotationState<M1, M2, dim, dim_cov>, rotation_index, dim>{
     public: // constructors
         // This constructor allows you to construct MyVectorType from Eigen expressions
         template<typename OtherDerived>
-        State(const Eigen::MatrixBase<OtherDerived>& other)
-            : UKFStateRotationBase<State<M1, M2, dim, dim_cov>, rotation_index, dim>(other)
+        RotationState(const Eigen::MatrixBase<OtherDerived>& other)
+            : UKFStateRotationBase<RotationState<M1, M2, dim, dim_cov>, rotation_index, dim>(other)
         { }
 
         // inital state (zero rotation, zero angular velocity)
-        State(): UKFStateRotationBase<State<M1, M2, dim, dim_cov>, rotation_index, dim>(){
+        RotationState(): UKFStateRotationBase<RotationState<M1, M2, dim, dim_cov>, rotation_index, dim>(){
         }
 
         // "down casting"
-        State(const UKFStateRotationBase<State<M1, M2, dim, dim_cov>, rotation_index, dim>& other):
-            UKFStateRotationBase<State<M1, M2, dim, dim_cov>, rotation_index, dim>(other)
+        RotationState(const UKFStateRotationBase<RotationState<M1, M2, dim, dim_cov>, rotation_index, dim>& other):
+            UKFStateRotationBase<RotationState<M1, M2, dim, dim_cov>, rotation_index, dim>(other)
         {}
 
     public: // accessors
-
         Eigen::Block<Eigen::Matrix<double,dim,1> > rotational_velocity(){
-            return UKFStateRotationBase<State<M1, M2, dim, dim_cov>, rotation_index, dim>::accessElements(3,0,3,1);
+            return UKFStateRotationBase<RotationState<M1, M2, dim, dim_cov>, rotation_index, dim>::accessElements(3,0,3,1);
         }
 
         const Eigen::Block<const Eigen::Matrix<double,dim,1> > rotational_velocity() const{
-            return UKFStateRotationBase<State<M1, M2, dim, dim_cov>, rotation_index, dim>::accessElements(3,0,3,1);
-        }
-
-        Eigen::Block<Eigen::Matrix<double,dim,1> > bias_rotational_velocity(){
-            return UKFStateRotationBase<State<M1, M2, dim, dim_cov>, rotation_index, dim>::accessElements(6,0,3,1);
-        }
-
-        const Eigen::Block<const Eigen::Matrix<double,dim,1> > bias_rotational_velocity() const{
-            return UKFStateRotationBase<State<M1, M2, dim, dim_cov>, rotation_index, dim>::accessElements(6,0,3,1);
+            return UKFStateRotationBase<RotationState<M1, M2, dim, dim_cov>, rotation_index, dim>::accessElements(3,0,3,1);
         }
 
     public:
-
         // functions requiered by the unscented kalman filter
         // TODO: should these functions be part of the filter?
 
@@ -70,8 +60,7 @@ class State : public UKFStateRotationBase<State<M1, M2, dim, dim_cov>, rotation_
 
             this->rotation() = new_angle_axis.angle() * new_angle_axis.axis();
 
-            this->rotational_velocity() = this->rotational_velocity() - this->bias_rotational_velocity();
-            this->bias_rotational_velocity() = this->bias_rotational_velocity();
+            this->rotational_velocity() = this->rotational_velocity();
         }
 
         // state to measurement transformation function
@@ -98,6 +87,64 @@ class State : public UKFStateRotationBase<State<M1, M2, dim, dim_cov>, rotation_
             M2 return_val(z);
             return_val << rotational_velocity();
             return return_val;
+        }
+};
+
+// state for acceleration in "global" reference frame
+template <class M1, int dim, int dim_cov = dim>
+class State : public Eigen::Matrix<double,dim,1>{
+    public: // constructors
+        // This constructor allows you to construct MyVectorType from Eigen expressions
+        template<typename OtherDerived>
+        State(const Eigen::MatrixBase<OtherDerived>& other)
+            : Eigen::Matrix<double,dim,1>(other)
+        { }
+
+        // inital state (zero rotation, zero angular velocity)
+        State(): Eigen::Matrix<double,dim,1>(){
+        }
+
+        // This method allows you to assign Eigen expressions to MyVectorType
+        template<typename OtherDerived>
+        State& operator=(const Eigen::MatrixBase <OtherDerived>& other)
+        {
+            this->Eigen::Matrix<double,dim,1>::operator=(other);
+            return *this;
+        }
+
+    public: // accessors
+        Eigen::Block<Eigen::Matrix<double,dim,1> > acceleration(){
+            return Eigen::Block<Eigen::Matrix<double,dim,1> >(this->derived(), 0, 0, 3, 1);
+        }
+
+        const Eigen::Block<const Eigen::Matrix<double,dim,1> > acceleration() const {
+            return Eigen::Block<const Eigen::Matrix<double,dim,1> >(this->derived(), 0, 0, 3, 1);
+        }
+
+    public:
+        // functions requiered by the unscented kalman filter
+        // TODO: should these functions be part of the filter?
+
+        // state transition function
+        void predict(double /*dt*/) {
+            // assume constant acceleration
+        }
+
+        // state to measurement transformation function
+        // HACK: add return type as parameter to enable overloading...
+        M1 asMeasurement(M1 /*z*/) const {
+            return acceleration();
+        }
+
+        static State calcMean(std::vector<State, Eigen::aligned_allocator<State> >& states){
+            State mean;
+
+            // calculate new state (weighted mean of sigma points)
+            for(typename std::vector<State, Eigen::aligned_allocator<State> >::iterator i = states.begin(); i != states.end(); ++i){
+                mean += 1.0 / static_cast<double>(states.size()) * (*i);
+            }
+
+            return mean;
         }
 };
 

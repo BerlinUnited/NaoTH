@@ -9,6 +9,7 @@
     #include <Eigen/Dense>
 #pragma GCC diagnostic pop
 
+// measurement vector which have components which didn't belong to a vector space, e.g. here a rotation vector
 template <int dim, int dim_cov = dim, int rotation_index = 0>
 class RotationMeasurement : public UKFStateRotationBase< RotationMeasurement<dim, dim_cov>, rotation_index, dim>{
 public:
@@ -28,12 +29,12 @@ public:
     {}
 
 public: // additional accessors
-
     Eigen::Block<Eigen::Matrix<double,dim,1> > rotational_velocity(){
         return Eigen::Block<Eigen::Matrix<double,dim,1> >(this->derived(), 3, 0, 3, 1);
     }
 };
 
+// measurement vectors which are elements of a euclidean vector space, e.g. velocity, accelerations
 template <int dim>
 class Measurement : public Eigen::Matrix<double,dim,1>{
 public:
@@ -56,11 +57,10 @@ public:
         return *this;
     }
 
-public: // additional accessors
-
-    Eigen::Block<Eigen::Matrix<double,dim,1> > rotational_velocity(){
+/*public: // additional accessors
+    Eigen::Block<Eigen::Matrix<double,dim,1> > velocity(){
         return Eigen::Block<Eigen::Matrix<double,dim,1> >(this->derived(), 0, 0, 3, 1);
-    }
+    }*/
 
 public:
     static Measurement calcMean(std::vector<Measurement, Eigen::aligned_allocator<Measurement> >& states){

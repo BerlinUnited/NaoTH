@@ -213,14 +213,15 @@ void Motion::processSensorData()
   // calibrate inertia sensors
   theInertiaSensorCalibrator->execute();
 
+  //TODO: introduce calibrated versions of the data
+  // correct the sensors
+  getGyrometerData().data += getCalibrationData().gyroSensorOffset;
+
   //
   theIMUModel->execute();
 
-  //TODO: introduce calibrated versions of the data
-  // correct the sensors
   getInertialSensorData().data += getCalibrationData().inertialSensorOffset;
-  getGyrometerData().data += getCalibrationData().gyroSensorOffset;
-  getAccelerometerData().data += getCalibrationData().accSensorOffset;
+  getAccelerometerData().data  += getCalibrationData().accSensorOffset;
 
   //
   theInertiaSensorFilterBH->execute();

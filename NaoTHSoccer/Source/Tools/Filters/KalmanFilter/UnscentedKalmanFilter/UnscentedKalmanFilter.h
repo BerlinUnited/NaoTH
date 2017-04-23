@@ -12,7 +12,7 @@
     #include <Eigen/Dense>
 #pragma GCC diagnostic pop
 
-template <int dim_state, int dim_state_cov, int dim_measurement, int dim_measurement_cov, class S>
+template <int dim_state_cov, int dim_measurement_cov, class S>
 class UKF {
     public:
 // TODO: enable different updates like only acceleration and rotation or all three
@@ -22,51 +22,16 @@ class UKF {
 //        };
 
     public:
+        // covariances
+        Eigen::Matrix<double,dim_state_cov,dim_state_cov> P;             // covariance matrix of current state
+        Eigen::Matrix<double,dim_state_cov,dim_state_cov> Q;             // covariance matrix of process noise
+        Eigen::Matrix<double,dim_measurement_cov,dim_measurement_cov> R; // covariance matrix of measurement noise
+
+    public:
         EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
-        UKF():
-            Q(Eigen::Matrix<double,dim_state_cov,dim_state_cov>::Identity()),
-            P(Eigen::Matrix<double,dim_state_cov,dim_state_cov>::Identity())
+        UKF()
         {
-            // bias_acceleration (x,y,z) [m/s^2], too small?
-//            Q(9,9)   = 10e-10;
-//            Q(10,10) = 10e-10;
-//            Q(11,11) = 10e-10;
-
-            // rotation (x,y,z) [rad]?
-            Q(0,0) = 0.01;
-            Q(1,1) = 0.01;
-            Q(2,2) = 0.01;
-
-            // rotational_velocity (x,y,z) [rad/s], too small?
-            Q(3,3) = 0.1;
-            Q(4,4) = 0.1;
-            Q(5,5) = 0.1;
-
-            // bias_rotational_velocity (x,y,z) [m/s^2], too small?
-            Q(6,6) = 10e-10;
-            Q(7,7) = 10e-10;
-            Q(8,8) = 10e-10;
-
-            // set covariance matrix of measurement noise
-            // measured covariance of acceleration and rotational velocity (motion log, 60 seconds)
-//            R << 5.074939351879890342e-04, -1.561730283237946278e-05,  1.012849085655689321e-04, 0     , 0     , 0     , -3.078687958578659292e-08, -1.132513004663809251e-06, -6.485352375515866273e-07,
-//                -1.561730283237946278e-05,  2.570436087068024501e-04, -4.159091012580820026e-05, 0     , 0     , 0     , -3.013278205585369588e-07,  1.736820285922189584e-06, -4.599219827687661978e-07,
-//                 1.012849085655689321e-04, -4.159091012580820026e-05,  4.727921819788054878e-04, 0     , 0     , 0     ,  5.523361976811979815e-07, -1.730307422507887473e-07, -3.030009469390110280e-07,
-//                 0                       ,  0                       ,  0                       , 10e-11, 0     , 0     ,  0                       ,  0                       ,  0                       ,
-//                 0                       ,  0                       ,  0                       , 0     , 10e-11, 0     ,  0                       ,  0                       ,  0                       ,
-//                 0                       ,  0                       ,  0                       , 0     , 0     , 10e-11,  0                       ,  0                       ,  0                       ,
-//                -3.078687958578659292e-08, -3.013278205585369588e-07,  5.523361976811979815e-07, 0     , 0     , 0     ,  3.434758685147043306e-06, -8.299226917536411892e-08,  5.842662059539863827e-08,
-//                -1.132513004663809251e-06,  1.736820285922189584e-06, -1.730307422507887473e-07, 0     , 0     , 0     , -8.299226917536411892e-08,  1.006052718494827880e-05,  1.346681994776136150e-06,
-//                -6.485352375515866273e-07, -4.599219827687661978e-07, -3.030009469390110280e-07, 0     , 0     , 0     ,  5.842662059539863827e-08,  1.346681994776136150e-06,  3.242298821157115427e-06;
-
-            // synthetic measurement covariance matrix used for testing
-            R << 10e-5, 0, 0, 0, 0, 0,
-                 0, 10e-5, 0, 0, 0, 0,
-                 0, 0, 10e-5, 0, 0, 0,
-                 0, 0, 0, 10e-5, 0, 0,
-                 0, 0, 0, 0, 10e-5, 0,
-                 0, 0, 0, 0, 0, 10e-5;
         }
 
     public:
@@ -112,8 +77,6 @@ class UKF {
 
             // calculate current measurement covariance
             Eigen::MatrixXd Pzz = Eigen::MatrixXd::Zero(z.rows(),z.rows());
-            //        Eigen::MatrixXd rotational_differences;
-            //        rotational_differences.resize(3,rotations.size());
             M temp;
 
             for(typename std::vector<M, Eigen::aligned_allocator<M> >::iterator i = sigmaMeasurements.begin(); i != sigmaMeasurements.end(); ++i){
@@ -123,7 +86,7 @@ class UKF {
 
             // apply measurement noise covariance
             // TODO: use correct measurement noise covariance matrix R
-            Eigen::MatrixXd Pvv = Pzz/* + R*/;
+            Eigen::MatrixXd Pvv = Pzz + 10e-5 * Eigen::MatrixXd::Identity(z.rows(),z.rows());
 
             // calculate state-measurement cross-covariance
             Eigen::MatrixXd Pxz = Eigen::MatrixXd::Zero(state.rows(),z.rows());
@@ -160,7 +123,7 @@ class UKF {
         const double alpha  = 10E-3;
         const double kapa   = 0;
         const double beta   = 2;
-        const double lambda = alpha * alpha * (dim_state + kapa) - dim_state;
+        const double lambda = alpha * alpha * (dim_state_cov + kapa) - dim_state_cov;
 
         std::vector<S, Eigen::aligned_allocator<S> > sigmaPoints;
 
@@ -188,11 +151,6 @@ class UKF {
                 sigmaPoints[i + dim_state_cov] += state;
             }
         }
-
-        // covariances
-        Eigen::Matrix<double,dim_state_cov,dim_state_cov> Q;         // covariance matrix of process noise
-        Eigen::Matrix<double,dim_measurement_cov,dim_measurement_cov> R; // covariance matrix of measurement noise
-        Eigen::Matrix<double,dim_state_cov,dim_state_cov> P;         // covariance matrix of current state
 
 };
 
