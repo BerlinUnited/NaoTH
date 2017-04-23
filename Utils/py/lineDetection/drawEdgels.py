@@ -20,9 +20,40 @@ import math
 import naoth.math3d as m3
 import naoth.math2d as m2
 
-from ransac import Ransac
+import line_detector
 
-from cluster import Cluster
+
+class LinePlot:
+
+    def __init__(self, ax, x_range, y_range):
+        self.X = x_range
+        self.Y = y_range
+
+        self.ax = ax
+        self.plotLines = [ax.plot([],[])[0]]
+        self.lineCount = 0
+
+    def add_line(self, param1, param2):
+        self.lineCount += 1
+        if self.lineCount > len(self.plotLines):
+            self.plotLines.append(ax.plot([],[])[0])
+
+        plot = self.plotLines[self.lineCount-1]
+
+        # draw lines
+        if param1:
+            plot.set_data([self.X[0], self.X[1]], [self.X[0] * param1 + param2, self.X[1] * param1 + param2])
+        elif param2:
+            # vertical line
+            plot.set_data([param1, param1], [self.Y[0], self.Y[1]])
+        else:
+            plot.set_data([], [])
+
+    def clean(self):
+        if self.lineCount < len(self.plotLines):
+            for i in range(self.lineCount, len(self.plotLines)-1):
+                self.plotLines[i].set_data([], [])
+        self.lineCount = 0
 
 def parseVector3(msg):
     return m3.Vector3(msg.x,msg.y,msg.z)
@@ -73,7 +104,7 @@ def projectEdgel(x,y,cMatrix):
     result.y = result.y + cMatrix.translation.y
     return (result.x, result.y)
 
-def animate(i, log, edgelsPlotTop, linePlotTop, edgelsPlot, projectedEdgelsPlot):
+def animate(i, log, edgelsPlotTop, linePlot, edgelsPlot, projectedEdgelsPlot):
     msg = log.next()
 
     edgelFrameTop = [(edgel.point.x, -edgel.point.y, edgel.direction.x, edgel.direction.y) for edgel in msg[1].edgels]
@@ -87,37 +118,18 @@ def animate(i, log, edgelsPlotTop, linePlotTop, edgelsPlot, projectedEdgelsPlot)
     if args.direction:
         edgelsPlot.set_UVC([edgel.direction.x for edgel in msg[2].edgels], [edgel.direction.y for edgel in msg[2].edgels])
 
-    projectedEdgelsPlot.set_offsets(msg[3] + msg[4])
+    #projectedEdgelsPlot.set_offsets(msg[3] + msg[4])
+    projectedEdgelsPlot.set_offsets(msg[3])
 
     #####################################
     # It's time to get things done
+    linePlot.clean()
+    data = msg[3]
 
-    ransac = Ransac(11, 5, 0.1)
+    param1, param2 = line_detector.detectLines(data)
 
-    if 0:
-        cluster = Cluster.buildCluster(edgelFrameTop)
-        data = max(cluster, key=len)
-
-        # test cluster
-        edgelsPlotTop.set_offsets(data)
-
-    else:
-        data = edgelFrameTop
-
-    bestParameter1, bestParameter2, outlier = ransac.getOutlier(data)
-
-
-    # draw lines
-    if bestParameter2:
-        linePlotTop.set_data([(0, 640), (bestParameter2, 640 * bestParameter1 + bestParameter2)])
-    elif bestParameter1:
-        #vertical line
-        linePlotTop.set_data([(bestParameter1, bestParameter1), (-480, 0)])
-
-    #
-    #####################################
-
-
+    for i in range(len(param1)):
+        linePlot.add_line(param1[i], param2[i])
 
 # init plot
 plt.close('all')
@@ -133,9 +145,6 @@ if args.direction:
 else:
     edgelsPlotTop = plt.scatter([], [], point_size)
 
-#linePlotTop = plt.scatter([], [], point_size)
-linePlotTop = ax.plot([],[], 'r')[0]
-
 ax = fig.add_subplot(2,2,3, aspect='equal')
 ax.set_xlim([0, 640])
 ax.set_ylim([-480, 0])
@@ -147,7 +156,9 @@ else:
 ax = fig.add_subplot(1,2,2, aspect='equal')
 ax.set_xlim([-10000, 10000])
 ax.set_ylim([-10000, 10000])
-projectedEdgelsPlot = plt.scatter([], [], point_size)
+projectedEdgelsPlot = plt.scatter([], [], point_size, color='black')
+
+linePlot = LinePlot(ax, (-10000, 10000), (-10000, 10000))
 
 
 # init parser
@@ -159,5 +170,5 @@ log = iter(LogReader(args.logfile, logParser, getEdgels))
 
 
 # start animation
-ani = animation.FuncAnimation(fig, animate, frames=100, fargs=(log, edgelsPlotTop, linePlotTop, edgelsPlot, projectedEdgelsPlot), interval = 60)
+ani = animation.FuncAnimation(fig, animate, frames=100, fargs=(log, edgelsPlotTop, linePlot, edgelsPlot, projectedEdgelsPlot), interval = 60)
 plt.show()

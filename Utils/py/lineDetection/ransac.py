@@ -5,14 +5,14 @@ import random
 
 class Ransac:
 
-    def __init__(self, iterations, threshDist, inlierRatio):
+    def __init__(self, iterations, threshDist, minInlier):
         self.iterations = iterations
         self.threshDist = threshDist
-        self.inlierRatio = inlierRatio
+        self.minInlier = minInlier
 
     def getOutlier(self, data):
         if not len(data) > 2:
-            return None, None, None
+            return None, None, None, data
 
         bestParameter1 = 0
         bestParameter2 = 0
@@ -50,7 +50,7 @@ class Ransac:
 
             #print(len(inlier))
 
-            if len(inlier) >= math.floor(self.inlierRatio * len(data)) and len(inlier) > len(bestIn):
+            if len(inlier) >= self.minInlier and len(inlier) > len(bestIn):
                 print("Found something", len(inlier))
 
                 bestIn = inlier
@@ -73,7 +73,7 @@ class Ransac:
 
         print("PARAMETER:", bestParameter1, bestParameter2, "\nINLIER:", len(bestIn))
 
-        return bestParameter1, bestParameter2, bestOut
+        return bestParameter1, bestParameter2, bestIn, bestOut
 
 
 # test
