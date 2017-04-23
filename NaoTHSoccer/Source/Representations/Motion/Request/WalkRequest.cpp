@@ -30,6 +30,7 @@ void Serializer<WalkRequest>::serialize(const WalkRequest& representation, naoth
   {
     naothmessages::StepControlRequest* stepControl = msg->mutable_stepcontrol();
     stepControl->set_stepid(representation.stepControl.stepID);
+    stepControl->set_steptype((naothmessages::StepControlRequest::stepType) representation.stepControl.type);
     stepControl->set_moveleftfoot(representation.stepControl.moveLeftFoot);
     stepControl->set_time(representation.stepControl.time);
     DataConversion::toMessage(representation.stepControl.target, *(stepControl->mutable_target()));
@@ -59,6 +60,7 @@ void Serializer<WalkRequest>::deserialize(const naothmessages::WalkRequest* msg,
   {
     const naothmessages::StepControlRequest& stepControl = msg->stepcontrol();
     representation.stepControl.stepID = stepControl.stepid();
+    representation.stepControl.type = (WalkRequest::StepControlRequest::stepType) stepControl.steptype();
     representation.stepControl.moveLeftFoot = stepControl.moveleftfoot();
     representation.stepControl.time = stepControl.time();
     DataConversion::fromMessage(stepControl.target(), representation.stepControl.target);

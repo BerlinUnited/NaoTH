@@ -71,10 +71,6 @@ void PrimitiveManeuvers::execute()
   STOPWATCH_STOP("PrimitiveManeuvers");
 
   // DEBUG REQUESTS
-  // Execute step list
-  DEBUG_REQUEST("PrimitiveManeuvers:execute_step_list",
-	PrimitiveManeuvers::execute_step_list();
-  );
   // Maneuvers
   DEBUG_REQUEST("PrimitiveManeuvers:walk_to_ball",
 	prepare_walk();
@@ -184,40 +180,18 @@ void PrimitiveManeuvers::MWalk_to_ball_dynamic(Foot foot)
   if (foot == Foot::Right)
   {
     stepX = ballPos.x - std::abs(ballPos.y + getPathModel().goto_yOffset) - getPathModel().goto_distance - ballRadius;
-    stepY = ballPos.y + getPathModel().goto_yOffset;
+    stepY = ballPos.x < 250 ? 0 : ballPos.y + getPathModel().goto_yOffset;
   }
   else if (foot == Foot::Left)
   {
     stepX = ballPos.x - std::abs(ballPos.y - getPathModel().goto_yOffset) - getPathModel().goto_distance - ballRadius;
-    stepY = ballPos.y - getPathModel().goto_yOffset;
+    stepY = ballPos.x < 250 ? 0 : ballPos.y - getPathModel().goto_yOffset;
   }
 
-  double stepRotation = ballPos.abs() > 250 ? ballPos.angle() : 0;
+  double stepRotation = 0;// ballPos.abs() > 250 ? ballPos.angle() : 0;
 
   add(new_step(limit_step(Vector3d(stepX, stepY, stepRotation))));
 }
-
-/*void PrimitiveManeuvers::MKick(Foot foot)
-{
-	Vector3d step;
-	Vector2d ballPos;
-	switch (foot) {
-	case Foot::Left:  ballPos = getBallModel().positionPreviewInLFoot; break;
-	case Foot::Right: ballPos = getBallModel().positionPreviewInRFoot; break;
-	case Foot::NONE:  ballPos = getBallModel().positionPreview; break;
-	}
-
-	if (!getBallPercept().ballWasSeen || ballPos.x < 250)
-	{
-		step = limit_step(Vector3d(-40.0f, 0.0f, 0.0f));
-		add(new_step(step));
-	}
-	else if (ballPos.x >= 250 && std::abs(ballPos.y) > 10.0f)
-	{
-		step = limit_step(Vector3d(0.0f, ballPos.y, 0.0f));
-		add(new_step(step));
-	}
-}*/
 
 Vector3d PrimitiveManeuvers::limit_step(Vector3d step)
 {
@@ -287,9 +261,11 @@ void PrimitiveManeuvers::pop_step() {
 }
 
 void PrimitiveManeuvers::execute_step_list() {
-  if (step_list.size() > 0) {
+  if (step_list.size() > 0) 
+  {
     STOPWATCH_START("PrimitiveManeuvers:execute_steplist");
-    if (getMotionRequest().id == motion::stand) {
+    if (getMotionRequest().id == motion::stand) 
+    {
       last_stepcontrol_stepID = 0;
     }
     getMotionRequest().walkRequest.stepControl.stepID = getMotionStatus().stepControl.stepID;
@@ -298,6 +274,7 @@ void PrimitiveManeuvers::execute_step_list() {
     getMotionRequest().standardStand                                = false;
     getMotionRequest().walkRequest.stepControl.time                 = 300;
     getMotionRequest().walkRequest.coordinate                       = WalkRequest::Hip;
+    getMotionRequest().walkRequest.stepControl.type                 = WalkRequest::StepControlRequest::walkstep;
     getMotionRequest().walkRequest.stepControl.target.translation.x = step_list.at(0).x;
     getMotionRequest().walkRequest.stepControl.target.translation.y = step_list.at(0).y;
     getMotionRequest().walkRequest.stepControl.target.rotation      = step_list.at(0).rotation;
@@ -341,11 +318,11 @@ void PrimitiveManeuvers::execute_step_list() {
     // false means right foot
     getMotionRequest().walkRequest.stepControl.moveLeftFoot = foot_to_be_used == Right ? false : true;
     STOPWATCH_STOP("PrimitiveManeuvers:execute_steplist");
-  } 
-  else 
+  }
+  /*else
   {
     getMotionRequest().id = motion::stand;
-  }
+  }*/
   
   // Correct last_stepcontrol_stepID if neccessary
   if (getMotionStatus().stepControl.stepID < last_stepcontrol_stepID) {

@@ -51,12 +51,18 @@ public:
     StepControlRequest()
       :
       stepID(0),
+      type(walkstep),
       moveLeftFoot(false),
       time(0),
       speedDirection(0),
       scale(1.0)
     {}
 
+    enum stepType {
+      walkstep,
+      kickstep
+    };
+    stepType type;
     unsigned int stepID; // it should match the current step id in walk, otherwise it will not be accepted
     bool moveLeftFoot; // it should also match, false = rightfoot
     Pose2D target; // in coordinate
@@ -90,6 +96,7 @@ public:
 
   void print(std::ostream& stream) const
   {
+    stream << "type: " << (stepControl.type == StepControlRequest::stepType::walkstep ? "walkstep" : "kickstep") << std::endl;
     stream << "target: " << target << std::endl;
     stream << "coordinate: "<< getCoordinateName(coordinate) << std::endl;
     stream << "character: " << character << std::endl;
