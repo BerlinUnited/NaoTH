@@ -5,12 +5,12 @@ import random
 
 class Ransac:
 
-    def __init__(self, iterations, threshDist, minInlier):
+    def __init__(self, iterations, threshDist, minInlier, threshAngle):
         self.iterations = iterations
         self.threshDist = threshDist
         self.minInlier = minInlier
 
-        self.threshAngle = math.radians(10)
+        self.threshAngle = threshAngle
 
     @staticmethod
     def __unit_vector(vector):

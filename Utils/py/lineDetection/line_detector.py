@@ -1,12 +1,14 @@
 import numpy as np
 import random
 
+import math
+
 from ransac import Ransac
 
 #from cluster import Cluster
 
-# Ransac: iterations, threshDist, minInlier
-ransac = Ransac(20, 50, 10)
+# Ransac: iterations, threshDist, minInlier, threshAngle
+ransac = Ransac(20, 50, 10, math.radians(5))
 
 def detectLines(edgelFrame):
     data = edgelFrame
