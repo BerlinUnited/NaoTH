@@ -105,7 +105,7 @@ if __name__ == '__main__':
 
     for i in range(3):
         # run ransac
-        bestParameter1, bestParameter2, outlier = ransac.getOutlier(outlier)
+        bestParameter1, bestParameter2, inlier, outlier = ransac.getOutlier(outlier)
 
         plt.scatter(*zip(*outlier))
 
