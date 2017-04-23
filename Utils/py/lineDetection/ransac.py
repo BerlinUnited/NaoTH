@@ -12,10 +12,12 @@ class Ransac:
 
     def getOutlier(self, data):
         if not len(data) > 2:
-            return None, None, None, data
+            return None, None, None, data, None, None
 
         bestParameter1 = 0
         bestParameter2 = 0
+        x_range = (0,0)
+        y_range = (0,0)
         bestIn = []
         bestOut = []
 
@@ -39,12 +41,28 @@ class Ransac:
             inlier = []
             outlier = []
             lineVec = np.subtract(sampleB, sampleA)
+
+            maxX = data[0][0]
+            maxY = data[0][1]
+            minX = data[0][0]
+            minY = data[0][1]
+
             for edgel in data:
                 point = (edgel[0], edgel[1])
                 d = LA.norm(np.cross(lineVec, np.subtract(sampleA, point))) / LA.norm(lineVec)
 
                 if abs(d) <= self.threshDist:
                     inlier.append(point)
+
+                    # find endpoints
+                    if edgel[0] > maxX:
+                        maxX = edgel[0]
+                    elif edgel[0] < minX:
+                        minX = edgel[0]
+                    if edgel[1] > maxY:
+                        maxY = edgel[1]
+                    elif edgel[1] < minY:
+                        minY = edgel[1]
                 else:
                     outlier.append(point)
 
@@ -52,6 +70,8 @@ class Ransac:
 
             if len(inlier) >= self.minInlier and len(inlier) > len(bestIn):
                 #print("Found something", len(inlier))
+                x_range = (minX, maxX)
+                y_range = (minY, maxY)
 
                 bestIn = inlier
                 bestOut = outlier
@@ -73,7 +93,7 @@ class Ransac:
 
         #print("PARAMETER:", bestParameter1, bestParameter2, "\nINLIER:", len(bestIn))
 
-        return bestParameter1, bestParameter2, bestIn, bestOut
+        return bestParameter1, bestParameter2, bestIn, bestOut, x_range, y_range
 
 
 # test

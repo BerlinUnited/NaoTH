@@ -33,7 +33,7 @@ class LinePlot:
         self.plotLines = [ax.plot([],[])[0]]
         self.lineCount = 0
 
-    def add_line(self, param1, param2):
+    def add_line(self, param1, param2, x_range, y_range):
         self.lineCount += 1
         if self.lineCount > len(self.plotLines):
             self.plotLines.append(ax.plot([],[])[0])
@@ -41,11 +41,18 @@ class LinePlot:
         plot = self.plotLines[self.lineCount-1]
 
         # draw lines
-        if param1:
-            plot.set_data([self.X[0], self.X[1]], [self.X[0] * param1 + param2, self.X[1] * param1 + param2])
-        elif param2:
+        if param1 and param2:
+            m = param1
+            b = param2
+            x_1 = (m * y_range[0] + x_range[0] - m * b) / (m * m + 1);
+            y_1 = (m * m * y_range[0] + m * x_range[0] + b) / (m * m + 1);
+            x_2 = (m * y_range[1] + x_range[1] - m * b) / (m * m + 1);
+            y_2 = (m * m * y_range[1] + m * x_range[1] + b) / (m * m + 1);
+
+            plot.set_data([x_1, x_2], [y_1, y_2])
+        elif param1:
             # vertical line
-            plot.set_data([param1, param1], [self.Y[0], self.Y[1]])
+            plot.set_data([param1, param1], [y_range[0], y_range[1]])
         else:
             plot.set_data([], [])
 
@@ -150,17 +157,17 @@ def animate(i, log, edgelsPlotTop, linePlot, edgelsPlot, projectedEdgelsPlot):
 
     # A
     data = msg[3][0]
-    param1, param2 = line_detector.detectLines(data)
+    param1, param2, x_range, y_range = line_detector.detectLines(data)
 
     for i in range(len(param1)):
-        linePlot.add_line(param1[i], param2[i])
+        linePlot.add_line(param1[i], param2[i], x_range[i], y_range[i])
 
     # B
     data = msg[3][1]
-    param1, param2 = line_detector.detectLines(data)
+    param1, param2, x_range, y_range = line_detector.detectLines(data)
 
     for i in range(len(param1)):
-        linePlot.add_line(param1[i], param2[i])
+        linePlot.add_line(param1[i], param2[i], x_range[i], y_range[i])
 
     linePlot.clean()
 
