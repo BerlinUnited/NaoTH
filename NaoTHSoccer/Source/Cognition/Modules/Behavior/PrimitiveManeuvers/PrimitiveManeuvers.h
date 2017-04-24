@@ -62,6 +62,7 @@ private:
     Left,
     NONE
   };
+  typedef WalkRequest::StepControlRequest::stepType stepType;
 
   // Primitive Maneuvers
 
@@ -69,9 +70,15 @@ private:
   void MWalk_to_ball(Foot foot);
   // Moves around the ball
   void MMove_around_ball(double direction, double radius);
-  // Walks back until the ball is seen
-  // and approaches the ball towards the enemy goal
+  // Walks to the ball "dynamically" - if neccessary 
+  // keep the rotation of the robot walk back and approach it
   void MWalk_to_ball_dynamic(Foot foot);
+  // Fast forward kick
+  void MFast_forward_kick(Foot foot);
+  // Normal kick
+  void MKick_with_foot(Foot foot);
+  // Sidekick (with left foot kicks to the left, and right to the right)
+  void MSidekick(Foot foot);
 
   // Limit steps depending on rotation
   // returns Vector3d where z is the rotation
@@ -83,6 +90,8 @@ private:
     double y;
     double rotation;
     double character;
+    stepType type;
+    double speedDirection;
   };
   std::vector<Step> step_list;
 
@@ -96,10 +105,8 @@ private:
 
   bool add(PrimitiveManeuvers::Step step);
   void pop_step();
-  PrimitiveManeuvers::Step new_step(Vector3d step);
   PrimitiveManeuvers::Step new_step(double x, double y, double rotation);
-  PrimitiveManeuvers::Step new_step(double x, double y, double rotation,
-                                    double character);
+  PrimitiveManeuvers::Step new_step(double x, double y, double rotation, double character, stepType type, double speedDirection);
 };
 
 #endif // _PrimitiveManeuvers_H_

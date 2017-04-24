@@ -50,6 +50,7 @@ option primitivemaneuvers_go_to_ball_with_foot_dynamic
     path.type = path.type.go_to_ball_dynamic_right;
     path.goto_distance      = @distance;
     path.goto_yOffset       = @offset.y;
+    path.ballRadius         = ball.radius;
     }
   }
 
@@ -97,7 +98,7 @@ option primitivemaneuvers_go_to_ball_with_foot_dynamic
     action 
     {
       head.control_mode = look_at_ball_percept;
-      motion.type = walk;
+      motion.type = stand;
       /*motion.walk.coordinate = right_foot;
       motion.walk.style = normal;
 
@@ -127,7 +128,7 @@ option primitivemaneuvers_go_to_ball_with_foot_dynamic
     action 
     {
       head.control_mode = look_at_ball_percept;
-      motion.type = walk;
+      motion.type = stand;
       /*motion.walk.coordinate = left_foot;
       motion.walk.style = normal;
 

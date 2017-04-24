@@ -14,7 +14,7 @@ option primitivemaneuvers_kick_short_with_approach
 
   state approach_for_right {
     decision{
-      if (ball.preview.right_foot.x < 180) 
+      if (action_done) 
           goto attack_with_right_foot;
       else 
         stay;
@@ -34,7 +34,7 @@ option primitivemaneuvers_kick_short_with_approach
     }
     action {
       situation_abortable = false;
-      fast_forward_kick(foot = right);
+      primitivemaneuvers_fast_forward_kick(foot = right);
     }
   }
 
@@ -48,10 +48,6 @@ option primitivemaneuvers_kick_short_with_approach
     action{
       primitivemaneuvers_go_to_ball_with_foot_dynamic(right=false, distance=160);
       //motion.walk.style = normal;
-
-      motion.type = walk;
-      path.type = go_to_ball_dynamic_left;
-      path.goto_distance = 160;
     }
   }
 
@@ -64,7 +60,7 @@ option primitivemaneuvers_kick_short_with_approach
     }
     action {
       situation_abortable = false;
-      fast_forward_kick(foot = left);
+      primitivemaneuvers_fast_forward_kick(foot = left);
     }
   }
 

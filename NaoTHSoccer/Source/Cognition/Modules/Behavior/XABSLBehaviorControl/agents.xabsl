@@ -157,6 +157,9 @@ include "Options/Test/primitivemaneuvers_striker/primitivemaneuvers_kick_long_wi
 include "Options/Test/primitivemaneuvers_striker/primitivemaneuvers_kick_short_with_approach.xabsl";
 include "Options/Test/primitivemaneuvers_skills/primitivemaneuvers_go_to_ball.xabsl";
 include "Options/Test/primitivemaneuvers_skills/primitivemaneuvers_go_to_ball_with_foot_dynamic.xabsl";
+include "Options/Test/primitivemaneuvers_skills/primitivemaneuvers_sidekick.xabsl";
+include "Options/Test/primitivemaneuvers_skills/primitivemaneuvers_fast_forward_kick.xabsl";
+include "Options/Test/primitivemaneuvers_skills/primitivemaneuvers_kick_with_foot.xabsl";
 
 
 

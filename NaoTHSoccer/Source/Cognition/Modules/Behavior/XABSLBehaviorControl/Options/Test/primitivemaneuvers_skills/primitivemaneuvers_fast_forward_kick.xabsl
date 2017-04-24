@@ -1,4 +1,4 @@
-option fast_forward_kick
+option primitivemaneuvers_fast_forward_kick
 {
 
   enum direction @foot;
@@ -41,7 +41,7 @@ option fast_forward_kick
     {
       motion.type = walk;
       
-      motion.walk.coordinate = right_foot;
+      /*motion.walk.coordinate = right_foot;
       motion.walk.style = fast;
 
       motion.walk.step_control.foot = right;
@@ -53,6 +53,9 @@ option fast_forward_kick
       motion.walk.step_control.scale = 0.7;
 
       //loook at percept
+      head.control_mode = look_at_ball_percept;*/
+      
+      path.type = path.type.fast_forward_right;
       head.control_mode = look_at_ball_percept;
     }
   }
@@ -70,7 +73,7 @@ option fast_forward_kick
     {
       motion.type = walk;
       
-      motion.walk.coordinate = left_foot;
+      /*motion.walk.coordinate = left_foot;
       motion.walk.style = fast;
 
       motion.walk.step_control.foot = left;
@@ -82,6 +85,9 @@ option fast_forward_kick
       motion.walk.step_control.scale = 0.7;
 
       //loook at percept
+      head.control_mode = look_at_ball_percept;*/
+      
+      path.type = path.type.fast_forward_left;
       head.control_mode = look_at_ball_percept;
     }
   }
@@ -102,6 +108,8 @@ option fast_forward_kick
       // really needed?
       motion.walk.coordinate = hip;
       motion.walk.step_control.foot = none;
+      
+      path.type = path.type.none;
     }
   
   }

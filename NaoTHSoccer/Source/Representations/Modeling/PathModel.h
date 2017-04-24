@@ -44,6 +44,7 @@ public:
   // distance and yOffset parameters (set by XABSL)
   double goto_distance;
   double goto_yOffset;
+  double ballRadius;
   
   // Move around ball
   double move_around_ball_direction;

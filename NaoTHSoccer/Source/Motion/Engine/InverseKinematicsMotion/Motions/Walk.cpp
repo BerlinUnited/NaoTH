@@ -336,27 +336,33 @@ Pose3D Walk::calculateLiftingFootPos(const Step& step) const
 
   if ( step.type == STEP_CONTROL )
   {
-    /*return FootTrajectorGenerator::stepControl(
-      step.footStep.footBegin(),
-      step.footStep.footEnd(),
-      step.executingCycle,
-      samplesDoubleSupport,
-      samplesSingleSupport,
-      parameters().kick.stepHeight,
-      0, //footPitchOffset
-      0, //footRollOffset
-      step.walkRequest.stepControl.speedDirection,
-      step.walkRequest.stepControl.scale);*/
-    return FootTrajectorGenerator::genTrajectory(
-      step.footStep.footBegin(),
-      step.footStep.footEnd(),
-      step.executingCycle,
-      samplesDoubleSupport,
-      samplesSingleSupport,
-      parameters().step.stepHeight,
-      0, // footPitchOffset
-      0  // footRollOffset
-    );
+    if (step.walkRequest.stepControl.type == WalkRequest::StepControlRequest::kickstep)
+    {
+      return FootTrajectorGenerator::stepControl(
+        step.footStep.footBegin(),
+        step.footStep.footEnd(),
+        step.executingCycle,
+        samplesDoubleSupport,
+        samplesSingleSupport,
+        parameters().kick.stepHeight,
+        0, //footPitchOffset
+        0, //footRollOffset
+        step.walkRequest.stepControl.speedDirection,
+        step.walkRequest.stepControl.scale);
+    }
+    else if (step.walkRequest.stepControl.type == WalkRequest::StepControlRequest::walkstep)
+    {
+      return FootTrajectorGenerator::genTrajectory(
+        step.footStep.footBegin(),
+        step.footStep.footEnd(),
+        step.executingCycle,
+        samplesDoubleSupport,
+        samplesSingleSupport,
+        parameters().step.stepHeight,
+        0, // footPitchOffset
+        0  // footRollOffset
+      );
+    }
   }
   else if( step.type == STEP_WALK )
   {

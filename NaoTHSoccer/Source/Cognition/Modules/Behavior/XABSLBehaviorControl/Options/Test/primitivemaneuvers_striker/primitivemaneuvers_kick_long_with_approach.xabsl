@@ -34,7 +34,7 @@ option primitivemaneuvers_kick_long_with_approach
     }
     action {
       situation_abortable = false;
-      kick_with_foot(foot = right);
+      primitivemaneuvers_kick_with_foot(foot = right);
     }
   }
 
@@ -60,7 +60,7 @@ option primitivemaneuvers_kick_long_with_approach
     }
     action {
       situation_abortable = false;
-      kick_with_foot(foot = left);
+      primitivemaneuvers_kick_with_foot(foot = left);
     }
   }
 

@@ -23,6 +23,7 @@ namespace path_symbols("PathPlanner Symbols") {
   
   float output path.goto_distance;
   float output path.goto_yOffset;
+  float output path.ballRadius;
 
   float output path.move_around_ball_direction;
   float output path.move_around_ball_radius;

@@ -21,7 +21,7 @@ option primitivemaneuvers_sidekick_left
     }
     action {
       situation_abortable = false;
-      sidekick(to = left);
+      primitivemaneuvers_sidekick(to = left);
     }
   }
   target state done
