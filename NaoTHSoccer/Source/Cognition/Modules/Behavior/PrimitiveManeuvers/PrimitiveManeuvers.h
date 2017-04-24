@@ -52,8 +52,6 @@ public:
 
   virtual void execute();
 
-  void execute_step_list();
-
 private:
   // NONE means hip
   enum Foot
@@ -103,10 +101,11 @@ private:
 
   void prepare_walk();
 
-  bool add(PrimitiveManeuvers::Step step);
-  void pop_step();
-  PrimitiveManeuvers::Step new_step(double x, double y, double rotation);
-  PrimitiveManeuvers::Step new_step(double x, double y, double rotation, double character, stepType type, double speedDirection);
+  void manage_step_buffer();
+  void execute_step();
+  bool add(Step step);
+  Step new_step(double x, double y, double rotation);
+  Step new_step(double x, double y, double rotation, double character, stepType type, double speedDirection);
 };
 
 #endif // _PrimitiveManeuvers_H_

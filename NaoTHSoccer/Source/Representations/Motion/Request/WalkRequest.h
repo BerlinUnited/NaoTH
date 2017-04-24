@@ -51,7 +51,7 @@ public:
     StepControlRequest()
       :
       stepID(0),
-      type(walkstep),
+      type(kickstep),
       moveLeftFoot(false),
       time(0),
       speedDirection(0),

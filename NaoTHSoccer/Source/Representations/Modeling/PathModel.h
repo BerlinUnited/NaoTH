@@ -17,7 +17,8 @@ public:
      goto_distance(0.0),
      goto_yOffset(0.0),
      move_around_ball_direction(0.0),
-     move_around_ball_radius(0.0)
+     move_around_ball_radius(0.0),
+     kick_executed(false)
    {}
   ~PathModel() {}
 
@@ -49,6 +50,8 @@ public:
   // Move around ball
   double move_around_ball_direction;
   double move_around_ball_radius;
+
+  bool kick_executed;
 
   virtual void print(std::ostream& stream) const
   {

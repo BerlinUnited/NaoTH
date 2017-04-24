@@ -41,6 +41,8 @@ void PathSymbols::registerSymbols(xabsl::Engine& engine)
                                      &getPathModel().move_around_ball_direction);
   engine.registerDecimalOutputSymbol("path.move_around_ball_radius",
                                      &getPathModel().move_around_ball_radius);
+
+  engine.registerBooleanInputSymbol("path.kick_executed", &getPathModel().kick_executed);
 }
 
 void PathSymbols::execute()

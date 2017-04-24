@@ -32,10 +32,15 @@ last_stepcontrol_stepID(0)
 void PrimitiveManeuvers::execute()
 {
   STOPWATCH_START("PrimitiveManeuvers");
-  PrimitiveManeuvers::execute_step_list();
+  manage_step_buffer();
+
+
   if (getPathModel().pathType == PathModel::PathType::none)
   {
-    getMotionRequest().id = motion::stand;
+    if (step_list.empty()) {
+      return;
+    }
+    //getMotionRequest().id = motion::stand;
   }
   else if (getPathModel().pathType == PathModel::PathType::go_to_ball_left)
   {
@@ -136,6 +141,10 @@ void PrimitiveManeuvers::execute()
   DEBUG_REQUEST("PrimitiveManeuvers:helper:turn_right",
 	add(new_step(0.0f, 0.0f, -0.5f));
   );
+
+
+
+  execute_step();
 }
 
 // Primitive Maneuvers
@@ -244,13 +253,22 @@ void PrimitiveManeuvers::MKick_with_foot(Foot foot)
 
 void PrimitiveManeuvers::MSidekick(Foot foot)
 {
-  Vector2d ballPos;
+  //Vector2d ballPos;
   double speedDirection;
   double stepY;
   switch (foot) {
-  case Foot::Left:  ballPos = getBallModel().positionPreviewInLFoot; speedDirection = -90; stepY = -100; break;
-  case Foot::Right: ballPos = getBallModel().positionPreviewInRFoot; speedDirection = 90; stepY = 100; break;
+    case Foot::Left:  
+      //ballPos = getBallModel().positionPreviewInLFoot; 
+      speedDirection = 90; 
+      stepY = 100; 
+      break;
+    case Foot::Right: 
+      //ballPos = getBallModel().positionPreviewInRFoot; 
+      speedDirection = -90; 
+      stepY = -100; 
+      break;
   }
+
   if (foot == Foot::Right && getMotionStatus().stepControl.moveableFoot == MotionStatus::StepControlStatus::BOTH)
   {
     foot_to_be_used = Foot::Left;
@@ -259,10 +277,20 @@ void PrimitiveManeuvers::MSidekick(Foot foot)
   {
     foot_to_be_used = Foot::Right;
   }
-  if (foot == Foot::Right && foot_to_be_used == Foot::Left
+
+  if ( foot == Foot::Right && foot_to_be_used == Foot::Left
     || foot == Foot::Left && foot_to_be_used == Foot::Right)
   {
-    add(new_step(500, stepY, 0, 0.7, stepType::kickstep, speedDirection));
+    if (step_list.empty()) {
+      add(new_step(500, stepY, 0, 0.7, stepType::kickstep, speedDirection));
+
+      step_list.push_back(new_step(0.0, 0.0, 0, 0.7, stepType::kickstep, 0.0));
+
+      getPathModel().kick_executed = true;
+    }
+  }
+  else {
+    int x = 0;
   }
 }
 
@@ -317,6 +345,8 @@ PrimitiveManeuvers::Step PrimitiveManeuvers::new_step(double x,
   Step newStep = {x, y, rotation, character, type, speedDirection};
   return newStep;
 }
+
+
 bool PrimitiveManeuvers::add(PrimitiveManeuvers::Step step) {
   if (step_list.size() == 0) {
     step_list.push_back(step);
@@ -324,83 +354,89 @@ bool PrimitiveManeuvers::add(PrimitiveManeuvers::Step step) {
   }
   return false;
 }
-void PrimitiveManeuvers::pop_step() {
-  if (!step_list.empty())
+
+
+void PrimitiveManeuvers::manage_step_buffer() 
+{
+  if (step_list.empty()) {
+    getPathModel().kick_executed = false;
+    return;
+  }
+
+  // stepID higher than the last one means, stepControl request with the
+  // last_stepcontrol_stepID has been accepted
+  // switch the foot_to_be_used
+  if (last_stepcontrol_stepID < getMotionStatus().stepControl.stepID)
   {
     step_list.erase(step_list.begin());
+    last_stepcontrol_stepID = getMotionStatus().stepControl.stepID;
+    foot_to_be_used = foot_to_be_used == Right ? Left : Right;
   }
-}
 
-void PrimitiveManeuvers::execute_step_list() {
-  if (step_list.size() > 0) 
-  {
-    STOPWATCH_START("PrimitiveManeuvers:execute_steplist");
-    if (getMotionRequest().id == motion::stand) 
-    {
-      last_stepcontrol_stepID = 0;
-    }
-    getMotionRequest().walkRequest.stepControl.stepID = getMotionStatus().stepControl.stepID;
-
-    getMotionRequest().id = motion::walk;
-    getMotionRequest().standardStand                                = false;
-    getMotionRequest().walkRequest.stepControl.time                 = 300;
-    getMotionRequest().walkRequest.coordinate                       = WalkRequest::Hip;
-    getMotionRequest().walkRequest.stepControl.type                 = step_list.at(0).type;
-    getMotionRequest().walkRequest.stepControl.target.translation.x = step_list.at(0).x;
-    getMotionRequest().walkRequest.stepControl.target.translation.y = step_list.at(0).y;
-    getMotionRequest().walkRequest.stepControl.target.rotation      = step_list.at(0).rotation;
-    getMotionRequest().walkRequest.character                        = step_list.at(0).character;
-
-    // kicks only
-    getMotionRequest().walkRequest.stepControl.speedDirection       = step_list.at(0).speedDirection;
-    getMotionRequest().walkRequest.stepControl.time                 = 300;
-
-    // sync foot_to_be_used with the movableFoot
-    switch (getMotionStatus().stepControl.moveableFoot)
-    {
-      case MotionStatus::StepControlStatus::LEFT:
-        foot_to_be_used = Foot::Left;
-        break;
-      case MotionStatus::StepControlStatus::RIGHT:
-        foot_to_be_used = Foot::Right;
-        break;
-        // TODO: choose foot more intelligently when both feet are usable
-      case MotionStatus::StepControlStatus::BOTH:
-        if (step_list.at(0).type == stepType::kickstep)
-        {
-          
-        }
-			  else if (step_list.at(0).y > 0.0f || step_list.at(0).rotation > 0.0f)
-			  {
-				  foot_to_be_used = Foot::Left;
-			  }
-			  else
-			  {
-				  foot_to_be_used = Foot::Right;
-			  }
-			  break;
-      case MotionStatus::StepControlStatus::NONE:
-        foot_to_be_used = Foot::Right;
-        break;
-    }
-
-    // stepID higher than the last one means, stepControl request with the
-    // last_stepcontrol_stepID has been accepted
-    // switch the foot_to_be_used
-    if (last_stepcontrol_stepID < getMotionStatus().stepControl.stepID)
-    {
-      pop_step();
-      last_stepcontrol_stepID = getMotionStatus().stepControl.stepID;
-      foot_to_be_used         = foot_to_be_used == Right ? Left : Right;
-    }
-
-    // false means right foot
-    getMotionRequest().walkRequest.stepControl.moveLeftFoot = foot_to_be_used == Right ? false : true;
-    STOPWATCH_STOP("PrimitiveManeuvers:execute_steplist");
-  }
-  
   // Correct last_stepcontrol_stepID if neccessary
   if (getMotionStatus().stepControl.stepID < last_stepcontrol_stepID) {
     last_stepcontrol_stepID = getMotionStatus().stepControl.stepID;
   }
+}
+
+void PrimitiveManeuvers::execute_step() 
+{
+  if (step_list.empty()) {
+    return;
+  }
+
+  STOPWATCH_START("PrimitiveManeuvers:execute_steplist");
+  getMotionRequest().walkRequest.stepControl.stepID = getMotionStatus().stepControl.stepID;
+
+  getMotionRequest().id = motion::walk;
+  getMotionRequest().standardStand                                = false;
+
+  // hack: in case of a walk step this time should taken from the parameters(?)
+  getMotionRequest().walkRequest.stepControl.time                 = 250;
+  if (step_list.front().type == stepType::kickstep) {
+    getMotionRequest().walkRequest.stepControl.time = 300;
+  }
+
+  getMotionRequest().walkRequest.coordinate                       = WalkRequest::Hip;
+  getMotionRequest().walkRequest.stepControl.type                 = step_list.at(0).type;
+  getMotionRequest().walkRequest.stepControl.target.translation.x = step_list.at(0).x;
+  getMotionRequest().walkRequest.stepControl.target.translation.y = step_list.at(0).y;
+  getMotionRequest().walkRequest.stepControl.target.rotation      = step_list.at(0).rotation;
+  getMotionRequest().walkRequest.character                        = step_list.at(0).character;
+
+  // kicks only
+  getMotionRequest().walkRequest.stepControl.speedDirection       = step_list.at(0).speedDirection;
+
+  // sync foot_to_be_used with the movableFoot
+  switch (getMotionStatus().stepControl.moveableFoot)
+  {
+    case MotionStatus::StepControlStatus::LEFT:
+      foot_to_be_used = Foot::Left;
+      break;
+    case MotionStatus::StepControlStatus::RIGHT:
+      foot_to_be_used = Foot::Right;
+      break;
+      // TODO: choose foot more intelligently when both feet are usable
+    case MotionStatus::StepControlStatus::BOTH:
+      if (step_list.front().type == stepType::kickstep)
+      {
+        
+      }
+      else if (step_list.front().y > 0.0f || step_list.at(0).rotation > 0.0f)
+			{
+				foot_to_be_used = Foot::Left;
+			}
+			else
+			{
+				foot_to_be_used = Foot::Right;
+			}
+			break;
+    case MotionStatus::StepControlStatus::NONE:
+      foot_to_be_used = Foot::Right;
+      break;
+  }
+
+  // false means right foot
+  getMotionRequest().walkRequest.stepControl.moveLeftFoot = foot_to_be_used == Right ? false : true;
+  STOPWATCH_STOP("PrimitiveManeuvers:execute_steplist");
 }

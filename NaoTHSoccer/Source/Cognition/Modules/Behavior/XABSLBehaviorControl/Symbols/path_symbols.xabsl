@@ -27,4 +27,6 @@ namespace path_symbols("PathPlanner Symbols") {
 
   float output path.move_around_ball_direction;
   float output path.move_around_ball_radius;
+
+  bool input path.kick_executed;
 }
