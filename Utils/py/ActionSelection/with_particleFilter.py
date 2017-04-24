@@ -1,19 +1,23 @@
 import math
 import copy
+import time
 import numpy as np
+
 from matplotlib import pyplot as plt
 from matplotlib.patches import Circle
+
 from tools import action as a
 from tools import Simulation as Sim
+from tools import potential_field as pf
 from naoth import math2d as m2d
 from tools import tools
-import time
+
 
 
 class State:
-    def __init__(self):
+    def __init__(self, x, y):
         self.pose = m2d.Pose2D()
-        self.pose.translation = m2d.Vector2(0, 0)
+        self.pose.translation = m2d.Vector2(x,y)
         self.pose.rotation = math.radians(0)
 
         self.ball_position = m2d.Vector2(100.0, 0.0)
@@ -30,12 +34,15 @@ def draw_actions(actions_consequences, state, best_action, normal_angle, better_
     axes.text(0, 0, best_action, fontsize=12)
 
     origin = state.pose.translation
-    # arrow_head = m2d.Vector2(500, 0).rotate(math.radians(normal_angle + better_angle))
+    #arrow_head = m2d.Vector2(500, 0).rotate(math.radians(normal_angle + better_angle))
 
     for angle in angle_list:
         arrow_head = m2d.Vector2(500, 0).rotate(state.pose.rotation + math.radians(normal_angle + angle))
         axes.arrow(origin.x, origin.y, arrow_head.x, arrow_head.y, head_width=100, head_length=100, fc='k', ec='k')
 
+    #arrow_head = m2d.Vector2(500, 0).rotate(state.pose.rotation + math.radians(normal_angle + better_angle))
+    #axes.arrow(origin.x, origin.y, arrow_head.x, arrow_head.y, head_width=100, head_length=100, fc='k', ec='k')
+    
     x = np.array([])
     y = np.array([])
 
@@ -48,69 +55,128 @@ def draw_actions(actions_consequences, state, best_action, normal_angle, better_
 
     plt.scatter(x, y, c='r', alpha=0.5)
     plt.pause(0.0001)
+    
+    
+def normalize(likelihood):
+  m = np.min(likelihood)
+  #M = np.max(likelihood)
+  l = likelihood - m
+  return l/np.sum(l)
+  
+  
+def resample(samples, likelihoods, n, sigma):
+  
+  new_samples = np.zeros(n)
+  likelihoods = normalize(likelihoods)
+  likelihoods = normalize(np.power(likelihoods,2))
+  
+  likelihood_step = 1.0/float(n)
+  targetSum = np.random.random(1)*likelihood_step
+  currentSum = 0.0
+  
+  j = 0
+  for (s,v) in zip(samples,likelihoods):
+    currentSum += v
+
+    while targetSum < currentSum and j < len(new_samples):
+      new_samples[j] = s + (np.random.random(1) - 0.5)*2*sigma
+      targetSum += likelihood_step
+      j += 1
+  
+  return new_samples
+
+  
+def update(samples, likelihoods, state, action, mm, mM):
+  #likelihoods = np.zeros(samples.shape)
+  test_action = copy.deepcopy(action)
+  simulation_consequences = []
+  
+  simulation_num_particles = 1
+  for i in range(0, len(samples)):
+    # modify the action with the sample
+    test_action.angle = action.angle + samples[i]
+    
+    test_action_consequence = a.ActionResults([])
+    simulation_consequences.append(Sim.simulate_consequences(test_action, test_action_consequence, state, simulation_num_particles))
+    
+    if test_action_consequence.category("INFIELD") > 0:
+      potential = -pf.evaluate_action2(test_action_consequence, state)
+      likelihoods[i] = potential
+      mm = min(mm, potential)
+      mM = max(mM, potential)
+    elif test_action_consequence.category("OPPGOAL") > 0:
+      likelihoods[i] = mM
+    else:
+      likelihoods[i] = mm
+            
+  return likelihoods, simulation_consequences, mm, mM
 
 
-def main():
-    state = State()
-
-    no_action = a.Action("none", 0, 0, 0, 0)
-    kick_short = a.Action("kick_short", 780, 150, 8.454482265522328, 6.992268841997358)
-    sidekick_left = a.Action("sidekick_left", 750, 150, 86.170795364136380, 10.669170653645670)
-    sidekick_right = a.Action("sidekick_right", 750, 150, -89.657943335302260, 10.553726275058064)
-
-    action_list = [no_action, kick_short, sidekick_left, sidekick_right]
-
-    num_particles = 30
+  
+def calculate_best_direction(x,y, iterations, show):
+    state = State(x,y)
+    action = a.Action("test", 1000, 150, 0, 8)
+    
+    # particles
     num_angle_particle = 30
-    angle_list = np.random.randint(low=0, high=360, size=num_angle_particle)
+    n_random = 0;
+    
+    samples = (np.random.random(num_angle_particle)-0.5)*2* 180.0
+    likelihoods = np.ones(samples.shape) * (1/float(num_angle_particle))
+    
     ####################################################################################################################
-    while True:
-        # Do normal Simulation
-        actions_consequences = []
-        # Simulate Consequences
-        for action in action_list:
-            single_consequence = a.ActionResults([])
-            actions_consequences.append(Sim.simulate_consequences(action, single_consequence, state, num_particles))
-
-        # actions_consequences is now a list of ActionResults
-
-        # Decide best action
-        best_action = Sim.decide_smart(actions_consequences, state)
-
-        ####################################################################################################################
-        # Do it more than once for one simulation cycle
-        for i in xrange(0, 20):
-            # Modify angle of best action with particle Filter
-            bla_num_particles = 1
-            improved_action = copy.deepcopy(action_list[best_action])
-
-            improved_actions_consequences = []
-            for angle in angle_list:
-                # Set the angle for the kick to angle
-                improved_action.angle = angle
-
-                # Simulate Consequences
-                improved_single_consequence = a.ActionResults([])
-                improved_actions_consequences.append(Sim.simulate_consequences(improved_action, improved_single_consequence, state, bla_num_particles))
-
-            # actions_consequences is now a list of ActionResults of one action with different angles
-
-            # Decide best action
-            improved_best_action = Sim.decide_smart(improved_actions_consequences, state)
-            # print("Best Action: " + str(improved_best_action) + " with angle: " + str(angle_list[improved_best_action]))
-
-            # Resampling - just take the best and get new samples near them + some random sample from a uniform distribution
-            mu = angle_list[improved_best_action]  # mean of best angle
-            test = (np.random.random(10) - 0.5) * 2  # returns 10 values between -1 and 1
-            new_angle_list = (test + mu) % 360
-            # new_angle_list = np.append(new_angle_list, np.random.randint(low=0, high=360, size=5))  # Add random particles
-            new_angle_list = np.append(new_angle_list, np.repeat(angle_list[improved_best_action], 15))
-
-            angle_list = new_angle_list
-
-        # print(angle_list[improved_best_action])
-        draw_actions(actions_consequences, state, action_list[best_action].name, action_list[best_action].angle,  angle_list[improved_best_action], angle_list)
-
+    mm = 0;
+    mM = 0;
+    mean_angle = None
+    for iteration in range(1,iterations):
+        
+        # evaluate the particles
+        likelihoods, simulation_consequences, mm, mM = update(samples, likelihoods, state, action, mm, mM)
+          
+        #resample
+        samples = resample(samples, likelihoods, num_angle_particle, 5.0)
+        
+        # add random samples 
+        if n_random > 0:
+          samples[(num_angle_particle-n_random):(num_angle_particle)] = np.random.random(n_random) * 360.0
+        
+        mean_angle = np.mean(samples)
+        
+        if show:
+          draw_actions(simulation_consequences, state, action.name, action.angle,  mean_angle, samples)
+    
+    return np.radians(mean_angle), np.radians(np.std(samples))
+    
+    
 
 if __name__ == "__main__":
-    main()
+
+  single_run = True
+
+  
+  if single_run:
+    # run a single directon
+    calculate_best_direction(1000, 1000, 50, True)
+  else:
+    # run for the whole field
+    x = range(-5200,5300,250)
+    y = range(-3700,3800,250)
+    xx, yy = np.meshgrid(x, y)
+    vx = np.zeros(xx.shape)
+    vy = np.zeros(xx.shape)
+    f = np.zeros(xx.shape)
+    
+    print xx.shape, len(x), len(y)
+    for ix in range(0,len(x)):
+      for iy in range(0,len(y)):
+        direction, direction_std = calculate_best_direction(float(x[ix]), float(y[iy]), 10, False)
+        
+        v = m2d.Vector2(100.0, 0.0).rotate(direction)
+        vx[iy, ix] = v.x
+        vy[iy, ix] = v.y
+        f[iy, ix] = direction_std
+        
+    plt.figure()
+    tools.draw_field()
+    Q = plt.quiver(xx, yy, vx, vy, np.degrees(f))
+    plt.show()
