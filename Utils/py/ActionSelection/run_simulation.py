@@ -56,7 +56,7 @@ def main():
         # Simulate Consequences
         for action in action_list:
             single_consequence = a.ActionResults([])
-            actions_consequences.append(Sim.simulate_consequences(action, single_consequence, state))
+            actions_consequences.append(Sim.simulate_consequences(action, single_consequence, state, 30))
 
         # actions_consequences is now a list of ActionResults
 
