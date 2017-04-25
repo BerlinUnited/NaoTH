@@ -10,13 +10,17 @@
 //#define DEBUG_INFRASTRUCTURE
 
 namespace naoth
-{  
+{ 
+  /**
+   * marker class to detect whether a class has an actual serializer
+   */
+  class EmptySerializer {};
 
   /**
    * Serializer is the base class for all Serializers implementations
    */
   template<class T>
-  class Serializer
+  class Serializer : public EmptySerializer
   {
     public:
       static void serialize(const T& /*representation*/, std::ostream& /*stream*/)

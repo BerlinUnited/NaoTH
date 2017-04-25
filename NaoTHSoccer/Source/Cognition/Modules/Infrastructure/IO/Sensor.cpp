@@ -60,6 +60,7 @@ void Sensor::init(naoth::ProcessInterface& platformInterface, const naoth::Platf
   platformInterface.registerInputChanel(getCalibrationData());
   platformInterface.registerInputChanel(getInertialModel());
   platformInterface.registerInputChanel(getBodyStatus());
+  platformInterface.registerInputChanel(getGroundContactModel());
 }//end init
 
 

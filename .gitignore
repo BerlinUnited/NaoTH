@@ -13,6 +13,8 @@ genfiles.properties
 
 #python
 *.pyc
+.idea/
+naoth.egg-info*
 
 #
 trace.dump.*

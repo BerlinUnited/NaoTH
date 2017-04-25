@@ -238,13 +238,13 @@ void ForwardKinematics::updateFSRPos(const KinematicChain& kinematicChain, Vecto
   const Pose3D& rFootPose = kinematicChain.getLink(KinematicChain::RFoot).M;
 
   // left foot
-  for (int i = 0; i < FSRData::RFsrFL; i++) {
-    theFSRPos[i] = lFootPose * NaoInfo::FSRPositions[i];
+  for (int i = 0; i < FSRData::numOfFSR; i++) {
+    theFSRPos[i] = lFootPose * NaoInfo::FSRPositionsLeft[i];
   }
 
   // right foot
-  for (int i = FSRData::RFsrFL; i < FSRData::numOfFSR; i++) {
-    theFSRPos[i] = rFootPose * NaoInfo::FSRPositions[i];
+  for (int i = 0; i < FSRData::numOfFSR; i++) {
+    theFSRPos[i] = rFootPose * NaoInfo::FSRPositionsRight[i];
   }
 }
 
