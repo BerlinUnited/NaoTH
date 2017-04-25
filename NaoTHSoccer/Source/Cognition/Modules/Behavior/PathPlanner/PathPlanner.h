@@ -10,41 +10,38 @@
 
 #include <ModuleFramework/Module.h>
 
-// representations
-#include "Representations/Infrastructure/FrameInfo.h"
-#include "Representations/Infrastructure/FieldInfo.h"
-#include "Representations/Modeling/OdometryData.h"
-#include "Representations/Perception/BallPercept.h"
-#include "Representations/Perception/MultiBallPercept.h"
-#include "Representations/Modeling/BallModel.h"
-
-#include "Representations/Motion/Request/HeadMotionRequest.h"
-#include "Representations/Motion/Request/MotionRequest.h"
-#include "Representations/Motion/MotionStatus.h"
-
-#include "Representations/Modeling/PathModel.h"
+#include "Tools/Math/Geometry.h"
 
 // debug
 #include "Tools/Debug/DebugRequest.h"
 #include "Tools/Debug/DebugModify.h"
 
+// representations
+#include "Representations/Infrastructure/FieldInfo.h"
+#include "Representations/Motion/Request/HeadMotionRequest.h"
+#include "Representations/Motion/Request/MotionRequest.h"
+#include "Representations/Motion/MotionStatus.h"
+#include "Representations/Perception/BallPercept.h"
+#include "Representations/Perception/MultiBallPercept.h"
+#include "Representations/Modeling/BallModel.h"
+#include "Representations/Modeling/PathModel.h"
+#include "Representations/Debug/Stopwatch.h"
+
+
 BEGIN_DECLARE_MODULE(PathPlanner)
 PROVIDE(DebugRequest)
 PROVIDE(DebugModify)
 
-REQUIRE(FrameInfo)
 REQUIRE(FieldInfo)
-REQUIRE(MotionStatus)
 REQUIRE(BallPercept)
-REQUIRE(BallPerceptTop)
 REQUIRE(MultiBallPercept)
-PROVIDE(BallModel)
-REQUIRE(OdometryData)
+REQUIRE(MotionStatus)
+REQUIRE(BallModel)
 
 PROVIDE(PathModel)
-
-PROVIDE(HeadMotionRequest)
 PROVIDE(MotionRequest)
+PROVIDE(HeadMotionRequest)
+PROVIDE(StopwatchManager)
 END_DECLARE_MODULE(PathPlanner)
 
 class PathPlanner: public PathPlannerBase
@@ -55,39 +52,56 @@ public:
 
   virtual void execute();
 
-  void execute_step_list();
-
 private:
-  struct Step {
-    double x;
-    double y;
-    double rotation;
-    double character;
-  };
-  std::vector<Step> step_list;
-
+  // NONE means hip
   enum Foot
   {
-    Right,
-    Left
+    RIGHT,
+    LEFT,
+    NONE
   };
-  // used to alternate between left and right foot when walking
-  // inside execute_steplist()
-  // everywhere else, indicates the last foot that has been moved
-  Foot foot_to_be_used;
+  typedef WalkRequest::StepControlRequest::StepType StepType;
 
+  // Primitive Routines
+  // Walks to the ball from far away
+  void walk_to_ball(const Foot foot);
+  // Moves around the ball
+  void move_around_ball(const double direction, const double radius);
+  // Approaches the ball from near - if neccessary 
+  // keep the rotation of the robot, walk back and then approach it
+  void approach_ball(const Foot foot);
+  // Short kick forward
+  void short_kick(const Foot foot);
+  // Long kick forward
+  void long_kick(const Foot foot);
+  // Sidekick (with left foot == Foot::LEFT kicks to the left, and foot == FOOT::RIGHT to the right)
+  void sidekick(const Foot foot);
+
+  // Limit steps depending on rotation
+  // returns Pose2D where z is the rotation
+  Pose2D limit_step(Pose2D &step);
+
+  // Stepcontrol
+  struct Step_Buffer_Element {
+    Pose2D pose;
+    double speedDirection;
+    StepType type;
+    int time;
+    double character;
+  };
+  std::vector<Step_Buffer_Element> step_buffer;
+
+  // Used to alternate between left and right foot
+  // or to specify which foot to use
+  Foot foot_to_use;
+
+  // Used to synchronize stepIDs of WalkEngine to take control
   unsigned int last_stepcontrol_stepID;
 
-  void look_at_ball();
-
-  double towards_ball(const char x_or_y);
-  double towards_ball(const char x_y_or_rot, const char for_left_or_right_foot);
-  char find_foot_with(std::size_t approximate_steps_to_ball);
-
-  void add(PathPlanner::Step step);
-  void pop_step();
-  PathPlanner::Step new_step(double x, double y, double rotation);
-  PathPlanner::Step new_step(double x, double y, double rotation, double character);
+  void add_step(const Pose2D &pose, const double &speedDirection, const StepType &type);
+  bool add_single_step(const Pose2D &pose, const double &speedDirection, const StepType &type);
+  void manage_step_buffer();
+  void execute_step_buffer();
 };
 
 #endif // _PathPlanner_H_

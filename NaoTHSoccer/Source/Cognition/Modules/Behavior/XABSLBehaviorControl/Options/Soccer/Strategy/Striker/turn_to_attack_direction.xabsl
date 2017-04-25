@@ -16,12 +16,8 @@ option turn_to_attack_direction
       stay;
     }
     action {
-      //move_around_ball(direction=30, radius=210);
+      move_around_ball(direction=30, radius=210);
       //motion.walk.style = fast;
-      
-      path.type = path.type.move_around_ball;
-      path.move_around_ball_direction = 30;
-      path.move_around_ball_radius = 210;
     }
   }
 
@@ -30,13 +26,8 @@ option turn_to_attack_direction
       stay;
     }
     action {
-      //move_around_ball(direction=-30, radius=210);
+      move_around_ball(direction=-30, radius=210);
       //motion.walk.style = fast;
-      
-      path.type = path.type.move_around_ball;
-      path.move_around_ball_direction = -30;
-      path.move_around_ball_radius = 210;
     }
   }
-
-}
+}

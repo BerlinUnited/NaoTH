@@ -1,0 +1,20 @@
+/** Test behavior for the PrimitiveManeuvers module */
+option pathplanner_test_agent {
+  initial state test {    
+    action {
+    
+      // react to the game controller and handle fall down
+      basic_play();
+
+      test_pathplanner();
+      
+      // control the arms
+      arms_control();
+      arm.control_mode = back;
+
+      // control head movement according to value of head.control_mode
+      head_control();
+      head.control_mode = look_at_ball_percept;
+    }
+  }
+}

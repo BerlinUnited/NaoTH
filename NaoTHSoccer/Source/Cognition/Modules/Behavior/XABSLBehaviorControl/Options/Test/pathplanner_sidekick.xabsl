@@ -1,0 +1,44 @@
+option pathplanner_sidekick {
+
+  common decision {
+    if(ball.time_since_last_seen > 3000)
+      goto search;
+    else if (!path.routine_executed)
+      goto start_routine;
+  }
+  
+  initial state start_routine {    
+    decision {
+      else if(ball.time_since_last_seen > 1500)
+        goto search;
+      else if (!path.routine_executed)
+        stay;
+      else
+        goto finished;
+    }
+    action {
+      path.routine = sidekick_left;
+      path.distance = 0;
+      path.yOffset = -40;
+    }
+  }
+
+  state search {
+    decision {
+      else if(action_done)
+        goto start_routine;
+      else
+        stay;
+    }
+    action{
+      path.routine = none;
+      search_ball();
+    }
+  }
+  
+  target state finished {
+    action {
+      path.routine = none;
+    }
+  }
+}

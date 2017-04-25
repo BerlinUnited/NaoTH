@@ -133,8 +133,6 @@ option sidekick
 
       //loook at percept
       head.control_mode = look_at_ball_percept;
-
-      path.type = path.type.none;
     }
   }
 }

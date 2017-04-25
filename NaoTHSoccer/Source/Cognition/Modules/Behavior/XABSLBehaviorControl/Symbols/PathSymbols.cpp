@@ -9,40 +9,37 @@
 
 void PathSymbols::registerSymbols(xabsl::Engine& engine)
 {
-  // PathType
-  engine.registerEnumElement("path.type", "path.type.none",                       PathModel::PathType::none);
-  engine.registerEnumElement("path.type", "path.type.go_to_ball",                 PathModel::PathType::go_to_ball);
-  engine.registerEnumElement("path.type", "path.type.go_to_ball_right",           PathModel::PathType::go_to_ball_right);
-  engine.registerEnumElement("path.type", "path.type.go_to_ball_left",            PathModel::PathType::go_to_ball_left);
-  engine.registerEnumElement("path.type", "path.type.go_to_ball_dynamic_right",   PathModel::PathType::go_to_ball_dynamic_right);
-  engine.registerEnumElement("path.type", "path.type.go_to_ball_dynamic_left",    PathModel::PathType::go_to_ball_dynamic_left);
-  engine.registerEnumElement("path.type", "path.type.move_around_ball",           PathModel::PathType::move_around_ball);
-  engine.registerEnumElement("path.type", "path.type.prepare_walk_back_approach", PathModel::PathType::prepare_walk_back_approach);
-  engine.registerEnumElement("path.type", "path.type.fast_forward_right",         PathModel::PathType::fast_forward_right);
-  engine.registerEnumElement("path.type", "path.type.fast_forward_left",          PathModel::PathType::fast_forward_left);
-  engine.registerEnumElement("path.type", "path.type.kick_with_foot_right",       PathModel::PathType::kick_with_foot_right);
-  engine.registerEnumElement("path.type", "path.type.kick_with_foot_left",        PathModel::PathType::kick_with_foot_left);
-  engine.registerEnumElement("path.type", "path.type.sidekick_left",              PathModel::PathType::sidekick_left);
-  engine.registerEnumElement("path.type", "path.type.sidekick_right",             PathModel::PathType::sidekick_right);
+  // PathRoutine
+  engine.registerEnumElement("path.routine", "path.routine.none",                PathModel::PathRoutine::NONE);
+  engine.registerEnumElement("path.routine", "path.routine.go_to_ball",          PathModel::PathRoutine::GO_TO_BALL);
+  engine.registerEnumElement("path.routine", "path.routine.go_to_ball_right",    PathModel::PathRoutine::GO_TO_BALL_RIGHT);
+  engine.registerEnumElement("path.routine", "path.routine.go_to_ball_left",     PathModel::PathRoutine::GO_TO_BALL_LEFT);
+  engine.registerEnumElement("path.routine", "path.routine.approach_ball_right", PathModel::PathRoutine::APPROACH_BALL_RIGHT);
+  engine.registerEnumElement("path.routine", "path.routine.approach_ball_left",  PathModel::PathRoutine::APPROACH_BALL_LEFT);
+  engine.registerEnumElement("path.routine", "path.routine.move_around_ball",    PathModel::PathRoutine::MOVE_AROUND_BALL);
+  engine.registerEnumElement("path.routine", "path.routine.short_kick_right",    PathModel::PathRoutine::SHORT_KICK_RIGHT);
+  engine.registerEnumElement("path.routine", "path.routine.short_kick_left",     PathModel::PathRoutine::SHORT_KICK_LEFT);
+  engine.registerEnumElement("path.routine", "path.routine.long_kick_right",     PathModel::PathRoutine::LONG_KICK_RIGHT);
+  engine.registerEnumElement("path.routine", "path.routine.long_kick_left",      PathModel::PathRoutine::LONG_KICK_LEFT);
+  engine.registerEnumElement("path.routine", "path.routine.sidekick_right",      PathModel::PathRoutine::SIDEKICK_RIGHT);
+  engine.registerEnumElement("path.routine", "path.routine.sidekick_left",       PathModel::PathRoutine::SIDEKICK_LEFT);
 
 
-  engine.registerEnumeratedOutputSymbol("path.type", "path.type", (int*)&getPathModel().pathType);
+  engine.registerEnumeratedOutputSymbol("path.routine", "path.routine", (int*)&getPathModel().path_routine);
 
   // go to ball: distance and yOffset
-  engine.registerDecimalOutputSymbol("path.goto_distance",
-                                     &getPathModel().goto_distance);
-  engine.registerDecimalOutputSymbol("path.goto_yOffset",
-                                     &getPathModel().goto_yOffset);
-  engine.registerDecimalOutputSymbol("path.ballRadius",
-                                     &getPathModel().ballRadius);
+  engine.registerDecimalOutputSymbol("path.distance",
+                                     &getPathModel().distance);
+  engine.registerDecimalOutputSymbol("path.yOffset",
+                                     &getPathModel().yOffset);
 
   // move around ball: direction and radius
-  engine.registerDecimalOutputSymbol("path.move_around_ball_direction",
-                                     &getPathModel().move_around_ball_direction);
-  engine.registerDecimalOutputSymbol("path.move_around_ball_radius",
-                                     &getPathModel().move_around_ball_radius);
+  engine.registerDecimalOutputSymbol("path.direction",
+                                     &getPathModel().direction);
+  engine.registerDecimalOutputSymbol("path.radius",
+                                     &getPathModel().radius);
 
-  engine.registerBooleanInputSymbol("path.kick_executed", &getPathModel().kick_executed);
+  engine.registerBooleanInputSymbol("path.routine_executed", &getPathModel().routine_executed);
 }
 
 void PathSymbols::execute()

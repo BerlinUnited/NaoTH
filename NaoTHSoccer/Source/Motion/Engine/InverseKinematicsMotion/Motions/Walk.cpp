@@ -336,7 +336,7 @@ Pose3D Walk::calculateLiftingFootPos(const Step& step) const
 
   if ( step.type == STEP_CONTROL )
   {
-    if (step.walkRequest.stepControl.type == WalkRequest::StepControlRequest::kickstep)
+    if (step.walkRequest.stepControl.type == WalkRequest::StepControlRequest::KICKSTEP)
     {
       return FootTrajectorGenerator::stepControl(
         step.footStep.footBegin(),
@@ -350,7 +350,7 @@ Pose3D Walk::calculateLiftingFootPos(const Step& step) const
         step.walkRequest.stepControl.speedDirection,
         step.walkRequest.stepControl.scale);
     }
-    else if (step.walkRequest.stepControl.type == WalkRequest::StepControlRequest::walkstep)
+    else if (step.walkRequest.stepControl.type == WalkRequest::StepControlRequest::WALKSTEP)
     {
       return FootTrajectorGenerator::genTrajectory(
         step.footStep.footBegin(),

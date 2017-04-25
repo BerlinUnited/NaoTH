@@ -10,206 +10,323 @@
 
 PathPlanner::PathPlanner()
 :
-step_list({}),
-foot_to_be_used(PathPlanner::Foot::Right),
+step_buffer({}),
+foot_to_use(Foot::RIGHT),
 last_stepcontrol_stepID(0)
-{
-  DEBUG_REQUEST_REGISTER("PathPlanner:walk:walk_to_ball_and_kick_forward",
-                         "Walk to the ball with alternating steps.", false);
-  DEBUG_REQUEST_REGISTER("PathPlanner:walk:execute_steplist",
-                         "Experimental", true);
-  DEBUG_REQUEST_REGISTER("PathPlanner:walk:add_forward_step",
-                         "Experimental", false);
-}
+{}
 
 void PathPlanner::execute()
 {
-  DEBUG_REQUEST("PathPlanner:walk:walk_to_ball_and_kick_forward",
-                look_at_ball();
-                getMotionRequest().armMotionRequest.id = ArmMotionRequest::arms_back;
+  STOPWATCH_START("PathPlanner");
+  // Always executed first
+  manage_step_buffer();
 
-                static char foot;
-                std::size_t approximate_steps_to_ball;
-                static bool executed_once = false;
-                double step_size          = 40.0;
-                Vector2d preview          = getBallModel().positionPreview;
-                double distance           = preview.abs();
-                double ballRad            = 70.0;
-                bool ballWasSeen          = getBallModel().valid;
+  switch (getPathModel().path_routine)
+  {
+  case PathModel::PathRoutine::NONE:
+    // Reset routine_executed, so that XABSL
+    // can jump out of option (PathRoutine) that is
+    // being executed
+    getPathModel().routine_executed = false;
+    if (step_buffer.empty()) {
+      return;
+    }
+    //getMotionRequest().id = motion::stand;
+    break;
+  case PathModel::PathRoutine::GO_TO_BALL:
+    walk_to_ball(Foot::NONE);
+    break;
+  case PathModel::PathRoutine::GO_TO_BALL_LEFT:
+    walk_to_ball(Foot::LEFT);
+    break;
+  case PathModel::PathRoutine::GO_TO_BALL_RIGHT:
+    walk_to_ball(Foot::RIGHT);
+    break;
+  case PathModel::PathRoutine::MOVE_AROUND_BALL:
+    move_around_ball(getPathModel().direction, getPathModel().radius);
+    break;
+  case PathModel::PathRoutine::APPROACH_BALL_LEFT:
+    approach_ball(Foot::LEFT);
+    break;
+  case PathModel::PathRoutine::APPROACH_BALL_RIGHT:
+    approach_ball(Foot::RIGHT);
+    break;
+  case PathModel::PathRoutine::SHORT_KICK_LEFT:
+    short_kick(Foot::LEFT);
+    break;
+  case PathModel::PathRoutine::SHORT_KICK_RIGHT:
+    short_kick(Foot::RIGHT);
+    break;
+  case PathModel::PathRoutine::LONG_KICK_LEFT:
+    long_kick(Foot::LEFT);
+    break;
+  case PathModel::PathRoutine::LONG_KICK_RIGHT:
+    long_kick(Foot::RIGHT);
+    break;
+  case PathModel::PathRoutine::SIDEKICK_LEFT:
+    sidekick(Foot::LEFT);
+    break;
+  case PathModel::PathRoutine::SIDEKICK_RIGHT:
+    sidekick(Foot::RIGHT);
+    break;
+  }
 
-                if (distance > 700) {
-                  std::cout << towards_ball('r') << std::endl;
-                  add(new_step(step_size,
-                               0.0,
-                               towards_ball('r')
-                               ));
-                } else if (distance > 280) {
-                  if (!executed_once) {
-                    executed_once = true;
-
-                    approximate_steps_to_ball = static_cast<std::size_t>((distance - ballRad - step_size) / 40.0);
-                    // check how many steps are possible with the step_size and
-                    // position right or left foot in front of the ball
-                    // according to the check
-                    foot = find_foot_with(approximate_steps_to_ball);
-                  }
-                  add(new_step(step_size,
-                               towards_ball('y', foot),
-                               0.0));
-                } else if (distance > 220) {
-                  executed_once = false;
-
-                  // close the remaining distance to the ball
-                  add(new_step(step_size , 0.0, 0.0));
-                } else if (step_list.size() == 0) { // <-- when the next step is awaited
-                  // do a single step with the foot that is not in front of the ball
-                  // if approximate_steps_to_ball was off by one step
-                  if (!executed_once) {
-                    executed_once = true;
-
-                    if (   (foot == 'r' && foot_to_be_used == Right)
-                        || (foot == 'l' && foot_to_be_used == Left)) {
-                      std::cout << "correcting!" << std::endl;
-                      // 30.0 instead of step_size (40.0) because
-                      // sometimes that would cause hitting the ball by
-                      // accident
-                      add(new_step(30.0, 0.0, 0.0));
-                    }
-                  }
-                  if (ballWasSeen)
-                  {
-                    // kick the ball forward
-                    //add(new_step(500.0, 0.0, 0.0, 1.0));
-                  }
-                }
-                );
-  DEBUG_REQUEST("PathPlanner:walk:add_forward_step",
-                add(new_step(40.0, 0.0, 0.0));
-                );
-  DEBUG_REQUEST("PathPlanner:walk:execute_steplist",
-                execute_step_list();
-                );
+  // Always executed last
+  execute_step_buffer();
+  STOPWATCH_STOP("PathPlanner");
 }
 
-void PathPlanner::look_at_ball()
+// Primitive Maneuvers
+void PathPlanner::walk_to_ball(const Foot foot)
 {
-  if (getBallPercept().ballWasSeen || getBallPerceptTop().ballWasSeen)
+  Vector2d ballPos;
+  switch (foot) {
+    case Foot::LEFT:  ballPos = getBallModel().positionPreviewInLFoot; break;
+    case Foot::RIGHT: ballPos = getBallModel().positionPreviewInRFoot; break;
+    case Foot::NONE:  ballPos = getBallModel().positionPreview; break;
+  }
+  double ballRotation = ballPos.angle();
+
+  Pose2D pose = limit_step(Pose2D(ballRotation, ballPos.x - getPathModel().distance, 0.0f));
+
+  add_single_step(pose, 0.0, StepType::WALKSTEP);
+}
+
+void PathPlanner::move_around_ball(const double direction, const double radius)
+{
+  Vector2d ballPos = getBallModel().positionPreview;
+ 
+  double ballRotation = ballPos.angle();
+  double ballDistance = ballPos.abs();
+
+  double min1;
+  double min2;
+  double max1;
+  double max2;
+  if (direction <= 0)
   {
-    Vector2d pos = (*getMultiBallPercept().begin()).positionOnField;
-    for(MultiBallPercept::ConstABPIterator iter = getMultiBallPercept().begin(); iter != getMultiBallPercept().end(); iter++) {
-      if(pos.abs() > (*iter).positionOnField.abs())
-      {
-        pos = (*iter).positionOnField;
+    min1 = 0.0;
+    min2 = 0.0;
+    max1 = 45.0;
+    max2 = 100.0;
+  }
+  else {
+    min1 = -45;
+    min2 = -100;
+    max1 = 0;
+    max2 = 0;
+  }
+  double stepX = (ballDistance - radius) * std::cos(ballRotation);
+  double stepY = Math::clamp(radius * std::tan(Math::clamp(Math::toDegrees(-direction), min1, max1)), min2, max2) * std::cos(ballRotation);
+
+  Pose2D pose = limit_step(Pose2D(ballRotation, stepX, stepY));
+
+  add_single_step(pose, 0.0, StepType::WALKSTEP);
+}
+
+void PathPlanner::approach_ball(const Foot foot)
+{
+  Vector2d ballPos;
+  double stepX;
+  double stepY;
+  double ballRadius = getFieldInfo().ballRadius;
+  double stepRotation = ballPos.abs() > 250 ? ballPos.angle() : 0;
+
+  switch (foot) {
+  case Foot::LEFT:  
+    ballPos = getBallModel().positionPreviewInLFoot;
+    stepX = ballPos.x - std::abs(ballPos.y - getPathModel().yOffset) - getPathModel().distance - ballRadius;
+    stepY = ballPos.y - getPathModel().yOffset;
+    break;
+  case Foot::RIGHT: 
+    ballPos = getBallModel().positionPreviewInRFoot;
+    stepX = ballPos.x - std::abs(ballPos.y + getPathModel().yOffset) - getPathModel().distance - ballRadius;
+    stepY = ballPos.y + getPathModel().yOffset;
+    break;
+  }
+
+  Pose2D pose = limit_step(Pose2D(stepRotation, stepX, stepY));
+
+  add_single_step(pose, 0.0, StepType::WALKSTEP);
+}
+
+void PathPlanner::short_kick(const Foot foot)
+{
+  Vector2d ballPos;
+  switch (foot) {
+  case Foot::LEFT:  ballPos = getBallModel().positionPreviewInLFoot; break;
+  case Foot::RIGHT: ballPos = getBallModel().positionPreviewInRFoot; break;
+  }
+
+  Pose2D pose = { 0.0, ballPos.x + 500 , ballPos.y };
+
+  add_single_step(pose, 0.0, StepType::KICKSTEP);
+}
+
+void PathPlanner::long_kick(const Foot foot)
+{
+  Vector2d ballPos;
+  switch (foot) {
+  case Foot::LEFT:  ballPos = getBallModel().positionPreviewInLFoot; break;
+  case Foot::RIGHT: ballPos = getBallModel().positionPreviewInRFoot; break;
+  }
+
+  Pose2D pose = { 0.0, ballPos.x + 500, 0.0 };
+
+  add_single_step(pose, 0.0, StepType::KICKSTEP);
+}
+
+void PathPlanner::sidekick(const Foot foot)
+{
+  double speedDirection;
+  double stepY;
+  Vector2d ballPos;
+  switch (foot) {
+    case Foot::LEFT:
+      ballPos = getBallModel().positionPreviewInLFoot;
+      speedDirection = 90; 
+      stepY = 100; 
+      break;
+    case Foot::RIGHT:
+      ballPos = getBallModel().positionPreviewInRFoot;
+      speedDirection = -90; 
+      stepY = -100; 
+      break;
+  }
+
+  double ballDistance = ballPos.abs();
+
+  if (ballDistance > 400.0)
+  {
+    PathPlanner::walk_to_ball(foot);
+  }
+  else if (ballDistance > 200)
+  {
+    PathPlanner::approach_ball(foot);
+  }
+  else
+  {
+    if (foot == Foot::RIGHT && getMotionStatus().stepControl.moveableFoot == MotionStatus::StepControlStatus::BOTH)
+    {
+      foot_to_use = Foot::LEFT;
+    }
+    else if (foot == Foot::LEFT && getMotionStatus().stepControl.moveableFoot == MotionStatus::StepControlStatus::BOTH)
+    {
+      foot_to_use = Foot::RIGHT;
+    }
+
+    if (foot == Foot::RIGHT && foot_to_use == Foot::LEFT
+      || foot == Foot::LEFT && foot_to_use == Foot::RIGHT)
+    {
+      if (step_buffer.empty()) {
+        Pose2D pose = { 0.0, 500, stepY };
+        add_step(pose, speedDirection, StepType::KICKSTEP);
+
+        pose = { 0.0, 0.0, 0.0 };
+        add_step(pose, 0.0, StepType::KICKSTEP);
+
+        getPathModel().routine_executed = true;
       }
     }
-    getHeadMotionRequest().id = HeadMotionRequest::look_at_world_point;
-    getHeadMotionRequest().targetPointInTheWorld.x = pos.x;
-    getHeadMotionRequest().targetPointInTheWorld.y = pos.y;
-    getHeadMotionRequest().targetPointInTheWorld.z = getFieldInfo().ballRadius;
   }
 }
 
+Pose2D PathPlanner::limit_step(Pose2D &step)
+{
+  // taken out of the stepplanner
+  // 0.75 because 0.5 * character(usually 0.5) + 0.5 (also out of stepplanner)
+  double maxStepTurn = Math::fromDegrees(30) * 0.75;
+  double maxStep     = 40.0f;
+  step.rotation      = Math::clamp(step.rotation, -maxStepTurn, maxStepTurn);
+  step.translation.x = Math::clamp(step.translation.x, -maxStep, maxStep) * cos(step.rotation/maxStepTurn * Math::pi/2);
+  step.translation.y = Math::clamp(step.translation.y, -maxStep, maxStep) * cos(step.rotation/maxStepTurn * Math::pi/2);
 
-PathPlanner::Step PathPlanner::new_step(double x,
-                                                double y,
-                                                double rotation) {
-  Step newStep = {x, y, rotation, 0.5};
-  return newStep;
+  return step;
 }
-PathPlanner::Step PathPlanner::new_step(double x,
-                                                double y,
-                                                double rotation,
-                                                double character) {
-  Step newStep = {x, y, rotation, character};
-  return newStep;
+
+// Stepcontrol
+void PathPlanner::add_step(const Pose2D &pose, const double &speedDirection, const StepType &type) {
+  step_buffer.push_back(Step_Buffer_Element({ pose, 
+                                              speedDirection, 
+                                              type, 
+                                              type == StepType::KICKSTEP ? 300 : 250, 
+                                              type == StepType::KICKSTEP ? 1.0 : 0.5 }));
 }
-void PathPlanner::add(PathPlanner::Step step) {
-  if (step_list.size() == 0) {
-    step_list.push_back(step);
+bool PathPlanner::add_single_step(const Pose2D &pose, const double &speedDirection, const StepType &type) {
+  if (step_buffer.size() == 0) {
+    add_step(pose, speedDirection, type);
+    return true;
   }
-}
-void PathPlanner::pop_step() {
-  assert(!step_list.empty());
-  step_list.erase(step_list.begin());
+  return false;
 }
 
-double PathPlanner::towards_ball(const char x_or_y) {
-  double ballRad    = getBallPercept().radiusInImage;
-  Vector2d preview  = getBallModel().positionPreview;
-  switch (x_or_y) {
-    case 'x': return 0.7 * (preview.x - std::abs(preview.y) - ballRad);
-    case 'y': return 0.7 * (preview.y);
-    case 'r': return preview.abs() > 250 ? preview.angle() : 0.0;
-  }
-  return 0.0;
-}
-double PathPlanner::towards_ball(const char x_y_or_rot, const char for_left_or_right_foot) {
-  double ballRad = getBallPercept().radiusInImage;
-  Vector2d preview;
-  switch (for_left_or_right_foot) {
-    case 'r':
-      preview = getBallModel().positionPreviewInRFoot;
-      break;
-    case 'l':
-      preview = getBallModel().positionPreviewInLFoot;
-      break;
-  }
-  switch (x_y_or_rot) {
-    case 'x': return 0.7 * (preview.x - std::abs(preview.y) - ballRad);
-    case 'y': return 0.7 * (preview.y);
-    case 'r': return preview.abs() > 250 ? preview.angle() : 0.0;
-  }
-  return 0.0;
-}
-char PathPlanner::find_foot_with(const std::size_t approximate_steps_to_ball) {
-  if (approximate_steps_to_ball % 2 == 0) {
-    if (foot_to_be_used == Right) {
-      return 'r';
-    } else {
-      return 'l';
-    }
-  } else {
-    if (foot_to_be_used == Right) {
-      return 'l';
-    } else {
-      return 'r';
-    }
-  }
-}
-
-void PathPlanner::execute_step_list() {
-  if (step_list.size() > 0) {
-    if (getMotionRequest().id == motion::stand) {
-      last_stepcontrol_stepID = 0;
-    }
-    getMotionRequest().walkRequest.stepControl.stepID = getMotionStatus().stepControl.stepID;
-
-    getMotionRequest().id = motion::walk;
-    getMotionRequest().standardStand                                = false;
-    getMotionRequest().walkRequest.stepControl.time                 = 300;
-    getMotionRequest().walkRequest.coordinate                       = WalkRequest::Hip;
-    getMotionRequest().walkRequest.stepControl.target.translation.x = step_list.at(0).x;
-    getMotionRequest().walkRequest.stepControl.target.translation.y = step_list.at(0).y;
-    getMotionRequest().walkRequest.stepControl.target.rotation      = step_list.at(0).rotation;
-    getMotionRequest().walkRequest.character                        = step_list.at(0).character;
-
-    // stepID higher than the last one means, stepControl request with the
-    // last_stepcontrol_stepID has been accepted
-    // switch the foot_to_be_used
-    if (last_stepcontrol_stepID < getMotionStatus().stepControl.stepID)
-    {
-      pop_step();
-      last_stepcontrol_stepID = getMotionStatus().stepControl.stepID;
-      foot_to_be_used         = foot_to_be_used == Right ? Left : Right;
-    }
-
-    // false means right foot
-    getMotionRequest().walkRequest.stepControl.moveLeftFoot = foot_to_be_used == Right ? false : true;
-  } else {
-    getMotionRequest().id = motion::stand;
+void PathPlanner::manage_step_buffer() 
+{
+  if (step_buffer.empty()) {
+    return;
   }
 
+  // stepID higher than the last one means, stepControl request with the
+  // last_stepcontrol_stepID has been accepted
+  if (last_stepcontrol_stepID < getMotionStatus().stepControl.stepID)
+  {
+    step_buffer.erase(step_buffer.begin());
+    last_stepcontrol_stepID = getMotionStatus().stepControl.stepID;
+  }
+
+  // Correct last_stepcontrol_stepID if neccessary
   if (getMotionStatus().stepControl.stepID < last_stepcontrol_stepID) {
     last_stepcontrol_stepID = getMotionStatus().stepControl.stepID;
   }
+}
+
+void PathPlanner::execute_step_buffer() 
+{
+  if (step_buffer.empty()) {
+    return;
+  }
+
+  STOPWATCH_START("PathPlanner:execute_steplist");
+  getMotionRequest().id                                     = motion::walk;
+  getMotionRequest().standardStand                          = false;
+  getMotionRequest().walkRequest.coordinate                 = WalkRequest::Hip;
+  getMotionRequest().walkRequest.stepControl.stepID         = getMotionStatus().stepControl.stepID;
+  getMotionRequest().walkRequest.character                  = step_buffer.front().character;
+  getMotionRequest().walkRequest.stepControl.type           = step_buffer.front().type;
+  getMotionRequest().walkRequest.stepControl.time           = step_buffer.front().time;
+  getMotionRequest().walkRequest.stepControl.speedDirection = step_buffer.front().speedDirection;
+  getMotionRequest().walkRequest.stepControl.target         = step_buffer.front().pose;
+
+
+  // sync foot_to_use with the movableFoot
+  switch (getMotionStatus().stepControl.moveableFoot)
+  {
+    case MotionStatus::StepControlStatus::LEFT:
+      foot_to_use = Foot::LEFT;
+      break;
+    case MotionStatus::StepControlStatus::RIGHT:
+      foot_to_use = Foot::RIGHT;
+      break;
+      // TODO: choose foot more intelligently when both feet are usable
+    case MotionStatus::StepControlStatus::BOTH:
+      if (step_buffer.front().type == StepType::KICKSTEP)
+      {
+        
+      }
+      else if (step_buffer.front().pose.translation.y > 0.0f || step_buffer.front().pose.rotation > 0.0f)
+			{
+				foot_to_use = Foot::LEFT;
+			}
+			else
+			{
+				foot_to_use = Foot::RIGHT;
+			}
+			break;
+    case MotionStatus::StepControlStatus::NONE:
+      foot_to_use = Foot::RIGHT;
+      break;
+  }
+  // false means right foot
+  getMotionRequest().walkRequest.stepControl.moveLeftFoot = foot_to_use == Foot::RIGHT ? false : true;
+  STOPWATCH_STOP("PathPlanner:execute_steplist");
 }

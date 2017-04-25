@@ -13,100 +13,95 @@ class PathModel : public naoth::Printable
 {
 public:
    PathModel() :
-   pathType(none),
-     goto_distance(0.0),
-     goto_yOffset(0.0),
-     move_around_ball_direction(0.0),
-     move_around_ball_radius(0.0),
-     kick_executed(false)
+     path_routine(NONE),
+     distance(0.0),
+     yOffset(0.0),
+     direction(0.0),
+     radius(0.0),
+     routine_executed(false)
    {}
   ~PathModel() {}
 
-  enum PathType
+  enum PathRoutine
   {
-    none,
-    go_to_ball,
-    go_to_ball_right,
-    go_to_ball_left,
-    go_to_ball_dynamic_right,
-    go_to_ball_dynamic_left,
-    move_around_ball,
-    prepare_walk_back_approach,
-    fast_forward_right,
-    fast_forward_left,
-    kick_with_foot_right,
-    kick_with_foot_left,
-    sidekick_left,
-    sidekick_right
+    NONE,
+    GO_TO_BALL,
+    GO_TO_BALL_RIGHT,
+    GO_TO_BALL_LEFT,
+    APPROACH_BALL_RIGHT,
+    APPROACH_BALL_LEFT,
+    MOVE_AROUND_BALL,
+    SHORT_KICK_RIGHT,
+    SHORT_KICK_LEFT,
+    LONG_KICK_RIGHT,
+    LONG_KICK_LEFT,
+    SIDEKICK_RIGHT,
+    SIDEKICK_LEFT
   };
 
-  PathType pathType;
+  PathRoutine path_routine;
 
   // distance and yOffset parameters (set by XABSL)
-  double goto_distance;
-  double goto_yOffset;
-  double ballRadius;
+  double distance;
+  double yOffset;
   
   // Move around ball
-  double move_around_ball_direction;
-  double move_around_ball_radius;
+  double direction;
+  double radius;
 
-  bool kick_executed;
+  bool routine_executed;
 
   virtual void print(std::ostream& stream) const
   {
     std::string path_type;
-    switch (pathType)
+    switch (path_routine)
     {
-    case none:
+    case NONE:
       path_type = "none";
       break;
-    case go_to_ball:
+    case GO_TO_BALL:
       path_type = "go_to_ball";
       break;
-    case go_to_ball_right:
-      path_type = "go_to_ball_right";
-      break;
-    case go_to_ball_left:
+    case GO_TO_BALL_LEFT:
       path_type = "go_to_ball_left";
       break;
-    case go_to_ball_dynamic_left:
-      path_type = "go_to_ball_dynamic_left";
+    case GO_TO_BALL_RIGHT:
+      path_type = "go_to_ball_right";
       break;
-    case go_to_ball_dynamic_right:
-      path_type = "go_to_ball_dynamic_right";
+    case APPROACH_BALL_LEFT:
+      path_type = "approach_ball_left";
       break;
-    case move_around_ball:
+    case APPROACH_BALL_RIGHT:
+      path_type = "approach_ball_right";
+      break;
+    case MOVE_AROUND_BALL:
       path_type = "move_around_ball";
       break;
-    case prepare_walk_back_approach:
-      path_type = "prepare_walk_back_approach";
+    case SHORT_KICK_LEFT:
+      path_type = "short_kick_left";
       break;
-    case fast_forward_right:
-      path_type = "fast_forward_right";
+    case SHORT_KICK_RIGHT:
+      path_type = "short_kick_right";
       break;
-    case fast_forward_left:
-      path_type = "fast_forward_left";
+    case LONG_KICK_LEFT:
+      path_type = "long_kick_left";
       break;
-    case kick_with_foot_right:
-      path_type = "kick_with_foot_right";
+    case LONG_KICK_RIGHT:
+      path_type = "long_kick_right";
       break;
-    case kick_with_foot_left:
-      path_type = "kick_with_foot_left";
-      break;
-    case sidekick_left:
+    case SIDEKICK_LEFT:
       path_type = "sidekick_left";
       break;
-    case sidekick_right:
+    case SIDEKICK_RIGHT:
       path_type = "sidekick_right";
       break;
     }
 
     stream << "path_type = " << path_type << std::endl;
-    stream << "goto_distance = " << goto_distance << std::endl;
-    stream << "goto_yOffset = " << goto_yOffset << std::endl;
-    stream << "move_around_ball_direction = " << move_around_ball_direction << std::endl;
-    stream << "move_around_ball_radius = " << move_around_ball_radius << std::endl;
+    stream << "distance = " << distance << std::endl;
+    stream << "yOffset = " << yOffset << std::endl;
+    stream << "direction = " << direction << std::endl;
+    stream << "radius = " << radius << std::endl;
   }
 };
 
