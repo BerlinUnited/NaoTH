@@ -27,11 +27,11 @@ void PathPlanner::execute()
     // Reset routine_executed, so that XABSL
     // can jump out of option (PathRoutine) that is
     // being executed
-    getPathModel().routine_executed = false;
+    getPathModel().kick_executed = false;
+
     if (step_buffer.empty()) {
       return;
     }
-    //getMotionRequest().id = motion::stand;
     break;
   case PathModel::PathRoutine::GO_TO_BALL:
     walk_to_ball(Foot::NONE);
@@ -87,7 +87,7 @@ void PathPlanner::walk_to_ball(const Foot foot)
   }
   double ballRotation = ballPos.angle();
 
-  Pose2D pose = limit_step(Pose2D(ballRotation, ballPos.x - getPathModel().distance, 0.0f));
+  Pose2D pose = { ballRotation, ballPos.x - getPathModel().distance, 0.0f };
 
   add_single_step(pose, 0.0, StepType::WALKSTEP);
 }
@@ -119,7 +119,7 @@ void PathPlanner::move_around_ball(const double direction, const double radius)
   double stepX = (ballDistance - radius) * std::cos(ballRotation);
   double stepY = Math::clamp(radius * std::tan(Math::clamp(Math::toDegrees(-direction), min1, max1)), min2, max2) * std::cos(ballRotation);
 
-  Pose2D pose = limit_step(Pose2D(ballRotation, stepX, stepY));
+  Pose2D pose = { ballRotation, stepX, stepY };
 
   add_single_step(pose, 0.0, StepType::WALKSTEP);
 }
@@ -129,7 +129,7 @@ void PathPlanner::approach_ball(const Foot foot)
   Vector2d ballPos;
   double stepX;
   double stepY;
-  double ballRadius = getFieldInfo().ballRadius;
+  double ballRadius   = getFieldInfo().ballRadius;
   double stepRotation = ballPos.abs() > 250 ? ballPos.angle() : 0;
 
   switch (foot) {
@@ -145,7 +145,7 @@ void PathPlanner::approach_ball(const Foot foot)
     break;
   }
 
-  Pose2D pose = limit_step(Pose2D(stepRotation, stepX, stepY));
+  Pose2D pose = { stepRotation, stepX, stepY };
 
   add_single_step(pose, 0.0, StepType::WALKSTEP);
 }
@@ -194,65 +194,47 @@ void PathPlanner::sidekick(const Foot foot)
       break;
   }
 
-  double ballDistance = ballPos.abs();
-
-  if (ballDistance > 400.0)
+  if (foot == Foot::RIGHT)
   {
-    PathPlanner::walk_to_ball(foot);
+    foot_to_use = Foot::LEFT;
   }
-  else if (ballDistance > 200)
+  else if (foot == Foot::LEFT)
   {
-    PathPlanner::approach_ball(foot);
+    foot_to_use = Foot::RIGHT;
   }
-  else
-  {
-    if (foot == Foot::RIGHT && getMotionStatus().stepControl.moveableFoot == MotionStatus::StepControlStatus::BOTH)
-    {
-      foot_to_use = Foot::LEFT;
-    }
-    else if (foot == Foot::LEFT && getMotionStatus().stepControl.moveableFoot == MotionStatus::StepControlStatus::BOTH)
-    {
-      foot_to_use = Foot::RIGHT;
-    }
 
-    if (foot == Foot::RIGHT && foot_to_use == Foot::LEFT
-      || foot == Foot::LEFT && foot_to_use == Foot::RIGHT)
-    {
-      if (step_buffer.empty()) {
-        Pose2D pose = { 0.0, 500, stepY };
-        add_step(pose, speedDirection, StepType::KICKSTEP);
+  if (step_buffer.empty()) {
+    Pose2D pose = { 0.0, 500, stepY };
+    add_step(pose, speedDirection, StepType::KICKSTEP);
 
-        pose = { 0.0, 0.0, 0.0 };
-        add_step(pose, 0.0, StepType::KICKSTEP);
+    pose = { 0.0, 0.0, 0.0 };
+    add_step(pose, 0.0, StepType::CORRECTSTEP);
 
-        getPathModel().routine_executed = true;
-      }
-    }
+    getPathModel().kick_executed = true;
   }
-}
-
-Pose2D PathPlanner::limit_step(Pose2D &step)
-{
-  // taken out of the stepplanner
-  // 0.75 because 0.5 * character(usually 0.5) + 0.5 (also out of stepplanner)
-  double maxStepTurn = Math::fromDegrees(30) * 0.75;
-  double maxStep     = 40.0f;
-  step.rotation      = Math::clamp(step.rotation, -maxStepTurn, maxStepTurn);
-  step.translation.x = Math::clamp(step.translation.x, -maxStep, maxStep) * cos(step.rotation/maxStepTurn * Math::pi/2);
-  step.translation.y = Math::clamp(step.translation.y, -maxStep, maxStep) * cos(step.rotation/maxStepTurn * Math::pi/2);
-
-  return step;
 }
 
 // Stepcontrol
-void PathPlanner::add_step(const Pose2D &pose, const double &speedDirection, const StepType &type) {
+void PathPlanner::add_step(Pose2D &pose, const double &speedDirection, const StepType &type) {
+  // taken out of the stepplanner
+  // limiting the steps if walksteps
+  // 0.75 because 0.5 * character(usually 0.5) + 0.5 (taken from stepplanner)
+  if (type == StepType::WALKSTEP)
+  {
+    double maxStepTurn = Math::fromDegrees(30) * 0.75;
+    double maxStep     = 40.0f;
+    pose.rotation      = Math::clamp(pose.rotation, -maxStepTurn, maxStepTurn);
+    pose.translation.x = Math::clamp(pose.translation.x, -maxStep, maxStep) * cos(pose.rotation / maxStepTurn * Math::pi / 2);
+    pose.translation.y = Math::clamp(pose.translation.y, -maxStep, maxStep) * cos(pose.rotation / maxStepTurn * Math::pi / 2);
+  }
+
   step_buffer.push_back(Step_Buffer_Element({ pose, 
                                               speedDirection, 
                                               type, 
                                               type == StepType::KICKSTEP ? 300 : 250, 
-                                              type == StepType::KICKSTEP ? 1.0 : 0.5 }));
+                                              type == StepType::KICKSTEP ? 0.7 : 0.5 }));
 }
-bool PathPlanner::add_single_step(const Pose2D &pose, const double &speedDirection, const StepType &type) {
+bool PathPlanner::add_single_step(Pose2D &pose, const double &speedDirection, const StepType &type) {
   if (step_buffer.size() == 0) {
     add_step(pose, speedDirection, type);
     return true;
@@ -298,9 +280,11 @@ void PathPlanner::execute_step_buffer()
   getMotionRequest().walkRequest.stepControl.target         = step_buffer.front().pose;
 
 
-  // sync foot_to_use with the movableFoot
-  switch (getMotionStatus().stepControl.moveableFoot)
+  // sync foot_to_use with the movableFoot for WALKSTEPS <-- you have to specify foot_to_use explicitly in KICKSTEPS
+  if (!(step_buffer.front().type == StepType::CORRECTSTEP))
   {
+    switch (getMotionStatus().stepControl.moveableFoot)
+    {
     case MotionStatus::StepControlStatus::LEFT:
       foot_to_use = Foot::LEFT;
       break;
@@ -311,20 +295,21 @@ void PathPlanner::execute_step_buffer()
     case MotionStatus::StepControlStatus::BOTH:
       if (step_buffer.front().type == StepType::KICKSTEP)
       {
-        
+
       }
       else if (step_buffer.front().pose.translation.y > 0.0f || step_buffer.front().pose.rotation > 0.0f)
-			{
-				foot_to_use = Foot::LEFT;
-			}
-			else
-			{
-				foot_to_use = Foot::RIGHT;
-			}
-			break;
+      {
+        foot_to_use = Foot::LEFT;
+      }
+      else
+      {
+        foot_to_use = Foot::RIGHT;
+      }
+      break;
     case MotionStatus::StepControlStatus::NONE:
       foot_to_use = Foot::RIGHT;
       break;
+    }
   }
   // false means right foot
   getMotionRequest().walkRequest.stepControl.moveLeftFoot = foot_to_use == Foot::RIGHT ? false : true;

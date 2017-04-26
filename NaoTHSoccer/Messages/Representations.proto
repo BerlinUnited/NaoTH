@@ -76,6 +76,7 @@ message StepControlRequest
   enum StepType {
 	WALKSTEP = 0;
 	KICKSTEP = 1;
+	CORRECTSTEP = 2;
   };
   
   required uint32 stepID = 1;

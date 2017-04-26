@@ -18,7 +18,7 @@ public:
      yOffset(0.0),
      direction(0.0),
      radius(0.0),
-     routine_executed(false)
+     kick_executed(false)
    {}
   ~PathModel() {}
 
@@ -49,7 +49,7 @@ public:
   double direction;
   double radius;
 
-  bool routine_executed;
+  bool kick_executed;
 
   virtual void print(std::ostream& stream) const
   {

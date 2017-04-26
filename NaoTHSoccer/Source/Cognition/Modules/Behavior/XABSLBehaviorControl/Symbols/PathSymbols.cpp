@@ -39,7 +39,7 @@ void PathSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalOutputSymbol("path.radius",
                                      &getPathModel().radius);
 
-  engine.registerBooleanInputSymbol("path.routine_executed", &getPathModel().routine_executed);
+  engine.registerBooleanInputSymbol("path.kick_executed", &getPathModel().kick_executed);
 }
 
 void PathSymbols::execute()

@@ -25,5 +25,5 @@ namespace path_symbols("PathPlanner Symbols") {
   float output path.direction;
   float output path.radius;
 
-  bool input path.routine_executed;
+  bool input path.kick_executed;
 }

@@ -8,13 +8,12 @@ option pathplanner_test_agent {
 
       test_pathplanner();
       
+      arm.control_mode = back;
       // control the arms
       arms_control();
-      arm.control_mode = back;
 
       // control head movement according to value of head.control_mode
       head_control();
-      head.control_mode = look_at_ball_percept;
     }
   }
 }

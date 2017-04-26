@@ -1,44 +1,105 @@
 option pathplanner_sidekick {
 
-  common decision {
-    if(ball.time_since_last_seen > 3000)
+  common decision
+  {
+    if(!body.ready_to_walk || game.current_mode != playing)
+      goto idle;
+    else if(situation_abortable && ball.time_since_last_seen > 1500)
       goto search;
-    else if (!path.routine_executed)
-      goto start_routine;
+    else if(situation_abortable && vector.abs(x=ball.preview.x, y=ball.preview.y) > 300)
+      goto goto_ball;
   }
-  
-  initial state start_routine {    
+
+  initial state idle {
     decision {
-      else if(ball.time_since_last_seen > 1500)
-        goto search;
-      else if (!path.routine_executed)
-        stay;
       else
-        goto finished;
+        goto search;
     }
     action {
-      path.routine = sidekick_left;
-      path.distance = 0;
-      path.yOffset = -40;
+      situation_abortable = true;
     }
   }
 
   state search {
     decision {
       else if(action_done)
-        goto start_routine;
+        goto approach_sidekick_to_left;
       else
         stay;
     }
     action{
-      path.routine = none;
+      situation_abortable = true;
       search_ball();
     }
   }
-  
-  target state finished {
+
+  state goto_ball {
+    decision{
+
+      else if(action_done && state_time > 1000)
+      {
+        goto approach_sidekick_to_left;
+      }
+      else
+        stay;
+    }
+    action{
+      situation_abortable = true;
+      path_go_to_ball_with_USOA(distance = 190);
+      
+      //loook at percept
+      head.control_mode = look_at_ball_percept;
+    }
+  }
+  state approach_sidekick_to_left {
+    decision {
+      else if(action_done)
+        goto sidekick_to_left;
+      else
+        stay;
+    }
     action {
-      path.routine = none;
+      //go_to_ball_with_foot(right = true, distance = 130, offset.y=-10);
+      path_go_to_ball_with_foot_dynamic(right = true, distance = 120, offset.y=-40);
+      
+      //loook at percept
+      head.control_mode = look_at_ball_percept;
+    }
+  }
+  state sidekick_to_left {
+    decision{
+      else if(action_done)
+        goto done;
+      else
+        stay;
+    }
+    action {
+      situation_abortable = false;
+      path_sidekick(to = left);
+      
+      //loook at percept
+      head.control_mode = look_at_ball_percept;
+    }
+  }
+  target state done
+  {
+    decision {
+    else if(state_time > 2000)
+      goto idle;
+      else
+        stay;
+    }
+    action {
+      //NOTE: this is synchronized with sidekick()->finished
+      motion.type = stand;
+    
+      motion.walk.stop_with_stand = true;
+
+      motion.walk.coordinate = hip;
+      motion.walk.style = normal;
+
+      //loook at percept
+      head.control_mode = look_at_ball_percept;
     }
   }
 }

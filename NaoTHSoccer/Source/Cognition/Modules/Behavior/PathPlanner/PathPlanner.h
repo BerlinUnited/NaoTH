@@ -77,10 +77,6 @@ private:
   // Sidekick (with left foot == Foot::LEFT kicks to the left, and foot == FOOT::RIGHT to the right)
   void sidekick(const Foot foot);
 
-  // Limit steps depending on rotation
-  // returns Pose2D where z is the rotation
-  Pose2D limit_step(Pose2D &step);
-
   // Stepcontrol
   struct Step_Buffer_Element {
     Pose2D pose;
@@ -98,8 +94,8 @@ private:
   // Used to synchronize stepIDs of WalkEngine to take control
   unsigned int last_stepcontrol_stepID;
 
-  void add_step(const Pose2D &pose, const double &speedDirection, const StepType &type);
-  bool add_single_step(const Pose2D &pose, const double &speedDirection, const StepType &type);
+  void add_step(Pose2D &pose, const double &speedDirection, const StepType &type);
+  bool add_single_step(Pose2D &pose, const double &speedDirection, const StepType &type);
   void manage_step_buffer();
   void execute_step_buffer();
 };

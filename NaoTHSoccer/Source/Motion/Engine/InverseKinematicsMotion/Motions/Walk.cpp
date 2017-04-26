@@ -225,7 +225,7 @@ void Walk::calculateNewStep(const Step& lastStep, Step& newStep, const WalkReque
     || (lastStep.footStep.liftingFoot() == FootStep::RIGHT && walkRequest.stepControl.moveLeftFoot)
     || (lastStep.footStep.liftingFoot() == FootStep::LEFT && !walkRequest.stepControl.moveLeftFoot);
 
-  if ( stepControlPossible && walkRequest.stepControl.stepID + 1 == stepBuffer.stepId() )
+  if ( (stepControlPossible || walkRequest.stepControl.type == WalkRequest::StepControlRequest::CORRECTSTEP ) && walkRequest.stepControl.stepID + 1 == stepBuffer.stepId() )
   {
     // step control
     newStep.footStep = theFootStepPlanner.controlStep(lastStep.footStep, walkRequest);
@@ -350,7 +350,7 @@ Pose3D Walk::calculateLiftingFootPos(const Step& step) const
         step.walkRequest.stepControl.speedDirection,
         step.walkRequest.stepControl.scale);
     }
-    else if (step.walkRequest.stepControl.type == WalkRequest::StepControlRequest::WALKSTEP)
+    else 
     {
       return FootTrajectorGenerator::genTrajectory(
         step.footStep.footBegin(),
