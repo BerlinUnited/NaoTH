@@ -79,11 +79,17 @@ void PathPlanner::execute()
 // Primitive Maneuvers
 void PathPlanner::walk_to_ball(const Foot foot)
 {
-  Vector2d ballPos;
+  Vector2d ballPos = Vector2d();
   switch (foot) {
-    case Foot::LEFT:  ballPos = getBallModel().positionPreviewInLFoot; break;
-    case Foot::RIGHT: ballPos = getBallModel().positionPreviewInRFoot; break;
-    case Foot::NONE:  ballPos = getBallModel().positionPreview; break;
+    case Foot::LEFT:  
+      ballPos = getBallModel().positionPreviewInLFoot; 
+      break;
+    case Foot::RIGHT: 
+      ballPos = getBallModel().positionPreviewInRFoot; 
+      break;
+    case Foot::NONE:  
+      ballPos = getBallModel().positionPreview; 
+      break;
   }
   double ballRotation = ballPos.angle();
 
@@ -126,9 +132,9 @@ void PathPlanner::move_around_ball(const double direction, const double radius)
 
 void PathPlanner::approach_ball(const Foot foot)
 {
-  Vector2d ballPos;
-  double stepX;
-  double stepY;
+  Vector2d ballPos = Vector2d();
+  double stepX = 0.0;
+  double stepY = 0.0;
   double ballRadius   = getFieldInfo().ballRadius;
   double stepRotation = ballPos.abs() > 250 ? ballPos.angle() : 0;
 
@@ -143,6 +149,8 @@ void PathPlanner::approach_ball(const Foot foot)
     stepX = ballPos.x - std::abs(ballPos.y + getPathModel().yOffset) - getPathModel().distance - ballRadius;
     stepY = ballPos.y + getPathModel().yOffset;
     break;
+  case Foot::NONE:
+    ASSERT(false);
   }
 
   Pose2D pose = { stepRotation, stepX, stepY };
@@ -152,7 +160,7 @@ void PathPlanner::approach_ball(const Foot foot)
 
 void PathPlanner::short_kick(const Foot foot)
 {
-  Vector2d ballPos;
+  Vector2d ballPos = Vector2d();
   switch (foot) {
   case Foot::LEFT:  ballPos = 
     getBallModel().positionPreviewInLFoot; 
@@ -160,6 +168,8 @@ void PathPlanner::short_kick(const Foot foot)
   case Foot::RIGHT: 
     ballPos = getBallModel().positionPreviewInRFoot; 
     break;
+  case Foot::NONE:
+    ASSERT(false);
   }
 
   foot_to_use = foot;
@@ -177,10 +187,16 @@ void PathPlanner::short_kick(const Foot foot)
 
 void PathPlanner::long_kick(const Foot foot)
 {
-  Vector2d ballPos;
+  Vector2d ballPos = Vector2d();
   switch (foot) {
-  case Foot::LEFT:  ballPos = getBallModel().positionPreviewInLFoot; break;
-  case Foot::RIGHT: ballPos = getBallModel().positionPreviewInRFoot; break;
+  case Foot::LEFT:  
+    ballPos = getBallModel().positionPreviewInLFoot; 
+    break;
+  case Foot::RIGHT: 
+    ballPos = getBallModel().positionPreviewInRFoot; 
+    break;
+  case Foot::NONE:
+    ASSERT(false);
   }
 
   foot_to_use = foot;
@@ -198,9 +214,9 @@ void PathPlanner::long_kick(const Foot foot)
 
 void PathPlanner::sidekick(const Foot foot)
 {
-  double speedDirection;
-  double stepY;
-  Vector2d ballPos;
+  double speedDirection = 0.0;
+  double stepY = 0.0;
+  Vector2d ballPos = Vector2d();
   switch (foot) {
     case Foot::LEFT:
       ballPos = getBallModel().positionPreviewInLFoot;
@@ -212,6 +228,8 @@ void PathPlanner::sidekick(const Foot foot)
       speedDirection = -90; 
       stepY = -100; 
       break;
+    case Foot::NONE:
+      ASSERT(false);
   }
 
   foot_to_use = foot == Foot::RIGHT ? Foot::LEFT : Foot::RIGHT;

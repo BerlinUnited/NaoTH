@@ -50,8 +50,8 @@ public:
   {
     StepControlRequest()
       :
-      stepID(0),
       type(KICKSTEP),       // KICKSTEP instead of WALKSTEP because of backwards compatibility
+      stepID(0),
       moveLeftFoot(false),
       time(0),
       speedDirection(0),
