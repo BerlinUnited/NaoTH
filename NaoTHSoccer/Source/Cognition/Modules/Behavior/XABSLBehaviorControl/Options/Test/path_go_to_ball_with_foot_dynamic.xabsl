@@ -28,25 +28,14 @@ option path_go_to_ball_with_foot_dynamic
     decision
     {
       if ( (ball.preview.right_foot.x - @distance - ball.radius) < 20
-        && abs(value = ball.preview.right_foot.y + @offset.y) < 20)
-        //&& atan2(y = ball.preview.right_foot.y, x = ball.preview.right_foot.x) < 30)
+        && abs(value = ball.preview.right_foot.y + @offset.y) < 10)
+        //&& atan2(y = ball.preview.right_foot.y, x = ball.preview.right_foot.x) < 15)
         goto go_to_ball_right_foot_done;
       else
         stay;
     }
     action 
     {
-      /*head.control_mode = search_for_ball_and_look_around;
-      motion.type = walk;
-      motion.walk.coordinate = right_foot;
-      motion.walk.style = normal;
-      
-      //motion.walk_speed.x = ((vector.abs(x=ball.preview.right_foot.x, y=ball.preview.right_foot.y) > 300) ? 0.7 : 0.5)*(ball.preview.right_foot.x - @distance - ball.radius);
-      motion.walk_speed.x = 0.7*(ball.preview.right_foot.x - abs(value=(ball.preview.right_foot.y + @offset.y)) - @distance - ball.radius);
-      motion.walk_speed.y = 0.7*(ball.preview.right_foot.y + @offset.y);
-      motion.walk_speed.rot = (vector.abs(x=ball.preview.right_foot.x, y=ball.preview.right_foot.y) > 250) ? atan2(y = ball.preview.right_foot.y, x = ball.preview.right_foot.x) : 0;
-      */
-
       path.routine = approach_ball_right;
       path.distance = @distance;
       path.yOffset = @offset.y;
@@ -58,25 +47,14 @@ option path_go_to_ball_with_foot_dynamic
     decision
     {
       if ( (ball.preview.left_foot.x - @distance - ball.radius) < 20
-        && abs(value = ball.preview.left_foot.y - @offset.y) < 20)
-        //&& atan2(y = ball.preview.right_foot.y, x = ball.preview.right_foot.x) < 30)
+        && abs(value = ball.preview.left_foot.y - @offset.y) < 10)
+        //&& atan2(y = ball.preview.right_foot.y, x = ball.preview.right_foot.x) < 15)
         goto go_to_ball_left_foot_done;
       else
         stay;
     }
     action 
     {
-      /*head.control_mode = search_for_ball_and_look_around;
-      motion.type = walk;
-      motion.walk.coordinate = left_foot;
-      motion.walk.style = normal;
-      
-      //motion.walk_speed.x = ((vector.abs(x=ball.preview.left_foot.x, y=ball.preview.left_foot.y) > 300) ? 0.7 : 0.5)*(ball.preview.left_foot.x - @distance - ball.radius);
-      motion.walk_speed.x = 0.7*(ball.preview.left_foot.x - abs(value=(ball.preview.left_foot.y - @offset.y)) - @distance - ball.radius);
-      motion.walk_speed.y = 0.7*(ball.preview.left_foot.y - @offset.y);
-      motion.walk_speed.rot = (vector.abs(x=ball.preview.left_foot.x, y=ball.preview.left_foot.y) > 250) ? atan2(y = ball.preview.left_foot.y, x = ball.preview.left_foot.x) : 0;
-      */
-      
       path.routine = approach_ball_left;
       path.distance = @distance;
       path.yOffset = @offset.y;
@@ -96,17 +74,6 @@ option path_go_to_ball_with_foot_dynamic
     }
     action 
     {
-      /*head.control_mode = search_for_ball_and_look_around;
-      motion.type = walk;
-      motion.walk.coordinate = right_foot;
-      motion.walk.style = normal;
-
-      //motion.walk_speed.x = 0.5*(ball.preview.right_foot.x - @distance - ball.radius);
-      motion.walk_speed.x = 0.7*(ball.preview.right_foot.x - abs(value=(ball.preview.right_foot.y + @offset.y)) - @distance - ball.radius);
-      motion.walk_speed.y = 0.7*(ball.preview.right_foot.y + @offset.y);
-      motion.walk_speed.rot = 0;
-      */
-      
       path.routine = approach_ball_right;
       path.distance = @distance;
       path.yOffset = @offset.y;
@@ -126,17 +93,6 @@ option path_go_to_ball_with_foot_dynamic
     }
     action 
     {
-      /*head.control_mode = search_for_ball_and_look_around;
-      motion.type = walk;
-      motion.walk.coordinate = left_foot;
-      motion.walk.style = normal;
-
-      //motion.walk_speed.x = 0.5*(ball.preview.left_foot.x - @distance - ball.radius);
-      motion.walk_speed.x = 0.7*(ball.preview.left_foot.x - abs(value=(ball.preview.left_foot.y - @offset.y)) - @distance - ball.radius);
-      motion.walk_speed.y = 0.7*(ball.preview.left_foot.y - @offset.y);
-      motion.walk_speed.rot = 0;
-      */
-      
       path.routine = approach_ball_left;
       path.distance = @distance;
       path.yOffset = @offset.y;

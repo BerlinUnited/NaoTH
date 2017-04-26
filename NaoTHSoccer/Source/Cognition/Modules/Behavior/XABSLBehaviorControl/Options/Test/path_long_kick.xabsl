@@ -1,18 +1,20 @@
-/** Side kick the ball to the right (with the left foot) in a 90 degree angle
-    assumes ball is infront of hip instead of foot **/
-
-option path_sidekick
-{
-  enum direction @to;
+/** Omnidirectional kick for penalty shooting (slow!)*/
+option path_long_kick
+{ 
+  enum direction @foot;
   
-  initial state direction
+  initial state wait
   {
     decision
     {
-      if(@to == right)
-        goto sidekick_left_foot;
+      if(executed_motion.type != walk)
+        stay;
+      else if(executed_motion.step_control.right_movable && @foot == right)
+        goto kick_with_right_foot;
+      else if(executed_motion.step_control.left_movable && @foot == left)
+        goto kick_with_left_foot;
       else
-        goto sidekick_right_foot;
+        stay;
     }
     action
     {
@@ -20,34 +22,33 @@ option path_sidekick
     }
   }
 
-  state sidekick_left_foot
+  state kick_with_right_foot
   {
     decision
     {
-      if( path.kick_executed )
+      if(path.kick_executed)
         goto short_freeze;
       else
         stay;
     }
     action
     {
-      path.routine = sidekick_right;
+      path.routine = long_kick_right;
     }
   }
 
-
-  state sidekick_right_foot
+   state kick_with_left_foot
   {
     decision
     {
-      if( path.kick_executed )
-        goto finished;
+      if(path.kick_executed)
+        goto short_freeze;
       else
         stay;
     }
     action
     {
-      path.routine = sidekick_left;
+      path.routine = long_kick_left;
     }
   }
 
@@ -61,6 +62,7 @@ option path_sidekick
     action {
       path.routine = none;
     }
+  
   }
 
   target state finished
@@ -72,7 +74,7 @@ option path_sidekick
     action
     {
       path.routine = none;
-
+      
       //loook at percept
       head.control_mode = look_at_ball_percept;
     }

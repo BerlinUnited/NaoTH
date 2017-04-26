@@ -1,7 +1,0 @@
-option test_pathplanner {
-  initial state test {    
-    action {
-      pathplanner_sidekick();
-    }
-  }
-}
