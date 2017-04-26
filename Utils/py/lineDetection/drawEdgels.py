@@ -164,17 +164,17 @@ def animate(i, log, edgelsPlotTop, linePlot, edgelsPlot, projectedEdgelsPlot):
 
     # A
     data = msg[3][0]
-    param1, param2, x_range, y_range = line_detector.detectLines(data)
+    lines = line_detector.detectLines(data)
 
-    for i in range(len(param1)):
-        linePlot.add_line(param1[i], param2[i], x_range[i], y_range[i])
+    for line in lines:
+        linePlot.add_line(line[0], line[1], line[2], line[3])
 
     # B
     data = msg[3][1]
-    param1, param2, x_range, y_range = line_detector.detectLines(data)
+    lines = line_detector.detectLines(data)
 
-    for i in range(len(param1)):
-        linePlot.add_line(param1[i], param2[i], x_range[i], y_range[i])
+    for line in lines:
+        linePlot.add_line(line[0], line[1], line[2], line[3])
 
     linePlot.clean()
 

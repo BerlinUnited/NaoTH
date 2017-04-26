@@ -3,6 +3,26 @@ from numpy import linalg as LA
 import math
 import random
 
+class Result:
+    def __init__(self):
+        self.sampleA = None
+        self.sampleB = None
+        self.inlier = []
+        self.outlier = []
+        self.x_range = None
+        self.y_range = None
+
+    # create line out of sample
+    def getLine(self):
+        x = self.sampleB[0] - self.sampleA[0]
+        if x:
+            m = (self.sampleB[1] - self.sampleA[1]) / float(x)
+            b = self.sampleB[1] - (m * self.sampleB[0])
+
+            return (m, b)
+        else:
+            return (self.sampleA[0],)
+
 class Ransac:
 
     def __init__(self, iterations, threshDist, minInlier, threshAngle):
@@ -24,14 +44,9 @@ class Ransac:
 
     def getOutlier(self, data):
         if not len(data) > 2:
-            return None, None, None, data, None, None
+            return None
 
-        bestParameter1 = 0
-        bestParameter2 = 0
-        x_range = (0,0)
-        y_range = (0,0)
-        bestIn = []
-        bestOut = []
+        result = Result()
 
         for i in range(self.iterations):
             # ----------
@@ -40,26 +55,29 @@ class Ransac:
 
             # pick two random points
             pick = random.sample(range(0, len(data)), 2)
-            sampleA = data[pick[0]]
-            sampleA_direction = (sampleA[2], sampleA[3])
-            sampleA = (sampleA[0], sampleA[1])
-            sampleB = data[pick[1]]
-            sampleB_direction = (sampleB[2], sampleB[3])
-            sampleB = (sampleB[0], sampleB[1])
+
+            sample = data[pick[0]]
+            sampleA = (sample[0], sample[1])
+            sampleA_direction = (sample[2], sample[3])
+
+            sample = data[pick[1]]
+            sampleB = (sample[0], sample[1])
+            sampleB_direction = (sample[2], sample[3])
 
             # ----
             # Test
             # ----
 
             if Ransac.__angle_between(sampleA_direction, sampleB_direction) > self.threshAngle:
+                # not same orientation!
                 continue
 
             lineNormal = (sampleA_direction[0] + sampleB_direction[0], sampleA_direction[1] + sampleB_direction[1])
 
-            # calculate distances of all pointes to the line
-            inlier = []
-            outlier = []
             lineVec = np.subtract(sampleB, sampleA)
+
+            outlier = []
+            inlier = []
 
             maxX = data[0][0]
             maxY = data[0][1]
@@ -69,6 +87,7 @@ class Ransac:
             for edgel in data:
                 direction = (edgel[2], edgel[3])
                 if Ransac.__angle_between(lineNormal, direction) > self.threshDist:
+                    # not same orientation!
                     outlier.append(edgel)
                     continue
 
@@ -79,95 +98,27 @@ class Ransac:
                     inlier.append(edgel)
 
                     # find endpoints
-                    if edgel[0] > maxX:
-                        maxX = edgel[0]
-                    elif edgel[0] < minX:
-                        minX = edgel[0]
-                    if edgel[1] > maxY:
-                        maxY = edgel[1]
-                    elif edgel[1] < minY:
-                        minY = edgel[1]
+                    maxX = max(maxX, edgel[0])
+                    maxY = max(maxY, edgel[1])
+                    minX = min(minX, edgel[0])
+                    minY = min(minY, edgel[1])
                 else:
                     outlier.append(edgel)
 
             #print(len(inlier))
 
-            if len(inlier) >= self.minInlier and len(inlier) > len(bestIn):
+            if len(inlier) >= self.minInlier and len(inlier) > len(result.inlier):
                 #print("Found something", len(inlier))
-                x_range = (minX, maxX)
-                y_range = (minY, maxY)
+                result.x_range = (minX, maxX)
+                result.y_range = (minY, maxY)
 
-                bestIn = inlier
-                bestOut = outlier
+                result.inlier = inlier
+                result.outlier = outlier
 
-                # create line out of sample
-                x = sampleB[0] - sampleA[0]
-                if x:
-                    m = (sampleB[1] - sampleA[1]) / float(x)
-                    b = sampleB[1] - (m * sampleB[0])
+                result.sampleA = sampleA
+                result.sampleB = sampleB
 
-                    bestParameter1 = m
-                    bestParameter2 = b
-                else:
-                    # vertical line
-                    bestParameter1 = sampleA[0]
-                    bestParameter2 = None
+            if not result.inlier:
+                return None
 
-                #data = inlier
-
-        #print("PARAMETER:", bestParameter1, bestParameter2, "\nINLIER:", len(bestIn))
-
-        return bestParameter1, bestParameter2, bestIn, bestOut, x_range, y_range
-
-
-# test TODO: Doesn't work, because lack of edgel directions
-if __name__ == '__main__':
-    import matplotlib.pyplot as plt
-
-    def __createLineSample(parameter1, parameter2):
-        line = [np.array( (line_samples[i], random.uniform( (parameter1*line_samples[i] + parameter2) - 0.2, (parameter1*line_samples[i] + parameter2) + 0.2)) ) for i in range(len(line_samples))]
-        return line
-
-    line_samples = [i for i in np.arange(0,10,0.1)]
-
-    # create data
-    noise = [np.array( (random.uniform(0, 10), random.uniform(0, 10)) ) for i in range(250)]
-    data = __createLineSample(1,0) + __createLineSample(-1, 10) + __createLineSample(0,2) + noise
-
-    random.shuffle(data)
-    #data = sorted(data,  key=lambda elem: elem[0])
-
-    print("LEN:", len(data))
-
-    # draw points
-    plt.scatter(*zip(*data))
-
-    lines = []
-    outlier = data
-
-    ransac = Ransac(20, 0.4, 1/6)
-
-    for i in range(3):
-        # run ransac
-        bestParameter1, bestParameter2, inlier, outlier = ransac.getOutlier(outlier)
-
-        plt.scatter(*zip(*outlier))
-
-        lines.append( (bestParameter1, bestParameter2) )
-        data = outlier
-
-    # draw lines
-    curve_samples = [i for i in np.arange(0,10,0.1)]
-    for parameter in lines:
-        curve = [parameter[0] * i + parameter[1] for i in curve_samples]
-
-        plt.plot(curve_samples, curve)
-
-    plt.show()
-
-"""
-# fit and draw line
-p = np.polyfit(*zip(*bestIn) , 1)
-curve_samples = np.arange(0, 10, 0.1)
-curve = [p[0]*i + p[1] for i in curve_samples]
-"""
+            return result
