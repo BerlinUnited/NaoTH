@@ -80,7 +80,6 @@
         </Component>
         <Component class="javax.swing.JCheckBox" name="jCheckBoxGrid">
           <Properties>
-            <Property name="selected" type="boolean" value="true"/>
             <Property name="text" type="java.lang.String" value="Grid"/>
             <Property name="toolTipText" type="java.lang.String" value="Show the soccer field."/>
             <Property name="focusable" type="boolean" value="false"/>

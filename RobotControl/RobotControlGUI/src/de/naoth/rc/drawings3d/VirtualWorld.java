@@ -83,11 +83,11 @@ public class VirtualWorld
        
     
     for(int i = 0; i <= n; ++i) {
-        axisXLines.setCoordinate(4*i+0, new Point3f(i*step-limit,-limit,0.01f));
-        axisXLines.setCoordinate(4*i+1, new Point3f(i*step-limit,limit,0.01f));
+        axisXLines.setCoordinate(4*i+0, new Point3f(i*step-limit,-limit,0.006f));
+        axisXLines.setCoordinate(4*i+1, new Point3f(i*step-limit,limit,0.006f));
         
-        axisXLines.setCoordinate(4*i+2, new Point3f(-limit, i*step-limit,0.01f));
-        axisXLines.setCoordinate(4*i+3, new Point3f(limit, i*step-limit,0.01f));
+        axisXLines.setCoordinate(4*i+2, new Point3f(-limit, i*step-limit,0.006f));
+        axisXLines.setCoordinate(4*i+3, new Point3f(limit, i*step-limit,0.006f));
     }
     
     // ground plane
@@ -97,10 +97,10 @@ public class VirtualWorld
     planeAppearance.setPolygonAttributes(new PolygonAttributes());
     
     QuadArray plane = new QuadArray (4, QuadArray.COORDINATES);  //This makes the plane.
-    plane.setCoordinate(0, new Point3f(-limit, -limit, -0.01f));  //You specify your own cornerpoints...
-    plane.setCoordinate(1, new Point3f(limit, -limit, -0.01f));
-    plane.setCoordinate(2, new Point3f(limit, limit, -0.01f));
-    plane.setCoordinate(3, new Point3f(-limit, limit, -0.01f));
+    plane.setCoordinate(0, new Point3f(-limit, -limit, -0.006f));  //You specify your own cornerpoints...
+    plane.setCoordinate(1, new Point3f(limit, -limit, -0.006f));
+    plane.setCoordinate(2, new Point3f(limit, limit, -0.006f));
+    plane.setCoordinate(3, new Point3f(-limit, limit, -0.006f));
     objRoot.addChild(new Shape3D(plane, planeAppearance));
        
     return objRoot;

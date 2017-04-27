@@ -161,7 +161,6 @@ public class ThreeDimensionViewer extends AbstractDialog
         });
         jToolBar.add(jCheckBoxField);
 
-        jCheckBoxGrid.setSelected(true);
         jCheckBoxGrid.setText("Grid");
         jCheckBoxGrid.setToolTipText("Show the soccer field.");
         jCheckBoxGrid.setFocusable(false);
