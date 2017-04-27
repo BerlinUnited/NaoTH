@@ -53,9 +53,9 @@ void CleanRoleDecision::computeStrikers()
         if(isRobotDead(robotNumber) || isRobotInactive) { continue; }
 
         // for all active robots, which sees the ball AND previously announced to want to be striker ...
-        if (msg.custom.wasStriker) {
-            // ... remember them as possible striker
-          possible_striker[robotNumber] = msg.custom.timeToBall;
+        if (msg.custom.wantsToBeStriker) {
+            // ... remember them as possible striker with their time to ball
+            possible_striker[robotNumber] = msg.custom.timeToBall;
         }
     }//end for
 
@@ -63,7 +63,7 @@ void CleanRoleDecision::computeStrikers()
     auto ownMessage = getTeamMessage().data.at(getPlayerInfo().playerNumber);
     // i want to be striker, if i'm not the goalie and i'm "active" (not fallen/panelized, see the ball)!!!
     getRoleDecisionModel().wantsToBeStriker = ownMessage.playerNumber != 1
-      && !(ownMessage.fallen || ownMessage.custom.isPenalized || ownMessage.ballAge < 0
+                                              && !(ownMessage.fallen || ownMessage.custom.isPenalized || ownMessage.ballAge < 0
                                               || (ownMessage.ballAge + getFrameInfo().getTimeSince(ownMessage.frameInfo.getTime()) > parameters.maxBallLostTime + (getPlayerInfo().playerNumber==getRoleDecisionModel().firstStriker?parameters.strikerBonusTime:0.0)));
 
     // if i'm striker, i get a time bonus!
