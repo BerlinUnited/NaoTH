@@ -328,6 +328,7 @@ void Motion::debugPlots()
 
   PLOT("Motion:InertialSensorData:x", getInertialSensorData().data.x);
   PLOT("Motion:InertialSensorData:y", getInertialSensorData().data.y);
+  PLOT("Motion:InertialSensorData:z", getInertialSensorData().data.z);
 
 //  PLOT("Motion:InertialModel:x", getInertialModel().orientation.x);
 //  PLOT("Motion:InertialModel:y", getInertialModel().orientation.y);
