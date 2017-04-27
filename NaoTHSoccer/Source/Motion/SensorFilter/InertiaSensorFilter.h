@@ -134,7 +134,7 @@ private:
   Parameters p; /**< The parameters of this module. */
 
   unsigned int lastTime; /**< The frame time of the previous iteration. */
-  Vector2d safeRawAngle; /**< The last not corrupted angle from aldebarans angle estimation algorithm. */
+  Vector3d safeRawAngle; /**< The last not corrupted angle from aldebarans angle estimation algorithm. */
 
   State<> x; /**< The estimate */
   Matrix2d cov; /**< The covariance of the estimate. */

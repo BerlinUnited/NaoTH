@@ -90,7 +90,7 @@ private:
   void updateIsLiftedUp();
 
   // internal data
-  RingBufferWithSum<Vector2<double>, 10> inertialBuffer;
+  RingBufferWithSum<Vector3d, 10> inertialBuffer;
 
 };
 

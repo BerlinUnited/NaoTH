@@ -198,6 +198,7 @@ void DCMHandler::initInertialSensor()
 {
   DCMPath_InertialSensor[0] = "Device/SubDeviceList/InertialSensor/AngleX/Sensor/Value";
   DCMPath_InertialSensor[1] = "Device/SubDeviceList/InertialSensor/AngleY/Sensor/Value";
+  DCMPath_InertialSensor[2] = "Device/SubDeviceList/InertialSensor/AngleZ/Sensor/Value";
 }//end initInertialSensor
 
 void DCMHandler::initIRReceive()
@@ -379,7 +380,7 @@ void DCMHandler::initAllSensorData()
 
   //InertialSensorsData
   ASSERT(theInertialSensorDataIndex == currentIndex);
-  for(int i=0;i<2;i++)
+  for(int i=0;i<3;i++)
   {
     allSensorsList[currentIndex++] = DCMPath_InertialSensor[i];
   }

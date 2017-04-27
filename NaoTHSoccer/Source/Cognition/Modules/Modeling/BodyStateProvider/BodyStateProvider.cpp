@@ -61,7 +61,7 @@ void BodyStateProvider::updateTheFallDownState()
   // buffer the inertial data
   inertialBuffer.add(getInertialSensorData().data);
 
-  Vector2d avg = inertialBuffer.getAverage();
+  Vector3d avg = inertialBuffer.getAverage();
   double inertialXaverage = avg.x;
   double inertialYaverage = avg.y;
 

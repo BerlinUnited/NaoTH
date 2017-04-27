@@ -191,7 +191,7 @@ void InertiaSensorCalibrator::execute()
       Kinematics::ForwardKinematics::calcChestFeetRotation(getKinematicChainSensor());
 
     // calculate expected acceleration sensor reading
-    Vector2d inertialExpected(calculatedRotation.getXAngle(), calculatedRotation.getYAngle());
+    Vector3d inertialExpected(calculatedRotation.getXAngle(), calculatedRotation.getYAngle(), calculatedRotation.getZAngle());
     Vector3d accExpected(calculatedRotation[0].z, calculatedRotation[1].z, calculatedRotation[2].z);
     accExpected *= -Math::g;
 

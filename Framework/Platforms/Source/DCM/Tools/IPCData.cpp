@@ -103,6 +103,7 @@ void NaoSensorData::get(InertialSensorData& data) const
 {
   data.data.x = sensorsValue[theInertialSensorDataIndex];
   data.data.y = sensorsValue[theInertialSensorDataIndex+1];
+  data.data.z = sensorsValue[theInertialSensorDataIndex+2];
 }//end InertialSensorData
 
 void NaoSensorData::get(IRReceiveData& data) const

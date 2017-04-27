@@ -52,7 +52,7 @@ private:
   std::string DCMPath_Gyrometer[3+3+1];
 
   //Inertial Sensors
-  std::string DCMPath_InertialSensor[2];
+  std::string DCMPath_InertialSensor[3];
 
   //Buttons
   std::string DCMPath_Button[ButtonData::numOfButtons];
