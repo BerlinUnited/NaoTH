@@ -54,7 +54,7 @@ def simulate_consequences(action, categorized_ball_positions, state, num_particl
             t_min = shootline.length
             for side in goal_backsides:
                 t = shootline.line_intersection(side)
-                if 0 <= t < t_min:
+                if 0 <= t < t_min and side.intersect(shootline):
                     t_min = t
                     collision_with_goal = True
 
