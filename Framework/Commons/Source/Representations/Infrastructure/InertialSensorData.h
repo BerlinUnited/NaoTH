@@ -13,7 +13,7 @@
 #include "Tools/DataStructures/Serializer.h"
 
 #include "Tools/Math/Common.h"
-#include "Tools/Math/Vector2.h"
+#include "Tools/Math/Vector3.h"
 
 namespace naoth
 {
@@ -22,7 +22,7 @@ namespace naoth
   {
   public:
 
-    Vector2d data;
+    Vector3d data;
 
     virtual void print(std::ostream& stream) const;
 
