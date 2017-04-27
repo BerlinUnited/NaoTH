@@ -49,13 +49,15 @@ void InertiaSensorCalibrator::reset()
 void InertiaSensorCalibrator::execute()
 {
   // inertial params
-  Vector2d inertialBiasProcessNoise = Vector2d(0.05, 0.05);
+  Vector3d inertialBiasProcessNoise = Vector3d(0.05, 0.05, 0.05);
   MODIFY("InertiaSensorCalibrator:inertialBiasProcessNoise.x", inertialBiasProcessNoise.x);
   MODIFY("InertiaSensorCalibrator:inertialBiasProcessNoise.y", inertialBiasProcessNoise.y);
+  MODIFY("InertiaSensorCalibrator:inertialBiasProcessNoise.z", inertialBiasProcessNoise.z);
 
-  Vector2d inertialBiasMeasurementNoise = Vector2d(0.01, 0.01);
+  Vector3d inertialBiasMeasurementNoise = Vector3d(0.01, 0.01, 0.01);
   MODIFY("InertiaSensorCalibrator:inertialBiasMeasurementNoise.x", inertialBiasMeasurementNoise.x);
   MODIFY("InertiaSensorCalibrator:inertialBiasMeasurementNoise.y", inertialBiasMeasurementNoise.y);
+  MODIFY("InertiaSensorCalibrator:inertialBiasMeasurementNoise.z", inertialBiasMeasurementNoise.z);
 
   // gyro params
   static const Vector3d gyroBiasProcessNoise(0.05f, 0.05f, 0.05f);
@@ -92,9 +94,12 @@ void InertiaSensorCalibrator::execute()
     const double timeDiff = static_cast<double>(getFrameInfo().getTimeSince(lastTime)) * 0.001; // in seconds
     inertialXBias.predict(0.0, Math::sqr(inertialBiasProcessNoise.x * timeDiff));
     inertialYBias.predict(0.0, Math::sqr(inertialBiasProcessNoise.y * timeDiff));
+    inertialZBias.predict(0.0, Math::sqr(inertialBiasProcessNoise.z * timeDiff));
+
     accXBias.predict(0.0, Math::sqr(accBiasProcessNoise.x * timeDiff));
     accYBias.predict(0.0, Math::sqr(accBiasProcessNoise.y * timeDiff));
     accZBias.predict(0.0, Math::sqr(accBiasProcessNoise.z * timeDiff));
+    
     gyroXBias.predict(0.0, Math::sqr(gyroBiasProcessNoise.x * timeDiff));
     gyroYBias.predict(0.0, Math::sqr(gyroBiasProcessNoise.y * timeDiff));
     gyroZBias.predict(0.0, Math::sqr(gyroBiasProcessNoise.z * timeDiff));
@@ -157,9 +162,12 @@ void InertiaSensorCalibrator::execute()
           calibrated = true;
           inertialXBias.init(collection.inertialAvg.x, Math::sqr(inertialBiasMeasurementNoise.x));
           inertialYBias.init(collection.inertialAvg.y, Math::sqr(inertialBiasMeasurementNoise.y));
+          inertialZBias.init(collection.inertialAvg.z, Math::sqr(inertialBiasMeasurementNoise.z));
+
           accXBias.init(collection.accAvg.x, Math::sqr(accBiasMeasurementNoise.x));
           accYBias.init(collection.accAvg.y, Math::sqr(accBiasMeasurementNoise.y));
           accZBias.init(collection.accAvg.z, Math::sqr(accBiasMeasurementNoise.z));
+          
           gyroXBias.init(collection.gyroAvg.x, Math::sqr(gyroBiasMeasurementNoise.x));
           gyroYBias.init(collection.gyroAvg.y, Math::sqr(gyroBiasMeasurementNoise.y));
           gyroZBias.init(collection.gyroAvg.z, Math::sqr(gyroBiasMeasurementNoise.z));
@@ -168,9 +176,12 @@ void InertiaSensorCalibrator::execute()
         {
           inertialXBias.update(collection.inertialAvg.x, Math::sqr(inertialBiasMeasurementNoise.x));
           inertialYBias.update(collection.inertialAvg.y, Math::sqr(inertialBiasMeasurementNoise.y));
+          inertialZBias.update(collection.inertialAvg.y, Math::sqr(inertialBiasMeasurementNoise.y));
+
           accXBias.update(collection.accAvg.x, Math::sqr(accBiasMeasurementNoise.x));
           accYBias.update(collection.accAvg.y, Math::sqr(accBiasMeasurementNoise.y));
           accZBias.update(collection.accAvg.z, Math::sqr(accBiasMeasurementNoise.z));
+
           gyroXBias.update(collection.gyroAvg.x, Math::sqr(gyroBiasMeasurementNoise.x));
           gyroYBias.update(collection.gyroAvg.y, Math::sqr(gyroBiasMeasurementNoise.y));
           gyroZBias.update(collection.gyroAvg.z, Math::sqr(gyroBiasMeasurementNoise.z));
@@ -215,12 +226,13 @@ void InertiaSensorCalibrator::execute()
   {
     getCalibrationData().accSensorOffset = Vector3d();
     getCalibrationData().gyroSensorOffset = Vector3d();
-    getCalibrationData().inertialSensorOffset = Vector2d();
+    getCalibrationData().inertialSensorOffset = Vector3d();
   }
   else
   {
     getCalibrationData().inertialSensorOffset.x = inertialXBias.value;
     getCalibrationData().inertialSensorOffset.y = inertialYBias.value;
+    getCalibrationData().inertialSensorOffset.z = inertialZBias.value;
 
     getCalibrationData().accSensorOffset.x = accXBias.value;
     getCalibrationData().accSensorOffset.y = accYBias.value;
@@ -235,6 +247,7 @@ void InertiaSensorCalibrator::execute()
 
   PLOT("InertiaSensorCalibrator:inertialOffset.x", getCalibrationData().inertialSensorOffset.x);
   PLOT("InertiaSensorCalibrator:inertialOffset.y", getCalibrationData().inertialSensorOffset.y);
+  PLOT("InertiaSensorCalibrator:inertialOffset.z", getCalibrationData().inertialSensorOffset.z);
 
   PLOT("InertiaSensorCalibrator:gyroOffset.x", getCalibrationData().gyroSensorOffset.x);
   PLOT("InertiaSensorCalibrator:gyroOffset.y", getCalibrationData().gyroSensorOffset.y);

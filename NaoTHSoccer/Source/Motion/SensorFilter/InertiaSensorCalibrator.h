@@ -68,6 +68,7 @@ private:
   // inertial
   Kalman<double> inertialXBias; /**< The calibration bias of inertialX. */
   Kalman<double> inertialYBias; /**< The calibration bias of inertialY. */
+  Kalman<double> inertialZBias; /**< The calibration bias of inertialZ. */
 
   // accelerometer
   Kalman<double> accXBias; /**< The calibration bias of accX. */
