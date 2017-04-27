@@ -33,7 +33,16 @@ class LinePlot:
         self.plotLines = [ax.plot([],[])[0]]
         self.lineCount = 0
 
-    def add_line(self, param1, param2, x_range, y_range):
+    @staticmethod
+    def color_from_err(error):
+        if error < 0.2:
+            return 'g'
+        elif error < 0.5:
+            return 'b'
+        else:
+            return 'r'
+
+    def add_line(self, line):
         self.lineCount += 1
         if self.lineCount > len(self.plotLines):
             self.plotLines.append(ax.plot([],[])[0])
@@ -41,20 +50,21 @@ class LinePlot:
         plot = self.plotLines[self.lineCount-1]
 
         # draw lines
-        if param1 and param2:
-            m = param1
-            b = param2
-            x_1 = (m * y_range[0] + x_range[0] - m * b) / (m * m + 1);
-            y_1 = (m * m * y_range[0] + m * x_range[0] + b) / (m * m + 1);
-            x_2 = (m * y_range[1] + x_range[1] - m * b) / (m * m + 1);
-            y_2 = (m * m * y_range[1] + m * x_range[1] + b) / (m * m + 1);
+        if len(line.params) == 2:
+            m = line.params[0]
+            b = line.params[1]
+
+            x_1 = (m * line.y_range[0] + line.x_range[0] - m * b) / (m * m + 1);
+            y_1 = (m * m * line.y_range[0] + m * line.x_range[0] + b) / (m * m + 1);
+            x_2 = (m * line.y_range[1] + line.x_range[1] - m * b) / (m * m + 1);
+            y_2 = (m * m * line.y_range[1] + m * line.x_range[1] + b) / (m * m + 1);
 
             plot.set_data([x_1, x_2], [y_1, y_2])
-        elif param1:
-            # vertical line
-            plot.set_data([param1, param1], [y_range[0], y_range[1]])
         else:
-            plot.set_data([], [])
+            # vertical line
+            plot.set_data([param1, param1], [line.y_range[0], line.y_range[1]])
+
+        plot.set_color( LinePlot.color_from_err(line.error) )
 
     def clean(self):
         if self.lineCount < len(self.plotLines):
@@ -167,14 +177,14 @@ def animate(i, log, edgelsPlotTop, linePlot, edgelsPlot, projectedEdgelsPlot):
     lines = line_detector.detectLines(data)
 
     for line in lines:
-        linePlot.add_line(line[0], line[1], line[2], line[3])
+        linePlot.add_line(line)
 
     # B
     data = msg[3][1]
     lines = line_detector.detectLines(data)
 
     for line in lines:
-        linePlot.add_line(line[0], line[1], line[2], line[3])
+        linePlot.add_line(line)
 
     linePlot.clean()
 
@@ -205,7 +215,7 @@ else:
 ax = fig.add_subplot(1,2,2, aspect='equal')
 ax.set_xlim([-10000, 10000])
 ax.set_ylim([-10000, 10000])
-projectedEdgelsPlot = [plt.scatter([], [], point_size, color='black'), plt.scatter([], [], point_size, color='red')]
+projectedEdgelsPlot = [plt.scatter([], [], point_size, color='black'), plt.scatter([], [], point_size, color='orange')]
 
 linePlot = LinePlot(ax, (-10000, 10000), (-10000, 10000))
 
@@ -219,5 +229,5 @@ log = iter(LogReader(args.logfile, logParser, getEdgels))
 
 
 # start animation
-ani = animation.FuncAnimation(fig, animate, frames=100, fargs=(log, edgelsPlotTop, linePlot, edgelsPlot, projectedEdgelsPlot), interval = 33)
+ani = animation.FuncAnimation(fig, animate, frames=100, fargs=(log, edgelsPlotTop, linePlot, edgelsPlot, projectedEdgelsPlot), interval = 66)
 plt.show()

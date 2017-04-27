@@ -12,6 +12,8 @@ class Result:
         self.x_range = None
         self.y_range = None
 
+        self.error = 0
+
     # create line out of sample
     def getLine(self):
         x = self.sampleB[0] - self.sampleA[0]
@@ -84,6 +86,8 @@ class Ransac:
             minX = data[0][0]
             minY = data[0][1]
 
+            error = 0
+
             for edgel in data:
                 direction = (edgel[2], edgel[3])
                 if Ransac.__angle_between(lineNormal, direction) > self.threshDist:
@@ -96,6 +100,8 @@ class Ransac:
 
                 if abs(d) <= self.threshDist:
                     inlier.append(edgel)
+
+                    error += abs(d)
 
                     # find endpoints
                     maxX = max(maxX, edgel[0])
@@ -117,6 +123,8 @@ class Ransac:
 
                 result.sampleA = sampleA
                 result.sampleB = sampleB
+
+                result.error = error
 
             if not result.inlier:
                 return None
