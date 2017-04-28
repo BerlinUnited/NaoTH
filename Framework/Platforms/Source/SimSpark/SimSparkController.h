@@ -33,7 +33,7 @@
 
 
 #include "SimSparkGameInfo.h"
-
+#include "MessagesSPL/SPLStandardMessage.h"
 
 #include <Tools/Communication/SocketStream/SocketStream.h>
 
