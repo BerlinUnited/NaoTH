@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package de.naoth.rc.dialogs;
 
 import com.google.gson.Gson;
@@ -44,14 +39,16 @@ import javax.swing.tree.DefaultTreeModel;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 import de.naoth.rc.components.teamcomm.TeamCommManager;
+import de.naoth.rc.core.dialog.RCDialog;
 import java.util.List;
 
 /**
  *
  * @author philipp
  */
-public class TeamCommLogViewer extends AbstractDialog {
-
+public class TeamCommLogViewer extends AbstractDialog
+{
+    @RCDialog(category = RCDialog.Category.Team, name = "LogfilePlayer")
     @PluginImplementation
     public static class Plugin extends DialogPlugin<TeamCommLogViewer> {
         @InjectPlugin

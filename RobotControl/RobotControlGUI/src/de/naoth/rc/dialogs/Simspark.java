@@ -4,6 +4,7 @@ import de.naoth.rc.RobotControl;
 import de.naoth.rc.components.simspark.SimsparkMonitor;
 import de.naoth.rc.core.dialog.AbstractDialog;
 import de.naoth.rc.core.dialog.DialogPlugin;
+import de.naoth.rc.core.dialog.RCDialog;
 import de.naoth.rc.dataformats.SimsparkState;
 import java.io.IOException;
 import java.util.Timer;
@@ -20,8 +21,9 @@ import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
  *
  * @author Philipp Strobel <philippstrobel@posteo.de>
  */
-public class Simspark extends AbstractDialog {
-
+public class Simspark extends AbstractDialog
+{
+    @RCDialog(category = RCDialog.Category.Tools, name = "SimsparkMonitor")
     @PluginImplementation
     public static class Plugin extends DialogPlugin<Simspark> {
         @InjectPlugin
