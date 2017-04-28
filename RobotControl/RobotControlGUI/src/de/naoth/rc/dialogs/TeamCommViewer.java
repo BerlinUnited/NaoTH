@@ -14,6 +14,7 @@ import de.naoth.rc.components.teamcommviewer.RobotStatusPanel;
 import de.naoth.rc.components.teamcommviewer.RobotStatusTable;
 import de.naoth.rc.components.teamcomm.TeamCommMessage;
 import de.naoth.rc.components.teamcommviewer.RobotTeamCommListener;
+import de.naoth.rc.components.teamcommviewer.TeamColorMenu;
 import de.naoth.rc.core.dialog.AbstractDialog;
 import de.naoth.rc.core.dialog.DialogPlugin;
 import de.naoth.rc.core.dialog.RCDialog;
@@ -91,6 +92,11 @@ public class TeamCommViewer extends AbstractDialog {
     private final TreeMap<String, RobotStatus> robotsMapSorted = new TreeMap<>();
 
     /**
+     * Container for storing the team color.
+     */
+    private final TreeMap<Integer, Color> teamColor = new TreeMap<>();
+
+    /**
      * Logger object, for logging TeamCommMessages.
      */
     private final TeamCommLogger log = new TeamCommLogger();
@@ -123,12 +129,14 @@ public class TeamCommViewer extends AbstractDialog {
 
         teamCommFileChooser = new de.naoth.rc.components.ExtendedFileChooser();
         pmAdditionalColumns = new javax.swing.JPopupMenu();
+        pmTeamColor = new javax.swing.JPopupMenu();
         toolbarPanel = new javax.swing.JPanel();
         btListen = new javax.swing.JToggleButton();
         jLabel1 = new javax.swing.JLabel();
         portNumberOwn = new javax.swing.JFormattedTextField();
         jLabel2 = new javax.swing.JLabel();
         portNumberOpponent = new javax.swing.JFormattedTextField();
+        btnTeamColor = new javax.swing.JToggleButton();
         btnRecord = new javax.swing.JToggleButton();
         btnStopRecording = new javax.swing.JButton();
         btnAddtionalColumns = new javax.swing.JToggleButton();
@@ -148,6 +156,17 @@ public class TeamCommViewer extends AbstractDialog {
             }
             public void popupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {
                 pmAdditionalColumnsPopupMenuWillBecomeInvisible(evt);
+            }
+            public void popupMenuCanceled(javax.swing.event.PopupMenuEvent evt) {
+            }
+        });
+
+        pmTeamColor.addPopupMenuListener(new javax.swing.event.PopupMenuListener() {
+            public void popupMenuWillBecomeVisible(javax.swing.event.PopupMenuEvent evt) {
+                pmTeamColorPopupMenuWillBecomeVisible(evt);
+            }
+            public void popupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {
+                pmTeamColorPopupMenuWillBecomeInvisible(evt);
             }
             public void popupMenuCanceled(javax.swing.event.PopupMenuEvent evt) {
             }
@@ -184,6 +203,16 @@ public class TeamCommViewer extends AbstractDialog {
         portNumberOpponent.setToolTipText("Opponent team port number");
         portNumberOpponent.setMinimumSize(new java.awt.Dimension(76, 19));
         toolbarPanel.add(portNumberOpponent);
+
+        btnTeamColor.setIcon(new javax.swing.ImageIcon(getClass().getResource("/data/bibliothek/gui/dock/core/flap_auto.png"))); // NOI18N
+        btnTeamColor.setToolTipText("Change color of teams.");
+        btnTeamColor.setEnabled(false);
+        btnTeamColor.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnTeamColorActionPerformed(evt);
+            }
+        });
+        toolbarPanel.add(btnTeamColor);
 
         btnRecord.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/naoth/rc/res/play.png"))); // NOI18N
         btnRecord.setText("Record TeamComm");
@@ -305,6 +334,7 @@ public class TeamCommViewer extends AbstractDialog {
                 this.robotStatusTable.removeAll();
                 this.portNumberOwn.setEnabled(true);
                 this.portNumberOpponent.setEnabled(true);
+                this.btnTeamColor.setEnabled(false);
             }
         } catch (NumberFormatException ex) {
             Helper.handleException("Invalid port number", ex);
@@ -349,6 +379,33 @@ public class TeamCommViewer extends AbstractDialog {
     private void pmAdditionalColumnsPopupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {//GEN-FIRST:event_pmAdditionalColumnsPopupMenuWillBecomeInvisible
         btnAddtionalColumns.setSelected(false);
     }//GEN-LAST:event_pmAdditionalColumnsPopupMenuWillBecomeInvisible
+
+    private void btnTeamColorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTeamColorActionPerformed
+        if(btnTeamColor.isSelected()) {
+           pmTeamColor.show(btnTeamColor, 0, btnTeamColor.getHeight());
+        }
+    }//GEN-LAST:event_btnTeamColorActionPerformed
+
+    private void pmTeamColorPopupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {//GEN-FIRST:event_pmTeamColorPopupMenuWillBecomeInvisible
+        btnTeamColor.setSelected(false);
+    }//GEN-LAST:event_pmTeamColorPopupMenuWillBecomeInvisible
+
+    private void pmTeamColorPopupMenuWillBecomeVisible(javax.swing.event.PopupMenuEvent evt) {//GEN-FIRST:event_pmTeamColorPopupMenuWillBecomeVisible
+        // remove all previous menu items, we're creating them afterwards, so we doesn't miss any new teams
+        pmTeamColor.removeAll();
+        // iterate over all teams
+        teamColor.entrySet().stream().forEach((entry) -> {
+            // ... and create menu item
+            TeamColorMenu teamMenu = new TeamColorMenu(entry.getKey(), entry.getValue());
+            // add listener for "color change"
+            teamMenu.addActionListener((e) -> {
+                // the menu item has the (new) color
+                TeamColorMenu tm = (TeamColorMenu)e.getSource();
+                teamColor.replace(tm.teamNumber, tm.getBackground());
+            });
+            pmTeamColor.add(teamMenu);
+        });
+    }//GEN-LAST:event_pmTeamColorPopupMenuWillBecomeVisible
 
     @Override
     public void dispose() {
@@ -480,7 +537,7 @@ public class TeamCommViewer extends AbstractDialog {
                             // ... new robot ...
                             if (robotStatus == null) {
                                 robotStatus = new RobotStatus(Plugin.parent.getMessageServer(), address);
-                                robotStatus.robotColor = msg.isOpponent() ? magenta : cyan;
+//                                robotStatus.robotColor = teamColor.containsKey() pmTeamColor.get;//msg.isOpponent() ? Color.RED : Color.BLUE;//magenta : cyan;
                                 // adds RobotStatus to a container
                                 robotsMapSorted.put(address, robotStatus);
                                 // clears the panel-view
@@ -491,14 +548,32 @@ public class TeamCommViewer extends AbstractDialog {
                                 });
                                 // adds the robotStatus to the table-view
                                 robotStatusTable.addRobot(robotStatus);
+                                // activates team color picker
+                                btnTeamColor.setEnabled(true);
                             }
                             // updates the robotStatus
                             robotStatus.updateStatus(msg.timestamp, msg.message);
+                            // new team -> add color
+                            if(!teamColor.containsKey((int)robotStatus.teamNum)) {
+                                teamColor.put(
+                                    (int)robotStatus.teamNum, 
+                                    // opponent gets "red" by default
+                                    msg.isOpponent() ? Color.RED : (
+                                        // "our" team gets "blue" or another
+                                        teamColor.isEmpty() ? 
+                                            Color.BLUE : 
+                                            // next color in the list ...
+                                            TeamColorMenu.getNextColor(teamColor.lastEntry().getValue())
+                                    )
+                                );
+                            }
+                            robotStatus.robotColor =  teamColor.get((int)robotStatus.teamNum);
                         }
                     });
                     // if enabled, draw robots on the FieldViewer otherwise not
-                    if(robotsMapSorted.get(address) == null || robotsMapSorted.get(address).showOnField) {
-                        msg.message.draw(drawings, msg.isOpponent() ? Color.RED : Color.BLUE, msg.isOpponent());
+                    RobotStatus rs = robotsMapSorted.get(address);
+                    if(rs != null && rs.showOnField) {
+                        msg.message.draw(drawings, rs.robotColor, msg.isOpponent());
                     }
                 } // end for
                 Plugin.drawingEventManager.fireDrawingEvent(drawings);
@@ -511,11 +586,13 @@ public class TeamCommViewer extends AbstractDialog {
     private javax.swing.JToggleButton btnAddtionalColumns;
     private javax.swing.JToggleButton btnRecord;
     private javax.swing.JButton btnStopRecording;
+    private javax.swing.JToggleButton btnTeamColor;
     private javax.swing.JPanel contentPanel;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JPopupMenu pmAdditionalColumns;
+    private javax.swing.JPopupMenu pmTeamColor;
     private javax.swing.JFormattedTextField portNumberOpponent;
     private javax.swing.JFormattedTextField portNumberOwn;
     private javax.swing.JPanel robotStatusPanel;
