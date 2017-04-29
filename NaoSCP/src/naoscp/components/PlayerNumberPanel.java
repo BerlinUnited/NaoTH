@@ -25,12 +25,23 @@ import naoscp.tools.Config;
  */
 public class PlayerNumberPanel extends javax.swing.JPanel {
 
-    private final Map<String,Integer> bodyIdToPlayerNumber = new HashMap<String, Integer>();
+    //private final Map<String,Integer> bodyIdToPlayerNumber = new HashMap<String, Integer>();
+    private Config teamConfig = new Config("team");
+    private Config loadedTeamConfig = new Config("team");
     
+    
+    public boolean teamWasChanged() {
+        return !teamConfig.values.equals(loadedTeamConfig.values);
+    }
+    
+    public Config getTeamConfig() {
+        return teamConfig;
+    }
+    /*
     public Map<String,Integer> getBodyIdToPlayerNumber() {
         return bodyIdToPlayerNumber;
     }
-    
+    */
     /**
      * Creates new form PlayerNumberPanel
      */
@@ -52,9 +63,10 @@ public class PlayerNumberPanel extends javax.swing.JPanel {
         // reamove the existing components
         this.removeAll();
         
-        Config teamCfg = new Config("team");
+        teamConfig = new Config("team"); // clear the config
+        loadedTeamConfig = new Config("team");
         try {
-            teamCfg.readFromFile(teamFile);
+            loadedTeamConfig.readFromFile(teamFile);
         } catch (IOException ex) {
             Logger.getGlobal().log(Level.WARNING, "Could not load team.cfg\n", ex.getMessage());
             ex.printStackTrace(System.err);
@@ -62,7 +74,7 @@ public class PlayerNumberPanel extends javax.swing.JPanel {
         }
         
         try {
-            for(Map.Entry<String, String> entry: teamCfg.values.entrySet()) {
+            for(Map.Entry<String, String> entry: loadedTeamConfig.values.entrySet()) {
                 final String name = entry.getKey();
                 int number = Integer.parseInt(entry.getValue());
                 addNumber(name, number);
@@ -108,7 +120,8 @@ public class PlayerNumberPanel extends javax.swing.JPanel {
     
     private void addNumber(final String name, int number) throws ParseException
     {
-        bodyIdToPlayerNumber.put(name, number);
+        //bodyIdToPlayerNumber.put(name, number);
+        teamConfig.values.put(name, Integer.toString(number) );
 
         final MaskFormatter formatter = new MaskFormatter(name + ": *");
         formatter.setValidCharacters("1234567890");
@@ -125,7 +138,8 @@ public class PlayerNumberPanel extends javax.swing.JPanel {
                     final Matcher matcher = Pattern.compile(name + ":[ \\\\t]*(\\d)").matcher(ftf.getText());
                     if (matcher.find() && matcher.groupCount() == 1) {
                         int number = Integer.parseInt(matcher.group(1));
-                        bodyIdToPlayerNumber.put(name, number);
+                        //bodyIdToPlayerNumber.put(name, number);
+                        teamConfig.values.put(name, Integer.toString(number) );
                     }
                 } catch (ParseException | NumberFormatException ex) {
                     // could not parse user input, do not report
