@@ -225,21 +225,45 @@ void Walk::calculateNewStep(const Step& lastStep, Step& newStep, const WalkReque
     || (lastStep.footStep.liftingFoot() == FootStep::RIGHT && walkRequest.stepControl.moveLeftFoot)
     || (lastStep.footStep.liftingFoot() == FootStep::LEFT && !walkRequest.stepControl.moveLeftFoot);
 
-  if ( (stepControlPossible || walkRequest.stepControl.type == WalkRequest::StepControlRequest::CORRECTSTEP ) && walkRequest.stepControl.stepID + 1 == stepBuffer.stepId() )
+  if (walkRequest.stepControl.stepID + 1 == stepBuffer.stepId()) // step control
   {
-    // step control
-    newStep.footStep = theFootStepPlanner.controlStep(lastStep.footStep, walkRequest);
+    //WalkRequest myRequest = walkRequest;
+    //myRequest.target = walkRequest.stepControl.target;
+    switch (walkRequest.stepControl.type)
+    {
+    case WalkRequest::StepControlRequest::ZEROSTEP:
+      newStep.footStep = theFootStepPlanner.zeroStep(lastStep.footStep);
+      break;
+    case WalkRequest::StepControlRequest::KICKSTEP:
+      newStep.footStep = theFootStepPlanner.controlStep(lastStep.footStep, walkRequest);
+      break;
+    case WalkRequest::StepControlRequest::WALKSTEP:
+      if (stepControlPossible)
+      {
+        newStep.footStep = theFootStepPlanner.controlStep(lastStep.footStep, walkRequest);
+      }
+
+      // STABILIZATION
+      if (parameters().stabilization.dynamicStepsize) {
+        adaptStepSize(newStep.footStep);
+        currentComErrorBuffer.clear();
+      }
+      break;
+    default:
+      ASSERT(false);
+    }
+
     newStep.numberOfCycles = walkRequest.stepControl.time / getRobotInfo().basicTimeStep;
     newStep.type = STEP_CONTROL;
   }
-  else
-  {
+  else // regular walk 
+  { 
     newStep.footStep = theFootStepPlanner.nextStep(lastStep.footStep, walkRequest);
     newStep.numberOfCycles = parameters().step.duration / getRobotInfo().basicTimeStep;
     newStep.type = STEP_WALK;
 
     // STABILIZATION
-    if ( parameters().stabilization.dynamicStepsize ) {
+    if (parameters().stabilization.dynamicStepsize) {
       adaptStepSize(newStep.footStep);
       currentComErrorBuffer.clear();
     }
@@ -445,8 +469,8 @@ void Walk::updateMotionStatus(MotionStatus& motionStatus) const
     case FootStep::RIGHT:
       motionStatus.stepControl.moveableFoot = MotionStatus::StepControlStatus::LEFT;
       break;
-    default: ASSERT(false);
-      break;
+    default: 
+      ASSERT(false);
     }
   }
 }//end updateMotionStatus
@@ -549,7 +573,7 @@ void Walk::feetStabilize(const Step& executingStep, double (&position)[naoth::Jo
   // HACK: small filter...
   static Vector3d lastGyro = gyro;
   Vector3d filteredGyro = (lastGyro+gyro)*0.5;
-
+  
   Vector2d weight;
   weight.x = 
       parameters().stabilization.stabilizeFeetP.x * inertial.x

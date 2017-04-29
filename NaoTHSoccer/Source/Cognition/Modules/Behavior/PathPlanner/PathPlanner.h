@@ -84,6 +84,7 @@ private:
     StepType type;
     int time;
     double character;
+    Foot foot;
   };
   std::vector<Step_Buffer_Element> step_buffer;
 
@@ -94,8 +95,9 @@ private:
   // Used to synchronize stepIDs of WalkEngine to take control
   unsigned int last_stepcontrol_stepID;
 
-  void add_step(Pose2D &pose, const double &speedDirection, const StepType &type);
+  void add_step(Pose2D &pose, const double &speedDirection, const StepType &type, const Foot foot);
   bool add_single_step(Pose2D &pose, const double &speedDirection, const StepType &type);
+  void update_step(Pose2D &pose, const double &speedDirection, const StepType &type);
   void manage_step_buffer();
   void execute_step_buffer();
 };

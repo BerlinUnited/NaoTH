@@ -6,7 +6,7 @@ option pathplanner_test_long_kick {
       // react to the game controller and handle fall down
       basic_play();
 
-      pathplanner_kick_short_with_approach();
+      pathplanner_kick_long();
       
       arm.control_mode = back;
       // control the arms

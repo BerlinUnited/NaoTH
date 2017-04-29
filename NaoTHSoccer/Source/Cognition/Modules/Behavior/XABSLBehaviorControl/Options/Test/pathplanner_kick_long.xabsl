@@ -1,4 +1,4 @@
-option pathplanner_kick_long_with_approach_left
+option pathplanner_kick_long
 {
   common decision
   {
@@ -22,6 +22,10 @@ option pathplanner_kick_long_with_approach_left
 
   state search {
     decision {
+      else if (ball.know_where_itis && ball.preview.x > 300)
+        goto goto_ball;
+      else if (ball.know_where_itis && ball.preview.x <= 300)
+        goto approach_short_kick_left;
       else if(action_done)
         goto goto_ball;
       else
@@ -45,7 +49,7 @@ option pathplanner_kick_long_with_approach_left
     }
     action{
       situation_abortable = true;
-      path_go_to_ball_with_USOA(distance = 190);
+      path_go_to_ball_with_USOA(distance = 300);
       
       //loook at percept
       head.control_mode = look_at_ball_percept;

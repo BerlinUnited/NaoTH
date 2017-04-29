@@ -6,7 +6,6 @@
  */
 
 #include "PathPlanner.h"
-#include <iostream>
 
 PathPlanner::PathPlanner()
 :
@@ -93,15 +92,20 @@ void PathPlanner::walk_to_ball(const Foot foot)
   }
   double ballRotation = ballPos.angle();
 
-  Pose2D pose = { ballRotation, ballPos.x - getPathModel().distance, 0.0f };
-
-  add_single_step(pose, 0.0, StepType::WALKSTEP);
+  Pose2D pose = { ballRotation, 0.7*(ballPos.x - getPathModel().distance), ballPos.y };
+  if (step_buffer.empty())
+  {
+    add_single_step(pose, 0.0, StepType::WALKSTEP);
+  }
+  else
+  {
+    update_step(pose, 0.0, StepType::WALKSTEP);
+  }
 }
 
 void PathPlanner::move_around_ball(const double direction, const double radius)
 {
   Vector2d ballPos = getBallModel().positionPreview;
- 
   double ballRotation = ballPos.angle();
   double ballDistance = ballPos.abs();
 
@@ -122,12 +126,19 @@ void PathPlanner::move_around_ball(const double direction, const double radius)
     max1 = 0;
     max2 = 0;
   }
+
   double stepX = (ballDistance - radius) * std::cos(ballRotation);
   double stepY = Math::clamp(radius * std::tan(Math::clamp(Math::toDegrees(-direction), min1, max1)), min2, max2) * std::cos(ballRotation);
-
   Pose2D pose = { ballRotation, stepX, stepY };
 
-  add_single_step(pose, 0.0, StepType::WALKSTEP);
+  if (step_buffer.empty())
+  {
+    add_single_step(pose, 0.0, StepType::WALKSTEP);
+  }
+  else
+  {
+    update_step(pose, 0.0, StepType::WALKSTEP);
+  }
 }
 
 void PathPlanner::approach_ball(const Foot foot)
@@ -153,100 +164,177 @@ void PathPlanner::approach_ball(const Foot foot)
     ASSERT(false);
   }
 
-  Pose2D pose = { stepRotation, stepX, stepY };
+  Pose2D pose = { stepRotation, 0.7 * stepX, 0.7 * stepY };
 
-  add_single_step(pose, 0.0, StepType::WALKSTEP);
+  if (step_buffer.empty())
+  {
+    add_single_step(pose, 0.0, StepType::WALKSTEP);
+  }
+  else
+  {
+    update_step(pose, 0.0, StepType::WALKSTEP);
+  }
 }
 
 void PathPlanner::short_kick(const Foot foot)
 {
-  Vector2d ballPos = Vector2d();
-  switch (foot) {
-  case Foot::LEFT:  ballPos = 
-    getBallModel().positionPreviewInLFoot; 
-    break;
-  case Foot::RIGHT: 
-    ballPos = getBallModel().positionPreviewInRFoot; 
-    break;
-  case Foot::NONE:
-    ASSERT(false);
-  }
+  if (!getPathModel().kick_executed)
+  {
+    double test_if_kick_x = 0.0;
+    double test_if_kick_y = 0.0;
+    Vector2d ballPos = Vector2d();
 
-  foot_to_use = foot;
+    switch (foot) {
+    case Foot::LEFT:  ballPos =
+      getBallModel().positionPreviewInLFoot;
 
-  if (step_buffer.empty()) {
-    Pose2D pose = { 0.0, ballPos.x + 500 , ballPos.y };
-    add_step(pose, 0.0, StepType::KICKSTEP);
+      // see approach_ball(foot)
+      test_if_kick_x = ballPos.x - std::abs(ballPos.y - getPathModel().yOffset) - getPathModel().distance - 35.0;
+      test_if_kick_y = ballPos.y - getPathModel().yOffset;
+      break;
+    case Foot::RIGHT:
+      ballPos = getBallModel().positionPreviewInRFoot;
 
-    pose = { 0.0, 0.0, 0.0 };
-    add_step(pose, 0.0, StepType::CORRECTSTEP);
+      // see approach_ball(foot)
+      test_if_kick_x = ballPos.x - std::abs(ballPos.y + getPathModel().yOffset) - getPathModel().distance - 35.0;
+      test_if_kick_y = ballPos.y + getPathModel().yOffset;
+      break;
+    case Foot::NONE:
+      ASSERT(false);
+    }
 
-    getPathModel().kick_executed = true;
+    bool kick_not_ready = test_if_kick_x > 5.0 || test_if_kick_y > 5.0;
+    if (kick_not_ready)
+    {
+      approach_ball(foot);
+      return;
+    }
+    else if (step_buffer.size() != 3)
+    {
+      step_buffer = {};
+
+      Pose2D pose = { 0.0, ballPos.x + 500 , ballPos.y };
+      add_step(pose, 0.0, StepType::KICKSTEP, foot);
+
+      add_step(pose, 0.0, StepType::ZEROSTEP, foot);
+
+      pose = { 0.0, 0.0, 0.0 };
+      add_step(pose, 0.0, StepType::WALKSTEP, foot);
+
+      getPathModel().kick_executed = true;
+    }
   }
 }
 
 void PathPlanner::long_kick(const Foot foot)
 {
-  Vector2d ballPos = Vector2d();
-  switch (foot) {
-  case Foot::LEFT:  
-    ballPos = getBallModel().positionPreviewInLFoot; 
-    break;
-  case Foot::RIGHT: 
-    ballPos = getBallModel().positionPreviewInRFoot; 
-    break;
-  case Foot::NONE:
-    ASSERT(false);
-  }
+  if (!getPathModel().kick_executed)
+  {
+    double test_if_kick_x = 0.0;
+    double test_if_kick_y = 0.0;
+    Vector2d ballPos = Vector2d();
 
-  foot_to_use = foot;
+    switch (foot) {
+    case Foot::LEFT:
+      ballPos = getBallModel().positionPreviewInLFoot;
 
-  if (step_buffer.empty()) {
-    Pose2D pose = { 0.0, ballPos.x + 500, 0.0 };
-    add_step(pose, 0.0, StepType::KICKSTEP);
+      // see approach_ball(foot)
+      test_if_kick_x = ballPos.x - std::abs(ballPos.y - getPathModel().yOffset) - getPathModel().distance - 35.0;
+      test_if_kick_y = ballPos.y - getPathModel().yOffset;
+      break;
+    case Foot::RIGHT:
+      ballPos = getBallModel().positionPreviewInRFoot;
 
-    pose = { 0.0, 0.0, 0.0 };
-    add_step(pose, 0.0, StepType::CORRECTSTEP);
+      // see approach_ball(foot)
+      test_if_kick_x = ballPos.x - std::abs(ballPos.y + getPathModel().yOffset) - getPathModel().distance - 35.0;
+      test_if_kick_y = ballPos.y + getPathModel().yOffset;
+      break;
+    case Foot::NONE:
+      ASSERT(false);
+    }
 
-    getPathModel().kick_executed = true;
+    bool kick_not_ready = test_if_kick_x > 5.0 || test_if_kick_y > 5.0;
+    if (kick_not_ready)
+    {
+      approach_ball(foot);
+      return;
+    }
+    else if (step_buffer.size() != 3)
+    {
+      step_buffer = {};
+
+      Pose2D pose = { 0.0, ballPos.x + 500, 0.0 };
+      add_step(pose, 0.0, StepType::KICKSTEP, foot);
+
+      add_step(pose, 0.0, StepType::ZEROSTEP, foot);
+
+      pose = { 0.0, 0.0, 0.0 };
+      add_step(pose, 0.0, StepType::WALKSTEP, foot);
+
+      getPathModel().kick_executed = true;
+    }
   }
 }
 
 void PathPlanner::sidekick(const Foot foot)
 {
-  double speedDirection = 0.0;
-  double stepY = 0.0;
-  Vector2d ballPos = Vector2d();
-  switch (foot) {
+  if (!getPathModel().kick_executed)
+  {
+    double speedDirection = 0.0;
+    double stepY = 0.0;
+    double test_if_kick_x = 0.0;
+    double test_if_kick_y = 0.0;
+    Vector2d ballPos = Vector2d();
+
+    switch (foot) {
     case Foot::LEFT:
       ballPos = getBallModel().positionPreviewInLFoot;
-      speedDirection = 90; 
-      stepY = 100; 
+      speedDirection = 90;
+      stepY = 100;
+
+      // see approach_ball(foot)
+      test_if_kick_x = ballPos.x - std::abs(ballPos.y - getPathModel().yOffset) - getPathModel().distance - 35.0;
+      test_if_kick_y = ballPos.y - getPathModel().yOffset;
       break;
     case Foot::RIGHT:
       ballPos = getBallModel().positionPreviewInRFoot;
-      speedDirection = -90; 
-      stepY = -100; 
+      speedDirection = -90;
+      stepY = -100;
+
+      // see approach_ball(foot)
+      test_if_kick_x = ballPos.x - std::abs(ballPos.y + getPathModel().yOffset) - getPathModel().distance - 35.0;
+      test_if_kick_y = ballPos.y + getPathModel().yOffset;
       break;
     case Foot::NONE:
       ASSERT(false);
-  }
+    }
 
-  foot_to_use = foot == Foot::RIGHT ? Foot::LEFT : Foot::RIGHT;
+    bool kick_not_ready = test_if_kick_x > 0.0 || test_if_kick_y > 0.0;
+    if (kick_not_ready)
+    {
+      approach_ball(foot);
+      return;
+    }
+    else if (step_buffer.size() != 3)
+    {
+      step_buffer = {};
 
-  if (step_buffer.empty()) {
-    Pose2D pose = { 0.0, 500, stepY };
-    add_step(pose, speedDirection, StepType::KICKSTEP);
+      Pose2D pose = { 0.0, 500, stepY };
+      add_step(pose, speedDirection, StepType::KICKSTEP, foot == Foot::RIGHT ? Foot::LEFT : Foot::RIGHT);
 
-    pose = { 0.0, 0.0, 0.0 };
-    add_step(pose, 0.0, StepType::CORRECTSTEP);
+      add_step(pose, 0.0, StepType::ZEROSTEP, foot == Foot::RIGHT ? Foot::LEFT : Foot::RIGHT);
 
-    getPathModel().kick_executed = true;
+      pose = { 0.0, 0.0, 0.0 };
+      add_step(pose, 0.0, StepType::WALKSTEP, foot == Foot::RIGHT ? Foot::LEFT : Foot::RIGHT);
+
+      getPathModel().kick_executed = true;
+    }
   }
 }
 
 // Stepcontrol
-void PathPlanner::add_step(Pose2D &pose, const double &speedDirection, const StepType &type) {
+void PathPlanner::add_step(Pose2D &pose, const double &speedDirection, const StepType &type, const Foot foot = Foot::NONE) 
+{
   // taken out of the stepplanner
   // limiting the steps if walksteps
   // 0.75 because 0.5 * character(usually 0.5) + 0.5 (taken from stepplanner)
@@ -263,7 +351,8 @@ void PathPlanner::add_step(Pose2D &pose, const double &speedDirection, const Ste
                                               speedDirection, 
                                               type, 
                                               type == StepType::KICKSTEP ? 300 : 250, 
-                                              type == StepType::KICKSTEP ? 0.7 : 0.5 }));
+                                              type == StepType::KICKSTEP ? 0.7 : 0.5,
+                                              foot }));
 }
 bool PathPlanner::add_single_step(Pose2D &pose, const double &speedDirection, const StepType &type) {
   if (step_buffer.size() == 0) {
@@ -271,6 +360,27 @@ bool PathPlanner::add_single_step(Pose2D &pose, const double &speedDirection, co
     return true;
   }
   return false;
+}
+void PathPlanner::update_step(Pose2D &pose, const double &speedDirection, const StepType &type)
+{
+  ASSERT(step_buffer.size() > 0);
+  // taken out of the stepplanner
+  // limiting the steps if walksteps
+  // 0.75 because 0.5 * character(usually 0.5) + 0.5 (taken from stepplanner)
+  if (type == StepType::WALKSTEP)
+  {
+    double maxStepTurn = Math::fromDegrees(30) * 0.75;
+    double maxStep = 40.0f;
+    pose.rotation = Math::clamp(pose.rotation, -maxStepTurn, maxStepTurn);
+    pose.translation.x = Math::clamp(pose.translation.x, -maxStep, maxStep) * cos(pose.rotation / maxStepTurn * Math::pi / 2);
+    pose.translation.y = Math::clamp(pose.translation.y, -maxStep, maxStep) * cos(pose.rotation / maxStepTurn * Math::pi / 2);
+  }
+  step_buffer.front() = Step_Buffer_Element({ pose,
+                                              speedDirection,
+                                              type,
+                                              type == StepType::KICKSTEP ? 300 : 250,
+                                              type == StepType::KICKSTEP ? 0.7 : 0.5,
+                                              Foot::NONE });
 }
 
 void PathPlanner::manage_step_buffer() 
@@ -293,7 +403,7 @@ void PathPlanner::manage_step_buffer()
   }
 }
 
-void PathPlanner::execute_step_buffer() 
+void PathPlanner::execute_step_buffer()
 {
   if (step_buffer.empty()) {
     return;
@@ -303,16 +413,15 @@ void PathPlanner::execute_step_buffer()
   getMotionRequest().id                                     = motion::walk;
   getMotionRequest().standardStand                          = false;
   getMotionRequest().walkRequest.coordinate                 = WalkRequest::Hip;
-  getMotionRequest().walkRequest.stepControl.stepID         = getMotionStatus().stepControl.stepID;
   getMotionRequest().walkRequest.character                  = step_buffer.front().character;
+  getMotionRequest().walkRequest.stepControl.stepID         = getMotionStatus().stepControl.stepID;
   getMotionRequest().walkRequest.stepControl.type           = step_buffer.front().type;
   getMotionRequest().walkRequest.stepControl.time           = step_buffer.front().time;
   getMotionRequest().walkRequest.stepControl.speedDirection = step_buffer.front().speedDirection;
   getMotionRequest().walkRequest.stepControl.target         = step_buffer.front().pose;
 
-
-  // sync foot_to_use with the movableFoot for WALKSTEPS <-- you have to specify foot_to_use explicitly in KICKSTEPS
-  if (!(step_buffer.front().type == StepType::CORRECTSTEP))
+  // normal walking WALKSTEPs use Foot::NONE, for KICKSTEPs the foot to use has to be specified
+  if (step_buffer.front().foot == Foot::NONE)
   {
     switch (getMotionStatus().stepControl.moveableFoot)
     {
@@ -324,11 +433,7 @@ void PathPlanner::execute_step_buffer()
       break;
       // TODO: choose foot more intelligently when both feet are usable
     case MotionStatus::StepControlStatus::BOTH:
-      if (step_buffer.front().type == StepType::KICKSTEP)
-      {
-
-      }
-      else if (step_buffer.front().pose.translation.y > 0.0f || step_buffer.front().pose.rotation > 0.0f)
+      if (step_buffer.front().pose.translation.y > 0.0f || step_buffer.front().pose.rotation > 0.0f)
       {
         foot_to_use = Foot::LEFT;
       }
@@ -341,6 +446,10 @@ void PathPlanner::execute_step_buffer()
       foot_to_use = Foot::RIGHT;
       break;
     }
+  }
+  else
+  {
+    foot_to_use = step_buffer.front().foot;
   }
   // false means right foot
   getMotionRequest().walkRequest.stepControl.moveLeftFoot = foot_to_use == Foot::RIGHT ? false : true;

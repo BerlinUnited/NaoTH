@@ -152,9 +152,12 @@ FootStep FootStepPlanner::calculateNextWalkStep(const InverseKinematic::FeetPose
   
 
   // do "path planing" :)
-  if(stepControl) {
+  if (stepControl && req.stepControl.type == WalkRequest::StepControlRequest::KICKSTEP)
+  {
     restrictStepSizeControlStep(stepRequest, req.character);
-  } else {
+  } 
+  else 
+  {
     restrictStepSize(stepRequest, req.character);
     restrictStepChange(stepRequest, lastStepRequest);
   }
