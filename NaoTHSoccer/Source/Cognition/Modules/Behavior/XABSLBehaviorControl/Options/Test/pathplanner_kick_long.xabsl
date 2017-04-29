@@ -24,10 +24,8 @@ option pathplanner_kick_long
     decision {
       else if (ball.know_where_itis && ball.preview.x > 300)
         goto goto_ball;
-      else if (ball.know_where_itis && ball.preview.x <= 300)
-        goto approach_short_kick_left;
       else if(action_done)
-        goto goto_ball;
+        goto approach_short_kick_left;
       else
         stay;
     }
@@ -95,11 +93,6 @@ option pathplanner_kick_long
     action {
       //NOTE: this is synchronized with sidekick()->finished
       motion.type = stand;
-    
-      motion.walk.stop_with_stand = true;
-
-      motion.walk.coordinate = hip;
-      motion.walk.style = normal;
 
       //loook at percept
       head.control_mode = look_at_ball_percept;
