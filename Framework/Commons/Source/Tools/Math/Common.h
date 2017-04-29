@@ -273,10 +273,33 @@ namespace Math {
 
   // NOTE: the input vector is copied and sorted internally, this can be slow for large vectors
   template<typename T>
+  T medianMax(std::vector<T> values) {
+    if (values.empty()){ return 0; }
+
+    size_t size = values.size();
+    std::sort(values.begin(), values.end());
+
+    if (size % 2 == 0) {
+      return (std::max(values[size / 2 - 1], values[size / 2]));
+    }
+    else {
+      return values[size / 2];
+    }
+  }
+
+  // NOTE: the input vector is copied and sorted internally, this can be slow for large vectors
+  template<typename T>
   T median(std::vector<T> values) {
     if(values.empty()){ return 0; }
     std::nth_element(values.begin(), values.begin() + values.size()/2, values.end());
     return values[values.size()/2];
+  }
+
+  // NOTE: the input vector is copied and sorted internally, this can be slow for large vectors
+  //Just a wrapper for nth_element -> median is index = values.size()/2
+  template<typename T>
+  T max(const std::vector<T>& values) {
+    return *std::max_element(values.begin(), values.end());
   }
 
 }//end namespace Math

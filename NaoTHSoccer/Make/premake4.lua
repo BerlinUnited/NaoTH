@@ -170,7 +170,7 @@ solution "NaoTHSoccer"
     buildoptions {"-Wno-logical-op-parentheses"}
     -- use clang on macOS
     -- NOTE: configuration doesn't affect these settings, they NEED to be in a if
-    if os.is("macosx") then
+    if (os.is("macosx") and _OPTIONS["platform"] ~= "Nao") then
       premake.gcc.cc = 'clang'
       premake.gcc.cxx = 'clang++'
     end
@@ -178,31 +178,41 @@ solution "NaoTHSoccer"
 
   -- commons
   dofile (FRAMEWORK_PATH .. "/Commons/Make/Commons.lua")
+    vpaths { ["*"] = FRAMEWORK_PATH .. "/Commons/Source" }
   
   -- core
   dofile "NaoTHSoccer.lua"
+    vpaths { ["*"] = "../Source" }
   
   -- set up platforms
   if _OPTIONS["platform"] == "Nao" then
     dofile (FRAMEWORK_PATH .. "/Platforms/Make/NaoSMAL.lua")
+      vpaths { ["*"] = FRAMEWORK_PATH .. "/Platforms/Source/NaoSMAL" }
       -- HACK: boost from NaoQI SDK makes problems
       buildoptions {"-Wno-conversion"}
+      -- these warning came in Windows with the toolchain 2013
+      buildoptions {"-Wno-unused-parameter"}
+      buildoptions {"-Wno-ignored-qualifiers"}
+      buildoptions {"-Wno-extra"}
       defines { "BOOST_SIGNALS_NO_DEPRECATION_WARNING" }
       -- ACHTUNG: NaoSMAL doesn't build with the flag -std=c++11 (because of Boost)
       buildoptions {"-std=gnu++11"}
     dofile (FRAMEWORK_PATH .. "/Platforms/Make/NaoRobot.lua")
       kind "ConsoleApp"
       links { "NaoTHSoccer", "Commons" }
+      vpaths { ["*"] = FRAMEWORK_PATH .. "/Platforms/Source/NaoRobot" }
   else
     dofile (FRAMEWORK_PATH .. "/Platforms/Make/SimSpark.lua")
       kind "ConsoleApp"
       links { "NaoTHSoccer", "Commons" }
+      vpaths { ["*"] = FRAMEWORK_PATH .. "/Platforms/Source/SimSpark" }
       debugargs { "--sync" }
     dofile (FRAMEWORK_PATH .. "/Platforms/Make/LogSimulator.lua")
       kind "ConsoleApp"
       links { "NaoTHSoccer", "Commons" }
+      vpaths { ["*"] = FRAMEWORK_PATH .. "/Platforms/Source/LogSimulator" }
     dofile (FRAMEWORK_PATH .. "/Platforms/Make/LogSimulatorJNI.lua")
       kind "SharedLib"
       links { "NaoTHSoccer", "Commons" }
+      vpaths { ["*"] = FRAMEWORK_PATH .. "/Platforms/Source/LogSimulatorJNI" }
   end
-  
