@@ -38,12 +38,49 @@ public class PlayerNumberPanel extends javax.swing.JPanel {
         initComponents();
     }
 
+    public boolean setRobotsFromTeamFile(File configDir) 
+    {
+        if (!configDir.isDirectory()) {
+            return false;
+        }
+        
+        File teamFile = new File(configDir, "team.cfg");
+        if (!teamFile.isFile()) {
+            return false;
+        }
+        
+        // reamove the existing components
+        this.removeAll();
+        
+        Config teamCfg = new Config("team");
+        try {
+            teamCfg.readFromFile(teamFile);
+        } catch (IOException ex) {
+            Logger.getGlobal().log(Level.WARNING, "Could not load team.cfg\n", ex.getMessage());
+            ex.printStackTrace(System.err);
+            return false;
+        }
+        
+        try {
+            for(Map.Entry<String, String> entry: teamCfg.values.entrySet()) {
+                final String name = entry.getKey();
+                int number = Integer.parseInt(entry.getValue());
+                addNumber(name, number);
+            }
+        } catch (ParseException ex) {
+            Logger.getGlobal().log(Level.SEVERE, "Could not parse team.cfg\n", ex.getMessage());
+            return false;
+        }
+        
+        return true;
+    }
+    
     public boolean setRobots(File configDir) {
         if (!configDir.isDirectory()) {
             return false;
         }
 
-        File robotsDir = new File(configDir + "/robots");
+        File robotsDir = new File(configDir, "/robots");
         if (!robotsDir.isDirectory()) {
             return false;
         }
@@ -59,33 +96,7 @@ public class PlayerNumberPanel extends javax.swing.JPanel {
                 if (files[i].isDirectory()) {
                     final String name = files[i].getName();
                     int number = loadPlayerCfg(files[i]);
-                    
-                    bodyIdToPlayerNumber.put(name, number);
-
-                    final MaskFormatter formatter = new MaskFormatter(name + ": *");
-                    formatter.setValidCharacters("1234567890");
-                    formatter.setPlaceholderCharacter(Character.forDigit(number, 10));
-
-                    final JFormattedTextField input = new JFormattedTextField(formatter);
-                    input.setInputVerifier(new InputVerifier() {
-                        @Override
-                        public boolean verify(JComponent input) {
-                            JFormattedTextField ftf = (JFormattedTextField) input;
-                            try {
-                                String s = (String) formatter.stringToValue(ftf.getText());
-                                // capture the player number from the input and parse it
-                                final Matcher matcher = Pattern.compile(name + ":[ \\\\t]*(\\d)").matcher(ftf.getText());
-                                if (matcher.find() && matcher.groupCount() == 1) {
-                                    int number = Integer.parseInt(matcher.group(1));
-                                    bodyIdToPlayerNumber.put(name, number);
-                                }
-                            } catch (Exception ex) {
-                            }
-                            return true;
-                        }
-                    });
-
-                    this.add(input);
+                    addNumber(name, number);
                 }
             }
 
@@ -94,6 +105,38 @@ public class PlayerNumberPanel extends javax.swing.JPanel {
             return false;
         }
     }
+    
+    private void addNumber(final String name, int number) throws ParseException
+    {
+        bodyIdToPlayerNumber.put(name, number);
+
+        final MaskFormatter formatter = new MaskFormatter(name + ": *");
+        formatter.setValidCharacters("1234567890");
+        formatter.setPlaceholderCharacter(Character.forDigit(number, 10));
+
+        final JFormattedTextField input = new JFormattedTextField(formatter);
+        input.setInputVerifier(new InputVerifier() {
+            @Override
+            public boolean verify(JComponent input) {
+                JFormattedTextField ftf = (JFormattedTextField) input;
+                try {
+                    String s = (String) formatter.stringToValue(ftf.getText());
+                    // capture the player number from the input and parse it
+                    final Matcher matcher = Pattern.compile(name + ":[ \\\\t]*(\\d)").matcher(ftf.getText());
+                    if (matcher.find() && matcher.groupCount() == 1) {
+                        int number = Integer.parseInt(matcher.group(1));
+                        bodyIdToPlayerNumber.put(name, number);
+                    }
+                } catch (ParseException | NumberFormatException ex) {
+                    // could not parse user input, do not report
+                }
+                return true;
+            }
+        });
+
+        this.add(input);
+    }
+    
     
     private int loadPlayerCfg(File configFile)
     {
@@ -112,7 +155,7 @@ public class PlayerNumberPanel extends javax.swing.JPanel {
         
         return 3;
     }
-    
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always

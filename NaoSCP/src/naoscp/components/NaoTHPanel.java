@@ -291,7 +291,13 @@ public class NaoTHPanel extends javax.swing.JPanel {
         } else {
             loadTeamCommCfg(new File(configDir, "general"));
         }
-
+        
+        if(new File(schemeDir, "team.cfg").exists()) {
+            playerNumberPanel.setRobotsFromTeamFile(schemeDir);
+        } else {
+            //playerNumberPanel.setRobotsFromTeamFile(new File(configDir, "general"));
+        }
+        this.revalidate();
     }//GEN-LAST:event_jSchemeBoxActionPerformed
 
     private void cbCopyConfigActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbCopyConfigActionPerformed
@@ -320,8 +326,8 @@ public class NaoTHPanel extends javax.swing.JPanel {
         loadTeamCommCfg(new File(configDir, "general"));
         loadConfigSchemes(configDir);
         
-
-        playerNumberPanel.setRobots(configDir);
+        //playerNumberPanel.setRobots(configDir);
+        playerNumberPanel.setRobotsFromTeamFile(new File(configDir, "general"));
         
         // check for the binaries
         if(new File(naothProjectFile, CopyConfigAction.localBinPath + "/naoth").exists()) {
