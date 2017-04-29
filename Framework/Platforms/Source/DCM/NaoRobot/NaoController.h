@@ -108,12 +108,12 @@ public:
   void get(WhistlePercept& data) {data.counter = whistleSensorData.data(); }
   void get(CpuData& data) {
       std::string val = "";
-      std::ifstream temperatureFile ("/sys/class/thermal/thermal_zone0/temp");
       if (temperatureFile.is_open()) {
           // The temperature is stored in 5 digits.  The first two are degrees in Celsius.  The rest are decimal precision.
           temperatureFile >> val;
           data.temperature = (int)(std::stof(val) / 1000);
-          temperatureFile.close();
+          temperatureFile.clear();                 // clear fail and eof bits
+          temperatureFile.seekg(0, std::ios::beg); // back to the start!
       } else {
         // Failed to open temperatureFile!
       }
@@ -203,6 +203,7 @@ protected:
   UDPReceiver* theRemoteCommandListener;
   SPLGameController* theGameController;
   DebugServer* theDebugServer;
+  std::ifstream temperatureFile;
 };
 
 } // end namespace naoth
