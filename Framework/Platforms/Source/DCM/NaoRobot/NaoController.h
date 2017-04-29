@@ -11,6 +11,8 @@
 #define _NaoController_H_
 
 #include <string>
+#include <fstream>
+#include <iostream>
 
 //
 #include "PlatformInterface/PlatformInterface.h"
@@ -104,7 +106,18 @@ public:
   void get(BatteryData& data) { naoSensorData.get(data); }
   void get(UltraSoundReceiveData& data) { naoSensorData.get(data); }
   void get(WhistlePercept& data) {data.counter = whistleSensorData.data(); }
-  void get(CpuData& data) { naoSensorData.get(data); /*std::cout << "[NaoController] " << "received temperature" << endl;*/ }
+  void get(CpuData& data) {
+      std::string val = "";
+      std::ifstream temperatureFile ("/sys/class/thermal/thermal_zone0/temp");
+      if (temperatureFile.is_open()) {
+          // The temperature is stored in 5 digits.  The first two are degrees in Celsius.  The rest are decimal precision.
+          temperatureFile >> val;
+          data.temperature = (int)(std::stof(val) / 1000);
+          temperatureFile.close();
+      } else {
+        // Failed to open temperatureFile!
+      }
+  }
 
   // write directly to the shared memory
   // ACHTUNG: each set calls swapWriting()

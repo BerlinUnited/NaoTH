@@ -157,11 +157,3 @@ void NaoSensorData::get(BatteryData& data) const
   data.current = sensorsValue[currentIndex++];
   data.temperature = sensorsValue[currentIndex++];
 }
-
-void NaoSensorData::get(CpuData& data) const
-{
-  unsigned int currentIndex = theCpuTemperatureIndex;
-  // reintpret_cast doesn't work here - "const" qualifier
-  int* t = (int*)(&sensorsValue[currentIndex]);
-  data.temperature = *t;
-}

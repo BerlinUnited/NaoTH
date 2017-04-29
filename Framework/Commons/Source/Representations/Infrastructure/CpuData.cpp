@@ -10,8 +10,6 @@ CpuData::CpuData():
 void CpuData::print(std::ostream& stream) const
 {
   stream << "head temperature: " << temperature << "°C" << std::endl;
-  stream << "read directly:\n";
-  this->readDirect(stream);
 }
 
 CpuData::~CpuData()

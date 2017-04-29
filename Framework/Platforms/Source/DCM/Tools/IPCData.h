@@ -34,8 +34,7 @@ const unsigned int theIRReceiveDataIndex = theInertialSensorDataIndex + 2; // in
 const unsigned int theButtonDataIndex = theIRReceiveDataIndex + IRReceiveData::numOfIRReceive;
 const unsigned int theUltraSoundReceiveDataIndex = theButtonDataIndex + ButtonData::numOfButtons;
 const unsigned int theBatteryDataIdex = theUltraSoundReceiveDataIndex + 1 + 2 * UltraSoundReceiveData::numOfUSEcho; //
-const unsigned int theCpuTemperatureIndex = theBatteryDataIdex + 3; // charge, current
-const unsigned int numOfSensors = theCpuTemperatureIndex + 1; // temperature
+const unsigned int numOfSensors = theBatteryDataIdex + 3; // charge, current, temperature
 
 /**
 * data written by libnaoth
@@ -53,9 +52,8 @@ public:
   void get(InertialSensorData& data) const;
   void get(IRReceiveData& data) const;
   void get(ButtonData& data) const;
-  void get(UltraSoundReceiveData& data) const;
   void get(BatteryData& data) const;
-  void get(CpuData& data) const;
+  void get(UltraSoundReceiveData& data) const;
 };
 
 }// end namespace naoth
