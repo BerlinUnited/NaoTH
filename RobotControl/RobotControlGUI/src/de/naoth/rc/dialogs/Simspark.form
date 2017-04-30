@@ -44,6 +44,7 @@
         <Component class="javax.swing.JToggleButton" name="tb_agent">
           <Properties>
             <Property name="text" type="java.lang.String" value="Agent"/>
+            <Property name="enabled" type="boolean" value="false"/>
             <Property name="focusable" type="boolean" value="false"/>
             <Property name="horizontalTextPosition" type="int" value="0"/>
             <Property name="verticalTextPosition" type="int" value="3"/>

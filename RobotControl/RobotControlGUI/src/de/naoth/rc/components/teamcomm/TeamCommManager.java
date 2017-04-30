@@ -9,17 +9,6 @@ import net.xeoh.plugins.base.Plugin;
  */
 public interface TeamCommManager extends Plugin {
     /**
-     * Sets the provider, where the TeamCommMessages came from.
-     * @param provider  the TeamCommMessage-provider
-     */
-    public void setProvider(TeamCommProvider provider);
-    
-    /**
-     * Removes the TeamCommMessage provider.
-     */
-    public void removeProvider();
-    
-    /**
      * Adds a listener to the TeamCommMessages.
      * The listener gets "notified", if a new TeamCommMessage arrives.
      * @param l 

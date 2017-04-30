@@ -1,6 +1,5 @@
 package de.naoth.rc.components.teamcommviewer;
 
-//import static de.naoth.rc.components.teamcommviewer.RobotStatusPanel.MAX_TIME_BEFORE_DEAD;
 import de.naoth.rc.dataformats.SPLMessage;
 import de.naoth.rc.server.ConnectionStatusEvent;
 import de.naoth.rc.server.ConnectionStatusListener;

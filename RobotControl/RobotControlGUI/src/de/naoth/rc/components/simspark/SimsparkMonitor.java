@@ -1,4 +1,3 @@
-
 package de.naoth.rc.components.simspark;
 
 import de.naoth.rc.components.teamcomm.TeamCommManager;
@@ -19,7 +18,11 @@ import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 
 /**
- *
+ * A simple Simspark monitor.
+ * Receives Simspark monitor messages, parses them and updates the Simspark state.
+ * Additional, if simspark sends teamcomm messages, these are parsed too and 
+ * broadcasted to other listening modules/dialog (eg. TeamCommViewer).
+ * 
  * @author Philipp Strobel <philippstrobel@posteo.de>
  */
 public class SimsparkMonitor extends Simspark {
@@ -43,6 +46,7 @@ public class SimsparkMonitor extends Simspark {
                 sleep(1);
                 final String msg = getServerMessage();
                 if (msg != null) {
+                    // parse message in another thread
                     s.submit(new SimsparkMonitorMessageParser(msg));
                 }
             } catch (InterruptedException ex) {

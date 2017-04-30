@@ -1,11 +1,13 @@
-
 package de.naoth.rc.components.simspark;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- *
+ * Basic Simspark agent.
+ * Just an experiment and to show how to create an agent and communicate with
+ * Simspark.
+ * 
  * @author Philipp Strobel <philippstrobel@posteo.de>
  */
 public class SimsparkAgent extends Simspark {
@@ -25,6 +27,7 @@ public class SimsparkAgent extends Simspark {
         while (isRunning) {
             try {
                 sleep(1);
+                // Simspark in "sync" mode ...
                 sendAgentMessage("(syn)");
                 String msg = getServerMessage();
                 if (msg != null) {

@@ -94,6 +94,7 @@ public class Simspark extends AbstractDialog
         simspark_toolbar.add(tb_monitor);
 
         tb_agent.setText("Agent");
+        tb_agent.setEnabled(false);
         tb_agent.setFocusable(false);
         tb_agent.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         tb_agent.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);

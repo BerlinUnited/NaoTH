@@ -6,7 +6,8 @@ import java.io.IOException;
 import java.net.Socket;
 
 /**
- *
+ * Base class for communicating with Simspark.
+ * 
  * @author Philipp Strobel <philippstrobel@posteo.de>
  */
 abstract class Simspark extends Thread {
@@ -21,7 +22,6 @@ abstract class Simspark extends Thread {
 
     public void connect(String host, int port) throws IOException {
         socket = new Socket(host, port);
-//            this.socket.setTcpNoDelay(true);
 
         in = new DataInputStream(socket.getInputStream());
         out = new DataOutputStream(socket.getOutputStream());
