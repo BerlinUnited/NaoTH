@@ -100,13 +100,7 @@ public class TeamCommViewer extends AbstractDialog {
      * Logger object, for logging TeamCommMessages.
      */
     private final TeamCommLogger log = new TeamCommLogger();
-    
-    /**
-     * Some colors ...
-     */
-    private final Color magenta = new Color(210, 180, 200);
-    private final Color cyan = new Color(180, 210, 255);
-    
+
     /**
      * Creates new form TeamCommViewer
      */
@@ -537,7 +531,6 @@ public class TeamCommViewer extends AbstractDialog {
                             // ... new robot ...
                             if (robotStatus == null) {
                                 robotStatus = new RobotStatus(Plugin.parent.getMessageServer(), address);
-//                                robotStatus.robotColor = teamColor.containsKey() pmTeamColor.get;//msg.isOpponent() ? Color.RED : Color.BLUE;//magenta : cyan;
                                 // adds RobotStatus to a container
                                 robotsMapSorted.put(address, robotStatus);
                                 // clears the panel-view

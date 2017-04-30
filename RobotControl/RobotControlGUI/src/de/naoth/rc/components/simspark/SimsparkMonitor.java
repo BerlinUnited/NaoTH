@@ -33,8 +33,12 @@ public class SimsparkMonitor extends Simspark {
         public static TeamCommManager teamcommManager;
     }//end Plugin
 
+    /** Representation of the simspark game state. */
     public SimsparkState state = new SimsparkState();
     
+    /**
+     * Main method of the simspark monitor thread.
+     */
     public void run() {
         if (socket == null) {
             return;
@@ -55,7 +59,9 @@ public class SimsparkMonitor extends Simspark {
         }
     }
     
-    
+    /**
+     * Parser for the simspark monitor messages.
+     */
     private class SimsparkMonitorMessageParser implements Runnable {
         private final Sexp parser = new Sexp(); 
 

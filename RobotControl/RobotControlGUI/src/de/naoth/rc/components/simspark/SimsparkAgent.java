@@ -10,13 +10,16 @@ import java.util.logging.Logger;
  * 
  * @author Philipp Strobel <philippstrobel@posteo.de>
  */
-public class SimsparkAgent extends Simspark {
-
+public class SimsparkAgent extends Simspark
+{
+    /**
+     * Main method of the simspark agent thread.
+     */
     public void run() {
         if (socket == null) {
             return;
         }
-        // use another rsg... ?
+        // init simspark communication
         sendAgentMessage("(scene rsg/agent/nao/nao.rsg 0)(syn)");
         System.out.println(getServerMessage());
         sendAgentMessage("(init (unum 0)(teamname NaoTH))(syn)");

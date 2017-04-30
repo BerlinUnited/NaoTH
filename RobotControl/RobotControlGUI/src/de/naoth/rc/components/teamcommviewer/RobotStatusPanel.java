@@ -194,6 +194,7 @@ public class RobotStatusPanel extends javax.swing.JPanel implements RobotStatusL
         }
         connectButton.setEnabled(!rs.isConnected);
         cbShowRobot.setSelected(rs.showOnField);
+        this.setBackground(rs.robotColor);
         this.repaint();
     }
     

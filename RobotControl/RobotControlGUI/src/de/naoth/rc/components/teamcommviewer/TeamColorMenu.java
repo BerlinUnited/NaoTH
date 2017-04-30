@@ -24,7 +24,10 @@ public class TeamColorMenu extends JMenu
         Color.DARK_GRAY,
         Color.GRAY,
         Color.BLACK,
-        Color.WHITE
+        Color.WHITE,
+        // some self defined colors
+        new Color(180, 210, 255),
+        new Color(210, 180, 200)
     );
 
     public int teamNumber;

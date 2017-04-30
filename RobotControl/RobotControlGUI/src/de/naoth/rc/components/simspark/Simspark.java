@@ -17,20 +17,30 @@ abstract class Simspark extends Thread {
     protected Socket socket;
     protected boolean isRunning;
 
-    public Simspark() {
-    }
+    public Simspark() {}
 
+    /**
+     * Connect to a simspark instance.
+     * @param host the host/ip of the simspark instance
+     * @param port the port of the simspark instance
+     * @throws IOException if coudn't connect to the simspark instance
+     */
     public void connect(String host, int port) throws IOException {
         socket = new Socket(host, port);
 
         in = new DataInputStream(socket.getInputStream());
         out = new DataOutputStream(socket.getOutputStream());
-
-        isRunning = true;
         
+        isRunning = true;
+        // start listening thread
         this.start();
     }
 
+    /**
+     * Disconnects from the simspark instance.
+     * @throws IOException
+     * @throws InterruptedException 
+     */
     public void disconnect() throws IOException, InterruptedException {
         isRunning = false;
         this.join();

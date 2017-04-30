@@ -12,7 +12,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- *
+ * Representation of all known information about a robot.
+ * 
  * @author Philipp Strobel <philippstrobel@posteo.de>
  */
 public class RobotStatus {
@@ -75,6 +76,11 @@ public class RobotStatus {
         listener.remove(l);
     }
 
+    /**
+     * Updates all informations with the given message.
+     * @param timestamp
+     * @param msg 
+     */
     public void updateStatus(long timestamp, SPLMessage msg) {
         this.teamNum = msg.teamNum;
         this.playerNum = msg.playerNum;
@@ -134,6 +140,9 @@ public class RobotStatus {
         }
     }
     
+    /**
+     * Informs all listener of the changed status.
+     */
     private void statusChanged() {
         for (RobotStatusListener l : listener) {
             l.statusChanged(this);
