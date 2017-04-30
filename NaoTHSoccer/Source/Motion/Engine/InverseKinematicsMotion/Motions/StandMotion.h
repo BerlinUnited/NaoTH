@@ -92,7 +92,7 @@ private:
 
   bool interpolateToPose();
 
-  void applyPose(const InverseKinematic::HipFeetPose& tc);
+  void applyPose(const InverseKinematic::CoMFeetPose& p);
 
   void tuneJointOffsets();
 
@@ -116,7 +116,7 @@ private:
   InverseKinematic::CoMFeetPose targetPose;
   InverseKinematic::CoMFeetPose startPose;
 
-  InverseKinematic::HipFeetPose relaxedPose;
+  //InverseKinematic::HipFeetPose relaxedPose;
   JointData relaxData;
   bool relaxedPoseInitialized;
   bool isRelaxing;
