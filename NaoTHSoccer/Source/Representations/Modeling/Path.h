@@ -21,7 +21,9 @@ private:
 
 public:
   // default constructor
-  Path() {}
+  Path()
+    : _timeNoNodeExpandable(0)
+  {}
   // default destructor
   ~Path(){};
 
