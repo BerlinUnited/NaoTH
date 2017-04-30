@@ -29,8 +29,6 @@ public:
     secondStriker(-1),
     wantsToBeStriker(false)
   {
-    aliveRobots = *(new std::list<int>());
-    deadRobots = *(new std::list<int>());
   }
 
   virtual void print(std::ostream& stream) const {
