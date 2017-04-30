@@ -39,6 +39,9 @@ option path_go_to_ball_with_foot_dynamic
       path.routine = approach_ball_right;
       path.distance = @distance;
       path.yOffset = @offset.y;
+      
+      //loook at percept
+      head.control_mode = look_at_ball_percept;
     }
   }
 
@@ -58,6 +61,9 @@ option path_go_to_ball_with_foot_dynamic
       path.routine = approach_ball_left;
       path.distance = @distance;
       path.yOffset = @offset.y;
+      
+      //loook at percept
+      head.control_mode = look_at_ball_percept;
     }
   }
 

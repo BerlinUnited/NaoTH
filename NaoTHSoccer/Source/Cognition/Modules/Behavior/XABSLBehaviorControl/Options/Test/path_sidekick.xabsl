@@ -41,7 +41,7 @@ option path_sidekick
     decision
     {
       if( path.kick_executed )
-        goto finished;
+        goto short_freeze;
       else
         stay;
     }
@@ -53,7 +53,7 @@ option path_sidekick
 
   state short_freeze {
     decision {
-      if(state_time > 500)
+      if(state_time > 2000)
         goto finished;
       else 
         stay; 

@@ -46,7 +46,7 @@ option initial_striker
 
   target state be_striker {
     action {
-      //striker();
+     path_striker();  // this was commented out before! edited by yigit
     }
   }
 }

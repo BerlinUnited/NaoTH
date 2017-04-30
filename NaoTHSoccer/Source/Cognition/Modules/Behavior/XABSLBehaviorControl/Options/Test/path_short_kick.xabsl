@@ -19,6 +19,12 @@ option path_short_kick
     action
     {
       head.control_mode = search_for_ball;
+      motion.walk.style = normal;
+
+      motion.type = walk;
+      motion.walk_speed.x = 0;
+      motion.walk_speed.y = 0;
+      motion.walk_speed.rot = 0;
     }
   }
 
@@ -26,7 +32,7 @@ option path_short_kick
   {
     decision
     {
-      if(path.kick_executed)
+      if(state_time > 300 && executed_motion.step_control.left_movable)
         goto short_freeze;
       else
         stay;
@@ -41,7 +47,7 @@ option path_short_kick
   {
     decision
     {
-      if(path.kick_executed)
+      if(state_time > 300 && executed_motion.step_control.right_movable)
         goto short_freeze;
       else
         stay;
@@ -54,7 +60,7 @@ option path_short_kick
 
   state short_freeze {
     decision {
-      if(state_time > 500)
+      if(state_time > 2000)
         goto finished;
       else 
         stay; 
@@ -74,9 +80,6 @@ option path_short_kick
     action
     {
       path.routine = none;
-      
-      //loook at percept
-      head.control_mode = look_at_ball_percept;
     }
   }
 }

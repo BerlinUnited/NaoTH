@@ -39,7 +39,7 @@ option decide_role
       situationStatusOwnHalf = true;
       team.is_playing_as_striker = false;
       ball_was_outside_circle = true;
-      basic_goalie();
+      path_basic_goalie();
     }
   }
 
@@ -49,7 +49,7 @@ option decide_role
     {
       team.is_playing_as_striker = true;
       ball_was_outside_circle = true;
-      striker();
+      path_striker();
       //blinking
       set_left_ear = (platform.frameNumber % 3 == 0) ? 9 : 0;
       set_right_ear = (platform.frameNumber % 3 == 0) ? 9 : 0;
@@ -67,7 +67,7 @@ option decide_role
     {
       team.is_playing_as_striker = false;
       ball_was_outside_circle = true;
-      striker();
+      path_striker();
       
       //blinking
       set_left_ear = (platform.frameNumber % 3 == 0) ? 9 : 0;

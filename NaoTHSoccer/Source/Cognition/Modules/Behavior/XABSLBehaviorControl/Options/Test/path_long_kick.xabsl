@@ -1,33 +1,115 @@
-/** Omnidirectional kick for penalty shooting (slow!)*/
 option path_long_kick
-{ 
-  enum direction @foot;
-  
-  initial state wait
+{
+  enum direction @foot;
+
+  initial state decide_foot
   {
     decision
     {
-      if(executed_motion.type != walk)
-        stay;
-      else if(executed_motion.step_control.right_movable && @foot == right)
-        goto kick_with_right_foot;
-      else if(executed_motion.step_control.left_movable && @foot == left)
-        goto kick_with_left_foot;
+      if (@foot == right && executed_motion.step_control.left_movable)
+        goto prepare_right_kick;
+      else if(@foot == left && executed_motion.step_control.right_movable)
+        goto prepare_left_kick;
       else
         stay;
     }
     action
     {
+      motion.type = walk;
+      motion.walk_speed.x = 0;
+      motion.walk_speed.y = 0;
+      motion.walk_speed.rot = 0;
+      
       head.control_mode = search_for_ball;
     }
   }
 
-  state kick_with_right_foot
+  state prepare_right_kick
   {
     decision
     {
-      if(path.kick_executed)
-        goto short_freeze;
+      if(state_time > 300 && executed_motion.step_control.right_movable)
+        goto kick_right_foot;
+      else
+        stay;
+    }
+    action
+    {
+      motion.type = walk;
+      
+      /*
+      motion.walk.coordinate = left_foot;
+      motion.walk.step_control.foot = left;
+      motion.walk.step_control.target.x = ball.preview.left_foot.x + 500;
+      motion.walk.step_control.target.y = ball.preview.left_foot.y + ball.radius + 20;
+      motion.walk.step_control.target.rot = 0;
+      motion.walk.step_control.speed_direction = 0;
+      motion.walk.step_control.time = 300;
+      motion.walk.stop_with_stand = false;
+
+      */
+
+      motion.walk.coordinate = right_foot;
+      motion.walk.style = fast;
+      motion.walk_speed.x = ball.preview.right_foot.x;
+      motion.walk_speed.y = ball.preview.right_foot.y;
+      motion.walk_speed.rot = 0;
+
+      //look at percept
+      head.control_mode = none;
+      head.motion_type = look_at_world_point;
+      head.point_in_world.x = ball.percept.x;
+      head.point_in_world.y = ball.percept.y;
+      head.point_in_world.z = ball.radius; // radius of the ball
+    }
+  }
+
+  state prepare_left_kick
+  {
+    decision
+    {
+      if(state_time > 300 && executed_motion.step_control.left_movable)
+        goto kick_left_foot;
+      else
+        stay;
+    }
+    action
+    {
+      motion.type = walk;
+      
+      /*
+      motion.walk.coordinate = right_foot;
+      motion.walk.step_control.foot = right;
+      motion.walk.step_control.target.x = ball.preview.right_foot.x + 500;
+      motion.walk.step_control.target.y = ball.preview.right_foot.y - ball.radius - 20;
+      motion.walk.step_control.target.rot = 0;
+      motion.walk.step_control.speed_direction = 0;
+      motion.walk.step_control.time = 300;
+      motion.walk.stop_with_stand = false;
+
+      */
+
+      motion.walk.coordinate = left_foot;
+      motion.walk.style = fast;
+      motion.walk_speed.x = ball.preview.left_foot.x;
+      motion.walk_speed.y = ball.preview.left_foot.y;
+      motion.walk_speed.rot = 0;
+
+      //look at percept
+      head.control_mode = none;
+      head.motion_type = look_at_world_point;
+      head.point_in_world.x = ball.percept.x;
+      head.point_in_world.y = ball.percept.y;
+      head.point_in_world.z = ball.radius; // radius of the ball
+    }
+  }
+  
+  state kick_right_foot
+  {
+    decision
+    {
+      if(state_time > 300 && executed_motion.step_control.left_movable)
+        goto reset_controls;
       else
         stay;
     }
@@ -37,12 +119,12 @@ option path_long_kick
     }
   }
 
-   state kick_with_left_foot
+  state kick_left_foot
   {
     decision
     {
-      if(path.kick_executed)
-        goto short_freeze;
+      if(state_time > 300 && executed_motion.step_control.right_movable)
+        goto reset_controls;
       else
         stay;
     }
@@ -52,17 +134,19 @@ option path_long_kick
     }
   }
 
-  state short_freeze {
-    decision {
-      if(state_time > 500)
+  state reset_controls
+  {
+    decision
+    {
+      if (state_time > 2000)
         goto finished;
-      else 
-        stay; 
+      else
+        stay;
     }
-    action {
+    action
+    {
       path.routine = none;
     }
-  
   }
 
   target state finished
@@ -74,9 +158,7 @@ option path_long_kick
     action
     {
       path.routine = none;
-      
-      //loook at percept
-      head.control_mode = look_at_ball_percept;
     }
   }
+
 }
