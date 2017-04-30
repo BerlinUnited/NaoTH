@@ -107,11 +107,11 @@ public:
   void get(UltraSoundReceiveData& data) { naoSensorData.get(data); }
   void get(WhistlePercept& data) {data.counter = whistleSensorData.data(); }
   void get(CpuData& data) {
-      std::string val = "";
-      if (temperatureFile.is_open()) {
-          // The temperature is stored in 5 digits.  The first two are degrees in Celsius.  The rest are decimal precision.
-          temperatureFile >> val;
-          data.temperature = (int)(std::stof(val) / 1000);
+      if (temperatureFile.is_open() && temperatureFile.good()) {
+          // read temperature
+          temperatureFile >> data.temperature;
+          data.temperature /= 1000.0;
+          // reset stream
           temperatureFile.clear();                 // clear fail and eof bits
           temperatureFile.seekg(0, std::ios::beg); // back to the start!
       } else {

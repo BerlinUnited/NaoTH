@@ -12,7 +12,7 @@ namespace naoth
   class CpuData: public Printable
   {
   public:
-    int temperature;
+    double temperature;
 
     CpuData();
     virtual void print(std::ostream& stream) const;
