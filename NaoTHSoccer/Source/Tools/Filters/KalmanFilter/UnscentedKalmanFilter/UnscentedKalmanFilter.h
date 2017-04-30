@@ -8,9 +8,8 @@
 
 // TODO: remove pragma
 #pragma GCC diagnostic ignored "-Wconversion"
-    #include <Eigen/Geometry>
-    #include <Eigen/Dense>
-#pragma GCC diagnostic pop
+#include <Eigen/Geometry>
+#include <Eigen/Dense>
 
 template <int dim_state_cov, int dim_measurement_cov, class S>
 class UKF {
@@ -25,7 +24,7 @@ class UKF {
         // covariances
         Eigen::Matrix<double,dim_state_cov,dim_state_cov> P;             // covariance matrix of current state
         Eigen::Matrix<double,dim_state_cov,dim_state_cov> Q;             // covariance matrix of process noise
-        Eigen::Matrix<double,dim_measurement_cov,dim_measurement_cov> R; // covariance matrix of measurement noise
+        //Eigen::Matrix<double,dim_measurement_cov,dim_measurement_cov> R; // covariance matrix of measurement noise
 
     public:
         EIGEN_MAKE_ALIGNED_OPERATOR_NEW
@@ -40,10 +39,11 @@ class UKF {
             state = S();
         }
 
-        void predict(double dt){
+        template<typename U>
+        void predict(U& u, double dt){
             // transit the sigma points to the next state
             for (typename std::vector<S, Eigen::aligned_allocator<S> >::iterator i = sigmaPoints.begin(); i != sigmaPoints.end(); i++){
-                (*i).predict(dt);
+                (*i).predict(u, dt);
             }
 
             S mean = S::calcMean(sigmaPoints);
@@ -63,8 +63,8 @@ class UKF {
             P     = cov/* + Q*/; // process covariance is applied before the process model (while generating the sigma points)
         }
 
-        template<typename M>
-        void update(M& z){
+        template<typename M, typename Derived>
+        void update(const M& z, const Eigen::MatrixBase<Derived>& R){
             std::vector<M, Eigen::aligned_allocator<M> > sigmaMeasurements;
 
             // map sigma points to measurement space
@@ -86,7 +86,7 @@ class UKF {
 
             // apply measurement noise covariance
             // TODO: use correct measurement noise covariance matrix R
-            Eigen::MatrixXd Pvv = Pzz + 10e-5 * Eigen::MatrixXd::Identity(z.rows(),z.rows());
+            Eigen::MatrixXd Pvv = Pzz + R;
 
             // calculate state-measurement cross-covariance
             Eigen::MatrixXd Pxz = Eigen::MatrixXd::Zero(state.rows(),z.rows());
@@ -153,5 +153,7 @@ class UKF {
         }
 
 };
+
+#pragma GCC diagnostic pop
 
 #endif // UNSCENTEDKALMANFILTER_H

@@ -29,9 +29,9 @@ public:
     {}
 
 public: // additional accessors
-    Eigen::Block<Eigen::Matrix<double,dim,1> > rotational_velocity(){
-        return Eigen::Block<Eigen::Matrix<double,dim,1> >(this->derived(), 3, 0, 3, 1);
-    }
+//    Eigen::Block<Eigen::Matrix<double,dim,1> > rotational_velocity(){
+//        return Eigen::Block<Eigen::Matrix<double,dim,1> >(this->derived(), 3, 0, 3, 1);
+//    }
 };
 
 // measurement vectors which are elements of a euclidean vector space, e.g. velocity, accelerations
