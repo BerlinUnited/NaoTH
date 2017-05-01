@@ -294,15 +294,34 @@ message BallCandidates
 }
 
 message RemoteControlCommand {
+  enum ControlMode
+  {
+    DIRECT_CONTROL = 0;
+    LOCK_CONTROL = 1;
+  }
+  
   enum ActionType {
     NONE = 0;
-    WALK = 1;
-    LOCK_ON_BALL = 2;
-    KICK = 3;
+    STAND = 1;
+    WALK = 2;
+    KICK_RIGHT = 3;
+    KICK_LEFT = 4;
+    KICK_FORWARD_LEFT = 5;
+    KICK_FORWARD_RIGHT = 6;
+  }
+  
+  enum SecondActionType
+  {
+    SECOND_NONE = 0;
+    BLINK = 1;
+    SAY = 2;
   }
 
-  optional ActionType action = 1;
-  optional Pose2D target = 2;
+  optional ControlMode controlMode = 1;
+  optional ActionType action = 2;
+  optional SecondActionType second_action = 3;
+  
+  optional Pose2D target = 4;
 }
 
 message GroundContactModel {
