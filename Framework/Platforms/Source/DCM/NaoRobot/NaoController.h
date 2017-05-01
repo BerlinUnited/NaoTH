@@ -11,6 +11,8 @@
 #define _NaoController_H_
 
 #include <string>
+#include <fstream>
+#include <iostream>
 
 //
 #include "PlatformInterface/PlatformInterface.h"
@@ -54,7 +56,7 @@ public:
   virtual string getBodyNickName() const { return theBodyNickName; }
   virtual string getHeadNickName() const { return theHeadNickName; }
   virtual string getRobotName() const { return theRobotName; }
-  
+
   // camera stuff
   void get(Image& data){ theBottomCameraHandler.get(data); } // blocking
   void get(ImageTop& data){ theTopCameraHandler.get(data); } // non blocking
@@ -64,8 +66,8 @@ public:
   void set(const CameraSettingsRequestTop& data);
 
   // sound
-  void set(const SoundPlayData& data) 
-  { 
+  void set(const SoundPlayData& data)
+  {
     theSoundHandler->setSoundData(data);
   }
 
@@ -74,7 +76,7 @@ public:
   void set(const TeamMessageDataOut& data) { theTeamCommSender->send(data.data); }
 
   void get(RemoteMessageDataIn& data) { theRemoteCommandListener->receive(data.data); }
-  
+
   // gamecontroller stuff
   void get(GameData& data){ theGameController->get(data); }
   void set(const GameReturnData& data) { theGameController->set(data); }
@@ -88,7 +90,7 @@ public:
   void get(FrameInfo& data)
   {
     //TODO: use naoSensorData.data().timeStamp
-    data.setTime(NaoTime::getNaoTimeInMilliSeconds()); 
+    data.setTime(NaoTime::getNaoTimeInMilliSeconds());
     data.setFrameNumber(data.getFrameNumber()+1);
   }
 
@@ -104,7 +106,18 @@ public:
   void get(BatteryData& data) { naoSensorData.get(data); }
   void get(UltraSoundReceiveData& data) { naoSensorData.get(data); }
   void get(WhistlePercept& data) {data.counter = whistleSensorData.data(); }
-
+  void get(CpuData& data) {
+      if (temperatureFile.is_open() && temperatureFile.good()) {
+          // read temperature
+          temperatureFile >> data.temperature;
+          data.temperature /= 1000.0;
+          // reset stream
+          temperatureFile.clear();                 // clear fail and eof bits
+          temperatureFile.seekg(0, std::ios::beg); // back to the start!
+      } else {
+        // Failed to open temperatureFile!
+      }
+  }
 
   // write directly to the shared memory
   // ACHTUNG: each set calls swapWriting()
@@ -142,7 +155,7 @@ public:
     PlatformInterface::getCognitionInput();
     //STOPWATCH_STOP("getCognitionInput");
   }
-  
+
 
   virtual void setCognitionOutput()
   {
@@ -180,7 +193,7 @@ protected:
   SharedMemoryWriter<Accessor<int> > whistleControlData;
 
   // -- end -- shared memory access --
-  
+
   //
   V4lCameraHandler theBottomCameraHandler;
   V4lCameraHandler theTopCameraHandler;
@@ -190,6 +203,7 @@ protected:
   UDPReceiver* theRemoteCommandListener;
   SPLGameController* theGameController;
   DebugServer* theDebugServer;
+  std::ifstream temperatureFile;
 };
 
 } // end namespace naoth
