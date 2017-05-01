@@ -32,8 +32,18 @@ namespace ConvexHull
     template<typename T>
     vector<T> convexHull(vector<T> P)
     {
+        // TODO: guard against overflow with std::limits<int>
         int n = static_cast<int> (P.size()), k = 0;
-        vector<T> H(n+1);
+
+        if(n <= 1)
+        {
+          // Check if we don't have to do anything and provide a (non-crashing) fallback in case the static_cast<int>
+          // did indeed overflow and i is less than zero.
+          return P;
+        }
+
+        // Worst-case scenario is that an value is assgined to n*2 points at least temporary
+        vector<T> H(n*2);
  
         // Sort points lexicographically
         sort(P.begin(), P.end(), graphical_less<T>);
