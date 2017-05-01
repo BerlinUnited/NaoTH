@@ -16,10 +16,10 @@ TeamMessageStatistics::~TeamMessageStatistics()
 
 void TeamMessageStatistics::execute() {   
   //Check, from which robots we have received a message, and update the corresponding statistics
-  for (std::map<unsigned int, TeamMessage::Data>::const_iterator i = getTeamMessage().data.begin(); i != getTeamMessage().data.end(); ++i) {
-    unsigned int robotNumber = i->first;
+  for(auto const &it : getTeamMessage().data) {
+    unsigned int robotNumber = it.first;
     unsigned int receiveTime = getFrameInfo().getTime();
-    unsigned int receiveTime_sender = i->second.frameInfo.getTime();
+    unsigned int receiveTime_sender = it.second.frameInfo.getTime();
     std::map<unsigned int, RobotMessageStatistics*>::const_iterator r = robotMap.find(robotNumber);
     if (r != robotMap.end()) {
       if ((*r->second).lastMessageReceived_sender < receiveTime_sender) {
@@ -44,8 +44,6 @@ void TeamMessageStatistics::execute() {
             /getTeamMessageStatisticsModel().amountOfMessages;
           getTeamMessageStatisticsModel().expectation_xSquared = (getTeamMessageStatisticsModel().expectation_xSquared * old_amountOfMessages + 
             std::pow(currentMessageInterval, 2))/getTeamMessageStatisticsModel().amountOfMessages;
-          getTeamMessageStatisticsModel().varianceMsgInterval = getTeamMessageStatisticsModel().expectation_xSquared - 
-            std::pow(getTeamMessageStatisticsModel().avgMsgInterval, 2);
         }
         else {
           //Interpolation of message intervals
@@ -53,9 +51,9 @@ void TeamMessageStatistics::execute() {
             (1.0 - parameters.interpolation) * getTeamMessageStatisticsModel().avgMsgInterval;
           getTeamMessageStatisticsModel().expectation_xSquared = parameters.interpolation * std::pow(currentMessageInterval, 2) + 
             (1.0 - parameters.interpolation) * getTeamMessageStatisticsModel().expectation_xSquared;
-          getTeamMessageStatisticsModel().varianceMsgInterval = getTeamMessageStatisticsModel().expectation_xSquared - 
-            std::pow(getTeamMessageStatisticsModel().avgMsgInterval, 2);
         }
+        getTeamMessageStatisticsModel().varianceMsgInterval = getTeamMessageStatisticsModel().expectation_xSquared - 
+          std::pow(getTeamMessageStatisticsModel().avgMsgInterval, 2);
         PLOT("MessageStatistics:Team:MessageInterval", currentMessageInterval);
       }
     }
