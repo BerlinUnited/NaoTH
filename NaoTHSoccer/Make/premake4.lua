@@ -101,7 +101,7 @@ solution "NaoTHSoccer"
   
   configuration { "OptDebug" }
     defines { "DEBUG" }
-    flags { "Optimize", "FatalWarnings" }
+    flags { "OptimizeSpeed", "FatalWarnings" }
     
     
   configuration{"Native"}
@@ -190,6 +190,10 @@ solution "NaoTHSoccer"
       vpaths { ["*"] = FRAMEWORK_PATH .. "/Platforms/Source/NaoSMAL" }
       -- HACK: boost from NaoQI SDK makes problems
       buildoptions {"-Wno-conversion"}
+      -- these warning came in Windows with the toolchain 2013
+      buildoptions {"-Wno-unused-parameter"}
+      buildoptions {"-Wno-ignored-qualifiers"}
+      buildoptions {"-Wno-extra"}
       defines { "BOOST_SIGNALS_NO_DEPRECATION_WARNING" }
       -- ACHTUNG: NaoSMAL doesn't build with the flag -std=c++11 (because of Boost)
       buildoptions {"-std=gnu++11"}
@@ -212,4 +216,3 @@ solution "NaoTHSoccer"
       links { "NaoTHSoccer", "Commons" }
       vpaths { ["*"] = FRAMEWORK_PATH .. "/Platforms/Source/LogSimulatorJNI" }
   end
-  

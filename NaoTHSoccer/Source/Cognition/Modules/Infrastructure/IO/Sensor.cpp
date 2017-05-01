@@ -44,6 +44,7 @@ void Sensor::init(naoth::ProcessInterface& platformInterface, const naoth::Platf
   REG_INPUT(BatteryData);
   REG_INPUT(ButtonData);
   REG_INPUT(IRReceiveData);
+  REG_INPUT(CpuData);
   
   REG_INPUT(GPSData);
   REG_INPUT(TeamMessageDataIn);

@@ -5,6 +5,7 @@ package naoscp;
 
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.SftpException;
+import java.awt.Font;
 import java.io.*;
 import java.net.InetAddress;
 import java.net.URLDecoder;
@@ -16,6 +17,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.UIDefaults;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 import naoscp.components.DeployDialog;
 import naoscp.components.NetwokPanel;
 import naoscp.tools.*;
@@ -40,19 +45,43 @@ public class NaoSCP extends javax.swing.JFrame {
      * Creates new form NaoSCP
      */
     public NaoSCP() {
-        initComponents();
+      
+      boolean configLoaded = false;
+      try {
+        config.load(new FileReader(configPath));
+        config.setProperty("naoscp.naothsoccerpath", projectPath + "/NaoTHSoccer");
+        configLoaded = true;
+      } catch (IOException ex) {
+        Logger.getGlobal().log(Level.INFO,
+                "Could not open the config file. It will be created after the first execution.");
+      }
+        
+      try {
+        final String fontSizeProp = config.getProperty("naoscp.font-size");
+        if (fontSizeProp != null) {
+          UIManager.setLookAndFeel(new NimbusLookAndFeel() {
+            @Override
+            public UIDefaults getDefaults() {
+              UIDefaults defaults = super.getDefaults();
+              defaults.put("defaultFont", new Font(Font.SANS_SERIF, Font.PLAIN, Integer.parseInt(fontSizeProp)));
+              return defaults;
+            }
 
-        Logger.getGlobal().addHandler(logTextPanel.getLogHandler());
-        Logger.getGlobal().setLevel(Level.ALL);
-
-        try {
-            config.load(new FileReader(configPath));
-            config.setProperty("naoscp.naothsoccerpath", projectPath + "/NaoTHSoccer");
-            naoTHPanel.setProperties(config);
-        } catch (IOException ex) {
-            Logger.getGlobal().log(Level.INFO,
-                    "Could not open the config file. It will be created after the first execution.");
+          });
         }
+      } catch (UnsupportedLookAndFeelException ex) {
+        Logger.getGlobal().log(Level.INFO,
+                "Could not set look and feel/font size.");
+      }
+      
+      initComponents();
+
+      Logger.getGlobal().addHandler(logTextPanel.getLogHandler());
+      Logger.getGlobal().setLevel(Level.ALL);
+
+      if (configLoaded) {
+        naoTHPanel.setProperties(config);
+      }
     }
 
     public String getBasePath() {
