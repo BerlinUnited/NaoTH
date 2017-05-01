@@ -29,6 +29,7 @@
 #include <Representations/Infrastructure/VirtualVision.h>
 #include <Representations/Infrastructure/DebugMessage.h>
 #include "Representations/Infrastructure/CalibrationData.h"
+#include <Representations/Infrastructure/CpuData.h>
 
 #include "Representations/Infrastructure/GPSData.h"
 //#include "Representations/Infrastructure/SerialSensorData.h"
@@ -43,6 +44,7 @@
 // others
 #include <Representations/Infrastructure/FrameInfo.h>
 #include <Representations/Infrastructure/CameraSettings.h>
+#include "Representations/Modeling/GroundContactModel.h"
 
 
 // hack
@@ -68,6 +70,7 @@ BEGIN_DECLARE_MODULE(Sensor)
   PROVIDE(BatteryData)
   PROVIDE(UltraSoundReceiveData)
   PROVIDE(SoundCaptureData)
+  PROVIDE(CpuData)
 
   PROVIDE(TeamMessageDataIn)
   PROVIDE(RemoteMessageDataIn)
@@ -92,6 +95,7 @@ BEGIN_DECLARE_MODULE(Sensor)
   PROVIDE(CameraMatrixBufferTop)
   PROVIDE(CalibrationData)
   PROVIDE(BodyStatus)
+  PROVIDE(GroundContactModel)
 END_DECLARE_MODULE(Sensor)
 
 class Sensor : public SensorBase

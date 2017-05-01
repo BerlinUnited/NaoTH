@@ -19,6 +19,9 @@
 #include <map>
 #include <queue>
 
+#include <thread>
+#include <mutex>
+
 class DebugServer
 {
 public:
@@ -96,14 +99,14 @@ private:
   /** Communication interface */
   DebugCommunicator comm;
 
-  GThread* connectionThread;
+  std::thread connectionThread;
 
   GAsyncQueue* answers; // outgoing messages
   Channel received_messages_cognition;
   Channel received_messages_motion;
 
-  GMutex* m_executing;
-  GMutex* m_abort;
+  std::mutex m_executing;
+  std::mutex m_abort;
 
   bool abort;
 
@@ -112,8 +115,6 @@ private:
   void send();
 
   void parseCommand(GString* cmdRaw, naoth::DebugMessageIn::Message& command) const;
-
-  static void* connection_thread_static(void* ref);
 
   void disconnect();
   void clearQueues();

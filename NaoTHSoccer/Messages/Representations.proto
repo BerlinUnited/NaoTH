@@ -321,3 +321,15 @@ message RemoteControlCommand {
   
   optional Pose2D target = 4;
 }
+
+message GroundContactModel {
+  enum Foot {
+    LEFT = 0;
+    RIGHT = 1;
+    NONE = 2;
+  }
+  
+  required bool leftGroundContact = 1;
+  required bool rightGroundContact = 2;
+  required Foot supportFoot = 3;
+}

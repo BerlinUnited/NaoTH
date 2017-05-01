@@ -187,7 +187,7 @@ private:
   DOUBLE_CAM_REQUIRE(BallCandidateDetector, CameraMatrix);
   DOUBLE_CAM_REQUIRE(BallCandidateDetector, FieldPercept);
   //DOUBLE_CAM_REQUIRE(BallCandidateDetector, BodyContour);
-//  DOUBLE_CAM_REQUIRE(BallCandidateDetector, GameColorIntegralImage);
+  DOUBLE_CAM_REQUIRE(BallCandidateDetector, BallDetectorIntegralImage);
   DOUBLE_CAM_REQUIRE(BallCandidateDetector, FieldColorPercept);
 
   DOUBLE_CAM_PROVIDE(BallCandidateDetector, BallCandidates);

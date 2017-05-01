@@ -15,6 +15,8 @@
 #include "Tools/BasicMotion.h"
 
 
+#include <thread>
+
 //
 // This is to suppress the following gcc warning 
 // thrown because by the old version of boost used by naoqi
@@ -57,6 +59,8 @@ public:
   //
   void motionCallbackPre();
   void motionCallbackPost();
+private:
+  void shutdownCallback();
   
 private:
   // needed by theDCMHandler 
@@ -132,6 +136,9 @@ private:
   InertialSensorData theInertialSensorData;
   ButtonData theButtonData;
   BasicMotion* initialMotion;
+
+  // thread for shutdown
+  std::thread shutdownCallbackThread;
 };
 
 }//end namespace naoth
