@@ -572,8 +572,9 @@ void Walk::feetStabilize(const Step& executingStep, double (&position)[naoth::Jo
 
   // HACK: small filter...
   static Vector3d lastGyro = gyro;
-  Vector3d filteredGyro = (lastGyro+gyro)*0.5;
+  Vector3d filteredGyro = filteredGyro*0.8 + gyro*0.2;
 
+  // balanceAdjustment = filteredGyroY/25;
   Vector2d weight;
   weight.x = 
       parameters().stabilization.stabilizeFeetP.x * inertial.x
