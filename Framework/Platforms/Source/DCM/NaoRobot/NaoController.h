@@ -24,6 +24,7 @@
 #include "V4lCameraHandler.h"
 #include "SoundControl.h"
 #include "SPLGameController.h"
+#include "CPUTemperatureReader.h"
 #include "DebugCommunication/DebugServer.h"
 
 #include "Tools/Communication/Network/BroadCaster.h"
@@ -106,18 +107,7 @@ public:
   void get(BatteryData& data) { naoSensorData.get(data); }
   void get(UltraSoundReceiveData& data) { naoSensorData.get(data); }
   void get(WhistlePercept& data) {data.counter = whistleSensorData.data(); }
-  void get(CpuData& data) {
-      if (temperatureFile.is_open() && temperatureFile.good()) {
-          // read temperature
-          temperatureFile >> data.temperature;
-          data.temperature /= 1000.0;
-          // reset stream
-          temperatureFile.clear();                 // clear fail and eof bits
-          temperatureFile.seekg(0, std::ios::beg); // back to the start!
-      } else {
-        // Failed to open temperatureFile!
-      }
-  }
+  void get(CpuData& data) { theCPUTemperatureReader.get(data); }
 
   // write directly to the shared memory
   // ACHTUNG: each set calls swapWriting()
@@ -203,7 +193,7 @@ protected:
   UDPReceiver* theRemoteCommandListener;
   SPLGameController* theGameController;
   DebugServer* theDebugServer;
-  std::ifstream temperatureFile;
+  CPUTemperatureReader theCPUTemperatureReader;
 };
 
 } // end namespace naoth
