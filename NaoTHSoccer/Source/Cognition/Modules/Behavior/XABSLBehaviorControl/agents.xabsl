@@ -145,13 +145,9 @@ include "Options/Test/agent/dribble_test_agent.xabsl";
 include "Options/Test/agent/walk_forward_agent.xabsl";
 
 // PathPlanner Tests
-include "Options/Test/pathplanner_test_approach_ball_right.xabsl";
-include "Options/Test/pathplanner_test_approach_ball_left.xabsl";
 include "Options/Test/pathplanner_test_sidekick.xabsl";
 include "Options/Test/pathplanner_test_short_kick.xabsl";
 include "Options/Test/pathplanner_test_long_kick.xabsl";
-include "Options/Test/pathplanner_approach_ball_right.xabsl";
-include "Options/Test/pathplanner_approach_ball_left.xabsl";
 include "Options/Test/pathplanner_sidekick.xabsl";
 include "Options/Test/pathplanner_kick_short.xabsl";
 include "Options/Test/pathplanner_kick_long.xabsl";
@@ -273,8 +269,6 @@ agent dribble_test_agent("dribble_test_agent", dribble_test_agent);
 agent pathplanner_test_sidekick("pathplanner_test_sidekick", pathplanner_test_sidekick);
 agent pathplanner_test_short_kick("pathplanner_test_short_kick", pathplanner_test_short_kick);
 agent pathplanner_test_long_kick("pathplanner_test_long_kick", pathplanner_test_long_kick);
-agent pathplanner_test_approach_ball_right("pathplanner_test_approach_ball_right", pathplanner_test_approach_ball_right);
-agent pathplanner_test_approach_ball_left("pathplanner_test_approach_ball_left", pathplanner_test_approach_ball_left);
 
 
 // Test agents search
