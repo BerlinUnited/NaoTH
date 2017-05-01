@@ -92,7 +92,7 @@ void PathPlanner::walk_to_ball(const Foot foot)
   }
   double ballRotation = ballPos.angle();
 
-  Pose2D pose = { ballRotation, 0.7*(ballPos.x - getPathModel().distance), 0.0 };
+  Pose2D pose = { ballRotation, 0.7*(ballPos.x - getPathModel().distance), ballPos.y };
   if (step_buffer.empty())
   {
     add_single_step(pose, StepType::WALKSTEP);

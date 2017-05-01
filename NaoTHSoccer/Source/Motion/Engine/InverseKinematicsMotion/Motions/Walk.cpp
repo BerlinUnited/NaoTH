@@ -220,11 +220,11 @@ void Walk::calculateNewStep(const Step& lastStep, Step& newStep, const WalkReque
 
   // indicates whether the requested foot is movable in this step
   // i.e., it was NOT moved in the last step
-  bool stepControlPossible = 
+  bool stepControlPossible = true;/*
         lastStep.footStep.liftingFoot() == FootStep::NONE
     || (lastStep.footStep.liftingFoot() == FootStep::RIGHT && walkRequest.stepControl.moveLeftFoot)
     || (lastStep.footStep.liftingFoot() == FootStep::LEFT && !walkRequest.stepControl.moveLeftFoot);
-
+    */
   if (walkRequest.stepControl.stepID + 1 == stepBuffer.stepId()) // step control
   {
     //WalkRequest myRequest = walkRequest;
