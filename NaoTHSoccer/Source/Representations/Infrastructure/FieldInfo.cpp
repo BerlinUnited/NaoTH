@@ -78,6 +78,12 @@ void FieldInfo::calculateCrossings()
   fieldRect = Geometry::Rect2d(Vector2d(-xLength*0.5, -yLength*0.5), Vector2d(xLength*0.5, yLength*0.5));
   oppHalfRect = Geometry::Rect2d(Vector2d(0, -yLength*0.5), Vector2d(xLength*0.5, yLength*0.5));
 
+  Vector2d ownGoalBackRight(ownGoalPostRight.x - goalDepth, opponentGoalPostRight.y);
+  ownGoalRect = Geometry::Rect2d(ownGoalBackRight, ownGoalPostLeft);
+
+  Vector2d oppGoalBackRight(opponentGoalPostRight.x + goalDepth, opponentGoalPostRight.y);
+  oppGoalRect = Geometry::Rect2d(oppGoalBackRight, opponentGoalPostLeft);
+
   //Extra stuff for the Simulator
   xThrowInLineOwn = xPosOwnGroundline+1000;
   xThrowInLineOpp = -xThrowInLineOwn;
