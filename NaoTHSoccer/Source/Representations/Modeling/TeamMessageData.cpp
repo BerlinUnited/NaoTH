@@ -207,6 +207,7 @@ naothmessages::BUUserTeamMessage TeamMessageCustom::toProto() const
     userMsg.set_ispenalized(isPenalized);
     userMsg.set_batterycharge((float)batteryCharge);
     userMsg.set_temperature((float)temperature);
+    userMsg.set_key(key);
     return userMsg;
 }
 
