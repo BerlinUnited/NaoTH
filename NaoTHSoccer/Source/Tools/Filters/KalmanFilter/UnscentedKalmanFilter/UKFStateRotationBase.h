@@ -149,6 +149,7 @@ protected:
             averaged_rotational_difference = 1.0 / static_cast<double>(rotational_differences.size()) * averaged_rotational_difference;
 
             mean = Eigen::Quaterniond(Eigen::AngleAxis<double>(averaged_rotational_difference.norm(), averaged_rotational_difference.normalized())) * mean;
+
             if(averaged_rotational_difference.norm() < 10e-4){
                 break;
             }

@@ -32,6 +32,7 @@ public: // additional accessors
 //    Eigen::Block<Eigen::Matrix<double,dim,1> > rotational_velocity(){
 //        return Eigen::Block<Eigen::Matrix<double,dim,1> >(this->derived(), 3, 0, 3, 1);
 //    }
+    static const int size = dim;
 };
 
 // measurement vectors which are elements of a euclidean vector space, e.g. velocity, accelerations
@@ -73,6 +74,8 @@ public:
 
         return mean;
     }
+
+    static const int size = dim;/*
 };
 
 #endif // IMUROTATIONMEASUREMENT_H

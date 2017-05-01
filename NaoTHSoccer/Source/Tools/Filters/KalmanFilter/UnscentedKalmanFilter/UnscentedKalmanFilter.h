@@ -11,7 +11,7 @@
 #include <Eigen/Geometry>
 #include <Eigen/Dense>
 
-template <int dim_state_cov, int dim_measurement_cov, class S>
+template <class S>
 class UKF {
     public:
 // TODO: enable different updates like only acceleration and rotation or all three
@@ -22,8 +22,8 @@ class UKF {
 
     public:
         // covariances
-        Eigen::Matrix<double,dim_state_cov,dim_state_cov> P;             // covariance matrix of current state
-        Eigen::Matrix<double,dim_state_cov,dim_state_cov> Q;             // covariance matrix of process noise
+        Eigen::Matrix<double,S::size,S::size> P;             // covariance matrix of current state
+        Eigen::Matrix<double,S::size,S::size> Q;             // covariance matrix of process noise
         //Eigen::Matrix<double,dim_measurement_cov,dim_measurement_cov> R; // covariance matrix of measurement noise
 
     public:
@@ -35,7 +35,7 @@ class UKF {
 
     public:
         void reset(){
-            P     = Eigen::Matrix<double,dim_state_cov,dim_state_cov>::Identity();
+            P     = Eigen::Matrix<double,S::size,S::size>::Identity();
             state = S();
         }
 
@@ -49,7 +49,7 @@ class UKF {
             S mean = S::calcMean(sigmaPoints);
 
             // calculate new process covariance
-            Eigen::Matrix<double, dim_state_cov, dim_state_cov> cov = Eigen::Matrix<double, dim_state_cov, dim_state_cov>::Zero();
+            Eigen::Matrix<double, S::size, S::size> cov = Eigen::Matrix<double, S::size, S::size>::Zero();
             S temp;
 
             for(typename std::vector<S, Eigen::aligned_allocator<S> >::iterator i = sigmaPoints.begin(); i != sigmaPoints.end(); ++i){
@@ -76,7 +76,7 @@ class UKF {
             M predicted_z = M::calcMean(sigmaMeasurements);
 
             // calculate current measurement covariance
-            Eigen::MatrixXd Pzz = Eigen::MatrixXd::Zero(z.rows(),z.rows());
+            Eigen::Matrix<double,M::size,M::size> Pzz(Eigen::Matrix<double, M::size,M::size>::Zero());
             M temp;
 
             for(typename std::vector<M, Eigen::aligned_allocator<M> >::iterator i = sigmaMeasurements.begin(); i != sigmaMeasurements.end(); ++i){
@@ -86,10 +86,10 @@ class UKF {
 
             // apply measurement noise covariance
             // TODO: use correct measurement noise covariance matrix R
-            Eigen::MatrixXd Pvv = Pzz + R;
+            Eigen::Matrix<double,M::size,M::size> Pvv = Pzz + R;
 
             // calculate state-measurement cross-covariance
-            Eigen::MatrixXd Pxz = Eigen::MatrixXd::Zero(state.rows(),z.rows());
+            Eigen::Matrix<double,S::size,M::size> Pxz(Eigen::Matrix<double,S::size,M::size>::Zero());
             S temp1;
             M temp2;
 
@@ -101,7 +101,7 @@ class UKF {
             }
 
             // calculate kalman gain
-            Eigen::MatrixXd K = Pxz*Pvv.inverse();
+            Eigen::Matrix<double,S::size,M::size> K = Pxz*Pvv.inverse();
 
             // calculate new state and covariance
             M z_innovation = z - predicted_z;
@@ -112,7 +112,7 @@ class UKF {
 
             //assert (state.allFinite());
 
-            Eigen::Matrix<double,dim_state_cov,dim_state_cov> P_wiki;
+            Eigen::Matrix<double,S::size,S::size> P_wiki;
             P_wiki   = P - K*Pzz*K.transpose(); // https://en.m.wikipedia.org/wiki/Kalman_filter
 
             P = P_wiki;
@@ -123,7 +123,7 @@ class UKF {
         const double alpha  = 10E-3;
         const double kapa   = 0;
         const double beta   = 2;
-        const double lambda = alpha * alpha * (dim_state_cov + kapa) - dim_state_cov;
+        const double lambda = alpha * alpha * (S::size + kapa) - S::size;
 
         std::vector<S, Eigen::aligned_allocator<S> > sigmaPoints;
 
@@ -131,24 +131,24 @@ class UKF {
         S state;
 
         void generateSigmaPoints(){
-            sigmaPoints.resize(2*dim_state_cov+1);
+            sigmaPoints.resize(2*S::size+1);
 
-            sigmaPoints[2*dim_state_cov] = state;
+            sigmaPoints[2*S::size] = state;
 
-            Eigen::LLT<Eigen::Matrix<double,dim_state_cov,dim_state_cov> > choleskyDecompositionOfCov(P+Q); // apply Q befor the process model
-            Eigen::Matrix<double,dim_state_cov,dim_state_cov> L = choleskyDecompositionOfCov.matrixL();
+            Eigen::LLT<Eigen::Matrix<double,S::size,S::size> > choleskyDecompositionOfCov(P+Q); // apply Q befor the process model
+            Eigen::Matrix<double,S::size,S::size> L = choleskyDecompositionOfCov.matrixL();
 
             //assert (L.allFinite());
 
-            for(int i = 0; i < dim_state_cov; i++){
-                S noise(std::sqrt(2*dim_state_cov) * L.col(i));
+            for(int i = 0; i < S::size; i++){
+                S noise(std::sqrt(2*S::size) * L.col(i));
 
                 sigmaPoints[i]  = noise;
                 sigmaPoints[i] += state;
 
                 // generate "opposite" sigma point
-                sigmaPoints[i + dim_state_cov]  = -noise;
-                sigmaPoints[i + dim_state_cov] += state;
+                sigmaPoints[i + S::size]  = -noise;
+                sigmaPoints[i + S::size] += state;
             }
         }
 

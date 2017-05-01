@@ -104,6 +104,7 @@ class RotationState : public UKFStateRotationBase<RotationState<M1,/* M2,*/ dim,
 //            return_val << rotational_velocity();
 //            return return_val;
 //        }
+        static const int size = dim;
 };
 
 // state for acceleration in "global" reference frame
@@ -117,7 +118,7 @@ class State : public Eigen::Matrix<double,dim,1>{
         { }
 
         // inital state (zero rotation, zero angular velocity)
-        State(): Eigen::Matrix<double,dim,1>(){
+        State(): Eigen::Matrix<double,dim,1>(Eigen::Matrix<double,dim,1>::Zero()){
         }
 
         // This method allows you to assign Eigen expressions to MyVectorType
@@ -148,7 +149,7 @@ class State : public Eigen::Matrix<double,dim,1>{
 
         // state to measurement transformation function
         // HACK: add return type as parameter to enable overloading...
-        M1 asMeasurement(M1 /*z*/) const {
+        M1 asMeasurement(const M1& /*z*/) const {
             return acceleration();
         }
 
@@ -162,6 +163,11 @@ class State : public Eigen::Matrix<double,dim,1>{
 
             return mean;
         }
+
+        static const int size = dim;
+//        static int size() {
+//            return dim;
+//        }
 };
 
 #endif // IMUROTATIONSTATE_H

@@ -49,10 +49,6 @@ IMUModel::IMUModel(){
 //                -3.078687958578659292e-08, -3.013278205585369588e-07,  5.523361976811979815e-07, 0     , 0     , 0     ,  3.434758685147043306e-06, -8.299226917536411892e-08,  5.842662059539863827e-08,
 //                -1.132513004663809251e-06,  1.736820285922189584e-06, -1.730307422507887473e-07, 0     , 0     , 0     , -8.299226917536411892e-08,  1.006052718494827880e-05,  1.346681994776136150e-06,
 //                -6.485352375515866273e-07, -4.599219827687661978e-07, -3.030009469390110280e-07, 0     , 0     , 0     ,  5.842662059539863827e-08,  1.346681994776136150e-06,  3.242298821157115427e-06;
-
-    // --- for testing integration around z
-    angle_about_z = 0;
-    // --- end
 }
 
 void IMUModel::execute(){
@@ -61,12 +57,16 @@ void IMUModel::execute(){
                   ukf_acc_global.reset();
     );
 
-    double dt = getFrameInfo().getTimeInSeconds() - lastFrameInfo.getTimeInSeconds();
-
+    STOPWATCH_START("Motion:IMU:SigmaPointsRot");
     ukf_rot.generateSigmaPoints();
+    STOPWATCH_STOP("Motion:IMU:SigmaPointsRot");
+
     Eigen::Vector3d gyro;
     gyro << getGyrometerData().data.x, getGyrometerData().data.y, -getGyrometerData().data.z;
-    ukf_rot.predict(gyro, dt);
+
+    STOPWATCH_START("Motion:IMU:predictRot");
+    ukf_rot.predict(gyro,0.01);
+    STOPWATCH_STOP("Motion:IMU:predictRot");
 
     // don't generate sigma points again because the process noise would be applied a second time
     // ukf.generateSigmaPoints();
@@ -74,16 +74,11 @@ void IMUModel::execute(){
     Eigen::Vector3d acceleration = Eigen::Vector3d(getAccelerometerData().data.x, getAccelerometerData().data.y, getAccelerometerData().data.z);
 
     // --- for debug purpose only
-    bool use_gyro_only = false;
-    bool use_both = false;
+//    bool use_gyro_only = false;
+//    bool use_both = false;
 
-    DEBUG_REQUEST("IMUModel:use_both", use_both = true;);
-    DEBUG_REQUEST("IMUModel:use_only_gyro", use_gyro_only = true;);
-    // --- end
-
-    // --- for testing integration around z
-    angle_about_z += -getGyrometerData().data.z * dt;
-    PLOT("IMUModel:angle_about:z", Math::toDegrees(fmod(angle_about_z, 2*M_PI)));
+//    DEBUG_REQUEST("IMUModel:use_both", use_both = true;);
+//    DEBUG_REQUEST("IMUModel:use_only_gyro", use_gyro_only = true;);
     // --- end
 
     // TODO: empirical determination or better condition
@@ -95,7 +90,9 @@ void IMUModel::execute(){
         // gyro z axis seems to measure in opposite direction (turning left measures negative angular velocity, should be positive)
         z << quaternionToRotationVector(rotation_acc_to_gravity);//, getGyrometerData().data.x, getGyrometerData().data.y, -getGyrometerData().data.z;
 
+        STOPWATCH_START("Motion:IMU:upadteRot");
         ukf_rot.update(z, R_rotation);
+        STOPWATCH_STOP("Motion:IMU:upadteRot");
 
         updated_by_both = true;
     //}
@@ -111,28 +108,40 @@ void IMUModel::execute(){
     }*/
 
     IMU_AccMeasurementGlobal z_acc = ukf_rot.state.getRotationAsQuaternion()._transformVector(acceleration);
-
+    STOPWATCH_START("Motion:IMU:SigmaPointsAcc");
     ukf_acc_global.generateSigmaPoints();
+    STOPWATCH_STOP("Motion:IMU:SigmaPointsAcc");
     double u = 0;
-    ukf_acc_global.predict(u, dt);
+
+    STOPWATCH_START("Motion:IMU:predictAcc");
+    ukf_acc_global.predict(u, 0.01);
+    STOPWATCH_STOP("Motion:IMU:predictAcc");
+
+    STOPWATCH_START("Motion:IMU:upadteAcc");
     ukf_acc_global.update(z_acc, R_acc);
+    STOPWATCH_STOP("Motion:IMU:upadteAcc");
 
-    writeIMUData(dt);
 
+    STOPWATCH_START("Motion:IMU:writeData");
+    writeIMUData();
+    STOPWATCH_STOP("Motion:IMU:writeData");
+
+    STOPWATCH_START("Motion:IMU:plotting");
     plots();
+    STOPWATCH_STOP("Motion:IMU:plotting");
 
     lastFrameInfo = getFrameInfo();
 }
 
-void IMUModel::writeIMUData(double dt){
+void IMUModel::writeIMUData(){
     // raw sensor values
     getIMUData().rotational_velocity_sensor = getGyrometerData().data;
     getIMUData().acceleration_sensor = getAccelerometerData().data;
 
     // global position data
-    getIMUData().location += getIMUData().velocity * dt;
+    getIMUData().location += getIMUData().velocity * 0.01;
 
-    getIMUData().velocity += getIMUData().acceleration * dt;
+    getIMUData().velocity += getIMUData().acceleration * 0.01;
 
     getIMUData().acceleration.x = ukf_acc_global.state.acceleration()(0,0);
     getIMUData().acceleration.y = ukf_acc_global.state.acceleration()(1,0);
@@ -155,6 +164,12 @@ void IMUModel::writeIMUData(double dt){
 }
 
 void IMUModel::plots(){
+    // --- for testing integration around
+        static double angle_about_z;
+        angle_about_z += -getGyrometerData().data.z * 0.01;
+        PLOT("IMUModel:angle_about:z", Math::toDegrees(fmod(angle_about_z, 2*M_PI)));
+    // --- end
+
 //    PLOT("IMUModel:State:acceleration:x", ukf.state.acceleration()(0,0));
 //    PLOT("IMUModel:State:acceleration:y", ukf.state.acceleration()(1,0));
 //    PLOT("IMUModel:State:acceleration:z", ukf.state.acceleration()(2,0));
@@ -178,34 +193,14 @@ void IMUModel::plots(){
     Pose3D pose(rot);
     pose.translation = Vector3d(0,0,250);
 
-    Vector3d xAxis = Vector3<double>(60, 0, 0);
-    Vector3d yAxis = Vector3<double>(0, 60, 0);
-    Vector3d zAxis = Vector3<double>(0, 0, 60);
-
     // plot gravity
     Eigen::Vector3d acceleration;
     acceleration << getAccelerometerData().data.x, getAccelerometerData().data.y, getAccelerometerData().data.z;
     Eigen::Vector3d temp3 = ukf_rot.state.getRotationAsQuaternion()._transformVector(acceleration);
     Vector3d gravity(6*temp3(0),6*temp3(1),6*temp3(2));
 
-    xAxis = pose * xAxis;
-    yAxis = pose * yAxis;
-    zAxis = pose * zAxis;
-
-    BOX_3D("FFA07A", 15, 15, 30, pose);
-    LINE_3D(ColorClasses::red, pose.translation, xAxis);
-    LINE_3D(ColorClasses::green, pose.translation, yAxis);
-    LINE_3D(ColorClasses::blue, pose.translation, zAxis);
-
+    COLOR_CUBE(30, pose);
     LINE_3D(ColorClasses::black, pose.translation, pose.translation + gravity);
-
-//    PLOT("IMUModel:State:rotational_velocity:x", ukf_rot.state.rotational_velocity()(0,0));
-//    PLOT("IMUModel:State:rotational_velocity:y", ukf_rot.state.rotational_velocity()(1,0));
-//    PLOT("IMUModel:State:rotational_velocity:z", ukf_rot.state.rotational_velocity()(2,0));
-
-//    PLOT("IMUModel:State:bias_rotational_velocity:x", ukf.state.bias_rotational_velocity()(0,0));
-//    PLOT("IMUModel:State:bias_rotational_velocity:y", ukf.state.bias_rotational_velocity()(1,0));
-//    PLOT("IMUModel:State:bias_rotational_velocity:z", ukf.state.bias_rotational_velocity()(2,0));
 
     PLOT("IMUModel:Measurement:rotational_velocity:x", getGyrometerData().data.x);
     PLOT("IMUModel:Measurement:rotational_velocity:y", getGyrometerData().data.y);
