@@ -20,7 +20,7 @@ option path_kick_long_with_approach
         stay;
     }
     action{
-      path_go_to_ball_with_foot_dynamic(right=true, distance=160);
+      path_go_to_ball_with_foot_dynamic(right=true, distance=165);
     }
   }
 
@@ -45,7 +45,7 @@ option path_kick_long_with_approach
         stay;
     }
     action{
-      path_go_to_ball_with_foot_dynamic(right=false, distance=160);
+      path_go_to_ball_with_foot_dynamic(right=false, distance=165);
     }
   }
 
