@@ -148,7 +148,10 @@ void TeamMessageData::print(std::ostream &stream) const
 {
     stream << "TeamMessageData from " << playerNumber << "\n";
     //frameInfo.print(stream);
-    stream << "\t" << "Pos (x; y; rotation) = "
+    stream << "\t" << "last received = "
+                   << frameInfo.getFrameNumber()
+                   << " @ " << frameInfo.getTime() << "\n"
+           << "\t" << "Pos (x; y; rotation) = "
                    << pose.translation.x << "; "
                    << pose.translation.y << "; "
                    << pose.rotation <<"\n"

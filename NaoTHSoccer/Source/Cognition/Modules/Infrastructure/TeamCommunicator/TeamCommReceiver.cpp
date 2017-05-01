@@ -87,7 +87,7 @@ void TeamCommReceiver::handleMessage(const std::string& data)
   }
 
   // unpack the message and make sure the user part can be parsed
-  TeamMessageData msg;
+  TeamMessageData msg(getFrameInfo());
   if (!msg.parseFromSplMessage(spl)) {
     droppedMessages++;
     return;
