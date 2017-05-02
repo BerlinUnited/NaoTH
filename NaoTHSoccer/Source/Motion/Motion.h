@@ -141,11 +141,13 @@ private:
     Parameter() : ParameterList("Motion")
     {
       PARAMETER_REGISTER(useGyroRotationOdometry) = true;
+      PARAMETER_REGISTER(useIMUModel) = false;
 
       syncWithConfig();
     }
 
     bool useGyroRotationOdometry;
+    bool useIMUModel;
 
   } parameter;
 

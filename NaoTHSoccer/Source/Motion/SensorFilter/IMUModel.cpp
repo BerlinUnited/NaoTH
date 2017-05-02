@@ -141,6 +141,9 @@ void IMUModel::writeIMUData(){
     // from inertiasensorfilter
     getIMUData().orientation = Vector2d(atan2(q.toRotationMatrix()(2,1),  q.toRotationMatrix()(2,2)),
                                         atan2(-q.toRotationMatrix()(2,0), q.toRotationMatrix()(2,2)));
+
+    // only to enable transparent switching with InertiaSensorFilter
+    getInertialModel().orientation = getIMUData().orientation;
 }
 
 void IMUModel::plots(){

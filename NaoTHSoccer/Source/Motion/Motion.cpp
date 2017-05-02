@@ -68,11 +68,13 @@ Motion::Motion()
   theIMUModel = registerModule<IMUModel>("IMUModel", true);
 
   theMotionEngine = registerModule<MotionEngine>("MotionEngine", true);
+
+  getDebugParameterList().add(&parameter);
 }
 
 Motion::~Motion()
 {
-
+  getDebugParameterList().remove(&parameter);
 }
 
 void Motion::init(naoth::ProcessInterface& platformInterface, const naoth::PlatformBase& platform)
@@ -213,18 +215,19 @@ void Motion::processSensorData()
   // calibrate inertia sensors
   theInertiaSensorCalibrator->execute();
 
-  //TODO: introduce calibrated versions of the data
-  // correct the sensors
-  // getGyrometerData().data += getCalibrationData().gyroSensorOffset;
+  if(parameter.useIMUModel){
+      // currently uses uncalibrated sensor data
+      theIMUModel->execute();
+  } else {
+      //TODO: introduce calibrated versions of the data
+      //TODO: correct the sensors z is inverted => don't forget to check all modules requiring/providing GyrometerData
+      getGyrometerData().data      += getCalibrationData().gyroSensorOffset;
+      getInertialSensorData().data += getCalibrationData().inertialSensorOffset;
+      getAccelerometerData().data  += getCalibrationData().accSensorOffset;
 
-  //
-  theIMUModel->execute();
-
-//  getInertialSensorData().data += getCalibrationData().inertialSensorOffset;
-//  getAccelerometerData().data  += getCalibrationData().accSensorOffset;
-
-  //
-  theInertiaSensorFilterBH->execute();
+      //
+      theInertiaSensorFilterBH->execute();
+  }
 
   //
   theFootGroundContactDetector->execute();

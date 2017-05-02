@@ -15,6 +15,7 @@
 
 #include "Representations/Infrastructure/FrameInfo.h"
 #include <Representations/Modeling/IMUData.h>
+#include <Representations/Modeling/InertialModel.h>
 
 #include "Tools/Filters/KalmanFilter/UnscentedKalmanFilter/UnscentedKalmanFilter.h"
 
@@ -36,6 +37,7 @@ BEGIN_DECLARE_MODULE(IMUModel)
     REQUIRE(InertialSensorData)
 
     PROVIDE(IMUData)
+    PROVIDE(InertialModel) // only to enable transparent switching with InertiaSensorFilter
 END_DECLARE_MODULE(IMUModel)
 
 class IMUModel: private IMUModelBase
