@@ -8,7 +8,12 @@
 
 using namespace std;
 
-TeamCommReceiver::TeamCommReceiver() : droppedMessages(0)
+TeamCommReceiver::TeamCommReceiver():
+    dropNoSplMessage(0),
+    dropNotOurTeam(0),
+    dropNotParseable(0),
+    dropKeyFail(0),
+    dropMonotonic(0)
 {
   DEBUG_REQUEST_REGISTER("TeamCommReceiver:artificial_delay",
                          "Add an artificial delay to all team comm messages", false );
@@ -62,7 +67,11 @@ void TeamCommReceiver::execute()
   getTeamMessageData().frameInfo = getFrameInfo();
   // TODO: should we clear the old state?!? (see TeamMessageData::clear())
 
-  PLOT("TeamCommReceiver:droppedMessages", droppedMessages);
+  PLOT("TeamCommReceiver:dropNoSplMessage", dropNoSplMessage);
+  PLOT("TeamCommReceiver:dropNotOurTeam",   dropNotOurTeam);
+  PLOT("TeamCommReceiver:dropNotParseable", dropNotParseable);
+  PLOT("TeamCommReceiver:dropKeyFail",      dropKeyFail);
+  PLOT("TeamCommReceiver:dropMonotonic",    dropMonotonic);
 }
 
 void TeamCommReceiver::handleMessage(const std::string& data)
@@ -70,38 +79,37 @@ void TeamCommReceiver::handleMessage(const std::string& data)
   SPLStandardMessage spl;
   // only legal SPL messages
   if (!parseFromSplMessageString(data, spl)) {
-    droppedMessages++;
+    dropNoSplMessage++;
     return;
   }
 
   // only messages from own "team"
   if (spl.teamNum != (int)getPlayerInfo().teamNumber) {
-    droppedMessages++;
+    dropNotOurTeam++;
     return;
   }
 
   // ignore own messages
   if (spl.playerNum == (int)getPlayerInfo().playerNumber) {
-    //droppedMessages++;
     return;
   }
 
   // unpack the message and make sure the user part can be parsed
   TeamMessageData msg(getFrameInfo());
   if (!msg.parseFromSplMessage(spl)) {
-    droppedMessages++;
+    dropNotParseable++;
     return;
   }
 
   // make sure it's really our message
   if (msg.custom.key != NAOTH_TEAMCOMM_MESAGE_KEY) {
-    droppedMessages++;
+    dropKeyFail++;
     return;
   }
 
   // make sure the time step is monotonically rising
   if (parameters.monotonicTimestampCheck && !monotonicTimeStamp(msg)) {
-    droppedMessages++;
+    dropMonotonic++;
     return;
   }
 
