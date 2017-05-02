@@ -14,7 +14,7 @@ namespace field("Field Symbols") {
   float input field.yPosLeftSideline;
   float input field.yPosRightSideline;
 
- //Used to generate certain imaginary lines or points
+ //Used to generate certain imaginary lines or points
   float input field.xPosFirstDefenseline;
   float input field.xPosSecondDefenseline;
   float input field.yPosLeftFlank;
