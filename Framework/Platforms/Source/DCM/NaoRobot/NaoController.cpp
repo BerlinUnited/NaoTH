@@ -28,7 +28,6 @@ NaoController::NaoController()
   // init shared memory
   // sensor data
   const std::string naoSensorDataPath = "/nao_sensor_data";
-  temperatureFile.open("/sys/class/thermal/thermal_zone0/temp");
   // command data
   const std::string naoCommandMotorJointDataPath = "/nao_command.MotorJointData";
   const std::string naoCommandUltraSoundSendDataPath = "/nao_command.UltraSoundSendData";
@@ -176,9 +175,6 @@ NaoController::~NaoController()
   delete theTeamCommListener;
   delete theGameController;
   delete theDebugServer;
-  if (temperatureFile.is_open()) {
-    temperatureFile.close();
-  }
 }
 
 void NaoController::set(const CameraSettingsRequest &data)

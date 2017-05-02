@@ -38,13 +38,13 @@ void SimpleRoleDecision::computeStrikers() {
   unsigned int playerNearestToBall = 0; //nobody near to ball
 
   //if someone is striker, leave! Goalie can be striker (while f.e. clearing ball)
-  for(std::map<unsigned int, TeamMessage::Data>::const_iterator i=tm.data.begin(); i != tm.data.end(); ++i) {
-    const TeamMessage::Data& messageData = i->second;
-    const unsigned int number = i->first;
+  for(auto const &it : tm.data) {
+    const TeamMessageData& messageData = it.second;
+    const unsigned int number = it.first;
 
-    if((getFrameInfo().getTimeSince(i->second.frameInfo.getTime()) < parameters.maximumFreshTime) && // the message is fresh...
+    if((getFrameInfo().getTimeSince(messageData.frameInfo.getTime()) < parameters.maximumFreshTime) && // the message is fresh...
         number != getPlayerInfo().playerNumber && // its not me...
-        messageData.wasStriker // the guy wants to be striker...
+        messageData.custom.wasStriker // the guy wants to be striker...
         ) {
       getRoleDecisionModel().firstStriker = number; // let him go :)      
       PLOT(std::string("SimpleRoleDecision:StrikerDecision"), 0);
@@ -54,23 +54,24 @@ void SimpleRoleDecision::computeStrikers() {
 
   // all team members except goalie!! otherwise goalie is nearest and all thinks he is striker, but he won't clear ball
   //should check who has best position to goal etc.
-  for(std::map<unsigned int, TeamMessage::Data>::const_iterator i=tm.data.begin(); i != tm.data.end(); ++i) {
-    const TeamMessage::Data& messageData = i->second;
-    const unsigned int number = i->first;
+  for(auto const &it : tm.data) {
+      const TeamMessageData& messageData = it.second;
+      const unsigned int number = it.first;
 
-    double time_bonus = messageData.wasStriker?parameters.strikerBonusTime:0.0; //At this point, the only robot that may still have been a striker is us
+      double time_bonus = messageData.custom.wasStriker ? parameters.strikerBonusTime : 0.0; //At this point, the only robot that may still have been a striker is us
 
     if (!messageData.fallen
-      && !messageData.isPenalized
+      && !messageData.custom.isPenalized
       && number != 1 // goalie is not considered
-      && getFrameInfo().getTimeSince(i->second.frameInfo.getTime()) < parameters.maximumFreshTime // its fresh
+      && getFrameInfo().getTimeSince(messageData.frameInfo.getTime()) < parameters.maximumFreshTime // its fresh
       && (messageData.ballAge >= 0 && messageData.ballAge < parameters.maxBallLostTime+time_bonus )// the guy sees the ball
-      ) {
+      ) 
+    {
       Vector2d ballPos = messageData.ballPosition;
       double ballDistance = ballPos.abs();
 
       // striker bonus
-      if (messageData.wasStriker)
+      if (messageData.custom.wasStriker)
         ballDistance -= 100;
 
       // remember the closest guy

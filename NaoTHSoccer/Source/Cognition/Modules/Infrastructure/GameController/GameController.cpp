@@ -59,6 +59,12 @@ GameController::GameController()
   } else {
     std::cerr << "[GameData] " << "No team color (TeamColor) given" << std::endl;
   }
+
+  // use the team configuration if avaliable
+  const std::string& name = naoth::Platform::getInstance().theRobotName;
+  if (config.hasKey("team", name)) {
+    getPlayerInfo().playerNumber = config.getInt("team", name);
+  }
 }
 
 void GameController::execute()
