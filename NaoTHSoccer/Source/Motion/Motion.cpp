@@ -212,13 +212,13 @@ void Motion::processSensorData()
       getSensorJointData().position[i] = getSensorJointData().position[i] - getOffsetJointData().position[i];
   }
 
-  // calibrate inertia sensors
-  theInertiaSensorCalibrator->execute();
-
   if(parameter.useIMUModel){
       // currently uses uncalibrated sensor data
       theIMUModel->execute();
   } else {
+      // calibrate inertia sensors
+      theInertiaSensorCalibrator->execute();
+
       //TODO: introduce calibrated versions of the data
       //TODO: correct the sensors z is inverted => don't forget to check all modules requiring/providing GyrometerData
       getGyrometerData().data      += getCalibrationData().gyroSensorOffset;

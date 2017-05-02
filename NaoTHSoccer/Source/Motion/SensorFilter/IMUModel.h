@@ -112,9 +112,9 @@ private:
            PARAMETER_REGISTER(processNoiseAccQ11) = 0.01; // [m^2/s^4]
            PARAMETER_REGISTER(processNoiseAccQ22) = 0.01; // [m^2/s^4]
 
-           PARAMETER_REGISTER(processNoiseRotationQ00) = 0.00001; // [rad^2]
-           PARAMETER_REGISTER(processNoiseRotationQ11) = 0.00001; // [rad^2]
-           PARAMETER_REGISTER(processNoiseRotationQ22) = 0.00001; // [rad^2]
+           PARAMETER_REGISTER(processNoiseRotationQ00) = 0.01; // [rad^2]
+           PARAMETER_REGISTER(processNoiseRotationQ11) = 0.01; // [rad^2]
+           PARAMETER_REGISTER(processNoiseRotationQ22) = 0.01; // [rad^2]
 
            PARAMETER_REGISTER(measurementNoiseAccR00) =  1.243597518737325602e+00; // [m^2/s^4]
            PARAMETER_REGISTER(measurementNoiseAccR01) =  4.170491338560008421e-01; // [m^2/s^4]
@@ -130,12 +130,12 @@ private:
            PARAMETER_REGISTER(measurementNoiseGyroR12) = -1.577172441763024426e-05; // [rad^2/s^2]
            PARAMETER_REGISTER(measurementNoiseGyroR22) =  1.671519468894508767e-02; // [rad^2/s^2]
 
-           PARAMETER_REGISTER(measurementNoiseAngleR00) =  6.121479966093734681e-01; // [rad^2]
-           PARAMETER_REGISTER(measurementNoiseAngleR01) = -2.013737709159823391e-02; // [rad^2]
+           PARAMETER_REGISTER(measurementNoiseAngleR00) =  150; // [rad^2]
+           PARAMETER_REGISTER(measurementNoiseAngleR01) =  0.0; // [rad^2]
            PARAMETER_REGISTER(measurementNoiseAngleR02) =  0.0;                      // [rad^2]
-           PARAMETER_REGISTER(measurementNoiseAngleR11) =  2.705392100034859082e-01; // [rad^2]
+           PARAMETER_REGISTER(measurementNoiseAngleR11) =  150; // [rad^2]
            PARAMETER_REGISTER(measurementNoiseAngleR12) =  0.0;                     // [rad^2]
-           PARAMETER_REGISTER(measurementNoiseAngleR22) =  10e-05;                   // [rad^2]
+           PARAMETER_REGISTER(measurementNoiseAngleR22) =  150;                   // [rad^2]
 
            syncWithConfig();
        }

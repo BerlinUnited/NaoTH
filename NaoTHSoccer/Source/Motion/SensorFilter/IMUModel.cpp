@@ -11,7 +11,7 @@ IMUModel::IMUModel():
     DEBUG_REQUEST_REGISTER("IMUModel:use_only_gyro", "uses only the gyrometer to estimate the orientation (integration)", false);
 
     // Parameter Related Debug Requests
-    DEBUG_REQUEST_REGISTER("IMUModel:reloadParameters", "reloads the filter parameters from the imuParameter object", false);
+    DEBUG_REQUEST_REGISTER("IMUModel:reloadParameters", "reloads the filter parameters from the imuParameter object", true);
 
     ukf_acc_global.P = Eigen::Matrix<double,3,3>::Identity();        // covariance matrix of current state
     ukf_rot.P        = Eigen::Matrix<double,3,3>::Identity(); // covariance matrix of current state
