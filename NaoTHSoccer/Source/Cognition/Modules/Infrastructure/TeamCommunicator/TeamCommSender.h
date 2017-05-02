@@ -6,6 +6,7 @@
 #include <Representations/Infrastructure/FrameInfo.h>
 #include <Representations/Infrastructure/TeamMessageData.h>
 #include <Representations/Infrastructure/BatteryData.h>
+#include "Representations/Infrastructure/CpuData.h"
 #include "Representations/Modeling/PlayerInfo.h"
 #include <Representations/Infrastructure/RobotInfo.h>
 #include "Representations/Modeling/RobotPose.h"
@@ -33,6 +34,7 @@ BEGIN_DECLARE_MODULE(TeamCommSender)
   REQUIRE(TeamMessage)
   REQUIRE(BatteryData)
   REQUIRE(KickActionModel)
+  REQUIRE(CpuData)
 
   PROVIDE(TeamMessageData)
   PROVIDE(TeamMessageDataOut)

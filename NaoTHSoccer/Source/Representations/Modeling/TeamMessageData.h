@@ -6,11 +6,10 @@
  *  To add a new field to the teamcomm message, do as follows:
  *  - edit the "Representation.proto" file and extend the "BUUserTeamMessage" definition
  *  - (re-)compile the protobuf files
- *  - add a class variable (in the "BU message field" section)
+ *  - add a class variable to the TeamMessageCustom class
  *  - use constructor to initialize/copy your variable
- *  - edit the getBUUserTeamMessage()/setFromBUUserTeamMessage() and make sure your variable
- *    gets written/parsed to/from the protobuf message
- * [ - do the same for (de-)serialization: serialize()/deserialize() ]
+ *  - edit the toProto() & parseFromProto() and make sure your variable gets written/parsed to/from the protobuf message
+ * [ - add the variable to print(), so it gets printed out ... ]
  */
 
 
@@ -48,6 +47,7 @@ public:
   bool isPenalized;           // whether the robot is penalized, or not
   double batteryCharge;       // the battery charge
   double temperature;         // the max. temperature of the left or right leg!
+  double cpuTemperature;      // the temperature of the cpu
   // opponents ?
 
   /** Sets the data according to the protobuf message. */

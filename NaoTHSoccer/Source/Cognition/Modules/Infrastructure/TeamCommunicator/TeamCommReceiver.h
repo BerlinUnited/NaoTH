@@ -81,7 +81,12 @@ private:
   }
 
   RingBuffer<std::string, 100> delayBuffer;
-  int droppedMessages;
+
+  unsigned int dropNoSplMessage;
+  unsigned int dropNotOurTeam;
+  unsigned int dropNotParseable;
+  unsigned int dropKeyFail;
+  unsigned int dropMonotonic;
 };
 
 #endif // TEAMCOMMRECEIVER_H

@@ -178,7 +178,8 @@ TeamMessageCustom::TeamMessageCustom() :
   timeToBall(std::numeric_limits<unsigned int>::max()),
   isPenalized(false),
   batteryCharge(0.0),
-  temperature(0.0)
+  temperature(0.0),
+  cpuTemperature(0.0)
 {
 }
 
@@ -193,7 +194,8 @@ void TeamMessageCustom::print(std::ostream &stream) const
     << "\t" << "wantsToBeStriker: " << (wantsToBeStriker ? "yes" : "no") << "\n"
     << "\t" << "isPenalized: " << (isPenalized ? "yes" : "no") << "\n"
     << "\t" << "batteryCharge: " << batteryCharge << "\n"
-    << "\t" << "temperature: " << temperature << "\n"
+    << "\t" << "temperature: " << temperature << "°C\n"
+    << "\t" << "CPU: " << cpuTemperature << "°C\n"
     ;
   stream << std::endl;
 }//end print
@@ -210,6 +212,7 @@ naothmessages::BUUserTeamMessage TeamMessageCustom::toProto() const
     userMsg.set_ispenalized(isPenalized);
     userMsg.set_batterycharge((float)batteryCharge);
     userMsg.set_temperature((float)temperature);
+    userMsg.set_cputemperature((float)cpuTemperature);
     userMsg.set_key(key);
     return userMsg;
 }
@@ -224,6 +227,7 @@ void TeamMessageCustom::parseFromProto(const naothmessages::BUUserTeamMessage &u
     isPenalized = userData.ispenalized();
     batteryCharge = userData.batterycharge();
     temperature = userData.temperature();
+    cpuTemperature = userData.cputemperature();
     key = userData.key();
 }
 

@@ -70,6 +70,7 @@ void TeamCommSender::fillMessageBeforeSending() const
     msg.custom.isPenalized = getPlayerInfo().robotState == PlayerInfo::penalized;
     msg.custom.batteryCharge = getBatteryData().charge;
     msg.custom.temperature = std::max(getBodyState().temperatureLeftLeg, getBodyState().temperatureRightLeg);
+    msg.custom.cpuTemperature = getCpuData().temperature;
     // TODO: shall we put it into config?
     msg.custom.key = NAOTH_TEAMCOMM_MESAGE_KEY;
 }
