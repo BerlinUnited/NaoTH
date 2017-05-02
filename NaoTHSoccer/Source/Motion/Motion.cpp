@@ -215,7 +215,7 @@ void Motion::processSensorData()
 
   //TODO: introduce calibrated versions of the data
   // correct the sensors
-//  getGyrometerData().data += getCalibrationData().gyroSensorOffset;
+  // getGyrometerData().data += getCalibrationData().gyroSensorOffset;
 
   //
   theIMUModel->execute();

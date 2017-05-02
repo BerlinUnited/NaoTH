@@ -3,58 +3,38 @@
 //TODO: remove pragma, problem with eigens optimization stuff "because conversion sequence for the argument is better"
 #pragma GCC diagnostic ignored "-Wconversion"
 
-IMUModel::IMUModel(){
+IMUModel::IMUModel():
+    integrated(1,0,0,0)
+{
     DEBUG_REQUEST_REGISTER("IMUModel:reset_filter", "reset filter", false);
     DEBUG_REQUEST_REGISTER("IMUModel:use_both", "uses accelerometer and gyrometer to estimate the orientation", false);
     DEBUG_REQUEST_REGISTER("IMUModel:use_only_gyro", "uses only the gyrometer to estimate the orientation (integration)", false);
 
-    // covariances of the acceleration filter
+    // Parameter Related Debug Requests
+    DEBUG_REQUEST_REGISTER("IMUModel:reloadParameters", "reloads the filter parameters from the imuParameter object", false);
+
     ukf_acc_global.P = Eigen::Matrix<double,3,3>::Identity();        // covariance matrix of current state
-    ukf_acc_global.Q = 0.01 * Eigen::Matrix<double,3,3>::Identity(); // covariance matrix of process noise
+    ukf_rot.P        = Eigen::Matrix<double,3,3>::Identity(); // covariance matrix of current state
 
-    R_acc << 5.074939351879890342e-04, -1.561730283237946278e-05,  1.012849085655689321e-04,
-            -1.561730283237946278e-05,  2.570436087068024501e-04, -4.159091012580820026e-05,
-             1.012849085655689321e-04, -4.159091012580820026e-05,  4.727921819788054878e-04; // covariance matrix of measurement noise
+    getDebugParameterList().add(&imuParameters);
 
-    // covariances of the rotation filter
-    ukf_rot.P = Eigen::Matrix<double,3,3>::Identity(); // covariance matrix of current state
-    ukf_rot.Q = Eigen::Matrix<double,3,3>::Identity(); // covariance matrix of process noise
+    reloadParameters();
+}
 
-    // rotation (x,y,z) [rad]?
-    ukf_rot.Q(0,0) = 0.00001;
-    ukf_rot.Q(1,1) = 0.00001;
-    ukf_rot.Q(2,2) = 0.00001;
-
-    // rotational_velocity (x,y,z) [rad/s], too small?
-//    ukf_rot.Q(3,3) = 0.1;
-//    ukf_rot.Q(4,4) = 0.1;
-//    ukf_rot.Q(5,5) = 0.1;
-
-    // synthetic measurement covariance matrix used for testing
-    R_rotation << 10e-2, 0, 0,// 0, 0, 0,
-                  0, 10e-2, 0,// 0, 0, 0,
-                  0, 0, 10e-2;// 0, 0, 0,
-//                  0, 0, 0,  3.434758685147043306e-06, -8.299226917536411892e-08,  5.842662059539863827e-08,
-//                  0, 0, 0, -8.299226917536411892e-08,  1.006052718494827880e-05,  1.346681994776136150e-06,
-//                  0, 0, 0,  5.842662059539863827e-08,  1.346681994776136150e-06,  3.242298821157115427e-06;
-
-    // set covariance matrix of measurement noise
-    // measured covariance of acceleration and rotational velocity (motion log, 60 seconds)
-//            R << 5.074939351879890342e-04, -1.561730283237946278e-05,  1.012849085655689321e-04, 0     , 0     , 0     , -3.078687958578659292e-08, -1.132513004663809251e-06, -6.485352375515866273e-07,
-//                -1.561730283237946278e-05,  2.570436087068024501e-04, -4.159091012580820026e-05, 0     , 0     , 0     , -3.013278205585369588e-07,  1.736820285922189584e-06, -4.599219827687661978e-07,
-//                 1.012849085655689321e-04, -4.159091012580820026e-05,  4.727921819788054878e-04, 0     , 0     , 0     ,  5.523361976811979815e-07, -1.730307422507887473e-07, -3.030009469390110280e-07,
-//                 0                       ,  0                       ,  0                       , 10e-11, 0     , 0     ,  0                       ,  0                       ,  0                       ,
-//                 0                       ,  0                       ,  0                       , 0     , 10e-11, 0     ,  0                       ,  0                       ,  0                       ,
-//                 0                       ,  0                       ,  0                       , 0     , 0     , 10e-11,  0                       ,  0                       ,  0                       ,
-//                -3.078687958578659292e-08, -3.013278205585369588e-07,  5.523361976811979815e-07, 0     , 0     , 0     ,  3.434758685147043306e-06, -8.299226917536411892e-08,  5.842662059539863827e-08,
-//                -1.132513004663809251e-06,  1.736820285922189584e-06, -1.730307422507887473e-07, 0     , 0     , 0     , -8.299226917536411892e-08,  1.006052718494827880e-05,  1.346681994776136150e-06,
-//                -6.485352375515866273e-07, -4.599219827687661978e-07, -3.030009469390110280e-07, 0     , 0     , 0     ,  5.842662059539863827e-08,  1.346681994776136150e-06,  3.242298821157115427e-06;
+IMUModel::~IMUModel()
+{
+    getDebugParameterList().remove(&imuParameters);
 }
 
 void IMUModel::execute(){
     DEBUG_REQUEST("IMUModel:reset_filter",
                   ukf_rot.reset();
                   ukf_acc_global.reset();
+                  integrated=Eigen::Quaterniond(1,0,0,0);
+    );
+
+    DEBUG_REQUEST("IMUModel:reloadParameters",
+        reloadParameters();
     );
 
     STOPWATCH_START("Motion:IMU:SigmaPointsRot");
@@ -164,10 +144,21 @@ void IMUModel::writeIMUData(){
 }
 
 void IMUModel::plots(){
-    // --- for testing integration around
-        static double angle_about_z;
-        angle_about_z += -getGyrometerData().data.z * 0.01;
-        PLOT("IMUModel:angle_about:z", Math::toDegrees(fmod(angle_about_z, 2*M_PI)));
+    // --- for testing integration
+        Eigen::Matrix3d rot_vel_mat;
+        // getGyrometerData().data.z is inverted!
+        rot_vel_mat << 1                             , getGyrometerData().data.z*0.01,  getGyrometerData().data.y*0.01,
+                      -getGyrometerData().data.z*0.01,                              1, -getGyrometerData().data.x*0.01,
+                      -getGyrometerData().data.y*0.01, getGyrometerData().data.x*0.01,                               1;
+
+        // continue rotation assuming constant velocity
+        integrated = integrated * Eigen::Quaterniond(rot_vel_mat);;
+
+        Vector3d translation(0,250,250);
+        LINE_3D(ColorClasses::red, translation, translation + quaternionToVector3D(integrated) * 100.0);
+        LINE_3D(ColorClasses::blue, translation, translation + quaternionToVector3D(ukf_rot.state.getRotationAsQuaternion()) * 100.0);
+
+        PLOT("IMUModel:Error:relative_to_pure_integration[°]", Math::toDegrees(Eigen::AngleAxisd(integrated*ukf_rot.state.getRotationAsQuaternion().inverse()).angle()));
     // --- end
 
 //    PLOT("IMUModel:State:acceleration:x", ukf.state.acceleration()(0,0));
@@ -200,13 +191,36 @@ void IMUModel::plots(){
     Vector3d gravity(6*temp3(0),6*temp3(1),6*temp3(2));
 
     COLOR_CUBE(30, pose);
-    LINE_3D(ColorClasses::black, pose.translation, pose.translation + gravity);
+    LINE_3D(ColorClasses::black, pose.translation, pose.translation + gravity*10.0);
 
     PLOT("IMUModel:Measurement:rotational_velocity:x", getGyrometerData().data.x);
     PLOT("IMUModel:Measurement:rotational_velocity:y", getGyrometerData().data.y);
     PLOT("IMUModel:Measurement:rotational_velocity:z", getGyrometerData().data.z);
 
     PLOT("IMUModel:updated_by_both", updated_by_both);
+}
+
+void IMUModel::reloadParameters()
+{
+    // covariances of the acceleration filter
+    ukf_acc_global.Q << imuParameters.processNoiseAccQ00,                                0,                                0,
+                                                       0, imuParameters.processNoiseAccQ11,                                0,
+                                                       0,                                0, imuParameters.processNoiseAccQ22;
+
+    // covariances of the rotation filter
+    ukf_rot.Q << imuParameters.processNoiseRotationQ00,                                     0,                                     0,
+                                                     0, imuParameters.processNoiseRotationQ11,                                     0,
+                                                     0,                                     0, imuParameters.processNoiseRotationQ22;
+
+    // measurement covariance matrix for the acceleration while stepping
+    R_acc << imuParameters.measurementNoiseAccR00, imuParameters.measurementNoiseAccR01, imuParameters.measurementNoiseAccR02,
+             imuParameters.measurementNoiseAccR01, imuParameters.measurementNoiseAccR11, imuParameters.measurementNoiseAccR12,
+             imuParameters.measurementNoiseAccR02, imuParameters.measurementNoiseAccR12, imuParameters.measurementNoiseAccR22;
+
+    // measurement covariance matrix for the rotation while stepping
+    R_rotation << imuParameters.measurementNoiseAngleR00, imuParameters.measurementNoiseAngleR01, imuParameters.measurementNoiseAngleR02,
+                  imuParameters.measurementNoiseAngleR01, imuParameters.measurementNoiseAngleR11, imuParameters.measurementNoiseAngleR12,
+                  imuParameters.measurementNoiseAngleR02, imuParameters.measurementNoiseAngleR12, imuParameters.measurementNoiseAngleR22;
 }
 
 #pragma GCC diagnostic pop

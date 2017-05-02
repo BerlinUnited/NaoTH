@@ -75,7 +75,7 @@ public:
         return mean;
     }
 
-    static const int size = dim;/*
+    static const int size = dim;
 };
 
 #endif // IMUROTATIONMEASUREMENT_H
