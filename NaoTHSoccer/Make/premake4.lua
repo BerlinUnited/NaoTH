@@ -101,7 +101,7 @@ solution "NaoTHSoccer"
   
   configuration { "OptDebug" }
     defines { "DEBUG" }
-    flags { "Optimize", "FatalWarnings" }
+    flags { "OptimizeSpeed", "FatalWarnings" }
     
     
   configuration{"Native"}

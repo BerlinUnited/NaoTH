@@ -35,7 +35,6 @@ private:
   RoboCupGameControlData dataIn;
   RoboCupGameControlReturnData dataOut;
 
-  unsigned int lastGetTime;
   naoth::GameData data;
   std::mutex  dataMutex;
   std::mutex returnDataMutex;
