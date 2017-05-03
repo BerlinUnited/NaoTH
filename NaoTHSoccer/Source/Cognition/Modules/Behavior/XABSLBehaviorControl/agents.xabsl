@@ -18,6 +18,8 @@ include "Symbols/goal_symbols.xabsl";
 include "Symbols/selfloc_symbols.xabsl";
 include "Symbols/sound_symbols.xabsl";
 include "Symbols/field_symbols.xabsl";
+include "Symbols/remote_symbols.xabsl";
+
 
 // Head Control
 include "Options/HeadControl/head_control.xabsl";
@@ -107,6 +109,13 @@ include "Options/Soccer/Test/passive_player_agent.xabsl";
 include "Options/Soccer/Test/basic_goali_agent.xabsl";
 include "Options/Soccer/Test/striker_agent.xabsl";
 
+// remote
+include "Options/Remote/spl_remote_agent.xabsl";
+include "Options/Remote/spl_remote_decide_gamestate.xabsl";
+include "Options/Remote/spl_remote_play.xabsl";
+include "Options/Remote/spl_remote_play_direct_control.xabsl";
+include "Options/Remote/spl_remote_play_lock_control.xabsl";
+include "Options/Remote/spl_remote_secondary_actions.xabsl";
 
 /* Test section */
 // Test agents Head Control
@@ -201,6 +210,7 @@ include "Options/Test/change_state_input_test.xabsl";
 agent spl_soccer("SPL Soccer", spl_play_soccer);
 agent penalty("Penalty", play_penalty);
 
+agent spl_remote("Remote Player", spl_remote_agent);
 
 /** simple soccer agents **/
 agent role_basic_goali("basic_goali", basic_goali_agent);
