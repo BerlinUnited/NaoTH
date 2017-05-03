@@ -14,8 +14,7 @@
 #include "Tools/Debug/DebugParameterList.h"
 
 #include "Representations/Perception/LineGraphPercept.h"
-#include "Representations/Perception/CameraMatrix.h"
-//#include "Representations/Perception/ScanLineEdgelPercept.h"
+#include "Representations/Perception/LinePercept.h"
 
 #include "Tools/Debug/DebugParameterList.h"
 
@@ -27,13 +26,9 @@ BEGIN_DECLARE_MODULE(RansacLineDetector)
   PROVIDE(DebugImageDrawingsTop)
   PROVIDE(DebugParameterList)
 
-  //REQUIRE(ScanLineEdgelPercept)
-  //REQUIRE(ScanLineEdgelPerceptTop)
-
   REQUIRE(LineGraphPercept)
 
-  REQUIRE(CameraMatrix)
-  REQUIRE(CameraMatrixTop)
+  PROVIDE(LinePercept)
 END_DECLARE_MODULE(RansacLineDetector)
 
 class RansacLineDetector: public RansacLineDetectorBase

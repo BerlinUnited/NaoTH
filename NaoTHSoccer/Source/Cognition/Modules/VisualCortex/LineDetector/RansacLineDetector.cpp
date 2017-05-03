@@ -3,7 +3,8 @@
 RansacLineDetector::RansacLineDetector()
 {
   // initialize some stuff here
-  DEBUG_REQUEST_REGISTER("Vision:RansacLineDetector:edgels", "", false);
+  DEBUG_REQUEST_REGISTER("Vision:RansacLineDetector:draw_edgels_field", "", false);
+  DEBUG_REQUEST_REGISTER("Vision:RansacLineDetector:draw_lines_field", "", false);
 
   getDebugParameterList().add(&params);
 }
@@ -15,9 +16,10 @@ RansacLineDetector::~RansacLineDetector()
 
 void RansacLineDetector::execute()
 {
-  // do some stuff here
+  getLinePercept().reset();
 
-  DEBUG_REQUEST("Vision:RansacLineDetector:edgels",
+
+  DEBUG_REQUEST("Vision:RansacLineDetector:draw_edgels_field",
     FIELD_DRAWING_CONTEXT;
 
     for(const Edgel& e: getLineGraphPercept().edgels)
@@ -38,22 +40,33 @@ void RansacLineDetector::execute()
     outliers[i] = i;
   }
   
-  for(int i = 0; i < 10; ++i)
+  for(int i = 0; i < 11; ++i)
   {
     Math::LineSegment result;
     if(ransac(result) > 0) 
     {
-      const Vector2d& a = result.begin();
-      const Vector2d& b = result.end();
-      FIELD_DRAWING_CONTEXT;
-      PEN("FF0000", 30);
-      LINE(a.x,a.y,b.x,b.y);
+      LinePercept::FieldLineSegment fieldLine;
+      fieldLine.lineOnField = result;
+      getLinePercept().lines.push_back(fieldLine);
     } 
     else {
       break;
     }
   }
   
+
+  DEBUG_REQUEST("Vision:RansacLineDetector:draw_lines_field",
+    FIELD_DRAWING_CONTEXT;
+
+    for(const LinePercept::FieldLineSegment& line: getLinePercept().lines)
+    {
+      PEN("999999", 50);
+      LINE(
+        line.lineOnField.begin().x, line.lineOnField.begin().y,
+        line.lineOnField.end().x, line.lineOnField.end().y);
+    }
+  );
+
 }
 
 int RansacLineDetector::ransac(Math::LineSegment& result)
@@ -104,7 +117,7 @@ int RansacLineDetector::ransac(Math::LineSegment& result)
     }
 
 
-    if(inlier > params.inlierMin && (inlier > bestInlier || (inlier == bestInlier && inlierError < bestInlierError))) {
+    if(inlier >= params.inlierMin && (inlier > bestInlier || (inlier == bestInlier && inlierError < bestInlierError))) {
       bestModel = model;
       bestInlier = inlier;
       bestInlierError = inlierError;
