@@ -6,11 +6,13 @@
 #include <Representations/Infrastructure/FrameInfo.h>
 #include <Representations/Infrastructure/TeamMessageData.h>
 #include <Representations/Infrastructure/BatteryData.h>
+#include "Representations/Infrastructure/CpuData.h"
 #include "Representations/Modeling/PlayerInfo.h"
 #include <Representations/Infrastructure/RobotInfo.h>
 #include "Representations/Modeling/RobotPose.h"
 #include "Representations/Modeling/BallModel.h"
 #include "Representations/Modeling/TeamMessage.h"
+#include "Representations/Modeling/TeamMessageData.h"
 #include "Representations/Modeling/BodyState.h"
 #include "Representations/Motion/MotionStatus.h"
 #include "Representations/Modeling/RoleDecisionModel.h"
@@ -32,7 +34,9 @@ BEGIN_DECLARE_MODULE(TeamCommSender)
   REQUIRE(TeamMessage)
   REQUIRE(BatteryData)
   REQUIRE(KickActionModel)
+  REQUIRE(CpuData)
 
+  PROVIDE(TeamMessageData)
   PROVIDE(TeamMessageDataOut)
 END_DECLARE_MODULE(TeamCommSender)
 
@@ -43,29 +47,11 @@ public:
 
   virtual void execute();
 
-  static void fillMessage(const PlayerInfo &playerInfo,
-                            const RobotInfo &robotInfo,
-                            const FrameInfo &frameInfo,
-                            const BallModel &ballModel,
-                            const RobotPose &robotPose,
-                            const BodyState &bodyState,
-                            const RoleDecisionModel &roleDecisionModel,
-                            const SoccerStrategy &soccerStrategy,
-                            const PlayersModel &playersModel,
-                            const BatteryData &batteryData,
-                            const KickActionModel &kickActionModel,
-                            TeamMessage::Data &out);
-
- static void convertToSPLMessage(const TeamMessage::Data& teamMsg, SPLStandardMessage& splMsg);
-
 private:
   unsigned int lastSentTimestamp;
   unsigned int send_interval;
 
-  void createMessage(SPLStandardMessage &msg);
-
-  static void addSendOppModel(unsigned int oppNum, const PlayersModel &playersModel,
-                              TeamMessage::Opponent &out);
+  void fillMessageBeforeSending() const;
 };
 
 #endif // TEAMCOMMSENDER_H

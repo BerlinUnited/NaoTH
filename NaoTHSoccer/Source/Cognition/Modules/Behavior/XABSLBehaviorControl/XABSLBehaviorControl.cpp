@@ -53,6 +53,7 @@ XABSLBehaviorControl::XABSLBehaviorControl()
   REGISTER_MODULE(SoundSymbols, true);
   REGISTER_MODULE(LineSymbols, true);
   REGISTER_MODULE(PathSymbols, true);
+  REGISTER_MODULE(RemoteSymbols, true);
   
 
   // load the behavior from config
@@ -246,6 +247,7 @@ void XABSLBehaviorControl::registerXABSLSymbols()
     XABSL_REGISTER_SYMBOLS(SoundSymbols);
     XABSL_REGISTER_SYMBOLS(LineSymbols);
     XABSL_REGISTER_SYMBOLS(PathSymbols);
+    XABSL_REGISTER_SYMBOLS(RemoteSymbols);
   }
 }//end registerXABSLSymbols
 

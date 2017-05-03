@@ -19,7 +19,7 @@ fig = plt.figure()
 image_canvas = None
 
 show_size = (10, 10)    # width, height
-patch_size = (12, 12)    # width, height
+patch_size = (24, 24)    # width, height
 fullscreen = False
 
 

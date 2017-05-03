@@ -46,6 +46,7 @@
 #include "Symbols/SoundSymbols.h"
 #include "Symbols/LineSymbols.h"
 #include "Symbols/PathSymbols.h"
+#include "Symbols/RemoteSymbols.h"
 
 
 // ErrorHandler
@@ -158,6 +159,7 @@ private:
   ModuleCreator<SoundSymbols>* theSoundSymbols;
   ModuleCreator<LineSymbols>* theLineSymbols;
   ModuleCreator<PathSymbols>* thePathSymbols;
+  ModuleCreator<RemoteSymbols>* theRemoteSymbols;
 };
 
 #endif  /* _XABSLBehaviorControl_H */
