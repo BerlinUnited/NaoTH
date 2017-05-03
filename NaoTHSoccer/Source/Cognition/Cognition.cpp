@@ -74,6 +74,7 @@
 #include "Modules/Modeling/TeamMessageStatistics/TeamRobotInfo.h"
 #include "Modules/Modeling/RoleDecision/SimpleRoleDecision/SimpleRoleDecision.h"
 #include "Modules/Modeling/RoleDecision/StableRoleDecision/StableRoleDecision.h"
+#include "Modules/Modeling/RoleDecision/CleanRoleDecision/CleanRoleDecision.h"
 #include "Modules/Modeling/SoccerStrategyProvider/SoccerStrategyProvider.h"
 #include "Modules/Modeling/PotentialFieldProvider/PotentialFieldProvider.h"
 #include "Modules/Modeling/SelfLocator/GPS_SelfLocator/GPS_SelfLocator.h"
@@ -93,6 +94,7 @@
 // behavior
 #include "Modules/Behavior/BasicTestBehavior/BasicTestBehavior.h"
 #include "Modules/Behavior/XABSLBehaviorControl/XABSLBehaviorControl.h"
+#include "Modules/Behavior/RemoteControlBehavior/RemoteControlBehavior.h"
 
 using namespace std;
 
@@ -181,6 +183,7 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(TeamRobotInfo);
   REGISTER_MODULE(SimpleRoleDecision);
   REGISTER_MODULE(StableRoleDecision);
+  REGISTER_MODULE(CleanRoleDecision);
   REGISTER_MODULE(SoccerStrategyProvider);
   REGISTER_MODULE(PotentialFieldProvider);
   REGISTER_MODULE(GPS_SelfLocator);
@@ -197,6 +200,7 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   // behavior
   REGISTER_MODULE(BasicTestBehavior);
   REGISTER_MODULE(XABSLBehaviorControl);
+  REGISTER_MODULE(RemoteControlBehavior);
 
   REGISTER_MODULE(TeamCommSender);
   

@@ -40,15 +40,14 @@ void StableRoleDecision::execute()
     ownTimeToBall -= 300;
   }
 
-  TeamMessage::PlayerMessageMap::const_iterator i=getTeamMessage().data.begin();
-  for (; i != getTeamMessage().data.end(); ++i) 
+  for (auto const& i : getTeamMessage().data) 
   {
-    unsigned int robotNumber = i->first;
-    const TeamMessage::Data& msg = i->second;
+    unsigned int robotNumber = i.first;
+    const TeamMessageData& msg = i.second;
 
     double failureProbability = getTeamMessageStatisticsModel().getFailureProbability(robotNumber);
 
-    if (failureProbability > parameters.minFailureProbability && msg.playerNum != getPlayerInfo().playerNumber) { //Message is not fresh
+    if (failureProbability > parameters.minFailureProbability && msg.playerNumber != getPlayerInfo().playerNumber) { //Message is not fresh
       getRoleDecisionModel().deadRobots.push_back((int)robotNumber);
       continue;
     } else {
@@ -56,22 +55,22 @@ void StableRoleDecision::execute()
     }
 
     double time_bonus = 0;
-    if(msg.playerNum==(unsigned int)getRoleDecisionModel().firstStriker) {
+    if (msg.playerNumber == getRoleDecisionModel().firstStriker) {
       time_bonus = parameters.strikerBonusTime;
     }
 
-    if (robotNumber == getPlayerInfo().playerNumber && (msg.fallen || msg.isPenalized || 
+    if (robotNumber == getPlayerInfo().playerNumber && (msg.fallen || msg.custom.isPenalized || 
       msg.ballAge < 0 || msg.ballAge > parameters.maxBallLostTime + time_bonus)) 
     {
       wantsToBeStriker = false;
     }
 
     if (!msg.fallen
-      && !msg.isPenalized
+      && !msg.custom.isPenalized
       && msg.ballAge >= 0 //Ball has been seen
       && msg.ballAge + getFrameInfo().getTimeSince(msg.frameInfo.getTime()) < parameters.maxBallLostTime + time_bonus) //Ball is fresh
     { 
-      if (msg.wantsToBeStriker) { //Decision of the current round
+      if (msg.custom.wantsToBeStriker) { //Decision of the current round
         // If two robots want to be striker, the one with a smaller number is favoured
         // NOTE: goalie is always favoured for the first striker
         if ((int)robotNumber < firstStriker) { 
@@ -83,7 +82,7 @@ void StableRoleDecision::execute()
       }
 
       // another player is closer than me
-      if ( robotNumber != getPlayerInfo().playerNumber && msg.timeToBall < ownTimeToBall ) { 
+      if (robotNumber != getPlayerInfo().playerNumber && msg.custom.timeToBall < ownTimeToBall) {
         wantsToBeStriker = false; //Preparation for next round's decision
       }
     }

@@ -16,12 +16,14 @@ import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.io.*;
+import java.lang.reflect.Field;
 import java.net.URISyntaxException;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.UIDefaults;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.plaf.nimbus.NimbusLookAndFeel;
@@ -56,18 +58,60 @@ public class RobotControlImpl extends javax.swing.JFrame
   // remember the window position and size to restore it later
   private Rectangle defaultWindowBounds = new Rectangle();
   
+  
+  
+  // HACK: set the path to the native libs
+  static 
+  {
+    try
+    {
+        String separator = System.getProperty("path.separator");
+        String path = System.getProperty("java.library.path", "./bin" );
+        
+        String arch = System.getProperty("os.arch").toLowerCase();
+        String name = System.getProperty("os.name").toLowerCase();
+        
+        if("linux".equals(name)) {
+            if("amd64".equals(arch)) {
+                path += separator + "./bin/linux64";
+            } else {
+                path += separator + "./bin/linux32";
+            }
+        } else {
+            path += separator + "./bin/win32"
+                  + separator + "./bin/win64"
+                  + separator + "./bin/macos";
+        }
+        
+        System.setProperty("java.library.path", path );
+        
+        System.getProperties().list(System.out);
+
+        Field fieldSysPath = ClassLoader.class.getDeclaredField( "sys_paths" );
+        fieldSysPath.setAccessible( true );
+        fieldSysPath.set( null, null );
+
+        Logger.getLogger(RobotControlImpl.class.getName()).log(Level.INFO, 
+            "Set java.library.path={0}", System.getProperty("java.library.path", "./bin" ));
+    } catch(IllegalAccessException | NoSuchFieldException  ex) {
+        System.err.println("[ERROR] could not set the java.library.path");
+        ex.printStackTrace(System.err);
+    }
+  }
+  
+  
   /**
    * Creates new form RobotControlGUI
    */
   public RobotControlImpl()
-  {
+  {  
     splashScreenMessage("Welcome to RobotControl");
     try
     {
       //UIManager.setLookAndFeel(new PlasticXPLookAndFeel());
-      UIManager.setLookAndFeel(new NimbusLookAndFeel());
+      UIManager.setLookAndFeel(new CustomNimbusLookAndFeel(RobotControlImpl.this));
       // set explicitely the Nimbus colors to be used
-      DockUI.getDefaultDockUI().registerColors("javax.swing.plaf.nimbus.NimbusLookAndFeel", new Nimbus6u10());
+      DockUI.getDefaultDockUI().registerColors("de.naoth.rc.CustomNimbusLookAndFeel", new Nimbus6u10());
     }
     catch(UnsupportedLookAndFeelException ex)
     {
@@ -600,4 +644,12 @@ public class RobotControlImpl extends javax.swing.JFrame
   {
     lblFramesS.setText(String.format("Frames/s: %4.2f", fps));
   }
+  
+  @Override
+  public boolean isHighDPI() 
+  {
+      return Toolkit.getDefaultToolkit().getScreenSize().width > 2000;
+  }
+  
+  
 }

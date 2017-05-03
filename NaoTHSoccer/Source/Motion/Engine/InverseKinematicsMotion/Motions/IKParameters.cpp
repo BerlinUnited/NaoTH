@@ -25,7 +25,7 @@ IKParameters::IKParameters()
   // relax
   PARAMETER_REGISTER(stand.relax.enable) = true;
   PARAMETER_REGISTER(stand.relax.allowedDeviation) = 5;   // [mm]
-  PARAMETER_REGISTER(stand.relax.allowedRotationDeviation) = Math::fromDegrees(5);// [rad] todo: PARAMETER_ANGLE_REGISTER
+  PARAMETER_ANGLE_REGISTER(stand.relax.allowedRotationDeviation) = 5; // [rad]
   PARAMETER_REGISTER(stand.relax.timeBonusForCorrection)   = 1000; // [ms]
 
   PARAMETER_REGISTER(stand.relax.jointOffsetTuning.enable) = true;

@@ -29,6 +29,8 @@ public:
   void addBox(const char* color, double xdim, double ydim, double zdim, const Pose3D& pose);
   void addBox(const char* color, double xdim, double ydim, double zdim, const RotationMatrix&R, const Vector3<double>& p);
 
+  void addColorCube(double size, const Pose3D& pose);
+
   void addSphere(ColorClasses::Color color, double radius, const Vector3<double>& p);
   void addSphere(ColorClasses::Color color, double radius, double x, double y, double z);
   void addSphere(const char* color, double radius, const Vector3<double>& p);
@@ -75,6 +77,7 @@ public:
 #ifdef DEBUG
 #define ENTITY getDebugDrawings3D().addEntity
 #define BOX_3D getDebugDrawings3D().addBox
+#define COLOR_CUBE getDebugDrawings3D().addColorCube
 #define SPHERE getDebugDrawings3D().addSphere
 #define CONE getDebugDrawings3D().addCone
 #define CYLINDER getDebugDrawings3D().addCylinder
@@ -84,6 +87,7 @@ public:
 /* ((void)0) - that's a do-nothing statement */
 #define ENTITY(...) ((void)0)
 #define BOX_3D(...) ((void)0)
+#define COLOR_CUBE(...) ((void)0)
 #define SPHERE(...) ((void)0)
 #define CONE(...) ((void)0)
 #define CYLINDER(...) ((void)0)

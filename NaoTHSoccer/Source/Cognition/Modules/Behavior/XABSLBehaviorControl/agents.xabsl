@@ -18,6 +18,8 @@ include "Symbols/goal_symbols.xabsl";
 include "Symbols/selfloc_symbols.xabsl";
 include "Symbols/sound_symbols.xabsl";
 include "Symbols/field_symbols.xabsl";
+include "Symbols/remote_symbols.xabsl";
+
 
 // Head Control
 include "Options/HeadControl/head_control.xabsl";
@@ -93,7 +95,8 @@ include "Options/Soccer/Strategy/passive/go_to_and_keep_passive_position.xabsl";
 include "Options/Soccer/Strategy/basic_goalie.xabsl";
 include "Options/Soccer/Strategy/goalie_watch_ball.xabsl";
 //Initial Striker
-include "Options/Soccer/Strategy/initial_striker.xabsl";
+include "Options/Soccer/Strategy/initial_striker.xabsl";
+
 
 // Penalty
 include "Options/Soccer/Penalty/penalty_kicker.xabsl";
@@ -106,6 +109,13 @@ include "Options/Soccer/Test/passive_player_agent.xabsl";
 include "Options/Soccer/Test/basic_goali_agent.xabsl";
 include "Options/Soccer/Test/striker_agent.xabsl";
 
+// remote
+include "Options/Remote/spl_remote_agent.xabsl";
+include "Options/Remote/spl_remote_decide_gamestate.xabsl";
+include "Options/Remote/spl_remote_play.xabsl";
+include "Options/Remote/spl_remote_play_direct_control.xabsl";
+include "Options/Remote/spl_remote_play_lock_control.xabsl";
+include "Options/Remote/spl_remote_secondary_actions.xabsl";
 
 /* Test section */
 // Test agents Head Control
@@ -140,6 +150,7 @@ include "Options/Test/agent/turn_around_ball_test_agent.xabsl";
 include "Options/Test/agent/clown_walk_test_agent.xabsl";
 include "Options/Test/agent/obstacle_test_agent.xabsl";
 include "Options/Test/agent/dribble_test_agent.xabsl";
+include "Options/Test/agent/walk_forward_agent.xabsl";
 
 // Test agents (options) Behaviour Tests
 include "Options/Test/agent/role_change_test_agent.xabsl";
@@ -186,6 +197,7 @@ include "Options/Test/walk/obstacle_test.xabsl";
 include "Options/Test/walk/clown_walk_test.xabsl";
 include "Options/Test/walk/turn_around_ball_test.xabsl";
 include "Options/Test/test_dribble.xabsl";
+include "Options/Test/walk/walk_forward.xabsl";
 
 // Test role change
 include "Options/Test/strategy/role_change_test.xabsl";
@@ -198,6 +210,7 @@ include "Options/Test/change_state_input_test.xabsl";
 agent spl_soccer("SPL Soccer", spl_play_soccer);
 agent penalty("Penalty", play_penalty);
 
+agent spl_remote("Remote Player", spl_remote_agent);
 
 /** simple soccer agents **/
 agent role_basic_goali("basic_goali", basic_goali_agent);
@@ -234,6 +247,7 @@ agent goto_obstacle_test("obstacle_test", obstacle_test_agent);
 agent goto_ball_with_USOA_test_agent("go_to_ball_with_USOA_test_agent", go_to_ball_with_USOA_test_agent);
 agent goto_point_with_USOA_test("go_to_point_with_USOA_test_agent", go_to_point_with_USOA_test_agent);
 
+agent walk_forward("walk_forward_agent", walk_forward_agent);
 agent dribble_test_agent("dribble_test_agent", dribble_test_agent);
 
 // Test agents search

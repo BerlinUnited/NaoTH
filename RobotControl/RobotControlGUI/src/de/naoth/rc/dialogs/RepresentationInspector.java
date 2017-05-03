@@ -273,7 +273,7 @@ public class RepresentationInspector extends AbstractDialog {
     class DataHandlerBinary implements ObjectListener<byte[]> {
 
         private final Parser parser;
-        private final List<Descriptor> allDescriptors = getAllProtobufDescriptors();
+        //private final List<Descriptor> allDescriptors = getAllProtobufDescriptors();
 
         public DataHandlerBinary(String name) {
             
@@ -432,8 +432,6 @@ public class RepresentationInspector extends AbstractDialog {
         // EVIL HACKS
         if (name.endsWith("Top")) {
             name = name.substring(0, name.length() - 3);
-        } else if("TeamMessage".equals(name)) {
-            name = "TeamMessageCollection";
         }
         
         Class<?> protoClasses[] = {
@@ -453,7 +451,6 @@ public class RepresentationInspector extends AbstractDialog {
     }
 
     interface Parser {
-
         public Object parse(byte[] object);
     }
 

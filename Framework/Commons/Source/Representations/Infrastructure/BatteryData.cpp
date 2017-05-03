@@ -17,6 +17,5 @@ void BatteryData::print(std::ostream& stream) const
 }
 
 BatteryData::~BatteryData()
-{ 
+{
 }
-

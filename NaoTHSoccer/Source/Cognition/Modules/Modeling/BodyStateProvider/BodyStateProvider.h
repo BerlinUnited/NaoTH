@@ -17,6 +17,7 @@
 #include "Representations/Infrastructure/FrameInfo.h"
 #include "Representations/Infrastructure/JointData.h"
 #include "Representations/Infrastructure/BatteryData.h"
+#include "Representations/Modeling/GroundContactModel.h"
 
 #include "Representations/Modeling/BodyState.h"
 
@@ -42,6 +43,7 @@ BEGIN_DECLARE_MODULE(BodyStateProvider)
   REQUIRE(FrameInfo)
   REQUIRE(SensorJointData)
   REQUIRE(BatteryData)
+  REQUIRE(GroundContactModel)
 
   PROVIDE(BodyState)
 END_DECLARE_MODULE(BodyStateProvider)
@@ -64,7 +66,6 @@ private:
     Parameters() : ParameterList("BodyStateParameters")
     {
       PARAMETER_REGISTER(getup_threshold) = 1.2;
-      PARAMETER_REGISTER(foot_threshold) = 1;
       PARAMETER_REGISTER(maxTimeForLiftUp) = 500;
       syncWithConfig();
       //DebugParameterList::getInstance().add(this);
@@ -75,7 +76,6 @@ private:
       //DebugParameterList::getInstance().remove(this);
     }
 
-    double foot_threshold;
     double getup_threshold;
     double maxTimeForLiftUp;
   } theParams;
