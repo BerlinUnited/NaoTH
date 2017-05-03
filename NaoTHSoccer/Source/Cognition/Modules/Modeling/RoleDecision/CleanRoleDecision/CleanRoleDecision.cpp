@@ -59,16 +59,19 @@ void CleanRoleDecision::computeStrikers()
         }
     }//end for
 
-    // get my own message
-    auto ownMessage = getTeamMessage().data.at(getPlayerInfo().playerNumber);
-    // i want to be striker, if i'm not the goalie and i'm "active" (not fallen/panelized, see the ball)!!!
-    getRoleDecisionModel().wantsToBeStriker = ownMessage.playerNumber != 1
-                                              && !(ownMessage.fallen || ownMessage.custom.isPenalized || ownMessage.ballAge < 0
-                                              || (ownMessage.ballAge + getFrameInfo().getTimeSince(ownMessage.frameInfo.getTime()) > parameters.maxBallLostTime + (getPlayerInfo().playerNumber==getRoleDecisionModel().firstStriker?parameters.strikerBonusTime:0.0)));
+    // get my own message, but skip "first frame"! (until i add myself to teamcomm)
+    double ownTimeToBall = std::numeric_limits<unsigned int>::max();
+    const auto own = getTeamMessage().data.find(getPlayerInfo().playerNumber);
+    if(own != getTeamMessage().data.end()) {
+        // i want to be striker, if i'm not the goalie and i'm "active" (not fallen/panelized, see the ball)!!!
+        getRoleDecisionModel().wantsToBeStriker = own->second.playerNumber != 1
+                                                  && !(own->second.fallen || own->second.custom.isPenalized || own->second.ballAge < 0
+                                                  || (own->second.ballAge + getFrameInfo().getTimeSince(own->second.frameInfo.getTime()) > parameters.maxBallLostTime + (getPlayerInfo().playerNumber==getRoleDecisionModel().firstStriker?parameters.strikerBonusTime:0.0)));
 
-    // if i'm striker, i get a time bonus!
-    // NOTE: ownTimeToBall can be negative if the robot is close to ball (!)
-    double ownTimeToBall = static_cast<double>(ownMessage.custom.timeToBall) - (ownMessage.custom.wasStriker ? 300.0 : 0.0);
+        // if i'm striker, i get a time bonus!
+        // NOTE: ownTimeToBall can be negative if the robot is close to ball (!)
+        ownTimeToBall = static_cast<double>(own->second.custom.timeToBall) - (own->second.custom.wasStriker ? 300.0 : 0.0);
+    }
 
 
     // clear for new striker decision
