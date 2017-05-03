@@ -79,7 +79,7 @@ int RansacLineDetector::ransac(Math::LineSegment& result)
     const Edgel& a = getLineGraphPercept().edgels[outliers[i0]];
     const Edgel& b = getLineGraphPercept().edgels[outliers[i1]];
 
-    double x = a.sim(b);
+    //double x = a.sim(b);
     if(a.sim(b) < params.directionSimilarity) {
       continue;
     }
