@@ -245,10 +245,6 @@ void Walk::calculateNewStep(const Step& lastStep, Step& newStep, const WalkReque
         newStep.footStep = theFootStepPlanner.controlStep(lastStep.footStep, walkRequest);
       }
 
-      PLOT("Walk:before_adaptStepSize_x", walkRequest.stepControl.target.translation.x);
-      PLOT("Walk:before_adaptStepSize_y", walkRequest.stepControl.target.translation.y);
-
-
       // STABILIZATION
       if (parameters().stabilization.dynamicStepsize) {
         adaptStepSize(newStep.footStep);
@@ -276,6 +272,9 @@ void Walk::calculateNewStep(const Step& lastStep, Step& newStep, const WalkReque
       adaptStepSize(newStep.footStep);
       currentComErrorBuffer.clear();
     }
+
+    PLOT("Walk:XABSL_after_adaptStepSize_x", newStep.footStep.footEnd().translation.x);
+    PLOT("Walk:XABSL_after_adaptStepSize_y", newStep.footStep.footEnd().translation.y);
   }
 }
 

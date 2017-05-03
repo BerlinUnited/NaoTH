@@ -12,10 +12,16 @@ PathPlanner::PathPlanner()
 step_buffer({}),
 foot_to_use(Foot::RIGHT),
 last_stepcontrol_stepID(0)
-{}
+{
+  DEBUG_REQUEST_REGISTER("PathPlanner:walk_forward", "Walks forward with y=0 and x=40", false);
+}
 
 void PathPlanner::execute()
 {
+  DEBUG_REQUEST("PathPlanner:walk_forward",
+    add_single_step(Pose2D(0.0, 40.0, 0.0), StepType::WALKSTEP, WalkRequest::Hip);
+    );
+
   STOPWATCH_START("PathPlanner");
   // Always executed first
   manage_step_buffer();
