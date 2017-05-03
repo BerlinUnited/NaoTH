@@ -4,11 +4,13 @@ RansacLineDetector::RansacLineDetector()
 {
   // initialize some stuff here
   DEBUG_REQUEST_REGISTER("Vision:RansacLineDetector:edgels", "", false);
+
+  getDebugParameterList().add(&params);
 }
 
 RansacLineDetector::~RansacLineDetector()
 {
-  // clean some stuff here
+  getDebugParameterList().remove(&params);
 }
 
 void RansacLineDetector::execute()
@@ -56,11 +58,6 @@ void RansacLineDetector::execute()
 
 int RansacLineDetector::ransac(Math::LineSegment& result)
 {
-  int iterations = 20;
-  double outlierThreshold = 70;
-  int inlierMin = 10;
-  double directionSimilarity = 0.8;
-
   if(outliers.size() <= 2) {
     return 0;
   }
@@ -69,7 +66,7 @@ int RansacLineDetector::ransac(Math::LineSegment& result)
   int bestInlier = 0;
   double bestInlierError = 0;
 
-  for(int i = 0; i < iterations; ++i)
+  for(int i = 0; i < params.iterations; ++i)
   {
     //pick two random points
     int i0 = Math::random((int)outliers.size());
@@ -83,7 +80,7 @@ int RansacLineDetector::ransac(Math::LineSegment& result)
     const Edgel& b = getLineGraphPercept().edgels[outliers[i1]];
 
     double x = a.sim(b);
-    if(a.sim(b) < directionSimilarity) {
+    if(a.sim(b) < params.directionSimilarity) {
       continue;
     }
 
@@ -100,14 +97,14 @@ int RansacLineDetector::ransac(Math::LineSegment& result)
       double d = model.minDistance(e.point);
 
       // inlier
-      if(d < outlierThreshold && sim(model, e) > directionSimilarity) {
+      if(d < params.outlierThreshold && sim(model, e) > params.directionSimilarity) {
         ++inlier;
         inlierError += d;
       }
     }
 
 
-    if(inlier > inlierMin && (inlier > bestInlier || (inlier == bestInlier && inlierError < bestInlierError))) {
+    if(inlier > params.inlierMin && (inlier > bestInlier || (inlier == bestInlier && inlierError < bestInlierError))) {
       bestModel = model;
       bestInlier = inlier;
       bestInlierError = inlierError;
@@ -127,7 +124,7 @@ int RansacLineDetector::ransac(Math::LineSegment& result)
     const Edgel& e = getLineGraphPercept().edgels[i];
     double d = bestModel.minDistance(e.point);
 
-    if(d < outlierThreshold && sim(bestModel, e) > directionSimilarity) {
+    if(d < params.outlierThreshold && sim(bestModel, e) > params.directionSimilarity) {
       double t = bestModel.project(e.point);
       minT = std::min(t, minT);
       maxT = std::max(t, maxT);

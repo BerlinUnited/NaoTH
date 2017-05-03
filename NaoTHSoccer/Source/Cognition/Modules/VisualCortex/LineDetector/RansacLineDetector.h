@@ -14,9 +14,10 @@
 #include "Tools/Debug/DebugParameterList.h"
 
 #include "Representations/Perception/LineGraphPercept.h"
-
 #include "Representations/Perception/CameraMatrix.h"
-#include "Representations/Perception/ScanLineEdgelPercept.h"
+//#include "Representations/Perception/ScanLineEdgelPercept.h"
+
+#include "Tools/Debug/DebugParameterList.h"
 
 BEGIN_DECLARE_MODULE(RansacLineDetector)
   PROVIDE(DebugRequest)
@@ -26,8 +27,8 @@ BEGIN_DECLARE_MODULE(RansacLineDetector)
   PROVIDE(DebugImageDrawingsTop)
   PROVIDE(DebugParameterList)
 
-  REQUIRE(ScanLineEdgelPercept)
-  REQUIRE(ScanLineEdgelPerceptTop)
+  //REQUIRE(ScanLineEdgelPercept)
+  //REQUIRE(ScanLineEdgelPerceptTop)
 
   REQUIRE(LineGraphPercept)
 
@@ -48,6 +49,28 @@ private:
   int ransac(Math::LineSegment& result);
 
 private:
+  class Parameters: public ParameterList
+  {
+  public:
+    Parameters() : ParameterList("RansacLineDetector")
+    {
+      PARAMETER_REGISTER(iterations) = 20;
+      PARAMETER_REGISTER(outlierThreshold) = 70;
+      PARAMETER_REGISTER(inlierMin) = 10;
+      PARAMETER_REGISTER(directionSimilarity) = 0.8;
+
+      syncWithConfig();
+    }
+
+    virtual ~Parameters() {
+    }
+
+    int iterations;
+    double outlierThreshold;
+    int inlierMin;
+    double directionSimilarity;
+  } params;
+
   // calculate the simmilarity to the other edgel
   // returns a value [0,1], 0 - not simmilar, 1 - very simmilar
   inline double sim(const Math::Line& line, const Edgel& edgel) const
