@@ -79,6 +79,7 @@ public class RobotStatusTable extends javax.swing.JPanel {
         new Column("BallAge (s)", Float.class, (RobotStatus r) -> r.ballAge, null, true,true,false),
         new Column("State", String.class, (RobotStatus r) -> (r.isDead ? "DEAD" : (r.fallen == 1 ? "FALLEN" : "NOT FALLEN")), null, true,true,false),
         new Column("Temperature", Float.class, (RobotStatus r) -> r.temperature, new TemperatureRenderer(), true,true,false),
+        new Column("CPU-Temperature", Float.class, (RobotStatus r) -> r.cpuTemperature, new TemperatureRenderer(), true,true,false),
         new Column("Battery", Float.class, (RobotStatus r) -> r.batteryCharge, new BatteryRenderer(), true,true,false),
         new Column("TimeToBall", Float.class, (RobotStatus r) -> r.timeToBall, null, true,false,false),
         new Column("wantToBeStriker", Boolean.class, (RobotStatus r) -> r.wantsToBeStriker, null, true,false,false),

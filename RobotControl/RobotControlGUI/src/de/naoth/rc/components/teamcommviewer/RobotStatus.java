@@ -38,6 +38,7 @@ public class RobotStatus {
     private ArrayList<RobotStatusListener> listener = new ArrayList<>();
 
     public float temperature;
+    public float cpuTemperature;
     public float batteryCharge;
     public float timeToBall;
     public boolean wantsToBeStriker;
@@ -101,13 +102,15 @@ public class RobotStatus {
 
         if (msg.user != null) {
             this.temperature = msg.user.getTemperature();
+            this.cpuTemperature = msg.user.getCpuTemperature();
             this.batteryCharge = msg.user.getBatteryCharge() * 100.0f;
             this.timeToBall = msg.user.getTimeToBall();
-//            this.wantsToBeStriker = msg.user.getWantsToBeStriker();
+            this.wantsToBeStriker = msg.user.getWantsToBeStriker();
             this.wasStriker = msg.user.getWasStriker();
             this.isPenalized = msg.user.getIsPenalized();
         } else {
             this.temperature = -1;
+            this.cpuTemperature = -1;
             this.batteryCharge = -1;
             this.timeToBall = -1;
             this.wantsToBeStriker = false;

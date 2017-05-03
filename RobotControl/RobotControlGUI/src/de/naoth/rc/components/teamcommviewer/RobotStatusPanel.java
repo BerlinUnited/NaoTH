@@ -172,7 +172,8 @@ public class RobotStatusPanel extends javax.swing.JPanel implements RobotStatusL
             jlBatteryCharge.setText("??");
         } else {
             //Representations.BUUserTeamMessage user = Representations.BUUserTeamMessage.parseFrom(msg.data);
-            jlTemperature.setText(String.format(" %3.1f °C", rs.temperature));
+            String temperature = String.format(" %3.1f °C", rs.temperature) + " / CPU:" + String.format(" %3.1f °C", rs.cpuTemperature);
+            jlTemperature.setText(temperature);
             jlBatteryCharge.setText(String.format("%3.1f%%", rs.batteryCharge));
 
             if (rs.temperature >= 60.0f) {
