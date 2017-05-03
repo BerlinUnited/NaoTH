@@ -45,7 +45,7 @@ public:
 
 private:
   std::vector<size_t> outliers;
-  int ransac(Math::Line& result);
+  int ransac(Math::LineSegment& result);
 };
 
 #endif // RANSACLINEDETECTOR_H

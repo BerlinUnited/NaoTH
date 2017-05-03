@@ -45,11 +45,11 @@ void RansacLineDetector::execute()
   
   for(int i = 0; i < 10; ++i)
   {
-    Math::Line result;
+    Math::LineSegment result;
     if(ransac(result) > 0) 
     {
-      Vector2d a = result.point(-10000);
-      Vector2d b = result.point(10000);
+      const Vector2d& a = result.begin();
+      const Vector2d& b = result.end();
       FIELD_DRAWING_CONTEXT;
       PEN("FF0000", 30);
       LINE(a.x,a.y,b.x,b.y);
@@ -61,10 +61,10 @@ void RansacLineDetector::execute()
   
 }
 
-int RansacLineDetector::ransac(Math::Line& result)
+int RansacLineDetector::ransac(Math::LineSegment& result)
 {
   int iterations = 20;
-  double outlierThreshold = 100;
+  double outlierThreshold = 70;
   int inlierMin = 10;
 
   if(outliers.size() <= 2) {
@@ -73,6 +73,7 @@ int RansacLineDetector::ransac(Math::Line& result)
 
   Math::Line bestModel;
   int bestInlier = 0;
+  double bestInlierError = 0;
 
   for(int i = 0; i < iterations; ++i)
   {
@@ -92,6 +93,7 @@ int RansacLineDetector::ransac(Math::Line& result)
 
     Math::Line model(a.point, b.point-a.point);
 
+    double inlierError = 0;
     int inlier = 0;
     for(size_t i: outliers) 
     {
@@ -101,33 +103,43 @@ int RansacLineDetector::ransac(Math::Line& result)
       // inlier
       if(d < outlierThreshold) {
         ++inlier;
+        inlierError += d;
       }
     }
 
 
-    if(inlier > inlierMin && inlier > bestInlier) {
+    if(inlier > inlierMin && (inlier > bestInlier || (inlier == bestInlier && inlierError < bestInlierError))) {
       bestModel = model;
       bestInlier = inlier;
+      bestInlierError = inlierError;
     }
   }
+
 
   // update the outliers
   // todo: make it faster
   std::vector<size_t> newOutliers;
   newOutliers.reserve(outliers.size() - bestInlier + 1);
+  double minT = 0;
+  double maxT = 0;
 
   for(size_t i: outliers) 
   {
     const Edgel& e = getLineGraphPercept().edgels[i];
     double d = bestModel.minDistance(e.point);
-    if(d >= outlierThreshold) {
-        newOutliers.push_back(i);
-      }
+
+    if(d < outlierThreshold) {
+      double t = bestModel.project(e.point);
+      minT = std::min(t, minT);
+      maxT = std::max(t, maxT);
+    } else {
+      newOutliers.push_back(i);
+    }
   }
   outliers = newOutliers;
 
   // return results
-  result = bestModel;
+  result = Math::LineSegment(bestModel.point(minT), bestModel.point(maxT));
   return bestInlier;
 }
 
