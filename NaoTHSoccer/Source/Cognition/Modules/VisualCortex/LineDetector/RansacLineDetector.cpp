@@ -3,7 +3,7 @@
 RansacLineDetector::RansacLineDetector()
 {
   // initialize some stuff here
-  DEBUG_REQUEST_REGISTER("Vision:RansacLineDetector:edgel_pairs", "", false);
+  DEBUG_REQUEST_REGISTER("Vision:RansacLineDetector:edgels", "", false);
 }
 
 RansacLineDetector::~RansacLineDetector()
@@ -15,22 +15,15 @@ void RansacLineDetector::execute()
 {
   // do some stuff here
 
-  DEBUG_REQUEST("Vision:RansacLineDetector:edgel_pairs",
-    CANVAS("ImageTop");
+  DEBUG_REQUEST("Vision:RansacLineDetector:edgels",
+    FIELD_DRAWING_CONTEXT;
 
-    for(size_t i = 0; i < getScanLineEdgelPerceptTop().pairs.size(); i++)
+    for(const Edgel& e: getLineGraphPercept().edgels)
     {
-      const ScanLineEdgelPercept::EdgelPair& pair = getScanLineEdgelPerceptTop().pairs[i];
-      const Edgel& edgelOne = getScanLineEdgelPerceptTop().edgels[pair.begin];
-      const Edgel& edgelTwo = getScanLineEdgelPerceptTop().edgels[pair.end];
-
+      PEN("FF0000",2);
+      CIRCLE(e.point.x, e.point.y, 25);
       PEN("000000",0.1);
-      //LINE_PX(ColorClasses::red, edgelOne.center.x, edgelOne.center.y, edgelTwo.center.x, edgelTwo.center.y);
-      LINE(edgelOne.point.x, edgelOne.point.y, edgelTwo.point.x, edgelTwo.point.y);
-      PEN("FF0000",0.1);
-      CIRCLE( edgelOne.point.x, edgelOne.point.y, 3);
-      PEN("0000FF",0.1);
-      CIRCLE( edgelTwo.point.x, edgelTwo.point.y, 2);
+      LINE(e.point.x, e.point.y, e.point.x + e.direction.x*100.0, e.point.y + e.direction.y*100.0);
     }
   );
 
@@ -66,6 +59,7 @@ int RansacLineDetector::ransac(Math::LineSegment& result)
   int iterations = 20;
   double outlierThreshold = 70;
   int inlierMin = 10;
+  double directionSimilarity = 0.8;
 
   if(outliers.size() <= 2) {
     return 0;
@@ -88,6 +82,11 @@ int RansacLineDetector::ransac(Math::LineSegment& result)
     const Edgel& a = getLineGraphPercept().edgels[outliers[i0]];
     const Edgel& b = getLineGraphPercept().edgels[outliers[i1]];
 
+    double x = a.sim(b);
+    if(a.sim(b) < directionSimilarity) {
+      continue;
+    }
+
     // check the orientation
     // TODO
 
@@ -101,7 +100,7 @@ int RansacLineDetector::ransac(Math::LineSegment& result)
       double d = model.minDistance(e.point);
 
       // inlier
-      if(d < outlierThreshold) {
+      if(d < outlierThreshold && sim(model, e) > directionSimilarity) {
         ++inlier;
         inlierError += d;
       }
@@ -128,7 +127,7 @@ int RansacLineDetector::ransac(Math::LineSegment& result)
     const Edgel& e = getLineGraphPercept().edgels[i];
     double d = bestModel.minDistance(e.point);
 
-    if(d < outlierThreshold) {
+    if(d < outlierThreshold && sim(bestModel, e) > directionSimilarity) {
       double t = bestModel.project(e.point);
       minT = std::min(t, minT);
       maxT = std::max(t, maxT);
