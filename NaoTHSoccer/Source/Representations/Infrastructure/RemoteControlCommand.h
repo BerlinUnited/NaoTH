@@ -11,27 +11,58 @@
 
 #include <Tools/Math/Pose2D.h>
 
+#include <Representations/Infrastructure/FrameInfo.h>
+
 class RemoteControlCommand : public naoth::Printable
 {
 public:
 
-  RemoteControlCommand() : action(NONE)
+  RemoteControlCommand() 
+    : controlMode(DIRECT_CONTROL), 
+      action(NONE), 
+      second_action(SECOND_NONE)
   {}
+
+  enum ControlMode
+  {
+    DIRECT_CONTROL,
+    LOCK_CONTROL,
+    NUMBER_OF_CONTROL_MODE_TYPE
+  } controlMode;
 
   enum ActionType
   {
     NONE,
+    STAND,
     WALK,
-    LOCK_ON_BALL,
-    KICK
+    KICK_RIGHT,
+    KICK_LEFT,
+    KICK_FORWARD_LEFT,
+    KICK_FORWARD_RIGHT,
+    NUMBER_OF_ACTION_TYPE
   } action;
 
+  enum SecondActionType
+  {
+    SECOND_NONE,
+    BLINK,
+    SAY,
+    NUMBER_OF_SECOND_ACTION_TYPE
+  } second_action;
+
   Pose2D target;
+
+
+  naoth::FrameInfo frameInfoWhenUpdated;
 
   virtual void print(std::ostream& stream) const
   {
     stream << "RemoteControlCommand" << std::endl;
+    stream << "ActionType = " << action << std::endl;
+    stream << "target = " << target << std::endl;
   }
+
+  static std::string getActionName(ActionType id);
 };
 
 

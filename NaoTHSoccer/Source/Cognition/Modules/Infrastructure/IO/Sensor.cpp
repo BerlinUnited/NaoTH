@@ -44,6 +44,7 @@ void Sensor::init(naoth::ProcessInterface& platformInterface, const naoth::Platf
   REG_INPUT(BatteryData);
   REG_INPUT(ButtonData);
   REG_INPUT(IRReceiveData);
+  REG_INPUT(CpuData);
   
   REG_INPUT(GPSData);
   REG_INPUT(TeamMessageDataIn);
@@ -77,6 +78,8 @@ void Sensor::execute()
   if (getRemoteMessageDataIn().data.size() > 0 ) {
     std::stringstream ss(getRemoteMessageDataIn().data.back());
     Serializer<RemoteControlCommand>::deserialize(ss, getRemoteControlCommand());
+
+    getRemoteControlCommand().frameInfoWhenUpdated = getFrameInfo();
   }
 
 }//end execute

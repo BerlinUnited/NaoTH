@@ -7,7 +7,7 @@ import json
 import cv2
 import patchReader as patchReader
 
-patch_size = (12, 12)  # width, height
+patch_size = (24, 24)  # width, height
 
 
 def load_labels(file):
@@ -71,13 +71,68 @@ def exportPatches(patchdata, labels, label_names, target_path):
         gray_image = cv2.cvtColor(yuv888, cv2.COLOR_BGR2GRAY)
         '''
         
-        # gray (for backgrounds)
+        # only the center part
+        a = a[4:20,4:20]
+        b = b[4:20,4:20]
+        
+        # remove green:
+        # gray + set green to 0 (used for balls)
+        #a = np.multiply(np.not_equal(b, 7), a)
+
         cv2.imwrite(file_path, a)
 
-        # gray + set green to 0 (used for balls)
-        # cv2.imwrite(file_path, np.multiply(np.not_equal(b, 7), a))
 
-'''
+def exportPatchesAll(patchdata, target_path):
+
+    # create the ourput directories for all labels
+    export_path = os.path.join(target_path, 'patch')
+    if not os.path.exists(export_path):
+      os.makedirs(export_path)
+    
+    # export the patches
+    for i in range(len(patchdata)):
+        p = patchdata[i]
+        if len(p) == 4*patch_size[0]*patch_size[1]:
+            a = np.array(p[0::4]).astype(float)
+            a = np.transpose(np.reshape(a, patch_size))
+            
+            b = np.array(p[3::4]).astype(float)
+            b = np.transpose(np.reshape(b, patch_size))
+        else:
+            a = np.array(p).astype(float)
+            a = np.transpose(np.reshape(a, patch_size))
+
+        file_path = os.path.join(export_path, str(i)+".png")
+        print file_path
+
+        # rgba
+        '''
+        rgba = np.zeros((patch_size[0],patch_size[1],4), dtype=np.uint8)
+        rgba[:,:,0] = a
+        rgba[:,:,1] = a
+        rgba[:,:,2] = a
+        rgba[:,:,3] = np.not_equal(b, 7)*255
+        cv2.imwrite(file_path, rgba)
+        '''
+        
+        # grayscale
+        '''
+        yuv888 = np.zeros(patch_size[0]*patch_size[1], dtype=np.uint8)
+        yuv888 = np.reshape(a, patch_size[0]*patch_size[1])
+        gray_image = cv2.cvtColor(yuv888, cv2.COLOR_BGR2GRAY)
+        '''
+        
+        # only the center part
+        a = a[4:20,4:20]
+        b = b[4:20,4:20]
+        
+        # remove green:
+        # gray + set green to 0 (used for balls)
+        #a = np.multiply(np.not_equal(b, 7), a)
+
+        cv2.imwrite(file_path, a)
+        
+        '''
 
 USAGE:
     python ball_patch_label.py ./data/ball-move-around-patches.log
@@ -100,4 +155,4 @@ if __name__ == "__main__":
     if not os.path.exists(base_file):
         os.makedirs(base_file)
 
-    exportPatches(patchdata, labels, label_names, base_file)
+    exportPatchesAll(patchdata, base_file)

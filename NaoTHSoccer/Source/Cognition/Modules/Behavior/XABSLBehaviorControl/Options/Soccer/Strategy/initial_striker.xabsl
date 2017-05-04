@@ -1,5 +1,5 @@
 option initial_striker
-{
+{
   initial state kickoff {
     decision {
       if(game.own_kickoff)

@@ -7,7 +7,7 @@
 #define GAMECONTROLLER_RETURN_PORT     3939
 
 #define GAMECONTROLLER_STRUCT_HEADER   "RGme"
-#define GAMECONTROLLER_STRUCT_VERSION  9
+#define GAMECONTROLLER_STRUCT_VERSION  10
 
 #define MAX_NUM_PLAYERS             11
 
@@ -16,6 +16,12 @@
 #define TEAM_RED                    1 // magenta, pink (not red/orange)
 #define TEAM_YELLOW                 2 // yellow
 #define TEAM_BLACK                  3 // black, dark gray
+#define TEAM_WHITE                  4 // white
+#define TEAM_GREEN                  5 // green
+#define TEAM_ORANGE                 6 // orange
+#define TEAM_PURPLE                 7 // purple, violet
+#define TEAM_BROWN                  8 // brown
+#define TEAM_GRAY                   9 // lighter grey
 
 // HL
 #define TEAM_CYAN                   0
@@ -67,7 +73,6 @@
 
 #define PENALTY_SUBSTITUTE                  14
 #define PENALTY_MANUAL                      15
-
 // NOTE: added by Heinrich
 namespace spl
 {
@@ -135,6 +140,5 @@ struct RoboCupGameControlReturnData
   }
 #endif
 };
-
 } // namespace spl
 #endif // ROBOCUPGAMECONTROLDATA_H
