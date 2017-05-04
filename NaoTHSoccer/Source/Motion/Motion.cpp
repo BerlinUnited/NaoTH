@@ -212,10 +212,7 @@ void Motion::processSensorData()
       getSensorJointData().position[i] = getSensorJointData().position[i] - getOffsetJointData().position[i];
   }
 
-  if(parameter.useIMUModel){
-      // currently uses uncalibrated sensor data
-      theIMUModel->execute();
-  } else {
+  if(parameter.useInertiaSensorCalibration){
       // calibrate inertia sensors
       theInertiaSensorCalibrator->execute();
 
@@ -224,7 +221,12 @@ void Motion::processSensorData()
       getGyrometerData().data      += getCalibrationData().gyroSensorOffset;
       getInertialSensorData().data += getCalibrationData().inertialSensorOffset;
       getAccelerometerData().data  += getCalibrationData().accSensorOffset;
+  }
 
+  if(parameter.useIMUModel){
+      //
+      theIMUModel->execute();
+  } else {
       //
       theInertiaSensorFilterBH->execute();
   }

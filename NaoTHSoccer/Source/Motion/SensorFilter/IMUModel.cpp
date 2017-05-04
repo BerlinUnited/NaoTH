@@ -66,6 +66,11 @@ void IMUModel::execute(){
         Eigen::Quaterniond rotation_acc_to_gravity;
         rotation_acc_to_gravity.setFromTwoVectors(acceleration,Eigen::Vector3d(0,0,-1));
 
+        //plotting rotation innovation between measurement and state
+        Eigen::Quaterniond q;
+        q.setFromTwoVectors(ukf_rot.state.getRotationAsQuaternion().inverse()._transformVector(Eigen::Vector3d(0,0,-1)),Eigen::Vector3d(0,0,-1));
+        PLOT("IMUModel:Error:relative_to_measurement[°]", Math::toDegrees(Eigen::AngleAxisd(rotation_acc_to_gravity*q.inverse()).angle()));
+
         IMU_RotationMeasurement z;
         // gyro z axis seems to measure in opposite direction (turning left measures negative angular velocity, should be positive)
         z << quaternionToRotationVector(rotation_acc_to_gravity);//, getGyrometerData().data.x, getGyrometerData().data.y, -getGyrometerData().data.z;
