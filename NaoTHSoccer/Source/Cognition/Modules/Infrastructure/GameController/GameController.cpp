@@ -129,6 +129,8 @@ void GameController::execute()
 
   // remember last game state (from gamecontroller)
   lastGameState = getGameData().gameState;
+  // set teamcomm: whistle detected!
+  getTeamMessageData().custom.whistleDetected = getWhistlePercept().counter > lastWhistleCount;
 
   // provide the return message
   getGameReturnData().team = getPlayerInfo().teamNumber;
