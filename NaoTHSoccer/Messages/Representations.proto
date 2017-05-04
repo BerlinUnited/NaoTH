@@ -266,6 +266,7 @@ message BUUserTeamMessage
   optional uint64 timestamp = 9 [default=0];
   optional bool wantsToBeStriker = 10 [default=false];
   optional float cpuTemperature = 11 [default=0.0];
+  optional bool whistleDetected = 12 [default=false];
   optional string key = 100 [default="none"];
 }
 
