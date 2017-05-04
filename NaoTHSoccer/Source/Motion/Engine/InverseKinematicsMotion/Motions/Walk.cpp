@@ -17,7 +17,6 @@ using namespace InverseKinematic;
 Walk::Walk() : IKMotion(getInverseKinematicsMotionEngineService(), motion::walk, getMotionLock())
 {
   DEBUG_REQUEST_REGISTER("Walk:draw_step_plan_geometry", "draw all planed steps, zmp and executed com", false);
-  DEBUG_REQUEST_REGISTER("Walk:use_genTrajectoryWithSplines", "use spline interpolation to parametrize 3D foot trajectory", false);
   DEBUG_REQUEST_REGISTER("Walk:plot_genTrajectoryWithSplines", "plot spline interpolation to parametrize 3D foot trajectory", false);
 }
   
@@ -363,41 +362,41 @@ Pose3D Walk::calculateLiftingFootPos(const Step& step) const
   if ( step.type == STEP_CONTROL )
   {
     return FootTrajectorGenerator::stepControl(  
-      step.footStep.footBegin(),
-      step.footStep.footEnd(),
-      step.executingCycle,
-      samplesDoubleSupport,
-      samplesSingleSupport,
-      parameters().kick.stepHeight,
-      0, //footPitchOffset
-      0, //footRollOffset
-      step.walkRequest.stepControl.speedDirection,
-      step.walkRequest.stepControl.scale);
+              step.footStep.footBegin(),
+              step.footStep.footEnd(),
+              step.executingCycle,
+              samplesDoubleSupport,
+              samplesSingleSupport,
+              parameters().kick.stepHeight,
+              0, //footPitchOffset
+              0, //footRollOffset
+              step.walkRequest.stepControl.speedDirection,
+              step.walkRequest.stepControl.scale);
   }
   else if( step.type == STEP_WALK )
   {
-    DEBUG_REQUEST("Walk:use_genTrajectoryWithSplines",
+    if(parameters().step.splineFootTrajectory) {
       return FootTrajectorGenerator::genTrajectoryWithSplines(
-               step.footStep.footBegin(),
-               step.footStep.footEnd(),
-               step.executingCycle,
-               samplesSingleSupport,
-               parameters().step.stepHeight,
-               0, // footPitchOffset
-               0  // footRollOffset
-             );
-    );
-
-    return FootTrajectorGenerator::genTrajectory(
-      step.footStep.footBegin(),
-      step.footStep.footEnd(),
-      step.executingCycle,
-      samplesDoubleSupport,
-      samplesSingleSupport,
-      parameters().step.stepHeight,
-      0, // footPitchOffset
-      0  // footRollOffset
-    );
+              step.footStep.footBegin(),
+              step.footStep.footEnd(),
+              step.executingCycle,
+              samplesSingleSupport,
+              parameters().step.stepHeight,
+              0, // footPitchOffset
+              0  // footRollOffset
+            );
+    } else {
+      return FootTrajectorGenerator::genTrajectory(
+              step.footStep.footBegin(),
+              step.footStep.footEnd(),
+              step.executingCycle,
+              samplesDoubleSupport,
+              samplesSingleSupport,
+              parameters().step.stepHeight,
+              0, // footPitchOffset
+              0  // footRollOffset
+      );
+    }
   }
 
   ASSERT(false);
