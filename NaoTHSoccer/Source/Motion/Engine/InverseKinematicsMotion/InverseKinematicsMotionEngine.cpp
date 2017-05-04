@@ -431,13 +431,12 @@ void InverseKinematicsMotionEngine::feetStabilize(
 
 
 bool InverseKinematicsMotionEngine::rotationStabilizeRC16(
-  //const InertialModel& theInertialModel,
-  const naoth::InertialSensorData& /*theInertialSensorData*/,
+  const naoth::InertialSensorData& theInertialSensorData,
   const GyrometerData& theGyrometerData,
   double timeDelta,
   InverseKinematic::HipFeetPose& p)
 {
-  const double alpha = 0.5;
+  const double alpha = 0.8;
   Vector2d gyro = Vector2d(theGyrometerData.data.x, theGyrometerData.data.y);
   static Vector2d filteredGyro = gyro;
   filteredGyro = filteredGyro * (1.0f - alpha) + gyro * alpha;
@@ -459,17 +458,17 @@ bool InverseKinematicsMotionEngine::rotationStabilizeRC16(
   {
     const Vector2d requestedVelocity = (buffer[frameDelay-1] - buffer[frameDelay]) / timeDelta;
     const Vector2d error = requestedVelocity - filteredGyro;
-    const Vector2d errorDerivative = (error - lastGyroError) / timeDelta;
+    //const Vector2d errorDerivative = (error - lastGyroError) / timeDelta;
 
-    double correctionY = getParameters().walk.stabilization.rotationVelocityP.y * error.y + 
-                         getParameters().walk.stabilization.rotationD.y * errorDerivative.y;
+    double correctionY = getParameters().walk.stabilization.rotationVelocityP.y * error.y; 
+    //                     getParameters().walk.stabilization.rotationD.y * errorDerivative.y;
 
-    double correctionX = getParameters().walk.stabilization.rotationVelocityP.x * error.x + 
-                         getParameters().walk.stabilization.rotationD.x * errorDerivative.x;
+    double correctionX = getParameters().walk.stabilization.rotationVelocityP.x * error.x; 
+    //                     + getParameters().walk.stabilization.rotationD.x * errorDerivative.x;
 
-    //const Vector2d& inertial = theInertialSensorData.data;
-    //correctionX += getParameters().walk.stabilization.rotationP.x * inertial.x;
-    //correctionY += getParameters().walk.stabilization.rotationP.y * inertial.y;
+    const Vector2d& inertial = theInertialSensorData.data;
+    correctionX += getParameters().walk.stabilization.rotationP.x * inertial.x;
+    correctionY += getParameters().walk.stabilization.rotationP.y * inertial.y;
 
     //p.localInHip();
     //p.hip.rotateX(correctionX);

@@ -17,6 +17,7 @@ using namespace InverseKinematic;
 Walk::Walk() : IKMotion(getInverseKinematicsMotionEngineService(), motion::walk, getMotionLock())
 {
   DEBUG_REQUEST_REGISTER("Walk:draw_step_plan_geometry", "draw all planed steps, zmp and executed com", false);
+  DEBUG_REQUEST_REGISTER("Walk:plot_genTrajectoryWithSplines", "plot spline interpolation to parametrize 3D foot trajectory", false);
 }
   
 void Walk::execute()
@@ -55,7 +56,7 @@ void Walk::execute()
     {
       tmp.localInRightFoot();
       theCoMFeetPose.com.translation.z += parameters().hip.comHeightOffset * tmp.feet.left.translation.z;
-      theCoMFeetPose.com.translation.y -= parameters().hip.comStepOffsetY *tmp.feet.left.translation.z;
+      theCoMFeetPose.com.translation.y -= parameters().hip.comStepOffsetY * tmp.feet.left.translation.z;
       //theCoMFeetPose.com.rotateX( parameters().hip.comRotationOffsetX *tmp.feet.left.translation.z );
 
       PLOT("Walk:theCoMFeetPose:total_rotationY",tmp.com.rotation.getYAngle());
@@ -64,7 +65,7 @@ void Walk::execute()
     {
       tmp.localInLeftFoot();
       theCoMFeetPose.com.translation.z += parameters().hip.comHeightOffset * tmp.feet.right.translation.z;
-      theCoMFeetPose.com.translation.y += parameters().hip.comStepOffsetY *tmp.feet.left.translation.z;
+      theCoMFeetPose.com.translation.y += parameters().hip.comStepOffsetY * tmp.feet.left.translation.z;
       //theCoMFeetPose.com.rotateX( -parameters().hip.comRotationOffsetX*tmp.feet.right.translation.z );
 
       PLOT("Walk:theCoMFeetPose:total_rotationY",tmp.com.rotation.getYAngle());
@@ -352,6 +353,32 @@ void Walk::executeStep()
     default: ASSERT(false);
   }
 
+  PLOT("Walk:trajectory:cos:x",theCoMFeetPose.feet.left.translation.x);
+  PLOT("Walk:trajectory:cos:y",theCoMFeetPose.feet.left.translation.y);
+  PLOT("Walk:trajectory:cos:z",theCoMFeetPose.feet.left.translation.z);
+
+  DEBUG_REQUEST("Walk:plot_genTrajectoryWithSplines",
+    if(executingStep.footStep.liftingFoot() == FootStep::LEFT) {
+      Pose3D returnPose2 = FootTrajectorGenerator::genTrajectoryWithSplines(
+                             executingStep.footStep.footBegin(),
+                             executingStep.footStep.footEnd(),
+                             executingStep.executingCycle,
+                             executingStep.numberOfCycles,
+                             parameters().step.stepHeight,
+                             0, // footPitchOffset
+                             0  // footRollOffset
+                           );
+
+      PLOT("Walk:trajectory:spline:x",returnPose2.translation.x);
+      PLOT("Walk:trajectory:spline:y",returnPose2.translation.y);
+      PLOT("Walk:trajectory:spline:z",returnPose2.translation.z);
+    } else {
+      PLOT("Walk:trajectory:spline:x",theCoMFeetPose.feet.left.translation.x);
+      PLOT("Walk:trajectory:spline:y",theCoMFeetPose.feet.left.translation.y);
+      PLOT("Walk:trajectory:spline:z",theCoMFeetPose.feet.left.translation.z);
+    }
+  );
+
   theCoMFeetPose.com.translation = com;
   // TODO: check this
   theCoMFeetPose.com.rotation = calculateBodyRotation(theCoMFeetPose.feet, getEngine().getParameters().walk.general.bodyPitchOffset);
@@ -364,48 +391,47 @@ Pose3D Walk::calculateLiftingFootPos(const Step& step) const
   int samplesSingleSupport = step.numberOfCycles - samplesDoubleSupport;
   ASSERT(samplesSingleSupport >= 0 && samplesDoubleSupport >= 0);
 
-  if ( step.type == STEP_CONTROL )
+  if ( step.type == STEP_CONTROL && step.walkRequest.stepControl.type == WalkRequest::StepControlRequest::KICKSTEP)
   {
-    if (step.walkRequest.stepControl.type == WalkRequest::StepControlRequest::KICKSTEP)
-    {
-      return FootTrajectorGenerator::stepControl(
-        step.footStep.footBegin(),
-        step.footStep.footEnd(),
-        step.executingCycle,
-        samplesDoubleSupport,
-        samplesSingleSupport,
-        parameters().kick.stepHeight,
-        0, //footPitchOffset
-        0, //footRollOffset
-        step.walkRequest.stepControl.speedDirection,
-        step.walkRequest.stepControl.scale);
-    }
-    else 
-    {
-      return FootTrajectorGenerator::genTrajectory(
-        step.footStep.footBegin(),
-        step.footStep.footEnd(),
-        step.executingCycle,
-        samplesDoubleSupport,
-        samplesSingleSupport,
-        parameters().step.stepHeight,
-        0, // footPitchOffset
-        0  // footRollOffset
-      );
-    }
-  }
-  else if( step.type == STEP_WALK )
-  {
-    return FootTrajectorGenerator::genTrajectory(
+    return FootTrajectorGenerator::stepControl(
       step.footStep.footBegin(),
       step.footStep.footEnd(),
       step.executingCycle,
       samplesDoubleSupport,
       samplesSingleSupport,
-      parameters().step.stepHeight,
-      0, // footPitchOffset
-      0  // footRollOffset
-    );
+      parameters().kick.stepHeight,
+      0, //footPitchOffset
+      0, //footRollOffset
+      step.walkRequest.stepControl.speedDirection,
+      step.walkRequest.stepControl.scale);
+  }
+  else //if( step.type == STEP_WALK )
+  {
+    if(parameters().step.splineFootTrajectory)
+    {
+      return FootTrajectorGenerator::genTrajectoryWithSplines(
+              step.footStep.footBegin(),
+              step.footStep.footEnd(),
+              step.executingCycle,
+              samplesSingleSupport,
+              parameters().step.stepHeight,
+              0, // footPitchOffset
+              0  // footRollOffset
+            );
+    }
+    else
+    {
+      return FootTrajectorGenerator::genTrajectory(
+              step.footStep.footBegin(),
+              step.footStep.footEnd(),
+              step.executingCycle,
+              samplesDoubleSupport,
+              samplesSingleSupport,
+              parameters().step.stepHeight,
+              0, // footPitchOffset
+              0  // footRollOffset
+      );
+    }
   }
 
   ASSERT(false);
@@ -578,9 +604,8 @@ void Walk::feetStabilize(const Step& executingStep, double (&position)[naoth::Jo
 
   // HACK: small filter...
   static Vector3d lastGyro = gyro;
-  Vector3d filteredGyro = filteredGyro*0.8 + gyro*0.2;
+  Vector3d filteredGyro = (lastGyro+gyro)*0.5;
 
-  // balanceAdjustment = filteredGyroY/25;
   Vector2d weight;
   weight.x = 
       parameters().stabilization.stabilizeFeetP.x * inertial.x

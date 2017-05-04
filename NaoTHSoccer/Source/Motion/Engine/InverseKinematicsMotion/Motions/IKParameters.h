@@ -88,6 +88,7 @@ public:
       int doubleSupportTime;
     
       double stepHeight;
+      bool splineFootTrajectory;
     } step;
 
 
