@@ -1,3 +1,7 @@
+// TODO: depricated - not used now, do we need it?
+
+#ifdef _deprecated_
+
 /**
 * @file SupportPolygonGenerator.cpp
 *
@@ -21,7 +25,6 @@ SupportPolygonGenerator::SupportPolygonGenerator()
   theFSRData = getFSRData().force;
   theFSRPos = getFSRPositions().pos;
   theLink = getKinematicChainSensor().theLinks;
-
 
   string leftFootTouchDetectorCfg("1 1 1 1 -5");
   string rightFootTouchDetectorCfg("1 1 1 1 -5");
@@ -208,3 +211,4 @@ void SupportPolygonGenerator::executeDebugCommand(
     */
 }//end executeDebugCommand
 
+#endif

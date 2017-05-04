@@ -16,6 +16,8 @@ import de.naoth.rc.core.dialog.DialogPlugin;
 import de.naoth.rc.core.dialog.RCDialog;
 import de.naoth.rc.core.manager.ObjectListener;
 import de.naoth.rc.core.manager.SwingCommandExecutor;
+import de.naoth.rc.manager.GenericManager;
+import de.naoth.rc.manager.GenericManagerFactory;
 import de.naoth.rc.scp.Scp;
 import de.naoth.rc.server.Command;
 import java.io.FileOutputStream;
@@ -49,14 +51,17 @@ public class LogfileRecorder extends AbstractDialog
     static public RobotControl parent;
     @InjectPlugin
     static public SwingCommandExecutor commandExecutor;
+    @InjectPlugin
+    public static GenericManagerFactory genericManagerFactory;
   }
   
   //private MessageServer server;
   private LoggerItem selectedLog;
   
   Map<String, List<String>> selectionLists = new TreeMap<String, List<String>>();
-        
- 
+  
+  StatusApdateHandler statusUpdateHandler = new StatusApdateHandler();
+  
   /** Creates new form LogfileRecorder */
   public LogfileRecorder()
   {
@@ -84,7 +89,6 @@ public class LogfileRecorder extends AbstractDialog
     m.addElement("Basic Perception");
     m.addElement("Last Record");
     cbSelectionScheme.setModel(m);
-   
     
     DefaultComboBoxModel loggerListModel = new DefaultComboBoxModel();
     loggerListModel.addElement(new LoggerItem("CognitionLog", "Cognition:CognitionLog"));
@@ -99,6 +103,8 @@ public class LogfileRecorder extends AbstractDialog
       private final String name;
       private final String cmd;
       
+      private GenericManager statusUpdateManager = null;
+      
       public LoggerItem(String name, String cmd) {
           this.name = name;
           this.cmd = cmd;
@@ -111,6 +117,20 @@ public class LogfileRecorder extends AbstractDialog
       
       public Command getCommand() {
           return new Command(cmd);
+      }
+      
+      public void setStatusListener(StatusApdateHandler listener) {
+          
+        if(statusUpdateManager == null) {
+            Command cmdStatus = selectedLog.getCommand().addArg("status");
+            statusUpdateManager = Plugin.genericManagerFactory.getManager(cmdStatus);
+        }
+
+        statusUpdateManager.addListener(listener);
+      }
+      
+      public void removeStatusListener(StatusApdateHandler listener) {
+        statusUpdateManager.removeListener(listener);
       }
   }
 
@@ -179,6 +199,8 @@ public class LogfileRecorder extends AbstractDialog
       .addArg("close");
     //server.executeSingleCommand(this, cmdClose);
     Plugin.commandExecutor.executeCommand(new DefaultHandler(), cmdClose);
+    
+    selectedLog.removeStatusListener(statusUpdateHandler);
   }
 
   /** This method is called from within the constructor to
@@ -204,6 +226,7 @@ public class LogfileRecorder extends AbstractDialog
         stringSelectionPanel = new de.naoth.rc.components.StringSelectionPanel();
         cbSelectionScheme = new javax.swing.JComboBox();
         jLabel3 = new javax.swing.JLabel();
+        progressLabel = new javax.swing.JLabel();
 
         saveFileChooser.setFileFilter(new FileNameExtensionFilter("Log files (*.log)", "log"));
 
@@ -293,6 +316,8 @@ public class LogfileRecorder extends AbstractDialog
 
         jLabel3.setText("Selection Scheme:");
 
+        progressLabel.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -303,7 +328,8 @@ public class LogfileRecorder extends AbstractDialog
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel1)
-                        .addGap(0, 399, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(progressLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addComponent(txtTempFile, javax.swing.GroupLayout.DEFAULT_SIZE, 507, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel2)
@@ -312,7 +338,7 @@ public class LogfileRecorder extends AbstractDialog
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(cbSelectionScheme, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jProgressBar, javax.swing.GroupLayout.DEFAULT_SIZE, 507, Short.MAX_VALUE)
-                    .addComponent(stringSelectionPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 507, Short.MAX_VALUE))
+                    .addComponent(stringSelectionPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 511, Short.MAX_VALUE))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -320,7 +346,9 @@ public class LogfileRecorder extends AbstractDialog
             .addGroup(layout.createSequentialGroup()
                 .addComponent(tbLog, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(jLabel1)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(progressLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(txtTempFile, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -409,6 +437,12 @@ public class LogfileRecorder extends AbstractDialog
             stringSelectionPanel.setEnabled(!btRecord.isSelected());
             cbSelectionScheme.setEnabled(!btRecord.isSelected());
             btNew.setEnabled(!btRecord.isSelected());
+            
+            selectedLog.setStatusListener(statusUpdateHandler);
+        }
+        else
+        {
+            selectedLog.removeStatusListener(statusUpdateHandler);
         }
       }//end if connected
 
@@ -486,6 +520,7 @@ public class LogfileRecorder extends AbstractDialog
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JProgressBar jProgressBar;
+    private javax.swing.JLabel progressLabel;
     private javax.swing.JFileChooser saveFileChooser;
     private de.naoth.rc.components.StringSelectionPanel stringSelectionPanel;
     private javax.swing.JToolBar tbLog;
@@ -565,6 +600,21 @@ public class LogfileRecorder extends AbstractDialog
       }//end class MyProgressMonitor
   }//end class Copier
   
+  class StatusApdateHandler implements ObjectListener<byte[]> {
+
+        @Override
+        public void newObjectReceived(byte[] object) {
+            double bytes = Double.parseDouble(new String(object));
+            //System.out.println(String.format("%.2f MB", bytes / 1000.0/1000.0));
+            progressLabel.setText(String.format("%.2f MB", bytes / 1000.0/1000.0));
+        }
+
+        @Override
+        public void errorOccured(String cause) {
+            JOptionPane.showMessageDialog(null, "command failed: " + cause,
+                "ERROR", JOptionPane.ERROR_MESSAGE);
+        }
+    }
 
   @Override
   public void dispose()
@@ -572,6 +622,6 @@ public class LogfileRecorder extends AbstractDialog
     // stop recording
     close();
     //System.out.println("Dispose is not implemented for: " + this.getClass().getName());
-  }//end dispose
+  }
 
 }//end class

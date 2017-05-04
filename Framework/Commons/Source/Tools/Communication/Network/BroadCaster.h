@@ -12,6 +12,10 @@
 #include <glib.h>
 #include <gio/gio.h>
 
+#include <thread>
+#include <mutex>
+#include <condition_variable>
+
 namespace naoth
 {
 
@@ -37,9 +41,9 @@ private:
   bool exiting;
   GSocket* socket;
   GSocketAddress* broadcastAddress;
-  GThread* socketThread;
-  GMutex*  messageMutex;
-  GCond* messageCond;
+  std::thread socketThread;
+  std::mutex  messageMutex;
+  std::condition_variable messageCond;
   std::string message;
   std::list<std::string> messages;
   const std::string interfaceName;
