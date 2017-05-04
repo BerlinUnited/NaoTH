@@ -37,29 +37,16 @@ void IMUModel::execute(){
         reloadParameters();
     );
 
-    STOPWATCH_START("Motion:IMU:SigmaPointsRot");
     ukf_rot.generateSigmaPoints();
-    STOPWATCH_STOP("Motion:IMU:SigmaPointsRot");
 
     Eigen::Vector3d gyro;
     gyro << getGyrometerData().data.x, getGyrometerData().data.y, -getGyrometerData().data.z;
-
-    STOPWATCH_START("Motion:IMU:predictRot");
     ukf_rot.predict(gyro,0.01);
-    STOPWATCH_STOP("Motion:IMU:predictRot");
 
     // don't generate sigma points again because the process noise would be applied a second time
     // ukf.generateSigmaPoints();
 
     Eigen::Vector3d acceleration = Eigen::Vector3d(getAccelerometerData().data.x, getAccelerometerData().data.y, getAccelerometerData().data.z);
-
-    // --- for debug purpose only
-//    bool use_gyro_only = false;
-//    bool use_both = false;
-
-//    DEBUG_REQUEST("IMUModel:use_both", use_both = true;);
-//    DEBUG_REQUEST("IMUModel:use_only_gyro", use_gyro_only = true;);
-    // --- end
 
     // TODO: empirical determination or better condition
     //if((fabs(acceleration.norm() - 9.81) < 0.5 || use_both) && !use_gyro_only ){ // use acceleration
@@ -73,47 +60,23 @@ void IMUModel::execute(){
 
         IMU_RotationMeasurement z;
         // gyro z axis seems to measure in opposite direction (turning left measures negative angular velocity, should be positive)
-        z << quaternionToRotationVector(rotation_acc_to_gravity);//, getGyrometerData().data.x, getGyrometerData().data.y, -getGyrometerData().data.z;
+        z << quaternionToRotationVector(rotation_acc_to_gravity);
 
-        STOPWATCH_START("Motion:IMU:upadteRot");
-        ukf_rot.update(z, R_rotation);
-        STOPWATCH_STOP("Motion:IMU:upadteRot");
-
-        updated_by_both = true;
-    //}
-        /* else { // use only gyro meter
-        IMU_RotVelMeasurement z;
-        // gyro z axis seems to measure in opposite direction (turning left measures negative angular velocity, should be positive)
-        z << getGyrometerData().data.x, getGyrometerData().data.y, -getGyrometerData().data.z;
-
-        //Eigen::Matrixd<3,3> R = R_rotation.block<3,3>(3,3);
-        ukf_rot.update(z, R_rotation.block<3,3>(3,3));
-
-        updated_by_both = false;
-    }*/
+        if(getMotionStatus().currentMotion != motion::walk){
+            ukf_rot.update(z, R_rotation_walk);
+        } else {
+            ukf_rot.update(z, R_rotation);
+        }
 
     IMU_AccMeasurementGlobal z_acc = ukf_rot.state.getRotationAsQuaternion()._transformVector(acceleration);
-    STOPWATCH_START("Motion:IMU:SigmaPointsAcc");
+    double u_acc = 0;
     ukf_acc_global.generateSigmaPoints();
-    STOPWATCH_STOP("Motion:IMU:SigmaPointsAcc");
-    double u = 0;
-
-    STOPWATCH_START("Motion:IMU:predictAcc");
-    ukf_acc_global.predict(u, 0.01);
-    STOPWATCH_STOP("Motion:IMU:predictAcc");
-
-    STOPWATCH_START("Motion:IMU:upadteAcc");
+    ukf_acc_global.predict(u_acc, 0.01);
     ukf_acc_global.update(z_acc, R_acc);
-    STOPWATCH_STOP("Motion:IMU:upadteAcc");
 
-
-    STOPWATCH_START("Motion:IMU:writeData");
     writeIMUData();
-    STOPWATCH_STOP("Motion:IMU:writeData");
 
-    STOPWATCH_START("Motion:IMU:plotting");
     plots();
-    STOPWATCH_STOP("Motion:IMU:plotting");
 
     lastFrameInfo = getFrameInfo();
 }
@@ -138,10 +101,6 @@ void IMUModel::writeIMUData(){
     getIMUData().rotation.x = angles(0);
     getIMUData().rotation.y = angles(1);
     getIMUData().rotation.z = angles(2);
-
-//    getIMUData().rotational_velocity.x = ukf_rot.state.rotational_velocity()(0,0);
-//    getIMUData().rotational_velocity.y = ukf_rot.state.rotational_velocity()(1,0);
-//    getIMUData().rotational_velocity.z = ukf_rot.state.rotational_velocity()(2,0);
 
     // from inertiasensorfilter
     getIMUData().orientation = Vector2d(atan2(q.toRotationMatrix()(2,1),  q.toRotationMatrix()(2,2)),
@@ -168,10 +127,6 @@ void IMUModel::plots(){
 
         PLOT("IMUModel:Error:relative_to_pure_integration[°]", Math::toDegrees(Eigen::AngleAxisd(integrated*ukf_rot.state.getRotationAsQuaternion().inverse()).angle()));
     // --- end
-
-//    PLOT("IMUModel:State:acceleration:x", ukf.state.acceleration()(0,0));
-//    PLOT("IMUModel:State:acceleration:y", ukf.state.acceleration()(1,0));
-//    PLOT("IMUModel:State:acceleration:z", ukf.state.acceleration()(2,0));
 
     PLOT("IMUModel:Measurement:acceleration:x", getAccelerometerData().data.x);
     PLOT("IMUModel:Measurement:acceleration:y", getAccelerometerData().data.y);
@@ -209,26 +164,47 @@ void IMUModel::plots(){
 }
 
 void IMUModel::reloadParameters()
-{
+{   /* parameters for stand */
     // covariances of the acceleration filter
-    ukf_acc_global.Q << imuParameters.processNoiseAccQ00,                                0,                                0,
-                                                       0, imuParameters.processNoiseAccQ11,                                0,
-                                                       0,                                0, imuParameters.processNoiseAccQ22;
+    ukf_acc_global.Q << imuParameters.stand.processNoiseAccQ00,                                0,                                0,
+                                                       0, imuParameters.stand.processNoiseAccQ11,                                0,
+                                                       0,                                0, imuParameters.stand.processNoiseAccQ22;
 
     // covariances of the rotation filter
-    ukf_rot.Q << imuParameters.processNoiseRotationQ00,                                     0,                                     0,
-                                                     0, imuParameters.processNoiseRotationQ11,                                     0,
-                                                     0,                                     0, imuParameters.processNoiseRotationQ22;
-
+    ukf_rot.Q << imuParameters.stand.processNoiseRotationQ00,                                     0,                               0,
+                                                     0, imuParameters.stand.processNoiseRotationQ11,                                     0,
+                                                     0,                                     0, imuParameters.stand.processNoiseRotationQ22;
+    
     // measurement covariance matrix for the acceleration while stepping
-    R_acc << imuParameters.measurementNoiseAccR00, imuParameters.measurementNoiseAccR01, imuParameters.measurementNoiseAccR02,
-             imuParameters.measurementNoiseAccR01, imuParameters.measurementNoiseAccR11, imuParameters.measurementNoiseAccR12,
-             imuParameters.measurementNoiseAccR02, imuParameters.measurementNoiseAccR12, imuParameters.measurementNoiseAccR22;
+    R_acc << imuParameters.stand.measurementNoiseAccR00, imuParameters.stand.measurementNoiseAccR01, imuParameters.stand.measurementNoiseAccR02,
+             imuParameters.stand.measurementNoiseAccR01, imuParameters.stand.measurementNoiseAccR11, imuParameters.stand.measurementNoiseAccR12,
+             imuParameters.stand.measurementNoiseAccR02, imuParameters.stand.measurementNoiseAccR12, imuParameters.stand.measurementNoiseAccR22;
 
     // measurement covariance matrix for the rotation while stepping
-    R_rotation << imuParameters.measurementNoiseAngleR00, imuParameters.measurementNoiseAngleR01, imuParameters.measurementNoiseAngleR02,
-                  imuParameters.measurementNoiseAngleR01, imuParameters.measurementNoiseAngleR11, imuParameters.measurementNoiseAngleR12,
-                  imuParameters.measurementNoiseAngleR02, imuParameters.measurementNoiseAngleR12, imuParameters.measurementNoiseAngleR22;
+    R_rotation << imuParameters.stand.measurementNoiseRotationR00, imuParameters.stand.measurementNoiseRotationR01, imuParameters.stand.measurementNoiseRotationR02,
+                  imuParameters.stand.measurementNoiseRotationR01, imuParameters.stand.measurementNoiseRotationR11, imuParameters.stand.measurementNoiseRotationR12,
+                  imuParameters.stand.measurementNoiseRotationR02, imuParameters.stand.measurementNoiseRotationR12, imuParameters.stand.measurementNoiseRotationR22;
+
+    /* parameters or walk */
+    // covariances of the acceleration filter
+    ukf_acc_global.Q << imuParameters.walk.processNoiseAccQ00,                                0,                                0,
+                                                       0, imuParameters.walk.processNoiseAccQ11,                                0,
+                                                       0,                                0, imuParameters.walk.processNoiseAccQ22;
+
+    // covariances of the rotation filter
+    ukf_rot.Q << imuParameters.walk.processNoiseRotationQ00,                                     0,                                     0,
+                                                     0, imuParameters.walk.processNoiseRotationQ11,                                     0,
+                                                     0,                                     0, imuParameters.walk.processNoiseRotationQ22;
+
+    // measurement covariance matrix for the acceleration while stepping
+    R_acc_walk << imuParameters.walk.measurementNoiseAccR00, imuParameters.walk.measurementNoiseAccR01, imuParameters.walk.measurementNoiseAccR02,
+                  imuParameters.walk.measurementNoiseAccR01, imuParameters.walk.measurementNoiseAccR11, imuParameters.walk.measurementNoiseAccR12,
+                  imuParameters.walk.measurementNoiseAccR02, imuParameters.walk.measurementNoiseAccR12, imuParameters.walk.measurementNoiseAccR22;
+
+    // measurement covariance matrix for the rotation while stepping
+    R_rotation_walk << imuParameters.walk.measurementNoiseRotationR00, imuParameters.walk.measurementNoiseRotationR01, imuParameters.walk.measurementNoiseRotationR02,
+                       imuParameters.walk.measurementNoiseRotationR01, imuParameters.walk.measurementNoiseRotationR11, imuParameters.walk.measurementNoiseRotationR12,
+                       imuParameters.walk.measurementNoiseRotationR02, imuParameters.walk.measurementNoiseRotationR12, imuParameters.walk.measurementNoiseRotationR22;
 }
 
 #pragma GCC diagnostic pop

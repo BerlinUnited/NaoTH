@@ -43,40 +43,19 @@ class RotationState : public UKFStateRotationBase<RotationState<M1,/* M2,*/ dim,
 
         // state transition function
         void predict(Eigen::Vector3d& u, double dt) {
-            // rotational_velocity to quaternion
-//            Eigen::Vector3d rotational_velocity = this->rotational_velocity();
-            Eigen::Quaterniond rotation_increment;
-//            Eigen::Quaterniond rotation_increment2;
-//            if(rotational_velocity.norm() > 0) {
-//                rotation_increment2 = Eigen::Quaterniond(Eigen::AngleAxisd(rotational_velocity.norm()*dt, rotational_velocity.normalized()));
-
-//                Eigen::Matrix3d rot_vel_mat;
-//                rotational_velocity = rotational_velocity * dt;
-//                rot_vel_mat << 1                     , -rotational_velocity(2),  rotational_velocity(1),
-//                               rotational_velocity(2),                       1, -rotational_velocity(0),
-//                              -rotational_velocity(1),  rotational_velocity(0),                       1;
-//                rotation_increment = Eigen::Quaterniond(rot_vel_mat);
-//            } else {
-//                // zero rotation quaternion
-//                rotation_increment = Eigen::Quaterniond(1,0,0,0);
-//            }
-
-            Eigen::Vector3d rotational_velocity = u * dt;
-            Eigen::Matrix3d rot_vel_mat;
-            rot_vel_mat << 1                     , -rotational_velocity(2),  rotational_velocity(1),
-                           rotational_velocity(2),                       1, -rotational_velocity(0),
-                          -rotational_velocity(1),  rotational_velocity(0),                       1;
-            rotation_increment = Eigen::Quaterniond(rot_vel_mat);
-
             // continue rotation assuming constant velocity
+            // rotational_velocity to quaternion
+            Eigen::Vector3d rot_vel = u * dt;
+            Eigen::Matrix3d rot_vel_mat;
+            rot_vel_mat << 1                     , -rot_vel(2),  rot_vel(1),
+                           rot_vel(2),                       1, -rot_vel(0),
+                          -rot_vel(1),  rot_vel(0),                       1;
+            Eigen::Quaterniond rotation_increment(rot_vel_mat);
+
             // TODO: compare with rotation_increment*rotation which sounds more reasonable
             Eigen::Quaterniond new_rotation = this->getRotationAsQuaternion() * rotation_increment; // follows paper
-            //Eigen::Quaterniond new_rotation = rotation_increment * this->getRotationAsQuaternion();
             Eigen::AngleAxisd  new_angle_axis(new_rotation);
-
             this->rotation() = new_angle_axis.angle() * new_angle_axis.axis();
-
-//            this->rotational_velocity() = this->rotational_velocity();
         }
 
         // state to measurement transformation function
