@@ -11,6 +11,7 @@
 #include "Representations/Infrastructure/SoundData.h"
 #include "Representations/Modeling/PlayerInfo.h"
 #include "Representations/Infrastructure/WhistlePercept.h"
+#include "Representations/Infrastructure/GameData.h"
 
 using namespace naoth;
 
@@ -43,6 +44,7 @@ private:
 
 private:
   int lastWhistleCount;
+  GameData::GameState lastGameState;
   GameReturnData::Message returnMessage;
 };
 
