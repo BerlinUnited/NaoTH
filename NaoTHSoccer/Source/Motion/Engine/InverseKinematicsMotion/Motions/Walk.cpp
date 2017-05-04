@@ -197,9 +197,7 @@ void Walk::calculateNewStep(const Step& lastStep, Step& newStep, const WalkReque
 
   // STABILIZATION
   bool do_emergency_stop = com_errors.size() == com_errors.getMaxEntries() && com_errors.getAverage() > parameters().stabilization.emergencyStopError;
-  if ( (getMotionRequest().id != getId() || do_emergency_stop) /* walkRequest.stepControl.type != WalkRequest::StepControlRequest::StepType::KICKSTEP 
-                                                               nor && lastStep.walkRequest.stepControl.type != WalkRequest::StepControlRequest::StepType::KICKSTEP have helped
-                                                               could try ZEROSTEP instead of KICKSTEP (lastStep.walkRequest.....)*/
+  if ( (getMotionRequest().id != getId() || do_emergency_stop) && lastStep.walkRequest.stepControl.type == WalkRequest::StepControlRequest::WALKSTEP 
       //|| walkRequest.stepControl.stepID + 1 != stepBuffer.stepId())
       )
   {

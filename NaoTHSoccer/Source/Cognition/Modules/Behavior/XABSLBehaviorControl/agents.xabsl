@@ -234,6 +234,9 @@ include "Options/Test/change_state_input_test.xabsl";
 
 /** The soccer competition agent */
 agent spl_soccer("SPL Soccer", spl_play_soccer);
+/** PathPlanner **/
+agent path_spl_soccer("Path SPL Soccer", path_spl_play_soccer);
+/** PathPlanner **/
 agent penalty("Penalty", play_penalty);
 
 agent spl_remote("Remote Player", spl_remote_agent);
@@ -280,7 +283,6 @@ agent dribble_test_agent("dribble_test_agent", dribble_test_agent);
 agent pathplanner_test_sidekick("pathplanner_test_sidekick", pathplanner_test_sidekick);
 agent pathplanner_test_short_kick("pathplanner_test_short_kick", pathplanner_test_short_kick);
 agent pathplanner_test_long_kick("pathplanner_test_long_kick", pathplanner_test_long_kick);
-agent path_spl_soccer("Path SPL Soccer", path_spl_play_soccer);
 
 
 // Test agents search
