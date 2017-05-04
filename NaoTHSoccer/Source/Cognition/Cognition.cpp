@@ -26,10 +26,10 @@
 #include "Modules/Infrastructure/Debug/DebugExecutor.h"
 #include "Modules/Infrastructure/Debug/Debug.h"
 #include "Modules/Infrastructure/LEDSetter/LEDSetter.h"
+#include "Modules/Infrastructure/UltraSoundControl/UltraSoundControl.h"
+
 #include "Modules/Infrastructure/TeamCommunicator/TeamCommReceiver.h"
-#include "Modules/Infrastructure/TeamCommunicator/TeamCommReceiveEmulator.h"
 #include "Modules/Infrastructure/TeamCommunicator/TeamCommSender.h"
-#include "Modules/Infrastructure/TeamCommunicator/TeamMessageStatistics.h"
 
 #include "Modules/Infrastructure/Debug/CameraDebug.h"
 #include "Modules/Infrastructure/Camera/CameraInfoSetter.h"
@@ -41,6 +41,7 @@
 #include "Modules/SelfAwareness/ArtificialHorizonCalculator/ArtificialHorizonCalculator.h"
 #include "Modules/SelfAwareness/BodyContourProvider/BodyContourProvider.h"
 #include "Modules/SelfAwareness/CameraMatrixCorrector/CameraMatrixCorrector.h"
+#include "Modules/SelfAwareness/CameraMatrixCorrectorV2/CameraMatrixCorrectorV2.h"
 
 #include "Modules/VisualCortex/HistogramProvider.h"
 #include "Modules/VisualCortex/SimpleFieldColorClassifier/SimpleFieldColorClassifier.h"
@@ -53,7 +54,13 @@
 #include "Modules/VisualCortex/GoalDetector/GoalDetector.h"
 #include "Modules/VisualCortex/GoalDetector/GoalDetectorV2.h"
 #include "Modules/VisualCortex/GoalDetector/GoalCrossBarDetector.h"
+#include "Modules/VisualCortex/BallDetector/RedBallDetector.h"
+#include "Modules/VisualCortex/BallDetector/BallCandidateDetector.h"
 #include "Modules/VisualCortex/BallDetector/BallDetector.h"
+#include "Modules/VisualCortex/IntegralImageProvider.h"
+
+#include "Modules/SelfAwareness/FakeCameraMatrixFinder/FakeCameraMatrixFinder.h"
+#include "Modules/VisualCortex/FakeBallDetector/FakeBallDetector.h"
 
 #include "Modules/Perception/VirtualVisionProcessor/VirtualVisionProcessor.h"
 #include "Modules/Perception/PerceptionsVisualizer/PerceptionsVisualizer.h"
@@ -62,8 +69,11 @@
 #include "Modules/Modeling/BodyStateProvider/BodyStateProvider.h"
 #include "Modules/Modeling/FieldCompass/FieldCompass.h"
 #include "Modules/Modeling/ObstacleLocator/UltraSoundObstacleLocator.h"
+#include "Modules/Modeling/TeamMessageStatistics/TeamCommReceiveEmulator.h"
+#include "Modules/Modeling/TeamMessageStatistics/TeamMessageStatistics.h"
 #include "Modules/Modeling/RoleDecision/SimpleRoleDecision/SimpleRoleDecision.h"
-#include "Modules/Modeling/RoleDecision/Experimental/StableRoleDecision.h"
+#include "Modules/Modeling/RoleDecision/StableRoleDecision/StableRoleDecision.h"
+#include "Modules/Modeling/RoleDecision/CleanRoleDecision/CleanRoleDecision.h"
 #include "Modules/Modeling/SoccerStrategyProvider/SoccerStrategyProvider.h"
 #include "Modules/Modeling/PotentialFieldProvider/PotentialFieldProvider.h"
 #include "Modules/Modeling/SelfLocator/GPS_SelfLocator/GPS_SelfLocator.h"
@@ -72,13 +82,18 @@
 #include "Modules/Modeling/GoalModel/DummyActiveGoalLocator/DummyActiveGoalLocator.h"
 #include "Modules/Modeling/GoalModel/WholeGoalLocator/WholeGoalLocator.h"
 #include "Modules/Modeling/BallLocator/KalmanFilterBallLocator/KalmanFilterBallLocator.h"
+#include "Modules/Modeling/BallLocator/MultiKalmanBallLocator/MultiKalmanBallLocator.h"
 #include "Modules/Modeling/StaticDebugModelProvider/StaticDebugModelProvider.h"
 
+#include "Modules/Modeling/Simulation/SimulationTest.h"
 #include "Modules/Modeling/Simulation/Simulation.h"
+#include "Modules/Modeling/SelfLocator/SituationPriorProvider/SituationPriorProvider.h"
+
 
 // behavior
 #include "Modules/Behavior/BasicTestBehavior/BasicTestBehavior.h"
 #include "Modules/Behavior/XABSLBehaviorControl/XABSLBehaviorControl.h"
+#include "Modules/Behavior/RemoteControlBehavior/RemoteControlBehavior.h"
 
 using namespace std;
 
@@ -117,12 +132,11 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
 
   // infrastructure
   REGISTER_MODULE(TeamCommReceiver);
-  REGISTER_MODULE(TeamCommReceiveEmulator);
-  REGISTER_MODULE(TeamMessageStatistics);
   REGISTER_MODULE(GameController);
   REGISTER_MODULE(BatteryAlert);
   REGISTER_MODULE(ButtonEventMonitor);
   REGISTER_MODULE(LEDSetter);
+  REGISTER_MODULE(UltraSoundControl);
 
   REGISTER_MODULE(CameraDebug);
   REGISTER_MODULE(CameraInfoSetter);
@@ -133,8 +147,10 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(ArtificialHorizonCalculator);
   REGISTER_MODULE(BodyContourProvider);
   REGISTER_MODULE(CameraMatrixCorrector);
+  REGISTER_MODULE(CameraMatrixCorrectorV2);
 
   REGISTER_MODULE(HistogramProvider);
+  REGISTER_MODULE(IntegralImageProvider);
   REGISTER_MODULE(SimpleFieldColorClassifier);
   REGISTER_MODULE(FieldColorClassifier);
   REGISTER_MODULE(ScanLineEdgelDetector);
@@ -145,17 +161,27 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(GoalDetector);
   REGISTER_MODULE(GoalDetectorV2);
   REGISTER_MODULE(GoalCrossBarDetector);
+
+  REGISTER_MODULE(RedBallDetector);
+  REGISTER_MODULE(BallCandidateDetector);
   REGISTER_MODULE(BallDetector);
+
+  REGISTER_MODULE(FakeCameraMatrixFinder);
+  REGISTER_MODULE(FakeBallDetector);
 
   REGISTER_MODULE(VirtualVisionProcessor);
   REGISTER_MODULE(PerceptionsVisualizer);
 
   // modeling
+  REGISTER_MODULE(SituationPriorProvider);
   REGISTER_MODULE(BodyStateProvider);
   REGISTER_MODULE(FieldCompass);
   REGISTER_MODULE(UltraSoundObstacleLocator);
+  REGISTER_MODULE(TeamCommReceiveEmulator);
+  REGISTER_MODULE(TeamMessageStatistics);
   REGISTER_MODULE(SimpleRoleDecision);
   REGISTER_MODULE(StableRoleDecision);
+  REGISTER_MODULE(CleanRoleDecision);
   REGISTER_MODULE(SoccerStrategyProvider);
   REGISTER_MODULE(PotentialFieldProvider);
   REGISTER_MODULE(GPS_SelfLocator);
@@ -164,12 +190,15 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(WholeGoalLocator);
   REGISTER_MODULE(DummyActiveGoalLocator);
   REGISTER_MODULE(KalmanFilterBallLocator);
+  REGISTER_MODULE(MultiKalmanBallLocator);
   REGISTER_MODULE(Simulation);
+  REGISTER_MODULE(SimulationTest);
   REGISTER_MODULE(StaticDebugModelProvider);
 
   // behavior
   REGISTER_MODULE(BasicTestBehavior);
   REGISTER_MODULE(XABSLBehaviorControl);
+  REGISTER_MODULE(RemoteControlBehavior);
 
   REGISTER_MODULE(TeamCommSender);
   

@@ -77,6 +77,14 @@ copy ./etc/ld.so.conf /etc/ld.so.conf root 644
 # copy new fstab
 copy ./etc/fstab /etc/fstab root 644
 
+# update the system wide libstdc++
+if [ -e ./home/nao/lib/libstdc++.so ]
+then
+    mkdir /usr/lib/backup_libst++
+    cp /usr/lib/libstdc++.* /usr/lib/backup_libst++/
+    cp  ./home/nao/lib/libstdc++.* /usr/lib/
+fi
+
 # create the local lib directory
 if [ ! -d /home/nao/lib ]
 then
@@ -152,7 +160,7 @@ fi
 rm -f /home/nao/bin/naoth.bak
 copy ./home/nao/bin/naoth /home/nao/bin/naoth nao 755
 rm -f /home/nao/bin/libnaosmal.so.bak
-copy ./home/nao/bin/libnaosmal.so /home/nao/bin/libnaosmal.so nao 444
+copy ./home/nao/bin/libnaosmal.so /home/nao/bin/libnaosmal.so nao 755
 
 if [ -d "/home/nao/naoqi/Config" ]; then
   rm -rf /home/nao/naoqi/Config/*
@@ -161,10 +169,12 @@ fi
 cp -r ./home/nao/naoqi/Config/* /home/nao/Config
 chown -R nao:nao /home/nao/naoqi/Config;
 
+# remove any old media files
 if [ -d "/home/nao/naoqi/Media" ]; then
   rm -rf /home/nao/naoqi/Media/*
 fi
 
+# copy the new media files
 cp -r ./home/nao/naoqi/Media/* /home/nao/Media
 chown -R nao:nao /home/nao/naoqi/Media;
 
@@ -223,10 +233,14 @@ copy ./etc/wpa_supplicant/wpa_supplicant.conf /etc/wpa_supplicant/wpa_supplicant
 # Network IP Adresses
 copy ./etc/conf.d/net /etc/conf.d/net root 644
 
+# hostname
+copy ./etc/conf.d/hostname /etc/conf.d/hostname root 644
+copy ./etc/hostname /etc/hostname root 644
+
 # Check and Update Runlevel Configuration for Network Services
 chown root:root ./checkRC.sh;
 chmod 744 ./checkRC.sh;
-./checkRC.sh "connman=disable net.eth0=boot net.wlan0=boot";
+./checkRC.sh "connman=disable net.eth0=boot net.wlan0=boot savecache=boot checkpart=disable checkpart-dummy=boot";
 
 # ----------------------
 
@@ -237,7 +251,9 @@ ldconfig;
 chmod +s /sbin/shutdown
 chmod +s /sbin/reboot
 
-amixer sset 'PCM' 90%
+# set volume to 88%
+sudo -u nao pactl set-sink-mute 0 false
+sudo -u nao pactl set-sink-volume 0 88%
 
 echo "initialization done, shutting down system";
 shutdown -h now

@@ -14,8 +14,8 @@ PerceptionsVisualizer::PerceptionsVisualizer()
 {
   DEBUG_REQUEST_REGISTER("PerceptionsVisualizer:image:draw_horizon", "draw the hizon line in the image", false);
 
-  DEBUG_REQUEST_REGISTER("PerceptionsVisualizer:field:CamTop", "execute for the top cam", false);
-  DEBUG_REQUEST_REGISTER("PerceptionsVisualizer:field:CamBottom", "execute for the bottom cam", false);
+  DEBUG_REQUEST_REGISTER("PerceptionsVisualizer:CamTop", "execute for the top cam", false);
+  DEBUG_REQUEST_REGISTER("PerceptionsVisualizer:CamBottom", "execute for the bottom cam", false);
 
   DEBUG_REQUEST_REGISTER("PerceptionsVisualizer:field:ball_percept", "draw ball percept", false);
   DEBUG_REQUEST_REGISTER("PerceptionsVisualizer:image:ball_percept", "draw ball percept", false);
@@ -24,12 +24,15 @@ PerceptionsVisualizer::PerceptionsVisualizer()
   DEBUG_REQUEST_REGISTER("PerceptionsVisualizer:field:goal_percept", "draw goal percept", false);
   DEBUG_REQUEST_REGISTER("PerceptionsVisualizer:image_px:goal_percept", "draw goal percept", false);
 
+
   DEBUG_REQUEST_REGISTER("PerceptionsVisualizer:field:edgels_percept", "draw edgels percept", false);
   DEBUG_REQUEST_REGISTER("PerceptionsVisualizer:image_px:edgels_percept", "draw edgels percept", false);
+
 
   DEBUG_REQUEST_REGISTER("PerceptionsVisualizer:field:line_percept", "draw line percept", false);
   DEBUG_REQUEST_REGISTER("PerceptionsVisualizer:image:line_percept", "draw line percept", false);
   DEBUG_REQUEST_REGISTER("PerceptionsVisualizer:image_px:line_percept", "draw line percept", false);
+
 
   DEBUG_REQUEST_REGISTER("PerceptionsVisualizer:field:players_percept", "draw players percept", false);
   DEBUG_REQUEST_REGISTER("PerceptionsVisualizer:image_px:players_percept", "draw players percept", false);
@@ -44,10 +47,10 @@ PerceptionsVisualizer::PerceptionsVisualizer()
 
 void PerceptionsVisualizer::execute()
 {
-  DEBUG_REQUEST("PerceptionsVisualizer:field:CamTop",
+  DEBUG_REQUEST("PerceptionsVisualizer:CamTop",
     execute(CameraInfo::Top);
   );
-  DEBUG_REQUEST("PerceptionsVisualizer:field:CamBottom",
+  DEBUG_REQUEST("PerceptionsVisualizer:CamBottom",
     execute(CameraInfo::Bottom);
   );
 
@@ -94,7 +97,18 @@ void PerceptionsVisualizer::execute(CameraInfo::CameraID id)
         (int)getBallPercept().centerInImage.y,
         (int)getBallPercept().radiusInImage);
     }
+
+	  for (MultiBallPercept::ConstABPIterator i = getMultiBallPercept().begin(); i != getMultiBallPercept().end(); ++i) {
+		  CANVAS((((*i).cameraId == CameraInfo::Top) ? "ImageTop" : "ImageBottom"));
+		  PEN("FF9900", 3);
+		  CIRCLE(
+			  (*i).centerInImage.x,
+			  (*i).centerInImage.y,
+			  (*i).radiusInImage);
+	  }
   );
+
+  
 
   DEBUG_REQUEST("PerceptionsVisualizer:image_px:ball_percept",
     if(getBallPercept().ballWasSeen) 
@@ -224,38 +238,21 @@ void PerceptionsVisualizer::execute(CameraInfo::CameraID id)
     }//end for
   );
 
-
   DEBUG_REQUEST("PerceptionsVisualizer:image_px:edgels_percept",
-    FIELD_DRAWING_CONTEXT;
+    /*FIELD_DRAWING_CONTEXT;
 
-    CameraMatrix cameraMatrix(getCameraMatrix());
-    DEBUG_REQUEST("PerceptionsVisualizer:field:corrrect_camera_matrix",
-      cameraMatrix.rotateY(getCameraMatrixOffset().offset.y)
-                  .rotateX(getCameraMatrixOffset().offset.x);
-    );
-    
     for(size_t i = 0; i < getScanLineEdgelPercept().scanLineEdgels.size(); i++)
     {
       const DoubleEdgel& e = getScanLineEdgelPercept().scanLineEdgels[i];
-      
-      Vector2d edgelOnFieldBegin = CameraGeometry::angleToPointInImage(
-        getCameraMatrix(),
-        getImage().cameraInfo,
-        e.begin.x,
-        e.begin.y) * 1000;
 
-      PEN("FF0000", 5);
-      CIRCLE(edgelOnFieldBegin.x, edgelOnFieldBegin.y, 10);
+      Vector2d begin_dir(10.0,0.0);
+      begin_dir.rotate(e.begin_angle);
+      LINE_PX(ColorClasses::red, e.begin.x, e.begin.y, e.begin.x + (int)(begin_dir.x+0.5), e.begin.y + (int)(begin_dir.y+0.5));
 
-      Vector2d edgelOnFieldEnd = CameraGeometry::angleToPointInImage(
-        getCameraMatrix(),
-        getImage().cameraInfo,
-        e.end.x,
-        e.end.y) * 1000;
-
-      PEN("0000FF", 5);
-      CIRCLE(edgelOnFieldEnd.x, edgelOnFieldEnd.y, 10);
-    }//end for
+      Vector2d end_dir(10.0,0.0);
+      end_dir.rotate(e.end_angle);
+      LINE_PX(ColorClasses::red, e.end.x, e.end.y, e.end.x + (int)(end_dir.x+0.5), e.end.y + (int)(end_dir.y+0.5));
+    }*///end for
   );
 
 

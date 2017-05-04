@@ -16,14 +16,14 @@ using namespace naoth;
 void NaoSensorData::get(SensorJointData& data) const
 {
   unsigned int currentIndex = theSensorJointDataIndex;
-  for (int i = 0; i < JointData::RHipYawPitch; i++) 
+  for (int i = 0; i < JointData::RHipYawPitch; i++)
   {
     data.electricCurrent[i] = sensorsValue[currentIndex++];
     data.temperature[i] = sensorsValue[currentIndex++];
     data.position[i] = sensorsValue[currentIndex++];
     data.stiffness[i] = sensorsValue[currentIndex++];
   }
-  for (int i = JointData::RHipYawPitch + 1; i < JointData::numOfJoint; i++) 
+  for (int i = JointData::RHipYawPitch + 1; i < JointData::numOfJoint; i++)
   {
     data.electricCurrent[i] = sensorsValue[currentIndex++];
     data.temperature[i] = sensorsValue[currentIndex++];
@@ -44,11 +44,11 @@ void NaoSensorData::get(SensorJointData& data) const
 void NaoSensorData::get(FSRData& data) const
 {
   unsigned int currentIndex = theFSRDataIndex;
-  for (int i = 0; i < FSRData::numOfFSR; i++) 
-  {
-    data.data[i] = sensorsValue[currentIndex++];
-    // The value returned for each FSR is similar to Kg in NaoQi 1.3.17
-    data.force[i] = data.data[i] * Math::g;
+  for (int i = 0; i < FSRData::numOfFSR; i++) {
+    data.dataLeft[i] = sensorsValue[currentIndex++];
+  }
+  for (int i = 0; i < FSRData::numOfFSR; i++) {
+    data.dataRight[i] = sensorsValue[currentIndex++];
   }
 }//end FSRData
 
@@ -68,9 +68,9 @@ void NaoSensorData::get(AccelerometerData& data) const
   //static float scale_acc = static_cast<float>(Math::g/60.0);
   //0.1532289 = 9.80665/64
   //data.data = data.rawData * scale_acc;//* 0.1532289;
-  
+
   //TODO: why?
-  data.data.y *= -1; 
+  data.data.y *= -1;
 }//end AccelerometerData
 
 void NaoSensorData::get(GyrometerData& data) const
@@ -84,7 +84,7 @@ void NaoSensorData::get(GyrometerData& data) const
   data.data.z = sensorsValue[theGyrometerDataIndex + 5];
 
   data.ref = sensorsValue[theGyrometerDataIndex + 6];
-  
+
 
   //data = (raw-zero) * 2.7 * PI/180 [rad/s]
   //static float scale_gyro = 2.7 * M_PI/180.0;
@@ -92,7 +92,7 @@ void NaoSensorData::get(GyrometerData& data) const
   const static double range = 4096; // 2^12
   const static double offset = range / 2;
   const static double scale_gyro = Math::fromDegrees(1000) / range; // +/- 500 deg/s
-  
+
   data.data.x = (data.rawData.x + offset)*scale_gyro;
   data.data.y = (data.rawData.y + offset)*scale_gyro;
   data.data.z = (data.rawData.z + offset)*scale_gyro;
@@ -116,20 +116,20 @@ void NaoSensorData::get(IRReceiveData& data) const
 void NaoSensorData::get(ButtonData& data) const
 {
   unsigned int currentIndex = theButtonDataIndex;
-  for (int i = 0; i < ButtonData::numOfButtons; i++) 
+  for (int i = 0; i < ButtonData::numOfButtons; i++)
   {
     float temp = sensorsValue[currentIndex++];
     bool wasAlreadPressed = data.isPressed[i];
-    if (temp == 1.0f) 
+    if (temp == 1.0f)
     {
       data.isPressed[i] = true;
       data.numOfFramesPressed[i]++;
-      if (!wasAlreadPressed) 
+      if (!wasAlreadPressed)
       {
         data.eventCounter[i]++;
       }
-    } 
-    else 
+    }
+    else
     {
       data.isPressed[i] = false;
       data.numOfFramesPressed[i] = 0;
@@ -142,7 +142,7 @@ void NaoSensorData::get(UltraSoundReceiveData& data) const
   unsigned int currentIndex = theUltraSoundReceiveDataIndex;
   data.rawdata = sensorsValue[currentIndex++];
 
-  for(int i = 0; i < UltraSoundData::numOfUSEcho;i++)
+  for(int i = 0; i < UltraSoundReceiveData::numOfUSEcho;i++)
   {
     data.dataLeft[i] = sensorsValue[currentIndex++];
     data.dataRight[i] = sensorsValue[currentIndex++];
@@ -152,5 +152,8 @@ void NaoSensorData::get(UltraSoundReceiveData& data) const
 
 void NaoSensorData::get(BatteryData& data) const
 {
-  data.charge = sensorsValue[thBatteryDataIdex];
-}//end BatteryData
+  unsigned int currentIndex = theBatteryDataIdex;
+  data.charge = sensorsValue[currentIndex++];
+  data.current = sensorsValue[currentIndex++];
+  data.temperature = sensorsValue[currentIndex++];
+}

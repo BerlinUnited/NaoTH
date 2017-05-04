@@ -11,6 +11,11 @@ build.xml
 build-impl.xml
 genfiles.properties
 
+#python
+*.pyc
+.idea/
+naoth.egg-info*
+
 #
 trace.dump.*
 projectconfig.user.lua

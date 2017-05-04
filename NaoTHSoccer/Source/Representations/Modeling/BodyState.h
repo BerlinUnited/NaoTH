@@ -9,6 +9,7 @@
 #define __BodyState_h_
 
 #include "Tools/DataStructures/Printable.h"
+#include "Tools/DataStructures/Serializer.h"
 
 class BodyState : public naoth::Printable
 {
@@ -21,7 +22,9 @@ public:
     standByRightFoot(true),
     foot_state_time(0),
     temperatureLeftLeg(0),
-    temperatureRightLeg(0)
+    temperatureRightLeg(0),
+    isLiftedUp(false),
+    isDischarging(true)
   {}
 
   ~BodyState(){}
@@ -75,20 +78,38 @@ public:
   // timestamp when any of the feet states changed last time
   unsigned int foot_state_time;
 
-
   // the maximal temperature for each leg
   double temperatureLeftLeg;
   double temperatureRightLeg;
 
+  //Is the body lifted up
+  bool isLiftedUp;
+
+  bool isDischarging;
 
   virtual void print(std::ostream& stream) const
   {
-    stream << "fall_down_state = " << getName(fall_down_state) << std::endl;
-    stream << "fall_down_state_time = " << fall_down_state_time << std::endl;
-    stream << "standByLeftFoot = " << standByLeftFoot << std::endl;
-    stream << "standByRightFoot = " << standByRightFoot << std::endl;
-    stream << "foot_state_time = " << foot_state_time << std::endl;
+      stream << "fall_down_state = " << getName(fall_down_state) << std::endl;
+      stream << "fall_down_state_time = " << fall_down_state_time << std::endl;
+      stream << "standByLeftFoot = " << standByLeftFoot << std::endl;
+      stream << "standByRightFoot = " << standByRightFoot << std::endl;
+      stream << "foot_state_time = " << foot_state_time << std::endl;
+      stream << "isLiftedUp = " << isLiftedUp << std::endl;
+      stream << "isDischarging = " << isDischarging << std::endl;
   }//end print
+
 };
+
+namespace naoth
+{
+    template<>
+    class Serializer<BodyState>
+    {
+    public:
+        static void serialize(const BodyState& representation, std::ostream& stream);
+        static void deserialize(std::istream& stream, BodyState& representation);
+    };
+}
+
 
 #endif// __BodyState_h_

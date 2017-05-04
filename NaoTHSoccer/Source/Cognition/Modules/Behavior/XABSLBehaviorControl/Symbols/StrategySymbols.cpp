@@ -64,12 +64,12 @@ void StrategySymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalInputSymbol("attack.direction.preview.right_foot", &attackDirectionPreviewRFoot);
 
   // action selection
-  engine.registerEnumElement("attack.action_type", "attack.action_type.ball_position", 0);
-  engine.registerEnumElement("attack.action_type", "attack.action_type.kick_short", 1);
-  engine.registerEnumElement("attack.action_type", "attack.action_type.kick_long", 2);
-  engine.registerEnumElement("attack.action_type", "attack.action_type.sidekick_left", 3);
-  engine.registerEnumElement("attack.action_type", "attack.action_type.sidekick_right", 4);
-  engine.registerEnumElement("attack.action_type", "attack.action_type.none", 5);
+  for(int i = 0; i < KickActionModel::numOfActions; ++i)
+  {
+    string str("attack.action_type.");
+    str.append(KickActionModel::getName((KickActionModel::ActionId)i));
+    engine.registerEnumElement("attack.action_type", str.c_str(), i);
+  }
 
   engine.registerEnumeratedInputSymbol("attack.best_action", "attack.action_type", &getBestAction);
 
@@ -144,9 +144,11 @@ void StrategySymbols::setSituationStatusOppHalf(bool oppHalf){
 	theInstance->getSituationStatus().oppHalf = oppHalf; 
 }
 
+// TODO: check if the model is valid
+// NOTE: what about the default position if the ball was not seen?
 Vector2d StrategySymbols::calculateGoalieGuardPosition()
 {
-  Vector2d ballPos = getRobotPose()*getBallModel().futurePosition[5];
+  Vector2d ballPos = getRobotPose()*getBallModel().getFuturePosition(5);
 
   double groundLineDistance = 500.0;
   MODIFY("StrategySymbols:groundLineDistance", groundLineDistance);
@@ -164,7 +166,7 @@ Vector2d StrategySymbols::calculateGoalieGuardPosition()
 Vector2d StrategySymbols::calculatePenaltyGoalieGuardPosition()
 {
   const Vector2d goalCenter(getFieldInfo().xPosOwnGroundline, 0);
-  const Vector2d& ballPos = getRobotPose()*getBallModel().futurePosition[5];
+  const Vector2d& ballPos = getRobotPose()*getBallModel().getFuturePosition(5);
 
   Math::LineSegment goal2BallLine(goalCenter, ballPos);
 

@@ -69,7 +69,7 @@ class JointData
     double dp[numOfJoint]; // speed
     double ddp[numOfJoint]; // acceleration
 
-    // joint limits
+    // HACK: joint limits
     static double min[numOfJoint];
     static double max[numOfJoint];
 
@@ -125,6 +125,15 @@ class JointData
 
     virtual void print(std::ostream& stream) const;
   };
+
+  class OffsetJointData : public JointData, public Printable
+  {
+  public:
+    OffsetJointData();
+    ~OffsetJointData();
+
+    virtual void print(std::ostream& stream) const;
+  };
   
   template<>
   class Serializer<SensorJointData>
@@ -140,6 +149,14 @@ class JointData
     public:
     static void serialize(const MotorJointData& representation, std::ostream& stream);
     static void deserialize(std::istream& stream, MotorJointData& representation);
+  };
+
+  template<>
+  class Serializer<OffsetJointData>
+  {
+    public:
+    static void serialize(const OffsetJointData& representation, std::ostream& stream);
+    static void deserialize(std::istream& stream, OffsetJointData& representation);
   };
 }
 

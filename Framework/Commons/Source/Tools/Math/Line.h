@@ -11,6 +11,7 @@
 
 #include <limits>
 #include <cmath>
+#include <algorithm>
 #include "Vector2.h"
 #include "Pose2D.h"
 

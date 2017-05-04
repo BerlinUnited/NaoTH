@@ -42,5 +42,10 @@ public class AbstractDialog extends JPanel implements Dialog
   {
       
   }
+  
+  @Override
+  public String getCategory() { 
+    return "Dialog";
+  }
 
 }//end AbstractDialog

@@ -1,9 +1,15 @@
 #!/bin/bash
-sudo -u nao /usr/bin/paplay /home/nao/naoqi/Media/usb_stop.wav
+
+# set volume to 88%
+sudo -u nao pactl set-sink-mute 0 false
+sudo -u nao pactl set-sink-volume 0 88%
+
+# play initial sound
+sudo -u nao /usr/bin/paplay /home/nao/naoqi/Media/usb_start.wav
 
 # stop naoqi and/or naoth if they are to replace
 if [ -f "./deploy/home/nao/bin/naoth" ]; then
-  /etc/init.d/naoth stop
+  naoth stop
 fi
 if [ -f "./deploy/home/nao/bin/libnaosmal.so" ]; then
   /etc/init.d/naoqi stop
@@ -41,7 +47,7 @@ if [ -f "./deploy/home/nao/bin/naoth" ]; then
   rm -f /home/nao/bin/naoth
   sudo -u nao cp ./deploy/home/nao/bin/naoth /home/nao/bin/naoth
   sudo -u nao chmod 755 /home/nao/bin/naoth
-  /etc/init.d/naoth start
+  naoth start
 fi
 
 echo "DONE"

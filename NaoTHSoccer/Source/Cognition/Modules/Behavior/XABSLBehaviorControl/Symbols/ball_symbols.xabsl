@@ -22,20 +22,20 @@ namespace ball_symbols("Ball Symbols") {
   /** y direction of speed */
   float input ball.speed.y [mm/s];
 
-  /** Whether the ball was seen in the current frame */
-  bool input ball.was_seen;
-  /** Time since the ball was last seen in ms */
+    /** Time since the ball was last seen in ms */
   float input ball.time_since_last_seen "ms";
   /** Time since the ball is seen in ms*/
   float input ball.time_seen "ms";
   
-  /** a filtered version of ball.was_seen*/
+  /** a filtered version of ball.percept.was_seen*/
   bool input ball.know_where_itis;
 
   /** relative ball position to the robot based on a current percept*/
   float input ball.percept.x "mm";
   /** relative ball position to the robot based on a current percept*/
   float input ball.percept.y "mm";
+  /** Whether the ball was seen in the current frame */
+  bool input ball.percept.was_seen;
 
 
   /** Distance of the ball in mm */

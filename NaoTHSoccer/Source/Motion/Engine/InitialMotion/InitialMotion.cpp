@@ -25,16 +25,21 @@ InitialMotion::InitialMotion()
   theInitJoints.position[JointData::LShoulderRoll] = Math::fromDegrees(10);
   theInitJoints.position[JointData::LElbowRoll] = theInitJoints.max[JointData::LElbowRoll];
   theInitJoints.position[JointData::LElbowYaw] = Math::fromDegrees(-90);
+
+  theInitJoints.position[JointData::LHand] = 0;
   theInitJoints.position[JointData::RShoulderPitch] = Math::fromDegrees(90);
   theInitJoints.position[JointData::RShoulderRoll] = Math::fromDegrees(-10);
   theInitJoints.position[JointData::RElbowRoll] = theInitJoints.min[JointData::RElbowRoll];
   theInitJoints.position[JointData::RElbowYaw] = Math::fromDegrees(90);
+  theInitJoints.position[JointData::RHand] = 0;
+
   theInitJoints.position[JointData::LHipYawPitch] = 0;
   theInitJoints.position[JointData::LHipRoll] = 0;  
   theInitJoints.position[JointData::LKneePitch] = theInitJoints.max[JointData::LKneePitch];
   theInitJoints.position[JointData::LAnklePitch] = theInitJoints.min[JointData::LAnklePitch];
   theInitJoints.position[JointData::LHipPitch] = -theInitJoints.position[JointData::LKneePitch] - theInitJoints.position[JointData::LAnklePitch]; 
   theInitJoints.position[JointData::LAnkleRoll] = 0;
+
   theInitJoints.position[JointData::RHipYawPitch] = 0;
   theInitJoints.position[JointData::RHipRoll] = 0;
   theInitJoints.position[JointData::RKneePitch] = theInitJoints.max[JointData::RKneePitch];
@@ -64,10 +69,11 @@ InitialMotion::InitialMotion()
 
   //HACK: turn off the hands
   freeStiffness[JointData::LHand] = -1;
-  safeStiffness[JointData::LHand] = -1;
+  safeStiffness[JointData::LHand] = 0.3;
   maxStiffness[JointData::LHand] = -1;
+
   freeStiffness[JointData::RHand] = -1;
-  safeStiffness[JointData::RHand] = -1;
+  safeStiffness[JointData::RHand] = 0.3;
   maxStiffness[JointData::RHand] = -1;
 }
 
@@ -156,7 +162,7 @@ void InitialMotion::moveToExtendPose()
     initStatus = ExtendPoseReady;
     movedTime = 0;
   }
-}//end moveToInitialPose
+}//end moveToExtendPose
 
 void InitialMotion::moveToInitialPose()
 {

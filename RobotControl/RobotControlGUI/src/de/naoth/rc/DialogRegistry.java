@@ -17,16 +17,14 @@ import bibliothek.gui.dock.common.perspective.CPerspective;
 import bibliothek.gui.dock.common.perspective.CStackPerspective;
 import bibliothek.gui.dock.common.perspective.SingleCDockablePerspective;
 import bibliothek.gui.dock.common.theme.ThemeMap;
+import de.naoth.rc.core.dialog.RCDialog;
 import java.awt.DefaultKeyboardFocusManager;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
 import javax.swing.JFrame;
-import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
 
@@ -37,24 +35,22 @@ import javax.swing.KeyStroke;
 public class DialogRegistry {
 
     private JFrame parent = null;
-    private final JMenu menu;
     private final CControl control;
+    private final MainMenuBar menuBar;
 
-    private final ArrayList<String> allDialogNames = new ArrayList<String>();
-
-    public DialogRegistry(JFrame parent, JMenu menu) {
+    public DialogRegistry(JFrame parent, MainMenuBar menuBar) {
         this.parent = parent;
-        this.menu = menu;
+        this.menuBar = menuBar;
 
         this.control = new CControl(this.parent);
         control.setTheme(ThemeMap.KEY_ECLIPSE_THEME);
         this.parent.add(control.getContentArea());
-     
+        
         // install a global tab listener
         DefaultKeyboardFocusManager.getCurrentKeyboardFocusManager().
             addKeyEventPostProcessor(new TabKeyController(this.control));
     }
-
+    
     private class DialogFactory implements SingleCDockableFactory {
 
         private final Dialog dialog;
@@ -109,26 +105,36 @@ public class DialogRegistry {
     }
 
     public void registerDialog(final Dialog dialog) {
-        String dialogName = dialog.getDisplayName();
-
-        // register a factory
-        this.control.addSingleDockableFactory(dialogName, new DialogFactory(dialog));
         
-        // register a menu entry 
-        if (this.menu != null) {
-            int insertPoint = Collections.binarySearch(allDialogNames, dialogName);
-            if (insertPoint < 0) {
-                JMenuItem newItem = new JMenuItem(dialogName);
-                newItem.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        dockDialog(dialog);
-                    }
-                });
-                menu.insert(newItem, -(insertPoint + 1));
-                allDialogNames.add(-(insertPoint + 1), dialogName);
+        String name = dialog.getDisplayName();
+        String category = dialog.getCategory();
+        char mnemonic = 0;
+        
+        // register a factory
+        this.control.addSingleDockableFactory(name, new DialogFactory(dialog));
+        
+        
+        // process anotation RCDialog
+        if (dialog.getClass().isAnnotationPresent(RCDialog.class)) {
+            RCDialog annotation = (RCDialog)dialog.getClass().getAnnotation(RCDialog.class);
+            
+            if(!annotation.name().isEmpty()) {
+                name = annotation.name();
             }
-        }
+            
+            category = annotation.category().name();
+            mnemonic = annotation.category().mnemonic();
+        } 
+        
+        // create menu item (should never return null)
+        
+        JMenuItem item = menuBar.addDialog(name, category, mnemonic);
+        item.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dockDialog(dialog);
+            }
+        });
     }//end registerDialog
 
     public void dockDialog(Dialog dialog) {
