@@ -164,6 +164,9 @@ include "Options/Test/path_go_to_ball_with_foot_dynamic.xabsl";
 include "Options/Test/path_long_kick.xabsl";
 include "Options/Test/path_short_kick.xabsl";
 include "Options/Test/path_sidekick.xabsl";
+include "Options/Soccer/path_spl_play_soccer.xabsl";
+include "Options/Soccer/Strategy/path_play_soccer.xabsl";
+include "Options/Soccer/Strategy/path_decide_role.xabsl";
 include "Options/Soccer/Strategy/Striker/path_striker.xabsl";
 include "Options/Soccer/Strategy/Striker/path_sidekick_left.xabsl";
 include "Options/Soccer/Strategy/Striker/path_sidekick_right.xabsl";
@@ -277,6 +280,7 @@ agent dribble_test_agent("dribble_test_agent", dribble_test_agent);
 agent pathplanner_test_sidekick("pathplanner_test_sidekick", pathplanner_test_sidekick);
 agent pathplanner_test_short_kick("pathplanner_test_short_kick", pathplanner_test_short_kick);
 agent pathplanner_test_long_kick("pathplanner_test_long_kick", pathplanner_test_long_kick);
+agent path_spl_soccer("Path SPL Soccer", path_spl_play_soccer);
 
 
 // Test agents search

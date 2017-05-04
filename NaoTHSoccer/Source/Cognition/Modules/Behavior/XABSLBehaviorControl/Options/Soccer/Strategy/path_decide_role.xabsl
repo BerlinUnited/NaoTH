@@ -1,5 +1,5 @@
 /** Behavior that is common to all players (goalie, striker, defender, ...) */
-option decide_role
+option path_decide_role
 {
 
   common decision 
@@ -39,7 +39,7 @@ option decide_role
       situationStatusOwnHalf = true;
       team.is_playing_as_striker = false;
       ball_was_outside_circle = true;
-      basic_goalie();
+      path_basic_goalie();
     }
   }
 
@@ -67,7 +67,7 @@ option decide_role
     {
       team.is_playing_as_striker = false;
       ball_was_outside_circle = true;
-      striker();
+      path_striker();
       
       //blinking
       set_left_ear = (platform.frameNumber % 3 == 0) ? 9 : 0;

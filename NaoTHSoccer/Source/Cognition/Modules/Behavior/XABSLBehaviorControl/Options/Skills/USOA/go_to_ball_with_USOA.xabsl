@@ -7,7 +7,7 @@ option go_to_ball_with_USOA
   {
     decision
     {
-      /*if (obstacle.ultrasound.blockedtime > 100 && obstacle.ultrasound.distance < 400)
+      if (obstacle.ultrasound.blockedtime > 100 && obstacle.ultrasound.distance < 400)
       {
 	      if (vector.abs(x=ball.preview.x, y=ball.preview.y) < obstacle.ultrasound.distance
 )
@@ -16,8 +16,8 @@ option go_to_ball_with_USOA
           goto avoid_left;
 	      else
           goto avoid_right;
-      }*/
-      //else
+      }
+      else
         stay;
     }
     action 
@@ -29,9 +29,9 @@ option go_to_ball_with_USOA
       motion.walk.coordinate = hip;
       motion.walk.style = fast;
       
-      motion.walk_speed.x = 40;//max(value0=(0.7*(ball.preview.x - @distance)), value1=0);
-      motion.walk_speed.y = 0;//ball.preview.y;
-      motion.walk_speed.rot = 0;//(vector.abs(x=ball.preview.x, y=ball.preview.y) > 250) ? atan2(y = ball.preview.y, x = ball.preview.x) : 0; 
+      motion.walk_speed.x = max(value0=(0.7*(ball.preview.x - @distance)), value1=0);
+      motion.walk_speed.y = ball.preview.y;
+      motion.walk_speed.rot = (vector.abs(x=ball.preview.x, y=ball.preview.y) > 250) ? atan2(y = ball.preview.y, x = ball.preview.x) : 0; 
     }
   }
 
