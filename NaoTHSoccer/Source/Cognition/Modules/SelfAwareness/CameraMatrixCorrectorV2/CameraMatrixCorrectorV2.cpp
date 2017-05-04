@@ -78,11 +78,11 @@ void CameraMatrixCorrectorV2::execute()
           break;
       case look_left_up:
           yaw = 88;
-          pitch = -22;
+          pitch = -20;
           break;
       case look_right_up:
           yaw = -88;
-          pitch = -22;
+          pitch = -20;
           break;
       default:
           break;
@@ -160,8 +160,15 @@ void CameraMatrixCorrectorV2::execute()
           if(last_idx_pitch != current_index_pitch || last_idx_yaw != current_index_yaw) {
               std::vector<CamMatErrorFunction::CalibrationDataSample>& data = c_data[index];
 
+              LineGraphPercept lineGraphPercept(getLineGraphPercept());
+
+              if(head_state == look_right_up || head_state == look_left_up
+                 || last_head_state == look_right_up || last_head_state == look_left_up){
+                  lineGraphPercept.edgelsInImageTop.clear();
+              }
+
               data.push_back(CamMatErrorFunction::CalibrationDataSample(getKinematicChain().theLinks[KinematicChain::Torso].M,
-                                                                        getLineGraphPercept(),getInertialModel(),
+                                                                        lineGraphPercept,getInertialModel(),
                                                                         getSensorJointData().position[JointData::HeadYaw],
                                                                         getSensorJointData().position[JointData::HeadPitch]
                                                                       ));
