@@ -22,7 +22,7 @@ option path_go_to_ball_with_USOA
     }
     action 
     {
-      path.routine = go_to_ball;
+      path.routine = go_to_ball_fast;
       path.distance = @distance;
       
       //loook at percept
@@ -107,7 +107,7 @@ option path_go_to_ball_with_USOA
     }
 
     action{
-      path.routine = go_to_ball;
+      path.routine = go_to_ball_slow;
       path.distance = @distance;
       
       //loook at percept
