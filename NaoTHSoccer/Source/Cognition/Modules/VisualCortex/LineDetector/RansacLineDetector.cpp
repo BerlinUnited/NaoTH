@@ -18,14 +18,16 @@ void RansacLineDetector::execute()
 {
   getLinePercept().reset();
 
-
   DEBUG_REQUEST("Vision:RansacLineDetector:draw_edgels_field",
     FIELD_DRAWING_CONTEXT;
 
     for(const Edgel& e: getLineGraphPercept().edgels)
     {
       PEN("FF0000",2);
-      CIRCLE(e.point.x, e.point.y, 25);
+
+      if(e.point.x > 0 || e.point.y > 0) {
+        CIRCLE(e.point.x, e.point.y, 25);
+      }
       PEN("000000",0.1);
       LINE(e.point.x, e.point.y, e.point.x + e.direction.x*100.0, e.point.y + e.direction.y*100.0);
     }
@@ -39,7 +41,9 @@ void RansacLineDetector::execute()
   for(size_t i = 0; i < getLineGraphPercept().edgels.size(); ++i) {
     outliers[i] = i;
   }
-  
+
+  Circle circResult;
+
   for(int i = 0; i < 11; ++i)
   {
     Math::LineSegment result;
@@ -50,6 +54,8 @@ void RansacLineDetector::execute()
       getLinePercept().lines.push_back(fieldLine);
     } 
     else {
+      // Check for circle
+      ransacCirc(circResult);
       break;
     }
   }
@@ -64,6 +70,8 @@ void RansacLineDetector::execute()
       LINE(
         line.lineOnField.begin().x, line.lineOnField.begin().y,
         line.lineOnField.end().x, line.lineOnField.end().y);
+
+      CIRCLE(circResult.m.x, circResult.m.y, 500);
     }
   );
 
@@ -153,3 +161,90 @@ int RansacLineDetector::ransac(Math::LineSegment& result)
 }
 
 
+
+int RansacLineDetector::ransacCirc(Circle& result)
+{
+  if(outliers.size() <= 2) {
+    return 0;
+  }
+
+  int bestInlier = 0;
+  //double bestInlierError = 0;
+
+  Circle bestModel;
+
+  for(int i = 0; i < params.circle_iterations; ++i)
+  {
+    //pick two random points
+    int i0 = Math::random((int)outliers.size());
+    int i1 = Math::random((int)outliers.size());
+
+    if(i0 == i1) {
+      continue;
+    }
+
+    const Edgel& a = getLineGraphPercept().edgels[outliers[i0]];
+    const Edgel& b = getLineGraphPercept().edgels[outliers[i1]];
+
+    //const Vector2d direction(-a.direction.x, a.direction.y);
+
+    Math::Line lineA(a.point, Vector2d(-a.direction.x, a.direction.y));
+    Math::Line lineB(b.point, Vector2d(-b.direction.x, b.direction.y));
+
+    double tA = lineA.intersection(lineB);
+    double tB = lineB.intersection(lineA);
+    //m = lineA.point(lineA.intersection(lineB));
+
+    Circle model(lineA,lineB, lineA.point(tA));
+
+    int inlier = 0;
+    for(size_t i: outliers)
+    {
+      const Edgel& e = getLineGraphPercept().edgels[i];
+
+      Math::Line lineE(e.point, Vector2d(-e.direction.x, e.direction.y));
+
+      double minT = std::min(fabs(tA - lineA.intersection(lineE)), fabs(tB - lineB.intersection(lineE)));
+
+      if (minT < params.circle_centerThreshold) {
+        inlier++;
+      }
+    }
+    if(inlier >= params.inlierMin && (inlier > bestInlier)) {
+      bestModel = model;
+      bestInlier = inlier;
+      //bestInlierError = inlierError;
+    }
+  }
+
+  // update the outliers
+  // todo: make it faster
+  std::vector<size_t> newOutliers;
+  newOutliers.reserve(outliers.size() - bestInlier + 1);
+
+  Math::Line& bestLineA = bestModel.lineA;
+  Math::Line& bestLineB = bestModel.lineB;
+
+  double tA = bestLineA.intersection(bestLineB);
+  double tB = bestLineB.intersection(bestLineA);
+
+  for(size_t i: outliers)
+  {
+    const Edgel& e = getLineGraphPercept().edgels[i];
+
+    Math::Line lineE(e.point, Vector2d(-e.direction.x, e.direction.y));
+
+    double minT = std::min(fabs(tA - bestLineA.intersection(lineE)), fabs(tB - bestLineB.intersection(lineE)));
+
+    if(minT < params.circle_centerThreshold) {
+
+    } else {
+      newOutliers.push_back(i);
+    }
+  }
+  outliers = newOutliers;
+
+  // return results
+  result = bestModel;
+  return bestInlier;
+}

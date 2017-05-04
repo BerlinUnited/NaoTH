@@ -31,6 +31,24 @@ BEGIN_DECLARE_MODULE(RansacLineDetector)
   PROVIDE(LinePercept)
 END_DECLARE_MODULE(RansacLineDetector)
 
+class Circle
+{
+public:
+  Circle() {
+
+  }
+
+  Circle(Math::Line a, Math::Line b, Vector2d m) {
+    this->lineA = a;
+    this->lineB = b;
+    this->m = m;
+  }
+
+  Math::Line lineA;
+  Math::Line lineB;
+  Vector2d m;
+};
+
 class RansacLineDetector: public RansacLineDetectorBase
 {
 public:
@@ -43,7 +61,9 @@ private:
   std::vector<size_t> outliers;
   int ransac(Math::LineSegment& result);
 
-private:
+  int ransacCirc(Circle& circResult);
+
+//private:
   class Parameters: public ParameterList
   {
   public:
@@ -53,6 +73,11 @@ private:
       PARAMETER_REGISTER(outlierThreshold) = 70;
       PARAMETER_REGISTER(inlierMin) = 10;
       PARAMETER_REGISTER(directionSimilarity) = 0.8;
+
+      PARAMETER_REGISTER(circle_iterations) = 20;
+      PARAMETER_REGISTER(circle_outlierThreshold) = 70;
+      PARAMETER_REGISTER(circle_inlierMin) = 10;
+      PARAMETER_REGISTER(circle_centerThreshold) = 100;
 
       syncWithConfig();
     }
@@ -64,6 +89,12 @@ private:
     double outlierThreshold;
     int inlierMin;
     double directionSimilarity;
+
+    int circle_iterations;
+    double circle_outlierThreshold;
+    double circle_centerThreshold;
+    int circle_inlierMin;
+
   } params;
 
   // calculate the simmilarity to the other edgel
