@@ -79,6 +79,10 @@ public:
       double comStepOffsetY;
       double ZMPOffsetY;
       double ZMPOffsetYByCharacter;
+
+      bool newZMP_ON;
+      double newZMP_offset;
+      double newZMP_width;
     } hip;
 
     // step geometry

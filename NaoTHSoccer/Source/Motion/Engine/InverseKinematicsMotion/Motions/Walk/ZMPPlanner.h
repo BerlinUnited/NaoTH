@@ -22,7 +22,7 @@ public:
    * @brief a little better than the simplest(..) one
    */
   static Vector2d betterOne(const FootStep& step, double offsetX, double offsetY,
-    double cycle, double samplesDoubleSupport, double samplesSingleSupport, double extendDoubleSupport);
+    double cycle, double samplesDoubleSupport, double samplesSingleSupport, double offset, double width);
 };
 
 #endif // _FOOT_STEP_PLANNER_H

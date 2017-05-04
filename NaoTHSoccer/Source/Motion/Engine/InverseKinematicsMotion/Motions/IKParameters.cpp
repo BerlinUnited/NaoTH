@@ -56,6 +56,11 @@ IKParameters::IKParameters()
   PARAMETER_REGISTER(walk.hip.ZMPOffsetY) = 5;
   PARAMETER_REGISTER(walk.hip.ZMPOffsetYByCharacter) = 0;
 
+  // experimental: new ZMP
+  PARAMETER_REGISTER(walk.hip.newZMP_ON) = false;
+  PARAMETER_REGISTER(walk.hip.newZMP_offset) = 0.8;
+  PARAMETER_REGISTER(walk.hip.newZMP_width) = 0.4;
+
   // step geometry
   PARAMETER_REGISTER(walk.step.duration) = 300;
   PARAMETER_REGISTER(walk.step.doubleSupportTime) = 40;

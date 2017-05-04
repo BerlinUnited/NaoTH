@@ -262,9 +262,30 @@ void Walk::planZMP()
     double zmpOffsetY = parameters().hip.ZMPOffsetY + parameters().hip.ZMPOffsetYByCharacter * (1-planningStep.walkRequest.character);
     double zmpOffsetX = getEngine().getParameters().walk.general.hipOffsetX;
 
-    Vector2d zmp_simple = ZMPPlanner::simplest(planningStep.footStep, zmpOffsetX, zmpOffsetY);
-    zmp = Vector3d(zmp_simple.x, zmp_simple.y, parameters().hip.comHeight);
+    //
+    if(parameters().hip.newZMP_ON) 
+    {
+      int samplesDoubleSupport = std::max(0, (int) (parameters().step.doubleSupportTime / getRobotInfo().basicTimeStep));
+      int samplesSingleSupport = planningStep.numberOfCycles - samplesDoubleSupport;
+      ASSERT(samplesSingleSupport >= 0 && samplesDoubleSupport >= 0);
+
+      Vector2d zmp_new = ZMPPlanner::betterOne(
+        planningStep.footStep, zmpOffsetX, zmpOffsetY,
+        planningStep.planningCycle,
+        samplesDoubleSupport, 
+        samplesSingleSupport,
+        parameters().hip.newZMP_offset,
+        parameters().hip.newZMP_width);
+      zmp = Vector3d(zmp_new.x, zmp_new.y, parameters().hip.comHeight);
+    } else {
+      Vector2d zmp_simple = ZMPPlanner::simplest(planningStep.footStep, zmpOffsetX, zmpOffsetY);
+      zmp = Vector3d(zmp_simple.x, zmp_simple.y, parameters().hip.comHeight);
+    }
   }
+
+  PLOT("Walk:zmp:x", zmp.x);
+  PLOT("Walk:zmp:y", zmp.y);
+  //PLOT_GENERIC("Walk:zmp:xy", zmp.x, zmp.y);
 
   //zmp.z = parameters().hip.comHeight;
   getEngine().zmpControl.push(zmp);
@@ -530,7 +551,7 @@ void Walk::feetStabilize(const Step& executingStep, double (&position)[naoth::Jo
 
   // HACK: small filter...
   static Vector3d lastGyro = gyro;
-  Vector3d filteredGyro = (lastGyro+gyro)*0.5;
+  Vector3d filteredGyro = filteredGyro*0.8 + gyro*0.2;
 
   Vector2d weight;
   weight.x = 

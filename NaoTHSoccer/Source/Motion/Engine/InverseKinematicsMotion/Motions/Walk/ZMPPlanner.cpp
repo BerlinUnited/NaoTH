@@ -7,6 +7,7 @@
 
 #include "ZMPPlanner.h"
 
+#include "Tools/DataStructures/Spline.h"
 
 using namespace InverseKinematic;
 
@@ -18,47 +19,39 @@ Vector2d ZMPPlanner::simplest(const FootStep& step, double offsetX, double offse
 }//end simplest
 
 
-Vector2d ZMPPlanner::betterOne(const FootStep& step, double offsetX, double offsetY,
-  double cycle, double samplesDoubleSupport, double samplesSingleSupport, double extendDoubleSupport)
+Vector2d ZMPPlanner::betterOne(
+  const FootStep& step, double offsetX, double offsetY,
+  double cycle, 
+  double samplesDoubleSupport, double samplesSingleSupport,
+  double offset, double width)
 {
-  double doubleSupportEnd = samplesDoubleSupport / 2 + extendDoubleSupport;
-  double doubleSupportBegin = samplesDoubleSupport / 2 + samplesSingleSupport;
-  samplesSingleSupport -= extendDoubleSupport;
+  double t = cycle / (samplesSingleSupport+samplesDoubleSupport);
+  Pose3D supFoot = step.supFoot();
+  supFoot.translate(offsetX, offsetY * step.liftingFoot(), 0);
+  
+  Pose3D targetFoot = step.footEnd();
+  targetFoot.translate(offsetX, -offsetY * step.liftingFoot(), 0);
 
-  double t = 0.0;
-  // interpolate in the double support phase
-  if (cycle <= doubleSupportEnd)
-  {
-    t = (doubleSupportEnd + cycle) / samplesDoubleSupport;
+  //double offset = 0.8;
+  //double width = 0.4;
 
-    Pose3D supFoot = step.supFoot();
-    supFoot.translate(offsetX, offsetY * step.liftingFoot(), 0);
-    Vector2d supZMP(supFoot.translation.x, supFoot.translation.y);
+  double s = 0;
+  if(t > offset + width/2.0) {
+    s = 1.0;
+  } else if(t > offset - width/2.0) {
+    double ts = (t - (offset - width/2.0)) / width;
+    std::vector<double> x = {0.0, 0.5, 1.0};
+    std::vector<double> y = {0.0, 0.5, 1.0};
 
-    Pose3D beginFoot = step.footBegin();
-    beginFoot.translate(offsetX, -offsetY * step.liftingFoot(), 0);
-    Vector2d liftZMP(beginFoot.translation.x, beginFoot.translation.y);
-
-    return supZMP*t + liftZMP*(1.0-t);
+    tk::spline spline;
+    spline.set_boundary(tk::spline::first_deriv,0.0, tk::spline::first_deriv,0.0, false);
+    spline.set_points(x,y);
+    s = spline(ts);
   }
-  else if (cycle >= doubleSupportBegin)
-  {
-    t = (cycle-doubleSupportBegin) / samplesDoubleSupport;
 
-    Pose3D supFoot = step.supFoot();
-    supFoot.translate(offsetX, offsetY * step.liftingFoot(), 0);
-    Vector2d supZMP(supFoot.translation.x, supFoot.translation.y);
+  
 
-    Pose3D endFoot = step.footEnd();
-    endFoot.translate(offsetX, -offsetY * step.liftingFoot(), 0);
-    Vector2d liftZMP(endFoot.translation.x, endFoot.translation.y);
-
-    return supZMP*(1.0-t) + liftZMP*t;
-  }
-  else
-  {
-    Pose3D supFoot = step.supFoot();
-    supFoot.translate(offsetX, offsetY * step.liftingFoot(), 0);
-    return Vector2d(supFoot.translation.x, supFoot.translation.y);
-  }
+  return Vector2d(
+    supFoot.translation.x*(1.0-t) + t*targetFoot.translation.x, 
+    supFoot.translation.y*(1.0-s) + s*targetFoot.translation.y);
 }//end betterOne
