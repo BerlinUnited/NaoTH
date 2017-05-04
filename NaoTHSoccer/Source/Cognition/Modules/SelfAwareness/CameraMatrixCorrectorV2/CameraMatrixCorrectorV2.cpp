@@ -76,6 +76,14 @@ void CameraMatrixCorrectorV2::execute()
           yaw = -88;
           pitch = 10;
           break;
+      case look_left_up:
+          yaw = 88;
+          pitch = -22;
+          break;
+      case look_right_up:
+          yaw = -88;
+          pitch = -22;
+          break;
       default:
           break;
       }
@@ -94,6 +102,12 @@ void CameraMatrixCorrectorV2::execute()
               head_state = look_right;
               last_head_state = look_left;
           } else if (head_state == look_right && last_head_state == look_left){
+              head_state = look_right_down;
+              last_head_state = look_right;
+          } else if (head_state == look_right_down && last_head_state == look_right){
+              head_state = look_right;
+              last_head_state = look_right_down;
+          } else if (head_state == look_right && last_head_state == look_right_down){
               head_state = look_left;
               last_head_state = look_right;
           } else if (head_state == look_left && last_head_state == look_right){
@@ -109,6 +123,24 @@ void CameraMatrixCorrectorV2::execute()
               head_state = look_left;
               last_head_state = look_left_down;
           } else if (head_state == look_left && last_head_state == look_left_down){
+              head_state = look_left_up;
+              last_head_state = look_left;
+          } else if (head_state == look_left_up && last_head_state == look_left){
+              head_state = look_right_up;
+              last_head_state = look_left_up;
+          } else if (head_state == look_right_up && last_head_state == look_left_up){
+              head_state = look_right;
+              last_head_state = look_right_up;
+          } else if (head_state == look_right && last_head_state == look_right_up){
+              head_state = look_right_up;
+              last_head_state = look_right;
+          } else if (head_state == look_right_up && last_head_state == look_right){
+              head_state = look_left_up;
+              last_head_state = look_right_up;
+          } else if (head_state == look_left_up && last_head_state == look_right_up){
+              head_state = look_left;
+              last_head_state = look_left_up;
+          } else if (head_state == look_left && last_head_state == look_left_up){
               head_state = look_right;
               last_head_state = look_left;
           }

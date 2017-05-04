@@ -275,7 +275,7 @@ public:
 
 private:
 
-  enum {initial, look_left, look_right, look_right_down, look_left_down} head_state, last_head_state;
+  enum {initial, look_left, look_right, look_right_down, look_left_down, look_right_up, look_left_up} head_state, last_head_state;
 
   int last_idx_yaw,last_idx_pitch;
   double damping;
