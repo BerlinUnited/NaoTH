@@ -19,7 +19,9 @@ last_stepcontrol_stepID(0)
 void PathPlanner::execute()
 {
   DEBUG_REQUEST("PathPlanner:walk_forward",
-    add_single_step(Pose2D(0.0, 40.0, 0.0), StepType::WALKSTEP, WalkRequest::Hip);
+    Pose2D pose = Pose2D(0.0, 40.0, 0.0);
+    WalkRequest::Coordinate coordinate = WalkRequest::Hip;
+    add_single_step(pose, StepType::WALKSTEP, coordinate);
     );
 
   STOPWATCH_START("PathPlanner");
