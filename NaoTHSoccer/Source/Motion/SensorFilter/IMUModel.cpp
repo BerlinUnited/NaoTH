@@ -9,6 +9,7 @@ IMUModel::IMUModel():
     DEBUG_REQUEST_REGISTER("IMUModel:reset_filter", "reset filter", false);
     DEBUG_REQUEST_REGISTER("IMUModel:use_both", "uses accelerometer and gyrometer to estimate the orientation", false);
     DEBUG_REQUEST_REGISTER("IMUModel:use_only_gyro", "uses only the gyrometer to estimate the orientation (integration)", false);
+    DEBUG_REQUEST_REGISTER("IMUModel:enableFilterWhileWalking", "enables filter update while walking", false);
 
     // Parameter Related Debug Requests
     DEBUG_REQUEST_REGISTER("IMUModel:reloadParameters", "reloads the filter parameters from the imuParameter object", true);
@@ -62,8 +63,10 @@ void IMUModel::execute(){
         // gyro z axis seems to measure in opposite direction (turning left measures negative angular velocity, should be positive)
         z << quaternionToRotationVector(rotation_acc_to_gravity);
 
-        if(getMotionStatus().currentMotion != motion::walk){
-            ukf_rot.update(z, R_rotation_walk);
+        if(getMotionStatus().currentMotion == motion::walk){
+            DEBUG_REQUEST("IMUModel:enableFilterWhileWalking",
+                ukf_rot.update(z, R_rotation_walk);
+            );
         } else {
             ukf_rot.update(z, R_rotation);
         }
