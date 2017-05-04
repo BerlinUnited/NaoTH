@@ -30,4 +30,6 @@ def detectLines(edgelFrame):
         line = Line(result.getLine(), result.x_range, result.y_range, error)
         lines.append(line)
 
+        outlier = result.outlier
+
     return lines

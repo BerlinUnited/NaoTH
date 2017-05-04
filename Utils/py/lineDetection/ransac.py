@@ -126,7 +126,7 @@ class Ransac:
 
                 result.error = error
 
-            if not result.inlier:
-                return None
+        if not result.inlier:
+            return None
 
-            return result
+        return result
