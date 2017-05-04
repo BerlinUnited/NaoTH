@@ -44,6 +44,7 @@ public class RobotStatus {
     public boolean wantsToBeStriker;
     public boolean wasStriker;
     public boolean isPenalized;
+    public boolean whistleDetected;
     
     public boolean showOnField = true;
     
@@ -108,6 +109,7 @@ public class RobotStatus {
             this.wantsToBeStriker = msg.user.getWantsToBeStriker();
             this.wasStriker = msg.user.getWasStriker();
             this.isPenalized = msg.user.getIsPenalized();
+//            this.whistleDetected = msg.user.getWhistleDetected(); // used in another branch!
         } else {
             this.temperature = -1;
             this.cpuTemperature = -1;
@@ -116,6 +118,7 @@ public class RobotStatus {
             this.wantsToBeStriker = false;
             this.wasStriker = false;
             this.isPenalized = false;
+            this.whistleDetected = false;
         }
         this.statusChanged();
     }
