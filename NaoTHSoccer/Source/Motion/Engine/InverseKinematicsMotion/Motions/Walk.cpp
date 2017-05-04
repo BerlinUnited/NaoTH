@@ -17,6 +17,7 @@ using namespace InverseKinematic;
 Walk::Walk() : IKMotion(getInverseKinematicsMotionEngineService(), motion::walk, getMotionLock())
 {
   DEBUG_REQUEST_REGISTER("Walk:draw_step_plan_geometry", "draw all planed steps, zmp and executed com", false);
+  DEBUG_REQUEST_REGISTER("Walk:plot_genTrajectoryWithSplines", "plot spline interpolation to parametrize 3D foot trajectory", false);
 }
   
 void Walk::execute()
@@ -320,6 +321,32 @@ void Walk::executeStep()
     default: ASSERT(false);
   }
 
+  PLOT("Walk:trajectory:cos:x",theCoMFeetPose.feet.left.translation.x);
+  PLOT("Walk:trajectory:cos:y",theCoMFeetPose.feet.left.translation.y);
+  PLOT("Walk:trajectory:cos:z",theCoMFeetPose.feet.left.translation.z);
+
+  DEBUG_REQUEST("Walk:plot_genTrajectoryWithSplines",
+    if(executingStep.footStep.liftingFoot() == FootStep::LEFT) {
+      Pose3D returnPose2 = FootTrajectorGenerator::genTrajectoryWithSplines(
+                             executingStep.footStep.footBegin(),
+                             executingStep.footStep.footEnd(),
+                             executingStep.executingCycle,
+                             executingStep.numberOfCycles,
+                             parameters().step.stepHeight,
+                             0, // footPitchOffset
+                             0  // footRollOffset
+                           );
+
+      PLOT("Walk:trajectory:spline:x",returnPose2.translation.x);
+      PLOT("Walk:trajectory:spline:y",returnPose2.translation.y);
+      PLOT("Walk:trajectory:spline:z",returnPose2.translation.z);
+    } else {
+      PLOT("Walk:trajectory:spline:x",theCoMFeetPose.feet.left.translation.x);
+      PLOT("Walk:trajectory:spline:y",theCoMFeetPose.feet.left.translation.y);
+      PLOT("Walk:trajectory:spline:z",theCoMFeetPose.feet.left.translation.z);
+    }
+  );
+
   theCoMFeetPose.com.translation = com;
   // TODO: check this
   theCoMFeetPose.com.rotation = calculateBodyRotation(theCoMFeetPose.feet, getEngine().getParameters().walk.general.bodyPitchOffset);
@@ -335,29 +362,41 @@ Pose3D Walk::calculateLiftingFootPos(const Step& step) const
   if ( step.type == STEP_CONTROL )
   {
     return FootTrajectorGenerator::stepControl(  
-      step.footStep.footBegin(),
-      step.footStep.footEnd(),
-      step.executingCycle,
-      samplesDoubleSupport,
-      samplesSingleSupport,
-      parameters().kick.stepHeight,
-      0, //footPitchOffset
-      0, //footRollOffset
-      step.walkRequest.stepControl.speedDirection,
-      step.walkRequest.stepControl.scale);
+              step.footStep.footBegin(),
+              step.footStep.footEnd(),
+              step.executingCycle,
+              samplesDoubleSupport,
+              samplesSingleSupport,
+              parameters().kick.stepHeight,
+              0, //footPitchOffset
+              0, //footRollOffset
+              step.walkRequest.stepControl.speedDirection,
+              step.walkRequest.stepControl.scale);
   }
   else if( step.type == STEP_WALK )
   {
-    return FootTrajectorGenerator::genTrajectory(
-      step.footStep.footBegin(),
-      step.footStep.footEnd(),
-      step.executingCycle,
-      samplesDoubleSupport,
-      samplesSingleSupport,
-      parameters().step.stepHeight,
-      0, // footPitchOffset
-      0  // footRollOffset
-    );
+    if(parameters().step.splineFootTrajectory) {
+      return FootTrajectorGenerator::genTrajectoryWithSplines(
+              step.footStep.footBegin(),
+              step.footStep.footEnd(),
+              step.executingCycle,
+              samplesSingleSupport,
+              parameters().step.stepHeight,
+              0, // footPitchOffset
+              0  // footRollOffset
+            );
+    } else {
+      return FootTrajectorGenerator::genTrajectory(
+              step.footStep.footBegin(),
+              step.footStep.footEnd(),
+              step.executingCycle,
+              samplesDoubleSupport,
+              samplesSingleSupport,
+              parameters().step.stepHeight,
+              0, // footPitchOffset
+              0  // footRollOffset
+      );
+    }
   }
 
   ASSERT(false);
