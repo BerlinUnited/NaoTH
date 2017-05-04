@@ -73,12 +73,19 @@ message HeadMotionRequest {
 
 message StepControlRequest
 {
+  enum StepType {
+	WALKSTEP = 0;
+	KICKSTEP = 1;
+	ZEROSTEP = 2;
+  };
+  
   required uint32 stepID = 1;
   required bool moveLeftFoot = 2;
   required Pose2D target = 3;
   required uint32 time = 4;
   required double speedDirection = 5;
   required double scale = 6;
+  required StepType steptype = 7;
 }
 
 message WalkRequest {

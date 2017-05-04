@@ -1,0 +1,29 @@
+/** Symbols for the PathPlanner Module */
+namespace path_symbols("PathPlanner Symbols") {
+  enum path.routine
+  {
+    none,
+    go_to_ball,
+    go_to_ball_right,
+    go_to_ball_left,
+    approach_ball_right,
+    approach_ball_left,
+    move_around_ball,
+    short_kick_right,
+    short_kick_left,
+    long_kick_right,
+    long_kick_left,
+    sidekick_right,
+    sidekick_left
+  };
+
+  enum path.routine output path.routine;
+  
+  float output path.distance;
+  float output path.yOffset;
+
+  float output path.direction;
+  float output path.radius;
+
+  bool input path.kick_executed;
+}

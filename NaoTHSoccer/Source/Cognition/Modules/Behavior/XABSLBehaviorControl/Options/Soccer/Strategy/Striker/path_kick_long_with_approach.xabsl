@@ -1,4 +1,4 @@
-option kick_long_with_approach
+option path_kick_long_with_approach
 {
   initial state decide
   {
@@ -20,8 +20,7 @@ option kick_long_with_approach
         stay;
     }
     action{
-      go_to_ball_with_foot_dynamic(right=true, distance=160);
-      motion.walk.style = normal;
+      path_go_to_ball_with_foot_dynamic(right=true, distance=165);
     }
   }
 
@@ -34,7 +33,7 @@ option kick_long_with_approach
     }
     action {
       situation_abortable = false;
-      kick_with_foot(foot = right);
+      path_long_kick(foot = right);
     }
   }
 
@@ -46,8 +45,7 @@ option kick_long_with_approach
         stay;
     }
     action{
-      go_to_ball_with_foot_dynamic(right=false, distance=160);
-      motion.walk.style = normal;
+      path_go_to_ball_with_foot_dynamic(right=false, distance=165);
     }
   }
 
@@ -60,7 +58,7 @@ option kick_long_with_approach
     }
     action {
       situation_abortable = false;
-      kick_with_foot(foot = left);
+      path_long_kick(foot = left);
     }
   }
 
@@ -72,10 +70,6 @@ option kick_long_with_approach
     action{
       //NOTE: this is synchronized with fast_forward_kick()->finished
       motion.type = stand;
-    
-      motion.walk.stop_with_stand = true;
-      motion.walk.coordinate = hip;
-      motion.walk.style = normal;
 
       //look at percept
       head.control_mode = look_at_ball_percept;
