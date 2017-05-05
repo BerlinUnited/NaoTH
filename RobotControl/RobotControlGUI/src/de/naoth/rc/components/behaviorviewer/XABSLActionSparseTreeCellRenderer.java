@@ -54,7 +54,7 @@ public class XABSLActionSparseTreeCellRenderer implements TreeCellRenderer {
                     text.append(" [");
                     text.append(oe.timeOfExecution);
                     text.append(" ms] - ");
-                    if(oe.option.states.contains(oe.activeState)) { // to prevent errors on new/old states!
+                    if(oe.activeState < oe.option.states.size()) { // to prevent errors on new/old states!
                         text.append(oe.option.states.get(oe.activeState).name);
                     } else {
                         text.append("[UNKNOWN_STATE]");
