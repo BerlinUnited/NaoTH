@@ -51,17 +51,28 @@ void IMUModel::execute(){
 
     // TODO: empirical determination or better condition
     //if((fabs(acceleration.norm() - 9.81) < 0.5 || use_both) && !use_gyro_only ){ // use acceleration
-        Eigen::Quaterniond rotation_acc_to_gravity;
-        rotation_acc_to_gravity.setFromTwoVectors(acceleration,Eigen::Vector3d(0,0,-1));
+//        Eigen::Quaterniond rotation_acc_to_gravity;
+//        rotation_acc_to_gravity.setFromTwoVectors(acceleration,Eigen::Vector3d(0,0,-1));
 
-        //plotting rotation innovation between measurement and state
-        Eigen::Quaterniond q;
-        q.setFromTwoVectors(ukf_rot.state.getRotationAsQuaternion().inverse()._transformVector(Eigen::Vector3d(0,0,-1)),Eigen::Vector3d(0,0,-1));
-        PLOT("IMUModel:Error:relative_to_measurement[°]", Math::toDegrees(Eigen::AngleAxisd(rotation_acc_to_gravity*q.inverse()).angle()));
+//        //plotting rotation innovation between measurement and state
+//        Eigen::Quaterniond q;
+//        q.setFromTwoVectors(ukf_rot.state.getRotationAsQuaternion().inverse()._transformVector(Eigen::Vector3d(0,0,-1)),Eigen::Vector3d(0,0,-1));
+//        //Reihenfolge?
+//        PLOT("IMUModel:Error:relative_to_measurement[°]", Math::toDegrees(Eigen::AngleAxisd(rotation_acc_to_gravity*q.inverse()).angle()));
+
+//        IMU_RotationMeasurement temp;
+//        Vector3d translation(0,-250,250);
+//        LINE_3D(ColorClasses::red,  translation, translation + quaternionToVector3D(rotation_acc_to_gravity) * 100.0);
+//        LINE_3D(ColorClasses::blue, translation, translation + eigenVectorToVector3D(ukf_rot.state.asMeasurement(temp)) * 100.0);
+
+
+//        LINE_3D(ColorClasses::yellow, translation, translation + eigenVectorToVector3D(ukf_rot.state.getRotationAsQuaternion().inverse()._transformVector(Eigen::Vector3d(0,0,-9.81)))*6);
+//        LINE_3D(ColorClasses::gray,   translation, translation + eigenVectorToVector3D(acceleration) * 6);
 
         IMU_RotationMeasurement z;
         // gyro z axis seems to measure in opposite direction (turning left measures negative angular velocity, should be positive)
-        z << quaternionToRotationVector(rotation_acc_to_gravity);
+        //z << quaternionToRotationVector(rotation_acc_to_gravity);
+        z << acceleration.normalized();
 
         if(getMotionStatus().currentMotion == motion::walk){
             DEBUG_REQUEST("IMUModel:enableFilterWhileWalking",

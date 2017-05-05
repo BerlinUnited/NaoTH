@@ -60,12 +60,12 @@ public:
 private:
     FrameInfo lastFrameInfo;
 
-    UKF<RotationState<RotationMeasurement<3>,3> > ukf_rot;
+    UKF<RotationState<Measurement<3>,3> > ukf_rot;
     UKF<State<Measurement<3>, 3> > ukf_acc_global;
 
-    typedef RotationMeasurement<3> IMU_RotationMeasurement;
-    typedef Measurement<3>         IMU_RotVelMeasurement;
-    typedef Measurement<3>         IMU_AccMeasurementGlobal;
+    typedef Measurement<3> IMU_RotationMeasurement;
+    //typedef Measurement<3>         IMU_RotVelMeasurement;
+    typedef Measurement<3> IMU_AccMeasurementGlobal;
 
     Eigen::Vector3d quaternionToRotationVector(const Eigen::Quaterniond& q) const{
         Eigen::AngleAxisd temp(q);
@@ -76,6 +76,10 @@ private:
         Eigen::AngleAxisd temp(q);
         Eigen::Vector3d temp2(temp.angle() * temp.axis());
         return Vector3d(temp2(0),temp2(1),temp2(2));
+    }
+
+    Vector3d eigenVectorToVector3D(const Eigen::Vector3d& v) const {
+        return Vector3d(v(0),v(1),v(2));
     }
 
     bool updated_by_both;
