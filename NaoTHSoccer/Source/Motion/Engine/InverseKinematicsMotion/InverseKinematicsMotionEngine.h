@@ -187,6 +187,13 @@ public:
     double timeDelta,
     InverseKinematic::HipFeetPose& p);
 
+  bool rotationStabilizenNewIMU(
+          //const InertialModel& theInertialModel,
+          const InertialModel& theInertialModel,
+          const GyrometerData& theGyrometerData,
+          double timeDelta,
+          InverseKinematic::HipFeetPose& p);
+
   bool rotationStabilize(
     const InertialModel& theInertialModel,
     const GyrometerData& theGyrometerData,
