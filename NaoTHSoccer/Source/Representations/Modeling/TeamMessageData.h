@@ -49,6 +49,7 @@ public:
   double temperature;         // the max. temperature of the left or right leg!
   double cpuTemperature;      // the temperature of the cpu
   bool whistleDetected;       // whether the robot heard/detected the whistle
+  int whistleCount;           // who many whistle the robot detected
   // opponents ?
 
   /** Sets the data according to the protobuf message. */
