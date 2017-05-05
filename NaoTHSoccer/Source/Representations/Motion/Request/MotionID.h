@@ -39,6 +39,7 @@ namespace motion
     stand_up_from_front,
     stand_up_from_back,
     stand_up_from_back_arms_back,
+    stand_up_from_side,
     
     block_middle,
     goalie_get_down,
@@ -89,7 +90,8 @@ namespace motion
       case stand_up_from_front: return "stand_up_from_front";
       case stand_up_from_back: return "stand_up_from_back";
       case stand_up_from_back_arms_back: return "stand_up_from_back_arms_back";
-      
+      case stand_up_from_side: return "stand_up_from_side";
+
       case block_middle: return "block_middle";
       case goalie_get_down: return "goalie_get_down";
       case goalie_sit: return "goalie_sit";
