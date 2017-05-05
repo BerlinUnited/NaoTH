@@ -85,7 +85,7 @@ option pathplanner_kick_long
   target state done
   {
     decision {
-    else if(state_time > 2000)
+    else if(state_time > 500)
       goto idle;
       else
         stay;

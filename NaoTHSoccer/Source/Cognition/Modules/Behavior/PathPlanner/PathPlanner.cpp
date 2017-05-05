@@ -11,13 +11,16 @@ PathPlanner::PathPlanner()
 :
 step_buffer({}),
 foot_to_use(Foot::RIGHT),
-last_stepcontrol_stepID(0)
+last_stepcontrol_stepID(0),
+kick_planned(false)
 {
   DEBUG_REQUEST_REGISTER("PathPlanner:walk_forward", "Walks forward with y=0 and x=40", false);
 }
 
 void PathPlanner::execute()
 {
+  getPathModel().kick_executed = false;
+
   DEBUG_REQUEST("PathPlanner:walk_forward",
     Pose2D pose = Pose2D(0.0, 40.0, 0.0);
     WalkRequest::Coordinate coordinate = WalkRequest::Hip;
@@ -25,11 +28,15 @@ void PathPlanner::execute()
     {
       add_step(pose, StepType::WALKSTEP, coordinate);
     }
-    );
+  );
 
   STOPWATCH_START("PathPlanner");
   // Always executed first
   manage_step_buffer();
+
+  if (kick_planned && step_buffer.empty()) {
+    getPathModel().kick_executed = true;
+  }
 
   switch (getPathModel().path_routine)
   {
@@ -37,14 +44,17 @@ void PathPlanner::execute()
     // Reset routine_executed, so that XABSL
     // can jump out of option (PathRoutine) that is
     // being executed
-    getPathModel().kick_executed = false;
+    //kick_planned = false;
+    if (kick_planned) {
+      kick_planned = false;
+    }
 
     if (step_buffer.empty()) {
       return;
     }
     break;
   case PathModel::PathRoutine::GO_TO_BALL_FAST:
-    walk_to_ball(Foot::NONE, true);
+    walk_to_ball(Foot::NONE , true);
     break;
   case PathModel::PathRoutine::GO_TO_BALL_SLOW:
     walk_to_ball(Foot::NONE);
@@ -80,6 +90,7 @@ void PathPlanner::execute()
 
   // Always executed last
   execute_step_buffer();
+
   STOPWATCH_STOP("PathPlanner");
 }
 
@@ -201,7 +212,7 @@ void PathPlanner::approach_ball(const Foot foot)
 
 void PathPlanner::short_kick(const Foot foot)
 {
-  if (!getPathModel().kick_executed)
+  if (!kick_planned)
   {
     Vector2d ballPos                   = Vector2d();
     WalkRequest::Coordinate coordinate = WalkRequest::Hip;
@@ -224,19 +235,19 @@ void PathPlanner::short_kick(const Foot foot)
       Pose2D pose = { 0.0, ballPos.x + 500 , 0.0 };
       add_step(pose, StepType::KICKSTEP, coordinate, 1.0, foot, 0.7);
 
-      add_step(pose, StepType::ZEROSTEP, coordinate, foot);
+      add_step(pose, StepType::ZEROSTEP, coordinate, 1.0, foot);
 
       pose = { 0.0, 0.0, 0.0 };
-      add_step(pose, StepType::WALKSTEP, coordinate, foot);
+      add_step(pose, StepType::WALKSTEP, coordinate, 1.0, foot);
 
-      getPathModel().kick_executed = true;
+      kick_planned = true;
     }
   }
 }
 
 void PathPlanner::long_kick(const Foot foot)
 {
-  if (!getPathModel().kick_executed)
+  if (!kick_planned)
   {
     Vector2d ballPos                   = Vector2d();
     WalkRequest::Coordinate coordinate = WalkRequest::Hip;
@@ -259,19 +270,19 @@ void PathPlanner::long_kick(const Foot foot)
       Pose2D pose = { 0.0, ballPos.x + 500, 0.0 };
       add_step(pose, StepType::KICKSTEP, coordinate, 1.0, foot, 0.7);
 
-      add_step(pose, StepType::ZEROSTEP, coordinate, foot);
+      add_step(pose, StepType::ZEROSTEP, coordinate, 1.0, foot);
 
       pose = { 0.0, 0.0, 0.0 };
-      add_step(pose, StepType::WALKSTEP, coordinate, foot);
+      add_step(pose, StepType::WALKSTEP, coordinate, 1.0, foot);
 
-      getPathModel().kick_executed = true;
+      kick_planned = true;
     }
   }
 }
 
 void PathPlanner::sidekick(const Foot foot)
 {
-  if (!getPathModel().kick_executed)
+  if (!kick_planned)
   {
     double speedDirection              = 0.0;
     double stepY                       = 0.0;
@@ -300,12 +311,12 @@ void PathPlanner::sidekick(const Foot foot)
       Pose2D pose = { 0.0, 500, stepY };
       add_step(pose, StepType::KICKSTEP, coordinate, 1.0, foot == Foot::RIGHT ? Foot::LEFT : Foot::RIGHT, 1.0, speedDirection);
 
-      add_step(pose, StepType::ZEROSTEP, coordinate, foot == Foot::RIGHT ? Foot::LEFT : Foot::RIGHT);
+      add_step(pose, StepType::ZEROSTEP, coordinate, 1.0, foot == Foot::RIGHT ? Foot::LEFT : Foot::RIGHT);
 
       pose = { 0.0, 0.0, 0.0 };
-      add_step(pose, StepType::WALKSTEP, coordinate, foot == Foot::RIGHT ? Foot::LEFT : Foot::RIGHT);
+      add_step(pose, StepType::WALKSTEP, coordinate, 1.0, foot == Foot::RIGHT ? Foot::LEFT : Foot::RIGHT);
 
-      getPathModel().kick_executed = true;
+      kick_planned = true;
     }
   }
 }

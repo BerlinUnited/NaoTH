@@ -214,8 +214,8 @@ void Walk::calculateNewStep(const Step& lastStep, Step& newStep, const WalkReque
 
   // STABILIZATION
   bool do_emergency_stop = com_errors.size() == com_errors.getMaxEntries() && com_errors.getAverage() > parameters().stabilization.emergencyStopError;
-  if ( getMotionRequest().id != getId() || 
-      (do_emergency_stop && lastStep.walkRequest.stepControl.type == WalkRequest::StepControlRequest::WALKSTEP)
+
+  if ( (getMotionRequest().id != getId() || do_emergency_stop)
       //|| walkRequest.stepControl.stepID + 1 != stepBuffer.stepId())
       )
   {
@@ -225,6 +225,8 @@ void Walk::calculateNewStep(const Step& lastStep, Step& newStep, const WalkReque
     } else {
       newStep.footStep = theFootStepPlanner.zeroStep(lastStep.footStep);
     }
+
+    //std::cout << "STABILIZED" << std::endl;
 
     newStep.numberOfCycles = (newStep.footStep.liftingFoot() == FootStep::NONE)?1:parameters().step.duration/getRobotInfo().basicTimeStep;
     newStep.type = STEP_WALK;
@@ -251,14 +253,21 @@ void Walk::calculateNewStep(const Step& lastStep, Step& newStep, const WalkReque
     {
     case WalkRequest::StepControlRequest::ZEROSTEP:
       newStep.footStep = theFootStepPlanner.zeroStep(lastStep.footStep);
+      //std::cout << "ZEROSTEP" << std::endl;
+      //std::cout << (walkRequest.stepControl.moveLeftFoot ? "LEFT" : "RIGHT") << " -- " << (newStep.footStep.liftingFoot() == FootStep::Foot::RIGHT ? "RIGHT" : "LEFT") << std::endl;
       break;
     case WalkRequest::StepControlRequest::KICKSTEP:
       newStep.footStep = theFootStepPlanner.controlStep(lastStep.footStep, walkRequest);
+      //std::cout << "KICKSTEP" << std::endl;
+      //std::cout << (walkRequest.stepControl.moveLeftFoot ? "LEFT" : "RIGHT") << " -- " << (newStep.footStep.liftingFoot() == FootStep::Foot::RIGHT ? "RIGHT" : "LEFT") << std::endl;
       break;
     case WalkRequest::StepControlRequest::WALKSTEP:
       if (stepControlPossible)
       {
         newStep.footStep = theFootStepPlanner.controlStep(lastStep.footStep, walkRequest);
+        //std::cout << "WALKSTEP" << std::endl;
+        //std::cout << (walkRequest.stepControl.moveLeftFoot ? "LEFT" : "RIGHT") << " -- " << (newStep.footStep.liftingFoot() == FootStep::Foot::RIGHT ? "RIGHT" : "LEFT") << std::endl;
+        //std::cout << "WALKREQUEST: " << newStep.walkRequest.stepControl.target.translation.x << ", " << newStep.walkRequest.stepControl.target.translation.y << std::endl;
       }
 
       // STABILIZATION
@@ -276,9 +285,12 @@ void Walk::calculateNewStep(const Step& lastStep, Step& newStep, const WalkReque
 
     newStep.numberOfCycles = walkRequest.stepControl.time / getRobotInfo().basicTimeStep;
     newStep.type = STEP_CONTROL;
+
+    //std::cout << " -- TARGET: " << newStep.footStep.footEnd().translation.x << ", " << newStep.footStep.footEnd().translation.y << std::endl;
   }
   else // regular walk 
   { 
+    //std::cout << "NORMAL WALKREQUEST" << std::endl;
     newStep.footStep = theFootStepPlanner.nextStep(lastStep.footStep, walkRequest);
     newStep.numberOfCycles = parameters().step.duration / getRobotInfo().basicTimeStep;
     newStep.type = STEP_WALK;
