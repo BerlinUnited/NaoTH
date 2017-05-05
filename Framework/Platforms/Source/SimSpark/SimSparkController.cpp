@@ -269,6 +269,19 @@ bool SimSparkController::init(const std::string& modelPath, const std::string& t
   //DEBUG_REQUEST_REGISTER("SimSparkController:beam", "beam to start pose", false);
   //REGISTER_DEBUG_COMMAND("beam", "beam to given pose", this);
 
+
+  Configuration& config = Platform::getInstance().theConfiguration;
+  // if player number wasn't set by configuration -> use the number from the simulation
+  if(config.getInt("player", "PlayerNumber") == 0) {
+    config.setInt("player", "PlayerNumber", theGameInfo.playerNumber);
+  }
+  // if team name wasn't set by configuration -> use the name from the simulation
+  if (!config.hasKey("player", "TeamName"))
+  {
+    config.setString("player", "TeamName", theGameInfo.teamName);
+  }
+  cout << "Player number: " << theGameInfo.playerNumber << endl;
+
   theLastSenseTime = NaoTime::getNaoTimeInMilliSeconds();
   theLastActTime = theLastSenseTime;
   calculateNextActTime();

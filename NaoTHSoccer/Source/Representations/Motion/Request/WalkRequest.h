@@ -50,6 +50,7 @@ public:
   {
     StepControlRequest()
       :
+      type(KICKSTEP),       // KICKSTEP instead of WALKSTEP because of backwards compatibility
       stepID(0),
       moveLeftFoot(false),
       time(0),
@@ -57,8 +58,14 @@ public:
       scale(1.0)
     {}
 
+    enum StepType {
+      WALKSTEP,
+      KICKSTEP,
+      ZEROSTEP
+    };
+    StepType type;
     unsigned int stepID; // it should match the current step id in walk, otherwise it will not be accepted
-    bool moveLeftFoot; // it should also match
+    bool moveLeftFoot; // it should also match, false = rightfoot
     Pose2D target; // in coordinate
     unsigned int time; // in ms
     //angle (in radiant) of the speed of the foot at the end of the controlled step
@@ -90,6 +97,7 @@ public:
 
   void print(std::ostream& stream) const
   {
+    stream << "type: " << (stepControl.type == StepControlRequest::StepType::WALKSTEP ? "WALKSTEP" : "KICKSTEP") << std::endl;
     stream << "target: " << target << std::endl;
     stream << "coordinate: "<< getCoordinateName(coordinate) << std::endl;
     stream << "character: " << character << std::endl;

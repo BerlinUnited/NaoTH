@@ -1,0 +1,80 @@
+/** Side kick the ball to the right (with the left foot) in a 90 degree angle
+    assumes ball is infront of hip instead of foot **/
+
+option path_sidekick
+{
+  enum direction @to;
+  
+  initial state direction
+  {
+    decision
+    {
+      if(@to == right)
+        goto sidekick_left_foot;
+      else
+        goto sidekick_right_foot;
+    }
+    action
+    {
+      head.control_mode = search_for_ball;
+    }
+  }
+
+  state sidekick_left_foot
+  {
+    decision
+    {
+      if( path.kick_executed )
+        goto short_freeze;
+      else
+        stay;
+    }
+    action
+    {
+      path.routine = sidekick_right;
+    }
+  }
+
+
+  state sidekick_right_foot
+  {
+    decision
+    {
+      if( path.kick_executed )
+        goto short_freeze;
+      else
+        stay;
+    }
+    action
+    {
+      path.routine = sidekick_left;
+    }
+  }
+
+  state short_freeze {
+    decision {
+      if(state_time > 2000)
+        goto finished;
+      else 
+        stay; 
+    }
+    action {
+      path.routine = none;
+    }
+  }
+
+  target state finished
+  {
+    decision
+    {
+      stay;
+    }
+    action
+    {
+      path.routine = none;
+
+      //loook at percept
+      head.control_mode = look_at_ball_percept;
+    }
+  }
+}

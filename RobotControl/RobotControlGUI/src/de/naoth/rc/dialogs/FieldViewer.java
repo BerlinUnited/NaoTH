@@ -5,8 +5,6 @@
  */
 package de.naoth.rc.dialogs;
 
-import com.google.protobuf.InvalidProtocolBufferException;
-import de.naoth.rc.Helper;
 import de.naoth.rc.core.dialog.AbstractDialog;
 import de.naoth.rc.core.dialog.DialogPlugin;
 import de.naoth.rc.RobotControl;
@@ -29,18 +27,13 @@ import de.naoth.rc.drawingmanager.DrawingListener;
 import de.naoth.rc.manager.DebugDrawingManager;
 import de.naoth.rc.manager.ImageManagerBottom;
 import de.naoth.rc.core.manager.ObjectListener;
-import de.naoth.rc.dataformats.SPLMessage;
 import de.naoth.rc.drawings.FieldDrawingSPL3x4;
-import de.naoth.rc.logmanager.BlackBoard;
-import de.naoth.rc.logmanager.LogDataFrame;
 import de.naoth.rc.logmanager.LogFileEventManager;
-import de.naoth.rc.logmanager.LogFrameListener;
 import de.naoth.rc.manager.DebugDrawingManagerMotion;
 import de.naoth.rc.manager.PlotDataManager;
 import de.naoth.rc.math.Vector2D;
 import de.naoth.rc.messages.Messages.PlotItem;
 import de.naoth.rc.messages.Messages.Plots;
-import de.naoth.rc.messages.Representations;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.event.MouseAdapter;
@@ -89,7 +82,6 @@ public class FieldViewer extends AbstractDialog
   private DrawingBuffer drawingEventBuffer = new DrawingBuffer(100);
 
   private final PlotDataListener plotDataListener;
-  private final LogListener logListener = new LogListener();
   private final StrokePlot strokePlot;
 
   private final DrawingsListener drawingsListener = new DrawingsListener();
@@ -176,7 +168,6 @@ public class FieldViewer extends AbstractDialog
         coordsPopup = new javax.swing.JDialog();
         jToolBar1 = new javax.swing.JToolBar();
         btReceiveDrawings = new javax.swing.JToggleButton();
-        btLog = new javax.swing.JToggleButton();
         btClean = new javax.swing.JButton();
         cbBackground = new javax.swing.JComboBox();
         btRotate = new javax.swing.JButton();
@@ -221,17 +212,6 @@ public class FieldViewer extends AbstractDialog
             }
         });
         jToolBar1.add(btReceiveDrawings);
-
-        btLog.setText("Log");
-        btLog.setFocusable(false);
-        btLog.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        btLog.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        btLog.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btLogActionPerformed(evt);
-            }
-        });
-        jToolBar1.add(btLog);
 
         btClean.setText("Clean");
         btClean.setFocusable(false);
@@ -435,13 +415,6 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
         this.fieldCanvas.repaint();
     }//GEN-LAST:event_btRotateActionPerformed
 
-    private void btLogActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btLogActionPerformed
-        if(btLog.isSelected()) {
-            Plugin.logFileEventManager.addListener(logListener);
-        } else {
-            Plugin.logFileEventManager.removeListener(logListener);
-        }
-    }//GEN-LAST:event_btLogActionPerformed
 
     private void btFitToViewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btFitToViewActionPerformed
         fieldCanvas.setFitToViewport(this.btFitToView.isSelected());
@@ -516,29 +489,6 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
       Plugin.debugDrawingManagerMotion.removeListener(this);
     }
   }
-  
-  public class LogListener implements LogFrameListener {
-
-        @Override
-        public void newFrame(BlackBoard b) {
-            LogDataFrame frame = b.get("TeamMessage");
-            if (frame != null) {
-                try {
-                    DrawingCollection drawings = new DrawingCollection();
-                    Representations.TeamMessage messageCollection = Representations.TeamMessage.parseFrom(frame.getData());
-                    for(Representations.TeamMessage.Data msg : messageCollection.getDataList()) {
-                        SPLMessage spl = new SPLMessage(msg);
-                        spl.draw(drawings, Color.GRAY, false);
-                    }
-                    
-                    TeamCommViewer.Plugin.drawingEventManager.fireDrawingEvent(drawings);
-                    
-                } catch (InvalidProtocolBufferException ex) {
-                    Helper.handleException(ex);
-                }
-            }
-        }
-    }
 
   class PlotDataListener implements ObjectListener<Plots>
   {
@@ -606,7 +556,6 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
     private javax.swing.JButton btClean;
     private javax.swing.JCheckBox btCollectDrawings;
     private javax.swing.JToggleButton btFitToView;
-    private javax.swing.JToggleButton btLog;
     private javax.swing.JToggleButton btReceiveDrawings;
     private javax.swing.JButton btRotate;
     private javax.swing.JCheckBox btTrace;

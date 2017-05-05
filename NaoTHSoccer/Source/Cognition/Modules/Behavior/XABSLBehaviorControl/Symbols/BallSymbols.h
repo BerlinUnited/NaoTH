@@ -30,7 +30,7 @@
 #include "Tools/Debug/DebugPlot.h"
 
 BEGIN_DECLARE_MODULE(BallSymbols)
-  REQUIRE(BallModel)
+  PROVIDE(BallModel) // PROVIDE so that XABSL bool can be read out
   REQUIRE(MultiBallPercept)
   REQUIRE(FrameInfo)
   REQUIRE(RobotPose)

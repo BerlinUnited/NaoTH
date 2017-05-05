@@ -32,6 +32,9 @@ void CleanRoleDecision::execute() {
 
 void CleanRoleDecision::computeStrikers()
 {
+    // skip "first frame"! (until i add myself to teamcomm)
+    if(getTeamMessage().data.find(getPlayerInfo().playerNumber) == getTeamMessage().data.end()) { return; }
+
     // container storing robots, which want to be striker, and their time to ball
     std::map<unsigned int, unsigned int> possible_striker;
 
@@ -69,7 +72,6 @@ void CleanRoleDecision::computeStrikers()
     // if i'm striker, i get a time bonus!
     // NOTE: ownTimeToBall can be negative if the robot is close to ball (!)
     double ownTimeToBall = static_cast<double>(ownMessage.custom.timeToBall) - (ownMessage.custom.wasStriker ? 300.0 : 0.0);
-
 
     // clear for new striker decision
     getRoleDecisionModel().resetStriker();

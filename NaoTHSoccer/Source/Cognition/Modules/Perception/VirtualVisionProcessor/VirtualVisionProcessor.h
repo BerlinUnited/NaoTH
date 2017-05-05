@@ -52,9 +52,10 @@ BEGIN_DECLARE_MODULE(VirtualVisionProcessor)
   REQUIRE(FieldInfo)
 
   PROVIDE(BallPercept)
+  PROVIDE(BallPerceptTop)
+
   PROVIDE(MultiBallPercept)
 
-  PROVIDE(BallPerceptTop)
   PROVIDE(GoalPercept)
   PROVIDE(GoalPerceptTop)
   PROVIDE(LinePercept)
@@ -73,6 +74,8 @@ public:
 
   virtual void execute()
   {
+    getMultiBallPercept().reset();
+
     execute(CameraInfo::Top);
     execute(CameraInfo::Bottom);
   }

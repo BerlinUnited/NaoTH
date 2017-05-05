@@ -17,6 +17,7 @@ using namespace InverseKinematic;
 Walk::Walk() : IKMotion(getInverseKinematicsMotionEngineService(), motion::walk, getMotionLock())
 {
   DEBUG_REQUEST_REGISTER("Walk:draw_step_plan_geometry", "draw all planed steps, zmp and executed com", false);
+  DEBUG_REQUEST_REGISTER("Walk:plot_genTrajectoryWithSplines", "plot spline interpolation to parametrize 3D foot trajectory", false);
 }
   
 void Walk::execute()
@@ -55,7 +56,7 @@ void Walk::execute()
     {
       tmp.localInRightFoot();
       theCoMFeetPose.com.translation.z += parameters().hip.comHeightOffset * tmp.feet.left.translation.z;
-      theCoMFeetPose.com.translation.y -= parameters().hip.comStepOffsetY *tmp.feet.left.translation.z;
+      theCoMFeetPose.com.translation.y -= parameters().hip.comStepOffsetY * tmp.feet.left.translation.z;
       //theCoMFeetPose.com.rotateX( parameters().hip.comRotationOffsetX *tmp.feet.left.translation.z );
 
       PLOT("Walk:theCoMFeetPose:total_rotationY",tmp.com.rotation.getYAngle());
@@ -64,7 +65,7 @@ void Walk::execute()
     {
       tmp.localInLeftFoot();
       theCoMFeetPose.com.translation.z += parameters().hip.comHeightOffset * tmp.feet.right.translation.z;
-      theCoMFeetPose.com.translation.y += parameters().hip.comStepOffsetY *tmp.feet.left.translation.z;
+      theCoMFeetPose.com.translation.y += parameters().hip.comStepOffsetY * tmp.feet.left.translation.z;
       //theCoMFeetPose.com.rotateX( -parameters().hip.comRotationOffsetX*tmp.feet.right.translation.z );
 
       PLOT("Walk:theCoMFeetPose:total_rotationY",tmp.com.rotation.getYAngle());
@@ -197,10 +198,13 @@ void Walk::calculateNewStep(const Step& lastStep, Step& newStep, const WalkReque
 
   // STABILIZATION
   bool do_emergency_stop = com_errors.size() == com_errors.getMaxEntries() && com_errors.getAverage() > parameters().stabilization.emergencyStopError;
-  if ( getMotionRequest().id != getId() || do_emergency_stop)
+  if ( getMotionRequest().id != getId() || 
+      (do_emergency_stop && lastStep.walkRequest.stepControl.type == WalkRequest::StepControlRequest::WALKSTEP)
+      //|| walkRequest.stepControl.stepID + 1 != stepBuffer.stepId())
+      )
   {
     // try to make a last step to align the feet if it is required
-    if ( getMotionRequest().standardStand ) {
+    if ( getMotionRequest().standardStand) {
       newStep.footStep = theFootStepPlanner.finalStep(lastStep.footStep, walkRequest);
     } else {
       newStep.footStep = theFootStepPlanner.zeroStep(lastStep.footStep);
@@ -218,29 +222,59 @@ void Walk::calculateNewStep(const Step& lastStep, Step& newStep, const WalkReque
 
   // indicates whether the requested foot is movable in this step
   // i.e., it was NOT moved in the last step
-  bool stepControlPossible = 
+  bool stepControlPossible = true;/*
         lastStep.footStep.liftingFoot() == FootStep::NONE
     || (lastStep.footStep.liftingFoot() == FootStep::RIGHT && walkRequest.stepControl.moveLeftFoot)
     || (lastStep.footStep.liftingFoot() == FootStep::LEFT && !walkRequest.stepControl.moveLeftFoot);
-
-  if ( stepControlPossible && walkRequest.stepControl.stepID + 1 == stepBuffer.stepId() )
+    */
+  if (walkRequest.stepControl.stepID + 1 == stepBuffer.stepId()) // step control
   {
-    // step control
-    newStep.footStep = theFootStepPlanner.controlStep(lastStep.footStep, walkRequest);
+    //WalkRequest myRequest = walkRequest;
+    //myRequest.target = walkRequest.stepControl.target;
+    switch (walkRequest.stepControl.type)
+    {
+    case WalkRequest::StepControlRequest::ZEROSTEP:
+      newStep.footStep = theFootStepPlanner.zeroStep(lastStep.footStep);
+      break;
+    case WalkRequest::StepControlRequest::KICKSTEP:
+      newStep.footStep = theFootStepPlanner.controlStep(lastStep.footStep, walkRequest);
+      break;
+    case WalkRequest::StepControlRequest::WALKSTEP:
+      if (stepControlPossible)
+      {
+        newStep.footStep = theFootStepPlanner.controlStep(lastStep.footStep, walkRequest);
+      }
+
+      // STABILIZATION
+      if (parameters().stabilization.dynamicStepsize) {
+        adaptStepSize(newStep.footStep);
+        currentComErrorBuffer.clear();
+      }
+
+      PLOT("Walk:after_adaptStepSize_x", newStep.footStep.footEnd().translation.x);
+      PLOT("Walk:after_adaptStepSize_y", newStep.footStep.footEnd().translation.y);
+      break;
+    default:
+      ASSERT(false);
+    }
+
     newStep.numberOfCycles = walkRequest.stepControl.time / getRobotInfo().basicTimeStep;
     newStep.type = STEP_CONTROL;
   }
-  else
-  {
+  else // regular walk 
+  { 
     newStep.footStep = theFootStepPlanner.nextStep(lastStep.footStep, walkRequest);
     newStep.numberOfCycles = parameters().step.duration / getRobotInfo().basicTimeStep;
     newStep.type = STEP_WALK;
 
     // STABILIZATION
-    if ( parameters().stabilization.dynamicStepsize ) {
+    if (parameters().stabilization.dynamicStepsize) {
       adaptStepSize(newStep.footStep);
       currentComErrorBuffer.clear();
     }
+
+    PLOT("Walk:XABSL_after_adaptStepSize_x", newStep.footStep.footEnd().translation.x);
+    PLOT("Walk:XABSL_after_adaptStepSize_y", newStep.footStep.footEnd().translation.y);
   }
 }
 
@@ -320,6 +354,32 @@ void Walk::executeStep()
     default: ASSERT(false);
   }
 
+  PLOT("Walk:trajectory:cos:x",theCoMFeetPose.feet.left.translation.x);
+  PLOT("Walk:trajectory:cos:y",theCoMFeetPose.feet.left.translation.y);
+  PLOT("Walk:trajectory:cos:z",theCoMFeetPose.feet.left.translation.z);
+
+  DEBUG_REQUEST("Walk:plot_genTrajectoryWithSplines",
+    if(executingStep.footStep.liftingFoot() == FootStep::LEFT) {
+      Pose3D returnPose2 = FootTrajectorGenerator::genTrajectoryWithSplines(
+                             executingStep.footStep.footBegin(),
+                             executingStep.footStep.footEnd(),
+                             executingStep.executingCycle,
+                             executingStep.numberOfCycles,
+                             parameters().step.stepHeight,
+                             0, // footPitchOffset
+                             0  // footRollOffset
+                           );
+
+      PLOT("Walk:trajectory:spline:x",returnPose2.translation.x);
+      PLOT("Walk:trajectory:spline:y",returnPose2.translation.y);
+      PLOT("Walk:trajectory:spline:z",returnPose2.translation.z);
+    } else {
+      PLOT("Walk:trajectory:spline:x",theCoMFeetPose.feet.left.translation.x);
+      PLOT("Walk:trajectory:spline:y",theCoMFeetPose.feet.left.translation.y);
+      PLOT("Walk:trajectory:spline:z",theCoMFeetPose.feet.left.translation.z);
+    }
+  );
+
   theCoMFeetPose.com.translation = com;
   // TODO: check this
   theCoMFeetPose.com.rotation = calculateBodyRotation(theCoMFeetPose.feet, getEngine().getParameters().walk.general.bodyPitchOffset);
@@ -332,9 +392,9 @@ Pose3D Walk::calculateLiftingFootPos(const Step& step) const
   int samplesSingleSupport = step.numberOfCycles - samplesDoubleSupport;
   ASSERT(samplesSingleSupport >= 0 && samplesDoubleSupport >= 0);
 
-  if ( step.type == STEP_CONTROL )
+  if ( step.type == STEP_CONTROL && step.walkRequest.stepControl.type == WalkRequest::StepControlRequest::KICKSTEP)
   {
-    return FootTrajectorGenerator::stepControl(  
+    return FootTrajectorGenerator::stepControl(
       step.footStep.footBegin(),
       step.footStep.footEnd(),
       step.executingCycle,
@@ -346,18 +406,33 @@ Pose3D Walk::calculateLiftingFootPos(const Step& step) const
       step.walkRequest.stepControl.speedDirection,
       step.walkRequest.stepControl.scale);
   }
-  else if( step.type == STEP_WALK )
+  else //if( step.type == STEP_WALK )
   {
-    return FootTrajectorGenerator::genTrajectory(
-      step.footStep.footBegin(),
-      step.footStep.footEnd(),
-      step.executingCycle,
-      samplesDoubleSupport,
-      samplesSingleSupport,
-      parameters().step.stepHeight,
-      0, // footPitchOffset
-      0  // footRollOffset
-    );
+    if(parameters().step.splineFootTrajectory)
+    {
+      return FootTrajectorGenerator::genTrajectoryWithSplines(
+              step.footStep.footBegin(),
+              step.footStep.footEnd(),
+              step.executingCycle,
+              samplesSingleSupport,
+              parameters().step.stepHeight,
+              0, // footPitchOffset
+              0  // footRollOffset
+            );
+    }
+    else
+    {
+      return FootTrajectorGenerator::genTrajectory(
+              step.footStep.footBegin(),
+              step.footStep.footEnd(),
+              step.executingCycle,
+              samplesDoubleSupport,
+              samplesSingleSupport,
+              parameters().step.stepHeight,
+              0, // footPitchOffset
+              0  // footRollOffset
+      );
+    }
   }
 
   ASSERT(false);
@@ -427,8 +502,8 @@ void Walk::updateMotionStatus(MotionStatus& motionStatus) const
     case FootStep::RIGHT:
       motionStatus.stepControl.moveableFoot = MotionStatus::StepControlStatus::LEFT;
       break;
-    default: ASSERT(false);
-      break;
+    default: 
+      ASSERT(false);
     }
   }
 }//end updateMotionStatus

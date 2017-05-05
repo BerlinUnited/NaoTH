@@ -179,7 +179,8 @@ TeamMessageCustom::TeamMessageCustom() :
   isPenalized(false),
   batteryCharge(0.0),
   temperature(0.0),
-  cpuTemperature(0.0)
+  cpuTemperature(0.0),
+  whistleDetected(false)
 {
 }
 
@@ -196,6 +197,7 @@ void TeamMessageCustom::print(std::ostream &stream) const
     << "\t" << "batteryCharge: " << batteryCharge << "\n"
     << "\t" << "temperature: " << temperature << "°C\n"
     << "\t" << "CPU: " << cpuTemperature << "°C\n"
+    << "\t" << "whistleDetected: " << (whistleDetected ? "yes" : "no") << "\n"
     ;
   stream << std::endl;
 }//end print
@@ -213,6 +215,7 @@ naothmessages::BUUserTeamMessage TeamMessageCustom::toProto() const
     userMsg.set_batterycharge((float)batteryCharge);
     userMsg.set_temperature((float)temperature);
     userMsg.set_cputemperature((float)cpuTemperature);
+    userMsg.set_whistledetected(whistleDetected);
     userMsg.set_key(key);
     return userMsg;
 }
@@ -228,6 +231,7 @@ void TeamMessageCustom::parseFromProto(const naothmessages::BUUserTeamMessage &u
     batteryCharge = userData.batterycharge();
     temperature = userData.temperature();
     cpuTemperature = userData.cputemperature();
+    whistleDetected = userData.whistledetected();
     key = userData.key();
 }
 

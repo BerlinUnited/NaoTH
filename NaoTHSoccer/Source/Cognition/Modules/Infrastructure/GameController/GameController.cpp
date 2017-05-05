@@ -6,6 +6,7 @@
 GameController::GameController()
   : 
   lastWhistleCount(0),
+  lastGameState(GameData::GameState::unknown_game_state),
   returnMessage(GameReturnData::alive)
 {
   DEBUG_REQUEST_REGISTER("gamecontroller:play", "force the play state", false);
@@ -105,12 +106,12 @@ void GameController::execute()
   handleDebugRequest();  
 
   
-  // remember the whistle counter before set
-  if(getPlayerInfo().robotState == PlayerInfo::ready) {
+  // remember the whistle counter before and after set (ready/playing)
+  if(getPlayerInfo().robotState == PlayerInfo::ready || (lastGameState == GameData::set && getGameData().gameState == GameData::playing)) {
     lastWhistleCount = getWhistlePercept().counter;
   }
-  // whistle overrides gamecontroller when in set
-  else if(getGameData().gameState == GameData::set)
+  // whistle overrides state when in set
+  else if(getPlayerInfo().robotState == PlayerInfo::set)
   {
     // switch from set to play
     if(getWhistlePercept().counter > lastWhistleCount) {
@@ -125,6 +126,11 @@ void GameController::execute()
   {
     updateLEDs();
   }
+
+  // remember last game state (from gamecontroller)
+  lastGameState = getGameData().gameState;
+  // set teamcomm: whistle detected!
+  getTeamMessageData().custom.whistleDetected = getWhistlePercept().counter > lastWhistleCount;
 
   // provide the return message
   getGameReturnData().team = getPlayerInfo().teamNumber;

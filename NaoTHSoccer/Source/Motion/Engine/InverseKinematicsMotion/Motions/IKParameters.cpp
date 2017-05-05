@@ -61,6 +61,7 @@ IKParameters::IKParameters()
   PARAMETER_REGISTER(walk.step.doubleSupportTime) = 40;
 
   PARAMETER_REGISTER(walk.step.stepHeight) = 15;
+  PARAMETER_REGISTER(walk.step.splineFootTrajectory) = true;
 
   // kick
   PARAMETER_REGISTER(walk.kick.stepHeight) = 20;
