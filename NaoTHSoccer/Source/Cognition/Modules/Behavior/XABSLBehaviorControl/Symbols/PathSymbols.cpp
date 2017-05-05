@@ -11,9 +11,8 @@ void PathSymbols::registerSymbols(xabsl::Engine& engine)
 {
   // PathRoutine
   engine.registerEnumElement("path.routine", "path.routine.none",                PathModel::PathRoutine::NONE);
-  engine.registerEnumElement("path.routine", "path.routine.go_to_ball",          PathModel::PathRoutine::GO_TO_BALL);
-  engine.registerEnumElement("path.routine", "path.routine.go_to_ball_right",    PathModel::PathRoutine::GO_TO_BALL_RIGHT);
-  engine.registerEnumElement("path.routine", "path.routine.go_to_ball_left",     PathModel::PathRoutine::GO_TO_BALL_LEFT);
+  engine.registerEnumElement("path.routine", "path.routine.go_to_ball_fast",     PathModel::PathRoutine::GO_TO_BALL_FAST);
+  engine.registerEnumElement("path.routine", "path.routine.go_to_ball_slow",     PathModel::PathRoutine::GO_TO_BALL_SLOW);
   engine.registerEnumElement("path.routine", "path.routine.approach_ball_right", PathModel::PathRoutine::APPROACH_BALL_RIGHT);
   engine.registerEnumElement("path.routine", "path.routine.approach_ball_left",  PathModel::PathRoutine::APPROACH_BALL_LEFT);
   engine.registerEnumElement("path.routine", "path.routine.move_around_ball",    PathModel::PathRoutine::MOVE_AROUND_BALL);

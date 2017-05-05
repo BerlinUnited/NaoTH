@@ -21,7 +21,10 @@ void PathPlanner::execute()
   DEBUG_REQUEST("PathPlanner:walk_forward",
     Pose2D pose = Pose2D(0.0, 40.0, 0.0);
     WalkRequest::Coordinate coordinate = WalkRequest::Hip;
-    add_single_step(pose, StepType::WALKSTEP, coordinate);
+    if (step_buffer.empty())
+    {
+      add_step(pose, StepType::WALKSTEP, coordinate);
+    }
     );
 
   STOPWATCH_START("PathPlanner");
@@ -40,14 +43,11 @@ void PathPlanner::execute()
       return;
     }
     break;
-  case PathModel::PathRoutine::GO_TO_BALL:
+  case PathModel::PathRoutine::GO_TO_BALL_FAST:
+    walk_to_ball(Foot::NONE, true);
+    break;
+  case PathModel::PathRoutine::GO_TO_BALL_SLOW:
     walk_to_ball(Foot::NONE);
-    break;
-  case PathModel::PathRoutine::GO_TO_BALL_LEFT:
-    walk_to_ball(Foot::LEFT);
-    break;
-  case PathModel::PathRoutine::GO_TO_BALL_RIGHT:
-    walk_to_ball(Foot::RIGHT);
     break;
   case PathModel::PathRoutine::MOVE_AROUND_BALL:
     move_around_ball(getPathModel().direction, getPathModel().radius);
@@ -84,7 +84,7 @@ void PathPlanner::execute()
 }
 
 // Primitive Maneuvers
-void PathPlanner::walk_to_ball(const Foot foot)
+void PathPlanner::walk_to_ball(const Foot foot, const bool go_fast)
 {
   Vector2d ballPos                   = Vector2d();
   WalkRequest::Coordinate coordinate = WalkRequest::Hip;
@@ -104,10 +104,17 @@ void PathPlanner::walk_to_ball(const Foot foot)
   }
   double ballRotation = ballPos.angle();
 
-  Pose2D pose = { ballRotation, 0.7*(ballPos.x - getPathModel().distance), 0.0 };
+  Pose2D pose = { ballRotation, 0.7*(ballPos.x - getPathModel().distance), ballPos.y };
   if (step_buffer.empty())
   {
-    add_single_step(pose, StepType::WALKSTEP, coordinate);
+    if (go_fast)
+    {
+      add_step(pose, StepType::WALKSTEP, coordinate, 1.0);
+    }
+    else
+    {
+      add_step(pose, StepType::WALKSTEP, coordinate, 0.3);
+    }
   }
   else
   {
@@ -146,7 +153,7 @@ void PathPlanner::move_around_ball(const double direction, const double radius)
 
   if (step_buffer.empty())
   {
-    add_single_step(pose, StepType::WALKSTEP, coordinate);
+    add_step(pose, StepType::WALKSTEP, coordinate, 0.7);
   }
   else
   {
@@ -184,7 +191,7 @@ void PathPlanner::approach_ball(const Foot foot)
 
   if (step_buffer.empty())
   {
-    add_single_step(pose, StepType::WALKSTEP, coordinate);
+    add_step(pose, StepType::WALKSTEP, coordinate, 0.7);
   }
   else
   {
@@ -215,7 +222,7 @@ void PathPlanner::short_kick(const Foot foot)
     if (step_buffer.empty())
     {
       Pose2D pose = { 0.0, ballPos.x + 500 , 0.0 };
-      add_step(pose, StepType::KICKSTEP, coordinate, foot, 0.7, 1.0);
+      add_step(pose, StepType::KICKSTEP, coordinate, 1.0, foot, 0.7);
 
       add_step(pose, StepType::ZEROSTEP, coordinate, foot);
 
@@ -250,7 +257,7 @@ void PathPlanner::long_kick(const Foot foot)
     if (step_buffer.empty())
     {
       Pose2D pose = { 0.0, ballPos.x + 500, 0.0 };
-      add_step(pose, StepType::KICKSTEP, coordinate, foot, 0.7, 1.0);
+      add_step(pose, StepType::KICKSTEP, coordinate, 1.0, foot, 0.7);
 
       add_step(pose, StepType::ZEROSTEP, coordinate, foot);
 
@@ -291,7 +298,7 @@ void PathPlanner::sidekick(const Foot foot)
     if (step_buffer.empty())
     {
       Pose2D pose = { 0.0, 500, stepY };
-      add_step(pose, StepType::KICKSTEP, coordinate, foot == Foot::RIGHT ? Foot::LEFT : Foot::RIGHT, 1.0, 1.0, speedDirection);
+      add_step(pose, StepType::KICKSTEP, coordinate, 1.0, foot == Foot::RIGHT ? Foot::LEFT : Foot::RIGHT, 1.0, speedDirection);
 
       add_step(pose, StepType::ZEROSTEP, coordinate, foot == Foot::RIGHT ? Foot::LEFT : Foot::RIGHT);
 
@@ -304,7 +311,7 @@ void PathPlanner::sidekick(const Foot foot)
 }
 
 // Stepcontrol
-void PathPlanner::add_step(Pose2D &pose, const StepType &type, const WalkRequest::Coordinate &coordinate, const Foot foot, const double scale, const double character, const double speedDirection)
+void PathPlanner::add_step(Pose2D &pose, const StepType &type, const WalkRequest::Coordinate &coordinate, const double character, const Foot foot, const double scale, const double speedDirection)
 {
   // taken out of the stepplanner
   // limiting the steps if walksteps
@@ -326,13 +333,6 @@ void PathPlanner::add_step(Pose2D &pose, const StepType &type, const WalkRequest
                                               scale,
                                               foot,
                                               coordinate}));
-}
-bool PathPlanner::add_single_step(Pose2D &pose, const StepType &type, const WalkRequest::Coordinate &coordinate) {
-  if (step_buffer.size() == 0) {
-    add_step(pose, type, coordinate);
-    return true;
-  }
-  return false;
 }
 void PathPlanner::update_step(Pose2D &pose)
 {

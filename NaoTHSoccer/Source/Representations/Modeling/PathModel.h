@@ -25,9 +25,8 @@ public:
   enum PathRoutine
   {
     NONE,
-    GO_TO_BALL,
-    GO_TO_BALL_RIGHT,
-    GO_TO_BALL_LEFT,
+    GO_TO_BALL_FAST,
+    GO_TO_BALL_SLOW,
     APPROACH_BALL_RIGHT,
     APPROACH_BALL_LEFT,
     MOVE_AROUND_BALL,
@@ -59,14 +58,11 @@ public:
     case NONE:
       path_type = "none";
       break;
-    case GO_TO_BALL:
-      path_type = "go_to_ball";
+    case GO_TO_BALL_FAST:
+      path_type = "go_to_ball_fast";
       break;
-    case GO_TO_BALL_LEFT:
-      path_type = "go_to_ball_left";
-      break;
-    case GO_TO_BALL_RIGHT:
-      path_type = "go_to_ball_right";
+    case GO_TO_BALL_SLOW:
+      path_type = "go_to_ball_slow";
       break;
     case APPROACH_BALL_LEFT:
       path_type = "approach_ball_left";

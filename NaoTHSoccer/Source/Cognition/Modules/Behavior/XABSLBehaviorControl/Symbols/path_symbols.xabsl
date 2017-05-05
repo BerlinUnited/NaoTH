@@ -3,9 +3,8 @@ namespace path_symbols("PathPlanner Symbols") {
   enum path.routine
   {
     none,
-    go_to_ball,
-    go_to_ball_right,
-    go_to_ball_left,
+    go_to_ball_fast,
+    go_to_ball_slow,
     approach_ball_right,
     approach_ball_left,
     move_around_ball,

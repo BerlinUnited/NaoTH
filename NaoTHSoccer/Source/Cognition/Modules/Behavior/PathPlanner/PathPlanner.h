@@ -64,7 +64,7 @@ private:
 
   // Primitive Routines
   // Walks to the ball from far away
-  void walk_to_ball(const Foot foot);
+  void walk_to_ball(const Foot foot, const bool go_fast = false);
   // Moves around the ball
   void move_around_ball(const double direction, const double radius);
   // Approaches the ball from near - if neccessary 
@@ -97,9 +97,8 @@ private:
   // Used to synchronize stepIDs of WalkEngine to take control
   unsigned int last_stepcontrol_stepID;
 
-  void add_step(Pose2D &pose, const StepType &type, const WalkRequest::Coordinate &coordinate, const Foot foot = Foot::NONE, const double scale = 1.0, const double character = 0.5, const double speedDirection = 0.0);
-  bool add_single_step(Pose2D &pose, const StepType &type, const WalkRequest::Coordinate &coordinate);
-  void update_step(Pose2D &pose);
+  void add_step(Pose2D &pose, const StepType &type, const WalkRequest::Coordinate &coordinate, const double character = 0.5, const Foot foot = Foot::NONE, const double scale = 1.0, const double speedDirection = 0.0);
+  bool add_single_step(Pose2D &pose, const StepType &type, const WalkRequest::Coordinate &coordinate);void update_step(Pose2D &pose);
   void manage_step_buffer();
   void execute_step_buffer();
 };
