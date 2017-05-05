@@ -114,9 +114,9 @@ private:
       PARAMETER_REGISTER(maxNumberOfKeys) = 4;
       PARAMETER_REGISTER(numberOfExportBestPatches) = 2;
 
-      PARAMETER_REGISTER(postBorderFactorClose) = 0.5;
+      PARAMETER_REGISTER(postBorderFactorClose) = 1.0;
       PARAMETER_REGISTER(postBorderFactorFar) = 0.0;
-      PARAMETER_REGISTER(postMaxCloseSize) = 40;
+      PARAMETER_REGISTER(postMaxCloseSize) = 60;
 
 
       PARAMETER_REGISTER(blackKeysCheck.enable) = false;

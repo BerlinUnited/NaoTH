@@ -18,6 +18,7 @@ BallCandidateDetector::BallCandidateDetector()
 {
   DEBUG_REQUEST_REGISTER("Vision:BallCandidateDetector:keyPoints", "draw key points extracted from integral image", false);
   DEBUG_REQUEST_REGISTER("Vision:BallCandidateDetector:drawCandidates", "draw ball candidates", false);
+  DEBUG_REQUEST_REGISTER("Vision:BallCandidateDetector:drawCandidatesResizes", "draw ball candidates (resized)", false);
   DEBUG_REQUEST_REGISTER("Vision:BallCandidateDetector:refinePatches", "draw refined ball key points", false);
   DEBUG_REQUEST_REGISTER("Vision:BallCandidateDetector:drawPercepts", "draw ball percepts", false);
 
@@ -169,32 +170,41 @@ void BallCandidateDetector::calculateCandidates()
 
         const int patch_size = 16;
         
-        BallCandidates::Patch p(0);
+        BallCandidates::Patch patchedBorder(0);
         //int size = ((*i).max.x - (*i).min.x)/2;
-        p.min = (*i).min;// - Vector2i(size,size);
-        p.max = (*i).max;// + Vector2i(size,size);
+        patchedBorder.min = (*i).min;// - Vector2i(size,size);
+        patchedBorder.max = (*i).max;// + Vector2i(size,size);
 
         // add an additional border as post-processing
-        int size = p.max.x - p.min.x;
+        int size = patchedBorder.max.x - patchedBorder.min.x;
         double radius = (double) size / 2.0;
         int postBorder = (int)(radius*params.postBorderFactorFar);
-        if(size < params.postMaxCloseSize) // HACK: use patch size as estimate if close or far away
+        if(size >= params.postMaxCloseSize) // HACK: use patch size as estimate if close or far away
         {
           postBorder = (int)(radius*params.postBorderFactorClose);
         }
 
-        p.min.x = p.min.x - postBorder;
-        p.min.y = p.min.y - postBorder;
-        p.max.x = p.max.x + postBorder;
-        p.max.y = p.max.y + postBorder;
+        patchedBorder.min.x = patchedBorder.min.x - postBorder;
+        patchedBorder.min.y = patchedBorder.min.y - postBorder;
+        patchedBorder.max.x = patchedBorder.max.x + postBorder;
+        patchedBorder.max.y = patchedBorder.max.y + postBorder;
 
-        if(getImage().isInside(p.min.x, p.min.y) && getImage().isInside(p.max.x, p.max.y)) 
+        if(getImage().isInside(patchedBorder.min.x, patchedBorder.min.y) && getImage().isInside(patchedBorder.max.x, patchedBorder.max.y))
         {
-          PatchWork::subsampling(getImage(), p.data, p.min.x, p.min.y, p.max.x, p.max.y, patch_size);
-          if(cvHaarClassifier.classify(p, params.haarDetector.minNeighbors, params.haarDetector.windowSize) > 0) {
+
+            auto r = (patchedBorder.max.x - patchedBorder.min.x)/2;
+            auto x = (patchedBorder.min.x + patchedBorder.max.x)/2;
+            auto y = (patchedBorder.min.y + patchedBorder.max.y)/2;
+            DEBUG_REQUEST("Vision:BallCandidateDetector:drawCandidatesResizes",
+              RECT_PX(ColorClasses::pink, x-r, y-r, x+r, y+r);
+            );
+
+          PatchWork::subsampling(getImage(), patchedBorder.data, patchedBorder.min.x, patchedBorder.min.y, patchedBorder.max.x, patchedBorder.max.y, patch_size);
+          if(cvHaarClassifier.classify(patchedBorder, params.haarDetector.minNeighbors, params.haarDetector.windowSize) > 0) {
             
             if(!params.blackKeysCheck.enable || blackKeysOK(*i)) {
               addBallPercept(Vector2i((min.x + max.x)/2, (min.y + max.y)/2), (max.x - min.x)/2);
+
             }
 
           }
