@@ -208,6 +208,19 @@ void BallCandidateDetector::calculateCandidates()
             }
 
           }
+        } else if(getImage().isInside(min.x, min.y) && getImage().isInside(max.x, max.y)) {
+            BallCandidates::Patch p(0);
+            p.min = (*i).min;
+            p.max = (*i).max;
+
+            PatchWork::subsampling(getImage(), p.data, min.x, min.y, max.x, max.y, patch_size);
+            if(cvHaarClassifier.classify(p, params.haarDetector.minNeighbors, params.haarDetector.windowSize) > 0) {
+
+              if(!params.blackKeysCheck.enable || blackKeysOK(*i)) {
+                addBallPercept(Vector2i((min.x + max.x)/2, (min.y + max.y)/2), (max.x - min.x)/2);
+
+              }
+            }
         }
 
         index++;
