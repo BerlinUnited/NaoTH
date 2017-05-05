@@ -116,22 +116,6 @@ void Walk::execute()
       getRobotInfo().getBasicTimeStepInSecond(),
       c);
   }
-  else if(getCalibrationData().calibrated && parameters().stabilization.rotationStabilizeNewIMU)
-  {
-    if(stepBuffer.first().footStep.liftingFoot() == FootStep::LEFT) {
-      c.localInRightFoot();
-    } else if(stepBuffer.first().footStep.liftingFoot() == FootStep::RIGHT) {
-      c.localInLeftFoot();
-    } else {
-      c.localInHip();
-    }
-
-    getEngine().rotationStabilizenNewIMU(
-      getInertialModel(),
-      getGyrometerData(),
-      getRobotInfo().getBasicTimeStepInSecond(),
-      c);
-  }
 
   getEngine().solveHipFeetIK(c);
   getEngine().copyLegJoints(getMotorJointData().position);
