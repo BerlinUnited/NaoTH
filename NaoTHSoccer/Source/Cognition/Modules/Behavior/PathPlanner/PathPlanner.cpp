@@ -113,7 +113,7 @@ void PathPlanner::walk_to_ball(const Foot foot, const bool go_fast)
     }
     else
     {
-      add_step(pose, StepType::WALKSTEP, coordinate);
+      add_step(pose, StepType::WALKSTEP, coordinate, 0.3);
     }
   }
   else
@@ -153,7 +153,7 @@ void PathPlanner::move_around_ball(const double direction, const double radius)
 
   if (step_buffer.empty())
   {
-    add_step(pose, StepType::WALKSTEP, coordinate);
+    add_step(pose, StepType::WALKSTEP, coordinate, 0.7);
   }
   else
   {
@@ -191,7 +191,7 @@ void PathPlanner::approach_ball(const Foot foot)
 
   if (step_buffer.empty())
   {
-    add_step(pose, StepType::WALKSTEP, coordinate);
+    add_step(pose, StepType::WALKSTEP, coordinate, 0.7);
   }
   else
   {
