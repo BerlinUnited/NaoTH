@@ -84,7 +84,7 @@ option pathplanner_sidekick {
   target state done
   {
     decision {
-    else if(state_time > 2000)
+    else if(state_time > 100)
       goto idle;
       else
         stay;

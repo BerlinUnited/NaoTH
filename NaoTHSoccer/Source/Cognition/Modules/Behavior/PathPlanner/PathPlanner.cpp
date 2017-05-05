@@ -34,10 +34,8 @@ void PathPlanner::execute()
   // Always executed first
   manage_step_buffer();
 
-
-  if(kick_planned && step_buffer.empty()) {
+  if (kick_planned && step_buffer.empty()) {
     getPathModel().kick_executed = true;
-    kick_planned = false;
   }
 
   switch (getPathModel().path_routine)
@@ -47,13 +45,16 @@ void PathPlanner::execute()
     // can jump out of option (PathRoutine) that is
     // being executed
     //kick_planned = false;
+    if (kick_planned) {
+      kick_planned = false;
+    }
 
     if (step_buffer.empty()) {
       return;
     }
     break;
   case PathModel::PathRoutine::GO_TO_BALL_FAST:
-    walk_to_ball(Foot::NONE, true);
+    walk_to_ball(Foot::NONE , true);
     break;
   case PathModel::PathRoutine::GO_TO_BALL_SLOW:
     walk_to_ball(Foot::NONE);
@@ -234,10 +235,10 @@ void PathPlanner::short_kick(const Foot foot)
       Pose2D pose = { 0.0, ballPos.x + 500 , 0.0 };
       add_step(pose, StepType::KICKSTEP, coordinate, 1.0, foot, 0.7);
 
-      add_step(pose, StepType::ZEROSTEP, coordinate, foot);
+      add_step(pose, StepType::ZEROSTEP, coordinate, 1.0, foot);
 
       pose = { 0.0, 0.0, 0.0 };
-      add_step(pose, StepType::WALKSTEP, coordinate, foot);
+      add_step(pose, StepType::WALKSTEP, coordinate, 1.0, foot);
 
       kick_planned = true;
     }
@@ -269,10 +270,10 @@ void PathPlanner::long_kick(const Foot foot)
       Pose2D pose = { 0.0, ballPos.x + 500, 0.0 };
       add_step(pose, StepType::KICKSTEP, coordinate, 1.0, foot, 0.7);
 
-      add_step(pose, StepType::ZEROSTEP, coordinate, foot);
+      add_step(pose, StepType::ZEROSTEP, coordinate, 1.0, foot);
 
       pose = { 0.0, 0.0, 0.0 };
-      add_step(pose, StepType::WALKSTEP, coordinate, foot);
+      add_step(pose, StepType::WALKSTEP, coordinate, 1.0, foot);
 
       kick_planned = true;
     }
@@ -310,10 +311,10 @@ void PathPlanner::sidekick(const Foot foot)
       Pose2D pose = { 0.0, 500, stepY };
       add_step(pose, StepType::KICKSTEP, coordinate, 1.0, foot == Foot::RIGHT ? Foot::LEFT : Foot::RIGHT, 1.0, speedDirection);
 
-      add_step(pose, StepType::ZEROSTEP, coordinate, foot == Foot::RIGHT ? Foot::LEFT : Foot::RIGHT);
+      add_step(pose, StepType::ZEROSTEP, coordinate, 1.0, foot == Foot::RIGHT ? Foot::LEFT : Foot::RIGHT);
 
       pose = { 0.0, 0.0, 0.0 };
-      add_step(pose, StepType::WALKSTEP, coordinate, foot == Foot::RIGHT ? Foot::LEFT : Foot::RIGHT);
+      add_step(pose, StepType::WALKSTEP, coordinate, 1.0, foot == Foot::RIGHT ? Foot::LEFT : Foot::RIGHT);
 
       kick_planned = true;
     }
@@ -402,6 +403,21 @@ void PathPlanner::execute_step_buffer()
   getMotionRequest().walkRequest.stepControl.speedDirection = step_buffer.front().speedDirection;
   getMotionRequest().walkRequest.stepControl.target         = step_buffer.front().pose;
 
+  std::string string = "";
+  if (step_buffer.front().foot == Foot::NONE)
+  {
+    string = "NONE";
+  }
+  else if (step_buffer.front().foot == Foot::LEFT)
+  {
+    string = "LEFT";
+  }
+  else
+  {
+    string = "RIGHT";
+  }
+  std::cout << string;
+
   // normal walking WALKSTEPs use Foot::NONE, for KICKSTEPs the foot to use has to be specified
   if (step_buffer.front().foot == Foot::NONE)
   {
@@ -432,8 +448,10 @@ void PathPlanner::execute_step_buffer()
   else
   {
     foot_to_use = step_buffer.front().foot;
+    std::cout << " a--d " << (foot_to_use == Foot::LEFT ? "LEFT" : "RIGHT") << std::endl;
   }
   // false means right foot
   getMotionRequest().walkRequest.stepControl.moveLeftFoot = foot_to_use == Foot::RIGHT ? false : true;
+  //std::cout << "foot_to_use == " << foot_to_use << " -- moveLeftFoot == " << (getMotionRequest().walkRequest.stepControl.moveLeftFoot == Foot::LEFT ? "LEFT" : "RIGHT") << std::endl;
   STOPWATCH_STOP("PathPlanner:execute_steplist");
 }
