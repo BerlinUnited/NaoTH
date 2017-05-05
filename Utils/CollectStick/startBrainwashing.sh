@@ -79,6 +79,15 @@ logger -f $errorFile
 find /home/nao -maxdepth 1 -type f -mmin -$current_boot_time -iname "trace.dump.*" -exec cp {} /media/brainwasher/$current_date-$current_nao/dumps/ \; 2> $errorFile
 logger -f $errorFile
 
+# create whistle folder and log errors
+mkdir -p /media/brainwasher/$current_date-$current_nao/whistle 2> $errorFile
+logger -f $errorFile
+
+# find and copy whistle raw files and log errors
+find /tmp/ -maxdepth 1 -type f -iname "capture_*.raw" -exec cp {} /media/brainwasher/$current_date-$current_nao/whistle/ \; 2> $errorFile
+logger -f $errorFile
+
+
 # remove error log file
 rm $errorFile
 
