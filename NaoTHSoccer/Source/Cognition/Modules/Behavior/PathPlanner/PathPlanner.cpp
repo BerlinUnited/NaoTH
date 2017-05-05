@@ -403,21 +403,6 @@ void PathPlanner::execute_step_buffer()
   getMotionRequest().walkRequest.stepControl.speedDirection = step_buffer.front().speedDirection;
   getMotionRequest().walkRequest.stepControl.target         = step_buffer.front().pose;
 
-  std::string string = "";
-  if (step_buffer.front().foot == Foot::NONE)
-  {
-    string = "NONE";
-  }
-  else if (step_buffer.front().foot == Foot::LEFT)
-  {
-    string = "LEFT";
-  }
-  else
-  {
-    string = "RIGHT";
-  }
-  std::cout << string;
-
   // normal walking WALKSTEPs use Foot::NONE, for KICKSTEPs the foot to use has to be specified
   if (step_buffer.front().foot == Foot::NONE)
   {
@@ -448,10 +433,8 @@ void PathPlanner::execute_step_buffer()
   else
   {
     foot_to_use = step_buffer.front().foot;
-    std::cout << " a--d " << (foot_to_use == Foot::LEFT ? "LEFT" : "RIGHT") << std::endl;
   }
   // false means right foot
   getMotionRequest().walkRequest.stepControl.moveLeftFoot = foot_to_use == Foot::RIGHT ? false : true;
-  //std::cout << "foot_to_use == " << foot_to_use << " -- moveLeftFoot == " << (getMotionRequest().walkRequest.stepControl.moveLeftFoot == Foot::LEFT ? "LEFT" : "RIGHT") << std::endl;
   STOPWATCH_STOP("PathPlanner:execute_steplist");
 }
