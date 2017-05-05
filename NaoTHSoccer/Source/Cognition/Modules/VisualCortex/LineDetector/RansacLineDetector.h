@@ -47,6 +47,8 @@ public:
   Math::Line lineA;
   Math::Line lineB;
   Vector2d m;
+
+  double radius;
 };
 
 class RansacLineDetector: public RansacLineDetectorBase

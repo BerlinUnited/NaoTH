@@ -71,7 +71,7 @@ void RansacLineDetector::execute()
         line.lineOnField.begin().x, line.lineOnField.begin().y,
         line.lineOnField.end().x, line.lineOnField.end().y);
 
-      CIRCLE(circResult.m.x, circResult.m.y, 500);
+      CIRCLE(circResult.m.x, circResult.m.y, circResult.radius);
     }
   );
 
@@ -197,6 +197,15 @@ int RansacLineDetector::ransacCirc(Circle& result)
 
     Circle model(lineA,lineB, lineA.point(tA));
 
+    double radius = (model.m - a.point).abs();
+    double radiusB = (model.m - b.point).abs();
+
+    if(std::fabs(radius - radiusB) < params.circle_outlierThreshold) {
+      continue;
+    } else {
+      model.radius = (radius + radiusB) / 2;
+    }
+
     int inlier = 0;
     for(size_t i: outliers)
     {
@@ -206,7 +215,7 @@ int RansacLineDetector::ransacCirc(Circle& result)
 
       double minT = std::min(fabs(tA - lineA.intersection(lineE)), fabs(tB - lineB.intersection(lineE)));
 
-      if (minT < params.circle_centerThreshold) {
+      if (minT < params.circle_centerThreshold && std::fabs((model.m - e.point).abs() - radius) < params.circle_outlierThreshold) {
         inlier++;
       }
     }
@@ -236,7 +245,7 @@ int RansacLineDetector::ransacCirc(Circle& result)
 
     double minT = std::min(fabs(tA - bestLineA.intersection(lineE)), fabs(tB - bestLineB.intersection(lineE)));
 
-    if(minT < params.circle_centerThreshold) {
+    if(minT < params.circle_centerThreshold && std::fabs((bestModel.m - e.point).abs() - bestModel.radius) < params.circle_outlierThreshold) {
 
     } else {
       newOutliers.push_back(i);
