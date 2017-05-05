@@ -316,6 +316,7 @@ void PathPlanner::add_step(Pose2D &pose, const StepType &type, const WalkRequest
   // taken out of the stepplanner
   // limiting the steps if walksteps
   // 0.75 because 0.5 * character(usually 0.5) + 0.5 (taken from stepplanner)
+  /*
   if (type == StepType::WALKSTEP)
   {
     double maxStepTurn = Math::fromDegrees(30) * 0.75;
@@ -324,7 +325,7 @@ void PathPlanner::add_step(Pose2D &pose, const StepType &type, const WalkRequest
     pose.translation.x = Math::clamp(pose.translation.x, -maxStep, maxStep) * cos(pose.rotation / maxStepTurn * Math::pi / 2);
     pose.translation.y = Math::clamp(pose.translation.y, -maxStep, maxStep) * cos(pose.rotation / maxStepTurn * Math::pi / 2);
   }
-
+  */
   step_buffer.push_back(Step_Buffer_Element({ pose, 
                                               speedDirection, 
                                               type, 
@@ -340,6 +341,8 @@ void PathPlanner::update_step(Pose2D &pose)
   // taken out of the stepplanner
   // limiting the steps if walksteps
   // 0.75 because 0.5 * character(usually 0.5) + 0.5 (taken from stepplanner)
+
+  /*
   if (step_buffer.front().type == StepType::WALKSTEP)
   {
     double maxStepTurn = Math::fromDegrees(30) * 0.75;
@@ -347,7 +350,7 @@ void PathPlanner::update_step(Pose2D &pose)
     pose.rotation      = Math::clamp(pose.rotation, -maxStepTurn, maxStepTurn);
     pose.translation.x = Math::clamp(pose.translation.x, -maxStep, maxStep) * cos(pose.rotation / maxStepTurn * Math::pi / 2);
     pose.translation.y = Math::clamp(pose.translation.y, -maxStep, maxStep) * cos(pose.rotation / maxStepTurn * Math::pi / 2);
-  }
+  }*/
 
   Step_Buffer_Element updatedElement = step_buffer.front();
   updatedElement.pose                = pose;
