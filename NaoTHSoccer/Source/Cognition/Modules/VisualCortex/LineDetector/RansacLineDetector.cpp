@@ -237,21 +237,45 @@ int RansacLineDetector::ransacCirc(Circle& result)
   double tA = bestLineA.intersection(bestLineB);
   double tB = bestLineB.intersection(bestLineA);
 
+  double sumX = 0;
+  double sumY = 0;
+
+  bestInlier = 0;
+
   for(size_t i: outliers)
   {
     const Edgel& e = getLineGraphPercept().edgels[i];
 
     Math::Line lineE(e.point, Vector2d(-e.direction.x, e.direction.y));
 
-    double minT = std::min(fabs(tA - bestLineA.intersection(lineE)), fabs(tB - bestLineB.intersection(lineE)));
+    double absA = fabs(tA - bestLineA.intersection(lineE));
+    double absB = fabs(tB - bestLineB.intersection(lineE));
+
+    double minT;
+
+    Math::Line tLine;
+
+    if(absA < absB) {
+      minT = absA;
+      tLine = bestLineA;
+    } else {
+      minT = absB;
+      tLine = bestLineB;
+    }
 
     if(minT < params.circle_centerThreshold && std::fabs((bestModel.m - e.point).abs() - bestModel.radius) < params.circle_outlierThreshold) {
-
+      Vector2d eCenter = tLine.point(minT);
+      sumX += eCenter.x;
+      sumY += eCenter.y;
+      bestInlier++;
     } else {
       newOutliers.push_back(i);
     }
   }
   outliers = newOutliers;
+
+  // m is centroid of inlier m's
+  bestModel.m = Vector2d(sumX/bestInlier, sumY/bestInlier);
 
   // return results
   result = bestModel;
