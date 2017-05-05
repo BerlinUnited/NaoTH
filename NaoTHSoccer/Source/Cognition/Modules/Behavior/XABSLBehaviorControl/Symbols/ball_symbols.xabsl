@@ -30,6 +30,8 @@ namespace ball_symbols("Ball Symbols") {
   /** a filtered version of ball.percept.was_seen*/
   bool input ball.know_where_itis;
 
+  bool input ball.see_where_itis;
+  
   /** relative ball position to the robot based on a current percept*/
   float input ball.percept.x "mm";
   /** relative ball position to the robot based on a current percept*/
