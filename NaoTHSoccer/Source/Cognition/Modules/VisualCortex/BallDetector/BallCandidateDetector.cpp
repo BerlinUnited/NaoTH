@@ -174,6 +174,20 @@ void BallCandidateDetector::calculateCandidates()
         p.min = (*i).min;// - Vector2i(size,size);
         p.max = (*i).max;// + Vector2i(size,size);
 
+        // add an additional border as post-processing
+        int size = p.max.x - p.min.x;
+        double radius = (double) size / 2.0;
+        int postBorder = (int)(radius*params.postBorderFactorFar);
+        if(size < params.postMaxCloseSize) // HACK: use patch size as estimate if close or far away
+        {
+          postBorder = (int)(radius*params.postBorderFactorClose);
+        }
+
+        p.min.x = p.min.x - postBorder;
+        p.min.y = p.min.y - postBorder;
+        p.max.x = p.max.x + postBorder;
+        p.max.y = p.max.y + postBorder;
+
         if(getImage().isInside(p.min.x, p.min.y) && getImage().isInside(p.max.x, p.max.y)) 
         {
           PatchWork::subsampling(getImage(), p.data, p.min.x, p.min.y, p.max.x, p.max.y, patch_size);
