@@ -39,6 +39,7 @@ option search_ball
         stay;
     }
     action {
+      path.routine = none;
       motion.type = stand;
       head.control_mode = search_for_ball;
     }
