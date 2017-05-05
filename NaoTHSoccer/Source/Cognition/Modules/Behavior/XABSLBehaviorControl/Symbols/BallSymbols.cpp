@@ -22,7 +22,7 @@ void BallSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerBooleanInputSymbol("ball.percept.was_seen", &ballPerceptSeen);
 
   engine.registerBooleanInputSymbol("ball.know_where_itis", &getBallModel().knows);
-  engine.registerBooleanInputSymbol("ball.see_where_itis", &ball_know_where_itis);
+  engine.registerBooleanInputSymbol("ball.see_where_itis", &ball_see_where_itis);
 
   // model
   engine.registerDecimalInputSymbol("ball.x", &getBallModel().position.x);
@@ -119,7 +119,7 @@ void BallSymbols::execute()
     PLOT("XABSL:BallSymbols:ball_seen_likelihood", ball_seen_filter.value());
 
     // hysteresis
-    ball_know_where_itis = ball_seen_filter.value() > (ball_know_where_itis?0.3:0.7);
+    ball_see_where_itis = ball_seen_filter.value() > (ball_see_where_itis?0.3:0.7);
   }
 }//end update
 
