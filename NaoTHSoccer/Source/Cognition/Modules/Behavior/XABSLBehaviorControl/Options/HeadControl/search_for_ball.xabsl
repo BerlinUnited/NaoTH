@@ -9,7 +9,7 @@ option search_for_ball
   {
     decision 
     {
-	    if((ball.know_where_itis || @force_ball_model_check) && 
+	    if((ball.see_where_itis || @force_ball_model_check) && 
 	       abs(value=ball.angle) < 60)
 	      goto try_to_look_at_the_old_ball;
 	    else if(ball.angle > 0)
@@ -134,7 +134,7 @@ option search_for_ball
     {
       if (state_time > 1000) // I waited long enough...
       {
-        if(ball.know_where_itis) // I still can see the ball => look at the model
+        if(ball.see_where_itis) // I still can see the ball => look at the model
           goto look_at_ball;
         else
           goto search_for_ball_right; // I cannt see the ball anymore, must have been a mirage => go back, where I came from
@@ -155,7 +155,7 @@ option search_for_ball
   {
     decision
     {
-      if (!ball.know_where_itis)
+      if (!ball.see_where_itis)
       {
         if( ball.y > 0 )
           goto search_for_ball_left;

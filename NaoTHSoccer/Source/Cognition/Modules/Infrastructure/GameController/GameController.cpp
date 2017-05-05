@@ -66,6 +66,9 @@ GameController::GameController()
   if (config.hasKey("team", name)) {
     getPlayerInfo().playerNumber = config.getInt("team", name);
   }
+
+  // set whistle count on init; otherwise we're detecting a whistle on startup!
+  lastWhistleCount = getWhistlePercept().counter;
 }
 
 void GameController::execute()
@@ -131,6 +134,7 @@ void GameController::execute()
   lastGameState = getGameData().gameState;
   // set teamcomm: whistle detected!
   getTeamMessageData().custom.whistleDetected = getWhistlePercept().counter > lastWhistleCount;
+  getTeamMessageData().custom.whistleCount = getWhistlePercept().counter;
 
   // provide the return message
   getGameReturnData().team = getPlayerInfo().teamNumber;
