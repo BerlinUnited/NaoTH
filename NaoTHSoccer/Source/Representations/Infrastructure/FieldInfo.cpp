@@ -77,7 +77,13 @@ void FieldInfo::calculateCrossings()
   ownHalfRect = Geometry::Rect2d(Vector2d(-xLength*0.5, -yLength*0.5), Vector2d(0, yLength*0.5));
   fieldRect = Geometry::Rect2d(Vector2d(-xLength*0.5, -yLength*0.5), Vector2d(xLength*0.5, yLength*0.5));
   oppHalfRect = Geometry::Rect2d(Vector2d(0, -yLength*0.5), Vector2d(xLength*0.5, yLength*0.5));
-  oppGoalBox = Geometry::Rect2d(oppGoalBackRight, opponentGoalPostLeft);
+
+  Vector2d ownGoalBackRight(ownGoalPostRight.x - goalDepth, opponentGoalPostRight.y);
+  ownGoalRect = Geometry::Rect2d(ownGoalBackRight, ownGoalPostLeft);
+
+  oppGoalBackLeft = Vector2d(opponentGoalPostLeft.x + goalDepth, opponentGoalPostLeft.y);
+  oppGoalBackRight = Vector2d(opponentGoalPostRight.x + goalDepth, opponentGoalPostRight.y);
+  oppGoalRect = Geometry::Rect2d(oppGoalBackRight, opponentGoalPostLeft);
 
   //Extra stuff for the Simulator
   xThrowInLineOwn = xPosOwnGroundline+1000;
@@ -91,10 +97,6 @@ void FieldInfo::calculateCrossings()
 
   rightThrowInPointOwn = Vector2d(xThrowInLineOwn,yThrowInLineRight);  
   rightThrowInPointOpp = Vector2d(xThrowInLineOpp,yThrowInLineRight);
-
-  //For Action Selection:
-  oppGoalBackLeft = Vector2d(opponentGoalPostLeft.x + goalDepth, opponentGoalPostLeft.y);
-  oppGoalBackRight = Vector2d(opponentGoalPostRight.x + goalDepth, opponentGoalPostRight.y);
 
   // L crossings
   crossings[opponentCornerLeft].position          = Vector2d(xPosOpponentGroundline, yPosLeftSideline);

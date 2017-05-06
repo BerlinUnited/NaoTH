@@ -202,9 +202,9 @@ void Simulation::simulateConsequences(
           FIELD_DRAWING_CONTEXT;
         
           PEN("000000", 10);
-		  BOX(getFieldInfo().oppGoalBox.min().x, getFieldInfo().oppGoalBox.min().y, getFieldInfo().oppGoalBox.max().x, getFieldInfo().oppGoalBox.max().y);
+          BOX(getFieldInfo().oppGoalRect.min().x, getFieldInfo().oppGoalRect.min().y, getFieldInfo().oppGoalRect.max().x, getFieldInfo().oppGoalRect.max().y);
 
-		  if (getFieldInfo().oppGoalBox.inside(globalBallEndPosition)) {
+          if (getFieldInfo().oppGoalRect.inside(globalBallEndPosition)) {
             PEN("0000AA66", 1);
           } else {
             PEN("FF00AA66", 1);
@@ -233,7 +233,7 @@ void Simulation::simulateConsequences(
     // now categorize the position
     BallPositionCategory category = INFIELD;
     // goal!!
-	if (getFieldInfo().oppGoalBox.inside(globalBallEndPosition))
+    if (getFieldInfo().oppGoalRect.inside(globalBallEndPosition))
     {
       category = OPPGOAL;
     }
