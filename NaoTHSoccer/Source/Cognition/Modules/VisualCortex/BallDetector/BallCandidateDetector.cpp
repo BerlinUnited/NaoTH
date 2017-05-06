@@ -21,6 +21,7 @@ BallCandidateDetector::BallCandidateDetector()
   DEBUG_REQUEST_REGISTER("Vision:BallCandidateDetector:drawCandidatesResizes", "draw ball candidates (resized)", false);
   DEBUG_REQUEST_REGISTER("Vision:BallCandidateDetector:refinePatches", "draw refined ball key points", false);
   DEBUG_REQUEST_REGISTER("Vision:BallCandidateDetector:drawPercepts", "draw ball percepts", false);
+  DEBUG_REQUEST_REGISTER("Vision:BallCandidateDetector:drawPatchContrast", "draw patch contrast (only when contrast-check is in use!", false);
 
   DEBUG_REQUEST_REGISTER("Vision:BallCandidateDetector:lbpDetection", "draw ball percepts", false);
 
@@ -105,6 +106,9 @@ void BallCandidateDetector::calculateCandidates()
   // needed for calculating black key-points in the ball candidates
   BestPatchList bestBlackKey;
 
+  // the used patch size
+  const int patch_size = 16;
+
   // NOTE: patches are sorted in the ascending order, so start from the end to get the best patches
   int index = 0;
   for(BestPatchList::reverse_iterator i = best.rbegin(); i != best.rend(); ++i)
@@ -158,7 +162,25 @@ void BallCandidateDetector::calculateCandidates()
       } else {
         //TODO: what to do with small balls?
       }
-      */
+      //*/
+
+      // (4) check body parts
+      // TODO
+
+      // (5) check contrast
+      if(params.contrastUse) {
+          double stddev = calculateContrast(getImage(),getFieldColorPercept(),min.x,min.y,max.x,max.y,patch_size);
+
+          DEBUG_REQUEST("Vision:BallCandidateDetector:drawPatchStdDev",
+                        CANVAS(((cameraID == CameraInfo::Top)?"ImageTop":"ImageBottom"));
+                  CIRCLE( (min.x + max.x)/2, (min.y + max.y)/2, stddev / 5.0);
+          );
+          // skip this patch, if contrast doesn't fullfill minimum
+          if(stddev <= params.contrastMinimum) {
+              continue;
+          }
+      }
+
 
       //if(checkGreenBelow && checkGreenInside)
       if(params.haarDetector.execute)
@@ -168,8 +190,6 @@ void BallCandidateDetector::calculateCandidates()
           cvHaarClassifier.loadModel(params.haarDetector.model_file);
         }
 
-        const int patch_size = 16;
-        
         BallCandidates::Patch patchedBorder(0);
         //int size = ((*i).max.x - (*i).min.x)/2;
         patchedBorder.min = (*i).min;// - Vector2i(size,size);
@@ -250,8 +270,9 @@ void BallCandidateDetector::calculateCandidates()
         //index++;
       }
 
-    }
-  }
+    } // end if in field
+
+  } // end for
 
 } // end calculateCandidates
 
@@ -306,4 +327,50 @@ void BallCandidateDetector::addBallPercept(const Vector2i& center, double radius
   }
 }
 
+double BallCandidateDetector::calculateContrast(const Image& image,  const FieldColorPercept& fielColorPercept, int x0, int y0, int x1, int y1, int size)
+{
+    x0 = std::max(0, x0);
+    y0 = std::max(0, y0);
+    x1 = std::min((int)image.width()-1, x1);
+    y1 = std::min((int)image.height()-1, y1);
 
+    double width_step = static_cast<double>(x1 - x0) / static_cast<double>(size);
+    double height_step = static_cast<double>(y1 - y0) / static_cast<double>(size);
+
+    double avg = 0;
+    double cnt = 0;
+    BallCandidates::ClassifiedPixel p;
+
+    for(double x = x0 + width_step/2.0; x < x1; x += width_step)
+    {
+        for(double y = y0 + height_step/2.0; y < y1; y += height_step)
+        {
+            image.get((int)(x + 0.5), (int)(y + 0.5), p.pixel);
+            if(!fielColorPercept.greenHSISeparator.isColor(p.pixel)) { // no green!
+                avg += p.pixel.y;
+                cnt++;
+            }
+        }
+    }
+
+    // we got only green ?!
+    if(cnt == 0) { return 0; }
+
+    // expected value -> average/mean
+    avg /= cnt;
+
+    double variance = 0;
+    for(double x = x0 + width_step/2.0; x < x1; x += width_step)
+    {
+        for(double y = y0 + height_step/2.0; y < y1; y += height_step)
+        {
+            image.get((int)(x + 0.5), (int)(y + 0.5), p.pixel);
+            if(!fielColorPercept.greenHSISeparator.isColor(p.pixel)) { // green!
+                auto t = p.pixel.y;
+                variance += (t-avg)*(t-avg);
+            }
+        }
+    }
+    variance /= cnt;
+    return std::sqrt(variance);
+}
