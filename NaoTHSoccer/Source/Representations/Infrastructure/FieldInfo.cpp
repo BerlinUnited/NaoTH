@@ -81,7 +81,8 @@ void FieldInfo::calculateCrossings()
   Vector2d ownGoalBackRight(ownGoalPostRight.x - goalDepth, opponentGoalPostRight.y);
   ownGoalRect = Geometry::Rect2d(ownGoalBackRight, ownGoalPostLeft);
 
-  Vector2d oppGoalBackRight(opponentGoalPostRight.x + goalDepth, opponentGoalPostRight.y);
+  oppGoalBackLeft = Vector2d(opponentGoalPostLeft.x + goalDepth, opponentGoalPostLeft.y);
+  oppGoalBackRight = Vector2d(opponentGoalPostRight.x + goalDepth, opponentGoalPostRight.y);
   oppGoalRect = Geometry::Rect2d(oppGoalBackRight, opponentGoalPostLeft);
 
   //Extra stuff for the Simulator
@@ -96,7 +97,6 @@ void FieldInfo::calculateCrossings()
 
   rightThrowInPointOwn = Vector2d(xThrowInLineOwn,yThrowInLineRight);  
   rightThrowInPointOpp = Vector2d(xThrowInLineOpp,yThrowInLineRight);
-
 
   // L crossings
   crossings[opponentCornerLeft].position          = Vector2d(xPosOpponentGroundline, yPosLeftSideline);
@@ -247,6 +247,8 @@ void FieldInfo::createLinesTable()
     crossings[opponentGoalTCrossingLeft].position
     );
 
+  //
+
   // HACK: RC14, RC15 white goal box is recognized as lines (opp goal)
   if(goalBoxAsLines)
   {
@@ -259,8 +261,8 @@ void FieldInfo::createLinesTable()
       Vector2d(opponentGoalPostRight.x + goalDepth, opponentGoalPostRight.y)
       );
     fieldLinesTable.addLine(
-      Vector2d(opponentGoalPostLeft.x + goalDepth, opponentGoalPostLeft.y),
-      Vector2d(opponentGoalPostRight.x + goalDepth, opponentGoalPostRight.y)
+		oppGoalBackLeft,
+		oppGoalBackRight
       );
 
     fieldLinesTable.addLine(

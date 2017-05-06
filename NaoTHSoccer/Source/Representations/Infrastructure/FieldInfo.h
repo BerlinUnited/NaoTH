@@ -195,6 +195,11 @@ public:
 
   /** */
   LinesTable fieldLinesTable;
+
+  // Moved from Simulation.cpp
+  Vector2d oppGoalBackLeft;
+  Vector2d oppGoalBackRight;
+
 };
 
 
