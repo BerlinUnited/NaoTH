@@ -121,6 +121,7 @@ private:
       PARAMETER_REGISTER(postMaxCloseSize) = 60;
 
       PARAMETER_REGISTER(contrastUse) = false;
+      PARAMETER_REGISTER(contrastVariant) = 1;
       PARAMETER_REGISTER(contrastMinimum) = 50;
 
       PARAMETER_REGISTER(blackKeysCheck.enable) = false;
@@ -161,6 +162,7 @@ private:
     int postMaxCloseSize;
 
     bool contrastUse;
+    int contrastVariant;
     double contrastMinimum;
 
   } params;
@@ -192,6 +194,8 @@ private:
   void addBallPercept(const Vector2i& center, double radius);
   void extractPatches();
   double calculateContrast(const Image& image,  const FieldColorPercept& fielColorPercept, int x0, int y0, int x1, int y1, int size);
+  double calculateContrastIterative(const Image& image,  const FieldColorPercept& fielColorPercept, int x0, int y0, int x1, int y1, int size);
+  double calculateContrastIterative2nd(const Image& image,  const FieldColorPercept& fielColorPercept, int x0, int y0, int x1, int y1, int size);
   
 private:
   CameraInfo::CameraID cameraID;

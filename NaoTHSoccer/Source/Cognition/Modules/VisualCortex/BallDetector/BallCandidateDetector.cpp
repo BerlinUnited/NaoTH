@@ -169,11 +169,24 @@ void BallCandidateDetector::calculateCandidates()
 
       // (5) check contrast
       if(params.contrastUse) {
-          double stddev = calculateContrast(getImage(),getFieldColorPercept(),min.x,min.y,max.x,max.y,patch_size);
+          double stddev = 0;
+          // switch between different "contrast calculation methods" (0-2)
+          switch (params.contrastVariant) {
+          case 1:
+              stddev = calculateContrastIterative(getImage(),getFieldColorPercept(),min.x,min.y,max.x,max.y,patch_size);
+              break;
+          case 2:
+              stddev = calculateContrastIterative2nd(getImage(),getFieldColorPercept(),min.x,min.y,max.x,max.y,patch_size);
+              break;
+          default:
+              stddev = calculateContrast(getImage(),getFieldColorPercept(),min.x,min.y,max.x,max.y,patch_size);
+              break;
+          }
 
           DEBUG_REQUEST("Vision:BallCandidateDetector:drawPatchContrast",
-                        CANVAS(((cameraID == CameraInfo::Top)?"ImageTop":"ImageBottom"));
-                  CIRCLE( (min.x + max.x)/2, (min.y + max.y)/2, stddev / 5.0);
+            CANVAS(((cameraID == CameraInfo::Top)?"ImageTop":"ImageBottom"));
+            PEN("FF0000", 1); // red
+            CIRCLE( (min.x + max.x)/2, (min.y + max.y)/2, stddev / 5.0);
           );
           // skip this patch, if contrast doesn't fullfill minimum
           if(stddev <= params.contrastMinimum) {
@@ -373,4 +386,80 @@ double BallCandidateDetector::calculateContrast(const Image& image,  const Field
     }
     variance /= cnt;
     return std::sqrt(variance);
+}
+
+double BallCandidateDetector::calculateContrastIterative(const Image& image,  const FieldColorPercept& fielColorPercept, int x0, int y0, int x1, int y1, int size)
+{
+    x0 = std::max(0, x0);
+    y0 = std::max(0, y0);
+    x1 = std::min((int)image.width()-1, x1);
+    y1 = std::min((int)image.height()-1, y1);
+
+    double width_step = static_cast<double>(x1 - x0) / static_cast<double>(size);
+    double height_step = static_cast<double>(y1 - y0) / static_cast<double>(size);
+
+    double K = -1; // inidicating first pixel
+    double n = 0;
+    double sum_ = 0;
+    double sum_sqr = 0;
+    BallCandidates::ClassifiedPixel p;
+
+    for(double x = x0 + width_step/2.0; x < x1; x += width_step)
+    {
+        for(double y = y0 + height_step/2.0; y < y1; y += height_step)
+        {
+            image.get((int)(x + 0.5), (int)(y + 0.5), p.pixel);
+            if(!fielColorPercept.greenHSISeparator.isColor(p.pixel)) { // no green!
+                if(K == -1) { K = p.pixel.y; }
+                n++;
+                sum_ += p.pixel.y - K;
+                sum_sqr += (p.pixel.y-K)*(p.pixel.y-K);
+            }
+        }
+    }
+
+    // make sure we got some none-green pixels!
+    if(n == 0) {
+        return 0;
+    }
+
+    return std::sqrt((sum_sqr - (sum_ * sum_)/n)/(n));
+}
+
+double BallCandidateDetector::calculateContrastIterative2nd(const Image& image,  const FieldColorPercept& fielColorPercept, int x0, int y0, int x1, int y1, int size)
+{
+    x0 = std::max(0, x0);
+    y0 = std::max(0, y0);
+    x1 = std::min((int)image.width()-1, x1);
+    y1 = std::min((int)image.height()-1, y1);
+
+    double width_step = static_cast<double>(x1 - x0) / static_cast<double>(size);
+    double height_step = static_cast<double>(y1 - y0) / static_cast<double>(size);
+
+    double n = 0;
+    double mean = 0.0;
+    double M2 = 0.0;
+    BallCandidates::ClassifiedPixel p;
+
+    for(double x = x0 + width_step/2.0; x < x1; x += width_step)
+    {
+        for(double y = y0 + height_step/2.0; y < y1; y += height_step)
+        {
+            image.get((int)(x + 0.5), (int)(y + 0.5), p.pixel);
+            if(!fielColorPercept.greenHSISeparator.isColor(p.pixel)) { // no green!
+                n++;
+                double delta = p.pixel.y - mean;
+                mean += delta/n;
+                double delta2 = p.pixel.y - mean;
+                M2 += delta*delta2;
+            }
+        }
+    }
+
+    // make sure we got some none-green pixels!
+    if(n < 2) {
+        return 0;
+    }
+
+    return std::sqrt(M2 / (n-1));
 }
