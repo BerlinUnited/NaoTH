@@ -96,6 +96,7 @@ public:
     struct Kick
     {
       double stepHeight;
+      double ZMPOffsetY;
     } kick;
     
 
