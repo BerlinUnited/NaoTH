@@ -58,20 +58,23 @@ Motion::Motion()
   REGISTER_DEBUG_COMMAND("modify:release", 
     "release a modifiable value (i.e. the value will not be overwritten anymore)", &getDebugModify());
 
-  // register the modeules
+  // register the modules
   theInertiaSensorCalibrator = registerModule<InertiaSensorCalibrator>("InertiaSensorCalibrator", true);
   theInertiaSensorFilterBH = registerModule<InertiaSensorFilter>("InertiaSensorFilter", true);
-  theFootGroundContactDetector = registerModule<FootGroundContactDetector>("FootGroundContactDetector", true);
-  theSupportPolygonGenerator = registerModule<SupportPolygonGenerator>("SupportPolygonGenerator", true);
+    theFootGroundContactDetector = registerModule<FootGroundContactDetector>("FootGroundContactDetector", true);
+  //theSupportPolygonGenerator = registerModule<SupportPolygonGenerator>("SupportPolygonGenerator", true);
   theOdometryCalculator = registerModule<OdometryCalculator>("OdometryCalculator", true);
   theKinematicChainProvider = registerModule<KinematicChainProviderMotion>("KinematicChainProvider", true);
+  theIMUModel = registerModule<IMUModel>("IMUModel", true);
 
   theMotionEngine = registerModule<MotionEngine>("MotionEngine", true);
+
+  getDebugParameterList().add(&parameter);
 }
 
 Motion::~Motion()
 {
-
+  getDebugParameterList().remove(&parameter);
 }
 
 void Motion::init(naoth::ProcessInterface& platformInterface, const naoth::PlatformBase& platform)
@@ -118,6 +121,7 @@ void Motion::init(naoth::ProcessInterface& platformInterface, const naoth::Platf
   platformInterface.registerOutputChanel(getCalibrationData());
   platformInterface.registerOutputChanel(getInertialModel());
   platformInterface.registerOutputChanel(getBodyStatus());
+  platformInterface.registerOutputChanel(getGroundContactModel());
 
   // messages from cognition to motion
   platformInterface.registerInputChanel(getCameraInfo());
@@ -208,26 +212,28 @@ void Motion::processSensorData()
       getSensorJointData().position[i] = getSensorJointData().position[i] - getOffsetJointData().position[i];
   }
 
-  // calibrate inertia sensors
-  theInertiaSensorCalibrator->execute();
+  if(parameter.useInertiaSensorCalibration){
+      // calibrate inertia sensors
+      theInertiaSensorCalibrator->execute();
 
-  //TODO: introduce calibrated versions of the data
-  // correct the sensors
-  getInertialSensorData().data += getCalibrationData().inertialSensorOffset;
-  getGyrometerData().data += getCalibrationData().gyroSensorOffset;
-  getAccelerometerData().data += getCalibrationData().accSensorOffset;
+      //TODO: introduce calibrated versions of the data
+      //TODO: correct the sensors z is inverted => don't forget to check all modules requiring/providing GyrometerData
+      getGyrometerData().data      += getCalibrationData().gyroSensorOffset;
+      getInertialSensorData().data += getCalibrationData().inertialSensorOffset;
+      getAccelerometerData().data  += getCalibrationData().accSensorOffset;
+  }
 
-  //
+  theIMUModel->execute();
   theInertiaSensorFilterBH->execute();
 
   //
   theFootGroundContactDetector->execute();
-
+    
   //
   theKinematicChainProvider->execute();
 
   //
-  theSupportPolygonGenerator->execute();
+//  theSupportPolygonGenerator->execute();
 
   //
   updateCameraMatrix();
@@ -458,19 +464,27 @@ void Motion::debugPlots()
 
 void Motion::updateCameraMatrix()
 {
-  getCameraMatrix() = CameraGeometry::calculateCameraMatrix(
-    getKinematicChainSensor(),
-    NaoInfo::robotDimensions.cameraTransform[naoth::CameraInfo::Bottom].offset,
-    NaoInfo::robotDimensions.cameraTransform[naoth::CameraInfo::Bottom].rotationY,
-    getCameraMatrixOffset().correctionOffset[naoth::CameraInfo::Bottom]
-  );
+  getCameraMatrix() = CameraGeometry::calculateCameraMatrixFromChestPose(
+              getKinematicChainSensor().theLinks[KinematicChain::Torso].M,
+              NaoInfo::robotDimensions.cameraTransform[naoth::CameraInfo::Bottom].offset,
+              NaoInfo::robotDimensions.cameraTransform[naoth::CameraInfo::Bottom].rotationY,
+              getCameraMatrixOffset().body_rot,
+              getCameraMatrixOffset().head_rot,
+              getCameraMatrixOffset().cam_rot[naoth::CameraInfo::Bottom],
+              getSensorJointData().position[JointData::HeadYaw],
+              getSensorJointData().position[JointData::HeadPitch],
+              getInertialModel().orientation);
 
-  getCameraMatrixTop() = CameraGeometry::calculateCameraMatrix(
-    getKinematicChainSensor(),
-    NaoInfo::robotDimensions.cameraTransform[naoth::CameraInfo::Top].offset,
-    NaoInfo::robotDimensions.cameraTransform[naoth::CameraInfo::Top].rotationY,
-    getCameraMatrixOffset().correctionOffset[naoth::CameraInfo::Top]
-  );
+  getCameraMatrixTop() = CameraGeometry::calculateCameraMatrixFromChestPose(
+              getKinematicChainSensor().theLinks[KinematicChain::Torso].M,
+              NaoInfo::robotDimensions.cameraTransform[naoth::CameraInfo::Top].offset,
+              NaoInfo::robotDimensions.cameraTransform[naoth::CameraInfo::Top].rotationY,
+              getCameraMatrixOffset().body_rot,
+              getCameraMatrixOffset().head_rot,
+              getCameraMatrixOffset().cam_rot[naoth::CameraInfo::Top],
+              getSensorJointData().position[JointData::HeadYaw],
+              getSensorJointData().position[JointData::HeadPitch],
+              getInertialModel().orientation);
 
   getCameraMatrix().timestamp = getSensorJointData().timestamp;
   getCameraMatrix().valid = true;

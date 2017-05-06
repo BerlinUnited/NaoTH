@@ -8,8 +8,10 @@
 #define _KickActionModel_H_
 
 #include <string>
+#include "Tools/DataStructures/Printable.h"
+#include <Tools/Math/Vector2.h>
 
-class KickActionModel
+class KickActionModel:public naoth::Printable
 {
 public:
 
@@ -31,6 +33,13 @@ public:
   static std::string getName(ActionId id);
   
   ActionId bestAction;
+  Vector2d expectedBallPos;
+
+  virtual void print(std::ostream& stream) const
+  {
+	  stream << "expectedBallPos.x = " << expectedBallPos.x << std::endl;
+	  stream << "expectedBallPos.y = " << expectedBallPos.y << std::endl;
+  }
 };
 
 

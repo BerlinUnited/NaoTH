@@ -5,8 +5,8 @@
 * Definition of the class Cognition
 */
 
-#ifndef __WalkRequest_h_
-#define __WalkRequest_h_
+#ifndef _WalkRequest_h_
+#define _WalkRequest_h_
 
 #include <string>
 #include <Tools/Math/Pose2D.h>
@@ -50,6 +50,7 @@ public:
   {
     StepControlRequest()
       :
+      type(KICKSTEP),       // KICKSTEP instead of WALKSTEP because of backwards compatibility
       stepID(0),
       moveLeftFoot(false),
       time(0),
@@ -57,11 +58,21 @@ public:
       scale(1.0)
     {}
 
+    enum StepType {
+      WALKSTEP,
+      KICKSTEP,
+      ZEROSTEP
+    };
+    StepType type;
     unsigned int stepID; // it should match the current step id in walk, otherwise it will not be accepted
-    bool moveLeftFoot; // it should also match
+    bool moveLeftFoot; // it should also match, false = rightfoot
     Pose2D target; // in coordinate
     unsigned int time; // in ms
-    double speedDirection; //TODO: what is that?
+    //angle (in radiant) of the speed of the foot at the end of the controlled step
+    //e.g., kick to left => speedDirection = Math::toRadiant(-90)
+    double speedDirection;
+    // time scale for the step trajectory (0..1], 
+    // e.g., scale = 1 => normal step trajectory, scale < 1 => faster step
     double scale;
   };
 
@@ -86,6 +97,7 @@ public:
 
   void print(std::ostream& stream) const
   {
+    stream << "type: " << (stepControl.type == StepControlRequest::StepType::WALKSTEP ? "WALKSTEP" : "KICKSTEP") << std::endl;
     stream << "target: " << target << std::endl;
     stream << "coordinate: "<< getCoordinateName(coordinate) << std::endl;
     stream << "character: " << character << std::endl;
@@ -121,5 +133,5 @@ namespace naoth
 }
 
 
-#endif // __WalkRequest_h_
+#endif // _WalkRequest_h_
 

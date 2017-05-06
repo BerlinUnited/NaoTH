@@ -16,7 +16,7 @@ message CameraMatrix {
 message BallPercept {
   optional bool ballWasSeen = 1;
   optional DoubleVector2 centerInImage = 2;
-  optional double radiusInImage = 3;  
+  optional double radiusInImage = 3;
   optional Color ballColor = 4;
   optional DoubleVector2 bearingBasedOffsetOnField = 5;
   optional FrameInfo frameInfoWhenBallWasSeen = 6;
@@ -29,7 +29,7 @@ message MultiBallPercept {
     optional DoubleVector2 positionOnField = 3;
     optional CameraID cameraId = 4;
   }
-  
+
   optional FrameInfo frameInfoWhenBallWasSeen = 1;
   repeated BallPercept percepts = 2;
 }
@@ -42,7 +42,7 @@ message GoalPercept {
       leftPost = 1;
       unknownPost = 2;
     };
-    
+
     optional IntVector2 basePoint = 1;
     optional DoubleVector2 position = 2;
     optional Color color = 3;
@@ -73,12 +73,19 @@ message HeadMotionRequest {
 
 message StepControlRequest
 {
+  enum StepType {
+	WALKSTEP = 0;
+	KICKSTEP = 1;
+	ZEROSTEP = 2;
+  };
+  
   required uint32 stepID = 1;
   required bool moveLeftFoot = 2;
   required Pose2D target = 3;
   required uint32 time = 4;
   required double speedDirection = 5;
   required double scale = 6;
+  required StepType steptype = 7;
 }
 
 message WalkRequest {
@@ -178,7 +185,7 @@ message StepControlStatus
   required uint32 moveableFoot =2;
 }
 
-message MotionStatus 
+message MotionStatus
 {
   required uint32 time = 1;
   required uint32 lastMotion = 2;
@@ -223,7 +230,7 @@ message InertialModel
   optional DoubleVector2 orientation = 1;
 }
 
-enum TeamColor 
+enum TeamColor
 {
   blueTeam = 0; redTeam = 1; yellowTeam = 2; blackTeam = 3; invalidTeam = 255;
 }
@@ -257,6 +264,11 @@ message BUUserTeamMessage
   optional float batteryCharge = 7 [default=1.0];
   optional float temperature = 8 [default=0.0];
   optional uint64 timestamp = 9 [default=0];
+  optional bool wantsToBeStriker = 10 [default=false];
+  optional float cpuTemperature = 11 [default=0.0];
+  optional bool whistleDetected = 12 [default=false];
+  optional int32 whistleCount = 13 [default=0];
+  optional string key = 100 [default="none"];
 }
 
 message Opponent {
@@ -268,11 +280,14 @@ message Opponent {
 message CameraMatrixCalibration
 {
   repeated DoubleVector2 correctionOffset = 1;
+  optional DoubleVector2 correctionOffsetBody = 2;
+  optional DoubleVector3 correctionOffsetHead = 3;
+  repeated DoubleVector3 correctionOffsetCam  = 4;
 }
 
 message BallCandidates
 {
-  message Patch 
+  message Patch
   {
     enum Type {
       Y = 0;
@@ -284,6 +299,49 @@ message BallCandidates
     optional Type type = 3 [default=Y];
     required bytes data = 5;
   }
-  
+
   repeated Patch patches = 1;
+}
+
+message RemoteControlCommand {
+  enum ControlMode
+  {
+    DIRECT_CONTROL = 0;
+    LOCK_CONTROL = 1;
+  }
+
+  enum ActionType {
+    NONE = 0;
+    STAND = 1;
+    WALK = 2;
+    KICK_RIGHT = 3;
+    KICK_LEFT = 4;
+    KICK_FORWARD_LEFT = 5;
+    KICK_FORWARD_RIGHT = 6;
+  }
+
+  enum SecondActionType
+  {
+    SECOND_NONE = 0;
+    BLINK = 1;
+    SAY = 2;
+  }
+
+  optional ControlMode controlMode = 1;
+  optional ActionType action = 2;
+  optional SecondActionType second_action = 3;
+
+  optional Pose2D target = 4;
+}
+
+message GroundContactModel {
+  enum Foot {
+    LEFT = 0;
+    RIGHT = 1;
+    NONE = 2;
+  }
+
+  required bool leftGroundContact = 1;
+  required bool rightGroundContact = 2;
+  required Foot supportFoot = 3;
 }

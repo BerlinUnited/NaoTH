@@ -8,6 +8,7 @@
 #ifndef FIELDCOLORPERCEPT_H
 #define FIELDCOLORPERCEPT_H
 
+#include <algorithm>
 #include <Tools/DataStructures/Printable.h>
 #include <Tools/Math/Common.h>
 #include <Representations/Infrastructure/FrameInfo.h>

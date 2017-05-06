@@ -5,7 +5,7 @@
 * Definition of class GoalSymbols
 */
 
-#ifndef _GaolSymbols_H_
+#ifndef _GoalSymbols_H_
 #define _GoalSymbols_H_
 
 #include <ModuleFramework/Module.h>

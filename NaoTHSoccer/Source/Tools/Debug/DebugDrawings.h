@@ -132,6 +132,7 @@ template<> class Serializer<DebugDrawings> : public Serializer<DrawingCanvas2D> 
 
 #define BINARY_PLOT(name,value) getDebugDrawings().out() << "BinaryPlotData:" << name << ":" << value << std::endl
 #define ROBOT(x,y,rotation) getDebugDrawings().out() << "Robot:" << x << ":" << y << ":" << rotation << ":" <<  std::endl
+#define ROBOT_WITH_HEAD(x,y,rotation, headRotation) getDebugDrawings().out() << "Robot:" << x << ":" << y << ":" << rotation << ":" <<  headRotation << ':' << std::endl
 
 
 #else

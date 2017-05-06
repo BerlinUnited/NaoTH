@@ -4,7 +4,8 @@ GameLogger::GameLogger()
   : 
   logfileManager(true),
   lastCompleteFrameNumber(0),
-  ignore_init_state(false)
+  oldState(PlayerInfo::initial),
+  firstRecording(true)
 {
   logfileManager.openFile("/tmp/game.log");
 
@@ -19,11 +20,15 @@ GameLogger::~GameLogger()
 }
 
 #define LOGSTUFF(name) \
-  { std::stringstream& streamBehavior = logfileManager.log(getFrameInfo().getFrameNumber(), #name); \
-  Serializer<name>::serialize(get##name(), streamBehavior); }
+  { std::stringstream& dataStream = logfileManager.log(getFrameInfo().getFrameNumber(), #name); \
+  Serializer<name>::serialize(get##name(), dataStream); } ((void)0)
 
 void GameLogger::execute()
 {
+  // HACK: wait a bit before starting recording
+  if(getFrameInfo().getFrameNumber() < 30 || !logfileManager.is_ready()) {
+    return;
+  }
 
   if( getBehaviorStateComplete().state.IsInitialized() &&
       getBehaviorStateSparse().state.IsInitialized())
@@ -36,15 +41,20 @@ void GameLogger::execute()
       LOGSTUFF(BehaviorStateComplete);
       LOGSTUFF(RobotInfo);
 
-
       lastCompleteFrameNumber = getFrameInfo().getFrameNumber();
       something_recorded = true;
     }
 
-    // NOTE: don't record if the internal state of the plyer is set to initial
-    //       in this case only first frame of the initial-phase is recorded
-    if( (getPlayerInfo().gameData.gameState != GameData::initial || !ignore_init_state) && 
-        getBehaviorStateSparse().state.framenumber() == getFrameInfo().getFrameNumber())
+    // condition wheather the current frame should be logged:
+    bool log_this_frame = getBehaviorStateSparse().state.framenumber() == getFrameInfo().getFrameNumber();
+
+    // NOTE: record only the first frame if the state changed to initial or finished
+    if(!firstRecording && oldState == getPlayerInfo().robotState) {
+      log_this_frame = log_this_frame && getPlayerInfo().robotState != PlayerInfo::initial;
+      log_this_frame = log_this_frame && getPlayerInfo().robotState != PlayerInfo::finished;
+    }
+
+    if(log_this_frame)
     {
       LOGSTUFF(BehaviorStateSparse);
 
@@ -52,13 +62,16 @@ void GameLogger::execute()
       LOGSTUFF(OdometryData);
       LOGSTUFF(CameraMatrix);
       LOGSTUFF(CameraMatrixTop);
-      LOGSTUFF(BodyStatus);
+
+      if(params.logBodyStatus) {
+        LOGSTUFF(BodyStatus);
+      }
 
       // perception
       LOGSTUFF(GoalPercept);
       LOGSTUFF(GoalPerceptTop);
 
-      LOGSTUFF(MultiBallPercept)
+      LOGSTUFF(MultiBallPercept);
       
       //LOGSTUFF(BallPercept);
       //LOGSTUFF(BallPerceptTop);
@@ -76,11 +89,15 @@ void GameLogger::execute()
       something_recorded = true;
     }
 
+    std::cout << logfileManager.is_ready() << std::endl;
+
     if(something_recorded) {
       LOGSTUFF(FrameInfo);
+      firstRecording = false;
     }
 
-    ignore_init_state = (getPlayerInfo().gameData.gameState == GameData::initial);
+    // remember the old state
+    oldState = getPlayerInfo().robotState;
   }
 }
 

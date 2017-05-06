@@ -7,6 +7,9 @@
 #include <assert.h>
 #include <cmath>
 
+#include <algorithm>
+#include <vector>
+
 #ifdef WIN32 /* needed for _isnan */
 #include <float.h>
 #endif
@@ -56,7 +59,7 @@ namespace Math {
 #ifdef WIN32
     return !_finite(x);
 #else
-    return !finite(x);
+    return std::isinf(x);
 #endif
   }//end isInf
 
@@ -68,8 +71,7 @@ namespace Math {
   #endif
 
   template <class T>
-  inline int sgn(const T& a)
-  {
+  inline int sgn(const T& a) {
     return ( (a) < 0 ? -1 : ((a)==0) ? 0 : 1 );
   }  
 
@@ -121,16 +123,13 @@ namespace Math {
   {
     if (data < pi && data >= -pi) return data;
     double ndata = data - ((int)(data / pi2))*pi2;
-    if (ndata >= pi)
-    {
+    if (ndata >= pi) {
       ndata -= pi2; 
-    }
-    else if (ndata < -pi)
-    {
+    } else if (ndata < -pi) {
       ndata += pi2;
     }
     return ndata;
-  }//end normalize
+  }
 
   /**
   * reduce angle to [0..+pi[
@@ -140,12 +139,11 @@ namespace Math {
   inline double normalizePositive(double data)
   {
     double ndata = normalize(data);
-    if (ndata < 0)
-    {
+    if (ndata < 0) {
       ndata += pi;
     }
     return ndata;
-  }//end normalize
+  }
 
   /** 
    * This method normalizes an angle. This means that the resulting
@@ -161,7 +159,7 @@ namespace Math {
       while (angle <= -pi) angle += pi2;
 
       return ( angle);
-  }//end normalizeAngle
+  }
 
 
   /**
@@ -221,7 +219,7 @@ namespace Math {
     if (x > max) return max;
     if (x < min) return min;
     return x;
-  }//end clamp
+  }
 
   /**
   * draw number from normal random distribution
@@ -233,7 +231,7 @@ namespace Math {
   {
     static const double r_max=RAND_MAX+1.0;
     return std*sqrt(-2.0*log((rand()+1.0)/r_max))*sin(2.0*pi*rand()/r_max)+mean;
-  }//end normal
+  }
 
   /** This method returns the bisector (average) of two angles. It deals
    *  with the boundary problem, thus when 'angMin' equals 170 and 'angMax'
@@ -256,6 +254,52 @@ namespace Math {
   */
   inline double meanAngle(double a, double b) {
     return atan2( sin(a)+sin(b), cos(a)+cos(b) );
+  }
+
+  // NOTE: the input vector is copied and sorted internally, this can be slow for large vectors
+  template<typename T>
+  T medianMean(std::vector<T> values) {
+    if(values.empty()){ return 0; }
+
+    size_t size = values.size();
+    std::sort(values.begin(), values.end());
+
+    if (size  % 2 == 0) {
+        return (values[size / 2 - 1] + values[size / 2]) / 2;
+    } else {
+        return values[size / 2];
+    }
+  }
+
+  // NOTE: the input vector is copied and sorted internally, this can be slow for large vectors
+  template<typename T>
+  T medianMax(std::vector<T> values) {
+    if (values.empty()){ return 0; }
+
+    size_t size = values.size();
+    std::sort(values.begin(), values.end());
+
+    if (size % 2 == 0) {
+      return (std::max(values[size / 2 - 1], values[size / 2]));
+    }
+    else {
+      return values[size / 2];
+    }
+  }
+
+  // NOTE: the input vector is copied and sorted internally, this can be slow for large vectors
+  template<typename T>
+  T median(std::vector<T> values) {
+    if(values.empty()){ return 0; }
+    std::nth_element(values.begin(), values.begin() + values.size()/2, values.end());
+    return values[values.size()/2];
+  }
+
+  // NOTE: the input vector is copied and sorted internally, this can be slow for large vectors
+  //Just a wrapper for nth_element -> median is index = values.size()/2
+  template<typename T>
+  T max(const std::vector<T>& values) {
+    return *std::max_element(values.begin(), values.end());
   }
 
 }//end namespace Math

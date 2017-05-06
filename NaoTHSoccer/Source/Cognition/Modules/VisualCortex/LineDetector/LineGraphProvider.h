@@ -74,6 +74,8 @@ public:
   {
     getProbabilisticQuadCompas().reset();
     getLineGraphPercept().edgels.clear();
+    getLineGraphPercept().edgelsInImage.clear();
+    getLineGraphPercept().edgelsInImageTop.clear();
 
     execute(CameraInfo::Bottom);
     execute(CameraInfo::Top);
@@ -89,6 +91,7 @@ public:
       PARAMETER_REGISTER(edgelSimThreshold) = 0.8;
       PARAMETER_REGISTER(quadCompasSmoothingFactor) = 0.4;
       PARAMETER_REGISTER(minimalNumberOfPairs) = 0;
+      PARAMETER_REGISTER(maximalProjectedLineWidth) = 30;
 
       syncWithConfig();
     }
@@ -99,6 +102,7 @@ public:
     double edgelSimThreshold;
     double quadCompasSmoothingFactor;
     int minimalNumberOfPairs;
+    int maximalProjectedLineWidth;
   } parameters;
 
   struct Neighbors {

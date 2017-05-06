@@ -29,9 +29,7 @@
 #include "Modules/Infrastructure/UltraSoundControl/UltraSoundControl.h"
 
 #include "Modules/Infrastructure/TeamCommunicator/TeamCommReceiver.h"
-#include "Modules/Infrastructure/TeamCommunicator/TeamCommReceiveEmulator.h"
 #include "Modules/Infrastructure/TeamCommunicator/TeamCommSender.h"
-#include "Modules/Infrastructure/TeamCommunicator/TeamMessageStatistics.h"
 
 #include "Modules/Infrastructure/Debug/CameraDebug.h"
 #include "Modules/Infrastructure/Camera/CameraInfoSetter.h"
@@ -43,6 +41,7 @@
 #include "Modules/SelfAwareness/ArtificialHorizonCalculator/ArtificialHorizonCalculator.h"
 #include "Modules/SelfAwareness/BodyContourProvider/BodyContourProvider.h"
 #include "Modules/SelfAwareness/CameraMatrixCorrector/CameraMatrixCorrector.h"
+#include "Modules/SelfAwareness/CameraMatrixCorrectorV2/CameraMatrixCorrectorV2.h"
 
 #include "Modules/VisualCortex/HistogramProvider.h"
 #include "Modules/VisualCortex/SimpleFieldColorClassifier/SimpleFieldColorClassifier.h"
@@ -56,6 +55,7 @@
 #include "Modules/VisualCortex/GoalDetector/GoalDetectorV2.h"
 #include "Modules/VisualCortex/GoalDetector/GoalCrossBarDetector.h"
 #include "Modules/VisualCortex/BallDetector/RedBallDetector.h"
+#include "Modules/VisualCortex/BallDetector/BallCandidateDetector.h"
 #include "Modules/VisualCortex/BallDetector/BallDetector.h"
 #include "Modules/VisualCortex/IntegralImageProvider.h"
 
@@ -69,8 +69,11 @@
 #include "Modules/Modeling/BodyStateProvider/BodyStateProvider.h"
 #include "Modules/Modeling/FieldCompass/FieldCompass.h"
 #include "Modules/Modeling/ObstacleLocator/UltraSoundObstacleLocator.h"
+#include "Modules/Modeling/TeamMessageStatistics/TeamCommReceiveEmulator.h"
+#include "Modules/Modeling/TeamMessageStatistics/TeamMessageStatistics.h"
 #include "Modules/Modeling/RoleDecision/SimpleRoleDecision/SimpleRoleDecision.h"
-#include "Modules/Modeling/RoleDecision/Experimental/StableRoleDecision.h"
+#include "Modules/Modeling/RoleDecision/StableRoleDecision/StableRoleDecision.h"
+#include "Modules/Modeling/RoleDecision/CleanRoleDecision/CleanRoleDecision.h"
 #include "Modules/Modeling/SoccerStrategyProvider/SoccerStrategyProvider.h"
 #include "Modules/Modeling/PotentialFieldProvider/PotentialFieldProvider.h"
 #include "Modules/Modeling/SelfLocator/GPS_SelfLocator/GPS_SelfLocator.h"
@@ -92,6 +95,8 @@
 // behavior
 #include "Modules/Behavior/BasicTestBehavior/BasicTestBehavior.h"
 #include "Modules/Behavior/XABSLBehaviorControl/XABSLBehaviorControl.h"
+#include "Modules/Behavior/PathPlanner/PathPlanner.h"
+#include "Modules/Behavior/RemoteControlBehavior/RemoteControlBehavior.h"
 
 using namespace std;
 
@@ -130,8 +135,6 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
 
   // infrastructure
   REGISTER_MODULE(TeamCommReceiver);
-  REGISTER_MODULE(TeamCommReceiveEmulator);
-  REGISTER_MODULE(TeamMessageStatistics);
   REGISTER_MODULE(GameController);
   REGISTER_MODULE(BatteryAlert);
   REGISTER_MODULE(ButtonEventMonitor);
@@ -147,6 +150,7 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(ArtificialHorizonCalculator);
   REGISTER_MODULE(BodyContourProvider);
   REGISTER_MODULE(CameraMatrixCorrector);
+  REGISTER_MODULE(CameraMatrixCorrectorV2);
 
   REGISTER_MODULE(HistogramProvider);
   REGISTER_MODULE(IntegralImageProvider);
@@ -162,6 +166,7 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(GoalCrossBarDetector);
 
   REGISTER_MODULE(RedBallDetector);
+  REGISTER_MODULE(BallCandidateDetector);
   REGISTER_MODULE(BallDetector);
 
   REGISTER_MODULE(FakeCameraMatrixFinder);
@@ -175,8 +180,11 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(BodyStateProvider);
   REGISTER_MODULE(FieldCompass);
   REGISTER_MODULE(UltraSoundObstacleLocator);
+  REGISTER_MODULE(TeamCommReceiveEmulator);
+  REGISTER_MODULE(TeamMessageStatistics);
   REGISTER_MODULE(SimpleRoleDecision);
   REGISTER_MODULE(StableRoleDecision);
+  REGISTER_MODULE(CleanRoleDecision);
   REGISTER_MODULE(SoccerStrategyProvider);
   REGISTER_MODULE(PotentialFieldProvider);
   REGISTER_MODULE(GPS_SelfLocator);
@@ -194,6 +202,8 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   // behavior
   REGISTER_MODULE(BasicTestBehavior);
   REGISTER_MODULE(XABSLBehaviorControl);
+  REGISTER_MODULE(PathPlanner);
+  REGISTER_MODULE(RemoteControlBehavior);
 
   REGISTER_MODULE(TeamCommSender);
   

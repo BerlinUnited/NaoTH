@@ -11,6 +11,8 @@
 #define _NaoController_H_
 
 #include <string>
+#include <fstream>
+#include <iostream>
 
 //
 #include "PlatformInterface/PlatformInterface.h"
@@ -20,9 +22,9 @@
 
 //
 #include "V4lCameraHandler.h"
-//#include "SoundPlayer.h"
 #include "SoundControl.h"
 #include "SPLGameController.h"
+#include "CPUTemperatureReader.h"
 #include "DebugCommunication/DebugServer.h"
 
 #include "Tools/Communication/Network/BroadCaster.h"
@@ -31,9 +33,11 @@
 // representations
 #include <Representations/Infrastructure/FrameInfo.h>
 #include "Representations/Infrastructure/TeamMessageData.h"
+#include "Representations/Infrastructure/RemoteMessageData.h"
 #include "Representations/Infrastructure/GameData.h"
 #include "Representations/Infrastructure/SoundData.h"
 #include "Representations/Infrastructure/WhistlePercept.h"
+#include "Representations/Infrastructure/WhistleControl.h"
 
 // local tools
 #include "Tools/IPCData.h"
@@ -52,7 +56,8 @@ public:
   virtual string getBodyID() const { return theBodyID; }
   virtual string getBodyNickName() const { return theBodyNickName; }
   virtual string getHeadNickName() const { return theHeadNickName; }
-  
+  virtual string getRobotName() const { return theRobotName; }
+
   // camera stuff
   void get(Image& data){ theBottomCameraHandler.get(data); } // blocking
   void get(ImageTop& data){ theTopCameraHandler.get(data); } // non blocking
@@ -62,9 +67,8 @@ public:
   void set(const CameraSettingsRequestTop& data);
 
   // sound
-  void set(const SoundPlayData& data) 
-  { 
-    //if(data.soundFile.size() > 0) theSoundPlayer.play(data.soundFile); 
+  void set(const SoundPlayData& data)
+  {
     theSoundHandler->setSoundData(data);
   }
 
@@ -72,9 +76,11 @@ public:
   void get(TeamMessageDataIn& data) { theTeamCommListener->receive(data.data); }
   void set(const TeamMessageDataOut& data) { theTeamCommSender->send(data.data); }
 
+  void get(RemoteMessageDataIn& data) { theRemoteCommandListener->receive(data.data); }
+
   // gamecontroller stuff
-  void get(GameData& data){ theGameController->get(data, NaoTime::getNaoTimeInMilliSeconds()); }
-  void set(const GameReturnData& data) { theGameController->setReturnData(data); }
+  void get(GameData& data){ theGameController->get(data); }
+  void set(const GameReturnData& data) { theGameController->set(data); }
 
   // debug comm
   void get(DebugMessageInCognition& data) { theDebugServer->getDebugMessageInCognition(data); }
@@ -85,7 +91,7 @@ public:
   void get(FrameInfo& data)
   {
     //TODO: use naoSensorData.data().timeStamp
-    data.setTime(NaoTime::getNaoTimeInMilliSeconds()); 
+    data.setTime(NaoTime::getNaoTimeInMilliSeconds());
     data.setFrameNumber(data.getFrameNumber()+1);
   }
 
@@ -101,7 +107,7 @@ public:
   void get(BatteryData& data) { naoSensorData.get(data); }
   void get(UltraSoundReceiveData& data) { naoSensorData.get(data); }
   void get(WhistlePercept& data) {data.counter = whistleSensorData.data(); }
-
+  void get(CpuData& data) { theCPUTemperatureReader.get(data); }
 
   // write directly to the shared memory
   // ACHTUNG: each set calls swapWriting()
@@ -109,6 +115,7 @@ public:
   void set(const LEDData& data) { naoCommandLEDData.set(data); }
   void set(const IRSendData& data) { naoCommandIRSendData.set(data); }
   void set(const UltraSoundSendData& data) { naoCommandUltraSoundSendData.set(data); }
+  void set(const WhistleControl& data) { whistleControlData.set(data.onOffSwitch); }
 
 
   virtual void getMotionInput()
@@ -138,9 +145,9 @@ public:
     PlatformInterface::getCognitionInput();
     //STOPWATCH_STOP("getCognitionInput");
   }
-  
 
-  void setCognitionOutput()
+
+  virtual void setCognitionOutput()
   {
     //STOPWATCH_START("setCognitionOutput");
     PlatformInterface::setCognitionOutput();
@@ -159,6 +166,7 @@ protected:
   std::string theBodyID;
   std::string theBodyNickName;
   std::string theHeadNickName;
+  std::string theRobotName;
 
   // -- begin -- shared memory access --
   // DCM --> NaoController
@@ -172,18 +180,20 @@ protected:
 
   // WhistleDetector --> NaoController
   SharedMemoryReader<int> whistleSensorData;
+  SharedMemoryWriter<Accessor<int> > whistleControlData;
 
   // -- end -- shared memory access --
-  
+
   //
   V4lCameraHandler theBottomCameraHandler;
   V4lCameraHandler theTopCameraHandler;
-  //SoundPlayer theSoundPlayer;
   SoundControl *theSoundHandler;
   BroadCaster* theTeamCommSender;
   UDPReceiver* theTeamCommListener;
+  UDPReceiver* theRemoteCommandListener;
   SPLGameController* theGameController;
   DebugServer* theDebugServer;
+  CPUTemperatureReader theCPUTemperatureReader;
 };
 
 } // end namespace naoth

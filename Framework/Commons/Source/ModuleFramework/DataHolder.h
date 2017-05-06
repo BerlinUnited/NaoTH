@@ -13,6 +13,7 @@
 #include "Tools/DataStructures/Printable.h"
 #include "Tools/DataStructures/Serializer.h"
 
+#include <type_traits>
 
 namespace naoth
 {
@@ -29,7 +30,6 @@ public:
 };
 }
 
-
 /**
  * Connects a arbitrary class with Representation
  */
@@ -39,10 +39,7 @@ class DataHolder: public Representation
 private:
   // creates an object of the data
   // (this requires the class T to have a default constructor)
-  //T data;
-  // HACK: make it polymorphic, this is necessary to use dynamic_cast in print()
-  // (just in case type T is not already polymorphic)
-  class PT: public T { public: virtual ~PT(){} } data;
+  T  data;
 
 public:
   DataHolder(const std::string& name): Representation(name){}
@@ -55,16 +52,18 @@ public:
   /** 
    * wrap the print, fromDataStream and toDataStream of the data member 
    */
-  virtual void print(std::ostream& stream) const
-  {
-    static const Printable* asPrintable = dynamic_cast<const Printable*>(&data);
-    
-    if(asPrintable != NULL) {
-      stream << *asPrintable;
-    } else { // use representation by default
+  virtual void print(std::ostream& stream) const {
+    if(std::is_base_of<Printable,T>::value) {
+      Printable* p = (Printable*)(&data);
+      p->print(stream);
+    } else {
       Representation::print(stream);
     }
-  }//end print
+  }
+
+  virtual bool serializable() const {
+    return !std::is_base_of<naoth::EmptySerializer,naoth::Serializer<T> >::value;
+  }
 
   void serialize(MsgOut<Representation>::type& msg) const {
     naoth::Serializer<T>::serialize(data, msg);

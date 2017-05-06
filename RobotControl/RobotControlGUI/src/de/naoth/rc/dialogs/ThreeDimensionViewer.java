@@ -8,6 +8,7 @@ import de.naoth.rc.Helper;
 import de.naoth.rc.RobotControl;
 import de.naoth.rc.core.dialog.AbstractDialog;
 import de.naoth.rc.core.dialog.DialogPlugin;
+import de.naoth.rc.core.dialog.RCDialog;
 import de.naoth.rc.core.manager.ObjectListener;
 import de.naoth.rc.dataformats.JanusImage;
 import de.naoth.rc.drawings3d.OrbitBehavior;
@@ -28,6 +29,7 @@ import javax.media.j3d.BoundingSphere;
 import javax.media.j3d.BranchGroup;
 import javax.media.j3d.GraphicsConfigTemplate3D;
 import javax.media.j3d.ImageComponent2D;
+import javax.media.j3d.LineArray;
 import javax.media.j3d.PhysicalBody;
 import javax.media.j3d.PhysicalEnvironment;
 import javax.media.j3d.QuadArray;
@@ -50,7 +52,7 @@ public class ThreeDimensionViewer extends AbstractDialog
         implements ObjectListener<Scene>
 {
     
-  
+  @RCDialog(category = RCDialog.Category.View, name = "3D")
   @PluginImplementation
   public static class Plugin extends DialogPlugin<ThreeDimensionViewer>
   {
@@ -117,6 +119,7 @@ public class ThreeDimensionViewer extends AbstractDialog
         jToolBar = new javax.swing.JToolBar();
         jToggleButtonUpdate = new javax.swing.JToggleButton();
         jCheckBoxField = new javax.swing.JCheckBox();
+        jCheckBoxGrid = new javax.swing.JCheckBox();
         jCheckBoxImage = new javax.swing.JCheckBox();
         cbUseFieldViewer = new javax.swing.JCheckBox();
 
@@ -157,6 +160,17 @@ public class ThreeDimensionViewer extends AbstractDialog
             }
         });
         jToolBar.add(jCheckBoxField);
+
+        jCheckBoxGrid.setText("Grid");
+        jCheckBoxGrid.setToolTipText("Show the soccer field.");
+        jCheckBoxGrid.setFocusable(false);
+        jCheckBoxGrid.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jCheckBoxGrid.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCheckBoxGridActionPerformed(evt);
+            }
+        });
+        jToolBar.add(jCheckBoxGrid);
 
         jCheckBoxImage.setText("Image");
         jCheckBoxImage.setToolTipText("Receive image from camera of robot.");
@@ -234,6 +248,10 @@ public class ThreeDimensionViewer extends AbstractDialog
       imageTop = null;
     }
   }//GEN-LAST:event_jCheckBoxImageActionPerformed
+
+    private void jCheckBoxGridActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxGridActionPerformed
+        vw.enableCoordinates(jCheckBoxGrid.isSelected());
+    }//GEN-LAST:event_jCheckBoxGridActionPerformed
 
   @Override
   public void init()
@@ -344,6 +362,7 @@ public class ThreeDimensionViewer extends AbstractDialog
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JCheckBox cbUseFieldViewer;
     private javax.swing.JCheckBox jCheckBoxField;
+    private javax.swing.JCheckBox jCheckBoxGrid;
     private javax.swing.JCheckBox jCheckBoxImage;
     private javax.swing.JPanel jPanelCanvas;
     private javax.swing.JToggleButton jToggleButtonUpdate;
@@ -367,6 +386,8 @@ public class ThreeDimensionViewer extends AbstractDialog
         object.addChild(createFieldViewertexture());
     }
     
+    
+    
     vw.add(object);
     if (activeScene != null)
     {
@@ -376,6 +397,7 @@ public class ThreeDimensionViewer extends AbstractDialog
     
     //exportScreenshotToPNG(new File("test3d_" + (kkk++) + ".png"));
   }
+  
   
   
   private Shape3D createFieldViewertexture()

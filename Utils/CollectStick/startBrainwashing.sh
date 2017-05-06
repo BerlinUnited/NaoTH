@@ -12,6 +12,10 @@ errorFile="/home/nao/brainwasher.log"
 # set vars
 current_date=$(date +"%y%m%d-%H%M")
 current_nao=$(sed -n "2p" $infoFile)
+current_nao_name=$(cat /etc/hostname) # get the name, eg. "nao96"
+current_nao_number=$(cat /etc/hostname | grep -Eo "[0-9]{2}") # get the number, e.g. "96"
+current_nao_player=$(cat /home/nao/Config/robots/$current_nao_name/player.cfg | grep -Eo "PlayerNumber=[0-9]{1,2}")
+
 current_boot_time=$(</proc/uptime awk '{printf "%d", $1 / 60}')
 
 check_for_errors() {
@@ -27,7 +31,7 @@ check_for_errors() {
 }
 
 # write to systemlog
-logger "Brainwasher:start $current_date, $current_nao"
+logger "Brainwasher:start $current_date, $current_nao, Player $current_nao_player"
 
 # play sound
 sudo -u nao /usr/bin/paplay /home/nao/naoqi/Media/usb_start.wav
@@ -46,6 +50,12 @@ logger -f $errorFile
 logger "Brainwasher:copy files"
 # create directory
 mkdir $current_date-$current_nao
+
+# copy info file of the nao
+cp $infoFile /media/brainwasher/$current_date-$current_nao/nao.info
+echo "Name=$current_nao_name" >> /media/brainwasher/$current_date-$current_nao/nao.info
+echo "Number=$current_nao_number" >> /media/brainwasher/$current_date-$current_nao/nao.info
+echo "$current_nao_player" >> /media/brainwasher/$current_date-$current_nao/nao.info
 
 # find log files and copy them to the created directory
 #find -L /tmp -type d -name media -prune -o -name "*.log" -exec cp {} /media/brainwasher/$current_date-$current_nao \;

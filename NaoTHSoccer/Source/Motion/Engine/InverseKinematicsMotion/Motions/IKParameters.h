@@ -23,22 +23,28 @@ public:
   {
     double speed;
     bool enableStabilization;
+    bool enableStabilizationRC16;
     double stiffness;
 
     double bodyPitchOffset;
     double hipOffsetX;
 
     struct Relax {
+
+        bool   enable;
         double allowedDeviation;
+        double allowedRotationDeviation;
         double timeBonusForCorrection;
 
         struct JointOffsetTuning {
+            bool   enable;
             double deadTime;
             double currentThreshold;
             double minimalJointStep;
         } jointOffsetTuning;
 
         struct StiffnessControl {
+            bool   enable;
             double deadTime;
             double minAngle;
             double minStiffness;
@@ -70,7 +76,7 @@ public:
     {
       double comHeight;
       double comHeightOffset;
-      double comRotationOffsetX;
+      double comStepOffsetY;
       double ZMPOffsetY;
       double ZMPOffsetYByCharacter;
     } hip;
@@ -82,8 +88,17 @@ public:
       int doubleSupportTime;
     
       double stepHeight;
+      bool splineFootTrajectory;
     } step;
+
+
+    // step geometry
+    struct Kick
+    {
+      double stepHeight;
+    } kick;
     
+
     // step limits
     struct Limits
     {
@@ -115,6 +130,8 @@ public:
 
       // enable stabilization by rotating the body
       bool rotationStabilize;
+      bool rotationStabilizeRC16;
+      bool rotationStabilizeNewIMU;
 
       // enable the PD-control for the feet
       bool stabilizeFeet;
