@@ -92,7 +92,6 @@ option pathplanner_kick_short
     }
     action {
       //NOTE: this is synchronized with sidekick()->finished
-      motion.walk.stop_with_stand = false;
       motion.type = stand;
 
       //loook at percept
