@@ -11,9 +11,6 @@ IMUModel::IMUModel():
     DEBUG_REQUEST_REGISTER("IMUModel:reset_filter", "reset filter", false);
     DEBUG_REQUEST_REGISTER("IMUModel:enableFilterWhileWalking", "enables filter update while walking", false);
 
-    // Parameter Related Debug Requests
-    DEBUG_REQUEST_REGISTER("IMUModel:reloadParameters", "reloads the filter parameters from the imuParameter object", true);
-
     ukf_acc_global.P = Eigen::Matrix<double,3,3>::Identity(); // covariance matrix of current state
     ukf_rot.P        = Eigen::Matrix<double,3,3>::Identity(); // covariance matrix of current state
 
@@ -53,11 +50,9 @@ void IMUModel::execute(){
     IMU_RotationMeasurement z;
     z << acceleration.normalized();
 
-    if(getMotionStatus().currentMotion == motion::walk){
+    if((getMotionStatus().currentMotion == motion::walk) && imuParameters.enableWhileWalking){
         //TODO: mhmhmhmh...
-        DEBUG_REQUEST("IMUModel:enableFilterWhileWalking",
-                      ukf_rot.update(z, R_rotation_walk);
-        );
+        ukf_rot.update(z, R_rotation_walk);
     } else {
         ukf_rot.update(z, R_rotation);
     }

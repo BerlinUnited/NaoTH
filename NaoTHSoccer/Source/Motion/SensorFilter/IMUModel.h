@@ -112,6 +112,8 @@ private:
            //              -2.013737709159823391e-02,  2.705392100034859082e-01,    0.0,
            //               0.000000000000000000e+00,  0.000000000000000000e+00, 10e-05;
 
+           PARAMETER_REGISTER(enableWhileWalking) = false;
+
            PARAMETER_REGISTER(stand.processNoiseAccQ00) = 0.01; // [m^2/s^4]
            PARAMETER_REGISTER(stand.processNoiseAccQ11) = 0.01; // [m^2/s^4]
            PARAMETER_REGISTER(stand.processNoiseAccQ22) = 0.01; // [m^2/s^4]
@@ -160,6 +162,8 @@ private:
 
            syncWithConfig();
        }
+
+       bool enableWhileWalking;
 
        struct Params{
        double processNoiseAccQ00;
