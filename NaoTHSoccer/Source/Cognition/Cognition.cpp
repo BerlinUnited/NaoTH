@@ -93,6 +93,7 @@
 // behavior
 #include "Modules/Behavior/BasicTestBehavior/BasicTestBehavior.h"
 #include "Modules/Behavior/XABSLBehaviorControl/XABSLBehaviorControl.h"
+#include "Modules/Behavior/PathPlanner/PathPlanner.h"
 #include "Modules/Behavior/RemoteControlBehavior/RemoteControlBehavior.h"
 
 using namespace std;
@@ -198,6 +199,7 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   // behavior
   REGISTER_MODULE(BasicTestBehavior);
   REGISTER_MODULE(XABSLBehaviorControl);
+  REGISTER_MODULE(PathPlanner);
   REGISTER_MODULE(RemoteControlBehavior);
 
   REGISTER_MODULE(TeamCommSender);
