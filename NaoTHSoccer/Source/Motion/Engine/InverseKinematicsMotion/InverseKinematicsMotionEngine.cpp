@@ -487,7 +487,8 @@ bool InverseKinematicsMotionEngine::rotationStabilizeRC16(
 }
 
 bool InverseKinematicsMotionEngine::rotationStabilizenNewIMU(
-  const InertialModel& theInertialModel,
+  const IMUData& imuData,
+  //const InertialModel& theInertialModel,
   const GyrometerData& theGyrometerData,
   double timeDelta,
   InverseKinematic::HipFeetPose& p)
@@ -522,7 +523,7 @@ bool InverseKinematicsMotionEngine::rotationStabilizenNewIMU(
     double correctionX = getParameters().walk.stabilization.rotationVelocityP.x * error.x;
     //                     + getParameters().walk.stabilization.rotationD.x * errorDerivative.x;
 
-    const Vector2d& inertial = theInertialModel.orientation;
+    const Vector2d& inertial = imuData.orientation;
     correctionX += getParameters().walk.stabilization.rotationP.x * inertial.x;
     correctionY += getParameters().walk.stabilization.rotationP.y * inertial.y;
 

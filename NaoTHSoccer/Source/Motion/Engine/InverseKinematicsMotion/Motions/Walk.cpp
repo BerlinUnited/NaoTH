@@ -127,7 +127,7 @@ void Walk::execute()
     }
 
     getEngine().rotationStabilizenNewIMU(
-      getInertialModel(),
+      getIMUData(),
       getGyrometerData(),
       getRobotInfo().getBasicTimeStepInSecond(),
       c);

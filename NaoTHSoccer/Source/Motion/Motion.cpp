@@ -223,13 +223,8 @@ void Motion::processSensorData()
       getAccelerometerData().data  += getCalibrationData().accSensorOffset;
   }
 
-  if(parameter.useIMUModel){
-      //
-      theIMUModel->execute();
-  } else {
-      //
-      theInertiaSensorFilterBH->execute();
-  }
+  theIMUModel->execute();
+  theInertiaSensorFilterBH->execute();
 
   //
   theFootGroundContactDetector->execute();
