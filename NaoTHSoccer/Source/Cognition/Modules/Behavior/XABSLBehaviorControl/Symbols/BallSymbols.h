@@ -51,7 +51,7 @@ public:
   BallSymbols() :
     ballPerceptSeen(false),
     ball_seen_filter(0.01, 0.1),
-    ball_know_where_itis(false)
+    ball_see_where_itis(false)
   {
     theInstance = this;
     getDebugParameterList().add(&parameters);
@@ -131,7 +131,7 @@ private:
   };
 
   AssymetricalBoolFilter ball_seen_filter;
-  bool ball_know_where_itis;
+  bool ball_see_where_itis;
 
 };//end class BallSymbols
 

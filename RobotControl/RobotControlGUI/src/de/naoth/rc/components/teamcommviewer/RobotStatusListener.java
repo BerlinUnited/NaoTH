@@ -7,5 +7,5 @@ package de.naoth.rc.components.teamcommviewer;
  */
 
 public interface RobotStatusListener {
-    public void statusChanged();
+    public void statusChanged(RobotStatus changed);
 }

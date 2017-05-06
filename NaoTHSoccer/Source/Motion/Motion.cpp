@@ -65,13 +65,16 @@ Motion::Motion()
   //theSupportPolygonGenerator = registerModule<SupportPolygonGenerator>("SupportPolygonGenerator", true);
   theOdometryCalculator = registerModule<OdometryCalculator>("OdometryCalculator", true);
   theKinematicChainProvider = registerModule<KinematicChainProviderMotion>("KinematicChainProvider", true);
+  theIMUModel = registerModule<IMUModel>("IMUModel", true);
 
   theMotionEngine = registerModule<MotionEngine>("MotionEngine", true);
+
+  getDebugParameterList().add(&parameter);
 }
 
 Motion::~Motion()
 {
-
+  getDebugParameterList().remove(&parameter);
 }
 
 void Motion::init(naoth::ProcessInterface& platformInterface, const naoth::PlatformBase& platform)
@@ -209,16 +212,18 @@ void Motion::processSensorData()
       getSensorJointData().position[i] = getSensorJointData().position[i] - getOffsetJointData().position[i];
   }
 
-  // calibrate inertia sensors
-  theInertiaSensorCalibrator->execute();
+  if(parameter.useInertiaSensorCalibration){
+      // calibrate inertia sensors
+      theInertiaSensorCalibrator->execute();
 
-  //TODO: introduce calibrated versions of the data
-  // correct the sensors
-  getInertialSensorData().data += getCalibrationData().inertialSensorOffset;
-  getGyrometerData().data += getCalibrationData().gyroSensorOffset;
-  getAccelerometerData().data += getCalibrationData().accSensorOffset;
+      //TODO: introduce calibrated versions of the data
+      //TODO: correct the sensors z is inverted => don't forget to check all modules requiring/providing GyrometerData
+      getGyrometerData().data      += getCalibrationData().gyroSensorOffset;
+      getInertialSensorData().data += getCalibrationData().inertialSensorOffset;
+      getAccelerometerData().data  += getCalibrationData().accSensorOffset;
+  }
 
-  //
+  theIMUModel->execute();
   theInertiaSensorFilterBH->execute();
 
   //

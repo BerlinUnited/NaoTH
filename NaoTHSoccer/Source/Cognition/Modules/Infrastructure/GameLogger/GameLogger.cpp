@@ -25,6 +25,10 @@ GameLogger::~GameLogger()
 
 void GameLogger::execute()
 {
+  // HACK: wait a bit before starting recording
+  if(getFrameInfo().getFrameNumber() < 30 || !logfileManager.is_ready()) {
+    return;
+  }
 
   if( getBehaviorStateComplete().state.IsInitialized() &&
       getBehaviorStateSparse().state.IsInitialized())
@@ -84,6 +88,8 @@ void GameLogger::execute()
 
       something_recorded = true;
     }
+
+    std::cout << logfileManager.is_ready() << std::endl;
 
     if(something_recorded) {
       LOGSTUFF(FrameInfo);

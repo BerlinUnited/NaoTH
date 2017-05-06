@@ -23,6 +23,8 @@ public class RobotStatusPanel extends javax.swing.JPanel implements RobotStatusL
         this.setBackground(rs.robotColor);
         rs.addListener(this);
         initComponents();
+        // get and set info, if the robot should be drawn on the field
+        this.cbShowRobot.setSelected(rs.showOnField);
     }
     
     public RobotStatusPanel(RobotStatus rs, Color backgroundColor) {
@@ -50,6 +52,7 @@ public class RobotStatusPanel extends javax.swing.JPanel implements RobotStatusL
         jlTemperature = new javax.swing.JLabel();
         jlAddress = new javax.swing.JLabel();
         connectButton = new javax.swing.JButton();
+        cbShowRobot = new javax.swing.JCheckBox();
 
         jLabel5.setText("jLabel5");
 
@@ -116,14 +119,30 @@ public class RobotStatusPanel extends javax.swing.JPanel implements RobotStatusL
             }
         });
         add(connectButton);
+
+        cbShowRobot.setSelected(true);
+        cbShowRobot.setText("Show robot");
+        cbShowRobot.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        cbShowRobot.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
+        cbShowRobot.setOpaque(false);
+        cbShowRobot.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cbShowRobotActionPerformed(evt);
+            }
+        });
+        add(cbShowRobot);
     }// </editor-fold>//GEN-END:initComponents
 
     private void connectButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_connectButtonActionPerformed
         rs.connect();
     }//GEN-LAST:event_connectButtonActionPerformed
 
+    private void cbShowRobotActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbShowRobotActionPerformed
+        rs.showOnField = this.cbShowRobot.isSelected();
+    }//GEN-LAST:event_cbShowRobotActionPerformed
+
     @Override
-    public void statusChanged() {
+    public void statusChanged(RobotStatus changed) {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
@@ -153,7 +172,8 @@ public class RobotStatusPanel extends javax.swing.JPanel implements RobotStatusL
             jlBatteryCharge.setText("??");
         } else {
             //Representations.BUUserTeamMessage user = Representations.BUUserTeamMessage.parseFrom(msg.data);
-            jlTemperature.setText(String.format(" %3.1f °C", rs.temperature));
+            String temperature = String.format(" %3.1f °C", rs.temperature) + " / CPU:" + String.format(" %3.1f °C", rs.cpuTemperature);
+            jlTemperature.setText(temperature);
             jlBatteryCharge.setText(String.format("%3.1f%%", rs.batteryCharge));
 
             if (rs.temperature >= 60.0f) {
@@ -174,10 +194,13 @@ public class RobotStatusPanel extends javax.swing.JPanel implements RobotStatusL
             this.jlTeamNumber.setText("" + rs.teamNum);
         }
         connectButton.setEnabled(!rs.isConnected);
+        cbShowRobot.setSelected(rs.showOnField);
+        this.setBackground(rs.robotColor);
         this.repaint();
     }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JCheckBox cbShowRobot;
     private javax.swing.JButton connectButton;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JPanel jPanel1;
