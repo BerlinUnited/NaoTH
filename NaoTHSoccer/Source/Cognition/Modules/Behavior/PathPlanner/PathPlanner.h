@@ -101,6 +101,10 @@ private:
   bool add_single_step(Pose2D &pose, const StepType &type, const WalkRequest::Coordinate &coordinate);void update_step(Pose2D &pose);
   void manage_step_buffer();
   void execute_step_buffer();
+
+
+private:
+  bool kick_planned;
 };
 
 #endif // _PathPlanner_H_
