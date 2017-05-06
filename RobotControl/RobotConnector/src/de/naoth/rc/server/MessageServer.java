@@ -313,6 +313,12 @@ public class MessageServer extends AbstractMessageServer {
             }
             int id = idBuffer.getInt();
             
+            if (id == 0) {
+                Logger.getLogger(MessageServer.class.getName()).log(Level.WARNING,
+                    "Ignore illegal response ID '0'. Why is this happening?!!");
+                break;
+            }
+            
             // read the rest of the data
             socketChannel.configureBlocking(true);
             

@@ -25,6 +25,7 @@
 *.properties text
 *.form   text
 *.html   text
+*.xabsl  text
 
 # Images should be treated as binary
 # (binary is a macro for -text -diff)

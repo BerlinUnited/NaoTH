@@ -25,7 +25,7 @@ IKParameters::IKParameters()
   // relax
   PARAMETER_REGISTER(stand.relax.enable) = true;
   PARAMETER_REGISTER(stand.relax.allowedDeviation) = 5;   // [mm]
-  PARAMETER_REGISTER(stand.relax.allowedRotationDeviation) = Math::fromDegrees(5);// [rad] todo: PARAMETER_ANGLE_REGISTER
+  PARAMETER_ANGLE_REGISTER(stand.relax.allowedRotationDeviation) = 5; // [rad]
   PARAMETER_REGISTER(stand.relax.timeBonusForCorrection)   = 1000; // [ms]
 
   PARAMETER_REGISTER(stand.relax.jointOffsetTuning.enable) = true;
@@ -61,6 +61,7 @@ IKParameters::IKParameters()
   PARAMETER_REGISTER(walk.step.doubleSupportTime) = 40;
 
   PARAMETER_REGISTER(walk.step.stepHeight) = 15;
+  PARAMETER_REGISTER(walk.step.splineFootTrajectory) = true;
 
   // kick
   PARAMETER_REGISTER(walk.kick.stepHeight) = 20;
@@ -89,6 +90,7 @@ IKParameters::IKParameters()
 
   PARAMETER_REGISTER(walk.stabilization.rotationStabilize) = true;
   PARAMETER_REGISTER(walk.stabilization.rotationStabilizeRC16) = false;
+  PARAMETER_REGISTER(walk.stabilization.rotationStabilizeNewIMU) = false;
   PARAMETER_REGISTER(walk.stabilization.rotationP.x) = 0;
   PARAMETER_REGISTER(walk.stabilization.rotationP.y) = 0;
   PARAMETER_REGISTER(walk.stabilization.rotationVelocityP.x) = 0;

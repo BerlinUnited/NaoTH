@@ -11,8 +11,7 @@ using namespace std;
 SPLGameController::SPLGameController()
   :exiting(false), returnPort(GAMECONTROLLER_RETURN_PORT),
     socket(NULL),
-    gamecontrollerAddress(NULL),
-    lastGetTime(0)
+    gamecontrollerAddress(NULL)
 {
   GError* err = bindAndListen();
   if(err)

@@ -88,6 +88,7 @@ public:
       int doubleSupportTime;
     
       double stepHeight;
+      bool splineFootTrajectory;
     } step;
 
 
@@ -130,6 +131,7 @@ public:
       // enable stabilization by rotating the body
       bool rotationStabilize;
       bool rotationStabilizeRC16;
+      bool rotationStabilizeNewIMU;
 
       // enable the PD-control for the feet
       bool stabilizeFeet;
