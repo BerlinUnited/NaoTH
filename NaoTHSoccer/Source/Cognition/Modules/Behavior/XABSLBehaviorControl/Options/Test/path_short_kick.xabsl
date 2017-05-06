@@ -67,6 +67,7 @@ option path_short_kick
     }
     action {
       path.routine = none;
+      motion.type = stand;
     }
   
   }

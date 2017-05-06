@@ -4,10 +4,14 @@
 #include "Tools/Filters/KalmanFilter/UnscentedKalmanFilter/UKFStateRotationBase.h"
 
 // TODO: remove pragma
+#if defined(__GNUC__)
 #pragma GCC diagnostic ignored "-Wconversion"
+#endif
     #include <Eigen/Geometry>
     #include <Eigen/Dense>
+#if defined(__GNUC__)
 #pragma GCC diagnostic pop
+#endif
 
 // measurement vectors which are elements of a euclidean vector space, e.g. velocity, accelerations
 template <int dim>

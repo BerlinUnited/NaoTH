@@ -7,7 +7,9 @@
 #include <Eigen/StdVector>
 
 // TODO: remove pragma
+#if defined(__GNUC__)
 #pragma GCC diagnostic ignored "-Wconversion"
+#endif
 #include <Eigen/Geometry>
 #include <Eigen/Dense>
 
@@ -140,6 +142,7 @@ class UKF {
 
 };
 
+#if defined(__GNUC__)
 #pragma GCC diagnostic pop
-
+#endif
 #endif // UNSCENTEDKALMANFILTER_H

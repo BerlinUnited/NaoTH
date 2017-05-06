@@ -4,10 +4,14 @@
 #include "Tools/Filters/KalmanFilter/UnscentedKalmanFilter/UKFStateRotationBase.h"
 
 // TODO: remove pragma
+#if defined(__GNUC__)
 #pragma GCC diagnostic ignored "-Wconversion"
+#endif
     #include <Eigen/Geometry>
     #include <Eigen/Dense>
+#if defined(__GNUC__)
 #pragma GCC diagnostic pop
+#endif
 
 // state for rotation and rotational velocity
 template <class M1,/* class M2,*/ int dim, int dim_cov = dim, int rotation_index = 0>

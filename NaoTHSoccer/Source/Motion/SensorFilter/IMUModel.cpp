@@ -1,7 +1,9 @@
 #include "IMUModel.h"
 
 //TODO: remove pragma, problem with eigens optimization stuff "because conversion sequence for the argument is better"
+#if defined(__GNUC__)
 #pragma GCC diagnostic ignored "-Wconversion"
+#endif
 
 IMUModel::IMUModel():
     integrated(1,0,0,0)
@@ -98,7 +100,7 @@ void IMUModel::writeIMUData(){
                                         atan2(-q.toRotationMatrix()(2,0), q.toRotationMatrix()(2,2)));
 
     // only to enable transparent switching with InertiaSensorFilter
-    getInertialModel().orientation = getIMUData().orientation;
+    //getInertialModel().orientation = getIMUData().orientation;
 }
 
 void IMUModel::plots(){
@@ -183,4 +185,6 @@ void IMUModel::reloadParameters()
                        imuParameters.walk.measurementNoiseRotationR02, imuParameters.walk.measurementNoiseRotationR12, imuParameters.walk.measurementNoiseRotationR22;
 }
 
+#if defined(__GNUC__)
 #pragma GCC diagnostic pop
+#endif
