@@ -171,7 +171,7 @@ void BallCandidateDetector::calculateCandidates()
       if(params.contrastUse) {
           double stddev = calculateContrast(getImage(),getFieldColorPercept(),min.x,min.y,max.x,max.y,patch_size);
 
-          DEBUG_REQUEST("Vision:BallCandidateDetector:drawPatchStdDev",
+          DEBUG_REQUEST("Vision:BallCandidateDetector:drawPatchContrast",
                         CANVAS(((cameraID == CameraInfo::Top)?"ImageTop":"ImageBottom"));
                   CIRCLE( (min.x + max.x)/2, (min.y + max.y)/2, stddev / 5.0);
           );
