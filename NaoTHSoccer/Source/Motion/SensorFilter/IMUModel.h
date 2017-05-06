@@ -11,7 +11,6 @@
 
 #include <Representations/Infrastructure/GyrometerData.h>
 #include <Representations/Infrastructure/AccelerometerData.h>
-#include <Representations/Infrastructure/InertialSensorData.h>
 
 #include "Representations/Infrastructure/FrameInfo.h"
 #include <Representations/Modeling/IMUData.h>
@@ -25,18 +24,15 @@
 #include "IMURotationState.h"
 
 BEGIN_DECLARE_MODULE(IMUModel)
-
     PROVIDE(DebugRequest)
     PROVIDE(DebugDrawings3D)
     PROVIDE(DebugPlot)
     PROVIDE(DebugParameterList)
-    PROVIDE(StopwatchManager)
 
     REQUIRE(FrameInfo)
 
     REQUIRE(GyrometerData)
     REQUIRE(AccelerometerData)
-    REQUIRE(InertialSensorData)
 
     REQUIRE(MotionStatus)
 
@@ -64,7 +60,6 @@ private:
     UKF<State<Measurement<3>, 3> > ukf_acc_global;
 
     typedef Measurement<3> IMU_RotationMeasurement;
-    //typedef Measurement<3>         IMU_RotVelMeasurement;
     typedef Measurement<3> IMU_AccMeasurementGlobal;
 
     Eigen::Vector3d quaternionToRotationVector(const Eigen::Quaterniond& q) const{
@@ -81,8 +76,6 @@ private:
     Vector3d eigenVectorToVector3D(const Eigen::Vector3d& v) const {
         return Vector3d(v(0),v(1),v(2));
     }
-
-    bool updated_by_both;
 
     Eigen::Matrix<double,3,3> R_acc;
     Eigen::Matrix<double,3,3> R_rotation;
@@ -135,12 +128,12 @@ private:
            PARAMETER_REGISTER(stand.measurementNoiseAccR22) =  1.204579269450257506e+01; // [m^2/s^4]
 
            // sqrt(R00,R11,R22) ~ the standard derivation rotation with axis sqrt(R00,R11,R22) and angle |(R00,R11,R22)|
-           PARAMETER_REGISTER(stand.measurementNoiseRotationR00) =  25;  // [rad^2]
+           PARAMETER_REGISTER(stand.measurementNoiseRotationR00) =  0.5;  // [rad^2]
            PARAMETER_REGISTER(stand.measurementNoiseRotationR01) =  0.0; // [rad^2]
            PARAMETER_REGISTER(stand.measurementNoiseRotationR02) =  0.0; // [rad^2]
-           PARAMETER_REGISTER(stand.measurementNoiseRotationR11) =  25;  // [rad^2]
+           PARAMETER_REGISTER(stand.measurementNoiseRotationR11) =  0.5;  // [rad^2]
            PARAMETER_REGISTER(stand.measurementNoiseRotationR12) =  0.0; // [rad^2]
-           PARAMETER_REGISTER(stand.measurementNoiseRotationR22) =  0.1; // [rad^2]
+           PARAMETER_REGISTER(stand.measurementNoiseRotationR22) =  0.5; // [rad^2]
 
            // walk
            PARAMETER_REGISTER(walk.processNoiseAccQ00) = 0.01; // [m^2/s^4]
@@ -158,12 +151,12 @@ private:
            PARAMETER_REGISTER(walk.measurementNoiseAccR12) = -5.760325107959280988e-01; // [m^2/s^4]
            PARAMETER_REGISTER(walk.measurementNoiseAccR22) =  1.204579269450257506e+01; // [m^2/s^4]
 
-           PARAMETER_REGISTER(walk.measurementNoiseRotationR00) =  200; // [rad^2]
+           PARAMETER_REGISTER(walk.measurementNoiseRotationR00) =  50; // [rad^2]
            PARAMETER_REGISTER(walk.measurementNoiseRotationR01) =  0.0; // [rad^2]
            PARAMETER_REGISTER(walk.measurementNoiseRotationR02) =  0.0; // [rad^2]
-           PARAMETER_REGISTER(walk.measurementNoiseRotationR11) =  200; // [rad^2]
+           PARAMETER_REGISTER(walk.measurementNoiseRotationR11) =  50; // [rad^2]
            PARAMETER_REGISTER(walk.measurementNoiseRotationR12) =  0.0; // [rad^2]
-           PARAMETER_REGISTER(walk.measurementNoiseRotationR22) =  200; // [rad^2]
+           PARAMETER_REGISTER(walk.measurementNoiseRotationR22) =  50; // [rad^2]
 
            syncWithConfig();
        }
