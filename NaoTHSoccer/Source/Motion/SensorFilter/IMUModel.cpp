@@ -50,9 +50,11 @@ void IMUModel::execute(){
     IMU_RotationMeasurement z;
     z << acceleration.normalized();
 
-    if((getMotionStatus().currentMotion == motion::walk) && imuParameters.enableWhileWalking){
+    if(getMotionStatus().currentMotion == motion::walk){
         //TODO: mhmhmhmh...
-        ukf_rot.update(z, R_rotation_walk);
+        if(imuParameters.enableWhileWalking){
+            ukf_rot.update(z, R_rotation_walk);
+        }
     } else {
         ukf_rot.update(z, R_rotation);
     }
