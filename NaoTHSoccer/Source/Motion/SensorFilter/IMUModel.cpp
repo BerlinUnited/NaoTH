@@ -9,14 +9,9 @@ IMUModel::IMUModel():
     integrated(1,0,0,0)
 {
     DEBUG_REQUEST_REGISTER("IMUModel:reset_filter", "reset filter", false);
-    DEBUG_REQUEST_REGISTER("IMUModel:use_both", "uses accelerometer and gyrometer to estimate the orientation", false);
-    DEBUG_REQUEST_REGISTER("IMUModel:use_only_gyro", "uses only the gyrometer to estimate the orientation (integration)", false);
     DEBUG_REQUEST_REGISTER("IMUModel:enableFilterWhileWalking", "enables filter update while walking", false);
 
-    // Parameter Related Debug Requests
-    DEBUG_REQUEST_REGISTER("IMUModel:reloadParameters", "reloads the filter parameters from the imuParameter object", true);
-
-    ukf_acc_global.P = Eigen::Matrix<double,3,3>::Identity();        // covariance matrix of current state
+    ukf_acc_global.P = Eigen::Matrix<double,3,3>::Identity(); // covariance matrix of current state
     ukf_rot.P        = Eigen::Matrix<double,3,3>::Identity(); // covariance matrix of current state
 
     getDebugParameterList().add(&imuParameters);
@@ -43,6 +38,7 @@ void IMUModel::execute(){
     ukf_rot.generateSigmaPoints();
 
     Eigen::Vector3d gyro;
+    // gyro z axis seems to measure in opposite direction (turning left measures negative angular velocity, should be positive)
     gyro << getGyrometerData().data.x, getGyrometerData().data.y, -getGyrometerData().data.z;
     ukf_rot.predict(gyro,0.01);
 
@@ -51,38 +47,17 @@ void IMUModel::execute(){
 
     Eigen::Vector3d acceleration = Eigen::Vector3d(getAccelerometerData().data.x, getAccelerometerData().data.y, getAccelerometerData().data.z);
 
-    // TODO: empirical determination or better condition
-    //if((fabs(acceleration.norm() - 9.81) < 0.5 || use_both) && !use_gyro_only ){ // use acceleration
-//        Eigen::Quaterniond rotation_acc_to_gravity;
-//        rotation_acc_to_gravity.setFromTwoVectors(acceleration,Eigen::Vector3d(0,0,-1));
+    IMU_RotationMeasurement z;
+    z << acceleration.normalized();
 
-//        //plotting rotation innovation between measurement and state
-//        Eigen::Quaterniond q;
-//        q.setFromTwoVectors(ukf_rot.state.getRotationAsQuaternion().inverse()._transformVector(Eigen::Vector3d(0,0,-1)),Eigen::Vector3d(0,0,-1));
-//        //Reihenfolge?
-//        PLOT("IMUModel:Error:relative_to_measurement[°]", Math::toDegrees(Eigen::AngleAxisd(rotation_acc_to_gravity*q.inverse()).angle()));
-
-//        IMU_RotationMeasurement temp;
-//        Vector3d translation(0,-250,250);
-//        LINE_3D(ColorClasses::red,  translation, translation + quaternionToVector3D(rotation_acc_to_gravity) * 100.0);
-//        LINE_3D(ColorClasses::blue, translation, translation + eigenVectorToVector3D(ukf_rot.state.asMeasurement(temp)) * 100.0);
-
-
-//        LINE_3D(ColorClasses::yellow, translation, translation + eigenVectorToVector3D(ukf_rot.state.getRotationAsQuaternion().inverse()._transformVector(Eigen::Vector3d(0,0,-9.81)))*6);
-//        LINE_3D(ColorClasses::gray,   translation, translation + eigenVectorToVector3D(acceleration) * 6);
-
-        IMU_RotationMeasurement z;
-        // gyro z axis seems to measure in opposite direction (turning left measures negative angular velocity, should be positive)
-        //z << quaternionToRotationVector(rotation_acc_to_gravity);
-        z << acceleration.normalized();
-
-        if(getMotionStatus().currentMotion == motion::walk){
-            DEBUG_REQUEST("IMUModel:enableFilterWhileWalking",
-                ukf_rot.update(z, R_rotation_walk);
-            );
-        } else {
-            ukf_rot.update(z, R_rotation);
+    if(getMotionStatus().currentMotion == motion::walk){
+        //TODO: mhmhmhmh...
+        if(imuParameters.enableWhileWalking){
+            ukf_rot.update(z, R_rotation_walk);
         }
+    } else {
+        ukf_rot.update(z, R_rotation);
+    }
 
     IMU_AccMeasurementGlobal z_acc = ukf_rot.state.getRotationAsQuaternion()._transformVector(acceleration);
     double u_acc = 0;
@@ -104,7 +79,6 @@ void IMUModel::writeIMUData(){
 
     // global position data
     getIMUData().location += getIMUData().velocity * 0.01;
-
     getIMUData().velocity += getIMUData().acceleration * 0.01;
 
     getIMUData().acceleration.x = ukf_acc_global.state.acceleration()(0,0);
@@ -144,20 +118,7 @@ void IMUModel::plots(){
         PLOT("IMUModel:Error:relative_to_pure_integration[°]", Math::toDegrees(Eigen::AngleAxisd(integrated*ukf_rot.state.getRotationAsQuaternion().inverse()).angle()));
     // --- end
 
-    PLOT("IMUModel:Measurement:acceleration:x", getAccelerometerData().data.x);
-    PLOT("IMUModel:Measurement:acceleration:y", getAccelerometerData().data.y);
-    PLOT("IMUModel:Measurement:acceleration:z", getAccelerometerData().data.z);
-
-    Eigen::Quaterniond q;
-    q = ukf_rot.state.getRotationAsQuaternion();
-    Eigen::Vector3d angles = q.toRotationMatrix().eulerAngles(0,1,2);
-    PLOT("IMUModel:State:rotation:x", angles(0));
-    PLOT("IMUModel:State:rotation:y", angles(1));
-    PLOT("IMUModel:State:rotation:z", angles(2));
-
-    Eigen::AngleAxisd temp(q);
-    Eigen::Vector3d temp2(temp.angle()*temp.axis());
-
+    Eigen::Vector3d temp2 = ukf_rot.state.rotation();
     Vector3d rot_vec(temp2(0),temp2(1),temp2(2));
     RotationMatrix rot(rot_vec);
     Pose3D pose(rot);
@@ -175,8 +136,6 @@ void IMUModel::plots(){
     PLOT("IMUModel:Measurement:rotational_velocity:x", getGyrometerData().data.x);
     PLOT("IMUModel:Measurement:rotational_velocity:y", getGyrometerData().data.y);
     PLOT("IMUModel:Measurement:rotational_velocity:z", getGyrometerData().data.z);
-
-    PLOT("IMUModel:updated_by_both", updated_by_both);
 }
 
 void IMUModel::reloadParameters()

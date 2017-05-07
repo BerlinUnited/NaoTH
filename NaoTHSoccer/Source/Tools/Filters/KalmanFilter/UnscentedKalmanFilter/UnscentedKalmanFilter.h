@@ -15,12 +15,6 @@
 
 template <class S>
 class UKF {
-    public:
-// TODO: enable different updates like only acceleration and rotation or all three
-//        enum class UpdateType{
-//            acc_rot_rotvel,
-//            acc_rot
-//        };
 
     public:
         // covariances
@@ -59,8 +53,6 @@ class UKF {
                 cov += 1.0 / static_cast<double>(sigmaPoints.size()) * (temp)*(temp).transpose();
             }
 
-            //assert (mean.allFinite());
-            //assert (cov.allFinite());
             state = mean;
             P     = cov/* + Q*/; // process covariance is applied before the process model (while generating the sigma points)
         }
@@ -87,7 +79,6 @@ class UKF {
             }
 
             // apply measurement noise covariance
-            // TODO: use correct measurement noise covariance matrix R
             Eigen::Matrix<double,M::size,M::size> Pvv = Pzz + R;
 
             // calculate state-measurement cross-covariance
@@ -112,13 +103,10 @@ class UKF {
 
             state = state_innovation + state;
 
-            //assert (state.allFinite());
-
             Eigen::Matrix<double,S::size,S::size> P_wiki;
             P_wiki   = P - K*Pzz*K.transpose(); // https://en.m.wikipedia.org/wiki/Kalman_filter
 
             P = P_wiki;
-            //assert (P.allFinite());
         }
 
     private:
@@ -139,8 +127,6 @@ class UKF {
 
             Eigen::LLT<Eigen::Matrix<double,S::size,S::size> > choleskyDecompositionOfCov(P+Q); // apply Q befor the process model
             Eigen::Matrix<double,S::size,S::size> L = choleskyDecompositionOfCov.matrixL();
-
-            //assert (L.allFinite());
 
             for(int i = 0; i < S::size; i++){
                 S noise(std::sqrt(2*S::size) * L.col(i));
