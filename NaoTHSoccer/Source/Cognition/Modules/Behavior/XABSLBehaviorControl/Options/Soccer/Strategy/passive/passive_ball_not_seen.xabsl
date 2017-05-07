@@ -11,10 +11,15 @@ option passive_ball_not_seen
   {
     decision {
       else if(state_time > 1000){
-          if(atan2(y=ball.preview.y,x=ball.preview.x) < 0)
-            goto turn_to_right;
-          else
-            goto turn_to_left;
+            if (ball.team.time_since_last_update < 5000)
+              goto look_at_team_ball;
+            else {
+              // TODO: using ball.team.rmse might be beneficial
+              if(atan2(y=ball.preview.y,x=ball.preview.x) < 0)
+		            goto turn_to_right;
+		          else
+		            goto turn_to_left;
+            }
       }
       else
         stay;
@@ -23,6 +28,30 @@ option passive_ball_not_seen
       head.control_mode = search_for_ball;
       motion.type = stand;
     }
+  }
+
+  state look_at_team_ball
+  {
+	  decision
+	  {
+      else if(abs(value = atan2(y=ball.team.position.y, x=ball.team.position.x)) < 50){
+        // turn in same direction if the ball wasn't seen
+        if(atan2(y=ball.team.position.y, x=ball.team.position.x) > 0)
+          goto turn_to_left;
+        else
+          goto turn_to_right;
+      } else 
+        stay;
+	  }
+	  
+	  action
+	  {
+      motion.type=walk;
+      motion.walk_speed.x=0;
+      motion.walk_speed.y=0;
+      motion.walk_speed.rot=atan2(y=ball.team.position.y, x=ball.team.position.x);
+      head.control_mode = look_at_team_ball;
+	  }
   }
 
   state turn_to_left {
