@@ -18,15 +18,11 @@ TeamBallLocator::TeamBallLocator()
 
 void TeamBallLocator::execute()
 {
-  for(
-    std::map<unsigned int, TeamMessage::Data>::const_iterator it=getTeamMessage().data.begin();
-    it != getTeamMessage().data.end(); 
-    it++) 
-  {
-    if(it->first != getGameData().playerNumber)
+  for (auto const& it: getTeamMessage().data) {
+    if(it.first != getPlayerInfo().playerNumber)
     {
-      const unsigned int& playerNumber = it->first;
-      const TeamMessage::Data& msg = it->second;
+      const unsigned int& playerNumber = it.first;
+      const TeamMessageData& msg = it.second;
       
       // -1 means invalid ball
       if(msg.ballAge >= 0 && lastMessages[playerNumber] < msg.frameInfo.getTime())
@@ -35,7 +31,7 @@ void TeamBallLocator::execute()
         // collect messages
         Vector2dTS ballPosTS;
         ballPosTS.vec = msg.pose * msg.ballPosition;
-        ballPosTS.t = msg.frameInfo.getTime() - msg.ballAge;
+        ballPosTS.t = msg.frameInfo.getTime() - static_cast<int>(msg.ballAge);
         ballPosHist.push_back(ballPosTS);
 
         // set time
@@ -46,8 +42,8 @@ void TeamBallLocator::execute()
       }
     } else
     {
-      const unsigned int& playerNumber = it->first;
-      const TeamMessage::Data& msg = it->second;
+      const unsigned int& playerNumber = it.first;
+      const TeamMessageData& msg = it.second;
       
       // -1 means invalid ball
       if(msg.ballAge >= 0 && lastMessages[playerNumber] < msg.frameInfo.getTime())
@@ -56,7 +52,7 @@ void TeamBallLocator::execute()
         // collect messages
         Vector2dTS ballPosTS;
         ballPosTS.vec = msg.pose * msg.ballPosition;
-        ballPosTS.t = msg.frameInfo.getTime() - msg.ballAge;
+        ballPosTS.t = msg.frameInfo.getTime() - static_cast<int>(msg.ballAge);
         ownballPosHist.push_back(ballPosTS);
       }
     }

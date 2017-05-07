@@ -17,6 +17,7 @@
 #include "Tools/Debug/DebugParameterList.h"
 
 // Representations
+#include "Representations/Modeling/PlayerInfo.h"
 #include "Representations/Modeling/TeamMessage.h"
 #include "Representations/Modeling/RobotPose.h"
 #include "Representations/Modeling/TeamBallModel.h"
@@ -37,6 +38,7 @@ BEGIN_DECLARE_MODULE(TeamBallLocator)
   PROVIDE(DebugDrawings)
   PROVIDE(DebugParameterList)
   
+  REQUIRE(PlayerInfo)
   REQUIRE(TeamMessage)
   REQUIRE(RobotPose)
   REQUIRE(GameData)
