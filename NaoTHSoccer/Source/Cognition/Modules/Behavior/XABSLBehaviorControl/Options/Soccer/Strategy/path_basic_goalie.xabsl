@@ -56,6 +56,8 @@ option path_basic_goalie
 
   state watch_ball {
     decision {
+      else if (ball.distance < 1500 && ball.time_since_last_seen < 1000)
+        goto clear_ball;
       else if (!ball.know_where_itis)
         goto go_to_strategy_point;
       else 

@@ -320,8 +320,17 @@ void Walk::planZMP()
     Pose3D finalBody = calculateStableCoMByFeet(planningStep.footStep.end(), getEngine().getParameters().walk.general.bodyPitchOffset);
     zmp = finalBody.translation;
   } else {
+    double zmpOffsetYParameter;
+    if (planningStep.type == STEP_CONTROL && planningStep.walkRequest.stepControl.type == WalkRequest::StepControlRequest::KICKSTEP)
+    {
+      zmpOffsetYParameter = parameters().kick.ZMPOffsetY;
+    }
+    else
+    {
+      zmpOffsetYParameter = parameters().hip.ZMPOffsetY;
+    }
     // TODO: should it be a part of the Step?
-    double zmpOffsetY = parameters().hip.ZMPOffsetY + parameters().hip.ZMPOffsetYByCharacter * (1-planningStep.walkRequest.character);
+    double zmpOffsetY = zmpOffsetYParameter + parameters().hip.ZMPOffsetYByCharacter * (1-planningStep.walkRequest.character);
     double zmpOffsetX = getEngine().getParameters().walk.general.hipOffsetX;
 
     Vector2d zmp_simple = ZMPPlanner::simplest(planningStep.footStep, zmpOffsetX, zmpOffsetY);

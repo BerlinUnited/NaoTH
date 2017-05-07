@@ -22,10 +22,8 @@ option pathplanner_kick_short
 
   state search {
     decision {
-      else if (ball.know_where_itis && ball.preview.x > 300)
+      else if (action_done)
         goto goto_ball;
-      else if(action_done)
-        goto approach_short_kick_left;
       else
         stay;
     }
@@ -40,7 +38,10 @@ option pathplanner_kick_short
 
       else if(action_done && state_time > 1000)
       {
-        goto approach_short_kick_left;
+        if(ball.preview.y > 0)
+          goto approach_short_kick_left;
+        else
+          goto approach_short_kick_right;
       }
       else
         stay;
@@ -82,6 +83,36 @@ option pathplanner_kick_short
       head.control_mode = look_at_ball_percept;
     }
   }
+  state approach_short_kick_right {
+    decision {
+      else if(action_done)
+        goto short_kick_right;
+      else
+        stay;
+    }
+    action {
+      path_go_to_ball_with_foot_dynamic(right = true, distance = 125, offset.y=0);
+      
+      //loook at percept
+      head.control_mode = look_at_ball_percept;
+    }
+  }
+  state short_kick_right {
+    decision{
+      else if(action_done)
+        goto done;
+      else
+        stay;
+    }
+    action {
+      situation_abortable = false;
+      path_short_kick(foot = right);
+      
+      //loook at percept
+      head.control_mode = look_at_ball_percept;
+    }
+  }
+
   target state done
   {
     decision {
@@ -92,7 +123,6 @@ option pathplanner_kick_short
     }
     action {
       //NOTE: this is synchronized with sidekick()->finished
-      motion.walk.stop_with_stand = false;
       motion.type = stand;
 
       //loook at percept

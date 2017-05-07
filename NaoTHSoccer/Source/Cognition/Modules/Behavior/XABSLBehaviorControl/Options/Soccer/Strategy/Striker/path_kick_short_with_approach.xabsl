@@ -4,9 +4,9 @@ option path_kick_short_with_approach
   {
     decision {
       if(ball.preview.y > 0)
-        goto approach_for_right;
-      else
         goto approach_for_left;
+      else
+        goto approach_for_right;
     }
     action {
     }
