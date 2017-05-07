@@ -19,6 +19,7 @@
 // Representations
 #include "Representations/Modeling/PlayerInfo.h"
 #include "Representations/Modeling/TeamMessage.h"
+#include "Representations/Modeling/TeamMessageData.h"
 #include "Representations/Modeling/RobotPose.h"
 #include "Representations/Modeling/TeamBallModel.h"
 #include "Representations/Infrastructure/GameData.h"
@@ -45,6 +46,7 @@ BEGIN_DECLARE_MODULE(TeamBallLocator)
   REQUIRE(FrameInfo)
 
   PROVIDE(TeamBallModel)
+  PROVIDE(TeamMessageData)
 END_DECLARE_MODULE(TeamBallLocator)
 
 class TeamBallLocator : protected TeamBallLocatorBase

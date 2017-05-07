@@ -138,4 +138,5 @@ void TeamBallLocator::execute()
     TEXT_DRAWING(getTeamBallModel().positionOnField.x+100, getTeamBallModel().positionOnField.y+100, ballPosHist.size());
     TEXT_DRAWING(getTeamBallModel().positionOnField.x+100, getTeamBallModel().positionOnField.y-100, getTeamBallModel().rmse);
   );
+  getTeamMessageData().custom.teamBallVisualizeOnly = getTeamBallModel().positionOnField;
 }
