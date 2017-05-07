@@ -65,6 +65,7 @@ IKParameters::IKParameters()
 
   // kick
   PARAMETER_REGISTER(walk.kick.stepHeight) = 20;
+  PARAMETER_REGISTER(walk.kick.ZMPOffsetY) = 0;
 
   // step limits
   PARAMETER_REGISTER(walk.limits.maxTurnInner) = 10;
