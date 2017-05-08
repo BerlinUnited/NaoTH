@@ -133,8 +133,8 @@ public:
       
 
       bool is_stationary() const {
-        return thePreviewController.com_velocity().abs2() < 1 && 
-               thePreviewController.com_acceleration().abs2() < 1;
+        return thePreviewController.com_velocity().abs() < 1;// && 
+               //thePreviewController.com_acceleration().abs2() < 1;
       }
 
       bool pop(Vector3d& com)
