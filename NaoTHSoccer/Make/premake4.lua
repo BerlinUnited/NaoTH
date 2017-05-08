@@ -162,7 +162,7 @@ solution "NaoTHSoccer"
   
   
   configuration {"macosx"}
-    defines { "BOOST_SIGNALS_NO_DEPRECATION_WARNING" }
+    defines { "BOOST_SIGNALS_NO_DEPRECATION_WARNING", "EIGEN_DONT_ALIGN" }
     buildoptions {"-std=c++11"}
     -- disable some warnings
     buildoptions {"-Wno-deprecated-declarations"}
