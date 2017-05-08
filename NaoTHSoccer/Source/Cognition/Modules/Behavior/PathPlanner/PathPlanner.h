@@ -62,19 +62,17 @@ private:
   };
   typedef WalkRequest::StepControlRequest::StepType StepType;
 
-  // Primitive Routines
-  // Walks to the ball from far away
+  // XABSL go_to_ball_with_USOA
   void walk_to_ball(const Foot foot, const bool go_fast = false);
-  // Moves around the ball
+  // XABSL move_around_ball
   void move_around_ball(const double direction, const double radius);
-  // Approaches the ball from near - if neccessary 
-  // keep the rotation of the robot, walk back and then approach it
+  // XABSL go_to_ball_with_foot_dynamic
   void approach_ball(const Foot foot);
-  // Short kick forward
+  // XABSL fast_forward_kick
   void short_kick(const Foot foot);
-  // Long kick forward
+  // XABSL kick_with_foot
   void long_kick(const Foot foot);
-  // Sidekick (with left foot == Foot::LEFT kicks to the left, and foot == FOOT::RIGHT to the right)
+  // XABSL sidekick (with foot == Foot::LEFT kicks to the left, and foot == FOOT::RIGHT to the right)
   void sidekick(const Foot foot);
 
   // Stepcontrol
@@ -97,8 +95,14 @@ private:
   // Used to synchronize stepIDs of WalkEngine to take control
   unsigned int last_stepcontrol_stepID;
 
-  void add_step(Pose2D &pose, const StepType &type, const WalkRequest::Coordinate &coordinate, const double character = 0.5, const Foot foot = Foot::NONE, const double scale = 1.0, const double speedDirection = 0.0);
-  bool add_single_step(Pose2D &pose, const StepType &type, const WalkRequest::Coordinate &coordinate);void update_step(Pose2D &pose);
+  void add_step(Pose2D &pose,
+                const StepType &type,
+                const WalkRequest::Coordinate &coordinate,
+                const double character,
+                const Foot foot,
+                const double scale,
+                const double speedDirection);
+  void update_step(Pose2D &pose);
   void manage_step_buffer();
   void execute_step_buffer();
 
