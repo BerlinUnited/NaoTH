@@ -14,7 +14,7 @@ foot_to_use(Foot::RIGHT),
 last_stepcontrol_stepID(0),
 kick_planned(false)
 {
-  DEBUG_REQUEST_REGISTER("PathPlaner:walk_to_ball", "Walks to the ball from far.", false);
+  DEBUG_REQUEST_REGISTER("PathPlanner:walk_to_ball", "Walks to the ball from far.", false);
   DEBUG_REQUEST_REGISTER("PathPlanner:control_ball", "Keeps in control of the ball.", false);
 }
 
