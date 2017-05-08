@@ -13,10 +13,25 @@ step_buffer({}),
 foot_to_use(Foot::RIGHT),
 last_stepcontrol_stepID(0),
 kick_planned(false)
-{}
+{
+  DEBUG_REQUEST_REGISTER("PathPlaner:walk_to_ball", "Walks to the ball from far.", false);
+  DEBUG_REQUEST_REGISTER("PathPlanner:control_ball", "Keeps in control of the ball.", false);
+}
 
 void PathPlanner::execute()
 {
+  // --- DEBUG REQUESTS ---
+  DEBUG_REQUEST("PathPlanner:walk_to_ball",
+                if (getBallModel().positionPreview.x > 250)
+                {
+                  walk_to_ball(Foot::NONE);
+                }
+                );
+  DEBUG_REQUEST("PathPlanner:control_ball",
+                control_ball(Foot::RIGHT);
+                );
+  // --- DEBUG REQUESTS ---
+
   getPathModel().kick_executed = false;
 
   STOPWATCH_START("PathPlanner");
@@ -438,4 +453,9 @@ void PathPlanner::execute_step_buffer()
   // false means right foot
   getMotionRequest().walkRequest.stepControl.moveLeftFoot = foot_to_use == Foot::RIGHT ? false : true;
   STOPWATCH_STOP("PathPlanner:execute_steplist");
+}
+
+void PathPlanner::control_ball(const Foot foot)
+{
+
 }

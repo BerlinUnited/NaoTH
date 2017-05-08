@@ -75,6 +75,8 @@ private:
   // XABSL sidekick (with foot == Foot::LEFT kicks to the left, and foot == FOOT::RIGHT to the right)
   void sidekick(const Foot foot);
 
+  void control_ball(const Foot foot);
+
   // Stepcontrol
   struct Step_Buffer_Element {
     Pose2D pose;
