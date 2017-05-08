@@ -58,7 +58,7 @@ public class MessageServer extends AbstractMessageServer {
     private final Map<Integer, SingleExecEntry> answerRequestMap = Collections.synchronizedMap(new HashMap<Integer, SingleExecEntry>());
 
     // each sent command has a unique id, which is used to assign the responces correctly
-    private Integer commandId = 0;
+    private Integer commandId = 1;
     
     // just for statistics
     private long receivedBytes;
@@ -314,6 +314,7 @@ public class MessageServer extends AbstractMessageServer {
             int id = idBuffer.getInt();
             
             if (id == 0) {
+                // shouldn't be happening anymore, "commandId" is initialized with "1"!
                 Logger.getLogger(MessageServer.class.getName()).log(Level.WARNING,
                     "Ignore illegal response ID '0'. Why is this happening?!!");
                 break;

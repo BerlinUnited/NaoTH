@@ -15,6 +15,7 @@ GameController::GameController()
   DEBUG_REQUEST_REGISTER("gamecontroller:ready", "force the ready state", false);
   DEBUG_REQUEST_REGISTER("gamecontroller:set", "force the set state", false);
   DEBUG_REQUEST_REGISTER("gamecontroller:finished", "force the finished state", false);
+  DEBUG_REQUEST_REGISTER("whistle:blow", "the robot recognizes a whistle", false);
 
   // TODO: make it parameters?
   // load values from config
@@ -164,6 +165,11 @@ void GameController::handleDebugRequest()
   );
   DEBUG_REQUEST("gamecontroller:finished",
     debugState = PlayerInfo::finished;
+  );
+
+  DEBUG_REQUEST("whistle:blow",
+    // kinda "hack": we don't increment the whistle counter, instead ...
+    lastWhistleCount--;
   );
 
   // NOTE: same behavior as the button interface

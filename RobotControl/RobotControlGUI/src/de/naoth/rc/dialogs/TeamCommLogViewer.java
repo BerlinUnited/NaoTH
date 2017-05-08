@@ -332,6 +332,8 @@ public class TeamCommLogViewer extends AbstractDialog
         while (jr.hasNext()) {
             TeamCommMessage p = json.fromJson(jr, TeamCommMessage.class);
             if(p.message != null) {
+                // custom part doesn't get (de-)serialized, but we have everything in data!
+                p.message.parseCustomFromData();
                 if(!messages.containsKey(p.timestamp)) {
                     messages.put(p.timestamp, new Timestamp(p.timestamp));
                 }
