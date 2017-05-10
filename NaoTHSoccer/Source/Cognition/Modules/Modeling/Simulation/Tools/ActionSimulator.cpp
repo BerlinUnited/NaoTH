@@ -11,7 +11,6 @@ using namespace std;
 
 ActionSimulator::ActionSimulator()
 {
- 
 }
 
 ActionSimulator::~ActionSimulator(){}
@@ -23,7 +22,7 @@ void ActionSimulator::execute()
 
 
 
-void ActionSimulator::simulateAction(const Action& action, ActionResults& result) const
+void ActionSimulator::simulateAction(const Action& action, ActionResults& result, size_t numParticles) const
 { 
   // just as a safety measure
   //categorizedBallPositions.clear();
@@ -58,7 +57,7 @@ void ActionSimulator::simulateAction(const Action& action, ActionResults& result
   
 
   // now generate predictions and categorize
-  for(size_t j=0; j < static_cast<size_t>(theParameters.numParticles); ++j)
+  for(size_t j=0; j < numParticles; ++j)
   {
     // predict and calculate shoot line
     Vector2d globalBallEndPosition = getRobotPose() * action.predict(getBallModel().positionPreview, true);
