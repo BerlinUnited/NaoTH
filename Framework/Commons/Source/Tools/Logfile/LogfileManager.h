@@ -113,14 +113,14 @@ public:
         writtenBytes += e.name.size() + 1;
 
         // size of data block
-        //size_t dataSize = e.data.str().size();
+   //     size_t dataSize = e.data.str().size();
         long dataSize = (long)e.data.tellp(); dataSize = dataSize < 0 ? 0 : dataSize;
         outFile.write((const char* ) &dataSize, 4);
         writtenBytes += 4;
 
         // the data itself
-        //outFile.write((const char *) e.data.str().c_str(), dataSize);
-        outFile << e.data.rdbuf();
+        outFile.write((const char *) e.data.str().c_str(), dataSize);
+        //outFile << e.data.rdbuf();
         writtenBytes += dataSize;
         
         // clear string buffer
