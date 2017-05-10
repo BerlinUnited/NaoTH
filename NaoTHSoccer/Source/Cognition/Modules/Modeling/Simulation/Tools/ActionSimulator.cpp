@@ -23,9 +23,101 @@ void ActionSimulator::execute()
 
 
 
-void ActionSimulator::simulateAction( const Action& action ) const
+void ActionSimulator::simulateAction(const Action& action, ActionResults& result) const
 { 
+  // just as a safety measure
+  //categorizedBallPositions.clear();
+  //categorizedBallPositions.reserve(static_cast<int>(theParameters.numParticles));
+  result.reset();
 
+  // calculate the own goal line
+
+  //TODO move to field Info as well
+  Vector2d ownGoalDir = (getFieldInfo().ownGoalPostRight - getFieldInfo().ownGoalPostLeft).normalize();
+  Vector2d ownLeftEndpoint = getFieldInfo().ownGoalPostLeft + ownGoalDir*(getFieldInfo().goalpostRadius + getFieldInfo().ballRadius);
+  Vector2d ownRightEndpoint = getFieldInfo().ownGoalPostRight - ownGoalDir*(getFieldInfo().goalpostRadius + getFieldInfo().ballRadius);
+  Math::LineSegment ownGoalLineGlobal(ownLeftEndpoint, ownRightEndpoint);
+
+  // draw own goal line
+  DEBUG_REQUEST("Simulation:OwnGoal",
+    FIELD_DRAWING_CONTEXT;
+    PEN("DADADA", 7);
+    LINE(ownGoalLineGlobal.begin().x,ownGoalLineGlobal.begin().y,
+         ownGoalLineGlobal.end().x,ownGoalLineGlobal.end().y);
+  );
+  
+  // opp goal
+  vector<Math::LineSegment> goalBackSides = {
+      Math::LineSegment(getFieldInfo().oppGoalBackLeft      , getFieldInfo().oppGoalBackRight),
+      Math::LineSegment(getFieldInfo().opponentGoalPostLeft , getFieldInfo().oppGoalBackLeft),
+      Math::LineSegment(getFieldInfo().opponentGoalPostRight, getFieldInfo().oppGoalBackRight)};
+  
+
+  // current ball position
+  Vector2d globalBallStartPosition = getRobotPose() * getBallModel().positionPreview;
+  
+
+  // now generate predictions and categorize
+  for(size_t j=0; j < static_cast<size_t>(theParameters.numParticles); ++j)
+  {
+    // predict and calculate shoot line
+    Vector2d globalBallEndPosition = getRobotPose() * action.predict(getBallModel().positionPreview, true);
+
+    // check if collision detection with goal has to be performed
+    // if the ball start and end positions are inside of the field, you don't need to check
+    if(!getFieldInfo().fieldRect.inside(globalBallEndPosition) || !getFieldInfo().fieldRect.inside(globalBallStartPosition))
+	  {
+      // calculate if there is a collision with the opponen goal and where the ball would stop
+      bool collisionWithGoal = calculateCollision(goalBackSides, globalBallStartPosition, globalBallEndPosition, globalBallEndPosition);
+
+      // draw balls and goal box if there are collisions
+      DEBUG_REQUEST("Simulation:draw_goal_collisions",
+        if(collisionWithGoal) 
+        {
+          FIELD_DRAWING_CONTEXT;
+        
+          PEN("000000", 10);
+          BOX(getFieldInfo().oppGoalRect.min().x, getFieldInfo().oppGoalRect.min().y, getFieldInfo().oppGoalRect.max().x, getFieldInfo().oppGoalRect.max().y);
+
+          if (getFieldInfo().oppGoalRect.inside(globalBallEndPosition)) {
+            PEN("0000AA66", 1);
+          } else {
+            PEN("FF00AA66", 1);
+          }
+          const double r = getFieldInfo().ballRadius;
+          FILLOVAL(globalBallEndPosition.x, globalBallEndPosition.y, r, r);
+      });
+    }
+
+    // default category
+    BallPositionCategory category = classifyBallPosition(globalBallEndPosition);
+    result.add(getRobotPose() / globalBallEndPosition, category);
+  }
+}
+
+bool ActionSimulator::calculateCollision(const vector<Math::LineSegment>& lines, const Vector2d& start, const Vector2d& end, Vector2d& result) const 
+{
+  Math::LineSegment motionLine(start, end);
+  double t_min = motionLine.getLength();
+
+  bool collision = false;
+  for(const Math::LineSegment& segment: lines) 
+  {
+    const double t = motionLine.Line::intersection(segment);
+
+    if(t >= 0 && t < t_min && segment.intersect(motionLine)) {
+      t_min = t;
+      collision = true;
+    }
+  }
+
+  if(collision) {
+    result = motionLine.point(t_min-getFieldInfo().ballRadius);
+  } else {
+    result = end;
+  }
+
+  return collision;
 }
 
 ActionSimulator::BallPositionCategory ActionSimulator::classifyBallPosition( const Vector2d& globalBallPosition ) const
@@ -36,20 +128,21 @@ ActionSimulator::BallPositionCategory ActionSimulator::classifyBallPosition( con
   if(getFieldInfo().oppGoalRect.inside(globalBallPosition)) {
     category = OPPGOAL;
   }
+  // own goal :(
+  else if(getFieldInfo().ownGoalRect.inside(globalBallPosition)) {
+    category = OWNGOAL;
+  }
   // inside field
   // HACK: small gap between this and the borders of the goalbox
   //check y coordinates and 
   else if(getFieldInfo().fieldRect.inside(globalBallPosition) ||
+    // TODO: do we really need it?
       (globalBallPosition.x <= getFieldInfo().opponentGoalPostRight.x 
     && globalBallPosition.y > getFieldInfo().opponentGoalPostRight.y 
     && globalBallPosition.y < getFieldInfo().opponentGoalPostLeft.y)
     )
   {
     category = INFIELD;
-  }
-  // own goal
-  else if(getFieldInfo().ownGoalRect.inside(globalBallPosition)) {
-    category = OWNGOAL;
   }
   //Opponent Groundline Out - Ball einen Meter hinter Roboter mind ansto hhe. jeweils seite wo ins ausgeht
   else if(globalBallPosition.x > getFieldInfo().xPosOpponentGroundline) {

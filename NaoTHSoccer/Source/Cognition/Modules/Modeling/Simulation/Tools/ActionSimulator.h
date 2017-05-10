@@ -11,36 +11,38 @@
 
 // Representations
 #include "Representations/Infrastructure/FrameInfo.h"
+#include "Representations/Infrastructure/FieldInfo.h"
 #include "Representations/Modeling/BallModel.h"
 #include "Representations/Modeling/RobotPose.h"
-#include "Representations/Modeling/GoalModel.h"
-#include "Representations/Modeling/RobotPose.h"
+//#include "Representations/Modeling/GoalModel.h"
 #include "Representations/Modeling/KickActionModel.h"
-#include "Representations/Modeling/ObstacleModel.h"
+//#include "Representations/Modeling/ObstacleModel.h"
 
 //Tools
 #include <Tools/Math/Vector2.h>
+#include <Tools/Math/Line.h>
+
 #include <Tools/Math/Probabilistics.h>
-#include "Tools/DataStructures/RingBufferWithSum.h"
+//#include "Tools/DataStructures/RingBufferWithSum.h"
 #include <Tools/DataStructures/ParameterList.h>
-#include <Tools/Debug/DebugParameterList.h>
-#include "Tools/Debug/DebugModify.h"
-#include <Representations/Debug/Stopwatch.h>
-#include "Tools/Filters/AssymetricalBoolFilter.h"
+//#include "Tools/Filters/AssymetricalBoolFilter.h"
+
 
 // Debug
+#include <Tools/Debug/DebugParameterList.h>
+#include "Tools/Debug/DebugModify.h"
 #include <Tools/Debug/DebugRequest.h>
+
 
 BEGIN_DECLARE_MODULE(ActionSimulator)
   PROVIDE(DebugModify)
   PROVIDE(DebugRequest)
   PROVIDE(DebugDrawings)
   PROVIDE(DebugParameterList)
-  PROVIDE(StopwatchManager)
-
+  
   REQUIRE(FrameInfo)
-  REQUIRE(FieldInfo)  
-  REQUIRE(ObstacleModel)
+  REQUIRE(FieldInfo)
+//  REQUIRE(ObstacleModel)
   REQUIRE(BallModel)
   REQUIRE(RobotPose)
   //REQUIRE(SelfLocGoalModel)
@@ -77,7 +79,7 @@ public:
   {
   public:
 	
-    Parameters() : ParameterList("PotentialActionParameters")
+    Parameters() : ParameterList("ActionParameters")
     {
       PARAMETER_REGISTER(sidekick_right.speed) = 750;
       PARAMETER_REGISTER(sidekick_right.speed_std) = 150;
@@ -133,6 +135,7 @@ public:
   private:
     KickActionModel::ActionId _id;
     std::string _name;
+
     double action_speed;
     double action_speed_std;
     double action_angle;
@@ -225,8 +228,8 @@ public:
   };
 
 private:
-  void simulateAction( const Action& action ) const;
-
+  void simulateAction( const Action& action, ActionResults& result ) const;
+  bool calculateCollision(const std::vector<Math::LineSegment>& lines, const Vector2d& start, const Vector2d& end, Vector2d& result) const;
 
   BallPositionCategory classifyBallPosition( const Vector2d& ballPosition ) const;
 
