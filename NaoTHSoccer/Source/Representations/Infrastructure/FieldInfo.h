@@ -200,6 +200,9 @@ public:
   Vector2d oppGoalBackLeft;
   Vector2d oppGoalBackRight;
 
+  Vector2d ownGoalBackLeft;
+  Vector2d ownGoalBackRight;
+
 };
 
 
