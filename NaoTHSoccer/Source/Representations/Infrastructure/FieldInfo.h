@@ -117,6 +117,8 @@ public:
   Geometry::Rect2d carpetRect;
   Geometry::Rect2d ownHalfRect;
   Geometry::Rect2d oppHalfRect;
+  Geometry::Rect2d ownGoalRect;
+  Geometry::Rect2d oppGoalRect;
 
   enum LineCrossingsId
   {
@@ -193,6 +195,14 @@ public:
 
   /** */
   LinesTable fieldLinesTable;
+
+  // Moved from Simulation.cpp
+  Vector2d oppGoalBackLeft;
+  Vector2d oppGoalBackRight;
+
+  Vector2d ownGoalBackLeft;
+  Vector2d ownGoalBackRight;
+
 };
 
 
