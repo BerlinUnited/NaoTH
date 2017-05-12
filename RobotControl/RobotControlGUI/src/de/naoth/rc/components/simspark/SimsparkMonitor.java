@@ -5,6 +5,7 @@ import de.naoth.rc.components.teamcomm.TeamCommMessage;
 import de.naoth.rc.dataformats.SPLMessage;
 import de.naoth.rc.dataformats.Sexp;
 import de.naoth.rc.dataformats.SimsparkState;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
@@ -39,22 +40,30 @@ public class SimsparkMonitor extends Simspark {
     /**
      * Main method of the simspark monitor thread.
      */
+    @Override
     public void run() {
         if (socket == null) {
             return;
         }
         ExecutorService s = Executors.newSingleThreadExecutor();
         
-        while (isRunning) {
+        while (isConnected.get()) {
             try {
                 sleep(1);
-                final String msg = getServerMessage();
+            } catch (InterruptedException ex) {
+                Logger.getLogger(SimsparkMonitor.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            try {
+                final String msg;
+                msg = receiveMessage();
+
                 if (msg != null) {
                     // parse message in another thread
                     s.submit(new SimsparkMonitorMessageParser(msg));
                 }
-            } catch (InterruptedException ex) {
-                Logger.getLogger(SimsparkMonitor.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (IOException ex) {
+                // NOTE: is there a way to notiy the user?!
+                checkConnection();
             }
         }
     }
@@ -69,6 +78,7 @@ public class SimsparkMonitor extends Simspark {
             this.parser.setExpression(msg);
         }
 
+        @Override
         public void run() {
             parseMessages(parser.parseSexp());
         }

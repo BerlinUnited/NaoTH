@@ -11,6 +11,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.beans.property.BooleanProperty;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.table.TableModel;
@@ -282,48 +283,22 @@ public class Simspark extends AbstractDialog
         } else if(simspark_comm == null || !simspark_comm.isAlive()) {
             JOptionPane.showMessageDialog(this, "Not connected to simspark!", "Not connected", JOptionPane.ERROR_MESSAGE);
         } else {
-            simspark_comm.sendAgentMessage(((String)cmd.getEditor().getItem()).trim());
+            try {
+                simspark_comm.sendMessage(((String)cmd.getEditor().getItem()).trim());
+            } catch (IOException ex) {
+                if(!simspark_comm.checkConnection()) {
+                    JOptionPane.showMessageDialog(null, "Connection to server lost!\nStill running?", "Lost connection", JOptionPane.WARNING_MESSAGE);
+                }
+            }
         }
     }//GEN-LAST:event_btnSendCommandActionPerformed
 
     private void btnConnectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConnectActionPerformed
         if (btnConnect.isSelected()) {
-                if (simspark_comm != null) {
-                    try {
-                        simspark_comm.disconnect();
-                    } catch (IOException | InterruptedException ex) {
-                        Logger.getLogger(Simspark.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                }
-                try {
-                    simspark_comm = new SimsparkMonitor();
-                    simspark_comm.connect(tf_monitor_ip.getText().trim(), Integer.parseInt(tf_monitor_port.getText().trim()));
-
-                    // start/schedule UI-updater
-                    this.timerUpdater = new Timer();
-                    this.timerUpdater.scheduleAtFixedRate(new UpdateTableTask(simspark_comm.state), 100, 33);
-
-                    // update UI
-                    tb_monitor.setIcon(connectionIcon);
-                    tf_monitor_ip.setEnabled(false);
-                    tf_monitor_port.setEnabled(false);
-                } catch (IOException ex) {
-                    JOptionPane.showMessageDialog(null, "Couldn't connect!", "Couldn't connect", JOptionPane.WARNING_MESSAGE);
-                    simspark_comm = null;
-                    btnConnect.setSelected(false);
-                }
+            this.connect();
+            if(!simspark_comm.checkConnection()) { btnConnect.setSelected(false); }
         } else {
-            if (simspark_comm != null) {
-                try {
-                    simspark_comm.disconnect();
-                } catch (IOException | InterruptedException ex) {
-                    Logger.getLogger(Simspark.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-            simspark_comm = null;
-            tb_monitor.setIcon(null);
-            tf_monitor_ip.setEnabled(true);
-            tf_monitor_port.setEnabled(true);
+            this.disconnect();
         }
     }//GEN-LAST:event_btnConnectActionPerformed
 
@@ -355,13 +330,13 @@ public class Simspark extends AbstractDialog
     }//GEN-LAST:event_tb_agentActionPerformed
 
     private void tf_monitor_ipActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tf_monitor_ipActionPerformed
-        // "click the connect button"
-        btnConnect.doClick();
+        // pressed enter/return in monitor ip textfield
+        this.connect();
     }//GEN-LAST:event_tf_monitor_ipActionPerformed
 
     private void tf_monitor_portActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tf_monitor_portActionPerformed
-        // "click the connect button"
-        btnConnect.doClick();
+        // pressed enter/return in monitor port textfield
+        this.connect();
     }//GEN-LAST:event_tf_monitor_portActionPerformed
 
     private void addTableContent() {
@@ -410,6 +385,58 @@ public class Simspark extends AbstractDialog
                 model.setValueAt(state.get(model.getValueAt(i, 0)), i, 1);
             }
         } // end run
+    }
+    
+    private void connect() {
+        try {
+            if(simspark_comm != null) {
+                simspark_comm.disconnect();
+            }
+            simspark_comm = new SimsparkMonitor();
+            // register connection listener
+            simspark_comm.isConnected.addListener((o) -> {
+                if(((BooleanProperty)o).get()) {
+                    btnConnect.setSelected(true);
+                    this.onConnect();
+                } else {
+                    btnConnect.setSelected(false);
+                    disconnect();
+                    onDisconnect();
+                }
+            });
+            simspark_comm.connect(tf_monitor_ip.getText().trim(), Integer.parseInt(tf_monitor_port.getText().trim()));
+        } catch (IOException | InterruptedException ex) {
+            JOptionPane.showMessageDialog(null, "Couldn't connect!", "Couldn't connect", JOptionPane.WARNING_MESSAGE);
+        }
+    }
+    
+    private void disconnect() {
+        try {
+            if(simspark_comm != null) {
+                simspark_comm.disconnect();
+            }
+            simspark_comm = null;
+        } catch (IOException | InterruptedException ex) {
+            Logger.getLogger(Simspark.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    private void onConnect() {
+        // start/schedule UI-updater
+        this.timerUpdater = new Timer();
+        this.timerUpdater.scheduleAtFixedRate(new UpdateTableTask(simspark_comm.state), 100, 33);
+
+        // update UI
+        tb_monitor.setIcon(connectionIcon);
+        tf_monitor_ip.setEnabled(false);
+        tf_monitor_port.setEnabled(false);
+    }
+    
+    private void onDisconnect() {
+        tb_monitor.setIcon(null);
+        tf_monitor_ip.setEnabled(true);
+        tf_monitor_port.setEnabled(true);
+        timerUpdater.cancel();
     }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
