@@ -9,7 +9,7 @@ import argparse
 import signal
 
 # protobuf
-sys.path.append('/home/philipp/NaoTH/naoth/Utils/pyLogEvaluator')
+sys.path.append('../../pyLogEvaluator')
 from Representations_pb2 import *
 
 
