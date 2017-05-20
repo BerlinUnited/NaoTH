@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-
+import cmd
 import socket
 import sys
 import threading
@@ -41,7 +41,7 @@ class TeamCommGenerator(threading.Thread):
 
     def run(self):
         self.running = True
-        print(self.name, " is running")
+        #print(self.name, " is running")
         while (self.running):
             try:
                 # Send message
@@ -52,11 +52,29 @@ class TeamCommGenerator(threading.Thread):
                 print('Error Code : ' + str(msg[0]) + ' Message ' + msg[1])
                 self.running = False
 
+    def getMessageFields(self):
+        return list(self.msg.__dict__.keys()) + list(self.msg.data.DESCRIPTOR.fields_by_name.keys())
+
     def hasMessageField(self, field):
         return field in self.msg.__dict__ or field in self.msg.data.DESCRIPTOR.fields_by_name
 
     def setMessageField(self, field, value):
-        parent = None
+        parent, field = self.__getParent(field)
+        # we got the "right" parent container
+        if parent is not None:
+            value = self.convertToType(type(getattr(parent, field)),value)
+            if value is not None:
+                setattr(parent, field, value)
+            else:
+                print("*** Couldn't set value, not a primitive value type!")
+        else:
+            print("*** Unknown message field")
+
+    def getMessageField(self, field):
+        parent, field = self.__getParent(field)
+        return getattr(parent, field)
+
+    def __getParent(self, field):
         # field contains '.' -> nested field access
         if '.' in field:
             fields = field.split('.')
@@ -67,15 +85,11 @@ class TeamCommGenerator(threading.Thread):
                     if hasattr(parent, f):
                         parent = getattr(parent, f)
                     else:
-                        parent = None
-                        break
+                        return (None, None)
+                return (parent, field)
         else:
-            parent = self.__getField(field)
-        # we got the "right" parent container
-        if parent is not None:
-            setattr(parent, field, self.convertToType(type(getattr(parent, field)),value))
-        else:
-            raise Exception("Unknown message field")
+            return (self.__getField(field), field)
+        return (None, None)
 
     def __getField(self, field):
         if field in self.msg.__dict__:
@@ -86,14 +100,16 @@ class TeamCommGenerator(threading.Thread):
 
     def convertToType(self, type, value):
         """Convert the given value to the specified type.
-        Returns the value 'as is', if we have not converting rule."""
+        Returns 'None', if we haven't a converting rule."""
         if type == int:
             return int(value)
         elif type == float:
             return float(value)
         elif type == bool:
             return bool(value)
-        return value
+        elif type == str:
+            return value
+        return None
 
 class SPLMessage(Struct):
     """Representation of the standard SPLMessage."""
@@ -188,53 +204,57 @@ class Pose2D(object):
     def __repr__(self):
         return str(self.__dict__)
 
-class CommandParser:
-    def __init__(self, thread):
-        self.thread = thread
-        # create the top-level parser
-        self.parser = argparse.ArgumentParser(add_help=False)
-        subparsers = self.parser.add_subparsers()
-        # help command
-        parser_help = subparsers.add_parser('help', aliases=['h'])
-        parser_help.set_defaults(func=self.help)
-        # quit command
-        parser_quit = subparsers.add_parser('quit', aliases=['q', 'exit'])
-        parser_quit.set_defaults(func=self.quit)
-        # info command
-        parser_info = subparsers.add_parser('info', aliases=['i'])
-        parser_info.set_defaults(func=self.info)
-        # set command
-        parser_set = subparsers.add_parser('set', aliases=['s'])
-        parser_set.add_argument('field', default=None)
-        parser_set.add_argument('value', default=None)
-        parser_set.set_defaults(func=self.set)
+class CommandParser(cmd.Cmd):
+    intro = 'TeamComm message generator.\n------------------------------\nType help or ? to list commands and use »tab« for completion.\n'
+    prompt = '>>> '
 
-    def parse(self, instr):
-        # parse the args and call whatever function was selected
-        try:
-            cmd = self.parser.parse_args(instr.split())
-            cmd.func(cmd)
-        except Exception as e:
-            print(e)
-        except:
-            print("Unknown command")
+    def __init__(self, tcg):
+        super(CommandParser, self).__init__()
+        self.thread = tcg
 
-    def quit(self, args):
-        print("quitting!")
-        # stopping & join threads
+    def default(self, line):
+        if line == 'EOF' or line == 'q':
+            return self.do_quit(None)
+        else:
+            super(CommandParser, self).default(line)
+
+    def do_quit(self, args):
+        'Stops sending messages and exits.'
         self.thread.running = False
         self.thread.join()
+        return True
 
-    def help(self, args):
-        self.parser.print_help()
-        #self.parser.print_usage()
+    def do_info(self, args):
+        'Prints out the specified value or all values of the currently sending messages.'
+        if args:
+            value = self.thread.getMessageField(args)
+            print(args+" = "+str(value) if value is not None else "*** Unknown message field")
+        else:
+            print(self.thread)
 
-    def info(self, args):
-        print(self.thread)
+    def do_set(self, args):
+        'Sets the value of a given message field. e.g.: set playerNumber 4\nNested values can be accessed via ».«, eg. set pose.x 3.4'
+        params = args.split()
+        if len(params) != 2:
+            print("*** invalid number of arguments")
+            return
+        self.thread.setMessageField(*params)
 
-    def set(self, args):
-        self.thread.setMessageField(args.field, args.value)
+    def complete_set(self, text, line, begidx, endidx):
+        # only complete the "first" argument
+        if len(line.split()) == 1 and len(text) == 0:
+            return self.thread.getMessageFields()
+        elif line.split().index(text) == 1:
+            return [ i for i in self.thread.getMessageFields() if i.startswith(text) ]
+        return []
 
+    def complete_info(self, text, line, begidx, endidx):
+        # only complete the "first" argument
+        if len(line.split()) == 1 and len(text) == 0:
+            return self.thread.getMessageFields()
+        elif line.split().index(text) == 1:
+            return [ i for i in self.thread.getMessageFields() if i.startswith(text) ]
+        return []
 
 def parseArguments():
     parser = argparse.ArgumentParser(description='Starts a TeamCommMessage generator', epilog="Example: {} -n 10.0.4.255 -p 10004".format(sys.argv[0]))
@@ -244,6 +264,7 @@ def parseArguments():
 
     return parser.parse_args()
 
+# NOTE: doesn't work with cmd.Cmd !?
 def signalHandler(sig, frm):
     global tc
     if signal.SIGINT == sig:
@@ -251,8 +272,6 @@ def signalHandler(sig, frm):
 
 #
 if '__main__' == __name__:
-    print("Starting ...")
-
     args = parseArguments()
 
     signal.signal(signal.SIGINT, signalHandler)
@@ -261,11 +280,7 @@ if '__main__' == __name__:
 
     tc.start()
 
-    cmdParser = CommandParser(tc)
-    while tc.is_alive() and tc.running:
-        instr = input(">>> ").strip()
-        if len(instr) > 0:
-            cmdParser.parse(instr)
+    CommandParser(tc).cmdloop()
 
     tc.join()
 
