@@ -215,4 +215,8 @@ solution "NaoTHSoccer"
       kind "SharedLib"
       links { "NaoTHSoccer", "Commons" }
       vpaths { ["*"] = FRAMEWORK_PATH .. "/Platforms/Source/LogSimulatorJNI" }
+	dofile (FRAMEWORK_PATH .. "/Platforms/Make/DummySimulator.lua")
+	  kind "ConsoleApp"
+      links { "NaoTHSoccer", "Commons" }
+	  vpaths { ["*"] = FRAMEWORK_PATH .. "/Platforms/Source/DummySimulator" }
   end
