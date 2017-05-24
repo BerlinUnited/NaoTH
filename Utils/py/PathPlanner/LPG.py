@@ -11,7 +11,7 @@ base           = 1.1789
 minimal_cell   = 100
 angular_part   = 16
 
-parameter_s = 1.25
+parameter_s = 1
 
 def distance(coords):
     x = coords[0]
@@ -75,7 +75,7 @@ def obst_func(cell, obst):   # obst is obstacle coordinates in x, y
     a = r_f - r_d  # cost of constant part
     r = r_f + r_d  # radius of constant part
     s = parameter_s*r        # radius of linear decreasing part
-    
+
     return np.maximum(np.minimum(1 - ((dist_to_obst_mid - r) / s), 1), 0) * a
 
 # A STAR IMPLEMENTATION
@@ -175,9 +175,9 @@ def draw(obstacles, target, algorithm):
         obstacle_set = set()
         for k in obstacles:
             obstacle_set.add(cell_mid(k))
-            ax.add_artist(Circle(xy=(k[0], k[1]), radius=(k[2]+(dist_between(k, (0, 0))/100)) * parameter_s, fill=True, color='green'))
-            ax.add_artist(Circle(xy=(k[0], k[1]), radius=k[2]+dist_between(k, (0, 0))/100, fill=True, color='red'))
-            ax.plot(k[0], k[1], '*', c='black')
+            ax.add_artist(Circle(xy=(k[0], k[1]), radius=k[2]+(dist_between(k, (0, 0))/100) + (k[2]+(dist_between(k, (0, 0))/100) * parameter_s), fill=True, color='green', alpha=.25))
+            ax.add_artist(Circle(xy=(k[0], k[1]), radius=k[2]+dist_between(k, (0, 0))/100, fill=True, color='red', alpha=.25))
+            ax.add_artist(Circle(xy=(k[0], k[1]), radius=10, fill=True, color='black'))
 
     # draw rings
     for k in range(1, 17):
