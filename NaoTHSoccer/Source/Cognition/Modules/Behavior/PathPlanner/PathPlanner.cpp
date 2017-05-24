@@ -15,7 +15,6 @@ last_stepcontrol_stepID(0),
 kick_planned(false)
 {
   DEBUG_REQUEST_REGISTER("PathPlanner:walk_to_ball", "Walks to the ball from far.", false);
-  DEBUG_REQUEST_REGISTER("PathPlanner:control_ball", "Keeps in control of the ball.", false);
 }
 
 void PathPlanner::execute()
@@ -26,9 +25,6 @@ void PathPlanner::execute()
                 {
                   walk_to_ball(Foot::NONE);
                 }
-                );
-  DEBUG_REQUEST("PathPlanner:control_ball",
-                control_ball(Foot::RIGHT);
                 );
   // --- DEBUG REQUESTS ---
 
@@ -199,13 +195,13 @@ void PathPlanner::approach_ball(const Foot foot)
   double stepRotation                = ballPos.abs() > 250 ? ballPos.angle() : 0;
 
   switch (foot) {
-  case Foot::LEFT:  
+  case Foot::LEFT:
     ballPos    = getBallModel().positionPreviewInLFoot;
     coordinate = WalkRequest::LFoot;
     stepX      = ballPos.x - std::abs(ballPos.y - getPathModel().yOffset) - getPathModel().distance - ballRadius;
     stepY      = ballPos.y - getPathModel().yOffset;
     break;
-  case Foot::RIGHT: 
+  case Foot::RIGHT:
     ballPos    = getBallModel().positionPreviewInRFoot;
     coordinate = WalkRequest::RFoot;
     stepX      = ballPos.x - std::abs(ballPos.y + getPathModel().yOffset) - getPathModel().distance - ballRadius;
@@ -223,7 +219,7 @@ void PathPlanner::approach_ball(const Foot foot)
     double character       = 0.7;
     double scale           = 1.0;
     double speed_direction = 0.0;
-    add_step(pose, type, coordinate, character, foot, scale, speed_direction);
+    add_step(pose, type, coordinate, character, Foot::NONE, scale, speed_direction);
   }
   else
   {
@@ -239,7 +235,7 @@ void PathPlanner::short_kick(const Foot foot)
     WalkRequest::Coordinate coordinate = WalkRequest::Hip;
 
     switch (foot) {
-    case Foot::LEFT:  
+    case Foot::LEFT:
       ballPos    = getBallModel().positionPreviewInLFoot;
       coordinate = WalkRequest::LFoot;
       break;
@@ -320,18 +316,18 @@ void PathPlanner::sidekick(const Foot foot)
   {
     double speed_direction             = 0.0;
     double stepY                       = 0.0;
-    Vector2d ballPos                   = Vector2d(); 
+    Vector2d ballPos                   = Vector2d();
     WalkRequest::Coordinate coordinate = WalkRequest::Hip;
 
     switch (foot) {
     case Foot::LEFT:
-      ballPos        = getBallModel().positionPreviewInLFoot; 
+      ballPos        = getBallModel().positionPreviewInLFoot;
       coordinate     = WalkRequest::LFoot;
       speed_direction = 90;
       stepY          = 100;
       break;
     case Foot::RIGHT:
-      ballPos        = getBallModel().positionPreviewInRFoot; 
+      ballPos        = getBallModel().positionPreviewInRFoot;
       coordinate     = WalkRequest::RFoot;
       speed_direction = -90;
       stepY          = -100;
@@ -364,10 +360,10 @@ void PathPlanner::sidekick(const Foot foot)
 // Stepcontrol
 void PathPlanner::add_step(Pose2D &pose, const StepType &type, const WalkRequest::Coordinate &coordinate, const double character, const Foot foot, const double scale, const double speedDirection)
 {
-  step_buffer.push_back(Step_Buffer_Element({ pose, 
-                                              speedDirection, 
-                                              type, 
-                                              type == StepType::KICKSTEP ? 300 : 250, 
+  step_buffer.push_back(Step_Buffer_Element({ pose,
+                                              speedDirection,
+                                              type,
+                                              type == StepType::KICKSTEP ? 300 : 250,
                                               character,
                                               scale,
                                               foot,
@@ -382,7 +378,7 @@ void PathPlanner::update_step(Pose2D &pose)
   step_buffer.front()                = updatedElement;
 }
 
-void PathPlanner::manage_step_buffer() 
+void PathPlanner::manage_step_buffer()
 {
   if (step_buffer.empty()) {
     return;
@@ -453,9 +449,4 @@ void PathPlanner::execute_step_buffer()
   // false means right foot
   getMotionRequest().walkRequest.stepControl.moveLeftFoot = foot_to_use == Foot::RIGHT ? false : true;
   STOPWATCH_STOP("PathPlanner:execute_steplist");
-}
-
-void PathPlanner::control_ball(const Foot foot)
-{
-
 }
