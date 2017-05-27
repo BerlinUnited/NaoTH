@@ -1,3 +1,6 @@
+#
+# Copy this file to the robot and execute there to change NaoTH to default Naoqi
+# 
 #check if root first
 if [[ $EUID -ne 0 ]]; then
    echo "This script must be run as root"
