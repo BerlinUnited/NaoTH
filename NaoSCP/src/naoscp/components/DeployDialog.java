@@ -48,7 +48,7 @@ public class DeployDialog extends javax.swing.JDialog {
         this.setLocationRelativeTo(c);
         this.usbPanel.refresh();
 
-        this.unmountButton.setVisible(this.usbPanel.hasSelection());        
+        this.unmountButton.setEnabled(this.usbPanel.hasSelection());        
         
         this.setVisible(true);
         

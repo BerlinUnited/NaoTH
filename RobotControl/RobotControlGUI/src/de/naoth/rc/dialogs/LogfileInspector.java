@@ -8,21 +8,23 @@ package de.naoth.rc.dialogs;
 
 import de.naoth.rc.logmanager.LogDataFrame;
 import de.naoth.rc.components.FileDrop;
+import de.naoth.rc.components.teamcomm.TeamCommManager;
+import de.naoth.rc.components.teamcomm.TeamCommMessage;
 import de.naoth.rc.core.dialog.AbstractDialog;
 import de.naoth.rc.core.dialog.DialogPlugin;
 import de.naoth.rc.core.dialog.RCDialog;
 import de.naoth.rc.dataformats.LogFile;
+import de.naoth.rc.dataformats.SPLMessage;
 import de.naoth.rc.logmanager.LogFileEventManager;
+import de.naoth.rc.messages.Representations;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import javax.swing.ImageIcon;
-import javax.swing.JDialog;
 import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
@@ -41,6 +43,8 @@ public class LogfileInspector extends AbstractDialog
     //static public RobotControl parent;
     @InjectPlugin
     static public LogFileEventManager logFileEventManager;
+    @InjectPlugin
+    public static TeamCommManager teamcommManager;
   }
 
   private LogFile logFile = null;
@@ -211,16 +215,34 @@ public class LogfileInspector extends AbstractDialog
         try
         {
           HashMap<String,LogDataFrame> f = this.logFile.readFrame(this.jSlider1.getValue());
+          if(f != null) {
+            StringBuilder sb = new StringBuilder();
+            sb.append(this.jSlider1.getValue()).append('\n');
+            for(String s: f.keySet()) {
+                sb.append(s).append('\n');
+            }
+            this.jTextArea1.setText(sb.toString());
+            
+            if(f.containsKey("TeamMessage")) {
+                LogDataFrame frame = f.get("TeamMessage");
+                List<TeamCommMessage> c = new ArrayList<>();
+                Representations.TeamMessage.parseFrom(frame.getData()).getDataList().stream().forEach(msg->{
+                    SPLMessage spl = new SPLMessage(msg);
+                    c.add(new TeamCommMessage(
+                        System.currentTimeMillis(),
+                        "10.0."+spl.teamNum+"."+spl.playerNum, // artificially set an ip
+                        spl,
+                        spl.teamNum != 4) // TOOD: can we set anywhere our team number?!?
+                    );
+                });
+                Plugin.teamcommManager.receivedMessages(c);
+            }
 
-          StringBuilder sb = new StringBuilder();
-          sb.append(this.jSlider1.getValue()).append('\n');
-          for(String s: f.keySet()) {
-              sb.append(s).append('\n');
-          }
-          this.jTextArea1.setText(sb.toString());
-          
-          if(Plugin.logFileEventManager != null) {  
-            Plugin.logFileEventManager.fireLogFrameEvent(f.values());
+            if(Plugin.logFileEventManager != null) {  
+              Plugin.logFileEventManager.fireLogFrameEvent(f.values());
+            }
+          } else {
+            this.jTextArea1.setText("Unable to retrieve frame info!");
           }
         }catch(IOException e)
         {

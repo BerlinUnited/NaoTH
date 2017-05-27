@@ -8,7 +8,9 @@ option decide_and_go_to_passive_position
 
   initial state idle {
 	  decision {
-      else if (action_done || state_time > 10000) // search for maximum 10s
+      else 
+if (action_done || state_time > 10000)
+ // search for maximum 10s
         goto check_player_number;
       else
         stay;
@@ -46,9 +48,9 @@ option decide_and_go_to_passive_position
     }
     action {
       go_to_and_keep_passive_position(
-        x  = field.centerCircleRadius,
-        y  = field.yPosLeftPenaltyArea, 
-        rot= 0);
+        x  =(field.xPosOppPenaltyMark + field.centerCircleRadius)/2,
+        y = field.yPosRightGoal, 
+        rot = 140);
     }
   }
 
@@ -60,9 +62,9 @@ option decide_and_go_to_passive_position
     }
     action {
       go_to_and_keep_passive_position(
-        x  =(field.xPosOppPenaltyMark + field.centerCircleRadius)/2,
-        y = field.yPosRightFlank, 
-        rot = 140);
+        x = -field.centerCircleRadius,
+        y = -field.centerCircleRadius/2, 
+        rot = 0);
     }
   }
 
@@ -73,9 +75,10 @@ option decide_and_go_to_passive_position
     }
     action {
       go_to_and_keep_passive_position(
-        x =(field.xPosOwnPenaltyMark+field.centerCircleRadius)/2, 
-        y =field.yPosRightPenaltyArea, 
+        x=(field.xPosOwnPenaltyArea+field.xPosOwnPenaltyMark)/2, 
+        y=field.yPosRightGoal+400, 
         rot=0);
+
     }
   }
 
@@ -86,9 +89,9 @@ option decide_and_go_to_passive_position
     }
     action {
       go_to_and_keep_passive_position(
-        x = field.xPosOwnPenaltyMark + 500, 
-        y = field.yPosLeftGoal, 
-        rot=-15);
+        x=field.xPosOwnPenaltyMark + 500, 
+        y=field.yPosLeftGoal-400,
+        rot=0);
     }
   }
 }
