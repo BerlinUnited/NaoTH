@@ -71,18 +71,18 @@ public:
   //int getMaxFrame() { return *(logFileScanner.last());}
 
   /////////////////////// get ///////////////////////
-  template<class T> void generalGet(T& data, std::string name) const;
+  //template<class T> void generalGet(T& data, std::string name) const;
 
-#define SIM_GET(rep) void get(rep& data) const {generalGet(data,#rep);}
+//#define SIM_GET(rep) void get(rep& data) const {generalGet(data,#rep);}
 
   // generic get
-  template<class T> void get(T& data) const { generalGet(data, typeid(T).name()); }
+//  template<class T> void get(T& data) const { generalGet(data, typeid(T).name()); }
 
   // do nothing
-  template<class T> void set(const T& /*data*/){}
+//  template<class T> void set(const T& /*data*/){}
 
   //SIM_GET(FrameInfo);
-  void get(unsigned int& /*timestamp*/) const {}
+//  void get(unsigned int& /*timestamp*/) const {}
 
 
   //SIM_GET(FrameInfo);
@@ -126,18 +126,18 @@ protected:
 
 public:
   // the flag for backend mode, which is used by LogfilePlayer of RobotControl
-  //bool backendMode;
+  bool backendMode;
   // play the logfie according to the time of the frames
   //bool realTime;
 
-  //LogFileScanner logFileScanner;
-  //LogFileScanner::FrameIterator currentFrame;
-  //LogFileScanner::Frame representations;
+  DummyModule dummyModule;
+  DummyModule::FrameIterator currentFrame;
+  DummyModule::Frame representations;
 
-  //unsigned int lastFrameTime;
+  unsigned int lastFrameTime;
   // the simulated time and the framenumber contineously increases even if the logfile is played backwards (!)
-  //unsigned int simulatedTime;
-  //unsigned int simulatedFrameNumber;
+  unsigned int simulatedTime;
+  unsigned int simulatedFrameNumber;
 
   char getInput();
 
@@ -145,13 +145,13 @@ public:
   * reads in the frame which begins at the current frame position and executes
   * the "processes"
   */
-  //void executeCurrentFrame();
+  void executeCurrentFrame();
 
   /**
   * if the frame info is not available: create new one
   * the time grows monotonously
   */
-  //void adjust_frame_time();
+  void adjust_frame_time();
 
 private:
   DebugServer theDebugServer;

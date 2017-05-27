@@ -7,6 +7,8 @@
 #ifndef _DummyModule_h_
 #define _DummyModule_h_
 
+#include <vector>
+
 #include <ModuleFramework/Module.h>
 
 #include <Tools/Debug/DebugRequest.h>
@@ -22,11 +24,35 @@ protected:
     return *(BlackBoardInterface::getBlackBoard().getRepresentation<DataHolder<DebugRequest> >("DebugRequest"));
   }
 
-private:
-  
-
 public:
-  
+  struct RepresentationData
+  {
+    RepresentationData() : valid(false) {}
+    bool valid;
+    std::vector<char> data;
+  };
+  //
+  typedef std::map<std::string, RepresentationData > Frame;
+  typedef std::list<unsigned int>::const_iterator FrameIterator;
+
+  void readFrame(unsigned int currentFrame, Frame& frame);
+
+  FrameIterator begin() {
+    return frames.begin();
+  }
+
+  FrameIterator end() {
+    return frames.end();
+  }
+
+  FrameIterator last() {
+    return --frames.end();
+  }
+
+private:
+  std::list<unsigned int> frames;
+
+public:  
   void init()
   {
 

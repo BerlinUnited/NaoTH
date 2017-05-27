@@ -62,7 +62,7 @@ int main(int argc, char** argv)
 
   //init_agent(sim);
   Cognition* theCognition = createCognition();
-  //Motion* theMotion = createMotion();
+  //Motion* theMotion = createMotion(); // crashes at inversekinematics
 
   // ACHTUNG: C-Cast (!)
   ModuleManager* theCognitionManager = getModuleManager(theCognition);
@@ -95,9 +95,6 @@ int main(int argc, char** argv)
 
   // start the execution
   sim.main();
-
-  // dump some debug information
-  //StopwatchManager::getInstance().dump();
 
   deleteCognition(theCognition);
   //deleteMotion(theMotion);

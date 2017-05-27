@@ -303,7 +303,7 @@ void Simulator::executeCurrentFrame()
     
   // execute
   runCognition();
-  runMotion();
+  //runMotion();
   
   //std::cout << "end executeCurrentFrame" << std::endl;
 
