@@ -1,3 +1,4 @@
+#!/bin/bash
 #
 # Copy this file to the robot and execute there to change NaoTH to default Naoqi
 # 
@@ -7,14 +8,27 @@ if [[ $EUID -ne 0 ]]; then
    exit 1
 fi
 
-# nao stop
-/etc/init.d/naoth stop
+# set volume to 88%
+sudo -u nao pactl set-sink-mute 0 false
+sudo -u nao pactl set-sink-volume 0 88%
 
-sleep 2
+# play initial sound
+sudo -u nao /usr/bin/paplay /home/nao/naoqi/Media/usb_start.wav
 
+naoth stop
 /etc/init.d/naoqi stop
 
 sleep 2
+
+# hier passiert die eigentliche arbeit
+chown root:root ./checkRC.sh;
+chmod 744 ./checkRC.sh;
+
+# disable naoth and enable the naoqi server
+./checkRC.sh "naoth=disable naopathe=boot nginx=boot"
+
+# set the network to be configured by connman
+./checkRC.sh "connman=boot net.eth0=disable net.wlan0=disable"
 
 # Set autoload.ini in /etc/naoqi to Naoqi
 cat > /etc/naoqi/autoload.ini << EOL
@@ -123,9 +137,9 @@ sounddetection
 soundlocalization
 
 basicawareness
-autonomousblinking
-autonomousmoves
-autonomouslife
+#autonomousblinking
+#autonomousmoves
+#autonomouslife
 dialog
 EOL
 
@@ -149,4 +163,5 @@ EOL
 
 sleep 2
 
-/etc/init.d/naoqi start
+# start the robot
+reboot
