@@ -23,6 +23,7 @@
 #include "MorphologyProcessor/KinematicChainProviderMotion.h"
 #include "SensorFilter/InertiaSensorCalibrator.h"
 #include "SensorFilter/InertiaSensorFilter.h"
+#include "SensorFilter/IMUModel.h"
 
 //#include <Representations/Modeling/CameraMatrixOffset.h>
 
@@ -38,6 +39,7 @@
 #include <Representations/Infrastructure/AccelerometerData.h>
 #include <Representations/Infrastructure/GyrometerData.h>
 #include <Representations/Infrastructure/DebugMessage.h>
+#include <Representations/Modeling/IMUData.h>
 #include "Representations/Modeling/GroundContactModel.h"
 
 // debug
@@ -139,11 +141,14 @@ private:
     Parameter() : ParameterList("Motion")
     {
       PARAMETER_REGISTER(useGyroRotationOdometry) = true;
-
+      PARAMETER_REGISTER(useIMUModel) = false;
+      PARAMETER_REGISTER(useInertiaSensorCalibration) = true;
       syncWithConfig();
     }
 
     bool useGyroRotationOdometry;
+    bool useIMUModel;
+    bool useInertiaSensorCalibration;
 
   } parameter;
 
@@ -162,6 +167,7 @@ private:
   //ModuleCreator<SupportPolygonGenerator>* theSupportPolygonGenerator;
   ModuleCreator<OdometryCalculator>* theOdometryCalculator;
   ModuleCreator<KinematicChainProviderMotion>* theKinematicChainProvider;
+  ModuleCreator<IMUModel>* theIMUModel;
 
   ModuleCreator<MotionEngine>* theMotionEngine;
 

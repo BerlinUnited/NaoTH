@@ -41,9 +41,11 @@
 #include "Tools/Debug/DebugImageDrawings.h"
 #include "Tools/Debug/DebugParameterList.h"
 #include "Tools/Debug/DebugModify.h"
+#include "Tools/Debug/DebugDrawings.h"
 
 BEGIN_DECLARE_MODULE(BallCandidateDetector)
   PROVIDE(DebugRequest)
+  PROVIDE(DebugDrawings)
   PROVIDE(DebugImageDrawings)
   PROVIDE(DebugImageDrawingsTop)
   PROVIDE(DebugParameterList)
@@ -114,6 +116,14 @@ private:
       PARAMETER_REGISTER(maxNumberOfKeys) = 4;
       PARAMETER_REGISTER(numberOfExportBestPatches) = 2;
 
+      PARAMETER_REGISTER(postBorderFactorClose) = 1.0;
+      PARAMETER_REGISTER(postBorderFactorFar) = 0.0;
+      PARAMETER_REGISTER(postMaxCloseSize) = 60;
+
+      PARAMETER_REGISTER(contrastUse) = false;
+      PARAMETER_REGISTER(contrastVariant) = 1;
+      PARAMETER_REGISTER(contrastMinimum) = 50;
+
       PARAMETER_REGISTER(blackKeysCheck.enable) = false;
       PARAMETER_REGISTER(blackKeysCheck.minSizeToCheck) = 60;
       PARAMETER_REGISTER(blackKeysCheck.minValue) = 20;
@@ -147,6 +157,13 @@ private:
 
     int maxNumberOfKeys;
     int numberOfExportBestPatches;
+    double postBorderFactorClose;
+    double postBorderFactorFar;
+    int postMaxCloseSize;
+
+    bool contrastUse;
+    int contrastVariant;
+    double contrastMinimum;
 
   } params;
 
@@ -176,6 +193,9 @@ private:
   void calculateCandidates();
   void addBallPercept(const Vector2i& center, double radius);
   void extractPatches();
+  double calculateContrast(const Image& image,  const FieldColorPercept& fielColorPercept, int x0, int y0, int x1, int y1, int size);
+  double calculateContrastIterative(const Image& image,  const FieldColorPercept& fielColorPercept, int x0, int y0, int x1, int y1, int size);
+  double calculateContrastIterative2nd(const Image& image,  const FieldColorPercept& fielColorPercept, int x0, int y0, int x1, int y1, int size);
   
 private:
   CameraInfo::CameraID cameraID;

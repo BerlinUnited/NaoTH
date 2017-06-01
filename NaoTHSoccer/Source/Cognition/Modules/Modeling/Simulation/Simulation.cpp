@@ -41,7 +41,10 @@ Simulation::Simulation()
   actionsConsequences.resize(action_local.size());
 }
 
-Simulation::~Simulation(){}
+Simulation::~Simulation()
+{
+  getDebugParameterList().remove(&theParameters);
+}
 
 void Simulation::execute()
 {
@@ -98,6 +101,7 @@ void Simulation::execute()
   STOPWATCH_STOP("Simulation:decide");  
 
   getKickActionModel().bestAction = action_local[best_action].id();
+  //Arghhh BUG: this expected ball pos is not affected by goal boarders/ obstacles
   getKickActionModel().expectedBallPos = getRobotPose() * action_local[best_action].predict(getBallModel().positionPreview, false);
 
   DEBUG_REQUEST("Simulation:draw_best_action",
@@ -137,6 +141,8 @@ void Simulation::simulateConsequences(
   categorizedBallPositions.reset();
 
   // calculate the own goal line
+
+  //TODO move to field Info as well
   Vector2d ownGoalDir = (getFieldInfo().ownGoalPostRight - getFieldInfo().ownGoalPostLeft).normalize();
   Vector2d ownLeftEndpoint = getFieldInfo().ownGoalPostLeft + ownGoalDir*(getFieldInfo().goalpostRadius + getFieldInfo().ballRadius);
   Vector2d ownRightEndpoint = getFieldInfo().ownGoalPostRight - ownGoalDir*(getFieldInfo().goalpostRadius + getFieldInfo().ballRadius);
@@ -149,18 +155,12 @@ void Simulation::simulateConsequences(
     LINE(ownGoalLineGlobal.begin().x,ownGoalLineGlobal.begin().y,
          ownGoalLineGlobal.end().x,ownGoalLineGlobal.end().y);
   );
-
-  // calculate opponent goal lines and box
-  Vector2d oppGoalBackLeft(getFieldInfo().opponentGoalPostLeft.x + getFieldInfo().goalDepth, getFieldInfo().opponentGoalPostLeft.y);
-  Vector2d oppGoalBackRight(getFieldInfo().opponentGoalPostRight.x + getFieldInfo().goalDepth, getFieldInfo().opponentGoalPostRight.y);
   
   vector<Math::LineSegment> goalBackSides;
   goalBackSides.reserve(3);
-  goalBackSides.push_back(Math::LineSegment(oppGoalBackLeft, oppGoalBackRight));
-  goalBackSides.push_back(Math::LineSegment(getFieldInfo().opponentGoalPostLeft, oppGoalBackLeft));
-  goalBackSides.push_back(Math::LineSegment(getFieldInfo().opponentGoalPostRight, oppGoalBackRight));
-
-  Geometry::Rect2d oppGoalBox(oppGoalBackRight, getFieldInfo().opponentGoalPostLeft);
+  goalBackSides.push_back(Math::LineSegment(getFieldInfo().oppGoalBackLeft, getFieldInfo().oppGoalBackRight));
+  goalBackSides.push_back(Math::LineSegment(getFieldInfo().opponentGoalPostLeft, getFieldInfo().oppGoalBackLeft));
+  goalBackSides.push_back(Math::LineSegment(getFieldInfo().opponentGoalPostRight, getFieldInfo().oppGoalBackRight));
    
   // current ball position
   Vector2d globalBallStartPosition = getRobotPose() * getBallModel().positionPreview;
@@ -202,9 +202,9 @@ void Simulation::simulateConsequences(
           FIELD_DRAWING_CONTEXT;
         
           PEN("000000", 10);
-          BOX(oppGoalBox.min().x,oppGoalBox.min().y,oppGoalBox.max().x,oppGoalBox.max().y);
+          BOX(getFieldInfo().oppGoalRect.min().x, getFieldInfo().oppGoalRect.min().y, getFieldInfo().oppGoalRect.max().x, getFieldInfo().oppGoalRect.max().y);
 
-          if(oppGoalBox.inside(globalBallEndPosition)) {
+          if (getFieldInfo().oppGoalRect.inside(globalBallEndPosition)) {
             PEN("0000AA66", 1);
           } else {
             PEN("FF00AA66", 1);
@@ -233,7 +233,7 @@ void Simulation::simulateConsequences(
     // now categorize the position
     BallPositionCategory category = INFIELD;
     // goal!!
-    if(oppGoalBox.inside(globalBallEndPosition)) 
+    if (getFieldInfo().oppGoalRect.inside(globalBallEndPosition))
     {
       category = OPPGOAL;
     }
@@ -250,7 +250,6 @@ void Simulation::simulateConsequences(
       && globalBallEndPosition.y > getFieldInfo().opponentGoalPostRight.y 
       && globalBallEndPosition.y < getFieldInfo().opponentGoalPostLeft.y)
       )
-      //(globalBallEndPosition.y < getFieldInfo().opponentGoalPostRight.y && globalBallEndPosition.y > getFieldInfo().opponentGoalPostLeft.y)
     {
       category = INFIELD;
     }
@@ -259,7 +258,7 @@ void Simulation::simulateConsequences(
     {
       category = OWNGOAL;
     }
-    //Opponent Groundline Out - Ball einen Meter hinter Roboter mind ansto� h�he. jeweils seite wo ins ausgeht
+    //Opponent Groundline Out - Ball einen Meter hinter Roboter mind anstoss hoehe. jeweils seite wo ins ausgeht
     else if(globalBallEndPosition.x > getFieldInfo().xPosOpponentGroundline)
     {
       category = OPPOUT;
@@ -270,7 +269,7 @@ void Simulation::simulateConsequences(
       category = OWNOUT;
     }
     //an der linken Seite raus -> ein meter hinter roboter oder wo ins ausgeht ein meter hinter
-    else if(globalBallEndPosition.y > getFieldInfo().yPosLeftSideline )
+    else if(globalBallEndPosition.y > getFieldInfo().yPosLeftSideline)
     {  
       category = LEFTOUT;
     }
@@ -296,7 +295,7 @@ size_t Simulation::decide_smart(const std::vector<ActionResults>& actionsConsequ
     const ActionResults& results = actionsConsequences[i];
 
     // if an own-goal is detected, ignore the action
-    if(results.categorie(OWNGOAL) > 0) {
+    if(results.category(OWNGOAL) > 0) {
       continue;
     }
 
@@ -326,7 +325,7 @@ size_t Simulation::decide_smart(const std::vector<ActionResults>& actionsConsequ
     const ActionResults& results = actionsConsequences[acceptableActions[i]];
 
     // chance of scoring a goal must be significant
-    if(results.categorie(OPPGOAL) < theParameters.minGoalParticles) {
+    if(results.category(OPPGOAL) < theParameters.minGoalParticles) {
       continue;
     }
 
@@ -336,14 +335,14 @@ size_t Simulation::decide_smart(const std::vector<ActionResults>& actionsConsequ
       continue;
     }
 
-    // the actio with the highest chance of scoring the goal is the best
-    if(actionsConsequences[goalActions.front()].categorie(OPPGOAL) < results.categorie(OPPGOAL)) {
+    // the action with the highest chance of scoring the goal is the best
+    if(actionsConsequences[goalActions.front()].category(OPPGOAL) < results.category(OPPGOAL)) {
       goalActions.clear();
       goalActions.push_back(acceptableActions[i]);
       continue;
     }
 
-    if(actionsConsequences[goalActions.front()].categorie(OPPGOAL) == results.categorie(OPPGOAL)) {
+    if(actionsConsequences[goalActions.front()].category(OPPGOAL) == results.category(OPPGOAL)) {
       goalActions.push_back(acceptableActions[i]);
       continue;
     }

@@ -1,13 +1,36 @@
 #!/usr/bin/python
-
 import os
 import sys
+import getopt
 import numpy as np
 import json
 import cv2
 import patchReader as patchReader
 
 patch_size = (24, 24)  # width, height
+
+
+def parse_arguments(argv):
+    input_file = ''
+    flag = ''
+    try:
+        opts, args = getopt.getopt(argv, "hi:f:", ["ifile=", "flag"])
+    except getopt.GetoptError:
+        print('patch_export.py -i <input file>')
+        sys.exit(2)
+    if opts == []:
+        print('patch_export.py -i <input file>')
+        sys.exit(2)
+    for opt, arg in opts:
+        if opt == '-h':
+            print('patch_export.py -i <input file>')
+            sys.exit()
+        elif opt in ("-f", "--flag"):
+            flag = arg
+        elif opt in ("-i", "--ifile"):
+            input_file = arg
+
+    return input_file, flag
 
 
 def load_labels(file):
@@ -72,12 +95,12 @@ def exportPatches(patchdata, labels, label_names, target_path):
         '''
         
         # only the center part
-        a = a[4:20,4:20]
-        b = b[4:20,4:20]
+        a = a[4:20, 4:20]
+        b = b[4:20, 4:20]
         
         # remove green:
         # gray + set green to 0 (used for balls)
-        #a = np.multiply(np.not_equal(b, 7), a)
+        # a = np.multiply(np.not_equal(b, 7), a)
 
         cv2.imwrite(file_path, a)
 
@@ -87,7 +110,7 @@ def exportPatchesAll(patchdata, target_path):
     # create the ourput directories for all labels
     export_path = os.path.join(target_path, 'patch')
     if not os.path.exists(export_path):
-      os.makedirs(export_path)
+        os.makedirs(export_path)
     
     # export the patches
     for i in range(len(patchdata)):
@@ -123,36 +146,35 @@ def exportPatchesAll(patchdata, target_path):
         '''
         
         # only the center part
-        a = a[4:20,4:20]
-        b = b[4:20,4:20]
+        a = a[4:20, 4:20]
+        b = b[4:20, 4:20]
         
         # remove green:
         # gray + set green to 0 (used for balls)
-        #a = np.multiply(np.not_equal(b, 7), a)
+        # a = np.multiply(np.not_equal(b, 7), a)
 
         cv2.imwrite(file_path, a)
         
-        '''
-
-USAGE:
-    python ball_patch_label.py ./data/ball-move-around-patches.log
-
 '''
+USAGE:
+    python ball_patch_label.py ./data/ball-move-around-patches.log -f all
+'''
+
 if __name__ == "__main__":
-    # Todo abort if no logfile is there
-    if len(sys.argv) > 1:
-        logFilePath = sys.argv[1]
+    logFilePath, flag = parse_arguments(sys.argv[1:])
 
     # type: 0-'Y', 1-'YUV', 2-'YUVC'
     patchdata, _ = patchReader.read_all_patches_from_log(logFilePath, type=2)
 
     # load the label file
     base_file, file_extension = os.path.splitext(logFilePath)
-    label_file = base_file+'.json'
-    labels, label_names = load_labels(label_file)
 
     # create an export directory
     if not os.path.exists(base_file):
         os.makedirs(base_file)
-
-    exportPatchesAll(patchdata, base_file)
+    if flag == 'all':
+        exportPatchesAll(patchdata, base_file)
+    else:
+        label_file = base_file + '.json'
+        labels, label_names = load_labels(label_file)
+        exportPatches(patchdata, labels, label_names, base_file)

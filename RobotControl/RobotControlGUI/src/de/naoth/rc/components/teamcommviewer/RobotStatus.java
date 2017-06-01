@@ -1,6 +1,5 @@
 package de.naoth.rc.components.teamcommviewer;
 
-//import static de.naoth.rc.components.teamcommviewer.RobotStatusPanel.MAX_TIME_BEFORE_DEAD;
 import de.naoth.rc.dataformats.SPLMessage;
 import de.naoth.rc.server.ConnectionStatusEvent;
 import de.naoth.rc.server.ConnectionStatusListener;
@@ -13,7 +12,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- *
+ * Representation of all known information about a robot.
+ * 
  * @author Philipp Strobel <philippstrobel@posteo.de>
  */
 public class RobotStatus {
@@ -33,12 +33,21 @@ public class RobotStatus {
     public Color robotColor = Color.WHITE;
     public double msgPerSecond;
     public float ballAge;
-    public float temperature;
-    public float batteryCharge;
     public byte fallen;
     public boolean isDead;
     private ArrayList<RobotStatusListener> listener = new ArrayList<>();
 
+    public float temperature;
+    public float cpuTemperature;
+    public float batteryCharge;
+    public float timeToBall;
+    public boolean wantsToBeStriker;
+    public boolean wasStriker;
+    public boolean isPenalized;
+    public boolean whistleDetected;
+    
+    public boolean showOnField = true;
+    
     /**
      * Creates new form RobotStatus
      */
@@ -69,6 +78,11 @@ public class RobotStatus {
         listener.remove(l);
     }
 
+    /**
+     * Updates all informations with the given message.
+     * @param timestamp
+     * @param msg 
+     */
     public void updateStatus(long timestamp, SPLMessage msg) {
         this.teamNum = msg.teamNum;
         this.playerNum = msg.playerNum;
@@ -89,10 +103,22 @@ public class RobotStatus {
 
         if (msg.user != null) {
             this.temperature = msg.user.getTemperature();
+            this.cpuTemperature = msg.user.getCpuTemperature();
             this.batteryCharge = msg.user.getBatteryCharge() * 100.0f;
+            this.timeToBall = msg.user.getTimeToBall();
+            this.wantsToBeStriker = msg.user.getWantsToBeStriker();
+            this.wasStriker = msg.user.getWasStriker();
+            this.isPenalized = msg.user.getIsPenalized();
+//            this.whistleDetected = msg.user.getWhistleDetected(); // used in another branch!
         } else {
             this.temperature = -1;
+            this.cpuTemperature = -1;
             this.batteryCharge = -1;
+            this.timeToBall = -1;
+            this.wantsToBeStriker = false;
+            this.wasStriker = false;
+            this.isPenalized = false;
+            this.whistleDetected = false;
         }
         this.statusChanged();
     }
@@ -120,17 +146,31 @@ public class RobotStatus {
         }
     }
     
+    /**
+     * Informs all listener of the changed status.
+     */
     private void statusChanged() {
         for (RobotStatusListener l : listener) {
-            l.statusChanged();
+            l.statusChanged(this);
         }
     }
     
     public boolean connect() {
         if (!this.messageServer.isConnected()) {
             try {
-                // TODO: fix port 5401
-                this.messageServer.connect(this.ipAddress, 5401);
+                String host = this.ipAddress;
+                int port = 5401;
+                // if the ip address contains a ':', the port is included!
+                if(host.contains(":")){
+                    String[] parts = host.split(":");
+                    host = parts[0];
+                    // if we can't parse the port, ignore it
+                    try {
+                        port = Integer.parseInt(parts[1]);
+                    } catch (Exception e) {
+                    }
+                }
+                this.messageServer.connect(host, port);
             } catch (IOException ex) {
                 Logger.getLogger(RobotStatusPanel.class.getName()).log(Level.SEVERE, "Coult not connect.", ex);
                 return false;
