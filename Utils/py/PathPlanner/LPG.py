@@ -6,6 +6,8 @@ from matplotlib import pyplot as plt
 from matplotlib.patches import Circle
 import matplotlib as mpl
 import Queue as Q
+import copy
+import field_info as f
 
 base           = 1.1789
 minimal_cell   = 100
@@ -35,6 +37,14 @@ def cell_mid(coords): # returns cell mid from cartesian coordinates
     y = coords[1]
     x = np.absolute(x)
     y = np.absolute(y)
+    if np.sign(x) < 0:
+        x_sign = -1
+    else:
+        x_sign = 1
+    if np.sign(y) < 0:
+        y_sign = -1
+    else:
+        y_sign = 1
 
     # distance and angle for the middle of the cell
     dist = distance((x, y))
@@ -42,10 +52,6 @@ def cell_mid(coords): # returns cell mid from cartesian coordinates
 
     x_new = np.cos(angl) * (((np.power(base, dist + 0.5) - 1) * minimal_cell) / (base-1))
     y_new = np.sin(angl) * (((np.power(base, dist + 0.5) - 1) * minimal_cell) / (base-1))
-    if np.sign(x) < 0:
-        x_new *= -1
-    if np.sign(y) < 0:
-        y_new *= -1
     return (x_new, y_new)
 
 def cell_mid_from_polar(r, a):   # returns cell mid from polar coordinates
@@ -109,11 +115,9 @@ def a_star_search(start, goal, obstacles):
                 new_cost = cost_so_far[current] + dist_between_cell(current, the_next)
 
                 # add obstacle costs to cell
-                #old_cost = new_cost
                 for obst in obstacles:
                     new_cost += obst_func(the_next, obst)
-                #print(the_next)
-                #print(new_cost - old_cost)
+
                 # add to or update openlist
                 if the_next not in cost_so_far or new_cost < cost_so_far[the_next]:
                     cost_so_far[the_next] = new_cost
@@ -136,73 +140,92 @@ def compute_waypoints_LPG(tar, obstacles):
         the_next = a[the_next]
         the_path.append(the_next)
 
-    # compute gait vector for next step
+    return the_path
+
+def compute_gait(the_path, target):
+    if len(the_path) is 1:
+        return (target[0], target[1])
     x = 0
     y = 0
     k = 0
-    """while np.absolute(x) < 40 or np.absolute(y) < 40:
-        the_mid = cell_mid(the_path[k])
-        x += the_mid[0]
-        y += the_mid[1]
-        k += 1"""
-    return the_path
+    for k in the_path:
+        (mx, my) = cell_mid_from_polar(k[0], k[1])
+        x = mx
+        y = my
+        if (np.absolute(x) >= 60) or (np.absolute(y) >= 60):
+            break
 
-def compute_waypoints_bisection(target):
-    return [[0, 0]]
+    x = min(max(x, -40), 40)
+    y = min(max(y, -40), 40)
+    return (x, y)
 
-def draw(obstacles, target, algorithm):
-    if not target:
-        print("Need a target!")
-        sys.exit()
-    elif len(target) > 2:
-        print("Too many targets!")
-        sys.exit()
+def draw_field(ax, x_off, y_off):
+    ax.plot([0 +x_off, 0+x_off], [-f.y_length * 0.5 + y_off, f.y_length * 0.5 + y_off], 'white')  # Middle line
 
-    # plotting field
+    ax.plot([f.x_opponent_groundline+x_off, f.x_opponent_groundline+x_off], [f.y_left_sideline+y_off, f.y_right_sideline+y_off], 'white')  # opponent ground line
+    ax.plot([f.x_own_groundline+x_off, f.x_own_groundline+x_off], [f.y_right_sideline+y_off, f.y_left_sideline+y_off], 'white')  # own ground line
+
+    ax.plot([f.x_own_groundline+x_off, f.x_opponent_groundline+x_off], [f.y_left_sideline+y_off, f.y_left_sideline+y_off], 'white')
+    ax.plot([f.x_own_groundline+x_off, f.x_opponent_groundline+x_off], [f.y_right_sideline+y_off, f.y_right_sideline+y_off], 'white')
+
+    ax.plot([f.x_opponent_groundline-f.x_penalty_area_length+x_off, f.x_opponent_groundline-f.x_penalty_area_length+x_off], [-f.y_penalty_area_length*0.5+y_off, f.y_penalty_area_length*0.5+y_off], 'white')  # opp penalty
+    ax.plot([f.x_opponent_groundline+x_off, f.x_opponent_groundline-f.x_penalty_area_length+x_off], [f.y_penalty_area_length*0.5+y_off, f.y_penalty_area_length*0.5+y_off], 'white')  # opp penalty
+    ax.plot([f.x_opponent_groundline+x_off, f.x_opponent_groundline-f.x_penalty_area_length+x_off], [-f.y_penalty_area_length*0.5+y_off, -f.y_penalty_area_length*0.5+y_off], 'white')  # opp penalty
+
+    ax.plot([f.x_own_groundline+f.x_penalty_area_length+x_off, f.x_own_groundline+f.x_penalty_area_length+x_off], [-f.y_penalty_area_length*0.5+y_off, f.y_penalty_area_length*0.5+y_off], 'white')  # own penalty
+    ax.plot([f.x_own_groundline+x_off, f.x_own_groundline+f.x_penalty_area_length+x_off], [f.y_penalty_area_length*0.5+y_off, f.y_penalty_area_length*0.5+y_off], 'white')  # own penalty
+    ax.plot([f.x_own_groundline+x_off, f.x_own_groundline+f.x_penalty_area_length+x_off], [-f.y_penalty_area_length*0.5+y_off, -f.y_penalty_area_length*0.5+y_off], 'white')  # own penalty
+
+    # Middle Circle
+    ax.add_artist(Circle(xy=(0+x_off, 0+y_off), radius=f.center_circle_radius, fill=False, edgecolor='white'))
+    # Penalty Marks
+    ax.add_artist(Circle(xy=(f.x_opponent_groundline - f.x_penalty_mark_distance+x_off, 0+y_off), radius=f.penalty_cross_radius, color='white'))
+    ax.add_artist(Circle(xy=(f.x_own_groundline + f.x_penalty_mark_distance+x_off, 0+y_off), radius=f.penalty_cross_radius, color='white'))
+
+    # Own goal box
+    ax.add_artist(Circle(xy=(f.own_goalpost_right.x+x_off, f.own_goalpost_right.y+y_off), radius=f.goalpost_radius, color='white'))  # GoalPostRight
+    ax.add_artist(Circle(xy=(f.own_goalpost_left.x+x_off, f.own_goalpost_left.y+y_off), radius=f.goalpost_radius, color='white'))  # GoalPostLeft
+    ax.plot([f.x_own_groundline+x_off, f.x_own_groundline - f.goal_depth+x_off], [-f.goal_width*0.5+y_off, -f.goal_width*0.5+y_off], 'white')  # own goal box
+    ax.plot([f.x_own_groundline+x_off, f.x_own_groundline - f.goal_depth+x_off], [f.goal_width*0.5+y_off, f.goal_width*0.5+y_off], 'white')  # own goal box
+    ax.plot([f.x_own_groundline - f.goal_depth+x_off, f.x_own_groundline - f.goal_depth+x_off], [-f.goal_width*0.5+y_off, f.goal_width*0.5+y_off], 'white')  # own goal box
+
+    # Opp GoalBox
+    ax.add_artist(Circle(xy=(f.opponent_goalpost_right.x+x_off, f.opponent_goalpost_right.y+y_off), radius=f.goalpost_radius, color='white'))  # GoalPostRight
+    ax.add_artist(Circle(xy=(f.opponent_goalpost_left.x+x_off, f.opponent_goalpost_left.y+y_off), radius=f.goalpost_radius, color='white'))  # GoalPostLeft
+    ax.plot([f.x_opponent_groundline+x_off, f.x_opponent_groundline + f.goal_depth+x_off], [-f.goal_width*0.5+y_off, -f.goal_width*0.5+y_off], 'white')  # Opp goal box
+    ax.plot([f.x_opponent_groundline+x_off, f.x_opponent_groundline + f.goal_depth+x_off], [f.goal_width*0.5+y_off, f.goal_width*0.5+y_off], 'white')  # Opp goal box
+    ax.plot([f.x_opponent_groundline + f.goal_depth+x_off, f.x_opponent_groundline + f.goal_depth+x_off], [-f.goal_width*0.5+y_off, f.goal_width*0.5+y_off], 'white')  # Opp goal box
+
+    ax.set_axis_bgcolor('green')
+
+def draw_LPG(ax, x_off, y_off):
     a_length = 2*math.pi / angular_part
     radius = 6000
     a = (np.arange(0, angular_part) + 0.5) * a_length
     x = np.cos(a) * radius
     y = np.sin(a) * radius
 
-    mpl.rcParams['lines.linewidth'] = 0.5
-    plt.clf()
-    plt.axis("equal")
-    ax = plt.gca()
-
-    # draw obstacles
-    if (obstacles is not []):
-        obstacle_set = set()
-        for k in obstacles:
-            obstacle_set.add(cell_mid(k))
-            ax.add_artist(Circle(xy=(k[0], k[1]), radius=k[2]+(dist_between(k, (0, 0))/100) + (k[2]+(dist_between(k, (0, 0))/100) * parameter_s), fill=True, color='green', alpha=.25))
-            ax.add_artist(Circle(xy=(k[0], k[1]), radius=k[2]+dist_between(k, (0, 0))/100, fill=True, color='red', alpha=.25))
-            ax.add_artist(Circle(xy=(k[0], k[1]), radius=10, fill=True, color='black'))
-
     # draw rings
-    for k in range(1, 17):
+    for k in range(0, 16):
         rad = inv_distance(k)
-        ax.add_artist(Circle(xy=(0, 0), radius=rad, fill=False, color='black'))
+        ax.add_artist(Circle(xy=(0+x_off, 0+y_off), radius=rad, fill=False, color='black', alpha=.25))
 
     # draw angular partitions
     for k in range(0, len(x)):
-        ax.plot([0, x[k]], [0, y[k]], 'black')
+        ax.plot([0+x_off, x[k]+x_off], [0+y_off, y[k]+y_off], 'black', alpha=.25)
 
-    # draw target
-    ax.plot(cell_mid(target)[0], cell_mid(target)[1], 'x', c='green')
-
-    # draw path
-    if algorithm is "LPG":
-        waypoints = compute_waypoints_LPG(target, obstacles)
-    if algorithm is "own":
-        waypoints = compute_waypoints_bisection(target)
-
-    # mark waypoint cells
+def draw_waypoints(ax, waypoints, x_off, y_off):
+    # draw waypoint cells
     for k in waypoints:
-        (x, y) = cell_mid_from_polar(k[0], k[1])
-        ax.plot(x, y, ">", c='blue')
+        (way_x, way_y) = cell_mid_from_polar(k[0], k[1])
+        ax.plot(way_x+x_off, way_y+y_off, ".", c='blue')
 
-    ax.set_xlim([-4500, 4500])
-    ax.set_ylim([-3000, 3000])
-
-    plt.pause(1)
+def draw_obstacles(ax, obstacles):
+    # draw obstacles
+    if obstacles:
+        obstacle_set = set()
+        for k in obstacles:
+            obstacle_set.add(cell_mid(k))
+            ax.add_artist(Circle(xy=(k[0], k[1]), radius=k[2]+(dist_between(k, (0, 0))/100) + (k[2]+(dist_between(k, (0, 0))/100) * parameter_s), fill=True, color='blue', alpha=.25))
+            ax.add_artist(Circle(xy=(k[0], k[1]), radius=k[2]+dist_between(k, (0, 0))/100, fill=True, color='red', alpha=.25))
+            ax.add_artist(Circle(xy=(k[0], k[1]), radius=10, fill=True, color='black'))
