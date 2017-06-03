@@ -19,13 +19,14 @@ def heard_pause():
             return True
     return False
 
+# LPG parameters
 base           = 1.1789
 minimal_cell   = 100
 angular_part   = 16
 parameter_s = 1
 
 obstacles = [(1600, 400, 300), (2000, -500, 300)] # [(), ()] ansonsten fehler
-target    = [3500, 0]
+target    = [-1000, -2750]
 
 orig_waypoints = LPG.compute_waypoints_LPG(target, obstacles)
 orig_obstacles = copy.copy(obstacles)
@@ -41,8 +42,10 @@ pause = False
 # plot
 while True:
     if heard_pause():
-        #sys.exit()
         pause = not pause
+    while pause:
+        if heard_pause():
+            pause = not pause
 
     mpl.rcParams['lines.linewidth'] = 0.5
     plt.clf()
@@ -82,8 +85,4 @@ while True:
 
     ax.set_xlim([-5500, 5500])
     ax.set_ylim([-3500, 3500])
-    while pause:
-        if heard_pause():
-            #sys.exit()
-            pause = not pause
     plt.pause(0.000000000001)

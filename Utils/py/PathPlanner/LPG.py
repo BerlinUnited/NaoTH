@@ -102,11 +102,12 @@ def a_star_search(start, goal, obstacles):
 
         closedlist.add(current)
 
-        for r in [0, -1]:
-            for a in [0, 1, -1]:
+        for r in [0, -1, 1]:
+            for a in [0, -1, 1]:
                 the_next = (current[0] + r, current[1] + a)
                 if the_next in closedlist:
                     continue
+
                 # initialize cost_so_far
                 if math.isnan(cost_so_far[current]):
                     cost_so_far[current] = 0
@@ -128,7 +129,8 @@ def a_star_search(start, goal, obstacles):
     return came_from, cost_so_far
 
 def compute_waypoints_LPG(tar, obstacles):
-    start = (get_cell(tar)[0], get_cell(tar)[1])  # target only occupies only cell
+    tar_cell = get_cell(tar)
+    start = (tar_cell[0], tar_cell[1])  # target only occupies only cell
     target = (0, 0)
 
     # compute obstacle radius
@@ -143,8 +145,6 @@ def compute_waypoints_LPG(tar, obstacles):
     return the_path
 
 def compute_gait(the_path, target):
-    if len(the_path) is 1:
-        return (target[0], target[1])
     x = 0
     y = 0
     k = 0
@@ -154,9 +154,10 @@ def compute_gait(the_path, target):
         y = my
         if (np.absolute(x) >= 60) or (np.absolute(y) >= 60):
             break
-
     x = min(max(x, -40), 40)
     y = min(max(y, -40), 40)
+    if np.sqrt(np.power(x, 2) + np.power(y, 2)) > np.sqrt(np.power(target[0], 2) + np.power(target[1], 2)):
+        (x, y) = target
     return (x, y)
 
 def draw_field(ax, x_off, y_off):
