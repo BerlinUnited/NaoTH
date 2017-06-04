@@ -1,4 +1,4 @@
 test/*
 test2/*
 statistics/*
-experimental/*
+*.txt
