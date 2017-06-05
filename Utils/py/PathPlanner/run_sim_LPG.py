@@ -25,17 +25,20 @@ minimal_cell   = 100
 angular_part   = 16
 parameter_s = 1
 
-obstacles = [(1600, 400, 300), (2000, -500, 300)] # [(), ()] ansonsten fehler
-target    = [-1000, -2750]
+obstacles = [(-500, 1500, 300), (-750, 1000, 300)]#[(1600, 400, 300), (2000, -500, 300)] # [(), ()] ansonsten fehler
+target    = [-1000, 2750]
 
-orig_waypoints = LPG.compute_waypoints_LPG(target, obstacles)
+x_off = 0
+y_off = 0
+rot   = np.arctan2(target[1], target[0])
+rot_a = LPG.cell_angle(target, rot)
+
+orig_waypoints = LPG.compute_waypoints_LPG(target, obstacles, rot, rot_a)
 orig_obstacles = copy.copy(obstacles)
 orig_target    = copy.copy(target)
 
 actual_path    = [(0, 0)]
 
-x_off = 0
-y_off = 0
 
 pause = False
 
@@ -55,20 +58,22 @@ while True:
     # plot field
     LPG.draw_field(ax, 0, 0)
 
-    LPG.draw_obstacles(ax, orig_obstacles)
+    LPG.draw_obstacles(ax, x_off, y_off, orig_obstacles)
 
-    waypoints = LPG.compute_waypoints_LPG(target, obstacles)
-    LPG.draw_waypoints(ax, waypoints, x_off, y_off)
+    waypoints = LPG.compute_waypoints_LPG(target, obstacles, rot, rot_a)
+    LPG.draw_waypoints(ax, waypoints, x_off, y_off, rot)
 
-    LPG.draw_LPG(ax, x_off, y_off)
+    LPG.draw_LPG(ax, x_off, y_off, rot)
 
     # compute next part of actual path
-    gait = LPG.compute_gait(waypoints, target)
+    gait = LPG.compute_gait(waypoints, target, rot)
     actual_path.append((actual_path[len(actual_path)-1][0] + gait[0], actual_path[len(actual_path)-1][1] + gait[1]))
 
     # simulate the gait
     x_off += gait[0]
     y_off += gait[1]
+    rot    = np.arctan2(target[1], target[0])
+    rot_a  = LPG.cell_angle(target, rot)
     target[0] -= gait[0]
     target[1] -= gait[1]
     for k in range(0, len(obstacles)):
@@ -79,8 +84,6 @@ while True:
         ax.plot([actual_path[k][0], actual_path[k+1][0]], [actual_path[k][1], actual_path[k+1][1]], c='red')
 
     # draw target
-    tar_cell = LPG.get_cell(target)
-    tar_mid  = LPG.cell_mid_from_polar(tar_cell[0], tar_cell[1])
     ax.plot(orig_target[0], orig_target[1], 'x', c='red')
 
     ax.set_xlim([-5500, 5500])
