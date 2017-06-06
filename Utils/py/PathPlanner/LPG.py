@@ -10,7 +10,7 @@ import copy
 import field_info as f
 
 base           = 1.1789
-minimal_cell   = 10
+minimal_cell   = 100
 angular_part   = 16
 
 parameter_s = 1
@@ -78,14 +78,19 @@ def obst_func(cell, obst, rot):   # obst is obstacle coordinates in x, y
     r_d              = obst_dist_to_mid / 10
 
     # parameters
-    a = r_f - r_d  # cost of constant part
-    r = r_f + r_d  # radius of constant part
+    a = r_f - r_d            # cost of constant part
+    r = r_f + r_d            # radius of constant part
     s = parameter_s*r        # radius of linear decreasing part
 
     return np.maximum(np.minimum(1 - ((dist_to_obst_mid - r) / s), 1), 0) * a
 
 # A STAR IMPLEMENTATION
 def a_star_search(start, goal, obstacles, rot):
+    goal2 = (goal[0], goal[1] + 1)
+    goal3 = (goal[0], goal[1] - 1)
+    goal4 = (goal[0], goal[1] - 2)
+    goal5 = (goal[0], goal[1] + 2)
+
     openlist = Q.PriorityQueue()
     closedlist = set()
     openlist.put((0, start))
@@ -98,6 +103,18 @@ def a_star_search(start, goal, obstacles, rot):
         current = openlist.get()[1]
 
         if current == goal:
+            break
+        if current == goal2:
+            goal = goal2
+            break
+        if current == goal3:
+            goal = goal3
+            break
+        if current == goal4:
+            goal = goal4
+            break
+        if current == goal5:
+            goal = goal5
             break
 
         closedlist.add(current)
@@ -126,20 +143,31 @@ def a_star_search(start, goal, obstacles, rot):
                     openlist.put((priority, the_next))
                     came_from[the_next] = current
 
-    return came_from, cost_so_far
+    return came_from, cost_so_far, goal
 
 def compute_waypoints_LPG(tar, obstacles, rot, rot_a):
     tar_cell = get_cell(tar, rot)
-    start = (tar_cell[0], tar_cell[1])  # target only occupies only cell
-    target = (0, rot_a)
+    start    = (tar_cell[0], tar_cell[1])  # target only occupies only cell
+    target   = (0, rot_a)
+    #target2  = (0, rot_a - 1)
+    #target3  = (0, rot_a + 1)
 
     # compute obstacle radius
 
-    (a, b) = a_star_search(start, target, obstacles, rot)
-    the_next = target
+    (a, b, c) = a_star_search(start, target, obstacles, rot)
+    #(c, d) = a_star_search(start, target2, obstacles, rot)
+    #(e, f) = a_star_search(start, target3, obstacles, rot)
+    result = a
+    the_next = c
+    """if (d[target2] < b[target]):
+        result = c
+        the_next = target2
+    if (f[target3] < d[target2]):
+        result = e
+        the_next = target2"""
     the_path = [the_next]
-    while a[the_next] in a:
-        the_next = a[the_next]
+    while result[the_next] in result:
+        the_next = result[the_next]
         the_path.append(the_next)
 
     return the_path
@@ -223,7 +251,6 @@ def draw_waypoints(ax, waypoints, x_off, y_off, rot):
 def draw_obstacles(ax, x_off, y_off, obstacles):
     # draw obstacles
     if obstacles:
-        obstacle_set = set()
         for k in obstacles:
             ax.add_artist(Circle(xy=(k[0], k[1]), radius=k[2]+(dist_between(k, (x_off, y_off))/10) + (k[2]+(dist_between(k, (x_off, y_off))/10) * parameter_s), fill=True, color='blue', alpha=.25))
             ax.add_artist(Circle(xy=(k[0], k[1]), radius=k[2]+dist_between(k, (x_off, y_off))/100, fill=True, color='red', alpha=.25))

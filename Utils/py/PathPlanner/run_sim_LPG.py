@@ -25,8 +25,8 @@ minimal_cell   = 100
 angular_part   = 16
 parameter_s = 1
 
-obstacles = [(-500, 1500, 300), (-750, 1000, 300)]#[(1600, 400, 300), (2000, -500, 300)] # [(), ()] ansonsten fehler
-target    = [-1000, 2750]
+obstacles = [(1600, 400, 300), (2000, -500, 300)]#[(-500, 1500, 300), (-750, 1000, 300)] # [(), ()] ansonsten fehler
+target    = [3500, 0]#[-1000, 2750]
 
 x_off = 0
 y_off = 0
