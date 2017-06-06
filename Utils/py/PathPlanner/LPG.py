@@ -10,7 +10,7 @@ import copy
 import field_info as f
 
 base           = 1.1789
-minimal_cell   = 100
+minimal_cell   = 10
 angular_part   = 16
 
 parameter_s = 1
@@ -86,11 +86,6 @@ def obst_func(cell, obst, rot):   # obst is obstacle coordinates in x, y
 
 # A STAR IMPLEMENTATION
 def a_star_search(start, goal, obstacles, rot):
-    goal2 = (goal[0], goal[1] + 1)
-    goal3 = (goal[0], goal[1] - 1)
-    goal4 = (goal[0], goal[1] - 2)
-    goal5 = (goal[0], goal[1] + 2)
-
     openlist = Q.PriorityQueue()
     closedlist = set()
     openlist.put((0, start))
@@ -104,22 +99,10 @@ def a_star_search(start, goal, obstacles, rot):
 
         if current == goal:
             break
-        if current == goal2:
-            goal = goal2
-            break
-        if current == goal3:
-            goal = goal3
-            break
-        if current == goal4:
-            goal = goal4
-            break
-        if current == goal5:
-            goal = goal5
-            break
 
         closedlist.add(current)
 
-        for r in [0, -1, 1]:
+        for r in [0, -1]:
             for a in [0, -1, 1]:
                 the_next = (current[0] + r, current[1] + a)
                 if the_next in closedlist:
@@ -143,32 +126,25 @@ def a_star_search(start, goal, obstacles, rot):
                     openlist.put((priority, the_next))
                     came_from[the_next] = current
 
-    return came_from, cost_so_far, goal
+    return came_from, cost_so_far
 
 def compute_waypoints_LPG(tar, obstacles, rot, rot_a):
-    tar_cell = get_cell(tar, rot)
-    start    = (tar_cell[0], tar_cell[1])  # target only occupies only cell
+    start = get_cell(tar, rot)
     target   = (0, rot_a)
-    #target2  = (0, rot_a - 1)
-    #target3  = (0, rot_a + 1)
 
-    # compute obstacle radius
+    (a, b) = a_star_search(start, target, obstacles, rot)
 
-    (a, b, c) = a_star_search(start, target, obstacles, rot)
-    #(c, d) = a_star_search(start, target2, obstacles, rot)
-    #(e, f) = a_star_search(start, target3, obstacles, rot)
-    result = a
-    the_next = c
-    """if (d[target2] < b[target]):
-        result = c
-        the_next = target2
-    if (f[target3] < d[target2]):
-        result = e
-        the_next = target2"""
+    the_next = target
     the_path = [the_next]
-    while result[the_next] in result:
-        the_next = result[the_next]
+
+    while a[the_next] in a:
+        the_next = a[the_next]
         the_path.append(the_next)
+
+    # dirty hack
+    if len(the_path) > 1:
+        if the_path[0][1] is not the_path[1][1]:
+            the_path[0] = (the_path[0][0], the_path[1][1])
 
     return the_path
 
@@ -253,5 +229,5 @@ def draw_obstacles(ax, x_off, y_off, obstacles):
     if obstacles:
         for k in obstacles:
             ax.add_artist(Circle(xy=(k[0], k[1]), radius=k[2]+(dist_between(k, (x_off, y_off))/10) + (k[2]+(dist_between(k, (x_off, y_off))/10) * parameter_s), fill=True, color='blue', alpha=.25))
-            ax.add_artist(Circle(xy=(k[0], k[1]), radius=k[2]+dist_between(k, (x_off, y_off))/100, fill=True, color='red', alpha=.25))
+            ax.add_artist(Circle(xy=(k[0], k[1]), radius=k[2]+dist_between(k, (x_off, y_off))/10, fill=True, color='red', alpha=.25))
             ax.add_artist(Circle(xy=(k[0], k[1]), radius=10, fill=True, color='black'))

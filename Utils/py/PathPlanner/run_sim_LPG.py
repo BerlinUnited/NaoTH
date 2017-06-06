@@ -39,7 +39,6 @@ orig_target    = copy.copy(target)
 
 actual_path    = [(0, 0)]
 
-
 pause = False
 
 # plot
