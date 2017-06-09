@@ -136,7 +136,7 @@ public class SimsparkMonitor extends Simspark {
                         // see SimSparkController.cpp, ~line: 280, "calculate debug communicaiton port"
                         String.format("%s:%d", ip, ((side==1?5400:5500)+spl.playerNum)),
                         spl,
-                        spl.teamNum == 4) // TOOD: can we set anywhere our team number?!?
+                        ((int)spl.teamNum) != 4) // TOOD: can we set anywhere our team number?!?
                     );
                 } catch (Exception ex) {
                     Logger.getLogger(SimsparkMonitor.class.getName()).log(Level.SEVERE, null, ex);

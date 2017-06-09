@@ -133,7 +133,7 @@ void TeamBallLocator::execute()
  
   DEBUG_REQUEST("TeamBallLocator:draw_ball_on_field",
     FIELD_DRAWING_CONTEXT;
-    PEN("0000FF", 20);
+    PEN("FF0000", 20);
     FILLOVAL(getTeamBallModel().positionOnField.x, getTeamBallModel().positionOnField.y, 50, 50);
     TEXT_DRAWING(getTeamBallModel().positionOnField.x+100, getTeamBallModel().positionOnField.y+100, ballPosHist.size());
     TEXT_DRAWING(getTeamBallModel().positionOnField.x+100, getTeamBallModel().positionOnField.y-100, getTeamBallModel().rmse);
