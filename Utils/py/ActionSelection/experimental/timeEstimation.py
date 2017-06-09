@@ -1,6 +1,4 @@
-"""
-    Old script -> makes a bad plot for the region of influence of one robot
-"""
+from __future__ import division
 from matplotlib import pyplot as plt
 import numpy as np
 import math as m
@@ -15,7 +13,7 @@ pgf_with_rc_fonts = {
 mlp.rcParams.update(pgf_with_rc_fonts)
 
 
-def estimate_time(x,y):
+def estimate_time(x, y):
     strength = 1.5
     radius = 2
     
@@ -27,13 +25,12 @@ def estimate_time(x,y):
 
     distance_time = distance/velWalk
     total_time = distance_time + rot_time
-
     for d1 in range(len(total_time)):
         for d2 in range(len(total_time)):
+            total_time[d1][d2] = 0.5 * total_time[d1][d2] * m.exp(total_time[d1][d2] * 0.001)
+
             if total_time[d1][d2] >= 5:
                 total_time[d1][d2] = 5
-            else:
-                total_time[d1][d2] = 0.5*total_time[d1][d2] * m.exp(total_time[d1][d2] * 0.001)
                 
     return total_time
  
