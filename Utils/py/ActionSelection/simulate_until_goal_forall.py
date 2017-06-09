@@ -20,7 +20,6 @@ class State:
 
         self.obstacle_list = ([])  # is in global coordinates
 
-    # Todo use this everywhere
     def update_pos(self, glob_pos, rotation):
         self.pose.translation = glob_pos
         self.pose.rotation = rotation
@@ -112,13 +111,11 @@ def main():
                         # Todo: can run in a deadlock for some reason
                         # Hack: abort if max_turn_credit is 0
                         if attack_direction > 0:
-                            state.update_pos(state.pose.translation, state.pose.rotation + math.radians(15)) # Should be turn right
-                            ##state.pose.rotation += math.radians(15)  # Should be turn right
+                            state.update_pos(state.pose.translation, state.pose.rotation + math.radians(15))  # Should be turn right
                             max_turn_credit -= 10  # FIXME
                             # print("Robot turns right - global rotation turns left")
                         else:
-                            state.update_pos(state.pose.translation, state.pose.rotation - math.radians(15)) # Should be turn left
-                            ##state.pose.rotation -= math.radians(15)  # Should be turn left
+                            state.update_pos(state.pose.translation, state.pose.rotation - math.radians(15))  # Should be turn left
                             max_turn_credit -= 10  # FIXME
                             # print("Robot turns left - global rotation turns right")
 
@@ -134,8 +131,6 @@ def main():
                         rotation = np.arctan2(expected_ball_pos.y, expected_ball_pos.x)
                         # print(math.degrees(rotation))
                         state.update_pos(state.pose * expected_ball_pos, state.pose.rotation + rotation)
-                        ##state.pose.translation = state.pose * expected_ball_pos
-                        ##state.pose.rotation += rotation
 
                         num_kicks += 1
 
@@ -148,15 +143,13 @@ def main():
                         # Todo: can run in a deadlock for some reason
                         # Hack: abort if max_turn_credit is 0
                         if attack_direction > 0:
-                            state.update_pos(state.pose.translation, state.pose.rotation + math.radians(15)) # Should be turn right
-                            ##state.pose.rotation += math.radians(15)  # Should be turn right
+                            state.update_pos(state.pose.translation, state.pose.rotation + math.radians(15))  # Should be turn right
                             max_turn_credit -= 10  # FIXME
-                            #print("Robot turns right - global rotation turns left")
+                            # print("Robot turns right - global rotation turns left")
                         else:
-                            state.update_pos(state.pose.translation, state.pose.rotation - math.radians(15)) # Should be turn left
-                            ##state.pose.rotation -= math.radians(15)  # Should be turn left
+                            state.update_pos(state.pose.translation, state.pose.rotation - math.radians(15))  # Should be turn left
                             max_turn_credit -= 10  # FIXME
-                            #print("Robot turns left - global rotation turns right")
+                            # print("Robot turns left - global rotation turns right")
 
                         num_turn_degrees += 1
                     else:
