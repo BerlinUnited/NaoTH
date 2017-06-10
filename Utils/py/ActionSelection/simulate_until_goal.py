@@ -17,7 +17,8 @@ class State:
         self.pose.rotation = math.radians(-40)
 
         self.ball_position = m2d.Vector2(100.0, 0.0)
-
+        self.rotation_vel = 60  # degrees per sec
+        self.walking_vel = 200  # mm per sec
         self.obstacle_list = ([])  # is in global coordinates
 
     def update_pos(self, glob_pos, rotation):
@@ -63,8 +64,8 @@ def main():
     num_kicks = 0
     num_turn_degrees = 0
     goal_scored = False
+    total_time = 0
     while not goal_scored:
-
         actions_consequences = []
         # Simulate Consequences
         for action in action_list:
@@ -86,24 +87,32 @@ def main():
 
         # Assert that expected_ball_pos is inside field or inside opp goal
         if not inside_field and not goal_scored:
-            print("Error")
+            print("Error: This position doesn't manage a goal")
             # For histogram -> note the this position doesnt manage a goal
             break
 
         if not action_list[best_action].name == "none":
 
-            print(str(state.pose * expected_ball_pos) + " Decision: " + str(action_list[best_action].name))
+            print("RobotPose: (" + str(state.pose * expected_ball_pos) + ") - Decision: " + str(action_list[best_action].name))
             draw_robot_walk(actions_consequences, state, state.pose * expected_ball_pos, action_list[best_action].name)
 
-            # update the robots position
+            # calculate the time needed
             rotation = np.arctan2(expected_ball_pos.y, expected_ball_pos.x)
-            print(math.degrees(rotation))
+            rotation_time = np.abs(rotation / state.rotation_vel)
+            distance = np.hypot(expected_ball_pos.x, expected_ball_pos.y)
+            distance_time = distance / state.walking_vel
+            total_time += distance_time + rotation_time
+
+            # update the robots position
             state.update_pos(state.pose * expected_ball_pos, state.pose.rotation + rotation)
             num_kicks += 1
 
         elif action_list[best_action].name == "none":
             print(str(state.pose * expected_ball_pos) + " Decision: " + str(action_list[best_action].name))
             draw_robot_walk(actions_consequences, state, state.pose * expected_ball_pos, action_list[best_action].name)
+
+            # Calculate rotation time
+            total_time += np.abs(math.radians(10) / state.rotation_vel)
 
             attack_direction = attack_dir.get_attack_direction(state)
             # Todo: can run in a deadlock for some reason
@@ -118,9 +127,7 @@ def main():
 
     print("Num Kicks: " + str(num_kicks))
     print("Num Turns: " + str(num_turn_degrees))
+    print("Total time to goal: " + str(total_time))
 
 if __name__ == "__main__":
-    '''
-    TODO: Should Simulate the real robot behavior, that means turn incrementally
-    '''
     main()
