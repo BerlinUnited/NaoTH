@@ -11,6 +11,7 @@ from tools import tools
 from tools import field_info as field
 from tools import raw_attack_direction_provider as attack_dir
 
+
 class State:
     def __init__(self):
         self.pose = m2d.Pose2D()
@@ -36,17 +37,17 @@ def var_kick(kick_type, ball_pos, shorten_kicks=True):
 
     :return: new ball_pos -- Vector2 type
     """
-    if kick_type == 1 and shorten_kicks == True:
+    if kick_type == 1 and shorten_kicks is True:
         random_number = np.random.randint(0, 3, 1)  # zu 25 % kurzer Schuss
         if random_number == 0:
             direction = ball_pos.normalize()
-            rotation_degrees = random.gauss(0,20)  # verschobene neue Richtung des Balls mit mittels Normalverteilung N(0,20)
+            rotation_degrees = random.gauss(0, 20)  # verschobene neue Richtung des Balls mit mittels Normalverteilung N(0,20)
             direction = direction.rotate(math.radians(rotation_degrees))
             direction *= 400
             return direction
         else:
             return ball_pos
-    elif kick_type in [2, 3] and shorten_kicks == True:
+    elif kick_type in [2, 3] and shorten_kicks is True:
         random_number = np.random.randint(0, 2, 1)  # zu 33% kurzer Seitschuss
         if random_number == 0:
             # gleicht dem verkuerzen und verschieben des short kicks
@@ -59,6 +60,7 @@ def var_kick(kick_type, ball_pos, shorten_kicks=True):
             return ball_pos
     else:
         return ball_pos
+
 
 def draw_robot_walk_lines(line):
     plt.clf()
@@ -77,7 +79,7 @@ def draw_robot_walk_lines(line):
         axes.add_artist(Circle(xy=(ball_pos.x, ball_pos.y), radius=120, fill=True, edgecolor='blue'))
         axes.arrow(origin.x, origin.y, arrow_head.x, arrow_head.y, head_width=100, head_length=100, fc='k', ec='k')
         axes.text(origin.x, origin.y - 350, count, fontsize=8)
-        axes.text(origin.x, 3500 - (count%4)*250, action_name_list[state.next_action]+" " +str(count), fontsize = 8)
+        axes.text(origin.x, 3500 - (count % 4)*250, action_name_list[state.next_action] + " " + str(count), fontsize=8)
         count += 1
         # -- Add counter for moves
         # -- Add executed action
@@ -87,8 +89,7 @@ def draw_robot_walk_lines(line):
     plt.show()
 
 
-
-def simulate_goal_cycle(variation = False):
+def simulate_goal_cycle(variation=False):
     state = State()
     sim_data = [copy.deepcopy(state)]
 
@@ -115,15 +116,14 @@ def simulate_goal_cycle(variation = False):
         # Decide best action
         best_action = Sim.decide_smart(actions_consequences, state)
 
-        #state.next_action = best_action #not next but last action
+        # state.next_action = best_action #not next but last action
         sim_data[len(sim_data)-1].next_action = best_action
 
         # expected_ball_pos should be in local coordinates for rotation calculations
         expected_ball_pos = actions_consequences[best_action].expected_ball_pos
 
-        if variation == True:
+        if variation is True:
             expected_ball_pos = var_kick(best_action, expected_ball_pos)
-
 
         # Check if expected_ball_pos inside opponent goal
         opp_goal_back_right = m2d.Vector2(field.opponent_goalpost_right.x + field.goal_depth,
@@ -175,6 +175,7 @@ def simulate_goal_cycle(variation = False):
     # print("Num Turns: " + str(num_turn_degrees))
 
     return sim_data
+
 
 def main():
 

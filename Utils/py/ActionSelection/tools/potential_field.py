@@ -35,3 +35,7 @@ def evaluate_action2(results, state):
     assert number_of_actions > 0
     sum_potential /= number_of_actions
     return sum_potential
+
+
+# Todo write a new function like evaluate_action2 which also takes into consideration the potentialfields of the teammates
+# then build a static test case which shows what happens when teammates are considered

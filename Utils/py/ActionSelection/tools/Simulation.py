@@ -6,7 +6,7 @@ import potential_field as pf
 from naoth import math2d as m2d
 
 
-def simulate_consequences(action, categorized_ball_positions, state, num_particles):  # TODO: change that everywhere
+def simulate_consequences(action, categorized_ball_positions, state, num_particles):
 
     categorized_ball_positions.reset()
 
@@ -58,7 +58,7 @@ def simulate_consequences(action, categorized_ball_positions, state, num_particl
                     t_min = t
                     collision_with_goal = True
 
-        # if there are collisions with the back goal lines, calulate where the ball will stop
+        # if there are collisions with the back goal lines, calculate where the ball will stop
         if collision_with_goal:
             shootline = m2d.LineSegment(global_ball_start_position, shootline.point(t_min-field.ball_radius))
             global_ball_end_position = shootline.end()
@@ -72,14 +72,13 @@ def simulate_consequences(action, categorized_ball_positions, state, num_particl
             if dist < 400 and shootline.intersect(obstacle_line):
                 obstacle_collision = True
 
-        category = "INFIELD"
         if opp_goal_box.inside(global_ball_end_position):
             category = "OPPGOAL"
         elif obstacle_collision and obstacle_line.intersect(shootline) and shootline.intersect(obstacle_line):
             category = "COLLISION"
         elif (field.field_rect.inside(global_ball_end_position) or
-                  (global_ball_end_position.x <= field.opponent_goalpost_right.x and
-                field.opponent_goalpost_left.y > global_ball_end_position.y > field.opponent_goalpost_right.y)):
+              (global_ball_end_position.x <= field.opponent_goalpost_right.x and
+              field.opponent_goalpost_left.y > global_ball_end_position.y > field.opponent_goalpost_right.y)):
             category = "INFIELD"
         elif shootline.intersect(own_goal_line_global) and own_goal_line_global.intersect(shootline):
             category = "OWNGOAL"

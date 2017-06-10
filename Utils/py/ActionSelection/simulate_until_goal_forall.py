@@ -1,13 +1,13 @@
 import math
+import sys
 import numpy as np
-from matplotlib import pyplot as plt
-from matplotlib.patches import Circle
 from tools import action as a
 from tools import Simulation as Sim
 from naoth import math2d as m2d
-from tools import tools
 from tools import field_info as field
 from tools import raw_attack_direction_provider as attack_dir
+
+# TODO when the time scripts are finished - replace this file with them
 
 
 class State:
@@ -15,7 +15,8 @@ class State:
         self.pose = m2d.Pose2D()
         self.pose.translation = m2d.Vector2(0, 0)
         self.pose.rotation = math.radians(0)
-
+        self.rotation_vel = 60  # degrees per sec
+        self.walking_vel = 200  # mm per sec
         self.ball_position = m2d.Vector2(100.0, 0.0)
 
         self.obstacle_list = ([])  # is in global coordinates
@@ -23,30 +24,6 @@ class State:
     def update_pos(self, glob_pos, rotation):
         self.pose.translation = glob_pos
         self.pose.rotation = rotation
-
-
-def draw_robot_walk(actions_consequences, state, expected_ball_pos, best_action):
-    plt.clf()
-    axes = plt.gca()
-    origin = state.pose.translation
-    arrow_head = m2d.Vector2(500, 0).rotate(state.pose.rotation)
-    x = np.array([])
-    y = np.array([])
-
-    tools.draw_field()
-    axes.add_artist(Circle(xy=(state.pose.translation.x, state.pose.translation.y), radius=100, fill=False, edgecolor='white'))
-    axes.add_artist(Circle(xy=(expected_ball_pos.x, expected_ball_pos.y), radius=120, fill=True, edgecolor='blue'))
-    axes.arrow(origin.x, origin.y, arrow_head.x, arrow_head.y, head_width=100, head_length=100, fc='k', ec='k')
-    axes.text(0, 0, best_action, fontsize=12)
-    for consequence in actions_consequences:
-        for particle in consequence.positions():
-            ball_pos = state.pose * particle.ball_pos  # transform in global coordinates
-
-            x = np.append(x, [ball_pos.x])
-            y = np.append(y, [ball_pos.y])
-
-    plt.scatter(x, y, c='r', alpha=0.5)
-    plt.pause(0.5)
 
 
 def main():
@@ -61,15 +38,19 @@ def main():
     action_list = [no_action, kick_short, sidekick_left, sidekick_right]
 
     # Todo: Maybe do several decision cycles(histogram of decisions) not just one to get rid of accidental decisions
-    for rot in range(0, 360, 10):
-        for x in range(int(-field.x_length*0.5)+cell_width, int(field.x_length*0.5), 2*cell_width):
-            for y in range(int(-field.y_length*0.5)+cell_width, int(field.y_length*0.5), 2*cell_width):
+    for x in range(int(-field.x_length*0.5)+cell_width, int(field.x_length*0.5), 2*cell_width):
+        for y in range(int(-field.y_length*0.5)+cell_width, int(field.y_length*0.5), 2*cell_width):
+            pos_total_time = sys.float_info.max
+            for rot in range(0, 360, 10):
                 print("Start position x: " + str(x) + " y: " + str(y) + " Rotation: " + str(rot))
                 state.update_pos(m2d.Vector2(x, y), rotation=rot)
                 num_kicks = 0
                 num_turn_degrees = 0
                 goal_scored = False
-                max_turn_credit = 100  # FIXME
+                max_turn_credit = 360  # FIXME
+
+                total_time = 0
+
                 while not goal_scored:
 
                     actions_consequences = []
@@ -91,65 +72,49 @@ def main():
                     goal_scored = opp_goal_box.inside(state.pose * expected_ball_pos)
                     inside_field = field.field_rect.inside(state.pose * expected_ball_pos)
 
-                    if max_turn_credit <= 0:  # FIXME
+                    if max_turn_credit <= 0:
                         print("x: " + str(x) + " y: " + str(y) + " - Credit: " + str(max_turn_credit))
-                        a.histogram[50-1] += 1  # means oscillation or 10 times turning by rot degrees wasn't enough
+                        a.histogram[50-1] += 1  # means oscillation or that 36 times turning by rot degrees wasn't enough
                         break
 
                     # Assert that expected_ball_pos is inside field or inside opp goal
                     # HACK: the real robot would shoot out
                     elif not inside_field and not goal_scored:
 
-                        print("Bad position x: " + str(state.pose.translation.x) + " y: " + str(state.pose.translation.y) + " Rotation: " + str(state.pose.rotation))
+                        print("Ball out at x: " + str(state.pose.translation.x) + " y: " + str(state.pose.translation.y) + " Rotation: " + str(state.pose.rotation))
                         a.histogram[0] += 1
-                        # For histogram -> note the this position doesnt manage a goal - would shoot outside field
-                        # print("Should continue")
-                        # Solution for expected ball Pos outside field is to turn
-                        # Todo note those positions and manually check them
-                        attack_direction = attack_dir.get_attack_direction(state)
-                        attack_direction = math.degrees((attack_direction.angle()))
-                        # Todo: can run in a deadlock for some reason
-                        # Hack: abort if max_turn_credit is 0
-                        if attack_direction > 0:
-                            state.update_pos(state.pose.translation, state.pose.rotation + math.radians(15))  # Should be turn right
-                            max_turn_credit -= 10  # FIXME
-                            # print("Robot turns right - global rotation turns left")
-                        else:
-                            state.update_pos(state.pose.translation, state.pose.rotation - math.radians(15))  # Should be turn left
-                            max_turn_credit -= 10  # FIXME
-                            # print("Robot turns left - global rotation turns right")
-
-                        num_turn_degrees += 1
-                        # continue
+                        # TODO indicate in time 2D Plot that this position leads to a ball out
+                        continue
 
                     elif not action_list[best_action].name == "none":
-                        max_turn_credit = 100  # FIXME
-                        # print(str(state.pose * expected_ball_pos) + " Decision: " + str(action_list[best_action].name))
-                        # draw_robot_walk(actions_consequences, state, state.pose * expected_ball_pos, action_list[best_action].name)
+                        max_turn_credit = 360
+
+                        # calculate the time needed
+                        rotation = np.arctan2(expected_ball_pos.y, expected_ball_pos.x)
+                        rotation_time = np.abs(rotation / state.rotation_vel)
+                        distance = np.hypot(expected_ball_pos.x, expected_ball_pos.y)
+                        distance_time = distance / state.walking_vel
+                        total_time += distance_time + rotation_time
 
                         # update the robots position
-                        rotation = np.arctan2(expected_ball_pos.y, expected_ball_pos.x)
-                        # print(math.degrees(rotation))
                         state.update_pos(state.pose * expected_ball_pos, state.pose.rotation + rotation)
 
                         num_kicks += 1
 
                     elif action_list[best_action].name == "none":
-                        # print(str(state.pose * expected_ball_pos) + " Decision: " + str(action_list[best_action].name))
-                        # draw_robot_walk(actions_consequences, state, state.pose * expected_ball_pos, action_list[best_action].name)
+
+                        # Calculate rotation time
+                        total_time += np.abs(math.radians(10) / state.rotation_vel)
 
                         attack_direction = attack_dir.get_attack_direction(state)
                         attack_direction = math.degrees((attack_direction.angle()))
-                        # Todo: can run in a deadlock for some reason
-                        # Hack: abort if max_turn_credit is 0
+                        # Can run in a deadlock for some reason - Hack: abort if max_turn_credit is 0
                         if attack_direction > 0:
                             state.update_pos(state.pose.translation, state.pose.rotation + math.radians(15))  # Should be turn right
-                            max_turn_credit -= 10  # FIXME
-                            # print("Robot turns right - global rotation turns left")
+                            max_turn_credit -= 10
                         else:
                             state.update_pos(state.pose.translation, state.pose.rotation - math.radians(15))  # Should be turn left
-                            max_turn_credit -= 10  # FIXME
-                            # print("Robot turns left - global rotation turns right")
+                            max_turn_credit -= 10
 
                         num_turn_degrees += 1
                     else:
@@ -157,8 +122,8 @@ def main():
                         break
 
                 a.histogram[num_kicks] += 1
-                # print("Num Kicks: " + str(num_kicks))
-                # print("Num Turns: " + str(num_turn_degrees))
+            if pos_total_time > total_time:
+                pos_total_time = total_time
 
     print(a.histogram)
     with open('num_goal_kicks', 'w') as f:
