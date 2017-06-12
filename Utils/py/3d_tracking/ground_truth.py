@@ -1,3 +1,4 @@
+from __future__ import print_function
 import argparse
 parser = argparse.ArgumentParser(description='save 3d tracking data to file')
 parser.add_argument("trackinglog", help='3D tracking logfile')
@@ -7,6 +8,8 @@ args = parser.parse_args()
 import time
 import atexit
 from NatNetClient import NatNetClient
+
+# TODO: replace from_bytes with own method for python2 and python3 compatibility
 
 startTime = 0
 
