@@ -179,6 +179,10 @@ message ScanLineEdgelPercept {
   repeated ScanLineEndPoint endPoints = 2;
 }
 
+message LineGraphPercept {
+  repeated Edgel edgelsOnField = 1;
+}
+
 message StepControlStatus
 {
   required uint32 stepID = 1;
