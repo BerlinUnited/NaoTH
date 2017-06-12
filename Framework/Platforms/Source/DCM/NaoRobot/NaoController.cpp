@@ -23,6 +23,7 @@ NaoController::NaoController()
     theTeamCommSender(NULL),
     theTeamCommListener(NULL),
     theRemoteCommandListener(NULL),
+    theGPSListener(NULL),
     theDebugServer(NULL)
 {
   // init shared memory
@@ -120,6 +121,7 @@ NaoController::NaoController()
   registerInput<UltraSoundReceiveData>(*this);
   registerInput<WhistlePercept>(*this);
   registerInput<CpuData>(*this);
+  registerInput<GPSData>(*this);
 
   // register command output
   registerOutput<const MotorJointData>(*this);
@@ -149,7 +151,10 @@ NaoController::NaoController()
   theTeamCommSender = new BroadCaster(interfaceName, teamcomm_port);
   theTeamCommListener = new UDPReceiver(teamcomm_port, TEAMCOMM_MAX_MSG_SIZE);
 
+  cout << "[NaoController] " << "init RemoteCommandListener" << endl;
   theRemoteCommandListener = new UDPReceiver(10401, 4096);
+  cout << "[NaoController] " << "init GPSListener" << endl;
+  theGPSListener = new UDPReceiver(1511, 32768, true); // 32KB
 
   // start the debug server at the default debug port
   std::cout << "[NaoController] " << "Init DebugServer" << endl;
