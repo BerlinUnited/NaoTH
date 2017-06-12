@@ -21,7 +21,7 @@ class UDPReceiver
 {
 
 public:
-  UDPReceiver(unsigned int port, unsigned int buffersize=4096);
+  UDPReceiver(unsigned int port, unsigned int buffersize = 4096, bool multicast = false);
 
   void receive(std::vector<std::string>& data);
 
@@ -39,6 +39,7 @@ private:
   std::mutex messageInMutex;
 
   GError* bindAndListen(unsigned int port);
+  GError* bindAndListenMulticast(unsigned int port);
 };
 } // namespace naoth
 
