@@ -118,3 +118,7 @@ message InertialSensorData {
   optional DoubleVector2 data = 2;
 }
 
+message GPSData
+{
+  required Pose3D pose = 1;
+}
