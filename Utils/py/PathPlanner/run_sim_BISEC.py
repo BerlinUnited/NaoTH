@@ -12,7 +12,7 @@ import copy
 import select
 
 obstacles    = [(1600, 0, 300), (2000, -500, 300)]#[(-500, 1500, 300), (-750, 1000, 300)] # [(), ()] ansonsten fehler
-target       = [-1000, -2750]#[3500, 0]#
+target       = [3500, 0]#[-1000, -2750]#
 orig_target  = copy.copy(target)
 
 x_off = 0
@@ -29,19 +29,17 @@ while True:
     # draw the field
     B.draw_field(ax, 0, 0)
 
-    (gait, steps, gait_unit_vec) = B.compute_gait(target, obstacles, x_off, y_off)
-    #gait = [400, 0]
-    B.draw_gait(ax, x_off, y_off, gait, steps, gait_unit_vec)
+    steps = B.compute_steps(target, obstacles, x_off, y_off)
+    B.draw_steps(ax, x_off, y_off, steps)
 
     # draw obstacles and the target
     B.draw_obstacles(ax, 0, 0, obstacles)
     B.draw_target(ax, orig_target)
-    B.draw_robo_pos(ax, (x_off, y_off))
 
     # simulate gait
-    if x_off is not target[0] and y_off is not target[1]:
-        x_off += gait[0]
-        y_off += gait[1]
-        target = (target[0] - gait[0], target[1] - gait[1])
+    if (x_off is not target[0] or y_off is not target[1]) and (len(steps) > 1):
+        x_off += steps[1][0]
+        y_off += steps[1][1]
+        target = (target[0] - steps[1][0], target[1] - steps[1][1])
 
     plt.pause(0.000000000001)

@@ -57,29 +57,39 @@ def draw_obstacles(ax, x_off, y_off, obstacles):
 
 def draw_target(ax, target):
     ax.plot(target[0], target[1], 'x', color='red')
-def draw_robo_pos(ax, coords):
-    ax.plot(coords[0], coords[1], 'x', color='blue')
 
-def draw_gait(ax, x_off, y_off, gait, steps, gait_unit_vec):
-    arr_wi_le = 100
-    ax.arrow(x_off, y_off, gait[0] * steps - (gait_unit_vec[0] * arr_wi_le), gait[1] * steps - (gait_unit_vec[1] * arr_wi_le), head_width=arr_wi_le, head_length=arr_wi_le, color='blue')
+def draw_steps(ax, x_off, y_off, steps):
+    x_dist = 0
+    y_dist = 0
+    for k in steps:
+        ax.plot(k[0] + x_dist + x_off, k[1] + y_dist + y_off, 'x', color='black')
+        x_dist += k[0]
+        y_dist += k[1]
 
 def dist(start, target):
     return np.sqrt(np.power(start[0] - target[0], 2) + np.power(start[1] - target[1], 2))
 
-def compute_gait(target, obstacles, x_off, y_off):
-    max_steplength = 40
-    tar_dist       = dist((0, 0), target)
+def compute_steps(tar, obstacles, x_off, y_off):
+    target         = copy.copy(tar)
+    steps          = []
 
-    gait_unit_vec  = (target[0] / tar_dist, target[1] / tar_dist)
-    gait = (gait_unit_vec[0] * max_steplength, gait_unit_vec[1] * max_steplength)
+    step_count = 0
+    while step_count < 20:
+        tar_dist       = dist((0, 0), target)
+        gait_unit_vec  = (target[0] / tar_dist, target[1] / tar_dist)
+        max_steplength = np.absolute(min(60, max(-60, min(tar_dist / gait_unit_vec[0], tar_dist / gait_unit_vec[1]))))
+        gait           = (gait_unit_vec[0] * max_steplength, gait_unit_vec[1] * max_steplength)
 
-    if np.sqrt(np.power(target[0], 2) + np.power(target[1], 2)) < np.sqrt(np.power(gait[0], 2) + np.power(gait[1], 2)):
-        gait = target
+        if math.isnan(gait[0]) or math.isnan(gait[1]):
+            break
+        if gait[0] is 0 and gait[1] is 0:
+            break
+        if gait[0] is -0 and gait[1] is -0:
+            break
 
-    steps = min(20, min(tar_dist / np.absolute(gait[0]), tar_dist / np.absolute(gait[1])))
+        steps.append(gait)
+        step_count += 1
 
-    if math.isnan(gait[0]) or math.isnan(gait[1]):
-        gait = (0, 0)
+        target = (target[0] - gait[0], target[1] - gait[1])
 
-    return gait, steps, gait_unit_vec
+    return steps
