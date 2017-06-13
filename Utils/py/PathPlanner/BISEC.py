@@ -9,6 +9,8 @@ import Queue as Q
 import copy
 import field_info as f
 
+robot_radius = 300
+
 def draw_field(ax, x_off, y_off):
     ax.plot([0 +x_off, 0+x_off], [-f.y_length * 0.5 + y_off, f.y_length * 0.5 + y_off], 'white')  # Middle line
 
@@ -67,15 +69,27 @@ def draw_steps(ax, x_off, y_off, steps):
         x_dist += k[0]
         y_dist += k[1]
 
+def draw_walked_path(ax, path):
+    for k in range(0, len(path) - 1):
+        ax.plot([path[k][0], path[k+1][0]], [path[k][1], path[k+1][1]], c='red')
+
 def dist(start, target):
     return np.sqrt(np.power(start[0] - target[0], 2) + np.power(start[1] - target[1], 2))
 
-def compute_steps(tar, orig_target, obstacles, x_off, y_off):
-    target         = copy.copy(tar)
-    steps          = []
+def hit_obstacle(obstacles, gait_pos):
+    for k in range(0, len(obstacles)):
+        if dist((obstacles[k][0], obstacles[k][1]), gait_pos) <= obstacles[k][2] + robot_radius:
+            return k
+    return -1
 
-    step_count = 0
-    while step_count < 20:
+def compute_steps(tar, obstacles, x_off, y_off):
+    target       = copy.copy(tar)
+    steps        = []
+    x_dist       = 0
+    y_dist       = 0
+    obstacle_hit = -1
+
+    while len(steps) < 20:
         tar_dist       = dist((0, 0), target)
         gait_unit_vec  = (target[0] / tar_dist, target[1] / tar_dist)
         max_steplength = np.absolute(min(60, max(-60, min(tar_dist / gait_unit_vec[0], tar_dist / gait_unit_vec[1]))))
@@ -89,10 +103,35 @@ def compute_steps(tar, orig_target, obstacles, x_off, y_off):
             break
 
         # check for obstacles
+        obstacle_hit = hit_obstacle(obstacles, (x_off + x_dist + gait[0], y_off + y_dist + gait[1]))
+
+        if obstacle_hit > -1:
+            break
+
+        # check if target is closer than gait
+        if np.sqrt(np.power(gait[0], 2) + np.power(gait[1], 2)) > np.sqrt(np.power(target[0], 2) + np.power(target[1], 2)):
+            gait = target
 
         steps.append(gait)
-        step_count += 1
 
         target = (target[0] - gait[0], target[1] - gait[1])
+        x_dist += gait[0]
+        y_dist += gait[1]
 
-    return steps
+    return steps, obstacle_hit
+
+def compute_sub_target(obstacle, target, x_off, y_off):
+    tmp_target = (target[0] - x_off, target[1] - y_off)
+    unit_vec  = (tmp_target[0] / dist((0, 0), tmp_target), tmp_target[1] / dist((0, 0), tmp_target))
+    sub_target1 = (unit_vec[1] * -1 * (robot_radius * 1.5 + obstacle[2]) + obstacle[0], unit_vec[0] * (robot_radius * 1.5 + obstacle[2]) + obstacle[1])
+    sub_target2 = (unit_vec[1] * (robot_radius * 1.5 + obstacle[2]) + obstacle[0], unit_vec[0] * -1 * (robot_radius * 1.5 + obstacle[2]) + obstacle[1])
+
+    dist1       = dist(target, sub_target1)
+    dist2       = dist(target, sub_target2)
+
+    if dist1 > dist2:
+        sub_target = sub_target2
+    else:
+        sub_target = sub_target1
+
+    return sub_target
