@@ -116,7 +116,8 @@ public:
   std::vector<std::string> gpsdata;
   static const int NAT_FRAMEOFDATA = 7;
 
-  void get(GPSData& data) { 
+  void get(GPSData& data) 
+  { 
     gpsdata.clear();
     theGPSListener->receive(gpsdata);
     //std::cout << gpsdata.size() << std::endl;
@@ -140,8 +141,7 @@ public:
         
         //ASSERT(markerSetCount == 0); // not supported
 
-
-        for (unsigned int i = 0; i < markerSetCount; ++i) 
+        for (unsigned int i = 0; i < markerSetCount; ++i)
         {
           // read the name of the representation
           std::string modelName;
@@ -241,7 +241,7 @@ public:
           pose.translate(150.0, 0.0);
           data.data = Pose3D::embedXY(pose);
 
-          std::cout << Math::toDegrees(yaw) << " " << Math::toDegrees(pitch) << " " << Math::toDegrees(roll) << id << std::endl;
+          //std::cout << Math::toDegrees(yaw) << " " << Math::toDegrees(pitch) << " " << Math::toDegrees(roll) << id << std::endl;
         }
       }
     }
