@@ -26,7 +26,7 @@ angular_part   = 16
 parameter_s = 1
 
 obstacles = [(1600, 400, 300), (2000, -500, 300)]#[(-500, 1500, 300), (-750, 1000, 300)] # [(), ()] ansonsten fehler
-target    = [3500, 0]#[-1000, 2750]
+target    = [3500, 0]#[-1000, 2750]#
 
 x_off = 0
 y_off = 0
@@ -40,8 +40,6 @@ orig_target    = copy.copy(target)
 actual_path    = [(0, 0)]
 
 pause = False
-
-print(LPG.dist_between(obstacles[0], obstacles[1]))
 
 # plot
 while True:
@@ -73,8 +71,8 @@ while True:
     # simulate the gait
     x_off += gait[0]
     y_off += gait[1]
-    rot    = np.arctan2(target[1], target[0])
-    rot_a  = LPG.cell_angle(target, rot)
+    #rot    = np.arctan2(target[1], target[0])
+    #rot_a  = LPG.cell_angle(target, rot)
     target[0] -= gait[0]
     target[1] -= gait[1]
     for k in range(0, len(obstacles)):

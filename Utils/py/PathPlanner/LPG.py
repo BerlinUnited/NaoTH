@@ -102,7 +102,7 @@ def a_star_search(start, goal, obstacles, rot):
 
         closedlist.add(current)
 
-        for r in [0, -1]:
+        for r in [0, -1, 1]:
             for a in [0, -1, 1]:
                 the_next = (current[0] + r, current[1] + a)
                 if the_next in closedlist:
