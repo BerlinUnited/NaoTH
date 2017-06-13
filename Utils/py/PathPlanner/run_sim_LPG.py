@@ -41,6 +41,8 @@ actual_path    = [(0, 0)]
 
 pause = False
 
+print(LPG.dist_between(obstacles[0], obstacles[1]))
+
 # plot
 while True:
     if heard_pause():

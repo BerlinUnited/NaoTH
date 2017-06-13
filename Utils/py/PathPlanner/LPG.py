@@ -10,10 +10,10 @@ import copy
 import field_info as f
 
 base           = 1.1789
-minimal_cell   = 10
+minimal_cell   = 100
 angular_part   = 16
 
-parameter_s = 1
+parameter_s = 0.5
 
 def distance(coords):
     x = coords[0]
@@ -142,9 +142,9 @@ def compute_waypoints_LPG(tar, obstacles, rot, rot_a):
         the_path.append(the_next)
 
     # dirty hack
-    if len(the_path) > 1:
+    """if len(the_path) > 1:
         if the_path[0][1] is not the_path[1][1]:
-            the_path[0] = (the_path[0][0], the_path[1][1])
+            the_path[0] = (the_path[0][0], the_path[1][1])"""
 
     return the_path
 
@@ -152,16 +152,20 @@ def compute_gait(the_path, target, rot):
     (x, y) = (0, 0)
     for k in range(0, len(the_path)):
         (x, y) = cell_mid_from_polar(the_path[k][0], the_path[k][1], rot)
-        if (np.absolute(x) >= 40) or (np.absolute(y) >= 40):
+        if (np.absolute(x) >= 60) or (np.absolute(y) >= 60):
             break
 
-    x = min(max(x, -40), 40)
-    y = min(max(y, -40), 40)
+    dist        = dist_between((x, y), (0, 0))
+    step_length = 60
+    gait        = (x / dist * step_length, y / dist * step_length)
 
-    if np.sqrt(np.power(x, 2) + np.power(y, 2)) > np.sqrt(np.power(target[0], 2) + np.power(target[1], 2)):
-        (x, y) = target
+    #x = min(max(x, -40), 40)
+    #y = min(max(y, -40), 40)
 
-    return (x, y)
+    if np.sqrt(np.power(gait[0], 2) + np.power(gait[1], 2)) > np.sqrt(np.power(target[0], 2) + np.power(target[1], 2)):
+        gait = target
+
+    return gait
 
 def draw_field(ax, x_off, y_off):
     ax.plot([0 +x_off, 0+x_off], [-f.y_length * 0.5 + y_off, f.y_length * 0.5 + y_off], 'white')  # Middle line
