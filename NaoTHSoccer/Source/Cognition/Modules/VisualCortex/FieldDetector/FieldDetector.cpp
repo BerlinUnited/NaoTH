@@ -85,6 +85,7 @@ void FieldDetector::execute(CameraInfo::CameraID id)
       }
     }
 
+    getFieldPercept().rawFieldBorder = points;
     // move the outer points
     //points.front().x = 0;
     //points.back().x = getImage().width()-1;
@@ -114,7 +115,6 @@ void FieldDetector::execute(CameraInfo::CameraID id)
         points.push_back(Vector2i(getImage().width() - 1, getScanLineEdgelPercept().endPoints.back().posInImage.y));
         points.push_back(Vector2i(getImage().width() - 1, getImage().height() - 1));
       }
-
     }
     // calculate the convex hull
     vector<Vector2i> result = ConvexHull::convexHull(points);

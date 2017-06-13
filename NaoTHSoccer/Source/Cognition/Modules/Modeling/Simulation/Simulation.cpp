@@ -167,6 +167,25 @@ void Simulation::simulateConsequences(
   
   // virtual ultrasound obstacle line
   Math::LineSegment obstacleLine(getRobotPose() * Vector2d(400, 200), getRobotPose() * Vector2d(400, -200));
+
+  // calculate projection of field border for bottom and top
+  std::vector<Math::LineSegment> bordersOnField;
+  Vector2d temp1, temp2;
+
+  for(unsigned int i =0; i < getFieldPercept().rawFieldBorder.size()-1; i++){
+      if(CameraGeometry::imagePixelToFieldCoord(getCameraMatrix(), getCameraInfo(), getFieldPercept().rawFieldBorder[i], 0, temp1)
+         && CameraGeometry::imagePixelToFieldCoord(getCameraMatrix(), getCameraInfo(), getFieldPercept().rawFieldBorder[i], 0, temp2)){
+          bordersOnField.push_back(Math::LineSegment(temp1,temp2));
+      }
+  }
+
+  for(unsigned int i =0; i < getFieldPerceptTop().rawFieldBorder.size()-1; i++){
+      if(CameraGeometry::imagePixelToFieldCoord(getCameraMatrixTop(), getCameraInfoTop(), getFieldPerceptTop().rawFieldBorder[i], 0, temp1)
+         && CameraGeometry::imagePixelToFieldCoord(getCameraMatrixTop(), getCameraInfoTop(), getFieldPerceptTop().rawFieldBorder[i], 0, temp2)){
+          bordersOnField.push_back(Math::LineSegment(temp1,temp2));
+      }
+  }
+
   // now generate predictions and categorize
   for(size_t j=0; j < static_cast<size_t>(theParameters.numParticles); j++)
   {
@@ -229,6 +248,15 @@ void Simulation::simulateConsequences(
       );
     }
     */
+    // "simple obstacle collision check"
+    // intersection with projected field border line segments? -> obstacleCollision = true;
+
+    for(std::vector<Math::LineSegment>::const_iterator i = bordersOnField.begin(); i != bordersOnField.end(); i++){
+        if(shootLine.intersect(*i)){
+            obstacleCollision = true;
+            break;
+        }
+    }
 
     // now categorize the position
     BallPositionCategory category = INFIELD;

@@ -18,6 +18,10 @@
 #include "Representations/Modeling/KickActionModel.h"
 #include "Representations/Modeling/ObstacleModel.h"
 
+#include "Representations/Perception/FieldPercept.h"
+#include "Representations/Perception/CameraMatrix.h"
+#include "Representations/Infrastructure/CameraInfo.h"
+
 //Tools
 #include <Tools/Math/Vector2.h>
 #include <Tools/Math/Probabilistics.h>
@@ -27,6 +31,7 @@
 #include "Tools/Debug/DebugModify.h"
 #include <Representations/Debug/Stopwatch.h>
 #include "Tools/Filters/AssymetricalBoolFilter.h"
+#include "Tools/CameraGeometry.h"
 
 // Debug
 #include <Tools/Debug/DebugRequest.h>
@@ -44,6 +49,13 @@ BEGIN_DECLARE_MODULE(Simulation)
   REQUIRE(BallModel)
   REQUIRE(RobotPose)
   //REQUIRE(SelfLocGoalModel)
+
+  REQUIRE(FieldPercept)
+  REQUIRE(FieldPerceptTop)
+  REQUIRE(CameraMatrix)
+  REQUIRE(CameraMatrixTop)
+  REQUIRE(CameraInfo)
+  REQUIRE(CameraInfoTop)
 
   PROVIDE(KickActionModel)
 END_DECLARE_MODULE(Simulation)
