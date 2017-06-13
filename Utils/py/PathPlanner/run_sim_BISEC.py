@@ -11,9 +11,10 @@ import Queue as Q
 import copy
 import select
 
-obstacles    = [(1600, 0, 300), (2000, -500, 300)]#[(-500, 1500, 300), (-750, 1000, 300)] # [(), ()] ansonsten fehler
-target       = [3500, 0]#[-1000, -2750]#
-orig_target  = copy.copy(target)
+obstacles      = [(1600, 0, 300), (2000, -500, 300)]#[(-500, 1500, 300), (-750, 1000, 300)] # [(), ()] ansonsten fehler
+target         = [(3500, 0)]#, (-1000, -2750)]
+orig_target    = copy.copy(target)
+current_target = 0
 
 x_off = 0
 y_off = 0
@@ -29,7 +30,7 @@ while True:
     # draw the field
     B.draw_field(ax, 0, 0)
 
-    steps = B.compute_steps(target, obstacles, x_off, y_off)
+    steps = B.compute_steps(target[current_target], orig_target[current_target], obstacles, x_off, y_off)
     B.draw_steps(ax, x_off, y_off, steps)
 
     # draw obstacles and the target
@@ -37,9 +38,13 @@ while True:
     B.draw_target(ax, orig_target)
 
     # simulate gait
-    if (x_off is not target[0] or y_off is not target[1]) and (len(steps) > 1):
-        x_off += steps[1][0]
-        y_off += steps[1][1]
-        target = (target[0] - steps[1][0], target[1] - steps[1][1])
+    if (x_off != target[current_target][0] or y_off != target[current_target][1]) and (len(steps) > 0):
+        x_off += math.floor(steps[0][0])
+        y_off += math.floor(steps[0][1])
+        target[current_target] = (target[current_target][0] - math.floor(steps[0][0]), target[current_target][1] - math.floor(steps[0][1]))
+    # change target
+    if x_off == orig_target[current_target][0] and y_off == orig_target[current_target][1] and current_target < len(target) - 1:
+        current_target        += 1
+        target[current_target] = (target[current_target][0] - x_off, target[current_target][1] - y_off)
 
     plt.pause(0.000000000001)

@@ -56,7 +56,8 @@ def draw_obstacles(ax, x_off, y_off, obstacles):
             ax.add_artist(Circle(xy=(k[0], k[1]), radius=10, fill=True, color='black'))
 
 def draw_target(ax, target):
-    ax.plot(target[0], target[1], 'x', color='red')
+    for k in target:
+        ax.plot(k[0], k[1], 'x', color='red')
 
 def draw_steps(ax, x_off, y_off, steps):
     x_dist = 0
@@ -69,7 +70,7 @@ def draw_steps(ax, x_off, y_off, steps):
 def dist(start, target):
     return np.sqrt(np.power(start[0] - target[0], 2) + np.power(start[1] - target[1], 2))
 
-def compute_steps(tar, obstacles, x_off, y_off):
+def compute_steps(tar, orig_target, obstacles, x_off, y_off):
     target         = copy.copy(tar)
     steps          = []
 
@@ -86,6 +87,8 @@ def compute_steps(tar, obstacles, x_off, y_off):
             break
         if gait[0] is -0 and gait[1] is -0:
             break
+
+        # check for obstacles
 
         steps.append(gait)
         step_count += 1
