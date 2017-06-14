@@ -71,27 +71,10 @@ int main(int argc, char** argv)
     std::cerr << "ERROR: theCognition is not of type ModuleManager" << std::endl;
     return (EXIT_FAILURE);
   }
-  /*
-  ModuleManager* theMotionManager = getModuleManager(theMotion);
-  if (!theMotionManager)
-  {
-    std::cerr << "ERROR: theMotion is not of type ModuleManager" << std::endl;
-    return (EXIT_FAILURE);
-  }
-  */
-  // register a module to provide all the logged data
-  //ModuleCreator<LogProvider>* theLogProviderCognition = theCognitionManager->registerModule<LogProvider>(std::string("LogProvider"));
-  //ModuleCreator<LogProvider>* theLogProviderMotion = theMotionManager->registerModule<LogProvider>(std::string("LogProvider"));
 
   // register processes
   sim.registerCognition((naoth::Callable*)(theCognition));
   //sim.registerMotion((naoth::Callable*)(theMotion));
-
-  //theLogProviderCognition->setEnabled(true);
-  //theLogProviderCognition->getModuleT()->init(sim.logFileScanner, sim.getRepresentations(), sim.getIncludedRepresentations());
-
-  //theLogProviderMotion->setEnabled(true);
-  //theLogProviderMotion->getModuleT()->init(sim.logFileScanner, sim.getRepresentations(), sim.getIncludedRepresentations());
 
   // start the execution
   sim.main();

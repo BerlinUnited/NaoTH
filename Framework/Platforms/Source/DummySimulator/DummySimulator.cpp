@@ -5,23 +5,19 @@
 * Created on 2017.05.21
 */
 #ifdef  WIN32
-#include <conio.h>
 #include <windows.h>
 #include <winbase.h>
 #else
 #include <unistd.h>
 #include <fcntl.h>
-#include "myconio.h"
 #endif //WIN32
 
-#include <sstream>
+#include "myconio.h"
 
 #include "DummySimulator.h"
 #include "Tools/NaoTime.h"
-
-#include <Messages/Framework-Representations.pb.h>
-
 #include "Tools/Math/Common.h"
+
 #include "PlatformInterface/Platform.h"
 
 using namespace std;
@@ -29,114 +25,102 @@ using namespace naoth;
 
 DummySimulator::DummySimulator(bool backendMode, bool realTime, unsigned short port)
   : PlatformInterface("DummySimulator", CYCLE_TIME),
-  backendMode(backendMode),
-  debugPort(port),
-  dummyModule(),
-  simulatedTime(0),
-  lastFrameTime(0),
-  simulatedFrameNumber(0)
+  backendMode(backendMode)
 {
+  registerInput<FrameInfo>(*this);
 
-}
+  registerInput<DebugMessageInCognition>(*this);
+  registerInput<DebugMessageInMotion>(*this);
+  registerOutput<DebugMessageOut>(*this);
 
-void DummySimulator::init()
-{
-  lastFrameTime = 0;
-  simulatedTime = 0;
-  theDebugServer.start(debugPort);
+
+  theDebugServer.start(port);
   theDebugServer.setTimeOut(0);
-
-  currentFrame = dummyModule.begin();
 }
+
+
+void DummySimulator::printHelp()
+{
+  cout << endl;
+  cout << "Welcome to the NaoTH DummySimulator" << endl;
+  cout << "--------------------------------------------" << endl << endl;
+
+  cout << "p - play " << endl;
+  cout << "r - repeat a frame" << endl;
+  cout << "q or x - quit/exit" << endl << endl;
+
+  cout << "After a frame was executed you will always get a line showing you the current frame" << endl;
+}//end printHelp
 
 char DummySimulator::getInput()
 {
   if (backendMode) {
     return static_cast<char>(getchar());
-  }
-  else {
+  } else {
     return static_cast<char>(getch());
   }
 }
 
 void DummySimulator::main()
 {
-  init();
+  printHelp();
+  executeFrame();
 
   char c;
   while ((c = getInput()) && c != 'q' && c != 'x')
   {
-    // execute    
-    executeCurrentFrame();
+    if (c == 'r') {
+      executeFrame();
+    } else if (c == 'p') {
+      play();
+    }
   }
 
   cout << endl << "bye bye!" << endl;
 }//end main
 
-void DummySimulator::executeCurrentFrame()
-{
-  //TODO provide currentFrame correct
-  dummyModule.readFrame(*currentFrame, representations);
-  currentFrame++;
-  adjust_frame_time();
 
-  // execute
+void DummySimulator::play()
+{
+#ifdef WIN32
+  //cerr << "Play-Support now yet enabled under Windows" << endl;
+#else
+  // set terminal to non-blocking...
+  const int fd = fileno(stdin);
+  const int fcflags = fcntl(fd, F_GETFL);
+  if (fcntl(fd, F_SETFL, fcflags | O_NONBLOCK) <0)
+  {
+    cerr << "Could not set terminal to non-blocking mode" << endl;
+    cerr << "\"Play\" capatibility not available on this terminal" << endl;
+    return;
+  }
+#endif //WIN32
+
+  int c = -1;
+  while (c != 'p' && c != '\n'&& c != 'q' && c != 'x')
+  {
+    unsigned int startTime = NaoTime::getNaoTimeInMilliSeconds();
+    executeFrame();
+    unsigned int calculationTime = NaoTime::getNaoTimeInMilliSeconds() - startTime;
+    // wait at least 5ms but max 1s
+    unsigned int waitTime = Math::clamp((int)frameExecutionTime - (int)calculationTime, 5, 1000);
+
+#ifdef WIN32
+    Sleep(waitTime);
+    if (_kbhit()) {
+      c = getInput();
+    }
+#else
+    // wait some time
+    usleep(waitTime * 1000);
+    c = getInput();
+#endif
+
+  }//while
+}
+
+void DummySimulator::executeFrame()
+{
   runCognition();
   //runMotion();
-  Sleep(500);
-
-  //printCurrentLineInfo();
-
-}//end executeCurrentFrame
-
-
-void DummySimulator::adjust_frame_time()
-{
-  naothmessages::FrameInfo f;
-
-  // default time since the last frame
-  int time_delta = 33; // default time step simulating 30fps
-
-  // if no FrameInfo was logged set it manually
-  DummyModule::RepresentationData& frameData = representations["FrameInfo"];
-  if (!frameData.valid)
-  {
-    f.set_framenumber(*currentFrame);
-    lastFrameTime = 0;
-  }
-  else
-  {
-    // read the actual frame info
-    f.ParseFromArray(frameData.data.data(), (int)frameData.data.size());
-    unsigned int frameTime = f.time();
-
-    // logged time since the last frame
-    if (lastFrameTime != 0) {
-      time_delta = (int)frameTime - (int)lastFrameTime;
-    }
-
-    // remember the current time for next cycle
-    lastFrameTime = frameTime;
-  }
-
-  if (time_delta <= 0) {
-    time_delta = 33; // default time step simulating 30fps
-  }
-
-  simulatedTime += time_delta;
-  f.set_time(simulatedTime);
-
-  f.set_framenumber(simulatedFrameNumber++);
-
-  // write the result back
-  string result = f.SerializeAsString();
-  frameData.data.resize(result.size());
-  std::copy(result.begin(), result.end(), frameData.data.begin());
-}//end adjust_frame_time
-
-
-MessageQueue* DummySimulator::createMessageQueue(const std::string& /*name*/)
-{
-  // for single thread
-  return new MessageQueue();
 }
