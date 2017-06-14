@@ -11,6 +11,8 @@ namespace naoth
   {
   public:
     double charge;
+    double current;
+    double temperature;
 
     BatteryData();
     virtual void print(std::ostream& stream) const;
@@ -20,4 +22,3 @@ namespace naoth
 }
 
 #endif  /* _BATTERY_DATA_H */
-

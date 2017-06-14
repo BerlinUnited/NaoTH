@@ -4,14 +4,14 @@ option search_ball_back_rot
 enum direction @search_direction;
 
 	common decision  {
-		if(ball.was_seen || ball.time_since_last_seen < 100)
+		if(ball.know_where_itis)
 	    goto finish;
 	}
 	
 	initial state start {
 	
 	  decision {
-	    else if(state_time > 1000 )
+	    else if(state_time > 3000 )
 	    {
 	      if (@search_direction == right)
 	        goto turn_right_first;
@@ -30,19 +30,22 @@ enum direction @search_direction;
 	    motion.walk_speed.y = 0;
 	    motion.walk_speed.rot = 0;
 	
+  /*
 	    head.control_mode = none;
 	    head.point_in_world.x = 200;
 	    head.point_in_world.y = 0;
 	    head.point_in_world.z = 0;
 	    head.motion_type = look_at_world_point;
+      */
+     head.control_mode = search_for_ball;
 	  }
 	}
 	
 	state turn_left_first{
 	
 	  decision {
-	    else if(state_time>1000 )
-	      goto stop1;
+	    else if( state_time > 1000 )
+	      goto stop_left;
 	    else
 	      stay;
 	  }
@@ -66,8 +69,8 @@ enum direction @search_direction;
 	state turn_right_first{
 	
 	  decision {
-	    else if(state_time>1000 )
-	      goto stop2;
+	    else if( state_time > 1000 )
+	      goto stop_right;
 	    else
 	      stay;
 	  }
@@ -88,10 +91,10 @@ enum direction @search_direction;
 	  }
 	}
 	
-	state stop1 {
+	state stop_left {
 	
 	  decision{
-	    else if(state_time>500 )
+	    else if( executed_motion.type == stand || state_time > 800)
 	      goto turn_right;
 	    else
 	      stay;
@@ -102,17 +105,17 @@ enum direction @search_direction;
 	    motion.walk.stop_with_stand=false;
 	    
 	    head.control_mode = none;
-	    head.point_in_world.x = 200;
-	    head.point_in_world.y = 0;
-	    head.point_in_world.z = 0;
-	    head.motion_type = look_at_world_point;
+      head.point_in_world.x = 200;
+      head.point_in_world.y = 200;
+      head.point_in_world.z = 0;
+      head.motion_type = look_at_world_point;
 	  }
 	}
 	
-	state stop2 {
+	state stop_right {
 	
 	  decision {
-	    else if(state_time>500 )
+	    else if( executed_motion.type == stand || state_time > 800)
 	      goto turn_left;
 	    else
 	      stay;
@@ -124,15 +127,15 @@ enum direction @search_direction;
 	    
 	    head.control_mode = none;
 	    head.point_in_world.x = 200;
-	    head.point_in_world.y = 0;
+      head.point_in_world.y = -200;
 	    head.point_in_world.z = 0;
 	    head.motion_type = look_at_world_point;
 	  }
 	}
 	
-	state turn_right{
+	state turn_right {
 	  decision {
-	    else if(state_time>1500 )
+	    else if( state_time > 1500 )
 	      goto finish;
 	    else
 	      stay;
@@ -154,9 +157,9 @@ enum direction @search_direction;
 	  }
 	}
 	
-	state turn_left{
+	state turn_left {
 	  decision {
-	    else if(state_time>1500 )
+	    else if( state_time > 1500 )
 	      goto finish;
 	    else
 	      stay;

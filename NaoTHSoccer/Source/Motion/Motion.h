@@ -16,13 +16,14 @@
 #include <ModuleFramework/Module.h>
 #include <Tools/Debug/ModuleManagerWithDebug.h>
 
-#include "MorphologyProcessor/SupportPolygonGenerator.h"
+//#include "MorphologyProcessor/SupportPolygonGenerator.h"
 #include "MorphologyProcessor/OdometryCalculator.h"
 //#include "MorphologyProcessor/FootTouchCalibrator.h"
 #include "MorphologyProcessor/FootGroundContactDetector.h"
 #include "MorphologyProcessor/KinematicChainProviderMotion.h"
 #include "SensorFilter/InertiaSensorCalibrator.h"
 #include "SensorFilter/InertiaSensorFilter.h"
+#include "SensorFilter/IMUModel.h"
 
 //#include <Representations/Modeling/CameraMatrixOffset.h>
 
@@ -38,6 +39,8 @@
 #include <Representations/Infrastructure/AccelerometerData.h>
 #include <Representations/Infrastructure/GyrometerData.h>
 #include <Representations/Infrastructure/DebugMessage.h>
+#include <Representations/Modeling/IMUData.h>
+#include "Representations/Modeling/GroundContactModel.h"
 
 // debug
 #include <Representations/Debug/Stopwatch.h>
@@ -51,11 +54,13 @@
 #include "Tools/Debug/DebugParameterList.h"
 #include "Tools/Debug/DebugModify.h"
 
+#include <Representations/Modeling/BodyState.h>
+
 #include <Tools/DataStructures/ParameterList.h>
 
-#include <Tools/DataStructures/RingBuffer.h>
-
 BEGIN_DECLARE_MODULE(Motion)
+  REQUIRE(GroundContactModel)
+
   PROVIDE(StopwatchManager)
   PROVIDE(DebugDrawings)
   PROVIDE(DebugImageDrawings)
@@ -76,13 +81,14 @@ BEGIN_DECLARE_MODULE(Motion)
   // PROVIDE is needed to update the speed and acceleration
   PROVIDE(MotorJointData) // TODO: check
 
+  PROVIDE(OffsetJointData)
+  
   PROVIDE(RobotInfo)
   PROVIDE(KinematicChainSensor)
   PROVIDE(KinematicChainMotor)
 
   // platform input
-
-  REQUIRE(SensorJointData)
+  PROVIDE(SensorJointData) //REQUIRE(SensorJointData)
   PROVIDE(FrameInfo)
   PROVIDE(InertialSensorData)
   PROVIDE(FSRData)
@@ -100,6 +106,7 @@ BEGIN_DECLARE_MODULE(Motion)
   PROVIDE(HeadMotionRequest)
   PROVIDE(MotionRequest)
   PROVIDE(BodyStatus)
+  PROVIDE(BodyState)
 END_DECLARE_MODULE(Motion)
 
 
@@ -124,6 +131,8 @@ private:
 
   void postProcess();
 
+  void modifyJointOffsets();
+
 private:
 
   class Parameter : public ParameterList
@@ -132,11 +141,14 @@ private:
     Parameter() : ParameterList("Motion")
     {
       PARAMETER_REGISTER(useGyroRotationOdometry) = true;
-
+      PARAMETER_REGISTER(useIMUModel) = false;
+      PARAMETER_REGISTER(useInertiaSensorCalibration) = true;
       syncWithConfig();
     }
 
     bool useGyroRotationOdometry;
+    bool useIMUModel;
+    bool useInertiaSensorCalibration;
 
   } parameter;
 
@@ -152,9 +164,10 @@ private:
   ModuleCreator<InertiaSensorCalibrator>* theInertiaSensorCalibrator;
   ModuleCreator<InertiaSensorFilter>* theInertiaSensorFilterBH;
   ModuleCreator<FootGroundContactDetector>* theFootGroundContactDetector;
-  ModuleCreator<SupportPolygonGenerator>* theSupportPolygonGenerator;
+  //ModuleCreator<SupportPolygonGenerator>* theSupportPolygonGenerator;
   ModuleCreator<OdometryCalculator>* theOdometryCalculator;
   ModuleCreator<KinematicChainProviderMotion>* theKinematicChainProvider;
+  ModuleCreator<IMUModel>* theIMUModel;
 
   ModuleCreator<MotionEngine>* theMotionEngine;
 

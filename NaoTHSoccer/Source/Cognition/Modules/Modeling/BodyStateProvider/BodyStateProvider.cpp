@@ -28,7 +28,14 @@ void BodyStateProvider::execute()
 
   // 
   updateTheLegTemperature();
+  updateIsLiftedUp();
   
+  if(getBatteryData().current < -0.5){
+    getBodyState().isDischarging = true;
+  }else{
+    getBodyState().isDischarging = false;
+  }
+
 }//end execute
 
 void BodyStateProvider::updateTheFootState()
@@ -36,8 +43,8 @@ void BodyStateProvider::updateTheFootState()
   bool old_standByLeftFoot = getBodyState().standByLeftFoot;
   bool old_standByRightFoot = getBodyState().standByRightFoot;
 
-  getBodyState().standByLeftFoot = getFSRData().forceLeft() > theParams.foot_threshold;
-  getBodyState().standByRightFoot = getFSRData().forceRight() > theParams.foot_threshold;
+  getBodyState().standByLeftFoot = getGroundContactModel().leftGroundContact;
+  getBodyState().standByRightFoot = getGroundContactModel().rightGroundContact;
 
   if(old_standByLeftFoot != getBodyState().standByLeftFoot ||
      old_standByRightFoot != getBodyState().standByRightFoot)
@@ -111,3 +118,11 @@ void BodyStateProvider::updateTheLegTemperature()
   getBodyState().temperatureRightLeg = tempR;
 }//end updateTheLegTemperature
 
+void BodyStateProvider::updateIsLiftedUp(){
+   getBodyState().isLiftedUp =  getBodyState().fall_down_state == BodyState::upright && 
+                      !getBodyState().standByLeftFoot && 
+                      !getBodyState().standByRightFoot && // no foot is on the ground
+                       getFrameInfo().getTimeSince(getBodyState().foot_state_time) > theParams.maxTimeForLiftUp;
+
+ 
+}

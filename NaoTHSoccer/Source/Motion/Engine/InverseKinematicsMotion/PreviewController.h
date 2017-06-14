@@ -17,13 +17,11 @@
 
 class PreviewController
 {
-public:
-
+private:
   // precalculated values
   Matrix3x3<double> A;
   Vector3d b;
   Vector3d c;
-  double timeStep;
 
   // loaded values
   struct Parameters
@@ -34,8 +32,8 @@ public:
     std::vector<double> f;
   };
 
+public:
   PreviewController();
-
   void loadParameter();
 
   //
@@ -45,19 +43,43 @@ public:
   
   void control(Vector3d& com, Vector2d& dcom, Vector2d& ddcom);
   
-  size_t previewSteps() const { return parameters->f.size(); }  
+  size_t previewSteps() const { return parameters->f.size(); }
 
   bool ready() const;
   
   //
   // input ZPM handling
-
   void push(const Vector3d& zmp);
+  void pop();
   Vector3d front() const;
   Vector3d back() const;
   unsigned int count() const { return static_cast<unsigned int> (refZMPx.size()); }
   void clear();
 
+  Vector3d com() const {
+    return Vector3d(theX[0], theY[0], theZ);
+  }
+
+  Vector2d com_velocity() const {
+    return Vector2d(theX[1], theY[1]);
+  }
+
+  Vector2d com_acceleration() const {
+    return Vector2d(theX[2], theY[2]);
+  }
+
+  // NOTE: experimental
+  void setState(const Vector3d& com, const Vector2d& dcom, const Vector2d& ddcom) {
+    setHeight(com.z);
+
+    theX[0] = com.x;
+    theX[1] = dcom.x;
+    theX[2] = ddcom.x;
+
+    theY[0] = com.y;
+    theY[1] = dcom.y;
+    theY[2] = ddcom.y;
+  }
 
 private:
   void setHeight(double height);
@@ -65,7 +87,7 @@ private:
 
   // output: internal state of the contsoller
   Vector3d theX; // x, x', x''
-  Vector3d theY; // y, y' ,y''
+  Vector3d theY; // y, y', y''
   double theZ; // z
   Vector2d theErr;
   
@@ -83,9 +105,9 @@ private:
   const Parameters* parameters;
   // current height used for the parameters
   unsigned int parameterHeight;
+  // time step of the precalculated parameters
+  double parameterTimeStep;
 };
-
-//std::istream& operator >>(std::istream& ist, PreviewController::Parameters& p);
 
 #endif  /* _PREVIEWCONTROLLER_H */
 

@@ -13,6 +13,7 @@ import de.naoth.rc.components.treetable.ModifyDataModel.ModifyDataNode;
 import de.naoth.rc.components.treetable.TreeTable;
 import de.naoth.rc.core.dialog.AbstractDialog;
 import de.naoth.rc.core.dialog.DialogPlugin;
+import de.naoth.rc.core.dialog.RCDialog;
 import de.naoth.rc.core.manager.ObjectListener;
 import de.naoth.rc.core.manager.SwingCommandExecutor;
 import de.naoth.rc.manager.GenericManagerFactory;
@@ -30,7 +31,7 @@ import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 
 /**
  *
- * @author admin
+ * @author heinrich
  */
 public class Modify extends AbstractDialog
 {
@@ -39,6 +40,7 @@ public class Modify extends AbstractDialog
     
     Command commandToExecute = null;
 
+    @RCDialog(category = RCDialog.Category.Debug, name = "Modify")
     @PluginImplementation
     public static class Plugin extends DialogPlugin<Modify>
     {
@@ -199,6 +201,8 @@ public class Modify extends AbstractDialog
                   }
                   
                   //myTreeTable.getTree().expandPath(new TreePath(myTreeTable.getTree().getModel().getRoot()));
+                  
+                  myTreeTable.expandRoot();
                   myTreeTable.revalidate();
                   myTreeTable.repaint();
               }

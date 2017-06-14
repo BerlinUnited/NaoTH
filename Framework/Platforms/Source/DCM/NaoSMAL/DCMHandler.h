@@ -1,4 +1,4 @@
- /* 
+ /*
  * File:   DCMHandler.h
  * Author: Oliver Welter (welter@informatik.hu-berlin.de)
  *
@@ -19,11 +19,16 @@
 
 #include "alincludes.h"
 
+#include "DCM_led.h"
+
 namespace naoth
 {
 
 class DCMHandler
 {
+private:
+  DCM_led ledHandler;
+
 private:
   boost::shared_ptr<AL::ALBroker> pBroker;
   boost::shared_ptr<AL::ALMemoryProxy> al_memory;
@@ -35,14 +40,10 @@ private:
   std::string DCMPath_SensorJointPosition[JointData::numOfJoint];
   std::string DCMPath_SensorJointElectricCurrent[JointData::numOfJoint];
   std::string DCMPath_SensorJointTemperature[JointData::numOfJoint];
-    
-
-  //LED
-  std::string DCMPath_MonoLED[LEDData::numOfMonoLED];
-  std::string DCMPath_MultiLED[LEDData::numOfMultiLED][LEDData::numOfLEDColor];
 
   //FSR
-  std::string DCMPath_FSR[FSRData::numOfFSR];
+  std::string DCMPath_FSR_Left[FSRData::numOfFSR];
+  std::string DCMPath_FSR_Right[FSRData::numOfFSR];
 
   //Accelerometer
   std::string DCMPath_Accelerometer[3+3];
@@ -59,11 +60,11 @@ private:
   //IR
   std::string DCMPath_IRSend[IRSendData::numOfIRSend];
   std::string DCMPath_IRReceive[IRReceiveData::numOfIRReceive];
-    
+
   //UltraSound
   std::string DCMPath_UltraSoundReceive;
-  std::string DCMPath_UltraSoundReceiveLeft[UltraSoundData::numOfUSEcho];
-  std::string DCMPath_UltraSoundReceiveRight[UltraSoundData::numOfUSEcho];
+  std::string DCMPath_UltraSoundReceiveLeft[UltraSoundReceiveData::numOfUSEcho];
+  std::string DCMPath_UltraSoundReceiveRight[UltraSoundReceiveData::numOfUSEcho];
   std::string DCMPath_UltraSoundSend;
 
   //Body-ID
@@ -72,19 +73,19 @@ private:
 
   //Battery
   std::string DCMPath_BatteryCharge;
+  std::string DCMPath_BatteryCurrent;
+  std::string DCMPath_BatteryTemperature;
 
   //State of the devices
   std::string DCMPath_DeviceState;
 
-  // 
+  //
   std::string allSensorsList[numOfSensors];
 
 
   //DCMCommand-Structures
   AL::ALValue allMotorPositionCommands;
   AL::ALValue allMotorHardnessCommands;
-  AL::ALValue ledCommands;
-  AL::ALValue singleLedCommand;
   AL::ALValue irCommands;
   AL::ALValue usSendCommands;
 
@@ -93,14 +94,12 @@ private:
   * For multiple data use al_memory->getListData() directly
   */
   AL::ALValue getFromALMemory(const std::string& path);
-  
+
   void sendToDCM(const std::string& path, const double value, const int timestamp);
 
   void initFSR();
   void initSensorJoint();
   void initMotorJoint();
-  void initLED();
-  void initSingleLED();
   void initAccelerometer();
   void initGyrometer();
   void initInertialSensor();
@@ -114,12 +113,11 @@ private:
   void initAllSensorData();
 
 public:
-  // 
+  //
   float* sensorPtrs[numOfSensors];
 
-  // remember last commands (needed by "smart" methods) 
+  // remember last commands (needed by "smart" methods)
   MotorJointData lastMotorJointData;
-  LEDData lastLEDData;
 
 
   DCMHandler();
@@ -133,27 +131,21 @@ public:
 
   // read sensor data from AL memory
   void readSensorData(float* dest);
-    
-  //void set(const LEDData& data);
-  //void set(const IRSendData& data);
-  //void set(const UltraSoundSendData& data);
 
   void setSingleMotorData(const JointData::JointID jointID, const MotorJointData *theMotorJointData, int dcmTime);
-    
+
   void setAllPositionData(const MotorJointData& mjd, int dcmTime);
   void setAllHardnessData(const MotorJointData& mjd, int dcmTime);
   void setAllHardnessData(double value, int dcmTime);
-
   void setUltraSoundSend(const UltraSoundSendData& data, int dcmTime);
-  void setLED(const LEDData& data, int dcmTime);
-  bool setSingleLED(const LEDData& data, int dcmTime);
   void setIRSend(const IRSendData& theIRSendData, int dcmTime);
+
+  void setLED(const LEDData& data, int dcmTime) { ledHandler.setAllLED(data, dcmTime); }
+  bool setSingleLED(const LEDData& data, int dcmTime) { return ledHandler.setSingleLED(data, dcmTime);}
 
   // smart set_methods
   bool setAllHardnessDataSmart(const MotorJointData& mjd, int dcmTime);
-  bool setLEDSmart(const LEDData& data, int dcmTime);
 };//end class DCMHandler
 
 }//end namespace naoth
 #endif	/* _DCMHANDLER_H */
-

@@ -81,7 +81,7 @@ void VirtualVisionProcessor::execute(const CameraInfo::CameraID id)
 Vector3d VirtualVisionProcessor::calculatePosition(const Vector3d& pol)
 {
   return getCameraMatrix() * pol2xyz(pol);
-}//end calculatePosition
+}
 
 void VirtualVisionProcessor::updateBall()
 {
@@ -102,6 +102,18 @@ void VirtualVisionProcessor::updateBall()
 
     theBallPercept.radiusInImage = theFieldInfo.ballRadius / iter->second.x * theCameraInfo.getFocalLength();
     CameraGeometry::relativePointToImage(theCameraMatrix, theCameraInfo, p, theBallPercept.centerInImage);
+
+    // set the multiball percept
+    MultiBallPercept::BallPercept ballPercept;
+  
+    ballPercept.cameraId = cameraID;
+    ballPercept.centerInImage = theBallPercept.centerInImage;
+    ballPercept.radiusInImage = theBallPercept.radiusInImage;
+    ballPercept.positionOnField.x = p.x;
+    ballPercept.positionOnField.y = p.y;
+
+    getMultiBallPercept().add(ballPercept);
+    getMultiBallPercept().frameInfoWhenBallWasSeen = theFrameInfo;
   }
   else
   {
@@ -548,9 +560,9 @@ void VirtualVisionProcessor::updatePlayers()
   PlayersPercept& thePlayersPercept = getPlayersPercept();
   const VirtualVision& theVirtualVision = getVirtualVision();
   const PlayerInfo& thePlayerInfo = getPlayerInfo();
-  const std::string& teamName = thePlayerInfo.gameData.teamName;
-  const int playerNumber = thePlayerInfo.gameData.playerNumber;
-  const GameData::TeamColor teamColor = thePlayerInfo.gameData.teamColor;
+  const std::string& teamName = thePlayerInfo.teamName;
+  const int playerNumber = thePlayerInfo.playerNumber;
+  const GameData::TeamColor teamColor = thePlayerInfo.teamColor;
 
   thePlayersPercept.reset();
   thePlayersPercept.theFrameInfo = getFrameInfo();
@@ -574,20 +586,29 @@ void VirtualVisionProcessor::updatePlayers()
       tokenize(key, tokens); // split by whitespaces
 
       int id;
-      if(!DataConversion::strTo(tokens[2],id))
+      if(!DataConversion::strTo(tokens[2],id)) {
         continue; // id couldn't be parsed
+      }
 
       // get the name of my team
-      if ( tokens[1] != teamName )
+      if ( tokens[1] != teamName ) {
         id = -id; // negative id means opponent
+      }
 
-      if ( id == (int)playerNumber ) continue;
+      if ( id == (int)playerNumber ) {
+        continue;
+      }
 
-      if(!seenPlayerPointsMap[id].set(tokens[3], calculatePosition(iter->second)))
+      if(!seenPlayerPointsMap[id].set(tokens[3], calculatePosition(iter->second))) {
         continue; // name of the body part couldn't be parsed
+      }
       
       // team color
-      seenPlayerPointsMap[id].color = id >0 ? teamColor : !teamColor;
+      if(id > 0) {
+        seenPlayerPointsMap[id].color = teamColor;
+      } else {
+        seenPlayerPointsMap[id].color = (teamColor == GameData::red)?GameData::blue:GameData::red;
+      }
       
     }//end if
   }//end for
@@ -668,8 +689,9 @@ void VirtualVisionProcessor::tokenize(
 
 void VirtualVisionProcessor::updateCorners()
 {
-  const GameData::TeamColor teamColor = getPlayerInfo().gameData.teamColor;
+  const GameData::TeamColor teamColor = getPlayerInfo().teamColor;
   ASSERT( teamColor == GameData::blue || teamColor == GameData::red );
+  ASSERT( teamColor == 0 || teamColor == 1 );
   const VirtualVision& theVirtualVision = getVirtualVision();
 
   const map<string, Vector2d >& fpof = flagPosOnField[teamColor];

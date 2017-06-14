@@ -32,13 +32,14 @@ public:
   private:
     // TODO: find beter solution to hide private stuff
     friend class DebugModify;
-    friend class std::map<std::string, ModifyValue>;
+    //friend class std::map<std::string, ModifyValue>;
 
-    ModifyValue() : value(0.0), modify(false) {}
     double value;
     bool modify;
 
   public:
+    ModifyValue() : value(0.0), modify(false) {}
+
     template<class T>
     void update(T& d)
     {

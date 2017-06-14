@@ -10,6 +10,7 @@
 #define _FSRData_H_
 
 #include <string>
+#include <vector>
 
 #include "Tools/Math/Vector3.h"
 #include "Tools/DataStructures/Printable.h"
@@ -21,6 +22,7 @@ namespace naoth
   class FSRData : public Printable
   {
   public:
+    /*
     enum FSRID
     {
       LFsrFL,
@@ -32,24 +34,25 @@ namespace naoth
       RFsrBL,
       RFsrBR,
       numOfFSR
+    };*/
+
+    enum SensorID {
+      FrontLeft,
+      FrontRight,
+      RearLeft,
+      RearRight,
+      numOfFSR
     };
 
-    double force[numOfFSR]; // the force that applied to the sensor
-    double data[numOfFSR]; // the data read from the platform directly
-    bool valid[numOfFSR]; // if the sensor data is valid
+    //double force[numOfFSR]; // the force that applied to the sensor
+    //double data[numOfFSR]; // the data read from the platform directly
 
-    /** total force on left foot */
-    double forceLeft() const;
-
-    /** total force on right foot */
-    double forceRight() const;
-    
-    /** Returns the force value of the given sensor or -1 if its value is invalid. */
-    double forceOf(FSRID fsrId) const;
+    std::vector<double> dataLeft;
+    std::vector<double> dataRight;
 
     FSRData();
     ~FSRData();
-    static const std::string getFSRName(FSRID fsr);
+    static const std::string getFSRName(SensorID fsr);
 
     virtual void print(std::ostream& stream) const;
   };

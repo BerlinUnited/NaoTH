@@ -15,7 +15,7 @@
 
 // representations
 #include "Representations/Modeling/BallModel.h"
-#include "Representations/Perception/BallPercept.h"
+#include "Representations/Perception/MultiBallPercept.h"
 #include "Representations/Modeling/TeamBallModel.h"
 #include "Representations/Infrastructure/FrameInfo.h"
 #include "Representations/Infrastructure/FieldInfo.h"
@@ -28,10 +28,10 @@
 #include "Tools/Debug/DebugRequest.h"
 #include "Tools/Debug/DebugDrawings.h"
 #include "Tools/Debug/DebugPlot.h"
+
 BEGIN_DECLARE_MODULE(BallSymbols)
-  REQUIRE(BallModel)
-  REQUIRE(BallPercept)
-  REQUIRE(BallPerceptTop)
+  PROVIDE(BallModel) // PROVIDE so that XABSL bool can be read out
+  REQUIRE(MultiBallPercept)
   REQUIRE(FrameInfo)
   REQUIRE(RobotPose)
   REQUIRE(TeamBallModel)
@@ -51,7 +51,7 @@ public:
   BallSymbols() :
     ballPerceptSeen(false),
     ball_seen_filter(0.01, 0.1),
-    ball_know_where_itis(false)
+    ball_see_where_itis(false)
   {
     theInstance = this;
     getDebugParameterList().add(&parameters);
@@ -131,7 +131,7 @@ private:
   };
 
   AssymetricalBoolFilter ball_seen_filter;
-  bool ball_know_where_itis;
+  bool ball_see_where_itis;
 
 };//end class BallSymbols
 

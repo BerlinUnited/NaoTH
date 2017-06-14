@@ -29,6 +29,13 @@ HeadMotionEngine::HeadMotionEngine()
   theKinematicChain.init(theJointData);
 
   DEBUG_REQUEST_REGISTER("HeadMotionEngine:draw_search_points_on_field", "draw the projected search points on the field", false);
+
+  getDebugParameterList().add(&params);
+}
+
+HeadMotionEngine::~HeadMotionEngine()
+{
+  getDebugParameterList().remove(&params);
 }
 
 void HeadMotionEngine::execute()
@@ -153,28 +160,23 @@ void HeadMotionEngine::gotoAngle(const Vector2d& target)
 
 void HeadMotionEngine::moveByAngle(const Vector2d& target) 
 {
-  double max_velocity_deg_in_second_fast = 60;
-  double max_velocity_deg_in_second_slow = 120;
-  double cutting_velocity = 40; // speed of the robot in mm/s
-
-
-  double max_velocity_deg_in_second = 90;
+  double max_velocity_deg_in_second = params.max_velocity_deg_in_second_slow;
   // calculate depending on the walking speed
   if(getMotionStatus().currentMotion == motion::walk)
   {
     double walking_speed = getMotionStatus().plannedMotion.hip.translation.abs();
     
-    if(walking_speed > cutting_velocity)
+    if(walking_speed > params.cutting_velocity)
     {
-      max_velocity_deg_in_second = max_velocity_deg_in_second_slow;
+      max_velocity_deg_in_second = params.max_velocity_deg_in_second_slow;
     } else {
-      double t = walking_speed/cutting_velocity;
-      max_velocity_deg_in_second = (1.0 - t)*max_velocity_deg_in_second_slow + t*max_velocity_deg_in_second_fast;
+      double t = walking_speed/params.cutting_velocity;
+      max_velocity_deg_in_second = (1.0 - t)*params.max_velocity_deg_in_second_slow + t*params.max_velocity_deg_in_second_fast;
     }
   }
   else
   {
-    max_velocity_deg_in_second = max_velocity_deg_in_second_slow;
+    max_velocity_deg_in_second = params.max_velocity_deg_in_second_slow;
   }
 
   max_velocity_deg_in_second = min(getHeadMotionRequest().velocity, max_velocity_deg_in_second);
@@ -252,17 +254,22 @@ void HeadMotionEngine::moveByAngle(const Vector2d& target)
 // needed by lookAtWorldPoint
 Vector3d HeadMotionEngine::g(double yaw, double pitch, const Vector3d& pointInWorld)
 {
-  theJointData.position[JointData::HeadYaw] = getMotorJointData().position[JointData::HeadYaw] + yaw;
+  theJointData.position[JointData::HeadYaw]   = getMotorJointData().position[JointData::HeadYaw]   + yaw;
   theJointData.position[JointData::HeadPitch] = getMotorJointData().position[JointData::HeadPitch] + pitch;
   theKinematicChain.theLinks[KinematicChain::Neck].updateFromMother();
   theKinematicChain.theLinks[KinematicChain::Head].updateFromMother();
 
-  CameraMatrix cameraMatrix = CameraGeometry::calculateCameraMatrix(
-      theKinematicChain,
-      NaoInfo::robotDimensions.cameraTransform[getHeadMotionRequest().cameraID].offset,
-      NaoInfo::robotDimensions.cameraTransform[getHeadMotionRequest().cameraID].rotationY,
-      getCameraMatrixOffset().correctionOffset[getHeadMotionRequest().cameraID]
-    );
+  CameraMatrix cameraMatrix = CameraGeometry::calculateCameraMatrixFromChestPose(
+              theKinematicChain.theLinks[KinematicChain::Torso].M,
+              NaoInfo::robotDimensions.cameraTransform[getHeadMotionRequest().cameraID].offset,
+              NaoInfo::robotDimensions.cameraTransform[getHeadMotionRequest().cameraID].rotationY,
+              getCameraMatrixOffset().body_rot,
+              getCameraMatrixOffset().head_rot,
+              getCameraMatrixOffset().cam_rot[getHeadMotionRequest().cameraID],
+              theJointData.position[JointData::HeadYaw],
+              theJointData.position[JointData::HeadPitch],
+              getInertialModel().orientation
+  );
 
   cameraMatrix.timestamp = getSensorJointData().timestamp;
 

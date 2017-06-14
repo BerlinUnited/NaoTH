@@ -3,19 +3,22 @@
 package de.naoth.rc.dataformats;
 
 import com.google.protobuf.InvalidProtocolBufferException;
+import de.naoth.rc.drawings.Arrow;
 import de.naoth.rc.drawings.Circle;
 import de.naoth.rc.drawings.DrawingCollection;
 import de.naoth.rc.drawings.FillOval;
 import de.naoth.rc.drawings.Line;
 import de.naoth.rc.drawings.Pen;
 import de.naoth.rc.drawings.Robot;
-import de.naoth.rc.drawings.Rotation;
 import de.naoth.rc.drawings.Text;
 import de.naoth.rc.math.Pose2D;
 import de.naoth.rc.math.Vector2D;
 import de.naoth.rc.messages.Representations;
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.nio.ByteBuffer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -79,8 +82,13 @@ public class SPLMessage {
 
     public byte[] data;
 
-    public Representations.BUUserTeamMessage user = null;
+    public transient Representations.BUUserTeamMessage user = null;
 
+    public SPLMessage()
+    {
+        user = Representations.BUUserTeamMessage.getDefaultInstance();
+    }
+    
     public SPLMessage(Representations.TeamMessage.Data msg) {
 
         this.averageWalkSpeed = -1;
@@ -232,6 +240,26 @@ public class SPLMessage {
                     (int) robotPose.translation.x, (int) robotPose.translation.y,
                     (int) globalBall.x, (int) globalBall.y);
                 drawings.add(ballLine);
+            }
+            
+            // if it is our striker ...
+            if(user != null && intention == 3 && shootingTo_x != 0 && shootingTo_y != 0)
+            {
+                // ... draw the excpected ball position
+                drawings.add(new Pen(5.0f, Color.gray));
+                drawings.add(new Circle((int) shootingTo_x, (int) shootingTo_y, 65));
+                drawings.add(new Pen(Color.gray, new BasicStroke(10, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{100, 50}, 0)));
+                drawings.add(new Arrow((int) globalBall.x, (int) globalBall.y, (int) shootingTo_x, (int) shootingTo_y));
+            }
+        }
+    }
+    
+    public void parseCustomFromData() {
+        if(data != null) {
+            try {
+                user = Representations.BUUserTeamMessage.parseFrom(data);
+            } catch (InvalidProtocolBufferException ex) {
+                Logger.getLogger(SPLMessage.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }

@@ -28,6 +28,7 @@
 #include "Representations/Modeling/KinematicChain.h"
 #include "Representations/Modeling/BallModel.h"
 #include "Representations/Perception/CameraMatrix.h"
+#include "Representations/Perception/MultiBallPercept.h"
 
 #include <DebugCommunication/DebugCommandManager.h>
 #include "Tools/Debug/Logger.h"
@@ -75,6 +76,7 @@ BEGIN_DECLARE_MODULE(Debug)
   PROVIDE(CameraInfo)
   PROVIDE(CameraInfoTop)
 
+  REQUIRE(MultiBallPercept)
   
 //  PROVIDE(ColorTable64)
 //  PROVIDE(ColorClassificationModel)
@@ -98,17 +100,22 @@ public:
   public:
     Parameter() : ParameterList("DebugParameter") 
     {
-      PARAMETER_REGISTER(test) = 20;
+      PARAMETER_REGISTER(log.onlyWhenBallwasSeen) = false;
+      PARAMETER_REGISTER(log.skipTimeMS) = 100; // record abouth 10 fps by default
 
       syncWithConfig();
     }
 
-    double test;
+    struct Log {
+      bool onlyWhenBallwasSeen;
+      int skipTimeMS;
+    } log;
 
   } parameter;
 
 private:
   Logger cognitionLogger;
+  FrameInfo lastLogFrameInfo;
 
   void draw3D();
   void drawRobot3D(const Pose3D& robotPose);
@@ -122,7 +129,9 @@ private:
     for(iter = blackBoard.getRegistry().begin(); iter != blackBoard.getRegistry().end(); ++iter)
     {
       const Representation& theRepresentation = iter->second->getRepresentation();
-      cognitionLogger.addRepresentation(&theRepresentation, iter->first);
+      if(theRepresentation.serializable()) {
+        cognitionLogger.addRepresentation(&theRepresentation, iter->first);
+      }
     }
   }
 

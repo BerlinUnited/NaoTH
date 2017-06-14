@@ -23,12 +23,8 @@ DebugServer::DebugServer()
   : 
   lastSendTime(0),
   lastReceiveTime(0),
-  connectionThread(NULL),
   abort(false)
 {
-  m_executing = g_mutex_new();
-  m_abort = g_mutex_new();
-
   answers = g_async_queue_new();
   g_async_queue_ref(answers);
 }
@@ -36,20 +32,18 @@ DebugServer::DebugServer()
 DebugServer::~DebugServer()
 {
   // notify the connectionThread to stop
-  g_mutex_lock(m_abort);
-  abort = true;
-  g_mutex_unlock(m_abort);
+  {
+    std::lock_guard<std::mutex> lock(m_abort);
+    abort = true;
+  }
 
   // wait for connectionThread to stop
-  if(connectionThread != NULL) {
-    g_thread_join(connectionThread);
+  if(connectionThread.joinable()) {
+    connectionThread.join();
   }
 
   clearQueues();
   comm.disconnect();
-
-  g_mutex_free(m_executing);
-  g_mutex_free(m_abort);
 
   g_async_queue_unref(answers);
 }
@@ -59,17 +53,9 @@ void DebugServer::start(unsigned short port)
 {
   comm.init(port);
 
-  if (!g_thread_supported()) {
-    g_thread_init(NULL);
-  }
-
-  GError* err = NULL;
-  g_debug("Starting debug server thread");
+  std::cout << "[INFO] Starting debug server thread" << std::endl;
    
-  connectionThread = g_thread_create(connection_thread_static, this, true, &err);
-  if(err) {
-    g_warning("Could not start debug server thread: %s", err->message);
-  }
+  connectionThread = std::thread([this] {this->run();});
 }//end start
 
 void DebugServer::run()
@@ -77,13 +63,12 @@ void DebugServer::run()
   while(true)
   {
     // check if the stop is requested
-    g_mutex_lock(m_abort);
-    if(abort) {
-      g_mutex_unlock(m_abort);
-      break;
+    {
+      std::lock_guard<std::mutex> lock(m_abort);
+      if(abort) {
+        break;
+      }
     }
-    g_mutex_unlock(m_abort);
-
     
     if(comm.isConnected()) 
     {
@@ -96,10 +81,10 @@ void DebugServer::run()
         receive();
 
       } catch(const char* msg) {
-        g_warning("debug server exception: %s", msg);
+        std::cout << "[WARN] debug server exception: " << msg << std::endl;
         disconnect();
       } catch(...) {
-        g_warning("unexpected exception in debug server");
+        std::cout << "[WARN] unexpected exception in debug server" << std::endl;
         disconnect();
       }
     }
@@ -115,7 +100,7 @@ void DebugServer::run()
     g_usleep(1000);
 
     // TODO: do we really need this here?
-    g_thread_yield();
+    std::this_thread::yield();
   } // end while true
 }//end run
 
@@ -173,7 +158,7 @@ void DebugServer::send()
     {
       if(!comm.sendMessage(answer->id, answer->data.data(), answer->data.size()))
       {
-        g_warning("could not send message");
+        std::cout << "[WARN] could not send message" << std::endl;
         disconnect();
       }
       delete answer;
@@ -184,10 +169,10 @@ void DebugServer::send()
 void DebugServer::disconnect()
 {
   // stop executing (so it's not messing up with our queues)
-  g_mutex_lock(m_executing);
-  clearQueues();
-  g_mutex_unlock(m_executing);
-
+  {
+    std::lock_guard<std::mutex> lock(m_executing);
+    clearQueues();
+  }
   // all commands are "answered", disconnect
   comm.disconnect();
 }
@@ -209,14 +194,14 @@ void DebugServer::getDebugMessageInMotion(DebugMessageIn& buffer)
 
 void DebugServer::setDebugMessageOut(const DebugMessageOut& buffer)
 {
-  g_mutex_lock(m_executing);
-
-  for(std::list<DebugMessageOut::Message*>::const_iterator iter = buffer.answers.begin(); iter != buffer.answers.end(); ++iter)
   {
-    g_async_queue_push(answers, *iter);
-  }
+    std::lock_guard<std::mutex> lock(m_executing);
 
-  g_mutex_unlock(m_executing);
+    for(std::list<DebugMessageOut::Message*>::const_iterator iter = buffer.answers.begin(); iter != buffer.answers.end(); ++iter)
+    {
+      g_async_queue_push(answers, *iter);
+    }
+  }
 }
 
 // TODO: serializer?
@@ -250,11 +235,5 @@ void DebugServer::clearQueues()
 
   received_messages_cognition.clear();
   received_messages_motion.clear();
-}
-
-void* DebugServer::connection_thread_static(void* ref)
-{
-  static_cast<DebugServer*>(ref)->run();
-  return NULL;
 }
 

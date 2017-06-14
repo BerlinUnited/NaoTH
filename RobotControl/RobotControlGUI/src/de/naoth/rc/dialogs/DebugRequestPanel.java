@@ -14,6 +14,7 @@ import de.naoth.rc.core.dialog.AbstractDialog;
 import de.naoth.rc.core.dialog.DialogPlugin;
 import de.naoth.rc.RobotControl;
 import de.naoth.rc.components.checkboxtree.SelectableTreeNode;
+import de.naoth.rc.core.dialog.RCDialog;
 import de.naoth.rc.core.manager.ObjectListener;
 import de.naoth.rc.core.manager.SwingCommandExecutor;
 import de.naoth.rc.core.manager.SwingCommandListener;
@@ -32,6 +33,7 @@ import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 public class DebugRequestPanel extends AbstractDialog
 {
 
+    @RCDialog(category = RCDialog.Category.Debug, name = "DebugRequest")
     @PluginImplementation
     public static class Plugin extends DialogPlugin<DebugRequestPanel>
     {
@@ -129,8 +131,8 @@ public class DebugRequestPanel extends AbstractDialog
     if (btRefresh.isSelected())
     {
       if (Plugin.parent.checkConnected()) {
-        Plugin.commandExecutor.executeCommand(debugRequestUpdaterCognition, new Command("Cognition:representation:getbinary").addArg("DebugRequest"));
-        Plugin.commandExecutor.executeCommand(debugRequestUpdaterMotion, new Command("Motion:representation:getbinary").addArg("DebugRequest"));
+        Plugin.commandExecutor.executeCommand(debugRequestUpdaterCognition, new Command("Cognition:representation:get").addArg("DebugRequest"));
+        Plugin.commandExecutor.executeCommand(debugRequestUpdaterMotion, new Command("Motion:representation:get").addArg("DebugRequest"));
       } else {
         btRefresh.setSelected(false);
         btUpdate.setSelected(false);
@@ -142,8 +144,8 @@ public class DebugRequestPanel extends AbstractDialog
         if (btUpdate.isSelected())
         {
           if (Plugin.parent.checkConnected()) {
-            Plugin.commandExecutor.executeCommand(debugRequestUpdaterCognition, new Command("Cognition:representation:getbinary").addArg("DebugRequest"));
-            Plugin.commandExecutor.executeCommand(debugRequestUpdaterMotion, new Command("Motion:representation:getbinary").addArg("DebugRequest"));
+            Plugin.commandExecutor.executeCommand(debugRequestUpdaterCognition, new Command("Cognition:representation:get").addArg("DebugRequest"));
+            Plugin.commandExecutor.executeCommand(debugRequestUpdaterMotion, new Command("Motion:representation:get").addArg("DebugRequest"));
           } else {
             btRefresh.setSelected(false);
             btUpdate.setSelected(false);

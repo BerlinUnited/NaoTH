@@ -23,6 +23,7 @@
 #include <Representations/Infrastructure/InertialSensorData.h>
 #include "Representations/Modeling/GroundContactModel.h"
 #include "Representations/Modeling/InertialModel.h"
+#include "Representations/Modeling/IMUData.h"
 #include <Representations/Infrastructure/RobotInfo.h>
 #include <Representations/Infrastructure/FrameInfo.h>
 #include "Representations/Motion/MotionStatus.h"
@@ -119,27 +120,81 @@ public:
     bool& sloved,
     bool fix_height);
 
-  unsigned int contorlZMPlength() const { return static_cast<unsigned int> (thePreviewController.previewSteps()); }
 
-  int controlZMPstart(const InverseKinematic::ZMPFeetPose& start);
+  class ZMPControlBuffer {
+    public:
 
-  void controlZMPpush(const Vector3d& zmp);
+      size_t size() const { return thePreviewController.previewSteps(); }
+      Vector3d back() const { return thePreviewController.back(); }
+      Vector3d front() const { return thePreviewController.front(); }
 
-  Vector3d controlZMPback() const;
+      void clear() { thePreviewController.clear(); }
+      void push(const Vector3d& zmp) { thePreviewController.push(zmp); }
+      
 
-  Vector3d controlZMPfront() const;
+      bool is_stationary() const {
+        return thePreviewController.com_velocity().abs() < 1;// && 
+               //thePreviewController.com_acceleration().abs2() < 1;
+      }
 
-  bool controlZMPstop(const Vector3d& finalZmp);
+      bool pop(Vector3d& com)
+      {
+        if ( !thePreviewController.ready() ) {
+          return false;
+        }
 
-  void controlZMPclear();
+        // dummy, not used
+        Vector2d dcom, ddcom;
+        thePreviewController.control(com, dcom, ddcom);
+        thePreviewController.pop();
 
-  /**
-   * @param com return the result
-   */
-  bool controlZMPpop(Vector3d& com);
+        return true;
+      }
+
+
+      int init(const Vector3d& com, const Vector3d& targetZMP)
+      {
+        ASSERT(thePreviewController.previewSteps() > 1);
+        // TODO: clear it because of the motion can be forced to finish immediately...
+        // the idea of keep buffer is to switch zmp control between different motions,
+        // such as walk and kick, then maybe we should check if zmp control is used every cycle and etc.
+        thePreviewController.clear();
+
+        thePreviewController.init(com, Vector2d(0,0), Vector2d(0,0));
+  
+        // NOTE: plan all but one zmp points
+        for (size_t i = 0; i+1 < thePreviewController.previewSteps(); i++) {
+          double t = static_cast<double>(i) / static_cast<double>(thePreviewController.previewSteps()-1);
+          Vector3d zmp = com*(1.0-t) + targetZMP*t;
+          thePreviewController.push(zmp);
+        }
+        //ASSERT(thePreviewController.ready());
+
+        return static_cast<int>(thePreviewController.previewSteps())-1;
+      }
+
+    private:
+      PreviewController thePreviewController;
+
+  } zmpControl;
+
   
   void solveHipFeetIK(const InverseKinematic::HipFeetPose& p);
   
+  bool rotationStabilizeRC16(
+    //const InertialModel& theInertialModel,
+    const naoth::InertialSensorData& theInertialSensorData,
+    const GyrometerData& theGyrometerData,
+    double timeDelta,
+    InverseKinematic::HipFeetPose& p);
+
+  bool rotationStabilizenNewIMU(
+          //const InertialModel& theInertialModel,
+          const IMUData& imuData,
+          //const InertialModel& theInertialModel,
+          const GyrometerData& theGyrometerData,
+          double timeDelta,
+          InverseKinematic::HipFeetPose& p);
 
   bool rotationStabilize(
     const InertialModel& theInertialModel,
@@ -155,20 +210,22 @@ public:
     const naoth::GyrometerData& theGyrometerData,
     double (&position)[naoth::JointData::numOfJoint]);
 
+  /*
   bool rotationStabilize(
     const InertialModel& theInertialModel,
     const GyrometerData& theGyrometerData,
     Pose3D& hip);
-
+  */
   /**
    * @return if stabilizer is working
    */
+  /*
   bool rotationStabilize(
     const naoth::RobotInfo& theRobotInfo,
     const GroundContactModel& theGroundContactModel,
     const naoth::InertialSensorData& theInertialSensorData,
     Pose3D& hip);
-
+  */
 
   void copyLegJoints(double (&position)[naoth::JointData::numOfJoint]) const;
   
@@ -218,11 +275,6 @@ private:
   Vector3d theCoMControlResult; // save CoM control result to be reused
   InverseKinematic::CoMFeetPose lastCoMFeetControlPose;
   FrameInfo lastCoMFeetControlFrameInfo;
-
-  PreviewController thePreviewController;
-  Vector3d thePreviewControlCoM;
-  Vector2d thePreviewControldCoM;
-  Vector2d thePreviewControlddCoM;
 
   double rotationStabilizeFactor; // [0, 1] disable ~ enable
 };

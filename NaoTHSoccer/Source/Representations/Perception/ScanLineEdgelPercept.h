@@ -24,21 +24,26 @@ public:
   class EndPoint
   {
   public:
-    EndPoint():color(ColorClasses::none), ScanLineID(0), valid(false){}
+    EndPoint():color(ColorClasses::none), ScanLineID(0), valid(false), greenFound(false){}
     Vector2i posInImage;
     Vector2d posOnField;
     ColorClasses::Color color;
     unsigned int ScanLineID;
     bool valid;
+    bool greenFound;
   };
 
   class EdgelPair : public EdgelT<double>
   {
   public:
-    EdgelPair() : begin(-1), end(-1), id(-1) {}
+    EdgelPair() : begin(-1), end(-1), id(-1), width(0) {}
     int begin;
     int end;
     int id;
+
+    // hack
+    double width;
+    double projectedWidth;
   };
 
   std::vector<EdgelPair> pairs; // this depends on edgels

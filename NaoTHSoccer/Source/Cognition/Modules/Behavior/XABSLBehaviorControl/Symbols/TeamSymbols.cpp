@@ -27,10 +27,8 @@ double TeamSymbols::getTeamMembersAliveCount()
 {
   int counter = 0;
 
-  for(std::map<unsigned int, TeamMessage::Data>::const_iterator i=theInstance->getTeamMessage().data.begin();
-    i != theInstance->getTeamMessage().data.end(); ++i)
-  {
-    const TeamMessage::Data& messageData = i->second;
+  for(auto const &it : theInstance->getTeamMessage().data) {
+    const TeamMessageData& messageData = it.second;
 
     // "alive" means sent something in the last n seconds
     if(theInstance->getFrameInfo().getTimeSince(messageData.frameInfo.getTime()) < theInstance->parameters.maximumFreshTime)
@@ -50,20 +48,21 @@ bool TeamSymbols::getWasStriker()
 void TeamSymbols::setWasStriker(bool striker)
 {
   theInstance->getPlayerInfo().isPlayingStriker = striker;
+
   // priorize the decision to become a striker by the goalie
-  if (striker && theInstance->getPlayerInfo().gameData.playerNumber == 1) {
+  if (striker && theInstance->getPlayerInfo().playerNumber == 1) {
     theInstance->getRoleDecisionModel().wantsToBeStriker = true;
   }
 }
 
 bool TeamSymbols::calculateIfStriker()
 {
-  return theInstance->getRoleDecisionModel().firstStriker == (int)theInstance->getPlayerInfo().gameData.playerNumber;
+  return theInstance->getRoleDecisionModel().firstStriker == theInstance->getPlayerInfo().playerNumber;
 }
 
 bool TeamSymbols::calculateIfSecondStriker()
 {
-  return theInstance->getRoleDecisionModel().secondStriker == (int)theInstance->getPlayerInfo().gameData.playerNumber;
+  return theInstance->getRoleDecisionModel().secondStriker == theInstance->getPlayerInfo().playerNumber;
 }
 
 TeamSymbols::~TeamSymbols()
@@ -73,31 +72,27 @@ TeamSymbols::~TeamSymbols()
 /** the robot which is closest to own goal is defined as the last one */
 bool TeamSymbols::calculateIfTheLast()
 {
-  TeamMessage const& tm = theInstance->getTeamMessage();
-
   // initialize with own values
   double shortestDistance = (theInstance->getRobotPose().translation - theInstance->getFieldInfo().ownGoalCenter).abs();
 
   double secondShortestDistance = std::numeric_limits<double>::max();
 
-  unsigned int playerNearestToOwnGoal = theInstance->getPlayerInfo().gameData.playerNumber;
+  unsigned int playerNearestToOwnGoal = theInstance->getPlayerInfo().playerNumber;
   unsigned int playerAlmostNearestToOwnGoal = std::numeric_limits<unsigned int>::max();
 
 
   // check all non-penalized and non-striker team members
-  for(std::map<unsigned int, TeamMessage::Data>::const_iterator i=tm.data.begin();
-    i != tm.data.end(); ++i)
-  {
-    const TeamMessage::Data& messageData = i->second;
-    const int number = i->first;
+  for(auto const &it : theInstance->getTeamMessage().data) {
+    const TeamMessageData& messageData = it.second;
+    const int number = it.first;
 
     if ((theInstance->getFrameInfo().getTimeSince(messageData.frameInfo.getTime())
          < theInstance->parameters.maximumFreshTime) && // alive?
-        !messageData.isPenalized && // not penalized?
-        !messageData.wasStriker &&
+        !messageData.custom.isPenalized && // not penalized?
+        !messageData.custom.wantsToBeStriker &&
         number != 1 && // no goalie
         // we are already considered by the initial values
-        messageData.playerNum != theInstance->getPlayerInfo().gameData.playerNumber
+        messageData.playerNumber != theInstance->getPlayerInfo().playerNumber
         )
     {
       Vector2d robotpos = messageData.pose.translation;
@@ -133,11 +128,11 @@ bool TeamSymbols::calculateIfTheLast()
   {
     // distance of distance is less than half a meter, choose if we have the
     // lowest player number
-    if(playerNearestToOwnGoal == theInstance->getPlayerInfo().gameData.playerNumber)
+    if(playerNearestToOwnGoal == theInstance->getPlayerInfo().playerNumber)
     {
       return playerNearestToOwnGoal < playerAlmostNearestToOwnGoal;
     }
-    else if(playerAlmostNearestToOwnGoal == theInstance->getPlayerInfo().gameData.playerNumber)
+    else if(playerAlmostNearestToOwnGoal == theInstance->getPlayerInfo().playerNumber)
     {
       return playerAlmostNearestToOwnGoal < playerNearestToOwnGoal;
     }
@@ -149,6 +144,6 @@ bool TeamSymbols::calculateIfTheLast()
   else
   {
     // is it me?
-    return playerNearestToOwnGoal == theInstance->getPlayerInfo().gameData.playerNumber;
+    return playerNearestToOwnGoal == theInstance->getPlayerInfo().playerNumber;
   }
 }//end calculateIfTheLast

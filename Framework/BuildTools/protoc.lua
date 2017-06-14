@@ -91,11 +91,10 @@ local function protocCompile(inputFiles, cppOut, javaOut, pythonOut, ipaths)
   print("INFO: executing " .. cmd)
   local returnCode = os.execute(cmd)
   
-  if _OPTIONS["Wno-conversion"] == nil and returnCode == 0 then
-	-- add few lines to suppress the conversion warnings to each of the generated *.cc files
-	add_gcc_ignore_pragmas(os.matchfiles(cppOut .. "**.pb.cc"))
-	add_gcc_ignore_pragmas(os.matchfiles(cppOut .. "**.pb.h"))
-	--
+  if returnCode == 0 then
+    -- add few lines to suppress the conversion warnings to each of the generated *.cc files
+    add_gcc_ignore_pragmas(os.matchfiles(cppOut .. "**.pb.cc"))
+    add_gcc_ignore_pragmas(os.matchfiles(cppOut .. "**.pb.h"))
   end
   
   return returnCode == 0
@@ -104,26 +103,18 @@ end
 
 function add_gcc_ignore_pragmas(files)
 	-- add gcc pragma to suppress the conversion warnings to each of the generated *.cc files
-	-- hack for the GCC version < 4.6.x
-	-- this is because "#pragma GCC diagnostic push/pop" was introduced in GCC 4.6
+	-- NOTE: we assume GCC version >= 4.9
 	local prefix = "// added by NaoTH \n" ..
-				 "#if defined(__GNUC__) && defined(_NAOTH_CHECK_CONVERSION_)\n" ..
-				 "#if (__GNUC__ > 3 && __GNUC_MINOR__ > 5) || (__GNUC__ > 4)\n" ..
+				 "#if defined(__GNUC__)\n" ..
 				 "#pragma GCC diagnostic push\n" ..
-				 "#endif\n" ..
 				 "#pragma GCC diagnostic ignored \"-Wconversion\"\n" ..
 				 "#pragma GCC diagnostic ignored \"-Wunused-parameter\"\n" ..
 				 "#endif\n\n"
-	
-	-- enable the warnings at the end
+         
+	-- restore the previous state at the end
 	local suffix = "\n\n// added by NaoTH \n" ..
-				 "#if defined(__GNUC__) && defined(_NAOTH_CHECK_CONVERSION_)\n" ..
-				 "#if (__GNUC__ > 3 && __GNUC_MINOR__ > 5) || (__GNUC__ > 4)\n" ..
+				 "#if defined(__GNUC__)\n" ..
 				 "#pragma GCC diagnostic pop\n" ..
-				 "#else\n" ..
-				 "#pragma GCC diagnostic error \"-Wconversion\"\n" ..
-				 "#pragma GCC diagnostic error \"-Wunused-parameter\"\n" ..
-				 "#endif\n" ..
 				 "#endif\n\n"
 	
 	for i,v in ipairs(files) do
@@ -167,6 +158,8 @@ function invokeprotoc(inputFiles, cppOut, javaOut, pythonOut, ipaths)
           -- touch shadow file in order to remember this build date
           touchShadow(inputFiles[i], time)
       end -- end for each file to compile
+     else
+      print ("ERROR: protoc not sucessful")
      end
     end -- end if compile
 end
