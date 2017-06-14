@@ -61,9 +61,11 @@ IKParameters::IKParameters()
   PARAMETER_REGISTER(walk.step.doubleSupportTime) = 40;
 
   PARAMETER_REGISTER(walk.step.stepHeight) = 15;
+  PARAMETER_REGISTER(walk.step.splineFootTrajectory) = true;
 
   // kick
   PARAMETER_REGISTER(walk.kick.stepHeight) = 20;
+  PARAMETER_REGISTER(walk.kick.ZMPOffsetY) = 0;
 
   // step limits
   PARAMETER_REGISTER(walk.limits.maxTurnInner) = 10;
@@ -89,6 +91,7 @@ IKParameters::IKParameters()
 
   PARAMETER_REGISTER(walk.stabilization.rotationStabilize) = true;
   PARAMETER_REGISTER(walk.stabilization.rotationStabilizeRC16) = false;
+  PARAMETER_REGISTER(walk.stabilization.rotationStabilizeNewIMU) = false;
   PARAMETER_REGISTER(walk.stabilization.rotationP.x) = 0;
   PARAMETER_REGISTER(walk.stabilization.rotationP.y) = 0;
   PARAMETER_REGISTER(walk.stabilization.rotationVelocityP.x) = 0;

@@ -73,11 +73,6 @@ void FieldInfo::calculateCrossings()
   yPosLeftSideline =         yLength / 2.0; 
   yPosRightSideline =       -yPosLeftSideline;
 
-  carpetRect = Geometry::Rect2d(Vector2d(-xFieldLength*0.5, -yFieldLength*0.5), Vector2d(xFieldLength*0.5, yFieldLength*0.5));
-  ownHalfRect = Geometry::Rect2d(Vector2d(-xLength*0.5, -yLength*0.5), Vector2d(0, yLength*0.5));
-  fieldRect = Geometry::Rect2d(Vector2d(-xLength*0.5, -yLength*0.5), Vector2d(xLength*0.5, yLength*0.5));
-  oppHalfRect = Geometry::Rect2d(Vector2d(0, -yLength*0.5), Vector2d(xLength*0.5, yLength*0.5));
-
   //Extra stuff for the Simulator
   xThrowInLineOwn = xPosOwnGroundline+1000;
   xThrowInLineOpp = -xThrowInLineOwn;
@@ -90,7 +85,6 @@ void FieldInfo::calculateCrossings()
 
   rightThrowInPointOwn = Vector2d(xThrowInLineOwn,yThrowInLineRight);  
   rightThrowInPointOpp = Vector2d(xThrowInLineOpp,yThrowInLineRight);
-
 
   // L crossings
   crossings[opponentCornerLeft].position          = Vector2d(xPosOpponentGroundline, yPosLeftSideline);
@@ -124,6 +118,22 @@ void FieldInfo::calculateCrossings()
   ownGoalPostLeft   = Vector2d(xPosOwnGoal-25, yPosLeftGoalpost);
   ownGoalPostRight  = Vector2d(xPosOwnGoal-25, yPosRightGoalpost);
   ownGoalCenter     = Vector2d(xPosOwnGoal-25, 0.0);
+
+  carpetRect = Geometry::Rect2d(Vector2d(-xFieldLength*0.5, -yFieldLength*0.5), Vector2d(xFieldLength*0.5, yFieldLength*0.5));
+  ownHalfRect = Geometry::Rect2d(Vector2d(-xLength*0.5, -yLength*0.5), Vector2d(0, yLength*0.5));
+  fieldRect = Geometry::Rect2d(Vector2d(-xLength*0.5, -yLength*0.5), Vector2d(xLength*0.5, yLength*0.5));
+  oppHalfRect = Geometry::Rect2d(Vector2d(0, -yLength*0.5), Vector2d(xLength*0.5, yLength*0.5));
+
+
+  ownGoalBackLeft = Vector2d(ownGoalPostLeft.x - goalDepth, ownGoalPostLeft.y);
+  ownGoalBackRight = Vector2d(ownGoalPostRight.x - goalDepth, opponentGoalPostRight.y);  
+  ownGoalRect = Geometry::Rect2d(ownGoalBackRight, ownGoalPostLeft); 
+
+  oppGoalBackLeft = Vector2d(opponentGoalPostLeft.x + goalDepth, opponentGoalPostLeft.y);
+  oppGoalBackRight = Vector2d(opponentGoalPostRight.x + goalDepth, opponentGoalPostRight.y);
+  oppGoalRect = Geometry::Rect2d(oppGoalBackRight, opponentGoalPostLeft);
+
+
 
   ////Should be done differently
   // 0 - right side line - sideLineRight
@@ -241,6 +251,8 @@ void FieldInfo::createLinesTable()
     crossings[opponentGoalTCrossingLeft].position
     );
 
+  //
+
   // HACK: RC14, RC15 white goal box is recognized as lines (opp goal)
   if(goalBoxAsLines)
   {
@@ -253,8 +265,8 @@ void FieldInfo::createLinesTable()
       Vector2d(opponentGoalPostRight.x + goalDepth, opponentGoalPostRight.y)
       );
     fieldLinesTable.addLine(
-      Vector2d(opponentGoalPostLeft.x + goalDepth, opponentGoalPostLeft.y),
-      Vector2d(opponentGoalPostRight.x + goalDepth, opponentGoalPostRight.y)
+		oppGoalBackLeft,
+		oppGoalBackRight
       );
 
     fieldLinesTable.addLine(
@@ -266,8 +278,8 @@ void FieldInfo::createLinesTable()
       Vector2d(ownGoalPostRight.x - goalDepth, ownGoalPostRight.y)
       );
     fieldLinesTable.addLine(
-      Vector2d(ownGoalPostLeft.x - goalDepth, ownGoalPostLeft.y),
-      Vector2d(ownGoalPostRight.x - goalDepth, ownGoalPostRight.y)
+      ownGoalBackLeft,
+      ownGoalBackRight
       );
   }
 

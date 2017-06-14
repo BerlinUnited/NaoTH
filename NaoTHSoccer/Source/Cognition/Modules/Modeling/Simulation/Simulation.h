@@ -203,7 +203,7 @@ public:
       return ballPositions;
     }
 
-    int categorie(BallPositionCategory cat) const {
+    int category(BallPositionCategory cat) const {
       return cat_histogram[cat];
     }
 

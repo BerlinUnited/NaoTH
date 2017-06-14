@@ -23,6 +23,7 @@
 #include <Representations/Infrastructure/InertialSensorData.h>
 #include "Representations/Modeling/GroundContactModel.h"
 #include "Representations/Modeling/InertialModel.h"
+#include "Representations/Modeling/IMUData.h"
 #include <Representations/Infrastructure/RobotInfo.h>
 #include <Representations/Infrastructure/FrameInfo.h>
 #include "Representations/Motion/MotionStatus.h"
@@ -132,8 +133,8 @@ public:
       
 
       bool is_stationary() const {
-        return thePreviewController.com_velocity().abs2() < 1 && 
-               thePreviewController.com_acceleration().abs2() < 1;
+        return thePreviewController.com_velocity().abs() < 1;// && 
+               //thePreviewController.com_acceleration().abs2() < 1;
       }
 
       bool pop(Vector3d& com)
@@ -186,6 +187,14 @@ public:
     const GyrometerData& theGyrometerData,
     double timeDelta,
     InverseKinematic::HipFeetPose& p);
+
+  bool rotationStabilizenNewIMU(
+          //const InertialModel& theInertialModel,
+          const IMUData& imuData,
+          //const InertialModel& theInertialModel,
+          const GyrometerData& theGyrometerData,
+          double timeDelta,
+          InverseKinematic::HipFeetPose& p);
 
   bool rotationStabilize(
     const InertialModel& theInertialModel,
