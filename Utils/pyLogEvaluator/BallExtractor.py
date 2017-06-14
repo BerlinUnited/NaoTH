@@ -8,7 +8,6 @@ from LogReader import Parser
 import math
 
 import matplotlib as mlp
-mlp.use('GTK')
 from matplotlib import pyplot
 import numpy
 from PIL import Image
@@ -141,7 +140,7 @@ if __name__ == "__main__":
     # register the protobuf message name for the 'ImageTop'
     myParser.register("ImageTop", "Image")
 
-    fileName = "/home/robert/workbench/log/2016-ball-log/ball-2016-still-green.log"
+    fileName = "game.log"
     log = LogReader(fileName, myParser)
 
     # initialize pyplot
