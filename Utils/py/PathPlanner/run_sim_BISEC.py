@@ -11,7 +11,7 @@ import Queue as Q
 import copy
 import select
 
-obstacles      = [(1600, 1000, 300), (1600, 500, 300), (1600, 0, 300), (1600, -500, 300)] # [(), ()] ansonsten fehler
+obstacles      = [(1600, 1000, 450), (1600, 500, 450), (1600, 0, 450), (1600, -500, 450)] # [(), ()] ansonsten fehler
 target         = (3500, 0)#(3500, 0)]#, (-1000, -2750)]
 
 robot_pos = (0, 0)#(1600, -900)#(0, 0)

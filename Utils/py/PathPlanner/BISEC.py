@@ -80,7 +80,7 @@ def hit_obstacle(start, steps, obstacles):
     for k in steps:
         for l in obstacles:
             if dist(l, (k[0] + x_dist + start[0], k[1] + y_dist + start[1])) <= l[2] + robot_radius:
-                return (True, (x_dist, y_dist))
+                return (True, l)#(x_dist, y_dist))
         x_dist += k[0]
         y_dist += k[1]
 
