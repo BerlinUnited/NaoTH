@@ -85,7 +85,6 @@ void FieldDetector::execute(CameraInfo::CameraID id)
       }
     }
 
-    getFieldPercept().rawFieldBorder = points;
     // move the outer points
     //points.front().x = 0;
     //points.back().x = getImage().width()-1;

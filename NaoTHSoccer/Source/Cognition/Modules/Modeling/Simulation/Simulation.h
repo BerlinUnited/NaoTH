@@ -18,9 +18,7 @@
 #include "Representations/Modeling/KickActionModel.h"
 #include "Representations/Modeling/ObstacleModel.h"
 
-#include "Representations/Perception/FieldPercept.h"
-#include "Representations/Perception/CameraMatrix.h"
-#include "Representations/Infrastructure/CameraInfo.h"
+#include "Representations/Perception/ScanLineEdgelPercept.h"
 
 //Tools
 #include <Tools/Math/Vector2.h>
@@ -50,12 +48,8 @@ BEGIN_DECLARE_MODULE(Simulation)
   REQUIRE(RobotPose)
   //REQUIRE(SelfLocGoalModel)
 
-  REQUIRE(FieldPercept)
-  REQUIRE(FieldPerceptTop)
-  REQUIRE(CameraMatrix)
-  REQUIRE(CameraMatrixTop)
-  REQUIRE(CameraInfo)
-  REQUIRE(CameraInfoTop)
+  REQUIRE(ScanLineEdgelPercept)
+  REQUIRE(ScanLineEdgelPerceptTop)
 
   PROVIDE(KickActionModel)
 END_DECLARE_MODULE(Simulation)
