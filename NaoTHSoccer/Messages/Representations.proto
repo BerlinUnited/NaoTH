@@ -162,6 +162,11 @@ message ScanLineEndPoint {
   required uint32 ScanLineID = 4;
 }
 
+message DoubleEdgel {
+  required DoubleVector2 point = 1;
+  required DoubleVector2 direction = 2;
+}
+
 message Edgel {
   required IntVector2 point = 1;
   required DoubleVector2 direction = 2;
@@ -181,6 +186,9 @@ message ScanLineEdgelPercept {
 
 message LineGraphPercept {
   repeated Edgel edgelsOnField = 1;
+  
+  repeated DoubleEdgel edgelsInImageTop = 2;
+  repeated DoubleEdgel edgelsInImage = 3;
 }
 
 message StepControlStatus
