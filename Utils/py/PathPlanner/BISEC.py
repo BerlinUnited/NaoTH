@@ -57,6 +57,9 @@ def draw_obstacles(ax, obstacles):
             ax.add_artist(Circle(xy=(k[0], k[1]), radius=k[2], fill=True, color='red', alpha=.25))
             ax.add_artist(Circle(xy=(k[0], k[1]), radius=10, fill=True, color='black'))
 
+def draw_robot(ax, robot_pos):
+    ax.add_artist(Circle(xy=(robot_pos[0], robot_pos[1]), radius=robot_radius, fill=True, color='black', alpha=1))
+
 def draw_target(ax, target):
     ax.plot(target[0], target[1], 'x', color='red')
 
@@ -134,30 +137,32 @@ def compute_sub_target(start, target, collision, obstacles, ax, sign):
     orth_vec1 = (unit_vec[1] * -1, unit_vec[0])
     orth_vec2 = (unit_vec[1], unit_vec[0] * -1)
 
-    collision = (collision[0] + start[0], collision[1] + start[1])
-
     if sign == 1:
         sub_target = (orth_vec1[0] * (robot_radius * robot_diameter_count) + collision[0], orth_vec1[1] * (robot_radius * robot_diameter_count) + collision[1])
     else:
         sub_target = (orth_vec2[0] * (robot_radius * robot_diameter_count) + collision[0], orth_vec2[1] * (robot_radius * robot_diameter_count) + collision[1])
 
+    alt_sub_targets = []
+
     while has_collided(sub_target, obstacles):
+        alt_sub_targets.append(sub_target)
         robot_diameter_count += 1
         if sign == 1:
             sub_target = (orth_vec1[0] * (robot_radius * robot_diameter_count) + collision[0], orth_vec1[1] * (robot_radius * robot_diameter_count) + collision[1])
         else:
             sub_target = (orth_vec2[0] * (robot_radius * robot_diameter_count) + collision[0], orth_vec2[1] * (robot_radius * robot_diameter_count) + collision[1])
 
-    ax.plot(sub_target[0], sub_target[1], 'x', color='blue')
+    ax.plot(sub_target[0], sub_target[1], 'x', color='white')
+    for k in alt_sub_targets:
+        ax.plot(k[0], k[1], 'x', color='white')
 
     return sub_target
 
-def compute_path(start, target, obst, depth, ax, sign):
+def compute_path(start, target, obstacles, depth, ax, sign):
     collision = start
     steps     = compute_steps(start, target)
-    obstacles = copy.copy(obst)
 
-    if depth > 20:
+    if depth > 6:
         return steps
 
     (has_collided, col_pos) = hit_obstacle(start, steps, obstacles)
