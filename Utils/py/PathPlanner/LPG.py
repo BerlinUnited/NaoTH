@@ -141,11 +141,6 @@ def compute_waypoints_LPG(tar, obstacles, rot, rot_a):
         the_next = a[the_next]
         the_path.append(the_next)
 
-    # dirty hack
-    """if len(the_path) > 1:
-        if the_path[0][1] is not the_path[1][1]:
-            the_path[0] = (the_path[0][0], the_path[1][1])"""
-
     return the_path
 
 def compute_gait(the_path, target, rot):
@@ -158,9 +153,6 @@ def compute_gait(the_path, target, rot):
     dist        = dist_between((x, y), (0, 0))
     step_length = 60
     gait        = (x / dist * step_length, y / dist * step_length)
-
-    #x = min(max(x, -40), 40)
-    #y = min(max(y, -40), 40)
 
     if np.sqrt(np.power(gait[0], 2) + np.power(gait[1], 2)) > np.sqrt(np.power(target[0], 2) + np.power(target[1], 2)):
         gait = target

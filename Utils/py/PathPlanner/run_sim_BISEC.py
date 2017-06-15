@@ -10,6 +10,30 @@ import matplotlib as mpl
 import Queue as Q
 import copy
 import select
+from sys import argv
+import os.path
+
+if len(argv) == 1:
+    print("Need a file to save the experiments in.")
+    sys.exit()
+file_count = 0
+if len(argv) == 2:
+    script, filename = argv
+if len(argv) == 3:
+    script, filename, max_exp = argv
+    max_exp = int(max_exp)
+
+orig_filename = copy.copy(filename)
+if os.path.isfile(filename):
+    file_count = 1
+    filename = filename + str(file_count)
+    while os.path.isfile(filename):
+        file_count += 1
+        filename = orig_filename + str(file_count)
+if file_count > 0:
+    print("The specified file already exists, renaming to " + filename + ".")
+file = open(filename, 'w')
+
 
 def heard_pause():
     i,o,e = select.select([sys.stdin],[],[],0.0001)
@@ -19,9 +43,6 @@ def heard_pause():
             return True
     return False
 
-#obstacles = [(1600, 1000, 450), (1600, 500, 450), (1600, 0, 450), (1600, -500, 450)] # [(), ()] ansonsten fehler
-#target    = (3500, 0)#(3500, 0)]#, (-1000, -2750)]
-
 obstacles = []
 target    = []
 robot_pos = (0, 0)
@@ -30,18 +51,28 @@ f_inf     = (4500, 3000)
 
 steps     = []
 
-pause = False
+pause     = False
+exp_count = 0
 
-while True:
+loop_bool = True
+
+while loop_bool:
     if heard_pause():
         pause = not pause
     while pause:
         if heard_pause():
             pause = not pause
 
+    if len(argv) == 3:
+        loop_bool = eval('exp_count < max_exp')
+        if not loop_bool:
+            sys.exit()
+
+    exp_count += 1
+    print("Experiment " + str(exp_count) + ".")
+
     obstacles = []
     target    = (rand(-f_inf[0], f_inf[0]), rand(-f_inf[1], f_inf[1]))
-    #robot_pos = (rand(-f_inf[0], f_inf[0]), rand(-f_inf[1], f_inf[1]))
     while len(obstacles) < 9:
         obst_r = 300
         obst_x = rand(-f_inf[0], f_inf[0])
@@ -50,10 +81,15 @@ while True:
             continue
         if B.dist((obst_x, obst_y), target) <= obst_r + B.robot_radius:
             continue
-        obstacles.append((obst_x, obst_y, obst_r))
+        do_add = True
+        if len(obstacles) > 0:
+            for k in obstacles:
+                if B.dist((obst_x, obst_y), k) <= 2*k[2]:
+                    do_add = False
+                    break
+        if do_add:
+            obstacles.append((obst_x, obst_y, obst_r))
 
-    print((target, robot_pos))
-    print(obstacles)
 
     mpl.rcParams['lines.linewidth'] = 0.5
     plt.clf()
@@ -84,6 +120,9 @@ while True:
     B.draw_target(ax, target)
     B.draw_robot(ax, robot_pos)
 
-    pause = True
+    file.write(str(steps) + ", " + str(obstacles) + ", " + str(target) + ", " + str(robot_pos) + ", " + str(B.robot_radius))
+    file.write("\n")
+
+    pause = False
 
     plt.pause(0.000000000001)
