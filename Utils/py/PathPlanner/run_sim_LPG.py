@@ -13,26 +13,24 @@ import select
 from sys import argv
 import os.path
 
-if len(argv) == 1:
-    print("Need a file to save the experiments in.")
-    sys.exit()
-file_count = 0
-if len(argv) == 2:
-    script, filename = argv
-if len(argv) == 3:
-    script, filename, max_exp = argv
-    max_exp = int(max_exp)
+if len(argv) > 1:
+    file_count = 0
+    if len(argv) == 2:
+        script, filename = argv
+    if len(argv) == 3:
+        script, filename, max_exp = argv
+        max_exp = int(max_exp)
 
-orig_filename    = copy.copy(filename)
-if os.path.isfile(filename):
-    file_count = 1
-    filename = filename + str(file_count)
-    while os.path.isfile(filename):
-        file_count += 1
-        filename = orig_filename + str(file_count)
-if file_count > 0:
-    print("The specified file already exists, renaming to " + filename + ".")
-file = open(filename, 'w')
+    orig_filename    = copy.copy(filename)
+    if os.path.isfile(filename):
+        file_count = 1
+        filename = filename + str(file_count)
+        while os.path.isfile(filename):
+            file_count += 1
+            filename = orig_filename + str(file_count)
+    if file_count > 0:
+        print("The specified file already exists, renaming to " + filename + ".")
+    file = open(filename, 'w')
 
 def heard_pause():
     i,o,e = select.select([sys.stdin],[],[],0.0001)
@@ -99,8 +97,8 @@ while loop_bool:
     # simulate the gait
     x_off += math.ceil(gait[0])
     y_off += math.ceil(gait[1])
-    #rot    = np.arctan2(target[1], target[0])
-    #rot_a  = LPG.cell_angle(target, rot)
+    rot    = np.arctan2(target[1], target[0])
+    rot_a  = LPG.cell_angle(target, rot)
     target[0] -= math.ceil(gait[0])
     target[1] -= math.ceil(gait[1])
     for k in range(0, len(obstacles)):
@@ -122,7 +120,7 @@ while loop_bool:
         exp_count += 1
         print("Experiment " + str(exp_count) + ".")
 
-        if exp_count > 1:
+        if exp_count > 1 and len(argv) > 1:
             file.write(str(actual_path) + ", " + str(obstacles) + ", " + str(target) + ", " + str((x_off, y_off)))
             file.write("\n")
 

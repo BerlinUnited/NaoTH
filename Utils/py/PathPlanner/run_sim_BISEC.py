@@ -13,26 +13,24 @@ import select
 from sys import argv
 import os.path
 
-if len(argv) == 1:
-    print("Need a file to save the experiments in.")
-    sys.exit()
-file_count = 0
-if len(argv) == 2:
-    script, filename = argv
-if len(argv) == 3:
-    script, filename, max_exp = argv
-    max_exp = int(max_exp)
+if len(argv) > 1:
+    file_count = 0
+    if len(argv) == 2:
+        script, filename = argv
+    if len(argv) == 3:
+        script, filename, max_exp = argv
+        max_exp = int(max_exp)
 
-orig_filename = copy.copy(filename)
-if os.path.isfile(filename):
-    file_count = 1
-    filename = filename + str(file_count)
-    while os.path.isfile(filename):
-        file_count += 1
-        filename = orig_filename + str(file_count)
-if file_count > 0:
-    print("The specified file already exists, renaming to " + filename + ".")
-file = open(filename, 'w')
+    orig_filename = copy.copy(filename)
+    if os.path.isfile(filename):
+        file_count = 1
+        filename = filename + str(file_count)
+        while os.path.isfile(filename):
+            file_count += 1
+            filename = orig_filename + str(file_count)
+    if file_count > 0:
+        print("The specified file already exists, renaming to " + filename + ".")
+    file = open(filename, 'w')
 
 
 def heard_pause():
@@ -120,8 +118,9 @@ while loop_bool:
     B.draw_target(ax, target)
     B.draw_robot(ax, robot_pos)
 
-    file.write(str(steps) + ", " + str(obstacles) + ", " + str(target) + ", " + str(robot_pos) + ", " + str(B.robot_radius))
-    file.write("\n")
+    if len(argv) > 1:
+        file.write(str(steps) + ", " + str(obstacles) + ", " + str(target) + ", " + str(robot_pos) + ", " + str(B.robot_radius))
+        file.write("\n")
 
     pause = False
 

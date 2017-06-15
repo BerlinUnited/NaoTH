@@ -58,7 +58,7 @@ def draw_obstacles(ax, obstacles):
             ax.add_artist(Circle(xy=(k[0], k[1]), radius=10, fill=True, color='black'))
 
 def draw_robot(ax, robot_pos):
-    ax.add_artist(Circle(xy=(robot_pos[0], robot_pos[1]), radius=robot_radius, fill=True, color='black', alpha=1))
+    ax.add_artist(Circle(xy=(robot_pos[0], robot_pos[1]), radius=robot_radius, fill=True, color='black', alpha=.5))
 
 def draw_target(ax, target):
     ax.plot(target[0], target[1], 'x', color='red')
@@ -153,8 +153,8 @@ def compute_sub_target(start, target, collision, obstacles, ax, sign):
             sub_target = (orth_vec2[0] * (robot_radius * robot_diameter_count) + collision[0], orth_vec2[1] * (robot_radius * robot_diameter_count) + collision[1])
 
     ax.plot(sub_target[0], sub_target[1], 'x', color='white')
-    for k in alt_sub_targets:
-        ax.plot(k[0], k[1], 'x', color='white')
+    #for k in alt_sub_targets:
+    #    ax.plot(k[0], k[1], 'x', color='white')
 
     return sub_target
 
