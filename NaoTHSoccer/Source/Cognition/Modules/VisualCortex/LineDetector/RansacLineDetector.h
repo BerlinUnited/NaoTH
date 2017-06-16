@@ -18,6 +18,10 @@
 
 #include "Tools/Debug/DebugParameterList.h"
 
+#include "Cognition/Modules/VisualCortex/LineDetector/ellipse.h"
+
+#include <Tools/naoth_eigen.h>
+
 BEGIN_DECLARE_MODULE(RansacLineDetector)
   PROVIDE(DebugRequest)
   PROVIDE(DebugModify)
@@ -64,6 +68,8 @@ private:
   int ransac(Math::LineSegment& result);
 
   int ransacCirc(Circle& circResult);
+
+  int ransacEllipse();
 
 //private:
   class Parameters: public ParameterList

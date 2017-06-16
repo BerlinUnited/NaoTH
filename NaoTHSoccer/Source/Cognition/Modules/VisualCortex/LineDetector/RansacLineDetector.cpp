@@ -59,6 +59,8 @@ void RansacLineDetector::execute()
       break;
     }
   }
+
+  ransacEllipse();
   
 
   DEBUG_REQUEST("Vision:RansacLineDetector:draw_lines_field",
@@ -280,4 +282,16 @@ int RansacLineDetector::ransacCirc(Circle& result)
   // return results
   result = bestModel;
   return bestInlier;
+}
+
+int RansacLineDetector::ransacEllipse()
+{
+  Ellipse ellipse;
+
+  Eigen::VectorXd x(5);
+  Eigen::VectorXd y(5);
+  x << -20.1, 2.5, 3, 4, 5;
+  y << 1, 2, -1, 2, 0.5;
+
+  ellipse.fitPoints(x, y);
 }
