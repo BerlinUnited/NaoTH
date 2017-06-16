@@ -51,7 +51,7 @@ parameter_s = 1
 
 obstacles = [(1600, 0, 300), (1600, 1000, 300), (1600, 500, 300), (1600, 1500, 300), (1600, -1000, 300), (1600, -500, 300)]
 target    = [4000, 0]
-robot_pos = (0, 0)
+robot_pos = (0, 1000)
 orig_robot_pos = copy.copy(robot_pos)
 
 rot   = np.arctan2(target[1], target[0]) # LPG

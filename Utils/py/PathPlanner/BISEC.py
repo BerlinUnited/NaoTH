@@ -152,7 +152,6 @@ def length_of_trajectory(t):
         length +=  np.linalg.norm(tnp[k, :] - tnp[k-1, :])
     return length
 
-
 def compute_path(start, target, obstacles, depth, ax, sign):
     collision  = start
     trajectory = (start, target)
@@ -195,7 +194,43 @@ def compute_path(start, target, obstacles, depth, ax, sign):
 
     return trajectory
 
-def compute_path_single(start, target, obstacles, depth, ax):
+def compute_path_single(start, target, obstacles, depth, ax, sign):
+    collision  = start
+    trajectory = (start, target)
+
+    if depth > 4:
+        return trajectory
+
+    col_pos = hit_obstacle(start, target, obstacles)
+
+    if col_pos is not None:
+        sub_target1 = compute_sub_target(start, target, col_pos, obstacles, ax, +1)
+        sub_target2 = compute_sub_target(start, target, col_pos, obstacles, ax, -1)
+
+        if depth < 2:
+            ax.plot(sub_target1[0], sub_target1[1], 'x', c='blue')
+            ax.plot(sub_target2[0], sub_target2[1], 'x', c='blue')
+
+        traj1 = compute_path(start, sub_target1, obstacles, depth+1, ax, 1)
+        traj2 = compute_path(start, sub_target1, obstacles, depth+1, ax, -1)
+        traj3 = compute_path(start, sub_target2, obstacles, depth+1, ax, 1)
+        traj4 = compute_path(start, sub_target2, obstacles, depth+1, ax, -1)
+
+        trajectories  = [traj1, traj2, traj3, traj4]
+
+        min_traj = None
+        min_dist  = float("inf")
+        for t in trajectories:
+            d = length_of_trajectory(t)
+            if min_dist > d or min_traj is None:
+                min_dist = d
+                min_traj = t
+
+        trajectory = min_traj
+
+    return trajectory
+
+def compute_path_real_single(start, target, obstacles, depth, ax):
     collision  = start
     trajectory = (start, target)
 
@@ -212,28 +247,17 @@ def compute_path_single(start, target, obstacles, depth, ax):
             ax.plot(sub_target1[0], sub_target1[1], 'x', c='blue')
             ax.plot(sub_target2[0], sub_target2[1], 'x', c='blue')
 
-        traj1 = compute_path(start, sub_target1, obstacles, depth+1, ax, 1)
-        traj2 = compute_path(start, sub_target1, obstacles, depth+1, ax, -1)
-        traj3 = compute_path(start, sub_target2, obstacles, depth+1, ax, -1)
-        traj4 = compute_path(start, sub_target2, obstacles, depth+1, ax, 1)
-
-        trajectories = [traj1 + traj3, traj2 + traj4, traj1 + traj4, traj2 + traj3]
-
-        min_traj = None
-        min_dist  = float("inf")
-        for t in trajectories:
-            d = length_of_trajectory(t)
-            if min_dist > d or min_traj is None:
-                min_dist = d
-                min_traj = t
-
-        trajectory = min_traj
+        if length_of_trajectory((start, sub_target1)) < length_of_trajectory((start, sub_target2)):
+            trajectory = (start, sub_target1)
+        else:
+            trajectory = (start, sub_target2)
 
     return trajectory
 
 def get_gait(robot_pos, target, obstacles, depth, ax):
     #trajectory  = compute_path(robot_pos, target, obstacles, 0, ax, None)
-    trajectory  = compute_path_single(robot_pos, target, obstacles, 0, ax)
+    #trajectory  = compute_path_real_single(robot_pos, target, obstacles, 0, ax)
+    trajectory  = compute_path_single(robot_pos, target, obstacles, 0, ax, 1)
 
     direction = np.array(trajectory[1]) - np.array(trajectory[0])
     distance  = np.linalg.norm(direction)
