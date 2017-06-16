@@ -96,9 +96,9 @@ def hit_obstacle(start, target, obstacles):
             point = (start[0] + line[0] * t, start[1] + line[1] * t)
 
         if dist(point, obst) <= obst[2] + robot_radius:
-            col_point = point - line / np.linalg(line) * np.sqrt(np.power(obst[2], 2) - np.power(dist(point, obst), 2))
-            hits.append((col_point, t))
-            #hits.append((obst, t))
+            #col_point = point - line / np.linalg(line) * np.sqrt(np.power(obst[2], 2) - np.power(dist(point, obst), 2))
+            #hits.append((col_point, t))
+            hits.append((obst, t))
 
     if len(hits) > 0:
         minim = hits[0]
@@ -114,9 +114,6 @@ def has_collided(vec, obstacles):
         if dist(vec, k) <= k[2] + robot_radius:
             return True
     return False
-
-def compute_trajectory(start, target):
-    return [start, (target[0] - start[0], target[1] - start[1])]
 
 def compute_sub_target(start, target, collision, obstacles, ax, sign):
     robot_diameter_count = 1
@@ -158,7 +155,6 @@ def length_of_trajectory(t):
 
 def compute_path(start, target, obstacles, depth, ax, sign):
     collision  = start
-    #trajectory = compute_trajectory(start, target)
     trajectory = (start, target)
 
     if depth > 4:
@@ -167,20 +163,61 @@ def compute_path(start, target, obstacles, depth, ax, sign):
     col_pos = hit_obstacle(start, target, obstacles)
 
     if col_pos is not None:
-        ax.plot(col_pos[0], col_pos[1], 'x', c='white')
-        sub_target = compute_sub_target(start, target, col_pos, obstacles, ax, sign)
-        if depth < 5:
-            ax.plot(sub_target[0], sub_target[1], 'x', c='blue')
-        #target = (target[0] + sub_target[0], target[1] + sub_target[1])
+        sub_target1 = compute_sub_target(start, target, col_pos, obstacles, ax, +1)
+        sub_target2 = compute_sub_target(start, target, col_pos, obstacles, ax, -1)
 
-        traj1 = compute_path(start, sub_target, obstacles, depth+1, ax, 1)
-        traj2 = compute_path(start, sub_target, obstacles, depth+1, ax, -1)
-        traj3 = compute_path(sub_target, target, obstacles, depth+1, ax, 1)
-        traj4 = compute_path(sub_target, target, obstacles, depth+1, ax, -1)
+        if depth < 2:
+            ax.plot(sub_target1[0], sub_target1[1], 'x', c='blue')
+            ax.plot(sub_target2[0], sub_target2[1], 'x', c='blue')
+
+        traj1 = compute_path(start, sub_target1, obstacles, depth+1, ax, 1)
+        traj2 = compute_path(start, sub_target1, obstacles, depth+1, ax, -1)
+        traj3 = compute_path(sub_target1, target, obstacles, depth+1, ax, 1)
+        traj4 = compute_path(sub_target1, target, obstacles, depth+1, ax, -1)
+
+        traj5 = compute_path(start, sub_target2, obstacles, depth+1, ax, 1)
+        traj6 = compute_path(start, sub_target2, obstacles, depth+1, ax, -1)
+        traj7 = compute_path(sub_target2, target, obstacles, depth+1, ax, 1)
+        traj8 = compute_path(sub_target2, target, obstacles, depth+1, ax, -1)
+
+        trajectories  = [traj1 + traj3, traj2 + traj4, traj1 + traj4, traj2 + traj3]
+        trajectories += [traj5 + traj7, traj6 + traj8, traj5 + traj8, traj6 + traj7]
+
+        min_traj = None
+        min_dist  = float("inf")
+        for t in trajectories:
+            d = length_of_trajectory(t)
+            if min_dist > d or min_traj is None:
+                min_dist = d
+                min_traj = t
+
+        trajectory = min_traj
+
+    return trajectory
+
+def compute_path_single(start, target, obstacles, depth, ax):
+    collision  = start
+    trajectory = (start, target)
+
+    if depth > 2:
+        return trajectory
+
+    col_pos = hit_obstacle(start, target, obstacles)
+
+    if col_pos is not None:
+        sub_target1 = compute_sub_target(start, target, col_pos, obstacles, ax, -1)
+        sub_target2 = compute_sub_target(start, target, col_pos, obstacles, ax, 1)
+
+        if depth < 2:
+            ax.plot(sub_target1[0], sub_target1[1], 'x', c='blue')
+            ax.plot(sub_target2[0], sub_target2[1], 'x', c='blue')
+
+        traj1 = compute_path(start, sub_target1, obstacles, depth+1, ax, 1)
+        traj2 = compute_path(start, sub_target1, obstacles, depth+1, ax, -1)
+        traj3 = compute_path(start, sub_target2, obstacles, depth+1, ax, -1)
+        traj4 = compute_path(start, sub_target2, obstacles, depth+1, ax, 1)
 
         trajectories = [traj1 + traj3, traj2 + traj4, traj1 + traj4, traj2 + traj3]
-
-        #dis_traj = [length_of_trajectory(t) for t in trajectories]
 
         min_traj = None
         min_dist  = float("inf")
@@ -195,16 +232,11 @@ def compute_path(start, target, obstacles, depth, ax, sign):
     return trajectory
 
 def get_gait(robot_pos, target, obstacles, depth, ax):
-    trajectory_plus  = compute_path(robot_pos, target, obstacles, 0, ax, 1)
-    trajectory_minus = compute_path(robot_pos, target, obstacles, 0, ax, -1)
-
-    if length_of_trajectory(trajectory_plus) < length_of_trajectory(trajectory_minus):
-        trajectory = trajectory_plus
-    else:
-        trajectory = trajectory_minus
+    #trajectory  = compute_path(robot_pos, target, obstacles, 0, ax, None)
+    trajectory  = compute_path_single(robot_pos, target, obstacles, 0, ax)
 
     direction = np.array(trajectory[1]) - np.array(trajectory[0])
-    distance       = np.linalg.norm(direction)
+    distance  = np.linalg.norm(direction)
 
     if distance > 0:
         gait_unit_vec  = direction/distance #(next_target[0] / distance, next_target[1] / distance)

@@ -49,15 +49,15 @@ minimal_cell   = 100
 angular_part   = 16
 parameter_s = 1
 
-obstacles = [(2000, 0, 300)]#[(1600, 0, 300), (1600, 1000, 300), (1600, 500, 300), (1600, 1500, 300), (1600, -1000, 300), (1600, -500, 300)]
+obstacles = [(1600, 0, 300), (1600, 1000, 300), (1600, 500, 300), (1600, 1500, 300), (1600, -1000, 300), (1600, -500, 300)]
 target    = [4000, 0]
 robot_pos = (0, 0)
 orig_robot_pos = copy.copy(robot_pos)
 
 rot   = np.arctan2(target[1], target[0]) # LPG
-rot_a = LPG.cell_angle(target, rot)      # LPG
+rot_a = LPG.get_a(target, rot)      # LPG
 
-orig_waypoints = LPG.compute_waypoints_LPG(target, obstacles, rot, rot_a)
+orig_waypoints = LPG.compute_waypoints(target, obstacles, rot, rot_a)
 orig_obstacles = copy.copy(obstacles)
 orig_target    = copy.copy(target)
 
@@ -136,8 +136,8 @@ while loop_bool:
         orig_target    = copy.copy(target)
         orig_obstacles = copy.copy(obstacles)
         rot            = np.arctan2(target[1], target[0])
-        rot_a          = LPG.cell_angle(target, rot)
-        orig_waypoints = LPG.compute_waypoints_LPG(target, obstacles, rot, rot_a)"""
+        rot_a          = LPG.get_a(target, rot)
+        orig_waypoints = LPG.compute_waypoints(target, obstacles, rot, rot_a)"""
 
     mpl.rcParams['lines.linewidth'] = 0.5
     plt.clf()
@@ -153,7 +153,7 @@ while loop_bool:
 
     # LPG
     if exp_exec == 1:
-        waypoints = LPG.compute_waypoints_LPG(target, obstacles, rot, rot_a)
+        waypoints = LPG.compute_waypoints(target, obstacles, rot, rot_a)
         LPG.draw_waypoints(ax, waypoints, robot_pos, rot)
 
         LPG.draw_LPG(ax, robot_pos, rot)
@@ -173,7 +173,7 @@ while loop_bool:
     robot_pos = (robot_pos[0] + gait[0], robot_pos[1] + gait[1])
     if exp_exec == 1:
         rot    = np.arctan2(target[1], target[0])
-        rot_a  = LPG.cell_angle(target, rot)
+        rot_a  = LPG.get_a(target, rot)
         target[0] -= math.ceil(gait[0])
         target[1] -= math.ceil(gait[1])
         for k in range(0, len(obstacles)):
