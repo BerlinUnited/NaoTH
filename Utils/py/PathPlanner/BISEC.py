@@ -54,7 +54,7 @@ def draw_obstacles(ax, obstacles):
     # draw obstacles
     if obstacles:
         for k in obstacles:
-            ax.add_artist(Circle(xy=(k[0], k[1]), radius=k[2], fill=True, color='red', alpha=.25))
+            ax.add_artist(Circle(xy=(k[0], k[1]), radius=k[2], fill=True, color='black', alpha=.25))
             ax.add_artist(Circle(xy=(k[0], k[1]), radius=10, fill=True, color='black'))
 
 def draw_robot(ax, robot_pos):
@@ -63,11 +63,11 @@ def draw_robot(ax, robot_pos):
 def draw_target(ax, target):
     ax.plot(target[0], target[1], 'x', color='red')
 
-def draw_steps(ax, robot_pos, steps, col):
+def draw_steps(ax, robot_pos, trajectory, col):
     x_dist = robot_pos[0]
     y_dist = robot_pos[1]
     path   = []
-    for k in steps:
+    for k in trajectory:
         path.append((k[0] + x_dist, k[1] + y_dist))
         x_dist += k[0]
         y_dist += k[1]
@@ -77,17 +77,37 @@ def draw_steps(ax, robot_pos, steps, col):
 def dist(start, target):
     return np.sqrt(np.power(start[0] - target[0], 2) + np.power(start[1] - target[1], 2))
 
-def hit_obstacle(start, steps, obstacles):
-    (x_dist, y_dist) = (0, 0)
+def hit_obstacle(start, target, obstacles):
+    hits = []
+    for obst in obstacles:
+        start_to_obst = (obst[0] - start[0], obst[1] - start[1])
+        line  = (target[0] - start[0], target[1] - start[1])
 
-    for k in steps:
-        for l in obstacles:
-            if dist(l, (k[0] + x_dist + start[0], k[1] + y_dist + start[1])) <= l[2] + robot_radius:
-                return (True, l)#(x_dist, y_dist))
-        x_dist += k[0]
-        y_dist += k[1]
+        line_mag = np.power(line[0], 2) + np.power(line[1], 2)
+        start_dot_obst = start_to_obst[0] * line[0] + start_to_obst[1] * line[1]
 
-    return (False, (0, 0))
+        t = start_dot_obst / line_mag
+
+        if (t < 0):
+            point = start
+        elif (t > 1):
+            point = target
+        else:
+            point = (start[0] + line[0] * t, start[1] + line[1] * t)
+
+        if dist(point, obst) <= obst[2] + robot_radius:
+            col_point = point - line / np.linalg(line) * np.sqrt(np.power(obst[2], 2) - np.power(dist(point, obst), 2))
+            hits.append((col_point, t))
+            #hits.append((obst, t))
+
+    if len(hits) > 0:
+        minim = hits[0]
+        for k in range(1, len(hits)):
+            if hits[k][1] < minim[1]:
+                    minim = hits[k]
+        return minim[0]
+
+    return None
 
 def has_collided(vec, obstacles):
     for k in obstacles:
@@ -95,37 +115,8 @@ def has_collided(vec, obstacles):
             return True
     return False
 
-def compute_steps(start, target):
-    steps            = []
-    (x_dist, y_dist) = start
-    target           = (target[0] - start[0], target[1] - start[1])
-
-    while True:
-        target_dist    = dist((0, 0), target)
-        gait_unit_vec  = (target[0] / target_dist, target[1] / target_dist)
-        max_steplength = np.absolute(min(60, max(-60, min(target_dist / gait_unit_vec[0], target_dist / gait_unit_vec[1]))))
-        gait           = (gait_unit_vec[0] * max_steplength, gait_unit_vec[1] * max_steplength)
-
-        if math.isnan(gait[0]) or math.isnan(gait[1]):
-            break
-        if gait[0] is 0 and gait[1] is 0:
-            break
-        if gait[0] is -0 and gait[1] is -0:
-            break
-
-        # check if target is closer than gait
-        if np.sqrt(np.power(gait[0], 2) + np.power(gait[1], 2)) > np.sqrt(np.power(target[0], 2) + np.power(target[1], 2)):
-            gait = target
-            steps.append(gait)
-            break
-
-        steps.append(gait)
-
-        target  = (target[0] - gait[0], target[1] - gait[1])
-        x_dist += gait[0]
-        y_dist += gait[1]
-
-    return steps
+def compute_trajectory(start, target):
+    return [start, (target[0] - start[0], target[1] - start[1])]
 
 def compute_sub_target(start, target, collision, obstacles, ax, sign):
     robot_diameter_count = 1
@@ -145,30 +136,82 @@ def compute_sub_target(start, target, collision, obstacles, ax, sign):
     alt_sub_targets = []
 
     while has_collided(sub_target, obstacles):
-        alt_sub_targets.append(sub_target)
         robot_diameter_count += 1
         if sign == 1:
             sub_target = (orth_vec1[0] * (robot_radius * robot_diameter_count) + collision[0], orth_vec1[1] * (robot_radius * robot_diameter_count) + collision[1])
         else:
             sub_target = (orth_vec2[0] * (robot_radius * robot_diameter_count) + collision[0], orth_vec2[1] * (robot_radius * robot_diameter_count) + collision[1])
 
-    ax.plot(sub_target[0], sub_target[1], 'x', color='white')
-    #for k in alt_sub_targets:
-    #    ax.plot(k[0], k[1], 'x', color='white')
-
     return sub_target
 
+def length_of_trajectory(t):
+    length = 0
+    if len(t) == 0 :
+        return 0
+
+    # hack
+    tnp = np.array(t)
+    for k in range(1, len(t)):
+        length +=  np.linalg.norm(tnp[k, :] - tnp[k-1, :])
+    return length
+
+
 def compute_path(start, target, obstacles, depth, ax, sign):
-    collision = start
-    steps     = compute_steps(start, target)
+    collision  = start
+    #trajectory = compute_trajectory(start, target)
+    trajectory = (start, target)
 
-    if depth > 6:
-        return steps
+    if depth > 4:
+        return trajectory
 
-    (has_collided, col_pos) = hit_obstacle(start, steps, obstacles)
+    col_pos = hit_obstacle(start, target, obstacles)
 
-    if has_collided:
+    if col_pos is not None:
+        ax.plot(col_pos[0], col_pos[1], 'x', c='white')
         sub_target = compute_sub_target(start, target, col_pos, obstacles, ax, sign)
-        steps      = compute_path(start, sub_target, obstacles, depth+1, ax, sign) + compute_path(sub_target, target, obstacles, depth+1, ax, sign)
+        if depth < 5:
+            ax.plot(sub_target[0], sub_target[1], 'x', c='blue')
+        #target = (target[0] + sub_target[0], target[1] + sub_target[1])
 
-    return steps
+        traj1 = compute_path(start, sub_target, obstacles, depth+1, ax, 1)
+        traj2 = compute_path(start, sub_target, obstacles, depth+1, ax, -1)
+        traj3 = compute_path(sub_target, target, obstacles, depth+1, ax, 1)
+        traj4 = compute_path(sub_target, target, obstacles, depth+1, ax, -1)
+
+        trajectories = [traj1 + traj3, traj2 + traj4, traj1 + traj4, traj2 + traj3]
+
+        #dis_traj = [length_of_trajectory(t) for t in trajectories]
+
+        min_traj = None
+        min_dist  = float("inf")
+        for t in trajectories:
+            d = length_of_trajectory(t)
+            if min_dist > d or min_traj is None:
+                min_dist = d
+                min_traj = t
+
+        trajectory = min_traj
+
+    return trajectory
+
+def get_gait(robot_pos, target, obstacles, depth, ax):
+    trajectory_plus  = compute_path(robot_pos, target, obstacles, 0, ax, 1)
+    trajectory_minus = compute_path(robot_pos, target, obstacles, 0, ax, -1)
+
+    if length_of_trajectory(trajectory_plus) < length_of_trajectory(trajectory_minus):
+        trajectory = trajectory_plus
+    else:
+        trajectory = trajectory_minus
+
+    direction = np.array(trajectory[1]) - np.array(trajectory[0])
+    distance       = np.linalg.norm(direction)
+
+    if distance > 0:
+        gait_unit_vec  = direction/distance #(next_target[0] / distance, next_target[1] / distance)
+        #max_steplength = np.absolute(min(60, max(-60, min(distance / gait_unit_vec[0], distance / gait_unit_vec[1]))))
+        max_steplength = min(60, max(-60, distance))
+        gait           = (gait_unit_vec[0] * max_steplength, gait_unit_vec[1] * max_steplength)
+    else:
+        gait = (0,0)
+
+    return gait, trajectory
