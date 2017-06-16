@@ -12,8 +12,7 @@ import field_info as f
 robot_radius = 300
 
 def stupid_experiment(start, target, obstacles):
-    #return hit_obstacle(start, target, obstacles) is None
-    return has_collided((target[0] - start[0], target[1] - start[1]), obstacles)
+    return hit_obstacle(start, target, obstacles) is None
 
 def draw_field(ax, x_off, y_off):
     ax.plot([0 +x_off, 0+x_off], [-f.y_length * 0.5 + y_off, f.y_length * 0.5 + y_off], 'white')  # Middle line
