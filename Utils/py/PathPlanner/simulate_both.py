@@ -49,9 +49,9 @@ minimal_cell   = 100
 angular_part   = 16
 parameter_s = 1
 
-obstacles = [(1600, 0, 300), (1600, 1000, 300), (1600, 500, 300), (1600, 1500, 300), (1600, -1000, 300), (1600, -500, 300)]
-target    = [4000, 0]
-robot_pos = (0, 1000)
+obstacles = []#[(1600, 0, 300), (1600, 1000, 300), (1600, 500, 300), (1600, 1500, 300), (1600, -1000, 300), (1600, -500, 300)]
+target    = [0, 0]#[4000, 0]
+robot_pos = (0, 0)
 orig_robot_pos = copy.copy(robot_pos)
 
 rot   = np.arctan2(target[1], target[0]) # LPG
@@ -77,6 +77,8 @@ loop_bool = True
 
 tmp_paths_count = 0
 
+do_skip = False
+
 # plot
 while loop_bool:
     if heard_pause():
@@ -86,26 +88,29 @@ while loop_bool:
             pause = not pause
 
     # switch algorithm
-    """if np.absolute(robot_pos[0] - orig_target[0]) < 1 and np.absolute(robot_pos[1] - orig_target[1]) < 1 and exp_exec < 2:
+    if np.absolute(robot_pos[0] - orig_target[0]) < 1 and np.absolute(robot_pos[1] - orig_target[1]) < 1 and exp_exec < 2:
         exp_exec += 1
         obstacles = copy.copy(orig_obstacles)
         target    = copy.copy(orig_target)
         robot_pos = (0, 0)
     # save experiment and start next
-    if np.absolute(robot_pos[0] - orig_target[0]) < 1 and np.absolute(robot_pos[1] - orig_target[1]) < 1 and exp_exec == 2:
-        if len(argv) == 3:
-            loop_bool = eval('exp_count < max_exp')
-            if not loop_bool:
-                sys.exit()
-        exp_count += 1
-        #exp_exec   = 1
-        print("Experiment " + str(exp_count) + ".")
+    if np.absolute(robot_pos[0] - orig_target[0]) < 1 and np.absolute(robot_pos[1] - orig_target[1]) < 1 and exp_exec == 2 or do_skip:
 
-        if exp_count > 1 and len(argv) > 1:
-            file.write(str(actual_path_LPG) + ", " + str(obstacles) + ", " + str(target) + ", " + str(robot_pos))
-            file.write("\n")
-            file.write(str(actual_path_B) + ", " + str(obstacles) + ", " + str(target) + ", " + str(robot_pos) + ", " + str(robot_radius))
-            file.write("\n")
+        if not do_skip:
+            if len(argv) == 3:
+                loop_bool = eval('exp_count < max_exp')
+                if not loop_bool:
+                    sys.exit()
+
+            exp_count += 1
+            #exp_exec   = 1
+            print("Experiment " + str(exp_count) + ".")
+
+            if exp_count > 1 and len(argv) > 1:
+                file.write(str(actual_path_LPG) + ", " + str(obstacles) + ", " + str(target) + ", " + str(robot_pos))
+                file.write("\n")
+                file.write(str(actual_path_B) + ", " + str(obstacles) + ", " + str(target) + ", " + str(robot_pos) + ", " + str(robot_radius))
+                file.write("\n")
 
         obstacles       = []
         robot_pos       = (0, 0)
@@ -127,7 +132,7 @@ while loop_bool:
                 do_add = False
             if len(obstacles) > 0:
                 for k in obstacles:
-                    if LPG.dist_between((obst_x, obst_y), k) <= 2*k[2]:
+                    if LPG.dist((obst_x, obst_y), k) <= 2*k[2]:
                         do_add = False
                         break
             if do_add:
@@ -137,7 +142,14 @@ while loop_bool:
         orig_obstacles = copy.copy(obstacles)
         rot            = np.arctan2(target[1], target[0])
         rot_a          = LPG.get_a(target, rot)
-        orig_waypoints = LPG.compute_waypoints(target, obstacles, rot, rot_a)"""
+        orig_waypoints = LPG.compute_waypoints(target, obstacles, rot, rot_a)
+        if not do_skip:
+            print orig_target, orig_obstacles
+
+        do_skip = False
+        # stupid experiment???
+        do_skip = B.stupid_experiment(robot_pos, target, obstacles)
+
 
     mpl.rcParams['lines.linewidth'] = 0.5
     plt.clf()
@@ -179,25 +191,15 @@ while loop_bool:
         for k in range(0, len(obstacles)):
             obstacles[k] = (obstacles[k][0] - gait[0], obstacles[k][1] - gait[1], obstacles[k][2])
 
-    # draw tmp paths for BISEC
-    """if exp_exec == 2:
-        for l in range(0, len(all_paths_B)):
-            for k in range(0, len(all_paths_B[l]) - 1):
-                ax.plot([all_paths_B[l][k][0] + all_robot_pos[l][0], all_paths_B[l][k+1][0] + all_robot_pos[l][0]], [all_paths_B[l][k][1] + all_robot_pos[l][1], all_paths_B[l][k+1][1] + all_robot_pos[l][1]], c='black')
-"""
     # draw actual path
     for k in range(0, len(actual_path_LPG) - 1):
         ax.plot([actual_path_LPG[k][0], actual_path_LPG[k+1][0]], [actual_path_LPG[k][1], actual_path_LPG[k+1][1]], c='red')
     for k in range(0, len(actual_path_B) - 1):
         ax.plot([actual_path_B[k][0] + orig_robot_pos[0], actual_path_B[k+1][0] + orig_robot_pos[0]], [actual_path_B[k][1] + orig_robot_pos[1], actual_path_B[k+1][1] + orig_robot_pos[1]], c='yellow')
 
-    ax.plot(robot_pos[0], robot_pos[1], 'x', c='yellow')
-    #for k in path:
-        #ax.plot(k[0] + robot_pos[0], k[1] + robot_pos[1], 'x', c='red')
-        #ax.plot(k[0], k[1], 'x', c='red')
-
-    # draw target
+    # draw target and robot
     ax.plot(orig_target[0], orig_target[1], 'x', c='red')
+    ax.plot(robot_pos[0], robot_pos[1], 'x', c='yellow')
 
     ax.set_xlim([-5500, 5500])
     ax.set_ylim([-3500, 3500])

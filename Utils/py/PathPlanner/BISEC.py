@@ -11,6 +11,10 @@ import field_info as f
 
 robot_radius = 300
 
+def stupid_experiment(start, target, obstacles):
+    #return hit_obstacle(start, target, obstacles) is None
+    return has_collided((target[0] - start[0], target[1] - start[1]), obstacles)
+
 def draw_field(ax, x_off, y_off):
     ax.plot([0 +x_off, 0+x_off], [-f.y_length * 0.5 + y_off, f.y_length * 0.5 + y_off], 'white')  # Middle line
 
@@ -113,7 +117,18 @@ def has_collided(vec, obstacles):
     for k in obstacles:
         if dist(vec, k) <= k[2] + robot_radius:
             return True
-    return False
+    return False\
+
+def length_of_trajectory(t):
+    length = 0
+    if len(t) == 0 :
+        return 0
+
+    # hack
+    tnp = np.array(t)
+    for k in range(1, len(t)):
+        length +=  np.linalg.norm(tnp[k, :] - tnp[k-1, :])
+    return length
 
 def compute_sub_target(start, target, collision, obstacles, ax, sign):
     robot_diameter_count = 1
@@ -140,17 +155,6 @@ def compute_sub_target(start, target, collision, obstacles, ax, sign):
             sub_target = (orth_vec2[0] * (robot_radius * robot_diameter_count) + collision[0], orth_vec2[1] * (robot_radius * robot_diameter_count) + collision[1])
 
     return sub_target
-
-def length_of_trajectory(t):
-    length = 0
-    if len(t) == 0 :
-        return 0
-
-    # hack
-    tnp = np.array(t)
-    for k in range(1, len(t)):
-        length +=  np.linalg.norm(tnp[k, :] - tnp[k-1, :])
-    return length
 
 def compute_path(start, target, obstacles, depth, ax, sign):
     collision  = start
@@ -194,6 +198,36 @@ def compute_path(start, target, obstacles, depth, ax, sign):
 
     return trajectory
 
+def get_path_alt(start, target, obstacles, depth, ax):
+    trajectories = [compute_path_alt(start, target, obstacles, depth, ax, 1), compute_path_alt(start, target, obstacles, depth, ax, -1)]
+
+    length1 = 0
+    length2 = 0
+
+    if length_of_trajectory(trajectories[0]) < length_of_trajectory(trajectories[1]):
+        return trajectories[0]
+    else:
+        return trajectories[1]
+
+def compute_path_alt(start, target, obstacles, depth, ax, sign):
+    collision  = start
+    trajectory = (start, target)
+
+    if depth > 4:
+        return trajectory
+
+    col_pos = hit_obstacle(start, target, obstacles)
+
+    if col_pos is not None:
+        sub_target = compute_sub_target(start, target, col_pos, obstacles, ax, sign)
+
+        if depth < 2:
+            ax.plot(sub_target[0], sub_target[1], 'x', c='blue')
+
+        trajectory = compute_path_alt(start, sub_target, obstacles, depth+1, ax, sign) + compute_path_alt(sub_target, target, obstacles, depth+1, ax, sign)
+
+    return trajectory
+
 def compute_path_single(start, target, obstacles, depth, ax, sign):
     collision  = start
     trajectory = (start, target)
@@ -211,10 +245,10 @@ def compute_path_single(start, target, obstacles, depth, ax, sign):
             ax.plot(sub_target1[0], sub_target1[1], 'x', c='blue')
             ax.plot(sub_target2[0], sub_target2[1], 'x', c='blue')
 
-        traj1 = compute_path(start, sub_target1, obstacles, depth+1, ax, 1)
-        traj2 = compute_path(start, sub_target1, obstacles, depth+1, ax, -1)
-        traj3 = compute_path(start, sub_target2, obstacles, depth+1, ax, 1)
-        traj4 = compute_path(start, sub_target2, obstacles, depth+1, ax, -1)
+        traj1 = compute_path_single(start, sub_target1, obstacles, depth+1, ax, 1)
+        traj2 = compute_path_single(start, sub_target1, obstacles, depth+1, ax, -1)
+        traj3 = compute_path_single(start, sub_target2, obstacles, depth+1, ax, 1)
+        traj4 = compute_path_single(start, sub_target2, obstacles, depth+1, ax, -1)
 
         trajectories  = [traj1, traj2, traj3, traj4]
 
@@ -255,9 +289,10 @@ def compute_path_real_single(start, target, obstacles, depth, ax):
     return trajectory
 
 def get_gait(robot_pos, target, obstacles, depth, ax):
-    #trajectory  = compute_path(robot_pos, target, obstacles, 0, ax, None)
+    trajectory  = compute_path(robot_pos, target, obstacles, 0, ax, None)
+    #trajectory  = get_path_alt(robot_pos, target, obstacles, 0, ax)
     #trajectory  = compute_path_real_single(robot_pos, target, obstacles, 0, ax)
-    trajectory  = compute_path_single(robot_pos, target, obstacles, 0, ax, 1)
+    #trajectory  = compute_path_single(robot_pos, target, obstacles, 0, ax, None)
 
     direction = np.array(trajectory[1]) - np.array(trajectory[0])
     distance  = np.linalg.norm(direction)
