@@ -20,7 +20,6 @@ class FieldPercept : public naoth::Printable
 {
 public:
   typedef Math::Polygon<20> FieldPoly;
-  std::vector<Vector2i> rawFieldBorder;
 
 private:
 

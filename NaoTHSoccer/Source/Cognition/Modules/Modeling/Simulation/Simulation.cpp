@@ -20,6 +20,8 @@ Simulation::Simulation()
   DEBUG_REQUEST_REGISTER("Simulation:use_Parameters","use_Parameters",false);
   DEBUG_REQUEST_REGISTER("Simulation:OwnGoal","OwnGoal",false);
   DEBUG_REQUEST_REGISTER("Simulation:ObstacleLine","ObstacleLine",false);
+  DEBUG_REQUEST_REGISTER("Simulation:draw_borders_on_field","draws borders determined from scan line edgel percept endpoints",false);
+  DEBUG_REQUEST_REGISTER("Simulation:draw_obstacle_collisions","ObstacleCollision",false);
 
   DEBUG_REQUEST_REGISTER("Simulation:ActionTarget:None","DrawNone",false);
   DEBUG_REQUEST_REGISTER("Simulation:ActionTarget:Short","DrawShortKick",false);
@@ -169,20 +171,37 @@ void Simulation::simulateConsequences(
   Math::LineSegment obstacleLine(getRobotPose() * Vector2d(400, 200), getRobotPose() * Vector2d(400, -200));
 
   // calculate projection of field border for bottom and top
+  std::vector<ScanLineEdgelPercept::EndPoint> rawFieldBorder;
   std::vector<Math::LineSegment> bordersOnField;
-  Vector2d temp1, temp2;
 
-  for(unsigned int i =0; i < getFieldPercept().rawFieldBorder.size()-1; i++){
-      if(CameraGeometry::imagePixelToFieldCoord(getCameraMatrix(), getCameraInfo(), getFieldPercept().rawFieldBorder[i], 0, temp1)
-         && CameraGeometry::imagePixelToFieldCoord(getCameraMatrix(), getCameraInfo(), getFieldPercept().rawFieldBorder[i], 0, temp2)){
-          bordersOnField.push_back(Math::LineSegment(temp1,temp2));
+  for(unsigned int i =0; i < getScanLineEdgelPercept().endPoints.size(); i++){
+      const ScanLineEdgelPercept::EndPoint& p = getScanLineEdgelPercept().endPoints[i];
+      if(p.greenFound){
+        rawFieldBorder.push_back(p);
       }
   }
 
-  for(unsigned int i =0; i < getFieldPerceptTop().rawFieldBorder.size()-1; i++){
-      if(CameraGeometry::imagePixelToFieldCoord(getCameraMatrixTop(), getCameraInfoTop(), getFieldPerceptTop().rawFieldBorder[i], 0, temp1)
-         && CameraGeometry::imagePixelToFieldCoord(getCameraMatrixTop(), getCameraInfoTop(), getFieldPerceptTop().rawFieldBorder[i], 0, temp2)){
-          bordersOnField.push_back(Math::LineSegment(temp1,temp2));
+  unsigned int lastBottomRawFieldBorderPoint = rawFieldBorder.size()>0 ? rawFieldBorder.size()-1 : 0;
+
+  for(unsigned int i =0; i < getScanLineEdgelPerceptTop().endPoints.size(); i++){
+      const ScanLineEdgelPercept::EndPoint& p = getScanLineEdgelPerceptTop().endPoints[i];
+      if(p.greenFound){
+        rawFieldBorder.push_back(p);
+      }
+  }
+
+  for(unsigned int i =0; i+1 < rawFieldBorder.size(); i++){
+      if (i==lastBottomRawFieldBorderPoint) continue;
+      if(rawFieldBorder[i].posInImage.y > 6 || rawFieldBorder[i+1].posInImage.y > 6) {
+          bordersOnField.push_back(Math::LineSegment(rawFieldBorder[i].posOnField, rawFieldBorder[i+1].posOnField));
+
+          DEBUG_REQUEST("Simulation:draw_borders_on_field",
+            FIELD_DRAWING_CONTEXT;
+
+            PEN("000000", 10);
+            LINE(rawFieldBorder[i].posOnField.x,   rawFieldBorder[i].posOnField.y,
+                 rawFieldBorder[i+1].posOnField.x, rawFieldBorder[i+1].posOnField.y);
+          );
       }
   }
 
@@ -252,10 +271,26 @@ void Simulation::simulateConsequences(
     // intersection with projected field border line segments? -> obstacleCollision = true;
 
     for(std::vector<Math::LineSegment>::const_iterator i = bordersOnField.begin(); i != bordersOnField.end(); i++){
-        if(shootLine.intersect(*i)){
-            obstacleCollision = true;
-            break;
-        }
+           // shootLine = Math::LineSegment(globalBallStartPosition, shootLine.point(shootLine.intersection(*i)))
+            double t_min = shootLine.getLength();
+            double t = shootLine.Line::intersection(*i);
+
+            if(t >= 0 && t < t_min && (*i).intersect(shootLine)) {
+              t_min = t;
+              obstacleCollision = true;
+              shootLine = Math::LineSegment(globalBallStartPosition, shootLine.point(t_min-getFieldInfo().ballRadius));
+              globalBallEndPosition = shootLine.end();
+              break;
+            }
+    }
+
+    if(obstacleCollision){
+        // draw balls if there are collisions with obstacles
+        DEBUG_REQUEST("Simulation:draw_obstacle_collisions",
+          FIELD_DRAWING_CONTEXT;
+          PEN("FF00AA66", 1);
+          FILLOVAL(shootLine.end().x, shootLine.end().y, 50, 50);
+        );
     }
 
     // now categorize the position
