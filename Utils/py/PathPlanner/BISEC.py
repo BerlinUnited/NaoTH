@@ -155,7 +155,7 @@ def compute_sub_target(start, target, collision, obstacles, ax, sign):
 
     return sub_target
 
-def compute_path(start, target, obstacles, depth, ax, sign):
+def compute_path(start, target, obstacles, depth, ax, sign, show_sub):
     collision  = start
     trajectory = (start, target)
 
@@ -168,19 +168,19 @@ def compute_path(start, target, obstacles, depth, ax, sign):
         sub_target1 = compute_sub_target(start, target, col_pos, obstacles, ax, +1)
         sub_target2 = compute_sub_target(start, target, col_pos, obstacles, ax, -1)
 
-        if depth < 2:
+        if depth < 3 and show_sub:
             ax.plot(sub_target1[0], sub_target1[1], 'x', c='blue')
             ax.plot(sub_target2[0], sub_target2[1], 'x', c='blue')
 
-        traj1 = compute_path(start, sub_target1, obstacles, depth+1, ax, 1)
-        traj2 = compute_path(start, sub_target1, obstacles, depth+1, ax, -1)
-        traj3 = compute_path(sub_target1, target, obstacles, depth+1, ax, 1)
-        traj4 = compute_path(sub_target1, target, obstacles, depth+1, ax, -1)
+        traj1 = compute_path(start, sub_target1, obstacles, depth+1, ax, 1, show_sub)
+        traj2 = compute_path(start, sub_target1, obstacles, depth+1, ax, -1, show_sub)
+        traj3 = compute_path(sub_target1, target, obstacles, depth+1, ax, 1, show_sub)
+        traj4 = compute_path(sub_target1, target, obstacles, depth+1, ax, -1, show_sub)
 
-        traj5 = compute_path(start, sub_target2, obstacles, depth+1, ax, 1)
-        traj6 = compute_path(start, sub_target2, obstacles, depth+1, ax, -1)
-        traj7 = compute_path(sub_target2, target, obstacles, depth+1, ax, 1)
-        traj8 = compute_path(sub_target2, target, obstacles, depth+1, ax, -1)
+        traj5 = compute_path(start, sub_target2, obstacles, depth+1, ax, 1, show_sub)
+        traj6 = compute_path(start, sub_target2, obstacles, depth+1, ax, -1, show_sub)
+        traj7 = compute_path(sub_target2, target, obstacles, depth+1, ax, 1, show_sub)
+        traj8 = compute_path(sub_target2, target, obstacles, depth+1, ax, -1, show_sub)
 
         trajectories  = [traj1 + traj3, traj2 + traj4, traj1 + traj4, traj2 + traj3]
         trajectories += [traj5 + traj7, traj6 + traj8, traj5 + traj8, traj6 + traj7]
@@ -287,8 +287,8 @@ def compute_path_real_single(start, target, obstacles, depth, ax):
 
     return trajectory
 
-def get_gait(robot_pos, target, obstacles, depth, ax):
-    trajectory  = compute_path(robot_pos, target, obstacles, 0, ax, None)
+def get_gait(robot_pos, target, obstacles, depth, ax, show_sub):
+    trajectory  = compute_path(robot_pos, target, obstacles, 0, ax, None, show_sub)
     #trajectory  = get_path_alt(robot_pos, target, obstacles, 0, ax)
     #trajectory  = compute_path_real_single(robot_pos, target, obstacles, 0, ax)
     #trajectory  = compute_path_single(robot_pos, target, obstacles, 0, ax, None)
