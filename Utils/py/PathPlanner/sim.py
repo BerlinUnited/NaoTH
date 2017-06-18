@@ -68,7 +68,7 @@ def draw_path(actual_path_LPG, actual_path_B, orig_robot_pos, ax):
     for k in range(0, len(actual_path_LPG) - 1):
         ax.plot([actual_path_LPG[k][0], actual_path_LPG[k+1][0]], [actual_path_LPG[k][1], actual_path_LPG[k+1][1]], c='red')
     for k in range(0, len(actual_path_B) - 1):
-        ax.plot([actual_path_B[k][0] + orig_robot_pos[0], actual_path_B[k+1][0] + orig_robot_pos[0]], [actual_path_B[k][1] + orig_robot_pos[1], actual_path_B[k+1][1] + orig_robot_pos[1]], c='red')
+        ax.plot([actual_path_B[k][0] + orig_robot_pos[0], actual_path_B[k+1][0] + orig_robot_pos[0]], [actual_path_B[k][1] + orig_robot_pos[1], actual_path_B[k+1][1] + orig_robot_pos[1]], c='yellow')
 
 def draw_tar_rob(orig_target, robot_pos, ax):
     ax.plot(orig_target[0], orig_target[1], 'x', c='red')
@@ -82,8 +82,8 @@ def simulate(gait, target, robot_pos, rot, rot_a, actual_path_B, actual_path_LPG
         actual_path_LPG.append((actual_path_LPG[len(actual_path_LPG)-1][0] + gait[0], actual_path_LPG[len(actual_path_LPG)-1][1] + gait[1]))
         rot    = np.arctan2(target[1], target[0])
         rot_a  = LPG.get_a(target, rot)
-        target[0] -= math.ceil(gait[0])
-        target[1] -= math.ceil(gait[1])
+        target[0] -= gait[0]
+        target[1] -= gait[1]
         for k in range(0, len(obstacles)):
             obstacles[k] = (obstacles[k][0] - gait[0], obstacles[k][1] - gait[1], obstacles[k][2])
     return gait, target, robot_pos, rot, rot_a, actual_path_B, actual_path_LPG, obstacles

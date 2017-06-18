@@ -127,8 +127,8 @@ def compute_gait(the_path, target, rot):
             break
 
     distance    = dist((x, y), (0, 0))
-    step_length = 60
-    gait        = (x / distance * step_length, y / distance * step_length)
+    max_steplength = min(60, max(-60, distance))
+    gait        = (x / distance * max_steplength, y / distance * max_steplength)
 
     if np.sqrt(np.power(gait[0], 2) + np.power(gait[1], 2)) > np.sqrt(np.power(target[0], 2) + np.power(target[1], 2)):
         gait = target

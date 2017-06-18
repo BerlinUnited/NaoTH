@@ -32,8 +32,8 @@ minimal_cell   = 100
 angular_part   = 16
 parameter_s = 1
 
-obstacles = []#[(1600, 0, 300), (1600, 1000, 300), (1600, 500, 300), (1600, 1500, 300), (1600, -1000, 300), (1600, -500, 300)]
-target    = [0, 0]#[4000, 0]
+obstacles = [(2561.506295763076, 89.22548767969283, 300), (-3229.8882816473783, 745.2658623693042, 300), (1621.6679149151987, 1067.2159754595705, 300), (4415.865864561594, 2031.630074230553, 300), (794.771189996065, 859.7827650240301, 300), (2055.1103851468215, -2839.405978352935, 300), (4175.285816609758, 533.516366558637, 300), (-1480.9322167897922, -2046.4255889838516, 300), (-2891.519028084903, -1126.5300529647893, 300)]
+target    = [2291.0, 979.0]
 robot_pos = (0, 0)
 orig_robot_pos = copy.copy(robot_pos)
 
@@ -63,7 +63,7 @@ go_back_e = False
 do_skip_e  = False
 do_skip_a  = False
 do_restart = False
-show_sub   = False
+show_sub   = 0
 
 loop_bool = True
 
@@ -92,12 +92,8 @@ while loop_bool:
         exp_exec = 1
         keys["e"] = False
     if keys["n"] == True:
-        print("Skipping current algorithm.")
-        if exp_exec == 2:
-            do_skip_e = True
-            exp_exec = 1
-        else:
-            do_skip_a = True
+        print("Switching algorithm.")
+        do_skip_a = True
         keys["n"] = False
     if keys["b"] == True:
         if exp_count < len(history_e):
@@ -110,11 +106,9 @@ while loop_bool:
         keys["r"] = False
     if keys["t"] == True:
         if exp_exec == 2:
-            if show_sub:
-                print("Show subtargets.")
-            if not show_sub:
-                print("Hide subtargets.")
-            show_sub = not show_sub
+            show_sub += 1
+            if show_sub > 3:
+                show_sub = 0
         keys["t"] = False
     if keys["escape"] == True:
         sys.exit()
@@ -126,7 +120,10 @@ while loop_bool:
         target    = copy.copy(orig_target)
         robot_pos = (0, 0)
     if do_skip_a:
-        exp_exec        = 2
+        if exp_exec == 2:
+            exp_exec = 1
+        else:
+            exp_exec = 2
         obstacles       = copy.copy(orig_obstacles)
         target          = copy.copy(orig_target)
         robot_pos       = copy.copy(orig_robot_pos)
@@ -186,6 +183,7 @@ while loop_bool:
     # BISEC
     if exp_exec == 2:
         (gait, path) = B.get_gait(robot_pos, target, obstacles, 0, ax, show_sub)
+        ax.plot([robot_pos[0], target[0]],[robot_pos[1], target[1]], c='black')
 
     # simulate the gait
     if not pause and not do_skip_a:
