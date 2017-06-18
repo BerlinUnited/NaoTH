@@ -14,7 +14,7 @@ public:
   void fitPoints(Eigen::VectorXd x,  Eigen::VectorXd y);
 
   //Ellipse: ax^2+bxy+cy^2+dx+fy+g=0
-  float params[5];
+  double params[5];
 };
 
 #endif // ELLIPSE_H
