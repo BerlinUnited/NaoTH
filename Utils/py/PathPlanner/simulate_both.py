@@ -55,7 +55,7 @@ all_robot_pos   = []
 pause = False
 
 exp_count = 0
-exp_exec  = 1
+algorithm  = 1
 
 history_e = []
 go_back_e = False
@@ -89,7 +89,7 @@ while loop_bool:
     if keys["e"] == True:
         print("Skipping current experiment.")
         do_skip_e = True
-        exp_exec = 1
+        #algorithm = 1
         keys["e"] = False
     if keys["n"] == True:
         print("Switching algorithm.")
@@ -105,7 +105,7 @@ while loop_bool:
         do_restart = True
         keys["r"] = False
     if keys["t"] == True:
-        if exp_exec == 2:
+        if algorithm == 2:
             show_sub += 1
             if show_sub > 3:
                 show_sub = 0
@@ -114,16 +114,16 @@ while loop_bool:
         sys.exit()
 
     # switch algorithm
-    if np.absolute(robot_pos[0] - orig_target[0]) < 1 and np.absolute(robot_pos[1] - orig_target[1]) < 1 and exp_exec < 2:
-        exp_exec += 1
+    if np.absolute(robot_pos[0] - orig_target[0]) < 1 and np.absolute(robot_pos[1] - orig_target[1]) < 1 and algorithm < 2:
+        algorithm += 1
         obstacles = copy.copy(orig_obstacles)
         target    = copy.copy(orig_target)
         robot_pos = (0, 0)
     if do_skip_a:
-        if exp_exec == 2:
-            exp_exec = 1
+        if algorithm == 2:
+            algorithm = 1
         else:
-            exp_exec = 2
+            algorithm = 2
         obstacles       = copy.copy(orig_obstacles)
         target          = copy.copy(orig_target)
         robot_pos       = copy.copy(orig_robot_pos)
@@ -138,7 +138,7 @@ while loop_bool:
         actual_path_LPG = [(0, 0)]
         do_restart = False
     # save experiment and start next
-    if np.absolute(robot_pos[0] - orig_target[0]) < 1 and np.absolute(robot_pos[1] - orig_target[1]) < 1 and exp_exec == 2 or do_skip_e:
+    if np.absolute(robot_pos[0] - orig_target[0]) < 1 and np.absolute(robot_pos[1] - orig_target[1]) < 1 and algorithm == 2 or do_skip_e:
         if not do_skip_e:
             if len(argv) == 3:
                 loop_bool = eval('exp_count < max_exp')
@@ -146,7 +146,8 @@ while loop_bool:
                     sys.exit()
 
             exp_count += 1
-            exp_exec   = 1
+            if not do_skip_e:
+                algorithm  = 1
             print("Experiment " + str(exp_count) + ".")
 
             if exp_count > 1 and len(argv) > 1:
@@ -166,13 +167,13 @@ while loop_bool:
     LPG.draw_field(ax)
 
     # draw obstacles
-    if exp_exec == 1:
+    if algorithm == 1:
         LPG.draw_obstacles(ax, robot_pos, orig_obstacles)
-    if exp_exec == 2:
+    if algorithm == 2:
         B.draw_obstacles(ax, orig_obstacles)
 
     # LPG
-    if exp_exec == 1:
+    if algorithm == 1:
         waypoints = LPG.compute_waypoints(target, obstacles, rot, rot_a)
         LPG.draw_waypoints(ax, waypoints, robot_pos, rot)
 
@@ -181,13 +182,13 @@ while loop_bool:
         gait = LPG.compute_gait(waypoints, target, rot)
 
     # BISEC
-    if exp_exec == 2:
+    if algorithm == 2:
         (gait, path) = B.get_gait(robot_pos, target, obstacles, 0, ax, show_sub)
         ax.plot([robot_pos[0], target[0]],[robot_pos[1], target[1]], c='black')
 
     # simulate the gait
     if not pause and not do_skip_a:
-        gait, target, robot_pos, rot, rot_a, actual_path_B, actual_path_LPG, obstacles = sim.simulate(gait, target, robot_pos, rot, rot_a, actual_path_B, actual_path_LPG, obstacles, exp_exec)
+        gait, target, robot_pos, rot, rot_a, actual_path_B, actual_path_LPG, obstacles = sim.simulate(gait, target, robot_pos, rot, rot_a, actual_path_B, actual_path_LPG, obstacles, algorithm)
 
     # draw actual path
     sim.draw_path(actual_path_LPG, actual_path_B, orig_robot_pos, ax)
