@@ -14,10 +14,11 @@ import select
 from sys import argv
 import os.path
 import sim
+import naiv as N
 
 file = sim.open_file(argv)
 
-keys = {"p": False, "d": False, "e": False, "n": False, "b": False, "r": False, "t": False, "escape": False}
+keys = {"p": False, "d": False, "e": False, "n": False, "r": False, "t": False, "escape": False}
 def key_pressed(event):
     keys[str(event.key)] = True
 def key_released(event):
@@ -32,8 +33,8 @@ minimal_cell   = 100
 angular_part   = 16
 parameter_s = 1
 
-obstacles = [(2561.506295763076, 89.22548767969283, 300), (-3229.8882816473783, 745.2658623693042, 300), (1621.6679149151987, 1067.2159754595705, 300), (4415.865864561594, 2031.630074230553, 300), (794.771189996065, 859.7827650240301, 300), (2055.1103851468215, -2839.405978352935, 300), (4175.285816609758, 533.516366558637, 300), (-1480.9322167897922, -2046.4255889838516, 300), (-2891.519028084903, -1126.5300529647893, 300)]
-target    = [2291.0, 979.0]
+obstacles = []#[(2561.506295763076, 89.22548767969283, 300), (-3229.8882816473783, 745.2658623693042, 300), (1621.6679149151987, 1067.2159754595705, 300), (4415.865864561594, 2031.630074230553, 300), (794.771189996065, 859.7827650240301, 300), (2055.1103851468215, -2839.405978352935, 300), (4175.285816609758, 533.516366558637, 300), (-1480.9322167897922, -2046.4255889838516, 300), (-2891.519028084903, -1126.5300529647893, 300)]
+target    = [0, 0]#[2291.0, 979.0]
 robot_pos = (0, 0)
 orig_robot_pos = copy.copy(robot_pos)
 
@@ -63,7 +64,7 @@ go_back_e = False
 do_skip_e  = False
 do_skip_a  = False
 do_restart = False
-show_sub   = 0
+show_sub   = False
 
 loop_bool = True
 
@@ -86,29 +87,22 @@ while loop_bool:
         print("Experiment " + str(exp_count) + ".")
         print orig_target, orig_obstacles
         keys["d"] = False
-    if keys["e"] == True:
-        print("Skipping current experiment.")
-        do_skip_e = True
-        #algorithm = 1
-        keys["e"] = False
-    if keys["n"] == True:
-        print("Switching algorithm.")
-        do_skip_a = True
-        keys["n"] = False
-    if keys["b"] == True:
-        if exp_count < len(history_e):
-            print("Going back in history.")
-            go_back_e = True
-        keys["b"] = False
-    if keys["r"] == True:
-        print("Restarting experiment.")
-        do_restart = True
-        keys["r"] = False
+    if len(argv) <= 1:
+        if keys["e"] == True:
+            print("Skipping current experiment.")
+            do_skip_e = True
+            #algorithm = 1
+            keys["e"] = False
+        if keys["n"] == True:
+            print("Switching algorithm.")
+            do_skip_a = True
+            keys["n"] = False
+        if keys["r"] == True:
+            print("Restarting experiment.")
+            do_restart = True
+            keys["r"] = False
     if keys["t"] == True:
-        if algorithm == 2:
-            show_sub += 1
-            if show_sub > 3:
-                show_sub = 0
+        show_sub = not show_sub
         keys["t"] = False
     if keys["escape"] == True:
         sys.exit()
@@ -153,7 +147,7 @@ while loop_bool:
             if exp_count > 1 and len(argv) > 1:
                 file.write(str(actual_path_LPG) + ", " + str(obstacles) + ", " + str(target) + ", " + str(robot_pos))
                 file.write("\n")
-                file.write(str(actual_path_B) + ", " + str(obstacles) + ", " + str(target) + ", " + str(robot_pos) + ", " + str(robot_radius))
+                file.write(str(actual_path_B) + ", " + str(obstacles) + ", " + str(target) + ", " + str(robot_pos) + ", " + str(B.robot_radius))
                 file.write("\n")
 
         robot_pos, orig_robot_pos, target, orig_target, obstacles, orig_obstacles, waypoints, orig_waypoints,actual_path_B, actual_path_LPG = sim.new_experiment()
@@ -164,7 +158,7 @@ while loop_bool:
             history_e.append((orig_target, orig_obstacles, orig_robot_pos))
 
     # plot field
-    LPG.draw_field(ax)
+    sim.draw_field(ax)
 
     # draw obstacles
     if algorithm == 1:
