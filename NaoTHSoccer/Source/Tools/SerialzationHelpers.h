@@ -18,15 +18,15 @@ namespace SerialzationHelpers
   template<typename I, class O>
   void toMessage(const EdgelT<I>& edgel, O& msg)
   {
-    DataConversion::toMessage(edgel.point, *msg.mutable_point());
-    DataConversion::toMessage(edgel.direction, *msg.mutable_direction());
+    naoth::DataConversion::toMessage(edgel.point, *msg.mutable_point());
+    naoth::DataConversion::toMessage(edgel.direction, *msg.mutable_direction());
   }
 
   template<typename I, class O>
   void fromMessage(const O& msg, EdgelT<I>& edgel)
   {
-    DataConversion::fromMessage(msg.point(), edgel.point);
-    DataConversion::fromMessage(msg.direction(), edgel.direction);
+    naoth::DataConversion::fromMessage(msg.point(), edgel.point);
+    naoth::DataConversion::fromMessage(msg.direction(), edgel.direction);
   }
 
   // vectors
