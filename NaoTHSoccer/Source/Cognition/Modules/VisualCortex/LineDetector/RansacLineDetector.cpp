@@ -38,11 +38,15 @@ void RansacLineDetector::execute()
   // todo: can this be optimized?
   //outliers.assign(getLineGraphPercept().edgels.begin(), getLineGraphPercept().edgels.end());
   outliers.resize(getLineGraphPercept().edgels.size());
+
   for(size_t i = 0; i < getLineGraphPercept().edgels.size(); ++i) {
     outliers[i] = i;
   }
 
-  Circle circResult;
+  std::cout << "EDGELS: " << getLineGraphPercept().edgels.size() << "#" << std::endl;
+
+  //Circle circResult;
+  Ellipse circResult;
 
   for(int i = 0; i < 11; ++i)
   {
@@ -55,13 +59,11 @@ void RansacLineDetector::execute()
     } 
     else {
       // Check for circle
-      ransacCirc(circResult);
+      //ransacCirc(circResult);
+      ransacEllipse(circResult);
       break;
     }
   }
-
-  ransacEllipse();
-  
 
   DEBUG_REQUEST("Vision:RansacLineDetector:draw_lines_field",
     FIELD_DRAWING_CONTEXT;
@@ -73,7 +75,12 @@ void RansacLineDetector::execute()
         line.lineOnField.begin().x, line.lineOnField.begin().y,
         line.lineOnField.end().x, line.lineOnField.end().y);
 
-      CIRCLE(circResult.m.x, circResult.m.y, circResult.radius);
+      double c[2];
+      circResult.getCenter(c);
+
+      PEN("009900", 50);
+
+      CIRCLE(c[0], c[1], 30);
     }
   );
 
@@ -284,14 +291,73 @@ int RansacLineDetector::ransacCirc(Circle& result)
   return bestInlier;
 }
 
-int RansacLineDetector::ransacEllipse()
+int RansacLineDetector::ransacEllipse(Ellipse& result)
 {
-  Ellipse ellipse;
 
-  Eigen::VectorXd x(5);
-  Eigen::VectorXd y(5);
-  x << -20.1, 2.5, 3, 4, 5;
-  y << 1, 2, -1, 2, 0.5;
+  if(outliers.size() <= 5) {
+    return 0;
+  }
+  //int bestInlier = 0;
 
-  ellipse.fitPoints(x, y);
+  Ellipse bestModel;
+  int bestInlier = 0;
+  //double bestInlierError = 0;
+
+  for(int i = 0; i < params.circle_iterations; ++i)
+  {
+    // create model
+    Ellipse ellipse;
+
+    double x[5], y[5];
+    for(int t=0; t<5; t++) {
+      size_t r = swap_random(outliers, (int) outliers.size()-(t+1));
+      const Edgel& e = getLineGraphPercept().edgels[r];
+
+      x[t] = e.point.x;
+      y[t] = e.point.y;
+    }
+    //double x[] = {-20.1, 2.5, 3, 4, 5};
+    //double y[] = { 1, 2, -1, 2, 0.5};
+    ellipse.fitPoints(x,y,5);
+
+    // check model
+    //double inlierError = 0;
+    int inlier = 0;
+
+    for(size_t i: outliers)
+    {
+      const Edgel& e = getLineGraphPercept().edgels[i];
+      double d = ellipse.error_to(e.point.x, e.point.y);
+
+      if(d < params.circle_outlierThreshold) {
+        ++inlier;
+        continue;
+      }
+    }
+
+    if(inlier >= params.circle_inlierMin && (inlier > bestInlier)) {
+      bestModel = ellipse;
+      bestInlier = inlier;
+    }
+
+    // update the outliers
+    // todo: make it faster
+    std::vector<size_t> newOutliers;
+    newOutliers.reserve(outliers.size() - bestInlier + 1);
+
+    for(size_t i: outliers)
+    {
+      const Edgel& e = getLineGraphPercept().edgels[i];
+      double d = bestModel.error_to(e.point.x, e.point.y);
+
+      if(d < params.circle_outlierThreshold) {
+        newOutliers.push_back(i);
+      }
+    }
+    outliers = newOutliers;
+
+    // return results
+    result = bestModel;
+    return bestInlier;
+  }
 }

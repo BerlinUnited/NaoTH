@@ -20,8 +20,6 @@
 
 #include "Cognition/Modules/VisualCortex/LineDetector/ellipse.h"
 
-#include <Tools/naoth_eigen.h>
-
 BEGIN_DECLARE_MODULE(RansacLineDetector)
   PROVIDE(DebugRequest)
   PROVIDE(DebugModify)
@@ -69,7 +67,7 @@ private:
 
   int ransacCirc(Circle& circResult);
 
-  int ransacEllipse();
+  int ransacEllipse(Ellipse& result);
 
 //private:
   class Parameters: public ParameterList
@@ -117,6 +115,14 @@ private:
     }
 
     return s;
+  }
+
+  //swaps v[i] with a random v[x], x in [0:i]
+  size_t swap_random(std::vector<size_t> &v, int i) {
+    int r = Math::random(i+1);
+    std::swap(v[r], v[i]);
+
+    return v[i];
   }
 };
 
