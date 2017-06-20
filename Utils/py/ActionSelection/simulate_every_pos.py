@@ -39,7 +39,7 @@ def main(num_particles, num_reps, x_step, y_step, rotation_step):
     for rot in range(0, 360, rotation_step):
         for x in range(int(-field.x_field_length*0.5)+x_step, int(field.x_field_length*0.5), 2*x_step):
             for y in range(int(-field.y_field_length*0.5)+y_step, int(field.y_field_length*0.5), 2*y_step):
-                state.update_pos(m2d.Vector2(x, y), rotation=rot)
+                state.update_pos(m2d.Vector2(x, y), rotation=math.radians(rot))
                 # Do this multiple times and write the decisions as a histogram
                 decision_histogramm = [0, 0, 0, 0]  # ordinal scale -> define own metric in evaluation script
                 for num_simulations in range(0, num_reps):
@@ -65,9 +65,9 @@ if __name__ == "__main__":
     )
     parser.add_argument("-p", "--num_particles", help="input the number of particles used for on action", type=int, default=30)
     parser.add_argument("-r", "--num_reps", help="input the number of repeats per position", type=int, default=1)
-    parser.add_argument("-x", "--res_x", help="input the step size for rotation", type=int, default=100)
-    parser.add_argument("-y", "--res_y", help="input the step size for rotation", type=int, default=100)
-    parser.add_argument("-rot", "--res_rot", help="input the step size for rotation", type=int, default=20)
+    parser.add_argument("-x", "--res_x", help="input the step size for rotation", type=int, default=200)
+    parser.add_argument("-y", "--res_y", help="input the step size for rotation", type=int, default=200)
+    parser.add_argument("-rot", "--res_rot", help="input the step size for rotation", type=int, default=30)
 
     args = parser.parse_args()
 

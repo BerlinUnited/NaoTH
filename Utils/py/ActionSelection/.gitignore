@@ -4,5 +4,7 @@ statistics/*
 *.txt
 
 # ignore generated data
+data/*/*.txt
 data/*.txt
+data/*/*.pickle
 data/*.pickle
