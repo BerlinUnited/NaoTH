@@ -5,3 +5,4 @@ statistics/*
 
 # ignore generated data
 data/*.txt
+data/*.pickle
