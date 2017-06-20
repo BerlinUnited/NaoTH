@@ -1,23 +1,24 @@
 clear all;
-%digitDatasetPath = fullfile(matlabroot,'toolbox','nnet','nndemos', ...
-%        'nndatasets','DigitDataset');
-digitDatasetPath = 'D:\RoboCup\OtherRepos\MatlabCNN\image_set01';
+
+digitDatasetPath = '..\data\16x16_bw\2016-06-28-patches-play-no-ball';
 digitData = imageDatastore(digitDatasetPath, ...
         'IncludeSubfolders',true,'LabelSource','foldernames');
-    
+
+% show sample patch data
 figure;
-perm = randperm(10000,20);
+perm = randperm(length(digitData.Files),20);
 for i = 1:20
     subplot(4,5,i);
     imshow(digitData.Files{perm(i)});
 end
-
-CountLabel = digitData.countEachLabel;
-
-img = readimage(digitData,1);
-size(img)
-
-trainingNumFiles = 750;
+%%
+% The labels for each patch is automatically determined by the name of the
+% subfolder from digitDatasetPath the image is located at
+countLabel = digitData.countEachLabel;
+disp(countLabel)
+numBallPatches = countLabel.Count(1)
+%%
+trainingNumFiles = round(numBallPatches*0.75);
 rng(1) % For reproducibility
 [trainDigitData,testDigitData] = splitEachLabel(digitData, ...
 				trainingNumFiles,'randomize');
@@ -44,4 +45,4 @@ convnet = trainNetwork(trainDigitData,layers,options);
 digitData_noball = imageDatastore('D:\RoboCup\OtherRepos\MatlabCNN\image_set01\noball', ...
         'IncludeSubfolders',true,'LabelSource','foldernames');
  
-YTest = classify(convnet,digitData_noball)
+YTest = classify(convnet,digitData_noball);

@@ -1,5 +1,13 @@
-
 createConvolutionCode.m generates a cpp file which calculates a convolution for ball.png with a predefined filter
+
+For Training:
+use the 01_set_16x16.tar file from
+/vol/repl261-vol4/naoth/logs/BallDetection/2016-ball-detection
+
+It contains labeled 16x16 patches sorted according to the logfile they are from.
+
+copy the contents of this archiv to data - for testing run trainTest01.m file 
+
 
 TODO
 - describe where trainingsdata can be found
