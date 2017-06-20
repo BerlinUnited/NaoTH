@@ -8,3 +8,7 @@ data/*/*.txt
 data/*.txt
 data/*/*.pickle
 data/*.pickle
+experimental/*
+*.pickle
+*.txt
+*.png
