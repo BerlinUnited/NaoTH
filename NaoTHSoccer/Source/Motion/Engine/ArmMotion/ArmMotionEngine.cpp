@@ -37,7 +37,6 @@ void ArmMotionEngine::execute()
 
   switch(getMotionRequest().armMotionRequest.id)
   {
-
     case ArmMotionRequest::set_left_shoulder_position:
       setLeftShoulderPosition(getMotionRequest().armMotionRequest.lShoulderPosition.x,
                               getMotionRequest().armMotionRequest.lShoulderPosition.y);
@@ -102,11 +101,11 @@ void ArmMotionEngine::execute()
 
     case ArmMotionRequest::arms_back: armsOnBack(); break;
     case ArmMotionRequest::arms_down: armsDown(); break;
+    case ArmMotionRequest::arms_synchronised_with_walk: armsSynchronisedWithWalk(); break;
 
     case ArmMotionRequest::arms_none: // do nothing
     default: break;
   }//end switch
-
 
   // copy the requested state
   theMotorJointDataOld = getMotorJointData();
@@ -331,7 +330,6 @@ void ArmMotionEngine::hold()
           getSensorJointData().position[JointData::LElbowRoll];
 }
 
-
 bool ArmMotionEngine::armsDown()
 {
   static double target[JointData::numOfJoint];
@@ -369,7 +367,6 @@ bool ArmMotionEngine::armsDown()
 
   return result;
 }//end armsDown
-
 
 bool ArmMotionEngine::armsOnBack()
 {
@@ -412,6 +409,9 @@ bool ArmMotionEngine::armsOnBack()
   return result;
 }//end armsOnBack
 
+bool ArmMotionEngine::armsSynchronisedWithWalk(){
+
+}
 
 bool ArmMotionEngine::moveToJoints(const double (&target)[JointData::numOfJoint])
 {

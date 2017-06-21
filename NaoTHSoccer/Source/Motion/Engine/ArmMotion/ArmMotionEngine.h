@@ -117,7 +117,7 @@ private:
 
   bool armsDown();
   bool armsOnBack();
-
+  bool armsSynchronisedWithWalk();
 
   bool moveToJoints(const double (&position)[JointData::numOfJoint]);
 
