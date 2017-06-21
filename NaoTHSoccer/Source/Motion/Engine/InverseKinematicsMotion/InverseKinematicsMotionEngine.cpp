@@ -777,71 +777,6 @@ double InverseKinematicsMotionEngine::solveHandsIK(
   return error;
 }//end solveHandsIK
 
-
-void InverseKinematicsMotionEngine::autoArms(
-  const RobotInfo& theRobotInfo,
-  const HipFeetPose& /* pose */,
-  double (&position)[JointData::numOfJoint])
-{
-  double target[JointData::LElbowYaw + 1];
-  target[JointData::RElbowYaw] = Math::fromDegrees(90);
-  target[JointData::LElbowYaw] = Math::fromDegrees(-90);
-  target[JointData::RShoulderRoll] = Math::fromDegrees(-10);
-  target[JointData::LShoulderRoll] = Math::fromDegrees(10);
-  target[JointData::RShoulderPitch] = Math::fromDegrees(100);
-  target[JointData::LShoulderPitch] = Math::fromDegrees(100);
-  target[JointData::RElbowRoll] = Math::fromDegrees(30);
-  target[JointData::LElbowRoll] = Math::fromDegrees(-30);
-
-  // move the arm according to motion ----------------
-  /*double shouldPitchRate = 0.5;
-  double shouldRollRate = 0.5;
-  double elbowRollRate = 0.5;
-  Pose3D lFoot = pose.hip.local(pose.feet.left);
-  Pose3D rFoot = pose.hip.local(pose.feet.right);
-  target[JointData::RShoulderPitch] -= (Math::fromDegrees(lFoot.translation.x) * shouldPitchRate);
-  target[JointData::RShoulderRoll] -= (Math::fromDegrees(lFoot.translation.y - NaoInfo::HipOffsetY) * shouldRollRate);
-  target[JointData::RElbowRoll] += (Math::fromDegrees(lFoot.translation.x) * elbowRollRate);
-  target[JointData::LShoulderPitch] -= (Math::fromDegrees(rFoot.translation.x) * shouldPitchRate);
-  target[JointData::LShoulderRoll] -= (Math::fromDegrees(rFoot.translation.y + NaoInfo::HipOffsetY) * shouldRollRate);
-  target[JointData::LElbowRoll] -= (Math::fromDegrees(rFoot.translation.x) * elbowRollRate);*/
-  //----------------------------------------------
-
-  // move the arm accoring to interial sensor -------------
-  /*
-  if (getParameters().arm.alwaysEnabled
-    || (theBlackBoard.theMotionStatus.currentMotion == MotionRequestID::walk && getParameters().walk.useArm))
-  {
-    const InertialPercept& isd = theBlackBoard.theInertialPercept;
-    double shoulderPitch = isd.get(InertialSensorData::Y) * getParameters().arm.shoulderPitchInterialSensorRate;
-    double shoulderRoll = isd.get(InertialSensorData::X) * getParameters().arm.shoulderRollInterialSensorRate;
-    target[JointData::RShoulderPitch] += shoulderPitch;
-    target[JointData::LShoulderPitch] += shoulderPitch;
-    target[JointData::RShoulderRoll] += shoulderRoll;
-    target[JointData::LShoulderRoll] += shoulderRoll;
-  }*/
-  //----------------------------------------------
-
-  // make sure the arms do not collide legs --------------
-  target[JointData::RShoulderRoll] = std::min(target[JointData::RShoulderRoll], position[JointData::RHipRoll]);
-  target[JointData::LShoulderRoll] = std::max(target[JointData::LShoulderRoll], position[JointData::LHipRoll]);
-  //---------------------------------------------
-
-  // limit the joint range to avoid collision --------------
-
-  //---------------------------------------------
-
-  // limit the max speed -----------------------------
-  double max_speed = Math::fromDegrees(getParameters().arm.maxSpeed) * theRobotInfo.getBasicTimeStepInSecond();
-  for (int i = JointData::RShoulderRoll; i <= JointData::LElbowYaw; i++)
-  {
-    double s = target[i] - position[i];
-    s = Math::clamp(s, -max_speed, max_speed);
-    position[i] += s;
-  }
-  //----------------------------------------------
-}//end autoArms
-
 void InverseKinematicsMotionEngine::armsOnBack(
   const RobotInfo& theRobotInfo,
   const HipFeetPose& /* pose */,
@@ -965,18 +900,8 @@ void InverseKinematicsMotionEngine::gotoArms(
   double (&position)[JointData::numOfJoint])
 {
   double target[JointData::LElbowYaw + 1];
-  //    target[JointData::RShoulderRoll] = 0;
-  //    target[JointData::LShoulderRoll] = 0;
-  //    target[JointData::RShoulderPitch] = Math::fromDegrees(120);
-  //    target[JointData::LShoulderPitch] = Math::fromDegrees(120);
-  //    target[JointData::RElbowRoll] = Math::fromDegrees(90);
-  //    target[JointData::LElbowRoll] = Math::fromDegrees(-90);
   target[JointData::RElbowYaw] = Math::fromDegrees(90);
   target[JointData::LElbowYaw] = Math::fromDegrees(-90);
-
-  // experiment //////////////////////////
-
-  // move the arm according to motion ----------------
   target[JointData::RShoulderRoll] = Math::fromDegrees(-10);
   target[JointData::LShoulderRoll] = Math::fromDegrees(10);
   target[JointData::RShoulderPitch] = Math::fromDegrees(100);
@@ -984,26 +909,28 @@ void InverseKinematicsMotionEngine::gotoArms(
   target[JointData::RElbowRoll] = Math::fromDegrees(30);
   target[JointData::LElbowRoll] = Math::fromDegrees(-30);
 
-  if ( (getParameters().arm.kickEnabled && theMotionStatus.currentMotion == motion::kick)
-    || (getParameters().arm.walkEnabled && theMotionStatus.currentMotion == motion::walk))
-  {
-  double shouldPitchRate = 0.5;
-  double shouldRollRate = 0.5;
-  double elbowRollRate = 0.5;
-  MODIFY("Motion:ShoulderPitchRate", shouldPitchRate);
-  MODIFY("Motion:ShoulderRollRate", shouldRollRate);
-  MODIFY("Motion:ElbowRollRate", elbowRollRate);
-  InverseKinematic::HipFeetPose localizedPose(currentPose);
-  localizedPose.localInHip();
+  // move the arm according to motion ----------------
 
-  Pose3D& lFoot = localizedPose.feet.left;
-  Pose3D& rFoot = localizedPose.feet.right;
-  target[JointData::RShoulderPitch] -= (Math::fromDegrees(lFoot.translation.x) * shouldPitchRate);
-  target[JointData::RShoulderRoll] -= (Math::fromDegrees(lFoot.translation.y - NaoInfo::HipOffsetY) * shouldRollRate);
-  target[JointData::RElbowRoll] += (Math::fromDegrees(lFoot.translation.x) * elbowRollRate);
-  target[JointData::LShoulderPitch] -= (Math::fromDegrees(rFoot.translation.x) * shouldPitchRate);
-  target[JointData::LShoulderRoll] -= (Math::fromDegrees(rFoot.translation.y + NaoInfo::HipOffsetY) * shouldRollRate);
-  target[JointData::LElbowRoll] -= (Math::fromDegrees(rFoot.translation.x) * elbowRollRate);
+  if ( (getParameters().arm.kickEnabled && theMotionStatus.currentMotion == motion::kick)
+       || (getParameters().arm.walkEnabled && theMotionStatus.currentMotion == motion::walk))
+  {
+      double shouldPitchRate = 0.5;
+      double shouldRollRate = 0.5;
+      double elbowRollRate = 0.5;
+      MODIFY("Motion:ShoulderPitchRate", shouldPitchRate);
+      MODIFY("Motion:ShoulderRollRate", shouldRollRate);
+      MODIFY("Motion:ElbowRollRate", elbowRollRate);
+      InverseKinematic::HipFeetPose localizedPose(currentPose);
+      localizedPose.localInHip();
+
+      Pose3D& lFoot = localizedPose.feet.left;
+      Pose3D& rFoot = localizedPose.feet.right;
+      target[JointData::RShoulderPitch] -= (Math::fromDegrees(lFoot.translation.x) * shouldPitchRate);
+      target[JointData::RShoulderRoll] -= (Math::fromDegrees(lFoot.translation.y - NaoInfo::HipOffsetY) * shouldRollRate);
+      target[JointData::RElbowRoll] += (Math::fromDegrees(lFoot.translation.x) * elbowRollRate);
+      target[JointData::LShoulderPitch] -= (Math::fromDegrees(rFoot.translation.x) * shouldPitchRate);
+      target[JointData::LShoulderRoll] -= (Math::fromDegrees(rFoot.translation.y + NaoInfo::HipOffsetY) * shouldRollRate);
+      target[JointData::LElbowRoll] -= (Math::fromDegrees(rFoot.translation.x) * elbowRollRate);
   }
   //----------------------------------------------
 
@@ -1012,7 +939,7 @@ void InverseKinematicsMotionEngine::gotoArms(
     || (theMotionStatus.currentMotion == motion::walk && getParameters().walk.general.useArm))
   {
     // TODO: InertialSensorData may be better
-    const InertialModel& isd = theInertialModel;
+    const InertialModel& isd = theInertialModel; //theInertialPercept
     double shoulderPitch = isd.orientation.y * getParameters().arm.shoulderPitchInterialSensorRate;
     double shoulderRoll = isd.orientation.x * getParameters().arm.shoulderRollInterialSensorRate;
     target[JointData::RShoulderPitch] += shoulderPitch;

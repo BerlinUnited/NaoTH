@@ -241,11 +241,6 @@ public:
     const Pose3D& rightHand,
     double (&position)[naoth::JointData::numOfJoint]);
 
-  void autoArms(
-    const naoth::RobotInfo& theRobotInfo,
-    const InverseKinematic::HipFeetPose& pose, 
-    double (&position)[naoth::JointData::numOfJoint]);
-
   Vector3<double> sensorCoMIn(
     const KinematicChainSensor& theKinematicChain,
     KinematicChain::LinkID link) const;
