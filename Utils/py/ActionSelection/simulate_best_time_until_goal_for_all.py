@@ -1,13 +1,9 @@
 import math
-import numpy as np
 from matplotlib import pyplot as plt
-from matplotlib.patches import Circle
-from tools import action as a
-from tools import Simulation as Sim
 from naoth import math2d as m2d
 from tools import tools
 from tools import field_info as field
-from simulate_best_angle import main as single
+from simulate_best_angle import main as simulate_best_angle
 
 """
     This file simulates the  best angle for all positions on the field by simulation all the steps necessary to 
@@ -23,7 +19,7 @@ class State:
     def __init__(self):
         self.pose = m2d.Pose2D()
         self.pose.translation = m2d.Vector2(-4000, -2000)
-        self.pose.rotation = math.radians(-120)
+        self.pose.rotation = math.radians(0)
         self.rotation_vel = 60  # degrees per sec
         self.walking_vel = 200  # mm per sec
         self.ball_position = m2d.Vector2(100.0, 0.0)
@@ -32,31 +28,28 @@ class State:
 
     def update_pos(self, glob_pos, rotation):
         self.pose.translation = glob_pos
-        self.pose.rotation = rotation
+        self.pose.rotation = math.radians(rotation)
 
 
 def main():
     state = State()
 
-    # run for the whole field
-    x_pos = range(-5200, 5300, 250)  # range(-5200, 5300, 250)
-    y_pos = range(-3700, 3800, 250)  # range(-3700, 3800, 250)
-    xx, yy = np.meshgrid(x_pos, y_pos)
-    vx = np.zeros(xx.shape)
-    vy = np.zeros(xx.shape)
-    f = np.zeros(xx.shape)
-    for ix in range(0, len(x_pos)):
-        for iy in range(0, len(y_pos)):
-            time, angle = single(float(x_pos[ix]), float(y_pos[iy]), state)
-
-            v = m2d.Vector2(100.0, 0.0).rotate(math.radians(angle))
-            vx[iy, ix] = v.x
-            vy[iy, ix] = v.y
+    cell_width = 100
+    rotation_step = 10
 
     plt.figure()
+    axes = plt.gca()
     tools.draw_field()
-    Q = plt.quiver(xx, yy, vx, vy)
-    plt.show()
+
+    # run for the whole field
+    for x in range(int(-field.x_length * 0.5) + cell_width, int(field.x_length * 0.5), 2 * cell_width):
+        for y in range(int(-field.y_length * 0.5) + cell_width, int(field.y_length * 0.5), 2 * cell_width):
+            time, angle = simulate_best_angle(x, y, state, rotation_step)
+            v = m2d.Vector2(100.0, 0.0).rotate(math.radians(angle))
+            axes.arrow(x, y, v.x, v.y, head_width=100, head_length=100, fc='k', ec='k')
+
+    # plt.show()
+    plt.savefig('goal_time.png')
 
 
 if __name__ == "__main__":

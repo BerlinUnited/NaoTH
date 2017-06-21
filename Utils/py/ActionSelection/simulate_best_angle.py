@@ -10,14 +10,13 @@ from tools import raw_attack_direction_provider as attack_dir
     This file simulates the best angle for a given robot position on the field by simulation all the steps necessary to 
     score a goal and compares the time for each rotation. The rotation with the shortest time to goal is the best.
 """
-# TODO make this callable so that a script can execute this for all positions
 
 
 class State:
     def __init__(self):
         self.pose = m2d.Pose2D()
-        self.pose.translation = m2d.Vector2(-4000, -2000)
-        self.pose.rotation = math.radians(-120)
+        self.pose.translation = m2d.Vector2(2000, 0)
+        self.pose.rotation = math.radians(0)
         self.rotation_vel = 60  # degrees per sec
         self.walking_vel = 200  # mm per sec
         self.ball_position = m2d.Vector2(100.0, 0.0)
@@ -26,22 +25,26 @@ class State:
 
     def update_pos(self, glob_pos, rotation):
         self.pose.translation = glob_pos
-        self.pose.rotation = rotation
+        self.pose.rotation = math.radians(rotation)
 
 
-def main(x, y, s):
+def main(x, y, s, rotation_step):
 
-    no_action = a.Action("none", 0, 0, 0, 0)
-    kick_short = a.Action("kick_short", 780, 150, 8.454482265522328, 6.992268841997358)
-    sidekick_left = a.Action("sidekick_left", 750, 150, 86.170795364136380, 10.669170653645670)
-    sidekick_right = a.Action("sidekick_right", 750, 150, -89.657943335302260, 10.553726275058064)
+    start_x = x
+    start_y = y
+    s.update_pos(m2d.Vector2(start_x, start_y), rotation=0)
 
-    action_list = [no_action, kick_short, sidekick_left, sidekick_right]
+    # Only simulate kick_short -> robot_rotation == kick direction and we want to simulate the kick direction - how a kick in this direction is
+    # executed doesnt matter.
+    kick_short = a.Action("kick_short", 1080, 150, 0, 0)
 
-    # Todo: Maybe do several decision cycles(histogram of decisions) not just one to get rid of accidental decisions!!!
+    action_list = [kick_short]
+
+    # Todo: Several Simulations for given rotation -> instead of time use mean of times
     pos_total_time = sys.float_info.max
     best_rotation = 0
-    for rot in range(0, 360, 10):
+    # TODO stepsize can be a parameter
+    for rot in range(0, 360, rotation_step):
         # print("Start Rotation: " + str(rot))
         s.update_pos(m2d.Vector2(x, y), rotation=rot)
         num_kicks = 0
@@ -81,7 +84,7 @@ def main(x, y, s):
             # HACK: the real robot would shoot out
             elif not inside_field and not goal_scored:
 
-                print("Ball out at x: " + str(s.pose.translation.x) + " y: " + str(s.pose.translation.y) + " Rotation: " + str(s.pose.rotation))
+                # print("Ball out at x: " + str(s.pose.translation.x) + " y: " + str(s.pose.translation.y) + " Rotation: " + str(s.pose.rotation))
                 total_time += 10000
                 a.histogram[0] += 1
                 # TODO indicate in time 2D Plot that this position leads to a ball out
@@ -127,11 +130,11 @@ def main(x, y, s):
             pos_total_time = total_time
             best_rotation = rot
 
-    print("Shortest Time: " + str(pos_total_time) + " with global Rotation: " + str(best_rotation))
+    print("Shortest Time: " + str(pos_total_time) + " with global Rotation of robot: " + str(best_rotation) + " StartX " + str(start_x))
     return pos_total_time, best_rotation
 
 
 if __name__ == "__main__":
     state = State()
-
-    main(state.pose.translation.x, state.pose.translation.y, state)
+    rotation_step = 10
+    main(state.pose.translation.x, state.pose.translation.y, state, rotation_step)
