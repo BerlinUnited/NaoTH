@@ -50,6 +50,7 @@ steps     = []
 
 actual_path_LPG = [(0, 0)]
 actual_path_B   = [(0, 0)]
+actual_path_naiv = [(0, 0)]
 all_paths_B     = []
 all_robot_pos   = []
 
@@ -108,21 +109,21 @@ while loop_bool:
         sys.exit()
 
     # switch algorithm
-    if np.absolute(robot_pos[0] - orig_target[0]) < 1 and np.absolute(robot_pos[1] - orig_target[1]) < 1 and algorithm < 2:
+    if np.absolute(robot_pos[0] - orig_target[0]) < 1 and np.absolute(robot_pos[1] - orig_target[1]) < 1 and algorithm < 3:
         algorithm += 1
         obstacles = copy.copy(orig_obstacles)
         target    = copy.copy(orig_target)
         robot_pos = (0, 0)
     if do_skip_a:
-        if algorithm == 2:
+        algorithm += 1
+        if algorithm == 4:
             algorithm = 1
-        else:
-            algorithm = 2
         obstacles       = copy.copy(orig_obstacles)
         target          = copy.copy(orig_target)
         robot_pos       = copy.copy(orig_robot_pos)
         actual_path_LPG = [(0, 0)]
         actual_path_B   = [(0, 0)]
+        actual_path_naiv = [(0, 0)]
     # restart current experiment
     if do_restart:
         target          = copy.copy(orig_target)
@@ -130,9 +131,10 @@ while loop_bool:
         obstacles       = copy.copy(orig_obstacles)
         actual_path_B   = [(0, 0)]
         actual_path_LPG = [(0, 0)]
+        actual_path_naiv = [(0, 0)]
         do_restart = False
     # save experiment and start next
-    if np.absolute(robot_pos[0] - orig_target[0]) < 1 and np.absolute(robot_pos[1] - orig_target[1]) < 1 and algorithm == 2 or do_skip_e:
+    if np.absolute(robot_pos[0] - orig_target[0]) < 1 and np.absolute(robot_pos[1] - orig_target[1]) < 1 and algorithm == 3 or do_skip_e:
         if not do_skip_e:
             if len(argv) == 3:
                 loop_bool = eval('exp_count < max_exp')
@@ -141,7 +143,7 @@ while loop_bool:
 
             exp_count += 1
             if not do_skip_e:
-                algorithm  = 1
+                algorithm = 1
             print("Experiment " + str(exp_count) + ".")
 
             if exp_count > 1 and len(argv) > 1:
@@ -150,7 +152,7 @@ while loop_bool:
                 file.write(str(actual_path_B) + ", " + str(obstacles) + ", " + str(target) + ", " + str(robot_pos) + ", " + str(B.robot_radius))
                 file.write("\n")
 
-        robot_pos, orig_robot_pos, target, orig_target, obstacles, orig_obstacles, waypoints, orig_waypoints,actual_path_B, actual_path_LPG = sim.new_experiment()
+        robot_pos, orig_robot_pos, target, orig_target, obstacles, orig_obstacles, waypoints, orig_waypoints,actual_path_B, actual_path_LPG, actual_path_naiv = sim.new_experiment()
 
         # stupid experiment???
         do_skip_e = B.stupid_experiment(robot_pos, target, obstacles)
@@ -163,7 +165,7 @@ while loop_bool:
     # draw obstacles
     if algorithm == 1:
         LPG.draw_obstacles(ax, robot_pos, orig_obstacles)
-    if algorithm == 2:
+    if algorithm > 1:
         B.draw_obstacles(ax, orig_obstacles)
 
     # LPG
@@ -180,12 +182,16 @@ while loop_bool:
         (gait, path) = B.get_gait(robot_pos, target, obstacles, 0, ax, show_sub)
         ax.plot([robot_pos[0], target[0]],[robot_pos[1], target[1]], c='black')
 
+    # Naiv
+    if algorithm == 3:
+        gait = N.get_path(robot_pos, target, obstacles)
+
     # simulate the gait
     if not pause and not do_skip_a:
-        gait, target, robot_pos, rot, rot_a, actual_path_B, actual_path_LPG, obstacles = sim.simulate(gait, target, robot_pos, rot, rot_a, actual_path_B, actual_path_LPG, obstacles, algorithm)
+        gait, target, robot_pos, rot, rot_a, actual_path_B, actual_path_LPG, actual_path_naiv, obstacles = sim.simulate(gait, target, robot_pos, rot, rot_a, actual_path_B, actual_path_LPG, actual_path_naiv, obstacles, algorithm)
 
     # draw actual path
-    sim.draw_path(actual_path_LPG, actual_path_B, orig_robot_pos, ax)
+    sim.draw_path(actual_path_LPG, actual_path_B, actual_path_naiv, orig_robot_pos, ax)
 
     # draw target and robot
     sim.draw_tar_rob(orig_target, robot_pos, ax)

@@ -65,7 +65,7 @@ def has_collided(vec, obstacles):
     for k in obstacles:
         if dist(vec, k) <= k[2] + robot_radius:
             return True
-    return False\
+    return False
 
 def length_of_trajectory(t):
     length = 0
@@ -130,7 +130,6 @@ def compute_path_it(start, target, obstacles, depth, ax, sign, show_sub):
                 for l in range(0, len(tmp_waypoints1) - 1):
                     dist1 += length_of_trajectory((tmp_waypoints1[l], tmp_waypoints1[l+1]))
                     dist2 += length_of_trajectory((tmp_waypoints2[l], tmp_waypoints2[l+1]))
-                #if len(tmp_waypoints1) < len(tmp_waypoints2) and np.absolute(dist1) - np.absolute(dist2) < 1000:
                 if dist1 < dist2:
                     sub_target = sub_target1
                 else:
@@ -142,8 +141,6 @@ def compute_path_it(start, target, obstacles, depth, ax, sign, show_sub):
                 continue
 
             if show_sub and sub_target is not None:
-                #ax.plot(sub_target1[0], sub_target1[1], 'x', c='blue')
-                #ax.plot(sub_target2[0], sub_target2[1], 'x', c='white')
                 ax.plot(sub_target[0], sub_target[1], 'x', c='white')
 
 
