@@ -85,8 +85,8 @@ void LineGraphProvider::execute(CameraInfo::CameraID id)
     edgel.point = Vector2d(edgelLeft + edgelRight)*0.5;
     edgel.direction = (edgelRight - edgelLeft).normalize(); // is it correct?
 
-    const ScanLineEdgelPercept::EdgelPair& el = getScanLineEdgelPercept().pairs[edgelPair.left];
-    const ScanLineEdgelPercept::EdgelPair& er = getScanLineEdgelPercept().pairs[edgelPair.right];
+    //const ScanLineEdgelPercept::EdgelPair& el = getScanLineEdgelPercept().pairs[edgelPair.left];
+    //const ScanLineEdgelPercept::EdgelPair& er = getScanLineEdgelPercept().pairs[edgelPair.right];
 
     if(projectedWidthLeft > parameters.maximalProjectedLineWidth && projectedWidthRight > parameters.maximalProjectedLineWidth) {
       getLineGraphPercept().edgels.push_back(edgel);
@@ -225,7 +225,7 @@ void LineGraphProvider::execute(CameraInfo::CameraID id)
         //if(pointOnField.abs() < 2500) {
         if (edgelNeighbors[i].left != -1) {
           const int pairIdx = edgelNeighbors[i].left;
-          const ScanLineEdgelPercept::EdgelPair& el = getScanLineEdgelPercept().pairs[pairIdx];
+          //const ScanLineEdgelPercept::EdgelPair& el = getScanLineEdgelPercept().pairs[pairIdx];
           
           const double projectedWidthLeft = (edgelProjectionsBegin[pairIdx] - edgelProjectionsEnd[pairIdx]).abs();
           if (projectedWidthLeft < 30) {
@@ -235,7 +235,7 @@ void LineGraphProvider::execute(CameraInfo::CameraID id)
         }
         if (edgelNeighbors[i].right != -1) {
           const int pairIdx = edgelNeighbors[i].right;
-          const ScanLineEdgelPercept::EdgelPair& er = getScanLineEdgelPercept().pairs[pairIdx];
+          //const ScanLineEdgelPercept::EdgelPair& er = getScanLineEdgelPercept().pairs[pairIdx];
           
           const double projectedWidthRight = (edgelProjectionsBegin[pairIdx] - edgelProjectionsEnd[pairIdx]).abs();
           if (projectedWidthRight < 30) {
