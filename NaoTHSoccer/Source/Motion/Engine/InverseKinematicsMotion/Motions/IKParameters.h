@@ -63,7 +63,7 @@ public:
       double hipOffsetX;
 
       double stiffness;
-      bool useArm;
+      bool   useArm;
 
       // hip joint correction
       double hipRollSingleSupFactorLeft;
@@ -160,16 +160,21 @@ public:
 
   struct Arm 
   {
-    // move shoulder according to interial sensor
-    double shoulderPitchInterialSensorRate;
-    double shoulderRollInterialSensorRate;
-
     // the max joint speed in degree/second
     double maxSpeed;
-    bool alwaysEnabled;
-    bool kickEnabled;
-    bool walkEnabled;
-    bool takeBack;
+
+    // move shoulder according to interial sensor
+    struct InertialModelBasedMovement {
+        double shoulderPitchInterialSensorRate;
+        double shoulderRollInterialSensorRate;
+    } inertialModelBasedMovement;
+
+    // move the arm according to motion/walk
+    struct SynchronisedWithWalk {
+        double shoulderPitchRate;
+        double shoulderRollRate;
+        double elbowRollRate;
+    } synchronisedWithWalk;
   } arm;
 
   struct BalanceCoMParameter 

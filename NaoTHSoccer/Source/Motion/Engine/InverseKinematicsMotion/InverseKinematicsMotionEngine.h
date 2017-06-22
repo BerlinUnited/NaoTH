@@ -250,9 +250,11 @@ public:
     const KinematicChainSensor& theKinematicChain,
     const Vector3d& lastReqCoM, KinematicChain::LinkID link) const;
 
-  void gotoArms(
-    const MotionStatus& theMotionStatus,
+  void armsBasedOnInertialModel(
     const InertialModel& theInertialModel,
+    double (&position)[naoth::JointData::numOfJoint]);
+
+  void armsSynchronisedWithWalk(
     const naoth::RobotInfo& theRobotInfo,
     const InverseKinematic::HipFeetPose& currentPose, 
     double (&position)[naoth::JointData::numOfJoint]);
