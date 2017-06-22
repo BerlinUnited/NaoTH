@@ -52,13 +52,14 @@ def draw_field(ax):
     ax.set_axis_bgcolor('#21a540')
 
 def open_file(argv):
-    file = None
-    if len(argv) > 1:
+    file    = None
+    max_exp = None
+    if len(argv) > 2:
         file_count = 0
-        if len(argv) == 2:
-            script, filename = argv
         if len(argv) == 3:
-            script, filename, max_exp = argv
+            script, f, filename = argv
+        if len(argv) == 4:
+            script, f, filename, max_exp = argv
             max_exp = int(max_exp)
 
         orig_filename    = copy.copy(filename)
@@ -71,10 +72,11 @@ def open_file(argv):
         if file_count > 0:
             print("The specified file already exists, renaming to " + filename + ".")
         file = open(filename, 'w')
-    return file
+    return file, max_exp
 
-def new_experiment():
+def new_experiment(sim_obst):
     obstacles       = []
+    LPG_obstacles   = []
     robot_pos       = (0, 0)
     orig_robot_pos  = copy.copy(robot_pos)
     actual_path_LPG = [(0, 0)]
@@ -88,6 +90,10 @@ def new_experiment():
         obst_r = 300
         obst_x = np.floor(rand(-f_inf[0], f_inf[0]))
         obst_y = np.floor(rand(-f_inf[1], f_inf[1]))
+        if sim_obst == True:
+            obst_g = (rand(-60, 60), rand(-60, 60))
+        else:
+            obst_g = (0, 0)
         do_add = True
         if obst_x <= (obst_r + B.robot_radius) and obst_x >= -1*(obst_r + B.robot_radius) and obst_y <= (obst_r + B.robot_radius) and obst_y >= -1*(obst_r + B.robot_radius):
             do_add = False
@@ -99,28 +105,29 @@ def new_experiment():
                     do_add = False
                     break
         if do_add:
-            obstacles.append((obst_x, obst_y, obst_r))
+            obstacles.append((obst_x, obst_y, obst_r, obst_g))
 
     orig_target    = copy.copy(target)
     orig_obstacles = copy.copy(obstacles)
+    LPG_obstacles  = copy.copy(obstacles)
     rot            = np.arctan2(target[1], target[0])
     rot_a          = LPG.get_a(target, rot)
-    orig_waypoints = LPG.compute_waypoints(target, obstacles, rot, rot_a)
-    return robot_pos, orig_robot_pos, target, orig_target, obstacles, orig_obstacles, waypoints, orig_waypoints, actual_path_B, actual_path_LPG, actual_path_naiv
+    orig_waypoints = LPG.compute_waypoints(target, LPG_obstacles, rot, rot_a)
+    return robot_pos, orig_robot_pos, target, orig_target, obstacles, orig_obstacles, LPG_obstacles, waypoints, orig_waypoints, actual_path_B, actual_path_LPG, actual_path_naiv
 
-def draw_path(actual_path_LPG, actual_path_B, actual_path_naiv, orig_robot_pos, ax):
+def draw_path(actual_path_LPG, actual_path_B, actual_path_naiv, ax):
     for k in range(0, len(actual_path_LPG) - 1):
         ax.plot([actual_path_LPG[k][0], actual_path_LPG[k+1][0]], [actual_path_LPG[k][1], actual_path_LPG[k+1][1]], c='red')
     for k in range(0, len(actual_path_B) - 1):
-        ax.plot([actual_path_B[k][0] + orig_robot_pos[0], actual_path_B[k+1][0] + orig_robot_pos[0]], [actual_path_B[k][1] + orig_robot_pos[1], actual_path_B[k+1][1] + orig_robot_pos[1]], c='yellow')
+        ax.plot([actual_path_B[k][0], actual_path_B[k+1][0]], [actual_path_B[k][1], actual_path_B[k+1][1]], c='yellow')
     for k in range(0, len(actual_path_naiv) - 1):
-        ax.plot([actual_path_naiv[k][0] + orig_robot_pos[0], actual_path_naiv[k+1][0] + orig_robot_pos[0]], [actual_path_naiv[k][1] + orig_robot_pos[1], actual_path_naiv[k+1][1] + orig_robot_pos[1]], c='blue')
+        ax.plot([actual_path_naiv[k][0], actual_path_naiv[k+1][0]], [actual_path_naiv[k][1], actual_path_naiv[k+1][1]], c='blue')
 
 def draw_tar_rob(orig_target, robot_pos, ax):
     ax.plot(orig_target[0], orig_target[1], 'x', c='red')
     ax.plot(robot_pos[0], robot_pos[1], 'x', c='red')
 
-def simulate(gait, target, robot_pos, rot, rot_a, actual_path_B, actual_path_LPG, actual_path_naiv, obstacles, exp_exec):
+def simulate(gait, target, robot_pos, rot, rot_a, actual_path_B, actual_path_LPG, actual_path_naiv, obstacles, orig_obstacles, LPG_obstacles, exp_exec):
     robot_pos = (robot_pos[0] + gait[0], robot_pos[1] + gait[1])
     if exp_exec == 3:
         actual_path_naiv.append((actual_path_naiv[len(actual_path_naiv)-1][0] + gait[0], actual_path_naiv[len(actual_path_naiv)-1][1] + gait[1]))
@@ -132,6 +139,16 @@ def simulate(gait, target, robot_pos, rot, rot_a, actual_path_B, actual_path_LPG
         rot_a  = LPG.get_a(target, rot)
         target[0] -= gait[0]
         target[1] -= gait[1]
-        for k in range(0, len(obstacles)):
-            obstacles[k] = (obstacles[k][0] - gait[0], obstacles[k][1] - gait[1], obstacles[k][2])
-    return gait, target, robot_pos, rot, rot_a, actual_path_B, actual_path_LPG, actual_path_naiv, obstacles
+        for k in range(0, len(LPG_obstacles)):
+            LPG_obstacles[k] = (LPG_obstacles[k][0] - gait[0], LPG_obstacles[k][1] - gait[1], LPG_obstacles[k][2], LPG_obstacles[k][3])
+            LPG_obstacles[k] = (LPG_obstacles[k][0] + LPG_obstacles[k][3][0], LPG_obstacles[k][1] + LPG_obstacles[k][3][1], LPG_obstacles[k][2], LPG_obstacles[k][3])
+
+    # simulate obstacles
+    obstacles, LPG_obstacles = move_obstacles(obstacles, LPG_obstacles, orig_obstacles)
+    return gait, target, robot_pos, rot, rot_a, actual_path_B, actual_path_LPG, actual_path_naiv, obstacles, LPG_obstacles
+
+def move_obstacles(obstacles, LPG_obstacles, orig):
+    for k in range(0, len(obstacles)):
+        obstacles[k] = (obstacles[k][0] + obstacles[k][3][0], obstacles[k][1] + obstacles[k][3][1], obstacles[k][2], obstacles[k][3])
+
+    return obstacles, LPG_obstacles
