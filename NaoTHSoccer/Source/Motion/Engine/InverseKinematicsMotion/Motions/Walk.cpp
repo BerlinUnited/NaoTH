@@ -136,6 +136,10 @@ void Walk::execute()
   getEngine().solveHipFeetIK(c);
   getEngine().copyLegJoints(getMotorJointData().position);
 
+  // set arms
+  if(parameters().general.useArm) {
+    getEngine().armsSynchronisedWithWalk(getRobotInfo(),c,getMotorJointData().position);
+  }
 	// set the stiffness for walking
   for( int i = JointData::RShoulderRoll; i < JointData::LHand; i++) {
     getMotorJointData().stiffness[i] = parameters().general.stiffness;
