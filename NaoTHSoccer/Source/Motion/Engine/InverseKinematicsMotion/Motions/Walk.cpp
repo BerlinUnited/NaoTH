@@ -137,6 +137,7 @@ void Walk::execute()
   getEngine().copyLegJoints(getMotorJointData().position);
 
   // set arms
+  // Attention: this will be overwritten by the arm motion engine if the ArmMotionRequest's MotionID is not equal to "none" or "arms_synchronised_with_walk"
   if(parameters().general.useArm) {
     getEngine().armsSynchronisedWithWalk(getRobotInfo(),c,getMotorJointData().position);
   }

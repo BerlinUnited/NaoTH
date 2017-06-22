@@ -410,7 +410,7 @@ bool ArmMotionEngine::armsOnBack()
 }//end armsOnBack
 
 bool ArmMotionEngine::armsSynchronisedWithWalk(){
-
+    return true;
 }
 
 bool ArmMotionEngine::moveToJoints(const double (&target)[JointData::numOfJoint])

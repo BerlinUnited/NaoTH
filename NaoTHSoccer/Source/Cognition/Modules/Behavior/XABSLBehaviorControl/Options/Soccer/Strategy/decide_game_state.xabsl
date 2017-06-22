@@ -63,7 +63,7 @@ option decide_game_state
     {
       game.current_mode = playing;
       motion.type = stand;
-      arm.control_mode = back;
+      arm.control_mode = synchronised_with_walk;
       head.control_mode = stay_as_forced;
       whistle.switch = 0;  //whistledetector off
       treat_lifted();
