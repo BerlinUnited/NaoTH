@@ -169,139 +169,16 @@ int RansacLineDetector::ransac(Math::LineSegment& result)
   return bestInlier;
 }
 
-
-
-int RansacLineDetector::ransacCirc(Circle& result)
-{
-  if(outliers.size() <= 2) {
-    return 0;
-  }
-
-  int bestInlier = 0;
-  //double bestInlierError = 0;
-
-  Circle bestModel;
-
-  for(int i = 0; i < params.circle_iterations; ++i)
-  {
-    //pick two random points
-    int i0 = Math::random((int)outliers.size());
-    int i1 = Math::random((int)outliers.size());
-
-    if(i0 == i1) {
-      continue;
-    }
-
-    const Edgel& a = getLineGraphPercept().edgels[outliers[i0]];
-    const Edgel& b = getLineGraphPercept().edgels[outliers[i1]];
-
-    //const Vector2d direction(-a.direction.x, a.direction.y);
-
-    Math::Line lineA(a.point, Vector2d(-a.direction.x, a.direction.y));
-    Math::Line lineB(b.point, Vector2d(-b.direction.x, b.direction.y));
-
-    double tA = lineA.intersection(lineB);
-    double tB = lineB.intersection(lineA);
-    //m = lineA.point(lineA.intersection(lineB));
-
-    Circle model(lineA,lineB, lineA.point(tA));
-
-    double radius = (model.m - a.point).abs();
-    double radiusB = (model.m - b.point).abs();
-
-    if(std::fabs(radius - radiusB) < params.circle_outlierThreshold) {
-      continue;
-    } else {
-      model.radius = (radius + radiusB) / 2;
-    }
-
-    int inlier = 0;
-    for(size_t i: outliers)
-    {
-      const Edgel& e = getLineGraphPercept().edgels[i];
-
-      Math::Line lineE(e.point, Vector2d(-e.direction.x, e.direction.y));
-
-      double minT = std::min(fabs(tA - lineA.intersection(lineE)), fabs(tB - lineB.intersection(lineE)));
-
-      if (minT < params.circle_centerThreshold && std::fabs((model.m - e.point).abs() - radius) < params.circle_outlierThreshold) {
-        inlier++;
-      }
-    }
-    if(inlier >= params.inlierMin && (inlier > bestInlier)) {
-      bestModel = model;
-      bestInlier = inlier;
-      //bestInlierError = inlierError;
-    }
-  }
-
-  // update the outliers
-  // todo: make it faster
-  std::vector<size_t> newOutliers;
-  newOutliers.reserve(outliers.size() - bestInlier + 1);
-
-  Math::Line& bestLineA = bestModel.lineA;
-  Math::Line& bestLineB = bestModel.lineB;
-
-  double tA = bestLineA.intersection(bestLineB);
-  double tB = bestLineB.intersection(bestLineA);
-
-  double sumX = 0;
-  double sumY = 0;
-
-  bestInlier = 0;
-
-  for(size_t i: outliers)
-  {
-    const Edgel& e = getLineGraphPercept().edgels[i];
-
-    Math::Line lineE(e.point, Vector2d(-e.direction.x, e.direction.y));
-
-    double absA = fabs(tA - bestLineA.intersection(lineE));
-    double absB = fabs(tB - bestLineB.intersection(lineE));
-
-    double minT;
-
-    Math::Line tLine;
-
-    if(absA < absB) {
-      minT = absA;
-      tLine = bestLineA;
-    } else {
-      minT = absB;
-      tLine = bestLineB;
-    }
-
-    if(minT < params.circle_centerThreshold && std::fabs((bestModel.m - e.point).abs() - bestModel.radius) < params.circle_outlierThreshold) {
-      Vector2d eCenter = tLine.point(minT);
-      sumX += eCenter.x;
-      sumY += eCenter.y;
-      bestInlier++;
-    } else {
-      newOutliers.push_back(i);
-    }
-  }
-  outliers = newOutliers;
-
-  // m is centroid of inlier m's
-  bestModel.m = Vector2d(sumX/bestInlier, sumY/bestInlier);
-
-  // return results
-  result = bestModel;
-  return bestInlier;
-}
-
 int RansacLineDetector::ransacEllipse(Ellipse& result)
 {
 
   if(outliers.size() <= 5) {
     return 0;
   }
-  //int bestInlier = 0;
 
   Ellipse bestModel;
   int bestInlier = 0;
-  //double bestInlierError = 0;
+  double bestInlierError = 0;
 
   for(int i = 0; i < params.circle_iterations; ++i)
   {
@@ -316,12 +193,11 @@ int RansacLineDetector::ransacEllipse(Ellipse& result)
       x[t] = e.point.x;
       y[t] = e.point.y;
     }
-    //double x[] = {-20.1, 2.5, 3, 4, 5};
-    //double y[] = { 1, 2, -1, 2, 0.5};
+
     ellipse.fitPoints(x,y,5);
 
     // check model
-    //double inlierError = 0;
+    double inlierError = 0;
     int inlier = 0;
 
     for(size_t i: outliers)
@@ -331,13 +207,14 @@ int RansacLineDetector::ransacEllipse(Ellipse& result)
 
       if(d < params.circle_outlierThreshold) {
         ++inlier;
+        inlierError += d;
         continue;
       }
     }
-
-    if(inlier >= params.circle_inlierMin && (inlier > bestInlier)) {
+    if(inlier >= params.circle_inlierMin && (inlier > bestInlier || (inlier == bestInlier && inlierError < bestInlierError))) {
       bestModel = ellipse;
       bestInlier = inlier;
+      bestInlierError = inlierError;
     }
 
     // update the outliers

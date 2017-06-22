@@ -33,26 +33,6 @@ BEGIN_DECLARE_MODULE(RansacLineDetector)
   PROVIDE(LinePercept)
 END_DECLARE_MODULE(RansacLineDetector)
 
-class Circle
-{
-public:
-  Circle() {
-
-  }
-
-  Circle(Math::Line a, Math::Line b, Vector2d m) {
-    this->lineA = a;
-    this->lineB = b;
-    this->m = m;
-  }
-
-  Math::Line lineA;
-  Math::Line lineB;
-  Vector2d m;
-
-  double radius;
-};
-
 class RansacLineDetector: public RansacLineDetectorBase
 {
 public:
@@ -64,8 +44,6 @@ public:
 private:
   std::vector<size_t> outliers;
   int ransac(Math::LineSegment& result);
-
-  int ransacCirc(Circle& circResult);
 
   int ransacEllipse(Ellipse& result);
 
@@ -83,7 +61,6 @@ private:
       PARAMETER_REGISTER(circle_iterations) = 20;
       PARAMETER_REGISTER(circle_outlierThreshold) = 70;
       PARAMETER_REGISTER(circle_inlierMin) = 10;
-      PARAMETER_REGISTER(circle_centerThreshold) = 100;
 
       syncWithConfig();
     }
@@ -98,7 +75,6 @@ private:
 
     int circle_iterations;
     double circle_outlierThreshold;
-    double circle_centerThreshold;
     int circle_inlierMin;
 
   } params;
