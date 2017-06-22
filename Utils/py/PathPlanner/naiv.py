@@ -2,7 +2,7 @@ import numpy as np
 import BISEC as B
 from random import randint as rand
 
-def get_path(start, target, obstacles):
+def compute_gait(start, target, obstacles):
     hit_obstacle = None
 
     direction      = np.array(target) - np.array(start)
@@ -14,7 +14,7 @@ def get_path(start, target, obstacles):
     start = (start[0] + gait[0], start[1] + gait[1])
 
     for k in obstacles:
-        if B.dist(start, k) <= k[2] + B.robot_radius / 2:
+        if B.dist(start, k) <= k[2] + B.robot_radius:
             if hit_obstacle is None:
                 hit_obstacle = k
             else:

@@ -197,7 +197,7 @@ while loop_bool:
 
     # Naiv
     if algorithm == 3:
-        gait = N.get_path(robot_pos, target, obstacles)
+        gait = N.compute_gait(robot_pos, target, obstacles)
 
     # simulate the gait
     if not pause and not do_skip_a:
