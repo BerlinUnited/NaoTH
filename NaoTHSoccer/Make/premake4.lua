@@ -83,7 +83,7 @@ solution "NaoTHSoccer"
     },
     FRAMEWORK_PATH .. "/Commons/Source/Messages/", 
     "../../RobotControl/RobotConnector/src/", 
-    "../../Utils/pyLogEvaluator",
+    "../../Utils/py/naoth/naoth",
     {COMMONS_MESSAGES}
   )
 
@@ -91,7 +91,7 @@ solution "NaoTHSoccer"
     {"../Messages/Representations.proto"}, 
     "../Source/Messages/", 
     "../../RobotControl/RobotConnector/src/", 
-    "../../Utils/pyLogEvaluator",
+    "../../Utils/py/naoth/naoth",
     {COMMONS_MESSAGES, "../Messages/"}
   )
   
