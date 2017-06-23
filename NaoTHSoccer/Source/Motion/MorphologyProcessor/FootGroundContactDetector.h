@@ -62,12 +62,14 @@ private:
       // experimental - probably needs some calibration (while playing?)
       PARAMETER_REGISTER(left) = 0.1;
       PARAMETER_REGISTER(right) = 0.1;
+      PARAMETER_REGISTER(useMaxMedian) = false;
 
       syncWithConfig();
     }
 
     double left;
     double right;
+    bool useMaxMedian;
   };
 
   Parameters footParams;

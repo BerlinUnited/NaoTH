@@ -2,6 +2,7 @@
  */
 package naoscp.components;
 
+import java.awt.Component;
 import java.io.File;
 import javax.swing.JFileChooser;
 
@@ -33,7 +34,7 @@ public class DeployDialog extends javax.swing.JDialog {
         if (!os.startsWith("Linux")) {
             this.unmountButton.setVisible(false);
         }
-        
+        this.setLocationByPlatform(true);
         this.jFileChooser.setControlButtonsAreShown(false);
         this.jFileChooser.setFileHidingEnabled(false);
         
@@ -43,10 +44,11 @@ public class DeployDialog extends javax.swing.JDialog {
         this.usbPanel.addFileChooser(this.jFileChooser);
     }
     
-    public OPTION showOpenDialog() {
+    public OPTION showOpenDialog(Component c) {
+        this.setLocationRelativeTo(c);
         this.usbPanel.refresh();
 
-        this.unmountButton.setVisible(this.usbPanel.hasSelection());        
+        this.unmountButton.setEnabled(this.usbPanel.hasSelection());        
         
         this.setVisible(true);
         
@@ -107,32 +109,31 @@ public class DeployDialog extends javax.swing.JDialog {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(jFileChooser, javax.swing.GroupLayout.DEFAULT_SIZE, 571, Short.MAX_VALUE)
-                .addContainerGap())
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(openButton)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(unmountButton)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(cancelButton)
-                .addGap(23, 23, 23))
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(usbPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(usbPanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGap(0, 305, Short.MAX_VALUE)
+                        .addComponent(openButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(unmountButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(cancelButton))
+                    .addComponent(jFileChooser, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jFileChooser, javax.swing.GroupLayout.PREFERRED_SIZE, 308, Short.MAX_VALUE)
+                .addComponent(jFileChooser, javax.swing.GroupLayout.DEFAULT_SIZE, 286, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(usbPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(cancelButton)
                     .addComponent(openButton)
-                    .addComponent(unmountButton))
+                    .addComponent(unmountButton)
+                    .addComponent(cancelButton))
                 .addContainerGap())
         );
 

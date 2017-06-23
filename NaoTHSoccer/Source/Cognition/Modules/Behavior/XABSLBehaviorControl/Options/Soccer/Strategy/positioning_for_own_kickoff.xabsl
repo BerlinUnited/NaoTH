@@ -35,7 +35,7 @@ option positioning_for_own_kickoff
      //x=field.xPosOwnGroundline+Z? da sonst genau auf der Linie steht
       //und das eher so semi cool ist, aber dann sieht er vielleicht nicht ein ball
       //der genau auf der Linie ist
-      go_to_point_with_USOA(x=field.xPosOwnGroundline  + 200, y=0, rot=0);
+      go_to_point_with_USOA(x=field.xPosOwnGroundline + 200, y=0, rot=0);
       //head.control_mode = search_for_goal;
       head.control_mode = search_for_goal_opp;
       motion.walk.style = stable;
@@ -56,7 +56,7 @@ option positioning_for_own_kickoff
 //go_to_point_with_USOA(x=-2500, y=-900, rot=0);
       go_to_point_with_USOA(
         x=field.xPosOwnPenaltyMark + 500, 
-        y=field.yPosLeftGoal,
+        y=field.yPosLeftGoal-400,
         rot=0);
       head.control_mode = look_around;
     }
@@ -90,7 +90,10 @@ option positioning_for_own_kickoff
     action
     {
       //go_to_point_with_USOA(x=-1000, y=-2000, rot=10);
-      go_to_point_with_USOA(x=(field.xPosOwnPenaltyArea+field.xPosOwnPenaltyMark)/2, y=field.yPosRightGoal, rot=00);
+      go_to_point_with_USOA(
+        x=(field.xPosOwnPenaltyArea+field.xPosOwnPenaltyMark)/2, 
+        y=field.yPosRightGoal+400, 
+        rot=0);
       head.control_mode = look_around;
 
     }
@@ -107,7 +110,10 @@ option positioning_for_own_kickoff
     action
     {
       //go_to_point_with_USOA(x=-2500, y=900, rot=0);
-       go_to_point_with_USOA(x=(field.xPosOwnPenaltyMark-field.centerCircleRadius)/2, y=field.yPosRightFlank, rot=10);
+       go_to_point_with_USOA(
+         x=(field.xPosOwnPenaltyMark-field.centerCircleRadius)/2, 
+         y=-field.centerCircleRadius, 
+         rot=10);
       head.control_mode = look_around;
     }
   }

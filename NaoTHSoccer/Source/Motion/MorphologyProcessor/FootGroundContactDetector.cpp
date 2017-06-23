@@ -21,9 +21,16 @@ FootGroundContactDetector::~FootGroundContactDetector()
 
 void FootGroundContactDetector::execute()
 {
+  if (footParams.useMaxMedian){
+    leftFSRBuffer.add(Math::medianMax(getFSRData().dataLeft));
+    rightFSRBuffer.add(Math::medianMax(getFSRData().dataRight));
+  }
+  else {
+    //Maximum of FSR Sensors
+    leftFSRBuffer.add(Math::max(getFSRData().dataLeft));
+    rightFSRBuffer.add(Math::max(getFSRData().dataRight));
+  }
 
-  leftFSRBuffer.add(Math::median(getFSRData().dataLeft));
-  rightFSRBuffer.add(Math::median(getFSRData().dataRight));
 
   getGroundContactModel().leftGroundContact  = leftFSRBuffer.getAverage() > footParams.left;
   getGroundContactModel().rightGroundContact = rightFSRBuffer.getAverage() > footParams.right;

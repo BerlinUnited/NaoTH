@@ -33,7 +33,7 @@
 
 
 #include "SimSparkGameInfo.h"
-
+#include "MessagesSPL/SPLStandardMessage.h"
 
 #include <Tools/Communication/SocketStream/SocketStream.h>
 
@@ -193,7 +193,10 @@ private:
 
   Vector3d decomposeForce(double f, double fx, double fy, const Vector3d& c0, const Vector3d& c1, const Vector3d& c2);
 
-  void calFSRForce(double f, double x, double y, FSRData::FSRID id0, FSRData::FSRID id1, FSRData::FSRID id2);
+  void calFSRForce(double f, double x, double y, 
+              const Vector3d* positions,
+              std::vector<double>& values,
+              FSRData::SensorID id0, FSRData::SensorID id1, FSRData::SensorID id2);
 
   void say();
 
