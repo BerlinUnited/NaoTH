@@ -39,6 +39,7 @@ public class SimsparkMonitor extends Simspark {
     /**
      * Main method of the simspark monitor thread.
      */
+    @Override
     public void run() {
         if (socket == null) {
             return;
@@ -46,15 +47,10 @@ public class SimsparkMonitor extends Simspark {
         ExecutorService s = Executors.newSingleThreadExecutor();
         
         while (isRunning) {
-            try {
-                sleep(1);
-                final String msg = getServerMessage();
-                if (msg != null) {
-                    // parse message in another thread
-                    s.submit(new SimsparkMonitorMessageParser(msg));
-                }
-            } catch (InterruptedException ex) {
-                Logger.getLogger(SimsparkMonitor.class.getName()).log(Level.SEVERE, null, ex);
+            final String msg = getServerMessage();
+            if (msg != null) {
+                // parse message in another thread
+                s.submit(new SimsparkMonitorMessageParser(msg));
             }
         }
     }
@@ -69,6 +65,7 @@ public class SimsparkMonitor extends Simspark {
             this.parser.setExpression(msg);
         }
 
+        @Override
         public void run() {
             parseMessages(parser.parseSexp());
         }
