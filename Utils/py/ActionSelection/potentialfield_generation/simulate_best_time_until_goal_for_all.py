@@ -1,9 +1,11 @@
 import math
+
 from matplotlib import pyplot as plt
 from naoth import math2d as m2d
-from tools import tools
+
+from potentialfield_generation.simulate_best_angle import main as simulate_best_angle
 from tools import field_info as field
-from simulate_best_angle import main as simulate_best_angle
+from tools import tools
 
 """
     This file simulates the  best angle for all positions on the field by simulation all the steps necessary to 
@@ -34,8 +36,8 @@ class State:
 def main():
     state = State()
 
-    cell_width = 100
-    rotation_step = 10
+    cell_width = 200
+    rotation_step = 30
 
     plt.figure()
     axes = plt.gca()
