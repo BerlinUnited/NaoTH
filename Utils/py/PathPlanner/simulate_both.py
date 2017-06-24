@@ -40,20 +40,23 @@ robot_pos      = (0, 0)
 orig_robot_pos = copy.copy(robot_pos)
 
 rot   = np.arctan2(target[1], target[0]) # LPG
-rot_a = LPG.get_a(target, rot)      # LPG
+rot_a = LPG.get_a(target, rot)           # LPG
 
 orig_waypoints = LPG.compute_waypoints(target, LPG_obstacles, rot, rot_a)
 orig_obstacles = copy.copy(obstacles)
 orig_target    = copy.copy(target)
 
-waypoints = []
-steps     = []
+waypoints     = []
+waypoints_LPG = []
+steps         = []
 
 actual_path_LPG  = [(0, 0)]
 actual_path_B    = [(0, 0)]
 actual_path_naiv = [(0, 0)]
 all_paths_B      = []
-all_robot_pos    = []
+all_paths_LPG    = []
+all_robot_pos_LPG = []
+all_robot_pos_B   = []
 
 pause = False
 
@@ -65,6 +68,7 @@ do_skip_e  = False
 do_skip_a  = False
 do_restart = False
 show_sub   = False
+deadlock   = False
 loop_bool  = True
 
 sim_obst = True
@@ -114,7 +118,7 @@ while loop_bool:
         sys.exit()
 
     # switch algorithm
-    if np.absolute(robot_pos[0] - orig_target[0]) < 1 and np.absolute(robot_pos[1] - orig_target[1]) < 1 and algorithm < 3:
+    if np.absolute(robot_pos[0] - orig_target[0]) < 1 and np.absolute(robot_pos[1] - orig_target[1]) < 1 and algorithm < 3 or (algorithm < 3 and deadlock):
         algorithm    += 1
         obstacles     = copy.copy(orig_obstacles)
         LPG_obstacles = copy.copy(orig_obstacles)
@@ -142,12 +146,11 @@ while loop_bool:
         actual_path_naiv = [(0, 0)]
         do_restart       = False
     # save experiment and start next
-    if np.absolute(robot_pos[0] - orig_target[0]) < 1 and np.absolute(robot_pos[1] - orig_target[1]) < 1 and algorithm == 3 or do_skip_e:
+    if np.absolute(robot_pos[0] - orig_target[0]) < 1 and np.absolute(robot_pos[1] - orig_target[1]) < 1 and algorithm == 3 or do_skip_e or (deadlock and algorithm == 3):
         if not do_skip_e:
             exp_count += 1
 
-            if not do_skip_e:
-                algorithm = 1
+            algorithm = 1
 
             print("Experiment " + str(exp_count) + ".")
 
@@ -168,7 +171,11 @@ while loop_bool:
                     sys.exit()
 
         robot_pos, orig_robot_pos, target, orig_target, obstacles, orig_obstacles, LPG_obstacles, waypoints, orig_waypoints,actual_path_B, actual_path_LPG, actual_path_naiv = sim.new_experiment(sim_obst)
-
+        waypoints_LPG = []
+        all_paths_LPG = []
+        all_paths_B   = []
+        all_robot_pos_LPG = []
+        all_robot_pos_B   = []
         # stupid experiment???
         do_skip_e = B.stupid_experiment(robot_pos, target, obstacles)
 
@@ -176,24 +183,31 @@ while loop_bool:
     sim.draw_field(ax)
 
     # draw obstacles
-    if algorithm == 1:
+    """if algorithm == 1:
         LPG.draw_obstacles(ax, robot_pos, obstacles)
     if algorithm > 1:
-        B.draw_obstacles(ax, obstacles)
+        B.draw_obstacles(ax, obstacles)"""
+    B.draw_obstacles(ax, obstacles)
 
     # LPG
     if algorithm == 1:
         waypoints = LPG.compute_waypoints(target, LPG_obstacles, rot, rot_a)
         LPG.draw_waypoints(ax, waypoints, robot_pos, rot)
 
-        LPG.draw_LPG(ax, robot_pos, rot)
+        #LPG.draw_LPG(ax, robot_pos, rot)
+        for k in waypoints:
+            waypoints_LPG.append(LPG.get_cell_mid(k, rot))
+        all_paths_LPG.append(waypoints_LPG)
+        all_robot_pos_LPG.append(robot_pos)
 
         gait = LPG.compute_gait(waypoints, target, rot)
 
     # BISEC
     if algorithm == 2:
-        (gait, path) = B.get_gait(robot_pos, target, obstacles, 0, ax, show_sub)
-        ax.plot([robot_pos[0], target[0]],[robot_pos[1], target[1]], c='black')
+        (gait, waypoints_B) = B.get_gait(robot_pos, target, obstacles, 0, ax, show_sub)
+        #ax.plot([robot_pos[0], target[0]],[robot_pos[1], target[1]], c='black') # straight trajectory line from robot_pos to target
+        all_paths_B.append(waypoints_B)
+        all_robot_pos_B.append(robot_pos)
 
     # Naiv
     if algorithm == 3:
@@ -202,9 +216,19 @@ while loop_bool:
     # simulate the gait
     if not pause and not do_skip_a:
         gait, target, robot_pos, rot, rot_a, actual_path_B, actual_path_LPG, actual_path_naiv, obstacles, LPG_obstacles = sim.simulate(gait, target, robot_pos, rot, rot_a, actual_path_B, actual_path_LPG, actual_path_naiv, obstacles, orig_obstacles, LPG_obstacles, algorithm)
+        deadlock = (len(actual_path_naiv) > 100 and algorithm == 3) or (len(actual_path_LPG) > 200 and algorithm == 1) or (len(actual_path_B) > 200 and algorithm == 2)
+        if deadlock:
+            if algorithm == 1:
+                actual_path_LPG = []
+            elif algorithm == 2:
+                actual_path_B = []
+            elif algorithm == 3:
+                actual_path_naiv = []
 
     # draw actual path
-    sim.draw_path(actual_path_LPG, actual_path_B, actual_path_naiv, ax)
+    sim.draw_path(actual_path_LPG, actual_path_B, actual_path_naiv, ax, algorithm)
+    # draw all paths
+    sim.draw_all_paths(all_paths_LPG, all_paths_B, all_robot_pos_LPG, all_robot_pos_B, ax, algorithm)
 
     # draw target and robot
     sim.draw_tar_rob(orig_target, robot_pos, ax)

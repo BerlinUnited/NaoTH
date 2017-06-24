@@ -115,25 +115,41 @@ def new_experiment(sim_obst):
     orig_waypoints = LPG.compute_waypoints(target, LPG_obstacles, rot, rot_a)
     return robot_pos, orig_robot_pos, target, orig_target, obstacles, orig_obstacles, LPG_obstacles, waypoints, orig_waypoints, actual_path_B, actual_path_LPG, actual_path_naiv
 
-def draw_path(actual_path_LPG, actual_path_B, actual_path_naiv, ax):
-    for k in range(0, len(actual_path_LPG) - 1):
-        ax.plot([actual_path_LPG[k][0], actual_path_LPG[k+1][0]], [actual_path_LPG[k][1], actual_path_LPG[k+1][1]], c='red')
-    for k in range(0, len(actual_path_B) - 1):
-        ax.plot([actual_path_B[k][0], actual_path_B[k+1][0]], [actual_path_B[k][1], actual_path_B[k+1][1]], c='yellow')
-    for k in range(0, len(actual_path_naiv) - 1):
-        ax.plot([actual_path_naiv[k][0], actual_path_naiv[k+1][0]], [actual_path_naiv[k][1], actual_path_naiv[k+1][1]], c='blue')
+def draw_path(actual_path_LPG, actual_path_B, actual_path_naiv, ax, algorithm):
+    if algorithm == 1:
+        for k in range(0, len(actual_path_LPG) - 1):
+            ax.plot([actual_path_LPG[k][0], actual_path_LPG[k+1][0]], [actual_path_LPG[k][1], actual_path_LPG[k+1][1]], c='red')
+    if algorithm == 2:
+        for k in range(0, len(actual_path_B) - 1):
+            ax.plot([actual_path_B[k][0], actual_path_B[k+1][0]], [actual_path_B[k][1], actual_path_B[k+1][1]], c='red')
+    if algorithm == 3:
+        for k in range(0, len(actual_path_naiv) - 1):
+            ax.plot([actual_path_naiv[k][0], actual_path_naiv[k+1][0]], [actual_path_naiv[k][1], actual_path_naiv[k+1][1]], c='red')
+
+def draw_all_paths(LPG, BI, robot_LPG, robot_B, ax, algorithm):
+    if algorithm == 1:
+        for k in range(0, len(LPG)):
+            if k % 20 == 0:
+                for l in range(0, len(LPG[k]) - 1):
+                    ax.plot([LPG[k][l][0] + robot_LPG[k][0], LPG[k][l+1][0] + robot_LPG[k][0]], [LPG[k][l][1] + robot_LPG[k][1], LPG[k][l+1][1] + robot_LPG[k][1]], c='black')
+    if algorithm == 2:
+        for k in range(0, len(BI)):
+            if k % 10 == 0:
+                for l in range(0, len(BI[k]) - 1):
+                    ax.plot([BI[k][l][0], BI[k][l+1][0]], [BI[k][l][1], BI[k][l+1][1]], c='black')
+
 
 def draw_tar_rob(orig_target, robot_pos, ax):
     ax.plot(orig_target[0], orig_target[1], 'x', c='red')
-    ax.plot(robot_pos[0], robot_pos[1], 'x', c='red')
+    ax.plot(robot_pos[0], robot_pos[1], 'x', c='yellow')
 
-def simulate(gait, target, robot_pos, rot, rot_a, actual_path_B, actual_path_LPG, actual_path_naiv, obstacles, orig_obstacles, LPG_obstacles, exp_exec):
+def simulate(gait, target, robot_pos, rot, rot_a, actual_path_B, actual_path_LPG, actual_path_naiv, obstacles, orig_obstacles, LPG_obstacles, algorithm):
     robot_pos = (robot_pos[0] + gait[0], robot_pos[1] + gait[1])
-    if exp_exec == 3:
+    if algorithm == 3:
         actual_path_naiv.append((actual_path_naiv[len(actual_path_naiv)-1][0] + gait[0], actual_path_naiv[len(actual_path_naiv)-1][1] + gait[1]))
-    if exp_exec == 2:
+    if algorithm == 2:
         actual_path_B.append((actual_path_B[len(actual_path_B)-1][0] + gait[0], actual_path_B[len(actual_path_B)-1][1] + gait[1]))
-    if exp_exec == 1:
+    if algorithm == 1:
         actual_path_LPG.append((actual_path_LPG[len(actual_path_LPG)-1][0] + gait[0], actual_path_LPG[len(actual_path_LPG)-1][1] + gait[1]))
         rot    = np.arctan2(target[1], target[0])
         rot_a  = LPG.get_a(target, rot)

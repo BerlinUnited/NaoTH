@@ -149,10 +149,10 @@ def compute_path_it(start, target, obstacles, depth, ax, sign, show_sub):
         for k in range(0, len(waypoints) - 1):
             trajectory.append((waypoints[k], waypoints[k+1]))
         if counter == 0:
-            return trajectory
+            return trajectory, waypoints
 
 def get_gait(robot_pos, target, obstacles, depth, ax, show_sub):
-    trajectory  = compute_path_it(robot_pos, target, obstacles, 0, ax, None, show_sub)
+    trajectory, waypoints  = compute_path_it(robot_pos, target, obstacles, 0, ax, None, show_sub)
     ax.plot(trajectory[0][1][0], trajectory[0][1][1], 'x', c='red')
 
     direction = np.array(trajectory[0][1]) - np.array(trajectory[0][0])
@@ -165,4 +165,4 @@ def get_gait(robot_pos, target, obstacles, depth, ax, show_sub):
     else:
         gait = (0,0)
 
-    return gait, trajectory
+    return gait, waypoints
