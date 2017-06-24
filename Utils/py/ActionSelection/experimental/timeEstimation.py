@@ -3,6 +3,7 @@ from matplotlib import pyplot as plt
 import numpy as np
 import math as m
 import matplotlib as mlp
+
 pgf_with_rc_fonts = {
     "font.family": "serif",
     "font.size": 16,
@@ -27,20 +28,25 @@ def estimate_time(x, y):
     total_time = distance_time + rot_time
     for d1 in range(len(total_time)):
         for d2 in range(len(total_time)):
-            total_time[d1][d2] = 0.5 * total_time[d1][d2] * m.exp(total_time[d1][d2] * 0.001)
+            total_time[d1][d2] =  1.5*total_time[d1][d2] * m.exp(-total_time[d1][d2] * 0.1)
 
             if total_time[d1][d2] >= 5:
                 total_time[d1][d2] = 5
+
+            total_time[d1][d2] -= 5
                 
     return total_time
- 
+
+
+
 if __name__ == "__main__":
     # Constants for robot
     velRot = 60  # grad pro sekunde
     velWalk = 200  # mm pro sekunde
-    
-    x = np.arange(-1000, 1000, 10)
-    y = np.arange(-1000, 1000, 10)
+    size = 1000
+
+    x = np.arange(-size, size, 10)
+    y = np.arange(-size, size, 10)
     xm, ym = np.meshgrid(x, y)
 
     times = estimate_time(xm, ym)
@@ -53,8 +59,8 @@ if __name__ == "__main__":
     ax.set_xlabel("x [mm]")
     ax.set_ylabel("y [mm]")
     ax.axis('on')
-    ax.set_xlim([-1000, 1000])
-    ax.set_ylim([-1000, 1000])
+    ax.set_xlim([-size, size])
+    ax.set_ylim([-size, size])
     ax.spines['left'].set_position(('axes', 0.0))
     ax.spines['bottom'].set_position(('axes', 0.0))
     ax.spines['right'].set_visible(False)
