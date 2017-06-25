@@ -16,7 +16,7 @@ import os.path
 import sim
 import naiv as N
 
-file, max_exp = sim.open_file(argv)
+the_file, max_exp, filename, draw = sim.open_file(argv)
 
 keys = {"p": False, "d": False, "e": False, "n": False, "r": False, "t": False, "escape": False}
 def key_pressed(event):
@@ -57,6 +57,13 @@ all_paths_B      = []
 all_paths_LPG    = []
 all_robot_pos_LPG = []
 all_robot_pos_B   = []
+
+all_robot     = []
+all_target    = []
+all_obstacle  = []
+all_path_LPG  = []
+all_path_B    = []
+all_path_naiv = []
 
 pause = False
 
@@ -155,17 +162,16 @@ while loop_bool:
             print("Experiment " + str(exp_count) + ".")
 
             if exp_count > 1 and len(argv) > 2:
-                file.write(str(orig_robot_pos) + ", " + str(orig_target) + ", " + str(orig_obstacles))
-                file.write("\n")
-                file.write(str(actual_path_LPG))
-                file.write("\n")
-                file.write(str(actual_path_B))
-                file.write("\n")
-                file.write(str(actual_path_naiv))
-                file.write("\n")
-                file.write("\n")
+                all_robot.append(orig_robot_pos)
+                all_target.append(orig_target)
+                all_obstacle.append(orig_obstacles)
+                all_path_LPG.append(actual_path_LPG)
+                all_path_B.append(actual_path_B)
+                all_path_naiv.append(actual_path_naiv)
+                everything = (all_robot, all_target, all_obstacle, all_path_LPG, all_path_B, all_path_naiv)
+                np.save(filename, everything)
 
-            if len(argv) == 4:
+            if len(argv) == 5:
                 loop_bool = eval('exp_count < max_exp')
                 if not loop_bool:
                     sys.exit()
@@ -180,21 +186,21 @@ while loop_bool:
         do_skip_e = B.stupid_experiment(robot_pos, target, obstacles)
 
     # plot field
-    sim.draw_field(ax)
+    if draw:
+        sim.draw_field(ax)
 
     # draw obstacles
-    """if algorithm == 1:
-        LPG.draw_obstacles(ax, robot_pos, obstacles)
-    if algorithm > 1:
-        B.draw_obstacles(ax, obstacles)"""
-    B.draw_obstacles(ax, obstacles)
+    if draw:
+        B.draw_obstacles(ax, obstacles)
 
     # LPG
     if algorithm == 1:
         waypoints = LPG.compute_waypoints(target, LPG_obstacles, rot, rot_a)
-        LPG.draw_waypoints(ax, waypoints, robot_pos, rot)
+        #if draw:
+            #LPG.draw_waypoints(ax, waypoints, robot_pos, rot)
 
-        #LPG.draw_LPG(ax, robot_pos, rot)
+        #if draw:
+            #LPG.draw_LPG(ax, robot_pos, rot)
         for k in waypoints:
             waypoints_LPG.append(LPG.get_cell_mid(k, rot))
         all_paths_LPG.append(waypoints_LPG)
@@ -205,9 +211,10 @@ while loop_bool:
     # BISEC
     if algorithm == 2:
         (gait, waypoints_B) = B.get_gait(robot_pos, target, obstacles, 0, ax, show_sub)
-        #ax.plot([robot_pos[0], target[0]],[robot_pos[1], target[1]], c='black') # straight trajectory line from robot_pos to target
         all_paths_B.append(waypoints_B)
         all_robot_pos_B.append(robot_pos)
+        #if draw:
+            #ax.plot([robot_pos[0], target[0]],[robot_pos[1], target[1]], c='black') # straight trajectory line from robot_pos to target
 
     # Naiv
     if algorithm == 3:
@@ -226,15 +233,19 @@ while loop_bool:
                 actual_path_naiv = []
 
     # draw actual path
-    sim.draw_path(actual_path_LPG, actual_path_B, actual_path_naiv, ax, algorithm)
+    if draw:
+        sim.draw_path(actual_path_LPG, actual_path_B, actual_path_naiv, ax, algorithm)
     # draw all paths
-    sim.draw_all_paths(all_paths_LPG, all_paths_B, all_robot_pos_LPG, all_robot_pos_B, ax, algorithm)
+    #if draw:
+        #sim.draw_all_paths(all_paths_LPG, all_paths_B, all_robot_pos_LPG, all_robot_pos_B, ax, algorithm)
 
     # draw target and robot
-    sim.draw_tar_rob(orig_target, robot_pos, ax)
+    if draw:
+        sim.draw_tar_rob(orig_target, robot_pos, ax)
 
     do_skip_a = False
 
     ax.set_xlim([-5500, 5500])
     ax.set_ylim([-3500, 3500])
-    plt.pause(0.000000000001)
+    if draw:
+        plt.pause(0.000000000001)

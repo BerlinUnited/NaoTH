@@ -52,27 +52,34 @@ def draw_field(ax):
     ax.set_axis_bgcolor('#21a540')
 
 def open_file(argv):
-    file    = None
-    max_exp = None
+    the_file     = None
+    max_exp  = None
+    filename = None
+    draw     = None
     if len(argv) > 2:
         file_count = 0
-        if len(argv) == 3:
-            script, f, filename = argv
         if len(argv) == 4:
-            script, f, filename, max_exp = argv
+            script, f, draw, filename = argv
+        if len(argv) == 5:
+            script, f, draw, filename, max_exp = argv
             max_exp = int(max_exp)
 
+        if draw is not 't':
+            draw = False
+        else:
+            draw = True
+
         orig_filename    = copy.copy(filename)
-        if os.path.isfile(filename):
+        if os.path.isfile(filename + '.npy'):
             file_count = 1
             filename = filename + str(file_count)
-            while os.path.isfile(filename):
+            while os.path.isfile(filename + '.npy'):
                 file_count += 1
                 filename = orig_filename + str(file_count)
         if file_count > 0:
             print("The specified file already exists, renaming to " + filename + ".")
-        file = open(filename, 'w')
-    return file, max_exp
+        #file = open(filename, 'w')
+    return the_file, max_exp, filename, draw
 
 def new_experiment(sim_obst):
     obstacles       = []
