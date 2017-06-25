@@ -112,7 +112,7 @@ def compute_path_it(start, target, obstacles, depth, ax, sign, show_sub):
 
     while True:
         if depth > 10:
-            return trajectory
+            return trajectory, waypoints
         depth += 1
         counter = 0
         tmp_waypoints = copy.copy(waypoints)
@@ -142,7 +142,6 @@ def compute_path_it(start, target, obstacles, depth, ax, sign, show_sub):
 
             if show_sub and sub_target is not None:
                 ax.plot(sub_target[0], sub_target[1], 'x', c='white')
-
 
         waypoints = copy.copy(tmp_waypoints)
         trajectory = []
