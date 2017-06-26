@@ -909,49 +909,34 @@ void InverseKinematicsMotionEngine::armsBasedOnInertialModel(
 void InverseKinematicsMotionEngine::armsSynchronisedWithWalk(
         const RobotInfo& theRobotInfo,
         const InverseKinematic::HipFeetPose& currentPose,
-        double (&position)[JointData::numOfJoint])
+        JointData& jointData)
 {
-    double target[JointData::LElbowYaw + 1];
-    target[JointData::RElbowYaw] = Math::fromDegrees(90);
-    target[JointData::LElbowYaw] = Math::fromDegrees(-90);
-    target[JointData::RShoulderRoll] = Math::fromDegrees(-10);
-    target[JointData::LShoulderRoll] = Math::fromDegrees(10);
-    target[JointData::RShoulderPitch] = Math::fromDegrees(100);
-    target[JointData::LShoulderPitch] = Math::fromDegrees(100);
-    target[JointData::RElbowRoll] = Math::fromDegrees(30);
-    target[JointData::LElbowRoll] = Math::fromDegrees(-30);
-
     InverseKinematic::HipFeetPose localizedPose(currentPose);
     localizedPose.localInHip();
+    const Pose3D& lFoot = localizedPose.feet.left;
+    const Pose3D& rFoot = localizedPose.feet.right;
 
-    Pose3D& lFoot = localizedPose.feet.left;
-    Pose3D& rFoot = localizedPose.feet.right;
+    const double stepDeltaX = (lFoot.translation.x - rFoot.translation.x)*0.5;
 
-    target[JointData::RShoulderPitch] -= (Math::fromDegrees(lFoot.translation.x) * getParameters().arm.synchronisedWithWalk.shoulderPitchRate);
-    target[JointData::RShoulderRoll]  -= (Math::fromDegrees(lFoot.translation.y - NaoInfo::HipOffsetY) * getParameters().arm.synchronisedWithWalk.shoulderRollRate);
-    target[JointData::RElbowRoll]     += (Math::fromDegrees(lFoot.translation.x) * getParameters().arm.synchronisedWithWalk.elbowRollRate);
+    // calculate the movement for the arms
+    const double targetRShoulderPitch = -(Math::fromDegrees(stepDeltaX) * getParameters().arm.synchronisedWithWalk.shoulderPitchRate);
+    const double targetLShoulderPitch = +(Math::fromDegrees(stepDeltaX) * getParameters().arm.synchronisedWithWalk.shoulderPitchRate);
+    
+    // maximal amount the arms should move
+    const double max_delta = Math::fromDegrees(getParameters().arm.maxSpeed) * theRobotInfo.getBasicTimeStepInSecond();
+    
+    // update the joints
+    jointData.set(JointData::RShoulderPitch, Math::fromDegrees(90) + targetRShoulderPitch, max_delta);
+    jointData.set(JointData::LShoulderPitch, Math::fromDegrees(90) + targetLShoulderPitch, max_delta);
 
-    target[JointData::LShoulderPitch] -= (Math::fromDegrees(rFoot.translation.x) * getParameters().arm.synchronisedWithWalk.shoulderPitchRate);
-    target[JointData::LShoulderRoll]  -= (Math::fromDegrees(rFoot.translation.y + NaoInfo::HipOffsetY) * getParameters().arm.synchronisedWithWalk.shoulderRollRate);
-    target[JointData::LElbowRoll]     -= (Math::fromDegrees(rFoot.translation.x) * getParameters().arm.synchronisedWithWalk.elbowRollRate);
+    jointData.set(JointData::RShoulderRoll, Math::fromDegrees(-5), max_delta);
+    jointData.set(JointData::LShoulderRoll, Math::fromDegrees(5), max_delta);
 
-    // make sure the arms do not collide legs --------------
-    target[JointData::RShoulderRoll] = std::min(target[JointData::RShoulderRoll], position[JointData::RHipRoll]);
-    target[JointData::LShoulderRoll] = std::max(target[JointData::LShoulderRoll], position[JointData::LHipRoll]);
-    //---------------------------------------------
+    jointData.set(JointData::RElbowYaw, Math::fromDegrees(90), max_delta);
+    jointData.set(JointData::LElbowYaw, Math::fromDegrees(-90), max_delta);
 
-    // limit the joint range to avoid collision --------------
+    jointData.set(JointData::RElbowRoll, Math::fromDegrees(0), max_delta);
+    jointData.set(JointData::LElbowRoll, Math::fromDegrees(0), max_delta);
 
-    //---------------------------------------------
-
-    // limit the max speed -----------------------------
-    double max_speed = Math::fromDegrees(getParameters().arm.maxSpeed) * theRobotInfo.getBasicTimeStepInSecond();
-    for (int i = JointData::RShoulderRoll; i <= JointData::LElbowYaw; i++)
-    {
-        double s = target[i] - position[i];
-        s = Math::clamp(s, -max_speed, max_speed);
-        position[i] += s;
-    }
-    //----------------------------------------------
 }//end gotoArms
 

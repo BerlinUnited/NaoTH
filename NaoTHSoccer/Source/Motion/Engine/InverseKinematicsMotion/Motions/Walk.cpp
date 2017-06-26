@@ -139,7 +139,7 @@ void Walk::execute()
   // set arms
   // Attention: this will be overwritten by the arm motion engine if the ArmMotionRequest's MotionID is not equal to "none" or "arms_synchronised_with_walk"
   if(parameters().general.useArm) {
-    getEngine().armsSynchronisedWithWalk(getRobotInfo(),c,getMotorJointData().position);
+    getEngine().armsSynchronisedWithWalk(getRobotInfo(), c, getMotorJointData());
   }
 	// set the stiffness for walking
   for( int i = JointData::RShoulderRoll; i < JointData::LHand; i++) {
