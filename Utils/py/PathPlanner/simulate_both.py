@@ -15,6 +15,7 @@ from sys import argv
 import os.path
 import sim
 import naiv as N
+import time
 
 the_file, max_exp, filename, draw = sim.open_file(argv)
 
@@ -65,6 +66,10 @@ all_path_LPG  = []
 all_path_B    = []
 all_path_naiv = []
 
+times_LPG  = []
+times_B    = []
+times_naiv = []
+
 pause = False
 
 exp_count = 0
@@ -87,10 +92,13 @@ if len(argv) > 1:
 
 # plot
 while loop_bool:
-    mpl.rcParams['lines.linewidth'] = 0.5
-    plt.clf()
-    plt.axis("equal")
-    ax = plt.gca()
+    if draw:
+        mpl.rcParams['lines.linewidth'] = 0.5
+        plt.clf()
+        plt.axis("equal")
+        ax = plt.gca()
+    else:
+        ax = None
 
     # check for key presses
     if keys["p"] == True:
@@ -168,11 +176,11 @@ while loop_bool:
                 all_path_LPG.append(actual_path_LPG)
                 all_path_B.append(actual_path_B)
                 all_path_naiv.append(actual_path_naiv)
-                everything = (all_robot, all_target, all_obstacle, all_path_LPG, all_path_B, all_path_naiv)
+                everything = (all_robot, all_target, all_obstacle, all_path_LPG, all_path_B, all_path_naiv, times_LPG, times_B, times_naiv)
                 np.save(filename, everything)
 
             if len(argv) == 5:
-                loop_bool = eval('exp_count < max_exp')
+                loop_bool = eval('exp_count <= max_exp')
                 if not loop_bool:
                     sys.exit()
 
@@ -195,7 +203,10 @@ while loop_bool:
 
     # LPG
     if algorithm == 1:
+        start = time.time()
         waypoints = LPG.compute_waypoints(target, LPG_obstacles, rot, rot_a)
+        gait = LPG.compute_gait(waypoints, target, rot)
+        times_LPG.append(time.time() - start)
         #if draw:
             #LPG.draw_waypoints(ax, waypoints, robot_pos, rot)
 
@@ -206,11 +217,11 @@ while loop_bool:
         all_paths_LPG.append(waypoints_LPG)
         all_robot_pos_LPG.append(robot_pos)
 
-        gait = LPG.compute_gait(waypoints, target, rot)
-
     # BISEC
     if algorithm == 2:
+        start = time.time()
         (gait, waypoints_B) = B.get_gait(robot_pos, target, obstacles, 0, ax, show_sub)
+        times_B.append(time.time() - start)
         all_paths_B.append(waypoints_B)
         all_robot_pos_B.append(robot_pos)
         #if draw:
@@ -218,12 +229,14 @@ while loop_bool:
 
     # Naiv
     if algorithm == 3:
+        start = time.time()
         gait = N.compute_gait(robot_pos, target, obstacles)
+        times_naiv.append(time.time() - start)
 
     # simulate the gait
     if not pause and not do_skip_a:
         gait, target, robot_pos, rot, rot_a, actual_path_B, actual_path_LPG, actual_path_naiv, obstacles, LPG_obstacles = sim.simulate(gait, target, robot_pos, rot, rot_a, actual_path_B, actual_path_LPG, actual_path_naiv, obstacles, orig_obstacles, LPG_obstacles, algorithm)
-        deadlock = (len(actual_path_naiv) > 100 and algorithm == 3) or (len(actual_path_LPG) > 200 and algorithm == 1) or (len(actual_path_B) > 200 and algorithm == 2)
+        deadlock = (len(actual_path_naiv) > 200 and algorithm == 3) or (len(actual_path_LPG) > 200 and algorithm == 1) or (len(actual_path_B) > 200 and algorithm == 2)
         if deadlock:
             if algorithm == 1:
                 actual_path_LPG = []
@@ -245,7 +258,7 @@ while loop_bool:
 
     do_skip_a = False
 
-    ax.set_xlim([-5500, 5500])
-    ax.set_ylim([-3500, 3500])
     if draw:
+        ax.set_xlim([-5500, 5500])
+        ax.set_ylim([-3500, 3500])
         plt.pause(0.000000000001)

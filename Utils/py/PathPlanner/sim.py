@@ -55,8 +55,8 @@ def open_file(argv):
     the_file     = None
     max_exp  = None
     filename = None
-    draw     = None
-    if len(argv) > 2:
+    draw     = 't'
+    if len(argv) > 3:
         file_count = 0
         if len(argv) == 4:
             script, f, draw, filename = argv
