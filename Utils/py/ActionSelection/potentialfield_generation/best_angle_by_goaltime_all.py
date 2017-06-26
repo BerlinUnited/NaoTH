@@ -10,10 +10,6 @@ from tools import tools
 """
     This file simulates the  best angle for all positions on the field by simulation all the steps necessary to 
     score a goal and compares the time for each rotation. The rotation with the shortest time to goal is the best.
-    
-    -> Currently the resulting plot looks random and not at all what one would expect
-        -> Draw the arrow to the mean of the next ball position instead of the robots rotation
-        -> Currently in the model sidekicks are almost equal to short kicks
 """
 
 

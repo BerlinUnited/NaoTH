@@ -43,7 +43,7 @@ def main(x, y, s, rotation_step):
     # Todo: Several Simulations for given rotation -> instead of time use mean of times
     pos_total_time = sys.float_info.max
     best_rotation = 0
-    # TODO stepsize can be a parameter
+
     for rot in range(0, 360, rotation_step):
         # print("Start Rotation: " + str(rot))
         s.update_pos(m2d.Vector2(x, y), rotation=rot)
