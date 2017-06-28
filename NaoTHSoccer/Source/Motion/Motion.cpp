@@ -132,6 +132,8 @@ void Motion::init(naoth::ProcessInterface& platformInterface, const naoth::Platf
   platformInterface.registerInputChanel(getBodyState());
 
   std::cout << "[Motion] register end" << std::endl;
+
+  armStatus = ArmMotionRequest::arms_down;
 }//end init
 
 
@@ -150,6 +152,61 @@ void Motion::call()
   STOPWATCH_START("Motion:processSensorData");
   processSensorData();
   STOPWATCH_STOP("Motion:processSensorData");
+
+
+  //*******************************************
+  // HACK BEGIN: test if there is a collision
+  if (motorJointDataBuffer[JointData::LShoulderPitch].isFull()) {
+    double e = motorJointDataBuffer[JointData::LShoulderPitch].first() - getSensorJointData().position[JointData::LShoulderPitch];
+    collisionBufferLeft.add(std::fabs(e));
+  }
+  if (motorJointDataBuffer[JointData::RShoulderPitch].isFull()) {
+    double e = motorJointDataBuffer[JointData::RShoulderPitch].first() - getSensorJointData().position[JointData::RShoulderPitch];
+    collisionBufferRight.add(std::fabs(e));
+  }
+  PLOT("Motion:collisionBufferRight", collisionBufferRight.getAverage());
+  PLOT("Motion:collisionBufferLeft", collisionBufferLeft.getAverage());
+
+  double max_error = 0.02;
+  if (getMotionStatus().currentMotion == motion::walk) {
+    max_error = 0.05;
+  }
+
+
+  MODIFY("Motion:arms:max_error", max_error);
+  PLOT("Motion:collision_max_error", max_error);
+
+
+  if (armStatus != ArmMotionRequest::arms_back && collisionBufferRight.isFull() && collisionBufferLeft.isFull()
+    && getFrameInfo().getTimeSince(frameWhenArmsBack.getTime()) > 1000)
+  {
+    if (collisionBufferRight.getAverage() > max_error || collisionBufferLeft.getAverage() > max_error) {
+      armStatus = ArmMotionRequest::arms_back;
+      frameWhenArmsBack = getFrameInfo();
+    }
+  }
+
+  PLOT("Motion:collision_time", getFrameInfo().getTimeSince(frameWhenArmsBack.getTime())*0.001);
+  if (armStatus == ArmMotionRequest::arms_back && getFrameInfo().getTimeSince(frameWhenArmsBack.getTime()) > 3000)
+  {
+    if (getMotionStatus().currentMotion == motion::walk) {
+      armStatus = ArmMotionRequest::arms_none;
+    } else {
+      armStatus = ArmMotionRequest::arms_down;
+    }
+    frameWhenArmsBack = getFrameInfo();
+  }
+
+  if (armStatus != ArmMotionRequest::arms_back && getMotionStatus().currentMotion == motion::walk) {
+    armStatus = ArmMotionRequest::arms_none;
+  }
+
+  getMotionRequest().armMotionRequest.id = armStatus;
+
+  // HACK END:
+  //************************************************
+
+
 
   /**
   * run the motion engine

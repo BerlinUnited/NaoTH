@@ -57,6 +57,7 @@
 #include <Representations/Modeling/BodyState.h>
 
 #include <Tools/DataStructures/ParameterList.h>
+#include <Tools/DataStructures/RingBufferWithSum.h>
 
 BEGIN_DECLARE_MODULE(Motion)
   REQUIRE(GroundContactModel)
@@ -182,6 +183,11 @@ private:
   RingBuffer<double,100> currentsRingBuffer[naoth::JointData::numOfJoint];
 
   RingBuffer<double,4> motorJointDataBuffer[naoth::JointData::numOfJoint];
+
+  RingBufferWithSum<double, 100> collisionBufferLeft;
+  RingBufferWithSum<double, 100> collisionBufferRight;
+  naoth::FrameInfo frameWhenArmsBack;
+  ArmMotionRequest::ArmMotionID armStatus;
 };
 
 
