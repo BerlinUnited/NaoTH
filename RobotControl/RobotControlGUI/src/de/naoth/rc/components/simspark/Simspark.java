@@ -31,9 +31,8 @@ abstract class Simspark extends Thread {
      * @throws IOException if coudn't connect to the simspark instance
      */
     public void connect(String host, int port) throws IOException {
-        socket = new Socket();
+        socket = new Socket(host, port);
         socket.setSoTimeout(1000);
-        socket.connect(new InetSocketAddress(host, port), 1000);
 
         in = new DataInputStream(socket.getInputStream());
         out = new DataOutputStream(socket.getOutputStream());

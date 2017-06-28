@@ -3,6 +3,7 @@
 
 #include <Tools/ThreadUtil.h>
 #include <chrono>
+#include <iostream>
 
 using namespace naoth;
 using namespace std;
