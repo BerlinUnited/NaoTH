@@ -93,7 +93,7 @@ if len(argv) > 1:
 # plot
 while loop_bool:
     if draw:
-        mpl.rcParams['lines.linewidth'] = 0.5
+        #mpl.rcParams['lines.linewidth'] = 0.5
         plt.clf()
         plt.axis("equal")
         ax = plt.gca()
@@ -112,7 +112,7 @@ while loop_bool:
         print("Experiment " + str(exp_count) + ".")
         print(orig_target, orig_obstacles)
         keys["d"] = False
-    if len(argv) <= 2:
+    if len(argv) <= 3:
         if keys["e"] == True:
             print("Skipping current experiment.")
             do_skip_e = True
@@ -192,6 +192,8 @@ while loop_bool:
         all_robot_pos_B   = []
         # stupid experiment???
         do_skip_e = B.stupid_experiment(robot_pos, target, obstacles)
+        if not do_skip_e:
+            print(orig_target, orig_obstacles)
 
     # plot field
     if draw:
@@ -205,17 +207,18 @@ while loop_bool:
     if algorithm == 1:
         start = time.time()
         waypoints = LPG.compute_waypoints(target, LPG_obstacles, rot, rot_a)
-        gait = LPG.compute_gait(waypoints, target, rot)
-        times_LPG.append(time.time() - start)
-        #if draw:
-            #LPG.draw_waypoints(ax, waypoints, robot_pos, rot)
+        if waypoints is not None:
+            gait = LPG.compute_gait(waypoints, target, rot)
+            times_LPG.append(time.time() - start)
+            if draw:
+                LPG.draw_waypoints(ax, waypoints, robot_pos, rot)
 
-        #if draw:
-            #LPG.draw_LPG(ax, robot_pos, rot)
-        for k in waypoints:
-            waypoints_LPG.append(LPG.get_cell_mid(k, rot))
-        all_paths_LPG.append(waypoints_LPG)
-        all_robot_pos_LPG.append(robot_pos)
+            #if draw:
+                #LPG.draw_LPG(ax, robot_pos, rot)
+            for k in waypoints:
+                waypoints_LPG.append(LPG.get_cell_mid(k, rot))
+            all_paths_LPG.append(waypoints_LPG)
+            all_robot_pos_LPG.append(robot_pos)
 
     # BISEC
     if algorithm == 2:

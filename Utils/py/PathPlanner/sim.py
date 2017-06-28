@@ -49,7 +49,7 @@ def draw_field(ax):
     ax.plot([f.x_opponent_groundline, f.x_opponent_groundline + f.goal_depth], [f.goal_width*0.5, f.goal_width*0.5], 'white')  # Opp goal box
     ax.plot([f.x_opponent_groundline + f.goal_depth, f.x_opponent_groundline + f.goal_depth], [-f.goal_width*0.5, f.goal_width*0.5], 'white')  # Opp goal box
 
-    ax.set_axis_bgcolor('#21a540')
+    ax.set_axis_bgcolor('#21C540')
 
 def open_file(argv):
     the_file     = None

@@ -7,6 +7,7 @@ from matplotlib.patches import Circle
 import matplotlib as mpl
 import Queue as Q
 import copy
+import time
 
 base           = 1.1789
 minimal_cell   = 100
@@ -68,7 +69,7 @@ def a_star_search(start, goal, obstacles, rot):
     cost_so_far = {}
     came_from[start] = None
     cost_so_far[start] = 0
-
+    start = time.time()
     while not openlist.empty():
         current = openlist.get()[1]
 
@@ -101,6 +102,8 @@ def a_star_search(start, goal, obstacles, rot):
                     openlist.put((priority, the_next))
                     came_from[the_next] = current
 
+                if time.time() - start > 10:
+                    return None, None
     return came_from, cost_so_far
 
 def compute_waypoints(tar, obstacles, rot, rot_a):
@@ -108,6 +111,9 @@ def compute_waypoints(tar, obstacles, rot, rot_a):
     target = (0, rot_a)
 
     (a, b) = a_star_search(start, target, obstacles, rot)
+
+    if a is None:
+        return None
 
     the_next = target
     the_path = [the_next]
