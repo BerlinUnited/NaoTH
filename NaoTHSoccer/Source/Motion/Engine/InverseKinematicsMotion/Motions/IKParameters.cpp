@@ -45,6 +45,7 @@ IKParameters::IKParameters()
   PARAMETER_ANGLE_REGISTER(walk.general.bodyPitchOffset) = 0.2;
   PARAMETER_REGISTER(walk.general.hipOffsetX) = 15;
   PARAMETER_REGISTER(walk.general.stiffness) = 0.7;
+  PARAMETER_REGISTER(walk.general.stiffnessArms) = 0.7;
   PARAMETER_REGISTER(walk.general.useArm) = false;
   PARAMETER_REGISTER(walk.general.hipRollSingleSupFactorLeft) = 0.4;
   PARAMETER_REGISTER(walk.general.hipRollSingleSupFactorRight) = 0.4;

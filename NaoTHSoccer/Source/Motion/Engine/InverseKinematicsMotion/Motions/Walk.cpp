@@ -141,8 +141,17 @@ void Walk::execute()
   if(parameters().general.useArm) {
     getEngine().armsSynchronisedWithWalk(getRobotInfo(), c, getMotorJointData());
   }
-	// set the stiffness for walking
-  for( int i = JointData::RShoulderRoll; i < JointData::LHand; i++) {
+
+  // set stiffness for the arms
+  for (size_t i = JointData::RShoulderRoll; i <= JointData::LElbowYaw; ++i) {
+    getMotorJointData().stiffness[i] = parameters().general.stiffnessArms;
+  }
+  getMotorJointData().stiffness[JointData::LWristYaw] = parameters().general.stiffnessArms;
+  getMotorJointData().stiffness[JointData::RWristYaw] = parameters().general.stiffnessArms;
+
+ 
+	// set the legs stiffness for walking
+  for (size_t i = JointData::RHipYawPitch; i <= JointData::LAnkleRoll; ++i) {
     getMotorJointData().stiffness[i] = parameters().general.stiffness;
   }
 

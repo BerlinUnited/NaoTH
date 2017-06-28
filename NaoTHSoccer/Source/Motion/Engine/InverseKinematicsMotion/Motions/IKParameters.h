@@ -63,6 +63,7 @@ public:
       double hipOffsetX;
 
       double stiffness;
+      double stiffnessArms;
       bool   useArm;
 
       // hip joint correction
