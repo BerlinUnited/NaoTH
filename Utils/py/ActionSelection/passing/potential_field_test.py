@@ -4,13 +4,12 @@ from matplotlib.patches import Circle
 import numpy as np
 from tools import potential_field as pfield
 from naoth import math2d as m2d
-import math as m
 
 
 if __name__ == "__main__":
     # Constants for robot
-    velRot = 60  # grad pro sekunde
-    velWalk = 200  # mm pro sekunde
+    velRot = 60  # grad pro second
+    velWalk = 200  # mm pro second
     size_x = 4500
     size_y = 3000
 
@@ -20,15 +19,16 @@ if __name__ == "__main__":
 
     x_dim = x.size
     y_dim = y.size
-    zm = np.zeros((y_dim,x_dim))
+    zm = np.zeros((y_dim, x_dim))
 
-    own_robots = [m2d.Vector2(-2000,-2000), m2d.Vector2(2000,1000)]
-    opp_robots = [m2d.Vector2(0,1000),m2d.Vector2(3000,2000),m2d.Vector2(-1500,-500)]
-    #own_robots = []
-    #opp_robots = []
+    # own_robots = [m2d.Vector2(-2000, -2000), m2d.Vector2(2000, 1000)]
+    # opp_robots = [m2d.Vector2(0, 1000), m2d.Vector2(3000, 2000), m2d.Vector2(-1500, -500)]
+    # TODO where should the friendly robot be according to the graphic in my thesis
+    own_robots = []
+    opp_robots = []
     for i in range(int(y_dim)):
         for j in range(int(x_dim)):
-            zm[i,j] = pfield.evaluate_action_with_robots(m2d.Vector2(xm[i][j],ym[i][j]),opp_robots,own_robots)
+            zm[i, j] = pfield.evaluate_action_with_robots(m2d.Vector2(xm[i][j], ym[i][j]), opp_robots, own_robots)
 
     # plot
     fig = plt.figure(frameon=False)
@@ -66,6 +66,5 @@ if __name__ == "__main__":
         # ax.arrow(robot.x, origin.y, arrow_head.x, arrow_head.y, head_width=100, head_length=100, fc='k', ec='k')
         ax.text(robot.x, robot.y, "opp " + str(count2), fontsize=5)
         count2 += 1
-
 
     plt.show()

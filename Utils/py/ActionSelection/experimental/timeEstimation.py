@@ -15,39 +15,39 @@ mlp.rcParams.update(pgf_with_rc_fonts)
 
 
 def estimate_time(x, y):
-    strength = 1.5
-    radius = 2
+
+    # strength = 1.5
+    # radius = 2
     
     angle = np.degrees(np.arctan2(y, x))
     rot_time = np.abs(angle/velRot)
 
-    # calulate the distance
+    # calculate the distance
     distance = np.hypot(x, y)
-
     distance_time = distance/velWalk
-    total_time = distance_time + rot_time
-    for d1 in range(len(total_time)):
-        for d2 in range(len(total_time)):
-            total_time[d1][d2] =  1.5*total_time[d1][d2] * m.exp(-total_time[d1][d2] * 0.1)
+    total_time = distance_time + rot_time  # type: np.ndarray
 
-            if total_time[d1][d2] >= 5:
-                total_time[d1][d2] = 5
+    for d1 in range(len(x)):
+        for d2 in range(len(y)):
+            total_time[d1, d2] = 1.5*total_time[d1, d2] * m.exp(-total_time[d1, d2] * 0.1)
 
-            total_time[d1][d2] -= 5
-                
+            if total_time[d1, d2] >= 5:
+                total_time[d1, d2] = 5
+
+            total_time[d1, d2] -= 5
+
     return total_time
-
 
 
 if __name__ == "__main__":
     # Constants for robot
-    velRot = 60  # grad pro sekunde
-    velWalk = 200  # mm pro sekunde
+    velRot = 60  # grad pro second
+    velWalk = 200  # mm pro second
     size = 1000
 
-    x = np.arange(-size, size, 10)
-    y = np.arange(-size, size, 10)
-    xm, ym = np.meshgrid(x, y)
+    x_val = np.arange(-size, size, 10)
+    y_val = np.arange(-size, size, 10)
+    xm, ym = np.meshgrid(x_val, y_val)
 
     times = estimate_time(xm, ym)
 
@@ -66,10 +66,10 @@ if __name__ == "__main__":
     ax.spines['right'].set_visible(False)
     ax.spines['top'].set_visible(False)
 
-    ax.get_xaxis().tick_bottom()   # remove unneeded ticks 
+    ax.get_xaxis().tick_bottom()  # remove unneeded ticks
     ax.get_yaxis().tick_left()
           
-    CS1 = plt.contourf(x, y, times, 10, alpha=0.5, cmap="coolwarm", frameon=False)
+    CS1 = plt.contourf(x_val, y_val, times, 10, alpha=0.5, cmap="coolwarm", frameon=False)
     
     CS = plt.contour(CS1, levels=CS1.levels)
     plt.clabel(CS, inline=1, fontsize=10)
