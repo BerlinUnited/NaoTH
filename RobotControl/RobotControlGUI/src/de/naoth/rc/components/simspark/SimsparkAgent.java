@@ -16,6 +16,7 @@ public class SimsparkAgent extends Simspark
     /**
      * Main method of the simspark agent thread.
      */
+    @Override
     public void run() {
         if (socket == null) {
             return;
@@ -31,11 +32,6 @@ public class SimsparkAgent extends Simspark
             
             while (isConnected.get()) {
                 try {
-                    sleep(1);
-                } catch (InterruptedException ex) {
-                    Logger.getLogger(SimsparkAgent.class.getName()).log(Level.SEVERE, null, ex);
-                }
-                try {
                     // Simspark in "sync" mode ...
                     sendMessage("(syn)");
                     String msg = receiveMessage();
@@ -44,6 +40,7 @@ public class SimsparkAgent extends Simspark
                         System.out.println(msg);
                     }
                 } catch (IOException ex) {
+                    // check connection and disconnect if connection lost!
                     checkConnection();
                 }
             }

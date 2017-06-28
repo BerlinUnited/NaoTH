@@ -49,11 +49,6 @@ public class SimsparkMonitor extends Simspark {
         
         while (isConnected.get()) {
             try {
-                sleep(1);
-            } catch (InterruptedException ex) {
-                Logger.getLogger(SimsparkMonitor.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            try {
                 final String msg;
                 msg = receiveMessage();
 
