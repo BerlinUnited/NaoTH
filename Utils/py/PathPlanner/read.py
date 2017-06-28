@@ -161,12 +161,18 @@ print("BISEC: " + str(std_B_smooth))
 print("naive: " + str(std_naiv_smooth))
 
 
-plt.plot(naiv_dist, LPG_dist, '.')
-plt.plot(naiv_dist, B_dist, '+')
-plt.plot([0, 6000], [0, 6000])
+plt.plot(naiv_dist, LPG_dist, '.', color='orange')
+plt.plot([0, 6000], [0, 6000], c='red')
 plt.show()
 
-plt.plot(naiv_smooth, LPG_smooth, '.')
-plt.plot(naiv_smooth, B_smooth, '+')
-plt.plot([0, 16], [0, 16])
+plt.plot(naiv_dist, B_dist, '.', color='blue')
+plt.plot([0, 6000], [0, 6000], c='red')
+plt.show()
+
+plt.plot(naiv_smooth, LPG_smooth, '.', color='orange')
+plt.plot([0, 16], [0, 16], c='red')
+plt.show()
+
+plt.plot(naiv_smooth, B_smooth, '.', color='blue')
+plt.plot([0, 16], [0, 16], c='red')
 plt.show()

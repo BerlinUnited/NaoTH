@@ -139,6 +139,7 @@ while loop_bool:
         LPG_obstacles = copy.copy(orig_obstacles)
         target        = copy.copy(orig_target)
         robot_pos     = (0, 0)
+        deadlock      = False
     if do_skip_a:
         algorithm += 1
         if algorithm == 4:
@@ -162,6 +163,7 @@ while loop_bool:
         do_restart       = False
     # save experiment and start next
     if np.absolute(robot_pos[0] - orig_target[0]) < 1 and np.absolute(robot_pos[1] - orig_target[1]) < 1 and algorithm == 3 or do_skip_e or (deadlock and algorithm == 3):
+        deadlock = False
         if not do_skip_e:
             exp_count += 1
 
@@ -183,7 +185,7 @@ while loop_bool:
                     sys.exit()
 
             print("Experiment " + str(exp_count) + ".")
-            
+
         robot_pos, orig_robot_pos, target, orig_target, obstacles, orig_obstacles, LPG_obstacles, waypoints, orig_waypoints,actual_path_B, actual_path_LPG, actual_path_naiv = sim.new_experiment(sim_obst)
         waypoints_LPG = []
         all_paths_LPG = []
@@ -243,9 +245,12 @@ while loop_bool:
         if deadlock:
             if algorithm == 1:
                 actual_path_LPG = []
+                print(" ------------ DEADLOCK LPG ------------")
             elif algorithm == 2:
+                print(" ------------ DEADLOCK BISEC ------------")
                 actual_path_B = []
             elif algorithm == 3:
+                print(" ------------ DEADLOCK NAIV ------------")
                 actual_path_naiv = []
 
     # draw actual path

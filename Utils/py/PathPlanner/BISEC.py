@@ -152,8 +152,8 @@ def compute_path_it(start, target, obstacles, depth, ax, sign, show_sub):
 
 def get_gait(robot_pos, target, obstacles, depth, ax, show_sub):
     trajectory, waypoints  = compute_path_it(robot_pos, target, obstacles, 0, ax, None, show_sub)
-    if ax is not None:
-        ax.plot(trajectory[0][1][0], trajectory[0][1][1], 'x', c='red')
+    #if ax is not None:
+        #ax.plot(trajectory[0][1][0], trajectory[0][1][1], 'x', c='red')
 
     direction = np.array(trajectory[0][1]) - np.array(trajectory[0][0])
     distance  = np.linalg.norm(direction)
