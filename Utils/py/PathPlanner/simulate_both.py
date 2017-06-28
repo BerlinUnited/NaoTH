@@ -167,8 +167,6 @@ while loop_bool:
 
             algorithm = 1
 
-            print("Experiment " + str(exp_count) + ".")
-
             if exp_count > 1 and len(argv) > 2:
                 all_robot.append(orig_robot_pos)
                 all_target.append(orig_target)
@@ -184,6 +182,8 @@ while loop_bool:
                 if not loop_bool:
                     sys.exit()
 
+            print("Experiment " + str(exp_count) + ".")
+            
         robot_pos, orig_robot_pos, target, orig_target, obstacles, orig_obstacles, LPG_obstacles, waypoints, orig_waypoints,actual_path_B, actual_path_LPG, actual_path_naiv = sim.new_experiment(sim_obst)
         waypoints_LPG = []
         all_paths_LPG = []

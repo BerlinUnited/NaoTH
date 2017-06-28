@@ -1,25 +1,39 @@
 import numpy as np
 from sys import argv
 from matplotlib import pyplot as plt
-script, filename = argv
+if len(argv) == 1:
+    sys.exit()
 
-file = open(filename, 'r')
-all = np.load(file)
+filenames = []
+for k in range(1, len(argv)):
+    filenames.append(argv[k])
 
-robot_pos  = all[0]
-targets    = all[1]
-obstacles  = all[2]
-paths_LPG  = all[3]
-paths_B    = all[4]
-paths_naiv = all[5]
+robot_pos  = []
+targets    = []
+obstacles  = []
+paths_LPG  = []
+paths_B    = []
+paths_naiv = []
+times_LPG  = []
+times_B    = []
+times_naiv = []
 
-print("Anzahl der Daten: " + str(len(all[0])))
+for k in filenames:
+    file = open(k, 'r')
+    all = np.load(file)
+
+    robot_pos  += all[0]
+    targets    += all[1]
+    obstacles  += all[2]
+    paths_LPG  += all[3]
+    paths_B    += all[4]
+    paths_naiv += all[5]
+    times_LPG  += all[6]
+    times_B    += all[7]
+    times_naiv += all[8]
+
+print("Anzahl der Daten: " + str(len(robot_pos)))
 print("")
-
-if len(all) > 6:
-    times_LPG  = all[6]
-    times_B    = all[7]
-    times_naiv = all[8]
 
 LPG_dist  = []
 B_dist    = []
@@ -33,7 +47,7 @@ dead_LPG  = 0
 dead_B    = 0
 dead_naiv = 0
 
-for k in range(0, len(all[0])):
+for k in range(0, len(robot_pos)):
 
     if len(paths_LPG[k]) < 2 or len(paths_B[k]) < 2 or len(paths_naiv[k]) < 2:
         if len(paths_LPG[k]) < 2:
@@ -107,12 +121,52 @@ if len(all) > 6:
 print("")
 print("---------")
 print("")
-relative_B   = np.divide(B_dist, naiv_dist)
-relative_LPG = np.divide(LPG_dist, naiv_dist)
-print(np.mean(relative_B))
-print(np.mean(relative_LPG))
+print("Relative path lengths")
+relative_B_dist   = np.divide(B_dist, naiv_dist)
+relative_LPG_dist = np.divide(LPG_dist, naiv_dist)
+print("LPG    " + str(np.mean(relative_LPG_dist)))
+print("BISEC: " + str(np.mean(relative_B_dist)))
+
+print("")
+print("---------")
+print("")
+print("Relative path smoothness")
+relative_B_smooth   = np.divide(B_smooth, naiv_smooth)
+relative_LPG_smooth = np.divide(LPG_smooth, naiv_smooth)
+print("LPG    " + str(np.mean(relative_LPG_smooth)))
+print("BISEC: " + str(np.mean(relative_B_smooth)))
+
+print("")
+print("---------")
+print("")
+print("Standardabweichung Laenge")
+
+std_B_dist = np.std(B_dist)
+std_LPG_dist = np.std(LPG_dist)
+std_naiv_dist = np.std(naiv_dist)
+
+print("LPG:   " + str(std_LPG_dist))
+print("BISEC: " + str(std_B_dist))
+print("naive: " + str(std_naiv_dist))
+
+print("")
+print("Standardabweichung Glattheit")
+
+std_B_smooth = np.std(B_smooth)
+std_LPG_smooth = np.std(LPG_smooth)
+std_naiv_smooth = np.std(naiv_smooth)
+
+print("LPG:   " + str(std_LPG_smooth))
+print("BISEC: " + str(std_B_smooth))
+print("naive: " + str(std_naiv_smooth))
+
 
 plt.plot(naiv_dist, LPG_dist, '.')
 plt.plot(naiv_dist, B_dist, '+')
 plt.plot([0, 6000], [0, 6000])
+plt.show()
+
+plt.plot(naiv_smooth, LPG_smooth, '.')
+plt.plot(naiv_smooth, B_smooth, '+')
+plt.plot([0, 16], [0, 16])
 plt.show()
