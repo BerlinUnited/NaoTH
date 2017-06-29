@@ -60,7 +60,7 @@ outputCN5 = activations(cn, ball, 5);
 
 % softmax manual
 exponents = output4 - max(output4);
-expX = exp(output4);
+expX = exp(exponents);
 output5 = expX./sum(expX);
 
 diff = max(max(abs(output5 - outputCN5)));

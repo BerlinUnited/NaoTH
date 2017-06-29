@@ -28,7 +28,7 @@ for i = 1:numel(layers)
        [rows,cols] = addFullyConnectedLayer(fileID,i,layers(i),rows,cols);
        fprintf(' [done]');
     case 'nnet.cnn.layer.SoftmaxLayer'
-       %dummy();
+       addSoftMaxLayer(fileID,i,rows,cols)
        fprintf(' [missing]');
     case 'nnet.cnn.layer.ClassificationOutputLayer'
        %dummy();
