@@ -12,7 +12,7 @@ outputCN1 = activations(cn, ball, 1);
 
 % input manual
 averageImage = struct(cn.Layers(1)).PrivateLayer.AverageImage;
-output1 = reshape(single(ball) - averageImage, 16*16, 1);
+output1 = reshape(single(ball) - averageImage, 1, 16*16);
 
 diff = max(max(abs(output1 - outputCN1)));
 fprintf('InputLayer error: %f\n',diff);
