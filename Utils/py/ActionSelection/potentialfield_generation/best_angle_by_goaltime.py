@@ -40,101 +40,109 @@ def main(x, y, s, rotation_step):
 
     action_list = [kick_short]
 
-    # Todo: Several Simulations for given rotation -> instead of time use mean of times
-    pos_total_time = sys.float_info.max
-    best_rotation = 0
+    repetitions = 10
+    best_times = []
+    best_rotations = []
 
-    for rot in range(0, 360, rotation_step):
-        # print("Start Rotation: " + str(rot))
-        s.update_pos(m2d.Vector2(x, y), rotation=rot)
-        num_kicks = 0
-        num_turn_degrees = 0
-        goal_scored = False
-        max_turn_credit = 360  # FIXME
+    for reps in range(repetitions):
+        pos_total_time = sys.float_info.max
+        best_rotation = 0
 
-        total_time = 0
+        for rot in range(0, 360, rotation_step):
+            # print("Start Rotation: " + str(rot))
+            s.update_pos(m2d.Vector2(x, y), rotation=rot)
+            num_kicks = 0
+            num_turn_degrees = 0
+            goal_scored = False
+            max_turn_credit = 360  # FIXME
 
-        while not goal_scored:
+            total_time = 0
 
-            actions_consequences = []
-            # Simulate Consequences
-            for action in action_list:
-                single_consequence = a.ActionResults([])
-                actions_consequences.append(Sim.simulate_consequences(action, single_consequence, s, a.num_particles))
+            while not goal_scored:
 
-            # Decide best action
-            best_action = Sim.decide_smart(actions_consequences, s)
+                actions_consequences = []
+                # Simulate Consequences
+                for action in action_list:
+                    single_consequence = a.ActionResults([])
+                    actions_consequences.append(Sim.simulate_consequences(action, single_consequence, s, a.num_particles))
 
-            # expected_ball_pos should be in local coordinates for rotation calculations
-            expected_ball_pos = actions_consequences[best_action].expected_ball_pos
+                # Decide best action
+                best_action = Sim.decide_smart(actions_consequences, s)
 
-            # Check if expected_ball_pos inside opponent goal
-            opp_goal_back_right = m2d.Vector2(field.opponent_goalpost_right.x + field.goal_depth, field.opponent_goalpost_right.y)
-            opp_goal_box = m2d.Rect2d(opp_goal_back_right, field.opponent_goalpost_left)
+                # expected_ball_pos should be in local coordinates for rotation calculations
+                expected_ball_pos = actions_consequences[best_action].expected_ball_pos
 
-            goal_scored = opp_goal_box.inside(s.pose * expected_ball_pos)
-            inside_field = field.field_rect.inside(s.pose * expected_ball_pos)
+                # Check if expected_ball_pos inside opponent goal
+                opp_goal_back_right = m2d.Vector2(field.opponent_goalpost_right.x + field.goal_depth, field.opponent_goalpost_right.y)
+                opp_goal_box = m2d.Rect2d(opp_goal_back_right, field.opponent_goalpost_left)
 
-            if max_turn_credit <= 0:
-                print("x: " + str(x) + " y: " + str(y) + " - Credit: " + str(max_turn_credit))
-                a.histogram[50-1] += 1  # means oscillation or that 36 times turning by rot degrees wasn't enough
-                break
+                goal_scored = opp_goal_box.inside(s.pose * expected_ball_pos)
+                inside_field = field.field_rect.inside(s.pose * expected_ball_pos)
 
-            # Assert that expected_ball_pos is inside field or inside opp goal
-            # HACK: the real robot would shoot out
-            elif not inside_field and not goal_scored:
+                if max_turn_credit <= 0:
+                    print("x: " + str(x) + " y: " + str(y) + " - Credit: " + str(max_turn_credit))
+                    a.histogram[50-1] += 1  # means oscillation or that 36 times turning by rot degrees wasn't enough
+                    break
 
-                # print("Ball out at x: " + str(s.pose.translation.x) + " y: " + str(s.pose.translation.y) + " Rotation: " + str(s.pose.rotation))
-                total_time += 10000
-                a.histogram[0] += 1
-                # TODO indicate in time 2D Plot that this position leads to a ball out
-                break
+                # Assert that expected_ball_pos is inside field or inside opp goal
+                # HACK: the real robot would shoot out
+                elif not inside_field and not goal_scored:
 
-            elif not action_list[best_action].name == "none":
-                max_turn_credit = 360
+                    # print("Ball out at x: " + str(s.pose.translation.x) + " y: " + str(s.pose.translation.y) + " Rotation: " + str(s.pose.rotation))
+                    total_time += 10000  # TODO: set to Nan and dont use for mean calculation
+                    a.histogram[0] += 1
+                    # TODO indicate in time 2D Plot that this position leads to a ball out
+                    break
 
-                # calculate the time needed
-                rotation = np.arctan2(expected_ball_pos.y, expected_ball_pos.x)
-                rotation_time = np.abs(rotation / s.rotation_vel)
-                distance = np.hypot(expected_ball_pos.x, expected_ball_pos.y)
-                distance_time = distance / s.walking_vel
-                total_time += distance_time + rotation_time
+                elif not action_list[best_action].name == "none":
+                    max_turn_credit = 360
 
-                # update the robots position
-                s.update_pos(s.pose * expected_ball_pos, s.pose.rotation + rotation)
+                    # calculate the time needed
+                    rotation = np.arctan2(expected_ball_pos.y, expected_ball_pos.x)
+                    rotation_time = np.abs(rotation / s.rotation_vel)
+                    distance = np.hypot(expected_ball_pos.x, expected_ball_pos.y)
+                    distance_time = distance / s.walking_vel
+                    total_time += distance_time + rotation_time
 
-                num_kicks += 1
+                    # update the robots position
+                    s.update_pos(s.pose * expected_ball_pos, s.pose.rotation + rotation)
 
-            elif action_list[best_action].name == "none":
+                    num_kicks += 1
 
-                # Calculate rotation time
-                total_time += np.abs(math.radians(10) / s.rotation_vel)
+                elif action_list[best_action].name == "none":
 
-                attack_direction = attack_dir.get_attack_direction(s)
-                attack_direction = math.degrees((attack_direction.angle()))
-                # Can run in a deadlock for some reason - Hack: abort if max_turn_credit is 0
-                if attack_direction > 0:
-                    s.update_pos(s.pose.translation, s.pose.rotation + math.radians(15))  # Should be turn right
-                    max_turn_credit -= 10
+                    # Calculate rotation time
+                    total_time += np.abs(math.radians(10) / s.rotation_vel)
+
+                    attack_direction = attack_dir.get_attack_direction(s)
+                    attack_direction = math.degrees((attack_direction.angle()))
+                    # Can run in a deadlock for some reason - Hack: abort if max_turn_credit is 0
+                    if attack_direction > 0:
+                        s.update_pos(s.pose.translation, s.pose.rotation + math.radians(15))  # Should be turn right
+                        max_turn_credit -= 10
+                    else:
+                        s.update_pos(s.pose.translation, s.pose.rotation - math.radians(15))  # Should be turn left
+                        max_turn_credit -= 10
+
+                    num_turn_degrees += 1
                 else:
-                    s.update_pos(s.pose.translation, s.pose.rotation - math.radians(15))  # Should be turn left
-                    max_turn_credit -= 10
+                    print("HUGE ERROR")
+                    break
 
-                num_turn_degrees += 1
-            else:
-                print("HUGE ERROR")
-                break
+            # print(total_time)
+            if pos_total_time > total_time:
+                pos_total_time = total_time
+                best_rotation = rot
 
-        # print(total_time)
-        if pos_total_time > total_time:
-            pos_total_time = total_time
-            best_rotation = rot
+        best_times.append(pos_total_time)
+        best_rotations.append(best_rotation)
 
-    print("Shortest Time: " + str(pos_total_time) + " with global Rotation of robot: " + str(best_rotation) + " StartX " + str(start_x))
-    return pos_total_time, best_rotation
+    print("Shortest Time: " + str(np.mean(best_times)) + " with global Rotation of robot: " + str(np.mean(best_rotations)) + " StartX " + str(start_x))
+
+    return np.mean(best_times), np.mean(best_rotations)
 
 
 if __name__ == "__main__":
     state = State()
-    rotation_step = 10
-    main(state.pose.translation.x, state.pose.translation.y, state, rotation_step)
+    rot_step = 10
+    main(state.pose.translation.x, state.pose.translation.y, state, rot_step)
