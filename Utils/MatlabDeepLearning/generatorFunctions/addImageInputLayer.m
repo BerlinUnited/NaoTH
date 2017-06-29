@@ -15,9 +15,9 @@ fprintf(fileID, 'double out_step%d[%d][%d];\n\n', step, rows, cols);
 
 fprintf(fileID, '// performe zero mean normalization\n');
 for x = 1:rows
-        for y = 1:cols
-            fprintf(fileID, 'out_step%d[%d][%d] = out_step%d[%d][%d] - %0.5e;\n', step, x-1, y-1, step-1, x-1, y-1, averageImage(x,y));
-        end
+    for y = 1:cols
+        fprintf(fileID, 'out_step%d[%2d][%2d] = out_step%d[%2d][%2d] - %.8f;\n', step, x-1, y-1, step-1, x-1, y-1, averageImage(x,y));
+    end
 end
 
 end
