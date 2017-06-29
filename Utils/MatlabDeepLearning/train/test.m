@@ -53,6 +53,24 @@ output4 = (w*output3' + b)';
 diff = max(max(abs(output4 - outputCN4)));
 fprintf('FullyConnected error: %f\n',diff);
 
+%%
+%
+%input = reshape(output3,14,14);
+%result = [0,0];
+%for out = 1:2 % 
+%    
+%    % iterate over input
+%    for x = 1 : 14
+%        for y = 1 : 14
+%            idx = 1+(x-1)*14 + (y-1);
+%            result(out) = result(out) + w(out,idx)*input(y, x);
+%        end
+%    end
+%    result(out) = result(out) + b(out);
+%end
+%result
+%diff = max(max(abs(result - output4)));
+%fprintf('ddd error: %f\n',diff);
 
 %% check softmax
 % softmax cn
