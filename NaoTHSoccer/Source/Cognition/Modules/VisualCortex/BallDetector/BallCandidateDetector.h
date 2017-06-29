@@ -33,6 +33,7 @@
 #include "Tools/BestPatchList.h"
 #include "Tools/BallKeyPointExtractor.h"
 #include "Tools/CVHaarClassifier.h"
+#include "Tools/CNNClassifier.h"
 #include "Tools/BlackSpotExtractor.h"
 
 // debug
@@ -186,6 +187,7 @@ private:
 
 private:
   CVHaarClassifier cvHaarClassifier;
+  CNNClassifier cnnClassifier;
   ModuleCreator<BallKeyPointExtractor>* theBallKeyPointExtractor;
   BestPatchList best;
 
