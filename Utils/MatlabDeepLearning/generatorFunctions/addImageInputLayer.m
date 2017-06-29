@@ -2,6 +2,9 @@ function [ output_args ] = addImageInputLayer(fileID,step,layer)
 %ADDIMAGEINPUTLAYER Summary of this function goes here
 %   Detailed explanation goes here
 
+% HACK: we need to access a private member 'PrivateLayer' in order to get
+% the average image
+warning off MATLAB:structOnObject
 averageImage = struct(layer).PrivateLayer.AverageImage;
 
 rows = layer.InputSize(1);

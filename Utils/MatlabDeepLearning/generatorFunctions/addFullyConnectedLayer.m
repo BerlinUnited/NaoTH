@@ -2,6 +2,7 @@ function [ out_rows, out_cols ] = addFullyConnectedLayer( fileID,step,layer,rows
 %ADDFULLYCONNECTEDLAYER Summary of this function goes here
 %   Detailed explanation goes here
 out_rows = layer.OutputSize;
+out_cols = 1;
 
 bias     = layer.Bias;
 weights  = reshape(layer.Weights,out_rows,rows,cols);
