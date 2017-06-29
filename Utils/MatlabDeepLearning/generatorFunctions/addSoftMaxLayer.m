@@ -19,15 +19,15 @@ fprintf(fileID, '// subtract max, use as exponent and sum up\n');
 fprintf(fileID, 'double sum = 0;\n');
 fprintf(fileID, 'for ( int i = 0; i < %d; i++){\n',rows);
 fprintf(fileID, '\tfor ( int j = 0; j < %d; j++){\n',cols);
-fprintf(fileID, '\t\tout_step%d[i][j] = exp(out_step%d[i][j] - x_max)\n',step,step-1);
-fprintf(fileID, '\t\tsum += out_step%d[i][j] \n',step);
+fprintf(fileID, '\t\tout_step%d[i][j] = exp(out_step%d[i][j] - x_max);\n',step,step-1);
+fprintf(fileID, '\t\tsum += out_step%d[i][j]; \n',step);
 fprintf(fileID, '\t}\n');
 fprintf(fileID, '}\n\n');
 
 fprintf(fileID, '// normalize\n');
 fprintf(fileID, 'for ( int i = 0; i < %d; i++){\n',rows);
 fprintf(fileID, '\tfor ( int j = 0; j < %d; j++){\n',cols);
-fprintf(fileID, '\t\tout_step%d[i][j] /= sum\n',step);
+fprintf(fileID, '\t\tout_step%d[i][j] /= sum;\n',step);
 fprintf(fileID, '\t}\n');
 fprintf(fileID, '}\n');
 end
