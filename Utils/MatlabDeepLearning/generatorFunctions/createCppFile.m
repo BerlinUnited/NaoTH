@@ -1,11 +1,13 @@
-function [path] = createCppFile(convnet)
+function [path] = createCppFile(convnet, file)
+
+fileID = fopen(file, 'w');
 
 layers = convnet.Layers;
 
 for i = 1:numel(layers)
    switch class(layers(i))
     case 'nnet.cnn.layer.ImageInputLayer'
-       addImageInputLayer(fileID,i,layer(i));
+       addImageInputLayer(fileID,i,layers(i));
        
        rows = layers(i).InputSize(1);
        cols = layers(i).InputSize(2);
