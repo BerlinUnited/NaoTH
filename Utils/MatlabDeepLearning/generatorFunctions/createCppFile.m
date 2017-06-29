@@ -29,7 +29,7 @@ for i = 1:numel(layers)
        fprintf(' [done]');
     case 'nnet.cnn.layer.SoftmaxLayer'
        addSoftMaxLayer(fileID,i,rows,cols)
-       fprintf(' [missing]');
+       fprintf(' [done]');
     case 'nnet.cnn.layer.ClassificationOutputLayer'
        %dummy();
        fprintf(' [missing]');
