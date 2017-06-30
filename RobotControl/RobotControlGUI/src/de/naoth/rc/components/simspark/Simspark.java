@@ -103,7 +103,7 @@ abstract class Simspark extends Thread {
         } catch (IOException e) {
             System.out.println("Error writing to socket. Has the server been shut down?");
         }
-        if (msg != "(syn)") {
+        if (!msg.equals("(syn)")) {
             System.out.println("sended msg: " + msg);
         }
     }
@@ -123,36 +123,31 @@ abstract class Simspark extends Thread {
      * messages).
      */
     public String getServerMessage() {
-        String msg = "keine Nachricht";
-        byte[] result;
-        int length;
-
         try {
-            if (in.available() == 0) {
-                return null;
-            }
+            // read "header"
             int byte0 = in.read();
             int byte1 = in.read();
             int byte2 = in.read();
             int byte3 = in.read();
-            length = byte0 << 24 | byte1 << 16 | byte2 << 8 | byte3; // analyzes
-            // the header
-            int total = 0;
-
+            // analyzes the header
+            int length = byte0 << 24 | byte1 << 16 | byte2 << 8 | byte3;
+            // was the server shutdown
             if (length < 0) {
-                // server was shutdown
                 System.out.println("Server ist down.");
+                isRunning = false;
+                return null;
             }
 
-            result = new byte[length];
+            byte[] result = new byte[length];
+            int total = 0;
             while (total < length) {
                 total += in.read(result, total, length - total);
             }
-            msg = new String(result, 0, length, "UTF-8");
+            return new String(result, 0, length, "UTF-8");
         } catch (IOException e) {
             System.out.println("Error when reading from socket. Has the server been shut down?");
-            return null;
+            isRunning = false;
         }
-        return msg;
+        return null;
     }
 } // end class Simspark
