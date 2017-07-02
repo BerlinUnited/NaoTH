@@ -4,2009 +4,5852 @@ bool CNNClassifier::classify(const BallCandidates::Patch& p){
 // copy patch into intial data array out_step0
 ASSERT(p.data.size() == 256);
 
-out_step0[ 0][ 0] = p.data[ 0];
-out_step0[ 0][ 1] = p.data[16];
-out_step0[ 0][ 2] = p.data[32];
-out_step0[ 0][ 3] = p.data[48];
-out_step0[ 0][ 4] = p.data[64];
-out_step0[ 0][ 5] = p.data[80];
-out_step0[ 0][ 6] = p.data[96];
-out_step0[ 0][ 7] = p.data[112];
-out_step0[ 0][ 8] = p.data[128];
-out_step0[ 0][ 9] = p.data[144];
-out_step0[ 0][10] = p.data[160];
-out_step0[ 0][11] = p.data[176];
-out_step0[ 0][12] = p.data[192];
-out_step0[ 0][13] = p.data[208];
-out_step0[ 0][14] = p.data[224];
-out_step0[ 0][15] = p.data[240];
-out_step0[ 1][ 0] = p.data[ 1];
-out_step0[ 1][ 1] = p.data[17];
-out_step0[ 1][ 2] = p.data[33];
-out_step0[ 1][ 3] = p.data[49];
-out_step0[ 1][ 4] = p.data[65];
-out_step0[ 1][ 5] = p.data[81];
-out_step0[ 1][ 6] = p.data[97];
-out_step0[ 1][ 7] = p.data[113];
-out_step0[ 1][ 8] = p.data[129];
-out_step0[ 1][ 9] = p.data[145];
-out_step0[ 1][10] = p.data[161];
-out_step0[ 1][11] = p.data[177];
-out_step0[ 1][12] = p.data[193];
-out_step0[ 1][13] = p.data[209];
-out_step0[ 1][14] = p.data[225];
-out_step0[ 1][15] = p.data[241];
-out_step0[ 2][ 0] = p.data[ 2];
-out_step0[ 2][ 1] = p.data[18];
-out_step0[ 2][ 2] = p.data[34];
-out_step0[ 2][ 3] = p.data[50];
-out_step0[ 2][ 4] = p.data[66];
-out_step0[ 2][ 5] = p.data[82];
-out_step0[ 2][ 6] = p.data[98];
-out_step0[ 2][ 7] = p.data[114];
-out_step0[ 2][ 8] = p.data[130];
-out_step0[ 2][ 9] = p.data[146];
-out_step0[ 2][10] = p.data[162];
-out_step0[ 2][11] = p.data[178];
-out_step0[ 2][12] = p.data[194];
-out_step0[ 2][13] = p.data[210];
-out_step0[ 2][14] = p.data[226];
-out_step0[ 2][15] = p.data[242];
-out_step0[ 3][ 0] = p.data[ 3];
-out_step0[ 3][ 1] = p.data[19];
-out_step0[ 3][ 2] = p.data[35];
-out_step0[ 3][ 3] = p.data[51];
-out_step0[ 3][ 4] = p.data[67];
-out_step0[ 3][ 5] = p.data[83];
-out_step0[ 3][ 6] = p.data[99];
-out_step0[ 3][ 7] = p.data[115];
-out_step0[ 3][ 8] = p.data[131];
-out_step0[ 3][ 9] = p.data[147];
-out_step0[ 3][10] = p.data[163];
-out_step0[ 3][11] = p.data[179];
-out_step0[ 3][12] = p.data[195];
-out_step0[ 3][13] = p.data[211];
-out_step0[ 3][14] = p.data[227];
-out_step0[ 3][15] = p.data[243];
-out_step0[ 4][ 0] = p.data[ 4];
-out_step0[ 4][ 1] = p.data[20];
-out_step0[ 4][ 2] = p.data[36];
-out_step0[ 4][ 3] = p.data[52];
-out_step0[ 4][ 4] = p.data[68];
-out_step0[ 4][ 5] = p.data[84];
-out_step0[ 4][ 6] = p.data[100];
-out_step0[ 4][ 7] = p.data[116];
-out_step0[ 4][ 8] = p.data[132];
-out_step0[ 4][ 9] = p.data[148];
-out_step0[ 4][10] = p.data[164];
-out_step0[ 4][11] = p.data[180];
-out_step0[ 4][12] = p.data[196];
-out_step0[ 4][13] = p.data[212];
-out_step0[ 4][14] = p.data[228];
-out_step0[ 4][15] = p.data[244];
-out_step0[ 5][ 0] = p.data[ 5];
-out_step0[ 5][ 1] = p.data[21];
-out_step0[ 5][ 2] = p.data[37];
-out_step0[ 5][ 3] = p.data[53];
-out_step0[ 5][ 4] = p.data[69];
-out_step0[ 5][ 5] = p.data[85];
-out_step0[ 5][ 6] = p.data[101];
-out_step0[ 5][ 7] = p.data[117];
-out_step0[ 5][ 8] = p.data[133];
-out_step0[ 5][ 9] = p.data[149];
-out_step0[ 5][10] = p.data[165];
-out_step0[ 5][11] = p.data[181];
-out_step0[ 5][12] = p.data[197];
-out_step0[ 5][13] = p.data[213];
-out_step0[ 5][14] = p.data[229];
-out_step0[ 5][15] = p.data[245];
-out_step0[ 6][ 0] = p.data[ 6];
-out_step0[ 6][ 1] = p.data[22];
-out_step0[ 6][ 2] = p.data[38];
-out_step0[ 6][ 3] = p.data[54];
-out_step0[ 6][ 4] = p.data[70];
-out_step0[ 6][ 5] = p.data[86];
-out_step0[ 6][ 6] = p.data[102];
-out_step0[ 6][ 7] = p.data[118];
-out_step0[ 6][ 8] = p.data[134];
-out_step0[ 6][ 9] = p.data[150];
-out_step0[ 6][10] = p.data[166];
-out_step0[ 6][11] = p.data[182];
-out_step0[ 6][12] = p.data[198];
-out_step0[ 6][13] = p.data[214];
-out_step0[ 6][14] = p.data[230];
-out_step0[ 6][15] = p.data[246];
-out_step0[ 7][ 0] = p.data[ 7];
-out_step0[ 7][ 1] = p.data[23];
-out_step0[ 7][ 2] = p.data[39];
-out_step0[ 7][ 3] = p.data[55];
-out_step0[ 7][ 4] = p.data[71];
-out_step0[ 7][ 5] = p.data[87];
-out_step0[ 7][ 6] = p.data[103];
-out_step0[ 7][ 7] = p.data[119];
-out_step0[ 7][ 8] = p.data[135];
-out_step0[ 7][ 9] = p.data[151];
-out_step0[ 7][10] = p.data[167];
-out_step0[ 7][11] = p.data[183];
-out_step0[ 7][12] = p.data[199];
-out_step0[ 7][13] = p.data[215];
-out_step0[ 7][14] = p.data[231];
-out_step0[ 7][15] = p.data[247];
-out_step0[ 8][ 0] = p.data[ 8];
-out_step0[ 8][ 1] = p.data[24];
-out_step0[ 8][ 2] = p.data[40];
-out_step0[ 8][ 3] = p.data[56];
-out_step0[ 8][ 4] = p.data[72];
-out_step0[ 8][ 5] = p.data[88];
-out_step0[ 8][ 6] = p.data[104];
-out_step0[ 8][ 7] = p.data[120];
-out_step0[ 8][ 8] = p.data[136];
-out_step0[ 8][ 9] = p.data[152];
-out_step0[ 8][10] = p.data[168];
-out_step0[ 8][11] = p.data[184];
-out_step0[ 8][12] = p.data[200];
-out_step0[ 8][13] = p.data[216];
-out_step0[ 8][14] = p.data[232];
-out_step0[ 8][15] = p.data[248];
-out_step0[ 9][ 0] = p.data[ 9];
-out_step0[ 9][ 1] = p.data[25];
-out_step0[ 9][ 2] = p.data[41];
-out_step0[ 9][ 3] = p.data[57];
-out_step0[ 9][ 4] = p.data[73];
-out_step0[ 9][ 5] = p.data[89];
-out_step0[ 9][ 6] = p.data[105];
-out_step0[ 9][ 7] = p.data[121];
-out_step0[ 9][ 8] = p.data[137];
-out_step0[ 9][ 9] = p.data[153];
-out_step0[ 9][10] = p.data[169];
-out_step0[ 9][11] = p.data[185];
-out_step0[ 9][12] = p.data[201];
-out_step0[ 9][13] = p.data[217];
-out_step0[ 9][14] = p.data[233];
-out_step0[ 9][15] = p.data[249];
-out_step0[10][ 0] = p.data[10];
-out_step0[10][ 1] = p.data[26];
-out_step0[10][ 2] = p.data[42];
-out_step0[10][ 3] = p.data[58];
-out_step0[10][ 4] = p.data[74];
-out_step0[10][ 5] = p.data[90];
-out_step0[10][ 6] = p.data[106];
-out_step0[10][ 7] = p.data[122];
-out_step0[10][ 8] = p.data[138];
-out_step0[10][ 9] = p.data[154];
-out_step0[10][10] = p.data[170];
-out_step0[10][11] = p.data[186];
-out_step0[10][12] = p.data[202];
-out_step0[10][13] = p.data[218];
-out_step0[10][14] = p.data[234];
-out_step0[10][15] = p.data[250];
-out_step0[11][ 0] = p.data[11];
-out_step0[11][ 1] = p.data[27];
-out_step0[11][ 2] = p.data[43];
-out_step0[11][ 3] = p.data[59];
-out_step0[11][ 4] = p.data[75];
-out_step0[11][ 5] = p.data[91];
-out_step0[11][ 6] = p.data[107];
-out_step0[11][ 7] = p.data[123];
-out_step0[11][ 8] = p.data[139];
-out_step0[11][ 9] = p.data[155];
-out_step0[11][10] = p.data[171];
-out_step0[11][11] = p.data[187];
-out_step0[11][12] = p.data[203];
-out_step0[11][13] = p.data[219];
-out_step0[11][14] = p.data[235];
-out_step0[11][15] = p.data[251];
-out_step0[12][ 0] = p.data[12];
-out_step0[12][ 1] = p.data[28];
-out_step0[12][ 2] = p.data[44];
-out_step0[12][ 3] = p.data[60];
-out_step0[12][ 4] = p.data[76];
-out_step0[12][ 5] = p.data[92];
-out_step0[12][ 6] = p.data[108];
-out_step0[12][ 7] = p.data[124];
-out_step0[12][ 8] = p.data[140];
-out_step0[12][ 9] = p.data[156];
-out_step0[12][10] = p.data[172];
-out_step0[12][11] = p.data[188];
-out_step0[12][12] = p.data[204];
-out_step0[12][13] = p.data[220];
-out_step0[12][14] = p.data[236];
-out_step0[12][15] = p.data[252];
-out_step0[13][ 0] = p.data[13];
-out_step0[13][ 1] = p.data[29];
-out_step0[13][ 2] = p.data[45];
-out_step0[13][ 3] = p.data[61];
-out_step0[13][ 4] = p.data[77];
-out_step0[13][ 5] = p.data[93];
-out_step0[13][ 6] = p.data[109];
-out_step0[13][ 7] = p.data[125];
-out_step0[13][ 8] = p.data[141];
-out_step0[13][ 9] = p.data[157];
-out_step0[13][10] = p.data[173];
-out_step0[13][11] = p.data[189];
-out_step0[13][12] = p.data[205];
-out_step0[13][13] = p.data[221];
-out_step0[13][14] = p.data[237];
-out_step0[13][15] = p.data[253];
-out_step0[14][ 0] = p.data[14];
-out_step0[14][ 1] = p.data[30];
-out_step0[14][ 2] = p.data[46];
-out_step0[14][ 3] = p.data[62];
-out_step0[14][ 4] = p.data[78];
-out_step0[14][ 5] = p.data[94];
-out_step0[14][ 6] = p.data[110];
-out_step0[14][ 7] = p.data[126];
-out_step0[14][ 8] = p.data[142];
-out_step0[14][ 9] = p.data[158];
-out_step0[14][10] = p.data[174];
-out_step0[14][11] = p.data[190];
-out_step0[14][12] = p.data[206];
-out_step0[14][13] = p.data[222];
-out_step0[14][14] = p.data[238];
-out_step0[14][15] = p.data[254];
-out_step0[15][ 0] = p.data[15];
-out_step0[15][ 1] = p.data[31];
-out_step0[15][ 2] = p.data[47];
-out_step0[15][ 3] = p.data[63];
-out_step0[15][ 4] = p.data[79];
-out_step0[15][ 5] = p.data[95];
-out_step0[15][ 6] = p.data[111];
-out_step0[15][ 7] = p.data[127];
-out_step0[15][ 8] = p.data[143];
-out_step0[15][ 9] = p.data[159];
-out_step0[15][10] = p.data[175];
-out_step0[15][11] = p.data[191];
-out_step0[15][12] = p.data[207];
-out_step0[15][13] = p.data[223];
-out_step0[15][14] = p.data[239];
-out_step0[15][15] = p.data[255];
+out_step0[ 0][ 0][0] = p.data[ 0];
+out_step0[ 0][ 1][0] = p.data[16];
+out_step0[ 0][ 2][0] = p.data[32];
+out_step0[ 0][ 3][0] = p.data[48];
+out_step0[ 0][ 4][0] = p.data[64];
+out_step0[ 0][ 5][0] = p.data[80];
+out_step0[ 0][ 6][0] = p.data[96];
+out_step0[ 0][ 7][0] = p.data[112];
+out_step0[ 0][ 8][0] = p.data[128];
+out_step0[ 0][ 9][0] = p.data[144];
+out_step0[ 0][10][0] = p.data[160];
+out_step0[ 0][11][0] = p.data[176];
+out_step0[ 0][12][0] = p.data[192];
+out_step0[ 0][13][0] = p.data[208];
+out_step0[ 0][14][0] = p.data[224];
+out_step0[ 0][15][0] = p.data[240];
+out_step0[ 1][ 0][0] = p.data[ 1];
+out_step0[ 1][ 1][0] = p.data[17];
+out_step0[ 1][ 2][0] = p.data[33];
+out_step0[ 1][ 3][0] = p.data[49];
+out_step0[ 1][ 4][0] = p.data[65];
+out_step0[ 1][ 5][0] = p.data[81];
+out_step0[ 1][ 6][0] = p.data[97];
+out_step0[ 1][ 7][0] = p.data[113];
+out_step0[ 1][ 8][0] = p.data[129];
+out_step0[ 1][ 9][0] = p.data[145];
+out_step0[ 1][10][0] = p.data[161];
+out_step0[ 1][11][0] = p.data[177];
+out_step0[ 1][12][0] = p.data[193];
+out_step0[ 1][13][0] = p.data[209];
+out_step0[ 1][14][0] = p.data[225];
+out_step0[ 1][15][0] = p.data[241];
+out_step0[ 2][ 0][0] = p.data[ 2];
+out_step0[ 2][ 1][0] = p.data[18];
+out_step0[ 2][ 2][0] = p.data[34];
+out_step0[ 2][ 3][0] = p.data[50];
+out_step0[ 2][ 4][0] = p.data[66];
+out_step0[ 2][ 5][0] = p.data[82];
+out_step0[ 2][ 6][0] = p.data[98];
+out_step0[ 2][ 7][0] = p.data[114];
+out_step0[ 2][ 8][0] = p.data[130];
+out_step0[ 2][ 9][0] = p.data[146];
+out_step0[ 2][10][0] = p.data[162];
+out_step0[ 2][11][0] = p.data[178];
+out_step0[ 2][12][0] = p.data[194];
+out_step0[ 2][13][0] = p.data[210];
+out_step0[ 2][14][0] = p.data[226];
+out_step0[ 2][15][0] = p.data[242];
+out_step0[ 3][ 0][0] = p.data[ 3];
+out_step0[ 3][ 1][0] = p.data[19];
+out_step0[ 3][ 2][0] = p.data[35];
+out_step0[ 3][ 3][0] = p.data[51];
+out_step0[ 3][ 4][0] = p.data[67];
+out_step0[ 3][ 5][0] = p.data[83];
+out_step0[ 3][ 6][0] = p.data[99];
+out_step0[ 3][ 7][0] = p.data[115];
+out_step0[ 3][ 8][0] = p.data[131];
+out_step0[ 3][ 9][0] = p.data[147];
+out_step0[ 3][10][0] = p.data[163];
+out_step0[ 3][11][0] = p.data[179];
+out_step0[ 3][12][0] = p.data[195];
+out_step0[ 3][13][0] = p.data[211];
+out_step0[ 3][14][0] = p.data[227];
+out_step0[ 3][15][0] = p.data[243];
+out_step0[ 4][ 0][0] = p.data[ 4];
+out_step0[ 4][ 1][0] = p.data[20];
+out_step0[ 4][ 2][0] = p.data[36];
+out_step0[ 4][ 3][0] = p.data[52];
+out_step0[ 4][ 4][0] = p.data[68];
+out_step0[ 4][ 5][0] = p.data[84];
+out_step0[ 4][ 6][0] = p.data[100];
+out_step0[ 4][ 7][0] = p.data[116];
+out_step0[ 4][ 8][0] = p.data[132];
+out_step0[ 4][ 9][0] = p.data[148];
+out_step0[ 4][10][0] = p.data[164];
+out_step0[ 4][11][0] = p.data[180];
+out_step0[ 4][12][0] = p.data[196];
+out_step0[ 4][13][0] = p.data[212];
+out_step0[ 4][14][0] = p.data[228];
+out_step0[ 4][15][0] = p.data[244];
+out_step0[ 5][ 0][0] = p.data[ 5];
+out_step0[ 5][ 1][0] = p.data[21];
+out_step0[ 5][ 2][0] = p.data[37];
+out_step0[ 5][ 3][0] = p.data[53];
+out_step0[ 5][ 4][0] = p.data[69];
+out_step0[ 5][ 5][0] = p.data[85];
+out_step0[ 5][ 6][0] = p.data[101];
+out_step0[ 5][ 7][0] = p.data[117];
+out_step0[ 5][ 8][0] = p.data[133];
+out_step0[ 5][ 9][0] = p.data[149];
+out_step0[ 5][10][0] = p.data[165];
+out_step0[ 5][11][0] = p.data[181];
+out_step0[ 5][12][0] = p.data[197];
+out_step0[ 5][13][0] = p.data[213];
+out_step0[ 5][14][0] = p.data[229];
+out_step0[ 5][15][0] = p.data[245];
+out_step0[ 6][ 0][0] = p.data[ 6];
+out_step0[ 6][ 1][0] = p.data[22];
+out_step0[ 6][ 2][0] = p.data[38];
+out_step0[ 6][ 3][0] = p.data[54];
+out_step0[ 6][ 4][0] = p.data[70];
+out_step0[ 6][ 5][0] = p.data[86];
+out_step0[ 6][ 6][0] = p.data[102];
+out_step0[ 6][ 7][0] = p.data[118];
+out_step0[ 6][ 8][0] = p.data[134];
+out_step0[ 6][ 9][0] = p.data[150];
+out_step0[ 6][10][0] = p.data[166];
+out_step0[ 6][11][0] = p.data[182];
+out_step0[ 6][12][0] = p.data[198];
+out_step0[ 6][13][0] = p.data[214];
+out_step0[ 6][14][0] = p.data[230];
+out_step0[ 6][15][0] = p.data[246];
+out_step0[ 7][ 0][0] = p.data[ 7];
+out_step0[ 7][ 1][0] = p.data[23];
+out_step0[ 7][ 2][0] = p.data[39];
+out_step0[ 7][ 3][0] = p.data[55];
+out_step0[ 7][ 4][0] = p.data[71];
+out_step0[ 7][ 5][0] = p.data[87];
+out_step0[ 7][ 6][0] = p.data[103];
+out_step0[ 7][ 7][0] = p.data[119];
+out_step0[ 7][ 8][0] = p.data[135];
+out_step0[ 7][ 9][0] = p.data[151];
+out_step0[ 7][10][0] = p.data[167];
+out_step0[ 7][11][0] = p.data[183];
+out_step0[ 7][12][0] = p.data[199];
+out_step0[ 7][13][0] = p.data[215];
+out_step0[ 7][14][0] = p.data[231];
+out_step0[ 7][15][0] = p.data[247];
+out_step0[ 8][ 0][0] = p.data[ 8];
+out_step0[ 8][ 1][0] = p.data[24];
+out_step0[ 8][ 2][0] = p.data[40];
+out_step0[ 8][ 3][0] = p.data[56];
+out_step0[ 8][ 4][0] = p.data[72];
+out_step0[ 8][ 5][0] = p.data[88];
+out_step0[ 8][ 6][0] = p.data[104];
+out_step0[ 8][ 7][0] = p.data[120];
+out_step0[ 8][ 8][0] = p.data[136];
+out_step0[ 8][ 9][0] = p.data[152];
+out_step0[ 8][10][0] = p.data[168];
+out_step0[ 8][11][0] = p.data[184];
+out_step0[ 8][12][0] = p.data[200];
+out_step0[ 8][13][0] = p.data[216];
+out_step0[ 8][14][0] = p.data[232];
+out_step0[ 8][15][0] = p.data[248];
+out_step0[ 9][ 0][0] = p.data[ 9];
+out_step0[ 9][ 1][0] = p.data[25];
+out_step0[ 9][ 2][0] = p.data[41];
+out_step0[ 9][ 3][0] = p.data[57];
+out_step0[ 9][ 4][0] = p.data[73];
+out_step0[ 9][ 5][0] = p.data[89];
+out_step0[ 9][ 6][0] = p.data[105];
+out_step0[ 9][ 7][0] = p.data[121];
+out_step0[ 9][ 8][0] = p.data[137];
+out_step0[ 9][ 9][0] = p.data[153];
+out_step0[ 9][10][0] = p.data[169];
+out_step0[ 9][11][0] = p.data[185];
+out_step0[ 9][12][0] = p.data[201];
+out_step0[ 9][13][0] = p.data[217];
+out_step0[ 9][14][0] = p.data[233];
+out_step0[ 9][15][0] = p.data[249];
+out_step0[10][ 0][0] = p.data[10];
+out_step0[10][ 1][0] = p.data[26];
+out_step0[10][ 2][0] = p.data[42];
+out_step0[10][ 3][0] = p.data[58];
+out_step0[10][ 4][0] = p.data[74];
+out_step0[10][ 5][0] = p.data[90];
+out_step0[10][ 6][0] = p.data[106];
+out_step0[10][ 7][0] = p.data[122];
+out_step0[10][ 8][0] = p.data[138];
+out_step0[10][ 9][0] = p.data[154];
+out_step0[10][10][0] = p.data[170];
+out_step0[10][11][0] = p.data[186];
+out_step0[10][12][0] = p.data[202];
+out_step0[10][13][0] = p.data[218];
+out_step0[10][14][0] = p.data[234];
+out_step0[10][15][0] = p.data[250];
+out_step0[11][ 0][0] = p.data[11];
+out_step0[11][ 1][0] = p.data[27];
+out_step0[11][ 2][0] = p.data[43];
+out_step0[11][ 3][0] = p.data[59];
+out_step0[11][ 4][0] = p.data[75];
+out_step0[11][ 5][0] = p.data[91];
+out_step0[11][ 6][0] = p.data[107];
+out_step0[11][ 7][0] = p.data[123];
+out_step0[11][ 8][0] = p.data[139];
+out_step0[11][ 9][0] = p.data[155];
+out_step0[11][10][0] = p.data[171];
+out_step0[11][11][0] = p.data[187];
+out_step0[11][12][0] = p.data[203];
+out_step0[11][13][0] = p.data[219];
+out_step0[11][14][0] = p.data[235];
+out_step0[11][15][0] = p.data[251];
+out_step0[12][ 0][0] = p.data[12];
+out_step0[12][ 1][0] = p.data[28];
+out_step0[12][ 2][0] = p.data[44];
+out_step0[12][ 3][0] = p.data[60];
+out_step0[12][ 4][0] = p.data[76];
+out_step0[12][ 5][0] = p.data[92];
+out_step0[12][ 6][0] = p.data[108];
+out_step0[12][ 7][0] = p.data[124];
+out_step0[12][ 8][0] = p.data[140];
+out_step0[12][ 9][0] = p.data[156];
+out_step0[12][10][0] = p.data[172];
+out_step0[12][11][0] = p.data[188];
+out_step0[12][12][0] = p.data[204];
+out_step0[12][13][0] = p.data[220];
+out_step0[12][14][0] = p.data[236];
+out_step0[12][15][0] = p.data[252];
+out_step0[13][ 0][0] = p.data[13];
+out_step0[13][ 1][0] = p.data[29];
+out_step0[13][ 2][0] = p.data[45];
+out_step0[13][ 3][0] = p.data[61];
+out_step0[13][ 4][0] = p.data[77];
+out_step0[13][ 5][0] = p.data[93];
+out_step0[13][ 6][0] = p.data[109];
+out_step0[13][ 7][0] = p.data[125];
+out_step0[13][ 8][0] = p.data[141];
+out_step0[13][ 9][0] = p.data[157];
+out_step0[13][10][0] = p.data[173];
+out_step0[13][11][0] = p.data[189];
+out_step0[13][12][0] = p.data[205];
+out_step0[13][13][0] = p.data[221];
+out_step0[13][14][0] = p.data[237];
+out_step0[13][15][0] = p.data[253];
+out_step0[14][ 0][0] = p.data[14];
+out_step0[14][ 1][0] = p.data[30];
+out_step0[14][ 2][0] = p.data[46];
+out_step0[14][ 3][0] = p.data[62];
+out_step0[14][ 4][0] = p.data[78];
+out_step0[14][ 5][0] = p.data[94];
+out_step0[14][ 6][0] = p.data[110];
+out_step0[14][ 7][0] = p.data[126];
+out_step0[14][ 8][0] = p.data[142];
+out_step0[14][ 9][0] = p.data[158];
+out_step0[14][10][0] = p.data[174];
+out_step0[14][11][0] = p.data[190];
+out_step0[14][12][0] = p.data[206];
+out_step0[14][13][0] = p.data[222];
+out_step0[14][14][0] = p.data[238];
+out_step0[14][15][0] = p.data[254];
+out_step0[15][ 0][0] = p.data[15];
+out_step0[15][ 1][0] = p.data[31];
+out_step0[15][ 2][0] = p.data[47];
+out_step0[15][ 3][0] = p.data[63];
+out_step0[15][ 4][0] = p.data[79];
+out_step0[15][ 5][0] = p.data[95];
+out_step0[15][ 6][0] = p.data[111];
+out_step0[15][ 7][0] = p.data[127];
+out_step0[15][ 8][0] = p.data[143];
+out_step0[15][ 9][0] = p.data[159];
+out_step0[15][10][0] = p.data[175];
+out_step0[15][11][0] = p.data[191];
+out_step0[15][12][0] = p.data[207];
+out_step0[15][13][0] = p.data[223];
+out_step0[15][14][0] = p.data[239];
+out_step0[15][15][0] = p.data[255];
 
-// performe zero mean normalization
-out_step1[ 0][ 0] = out_step0[ 0][ 0] - 157.97685242;
-out_step1[ 0][ 1] = out_step0[ 0][ 1] - 159.02984619;
-out_step1[ 0][ 2] = out_step0[ 0][ 2] - 159.81364441;
-out_step1[ 0][ 3] = out_step0[ 0][ 3] - 160.60108948;
-out_step1[ 0][ 4] = out_step0[ 0][ 4] - 160.35444641;
-out_step1[ 0][ 5] = out_step0[ 0][ 5] - 158.68635559;
-out_step1[ 0][ 6] = out_step0[ 0][ 6] - 158.72290039;
-out_step1[ 0][ 7] = out_step0[ 0][ 7] - 158.18574524;
-out_step1[ 0][ 8] = out_step0[ 0][ 8] - 158.27406311;
-out_step1[ 0][ 9] = out_step0[ 0][ 9] - 156.85078430;
-out_step1[ 0][10] = out_step0[ 0][10] - 154.57003784;
-out_step1[ 0][11] = out_step0[ 0][11] - 154.15286255;
-out_step1[ 0][12] = out_step0[ 0][12] - 154.44519043;
-out_step1[ 0][13] = out_step0[ 0][13] - 155.27648926;
-out_step1[ 0][14] = out_step0[ 0][14] - 155.64738464;
-out_step1[ 0][15] = out_step0[ 0][15] - 155.40194702;
-out_step1[ 1][ 0] = out_step0[ 1][ 0] - 157.17539978;
-out_step1[ 1][ 1] = out_step0[ 1][ 1] - 158.96284485;
-out_step1[ 1][ 2] = out_step0[ 1][ 2] - 160.04080200;
-out_step1[ 1][ 3] = out_step0[ 1][ 3] - 161.62059021;
-out_step1[ 1][ 4] = out_step0[ 1][ 4] - 163.47076416;
-out_step1[ 1][ 5] = out_step0[ 1][ 5] - 165.79171753;
-out_step1[ 1][ 6] = out_step0[ 1][ 6] - 166.79841614;
-out_step1[ 1][ 7] = out_step0[ 1][ 7] - 166.82398987;
-out_step1[ 1][ 8] = out_step0[ 1][ 8] - 165.75883484;
-out_step1[ 1][ 9] = out_step0[ 1][ 9] - 163.52984619;
-out_step1[ 1][10] = out_step0[ 1][10] - 159.91961670;
-out_step1[ 1][11] = out_step0[ 1][11] - 157.40499878;
-out_step1[ 1][12] = out_step0[ 1][12] - 154.91047668;
-out_step1[ 1][13] = out_step0[ 1][13] - 155.46833801;
-out_step1[ 1][14] = out_step0[ 1][14] - 155.90011597;
-out_step1[ 1][15] = out_step0[ 1][15] - 155.04566956;
-out_step1[ 2][ 0] = out_step0[ 2][ 0] - 157.32643127;
-out_step1[ 2][ 1] = out_step0[ 2][ 1] - 160.08099365;
-out_step1[ 2][ 2] = out_step0[ 2][ 2] - 163.14981079;
-out_step1[ 2][ 3] = out_step0[ 2][ 3] - 166.63032532;
-out_step1[ 2][ 4] = out_step0[ 2][ 4] - 175.96954346;
-out_step1[ 2][ 5] = out_step0[ 2][ 5] - 186.06028748;
-out_step1[ 2][ 6] = out_step0[ 2][ 6] - 190.18574524;
-out_step1[ 2][ 7] = out_step0[ 2][ 7] - 191.10231018;
-out_step1[ 2][ 8] = out_step0[ 2][ 8] - 190.28684998;
-out_step1[ 2][ 9] = out_step0[ 2][ 9] - 188.30146790;
-out_step1[ 2][10] = out_step0[ 2][10] - 177.91839600;
-out_step1[ 2][11] = out_step0[ 2][11] - 167.66992188;
-out_step1[ 2][12] = out_step0[ 2][12] - 161.95858765;
-out_step1[ 2][13] = out_step0[ 2][13] - 157.37515259;
-out_step1[ 2][14] = out_step0[ 2][14] - 155.65469360;
-out_step1[ 2][15] = out_step0[ 2][15] - 155.48721313;
-out_step1[ 3][ 0] = out_step0[ 3][ 0] - 156.92448425;
-out_step1[ 3][ 1] = out_step0[ 3][ 1] - 159.83312988;
-out_step1[ 3][ 2] = out_step0[ 3][ 2] - 165.77832031;
-out_step1[ 3][ 3] = out_step0[ 3][ 3] - 178.93240356;
-out_step1[ 3][ 4] = out_step0[ 3][ 4] - 197.59683228;
-out_step1[ 3][ 5] = out_step0[ 3][ 5] - 201.11753845;
-out_step1[ 3][ 6] = out_step0[ 3][ 6] - 203.36906433;
-out_step1[ 3][ 7] = out_step0[ 3][ 7] - 200.02923584;
-out_step1[ 3][ 8] = out_step0[ 3][ 8] - 199.66503906;
-out_step1[ 3][ 9] = out_step0[ 3][ 9] - 199.86784363;
-out_step1[ 3][10] = out_step0[ 3][10] - 197.12789917;
-out_step1[ 3][11] = out_step0[ 3][11] - 189.82704163;
-out_step1[ 3][12] = out_step0[ 3][12] - 174.21133423;
-out_step1[ 3][13] = out_step0[ 3][13] - 163.02192688;
-out_step1[ 3][14] = out_step0[ 3][14] - 156.53166199;
-out_step1[ 3][15] = out_step0[ 3][15] - 155.02070618;
-out_step1[ 4][ 0] = out_step0[ 4][ 0] - 155.68087769;
-out_step1[ 4][ 1] = out_step0[ 4][ 1] - 158.35322571;
-out_step1[ 4][ 2] = out_step0[ 4][ 2] - 171.60719299;
-out_step1[ 4][ 3] = out_step0[ 4][ 3] - 195.16625977;
-out_step1[ 4][ 4] = out_step0[ 4][ 4] - 205.47198486;
-out_step1[ 4][ 5] = out_step0[ 4][ 5] - 207.05906677;
-out_step1[ 4][ 6] = out_step0[ 4][ 6] - 205.55725098;
-out_step1[ 4][ 7] = out_step0[ 4][ 7] - 204.24847412;
-out_step1[ 4][ 8] = out_step0[ 4][ 8] - 203.86967468;
-out_step1[ 4][ 9] = out_step0[ 4][ 9] - 204.22351074;
-out_step1[ 4][10] = out_step0[ 4][10] - 200.68087769;
-out_step1[ 4][11] = out_step0[ 4][11] - 192.58343506;
-out_step1[ 4][12] = out_step0[ 4][12] - 187.48173523;
-out_step1[ 4][13] = out_step0[ 4][13] - 170.92265320;
-out_step1[ 4][14] = out_step0[ 4][14] - 157.45675659;
-out_step1[ 4][15] = out_step0[ 4][15] - 153.74421692;
-out_step1[ 5][ 0] = out_step0[ 5][ 0] - 153.92874146;
-out_step1[ 5][ 1] = out_step0[ 5][ 1] - 159.37028503;
-out_step1[ 5][ 2] = out_step0[ 5][ 2] - 180.50914001;
-out_step1[ 5][ 3] = out_step0[ 5][ 3] - 197.88977051;
-out_step1[ 5][ 4] = out_step0[ 5][ 4] - 205.29536438;
-out_step1[ 5][ 5] = out_step0[ 5][ 5] - 206.35931396;
-out_step1[ 5][ 6] = out_step0[ 5][ 6] - 205.05116272;
-out_step1[ 5][ 7] = out_step0[ 5][ 7] - 205.66320801;
-out_step1[ 5][ 8] = out_step0[ 5][ 8] - 207.67417908;
-out_step1[ 5][ 9] = out_step0[ 5][ 9] - 208.09866333;
-out_step1[ 5][10] = out_step0[ 5][10] - 202.36906433;
-out_step1[ 5][11] = out_step0[ 5][11] - 194.22412109;
-out_step1[ 5][12] = out_step0[ 5][12] - 186.32521057;
-out_step1[ 5][13] = out_step0[ 5][13] - 178.74604797;
-out_step1[ 5][14] = out_step0[ 5][14] - 158.80511475;
-out_step1[ 5][15] = out_step0[ 5][15] - 154.02253723;
-out_step1[ 6][ 0] = out_step0[ 6][ 0] - 153.57551575;
-out_step1[ 6][ 1] = out_step0[ 6][ 1] - 159.87271118;
-out_step1[ 6][ 2] = out_step0[ 6][ 2] - 183.11083984;
-out_step1[ 6][ 3] = out_step0[ 6][ 3] - 191.76126099;
-out_step1[ 6][ 4] = out_step0[ 6][ 4] - 201.44458008;
-out_step1[ 6][ 5] = out_step0[ 6][ 5] - 203.14981079;
-out_step1[ 6][ 6] = out_step0[ 6][ 6] - 202.02496338;
-out_step1[ 6][ 7] = out_step0[ 6][ 7] - 199.99877930;
-out_step1[ 6][ 8] = out_step0[ 6][ 8] - 204.58952332;
-out_step1[ 6][ 9] = out_step0[ 6][ 9] - 207.84226990;
-out_step1[ 6][10] = out_step0[ 6][10] - 203.19671631;
-out_step1[ 6][11] = out_step0[ 6][11] - 194.03106689;
-out_step1[ 6][12] = out_step0[ 6][12] - 180.55236816;
-out_step1[ 6][13] = out_step0[ 6][13] - 180.31851196;
-out_step1[ 6][14] = out_step0[ 6][14] - 158.95736694;
-out_step1[ 6][15] = out_step0[ 6][15] - 152.31120300;
-out_step1[ 7][ 0] = out_step0[ 7][ 0] - 151.20036316;
-out_step1[ 7][ 1] = out_step0[ 7][ 1] - 156.87820435;
-out_step1[ 7][ 2] = out_step0[ 7][ 2] - 175.05419922;
-out_step1[ 7][ 3] = out_step0[ 7][ 3] - 185.85809326;
-out_step1[ 7][ 4] = out_step0[ 7][ 4] - 195.53654480;
-out_step1[ 7][ 5] = out_step0[ 7][ 5] - 198.32034302;
-out_step1[ 7][ 6] = out_step0[ 7][ 6] - 194.40438843;
-out_step1[ 7][ 7] = out_step0[ 7][ 7] - 194.29963684;
-out_step1[ 7][ 8] = out_step0[ 7][ 8] - 197.66748047;
-out_step1[ 7][ 9] = out_step0[ 7][ 9] - 205.31303406;
-out_step1[ 7][10] = out_step0[ 7][10] - 201.16200256;
-out_step1[ 7][11] = out_step0[ 7][11] - 191.23263550;
-out_step1[ 7][12] = out_step0[ 7][12] - 180.23751831;
-out_step1[ 7][13] = out_step0[ 7][13] - 182.07368469;
-out_step1[ 7][14] = out_step0[ 7][14] - 157.94396973;
-out_step1[ 7][15] = out_step0[ 7][15] - 149.84408569;
-out_step1[ 8][ 0] = out_step0[ 8][ 0] - 150.27162170;
-out_step1[ 8][ 1] = out_step0[ 8][ 1] - 154.07795715;
-out_step1[ 8][ 2] = out_step0[ 8][ 2] - 171.63824463;
-out_step1[ 8][ 3] = out_step0[ 8][ 3] - 183.99024963;
-out_step1[ 8][ 4] = out_step0[ 8][ 4] - 188.77954102;
-out_step1[ 8][ 5] = out_step0[ 8][ 5] - 188.97929382;
-out_step1[ 8][ 6] = out_step0[ 8][ 6] - 189.07368469;
-out_step1[ 8][ 7] = out_step0[ 8][ 7] - 188.51887512;
-out_step1[ 8][ 8] = out_step0[ 8][ 8] - 194.83312988;
-out_step1[ 8][ 9] = out_step0[ 8][ 9] - 200.86967468;
-out_step1[ 8][10] = out_step0[ 8][10] - 197.93179321;
-out_step1[ 8][11] = out_step0[ 8][11] - 187.15530396;
-out_step1[ 8][12] = out_step0[ 8][12] - 176.45614624;
-out_step1[ 8][13] = out_step0[ 8][13] - 180.90560913;
-out_step1[ 8][14] = out_step0[ 8][14] - 156.56517029;
-out_step1[ 8][15] = out_step0[ 8][15] - 148.48112488;
-out_step1[ 9][ 0] = out_step0[ 9][ 0] - 149.96893311;
-out_step1[ 9][ 1] = out_step0[ 9][ 1] - 152.91961670;
-out_step1[ 9][ 2] = out_step0[ 9][ 2] - 170.08221436;
-out_step1[ 9][ 3] = out_step0[ 9][ 3] - 182.26553345;
-out_step1[ 9][ 4] = out_step0[ 9][ 4] - 184.79232788;
-out_step1[ 9][ 5] = out_step0[ 9][ 5] - 184.67051697;
-out_step1[ 9][ 6] = out_step0[ 9][ 6] - 181.62910461;
-out_step1[ 9][ 7] = out_step0[ 9][ 7] - 183.55297852;
-out_step1[ 9][ 8] = out_step0[ 9][ 8] - 190.92935181;
-out_step1[ 9][ 9] = out_step0[ 9][ 9] - 196.57125854;
-out_step1[ 9][10] = out_step0[ 9][10] - 193.38429260;
-out_step1[ 9][11] = out_step0[ 9][11] - 183.86967468;
-out_step1[ 9][12] = out_step0[ 9][12] - 175.76856995;
-out_step1[ 9][13] = out_step0[ 9][13] - 178.33496094;
-out_step1[ 9][14] = out_step0[ 9][14] - 153.75639343;
-out_step1[ 9][15] = out_step0[ 9][15] - 147.59744263;
-out_step1[10][ 0] = out_step0[10][ 0] - 148.65164185;
-out_step1[10][ 1] = out_step0[10][ 1] - 150.75822449;
-out_step1[10][ 2] = out_step0[10][ 2] - 165.13276672;
-out_step1[10][ 3] = out_step0[10][ 3] - 175.04811096;
-out_step1[10][ 4] = out_step0[10][ 4] - 178.75700378;
-out_step1[10][ 5] = out_step0[10][ 5] - 177.87515259;
-out_step1[10][ 6] = out_step0[10][ 6] - 174.30633545;
-out_step1[10][ 7] = out_step0[10][ 7] - 178.71864319;
-out_step1[10][ 8] = out_step0[10][ 8] - 184.32337952;
-out_step1[10][ 9] = out_step0[10][ 9] - 189.29780579;
-out_step1[10][10] = out_step0[10][10] - 187.42692566;
-out_step1[10][11] = out_step0[10][11] - 181.16809082;
-out_step1[10][12] = out_step0[10][12] - 174.48416138;
-out_step1[10][13] = out_step0[10][13] - 167.65408325;
-out_step1[10][14] = out_step0[10][14] - 152.61328125;
-out_step1[10][15] = out_step0[10][15] - 148.15773010;
-out_step1[11][ 0] = out_step0[11][ 0] - 144.77465820;
-out_step1[11][ 1] = out_step0[11][ 1] - 145.12910461;
-out_step1[11][ 2] = out_step0[11][ 2] - 152.10292053;
-out_step1[11][ 3] = out_step0[11][ 3] - 164.40255737;
-out_step1[11][ 4] = out_step0[11][ 4] - 167.45249939;
-out_step1[11][ 5] = out_step0[11][ 5] - 165.40438843;
-out_step1[11][ 6] = out_step0[11][ 6] - 163.42996216;
-out_step1[11][ 7] = out_step0[11][ 7] - 167.80937195;
-out_step1[11][ 8] = out_step0[11][ 8] - 172.86236572;
-out_step1[11][ 9] = out_step0[11][ 9] - 177.35078430;
-out_step1[11][10] = out_step0[11][10] - 175.98963928;
-out_step1[11][11] = out_step0[11][11] - 171.32521057;
-out_step1[11][12] = out_step0[11][12] - 169.08587646;
-out_step1[11][13] = out_step0[11][13] - 157.27770996;
-out_step1[11][14] = out_step0[11][14] - 149.39038086;
-out_step1[11][15] = out_step0[11][15] - 147.66078186;
-out_step1[12][ 0] = out_step0[12][ 0] - 140.40681458;
-out_step1[12][ 1] = out_step0[12][ 1] - 138.69244385;
-out_step1[12][ 2] = out_step0[12][ 2] - 138.96041870;
-out_step1[12][ 3] = out_step0[12][ 3] - 145.63824463;
-out_step1[12][ 4] = out_step0[12][ 4] - 153.43057251;
-out_step1[12][ 5] = out_step0[12][ 5] - 151.33921814;
-out_step1[12][ 6] = out_step0[12][ 6] - 151.18635559;
-out_step1[12][ 7] = out_step0[12][ 7] - 153.25456238;
-out_step1[12][ 8] = out_step0[12][ 8] - 157.40499878;
-out_step1[12][ 9] = out_step0[12][ 9] - 161.22229004;
-out_step1[12][10] = out_step0[12][10] - 159.11692810;
-out_step1[12][11] = out_step0[12][11] - 153.89950562;
-out_step1[12][12] = out_step0[12][12] - 148.83190918;
-out_step1[12][13] = out_step0[12][13] - 145.01095581;
-out_step1[12][14] = out_step0[12][14] - 142.39221191;
-out_step1[12][15] = out_step0[12][15] - 143.51583862;
-out_step1[13][ 0] = out_step0[13][ 0] - 133.83374023;
-out_step1[13][ 1] = out_step0[13][ 1] - 131.38368225;
-out_step1[13][ 2] = out_step0[13][ 2] - 128.46833801;
-out_step1[13][ 3] = out_step0[13][ 3] - 127.44031525;
-out_step1[13][ 4] = out_step0[13][ 4] - 128.50061035;
-out_step1[13][ 5] = out_step0[13][ 5] - 132.14372253;
-out_step1[13][ 6] = out_step0[13][ 6] - 134.40072632;
-out_step1[13][ 7] = out_step0[13][ 7] - 137.93727112;
-out_step1[13][ 8] = out_step0[13][ 8] - 142.10108948;
-out_step1[13][ 9] = out_step0[13][ 9] - 141.17782593;
-out_step1[13][10] = out_step0[13][10] - 135.40803528;
-out_step1[13][11] = out_step0[13][11] - 129.36540222;
-out_step1[13][12] = out_step0[13][12] - 131.31303406;
-out_step1[13][13] = out_step0[13][13] - 135.21498108;
-out_step1[13][14] = out_step0[13][14] - 137.09744263;
-out_step1[13][15] = out_step0[13][15] - 139.33738708;
-out_step1[14][ 0] = out_step0[14][ 0] - 129.04566956;
-out_step1[14][ 1] = out_step0[14][ 1] - 125.92691803;
-out_step1[14][ 2] = out_step0[14][ 2] - 121.63397980;
-out_step1[14][ 3] = out_step0[14][ 3] - 119.65712738;
-out_step1[14][ 4] = out_step0[14][ 4] - 115.89463806;
-out_step1[14][ 5] = out_step0[14][ 5] - 114.25091553;
-out_step1[14][ 6] = out_step0[14][ 6] - 114.55603027;
-out_step1[14][ 7] = out_step0[14][ 7] - 115.85505676;
-out_step1[14][ 8] = out_step0[14][ 8] - 116.48964691;
-out_step1[14][ 9] = out_step0[14][ 9] - 115.63824463;
-out_step1[14][10] = out_step0[14][10] - 114.69427490;
-out_step1[14][11] = out_step0[14][11] - 116.59683228;
-out_step1[14][12] = out_step0[14][12] - 122.39829254;
-out_step1[14][13] = out_step0[14][13] - 129.22959900;
-out_step1[14][14] = out_step0[14][14] - 133.68513489;
-out_step1[14][15] = out_step0[14][15] - 135.21192932;
-out_step1[15][ 0] = out_step0[15][ 0] - 125.96467590;
-out_step1[15][ 1] = out_step0[15][ 1] - 122.31973267;
-out_step1[15][ 2] = out_step0[15][ 2] - 118.66503906;
-out_step1[15][ 3] = out_step0[15][ 3] - 115.37637329;
-out_step1[15][ 4] = out_step0[15][ 4] - 111.38854980;
-out_step1[15][ 5] = out_step0[15][ 5] - 109.04567719;
-out_step1[15][ 6] = out_step0[15][ 6] - 107.58891296;
-out_step1[15][ 7] = out_step0[15][ 7] - 107.41474152;
-out_step1[15][ 8] = out_step0[15][ 8] - 107.91595459;
-out_step1[15][ 9] = out_step0[15][ 9] - 108.03044891;
-out_step1[15][10] = out_step0[15][10] - 109.96955109;
-out_step1[15][11] = out_step0[15][11] - 113.00547791;
-out_step1[15][12] = out_step0[15][12] - 120.03289032;
-out_step1[15][13] = out_step0[15][13] - 126.56089783;
-out_step1[15][14] = out_step0[15][14] - 130.56211853;
-out_step1[15][15] = out_step0[15][15] - 132.43544006;
+// perform zero mean normalization
+out_step1[ 0][ 0][0] = out_step0[ 0][ 0][0] - 141.16641235;
+out_step1[ 0][ 1][0] = out_step0[ 0][ 1][0] - 143.02302551;
+out_step1[ 0][ 2][0] = out_step0[ 0][ 2][0] - 145.18669128;
+out_step1[ 0][ 3][0] = out_step0[ 0][ 3][0] - 147.22747803;
+out_step1[ 0][ 4][0] = out_step0[ 0][ 4][0] - 149.73799133;
+out_step1[ 0][ 5][0] = out_step0[ 0][ 5][0] - 152.11611938;
+out_step1[ 0][ 6][0] = out_step0[ 0][ 6][0] - 154.08058167;
+out_step1[ 0][ 7][0] = out_step0[ 0][ 7][0] - 155.41891479;
+out_step1[ 0][ 8][0] = out_step0[ 0][ 8][0] - 154.99774170;
+out_step1[ 0][ 9][0] = out_step0[ 0][ 9][0] - 153.20069885;
+out_step1[ 0][10][0] = out_step0[ 0][10][0] - 151.02928162;
+out_step1[ 0][11][0] = out_step0[ 0][11][0] - 149.11912537;
+out_step1[ 0][12][0] = out_step0[ 0][12][0] - 146.91265869;
+out_step1[ 0][13][0] = out_step0[ 0][13][0] - 143.79504395;
+out_step1[ 0][14][0] = out_step0[ 0][14][0] - 141.51826477;
+out_step1[ 0][15][0] = out_step0[ 0][15][0] - 139.42141724;
+out_step1[ 1][ 0][0] = out_step0[ 1][ 0][0] - 140.98948669;
+out_step1[ 1][ 1][0] = out_step0[ 1][ 1][0] - 144.14013672;
+out_step1[ 1][ 2][0] = out_step0[ 1][ 2][0] - 146.54354858;
+out_step1[ 1][ 3][0] = out_step0[ 1][ 3][0] - 149.83332825;
+out_step1[ 1][ 4][0] = out_step0[ 1][ 4][0] - 156.56681824;
+out_step1[ 1][ 5][0] = out_step0[ 1][ 5][0] - 161.80630493;
+out_step1[ 1][ 6][0] = out_step0[ 1][ 6][0] - 165.37762451;
+out_step1[ 1][ 7][0] = out_step0[ 1][ 7][0] - 167.28053284;
+out_step1[ 1][ 8][0] = out_step0[ 1][ 8][0] - 168.15615845;
+out_step1[ 1][ 9][0] = out_step0[ 1][ 9][0] - 166.43518066;
+out_step1[ 1][10][0] = out_step0[ 1][10][0] - 161.27577209;
+out_step1[ 1][11][0] = out_step0[ 1][11][0] - 155.19894409;
+out_step1[ 1][12][0] = out_step0[ 1][12][0] - 150.00000000;
+out_step1[ 1][13][0] = out_step0[ 1][13][0] - 145.45445251;
+out_step1[ 1][14][0] = out_step0[ 1][14][0] - 141.90339661;
+out_step1[ 1][15][0] = out_step0[ 1][15][0] - 138.90715027;
+out_step1[ 2][ 0][0] = out_step0[ 2][ 0][0] - 141.00024414;
+out_step1[ 2][ 1][0] = out_step0[ 2][ 1][0] - 144.14239502;
+out_step1[ 2][ 2][0] = out_step0[ 2][ 2][0] - 149.77853394;
+out_step1[ 2][ 3][0] = out_step0[ 2][ 3][0] - 157.95921326;
+out_step1[ 2][ 4][0] = out_step0[ 2][ 4][0] - 167.89865112;
+out_step1[ 2][ 5][0] = out_step0[ 2][ 5][0] - 177.28753662;
+out_step1[ 2][ 6][0] = out_step0[ 2][ 6][0] - 183.34634399;
+out_step1[ 2][ 7][0] = out_step0[ 2][ 7][0] - 185.44294739;
+out_step1[ 2][ 8][0] = out_step0[ 2][ 8][0] - 186.04403687;
+out_step1[ 2][ 9][0] = out_step0[ 2][ 9][0] - 184.25726318;
+out_step1[ 2][10][0] = out_step0[ 2][10][0] - 177.65640259;
+out_step1[ 2][11][0] = out_step0[ 2][11][0] - 167.94194031;
+out_step1[ 2][12][0] = out_step0[ 2][12][0] - 158.24324036;
+out_step1[ 2][13][0] = out_step0[ 2][13][0] - 149.75074768;
+out_step1[ 2][14][0] = out_step0[ 2][14][0] - 143.49475098;
+out_step1[ 2][15][0] = out_step0[ 2][15][0] - 139.17042542;
+out_step1[ 3][ 0][0] = out_step0[ 3][ 0][0] - 142.58708191;
+out_step1[ 3][ 1][0] = out_step0[ 3][ 1][0] - 147.12887573;
+out_step1[ 3][ 2][0] = out_step0[ 3][ 2][0] - 157.75024414;
+out_step1[ 3][ 3][0] = out_step0[ 3][ 3][0] - 172.12762451;
+out_step1[ 3][ 4][0] = out_step0[ 3][ 4][0] - 184.67892456;
+out_step1[ 3][ 5][0] = out_step0[ 3][ 5][0] - 190.35585022;
+out_step1[ 3][ 6][0] = out_step0[ 3][ 6][0] - 193.66015625;
+out_step1[ 3][ 7][0] = out_step0[ 3][ 7][0] - 193.61186218;
+out_step1[ 3][ 8][0] = out_step0[ 3][ 8][0] - 193.77651978;
+out_step1[ 3][ 9][0] = out_step0[ 3][ 9][0] - 193.88414001;
+out_step1[ 3][10][0] = out_step0[ 3][10][0] - 191.46922302;
+out_step1[ 3][11][0] = out_step0[ 3][11][0] - 185.29980469;
+out_step1[ 3][12][0] = out_step0[ 3][12][0] - 172.14990234;
+out_step1[ 3][13][0] = out_step0[ 3][13][0] - 158.53527832;
+out_step1[ 3][14][0] = out_step0[ 3][14][0] - 147.77076721;
+out_step1[ 3][15][0] = out_step0[ 3][15][0] - 142.42842102;
+out_step1[ 4][ 0][0] = out_step0[ 4][ 0][0] - 142.19595337;
+out_step1[ 4][ 1][0] = out_step0[ 4][ 1][0] - 148.62788391;
+out_step1[ 4][ 2][0] = out_step0[ 4][ 2][0] - 165.58984375;
+out_step1[ 4][ 3][0] = out_step0[ 4][ 3][0] - 182.00375366;
+out_step1[ 4][ 4][0] = out_step0[ 4][ 4][0] - 191.16340637;
+out_step1[ 4][ 5][0] = out_step0[ 4][ 5][0] - 197.07957458;
+out_step1[ 4][ 6][0] = out_step0[ 4][ 6][0] - 199.30880737;
+out_step1[ 4][ 7][0] = out_step0[ 4][ 7][0] - 200.27526855;
+out_step1[ 4][ 8][0] = out_step0[ 4][ 8][0] - 200.08934021;
+out_step1[ 4][ 9][0] = out_step0[ 4][ 9][0] - 200.20195007;
+out_step1[ 4][10][0] = out_step0[ 4][10][0] - 197.90940857;
+out_step1[ 4][11][0] = out_step0[ 4][11][0] - 192.85334778;
+out_step1[ 4][12][0] = out_step0[ 4][12][0] - 184.51602173;
+out_step1[ 4][13][0] = out_step0[ 4][13][0] - 165.71070862;
+out_step1[ 4][14][0] = out_step0[ 4][14][0] - 148.71296692;
+out_step1[ 4][15][0] = out_step0[ 4][15][0] - 141.95820618;
+out_step1[ 5][ 0][0] = out_step0[ 5][ 0][0] - 143.38989258;
+out_step1[ 5][ 1][0] = out_step0[ 5][ 1][0] - 152.20471191;
+out_step1[ 5][ 2][0] = out_step0[ 5][ 2][0] - 173.31256104;
+out_step1[ 5][ 3][0] = out_step0[ 5][ 3][0] - 186.18844604;
+out_step1[ 5][ 4][0] = out_step0[ 5][ 4][0] - 194.08108521;
+out_step1[ 5][ 5][0] = out_step0[ 5][ 5][0] - 198.06155396;
+out_step1[ 5][ 6][0] = out_step0[ 5][ 6][0] - 199.86335754;
+out_step1[ 5][ 7][0] = out_step0[ 5][ 7][0] - 201.00476074;
+out_step1[ 5][ 8][0] = out_step0[ 5][ 8][0] - 200.36886597;
+out_step1[ 5][ 9][0] = out_step0[ 5][ 9][0] - 199.44720459;
+out_step1[ 5][10][0] = out_step0[ 5][10][0] - 198.14889526;
+out_step1[ 5][11][0] = out_step0[ 5][11][0] - 194.76075745;
+out_step1[ 5][12][0] = out_step0[ 5][12][0] - 187.85736084;
+out_step1[ 5][13][0] = out_step0[ 5][13][0] - 174.14189148;
+out_step1[ 5][14][0] = out_step0[ 5][14][0] - 152.66215515;
+out_step1[ 5][15][0] = out_step0[ 5][15][0] - 143.21496582;
+out_step1[ 6][ 0][0] = out_step0[ 6][ 0][0] - 143.70471191;
+out_step1[ 6][ 1][0] = out_step0[ 6][ 1][0] - 155.32658386;
+out_step1[ 6][ 2][0] = out_step0[ 6][ 2][0] - 176.34359741;
+out_step1[ 6][ 3][0] = out_step0[ 6][ 3][0] - 184.24124146;
+out_step1[ 6][ 4][0] = out_step0[ 6][ 4][0] - 194.50250244;
+out_step1[ 6][ 5][0] = out_step0[ 6][ 5][0] - 197.76101685;
+out_step1[ 6][ 6][0] = out_step0[ 6][ 6][0] - 198.77401733;
+out_step1[ 6][ 7][0] = out_step0[ 6][ 7][0] - 197.01451111;
+out_step1[ 6][ 8][0] = out_step0[ 6][ 8][0] - 196.88163757;
+out_step1[ 6][ 9][0] = out_step0[ 6][ 9][0] - 198.60285950;
+out_step1[ 6][10][0] = out_step0[ 6][10][0] - 196.79554749;
+out_step1[ 6][11][0] = out_step0[ 6][11][0] - 193.20170593;
+out_step1[ 6][12][0] = out_step0[ 6][12][0] - 185.33683777;
+out_step1[ 6][13][0] = out_step0[ 6][13][0] - 177.70445251;
+out_step1[ 6][14][0] = out_step0[ 6][14][0] - 154.44920349;
+out_step1[ 6][15][0] = out_step0[ 6][15][0] - 143.39964294;
+out_step1[ 7][ 0][0] = out_step0[ 7][ 0][0] - 143.42543030;
+out_step1[ 7][ 1][0] = out_step0[ 7][ 1][0] - 155.30905151;
+out_step1[ 7][ 2][0] = out_step0[ 7][ 2][0] - 174.33383179;
+out_step1[ 7][ 3][0] = out_step0[ 7][ 3][0] - 180.91090393;
+out_step1[ 7][ 4][0] = out_step0[ 7][ 4][0] - 190.88438416;
+out_step1[ 7][ 5][0] = out_step0[ 7][ 5][0] - 195.91215515;
+out_step1[ 7][ 6][0] = out_step0[ 7][ 6][0] - 196.28152466;
+out_step1[ 7][ 7][0] = out_step0[ 7][ 7][0] - 193.16941833;
+out_step1[ 7][ 8][0] = out_step0[ 7][ 8][0] - 192.58633423;
+out_step1[ 7][ 9][0] = out_step0[ 7][ 9][0] - 194.34959412;
+out_step1[ 7][10][0] = out_step0[ 7][10][0] - 194.52127075;
+out_step1[ 7][11][0] = out_step0[ 7][11][0] - 190.44845581;
+out_step1[ 7][12][0] = out_step0[ 7][12][0] - 182.51551819;
+out_step1[ 7][13][0] = out_step0[ 7][13][0] - 174.59634399;
+out_step1[ 7][14][0] = out_step0[ 7][14][0] - 154.59735107;
+out_step1[ 7][15][0] = out_step0[ 7][15][0] - 142.31407166;
+out_step1[ 8][ 0][0] = out_step0[ 8][ 0][0] - 141.67442322;
+out_step1[ 8][ 1][0] = out_step0[ 8][ 1][0] - 152.65715027;
+out_step1[ 8][ 2][0] = out_step0[ 8][ 2][0] - 170.79028320;
+out_step1[ 8][ 3][0] = out_step0[ 8][ 3][0] - 178.99850464;
+out_step1[ 8][ 4][0] = out_step0[ 8][ 4][0] - 186.71997070;
+out_step1[ 8][ 5][0] = out_step0[ 8][ 5][0] - 191.65165710;
+out_step1[ 8][ 6][0] = out_step0[ 8][ 6][0] - 192.84133911;
+out_step1[ 8][ 7][0] = out_step0[ 8][ 7][0] - 190.90390015;
+out_step1[ 8][ 8][0] = out_step0[ 8][ 8][0] - 190.73498535;
+out_step1[ 8][ 9][0] = out_step0[ 8][ 9][0] - 191.07983398;
+out_step1[ 8][10][0] = out_step0[ 8][10][0] - 190.56706238;
+out_step1[ 8][11][0] = out_step0[ 8][11][0] - 186.61836243;
+out_step1[ 8][12][0] = out_step0[ 8][12][0] - 180.59634399;
+out_step1[ 8][13][0] = out_step0[ 8][13][0] - 172.30505371;
+out_step1[ 8][14][0] = out_step0[ 8][14][0] - 151.72422791;
+out_step1[ 8][15][0] = out_step0[ 8][15][0] - 141.10760498;
+out_step1[ 9][ 0][0] = out_step0[ 9][ 0][0] - 136.81506348;
+out_step1[ 9][ 1][0] = out_step0[ 9][ 1][0] - 145.60986328;
+out_step1[ 9][ 2][0] = out_step0[ 9][ 2][0] - 163.82081604;
+out_step1[ 9][ 3][0] = out_step0[ 9][ 3][0] - 172.73548889;
+out_step1[ 9][ 4][0] = out_step0[ 9][ 4][0] - 180.22598267;
+out_step1[ 9][ 5][0] = out_step0[ 9][ 5][0] - 184.34359741;
+out_step1[ 9][ 6][0] = out_step0[ 9][ 6][0] - 185.01951599;
+out_step1[ 9][ 7][0] = out_step0[ 9][ 7][0] - 184.32933044;
+out_step1[ 9][ 8][0] = out_step0[ 9][ 8][0] - 184.41891479;
+out_step1[ 9][ 9][0] = out_step0[ 9][ 9][0] - 185.14189148;
+out_step1[ 9][10][0] = out_step0[ 9][10][0] - 184.99475098;
+out_step1[ 9][11][0] = out_step0[ 9][11][0] - 182.02728271;
+out_step1[ 9][12][0] = out_step0[ 9][12][0] - 175.91015625;
+out_step1[ 9][13][0] = out_step0[ 9][13][0] - 165.43544006;
+out_step1[ 9][14][0] = out_step0[ 9][14][0] - 145.36561584;
+out_step1[ 9][15][0] = out_step0[ 9][15][0] - 136.52827454;
+out_step1[10][ 0][0] = out_step0[10][ 0][0] - 132.88587952;
+out_step1[10][ 1][0] = out_step0[10][ 1][0] - 139.10411072;
+out_step1[10][ 2][0] = out_step0[10][ 2][0] - 152.56657410;
+out_step1[10][ 3][0] = out_step0[10][ 3][0] - 164.45170593;
+out_step1[10][ 4][0] = out_step0[10][ 4][0] - 170.75450134;
+out_step1[10][ 5][0] = out_step0[10][ 5][0] - 173.48974609;
+out_step1[10][ 6][0] = out_step0[10][ 6][0] - 173.00801086;
+out_step1[10][ 7][0] = out_step0[10][ 7][0] - 173.25524902;
+out_step1[10][ 8][0] = out_step0[10][ 8][0] - 173.67967224;
+out_step1[10][ 9][0] = out_step0[10][ 9][0] - 174.46347046;
+out_step1[10][10][0] = out_step0[10][10][0] - 175.41841125;
+out_step1[10][11][0] = out_step0[10][11][0] - 172.49449158;
+out_step1[10][12][0] = out_step0[10][12][0] - 166.06506348;
+out_step1[10][13][0] = out_step0[10][13][0] - 154.91741943;
+out_step1[10][14][0] = out_step0[10][14][0] - 139.46121216;
+out_step1[10][15][0] = out_step0[10][15][0] - 133.15791321;
+out_step1[11][ 0][0] = out_step0[11][ 0][0] - 127.05931091;
+out_step1[11][ 1][0] = out_step0[11][ 1][0] - 129.21020508;
+out_step1[11][ 2][0] = out_step0[11][ 2][0] - 138.00325012;
+out_step1[11][ 3][0] = out_step0[11][ 3][0] - 149.66241455;
+out_step1[11][ 4][0] = out_step0[11][ 4][0] - 155.90791321;
+out_step1[11][ 5][0] = out_step0[11][ 5][0] - 159.43193054;
+out_step1[11][ 6][0] = out_step0[11][ 6][0] - 159.86061096;
+out_step1[11][ 7][0] = out_step0[11][ 7][0] - 159.98898315;
+out_step1[11][ 8][0] = out_step0[11][ 8][0] - 160.87687683;
+out_step1[11][ 9][0] = out_step0[11][ 9][0] - 160.85510254;
+out_step1[11][10][0] = out_step0[11][10][0] - 160.86987305;
+out_step1[11][11][0] = out_step0[11][11][0] - 156.90866089;
+out_step1[11][12][0] = out_step0[11][12][0] - 150.04579163;
+out_step1[11][13][0] = out_step0[11][13][0] - 138.63638306;
+out_step1[11][14][0] = out_step0[11][14][0] - 129.59059143;
+out_step1[11][15][0] = out_step0[11][15][0] - 127.24424744;
+out_step1[12][ 0][0] = out_step0[12][ 0][0] - 120.79754639;
+out_step1[12][ 1][0] = out_step0[12][ 1][0] - 120.40415192;
+out_step1[12][ 2][0] = out_step0[12][ 2][0] - 123.82407379;
+out_step1[12][ 3][0] = out_step0[12][ 3][0] - 131.17567444;
+out_step1[12][ 4][0] = out_step0[12][ 4][0] - 138.02728271;
+out_step1[12][ 5][0] = out_step0[12][ 5][0] - 141.38739014;
+out_step1[12][ 6][0] = out_step0[12][ 6][0] - 142.82832336;
+out_step1[12][ 7][0] = out_step0[12][ 7][0] - 143.40589905;
+out_step1[12][ 8][0] = out_step0[12][ 8][0] - 143.71871948;
+out_step1[12][ 9][0] = out_step0[12][ 9][0] - 143.37762451;
+out_step1[12][10][0] = out_step0[12][10][0] - 142.02401733;
+out_step1[12][11][0] = out_step0[12][11][0] - 138.14364624;
+out_step1[12][12][0] = out_step0[12][12][0] - 131.17242432;
+out_step1[12][13][0] = out_step0[12][13][0] - 124.36761475;
+out_step1[12][14][0] = out_step0[12][14][0] - 120.17617798;
+out_step1[12][15][0] = out_step0[12][15][0] - 120.19494629;
+out_step1[13][ 0][0] = out_step0[13][ 0][0] - 116.10510254;
+out_step1[13][ 1][0] = out_step0[13][ 1][0] - 114.33608246;
+out_step1[13][ 2][0] = out_step0[13][ 2][0] - 113.47472382;
+out_step1[13][ 3][0] = out_step0[13][ 3][0] - 114.14839935;
+out_step1[13][ 4][0] = out_step0[13][ 4][0] - 116.81005859;
+out_step1[13][ 5][0] = out_step0[13][ 5][0] - 121.47071838;
+out_step1[13][ 6][0] = out_step0[13][ 6][0] - 124.41366577;
+out_step1[13][ 7][0] = out_step0[13][ 7][0] - 125.54904938;
+out_step1[13][ 8][0] = out_step0[13][ 8][0] - 125.80180359;
+out_step1[13][ 9][0] = out_step0[13][ 9][0] - 124.20445251;
+out_step1[13][10][0] = out_step0[13][10][0] - 120.80555725;
+out_step1[13][11][0] = out_step0[13][11][0] - 116.35910797;
+out_step1[13][12][0] = out_step0[13][12][0] - 114.68268585;
+out_step1[13][13][0] = out_step0[13][13][0] - 113.72247314;
+out_step1[13][14][0] = out_step0[13][14][0] - 113.92117310;
+out_step1[13][15][0] = out_step0[13][15][0] - 115.74824524;
+out_step1[14][ 0][0] = out_step0[14][ 0][0] - 113.08508301;
+out_step1[14][ 1][0] = out_step0[14][ 1][0] - 110.45270538;
+out_step1[14][ 2][0] = out_step0[14][ 2][0] - 107.56506348;
+out_step1[14][ 3][0] = out_step0[14][ 3][0] - 105.38938904;
+out_step1[14][ 4][0] = out_step0[14][ 4][0] - 104.08708954;
+out_step1[14][ 5][0] = out_step0[14][ 5][0] - 104.51726532;
+out_step1[14][ 6][0] = out_step0[14][ 6][0] - 105.50825500;
+out_step1[14][ 7][0] = out_step0[14][ 7][0] - 106.46521759;
+out_step1[14][ 8][0] = out_step0[14][ 8][0] - 106.27727509;
+out_step1[14][ 9][0] = out_step0[14][ 9][0] - 105.63864136;
+out_step1[14][10][0] = out_step0[14][10][0] - 105.05880737;
+out_step1[14][11][0] = out_step0[14][11][0] - 104.67267609;
+out_step1[14][12][0] = out_step0[14][12][0] - 105.55831146;
+out_step1[14][13][0] = out_step0[14][13][0] - 107.51902008;
+out_step1[14][14][0] = out_step0[14][14][0] - 110.35810852;
+out_step1[14][15][0] = out_step0[14][15][0] - 112.60385132;
+out_step1[15][ 0][0] = out_step0[15][ 0][0] - 110.74824524;
+out_step1[15][ 1][0] = out_step0[15][ 1][0] - 108.29054260;
+out_step1[15][ 2][0] = out_step0[15][ 2][0] - 105.38838959;
+out_step1[15][ 3][0] = out_step0[15][ 3][0] - 102.31906891;
+out_step1[15][ 4][0] = out_step0[15][ 4][0] - 99.80380249;
+out_step1[15][ 5][0] = out_step0[15][ 5][0] - 99.07807922;
+out_step1[15][ 6][0] = out_step0[15][ 6][0] - 98.69819641;
+out_step1[15][ 7][0] = out_step0[15][ 7][0] - 98.90190125;
+out_step1[15][ 8][0] = out_step0[15][ 8][0] - 98.85760498;
+out_step1[15][ 9][0] = out_step0[15][ 9][0] - 99.06481171;
+out_step1[15][10][0] = out_step0[15][10][0] - 99.55030060;
+out_step1[15][11][0] = out_step0[15][11][0] - 100.34609985;
+out_step1[15][12][0] = out_step0[15][12][0] - 103.06531525;
+out_step1[15][13][0] = out_step0[15][13][0] - 106.05455780;
+out_step1[15][14][0] = out_step0[15][14][0] - 108.47898102;
+out_step1[15][15][0] = out_step0[15][15][0] - 110.66141510;
 
 // determine output for this convolution step
-out_step2[0][0] = 
-   - 0.10991814 * out_step1[ 0][ 0] - 0.07047570 * out_step1[ 0][ 1] + 0.32846937 * out_step1[ 0][ 2]
-   + 0.05873375 * out_step1[ 1][ 0] + 0.08658601 * out_step1[ 1][ 1] + 0.03624630 * out_step1[ 1][ 2]
-   + 0.01479519 * out_step1[ 2][ 0] + 0.36403248 * out_step1[ 2][ 1] - 0.13253643 * out_step1[ 2][ 2]
-   + 0.00906407;
-
-out_step2[0][1] = 
-   - 0.10991814 * out_step1[ 0][ 1] - 0.07047570 * out_step1[ 0][ 2] + 0.32846937 * out_step1[ 0][ 3]
-   + 0.05873375 * out_step1[ 1][ 1] + 0.08658601 * out_step1[ 1][ 2] + 0.03624630 * out_step1[ 1][ 3]
-   + 0.01479519 * out_step1[ 2][ 1] + 0.36403248 * out_step1[ 2][ 2] - 0.13253643 * out_step1[ 2][ 3]
-   + 0.00906407;
-
-out_step2[0][2] = 
-   - 0.10991814 * out_step1[ 0][ 2] - 0.07047570 * out_step1[ 0][ 3] + 0.32846937 * out_step1[ 0][ 4]
-   + 0.05873375 * out_step1[ 1][ 2] + 0.08658601 * out_step1[ 1][ 3] + 0.03624630 * out_step1[ 1][ 4]
-   + 0.01479519 * out_step1[ 2][ 2] + 0.36403248 * out_step1[ 2][ 3] - 0.13253643 * out_step1[ 2][ 4]
-   + 0.00906407;
-
-out_step2[0][3] = 
-   - 0.10991814 * out_step1[ 0][ 3] - 0.07047570 * out_step1[ 0][ 4] + 0.32846937 * out_step1[ 0][ 5]
-   + 0.05873375 * out_step1[ 1][ 3] + 0.08658601 * out_step1[ 1][ 4] + 0.03624630 * out_step1[ 1][ 5]
-   + 0.01479519 * out_step1[ 2][ 3] + 0.36403248 * out_step1[ 2][ 4] - 0.13253643 * out_step1[ 2][ 5]
-   + 0.00906407;
-
-out_step2[0][4] = 
-   - 0.10991814 * out_step1[ 0][ 4] - 0.07047570 * out_step1[ 0][ 5] + 0.32846937 * out_step1[ 0][ 6]
-   + 0.05873375 * out_step1[ 1][ 4] + 0.08658601 * out_step1[ 1][ 5] + 0.03624630 * out_step1[ 1][ 6]
-   + 0.01479519 * out_step1[ 2][ 4] + 0.36403248 * out_step1[ 2][ 5] - 0.13253643 * out_step1[ 2][ 6]
-   + 0.00906407;
-
-out_step2[0][5] = 
-   - 0.10991814 * out_step1[ 0][ 5] - 0.07047570 * out_step1[ 0][ 6] + 0.32846937 * out_step1[ 0][ 7]
-   + 0.05873375 * out_step1[ 1][ 5] + 0.08658601 * out_step1[ 1][ 6] + 0.03624630 * out_step1[ 1][ 7]
-   + 0.01479519 * out_step1[ 2][ 5] + 0.36403248 * out_step1[ 2][ 6] - 0.13253643 * out_step1[ 2][ 7]
-   + 0.00906407;
-
-out_step2[0][6] = 
-   - 0.10991814 * out_step1[ 0][ 6] - 0.07047570 * out_step1[ 0][ 7] + 0.32846937 * out_step1[ 0][ 8]
-   + 0.05873375 * out_step1[ 1][ 6] + 0.08658601 * out_step1[ 1][ 7] + 0.03624630 * out_step1[ 1][ 8]
-   + 0.01479519 * out_step1[ 2][ 6] + 0.36403248 * out_step1[ 2][ 7] - 0.13253643 * out_step1[ 2][ 8]
-   + 0.00906407;
-
-out_step2[0][7] = 
-   - 0.10991814 * out_step1[ 0][ 7] - 0.07047570 * out_step1[ 0][ 8] + 0.32846937 * out_step1[ 0][ 9]
-   + 0.05873375 * out_step1[ 1][ 7] + 0.08658601 * out_step1[ 1][ 8] + 0.03624630 * out_step1[ 1][ 9]
-   + 0.01479519 * out_step1[ 2][ 7] + 0.36403248 * out_step1[ 2][ 8] - 0.13253643 * out_step1[ 2][ 9]
-   + 0.00906407;
-
-out_step2[0][8] = 
-   - 0.10991814 * out_step1[ 0][ 8] - 0.07047570 * out_step1[ 0][ 9] + 0.32846937 * out_step1[ 0][10]
-   + 0.05873375 * out_step1[ 1][ 8] + 0.08658601 * out_step1[ 1][ 9] + 0.03624630 * out_step1[ 1][10]
-   + 0.01479519 * out_step1[ 2][ 8] + 0.36403248 * out_step1[ 2][ 9] - 0.13253643 * out_step1[ 2][10]
-   + 0.00906407;
-
-out_step2[0][9] = 
-   - 0.10991814 * out_step1[ 0][ 9] - 0.07047570 * out_step1[ 0][10] + 0.32846937 * out_step1[ 0][11]
-   + 0.05873375 * out_step1[ 1][ 9] + 0.08658601 * out_step1[ 1][10] + 0.03624630 * out_step1[ 1][11]
-   + 0.01479519 * out_step1[ 2][ 9] + 0.36403248 * out_step1[ 2][10] - 0.13253643 * out_step1[ 2][11]
-   + 0.00906407;
-
-out_step2[0][10] = 
-   - 0.10991814 * out_step1[ 0][10] - 0.07047570 * out_step1[ 0][11] + 0.32846937 * out_step1[ 0][12]
-   + 0.05873375 * out_step1[ 1][10] + 0.08658601 * out_step1[ 1][11] + 0.03624630 * out_step1[ 1][12]
-   + 0.01479519 * out_step1[ 2][10] + 0.36403248 * out_step1[ 2][11] - 0.13253643 * out_step1[ 2][12]
-   + 0.00906407;
-
-out_step2[0][11] = 
-   - 0.10991814 * out_step1[ 0][11] - 0.07047570 * out_step1[ 0][12] + 0.32846937 * out_step1[ 0][13]
-   + 0.05873375 * out_step1[ 1][11] + 0.08658601 * out_step1[ 1][12] + 0.03624630 * out_step1[ 1][13]
-   + 0.01479519 * out_step1[ 2][11] + 0.36403248 * out_step1[ 2][12] - 0.13253643 * out_step1[ 2][13]
-   + 0.00906407;
-
-out_step2[0][12] = 
-   - 0.10991814 * out_step1[ 0][12] - 0.07047570 * out_step1[ 0][13] + 0.32846937 * out_step1[ 0][14]
-   + 0.05873375 * out_step1[ 1][12] + 0.08658601 * out_step1[ 1][13] + 0.03624630 * out_step1[ 1][14]
-   + 0.01479519 * out_step1[ 2][12] + 0.36403248 * out_step1[ 2][13] - 0.13253643 * out_step1[ 2][14]
-   + 0.00906407;
-
-out_step2[0][13] = 
-   - 0.10991814 * out_step1[ 0][13] - 0.07047570 * out_step1[ 0][14] + 0.32846937 * out_step1[ 0][15]
-   + 0.05873375 * out_step1[ 1][13] + 0.08658601 * out_step1[ 1][14] + 0.03624630 * out_step1[ 1][15]
-   + 0.01479519 * out_step1[ 2][13] + 0.36403248 * out_step1[ 2][14] - 0.13253643 * out_step1[ 2][15]
-   + 0.00906407;
-
-out_step2[1][0] = 
-   - 0.10991814 * out_step1[ 1][ 0] - 0.07047570 * out_step1[ 1][ 1] + 0.32846937 * out_step1[ 1][ 2]
-   + 0.05873375 * out_step1[ 2][ 0] + 0.08658601 * out_step1[ 2][ 1] + 0.03624630 * out_step1[ 2][ 2]
-   + 0.01479519 * out_step1[ 3][ 0] + 0.36403248 * out_step1[ 3][ 1] - 0.13253643 * out_step1[ 3][ 2]
-   + 0.00906407;
-
-out_step2[1][1] = 
-   - 0.10991814 * out_step1[ 1][ 1] - 0.07047570 * out_step1[ 1][ 2] + 0.32846937 * out_step1[ 1][ 3]
-   + 0.05873375 * out_step1[ 2][ 1] + 0.08658601 * out_step1[ 2][ 2] + 0.03624630 * out_step1[ 2][ 3]
-   + 0.01479519 * out_step1[ 3][ 1] + 0.36403248 * out_step1[ 3][ 2] - 0.13253643 * out_step1[ 3][ 3]
-   + 0.00906407;
-
-out_step2[1][2] = 
-   - 0.10991814 * out_step1[ 1][ 2] - 0.07047570 * out_step1[ 1][ 3] + 0.32846937 * out_step1[ 1][ 4]
-   + 0.05873375 * out_step1[ 2][ 2] + 0.08658601 * out_step1[ 2][ 3] + 0.03624630 * out_step1[ 2][ 4]
-   + 0.01479519 * out_step1[ 3][ 2] + 0.36403248 * out_step1[ 3][ 3] - 0.13253643 * out_step1[ 3][ 4]
-   + 0.00906407;
-
-out_step2[1][3] = 
-   - 0.10991814 * out_step1[ 1][ 3] - 0.07047570 * out_step1[ 1][ 4] + 0.32846937 * out_step1[ 1][ 5]
-   + 0.05873375 * out_step1[ 2][ 3] + 0.08658601 * out_step1[ 2][ 4] + 0.03624630 * out_step1[ 2][ 5]
-   + 0.01479519 * out_step1[ 3][ 3] + 0.36403248 * out_step1[ 3][ 4] - 0.13253643 * out_step1[ 3][ 5]
-   + 0.00906407;
-
-out_step2[1][4] = 
-   - 0.10991814 * out_step1[ 1][ 4] - 0.07047570 * out_step1[ 1][ 5] + 0.32846937 * out_step1[ 1][ 6]
-   + 0.05873375 * out_step1[ 2][ 4] + 0.08658601 * out_step1[ 2][ 5] + 0.03624630 * out_step1[ 2][ 6]
-   + 0.01479519 * out_step1[ 3][ 4] + 0.36403248 * out_step1[ 3][ 5] - 0.13253643 * out_step1[ 3][ 6]
-   + 0.00906407;
-
-out_step2[1][5] = 
-   - 0.10991814 * out_step1[ 1][ 5] - 0.07047570 * out_step1[ 1][ 6] + 0.32846937 * out_step1[ 1][ 7]
-   + 0.05873375 * out_step1[ 2][ 5] + 0.08658601 * out_step1[ 2][ 6] + 0.03624630 * out_step1[ 2][ 7]
-   + 0.01479519 * out_step1[ 3][ 5] + 0.36403248 * out_step1[ 3][ 6] - 0.13253643 * out_step1[ 3][ 7]
-   + 0.00906407;
-
-out_step2[1][6] = 
-   - 0.10991814 * out_step1[ 1][ 6] - 0.07047570 * out_step1[ 1][ 7] + 0.32846937 * out_step1[ 1][ 8]
-   + 0.05873375 * out_step1[ 2][ 6] + 0.08658601 * out_step1[ 2][ 7] + 0.03624630 * out_step1[ 2][ 8]
-   + 0.01479519 * out_step1[ 3][ 6] + 0.36403248 * out_step1[ 3][ 7] - 0.13253643 * out_step1[ 3][ 8]
-   + 0.00906407;
-
-out_step2[1][7] = 
-   - 0.10991814 * out_step1[ 1][ 7] - 0.07047570 * out_step1[ 1][ 8] + 0.32846937 * out_step1[ 1][ 9]
-   + 0.05873375 * out_step1[ 2][ 7] + 0.08658601 * out_step1[ 2][ 8] + 0.03624630 * out_step1[ 2][ 9]
-   + 0.01479519 * out_step1[ 3][ 7] + 0.36403248 * out_step1[ 3][ 8] - 0.13253643 * out_step1[ 3][ 9]
-   + 0.00906407;
-
-out_step2[1][8] = 
-   - 0.10991814 * out_step1[ 1][ 8] - 0.07047570 * out_step1[ 1][ 9] + 0.32846937 * out_step1[ 1][10]
-   + 0.05873375 * out_step1[ 2][ 8] + 0.08658601 * out_step1[ 2][ 9] + 0.03624630 * out_step1[ 2][10]
-   + 0.01479519 * out_step1[ 3][ 8] + 0.36403248 * out_step1[ 3][ 9] - 0.13253643 * out_step1[ 3][10]
-   + 0.00906407;
-
-out_step2[1][9] = 
-   - 0.10991814 * out_step1[ 1][ 9] - 0.07047570 * out_step1[ 1][10] + 0.32846937 * out_step1[ 1][11]
-   + 0.05873375 * out_step1[ 2][ 9] + 0.08658601 * out_step1[ 2][10] + 0.03624630 * out_step1[ 2][11]
-   + 0.01479519 * out_step1[ 3][ 9] + 0.36403248 * out_step1[ 3][10] - 0.13253643 * out_step1[ 3][11]
-   + 0.00906407;
-
-out_step2[1][10] = 
-   - 0.10991814 * out_step1[ 1][10] - 0.07047570 * out_step1[ 1][11] + 0.32846937 * out_step1[ 1][12]
-   + 0.05873375 * out_step1[ 2][10] + 0.08658601 * out_step1[ 2][11] + 0.03624630 * out_step1[ 2][12]
-   + 0.01479519 * out_step1[ 3][10] + 0.36403248 * out_step1[ 3][11] - 0.13253643 * out_step1[ 3][12]
-   + 0.00906407;
-
-out_step2[1][11] = 
-   - 0.10991814 * out_step1[ 1][11] - 0.07047570 * out_step1[ 1][12] + 0.32846937 * out_step1[ 1][13]
-   + 0.05873375 * out_step1[ 2][11] + 0.08658601 * out_step1[ 2][12] + 0.03624630 * out_step1[ 2][13]
-   + 0.01479519 * out_step1[ 3][11] + 0.36403248 * out_step1[ 3][12] - 0.13253643 * out_step1[ 3][13]
-   + 0.00906407;
-
-out_step2[1][12] = 
-   - 0.10991814 * out_step1[ 1][12] - 0.07047570 * out_step1[ 1][13] + 0.32846937 * out_step1[ 1][14]
-   + 0.05873375 * out_step1[ 2][12] + 0.08658601 * out_step1[ 2][13] + 0.03624630 * out_step1[ 2][14]
-   + 0.01479519 * out_step1[ 3][12] + 0.36403248 * out_step1[ 3][13] - 0.13253643 * out_step1[ 3][14]
-   + 0.00906407;
-
-out_step2[1][13] = 
-   - 0.10991814 * out_step1[ 1][13] - 0.07047570 * out_step1[ 1][14] + 0.32846937 * out_step1[ 1][15]
-   + 0.05873375 * out_step1[ 2][13] + 0.08658601 * out_step1[ 2][14] + 0.03624630 * out_step1[ 2][15]
-   + 0.01479519 * out_step1[ 3][13] + 0.36403248 * out_step1[ 3][14] - 0.13253643 * out_step1[ 3][15]
-   + 0.00906407;
-
-out_step2[2][0] = 
-   - 0.10991814 * out_step1[ 2][ 0] - 0.07047570 * out_step1[ 2][ 1] + 0.32846937 * out_step1[ 2][ 2]
-   + 0.05873375 * out_step1[ 3][ 0] + 0.08658601 * out_step1[ 3][ 1] + 0.03624630 * out_step1[ 3][ 2]
-   + 0.01479519 * out_step1[ 4][ 0] + 0.36403248 * out_step1[ 4][ 1] - 0.13253643 * out_step1[ 4][ 2]
-   + 0.00906407;
-
-out_step2[2][1] = 
-   - 0.10991814 * out_step1[ 2][ 1] - 0.07047570 * out_step1[ 2][ 2] + 0.32846937 * out_step1[ 2][ 3]
-   + 0.05873375 * out_step1[ 3][ 1] + 0.08658601 * out_step1[ 3][ 2] + 0.03624630 * out_step1[ 3][ 3]
-   + 0.01479519 * out_step1[ 4][ 1] + 0.36403248 * out_step1[ 4][ 2] - 0.13253643 * out_step1[ 4][ 3]
-   + 0.00906407;
-
-out_step2[2][2] = 
-   - 0.10991814 * out_step1[ 2][ 2] - 0.07047570 * out_step1[ 2][ 3] + 0.32846937 * out_step1[ 2][ 4]
-   + 0.05873375 * out_step1[ 3][ 2] + 0.08658601 * out_step1[ 3][ 3] + 0.03624630 * out_step1[ 3][ 4]
-   + 0.01479519 * out_step1[ 4][ 2] + 0.36403248 * out_step1[ 4][ 3] - 0.13253643 * out_step1[ 4][ 4]
-   + 0.00906407;
-
-out_step2[2][3] = 
-   - 0.10991814 * out_step1[ 2][ 3] - 0.07047570 * out_step1[ 2][ 4] + 0.32846937 * out_step1[ 2][ 5]
-   + 0.05873375 * out_step1[ 3][ 3] + 0.08658601 * out_step1[ 3][ 4] + 0.03624630 * out_step1[ 3][ 5]
-   + 0.01479519 * out_step1[ 4][ 3] + 0.36403248 * out_step1[ 4][ 4] - 0.13253643 * out_step1[ 4][ 5]
-   + 0.00906407;
-
-out_step2[2][4] = 
-   - 0.10991814 * out_step1[ 2][ 4] - 0.07047570 * out_step1[ 2][ 5] + 0.32846937 * out_step1[ 2][ 6]
-   + 0.05873375 * out_step1[ 3][ 4] + 0.08658601 * out_step1[ 3][ 5] + 0.03624630 * out_step1[ 3][ 6]
-   + 0.01479519 * out_step1[ 4][ 4] + 0.36403248 * out_step1[ 4][ 5] - 0.13253643 * out_step1[ 4][ 6]
-   + 0.00906407;
-
-out_step2[2][5] = 
-   - 0.10991814 * out_step1[ 2][ 5] - 0.07047570 * out_step1[ 2][ 6] + 0.32846937 * out_step1[ 2][ 7]
-   + 0.05873375 * out_step1[ 3][ 5] + 0.08658601 * out_step1[ 3][ 6] + 0.03624630 * out_step1[ 3][ 7]
-   + 0.01479519 * out_step1[ 4][ 5] + 0.36403248 * out_step1[ 4][ 6] - 0.13253643 * out_step1[ 4][ 7]
-   + 0.00906407;
-
-out_step2[2][6] = 
-   - 0.10991814 * out_step1[ 2][ 6] - 0.07047570 * out_step1[ 2][ 7] + 0.32846937 * out_step1[ 2][ 8]
-   + 0.05873375 * out_step1[ 3][ 6] + 0.08658601 * out_step1[ 3][ 7] + 0.03624630 * out_step1[ 3][ 8]
-   + 0.01479519 * out_step1[ 4][ 6] + 0.36403248 * out_step1[ 4][ 7] - 0.13253643 * out_step1[ 4][ 8]
-   + 0.00906407;
-
-out_step2[2][7] = 
-   - 0.10991814 * out_step1[ 2][ 7] - 0.07047570 * out_step1[ 2][ 8] + 0.32846937 * out_step1[ 2][ 9]
-   + 0.05873375 * out_step1[ 3][ 7] + 0.08658601 * out_step1[ 3][ 8] + 0.03624630 * out_step1[ 3][ 9]
-   + 0.01479519 * out_step1[ 4][ 7] + 0.36403248 * out_step1[ 4][ 8] - 0.13253643 * out_step1[ 4][ 9]
-   + 0.00906407;
-
-out_step2[2][8] = 
-   - 0.10991814 * out_step1[ 2][ 8] - 0.07047570 * out_step1[ 2][ 9] + 0.32846937 * out_step1[ 2][10]
-   + 0.05873375 * out_step1[ 3][ 8] + 0.08658601 * out_step1[ 3][ 9] + 0.03624630 * out_step1[ 3][10]
-   + 0.01479519 * out_step1[ 4][ 8] + 0.36403248 * out_step1[ 4][ 9] - 0.13253643 * out_step1[ 4][10]
-   + 0.00906407;
-
-out_step2[2][9] = 
-   - 0.10991814 * out_step1[ 2][ 9] - 0.07047570 * out_step1[ 2][10] + 0.32846937 * out_step1[ 2][11]
-   + 0.05873375 * out_step1[ 3][ 9] + 0.08658601 * out_step1[ 3][10] + 0.03624630 * out_step1[ 3][11]
-   + 0.01479519 * out_step1[ 4][ 9] + 0.36403248 * out_step1[ 4][10] - 0.13253643 * out_step1[ 4][11]
-   + 0.00906407;
-
-out_step2[2][10] = 
-   - 0.10991814 * out_step1[ 2][10] - 0.07047570 * out_step1[ 2][11] + 0.32846937 * out_step1[ 2][12]
-   + 0.05873375 * out_step1[ 3][10] + 0.08658601 * out_step1[ 3][11] + 0.03624630 * out_step1[ 3][12]
-   + 0.01479519 * out_step1[ 4][10] + 0.36403248 * out_step1[ 4][11] - 0.13253643 * out_step1[ 4][12]
-   + 0.00906407;
-
-out_step2[2][11] = 
-   - 0.10991814 * out_step1[ 2][11] - 0.07047570 * out_step1[ 2][12] + 0.32846937 * out_step1[ 2][13]
-   + 0.05873375 * out_step1[ 3][11] + 0.08658601 * out_step1[ 3][12] + 0.03624630 * out_step1[ 3][13]
-   + 0.01479519 * out_step1[ 4][11] + 0.36403248 * out_step1[ 4][12] - 0.13253643 * out_step1[ 4][13]
-   + 0.00906407;
-
-out_step2[2][12] = 
-   - 0.10991814 * out_step1[ 2][12] - 0.07047570 * out_step1[ 2][13] + 0.32846937 * out_step1[ 2][14]
-   + 0.05873375 * out_step1[ 3][12] + 0.08658601 * out_step1[ 3][13] + 0.03624630 * out_step1[ 3][14]
-   + 0.01479519 * out_step1[ 4][12] + 0.36403248 * out_step1[ 4][13] - 0.13253643 * out_step1[ 4][14]
-   + 0.00906407;
-
-out_step2[2][13] = 
-   - 0.10991814 * out_step1[ 2][13] - 0.07047570 * out_step1[ 2][14] + 0.32846937 * out_step1[ 2][15]
-   + 0.05873375 * out_step1[ 3][13] + 0.08658601 * out_step1[ 3][14] + 0.03624630 * out_step1[ 3][15]
-   + 0.01479519 * out_step1[ 4][13] + 0.36403248 * out_step1[ 4][14] - 0.13253643 * out_step1[ 4][15]
-   + 0.00906407;
-
-out_step2[3][0] = 
-   - 0.10991814 * out_step1[ 3][ 0] - 0.07047570 * out_step1[ 3][ 1] + 0.32846937 * out_step1[ 3][ 2]
-   + 0.05873375 * out_step1[ 4][ 0] + 0.08658601 * out_step1[ 4][ 1] + 0.03624630 * out_step1[ 4][ 2]
-   + 0.01479519 * out_step1[ 5][ 0] + 0.36403248 * out_step1[ 5][ 1] - 0.13253643 * out_step1[ 5][ 2]
-   + 0.00906407;
-
-out_step2[3][1] = 
-   - 0.10991814 * out_step1[ 3][ 1] - 0.07047570 * out_step1[ 3][ 2] + 0.32846937 * out_step1[ 3][ 3]
-   + 0.05873375 * out_step1[ 4][ 1] + 0.08658601 * out_step1[ 4][ 2] + 0.03624630 * out_step1[ 4][ 3]
-   + 0.01479519 * out_step1[ 5][ 1] + 0.36403248 * out_step1[ 5][ 2] - 0.13253643 * out_step1[ 5][ 3]
-   + 0.00906407;
-
-out_step2[3][2] = 
-   - 0.10991814 * out_step1[ 3][ 2] - 0.07047570 * out_step1[ 3][ 3] + 0.32846937 * out_step1[ 3][ 4]
-   + 0.05873375 * out_step1[ 4][ 2] + 0.08658601 * out_step1[ 4][ 3] + 0.03624630 * out_step1[ 4][ 4]
-   + 0.01479519 * out_step1[ 5][ 2] + 0.36403248 * out_step1[ 5][ 3] - 0.13253643 * out_step1[ 5][ 4]
-   + 0.00906407;
-
-out_step2[3][3] = 
-   - 0.10991814 * out_step1[ 3][ 3] - 0.07047570 * out_step1[ 3][ 4] + 0.32846937 * out_step1[ 3][ 5]
-   + 0.05873375 * out_step1[ 4][ 3] + 0.08658601 * out_step1[ 4][ 4] + 0.03624630 * out_step1[ 4][ 5]
-   + 0.01479519 * out_step1[ 5][ 3] + 0.36403248 * out_step1[ 5][ 4] - 0.13253643 * out_step1[ 5][ 5]
-   + 0.00906407;
-
-out_step2[3][4] = 
-   - 0.10991814 * out_step1[ 3][ 4] - 0.07047570 * out_step1[ 3][ 5] + 0.32846937 * out_step1[ 3][ 6]
-   + 0.05873375 * out_step1[ 4][ 4] + 0.08658601 * out_step1[ 4][ 5] + 0.03624630 * out_step1[ 4][ 6]
-   + 0.01479519 * out_step1[ 5][ 4] + 0.36403248 * out_step1[ 5][ 5] - 0.13253643 * out_step1[ 5][ 6]
-   + 0.00906407;
-
-out_step2[3][5] = 
-   - 0.10991814 * out_step1[ 3][ 5] - 0.07047570 * out_step1[ 3][ 6] + 0.32846937 * out_step1[ 3][ 7]
-   + 0.05873375 * out_step1[ 4][ 5] + 0.08658601 * out_step1[ 4][ 6] + 0.03624630 * out_step1[ 4][ 7]
-   + 0.01479519 * out_step1[ 5][ 5] + 0.36403248 * out_step1[ 5][ 6] - 0.13253643 * out_step1[ 5][ 7]
-   + 0.00906407;
-
-out_step2[3][6] = 
-   - 0.10991814 * out_step1[ 3][ 6] - 0.07047570 * out_step1[ 3][ 7] + 0.32846937 * out_step1[ 3][ 8]
-   + 0.05873375 * out_step1[ 4][ 6] + 0.08658601 * out_step1[ 4][ 7] + 0.03624630 * out_step1[ 4][ 8]
-   + 0.01479519 * out_step1[ 5][ 6] + 0.36403248 * out_step1[ 5][ 7] - 0.13253643 * out_step1[ 5][ 8]
-   + 0.00906407;
-
-out_step2[3][7] = 
-   - 0.10991814 * out_step1[ 3][ 7] - 0.07047570 * out_step1[ 3][ 8] + 0.32846937 * out_step1[ 3][ 9]
-   + 0.05873375 * out_step1[ 4][ 7] + 0.08658601 * out_step1[ 4][ 8] + 0.03624630 * out_step1[ 4][ 9]
-   + 0.01479519 * out_step1[ 5][ 7] + 0.36403248 * out_step1[ 5][ 8] - 0.13253643 * out_step1[ 5][ 9]
-   + 0.00906407;
-
-out_step2[3][8] = 
-   - 0.10991814 * out_step1[ 3][ 8] - 0.07047570 * out_step1[ 3][ 9] + 0.32846937 * out_step1[ 3][10]
-   + 0.05873375 * out_step1[ 4][ 8] + 0.08658601 * out_step1[ 4][ 9] + 0.03624630 * out_step1[ 4][10]
-   + 0.01479519 * out_step1[ 5][ 8] + 0.36403248 * out_step1[ 5][ 9] - 0.13253643 * out_step1[ 5][10]
-   + 0.00906407;
-
-out_step2[3][9] = 
-   - 0.10991814 * out_step1[ 3][ 9] - 0.07047570 * out_step1[ 3][10] + 0.32846937 * out_step1[ 3][11]
-   + 0.05873375 * out_step1[ 4][ 9] + 0.08658601 * out_step1[ 4][10] + 0.03624630 * out_step1[ 4][11]
-   + 0.01479519 * out_step1[ 5][ 9] + 0.36403248 * out_step1[ 5][10] - 0.13253643 * out_step1[ 5][11]
-   + 0.00906407;
-
-out_step2[3][10] = 
-   - 0.10991814 * out_step1[ 3][10] - 0.07047570 * out_step1[ 3][11] + 0.32846937 * out_step1[ 3][12]
-   + 0.05873375 * out_step1[ 4][10] + 0.08658601 * out_step1[ 4][11] + 0.03624630 * out_step1[ 4][12]
-   + 0.01479519 * out_step1[ 5][10] + 0.36403248 * out_step1[ 5][11] - 0.13253643 * out_step1[ 5][12]
-   + 0.00906407;
-
-out_step2[3][11] = 
-   - 0.10991814 * out_step1[ 3][11] - 0.07047570 * out_step1[ 3][12] + 0.32846937 * out_step1[ 3][13]
-   + 0.05873375 * out_step1[ 4][11] + 0.08658601 * out_step1[ 4][12] + 0.03624630 * out_step1[ 4][13]
-   + 0.01479519 * out_step1[ 5][11] + 0.36403248 * out_step1[ 5][12] - 0.13253643 * out_step1[ 5][13]
-   + 0.00906407;
-
-out_step2[3][12] = 
-   - 0.10991814 * out_step1[ 3][12] - 0.07047570 * out_step1[ 3][13] + 0.32846937 * out_step1[ 3][14]
-   + 0.05873375 * out_step1[ 4][12] + 0.08658601 * out_step1[ 4][13] + 0.03624630 * out_step1[ 4][14]
-   + 0.01479519 * out_step1[ 5][12] + 0.36403248 * out_step1[ 5][13] - 0.13253643 * out_step1[ 5][14]
-   + 0.00906407;
-
-out_step2[3][13] = 
-   - 0.10991814 * out_step1[ 3][13] - 0.07047570 * out_step1[ 3][14] + 0.32846937 * out_step1[ 3][15]
-   + 0.05873375 * out_step1[ 4][13] + 0.08658601 * out_step1[ 4][14] + 0.03624630 * out_step1[ 4][15]
-   + 0.01479519 * out_step1[ 5][13] + 0.36403248 * out_step1[ 5][14] - 0.13253643 * out_step1[ 5][15]
-   + 0.00906407;
-
-out_step2[4][0] = 
-   - 0.10991814 * out_step1[ 4][ 0] - 0.07047570 * out_step1[ 4][ 1] + 0.32846937 * out_step1[ 4][ 2]
-   + 0.05873375 * out_step1[ 5][ 0] + 0.08658601 * out_step1[ 5][ 1] + 0.03624630 * out_step1[ 5][ 2]
-   + 0.01479519 * out_step1[ 6][ 0] + 0.36403248 * out_step1[ 6][ 1] - 0.13253643 * out_step1[ 6][ 2]
-   + 0.00906407;
-
-out_step2[4][1] = 
-   - 0.10991814 * out_step1[ 4][ 1] - 0.07047570 * out_step1[ 4][ 2] + 0.32846937 * out_step1[ 4][ 3]
-   + 0.05873375 * out_step1[ 5][ 1] + 0.08658601 * out_step1[ 5][ 2] + 0.03624630 * out_step1[ 5][ 3]
-   + 0.01479519 * out_step1[ 6][ 1] + 0.36403248 * out_step1[ 6][ 2] - 0.13253643 * out_step1[ 6][ 3]
-   + 0.00906407;
-
-out_step2[4][2] = 
-   - 0.10991814 * out_step1[ 4][ 2] - 0.07047570 * out_step1[ 4][ 3] + 0.32846937 * out_step1[ 4][ 4]
-   + 0.05873375 * out_step1[ 5][ 2] + 0.08658601 * out_step1[ 5][ 3] + 0.03624630 * out_step1[ 5][ 4]
-   + 0.01479519 * out_step1[ 6][ 2] + 0.36403248 * out_step1[ 6][ 3] - 0.13253643 * out_step1[ 6][ 4]
-   + 0.00906407;
-
-out_step2[4][3] = 
-   - 0.10991814 * out_step1[ 4][ 3] - 0.07047570 * out_step1[ 4][ 4] + 0.32846937 * out_step1[ 4][ 5]
-   + 0.05873375 * out_step1[ 5][ 3] + 0.08658601 * out_step1[ 5][ 4] + 0.03624630 * out_step1[ 5][ 5]
-   + 0.01479519 * out_step1[ 6][ 3] + 0.36403248 * out_step1[ 6][ 4] - 0.13253643 * out_step1[ 6][ 5]
-   + 0.00906407;
-
-out_step2[4][4] = 
-   - 0.10991814 * out_step1[ 4][ 4] - 0.07047570 * out_step1[ 4][ 5] + 0.32846937 * out_step1[ 4][ 6]
-   + 0.05873375 * out_step1[ 5][ 4] + 0.08658601 * out_step1[ 5][ 5] + 0.03624630 * out_step1[ 5][ 6]
-   + 0.01479519 * out_step1[ 6][ 4] + 0.36403248 * out_step1[ 6][ 5] - 0.13253643 * out_step1[ 6][ 6]
-   + 0.00906407;
-
-out_step2[4][5] = 
-   - 0.10991814 * out_step1[ 4][ 5] - 0.07047570 * out_step1[ 4][ 6] + 0.32846937 * out_step1[ 4][ 7]
-   + 0.05873375 * out_step1[ 5][ 5] + 0.08658601 * out_step1[ 5][ 6] + 0.03624630 * out_step1[ 5][ 7]
-   + 0.01479519 * out_step1[ 6][ 5] + 0.36403248 * out_step1[ 6][ 6] - 0.13253643 * out_step1[ 6][ 7]
-   + 0.00906407;
-
-out_step2[4][6] = 
-   - 0.10991814 * out_step1[ 4][ 6] - 0.07047570 * out_step1[ 4][ 7] + 0.32846937 * out_step1[ 4][ 8]
-   + 0.05873375 * out_step1[ 5][ 6] + 0.08658601 * out_step1[ 5][ 7] + 0.03624630 * out_step1[ 5][ 8]
-   + 0.01479519 * out_step1[ 6][ 6] + 0.36403248 * out_step1[ 6][ 7] - 0.13253643 * out_step1[ 6][ 8]
-   + 0.00906407;
-
-out_step2[4][7] = 
-   - 0.10991814 * out_step1[ 4][ 7] - 0.07047570 * out_step1[ 4][ 8] + 0.32846937 * out_step1[ 4][ 9]
-   + 0.05873375 * out_step1[ 5][ 7] + 0.08658601 * out_step1[ 5][ 8] + 0.03624630 * out_step1[ 5][ 9]
-   + 0.01479519 * out_step1[ 6][ 7] + 0.36403248 * out_step1[ 6][ 8] - 0.13253643 * out_step1[ 6][ 9]
-   + 0.00906407;
-
-out_step2[4][8] = 
-   - 0.10991814 * out_step1[ 4][ 8] - 0.07047570 * out_step1[ 4][ 9] + 0.32846937 * out_step1[ 4][10]
-   + 0.05873375 * out_step1[ 5][ 8] + 0.08658601 * out_step1[ 5][ 9] + 0.03624630 * out_step1[ 5][10]
-   + 0.01479519 * out_step1[ 6][ 8] + 0.36403248 * out_step1[ 6][ 9] - 0.13253643 * out_step1[ 6][10]
-   + 0.00906407;
-
-out_step2[4][9] = 
-   - 0.10991814 * out_step1[ 4][ 9] - 0.07047570 * out_step1[ 4][10] + 0.32846937 * out_step1[ 4][11]
-   + 0.05873375 * out_step1[ 5][ 9] + 0.08658601 * out_step1[ 5][10] + 0.03624630 * out_step1[ 5][11]
-   + 0.01479519 * out_step1[ 6][ 9] + 0.36403248 * out_step1[ 6][10] - 0.13253643 * out_step1[ 6][11]
-   + 0.00906407;
-
-out_step2[4][10] = 
-   - 0.10991814 * out_step1[ 4][10] - 0.07047570 * out_step1[ 4][11] + 0.32846937 * out_step1[ 4][12]
-   + 0.05873375 * out_step1[ 5][10] + 0.08658601 * out_step1[ 5][11] + 0.03624630 * out_step1[ 5][12]
-   + 0.01479519 * out_step1[ 6][10] + 0.36403248 * out_step1[ 6][11] - 0.13253643 * out_step1[ 6][12]
-   + 0.00906407;
-
-out_step2[4][11] = 
-   - 0.10991814 * out_step1[ 4][11] - 0.07047570 * out_step1[ 4][12] + 0.32846937 * out_step1[ 4][13]
-   + 0.05873375 * out_step1[ 5][11] + 0.08658601 * out_step1[ 5][12] + 0.03624630 * out_step1[ 5][13]
-   + 0.01479519 * out_step1[ 6][11] + 0.36403248 * out_step1[ 6][12] - 0.13253643 * out_step1[ 6][13]
-   + 0.00906407;
-
-out_step2[4][12] = 
-   - 0.10991814 * out_step1[ 4][12] - 0.07047570 * out_step1[ 4][13] + 0.32846937 * out_step1[ 4][14]
-   + 0.05873375 * out_step1[ 5][12] + 0.08658601 * out_step1[ 5][13] + 0.03624630 * out_step1[ 5][14]
-   + 0.01479519 * out_step1[ 6][12] + 0.36403248 * out_step1[ 6][13] - 0.13253643 * out_step1[ 6][14]
-   + 0.00906407;
-
-out_step2[4][13] = 
-   - 0.10991814 * out_step1[ 4][13] - 0.07047570 * out_step1[ 4][14] + 0.32846937 * out_step1[ 4][15]
-   + 0.05873375 * out_step1[ 5][13] + 0.08658601 * out_step1[ 5][14] + 0.03624630 * out_step1[ 5][15]
-   + 0.01479519 * out_step1[ 6][13] + 0.36403248 * out_step1[ 6][14] - 0.13253643 * out_step1[ 6][15]
-   + 0.00906407;
-
-out_step2[5][0] = 
-   - 0.10991814 * out_step1[ 5][ 0] - 0.07047570 * out_step1[ 5][ 1] + 0.32846937 * out_step1[ 5][ 2]
-   + 0.05873375 * out_step1[ 6][ 0] + 0.08658601 * out_step1[ 6][ 1] + 0.03624630 * out_step1[ 6][ 2]
-   + 0.01479519 * out_step1[ 7][ 0] + 0.36403248 * out_step1[ 7][ 1] - 0.13253643 * out_step1[ 7][ 2]
-   + 0.00906407;
-
-out_step2[5][1] = 
-   - 0.10991814 * out_step1[ 5][ 1] - 0.07047570 * out_step1[ 5][ 2] + 0.32846937 * out_step1[ 5][ 3]
-   + 0.05873375 * out_step1[ 6][ 1] + 0.08658601 * out_step1[ 6][ 2] + 0.03624630 * out_step1[ 6][ 3]
-   + 0.01479519 * out_step1[ 7][ 1] + 0.36403248 * out_step1[ 7][ 2] - 0.13253643 * out_step1[ 7][ 3]
-   + 0.00906407;
-
-out_step2[5][2] = 
-   - 0.10991814 * out_step1[ 5][ 2] - 0.07047570 * out_step1[ 5][ 3] + 0.32846937 * out_step1[ 5][ 4]
-   + 0.05873375 * out_step1[ 6][ 2] + 0.08658601 * out_step1[ 6][ 3] + 0.03624630 * out_step1[ 6][ 4]
-   + 0.01479519 * out_step1[ 7][ 2] + 0.36403248 * out_step1[ 7][ 3] - 0.13253643 * out_step1[ 7][ 4]
-   + 0.00906407;
-
-out_step2[5][3] = 
-   - 0.10991814 * out_step1[ 5][ 3] - 0.07047570 * out_step1[ 5][ 4] + 0.32846937 * out_step1[ 5][ 5]
-   + 0.05873375 * out_step1[ 6][ 3] + 0.08658601 * out_step1[ 6][ 4] + 0.03624630 * out_step1[ 6][ 5]
-   + 0.01479519 * out_step1[ 7][ 3] + 0.36403248 * out_step1[ 7][ 4] - 0.13253643 * out_step1[ 7][ 5]
-   + 0.00906407;
-
-out_step2[5][4] = 
-   - 0.10991814 * out_step1[ 5][ 4] - 0.07047570 * out_step1[ 5][ 5] + 0.32846937 * out_step1[ 5][ 6]
-   + 0.05873375 * out_step1[ 6][ 4] + 0.08658601 * out_step1[ 6][ 5] + 0.03624630 * out_step1[ 6][ 6]
-   + 0.01479519 * out_step1[ 7][ 4] + 0.36403248 * out_step1[ 7][ 5] - 0.13253643 * out_step1[ 7][ 6]
-   + 0.00906407;
-
-out_step2[5][5] = 
-   - 0.10991814 * out_step1[ 5][ 5] - 0.07047570 * out_step1[ 5][ 6] + 0.32846937 * out_step1[ 5][ 7]
-   + 0.05873375 * out_step1[ 6][ 5] + 0.08658601 * out_step1[ 6][ 6] + 0.03624630 * out_step1[ 6][ 7]
-   + 0.01479519 * out_step1[ 7][ 5] + 0.36403248 * out_step1[ 7][ 6] - 0.13253643 * out_step1[ 7][ 7]
-   + 0.00906407;
-
-out_step2[5][6] = 
-   - 0.10991814 * out_step1[ 5][ 6] - 0.07047570 * out_step1[ 5][ 7] + 0.32846937 * out_step1[ 5][ 8]
-   + 0.05873375 * out_step1[ 6][ 6] + 0.08658601 * out_step1[ 6][ 7] + 0.03624630 * out_step1[ 6][ 8]
-   + 0.01479519 * out_step1[ 7][ 6] + 0.36403248 * out_step1[ 7][ 7] - 0.13253643 * out_step1[ 7][ 8]
-   + 0.00906407;
-
-out_step2[5][7] = 
-   - 0.10991814 * out_step1[ 5][ 7] - 0.07047570 * out_step1[ 5][ 8] + 0.32846937 * out_step1[ 5][ 9]
-   + 0.05873375 * out_step1[ 6][ 7] + 0.08658601 * out_step1[ 6][ 8] + 0.03624630 * out_step1[ 6][ 9]
-   + 0.01479519 * out_step1[ 7][ 7] + 0.36403248 * out_step1[ 7][ 8] - 0.13253643 * out_step1[ 7][ 9]
-   + 0.00906407;
-
-out_step2[5][8] = 
-   - 0.10991814 * out_step1[ 5][ 8] - 0.07047570 * out_step1[ 5][ 9] + 0.32846937 * out_step1[ 5][10]
-   + 0.05873375 * out_step1[ 6][ 8] + 0.08658601 * out_step1[ 6][ 9] + 0.03624630 * out_step1[ 6][10]
-   + 0.01479519 * out_step1[ 7][ 8] + 0.36403248 * out_step1[ 7][ 9] - 0.13253643 * out_step1[ 7][10]
-   + 0.00906407;
-
-out_step2[5][9] = 
-   - 0.10991814 * out_step1[ 5][ 9] - 0.07047570 * out_step1[ 5][10] + 0.32846937 * out_step1[ 5][11]
-   + 0.05873375 * out_step1[ 6][ 9] + 0.08658601 * out_step1[ 6][10] + 0.03624630 * out_step1[ 6][11]
-   + 0.01479519 * out_step1[ 7][ 9] + 0.36403248 * out_step1[ 7][10] - 0.13253643 * out_step1[ 7][11]
-   + 0.00906407;
-
-out_step2[5][10] = 
-   - 0.10991814 * out_step1[ 5][10] - 0.07047570 * out_step1[ 5][11] + 0.32846937 * out_step1[ 5][12]
-   + 0.05873375 * out_step1[ 6][10] + 0.08658601 * out_step1[ 6][11] + 0.03624630 * out_step1[ 6][12]
-   + 0.01479519 * out_step1[ 7][10] + 0.36403248 * out_step1[ 7][11] - 0.13253643 * out_step1[ 7][12]
-   + 0.00906407;
-
-out_step2[5][11] = 
-   - 0.10991814 * out_step1[ 5][11] - 0.07047570 * out_step1[ 5][12] + 0.32846937 * out_step1[ 5][13]
-   + 0.05873375 * out_step1[ 6][11] + 0.08658601 * out_step1[ 6][12] + 0.03624630 * out_step1[ 6][13]
-   + 0.01479519 * out_step1[ 7][11] + 0.36403248 * out_step1[ 7][12] - 0.13253643 * out_step1[ 7][13]
-   + 0.00906407;
-
-out_step2[5][12] = 
-   - 0.10991814 * out_step1[ 5][12] - 0.07047570 * out_step1[ 5][13] + 0.32846937 * out_step1[ 5][14]
-   + 0.05873375 * out_step1[ 6][12] + 0.08658601 * out_step1[ 6][13] + 0.03624630 * out_step1[ 6][14]
-   + 0.01479519 * out_step1[ 7][12] + 0.36403248 * out_step1[ 7][13] - 0.13253643 * out_step1[ 7][14]
-   + 0.00906407;
-
-out_step2[5][13] = 
-   - 0.10991814 * out_step1[ 5][13] - 0.07047570 * out_step1[ 5][14] + 0.32846937 * out_step1[ 5][15]
-   + 0.05873375 * out_step1[ 6][13] + 0.08658601 * out_step1[ 6][14] + 0.03624630 * out_step1[ 6][15]
-   + 0.01479519 * out_step1[ 7][13] + 0.36403248 * out_step1[ 7][14] - 0.13253643 * out_step1[ 7][15]
-   + 0.00906407;
-
-out_step2[6][0] = 
-   - 0.10991814 * out_step1[ 6][ 0] - 0.07047570 * out_step1[ 6][ 1] + 0.32846937 * out_step1[ 6][ 2]
-   + 0.05873375 * out_step1[ 7][ 0] + 0.08658601 * out_step1[ 7][ 1] + 0.03624630 * out_step1[ 7][ 2]
-   + 0.01479519 * out_step1[ 8][ 0] + 0.36403248 * out_step1[ 8][ 1] - 0.13253643 * out_step1[ 8][ 2]
-   + 0.00906407;
-
-out_step2[6][1] = 
-   - 0.10991814 * out_step1[ 6][ 1] - 0.07047570 * out_step1[ 6][ 2] + 0.32846937 * out_step1[ 6][ 3]
-   + 0.05873375 * out_step1[ 7][ 1] + 0.08658601 * out_step1[ 7][ 2] + 0.03624630 * out_step1[ 7][ 3]
-   + 0.01479519 * out_step1[ 8][ 1] + 0.36403248 * out_step1[ 8][ 2] - 0.13253643 * out_step1[ 8][ 3]
-   + 0.00906407;
-
-out_step2[6][2] = 
-   - 0.10991814 * out_step1[ 6][ 2] - 0.07047570 * out_step1[ 6][ 3] + 0.32846937 * out_step1[ 6][ 4]
-   + 0.05873375 * out_step1[ 7][ 2] + 0.08658601 * out_step1[ 7][ 3] + 0.03624630 * out_step1[ 7][ 4]
-   + 0.01479519 * out_step1[ 8][ 2] + 0.36403248 * out_step1[ 8][ 3] - 0.13253643 * out_step1[ 8][ 4]
-   + 0.00906407;
-
-out_step2[6][3] = 
-   - 0.10991814 * out_step1[ 6][ 3] - 0.07047570 * out_step1[ 6][ 4] + 0.32846937 * out_step1[ 6][ 5]
-   + 0.05873375 * out_step1[ 7][ 3] + 0.08658601 * out_step1[ 7][ 4] + 0.03624630 * out_step1[ 7][ 5]
-   + 0.01479519 * out_step1[ 8][ 3] + 0.36403248 * out_step1[ 8][ 4] - 0.13253643 * out_step1[ 8][ 5]
-   + 0.00906407;
-
-out_step2[6][4] = 
-   - 0.10991814 * out_step1[ 6][ 4] - 0.07047570 * out_step1[ 6][ 5] + 0.32846937 * out_step1[ 6][ 6]
-   + 0.05873375 * out_step1[ 7][ 4] + 0.08658601 * out_step1[ 7][ 5] + 0.03624630 * out_step1[ 7][ 6]
-   + 0.01479519 * out_step1[ 8][ 4] + 0.36403248 * out_step1[ 8][ 5] - 0.13253643 * out_step1[ 8][ 6]
-   + 0.00906407;
-
-out_step2[6][5] = 
-   - 0.10991814 * out_step1[ 6][ 5] - 0.07047570 * out_step1[ 6][ 6] + 0.32846937 * out_step1[ 6][ 7]
-   + 0.05873375 * out_step1[ 7][ 5] + 0.08658601 * out_step1[ 7][ 6] + 0.03624630 * out_step1[ 7][ 7]
-   + 0.01479519 * out_step1[ 8][ 5] + 0.36403248 * out_step1[ 8][ 6] - 0.13253643 * out_step1[ 8][ 7]
-   + 0.00906407;
-
-out_step2[6][6] = 
-   - 0.10991814 * out_step1[ 6][ 6] - 0.07047570 * out_step1[ 6][ 7] + 0.32846937 * out_step1[ 6][ 8]
-   + 0.05873375 * out_step1[ 7][ 6] + 0.08658601 * out_step1[ 7][ 7] + 0.03624630 * out_step1[ 7][ 8]
-   + 0.01479519 * out_step1[ 8][ 6] + 0.36403248 * out_step1[ 8][ 7] - 0.13253643 * out_step1[ 8][ 8]
-   + 0.00906407;
-
-out_step2[6][7] = 
-   - 0.10991814 * out_step1[ 6][ 7] - 0.07047570 * out_step1[ 6][ 8] + 0.32846937 * out_step1[ 6][ 9]
-   + 0.05873375 * out_step1[ 7][ 7] + 0.08658601 * out_step1[ 7][ 8] + 0.03624630 * out_step1[ 7][ 9]
-   + 0.01479519 * out_step1[ 8][ 7] + 0.36403248 * out_step1[ 8][ 8] - 0.13253643 * out_step1[ 8][ 9]
-   + 0.00906407;
-
-out_step2[6][8] = 
-   - 0.10991814 * out_step1[ 6][ 8] - 0.07047570 * out_step1[ 6][ 9] + 0.32846937 * out_step1[ 6][10]
-   + 0.05873375 * out_step1[ 7][ 8] + 0.08658601 * out_step1[ 7][ 9] + 0.03624630 * out_step1[ 7][10]
-   + 0.01479519 * out_step1[ 8][ 8] + 0.36403248 * out_step1[ 8][ 9] - 0.13253643 * out_step1[ 8][10]
-   + 0.00906407;
-
-out_step2[6][9] = 
-   - 0.10991814 * out_step1[ 6][ 9] - 0.07047570 * out_step1[ 6][10] + 0.32846937 * out_step1[ 6][11]
-   + 0.05873375 * out_step1[ 7][ 9] + 0.08658601 * out_step1[ 7][10] + 0.03624630 * out_step1[ 7][11]
-   + 0.01479519 * out_step1[ 8][ 9] + 0.36403248 * out_step1[ 8][10] - 0.13253643 * out_step1[ 8][11]
-   + 0.00906407;
-
-out_step2[6][10] = 
-   - 0.10991814 * out_step1[ 6][10] - 0.07047570 * out_step1[ 6][11] + 0.32846937 * out_step1[ 6][12]
-   + 0.05873375 * out_step1[ 7][10] + 0.08658601 * out_step1[ 7][11] + 0.03624630 * out_step1[ 7][12]
-   + 0.01479519 * out_step1[ 8][10] + 0.36403248 * out_step1[ 8][11] - 0.13253643 * out_step1[ 8][12]
-   + 0.00906407;
-
-out_step2[6][11] = 
-   - 0.10991814 * out_step1[ 6][11] - 0.07047570 * out_step1[ 6][12] + 0.32846937 * out_step1[ 6][13]
-   + 0.05873375 * out_step1[ 7][11] + 0.08658601 * out_step1[ 7][12] + 0.03624630 * out_step1[ 7][13]
-   + 0.01479519 * out_step1[ 8][11] + 0.36403248 * out_step1[ 8][12] - 0.13253643 * out_step1[ 8][13]
-   + 0.00906407;
-
-out_step2[6][12] = 
-   - 0.10991814 * out_step1[ 6][12] - 0.07047570 * out_step1[ 6][13] + 0.32846937 * out_step1[ 6][14]
-   + 0.05873375 * out_step1[ 7][12] + 0.08658601 * out_step1[ 7][13] + 0.03624630 * out_step1[ 7][14]
-   + 0.01479519 * out_step1[ 8][12] + 0.36403248 * out_step1[ 8][13] - 0.13253643 * out_step1[ 8][14]
-   + 0.00906407;
-
-out_step2[6][13] = 
-   - 0.10991814 * out_step1[ 6][13] - 0.07047570 * out_step1[ 6][14] + 0.32846937 * out_step1[ 6][15]
-   + 0.05873375 * out_step1[ 7][13] + 0.08658601 * out_step1[ 7][14] + 0.03624630 * out_step1[ 7][15]
-   + 0.01479519 * out_step1[ 8][13] + 0.36403248 * out_step1[ 8][14] - 0.13253643 * out_step1[ 8][15]
-   + 0.00906407;
-
-out_step2[7][0] = 
-   - 0.10991814 * out_step1[ 7][ 0] - 0.07047570 * out_step1[ 7][ 1] + 0.32846937 * out_step1[ 7][ 2]
-   + 0.05873375 * out_step1[ 8][ 0] + 0.08658601 * out_step1[ 8][ 1] + 0.03624630 * out_step1[ 8][ 2]
-   + 0.01479519 * out_step1[ 9][ 0] + 0.36403248 * out_step1[ 9][ 1] - 0.13253643 * out_step1[ 9][ 2]
-   + 0.00906407;
-
-out_step2[7][1] = 
-   - 0.10991814 * out_step1[ 7][ 1] - 0.07047570 * out_step1[ 7][ 2] + 0.32846937 * out_step1[ 7][ 3]
-   + 0.05873375 * out_step1[ 8][ 1] + 0.08658601 * out_step1[ 8][ 2] + 0.03624630 * out_step1[ 8][ 3]
-   + 0.01479519 * out_step1[ 9][ 1] + 0.36403248 * out_step1[ 9][ 2] - 0.13253643 * out_step1[ 9][ 3]
-   + 0.00906407;
-
-out_step2[7][2] = 
-   - 0.10991814 * out_step1[ 7][ 2] - 0.07047570 * out_step1[ 7][ 3] + 0.32846937 * out_step1[ 7][ 4]
-   + 0.05873375 * out_step1[ 8][ 2] + 0.08658601 * out_step1[ 8][ 3] + 0.03624630 * out_step1[ 8][ 4]
-   + 0.01479519 * out_step1[ 9][ 2] + 0.36403248 * out_step1[ 9][ 3] - 0.13253643 * out_step1[ 9][ 4]
-   + 0.00906407;
-
-out_step2[7][3] = 
-   - 0.10991814 * out_step1[ 7][ 3] - 0.07047570 * out_step1[ 7][ 4] + 0.32846937 * out_step1[ 7][ 5]
-   + 0.05873375 * out_step1[ 8][ 3] + 0.08658601 * out_step1[ 8][ 4] + 0.03624630 * out_step1[ 8][ 5]
-   + 0.01479519 * out_step1[ 9][ 3] + 0.36403248 * out_step1[ 9][ 4] - 0.13253643 * out_step1[ 9][ 5]
-   + 0.00906407;
-
-out_step2[7][4] = 
-   - 0.10991814 * out_step1[ 7][ 4] - 0.07047570 * out_step1[ 7][ 5] + 0.32846937 * out_step1[ 7][ 6]
-   + 0.05873375 * out_step1[ 8][ 4] + 0.08658601 * out_step1[ 8][ 5] + 0.03624630 * out_step1[ 8][ 6]
-   + 0.01479519 * out_step1[ 9][ 4] + 0.36403248 * out_step1[ 9][ 5] - 0.13253643 * out_step1[ 9][ 6]
-   + 0.00906407;
-
-out_step2[7][5] = 
-   - 0.10991814 * out_step1[ 7][ 5] - 0.07047570 * out_step1[ 7][ 6] + 0.32846937 * out_step1[ 7][ 7]
-   + 0.05873375 * out_step1[ 8][ 5] + 0.08658601 * out_step1[ 8][ 6] + 0.03624630 * out_step1[ 8][ 7]
-   + 0.01479519 * out_step1[ 9][ 5] + 0.36403248 * out_step1[ 9][ 6] - 0.13253643 * out_step1[ 9][ 7]
-   + 0.00906407;
-
-out_step2[7][6] = 
-   - 0.10991814 * out_step1[ 7][ 6] - 0.07047570 * out_step1[ 7][ 7] + 0.32846937 * out_step1[ 7][ 8]
-   + 0.05873375 * out_step1[ 8][ 6] + 0.08658601 * out_step1[ 8][ 7] + 0.03624630 * out_step1[ 8][ 8]
-   + 0.01479519 * out_step1[ 9][ 6] + 0.36403248 * out_step1[ 9][ 7] - 0.13253643 * out_step1[ 9][ 8]
-   + 0.00906407;
-
-out_step2[7][7] = 
-   - 0.10991814 * out_step1[ 7][ 7] - 0.07047570 * out_step1[ 7][ 8] + 0.32846937 * out_step1[ 7][ 9]
-   + 0.05873375 * out_step1[ 8][ 7] + 0.08658601 * out_step1[ 8][ 8] + 0.03624630 * out_step1[ 8][ 9]
-   + 0.01479519 * out_step1[ 9][ 7] + 0.36403248 * out_step1[ 9][ 8] - 0.13253643 * out_step1[ 9][ 9]
-   + 0.00906407;
-
-out_step2[7][8] = 
-   - 0.10991814 * out_step1[ 7][ 8] - 0.07047570 * out_step1[ 7][ 9] + 0.32846937 * out_step1[ 7][10]
-   + 0.05873375 * out_step1[ 8][ 8] + 0.08658601 * out_step1[ 8][ 9] + 0.03624630 * out_step1[ 8][10]
-   + 0.01479519 * out_step1[ 9][ 8] + 0.36403248 * out_step1[ 9][ 9] - 0.13253643 * out_step1[ 9][10]
-   + 0.00906407;
-
-out_step2[7][9] = 
-   - 0.10991814 * out_step1[ 7][ 9] - 0.07047570 * out_step1[ 7][10] + 0.32846937 * out_step1[ 7][11]
-   + 0.05873375 * out_step1[ 8][ 9] + 0.08658601 * out_step1[ 8][10] + 0.03624630 * out_step1[ 8][11]
-   + 0.01479519 * out_step1[ 9][ 9] + 0.36403248 * out_step1[ 9][10] - 0.13253643 * out_step1[ 9][11]
-   + 0.00906407;
-
-out_step2[7][10] = 
-   - 0.10991814 * out_step1[ 7][10] - 0.07047570 * out_step1[ 7][11] + 0.32846937 * out_step1[ 7][12]
-   + 0.05873375 * out_step1[ 8][10] + 0.08658601 * out_step1[ 8][11] + 0.03624630 * out_step1[ 8][12]
-   + 0.01479519 * out_step1[ 9][10] + 0.36403248 * out_step1[ 9][11] - 0.13253643 * out_step1[ 9][12]
-   + 0.00906407;
-
-out_step2[7][11] = 
-   - 0.10991814 * out_step1[ 7][11] - 0.07047570 * out_step1[ 7][12] + 0.32846937 * out_step1[ 7][13]
-   + 0.05873375 * out_step1[ 8][11] + 0.08658601 * out_step1[ 8][12] + 0.03624630 * out_step1[ 8][13]
-   + 0.01479519 * out_step1[ 9][11] + 0.36403248 * out_step1[ 9][12] - 0.13253643 * out_step1[ 9][13]
-   + 0.00906407;
-
-out_step2[7][12] = 
-   - 0.10991814 * out_step1[ 7][12] - 0.07047570 * out_step1[ 7][13] + 0.32846937 * out_step1[ 7][14]
-   + 0.05873375 * out_step1[ 8][12] + 0.08658601 * out_step1[ 8][13] + 0.03624630 * out_step1[ 8][14]
-   + 0.01479519 * out_step1[ 9][12] + 0.36403248 * out_step1[ 9][13] - 0.13253643 * out_step1[ 9][14]
-   + 0.00906407;
-
-out_step2[7][13] = 
-   - 0.10991814 * out_step1[ 7][13] - 0.07047570 * out_step1[ 7][14] + 0.32846937 * out_step1[ 7][15]
-   + 0.05873375 * out_step1[ 8][13] + 0.08658601 * out_step1[ 8][14] + 0.03624630 * out_step1[ 8][15]
-   + 0.01479519 * out_step1[ 9][13] + 0.36403248 * out_step1[ 9][14] - 0.13253643 * out_step1[ 9][15]
-   + 0.00906407;
-
-out_step2[8][0] = 
-   - 0.10991814 * out_step1[ 8][ 0] - 0.07047570 * out_step1[ 8][ 1] + 0.32846937 * out_step1[ 8][ 2]
-   + 0.05873375 * out_step1[ 9][ 0] + 0.08658601 * out_step1[ 9][ 1] + 0.03624630 * out_step1[ 9][ 2]
-   + 0.01479519 * out_step1[10][ 0] + 0.36403248 * out_step1[10][ 1] - 0.13253643 * out_step1[10][ 2]
-   + 0.00906407;
-
-out_step2[8][1] = 
-   - 0.10991814 * out_step1[ 8][ 1] - 0.07047570 * out_step1[ 8][ 2] + 0.32846937 * out_step1[ 8][ 3]
-   + 0.05873375 * out_step1[ 9][ 1] + 0.08658601 * out_step1[ 9][ 2] + 0.03624630 * out_step1[ 9][ 3]
-   + 0.01479519 * out_step1[10][ 1] + 0.36403248 * out_step1[10][ 2] - 0.13253643 * out_step1[10][ 3]
-   + 0.00906407;
-
-out_step2[8][2] = 
-   - 0.10991814 * out_step1[ 8][ 2] - 0.07047570 * out_step1[ 8][ 3] + 0.32846937 * out_step1[ 8][ 4]
-   + 0.05873375 * out_step1[ 9][ 2] + 0.08658601 * out_step1[ 9][ 3] + 0.03624630 * out_step1[ 9][ 4]
-   + 0.01479519 * out_step1[10][ 2] + 0.36403248 * out_step1[10][ 3] - 0.13253643 * out_step1[10][ 4]
-   + 0.00906407;
-
-out_step2[8][3] = 
-   - 0.10991814 * out_step1[ 8][ 3] - 0.07047570 * out_step1[ 8][ 4] + 0.32846937 * out_step1[ 8][ 5]
-   + 0.05873375 * out_step1[ 9][ 3] + 0.08658601 * out_step1[ 9][ 4] + 0.03624630 * out_step1[ 9][ 5]
-   + 0.01479519 * out_step1[10][ 3] + 0.36403248 * out_step1[10][ 4] - 0.13253643 * out_step1[10][ 5]
-   + 0.00906407;
-
-out_step2[8][4] = 
-   - 0.10991814 * out_step1[ 8][ 4] - 0.07047570 * out_step1[ 8][ 5] + 0.32846937 * out_step1[ 8][ 6]
-   + 0.05873375 * out_step1[ 9][ 4] + 0.08658601 * out_step1[ 9][ 5] + 0.03624630 * out_step1[ 9][ 6]
-   + 0.01479519 * out_step1[10][ 4] + 0.36403248 * out_step1[10][ 5] - 0.13253643 * out_step1[10][ 6]
-   + 0.00906407;
-
-out_step2[8][5] = 
-   - 0.10991814 * out_step1[ 8][ 5] - 0.07047570 * out_step1[ 8][ 6] + 0.32846937 * out_step1[ 8][ 7]
-   + 0.05873375 * out_step1[ 9][ 5] + 0.08658601 * out_step1[ 9][ 6] + 0.03624630 * out_step1[ 9][ 7]
-   + 0.01479519 * out_step1[10][ 5] + 0.36403248 * out_step1[10][ 6] - 0.13253643 * out_step1[10][ 7]
-   + 0.00906407;
-
-out_step2[8][6] = 
-   - 0.10991814 * out_step1[ 8][ 6] - 0.07047570 * out_step1[ 8][ 7] + 0.32846937 * out_step1[ 8][ 8]
-   + 0.05873375 * out_step1[ 9][ 6] + 0.08658601 * out_step1[ 9][ 7] + 0.03624630 * out_step1[ 9][ 8]
-   + 0.01479519 * out_step1[10][ 6] + 0.36403248 * out_step1[10][ 7] - 0.13253643 * out_step1[10][ 8]
-   + 0.00906407;
-
-out_step2[8][7] = 
-   - 0.10991814 * out_step1[ 8][ 7] - 0.07047570 * out_step1[ 8][ 8] + 0.32846937 * out_step1[ 8][ 9]
-   + 0.05873375 * out_step1[ 9][ 7] + 0.08658601 * out_step1[ 9][ 8] + 0.03624630 * out_step1[ 9][ 9]
-   + 0.01479519 * out_step1[10][ 7] + 0.36403248 * out_step1[10][ 8] - 0.13253643 * out_step1[10][ 9]
-   + 0.00906407;
-
-out_step2[8][8] = 
-   - 0.10991814 * out_step1[ 8][ 8] - 0.07047570 * out_step1[ 8][ 9] + 0.32846937 * out_step1[ 8][10]
-   + 0.05873375 * out_step1[ 9][ 8] + 0.08658601 * out_step1[ 9][ 9] + 0.03624630 * out_step1[ 9][10]
-   + 0.01479519 * out_step1[10][ 8] + 0.36403248 * out_step1[10][ 9] - 0.13253643 * out_step1[10][10]
-   + 0.00906407;
-
-out_step2[8][9] = 
-   - 0.10991814 * out_step1[ 8][ 9] - 0.07047570 * out_step1[ 8][10] + 0.32846937 * out_step1[ 8][11]
-   + 0.05873375 * out_step1[ 9][ 9] + 0.08658601 * out_step1[ 9][10] + 0.03624630 * out_step1[ 9][11]
-   + 0.01479519 * out_step1[10][ 9] + 0.36403248 * out_step1[10][10] - 0.13253643 * out_step1[10][11]
-   + 0.00906407;
-
-out_step2[8][10] = 
-   - 0.10991814 * out_step1[ 8][10] - 0.07047570 * out_step1[ 8][11] + 0.32846937 * out_step1[ 8][12]
-   + 0.05873375 * out_step1[ 9][10] + 0.08658601 * out_step1[ 9][11] + 0.03624630 * out_step1[ 9][12]
-   + 0.01479519 * out_step1[10][10] + 0.36403248 * out_step1[10][11] - 0.13253643 * out_step1[10][12]
-   + 0.00906407;
-
-out_step2[8][11] = 
-   - 0.10991814 * out_step1[ 8][11] - 0.07047570 * out_step1[ 8][12] + 0.32846937 * out_step1[ 8][13]
-   + 0.05873375 * out_step1[ 9][11] + 0.08658601 * out_step1[ 9][12] + 0.03624630 * out_step1[ 9][13]
-   + 0.01479519 * out_step1[10][11] + 0.36403248 * out_step1[10][12] - 0.13253643 * out_step1[10][13]
-   + 0.00906407;
-
-out_step2[8][12] = 
-   - 0.10991814 * out_step1[ 8][12] - 0.07047570 * out_step1[ 8][13] + 0.32846937 * out_step1[ 8][14]
-   + 0.05873375 * out_step1[ 9][12] + 0.08658601 * out_step1[ 9][13] + 0.03624630 * out_step1[ 9][14]
-   + 0.01479519 * out_step1[10][12] + 0.36403248 * out_step1[10][13] - 0.13253643 * out_step1[10][14]
-   + 0.00906407;
-
-out_step2[8][13] = 
-   - 0.10991814 * out_step1[ 8][13] - 0.07047570 * out_step1[ 8][14] + 0.32846937 * out_step1[ 8][15]
-   + 0.05873375 * out_step1[ 9][13] + 0.08658601 * out_step1[ 9][14] + 0.03624630 * out_step1[ 9][15]
-   + 0.01479519 * out_step1[10][13] + 0.36403248 * out_step1[10][14] - 0.13253643 * out_step1[10][15]
-   + 0.00906407;
-
-out_step2[9][0] = 
-   - 0.10991814 * out_step1[ 9][ 0] - 0.07047570 * out_step1[ 9][ 1] + 0.32846937 * out_step1[ 9][ 2]
-   + 0.05873375 * out_step1[10][ 0] + 0.08658601 * out_step1[10][ 1] + 0.03624630 * out_step1[10][ 2]
-   + 0.01479519 * out_step1[11][ 0] + 0.36403248 * out_step1[11][ 1] - 0.13253643 * out_step1[11][ 2]
-   + 0.00906407;
-
-out_step2[9][1] = 
-   - 0.10991814 * out_step1[ 9][ 1] - 0.07047570 * out_step1[ 9][ 2] + 0.32846937 * out_step1[ 9][ 3]
-   + 0.05873375 * out_step1[10][ 1] + 0.08658601 * out_step1[10][ 2] + 0.03624630 * out_step1[10][ 3]
-   + 0.01479519 * out_step1[11][ 1] + 0.36403248 * out_step1[11][ 2] - 0.13253643 * out_step1[11][ 3]
-   + 0.00906407;
-
-out_step2[9][2] = 
-   - 0.10991814 * out_step1[ 9][ 2] - 0.07047570 * out_step1[ 9][ 3] + 0.32846937 * out_step1[ 9][ 4]
-   + 0.05873375 * out_step1[10][ 2] + 0.08658601 * out_step1[10][ 3] + 0.03624630 * out_step1[10][ 4]
-   + 0.01479519 * out_step1[11][ 2] + 0.36403248 * out_step1[11][ 3] - 0.13253643 * out_step1[11][ 4]
-   + 0.00906407;
-
-out_step2[9][3] = 
-   - 0.10991814 * out_step1[ 9][ 3] - 0.07047570 * out_step1[ 9][ 4] + 0.32846937 * out_step1[ 9][ 5]
-   + 0.05873375 * out_step1[10][ 3] + 0.08658601 * out_step1[10][ 4] + 0.03624630 * out_step1[10][ 5]
-   + 0.01479519 * out_step1[11][ 3] + 0.36403248 * out_step1[11][ 4] - 0.13253643 * out_step1[11][ 5]
-   + 0.00906407;
-
-out_step2[9][4] = 
-   - 0.10991814 * out_step1[ 9][ 4] - 0.07047570 * out_step1[ 9][ 5] + 0.32846937 * out_step1[ 9][ 6]
-   + 0.05873375 * out_step1[10][ 4] + 0.08658601 * out_step1[10][ 5] + 0.03624630 * out_step1[10][ 6]
-   + 0.01479519 * out_step1[11][ 4] + 0.36403248 * out_step1[11][ 5] - 0.13253643 * out_step1[11][ 6]
-   + 0.00906407;
-
-out_step2[9][5] = 
-   - 0.10991814 * out_step1[ 9][ 5] - 0.07047570 * out_step1[ 9][ 6] + 0.32846937 * out_step1[ 9][ 7]
-   + 0.05873375 * out_step1[10][ 5] + 0.08658601 * out_step1[10][ 6] + 0.03624630 * out_step1[10][ 7]
-   + 0.01479519 * out_step1[11][ 5] + 0.36403248 * out_step1[11][ 6] - 0.13253643 * out_step1[11][ 7]
-   + 0.00906407;
-
-out_step2[9][6] = 
-   - 0.10991814 * out_step1[ 9][ 6] - 0.07047570 * out_step1[ 9][ 7] + 0.32846937 * out_step1[ 9][ 8]
-   + 0.05873375 * out_step1[10][ 6] + 0.08658601 * out_step1[10][ 7] + 0.03624630 * out_step1[10][ 8]
-   + 0.01479519 * out_step1[11][ 6] + 0.36403248 * out_step1[11][ 7] - 0.13253643 * out_step1[11][ 8]
-   + 0.00906407;
-
-out_step2[9][7] = 
-   - 0.10991814 * out_step1[ 9][ 7] - 0.07047570 * out_step1[ 9][ 8] + 0.32846937 * out_step1[ 9][ 9]
-   + 0.05873375 * out_step1[10][ 7] + 0.08658601 * out_step1[10][ 8] + 0.03624630 * out_step1[10][ 9]
-   + 0.01479519 * out_step1[11][ 7] + 0.36403248 * out_step1[11][ 8] - 0.13253643 * out_step1[11][ 9]
-   + 0.00906407;
-
-out_step2[9][8] = 
-   - 0.10991814 * out_step1[ 9][ 8] - 0.07047570 * out_step1[ 9][ 9] + 0.32846937 * out_step1[ 9][10]
-   + 0.05873375 * out_step1[10][ 8] + 0.08658601 * out_step1[10][ 9] + 0.03624630 * out_step1[10][10]
-   + 0.01479519 * out_step1[11][ 8] + 0.36403248 * out_step1[11][ 9] - 0.13253643 * out_step1[11][10]
-   + 0.00906407;
-
-out_step2[9][9] = 
-   - 0.10991814 * out_step1[ 9][ 9] - 0.07047570 * out_step1[ 9][10] + 0.32846937 * out_step1[ 9][11]
-   + 0.05873375 * out_step1[10][ 9] + 0.08658601 * out_step1[10][10] + 0.03624630 * out_step1[10][11]
-   + 0.01479519 * out_step1[11][ 9] + 0.36403248 * out_step1[11][10] - 0.13253643 * out_step1[11][11]
-   + 0.00906407;
-
-out_step2[9][10] = 
-   - 0.10991814 * out_step1[ 9][10] - 0.07047570 * out_step1[ 9][11] + 0.32846937 * out_step1[ 9][12]
-   + 0.05873375 * out_step1[10][10] + 0.08658601 * out_step1[10][11] + 0.03624630 * out_step1[10][12]
-   + 0.01479519 * out_step1[11][10] + 0.36403248 * out_step1[11][11] - 0.13253643 * out_step1[11][12]
-   + 0.00906407;
-
-out_step2[9][11] = 
-   - 0.10991814 * out_step1[ 9][11] - 0.07047570 * out_step1[ 9][12] + 0.32846937 * out_step1[ 9][13]
-   + 0.05873375 * out_step1[10][11] + 0.08658601 * out_step1[10][12] + 0.03624630 * out_step1[10][13]
-   + 0.01479519 * out_step1[11][11] + 0.36403248 * out_step1[11][12] - 0.13253643 * out_step1[11][13]
-   + 0.00906407;
-
-out_step2[9][12] = 
-   - 0.10991814 * out_step1[ 9][12] - 0.07047570 * out_step1[ 9][13] + 0.32846937 * out_step1[ 9][14]
-   + 0.05873375 * out_step1[10][12] + 0.08658601 * out_step1[10][13] + 0.03624630 * out_step1[10][14]
-   + 0.01479519 * out_step1[11][12] + 0.36403248 * out_step1[11][13] - 0.13253643 * out_step1[11][14]
-   + 0.00906407;
-
-out_step2[9][13] = 
-   - 0.10991814 * out_step1[ 9][13] - 0.07047570 * out_step1[ 9][14] + 0.32846937 * out_step1[ 9][15]
-   + 0.05873375 * out_step1[10][13] + 0.08658601 * out_step1[10][14] + 0.03624630 * out_step1[10][15]
-   + 0.01479519 * out_step1[11][13] + 0.36403248 * out_step1[11][14] - 0.13253643 * out_step1[11][15]
-   + 0.00906407;
-
-out_step2[10][0] = 
-   - 0.10991814 * out_step1[10][ 0] - 0.07047570 * out_step1[10][ 1] + 0.32846937 * out_step1[10][ 2]
-   + 0.05873375 * out_step1[11][ 0] + 0.08658601 * out_step1[11][ 1] + 0.03624630 * out_step1[11][ 2]
-   + 0.01479519 * out_step1[12][ 0] + 0.36403248 * out_step1[12][ 1] - 0.13253643 * out_step1[12][ 2]
-   + 0.00906407;
-
-out_step2[10][1] = 
-   - 0.10991814 * out_step1[10][ 1] - 0.07047570 * out_step1[10][ 2] + 0.32846937 * out_step1[10][ 3]
-   + 0.05873375 * out_step1[11][ 1] + 0.08658601 * out_step1[11][ 2] + 0.03624630 * out_step1[11][ 3]
-   + 0.01479519 * out_step1[12][ 1] + 0.36403248 * out_step1[12][ 2] - 0.13253643 * out_step1[12][ 3]
-   + 0.00906407;
-
-out_step2[10][2] = 
-   - 0.10991814 * out_step1[10][ 2] - 0.07047570 * out_step1[10][ 3] + 0.32846937 * out_step1[10][ 4]
-   + 0.05873375 * out_step1[11][ 2] + 0.08658601 * out_step1[11][ 3] + 0.03624630 * out_step1[11][ 4]
-   + 0.01479519 * out_step1[12][ 2] + 0.36403248 * out_step1[12][ 3] - 0.13253643 * out_step1[12][ 4]
-   + 0.00906407;
-
-out_step2[10][3] = 
-   - 0.10991814 * out_step1[10][ 3] - 0.07047570 * out_step1[10][ 4] + 0.32846937 * out_step1[10][ 5]
-   + 0.05873375 * out_step1[11][ 3] + 0.08658601 * out_step1[11][ 4] + 0.03624630 * out_step1[11][ 5]
-   + 0.01479519 * out_step1[12][ 3] + 0.36403248 * out_step1[12][ 4] - 0.13253643 * out_step1[12][ 5]
-   + 0.00906407;
-
-out_step2[10][4] = 
-   - 0.10991814 * out_step1[10][ 4] - 0.07047570 * out_step1[10][ 5] + 0.32846937 * out_step1[10][ 6]
-   + 0.05873375 * out_step1[11][ 4] + 0.08658601 * out_step1[11][ 5] + 0.03624630 * out_step1[11][ 6]
-   + 0.01479519 * out_step1[12][ 4] + 0.36403248 * out_step1[12][ 5] - 0.13253643 * out_step1[12][ 6]
-   + 0.00906407;
-
-out_step2[10][5] = 
-   - 0.10991814 * out_step1[10][ 5] - 0.07047570 * out_step1[10][ 6] + 0.32846937 * out_step1[10][ 7]
-   + 0.05873375 * out_step1[11][ 5] + 0.08658601 * out_step1[11][ 6] + 0.03624630 * out_step1[11][ 7]
-   + 0.01479519 * out_step1[12][ 5] + 0.36403248 * out_step1[12][ 6] - 0.13253643 * out_step1[12][ 7]
-   + 0.00906407;
-
-out_step2[10][6] = 
-   - 0.10991814 * out_step1[10][ 6] - 0.07047570 * out_step1[10][ 7] + 0.32846937 * out_step1[10][ 8]
-   + 0.05873375 * out_step1[11][ 6] + 0.08658601 * out_step1[11][ 7] + 0.03624630 * out_step1[11][ 8]
-   + 0.01479519 * out_step1[12][ 6] + 0.36403248 * out_step1[12][ 7] - 0.13253643 * out_step1[12][ 8]
-   + 0.00906407;
-
-out_step2[10][7] = 
-   - 0.10991814 * out_step1[10][ 7] - 0.07047570 * out_step1[10][ 8] + 0.32846937 * out_step1[10][ 9]
-   + 0.05873375 * out_step1[11][ 7] + 0.08658601 * out_step1[11][ 8] + 0.03624630 * out_step1[11][ 9]
-   + 0.01479519 * out_step1[12][ 7] + 0.36403248 * out_step1[12][ 8] - 0.13253643 * out_step1[12][ 9]
-   + 0.00906407;
-
-out_step2[10][8] = 
-   - 0.10991814 * out_step1[10][ 8] - 0.07047570 * out_step1[10][ 9] + 0.32846937 * out_step1[10][10]
-   + 0.05873375 * out_step1[11][ 8] + 0.08658601 * out_step1[11][ 9] + 0.03624630 * out_step1[11][10]
-   + 0.01479519 * out_step1[12][ 8] + 0.36403248 * out_step1[12][ 9] - 0.13253643 * out_step1[12][10]
-   + 0.00906407;
-
-out_step2[10][9] = 
-   - 0.10991814 * out_step1[10][ 9] - 0.07047570 * out_step1[10][10] + 0.32846937 * out_step1[10][11]
-   + 0.05873375 * out_step1[11][ 9] + 0.08658601 * out_step1[11][10] + 0.03624630 * out_step1[11][11]
-   + 0.01479519 * out_step1[12][ 9] + 0.36403248 * out_step1[12][10] - 0.13253643 * out_step1[12][11]
-   + 0.00906407;
-
-out_step2[10][10] = 
-   - 0.10991814 * out_step1[10][10] - 0.07047570 * out_step1[10][11] + 0.32846937 * out_step1[10][12]
-   + 0.05873375 * out_step1[11][10] + 0.08658601 * out_step1[11][11] + 0.03624630 * out_step1[11][12]
-   + 0.01479519 * out_step1[12][10] + 0.36403248 * out_step1[12][11] - 0.13253643 * out_step1[12][12]
-   + 0.00906407;
-
-out_step2[10][11] = 
-   - 0.10991814 * out_step1[10][11] - 0.07047570 * out_step1[10][12] + 0.32846937 * out_step1[10][13]
-   + 0.05873375 * out_step1[11][11] + 0.08658601 * out_step1[11][12] + 0.03624630 * out_step1[11][13]
-   + 0.01479519 * out_step1[12][11] + 0.36403248 * out_step1[12][12] - 0.13253643 * out_step1[12][13]
-   + 0.00906407;
-
-out_step2[10][12] = 
-   - 0.10991814 * out_step1[10][12] - 0.07047570 * out_step1[10][13] + 0.32846937 * out_step1[10][14]
-   + 0.05873375 * out_step1[11][12] + 0.08658601 * out_step1[11][13] + 0.03624630 * out_step1[11][14]
-   + 0.01479519 * out_step1[12][12] + 0.36403248 * out_step1[12][13] - 0.13253643 * out_step1[12][14]
-   + 0.00906407;
-
-out_step2[10][13] = 
-   - 0.10991814 * out_step1[10][13] - 0.07047570 * out_step1[10][14] + 0.32846937 * out_step1[10][15]
-   + 0.05873375 * out_step1[11][13] + 0.08658601 * out_step1[11][14] + 0.03624630 * out_step1[11][15]
-   + 0.01479519 * out_step1[12][13] + 0.36403248 * out_step1[12][14] - 0.13253643 * out_step1[12][15]
-   + 0.00906407;
-
-out_step2[11][0] = 
-   - 0.10991814 * out_step1[11][ 0] - 0.07047570 * out_step1[11][ 1] + 0.32846937 * out_step1[11][ 2]
-   + 0.05873375 * out_step1[12][ 0] + 0.08658601 * out_step1[12][ 1] + 0.03624630 * out_step1[12][ 2]
-   + 0.01479519 * out_step1[13][ 0] + 0.36403248 * out_step1[13][ 1] - 0.13253643 * out_step1[13][ 2]
-   + 0.00906407;
-
-out_step2[11][1] = 
-   - 0.10991814 * out_step1[11][ 1] - 0.07047570 * out_step1[11][ 2] + 0.32846937 * out_step1[11][ 3]
-   + 0.05873375 * out_step1[12][ 1] + 0.08658601 * out_step1[12][ 2] + 0.03624630 * out_step1[12][ 3]
-   + 0.01479519 * out_step1[13][ 1] + 0.36403248 * out_step1[13][ 2] - 0.13253643 * out_step1[13][ 3]
-   + 0.00906407;
-
-out_step2[11][2] = 
-   - 0.10991814 * out_step1[11][ 2] - 0.07047570 * out_step1[11][ 3] + 0.32846937 * out_step1[11][ 4]
-   + 0.05873375 * out_step1[12][ 2] + 0.08658601 * out_step1[12][ 3] + 0.03624630 * out_step1[12][ 4]
-   + 0.01479519 * out_step1[13][ 2] + 0.36403248 * out_step1[13][ 3] - 0.13253643 * out_step1[13][ 4]
-   + 0.00906407;
-
-out_step2[11][3] = 
-   - 0.10991814 * out_step1[11][ 3] - 0.07047570 * out_step1[11][ 4] + 0.32846937 * out_step1[11][ 5]
-   + 0.05873375 * out_step1[12][ 3] + 0.08658601 * out_step1[12][ 4] + 0.03624630 * out_step1[12][ 5]
-   + 0.01479519 * out_step1[13][ 3] + 0.36403248 * out_step1[13][ 4] - 0.13253643 * out_step1[13][ 5]
-   + 0.00906407;
-
-out_step2[11][4] = 
-   - 0.10991814 * out_step1[11][ 4] - 0.07047570 * out_step1[11][ 5] + 0.32846937 * out_step1[11][ 6]
-   + 0.05873375 * out_step1[12][ 4] + 0.08658601 * out_step1[12][ 5] + 0.03624630 * out_step1[12][ 6]
-   + 0.01479519 * out_step1[13][ 4] + 0.36403248 * out_step1[13][ 5] - 0.13253643 * out_step1[13][ 6]
-   + 0.00906407;
-
-out_step2[11][5] = 
-   - 0.10991814 * out_step1[11][ 5] - 0.07047570 * out_step1[11][ 6] + 0.32846937 * out_step1[11][ 7]
-   + 0.05873375 * out_step1[12][ 5] + 0.08658601 * out_step1[12][ 6] + 0.03624630 * out_step1[12][ 7]
-   + 0.01479519 * out_step1[13][ 5] + 0.36403248 * out_step1[13][ 6] - 0.13253643 * out_step1[13][ 7]
-   + 0.00906407;
-
-out_step2[11][6] = 
-   - 0.10991814 * out_step1[11][ 6] - 0.07047570 * out_step1[11][ 7] + 0.32846937 * out_step1[11][ 8]
-   + 0.05873375 * out_step1[12][ 6] + 0.08658601 * out_step1[12][ 7] + 0.03624630 * out_step1[12][ 8]
-   + 0.01479519 * out_step1[13][ 6] + 0.36403248 * out_step1[13][ 7] - 0.13253643 * out_step1[13][ 8]
-   + 0.00906407;
-
-out_step2[11][7] = 
-   - 0.10991814 * out_step1[11][ 7] - 0.07047570 * out_step1[11][ 8] + 0.32846937 * out_step1[11][ 9]
-   + 0.05873375 * out_step1[12][ 7] + 0.08658601 * out_step1[12][ 8] + 0.03624630 * out_step1[12][ 9]
-   + 0.01479519 * out_step1[13][ 7] + 0.36403248 * out_step1[13][ 8] - 0.13253643 * out_step1[13][ 9]
-   + 0.00906407;
-
-out_step2[11][8] = 
-   - 0.10991814 * out_step1[11][ 8] - 0.07047570 * out_step1[11][ 9] + 0.32846937 * out_step1[11][10]
-   + 0.05873375 * out_step1[12][ 8] + 0.08658601 * out_step1[12][ 9] + 0.03624630 * out_step1[12][10]
-   + 0.01479519 * out_step1[13][ 8] + 0.36403248 * out_step1[13][ 9] - 0.13253643 * out_step1[13][10]
-   + 0.00906407;
-
-out_step2[11][9] = 
-   - 0.10991814 * out_step1[11][ 9] - 0.07047570 * out_step1[11][10] + 0.32846937 * out_step1[11][11]
-   + 0.05873375 * out_step1[12][ 9] + 0.08658601 * out_step1[12][10] + 0.03624630 * out_step1[12][11]
-   + 0.01479519 * out_step1[13][ 9] + 0.36403248 * out_step1[13][10] - 0.13253643 * out_step1[13][11]
-   + 0.00906407;
-
-out_step2[11][10] = 
-   - 0.10991814 * out_step1[11][10] - 0.07047570 * out_step1[11][11] + 0.32846937 * out_step1[11][12]
-   + 0.05873375 * out_step1[12][10] + 0.08658601 * out_step1[12][11] + 0.03624630 * out_step1[12][12]
-   + 0.01479519 * out_step1[13][10] + 0.36403248 * out_step1[13][11] - 0.13253643 * out_step1[13][12]
-   + 0.00906407;
-
-out_step2[11][11] = 
-   - 0.10991814 * out_step1[11][11] - 0.07047570 * out_step1[11][12] + 0.32846937 * out_step1[11][13]
-   + 0.05873375 * out_step1[12][11] + 0.08658601 * out_step1[12][12] + 0.03624630 * out_step1[12][13]
-   + 0.01479519 * out_step1[13][11] + 0.36403248 * out_step1[13][12] - 0.13253643 * out_step1[13][13]
-   + 0.00906407;
-
-out_step2[11][12] = 
-   - 0.10991814 * out_step1[11][12] - 0.07047570 * out_step1[11][13] + 0.32846937 * out_step1[11][14]
-   + 0.05873375 * out_step1[12][12] + 0.08658601 * out_step1[12][13] + 0.03624630 * out_step1[12][14]
-   + 0.01479519 * out_step1[13][12] + 0.36403248 * out_step1[13][13] - 0.13253643 * out_step1[13][14]
-   + 0.00906407;
-
-out_step2[11][13] = 
-   - 0.10991814 * out_step1[11][13] - 0.07047570 * out_step1[11][14] + 0.32846937 * out_step1[11][15]
-   + 0.05873375 * out_step1[12][13] + 0.08658601 * out_step1[12][14] + 0.03624630 * out_step1[12][15]
-   + 0.01479519 * out_step1[13][13] + 0.36403248 * out_step1[13][14] - 0.13253643 * out_step1[13][15]
-   + 0.00906407;
-
-out_step2[12][0] = 
-   - 0.10991814 * out_step1[12][ 0] - 0.07047570 * out_step1[12][ 1] + 0.32846937 * out_step1[12][ 2]
-   + 0.05873375 * out_step1[13][ 0] + 0.08658601 * out_step1[13][ 1] + 0.03624630 * out_step1[13][ 2]
-   + 0.01479519 * out_step1[14][ 0] + 0.36403248 * out_step1[14][ 1] - 0.13253643 * out_step1[14][ 2]
-   + 0.00906407;
-
-out_step2[12][1] = 
-   - 0.10991814 * out_step1[12][ 1] - 0.07047570 * out_step1[12][ 2] + 0.32846937 * out_step1[12][ 3]
-   + 0.05873375 * out_step1[13][ 1] + 0.08658601 * out_step1[13][ 2] + 0.03624630 * out_step1[13][ 3]
-   + 0.01479519 * out_step1[14][ 1] + 0.36403248 * out_step1[14][ 2] - 0.13253643 * out_step1[14][ 3]
-   + 0.00906407;
-
-out_step2[12][2] = 
-   - 0.10991814 * out_step1[12][ 2] - 0.07047570 * out_step1[12][ 3] + 0.32846937 * out_step1[12][ 4]
-   + 0.05873375 * out_step1[13][ 2] + 0.08658601 * out_step1[13][ 3] + 0.03624630 * out_step1[13][ 4]
-   + 0.01479519 * out_step1[14][ 2] + 0.36403248 * out_step1[14][ 3] - 0.13253643 * out_step1[14][ 4]
-   + 0.00906407;
-
-out_step2[12][3] = 
-   - 0.10991814 * out_step1[12][ 3] - 0.07047570 * out_step1[12][ 4] + 0.32846937 * out_step1[12][ 5]
-   + 0.05873375 * out_step1[13][ 3] + 0.08658601 * out_step1[13][ 4] + 0.03624630 * out_step1[13][ 5]
-   + 0.01479519 * out_step1[14][ 3] + 0.36403248 * out_step1[14][ 4] - 0.13253643 * out_step1[14][ 5]
-   + 0.00906407;
-
-out_step2[12][4] = 
-   - 0.10991814 * out_step1[12][ 4] - 0.07047570 * out_step1[12][ 5] + 0.32846937 * out_step1[12][ 6]
-   + 0.05873375 * out_step1[13][ 4] + 0.08658601 * out_step1[13][ 5] + 0.03624630 * out_step1[13][ 6]
-   + 0.01479519 * out_step1[14][ 4] + 0.36403248 * out_step1[14][ 5] - 0.13253643 * out_step1[14][ 6]
-   + 0.00906407;
-
-out_step2[12][5] = 
-   - 0.10991814 * out_step1[12][ 5] - 0.07047570 * out_step1[12][ 6] + 0.32846937 * out_step1[12][ 7]
-   + 0.05873375 * out_step1[13][ 5] + 0.08658601 * out_step1[13][ 6] + 0.03624630 * out_step1[13][ 7]
-   + 0.01479519 * out_step1[14][ 5] + 0.36403248 * out_step1[14][ 6] - 0.13253643 * out_step1[14][ 7]
-   + 0.00906407;
-
-out_step2[12][6] = 
-   - 0.10991814 * out_step1[12][ 6] - 0.07047570 * out_step1[12][ 7] + 0.32846937 * out_step1[12][ 8]
-   + 0.05873375 * out_step1[13][ 6] + 0.08658601 * out_step1[13][ 7] + 0.03624630 * out_step1[13][ 8]
-   + 0.01479519 * out_step1[14][ 6] + 0.36403248 * out_step1[14][ 7] - 0.13253643 * out_step1[14][ 8]
-   + 0.00906407;
-
-out_step2[12][7] = 
-   - 0.10991814 * out_step1[12][ 7] - 0.07047570 * out_step1[12][ 8] + 0.32846937 * out_step1[12][ 9]
-   + 0.05873375 * out_step1[13][ 7] + 0.08658601 * out_step1[13][ 8] + 0.03624630 * out_step1[13][ 9]
-   + 0.01479519 * out_step1[14][ 7] + 0.36403248 * out_step1[14][ 8] - 0.13253643 * out_step1[14][ 9]
-   + 0.00906407;
-
-out_step2[12][8] = 
-   - 0.10991814 * out_step1[12][ 8] - 0.07047570 * out_step1[12][ 9] + 0.32846937 * out_step1[12][10]
-   + 0.05873375 * out_step1[13][ 8] + 0.08658601 * out_step1[13][ 9] + 0.03624630 * out_step1[13][10]
-   + 0.01479519 * out_step1[14][ 8] + 0.36403248 * out_step1[14][ 9] - 0.13253643 * out_step1[14][10]
-   + 0.00906407;
-
-out_step2[12][9] = 
-   - 0.10991814 * out_step1[12][ 9] - 0.07047570 * out_step1[12][10] + 0.32846937 * out_step1[12][11]
-   + 0.05873375 * out_step1[13][ 9] + 0.08658601 * out_step1[13][10] + 0.03624630 * out_step1[13][11]
-   + 0.01479519 * out_step1[14][ 9] + 0.36403248 * out_step1[14][10] - 0.13253643 * out_step1[14][11]
-   + 0.00906407;
-
-out_step2[12][10] = 
-   - 0.10991814 * out_step1[12][10] - 0.07047570 * out_step1[12][11] + 0.32846937 * out_step1[12][12]
-   + 0.05873375 * out_step1[13][10] + 0.08658601 * out_step1[13][11] + 0.03624630 * out_step1[13][12]
-   + 0.01479519 * out_step1[14][10] + 0.36403248 * out_step1[14][11] - 0.13253643 * out_step1[14][12]
-   + 0.00906407;
-
-out_step2[12][11] = 
-   - 0.10991814 * out_step1[12][11] - 0.07047570 * out_step1[12][12] + 0.32846937 * out_step1[12][13]
-   + 0.05873375 * out_step1[13][11] + 0.08658601 * out_step1[13][12] + 0.03624630 * out_step1[13][13]
-   + 0.01479519 * out_step1[14][11] + 0.36403248 * out_step1[14][12] - 0.13253643 * out_step1[14][13]
-   + 0.00906407;
-
-out_step2[12][12] = 
-   - 0.10991814 * out_step1[12][12] - 0.07047570 * out_step1[12][13] + 0.32846937 * out_step1[12][14]
-   + 0.05873375 * out_step1[13][12] + 0.08658601 * out_step1[13][13] + 0.03624630 * out_step1[13][14]
-   + 0.01479519 * out_step1[14][12] + 0.36403248 * out_step1[14][13] - 0.13253643 * out_step1[14][14]
-   + 0.00906407;
-
-out_step2[12][13] = 
-   - 0.10991814 * out_step1[12][13] - 0.07047570 * out_step1[12][14] + 0.32846937 * out_step1[12][15]
-   + 0.05873375 * out_step1[13][13] + 0.08658601 * out_step1[13][14] + 0.03624630 * out_step1[13][15]
-   + 0.01479519 * out_step1[14][13] + 0.36403248 * out_step1[14][14] - 0.13253643 * out_step1[14][15]
-   + 0.00906407;
-
-out_step2[13][0] = 
-   - 0.10991814 * out_step1[13][ 0] - 0.07047570 * out_step1[13][ 1] + 0.32846937 * out_step1[13][ 2]
-   + 0.05873375 * out_step1[14][ 0] + 0.08658601 * out_step1[14][ 1] + 0.03624630 * out_step1[14][ 2]
-   + 0.01479519 * out_step1[15][ 0] + 0.36403248 * out_step1[15][ 1] - 0.13253643 * out_step1[15][ 2]
-   + 0.00906407;
-
-out_step2[13][1] = 
-   - 0.10991814 * out_step1[13][ 1] - 0.07047570 * out_step1[13][ 2] + 0.32846937 * out_step1[13][ 3]
-   + 0.05873375 * out_step1[14][ 1] + 0.08658601 * out_step1[14][ 2] + 0.03624630 * out_step1[14][ 3]
-   + 0.01479519 * out_step1[15][ 1] + 0.36403248 * out_step1[15][ 2] - 0.13253643 * out_step1[15][ 3]
-   + 0.00906407;
-
-out_step2[13][2] = 
-   - 0.10991814 * out_step1[13][ 2] - 0.07047570 * out_step1[13][ 3] + 0.32846937 * out_step1[13][ 4]
-   + 0.05873375 * out_step1[14][ 2] + 0.08658601 * out_step1[14][ 3] + 0.03624630 * out_step1[14][ 4]
-   + 0.01479519 * out_step1[15][ 2] + 0.36403248 * out_step1[15][ 3] - 0.13253643 * out_step1[15][ 4]
-   + 0.00906407;
-
-out_step2[13][3] = 
-   - 0.10991814 * out_step1[13][ 3] - 0.07047570 * out_step1[13][ 4] + 0.32846937 * out_step1[13][ 5]
-   + 0.05873375 * out_step1[14][ 3] + 0.08658601 * out_step1[14][ 4] + 0.03624630 * out_step1[14][ 5]
-   + 0.01479519 * out_step1[15][ 3] + 0.36403248 * out_step1[15][ 4] - 0.13253643 * out_step1[15][ 5]
-   + 0.00906407;
-
-out_step2[13][4] = 
-   - 0.10991814 * out_step1[13][ 4] - 0.07047570 * out_step1[13][ 5] + 0.32846937 * out_step1[13][ 6]
-   + 0.05873375 * out_step1[14][ 4] + 0.08658601 * out_step1[14][ 5] + 0.03624630 * out_step1[14][ 6]
-   + 0.01479519 * out_step1[15][ 4] + 0.36403248 * out_step1[15][ 5] - 0.13253643 * out_step1[15][ 6]
-   + 0.00906407;
-
-out_step2[13][5] = 
-   - 0.10991814 * out_step1[13][ 5] - 0.07047570 * out_step1[13][ 6] + 0.32846937 * out_step1[13][ 7]
-   + 0.05873375 * out_step1[14][ 5] + 0.08658601 * out_step1[14][ 6] + 0.03624630 * out_step1[14][ 7]
-   + 0.01479519 * out_step1[15][ 5] + 0.36403248 * out_step1[15][ 6] - 0.13253643 * out_step1[15][ 7]
-   + 0.00906407;
-
-out_step2[13][6] = 
-   - 0.10991814 * out_step1[13][ 6] - 0.07047570 * out_step1[13][ 7] + 0.32846937 * out_step1[13][ 8]
-   + 0.05873375 * out_step1[14][ 6] + 0.08658601 * out_step1[14][ 7] + 0.03624630 * out_step1[14][ 8]
-   + 0.01479519 * out_step1[15][ 6] + 0.36403248 * out_step1[15][ 7] - 0.13253643 * out_step1[15][ 8]
-   + 0.00906407;
-
-out_step2[13][7] = 
-   - 0.10991814 * out_step1[13][ 7] - 0.07047570 * out_step1[13][ 8] + 0.32846937 * out_step1[13][ 9]
-   + 0.05873375 * out_step1[14][ 7] + 0.08658601 * out_step1[14][ 8] + 0.03624630 * out_step1[14][ 9]
-   + 0.01479519 * out_step1[15][ 7] + 0.36403248 * out_step1[15][ 8] - 0.13253643 * out_step1[15][ 9]
-   + 0.00906407;
-
-out_step2[13][8] = 
-   - 0.10991814 * out_step1[13][ 8] - 0.07047570 * out_step1[13][ 9] + 0.32846937 * out_step1[13][10]
-   + 0.05873375 * out_step1[14][ 8] + 0.08658601 * out_step1[14][ 9] + 0.03624630 * out_step1[14][10]
-   + 0.01479519 * out_step1[15][ 8] + 0.36403248 * out_step1[15][ 9] - 0.13253643 * out_step1[15][10]
-   + 0.00906407;
-
-out_step2[13][9] = 
-   - 0.10991814 * out_step1[13][ 9] - 0.07047570 * out_step1[13][10] + 0.32846937 * out_step1[13][11]
-   + 0.05873375 * out_step1[14][ 9] + 0.08658601 * out_step1[14][10] + 0.03624630 * out_step1[14][11]
-   + 0.01479519 * out_step1[15][ 9] + 0.36403248 * out_step1[15][10] - 0.13253643 * out_step1[15][11]
-   + 0.00906407;
-
-out_step2[13][10] = 
-   - 0.10991814 * out_step1[13][10] - 0.07047570 * out_step1[13][11] + 0.32846937 * out_step1[13][12]
-   + 0.05873375 * out_step1[14][10] + 0.08658601 * out_step1[14][11] + 0.03624630 * out_step1[14][12]
-   + 0.01479519 * out_step1[15][10] + 0.36403248 * out_step1[15][11] - 0.13253643 * out_step1[15][12]
-   + 0.00906407;
-
-out_step2[13][11] = 
-   - 0.10991814 * out_step1[13][11] - 0.07047570 * out_step1[13][12] + 0.32846937 * out_step1[13][13]
-   + 0.05873375 * out_step1[14][11] + 0.08658601 * out_step1[14][12] + 0.03624630 * out_step1[14][13]
-   + 0.01479519 * out_step1[15][11] + 0.36403248 * out_step1[15][12] - 0.13253643 * out_step1[15][13]
-   + 0.00906407;
-
-out_step2[13][12] = 
-   - 0.10991814 * out_step1[13][12] - 0.07047570 * out_step1[13][13] + 0.32846937 * out_step1[13][14]
-   + 0.05873375 * out_step1[14][12] + 0.08658601 * out_step1[14][13] + 0.03624630 * out_step1[14][14]
-   + 0.01479519 * out_step1[15][12] + 0.36403248 * out_step1[15][13] - 0.13253643 * out_step1[15][14]
-   + 0.00906407;
-
-out_step2[13][13] = 
-   - 0.10991814 * out_step1[13][13] - 0.07047570 * out_step1[13][14] + 0.32846937 * out_step1[13][15]
-   + 0.05873375 * out_step1[14][13] + 0.08658601 * out_step1[14][14] + 0.03624630 * out_step1[14][15]
-   + 0.01479519 * out_step1[15][13] + 0.36403248 * out_step1[15][14] - 0.13253643 * out_step1[15][15]
-   + 0.00906407;
+out_step2[0][0][0] = 
+   - 0.04886923 * out_step1[ 0][ 0][0] - 0.09794637 * out_step1[ 0][ 1][0] + 0.14456660 * out_step1[ 0][ 2][0]
+   + 0.08610985 * out_step1[ 1][ 0][0] - 0.21880460 * out_step1[ 1][ 1][0] + 0.03028065 * out_step1[ 1][ 2][0]
+   + 0.07185251 * out_step1[ 2][ 0][0] - 0.18992572 * out_step1[ 2][ 1][0] + 0.06878845 * out_step1[ 2][ 2][0]
+   - 0.01815627;
+
+out_step2[0][1][0] = 
+   - 0.04886923 * out_step1[ 0][ 2][0] - 0.09794637 * out_step1[ 0][ 3][0] + 0.14456660 * out_step1[ 0][ 4][0]
+   + 0.08610985 * out_step1[ 1][ 2][0] - 0.21880460 * out_step1[ 1][ 3][0] + 0.03028065 * out_step1[ 1][ 4][0]
+   + 0.07185251 * out_step1[ 2][ 2][0] - 0.18992572 * out_step1[ 2][ 3][0] + 0.06878845 * out_step1[ 2][ 4][0]
+   - 0.01815627;
+
+out_step2[0][2][0] = 
+   - 0.04886923 * out_step1[ 0][ 4][0] - 0.09794637 * out_step1[ 0][ 5][0] + 0.14456660 * out_step1[ 0][ 6][0]
+   + 0.08610985 * out_step1[ 1][ 4][0] - 0.21880460 * out_step1[ 1][ 5][0] + 0.03028065 * out_step1[ 1][ 6][0]
+   + 0.07185251 * out_step1[ 2][ 4][0] - 0.18992572 * out_step1[ 2][ 5][0] + 0.06878845 * out_step1[ 2][ 6][0]
+   - 0.01815627;
+
+out_step2[0][3][0] = 
+   - 0.04886923 * out_step1[ 0][ 6][0] - 0.09794637 * out_step1[ 0][ 7][0] + 0.14456660 * out_step1[ 0][ 8][0]
+   + 0.08610985 * out_step1[ 1][ 6][0] - 0.21880460 * out_step1[ 1][ 7][0] + 0.03028065 * out_step1[ 1][ 8][0]
+   + 0.07185251 * out_step1[ 2][ 6][0] - 0.18992572 * out_step1[ 2][ 7][0] + 0.06878845 * out_step1[ 2][ 8][0]
+   - 0.01815627;
+
+out_step2[0][4][0] = 
+   - 0.04886923 * out_step1[ 0][ 8][0] - 0.09794637 * out_step1[ 0][ 9][0] + 0.14456660 * out_step1[ 0][10][0]
+   + 0.08610985 * out_step1[ 1][ 8][0] - 0.21880460 * out_step1[ 1][ 9][0] + 0.03028065 * out_step1[ 1][10][0]
+   + 0.07185251 * out_step1[ 2][ 8][0] - 0.18992572 * out_step1[ 2][ 9][0] + 0.06878845 * out_step1[ 2][10][0]
+   - 0.01815627;
+
+out_step2[0][5][0] = 
+   - 0.04886923 * out_step1[ 0][10][0] - 0.09794637 * out_step1[ 0][11][0] + 0.14456660 * out_step1[ 0][12][0]
+   + 0.08610985 * out_step1[ 1][10][0] - 0.21880460 * out_step1[ 1][11][0] + 0.03028065 * out_step1[ 1][12][0]
+   + 0.07185251 * out_step1[ 2][10][0] - 0.18992572 * out_step1[ 2][11][0] + 0.06878845 * out_step1[ 2][12][0]
+   - 0.01815627;
+
+out_step2[0][6][0] = 
+   - 0.04886923 * out_step1[ 0][12][0] - 0.09794637 * out_step1[ 0][13][0] + 0.14456660 * out_step1[ 0][14][0]
+   + 0.08610985 * out_step1[ 1][12][0] - 0.21880460 * out_step1[ 1][13][0] + 0.03028065 * out_step1[ 1][14][0]
+   + 0.07185251 * out_step1[ 2][12][0] - 0.18992572 * out_step1[ 2][13][0] + 0.06878845 * out_step1[ 2][14][0]
+   - 0.01815627;
+
+out_step2[1][0][0] = 
+   - 0.04886923 * out_step1[ 2][ 0][0] - 0.09794637 * out_step1[ 2][ 1][0] + 0.14456660 * out_step1[ 2][ 2][0]
+   + 0.08610985 * out_step1[ 3][ 0][0] - 0.21880460 * out_step1[ 3][ 1][0] + 0.03028065 * out_step1[ 3][ 2][0]
+   + 0.07185251 * out_step1[ 4][ 0][0] - 0.18992572 * out_step1[ 4][ 1][0] + 0.06878845 * out_step1[ 4][ 2][0]
+   - 0.01815627;
+
+out_step2[1][1][0] = 
+   - 0.04886923 * out_step1[ 2][ 2][0] - 0.09794637 * out_step1[ 2][ 3][0] + 0.14456660 * out_step1[ 2][ 4][0]
+   + 0.08610985 * out_step1[ 3][ 2][0] - 0.21880460 * out_step1[ 3][ 3][0] + 0.03028065 * out_step1[ 3][ 4][0]
+   + 0.07185251 * out_step1[ 4][ 2][0] - 0.18992572 * out_step1[ 4][ 3][0] + 0.06878845 * out_step1[ 4][ 4][0]
+   - 0.01815627;
+
+out_step2[1][2][0] = 
+   - 0.04886923 * out_step1[ 2][ 4][0] - 0.09794637 * out_step1[ 2][ 5][0] + 0.14456660 * out_step1[ 2][ 6][0]
+   + 0.08610985 * out_step1[ 3][ 4][0] - 0.21880460 * out_step1[ 3][ 5][0] + 0.03028065 * out_step1[ 3][ 6][0]
+   + 0.07185251 * out_step1[ 4][ 4][0] - 0.18992572 * out_step1[ 4][ 5][0] + 0.06878845 * out_step1[ 4][ 6][0]
+   - 0.01815627;
+
+out_step2[1][3][0] = 
+   - 0.04886923 * out_step1[ 2][ 6][0] - 0.09794637 * out_step1[ 2][ 7][0] + 0.14456660 * out_step1[ 2][ 8][0]
+   + 0.08610985 * out_step1[ 3][ 6][0] - 0.21880460 * out_step1[ 3][ 7][0] + 0.03028065 * out_step1[ 3][ 8][0]
+   + 0.07185251 * out_step1[ 4][ 6][0] - 0.18992572 * out_step1[ 4][ 7][0] + 0.06878845 * out_step1[ 4][ 8][0]
+   - 0.01815627;
+
+out_step2[1][4][0] = 
+   - 0.04886923 * out_step1[ 2][ 8][0] - 0.09794637 * out_step1[ 2][ 9][0] + 0.14456660 * out_step1[ 2][10][0]
+   + 0.08610985 * out_step1[ 3][ 8][0] - 0.21880460 * out_step1[ 3][ 9][0] + 0.03028065 * out_step1[ 3][10][0]
+   + 0.07185251 * out_step1[ 4][ 8][0] - 0.18992572 * out_step1[ 4][ 9][0] + 0.06878845 * out_step1[ 4][10][0]
+   - 0.01815627;
+
+out_step2[1][5][0] = 
+   - 0.04886923 * out_step1[ 2][10][0] - 0.09794637 * out_step1[ 2][11][0] + 0.14456660 * out_step1[ 2][12][0]
+   + 0.08610985 * out_step1[ 3][10][0] - 0.21880460 * out_step1[ 3][11][0] + 0.03028065 * out_step1[ 3][12][0]
+   + 0.07185251 * out_step1[ 4][10][0] - 0.18992572 * out_step1[ 4][11][0] + 0.06878845 * out_step1[ 4][12][0]
+   - 0.01815627;
+
+out_step2[1][6][0] = 
+   - 0.04886923 * out_step1[ 2][12][0] - 0.09794637 * out_step1[ 2][13][0] + 0.14456660 * out_step1[ 2][14][0]
+   + 0.08610985 * out_step1[ 3][12][0] - 0.21880460 * out_step1[ 3][13][0] + 0.03028065 * out_step1[ 3][14][0]
+   + 0.07185251 * out_step1[ 4][12][0] - 0.18992572 * out_step1[ 4][13][0] + 0.06878845 * out_step1[ 4][14][0]
+   - 0.01815627;
+
+out_step2[2][0][0] = 
+   - 0.04886923 * out_step1[ 4][ 0][0] - 0.09794637 * out_step1[ 4][ 1][0] + 0.14456660 * out_step1[ 4][ 2][0]
+   + 0.08610985 * out_step1[ 5][ 0][0] - 0.21880460 * out_step1[ 5][ 1][0] + 0.03028065 * out_step1[ 5][ 2][0]
+   + 0.07185251 * out_step1[ 6][ 0][0] - 0.18992572 * out_step1[ 6][ 1][0] + 0.06878845 * out_step1[ 6][ 2][0]
+   - 0.01815627;
+
+out_step2[2][1][0] = 
+   - 0.04886923 * out_step1[ 4][ 2][0] - 0.09794637 * out_step1[ 4][ 3][0] + 0.14456660 * out_step1[ 4][ 4][0]
+   + 0.08610985 * out_step1[ 5][ 2][0] - 0.21880460 * out_step1[ 5][ 3][0] + 0.03028065 * out_step1[ 5][ 4][0]
+   + 0.07185251 * out_step1[ 6][ 2][0] - 0.18992572 * out_step1[ 6][ 3][0] + 0.06878845 * out_step1[ 6][ 4][0]
+   - 0.01815627;
+
+out_step2[2][2][0] = 
+   - 0.04886923 * out_step1[ 4][ 4][0] - 0.09794637 * out_step1[ 4][ 5][0] + 0.14456660 * out_step1[ 4][ 6][0]
+   + 0.08610985 * out_step1[ 5][ 4][0] - 0.21880460 * out_step1[ 5][ 5][0] + 0.03028065 * out_step1[ 5][ 6][0]
+   + 0.07185251 * out_step1[ 6][ 4][0] - 0.18992572 * out_step1[ 6][ 5][0] + 0.06878845 * out_step1[ 6][ 6][0]
+   - 0.01815627;
+
+out_step2[2][3][0] = 
+   - 0.04886923 * out_step1[ 4][ 6][0] - 0.09794637 * out_step1[ 4][ 7][0] + 0.14456660 * out_step1[ 4][ 8][0]
+   + 0.08610985 * out_step1[ 5][ 6][0] - 0.21880460 * out_step1[ 5][ 7][0] + 0.03028065 * out_step1[ 5][ 8][0]
+   + 0.07185251 * out_step1[ 6][ 6][0] - 0.18992572 * out_step1[ 6][ 7][0] + 0.06878845 * out_step1[ 6][ 8][0]
+   - 0.01815627;
+
+out_step2[2][4][0] = 
+   - 0.04886923 * out_step1[ 4][ 8][0] - 0.09794637 * out_step1[ 4][ 9][0] + 0.14456660 * out_step1[ 4][10][0]
+   + 0.08610985 * out_step1[ 5][ 8][0] - 0.21880460 * out_step1[ 5][ 9][0] + 0.03028065 * out_step1[ 5][10][0]
+   + 0.07185251 * out_step1[ 6][ 8][0] - 0.18992572 * out_step1[ 6][ 9][0] + 0.06878845 * out_step1[ 6][10][0]
+   - 0.01815627;
+
+out_step2[2][5][0] = 
+   - 0.04886923 * out_step1[ 4][10][0] - 0.09794637 * out_step1[ 4][11][0] + 0.14456660 * out_step1[ 4][12][0]
+   + 0.08610985 * out_step1[ 5][10][0] - 0.21880460 * out_step1[ 5][11][0] + 0.03028065 * out_step1[ 5][12][0]
+   + 0.07185251 * out_step1[ 6][10][0] - 0.18992572 * out_step1[ 6][11][0] + 0.06878845 * out_step1[ 6][12][0]
+   - 0.01815627;
+
+out_step2[2][6][0] = 
+   - 0.04886923 * out_step1[ 4][12][0] - 0.09794637 * out_step1[ 4][13][0] + 0.14456660 * out_step1[ 4][14][0]
+   + 0.08610985 * out_step1[ 5][12][0] - 0.21880460 * out_step1[ 5][13][0] + 0.03028065 * out_step1[ 5][14][0]
+   + 0.07185251 * out_step1[ 6][12][0] - 0.18992572 * out_step1[ 6][13][0] + 0.06878845 * out_step1[ 6][14][0]
+   - 0.01815627;
+
+out_step2[3][0][0] = 
+   - 0.04886923 * out_step1[ 6][ 0][0] - 0.09794637 * out_step1[ 6][ 1][0] + 0.14456660 * out_step1[ 6][ 2][0]
+   + 0.08610985 * out_step1[ 7][ 0][0] - 0.21880460 * out_step1[ 7][ 1][0] + 0.03028065 * out_step1[ 7][ 2][0]
+   + 0.07185251 * out_step1[ 8][ 0][0] - 0.18992572 * out_step1[ 8][ 1][0] + 0.06878845 * out_step1[ 8][ 2][0]
+   - 0.01815627;
+
+out_step2[3][1][0] = 
+   - 0.04886923 * out_step1[ 6][ 2][0] - 0.09794637 * out_step1[ 6][ 3][0] + 0.14456660 * out_step1[ 6][ 4][0]
+   + 0.08610985 * out_step1[ 7][ 2][0] - 0.21880460 * out_step1[ 7][ 3][0] + 0.03028065 * out_step1[ 7][ 4][0]
+   + 0.07185251 * out_step1[ 8][ 2][0] - 0.18992572 * out_step1[ 8][ 3][0] + 0.06878845 * out_step1[ 8][ 4][0]
+   - 0.01815627;
+
+out_step2[3][2][0] = 
+   - 0.04886923 * out_step1[ 6][ 4][0] - 0.09794637 * out_step1[ 6][ 5][0] + 0.14456660 * out_step1[ 6][ 6][0]
+   + 0.08610985 * out_step1[ 7][ 4][0] - 0.21880460 * out_step1[ 7][ 5][0] + 0.03028065 * out_step1[ 7][ 6][0]
+   + 0.07185251 * out_step1[ 8][ 4][0] - 0.18992572 * out_step1[ 8][ 5][0] + 0.06878845 * out_step1[ 8][ 6][0]
+   - 0.01815627;
+
+out_step2[3][3][0] = 
+   - 0.04886923 * out_step1[ 6][ 6][0] - 0.09794637 * out_step1[ 6][ 7][0] + 0.14456660 * out_step1[ 6][ 8][0]
+   + 0.08610985 * out_step1[ 7][ 6][0] - 0.21880460 * out_step1[ 7][ 7][0] + 0.03028065 * out_step1[ 7][ 8][0]
+   + 0.07185251 * out_step1[ 8][ 6][0] - 0.18992572 * out_step1[ 8][ 7][0] + 0.06878845 * out_step1[ 8][ 8][0]
+   - 0.01815627;
+
+out_step2[3][4][0] = 
+   - 0.04886923 * out_step1[ 6][ 8][0] - 0.09794637 * out_step1[ 6][ 9][0] + 0.14456660 * out_step1[ 6][10][0]
+   + 0.08610985 * out_step1[ 7][ 8][0] - 0.21880460 * out_step1[ 7][ 9][0] + 0.03028065 * out_step1[ 7][10][0]
+   + 0.07185251 * out_step1[ 8][ 8][0] - 0.18992572 * out_step1[ 8][ 9][0] + 0.06878845 * out_step1[ 8][10][0]
+   - 0.01815627;
+
+out_step2[3][5][0] = 
+   - 0.04886923 * out_step1[ 6][10][0] - 0.09794637 * out_step1[ 6][11][0] + 0.14456660 * out_step1[ 6][12][0]
+   + 0.08610985 * out_step1[ 7][10][0] - 0.21880460 * out_step1[ 7][11][0] + 0.03028065 * out_step1[ 7][12][0]
+   + 0.07185251 * out_step1[ 8][10][0] - 0.18992572 * out_step1[ 8][11][0] + 0.06878845 * out_step1[ 8][12][0]
+   - 0.01815627;
+
+out_step2[3][6][0] = 
+   - 0.04886923 * out_step1[ 6][12][0] - 0.09794637 * out_step1[ 6][13][0] + 0.14456660 * out_step1[ 6][14][0]
+   + 0.08610985 * out_step1[ 7][12][0] - 0.21880460 * out_step1[ 7][13][0] + 0.03028065 * out_step1[ 7][14][0]
+   + 0.07185251 * out_step1[ 8][12][0] - 0.18992572 * out_step1[ 8][13][0] + 0.06878845 * out_step1[ 8][14][0]
+   - 0.01815627;
+
+out_step2[4][0][0] = 
+   - 0.04886923 * out_step1[ 8][ 0][0] - 0.09794637 * out_step1[ 8][ 1][0] + 0.14456660 * out_step1[ 8][ 2][0]
+   + 0.08610985 * out_step1[ 9][ 0][0] - 0.21880460 * out_step1[ 9][ 1][0] + 0.03028065 * out_step1[ 9][ 2][0]
+   + 0.07185251 * out_step1[10][ 0][0] - 0.18992572 * out_step1[10][ 1][0] + 0.06878845 * out_step1[10][ 2][0]
+   - 0.01815627;
+
+out_step2[4][1][0] = 
+   - 0.04886923 * out_step1[ 8][ 2][0] - 0.09794637 * out_step1[ 8][ 3][0] + 0.14456660 * out_step1[ 8][ 4][0]
+   + 0.08610985 * out_step1[ 9][ 2][0] - 0.21880460 * out_step1[ 9][ 3][0] + 0.03028065 * out_step1[ 9][ 4][0]
+   + 0.07185251 * out_step1[10][ 2][0] - 0.18992572 * out_step1[10][ 3][0] + 0.06878845 * out_step1[10][ 4][0]
+   - 0.01815627;
+
+out_step2[4][2][0] = 
+   - 0.04886923 * out_step1[ 8][ 4][0] - 0.09794637 * out_step1[ 8][ 5][0] + 0.14456660 * out_step1[ 8][ 6][0]
+   + 0.08610985 * out_step1[ 9][ 4][0] - 0.21880460 * out_step1[ 9][ 5][0] + 0.03028065 * out_step1[ 9][ 6][0]
+   + 0.07185251 * out_step1[10][ 4][0] - 0.18992572 * out_step1[10][ 5][0] + 0.06878845 * out_step1[10][ 6][0]
+   - 0.01815627;
+
+out_step2[4][3][0] = 
+   - 0.04886923 * out_step1[ 8][ 6][0] - 0.09794637 * out_step1[ 8][ 7][0] + 0.14456660 * out_step1[ 8][ 8][0]
+   + 0.08610985 * out_step1[ 9][ 6][0] - 0.21880460 * out_step1[ 9][ 7][0] + 0.03028065 * out_step1[ 9][ 8][0]
+   + 0.07185251 * out_step1[10][ 6][0] - 0.18992572 * out_step1[10][ 7][0] + 0.06878845 * out_step1[10][ 8][0]
+   - 0.01815627;
+
+out_step2[4][4][0] = 
+   - 0.04886923 * out_step1[ 8][ 8][0] - 0.09794637 * out_step1[ 8][ 9][0] + 0.14456660 * out_step1[ 8][10][0]
+   + 0.08610985 * out_step1[ 9][ 8][0] - 0.21880460 * out_step1[ 9][ 9][0] + 0.03028065 * out_step1[ 9][10][0]
+   + 0.07185251 * out_step1[10][ 8][0] - 0.18992572 * out_step1[10][ 9][0] + 0.06878845 * out_step1[10][10][0]
+   - 0.01815627;
+
+out_step2[4][5][0] = 
+   - 0.04886923 * out_step1[ 8][10][0] - 0.09794637 * out_step1[ 8][11][0] + 0.14456660 * out_step1[ 8][12][0]
+   + 0.08610985 * out_step1[ 9][10][0] - 0.21880460 * out_step1[ 9][11][0] + 0.03028065 * out_step1[ 9][12][0]
+   + 0.07185251 * out_step1[10][10][0] - 0.18992572 * out_step1[10][11][0] + 0.06878845 * out_step1[10][12][0]
+   - 0.01815627;
+
+out_step2[4][6][0] = 
+   - 0.04886923 * out_step1[ 8][12][0] - 0.09794637 * out_step1[ 8][13][0] + 0.14456660 * out_step1[ 8][14][0]
+   + 0.08610985 * out_step1[ 9][12][0] - 0.21880460 * out_step1[ 9][13][0] + 0.03028065 * out_step1[ 9][14][0]
+   + 0.07185251 * out_step1[10][12][0] - 0.18992572 * out_step1[10][13][0] + 0.06878845 * out_step1[10][14][0]
+   - 0.01815627;
+
+out_step2[5][0][0] = 
+   - 0.04886923 * out_step1[10][ 0][0] - 0.09794637 * out_step1[10][ 1][0] + 0.14456660 * out_step1[10][ 2][0]
+   + 0.08610985 * out_step1[11][ 0][0] - 0.21880460 * out_step1[11][ 1][0] + 0.03028065 * out_step1[11][ 2][0]
+   + 0.07185251 * out_step1[12][ 0][0] - 0.18992572 * out_step1[12][ 1][0] + 0.06878845 * out_step1[12][ 2][0]
+   - 0.01815627;
+
+out_step2[5][1][0] = 
+   - 0.04886923 * out_step1[10][ 2][0] - 0.09794637 * out_step1[10][ 3][0] + 0.14456660 * out_step1[10][ 4][0]
+   + 0.08610985 * out_step1[11][ 2][0] - 0.21880460 * out_step1[11][ 3][0] + 0.03028065 * out_step1[11][ 4][0]
+   + 0.07185251 * out_step1[12][ 2][0] - 0.18992572 * out_step1[12][ 3][0] + 0.06878845 * out_step1[12][ 4][0]
+   - 0.01815627;
+
+out_step2[5][2][0] = 
+   - 0.04886923 * out_step1[10][ 4][0] - 0.09794637 * out_step1[10][ 5][0] + 0.14456660 * out_step1[10][ 6][0]
+   + 0.08610985 * out_step1[11][ 4][0] - 0.21880460 * out_step1[11][ 5][0] + 0.03028065 * out_step1[11][ 6][0]
+   + 0.07185251 * out_step1[12][ 4][0] - 0.18992572 * out_step1[12][ 5][0] + 0.06878845 * out_step1[12][ 6][0]
+   - 0.01815627;
+
+out_step2[5][3][0] = 
+   - 0.04886923 * out_step1[10][ 6][0] - 0.09794637 * out_step1[10][ 7][0] + 0.14456660 * out_step1[10][ 8][0]
+   + 0.08610985 * out_step1[11][ 6][0] - 0.21880460 * out_step1[11][ 7][0] + 0.03028065 * out_step1[11][ 8][0]
+   + 0.07185251 * out_step1[12][ 6][0] - 0.18992572 * out_step1[12][ 7][0] + 0.06878845 * out_step1[12][ 8][0]
+   - 0.01815627;
+
+out_step2[5][4][0] = 
+   - 0.04886923 * out_step1[10][ 8][0] - 0.09794637 * out_step1[10][ 9][0] + 0.14456660 * out_step1[10][10][0]
+   + 0.08610985 * out_step1[11][ 8][0] - 0.21880460 * out_step1[11][ 9][0] + 0.03028065 * out_step1[11][10][0]
+   + 0.07185251 * out_step1[12][ 8][0] - 0.18992572 * out_step1[12][ 9][0] + 0.06878845 * out_step1[12][10][0]
+   - 0.01815627;
+
+out_step2[5][5][0] = 
+   - 0.04886923 * out_step1[10][10][0] - 0.09794637 * out_step1[10][11][0] + 0.14456660 * out_step1[10][12][0]
+   + 0.08610985 * out_step1[11][10][0] - 0.21880460 * out_step1[11][11][0] + 0.03028065 * out_step1[11][12][0]
+   + 0.07185251 * out_step1[12][10][0] - 0.18992572 * out_step1[12][11][0] + 0.06878845 * out_step1[12][12][0]
+   - 0.01815627;
+
+out_step2[5][6][0] = 
+   - 0.04886923 * out_step1[10][12][0] - 0.09794637 * out_step1[10][13][0] + 0.14456660 * out_step1[10][14][0]
+   + 0.08610985 * out_step1[11][12][0] - 0.21880460 * out_step1[11][13][0] + 0.03028065 * out_step1[11][14][0]
+   + 0.07185251 * out_step1[12][12][0] - 0.18992572 * out_step1[12][13][0] + 0.06878845 * out_step1[12][14][0]
+   - 0.01815627;
+
+out_step2[6][0][0] = 
+   - 0.04886923 * out_step1[12][ 0][0] - 0.09794637 * out_step1[12][ 1][0] + 0.14456660 * out_step1[12][ 2][0]
+   + 0.08610985 * out_step1[13][ 0][0] - 0.21880460 * out_step1[13][ 1][0] + 0.03028065 * out_step1[13][ 2][0]
+   + 0.07185251 * out_step1[14][ 0][0] - 0.18992572 * out_step1[14][ 1][0] + 0.06878845 * out_step1[14][ 2][0]
+   - 0.01815627;
+
+out_step2[6][1][0] = 
+   - 0.04886923 * out_step1[12][ 2][0] - 0.09794637 * out_step1[12][ 3][0] + 0.14456660 * out_step1[12][ 4][0]
+   + 0.08610985 * out_step1[13][ 2][0] - 0.21880460 * out_step1[13][ 3][0] + 0.03028065 * out_step1[13][ 4][0]
+   + 0.07185251 * out_step1[14][ 2][0] - 0.18992572 * out_step1[14][ 3][0] + 0.06878845 * out_step1[14][ 4][0]
+   - 0.01815627;
+
+out_step2[6][2][0] = 
+   - 0.04886923 * out_step1[12][ 4][0] - 0.09794637 * out_step1[12][ 5][0] + 0.14456660 * out_step1[12][ 6][0]
+   + 0.08610985 * out_step1[13][ 4][0] - 0.21880460 * out_step1[13][ 5][0] + 0.03028065 * out_step1[13][ 6][0]
+   + 0.07185251 * out_step1[14][ 4][0] - 0.18992572 * out_step1[14][ 5][0] + 0.06878845 * out_step1[14][ 6][0]
+   - 0.01815627;
+
+out_step2[6][3][0] = 
+   - 0.04886923 * out_step1[12][ 6][0] - 0.09794637 * out_step1[12][ 7][0] + 0.14456660 * out_step1[12][ 8][0]
+   + 0.08610985 * out_step1[13][ 6][0] - 0.21880460 * out_step1[13][ 7][0] + 0.03028065 * out_step1[13][ 8][0]
+   + 0.07185251 * out_step1[14][ 6][0] - 0.18992572 * out_step1[14][ 7][0] + 0.06878845 * out_step1[14][ 8][0]
+   - 0.01815627;
+
+out_step2[6][4][0] = 
+   - 0.04886923 * out_step1[12][ 8][0] - 0.09794637 * out_step1[12][ 9][0] + 0.14456660 * out_step1[12][10][0]
+   + 0.08610985 * out_step1[13][ 8][0] - 0.21880460 * out_step1[13][ 9][0] + 0.03028065 * out_step1[13][10][0]
+   + 0.07185251 * out_step1[14][ 8][0] - 0.18992572 * out_step1[14][ 9][0] + 0.06878845 * out_step1[14][10][0]
+   - 0.01815627;
+
+out_step2[6][5][0] = 
+   - 0.04886923 * out_step1[12][10][0] - 0.09794637 * out_step1[12][11][0] + 0.14456660 * out_step1[12][12][0]
+   + 0.08610985 * out_step1[13][10][0] - 0.21880460 * out_step1[13][11][0] + 0.03028065 * out_step1[13][12][0]
+   + 0.07185251 * out_step1[14][10][0] - 0.18992572 * out_step1[14][11][0] + 0.06878845 * out_step1[14][12][0]
+   - 0.01815627;
+
+out_step2[6][6][0] = 
+   - 0.04886923 * out_step1[12][12][0] - 0.09794637 * out_step1[12][13][0] + 0.14456660 * out_step1[12][14][0]
+   + 0.08610985 * out_step1[13][12][0] - 0.21880460 * out_step1[13][13][0] + 0.03028065 * out_step1[13][14][0]
+   + 0.07185251 * out_step1[14][12][0] - 0.18992572 * out_step1[14][13][0] + 0.06878845 * out_step1[14][14][0]
+   - 0.01815627;
+
+out_step2[0][0][1] = 
+   - 0.07031628 * out_step1[ 0][ 0][0] - 0.01049577 * out_step1[ 0][ 1][0] - 0.02967909 * out_step1[ 0][ 2][0]
+   + 0.01542667 * out_step1[ 1][ 0][0] + 0.01171980 * out_step1[ 1][ 1][0] - 0.02660849 * out_step1[ 1][ 2][0]
+   - 0.05360425 * out_step1[ 2][ 0][0] - 0.04893653 * out_step1[ 2][ 1][0] - 0.06422424 * out_step1[ 2][ 2][0]
+   + 0.00519572;
+
+out_step2[0][1][1] = 
+   - 0.07031628 * out_step1[ 0][ 2][0] - 0.01049577 * out_step1[ 0][ 3][0] - 0.02967909 * out_step1[ 0][ 4][0]
+   + 0.01542667 * out_step1[ 1][ 2][0] + 0.01171980 * out_step1[ 1][ 3][0] - 0.02660849 * out_step1[ 1][ 4][0]
+   - 0.05360425 * out_step1[ 2][ 2][0] - 0.04893653 * out_step1[ 2][ 3][0] - 0.06422424 * out_step1[ 2][ 4][0]
+   + 0.00519572;
+
+out_step2[0][2][1] = 
+   - 0.07031628 * out_step1[ 0][ 4][0] - 0.01049577 * out_step1[ 0][ 5][0] - 0.02967909 * out_step1[ 0][ 6][0]
+   + 0.01542667 * out_step1[ 1][ 4][0] + 0.01171980 * out_step1[ 1][ 5][0] - 0.02660849 * out_step1[ 1][ 6][0]
+   - 0.05360425 * out_step1[ 2][ 4][0] - 0.04893653 * out_step1[ 2][ 5][0] - 0.06422424 * out_step1[ 2][ 6][0]
+   + 0.00519572;
+
+out_step2[0][3][1] = 
+   - 0.07031628 * out_step1[ 0][ 6][0] - 0.01049577 * out_step1[ 0][ 7][0] - 0.02967909 * out_step1[ 0][ 8][0]
+   + 0.01542667 * out_step1[ 1][ 6][0] + 0.01171980 * out_step1[ 1][ 7][0] - 0.02660849 * out_step1[ 1][ 8][0]
+   - 0.05360425 * out_step1[ 2][ 6][0] - 0.04893653 * out_step1[ 2][ 7][0] - 0.06422424 * out_step1[ 2][ 8][0]
+   + 0.00519572;
+
+out_step2[0][4][1] = 
+   - 0.07031628 * out_step1[ 0][ 8][0] - 0.01049577 * out_step1[ 0][ 9][0] - 0.02967909 * out_step1[ 0][10][0]
+   + 0.01542667 * out_step1[ 1][ 8][0] + 0.01171980 * out_step1[ 1][ 9][0] - 0.02660849 * out_step1[ 1][10][0]
+   - 0.05360425 * out_step1[ 2][ 8][0] - 0.04893653 * out_step1[ 2][ 9][0] - 0.06422424 * out_step1[ 2][10][0]
+   + 0.00519572;
+
+out_step2[0][5][1] = 
+   - 0.07031628 * out_step1[ 0][10][0] - 0.01049577 * out_step1[ 0][11][0] - 0.02967909 * out_step1[ 0][12][0]
+   + 0.01542667 * out_step1[ 1][10][0] + 0.01171980 * out_step1[ 1][11][0] - 0.02660849 * out_step1[ 1][12][0]
+   - 0.05360425 * out_step1[ 2][10][0] - 0.04893653 * out_step1[ 2][11][0] - 0.06422424 * out_step1[ 2][12][0]
+   + 0.00519572;
+
+out_step2[0][6][1] = 
+   - 0.07031628 * out_step1[ 0][12][0] - 0.01049577 * out_step1[ 0][13][0] - 0.02967909 * out_step1[ 0][14][0]
+   + 0.01542667 * out_step1[ 1][12][0] + 0.01171980 * out_step1[ 1][13][0] - 0.02660849 * out_step1[ 1][14][0]
+   - 0.05360425 * out_step1[ 2][12][0] - 0.04893653 * out_step1[ 2][13][0] - 0.06422424 * out_step1[ 2][14][0]
+   + 0.00519572;
+
+out_step2[1][0][1] = 
+   - 0.07031628 * out_step1[ 2][ 0][0] - 0.01049577 * out_step1[ 2][ 1][0] - 0.02967909 * out_step1[ 2][ 2][0]
+   + 0.01542667 * out_step1[ 3][ 0][0] + 0.01171980 * out_step1[ 3][ 1][0] - 0.02660849 * out_step1[ 3][ 2][0]
+   - 0.05360425 * out_step1[ 4][ 0][0] - 0.04893653 * out_step1[ 4][ 1][0] - 0.06422424 * out_step1[ 4][ 2][0]
+   + 0.00519572;
+
+out_step2[1][1][1] = 
+   - 0.07031628 * out_step1[ 2][ 2][0] - 0.01049577 * out_step1[ 2][ 3][0] - 0.02967909 * out_step1[ 2][ 4][0]
+   + 0.01542667 * out_step1[ 3][ 2][0] + 0.01171980 * out_step1[ 3][ 3][0] - 0.02660849 * out_step1[ 3][ 4][0]
+   - 0.05360425 * out_step1[ 4][ 2][0] - 0.04893653 * out_step1[ 4][ 3][0] - 0.06422424 * out_step1[ 4][ 4][0]
+   + 0.00519572;
+
+out_step2[1][2][1] = 
+   - 0.07031628 * out_step1[ 2][ 4][0] - 0.01049577 * out_step1[ 2][ 5][0] - 0.02967909 * out_step1[ 2][ 6][0]
+   + 0.01542667 * out_step1[ 3][ 4][0] + 0.01171980 * out_step1[ 3][ 5][0] - 0.02660849 * out_step1[ 3][ 6][0]
+   - 0.05360425 * out_step1[ 4][ 4][0] - 0.04893653 * out_step1[ 4][ 5][0] - 0.06422424 * out_step1[ 4][ 6][0]
+   + 0.00519572;
+
+out_step2[1][3][1] = 
+   - 0.07031628 * out_step1[ 2][ 6][0] - 0.01049577 * out_step1[ 2][ 7][0] - 0.02967909 * out_step1[ 2][ 8][0]
+   + 0.01542667 * out_step1[ 3][ 6][0] + 0.01171980 * out_step1[ 3][ 7][0] - 0.02660849 * out_step1[ 3][ 8][0]
+   - 0.05360425 * out_step1[ 4][ 6][0] - 0.04893653 * out_step1[ 4][ 7][0] - 0.06422424 * out_step1[ 4][ 8][0]
+   + 0.00519572;
+
+out_step2[1][4][1] = 
+   - 0.07031628 * out_step1[ 2][ 8][0] - 0.01049577 * out_step1[ 2][ 9][0] - 0.02967909 * out_step1[ 2][10][0]
+   + 0.01542667 * out_step1[ 3][ 8][0] + 0.01171980 * out_step1[ 3][ 9][0] - 0.02660849 * out_step1[ 3][10][0]
+   - 0.05360425 * out_step1[ 4][ 8][0] - 0.04893653 * out_step1[ 4][ 9][0] - 0.06422424 * out_step1[ 4][10][0]
+   + 0.00519572;
+
+out_step2[1][5][1] = 
+   - 0.07031628 * out_step1[ 2][10][0] - 0.01049577 * out_step1[ 2][11][0] - 0.02967909 * out_step1[ 2][12][0]
+   + 0.01542667 * out_step1[ 3][10][0] + 0.01171980 * out_step1[ 3][11][0] - 0.02660849 * out_step1[ 3][12][0]
+   - 0.05360425 * out_step1[ 4][10][0] - 0.04893653 * out_step1[ 4][11][0] - 0.06422424 * out_step1[ 4][12][0]
+   + 0.00519572;
+
+out_step2[1][6][1] = 
+   - 0.07031628 * out_step1[ 2][12][0] - 0.01049577 * out_step1[ 2][13][0] - 0.02967909 * out_step1[ 2][14][0]
+   + 0.01542667 * out_step1[ 3][12][0] + 0.01171980 * out_step1[ 3][13][0] - 0.02660849 * out_step1[ 3][14][0]
+   - 0.05360425 * out_step1[ 4][12][0] - 0.04893653 * out_step1[ 4][13][0] - 0.06422424 * out_step1[ 4][14][0]
+   + 0.00519572;
+
+out_step2[2][0][1] = 
+   - 0.07031628 * out_step1[ 4][ 0][0] - 0.01049577 * out_step1[ 4][ 1][0] - 0.02967909 * out_step1[ 4][ 2][0]
+   + 0.01542667 * out_step1[ 5][ 0][0] + 0.01171980 * out_step1[ 5][ 1][0] - 0.02660849 * out_step1[ 5][ 2][0]
+   - 0.05360425 * out_step1[ 6][ 0][0] - 0.04893653 * out_step1[ 6][ 1][0] - 0.06422424 * out_step1[ 6][ 2][0]
+   + 0.00519572;
+
+out_step2[2][1][1] = 
+   - 0.07031628 * out_step1[ 4][ 2][0] - 0.01049577 * out_step1[ 4][ 3][0] - 0.02967909 * out_step1[ 4][ 4][0]
+   + 0.01542667 * out_step1[ 5][ 2][0] + 0.01171980 * out_step1[ 5][ 3][0] - 0.02660849 * out_step1[ 5][ 4][0]
+   - 0.05360425 * out_step1[ 6][ 2][0] - 0.04893653 * out_step1[ 6][ 3][0] - 0.06422424 * out_step1[ 6][ 4][0]
+   + 0.00519572;
+
+out_step2[2][2][1] = 
+   - 0.07031628 * out_step1[ 4][ 4][0] - 0.01049577 * out_step1[ 4][ 5][0] - 0.02967909 * out_step1[ 4][ 6][0]
+   + 0.01542667 * out_step1[ 5][ 4][0] + 0.01171980 * out_step1[ 5][ 5][0] - 0.02660849 * out_step1[ 5][ 6][0]
+   - 0.05360425 * out_step1[ 6][ 4][0] - 0.04893653 * out_step1[ 6][ 5][0] - 0.06422424 * out_step1[ 6][ 6][0]
+   + 0.00519572;
+
+out_step2[2][3][1] = 
+   - 0.07031628 * out_step1[ 4][ 6][0] - 0.01049577 * out_step1[ 4][ 7][0] - 0.02967909 * out_step1[ 4][ 8][0]
+   + 0.01542667 * out_step1[ 5][ 6][0] + 0.01171980 * out_step1[ 5][ 7][0] - 0.02660849 * out_step1[ 5][ 8][0]
+   - 0.05360425 * out_step1[ 6][ 6][0] - 0.04893653 * out_step1[ 6][ 7][0] - 0.06422424 * out_step1[ 6][ 8][0]
+   + 0.00519572;
+
+out_step2[2][4][1] = 
+   - 0.07031628 * out_step1[ 4][ 8][0] - 0.01049577 * out_step1[ 4][ 9][0] - 0.02967909 * out_step1[ 4][10][0]
+   + 0.01542667 * out_step1[ 5][ 8][0] + 0.01171980 * out_step1[ 5][ 9][0] - 0.02660849 * out_step1[ 5][10][0]
+   - 0.05360425 * out_step1[ 6][ 8][0] - 0.04893653 * out_step1[ 6][ 9][0] - 0.06422424 * out_step1[ 6][10][0]
+   + 0.00519572;
+
+out_step2[2][5][1] = 
+   - 0.07031628 * out_step1[ 4][10][0] - 0.01049577 * out_step1[ 4][11][0] - 0.02967909 * out_step1[ 4][12][0]
+   + 0.01542667 * out_step1[ 5][10][0] + 0.01171980 * out_step1[ 5][11][0] - 0.02660849 * out_step1[ 5][12][0]
+   - 0.05360425 * out_step1[ 6][10][0] - 0.04893653 * out_step1[ 6][11][0] - 0.06422424 * out_step1[ 6][12][0]
+   + 0.00519572;
+
+out_step2[2][6][1] = 
+   - 0.07031628 * out_step1[ 4][12][0] - 0.01049577 * out_step1[ 4][13][0] - 0.02967909 * out_step1[ 4][14][0]
+   + 0.01542667 * out_step1[ 5][12][0] + 0.01171980 * out_step1[ 5][13][0] - 0.02660849 * out_step1[ 5][14][0]
+   - 0.05360425 * out_step1[ 6][12][0] - 0.04893653 * out_step1[ 6][13][0] - 0.06422424 * out_step1[ 6][14][0]
+   + 0.00519572;
+
+out_step2[3][0][1] = 
+   - 0.07031628 * out_step1[ 6][ 0][0] - 0.01049577 * out_step1[ 6][ 1][0] - 0.02967909 * out_step1[ 6][ 2][0]
+   + 0.01542667 * out_step1[ 7][ 0][0] + 0.01171980 * out_step1[ 7][ 1][0] - 0.02660849 * out_step1[ 7][ 2][0]
+   - 0.05360425 * out_step1[ 8][ 0][0] - 0.04893653 * out_step1[ 8][ 1][0] - 0.06422424 * out_step1[ 8][ 2][0]
+   + 0.00519572;
+
+out_step2[3][1][1] = 
+   - 0.07031628 * out_step1[ 6][ 2][0] - 0.01049577 * out_step1[ 6][ 3][0] - 0.02967909 * out_step1[ 6][ 4][0]
+   + 0.01542667 * out_step1[ 7][ 2][0] + 0.01171980 * out_step1[ 7][ 3][0] - 0.02660849 * out_step1[ 7][ 4][0]
+   - 0.05360425 * out_step1[ 8][ 2][0] - 0.04893653 * out_step1[ 8][ 3][0] - 0.06422424 * out_step1[ 8][ 4][0]
+   + 0.00519572;
+
+out_step2[3][2][1] = 
+   - 0.07031628 * out_step1[ 6][ 4][0] - 0.01049577 * out_step1[ 6][ 5][0] - 0.02967909 * out_step1[ 6][ 6][0]
+   + 0.01542667 * out_step1[ 7][ 4][0] + 0.01171980 * out_step1[ 7][ 5][0] - 0.02660849 * out_step1[ 7][ 6][0]
+   - 0.05360425 * out_step1[ 8][ 4][0] - 0.04893653 * out_step1[ 8][ 5][0] - 0.06422424 * out_step1[ 8][ 6][0]
+   + 0.00519572;
+
+out_step2[3][3][1] = 
+   - 0.07031628 * out_step1[ 6][ 6][0] - 0.01049577 * out_step1[ 6][ 7][0] - 0.02967909 * out_step1[ 6][ 8][0]
+   + 0.01542667 * out_step1[ 7][ 6][0] + 0.01171980 * out_step1[ 7][ 7][0] - 0.02660849 * out_step1[ 7][ 8][0]
+   - 0.05360425 * out_step1[ 8][ 6][0] - 0.04893653 * out_step1[ 8][ 7][0] - 0.06422424 * out_step1[ 8][ 8][0]
+   + 0.00519572;
+
+out_step2[3][4][1] = 
+   - 0.07031628 * out_step1[ 6][ 8][0] - 0.01049577 * out_step1[ 6][ 9][0] - 0.02967909 * out_step1[ 6][10][0]
+   + 0.01542667 * out_step1[ 7][ 8][0] + 0.01171980 * out_step1[ 7][ 9][0] - 0.02660849 * out_step1[ 7][10][0]
+   - 0.05360425 * out_step1[ 8][ 8][0] - 0.04893653 * out_step1[ 8][ 9][0] - 0.06422424 * out_step1[ 8][10][0]
+   + 0.00519572;
+
+out_step2[3][5][1] = 
+   - 0.07031628 * out_step1[ 6][10][0] - 0.01049577 * out_step1[ 6][11][0] - 0.02967909 * out_step1[ 6][12][0]
+   + 0.01542667 * out_step1[ 7][10][0] + 0.01171980 * out_step1[ 7][11][0] - 0.02660849 * out_step1[ 7][12][0]
+   - 0.05360425 * out_step1[ 8][10][0] - 0.04893653 * out_step1[ 8][11][0] - 0.06422424 * out_step1[ 8][12][0]
+   + 0.00519572;
+
+out_step2[3][6][1] = 
+   - 0.07031628 * out_step1[ 6][12][0] - 0.01049577 * out_step1[ 6][13][0] - 0.02967909 * out_step1[ 6][14][0]
+   + 0.01542667 * out_step1[ 7][12][0] + 0.01171980 * out_step1[ 7][13][0] - 0.02660849 * out_step1[ 7][14][0]
+   - 0.05360425 * out_step1[ 8][12][0] - 0.04893653 * out_step1[ 8][13][0] - 0.06422424 * out_step1[ 8][14][0]
+   + 0.00519572;
+
+out_step2[4][0][1] = 
+   - 0.07031628 * out_step1[ 8][ 0][0] - 0.01049577 * out_step1[ 8][ 1][0] - 0.02967909 * out_step1[ 8][ 2][0]
+   + 0.01542667 * out_step1[ 9][ 0][0] + 0.01171980 * out_step1[ 9][ 1][0] - 0.02660849 * out_step1[ 9][ 2][0]
+   - 0.05360425 * out_step1[10][ 0][0] - 0.04893653 * out_step1[10][ 1][0] - 0.06422424 * out_step1[10][ 2][0]
+   + 0.00519572;
+
+out_step2[4][1][1] = 
+   - 0.07031628 * out_step1[ 8][ 2][0] - 0.01049577 * out_step1[ 8][ 3][0] - 0.02967909 * out_step1[ 8][ 4][0]
+   + 0.01542667 * out_step1[ 9][ 2][0] + 0.01171980 * out_step1[ 9][ 3][0] - 0.02660849 * out_step1[ 9][ 4][0]
+   - 0.05360425 * out_step1[10][ 2][0] - 0.04893653 * out_step1[10][ 3][0] - 0.06422424 * out_step1[10][ 4][0]
+   + 0.00519572;
+
+out_step2[4][2][1] = 
+   - 0.07031628 * out_step1[ 8][ 4][0] - 0.01049577 * out_step1[ 8][ 5][0] - 0.02967909 * out_step1[ 8][ 6][0]
+   + 0.01542667 * out_step1[ 9][ 4][0] + 0.01171980 * out_step1[ 9][ 5][0] - 0.02660849 * out_step1[ 9][ 6][0]
+   - 0.05360425 * out_step1[10][ 4][0] - 0.04893653 * out_step1[10][ 5][0] - 0.06422424 * out_step1[10][ 6][0]
+   + 0.00519572;
+
+out_step2[4][3][1] = 
+   - 0.07031628 * out_step1[ 8][ 6][0] - 0.01049577 * out_step1[ 8][ 7][0] - 0.02967909 * out_step1[ 8][ 8][0]
+   + 0.01542667 * out_step1[ 9][ 6][0] + 0.01171980 * out_step1[ 9][ 7][0] - 0.02660849 * out_step1[ 9][ 8][0]
+   - 0.05360425 * out_step1[10][ 6][0] - 0.04893653 * out_step1[10][ 7][0] - 0.06422424 * out_step1[10][ 8][0]
+   + 0.00519572;
+
+out_step2[4][4][1] = 
+   - 0.07031628 * out_step1[ 8][ 8][0] - 0.01049577 * out_step1[ 8][ 9][0] - 0.02967909 * out_step1[ 8][10][0]
+   + 0.01542667 * out_step1[ 9][ 8][0] + 0.01171980 * out_step1[ 9][ 9][0] - 0.02660849 * out_step1[ 9][10][0]
+   - 0.05360425 * out_step1[10][ 8][0] - 0.04893653 * out_step1[10][ 9][0] - 0.06422424 * out_step1[10][10][0]
+   + 0.00519572;
+
+out_step2[4][5][1] = 
+   - 0.07031628 * out_step1[ 8][10][0] - 0.01049577 * out_step1[ 8][11][0] - 0.02967909 * out_step1[ 8][12][0]
+   + 0.01542667 * out_step1[ 9][10][0] + 0.01171980 * out_step1[ 9][11][0] - 0.02660849 * out_step1[ 9][12][0]
+   - 0.05360425 * out_step1[10][10][0] - 0.04893653 * out_step1[10][11][0] - 0.06422424 * out_step1[10][12][0]
+   + 0.00519572;
+
+out_step2[4][6][1] = 
+   - 0.07031628 * out_step1[ 8][12][0] - 0.01049577 * out_step1[ 8][13][0] - 0.02967909 * out_step1[ 8][14][0]
+   + 0.01542667 * out_step1[ 9][12][0] + 0.01171980 * out_step1[ 9][13][0] - 0.02660849 * out_step1[ 9][14][0]
+   - 0.05360425 * out_step1[10][12][0] - 0.04893653 * out_step1[10][13][0] - 0.06422424 * out_step1[10][14][0]
+   + 0.00519572;
+
+out_step2[5][0][1] = 
+   - 0.07031628 * out_step1[10][ 0][0] - 0.01049577 * out_step1[10][ 1][0] - 0.02967909 * out_step1[10][ 2][0]
+   + 0.01542667 * out_step1[11][ 0][0] + 0.01171980 * out_step1[11][ 1][0] - 0.02660849 * out_step1[11][ 2][0]
+   - 0.05360425 * out_step1[12][ 0][0] - 0.04893653 * out_step1[12][ 1][0] - 0.06422424 * out_step1[12][ 2][0]
+   + 0.00519572;
+
+out_step2[5][1][1] = 
+   - 0.07031628 * out_step1[10][ 2][0] - 0.01049577 * out_step1[10][ 3][0] - 0.02967909 * out_step1[10][ 4][0]
+   + 0.01542667 * out_step1[11][ 2][0] + 0.01171980 * out_step1[11][ 3][0] - 0.02660849 * out_step1[11][ 4][0]
+   - 0.05360425 * out_step1[12][ 2][0] - 0.04893653 * out_step1[12][ 3][0] - 0.06422424 * out_step1[12][ 4][0]
+   + 0.00519572;
+
+out_step2[5][2][1] = 
+   - 0.07031628 * out_step1[10][ 4][0] - 0.01049577 * out_step1[10][ 5][0] - 0.02967909 * out_step1[10][ 6][0]
+   + 0.01542667 * out_step1[11][ 4][0] + 0.01171980 * out_step1[11][ 5][0] - 0.02660849 * out_step1[11][ 6][0]
+   - 0.05360425 * out_step1[12][ 4][0] - 0.04893653 * out_step1[12][ 5][0] - 0.06422424 * out_step1[12][ 6][0]
+   + 0.00519572;
+
+out_step2[5][3][1] = 
+   - 0.07031628 * out_step1[10][ 6][0] - 0.01049577 * out_step1[10][ 7][0] - 0.02967909 * out_step1[10][ 8][0]
+   + 0.01542667 * out_step1[11][ 6][0] + 0.01171980 * out_step1[11][ 7][0] - 0.02660849 * out_step1[11][ 8][0]
+   - 0.05360425 * out_step1[12][ 6][0] - 0.04893653 * out_step1[12][ 7][0] - 0.06422424 * out_step1[12][ 8][0]
+   + 0.00519572;
+
+out_step2[5][4][1] = 
+   - 0.07031628 * out_step1[10][ 8][0] - 0.01049577 * out_step1[10][ 9][0] - 0.02967909 * out_step1[10][10][0]
+   + 0.01542667 * out_step1[11][ 8][0] + 0.01171980 * out_step1[11][ 9][0] - 0.02660849 * out_step1[11][10][0]
+   - 0.05360425 * out_step1[12][ 8][0] - 0.04893653 * out_step1[12][ 9][0] - 0.06422424 * out_step1[12][10][0]
+   + 0.00519572;
+
+out_step2[5][5][1] = 
+   - 0.07031628 * out_step1[10][10][0] - 0.01049577 * out_step1[10][11][0] - 0.02967909 * out_step1[10][12][0]
+   + 0.01542667 * out_step1[11][10][0] + 0.01171980 * out_step1[11][11][0] - 0.02660849 * out_step1[11][12][0]
+   - 0.05360425 * out_step1[12][10][0] - 0.04893653 * out_step1[12][11][0] - 0.06422424 * out_step1[12][12][0]
+   + 0.00519572;
+
+out_step2[5][6][1] = 
+   - 0.07031628 * out_step1[10][12][0] - 0.01049577 * out_step1[10][13][0] - 0.02967909 * out_step1[10][14][0]
+   + 0.01542667 * out_step1[11][12][0] + 0.01171980 * out_step1[11][13][0] - 0.02660849 * out_step1[11][14][0]
+   - 0.05360425 * out_step1[12][12][0] - 0.04893653 * out_step1[12][13][0] - 0.06422424 * out_step1[12][14][0]
+   + 0.00519572;
+
+out_step2[6][0][1] = 
+   - 0.07031628 * out_step1[12][ 0][0] - 0.01049577 * out_step1[12][ 1][0] - 0.02967909 * out_step1[12][ 2][0]
+   + 0.01542667 * out_step1[13][ 0][0] + 0.01171980 * out_step1[13][ 1][0] - 0.02660849 * out_step1[13][ 2][0]
+   - 0.05360425 * out_step1[14][ 0][0] - 0.04893653 * out_step1[14][ 1][0] - 0.06422424 * out_step1[14][ 2][0]
+   + 0.00519572;
+
+out_step2[6][1][1] = 
+   - 0.07031628 * out_step1[12][ 2][0] - 0.01049577 * out_step1[12][ 3][0] - 0.02967909 * out_step1[12][ 4][0]
+   + 0.01542667 * out_step1[13][ 2][0] + 0.01171980 * out_step1[13][ 3][0] - 0.02660849 * out_step1[13][ 4][0]
+   - 0.05360425 * out_step1[14][ 2][0] - 0.04893653 * out_step1[14][ 3][0] - 0.06422424 * out_step1[14][ 4][0]
+   + 0.00519572;
+
+out_step2[6][2][1] = 
+   - 0.07031628 * out_step1[12][ 4][0] - 0.01049577 * out_step1[12][ 5][0] - 0.02967909 * out_step1[12][ 6][0]
+   + 0.01542667 * out_step1[13][ 4][0] + 0.01171980 * out_step1[13][ 5][0] - 0.02660849 * out_step1[13][ 6][0]
+   - 0.05360425 * out_step1[14][ 4][0] - 0.04893653 * out_step1[14][ 5][0] - 0.06422424 * out_step1[14][ 6][0]
+   + 0.00519572;
+
+out_step2[6][3][1] = 
+   - 0.07031628 * out_step1[12][ 6][0] - 0.01049577 * out_step1[12][ 7][0] - 0.02967909 * out_step1[12][ 8][0]
+   + 0.01542667 * out_step1[13][ 6][0] + 0.01171980 * out_step1[13][ 7][0] - 0.02660849 * out_step1[13][ 8][0]
+   - 0.05360425 * out_step1[14][ 6][0] - 0.04893653 * out_step1[14][ 7][0] - 0.06422424 * out_step1[14][ 8][0]
+   + 0.00519572;
+
+out_step2[6][4][1] = 
+   - 0.07031628 * out_step1[12][ 8][0] - 0.01049577 * out_step1[12][ 9][0] - 0.02967909 * out_step1[12][10][0]
+   + 0.01542667 * out_step1[13][ 8][0] + 0.01171980 * out_step1[13][ 9][0] - 0.02660849 * out_step1[13][10][0]
+   - 0.05360425 * out_step1[14][ 8][0] - 0.04893653 * out_step1[14][ 9][0] - 0.06422424 * out_step1[14][10][0]
+   + 0.00519572;
+
+out_step2[6][5][1] = 
+   - 0.07031628 * out_step1[12][10][0] - 0.01049577 * out_step1[12][11][0] - 0.02967909 * out_step1[12][12][0]
+   + 0.01542667 * out_step1[13][10][0] + 0.01171980 * out_step1[13][11][0] - 0.02660849 * out_step1[13][12][0]
+   - 0.05360425 * out_step1[14][10][0] - 0.04893653 * out_step1[14][11][0] - 0.06422424 * out_step1[14][12][0]
+   + 0.00519572;
+
+out_step2[6][6][1] = 
+   - 0.07031628 * out_step1[12][12][0] - 0.01049577 * out_step1[12][13][0] - 0.02967909 * out_step1[12][14][0]
+   + 0.01542667 * out_step1[13][12][0] + 0.01171980 * out_step1[13][13][0] - 0.02660849 * out_step1[13][14][0]
+   - 0.05360425 * out_step1[14][12][0] - 0.04893653 * out_step1[14][13][0] - 0.06422424 * out_step1[14][14][0]
+   + 0.00519572;
+
+out_step2[0][0][2] = 
+   - 0.04781172 * out_step1[ 0][ 0][0] - 0.08686382 * out_step1[ 0][ 1][0] - 0.07514062 * out_step1[ 0][ 2][0]
+   + 0.01508845 * out_step1[ 1][ 0][0] - 0.01066411 * out_step1[ 1][ 1][0] - 0.01796810 * out_step1[ 1][ 2][0]
+   + 0.17018725 * out_step1[ 2][ 0][0] + 0.30519563 * out_step1[ 2][ 1][0] + 0.14546387 * out_step1[ 2][ 2][0]
+   + 0.02205547;
+
+out_step2[0][1][2] = 
+   - 0.04781172 * out_step1[ 0][ 2][0] - 0.08686382 * out_step1[ 0][ 3][0] - 0.07514062 * out_step1[ 0][ 4][0]
+   + 0.01508845 * out_step1[ 1][ 2][0] - 0.01066411 * out_step1[ 1][ 3][0] - 0.01796810 * out_step1[ 1][ 4][0]
+   + 0.17018725 * out_step1[ 2][ 2][0] + 0.30519563 * out_step1[ 2][ 3][0] + 0.14546387 * out_step1[ 2][ 4][0]
+   + 0.02205547;
+
+out_step2[0][2][2] = 
+   - 0.04781172 * out_step1[ 0][ 4][0] - 0.08686382 * out_step1[ 0][ 5][0] - 0.07514062 * out_step1[ 0][ 6][0]
+   + 0.01508845 * out_step1[ 1][ 4][0] - 0.01066411 * out_step1[ 1][ 5][0] - 0.01796810 * out_step1[ 1][ 6][0]
+   + 0.17018725 * out_step1[ 2][ 4][0] + 0.30519563 * out_step1[ 2][ 5][0] + 0.14546387 * out_step1[ 2][ 6][0]
+   + 0.02205547;
+
+out_step2[0][3][2] = 
+   - 0.04781172 * out_step1[ 0][ 6][0] - 0.08686382 * out_step1[ 0][ 7][0] - 0.07514062 * out_step1[ 0][ 8][0]
+   + 0.01508845 * out_step1[ 1][ 6][0] - 0.01066411 * out_step1[ 1][ 7][0] - 0.01796810 * out_step1[ 1][ 8][0]
+   + 0.17018725 * out_step1[ 2][ 6][0] + 0.30519563 * out_step1[ 2][ 7][0] + 0.14546387 * out_step1[ 2][ 8][0]
+   + 0.02205547;
+
+out_step2[0][4][2] = 
+   - 0.04781172 * out_step1[ 0][ 8][0] - 0.08686382 * out_step1[ 0][ 9][0] - 0.07514062 * out_step1[ 0][10][0]
+   + 0.01508845 * out_step1[ 1][ 8][0] - 0.01066411 * out_step1[ 1][ 9][0] - 0.01796810 * out_step1[ 1][10][0]
+   + 0.17018725 * out_step1[ 2][ 8][0] + 0.30519563 * out_step1[ 2][ 9][0] + 0.14546387 * out_step1[ 2][10][0]
+   + 0.02205547;
+
+out_step2[0][5][2] = 
+   - 0.04781172 * out_step1[ 0][10][0] - 0.08686382 * out_step1[ 0][11][0] - 0.07514062 * out_step1[ 0][12][0]
+   + 0.01508845 * out_step1[ 1][10][0] - 0.01066411 * out_step1[ 1][11][0] - 0.01796810 * out_step1[ 1][12][0]
+   + 0.17018725 * out_step1[ 2][10][0] + 0.30519563 * out_step1[ 2][11][0] + 0.14546387 * out_step1[ 2][12][0]
+   + 0.02205547;
+
+out_step2[0][6][2] = 
+   - 0.04781172 * out_step1[ 0][12][0] - 0.08686382 * out_step1[ 0][13][0] - 0.07514062 * out_step1[ 0][14][0]
+   + 0.01508845 * out_step1[ 1][12][0] - 0.01066411 * out_step1[ 1][13][0] - 0.01796810 * out_step1[ 1][14][0]
+   + 0.17018725 * out_step1[ 2][12][0] + 0.30519563 * out_step1[ 2][13][0] + 0.14546387 * out_step1[ 2][14][0]
+   + 0.02205547;
+
+out_step2[1][0][2] = 
+   - 0.04781172 * out_step1[ 2][ 0][0] - 0.08686382 * out_step1[ 2][ 1][0] - 0.07514062 * out_step1[ 2][ 2][0]
+   + 0.01508845 * out_step1[ 3][ 0][0] - 0.01066411 * out_step1[ 3][ 1][0] - 0.01796810 * out_step1[ 3][ 2][0]
+   + 0.17018725 * out_step1[ 4][ 0][0] + 0.30519563 * out_step1[ 4][ 1][0] + 0.14546387 * out_step1[ 4][ 2][0]
+   + 0.02205547;
+
+out_step2[1][1][2] = 
+   - 0.04781172 * out_step1[ 2][ 2][0] - 0.08686382 * out_step1[ 2][ 3][0] - 0.07514062 * out_step1[ 2][ 4][0]
+   + 0.01508845 * out_step1[ 3][ 2][0] - 0.01066411 * out_step1[ 3][ 3][0] - 0.01796810 * out_step1[ 3][ 4][0]
+   + 0.17018725 * out_step1[ 4][ 2][0] + 0.30519563 * out_step1[ 4][ 3][0] + 0.14546387 * out_step1[ 4][ 4][0]
+   + 0.02205547;
+
+out_step2[1][2][2] = 
+   - 0.04781172 * out_step1[ 2][ 4][0] - 0.08686382 * out_step1[ 2][ 5][0] - 0.07514062 * out_step1[ 2][ 6][0]
+   + 0.01508845 * out_step1[ 3][ 4][0] - 0.01066411 * out_step1[ 3][ 5][0] - 0.01796810 * out_step1[ 3][ 6][0]
+   + 0.17018725 * out_step1[ 4][ 4][0] + 0.30519563 * out_step1[ 4][ 5][0] + 0.14546387 * out_step1[ 4][ 6][0]
+   + 0.02205547;
+
+out_step2[1][3][2] = 
+   - 0.04781172 * out_step1[ 2][ 6][0] - 0.08686382 * out_step1[ 2][ 7][0] - 0.07514062 * out_step1[ 2][ 8][0]
+   + 0.01508845 * out_step1[ 3][ 6][0] - 0.01066411 * out_step1[ 3][ 7][0] - 0.01796810 * out_step1[ 3][ 8][0]
+   + 0.17018725 * out_step1[ 4][ 6][0] + 0.30519563 * out_step1[ 4][ 7][0] + 0.14546387 * out_step1[ 4][ 8][0]
+   + 0.02205547;
+
+out_step2[1][4][2] = 
+   - 0.04781172 * out_step1[ 2][ 8][0] - 0.08686382 * out_step1[ 2][ 9][0] - 0.07514062 * out_step1[ 2][10][0]
+   + 0.01508845 * out_step1[ 3][ 8][0] - 0.01066411 * out_step1[ 3][ 9][0] - 0.01796810 * out_step1[ 3][10][0]
+   + 0.17018725 * out_step1[ 4][ 8][0] + 0.30519563 * out_step1[ 4][ 9][0] + 0.14546387 * out_step1[ 4][10][0]
+   + 0.02205547;
+
+out_step2[1][5][2] = 
+   - 0.04781172 * out_step1[ 2][10][0] - 0.08686382 * out_step1[ 2][11][0] - 0.07514062 * out_step1[ 2][12][0]
+   + 0.01508845 * out_step1[ 3][10][0] - 0.01066411 * out_step1[ 3][11][0] - 0.01796810 * out_step1[ 3][12][0]
+   + 0.17018725 * out_step1[ 4][10][0] + 0.30519563 * out_step1[ 4][11][0] + 0.14546387 * out_step1[ 4][12][0]
+   + 0.02205547;
+
+out_step2[1][6][2] = 
+   - 0.04781172 * out_step1[ 2][12][0] - 0.08686382 * out_step1[ 2][13][0] - 0.07514062 * out_step1[ 2][14][0]
+   + 0.01508845 * out_step1[ 3][12][0] - 0.01066411 * out_step1[ 3][13][0] - 0.01796810 * out_step1[ 3][14][0]
+   + 0.17018725 * out_step1[ 4][12][0] + 0.30519563 * out_step1[ 4][13][0] + 0.14546387 * out_step1[ 4][14][0]
+   + 0.02205547;
+
+out_step2[2][0][2] = 
+   - 0.04781172 * out_step1[ 4][ 0][0] - 0.08686382 * out_step1[ 4][ 1][0] - 0.07514062 * out_step1[ 4][ 2][0]
+   + 0.01508845 * out_step1[ 5][ 0][0] - 0.01066411 * out_step1[ 5][ 1][0] - 0.01796810 * out_step1[ 5][ 2][0]
+   + 0.17018725 * out_step1[ 6][ 0][0] + 0.30519563 * out_step1[ 6][ 1][0] + 0.14546387 * out_step1[ 6][ 2][0]
+   + 0.02205547;
+
+out_step2[2][1][2] = 
+   - 0.04781172 * out_step1[ 4][ 2][0] - 0.08686382 * out_step1[ 4][ 3][0] - 0.07514062 * out_step1[ 4][ 4][0]
+   + 0.01508845 * out_step1[ 5][ 2][0] - 0.01066411 * out_step1[ 5][ 3][0] - 0.01796810 * out_step1[ 5][ 4][0]
+   + 0.17018725 * out_step1[ 6][ 2][0] + 0.30519563 * out_step1[ 6][ 3][0] + 0.14546387 * out_step1[ 6][ 4][0]
+   + 0.02205547;
+
+out_step2[2][2][2] = 
+   - 0.04781172 * out_step1[ 4][ 4][0] - 0.08686382 * out_step1[ 4][ 5][0] - 0.07514062 * out_step1[ 4][ 6][0]
+   + 0.01508845 * out_step1[ 5][ 4][0] - 0.01066411 * out_step1[ 5][ 5][0] - 0.01796810 * out_step1[ 5][ 6][0]
+   + 0.17018725 * out_step1[ 6][ 4][0] + 0.30519563 * out_step1[ 6][ 5][0] + 0.14546387 * out_step1[ 6][ 6][0]
+   + 0.02205547;
+
+out_step2[2][3][2] = 
+   - 0.04781172 * out_step1[ 4][ 6][0] - 0.08686382 * out_step1[ 4][ 7][0] - 0.07514062 * out_step1[ 4][ 8][0]
+   + 0.01508845 * out_step1[ 5][ 6][0] - 0.01066411 * out_step1[ 5][ 7][0] - 0.01796810 * out_step1[ 5][ 8][0]
+   + 0.17018725 * out_step1[ 6][ 6][0] + 0.30519563 * out_step1[ 6][ 7][0] + 0.14546387 * out_step1[ 6][ 8][0]
+   + 0.02205547;
+
+out_step2[2][4][2] = 
+   - 0.04781172 * out_step1[ 4][ 8][0] - 0.08686382 * out_step1[ 4][ 9][0] - 0.07514062 * out_step1[ 4][10][0]
+   + 0.01508845 * out_step1[ 5][ 8][0] - 0.01066411 * out_step1[ 5][ 9][0] - 0.01796810 * out_step1[ 5][10][0]
+   + 0.17018725 * out_step1[ 6][ 8][0] + 0.30519563 * out_step1[ 6][ 9][0] + 0.14546387 * out_step1[ 6][10][0]
+   + 0.02205547;
+
+out_step2[2][5][2] = 
+   - 0.04781172 * out_step1[ 4][10][0] - 0.08686382 * out_step1[ 4][11][0] - 0.07514062 * out_step1[ 4][12][0]
+   + 0.01508845 * out_step1[ 5][10][0] - 0.01066411 * out_step1[ 5][11][0] - 0.01796810 * out_step1[ 5][12][0]
+   + 0.17018725 * out_step1[ 6][10][0] + 0.30519563 * out_step1[ 6][11][0] + 0.14546387 * out_step1[ 6][12][0]
+   + 0.02205547;
+
+out_step2[2][6][2] = 
+   - 0.04781172 * out_step1[ 4][12][0] - 0.08686382 * out_step1[ 4][13][0] - 0.07514062 * out_step1[ 4][14][0]
+   + 0.01508845 * out_step1[ 5][12][0] - 0.01066411 * out_step1[ 5][13][0] - 0.01796810 * out_step1[ 5][14][0]
+   + 0.17018725 * out_step1[ 6][12][0] + 0.30519563 * out_step1[ 6][13][0] + 0.14546387 * out_step1[ 6][14][0]
+   + 0.02205547;
+
+out_step2[3][0][2] = 
+   - 0.04781172 * out_step1[ 6][ 0][0] - 0.08686382 * out_step1[ 6][ 1][0] - 0.07514062 * out_step1[ 6][ 2][0]
+   + 0.01508845 * out_step1[ 7][ 0][0] - 0.01066411 * out_step1[ 7][ 1][0] - 0.01796810 * out_step1[ 7][ 2][0]
+   + 0.17018725 * out_step1[ 8][ 0][0] + 0.30519563 * out_step1[ 8][ 1][0] + 0.14546387 * out_step1[ 8][ 2][0]
+   + 0.02205547;
+
+out_step2[3][1][2] = 
+   - 0.04781172 * out_step1[ 6][ 2][0] - 0.08686382 * out_step1[ 6][ 3][0] - 0.07514062 * out_step1[ 6][ 4][0]
+   + 0.01508845 * out_step1[ 7][ 2][0] - 0.01066411 * out_step1[ 7][ 3][0] - 0.01796810 * out_step1[ 7][ 4][0]
+   + 0.17018725 * out_step1[ 8][ 2][0] + 0.30519563 * out_step1[ 8][ 3][0] + 0.14546387 * out_step1[ 8][ 4][0]
+   + 0.02205547;
+
+out_step2[3][2][2] = 
+   - 0.04781172 * out_step1[ 6][ 4][0] - 0.08686382 * out_step1[ 6][ 5][0] - 0.07514062 * out_step1[ 6][ 6][0]
+   + 0.01508845 * out_step1[ 7][ 4][0] - 0.01066411 * out_step1[ 7][ 5][0] - 0.01796810 * out_step1[ 7][ 6][0]
+   + 0.17018725 * out_step1[ 8][ 4][0] + 0.30519563 * out_step1[ 8][ 5][0] + 0.14546387 * out_step1[ 8][ 6][0]
+   + 0.02205547;
+
+out_step2[3][3][2] = 
+   - 0.04781172 * out_step1[ 6][ 6][0] - 0.08686382 * out_step1[ 6][ 7][0] - 0.07514062 * out_step1[ 6][ 8][0]
+   + 0.01508845 * out_step1[ 7][ 6][0] - 0.01066411 * out_step1[ 7][ 7][0] - 0.01796810 * out_step1[ 7][ 8][0]
+   + 0.17018725 * out_step1[ 8][ 6][0] + 0.30519563 * out_step1[ 8][ 7][0] + 0.14546387 * out_step1[ 8][ 8][0]
+   + 0.02205547;
+
+out_step2[3][4][2] = 
+   - 0.04781172 * out_step1[ 6][ 8][0] - 0.08686382 * out_step1[ 6][ 9][0] - 0.07514062 * out_step1[ 6][10][0]
+   + 0.01508845 * out_step1[ 7][ 8][0] - 0.01066411 * out_step1[ 7][ 9][0] - 0.01796810 * out_step1[ 7][10][0]
+   + 0.17018725 * out_step1[ 8][ 8][0] + 0.30519563 * out_step1[ 8][ 9][0] + 0.14546387 * out_step1[ 8][10][0]
+   + 0.02205547;
+
+out_step2[3][5][2] = 
+   - 0.04781172 * out_step1[ 6][10][0] - 0.08686382 * out_step1[ 6][11][0] - 0.07514062 * out_step1[ 6][12][0]
+   + 0.01508845 * out_step1[ 7][10][0] - 0.01066411 * out_step1[ 7][11][0] - 0.01796810 * out_step1[ 7][12][0]
+   + 0.17018725 * out_step1[ 8][10][0] + 0.30519563 * out_step1[ 8][11][0] + 0.14546387 * out_step1[ 8][12][0]
+   + 0.02205547;
+
+out_step2[3][6][2] = 
+   - 0.04781172 * out_step1[ 6][12][0] - 0.08686382 * out_step1[ 6][13][0] - 0.07514062 * out_step1[ 6][14][0]
+   + 0.01508845 * out_step1[ 7][12][0] - 0.01066411 * out_step1[ 7][13][0] - 0.01796810 * out_step1[ 7][14][0]
+   + 0.17018725 * out_step1[ 8][12][0] + 0.30519563 * out_step1[ 8][13][0] + 0.14546387 * out_step1[ 8][14][0]
+   + 0.02205547;
+
+out_step2[4][0][2] = 
+   - 0.04781172 * out_step1[ 8][ 0][0] - 0.08686382 * out_step1[ 8][ 1][0] - 0.07514062 * out_step1[ 8][ 2][0]
+   + 0.01508845 * out_step1[ 9][ 0][0] - 0.01066411 * out_step1[ 9][ 1][0] - 0.01796810 * out_step1[ 9][ 2][0]
+   + 0.17018725 * out_step1[10][ 0][0] + 0.30519563 * out_step1[10][ 1][0] + 0.14546387 * out_step1[10][ 2][0]
+   + 0.02205547;
+
+out_step2[4][1][2] = 
+   - 0.04781172 * out_step1[ 8][ 2][0] - 0.08686382 * out_step1[ 8][ 3][0] - 0.07514062 * out_step1[ 8][ 4][0]
+   + 0.01508845 * out_step1[ 9][ 2][0] - 0.01066411 * out_step1[ 9][ 3][0] - 0.01796810 * out_step1[ 9][ 4][0]
+   + 0.17018725 * out_step1[10][ 2][0] + 0.30519563 * out_step1[10][ 3][0] + 0.14546387 * out_step1[10][ 4][0]
+   + 0.02205547;
+
+out_step2[4][2][2] = 
+   - 0.04781172 * out_step1[ 8][ 4][0] - 0.08686382 * out_step1[ 8][ 5][0] - 0.07514062 * out_step1[ 8][ 6][0]
+   + 0.01508845 * out_step1[ 9][ 4][0] - 0.01066411 * out_step1[ 9][ 5][0] - 0.01796810 * out_step1[ 9][ 6][0]
+   + 0.17018725 * out_step1[10][ 4][0] + 0.30519563 * out_step1[10][ 5][0] + 0.14546387 * out_step1[10][ 6][0]
+   + 0.02205547;
+
+out_step2[4][3][2] = 
+   - 0.04781172 * out_step1[ 8][ 6][0] - 0.08686382 * out_step1[ 8][ 7][0] - 0.07514062 * out_step1[ 8][ 8][0]
+   + 0.01508845 * out_step1[ 9][ 6][0] - 0.01066411 * out_step1[ 9][ 7][0] - 0.01796810 * out_step1[ 9][ 8][0]
+   + 0.17018725 * out_step1[10][ 6][0] + 0.30519563 * out_step1[10][ 7][0] + 0.14546387 * out_step1[10][ 8][0]
+   + 0.02205547;
+
+out_step2[4][4][2] = 
+   - 0.04781172 * out_step1[ 8][ 8][0] - 0.08686382 * out_step1[ 8][ 9][0] - 0.07514062 * out_step1[ 8][10][0]
+   + 0.01508845 * out_step1[ 9][ 8][0] - 0.01066411 * out_step1[ 9][ 9][0] - 0.01796810 * out_step1[ 9][10][0]
+   + 0.17018725 * out_step1[10][ 8][0] + 0.30519563 * out_step1[10][ 9][0] + 0.14546387 * out_step1[10][10][0]
+   + 0.02205547;
+
+out_step2[4][5][2] = 
+   - 0.04781172 * out_step1[ 8][10][0] - 0.08686382 * out_step1[ 8][11][0] - 0.07514062 * out_step1[ 8][12][0]
+   + 0.01508845 * out_step1[ 9][10][0] - 0.01066411 * out_step1[ 9][11][0] - 0.01796810 * out_step1[ 9][12][0]
+   + 0.17018725 * out_step1[10][10][0] + 0.30519563 * out_step1[10][11][0] + 0.14546387 * out_step1[10][12][0]
+   + 0.02205547;
+
+out_step2[4][6][2] = 
+   - 0.04781172 * out_step1[ 8][12][0] - 0.08686382 * out_step1[ 8][13][0] - 0.07514062 * out_step1[ 8][14][0]
+   + 0.01508845 * out_step1[ 9][12][0] - 0.01066411 * out_step1[ 9][13][0] - 0.01796810 * out_step1[ 9][14][0]
+   + 0.17018725 * out_step1[10][12][0] + 0.30519563 * out_step1[10][13][0] + 0.14546387 * out_step1[10][14][0]
+   + 0.02205547;
+
+out_step2[5][0][2] = 
+   - 0.04781172 * out_step1[10][ 0][0] - 0.08686382 * out_step1[10][ 1][0] - 0.07514062 * out_step1[10][ 2][0]
+   + 0.01508845 * out_step1[11][ 0][0] - 0.01066411 * out_step1[11][ 1][0] - 0.01796810 * out_step1[11][ 2][0]
+   + 0.17018725 * out_step1[12][ 0][0] + 0.30519563 * out_step1[12][ 1][0] + 0.14546387 * out_step1[12][ 2][0]
+   + 0.02205547;
+
+out_step2[5][1][2] = 
+   - 0.04781172 * out_step1[10][ 2][0] - 0.08686382 * out_step1[10][ 3][0] - 0.07514062 * out_step1[10][ 4][0]
+   + 0.01508845 * out_step1[11][ 2][0] - 0.01066411 * out_step1[11][ 3][0] - 0.01796810 * out_step1[11][ 4][0]
+   + 0.17018725 * out_step1[12][ 2][0] + 0.30519563 * out_step1[12][ 3][0] + 0.14546387 * out_step1[12][ 4][0]
+   + 0.02205547;
+
+out_step2[5][2][2] = 
+   - 0.04781172 * out_step1[10][ 4][0] - 0.08686382 * out_step1[10][ 5][0] - 0.07514062 * out_step1[10][ 6][0]
+   + 0.01508845 * out_step1[11][ 4][0] - 0.01066411 * out_step1[11][ 5][0] - 0.01796810 * out_step1[11][ 6][0]
+   + 0.17018725 * out_step1[12][ 4][0] + 0.30519563 * out_step1[12][ 5][0] + 0.14546387 * out_step1[12][ 6][0]
+   + 0.02205547;
+
+out_step2[5][3][2] = 
+   - 0.04781172 * out_step1[10][ 6][0] - 0.08686382 * out_step1[10][ 7][0] - 0.07514062 * out_step1[10][ 8][0]
+   + 0.01508845 * out_step1[11][ 6][0] - 0.01066411 * out_step1[11][ 7][0] - 0.01796810 * out_step1[11][ 8][0]
+   + 0.17018725 * out_step1[12][ 6][0] + 0.30519563 * out_step1[12][ 7][0] + 0.14546387 * out_step1[12][ 8][0]
+   + 0.02205547;
+
+out_step2[5][4][2] = 
+   - 0.04781172 * out_step1[10][ 8][0] - 0.08686382 * out_step1[10][ 9][0] - 0.07514062 * out_step1[10][10][0]
+   + 0.01508845 * out_step1[11][ 8][0] - 0.01066411 * out_step1[11][ 9][0] - 0.01796810 * out_step1[11][10][0]
+   + 0.17018725 * out_step1[12][ 8][0] + 0.30519563 * out_step1[12][ 9][0] + 0.14546387 * out_step1[12][10][0]
+   + 0.02205547;
+
+out_step2[5][5][2] = 
+   - 0.04781172 * out_step1[10][10][0] - 0.08686382 * out_step1[10][11][0] - 0.07514062 * out_step1[10][12][0]
+   + 0.01508845 * out_step1[11][10][0] - 0.01066411 * out_step1[11][11][0] - 0.01796810 * out_step1[11][12][0]
+   + 0.17018725 * out_step1[12][10][0] + 0.30519563 * out_step1[12][11][0] + 0.14546387 * out_step1[12][12][0]
+   + 0.02205547;
+
+out_step2[5][6][2] = 
+   - 0.04781172 * out_step1[10][12][0] - 0.08686382 * out_step1[10][13][0] - 0.07514062 * out_step1[10][14][0]
+   + 0.01508845 * out_step1[11][12][0] - 0.01066411 * out_step1[11][13][0] - 0.01796810 * out_step1[11][14][0]
+   + 0.17018725 * out_step1[12][12][0] + 0.30519563 * out_step1[12][13][0] + 0.14546387 * out_step1[12][14][0]
+   + 0.02205547;
+
+out_step2[6][0][2] = 
+   - 0.04781172 * out_step1[12][ 0][0] - 0.08686382 * out_step1[12][ 1][0] - 0.07514062 * out_step1[12][ 2][0]
+   + 0.01508845 * out_step1[13][ 0][0] - 0.01066411 * out_step1[13][ 1][0] - 0.01796810 * out_step1[13][ 2][0]
+   + 0.17018725 * out_step1[14][ 0][0] + 0.30519563 * out_step1[14][ 1][0] + 0.14546387 * out_step1[14][ 2][0]
+   + 0.02205547;
+
+out_step2[6][1][2] = 
+   - 0.04781172 * out_step1[12][ 2][0] - 0.08686382 * out_step1[12][ 3][0] - 0.07514062 * out_step1[12][ 4][0]
+   + 0.01508845 * out_step1[13][ 2][0] - 0.01066411 * out_step1[13][ 3][0] - 0.01796810 * out_step1[13][ 4][0]
+   + 0.17018725 * out_step1[14][ 2][0] + 0.30519563 * out_step1[14][ 3][0] + 0.14546387 * out_step1[14][ 4][0]
+   + 0.02205547;
+
+out_step2[6][2][2] = 
+   - 0.04781172 * out_step1[12][ 4][0] - 0.08686382 * out_step1[12][ 5][0] - 0.07514062 * out_step1[12][ 6][0]
+   + 0.01508845 * out_step1[13][ 4][0] - 0.01066411 * out_step1[13][ 5][0] - 0.01796810 * out_step1[13][ 6][0]
+   + 0.17018725 * out_step1[14][ 4][0] + 0.30519563 * out_step1[14][ 5][0] + 0.14546387 * out_step1[14][ 6][0]
+   + 0.02205547;
+
+out_step2[6][3][2] = 
+   - 0.04781172 * out_step1[12][ 6][0] - 0.08686382 * out_step1[12][ 7][0] - 0.07514062 * out_step1[12][ 8][0]
+   + 0.01508845 * out_step1[13][ 6][0] - 0.01066411 * out_step1[13][ 7][0] - 0.01796810 * out_step1[13][ 8][0]
+   + 0.17018725 * out_step1[14][ 6][0] + 0.30519563 * out_step1[14][ 7][0] + 0.14546387 * out_step1[14][ 8][0]
+   + 0.02205547;
+
+out_step2[6][4][2] = 
+   - 0.04781172 * out_step1[12][ 8][0] - 0.08686382 * out_step1[12][ 9][0] - 0.07514062 * out_step1[12][10][0]
+   + 0.01508845 * out_step1[13][ 8][0] - 0.01066411 * out_step1[13][ 9][0] - 0.01796810 * out_step1[13][10][0]
+   + 0.17018725 * out_step1[14][ 8][0] + 0.30519563 * out_step1[14][ 9][0] + 0.14546387 * out_step1[14][10][0]
+   + 0.02205547;
+
+out_step2[6][5][2] = 
+   - 0.04781172 * out_step1[12][10][0] - 0.08686382 * out_step1[12][11][0] - 0.07514062 * out_step1[12][12][0]
+   + 0.01508845 * out_step1[13][10][0] - 0.01066411 * out_step1[13][11][0] - 0.01796810 * out_step1[13][12][0]
+   + 0.17018725 * out_step1[14][10][0] + 0.30519563 * out_step1[14][11][0] + 0.14546387 * out_step1[14][12][0]
+   + 0.02205547;
+
+out_step2[6][6][2] = 
+   - 0.04781172 * out_step1[12][12][0] - 0.08686382 * out_step1[12][13][0] - 0.07514062 * out_step1[12][14][0]
+   + 0.01508845 * out_step1[13][12][0] - 0.01066411 * out_step1[13][13][0] - 0.01796810 * out_step1[13][14][0]
+   + 0.17018725 * out_step1[14][12][0] + 0.30519563 * out_step1[14][13][0] + 0.14546387 * out_step1[14][14][0]
+   + 0.02205547;
+
+out_step2[0][0][3] = 
+   - 0.03353269 * out_step1[ 0][ 0][0] - 0.03219005 * out_step1[ 0][ 1][0] - 0.11256361 * out_step1[ 0][ 2][0]
+   - 0.01349546 * out_step1[ 1][ 0][0] + 0.00248000 * out_step1[ 1][ 1][0] - 0.01401057 * out_step1[ 1][ 2][0]
+   - 0.11209673 * out_step1[ 2][ 0][0] - 0.05698218 * out_step1[ 2][ 1][0] - 0.10160849 * out_step1[ 2][ 2][0]
+   + 0.03134756;
+
+out_step2[0][1][3] = 
+   - 0.03353269 * out_step1[ 0][ 2][0] - 0.03219005 * out_step1[ 0][ 3][0] - 0.11256361 * out_step1[ 0][ 4][0]
+   - 0.01349546 * out_step1[ 1][ 2][0] + 0.00248000 * out_step1[ 1][ 3][0] - 0.01401057 * out_step1[ 1][ 4][0]
+   - 0.11209673 * out_step1[ 2][ 2][0] - 0.05698218 * out_step1[ 2][ 3][0] - 0.10160849 * out_step1[ 2][ 4][0]
+   + 0.03134756;
+
+out_step2[0][2][3] = 
+   - 0.03353269 * out_step1[ 0][ 4][0] - 0.03219005 * out_step1[ 0][ 5][0] - 0.11256361 * out_step1[ 0][ 6][0]
+   - 0.01349546 * out_step1[ 1][ 4][0] + 0.00248000 * out_step1[ 1][ 5][0] - 0.01401057 * out_step1[ 1][ 6][0]
+   - 0.11209673 * out_step1[ 2][ 4][0] - 0.05698218 * out_step1[ 2][ 5][0] - 0.10160849 * out_step1[ 2][ 6][0]
+   + 0.03134756;
+
+out_step2[0][3][3] = 
+   - 0.03353269 * out_step1[ 0][ 6][0] - 0.03219005 * out_step1[ 0][ 7][0] - 0.11256361 * out_step1[ 0][ 8][0]
+   - 0.01349546 * out_step1[ 1][ 6][0] + 0.00248000 * out_step1[ 1][ 7][0] - 0.01401057 * out_step1[ 1][ 8][0]
+   - 0.11209673 * out_step1[ 2][ 6][0] - 0.05698218 * out_step1[ 2][ 7][0] - 0.10160849 * out_step1[ 2][ 8][0]
+   + 0.03134756;
+
+out_step2[0][4][3] = 
+   - 0.03353269 * out_step1[ 0][ 8][0] - 0.03219005 * out_step1[ 0][ 9][0] - 0.11256361 * out_step1[ 0][10][0]
+   - 0.01349546 * out_step1[ 1][ 8][0] + 0.00248000 * out_step1[ 1][ 9][0] - 0.01401057 * out_step1[ 1][10][0]
+   - 0.11209673 * out_step1[ 2][ 8][0] - 0.05698218 * out_step1[ 2][ 9][0] - 0.10160849 * out_step1[ 2][10][0]
+   + 0.03134756;
+
+out_step2[0][5][3] = 
+   - 0.03353269 * out_step1[ 0][10][0] - 0.03219005 * out_step1[ 0][11][0] - 0.11256361 * out_step1[ 0][12][0]
+   - 0.01349546 * out_step1[ 1][10][0] + 0.00248000 * out_step1[ 1][11][0] - 0.01401057 * out_step1[ 1][12][0]
+   - 0.11209673 * out_step1[ 2][10][0] - 0.05698218 * out_step1[ 2][11][0] - 0.10160849 * out_step1[ 2][12][0]
+   + 0.03134756;
+
+out_step2[0][6][3] = 
+   - 0.03353269 * out_step1[ 0][12][0] - 0.03219005 * out_step1[ 0][13][0] - 0.11256361 * out_step1[ 0][14][0]
+   - 0.01349546 * out_step1[ 1][12][0] + 0.00248000 * out_step1[ 1][13][0] - 0.01401057 * out_step1[ 1][14][0]
+   - 0.11209673 * out_step1[ 2][12][0] - 0.05698218 * out_step1[ 2][13][0] - 0.10160849 * out_step1[ 2][14][0]
+   + 0.03134756;
+
+out_step2[1][0][3] = 
+   - 0.03353269 * out_step1[ 2][ 0][0] - 0.03219005 * out_step1[ 2][ 1][0] - 0.11256361 * out_step1[ 2][ 2][0]
+   - 0.01349546 * out_step1[ 3][ 0][0] + 0.00248000 * out_step1[ 3][ 1][0] - 0.01401057 * out_step1[ 3][ 2][0]
+   - 0.11209673 * out_step1[ 4][ 0][0] - 0.05698218 * out_step1[ 4][ 1][0] - 0.10160849 * out_step1[ 4][ 2][0]
+   + 0.03134756;
+
+out_step2[1][1][3] = 
+   - 0.03353269 * out_step1[ 2][ 2][0] - 0.03219005 * out_step1[ 2][ 3][0] - 0.11256361 * out_step1[ 2][ 4][0]
+   - 0.01349546 * out_step1[ 3][ 2][0] + 0.00248000 * out_step1[ 3][ 3][0] - 0.01401057 * out_step1[ 3][ 4][0]
+   - 0.11209673 * out_step1[ 4][ 2][0] - 0.05698218 * out_step1[ 4][ 3][0] - 0.10160849 * out_step1[ 4][ 4][0]
+   + 0.03134756;
+
+out_step2[1][2][3] = 
+   - 0.03353269 * out_step1[ 2][ 4][0] - 0.03219005 * out_step1[ 2][ 5][0] - 0.11256361 * out_step1[ 2][ 6][0]
+   - 0.01349546 * out_step1[ 3][ 4][0] + 0.00248000 * out_step1[ 3][ 5][0] - 0.01401057 * out_step1[ 3][ 6][0]
+   - 0.11209673 * out_step1[ 4][ 4][0] - 0.05698218 * out_step1[ 4][ 5][0] - 0.10160849 * out_step1[ 4][ 6][0]
+   + 0.03134756;
+
+out_step2[1][3][3] = 
+   - 0.03353269 * out_step1[ 2][ 6][0] - 0.03219005 * out_step1[ 2][ 7][0] - 0.11256361 * out_step1[ 2][ 8][0]
+   - 0.01349546 * out_step1[ 3][ 6][0] + 0.00248000 * out_step1[ 3][ 7][0] - 0.01401057 * out_step1[ 3][ 8][0]
+   - 0.11209673 * out_step1[ 4][ 6][0] - 0.05698218 * out_step1[ 4][ 7][0] - 0.10160849 * out_step1[ 4][ 8][0]
+   + 0.03134756;
+
+out_step2[1][4][3] = 
+   - 0.03353269 * out_step1[ 2][ 8][0] - 0.03219005 * out_step1[ 2][ 9][0] - 0.11256361 * out_step1[ 2][10][0]
+   - 0.01349546 * out_step1[ 3][ 8][0] + 0.00248000 * out_step1[ 3][ 9][0] - 0.01401057 * out_step1[ 3][10][0]
+   - 0.11209673 * out_step1[ 4][ 8][0] - 0.05698218 * out_step1[ 4][ 9][0] - 0.10160849 * out_step1[ 4][10][0]
+   + 0.03134756;
+
+out_step2[1][5][3] = 
+   - 0.03353269 * out_step1[ 2][10][0] - 0.03219005 * out_step1[ 2][11][0] - 0.11256361 * out_step1[ 2][12][0]
+   - 0.01349546 * out_step1[ 3][10][0] + 0.00248000 * out_step1[ 3][11][0] - 0.01401057 * out_step1[ 3][12][0]
+   - 0.11209673 * out_step1[ 4][10][0] - 0.05698218 * out_step1[ 4][11][0] - 0.10160849 * out_step1[ 4][12][0]
+   + 0.03134756;
+
+out_step2[1][6][3] = 
+   - 0.03353269 * out_step1[ 2][12][0] - 0.03219005 * out_step1[ 2][13][0] - 0.11256361 * out_step1[ 2][14][0]
+   - 0.01349546 * out_step1[ 3][12][0] + 0.00248000 * out_step1[ 3][13][0] - 0.01401057 * out_step1[ 3][14][0]
+   - 0.11209673 * out_step1[ 4][12][0] - 0.05698218 * out_step1[ 4][13][0] - 0.10160849 * out_step1[ 4][14][0]
+   + 0.03134756;
+
+out_step2[2][0][3] = 
+   - 0.03353269 * out_step1[ 4][ 0][0] - 0.03219005 * out_step1[ 4][ 1][0] - 0.11256361 * out_step1[ 4][ 2][0]
+   - 0.01349546 * out_step1[ 5][ 0][0] + 0.00248000 * out_step1[ 5][ 1][0] - 0.01401057 * out_step1[ 5][ 2][0]
+   - 0.11209673 * out_step1[ 6][ 0][0] - 0.05698218 * out_step1[ 6][ 1][0] - 0.10160849 * out_step1[ 6][ 2][0]
+   + 0.03134756;
+
+out_step2[2][1][3] = 
+   - 0.03353269 * out_step1[ 4][ 2][0] - 0.03219005 * out_step1[ 4][ 3][0] - 0.11256361 * out_step1[ 4][ 4][0]
+   - 0.01349546 * out_step1[ 5][ 2][0] + 0.00248000 * out_step1[ 5][ 3][0] - 0.01401057 * out_step1[ 5][ 4][0]
+   - 0.11209673 * out_step1[ 6][ 2][0] - 0.05698218 * out_step1[ 6][ 3][0] - 0.10160849 * out_step1[ 6][ 4][0]
+   + 0.03134756;
+
+out_step2[2][2][3] = 
+   - 0.03353269 * out_step1[ 4][ 4][0] - 0.03219005 * out_step1[ 4][ 5][0] - 0.11256361 * out_step1[ 4][ 6][0]
+   - 0.01349546 * out_step1[ 5][ 4][0] + 0.00248000 * out_step1[ 5][ 5][0] - 0.01401057 * out_step1[ 5][ 6][0]
+   - 0.11209673 * out_step1[ 6][ 4][0] - 0.05698218 * out_step1[ 6][ 5][0] - 0.10160849 * out_step1[ 6][ 6][0]
+   + 0.03134756;
+
+out_step2[2][3][3] = 
+   - 0.03353269 * out_step1[ 4][ 6][0] - 0.03219005 * out_step1[ 4][ 7][0] - 0.11256361 * out_step1[ 4][ 8][0]
+   - 0.01349546 * out_step1[ 5][ 6][0] + 0.00248000 * out_step1[ 5][ 7][0] - 0.01401057 * out_step1[ 5][ 8][0]
+   - 0.11209673 * out_step1[ 6][ 6][0] - 0.05698218 * out_step1[ 6][ 7][0] - 0.10160849 * out_step1[ 6][ 8][0]
+   + 0.03134756;
+
+out_step2[2][4][3] = 
+   - 0.03353269 * out_step1[ 4][ 8][0] - 0.03219005 * out_step1[ 4][ 9][0] - 0.11256361 * out_step1[ 4][10][0]
+   - 0.01349546 * out_step1[ 5][ 8][0] + 0.00248000 * out_step1[ 5][ 9][0] - 0.01401057 * out_step1[ 5][10][0]
+   - 0.11209673 * out_step1[ 6][ 8][0] - 0.05698218 * out_step1[ 6][ 9][0] - 0.10160849 * out_step1[ 6][10][0]
+   + 0.03134756;
+
+out_step2[2][5][3] = 
+   - 0.03353269 * out_step1[ 4][10][0] - 0.03219005 * out_step1[ 4][11][0] - 0.11256361 * out_step1[ 4][12][0]
+   - 0.01349546 * out_step1[ 5][10][0] + 0.00248000 * out_step1[ 5][11][0] - 0.01401057 * out_step1[ 5][12][0]
+   - 0.11209673 * out_step1[ 6][10][0] - 0.05698218 * out_step1[ 6][11][0] - 0.10160849 * out_step1[ 6][12][0]
+   + 0.03134756;
+
+out_step2[2][6][3] = 
+   - 0.03353269 * out_step1[ 4][12][0] - 0.03219005 * out_step1[ 4][13][0] - 0.11256361 * out_step1[ 4][14][0]
+   - 0.01349546 * out_step1[ 5][12][0] + 0.00248000 * out_step1[ 5][13][0] - 0.01401057 * out_step1[ 5][14][0]
+   - 0.11209673 * out_step1[ 6][12][0] - 0.05698218 * out_step1[ 6][13][0] - 0.10160849 * out_step1[ 6][14][0]
+   + 0.03134756;
+
+out_step2[3][0][3] = 
+   - 0.03353269 * out_step1[ 6][ 0][0] - 0.03219005 * out_step1[ 6][ 1][0] - 0.11256361 * out_step1[ 6][ 2][0]
+   - 0.01349546 * out_step1[ 7][ 0][0] + 0.00248000 * out_step1[ 7][ 1][0] - 0.01401057 * out_step1[ 7][ 2][0]
+   - 0.11209673 * out_step1[ 8][ 0][0] - 0.05698218 * out_step1[ 8][ 1][0] - 0.10160849 * out_step1[ 8][ 2][0]
+   + 0.03134756;
+
+out_step2[3][1][3] = 
+   - 0.03353269 * out_step1[ 6][ 2][0] - 0.03219005 * out_step1[ 6][ 3][0] - 0.11256361 * out_step1[ 6][ 4][0]
+   - 0.01349546 * out_step1[ 7][ 2][0] + 0.00248000 * out_step1[ 7][ 3][0] - 0.01401057 * out_step1[ 7][ 4][0]
+   - 0.11209673 * out_step1[ 8][ 2][0] - 0.05698218 * out_step1[ 8][ 3][0] - 0.10160849 * out_step1[ 8][ 4][0]
+   + 0.03134756;
+
+out_step2[3][2][3] = 
+   - 0.03353269 * out_step1[ 6][ 4][0] - 0.03219005 * out_step1[ 6][ 5][0] - 0.11256361 * out_step1[ 6][ 6][0]
+   - 0.01349546 * out_step1[ 7][ 4][0] + 0.00248000 * out_step1[ 7][ 5][0] - 0.01401057 * out_step1[ 7][ 6][0]
+   - 0.11209673 * out_step1[ 8][ 4][0] - 0.05698218 * out_step1[ 8][ 5][0] - 0.10160849 * out_step1[ 8][ 6][0]
+   + 0.03134756;
+
+out_step2[3][3][3] = 
+   - 0.03353269 * out_step1[ 6][ 6][0] - 0.03219005 * out_step1[ 6][ 7][0] - 0.11256361 * out_step1[ 6][ 8][0]
+   - 0.01349546 * out_step1[ 7][ 6][0] + 0.00248000 * out_step1[ 7][ 7][0] - 0.01401057 * out_step1[ 7][ 8][0]
+   - 0.11209673 * out_step1[ 8][ 6][0] - 0.05698218 * out_step1[ 8][ 7][0] - 0.10160849 * out_step1[ 8][ 8][0]
+   + 0.03134756;
+
+out_step2[3][4][3] = 
+   - 0.03353269 * out_step1[ 6][ 8][0] - 0.03219005 * out_step1[ 6][ 9][0] - 0.11256361 * out_step1[ 6][10][0]
+   - 0.01349546 * out_step1[ 7][ 8][0] + 0.00248000 * out_step1[ 7][ 9][0] - 0.01401057 * out_step1[ 7][10][0]
+   - 0.11209673 * out_step1[ 8][ 8][0] - 0.05698218 * out_step1[ 8][ 9][0] - 0.10160849 * out_step1[ 8][10][0]
+   + 0.03134756;
+
+out_step2[3][5][3] = 
+   - 0.03353269 * out_step1[ 6][10][0] - 0.03219005 * out_step1[ 6][11][0] - 0.11256361 * out_step1[ 6][12][0]
+   - 0.01349546 * out_step1[ 7][10][0] + 0.00248000 * out_step1[ 7][11][0] - 0.01401057 * out_step1[ 7][12][0]
+   - 0.11209673 * out_step1[ 8][10][0] - 0.05698218 * out_step1[ 8][11][0] - 0.10160849 * out_step1[ 8][12][0]
+   + 0.03134756;
+
+out_step2[3][6][3] = 
+   - 0.03353269 * out_step1[ 6][12][0] - 0.03219005 * out_step1[ 6][13][0] - 0.11256361 * out_step1[ 6][14][0]
+   - 0.01349546 * out_step1[ 7][12][0] + 0.00248000 * out_step1[ 7][13][0] - 0.01401057 * out_step1[ 7][14][0]
+   - 0.11209673 * out_step1[ 8][12][0] - 0.05698218 * out_step1[ 8][13][0] - 0.10160849 * out_step1[ 8][14][0]
+   + 0.03134756;
+
+out_step2[4][0][3] = 
+   - 0.03353269 * out_step1[ 8][ 0][0] - 0.03219005 * out_step1[ 8][ 1][0] - 0.11256361 * out_step1[ 8][ 2][0]
+   - 0.01349546 * out_step1[ 9][ 0][0] + 0.00248000 * out_step1[ 9][ 1][0] - 0.01401057 * out_step1[ 9][ 2][0]
+   - 0.11209673 * out_step1[10][ 0][0] - 0.05698218 * out_step1[10][ 1][0] - 0.10160849 * out_step1[10][ 2][0]
+   + 0.03134756;
+
+out_step2[4][1][3] = 
+   - 0.03353269 * out_step1[ 8][ 2][0] - 0.03219005 * out_step1[ 8][ 3][0] - 0.11256361 * out_step1[ 8][ 4][0]
+   - 0.01349546 * out_step1[ 9][ 2][0] + 0.00248000 * out_step1[ 9][ 3][0] - 0.01401057 * out_step1[ 9][ 4][0]
+   - 0.11209673 * out_step1[10][ 2][0] - 0.05698218 * out_step1[10][ 3][0] - 0.10160849 * out_step1[10][ 4][0]
+   + 0.03134756;
+
+out_step2[4][2][3] = 
+   - 0.03353269 * out_step1[ 8][ 4][0] - 0.03219005 * out_step1[ 8][ 5][0] - 0.11256361 * out_step1[ 8][ 6][0]
+   - 0.01349546 * out_step1[ 9][ 4][0] + 0.00248000 * out_step1[ 9][ 5][0] - 0.01401057 * out_step1[ 9][ 6][0]
+   - 0.11209673 * out_step1[10][ 4][0] - 0.05698218 * out_step1[10][ 5][0] - 0.10160849 * out_step1[10][ 6][0]
+   + 0.03134756;
+
+out_step2[4][3][3] = 
+   - 0.03353269 * out_step1[ 8][ 6][0] - 0.03219005 * out_step1[ 8][ 7][0] - 0.11256361 * out_step1[ 8][ 8][0]
+   - 0.01349546 * out_step1[ 9][ 6][0] + 0.00248000 * out_step1[ 9][ 7][0] - 0.01401057 * out_step1[ 9][ 8][0]
+   - 0.11209673 * out_step1[10][ 6][0] - 0.05698218 * out_step1[10][ 7][0] - 0.10160849 * out_step1[10][ 8][0]
+   + 0.03134756;
+
+out_step2[4][4][3] = 
+   - 0.03353269 * out_step1[ 8][ 8][0] - 0.03219005 * out_step1[ 8][ 9][0] - 0.11256361 * out_step1[ 8][10][0]
+   - 0.01349546 * out_step1[ 9][ 8][0] + 0.00248000 * out_step1[ 9][ 9][0] - 0.01401057 * out_step1[ 9][10][0]
+   - 0.11209673 * out_step1[10][ 8][0] - 0.05698218 * out_step1[10][ 9][0] - 0.10160849 * out_step1[10][10][0]
+   + 0.03134756;
+
+out_step2[4][5][3] = 
+   - 0.03353269 * out_step1[ 8][10][0] - 0.03219005 * out_step1[ 8][11][0] - 0.11256361 * out_step1[ 8][12][0]
+   - 0.01349546 * out_step1[ 9][10][0] + 0.00248000 * out_step1[ 9][11][0] - 0.01401057 * out_step1[ 9][12][0]
+   - 0.11209673 * out_step1[10][10][0] - 0.05698218 * out_step1[10][11][0] - 0.10160849 * out_step1[10][12][0]
+   + 0.03134756;
+
+out_step2[4][6][3] = 
+   - 0.03353269 * out_step1[ 8][12][0] - 0.03219005 * out_step1[ 8][13][0] - 0.11256361 * out_step1[ 8][14][0]
+   - 0.01349546 * out_step1[ 9][12][0] + 0.00248000 * out_step1[ 9][13][0] - 0.01401057 * out_step1[ 9][14][0]
+   - 0.11209673 * out_step1[10][12][0] - 0.05698218 * out_step1[10][13][0] - 0.10160849 * out_step1[10][14][0]
+   + 0.03134756;
+
+out_step2[5][0][3] = 
+   - 0.03353269 * out_step1[10][ 0][0] - 0.03219005 * out_step1[10][ 1][0] - 0.11256361 * out_step1[10][ 2][0]
+   - 0.01349546 * out_step1[11][ 0][0] + 0.00248000 * out_step1[11][ 1][0] - 0.01401057 * out_step1[11][ 2][0]
+   - 0.11209673 * out_step1[12][ 0][0] - 0.05698218 * out_step1[12][ 1][0] - 0.10160849 * out_step1[12][ 2][0]
+   + 0.03134756;
+
+out_step2[5][1][3] = 
+   - 0.03353269 * out_step1[10][ 2][0] - 0.03219005 * out_step1[10][ 3][0] - 0.11256361 * out_step1[10][ 4][0]
+   - 0.01349546 * out_step1[11][ 2][0] + 0.00248000 * out_step1[11][ 3][0] - 0.01401057 * out_step1[11][ 4][0]
+   - 0.11209673 * out_step1[12][ 2][0] - 0.05698218 * out_step1[12][ 3][0] - 0.10160849 * out_step1[12][ 4][0]
+   + 0.03134756;
+
+out_step2[5][2][3] = 
+   - 0.03353269 * out_step1[10][ 4][0] - 0.03219005 * out_step1[10][ 5][0] - 0.11256361 * out_step1[10][ 6][0]
+   - 0.01349546 * out_step1[11][ 4][0] + 0.00248000 * out_step1[11][ 5][0] - 0.01401057 * out_step1[11][ 6][0]
+   - 0.11209673 * out_step1[12][ 4][0] - 0.05698218 * out_step1[12][ 5][0] - 0.10160849 * out_step1[12][ 6][0]
+   + 0.03134756;
+
+out_step2[5][3][3] = 
+   - 0.03353269 * out_step1[10][ 6][0] - 0.03219005 * out_step1[10][ 7][0] - 0.11256361 * out_step1[10][ 8][0]
+   - 0.01349546 * out_step1[11][ 6][0] + 0.00248000 * out_step1[11][ 7][0] - 0.01401057 * out_step1[11][ 8][0]
+   - 0.11209673 * out_step1[12][ 6][0] - 0.05698218 * out_step1[12][ 7][0] - 0.10160849 * out_step1[12][ 8][0]
+   + 0.03134756;
+
+out_step2[5][4][3] = 
+   - 0.03353269 * out_step1[10][ 8][0] - 0.03219005 * out_step1[10][ 9][0] - 0.11256361 * out_step1[10][10][0]
+   - 0.01349546 * out_step1[11][ 8][0] + 0.00248000 * out_step1[11][ 9][0] - 0.01401057 * out_step1[11][10][0]
+   - 0.11209673 * out_step1[12][ 8][0] - 0.05698218 * out_step1[12][ 9][0] - 0.10160849 * out_step1[12][10][0]
+   + 0.03134756;
+
+out_step2[5][5][3] = 
+   - 0.03353269 * out_step1[10][10][0] - 0.03219005 * out_step1[10][11][0] - 0.11256361 * out_step1[10][12][0]
+   - 0.01349546 * out_step1[11][10][0] + 0.00248000 * out_step1[11][11][0] - 0.01401057 * out_step1[11][12][0]
+   - 0.11209673 * out_step1[12][10][0] - 0.05698218 * out_step1[12][11][0] - 0.10160849 * out_step1[12][12][0]
+   + 0.03134756;
+
+out_step2[5][6][3] = 
+   - 0.03353269 * out_step1[10][12][0] - 0.03219005 * out_step1[10][13][0] - 0.11256361 * out_step1[10][14][0]
+   - 0.01349546 * out_step1[11][12][0] + 0.00248000 * out_step1[11][13][0] - 0.01401057 * out_step1[11][14][0]
+   - 0.11209673 * out_step1[12][12][0] - 0.05698218 * out_step1[12][13][0] - 0.10160849 * out_step1[12][14][0]
+   + 0.03134756;
+
+out_step2[6][0][3] = 
+   - 0.03353269 * out_step1[12][ 0][0] - 0.03219005 * out_step1[12][ 1][0] - 0.11256361 * out_step1[12][ 2][0]
+   - 0.01349546 * out_step1[13][ 0][0] + 0.00248000 * out_step1[13][ 1][0] - 0.01401057 * out_step1[13][ 2][0]
+   - 0.11209673 * out_step1[14][ 0][0] - 0.05698218 * out_step1[14][ 1][0] - 0.10160849 * out_step1[14][ 2][0]
+   + 0.03134756;
+
+out_step2[6][1][3] = 
+   - 0.03353269 * out_step1[12][ 2][0] - 0.03219005 * out_step1[12][ 3][0] - 0.11256361 * out_step1[12][ 4][0]
+   - 0.01349546 * out_step1[13][ 2][0] + 0.00248000 * out_step1[13][ 3][0] - 0.01401057 * out_step1[13][ 4][0]
+   - 0.11209673 * out_step1[14][ 2][0] - 0.05698218 * out_step1[14][ 3][0] - 0.10160849 * out_step1[14][ 4][0]
+   + 0.03134756;
+
+out_step2[6][2][3] = 
+   - 0.03353269 * out_step1[12][ 4][0] - 0.03219005 * out_step1[12][ 5][0] - 0.11256361 * out_step1[12][ 6][0]
+   - 0.01349546 * out_step1[13][ 4][0] + 0.00248000 * out_step1[13][ 5][0] - 0.01401057 * out_step1[13][ 6][0]
+   - 0.11209673 * out_step1[14][ 4][0] - 0.05698218 * out_step1[14][ 5][0] - 0.10160849 * out_step1[14][ 6][0]
+   + 0.03134756;
+
+out_step2[6][3][3] = 
+   - 0.03353269 * out_step1[12][ 6][0] - 0.03219005 * out_step1[12][ 7][0] - 0.11256361 * out_step1[12][ 8][0]
+   - 0.01349546 * out_step1[13][ 6][0] + 0.00248000 * out_step1[13][ 7][0] - 0.01401057 * out_step1[13][ 8][0]
+   - 0.11209673 * out_step1[14][ 6][0] - 0.05698218 * out_step1[14][ 7][0] - 0.10160849 * out_step1[14][ 8][0]
+   + 0.03134756;
+
+out_step2[6][4][3] = 
+   - 0.03353269 * out_step1[12][ 8][0] - 0.03219005 * out_step1[12][ 9][0] - 0.11256361 * out_step1[12][10][0]
+   - 0.01349546 * out_step1[13][ 8][0] + 0.00248000 * out_step1[13][ 9][0] - 0.01401057 * out_step1[13][10][0]
+   - 0.11209673 * out_step1[14][ 8][0] - 0.05698218 * out_step1[14][ 9][0] - 0.10160849 * out_step1[14][10][0]
+   + 0.03134756;
+
+out_step2[6][5][3] = 
+   - 0.03353269 * out_step1[12][10][0] - 0.03219005 * out_step1[12][11][0] - 0.11256361 * out_step1[12][12][0]
+   - 0.01349546 * out_step1[13][10][0] + 0.00248000 * out_step1[13][11][0] - 0.01401057 * out_step1[13][12][0]
+   - 0.11209673 * out_step1[14][10][0] - 0.05698218 * out_step1[14][11][0] - 0.10160849 * out_step1[14][12][0]
+   + 0.03134756;
+
+out_step2[6][6][3] = 
+   - 0.03353269 * out_step1[12][12][0] - 0.03219005 * out_step1[12][13][0] - 0.11256361 * out_step1[12][14][0]
+   - 0.01349546 * out_step1[13][12][0] + 0.00248000 * out_step1[13][13][0] - 0.01401057 * out_step1[13][14][0]
+   - 0.11209673 * out_step1[14][12][0] - 0.05698218 * out_step1[14][13][0] - 0.10160849 * out_step1[14][14][0]
+   + 0.03134756;
+
+out_step2[0][0][4] = 
+   - 0.01933165 * out_step1[ 0][ 0][0] + 0.06232061 * out_step1[ 0][ 1][0] + 0.12056333 * out_step1[ 0][ 2][0]
+   + 0.10825348 * out_step1[ 1][ 0][0] + 0.04638123 * out_step1[ 1][ 1][0] + 0.08799364 * out_step1[ 1][ 2][0]
+   - 0.04590428 * out_step1[ 2][ 0][0] + 0.14792611 * out_step1[ 2][ 1][0] + 0.11355620 * out_step1[ 2][ 2][0]
+   + 0.01341407;
+
+out_step2[0][1][4] = 
+   - 0.01933165 * out_step1[ 0][ 2][0] + 0.06232061 * out_step1[ 0][ 3][0] + 0.12056333 * out_step1[ 0][ 4][0]
+   + 0.10825348 * out_step1[ 1][ 2][0] + 0.04638123 * out_step1[ 1][ 3][0] + 0.08799364 * out_step1[ 1][ 4][0]
+   - 0.04590428 * out_step1[ 2][ 2][0] + 0.14792611 * out_step1[ 2][ 3][0] + 0.11355620 * out_step1[ 2][ 4][0]
+   + 0.01341407;
+
+out_step2[0][2][4] = 
+   - 0.01933165 * out_step1[ 0][ 4][0] + 0.06232061 * out_step1[ 0][ 5][0] + 0.12056333 * out_step1[ 0][ 6][0]
+   + 0.10825348 * out_step1[ 1][ 4][0] + 0.04638123 * out_step1[ 1][ 5][0] + 0.08799364 * out_step1[ 1][ 6][0]
+   - 0.04590428 * out_step1[ 2][ 4][0] + 0.14792611 * out_step1[ 2][ 5][0] + 0.11355620 * out_step1[ 2][ 6][0]
+   + 0.01341407;
+
+out_step2[0][3][4] = 
+   - 0.01933165 * out_step1[ 0][ 6][0] + 0.06232061 * out_step1[ 0][ 7][0] + 0.12056333 * out_step1[ 0][ 8][0]
+   + 0.10825348 * out_step1[ 1][ 6][0] + 0.04638123 * out_step1[ 1][ 7][0] + 0.08799364 * out_step1[ 1][ 8][0]
+   - 0.04590428 * out_step1[ 2][ 6][0] + 0.14792611 * out_step1[ 2][ 7][0] + 0.11355620 * out_step1[ 2][ 8][0]
+   + 0.01341407;
+
+out_step2[0][4][4] = 
+   - 0.01933165 * out_step1[ 0][ 8][0] + 0.06232061 * out_step1[ 0][ 9][0] + 0.12056333 * out_step1[ 0][10][0]
+   + 0.10825348 * out_step1[ 1][ 8][0] + 0.04638123 * out_step1[ 1][ 9][0] + 0.08799364 * out_step1[ 1][10][0]
+   - 0.04590428 * out_step1[ 2][ 8][0] + 0.14792611 * out_step1[ 2][ 9][0] + 0.11355620 * out_step1[ 2][10][0]
+   + 0.01341407;
+
+out_step2[0][5][4] = 
+   - 0.01933165 * out_step1[ 0][10][0] + 0.06232061 * out_step1[ 0][11][0] + 0.12056333 * out_step1[ 0][12][0]
+   + 0.10825348 * out_step1[ 1][10][0] + 0.04638123 * out_step1[ 1][11][0] + 0.08799364 * out_step1[ 1][12][0]
+   - 0.04590428 * out_step1[ 2][10][0] + 0.14792611 * out_step1[ 2][11][0] + 0.11355620 * out_step1[ 2][12][0]
+   + 0.01341407;
+
+out_step2[0][6][4] = 
+   - 0.01933165 * out_step1[ 0][12][0] + 0.06232061 * out_step1[ 0][13][0] + 0.12056333 * out_step1[ 0][14][0]
+   + 0.10825348 * out_step1[ 1][12][0] + 0.04638123 * out_step1[ 1][13][0] + 0.08799364 * out_step1[ 1][14][0]
+   - 0.04590428 * out_step1[ 2][12][0] + 0.14792611 * out_step1[ 2][13][0] + 0.11355620 * out_step1[ 2][14][0]
+   + 0.01341407;
+
+out_step2[1][0][4] = 
+   - 0.01933165 * out_step1[ 2][ 0][0] + 0.06232061 * out_step1[ 2][ 1][0] + 0.12056333 * out_step1[ 2][ 2][0]
+   + 0.10825348 * out_step1[ 3][ 0][0] + 0.04638123 * out_step1[ 3][ 1][0] + 0.08799364 * out_step1[ 3][ 2][0]
+   - 0.04590428 * out_step1[ 4][ 0][0] + 0.14792611 * out_step1[ 4][ 1][0] + 0.11355620 * out_step1[ 4][ 2][0]
+   + 0.01341407;
+
+out_step2[1][1][4] = 
+   - 0.01933165 * out_step1[ 2][ 2][0] + 0.06232061 * out_step1[ 2][ 3][0] + 0.12056333 * out_step1[ 2][ 4][0]
+   + 0.10825348 * out_step1[ 3][ 2][0] + 0.04638123 * out_step1[ 3][ 3][0] + 0.08799364 * out_step1[ 3][ 4][0]
+   - 0.04590428 * out_step1[ 4][ 2][0] + 0.14792611 * out_step1[ 4][ 3][0] + 0.11355620 * out_step1[ 4][ 4][0]
+   + 0.01341407;
+
+out_step2[1][2][4] = 
+   - 0.01933165 * out_step1[ 2][ 4][0] + 0.06232061 * out_step1[ 2][ 5][0] + 0.12056333 * out_step1[ 2][ 6][0]
+   + 0.10825348 * out_step1[ 3][ 4][0] + 0.04638123 * out_step1[ 3][ 5][0] + 0.08799364 * out_step1[ 3][ 6][0]
+   - 0.04590428 * out_step1[ 4][ 4][0] + 0.14792611 * out_step1[ 4][ 5][0] + 0.11355620 * out_step1[ 4][ 6][0]
+   + 0.01341407;
+
+out_step2[1][3][4] = 
+   - 0.01933165 * out_step1[ 2][ 6][0] + 0.06232061 * out_step1[ 2][ 7][0] + 0.12056333 * out_step1[ 2][ 8][0]
+   + 0.10825348 * out_step1[ 3][ 6][0] + 0.04638123 * out_step1[ 3][ 7][0] + 0.08799364 * out_step1[ 3][ 8][0]
+   - 0.04590428 * out_step1[ 4][ 6][0] + 0.14792611 * out_step1[ 4][ 7][0] + 0.11355620 * out_step1[ 4][ 8][0]
+   + 0.01341407;
+
+out_step2[1][4][4] = 
+   - 0.01933165 * out_step1[ 2][ 8][0] + 0.06232061 * out_step1[ 2][ 9][0] + 0.12056333 * out_step1[ 2][10][0]
+   + 0.10825348 * out_step1[ 3][ 8][0] + 0.04638123 * out_step1[ 3][ 9][0] + 0.08799364 * out_step1[ 3][10][0]
+   - 0.04590428 * out_step1[ 4][ 8][0] + 0.14792611 * out_step1[ 4][ 9][0] + 0.11355620 * out_step1[ 4][10][0]
+   + 0.01341407;
+
+out_step2[1][5][4] = 
+   - 0.01933165 * out_step1[ 2][10][0] + 0.06232061 * out_step1[ 2][11][0] + 0.12056333 * out_step1[ 2][12][0]
+   + 0.10825348 * out_step1[ 3][10][0] + 0.04638123 * out_step1[ 3][11][0] + 0.08799364 * out_step1[ 3][12][0]
+   - 0.04590428 * out_step1[ 4][10][0] + 0.14792611 * out_step1[ 4][11][0] + 0.11355620 * out_step1[ 4][12][0]
+   + 0.01341407;
+
+out_step2[1][6][4] = 
+   - 0.01933165 * out_step1[ 2][12][0] + 0.06232061 * out_step1[ 2][13][0] + 0.12056333 * out_step1[ 2][14][0]
+   + 0.10825348 * out_step1[ 3][12][0] + 0.04638123 * out_step1[ 3][13][0] + 0.08799364 * out_step1[ 3][14][0]
+   - 0.04590428 * out_step1[ 4][12][0] + 0.14792611 * out_step1[ 4][13][0] + 0.11355620 * out_step1[ 4][14][0]
+   + 0.01341407;
+
+out_step2[2][0][4] = 
+   - 0.01933165 * out_step1[ 4][ 0][0] + 0.06232061 * out_step1[ 4][ 1][0] + 0.12056333 * out_step1[ 4][ 2][0]
+   + 0.10825348 * out_step1[ 5][ 0][0] + 0.04638123 * out_step1[ 5][ 1][0] + 0.08799364 * out_step1[ 5][ 2][0]
+   - 0.04590428 * out_step1[ 6][ 0][0] + 0.14792611 * out_step1[ 6][ 1][0] + 0.11355620 * out_step1[ 6][ 2][0]
+   + 0.01341407;
+
+out_step2[2][1][4] = 
+   - 0.01933165 * out_step1[ 4][ 2][0] + 0.06232061 * out_step1[ 4][ 3][0] + 0.12056333 * out_step1[ 4][ 4][0]
+   + 0.10825348 * out_step1[ 5][ 2][0] + 0.04638123 * out_step1[ 5][ 3][0] + 0.08799364 * out_step1[ 5][ 4][0]
+   - 0.04590428 * out_step1[ 6][ 2][0] + 0.14792611 * out_step1[ 6][ 3][0] + 0.11355620 * out_step1[ 6][ 4][0]
+   + 0.01341407;
+
+out_step2[2][2][4] = 
+   - 0.01933165 * out_step1[ 4][ 4][0] + 0.06232061 * out_step1[ 4][ 5][0] + 0.12056333 * out_step1[ 4][ 6][0]
+   + 0.10825348 * out_step1[ 5][ 4][0] + 0.04638123 * out_step1[ 5][ 5][0] + 0.08799364 * out_step1[ 5][ 6][0]
+   - 0.04590428 * out_step1[ 6][ 4][0] + 0.14792611 * out_step1[ 6][ 5][0] + 0.11355620 * out_step1[ 6][ 6][0]
+   + 0.01341407;
+
+out_step2[2][3][4] = 
+   - 0.01933165 * out_step1[ 4][ 6][0] + 0.06232061 * out_step1[ 4][ 7][0] + 0.12056333 * out_step1[ 4][ 8][0]
+   + 0.10825348 * out_step1[ 5][ 6][0] + 0.04638123 * out_step1[ 5][ 7][0] + 0.08799364 * out_step1[ 5][ 8][0]
+   - 0.04590428 * out_step1[ 6][ 6][0] + 0.14792611 * out_step1[ 6][ 7][0] + 0.11355620 * out_step1[ 6][ 8][0]
+   + 0.01341407;
+
+out_step2[2][4][4] = 
+   - 0.01933165 * out_step1[ 4][ 8][0] + 0.06232061 * out_step1[ 4][ 9][0] + 0.12056333 * out_step1[ 4][10][0]
+   + 0.10825348 * out_step1[ 5][ 8][0] + 0.04638123 * out_step1[ 5][ 9][0] + 0.08799364 * out_step1[ 5][10][0]
+   - 0.04590428 * out_step1[ 6][ 8][0] + 0.14792611 * out_step1[ 6][ 9][0] + 0.11355620 * out_step1[ 6][10][0]
+   + 0.01341407;
+
+out_step2[2][5][4] = 
+   - 0.01933165 * out_step1[ 4][10][0] + 0.06232061 * out_step1[ 4][11][0] + 0.12056333 * out_step1[ 4][12][0]
+   + 0.10825348 * out_step1[ 5][10][0] + 0.04638123 * out_step1[ 5][11][0] + 0.08799364 * out_step1[ 5][12][0]
+   - 0.04590428 * out_step1[ 6][10][0] + 0.14792611 * out_step1[ 6][11][0] + 0.11355620 * out_step1[ 6][12][0]
+   + 0.01341407;
+
+out_step2[2][6][4] = 
+   - 0.01933165 * out_step1[ 4][12][0] + 0.06232061 * out_step1[ 4][13][0] + 0.12056333 * out_step1[ 4][14][0]
+   + 0.10825348 * out_step1[ 5][12][0] + 0.04638123 * out_step1[ 5][13][0] + 0.08799364 * out_step1[ 5][14][0]
+   - 0.04590428 * out_step1[ 6][12][0] + 0.14792611 * out_step1[ 6][13][0] + 0.11355620 * out_step1[ 6][14][0]
+   + 0.01341407;
+
+out_step2[3][0][4] = 
+   - 0.01933165 * out_step1[ 6][ 0][0] + 0.06232061 * out_step1[ 6][ 1][0] + 0.12056333 * out_step1[ 6][ 2][0]
+   + 0.10825348 * out_step1[ 7][ 0][0] + 0.04638123 * out_step1[ 7][ 1][0] + 0.08799364 * out_step1[ 7][ 2][0]
+   - 0.04590428 * out_step1[ 8][ 0][0] + 0.14792611 * out_step1[ 8][ 1][0] + 0.11355620 * out_step1[ 8][ 2][0]
+   + 0.01341407;
+
+out_step2[3][1][4] = 
+   - 0.01933165 * out_step1[ 6][ 2][0] + 0.06232061 * out_step1[ 6][ 3][0] + 0.12056333 * out_step1[ 6][ 4][0]
+   + 0.10825348 * out_step1[ 7][ 2][0] + 0.04638123 * out_step1[ 7][ 3][0] + 0.08799364 * out_step1[ 7][ 4][0]
+   - 0.04590428 * out_step1[ 8][ 2][0] + 0.14792611 * out_step1[ 8][ 3][0] + 0.11355620 * out_step1[ 8][ 4][0]
+   + 0.01341407;
+
+out_step2[3][2][4] = 
+   - 0.01933165 * out_step1[ 6][ 4][0] + 0.06232061 * out_step1[ 6][ 5][0] + 0.12056333 * out_step1[ 6][ 6][0]
+   + 0.10825348 * out_step1[ 7][ 4][0] + 0.04638123 * out_step1[ 7][ 5][0] + 0.08799364 * out_step1[ 7][ 6][0]
+   - 0.04590428 * out_step1[ 8][ 4][0] + 0.14792611 * out_step1[ 8][ 5][0] + 0.11355620 * out_step1[ 8][ 6][0]
+   + 0.01341407;
+
+out_step2[3][3][4] = 
+   - 0.01933165 * out_step1[ 6][ 6][0] + 0.06232061 * out_step1[ 6][ 7][0] + 0.12056333 * out_step1[ 6][ 8][0]
+   + 0.10825348 * out_step1[ 7][ 6][0] + 0.04638123 * out_step1[ 7][ 7][0] + 0.08799364 * out_step1[ 7][ 8][0]
+   - 0.04590428 * out_step1[ 8][ 6][0] + 0.14792611 * out_step1[ 8][ 7][0] + 0.11355620 * out_step1[ 8][ 8][0]
+   + 0.01341407;
+
+out_step2[3][4][4] = 
+   - 0.01933165 * out_step1[ 6][ 8][0] + 0.06232061 * out_step1[ 6][ 9][0] + 0.12056333 * out_step1[ 6][10][0]
+   + 0.10825348 * out_step1[ 7][ 8][0] + 0.04638123 * out_step1[ 7][ 9][0] + 0.08799364 * out_step1[ 7][10][0]
+   - 0.04590428 * out_step1[ 8][ 8][0] + 0.14792611 * out_step1[ 8][ 9][0] + 0.11355620 * out_step1[ 8][10][0]
+   + 0.01341407;
+
+out_step2[3][5][4] = 
+   - 0.01933165 * out_step1[ 6][10][0] + 0.06232061 * out_step1[ 6][11][0] + 0.12056333 * out_step1[ 6][12][0]
+   + 0.10825348 * out_step1[ 7][10][0] + 0.04638123 * out_step1[ 7][11][0] + 0.08799364 * out_step1[ 7][12][0]
+   - 0.04590428 * out_step1[ 8][10][0] + 0.14792611 * out_step1[ 8][11][0] + 0.11355620 * out_step1[ 8][12][0]
+   + 0.01341407;
+
+out_step2[3][6][4] = 
+   - 0.01933165 * out_step1[ 6][12][0] + 0.06232061 * out_step1[ 6][13][0] + 0.12056333 * out_step1[ 6][14][0]
+   + 0.10825348 * out_step1[ 7][12][0] + 0.04638123 * out_step1[ 7][13][0] + 0.08799364 * out_step1[ 7][14][0]
+   - 0.04590428 * out_step1[ 8][12][0] + 0.14792611 * out_step1[ 8][13][0] + 0.11355620 * out_step1[ 8][14][0]
+   + 0.01341407;
+
+out_step2[4][0][4] = 
+   - 0.01933165 * out_step1[ 8][ 0][0] + 0.06232061 * out_step1[ 8][ 1][0] + 0.12056333 * out_step1[ 8][ 2][0]
+   + 0.10825348 * out_step1[ 9][ 0][0] + 0.04638123 * out_step1[ 9][ 1][0] + 0.08799364 * out_step1[ 9][ 2][0]
+   - 0.04590428 * out_step1[10][ 0][0] + 0.14792611 * out_step1[10][ 1][0] + 0.11355620 * out_step1[10][ 2][0]
+   + 0.01341407;
+
+out_step2[4][1][4] = 
+   - 0.01933165 * out_step1[ 8][ 2][0] + 0.06232061 * out_step1[ 8][ 3][0] + 0.12056333 * out_step1[ 8][ 4][0]
+   + 0.10825348 * out_step1[ 9][ 2][0] + 0.04638123 * out_step1[ 9][ 3][0] + 0.08799364 * out_step1[ 9][ 4][0]
+   - 0.04590428 * out_step1[10][ 2][0] + 0.14792611 * out_step1[10][ 3][0] + 0.11355620 * out_step1[10][ 4][0]
+   + 0.01341407;
+
+out_step2[4][2][4] = 
+   - 0.01933165 * out_step1[ 8][ 4][0] + 0.06232061 * out_step1[ 8][ 5][0] + 0.12056333 * out_step1[ 8][ 6][0]
+   + 0.10825348 * out_step1[ 9][ 4][0] + 0.04638123 * out_step1[ 9][ 5][0] + 0.08799364 * out_step1[ 9][ 6][0]
+   - 0.04590428 * out_step1[10][ 4][0] + 0.14792611 * out_step1[10][ 5][0] + 0.11355620 * out_step1[10][ 6][0]
+   + 0.01341407;
+
+out_step2[4][3][4] = 
+   - 0.01933165 * out_step1[ 8][ 6][0] + 0.06232061 * out_step1[ 8][ 7][0] + 0.12056333 * out_step1[ 8][ 8][0]
+   + 0.10825348 * out_step1[ 9][ 6][0] + 0.04638123 * out_step1[ 9][ 7][0] + 0.08799364 * out_step1[ 9][ 8][0]
+   - 0.04590428 * out_step1[10][ 6][0] + 0.14792611 * out_step1[10][ 7][0] + 0.11355620 * out_step1[10][ 8][0]
+   + 0.01341407;
+
+out_step2[4][4][4] = 
+   - 0.01933165 * out_step1[ 8][ 8][0] + 0.06232061 * out_step1[ 8][ 9][0] + 0.12056333 * out_step1[ 8][10][0]
+   + 0.10825348 * out_step1[ 9][ 8][0] + 0.04638123 * out_step1[ 9][ 9][0] + 0.08799364 * out_step1[ 9][10][0]
+   - 0.04590428 * out_step1[10][ 8][0] + 0.14792611 * out_step1[10][ 9][0] + 0.11355620 * out_step1[10][10][0]
+   + 0.01341407;
+
+out_step2[4][5][4] = 
+   - 0.01933165 * out_step1[ 8][10][0] + 0.06232061 * out_step1[ 8][11][0] + 0.12056333 * out_step1[ 8][12][0]
+   + 0.10825348 * out_step1[ 9][10][0] + 0.04638123 * out_step1[ 9][11][0] + 0.08799364 * out_step1[ 9][12][0]
+   - 0.04590428 * out_step1[10][10][0] + 0.14792611 * out_step1[10][11][0] + 0.11355620 * out_step1[10][12][0]
+   + 0.01341407;
+
+out_step2[4][6][4] = 
+   - 0.01933165 * out_step1[ 8][12][0] + 0.06232061 * out_step1[ 8][13][0] + 0.12056333 * out_step1[ 8][14][0]
+   + 0.10825348 * out_step1[ 9][12][0] + 0.04638123 * out_step1[ 9][13][0] + 0.08799364 * out_step1[ 9][14][0]
+   - 0.04590428 * out_step1[10][12][0] + 0.14792611 * out_step1[10][13][0] + 0.11355620 * out_step1[10][14][0]
+   + 0.01341407;
+
+out_step2[5][0][4] = 
+   - 0.01933165 * out_step1[10][ 0][0] + 0.06232061 * out_step1[10][ 1][0] + 0.12056333 * out_step1[10][ 2][0]
+   + 0.10825348 * out_step1[11][ 0][0] + 0.04638123 * out_step1[11][ 1][0] + 0.08799364 * out_step1[11][ 2][0]
+   - 0.04590428 * out_step1[12][ 0][0] + 0.14792611 * out_step1[12][ 1][0] + 0.11355620 * out_step1[12][ 2][0]
+   + 0.01341407;
+
+out_step2[5][1][4] = 
+   - 0.01933165 * out_step1[10][ 2][0] + 0.06232061 * out_step1[10][ 3][0] + 0.12056333 * out_step1[10][ 4][0]
+   + 0.10825348 * out_step1[11][ 2][0] + 0.04638123 * out_step1[11][ 3][0] + 0.08799364 * out_step1[11][ 4][0]
+   - 0.04590428 * out_step1[12][ 2][0] + 0.14792611 * out_step1[12][ 3][0] + 0.11355620 * out_step1[12][ 4][0]
+   + 0.01341407;
+
+out_step2[5][2][4] = 
+   - 0.01933165 * out_step1[10][ 4][0] + 0.06232061 * out_step1[10][ 5][0] + 0.12056333 * out_step1[10][ 6][0]
+   + 0.10825348 * out_step1[11][ 4][0] + 0.04638123 * out_step1[11][ 5][0] + 0.08799364 * out_step1[11][ 6][0]
+   - 0.04590428 * out_step1[12][ 4][0] + 0.14792611 * out_step1[12][ 5][0] + 0.11355620 * out_step1[12][ 6][0]
+   + 0.01341407;
+
+out_step2[5][3][4] = 
+   - 0.01933165 * out_step1[10][ 6][0] + 0.06232061 * out_step1[10][ 7][0] + 0.12056333 * out_step1[10][ 8][0]
+   + 0.10825348 * out_step1[11][ 6][0] + 0.04638123 * out_step1[11][ 7][0] + 0.08799364 * out_step1[11][ 8][0]
+   - 0.04590428 * out_step1[12][ 6][0] + 0.14792611 * out_step1[12][ 7][0] + 0.11355620 * out_step1[12][ 8][0]
+   + 0.01341407;
+
+out_step2[5][4][4] = 
+   - 0.01933165 * out_step1[10][ 8][0] + 0.06232061 * out_step1[10][ 9][0] + 0.12056333 * out_step1[10][10][0]
+   + 0.10825348 * out_step1[11][ 8][0] + 0.04638123 * out_step1[11][ 9][0] + 0.08799364 * out_step1[11][10][0]
+   - 0.04590428 * out_step1[12][ 8][0] + 0.14792611 * out_step1[12][ 9][0] + 0.11355620 * out_step1[12][10][0]
+   + 0.01341407;
+
+out_step2[5][5][4] = 
+   - 0.01933165 * out_step1[10][10][0] + 0.06232061 * out_step1[10][11][0] + 0.12056333 * out_step1[10][12][0]
+   + 0.10825348 * out_step1[11][10][0] + 0.04638123 * out_step1[11][11][0] + 0.08799364 * out_step1[11][12][0]
+   - 0.04590428 * out_step1[12][10][0] + 0.14792611 * out_step1[12][11][0] + 0.11355620 * out_step1[12][12][0]
+   + 0.01341407;
+
+out_step2[5][6][4] = 
+   - 0.01933165 * out_step1[10][12][0] + 0.06232061 * out_step1[10][13][0] + 0.12056333 * out_step1[10][14][0]
+   + 0.10825348 * out_step1[11][12][0] + 0.04638123 * out_step1[11][13][0] + 0.08799364 * out_step1[11][14][0]
+   - 0.04590428 * out_step1[12][12][0] + 0.14792611 * out_step1[12][13][0] + 0.11355620 * out_step1[12][14][0]
+   + 0.01341407;
+
+out_step2[6][0][4] = 
+   - 0.01933165 * out_step1[12][ 0][0] + 0.06232061 * out_step1[12][ 1][0] + 0.12056333 * out_step1[12][ 2][0]
+   + 0.10825348 * out_step1[13][ 0][0] + 0.04638123 * out_step1[13][ 1][0] + 0.08799364 * out_step1[13][ 2][0]
+   - 0.04590428 * out_step1[14][ 0][0] + 0.14792611 * out_step1[14][ 1][0] + 0.11355620 * out_step1[14][ 2][0]
+   + 0.01341407;
+
+out_step2[6][1][4] = 
+   - 0.01933165 * out_step1[12][ 2][0] + 0.06232061 * out_step1[12][ 3][0] + 0.12056333 * out_step1[12][ 4][0]
+   + 0.10825348 * out_step1[13][ 2][0] + 0.04638123 * out_step1[13][ 3][0] + 0.08799364 * out_step1[13][ 4][0]
+   - 0.04590428 * out_step1[14][ 2][0] + 0.14792611 * out_step1[14][ 3][0] + 0.11355620 * out_step1[14][ 4][0]
+   + 0.01341407;
+
+out_step2[6][2][4] = 
+   - 0.01933165 * out_step1[12][ 4][0] + 0.06232061 * out_step1[12][ 5][0] + 0.12056333 * out_step1[12][ 6][0]
+   + 0.10825348 * out_step1[13][ 4][0] + 0.04638123 * out_step1[13][ 5][0] + 0.08799364 * out_step1[13][ 6][0]
+   - 0.04590428 * out_step1[14][ 4][0] + 0.14792611 * out_step1[14][ 5][0] + 0.11355620 * out_step1[14][ 6][0]
+   + 0.01341407;
+
+out_step2[6][3][4] = 
+   - 0.01933165 * out_step1[12][ 6][0] + 0.06232061 * out_step1[12][ 7][0] + 0.12056333 * out_step1[12][ 8][0]
+   + 0.10825348 * out_step1[13][ 6][0] + 0.04638123 * out_step1[13][ 7][0] + 0.08799364 * out_step1[13][ 8][0]
+   - 0.04590428 * out_step1[14][ 6][0] + 0.14792611 * out_step1[14][ 7][0] + 0.11355620 * out_step1[14][ 8][0]
+   + 0.01341407;
+
+out_step2[6][4][4] = 
+   - 0.01933165 * out_step1[12][ 8][0] + 0.06232061 * out_step1[12][ 9][0] + 0.12056333 * out_step1[12][10][0]
+   + 0.10825348 * out_step1[13][ 8][0] + 0.04638123 * out_step1[13][ 9][0] + 0.08799364 * out_step1[13][10][0]
+   - 0.04590428 * out_step1[14][ 8][0] + 0.14792611 * out_step1[14][ 9][0] + 0.11355620 * out_step1[14][10][0]
+   + 0.01341407;
+
+out_step2[6][5][4] = 
+   - 0.01933165 * out_step1[12][10][0] + 0.06232061 * out_step1[12][11][0] + 0.12056333 * out_step1[12][12][0]
+   + 0.10825348 * out_step1[13][10][0] + 0.04638123 * out_step1[13][11][0] + 0.08799364 * out_step1[13][12][0]
+   - 0.04590428 * out_step1[14][10][0] + 0.14792611 * out_step1[14][11][0] + 0.11355620 * out_step1[14][12][0]
+   + 0.01341407;
+
+out_step2[6][6][4] = 
+   - 0.01933165 * out_step1[12][12][0] + 0.06232061 * out_step1[12][13][0] + 0.12056333 * out_step1[12][14][0]
+   + 0.10825348 * out_step1[13][12][0] + 0.04638123 * out_step1[13][13][0] + 0.08799364 * out_step1[13][14][0]
+   - 0.04590428 * out_step1[14][12][0] + 0.14792611 * out_step1[14][13][0] + 0.11355620 * out_step1[14][14][0]
+   + 0.01341407;
+
+out_step2[0][0][5] = 
+   - 0.04363964 * out_step1[ 0][ 0][0] + 0.20785710 * out_step1[ 0][ 1][0] - 0.15240549 * out_step1[ 0][ 2][0]
+   + 0.10027018 * out_step1[ 1][ 0][0] + 0.12395237 * out_step1[ 1][ 1][0] - 0.31064633 * out_step1[ 1][ 2][0]
+   + 0.09984881 * out_step1[ 2][ 0][0] + 0.08187433 * out_step1[ 2][ 1][0] - 0.29307550 * out_step1[ 2][ 2][0]
+   - 0.05818233;
+
+out_step2[0][1][5] = 
+   - 0.04363964 * out_step1[ 0][ 2][0] + 0.20785710 * out_step1[ 0][ 3][0] - 0.15240549 * out_step1[ 0][ 4][0]
+   + 0.10027018 * out_step1[ 1][ 2][0] + 0.12395237 * out_step1[ 1][ 3][0] - 0.31064633 * out_step1[ 1][ 4][0]
+   + 0.09984881 * out_step1[ 2][ 2][0] + 0.08187433 * out_step1[ 2][ 3][0] - 0.29307550 * out_step1[ 2][ 4][0]
+   - 0.05818233;
+
+out_step2[0][2][5] = 
+   - 0.04363964 * out_step1[ 0][ 4][0] + 0.20785710 * out_step1[ 0][ 5][0] - 0.15240549 * out_step1[ 0][ 6][0]
+   + 0.10027018 * out_step1[ 1][ 4][0] + 0.12395237 * out_step1[ 1][ 5][0] - 0.31064633 * out_step1[ 1][ 6][0]
+   + 0.09984881 * out_step1[ 2][ 4][0] + 0.08187433 * out_step1[ 2][ 5][0] - 0.29307550 * out_step1[ 2][ 6][0]
+   - 0.05818233;
+
+out_step2[0][3][5] = 
+   - 0.04363964 * out_step1[ 0][ 6][0] + 0.20785710 * out_step1[ 0][ 7][0] - 0.15240549 * out_step1[ 0][ 8][0]
+   + 0.10027018 * out_step1[ 1][ 6][0] + 0.12395237 * out_step1[ 1][ 7][0] - 0.31064633 * out_step1[ 1][ 8][0]
+   + 0.09984881 * out_step1[ 2][ 6][0] + 0.08187433 * out_step1[ 2][ 7][0] - 0.29307550 * out_step1[ 2][ 8][0]
+   - 0.05818233;
+
+out_step2[0][4][5] = 
+   - 0.04363964 * out_step1[ 0][ 8][0] + 0.20785710 * out_step1[ 0][ 9][0] - 0.15240549 * out_step1[ 0][10][0]
+   + 0.10027018 * out_step1[ 1][ 8][0] + 0.12395237 * out_step1[ 1][ 9][0] - 0.31064633 * out_step1[ 1][10][0]
+   + 0.09984881 * out_step1[ 2][ 8][0] + 0.08187433 * out_step1[ 2][ 9][0] - 0.29307550 * out_step1[ 2][10][0]
+   - 0.05818233;
+
+out_step2[0][5][5] = 
+   - 0.04363964 * out_step1[ 0][10][0] + 0.20785710 * out_step1[ 0][11][0] - 0.15240549 * out_step1[ 0][12][0]
+   + 0.10027018 * out_step1[ 1][10][0] + 0.12395237 * out_step1[ 1][11][0] - 0.31064633 * out_step1[ 1][12][0]
+   + 0.09984881 * out_step1[ 2][10][0] + 0.08187433 * out_step1[ 2][11][0] - 0.29307550 * out_step1[ 2][12][0]
+   - 0.05818233;
+
+out_step2[0][6][5] = 
+   - 0.04363964 * out_step1[ 0][12][0] + 0.20785710 * out_step1[ 0][13][0] - 0.15240549 * out_step1[ 0][14][0]
+   + 0.10027018 * out_step1[ 1][12][0] + 0.12395237 * out_step1[ 1][13][0] - 0.31064633 * out_step1[ 1][14][0]
+   + 0.09984881 * out_step1[ 2][12][0] + 0.08187433 * out_step1[ 2][13][0] - 0.29307550 * out_step1[ 2][14][0]
+   - 0.05818233;
+
+out_step2[1][0][5] = 
+   - 0.04363964 * out_step1[ 2][ 0][0] + 0.20785710 * out_step1[ 2][ 1][0] - 0.15240549 * out_step1[ 2][ 2][0]
+   + 0.10027018 * out_step1[ 3][ 0][0] + 0.12395237 * out_step1[ 3][ 1][0] - 0.31064633 * out_step1[ 3][ 2][0]
+   + 0.09984881 * out_step1[ 4][ 0][0] + 0.08187433 * out_step1[ 4][ 1][0] - 0.29307550 * out_step1[ 4][ 2][0]
+   - 0.05818233;
+
+out_step2[1][1][5] = 
+   - 0.04363964 * out_step1[ 2][ 2][0] + 0.20785710 * out_step1[ 2][ 3][0] - 0.15240549 * out_step1[ 2][ 4][0]
+   + 0.10027018 * out_step1[ 3][ 2][0] + 0.12395237 * out_step1[ 3][ 3][0] - 0.31064633 * out_step1[ 3][ 4][0]
+   + 0.09984881 * out_step1[ 4][ 2][0] + 0.08187433 * out_step1[ 4][ 3][0] - 0.29307550 * out_step1[ 4][ 4][0]
+   - 0.05818233;
+
+out_step2[1][2][5] = 
+   - 0.04363964 * out_step1[ 2][ 4][0] + 0.20785710 * out_step1[ 2][ 5][0] - 0.15240549 * out_step1[ 2][ 6][0]
+   + 0.10027018 * out_step1[ 3][ 4][0] + 0.12395237 * out_step1[ 3][ 5][0] - 0.31064633 * out_step1[ 3][ 6][0]
+   + 0.09984881 * out_step1[ 4][ 4][0] + 0.08187433 * out_step1[ 4][ 5][0] - 0.29307550 * out_step1[ 4][ 6][0]
+   - 0.05818233;
+
+out_step2[1][3][5] = 
+   - 0.04363964 * out_step1[ 2][ 6][0] + 0.20785710 * out_step1[ 2][ 7][0] - 0.15240549 * out_step1[ 2][ 8][0]
+   + 0.10027018 * out_step1[ 3][ 6][0] + 0.12395237 * out_step1[ 3][ 7][0] - 0.31064633 * out_step1[ 3][ 8][0]
+   + 0.09984881 * out_step1[ 4][ 6][0] + 0.08187433 * out_step1[ 4][ 7][0] - 0.29307550 * out_step1[ 4][ 8][0]
+   - 0.05818233;
+
+out_step2[1][4][5] = 
+   - 0.04363964 * out_step1[ 2][ 8][0] + 0.20785710 * out_step1[ 2][ 9][0] - 0.15240549 * out_step1[ 2][10][0]
+   + 0.10027018 * out_step1[ 3][ 8][0] + 0.12395237 * out_step1[ 3][ 9][0] - 0.31064633 * out_step1[ 3][10][0]
+   + 0.09984881 * out_step1[ 4][ 8][0] + 0.08187433 * out_step1[ 4][ 9][0] - 0.29307550 * out_step1[ 4][10][0]
+   - 0.05818233;
+
+out_step2[1][5][5] = 
+   - 0.04363964 * out_step1[ 2][10][0] + 0.20785710 * out_step1[ 2][11][0] - 0.15240549 * out_step1[ 2][12][0]
+   + 0.10027018 * out_step1[ 3][10][0] + 0.12395237 * out_step1[ 3][11][0] - 0.31064633 * out_step1[ 3][12][0]
+   + 0.09984881 * out_step1[ 4][10][0] + 0.08187433 * out_step1[ 4][11][0] - 0.29307550 * out_step1[ 4][12][0]
+   - 0.05818233;
+
+out_step2[1][6][5] = 
+   - 0.04363964 * out_step1[ 2][12][0] + 0.20785710 * out_step1[ 2][13][0] - 0.15240549 * out_step1[ 2][14][0]
+   + 0.10027018 * out_step1[ 3][12][0] + 0.12395237 * out_step1[ 3][13][0] - 0.31064633 * out_step1[ 3][14][0]
+   + 0.09984881 * out_step1[ 4][12][0] + 0.08187433 * out_step1[ 4][13][0] - 0.29307550 * out_step1[ 4][14][0]
+   - 0.05818233;
+
+out_step2[2][0][5] = 
+   - 0.04363964 * out_step1[ 4][ 0][0] + 0.20785710 * out_step1[ 4][ 1][0] - 0.15240549 * out_step1[ 4][ 2][0]
+   + 0.10027018 * out_step1[ 5][ 0][0] + 0.12395237 * out_step1[ 5][ 1][0] - 0.31064633 * out_step1[ 5][ 2][0]
+   + 0.09984881 * out_step1[ 6][ 0][0] + 0.08187433 * out_step1[ 6][ 1][0] - 0.29307550 * out_step1[ 6][ 2][0]
+   - 0.05818233;
+
+out_step2[2][1][5] = 
+   - 0.04363964 * out_step1[ 4][ 2][0] + 0.20785710 * out_step1[ 4][ 3][0] - 0.15240549 * out_step1[ 4][ 4][0]
+   + 0.10027018 * out_step1[ 5][ 2][0] + 0.12395237 * out_step1[ 5][ 3][0] - 0.31064633 * out_step1[ 5][ 4][0]
+   + 0.09984881 * out_step1[ 6][ 2][0] + 0.08187433 * out_step1[ 6][ 3][0] - 0.29307550 * out_step1[ 6][ 4][0]
+   - 0.05818233;
+
+out_step2[2][2][5] = 
+   - 0.04363964 * out_step1[ 4][ 4][0] + 0.20785710 * out_step1[ 4][ 5][0] - 0.15240549 * out_step1[ 4][ 6][0]
+   + 0.10027018 * out_step1[ 5][ 4][0] + 0.12395237 * out_step1[ 5][ 5][0] - 0.31064633 * out_step1[ 5][ 6][0]
+   + 0.09984881 * out_step1[ 6][ 4][0] + 0.08187433 * out_step1[ 6][ 5][0] - 0.29307550 * out_step1[ 6][ 6][0]
+   - 0.05818233;
+
+out_step2[2][3][5] = 
+   - 0.04363964 * out_step1[ 4][ 6][0] + 0.20785710 * out_step1[ 4][ 7][0] - 0.15240549 * out_step1[ 4][ 8][0]
+   + 0.10027018 * out_step1[ 5][ 6][0] + 0.12395237 * out_step1[ 5][ 7][0] - 0.31064633 * out_step1[ 5][ 8][0]
+   + 0.09984881 * out_step1[ 6][ 6][0] + 0.08187433 * out_step1[ 6][ 7][0] - 0.29307550 * out_step1[ 6][ 8][0]
+   - 0.05818233;
+
+out_step2[2][4][5] = 
+   - 0.04363964 * out_step1[ 4][ 8][0] + 0.20785710 * out_step1[ 4][ 9][0] - 0.15240549 * out_step1[ 4][10][0]
+   + 0.10027018 * out_step1[ 5][ 8][0] + 0.12395237 * out_step1[ 5][ 9][0] - 0.31064633 * out_step1[ 5][10][0]
+   + 0.09984881 * out_step1[ 6][ 8][0] + 0.08187433 * out_step1[ 6][ 9][0] - 0.29307550 * out_step1[ 6][10][0]
+   - 0.05818233;
+
+out_step2[2][5][5] = 
+   - 0.04363964 * out_step1[ 4][10][0] + 0.20785710 * out_step1[ 4][11][0] - 0.15240549 * out_step1[ 4][12][0]
+   + 0.10027018 * out_step1[ 5][10][0] + 0.12395237 * out_step1[ 5][11][0] - 0.31064633 * out_step1[ 5][12][0]
+   + 0.09984881 * out_step1[ 6][10][0] + 0.08187433 * out_step1[ 6][11][0] - 0.29307550 * out_step1[ 6][12][0]
+   - 0.05818233;
+
+out_step2[2][6][5] = 
+   - 0.04363964 * out_step1[ 4][12][0] + 0.20785710 * out_step1[ 4][13][0] - 0.15240549 * out_step1[ 4][14][0]
+   + 0.10027018 * out_step1[ 5][12][0] + 0.12395237 * out_step1[ 5][13][0] - 0.31064633 * out_step1[ 5][14][0]
+   + 0.09984881 * out_step1[ 6][12][0] + 0.08187433 * out_step1[ 6][13][0] - 0.29307550 * out_step1[ 6][14][0]
+   - 0.05818233;
+
+out_step2[3][0][5] = 
+   - 0.04363964 * out_step1[ 6][ 0][0] + 0.20785710 * out_step1[ 6][ 1][0] - 0.15240549 * out_step1[ 6][ 2][0]
+   + 0.10027018 * out_step1[ 7][ 0][0] + 0.12395237 * out_step1[ 7][ 1][0] - 0.31064633 * out_step1[ 7][ 2][0]
+   + 0.09984881 * out_step1[ 8][ 0][0] + 0.08187433 * out_step1[ 8][ 1][0] - 0.29307550 * out_step1[ 8][ 2][0]
+   - 0.05818233;
+
+out_step2[3][1][5] = 
+   - 0.04363964 * out_step1[ 6][ 2][0] + 0.20785710 * out_step1[ 6][ 3][0] - 0.15240549 * out_step1[ 6][ 4][0]
+   + 0.10027018 * out_step1[ 7][ 2][0] + 0.12395237 * out_step1[ 7][ 3][0] - 0.31064633 * out_step1[ 7][ 4][0]
+   + 0.09984881 * out_step1[ 8][ 2][0] + 0.08187433 * out_step1[ 8][ 3][0] - 0.29307550 * out_step1[ 8][ 4][0]
+   - 0.05818233;
+
+out_step2[3][2][5] = 
+   - 0.04363964 * out_step1[ 6][ 4][0] + 0.20785710 * out_step1[ 6][ 5][0] - 0.15240549 * out_step1[ 6][ 6][0]
+   + 0.10027018 * out_step1[ 7][ 4][0] + 0.12395237 * out_step1[ 7][ 5][0] - 0.31064633 * out_step1[ 7][ 6][0]
+   + 0.09984881 * out_step1[ 8][ 4][0] + 0.08187433 * out_step1[ 8][ 5][0] - 0.29307550 * out_step1[ 8][ 6][0]
+   - 0.05818233;
+
+out_step2[3][3][5] = 
+   - 0.04363964 * out_step1[ 6][ 6][0] + 0.20785710 * out_step1[ 6][ 7][0] - 0.15240549 * out_step1[ 6][ 8][0]
+   + 0.10027018 * out_step1[ 7][ 6][0] + 0.12395237 * out_step1[ 7][ 7][0] - 0.31064633 * out_step1[ 7][ 8][0]
+   + 0.09984881 * out_step1[ 8][ 6][0] + 0.08187433 * out_step1[ 8][ 7][0] - 0.29307550 * out_step1[ 8][ 8][0]
+   - 0.05818233;
+
+out_step2[3][4][5] = 
+   - 0.04363964 * out_step1[ 6][ 8][0] + 0.20785710 * out_step1[ 6][ 9][0] - 0.15240549 * out_step1[ 6][10][0]
+   + 0.10027018 * out_step1[ 7][ 8][0] + 0.12395237 * out_step1[ 7][ 9][0] - 0.31064633 * out_step1[ 7][10][0]
+   + 0.09984881 * out_step1[ 8][ 8][0] + 0.08187433 * out_step1[ 8][ 9][0] - 0.29307550 * out_step1[ 8][10][0]
+   - 0.05818233;
+
+out_step2[3][5][5] = 
+   - 0.04363964 * out_step1[ 6][10][0] + 0.20785710 * out_step1[ 6][11][0] - 0.15240549 * out_step1[ 6][12][0]
+   + 0.10027018 * out_step1[ 7][10][0] + 0.12395237 * out_step1[ 7][11][0] - 0.31064633 * out_step1[ 7][12][0]
+   + 0.09984881 * out_step1[ 8][10][0] + 0.08187433 * out_step1[ 8][11][0] - 0.29307550 * out_step1[ 8][12][0]
+   - 0.05818233;
+
+out_step2[3][6][5] = 
+   - 0.04363964 * out_step1[ 6][12][0] + 0.20785710 * out_step1[ 6][13][0] - 0.15240549 * out_step1[ 6][14][0]
+   + 0.10027018 * out_step1[ 7][12][0] + 0.12395237 * out_step1[ 7][13][0] - 0.31064633 * out_step1[ 7][14][0]
+   + 0.09984881 * out_step1[ 8][12][0] + 0.08187433 * out_step1[ 8][13][0] - 0.29307550 * out_step1[ 8][14][0]
+   - 0.05818233;
+
+out_step2[4][0][5] = 
+   - 0.04363964 * out_step1[ 8][ 0][0] + 0.20785710 * out_step1[ 8][ 1][0] - 0.15240549 * out_step1[ 8][ 2][0]
+   + 0.10027018 * out_step1[ 9][ 0][0] + 0.12395237 * out_step1[ 9][ 1][0] - 0.31064633 * out_step1[ 9][ 2][0]
+   + 0.09984881 * out_step1[10][ 0][0] + 0.08187433 * out_step1[10][ 1][0] - 0.29307550 * out_step1[10][ 2][0]
+   - 0.05818233;
+
+out_step2[4][1][5] = 
+   - 0.04363964 * out_step1[ 8][ 2][0] + 0.20785710 * out_step1[ 8][ 3][0] - 0.15240549 * out_step1[ 8][ 4][0]
+   + 0.10027018 * out_step1[ 9][ 2][0] + 0.12395237 * out_step1[ 9][ 3][0] - 0.31064633 * out_step1[ 9][ 4][0]
+   + 0.09984881 * out_step1[10][ 2][0] + 0.08187433 * out_step1[10][ 3][0] - 0.29307550 * out_step1[10][ 4][0]
+   - 0.05818233;
+
+out_step2[4][2][5] = 
+   - 0.04363964 * out_step1[ 8][ 4][0] + 0.20785710 * out_step1[ 8][ 5][0] - 0.15240549 * out_step1[ 8][ 6][0]
+   + 0.10027018 * out_step1[ 9][ 4][0] + 0.12395237 * out_step1[ 9][ 5][0] - 0.31064633 * out_step1[ 9][ 6][0]
+   + 0.09984881 * out_step1[10][ 4][0] + 0.08187433 * out_step1[10][ 5][0] - 0.29307550 * out_step1[10][ 6][0]
+   - 0.05818233;
+
+out_step2[4][3][5] = 
+   - 0.04363964 * out_step1[ 8][ 6][0] + 0.20785710 * out_step1[ 8][ 7][0] - 0.15240549 * out_step1[ 8][ 8][0]
+   + 0.10027018 * out_step1[ 9][ 6][0] + 0.12395237 * out_step1[ 9][ 7][0] - 0.31064633 * out_step1[ 9][ 8][0]
+   + 0.09984881 * out_step1[10][ 6][0] + 0.08187433 * out_step1[10][ 7][0] - 0.29307550 * out_step1[10][ 8][0]
+   - 0.05818233;
+
+out_step2[4][4][5] = 
+   - 0.04363964 * out_step1[ 8][ 8][0] + 0.20785710 * out_step1[ 8][ 9][0] - 0.15240549 * out_step1[ 8][10][0]
+   + 0.10027018 * out_step1[ 9][ 8][0] + 0.12395237 * out_step1[ 9][ 9][0] - 0.31064633 * out_step1[ 9][10][0]
+   + 0.09984881 * out_step1[10][ 8][0] + 0.08187433 * out_step1[10][ 9][0] - 0.29307550 * out_step1[10][10][0]
+   - 0.05818233;
+
+out_step2[4][5][5] = 
+   - 0.04363964 * out_step1[ 8][10][0] + 0.20785710 * out_step1[ 8][11][0] - 0.15240549 * out_step1[ 8][12][0]
+   + 0.10027018 * out_step1[ 9][10][0] + 0.12395237 * out_step1[ 9][11][0] - 0.31064633 * out_step1[ 9][12][0]
+   + 0.09984881 * out_step1[10][10][0] + 0.08187433 * out_step1[10][11][0] - 0.29307550 * out_step1[10][12][0]
+   - 0.05818233;
+
+out_step2[4][6][5] = 
+   - 0.04363964 * out_step1[ 8][12][0] + 0.20785710 * out_step1[ 8][13][0] - 0.15240549 * out_step1[ 8][14][0]
+   + 0.10027018 * out_step1[ 9][12][0] + 0.12395237 * out_step1[ 9][13][0] - 0.31064633 * out_step1[ 9][14][0]
+   + 0.09984881 * out_step1[10][12][0] + 0.08187433 * out_step1[10][13][0] - 0.29307550 * out_step1[10][14][0]
+   - 0.05818233;
+
+out_step2[5][0][5] = 
+   - 0.04363964 * out_step1[10][ 0][0] + 0.20785710 * out_step1[10][ 1][0] - 0.15240549 * out_step1[10][ 2][0]
+   + 0.10027018 * out_step1[11][ 0][0] + 0.12395237 * out_step1[11][ 1][0] - 0.31064633 * out_step1[11][ 2][0]
+   + 0.09984881 * out_step1[12][ 0][0] + 0.08187433 * out_step1[12][ 1][0] - 0.29307550 * out_step1[12][ 2][0]
+   - 0.05818233;
+
+out_step2[5][1][5] = 
+   - 0.04363964 * out_step1[10][ 2][0] + 0.20785710 * out_step1[10][ 3][0] - 0.15240549 * out_step1[10][ 4][0]
+   + 0.10027018 * out_step1[11][ 2][0] + 0.12395237 * out_step1[11][ 3][0] - 0.31064633 * out_step1[11][ 4][0]
+   + 0.09984881 * out_step1[12][ 2][0] + 0.08187433 * out_step1[12][ 3][0] - 0.29307550 * out_step1[12][ 4][0]
+   - 0.05818233;
+
+out_step2[5][2][5] = 
+   - 0.04363964 * out_step1[10][ 4][0] + 0.20785710 * out_step1[10][ 5][0] - 0.15240549 * out_step1[10][ 6][0]
+   + 0.10027018 * out_step1[11][ 4][0] + 0.12395237 * out_step1[11][ 5][0] - 0.31064633 * out_step1[11][ 6][0]
+   + 0.09984881 * out_step1[12][ 4][0] + 0.08187433 * out_step1[12][ 5][0] - 0.29307550 * out_step1[12][ 6][0]
+   - 0.05818233;
+
+out_step2[5][3][5] = 
+   - 0.04363964 * out_step1[10][ 6][0] + 0.20785710 * out_step1[10][ 7][0] - 0.15240549 * out_step1[10][ 8][0]
+   + 0.10027018 * out_step1[11][ 6][0] + 0.12395237 * out_step1[11][ 7][0] - 0.31064633 * out_step1[11][ 8][0]
+   + 0.09984881 * out_step1[12][ 6][0] + 0.08187433 * out_step1[12][ 7][0] - 0.29307550 * out_step1[12][ 8][0]
+   - 0.05818233;
+
+out_step2[5][4][5] = 
+   - 0.04363964 * out_step1[10][ 8][0] + 0.20785710 * out_step1[10][ 9][0] - 0.15240549 * out_step1[10][10][0]
+   + 0.10027018 * out_step1[11][ 8][0] + 0.12395237 * out_step1[11][ 9][0] - 0.31064633 * out_step1[11][10][0]
+   + 0.09984881 * out_step1[12][ 8][0] + 0.08187433 * out_step1[12][ 9][0] - 0.29307550 * out_step1[12][10][0]
+   - 0.05818233;
+
+out_step2[5][5][5] = 
+   - 0.04363964 * out_step1[10][10][0] + 0.20785710 * out_step1[10][11][0] - 0.15240549 * out_step1[10][12][0]
+   + 0.10027018 * out_step1[11][10][0] + 0.12395237 * out_step1[11][11][0] - 0.31064633 * out_step1[11][12][0]
+   + 0.09984881 * out_step1[12][10][0] + 0.08187433 * out_step1[12][11][0] - 0.29307550 * out_step1[12][12][0]
+   - 0.05818233;
+
+out_step2[5][6][5] = 
+   - 0.04363964 * out_step1[10][12][0] + 0.20785710 * out_step1[10][13][0] - 0.15240549 * out_step1[10][14][0]
+   + 0.10027018 * out_step1[11][12][0] + 0.12395237 * out_step1[11][13][0] - 0.31064633 * out_step1[11][14][0]
+   + 0.09984881 * out_step1[12][12][0] + 0.08187433 * out_step1[12][13][0] - 0.29307550 * out_step1[12][14][0]
+   - 0.05818233;
+
+out_step2[6][0][5] = 
+   - 0.04363964 * out_step1[12][ 0][0] + 0.20785710 * out_step1[12][ 1][0] - 0.15240549 * out_step1[12][ 2][0]
+   + 0.10027018 * out_step1[13][ 0][0] + 0.12395237 * out_step1[13][ 1][0] - 0.31064633 * out_step1[13][ 2][0]
+   + 0.09984881 * out_step1[14][ 0][0] + 0.08187433 * out_step1[14][ 1][0] - 0.29307550 * out_step1[14][ 2][0]
+   - 0.05818233;
+
+out_step2[6][1][5] = 
+   - 0.04363964 * out_step1[12][ 2][0] + 0.20785710 * out_step1[12][ 3][0] - 0.15240549 * out_step1[12][ 4][0]
+   + 0.10027018 * out_step1[13][ 2][0] + 0.12395237 * out_step1[13][ 3][0] - 0.31064633 * out_step1[13][ 4][0]
+   + 0.09984881 * out_step1[14][ 2][0] + 0.08187433 * out_step1[14][ 3][0] - 0.29307550 * out_step1[14][ 4][0]
+   - 0.05818233;
+
+out_step2[6][2][5] = 
+   - 0.04363964 * out_step1[12][ 4][0] + 0.20785710 * out_step1[12][ 5][0] - 0.15240549 * out_step1[12][ 6][0]
+   + 0.10027018 * out_step1[13][ 4][0] + 0.12395237 * out_step1[13][ 5][0] - 0.31064633 * out_step1[13][ 6][0]
+   + 0.09984881 * out_step1[14][ 4][0] + 0.08187433 * out_step1[14][ 5][0] - 0.29307550 * out_step1[14][ 6][0]
+   - 0.05818233;
+
+out_step2[6][3][5] = 
+   - 0.04363964 * out_step1[12][ 6][0] + 0.20785710 * out_step1[12][ 7][0] - 0.15240549 * out_step1[12][ 8][0]
+   + 0.10027018 * out_step1[13][ 6][0] + 0.12395237 * out_step1[13][ 7][0] - 0.31064633 * out_step1[13][ 8][0]
+   + 0.09984881 * out_step1[14][ 6][0] + 0.08187433 * out_step1[14][ 7][0] - 0.29307550 * out_step1[14][ 8][0]
+   - 0.05818233;
+
+out_step2[6][4][5] = 
+   - 0.04363964 * out_step1[12][ 8][0] + 0.20785710 * out_step1[12][ 9][0] - 0.15240549 * out_step1[12][10][0]
+   + 0.10027018 * out_step1[13][ 8][0] + 0.12395237 * out_step1[13][ 9][0] - 0.31064633 * out_step1[13][10][0]
+   + 0.09984881 * out_step1[14][ 8][0] + 0.08187433 * out_step1[14][ 9][0] - 0.29307550 * out_step1[14][10][0]
+   - 0.05818233;
+
+out_step2[6][5][5] = 
+   - 0.04363964 * out_step1[12][10][0] + 0.20785710 * out_step1[12][11][0] - 0.15240549 * out_step1[12][12][0]
+   + 0.10027018 * out_step1[13][10][0] + 0.12395237 * out_step1[13][11][0] - 0.31064633 * out_step1[13][12][0]
+   + 0.09984881 * out_step1[14][10][0] + 0.08187433 * out_step1[14][11][0] - 0.29307550 * out_step1[14][12][0]
+   - 0.05818233;
+
+out_step2[6][6][5] = 
+   - 0.04363964 * out_step1[12][12][0] + 0.20785710 * out_step1[12][13][0] - 0.15240549 * out_step1[12][14][0]
+   + 0.10027018 * out_step1[13][12][0] + 0.12395237 * out_step1[13][13][0] - 0.31064633 * out_step1[13][14][0]
+   + 0.09984881 * out_step1[14][12][0] + 0.08187433 * out_step1[14][13][0] - 0.29307550 * out_step1[14][14][0]
+   - 0.05818233;
+
+out_step2[0][0][6] = 
+   - 0.05144623 * out_step1[ 0][ 0][0] - 0.01267493 * out_step1[ 0][ 1][0] + 0.12497300 * out_step1[ 0][ 2][0]
+   - 0.21162535 * out_step1[ 1][ 0][0] - 0.01835628 * out_step1[ 1][ 1][0] + 0.19533242 * out_step1[ 1][ 2][0]
+   - 0.14631337 * out_step1[ 2][ 0][0] - 0.06964923 * out_step1[ 2][ 1][0] + 0.20622501 * out_step1[ 2][ 2][0]
+   - 0.01590089;
+
+out_step2[0][1][6] = 
+   - 0.05144623 * out_step1[ 0][ 2][0] - 0.01267493 * out_step1[ 0][ 3][0] + 0.12497300 * out_step1[ 0][ 4][0]
+   - 0.21162535 * out_step1[ 1][ 2][0] - 0.01835628 * out_step1[ 1][ 3][0] + 0.19533242 * out_step1[ 1][ 4][0]
+   - 0.14631337 * out_step1[ 2][ 2][0] - 0.06964923 * out_step1[ 2][ 3][0] + 0.20622501 * out_step1[ 2][ 4][0]
+   - 0.01590089;
+
+out_step2[0][2][6] = 
+   - 0.05144623 * out_step1[ 0][ 4][0] - 0.01267493 * out_step1[ 0][ 5][0] + 0.12497300 * out_step1[ 0][ 6][0]
+   - 0.21162535 * out_step1[ 1][ 4][0] - 0.01835628 * out_step1[ 1][ 5][0] + 0.19533242 * out_step1[ 1][ 6][0]
+   - 0.14631337 * out_step1[ 2][ 4][0] - 0.06964923 * out_step1[ 2][ 5][0] + 0.20622501 * out_step1[ 2][ 6][0]
+   - 0.01590089;
+
+out_step2[0][3][6] = 
+   - 0.05144623 * out_step1[ 0][ 6][0] - 0.01267493 * out_step1[ 0][ 7][0] + 0.12497300 * out_step1[ 0][ 8][0]
+   - 0.21162535 * out_step1[ 1][ 6][0] - 0.01835628 * out_step1[ 1][ 7][0] + 0.19533242 * out_step1[ 1][ 8][0]
+   - 0.14631337 * out_step1[ 2][ 6][0] - 0.06964923 * out_step1[ 2][ 7][0] + 0.20622501 * out_step1[ 2][ 8][0]
+   - 0.01590089;
+
+out_step2[0][4][6] = 
+   - 0.05144623 * out_step1[ 0][ 8][0] - 0.01267493 * out_step1[ 0][ 9][0] + 0.12497300 * out_step1[ 0][10][0]
+   - 0.21162535 * out_step1[ 1][ 8][0] - 0.01835628 * out_step1[ 1][ 9][0] + 0.19533242 * out_step1[ 1][10][0]
+   - 0.14631337 * out_step1[ 2][ 8][0] - 0.06964923 * out_step1[ 2][ 9][0] + 0.20622501 * out_step1[ 2][10][0]
+   - 0.01590089;
+
+out_step2[0][5][6] = 
+   - 0.05144623 * out_step1[ 0][10][0] - 0.01267493 * out_step1[ 0][11][0] + 0.12497300 * out_step1[ 0][12][0]
+   - 0.21162535 * out_step1[ 1][10][0] - 0.01835628 * out_step1[ 1][11][0] + 0.19533242 * out_step1[ 1][12][0]
+   - 0.14631337 * out_step1[ 2][10][0] - 0.06964923 * out_step1[ 2][11][0] + 0.20622501 * out_step1[ 2][12][0]
+   - 0.01590089;
+
+out_step2[0][6][6] = 
+   - 0.05144623 * out_step1[ 0][12][0] - 0.01267493 * out_step1[ 0][13][0] + 0.12497300 * out_step1[ 0][14][0]
+   - 0.21162535 * out_step1[ 1][12][0] - 0.01835628 * out_step1[ 1][13][0] + 0.19533242 * out_step1[ 1][14][0]
+   - 0.14631337 * out_step1[ 2][12][0] - 0.06964923 * out_step1[ 2][13][0] + 0.20622501 * out_step1[ 2][14][0]
+   - 0.01590089;
+
+out_step2[1][0][6] = 
+   - 0.05144623 * out_step1[ 2][ 0][0] - 0.01267493 * out_step1[ 2][ 1][0] + 0.12497300 * out_step1[ 2][ 2][0]
+   - 0.21162535 * out_step1[ 3][ 0][0] - 0.01835628 * out_step1[ 3][ 1][0] + 0.19533242 * out_step1[ 3][ 2][0]
+   - 0.14631337 * out_step1[ 4][ 0][0] - 0.06964923 * out_step1[ 4][ 1][0] + 0.20622501 * out_step1[ 4][ 2][0]
+   - 0.01590089;
+
+out_step2[1][1][6] = 
+   - 0.05144623 * out_step1[ 2][ 2][0] - 0.01267493 * out_step1[ 2][ 3][0] + 0.12497300 * out_step1[ 2][ 4][0]
+   - 0.21162535 * out_step1[ 3][ 2][0] - 0.01835628 * out_step1[ 3][ 3][0] + 0.19533242 * out_step1[ 3][ 4][0]
+   - 0.14631337 * out_step1[ 4][ 2][0] - 0.06964923 * out_step1[ 4][ 3][0] + 0.20622501 * out_step1[ 4][ 4][0]
+   - 0.01590089;
+
+out_step2[1][2][6] = 
+   - 0.05144623 * out_step1[ 2][ 4][0] - 0.01267493 * out_step1[ 2][ 5][0] + 0.12497300 * out_step1[ 2][ 6][0]
+   - 0.21162535 * out_step1[ 3][ 4][0] - 0.01835628 * out_step1[ 3][ 5][0] + 0.19533242 * out_step1[ 3][ 6][0]
+   - 0.14631337 * out_step1[ 4][ 4][0] - 0.06964923 * out_step1[ 4][ 5][0] + 0.20622501 * out_step1[ 4][ 6][0]
+   - 0.01590089;
+
+out_step2[1][3][6] = 
+   - 0.05144623 * out_step1[ 2][ 6][0] - 0.01267493 * out_step1[ 2][ 7][0] + 0.12497300 * out_step1[ 2][ 8][0]
+   - 0.21162535 * out_step1[ 3][ 6][0] - 0.01835628 * out_step1[ 3][ 7][0] + 0.19533242 * out_step1[ 3][ 8][0]
+   - 0.14631337 * out_step1[ 4][ 6][0] - 0.06964923 * out_step1[ 4][ 7][0] + 0.20622501 * out_step1[ 4][ 8][0]
+   - 0.01590089;
+
+out_step2[1][4][6] = 
+   - 0.05144623 * out_step1[ 2][ 8][0] - 0.01267493 * out_step1[ 2][ 9][0] + 0.12497300 * out_step1[ 2][10][0]
+   - 0.21162535 * out_step1[ 3][ 8][0] - 0.01835628 * out_step1[ 3][ 9][0] + 0.19533242 * out_step1[ 3][10][0]
+   - 0.14631337 * out_step1[ 4][ 8][0] - 0.06964923 * out_step1[ 4][ 9][0] + 0.20622501 * out_step1[ 4][10][0]
+   - 0.01590089;
+
+out_step2[1][5][6] = 
+   - 0.05144623 * out_step1[ 2][10][0] - 0.01267493 * out_step1[ 2][11][0] + 0.12497300 * out_step1[ 2][12][0]
+   - 0.21162535 * out_step1[ 3][10][0] - 0.01835628 * out_step1[ 3][11][0] + 0.19533242 * out_step1[ 3][12][0]
+   - 0.14631337 * out_step1[ 4][10][0] - 0.06964923 * out_step1[ 4][11][0] + 0.20622501 * out_step1[ 4][12][0]
+   - 0.01590089;
+
+out_step2[1][6][6] = 
+   - 0.05144623 * out_step1[ 2][12][0] - 0.01267493 * out_step1[ 2][13][0] + 0.12497300 * out_step1[ 2][14][0]
+   - 0.21162535 * out_step1[ 3][12][0] - 0.01835628 * out_step1[ 3][13][0] + 0.19533242 * out_step1[ 3][14][0]
+   - 0.14631337 * out_step1[ 4][12][0] - 0.06964923 * out_step1[ 4][13][0] + 0.20622501 * out_step1[ 4][14][0]
+   - 0.01590089;
+
+out_step2[2][0][6] = 
+   - 0.05144623 * out_step1[ 4][ 0][0] - 0.01267493 * out_step1[ 4][ 1][0] + 0.12497300 * out_step1[ 4][ 2][0]
+   - 0.21162535 * out_step1[ 5][ 0][0] - 0.01835628 * out_step1[ 5][ 1][0] + 0.19533242 * out_step1[ 5][ 2][0]
+   - 0.14631337 * out_step1[ 6][ 0][0] - 0.06964923 * out_step1[ 6][ 1][0] + 0.20622501 * out_step1[ 6][ 2][0]
+   - 0.01590089;
+
+out_step2[2][1][6] = 
+   - 0.05144623 * out_step1[ 4][ 2][0] - 0.01267493 * out_step1[ 4][ 3][0] + 0.12497300 * out_step1[ 4][ 4][0]
+   - 0.21162535 * out_step1[ 5][ 2][0] - 0.01835628 * out_step1[ 5][ 3][0] + 0.19533242 * out_step1[ 5][ 4][0]
+   - 0.14631337 * out_step1[ 6][ 2][0] - 0.06964923 * out_step1[ 6][ 3][0] + 0.20622501 * out_step1[ 6][ 4][0]
+   - 0.01590089;
+
+out_step2[2][2][6] = 
+   - 0.05144623 * out_step1[ 4][ 4][0] - 0.01267493 * out_step1[ 4][ 5][0] + 0.12497300 * out_step1[ 4][ 6][0]
+   - 0.21162535 * out_step1[ 5][ 4][0] - 0.01835628 * out_step1[ 5][ 5][0] + 0.19533242 * out_step1[ 5][ 6][0]
+   - 0.14631337 * out_step1[ 6][ 4][0] - 0.06964923 * out_step1[ 6][ 5][0] + 0.20622501 * out_step1[ 6][ 6][0]
+   - 0.01590089;
+
+out_step2[2][3][6] = 
+   - 0.05144623 * out_step1[ 4][ 6][0] - 0.01267493 * out_step1[ 4][ 7][0] + 0.12497300 * out_step1[ 4][ 8][0]
+   - 0.21162535 * out_step1[ 5][ 6][0] - 0.01835628 * out_step1[ 5][ 7][0] + 0.19533242 * out_step1[ 5][ 8][0]
+   - 0.14631337 * out_step1[ 6][ 6][0] - 0.06964923 * out_step1[ 6][ 7][0] + 0.20622501 * out_step1[ 6][ 8][0]
+   - 0.01590089;
+
+out_step2[2][4][6] = 
+   - 0.05144623 * out_step1[ 4][ 8][0] - 0.01267493 * out_step1[ 4][ 9][0] + 0.12497300 * out_step1[ 4][10][0]
+   - 0.21162535 * out_step1[ 5][ 8][0] - 0.01835628 * out_step1[ 5][ 9][0] + 0.19533242 * out_step1[ 5][10][0]
+   - 0.14631337 * out_step1[ 6][ 8][0] - 0.06964923 * out_step1[ 6][ 9][0] + 0.20622501 * out_step1[ 6][10][0]
+   - 0.01590089;
+
+out_step2[2][5][6] = 
+   - 0.05144623 * out_step1[ 4][10][0] - 0.01267493 * out_step1[ 4][11][0] + 0.12497300 * out_step1[ 4][12][0]
+   - 0.21162535 * out_step1[ 5][10][0] - 0.01835628 * out_step1[ 5][11][0] + 0.19533242 * out_step1[ 5][12][0]
+   - 0.14631337 * out_step1[ 6][10][0] - 0.06964923 * out_step1[ 6][11][0] + 0.20622501 * out_step1[ 6][12][0]
+   - 0.01590089;
+
+out_step2[2][6][6] = 
+   - 0.05144623 * out_step1[ 4][12][0] - 0.01267493 * out_step1[ 4][13][0] + 0.12497300 * out_step1[ 4][14][0]
+   - 0.21162535 * out_step1[ 5][12][0] - 0.01835628 * out_step1[ 5][13][0] + 0.19533242 * out_step1[ 5][14][0]
+   - 0.14631337 * out_step1[ 6][12][0] - 0.06964923 * out_step1[ 6][13][0] + 0.20622501 * out_step1[ 6][14][0]
+   - 0.01590089;
+
+out_step2[3][0][6] = 
+   - 0.05144623 * out_step1[ 6][ 0][0] - 0.01267493 * out_step1[ 6][ 1][0] + 0.12497300 * out_step1[ 6][ 2][0]
+   - 0.21162535 * out_step1[ 7][ 0][0] - 0.01835628 * out_step1[ 7][ 1][0] + 0.19533242 * out_step1[ 7][ 2][0]
+   - 0.14631337 * out_step1[ 8][ 0][0] - 0.06964923 * out_step1[ 8][ 1][0] + 0.20622501 * out_step1[ 8][ 2][0]
+   - 0.01590089;
+
+out_step2[3][1][6] = 
+   - 0.05144623 * out_step1[ 6][ 2][0] - 0.01267493 * out_step1[ 6][ 3][0] + 0.12497300 * out_step1[ 6][ 4][0]
+   - 0.21162535 * out_step1[ 7][ 2][0] - 0.01835628 * out_step1[ 7][ 3][0] + 0.19533242 * out_step1[ 7][ 4][0]
+   - 0.14631337 * out_step1[ 8][ 2][0] - 0.06964923 * out_step1[ 8][ 3][0] + 0.20622501 * out_step1[ 8][ 4][0]
+   - 0.01590089;
+
+out_step2[3][2][6] = 
+   - 0.05144623 * out_step1[ 6][ 4][0] - 0.01267493 * out_step1[ 6][ 5][0] + 0.12497300 * out_step1[ 6][ 6][0]
+   - 0.21162535 * out_step1[ 7][ 4][0] - 0.01835628 * out_step1[ 7][ 5][0] + 0.19533242 * out_step1[ 7][ 6][0]
+   - 0.14631337 * out_step1[ 8][ 4][0] - 0.06964923 * out_step1[ 8][ 5][0] + 0.20622501 * out_step1[ 8][ 6][0]
+   - 0.01590089;
+
+out_step2[3][3][6] = 
+   - 0.05144623 * out_step1[ 6][ 6][0] - 0.01267493 * out_step1[ 6][ 7][0] + 0.12497300 * out_step1[ 6][ 8][0]
+   - 0.21162535 * out_step1[ 7][ 6][0] - 0.01835628 * out_step1[ 7][ 7][0] + 0.19533242 * out_step1[ 7][ 8][0]
+   - 0.14631337 * out_step1[ 8][ 6][0] - 0.06964923 * out_step1[ 8][ 7][0] + 0.20622501 * out_step1[ 8][ 8][0]
+   - 0.01590089;
+
+out_step2[3][4][6] = 
+   - 0.05144623 * out_step1[ 6][ 8][0] - 0.01267493 * out_step1[ 6][ 9][0] + 0.12497300 * out_step1[ 6][10][0]
+   - 0.21162535 * out_step1[ 7][ 8][0] - 0.01835628 * out_step1[ 7][ 9][0] + 0.19533242 * out_step1[ 7][10][0]
+   - 0.14631337 * out_step1[ 8][ 8][0] - 0.06964923 * out_step1[ 8][ 9][0] + 0.20622501 * out_step1[ 8][10][0]
+   - 0.01590089;
+
+out_step2[3][5][6] = 
+   - 0.05144623 * out_step1[ 6][10][0] - 0.01267493 * out_step1[ 6][11][0] + 0.12497300 * out_step1[ 6][12][0]
+   - 0.21162535 * out_step1[ 7][10][0] - 0.01835628 * out_step1[ 7][11][0] + 0.19533242 * out_step1[ 7][12][0]
+   - 0.14631337 * out_step1[ 8][10][0] - 0.06964923 * out_step1[ 8][11][0] + 0.20622501 * out_step1[ 8][12][0]
+   - 0.01590089;
+
+out_step2[3][6][6] = 
+   - 0.05144623 * out_step1[ 6][12][0] - 0.01267493 * out_step1[ 6][13][0] + 0.12497300 * out_step1[ 6][14][0]
+   - 0.21162535 * out_step1[ 7][12][0] - 0.01835628 * out_step1[ 7][13][0] + 0.19533242 * out_step1[ 7][14][0]
+   - 0.14631337 * out_step1[ 8][12][0] - 0.06964923 * out_step1[ 8][13][0] + 0.20622501 * out_step1[ 8][14][0]
+   - 0.01590089;
+
+out_step2[4][0][6] = 
+   - 0.05144623 * out_step1[ 8][ 0][0] - 0.01267493 * out_step1[ 8][ 1][0] + 0.12497300 * out_step1[ 8][ 2][0]
+   - 0.21162535 * out_step1[ 9][ 0][0] - 0.01835628 * out_step1[ 9][ 1][0] + 0.19533242 * out_step1[ 9][ 2][0]
+   - 0.14631337 * out_step1[10][ 0][0] - 0.06964923 * out_step1[10][ 1][0] + 0.20622501 * out_step1[10][ 2][0]
+   - 0.01590089;
+
+out_step2[4][1][6] = 
+   - 0.05144623 * out_step1[ 8][ 2][0] - 0.01267493 * out_step1[ 8][ 3][0] + 0.12497300 * out_step1[ 8][ 4][0]
+   - 0.21162535 * out_step1[ 9][ 2][0] - 0.01835628 * out_step1[ 9][ 3][0] + 0.19533242 * out_step1[ 9][ 4][0]
+   - 0.14631337 * out_step1[10][ 2][0] - 0.06964923 * out_step1[10][ 3][0] + 0.20622501 * out_step1[10][ 4][0]
+   - 0.01590089;
+
+out_step2[4][2][6] = 
+   - 0.05144623 * out_step1[ 8][ 4][0] - 0.01267493 * out_step1[ 8][ 5][0] + 0.12497300 * out_step1[ 8][ 6][0]
+   - 0.21162535 * out_step1[ 9][ 4][0] - 0.01835628 * out_step1[ 9][ 5][0] + 0.19533242 * out_step1[ 9][ 6][0]
+   - 0.14631337 * out_step1[10][ 4][0] - 0.06964923 * out_step1[10][ 5][0] + 0.20622501 * out_step1[10][ 6][0]
+   - 0.01590089;
+
+out_step2[4][3][6] = 
+   - 0.05144623 * out_step1[ 8][ 6][0] - 0.01267493 * out_step1[ 8][ 7][0] + 0.12497300 * out_step1[ 8][ 8][0]
+   - 0.21162535 * out_step1[ 9][ 6][0] - 0.01835628 * out_step1[ 9][ 7][0] + 0.19533242 * out_step1[ 9][ 8][0]
+   - 0.14631337 * out_step1[10][ 6][0] - 0.06964923 * out_step1[10][ 7][0] + 0.20622501 * out_step1[10][ 8][0]
+   - 0.01590089;
+
+out_step2[4][4][6] = 
+   - 0.05144623 * out_step1[ 8][ 8][0] - 0.01267493 * out_step1[ 8][ 9][0] + 0.12497300 * out_step1[ 8][10][0]
+   - 0.21162535 * out_step1[ 9][ 8][0] - 0.01835628 * out_step1[ 9][ 9][0] + 0.19533242 * out_step1[ 9][10][0]
+   - 0.14631337 * out_step1[10][ 8][0] - 0.06964923 * out_step1[10][ 9][0] + 0.20622501 * out_step1[10][10][0]
+   - 0.01590089;
+
+out_step2[4][5][6] = 
+   - 0.05144623 * out_step1[ 8][10][0] - 0.01267493 * out_step1[ 8][11][0] + 0.12497300 * out_step1[ 8][12][0]
+   - 0.21162535 * out_step1[ 9][10][0] - 0.01835628 * out_step1[ 9][11][0] + 0.19533242 * out_step1[ 9][12][0]
+   - 0.14631337 * out_step1[10][10][0] - 0.06964923 * out_step1[10][11][0] + 0.20622501 * out_step1[10][12][0]
+   - 0.01590089;
+
+out_step2[4][6][6] = 
+   - 0.05144623 * out_step1[ 8][12][0] - 0.01267493 * out_step1[ 8][13][0] + 0.12497300 * out_step1[ 8][14][0]
+   - 0.21162535 * out_step1[ 9][12][0] - 0.01835628 * out_step1[ 9][13][0] + 0.19533242 * out_step1[ 9][14][0]
+   - 0.14631337 * out_step1[10][12][0] - 0.06964923 * out_step1[10][13][0] + 0.20622501 * out_step1[10][14][0]
+   - 0.01590089;
+
+out_step2[5][0][6] = 
+   - 0.05144623 * out_step1[10][ 0][0] - 0.01267493 * out_step1[10][ 1][0] + 0.12497300 * out_step1[10][ 2][0]
+   - 0.21162535 * out_step1[11][ 0][0] - 0.01835628 * out_step1[11][ 1][0] + 0.19533242 * out_step1[11][ 2][0]
+   - 0.14631337 * out_step1[12][ 0][0] - 0.06964923 * out_step1[12][ 1][0] + 0.20622501 * out_step1[12][ 2][0]
+   - 0.01590089;
+
+out_step2[5][1][6] = 
+   - 0.05144623 * out_step1[10][ 2][0] - 0.01267493 * out_step1[10][ 3][0] + 0.12497300 * out_step1[10][ 4][0]
+   - 0.21162535 * out_step1[11][ 2][0] - 0.01835628 * out_step1[11][ 3][0] + 0.19533242 * out_step1[11][ 4][0]
+   - 0.14631337 * out_step1[12][ 2][0] - 0.06964923 * out_step1[12][ 3][0] + 0.20622501 * out_step1[12][ 4][0]
+   - 0.01590089;
+
+out_step2[5][2][6] = 
+   - 0.05144623 * out_step1[10][ 4][0] - 0.01267493 * out_step1[10][ 5][0] + 0.12497300 * out_step1[10][ 6][0]
+   - 0.21162535 * out_step1[11][ 4][0] - 0.01835628 * out_step1[11][ 5][0] + 0.19533242 * out_step1[11][ 6][0]
+   - 0.14631337 * out_step1[12][ 4][0] - 0.06964923 * out_step1[12][ 5][0] + 0.20622501 * out_step1[12][ 6][0]
+   - 0.01590089;
+
+out_step2[5][3][6] = 
+   - 0.05144623 * out_step1[10][ 6][0] - 0.01267493 * out_step1[10][ 7][0] + 0.12497300 * out_step1[10][ 8][0]
+   - 0.21162535 * out_step1[11][ 6][0] - 0.01835628 * out_step1[11][ 7][0] + 0.19533242 * out_step1[11][ 8][0]
+   - 0.14631337 * out_step1[12][ 6][0] - 0.06964923 * out_step1[12][ 7][0] + 0.20622501 * out_step1[12][ 8][0]
+   - 0.01590089;
+
+out_step2[5][4][6] = 
+   - 0.05144623 * out_step1[10][ 8][0] - 0.01267493 * out_step1[10][ 9][0] + 0.12497300 * out_step1[10][10][0]
+   - 0.21162535 * out_step1[11][ 8][0] - 0.01835628 * out_step1[11][ 9][0] + 0.19533242 * out_step1[11][10][0]
+   - 0.14631337 * out_step1[12][ 8][0] - 0.06964923 * out_step1[12][ 9][0] + 0.20622501 * out_step1[12][10][0]
+   - 0.01590089;
+
+out_step2[5][5][6] = 
+   - 0.05144623 * out_step1[10][10][0] - 0.01267493 * out_step1[10][11][0] + 0.12497300 * out_step1[10][12][0]
+   - 0.21162535 * out_step1[11][10][0] - 0.01835628 * out_step1[11][11][0] + 0.19533242 * out_step1[11][12][0]
+   - 0.14631337 * out_step1[12][10][0] - 0.06964923 * out_step1[12][11][0] + 0.20622501 * out_step1[12][12][0]
+   - 0.01590089;
+
+out_step2[5][6][6] = 
+   - 0.05144623 * out_step1[10][12][0] - 0.01267493 * out_step1[10][13][0] + 0.12497300 * out_step1[10][14][0]
+   - 0.21162535 * out_step1[11][12][0] - 0.01835628 * out_step1[11][13][0] + 0.19533242 * out_step1[11][14][0]
+   - 0.14631337 * out_step1[12][12][0] - 0.06964923 * out_step1[12][13][0] + 0.20622501 * out_step1[12][14][0]
+   - 0.01590089;
+
+out_step2[6][0][6] = 
+   - 0.05144623 * out_step1[12][ 0][0] - 0.01267493 * out_step1[12][ 1][0] + 0.12497300 * out_step1[12][ 2][0]
+   - 0.21162535 * out_step1[13][ 0][0] - 0.01835628 * out_step1[13][ 1][0] + 0.19533242 * out_step1[13][ 2][0]
+   - 0.14631337 * out_step1[14][ 0][0] - 0.06964923 * out_step1[14][ 1][0] + 0.20622501 * out_step1[14][ 2][0]
+   - 0.01590089;
+
+out_step2[6][1][6] = 
+   - 0.05144623 * out_step1[12][ 2][0] - 0.01267493 * out_step1[12][ 3][0] + 0.12497300 * out_step1[12][ 4][0]
+   - 0.21162535 * out_step1[13][ 2][0] - 0.01835628 * out_step1[13][ 3][0] + 0.19533242 * out_step1[13][ 4][0]
+   - 0.14631337 * out_step1[14][ 2][0] - 0.06964923 * out_step1[14][ 3][0] + 0.20622501 * out_step1[14][ 4][0]
+   - 0.01590089;
+
+out_step2[6][2][6] = 
+   - 0.05144623 * out_step1[12][ 4][0] - 0.01267493 * out_step1[12][ 5][0] + 0.12497300 * out_step1[12][ 6][0]
+   - 0.21162535 * out_step1[13][ 4][0] - 0.01835628 * out_step1[13][ 5][0] + 0.19533242 * out_step1[13][ 6][0]
+   - 0.14631337 * out_step1[14][ 4][0] - 0.06964923 * out_step1[14][ 5][0] + 0.20622501 * out_step1[14][ 6][0]
+   - 0.01590089;
+
+out_step2[6][3][6] = 
+   - 0.05144623 * out_step1[12][ 6][0] - 0.01267493 * out_step1[12][ 7][0] + 0.12497300 * out_step1[12][ 8][0]
+   - 0.21162535 * out_step1[13][ 6][0] - 0.01835628 * out_step1[13][ 7][0] + 0.19533242 * out_step1[13][ 8][0]
+   - 0.14631337 * out_step1[14][ 6][0] - 0.06964923 * out_step1[14][ 7][0] + 0.20622501 * out_step1[14][ 8][0]
+   - 0.01590089;
+
+out_step2[6][4][6] = 
+   - 0.05144623 * out_step1[12][ 8][0] - 0.01267493 * out_step1[12][ 9][0] + 0.12497300 * out_step1[12][10][0]
+   - 0.21162535 * out_step1[13][ 8][0] - 0.01835628 * out_step1[13][ 9][0] + 0.19533242 * out_step1[13][10][0]
+   - 0.14631337 * out_step1[14][ 8][0] - 0.06964923 * out_step1[14][ 9][0] + 0.20622501 * out_step1[14][10][0]
+   - 0.01590089;
+
+out_step2[6][5][6] = 
+   - 0.05144623 * out_step1[12][10][0] - 0.01267493 * out_step1[12][11][0] + 0.12497300 * out_step1[12][12][0]
+   - 0.21162535 * out_step1[13][10][0] - 0.01835628 * out_step1[13][11][0] + 0.19533242 * out_step1[13][12][0]
+   - 0.14631337 * out_step1[14][10][0] - 0.06964923 * out_step1[14][11][0] + 0.20622501 * out_step1[14][12][0]
+   - 0.01590089;
+
+out_step2[6][6][6] = 
+   - 0.05144623 * out_step1[12][12][0] - 0.01267493 * out_step1[12][13][0] + 0.12497300 * out_step1[12][14][0]
+   - 0.21162535 * out_step1[13][12][0] - 0.01835628 * out_step1[13][13][0] + 0.19533242 * out_step1[13][14][0]
+   - 0.14631337 * out_step1[14][12][0] - 0.06964923 * out_step1[14][13][0] + 0.20622501 * out_step1[14][14][0]
+   - 0.01590089;
+
+out_step2[0][0][7] = 
+   - 0.14461090 * out_step1[ 0][ 0][0] - 0.01728051 * out_step1[ 0][ 1][0] - 0.18139109 * out_step1[ 0][ 2][0]
+   + 0.32672033 * out_step1[ 1][ 0][0] + 0.04118974 * out_step1[ 1][ 1][0] - 0.20522679 * out_step1[ 1][ 2][0]
+   + 0.23050334 * out_step1[ 2][ 0][0] - 0.04391641 * out_step1[ 2][ 1][0] - 0.19100980 * out_step1[ 2][ 2][0]
+   - 0.05004810;
+
+out_step2[0][1][7] = 
+   - 0.14461090 * out_step1[ 0][ 2][0] - 0.01728051 * out_step1[ 0][ 3][0] - 0.18139109 * out_step1[ 0][ 4][0]
+   + 0.32672033 * out_step1[ 1][ 2][0] + 0.04118974 * out_step1[ 1][ 3][0] - 0.20522679 * out_step1[ 1][ 4][0]
+   + 0.23050334 * out_step1[ 2][ 2][0] - 0.04391641 * out_step1[ 2][ 3][0] - 0.19100980 * out_step1[ 2][ 4][0]
+   - 0.05004810;
+
+out_step2[0][2][7] = 
+   - 0.14461090 * out_step1[ 0][ 4][0] - 0.01728051 * out_step1[ 0][ 5][0] - 0.18139109 * out_step1[ 0][ 6][0]
+   + 0.32672033 * out_step1[ 1][ 4][0] + 0.04118974 * out_step1[ 1][ 5][0] - 0.20522679 * out_step1[ 1][ 6][0]
+   + 0.23050334 * out_step1[ 2][ 4][0] - 0.04391641 * out_step1[ 2][ 5][0] - 0.19100980 * out_step1[ 2][ 6][0]
+   - 0.05004810;
+
+out_step2[0][3][7] = 
+   - 0.14461090 * out_step1[ 0][ 6][0] - 0.01728051 * out_step1[ 0][ 7][0] - 0.18139109 * out_step1[ 0][ 8][0]
+   + 0.32672033 * out_step1[ 1][ 6][0] + 0.04118974 * out_step1[ 1][ 7][0] - 0.20522679 * out_step1[ 1][ 8][0]
+   + 0.23050334 * out_step1[ 2][ 6][0] - 0.04391641 * out_step1[ 2][ 7][0] - 0.19100980 * out_step1[ 2][ 8][0]
+   - 0.05004810;
+
+out_step2[0][4][7] = 
+   - 0.14461090 * out_step1[ 0][ 8][0] - 0.01728051 * out_step1[ 0][ 9][0] - 0.18139109 * out_step1[ 0][10][0]
+   + 0.32672033 * out_step1[ 1][ 8][0] + 0.04118974 * out_step1[ 1][ 9][0] - 0.20522679 * out_step1[ 1][10][0]
+   + 0.23050334 * out_step1[ 2][ 8][0] - 0.04391641 * out_step1[ 2][ 9][0] - 0.19100980 * out_step1[ 2][10][0]
+   - 0.05004810;
+
+out_step2[0][5][7] = 
+   - 0.14461090 * out_step1[ 0][10][0] - 0.01728051 * out_step1[ 0][11][0] - 0.18139109 * out_step1[ 0][12][0]
+   + 0.32672033 * out_step1[ 1][10][0] + 0.04118974 * out_step1[ 1][11][0] - 0.20522679 * out_step1[ 1][12][0]
+   + 0.23050334 * out_step1[ 2][10][0] - 0.04391641 * out_step1[ 2][11][0] - 0.19100980 * out_step1[ 2][12][0]
+   - 0.05004810;
+
+out_step2[0][6][7] = 
+   - 0.14461090 * out_step1[ 0][12][0] - 0.01728051 * out_step1[ 0][13][0] - 0.18139109 * out_step1[ 0][14][0]
+   + 0.32672033 * out_step1[ 1][12][0] + 0.04118974 * out_step1[ 1][13][0] - 0.20522679 * out_step1[ 1][14][0]
+   + 0.23050334 * out_step1[ 2][12][0] - 0.04391641 * out_step1[ 2][13][0] - 0.19100980 * out_step1[ 2][14][0]
+   - 0.05004810;
+
+out_step2[1][0][7] = 
+   - 0.14461090 * out_step1[ 2][ 0][0] - 0.01728051 * out_step1[ 2][ 1][0] - 0.18139109 * out_step1[ 2][ 2][0]
+   + 0.32672033 * out_step1[ 3][ 0][0] + 0.04118974 * out_step1[ 3][ 1][0] - 0.20522679 * out_step1[ 3][ 2][0]
+   + 0.23050334 * out_step1[ 4][ 0][0] - 0.04391641 * out_step1[ 4][ 1][0] - 0.19100980 * out_step1[ 4][ 2][0]
+   - 0.05004810;
+
+out_step2[1][1][7] = 
+   - 0.14461090 * out_step1[ 2][ 2][0] - 0.01728051 * out_step1[ 2][ 3][0] - 0.18139109 * out_step1[ 2][ 4][0]
+   + 0.32672033 * out_step1[ 3][ 2][0] + 0.04118974 * out_step1[ 3][ 3][0] - 0.20522679 * out_step1[ 3][ 4][0]
+   + 0.23050334 * out_step1[ 4][ 2][0] - 0.04391641 * out_step1[ 4][ 3][0] - 0.19100980 * out_step1[ 4][ 4][0]
+   - 0.05004810;
+
+out_step2[1][2][7] = 
+   - 0.14461090 * out_step1[ 2][ 4][0] - 0.01728051 * out_step1[ 2][ 5][0] - 0.18139109 * out_step1[ 2][ 6][0]
+   + 0.32672033 * out_step1[ 3][ 4][0] + 0.04118974 * out_step1[ 3][ 5][0] - 0.20522679 * out_step1[ 3][ 6][0]
+   + 0.23050334 * out_step1[ 4][ 4][0] - 0.04391641 * out_step1[ 4][ 5][0] - 0.19100980 * out_step1[ 4][ 6][0]
+   - 0.05004810;
+
+out_step2[1][3][7] = 
+   - 0.14461090 * out_step1[ 2][ 6][0] - 0.01728051 * out_step1[ 2][ 7][0] - 0.18139109 * out_step1[ 2][ 8][0]
+   + 0.32672033 * out_step1[ 3][ 6][0] + 0.04118974 * out_step1[ 3][ 7][0] - 0.20522679 * out_step1[ 3][ 8][0]
+   + 0.23050334 * out_step1[ 4][ 6][0] - 0.04391641 * out_step1[ 4][ 7][0] - 0.19100980 * out_step1[ 4][ 8][0]
+   - 0.05004810;
+
+out_step2[1][4][7] = 
+   - 0.14461090 * out_step1[ 2][ 8][0] - 0.01728051 * out_step1[ 2][ 9][0] - 0.18139109 * out_step1[ 2][10][0]
+   + 0.32672033 * out_step1[ 3][ 8][0] + 0.04118974 * out_step1[ 3][ 9][0] - 0.20522679 * out_step1[ 3][10][0]
+   + 0.23050334 * out_step1[ 4][ 8][0] - 0.04391641 * out_step1[ 4][ 9][0] - 0.19100980 * out_step1[ 4][10][0]
+   - 0.05004810;
+
+out_step2[1][5][7] = 
+   - 0.14461090 * out_step1[ 2][10][0] - 0.01728051 * out_step1[ 2][11][0] - 0.18139109 * out_step1[ 2][12][0]
+   + 0.32672033 * out_step1[ 3][10][0] + 0.04118974 * out_step1[ 3][11][0] - 0.20522679 * out_step1[ 3][12][0]
+   + 0.23050334 * out_step1[ 4][10][0] - 0.04391641 * out_step1[ 4][11][0] - 0.19100980 * out_step1[ 4][12][0]
+   - 0.05004810;
+
+out_step2[1][6][7] = 
+   - 0.14461090 * out_step1[ 2][12][0] - 0.01728051 * out_step1[ 2][13][0] - 0.18139109 * out_step1[ 2][14][0]
+   + 0.32672033 * out_step1[ 3][12][0] + 0.04118974 * out_step1[ 3][13][0] - 0.20522679 * out_step1[ 3][14][0]
+   + 0.23050334 * out_step1[ 4][12][0] - 0.04391641 * out_step1[ 4][13][0] - 0.19100980 * out_step1[ 4][14][0]
+   - 0.05004810;
+
+out_step2[2][0][7] = 
+   - 0.14461090 * out_step1[ 4][ 0][0] - 0.01728051 * out_step1[ 4][ 1][0] - 0.18139109 * out_step1[ 4][ 2][0]
+   + 0.32672033 * out_step1[ 5][ 0][0] + 0.04118974 * out_step1[ 5][ 1][0] - 0.20522679 * out_step1[ 5][ 2][0]
+   + 0.23050334 * out_step1[ 6][ 0][0] - 0.04391641 * out_step1[ 6][ 1][0] - 0.19100980 * out_step1[ 6][ 2][0]
+   - 0.05004810;
+
+out_step2[2][1][7] = 
+   - 0.14461090 * out_step1[ 4][ 2][0] - 0.01728051 * out_step1[ 4][ 3][0] - 0.18139109 * out_step1[ 4][ 4][0]
+   + 0.32672033 * out_step1[ 5][ 2][0] + 0.04118974 * out_step1[ 5][ 3][0] - 0.20522679 * out_step1[ 5][ 4][0]
+   + 0.23050334 * out_step1[ 6][ 2][0] - 0.04391641 * out_step1[ 6][ 3][0] - 0.19100980 * out_step1[ 6][ 4][0]
+   - 0.05004810;
+
+out_step2[2][2][7] = 
+   - 0.14461090 * out_step1[ 4][ 4][0] - 0.01728051 * out_step1[ 4][ 5][0] - 0.18139109 * out_step1[ 4][ 6][0]
+   + 0.32672033 * out_step1[ 5][ 4][0] + 0.04118974 * out_step1[ 5][ 5][0] - 0.20522679 * out_step1[ 5][ 6][0]
+   + 0.23050334 * out_step1[ 6][ 4][0] - 0.04391641 * out_step1[ 6][ 5][0] - 0.19100980 * out_step1[ 6][ 6][0]
+   - 0.05004810;
+
+out_step2[2][3][7] = 
+   - 0.14461090 * out_step1[ 4][ 6][0] - 0.01728051 * out_step1[ 4][ 7][0] - 0.18139109 * out_step1[ 4][ 8][0]
+   + 0.32672033 * out_step1[ 5][ 6][0] + 0.04118974 * out_step1[ 5][ 7][0] - 0.20522679 * out_step1[ 5][ 8][0]
+   + 0.23050334 * out_step1[ 6][ 6][0] - 0.04391641 * out_step1[ 6][ 7][0] - 0.19100980 * out_step1[ 6][ 8][0]
+   - 0.05004810;
+
+out_step2[2][4][7] = 
+   - 0.14461090 * out_step1[ 4][ 8][0] - 0.01728051 * out_step1[ 4][ 9][0] - 0.18139109 * out_step1[ 4][10][0]
+   + 0.32672033 * out_step1[ 5][ 8][0] + 0.04118974 * out_step1[ 5][ 9][0] - 0.20522679 * out_step1[ 5][10][0]
+   + 0.23050334 * out_step1[ 6][ 8][0] - 0.04391641 * out_step1[ 6][ 9][0] - 0.19100980 * out_step1[ 6][10][0]
+   - 0.05004810;
+
+out_step2[2][5][7] = 
+   - 0.14461090 * out_step1[ 4][10][0] - 0.01728051 * out_step1[ 4][11][0] - 0.18139109 * out_step1[ 4][12][0]
+   + 0.32672033 * out_step1[ 5][10][0] + 0.04118974 * out_step1[ 5][11][0] - 0.20522679 * out_step1[ 5][12][0]
+   + 0.23050334 * out_step1[ 6][10][0] - 0.04391641 * out_step1[ 6][11][0] - 0.19100980 * out_step1[ 6][12][0]
+   - 0.05004810;
+
+out_step2[2][6][7] = 
+   - 0.14461090 * out_step1[ 4][12][0] - 0.01728051 * out_step1[ 4][13][0] - 0.18139109 * out_step1[ 4][14][0]
+   + 0.32672033 * out_step1[ 5][12][0] + 0.04118974 * out_step1[ 5][13][0] - 0.20522679 * out_step1[ 5][14][0]
+   + 0.23050334 * out_step1[ 6][12][0] - 0.04391641 * out_step1[ 6][13][0] - 0.19100980 * out_step1[ 6][14][0]
+   - 0.05004810;
+
+out_step2[3][0][7] = 
+   - 0.14461090 * out_step1[ 6][ 0][0] - 0.01728051 * out_step1[ 6][ 1][0] - 0.18139109 * out_step1[ 6][ 2][0]
+   + 0.32672033 * out_step1[ 7][ 0][0] + 0.04118974 * out_step1[ 7][ 1][0] - 0.20522679 * out_step1[ 7][ 2][0]
+   + 0.23050334 * out_step1[ 8][ 0][0] - 0.04391641 * out_step1[ 8][ 1][0] - 0.19100980 * out_step1[ 8][ 2][0]
+   - 0.05004810;
+
+out_step2[3][1][7] = 
+   - 0.14461090 * out_step1[ 6][ 2][0] - 0.01728051 * out_step1[ 6][ 3][0] - 0.18139109 * out_step1[ 6][ 4][0]
+   + 0.32672033 * out_step1[ 7][ 2][0] + 0.04118974 * out_step1[ 7][ 3][0] - 0.20522679 * out_step1[ 7][ 4][0]
+   + 0.23050334 * out_step1[ 8][ 2][0] - 0.04391641 * out_step1[ 8][ 3][0] - 0.19100980 * out_step1[ 8][ 4][0]
+   - 0.05004810;
+
+out_step2[3][2][7] = 
+   - 0.14461090 * out_step1[ 6][ 4][0] - 0.01728051 * out_step1[ 6][ 5][0] - 0.18139109 * out_step1[ 6][ 6][0]
+   + 0.32672033 * out_step1[ 7][ 4][0] + 0.04118974 * out_step1[ 7][ 5][0] - 0.20522679 * out_step1[ 7][ 6][0]
+   + 0.23050334 * out_step1[ 8][ 4][0] - 0.04391641 * out_step1[ 8][ 5][0] - 0.19100980 * out_step1[ 8][ 6][0]
+   - 0.05004810;
+
+out_step2[3][3][7] = 
+   - 0.14461090 * out_step1[ 6][ 6][0] - 0.01728051 * out_step1[ 6][ 7][0] - 0.18139109 * out_step1[ 6][ 8][0]
+   + 0.32672033 * out_step1[ 7][ 6][0] + 0.04118974 * out_step1[ 7][ 7][0] - 0.20522679 * out_step1[ 7][ 8][0]
+   + 0.23050334 * out_step1[ 8][ 6][0] - 0.04391641 * out_step1[ 8][ 7][0] - 0.19100980 * out_step1[ 8][ 8][0]
+   - 0.05004810;
+
+out_step2[3][4][7] = 
+   - 0.14461090 * out_step1[ 6][ 8][0] - 0.01728051 * out_step1[ 6][ 9][0] - 0.18139109 * out_step1[ 6][10][0]
+   + 0.32672033 * out_step1[ 7][ 8][0] + 0.04118974 * out_step1[ 7][ 9][0] - 0.20522679 * out_step1[ 7][10][0]
+   + 0.23050334 * out_step1[ 8][ 8][0] - 0.04391641 * out_step1[ 8][ 9][0] - 0.19100980 * out_step1[ 8][10][0]
+   - 0.05004810;
+
+out_step2[3][5][7] = 
+   - 0.14461090 * out_step1[ 6][10][0] - 0.01728051 * out_step1[ 6][11][0] - 0.18139109 * out_step1[ 6][12][0]
+   + 0.32672033 * out_step1[ 7][10][0] + 0.04118974 * out_step1[ 7][11][0] - 0.20522679 * out_step1[ 7][12][0]
+   + 0.23050334 * out_step1[ 8][10][0] - 0.04391641 * out_step1[ 8][11][0] - 0.19100980 * out_step1[ 8][12][0]
+   - 0.05004810;
+
+out_step2[3][6][7] = 
+   - 0.14461090 * out_step1[ 6][12][0] - 0.01728051 * out_step1[ 6][13][0] - 0.18139109 * out_step1[ 6][14][0]
+   + 0.32672033 * out_step1[ 7][12][0] + 0.04118974 * out_step1[ 7][13][0] - 0.20522679 * out_step1[ 7][14][0]
+   + 0.23050334 * out_step1[ 8][12][0] - 0.04391641 * out_step1[ 8][13][0] - 0.19100980 * out_step1[ 8][14][0]
+   - 0.05004810;
+
+out_step2[4][0][7] = 
+   - 0.14461090 * out_step1[ 8][ 0][0] - 0.01728051 * out_step1[ 8][ 1][0] - 0.18139109 * out_step1[ 8][ 2][0]
+   + 0.32672033 * out_step1[ 9][ 0][0] + 0.04118974 * out_step1[ 9][ 1][0] - 0.20522679 * out_step1[ 9][ 2][0]
+   + 0.23050334 * out_step1[10][ 0][0] - 0.04391641 * out_step1[10][ 1][0] - 0.19100980 * out_step1[10][ 2][0]
+   - 0.05004810;
+
+out_step2[4][1][7] = 
+   - 0.14461090 * out_step1[ 8][ 2][0] - 0.01728051 * out_step1[ 8][ 3][0] - 0.18139109 * out_step1[ 8][ 4][0]
+   + 0.32672033 * out_step1[ 9][ 2][0] + 0.04118974 * out_step1[ 9][ 3][0] - 0.20522679 * out_step1[ 9][ 4][0]
+   + 0.23050334 * out_step1[10][ 2][0] - 0.04391641 * out_step1[10][ 3][0] - 0.19100980 * out_step1[10][ 4][0]
+   - 0.05004810;
+
+out_step2[4][2][7] = 
+   - 0.14461090 * out_step1[ 8][ 4][0] - 0.01728051 * out_step1[ 8][ 5][0] - 0.18139109 * out_step1[ 8][ 6][0]
+   + 0.32672033 * out_step1[ 9][ 4][0] + 0.04118974 * out_step1[ 9][ 5][0] - 0.20522679 * out_step1[ 9][ 6][0]
+   + 0.23050334 * out_step1[10][ 4][0] - 0.04391641 * out_step1[10][ 5][0] - 0.19100980 * out_step1[10][ 6][0]
+   - 0.05004810;
+
+out_step2[4][3][7] = 
+   - 0.14461090 * out_step1[ 8][ 6][0] - 0.01728051 * out_step1[ 8][ 7][0] - 0.18139109 * out_step1[ 8][ 8][0]
+   + 0.32672033 * out_step1[ 9][ 6][0] + 0.04118974 * out_step1[ 9][ 7][0] - 0.20522679 * out_step1[ 9][ 8][0]
+   + 0.23050334 * out_step1[10][ 6][0] - 0.04391641 * out_step1[10][ 7][0] - 0.19100980 * out_step1[10][ 8][0]
+   - 0.05004810;
+
+out_step2[4][4][7] = 
+   - 0.14461090 * out_step1[ 8][ 8][0] - 0.01728051 * out_step1[ 8][ 9][0] - 0.18139109 * out_step1[ 8][10][0]
+   + 0.32672033 * out_step1[ 9][ 8][0] + 0.04118974 * out_step1[ 9][ 9][0] - 0.20522679 * out_step1[ 9][10][0]
+   + 0.23050334 * out_step1[10][ 8][0] - 0.04391641 * out_step1[10][ 9][0] - 0.19100980 * out_step1[10][10][0]
+   - 0.05004810;
+
+out_step2[4][5][7] = 
+   - 0.14461090 * out_step1[ 8][10][0] - 0.01728051 * out_step1[ 8][11][0] - 0.18139109 * out_step1[ 8][12][0]
+   + 0.32672033 * out_step1[ 9][10][0] + 0.04118974 * out_step1[ 9][11][0] - 0.20522679 * out_step1[ 9][12][0]
+   + 0.23050334 * out_step1[10][10][0] - 0.04391641 * out_step1[10][11][0] - 0.19100980 * out_step1[10][12][0]
+   - 0.05004810;
+
+out_step2[4][6][7] = 
+   - 0.14461090 * out_step1[ 8][12][0] - 0.01728051 * out_step1[ 8][13][0] - 0.18139109 * out_step1[ 8][14][0]
+   + 0.32672033 * out_step1[ 9][12][0] + 0.04118974 * out_step1[ 9][13][0] - 0.20522679 * out_step1[ 9][14][0]
+   + 0.23050334 * out_step1[10][12][0] - 0.04391641 * out_step1[10][13][0] - 0.19100980 * out_step1[10][14][0]
+   - 0.05004810;
+
+out_step2[5][0][7] = 
+   - 0.14461090 * out_step1[10][ 0][0] - 0.01728051 * out_step1[10][ 1][0] - 0.18139109 * out_step1[10][ 2][0]
+   + 0.32672033 * out_step1[11][ 0][0] + 0.04118974 * out_step1[11][ 1][0] - 0.20522679 * out_step1[11][ 2][0]
+   + 0.23050334 * out_step1[12][ 0][0] - 0.04391641 * out_step1[12][ 1][0] - 0.19100980 * out_step1[12][ 2][0]
+   - 0.05004810;
+
+out_step2[5][1][7] = 
+   - 0.14461090 * out_step1[10][ 2][0] - 0.01728051 * out_step1[10][ 3][0] - 0.18139109 * out_step1[10][ 4][0]
+   + 0.32672033 * out_step1[11][ 2][0] + 0.04118974 * out_step1[11][ 3][0] - 0.20522679 * out_step1[11][ 4][0]
+   + 0.23050334 * out_step1[12][ 2][0] - 0.04391641 * out_step1[12][ 3][0] - 0.19100980 * out_step1[12][ 4][0]
+   - 0.05004810;
+
+out_step2[5][2][7] = 
+   - 0.14461090 * out_step1[10][ 4][0] - 0.01728051 * out_step1[10][ 5][0] - 0.18139109 * out_step1[10][ 6][0]
+   + 0.32672033 * out_step1[11][ 4][0] + 0.04118974 * out_step1[11][ 5][0] - 0.20522679 * out_step1[11][ 6][0]
+   + 0.23050334 * out_step1[12][ 4][0] - 0.04391641 * out_step1[12][ 5][0] - 0.19100980 * out_step1[12][ 6][0]
+   - 0.05004810;
+
+out_step2[5][3][7] = 
+   - 0.14461090 * out_step1[10][ 6][0] - 0.01728051 * out_step1[10][ 7][0] - 0.18139109 * out_step1[10][ 8][0]
+   + 0.32672033 * out_step1[11][ 6][0] + 0.04118974 * out_step1[11][ 7][0] - 0.20522679 * out_step1[11][ 8][0]
+   + 0.23050334 * out_step1[12][ 6][0] - 0.04391641 * out_step1[12][ 7][0] - 0.19100980 * out_step1[12][ 8][0]
+   - 0.05004810;
+
+out_step2[5][4][7] = 
+   - 0.14461090 * out_step1[10][ 8][0] - 0.01728051 * out_step1[10][ 9][0] - 0.18139109 * out_step1[10][10][0]
+   + 0.32672033 * out_step1[11][ 8][0] + 0.04118974 * out_step1[11][ 9][0] - 0.20522679 * out_step1[11][10][0]
+   + 0.23050334 * out_step1[12][ 8][0] - 0.04391641 * out_step1[12][ 9][0] - 0.19100980 * out_step1[12][10][0]
+   - 0.05004810;
+
+out_step2[5][5][7] = 
+   - 0.14461090 * out_step1[10][10][0] - 0.01728051 * out_step1[10][11][0] - 0.18139109 * out_step1[10][12][0]
+   + 0.32672033 * out_step1[11][10][0] + 0.04118974 * out_step1[11][11][0] - 0.20522679 * out_step1[11][12][0]
+   + 0.23050334 * out_step1[12][10][0] - 0.04391641 * out_step1[12][11][0] - 0.19100980 * out_step1[12][12][0]
+   - 0.05004810;
+
+out_step2[5][6][7] = 
+   - 0.14461090 * out_step1[10][12][0] - 0.01728051 * out_step1[10][13][0] - 0.18139109 * out_step1[10][14][0]
+   + 0.32672033 * out_step1[11][12][0] + 0.04118974 * out_step1[11][13][0] - 0.20522679 * out_step1[11][14][0]
+   + 0.23050334 * out_step1[12][12][0] - 0.04391641 * out_step1[12][13][0] - 0.19100980 * out_step1[12][14][0]
+   - 0.05004810;
+
+out_step2[6][0][7] = 
+   - 0.14461090 * out_step1[12][ 0][0] - 0.01728051 * out_step1[12][ 1][0] - 0.18139109 * out_step1[12][ 2][0]
+   + 0.32672033 * out_step1[13][ 0][0] + 0.04118974 * out_step1[13][ 1][0] - 0.20522679 * out_step1[13][ 2][0]
+   + 0.23050334 * out_step1[14][ 0][0] - 0.04391641 * out_step1[14][ 1][0] - 0.19100980 * out_step1[14][ 2][0]
+   - 0.05004810;
+
+out_step2[6][1][7] = 
+   - 0.14461090 * out_step1[12][ 2][0] - 0.01728051 * out_step1[12][ 3][0] - 0.18139109 * out_step1[12][ 4][0]
+   + 0.32672033 * out_step1[13][ 2][0] + 0.04118974 * out_step1[13][ 3][0] - 0.20522679 * out_step1[13][ 4][0]
+   + 0.23050334 * out_step1[14][ 2][0] - 0.04391641 * out_step1[14][ 3][0] - 0.19100980 * out_step1[14][ 4][0]
+   - 0.05004810;
+
+out_step2[6][2][7] = 
+   - 0.14461090 * out_step1[12][ 4][0] - 0.01728051 * out_step1[12][ 5][0] - 0.18139109 * out_step1[12][ 6][0]
+   + 0.32672033 * out_step1[13][ 4][0] + 0.04118974 * out_step1[13][ 5][0] - 0.20522679 * out_step1[13][ 6][0]
+   + 0.23050334 * out_step1[14][ 4][0] - 0.04391641 * out_step1[14][ 5][0] - 0.19100980 * out_step1[14][ 6][0]
+   - 0.05004810;
+
+out_step2[6][3][7] = 
+   - 0.14461090 * out_step1[12][ 6][0] - 0.01728051 * out_step1[12][ 7][0] - 0.18139109 * out_step1[12][ 8][0]
+   + 0.32672033 * out_step1[13][ 6][0] + 0.04118974 * out_step1[13][ 7][0] - 0.20522679 * out_step1[13][ 8][0]
+   + 0.23050334 * out_step1[14][ 6][0] - 0.04391641 * out_step1[14][ 7][0] - 0.19100980 * out_step1[14][ 8][0]
+   - 0.05004810;
+
+out_step2[6][4][7] = 
+   - 0.14461090 * out_step1[12][ 8][0] - 0.01728051 * out_step1[12][ 9][0] - 0.18139109 * out_step1[12][10][0]
+   + 0.32672033 * out_step1[13][ 8][0] + 0.04118974 * out_step1[13][ 9][0] - 0.20522679 * out_step1[13][10][0]
+   + 0.23050334 * out_step1[14][ 8][0] - 0.04391641 * out_step1[14][ 9][0] - 0.19100980 * out_step1[14][10][0]
+   - 0.05004810;
+
+out_step2[6][5][7] = 
+   - 0.14461090 * out_step1[12][10][0] - 0.01728051 * out_step1[12][11][0] - 0.18139109 * out_step1[12][12][0]
+   + 0.32672033 * out_step1[13][10][0] + 0.04118974 * out_step1[13][11][0] - 0.20522679 * out_step1[13][12][0]
+   + 0.23050334 * out_step1[14][10][0] - 0.04391641 * out_step1[14][11][0] - 0.19100980 * out_step1[14][12][0]
+   - 0.05004810;
+
+out_step2[6][6][7] = 
+   - 0.14461090 * out_step1[12][12][0] - 0.01728051 * out_step1[12][13][0] - 0.18139109 * out_step1[12][14][0]
+   + 0.32672033 * out_step1[13][12][0] + 0.04118974 * out_step1[13][13][0] - 0.20522679 * out_step1[13][14][0]
+   + 0.23050334 * out_step1[14][12][0] - 0.04391641 * out_step1[14][13][0] - 0.19100980 * out_step1[14][14][0]
+   - 0.05004810;
 
 
 // determine value of activation function Rectified-Linear-Unit
-out_step3[ 0][ 0] = (out_step2[ 0][ 0] > 0) ? out_step2[ 0][ 0] : 0;
-out_step3[ 0][ 1] = (out_step2[ 0][ 1] > 0) ? out_step2[ 0][ 1] : 0;
-out_step3[ 0][ 2] = (out_step2[ 0][ 2] > 0) ? out_step2[ 0][ 2] : 0;
-out_step3[ 0][ 3] = (out_step2[ 0][ 3] > 0) ? out_step2[ 0][ 3] : 0;
-out_step3[ 0][ 4] = (out_step2[ 0][ 4] > 0) ? out_step2[ 0][ 4] : 0;
-out_step3[ 0][ 5] = (out_step2[ 0][ 5] > 0) ? out_step2[ 0][ 5] : 0;
-out_step3[ 0][ 6] = (out_step2[ 0][ 6] > 0) ? out_step2[ 0][ 6] : 0;
-out_step3[ 0][ 7] = (out_step2[ 0][ 7] > 0) ? out_step2[ 0][ 7] : 0;
-out_step3[ 0][ 8] = (out_step2[ 0][ 8] > 0) ? out_step2[ 0][ 8] : 0;
-out_step3[ 0][ 9] = (out_step2[ 0][ 9] > 0) ? out_step2[ 0][ 9] : 0;
-out_step3[ 0][10] = (out_step2[ 0][10] > 0) ? out_step2[ 0][10] : 0;
-out_step3[ 0][11] = (out_step2[ 0][11] > 0) ? out_step2[ 0][11] : 0;
-out_step3[ 0][12] = (out_step2[ 0][12] > 0) ? out_step2[ 0][12] : 0;
-out_step3[ 0][13] = (out_step2[ 0][13] > 0) ? out_step2[ 0][13] : 0;
-out_step3[ 1][ 0] = (out_step2[ 1][ 0] > 0) ? out_step2[ 1][ 0] : 0;
-out_step3[ 1][ 1] = (out_step2[ 1][ 1] > 0) ? out_step2[ 1][ 1] : 0;
-out_step3[ 1][ 2] = (out_step2[ 1][ 2] > 0) ? out_step2[ 1][ 2] : 0;
-out_step3[ 1][ 3] = (out_step2[ 1][ 3] > 0) ? out_step2[ 1][ 3] : 0;
-out_step3[ 1][ 4] = (out_step2[ 1][ 4] > 0) ? out_step2[ 1][ 4] : 0;
-out_step3[ 1][ 5] = (out_step2[ 1][ 5] > 0) ? out_step2[ 1][ 5] : 0;
-out_step3[ 1][ 6] = (out_step2[ 1][ 6] > 0) ? out_step2[ 1][ 6] : 0;
-out_step3[ 1][ 7] = (out_step2[ 1][ 7] > 0) ? out_step2[ 1][ 7] : 0;
-out_step3[ 1][ 8] = (out_step2[ 1][ 8] > 0) ? out_step2[ 1][ 8] : 0;
-out_step3[ 1][ 9] = (out_step2[ 1][ 9] > 0) ? out_step2[ 1][ 9] : 0;
-out_step3[ 1][10] = (out_step2[ 1][10] > 0) ? out_step2[ 1][10] : 0;
-out_step3[ 1][11] = (out_step2[ 1][11] > 0) ? out_step2[ 1][11] : 0;
-out_step3[ 1][12] = (out_step2[ 1][12] > 0) ? out_step2[ 1][12] : 0;
-out_step3[ 1][13] = (out_step2[ 1][13] > 0) ? out_step2[ 1][13] : 0;
-out_step3[ 2][ 0] = (out_step2[ 2][ 0] > 0) ? out_step2[ 2][ 0] : 0;
-out_step3[ 2][ 1] = (out_step2[ 2][ 1] > 0) ? out_step2[ 2][ 1] : 0;
-out_step3[ 2][ 2] = (out_step2[ 2][ 2] > 0) ? out_step2[ 2][ 2] : 0;
-out_step3[ 2][ 3] = (out_step2[ 2][ 3] > 0) ? out_step2[ 2][ 3] : 0;
-out_step3[ 2][ 4] = (out_step2[ 2][ 4] > 0) ? out_step2[ 2][ 4] : 0;
-out_step3[ 2][ 5] = (out_step2[ 2][ 5] > 0) ? out_step2[ 2][ 5] : 0;
-out_step3[ 2][ 6] = (out_step2[ 2][ 6] > 0) ? out_step2[ 2][ 6] : 0;
-out_step3[ 2][ 7] = (out_step2[ 2][ 7] > 0) ? out_step2[ 2][ 7] : 0;
-out_step3[ 2][ 8] = (out_step2[ 2][ 8] > 0) ? out_step2[ 2][ 8] : 0;
-out_step3[ 2][ 9] = (out_step2[ 2][ 9] > 0) ? out_step2[ 2][ 9] : 0;
-out_step3[ 2][10] = (out_step2[ 2][10] > 0) ? out_step2[ 2][10] : 0;
-out_step3[ 2][11] = (out_step2[ 2][11] > 0) ? out_step2[ 2][11] : 0;
-out_step3[ 2][12] = (out_step2[ 2][12] > 0) ? out_step2[ 2][12] : 0;
-out_step3[ 2][13] = (out_step2[ 2][13] > 0) ? out_step2[ 2][13] : 0;
-out_step3[ 3][ 0] = (out_step2[ 3][ 0] > 0) ? out_step2[ 3][ 0] : 0;
-out_step3[ 3][ 1] = (out_step2[ 3][ 1] > 0) ? out_step2[ 3][ 1] : 0;
-out_step3[ 3][ 2] = (out_step2[ 3][ 2] > 0) ? out_step2[ 3][ 2] : 0;
-out_step3[ 3][ 3] = (out_step2[ 3][ 3] > 0) ? out_step2[ 3][ 3] : 0;
-out_step3[ 3][ 4] = (out_step2[ 3][ 4] > 0) ? out_step2[ 3][ 4] : 0;
-out_step3[ 3][ 5] = (out_step2[ 3][ 5] > 0) ? out_step2[ 3][ 5] : 0;
-out_step3[ 3][ 6] = (out_step2[ 3][ 6] > 0) ? out_step2[ 3][ 6] : 0;
-out_step3[ 3][ 7] = (out_step2[ 3][ 7] > 0) ? out_step2[ 3][ 7] : 0;
-out_step3[ 3][ 8] = (out_step2[ 3][ 8] > 0) ? out_step2[ 3][ 8] : 0;
-out_step3[ 3][ 9] = (out_step2[ 3][ 9] > 0) ? out_step2[ 3][ 9] : 0;
-out_step3[ 3][10] = (out_step2[ 3][10] > 0) ? out_step2[ 3][10] : 0;
-out_step3[ 3][11] = (out_step2[ 3][11] > 0) ? out_step2[ 3][11] : 0;
-out_step3[ 3][12] = (out_step2[ 3][12] > 0) ? out_step2[ 3][12] : 0;
-out_step3[ 3][13] = (out_step2[ 3][13] > 0) ? out_step2[ 3][13] : 0;
-out_step3[ 4][ 0] = (out_step2[ 4][ 0] > 0) ? out_step2[ 4][ 0] : 0;
-out_step3[ 4][ 1] = (out_step2[ 4][ 1] > 0) ? out_step2[ 4][ 1] : 0;
-out_step3[ 4][ 2] = (out_step2[ 4][ 2] > 0) ? out_step2[ 4][ 2] : 0;
-out_step3[ 4][ 3] = (out_step2[ 4][ 3] > 0) ? out_step2[ 4][ 3] : 0;
-out_step3[ 4][ 4] = (out_step2[ 4][ 4] > 0) ? out_step2[ 4][ 4] : 0;
-out_step3[ 4][ 5] = (out_step2[ 4][ 5] > 0) ? out_step2[ 4][ 5] : 0;
-out_step3[ 4][ 6] = (out_step2[ 4][ 6] > 0) ? out_step2[ 4][ 6] : 0;
-out_step3[ 4][ 7] = (out_step2[ 4][ 7] > 0) ? out_step2[ 4][ 7] : 0;
-out_step3[ 4][ 8] = (out_step2[ 4][ 8] > 0) ? out_step2[ 4][ 8] : 0;
-out_step3[ 4][ 9] = (out_step2[ 4][ 9] > 0) ? out_step2[ 4][ 9] : 0;
-out_step3[ 4][10] = (out_step2[ 4][10] > 0) ? out_step2[ 4][10] : 0;
-out_step3[ 4][11] = (out_step2[ 4][11] > 0) ? out_step2[ 4][11] : 0;
-out_step3[ 4][12] = (out_step2[ 4][12] > 0) ? out_step2[ 4][12] : 0;
-out_step3[ 4][13] = (out_step2[ 4][13] > 0) ? out_step2[ 4][13] : 0;
-out_step3[ 5][ 0] = (out_step2[ 5][ 0] > 0) ? out_step2[ 5][ 0] : 0;
-out_step3[ 5][ 1] = (out_step2[ 5][ 1] > 0) ? out_step2[ 5][ 1] : 0;
-out_step3[ 5][ 2] = (out_step2[ 5][ 2] > 0) ? out_step2[ 5][ 2] : 0;
-out_step3[ 5][ 3] = (out_step2[ 5][ 3] > 0) ? out_step2[ 5][ 3] : 0;
-out_step3[ 5][ 4] = (out_step2[ 5][ 4] > 0) ? out_step2[ 5][ 4] : 0;
-out_step3[ 5][ 5] = (out_step2[ 5][ 5] > 0) ? out_step2[ 5][ 5] : 0;
-out_step3[ 5][ 6] = (out_step2[ 5][ 6] > 0) ? out_step2[ 5][ 6] : 0;
-out_step3[ 5][ 7] = (out_step2[ 5][ 7] > 0) ? out_step2[ 5][ 7] : 0;
-out_step3[ 5][ 8] = (out_step2[ 5][ 8] > 0) ? out_step2[ 5][ 8] : 0;
-out_step3[ 5][ 9] = (out_step2[ 5][ 9] > 0) ? out_step2[ 5][ 9] : 0;
-out_step3[ 5][10] = (out_step2[ 5][10] > 0) ? out_step2[ 5][10] : 0;
-out_step3[ 5][11] = (out_step2[ 5][11] > 0) ? out_step2[ 5][11] : 0;
-out_step3[ 5][12] = (out_step2[ 5][12] > 0) ? out_step2[ 5][12] : 0;
-out_step3[ 5][13] = (out_step2[ 5][13] > 0) ? out_step2[ 5][13] : 0;
-out_step3[ 6][ 0] = (out_step2[ 6][ 0] > 0) ? out_step2[ 6][ 0] : 0;
-out_step3[ 6][ 1] = (out_step2[ 6][ 1] > 0) ? out_step2[ 6][ 1] : 0;
-out_step3[ 6][ 2] = (out_step2[ 6][ 2] > 0) ? out_step2[ 6][ 2] : 0;
-out_step3[ 6][ 3] = (out_step2[ 6][ 3] > 0) ? out_step2[ 6][ 3] : 0;
-out_step3[ 6][ 4] = (out_step2[ 6][ 4] > 0) ? out_step2[ 6][ 4] : 0;
-out_step3[ 6][ 5] = (out_step2[ 6][ 5] > 0) ? out_step2[ 6][ 5] : 0;
-out_step3[ 6][ 6] = (out_step2[ 6][ 6] > 0) ? out_step2[ 6][ 6] : 0;
-out_step3[ 6][ 7] = (out_step2[ 6][ 7] > 0) ? out_step2[ 6][ 7] : 0;
-out_step3[ 6][ 8] = (out_step2[ 6][ 8] > 0) ? out_step2[ 6][ 8] : 0;
-out_step3[ 6][ 9] = (out_step2[ 6][ 9] > 0) ? out_step2[ 6][ 9] : 0;
-out_step3[ 6][10] = (out_step2[ 6][10] > 0) ? out_step2[ 6][10] : 0;
-out_step3[ 6][11] = (out_step2[ 6][11] > 0) ? out_step2[ 6][11] : 0;
-out_step3[ 6][12] = (out_step2[ 6][12] > 0) ? out_step2[ 6][12] : 0;
-out_step3[ 6][13] = (out_step2[ 6][13] > 0) ? out_step2[ 6][13] : 0;
-out_step3[ 7][ 0] = (out_step2[ 7][ 0] > 0) ? out_step2[ 7][ 0] : 0;
-out_step3[ 7][ 1] = (out_step2[ 7][ 1] > 0) ? out_step2[ 7][ 1] : 0;
-out_step3[ 7][ 2] = (out_step2[ 7][ 2] > 0) ? out_step2[ 7][ 2] : 0;
-out_step3[ 7][ 3] = (out_step2[ 7][ 3] > 0) ? out_step2[ 7][ 3] : 0;
-out_step3[ 7][ 4] = (out_step2[ 7][ 4] > 0) ? out_step2[ 7][ 4] : 0;
-out_step3[ 7][ 5] = (out_step2[ 7][ 5] > 0) ? out_step2[ 7][ 5] : 0;
-out_step3[ 7][ 6] = (out_step2[ 7][ 6] > 0) ? out_step2[ 7][ 6] : 0;
-out_step3[ 7][ 7] = (out_step2[ 7][ 7] > 0) ? out_step2[ 7][ 7] : 0;
-out_step3[ 7][ 8] = (out_step2[ 7][ 8] > 0) ? out_step2[ 7][ 8] : 0;
-out_step3[ 7][ 9] = (out_step2[ 7][ 9] > 0) ? out_step2[ 7][ 9] : 0;
-out_step3[ 7][10] = (out_step2[ 7][10] > 0) ? out_step2[ 7][10] : 0;
-out_step3[ 7][11] = (out_step2[ 7][11] > 0) ? out_step2[ 7][11] : 0;
-out_step3[ 7][12] = (out_step2[ 7][12] > 0) ? out_step2[ 7][12] : 0;
-out_step3[ 7][13] = (out_step2[ 7][13] > 0) ? out_step2[ 7][13] : 0;
-out_step3[ 8][ 0] = (out_step2[ 8][ 0] > 0) ? out_step2[ 8][ 0] : 0;
-out_step3[ 8][ 1] = (out_step2[ 8][ 1] > 0) ? out_step2[ 8][ 1] : 0;
-out_step3[ 8][ 2] = (out_step2[ 8][ 2] > 0) ? out_step2[ 8][ 2] : 0;
-out_step3[ 8][ 3] = (out_step2[ 8][ 3] > 0) ? out_step2[ 8][ 3] : 0;
-out_step3[ 8][ 4] = (out_step2[ 8][ 4] > 0) ? out_step2[ 8][ 4] : 0;
-out_step3[ 8][ 5] = (out_step2[ 8][ 5] > 0) ? out_step2[ 8][ 5] : 0;
-out_step3[ 8][ 6] = (out_step2[ 8][ 6] > 0) ? out_step2[ 8][ 6] : 0;
-out_step3[ 8][ 7] = (out_step2[ 8][ 7] > 0) ? out_step2[ 8][ 7] : 0;
-out_step3[ 8][ 8] = (out_step2[ 8][ 8] > 0) ? out_step2[ 8][ 8] : 0;
-out_step3[ 8][ 9] = (out_step2[ 8][ 9] > 0) ? out_step2[ 8][ 9] : 0;
-out_step3[ 8][10] = (out_step2[ 8][10] > 0) ? out_step2[ 8][10] : 0;
-out_step3[ 8][11] = (out_step2[ 8][11] > 0) ? out_step2[ 8][11] : 0;
-out_step3[ 8][12] = (out_step2[ 8][12] > 0) ? out_step2[ 8][12] : 0;
-out_step3[ 8][13] = (out_step2[ 8][13] > 0) ? out_step2[ 8][13] : 0;
-out_step3[ 9][ 0] = (out_step2[ 9][ 0] > 0) ? out_step2[ 9][ 0] : 0;
-out_step3[ 9][ 1] = (out_step2[ 9][ 1] > 0) ? out_step2[ 9][ 1] : 0;
-out_step3[ 9][ 2] = (out_step2[ 9][ 2] > 0) ? out_step2[ 9][ 2] : 0;
-out_step3[ 9][ 3] = (out_step2[ 9][ 3] > 0) ? out_step2[ 9][ 3] : 0;
-out_step3[ 9][ 4] = (out_step2[ 9][ 4] > 0) ? out_step2[ 9][ 4] : 0;
-out_step3[ 9][ 5] = (out_step2[ 9][ 5] > 0) ? out_step2[ 9][ 5] : 0;
-out_step3[ 9][ 6] = (out_step2[ 9][ 6] > 0) ? out_step2[ 9][ 6] : 0;
-out_step3[ 9][ 7] = (out_step2[ 9][ 7] > 0) ? out_step2[ 9][ 7] : 0;
-out_step3[ 9][ 8] = (out_step2[ 9][ 8] > 0) ? out_step2[ 9][ 8] : 0;
-out_step3[ 9][ 9] = (out_step2[ 9][ 9] > 0) ? out_step2[ 9][ 9] : 0;
-out_step3[ 9][10] = (out_step2[ 9][10] > 0) ? out_step2[ 9][10] : 0;
-out_step3[ 9][11] = (out_step2[ 9][11] > 0) ? out_step2[ 9][11] : 0;
-out_step3[ 9][12] = (out_step2[ 9][12] > 0) ? out_step2[ 9][12] : 0;
-out_step3[ 9][13] = (out_step2[ 9][13] > 0) ? out_step2[ 9][13] : 0;
-out_step3[10][ 0] = (out_step2[10][ 0] > 0) ? out_step2[10][ 0] : 0;
-out_step3[10][ 1] = (out_step2[10][ 1] > 0) ? out_step2[10][ 1] : 0;
-out_step3[10][ 2] = (out_step2[10][ 2] > 0) ? out_step2[10][ 2] : 0;
-out_step3[10][ 3] = (out_step2[10][ 3] > 0) ? out_step2[10][ 3] : 0;
-out_step3[10][ 4] = (out_step2[10][ 4] > 0) ? out_step2[10][ 4] : 0;
-out_step3[10][ 5] = (out_step2[10][ 5] > 0) ? out_step2[10][ 5] : 0;
-out_step3[10][ 6] = (out_step2[10][ 6] > 0) ? out_step2[10][ 6] : 0;
-out_step3[10][ 7] = (out_step2[10][ 7] > 0) ? out_step2[10][ 7] : 0;
-out_step3[10][ 8] = (out_step2[10][ 8] > 0) ? out_step2[10][ 8] : 0;
-out_step3[10][ 9] = (out_step2[10][ 9] > 0) ? out_step2[10][ 9] : 0;
-out_step3[10][10] = (out_step2[10][10] > 0) ? out_step2[10][10] : 0;
-out_step3[10][11] = (out_step2[10][11] > 0) ? out_step2[10][11] : 0;
-out_step3[10][12] = (out_step2[10][12] > 0) ? out_step2[10][12] : 0;
-out_step3[10][13] = (out_step2[10][13] > 0) ? out_step2[10][13] : 0;
-out_step3[11][ 0] = (out_step2[11][ 0] > 0) ? out_step2[11][ 0] : 0;
-out_step3[11][ 1] = (out_step2[11][ 1] > 0) ? out_step2[11][ 1] : 0;
-out_step3[11][ 2] = (out_step2[11][ 2] > 0) ? out_step2[11][ 2] : 0;
-out_step3[11][ 3] = (out_step2[11][ 3] > 0) ? out_step2[11][ 3] : 0;
-out_step3[11][ 4] = (out_step2[11][ 4] > 0) ? out_step2[11][ 4] : 0;
-out_step3[11][ 5] = (out_step2[11][ 5] > 0) ? out_step2[11][ 5] : 0;
-out_step3[11][ 6] = (out_step2[11][ 6] > 0) ? out_step2[11][ 6] : 0;
-out_step3[11][ 7] = (out_step2[11][ 7] > 0) ? out_step2[11][ 7] : 0;
-out_step3[11][ 8] = (out_step2[11][ 8] > 0) ? out_step2[11][ 8] : 0;
-out_step3[11][ 9] = (out_step2[11][ 9] > 0) ? out_step2[11][ 9] : 0;
-out_step3[11][10] = (out_step2[11][10] > 0) ? out_step2[11][10] : 0;
-out_step3[11][11] = (out_step2[11][11] > 0) ? out_step2[11][11] : 0;
-out_step3[11][12] = (out_step2[11][12] > 0) ? out_step2[11][12] : 0;
-out_step3[11][13] = (out_step2[11][13] > 0) ? out_step2[11][13] : 0;
-out_step3[12][ 0] = (out_step2[12][ 0] > 0) ? out_step2[12][ 0] : 0;
-out_step3[12][ 1] = (out_step2[12][ 1] > 0) ? out_step2[12][ 1] : 0;
-out_step3[12][ 2] = (out_step2[12][ 2] > 0) ? out_step2[12][ 2] : 0;
-out_step3[12][ 3] = (out_step2[12][ 3] > 0) ? out_step2[12][ 3] : 0;
-out_step3[12][ 4] = (out_step2[12][ 4] > 0) ? out_step2[12][ 4] : 0;
-out_step3[12][ 5] = (out_step2[12][ 5] > 0) ? out_step2[12][ 5] : 0;
-out_step3[12][ 6] = (out_step2[12][ 6] > 0) ? out_step2[12][ 6] : 0;
-out_step3[12][ 7] = (out_step2[12][ 7] > 0) ? out_step2[12][ 7] : 0;
-out_step3[12][ 8] = (out_step2[12][ 8] > 0) ? out_step2[12][ 8] : 0;
-out_step3[12][ 9] = (out_step2[12][ 9] > 0) ? out_step2[12][ 9] : 0;
-out_step3[12][10] = (out_step2[12][10] > 0) ? out_step2[12][10] : 0;
-out_step3[12][11] = (out_step2[12][11] > 0) ? out_step2[12][11] : 0;
-out_step3[12][12] = (out_step2[12][12] > 0) ? out_step2[12][12] : 0;
-out_step3[12][13] = (out_step2[12][13] > 0) ? out_step2[12][13] : 0;
-out_step3[13][ 0] = (out_step2[13][ 0] > 0) ? out_step2[13][ 0] : 0;
-out_step3[13][ 1] = (out_step2[13][ 1] > 0) ? out_step2[13][ 1] : 0;
-out_step3[13][ 2] = (out_step2[13][ 2] > 0) ? out_step2[13][ 2] : 0;
-out_step3[13][ 3] = (out_step2[13][ 3] > 0) ? out_step2[13][ 3] : 0;
-out_step3[13][ 4] = (out_step2[13][ 4] > 0) ? out_step2[13][ 4] : 0;
-out_step3[13][ 5] = (out_step2[13][ 5] > 0) ? out_step2[13][ 5] : 0;
-out_step3[13][ 6] = (out_step2[13][ 6] > 0) ? out_step2[13][ 6] : 0;
-out_step3[13][ 7] = (out_step2[13][ 7] > 0) ? out_step2[13][ 7] : 0;
-out_step3[13][ 8] = (out_step2[13][ 8] > 0) ? out_step2[13][ 8] : 0;
-out_step3[13][ 9] = (out_step2[13][ 9] > 0) ? out_step2[13][ 9] : 0;
-out_step3[13][10] = (out_step2[13][10] > 0) ? out_step2[13][10] : 0;
-out_step3[13][11] = (out_step2[13][11] > 0) ? out_step2[13][11] : 0;
-out_step3[13][12] = (out_step2[13][12] > 0) ? out_step2[13][12] : 0;
-out_step3[13][13] = (out_step2[13][13] > 0) ? out_step2[13][13] : 0;
+out_step3[ 0][ 0][0] = (out_step2[ 0][ 0][0] > 0) ? out_step2[ 0][ 0][0] : 0;
+out_step3[ 0][ 1][0] = (out_step2[ 0][ 1][0] > 0) ? out_step2[ 0][ 1][0] : 0;
+out_step3[ 0][ 2][0] = (out_step2[ 0][ 2][0] > 0) ? out_step2[ 0][ 2][0] : 0;
+out_step3[ 0][ 3][0] = (out_step2[ 0][ 3][0] > 0) ? out_step2[ 0][ 3][0] : 0;
+out_step3[ 0][ 4][0] = (out_step2[ 0][ 4][0] > 0) ? out_step2[ 0][ 4][0] : 0;
+out_step3[ 0][ 5][0] = (out_step2[ 0][ 5][0] > 0) ? out_step2[ 0][ 5][0] : 0;
+out_step3[ 0][ 6][0] = (out_step2[ 0][ 6][0] > 0) ? out_step2[ 0][ 6][0] : 0;
+out_step3[ 1][ 0][0] = (out_step2[ 1][ 0][0] > 0) ? out_step2[ 1][ 0][0] : 0;
+out_step3[ 1][ 1][0] = (out_step2[ 1][ 1][0] > 0) ? out_step2[ 1][ 1][0] : 0;
+out_step3[ 1][ 2][0] = (out_step2[ 1][ 2][0] > 0) ? out_step2[ 1][ 2][0] : 0;
+out_step3[ 1][ 3][0] = (out_step2[ 1][ 3][0] > 0) ? out_step2[ 1][ 3][0] : 0;
+out_step3[ 1][ 4][0] = (out_step2[ 1][ 4][0] > 0) ? out_step2[ 1][ 4][0] : 0;
+out_step3[ 1][ 5][0] = (out_step2[ 1][ 5][0] > 0) ? out_step2[ 1][ 5][0] : 0;
+out_step3[ 1][ 6][0] = (out_step2[ 1][ 6][0] > 0) ? out_step2[ 1][ 6][0] : 0;
+out_step3[ 2][ 0][0] = (out_step2[ 2][ 0][0] > 0) ? out_step2[ 2][ 0][0] : 0;
+out_step3[ 2][ 1][0] = (out_step2[ 2][ 1][0] > 0) ? out_step2[ 2][ 1][0] : 0;
+out_step3[ 2][ 2][0] = (out_step2[ 2][ 2][0] > 0) ? out_step2[ 2][ 2][0] : 0;
+out_step3[ 2][ 3][0] = (out_step2[ 2][ 3][0] > 0) ? out_step2[ 2][ 3][0] : 0;
+out_step3[ 2][ 4][0] = (out_step2[ 2][ 4][0] > 0) ? out_step2[ 2][ 4][0] : 0;
+out_step3[ 2][ 5][0] = (out_step2[ 2][ 5][0] > 0) ? out_step2[ 2][ 5][0] : 0;
+out_step3[ 2][ 6][0] = (out_step2[ 2][ 6][0] > 0) ? out_step2[ 2][ 6][0] : 0;
+out_step3[ 3][ 0][0] = (out_step2[ 3][ 0][0] > 0) ? out_step2[ 3][ 0][0] : 0;
+out_step3[ 3][ 1][0] = (out_step2[ 3][ 1][0] > 0) ? out_step2[ 3][ 1][0] : 0;
+out_step3[ 3][ 2][0] = (out_step2[ 3][ 2][0] > 0) ? out_step2[ 3][ 2][0] : 0;
+out_step3[ 3][ 3][0] = (out_step2[ 3][ 3][0] > 0) ? out_step2[ 3][ 3][0] : 0;
+out_step3[ 3][ 4][0] = (out_step2[ 3][ 4][0] > 0) ? out_step2[ 3][ 4][0] : 0;
+out_step3[ 3][ 5][0] = (out_step2[ 3][ 5][0] > 0) ? out_step2[ 3][ 5][0] : 0;
+out_step3[ 3][ 6][0] = (out_step2[ 3][ 6][0] > 0) ? out_step2[ 3][ 6][0] : 0;
+out_step3[ 4][ 0][0] = (out_step2[ 4][ 0][0] > 0) ? out_step2[ 4][ 0][0] : 0;
+out_step3[ 4][ 1][0] = (out_step2[ 4][ 1][0] > 0) ? out_step2[ 4][ 1][0] : 0;
+out_step3[ 4][ 2][0] = (out_step2[ 4][ 2][0] > 0) ? out_step2[ 4][ 2][0] : 0;
+out_step3[ 4][ 3][0] = (out_step2[ 4][ 3][0] > 0) ? out_step2[ 4][ 3][0] : 0;
+out_step3[ 4][ 4][0] = (out_step2[ 4][ 4][0] > 0) ? out_step2[ 4][ 4][0] : 0;
+out_step3[ 4][ 5][0] = (out_step2[ 4][ 5][0] > 0) ? out_step2[ 4][ 5][0] : 0;
+out_step3[ 4][ 6][0] = (out_step2[ 4][ 6][0] > 0) ? out_step2[ 4][ 6][0] : 0;
+out_step3[ 5][ 0][0] = (out_step2[ 5][ 0][0] > 0) ? out_step2[ 5][ 0][0] : 0;
+out_step3[ 5][ 1][0] = (out_step2[ 5][ 1][0] > 0) ? out_step2[ 5][ 1][0] : 0;
+out_step3[ 5][ 2][0] = (out_step2[ 5][ 2][0] > 0) ? out_step2[ 5][ 2][0] : 0;
+out_step3[ 5][ 3][0] = (out_step2[ 5][ 3][0] > 0) ? out_step2[ 5][ 3][0] : 0;
+out_step3[ 5][ 4][0] = (out_step2[ 5][ 4][0] > 0) ? out_step2[ 5][ 4][0] : 0;
+out_step3[ 5][ 5][0] = (out_step2[ 5][ 5][0] > 0) ? out_step2[ 5][ 5][0] : 0;
+out_step3[ 5][ 6][0] = (out_step2[ 5][ 6][0] > 0) ? out_step2[ 5][ 6][0] : 0;
+out_step3[ 6][ 0][0] = (out_step2[ 6][ 0][0] > 0) ? out_step2[ 6][ 0][0] : 0;
+out_step3[ 6][ 1][0] = (out_step2[ 6][ 1][0] > 0) ? out_step2[ 6][ 1][0] : 0;
+out_step3[ 6][ 2][0] = (out_step2[ 6][ 2][0] > 0) ? out_step2[ 6][ 2][0] : 0;
+out_step3[ 6][ 3][0] = (out_step2[ 6][ 3][0] > 0) ? out_step2[ 6][ 3][0] : 0;
+out_step3[ 6][ 4][0] = (out_step2[ 6][ 4][0] > 0) ? out_step2[ 6][ 4][0] : 0;
+out_step3[ 6][ 5][0] = (out_step2[ 6][ 5][0] > 0) ? out_step2[ 6][ 5][0] : 0;
+out_step3[ 6][ 6][0] = (out_step2[ 6][ 6][0] > 0) ? out_step2[ 6][ 6][0] : 0;
+out_step3[ 0][ 0][1] = (out_step2[ 0][ 0][1] > 0) ? out_step2[ 0][ 0][1] : 0;
+out_step3[ 0][ 1][1] = (out_step2[ 0][ 1][1] > 0) ? out_step2[ 0][ 1][1] : 0;
+out_step3[ 0][ 2][1] = (out_step2[ 0][ 2][1] > 0) ? out_step2[ 0][ 2][1] : 0;
+out_step3[ 0][ 3][1] = (out_step2[ 0][ 3][1] > 0) ? out_step2[ 0][ 3][1] : 0;
+out_step3[ 0][ 4][1] = (out_step2[ 0][ 4][1] > 0) ? out_step2[ 0][ 4][1] : 0;
+out_step3[ 0][ 5][1] = (out_step2[ 0][ 5][1] > 0) ? out_step2[ 0][ 5][1] : 0;
+out_step3[ 0][ 6][1] = (out_step2[ 0][ 6][1] > 0) ? out_step2[ 0][ 6][1] : 0;
+out_step3[ 1][ 0][1] = (out_step2[ 1][ 0][1] > 0) ? out_step2[ 1][ 0][1] : 0;
+out_step3[ 1][ 1][1] = (out_step2[ 1][ 1][1] > 0) ? out_step2[ 1][ 1][1] : 0;
+out_step3[ 1][ 2][1] = (out_step2[ 1][ 2][1] > 0) ? out_step2[ 1][ 2][1] : 0;
+out_step3[ 1][ 3][1] = (out_step2[ 1][ 3][1] > 0) ? out_step2[ 1][ 3][1] : 0;
+out_step3[ 1][ 4][1] = (out_step2[ 1][ 4][1] > 0) ? out_step2[ 1][ 4][1] : 0;
+out_step3[ 1][ 5][1] = (out_step2[ 1][ 5][1] > 0) ? out_step2[ 1][ 5][1] : 0;
+out_step3[ 1][ 6][1] = (out_step2[ 1][ 6][1] > 0) ? out_step2[ 1][ 6][1] : 0;
+out_step3[ 2][ 0][1] = (out_step2[ 2][ 0][1] > 0) ? out_step2[ 2][ 0][1] : 0;
+out_step3[ 2][ 1][1] = (out_step2[ 2][ 1][1] > 0) ? out_step2[ 2][ 1][1] : 0;
+out_step3[ 2][ 2][1] = (out_step2[ 2][ 2][1] > 0) ? out_step2[ 2][ 2][1] : 0;
+out_step3[ 2][ 3][1] = (out_step2[ 2][ 3][1] > 0) ? out_step2[ 2][ 3][1] : 0;
+out_step3[ 2][ 4][1] = (out_step2[ 2][ 4][1] > 0) ? out_step2[ 2][ 4][1] : 0;
+out_step3[ 2][ 5][1] = (out_step2[ 2][ 5][1] > 0) ? out_step2[ 2][ 5][1] : 0;
+out_step3[ 2][ 6][1] = (out_step2[ 2][ 6][1] > 0) ? out_step2[ 2][ 6][1] : 0;
+out_step3[ 3][ 0][1] = (out_step2[ 3][ 0][1] > 0) ? out_step2[ 3][ 0][1] : 0;
+out_step3[ 3][ 1][1] = (out_step2[ 3][ 1][1] > 0) ? out_step2[ 3][ 1][1] : 0;
+out_step3[ 3][ 2][1] = (out_step2[ 3][ 2][1] > 0) ? out_step2[ 3][ 2][1] : 0;
+out_step3[ 3][ 3][1] = (out_step2[ 3][ 3][1] > 0) ? out_step2[ 3][ 3][1] : 0;
+out_step3[ 3][ 4][1] = (out_step2[ 3][ 4][1] > 0) ? out_step2[ 3][ 4][1] : 0;
+out_step3[ 3][ 5][1] = (out_step2[ 3][ 5][1] > 0) ? out_step2[ 3][ 5][1] : 0;
+out_step3[ 3][ 6][1] = (out_step2[ 3][ 6][1] > 0) ? out_step2[ 3][ 6][1] : 0;
+out_step3[ 4][ 0][1] = (out_step2[ 4][ 0][1] > 0) ? out_step2[ 4][ 0][1] : 0;
+out_step3[ 4][ 1][1] = (out_step2[ 4][ 1][1] > 0) ? out_step2[ 4][ 1][1] : 0;
+out_step3[ 4][ 2][1] = (out_step2[ 4][ 2][1] > 0) ? out_step2[ 4][ 2][1] : 0;
+out_step3[ 4][ 3][1] = (out_step2[ 4][ 3][1] > 0) ? out_step2[ 4][ 3][1] : 0;
+out_step3[ 4][ 4][1] = (out_step2[ 4][ 4][1] > 0) ? out_step2[ 4][ 4][1] : 0;
+out_step3[ 4][ 5][1] = (out_step2[ 4][ 5][1] > 0) ? out_step2[ 4][ 5][1] : 0;
+out_step3[ 4][ 6][1] = (out_step2[ 4][ 6][1] > 0) ? out_step2[ 4][ 6][1] : 0;
+out_step3[ 5][ 0][1] = (out_step2[ 5][ 0][1] > 0) ? out_step2[ 5][ 0][1] : 0;
+out_step3[ 5][ 1][1] = (out_step2[ 5][ 1][1] > 0) ? out_step2[ 5][ 1][1] : 0;
+out_step3[ 5][ 2][1] = (out_step2[ 5][ 2][1] > 0) ? out_step2[ 5][ 2][1] : 0;
+out_step3[ 5][ 3][1] = (out_step2[ 5][ 3][1] > 0) ? out_step2[ 5][ 3][1] : 0;
+out_step3[ 5][ 4][1] = (out_step2[ 5][ 4][1] > 0) ? out_step2[ 5][ 4][1] : 0;
+out_step3[ 5][ 5][1] = (out_step2[ 5][ 5][1] > 0) ? out_step2[ 5][ 5][1] : 0;
+out_step3[ 5][ 6][1] = (out_step2[ 5][ 6][1] > 0) ? out_step2[ 5][ 6][1] : 0;
+out_step3[ 6][ 0][1] = (out_step2[ 6][ 0][1] > 0) ? out_step2[ 6][ 0][1] : 0;
+out_step3[ 6][ 1][1] = (out_step2[ 6][ 1][1] > 0) ? out_step2[ 6][ 1][1] : 0;
+out_step3[ 6][ 2][1] = (out_step2[ 6][ 2][1] > 0) ? out_step2[ 6][ 2][1] : 0;
+out_step3[ 6][ 3][1] = (out_step2[ 6][ 3][1] > 0) ? out_step2[ 6][ 3][1] : 0;
+out_step3[ 6][ 4][1] = (out_step2[ 6][ 4][1] > 0) ? out_step2[ 6][ 4][1] : 0;
+out_step3[ 6][ 5][1] = (out_step2[ 6][ 5][1] > 0) ? out_step2[ 6][ 5][1] : 0;
+out_step3[ 6][ 6][1] = (out_step2[ 6][ 6][1] > 0) ? out_step2[ 6][ 6][1] : 0;
+out_step3[ 0][ 0][2] = (out_step2[ 0][ 0][2] > 0) ? out_step2[ 0][ 0][2] : 0;
+out_step3[ 0][ 1][2] = (out_step2[ 0][ 1][2] > 0) ? out_step2[ 0][ 1][2] : 0;
+out_step3[ 0][ 2][2] = (out_step2[ 0][ 2][2] > 0) ? out_step2[ 0][ 2][2] : 0;
+out_step3[ 0][ 3][2] = (out_step2[ 0][ 3][2] > 0) ? out_step2[ 0][ 3][2] : 0;
+out_step3[ 0][ 4][2] = (out_step2[ 0][ 4][2] > 0) ? out_step2[ 0][ 4][2] : 0;
+out_step3[ 0][ 5][2] = (out_step2[ 0][ 5][2] > 0) ? out_step2[ 0][ 5][2] : 0;
+out_step3[ 0][ 6][2] = (out_step2[ 0][ 6][2] > 0) ? out_step2[ 0][ 6][2] : 0;
+out_step3[ 1][ 0][2] = (out_step2[ 1][ 0][2] > 0) ? out_step2[ 1][ 0][2] : 0;
+out_step3[ 1][ 1][2] = (out_step2[ 1][ 1][2] > 0) ? out_step2[ 1][ 1][2] : 0;
+out_step3[ 1][ 2][2] = (out_step2[ 1][ 2][2] > 0) ? out_step2[ 1][ 2][2] : 0;
+out_step3[ 1][ 3][2] = (out_step2[ 1][ 3][2] > 0) ? out_step2[ 1][ 3][2] : 0;
+out_step3[ 1][ 4][2] = (out_step2[ 1][ 4][2] > 0) ? out_step2[ 1][ 4][2] : 0;
+out_step3[ 1][ 5][2] = (out_step2[ 1][ 5][2] > 0) ? out_step2[ 1][ 5][2] : 0;
+out_step3[ 1][ 6][2] = (out_step2[ 1][ 6][2] > 0) ? out_step2[ 1][ 6][2] : 0;
+out_step3[ 2][ 0][2] = (out_step2[ 2][ 0][2] > 0) ? out_step2[ 2][ 0][2] : 0;
+out_step3[ 2][ 1][2] = (out_step2[ 2][ 1][2] > 0) ? out_step2[ 2][ 1][2] : 0;
+out_step3[ 2][ 2][2] = (out_step2[ 2][ 2][2] > 0) ? out_step2[ 2][ 2][2] : 0;
+out_step3[ 2][ 3][2] = (out_step2[ 2][ 3][2] > 0) ? out_step2[ 2][ 3][2] : 0;
+out_step3[ 2][ 4][2] = (out_step2[ 2][ 4][2] > 0) ? out_step2[ 2][ 4][2] : 0;
+out_step3[ 2][ 5][2] = (out_step2[ 2][ 5][2] > 0) ? out_step2[ 2][ 5][2] : 0;
+out_step3[ 2][ 6][2] = (out_step2[ 2][ 6][2] > 0) ? out_step2[ 2][ 6][2] : 0;
+out_step3[ 3][ 0][2] = (out_step2[ 3][ 0][2] > 0) ? out_step2[ 3][ 0][2] : 0;
+out_step3[ 3][ 1][2] = (out_step2[ 3][ 1][2] > 0) ? out_step2[ 3][ 1][2] : 0;
+out_step3[ 3][ 2][2] = (out_step2[ 3][ 2][2] > 0) ? out_step2[ 3][ 2][2] : 0;
+out_step3[ 3][ 3][2] = (out_step2[ 3][ 3][2] > 0) ? out_step2[ 3][ 3][2] : 0;
+out_step3[ 3][ 4][2] = (out_step2[ 3][ 4][2] > 0) ? out_step2[ 3][ 4][2] : 0;
+out_step3[ 3][ 5][2] = (out_step2[ 3][ 5][2] > 0) ? out_step2[ 3][ 5][2] : 0;
+out_step3[ 3][ 6][2] = (out_step2[ 3][ 6][2] > 0) ? out_step2[ 3][ 6][2] : 0;
+out_step3[ 4][ 0][2] = (out_step2[ 4][ 0][2] > 0) ? out_step2[ 4][ 0][2] : 0;
+out_step3[ 4][ 1][2] = (out_step2[ 4][ 1][2] > 0) ? out_step2[ 4][ 1][2] : 0;
+out_step3[ 4][ 2][2] = (out_step2[ 4][ 2][2] > 0) ? out_step2[ 4][ 2][2] : 0;
+out_step3[ 4][ 3][2] = (out_step2[ 4][ 3][2] > 0) ? out_step2[ 4][ 3][2] : 0;
+out_step3[ 4][ 4][2] = (out_step2[ 4][ 4][2] > 0) ? out_step2[ 4][ 4][2] : 0;
+out_step3[ 4][ 5][2] = (out_step2[ 4][ 5][2] > 0) ? out_step2[ 4][ 5][2] : 0;
+out_step3[ 4][ 6][2] = (out_step2[ 4][ 6][2] > 0) ? out_step2[ 4][ 6][2] : 0;
+out_step3[ 5][ 0][2] = (out_step2[ 5][ 0][2] > 0) ? out_step2[ 5][ 0][2] : 0;
+out_step3[ 5][ 1][2] = (out_step2[ 5][ 1][2] > 0) ? out_step2[ 5][ 1][2] : 0;
+out_step3[ 5][ 2][2] = (out_step2[ 5][ 2][2] > 0) ? out_step2[ 5][ 2][2] : 0;
+out_step3[ 5][ 3][2] = (out_step2[ 5][ 3][2] > 0) ? out_step2[ 5][ 3][2] : 0;
+out_step3[ 5][ 4][2] = (out_step2[ 5][ 4][2] > 0) ? out_step2[ 5][ 4][2] : 0;
+out_step3[ 5][ 5][2] = (out_step2[ 5][ 5][2] > 0) ? out_step2[ 5][ 5][2] : 0;
+out_step3[ 5][ 6][2] = (out_step2[ 5][ 6][2] > 0) ? out_step2[ 5][ 6][2] : 0;
+out_step3[ 6][ 0][2] = (out_step2[ 6][ 0][2] > 0) ? out_step2[ 6][ 0][2] : 0;
+out_step3[ 6][ 1][2] = (out_step2[ 6][ 1][2] > 0) ? out_step2[ 6][ 1][2] : 0;
+out_step3[ 6][ 2][2] = (out_step2[ 6][ 2][2] > 0) ? out_step2[ 6][ 2][2] : 0;
+out_step3[ 6][ 3][2] = (out_step2[ 6][ 3][2] > 0) ? out_step2[ 6][ 3][2] : 0;
+out_step3[ 6][ 4][2] = (out_step2[ 6][ 4][2] > 0) ? out_step2[ 6][ 4][2] : 0;
+out_step3[ 6][ 5][2] = (out_step2[ 6][ 5][2] > 0) ? out_step2[ 6][ 5][2] : 0;
+out_step3[ 6][ 6][2] = (out_step2[ 6][ 6][2] > 0) ? out_step2[ 6][ 6][2] : 0;
+out_step3[ 0][ 0][3] = (out_step2[ 0][ 0][3] > 0) ? out_step2[ 0][ 0][3] : 0;
+out_step3[ 0][ 1][3] = (out_step2[ 0][ 1][3] > 0) ? out_step2[ 0][ 1][3] : 0;
+out_step3[ 0][ 2][3] = (out_step2[ 0][ 2][3] > 0) ? out_step2[ 0][ 2][3] : 0;
+out_step3[ 0][ 3][3] = (out_step2[ 0][ 3][3] > 0) ? out_step2[ 0][ 3][3] : 0;
+out_step3[ 0][ 4][3] = (out_step2[ 0][ 4][3] > 0) ? out_step2[ 0][ 4][3] : 0;
+out_step3[ 0][ 5][3] = (out_step2[ 0][ 5][3] > 0) ? out_step2[ 0][ 5][3] : 0;
+out_step3[ 0][ 6][3] = (out_step2[ 0][ 6][3] > 0) ? out_step2[ 0][ 6][3] : 0;
+out_step3[ 1][ 0][3] = (out_step2[ 1][ 0][3] > 0) ? out_step2[ 1][ 0][3] : 0;
+out_step3[ 1][ 1][3] = (out_step2[ 1][ 1][3] > 0) ? out_step2[ 1][ 1][3] : 0;
+out_step3[ 1][ 2][3] = (out_step2[ 1][ 2][3] > 0) ? out_step2[ 1][ 2][3] : 0;
+out_step3[ 1][ 3][3] = (out_step2[ 1][ 3][3] > 0) ? out_step2[ 1][ 3][3] : 0;
+out_step3[ 1][ 4][3] = (out_step2[ 1][ 4][3] > 0) ? out_step2[ 1][ 4][3] : 0;
+out_step3[ 1][ 5][3] = (out_step2[ 1][ 5][3] > 0) ? out_step2[ 1][ 5][3] : 0;
+out_step3[ 1][ 6][3] = (out_step2[ 1][ 6][3] > 0) ? out_step2[ 1][ 6][3] : 0;
+out_step3[ 2][ 0][3] = (out_step2[ 2][ 0][3] > 0) ? out_step2[ 2][ 0][3] : 0;
+out_step3[ 2][ 1][3] = (out_step2[ 2][ 1][3] > 0) ? out_step2[ 2][ 1][3] : 0;
+out_step3[ 2][ 2][3] = (out_step2[ 2][ 2][3] > 0) ? out_step2[ 2][ 2][3] : 0;
+out_step3[ 2][ 3][3] = (out_step2[ 2][ 3][3] > 0) ? out_step2[ 2][ 3][3] : 0;
+out_step3[ 2][ 4][3] = (out_step2[ 2][ 4][3] > 0) ? out_step2[ 2][ 4][3] : 0;
+out_step3[ 2][ 5][3] = (out_step2[ 2][ 5][3] > 0) ? out_step2[ 2][ 5][3] : 0;
+out_step3[ 2][ 6][3] = (out_step2[ 2][ 6][3] > 0) ? out_step2[ 2][ 6][3] : 0;
+out_step3[ 3][ 0][3] = (out_step2[ 3][ 0][3] > 0) ? out_step2[ 3][ 0][3] : 0;
+out_step3[ 3][ 1][3] = (out_step2[ 3][ 1][3] > 0) ? out_step2[ 3][ 1][3] : 0;
+out_step3[ 3][ 2][3] = (out_step2[ 3][ 2][3] > 0) ? out_step2[ 3][ 2][3] : 0;
+out_step3[ 3][ 3][3] = (out_step2[ 3][ 3][3] > 0) ? out_step2[ 3][ 3][3] : 0;
+out_step3[ 3][ 4][3] = (out_step2[ 3][ 4][3] > 0) ? out_step2[ 3][ 4][3] : 0;
+out_step3[ 3][ 5][3] = (out_step2[ 3][ 5][3] > 0) ? out_step2[ 3][ 5][3] : 0;
+out_step3[ 3][ 6][3] = (out_step2[ 3][ 6][3] > 0) ? out_step2[ 3][ 6][3] : 0;
+out_step3[ 4][ 0][3] = (out_step2[ 4][ 0][3] > 0) ? out_step2[ 4][ 0][3] : 0;
+out_step3[ 4][ 1][3] = (out_step2[ 4][ 1][3] > 0) ? out_step2[ 4][ 1][3] : 0;
+out_step3[ 4][ 2][3] = (out_step2[ 4][ 2][3] > 0) ? out_step2[ 4][ 2][3] : 0;
+out_step3[ 4][ 3][3] = (out_step2[ 4][ 3][3] > 0) ? out_step2[ 4][ 3][3] : 0;
+out_step3[ 4][ 4][3] = (out_step2[ 4][ 4][3] > 0) ? out_step2[ 4][ 4][3] : 0;
+out_step3[ 4][ 5][3] = (out_step2[ 4][ 5][3] > 0) ? out_step2[ 4][ 5][3] : 0;
+out_step3[ 4][ 6][3] = (out_step2[ 4][ 6][3] > 0) ? out_step2[ 4][ 6][3] : 0;
+out_step3[ 5][ 0][3] = (out_step2[ 5][ 0][3] > 0) ? out_step2[ 5][ 0][3] : 0;
+out_step3[ 5][ 1][3] = (out_step2[ 5][ 1][3] > 0) ? out_step2[ 5][ 1][3] : 0;
+out_step3[ 5][ 2][3] = (out_step2[ 5][ 2][3] > 0) ? out_step2[ 5][ 2][3] : 0;
+out_step3[ 5][ 3][3] = (out_step2[ 5][ 3][3] > 0) ? out_step2[ 5][ 3][3] : 0;
+out_step3[ 5][ 4][3] = (out_step2[ 5][ 4][3] > 0) ? out_step2[ 5][ 4][3] : 0;
+out_step3[ 5][ 5][3] = (out_step2[ 5][ 5][3] > 0) ? out_step2[ 5][ 5][3] : 0;
+out_step3[ 5][ 6][3] = (out_step2[ 5][ 6][3] > 0) ? out_step2[ 5][ 6][3] : 0;
+out_step3[ 6][ 0][3] = (out_step2[ 6][ 0][3] > 0) ? out_step2[ 6][ 0][3] : 0;
+out_step3[ 6][ 1][3] = (out_step2[ 6][ 1][3] > 0) ? out_step2[ 6][ 1][3] : 0;
+out_step3[ 6][ 2][3] = (out_step2[ 6][ 2][3] > 0) ? out_step2[ 6][ 2][3] : 0;
+out_step3[ 6][ 3][3] = (out_step2[ 6][ 3][3] > 0) ? out_step2[ 6][ 3][3] : 0;
+out_step3[ 6][ 4][3] = (out_step2[ 6][ 4][3] > 0) ? out_step2[ 6][ 4][3] : 0;
+out_step3[ 6][ 5][3] = (out_step2[ 6][ 5][3] > 0) ? out_step2[ 6][ 5][3] : 0;
+out_step3[ 6][ 6][3] = (out_step2[ 6][ 6][3] > 0) ? out_step2[ 6][ 6][3] : 0;
+out_step3[ 0][ 0][4] = (out_step2[ 0][ 0][4] > 0) ? out_step2[ 0][ 0][4] : 0;
+out_step3[ 0][ 1][4] = (out_step2[ 0][ 1][4] > 0) ? out_step2[ 0][ 1][4] : 0;
+out_step3[ 0][ 2][4] = (out_step2[ 0][ 2][4] > 0) ? out_step2[ 0][ 2][4] : 0;
+out_step3[ 0][ 3][4] = (out_step2[ 0][ 3][4] > 0) ? out_step2[ 0][ 3][4] : 0;
+out_step3[ 0][ 4][4] = (out_step2[ 0][ 4][4] > 0) ? out_step2[ 0][ 4][4] : 0;
+out_step3[ 0][ 5][4] = (out_step2[ 0][ 5][4] > 0) ? out_step2[ 0][ 5][4] : 0;
+out_step3[ 0][ 6][4] = (out_step2[ 0][ 6][4] > 0) ? out_step2[ 0][ 6][4] : 0;
+out_step3[ 1][ 0][4] = (out_step2[ 1][ 0][4] > 0) ? out_step2[ 1][ 0][4] : 0;
+out_step3[ 1][ 1][4] = (out_step2[ 1][ 1][4] > 0) ? out_step2[ 1][ 1][4] : 0;
+out_step3[ 1][ 2][4] = (out_step2[ 1][ 2][4] > 0) ? out_step2[ 1][ 2][4] : 0;
+out_step3[ 1][ 3][4] = (out_step2[ 1][ 3][4] > 0) ? out_step2[ 1][ 3][4] : 0;
+out_step3[ 1][ 4][4] = (out_step2[ 1][ 4][4] > 0) ? out_step2[ 1][ 4][4] : 0;
+out_step3[ 1][ 5][4] = (out_step2[ 1][ 5][4] > 0) ? out_step2[ 1][ 5][4] : 0;
+out_step3[ 1][ 6][4] = (out_step2[ 1][ 6][4] > 0) ? out_step2[ 1][ 6][4] : 0;
+out_step3[ 2][ 0][4] = (out_step2[ 2][ 0][4] > 0) ? out_step2[ 2][ 0][4] : 0;
+out_step3[ 2][ 1][4] = (out_step2[ 2][ 1][4] > 0) ? out_step2[ 2][ 1][4] : 0;
+out_step3[ 2][ 2][4] = (out_step2[ 2][ 2][4] > 0) ? out_step2[ 2][ 2][4] : 0;
+out_step3[ 2][ 3][4] = (out_step2[ 2][ 3][4] > 0) ? out_step2[ 2][ 3][4] : 0;
+out_step3[ 2][ 4][4] = (out_step2[ 2][ 4][4] > 0) ? out_step2[ 2][ 4][4] : 0;
+out_step3[ 2][ 5][4] = (out_step2[ 2][ 5][4] > 0) ? out_step2[ 2][ 5][4] : 0;
+out_step3[ 2][ 6][4] = (out_step2[ 2][ 6][4] > 0) ? out_step2[ 2][ 6][4] : 0;
+out_step3[ 3][ 0][4] = (out_step2[ 3][ 0][4] > 0) ? out_step2[ 3][ 0][4] : 0;
+out_step3[ 3][ 1][4] = (out_step2[ 3][ 1][4] > 0) ? out_step2[ 3][ 1][4] : 0;
+out_step3[ 3][ 2][4] = (out_step2[ 3][ 2][4] > 0) ? out_step2[ 3][ 2][4] : 0;
+out_step3[ 3][ 3][4] = (out_step2[ 3][ 3][4] > 0) ? out_step2[ 3][ 3][4] : 0;
+out_step3[ 3][ 4][4] = (out_step2[ 3][ 4][4] > 0) ? out_step2[ 3][ 4][4] : 0;
+out_step3[ 3][ 5][4] = (out_step2[ 3][ 5][4] > 0) ? out_step2[ 3][ 5][4] : 0;
+out_step3[ 3][ 6][4] = (out_step2[ 3][ 6][4] > 0) ? out_step2[ 3][ 6][4] : 0;
+out_step3[ 4][ 0][4] = (out_step2[ 4][ 0][4] > 0) ? out_step2[ 4][ 0][4] : 0;
+out_step3[ 4][ 1][4] = (out_step2[ 4][ 1][4] > 0) ? out_step2[ 4][ 1][4] : 0;
+out_step3[ 4][ 2][4] = (out_step2[ 4][ 2][4] > 0) ? out_step2[ 4][ 2][4] : 0;
+out_step3[ 4][ 3][4] = (out_step2[ 4][ 3][4] > 0) ? out_step2[ 4][ 3][4] : 0;
+out_step3[ 4][ 4][4] = (out_step2[ 4][ 4][4] > 0) ? out_step2[ 4][ 4][4] : 0;
+out_step3[ 4][ 5][4] = (out_step2[ 4][ 5][4] > 0) ? out_step2[ 4][ 5][4] : 0;
+out_step3[ 4][ 6][4] = (out_step2[ 4][ 6][4] > 0) ? out_step2[ 4][ 6][4] : 0;
+out_step3[ 5][ 0][4] = (out_step2[ 5][ 0][4] > 0) ? out_step2[ 5][ 0][4] : 0;
+out_step3[ 5][ 1][4] = (out_step2[ 5][ 1][4] > 0) ? out_step2[ 5][ 1][4] : 0;
+out_step3[ 5][ 2][4] = (out_step2[ 5][ 2][4] > 0) ? out_step2[ 5][ 2][4] : 0;
+out_step3[ 5][ 3][4] = (out_step2[ 5][ 3][4] > 0) ? out_step2[ 5][ 3][4] : 0;
+out_step3[ 5][ 4][4] = (out_step2[ 5][ 4][4] > 0) ? out_step2[ 5][ 4][4] : 0;
+out_step3[ 5][ 5][4] = (out_step2[ 5][ 5][4] > 0) ? out_step2[ 5][ 5][4] : 0;
+out_step3[ 5][ 6][4] = (out_step2[ 5][ 6][4] > 0) ? out_step2[ 5][ 6][4] : 0;
+out_step3[ 6][ 0][4] = (out_step2[ 6][ 0][4] > 0) ? out_step2[ 6][ 0][4] : 0;
+out_step3[ 6][ 1][4] = (out_step2[ 6][ 1][4] > 0) ? out_step2[ 6][ 1][4] : 0;
+out_step3[ 6][ 2][4] = (out_step2[ 6][ 2][4] > 0) ? out_step2[ 6][ 2][4] : 0;
+out_step3[ 6][ 3][4] = (out_step2[ 6][ 3][4] > 0) ? out_step2[ 6][ 3][4] : 0;
+out_step3[ 6][ 4][4] = (out_step2[ 6][ 4][4] > 0) ? out_step2[ 6][ 4][4] : 0;
+out_step3[ 6][ 5][4] = (out_step2[ 6][ 5][4] > 0) ? out_step2[ 6][ 5][4] : 0;
+out_step3[ 6][ 6][4] = (out_step2[ 6][ 6][4] > 0) ? out_step2[ 6][ 6][4] : 0;
+out_step3[ 0][ 0][5] = (out_step2[ 0][ 0][5] > 0) ? out_step2[ 0][ 0][5] : 0;
+out_step3[ 0][ 1][5] = (out_step2[ 0][ 1][5] > 0) ? out_step2[ 0][ 1][5] : 0;
+out_step3[ 0][ 2][5] = (out_step2[ 0][ 2][5] > 0) ? out_step2[ 0][ 2][5] : 0;
+out_step3[ 0][ 3][5] = (out_step2[ 0][ 3][5] > 0) ? out_step2[ 0][ 3][5] : 0;
+out_step3[ 0][ 4][5] = (out_step2[ 0][ 4][5] > 0) ? out_step2[ 0][ 4][5] : 0;
+out_step3[ 0][ 5][5] = (out_step2[ 0][ 5][5] > 0) ? out_step2[ 0][ 5][5] : 0;
+out_step3[ 0][ 6][5] = (out_step2[ 0][ 6][5] > 0) ? out_step2[ 0][ 6][5] : 0;
+out_step3[ 1][ 0][5] = (out_step2[ 1][ 0][5] > 0) ? out_step2[ 1][ 0][5] : 0;
+out_step3[ 1][ 1][5] = (out_step2[ 1][ 1][5] > 0) ? out_step2[ 1][ 1][5] : 0;
+out_step3[ 1][ 2][5] = (out_step2[ 1][ 2][5] > 0) ? out_step2[ 1][ 2][5] : 0;
+out_step3[ 1][ 3][5] = (out_step2[ 1][ 3][5] > 0) ? out_step2[ 1][ 3][5] : 0;
+out_step3[ 1][ 4][5] = (out_step2[ 1][ 4][5] > 0) ? out_step2[ 1][ 4][5] : 0;
+out_step3[ 1][ 5][5] = (out_step2[ 1][ 5][5] > 0) ? out_step2[ 1][ 5][5] : 0;
+out_step3[ 1][ 6][5] = (out_step2[ 1][ 6][5] > 0) ? out_step2[ 1][ 6][5] : 0;
+out_step3[ 2][ 0][5] = (out_step2[ 2][ 0][5] > 0) ? out_step2[ 2][ 0][5] : 0;
+out_step3[ 2][ 1][5] = (out_step2[ 2][ 1][5] > 0) ? out_step2[ 2][ 1][5] : 0;
+out_step3[ 2][ 2][5] = (out_step2[ 2][ 2][5] > 0) ? out_step2[ 2][ 2][5] : 0;
+out_step3[ 2][ 3][5] = (out_step2[ 2][ 3][5] > 0) ? out_step2[ 2][ 3][5] : 0;
+out_step3[ 2][ 4][5] = (out_step2[ 2][ 4][5] > 0) ? out_step2[ 2][ 4][5] : 0;
+out_step3[ 2][ 5][5] = (out_step2[ 2][ 5][5] > 0) ? out_step2[ 2][ 5][5] : 0;
+out_step3[ 2][ 6][5] = (out_step2[ 2][ 6][5] > 0) ? out_step2[ 2][ 6][5] : 0;
+out_step3[ 3][ 0][5] = (out_step2[ 3][ 0][5] > 0) ? out_step2[ 3][ 0][5] : 0;
+out_step3[ 3][ 1][5] = (out_step2[ 3][ 1][5] > 0) ? out_step2[ 3][ 1][5] : 0;
+out_step3[ 3][ 2][5] = (out_step2[ 3][ 2][5] > 0) ? out_step2[ 3][ 2][5] : 0;
+out_step3[ 3][ 3][5] = (out_step2[ 3][ 3][5] > 0) ? out_step2[ 3][ 3][5] : 0;
+out_step3[ 3][ 4][5] = (out_step2[ 3][ 4][5] > 0) ? out_step2[ 3][ 4][5] : 0;
+out_step3[ 3][ 5][5] = (out_step2[ 3][ 5][5] > 0) ? out_step2[ 3][ 5][5] : 0;
+out_step3[ 3][ 6][5] = (out_step2[ 3][ 6][5] > 0) ? out_step2[ 3][ 6][5] : 0;
+out_step3[ 4][ 0][5] = (out_step2[ 4][ 0][5] > 0) ? out_step2[ 4][ 0][5] : 0;
+out_step3[ 4][ 1][5] = (out_step2[ 4][ 1][5] > 0) ? out_step2[ 4][ 1][5] : 0;
+out_step3[ 4][ 2][5] = (out_step2[ 4][ 2][5] > 0) ? out_step2[ 4][ 2][5] : 0;
+out_step3[ 4][ 3][5] = (out_step2[ 4][ 3][5] > 0) ? out_step2[ 4][ 3][5] : 0;
+out_step3[ 4][ 4][5] = (out_step2[ 4][ 4][5] > 0) ? out_step2[ 4][ 4][5] : 0;
+out_step3[ 4][ 5][5] = (out_step2[ 4][ 5][5] > 0) ? out_step2[ 4][ 5][5] : 0;
+out_step3[ 4][ 6][5] = (out_step2[ 4][ 6][5] > 0) ? out_step2[ 4][ 6][5] : 0;
+out_step3[ 5][ 0][5] = (out_step2[ 5][ 0][5] > 0) ? out_step2[ 5][ 0][5] : 0;
+out_step3[ 5][ 1][5] = (out_step2[ 5][ 1][5] > 0) ? out_step2[ 5][ 1][5] : 0;
+out_step3[ 5][ 2][5] = (out_step2[ 5][ 2][5] > 0) ? out_step2[ 5][ 2][5] : 0;
+out_step3[ 5][ 3][5] = (out_step2[ 5][ 3][5] > 0) ? out_step2[ 5][ 3][5] : 0;
+out_step3[ 5][ 4][5] = (out_step2[ 5][ 4][5] > 0) ? out_step2[ 5][ 4][5] : 0;
+out_step3[ 5][ 5][5] = (out_step2[ 5][ 5][5] > 0) ? out_step2[ 5][ 5][5] : 0;
+out_step3[ 5][ 6][5] = (out_step2[ 5][ 6][5] > 0) ? out_step2[ 5][ 6][5] : 0;
+out_step3[ 6][ 0][5] = (out_step2[ 6][ 0][5] > 0) ? out_step2[ 6][ 0][5] : 0;
+out_step3[ 6][ 1][5] = (out_step2[ 6][ 1][5] > 0) ? out_step2[ 6][ 1][5] : 0;
+out_step3[ 6][ 2][5] = (out_step2[ 6][ 2][5] > 0) ? out_step2[ 6][ 2][5] : 0;
+out_step3[ 6][ 3][5] = (out_step2[ 6][ 3][5] > 0) ? out_step2[ 6][ 3][5] : 0;
+out_step3[ 6][ 4][5] = (out_step2[ 6][ 4][5] > 0) ? out_step2[ 6][ 4][5] : 0;
+out_step3[ 6][ 5][5] = (out_step2[ 6][ 5][5] > 0) ? out_step2[ 6][ 5][5] : 0;
+out_step3[ 6][ 6][5] = (out_step2[ 6][ 6][5] > 0) ? out_step2[ 6][ 6][5] : 0;
+out_step3[ 0][ 0][6] = (out_step2[ 0][ 0][6] > 0) ? out_step2[ 0][ 0][6] : 0;
+out_step3[ 0][ 1][6] = (out_step2[ 0][ 1][6] > 0) ? out_step2[ 0][ 1][6] : 0;
+out_step3[ 0][ 2][6] = (out_step2[ 0][ 2][6] > 0) ? out_step2[ 0][ 2][6] : 0;
+out_step3[ 0][ 3][6] = (out_step2[ 0][ 3][6] > 0) ? out_step2[ 0][ 3][6] : 0;
+out_step3[ 0][ 4][6] = (out_step2[ 0][ 4][6] > 0) ? out_step2[ 0][ 4][6] : 0;
+out_step3[ 0][ 5][6] = (out_step2[ 0][ 5][6] > 0) ? out_step2[ 0][ 5][6] : 0;
+out_step3[ 0][ 6][6] = (out_step2[ 0][ 6][6] > 0) ? out_step2[ 0][ 6][6] : 0;
+out_step3[ 1][ 0][6] = (out_step2[ 1][ 0][6] > 0) ? out_step2[ 1][ 0][6] : 0;
+out_step3[ 1][ 1][6] = (out_step2[ 1][ 1][6] > 0) ? out_step2[ 1][ 1][6] : 0;
+out_step3[ 1][ 2][6] = (out_step2[ 1][ 2][6] > 0) ? out_step2[ 1][ 2][6] : 0;
+out_step3[ 1][ 3][6] = (out_step2[ 1][ 3][6] > 0) ? out_step2[ 1][ 3][6] : 0;
+out_step3[ 1][ 4][6] = (out_step2[ 1][ 4][6] > 0) ? out_step2[ 1][ 4][6] : 0;
+out_step3[ 1][ 5][6] = (out_step2[ 1][ 5][6] > 0) ? out_step2[ 1][ 5][6] : 0;
+out_step3[ 1][ 6][6] = (out_step2[ 1][ 6][6] > 0) ? out_step2[ 1][ 6][6] : 0;
+out_step3[ 2][ 0][6] = (out_step2[ 2][ 0][6] > 0) ? out_step2[ 2][ 0][6] : 0;
+out_step3[ 2][ 1][6] = (out_step2[ 2][ 1][6] > 0) ? out_step2[ 2][ 1][6] : 0;
+out_step3[ 2][ 2][6] = (out_step2[ 2][ 2][6] > 0) ? out_step2[ 2][ 2][6] : 0;
+out_step3[ 2][ 3][6] = (out_step2[ 2][ 3][6] > 0) ? out_step2[ 2][ 3][6] : 0;
+out_step3[ 2][ 4][6] = (out_step2[ 2][ 4][6] > 0) ? out_step2[ 2][ 4][6] : 0;
+out_step3[ 2][ 5][6] = (out_step2[ 2][ 5][6] > 0) ? out_step2[ 2][ 5][6] : 0;
+out_step3[ 2][ 6][6] = (out_step2[ 2][ 6][6] > 0) ? out_step2[ 2][ 6][6] : 0;
+out_step3[ 3][ 0][6] = (out_step2[ 3][ 0][6] > 0) ? out_step2[ 3][ 0][6] : 0;
+out_step3[ 3][ 1][6] = (out_step2[ 3][ 1][6] > 0) ? out_step2[ 3][ 1][6] : 0;
+out_step3[ 3][ 2][6] = (out_step2[ 3][ 2][6] > 0) ? out_step2[ 3][ 2][6] : 0;
+out_step3[ 3][ 3][6] = (out_step2[ 3][ 3][6] > 0) ? out_step2[ 3][ 3][6] : 0;
+out_step3[ 3][ 4][6] = (out_step2[ 3][ 4][6] > 0) ? out_step2[ 3][ 4][6] : 0;
+out_step3[ 3][ 5][6] = (out_step2[ 3][ 5][6] > 0) ? out_step2[ 3][ 5][6] : 0;
+out_step3[ 3][ 6][6] = (out_step2[ 3][ 6][6] > 0) ? out_step2[ 3][ 6][6] : 0;
+out_step3[ 4][ 0][6] = (out_step2[ 4][ 0][6] > 0) ? out_step2[ 4][ 0][6] : 0;
+out_step3[ 4][ 1][6] = (out_step2[ 4][ 1][6] > 0) ? out_step2[ 4][ 1][6] : 0;
+out_step3[ 4][ 2][6] = (out_step2[ 4][ 2][6] > 0) ? out_step2[ 4][ 2][6] : 0;
+out_step3[ 4][ 3][6] = (out_step2[ 4][ 3][6] > 0) ? out_step2[ 4][ 3][6] : 0;
+out_step3[ 4][ 4][6] = (out_step2[ 4][ 4][6] > 0) ? out_step2[ 4][ 4][6] : 0;
+out_step3[ 4][ 5][6] = (out_step2[ 4][ 5][6] > 0) ? out_step2[ 4][ 5][6] : 0;
+out_step3[ 4][ 6][6] = (out_step2[ 4][ 6][6] > 0) ? out_step2[ 4][ 6][6] : 0;
+out_step3[ 5][ 0][6] = (out_step2[ 5][ 0][6] > 0) ? out_step2[ 5][ 0][6] : 0;
+out_step3[ 5][ 1][6] = (out_step2[ 5][ 1][6] > 0) ? out_step2[ 5][ 1][6] : 0;
+out_step3[ 5][ 2][6] = (out_step2[ 5][ 2][6] > 0) ? out_step2[ 5][ 2][6] : 0;
+out_step3[ 5][ 3][6] = (out_step2[ 5][ 3][6] > 0) ? out_step2[ 5][ 3][6] : 0;
+out_step3[ 5][ 4][6] = (out_step2[ 5][ 4][6] > 0) ? out_step2[ 5][ 4][6] : 0;
+out_step3[ 5][ 5][6] = (out_step2[ 5][ 5][6] > 0) ? out_step2[ 5][ 5][6] : 0;
+out_step3[ 5][ 6][6] = (out_step2[ 5][ 6][6] > 0) ? out_step2[ 5][ 6][6] : 0;
+out_step3[ 6][ 0][6] = (out_step2[ 6][ 0][6] > 0) ? out_step2[ 6][ 0][6] : 0;
+out_step3[ 6][ 1][6] = (out_step2[ 6][ 1][6] > 0) ? out_step2[ 6][ 1][6] : 0;
+out_step3[ 6][ 2][6] = (out_step2[ 6][ 2][6] > 0) ? out_step2[ 6][ 2][6] : 0;
+out_step3[ 6][ 3][6] = (out_step2[ 6][ 3][6] > 0) ? out_step2[ 6][ 3][6] : 0;
+out_step3[ 6][ 4][6] = (out_step2[ 6][ 4][6] > 0) ? out_step2[ 6][ 4][6] : 0;
+out_step3[ 6][ 5][6] = (out_step2[ 6][ 5][6] > 0) ? out_step2[ 6][ 5][6] : 0;
+out_step3[ 6][ 6][6] = (out_step2[ 6][ 6][6] > 0) ? out_step2[ 6][ 6][6] : 0;
+out_step3[ 0][ 0][7] = (out_step2[ 0][ 0][7] > 0) ? out_step2[ 0][ 0][7] : 0;
+out_step3[ 0][ 1][7] = (out_step2[ 0][ 1][7] > 0) ? out_step2[ 0][ 1][7] : 0;
+out_step3[ 0][ 2][7] = (out_step2[ 0][ 2][7] > 0) ? out_step2[ 0][ 2][7] : 0;
+out_step3[ 0][ 3][7] = (out_step2[ 0][ 3][7] > 0) ? out_step2[ 0][ 3][7] : 0;
+out_step3[ 0][ 4][7] = (out_step2[ 0][ 4][7] > 0) ? out_step2[ 0][ 4][7] : 0;
+out_step3[ 0][ 5][7] = (out_step2[ 0][ 5][7] > 0) ? out_step2[ 0][ 5][7] : 0;
+out_step3[ 0][ 6][7] = (out_step2[ 0][ 6][7] > 0) ? out_step2[ 0][ 6][7] : 0;
+out_step3[ 1][ 0][7] = (out_step2[ 1][ 0][7] > 0) ? out_step2[ 1][ 0][7] : 0;
+out_step3[ 1][ 1][7] = (out_step2[ 1][ 1][7] > 0) ? out_step2[ 1][ 1][7] : 0;
+out_step3[ 1][ 2][7] = (out_step2[ 1][ 2][7] > 0) ? out_step2[ 1][ 2][7] : 0;
+out_step3[ 1][ 3][7] = (out_step2[ 1][ 3][7] > 0) ? out_step2[ 1][ 3][7] : 0;
+out_step3[ 1][ 4][7] = (out_step2[ 1][ 4][7] > 0) ? out_step2[ 1][ 4][7] : 0;
+out_step3[ 1][ 5][7] = (out_step2[ 1][ 5][7] > 0) ? out_step2[ 1][ 5][7] : 0;
+out_step3[ 1][ 6][7] = (out_step2[ 1][ 6][7] > 0) ? out_step2[ 1][ 6][7] : 0;
+out_step3[ 2][ 0][7] = (out_step2[ 2][ 0][7] > 0) ? out_step2[ 2][ 0][7] : 0;
+out_step3[ 2][ 1][7] = (out_step2[ 2][ 1][7] > 0) ? out_step2[ 2][ 1][7] : 0;
+out_step3[ 2][ 2][7] = (out_step2[ 2][ 2][7] > 0) ? out_step2[ 2][ 2][7] : 0;
+out_step3[ 2][ 3][7] = (out_step2[ 2][ 3][7] > 0) ? out_step2[ 2][ 3][7] : 0;
+out_step3[ 2][ 4][7] = (out_step2[ 2][ 4][7] > 0) ? out_step2[ 2][ 4][7] : 0;
+out_step3[ 2][ 5][7] = (out_step2[ 2][ 5][7] > 0) ? out_step2[ 2][ 5][7] : 0;
+out_step3[ 2][ 6][7] = (out_step2[ 2][ 6][7] > 0) ? out_step2[ 2][ 6][7] : 0;
+out_step3[ 3][ 0][7] = (out_step2[ 3][ 0][7] > 0) ? out_step2[ 3][ 0][7] : 0;
+out_step3[ 3][ 1][7] = (out_step2[ 3][ 1][7] > 0) ? out_step2[ 3][ 1][7] : 0;
+out_step3[ 3][ 2][7] = (out_step2[ 3][ 2][7] > 0) ? out_step2[ 3][ 2][7] : 0;
+out_step3[ 3][ 3][7] = (out_step2[ 3][ 3][7] > 0) ? out_step2[ 3][ 3][7] : 0;
+out_step3[ 3][ 4][7] = (out_step2[ 3][ 4][7] > 0) ? out_step2[ 3][ 4][7] : 0;
+out_step3[ 3][ 5][7] = (out_step2[ 3][ 5][7] > 0) ? out_step2[ 3][ 5][7] : 0;
+out_step3[ 3][ 6][7] = (out_step2[ 3][ 6][7] > 0) ? out_step2[ 3][ 6][7] : 0;
+out_step3[ 4][ 0][7] = (out_step2[ 4][ 0][7] > 0) ? out_step2[ 4][ 0][7] : 0;
+out_step3[ 4][ 1][7] = (out_step2[ 4][ 1][7] > 0) ? out_step2[ 4][ 1][7] : 0;
+out_step3[ 4][ 2][7] = (out_step2[ 4][ 2][7] > 0) ? out_step2[ 4][ 2][7] : 0;
+out_step3[ 4][ 3][7] = (out_step2[ 4][ 3][7] > 0) ? out_step2[ 4][ 3][7] : 0;
+out_step3[ 4][ 4][7] = (out_step2[ 4][ 4][7] > 0) ? out_step2[ 4][ 4][7] : 0;
+out_step3[ 4][ 5][7] = (out_step2[ 4][ 5][7] > 0) ? out_step2[ 4][ 5][7] : 0;
+out_step3[ 4][ 6][7] = (out_step2[ 4][ 6][7] > 0) ? out_step2[ 4][ 6][7] : 0;
+out_step3[ 5][ 0][7] = (out_step2[ 5][ 0][7] > 0) ? out_step2[ 5][ 0][7] : 0;
+out_step3[ 5][ 1][7] = (out_step2[ 5][ 1][7] > 0) ? out_step2[ 5][ 1][7] : 0;
+out_step3[ 5][ 2][7] = (out_step2[ 5][ 2][7] > 0) ? out_step2[ 5][ 2][7] : 0;
+out_step3[ 5][ 3][7] = (out_step2[ 5][ 3][7] > 0) ? out_step2[ 5][ 3][7] : 0;
+out_step3[ 5][ 4][7] = (out_step2[ 5][ 4][7] > 0) ? out_step2[ 5][ 4][7] : 0;
+out_step3[ 5][ 5][7] = (out_step2[ 5][ 5][7] > 0) ? out_step2[ 5][ 5][7] : 0;
+out_step3[ 5][ 6][7] = (out_step2[ 5][ 6][7] > 0) ? out_step2[ 5][ 6][7] : 0;
+out_step3[ 6][ 0][7] = (out_step2[ 6][ 0][7] > 0) ? out_step2[ 6][ 0][7] : 0;
+out_step3[ 6][ 1][7] = (out_step2[ 6][ 1][7] > 0) ? out_step2[ 6][ 1][7] : 0;
+out_step3[ 6][ 2][7] = (out_step2[ 6][ 2][7] > 0) ? out_step2[ 6][ 2][7] : 0;
+out_step3[ 6][ 3][7] = (out_step2[ 6][ 3][7] > 0) ? out_step2[ 6][ 3][7] : 0;
+out_step3[ 6][ 4][7] = (out_step2[ 6][ 4][7] > 0) ? out_step2[ 6][ 4][7] : 0;
+out_step3[ 6][ 5][7] = (out_step2[ 6][ 5][7] > 0) ? out_step2[ 6][ 5][7] : 0;
+out_step3[ 6][ 6][7] = (out_step2[ 6][ 6][7] > 0) ? out_step2[ 6][ 6][7] : 0;
+
+// determine output for this convolution step
+out_step4[0][0][0] = 
+   - 0.00998629 * out_step3[ 0][ 0][0] + 0.08283555 * out_step3[ 0][ 1][0] - 0.07144316 * out_step3[ 0][ 2][0]
+   + 0.06145312 * out_step3[ 1][ 0][0] - 0.00760845 * out_step3[ 1][ 1][0] + 0.01897371 * out_step3[ 1][ 2][0]
+   + 0.10231151 * out_step3[ 2][ 0][0] + 0.06978398 * out_step3[ 2][ 1][0] + 0.06476418 * out_step3[ 2][ 2][0]
+   - 0.02043270 * out_step3[ 0][ 0][1] - 0.00208487 * out_step3[ 0][ 1][1] - 0.02488014 * out_step3[ 0][ 2][1]
+   + 0.02265758 * out_step3[ 1][ 0][1] - 0.02984328 * out_step3[ 1][ 1][1] - 0.01365817 * out_step3[ 1][ 2][1]
+   + 0.00905038 * out_step3[ 2][ 0][1] - 0.00131872 * out_step3[ 2][ 1][1] - 0.02170555 * out_step3[ 2][ 2][1]
+   - 0.10739317 * out_step3[ 0][ 0][2] - 0.04947611 * out_step3[ 0][ 1][2] + 0.09006887 * out_step3[ 0][ 2][2]
+   - 0.00593757 * out_step3[ 1][ 0][2] + 0.04316609 * out_step3[ 1][ 1][2] - 0.05418501 * out_step3[ 1][ 2][2]
+   + 0.04111471 * out_step3[ 2][ 0][2] - 0.05407892 * out_step3[ 2][ 1][2] - 0.04594433 * out_step3[ 2][ 2][2]
+   - 0.04119977 * out_step3[ 0][ 0][3] - 0.01770117 * out_step3[ 0][ 1][3] - 0.09023756 * out_step3[ 0][ 2][3]
+   + 0.03726254 * out_step3[ 1][ 0][3] - 0.01570367 * out_step3[ 1][ 1][3] - 0.05482312 * out_step3[ 1][ 2][3]
+   + 0.01748000 * out_step3[ 2][ 0][3] - 0.04506006 * out_step3[ 2][ 1][3] - 0.06168160 * out_step3[ 2][ 2][3]
+   - 0.03156140 * out_step3[ 0][ 0][4] + 0.02665797 * out_step3[ 0][ 1][4] + 0.00361931 * out_step3[ 0][ 2][4]
+   - 0.05855275 * out_step3[ 1][ 0][4] - 0.02254592 * out_step3[ 1][ 1][4] - 0.00796637 * out_step3[ 1][ 2][4]
+   + 0.03364900 * out_step3[ 2][ 0][4] + 0.00620785 * out_step3[ 2][ 1][4] - 0.04832491 * out_step3[ 2][ 2][4]
+   - 0.04134467 * out_step3[ 0][ 0][5] - 0.06257880 * out_step3[ 0][ 1][5] - 0.08256511 * out_step3[ 0][ 2][5]
+   + 0.05253258 * out_step3[ 1][ 0][5] - 0.02745731 * out_step3[ 1][ 1][5] - 0.01654654 * out_step3[ 1][ 2][5]
+   + 0.09516135 * out_step3[ 2][ 0][5] + 0.05119761 * out_step3[ 2][ 1][5] + 0.01386645 * out_step3[ 2][ 2][5]
+   - 0.00754154 * out_step3[ 0][ 0][6] + 0.00949769 * out_step3[ 0][ 1][6] - 0.02027263 * out_step3[ 0][ 2][6]
+   + 0.04210031 * out_step3[ 1][ 0][6] + 0.10016090 * out_step3[ 1][ 1][6] - 0.08451574 * out_step3[ 1][ 2][6]
+   - 0.04027500 * out_step3[ 2][ 0][6] + 0.11918592 * out_step3[ 2][ 1][6] + 0.03446440 * out_step3[ 2][ 2][6]
+   - 0.00500440 * out_step3[ 0][ 0][7] - 0.02444750 * out_step3[ 0][ 1][7] - 0.02437118 * out_step3[ 0][ 2][7]
+   + 0.06739507 * out_step3[ 1][ 0][7] + 0.02494654 * out_step3[ 1][ 1][7] + 0.05504896 * out_step3[ 1][ 2][7]
+   + 0.12062760 * out_step3[ 2][ 0][7] + 0.10671559 * out_step3[ 2][ 1][7] + 0.06758494 * out_step3[ 2][ 2][7]
+   - 0.07305621;
+
+out_step4[0][1][0] = 
+   - 0.00998629 * out_step3[ 0][ 2][0] + 0.08283555 * out_step3[ 0][ 3][0] - 0.07144316 * out_step3[ 0][ 4][0]
+   + 0.06145312 * out_step3[ 1][ 2][0] - 0.00760845 * out_step3[ 1][ 3][0] + 0.01897371 * out_step3[ 1][ 4][0]
+   + 0.10231151 * out_step3[ 2][ 2][0] + 0.06978398 * out_step3[ 2][ 3][0] + 0.06476418 * out_step3[ 2][ 4][0]
+   - 0.02043270 * out_step3[ 0][ 2][1] - 0.00208487 * out_step3[ 0][ 3][1] - 0.02488014 * out_step3[ 0][ 4][1]
+   + 0.02265758 * out_step3[ 1][ 2][1] - 0.02984328 * out_step3[ 1][ 3][1] - 0.01365817 * out_step3[ 1][ 4][1]
+   + 0.00905038 * out_step3[ 2][ 2][1] - 0.00131872 * out_step3[ 2][ 3][1] - 0.02170555 * out_step3[ 2][ 4][1]
+   - 0.10739317 * out_step3[ 0][ 2][2] - 0.04947611 * out_step3[ 0][ 3][2] + 0.09006887 * out_step3[ 0][ 4][2]
+   - 0.00593757 * out_step3[ 1][ 2][2] + 0.04316609 * out_step3[ 1][ 3][2] - 0.05418501 * out_step3[ 1][ 4][2]
+   + 0.04111471 * out_step3[ 2][ 2][2] - 0.05407892 * out_step3[ 2][ 3][2] - 0.04594433 * out_step3[ 2][ 4][2]
+   - 0.04119977 * out_step3[ 0][ 2][3] - 0.01770117 * out_step3[ 0][ 3][3] - 0.09023756 * out_step3[ 0][ 4][3]
+   + 0.03726254 * out_step3[ 1][ 2][3] - 0.01570367 * out_step3[ 1][ 3][3] - 0.05482312 * out_step3[ 1][ 4][3]
+   + 0.01748000 * out_step3[ 2][ 2][3] - 0.04506006 * out_step3[ 2][ 3][3] - 0.06168160 * out_step3[ 2][ 4][3]
+   - 0.03156140 * out_step3[ 0][ 2][4] + 0.02665797 * out_step3[ 0][ 3][4] + 0.00361931 * out_step3[ 0][ 4][4]
+   - 0.05855275 * out_step3[ 1][ 2][4] - 0.02254592 * out_step3[ 1][ 3][4] - 0.00796637 * out_step3[ 1][ 4][4]
+   + 0.03364900 * out_step3[ 2][ 2][4] + 0.00620785 * out_step3[ 2][ 3][4] - 0.04832491 * out_step3[ 2][ 4][4]
+   - 0.04134467 * out_step3[ 0][ 2][5] - 0.06257880 * out_step3[ 0][ 3][5] - 0.08256511 * out_step3[ 0][ 4][5]
+   + 0.05253258 * out_step3[ 1][ 2][5] - 0.02745731 * out_step3[ 1][ 3][5] - 0.01654654 * out_step3[ 1][ 4][5]
+   + 0.09516135 * out_step3[ 2][ 2][5] + 0.05119761 * out_step3[ 2][ 3][5] + 0.01386645 * out_step3[ 2][ 4][5]
+   - 0.00754154 * out_step3[ 0][ 2][6] + 0.00949769 * out_step3[ 0][ 3][6] - 0.02027263 * out_step3[ 0][ 4][6]
+   + 0.04210031 * out_step3[ 1][ 2][6] + 0.10016090 * out_step3[ 1][ 3][6] - 0.08451574 * out_step3[ 1][ 4][6]
+   - 0.04027500 * out_step3[ 2][ 2][6] + 0.11918592 * out_step3[ 2][ 3][6] + 0.03446440 * out_step3[ 2][ 4][6]
+   - 0.00500440 * out_step3[ 0][ 2][7] - 0.02444750 * out_step3[ 0][ 3][7] - 0.02437118 * out_step3[ 0][ 4][7]
+   + 0.06739507 * out_step3[ 1][ 2][7] + 0.02494654 * out_step3[ 1][ 3][7] + 0.05504896 * out_step3[ 1][ 4][7]
+   + 0.12062760 * out_step3[ 2][ 2][7] + 0.10671559 * out_step3[ 2][ 3][7] + 0.06758494 * out_step3[ 2][ 4][7]
+   - 0.07305621;
+
+out_step4[0][2][0] = 
+   - 0.00998629 * out_step3[ 0][ 4][0] + 0.08283555 * out_step3[ 0][ 5][0] - 0.07144316 * out_step3[ 0][ 6][0]
+   + 0.06145312 * out_step3[ 1][ 4][0] - 0.00760845 * out_step3[ 1][ 5][0] + 0.01897371 * out_step3[ 1][ 6][0]
+   + 0.10231151 * out_step3[ 2][ 4][0] + 0.06978398 * out_step3[ 2][ 5][0] + 0.06476418 * out_step3[ 2][ 6][0]
+   - 0.02043270 * out_step3[ 0][ 4][1] - 0.00208487 * out_step3[ 0][ 5][1] - 0.02488014 * out_step3[ 0][ 6][1]
+   + 0.02265758 * out_step3[ 1][ 4][1] - 0.02984328 * out_step3[ 1][ 5][1] - 0.01365817 * out_step3[ 1][ 6][1]
+   + 0.00905038 * out_step3[ 2][ 4][1] - 0.00131872 * out_step3[ 2][ 5][1] - 0.02170555 * out_step3[ 2][ 6][1]
+   - 0.10739317 * out_step3[ 0][ 4][2] - 0.04947611 * out_step3[ 0][ 5][2] + 0.09006887 * out_step3[ 0][ 6][2]
+   - 0.00593757 * out_step3[ 1][ 4][2] + 0.04316609 * out_step3[ 1][ 5][2] - 0.05418501 * out_step3[ 1][ 6][2]
+   + 0.04111471 * out_step3[ 2][ 4][2] - 0.05407892 * out_step3[ 2][ 5][2] - 0.04594433 * out_step3[ 2][ 6][2]
+   - 0.04119977 * out_step3[ 0][ 4][3] - 0.01770117 * out_step3[ 0][ 5][3] - 0.09023756 * out_step3[ 0][ 6][3]
+   + 0.03726254 * out_step3[ 1][ 4][3] - 0.01570367 * out_step3[ 1][ 5][3] - 0.05482312 * out_step3[ 1][ 6][3]
+   + 0.01748000 * out_step3[ 2][ 4][3] - 0.04506006 * out_step3[ 2][ 5][3] - 0.06168160 * out_step3[ 2][ 6][3]
+   - 0.03156140 * out_step3[ 0][ 4][4] + 0.02665797 * out_step3[ 0][ 5][4] + 0.00361931 * out_step3[ 0][ 6][4]
+   - 0.05855275 * out_step3[ 1][ 4][4] - 0.02254592 * out_step3[ 1][ 5][4] - 0.00796637 * out_step3[ 1][ 6][4]
+   + 0.03364900 * out_step3[ 2][ 4][4] + 0.00620785 * out_step3[ 2][ 5][4] - 0.04832491 * out_step3[ 2][ 6][4]
+   - 0.04134467 * out_step3[ 0][ 4][5] - 0.06257880 * out_step3[ 0][ 5][5] - 0.08256511 * out_step3[ 0][ 6][5]
+   + 0.05253258 * out_step3[ 1][ 4][5] - 0.02745731 * out_step3[ 1][ 5][5] - 0.01654654 * out_step3[ 1][ 6][5]
+   + 0.09516135 * out_step3[ 2][ 4][5] + 0.05119761 * out_step3[ 2][ 5][5] + 0.01386645 * out_step3[ 2][ 6][5]
+   - 0.00754154 * out_step3[ 0][ 4][6] + 0.00949769 * out_step3[ 0][ 5][6] - 0.02027263 * out_step3[ 0][ 6][6]
+   + 0.04210031 * out_step3[ 1][ 4][6] + 0.10016090 * out_step3[ 1][ 5][6] - 0.08451574 * out_step3[ 1][ 6][6]
+   - 0.04027500 * out_step3[ 2][ 4][6] + 0.11918592 * out_step3[ 2][ 5][6] + 0.03446440 * out_step3[ 2][ 6][6]
+   - 0.00500440 * out_step3[ 0][ 4][7] - 0.02444750 * out_step3[ 0][ 5][7] - 0.02437118 * out_step3[ 0][ 6][7]
+   + 0.06739507 * out_step3[ 1][ 4][7] + 0.02494654 * out_step3[ 1][ 5][7] + 0.05504896 * out_step3[ 1][ 6][7]
+   + 0.12062760 * out_step3[ 2][ 4][7] + 0.10671559 * out_step3[ 2][ 5][7] + 0.06758494 * out_step3[ 2][ 6][7]
+   - 0.07305621;
+
+out_step4[1][0][0] = 
+   - 0.00998629 * out_step3[ 2][ 0][0] + 0.08283555 * out_step3[ 2][ 1][0] - 0.07144316 * out_step3[ 2][ 2][0]
+   + 0.06145312 * out_step3[ 3][ 0][0] - 0.00760845 * out_step3[ 3][ 1][0] + 0.01897371 * out_step3[ 3][ 2][0]
+   + 0.10231151 * out_step3[ 4][ 0][0] + 0.06978398 * out_step3[ 4][ 1][0] + 0.06476418 * out_step3[ 4][ 2][0]
+   - 0.02043270 * out_step3[ 2][ 0][1] - 0.00208487 * out_step3[ 2][ 1][1] - 0.02488014 * out_step3[ 2][ 2][1]
+   + 0.02265758 * out_step3[ 3][ 0][1] - 0.02984328 * out_step3[ 3][ 1][1] - 0.01365817 * out_step3[ 3][ 2][1]
+   + 0.00905038 * out_step3[ 4][ 0][1] - 0.00131872 * out_step3[ 4][ 1][1] - 0.02170555 * out_step3[ 4][ 2][1]
+   - 0.10739317 * out_step3[ 2][ 0][2] - 0.04947611 * out_step3[ 2][ 1][2] + 0.09006887 * out_step3[ 2][ 2][2]
+   - 0.00593757 * out_step3[ 3][ 0][2] + 0.04316609 * out_step3[ 3][ 1][2] - 0.05418501 * out_step3[ 3][ 2][2]
+   + 0.04111471 * out_step3[ 4][ 0][2] - 0.05407892 * out_step3[ 4][ 1][2] - 0.04594433 * out_step3[ 4][ 2][2]
+   - 0.04119977 * out_step3[ 2][ 0][3] - 0.01770117 * out_step3[ 2][ 1][3] - 0.09023756 * out_step3[ 2][ 2][3]
+   + 0.03726254 * out_step3[ 3][ 0][3] - 0.01570367 * out_step3[ 3][ 1][3] - 0.05482312 * out_step3[ 3][ 2][3]
+   + 0.01748000 * out_step3[ 4][ 0][3] - 0.04506006 * out_step3[ 4][ 1][3] - 0.06168160 * out_step3[ 4][ 2][3]
+   - 0.03156140 * out_step3[ 2][ 0][4] + 0.02665797 * out_step3[ 2][ 1][4] + 0.00361931 * out_step3[ 2][ 2][4]
+   - 0.05855275 * out_step3[ 3][ 0][4] - 0.02254592 * out_step3[ 3][ 1][4] - 0.00796637 * out_step3[ 3][ 2][4]
+   + 0.03364900 * out_step3[ 4][ 0][4] + 0.00620785 * out_step3[ 4][ 1][4] - 0.04832491 * out_step3[ 4][ 2][4]
+   - 0.04134467 * out_step3[ 2][ 0][5] - 0.06257880 * out_step3[ 2][ 1][5] - 0.08256511 * out_step3[ 2][ 2][5]
+   + 0.05253258 * out_step3[ 3][ 0][5] - 0.02745731 * out_step3[ 3][ 1][5] - 0.01654654 * out_step3[ 3][ 2][5]
+   + 0.09516135 * out_step3[ 4][ 0][5] + 0.05119761 * out_step3[ 4][ 1][5] + 0.01386645 * out_step3[ 4][ 2][5]
+   - 0.00754154 * out_step3[ 2][ 0][6] + 0.00949769 * out_step3[ 2][ 1][6] - 0.02027263 * out_step3[ 2][ 2][6]
+   + 0.04210031 * out_step3[ 3][ 0][6] + 0.10016090 * out_step3[ 3][ 1][6] - 0.08451574 * out_step3[ 3][ 2][6]
+   - 0.04027500 * out_step3[ 4][ 0][6] + 0.11918592 * out_step3[ 4][ 1][6] + 0.03446440 * out_step3[ 4][ 2][6]
+   - 0.00500440 * out_step3[ 2][ 0][7] - 0.02444750 * out_step3[ 2][ 1][7] - 0.02437118 * out_step3[ 2][ 2][7]
+   + 0.06739507 * out_step3[ 3][ 0][7] + 0.02494654 * out_step3[ 3][ 1][7] + 0.05504896 * out_step3[ 3][ 2][7]
+   + 0.12062760 * out_step3[ 4][ 0][7] + 0.10671559 * out_step3[ 4][ 1][7] + 0.06758494 * out_step3[ 4][ 2][7]
+   - 0.07305621;
+
+out_step4[1][1][0] = 
+   - 0.00998629 * out_step3[ 2][ 2][0] + 0.08283555 * out_step3[ 2][ 3][0] - 0.07144316 * out_step3[ 2][ 4][0]
+   + 0.06145312 * out_step3[ 3][ 2][0] - 0.00760845 * out_step3[ 3][ 3][0] + 0.01897371 * out_step3[ 3][ 4][0]
+   + 0.10231151 * out_step3[ 4][ 2][0] + 0.06978398 * out_step3[ 4][ 3][0] + 0.06476418 * out_step3[ 4][ 4][0]
+   - 0.02043270 * out_step3[ 2][ 2][1] - 0.00208487 * out_step3[ 2][ 3][1] - 0.02488014 * out_step3[ 2][ 4][1]
+   + 0.02265758 * out_step3[ 3][ 2][1] - 0.02984328 * out_step3[ 3][ 3][1] - 0.01365817 * out_step3[ 3][ 4][1]
+   + 0.00905038 * out_step3[ 4][ 2][1] - 0.00131872 * out_step3[ 4][ 3][1] - 0.02170555 * out_step3[ 4][ 4][1]
+   - 0.10739317 * out_step3[ 2][ 2][2] - 0.04947611 * out_step3[ 2][ 3][2] + 0.09006887 * out_step3[ 2][ 4][2]
+   - 0.00593757 * out_step3[ 3][ 2][2] + 0.04316609 * out_step3[ 3][ 3][2] - 0.05418501 * out_step3[ 3][ 4][2]
+   + 0.04111471 * out_step3[ 4][ 2][2] - 0.05407892 * out_step3[ 4][ 3][2] - 0.04594433 * out_step3[ 4][ 4][2]
+   - 0.04119977 * out_step3[ 2][ 2][3] - 0.01770117 * out_step3[ 2][ 3][3] - 0.09023756 * out_step3[ 2][ 4][3]
+   + 0.03726254 * out_step3[ 3][ 2][3] - 0.01570367 * out_step3[ 3][ 3][3] - 0.05482312 * out_step3[ 3][ 4][3]
+   + 0.01748000 * out_step3[ 4][ 2][3] - 0.04506006 * out_step3[ 4][ 3][3] - 0.06168160 * out_step3[ 4][ 4][3]
+   - 0.03156140 * out_step3[ 2][ 2][4] + 0.02665797 * out_step3[ 2][ 3][4] + 0.00361931 * out_step3[ 2][ 4][4]
+   - 0.05855275 * out_step3[ 3][ 2][4] - 0.02254592 * out_step3[ 3][ 3][4] - 0.00796637 * out_step3[ 3][ 4][4]
+   + 0.03364900 * out_step3[ 4][ 2][4] + 0.00620785 * out_step3[ 4][ 3][4] - 0.04832491 * out_step3[ 4][ 4][4]
+   - 0.04134467 * out_step3[ 2][ 2][5] - 0.06257880 * out_step3[ 2][ 3][5] - 0.08256511 * out_step3[ 2][ 4][5]
+   + 0.05253258 * out_step3[ 3][ 2][5] - 0.02745731 * out_step3[ 3][ 3][5] - 0.01654654 * out_step3[ 3][ 4][5]
+   + 0.09516135 * out_step3[ 4][ 2][5] + 0.05119761 * out_step3[ 4][ 3][5] + 0.01386645 * out_step3[ 4][ 4][5]
+   - 0.00754154 * out_step3[ 2][ 2][6] + 0.00949769 * out_step3[ 2][ 3][6] - 0.02027263 * out_step3[ 2][ 4][6]
+   + 0.04210031 * out_step3[ 3][ 2][6] + 0.10016090 * out_step3[ 3][ 3][6] - 0.08451574 * out_step3[ 3][ 4][6]
+   - 0.04027500 * out_step3[ 4][ 2][6] + 0.11918592 * out_step3[ 4][ 3][6] + 0.03446440 * out_step3[ 4][ 4][6]
+   - 0.00500440 * out_step3[ 2][ 2][7] - 0.02444750 * out_step3[ 2][ 3][7] - 0.02437118 * out_step3[ 2][ 4][7]
+   + 0.06739507 * out_step3[ 3][ 2][7] + 0.02494654 * out_step3[ 3][ 3][7] + 0.05504896 * out_step3[ 3][ 4][7]
+   + 0.12062760 * out_step3[ 4][ 2][7] + 0.10671559 * out_step3[ 4][ 3][7] + 0.06758494 * out_step3[ 4][ 4][7]
+   - 0.07305621;
+
+out_step4[1][2][0] = 
+   - 0.00998629 * out_step3[ 2][ 4][0] + 0.08283555 * out_step3[ 2][ 5][0] - 0.07144316 * out_step3[ 2][ 6][0]
+   + 0.06145312 * out_step3[ 3][ 4][0] - 0.00760845 * out_step3[ 3][ 5][0] + 0.01897371 * out_step3[ 3][ 6][0]
+   + 0.10231151 * out_step3[ 4][ 4][0] + 0.06978398 * out_step3[ 4][ 5][0] + 0.06476418 * out_step3[ 4][ 6][0]
+   - 0.02043270 * out_step3[ 2][ 4][1] - 0.00208487 * out_step3[ 2][ 5][1] - 0.02488014 * out_step3[ 2][ 6][1]
+   + 0.02265758 * out_step3[ 3][ 4][1] - 0.02984328 * out_step3[ 3][ 5][1] - 0.01365817 * out_step3[ 3][ 6][1]
+   + 0.00905038 * out_step3[ 4][ 4][1] - 0.00131872 * out_step3[ 4][ 5][1] - 0.02170555 * out_step3[ 4][ 6][1]
+   - 0.10739317 * out_step3[ 2][ 4][2] - 0.04947611 * out_step3[ 2][ 5][2] + 0.09006887 * out_step3[ 2][ 6][2]
+   - 0.00593757 * out_step3[ 3][ 4][2] + 0.04316609 * out_step3[ 3][ 5][2] - 0.05418501 * out_step3[ 3][ 6][2]
+   + 0.04111471 * out_step3[ 4][ 4][2] - 0.05407892 * out_step3[ 4][ 5][2] - 0.04594433 * out_step3[ 4][ 6][2]
+   - 0.04119977 * out_step3[ 2][ 4][3] - 0.01770117 * out_step3[ 2][ 5][3] - 0.09023756 * out_step3[ 2][ 6][3]
+   + 0.03726254 * out_step3[ 3][ 4][3] - 0.01570367 * out_step3[ 3][ 5][3] - 0.05482312 * out_step3[ 3][ 6][3]
+   + 0.01748000 * out_step3[ 4][ 4][3] - 0.04506006 * out_step3[ 4][ 5][3] - 0.06168160 * out_step3[ 4][ 6][3]
+   - 0.03156140 * out_step3[ 2][ 4][4] + 0.02665797 * out_step3[ 2][ 5][4] + 0.00361931 * out_step3[ 2][ 6][4]
+   - 0.05855275 * out_step3[ 3][ 4][4] - 0.02254592 * out_step3[ 3][ 5][4] - 0.00796637 * out_step3[ 3][ 6][4]
+   + 0.03364900 * out_step3[ 4][ 4][4] + 0.00620785 * out_step3[ 4][ 5][4] - 0.04832491 * out_step3[ 4][ 6][4]
+   - 0.04134467 * out_step3[ 2][ 4][5] - 0.06257880 * out_step3[ 2][ 5][5] - 0.08256511 * out_step3[ 2][ 6][5]
+   + 0.05253258 * out_step3[ 3][ 4][5] - 0.02745731 * out_step3[ 3][ 5][5] - 0.01654654 * out_step3[ 3][ 6][5]
+   + 0.09516135 * out_step3[ 4][ 4][5] + 0.05119761 * out_step3[ 4][ 5][5] + 0.01386645 * out_step3[ 4][ 6][5]
+   - 0.00754154 * out_step3[ 2][ 4][6] + 0.00949769 * out_step3[ 2][ 5][6] - 0.02027263 * out_step3[ 2][ 6][6]
+   + 0.04210031 * out_step3[ 3][ 4][6] + 0.10016090 * out_step3[ 3][ 5][6] - 0.08451574 * out_step3[ 3][ 6][6]
+   - 0.04027500 * out_step3[ 4][ 4][6] + 0.11918592 * out_step3[ 4][ 5][6] + 0.03446440 * out_step3[ 4][ 6][6]
+   - 0.00500440 * out_step3[ 2][ 4][7] - 0.02444750 * out_step3[ 2][ 5][7] - 0.02437118 * out_step3[ 2][ 6][7]
+   + 0.06739507 * out_step3[ 3][ 4][7] + 0.02494654 * out_step3[ 3][ 5][7] + 0.05504896 * out_step3[ 3][ 6][7]
+   + 0.12062760 * out_step3[ 4][ 4][7] + 0.10671559 * out_step3[ 4][ 5][7] + 0.06758494 * out_step3[ 4][ 6][7]
+   - 0.07305621;
+
+out_step4[2][0][0] = 
+   - 0.00998629 * out_step3[ 4][ 0][0] + 0.08283555 * out_step3[ 4][ 1][0] - 0.07144316 * out_step3[ 4][ 2][0]
+   + 0.06145312 * out_step3[ 5][ 0][0] - 0.00760845 * out_step3[ 5][ 1][0] + 0.01897371 * out_step3[ 5][ 2][0]
+   + 0.10231151 * out_step3[ 6][ 0][0] + 0.06978398 * out_step3[ 6][ 1][0] + 0.06476418 * out_step3[ 6][ 2][0]
+   - 0.02043270 * out_step3[ 4][ 0][1] - 0.00208487 * out_step3[ 4][ 1][1] - 0.02488014 * out_step3[ 4][ 2][1]
+   + 0.02265758 * out_step3[ 5][ 0][1] - 0.02984328 * out_step3[ 5][ 1][1] - 0.01365817 * out_step3[ 5][ 2][1]
+   + 0.00905038 * out_step3[ 6][ 0][1] - 0.00131872 * out_step3[ 6][ 1][1] - 0.02170555 * out_step3[ 6][ 2][1]
+   - 0.10739317 * out_step3[ 4][ 0][2] - 0.04947611 * out_step3[ 4][ 1][2] + 0.09006887 * out_step3[ 4][ 2][2]
+   - 0.00593757 * out_step3[ 5][ 0][2] + 0.04316609 * out_step3[ 5][ 1][2] - 0.05418501 * out_step3[ 5][ 2][2]
+   + 0.04111471 * out_step3[ 6][ 0][2] - 0.05407892 * out_step3[ 6][ 1][2] - 0.04594433 * out_step3[ 6][ 2][2]
+   - 0.04119977 * out_step3[ 4][ 0][3] - 0.01770117 * out_step3[ 4][ 1][3] - 0.09023756 * out_step3[ 4][ 2][3]
+   + 0.03726254 * out_step3[ 5][ 0][3] - 0.01570367 * out_step3[ 5][ 1][3] - 0.05482312 * out_step3[ 5][ 2][3]
+   + 0.01748000 * out_step3[ 6][ 0][3] - 0.04506006 * out_step3[ 6][ 1][3] - 0.06168160 * out_step3[ 6][ 2][3]
+   - 0.03156140 * out_step3[ 4][ 0][4] + 0.02665797 * out_step3[ 4][ 1][4] + 0.00361931 * out_step3[ 4][ 2][4]
+   - 0.05855275 * out_step3[ 5][ 0][4] - 0.02254592 * out_step3[ 5][ 1][4] - 0.00796637 * out_step3[ 5][ 2][4]
+   + 0.03364900 * out_step3[ 6][ 0][4] + 0.00620785 * out_step3[ 6][ 1][4] - 0.04832491 * out_step3[ 6][ 2][4]
+   - 0.04134467 * out_step3[ 4][ 0][5] - 0.06257880 * out_step3[ 4][ 1][5] - 0.08256511 * out_step3[ 4][ 2][5]
+   + 0.05253258 * out_step3[ 5][ 0][5] - 0.02745731 * out_step3[ 5][ 1][5] - 0.01654654 * out_step3[ 5][ 2][5]
+   + 0.09516135 * out_step3[ 6][ 0][5] + 0.05119761 * out_step3[ 6][ 1][5] + 0.01386645 * out_step3[ 6][ 2][5]
+   - 0.00754154 * out_step3[ 4][ 0][6] + 0.00949769 * out_step3[ 4][ 1][6] - 0.02027263 * out_step3[ 4][ 2][6]
+   + 0.04210031 * out_step3[ 5][ 0][6] + 0.10016090 * out_step3[ 5][ 1][6] - 0.08451574 * out_step3[ 5][ 2][6]
+   - 0.04027500 * out_step3[ 6][ 0][6] + 0.11918592 * out_step3[ 6][ 1][6] + 0.03446440 * out_step3[ 6][ 2][6]
+   - 0.00500440 * out_step3[ 4][ 0][7] - 0.02444750 * out_step3[ 4][ 1][7] - 0.02437118 * out_step3[ 4][ 2][7]
+   + 0.06739507 * out_step3[ 5][ 0][7] + 0.02494654 * out_step3[ 5][ 1][7] + 0.05504896 * out_step3[ 5][ 2][7]
+   + 0.12062760 * out_step3[ 6][ 0][7] + 0.10671559 * out_step3[ 6][ 1][7] + 0.06758494 * out_step3[ 6][ 2][7]
+   - 0.07305621;
+
+out_step4[2][1][0] = 
+   - 0.00998629 * out_step3[ 4][ 2][0] + 0.08283555 * out_step3[ 4][ 3][0] - 0.07144316 * out_step3[ 4][ 4][0]
+   + 0.06145312 * out_step3[ 5][ 2][0] - 0.00760845 * out_step3[ 5][ 3][0] + 0.01897371 * out_step3[ 5][ 4][0]
+   + 0.10231151 * out_step3[ 6][ 2][0] + 0.06978398 * out_step3[ 6][ 3][0] + 0.06476418 * out_step3[ 6][ 4][0]
+   - 0.02043270 * out_step3[ 4][ 2][1] - 0.00208487 * out_step3[ 4][ 3][1] - 0.02488014 * out_step3[ 4][ 4][1]
+   + 0.02265758 * out_step3[ 5][ 2][1] - 0.02984328 * out_step3[ 5][ 3][1] - 0.01365817 * out_step3[ 5][ 4][1]
+   + 0.00905038 * out_step3[ 6][ 2][1] - 0.00131872 * out_step3[ 6][ 3][1] - 0.02170555 * out_step3[ 6][ 4][1]
+   - 0.10739317 * out_step3[ 4][ 2][2] - 0.04947611 * out_step3[ 4][ 3][2] + 0.09006887 * out_step3[ 4][ 4][2]
+   - 0.00593757 * out_step3[ 5][ 2][2] + 0.04316609 * out_step3[ 5][ 3][2] - 0.05418501 * out_step3[ 5][ 4][2]
+   + 0.04111471 * out_step3[ 6][ 2][2] - 0.05407892 * out_step3[ 6][ 3][2] - 0.04594433 * out_step3[ 6][ 4][2]
+   - 0.04119977 * out_step3[ 4][ 2][3] - 0.01770117 * out_step3[ 4][ 3][3] - 0.09023756 * out_step3[ 4][ 4][3]
+   + 0.03726254 * out_step3[ 5][ 2][3] - 0.01570367 * out_step3[ 5][ 3][3] - 0.05482312 * out_step3[ 5][ 4][3]
+   + 0.01748000 * out_step3[ 6][ 2][3] - 0.04506006 * out_step3[ 6][ 3][3] - 0.06168160 * out_step3[ 6][ 4][3]
+   - 0.03156140 * out_step3[ 4][ 2][4] + 0.02665797 * out_step3[ 4][ 3][4] + 0.00361931 * out_step3[ 4][ 4][4]
+   - 0.05855275 * out_step3[ 5][ 2][4] - 0.02254592 * out_step3[ 5][ 3][4] - 0.00796637 * out_step3[ 5][ 4][4]
+   + 0.03364900 * out_step3[ 6][ 2][4] + 0.00620785 * out_step3[ 6][ 3][4] - 0.04832491 * out_step3[ 6][ 4][4]
+   - 0.04134467 * out_step3[ 4][ 2][5] - 0.06257880 * out_step3[ 4][ 3][5] - 0.08256511 * out_step3[ 4][ 4][5]
+   + 0.05253258 * out_step3[ 5][ 2][5] - 0.02745731 * out_step3[ 5][ 3][5] - 0.01654654 * out_step3[ 5][ 4][5]
+   + 0.09516135 * out_step3[ 6][ 2][5] + 0.05119761 * out_step3[ 6][ 3][5] + 0.01386645 * out_step3[ 6][ 4][5]
+   - 0.00754154 * out_step3[ 4][ 2][6] + 0.00949769 * out_step3[ 4][ 3][6] - 0.02027263 * out_step3[ 4][ 4][6]
+   + 0.04210031 * out_step3[ 5][ 2][6] + 0.10016090 * out_step3[ 5][ 3][6] - 0.08451574 * out_step3[ 5][ 4][6]
+   - 0.04027500 * out_step3[ 6][ 2][6] + 0.11918592 * out_step3[ 6][ 3][6] + 0.03446440 * out_step3[ 6][ 4][6]
+   - 0.00500440 * out_step3[ 4][ 2][7] - 0.02444750 * out_step3[ 4][ 3][7] - 0.02437118 * out_step3[ 4][ 4][7]
+   + 0.06739507 * out_step3[ 5][ 2][7] + 0.02494654 * out_step3[ 5][ 3][7] + 0.05504896 * out_step3[ 5][ 4][7]
+   + 0.12062760 * out_step3[ 6][ 2][7] + 0.10671559 * out_step3[ 6][ 3][7] + 0.06758494 * out_step3[ 6][ 4][7]
+   - 0.07305621;
+
+out_step4[2][2][0] = 
+   - 0.00998629 * out_step3[ 4][ 4][0] + 0.08283555 * out_step3[ 4][ 5][0] - 0.07144316 * out_step3[ 4][ 6][0]
+   + 0.06145312 * out_step3[ 5][ 4][0] - 0.00760845 * out_step3[ 5][ 5][0] + 0.01897371 * out_step3[ 5][ 6][0]
+   + 0.10231151 * out_step3[ 6][ 4][0] + 0.06978398 * out_step3[ 6][ 5][0] + 0.06476418 * out_step3[ 6][ 6][0]
+   - 0.02043270 * out_step3[ 4][ 4][1] - 0.00208487 * out_step3[ 4][ 5][1] - 0.02488014 * out_step3[ 4][ 6][1]
+   + 0.02265758 * out_step3[ 5][ 4][1] - 0.02984328 * out_step3[ 5][ 5][1] - 0.01365817 * out_step3[ 5][ 6][1]
+   + 0.00905038 * out_step3[ 6][ 4][1] - 0.00131872 * out_step3[ 6][ 5][1] - 0.02170555 * out_step3[ 6][ 6][1]
+   - 0.10739317 * out_step3[ 4][ 4][2] - 0.04947611 * out_step3[ 4][ 5][2] + 0.09006887 * out_step3[ 4][ 6][2]
+   - 0.00593757 * out_step3[ 5][ 4][2] + 0.04316609 * out_step3[ 5][ 5][2] - 0.05418501 * out_step3[ 5][ 6][2]
+   + 0.04111471 * out_step3[ 6][ 4][2] - 0.05407892 * out_step3[ 6][ 5][2] - 0.04594433 * out_step3[ 6][ 6][2]
+   - 0.04119977 * out_step3[ 4][ 4][3] - 0.01770117 * out_step3[ 4][ 5][3] - 0.09023756 * out_step3[ 4][ 6][3]
+   + 0.03726254 * out_step3[ 5][ 4][3] - 0.01570367 * out_step3[ 5][ 5][3] - 0.05482312 * out_step3[ 5][ 6][3]
+   + 0.01748000 * out_step3[ 6][ 4][3] - 0.04506006 * out_step3[ 6][ 5][3] - 0.06168160 * out_step3[ 6][ 6][3]
+   - 0.03156140 * out_step3[ 4][ 4][4] + 0.02665797 * out_step3[ 4][ 5][4] + 0.00361931 * out_step3[ 4][ 6][4]
+   - 0.05855275 * out_step3[ 5][ 4][4] - 0.02254592 * out_step3[ 5][ 5][4] - 0.00796637 * out_step3[ 5][ 6][4]
+   + 0.03364900 * out_step3[ 6][ 4][4] + 0.00620785 * out_step3[ 6][ 5][4] - 0.04832491 * out_step3[ 6][ 6][4]
+   - 0.04134467 * out_step3[ 4][ 4][5] - 0.06257880 * out_step3[ 4][ 5][5] - 0.08256511 * out_step3[ 4][ 6][5]
+   + 0.05253258 * out_step3[ 5][ 4][5] - 0.02745731 * out_step3[ 5][ 5][5] - 0.01654654 * out_step3[ 5][ 6][5]
+   + 0.09516135 * out_step3[ 6][ 4][5] + 0.05119761 * out_step3[ 6][ 5][5] + 0.01386645 * out_step3[ 6][ 6][5]
+   - 0.00754154 * out_step3[ 4][ 4][6] + 0.00949769 * out_step3[ 4][ 5][6] - 0.02027263 * out_step3[ 4][ 6][6]
+   + 0.04210031 * out_step3[ 5][ 4][6] + 0.10016090 * out_step3[ 5][ 5][6] - 0.08451574 * out_step3[ 5][ 6][6]
+   - 0.04027500 * out_step3[ 6][ 4][6] + 0.11918592 * out_step3[ 6][ 5][6] + 0.03446440 * out_step3[ 6][ 6][6]
+   - 0.00500440 * out_step3[ 4][ 4][7] - 0.02444750 * out_step3[ 4][ 5][7] - 0.02437118 * out_step3[ 4][ 6][7]
+   + 0.06739507 * out_step3[ 5][ 4][7] + 0.02494654 * out_step3[ 5][ 5][7] + 0.05504896 * out_step3[ 5][ 6][7]
+   + 0.12062760 * out_step3[ 6][ 4][7] + 0.10671559 * out_step3[ 6][ 5][7] + 0.06758494 * out_step3[ 6][ 6][7]
+   - 0.07305621;
+
+out_step4[0][0][1] = 
+   - 0.01629355 * out_step3[ 0][ 0][0] - 0.01004506 * out_step3[ 0][ 1][0] + 0.02448954 * out_step3[ 0][ 2][0]
+   - 0.04510621 * out_step3[ 1][ 0][0] - 0.06716122 * out_step3[ 1][ 1][0] - 0.04569817 * out_step3[ 1][ 2][0]
+   - 0.01459688 * out_step3[ 2][ 0][0] - 0.00349974 * out_step3[ 2][ 1][0] - 0.03994582 * out_step3[ 2][ 2][0]
+   - 0.02459791 * out_step3[ 0][ 0][1] + 0.02305431 * out_step3[ 0][ 1][1] + 0.01490633 * out_step3[ 0][ 2][1]
+   - 0.01333811 * out_step3[ 1][ 0][1] + 0.00091649 * out_step3[ 1][ 1][1] - 0.00619656 * out_step3[ 1][ 2][1]
+   - 0.01346097 * out_step3[ 2][ 0][1] + 0.03298710 * out_step3[ 2][ 1][1] - 0.02153836 * out_step3[ 2][ 2][1]
+   - 0.04941129 * out_step3[ 0][ 0][2] - 0.09334059 * out_step3[ 0][ 1][2] - 0.09741234 * out_step3[ 0][ 2][2]
+   - 0.04605885 * out_step3[ 1][ 0][2] - 0.02795968 * out_step3[ 1][ 1][2] - 0.09530425 * out_step3[ 1][ 2][2]
+   + 0.11051667 * out_step3[ 2][ 0][2] + 0.14176399 * out_step3[ 2][ 1][2] + 0.11652906 * out_step3[ 2][ 2][2]
+   - 0.07480140 * out_step3[ 0][ 0][3] + 0.07931215 * out_step3[ 0][ 1][3] + 0.07069705 * out_step3[ 0][ 2][3]
+   - 0.01154299 * out_step3[ 1][ 0][3] - 0.00084963 * out_step3[ 1][ 1][3] - 0.02081733 * out_step3[ 1][ 2][3]
+   - 0.01547465 * out_step3[ 2][ 0][3] + 0.09425939 * out_step3[ 2][ 1][3] - 0.05942418 * out_step3[ 2][ 2][3]
+   - 0.01916689 * out_step3[ 0][ 0][4] - 0.05124836 * out_step3[ 0][ 1][4] + 0.10451633 * out_step3[ 0][ 2][4]
+   - 0.00047673 * out_step3[ 1][ 0][4] + 0.06582735 * out_step3[ 1][ 1][4] + 0.05096194 * out_step3[ 1][ 2][4]
+   + 0.05057922 * out_step3[ 2][ 0][4] + 0.13040215 * out_step3[ 2][ 1][4] + 0.01861385 * out_step3[ 2][ 2][4]
+   - 0.00901347 * out_step3[ 0][ 0][5] - 0.02461978 * out_step3[ 0][ 1][5] + 0.01721653 * out_step3[ 0][ 2][5]
+   - 0.09828988 * out_step3[ 1][ 0][5] - 0.04269146 * out_step3[ 1][ 1][5] - 0.05468850 * out_step3[ 1][ 2][5]
+   + 0.01076312 * out_step3[ 2][ 0][5] - 0.05043448 * out_step3[ 2][ 1][5] - 0.02967713 * out_step3[ 2][ 2][5]
+   - 0.02643815 * out_step3[ 0][ 0][6] - 0.07052093 * out_step3[ 0][ 1][6] + 0.03562033 * out_step3[ 0][ 2][6]
+   - 0.03104484 * out_step3[ 1][ 0][6] - 0.00494508 * out_step3[ 1][ 1][6] - 0.05689826 * out_step3[ 1][ 2][6]
+   + 0.03019677 * out_step3[ 2][ 0][6] - 0.00792826 * out_step3[ 2][ 1][6] + 0.00687118 * out_step3[ 2][ 2][6]
+   - 0.07603843 * out_step3[ 0][ 0][7] - 0.05902485 * out_step3[ 0][ 1][7] + 0.02273950 * out_step3[ 0][ 2][7]
+   - 0.09148506 * out_step3[ 1][ 0][7] + 0.01322223 * out_step3[ 1][ 1][7] - 0.01591296 * out_step3[ 1][ 2][7]
+   + 0.10069007 * out_step3[ 2][ 0][7] + 0.01710834 * out_step3[ 2][ 1][7] - 0.00049727 * out_step3[ 2][ 2][7]
+   + 0.07883292;
+
+out_step4[0][1][1] = 
+   - 0.01629355 * out_step3[ 0][ 2][0] - 0.01004506 * out_step3[ 0][ 3][0] + 0.02448954 * out_step3[ 0][ 4][0]
+   - 0.04510621 * out_step3[ 1][ 2][0] - 0.06716122 * out_step3[ 1][ 3][0] - 0.04569817 * out_step3[ 1][ 4][0]
+   - 0.01459688 * out_step3[ 2][ 2][0] - 0.00349974 * out_step3[ 2][ 3][0] - 0.03994582 * out_step3[ 2][ 4][0]
+   - 0.02459791 * out_step3[ 0][ 2][1] + 0.02305431 * out_step3[ 0][ 3][1] + 0.01490633 * out_step3[ 0][ 4][1]
+   - 0.01333811 * out_step3[ 1][ 2][1] + 0.00091649 * out_step3[ 1][ 3][1] - 0.00619656 * out_step3[ 1][ 4][1]
+   - 0.01346097 * out_step3[ 2][ 2][1] + 0.03298710 * out_step3[ 2][ 3][1] - 0.02153836 * out_step3[ 2][ 4][1]
+   - 0.04941129 * out_step3[ 0][ 2][2] - 0.09334059 * out_step3[ 0][ 3][2] - 0.09741234 * out_step3[ 0][ 4][2]
+   - 0.04605885 * out_step3[ 1][ 2][2] - 0.02795968 * out_step3[ 1][ 3][2] - 0.09530425 * out_step3[ 1][ 4][2]
+   + 0.11051667 * out_step3[ 2][ 2][2] + 0.14176399 * out_step3[ 2][ 3][2] + 0.11652906 * out_step3[ 2][ 4][2]
+   - 0.07480140 * out_step3[ 0][ 2][3] + 0.07931215 * out_step3[ 0][ 3][3] + 0.07069705 * out_step3[ 0][ 4][3]
+   - 0.01154299 * out_step3[ 1][ 2][3] - 0.00084963 * out_step3[ 1][ 3][3] - 0.02081733 * out_step3[ 1][ 4][3]
+   - 0.01547465 * out_step3[ 2][ 2][3] + 0.09425939 * out_step3[ 2][ 3][3] - 0.05942418 * out_step3[ 2][ 4][3]
+   - 0.01916689 * out_step3[ 0][ 2][4] - 0.05124836 * out_step3[ 0][ 3][4] + 0.10451633 * out_step3[ 0][ 4][4]
+   - 0.00047673 * out_step3[ 1][ 2][4] + 0.06582735 * out_step3[ 1][ 3][4] + 0.05096194 * out_step3[ 1][ 4][4]
+   + 0.05057922 * out_step3[ 2][ 2][4] + 0.13040215 * out_step3[ 2][ 3][4] + 0.01861385 * out_step3[ 2][ 4][4]
+   - 0.00901347 * out_step3[ 0][ 2][5] - 0.02461978 * out_step3[ 0][ 3][5] + 0.01721653 * out_step3[ 0][ 4][5]
+   - 0.09828988 * out_step3[ 1][ 2][5] - 0.04269146 * out_step3[ 1][ 3][5] - 0.05468850 * out_step3[ 1][ 4][5]
+   + 0.01076312 * out_step3[ 2][ 2][5] - 0.05043448 * out_step3[ 2][ 3][5] - 0.02967713 * out_step3[ 2][ 4][5]
+   - 0.02643815 * out_step3[ 0][ 2][6] - 0.07052093 * out_step3[ 0][ 3][6] + 0.03562033 * out_step3[ 0][ 4][6]
+   - 0.03104484 * out_step3[ 1][ 2][6] - 0.00494508 * out_step3[ 1][ 3][6] - 0.05689826 * out_step3[ 1][ 4][6]
+   + 0.03019677 * out_step3[ 2][ 2][6] - 0.00792826 * out_step3[ 2][ 3][6] + 0.00687118 * out_step3[ 2][ 4][6]
+   - 0.07603843 * out_step3[ 0][ 2][7] - 0.05902485 * out_step3[ 0][ 3][7] + 0.02273950 * out_step3[ 0][ 4][7]
+   - 0.09148506 * out_step3[ 1][ 2][7] + 0.01322223 * out_step3[ 1][ 3][7] - 0.01591296 * out_step3[ 1][ 4][7]
+   + 0.10069007 * out_step3[ 2][ 2][7] + 0.01710834 * out_step3[ 2][ 3][7] - 0.00049727 * out_step3[ 2][ 4][7]
+   + 0.07883292;
+
+out_step4[0][2][1] = 
+   - 0.01629355 * out_step3[ 0][ 4][0] - 0.01004506 * out_step3[ 0][ 5][0] + 0.02448954 * out_step3[ 0][ 6][0]
+   - 0.04510621 * out_step3[ 1][ 4][0] - 0.06716122 * out_step3[ 1][ 5][0] - 0.04569817 * out_step3[ 1][ 6][0]
+   - 0.01459688 * out_step3[ 2][ 4][0] - 0.00349974 * out_step3[ 2][ 5][0] - 0.03994582 * out_step3[ 2][ 6][0]
+   - 0.02459791 * out_step3[ 0][ 4][1] + 0.02305431 * out_step3[ 0][ 5][1] + 0.01490633 * out_step3[ 0][ 6][1]
+   - 0.01333811 * out_step3[ 1][ 4][1] + 0.00091649 * out_step3[ 1][ 5][1] - 0.00619656 * out_step3[ 1][ 6][1]
+   - 0.01346097 * out_step3[ 2][ 4][1] + 0.03298710 * out_step3[ 2][ 5][1] - 0.02153836 * out_step3[ 2][ 6][1]
+   - 0.04941129 * out_step3[ 0][ 4][2] - 0.09334059 * out_step3[ 0][ 5][2] - 0.09741234 * out_step3[ 0][ 6][2]
+   - 0.04605885 * out_step3[ 1][ 4][2] - 0.02795968 * out_step3[ 1][ 5][2] - 0.09530425 * out_step3[ 1][ 6][2]
+   + 0.11051667 * out_step3[ 2][ 4][2] + 0.14176399 * out_step3[ 2][ 5][2] + 0.11652906 * out_step3[ 2][ 6][2]
+   - 0.07480140 * out_step3[ 0][ 4][3] + 0.07931215 * out_step3[ 0][ 5][3] + 0.07069705 * out_step3[ 0][ 6][3]
+   - 0.01154299 * out_step3[ 1][ 4][3] - 0.00084963 * out_step3[ 1][ 5][3] - 0.02081733 * out_step3[ 1][ 6][3]
+   - 0.01547465 * out_step3[ 2][ 4][3] + 0.09425939 * out_step3[ 2][ 5][3] - 0.05942418 * out_step3[ 2][ 6][3]
+   - 0.01916689 * out_step3[ 0][ 4][4] - 0.05124836 * out_step3[ 0][ 5][4] + 0.10451633 * out_step3[ 0][ 6][4]
+   - 0.00047673 * out_step3[ 1][ 4][4] + 0.06582735 * out_step3[ 1][ 5][4] + 0.05096194 * out_step3[ 1][ 6][4]
+   + 0.05057922 * out_step3[ 2][ 4][4] + 0.13040215 * out_step3[ 2][ 5][4] + 0.01861385 * out_step3[ 2][ 6][4]
+   - 0.00901347 * out_step3[ 0][ 4][5] - 0.02461978 * out_step3[ 0][ 5][5] + 0.01721653 * out_step3[ 0][ 6][5]
+   - 0.09828988 * out_step3[ 1][ 4][5] - 0.04269146 * out_step3[ 1][ 5][5] - 0.05468850 * out_step3[ 1][ 6][5]
+   + 0.01076312 * out_step3[ 2][ 4][5] - 0.05043448 * out_step3[ 2][ 5][5] - 0.02967713 * out_step3[ 2][ 6][5]
+   - 0.02643815 * out_step3[ 0][ 4][6] - 0.07052093 * out_step3[ 0][ 5][6] + 0.03562033 * out_step3[ 0][ 6][6]
+   - 0.03104484 * out_step3[ 1][ 4][6] - 0.00494508 * out_step3[ 1][ 5][6] - 0.05689826 * out_step3[ 1][ 6][6]
+   + 0.03019677 * out_step3[ 2][ 4][6] - 0.00792826 * out_step3[ 2][ 5][6] + 0.00687118 * out_step3[ 2][ 6][6]
+   - 0.07603843 * out_step3[ 0][ 4][7] - 0.05902485 * out_step3[ 0][ 5][7] + 0.02273950 * out_step3[ 0][ 6][7]
+   - 0.09148506 * out_step3[ 1][ 4][7] + 0.01322223 * out_step3[ 1][ 5][7] - 0.01591296 * out_step3[ 1][ 6][7]
+   + 0.10069007 * out_step3[ 2][ 4][7] + 0.01710834 * out_step3[ 2][ 5][7] - 0.00049727 * out_step3[ 2][ 6][7]
+   + 0.07883292;
+
+out_step4[1][0][1] = 
+   - 0.01629355 * out_step3[ 2][ 0][0] - 0.01004506 * out_step3[ 2][ 1][0] + 0.02448954 * out_step3[ 2][ 2][0]
+   - 0.04510621 * out_step3[ 3][ 0][0] - 0.06716122 * out_step3[ 3][ 1][0] - 0.04569817 * out_step3[ 3][ 2][0]
+   - 0.01459688 * out_step3[ 4][ 0][0] - 0.00349974 * out_step3[ 4][ 1][0] - 0.03994582 * out_step3[ 4][ 2][0]
+   - 0.02459791 * out_step3[ 2][ 0][1] + 0.02305431 * out_step3[ 2][ 1][1] + 0.01490633 * out_step3[ 2][ 2][1]
+   - 0.01333811 * out_step3[ 3][ 0][1] + 0.00091649 * out_step3[ 3][ 1][1] - 0.00619656 * out_step3[ 3][ 2][1]
+   - 0.01346097 * out_step3[ 4][ 0][1] + 0.03298710 * out_step3[ 4][ 1][1] - 0.02153836 * out_step3[ 4][ 2][1]
+   - 0.04941129 * out_step3[ 2][ 0][2] - 0.09334059 * out_step3[ 2][ 1][2] - 0.09741234 * out_step3[ 2][ 2][2]
+   - 0.04605885 * out_step3[ 3][ 0][2] - 0.02795968 * out_step3[ 3][ 1][2] - 0.09530425 * out_step3[ 3][ 2][2]
+   + 0.11051667 * out_step3[ 4][ 0][2] + 0.14176399 * out_step3[ 4][ 1][2] + 0.11652906 * out_step3[ 4][ 2][2]
+   - 0.07480140 * out_step3[ 2][ 0][3] + 0.07931215 * out_step3[ 2][ 1][3] + 0.07069705 * out_step3[ 2][ 2][3]
+   - 0.01154299 * out_step3[ 3][ 0][3] - 0.00084963 * out_step3[ 3][ 1][3] - 0.02081733 * out_step3[ 3][ 2][3]
+   - 0.01547465 * out_step3[ 4][ 0][3] + 0.09425939 * out_step3[ 4][ 1][3] - 0.05942418 * out_step3[ 4][ 2][3]
+   - 0.01916689 * out_step3[ 2][ 0][4] - 0.05124836 * out_step3[ 2][ 1][4] + 0.10451633 * out_step3[ 2][ 2][4]
+   - 0.00047673 * out_step3[ 3][ 0][4] + 0.06582735 * out_step3[ 3][ 1][4] + 0.05096194 * out_step3[ 3][ 2][4]
+   + 0.05057922 * out_step3[ 4][ 0][4] + 0.13040215 * out_step3[ 4][ 1][4] + 0.01861385 * out_step3[ 4][ 2][4]
+   - 0.00901347 * out_step3[ 2][ 0][5] - 0.02461978 * out_step3[ 2][ 1][5] + 0.01721653 * out_step3[ 2][ 2][5]
+   - 0.09828988 * out_step3[ 3][ 0][5] - 0.04269146 * out_step3[ 3][ 1][5] - 0.05468850 * out_step3[ 3][ 2][5]
+   + 0.01076312 * out_step3[ 4][ 0][5] - 0.05043448 * out_step3[ 4][ 1][5] - 0.02967713 * out_step3[ 4][ 2][5]
+   - 0.02643815 * out_step3[ 2][ 0][6] - 0.07052093 * out_step3[ 2][ 1][6] + 0.03562033 * out_step3[ 2][ 2][6]
+   - 0.03104484 * out_step3[ 3][ 0][6] - 0.00494508 * out_step3[ 3][ 1][6] - 0.05689826 * out_step3[ 3][ 2][6]
+   + 0.03019677 * out_step3[ 4][ 0][6] - 0.00792826 * out_step3[ 4][ 1][6] + 0.00687118 * out_step3[ 4][ 2][6]
+   - 0.07603843 * out_step3[ 2][ 0][7] - 0.05902485 * out_step3[ 2][ 1][7] + 0.02273950 * out_step3[ 2][ 2][7]
+   - 0.09148506 * out_step3[ 3][ 0][7] + 0.01322223 * out_step3[ 3][ 1][7] - 0.01591296 * out_step3[ 3][ 2][7]
+   + 0.10069007 * out_step3[ 4][ 0][7] + 0.01710834 * out_step3[ 4][ 1][7] - 0.00049727 * out_step3[ 4][ 2][7]
+   + 0.07883292;
+
+out_step4[1][1][1] = 
+   - 0.01629355 * out_step3[ 2][ 2][0] - 0.01004506 * out_step3[ 2][ 3][0] + 0.02448954 * out_step3[ 2][ 4][0]
+   - 0.04510621 * out_step3[ 3][ 2][0] - 0.06716122 * out_step3[ 3][ 3][0] - 0.04569817 * out_step3[ 3][ 4][0]
+   - 0.01459688 * out_step3[ 4][ 2][0] - 0.00349974 * out_step3[ 4][ 3][0] - 0.03994582 * out_step3[ 4][ 4][0]
+   - 0.02459791 * out_step3[ 2][ 2][1] + 0.02305431 * out_step3[ 2][ 3][1] + 0.01490633 * out_step3[ 2][ 4][1]
+   - 0.01333811 * out_step3[ 3][ 2][1] + 0.00091649 * out_step3[ 3][ 3][1] - 0.00619656 * out_step3[ 3][ 4][1]
+   - 0.01346097 * out_step3[ 4][ 2][1] + 0.03298710 * out_step3[ 4][ 3][1] - 0.02153836 * out_step3[ 4][ 4][1]
+   - 0.04941129 * out_step3[ 2][ 2][2] - 0.09334059 * out_step3[ 2][ 3][2] - 0.09741234 * out_step3[ 2][ 4][2]
+   - 0.04605885 * out_step3[ 3][ 2][2] - 0.02795968 * out_step3[ 3][ 3][2] - 0.09530425 * out_step3[ 3][ 4][2]
+   + 0.11051667 * out_step3[ 4][ 2][2] + 0.14176399 * out_step3[ 4][ 3][2] + 0.11652906 * out_step3[ 4][ 4][2]
+   - 0.07480140 * out_step3[ 2][ 2][3] + 0.07931215 * out_step3[ 2][ 3][3] + 0.07069705 * out_step3[ 2][ 4][3]
+   - 0.01154299 * out_step3[ 3][ 2][3] - 0.00084963 * out_step3[ 3][ 3][3] - 0.02081733 * out_step3[ 3][ 4][3]
+   - 0.01547465 * out_step3[ 4][ 2][3] + 0.09425939 * out_step3[ 4][ 3][3] - 0.05942418 * out_step3[ 4][ 4][3]
+   - 0.01916689 * out_step3[ 2][ 2][4] - 0.05124836 * out_step3[ 2][ 3][4] + 0.10451633 * out_step3[ 2][ 4][4]
+   - 0.00047673 * out_step3[ 3][ 2][4] + 0.06582735 * out_step3[ 3][ 3][4] + 0.05096194 * out_step3[ 3][ 4][4]
+   + 0.05057922 * out_step3[ 4][ 2][4] + 0.13040215 * out_step3[ 4][ 3][4] + 0.01861385 * out_step3[ 4][ 4][4]
+   - 0.00901347 * out_step3[ 2][ 2][5] - 0.02461978 * out_step3[ 2][ 3][5] + 0.01721653 * out_step3[ 2][ 4][5]
+   - 0.09828988 * out_step3[ 3][ 2][5] - 0.04269146 * out_step3[ 3][ 3][5] - 0.05468850 * out_step3[ 3][ 4][5]
+   + 0.01076312 * out_step3[ 4][ 2][5] - 0.05043448 * out_step3[ 4][ 3][5] - 0.02967713 * out_step3[ 4][ 4][5]
+   - 0.02643815 * out_step3[ 2][ 2][6] - 0.07052093 * out_step3[ 2][ 3][6] + 0.03562033 * out_step3[ 2][ 4][6]
+   - 0.03104484 * out_step3[ 3][ 2][6] - 0.00494508 * out_step3[ 3][ 3][6] - 0.05689826 * out_step3[ 3][ 4][6]
+   + 0.03019677 * out_step3[ 4][ 2][6] - 0.00792826 * out_step3[ 4][ 3][6] + 0.00687118 * out_step3[ 4][ 4][6]
+   - 0.07603843 * out_step3[ 2][ 2][7] - 0.05902485 * out_step3[ 2][ 3][7] + 0.02273950 * out_step3[ 2][ 4][7]
+   - 0.09148506 * out_step3[ 3][ 2][7] + 0.01322223 * out_step3[ 3][ 3][7] - 0.01591296 * out_step3[ 3][ 4][7]
+   + 0.10069007 * out_step3[ 4][ 2][7] + 0.01710834 * out_step3[ 4][ 3][7] - 0.00049727 * out_step3[ 4][ 4][7]
+   + 0.07883292;
+
+out_step4[1][2][1] = 
+   - 0.01629355 * out_step3[ 2][ 4][0] - 0.01004506 * out_step3[ 2][ 5][0] + 0.02448954 * out_step3[ 2][ 6][0]
+   - 0.04510621 * out_step3[ 3][ 4][0] - 0.06716122 * out_step3[ 3][ 5][0] - 0.04569817 * out_step3[ 3][ 6][0]
+   - 0.01459688 * out_step3[ 4][ 4][0] - 0.00349974 * out_step3[ 4][ 5][0] - 0.03994582 * out_step3[ 4][ 6][0]
+   - 0.02459791 * out_step3[ 2][ 4][1] + 0.02305431 * out_step3[ 2][ 5][1] + 0.01490633 * out_step3[ 2][ 6][1]
+   - 0.01333811 * out_step3[ 3][ 4][1] + 0.00091649 * out_step3[ 3][ 5][1] - 0.00619656 * out_step3[ 3][ 6][1]
+   - 0.01346097 * out_step3[ 4][ 4][1] + 0.03298710 * out_step3[ 4][ 5][1] - 0.02153836 * out_step3[ 4][ 6][1]
+   - 0.04941129 * out_step3[ 2][ 4][2] - 0.09334059 * out_step3[ 2][ 5][2] - 0.09741234 * out_step3[ 2][ 6][2]
+   - 0.04605885 * out_step3[ 3][ 4][2] - 0.02795968 * out_step3[ 3][ 5][2] - 0.09530425 * out_step3[ 3][ 6][2]
+   + 0.11051667 * out_step3[ 4][ 4][2] + 0.14176399 * out_step3[ 4][ 5][2] + 0.11652906 * out_step3[ 4][ 6][2]
+   - 0.07480140 * out_step3[ 2][ 4][3] + 0.07931215 * out_step3[ 2][ 5][3] + 0.07069705 * out_step3[ 2][ 6][3]
+   - 0.01154299 * out_step3[ 3][ 4][3] - 0.00084963 * out_step3[ 3][ 5][3] - 0.02081733 * out_step3[ 3][ 6][3]
+   - 0.01547465 * out_step3[ 4][ 4][3] + 0.09425939 * out_step3[ 4][ 5][3] - 0.05942418 * out_step3[ 4][ 6][3]
+   - 0.01916689 * out_step3[ 2][ 4][4] - 0.05124836 * out_step3[ 2][ 5][4] + 0.10451633 * out_step3[ 2][ 6][4]
+   - 0.00047673 * out_step3[ 3][ 4][4] + 0.06582735 * out_step3[ 3][ 5][4] + 0.05096194 * out_step3[ 3][ 6][4]
+   + 0.05057922 * out_step3[ 4][ 4][4] + 0.13040215 * out_step3[ 4][ 5][4] + 0.01861385 * out_step3[ 4][ 6][4]
+   - 0.00901347 * out_step3[ 2][ 4][5] - 0.02461978 * out_step3[ 2][ 5][5] + 0.01721653 * out_step3[ 2][ 6][5]
+   - 0.09828988 * out_step3[ 3][ 4][5] - 0.04269146 * out_step3[ 3][ 5][5] - 0.05468850 * out_step3[ 3][ 6][5]
+   + 0.01076312 * out_step3[ 4][ 4][5] - 0.05043448 * out_step3[ 4][ 5][5] - 0.02967713 * out_step3[ 4][ 6][5]
+   - 0.02643815 * out_step3[ 2][ 4][6] - 0.07052093 * out_step3[ 2][ 5][6] + 0.03562033 * out_step3[ 2][ 6][6]
+   - 0.03104484 * out_step3[ 3][ 4][6] - 0.00494508 * out_step3[ 3][ 5][6] - 0.05689826 * out_step3[ 3][ 6][6]
+   + 0.03019677 * out_step3[ 4][ 4][6] - 0.00792826 * out_step3[ 4][ 5][6] + 0.00687118 * out_step3[ 4][ 6][6]
+   - 0.07603843 * out_step3[ 2][ 4][7] - 0.05902485 * out_step3[ 2][ 5][7] + 0.02273950 * out_step3[ 2][ 6][7]
+   - 0.09148506 * out_step3[ 3][ 4][7] + 0.01322223 * out_step3[ 3][ 5][7] - 0.01591296 * out_step3[ 3][ 6][7]
+   + 0.10069007 * out_step3[ 4][ 4][7] + 0.01710834 * out_step3[ 4][ 5][7] - 0.00049727 * out_step3[ 4][ 6][7]
+   + 0.07883292;
+
+out_step4[2][0][1] = 
+   - 0.01629355 * out_step3[ 4][ 0][0] - 0.01004506 * out_step3[ 4][ 1][0] + 0.02448954 * out_step3[ 4][ 2][0]
+   - 0.04510621 * out_step3[ 5][ 0][0] - 0.06716122 * out_step3[ 5][ 1][0] - 0.04569817 * out_step3[ 5][ 2][0]
+   - 0.01459688 * out_step3[ 6][ 0][0] - 0.00349974 * out_step3[ 6][ 1][0] - 0.03994582 * out_step3[ 6][ 2][0]
+   - 0.02459791 * out_step3[ 4][ 0][1] + 0.02305431 * out_step3[ 4][ 1][1] + 0.01490633 * out_step3[ 4][ 2][1]
+   - 0.01333811 * out_step3[ 5][ 0][1] + 0.00091649 * out_step3[ 5][ 1][1] - 0.00619656 * out_step3[ 5][ 2][1]
+   - 0.01346097 * out_step3[ 6][ 0][1] + 0.03298710 * out_step3[ 6][ 1][1] - 0.02153836 * out_step3[ 6][ 2][1]
+   - 0.04941129 * out_step3[ 4][ 0][2] - 0.09334059 * out_step3[ 4][ 1][2] - 0.09741234 * out_step3[ 4][ 2][2]
+   - 0.04605885 * out_step3[ 5][ 0][2] - 0.02795968 * out_step3[ 5][ 1][2] - 0.09530425 * out_step3[ 5][ 2][2]
+   + 0.11051667 * out_step3[ 6][ 0][2] + 0.14176399 * out_step3[ 6][ 1][2] + 0.11652906 * out_step3[ 6][ 2][2]
+   - 0.07480140 * out_step3[ 4][ 0][3] + 0.07931215 * out_step3[ 4][ 1][3] + 0.07069705 * out_step3[ 4][ 2][3]
+   - 0.01154299 * out_step3[ 5][ 0][3] - 0.00084963 * out_step3[ 5][ 1][3] - 0.02081733 * out_step3[ 5][ 2][3]
+   - 0.01547465 * out_step3[ 6][ 0][3] + 0.09425939 * out_step3[ 6][ 1][3] - 0.05942418 * out_step3[ 6][ 2][3]
+   - 0.01916689 * out_step3[ 4][ 0][4] - 0.05124836 * out_step3[ 4][ 1][4] + 0.10451633 * out_step3[ 4][ 2][4]
+   - 0.00047673 * out_step3[ 5][ 0][4] + 0.06582735 * out_step3[ 5][ 1][4] + 0.05096194 * out_step3[ 5][ 2][4]
+   + 0.05057922 * out_step3[ 6][ 0][4] + 0.13040215 * out_step3[ 6][ 1][4] + 0.01861385 * out_step3[ 6][ 2][4]
+   - 0.00901347 * out_step3[ 4][ 0][5] - 0.02461978 * out_step3[ 4][ 1][5] + 0.01721653 * out_step3[ 4][ 2][5]
+   - 0.09828988 * out_step3[ 5][ 0][5] - 0.04269146 * out_step3[ 5][ 1][5] - 0.05468850 * out_step3[ 5][ 2][5]
+   + 0.01076312 * out_step3[ 6][ 0][5] - 0.05043448 * out_step3[ 6][ 1][5] - 0.02967713 * out_step3[ 6][ 2][5]
+   - 0.02643815 * out_step3[ 4][ 0][6] - 0.07052093 * out_step3[ 4][ 1][6] + 0.03562033 * out_step3[ 4][ 2][6]
+   - 0.03104484 * out_step3[ 5][ 0][6] - 0.00494508 * out_step3[ 5][ 1][6] - 0.05689826 * out_step3[ 5][ 2][6]
+   + 0.03019677 * out_step3[ 6][ 0][6] - 0.00792826 * out_step3[ 6][ 1][6] + 0.00687118 * out_step3[ 6][ 2][6]
+   - 0.07603843 * out_step3[ 4][ 0][7] - 0.05902485 * out_step3[ 4][ 1][7] + 0.02273950 * out_step3[ 4][ 2][7]
+   - 0.09148506 * out_step3[ 5][ 0][7] + 0.01322223 * out_step3[ 5][ 1][7] - 0.01591296 * out_step3[ 5][ 2][7]
+   + 0.10069007 * out_step3[ 6][ 0][7] + 0.01710834 * out_step3[ 6][ 1][7] - 0.00049727 * out_step3[ 6][ 2][7]
+   + 0.07883292;
+
+out_step4[2][1][1] = 
+   - 0.01629355 * out_step3[ 4][ 2][0] - 0.01004506 * out_step3[ 4][ 3][0] + 0.02448954 * out_step3[ 4][ 4][0]
+   - 0.04510621 * out_step3[ 5][ 2][0] - 0.06716122 * out_step3[ 5][ 3][0] - 0.04569817 * out_step3[ 5][ 4][0]
+   - 0.01459688 * out_step3[ 6][ 2][0] - 0.00349974 * out_step3[ 6][ 3][0] - 0.03994582 * out_step3[ 6][ 4][0]
+   - 0.02459791 * out_step3[ 4][ 2][1] + 0.02305431 * out_step3[ 4][ 3][1] + 0.01490633 * out_step3[ 4][ 4][1]
+   - 0.01333811 * out_step3[ 5][ 2][1] + 0.00091649 * out_step3[ 5][ 3][1] - 0.00619656 * out_step3[ 5][ 4][1]
+   - 0.01346097 * out_step3[ 6][ 2][1] + 0.03298710 * out_step3[ 6][ 3][1] - 0.02153836 * out_step3[ 6][ 4][1]
+   - 0.04941129 * out_step3[ 4][ 2][2] - 0.09334059 * out_step3[ 4][ 3][2] - 0.09741234 * out_step3[ 4][ 4][2]
+   - 0.04605885 * out_step3[ 5][ 2][2] - 0.02795968 * out_step3[ 5][ 3][2] - 0.09530425 * out_step3[ 5][ 4][2]
+   + 0.11051667 * out_step3[ 6][ 2][2] + 0.14176399 * out_step3[ 6][ 3][2] + 0.11652906 * out_step3[ 6][ 4][2]
+   - 0.07480140 * out_step3[ 4][ 2][3] + 0.07931215 * out_step3[ 4][ 3][3] + 0.07069705 * out_step3[ 4][ 4][3]
+   - 0.01154299 * out_step3[ 5][ 2][3] - 0.00084963 * out_step3[ 5][ 3][3] - 0.02081733 * out_step3[ 5][ 4][3]
+   - 0.01547465 * out_step3[ 6][ 2][3] + 0.09425939 * out_step3[ 6][ 3][3] - 0.05942418 * out_step3[ 6][ 4][3]
+   - 0.01916689 * out_step3[ 4][ 2][4] - 0.05124836 * out_step3[ 4][ 3][4] + 0.10451633 * out_step3[ 4][ 4][4]
+   - 0.00047673 * out_step3[ 5][ 2][4] + 0.06582735 * out_step3[ 5][ 3][4] + 0.05096194 * out_step3[ 5][ 4][4]
+   + 0.05057922 * out_step3[ 6][ 2][4] + 0.13040215 * out_step3[ 6][ 3][4] + 0.01861385 * out_step3[ 6][ 4][4]
+   - 0.00901347 * out_step3[ 4][ 2][5] - 0.02461978 * out_step3[ 4][ 3][5] + 0.01721653 * out_step3[ 4][ 4][5]
+   - 0.09828988 * out_step3[ 5][ 2][5] - 0.04269146 * out_step3[ 5][ 3][5] - 0.05468850 * out_step3[ 5][ 4][5]
+   + 0.01076312 * out_step3[ 6][ 2][5] - 0.05043448 * out_step3[ 6][ 3][5] - 0.02967713 * out_step3[ 6][ 4][5]
+   - 0.02643815 * out_step3[ 4][ 2][6] - 0.07052093 * out_step3[ 4][ 3][6] + 0.03562033 * out_step3[ 4][ 4][6]
+   - 0.03104484 * out_step3[ 5][ 2][6] - 0.00494508 * out_step3[ 5][ 3][6] - 0.05689826 * out_step3[ 5][ 4][6]
+   + 0.03019677 * out_step3[ 6][ 2][6] - 0.00792826 * out_step3[ 6][ 3][6] + 0.00687118 * out_step3[ 6][ 4][6]
+   - 0.07603843 * out_step3[ 4][ 2][7] - 0.05902485 * out_step3[ 4][ 3][7] + 0.02273950 * out_step3[ 4][ 4][7]
+   - 0.09148506 * out_step3[ 5][ 2][7] + 0.01322223 * out_step3[ 5][ 3][7] - 0.01591296 * out_step3[ 5][ 4][7]
+   + 0.10069007 * out_step3[ 6][ 2][7] + 0.01710834 * out_step3[ 6][ 3][7] - 0.00049727 * out_step3[ 6][ 4][7]
+   + 0.07883292;
+
+out_step4[2][2][1] = 
+   - 0.01629355 * out_step3[ 4][ 4][0] - 0.01004506 * out_step3[ 4][ 5][0] + 0.02448954 * out_step3[ 4][ 6][0]
+   - 0.04510621 * out_step3[ 5][ 4][0] - 0.06716122 * out_step3[ 5][ 5][0] - 0.04569817 * out_step3[ 5][ 6][0]
+   - 0.01459688 * out_step3[ 6][ 4][0] - 0.00349974 * out_step3[ 6][ 5][0] - 0.03994582 * out_step3[ 6][ 6][0]
+   - 0.02459791 * out_step3[ 4][ 4][1] + 0.02305431 * out_step3[ 4][ 5][1] + 0.01490633 * out_step3[ 4][ 6][1]
+   - 0.01333811 * out_step3[ 5][ 4][1] + 0.00091649 * out_step3[ 5][ 5][1] - 0.00619656 * out_step3[ 5][ 6][1]
+   - 0.01346097 * out_step3[ 6][ 4][1] + 0.03298710 * out_step3[ 6][ 5][1] - 0.02153836 * out_step3[ 6][ 6][1]
+   - 0.04941129 * out_step3[ 4][ 4][2] - 0.09334059 * out_step3[ 4][ 5][2] - 0.09741234 * out_step3[ 4][ 6][2]
+   - 0.04605885 * out_step3[ 5][ 4][2] - 0.02795968 * out_step3[ 5][ 5][2] - 0.09530425 * out_step3[ 5][ 6][2]
+   + 0.11051667 * out_step3[ 6][ 4][2] + 0.14176399 * out_step3[ 6][ 5][2] + 0.11652906 * out_step3[ 6][ 6][2]
+   - 0.07480140 * out_step3[ 4][ 4][3] + 0.07931215 * out_step3[ 4][ 5][3] + 0.07069705 * out_step3[ 4][ 6][3]
+   - 0.01154299 * out_step3[ 5][ 4][3] - 0.00084963 * out_step3[ 5][ 5][3] - 0.02081733 * out_step3[ 5][ 6][3]
+   - 0.01547465 * out_step3[ 6][ 4][3] + 0.09425939 * out_step3[ 6][ 5][3] - 0.05942418 * out_step3[ 6][ 6][3]
+   - 0.01916689 * out_step3[ 4][ 4][4] - 0.05124836 * out_step3[ 4][ 5][4] + 0.10451633 * out_step3[ 4][ 6][4]
+   - 0.00047673 * out_step3[ 5][ 4][4] + 0.06582735 * out_step3[ 5][ 5][4] + 0.05096194 * out_step3[ 5][ 6][4]
+   + 0.05057922 * out_step3[ 6][ 4][4] + 0.13040215 * out_step3[ 6][ 5][4] + 0.01861385 * out_step3[ 6][ 6][4]
+   - 0.00901347 * out_step3[ 4][ 4][5] - 0.02461978 * out_step3[ 4][ 5][5] + 0.01721653 * out_step3[ 4][ 6][5]
+   - 0.09828988 * out_step3[ 5][ 4][5] - 0.04269146 * out_step3[ 5][ 5][5] - 0.05468850 * out_step3[ 5][ 6][5]
+   + 0.01076312 * out_step3[ 6][ 4][5] - 0.05043448 * out_step3[ 6][ 5][5] - 0.02967713 * out_step3[ 6][ 6][5]
+   - 0.02643815 * out_step3[ 4][ 4][6] - 0.07052093 * out_step3[ 4][ 5][6] + 0.03562033 * out_step3[ 4][ 6][6]
+   - 0.03104484 * out_step3[ 5][ 4][6] - 0.00494508 * out_step3[ 5][ 5][6] - 0.05689826 * out_step3[ 5][ 6][6]
+   + 0.03019677 * out_step3[ 6][ 4][6] - 0.00792826 * out_step3[ 6][ 5][6] + 0.00687118 * out_step3[ 6][ 6][6]
+   - 0.07603843 * out_step3[ 4][ 4][7] - 0.05902485 * out_step3[ 4][ 5][7] + 0.02273950 * out_step3[ 4][ 6][7]
+   - 0.09148506 * out_step3[ 5][ 4][7] + 0.01322223 * out_step3[ 5][ 5][7] - 0.01591296 * out_step3[ 5][ 6][7]
+   + 0.10069007 * out_step3[ 6][ 4][7] + 0.01710834 * out_step3[ 6][ 5][7] - 0.00049727 * out_step3[ 6][ 6][7]
+   + 0.07883292;
+
+out_step4[0][0][2] = 
+   - 0.03016195 * out_step3[ 0][ 0][0] + 0.01466971 * out_step3[ 0][ 1][0] + 0.09245963 * out_step3[ 0][ 2][0]
+   + 0.04806022 * out_step3[ 1][ 0][0] + 0.00514252 * out_step3[ 1][ 1][0] + 0.05761788 * out_step3[ 1][ 2][0]
+   + 0.08295444 * out_step3[ 2][ 0][0] + 0.05424390 * out_step3[ 2][ 1][0] + 0.02938304 * out_step3[ 2][ 2][0]
+   - 0.00064643 * out_step3[ 0][ 0][1] - 0.01214767 * out_step3[ 0][ 1][1] - 0.02273495 * out_step3[ 0][ 2][1]
+   + 0.02360674 * out_step3[ 1][ 0][1] + 0.01146758 * out_step3[ 1][ 1][1] - 0.01312894 * out_step3[ 1][ 2][1]
+   + 0.06710123 * out_step3[ 2][ 0][1] + 0.05218282 * out_step3[ 2][ 1][1] - 0.02242908 * out_step3[ 2][ 2][1]
+   - 0.09002049 * out_step3[ 0][ 0][2] - 0.01430498 * out_step3[ 0][ 1][2] + 0.08259603 * out_step3[ 0][ 2][2]
+   - 0.05515909 * out_step3[ 1][ 0][2] + 0.01670889 * out_step3[ 1][ 1][2] + 0.07991716 * out_step3[ 1][ 2][2]
+   - 0.01065295 * out_step3[ 2][ 0][2] + 0.06889448 * out_step3[ 2][ 1][2] + 0.04308194 * out_step3[ 2][ 2][2]
+   - 0.02060683 * out_step3[ 0][ 0][3] + 0.04981133 * out_step3[ 0][ 1][3] - 0.01315737 * out_step3[ 0][ 2][3]
+   + 0.00549790 * out_step3[ 1][ 0][3] - 0.02693122 * out_step3[ 1][ 1][3] - 0.02297508 * out_step3[ 1][ 2][3]
+   + 0.12728333 * out_step3[ 2][ 0][3] + 0.10816646 * out_step3[ 2][ 1][3] - 0.01020970 * out_step3[ 2][ 2][3]
+   - 0.15822166 * out_step3[ 0][ 0][4] - 0.09317032 * out_step3[ 0][ 1][4] + 0.04367159 * out_step3[ 0][ 2][4]
+   - 0.11191960 * out_step3[ 1][ 0][4] - 0.00374823 * out_step3[ 1][ 1][4] + 0.06145041 * out_step3[ 1][ 2][4]
+   - 0.11305376 * out_step3[ 2][ 0][4] - 0.00385370 * out_step3[ 2][ 1][4] + 0.04204224 * out_step3[ 2][ 2][4]
+   - 0.01420539 * out_step3[ 0][ 0][5] - 0.07109994 * out_step3[ 0][ 1][5] - 0.03551175 * out_step3[ 0][ 2][5]
+   + 0.02083026 * out_step3[ 1][ 0][5] + 0.04565626 * out_step3[ 1][ 1][5] - 0.00893075 * out_step3[ 1][ 2][5]
+   + 0.01141086 * out_step3[ 2][ 0][5] + 0.02496691 * out_step3[ 2][ 1][5] + 0.00786719 * out_step3[ 2][ 2][5]
+   - 0.04029258 * out_step3[ 0][ 0][6] - 0.01166576 * out_step3[ 0][ 1][6] + 0.07735964 * out_step3[ 0][ 2][6]
+   + 0.01824661 * out_step3[ 1][ 0][6] + 0.01085183 * out_step3[ 1][ 1][6] + 0.02506108 * out_step3[ 1][ 2][6]
+   + 0.09275567 * out_step3[ 2][ 0][6] + 0.05676392 * out_step3[ 2][ 1][6] + 0.06208214 * out_step3[ 2][ 2][6]
+   - 0.00613805 * out_step3[ 0][ 0][7] - 0.15181011 * out_step3[ 0][ 1][7] - 0.13294272 * out_step3[ 0][ 2][7]
+   - 0.01583134 * out_step3[ 1][ 0][7] - 0.07231833 * out_step3[ 1][ 1][7] + 0.01753190 * out_step3[ 1][ 2][7]
+   + 0.05162439 * out_step3[ 2][ 0][7] - 0.03116028 * out_step3[ 2][ 1][7] - 0.01412445 * out_step3[ 2][ 2][7]
+   + 0.09367869;
+
+out_step4[0][1][2] = 
+   - 0.03016195 * out_step3[ 0][ 2][0] + 0.01466971 * out_step3[ 0][ 3][0] + 0.09245963 * out_step3[ 0][ 4][0]
+   + 0.04806022 * out_step3[ 1][ 2][0] + 0.00514252 * out_step3[ 1][ 3][0] + 0.05761788 * out_step3[ 1][ 4][0]
+   + 0.08295444 * out_step3[ 2][ 2][0] + 0.05424390 * out_step3[ 2][ 3][0] + 0.02938304 * out_step3[ 2][ 4][0]
+   - 0.00064643 * out_step3[ 0][ 2][1] - 0.01214767 * out_step3[ 0][ 3][1] - 0.02273495 * out_step3[ 0][ 4][1]
+   + 0.02360674 * out_step3[ 1][ 2][1] + 0.01146758 * out_step3[ 1][ 3][1] - 0.01312894 * out_step3[ 1][ 4][1]
+   + 0.06710123 * out_step3[ 2][ 2][1] + 0.05218282 * out_step3[ 2][ 3][1] - 0.02242908 * out_step3[ 2][ 4][1]
+   - 0.09002049 * out_step3[ 0][ 2][2] - 0.01430498 * out_step3[ 0][ 3][2] + 0.08259603 * out_step3[ 0][ 4][2]
+   - 0.05515909 * out_step3[ 1][ 2][2] + 0.01670889 * out_step3[ 1][ 3][2] + 0.07991716 * out_step3[ 1][ 4][2]
+   - 0.01065295 * out_step3[ 2][ 2][2] + 0.06889448 * out_step3[ 2][ 3][2] + 0.04308194 * out_step3[ 2][ 4][2]
+   - 0.02060683 * out_step3[ 0][ 2][3] + 0.04981133 * out_step3[ 0][ 3][3] - 0.01315737 * out_step3[ 0][ 4][3]
+   + 0.00549790 * out_step3[ 1][ 2][3] - 0.02693122 * out_step3[ 1][ 3][3] - 0.02297508 * out_step3[ 1][ 4][3]
+   + 0.12728333 * out_step3[ 2][ 2][3] + 0.10816646 * out_step3[ 2][ 3][3] - 0.01020970 * out_step3[ 2][ 4][3]
+   - 0.15822166 * out_step3[ 0][ 2][4] - 0.09317032 * out_step3[ 0][ 3][4] + 0.04367159 * out_step3[ 0][ 4][4]
+   - 0.11191960 * out_step3[ 1][ 2][4] - 0.00374823 * out_step3[ 1][ 3][4] + 0.06145041 * out_step3[ 1][ 4][4]
+   - 0.11305376 * out_step3[ 2][ 2][4] - 0.00385370 * out_step3[ 2][ 3][4] + 0.04204224 * out_step3[ 2][ 4][4]
+   - 0.01420539 * out_step3[ 0][ 2][5] - 0.07109994 * out_step3[ 0][ 3][5] - 0.03551175 * out_step3[ 0][ 4][5]
+   + 0.02083026 * out_step3[ 1][ 2][5] + 0.04565626 * out_step3[ 1][ 3][5] - 0.00893075 * out_step3[ 1][ 4][5]
+   + 0.01141086 * out_step3[ 2][ 2][5] + 0.02496691 * out_step3[ 2][ 3][5] + 0.00786719 * out_step3[ 2][ 4][5]
+   - 0.04029258 * out_step3[ 0][ 2][6] - 0.01166576 * out_step3[ 0][ 3][6] + 0.07735964 * out_step3[ 0][ 4][6]
+   + 0.01824661 * out_step3[ 1][ 2][6] + 0.01085183 * out_step3[ 1][ 3][6] + 0.02506108 * out_step3[ 1][ 4][6]
+   + 0.09275567 * out_step3[ 2][ 2][6] + 0.05676392 * out_step3[ 2][ 3][6] + 0.06208214 * out_step3[ 2][ 4][6]
+   - 0.00613805 * out_step3[ 0][ 2][7] - 0.15181011 * out_step3[ 0][ 3][7] - 0.13294272 * out_step3[ 0][ 4][7]
+   - 0.01583134 * out_step3[ 1][ 2][7] - 0.07231833 * out_step3[ 1][ 3][7] + 0.01753190 * out_step3[ 1][ 4][7]
+   + 0.05162439 * out_step3[ 2][ 2][7] - 0.03116028 * out_step3[ 2][ 3][7] - 0.01412445 * out_step3[ 2][ 4][7]
+   + 0.09367869;
+
+out_step4[0][2][2] = 
+   - 0.03016195 * out_step3[ 0][ 4][0] + 0.01466971 * out_step3[ 0][ 5][0] + 0.09245963 * out_step3[ 0][ 6][0]
+   + 0.04806022 * out_step3[ 1][ 4][0] + 0.00514252 * out_step3[ 1][ 5][0] + 0.05761788 * out_step3[ 1][ 6][0]
+   + 0.08295444 * out_step3[ 2][ 4][0] + 0.05424390 * out_step3[ 2][ 5][0] + 0.02938304 * out_step3[ 2][ 6][0]
+   - 0.00064643 * out_step3[ 0][ 4][1] - 0.01214767 * out_step3[ 0][ 5][1] - 0.02273495 * out_step3[ 0][ 6][1]
+   + 0.02360674 * out_step3[ 1][ 4][1] + 0.01146758 * out_step3[ 1][ 5][1] - 0.01312894 * out_step3[ 1][ 6][1]
+   + 0.06710123 * out_step3[ 2][ 4][1] + 0.05218282 * out_step3[ 2][ 5][1] - 0.02242908 * out_step3[ 2][ 6][1]
+   - 0.09002049 * out_step3[ 0][ 4][2] - 0.01430498 * out_step3[ 0][ 5][2] + 0.08259603 * out_step3[ 0][ 6][2]
+   - 0.05515909 * out_step3[ 1][ 4][2] + 0.01670889 * out_step3[ 1][ 5][2] + 0.07991716 * out_step3[ 1][ 6][2]
+   - 0.01065295 * out_step3[ 2][ 4][2] + 0.06889448 * out_step3[ 2][ 5][2] + 0.04308194 * out_step3[ 2][ 6][2]
+   - 0.02060683 * out_step3[ 0][ 4][3] + 0.04981133 * out_step3[ 0][ 5][3] - 0.01315737 * out_step3[ 0][ 6][3]
+   + 0.00549790 * out_step3[ 1][ 4][3] - 0.02693122 * out_step3[ 1][ 5][3] - 0.02297508 * out_step3[ 1][ 6][3]
+   + 0.12728333 * out_step3[ 2][ 4][3] + 0.10816646 * out_step3[ 2][ 5][3] - 0.01020970 * out_step3[ 2][ 6][3]
+   - 0.15822166 * out_step3[ 0][ 4][4] - 0.09317032 * out_step3[ 0][ 5][4] + 0.04367159 * out_step3[ 0][ 6][4]
+   - 0.11191960 * out_step3[ 1][ 4][4] - 0.00374823 * out_step3[ 1][ 5][4] + 0.06145041 * out_step3[ 1][ 6][4]
+   - 0.11305376 * out_step3[ 2][ 4][4] - 0.00385370 * out_step3[ 2][ 5][4] + 0.04204224 * out_step3[ 2][ 6][4]
+   - 0.01420539 * out_step3[ 0][ 4][5] - 0.07109994 * out_step3[ 0][ 5][5] - 0.03551175 * out_step3[ 0][ 6][5]
+   + 0.02083026 * out_step3[ 1][ 4][5] + 0.04565626 * out_step3[ 1][ 5][5] - 0.00893075 * out_step3[ 1][ 6][5]
+   + 0.01141086 * out_step3[ 2][ 4][5] + 0.02496691 * out_step3[ 2][ 5][5] + 0.00786719 * out_step3[ 2][ 6][5]
+   - 0.04029258 * out_step3[ 0][ 4][6] - 0.01166576 * out_step3[ 0][ 5][6] + 0.07735964 * out_step3[ 0][ 6][6]
+   + 0.01824661 * out_step3[ 1][ 4][6] + 0.01085183 * out_step3[ 1][ 5][6] + 0.02506108 * out_step3[ 1][ 6][6]
+   + 0.09275567 * out_step3[ 2][ 4][6] + 0.05676392 * out_step3[ 2][ 5][6] + 0.06208214 * out_step3[ 2][ 6][6]
+   - 0.00613805 * out_step3[ 0][ 4][7] - 0.15181011 * out_step3[ 0][ 5][7] - 0.13294272 * out_step3[ 0][ 6][7]
+   - 0.01583134 * out_step3[ 1][ 4][7] - 0.07231833 * out_step3[ 1][ 5][7] + 0.01753190 * out_step3[ 1][ 6][7]
+   + 0.05162439 * out_step3[ 2][ 4][7] - 0.03116028 * out_step3[ 2][ 5][7] - 0.01412445 * out_step3[ 2][ 6][7]
+   + 0.09367869;
+
+out_step4[1][0][2] = 
+   - 0.03016195 * out_step3[ 2][ 0][0] + 0.01466971 * out_step3[ 2][ 1][0] + 0.09245963 * out_step3[ 2][ 2][0]
+   + 0.04806022 * out_step3[ 3][ 0][0] + 0.00514252 * out_step3[ 3][ 1][0] + 0.05761788 * out_step3[ 3][ 2][0]
+   + 0.08295444 * out_step3[ 4][ 0][0] + 0.05424390 * out_step3[ 4][ 1][0] + 0.02938304 * out_step3[ 4][ 2][0]
+   - 0.00064643 * out_step3[ 2][ 0][1] - 0.01214767 * out_step3[ 2][ 1][1] - 0.02273495 * out_step3[ 2][ 2][1]
+   + 0.02360674 * out_step3[ 3][ 0][1] + 0.01146758 * out_step3[ 3][ 1][1] - 0.01312894 * out_step3[ 3][ 2][1]
+   + 0.06710123 * out_step3[ 4][ 0][1] + 0.05218282 * out_step3[ 4][ 1][1] - 0.02242908 * out_step3[ 4][ 2][1]
+   - 0.09002049 * out_step3[ 2][ 0][2] - 0.01430498 * out_step3[ 2][ 1][2] + 0.08259603 * out_step3[ 2][ 2][2]
+   - 0.05515909 * out_step3[ 3][ 0][2] + 0.01670889 * out_step3[ 3][ 1][2] + 0.07991716 * out_step3[ 3][ 2][2]
+   - 0.01065295 * out_step3[ 4][ 0][2] + 0.06889448 * out_step3[ 4][ 1][2] + 0.04308194 * out_step3[ 4][ 2][2]
+   - 0.02060683 * out_step3[ 2][ 0][3] + 0.04981133 * out_step3[ 2][ 1][3] - 0.01315737 * out_step3[ 2][ 2][3]
+   + 0.00549790 * out_step3[ 3][ 0][3] - 0.02693122 * out_step3[ 3][ 1][3] - 0.02297508 * out_step3[ 3][ 2][3]
+   + 0.12728333 * out_step3[ 4][ 0][3] + 0.10816646 * out_step3[ 4][ 1][3] - 0.01020970 * out_step3[ 4][ 2][3]
+   - 0.15822166 * out_step3[ 2][ 0][4] - 0.09317032 * out_step3[ 2][ 1][4] + 0.04367159 * out_step3[ 2][ 2][4]
+   - 0.11191960 * out_step3[ 3][ 0][4] - 0.00374823 * out_step3[ 3][ 1][4] + 0.06145041 * out_step3[ 3][ 2][4]
+   - 0.11305376 * out_step3[ 4][ 0][4] - 0.00385370 * out_step3[ 4][ 1][4] + 0.04204224 * out_step3[ 4][ 2][4]
+   - 0.01420539 * out_step3[ 2][ 0][5] - 0.07109994 * out_step3[ 2][ 1][5] - 0.03551175 * out_step3[ 2][ 2][5]
+   + 0.02083026 * out_step3[ 3][ 0][5] + 0.04565626 * out_step3[ 3][ 1][5] - 0.00893075 * out_step3[ 3][ 2][5]
+   + 0.01141086 * out_step3[ 4][ 0][5] + 0.02496691 * out_step3[ 4][ 1][5] + 0.00786719 * out_step3[ 4][ 2][5]
+   - 0.04029258 * out_step3[ 2][ 0][6] - 0.01166576 * out_step3[ 2][ 1][6] + 0.07735964 * out_step3[ 2][ 2][6]
+   + 0.01824661 * out_step3[ 3][ 0][6] + 0.01085183 * out_step3[ 3][ 1][6] + 0.02506108 * out_step3[ 3][ 2][6]
+   + 0.09275567 * out_step3[ 4][ 0][6] + 0.05676392 * out_step3[ 4][ 1][6] + 0.06208214 * out_step3[ 4][ 2][6]
+   - 0.00613805 * out_step3[ 2][ 0][7] - 0.15181011 * out_step3[ 2][ 1][7] - 0.13294272 * out_step3[ 2][ 2][7]
+   - 0.01583134 * out_step3[ 3][ 0][7] - 0.07231833 * out_step3[ 3][ 1][7] + 0.01753190 * out_step3[ 3][ 2][7]
+   + 0.05162439 * out_step3[ 4][ 0][7] - 0.03116028 * out_step3[ 4][ 1][7] - 0.01412445 * out_step3[ 4][ 2][7]
+   + 0.09367869;
+
+out_step4[1][1][2] = 
+   - 0.03016195 * out_step3[ 2][ 2][0] + 0.01466971 * out_step3[ 2][ 3][0] + 0.09245963 * out_step3[ 2][ 4][0]
+   + 0.04806022 * out_step3[ 3][ 2][0] + 0.00514252 * out_step3[ 3][ 3][0] + 0.05761788 * out_step3[ 3][ 4][0]
+   + 0.08295444 * out_step3[ 4][ 2][0] + 0.05424390 * out_step3[ 4][ 3][0] + 0.02938304 * out_step3[ 4][ 4][0]
+   - 0.00064643 * out_step3[ 2][ 2][1] - 0.01214767 * out_step3[ 2][ 3][1] - 0.02273495 * out_step3[ 2][ 4][1]
+   + 0.02360674 * out_step3[ 3][ 2][1] + 0.01146758 * out_step3[ 3][ 3][1] - 0.01312894 * out_step3[ 3][ 4][1]
+   + 0.06710123 * out_step3[ 4][ 2][1] + 0.05218282 * out_step3[ 4][ 3][1] - 0.02242908 * out_step3[ 4][ 4][1]
+   - 0.09002049 * out_step3[ 2][ 2][2] - 0.01430498 * out_step3[ 2][ 3][2] + 0.08259603 * out_step3[ 2][ 4][2]
+   - 0.05515909 * out_step3[ 3][ 2][2] + 0.01670889 * out_step3[ 3][ 3][2] + 0.07991716 * out_step3[ 3][ 4][2]
+   - 0.01065295 * out_step3[ 4][ 2][2] + 0.06889448 * out_step3[ 4][ 3][2] + 0.04308194 * out_step3[ 4][ 4][2]
+   - 0.02060683 * out_step3[ 2][ 2][3] + 0.04981133 * out_step3[ 2][ 3][3] - 0.01315737 * out_step3[ 2][ 4][3]
+   + 0.00549790 * out_step3[ 3][ 2][3] - 0.02693122 * out_step3[ 3][ 3][3] - 0.02297508 * out_step3[ 3][ 4][3]
+   + 0.12728333 * out_step3[ 4][ 2][3] + 0.10816646 * out_step3[ 4][ 3][3] - 0.01020970 * out_step3[ 4][ 4][3]
+   - 0.15822166 * out_step3[ 2][ 2][4] - 0.09317032 * out_step3[ 2][ 3][4] + 0.04367159 * out_step3[ 2][ 4][4]
+   - 0.11191960 * out_step3[ 3][ 2][4] - 0.00374823 * out_step3[ 3][ 3][4] + 0.06145041 * out_step3[ 3][ 4][4]
+   - 0.11305376 * out_step3[ 4][ 2][4] - 0.00385370 * out_step3[ 4][ 3][4] + 0.04204224 * out_step3[ 4][ 4][4]
+   - 0.01420539 * out_step3[ 2][ 2][5] - 0.07109994 * out_step3[ 2][ 3][5] - 0.03551175 * out_step3[ 2][ 4][5]
+   + 0.02083026 * out_step3[ 3][ 2][5] + 0.04565626 * out_step3[ 3][ 3][5] - 0.00893075 * out_step3[ 3][ 4][5]
+   + 0.01141086 * out_step3[ 4][ 2][5] + 0.02496691 * out_step3[ 4][ 3][5] + 0.00786719 * out_step3[ 4][ 4][5]
+   - 0.04029258 * out_step3[ 2][ 2][6] - 0.01166576 * out_step3[ 2][ 3][6] + 0.07735964 * out_step3[ 2][ 4][6]
+   + 0.01824661 * out_step3[ 3][ 2][6] + 0.01085183 * out_step3[ 3][ 3][6] + 0.02506108 * out_step3[ 3][ 4][6]
+   + 0.09275567 * out_step3[ 4][ 2][6] + 0.05676392 * out_step3[ 4][ 3][6] + 0.06208214 * out_step3[ 4][ 4][6]
+   - 0.00613805 * out_step3[ 2][ 2][7] - 0.15181011 * out_step3[ 2][ 3][7] - 0.13294272 * out_step3[ 2][ 4][7]
+   - 0.01583134 * out_step3[ 3][ 2][7] - 0.07231833 * out_step3[ 3][ 3][7] + 0.01753190 * out_step3[ 3][ 4][7]
+   + 0.05162439 * out_step3[ 4][ 2][7] - 0.03116028 * out_step3[ 4][ 3][7] - 0.01412445 * out_step3[ 4][ 4][7]
+   + 0.09367869;
+
+out_step4[1][2][2] = 
+   - 0.03016195 * out_step3[ 2][ 4][0] + 0.01466971 * out_step3[ 2][ 5][0] + 0.09245963 * out_step3[ 2][ 6][0]
+   + 0.04806022 * out_step3[ 3][ 4][0] + 0.00514252 * out_step3[ 3][ 5][0] + 0.05761788 * out_step3[ 3][ 6][0]
+   + 0.08295444 * out_step3[ 4][ 4][0] + 0.05424390 * out_step3[ 4][ 5][0] + 0.02938304 * out_step3[ 4][ 6][0]
+   - 0.00064643 * out_step3[ 2][ 4][1] - 0.01214767 * out_step3[ 2][ 5][1] - 0.02273495 * out_step3[ 2][ 6][1]
+   + 0.02360674 * out_step3[ 3][ 4][1] + 0.01146758 * out_step3[ 3][ 5][1] - 0.01312894 * out_step3[ 3][ 6][1]
+   + 0.06710123 * out_step3[ 4][ 4][1] + 0.05218282 * out_step3[ 4][ 5][1] - 0.02242908 * out_step3[ 4][ 6][1]
+   - 0.09002049 * out_step3[ 2][ 4][2] - 0.01430498 * out_step3[ 2][ 5][2] + 0.08259603 * out_step3[ 2][ 6][2]
+   - 0.05515909 * out_step3[ 3][ 4][2] + 0.01670889 * out_step3[ 3][ 5][2] + 0.07991716 * out_step3[ 3][ 6][2]
+   - 0.01065295 * out_step3[ 4][ 4][2] + 0.06889448 * out_step3[ 4][ 5][2] + 0.04308194 * out_step3[ 4][ 6][2]
+   - 0.02060683 * out_step3[ 2][ 4][3] + 0.04981133 * out_step3[ 2][ 5][3] - 0.01315737 * out_step3[ 2][ 6][3]
+   + 0.00549790 * out_step3[ 3][ 4][3] - 0.02693122 * out_step3[ 3][ 5][3] - 0.02297508 * out_step3[ 3][ 6][3]
+   + 0.12728333 * out_step3[ 4][ 4][3] + 0.10816646 * out_step3[ 4][ 5][3] - 0.01020970 * out_step3[ 4][ 6][3]
+   - 0.15822166 * out_step3[ 2][ 4][4] - 0.09317032 * out_step3[ 2][ 5][4] + 0.04367159 * out_step3[ 2][ 6][4]
+   - 0.11191960 * out_step3[ 3][ 4][4] - 0.00374823 * out_step3[ 3][ 5][4] + 0.06145041 * out_step3[ 3][ 6][4]
+   - 0.11305376 * out_step3[ 4][ 4][4] - 0.00385370 * out_step3[ 4][ 5][4] + 0.04204224 * out_step3[ 4][ 6][4]
+   - 0.01420539 * out_step3[ 2][ 4][5] - 0.07109994 * out_step3[ 2][ 5][5] - 0.03551175 * out_step3[ 2][ 6][5]
+   + 0.02083026 * out_step3[ 3][ 4][5] + 0.04565626 * out_step3[ 3][ 5][5] - 0.00893075 * out_step3[ 3][ 6][5]
+   + 0.01141086 * out_step3[ 4][ 4][5] + 0.02496691 * out_step3[ 4][ 5][5] + 0.00786719 * out_step3[ 4][ 6][5]
+   - 0.04029258 * out_step3[ 2][ 4][6] - 0.01166576 * out_step3[ 2][ 5][6] + 0.07735964 * out_step3[ 2][ 6][6]
+   + 0.01824661 * out_step3[ 3][ 4][6] + 0.01085183 * out_step3[ 3][ 5][6] + 0.02506108 * out_step3[ 3][ 6][6]
+   + 0.09275567 * out_step3[ 4][ 4][6] + 0.05676392 * out_step3[ 4][ 5][6] + 0.06208214 * out_step3[ 4][ 6][6]
+   - 0.00613805 * out_step3[ 2][ 4][7] - 0.15181011 * out_step3[ 2][ 5][7] - 0.13294272 * out_step3[ 2][ 6][7]
+   - 0.01583134 * out_step3[ 3][ 4][7] - 0.07231833 * out_step3[ 3][ 5][7] + 0.01753190 * out_step3[ 3][ 6][7]
+   + 0.05162439 * out_step3[ 4][ 4][7] - 0.03116028 * out_step3[ 4][ 5][7] - 0.01412445 * out_step3[ 4][ 6][7]
+   + 0.09367869;
+
+out_step4[2][0][2] = 
+   - 0.03016195 * out_step3[ 4][ 0][0] + 0.01466971 * out_step3[ 4][ 1][0] + 0.09245963 * out_step3[ 4][ 2][0]
+   + 0.04806022 * out_step3[ 5][ 0][0] + 0.00514252 * out_step3[ 5][ 1][0] + 0.05761788 * out_step3[ 5][ 2][0]
+   + 0.08295444 * out_step3[ 6][ 0][0] + 0.05424390 * out_step3[ 6][ 1][0] + 0.02938304 * out_step3[ 6][ 2][0]
+   - 0.00064643 * out_step3[ 4][ 0][1] - 0.01214767 * out_step3[ 4][ 1][1] - 0.02273495 * out_step3[ 4][ 2][1]
+   + 0.02360674 * out_step3[ 5][ 0][1] + 0.01146758 * out_step3[ 5][ 1][1] - 0.01312894 * out_step3[ 5][ 2][1]
+   + 0.06710123 * out_step3[ 6][ 0][1] + 0.05218282 * out_step3[ 6][ 1][1] - 0.02242908 * out_step3[ 6][ 2][1]
+   - 0.09002049 * out_step3[ 4][ 0][2] - 0.01430498 * out_step3[ 4][ 1][2] + 0.08259603 * out_step3[ 4][ 2][2]
+   - 0.05515909 * out_step3[ 5][ 0][2] + 0.01670889 * out_step3[ 5][ 1][2] + 0.07991716 * out_step3[ 5][ 2][2]
+   - 0.01065295 * out_step3[ 6][ 0][2] + 0.06889448 * out_step3[ 6][ 1][2] + 0.04308194 * out_step3[ 6][ 2][2]
+   - 0.02060683 * out_step3[ 4][ 0][3] + 0.04981133 * out_step3[ 4][ 1][3] - 0.01315737 * out_step3[ 4][ 2][3]
+   + 0.00549790 * out_step3[ 5][ 0][3] - 0.02693122 * out_step3[ 5][ 1][3] - 0.02297508 * out_step3[ 5][ 2][3]
+   + 0.12728333 * out_step3[ 6][ 0][3] + 0.10816646 * out_step3[ 6][ 1][3] - 0.01020970 * out_step3[ 6][ 2][3]
+   - 0.15822166 * out_step3[ 4][ 0][4] - 0.09317032 * out_step3[ 4][ 1][4] + 0.04367159 * out_step3[ 4][ 2][4]
+   - 0.11191960 * out_step3[ 5][ 0][4] - 0.00374823 * out_step3[ 5][ 1][4] + 0.06145041 * out_step3[ 5][ 2][4]
+   - 0.11305376 * out_step3[ 6][ 0][4] - 0.00385370 * out_step3[ 6][ 1][4] + 0.04204224 * out_step3[ 6][ 2][4]
+   - 0.01420539 * out_step3[ 4][ 0][5] - 0.07109994 * out_step3[ 4][ 1][5] - 0.03551175 * out_step3[ 4][ 2][5]
+   + 0.02083026 * out_step3[ 5][ 0][5] + 0.04565626 * out_step3[ 5][ 1][5] - 0.00893075 * out_step3[ 5][ 2][5]
+   + 0.01141086 * out_step3[ 6][ 0][5] + 0.02496691 * out_step3[ 6][ 1][5] + 0.00786719 * out_step3[ 6][ 2][5]
+   - 0.04029258 * out_step3[ 4][ 0][6] - 0.01166576 * out_step3[ 4][ 1][6] + 0.07735964 * out_step3[ 4][ 2][6]
+   + 0.01824661 * out_step3[ 5][ 0][6] + 0.01085183 * out_step3[ 5][ 1][6] + 0.02506108 * out_step3[ 5][ 2][6]
+   + 0.09275567 * out_step3[ 6][ 0][6] + 0.05676392 * out_step3[ 6][ 1][6] + 0.06208214 * out_step3[ 6][ 2][6]
+   - 0.00613805 * out_step3[ 4][ 0][7] - 0.15181011 * out_step3[ 4][ 1][7] - 0.13294272 * out_step3[ 4][ 2][7]
+   - 0.01583134 * out_step3[ 5][ 0][7] - 0.07231833 * out_step3[ 5][ 1][7] + 0.01753190 * out_step3[ 5][ 2][7]
+   + 0.05162439 * out_step3[ 6][ 0][7] - 0.03116028 * out_step3[ 6][ 1][7] - 0.01412445 * out_step3[ 6][ 2][7]
+   + 0.09367869;
+
+out_step4[2][1][2] = 
+   - 0.03016195 * out_step3[ 4][ 2][0] + 0.01466971 * out_step3[ 4][ 3][0] + 0.09245963 * out_step3[ 4][ 4][0]
+   + 0.04806022 * out_step3[ 5][ 2][0] + 0.00514252 * out_step3[ 5][ 3][0] + 0.05761788 * out_step3[ 5][ 4][0]
+   + 0.08295444 * out_step3[ 6][ 2][0] + 0.05424390 * out_step3[ 6][ 3][0] + 0.02938304 * out_step3[ 6][ 4][0]
+   - 0.00064643 * out_step3[ 4][ 2][1] - 0.01214767 * out_step3[ 4][ 3][1] - 0.02273495 * out_step3[ 4][ 4][1]
+   + 0.02360674 * out_step3[ 5][ 2][1] + 0.01146758 * out_step3[ 5][ 3][1] - 0.01312894 * out_step3[ 5][ 4][1]
+   + 0.06710123 * out_step3[ 6][ 2][1] + 0.05218282 * out_step3[ 6][ 3][1] - 0.02242908 * out_step3[ 6][ 4][1]
+   - 0.09002049 * out_step3[ 4][ 2][2] - 0.01430498 * out_step3[ 4][ 3][2] + 0.08259603 * out_step3[ 4][ 4][2]
+   - 0.05515909 * out_step3[ 5][ 2][2] + 0.01670889 * out_step3[ 5][ 3][2] + 0.07991716 * out_step3[ 5][ 4][2]
+   - 0.01065295 * out_step3[ 6][ 2][2] + 0.06889448 * out_step3[ 6][ 3][2] + 0.04308194 * out_step3[ 6][ 4][2]
+   - 0.02060683 * out_step3[ 4][ 2][3] + 0.04981133 * out_step3[ 4][ 3][3] - 0.01315737 * out_step3[ 4][ 4][3]
+   + 0.00549790 * out_step3[ 5][ 2][3] - 0.02693122 * out_step3[ 5][ 3][3] - 0.02297508 * out_step3[ 5][ 4][3]
+   + 0.12728333 * out_step3[ 6][ 2][3] + 0.10816646 * out_step3[ 6][ 3][3] - 0.01020970 * out_step3[ 6][ 4][3]
+   - 0.15822166 * out_step3[ 4][ 2][4] - 0.09317032 * out_step3[ 4][ 3][4] + 0.04367159 * out_step3[ 4][ 4][4]
+   - 0.11191960 * out_step3[ 5][ 2][4] - 0.00374823 * out_step3[ 5][ 3][4] + 0.06145041 * out_step3[ 5][ 4][4]
+   - 0.11305376 * out_step3[ 6][ 2][4] - 0.00385370 * out_step3[ 6][ 3][4] + 0.04204224 * out_step3[ 6][ 4][4]
+   - 0.01420539 * out_step3[ 4][ 2][5] - 0.07109994 * out_step3[ 4][ 3][5] - 0.03551175 * out_step3[ 4][ 4][5]
+   + 0.02083026 * out_step3[ 5][ 2][5] + 0.04565626 * out_step3[ 5][ 3][5] - 0.00893075 * out_step3[ 5][ 4][5]
+   + 0.01141086 * out_step3[ 6][ 2][5] + 0.02496691 * out_step3[ 6][ 3][5] + 0.00786719 * out_step3[ 6][ 4][5]
+   - 0.04029258 * out_step3[ 4][ 2][6] - 0.01166576 * out_step3[ 4][ 3][6] + 0.07735964 * out_step3[ 4][ 4][6]
+   + 0.01824661 * out_step3[ 5][ 2][6] + 0.01085183 * out_step3[ 5][ 3][6] + 0.02506108 * out_step3[ 5][ 4][6]
+   + 0.09275567 * out_step3[ 6][ 2][6] + 0.05676392 * out_step3[ 6][ 3][6] + 0.06208214 * out_step3[ 6][ 4][6]
+   - 0.00613805 * out_step3[ 4][ 2][7] - 0.15181011 * out_step3[ 4][ 3][7] - 0.13294272 * out_step3[ 4][ 4][7]
+   - 0.01583134 * out_step3[ 5][ 2][7] - 0.07231833 * out_step3[ 5][ 3][7] + 0.01753190 * out_step3[ 5][ 4][7]
+   + 0.05162439 * out_step3[ 6][ 2][7] - 0.03116028 * out_step3[ 6][ 3][7] - 0.01412445 * out_step3[ 6][ 4][7]
+   + 0.09367869;
+
+out_step4[2][2][2] = 
+   - 0.03016195 * out_step3[ 4][ 4][0] + 0.01466971 * out_step3[ 4][ 5][0] + 0.09245963 * out_step3[ 4][ 6][0]
+   + 0.04806022 * out_step3[ 5][ 4][0] + 0.00514252 * out_step3[ 5][ 5][0] + 0.05761788 * out_step3[ 5][ 6][0]
+   + 0.08295444 * out_step3[ 6][ 4][0] + 0.05424390 * out_step3[ 6][ 5][0] + 0.02938304 * out_step3[ 6][ 6][0]
+   - 0.00064643 * out_step3[ 4][ 4][1] - 0.01214767 * out_step3[ 4][ 5][1] - 0.02273495 * out_step3[ 4][ 6][1]
+   + 0.02360674 * out_step3[ 5][ 4][1] + 0.01146758 * out_step3[ 5][ 5][1] - 0.01312894 * out_step3[ 5][ 6][1]
+   + 0.06710123 * out_step3[ 6][ 4][1] + 0.05218282 * out_step3[ 6][ 5][1] - 0.02242908 * out_step3[ 6][ 6][1]
+   - 0.09002049 * out_step3[ 4][ 4][2] - 0.01430498 * out_step3[ 4][ 5][2] + 0.08259603 * out_step3[ 4][ 6][2]
+   - 0.05515909 * out_step3[ 5][ 4][2] + 0.01670889 * out_step3[ 5][ 5][2] + 0.07991716 * out_step3[ 5][ 6][2]
+   - 0.01065295 * out_step3[ 6][ 4][2] + 0.06889448 * out_step3[ 6][ 5][2] + 0.04308194 * out_step3[ 6][ 6][2]
+   - 0.02060683 * out_step3[ 4][ 4][3] + 0.04981133 * out_step3[ 4][ 5][3] - 0.01315737 * out_step3[ 4][ 6][3]
+   + 0.00549790 * out_step3[ 5][ 4][3] - 0.02693122 * out_step3[ 5][ 5][3] - 0.02297508 * out_step3[ 5][ 6][3]
+   + 0.12728333 * out_step3[ 6][ 4][3] + 0.10816646 * out_step3[ 6][ 5][3] - 0.01020970 * out_step3[ 6][ 6][3]
+   - 0.15822166 * out_step3[ 4][ 4][4] - 0.09317032 * out_step3[ 4][ 5][4] + 0.04367159 * out_step3[ 4][ 6][4]
+   - 0.11191960 * out_step3[ 5][ 4][4] - 0.00374823 * out_step3[ 5][ 5][4] + 0.06145041 * out_step3[ 5][ 6][4]
+   - 0.11305376 * out_step3[ 6][ 4][4] - 0.00385370 * out_step3[ 6][ 5][4] + 0.04204224 * out_step3[ 6][ 6][4]
+   - 0.01420539 * out_step3[ 4][ 4][5] - 0.07109994 * out_step3[ 4][ 5][5] - 0.03551175 * out_step3[ 4][ 6][5]
+   + 0.02083026 * out_step3[ 5][ 4][5] + 0.04565626 * out_step3[ 5][ 5][5] - 0.00893075 * out_step3[ 5][ 6][5]
+   + 0.01141086 * out_step3[ 6][ 4][5] + 0.02496691 * out_step3[ 6][ 5][5] + 0.00786719 * out_step3[ 6][ 6][5]
+   - 0.04029258 * out_step3[ 4][ 4][6] - 0.01166576 * out_step3[ 4][ 5][6] + 0.07735964 * out_step3[ 4][ 6][6]
+   + 0.01824661 * out_step3[ 5][ 4][6] + 0.01085183 * out_step3[ 5][ 5][6] + 0.02506108 * out_step3[ 5][ 6][6]
+   + 0.09275567 * out_step3[ 6][ 4][6] + 0.05676392 * out_step3[ 6][ 5][6] + 0.06208214 * out_step3[ 6][ 6][6]
+   - 0.00613805 * out_step3[ 4][ 4][7] - 0.15181011 * out_step3[ 4][ 5][7] - 0.13294272 * out_step3[ 4][ 6][7]
+   - 0.01583134 * out_step3[ 5][ 4][7] - 0.07231833 * out_step3[ 5][ 5][7] + 0.01753190 * out_step3[ 5][ 6][7]
+   + 0.05162439 * out_step3[ 6][ 4][7] - 0.03116028 * out_step3[ 6][ 5][7] - 0.01412445 * out_step3[ 6][ 6][7]
+   + 0.09367869;
+
+out_step4[0][0][3] = 
+   - 0.01219058 * out_step3[ 0][ 0][0] + 0.01253999 * out_step3[ 0][ 1][0] + 0.04706878 * out_step3[ 0][ 2][0]
+   + 0.00973778 * out_step3[ 1][ 0][0] + 0.00846840 * out_step3[ 1][ 1][0] - 0.00206387 * out_step3[ 1][ 2][0]
+   + 0.04355868 * out_step3[ 2][ 0][0] + 0.02735376 * out_step3[ 2][ 1][0] + 0.06654607 * out_step3[ 2][ 2][0]
+   - 0.01309244 * out_step3[ 0][ 0][1] - 0.00503413 * out_step3[ 0][ 1][1] - 0.01778936 * out_step3[ 0][ 2][1]
+   - 0.03693264 * out_step3[ 1][ 0][1] - 0.03880535 * out_step3[ 1][ 1][1] - 0.08037473 * out_step3[ 1][ 2][1]
+   + 0.00592731 * out_step3[ 2][ 0][1] - 0.02395234 * out_step3[ 2][ 1][1] + 0.00640133 * out_step3[ 2][ 2][1]
+   - 0.08784307 * out_step3[ 0][ 0][2] + 0.03642750 * out_step3[ 0][ 1][2] + 0.02933124 * out_step3[ 0][ 2][2]
+   - 0.01429078 * out_step3[ 1][ 0][2] - 0.00058162 * out_step3[ 1][ 1][2] + 0.07061297 * out_step3[ 1][ 2][2]
+   - 0.05208841 * out_step3[ 2][ 0][2] - 0.07087097 * out_step3[ 2][ 1][2] + 0.06776509 * out_step3[ 2][ 2][2]
+   - 0.08968325 * out_step3[ 0][ 0][3] - 0.03274346 * out_step3[ 0][ 1][3] - 0.07372682 * out_step3[ 0][ 2][3]
+   - 0.12655382 * out_step3[ 1][ 0][3] - 0.07622565 * out_step3[ 1][ 1][3] - 0.12201009 * out_step3[ 1][ 2][3]
+   - 0.06319173 * out_step3[ 2][ 0][3] - 0.10331886 * out_step3[ 2][ 1][3] - 0.05425242 * out_step3[ 2][ 2][3]
+   - 0.02687171 * out_step3[ 0][ 0][4] + 0.01349602 * out_step3[ 0][ 1][4] - 0.03327937 * out_step3[ 0][ 2][4]
+   + 0.01906963 * out_step3[ 1][ 0][4] - 0.07059298 * out_step3[ 1][ 1][4] + 0.00826073 * out_step3[ 1][ 2][4]
+   - 0.04234074 * out_step3[ 2][ 0][4] - 0.02114138 * out_step3[ 2][ 1][4] + 0.09829297 * out_step3[ 2][ 2][4]
+   - 0.02156375 * out_step3[ 0][ 0][5] + 0.07844485 * out_step3[ 0][ 1][5] - 0.05358755 * out_step3[ 0][ 2][5]
+   + 0.10799657 * out_step3[ 1][ 0][5] + 0.04948188 * out_step3[ 1][ 1][5] + 0.01527697 * out_step3[ 1][ 2][5]
+   + 0.14712320 * out_step3[ 2][ 0][5] + 0.06151152 * out_step3[ 2][ 1][5] + 0.02142990 * out_step3[ 2][ 2][5]
+   - 0.05441502 * out_step3[ 0][ 0][6] - 0.03501711 * out_step3[ 0][ 1][6] + 0.03901573 * out_step3[ 0][ 2][6]
+   + 0.05073790 * out_step3[ 1][ 0][6] + 0.02503924 * out_step3[ 1][ 1][6] + 0.08469989 * out_step3[ 1][ 2][6]
+   + 0.00591517 * out_step3[ 2][ 0][6] + 0.06105610 * out_step3[ 2][ 1][6] + 0.07003120 * out_step3[ 2][ 2][6]
+   - 0.07154232 * out_step3[ 0][ 0][7] + 0.01867061 * out_step3[ 0][ 1][7] + 0.05424637 * out_step3[ 0][ 2][7]
+   + 0.00400064 * out_step3[ 1][ 0][7] + 0.09309848 * out_step3[ 1][ 1][7] + 0.05838659 * out_step3[ 1][ 2][7]
+   + 0.03486924 * out_step3[ 2][ 0][7] + 0.00026716 * out_step3[ 2][ 1][7] - 0.04316613 * out_step3[ 2][ 2][7]
+   - 0.05939010;
+
+out_step4[0][1][3] = 
+   - 0.01219058 * out_step3[ 0][ 2][0] + 0.01253999 * out_step3[ 0][ 3][0] + 0.04706878 * out_step3[ 0][ 4][0]
+   + 0.00973778 * out_step3[ 1][ 2][0] + 0.00846840 * out_step3[ 1][ 3][0] - 0.00206387 * out_step3[ 1][ 4][0]
+   + 0.04355868 * out_step3[ 2][ 2][0] + 0.02735376 * out_step3[ 2][ 3][0] + 0.06654607 * out_step3[ 2][ 4][0]
+   - 0.01309244 * out_step3[ 0][ 2][1] - 0.00503413 * out_step3[ 0][ 3][1] - 0.01778936 * out_step3[ 0][ 4][1]
+   - 0.03693264 * out_step3[ 1][ 2][1] - 0.03880535 * out_step3[ 1][ 3][1] - 0.08037473 * out_step3[ 1][ 4][1]
+   + 0.00592731 * out_step3[ 2][ 2][1] - 0.02395234 * out_step3[ 2][ 3][1] + 0.00640133 * out_step3[ 2][ 4][1]
+   - 0.08784307 * out_step3[ 0][ 2][2] + 0.03642750 * out_step3[ 0][ 3][2] + 0.02933124 * out_step3[ 0][ 4][2]
+   - 0.01429078 * out_step3[ 1][ 2][2] - 0.00058162 * out_step3[ 1][ 3][2] + 0.07061297 * out_step3[ 1][ 4][2]
+   - 0.05208841 * out_step3[ 2][ 2][2] - 0.07087097 * out_step3[ 2][ 3][2] + 0.06776509 * out_step3[ 2][ 4][2]
+   - 0.08968325 * out_step3[ 0][ 2][3] - 0.03274346 * out_step3[ 0][ 3][3] - 0.07372682 * out_step3[ 0][ 4][3]
+   - 0.12655382 * out_step3[ 1][ 2][3] - 0.07622565 * out_step3[ 1][ 3][3] - 0.12201009 * out_step3[ 1][ 4][3]
+   - 0.06319173 * out_step3[ 2][ 2][3] - 0.10331886 * out_step3[ 2][ 3][3] - 0.05425242 * out_step3[ 2][ 4][3]
+   - 0.02687171 * out_step3[ 0][ 2][4] + 0.01349602 * out_step3[ 0][ 3][4] - 0.03327937 * out_step3[ 0][ 4][4]
+   + 0.01906963 * out_step3[ 1][ 2][4] - 0.07059298 * out_step3[ 1][ 3][4] + 0.00826073 * out_step3[ 1][ 4][4]
+   - 0.04234074 * out_step3[ 2][ 2][4] - 0.02114138 * out_step3[ 2][ 3][4] + 0.09829297 * out_step3[ 2][ 4][4]
+   - 0.02156375 * out_step3[ 0][ 2][5] + 0.07844485 * out_step3[ 0][ 3][5] - 0.05358755 * out_step3[ 0][ 4][5]
+   + 0.10799657 * out_step3[ 1][ 2][5] + 0.04948188 * out_step3[ 1][ 3][5] + 0.01527697 * out_step3[ 1][ 4][5]
+   + 0.14712320 * out_step3[ 2][ 2][5] + 0.06151152 * out_step3[ 2][ 3][5] + 0.02142990 * out_step3[ 2][ 4][5]
+   - 0.05441502 * out_step3[ 0][ 2][6] - 0.03501711 * out_step3[ 0][ 3][6] + 0.03901573 * out_step3[ 0][ 4][6]
+   + 0.05073790 * out_step3[ 1][ 2][6] + 0.02503924 * out_step3[ 1][ 3][6] + 0.08469989 * out_step3[ 1][ 4][6]
+   + 0.00591517 * out_step3[ 2][ 2][6] + 0.06105610 * out_step3[ 2][ 3][6] + 0.07003120 * out_step3[ 2][ 4][6]
+   - 0.07154232 * out_step3[ 0][ 2][7] + 0.01867061 * out_step3[ 0][ 3][7] + 0.05424637 * out_step3[ 0][ 4][7]
+   + 0.00400064 * out_step3[ 1][ 2][7] + 0.09309848 * out_step3[ 1][ 3][7] + 0.05838659 * out_step3[ 1][ 4][7]
+   + 0.03486924 * out_step3[ 2][ 2][7] + 0.00026716 * out_step3[ 2][ 3][7] - 0.04316613 * out_step3[ 2][ 4][7]
+   - 0.05939010;
+
+out_step4[0][2][3] = 
+   - 0.01219058 * out_step3[ 0][ 4][0] + 0.01253999 * out_step3[ 0][ 5][0] + 0.04706878 * out_step3[ 0][ 6][0]
+   + 0.00973778 * out_step3[ 1][ 4][0] + 0.00846840 * out_step3[ 1][ 5][0] - 0.00206387 * out_step3[ 1][ 6][0]
+   + 0.04355868 * out_step3[ 2][ 4][0] + 0.02735376 * out_step3[ 2][ 5][0] + 0.06654607 * out_step3[ 2][ 6][0]
+   - 0.01309244 * out_step3[ 0][ 4][1] - 0.00503413 * out_step3[ 0][ 5][1] - 0.01778936 * out_step3[ 0][ 6][1]
+   - 0.03693264 * out_step3[ 1][ 4][1] - 0.03880535 * out_step3[ 1][ 5][1] - 0.08037473 * out_step3[ 1][ 6][1]
+   + 0.00592731 * out_step3[ 2][ 4][1] - 0.02395234 * out_step3[ 2][ 5][1] + 0.00640133 * out_step3[ 2][ 6][1]
+   - 0.08784307 * out_step3[ 0][ 4][2] + 0.03642750 * out_step3[ 0][ 5][2] + 0.02933124 * out_step3[ 0][ 6][2]
+   - 0.01429078 * out_step3[ 1][ 4][2] - 0.00058162 * out_step3[ 1][ 5][2] + 0.07061297 * out_step3[ 1][ 6][2]
+   - 0.05208841 * out_step3[ 2][ 4][2] - 0.07087097 * out_step3[ 2][ 5][2] + 0.06776509 * out_step3[ 2][ 6][2]
+   - 0.08968325 * out_step3[ 0][ 4][3] - 0.03274346 * out_step3[ 0][ 5][3] - 0.07372682 * out_step3[ 0][ 6][3]
+   - 0.12655382 * out_step3[ 1][ 4][3] - 0.07622565 * out_step3[ 1][ 5][3] - 0.12201009 * out_step3[ 1][ 6][3]
+   - 0.06319173 * out_step3[ 2][ 4][3] - 0.10331886 * out_step3[ 2][ 5][3] - 0.05425242 * out_step3[ 2][ 6][3]
+   - 0.02687171 * out_step3[ 0][ 4][4] + 0.01349602 * out_step3[ 0][ 5][4] - 0.03327937 * out_step3[ 0][ 6][4]
+   + 0.01906963 * out_step3[ 1][ 4][4] - 0.07059298 * out_step3[ 1][ 5][4] + 0.00826073 * out_step3[ 1][ 6][4]
+   - 0.04234074 * out_step3[ 2][ 4][4] - 0.02114138 * out_step3[ 2][ 5][4] + 0.09829297 * out_step3[ 2][ 6][4]
+   - 0.02156375 * out_step3[ 0][ 4][5] + 0.07844485 * out_step3[ 0][ 5][5] - 0.05358755 * out_step3[ 0][ 6][5]
+   + 0.10799657 * out_step3[ 1][ 4][5] + 0.04948188 * out_step3[ 1][ 5][5] + 0.01527697 * out_step3[ 1][ 6][5]
+   + 0.14712320 * out_step3[ 2][ 4][5] + 0.06151152 * out_step3[ 2][ 5][5] + 0.02142990 * out_step3[ 2][ 6][5]
+   - 0.05441502 * out_step3[ 0][ 4][6] - 0.03501711 * out_step3[ 0][ 5][6] + 0.03901573 * out_step3[ 0][ 6][6]
+   + 0.05073790 * out_step3[ 1][ 4][6] + 0.02503924 * out_step3[ 1][ 5][6] + 0.08469989 * out_step3[ 1][ 6][6]
+   + 0.00591517 * out_step3[ 2][ 4][6] + 0.06105610 * out_step3[ 2][ 5][6] + 0.07003120 * out_step3[ 2][ 6][6]
+   - 0.07154232 * out_step3[ 0][ 4][7] + 0.01867061 * out_step3[ 0][ 5][7] + 0.05424637 * out_step3[ 0][ 6][7]
+   + 0.00400064 * out_step3[ 1][ 4][7] + 0.09309848 * out_step3[ 1][ 5][7] + 0.05838659 * out_step3[ 1][ 6][7]
+   + 0.03486924 * out_step3[ 2][ 4][7] + 0.00026716 * out_step3[ 2][ 5][7] - 0.04316613 * out_step3[ 2][ 6][7]
+   - 0.05939010;
+
+out_step4[1][0][3] = 
+   - 0.01219058 * out_step3[ 2][ 0][0] + 0.01253999 * out_step3[ 2][ 1][0] + 0.04706878 * out_step3[ 2][ 2][0]
+   + 0.00973778 * out_step3[ 3][ 0][0] + 0.00846840 * out_step3[ 3][ 1][0] - 0.00206387 * out_step3[ 3][ 2][0]
+   + 0.04355868 * out_step3[ 4][ 0][0] + 0.02735376 * out_step3[ 4][ 1][0] + 0.06654607 * out_step3[ 4][ 2][0]
+   - 0.01309244 * out_step3[ 2][ 0][1] - 0.00503413 * out_step3[ 2][ 1][1] - 0.01778936 * out_step3[ 2][ 2][1]
+   - 0.03693264 * out_step3[ 3][ 0][1] - 0.03880535 * out_step3[ 3][ 1][1] - 0.08037473 * out_step3[ 3][ 2][1]
+   + 0.00592731 * out_step3[ 4][ 0][1] - 0.02395234 * out_step3[ 4][ 1][1] + 0.00640133 * out_step3[ 4][ 2][1]
+   - 0.08784307 * out_step3[ 2][ 0][2] + 0.03642750 * out_step3[ 2][ 1][2] + 0.02933124 * out_step3[ 2][ 2][2]
+   - 0.01429078 * out_step3[ 3][ 0][2] - 0.00058162 * out_step3[ 3][ 1][2] + 0.07061297 * out_step3[ 3][ 2][2]
+   - 0.05208841 * out_step3[ 4][ 0][2] - 0.07087097 * out_step3[ 4][ 1][2] + 0.06776509 * out_step3[ 4][ 2][2]
+   - 0.08968325 * out_step3[ 2][ 0][3] - 0.03274346 * out_step3[ 2][ 1][3] - 0.07372682 * out_step3[ 2][ 2][3]
+   - 0.12655382 * out_step3[ 3][ 0][3] - 0.07622565 * out_step3[ 3][ 1][3] - 0.12201009 * out_step3[ 3][ 2][3]
+   - 0.06319173 * out_step3[ 4][ 0][3] - 0.10331886 * out_step3[ 4][ 1][3] - 0.05425242 * out_step3[ 4][ 2][3]
+   - 0.02687171 * out_step3[ 2][ 0][4] + 0.01349602 * out_step3[ 2][ 1][4] - 0.03327937 * out_step3[ 2][ 2][4]
+   + 0.01906963 * out_step3[ 3][ 0][4] - 0.07059298 * out_step3[ 3][ 1][4] + 0.00826073 * out_step3[ 3][ 2][4]
+   - 0.04234074 * out_step3[ 4][ 0][4] - 0.02114138 * out_step3[ 4][ 1][4] + 0.09829297 * out_step3[ 4][ 2][4]
+   - 0.02156375 * out_step3[ 2][ 0][5] + 0.07844485 * out_step3[ 2][ 1][5] - 0.05358755 * out_step3[ 2][ 2][5]
+   + 0.10799657 * out_step3[ 3][ 0][5] + 0.04948188 * out_step3[ 3][ 1][5] + 0.01527697 * out_step3[ 3][ 2][5]
+   + 0.14712320 * out_step3[ 4][ 0][5] + 0.06151152 * out_step3[ 4][ 1][5] + 0.02142990 * out_step3[ 4][ 2][5]
+   - 0.05441502 * out_step3[ 2][ 0][6] - 0.03501711 * out_step3[ 2][ 1][6] + 0.03901573 * out_step3[ 2][ 2][6]
+   + 0.05073790 * out_step3[ 3][ 0][6] + 0.02503924 * out_step3[ 3][ 1][6] + 0.08469989 * out_step3[ 3][ 2][6]
+   + 0.00591517 * out_step3[ 4][ 0][6] + 0.06105610 * out_step3[ 4][ 1][6] + 0.07003120 * out_step3[ 4][ 2][6]
+   - 0.07154232 * out_step3[ 2][ 0][7] + 0.01867061 * out_step3[ 2][ 1][7] + 0.05424637 * out_step3[ 2][ 2][7]
+   + 0.00400064 * out_step3[ 3][ 0][7] + 0.09309848 * out_step3[ 3][ 1][7] + 0.05838659 * out_step3[ 3][ 2][7]
+   + 0.03486924 * out_step3[ 4][ 0][7] + 0.00026716 * out_step3[ 4][ 1][7] - 0.04316613 * out_step3[ 4][ 2][7]
+   - 0.05939010;
+
+out_step4[1][1][3] = 
+   - 0.01219058 * out_step3[ 2][ 2][0] + 0.01253999 * out_step3[ 2][ 3][0] + 0.04706878 * out_step3[ 2][ 4][0]
+   + 0.00973778 * out_step3[ 3][ 2][0] + 0.00846840 * out_step3[ 3][ 3][0] - 0.00206387 * out_step3[ 3][ 4][0]
+   + 0.04355868 * out_step3[ 4][ 2][0] + 0.02735376 * out_step3[ 4][ 3][0] + 0.06654607 * out_step3[ 4][ 4][0]
+   - 0.01309244 * out_step3[ 2][ 2][1] - 0.00503413 * out_step3[ 2][ 3][1] - 0.01778936 * out_step3[ 2][ 4][1]
+   - 0.03693264 * out_step3[ 3][ 2][1] - 0.03880535 * out_step3[ 3][ 3][1] - 0.08037473 * out_step3[ 3][ 4][1]
+   + 0.00592731 * out_step3[ 4][ 2][1] - 0.02395234 * out_step3[ 4][ 3][1] + 0.00640133 * out_step3[ 4][ 4][1]
+   - 0.08784307 * out_step3[ 2][ 2][2] + 0.03642750 * out_step3[ 2][ 3][2] + 0.02933124 * out_step3[ 2][ 4][2]
+   - 0.01429078 * out_step3[ 3][ 2][2] - 0.00058162 * out_step3[ 3][ 3][2] + 0.07061297 * out_step3[ 3][ 4][2]
+   - 0.05208841 * out_step3[ 4][ 2][2] - 0.07087097 * out_step3[ 4][ 3][2] + 0.06776509 * out_step3[ 4][ 4][2]
+   - 0.08968325 * out_step3[ 2][ 2][3] - 0.03274346 * out_step3[ 2][ 3][3] - 0.07372682 * out_step3[ 2][ 4][3]
+   - 0.12655382 * out_step3[ 3][ 2][3] - 0.07622565 * out_step3[ 3][ 3][3] - 0.12201009 * out_step3[ 3][ 4][3]
+   - 0.06319173 * out_step3[ 4][ 2][3] - 0.10331886 * out_step3[ 4][ 3][3] - 0.05425242 * out_step3[ 4][ 4][3]
+   - 0.02687171 * out_step3[ 2][ 2][4] + 0.01349602 * out_step3[ 2][ 3][4] - 0.03327937 * out_step3[ 2][ 4][4]
+   + 0.01906963 * out_step3[ 3][ 2][4] - 0.07059298 * out_step3[ 3][ 3][4] + 0.00826073 * out_step3[ 3][ 4][4]
+   - 0.04234074 * out_step3[ 4][ 2][4] - 0.02114138 * out_step3[ 4][ 3][4] + 0.09829297 * out_step3[ 4][ 4][4]
+   - 0.02156375 * out_step3[ 2][ 2][5] + 0.07844485 * out_step3[ 2][ 3][5] - 0.05358755 * out_step3[ 2][ 4][5]
+   + 0.10799657 * out_step3[ 3][ 2][5] + 0.04948188 * out_step3[ 3][ 3][5] + 0.01527697 * out_step3[ 3][ 4][5]
+   + 0.14712320 * out_step3[ 4][ 2][5] + 0.06151152 * out_step3[ 4][ 3][5] + 0.02142990 * out_step3[ 4][ 4][5]
+   - 0.05441502 * out_step3[ 2][ 2][6] - 0.03501711 * out_step3[ 2][ 3][6] + 0.03901573 * out_step3[ 2][ 4][6]
+   + 0.05073790 * out_step3[ 3][ 2][6] + 0.02503924 * out_step3[ 3][ 3][6] + 0.08469989 * out_step3[ 3][ 4][6]
+   + 0.00591517 * out_step3[ 4][ 2][6] + 0.06105610 * out_step3[ 4][ 3][6] + 0.07003120 * out_step3[ 4][ 4][6]
+   - 0.07154232 * out_step3[ 2][ 2][7] + 0.01867061 * out_step3[ 2][ 3][7] + 0.05424637 * out_step3[ 2][ 4][7]
+   + 0.00400064 * out_step3[ 3][ 2][7] + 0.09309848 * out_step3[ 3][ 3][7] + 0.05838659 * out_step3[ 3][ 4][7]
+   + 0.03486924 * out_step3[ 4][ 2][7] + 0.00026716 * out_step3[ 4][ 3][7] - 0.04316613 * out_step3[ 4][ 4][7]
+   - 0.05939010;
+
+out_step4[1][2][3] = 
+   - 0.01219058 * out_step3[ 2][ 4][0] + 0.01253999 * out_step3[ 2][ 5][0] + 0.04706878 * out_step3[ 2][ 6][0]
+   + 0.00973778 * out_step3[ 3][ 4][0] + 0.00846840 * out_step3[ 3][ 5][0] - 0.00206387 * out_step3[ 3][ 6][0]
+   + 0.04355868 * out_step3[ 4][ 4][0] + 0.02735376 * out_step3[ 4][ 5][0] + 0.06654607 * out_step3[ 4][ 6][0]
+   - 0.01309244 * out_step3[ 2][ 4][1] - 0.00503413 * out_step3[ 2][ 5][1] - 0.01778936 * out_step3[ 2][ 6][1]
+   - 0.03693264 * out_step3[ 3][ 4][1] - 0.03880535 * out_step3[ 3][ 5][1] - 0.08037473 * out_step3[ 3][ 6][1]
+   + 0.00592731 * out_step3[ 4][ 4][1] - 0.02395234 * out_step3[ 4][ 5][1] + 0.00640133 * out_step3[ 4][ 6][1]
+   - 0.08784307 * out_step3[ 2][ 4][2] + 0.03642750 * out_step3[ 2][ 5][2] + 0.02933124 * out_step3[ 2][ 6][2]
+   - 0.01429078 * out_step3[ 3][ 4][2] - 0.00058162 * out_step3[ 3][ 5][2] + 0.07061297 * out_step3[ 3][ 6][2]
+   - 0.05208841 * out_step3[ 4][ 4][2] - 0.07087097 * out_step3[ 4][ 5][2] + 0.06776509 * out_step3[ 4][ 6][2]
+   - 0.08968325 * out_step3[ 2][ 4][3] - 0.03274346 * out_step3[ 2][ 5][3] - 0.07372682 * out_step3[ 2][ 6][3]
+   - 0.12655382 * out_step3[ 3][ 4][3] - 0.07622565 * out_step3[ 3][ 5][3] - 0.12201009 * out_step3[ 3][ 6][3]
+   - 0.06319173 * out_step3[ 4][ 4][3] - 0.10331886 * out_step3[ 4][ 5][3] - 0.05425242 * out_step3[ 4][ 6][3]
+   - 0.02687171 * out_step3[ 2][ 4][4] + 0.01349602 * out_step3[ 2][ 5][4] - 0.03327937 * out_step3[ 2][ 6][4]
+   + 0.01906963 * out_step3[ 3][ 4][4] - 0.07059298 * out_step3[ 3][ 5][4] + 0.00826073 * out_step3[ 3][ 6][4]
+   - 0.04234074 * out_step3[ 4][ 4][4] - 0.02114138 * out_step3[ 4][ 5][4] + 0.09829297 * out_step3[ 4][ 6][4]
+   - 0.02156375 * out_step3[ 2][ 4][5] + 0.07844485 * out_step3[ 2][ 5][5] - 0.05358755 * out_step3[ 2][ 6][5]
+   + 0.10799657 * out_step3[ 3][ 4][5] + 0.04948188 * out_step3[ 3][ 5][5] + 0.01527697 * out_step3[ 3][ 6][5]
+   + 0.14712320 * out_step3[ 4][ 4][5] + 0.06151152 * out_step3[ 4][ 5][5] + 0.02142990 * out_step3[ 4][ 6][5]
+   - 0.05441502 * out_step3[ 2][ 4][6] - 0.03501711 * out_step3[ 2][ 5][6] + 0.03901573 * out_step3[ 2][ 6][6]
+   + 0.05073790 * out_step3[ 3][ 4][6] + 0.02503924 * out_step3[ 3][ 5][6] + 0.08469989 * out_step3[ 3][ 6][6]
+   + 0.00591517 * out_step3[ 4][ 4][6] + 0.06105610 * out_step3[ 4][ 5][6] + 0.07003120 * out_step3[ 4][ 6][6]
+   - 0.07154232 * out_step3[ 2][ 4][7] + 0.01867061 * out_step3[ 2][ 5][7] + 0.05424637 * out_step3[ 2][ 6][7]
+   + 0.00400064 * out_step3[ 3][ 4][7] + 0.09309848 * out_step3[ 3][ 5][7] + 0.05838659 * out_step3[ 3][ 6][7]
+   + 0.03486924 * out_step3[ 4][ 4][7] + 0.00026716 * out_step3[ 4][ 5][7] - 0.04316613 * out_step3[ 4][ 6][7]
+   - 0.05939010;
+
+out_step4[2][0][3] = 
+   - 0.01219058 * out_step3[ 4][ 0][0] + 0.01253999 * out_step3[ 4][ 1][0] + 0.04706878 * out_step3[ 4][ 2][0]
+   + 0.00973778 * out_step3[ 5][ 0][0] + 0.00846840 * out_step3[ 5][ 1][0] - 0.00206387 * out_step3[ 5][ 2][0]
+   + 0.04355868 * out_step3[ 6][ 0][0] + 0.02735376 * out_step3[ 6][ 1][0] + 0.06654607 * out_step3[ 6][ 2][0]
+   - 0.01309244 * out_step3[ 4][ 0][1] - 0.00503413 * out_step3[ 4][ 1][1] - 0.01778936 * out_step3[ 4][ 2][1]
+   - 0.03693264 * out_step3[ 5][ 0][1] - 0.03880535 * out_step3[ 5][ 1][1] - 0.08037473 * out_step3[ 5][ 2][1]
+   + 0.00592731 * out_step3[ 6][ 0][1] - 0.02395234 * out_step3[ 6][ 1][1] + 0.00640133 * out_step3[ 6][ 2][1]
+   - 0.08784307 * out_step3[ 4][ 0][2] + 0.03642750 * out_step3[ 4][ 1][2] + 0.02933124 * out_step3[ 4][ 2][2]
+   - 0.01429078 * out_step3[ 5][ 0][2] - 0.00058162 * out_step3[ 5][ 1][2] + 0.07061297 * out_step3[ 5][ 2][2]
+   - 0.05208841 * out_step3[ 6][ 0][2] - 0.07087097 * out_step3[ 6][ 1][2] + 0.06776509 * out_step3[ 6][ 2][2]
+   - 0.08968325 * out_step3[ 4][ 0][3] - 0.03274346 * out_step3[ 4][ 1][3] - 0.07372682 * out_step3[ 4][ 2][3]
+   - 0.12655382 * out_step3[ 5][ 0][3] - 0.07622565 * out_step3[ 5][ 1][3] - 0.12201009 * out_step3[ 5][ 2][3]
+   - 0.06319173 * out_step3[ 6][ 0][3] - 0.10331886 * out_step3[ 6][ 1][3] - 0.05425242 * out_step3[ 6][ 2][3]
+   - 0.02687171 * out_step3[ 4][ 0][4] + 0.01349602 * out_step3[ 4][ 1][4] - 0.03327937 * out_step3[ 4][ 2][4]
+   + 0.01906963 * out_step3[ 5][ 0][4] - 0.07059298 * out_step3[ 5][ 1][4] + 0.00826073 * out_step3[ 5][ 2][4]
+   - 0.04234074 * out_step3[ 6][ 0][4] - 0.02114138 * out_step3[ 6][ 1][4] + 0.09829297 * out_step3[ 6][ 2][4]
+   - 0.02156375 * out_step3[ 4][ 0][5] + 0.07844485 * out_step3[ 4][ 1][5] - 0.05358755 * out_step3[ 4][ 2][5]
+   + 0.10799657 * out_step3[ 5][ 0][5] + 0.04948188 * out_step3[ 5][ 1][5] + 0.01527697 * out_step3[ 5][ 2][5]
+   + 0.14712320 * out_step3[ 6][ 0][5] + 0.06151152 * out_step3[ 6][ 1][5] + 0.02142990 * out_step3[ 6][ 2][5]
+   - 0.05441502 * out_step3[ 4][ 0][6] - 0.03501711 * out_step3[ 4][ 1][6] + 0.03901573 * out_step3[ 4][ 2][6]
+   + 0.05073790 * out_step3[ 5][ 0][6] + 0.02503924 * out_step3[ 5][ 1][6] + 0.08469989 * out_step3[ 5][ 2][6]
+   + 0.00591517 * out_step3[ 6][ 0][6] + 0.06105610 * out_step3[ 6][ 1][6] + 0.07003120 * out_step3[ 6][ 2][6]
+   - 0.07154232 * out_step3[ 4][ 0][7] + 0.01867061 * out_step3[ 4][ 1][7] + 0.05424637 * out_step3[ 4][ 2][7]
+   + 0.00400064 * out_step3[ 5][ 0][7] + 0.09309848 * out_step3[ 5][ 1][7] + 0.05838659 * out_step3[ 5][ 2][7]
+   + 0.03486924 * out_step3[ 6][ 0][7] + 0.00026716 * out_step3[ 6][ 1][7] - 0.04316613 * out_step3[ 6][ 2][7]
+   - 0.05939010;
+
+out_step4[2][1][3] = 
+   - 0.01219058 * out_step3[ 4][ 2][0] + 0.01253999 * out_step3[ 4][ 3][0] + 0.04706878 * out_step3[ 4][ 4][0]
+   + 0.00973778 * out_step3[ 5][ 2][0] + 0.00846840 * out_step3[ 5][ 3][0] - 0.00206387 * out_step3[ 5][ 4][0]
+   + 0.04355868 * out_step3[ 6][ 2][0] + 0.02735376 * out_step3[ 6][ 3][0] + 0.06654607 * out_step3[ 6][ 4][0]
+   - 0.01309244 * out_step3[ 4][ 2][1] - 0.00503413 * out_step3[ 4][ 3][1] - 0.01778936 * out_step3[ 4][ 4][1]
+   - 0.03693264 * out_step3[ 5][ 2][1] - 0.03880535 * out_step3[ 5][ 3][1] - 0.08037473 * out_step3[ 5][ 4][1]
+   + 0.00592731 * out_step3[ 6][ 2][1] - 0.02395234 * out_step3[ 6][ 3][1] + 0.00640133 * out_step3[ 6][ 4][1]
+   - 0.08784307 * out_step3[ 4][ 2][2] + 0.03642750 * out_step3[ 4][ 3][2] + 0.02933124 * out_step3[ 4][ 4][2]
+   - 0.01429078 * out_step3[ 5][ 2][2] - 0.00058162 * out_step3[ 5][ 3][2] + 0.07061297 * out_step3[ 5][ 4][2]
+   - 0.05208841 * out_step3[ 6][ 2][2] - 0.07087097 * out_step3[ 6][ 3][2] + 0.06776509 * out_step3[ 6][ 4][2]
+   - 0.08968325 * out_step3[ 4][ 2][3] - 0.03274346 * out_step3[ 4][ 3][3] - 0.07372682 * out_step3[ 4][ 4][3]
+   - 0.12655382 * out_step3[ 5][ 2][3] - 0.07622565 * out_step3[ 5][ 3][3] - 0.12201009 * out_step3[ 5][ 4][3]
+   - 0.06319173 * out_step3[ 6][ 2][3] - 0.10331886 * out_step3[ 6][ 3][3] - 0.05425242 * out_step3[ 6][ 4][3]
+   - 0.02687171 * out_step3[ 4][ 2][4] + 0.01349602 * out_step3[ 4][ 3][4] - 0.03327937 * out_step3[ 4][ 4][4]
+   + 0.01906963 * out_step3[ 5][ 2][4] - 0.07059298 * out_step3[ 5][ 3][4] + 0.00826073 * out_step3[ 5][ 4][4]
+   - 0.04234074 * out_step3[ 6][ 2][4] - 0.02114138 * out_step3[ 6][ 3][4] + 0.09829297 * out_step3[ 6][ 4][4]
+   - 0.02156375 * out_step3[ 4][ 2][5] + 0.07844485 * out_step3[ 4][ 3][5] - 0.05358755 * out_step3[ 4][ 4][5]
+   + 0.10799657 * out_step3[ 5][ 2][5] + 0.04948188 * out_step3[ 5][ 3][5] + 0.01527697 * out_step3[ 5][ 4][5]
+   + 0.14712320 * out_step3[ 6][ 2][5] + 0.06151152 * out_step3[ 6][ 3][5] + 0.02142990 * out_step3[ 6][ 4][5]
+   - 0.05441502 * out_step3[ 4][ 2][6] - 0.03501711 * out_step3[ 4][ 3][6] + 0.03901573 * out_step3[ 4][ 4][6]
+   + 0.05073790 * out_step3[ 5][ 2][6] + 0.02503924 * out_step3[ 5][ 3][6] + 0.08469989 * out_step3[ 5][ 4][6]
+   + 0.00591517 * out_step3[ 6][ 2][6] + 0.06105610 * out_step3[ 6][ 3][6] + 0.07003120 * out_step3[ 6][ 4][6]
+   - 0.07154232 * out_step3[ 4][ 2][7] + 0.01867061 * out_step3[ 4][ 3][7] + 0.05424637 * out_step3[ 4][ 4][7]
+   + 0.00400064 * out_step3[ 5][ 2][7] + 0.09309848 * out_step3[ 5][ 3][7] + 0.05838659 * out_step3[ 5][ 4][7]
+   + 0.03486924 * out_step3[ 6][ 2][7] + 0.00026716 * out_step3[ 6][ 3][7] - 0.04316613 * out_step3[ 6][ 4][7]
+   - 0.05939010;
+
+out_step4[2][2][3] = 
+   - 0.01219058 * out_step3[ 4][ 4][0] + 0.01253999 * out_step3[ 4][ 5][0] + 0.04706878 * out_step3[ 4][ 6][0]
+   + 0.00973778 * out_step3[ 5][ 4][0] + 0.00846840 * out_step3[ 5][ 5][0] - 0.00206387 * out_step3[ 5][ 6][0]
+   + 0.04355868 * out_step3[ 6][ 4][0] + 0.02735376 * out_step3[ 6][ 5][0] + 0.06654607 * out_step3[ 6][ 6][0]
+   - 0.01309244 * out_step3[ 4][ 4][1] - 0.00503413 * out_step3[ 4][ 5][1] - 0.01778936 * out_step3[ 4][ 6][1]
+   - 0.03693264 * out_step3[ 5][ 4][1] - 0.03880535 * out_step3[ 5][ 5][1] - 0.08037473 * out_step3[ 5][ 6][1]
+   + 0.00592731 * out_step3[ 6][ 4][1] - 0.02395234 * out_step3[ 6][ 5][1] + 0.00640133 * out_step3[ 6][ 6][1]
+   - 0.08784307 * out_step3[ 4][ 4][2] + 0.03642750 * out_step3[ 4][ 5][2] + 0.02933124 * out_step3[ 4][ 6][2]
+   - 0.01429078 * out_step3[ 5][ 4][2] - 0.00058162 * out_step3[ 5][ 5][2] + 0.07061297 * out_step3[ 5][ 6][2]
+   - 0.05208841 * out_step3[ 6][ 4][2] - 0.07087097 * out_step3[ 6][ 5][2] + 0.06776509 * out_step3[ 6][ 6][2]
+   - 0.08968325 * out_step3[ 4][ 4][3] - 0.03274346 * out_step3[ 4][ 5][3] - 0.07372682 * out_step3[ 4][ 6][3]
+   - 0.12655382 * out_step3[ 5][ 4][3] - 0.07622565 * out_step3[ 5][ 5][3] - 0.12201009 * out_step3[ 5][ 6][3]
+   - 0.06319173 * out_step3[ 6][ 4][3] - 0.10331886 * out_step3[ 6][ 5][3] - 0.05425242 * out_step3[ 6][ 6][3]
+   - 0.02687171 * out_step3[ 4][ 4][4] + 0.01349602 * out_step3[ 4][ 5][4] - 0.03327937 * out_step3[ 4][ 6][4]
+   + 0.01906963 * out_step3[ 5][ 4][4] - 0.07059298 * out_step3[ 5][ 5][4] + 0.00826073 * out_step3[ 5][ 6][4]
+   - 0.04234074 * out_step3[ 6][ 4][4] - 0.02114138 * out_step3[ 6][ 5][4] + 0.09829297 * out_step3[ 6][ 6][4]
+   - 0.02156375 * out_step3[ 4][ 4][5] + 0.07844485 * out_step3[ 4][ 5][5] - 0.05358755 * out_step3[ 4][ 6][5]
+   + 0.10799657 * out_step3[ 5][ 4][5] + 0.04948188 * out_step3[ 5][ 5][5] + 0.01527697 * out_step3[ 5][ 6][5]
+   + 0.14712320 * out_step3[ 6][ 4][5] + 0.06151152 * out_step3[ 6][ 5][5] + 0.02142990 * out_step3[ 6][ 6][5]
+   - 0.05441502 * out_step3[ 4][ 4][6] - 0.03501711 * out_step3[ 4][ 5][6] + 0.03901573 * out_step3[ 4][ 6][6]
+   + 0.05073790 * out_step3[ 5][ 4][6] + 0.02503924 * out_step3[ 5][ 5][6] + 0.08469989 * out_step3[ 5][ 6][6]
+   + 0.00591517 * out_step3[ 6][ 4][6] + 0.06105610 * out_step3[ 6][ 5][6] + 0.07003120 * out_step3[ 6][ 6][6]
+   - 0.07154232 * out_step3[ 4][ 4][7] + 0.01867061 * out_step3[ 4][ 5][7] + 0.05424637 * out_step3[ 4][ 6][7]
+   + 0.00400064 * out_step3[ 5][ 4][7] + 0.09309848 * out_step3[ 5][ 5][7] + 0.05838659 * out_step3[ 5][ 6][7]
+   + 0.03486924 * out_step3[ 6][ 4][7] + 0.00026716 * out_step3[ 6][ 5][7] - 0.04316613 * out_step3[ 6][ 6][7]
+   - 0.05939010;
+
+out_step4[0][0][4] = 
+   - 0.02788380 * out_step3[ 0][ 0][0] - 0.04210471 * out_step3[ 0][ 1][0] - 0.00102759 * out_step3[ 0][ 2][0]
+   - 0.00362742 * out_step3[ 1][ 0][0] + 0.02019106 * out_step3[ 1][ 1][0] + 0.03666317 * out_step3[ 1][ 2][0]
+   - 0.01411386 * out_step3[ 2][ 0][0] - 0.01567840 * out_step3[ 2][ 1][0] - 0.00158196 * out_step3[ 2][ 2][0]
+   - 0.01263750 * out_step3[ 0][ 0][1] - 0.01293348 * out_step3[ 0][ 1][1] - 0.01922585 * out_step3[ 0][ 2][1]
+   + 0.01632958 * out_step3[ 1][ 0][1] - 0.00972220 * out_step3[ 1][ 1][1] + 0.00907361 * out_step3[ 1][ 2][1]
+   - 0.00477314 * out_step3[ 2][ 0][1] + 0.02430107 * out_step3[ 2][ 1][1] + 0.01868868 * out_step3[ 2][ 2][1]
+   - 0.00702908 * out_step3[ 0][ 0][2] + 0.12775944 * out_step3[ 0][ 1][2] - 0.00228923 * out_step3[ 0][ 2][2]
+   + 0.01610980 * out_step3[ 1][ 0][2] - 0.02875206 * out_step3[ 1][ 1][2] + 0.00227189 * out_step3[ 1][ 2][2]
+   + 0.00871214 * out_step3[ 2][ 0][2] - 0.00292907 * out_step3[ 2][ 1][2] - 0.00560114 * out_step3[ 2][ 2][2]
+   - 0.01133613 * out_step3[ 0][ 0][3] - 0.03562238 * out_step3[ 0][ 1][3] - 0.07423968 * out_step3[ 0][ 2][3]
+   + 0.02253462 * out_step3[ 1][ 0][3] + 0.00859613 * out_step3[ 1][ 1][3] + 0.00927490 * out_step3[ 1][ 2][3]
+   - 0.03413711 * out_step3[ 2][ 0][3] + 0.01078769 * out_step3[ 2][ 1][3] + 0.04291977 * out_step3[ 2][ 2][3]
+   - 0.03853429 * out_step3[ 0][ 0][4] + 0.01506331 * out_step3[ 0][ 1][4] - 0.03011924 * out_step3[ 0][ 2][4]
+   + 0.00300828 * out_step3[ 1][ 0][4] + 0.02658010 * out_step3[ 1][ 1][4] - 0.03056832 * out_step3[ 1][ 2][4]
+   - 0.04426134 * out_step3[ 2][ 0][4] - 0.00142324 * out_step3[ 2][ 1][4] - 0.00737025 * out_step3[ 2][ 2][4]
+   - 0.02874947 * out_step3[ 0][ 0][5] - 0.00982164 * out_step3[ 0][ 1][5] - 0.01736685 * out_step3[ 0][ 2][5]
+   - 0.00868256 * out_step3[ 1][ 0][5] + 0.06346857 * out_step3[ 1][ 1][5] + 0.03337272 * out_step3[ 1][ 2][5]
+   + 0.01212927 * out_step3[ 2][ 0][5] + 0.03432760 * out_step3[ 2][ 1][5] + 0.03572888 * out_step3[ 2][ 2][5]
+   - 0.02993809 * out_step3[ 0][ 0][6] + 0.07251758 * out_step3[ 0][ 1][6] + 0.00468446 * out_step3[ 0][ 2][6]
+   - 0.00517532 * out_step3[ 1][ 0][6] - 0.00200865 * out_step3[ 1][ 1][6] + 0.02307587 * out_step3[ 1][ 2][6]
+   - 0.01068257 * out_step3[ 2][ 0][6] + 0.00374549 * out_step3[ 2][ 1][6] - 0.03457372 * out_step3[ 2][ 2][6]
+   - 0.06667280 * out_step3[ 0][ 0][7] - 0.02353556 * out_step3[ 0][ 1][7] + 0.02977575 * out_step3[ 0][ 2][7]
+   - 0.04220737 * out_step3[ 1][ 0][7] + 0.04210890 * out_step3[ 1][ 1][7] + 0.00206789 * out_step3[ 1][ 2][7]
+   + 0.02231535 * out_step3[ 2][ 0][7] + 0.01047123 * out_step3[ 2][ 1][7] + 0.03550670 * out_step3[ 2][ 2][7]
+   - 0.02176462;
+
+out_step4[0][1][4] = 
+   - 0.02788380 * out_step3[ 0][ 2][0] - 0.04210471 * out_step3[ 0][ 3][0] - 0.00102759 * out_step3[ 0][ 4][0]
+   - 0.00362742 * out_step3[ 1][ 2][0] + 0.02019106 * out_step3[ 1][ 3][0] + 0.03666317 * out_step3[ 1][ 4][0]
+   - 0.01411386 * out_step3[ 2][ 2][0] - 0.01567840 * out_step3[ 2][ 3][0] - 0.00158196 * out_step3[ 2][ 4][0]
+   - 0.01263750 * out_step3[ 0][ 2][1] - 0.01293348 * out_step3[ 0][ 3][1] - 0.01922585 * out_step3[ 0][ 4][1]
+   + 0.01632958 * out_step3[ 1][ 2][1] - 0.00972220 * out_step3[ 1][ 3][1] + 0.00907361 * out_step3[ 1][ 4][1]
+   - 0.00477314 * out_step3[ 2][ 2][1] + 0.02430107 * out_step3[ 2][ 3][1] + 0.01868868 * out_step3[ 2][ 4][1]
+   - 0.00702908 * out_step3[ 0][ 2][2] + 0.12775944 * out_step3[ 0][ 3][2] - 0.00228923 * out_step3[ 0][ 4][2]
+   + 0.01610980 * out_step3[ 1][ 2][2] - 0.02875206 * out_step3[ 1][ 3][2] + 0.00227189 * out_step3[ 1][ 4][2]
+   + 0.00871214 * out_step3[ 2][ 2][2] - 0.00292907 * out_step3[ 2][ 3][2] - 0.00560114 * out_step3[ 2][ 4][2]
+   - 0.01133613 * out_step3[ 0][ 2][3] - 0.03562238 * out_step3[ 0][ 3][3] - 0.07423968 * out_step3[ 0][ 4][3]
+   + 0.02253462 * out_step3[ 1][ 2][3] + 0.00859613 * out_step3[ 1][ 3][3] + 0.00927490 * out_step3[ 1][ 4][3]
+   - 0.03413711 * out_step3[ 2][ 2][3] + 0.01078769 * out_step3[ 2][ 3][3] + 0.04291977 * out_step3[ 2][ 4][3]
+   - 0.03853429 * out_step3[ 0][ 2][4] + 0.01506331 * out_step3[ 0][ 3][4] - 0.03011924 * out_step3[ 0][ 4][4]
+   + 0.00300828 * out_step3[ 1][ 2][4] + 0.02658010 * out_step3[ 1][ 3][4] - 0.03056832 * out_step3[ 1][ 4][4]
+   - 0.04426134 * out_step3[ 2][ 2][4] - 0.00142324 * out_step3[ 2][ 3][4] - 0.00737025 * out_step3[ 2][ 4][4]
+   - 0.02874947 * out_step3[ 0][ 2][5] - 0.00982164 * out_step3[ 0][ 3][5] - 0.01736685 * out_step3[ 0][ 4][5]
+   - 0.00868256 * out_step3[ 1][ 2][5] + 0.06346857 * out_step3[ 1][ 3][5] + 0.03337272 * out_step3[ 1][ 4][5]
+   + 0.01212927 * out_step3[ 2][ 2][5] + 0.03432760 * out_step3[ 2][ 3][5] + 0.03572888 * out_step3[ 2][ 4][5]
+   - 0.02993809 * out_step3[ 0][ 2][6] + 0.07251758 * out_step3[ 0][ 3][6] + 0.00468446 * out_step3[ 0][ 4][6]
+   - 0.00517532 * out_step3[ 1][ 2][6] - 0.00200865 * out_step3[ 1][ 3][6] + 0.02307587 * out_step3[ 1][ 4][6]
+   - 0.01068257 * out_step3[ 2][ 2][6] + 0.00374549 * out_step3[ 2][ 3][6] - 0.03457372 * out_step3[ 2][ 4][6]
+   - 0.06667280 * out_step3[ 0][ 2][7] - 0.02353556 * out_step3[ 0][ 3][7] + 0.02977575 * out_step3[ 0][ 4][7]
+   - 0.04220737 * out_step3[ 1][ 2][7] + 0.04210890 * out_step3[ 1][ 3][7] + 0.00206789 * out_step3[ 1][ 4][7]
+   + 0.02231535 * out_step3[ 2][ 2][7] + 0.01047123 * out_step3[ 2][ 3][7] + 0.03550670 * out_step3[ 2][ 4][7]
+   - 0.02176462;
+
+out_step4[0][2][4] = 
+   - 0.02788380 * out_step3[ 0][ 4][0] - 0.04210471 * out_step3[ 0][ 5][0] - 0.00102759 * out_step3[ 0][ 6][0]
+   - 0.00362742 * out_step3[ 1][ 4][0] + 0.02019106 * out_step3[ 1][ 5][0] + 0.03666317 * out_step3[ 1][ 6][0]
+   - 0.01411386 * out_step3[ 2][ 4][0] - 0.01567840 * out_step3[ 2][ 5][0] - 0.00158196 * out_step3[ 2][ 6][0]
+   - 0.01263750 * out_step3[ 0][ 4][1] - 0.01293348 * out_step3[ 0][ 5][1] - 0.01922585 * out_step3[ 0][ 6][1]
+   + 0.01632958 * out_step3[ 1][ 4][1] - 0.00972220 * out_step3[ 1][ 5][1] + 0.00907361 * out_step3[ 1][ 6][1]
+   - 0.00477314 * out_step3[ 2][ 4][1] + 0.02430107 * out_step3[ 2][ 5][1] + 0.01868868 * out_step3[ 2][ 6][1]
+   - 0.00702908 * out_step3[ 0][ 4][2] + 0.12775944 * out_step3[ 0][ 5][2] - 0.00228923 * out_step3[ 0][ 6][2]
+   + 0.01610980 * out_step3[ 1][ 4][2] - 0.02875206 * out_step3[ 1][ 5][2] + 0.00227189 * out_step3[ 1][ 6][2]
+   + 0.00871214 * out_step3[ 2][ 4][2] - 0.00292907 * out_step3[ 2][ 5][2] - 0.00560114 * out_step3[ 2][ 6][2]
+   - 0.01133613 * out_step3[ 0][ 4][3] - 0.03562238 * out_step3[ 0][ 5][3] - 0.07423968 * out_step3[ 0][ 6][3]
+   + 0.02253462 * out_step3[ 1][ 4][3] + 0.00859613 * out_step3[ 1][ 5][3] + 0.00927490 * out_step3[ 1][ 6][3]
+   - 0.03413711 * out_step3[ 2][ 4][3] + 0.01078769 * out_step3[ 2][ 5][3] + 0.04291977 * out_step3[ 2][ 6][3]
+   - 0.03853429 * out_step3[ 0][ 4][4] + 0.01506331 * out_step3[ 0][ 5][4] - 0.03011924 * out_step3[ 0][ 6][4]
+   + 0.00300828 * out_step3[ 1][ 4][4] + 0.02658010 * out_step3[ 1][ 5][4] - 0.03056832 * out_step3[ 1][ 6][4]
+   - 0.04426134 * out_step3[ 2][ 4][4] - 0.00142324 * out_step3[ 2][ 5][4] - 0.00737025 * out_step3[ 2][ 6][4]
+   - 0.02874947 * out_step3[ 0][ 4][5] - 0.00982164 * out_step3[ 0][ 5][5] - 0.01736685 * out_step3[ 0][ 6][5]
+   - 0.00868256 * out_step3[ 1][ 4][5] + 0.06346857 * out_step3[ 1][ 5][5] + 0.03337272 * out_step3[ 1][ 6][5]
+   + 0.01212927 * out_step3[ 2][ 4][5] + 0.03432760 * out_step3[ 2][ 5][5] + 0.03572888 * out_step3[ 2][ 6][5]
+   - 0.02993809 * out_step3[ 0][ 4][6] + 0.07251758 * out_step3[ 0][ 5][6] + 0.00468446 * out_step3[ 0][ 6][6]
+   - 0.00517532 * out_step3[ 1][ 4][6] - 0.00200865 * out_step3[ 1][ 5][6] + 0.02307587 * out_step3[ 1][ 6][6]
+   - 0.01068257 * out_step3[ 2][ 4][6] + 0.00374549 * out_step3[ 2][ 5][6] - 0.03457372 * out_step3[ 2][ 6][6]
+   - 0.06667280 * out_step3[ 0][ 4][7] - 0.02353556 * out_step3[ 0][ 5][7] + 0.02977575 * out_step3[ 0][ 6][7]
+   - 0.04220737 * out_step3[ 1][ 4][7] + 0.04210890 * out_step3[ 1][ 5][7] + 0.00206789 * out_step3[ 1][ 6][7]
+   + 0.02231535 * out_step3[ 2][ 4][7] + 0.01047123 * out_step3[ 2][ 5][7] + 0.03550670 * out_step3[ 2][ 6][7]
+   - 0.02176462;
+
+out_step4[1][0][4] = 
+   - 0.02788380 * out_step3[ 2][ 0][0] - 0.04210471 * out_step3[ 2][ 1][0] - 0.00102759 * out_step3[ 2][ 2][0]
+   - 0.00362742 * out_step3[ 3][ 0][0] + 0.02019106 * out_step3[ 3][ 1][0] + 0.03666317 * out_step3[ 3][ 2][0]
+   - 0.01411386 * out_step3[ 4][ 0][0] - 0.01567840 * out_step3[ 4][ 1][0] - 0.00158196 * out_step3[ 4][ 2][0]
+   - 0.01263750 * out_step3[ 2][ 0][1] - 0.01293348 * out_step3[ 2][ 1][1] - 0.01922585 * out_step3[ 2][ 2][1]
+   + 0.01632958 * out_step3[ 3][ 0][1] - 0.00972220 * out_step3[ 3][ 1][1] + 0.00907361 * out_step3[ 3][ 2][1]
+   - 0.00477314 * out_step3[ 4][ 0][1] + 0.02430107 * out_step3[ 4][ 1][1] + 0.01868868 * out_step3[ 4][ 2][1]
+   - 0.00702908 * out_step3[ 2][ 0][2] + 0.12775944 * out_step3[ 2][ 1][2] - 0.00228923 * out_step3[ 2][ 2][2]
+   + 0.01610980 * out_step3[ 3][ 0][2] - 0.02875206 * out_step3[ 3][ 1][2] + 0.00227189 * out_step3[ 3][ 2][2]
+   + 0.00871214 * out_step3[ 4][ 0][2] - 0.00292907 * out_step3[ 4][ 1][2] - 0.00560114 * out_step3[ 4][ 2][2]
+   - 0.01133613 * out_step3[ 2][ 0][3] - 0.03562238 * out_step3[ 2][ 1][3] - 0.07423968 * out_step3[ 2][ 2][3]
+   + 0.02253462 * out_step3[ 3][ 0][3] + 0.00859613 * out_step3[ 3][ 1][3] + 0.00927490 * out_step3[ 3][ 2][3]
+   - 0.03413711 * out_step3[ 4][ 0][3] + 0.01078769 * out_step3[ 4][ 1][3] + 0.04291977 * out_step3[ 4][ 2][3]
+   - 0.03853429 * out_step3[ 2][ 0][4] + 0.01506331 * out_step3[ 2][ 1][4] - 0.03011924 * out_step3[ 2][ 2][4]
+   + 0.00300828 * out_step3[ 3][ 0][4] + 0.02658010 * out_step3[ 3][ 1][4] - 0.03056832 * out_step3[ 3][ 2][4]
+   - 0.04426134 * out_step3[ 4][ 0][4] - 0.00142324 * out_step3[ 4][ 1][4] - 0.00737025 * out_step3[ 4][ 2][4]
+   - 0.02874947 * out_step3[ 2][ 0][5] - 0.00982164 * out_step3[ 2][ 1][5] - 0.01736685 * out_step3[ 2][ 2][5]
+   - 0.00868256 * out_step3[ 3][ 0][5] + 0.06346857 * out_step3[ 3][ 1][5] + 0.03337272 * out_step3[ 3][ 2][5]
+   + 0.01212927 * out_step3[ 4][ 0][5] + 0.03432760 * out_step3[ 4][ 1][5] + 0.03572888 * out_step3[ 4][ 2][5]
+   - 0.02993809 * out_step3[ 2][ 0][6] + 0.07251758 * out_step3[ 2][ 1][6] + 0.00468446 * out_step3[ 2][ 2][6]
+   - 0.00517532 * out_step3[ 3][ 0][6] - 0.00200865 * out_step3[ 3][ 1][6] + 0.02307587 * out_step3[ 3][ 2][6]
+   - 0.01068257 * out_step3[ 4][ 0][6] + 0.00374549 * out_step3[ 4][ 1][6] - 0.03457372 * out_step3[ 4][ 2][6]
+   - 0.06667280 * out_step3[ 2][ 0][7] - 0.02353556 * out_step3[ 2][ 1][7] + 0.02977575 * out_step3[ 2][ 2][7]
+   - 0.04220737 * out_step3[ 3][ 0][7] + 0.04210890 * out_step3[ 3][ 1][7] + 0.00206789 * out_step3[ 3][ 2][7]
+   + 0.02231535 * out_step3[ 4][ 0][7] + 0.01047123 * out_step3[ 4][ 1][7] + 0.03550670 * out_step3[ 4][ 2][7]
+   - 0.02176462;
+
+out_step4[1][1][4] = 
+   - 0.02788380 * out_step3[ 2][ 2][0] - 0.04210471 * out_step3[ 2][ 3][0] - 0.00102759 * out_step3[ 2][ 4][0]
+   - 0.00362742 * out_step3[ 3][ 2][0] + 0.02019106 * out_step3[ 3][ 3][0] + 0.03666317 * out_step3[ 3][ 4][0]
+   - 0.01411386 * out_step3[ 4][ 2][0] - 0.01567840 * out_step3[ 4][ 3][0] - 0.00158196 * out_step3[ 4][ 4][0]
+   - 0.01263750 * out_step3[ 2][ 2][1] - 0.01293348 * out_step3[ 2][ 3][1] - 0.01922585 * out_step3[ 2][ 4][1]
+   + 0.01632958 * out_step3[ 3][ 2][1] - 0.00972220 * out_step3[ 3][ 3][1] + 0.00907361 * out_step3[ 3][ 4][1]
+   - 0.00477314 * out_step3[ 4][ 2][1] + 0.02430107 * out_step3[ 4][ 3][1] + 0.01868868 * out_step3[ 4][ 4][1]
+   - 0.00702908 * out_step3[ 2][ 2][2] + 0.12775944 * out_step3[ 2][ 3][2] - 0.00228923 * out_step3[ 2][ 4][2]
+   + 0.01610980 * out_step3[ 3][ 2][2] - 0.02875206 * out_step3[ 3][ 3][2] + 0.00227189 * out_step3[ 3][ 4][2]
+   + 0.00871214 * out_step3[ 4][ 2][2] - 0.00292907 * out_step3[ 4][ 3][2] - 0.00560114 * out_step3[ 4][ 4][2]
+   - 0.01133613 * out_step3[ 2][ 2][3] - 0.03562238 * out_step3[ 2][ 3][3] - 0.07423968 * out_step3[ 2][ 4][3]
+   + 0.02253462 * out_step3[ 3][ 2][3] + 0.00859613 * out_step3[ 3][ 3][3] + 0.00927490 * out_step3[ 3][ 4][3]
+   - 0.03413711 * out_step3[ 4][ 2][3] + 0.01078769 * out_step3[ 4][ 3][3] + 0.04291977 * out_step3[ 4][ 4][3]
+   - 0.03853429 * out_step3[ 2][ 2][4] + 0.01506331 * out_step3[ 2][ 3][4] - 0.03011924 * out_step3[ 2][ 4][4]
+   + 0.00300828 * out_step3[ 3][ 2][4] + 0.02658010 * out_step3[ 3][ 3][4] - 0.03056832 * out_step3[ 3][ 4][4]
+   - 0.04426134 * out_step3[ 4][ 2][4] - 0.00142324 * out_step3[ 4][ 3][4] - 0.00737025 * out_step3[ 4][ 4][4]
+   - 0.02874947 * out_step3[ 2][ 2][5] - 0.00982164 * out_step3[ 2][ 3][5] - 0.01736685 * out_step3[ 2][ 4][5]
+   - 0.00868256 * out_step3[ 3][ 2][5] + 0.06346857 * out_step3[ 3][ 3][5] + 0.03337272 * out_step3[ 3][ 4][5]
+   + 0.01212927 * out_step3[ 4][ 2][5] + 0.03432760 * out_step3[ 4][ 3][5] + 0.03572888 * out_step3[ 4][ 4][5]
+   - 0.02993809 * out_step3[ 2][ 2][6] + 0.07251758 * out_step3[ 2][ 3][6] + 0.00468446 * out_step3[ 2][ 4][6]
+   - 0.00517532 * out_step3[ 3][ 2][6] - 0.00200865 * out_step3[ 3][ 3][6] + 0.02307587 * out_step3[ 3][ 4][6]
+   - 0.01068257 * out_step3[ 4][ 2][6] + 0.00374549 * out_step3[ 4][ 3][6] - 0.03457372 * out_step3[ 4][ 4][6]
+   - 0.06667280 * out_step3[ 2][ 2][7] - 0.02353556 * out_step3[ 2][ 3][7] + 0.02977575 * out_step3[ 2][ 4][7]
+   - 0.04220737 * out_step3[ 3][ 2][7] + 0.04210890 * out_step3[ 3][ 3][7] + 0.00206789 * out_step3[ 3][ 4][7]
+   + 0.02231535 * out_step3[ 4][ 2][7] + 0.01047123 * out_step3[ 4][ 3][7] + 0.03550670 * out_step3[ 4][ 4][7]
+   - 0.02176462;
+
+out_step4[1][2][4] = 
+   - 0.02788380 * out_step3[ 2][ 4][0] - 0.04210471 * out_step3[ 2][ 5][0] - 0.00102759 * out_step3[ 2][ 6][0]
+   - 0.00362742 * out_step3[ 3][ 4][0] + 0.02019106 * out_step3[ 3][ 5][0] + 0.03666317 * out_step3[ 3][ 6][0]
+   - 0.01411386 * out_step3[ 4][ 4][0] - 0.01567840 * out_step3[ 4][ 5][0] - 0.00158196 * out_step3[ 4][ 6][0]
+   - 0.01263750 * out_step3[ 2][ 4][1] - 0.01293348 * out_step3[ 2][ 5][1] - 0.01922585 * out_step3[ 2][ 6][1]
+   + 0.01632958 * out_step3[ 3][ 4][1] - 0.00972220 * out_step3[ 3][ 5][1] + 0.00907361 * out_step3[ 3][ 6][1]
+   - 0.00477314 * out_step3[ 4][ 4][1] + 0.02430107 * out_step3[ 4][ 5][1] + 0.01868868 * out_step3[ 4][ 6][1]
+   - 0.00702908 * out_step3[ 2][ 4][2] + 0.12775944 * out_step3[ 2][ 5][2] - 0.00228923 * out_step3[ 2][ 6][2]
+   + 0.01610980 * out_step3[ 3][ 4][2] - 0.02875206 * out_step3[ 3][ 5][2] + 0.00227189 * out_step3[ 3][ 6][2]
+   + 0.00871214 * out_step3[ 4][ 4][2] - 0.00292907 * out_step3[ 4][ 5][2] - 0.00560114 * out_step3[ 4][ 6][2]
+   - 0.01133613 * out_step3[ 2][ 4][3] - 0.03562238 * out_step3[ 2][ 5][3] - 0.07423968 * out_step3[ 2][ 6][3]
+   + 0.02253462 * out_step3[ 3][ 4][3] + 0.00859613 * out_step3[ 3][ 5][3] + 0.00927490 * out_step3[ 3][ 6][3]
+   - 0.03413711 * out_step3[ 4][ 4][3] + 0.01078769 * out_step3[ 4][ 5][3] + 0.04291977 * out_step3[ 4][ 6][3]
+   - 0.03853429 * out_step3[ 2][ 4][4] + 0.01506331 * out_step3[ 2][ 5][4] - 0.03011924 * out_step3[ 2][ 6][4]
+   + 0.00300828 * out_step3[ 3][ 4][4] + 0.02658010 * out_step3[ 3][ 5][4] - 0.03056832 * out_step3[ 3][ 6][4]
+   - 0.04426134 * out_step3[ 4][ 4][4] - 0.00142324 * out_step3[ 4][ 5][4] - 0.00737025 * out_step3[ 4][ 6][4]
+   - 0.02874947 * out_step3[ 2][ 4][5] - 0.00982164 * out_step3[ 2][ 5][5] - 0.01736685 * out_step3[ 2][ 6][5]
+   - 0.00868256 * out_step3[ 3][ 4][5] + 0.06346857 * out_step3[ 3][ 5][5] + 0.03337272 * out_step3[ 3][ 6][5]
+   + 0.01212927 * out_step3[ 4][ 4][5] + 0.03432760 * out_step3[ 4][ 5][5] + 0.03572888 * out_step3[ 4][ 6][5]
+   - 0.02993809 * out_step3[ 2][ 4][6] + 0.07251758 * out_step3[ 2][ 5][6] + 0.00468446 * out_step3[ 2][ 6][6]
+   - 0.00517532 * out_step3[ 3][ 4][6] - 0.00200865 * out_step3[ 3][ 5][6] + 0.02307587 * out_step3[ 3][ 6][6]
+   - 0.01068257 * out_step3[ 4][ 4][6] + 0.00374549 * out_step3[ 4][ 5][6] - 0.03457372 * out_step3[ 4][ 6][6]
+   - 0.06667280 * out_step3[ 2][ 4][7] - 0.02353556 * out_step3[ 2][ 5][7] + 0.02977575 * out_step3[ 2][ 6][7]
+   - 0.04220737 * out_step3[ 3][ 4][7] + 0.04210890 * out_step3[ 3][ 5][7] + 0.00206789 * out_step3[ 3][ 6][7]
+   + 0.02231535 * out_step3[ 4][ 4][7] + 0.01047123 * out_step3[ 4][ 5][7] + 0.03550670 * out_step3[ 4][ 6][7]
+   - 0.02176462;
+
+out_step4[2][0][4] = 
+   - 0.02788380 * out_step3[ 4][ 0][0] - 0.04210471 * out_step3[ 4][ 1][0] - 0.00102759 * out_step3[ 4][ 2][0]
+   - 0.00362742 * out_step3[ 5][ 0][0] + 0.02019106 * out_step3[ 5][ 1][0] + 0.03666317 * out_step3[ 5][ 2][0]
+   - 0.01411386 * out_step3[ 6][ 0][0] - 0.01567840 * out_step3[ 6][ 1][0] - 0.00158196 * out_step3[ 6][ 2][0]
+   - 0.01263750 * out_step3[ 4][ 0][1] - 0.01293348 * out_step3[ 4][ 1][1] - 0.01922585 * out_step3[ 4][ 2][1]
+   + 0.01632958 * out_step3[ 5][ 0][1] - 0.00972220 * out_step3[ 5][ 1][1] + 0.00907361 * out_step3[ 5][ 2][1]
+   - 0.00477314 * out_step3[ 6][ 0][1] + 0.02430107 * out_step3[ 6][ 1][1] + 0.01868868 * out_step3[ 6][ 2][1]
+   - 0.00702908 * out_step3[ 4][ 0][2] + 0.12775944 * out_step3[ 4][ 1][2] - 0.00228923 * out_step3[ 4][ 2][2]
+   + 0.01610980 * out_step3[ 5][ 0][2] - 0.02875206 * out_step3[ 5][ 1][2] + 0.00227189 * out_step3[ 5][ 2][2]
+   + 0.00871214 * out_step3[ 6][ 0][2] - 0.00292907 * out_step3[ 6][ 1][2] - 0.00560114 * out_step3[ 6][ 2][2]
+   - 0.01133613 * out_step3[ 4][ 0][3] - 0.03562238 * out_step3[ 4][ 1][3] - 0.07423968 * out_step3[ 4][ 2][3]
+   + 0.02253462 * out_step3[ 5][ 0][3] + 0.00859613 * out_step3[ 5][ 1][3] + 0.00927490 * out_step3[ 5][ 2][3]
+   - 0.03413711 * out_step3[ 6][ 0][3] + 0.01078769 * out_step3[ 6][ 1][3] + 0.04291977 * out_step3[ 6][ 2][3]
+   - 0.03853429 * out_step3[ 4][ 0][4] + 0.01506331 * out_step3[ 4][ 1][4] - 0.03011924 * out_step3[ 4][ 2][4]
+   + 0.00300828 * out_step3[ 5][ 0][4] + 0.02658010 * out_step3[ 5][ 1][4] - 0.03056832 * out_step3[ 5][ 2][4]
+   - 0.04426134 * out_step3[ 6][ 0][4] - 0.00142324 * out_step3[ 6][ 1][4] - 0.00737025 * out_step3[ 6][ 2][4]
+   - 0.02874947 * out_step3[ 4][ 0][5] - 0.00982164 * out_step3[ 4][ 1][5] - 0.01736685 * out_step3[ 4][ 2][5]
+   - 0.00868256 * out_step3[ 5][ 0][5] + 0.06346857 * out_step3[ 5][ 1][5] + 0.03337272 * out_step3[ 5][ 2][5]
+   + 0.01212927 * out_step3[ 6][ 0][5] + 0.03432760 * out_step3[ 6][ 1][5] + 0.03572888 * out_step3[ 6][ 2][5]
+   - 0.02993809 * out_step3[ 4][ 0][6] + 0.07251758 * out_step3[ 4][ 1][6] + 0.00468446 * out_step3[ 4][ 2][6]
+   - 0.00517532 * out_step3[ 5][ 0][6] - 0.00200865 * out_step3[ 5][ 1][6] + 0.02307587 * out_step3[ 5][ 2][6]
+   - 0.01068257 * out_step3[ 6][ 0][6] + 0.00374549 * out_step3[ 6][ 1][6] - 0.03457372 * out_step3[ 6][ 2][6]
+   - 0.06667280 * out_step3[ 4][ 0][7] - 0.02353556 * out_step3[ 4][ 1][7] + 0.02977575 * out_step3[ 4][ 2][7]
+   - 0.04220737 * out_step3[ 5][ 0][7] + 0.04210890 * out_step3[ 5][ 1][7] + 0.00206789 * out_step3[ 5][ 2][7]
+   + 0.02231535 * out_step3[ 6][ 0][7] + 0.01047123 * out_step3[ 6][ 1][7] + 0.03550670 * out_step3[ 6][ 2][7]
+   - 0.02176462;
+
+out_step4[2][1][4] = 
+   - 0.02788380 * out_step3[ 4][ 2][0] - 0.04210471 * out_step3[ 4][ 3][0] - 0.00102759 * out_step3[ 4][ 4][0]
+   - 0.00362742 * out_step3[ 5][ 2][0] + 0.02019106 * out_step3[ 5][ 3][0] + 0.03666317 * out_step3[ 5][ 4][0]
+   - 0.01411386 * out_step3[ 6][ 2][0] - 0.01567840 * out_step3[ 6][ 3][0] - 0.00158196 * out_step3[ 6][ 4][0]
+   - 0.01263750 * out_step3[ 4][ 2][1] - 0.01293348 * out_step3[ 4][ 3][1] - 0.01922585 * out_step3[ 4][ 4][1]
+   + 0.01632958 * out_step3[ 5][ 2][1] - 0.00972220 * out_step3[ 5][ 3][1] + 0.00907361 * out_step3[ 5][ 4][1]
+   - 0.00477314 * out_step3[ 6][ 2][1] + 0.02430107 * out_step3[ 6][ 3][1] + 0.01868868 * out_step3[ 6][ 4][1]
+   - 0.00702908 * out_step3[ 4][ 2][2] + 0.12775944 * out_step3[ 4][ 3][2] - 0.00228923 * out_step3[ 4][ 4][2]
+   + 0.01610980 * out_step3[ 5][ 2][2] - 0.02875206 * out_step3[ 5][ 3][2] + 0.00227189 * out_step3[ 5][ 4][2]
+   + 0.00871214 * out_step3[ 6][ 2][2] - 0.00292907 * out_step3[ 6][ 3][2] - 0.00560114 * out_step3[ 6][ 4][2]
+   - 0.01133613 * out_step3[ 4][ 2][3] - 0.03562238 * out_step3[ 4][ 3][3] - 0.07423968 * out_step3[ 4][ 4][3]
+   + 0.02253462 * out_step3[ 5][ 2][3] + 0.00859613 * out_step3[ 5][ 3][3] + 0.00927490 * out_step3[ 5][ 4][3]
+   - 0.03413711 * out_step3[ 6][ 2][3] + 0.01078769 * out_step3[ 6][ 3][3] + 0.04291977 * out_step3[ 6][ 4][3]
+   - 0.03853429 * out_step3[ 4][ 2][4] + 0.01506331 * out_step3[ 4][ 3][4] - 0.03011924 * out_step3[ 4][ 4][4]
+   + 0.00300828 * out_step3[ 5][ 2][4] + 0.02658010 * out_step3[ 5][ 3][4] - 0.03056832 * out_step3[ 5][ 4][4]
+   - 0.04426134 * out_step3[ 6][ 2][4] - 0.00142324 * out_step3[ 6][ 3][4] - 0.00737025 * out_step3[ 6][ 4][4]
+   - 0.02874947 * out_step3[ 4][ 2][5] - 0.00982164 * out_step3[ 4][ 3][5] - 0.01736685 * out_step3[ 4][ 4][5]
+   - 0.00868256 * out_step3[ 5][ 2][5] + 0.06346857 * out_step3[ 5][ 3][5] + 0.03337272 * out_step3[ 5][ 4][5]
+   + 0.01212927 * out_step3[ 6][ 2][5] + 0.03432760 * out_step3[ 6][ 3][5] + 0.03572888 * out_step3[ 6][ 4][5]
+   - 0.02993809 * out_step3[ 4][ 2][6] + 0.07251758 * out_step3[ 4][ 3][6] + 0.00468446 * out_step3[ 4][ 4][6]
+   - 0.00517532 * out_step3[ 5][ 2][6] - 0.00200865 * out_step3[ 5][ 3][6] + 0.02307587 * out_step3[ 5][ 4][6]
+   - 0.01068257 * out_step3[ 6][ 2][6] + 0.00374549 * out_step3[ 6][ 3][6] - 0.03457372 * out_step3[ 6][ 4][6]
+   - 0.06667280 * out_step3[ 4][ 2][7] - 0.02353556 * out_step3[ 4][ 3][7] + 0.02977575 * out_step3[ 4][ 4][7]
+   - 0.04220737 * out_step3[ 5][ 2][7] + 0.04210890 * out_step3[ 5][ 3][7] + 0.00206789 * out_step3[ 5][ 4][7]
+   + 0.02231535 * out_step3[ 6][ 2][7] + 0.01047123 * out_step3[ 6][ 3][7] + 0.03550670 * out_step3[ 6][ 4][7]
+   - 0.02176462;
+
+out_step4[2][2][4] = 
+   - 0.02788380 * out_step3[ 4][ 4][0] - 0.04210471 * out_step3[ 4][ 5][0] - 0.00102759 * out_step3[ 4][ 6][0]
+   - 0.00362742 * out_step3[ 5][ 4][0] + 0.02019106 * out_step3[ 5][ 5][0] + 0.03666317 * out_step3[ 5][ 6][0]
+   - 0.01411386 * out_step3[ 6][ 4][0] - 0.01567840 * out_step3[ 6][ 5][0] - 0.00158196 * out_step3[ 6][ 6][0]
+   - 0.01263750 * out_step3[ 4][ 4][1] - 0.01293348 * out_step3[ 4][ 5][1] - 0.01922585 * out_step3[ 4][ 6][1]
+   + 0.01632958 * out_step3[ 5][ 4][1] - 0.00972220 * out_step3[ 5][ 5][1] + 0.00907361 * out_step3[ 5][ 6][1]
+   - 0.00477314 * out_step3[ 6][ 4][1] + 0.02430107 * out_step3[ 6][ 5][1] + 0.01868868 * out_step3[ 6][ 6][1]
+   - 0.00702908 * out_step3[ 4][ 4][2] + 0.12775944 * out_step3[ 4][ 5][2] - 0.00228923 * out_step3[ 4][ 6][2]
+   + 0.01610980 * out_step3[ 5][ 4][2] - 0.02875206 * out_step3[ 5][ 5][2] + 0.00227189 * out_step3[ 5][ 6][2]
+   + 0.00871214 * out_step3[ 6][ 4][2] - 0.00292907 * out_step3[ 6][ 5][2] - 0.00560114 * out_step3[ 6][ 6][2]
+   - 0.01133613 * out_step3[ 4][ 4][3] - 0.03562238 * out_step3[ 4][ 5][3] - 0.07423968 * out_step3[ 4][ 6][3]
+   + 0.02253462 * out_step3[ 5][ 4][3] + 0.00859613 * out_step3[ 5][ 5][3] + 0.00927490 * out_step3[ 5][ 6][3]
+   - 0.03413711 * out_step3[ 6][ 4][3] + 0.01078769 * out_step3[ 6][ 5][3] + 0.04291977 * out_step3[ 6][ 6][3]
+   - 0.03853429 * out_step3[ 4][ 4][4] + 0.01506331 * out_step3[ 4][ 5][4] - 0.03011924 * out_step3[ 4][ 6][4]
+   + 0.00300828 * out_step3[ 5][ 4][4] + 0.02658010 * out_step3[ 5][ 5][4] - 0.03056832 * out_step3[ 5][ 6][4]
+   - 0.04426134 * out_step3[ 6][ 4][4] - 0.00142324 * out_step3[ 6][ 5][4] - 0.00737025 * out_step3[ 6][ 6][4]
+   - 0.02874947 * out_step3[ 4][ 4][5] - 0.00982164 * out_step3[ 4][ 5][5] - 0.01736685 * out_step3[ 4][ 6][5]
+   - 0.00868256 * out_step3[ 5][ 4][5] + 0.06346857 * out_step3[ 5][ 5][5] + 0.03337272 * out_step3[ 5][ 6][5]
+   + 0.01212927 * out_step3[ 6][ 4][5] + 0.03432760 * out_step3[ 6][ 5][5] + 0.03572888 * out_step3[ 6][ 6][5]
+   - 0.02993809 * out_step3[ 4][ 4][6] + 0.07251758 * out_step3[ 4][ 5][6] + 0.00468446 * out_step3[ 4][ 6][6]
+   - 0.00517532 * out_step3[ 5][ 4][6] - 0.00200865 * out_step3[ 5][ 5][6] + 0.02307587 * out_step3[ 5][ 6][6]
+   - 0.01068257 * out_step3[ 6][ 4][6] + 0.00374549 * out_step3[ 6][ 5][6] - 0.03457372 * out_step3[ 6][ 6][6]
+   - 0.06667280 * out_step3[ 4][ 4][7] - 0.02353556 * out_step3[ 4][ 5][7] + 0.02977575 * out_step3[ 4][ 6][7]
+   - 0.04220737 * out_step3[ 5][ 4][7] + 0.04210890 * out_step3[ 5][ 5][7] + 0.00206789 * out_step3[ 5][ 6][7]
+   + 0.02231535 * out_step3[ 6][ 4][7] + 0.01047123 * out_step3[ 6][ 5][7] + 0.03550670 * out_step3[ 6][ 6][7]
+   - 0.02176462;
+
+out_step4[0][0][5] = 
+   - 0.07053677 * out_step3[ 0][ 0][0] + 0.01514253 * out_step3[ 0][ 1][0] + 0.01487644 * out_step3[ 0][ 2][0]
+   + 0.01624711 * out_step3[ 1][ 0][0] + 0.01248626 * out_step3[ 1][ 1][0] + 0.02341889 * out_step3[ 1][ 2][0]
+   + 0.07290121 * out_step3[ 2][ 0][0] - 0.00408737 * out_step3[ 2][ 1][0] + 0.08531891 * out_step3[ 2][ 2][0]
+   - 0.00699493 * out_step3[ 0][ 0][1] + 0.00956564 * out_step3[ 0][ 1][1] - 0.02290018 * out_step3[ 0][ 2][1]
+   - 0.01696064 * out_step3[ 1][ 0][1] - 0.01284063 * out_step3[ 1][ 1][1] - 0.00007461 * out_step3[ 1][ 2][1]
+   + 0.04244060 * out_step3[ 2][ 0][1] - 0.04413277 * out_step3[ 2][ 1][1] + 0.00188441 * out_step3[ 2][ 2][1]
+   - 0.09284910 * out_step3[ 0][ 0][2] - 0.03702786 * out_step3[ 0][ 1][2] - 0.03781045 * out_step3[ 0][ 2][2]
+   - 0.01563411 * out_step3[ 1][ 0][2] - 0.05201762 * out_step3[ 1][ 1][2] - 0.02519796 * out_step3[ 1][ 2][2]
+   + 0.03771210 * out_step3[ 2][ 0][2] + 0.02832999 * out_step3[ 2][ 1][2] + 0.03866443 * out_step3[ 2][ 2][2]
+   - 0.03854972 * out_step3[ 0][ 0][3] + 0.04086106 * out_step3[ 0][ 1][3] - 0.02612085 * out_step3[ 0][ 2][3]
+   - 0.03388729 * out_step3[ 1][ 0][3] + 0.03139944 * out_step3[ 1][ 1][3] - 0.04068478 * out_step3[ 1][ 2][3]
+   + 0.07657403 * out_step3[ 2][ 0][3] - 0.07614668 * out_step3[ 2][ 1][3] - 0.00831205 * out_step3[ 2][ 2][3]
+   - 0.05453590 * out_step3[ 0][ 0][4] + 0.07741585 * out_step3[ 0][ 1][4] + 0.00632656 * out_step3[ 0][ 2][4]
+   + 0.01206762 * out_step3[ 1][ 0][4] - 0.05905085 * out_step3[ 1][ 1][4] - 0.02582971 * out_step3[ 1][ 2][4]
+   + 0.02701914 * out_step3[ 2][ 0][4] - 0.04741174 * out_step3[ 2][ 1][4] + 0.09778473 * out_step3[ 2][ 2][4]
+   - 0.04051621 * out_step3[ 0][ 0][5] - 0.02226985 * out_step3[ 0][ 1][5] - 0.00379811 * out_step3[ 0][ 2][5]
+   + 0.01996554 * out_step3[ 1][ 0][5] + 0.04452145 * out_step3[ 1][ 1][5] + 0.00175344 * out_step3[ 1][ 2][5]
+   + 0.04706748 * out_step3[ 2][ 0][5] + 0.05306396 * out_step3[ 2][ 1][5] + 0.08589545 * out_step3[ 2][ 2][5]
+   - 0.02099180 * out_step3[ 0][ 0][6] - 0.07181203 * out_step3[ 0][ 1][6] - 0.00419664 * out_step3[ 0][ 2][6]
+   - 0.00797584 * out_step3[ 1][ 0][6] + 0.01157855 * out_step3[ 1][ 1][6] + 0.04112831 * out_step3[ 1][ 2][6]
+   + 0.00576289 * out_step3[ 2][ 0][6] + 0.10302389 * out_step3[ 2][ 1][6] + 0.04728944 * out_step3[ 2][ 2][6]
+   - 0.05556612 * out_step3[ 0][ 0][7] + 0.00045472 * out_step3[ 0][ 1][7] - 0.04803878 * out_step3[ 0][ 2][7]
+   + 0.03504039 * out_step3[ 1][ 0][7] + 0.07122118 * out_step3[ 1][ 1][7] - 0.02528831 * out_step3[ 1][ 2][7]
+   + 0.05216264 * out_step3[ 2][ 0][7] + 0.05425847 * out_step3[ 2][ 1][7] + 0.04072513 * out_step3[ 2][ 2][7]
+   - 0.05041490;
+
+out_step4[0][1][5] = 
+   - 0.07053677 * out_step3[ 0][ 2][0] + 0.01514253 * out_step3[ 0][ 3][0] + 0.01487644 * out_step3[ 0][ 4][0]
+   + 0.01624711 * out_step3[ 1][ 2][0] + 0.01248626 * out_step3[ 1][ 3][0] + 0.02341889 * out_step3[ 1][ 4][0]
+   + 0.07290121 * out_step3[ 2][ 2][0] - 0.00408737 * out_step3[ 2][ 3][0] + 0.08531891 * out_step3[ 2][ 4][0]
+   - 0.00699493 * out_step3[ 0][ 2][1] + 0.00956564 * out_step3[ 0][ 3][1] - 0.02290018 * out_step3[ 0][ 4][1]
+   - 0.01696064 * out_step3[ 1][ 2][1] - 0.01284063 * out_step3[ 1][ 3][1] - 0.00007461 * out_step3[ 1][ 4][1]
+   + 0.04244060 * out_step3[ 2][ 2][1] - 0.04413277 * out_step3[ 2][ 3][1] + 0.00188441 * out_step3[ 2][ 4][1]
+   - 0.09284910 * out_step3[ 0][ 2][2] - 0.03702786 * out_step3[ 0][ 3][2] - 0.03781045 * out_step3[ 0][ 4][2]
+   - 0.01563411 * out_step3[ 1][ 2][2] - 0.05201762 * out_step3[ 1][ 3][2] - 0.02519796 * out_step3[ 1][ 4][2]
+   + 0.03771210 * out_step3[ 2][ 2][2] + 0.02832999 * out_step3[ 2][ 3][2] + 0.03866443 * out_step3[ 2][ 4][2]
+   - 0.03854972 * out_step3[ 0][ 2][3] + 0.04086106 * out_step3[ 0][ 3][3] - 0.02612085 * out_step3[ 0][ 4][3]
+   - 0.03388729 * out_step3[ 1][ 2][3] + 0.03139944 * out_step3[ 1][ 3][3] - 0.04068478 * out_step3[ 1][ 4][3]
+   + 0.07657403 * out_step3[ 2][ 2][3] - 0.07614668 * out_step3[ 2][ 3][3] - 0.00831205 * out_step3[ 2][ 4][3]
+   - 0.05453590 * out_step3[ 0][ 2][4] + 0.07741585 * out_step3[ 0][ 3][4] + 0.00632656 * out_step3[ 0][ 4][4]
+   + 0.01206762 * out_step3[ 1][ 2][4] - 0.05905085 * out_step3[ 1][ 3][4] - 0.02582971 * out_step3[ 1][ 4][4]
+   + 0.02701914 * out_step3[ 2][ 2][4] - 0.04741174 * out_step3[ 2][ 3][4] + 0.09778473 * out_step3[ 2][ 4][4]
+   - 0.04051621 * out_step3[ 0][ 2][5] - 0.02226985 * out_step3[ 0][ 3][5] - 0.00379811 * out_step3[ 0][ 4][5]
+   + 0.01996554 * out_step3[ 1][ 2][5] + 0.04452145 * out_step3[ 1][ 3][5] + 0.00175344 * out_step3[ 1][ 4][5]
+   + 0.04706748 * out_step3[ 2][ 2][5] + 0.05306396 * out_step3[ 2][ 3][5] + 0.08589545 * out_step3[ 2][ 4][5]
+   - 0.02099180 * out_step3[ 0][ 2][6] - 0.07181203 * out_step3[ 0][ 3][6] - 0.00419664 * out_step3[ 0][ 4][6]
+   - 0.00797584 * out_step3[ 1][ 2][6] + 0.01157855 * out_step3[ 1][ 3][6] + 0.04112831 * out_step3[ 1][ 4][6]
+   + 0.00576289 * out_step3[ 2][ 2][6] + 0.10302389 * out_step3[ 2][ 3][6] + 0.04728944 * out_step3[ 2][ 4][6]
+   - 0.05556612 * out_step3[ 0][ 2][7] + 0.00045472 * out_step3[ 0][ 3][7] - 0.04803878 * out_step3[ 0][ 4][7]
+   + 0.03504039 * out_step3[ 1][ 2][7] + 0.07122118 * out_step3[ 1][ 3][7] - 0.02528831 * out_step3[ 1][ 4][7]
+   + 0.05216264 * out_step3[ 2][ 2][7] + 0.05425847 * out_step3[ 2][ 3][7] + 0.04072513 * out_step3[ 2][ 4][7]
+   - 0.05041490;
+
+out_step4[0][2][5] = 
+   - 0.07053677 * out_step3[ 0][ 4][0] + 0.01514253 * out_step3[ 0][ 5][0] + 0.01487644 * out_step3[ 0][ 6][0]
+   + 0.01624711 * out_step3[ 1][ 4][0] + 0.01248626 * out_step3[ 1][ 5][0] + 0.02341889 * out_step3[ 1][ 6][0]
+   + 0.07290121 * out_step3[ 2][ 4][0] - 0.00408737 * out_step3[ 2][ 5][0] + 0.08531891 * out_step3[ 2][ 6][0]
+   - 0.00699493 * out_step3[ 0][ 4][1] + 0.00956564 * out_step3[ 0][ 5][1] - 0.02290018 * out_step3[ 0][ 6][1]
+   - 0.01696064 * out_step3[ 1][ 4][1] - 0.01284063 * out_step3[ 1][ 5][1] - 0.00007461 * out_step3[ 1][ 6][1]
+   + 0.04244060 * out_step3[ 2][ 4][1] - 0.04413277 * out_step3[ 2][ 5][1] + 0.00188441 * out_step3[ 2][ 6][1]
+   - 0.09284910 * out_step3[ 0][ 4][2] - 0.03702786 * out_step3[ 0][ 5][2] - 0.03781045 * out_step3[ 0][ 6][2]
+   - 0.01563411 * out_step3[ 1][ 4][2] - 0.05201762 * out_step3[ 1][ 5][2] - 0.02519796 * out_step3[ 1][ 6][2]
+   + 0.03771210 * out_step3[ 2][ 4][2] + 0.02832999 * out_step3[ 2][ 5][2] + 0.03866443 * out_step3[ 2][ 6][2]
+   - 0.03854972 * out_step3[ 0][ 4][3] + 0.04086106 * out_step3[ 0][ 5][3] - 0.02612085 * out_step3[ 0][ 6][3]
+   - 0.03388729 * out_step3[ 1][ 4][3] + 0.03139944 * out_step3[ 1][ 5][3] - 0.04068478 * out_step3[ 1][ 6][3]
+   + 0.07657403 * out_step3[ 2][ 4][3] - 0.07614668 * out_step3[ 2][ 5][3] - 0.00831205 * out_step3[ 2][ 6][3]
+   - 0.05453590 * out_step3[ 0][ 4][4] + 0.07741585 * out_step3[ 0][ 5][4] + 0.00632656 * out_step3[ 0][ 6][4]
+   + 0.01206762 * out_step3[ 1][ 4][4] - 0.05905085 * out_step3[ 1][ 5][4] - 0.02582971 * out_step3[ 1][ 6][4]
+   + 0.02701914 * out_step3[ 2][ 4][4] - 0.04741174 * out_step3[ 2][ 5][4] + 0.09778473 * out_step3[ 2][ 6][4]
+   - 0.04051621 * out_step3[ 0][ 4][5] - 0.02226985 * out_step3[ 0][ 5][5] - 0.00379811 * out_step3[ 0][ 6][5]
+   + 0.01996554 * out_step3[ 1][ 4][5] + 0.04452145 * out_step3[ 1][ 5][5] + 0.00175344 * out_step3[ 1][ 6][5]
+   + 0.04706748 * out_step3[ 2][ 4][5] + 0.05306396 * out_step3[ 2][ 5][5] + 0.08589545 * out_step3[ 2][ 6][5]
+   - 0.02099180 * out_step3[ 0][ 4][6] - 0.07181203 * out_step3[ 0][ 5][6] - 0.00419664 * out_step3[ 0][ 6][6]
+   - 0.00797584 * out_step3[ 1][ 4][6] + 0.01157855 * out_step3[ 1][ 5][6] + 0.04112831 * out_step3[ 1][ 6][6]
+   + 0.00576289 * out_step3[ 2][ 4][6] + 0.10302389 * out_step3[ 2][ 5][6] + 0.04728944 * out_step3[ 2][ 6][6]
+   - 0.05556612 * out_step3[ 0][ 4][7] + 0.00045472 * out_step3[ 0][ 5][7] - 0.04803878 * out_step3[ 0][ 6][7]
+   + 0.03504039 * out_step3[ 1][ 4][7] + 0.07122118 * out_step3[ 1][ 5][7] - 0.02528831 * out_step3[ 1][ 6][7]
+   + 0.05216264 * out_step3[ 2][ 4][7] + 0.05425847 * out_step3[ 2][ 5][7] + 0.04072513 * out_step3[ 2][ 6][7]
+   - 0.05041490;
+
+out_step4[1][0][5] = 
+   - 0.07053677 * out_step3[ 2][ 0][0] + 0.01514253 * out_step3[ 2][ 1][0] + 0.01487644 * out_step3[ 2][ 2][0]
+   + 0.01624711 * out_step3[ 3][ 0][0] + 0.01248626 * out_step3[ 3][ 1][0] + 0.02341889 * out_step3[ 3][ 2][0]
+   + 0.07290121 * out_step3[ 4][ 0][0] - 0.00408737 * out_step3[ 4][ 1][0] + 0.08531891 * out_step3[ 4][ 2][0]
+   - 0.00699493 * out_step3[ 2][ 0][1] + 0.00956564 * out_step3[ 2][ 1][1] - 0.02290018 * out_step3[ 2][ 2][1]
+   - 0.01696064 * out_step3[ 3][ 0][1] - 0.01284063 * out_step3[ 3][ 1][1] - 0.00007461 * out_step3[ 3][ 2][1]
+   + 0.04244060 * out_step3[ 4][ 0][1] - 0.04413277 * out_step3[ 4][ 1][1] + 0.00188441 * out_step3[ 4][ 2][1]
+   - 0.09284910 * out_step3[ 2][ 0][2] - 0.03702786 * out_step3[ 2][ 1][2] - 0.03781045 * out_step3[ 2][ 2][2]
+   - 0.01563411 * out_step3[ 3][ 0][2] - 0.05201762 * out_step3[ 3][ 1][2] - 0.02519796 * out_step3[ 3][ 2][2]
+   + 0.03771210 * out_step3[ 4][ 0][2] + 0.02832999 * out_step3[ 4][ 1][2] + 0.03866443 * out_step3[ 4][ 2][2]
+   - 0.03854972 * out_step3[ 2][ 0][3] + 0.04086106 * out_step3[ 2][ 1][3] - 0.02612085 * out_step3[ 2][ 2][3]
+   - 0.03388729 * out_step3[ 3][ 0][3] + 0.03139944 * out_step3[ 3][ 1][3] - 0.04068478 * out_step3[ 3][ 2][3]
+   + 0.07657403 * out_step3[ 4][ 0][3] - 0.07614668 * out_step3[ 4][ 1][3] - 0.00831205 * out_step3[ 4][ 2][3]
+   - 0.05453590 * out_step3[ 2][ 0][4] + 0.07741585 * out_step3[ 2][ 1][4] + 0.00632656 * out_step3[ 2][ 2][4]
+   + 0.01206762 * out_step3[ 3][ 0][4] - 0.05905085 * out_step3[ 3][ 1][4] - 0.02582971 * out_step3[ 3][ 2][4]
+   + 0.02701914 * out_step3[ 4][ 0][4] - 0.04741174 * out_step3[ 4][ 1][4] + 0.09778473 * out_step3[ 4][ 2][4]
+   - 0.04051621 * out_step3[ 2][ 0][5] - 0.02226985 * out_step3[ 2][ 1][5] - 0.00379811 * out_step3[ 2][ 2][5]
+   + 0.01996554 * out_step3[ 3][ 0][5] + 0.04452145 * out_step3[ 3][ 1][5] + 0.00175344 * out_step3[ 3][ 2][5]
+   + 0.04706748 * out_step3[ 4][ 0][5] + 0.05306396 * out_step3[ 4][ 1][5] + 0.08589545 * out_step3[ 4][ 2][5]
+   - 0.02099180 * out_step3[ 2][ 0][6] - 0.07181203 * out_step3[ 2][ 1][6] - 0.00419664 * out_step3[ 2][ 2][6]
+   - 0.00797584 * out_step3[ 3][ 0][6] + 0.01157855 * out_step3[ 3][ 1][6] + 0.04112831 * out_step3[ 3][ 2][6]
+   + 0.00576289 * out_step3[ 4][ 0][6] + 0.10302389 * out_step3[ 4][ 1][6] + 0.04728944 * out_step3[ 4][ 2][6]
+   - 0.05556612 * out_step3[ 2][ 0][7] + 0.00045472 * out_step3[ 2][ 1][7] - 0.04803878 * out_step3[ 2][ 2][7]
+   + 0.03504039 * out_step3[ 3][ 0][7] + 0.07122118 * out_step3[ 3][ 1][7] - 0.02528831 * out_step3[ 3][ 2][7]
+   + 0.05216264 * out_step3[ 4][ 0][7] + 0.05425847 * out_step3[ 4][ 1][7] + 0.04072513 * out_step3[ 4][ 2][7]
+   - 0.05041490;
+
+out_step4[1][1][5] = 
+   - 0.07053677 * out_step3[ 2][ 2][0] + 0.01514253 * out_step3[ 2][ 3][0] + 0.01487644 * out_step3[ 2][ 4][0]
+   + 0.01624711 * out_step3[ 3][ 2][0] + 0.01248626 * out_step3[ 3][ 3][0] + 0.02341889 * out_step3[ 3][ 4][0]
+   + 0.07290121 * out_step3[ 4][ 2][0] - 0.00408737 * out_step3[ 4][ 3][0] + 0.08531891 * out_step3[ 4][ 4][0]
+   - 0.00699493 * out_step3[ 2][ 2][1] + 0.00956564 * out_step3[ 2][ 3][1] - 0.02290018 * out_step3[ 2][ 4][1]
+   - 0.01696064 * out_step3[ 3][ 2][1] - 0.01284063 * out_step3[ 3][ 3][1] - 0.00007461 * out_step3[ 3][ 4][1]
+   + 0.04244060 * out_step3[ 4][ 2][1] - 0.04413277 * out_step3[ 4][ 3][1] + 0.00188441 * out_step3[ 4][ 4][1]
+   - 0.09284910 * out_step3[ 2][ 2][2] - 0.03702786 * out_step3[ 2][ 3][2] - 0.03781045 * out_step3[ 2][ 4][2]
+   - 0.01563411 * out_step3[ 3][ 2][2] - 0.05201762 * out_step3[ 3][ 3][2] - 0.02519796 * out_step3[ 3][ 4][2]
+   + 0.03771210 * out_step3[ 4][ 2][2] + 0.02832999 * out_step3[ 4][ 3][2] + 0.03866443 * out_step3[ 4][ 4][2]
+   - 0.03854972 * out_step3[ 2][ 2][3] + 0.04086106 * out_step3[ 2][ 3][3] - 0.02612085 * out_step3[ 2][ 4][3]
+   - 0.03388729 * out_step3[ 3][ 2][3] + 0.03139944 * out_step3[ 3][ 3][3] - 0.04068478 * out_step3[ 3][ 4][3]
+   + 0.07657403 * out_step3[ 4][ 2][3] - 0.07614668 * out_step3[ 4][ 3][3] - 0.00831205 * out_step3[ 4][ 4][3]
+   - 0.05453590 * out_step3[ 2][ 2][4] + 0.07741585 * out_step3[ 2][ 3][4] + 0.00632656 * out_step3[ 2][ 4][4]
+   + 0.01206762 * out_step3[ 3][ 2][4] - 0.05905085 * out_step3[ 3][ 3][4] - 0.02582971 * out_step3[ 3][ 4][4]
+   + 0.02701914 * out_step3[ 4][ 2][4] - 0.04741174 * out_step3[ 4][ 3][4] + 0.09778473 * out_step3[ 4][ 4][4]
+   - 0.04051621 * out_step3[ 2][ 2][5] - 0.02226985 * out_step3[ 2][ 3][5] - 0.00379811 * out_step3[ 2][ 4][5]
+   + 0.01996554 * out_step3[ 3][ 2][5] + 0.04452145 * out_step3[ 3][ 3][5] + 0.00175344 * out_step3[ 3][ 4][5]
+   + 0.04706748 * out_step3[ 4][ 2][5] + 0.05306396 * out_step3[ 4][ 3][5] + 0.08589545 * out_step3[ 4][ 4][5]
+   - 0.02099180 * out_step3[ 2][ 2][6] - 0.07181203 * out_step3[ 2][ 3][6] - 0.00419664 * out_step3[ 2][ 4][6]
+   - 0.00797584 * out_step3[ 3][ 2][6] + 0.01157855 * out_step3[ 3][ 3][6] + 0.04112831 * out_step3[ 3][ 4][6]
+   + 0.00576289 * out_step3[ 4][ 2][6] + 0.10302389 * out_step3[ 4][ 3][6] + 0.04728944 * out_step3[ 4][ 4][6]
+   - 0.05556612 * out_step3[ 2][ 2][7] + 0.00045472 * out_step3[ 2][ 3][7] - 0.04803878 * out_step3[ 2][ 4][7]
+   + 0.03504039 * out_step3[ 3][ 2][7] + 0.07122118 * out_step3[ 3][ 3][7] - 0.02528831 * out_step3[ 3][ 4][7]
+   + 0.05216264 * out_step3[ 4][ 2][7] + 0.05425847 * out_step3[ 4][ 3][7] + 0.04072513 * out_step3[ 4][ 4][7]
+   - 0.05041490;
+
+out_step4[1][2][5] = 
+   - 0.07053677 * out_step3[ 2][ 4][0] + 0.01514253 * out_step3[ 2][ 5][0] + 0.01487644 * out_step3[ 2][ 6][0]
+   + 0.01624711 * out_step3[ 3][ 4][0] + 0.01248626 * out_step3[ 3][ 5][0] + 0.02341889 * out_step3[ 3][ 6][0]
+   + 0.07290121 * out_step3[ 4][ 4][0] - 0.00408737 * out_step3[ 4][ 5][0] + 0.08531891 * out_step3[ 4][ 6][0]
+   - 0.00699493 * out_step3[ 2][ 4][1] + 0.00956564 * out_step3[ 2][ 5][1] - 0.02290018 * out_step3[ 2][ 6][1]
+   - 0.01696064 * out_step3[ 3][ 4][1] - 0.01284063 * out_step3[ 3][ 5][1] - 0.00007461 * out_step3[ 3][ 6][1]
+   + 0.04244060 * out_step3[ 4][ 4][1] - 0.04413277 * out_step3[ 4][ 5][1] + 0.00188441 * out_step3[ 4][ 6][1]
+   - 0.09284910 * out_step3[ 2][ 4][2] - 0.03702786 * out_step3[ 2][ 5][2] - 0.03781045 * out_step3[ 2][ 6][2]
+   - 0.01563411 * out_step3[ 3][ 4][2] - 0.05201762 * out_step3[ 3][ 5][2] - 0.02519796 * out_step3[ 3][ 6][2]
+   + 0.03771210 * out_step3[ 4][ 4][2] + 0.02832999 * out_step3[ 4][ 5][2] + 0.03866443 * out_step3[ 4][ 6][2]
+   - 0.03854972 * out_step3[ 2][ 4][3] + 0.04086106 * out_step3[ 2][ 5][3] - 0.02612085 * out_step3[ 2][ 6][3]
+   - 0.03388729 * out_step3[ 3][ 4][3] + 0.03139944 * out_step3[ 3][ 5][3] - 0.04068478 * out_step3[ 3][ 6][3]
+   + 0.07657403 * out_step3[ 4][ 4][3] - 0.07614668 * out_step3[ 4][ 5][3] - 0.00831205 * out_step3[ 4][ 6][3]
+   - 0.05453590 * out_step3[ 2][ 4][4] + 0.07741585 * out_step3[ 2][ 5][4] + 0.00632656 * out_step3[ 2][ 6][4]
+   + 0.01206762 * out_step3[ 3][ 4][4] - 0.05905085 * out_step3[ 3][ 5][4] - 0.02582971 * out_step3[ 3][ 6][4]
+   + 0.02701914 * out_step3[ 4][ 4][4] - 0.04741174 * out_step3[ 4][ 5][4] + 0.09778473 * out_step3[ 4][ 6][4]
+   - 0.04051621 * out_step3[ 2][ 4][5] - 0.02226985 * out_step3[ 2][ 5][5] - 0.00379811 * out_step3[ 2][ 6][5]
+   + 0.01996554 * out_step3[ 3][ 4][5] + 0.04452145 * out_step3[ 3][ 5][5] + 0.00175344 * out_step3[ 3][ 6][5]
+   + 0.04706748 * out_step3[ 4][ 4][5] + 0.05306396 * out_step3[ 4][ 5][5] + 0.08589545 * out_step3[ 4][ 6][5]
+   - 0.02099180 * out_step3[ 2][ 4][6] - 0.07181203 * out_step3[ 2][ 5][6] - 0.00419664 * out_step3[ 2][ 6][6]
+   - 0.00797584 * out_step3[ 3][ 4][6] + 0.01157855 * out_step3[ 3][ 5][6] + 0.04112831 * out_step3[ 3][ 6][6]
+   + 0.00576289 * out_step3[ 4][ 4][6] + 0.10302389 * out_step3[ 4][ 5][6] + 0.04728944 * out_step3[ 4][ 6][6]
+   - 0.05556612 * out_step3[ 2][ 4][7] + 0.00045472 * out_step3[ 2][ 5][7] - 0.04803878 * out_step3[ 2][ 6][7]
+   + 0.03504039 * out_step3[ 3][ 4][7] + 0.07122118 * out_step3[ 3][ 5][7] - 0.02528831 * out_step3[ 3][ 6][7]
+   + 0.05216264 * out_step3[ 4][ 4][7] + 0.05425847 * out_step3[ 4][ 5][7] + 0.04072513 * out_step3[ 4][ 6][7]
+   - 0.05041490;
+
+out_step4[2][0][5] = 
+   - 0.07053677 * out_step3[ 4][ 0][0] + 0.01514253 * out_step3[ 4][ 1][0] + 0.01487644 * out_step3[ 4][ 2][0]
+   + 0.01624711 * out_step3[ 5][ 0][0] + 0.01248626 * out_step3[ 5][ 1][0] + 0.02341889 * out_step3[ 5][ 2][0]
+   + 0.07290121 * out_step3[ 6][ 0][0] - 0.00408737 * out_step3[ 6][ 1][0] + 0.08531891 * out_step3[ 6][ 2][0]
+   - 0.00699493 * out_step3[ 4][ 0][1] + 0.00956564 * out_step3[ 4][ 1][1] - 0.02290018 * out_step3[ 4][ 2][1]
+   - 0.01696064 * out_step3[ 5][ 0][1] - 0.01284063 * out_step3[ 5][ 1][1] - 0.00007461 * out_step3[ 5][ 2][1]
+   + 0.04244060 * out_step3[ 6][ 0][1] - 0.04413277 * out_step3[ 6][ 1][1] + 0.00188441 * out_step3[ 6][ 2][1]
+   - 0.09284910 * out_step3[ 4][ 0][2] - 0.03702786 * out_step3[ 4][ 1][2] - 0.03781045 * out_step3[ 4][ 2][2]
+   - 0.01563411 * out_step3[ 5][ 0][2] - 0.05201762 * out_step3[ 5][ 1][2] - 0.02519796 * out_step3[ 5][ 2][2]
+   + 0.03771210 * out_step3[ 6][ 0][2] + 0.02832999 * out_step3[ 6][ 1][2] + 0.03866443 * out_step3[ 6][ 2][2]
+   - 0.03854972 * out_step3[ 4][ 0][3] + 0.04086106 * out_step3[ 4][ 1][3] - 0.02612085 * out_step3[ 4][ 2][3]
+   - 0.03388729 * out_step3[ 5][ 0][3] + 0.03139944 * out_step3[ 5][ 1][3] - 0.04068478 * out_step3[ 5][ 2][3]
+   + 0.07657403 * out_step3[ 6][ 0][3] - 0.07614668 * out_step3[ 6][ 1][3] - 0.00831205 * out_step3[ 6][ 2][3]
+   - 0.05453590 * out_step3[ 4][ 0][4] + 0.07741585 * out_step3[ 4][ 1][4] + 0.00632656 * out_step3[ 4][ 2][4]
+   + 0.01206762 * out_step3[ 5][ 0][4] - 0.05905085 * out_step3[ 5][ 1][4] - 0.02582971 * out_step3[ 5][ 2][4]
+   + 0.02701914 * out_step3[ 6][ 0][4] - 0.04741174 * out_step3[ 6][ 1][4] + 0.09778473 * out_step3[ 6][ 2][4]
+   - 0.04051621 * out_step3[ 4][ 0][5] - 0.02226985 * out_step3[ 4][ 1][5] - 0.00379811 * out_step3[ 4][ 2][5]
+   + 0.01996554 * out_step3[ 5][ 0][5] + 0.04452145 * out_step3[ 5][ 1][5] + 0.00175344 * out_step3[ 5][ 2][5]
+   + 0.04706748 * out_step3[ 6][ 0][5] + 0.05306396 * out_step3[ 6][ 1][5] + 0.08589545 * out_step3[ 6][ 2][5]
+   - 0.02099180 * out_step3[ 4][ 0][6] - 0.07181203 * out_step3[ 4][ 1][6] - 0.00419664 * out_step3[ 4][ 2][6]
+   - 0.00797584 * out_step3[ 5][ 0][6] + 0.01157855 * out_step3[ 5][ 1][6] + 0.04112831 * out_step3[ 5][ 2][6]
+   + 0.00576289 * out_step3[ 6][ 0][6] + 0.10302389 * out_step3[ 6][ 1][6] + 0.04728944 * out_step3[ 6][ 2][6]
+   - 0.05556612 * out_step3[ 4][ 0][7] + 0.00045472 * out_step3[ 4][ 1][7] - 0.04803878 * out_step3[ 4][ 2][7]
+   + 0.03504039 * out_step3[ 5][ 0][7] + 0.07122118 * out_step3[ 5][ 1][7] - 0.02528831 * out_step3[ 5][ 2][7]
+   + 0.05216264 * out_step3[ 6][ 0][7] + 0.05425847 * out_step3[ 6][ 1][7] + 0.04072513 * out_step3[ 6][ 2][7]
+   - 0.05041490;
+
+out_step4[2][1][5] = 
+   - 0.07053677 * out_step3[ 4][ 2][0] + 0.01514253 * out_step3[ 4][ 3][0] + 0.01487644 * out_step3[ 4][ 4][0]
+   + 0.01624711 * out_step3[ 5][ 2][0] + 0.01248626 * out_step3[ 5][ 3][0] + 0.02341889 * out_step3[ 5][ 4][0]
+   + 0.07290121 * out_step3[ 6][ 2][0] - 0.00408737 * out_step3[ 6][ 3][0] + 0.08531891 * out_step3[ 6][ 4][0]
+   - 0.00699493 * out_step3[ 4][ 2][1] + 0.00956564 * out_step3[ 4][ 3][1] - 0.02290018 * out_step3[ 4][ 4][1]
+   - 0.01696064 * out_step3[ 5][ 2][1] - 0.01284063 * out_step3[ 5][ 3][1] - 0.00007461 * out_step3[ 5][ 4][1]
+   + 0.04244060 * out_step3[ 6][ 2][1] - 0.04413277 * out_step3[ 6][ 3][1] + 0.00188441 * out_step3[ 6][ 4][1]
+   - 0.09284910 * out_step3[ 4][ 2][2] - 0.03702786 * out_step3[ 4][ 3][2] - 0.03781045 * out_step3[ 4][ 4][2]
+   - 0.01563411 * out_step3[ 5][ 2][2] - 0.05201762 * out_step3[ 5][ 3][2] - 0.02519796 * out_step3[ 5][ 4][2]
+   + 0.03771210 * out_step3[ 6][ 2][2] + 0.02832999 * out_step3[ 6][ 3][2] + 0.03866443 * out_step3[ 6][ 4][2]
+   - 0.03854972 * out_step3[ 4][ 2][3] + 0.04086106 * out_step3[ 4][ 3][3] - 0.02612085 * out_step3[ 4][ 4][3]
+   - 0.03388729 * out_step3[ 5][ 2][3] + 0.03139944 * out_step3[ 5][ 3][3] - 0.04068478 * out_step3[ 5][ 4][3]
+   + 0.07657403 * out_step3[ 6][ 2][3] - 0.07614668 * out_step3[ 6][ 3][3] - 0.00831205 * out_step3[ 6][ 4][3]
+   - 0.05453590 * out_step3[ 4][ 2][4] + 0.07741585 * out_step3[ 4][ 3][4] + 0.00632656 * out_step3[ 4][ 4][4]
+   + 0.01206762 * out_step3[ 5][ 2][4] - 0.05905085 * out_step3[ 5][ 3][4] - 0.02582971 * out_step3[ 5][ 4][4]
+   + 0.02701914 * out_step3[ 6][ 2][4] - 0.04741174 * out_step3[ 6][ 3][4] + 0.09778473 * out_step3[ 6][ 4][4]
+   - 0.04051621 * out_step3[ 4][ 2][5] - 0.02226985 * out_step3[ 4][ 3][5] - 0.00379811 * out_step3[ 4][ 4][5]
+   + 0.01996554 * out_step3[ 5][ 2][5] + 0.04452145 * out_step3[ 5][ 3][5] + 0.00175344 * out_step3[ 5][ 4][5]
+   + 0.04706748 * out_step3[ 6][ 2][5] + 0.05306396 * out_step3[ 6][ 3][5] + 0.08589545 * out_step3[ 6][ 4][5]
+   - 0.02099180 * out_step3[ 4][ 2][6] - 0.07181203 * out_step3[ 4][ 3][6] - 0.00419664 * out_step3[ 4][ 4][6]
+   - 0.00797584 * out_step3[ 5][ 2][6] + 0.01157855 * out_step3[ 5][ 3][6] + 0.04112831 * out_step3[ 5][ 4][6]
+   + 0.00576289 * out_step3[ 6][ 2][6] + 0.10302389 * out_step3[ 6][ 3][6] + 0.04728944 * out_step3[ 6][ 4][6]
+   - 0.05556612 * out_step3[ 4][ 2][7] + 0.00045472 * out_step3[ 4][ 3][7] - 0.04803878 * out_step3[ 4][ 4][7]
+   + 0.03504039 * out_step3[ 5][ 2][7] + 0.07122118 * out_step3[ 5][ 3][7] - 0.02528831 * out_step3[ 5][ 4][7]
+   + 0.05216264 * out_step3[ 6][ 2][7] + 0.05425847 * out_step3[ 6][ 3][7] + 0.04072513 * out_step3[ 6][ 4][7]
+   - 0.05041490;
+
+out_step4[2][2][5] = 
+   - 0.07053677 * out_step3[ 4][ 4][0] + 0.01514253 * out_step3[ 4][ 5][0] + 0.01487644 * out_step3[ 4][ 6][0]
+   + 0.01624711 * out_step3[ 5][ 4][0] + 0.01248626 * out_step3[ 5][ 5][0] + 0.02341889 * out_step3[ 5][ 6][0]
+   + 0.07290121 * out_step3[ 6][ 4][0] - 0.00408737 * out_step3[ 6][ 5][0] + 0.08531891 * out_step3[ 6][ 6][0]
+   - 0.00699493 * out_step3[ 4][ 4][1] + 0.00956564 * out_step3[ 4][ 5][1] - 0.02290018 * out_step3[ 4][ 6][1]
+   - 0.01696064 * out_step3[ 5][ 4][1] - 0.01284063 * out_step3[ 5][ 5][1] - 0.00007461 * out_step3[ 5][ 6][1]
+   + 0.04244060 * out_step3[ 6][ 4][1] - 0.04413277 * out_step3[ 6][ 5][1] + 0.00188441 * out_step3[ 6][ 6][1]
+   - 0.09284910 * out_step3[ 4][ 4][2] - 0.03702786 * out_step3[ 4][ 5][2] - 0.03781045 * out_step3[ 4][ 6][2]
+   - 0.01563411 * out_step3[ 5][ 4][2] - 0.05201762 * out_step3[ 5][ 5][2] - 0.02519796 * out_step3[ 5][ 6][2]
+   + 0.03771210 * out_step3[ 6][ 4][2] + 0.02832999 * out_step3[ 6][ 5][2] + 0.03866443 * out_step3[ 6][ 6][2]
+   - 0.03854972 * out_step3[ 4][ 4][3] + 0.04086106 * out_step3[ 4][ 5][3] - 0.02612085 * out_step3[ 4][ 6][3]
+   - 0.03388729 * out_step3[ 5][ 4][3] + 0.03139944 * out_step3[ 5][ 5][3] - 0.04068478 * out_step3[ 5][ 6][3]
+   + 0.07657403 * out_step3[ 6][ 4][3] - 0.07614668 * out_step3[ 6][ 5][3] - 0.00831205 * out_step3[ 6][ 6][3]
+   - 0.05453590 * out_step3[ 4][ 4][4] + 0.07741585 * out_step3[ 4][ 5][4] + 0.00632656 * out_step3[ 4][ 6][4]
+   + 0.01206762 * out_step3[ 5][ 4][4] - 0.05905085 * out_step3[ 5][ 5][4] - 0.02582971 * out_step3[ 5][ 6][4]
+   + 0.02701914 * out_step3[ 6][ 4][4] - 0.04741174 * out_step3[ 6][ 5][4] + 0.09778473 * out_step3[ 6][ 6][4]
+   - 0.04051621 * out_step3[ 4][ 4][5] - 0.02226985 * out_step3[ 4][ 5][5] - 0.00379811 * out_step3[ 4][ 6][5]
+   + 0.01996554 * out_step3[ 5][ 4][5] + 0.04452145 * out_step3[ 5][ 5][5] + 0.00175344 * out_step3[ 5][ 6][5]
+   + 0.04706748 * out_step3[ 6][ 4][5] + 0.05306396 * out_step3[ 6][ 5][5] + 0.08589545 * out_step3[ 6][ 6][5]
+   - 0.02099180 * out_step3[ 4][ 4][6] - 0.07181203 * out_step3[ 4][ 5][6] - 0.00419664 * out_step3[ 4][ 6][6]
+   - 0.00797584 * out_step3[ 5][ 4][6] + 0.01157855 * out_step3[ 5][ 5][6] + 0.04112831 * out_step3[ 5][ 6][6]
+   + 0.00576289 * out_step3[ 6][ 4][6] + 0.10302389 * out_step3[ 6][ 5][6] + 0.04728944 * out_step3[ 6][ 6][6]
+   - 0.05556612 * out_step3[ 4][ 4][7] + 0.00045472 * out_step3[ 4][ 5][7] - 0.04803878 * out_step3[ 4][ 6][7]
+   + 0.03504039 * out_step3[ 5][ 4][7] + 0.07122118 * out_step3[ 5][ 5][7] - 0.02528831 * out_step3[ 5][ 6][7]
+   + 0.05216264 * out_step3[ 6][ 4][7] + 0.05425847 * out_step3[ 6][ 5][7] + 0.04072513 * out_step3[ 6][ 6][7]
+   - 0.05041490;
+
+out_step4[0][0][6] = 
+   - 0.01097019 * out_step3[ 0][ 0][0] - 0.04739593 * out_step3[ 0][ 1][0] - 0.04134821 * out_step3[ 0][ 2][0]
+   - 0.00883368 * out_step3[ 1][ 0][0] - 0.00092145 * out_step3[ 1][ 1][0] - 0.02610119 * out_step3[ 1][ 2][0]
+   - 0.04125006 * out_step3[ 2][ 0][0] - 0.00580545 * out_step3[ 2][ 1][0] - 0.10967796 * out_step3[ 2][ 2][0]
+   - 0.02574895 * out_step3[ 0][ 0][1] - 0.02055079 * out_step3[ 0][ 1][1] - 0.00988178 * out_step3[ 0][ 2][1]
+   - 0.00978039 * out_step3[ 1][ 0][1] + 0.03602314 * out_step3[ 1][ 1][1] + 0.01457712 * out_step3[ 1][ 2][1]
+   - 0.01315928 * out_step3[ 2][ 0][1] - 0.01496073 * out_step3[ 2][ 1][1] - 0.02324252 * out_step3[ 2][ 2][1]
+   - 0.05593017 * out_step3[ 0][ 0][2] - 0.10596211 * out_step3[ 0][ 1][2] - 0.21975245 * out_step3[ 0][ 2][2]
+   - 0.03691751 * out_step3[ 1][ 0][2] + 0.04020781 * out_step3[ 1][ 1][2] - 0.03647369 * out_step3[ 1][ 2][2]
+   + 0.04537480 * out_step3[ 2][ 0][2] + 0.10108703 * out_step3[ 2][ 1][2] + 0.06473944 * out_step3[ 2][ 2][2]
+   - 0.09289113 * out_step3[ 0][ 0][3] + 0.00422812 * out_step3[ 0][ 1][3] - 0.02700476 * out_step3[ 0][ 2][3]
+   - 0.08167750 * out_step3[ 1][ 0][3] + 0.00250395 * out_step3[ 1][ 1][3] + 0.05185431 * out_step3[ 1][ 2][3]
+   - 0.04207358 * out_step3[ 2][ 0][3] + 0.01593308 * out_step3[ 2][ 1][3] - 0.04504666 * out_step3[ 2][ 2][3]
+   - 0.08640865 * out_step3[ 0][ 0][4] - 0.01025804 * out_step3[ 0][ 1][4] - 0.14590031 * out_step3[ 0][ 2][4]
+   + 0.00760786 * out_step3[ 1][ 0][4] - 0.03579155 * out_step3[ 1][ 1][4] - 0.13050805 * out_step3[ 1][ 2][4]
+   + 0.04236129 * out_step3[ 2][ 0][4] + 0.07763752 * out_step3[ 2][ 1][4] - 0.05216176 * out_step3[ 2][ 2][4]
+   - 0.08307002 * out_step3[ 0][ 0][5] - 0.00518321 * out_step3[ 0][ 1][5] + 0.07870930 * out_step3[ 0][ 2][5]
+   + 0.00088671 * out_step3[ 1][ 0][5] + 0.01869399 * out_step3[ 1][ 1][5] - 0.03931249 * out_step3[ 1][ 2][5]
+   + 0.02161304 * out_step3[ 2][ 0][5] + 0.01760719 * out_step3[ 2][ 1][5] - 0.00888964 * out_step3[ 2][ 2][5]
+   - 0.05847529 * out_step3[ 0][ 0][6] - 0.09599801 * out_step3[ 0][ 1][6] - 0.08031599 * out_step3[ 0][ 2][6]
+   + 0.00662168 * out_step3[ 1][ 0][6] - 0.06953692 * out_step3[ 1][ 1][6] - 0.11121287 * out_step3[ 1][ 2][6]
+   + 0.07780533 * out_step3[ 2][ 0][6] - 0.03965628 * out_step3[ 2][ 1][6] + 0.02502290 * out_step3[ 2][ 2][6]
+   - 0.07400513 * out_step3[ 0][ 0][7] + 0.06600901 * out_step3[ 0][ 1][7] - 0.03751504 * out_step3[ 0][ 2][7]
+   + 0.06564075 * out_step3[ 1][ 0][7] - 0.05585040 * out_step3[ 1][ 1][7] - 0.05365818 * out_step3[ 1][ 2][7]
+   + 0.04477492 * out_step3[ 2][ 0][7] + 0.06436554 * out_step3[ 2][ 1][7] + 0.04006104 * out_step3[ 2][ 2][7]
+   + 0.06344640;
+
+out_step4[0][1][6] = 
+   - 0.01097019 * out_step3[ 0][ 2][0] - 0.04739593 * out_step3[ 0][ 3][0] - 0.04134821 * out_step3[ 0][ 4][0]
+   - 0.00883368 * out_step3[ 1][ 2][0] - 0.00092145 * out_step3[ 1][ 3][0] - 0.02610119 * out_step3[ 1][ 4][0]
+   - 0.04125006 * out_step3[ 2][ 2][0] - 0.00580545 * out_step3[ 2][ 3][0] - 0.10967796 * out_step3[ 2][ 4][0]
+   - 0.02574895 * out_step3[ 0][ 2][1] - 0.02055079 * out_step3[ 0][ 3][1] - 0.00988178 * out_step3[ 0][ 4][1]
+   - 0.00978039 * out_step3[ 1][ 2][1] + 0.03602314 * out_step3[ 1][ 3][1] + 0.01457712 * out_step3[ 1][ 4][1]
+   - 0.01315928 * out_step3[ 2][ 2][1] - 0.01496073 * out_step3[ 2][ 3][1] - 0.02324252 * out_step3[ 2][ 4][1]
+   - 0.05593017 * out_step3[ 0][ 2][2] - 0.10596211 * out_step3[ 0][ 3][2] - 0.21975245 * out_step3[ 0][ 4][2]
+   - 0.03691751 * out_step3[ 1][ 2][2] + 0.04020781 * out_step3[ 1][ 3][2] - 0.03647369 * out_step3[ 1][ 4][2]
+   + 0.04537480 * out_step3[ 2][ 2][2] + 0.10108703 * out_step3[ 2][ 3][2] + 0.06473944 * out_step3[ 2][ 4][2]
+   - 0.09289113 * out_step3[ 0][ 2][3] + 0.00422812 * out_step3[ 0][ 3][3] - 0.02700476 * out_step3[ 0][ 4][3]
+   - 0.08167750 * out_step3[ 1][ 2][3] + 0.00250395 * out_step3[ 1][ 3][3] + 0.05185431 * out_step3[ 1][ 4][3]
+   - 0.04207358 * out_step3[ 2][ 2][3] + 0.01593308 * out_step3[ 2][ 3][3] - 0.04504666 * out_step3[ 2][ 4][3]
+   - 0.08640865 * out_step3[ 0][ 2][4] - 0.01025804 * out_step3[ 0][ 3][4] - 0.14590031 * out_step3[ 0][ 4][4]
+   + 0.00760786 * out_step3[ 1][ 2][4] - 0.03579155 * out_step3[ 1][ 3][4] - 0.13050805 * out_step3[ 1][ 4][4]
+   + 0.04236129 * out_step3[ 2][ 2][4] + 0.07763752 * out_step3[ 2][ 3][4] - 0.05216176 * out_step3[ 2][ 4][4]
+   - 0.08307002 * out_step3[ 0][ 2][5] - 0.00518321 * out_step3[ 0][ 3][5] + 0.07870930 * out_step3[ 0][ 4][5]
+   + 0.00088671 * out_step3[ 1][ 2][5] + 0.01869399 * out_step3[ 1][ 3][5] - 0.03931249 * out_step3[ 1][ 4][5]
+   + 0.02161304 * out_step3[ 2][ 2][5] + 0.01760719 * out_step3[ 2][ 3][5] - 0.00888964 * out_step3[ 2][ 4][5]
+   - 0.05847529 * out_step3[ 0][ 2][6] - 0.09599801 * out_step3[ 0][ 3][6] - 0.08031599 * out_step3[ 0][ 4][6]
+   + 0.00662168 * out_step3[ 1][ 2][6] - 0.06953692 * out_step3[ 1][ 3][6] - 0.11121287 * out_step3[ 1][ 4][6]
+   + 0.07780533 * out_step3[ 2][ 2][6] - 0.03965628 * out_step3[ 2][ 3][6] + 0.02502290 * out_step3[ 2][ 4][6]
+   - 0.07400513 * out_step3[ 0][ 2][7] + 0.06600901 * out_step3[ 0][ 3][7] - 0.03751504 * out_step3[ 0][ 4][7]
+   + 0.06564075 * out_step3[ 1][ 2][7] - 0.05585040 * out_step3[ 1][ 3][7] - 0.05365818 * out_step3[ 1][ 4][7]
+   + 0.04477492 * out_step3[ 2][ 2][7] + 0.06436554 * out_step3[ 2][ 3][7] + 0.04006104 * out_step3[ 2][ 4][7]
+   + 0.06344640;
+
+out_step4[0][2][6] = 
+   - 0.01097019 * out_step3[ 0][ 4][0] - 0.04739593 * out_step3[ 0][ 5][0] - 0.04134821 * out_step3[ 0][ 6][0]
+   - 0.00883368 * out_step3[ 1][ 4][0] - 0.00092145 * out_step3[ 1][ 5][0] - 0.02610119 * out_step3[ 1][ 6][0]
+   - 0.04125006 * out_step3[ 2][ 4][0] - 0.00580545 * out_step3[ 2][ 5][0] - 0.10967796 * out_step3[ 2][ 6][0]
+   - 0.02574895 * out_step3[ 0][ 4][1] - 0.02055079 * out_step3[ 0][ 5][1] - 0.00988178 * out_step3[ 0][ 6][1]
+   - 0.00978039 * out_step3[ 1][ 4][1] + 0.03602314 * out_step3[ 1][ 5][1] + 0.01457712 * out_step3[ 1][ 6][1]
+   - 0.01315928 * out_step3[ 2][ 4][1] - 0.01496073 * out_step3[ 2][ 5][1] - 0.02324252 * out_step3[ 2][ 6][1]
+   - 0.05593017 * out_step3[ 0][ 4][2] - 0.10596211 * out_step3[ 0][ 5][2] - 0.21975245 * out_step3[ 0][ 6][2]
+   - 0.03691751 * out_step3[ 1][ 4][2] + 0.04020781 * out_step3[ 1][ 5][2] - 0.03647369 * out_step3[ 1][ 6][2]
+   + 0.04537480 * out_step3[ 2][ 4][2] + 0.10108703 * out_step3[ 2][ 5][2] + 0.06473944 * out_step3[ 2][ 6][2]
+   - 0.09289113 * out_step3[ 0][ 4][3] + 0.00422812 * out_step3[ 0][ 5][3] - 0.02700476 * out_step3[ 0][ 6][3]
+   - 0.08167750 * out_step3[ 1][ 4][3] + 0.00250395 * out_step3[ 1][ 5][3] + 0.05185431 * out_step3[ 1][ 6][3]
+   - 0.04207358 * out_step3[ 2][ 4][3] + 0.01593308 * out_step3[ 2][ 5][3] - 0.04504666 * out_step3[ 2][ 6][3]
+   - 0.08640865 * out_step3[ 0][ 4][4] - 0.01025804 * out_step3[ 0][ 5][4] - 0.14590031 * out_step3[ 0][ 6][4]
+   + 0.00760786 * out_step3[ 1][ 4][4] - 0.03579155 * out_step3[ 1][ 5][4] - 0.13050805 * out_step3[ 1][ 6][4]
+   + 0.04236129 * out_step3[ 2][ 4][4] + 0.07763752 * out_step3[ 2][ 5][4] - 0.05216176 * out_step3[ 2][ 6][4]
+   - 0.08307002 * out_step3[ 0][ 4][5] - 0.00518321 * out_step3[ 0][ 5][5] + 0.07870930 * out_step3[ 0][ 6][5]
+   + 0.00088671 * out_step3[ 1][ 4][5] + 0.01869399 * out_step3[ 1][ 5][5] - 0.03931249 * out_step3[ 1][ 6][5]
+   + 0.02161304 * out_step3[ 2][ 4][5] + 0.01760719 * out_step3[ 2][ 5][5] - 0.00888964 * out_step3[ 2][ 6][5]
+   - 0.05847529 * out_step3[ 0][ 4][6] - 0.09599801 * out_step3[ 0][ 5][6] - 0.08031599 * out_step3[ 0][ 6][6]
+   + 0.00662168 * out_step3[ 1][ 4][6] - 0.06953692 * out_step3[ 1][ 5][6] - 0.11121287 * out_step3[ 1][ 6][6]
+   + 0.07780533 * out_step3[ 2][ 4][6] - 0.03965628 * out_step3[ 2][ 5][6] + 0.02502290 * out_step3[ 2][ 6][6]
+   - 0.07400513 * out_step3[ 0][ 4][7] + 0.06600901 * out_step3[ 0][ 5][7] - 0.03751504 * out_step3[ 0][ 6][7]
+   + 0.06564075 * out_step3[ 1][ 4][7] - 0.05585040 * out_step3[ 1][ 5][7] - 0.05365818 * out_step3[ 1][ 6][7]
+   + 0.04477492 * out_step3[ 2][ 4][7] + 0.06436554 * out_step3[ 2][ 5][7] + 0.04006104 * out_step3[ 2][ 6][7]
+   + 0.06344640;
+
+out_step4[1][0][6] = 
+   - 0.01097019 * out_step3[ 2][ 0][0] - 0.04739593 * out_step3[ 2][ 1][0] - 0.04134821 * out_step3[ 2][ 2][0]
+   - 0.00883368 * out_step3[ 3][ 0][0] - 0.00092145 * out_step3[ 3][ 1][0] - 0.02610119 * out_step3[ 3][ 2][0]
+   - 0.04125006 * out_step3[ 4][ 0][0] - 0.00580545 * out_step3[ 4][ 1][0] - 0.10967796 * out_step3[ 4][ 2][0]
+   - 0.02574895 * out_step3[ 2][ 0][1] - 0.02055079 * out_step3[ 2][ 1][1] - 0.00988178 * out_step3[ 2][ 2][1]
+   - 0.00978039 * out_step3[ 3][ 0][1] + 0.03602314 * out_step3[ 3][ 1][1] + 0.01457712 * out_step3[ 3][ 2][1]
+   - 0.01315928 * out_step3[ 4][ 0][1] - 0.01496073 * out_step3[ 4][ 1][1] - 0.02324252 * out_step3[ 4][ 2][1]
+   - 0.05593017 * out_step3[ 2][ 0][2] - 0.10596211 * out_step3[ 2][ 1][2] - 0.21975245 * out_step3[ 2][ 2][2]
+   - 0.03691751 * out_step3[ 3][ 0][2] + 0.04020781 * out_step3[ 3][ 1][2] - 0.03647369 * out_step3[ 3][ 2][2]
+   + 0.04537480 * out_step3[ 4][ 0][2] + 0.10108703 * out_step3[ 4][ 1][2] + 0.06473944 * out_step3[ 4][ 2][2]
+   - 0.09289113 * out_step3[ 2][ 0][3] + 0.00422812 * out_step3[ 2][ 1][3] - 0.02700476 * out_step3[ 2][ 2][3]
+   - 0.08167750 * out_step3[ 3][ 0][3] + 0.00250395 * out_step3[ 3][ 1][3] + 0.05185431 * out_step3[ 3][ 2][3]
+   - 0.04207358 * out_step3[ 4][ 0][3] + 0.01593308 * out_step3[ 4][ 1][3] - 0.04504666 * out_step3[ 4][ 2][3]
+   - 0.08640865 * out_step3[ 2][ 0][4] - 0.01025804 * out_step3[ 2][ 1][4] - 0.14590031 * out_step3[ 2][ 2][4]
+   + 0.00760786 * out_step3[ 3][ 0][4] - 0.03579155 * out_step3[ 3][ 1][4] - 0.13050805 * out_step3[ 3][ 2][4]
+   + 0.04236129 * out_step3[ 4][ 0][4] + 0.07763752 * out_step3[ 4][ 1][4] - 0.05216176 * out_step3[ 4][ 2][4]
+   - 0.08307002 * out_step3[ 2][ 0][5] - 0.00518321 * out_step3[ 2][ 1][5] + 0.07870930 * out_step3[ 2][ 2][5]
+   + 0.00088671 * out_step3[ 3][ 0][5] + 0.01869399 * out_step3[ 3][ 1][5] - 0.03931249 * out_step3[ 3][ 2][5]
+   + 0.02161304 * out_step3[ 4][ 0][5] + 0.01760719 * out_step3[ 4][ 1][5] - 0.00888964 * out_step3[ 4][ 2][5]
+   - 0.05847529 * out_step3[ 2][ 0][6] - 0.09599801 * out_step3[ 2][ 1][6] - 0.08031599 * out_step3[ 2][ 2][6]
+   + 0.00662168 * out_step3[ 3][ 0][6] - 0.06953692 * out_step3[ 3][ 1][6] - 0.11121287 * out_step3[ 3][ 2][6]
+   + 0.07780533 * out_step3[ 4][ 0][6] - 0.03965628 * out_step3[ 4][ 1][6] + 0.02502290 * out_step3[ 4][ 2][6]
+   - 0.07400513 * out_step3[ 2][ 0][7] + 0.06600901 * out_step3[ 2][ 1][7] - 0.03751504 * out_step3[ 2][ 2][7]
+   + 0.06564075 * out_step3[ 3][ 0][7] - 0.05585040 * out_step3[ 3][ 1][7] - 0.05365818 * out_step3[ 3][ 2][7]
+   + 0.04477492 * out_step3[ 4][ 0][7] + 0.06436554 * out_step3[ 4][ 1][7] + 0.04006104 * out_step3[ 4][ 2][7]
+   + 0.06344640;
+
+out_step4[1][1][6] = 
+   - 0.01097019 * out_step3[ 2][ 2][0] - 0.04739593 * out_step3[ 2][ 3][0] - 0.04134821 * out_step3[ 2][ 4][0]
+   - 0.00883368 * out_step3[ 3][ 2][0] - 0.00092145 * out_step3[ 3][ 3][0] - 0.02610119 * out_step3[ 3][ 4][0]
+   - 0.04125006 * out_step3[ 4][ 2][0] - 0.00580545 * out_step3[ 4][ 3][0] - 0.10967796 * out_step3[ 4][ 4][0]
+   - 0.02574895 * out_step3[ 2][ 2][1] - 0.02055079 * out_step3[ 2][ 3][1] - 0.00988178 * out_step3[ 2][ 4][1]
+   - 0.00978039 * out_step3[ 3][ 2][1] + 0.03602314 * out_step3[ 3][ 3][1] + 0.01457712 * out_step3[ 3][ 4][1]
+   - 0.01315928 * out_step3[ 4][ 2][1] - 0.01496073 * out_step3[ 4][ 3][1] - 0.02324252 * out_step3[ 4][ 4][1]
+   - 0.05593017 * out_step3[ 2][ 2][2] - 0.10596211 * out_step3[ 2][ 3][2] - 0.21975245 * out_step3[ 2][ 4][2]
+   - 0.03691751 * out_step3[ 3][ 2][2] + 0.04020781 * out_step3[ 3][ 3][2] - 0.03647369 * out_step3[ 3][ 4][2]
+   + 0.04537480 * out_step3[ 4][ 2][2] + 0.10108703 * out_step3[ 4][ 3][2] + 0.06473944 * out_step3[ 4][ 4][2]
+   - 0.09289113 * out_step3[ 2][ 2][3] + 0.00422812 * out_step3[ 2][ 3][3] - 0.02700476 * out_step3[ 2][ 4][3]
+   - 0.08167750 * out_step3[ 3][ 2][3] + 0.00250395 * out_step3[ 3][ 3][3] + 0.05185431 * out_step3[ 3][ 4][3]
+   - 0.04207358 * out_step3[ 4][ 2][3] + 0.01593308 * out_step3[ 4][ 3][3] - 0.04504666 * out_step3[ 4][ 4][3]
+   - 0.08640865 * out_step3[ 2][ 2][4] - 0.01025804 * out_step3[ 2][ 3][4] - 0.14590031 * out_step3[ 2][ 4][4]
+   + 0.00760786 * out_step3[ 3][ 2][4] - 0.03579155 * out_step3[ 3][ 3][4] - 0.13050805 * out_step3[ 3][ 4][4]
+   + 0.04236129 * out_step3[ 4][ 2][4] + 0.07763752 * out_step3[ 4][ 3][4] - 0.05216176 * out_step3[ 4][ 4][4]
+   - 0.08307002 * out_step3[ 2][ 2][5] - 0.00518321 * out_step3[ 2][ 3][5] + 0.07870930 * out_step3[ 2][ 4][5]
+   + 0.00088671 * out_step3[ 3][ 2][5] + 0.01869399 * out_step3[ 3][ 3][5] - 0.03931249 * out_step3[ 3][ 4][5]
+   + 0.02161304 * out_step3[ 4][ 2][5] + 0.01760719 * out_step3[ 4][ 3][5] - 0.00888964 * out_step3[ 4][ 4][5]
+   - 0.05847529 * out_step3[ 2][ 2][6] - 0.09599801 * out_step3[ 2][ 3][6] - 0.08031599 * out_step3[ 2][ 4][6]
+   + 0.00662168 * out_step3[ 3][ 2][6] - 0.06953692 * out_step3[ 3][ 3][6] - 0.11121287 * out_step3[ 3][ 4][6]
+   + 0.07780533 * out_step3[ 4][ 2][6] - 0.03965628 * out_step3[ 4][ 3][6] + 0.02502290 * out_step3[ 4][ 4][6]
+   - 0.07400513 * out_step3[ 2][ 2][7] + 0.06600901 * out_step3[ 2][ 3][7] - 0.03751504 * out_step3[ 2][ 4][7]
+   + 0.06564075 * out_step3[ 3][ 2][7] - 0.05585040 * out_step3[ 3][ 3][7] - 0.05365818 * out_step3[ 3][ 4][7]
+   + 0.04477492 * out_step3[ 4][ 2][7] + 0.06436554 * out_step3[ 4][ 3][7] + 0.04006104 * out_step3[ 4][ 4][7]
+   + 0.06344640;
+
+out_step4[1][2][6] = 
+   - 0.01097019 * out_step3[ 2][ 4][0] - 0.04739593 * out_step3[ 2][ 5][0] - 0.04134821 * out_step3[ 2][ 6][0]
+   - 0.00883368 * out_step3[ 3][ 4][0] - 0.00092145 * out_step3[ 3][ 5][0] - 0.02610119 * out_step3[ 3][ 6][0]
+   - 0.04125006 * out_step3[ 4][ 4][0] - 0.00580545 * out_step3[ 4][ 5][0] - 0.10967796 * out_step3[ 4][ 6][0]
+   - 0.02574895 * out_step3[ 2][ 4][1] - 0.02055079 * out_step3[ 2][ 5][1] - 0.00988178 * out_step3[ 2][ 6][1]
+   - 0.00978039 * out_step3[ 3][ 4][1] + 0.03602314 * out_step3[ 3][ 5][1] + 0.01457712 * out_step3[ 3][ 6][1]
+   - 0.01315928 * out_step3[ 4][ 4][1] - 0.01496073 * out_step3[ 4][ 5][1] - 0.02324252 * out_step3[ 4][ 6][1]
+   - 0.05593017 * out_step3[ 2][ 4][2] - 0.10596211 * out_step3[ 2][ 5][2] - 0.21975245 * out_step3[ 2][ 6][2]
+   - 0.03691751 * out_step3[ 3][ 4][2] + 0.04020781 * out_step3[ 3][ 5][2] - 0.03647369 * out_step3[ 3][ 6][2]
+   + 0.04537480 * out_step3[ 4][ 4][2] + 0.10108703 * out_step3[ 4][ 5][2] + 0.06473944 * out_step3[ 4][ 6][2]
+   - 0.09289113 * out_step3[ 2][ 4][3] + 0.00422812 * out_step3[ 2][ 5][3] - 0.02700476 * out_step3[ 2][ 6][3]
+   - 0.08167750 * out_step3[ 3][ 4][3] + 0.00250395 * out_step3[ 3][ 5][3] + 0.05185431 * out_step3[ 3][ 6][3]
+   - 0.04207358 * out_step3[ 4][ 4][3] + 0.01593308 * out_step3[ 4][ 5][3] - 0.04504666 * out_step3[ 4][ 6][3]
+   - 0.08640865 * out_step3[ 2][ 4][4] - 0.01025804 * out_step3[ 2][ 5][4] - 0.14590031 * out_step3[ 2][ 6][4]
+   + 0.00760786 * out_step3[ 3][ 4][4] - 0.03579155 * out_step3[ 3][ 5][4] - 0.13050805 * out_step3[ 3][ 6][4]
+   + 0.04236129 * out_step3[ 4][ 4][4] + 0.07763752 * out_step3[ 4][ 5][4] - 0.05216176 * out_step3[ 4][ 6][4]
+   - 0.08307002 * out_step3[ 2][ 4][5] - 0.00518321 * out_step3[ 2][ 5][5] + 0.07870930 * out_step3[ 2][ 6][5]
+   + 0.00088671 * out_step3[ 3][ 4][5] + 0.01869399 * out_step3[ 3][ 5][5] - 0.03931249 * out_step3[ 3][ 6][5]
+   + 0.02161304 * out_step3[ 4][ 4][5] + 0.01760719 * out_step3[ 4][ 5][5] - 0.00888964 * out_step3[ 4][ 6][5]
+   - 0.05847529 * out_step3[ 2][ 4][6] - 0.09599801 * out_step3[ 2][ 5][6] - 0.08031599 * out_step3[ 2][ 6][6]
+   + 0.00662168 * out_step3[ 3][ 4][6] - 0.06953692 * out_step3[ 3][ 5][6] - 0.11121287 * out_step3[ 3][ 6][6]
+   + 0.07780533 * out_step3[ 4][ 4][6] - 0.03965628 * out_step3[ 4][ 5][6] + 0.02502290 * out_step3[ 4][ 6][6]
+   - 0.07400513 * out_step3[ 2][ 4][7] + 0.06600901 * out_step3[ 2][ 5][7] - 0.03751504 * out_step3[ 2][ 6][7]
+   + 0.06564075 * out_step3[ 3][ 4][7] - 0.05585040 * out_step3[ 3][ 5][7] - 0.05365818 * out_step3[ 3][ 6][7]
+   + 0.04477492 * out_step3[ 4][ 4][7] + 0.06436554 * out_step3[ 4][ 5][7] + 0.04006104 * out_step3[ 4][ 6][7]
+   + 0.06344640;
+
+out_step4[2][0][6] = 
+   - 0.01097019 * out_step3[ 4][ 0][0] - 0.04739593 * out_step3[ 4][ 1][0] - 0.04134821 * out_step3[ 4][ 2][0]
+   - 0.00883368 * out_step3[ 5][ 0][0] - 0.00092145 * out_step3[ 5][ 1][0] - 0.02610119 * out_step3[ 5][ 2][0]
+   - 0.04125006 * out_step3[ 6][ 0][0] - 0.00580545 * out_step3[ 6][ 1][0] - 0.10967796 * out_step3[ 6][ 2][0]
+   - 0.02574895 * out_step3[ 4][ 0][1] - 0.02055079 * out_step3[ 4][ 1][1] - 0.00988178 * out_step3[ 4][ 2][1]
+   - 0.00978039 * out_step3[ 5][ 0][1] + 0.03602314 * out_step3[ 5][ 1][1] + 0.01457712 * out_step3[ 5][ 2][1]
+   - 0.01315928 * out_step3[ 6][ 0][1] - 0.01496073 * out_step3[ 6][ 1][1] - 0.02324252 * out_step3[ 6][ 2][1]
+   - 0.05593017 * out_step3[ 4][ 0][2] - 0.10596211 * out_step3[ 4][ 1][2] - 0.21975245 * out_step3[ 4][ 2][2]
+   - 0.03691751 * out_step3[ 5][ 0][2] + 0.04020781 * out_step3[ 5][ 1][2] - 0.03647369 * out_step3[ 5][ 2][2]
+   + 0.04537480 * out_step3[ 6][ 0][2] + 0.10108703 * out_step3[ 6][ 1][2] + 0.06473944 * out_step3[ 6][ 2][2]
+   - 0.09289113 * out_step3[ 4][ 0][3] + 0.00422812 * out_step3[ 4][ 1][3] - 0.02700476 * out_step3[ 4][ 2][3]
+   - 0.08167750 * out_step3[ 5][ 0][3] + 0.00250395 * out_step3[ 5][ 1][3] + 0.05185431 * out_step3[ 5][ 2][3]
+   - 0.04207358 * out_step3[ 6][ 0][3] + 0.01593308 * out_step3[ 6][ 1][3] - 0.04504666 * out_step3[ 6][ 2][3]
+   - 0.08640865 * out_step3[ 4][ 0][4] - 0.01025804 * out_step3[ 4][ 1][4] - 0.14590031 * out_step3[ 4][ 2][4]
+   + 0.00760786 * out_step3[ 5][ 0][4] - 0.03579155 * out_step3[ 5][ 1][4] - 0.13050805 * out_step3[ 5][ 2][4]
+   + 0.04236129 * out_step3[ 6][ 0][4] + 0.07763752 * out_step3[ 6][ 1][4] - 0.05216176 * out_step3[ 6][ 2][4]
+   - 0.08307002 * out_step3[ 4][ 0][5] - 0.00518321 * out_step3[ 4][ 1][5] + 0.07870930 * out_step3[ 4][ 2][5]
+   + 0.00088671 * out_step3[ 5][ 0][5] + 0.01869399 * out_step3[ 5][ 1][5] - 0.03931249 * out_step3[ 5][ 2][5]
+   + 0.02161304 * out_step3[ 6][ 0][5] + 0.01760719 * out_step3[ 6][ 1][5] - 0.00888964 * out_step3[ 6][ 2][5]
+   - 0.05847529 * out_step3[ 4][ 0][6] - 0.09599801 * out_step3[ 4][ 1][6] - 0.08031599 * out_step3[ 4][ 2][6]
+   + 0.00662168 * out_step3[ 5][ 0][6] - 0.06953692 * out_step3[ 5][ 1][6] - 0.11121287 * out_step3[ 5][ 2][6]
+   + 0.07780533 * out_step3[ 6][ 0][6] - 0.03965628 * out_step3[ 6][ 1][6] + 0.02502290 * out_step3[ 6][ 2][6]
+   - 0.07400513 * out_step3[ 4][ 0][7] + 0.06600901 * out_step3[ 4][ 1][7] - 0.03751504 * out_step3[ 4][ 2][7]
+   + 0.06564075 * out_step3[ 5][ 0][7] - 0.05585040 * out_step3[ 5][ 1][7] - 0.05365818 * out_step3[ 5][ 2][7]
+   + 0.04477492 * out_step3[ 6][ 0][7] + 0.06436554 * out_step3[ 6][ 1][7] + 0.04006104 * out_step3[ 6][ 2][7]
+   + 0.06344640;
+
+out_step4[2][1][6] = 
+   - 0.01097019 * out_step3[ 4][ 2][0] - 0.04739593 * out_step3[ 4][ 3][0] - 0.04134821 * out_step3[ 4][ 4][0]
+   - 0.00883368 * out_step3[ 5][ 2][0] - 0.00092145 * out_step3[ 5][ 3][0] - 0.02610119 * out_step3[ 5][ 4][0]
+   - 0.04125006 * out_step3[ 6][ 2][0] - 0.00580545 * out_step3[ 6][ 3][0] - 0.10967796 * out_step3[ 6][ 4][0]
+   - 0.02574895 * out_step3[ 4][ 2][1] - 0.02055079 * out_step3[ 4][ 3][1] - 0.00988178 * out_step3[ 4][ 4][1]
+   - 0.00978039 * out_step3[ 5][ 2][1] + 0.03602314 * out_step3[ 5][ 3][1] + 0.01457712 * out_step3[ 5][ 4][1]
+   - 0.01315928 * out_step3[ 6][ 2][1] - 0.01496073 * out_step3[ 6][ 3][1] - 0.02324252 * out_step3[ 6][ 4][1]
+   - 0.05593017 * out_step3[ 4][ 2][2] - 0.10596211 * out_step3[ 4][ 3][2] - 0.21975245 * out_step3[ 4][ 4][2]
+   - 0.03691751 * out_step3[ 5][ 2][2] + 0.04020781 * out_step3[ 5][ 3][2] - 0.03647369 * out_step3[ 5][ 4][2]
+   + 0.04537480 * out_step3[ 6][ 2][2] + 0.10108703 * out_step3[ 6][ 3][2] + 0.06473944 * out_step3[ 6][ 4][2]
+   - 0.09289113 * out_step3[ 4][ 2][3] + 0.00422812 * out_step3[ 4][ 3][3] - 0.02700476 * out_step3[ 4][ 4][3]
+   - 0.08167750 * out_step3[ 5][ 2][3] + 0.00250395 * out_step3[ 5][ 3][3] + 0.05185431 * out_step3[ 5][ 4][3]
+   - 0.04207358 * out_step3[ 6][ 2][3] + 0.01593308 * out_step3[ 6][ 3][3] - 0.04504666 * out_step3[ 6][ 4][3]
+   - 0.08640865 * out_step3[ 4][ 2][4] - 0.01025804 * out_step3[ 4][ 3][4] - 0.14590031 * out_step3[ 4][ 4][4]
+   + 0.00760786 * out_step3[ 5][ 2][4] - 0.03579155 * out_step3[ 5][ 3][4] - 0.13050805 * out_step3[ 5][ 4][4]
+   + 0.04236129 * out_step3[ 6][ 2][4] + 0.07763752 * out_step3[ 6][ 3][4] - 0.05216176 * out_step3[ 6][ 4][4]
+   - 0.08307002 * out_step3[ 4][ 2][5] - 0.00518321 * out_step3[ 4][ 3][5] + 0.07870930 * out_step3[ 4][ 4][5]
+   + 0.00088671 * out_step3[ 5][ 2][5] + 0.01869399 * out_step3[ 5][ 3][5] - 0.03931249 * out_step3[ 5][ 4][5]
+   + 0.02161304 * out_step3[ 6][ 2][5] + 0.01760719 * out_step3[ 6][ 3][5] - 0.00888964 * out_step3[ 6][ 4][5]
+   - 0.05847529 * out_step3[ 4][ 2][6] - 0.09599801 * out_step3[ 4][ 3][6] - 0.08031599 * out_step3[ 4][ 4][6]
+   + 0.00662168 * out_step3[ 5][ 2][6] - 0.06953692 * out_step3[ 5][ 3][6] - 0.11121287 * out_step3[ 5][ 4][6]
+   + 0.07780533 * out_step3[ 6][ 2][6] - 0.03965628 * out_step3[ 6][ 3][6] + 0.02502290 * out_step3[ 6][ 4][6]
+   - 0.07400513 * out_step3[ 4][ 2][7] + 0.06600901 * out_step3[ 4][ 3][7] - 0.03751504 * out_step3[ 4][ 4][7]
+   + 0.06564075 * out_step3[ 5][ 2][7] - 0.05585040 * out_step3[ 5][ 3][7] - 0.05365818 * out_step3[ 5][ 4][7]
+   + 0.04477492 * out_step3[ 6][ 2][7] + 0.06436554 * out_step3[ 6][ 3][7] + 0.04006104 * out_step3[ 6][ 4][7]
+   + 0.06344640;
+
+out_step4[2][2][6] = 
+   - 0.01097019 * out_step3[ 4][ 4][0] - 0.04739593 * out_step3[ 4][ 5][0] - 0.04134821 * out_step3[ 4][ 6][0]
+   - 0.00883368 * out_step3[ 5][ 4][0] - 0.00092145 * out_step3[ 5][ 5][0] - 0.02610119 * out_step3[ 5][ 6][0]
+   - 0.04125006 * out_step3[ 6][ 4][0] - 0.00580545 * out_step3[ 6][ 5][0] - 0.10967796 * out_step3[ 6][ 6][0]
+   - 0.02574895 * out_step3[ 4][ 4][1] - 0.02055079 * out_step3[ 4][ 5][1] - 0.00988178 * out_step3[ 4][ 6][1]
+   - 0.00978039 * out_step3[ 5][ 4][1] + 0.03602314 * out_step3[ 5][ 5][1] + 0.01457712 * out_step3[ 5][ 6][1]
+   - 0.01315928 * out_step3[ 6][ 4][1] - 0.01496073 * out_step3[ 6][ 5][1] - 0.02324252 * out_step3[ 6][ 6][1]
+   - 0.05593017 * out_step3[ 4][ 4][2] - 0.10596211 * out_step3[ 4][ 5][2] - 0.21975245 * out_step3[ 4][ 6][2]
+   - 0.03691751 * out_step3[ 5][ 4][2] + 0.04020781 * out_step3[ 5][ 5][2] - 0.03647369 * out_step3[ 5][ 6][2]
+   + 0.04537480 * out_step3[ 6][ 4][2] + 0.10108703 * out_step3[ 6][ 5][2] + 0.06473944 * out_step3[ 6][ 6][2]
+   - 0.09289113 * out_step3[ 4][ 4][3] + 0.00422812 * out_step3[ 4][ 5][3] - 0.02700476 * out_step3[ 4][ 6][3]
+   - 0.08167750 * out_step3[ 5][ 4][3] + 0.00250395 * out_step3[ 5][ 5][3] + 0.05185431 * out_step3[ 5][ 6][3]
+   - 0.04207358 * out_step3[ 6][ 4][3] + 0.01593308 * out_step3[ 6][ 5][3] - 0.04504666 * out_step3[ 6][ 6][3]
+   - 0.08640865 * out_step3[ 4][ 4][4] - 0.01025804 * out_step3[ 4][ 5][4] - 0.14590031 * out_step3[ 4][ 6][4]
+   + 0.00760786 * out_step3[ 5][ 4][4] - 0.03579155 * out_step3[ 5][ 5][4] - 0.13050805 * out_step3[ 5][ 6][4]
+   + 0.04236129 * out_step3[ 6][ 4][4] + 0.07763752 * out_step3[ 6][ 5][4] - 0.05216176 * out_step3[ 6][ 6][4]
+   - 0.08307002 * out_step3[ 4][ 4][5] - 0.00518321 * out_step3[ 4][ 5][5] + 0.07870930 * out_step3[ 4][ 6][5]
+   + 0.00088671 * out_step3[ 5][ 4][5] + 0.01869399 * out_step3[ 5][ 5][5] - 0.03931249 * out_step3[ 5][ 6][5]
+   + 0.02161304 * out_step3[ 6][ 4][5] + 0.01760719 * out_step3[ 6][ 5][5] - 0.00888964 * out_step3[ 6][ 6][5]
+   - 0.05847529 * out_step3[ 4][ 4][6] - 0.09599801 * out_step3[ 4][ 5][6] - 0.08031599 * out_step3[ 4][ 6][6]
+   + 0.00662168 * out_step3[ 5][ 4][6] - 0.06953692 * out_step3[ 5][ 5][6] - 0.11121287 * out_step3[ 5][ 6][6]
+   + 0.07780533 * out_step3[ 6][ 4][6] - 0.03965628 * out_step3[ 6][ 5][6] + 0.02502290 * out_step3[ 6][ 6][6]
+   - 0.07400513 * out_step3[ 4][ 4][7] + 0.06600901 * out_step3[ 4][ 5][7] - 0.03751504 * out_step3[ 4][ 6][7]
+   + 0.06564075 * out_step3[ 5][ 4][7] - 0.05585040 * out_step3[ 5][ 5][7] - 0.05365818 * out_step3[ 5][ 6][7]
+   + 0.04477492 * out_step3[ 6][ 4][7] + 0.06436554 * out_step3[ 6][ 5][7] + 0.04006104 * out_step3[ 6][ 6][7]
+   + 0.06344640;
+
+out_step4[0][0][7] = 
+   - 0.00117604 * out_step3[ 0][ 0][0] - 0.05252417 * out_step3[ 0][ 1][0] - 0.08358262 * out_step3[ 0][ 2][0]
+   - 0.06182690 * out_step3[ 1][ 0][0] - 0.01993817 * out_step3[ 1][ 1][0] - 0.03628967 * out_step3[ 1][ 2][0]
+   - 0.08161902 * out_step3[ 2][ 0][0] - 0.04902529 * out_step3[ 2][ 1][0] - 0.04408643 * out_step3[ 2][ 2][0]
+   - 0.00095936 * out_step3[ 0][ 0][1] - 0.02539010 * out_step3[ 0][ 1][1] - 0.01495434 * out_step3[ 0][ 2][1]
+   + 0.02543900 * out_step3[ 1][ 0][1] + 0.01424166 * out_step3[ 1][ 1][1] - 0.00225786 * out_step3[ 1][ 2][1]
+   - 0.02862168 * out_step3[ 2][ 0][1] - 0.04998906 * out_step3[ 2][ 1][1] - 0.01026029 * out_step3[ 2][ 2][1]
+   - 0.01513285 * out_step3[ 0][ 0][2] + 0.04303989 * out_step3[ 0][ 1][2] + 0.04290899 * out_step3[ 0][ 2][2]
+   + 0.07907201 * out_step3[ 1][ 0][2] + 0.11527291 * out_step3[ 1][ 1][2] + 0.10291121 * out_step3[ 1][ 2][2]
+   - 0.03537496 * out_step3[ 2][ 0][2] - 0.10156145 * out_step3[ 2][ 1][2] - 0.11662345 * out_step3[ 2][ 2][2]
+   - 0.04980965 * out_step3[ 0][ 0][3] + 0.00314367 * out_step3[ 0][ 1][3] + 0.01163050 * out_step3[ 0][ 2][3]
+   + 0.05195190 * out_step3[ 1][ 0][3] + 0.03087861 * out_step3[ 1][ 1][3] - 0.00227121 * out_step3[ 1][ 2][3]
+   + 0.02340549 * out_step3[ 2][ 0][3] - 0.06107544 * out_step3[ 2][ 1][3] - 0.02049684 * out_step3[ 2][ 2][3]
+   - 0.07735132 * out_step3[ 0][ 0][4] + 0.11826890 * out_step3[ 0][ 1][4] + 0.17387629 * out_step3[ 0][ 2][4]
+   + 0.07911997 * out_step3[ 1][ 0][4] + 0.11526112 * out_step3[ 1][ 1][4] + 0.01537108 * out_step3[ 1][ 2][4]
+   + 0.00529317 * out_step3[ 2][ 0][4] - 0.09442890 * out_step3[ 2][ 1][4] - 0.02841247 * out_step3[ 2][ 2][4]
+   - 0.10549024 * out_step3[ 0][ 0][5] - 0.08103776 * out_step3[ 0][ 1][5] - 0.01161300 * out_step3[ 0][ 2][5]
+   - 0.07424026 * out_step3[ 1][ 0][5] - 0.05667843 * out_step3[ 1][ 1][5] - 0.05548735 * out_step3[ 1][ 2][5]
+   - 0.14923607 * out_step3[ 2][ 0][5] - 0.13779306 * out_step3[ 2][ 1][5] - 0.09090189 * out_step3[ 2][ 2][5]
+   - 0.02140876 * out_step3[ 0][ 0][6] - 0.01811916 * out_step3[ 0][ 1][6] - 0.00171503 * out_step3[ 0][ 2][6]
+   + 0.02935436 * out_step3[ 1][ 0][6] - 0.00610886 * out_step3[ 1][ 1][6] + 0.03546273 * out_step3[ 1][ 2][6]
+   - 0.09403312 * out_step3[ 2][ 0][6] - 0.01597615 * out_step3[ 2][ 1][6] - 0.04382054 * out_step3[ 2][ 2][6]
+   - 0.01527203 * out_step3[ 0][ 0][7] - 0.04009584 * out_step3[ 0][ 1][7] - 0.07166479 * out_step3[ 0][ 2][7]
+   - 0.02847805 * out_step3[ 1][ 0][7] + 0.03420868 * out_step3[ 1][ 1][7] + 0.09173471 * out_step3[ 1][ 2][7]
+   - 0.09661591 * out_step3[ 2][ 0][7] - 0.09112209 * out_step3[ 2][ 1][7] - 0.09543817 * out_step3[ 2][ 2][7]
+   + 0.05209413;
+
+out_step4[0][1][7] = 
+   - 0.00117604 * out_step3[ 0][ 2][0] - 0.05252417 * out_step3[ 0][ 3][0] - 0.08358262 * out_step3[ 0][ 4][0]
+   - 0.06182690 * out_step3[ 1][ 2][0] - 0.01993817 * out_step3[ 1][ 3][0] - 0.03628967 * out_step3[ 1][ 4][0]
+   - 0.08161902 * out_step3[ 2][ 2][0] - 0.04902529 * out_step3[ 2][ 3][0] - 0.04408643 * out_step3[ 2][ 4][0]
+   - 0.00095936 * out_step3[ 0][ 2][1] - 0.02539010 * out_step3[ 0][ 3][1] - 0.01495434 * out_step3[ 0][ 4][1]
+   + 0.02543900 * out_step3[ 1][ 2][1] + 0.01424166 * out_step3[ 1][ 3][1] - 0.00225786 * out_step3[ 1][ 4][1]
+   - 0.02862168 * out_step3[ 2][ 2][1] - 0.04998906 * out_step3[ 2][ 3][1] - 0.01026029 * out_step3[ 2][ 4][1]
+   - 0.01513285 * out_step3[ 0][ 2][2] + 0.04303989 * out_step3[ 0][ 3][2] + 0.04290899 * out_step3[ 0][ 4][2]
+   + 0.07907201 * out_step3[ 1][ 2][2] + 0.11527291 * out_step3[ 1][ 3][2] + 0.10291121 * out_step3[ 1][ 4][2]
+   - 0.03537496 * out_step3[ 2][ 2][2] - 0.10156145 * out_step3[ 2][ 3][2] - 0.11662345 * out_step3[ 2][ 4][2]
+   - 0.04980965 * out_step3[ 0][ 2][3] + 0.00314367 * out_step3[ 0][ 3][3] + 0.01163050 * out_step3[ 0][ 4][3]
+   + 0.05195190 * out_step3[ 1][ 2][3] + 0.03087861 * out_step3[ 1][ 3][3] - 0.00227121 * out_step3[ 1][ 4][3]
+   + 0.02340549 * out_step3[ 2][ 2][3] - 0.06107544 * out_step3[ 2][ 3][3] - 0.02049684 * out_step3[ 2][ 4][3]
+   - 0.07735132 * out_step3[ 0][ 2][4] + 0.11826890 * out_step3[ 0][ 3][4] + 0.17387629 * out_step3[ 0][ 4][4]
+   + 0.07911997 * out_step3[ 1][ 2][4] + 0.11526112 * out_step3[ 1][ 3][4] + 0.01537108 * out_step3[ 1][ 4][4]
+   + 0.00529317 * out_step3[ 2][ 2][4] - 0.09442890 * out_step3[ 2][ 3][4] - 0.02841247 * out_step3[ 2][ 4][4]
+   - 0.10549024 * out_step3[ 0][ 2][5] - 0.08103776 * out_step3[ 0][ 3][5] - 0.01161300 * out_step3[ 0][ 4][5]
+   - 0.07424026 * out_step3[ 1][ 2][5] - 0.05667843 * out_step3[ 1][ 3][5] - 0.05548735 * out_step3[ 1][ 4][5]
+   - 0.14923607 * out_step3[ 2][ 2][5] - 0.13779306 * out_step3[ 2][ 3][5] - 0.09090189 * out_step3[ 2][ 4][5]
+   - 0.02140876 * out_step3[ 0][ 2][6] - 0.01811916 * out_step3[ 0][ 3][6] - 0.00171503 * out_step3[ 0][ 4][6]
+   + 0.02935436 * out_step3[ 1][ 2][6] - 0.00610886 * out_step3[ 1][ 3][6] + 0.03546273 * out_step3[ 1][ 4][6]
+   - 0.09403312 * out_step3[ 2][ 2][6] - 0.01597615 * out_step3[ 2][ 3][6] - 0.04382054 * out_step3[ 2][ 4][6]
+   - 0.01527203 * out_step3[ 0][ 2][7] - 0.04009584 * out_step3[ 0][ 3][7] - 0.07166479 * out_step3[ 0][ 4][7]
+   - 0.02847805 * out_step3[ 1][ 2][7] + 0.03420868 * out_step3[ 1][ 3][7] + 0.09173471 * out_step3[ 1][ 4][7]
+   - 0.09661591 * out_step3[ 2][ 2][7] - 0.09112209 * out_step3[ 2][ 3][7] - 0.09543817 * out_step3[ 2][ 4][7]
+   + 0.05209413;
+
+out_step4[0][2][7] = 
+   - 0.00117604 * out_step3[ 0][ 4][0] - 0.05252417 * out_step3[ 0][ 5][0] - 0.08358262 * out_step3[ 0][ 6][0]
+   - 0.06182690 * out_step3[ 1][ 4][0] - 0.01993817 * out_step3[ 1][ 5][0] - 0.03628967 * out_step3[ 1][ 6][0]
+   - 0.08161902 * out_step3[ 2][ 4][0] - 0.04902529 * out_step3[ 2][ 5][0] - 0.04408643 * out_step3[ 2][ 6][0]
+   - 0.00095936 * out_step3[ 0][ 4][1] - 0.02539010 * out_step3[ 0][ 5][1] - 0.01495434 * out_step3[ 0][ 6][1]
+   + 0.02543900 * out_step3[ 1][ 4][1] + 0.01424166 * out_step3[ 1][ 5][1] - 0.00225786 * out_step3[ 1][ 6][1]
+   - 0.02862168 * out_step3[ 2][ 4][1] - 0.04998906 * out_step3[ 2][ 5][1] - 0.01026029 * out_step3[ 2][ 6][1]
+   - 0.01513285 * out_step3[ 0][ 4][2] + 0.04303989 * out_step3[ 0][ 5][2] + 0.04290899 * out_step3[ 0][ 6][2]
+   + 0.07907201 * out_step3[ 1][ 4][2] + 0.11527291 * out_step3[ 1][ 5][2] + 0.10291121 * out_step3[ 1][ 6][2]
+   - 0.03537496 * out_step3[ 2][ 4][2] - 0.10156145 * out_step3[ 2][ 5][2] - 0.11662345 * out_step3[ 2][ 6][2]
+   - 0.04980965 * out_step3[ 0][ 4][3] + 0.00314367 * out_step3[ 0][ 5][3] + 0.01163050 * out_step3[ 0][ 6][3]
+   + 0.05195190 * out_step3[ 1][ 4][3] + 0.03087861 * out_step3[ 1][ 5][3] - 0.00227121 * out_step3[ 1][ 6][3]
+   + 0.02340549 * out_step3[ 2][ 4][3] - 0.06107544 * out_step3[ 2][ 5][3] - 0.02049684 * out_step3[ 2][ 6][3]
+   - 0.07735132 * out_step3[ 0][ 4][4] + 0.11826890 * out_step3[ 0][ 5][4] + 0.17387629 * out_step3[ 0][ 6][4]
+   + 0.07911997 * out_step3[ 1][ 4][4] + 0.11526112 * out_step3[ 1][ 5][4] + 0.01537108 * out_step3[ 1][ 6][4]
+   + 0.00529317 * out_step3[ 2][ 4][4] - 0.09442890 * out_step3[ 2][ 5][4] - 0.02841247 * out_step3[ 2][ 6][4]
+   - 0.10549024 * out_step3[ 0][ 4][5] - 0.08103776 * out_step3[ 0][ 5][5] - 0.01161300 * out_step3[ 0][ 6][5]
+   - 0.07424026 * out_step3[ 1][ 4][5] - 0.05667843 * out_step3[ 1][ 5][5] - 0.05548735 * out_step3[ 1][ 6][5]
+   - 0.14923607 * out_step3[ 2][ 4][5] - 0.13779306 * out_step3[ 2][ 5][5] - 0.09090189 * out_step3[ 2][ 6][5]
+   - 0.02140876 * out_step3[ 0][ 4][6] - 0.01811916 * out_step3[ 0][ 5][6] - 0.00171503 * out_step3[ 0][ 6][6]
+   + 0.02935436 * out_step3[ 1][ 4][6] - 0.00610886 * out_step3[ 1][ 5][6] + 0.03546273 * out_step3[ 1][ 6][6]
+   - 0.09403312 * out_step3[ 2][ 4][6] - 0.01597615 * out_step3[ 2][ 5][6] - 0.04382054 * out_step3[ 2][ 6][6]
+   - 0.01527203 * out_step3[ 0][ 4][7] - 0.04009584 * out_step3[ 0][ 5][7] - 0.07166479 * out_step3[ 0][ 6][7]
+   - 0.02847805 * out_step3[ 1][ 4][7] + 0.03420868 * out_step3[ 1][ 5][7] + 0.09173471 * out_step3[ 1][ 6][7]
+   - 0.09661591 * out_step3[ 2][ 4][7] - 0.09112209 * out_step3[ 2][ 5][7] - 0.09543817 * out_step3[ 2][ 6][7]
+   + 0.05209413;
+
+out_step4[1][0][7] = 
+   - 0.00117604 * out_step3[ 2][ 0][0] - 0.05252417 * out_step3[ 2][ 1][0] - 0.08358262 * out_step3[ 2][ 2][0]
+   - 0.06182690 * out_step3[ 3][ 0][0] - 0.01993817 * out_step3[ 3][ 1][0] - 0.03628967 * out_step3[ 3][ 2][0]
+   - 0.08161902 * out_step3[ 4][ 0][0] - 0.04902529 * out_step3[ 4][ 1][0] - 0.04408643 * out_step3[ 4][ 2][0]
+   - 0.00095936 * out_step3[ 2][ 0][1] - 0.02539010 * out_step3[ 2][ 1][1] - 0.01495434 * out_step3[ 2][ 2][1]
+   + 0.02543900 * out_step3[ 3][ 0][1] + 0.01424166 * out_step3[ 3][ 1][1] - 0.00225786 * out_step3[ 3][ 2][1]
+   - 0.02862168 * out_step3[ 4][ 0][1] - 0.04998906 * out_step3[ 4][ 1][1] - 0.01026029 * out_step3[ 4][ 2][1]
+   - 0.01513285 * out_step3[ 2][ 0][2] + 0.04303989 * out_step3[ 2][ 1][2] + 0.04290899 * out_step3[ 2][ 2][2]
+   + 0.07907201 * out_step3[ 3][ 0][2] + 0.11527291 * out_step3[ 3][ 1][2] + 0.10291121 * out_step3[ 3][ 2][2]
+   - 0.03537496 * out_step3[ 4][ 0][2] - 0.10156145 * out_step3[ 4][ 1][2] - 0.11662345 * out_step3[ 4][ 2][2]
+   - 0.04980965 * out_step3[ 2][ 0][3] + 0.00314367 * out_step3[ 2][ 1][3] + 0.01163050 * out_step3[ 2][ 2][3]
+   + 0.05195190 * out_step3[ 3][ 0][3] + 0.03087861 * out_step3[ 3][ 1][3] - 0.00227121 * out_step3[ 3][ 2][3]
+   + 0.02340549 * out_step3[ 4][ 0][3] - 0.06107544 * out_step3[ 4][ 1][3] - 0.02049684 * out_step3[ 4][ 2][3]
+   - 0.07735132 * out_step3[ 2][ 0][4] + 0.11826890 * out_step3[ 2][ 1][4] + 0.17387629 * out_step3[ 2][ 2][4]
+   + 0.07911997 * out_step3[ 3][ 0][4] + 0.11526112 * out_step3[ 3][ 1][4] + 0.01537108 * out_step3[ 3][ 2][4]
+   + 0.00529317 * out_step3[ 4][ 0][4] - 0.09442890 * out_step3[ 4][ 1][4] - 0.02841247 * out_step3[ 4][ 2][4]
+   - 0.10549024 * out_step3[ 2][ 0][5] - 0.08103776 * out_step3[ 2][ 1][5] - 0.01161300 * out_step3[ 2][ 2][5]
+   - 0.07424026 * out_step3[ 3][ 0][5] - 0.05667843 * out_step3[ 3][ 1][5] - 0.05548735 * out_step3[ 3][ 2][5]
+   - 0.14923607 * out_step3[ 4][ 0][5] - 0.13779306 * out_step3[ 4][ 1][5] - 0.09090189 * out_step3[ 4][ 2][5]
+   - 0.02140876 * out_step3[ 2][ 0][6] - 0.01811916 * out_step3[ 2][ 1][6] - 0.00171503 * out_step3[ 2][ 2][6]
+   + 0.02935436 * out_step3[ 3][ 0][6] - 0.00610886 * out_step3[ 3][ 1][6] + 0.03546273 * out_step3[ 3][ 2][6]
+   - 0.09403312 * out_step3[ 4][ 0][6] - 0.01597615 * out_step3[ 4][ 1][6] - 0.04382054 * out_step3[ 4][ 2][6]
+   - 0.01527203 * out_step3[ 2][ 0][7] - 0.04009584 * out_step3[ 2][ 1][7] - 0.07166479 * out_step3[ 2][ 2][7]
+   - 0.02847805 * out_step3[ 3][ 0][7] + 0.03420868 * out_step3[ 3][ 1][7] + 0.09173471 * out_step3[ 3][ 2][7]
+   - 0.09661591 * out_step3[ 4][ 0][7] - 0.09112209 * out_step3[ 4][ 1][7] - 0.09543817 * out_step3[ 4][ 2][7]
+   + 0.05209413;
+
+out_step4[1][1][7] = 
+   - 0.00117604 * out_step3[ 2][ 2][0] - 0.05252417 * out_step3[ 2][ 3][0] - 0.08358262 * out_step3[ 2][ 4][0]
+   - 0.06182690 * out_step3[ 3][ 2][0] - 0.01993817 * out_step3[ 3][ 3][0] - 0.03628967 * out_step3[ 3][ 4][0]
+   - 0.08161902 * out_step3[ 4][ 2][0] - 0.04902529 * out_step3[ 4][ 3][0] - 0.04408643 * out_step3[ 4][ 4][0]
+   - 0.00095936 * out_step3[ 2][ 2][1] - 0.02539010 * out_step3[ 2][ 3][1] - 0.01495434 * out_step3[ 2][ 4][1]
+   + 0.02543900 * out_step3[ 3][ 2][1] + 0.01424166 * out_step3[ 3][ 3][1] - 0.00225786 * out_step3[ 3][ 4][1]
+   - 0.02862168 * out_step3[ 4][ 2][1] - 0.04998906 * out_step3[ 4][ 3][1] - 0.01026029 * out_step3[ 4][ 4][1]
+   - 0.01513285 * out_step3[ 2][ 2][2] + 0.04303989 * out_step3[ 2][ 3][2] + 0.04290899 * out_step3[ 2][ 4][2]
+   + 0.07907201 * out_step3[ 3][ 2][2] + 0.11527291 * out_step3[ 3][ 3][2] + 0.10291121 * out_step3[ 3][ 4][2]
+   - 0.03537496 * out_step3[ 4][ 2][2] - 0.10156145 * out_step3[ 4][ 3][2] - 0.11662345 * out_step3[ 4][ 4][2]
+   - 0.04980965 * out_step3[ 2][ 2][3] + 0.00314367 * out_step3[ 2][ 3][3] + 0.01163050 * out_step3[ 2][ 4][3]
+   + 0.05195190 * out_step3[ 3][ 2][3] + 0.03087861 * out_step3[ 3][ 3][3] - 0.00227121 * out_step3[ 3][ 4][3]
+   + 0.02340549 * out_step3[ 4][ 2][3] - 0.06107544 * out_step3[ 4][ 3][3] - 0.02049684 * out_step3[ 4][ 4][3]
+   - 0.07735132 * out_step3[ 2][ 2][4] + 0.11826890 * out_step3[ 2][ 3][4] + 0.17387629 * out_step3[ 2][ 4][4]
+   + 0.07911997 * out_step3[ 3][ 2][4] + 0.11526112 * out_step3[ 3][ 3][4] + 0.01537108 * out_step3[ 3][ 4][4]
+   + 0.00529317 * out_step3[ 4][ 2][4] - 0.09442890 * out_step3[ 4][ 3][4] - 0.02841247 * out_step3[ 4][ 4][4]
+   - 0.10549024 * out_step3[ 2][ 2][5] - 0.08103776 * out_step3[ 2][ 3][5] - 0.01161300 * out_step3[ 2][ 4][5]
+   - 0.07424026 * out_step3[ 3][ 2][5] - 0.05667843 * out_step3[ 3][ 3][5] - 0.05548735 * out_step3[ 3][ 4][5]
+   - 0.14923607 * out_step3[ 4][ 2][5] - 0.13779306 * out_step3[ 4][ 3][5] - 0.09090189 * out_step3[ 4][ 4][5]
+   - 0.02140876 * out_step3[ 2][ 2][6] - 0.01811916 * out_step3[ 2][ 3][6] - 0.00171503 * out_step3[ 2][ 4][6]
+   + 0.02935436 * out_step3[ 3][ 2][6] - 0.00610886 * out_step3[ 3][ 3][6] + 0.03546273 * out_step3[ 3][ 4][6]
+   - 0.09403312 * out_step3[ 4][ 2][6] - 0.01597615 * out_step3[ 4][ 3][6] - 0.04382054 * out_step3[ 4][ 4][6]
+   - 0.01527203 * out_step3[ 2][ 2][7] - 0.04009584 * out_step3[ 2][ 3][7] - 0.07166479 * out_step3[ 2][ 4][7]
+   - 0.02847805 * out_step3[ 3][ 2][7] + 0.03420868 * out_step3[ 3][ 3][7] + 0.09173471 * out_step3[ 3][ 4][7]
+   - 0.09661591 * out_step3[ 4][ 2][7] - 0.09112209 * out_step3[ 4][ 3][7] - 0.09543817 * out_step3[ 4][ 4][7]
+   + 0.05209413;
+
+out_step4[1][2][7] = 
+   - 0.00117604 * out_step3[ 2][ 4][0] - 0.05252417 * out_step3[ 2][ 5][0] - 0.08358262 * out_step3[ 2][ 6][0]
+   - 0.06182690 * out_step3[ 3][ 4][0] - 0.01993817 * out_step3[ 3][ 5][0] - 0.03628967 * out_step3[ 3][ 6][0]
+   - 0.08161902 * out_step3[ 4][ 4][0] - 0.04902529 * out_step3[ 4][ 5][0] - 0.04408643 * out_step3[ 4][ 6][0]
+   - 0.00095936 * out_step3[ 2][ 4][1] - 0.02539010 * out_step3[ 2][ 5][1] - 0.01495434 * out_step3[ 2][ 6][1]
+   + 0.02543900 * out_step3[ 3][ 4][1] + 0.01424166 * out_step3[ 3][ 5][1] - 0.00225786 * out_step3[ 3][ 6][1]
+   - 0.02862168 * out_step3[ 4][ 4][1] - 0.04998906 * out_step3[ 4][ 5][1] - 0.01026029 * out_step3[ 4][ 6][1]
+   - 0.01513285 * out_step3[ 2][ 4][2] + 0.04303989 * out_step3[ 2][ 5][2] + 0.04290899 * out_step3[ 2][ 6][2]
+   + 0.07907201 * out_step3[ 3][ 4][2] + 0.11527291 * out_step3[ 3][ 5][2] + 0.10291121 * out_step3[ 3][ 6][2]
+   - 0.03537496 * out_step3[ 4][ 4][2] - 0.10156145 * out_step3[ 4][ 5][2] - 0.11662345 * out_step3[ 4][ 6][2]
+   - 0.04980965 * out_step3[ 2][ 4][3] + 0.00314367 * out_step3[ 2][ 5][3] + 0.01163050 * out_step3[ 2][ 6][3]
+   + 0.05195190 * out_step3[ 3][ 4][3] + 0.03087861 * out_step3[ 3][ 5][3] - 0.00227121 * out_step3[ 3][ 6][3]
+   + 0.02340549 * out_step3[ 4][ 4][3] - 0.06107544 * out_step3[ 4][ 5][3] - 0.02049684 * out_step3[ 4][ 6][3]
+   - 0.07735132 * out_step3[ 2][ 4][4] + 0.11826890 * out_step3[ 2][ 5][4] + 0.17387629 * out_step3[ 2][ 6][4]
+   + 0.07911997 * out_step3[ 3][ 4][4] + 0.11526112 * out_step3[ 3][ 5][4] + 0.01537108 * out_step3[ 3][ 6][4]
+   + 0.00529317 * out_step3[ 4][ 4][4] - 0.09442890 * out_step3[ 4][ 5][4] - 0.02841247 * out_step3[ 4][ 6][4]
+   - 0.10549024 * out_step3[ 2][ 4][5] - 0.08103776 * out_step3[ 2][ 5][5] - 0.01161300 * out_step3[ 2][ 6][5]
+   - 0.07424026 * out_step3[ 3][ 4][5] - 0.05667843 * out_step3[ 3][ 5][5] - 0.05548735 * out_step3[ 3][ 6][5]
+   - 0.14923607 * out_step3[ 4][ 4][5] - 0.13779306 * out_step3[ 4][ 5][5] - 0.09090189 * out_step3[ 4][ 6][5]
+   - 0.02140876 * out_step3[ 2][ 4][6] - 0.01811916 * out_step3[ 2][ 5][6] - 0.00171503 * out_step3[ 2][ 6][6]
+   + 0.02935436 * out_step3[ 3][ 4][6] - 0.00610886 * out_step3[ 3][ 5][6] + 0.03546273 * out_step3[ 3][ 6][6]
+   - 0.09403312 * out_step3[ 4][ 4][6] - 0.01597615 * out_step3[ 4][ 5][6] - 0.04382054 * out_step3[ 4][ 6][6]
+   - 0.01527203 * out_step3[ 2][ 4][7] - 0.04009584 * out_step3[ 2][ 5][7] - 0.07166479 * out_step3[ 2][ 6][7]
+   - 0.02847805 * out_step3[ 3][ 4][7] + 0.03420868 * out_step3[ 3][ 5][7] + 0.09173471 * out_step3[ 3][ 6][7]
+   - 0.09661591 * out_step3[ 4][ 4][7] - 0.09112209 * out_step3[ 4][ 5][7] - 0.09543817 * out_step3[ 4][ 6][7]
+   + 0.05209413;
+
+out_step4[2][0][7] = 
+   - 0.00117604 * out_step3[ 4][ 0][0] - 0.05252417 * out_step3[ 4][ 1][0] - 0.08358262 * out_step3[ 4][ 2][0]
+   - 0.06182690 * out_step3[ 5][ 0][0] - 0.01993817 * out_step3[ 5][ 1][0] - 0.03628967 * out_step3[ 5][ 2][0]
+   - 0.08161902 * out_step3[ 6][ 0][0] - 0.04902529 * out_step3[ 6][ 1][0] - 0.04408643 * out_step3[ 6][ 2][0]
+   - 0.00095936 * out_step3[ 4][ 0][1] - 0.02539010 * out_step3[ 4][ 1][1] - 0.01495434 * out_step3[ 4][ 2][1]
+   + 0.02543900 * out_step3[ 5][ 0][1] + 0.01424166 * out_step3[ 5][ 1][1] - 0.00225786 * out_step3[ 5][ 2][1]
+   - 0.02862168 * out_step3[ 6][ 0][1] - 0.04998906 * out_step3[ 6][ 1][1] - 0.01026029 * out_step3[ 6][ 2][1]
+   - 0.01513285 * out_step3[ 4][ 0][2] + 0.04303989 * out_step3[ 4][ 1][2] + 0.04290899 * out_step3[ 4][ 2][2]
+   + 0.07907201 * out_step3[ 5][ 0][2] + 0.11527291 * out_step3[ 5][ 1][2] + 0.10291121 * out_step3[ 5][ 2][2]
+   - 0.03537496 * out_step3[ 6][ 0][2] - 0.10156145 * out_step3[ 6][ 1][2] - 0.11662345 * out_step3[ 6][ 2][2]
+   - 0.04980965 * out_step3[ 4][ 0][3] + 0.00314367 * out_step3[ 4][ 1][3] + 0.01163050 * out_step3[ 4][ 2][3]
+   + 0.05195190 * out_step3[ 5][ 0][3] + 0.03087861 * out_step3[ 5][ 1][3] - 0.00227121 * out_step3[ 5][ 2][3]
+   + 0.02340549 * out_step3[ 6][ 0][3] - 0.06107544 * out_step3[ 6][ 1][3] - 0.02049684 * out_step3[ 6][ 2][3]
+   - 0.07735132 * out_step3[ 4][ 0][4] + 0.11826890 * out_step3[ 4][ 1][4] + 0.17387629 * out_step3[ 4][ 2][4]
+   + 0.07911997 * out_step3[ 5][ 0][4] + 0.11526112 * out_step3[ 5][ 1][4] + 0.01537108 * out_step3[ 5][ 2][4]
+   + 0.00529317 * out_step3[ 6][ 0][4] - 0.09442890 * out_step3[ 6][ 1][4] - 0.02841247 * out_step3[ 6][ 2][4]
+   - 0.10549024 * out_step3[ 4][ 0][5] - 0.08103776 * out_step3[ 4][ 1][5] - 0.01161300 * out_step3[ 4][ 2][5]
+   - 0.07424026 * out_step3[ 5][ 0][5] - 0.05667843 * out_step3[ 5][ 1][5] - 0.05548735 * out_step3[ 5][ 2][5]
+   - 0.14923607 * out_step3[ 6][ 0][5] - 0.13779306 * out_step3[ 6][ 1][5] - 0.09090189 * out_step3[ 6][ 2][5]
+   - 0.02140876 * out_step3[ 4][ 0][6] - 0.01811916 * out_step3[ 4][ 1][6] - 0.00171503 * out_step3[ 4][ 2][6]
+   + 0.02935436 * out_step3[ 5][ 0][6] - 0.00610886 * out_step3[ 5][ 1][6] + 0.03546273 * out_step3[ 5][ 2][6]
+   - 0.09403312 * out_step3[ 6][ 0][6] - 0.01597615 * out_step3[ 6][ 1][6] - 0.04382054 * out_step3[ 6][ 2][6]
+   - 0.01527203 * out_step3[ 4][ 0][7] - 0.04009584 * out_step3[ 4][ 1][7] - 0.07166479 * out_step3[ 4][ 2][7]
+   - 0.02847805 * out_step3[ 5][ 0][7] + 0.03420868 * out_step3[ 5][ 1][7] + 0.09173471 * out_step3[ 5][ 2][7]
+   - 0.09661591 * out_step3[ 6][ 0][7] - 0.09112209 * out_step3[ 6][ 1][7] - 0.09543817 * out_step3[ 6][ 2][7]
+   + 0.05209413;
+
+out_step4[2][1][7] = 
+   - 0.00117604 * out_step3[ 4][ 2][0] - 0.05252417 * out_step3[ 4][ 3][0] - 0.08358262 * out_step3[ 4][ 4][0]
+   - 0.06182690 * out_step3[ 5][ 2][0] - 0.01993817 * out_step3[ 5][ 3][0] - 0.03628967 * out_step3[ 5][ 4][0]
+   - 0.08161902 * out_step3[ 6][ 2][0] - 0.04902529 * out_step3[ 6][ 3][0] - 0.04408643 * out_step3[ 6][ 4][0]
+   - 0.00095936 * out_step3[ 4][ 2][1] - 0.02539010 * out_step3[ 4][ 3][1] - 0.01495434 * out_step3[ 4][ 4][1]
+   + 0.02543900 * out_step3[ 5][ 2][1] + 0.01424166 * out_step3[ 5][ 3][1] - 0.00225786 * out_step3[ 5][ 4][1]
+   - 0.02862168 * out_step3[ 6][ 2][1] - 0.04998906 * out_step3[ 6][ 3][1] - 0.01026029 * out_step3[ 6][ 4][1]
+   - 0.01513285 * out_step3[ 4][ 2][2] + 0.04303989 * out_step3[ 4][ 3][2] + 0.04290899 * out_step3[ 4][ 4][2]
+   + 0.07907201 * out_step3[ 5][ 2][2] + 0.11527291 * out_step3[ 5][ 3][2] + 0.10291121 * out_step3[ 5][ 4][2]
+   - 0.03537496 * out_step3[ 6][ 2][2] - 0.10156145 * out_step3[ 6][ 3][2] - 0.11662345 * out_step3[ 6][ 4][2]
+   - 0.04980965 * out_step3[ 4][ 2][3] + 0.00314367 * out_step3[ 4][ 3][3] + 0.01163050 * out_step3[ 4][ 4][3]
+   + 0.05195190 * out_step3[ 5][ 2][3] + 0.03087861 * out_step3[ 5][ 3][3] - 0.00227121 * out_step3[ 5][ 4][3]
+   + 0.02340549 * out_step3[ 6][ 2][3] - 0.06107544 * out_step3[ 6][ 3][3] - 0.02049684 * out_step3[ 6][ 4][3]
+   - 0.07735132 * out_step3[ 4][ 2][4] + 0.11826890 * out_step3[ 4][ 3][4] + 0.17387629 * out_step3[ 4][ 4][4]
+   + 0.07911997 * out_step3[ 5][ 2][4] + 0.11526112 * out_step3[ 5][ 3][4] + 0.01537108 * out_step3[ 5][ 4][4]
+   + 0.00529317 * out_step3[ 6][ 2][4] - 0.09442890 * out_step3[ 6][ 3][4] - 0.02841247 * out_step3[ 6][ 4][4]
+   - 0.10549024 * out_step3[ 4][ 2][5] - 0.08103776 * out_step3[ 4][ 3][5] - 0.01161300 * out_step3[ 4][ 4][5]
+   - 0.07424026 * out_step3[ 5][ 2][5] - 0.05667843 * out_step3[ 5][ 3][5] - 0.05548735 * out_step3[ 5][ 4][5]
+   - 0.14923607 * out_step3[ 6][ 2][5] - 0.13779306 * out_step3[ 6][ 3][5] - 0.09090189 * out_step3[ 6][ 4][5]
+   - 0.02140876 * out_step3[ 4][ 2][6] - 0.01811916 * out_step3[ 4][ 3][6] - 0.00171503 * out_step3[ 4][ 4][6]
+   + 0.02935436 * out_step3[ 5][ 2][6] - 0.00610886 * out_step3[ 5][ 3][6] + 0.03546273 * out_step3[ 5][ 4][6]
+   - 0.09403312 * out_step3[ 6][ 2][6] - 0.01597615 * out_step3[ 6][ 3][6] - 0.04382054 * out_step3[ 6][ 4][6]
+   - 0.01527203 * out_step3[ 4][ 2][7] - 0.04009584 * out_step3[ 4][ 3][7] - 0.07166479 * out_step3[ 4][ 4][7]
+   - 0.02847805 * out_step3[ 5][ 2][7] + 0.03420868 * out_step3[ 5][ 3][7] + 0.09173471 * out_step3[ 5][ 4][7]
+   - 0.09661591 * out_step3[ 6][ 2][7] - 0.09112209 * out_step3[ 6][ 3][7] - 0.09543817 * out_step3[ 6][ 4][7]
+   + 0.05209413;
+
+out_step4[2][2][7] = 
+   - 0.00117604 * out_step3[ 4][ 4][0] - 0.05252417 * out_step3[ 4][ 5][0] - 0.08358262 * out_step3[ 4][ 6][0]
+   - 0.06182690 * out_step3[ 5][ 4][0] - 0.01993817 * out_step3[ 5][ 5][0] - 0.03628967 * out_step3[ 5][ 6][0]
+   - 0.08161902 * out_step3[ 6][ 4][0] - 0.04902529 * out_step3[ 6][ 5][0] - 0.04408643 * out_step3[ 6][ 6][0]
+   - 0.00095936 * out_step3[ 4][ 4][1] - 0.02539010 * out_step3[ 4][ 5][1] - 0.01495434 * out_step3[ 4][ 6][1]
+   + 0.02543900 * out_step3[ 5][ 4][1] + 0.01424166 * out_step3[ 5][ 5][1] - 0.00225786 * out_step3[ 5][ 6][1]
+   - 0.02862168 * out_step3[ 6][ 4][1] - 0.04998906 * out_step3[ 6][ 5][1] - 0.01026029 * out_step3[ 6][ 6][1]
+   - 0.01513285 * out_step3[ 4][ 4][2] + 0.04303989 * out_step3[ 4][ 5][2] + 0.04290899 * out_step3[ 4][ 6][2]
+   + 0.07907201 * out_step3[ 5][ 4][2] + 0.11527291 * out_step3[ 5][ 5][2] + 0.10291121 * out_step3[ 5][ 6][2]
+   - 0.03537496 * out_step3[ 6][ 4][2] - 0.10156145 * out_step3[ 6][ 5][2] - 0.11662345 * out_step3[ 6][ 6][2]
+   - 0.04980965 * out_step3[ 4][ 4][3] + 0.00314367 * out_step3[ 4][ 5][3] + 0.01163050 * out_step3[ 4][ 6][3]
+   + 0.05195190 * out_step3[ 5][ 4][3] + 0.03087861 * out_step3[ 5][ 5][3] - 0.00227121 * out_step3[ 5][ 6][3]
+   + 0.02340549 * out_step3[ 6][ 4][3] - 0.06107544 * out_step3[ 6][ 5][3] - 0.02049684 * out_step3[ 6][ 6][3]
+   - 0.07735132 * out_step3[ 4][ 4][4] + 0.11826890 * out_step3[ 4][ 5][4] + 0.17387629 * out_step3[ 4][ 6][4]
+   + 0.07911997 * out_step3[ 5][ 4][4] + 0.11526112 * out_step3[ 5][ 5][4] + 0.01537108 * out_step3[ 5][ 6][4]
+   + 0.00529317 * out_step3[ 6][ 4][4] - 0.09442890 * out_step3[ 6][ 5][4] - 0.02841247 * out_step3[ 6][ 6][4]
+   - 0.10549024 * out_step3[ 4][ 4][5] - 0.08103776 * out_step3[ 4][ 5][5] - 0.01161300 * out_step3[ 4][ 6][5]
+   - 0.07424026 * out_step3[ 5][ 4][5] - 0.05667843 * out_step3[ 5][ 5][5] - 0.05548735 * out_step3[ 5][ 6][5]
+   - 0.14923607 * out_step3[ 6][ 4][5] - 0.13779306 * out_step3[ 6][ 5][5] - 0.09090189 * out_step3[ 6][ 6][5]
+   - 0.02140876 * out_step3[ 4][ 4][6] - 0.01811916 * out_step3[ 4][ 5][6] - 0.00171503 * out_step3[ 4][ 6][6]
+   + 0.02935436 * out_step3[ 5][ 4][6] - 0.00610886 * out_step3[ 5][ 5][6] + 0.03546273 * out_step3[ 5][ 6][6]
+   - 0.09403312 * out_step3[ 6][ 4][6] - 0.01597615 * out_step3[ 6][ 5][6] - 0.04382054 * out_step3[ 6][ 6][6]
+   - 0.01527203 * out_step3[ 4][ 4][7] - 0.04009584 * out_step3[ 4][ 5][7] - 0.07166479 * out_step3[ 4][ 6][7]
+   - 0.02847805 * out_step3[ 5][ 4][7] + 0.03420868 * out_step3[ 5][ 5][7] + 0.09173471 * out_step3[ 5][ 6][7]
+   - 0.09661591 * out_step3[ 6][ 4][7] - 0.09112209 * out_step3[ 6][ 5][7] - 0.09543817 * out_step3[ 6][ 6][7]
+   + 0.05209413;
+
+out_step4[0][0][8] = 
+   - 0.03747300 * out_step3[ 0][ 0][0] + 0.02446466 * out_step3[ 0][ 1][0] + 0.02748419 * out_step3[ 0][ 2][0]
+   - 0.03224619 * out_step3[ 1][ 0][0] + 0.01370133 * out_step3[ 1][ 1][0] + 0.02632665 * out_step3[ 1][ 2][0]
+   - 0.00834311 * out_step3[ 2][ 0][0] - 0.04509716 * out_step3[ 2][ 1][0] - 0.01682265 * out_step3[ 2][ 2][0]
+   - 0.03572841 * out_step3[ 0][ 0][1] + 0.05534445 * out_step3[ 0][ 1][1] + 0.00208834 * out_step3[ 0][ 2][1]
+   + 0.02909134 * out_step3[ 1][ 0][1] - 0.00120488 * out_step3[ 1][ 1][1] - 0.02029474 * out_step3[ 1][ 2][1]
+   + 0.01082873 * out_step3[ 2][ 0][1] - 0.06870382 * out_step3[ 2][ 1][1] + 0.00676743 * out_step3[ 2][ 2][1]
+   - 0.03842957 * out_step3[ 0][ 0][2] - 0.00969998 * out_step3[ 0][ 1][2] + 0.04304982 * out_step3[ 0][ 2][2]
+   - 0.03028473 * out_step3[ 1][ 0][2] - 0.05270055 * out_step3[ 1][ 1][2] + 0.03303846 * out_step3[ 1][ 2][2]
+   - 0.00652625 * out_step3[ 2][ 0][2] - 0.01054280 * out_step3[ 2][ 1][2] + 0.03100870 * out_step3[ 2][ 2][2]
+   - 0.04571012 * out_step3[ 0][ 0][3] + 0.14462885 * out_step3[ 0][ 1][3] + 0.06714435 * out_step3[ 0][ 2][3]
+   + 0.03408671 * out_step3[ 1][ 0][3] + 0.02912452 * out_step3[ 1][ 1][3] - 0.03362672 * out_step3[ 1][ 2][3]
+   - 0.00034685 * out_step3[ 2][ 0][3] - 0.11290960 * out_step3[ 2][ 1][3] + 0.01043491 * out_step3[ 2][ 2][3]
+   - 0.02675117 * out_step3[ 0][ 0][4] - 0.04762271 * out_step3[ 0][ 1][4] - 0.02108681 * out_step3[ 0][ 2][4]
+   + 0.06529764 * out_step3[ 1][ 0][4] - 0.02100878 * out_step3[ 1][ 1][4] + 0.02934207 * out_step3[ 1][ 2][4]
+   - 0.01440481 * out_step3[ 2][ 0][4] - 0.06631953 * out_step3[ 2][ 1][4] + 0.04682801 * out_step3[ 2][ 2][4]
+   - 0.01360819 * out_step3[ 0][ 0][5] + 0.02252637 * out_step3[ 0][ 1][5] + 0.00629140 * out_step3[ 0][ 2][5]
+   + 0.04268021 * out_step3[ 1][ 0][5] - 0.06570319 * out_step3[ 1][ 1][5] - 0.01213371 * out_step3[ 1][ 2][5]
+   - 0.07391589 * out_step3[ 2][ 0][5] + 0.09330343 * out_step3[ 2][ 1][5] + 0.06588328 * out_step3[ 2][ 2][5]
+   - 0.02349851 * out_step3[ 0][ 0][6] - 0.05920330 * out_step3[ 0][ 1][6] + 0.03170622 * out_step3[ 0][ 2][6]
+   - 0.02830298 * out_step3[ 1][ 0][6] - 0.01472284 * out_step3[ 1][ 1][6] + 0.10367820 * out_step3[ 1][ 2][6]
+   + 0.03512894 * out_step3[ 2][ 0][6] + 0.00549308 * out_step3[ 2][ 1][6] - 0.00402416 * out_step3[ 2][ 2][6]
+   - 0.01545316 * out_step3[ 0][ 0][7] + 0.01323530 * out_step3[ 0][ 1][7] - 0.06452832 * out_step3[ 0][ 2][7]
+   - 0.06631935 * out_step3[ 1][ 0][7] - 0.06110401 * out_step3[ 1][ 1][7] - 0.02595045 * out_step3[ 1][ 2][7]
+   - 0.09238039 * out_step3[ 2][ 0][7] + 0.04481936 * out_step3[ 2][ 1][7] + 0.02557128 * out_step3[ 2][ 2][7]
+   - 0.02196685;
+
+out_step4[0][1][8] = 
+   - 0.03747300 * out_step3[ 0][ 2][0] + 0.02446466 * out_step3[ 0][ 3][0] + 0.02748419 * out_step3[ 0][ 4][0]
+   - 0.03224619 * out_step3[ 1][ 2][0] + 0.01370133 * out_step3[ 1][ 3][0] + 0.02632665 * out_step3[ 1][ 4][0]
+   - 0.00834311 * out_step3[ 2][ 2][0] - 0.04509716 * out_step3[ 2][ 3][0] - 0.01682265 * out_step3[ 2][ 4][0]
+   - 0.03572841 * out_step3[ 0][ 2][1] + 0.05534445 * out_step3[ 0][ 3][1] + 0.00208834 * out_step3[ 0][ 4][1]
+   + 0.02909134 * out_step3[ 1][ 2][1] - 0.00120488 * out_step3[ 1][ 3][1] - 0.02029474 * out_step3[ 1][ 4][1]
+   + 0.01082873 * out_step3[ 2][ 2][1] - 0.06870382 * out_step3[ 2][ 3][1] + 0.00676743 * out_step3[ 2][ 4][1]
+   - 0.03842957 * out_step3[ 0][ 2][2] - 0.00969998 * out_step3[ 0][ 3][2] + 0.04304982 * out_step3[ 0][ 4][2]
+   - 0.03028473 * out_step3[ 1][ 2][2] - 0.05270055 * out_step3[ 1][ 3][2] + 0.03303846 * out_step3[ 1][ 4][2]
+   - 0.00652625 * out_step3[ 2][ 2][2] - 0.01054280 * out_step3[ 2][ 3][2] + 0.03100870 * out_step3[ 2][ 4][2]
+   - 0.04571012 * out_step3[ 0][ 2][3] + 0.14462885 * out_step3[ 0][ 3][3] + 0.06714435 * out_step3[ 0][ 4][3]
+   + 0.03408671 * out_step3[ 1][ 2][3] + 0.02912452 * out_step3[ 1][ 3][3] - 0.03362672 * out_step3[ 1][ 4][3]
+   - 0.00034685 * out_step3[ 2][ 2][3] - 0.11290960 * out_step3[ 2][ 3][3] + 0.01043491 * out_step3[ 2][ 4][3]
+   - 0.02675117 * out_step3[ 0][ 2][4] - 0.04762271 * out_step3[ 0][ 3][4] - 0.02108681 * out_step3[ 0][ 4][4]
+   + 0.06529764 * out_step3[ 1][ 2][4] - 0.02100878 * out_step3[ 1][ 3][4] + 0.02934207 * out_step3[ 1][ 4][4]
+   - 0.01440481 * out_step3[ 2][ 2][4] - 0.06631953 * out_step3[ 2][ 3][4] + 0.04682801 * out_step3[ 2][ 4][4]
+   - 0.01360819 * out_step3[ 0][ 2][5] + 0.02252637 * out_step3[ 0][ 3][5] + 0.00629140 * out_step3[ 0][ 4][5]
+   + 0.04268021 * out_step3[ 1][ 2][5] - 0.06570319 * out_step3[ 1][ 3][5] - 0.01213371 * out_step3[ 1][ 4][5]
+   - 0.07391589 * out_step3[ 2][ 2][5] + 0.09330343 * out_step3[ 2][ 3][5] + 0.06588328 * out_step3[ 2][ 4][5]
+   - 0.02349851 * out_step3[ 0][ 2][6] - 0.05920330 * out_step3[ 0][ 3][6] + 0.03170622 * out_step3[ 0][ 4][6]
+   - 0.02830298 * out_step3[ 1][ 2][6] - 0.01472284 * out_step3[ 1][ 3][6] + 0.10367820 * out_step3[ 1][ 4][6]
+   + 0.03512894 * out_step3[ 2][ 2][6] + 0.00549308 * out_step3[ 2][ 3][6] - 0.00402416 * out_step3[ 2][ 4][6]
+   - 0.01545316 * out_step3[ 0][ 2][7] + 0.01323530 * out_step3[ 0][ 3][7] - 0.06452832 * out_step3[ 0][ 4][7]
+   - 0.06631935 * out_step3[ 1][ 2][7] - 0.06110401 * out_step3[ 1][ 3][7] - 0.02595045 * out_step3[ 1][ 4][7]
+   - 0.09238039 * out_step3[ 2][ 2][7] + 0.04481936 * out_step3[ 2][ 3][7] + 0.02557128 * out_step3[ 2][ 4][7]
+   - 0.02196685;
+
+out_step4[0][2][8] = 
+   - 0.03747300 * out_step3[ 0][ 4][0] + 0.02446466 * out_step3[ 0][ 5][0] + 0.02748419 * out_step3[ 0][ 6][0]
+   - 0.03224619 * out_step3[ 1][ 4][0] + 0.01370133 * out_step3[ 1][ 5][0] + 0.02632665 * out_step3[ 1][ 6][0]
+   - 0.00834311 * out_step3[ 2][ 4][0] - 0.04509716 * out_step3[ 2][ 5][0] - 0.01682265 * out_step3[ 2][ 6][0]
+   - 0.03572841 * out_step3[ 0][ 4][1] + 0.05534445 * out_step3[ 0][ 5][1] + 0.00208834 * out_step3[ 0][ 6][1]
+   + 0.02909134 * out_step3[ 1][ 4][1] - 0.00120488 * out_step3[ 1][ 5][1] - 0.02029474 * out_step3[ 1][ 6][1]
+   + 0.01082873 * out_step3[ 2][ 4][1] - 0.06870382 * out_step3[ 2][ 5][1] + 0.00676743 * out_step3[ 2][ 6][1]
+   - 0.03842957 * out_step3[ 0][ 4][2] - 0.00969998 * out_step3[ 0][ 5][2] + 0.04304982 * out_step3[ 0][ 6][2]
+   - 0.03028473 * out_step3[ 1][ 4][2] - 0.05270055 * out_step3[ 1][ 5][2] + 0.03303846 * out_step3[ 1][ 6][2]
+   - 0.00652625 * out_step3[ 2][ 4][2] - 0.01054280 * out_step3[ 2][ 5][2] + 0.03100870 * out_step3[ 2][ 6][2]
+   - 0.04571012 * out_step3[ 0][ 4][3] + 0.14462885 * out_step3[ 0][ 5][3] + 0.06714435 * out_step3[ 0][ 6][3]
+   + 0.03408671 * out_step3[ 1][ 4][3] + 0.02912452 * out_step3[ 1][ 5][3] - 0.03362672 * out_step3[ 1][ 6][3]
+   - 0.00034685 * out_step3[ 2][ 4][3] - 0.11290960 * out_step3[ 2][ 5][3] + 0.01043491 * out_step3[ 2][ 6][3]
+   - 0.02675117 * out_step3[ 0][ 4][4] - 0.04762271 * out_step3[ 0][ 5][4] - 0.02108681 * out_step3[ 0][ 6][4]
+   + 0.06529764 * out_step3[ 1][ 4][4] - 0.02100878 * out_step3[ 1][ 5][4] + 0.02934207 * out_step3[ 1][ 6][4]
+   - 0.01440481 * out_step3[ 2][ 4][4] - 0.06631953 * out_step3[ 2][ 5][4] + 0.04682801 * out_step3[ 2][ 6][4]
+   - 0.01360819 * out_step3[ 0][ 4][5] + 0.02252637 * out_step3[ 0][ 5][5] + 0.00629140 * out_step3[ 0][ 6][5]
+   + 0.04268021 * out_step3[ 1][ 4][5] - 0.06570319 * out_step3[ 1][ 5][5] - 0.01213371 * out_step3[ 1][ 6][5]
+   - 0.07391589 * out_step3[ 2][ 4][5] + 0.09330343 * out_step3[ 2][ 5][5] + 0.06588328 * out_step3[ 2][ 6][5]
+   - 0.02349851 * out_step3[ 0][ 4][6] - 0.05920330 * out_step3[ 0][ 5][6] + 0.03170622 * out_step3[ 0][ 6][6]
+   - 0.02830298 * out_step3[ 1][ 4][6] - 0.01472284 * out_step3[ 1][ 5][6] + 0.10367820 * out_step3[ 1][ 6][6]
+   + 0.03512894 * out_step3[ 2][ 4][6] + 0.00549308 * out_step3[ 2][ 5][6] - 0.00402416 * out_step3[ 2][ 6][6]
+   - 0.01545316 * out_step3[ 0][ 4][7] + 0.01323530 * out_step3[ 0][ 5][7] - 0.06452832 * out_step3[ 0][ 6][7]
+   - 0.06631935 * out_step3[ 1][ 4][7] - 0.06110401 * out_step3[ 1][ 5][7] - 0.02595045 * out_step3[ 1][ 6][7]
+   - 0.09238039 * out_step3[ 2][ 4][7] + 0.04481936 * out_step3[ 2][ 5][7] + 0.02557128 * out_step3[ 2][ 6][7]
+   - 0.02196685;
+
+out_step4[1][0][8] = 
+   - 0.03747300 * out_step3[ 2][ 0][0] + 0.02446466 * out_step3[ 2][ 1][0] + 0.02748419 * out_step3[ 2][ 2][0]
+   - 0.03224619 * out_step3[ 3][ 0][0] + 0.01370133 * out_step3[ 3][ 1][0] + 0.02632665 * out_step3[ 3][ 2][0]
+   - 0.00834311 * out_step3[ 4][ 0][0] - 0.04509716 * out_step3[ 4][ 1][0] - 0.01682265 * out_step3[ 4][ 2][0]
+   - 0.03572841 * out_step3[ 2][ 0][1] + 0.05534445 * out_step3[ 2][ 1][1] + 0.00208834 * out_step3[ 2][ 2][1]
+   + 0.02909134 * out_step3[ 3][ 0][1] - 0.00120488 * out_step3[ 3][ 1][1] - 0.02029474 * out_step3[ 3][ 2][1]
+   + 0.01082873 * out_step3[ 4][ 0][1] - 0.06870382 * out_step3[ 4][ 1][1] + 0.00676743 * out_step3[ 4][ 2][1]
+   - 0.03842957 * out_step3[ 2][ 0][2] - 0.00969998 * out_step3[ 2][ 1][2] + 0.04304982 * out_step3[ 2][ 2][2]
+   - 0.03028473 * out_step3[ 3][ 0][2] - 0.05270055 * out_step3[ 3][ 1][2] + 0.03303846 * out_step3[ 3][ 2][2]
+   - 0.00652625 * out_step3[ 4][ 0][2] - 0.01054280 * out_step3[ 4][ 1][2] + 0.03100870 * out_step3[ 4][ 2][2]
+   - 0.04571012 * out_step3[ 2][ 0][3] + 0.14462885 * out_step3[ 2][ 1][3] + 0.06714435 * out_step3[ 2][ 2][3]
+   + 0.03408671 * out_step3[ 3][ 0][3] + 0.02912452 * out_step3[ 3][ 1][3] - 0.03362672 * out_step3[ 3][ 2][3]
+   - 0.00034685 * out_step3[ 4][ 0][3] - 0.11290960 * out_step3[ 4][ 1][3] + 0.01043491 * out_step3[ 4][ 2][3]
+   - 0.02675117 * out_step3[ 2][ 0][4] - 0.04762271 * out_step3[ 2][ 1][4] - 0.02108681 * out_step3[ 2][ 2][4]
+   + 0.06529764 * out_step3[ 3][ 0][4] - 0.02100878 * out_step3[ 3][ 1][4] + 0.02934207 * out_step3[ 3][ 2][4]
+   - 0.01440481 * out_step3[ 4][ 0][4] - 0.06631953 * out_step3[ 4][ 1][4] + 0.04682801 * out_step3[ 4][ 2][4]
+   - 0.01360819 * out_step3[ 2][ 0][5] + 0.02252637 * out_step3[ 2][ 1][5] + 0.00629140 * out_step3[ 2][ 2][5]
+   + 0.04268021 * out_step3[ 3][ 0][5] - 0.06570319 * out_step3[ 3][ 1][5] - 0.01213371 * out_step3[ 3][ 2][5]
+   - 0.07391589 * out_step3[ 4][ 0][5] + 0.09330343 * out_step3[ 4][ 1][5] + 0.06588328 * out_step3[ 4][ 2][5]
+   - 0.02349851 * out_step3[ 2][ 0][6] - 0.05920330 * out_step3[ 2][ 1][6] + 0.03170622 * out_step3[ 2][ 2][6]
+   - 0.02830298 * out_step3[ 3][ 0][6] - 0.01472284 * out_step3[ 3][ 1][6] + 0.10367820 * out_step3[ 3][ 2][6]
+   + 0.03512894 * out_step3[ 4][ 0][6] + 0.00549308 * out_step3[ 4][ 1][6] - 0.00402416 * out_step3[ 4][ 2][6]
+   - 0.01545316 * out_step3[ 2][ 0][7] + 0.01323530 * out_step3[ 2][ 1][7] - 0.06452832 * out_step3[ 2][ 2][7]
+   - 0.06631935 * out_step3[ 3][ 0][7] - 0.06110401 * out_step3[ 3][ 1][7] - 0.02595045 * out_step3[ 3][ 2][7]
+   - 0.09238039 * out_step3[ 4][ 0][7] + 0.04481936 * out_step3[ 4][ 1][7] + 0.02557128 * out_step3[ 4][ 2][7]
+   - 0.02196685;
+
+out_step4[1][1][8] = 
+   - 0.03747300 * out_step3[ 2][ 2][0] + 0.02446466 * out_step3[ 2][ 3][0] + 0.02748419 * out_step3[ 2][ 4][0]
+   - 0.03224619 * out_step3[ 3][ 2][0] + 0.01370133 * out_step3[ 3][ 3][0] + 0.02632665 * out_step3[ 3][ 4][0]
+   - 0.00834311 * out_step3[ 4][ 2][0] - 0.04509716 * out_step3[ 4][ 3][0] - 0.01682265 * out_step3[ 4][ 4][0]
+   - 0.03572841 * out_step3[ 2][ 2][1] + 0.05534445 * out_step3[ 2][ 3][1] + 0.00208834 * out_step3[ 2][ 4][1]
+   + 0.02909134 * out_step3[ 3][ 2][1] - 0.00120488 * out_step3[ 3][ 3][1] - 0.02029474 * out_step3[ 3][ 4][1]
+   + 0.01082873 * out_step3[ 4][ 2][1] - 0.06870382 * out_step3[ 4][ 3][1] + 0.00676743 * out_step3[ 4][ 4][1]
+   - 0.03842957 * out_step3[ 2][ 2][2] - 0.00969998 * out_step3[ 2][ 3][2] + 0.04304982 * out_step3[ 2][ 4][2]
+   - 0.03028473 * out_step3[ 3][ 2][2] - 0.05270055 * out_step3[ 3][ 3][2] + 0.03303846 * out_step3[ 3][ 4][2]
+   - 0.00652625 * out_step3[ 4][ 2][2] - 0.01054280 * out_step3[ 4][ 3][2] + 0.03100870 * out_step3[ 4][ 4][2]
+   - 0.04571012 * out_step3[ 2][ 2][3] + 0.14462885 * out_step3[ 2][ 3][3] + 0.06714435 * out_step3[ 2][ 4][3]
+   + 0.03408671 * out_step3[ 3][ 2][3] + 0.02912452 * out_step3[ 3][ 3][3] - 0.03362672 * out_step3[ 3][ 4][3]
+   - 0.00034685 * out_step3[ 4][ 2][3] - 0.11290960 * out_step3[ 4][ 3][3] + 0.01043491 * out_step3[ 4][ 4][3]
+   - 0.02675117 * out_step3[ 2][ 2][4] - 0.04762271 * out_step3[ 2][ 3][4] - 0.02108681 * out_step3[ 2][ 4][4]
+   + 0.06529764 * out_step3[ 3][ 2][4] - 0.02100878 * out_step3[ 3][ 3][4] + 0.02934207 * out_step3[ 3][ 4][4]
+   - 0.01440481 * out_step3[ 4][ 2][4] - 0.06631953 * out_step3[ 4][ 3][4] + 0.04682801 * out_step3[ 4][ 4][4]
+   - 0.01360819 * out_step3[ 2][ 2][5] + 0.02252637 * out_step3[ 2][ 3][5] + 0.00629140 * out_step3[ 2][ 4][5]
+   + 0.04268021 * out_step3[ 3][ 2][5] - 0.06570319 * out_step3[ 3][ 3][5] - 0.01213371 * out_step3[ 3][ 4][5]
+   - 0.07391589 * out_step3[ 4][ 2][5] + 0.09330343 * out_step3[ 4][ 3][5] + 0.06588328 * out_step3[ 4][ 4][5]
+   - 0.02349851 * out_step3[ 2][ 2][6] - 0.05920330 * out_step3[ 2][ 3][6] + 0.03170622 * out_step3[ 2][ 4][6]
+   - 0.02830298 * out_step3[ 3][ 2][6] - 0.01472284 * out_step3[ 3][ 3][6] + 0.10367820 * out_step3[ 3][ 4][6]
+   + 0.03512894 * out_step3[ 4][ 2][6] + 0.00549308 * out_step3[ 4][ 3][6] - 0.00402416 * out_step3[ 4][ 4][6]
+   - 0.01545316 * out_step3[ 2][ 2][7] + 0.01323530 * out_step3[ 2][ 3][7] - 0.06452832 * out_step3[ 2][ 4][7]
+   - 0.06631935 * out_step3[ 3][ 2][7] - 0.06110401 * out_step3[ 3][ 3][7] - 0.02595045 * out_step3[ 3][ 4][7]
+   - 0.09238039 * out_step3[ 4][ 2][7] + 0.04481936 * out_step3[ 4][ 3][7] + 0.02557128 * out_step3[ 4][ 4][7]
+   - 0.02196685;
+
+out_step4[1][2][8] = 
+   - 0.03747300 * out_step3[ 2][ 4][0] + 0.02446466 * out_step3[ 2][ 5][0] + 0.02748419 * out_step3[ 2][ 6][0]
+   - 0.03224619 * out_step3[ 3][ 4][0] + 0.01370133 * out_step3[ 3][ 5][0] + 0.02632665 * out_step3[ 3][ 6][0]
+   - 0.00834311 * out_step3[ 4][ 4][0] - 0.04509716 * out_step3[ 4][ 5][0] - 0.01682265 * out_step3[ 4][ 6][0]
+   - 0.03572841 * out_step3[ 2][ 4][1] + 0.05534445 * out_step3[ 2][ 5][1] + 0.00208834 * out_step3[ 2][ 6][1]
+   + 0.02909134 * out_step3[ 3][ 4][1] - 0.00120488 * out_step3[ 3][ 5][1] - 0.02029474 * out_step3[ 3][ 6][1]
+   + 0.01082873 * out_step3[ 4][ 4][1] - 0.06870382 * out_step3[ 4][ 5][1] + 0.00676743 * out_step3[ 4][ 6][1]
+   - 0.03842957 * out_step3[ 2][ 4][2] - 0.00969998 * out_step3[ 2][ 5][2] + 0.04304982 * out_step3[ 2][ 6][2]
+   - 0.03028473 * out_step3[ 3][ 4][2] - 0.05270055 * out_step3[ 3][ 5][2] + 0.03303846 * out_step3[ 3][ 6][2]
+   - 0.00652625 * out_step3[ 4][ 4][2] - 0.01054280 * out_step3[ 4][ 5][2] + 0.03100870 * out_step3[ 4][ 6][2]
+   - 0.04571012 * out_step3[ 2][ 4][3] + 0.14462885 * out_step3[ 2][ 5][3] + 0.06714435 * out_step3[ 2][ 6][3]
+   + 0.03408671 * out_step3[ 3][ 4][3] + 0.02912452 * out_step3[ 3][ 5][3] - 0.03362672 * out_step3[ 3][ 6][3]
+   - 0.00034685 * out_step3[ 4][ 4][3] - 0.11290960 * out_step3[ 4][ 5][3] + 0.01043491 * out_step3[ 4][ 6][3]
+   - 0.02675117 * out_step3[ 2][ 4][4] - 0.04762271 * out_step3[ 2][ 5][4] - 0.02108681 * out_step3[ 2][ 6][4]
+   + 0.06529764 * out_step3[ 3][ 4][4] - 0.02100878 * out_step3[ 3][ 5][4] + 0.02934207 * out_step3[ 3][ 6][4]
+   - 0.01440481 * out_step3[ 4][ 4][4] - 0.06631953 * out_step3[ 4][ 5][4] + 0.04682801 * out_step3[ 4][ 6][4]
+   - 0.01360819 * out_step3[ 2][ 4][5] + 0.02252637 * out_step3[ 2][ 5][5] + 0.00629140 * out_step3[ 2][ 6][5]
+   + 0.04268021 * out_step3[ 3][ 4][5] - 0.06570319 * out_step3[ 3][ 5][5] - 0.01213371 * out_step3[ 3][ 6][5]
+   - 0.07391589 * out_step3[ 4][ 4][5] + 0.09330343 * out_step3[ 4][ 5][5] + 0.06588328 * out_step3[ 4][ 6][5]
+   - 0.02349851 * out_step3[ 2][ 4][6] - 0.05920330 * out_step3[ 2][ 5][6] + 0.03170622 * out_step3[ 2][ 6][6]
+   - 0.02830298 * out_step3[ 3][ 4][6] - 0.01472284 * out_step3[ 3][ 5][6] + 0.10367820 * out_step3[ 3][ 6][6]
+   + 0.03512894 * out_step3[ 4][ 4][6] + 0.00549308 * out_step3[ 4][ 5][6] - 0.00402416 * out_step3[ 4][ 6][6]
+   - 0.01545316 * out_step3[ 2][ 4][7] + 0.01323530 * out_step3[ 2][ 5][7] - 0.06452832 * out_step3[ 2][ 6][7]
+   - 0.06631935 * out_step3[ 3][ 4][7] - 0.06110401 * out_step3[ 3][ 5][7] - 0.02595045 * out_step3[ 3][ 6][7]
+   - 0.09238039 * out_step3[ 4][ 4][7] + 0.04481936 * out_step3[ 4][ 5][7] + 0.02557128 * out_step3[ 4][ 6][7]
+   - 0.02196685;
+
+out_step4[2][0][8] = 
+   - 0.03747300 * out_step3[ 4][ 0][0] + 0.02446466 * out_step3[ 4][ 1][0] + 0.02748419 * out_step3[ 4][ 2][0]
+   - 0.03224619 * out_step3[ 5][ 0][0] + 0.01370133 * out_step3[ 5][ 1][0] + 0.02632665 * out_step3[ 5][ 2][0]
+   - 0.00834311 * out_step3[ 6][ 0][0] - 0.04509716 * out_step3[ 6][ 1][0] - 0.01682265 * out_step3[ 6][ 2][0]
+   - 0.03572841 * out_step3[ 4][ 0][1] + 0.05534445 * out_step3[ 4][ 1][1] + 0.00208834 * out_step3[ 4][ 2][1]
+   + 0.02909134 * out_step3[ 5][ 0][1] - 0.00120488 * out_step3[ 5][ 1][1] - 0.02029474 * out_step3[ 5][ 2][1]
+   + 0.01082873 * out_step3[ 6][ 0][1] - 0.06870382 * out_step3[ 6][ 1][1] + 0.00676743 * out_step3[ 6][ 2][1]
+   - 0.03842957 * out_step3[ 4][ 0][2] - 0.00969998 * out_step3[ 4][ 1][2] + 0.04304982 * out_step3[ 4][ 2][2]
+   - 0.03028473 * out_step3[ 5][ 0][2] - 0.05270055 * out_step3[ 5][ 1][2] + 0.03303846 * out_step3[ 5][ 2][2]
+   - 0.00652625 * out_step3[ 6][ 0][2] - 0.01054280 * out_step3[ 6][ 1][2] + 0.03100870 * out_step3[ 6][ 2][2]
+   - 0.04571012 * out_step3[ 4][ 0][3] + 0.14462885 * out_step3[ 4][ 1][3] + 0.06714435 * out_step3[ 4][ 2][3]
+   + 0.03408671 * out_step3[ 5][ 0][3] + 0.02912452 * out_step3[ 5][ 1][3] - 0.03362672 * out_step3[ 5][ 2][3]
+   - 0.00034685 * out_step3[ 6][ 0][3] - 0.11290960 * out_step3[ 6][ 1][3] + 0.01043491 * out_step3[ 6][ 2][3]
+   - 0.02675117 * out_step3[ 4][ 0][4] - 0.04762271 * out_step3[ 4][ 1][4] - 0.02108681 * out_step3[ 4][ 2][4]
+   + 0.06529764 * out_step3[ 5][ 0][4] - 0.02100878 * out_step3[ 5][ 1][4] + 0.02934207 * out_step3[ 5][ 2][4]
+   - 0.01440481 * out_step3[ 6][ 0][4] - 0.06631953 * out_step3[ 6][ 1][4] + 0.04682801 * out_step3[ 6][ 2][4]
+   - 0.01360819 * out_step3[ 4][ 0][5] + 0.02252637 * out_step3[ 4][ 1][5] + 0.00629140 * out_step3[ 4][ 2][5]
+   + 0.04268021 * out_step3[ 5][ 0][5] - 0.06570319 * out_step3[ 5][ 1][5] - 0.01213371 * out_step3[ 5][ 2][5]
+   - 0.07391589 * out_step3[ 6][ 0][5] + 0.09330343 * out_step3[ 6][ 1][5] + 0.06588328 * out_step3[ 6][ 2][5]
+   - 0.02349851 * out_step3[ 4][ 0][6] - 0.05920330 * out_step3[ 4][ 1][6] + 0.03170622 * out_step3[ 4][ 2][6]
+   - 0.02830298 * out_step3[ 5][ 0][6] - 0.01472284 * out_step3[ 5][ 1][6] + 0.10367820 * out_step3[ 5][ 2][6]
+   + 0.03512894 * out_step3[ 6][ 0][6] + 0.00549308 * out_step3[ 6][ 1][6] - 0.00402416 * out_step3[ 6][ 2][6]
+   - 0.01545316 * out_step3[ 4][ 0][7] + 0.01323530 * out_step3[ 4][ 1][7] - 0.06452832 * out_step3[ 4][ 2][7]
+   - 0.06631935 * out_step3[ 5][ 0][7] - 0.06110401 * out_step3[ 5][ 1][7] - 0.02595045 * out_step3[ 5][ 2][7]
+   - 0.09238039 * out_step3[ 6][ 0][7] + 0.04481936 * out_step3[ 6][ 1][7] + 0.02557128 * out_step3[ 6][ 2][7]
+   - 0.02196685;
+
+out_step4[2][1][8] = 
+   - 0.03747300 * out_step3[ 4][ 2][0] + 0.02446466 * out_step3[ 4][ 3][0] + 0.02748419 * out_step3[ 4][ 4][0]
+   - 0.03224619 * out_step3[ 5][ 2][0] + 0.01370133 * out_step3[ 5][ 3][0] + 0.02632665 * out_step3[ 5][ 4][0]
+   - 0.00834311 * out_step3[ 6][ 2][0] - 0.04509716 * out_step3[ 6][ 3][0] - 0.01682265 * out_step3[ 6][ 4][0]
+   - 0.03572841 * out_step3[ 4][ 2][1] + 0.05534445 * out_step3[ 4][ 3][1] + 0.00208834 * out_step3[ 4][ 4][1]
+   + 0.02909134 * out_step3[ 5][ 2][1] - 0.00120488 * out_step3[ 5][ 3][1] - 0.02029474 * out_step3[ 5][ 4][1]
+   + 0.01082873 * out_step3[ 6][ 2][1] - 0.06870382 * out_step3[ 6][ 3][1] + 0.00676743 * out_step3[ 6][ 4][1]
+   - 0.03842957 * out_step3[ 4][ 2][2] - 0.00969998 * out_step3[ 4][ 3][2] + 0.04304982 * out_step3[ 4][ 4][2]
+   - 0.03028473 * out_step3[ 5][ 2][2] - 0.05270055 * out_step3[ 5][ 3][2] + 0.03303846 * out_step3[ 5][ 4][2]
+   - 0.00652625 * out_step3[ 6][ 2][2] - 0.01054280 * out_step3[ 6][ 3][2] + 0.03100870 * out_step3[ 6][ 4][2]
+   - 0.04571012 * out_step3[ 4][ 2][3] + 0.14462885 * out_step3[ 4][ 3][3] + 0.06714435 * out_step3[ 4][ 4][3]
+   + 0.03408671 * out_step3[ 5][ 2][3] + 0.02912452 * out_step3[ 5][ 3][3] - 0.03362672 * out_step3[ 5][ 4][3]
+   - 0.00034685 * out_step3[ 6][ 2][3] - 0.11290960 * out_step3[ 6][ 3][3] + 0.01043491 * out_step3[ 6][ 4][3]
+   - 0.02675117 * out_step3[ 4][ 2][4] - 0.04762271 * out_step3[ 4][ 3][4] - 0.02108681 * out_step3[ 4][ 4][4]
+   + 0.06529764 * out_step3[ 5][ 2][4] - 0.02100878 * out_step3[ 5][ 3][4] + 0.02934207 * out_step3[ 5][ 4][4]
+   - 0.01440481 * out_step3[ 6][ 2][4] - 0.06631953 * out_step3[ 6][ 3][4] + 0.04682801 * out_step3[ 6][ 4][4]
+   - 0.01360819 * out_step3[ 4][ 2][5] + 0.02252637 * out_step3[ 4][ 3][5] + 0.00629140 * out_step3[ 4][ 4][5]
+   + 0.04268021 * out_step3[ 5][ 2][5] - 0.06570319 * out_step3[ 5][ 3][5] - 0.01213371 * out_step3[ 5][ 4][5]
+   - 0.07391589 * out_step3[ 6][ 2][5] + 0.09330343 * out_step3[ 6][ 3][5] + 0.06588328 * out_step3[ 6][ 4][5]
+   - 0.02349851 * out_step3[ 4][ 2][6] - 0.05920330 * out_step3[ 4][ 3][6] + 0.03170622 * out_step3[ 4][ 4][6]
+   - 0.02830298 * out_step3[ 5][ 2][6] - 0.01472284 * out_step3[ 5][ 3][6] + 0.10367820 * out_step3[ 5][ 4][6]
+   + 0.03512894 * out_step3[ 6][ 2][6] + 0.00549308 * out_step3[ 6][ 3][6] - 0.00402416 * out_step3[ 6][ 4][6]
+   - 0.01545316 * out_step3[ 4][ 2][7] + 0.01323530 * out_step3[ 4][ 3][7] - 0.06452832 * out_step3[ 4][ 4][7]
+   - 0.06631935 * out_step3[ 5][ 2][7] - 0.06110401 * out_step3[ 5][ 3][7] - 0.02595045 * out_step3[ 5][ 4][7]
+   - 0.09238039 * out_step3[ 6][ 2][7] + 0.04481936 * out_step3[ 6][ 3][7] + 0.02557128 * out_step3[ 6][ 4][7]
+   - 0.02196685;
+
+out_step4[2][2][8] = 
+   - 0.03747300 * out_step3[ 4][ 4][0] + 0.02446466 * out_step3[ 4][ 5][0] + 0.02748419 * out_step3[ 4][ 6][0]
+   - 0.03224619 * out_step3[ 5][ 4][0] + 0.01370133 * out_step3[ 5][ 5][0] + 0.02632665 * out_step3[ 5][ 6][0]
+   - 0.00834311 * out_step3[ 6][ 4][0] - 0.04509716 * out_step3[ 6][ 5][0] - 0.01682265 * out_step3[ 6][ 6][0]
+   - 0.03572841 * out_step3[ 4][ 4][1] + 0.05534445 * out_step3[ 4][ 5][1] + 0.00208834 * out_step3[ 4][ 6][1]
+   + 0.02909134 * out_step3[ 5][ 4][1] - 0.00120488 * out_step3[ 5][ 5][1] - 0.02029474 * out_step3[ 5][ 6][1]
+   + 0.01082873 * out_step3[ 6][ 4][1] - 0.06870382 * out_step3[ 6][ 5][1] + 0.00676743 * out_step3[ 6][ 6][1]
+   - 0.03842957 * out_step3[ 4][ 4][2] - 0.00969998 * out_step3[ 4][ 5][2] + 0.04304982 * out_step3[ 4][ 6][2]
+   - 0.03028473 * out_step3[ 5][ 4][2] - 0.05270055 * out_step3[ 5][ 5][2] + 0.03303846 * out_step3[ 5][ 6][2]
+   - 0.00652625 * out_step3[ 6][ 4][2] - 0.01054280 * out_step3[ 6][ 5][2] + 0.03100870 * out_step3[ 6][ 6][2]
+   - 0.04571012 * out_step3[ 4][ 4][3] + 0.14462885 * out_step3[ 4][ 5][3] + 0.06714435 * out_step3[ 4][ 6][3]
+   + 0.03408671 * out_step3[ 5][ 4][3] + 0.02912452 * out_step3[ 5][ 5][3] - 0.03362672 * out_step3[ 5][ 6][3]
+   - 0.00034685 * out_step3[ 6][ 4][3] - 0.11290960 * out_step3[ 6][ 5][3] + 0.01043491 * out_step3[ 6][ 6][3]
+   - 0.02675117 * out_step3[ 4][ 4][4] - 0.04762271 * out_step3[ 4][ 5][4] - 0.02108681 * out_step3[ 4][ 6][4]
+   + 0.06529764 * out_step3[ 5][ 4][4] - 0.02100878 * out_step3[ 5][ 5][4] + 0.02934207 * out_step3[ 5][ 6][4]
+   - 0.01440481 * out_step3[ 6][ 4][4] - 0.06631953 * out_step3[ 6][ 5][4] + 0.04682801 * out_step3[ 6][ 6][4]
+   - 0.01360819 * out_step3[ 4][ 4][5] + 0.02252637 * out_step3[ 4][ 5][5] + 0.00629140 * out_step3[ 4][ 6][5]
+   + 0.04268021 * out_step3[ 5][ 4][5] - 0.06570319 * out_step3[ 5][ 5][5] - 0.01213371 * out_step3[ 5][ 6][5]
+   - 0.07391589 * out_step3[ 6][ 4][5] + 0.09330343 * out_step3[ 6][ 5][5] + 0.06588328 * out_step3[ 6][ 6][5]
+   - 0.02349851 * out_step3[ 4][ 4][6] - 0.05920330 * out_step3[ 4][ 5][6] + 0.03170622 * out_step3[ 4][ 6][6]
+   - 0.02830298 * out_step3[ 5][ 4][6] - 0.01472284 * out_step3[ 5][ 5][6] + 0.10367820 * out_step3[ 5][ 6][6]
+   + 0.03512894 * out_step3[ 6][ 4][6] + 0.00549308 * out_step3[ 6][ 5][6] - 0.00402416 * out_step3[ 6][ 6][6]
+   - 0.01545316 * out_step3[ 4][ 4][7] + 0.01323530 * out_step3[ 4][ 5][7] - 0.06452832 * out_step3[ 4][ 6][7]
+   - 0.06631935 * out_step3[ 5][ 4][7] - 0.06110401 * out_step3[ 5][ 5][7] - 0.02595045 * out_step3[ 5][ 6][7]
+   - 0.09238039 * out_step3[ 6][ 4][7] + 0.04481936 * out_step3[ 6][ 5][7] + 0.02557128 * out_step3[ 6][ 6][7]
+   - 0.02196685;
+
+out_step4[0][0][9] = 
+   - 0.02227347 * out_step3[ 0][ 0][0] - 0.01274508 * out_step3[ 0][ 1][0] + 0.07452599 * out_step3[ 0][ 2][0]
+   - 0.03697690 * out_step3[ 1][ 0][0] + 0.04494498 * out_step3[ 1][ 1][0] + 0.01852584 * out_step3[ 1][ 2][0]
+   + 0.00390764 * out_step3[ 2][ 0][0] + 0.05484428 * out_step3[ 2][ 1][0] - 0.01926905 * out_step3[ 2][ 2][0]
+   - 0.03356777 * out_step3[ 0][ 0][1] + 0.04695299 * out_step3[ 0][ 1][1] + 0.02757669 * out_step3[ 0][ 2][1]
+   - 0.02798160 * out_step3[ 1][ 0][1] + 0.00479993 * out_step3[ 1][ 1][1] - 0.03743491 * out_step3[ 1][ 2][1]
+   + 0.01256785 * out_step3[ 2][ 0][1] - 0.02054437 * out_step3[ 2][ 1][1] - 0.00959636 * out_step3[ 2][ 2][1]
+   - 0.02954619 * out_step3[ 0][ 0][2] + 0.01373486 * out_step3[ 0][ 1][2] + 0.02412075 * out_step3[ 0][ 2][2]
+   + 0.02075917 * out_step3[ 1][ 0][2] - 0.11101401 * out_step3[ 1][ 1][2] + 0.06982312 * out_step3[ 1][ 2][2]
+   - 0.00087035 * out_step3[ 2][ 0][2] - 0.10051176 * out_step3[ 2][ 1][2] + 0.02473343 * out_step3[ 2][ 2][2]
+   - 0.03311590 * out_step3[ 0][ 0][3] + 0.03387387 * out_step3[ 0][ 1][3] + 0.05369813 * out_step3[ 0][ 2][3]
+   - 0.03958905 * out_step3[ 1][ 0][3] + 0.08983167 * out_step3[ 1][ 1][3] - 0.03831133 * out_step3[ 1][ 2][3]
+   - 0.02661561 * out_step3[ 2][ 0][3] - 0.02569672 * out_step3[ 2][ 1][3] - 0.09761365 * out_step3[ 2][ 2][3]
+   - 0.02835083 * out_step3[ 0][ 0][4] + 0.02540792 * out_step3[ 0][ 1][4] - 0.08677411 * out_step3[ 0][ 2][4]
+   - 0.03269066 * out_step3[ 1][ 0][4] - 0.07037918 * out_step3[ 1][ 1][4] + 0.04869279 * out_step3[ 1][ 2][4]
+   + 0.07973684 * out_step3[ 2][ 0][4] - 0.08355879 * out_step3[ 2][ 1][4] + 0.05925191 * out_step3[ 2][ 2][4]
+   - 0.08218288 * out_step3[ 0][ 0][5] - 0.00726730 * out_step3[ 0][ 1][5] + 0.02544058 * out_step3[ 0][ 2][5]
+   + 0.07663906 * out_step3[ 1][ 0][5] + 0.09074876 * out_step3[ 1][ 1][5] - 0.16588275 * out_step3[ 1][ 2][5]
+   - 0.00448276 * out_step3[ 2][ 0][5] + 0.08832297 * out_step3[ 2][ 1][5] + 0.00661622 * out_step3[ 2][ 2][5]
+   - 0.00694120 * out_step3[ 0][ 0][6] + 0.01718853 * out_step3[ 0][ 1][6] - 0.04316361 * out_step3[ 0][ 2][6]
+   - 0.01950866 * out_step3[ 1][ 0][6] + 0.03659920 * out_step3[ 1][ 1][6] + 0.06939868 * out_step3[ 1][ 2][6]
+   + 0.01244422 * out_step3[ 2][ 0][6] + 0.01466536 * out_step3[ 2][ 1][6] + 0.05333254 * out_step3[ 2][ 2][6]
+   - 0.03540488 * out_step3[ 0][ 0][7] + 0.05202066 * out_step3[ 0][ 1][7] + 0.11770041 * out_step3[ 0][ 2][7]
+   + 0.03424012 * out_step3[ 1][ 0][7] + 0.06158106 * out_step3[ 1][ 1][7] + 0.00662863 * out_step3[ 1][ 2][7]
+   - 0.00764533 * out_step3[ 2][ 0][7] + 0.14070190 * out_step3[ 2][ 1][7] - 0.01502050 * out_step3[ 2][ 2][7]
+   - 0.08450716;
+
+out_step4[0][1][9] = 
+   - 0.02227347 * out_step3[ 0][ 2][0] - 0.01274508 * out_step3[ 0][ 3][0] + 0.07452599 * out_step3[ 0][ 4][0]
+   - 0.03697690 * out_step3[ 1][ 2][0] + 0.04494498 * out_step3[ 1][ 3][0] + 0.01852584 * out_step3[ 1][ 4][0]
+   + 0.00390764 * out_step3[ 2][ 2][0] + 0.05484428 * out_step3[ 2][ 3][0] - 0.01926905 * out_step3[ 2][ 4][0]
+   - 0.03356777 * out_step3[ 0][ 2][1] + 0.04695299 * out_step3[ 0][ 3][1] + 0.02757669 * out_step3[ 0][ 4][1]
+   - 0.02798160 * out_step3[ 1][ 2][1] + 0.00479993 * out_step3[ 1][ 3][1] - 0.03743491 * out_step3[ 1][ 4][1]
+   + 0.01256785 * out_step3[ 2][ 2][1] - 0.02054437 * out_step3[ 2][ 3][1] - 0.00959636 * out_step3[ 2][ 4][1]
+   - 0.02954619 * out_step3[ 0][ 2][2] + 0.01373486 * out_step3[ 0][ 3][2] + 0.02412075 * out_step3[ 0][ 4][2]
+   + 0.02075917 * out_step3[ 1][ 2][2] - 0.11101401 * out_step3[ 1][ 3][2] + 0.06982312 * out_step3[ 1][ 4][2]
+   - 0.00087035 * out_step3[ 2][ 2][2] - 0.10051176 * out_step3[ 2][ 3][2] + 0.02473343 * out_step3[ 2][ 4][2]
+   - 0.03311590 * out_step3[ 0][ 2][3] + 0.03387387 * out_step3[ 0][ 3][3] + 0.05369813 * out_step3[ 0][ 4][3]
+   - 0.03958905 * out_step3[ 1][ 2][3] + 0.08983167 * out_step3[ 1][ 3][3] - 0.03831133 * out_step3[ 1][ 4][3]
+   - 0.02661561 * out_step3[ 2][ 2][3] - 0.02569672 * out_step3[ 2][ 3][3] - 0.09761365 * out_step3[ 2][ 4][3]
+   - 0.02835083 * out_step3[ 0][ 2][4] + 0.02540792 * out_step3[ 0][ 3][4] - 0.08677411 * out_step3[ 0][ 4][4]
+   - 0.03269066 * out_step3[ 1][ 2][4] - 0.07037918 * out_step3[ 1][ 3][4] + 0.04869279 * out_step3[ 1][ 4][4]
+   + 0.07973684 * out_step3[ 2][ 2][4] - 0.08355879 * out_step3[ 2][ 3][4] + 0.05925191 * out_step3[ 2][ 4][4]
+   - 0.08218288 * out_step3[ 0][ 2][5] - 0.00726730 * out_step3[ 0][ 3][5] + 0.02544058 * out_step3[ 0][ 4][5]
+   + 0.07663906 * out_step3[ 1][ 2][5] + 0.09074876 * out_step3[ 1][ 3][5] - 0.16588275 * out_step3[ 1][ 4][5]
+   - 0.00448276 * out_step3[ 2][ 2][5] + 0.08832297 * out_step3[ 2][ 3][5] + 0.00661622 * out_step3[ 2][ 4][5]
+   - 0.00694120 * out_step3[ 0][ 2][6] + 0.01718853 * out_step3[ 0][ 3][6] - 0.04316361 * out_step3[ 0][ 4][6]
+   - 0.01950866 * out_step3[ 1][ 2][6] + 0.03659920 * out_step3[ 1][ 3][6] + 0.06939868 * out_step3[ 1][ 4][6]
+   + 0.01244422 * out_step3[ 2][ 2][6] + 0.01466536 * out_step3[ 2][ 3][6] + 0.05333254 * out_step3[ 2][ 4][6]
+   - 0.03540488 * out_step3[ 0][ 2][7] + 0.05202066 * out_step3[ 0][ 3][7] + 0.11770041 * out_step3[ 0][ 4][7]
+   + 0.03424012 * out_step3[ 1][ 2][7] + 0.06158106 * out_step3[ 1][ 3][7] + 0.00662863 * out_step3[ 1][ 4][7]
+   - 0.00764533 * out_step3[ 2][ 2][7] + 0.14070190 * out_step3[ 2][ 3][7] - 0.01502050 * out_step3[ 2][ 4][7]
+   - 0.08450716;
+
+out_step4[0][2][9] = 
+   - 0.02227347 * out_step3[ 0][ 4][0] - 0.01274508 * out_step3[ 0][ 5][0] + 0.07452599 * out_step3[ 0][ 6][0]
+   - 0.03697690 * out_step3[ 1][ 4][0] + 0.04494498 * out_step3[ 1][ 5][0] + 0.01852584 * out_step3[ 1][ 6][0]
+   + 0.00390764 * out_step3[ 2][ 4][0] + 0.05484428 * out_step3[ 2][ 5][0] - 0.01926905 * out_step3[ 2][ 6][0]
+   - 0.03356777 * out_step3[ 0][ 4][1] + 0.04695299 * out_step3[ 0][ 5][1] + 0.02757669 * out_step3[ 0][ 6][1]
+   - 0.02798160 * out_step3[ 1][ 4][1] + 0.00479993 * out_step3[ 1][ 5][1] - 0.03743491 * out_step3[ 1][ 6][1]
+   + 0.01256785 * out_step3[ 2][ 4][1] - 0.02054437 * out_step3[ 2][ 5][1] - 0.00959636 * out_step3[ 2][ 6][1]
+   - 0.02954619 * out_step3[ 0][ 4][2] + 0.01373486 * out_step3[ 0][ 5][2] + 0.02412075 * out_step3[ 0][ 6][2]
+   + 0.02075917 * out_step3[ 1][ 4][2] - 0.11101401 * out_step3[ 1][ 5][2] + 0.06982312 * out_step3[ 1][ 6][2]
+   - 0.00087035 * out_step3[ 2][ 4][2] - 0.10051176 * out_step3[ 2][ 5][2] + 0.02473343 * out_step3[ 2][ 6][2]
+   - 0.03311590 * out_step3[ 0][ 4][3] + 0.03387387 * out_step3[ 0][ 5][3] + 0.05369813 * out_step3[ 0][ 6][3]
+   - 0.03958905 * out_step3[ 1][ 4][3] + 0.08983167 * out_step3[ 1][ 5][3] - 0.03831133 * out_step3[ 1][ 6][3]
+   - 0.02661561 * out_step3[ 2][ 4][3] - 0.02569672 * out_step3[ 2][ 5][3] - 0.09761365 * out_step3[ 2][ 6][3]
+   - 0.02835083 * out_step3[ 0][ 4][4] + 0.02540792 * out_step3[ 0][ 5][4] - 0.08677411 * out_step3[ 0][ 6][4]
+   - 0.03269066 * out_step3[ 1][ 4][4] - 0.07037918 * out_step3[ 1][ 5][4] + 0.04869279 * out_step3[ 1][ 6][4]
+   + 0.07973684 * out_step3[ 2][ 4][4] - 0.08355879 * out_step3[ 2][ 5][4] + 0.05925191 * out_step3[ 2][ 6][4]
+   - 0.08218288 * out_step3[ 0][ 4][5] - 0.00726730 * out_step3[ 0][ 5][5] + 0.02544058 * out_step3[ 0][ 6][5]
+   + 0.07663906 * out_step3[ 1][ 4][5] + 0.09074876 * out_step3[ 1][ 5][5] - 0.16588275 * out_step3[ 1][ 6][5]
+   - 0.00448276 * out_step3[ 2][ 4][5] + 0.08832297 * out_step3[ 2][ 5][5] + 0.00661622 * out_step3[ 2][ 6][5]
+   - 0.00694120 * out_step3[ 0][ 4][6] + 0.01718853 * out_step3[ 0][ 5][6] - 0.04316361 * out_step3[ 0][ 6][6]
+   - 0.01950866 * out_step3[ 1][ 4][6] + 0.03659920 * out_step3[ 1][ 5][6] + 0.06939868 * out_step3[ 1][ 6][6]
+   + 0.01244422 * out_step3[ 2][ 4][6] + 0.01466536 * out_step3[ 2][ 5][6] + 0.05333254 * out_step3[ 2][ 6][6]
+   - 0.03540488 * out_step3[ 0][ 4][7] + 0.05202066 * out_step3[ 0][ 5][7] + 0.11770041 * out_step3[ 0][ 6][7]
+   + 0.03424012 * out_step3[ 1][ 4][7] + 0.06158106 * out_step3[ 1][ 5][7] + 0.00662863 * out_step3[ 1][ 6][7]
+   - 0.00764533 * out_step3[ 2][ 4][7] + 0.14070190 * out_step3[ 2][ 5][7] - 0.01502050 * out_step3[ 2][ 6][7]
+   - 0.08450716;
+
+out_step4[1][0][9] = 
+   - 0.02227347 * out_step3[ 2][ 0][0] - 0.01274508 * out_step3[ 2][ 1][0] + 0.07452599 * out_step3[ 2][ 2][0]
+   - 0.03697690 * out_step3[ 3][ 0][0] + 0.04494498 * out_step3[ 3][ 1][0] + 0.01852584 * out_step3[ 3][ 2][0]
+   + 0.00390764 * out_step3[ 4][ 0][0] + 0.05484428 * out_step3[ 4][ 1][0] - 0.01926905 * out_step3[ 4][ 2][0]
+   - 0.03356777 * out_step3[ 2][ 0][1] + 0.04695299 * out_step3[ 2][ 1][1] + 0.02757669 * out_step3[ 2][ 2][1]
+   - 0.02798160 * out_step3[ 3][ 0][1] + 0.00479993 * out_step3[ 3][ 1][1] - 0.03743491 * out_step3[ 3][ 2][1]
+   + 0.01256785 * out_step3[ 4][ 0][1] - 0.02054437 * out_step3[ 4][ 1][1] - 0.00959636 * out_step3[ 4][ 2][1]
+   - 0.02954619 * out_step3[ 2][ 0][2] + 0.01373486 * out_step3[ 2][ 1][2] + 0.02412075 * out_step3[ 2][ 2][2]
+   + 0.02075917 * out_step3[ 3][ 0][2] - 0.11101401 * out_step3[ 3][ 1][2] + 0.06982312 * out_step3[ 3][ 2][2]
+   - 0.00087035 * out_step3[ 4][ 0][2] - 0.10051176 * out_step3[ 4][ 1][2] + 0.02473343 * out_step3[ 4][ 2][2]
+   - 0.03311590 * out_step3[ 2][ 0][3] + 0.03387387 * out_step3[ 2][ 1][3] + 0.05369813 * out_step3[ 2][ 2][3]
+   - 0.03958905 * out_step3[ 3][ 0][3] + 0.08983167 * out_step3[ 3][ 1][3] - 0.03831133 * out_step3[ 3][ 2][3]
+   - 0.02661561 * out_step3[ 4][ 0][3] - 0.02569672 * out_step3[ 4][ 1][3] - 0.09761365 * out_step3[ 4][ 2][3]
+   - 0.02835083 * out_step3[ 2][ 0][4] + 0.02540792 * out_step3[ 2][ 1][4] - 0.08677411 * out_step3[ 2][ 2][4]
+   - 0.03269066 * out_step3[ 3][ 0][4] - 0.07037918 * out_step3[ 3][ 1][4] + 0.04869279 * out_step3[ 3][ 2][4]
+   + 0.07973684 * out_step3[ 4][ 0][4] - 0.08355879 * out_step3[ 4][ 1][4] + 0.05925191 * out_step3[ 4][ 2][4]
+   - 0.08218288 * out_step3[ 2][ 0][5] - 0.00726730 * out_step3[ 2][ 1][5] + 0.02544058 * out_step3[ 2][ 2][5]
+   + 0.07663906 * out_step3[ 3][ 0][5] + 0.09074876 * out_step3[ 3][ 1][5] - 0.16588275 * out_step3[ 3][ 2][5]
+   - 0.00448276 * out_step3[ 4][ 0][5] + 0.08832297 * out_step3[ 4][ 1][5] + 0.00661622 * out_step3[ 4][ 2][5]
+   - 0.00694120 * out_step3[ 2][ 0][6] + 0.01718853 * out_step3[ 2][ 1][6] - 0.04316361 * out_step3[ 2][ 2][6]
+   - 0.01950866 * out_step3[ 3][ 0][6] + 0.03659920 * out_step3[ 3][ 1][6] + 0.06939868 * out_step3[ 3][ 2][6]
+   + 0.01244422 * out_step3[ 4][ 0][6] + 0.01466536 * out_step3[ 4][ 1][6] + 0.05333254 * out_step3[ 4][ 2][6]
+   - 0.03540488 * out_step3[ 2][ 0][7] + 0.05202066 * out_step3[ 2][ 1][7] + 0.11770041 * out_step3[ 2][ 2][7]
+   + 0.03424012 * out_step3[ 3][ 0][7] + 0.06158106 * out_step3[ 3][ 1][7] + 0.00662863 * out_step3[ 3][ 2][7]
+   - 0.00764533 * out_step3[ 4][ 0][7] + 0.14070190 * out_step3[ 4][ 1][7] - 0.01502050 * out_step3[ 4][ 2][7]
+   - 0.08450716;
+
+out_step4[1][1][9] = 
+   - 0.02227347 * out_step3[ 2][ 2][0] - 0.01274508 * out_step3[ 2][ 3][0] + 0.07452599 * out_step3[ 2][ 4][0]
+   - 0.03697690 * out_step3[ 3][ 2][0] + 0.04494498 * out_step3[ 3][ 3][0] + 0.01852584 * out_step3[ 3][ 4][0]
+   + 0.00390764 * out_step3[ 4][ 2][0] + 0.05484428 * out_step3[ 4][ 3][0] - 0.01926905 * out_step3[ 4][ 4][0]
+   - 0.03356777 * out_step3[ 2][ 2][1] + 0.04695299 * out_step3[ 2][ 3][1] + 0.02757669 * out_step3[ 2][ 4][1]
+   - 0.02798160 * out_step3[ 3][ 2][1] + 0.00479993 * out_step3[ 3][ 3][1] - 0.03743491 * out_step3[ 3][ 4][1]
+   + 0.01256785 * out_step3[ 4][ 2][1] - 0.02054437 * out_step3[ 4][ 3][1] - 0.00959636 * out_step3[ 4][ 4][1]
+   - 0.02954619 * out_step3[ 2][ 2][2] + 0.01373486 * out_step3[ 2][ 3][2] + 0.02412075 * out_step3[ 2][ 4][2]
+   + 0.02075917 * out_step3[ 3][ 2][2] - 0.11101401 * out_step3[ 3][ 3][2] + 0.06982312 * out_step3[ 3][ 4][2]
+   - 0.00087035 * out_step3[ 4][ 2][2] - 0.10051176 * out_step3[ 4][ 3][2] + 0.02473343 * out_step3[ 4][ 4][2]
+   - 0.03311590 * out_step3[ 2][ 2][3] + 0.03387387 * out_step3[ 2][ 3][3] + 0.05369813 * out_step3[ 2][ 4][3]
+   - 0.03958905 * out_step3[ 3][ 2][3] + 0.08983167 * out_step3[ 3][ 3][3] - 0.03831133 * out_step3[ 3][ 4][3]
+   - 0.02661561 * out_step3[ 4][ 2][3] - 0.02569672 * out_step3[ 4][ 3][3] - 0.09761365 * out_step3[ 4][ 4][3]
+   - 0.02835083 * out_step3[ 2][ 2][4] + 0.02540792 * out_step3[ 2][ 3][4] - 0.08677411 * out_step3[ 2][ 4][4]
+   - 0.03269066 * out_step3[ 3][ 2][4] - 0.07037918 * out_step3[ 3][ 3][4] + 0.04869279 * out_step3[ 3][ 4][4]
+   + 0.07973684 * out_step3[ 4][ 2][4] - 0.08355879 * out_step3[ 4][ 3][4] + 0.05925191 * out_step3[ 4][ 4][4]
+   - 0.08218288 * out_step3[ 2][ 2][5] - 0.00726730 * out_step3[ 2][ 3][5] + 0.02544058 * out_step3[ 2][ 4][5]
+   + 0.07663906 * out_step3[ 3][ 2][5] + 0.09074876 * out_step3[ 3][ 3][5] - 0.16588275 * out_step3[ 3][ 4][5]
+   - 0.00448276 * out_step3[ 4][ 2][5] + 0.08832297 * out_step3[ 4][ 3][5] + 0.00661622 * out_step3[ 4][ 4][5]
+   - 0.00694120 * out_step3[ 2][ 2][6] + 0.01718853 * out_step3[ 2][ 3][6] - 0.04316361 * out_step3[ 2][ 4][6]
+   - 0.01950866 * out_step3[ 3][ 2][6] + 0.03659920 * out_step3[ 3][ 3][6] + 0.06939868 * out_step3[ 3][ 4][6]
+   + 0.01244422 * out_step3[ 4][ 2][6] + 0.01466536 * out_step3[ 4][ 3][6] + 0.05333254 * out_step3[ 4][ 4][6]
+   - 0.03540488 * out_step3[ 2][ 2][7] + 0.05202066 * out_step3[ 2][ 3][7] + 0.11770041 * out_step3[ 2][ 4][7]
+   + 0.03424012 * out_step3[ 3][ 2][7] + 0.06158106 * out_step3[ 3][ 3][7] + 0.00662863 * out_step3[ 3][ 4][7]
+   - 0.00764533 * out_step3[ 4][ 2][7] + 0.14070190 * out_step3[ 4][ 3][7] - 0.01502050 * out_step3[ 4][ 4][7]
+   - 0.08450716;
+
+out_step4[1][2][9] = 
+   - 0.02227347 * out_step3[ 2][ 4][0] - 0.01274508 * out_step3[ 2][ 5][0] + 0.07452599 * out_step3[ 2][ 6][0]
+   - 0.03697690 * out_step3[ 3][ 4][0] + 0.04494498 * out_step3[ 3][ 5][0] + 0.01852584 * out_step3[ 3][ 6][0]
+   + 0.00390764 * out_step3[ 4][ 4][0] + 0.05484428 * out_step3[ 4][ 5][0] - 0.01926905 * out_step3[ 4][ 6][0]
+   - 0.03356777 * out_step3[ 2][ 4][1] + 0.04695299 * out_step3[ 2][ 5][1] + 0.02757669 * out_step3[ 2][ 6][1]
+   - 0.02798160 * out_step3[ 3][ 4][1] + 0.00479993 * out_step3[ 3][ 5][1] - 0.03743491 * out_step3[ 3][ 6][1]
+   + 0.01256785 * out_step3[ 4][ 4][1] - 0.02054437 * out_step3[ 4][ 5][1] - 0.00959636 * out_step3[ 4][ 6][1]
+   - 0.02954619 * out_step3[ 2][ 4][2] + 0.01373486 * out_step3[ 2][ 5][2] + 0.02412075 * out_step3[ 2][ 6][2]
+   + 0.02075917 * out_step3[ 3][ 4][2] - 0.11101401 * out_step3[ 3][ 5][2] + 0.06982312 * out_step3[ 3][ 6][2]
+   - 0.00087035 * out_step3[ 4][ 4][2] - 0.10051176 * out_step3[ 4][ 5][2] + 0.02473343 * out_step3[ 4][ 6][2]
+   - 0.03311590 * out_step3[ 2][ 4][3] + 0.03387387 * out_step3[ 2][ 5][3] + 0.05369813 * out_step3[ 2][ 6][3]
+   - 0.03958905 * out_step3[ 3][ 4][3] + 0.08983167 * out_step3[ 3][ 5][3] - 0.03831133 * out_step3[ 3][ 6][3]
+   - 0.02661561 * out_step3[ 4][ 4][3] - 0.02569672 * out_step3[ 4][ 5][3] - 0.09761365 * out_step3[ 4][ 6][3]
+   - 0.02835083 * out_step3[ 2][ 4][4] + 0.02540792 * out_step3[ 2][ 5][4] - 0.08677411 * out_step3[ 2][ 6][4]
+   - 0.03269066 * out_step3[ 3][ 4][4] - 0.07037918 * out_step3[ 3][ 5][4] + 0.04869279 * out_step3[ 3][ 6][4]
+   + 0.07973684 * out_step3[ 4][ 4][4] - 0.08355879 * out_step3[ 4][ 5][4] + 0.05925191 * out_step3[ 4][ 6][4]
+   - 0.08218288 * out_step3[ 2][ 4][5] - 0.00726730 * out_step3[ 2][ 5][5] + 0.02544058 * out_step3[ 2][ 6][5]
+   + 0.07663906 * out_step3[ 3][ 4][5] + 0.09074876 * out_step3[ 3][ 5][5] - 0.16588275 * out_step3[ 3][ 6][5]
+   - 0.00448276 * out_step3[ 4][ 4][5] + 0.08832297 * out_step3[ 4][ 5][5] + 0.00661622 * out_step3[ 4][ 6][5]
+   - 0.00694120 * out_step3[ 2][ 4][6] + 0.01718853 * out_step3[ 2][ 5][6] - 0.04316361 * out_step3[ 2][ 6][6]
+   - 0.01950866 * out_step3[ 3][ 4][6] + 0.03659920 * out_step3[ 3][ 5][6] + 0.06939868 * out_step3[ 3][ 6][6]
+   + 0.01244422 * out_step3[ 4][ 4][6] + 0.01466536 * out_step3[ 4][ 5][6] + 0.05333254 * out_step3[ 4][ 6][6]
+   - 0.03540488 * out_step3[ 2][ 4][7] + 0.05202066 * out_step3[ 2][ 5][7] + 0.11770041 * out_step3[ 2][ 6][7]
+   + 0.03424012 * out_step3[ 3][ 4][7] + 0.06158106 * out_step3[ 3][ 5][7] + 0.00662863 * out_step3[ 3][ 6][7]
+   - 0.00764533 * out_step3[ 4][ 4][7] + 0.14070190 * out_step3[ 4][ 5][7] - 0.01502050 * out_step3[ 4][ 6][7]
+   - 0.08450716;
+
+out_step4[2][0][9] = 
+   - 0.02227347 * out_step3[ 4][ 0][0] - 0.01274508 * out_step3[ 4][ 1][0] + 0.07452599 * out_step3[ 4][ 2][0]
+   - 0.03697690 * out_step3[ 5][ 0][0] + 0.04494498 * out_step3[ 5][ 1][0] + 0.01852584 * out_step3[ 5][ 2][0]
+   + 0.00390764 * out_step3[ 6][ 0][0] + 0.05484428 * out_step3[ 6][ 1][0] - 0.01926905 * out_step3[ 6][ 2][0]
+   - 0.03356777 * out_step3[ 4][ 0][1] + 0.04695299 * out_step3[ 4][ 1][1] + 0.02757669 * out_step3[ 4][ 2][1]
+   - 0.02798160 * out_step3[ 5][ 0][1] + 0.00479993 * out_step3[ 5][ 1][1] - 0.03743491 * out_step3[ 5][ 2][1]
+   + 0.01256785 * out_step3[ 6][ 0][1] - 0.02054437 * out_step3[ 6][ 1][1] - 0.00959636 * out_step3[ 6][ 2][1]
+   - 0.02954619 * out_step3[ 4][ 0][2] + 0.01373486 * out_step3[ 4][ 1][2] + 0.02412075 * out_step3[ 4][ 2][2]
+   + 0.02075917 * out_step3[ 5][ 0][2] - 0.11101401 * out_step3[ 5][ 1][2] + 0.06982312 * out_step3[ 5][ 2][2]
+   - 0.00087035 * out_step3[ 6][ 0][2] - 0.10051176 * out_step3[ 6][ 1][2] + 0.02473343 * out_step3[ 6][ 2][2]
+   - 0.03311590 * out_step3[ 4][ 0][3] + 0.03387387 * out_step3[ 4][ 1][3] + 0.05369813 * out_step3[ 4][ 2][3]
+   - 0.03958905 * out_step3[ 5][ 0][3] + 0.08983167 * out_step3[ 5][ 1][3] - 0.03831133 * out_step3[ 5][ 2][3]
+   - 0.02661561 * out_step3[ 6][ 0][3] - 0.02569672 * out_step3[ 6][ 1][3] - 0.09761365 * out_step3[ 6][ 2][3]
+   - 0.02835083 * out_step3[ 4][ 0][4] + 0.02540792 * out_step3[ 4][ 1][4] - 0.08677411 * out_step3[ 4][ 2][4]
+   - 0.03269066 * out_step3[ 5][ 0][4] - 0.07037918 * out_step3[ 5][ 1][4] + 0.04869279 * out_step3[ 5][ 2][4]
+   + 0.07973684 * out_step3[ 6][ 0][4] - 0.08355879 * out_step3[ 6][ 1][4] + 0.05925191 * out_step3[ 6][ 2][4]
+   - 0.08218288 * out_step3[ 4][ 0][5] - 0.00726730 * out_step3[ 4][ 1][5] + 0.02544058 * out_step3[ 4][ 2][5]
+   + 0.07663906 * out_step3[ 5][ 0][5] + 0.09074876 * out_step3[ 5][ 1][5] - 0.16588275 * out_step3[ 5][ 2][5]
+   - 0.00448276 * out_step3[ 6][ 0][5] + 0.08832297 * out_step3[ 6][ 1][5] + 0.00661622 * out_step3[ 6][ 2][5]
+   - 0.00694120 * out_step3[ 4][ 0][6] + 0.01718853 * out_step3[ 4][ 1][6] - 0.04316361 * out_step3[ 4][ 2][6]
+   - 0.01950866 * out_step3[ 5][ 0][6] + 0.03659920 * out_step3[ 5][ 1][6] + 0.06939868 * out_step3[ 5][ 2][6]
+   + 0.01244422 * out_step3[ 6][ 0][6] + 0.01466536 * out_step3[ 6][ 1][6] + 0.05333254 * out_step3[ 6][ 2][6]
+   - 0.03540488 * out_step3[ 4][ 0][7] + 0.05202066 * out_step3[ 4][ 1][7] + 0.11770041 * out_step3[ 4][ 2][7]
+   + 0.03424012 * out_step3[ 5][ 0][7] + 0.06158106 * out_step3[ 5][ 1][7] + 0.00662863 * out_step3[ 5][ 2][7]
+   - 0.00764533 * out_step3[ 6][ 0][7] + 0.14070190 * out_step3[ 6][ 1][7] - 0.01502050 * out_step3[ 6][ 2][7]
+   - 0.08450716;
+
+out_step4[2][1][9] = 
+   - 0.02227347 * out_step3[ 4][ 2][0] - 0.01274508 * out_step3[ 4][ 3][0] + 0.07452599 * out_step3[ 4][ 4][0]
+   - 0.03697690 * out_step3[ 5][ 2][0] + 0.04494498 * out_step3[ 5][ 3][0] + 0.01852584 * out_step3[ 5][ 4][0]
+   + 0.00390764 * out_step3[ 6][ 2][0] + 0.05484428 * out_step3[ 6][ 3][0] - 0.01926905 * out_step3[ 6][ 4][0]
+   - 0.03356777 * out_step3[ 4][ 2][1] + 0.04695299 * out_step3[ 4][ 3][1] + 0.02757669 * out_step3[ 4][ 4][1]
+   - 0.02798160 * out_step3[ 5][ 2][1] + 0.00479993 * out_step3[ 5][ 3][1] - 0.03743491 * out_step3[ 5][ 4][1]
+   + 0.01256785 * out_step3[ 6][ 2][1] - 0.02054437 * out_step3[ 6][ 3][1] - 0.00959636 * out_step3[ 6][ 4][1]
+   - 0.02954619 * out_step3[ 4][ 2][2] + 0.01373486 * out_step3[ 4][ 3][2] + 0.02412075 * out_step3[ 4][ 4][2]
+   + 0.02075917 * out_step3[ 5][ 2][2] - 0.11101401 * out_step3[ 5][ 3][2] + 0.06982312 * out_step3[ 5][ 4][2]
+   - 0.00087035 * out_step3[ 6][ 2][2] - 0.10051176 * out_step3[ 6][ 3][2] + 0.02473343 * out_step3[ 6][ 4][2]
+   - 0.03311590 * out_step3[ 4][ 2][3] + 0.03387387 * out_step3[ 4][ 3][3] + 0.05369813 * out_step3[ 4][ 4][3]
+   - 0.03958905 * out_step3[ 5][ 2][3] + 0.08983167 * out_step3[ 5][ 3][3] - 0.03831133 * out_step3[ 5][ 4][3]
+   - 0.02661561 * out_step3[ 6][ 2][3] - 0.02569672 * out_step3[ 6][ 3][3] - 0.09761365 * out_step3[ 6][ 4][3]
+   - 0.02835083 * out_step3[ 4][ 2][4] + 0.02540792 * out_step3[ 4][ 3][4] - 0.08677411 * out_step3[ 4][ 4][4]
+   - 0.03269066 * out_step3[ 5][ 2][4] - 0.07037918 * out_step3[ 5][ 3][4] + 0.04869279 * out_step3[ 5][ 4][4]
+   + 0.07973684 * out_step3[ 6][ 2][4] - 0.08355879 * out_step3[ 6][ 3][4] + 0.05925191 * out_step3[ 6][ 4][4]
+   - 0.08218288 * out_step3[ 4][ 2][5] - 0.00726730 * out_step3[ 4][ 3][5] + 0.02544058 * out_step3[ 4][ 4][5]
+   + 0.07663906 * out_step3[ 5][ 2][5] + 0.09074876 * out_step3[ 5][ 3][5] - 0.16588275 * out_step3[ 5][ 4][5]
+   - 0.00448276 * out_step3[ 6][ 2][5] + 0.08832297 * out_step3[ 6][ 3][5] + 0.00661622 * out_step3[ 6][ 4][5]
+   - 0.00694120 * out_step3[ 4][ 2][6] + 0.01718853 * out_step3[ 4][ 3][6] - 0.04316361 * out_step3[ 4][ 4][6]
+   - 0.01950866 * out_step3[ 5][ 2][6] + 0.03659920 * out_step3[ 5][ 3][6] + 0.06939868 * out_step3[ 5][ 4][6]
+   + 0.01244422 * out_step3[ 6][ 2][6] + 0.01466536 * out_step3[ 6][ 3][6] + 0.05333254 * out_step3[ 6][ 4][6]
+   - 0.03540488 * out_step3[ 4][ 2][7] + 0.05202066 * out_step3[ 4][ 3][7] + 0.11770041 * out_step3[ 4][ 4][7]
+   + 0.03424012 * out_step3[ 5][ 2][7] + 0.06158106 * out_step3[ 5][ 3][7] + 0.00662863 * out_step3[ 5][ 4][7]
+   - 0.00764533 * out_step3[ 6][ 2][7] + 0.14070190 * out_step3[ 6][ 3][7] - 0.01502050 * out_step3[ 6][ 4][7]
+   - 0.08450716;
+
+out_step4[2][2][9] = 
+   - 0.02227347 * out_step3[ 4][ 4][0] - 0.01274508 * out_step3[ 4][ 5][0] + 0.07452599 * out_step3[ 4][ 6][0]
+   - 0.03697690 * out_step3[ 5][ 4][0] + 0.04494498 * out_step3[ 5][ 5][0] + 0.01852584 * out_step3[ 5][ 6][0]
+   + 0.00390764 * out_step3[ 6][ 4][0] + 0.05484428 * out_step3[ 6][ 5][0] - 0.01926905 * out_step3[ 6][ 6][0]
+   - 0.03356777 * out_step3[ 4][ 4][1] + 0.04695299 * out_step3[ 4][ 5][1] + 0.02757669 * out_step3[ 4][ 6][1]
+   - 0.02798160 * out_step3[ 5][ 4][1] + 0.00479993 * out_step3[ 5][ 5][1] - 0.03743491 * out_step3[ 5][ 6][1]
+   + 0.01256785 * out_step3[ 6][ 4][1] - 0.02054437 * out_step3[ 6][ 5][1] - 0.00959636 * out_step3[ 6][ 6][1]
+   - 0.02954619 * out_step3[ 4][ 4][2] + 0.01373486 * out_step3[ 4][ 5][2] + 0.02412075 * out_step3[ 4][ 6][2]
+   + 0.02075917 * out_step3[ 5][ 4][2] - 0.11101401 * out_step3[ 5][ 5][2] + 0.06982312 * out_step3[ 5][ 6][2]
+   - 0.00087035 * out_step3[ 6][ 4][2] - 0.10051176 * out_step3[ 6][ 5][2] + 0.02473343 * out_step3[ 6][ 6][2]
+   - 0.03311590 * out_step3[ 4][ 4][3] + 0.03387387 * out_step3[ 4][ 5][3] + 0.05369813 * out_step3[ 4][ 6][3]
+   - 0.03958905 * out_step3[ 5][ 4][3] + 0.08983167 * out_step3[ 5][ 5][3] - 0.03831133 * out_step3[ 5][ 6][3]
+   - 0.02661561 * out_step3[ 6][ 4][3] - 0.02569672 * out_step3[ 6][ 5][3] - 0.09761365 * out_step3[ 6][ 6][3]
+   - 0.02835083 * out_step3[ 4][ 4][4] + 0.02540792 * out_step3[ 4][ 5][4] - 0.08677411 * out_step3[ 4][ 6][4]
+   - 0.03269066 * out_step3[ 5][ 4][4] - 0.07037918 * out_step3[ 5][ 5][4] + 0.04869279 * out_step3[ 5][ 6][4]
+   + 0.07973684 * out_step3[ 6][ 4][4] - 0.08355879 * out_step3[ 6][ 5][4] + 0.05925191 * out_step3[ 6][ 6][4]
+   - 0.08218288 * out_step3[ 4][ 4][5] - 0.00726730 * out_step3[ 4][ 5][5] + 0.02544058 * out_step3[ 4][ 6][5]
+   + 0.07663906 * out_step3[ 5][ 4][5] + 0.09074876 * out_step3[ 5][ 5][5] - 0.16588275 * out_step3[ 5][ 6][5]
+   - 0.00448276 * out_step3[ 6][ 4][5] + 0.08832297 * out_step3[ 6][ 5][5] + 0.00661622 * out_step3[ 6][ 6][5]
+   - 0.00694120 * out_step3[ 4][ 4][6] + 0.01718853 * out_step3[ 4][ 5][6] - 0.04316361 * out_step3[ 4][ 6][6]
+   - 0.01950866 * out_step3[ 5][ 4][6] + 0.03659920 * out_step3[ 5][ 5][6] + 0.06939868 * out_step3[ 5][ 6][6]
+   + 0.01244422 * out_step3[ 6][ 4][6] + 0.01466536 * out_step3[ 6][ 5][6] + 0.05333254 * out_step3[ 6][ 6][6]
+   - 0.03540488 * out_step3[ 4][ 4][7] + 0.05202066 * out_step3[ 4][ 5][7] + 0.11770041 * out_step3[ 4][ 6][7]
+   + 0.03424012 * out_step3[ 5][ 4][7] + 0.06158106 * out_step3[ 5][ 5][7] + 0.00662863 * out_step3[ 5][ 6][7]
+   - 0.00764533 * out_step3[ 6][ 4][7] + 0.14070190 * out_step3[ 6][ 5][7] - 0.01502050 * out_step3[ 6][ 6][7]
+   - 0.08450716;
+
+
+// determine value of activation function Rectified-Linear-Unit
+out_step5[ 0][ 0][0] = (out_step4[ 0][ 0][0] > 0) ? out_step4[ 0][ 0][0] : 0;
+out_step5[ 0][ 1][0] = (out_step4[ 0][ 1][0] > 0) ? out_step4[ 0][ 1][0] : 0;
+out_step5[ 0][ 2][0] = (out_step4[ 0][ 2][0] > 0) ? out_step4[ 0][ 2][0] : 0;
+out_step5[ 1][ 0][0] = (out_step4[ 1][ 0][0] > 0) ? out_step4[ 1][ 0][0] : 0;
+out_step5[ 1][ 1][0] = (out_step4[ 1][ 1][0] > 0) ? out_step4[ 1][ 1][0] : 0;
+out_step5[ 1][ 2][0] = (out_step4[ 1][ 2][0] > 0) ? out_step4[ 1][ 2][0] : 0;
+out_step5[ 2][ 0][0] = (out_step4[ 2][ 0][0] > 0) ? out_step4[ 2][ 0][0] : 0;
+out_step5[ 2][ 1][0] = (out_step4[ 2][ 1][0] > 0) ? out_step4[ 2][ 1][0] : 0;
+out_step5[ 2][ 2][0] = (out_step4[ 2][ 2][0] > 0) ? out_step4[ 2][ 2][0] : 0;
+out_step5[ 0][ 0][1] = (out_step4[ 0][ 0][1] > 0) ? out_step4[ 0][ 0][1] : 0;
+out_step5[ 0][ 1][1] = (out_step4[ 0][ 1][1] > 0) ? out_step4[ 0][ 1][1] : 0;
+out_step5[ 0][ 2][1] = (out_step4[ 0][ 2][1] > 0) ? out_step4[ 0][ 2][1] : 0;
+out_step5[ 1][ 0][1] = (out_step4[ 1][ 0][1] > 0) ? out_step4[ 1][ 0][1] : 0;
+out_step5[ 1][ 1][1] = (out_step4[ 1][ 1][1] > 0) ? out_step4[ 1][ 1][1] : 0;
+out_step5[ 1][ 2][1] = (out_step4[ 1][ 2][1] > 0) ? out_step4[ 1][ 2][1] : 0;
+out_step5[ 2][ 0][1] = (out_step4[ 2][ 0][1] > 0) ? out_step4[ 2][ 0][1] : 0;
+out_step5[ 2][ 1][1] = (out_step4[ 2][ 1][1] > 0) ? out_step4[ 2][ 1][1] : 0;
+out_step5[ 2][ 2][1] = (out_step4[ 2][ 2][1] > 0) ? out_step4[ 2][ 2][1] : 0;
+out_step5[ 0][ 0][2] = (out_step4[ 0][ 0][2] > 0) ? out_step4[ 0][ 0][2] : 0;
+out_step5[ 0][ 1][2] = (out_step4[ 0][ 1][2] > 0) ? out_step4[ 0][ 1][2] : 0;
+out_step5[ 0][ 2][2] = (out_step4[ 0][ 2][2] > 0) ? out_step4[ 0][ 2][2] : 0;
+out_step5[ 1][ 0][2] = (out_step4[ 1][ 0][2] > 0) ? out_step4[ 1][ 0][2] : 0;
+out_step5[ 1][ 1][2] = (out_step4[ 1][ 1][2] > 0) ? out_step4[ 1][ 1][2] : 0;
+out_step5[ 1][ 2][2] = (out_step4[ 1][ 2][2] > 0) ? out_step4[ 1][ 2][2] : 0;
+out_step5[ 2][ 0][2] = (out_step4[ 2][ 0][2] > 0) ? out_step4[ 2][ 0][2] : 0;
+out_step5[ 2][ 1][2] = (out_step4[ 2][ 1][2] > 0) ? out_step4[ 2][ 1][2] : 0;
+out_step5[ 2][ 2][2] = (out_step4[ 2][ 2][2] > 0) ? out_step4[ 2][ 2][2] : 0;
+out_step5[ 0][ 0][3] = (out_step4[ 0][ 0][3] > 0) ? out_step4[ 0][ 0][3] : 0;
+out_step5[ 0][ 1][3] = (out_step4[ 0][ 1][3] > 0) ? out_step4[ 0][ 1][3] : 0;
+out_step5[ 0][ 2][3] = (out_step4[ 0][ 2][3] > 0) ? out_step4[ 0][ 2][3] : 0;
+out_step5[ 1][ 0][3] = (out_step4[ 1][ 0][3] > 0) ? out_step4[ 1][ 0][3] : 0;
+out_step5[ 1][ 1][3] = (out_step4[ 1][ 1][3] > 0) ? out_step4[ 1][ 1][3] : 0;
+out_step5[ 1][ 2][3] = (out_step4[ 1][ 2][3] > 0) ? out_step4[ 1][ 2][3] : 0;
+out_step5[ 2][ 0][3] = (out_step4[ 2][ 0][3] > 0) ? out_step4[ 2][ 0][3] : 0;
+out_step5[ 2][ 1][3] = (out_step4[ 2][ 1][3] > 0) ? out_step4[ 2][ 1][3] : 0;
+out_step5[ 2][ 2][3] = (out_step4[ 2][ 2][3] > 0) ? out_step4[ 2][ 2][3] : 0;
+out_step5[ 0][ 0][4] = (out_step4[ 0][ 0][4] > 0) ? out_step4[ 0][ 0][4] : 0;
+out_step5[ 0][ 1][4] = (out_step4[ 0][ 1][4] > 0) ? out_step4[ 0][ 1][4] : 0;
+out_step5[ 0][ 2][4] = (out_step4[ 0][ 2][4] > 0) ? out_step4[ 0][ 2][4] : 0;
+out_step5[ 1][ 0][4] = (out_step4[ 1][ 0][4] > 0) ? out_step4[ 1][ 0][4] : 0;
+out_step5[ 1][ 1][4] = (out_step4[ 1][ 1][4] > 0) ? out_step4[ 1][ 1][4] : 0;
+out_step5[ 1][ 2][4] = (out_step4[ 1][ 2][4] > 0) ? out_step4[ 1][ 2][4] : 0;
+out_step5[ 2][ 0][4] = (out_step4[ 2][ 0][4] > 0) ? out_step4[ 2][ 0][4] : 0;
+out_step5[ 2][ 1][4] = (out_step4[ 2][ 1][4] > 0) ? out_step4[ 2][ 1][4] : 0;
+out_step5[ 2][ 2][4] = (out_step4[ 2][ 2][4] > 0) ? out_step4[ 2][ 2][4] : 0;
+out_step5[ 0][ 0][5] = (out_step4[ 0][ 0][5] > 0) ? out_step4[ 0][ 0][5] : 0;
+out_step5[ 0][ 1][5] = (out_step4[ 0][ 1][5] > 0) ? out_step4[ 0][ 1][5] : 0;
+out_step5[ 0][ 2][5] = (out_step4[ 0][ 2][5] > 0) ? out_step4[ 0][ 2][5] : 0;
+out_step5[ 1][ 0][5] = (out_step4[ 1][ 0][5] > 0) ? out_step4[ 1][ 0][5] : 0;
+out_step5[ 1][ 1][5] = (out_step4[ 1][ 1][5] > 0) ? out_step4[ 1][ 1][5] : 0;
+out_step5[ 1][ 2][5] = (out_step4[ 1][ 2][5] > 0) ? out_step4[ 1][ 2][5] : 0;
+out_step5[ 2][ 0][5] = (out_step4[ 2][ 0][5] > 0) ? out_step4[ 2][ 0][5] : 0;
+out_step5[ 2][ 1][5] = (out_step4[ 2][ 1][5] > 0) ? out_step4[ 2][ 1][5] : 0;
+out_step5[ 2][ 2][5] = (out_step4[ 2][ 2][5] > 0) ? out_step4[ 2][ 2][5] : 0;
+out_step5[ 0][ 0][6] = (out_step4[ 0][ 0][6] > 0) ? out_step4[ 0][ 0][6] : 0;
+out_step5[ 0][ 1][6] = (out_step4[ 0][ 1][6] > 0) ? out_step4[ 0][ 1][6] : 0;
+out_step5[ 0][ 2][6] = (out_step4[ 0][ 2][6] > 0) ? out_step4[ 0][ 2][6] : 0;
+out_step5[ 1][ 0][6] = (out_step4[ 1][ 0][6] > 0) ? out_step4[ 1][ 0][6] : 0;
+out_step5[ 1][ 1][6] = (out_step4[ 1][ 1][6] > 0) ? out_step4[ 1][ 1][6] : 0;
+out_step5[ 1][ 2][6] = (out_step4[ 1][ 2][6] > 0) ? out_step4[ 1][ 2][6] : 0;
+out_step5[ 2][ 0][6] = (out_step4[ 2][ 0][6] > 0) ? out_step4[ 2][ 0][6] : 0;
+out_step5[ 2][ 1][6] = (out_step4[ 2][ 1][6] > 0) ? out_step4[ 2][ 1][6] : 0;
+out_step5[ 2][ 2][6] = (out_step4[ 2][ 2][6] > 0) ? out_step4[ 2][ 2][6] : 0;
+out_step5[ 0][ 0][7] = (out_step4[ 0][ 0][7] > 0) ? out_step4[ 0][ 0][7] : 0;
+out_step5[ 0][ 1][7] = (out_step4[ 0][ 1][7] > 0) ? out_step4[ 0][ 1][7] : 0;
+out_step5[ 0][ 2][7] = (out_step4[ 0][ 2][7] > 0) ? out_step4[ 0][ 2][7] : 0;
+out_step5[ 1][ 0][7] = (out_step4[ 1][ 0][7] > 0) ? out_step4[ 1][ 0][7] : 0;
+out_step5[ 1][ 1][7] = (out_step4[ 1][ 1][7] > 0) ? out_step4[ 1][ 1][7] : 0;
+out_step5[ 1][ 2][7] = (out_step4[ 1][ 2][7] > 0) ? out_step4[ 1][ 2][7] : 0;
+out_step5[ 2][ 0][7] = (out_step4[ 2][ 0][7] > 0) ? out_step4[ 2][ 0][7] : 0;
+out_step5[ 2][ 1][7] = (out_step4[ 2][ 1][7] > 0) ? out_step4[ 2][ 1][7] : 0;
+out_step5[ 2][ 2][7] = (out_step4[ 2][ 2][7] > 0) ? out_step4[ 2][ 2][7] : 0;
+out_step5[ 0][ 0][8] = (out_step4[ 0][ 0][8] > 0) ? out_step4[ 0][ 0][8] : 0;
+out_step5[ 0][ 1][8] = (out_step4[ 0][ 1][8] > 0) ? out_step4[ 0][ 1][8] : 0;
+out_step5[ 0][ 2][8] = (out_step4[ 0][ 2][8] > 0) ? out_step4[ 0][ 2][8] : 0;
+out_step5[ 1][ 0][8] = (out_step4[ 1][ 0][8] > 0) ? out_step4[ 1][ 0][8] : 0;
+out_step5[ 1][ 1][8] = (out_step4[ 1][ 1][8] > 0) ? out_step4[ 1][ 1][8] : 0;
+out_step5[ 1][ 2][8] = (out_step4[ 1][ 2][8] > 0) ? out_step4[ 1][ 2][8] : 0;
+out_step5[ 2][ 0][8] = (out_step4[ 2][ 0][8] > 0) ? out_step4[ 2][ 0][8] : 0;
+out_step5[ 2][ 1][8] = (out_step4[ 2][ 1][8] > 0) ? out_step4[ 2][ 1][8] : 0;
+out_step5[ 2][ 2][8] = (out_step4[ 2][ 2][8] > 0) ? out_step4[ 2][ 2][8] : 0;
+out_step5[ 0][ 0][9] = (out_step4[ 0][ 0][9] > 0) ? out_step4[ 0][ 0][9] : 0;
+out_step5[ 0][ 1][9] = (out_step4[ 0][ 1][9] > 0) ? out_step4[ 0][ 1][9] : 0;
+out_step5[ 0][ 2][9] = (out_step4[ 0][ 2][9] > 0) ? out_step4[ 0][ 2][9] : 0;
+out_step5[ 1][ 0][9] = (out_step4[ 1][ 0][9] > 0) ? out_step4[ 1][ 0][9] : 0;
+out_step5[ 1][ 1][9] = (out_step4[ 1][ 1][9] > 0) ? out_step4[ 1][ 1][9] : 0;
+out_step5[ 1][ 2][9] = (out_step4[ 1][ 2][9] > 0) ? out_step4[ 1][ 2][9] : 0;
+out_step5[ 2][ 0][9] = (out_step4[ 2][ 0][9] > 0) ? out_step4[ 2][ 0][9] : 0;
+out_step5[ 2][ 1][9] = (out_step4[ 2][ 1][9] > 0) ? out_step4[ 2][ 1][9] : 0;
+out_step5[ 2][ 2][9] = (out_step4[ 2][ 2][9] > 0) ? out_step4[ 2][ 2][9] : 0;
 
 // determine output for this fully connected step
-out_step4[0][0] = 
-   - 0.03336591 * out_step3[ 0][ 0] - 0.02325516 * out_step3[ 1][ 0] - 0.12105709 * out_step3[ 2][ 0] - 0.04534440 * out_step3[ 3][ 0]
-   - 0.03547922 * out_step3[ 4][ 0] + 0.00866207 * out_step3[ 5][ 0] - 0.06342828 * out_step3[ 6][ 0] + 0.01803839 * out_step3[ 7][ 0]
-   - 0.01498788 * out_step3[ 8][ 0] + 0.00611906 * out_step3[ 9][ 0] + 0.02133747 * out_step3[10][ 0] - 0.07483032 * out_step3[11][ 0]
-   - 0.01877831 * out_step3[12][ 0] + 0.01198448 * out_step3[13][ 0] - 0.01618516 * out_step3[ 0][ 1] - 0.02896284 * out_step3[ 1][ 1]
-   + 0.05064066 * out_step3[ 2][ 1] - 0.03787059 * out_step3[ 3][ 1] + 0.10141790 * out_step3[ 4][ 1] + 0.10300613 * out_step3[ 5][ 1]
-   + 0.03796652 * out_step3[ 6][ 1] + 0.01526272 * out_step3[ 7][ 1] + 0.00743996 * out_step3[ 8][ 1] + 0.00490154 * out_step3[ 9][ 1]
-   - 0.02582215 * out_step3[10][ 1] + 0.02945370 * out_step3[11][ 1] + 0.02757339 * out_step3[12][ 1] + 0.01714399 * out_step3[13][ 1]
-   + 0.06783661 * out_step3[ 0][ 2] - 0.06478661 * out_step3[ 1][ 2] + 0.05835465 * out_step3[ 2][ 2] + 0.07610069 * out_step3[ 3][ 2]
-   + 0.01655093 * out_step3[ 4][ 2] - 0.00526783 * out_step3[ 5][ 2] - 0.00461301 * out_step3[ 6][ 2] + 0.06376541 * out_step3[ 7][ 2]
-   + 0.03655368 * out_step3[ 8][ 2] + 0.06145429 * out_step3[ 9][ 2] - 0.01446019 * out_step3[10][ 2] + 0.01744191 * out_step3[11][ 2]
-   + 0.05604537 * out_step3[12][ 2] - 0.01885433 * out_step3[13][ 2] - 0.03169328 * out_step3[ 0][ 3] + 0.03278098 * out_step3[ 1][ 3]
-   + 0.07828612 * out_step3[ 2][ 3] + 0.07614708 * out_step3[ 3][ 3] + 0.01780646 * out_step3[ 4][ 3] - 0.00462223 * out_step3[ 5][ 3]
-   + 0.06531325 * out_step3[ 6][ 3] + 0.05618798 * out_step3[ 7][ 3] + 0.00852917 * out_step3[ 8][ 3] + 0.03515044 * out_step3[ 9][ 3]
-   - 0.06406964 * out_step3[10][ 3] - 0.01028153 * out_step3[11][ 3] + 0.01025952 * out_step3[12][ 3] - 0.02059528 * out_step3[13][ 3]
-   + 0.05800336 * out_step3[ 0][ 4] + 0.04613731 * out_step3[ 1][ 4] + 0.03665877 * out_step3[ 2][ 4] - 0.00524032 * out_step3[ 3][ 4]
-   + 0.03239070 * out_step3[ 4][ 4] + 0.01028684 * out_step3[ 5][ 4] + 0.04217515 * out_step3[ 6][ 4] - 0.05242280 * out_step3[ 7][ 4]
-   + 0.04197036 * out_step3[ 8][ 4] + 0.01642611 * out_step3[ 9][ 4] + 0.00199332 * out_step3[10][ 4] + 0.02741295 * out_step3[11][ 4]
-   + 0.01159924 * out_step3[12][ 4] - 0.07735870 * out_step3[13][ 4] - 0.00441207 * out_step3[ 0][ 5] - 0.02351503 * out_step3[ 1][ 5]
-   + 0.02344317 * out_step3[ 2][ 5] - 0.00562011 * out_step3[ 3][ 5] + 0.03967815 * out_step3[ 4][ 5] - 0.07049017 * out_step3[ 5][ 5]
-   + 0.03042419 * out_step3[ 6][ 5] - 0.06983824 * out_step3[ 7][ 5] - 0.02553785 * out_step3[ 8][ 5] + 0.00019677 * out_step3[ 9][ 5]
-   + 0.00506797 * out_step3[10][ 5] - 0.04062985 * out_step3[11][ 5] + 0.00306727 * out_step3[12][ 5] - 0.02751856 * out_step3[13][ 5]
-   + 0.07413442 * out_step3[ 0][ 6] - 0.02026912 * out_step3[ 1][ 6] + 0.06586147 * out_step3[ 2][ 6] + 0.05969341 * out_step3[ 3][ 6]
-   + 0.10746769 * out_step3[ 4][ 6] - 0.04590751 * out_step3[ 5][ 6] + 0.01294855 * out_step3[ 6][ 6] - 0.02760603 * out_step3[ 7][ 6]
-   - 0.07795448 * out_step3[ 8][ 6] + 0.02212426 * out_step3[ 9][ 6] - 0.07102582 * out_step3[10][ 6] - 0.09073550 * out_step3[11][ 6]
-   + 0.05245681 * out_step3[12][ 6] - 0.07888416 * out_step3[13][ 6] - 0.06807664 * out_step3[ 0][ 7] - 0.01234203 * out_step3[ 1][ 7]
-   + 0.07325999 * out_step3[ 2][ 7] + 0.07712540 * out_step3[ 3][ 7] + 0.02168201 * out_step3[ 4][ 7] + 0.01285801 * out_step3[ 5][ 7]
-   - 0.07548288 * out_step3[ 6][ 7] + 0.01632245 * out_step3[ 7][ 7] - 0.09596946 * out_step3[ 8][ 7] - 0.04708050 * out_step3[ 9][ 7]
-   + 0.04102194 * out_step3[10][ 7] - 0.01925552 * out_step3[11][ 7] - 0.03598686 * out_step3[12][ 7] - 0.04461047 * out_step3[13][ 7]
-   - 0.01866007 * out_step3[ 0][ 8] + 0.10944767 * out_step3[ 1][ 8] - 0.02296875 * out_step3[ 2][ 8] + 0.05083752 * out_step3[ 3][ 8]
-   + 0.04543770 * out_step3[ 4][ 8] - 0.03447407 * out_step3[ 5][ 8] + 0.02472430 * out_step3[ 6][ 8] - 0.04503316 * out_step3[ 7][ 8]
-   + 0.01296419 * out_step3[ 8][ 8] + 0.01466487 * out_step3[ 9][ 8] + 0.00198217 * out_step3[10][ 8] + 0.04380584 * out_step3[11][ 8]
-   + 0.05644375 * out_step3[12][ 8] + 0.05470167 * out_step3[13][ 8] - 0.04862870 * out_step3[ 0][ 9] + 0.04155042 * out_step3[ 1][ 9]
-   - 0.01207306 * out_step3[ 2][ 9] + 0.04620437 * out_step3[ 3][ 9] + 0.08142418 * out_step3[ 4][ 9] + 0.04694096 * out_step3[ 5][ 9]
-   + 0.02021865 * out_step3[ 6][ 9] + 0.03130104 * out_step3[ 7][ 9] + 0.01284675 * out_step3[ 8][ 9] - 0.03644331 * out_step3[ 9][ 9]
-   + 0.01361564 * out_step3[10][ 9] + 0.00713713 * out_step3[11][ 9] + 0.02453433 * out_step3[12][ 9] - 0.06476215 * out_step3[13][ 9]
-   - 0.03864865 * out_step3[ 0][10] + 0.01167559 * out_step3[ 1][10] + 0.01469047 * out_step3[ 2][10] + 0.01850416 * out_step3[ 3][10]
-   + 0.11022507 * out_step3[ 4][10] - 0.00403061 * out_step3[ 5][10] - 0.04177484 * out_step3[ 6][10] - 0.06191868 * out_step3[ 7][10]
-   - 0.00672799 * out_step3[ 8][10] + 0.03913474 * out_step3[ 9][10] - 0.05905705 * out_step3[10][10] + 0.06105304 * out_step3[11][10]
-   - 0.04654726 * out_step3[12][10] - 0.04690268 * out_step3[13][10] - 0.05419086 * out_step3[ 0][11] - 0.11213516 * out_step3[ 1][11]
-   + 0.03486596 * out_step3[ 2][11] - 0.02372439 * out_step3[ 3][11] + 0.07924570 * out_step3[ 4][11] + 0.04058645 * out_step3[ 5][11]
-   + 0.04823261 * out_step3[ 6][11] + 0.07052492 * out_step3[ 7][11] + 0.04422250 * out_step3[ 8][11] - 0.00384214 * out_step3[ 9][11]
-   - 0.01742649 * out_step3[10][11] - 0.00780718 * out_step3[11][11] - 0.04819882 * out_step3[12][11] - 0.08775666 * out_step3[13][11]
-   - 0.05632878 * out_step3[ 0][12] - 0.00223449 * out_step3[ 1][12] + 0.02468692 * out_step3[ 2][12] - 0.06180303 * out_step3[ 3][12]
-   - 0.03389818 * out_step3[ 4][12] - 0.03972032 * out_step3[ 5][12] - 0.03132495 * out_step3[ 6][12] + 0.04544247 * out_step3[ 7][12]
-   + 0.01519446 * out_step3[ 8][12] + 0.03819647 * out_step3[ 9][12] + 0.02444332 * out_step3[10][12] + 0.02148645 * out_step3[11][12]
-   - 0.00229122 * out_step3[12][12] - 0.01803391 * out_step3[13][12] - 0.05053189 * out_step3[ 0][13] - 0.00812195 * out_step3[ 1][13]
-   - 0.11317353 * out_step3[ 2][13] - 0.10135447 * out_step3[ 3][13] - 0.06175981 * out_step3[ 4][13] + 0.00387141 * out_step3[ 5][13]
-   - 0.09559490 * out_step3[ 6][13] - 0.00034119 * out_step3[ 7][13] + 0.02512987 * out_step3[ 8][13] - 0.08169007 * out_step3[ 9][13]
-   - 0.02195470 * out_step3[10][13] - 0.00315784 * out_step3[11][13] + 0.02057242 * out_step3[12][13] - 0.07564373 * out_step3[13][13]
-   - 0.25387558;
+out_step6[0][0] = 
+   - 0.05881648 * out_step5[ 0][ 0][0] + 0.01398518 * out_step5[ 1][ 0][0] - 0.07418316 * out_step5[ 2][ 0][0] + 0.03590464 * out_step5[ 0][ 1][0]
+   + 0.00241315 * out_step5[ 1][ 1][0] + 0.12494137 * out_step5[ 2][ 1][0] - 0.00297197 * out_step5[ 0][ 2][0] + 0.08980146 * out_step5[ 1][ 2][0]
+   + 0.16168894 * out_step5[ 2][ 2][0] - 0.02434799 * out_step5[ 0][ 0][1] + 0.01809889 * out_step5[ 1][ 0][1] - 0.18467456 * out_step5[ 2][ 0][1]
+   + 0.03724630 * out_step5[ 0][ 1][1] + 0.07661919 * out_step5[ 1][ 1][1] - 0.17270601 * out_step5[ 2][ 1][1] + 0.07679638 * out_step5[ 0][ 2][1]
+   + 0.01798674 * out_step5[ 1][ 2][1] - 0.06818936 * out_step5[ 2][ 2][1] - 0.03891616 * out_step5[ 0][ 0][2] - 0.08470105 * out_step5[ 1][ 0][2]
+   - 0.04093039 * out_step5[ 2][ 0][2] - 0.08551759 * out_step5[ 0][ 1][2] - 0.02384003 * out_step5[ 1][ 1][2] - 0.13564175 * out_step5[ 2][ 1][2]
+   - 0.08726944 * out_step5[ 0][ 2][2] - 0.08964407 * out_step5[ 1][ 2][2] - 0.05605540 * out_step5[ 2][ 2][2] - 0.02098265 * out_step5[ 0][ 0][3]
+   + 0.07261277 * out_step5[ 1][ 0][3] + 0.04004663 * out_step5[ 2][ 0][3] + 0.09682514 * out_step5[ 0][ 1][3] + 0.06930210 * out_step5[ 1][ 1][3]
+   + 0.06696132 * out_step5[ 2][ 1][3] + 0.13629112 * out_step5[ 0][ 2][3] + 0.08116747 * out_step5[ 1][ 2][3] + 0.02986448 * out_step5[ 2][ 2][3]
+   + 0.02128929 * out_step5[ 0][ 0][4] + 0.06519270 * out_step5[ 1][ 0][4] + 0.03441910 * out_step5[ 2][ 0][4] + 0.11183025 * out_step5[ 0][ 1][4]
+   - 0.01159581 * out_step5[ 1][ 1][4] - 0.05086368 * out_step5[ 2][ 1][4] + 0.02900359 * out_step5[ 0][ 2][4] - 0.08164009 * out_step5[ 1][ 2][4]
+   + 0.02153491 * out_step5[ 2][ 2][4] - 0.02227514 * out_step5[ 0][ 0][5] + 0.04052741 * out_step5[ 1][ 0][5] - 0.04940606 * out_step5[ 2][ 0][5]
+   - 0.02104837 * out_step5[ 0][ 1][5] + 0.05923438 * out_step5[ 1][ 1][5] + 0.20750688 * out_step5[ 2][ 1][5] - 0.03435166 * out_step5[ 0][ 2][5]
+   - 0.01855527 * out_step5[ 1][ 2][5] - 0.02353650 * out_step5[ 2][ 2][5] - 0.02299294 * out_step5[ 0][ 0][6] - 0.17766012 * out_step5[ 1][ 0][6]
+   - 0.06324160 * out_step5[ 2][ 0][6] - 0.10783185 * out_step5[ 0][ 1][6] - 0.08510654 * out_step5[ 1][ 1][6] - 0.02872881 * out_step5[ 2][ 1][6]
+   - 0.05709285 * out_step5[ 0][ 2][6] - 0.07022785 * out_step5[ 1][ 2][6] - 0.17121422 * out_step5[ 2][ 2][6] - 0.08598623 * out_step5[ 0][ 0][7]
+   - 0.11413740 * out_step5[ 1][ 0][7] - 0.11583131 * out_step5[ 2][ 0][7] - 0.17896922 * out_step5[ 0][ 1][7] - 0.05189192 * out_step5[ 1][ 1][7]
+   - 0.02593692 * out_step5[ 2][ 1][7] - 0.06263162 * out_step5[ 0][ 2][7] - 0.09157000 * out_step5[ 1][ 2][7] - 0.08920299 * out_step5[ 2][ 2][7]
+   + 0.12190945 * out_step5[ 0][ 0][8] + 0.05204890 * out_step5[ 1][ 0][8] + 0.08835862 * out_step5[ 2][ 0][8] - 0.09891846 * out_step5[ 0][ 1][8]
+   + 0.06049427 * out_step5[ 1][ 1][8] + 0.12991269 * out_step5[ 2][ 1][8] + 0.02526964 * out_step5[ 0][ 2][8] - 0.11838969 * out_step5[ 1][ 2][8]
+   - 0.03636335 * out_step5[ 2][ 2][8] + 0.02648498 * out_step5[ 0][ 0][9] - 0.06331580 * out_step5[ 1][ 0][9] + 0.11957757 * out_step5[ 2][ 0][9]
+   + 0.03888746 * out_step5[ 0][ 1][9] + 0.08312147 * out_step5[ 1][ 1][9] + 0.06327374 * out_step5[ 2][ 1][9] + 0.02616860 * out_step5[ 0][ 2][9]
+   + 0.03256612 * out_step5[ 1][ 2][9] + 0.10974393 * out_step5[ 2][ 2][9]
+   - 0.12650988;
 
-out_step4[1][0] = 
-   + 0.02975832 * out_step3[ 0][ 0] + 0.03589328 * out_step3[ 1][ 0] + 0.10776548 * out_step3[ 2][ 0] + 0.04239635 * out_step3[ 3][ 0]
-   + 0.05239161 * out_step3[ 4][ 0] - 0.01503415 * out_step3[ 5][ 0] + 0.03756517 * out_step3[ 6][ 0] - 0.01781407 * out_step3[ 7][ 0]
-   + 0.03449496 * out_step3[ 8][ 0] - 0.01519396 * out_step3[ 9][ 0] - 0.00457017 * out_step3[10][ 0] + 0.04549729 * out_step3[11][ 0]
-   + 0.01360906 * out_step3[12][ 0] - 0.02634277 * out_step3[13][ 0] + 0.00416781 * out_step3[ 0][ 1] + 0.02480890 * out_step3[ 1][ 1]
-   - 0.05906149 * out_step3[ 2][ 1] + 0.03734747 * out_step3[ 3][ 1] - 0.09806990 * out_step3[ 4][ 1] - 0.09318617 * out_step3[ 5][ 1]
-   - 0.02143970 * out_step3[ 6][ 1] - 0.03484919 * out_step3[ 7][ 1] + 0.02077156 * out_step3[ 8][ 1] + 0.01186369 * out_step3[ 9][ 1]
-   + 0.02680589 * out_step3[10][ 1] - 0.02663168 * out_step3[11][ 1] - 0.03652284 * out_step3[12][ 1] - 0.00296591 * out_step3[13][ 1]
-   - 0.07384368 * out_step3[ 0][ 2] + 0.08414046 * out_step3[ 1][ 2] - 0.05473005 * out_step3[ 2][ 2] - 0.08477516 * out_step3[ 3][ 2]
-   - 0.01302181 * out_step3[ 4][ 2] + 0.02079068 * out_step3[ 5][ 2] - 0.01648733 * out_step3[ 6][ 2] - 0.07630613 * out_step3[ 7][ 2]
-   - 0.03532451 * out_step3[ 8][ 2] - 0.04499120 * out_step3[ 9][ 2] + 0.01729709 * out_step3[10][ 2] - 0.02025643 * out_step3[11][ 2]
-   - 0.07253364 * out_step3[12][ 2] + 0.02004046 * out_step3[13][ 2] + 0.04010371 * out_step3[ 0][ 3] - 0.04321144 * out_step3[ 1][ 3]
-   - 0.08695387 * out_step3[ 2][ 3] - 0.07032674 * out_step3[ 3][ 3] - 0.00154767 * out_step3[ 4][ 3] - 0.00212968 * out_step3[ 5][ 3]
-   - 0.05576752 * out_step3[ 6][ 3] - 0.06471778 * out_step3[ 7][ 3] - 0.00087649 * out_step3[ 8][ 3] - 0.01119206 * out_step3[ 9][ 3]
-   + 0.07458796 * out_step3[10][ 3] - 0.01789855 * out_step3[11][ 3] - 0.00982520 * out_step3[12][ 3] + 0.02173833 * out_step3[13][ 3]
-   - 0.04445776 * out_step3[ 0][ 4] - 0.02572627 * out_step3[ 1][ 4] - 0.01660992 * out_step3[ 2][ 4] + 0.01961609 * out_step3[ 3][ 4]
-   - 0.03834381 * out_step3[ 4][ 4] - 0.01489826 * out_step3[ 5][ 4] - 0.04266727 * out_step3[ 6][ 4] + 0.05722321 * out_step3[ 7][ 4]
-   - 0.04033323 * out_step3[ 8][ 4] + 0.00012421 * out_step3[ 9][ 4] - 0.02023107 * out_step3[10][ 4] - 0.00429306 * out_step3[11][ 4]
-   - 0.01182545 * out_step3[12][ 4] + 0.06805842 * out_step3[13][ 4] + 0.01761909 * out_step3[ 0][ 5] + 0.02287347 * out_step3[ 1][ 5]
-   - 0.01530656 * out_step3[ 2][ 5] + 0.00092267 * out_step3[ 3][ 5] - 0.05640272 * out_step3[ 4][ 5] + 0.06667810 * out_step3[ 5][ 5]
-   - 0.04135128 * out_step3[ 6][ 5] + 0.07050373 * out_step3[ 7][ 5] + 0.00640085 * out_step3[ 8][ 5] - 0.00831426 * out_step3[ 9][ 5]
-   - 0.00185266 * out_step3[10][ 5] + 0.05362444 * out_step3[11][ 5] + 0.00711274 * out_step3[12][ 5] + 0.03090644 * out_step3[13][ 5]
-   - 0.05457315 * out_step3[ 0][ 6] - 0.00220147 * out_step3[ 1][ 6] - 0.05778651 * out_step3[ 2][ 6] - 0.08668954 * out_step3[ 3][ 6]
-   - 0.08997142 * out_step3[ 4][ 6] + 0.05598419 * out_step3[ 5][ 6] - 0.01208994 * out_step3[ 6][ 6] + 0.02004997 * out_step3[ 7][ 6]
-   + 0.06927241 * out_step3[ 8][ 6] - 0.03507007 * out_step3[ 9][ 6] + 0.09549789 * out_step3[10][ 6] + 0.07376146 * out_step3[11][ 6]
-   - 0.03329099 * out_step3[12][ 6] + 0.06787375 * out_step3[13][ 6] + 0.07799705 * out_step3[ 0][ 7] + 0.00242088 * out_step3[ 1][ 7]
-   - 0.07720615 * out_step3[ 2][ 7] - 0.07524730 * out_step3[ 3][ 7] - 0.03744585 * out_step3[ 4][ 7] - 0.02355212 * out_step3[ 5][ 7]
-   + 0.05979412 * out_step3[ 6][ 7] - 0.00687716 * out_step3[ 7][ 7] + 0.10056350 * out_step3[ 8][ 7] + 0.05514842 * out_step3[ 9][ 7]
-   - 0.05571279 * out_step3[10][ 7] + 0.01430163 * out_step3[11][ 7] + 0.04185321 * out_step3[12][ 7] + 0.05491559 * out_step3[13][ 7]
-   + 0.01036141 * out_step3[ 0][ 8] - 0.09527688 * out_step3[ 1][ 8] + 0.00504399 * out_step3[ 2][ 8] - 0.02057003 * out_step3[ 3][ 8]
-   - 0.03217699 * out_step3[ 4][ 8] + 0.04060709 * out_step3[ 5][ 8] + 0.01087005 * out_step3[ 6][ 8] + 0.03848815 * out_step3[ 7][ 8]
-   - 0.00974287 * out_step3[ 8][ 8] - 0.01382185 * out_step3[ 9][ 8] + 0.00605501 * out_step3[10][ 8] - 0.06384061 * out_step3[11][ 8]
-   - 0.06176941 * out_step3[12][ 8] - 0.05072620 * out_step3[13][ 8] + 0.03818783 * out_step3[ 0][ 9] - 0.04382310 * out_step3[ 1][ 9]
-   + 0.00239683 * out_step3[ 2][ 9] - 0.02067773 * out_step3[ 3][ 9] - 0.06202119 * out_step3[ 4][ 9] - 0.05287086 * out_step3[ 5][ 9]
-   - 0.03706156 * out_step3[ 6][ 9] - 0.02269542 * out_step3[ 7][ 9] - 0.00912425 * out_step3[ 8][ 9] + 0.00885934 * out_step3[ 9][ 9]
-   - 0.02489990 * out_step3[10][ 9] + 0.02077889 * out_step3[11][ 9] - 0.01787323 * out_step3[12][ 9] + 0.04602303 * out_step3[13][ 9]
-   + 0.04450347 * out_step3[ 0][10] - 0.01250134 * out_step3[ 1][10] - 0.01451723 * out_step3[ 2][10] - 0.01769516 * out_step3[ 3][10]
-   - 0.10653573 * out_step3[ 4][10] + 0.02475655 * out_step3[ 5][10] + 0.04377123 * out_step3[ 6][10] + 0.06083157 * out_step3[ 7][10]
-   - 0.00757726 * out_step3[ 8][10] - 0.05881472 * out_step3[ 9][10] + 0.06471855 * out_step3[10][10] - 0.05681210 * out_step3[11][10]
-   + 0.04530618 * out_step3[12][10] + 0.04731765 * out_step3[13][10] + 0.04459693 * out_step3[ 0][11] + 0.10853466 * out_step3[ 1][11]
-   - 0.01313989 * out_step3[ 2][11] + 0.04209728 * out_step3[ 3][11] - 0.07266121 * out_step3[ 4][11] - 0.05094980 * out_step3[ 5][11]
-   - 0.04229941 * out_step3[ 6][11] - 0.08199473 * out_step3[ 7][11] - 0.03620228 * out_step3[ 8][11] - 0.02022579 * out_step3[ 9][11]
-   + 0.02142653 * out_step3[10][11] + 0.00476125 * out_step3[11][11] + 0.03206272 * out_step3[12][11] + 0.08239815 * out_step3[13][11]
-   + 0.04887506 * out_step3[ 0][12] + 0.03884654 * out_step3[ 1][12] - 0.00741941 * out_step3[ 2][12] + 0.05611546 * out_step3[ 3][12]
-   + 0.03177745 * out_step3[ 4][12] + 0.03349658 * out_step3[ 5][12] + 0.02319003 * out_step3[ 6][12] - 0.06975812 * out_step3[ 7][12]
-   - 0.00310838 * out_step3[ 8][12] - 0.00310859 * out_step3[ 9][12] - 0.04383368 * out_step3[10][12] - 0.02024104 * out_step3[11][12]
-   + 0.01500400 * out_step3[12][12] + 0.01739977 * out_step3[13][12] + 0.04575537 * out_step3[ 0][13] + 0.01738844 * out_step3[ 1][13]
-   + 0.10018238 * out_step3[ 2][13] + 0.10947301 * out_step3[ 3][13] + 0.07463653 * out_step3[ 4][13] - 0.03470362 * out_step3[ 5][13]
-   + 0.11066878 * out_step3[ 6][13] + 0.00853612 * out_step3[ 7][13] - 0.01686093 * out_step3[ 8][13] + 0.08714316 * out_step3[ 9][13]
-   + 0.04184404 * out_step3[10][13] + 0.02491191 * out_step3[11][13] - 0.00024464 * out_step3[12][13] + 0.06216197 * out_step3[13][13]
-   + 0.25387448;
+out_step6[1][0] =  - 0.07405749 * out_step5[ 0][ 0][0] - 0.02994048 * out_step5[ 1][ 0][0]
+   + 0.08042076 * out_step5[ 2][ 0][0] - 0.05308691 * out_step5[ 0][ 1][0] - 0.04165785 * out_step5[ 1][ 1][0] - 0.10512836 * out_step5[ 2][ 1][0]
+   - 0.00269929 * out_step5[ 0][ 2][0] - 0.08230648 * out_step5[ 1][ 2][0] - 0.15740363 * out_step5[ 2][ 2][0] + 0.03451586 * out_step5[ 0][ 0][1]
+   + 0.00891192 * out_step5[ 1][ 0][1] + 0.16792984 * out_step5[ 2][ 0][1] - 0.01599967 * out_step5[ 0][ 1][1] - 0.09222775 * out_step5[ 1][ 1][1]
+   + 0.14413245 * out_step5[ 2][ 1][1] - 0.06143776 * out_step5[ 0][ 2][1] - 0.01291572 * out_step5[ 1][ 2][1] + 0.07562421 * out_step5[ 2][ 2][1]
+   + 0.06746981 * out_step5[ 0][ 0][2] + 0.09292106 * out_step5[ 1][ 0][2] + 0.05000152 * out_step5[ 2][ 0][2] + 0.09193377 * out_step5[ 0][ 1][2]
+   + 0.02445712 * out_step5[ 1][ 1][2] + 0.10177163 * out_step5[ 2][ 1][2] + 0.07857987 * out_step5[ 0][ 2][2] + 0.08979443 * out_step5[ 1][ 2][2]
+   + 0.06228552 * out_step5[ 2][ 2][2] - 0.00163125 * out_step5[ 0][ 0][3] - 0.07831312 * out_step5[ 1][ 0][3] - 0.02648472 * out_step5[ 2][ 0][3]
+   - 0.07824423 * out_step5[ 0][ 1][3] - 0.06641153 * out_step5[ 1][ 1][3] - 0.06343783 * out_step5[ 2][ 1][3] - 0.12287486 * out_step5[ 0][ 2][3]
+   - 0.07625393 * out_step5[ 1][ 2][3] - 0.00524982 * out_step5[ 2][ 2][3] - 0.04759873 * out_step5[ 0][ 0][4] - 0.05469463 * out_step5[ 1][ 0][4]
+   - 0.02048755 * out_step5[ 2][ 0][4] - 0.09621670 * out_step5[ 0][ 1][4] - 0.00162337 * out_step5[ 1][ 1][4] + 0.05470735 * out_step5[ 2][ 1][4]
+   - 0.02526578 * out_step5[ 0][ 2][4] + 0.06354574 * out_step5[ 1][ 2][4] + 0.00391370 * out_step5[ 2][ 2][4] + 0.01816379 * out_step5[ 0][ 0][5]
+   - 0.03259896 * out_step5[ 1][ 0][5] + 0.02388327 * out_step5[ 2][ 0][5] + 0.04430892 * out_step5[ 0][ 1][5] - 0.05666029 * out_step5[ 1][ 1][5]
+   - 0.20009355 * out_step5[ 2][ 1][5] + 0.05550290 * out_step5[ 0][ 2][5] + 0.02746582 * out_step5[ 1][ 2][5] + 0.01536601 * out_step5[ 2][ 2][5]
+   + 0.02339339 * out_step5[ 0][ 0][6] + 0.17125101 * out_step5[ 1][ 0][6] + 0.05867869 * out_step5[ 2][ 0][6] + 0.10864832 * out_step5[ 0][ 1][6]
+   + 0.08152881 * out_step5[ 1][ 1][6] + 0.01998655 * out_step5[ 2][ 1][6] + 0.04488105 * out_step5[ 0][ 2][6] + 0.06732184 * out_step5[ 1][ 2][6]
+   + 0.17537098 * out_step5[ 2][ 2][6] + 0.07195082 * out_step5[ 0][ 0][7] + 0.10318866 * out_step5[ 1][ 0][7] + 0.12265488 * out_step5[ 2][ 0][7]
+   + 0.16515066 * out_step5[ 0][ 1][7] + 0.05467703 * out_step5[ 1][ 1][7] + 0.02704152 * out_step5[ 2][ 1][7] + 0.04860366 * out_step5[ 0][ 2][7]
+   + 0.07490332 * out_step5[ 1][ 2][7] + 0.09794541 * out_step5[ 2][ 2][7] - 0.07620320 * out_step5[ 0][ 0][8] - 0.06213604 * out_step5[ 1][ 0][8]
+   - 0.07870225 * out_step5[ 2][ 0][8] + 0.07694446 * out_step5[ 0][ 1][8] - 0.06257490 * out_step5[ 1][ 1][8] - 0.12562585 * out_step5[ 2][ 1][8]
+   - 0.02507705 * out_step5[ 0][ 2][8] + 0.10649390 * out_step5[ 1][ 2][8] + 0.03094615 * out_step5[ 2][ 2][8] - 0.03064500 * out_step5[ 0][ 0][9]
+   + 0.06376787 * out_step5[ 1][ 0][9] - 0.11993130 * out_step5[ 2][ 0][9] - 0.05843266 * out_step5[ 0][ 1][9] - 0.08146110 * out_step5[ 1][ 1][9]
+   - 0.06564142 * out_step5[ 2][ 1][9] - 0.01980582 * out_step5[ 0][ 2][9] - 0.02178746 * out_step5[ 1][ 2][9] - 0.09730095 * out_step5[ 2][ 2][9]
+   + 0.12650886;
 
 
 // determine maximum
 double x_max = std::numeric_limits<double>::min();
 for ( int i = 0; i < 2; i++){
 	for ( int j = 0; j < 1; j++){
-		if (out_step4[i][j] > x_max){
-			x_max = out_step4[i][j];
+		if (out_step6[i][j] > x_max){
+			x_max = out_step6[i][j];
 		}
 	}
 }
@@ -2015,19 +5858,19 @@ for ( int i = 0; i < 2; i++){
 double sum = 0;
 for ( int i = 0; i < 2; i++){
 	for ( int j = 0; j < 1; j++){
-		out_step5[i][j] = exp(out_step4[i][j] - x_max);
-		sum += out_step5[i][j]; 
+		out_step7[i][j] = exp(out_step6[i][j] - x_max);
+		sum += out_step7[i][j]; 
 	}
 }
 
 // normalize
 for ( int i = 0; i < 2; i++){
 	for ( int j = 0; j < 1; j++){
-		out_step5[i][j] /= sum;
+		out_step7[i][j] /= sum;
 	}
 }
 
 // return classification
-return out_step5[0][0] > out_step5[1][0];
+return out_step7[0][0] > out_step7[1][0];
 }
 
