@@ -25,29 +25,32 @@ fprintf(BodyFile,'bool %s::classify(const BallCandidates::Patch& p){\n',name);
 
 layers = convnet.Layers;
 for i = 1:numel(layers)
-   fprintf('%d make %s',i, class(layers(i)));
    
-   switch class(layers(i))
+   layer = convnet.Layers(i);
+   fprintf('%d make %s',i, class(layer));
+   
+   switch class(layer)
     case 'nnet.cnn.layer.ImageInputLayer'
-       rows = layers(i).InputSize(1);
-       cols = layers(i).InputSize(2);
+       rows = layer.InputSize(1);
+       cols = layer.InputSize(2);
+       channels = layer.InputSize(3);
+       
+       addInitialCopyFromInput(HeaderFile,BodyFile,rows,cols,channels);
 
-       addInitialCopyFromInput(HeaderFile,BodyFile,rows,cols);
-
-       addImageInputLayer(HeaderFile,BodyFile,i,layers(i));
+       addImageInputLayer(HeaderFile,BodyFile,i,layer);
        
        fprintf(' [done]');
+       
     case 'nnet.cnn.layer.Convolution2DLayer'
-       [rows, cols] = addConvolution2Dlayer(HeaderFile,BodyFile,i,layers(i),rows,cols);
+       [rows, cols, channels] = addConvolution2Dlayer(HeaderFile,BodyFile,i,layer,rows,cols);
        fprintf(' [done]');
     case 'nnet.cnn.layer.ReLULayer'
-       addReLULayer(HeaderFile,BodyFile,i,rows,cols);
+       addReLULayer(HeaderFile,BodyFile,i,rows,cols,channels);
        fprintf(' [done]');
     case 'nnet.cnn.layer.MaxPooling2DLayer'
-       %dummy();
        fprintf(' [missing]');
     case 'nnet.cnn.layer.FullyConnectedLayer'
-       [rows,cols] = addFullyConnectedLayer(HeaderFile,BodyFile,i,layers(i),rows,cols);
+       [rows,cols, channels] = addFullyConnectedLayer(HeaderFile,BodyFile,i,layer,rows,cols,channels);
        fprintf(' [done]');
     case 'nnet.cnn.layer.SoftmaxLayer'
        addSoftMaxLayer(HeaderFile,BodyFile,i,rows,cols);
@@ -65,5 +68,8 @@ fprintf(HeaderFile,'};\n\n'); % close class
 fprintf(HeaderFile,'#endif\n\n'); % end ifdef
 
 fprintf(BodyFile,'}\n\n'); % close function definition of classify
+
+fclose(HeaderFile);
+fclose(BodyFile);
 
 end
