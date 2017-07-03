@@ -82,25 +82,30 @@ def open_file(argv):
     return the_file, max_exp, filename, draw
 
 def new_experiment(sim_obst):
-    obstacles       = []
-    LPG_obstacles   = []
-    robot_pos       = (0, 0)
-    orig_robot_pos  = copy.copy(robot_pos)
-    actual_path_LPG = [(0, 0)]
-    actual_path_B   = [(0, 0)]
+    obstacles        = []
+    LPG_obstacles    = []
+    robot_pos        = (0, 0)
+    orig_robot_pos   = copy.copy(robot_pos)
+    actual_path_LPG  = [(0, 0)]
+    actual_path_B    = [(0, 0)]
     actual_path_naiv = [(0, 0)]
-    all_paths_B     = []
-    all_robot_pos   = []
-    waypoints       = []
-    target          = [math.ceil(rand(-f_inf[0], f_inf[0])), math.ceil(rand(-f_inf[1], f_inf[1]))]
+    all_paths_B      = []
+    all_robot_pos    = []
+    waypoints        = []
+    target           = [math.ceil(rand(-f_inf[0], f_inf[0])), math.ceil(rand(-f_inf[1], f_inf[1]))]
     while len(obstacles) < 9:
         obst_r = 300
         obst_x = np.floor(rand(-f_inf[0], f_inf[0]))
         obst_y = np.floor(rand(-f_inf[1], f_inf[1]))
-        if sim_obst == True:
-            obst_g = (rand(-60, 60), rand(-60, 60))
+        if sim_obst:
+            obst_g = (rand(-4500, 4500), rand(-3000, 3000))
         else:
             obst_g = (0, 0)
+        while np.absolute(target[0] - obst_g[0]) <= 300 or np.absolute(target[1] - obst_g[1]) <= 300:
+            if sim_obst:
+                obst_g = (rand(-4500, 4500), rand(-3000, 3000))
+            else:
+                obst_g = (0, 0)
         do_add = True
         if obst_x <= (obst_r + B.robot_radius) and obst_x >= -1*(obst_r + B.robot_radius) and obst_y <= (obst_r + B.robot_radius) and obst_y >= -1*(obst_r + B.robot_radius):
             do_add = False
@@ -150,7 +155,7 @@ def draw_tar_rob(orig_target, robot_pos, ax):
     ax.plot(orig_target[0], orig_target[1], 'x', c='red')
     ax.plot(robot_pos[0], robot_pos[1], 'x', c='yellow')
 
-def simulate(gait, target, robot_pos, rot, rot_a, actual_path_B, actual_path_LPG, actual_path_naiv, obstacles, orig_obstacles, LPG_obstacles, algorithm):
+def simulate(gait, target, robot_pos, rot, rot_a, actual_path_B, actual_path_LPG, actual_path_naiv, obstacles, orig_obstacles, LPG_obstacles, algorithm, sim_obst):
     robot_pos = (robot_pos[0] + gait[0], robot_pos[1] + gait[1])
     if algorithm == 3:
         actual_path_naiv.append((actual_path_naiv[len(actual_path_naiv)-1][0] + gait[0], actual_path_naiv[len(actual_path_naiv)-1][1] + gait[1]))
@@ -164,14 +169,18 @@ def simulate(gait, target, robot_pos, rot, rot_a, actual_path_B, actual_path_LPG
         target[1] -= gait[1]
         for k in range(0, len(LPG_obstacles)):
             LPG_obstacles[k] = (LPG_obstacles[k][0] - gait[0], LPG_obstacles[k][1] - gait[1], LPG_obstacles[k][2], LPG_obstacles[k][3])
-            LPG_obstacles[k] = (LPG_obstacles[k][0] + LPG_obstacles[k][3][0], LPG_obstacles[k][1] + LPG_obstacles[k][3][1], LPG_obstacles[k][2], LPG_obstacles[k][3])
 
-    # simulate obstacles
-    obstacles, LPG_obstacles = move_obstacles(obstacles, LPG_obstacles, orig_obstacles)
+    if sim_obst:
+        for k in range(0, len(obstacles)):
+            direction = (obstacles[k][3][0] - obstacles[k][0], obstacles[k][3][1] - obstacles[k][1])
+            distance  = np.linalg.norm(direction)
+            gait_obst = direction / distance * min(60, max(-60, distance))
+
+            if np.isnan(gait_obst[0]) or np.isnan(gait_obst[1]):
+                gait_obst = (0, 0)
+
+            obstacles[k] = (obstacles[k][0] + gait_obst[0], obstacles[k][1] + gait_obst[1], obstacles[k][2], obstacles[k][3])
+
+            LPG_obstacles[k] = (LPG_obstacles[k][0] + gait_obst[0], LPG_obstacles[k][1] + gait_obst[1], LPG_obstacles[k][2], LPG_obstacles[k][3])
+
     return gait, target, robot_pos, rot, rot_a, actual_path_B, actual_path_LPG, actual_path_naiv, obstacles, LPG_obstacles
-
-def move_obstacles(obstacles, LPG_obstacles, orig):
-    for k in range(0, len(obstacles)):
-        obstacles[k] = (obstacles[k][0] + obstacles[k][3][0], obstacles[k][1] + obstacles[k][3][1], obstacles[k][2], obstacles[k][3])
-
-    return obstacles, LPG_obstacles
