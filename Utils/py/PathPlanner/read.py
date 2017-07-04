@@ -46,7 +46,8 @@ dead_naiv = 0
 
 data_num = 0
 
-for k in range(0, len(robot_pos)):
+#for k in range(0, len(robot_pos)):
+for k in range(0, 6000):
     # skip wrong deadlock LPG data
     if len(paths_LPG[k]) == 1:
         continue
@@ -170,18 +171,27 @@ print("LPG:   " + str(std_LPG_smooth))
 print("BISEC: " + str(std_B_smooth))
 print("naive: " + str(std_naiv_smooth))
 
+
+plt.gca().set_ylim([0, 12000])
+plt.gca().set_xlim([0, 12000])
 plt.plot(naiv_dist, LPG_dist, '.', color='orange')
-plt.plot([0, 6000], [0, 6000], c='red')
+plt.plot([0, 12000], [0, 12000], c='red')
 plt.show()
 
+plt.gca().set_ylim([0, 12000])
+plt.gca().set_xlim([0, 12000])
 plt.plot(naiv_dist, B_dist, '.', color='blue')
-plt.plot([0, 6000], [0, 6000], c='red')
+plt.plot([0, 12000], [0, 12000], c='red')
 plt.show()
 
+plt.gca().set_ylim([0, 25])
+plt.gca().set_xlim([0, 25])
 plt.plot(naiv_smooth, LPG_smooth, '.', color='orange')
-plt.plot([0, 16], [0, 16], c='red')
+plt.plot([0, 25], [0, 25], c='red')
 plt.show()
 
+plt.gca().set_ylim([0, 25])
+plt.gca().set_xlim([0, 25])
 plt.plot(naiv_smooth, B_smooth, '.', color='blue')
-plt.plot([0, 16], [0, 16], c='red')
+plt.plot([0, 25], [0, 25], c='red')
 plt.show()

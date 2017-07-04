@@ -12,6 +12,45 @@ import field_info as f
 
 f_inf = (4500, 3000)
 
+def draw_field_sw(ax):
+    ax.plot([0 , 0], [-f.y_length * 0.5 , f.y_length * 0.5 ], 'black')  # Middle line
+
+    ax.plot([f.x_opponent_groundline, f.x_opponent_groundline], [f.y_left_sideline, f.y_right_sideline], 'black')  # opponent ground line
+    ax.plot([f.x_own_groundline, f.x_own_groundline], [f.y_right_sideline, f.y_left_sideline], 'black')  # own ground line
+
+    ax.plot([f.x_own_groundline, f.x_opponent_groundline], [f.y_left_sideline, f.y_left_sideline], 'black')
+    ax.plot([f.x_own_groundline, f.x_opponent_groundline], [f.y_right_sideline, f.y_right_sideline], 'black')
+
+    ax.plot([f.x_opponent_groundline-f.x_penalty_area_length, f.x_opponent_groundline-f.x_penalty_area_length], [-f.y_penalty_area_length*0.5, f.y_penalty_area_length*0.5], 'black')  # opp penalty
+    ax.plot([f.x_opponent_groundline, f.x_opponent_groundline-f.x_penalty_area_length], [f.y_penalty_area_length*0.5, f.y_penalty_area_length*0.5], 'black')  # opp penalty
+    ax.plot([f.x_opponent_groundline, f.x_opponent_groundline-f.x_penalty_area_length], [-f.y_penalty_area_length*0.5, -f.y_penalty_area_length*0.5], 'black')  # opp penalty
+
+    ax.plot([f.x_own_groundline+f.x_penalty_area_length, f.x_own_groundline+f.x_penalty_area_length], [-f.y_penalty_area_length*0.5, f.y_penalty_area_length*0.5], 'black')  # own penalty
+    ax.plot([f.x_own_groundline, f.x_own_groundline+f.x_penalty_area_length], [f.y_penalty_area_length*0.5, f.y_penalty_area_length*0.5], 'black')  # own penalty
+    ax.plot([f.x_own_groundline, f.x_own_groundline+f.x_penalty_area_length], [-f.y_penalty_area_length*0.5, -f.y_penalty_area_length*0.5], 'black')  # own penalty
+
+    # Middle Circle
+    ax.add_artist(Circle(xy=(0, 0), radius=f.center_circle_radius, fill=False, edgecolor='black'))
+    # Penalty Marks
+    ax.add_artist(Circle(xy=(f.x_opponent_groundline - f.x_penalty_mark_distance, 0), radius=f.penalty_cross_radius, color='black'))
+    ax.add_artist(Circle(xy=(f.x_own_groundline + f.x_penalty_mark_distance, 0), radius=f.penalty_cross_radius, color='black'))
+
+    # Own goal box
+    ax.add_artist(Circle(xy=(f.own_goalpost_right.x, f.own_goalpost_right.y), radius=f.goalpost_radius, color='black'))  # GoalPostRight
+    ax.add_artist(Circle(xy=(f.own_goalpost_left.x, f.own_goalpost_left.y), radius=f.goalpost_radius, color='black'))  # GoalPostLeft
+    ax.plot([f.x_own_groundline, f.x_own_groundline - f.goal_depth], [-f.goal_width*0.5, -f.goal_width*0.5], 'black')  # own goal box
+    ax.plot([f.x_own_groundline, f.x_own_groundline - f.goal_depth], [f.goal_width*0.5, f.goal_width*0.5], 'black')  # own goal box
+    ax.plot([f.x_own_groundline - f.goal_depth, f.x_own_groundline - f.goal_depth], [-f.goal_width*0.5, f.goal_width*0.5], 'black')  # own goal box
+
+    # Opp GoalBox
+    ax.add_artist(Circle(xy=(f.opponent_goalpost_right.x, f.opponent_goalpost_right.y), radius=f.goalpost_radius, color='black'))  # GoalPostRight
+    ax.add_artist(Circle(xy=(f.opponent_goalpost_left.x, f.opponent_goalpost_left.y), radius=f.goalpost_radius, color='black'))  # GoalPostLeft
+    ax.plot([f.x_opponent_groundline, f.x_opponent_groundline + f.goal_depth], [-f.goal_width*0.5, -f.goal_width*0.5], 'black')  # Opp goal box
+    ax.plot([f.x_opponent_groundline, f.x_opponent_groundline + f.goal_depth], [f.goal_width*0.5, f.goal_width*0.5], 'black')  # Opp goal box
+    ax.plot([f.x_opponent_groundline + f.goal_depth, f.x_opponent_groundline + f.goal_depth], [-f.goal_width*0.5, f.goal_width*0.5], 'black')  # Opp goal box
+
+    ax.set_axis_bgcolor('white')
+
 def draw_field(ax):
     ax.plot([0 , 0], [-f.y_length * 0.5 , f.y_length * 0.5 ], 'white')  # Middle line
 

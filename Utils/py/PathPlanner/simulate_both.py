@@ -19,7 +19,7 @@ import time
 
 the_file, max_exp, filename, draw = sim.open_file(argv)
 
-keys = {"p": False, "d": False, "e": False, "n": False, "r": False, "t": False, "escape": False}
+keys = {"p": False, "d": False, "e": False, "n": False, "r": False, "t": False, "escape": False, "f": False}
 def key_pressed(event):
     keys[str(event.key)] = True
 def key_released(event):
@@ -34,9 +34,9 @@ minimal_cell = 100
 angular_part = 16
 parameter_s  = 1
 
-LPG_obstacles  = [(-1237.0, -1854.0, 300, (0, 0)), (3237.0, -2720.0, 300, (0, 0)), (-3063.0, -1843.0, 300, (0, 0)), (227.0, -1593.0, 300, (0, 0)), (-3389.0, -1262.0, 300, (0, 0)), (-3086.0, 1903.0, 300, (0, 0)), (743.0, -2864.0, 300, (0, 0)), (-4086.0, 1440.0, 300, (0, 0)), (1619.0, 2170.0, 300, (0, 0))]
-obstacles      = [(-1237.0, -1854.0, 300, (0, 0)), (3237.0, -2720.0, 300, (0, 0)), (-3063.0, -1843.0, 300, (0, 0)), (227.0, -1593.0, 300, (0, 0)), (-3389.0, -1262.0, 300, (0, 0)), (-3086.0, 1903.0, 300, (0, 0)), (743.0, -2864.0, 300, (0, 0)), (-4086.0, 1440.0, 300, (0, 0)), (1619.0, 2170.0, 300, (0, 0))]
-target         = [-3721.0, -1821.0]#[0, 0]
+LPG_obstacles  = []
+obstacles      = []
+target         = [0, 0]
 robot_pos      = (0, 0)
 orig_robot_pos = copy.copy(robot_pos)
 
@@ -77,6 +77,13 @@ do_restart = False
 show_sub   = False
 deadlock   = False
 loop_bool  = True
+
+save_current          = False
+current_all_path_B    = []
+current_all_path_LPG  = []
+current_all_path_naiv = []
+current_target        = []
+current_obstacles     = []
 
 sim_obst = True
 if len(argv) > 1:
@@ -121,6 +128,10 @@ while loop_bool:
             print("Restarting experiment.")
             do_restart = True
             keys["r"] = False
+        if keys["f"] == True:
+            save_current = True
+            print("Saving current.")
+            keys["f"] = False
     if keys["t"] == True:
         show_sub = not show_sub
         keys["t"] = False
@@ -175,6 +186,17 @@ while loop_bool:
                 everything = (all_robot, all_target, all_obstacle, all_path_LPG, all_path_B, all_path_naiv, times_LPG, times_B, times_naiv)
                 np.save(filename, everything)
 
+            if save_current:
+                current_all_path_LPG.append(copy.copy(actual_path_LPG))
+                current_all_path_B.append(copy.copy(actual_path_B))
+                current_all_path_naiv.append(copy.copy(actual_path_naiv))
+                current_target.append(orig_target)
+                current_obstacles.append(orig_obstacles)
+                current_everything = (current_target, current_all_path_LPG, current_all_path_B, current_all_path_naiv, current_obstacles)
+                np.save("current", current_everything)
+                save_current = False
+                print("Current saved.")
+
             if len(argv) == 5:
                 loop_bool = eval('exp_count <= max_exp')
                 if not loop_bool:
@@ -196,6 +218,7 @@ while loop_bool:
     # draw obstacles
     if draw:
         B.draw_obstacles(ax, obstacles)
+        #LPG.draw_obstacles(ax, robot_pos, LPG_obstacles)
 
     # LPG
     if algorithm == 1:

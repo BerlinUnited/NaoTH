@@ -17,7 +17,7 @@ def draw_obstacles(ax, obstacles):
     # draw obstacles
     if obstacles:
         for k in obstacles:
-            ax.add_artist(Circle(xy=(k[0], k[1]), radius=k[2], fill=True, color='black', alpha=.25))
+            ax.add_artist(Circle(xy=(k[0], k[1]), radius=k[2], fill=True, color='black', alpha=.25, zorder='10'))
             ax.add_artist(Circle(xy=(k[0], k[1]), radius=10, fill=True, color='black'))
 
 def draw_robot(ax, robot_pos):
