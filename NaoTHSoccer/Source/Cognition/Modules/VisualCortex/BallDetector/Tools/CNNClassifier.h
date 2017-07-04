@@ -3,13 +3,18 @@
 
 #include <limits>
 
+#include <fstream>
+
 #include "Representations/Perception/BallCandidates.h"
 
 class CNNClassifier{
 
 public:
-	CNNClassifier(){}
+	CNNClassifier(){out.open("example.txt");}
 
+	~CNNClassifier(){out.close();}
+
+std::ofstream out;
 	bool classify(const BallCandidates::Patch& p);
 
 	// declare copied intial input array
@@ -31,10 +36,16 @@ public:
 	double out_step5[3][3][10];
 
 	// declare output for this fully connected step
-	double out_step6[2][1];
+	double out_step6[64][1][1];
+
+	// declare output for this ReLU step
+	double out_step7[64][1][1];
+
+	// declare output for this fully connected step
+	double out_step8[2][1][1];
 
 	// declare output for this SoftMax step
-	double out_step7[2][1];
+	double out_step9[2][1][1];
 
 };
 
