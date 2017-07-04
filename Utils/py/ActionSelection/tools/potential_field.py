@@ -93,6 +93,18 @@ def evaluate_action_with_robots(ball_pos, opp_robots, own_robots):
                 f = -f_rob
     return f
 
+def benji_field(results, state, opp_robots, own_robots):
+    sum_potential = 0.0
+    number_of_actions = 0.0
+    for p in results.positions():
+        if p.cat() == "INFIELD" or p.cat() == "OPPGOAL":
+            sum_potential += evaluate_action_with_robots(state.pose * p.pos(), opp_robots, own_robots)
+            number_of_actions += 1
+
+    assert number_of_actions > 0
+    sum_potential /= number_of_actions
+    return sum_potential
+
 
 def evaluate_action_with_robots2(ball_pos, opp_robots, own_robots):
     x = ball_pos.x

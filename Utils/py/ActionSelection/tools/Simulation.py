@@ -104,6 +104,10 @@ def simulate_consequences(action, categorized_ball_positions, state, num_particl
 
 def decide_smart(actions_consequences, state):
 
+    # FIXME
+    own_robots = [m2d.Vector2(-2000, -2000), m2d.Vector2(2000, 1000)]
+    opp_robots = [m2d.Vector2(0, 1000), m2d.Vector2(3000, 2000), m2d.Vector2(-1500, -500)]
+
     acceptable_actions = []
     # select acceptable actions
     for i, results in enumerate(actions_consequences):
@@ -170,6 +174,9 @@ def decide_smart(actions_consequences, state):
     best_action = 0
     best_value = float("inf")  # assuming potential is [0.0, inf]
     for index in goal_actions:
+        # FIXME Test for different potential fields
+
+        potential = pf.benji_field(actions_consequences[index], state, opp_robots, own_robots)
         potential = pf.evaluate_action2(actions_consequences[index], state)
         if potential < best_value:
             best_action = index
