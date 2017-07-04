@@ -1,6 +1,5 @@
 function [ out_rows, out_cols, out_channels ] = addFullyConnectedLayer( HeaderFile,BodyFile,step,layer,rows,cols,channels )
-%ADDFULLYCONNECTEDLAYER Summary of this function goes here
-%   Detailed explanation goes here
+
 out_rows = layer.OutputSize;
 out_cols = 1;
 out_channels = 1;
@@ -9,14 +8,15 @@ bias     = layer.Bias;
 weights  = layer.Weights; %reshape(layer.Weights,out_rows,rows,cols);
 
 fprintf(HeaderFile, '\t// declare output for this fully connected step\n');
-fprintf(HeaderFile, '\tdouble out_step%d[%d][%d];\n\n', step, out_rows, 1);
+fprintf(HeaderFile, '\tdouble out_step%d[%d][%d][%d];\n\n', step, out_rows, out_cols, out_channels);
 
 fprintf(BodyFile, '// determine output for this fully connected step\n');
 
 i = 0;
 for out = 1:out_rows % 
     
-    fprintf(BodyFile, 'out_step%d[%d][%d] = ', step, out-1, 0);
+    % hack: there is allways only 1 out channel
+    fprintf(BodyFile, 'out_step%d[%d][%d][%d] = ', step, out-1, 0, 0);
     
     % iterate over input
     for c = 1 : channels
@@ -29,7 +29,7 @@ for out = 1:out_rows %
                     fprintf(BodyFile, '\n  ');
                 end
 
-                if i > 0 && weights(out,idx) >= 0
+                if weights(out,idx) >= 0
                     fprintf(BodyFile, ' + ');
                 else
                     fprintf(BodyFile, ' - ');

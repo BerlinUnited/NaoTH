@@ -3,7 +3,7 @@ function [ output_args ] = addClassificationOutputLayer(HeaderFile,BodyFile,step
 %   Detailed explanation goes here
 
 fprintf(BodyFile, '// return classification\n');
-fprintf(BodyFile, 'return out_step%d[%d][%d] > out_step%d[%d][%d];\n',step-1,0,0,step-1,1,0);
+fprintf(BodyFile, 'return out_step%d[%d][%d][0] > out_step%d[%d][%d][0];\n',step-1,0,0,step-1,1,0);
 
 end
 

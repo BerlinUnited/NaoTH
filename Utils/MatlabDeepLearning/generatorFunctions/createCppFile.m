@@ -9,12 +9,15 @@ fprintf(HeaderFile,strcat('#ifndef _',name,'_H_\n'));
 fprintf(HeaderFile,strcat('#define _',name,'_H_\n\n'));
 
 fprintf(HeaderFile,'#include <limits>\n\n');
+fprintf(HeaderFile,'#include <fstream>\n\n');
 
 fprintf(HeaderFile,'#include "Representations/Perception/BallCandidates.h"\n\n');
 
 fprintf(HeaderFile,'class %s{\n\n',name);
 fprintf(HeaderFile,'public:\n');
-fprintf(HeaderFile,'\t%s(){}\n\n',name);
+fprintf(HeaderFile,'\t%s(){out.open("example.txt");}\n\n',name);
+fprintf(HeaderFile,'\t~%s(){out.close();}\n\n',name);
+fprintf(HeaderFile,'std::ofstream out;\n');
 
 %fprintf(HeaderFile,'\tbool classify( double* /*BallCandidates::Patch&*/ p/*, naoth::CameraInfo::CameraID cameraId*/);\n\n');
 fprintf(HeaderFile,'\tbool classify(const BallCandidates::Patch& p);\n\n');
@@ -53,7 +56,7 @@ for i = 1:numel(layers)
        [rows,cols, channels] = addFullyConnectedLayer(HeaderFile,BodyFile,i,layer,rows,cols,channels);
        fprintf(' [done]');
     case 'nnet.cnn.layer.SoftmaxLayer'
-       addSoftMaxLayer(HeaderFile,BodyFile,i,rows,cols);
+       addSoftMaxLayer(HeaderFile,BodyFile,i,rows,cols,channels);
        fprintf(' [done]');
     case 'nnet.cnn.layer.ClassificationOutputLayer'
        addClassificationOutputLayer(HeaderFile,BodyFile,i,rows,cols);

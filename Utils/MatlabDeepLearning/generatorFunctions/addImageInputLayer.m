@@ -21,6 +21,18 @@ for c = 1:channels
     end
 end
 
+% test output
+%{
+fprintf(BodyFile,'out << "\\n\\n";\n');
+fprintf(BodyFile, 'out << "img = [";\n');
+fprintf(BodyFile, 'for ( int i = 0; i < %d; i++){\n',rows);
+fprintf(BodyFile, '\tout << (i>0?"\\n":"");\n');
+fprintf(BodyFile, '\tfor ( int j = 0; j < %d; j++){\n',cols);
+fprintf(BodyFile, '\t\tout << (j>0?",":"") << out_step%d[i][j][0]; \n',step-1);
+fprintf(BodyFile, '\t}\n');
+fprintf(BodyFile, '}\n');
+fprintf(BodyFile, 'out << "];";\n');
+%}
 fprintf(BodyFile,'\n');
 
 end

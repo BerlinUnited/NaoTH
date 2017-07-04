@@ -41,23 +41,23 @@ function [out_dim_x, out_dim_y, out_dim_z] = addConvolution2Dlayer(HeaderFile,Bo
                            if (x+f_x-1 < 1 || x+f_x-1 > in_dim_x) || (y+f_y-1 < 1 || y+f_y-1 > in_dim_y) 
                                continue;
                            else
-                               % make the file more readable
+                                % make the file more readable
                                 if mod(i,filter_dim_x) == 0
                                     fprintf(BodyFile, '\n  ');
                                 end
 
-                                if i > 0 && w(f_x,f_y,c) >= 0
+                                if w(f_x,f_y,c) >= 0
                                     fprintf(BodyFile, ' + ');
                                 else
                                     fprintf(BodyFile, ' - ');
                                 end
 
-                               fprintf(BodyFile, '%.8f * out_step%d[%2d][%2d][%d]', abs(w(f_x,f_y,c)), step-1, x+f_x-1-1, y+f_y-1-1, c-1);
+                               fprintf(BodyFile, '%.8f * out_step%d[%2d][%2d][%d]', abs(w(f_x,f_y,c)), step-1, (x+f_x-1)-1, (y+f_y-1)-1, c-1);
 
                                i = i+1;
                            end
-                        end
-                    end
+                        end % f_y
+                    end % f_x
                 end % channels
 
                 fprintf(BodyFile, '\n  ');
@@ -70,11 +70,26 @@ function [out_dim_x, out_dim_y, out_dim_z] = addConvolution2Dlayer(HeaderFile,Bo
                 fprintf(BodyFile, '%.8f;\n\n', abs(b));
 
                 y_out = y_out + 1;
-            end
+            end % y
             x_out = x_out + 1;
-        end
+        end % x
     end % z_out
     
     fprintf(BodyFile,'\n');
+    
+    %{
+    fprintf(BodyFile,'out << "\\n\\n";\n');
+    fprintf(BodyFile,'out << "out_step%d = zeros(7,7,8);";\n', step);
+    fprintf(BodyFile,'for (int c = 0; c < 8; c++){\n');
+    fprintf(BodyFile,'  out << "\\n\\nout_step%d(:,:," << (c+1) << ") = [";\n', step);
+    fprintf(BodyFile,'  for (int i = 0; i < 7; i++){\n');
+    fprintf(BodyFile,'    out << (i>0 ? "\\n" : "");\n');
+    fprintf(BodyFile,'    for (int j = 0; j < 7; j++){\n');
+    fprintf(BodyFile,'      out << (j>0 ? "," : "") << out_step%d[i][j][c];\n', step);
+    fprintf(BodyFile,'    }\n');
+    fprintf(BodyFile,'  }\n');
+    fprintf(BodyFile,'  out << "];";\n');
+    fprintf(BodyFile,'}\n');
+    %}
 end
 
