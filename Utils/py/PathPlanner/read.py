@@ -32,9 +32,6 @@ for k in filenames:
     times_B    += all[7]
     times_naiv += all[8]
 
-print("Anzahl der Daten: " + str(len(robot_pos)))
-print("")
-
 LPG_dist  = []
 B_dist    = []
 naiv_dist = []
@@ -47,14 +44,23 @@ dead_LPG  = 0
 dead_B    = 0
 dead_naiv = 0
 
-for k in range(0, len(robot_pos)):
+data_num = 0
 
-    if len(paths_LPG[k]) < 2 or len(paths_B[k]) < 2 or len(paths_naiv[k]) < 2:
-        if len(paths_LPG[k]) < 2:
+for k in range(0, len(robot_pos)):
+    # skip wrong deadlock LPG data
+    if len(paths_LPG[k]) == 1:
+        continue
+    if targets[k] == [-3218.0, -76.0] and obstacles[k] == [(993.0, 1843.0, 300, (0, 0)), (-3620.0, 1675.0, 300, (0, 0)), (311.0, 2145.0, 300, (0, 0)), (4293.0, 1551.0, 300, (0, 0)), (3626.0, -962.0, 300, (0, 0)), (134.0, 1547.0, 300, (0, 0)), (-2828.0, -2573.0, 300, (0, 0)), (-4259.0, -2656.0, 300, (0, 0)), (-712.0, -60.0, 300, (0, 0))]:
+        continue
+    data_num += 1
+    if len(paths_LPG[k]) == 0 or len(paths_B[k]) == 0 or len(paths_naiv[k]) == 0:
+        if len(paths_LPG[k]) == 0:
+            print(targets[k])
+            print(obstacles[k])
             dead_LPG += 1
-        if len(paths_B[k]) < 2:
+        if len(paths_B[k]) == 0:
             dead_B += 1
-        if len(paths_naiv[k]) < 2:
+        if len(paths_naiv[k]) == 0:
             dead_naiv += 1
         continue
 
@@ -85,7 +91,11 @@ for k in range(0, len(robot_pos)):
     naiv_dist.append(dist)
     naiv_smooth.append(smooth * 1000 / dist)
 
-median_LPG_dist      = np.median(LPG_dist)
+
+print("Anzahl der Daten: " + str(data_num))
+print("")
+
+median_LPG_dist    = np.median(LPG_dist)
 median_B_dist      = np.median(B_dist)
 median_naiv_dist   = np.median(naiv_dist)
 median_LPG_smooth  = np.median(LPG_smooth)
@@ -113,10 +123,10 @@ print("")
 if len(all) > 6:
     print("---------")
     print("")
-    print("Avg. Times")
-    print(np.average(times_LPG))
-    print(np.average(times_B))
-    print(np.average(times_naiv))
+    print("median Times")
+    print("LPG:   " + str(np.median(times_LPG)))
+    print("BISEC: " + str(np.median(times_B)))
+    print("naive: " + str(np.median(times_naiv)))
 
 print("")
 print("---------")
@@ -159,7 +169,6 @@ std_naiv_smooth = np.std(naiv_smooth)
 print("LPG:   " + str(std_LPG_smooth))
 print("BISEC: " + str(std_B_smooth))
 print("naive: " + str(std_naiv_smooth))
-
 
 plt.plot(naiv_dist, LPG_dist, '.', color='orange')
 plt.plot([0, 6000], [0, 6000], c='red')

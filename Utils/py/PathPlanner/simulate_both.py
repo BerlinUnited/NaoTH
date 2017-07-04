@@ -34,9 +34,9 @@ minimal_cell = 100
 angular_part = 16
 parameter_s  = 1
 
-LPG_obstacles  = []
-obstacles      = []
-target         = [0, 0]
+LPG_obstacles  = [(-1237.0, -1854.0, 300, (0, 0)), (3237.0, -2720.0, 300, (0, 0)), (-3063.0, -1843.0, 300, (0, 0)), (227.0, -1593.0, 300, (0, 0)), (-3389.0, -1262.0, 300, (0, 0)), (-3086.0, 1903.0, 300, (0, 0)), (743.0, -2864.0, 300, (0, 0)), (-4086.0, 1440.0, 300, (0, 0)), (1619.0, 2170.0, 300, (0, 0))]
+obstacles      = [(-1237.0, -1854.0, 300, (0, 0)), (3237.0, -2720.0, 300, (0, 0)), (-3063.0, -1843.0, 300, (0, 0)), (227.0, -1593.0, 300, (0, 0)), (-3389.0, -1262.0, 300, (0, 0)), (-3086.0, 1903.0, 300, (0, 0)), (743.0, -2864.0, 300, (0, 0)), (-4086.0, 1440.0, 300, (0, 0)), (1619.0, 2170.0, 300, (0, 0))]
+target         = [-3721.0, -1821.0]#[0, 0]
 robot_pos      = (0, 0)
 orig_robot_pos = copy.copy(robot_pos)
 
@@ -48,7 +48,6 @@ orig_obstacles = copy.copy(obstacles)
 orig_target    = copy.copy(target)
 
 waypoints     = []
-waypoints_LPG = []
 steps         = []
 
 actual_path_LPG  = [(0, 0)]
@@ -136,6 +135,7 @@ while loop_bool:
         target        = copy.copy(orig_target)
         robot_pos     = (0, 0)
         deadlock      = False
+    # skip current algorithm
     if do_skip_a:
         algorithm += 1
         if algorithm == 4:
@@ -165,13 +165,13 @@ while loop_bool:
 
             algorithm = 1
 
-            if exp_count > 1 and len(argv) > 2:
-                all_robot.append(orig_robot_pos)
-                all_target.append(orig_target)
-                all_obstacle.append(orig_obstacles)
-                all_path_LPG.append(actual_path_LPG)
-                all_path_B.append(actual_path_B)
-                all_path_naiv.append(actual_path_naiv)
+            if exp_count > 1 and len(argv) > 3:
+                all_robot.append(copy.copy(orig_robot_pos))
+                all_target.append(copy.copy(orig_target))
+                all_obstacle.append(copy.copy(orig_obstacles))
+                all_path_LPG.append(copy.copy(actual_path_LPG))
+                all_path_B.append(copy.copy(actual_path_B))
+                all_path_naiv.append(copy.copy(actual_path_naiv))
                 everything = (all_robot, all_target, all_obstacle, all_path_LPG, all_path_B, all_path_naiv, times_LPG, times_B, times_naiv)
                 np.save(filename, everything)
 
@@ -183,11 +183,11 @@ while loop_bool:
             print("Experiment " + str(exp_count) + ".")
 
         robot_pos, orig_robot_pos, target, orig_target, obstacles, orig_obstacles, LPG_obstacles, waypoints, orig_waypoints, actual_path_B, actual_path_LPG, actual_path_naiv = sim.new_experiment(sim_obst)
-        waypoints_LPG = []
+
         # stupid experiment???
         do_skip_e = B.stupid_experiment(robot_pos, target, obstacles)
-        if not do_skip_e:
-            print(orig_target, orig_obstacles)
+        #if not do_skip_e:
+        #    print(orig_target, orig_obstacles)
 
     # plot field
     if draw:
@@ -204,13 +204,11 @@ while loop_bool:
         if waypoints is not None:
             gait = LPG.compute_gait(waypoints, target, rot)
             times_LPG.append(time.time() - start)
-            if draw:
-                LPG.draw_waypoints(ax, waypoints, robot_pos, rot)
+            #if draw:
+                #LPG.draw_waypoints(ax, waypoints, robot_pos, rot)
 
             #if draw:
                 #LPG.draw_LPG(ax, robot_pos, rot)
-            for k in waypoints:
-                waypoints_LPG.append(LPG.get_cell_mid(k, rot))
 
     # BISEC
     if algorithm == 2:

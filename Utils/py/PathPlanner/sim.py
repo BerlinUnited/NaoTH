@@ -52,10 +52,13 @@ def draw_field(ax):
     ax.set_axis_bgcolor('#21C540')
 
 def open_file(argv):
-    the_file     = None
+    the_file = None
     max_exp  = None
     filename = None
     draw     = 't'
+    if len(argv) > 2:
+        draw = argv[2]
+
     if len(argv) > 3:
         file_count = 0
         if len(argv) == 4:
@@ -63,11 +66,6 @@ def open_file(argv):
         if len(argv) == 5:
             script, f, draw, filename, max_exp = argv
             max_exp = int(max_exp)
-
-        if draw is not 't':
-            draw = False
-        else:
-            draw = True
 
         orig_filename    = copy.copy(filename)
         if os.path.isfile(filename + '.npy'):
@@ -79,6 +77,10 @@ def open_file(argv):
         if file_count > 0:
             print("The specified file already exists, renaming to " + filename + ".")
         #file = open(filename, 'w')
+    if draw is not 't':
+        draw = False
+    else:
+        draw = True
     return the_file, max_exp, filename, draw
 
 def new_experiment(sim_obst):
@@ -99,13 +101,11 @@ def new_experiment(sim_obst):
         obst_y = np.floor(rand(-f_inf[1], f_inf[1]))
         if sim_obst:
             obst_g = (rand(-4500, 4500), rand(-3000, 3000))
+            while np.absolute(target[0] - obst_g[0]) <= 300 or np.absolute(target[1] - obst_g[1]) <= 300:
+                obst_g = (rand(-4500, 4500), rand(-3000, 3000))
         else:
             obst_g = (0, 0)
-        while np.absolute(target[0] - obst_g[0]) <= 300 or np.absolute(target[1] - obst_g[1]) <= 300:
-            if sim_obst:
-                obst_g = (rand(-4500, 4500), rand(-3000, 3000))
-            else:
-                obst_g = (0, 0)
+
         do_add = True
         if obst_x <= (obst_r + B.robot_radius) and obst_x >= -1*(obst_r + B.robot_radius) and obst_y <= (obst_r + B.robot_radius) and obst_y >= -1*(obst_r + B.robot_radius):
             do_add = False
