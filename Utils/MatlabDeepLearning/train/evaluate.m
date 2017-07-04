@@ -68,35 +68,33 @@ function output = calc_convolution2D(layer, input)
     out_dim_z = size(weights,4);
 
     output = zeros(out_dim_x, out_dim_y, out_dim_z);
-    for i = 1:out_dim_z
-        
-        res = zeros(out_dim_x, out_dim_y);
-        b = bias(1,1,i);
+    for z_out = 1:out_dim_z
         
         x_out = 1;
         for x = -padding_x + 1 : stride_x : in_dim_x + padding_x - filter_dim_x + 1
             y_out = 1;
             for y = -padding_y + 1 : stride_y : in_dim_y + padding_y - filter_dim_y + 1
                 
+                res = 0;
                 for c = 1:channels
                     for f_x = 1:filter_dim_x
                         for f_y = 1:filter_dim_y
                            if (x+f_x-1 < 1 || x+f_x-1 > in_dim_x) || (y+f_y-1 < 1 || y+f_y-1 > in_dim_y) 
                                continue;
                            else
-                               res(x_out, y_out) = res(x_out, y_out) + weights(f_x,f_y,c,i)*input(x+f_x-1, y+f_y-1, c);
+                               res = res + weights(f_x,f_y,c,z_out)*input(x+f_x-1, y+f_y-1, c);
                            end
                         end
                     end
                 end % c
                 
-                res(x_out, y_out) = res(x_out, y_out) + b;
+                output(x_out, y_out,z_out) = res + bias(1,1,z_out);
                 y_out = y_out + 1;
             end
             x_out = x_out + 1;
         end
+    
         
-        output(:,:,i) = res;
     end
 end
 
