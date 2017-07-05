@@ -18,7 +18,7 @@ class State:
 
         self.obstacle_list = ([])  # is in global coordinates
         self.own_robots = [m2d.Vector2(-2250, -1000)]
-        self.opp_robots = []
+        self.opp_robots = [m2d.Vector2(-1800, -1000)]
 
 
 def draw_actions(actions_consequences, state, best_action):
