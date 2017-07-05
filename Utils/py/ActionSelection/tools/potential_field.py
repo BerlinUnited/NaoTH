@@ -77,6 +77,7 @@ def evaluate_action_with_robots(ball_pos, opp_robots, own_robots):
     f = slope(x, y, -1.0 / field.x_opponent_goal, 0.0) \
         - gaussian(x, y, field.x_opponent_goal, 0.0, sigma_x, sigma_y) \
         + gaussian(x, y, field.x_own_goal, 0.0, 1.5 * sigma_x, sigma_y)
+
     for opp_rob in opp_robots:  # adding infuence of own and opponent robots into the field
         f_rob = robot_field(opp_rob, ball_pos)
         if f_rob != 0:
@@ -84,6 +85,7 @@ def evaluate_action_with_robots(ball_pos, opp_robots, own_robots):
                 f = f_rob
             else:
                 f += f_rob
+
     for own_rob in own_robots:
         f_rob = robot_field(own_rob, ball_pos)
         if f_rob != 0:
@@ -92,6 +94,7 @@ def evaluate_action_with_robots(ball_pos, opp_robots, own_robots):
             else:
                 f = -f_rob
     return f
+
 
 def benji_field(results, state, opp_robots, own_robots):
     sum_potential = 0.0
@@ -113,7 +116,7 @@ def evaluate_action_with_robots2(ball_pos, opp_robots, own_robots):
     sigma_y = field.y_left_sideline / 2.5
 
     f = 0
-    for opp_rob in opp_robots:  # adding infuence of own and opponent robots into the field
+    for opp_rob in opp_robots:  # adding influence of own and opponent robots into the field
         f += robot_field(opp_rob, ball_pos)
     for own_rob in own_robots:
         f -= robot_field(own_rob, ball_pos)
