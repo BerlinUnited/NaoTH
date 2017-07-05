@@ -67,6 +67,8 @@ Motion::Motion()
   theKinematicChainProvider = registerModule<KinematicChainProviderMotion>("KinematicChainProvider", true);
   theIMUModel = registerModule<IMUModel>("IMUModel", true);
 
+  theArmCollisionDetector = registerModule<ArmCollisionDetector>("ArmCollisionDetector", true);
+
   theMotionEngine = registerModule<MotionEngine>("MotionEngine", true);
 
   getDebugParameterList().add(&parameter);
@@ -122,6 +124,7 @@ void Motion::init(naoth::ProcessInterface& platformInterface, const naoth::Platf
   platformInterface.registerOutputChanel(getInertialModel());
   platformInterface.registerOutputChanel(getBodyStatus());
   platformInterface.registerOutputChanel(getGroundContactModel());
+  platformInterface.registerOutputChanel(getCollisionPercept());
 
   // messages from cognition to motion
   platformInterface.registerInputChanel(getCameraInfo());
@@ -297,6 +300,9 @@ void Motion::processSensorData()
 
   //
   theOdometryCalculator->execute();
+
+  theArmCollisionDetector->execute();
+
 
   // NOTE: highly experimental
   static double rotationGyroZ = 0.0;

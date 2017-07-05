@@ -40,6 +40,9 @@ namespace sensor("Sensor Symbols") {
   bool input body.foot.groundcontact.left;
   bool input body.foot.groundcontact.right;
   float input body.foot.groundcontact.statetime;
+
+  bool input body.collision.arm.left;
+  bool input body.collision.arm.right;
   
   /** Ultrasound distance sensor */
   float input sensor.ultrasound;
@@ -52,9 +55,6 @@ namespace sensor("Sensor Symbols") {
   float input obstacle.ultrasound.right.distance;
   float input obstacle.ultrasound.blockedtime;
 
-  /** is set to true if the robot is currently colliding */
-  bool input collision.colliding;
-  
   /** number of the button pressed on a remote control*/
   float input button.remote;
 
