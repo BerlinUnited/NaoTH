@@ -238,11 +238,12 @@ void Walk::calculateNewStep(const Step& lastStep, Step& newStep, const WalkReque
 
   // indicates whether the requested foot is movable in this step
   // i.e., it was NOT moved in the last step
-  bool stepControlPossible = true;/*
+  /*
+   bool stepControlPossible =
         lastStep.footStep.liftingFoot() == FootStep::NONE
     || (lastStep.footStep.liftingFoot() == FootStep::RIGHT && walkRequest.stepControl.moveLeftFoot)
     || (lastStep.footStep.liftingFoot() == FootStep::LEFT && !walkRequest.stepControl.moveLeftFoot);
-    */
+  */
   if (walkRequest.stepControl.stepID + 1 == stepBuffer.stepId()) // step control
   {
     //WalkRequest myRequest = walkRequest;
@@ -251,15 +252,16 @@ void Walk::calculateNewStep(const Step& lastStep, Step& newStep, const WalkReque
     {
     case WalkRequest::StepControlRequest::ZEROSTEP:
       newStep.footStep = theFootStepPlanner.zeroStep(lastStep.footStep);
+      newStep.numberOfCycles = walkRequest.stepControl.time / getRobotInfo().basicTimeStep;
+      newStep.type = STEP_CONTROL;
       break;
     case WalkRequest::StepControlRequest::KICKSTEP:
       newStep.footStep = theFootStepPlanner.controlStep(lastStep.footStep, walkRequest);
+      newStep.numberOfCycles = walkRequest.stepControl.time / getRobotInfo().basicTimeStep;
+      newStep.type = STEP_CONTROL;
       break;
     case WalkRequest::StepControlRequest::WALKSTEP:
-      if (stepControlPossible)
-      {
-        newStep.footStep = theFootStepPlanner.controlStep(lastStep.footStep, walkRequest);
-      }
+      newStep.footStep = theFootStepPlanner.controlStep(lastStep.footStep, walkRequest);
 
       // STABILIZATION
       if (parameters().stabilization.dynamicStepsize) {
@@ -267,15 +269,15 @@ void Walk::calculateNewStep(const Step& lastStep, Step& newStep, const WalkReque
         currentComErrorBuffer.clear();
       }
 
+      newStep.numberOfCycles = parameters().step.duration / getRobotInfo().basicTimeStep;
+      newStep.type = STEP_CONTROL;
+
       PLOT("Walk:after_adaptStepSize_x", newStep.footStep.footEnd().translation.x);
       PLOT("Walk:after_adaptStepSize_y", newStep.footStep.footEnd().translation.y);
       break;
     default:
       ASSERT(false);
     }
-
-    newStep.numberOfCycles = walkRequest.stepControl.time / getRobotInfo().basicTimeStep;
-    newStep.type = STEP_CONTROL;
   }
   else // regular walk 
   { 
