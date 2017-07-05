@@ -3,8 +3,6 @@
 #define _CPU_DATA_H
 
 #include <string>
-#include <fstream>
-#include <iostream>
 #include "Tools/DataStructures/Printable.h"
 
 namespace naoth
