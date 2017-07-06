@@ -12,7 +12,7 @@ function [out_dim_x, out_dim_y, out_dim_z] = addMaxPolling2dLayer(HeaderFile, Bo
     out_dim_z = channels;
     
     fprintf(HeaderFile, '\t// declare output for this max polling step\n');
-    fprintf(HeaderFile, '\tdouble out_step%d[%d][%d][%d];\n\n', step, out_dim_x, out_dim_y, out_dim_z);
+    fprintf(HeaderFile, '\tfloat out_step%d[%d][%d][%d];\n\n', step, out_dim_x, out_dim_y, out_dim_z);
     
     fprintf(BodyFile, '// determine output for this max polling step\n');
     

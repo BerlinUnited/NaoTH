@@ -17,7 +17,7 @@ function [out_dim_x, out_dim_y, out_dim_z] = addConvolution2Dlayer(HeaderFile,Bo
     out_dim_z = size(weights,4);
     
     fprintf(HeaderFile, '\t// declare output for this convolution step\n');
-    fprintf(HeaderFile, '\tdouble out_step%d[%d][%d][%d];\n\n', step, out_dim_x, out_dim_y, out_dim_z);
+    fprintf(HeaderFile, '\tfloat out_step%d[%d][%d][%d];\n\n', step, out_dim_x, out_dim_y, out_dim_z);
     
     fprintf(BodyFile, '// determine output for this convolution step\n');
     
@@ -52,7 +52,7 @@ function [out_dim_x, out_dim_y, out_dim_z] = addConvolution2Dlayer(HeaderFile,Bo
                                     fprintf(BodyFile, ' - ');
                                 end
 
-                               fprintf(BodyFile, '%.8f * out_step%d[%2d][%2d][%d]', abs(w(f_x,f_y,c)), step-1, (x+f_x-1)-1, (y+f_y-1)-1, c-1);
+                               fprintf(BodyFile, '%.8ff * out_step%d[%2d][%2d][%d]', abs(w(f_x,f_y,c)), step-1, (x+f_x-1)-1, (y+f_y-1)-1, c-1);
 
                                i = i+1;
                            end
@@ -67,7 +67,7 @@ function [out_dim_x, out_dim_y, out_dim_z] = addConvolution2Dlayer(HeaderFile,Bo
                     fprintf(BodyFile, ' - ');
                 end
 
-                fprintf(BodyFile, '%.8f;\n\n', abs(b));
+                fprintf(BodyFile, '%.8ff;\n\n', abs(b));
 
                 y_out = y_out + 1;
             end % y

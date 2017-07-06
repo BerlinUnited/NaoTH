@@ -1,7 +1,7 @@
 function [] = addReLULayer(HeaderFile,BodyFile,step,rows,cols,channels)
 
 fprintf(HeaderFile, '\t// declare output for this ReLU step\n');
-fprintf(HeaderFile, '\tdouble out_step%d[%d][%d][%d];\n\n', step, rows, cols, channels);
+fprintf(HeaderFile, '\tfloat out_step%d[%d][%d][%d];\n\n', step, rows, cols, channels);
 
 fprintf(BodyFile, '// determine value of activation function Rectified-Linear-Unit\n');
 for c = 1:channels

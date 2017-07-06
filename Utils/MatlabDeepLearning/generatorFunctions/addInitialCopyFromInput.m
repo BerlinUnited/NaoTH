@@ -4,7 +4,7 @@ function addInitialCopyFromInput(HeaderFile,BodyFile,rows,cols,channels)
 
 
 fprintf(HeaderFile, '\t// declare copied intial input array\n');
-fprintf(HeaderFile, '\tdouble out_step%d[%d][%d][%d];\n\n', 0, rows, cols, channels);
+fprintf(HeaderFile, '\tfloat out_step%d[%d][%d][%d];\n\n', 0, rows, cols, channels);
 
 fprintf(BodyFile, '// copy patch into intial data array out_step0\n');
 fprintf(BodyFile,'ASSERT(p.data.size() == %d);\n\n',rows*cols);

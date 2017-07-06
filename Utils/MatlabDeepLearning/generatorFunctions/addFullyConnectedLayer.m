@@ -8,7 +8,7 @@ bias     = layer.Bias;
 weights  = layer.Weights; %reshape(layer.Weights,out_rows,rows,cols);
 
 fprintf(HeaderFile, '\t// declare output for this fully connected step\n');
-fprintf(HeaderFile, '\tdouble out_step%d[%d][%d][%d];\n\n', step, out_rows, out_cols, out_channels);
+fprintf(HeaderFile, '\tfloat out_step%d[%d][%d][%d];\n\n', step, out_rows, out_cols, out_channels);
 
 fprintf(BodyFile, '// determine output for this fully connected step\n');
 
@@ -35,7 +35,7 @@ for out = 1:out_rows %
                     fprintf(BodyFile, ' - ');
                 end
 
-                fprintf(BodyFile, '%.8f * out_step%d[%2d][%2d][%d]', abs(weights(out,idx)), step-1, y-1, x-1, c-1);
+                fprintf(BodyFile, '%.8ff * out_step%d[%2d][%2d][%d]', abs(weights(out,idx)), step-1, y-1, x-1, c-1);
 
                 i = i+1;
             end
@@ -49,7 +49,7 @@ for out = 1:out_rows %
         fprintf(BodyFile, ' - ');
     end
     
-    fprintf(BodyFile, '%.8f;\n\n', abs(bias(out)));
+    fprintf(BodyFile, '%.8ff;\n\n', abs(bias(out)));
 end
 
 fprintf(BodyFile,'\n');

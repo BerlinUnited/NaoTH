@@ -19,11 +19,11 @@ fprintf(HeaderFile,'\t%s(){out.open("example.txt");}\n\n',name);
 fprintf(HeaderFile,'\t~%s(){out.close();}\n\n',name);
 fprintf(HeaderFile,'std::ofstream out;\n');
 
-%fprintf(HeaderFile,'\tbool classify( double* /*BallCandidates::Patch&*/ p/*, naoth::CameraInfo::CameraID cameraId*/);\n\n');
+%fprintf(HeaderFile,'\tbool classify( float* /*BallCandidates::Patch&*/ p/*, naoth::CameraInfo::CameraID cameraId*/);\n\n');
 fprintf(HeaderFile,'\tbool classify(const BallCandidates::Patch& p);\n\n');
 
 fprintf(BodyFile,strcat('#include "',name,'.h"\n\n'));
-%fprintf(BodyFile,'bool %s::classify( double* /*BallCandidates::Patch&*/ p/*, naoth::CameraInfo::CameraID cameraId*/){\n',name);
+%fprintf(BodyFile,'bool %s::classify( float* /*BallCandidates::Patch&*/ p/*, naoth::CameraInfo::CameraID cameraId*/){\n',name);
 fprintf(BodyFile,'bool %s::classify(const BallCandidates::Patch& p){\n',name);
 
 layers = convnet.Layers;
