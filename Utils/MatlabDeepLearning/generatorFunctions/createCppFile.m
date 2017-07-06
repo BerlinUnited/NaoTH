@@ -51,8 +51,8 @@ for i = 1:numel(layers)
        addReLULayer(HeaderFile,BodyFile,i,rows,cols,channels);
        fprintf(' [done]');
     case 'nnet.cnn.layer.MaxPooling2DLayer'
-       %addMaxPolling2dLayer(HeaderFile,BodyFile,i,rows,cols,channels);
-       fprintf(' [missing]');
+       [rows, cols, channels] = addMaxPolling2dLayer(HeaderFile,BodyFile,i,layer,rows,cols,channels);
+       fprintf(' [done]');
     case 'nnet.cnn.layer.FullyConnectedLayer'
        [rows,cols, channels] = addFullyConnectedLayer(HeaderFile,BodyFile,i,layer,rows,cols,channels);
        fprintf(' [done]');

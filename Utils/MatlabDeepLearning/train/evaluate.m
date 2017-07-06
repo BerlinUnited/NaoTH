@@ -17,8 +17,7 @@ function evaluate(convnet, image)
             case 'nnet.cnn.layer.ReLULayer'
                 activation = cals_relu(layer, activation);
             case 'nnet.cnn.layer.MaxPooling2DLayer'
-                fprintf('[%s] missing.\n',class(layer));
-                continue;
+                activation = cals_MaxPolling2D(layer, activation);
             case 'nnet.cnn.layer.FullyConnectedLayer'
                 activation = calc_fullyConnected(layer, activation);
             case 'nnet.cnn.layer.SoftmaxLayer'
@@ -141,4 +140,50 @@ function output = calc_classificationOutput(~,input)
     output = input;
 end
 
+function output = cals_MaxPolling2D(layer, input)
 
+    in_dim_x = size(input,1);
+    in_dim_y = size(input,2);
+    in_dim_z = size(input,3);
+
+    stride_x  = layer.Stride(1);
+    stride_y  = layer.Stride(2);
+    padding_x = layer.Padding(1);
+    padding_y = layer.Padding(2);
+    pool_dim_x = layer.PoolSize(1);
+    pool_dim_y = layer.PoolSize(2);
+    
+    out_dim_x = floor((in_dim_x - pool_dim_x + 2*padding_x)/stride_x + 1);
+    out_dim_y = floor((in_dim_y - pool_dim_y + 2*padding_y)/stride_y + 1);
+    
+    out_dim_z = in_dim_z;
+    
+    output = zeros(out_dim_x, out_dim_y, out_dim_z);
+    
+    for z_out = 1:out_dim_z 
+        x_out = 1;
+        for x = -padding_x + 1 : stride_x : in_dim_x + padding_x - pool_dim_x + 1
+            y_out = 1;
+            for y = -padding_y + 1 : stride_y : in_dim_y + padding_y - pool_dim_y + 1
+              
+                    output(x_out, y_out, z_out) = input(x,y,z_out);
+                    
+                    for f_x = 1:pool_dim_x
+                        for f_y = 1:pool_dim_y
+                           if (x+f_x-1 < 1 || x+f_x-1 > in_dim_x) || (y+f_y-1 < 1 || y+f_y-1 > in_dim_y) || (f_x == 1 && f_y == 1)
+                               continue;
+                           else
+                               if(output(x_out, y_out, z_out) < input((x+f_x-1), (y+f_y-1), z_out))
+                                    output(x_out, y_out, z_out) = input((x+f_x-1), (y+f_y-1), z_out);
+                               end
+                               
+                           end
+                        end % f_y
+                    end % f_x
+                y_out = y_out + 1;
+            end % y
+            x_out = x_out + 1;
+        end % x
+    end % z_out
+   
+end
