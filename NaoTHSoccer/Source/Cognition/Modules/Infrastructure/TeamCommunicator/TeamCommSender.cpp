@@ -70,7 +70,7 @@ void TeamCommSender::fillMessageBeforeSending() const
     if(send_dobermann_time)
     {
       std::uint32_t dobermannTime = DoberMannTime::getSystemTimeMixedTeam();
-      msg.averageWalkSpeed = static_cast<std::uint16_t>(dobermannTime << 8);
+      msg.averageWalkSpeed = static_cast<std::uint16_t>(dobermannTime >> 16);
       msg.maxKickDistance = static_cast<std::uint16_t>(dobermannTime);
     }
 
