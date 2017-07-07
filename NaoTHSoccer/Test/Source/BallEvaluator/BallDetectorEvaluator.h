@@ -10,7 +10,7 @@
 
 #include <map>
 
-#include <picojson.h>
+#include <Tools/Extern/picojson.h>
 
 BEGIN_DECLARE_MODULE(BallDetectorEvaluator)
   PROVIDE(BallCandidates)
