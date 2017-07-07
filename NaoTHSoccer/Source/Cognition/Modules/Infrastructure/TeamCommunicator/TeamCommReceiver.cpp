@@ -53,7 +53,7 @@ void TeamCommReceiver::execute()
     }
   }
 
-  // wait until we got a valid playnumber
+  // wait until we got a valid player number
   if (getPlayerInfo().playerNumber > 0 && 
       getTeamMessageData().frameInfo.getFrameNumber() + 1 == getFrameInfo().getFrameNumber() &&
       getTeamMessageData().playerNumber == getPlayerInfo().playerNumber &&
@@ -96,20 +96,28 @@ void TeamCommReceiver::handleMessage(const std::string& data)
 
   // unpack the message and make sure the user part can be parsed
   TeamMessageData msg(getFrameInfo());
-  if (!msg.parseFromSplMessage(spl)) {
+  if (msg.parseFromSplMessage(spl))
+  {
+    // make sure it's really our message
+    if (msg.custom.key != NAOTH_TEAMCOMM_MESAGE_KEY) {
+      dropKeyFail++;
+      return;
+    }
+
+    // make sure the time step is monotonically rising
+    if (parameters.monotonicTimestampCheck && !monotonicTimeStamp(msg)) {
+      dropMonotonic++;
+      return;
+    }
+  }
+  else if (parameters.acceptMixedTeamMessages)
+  {
+    // TODO: accept mixed team communication
+    msg.custom.isPenalized = getGameData().getOwnRobotInfo(msg.playerNumber).isPenalized();
+  }
+  else
+  {
     dropNotParseable++;
-    return;
-  }
-
-  // make sure it's really our message
-  if (msg.custom.key != NAOTH_TEAMCOMM_MESAGE_KEY) {
-    dropKeyFail++;
-    return;
-  }
-
-  // make sure the time step is monotonically rising
-  if (parameters.monotonicTimestampCheck && !monotonicTimeStamp(msg)) {
-    dropMonotonic++;
     return;
   }
 
