@@ -74,15 +74,21 @@ void RansacLineDetector::execute()
       LINE(
         line.lineOnField.begin().x, line.lineOnField.begin().y,
         line.lineOnField.end().x, line.lineOnField.end().y);
-
-      double c[2];
-      circResult.getCenter(c);
-
-      PEN("009900", 50);
-
-      CIRCLE(c[0], c[1], 30);
       //CIRCLE(circResult.center[0], circResult.center[1], 30);
     }
+
+    double c[2];
+    circResult.getCenter(c);
+
+    double a[2];
+    circResult.axesLength(a);
+
+    PEN("009900", 50);
+
+    CIRCLE(c[0], c[1], 30);
+
+    PEN("009900", 50);
+    OVAL_ROTATED(c[0], c[1], a[0], a[1], circResult.rotationAngle());
   );
 
 }
