@@ -1,15 +1,15 @@
 clear all;
 
-digitDatasetPath = {...
-    '../data/16x16_bw/rasen-ball-robot-move-5-best-24x24',...
-    '../data/16x16_bw/2016-06-29-patches-play' };
+%digitDatasetPath = {...
+%    '../data/16x16_bw/rasen-ball-robot-move-5-best-24x24',...
+%    '../data/16x16_bw/2016-06-29-patches-play' };
 
 digitDatasetPath = {...
-    '../data/16x16_bw/small-set'};
+    '../data/data-set-10'};
 
 digitData = imageDatastore(digitDatasetPath, ...
         'IncludeSubfolders',true,...
-        'LabelSource','foldernames');
+        'LabelSource','foldernames', 'ReadFcn',@imgReader);
 
 
 %%
@@ -25,19 +25,22 @@ trainingNumFiles = round(numBallPatches*0.75);
 				trainingNumFiles,'randomize');
 
 layers = [imageInputLayer([16 16 1], 'DataAugmentation',{'randfliplr', 'randcrop'}) % ,'randcrop'
-          convolution2dLayer(3, 8,'Stride',2)
+          convolution2dLayer(3, 8)
           reluLayer
-          convolution2dLayer(3, 10,'Stride',2)
+          maxPooling2dLayer(2)
+          convolution2dLayer(3, 10)
           reluLayer
+          maxPooling2dLayer(2)
           fullyConnectedLayer(64)
           reluLayer
+          %dropoutLayer()
           fullyConnectedLayer(2)
           softmaxLayer
           classificationLayer];
 
 % Initialize the first convolutional layer weights using normally distributed 
 % random numbers with standard deviation of 0.0001.
-layers(2).Weights = 0.0001 * randn(size(layers(2).Weights));
+layers(2).Weights = 0.0001 * randn(3,3,1,8);
 
 %https://www.mathworks.com/help/vision/examples/object-detection-using-deep-learning.html
 %{
@@ -54,11 +57,17 @@ opts = trainingOptions('sgdm', ...
 %}
 
 options = trainingOptions('sgdm',...
-    'MaxEpochs',100,...
-    'MiniBatchSize',30,...
-    'ExecutionEnvironment', 'cpu'); % 'cpu', 'parallel'
+    'Momentum', 0.9, ...
+    'InitialLearnRate', 0.001, ...
+    'LearnRateSchedule', 'piecewise', ...
+    'LearnRateDropFactor', 0.1, ...
+    'LearnRateDropPeriod', 8, ...
+    'L2Regularization', 0.004, ...
+    'MaxEpochs', 30, ...
+    'MiniBatchSize', 128); % 'cpu', 'parallel'
 
 convnet = trainNetwork(digitData,layers,options);
 
-save cn11.mat convnet
+% save cn13.mat convnet
+
 
