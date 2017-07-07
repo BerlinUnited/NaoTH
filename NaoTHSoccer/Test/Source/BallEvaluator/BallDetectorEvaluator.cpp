@@ -62,6 +62,10 @@ void BallDetectorEvaluator::execute()
   {
     models.push_back("");
   }
+  else if(modelDir == "cnn")
+  {
+    models.push_back("cnn");
+  }
   else
   {
     models = findModelNames();
@@ -78,15 +82,24 @@ void BallDetectorEvaluator::execute()
 
   for(std::string modelName : models)
   {
-    if(!modelName.empty())
+    if(modelName == "cnn")
+    {
+      // TODO: do we need a CNN initialization?
+    }
+    else if(!modelName.empty())
     {
       classifier.loadModel(modelName);
     }
 
+    using uint_range = std::pair<unsigned int, unsigned int>;
+
+    const uint_range minNeighboursRange = modelName == "cnn" ? uint_range(0,0) : uint_range(0, 5);
+    const uint_range windowSizeRange = modelName == "cnn" ? uint_range(0,0) : uint_range(12, 20);
+
     // do experiment for different parameters
-    for(unsigned int minNeighbours=0; minNeighbours <= 5; minNeighbours++)
+    for(unsigned int minNeighbours=minNeighboursRange.first; minNeighbours <= minNeighboursRange.second; minNeighbours++)
     {
-      for(unsigned int windowSize=12; windowSize <= 20; windowSize += 2)
+      for(unsigned int windowSize=windowSizeRange.first; windowSize <= windowSizeRange.second; windowSize += 2)
       {
         ExperimentParameters params;
         params.minNeighbours = minNeighbours;
@@ -489,8 +502,15 @@ void BallDetectorEvaluator::evaluatePatch(const BallCandidates::Patch &p, unsign
   resizedPatch.data = std::vector<unsigned char>(img.begin<unsigned char>(), img.end<unsigned char>());
 
   bool expected = expectedBallIdx.find(patchIdx) != expectedBallIdx.end();
-  bool actual = classifier.classify(resizedPatch, params.minNeighbours, params.maxWindowSize) > 0;
-
+  bool actual;
+  if(params.modelName == "cnn")
+  {
+    actual = cnnClassifier.classify(resizedPatch);
+  }
+  else
+  {
+    actual = classifier.classify(resizedPatch, params.minNeighbours, params.maxWindowSize) > 0;
+  }
   if(expected == actual)
   {
     if(expected)

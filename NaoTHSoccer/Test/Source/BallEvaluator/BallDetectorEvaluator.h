@@ -7,6 +7,7 @@
 #include <ModuleFramework/ModuleManager.h>
 #include <Cognition/Modules/VisualCortex/BallDetector/BallDetector.h>
 #include <Cognition/Modules/VisualCortex/BallDetector/Tools/CVHaarClassifier.h>
+#include <Cognition/Modules/VisualCortex/BallDetector/Tools/CNNClassifier.h>
 
 #include <map>
 
@@ -143,8 +144,7 @@ private:
 
   // TODO: allow more classifiers (including the ones that have the more complex filter logic)
   CVHaarClassifier classifier;
-
-
+  CNNClassifier cnnClassifier;
 
   std::map<ExperimentParameters, ExperimentResult, cmpExperimentParameters> results;
 
