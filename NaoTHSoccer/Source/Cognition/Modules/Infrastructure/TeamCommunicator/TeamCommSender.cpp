@@ -10,12 +10,17 @@ using namespace std;
 
 TeamCommSender::TeamCommSender()
   :lastSentTimestamp(0),
-   send_interval(400)
+   send_interval(400),
+   send_dobermann_time(false)
 {
   naoth::Configuration& config = naoth::Platform::getInstance().theConfiguration;
   if ( config.hasKey("teamcomm", "send_interval") )
   {
     send_interval = config.getInt("teamcomm", "send_interval");
+  }
+  if ( config.hasKey("teamcomm", "send_dobermann_time") )
+  {
+    send_dobermann_time = config.getBool("teamcomm", "send_dobermann_time");
   }
 }
 
@@ -62,9 +67,12 @@ void TeamCommSender::fillMessageBeforeSending() const
     msg.shootingTo = getPlayerInfo().isPlayingStriker ? getKickActionModel().expectedBallPos : getRobotPose().translation;
 
     // HACK: we should'nt use these fields for this
-    std::uint32_t dobermannTime = DoberMannTime::getSystemTimeMixedTeam();
-    msg.averageWalkSpeed = static_cast<std::uint16_t>(dobermannTime << 8);
-    msg.maxKickDistance = static_cast<std::uint16_t>(dobermannTime);
+    if(send_dobermann_time)
+    {
+      std::uint32_t dobermannTime = DoberMannTime::getSystemTimeMixedTeam();
+      msg.averageWalkSpeed = static_cast<std::uint16_t>(dobermannTime << 8);
+      msg.maxKickDistance = static_cast<std::uint16_t>(dobermannTime);
+    }
 
     // TODO: can we make it more separate?
     msg.custom.timestamp = naoth::NaoTime::getSystemTimeInMilliSeconds();
