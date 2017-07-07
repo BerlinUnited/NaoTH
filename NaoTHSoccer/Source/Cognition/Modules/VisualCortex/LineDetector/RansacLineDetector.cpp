@@ -43,7 +43,7 @@ void RansacLineDetector::execute()
     outliers[i] = i;
   }
 
-  std::cout << "EDGELS: " << getLineGraphPercept().edgels.size() << "#" << std::endl;
+  //std::cout << "EDGELS: " << getLineGraphPercept().edgels.size() << "#" << std::endl;
 
   //Circle circResult;
   Ellipse circResult;
@@ -81,6 +81,7 @@ void RansacLineDetector::execute()
       PEN("009900", 50);
 
       CIRCLE(c[0], c[1], 30);
+      //CIRCLE(circResult.center[0], circResult.center[1], 30);
     }
   );
 

@@ -73,10 +73,66 @@ void Ellipse::fitPoints(Eigen::VectorXd x,  Eigen::VectorXd y) {
     + a(1).real()*mean_x*mean_y
     - a(3).real()*mean_x
     - a(4).real()*mean_y;
+
+  // normalize
+  double norm = 0;
+  for(int i=0; i<5; ++i) {
+    norm += params[i] * params[i];
+  }
+  norm = sqrt(norm);
+  for(int i=0; i<5; ++i) {
+    params[i] /= norm;
+  }
+
+  getCenter(center);
+  axesLength(axes);
+  angle = rotationAngle();
   /*
   std::cout << "params =" << std::endl;
   for (int i = 0; i<6; i++)
     std::cout << params[i] << " ";
   std::cout << std::endl;
   */
+}
+
+double Ellipse::rotationAngle() {
+  if (params[1]==0) {
+    if (params[0]<params[2]) return 0;
+    else return Math::pi_2;
+  } else {
+    if (params[0]<params[2]) return 0.5 * atan(params[1]/(params[0]-params[2]));
+    else return Math::pi_2 + 0.5 * atan(params[1]/(params[0]-params[2]));
+  }
+}
+
+void Ellipse::getCenter(double (&C)[2]) {
+  double a = params[0];
+  double b = params[1]/2;
+  double c = params[2];
+  double d = params[3]/2;
+  double f = params[4]/2;
+
+  double num = b*b - a*c;
+  C[0] = (c*d-b*f) / num;
+  C[1] = (a*f-b*d) / num;
+}
+
+void Ellipse::axesLength(double (&A)[2]) {
+  double a = params[0];
+  double b = params[1]/2;
+  double c = params[2];
+  double d = params[3]/2;
+  double f = params[4]/2;
+  double g = params[5];
+
+  double num = 2*( a*f*f + c*d*d + g*b*b - 2*b*d*f - a*c*g );
+
+  //sd = np.sqrt( np.power(A-C,2) + 4*np.power(B,2) )
+  double sd = sqrt( (a-c)*(a-c) + 4*b*b );
+
+  double den1 = (b*b - a*c) * (sd - (a+c));
+  double den2 = (b*b - a*c) * (-sd - (a+c));
+
+  A[0] = sqrt(num/den1);
+  A[1] = sqrt(num/den2);
 }
