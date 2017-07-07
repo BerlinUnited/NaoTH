@@ -2,6 +2,7 @@
 import numpy as np
 import numpy.linalg as la
 import math
+import random
 
 # Ellipse: Ax^2+Bxy+Cy^2+Dx+Ey+F=0
 
@@ -75,6 +76,7 @@ def improved_fitEllipse(x,y):
     # evaluate a'Ca
     cond = 4*V[0] * V[2] - np.power(V[1],2)
     A0 = V[:, np.argmax(cond)]
+    print("EVAL", E[np.argmax(cond)])
 
     A = np.concatenate((
         A0,
@@ -123,6 +125,22 @@ def ellipse_axis_length(a):
 
     return np.array( [np.sqrt(num/den1), np.sqrt(num/den2)] )
 
+def error_to(a, x, y, center):
+    A = np.array([[a[0],a[1]/2],[a[1]/2, a[2]]])
+    ff = np.dot(np.dot(center, A), center)
+
+    rad = abs(a[5]) + abs(ff)
+
+    p1 = np.array([x, y])
+
+    ds = np.dot(np.dot((p1 - center), A), (p1 - center))
+
+    #print(ds, rad)
+
+    d = abs(abs(ds) - rad)
+
+    return d, (d/rad)
+
 def ellipse_angle_of_rotation(a):
     A = a[0]
     B = a[1]#np.divide(a[1], 2)
@@ -145,16 +163,46 @@ def ellipse_angle_of_rotation(a):
     #0.5 * np.arctan( (A-C) / (2*B) )
 
 x = np.array([-20.1 ,2.5, 3, 4,  5])
-y = np.array([1  ,2  ,-1, 2, 0.5])
+y = np.array([1 ,2  ,-1, 2, 0.5])
 #x = np.array([2.5, 3, 4,  5])
 #y = np.array([2  ,-1, 2, 0.5])
 
 #a = fitEllipse(x,y)
 a = improved_fitEllipse(x,y)
+#a = [-0.00819266, 0.0416844, -0.198772, -0.163809, 0.0892647, 0.961189]
+#a = [-0.0403062, 0.205078, -0.977915, -0.805908, 0.439164, 4.72885]
+#a = np.array(a)/a[0]
+print("PARAMS:", a)
 center = ellipse_center(a)
-
 phi = ellipse_angle_of_rotation(a)
 axes = ellipse_axis_length(a)
+
+#xt = np.array([-1, 0, 1, 2, 3, 4, 5 ,6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17])
+#yt = np.array([0, 0, 0, 0, 0, 0, 0 , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+
+xt = np.array([random.uniform(-40, 10) for i in range(10000)])
+yt = np.array([random.uniform(-5, 3) for i in range(10000)])
+
+x= np.append(x, [0])
+y= np.append(y, [0])
+
+xr = []
+yr = []
+xb = []
+yb = []
+
+print("ABS")
+for c in range(len(xt)):
+    d = error_to(a, xt[c], yt[c], center)
+    print(d)
+    d = d[1]
+    if d < 0.2:
+        xb.append(xt[c])
+        yb.append(yt[c])
+    else:
+        xr.append(xt[c])
+        yr.append(yt[c])
+print("ABS_END")
 
 print("center = ",  center)
 print("angle of rotation = ",  phi)
@@ -169,6 +217,8 @@ yy = axes[0]*np.cos(t)*np.sin(phi) + axes[1]*np.sin(t)*np.cos(phi) + center[1]
 from matplotlib import pyplot as plt
 
 plt.scatter(x,y)
+plt.scatter(xr,yr)
+plt.scatter(xb,yb)
 plt.scatter(center[0], center[1], marker='x', color = 'red')
 
 plt.plot(xx,yy, color = 'red')
