@@ -4,6 +4,8 @@
 
 #include <Tools/NaoTime.h>
 
+#include <Tools/DoberMannTime.h>
+
 using namespace std;
 
 TeamCommSender::TeamCommSender()
@@ -59,6 +61,11 @@ void TeamCommSender::fillMessageBeforeSending() const
     msg.walkingTo = getRobotPose().translation;
     msg.shootingTo = getPlayerInfo().isPlayingStriker ? getKickActionModel().expectedBallPos : getRobotPose().translation;
 
+    // HACK: we should'nt use these fields for this
+    std::uint32_t dobermannTime = DoberMannTime::getSystemTimeMixedTeam();
+    msg.averageWalkSpeed = static_cast<std::uint16_t>(dobermannTime << 8);
+    msg.maxKickDistance = static_cast<std::uint16_t>(dobermannTime);
+
     // TODO: can we make it more separate?
     msg.custom.timestamp = naoth::NaoTime::getSystemTimeInMilliSeconds();
     msg.custom.wantsToBeStriker = getRoleDecisionModel().wantsToBeStriker;
@@ -74,3 +81,4 @@ void TeamCommSender::fillMessageBeforeSending() const
     // TODO: shall we put it into config?
     msg.custom.key = NAOTH_TEAMCOMM_MESAGE_KEY;
 }
+
