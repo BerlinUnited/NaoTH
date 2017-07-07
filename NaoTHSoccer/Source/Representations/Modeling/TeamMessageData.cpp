@@ -225,17 +225,24 @@ naothmessages::BUUserTeamMessage TeamMessageCustom::toProto() const
 
 void TeamMessageCustom::parseFromProto(const naothmessages::BUUserTeamMessage &userData)
 {
+    // basic info
+    key = userData.key();
     timestamp = userData.timestamp();
     bodyID = userData.bodyid();
-    wasStriker = userData.wasstriker();
-    wantsToBeStriker = userData.wantstobestriker();
-    timeToBall = userData.timetoball();
-    isPenalized = userData.ispenalized();
+    
+    // body status
     batteryCharge = userData.batterycharge();
     temperature = userData.temperature();
     cpuTemperature = userData.cputemperature();
+
+    // strategic info
+    timeToBall = userData.timetoball();
+    wasStriker = userData.wasstriker();
+    wantsToBeStriker = userData.wantstobestriker();
+    
+    isPenalized = userData.ispenalized(); // TODO: remove and use game data instead
+    
     whistleDetected = userData.whistledetected();
     whistleCount = userData.whistlecount();
-    key = userData.key();
 }
 
