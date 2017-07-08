@@ -3,6 +3,8 @@
 #include <glib.h>
 #include <glib/gstdio.h>
 
+#include <Tools/Extern/dirent.h>
+
 #include <strstream>
 #include <fstream>
 #include <sstream>
@@ -39,8 +41,8 @@
 #endif
 #endif
 
-BallDetectorEvaluator::BallDetectorEvaluator(const std::string &fileArg, const std::string &modelDir)
-  : fileArg(fileArg), modelDir(modelDir)
+BallDetectorEvaluator::BallDetectorEvaluator(const std::string &fileArg, const std::string &modelDir, int patchSize)
+  : fileArg(fileArg), modelDir(modelDir), patchSize(patchSize)
 {
 
 }
@@ -50,177 +52,167 @@ BallDetectorEvaluator::~BallDetectorEvaluator()
 
 }
 
-
-void BallDetectorEvaluator::execute()
+BallDetectorEvaluator::ExperimentResult BallDetectorEvaluator::executeParam(
+    const ExperimentParameters& params, const std::multimap<std::string, InputPatch>& imageSet)
 {
+  ExperimentResult r;
+
+  r.truePositives = 0;
+  r.falseNegatives = 0;
+  r.falsePositives = 0;
+  r.falsePositivePatches.clear();
+  r.falseNegativePatches.clear();
+
+  r.totalSize = executeSingleImageSet(imageSet, params, r);
+
+  r.precision = 1.0;
+  if(r.truePositives + r.falsePositives > 0)
+  {
+    r.precision = (double) r.truePositives / ((double) (r.truePositives + r.falsePositives));
+  }
+  r.recall = 0.0;
+  if(r.truePositives + r.falsePositives > 0)
+  {
+    r.recall = (double) r.truePositives / ((double) (r.truePositives + r.falseNegatives));
+  }
+
+  std::cout << "=============" << std::endl;
+  std::cout << toDesc(params) << std::endl;
+
+  std::cout << "precision: " << r.precision << std::endl;
+  std::cout << "recall: " << r.recall << std::endl;
+
+  if(r.precision >= 0.90 && bestRecall90 < r.recall)
+  {
+    bestRecallParam90 = params;
+    bestRecall90 = r.recall;
+  }
+
+  if(r.precision >= 0.95 && bestRecall95 < r.recall)
+  {
+    bestRecallParam95 = params;
+    bestRecall95 = r.recall;
+  }
+
+  if(r.precision >= 0.99 && bestRecall99 < r.recall)
+  {
+    bestRecallParam99 = params;
+    bestRecall99 = r.recall;
+  }
+
+  if(bestRecall90 > 0.0)
+  {
+    std::cout << "-------------" << std::endl;
+    std::cout << "best recall for precision >= 0.90: " << bestRecall90 << std::endl;
+    std::cout << toDesc(bestRecallParam90) << std::endl;
+  }
+
+  if(bestRecall95 > 0.0)
+  {
+    std::cout << "-------------" << std::endl;
+    std::cout << "best recall for precision >= 0.95: " << bestRecall95 << std::endl;
+    std::cout << toDesc(bestRecallParam95) << std::endl;
+  }
+
+  if(bestRecall99 > 0.0)
+  {
+    std::cout << "-------------" << std::endl;
+    std::cout << "best recall for precision >= 0.99: " << bestRecall99 << std::endl;
+    std::cout << toDesc(bestRecallParam99) << std::endl;
+  }
+
+  std::cout << "=============" << std::endl;
+
+  return r;
+}
+
+
+void BallDetectorEvaluator::executeHaarBall()
+{
+  std::cout << "Loading test image set from " << fileArg << std::endl;
+  std::multimap<std::string, InputPatch> imagesByClasses = loadImageSets(fileArg);
+  std::cout << "Loaded " << imagesByClasses.size() << " images." << std::endl;
+
   results.clear();
   std::string fileArgBase(g_path_get_basename(fileArg.c_str()));
-  std::string outFileName = fileArgBase + ".html";
+  std::string outFileName = "haar_ball_" + fileArgBase + ".html";
 
-  std::list<std::string> models;
-  if(modelDir.empty())
+
+
+  bestRecall90 = 0.0;
+  bestRecall95 = 0.0;
+  bestRecall99 = 0.0;
+
+  for(std::string m : findHaarModelNames())
   {
-    models.push_back("");
-  }
-  else if(modelDir == "cnn")
-  {
-    models.push_back("cnn");
-  }
-  else
-  {
-    models = findModelNames();
-  }
-
-  double bestRecall90 = 0.0;
-  ExperimentParameters bestRecallParam90;
-
-  double bestRecall95 = 0.0;
-  ExperimentParameters bestRecallParam95;
-
-  double bestRecall99 = 0.0;
-  ExperimentParameters bestRecallParam99;
-
-  for(std::string modelName : models)
-  {
-    if(modelName == "cnn")
+    if(!m.empty())
     {
-      // TODO: do we need a CNN initialization?
-    }
-    else if(!modelName.empty())
-    {
-      classifier.loadModel(modelName);
-    }
+      classifierHaar.loadModel(m);
 
-    using uint_range = std::pair<unsigned int, unsigned int>;
-
-    const uint_range minNeighboursRange = modelName == "cnn" ? uint_range(0,0) : uint_range(0, 5);
-    const uint_range windowSizeRange = modelName == "cnn" ? uint_range(0,0) : uint_range(12, 20);
-
-    // do experiment for different parameters
-    for(unsigned int minNeighbours=minNeighboursRange.first; minNeighbours <= minNeighboursRange.second; minNeighbours++)
-    {
-      for(unsigned int windowSize=windowSizeRange.first; windowSize <= windowSizeRange.second; windowSize += 2)
+      // do experiment for different parameters
+      for(unsigned int minNeighbours=0; minNeighbours <= 5; minNeighbours++)
       {
-        ExperimentParameters params;
-        params.minNeighbours = minNeighbours;
-        params.maxWindowSize = windowSize;
-        params.modelName = modelName;
-
-        ExperimentResult r;
-
-        r.truePositives = 0;
-        r.falseNegatives = 0;
-        r.falsePositives = 0;
-        r.falsePositivePatches.clear();
-        r.falseNegativePatches.clear();
-        r.totalSize = 0;
-
-
-        if(g_file_test(fileArg.c_str(), G_FILE_TEST_IS_DIR))
+        for(unsigned int windowSize=12; windowSize <= 20; windowSize += 2)
         {
-          std::string dirlocation = fileArg;
-          if (!g_str_has_suffix(dirlocation.c_str(), "/"))
-          {
-            dirlocation = dirlocation + "/";
-          }
+          ExperimentParameters haarParams;
+          haarParams.type = ExperimentParameters::Type::haar;
+          haarParams.modelName = m;
+          haarParams.minNeighbours = minNeighbours;
+          haarParams.maxWindowSize = windowSize;
 
-          GDir* dir = g_dir_open(dirlocation.c_str(), 0, NULL);
-          if (dir != NULL)
-          {
-            const gchar* name;
-            while ((name = g_dir_read_name(dir)) != NULL)
-            {
-              if (g_str_has_suffix(name, ".log"))
-              {
-                std::string completeFileName = dirlocation + name;
-                if (g_file_test(completeFileName.c_str(), G_FILE_TEST_EXISTS)
-                    && g_file_test(completeFileName.c_str(), G_FILE_TEST_IS_REGULAR))
-                {
-                  r.totalSize += executeSingleFile(completeFileName, params, r);
-                }
-              }
+          bestRecallParam90 = haarParams;
+          bestRecallParam95 = haarParams;
+          bestRecallParam99 = haarParams;
 
-
-            }
-            g_dir_close(dir);
-          }
+          results[haarParams] = executeParam(haarParams, imagesByClasses);
         }
-        else
-        {
-          // only one file
-          r.totalSize = executeSingleFile(fileArg, params, r);
-        }
-
-        r.precision = 1.0;
-        if(r.truePositives + r.falsePositives > 0)
-        {
-          r.precision = (double) r.truePositives / ((double) (r.truePositives + r.falsePositives));
-        }
-        r.recall = 0.0;
-        if(r.truePositives + r.falsePositives > 0)
-        {
-          r.recall = (double) r.truePositives / ((double) (r.truePositives + r.falseNegatives));
-        }
-
-        results[params] = r;
-
-
-
-        std::cout << "=============" << std::endl;
-        std::cout << toDesc(params) << std::endl;
-
-        std::cout << "precision: " << r.precision << std::endl;
-        std::cout << "recall: " << r.recall << std::endl;
-
-        if(r.precision >= 0.90 && bestRecall90 < r.recall)
-        {
-          bestRecallParam90 = params;
-          bestRecall90 = r.recall;
-        }
-
-        if(r.precision >= 0.95 && bestRecall95 < r.recall)
-        {
-          bestRecallParam95 = params;
-          bestRecall95 = r.recall;
-        }
-
-        if(r.precision >= 0.99 && bestRecall99 < r.recall)
-        {
-          bestRecallParam99 = params;
-          bestRecall99 = r.recall;
-        }
-
-        if(bestRecall90 > 0.0)
-        {
-          std::cout << "-------------" << std::endl;
-          std::cout << "best recall for precision >= 0.90: " << bestRecall90 << std::endl;
-          std::cout << toDesc(bestRecallParam90) << std::endl;
-        }
-
-
-        if(bestRecall95 > 0.0)
-        {
-          std::cout << "-------------" << std::endl;
-          std::cout << "best recall for precision >= 0.95: " << bestRecall95 << std::endl;
-          std::cout << toDesc(bestRecallParam95) << std::endl;
-        }
-
-        if(bestRecall99 > 0.0)
-        {
-          std::cout << "-------------" << std::endl;
-          std::cout << "best recall for precision >= 0.99: " << bestRecall99 << std::endl;
-          std::cout << toDesc(bestRecallParam99) << std::endl;
-        }
-
-        std::cout << "=============" << std::endl;
-
-
       }
     }
   }
+
   outputResults(outFileName);
   std::cout << "Written detailed report to " << outFileName << std::endl;
 }
+
+
+std::multimap<std::string, BallDetectorEvaluator::InputPatch> BallDetectorEvaluator::loadImageSets(const std::string &rootDir, const std::string& pathSep)
+{
+
+  std::multimap<std::string, InputPatch> result;
+
+  for(const std::string& className : findSubdirectories(rootDir))
+  {
+    for(const std::string& file : findDirectoryChildren(rootDir + pathSep + className))
+    {
+      std::string fullFilePath = rootDir + pathSep + className + pathSep + file;
+      if(!isDirectory(fullFilePath) && hasFileSuffix(file, ".png"))
+      {
+        // get the image using opencv
+        try
+        {
+          cv::Mat img = cv::imread(fullFilePath);
+
+          if(img.type() != CV_8UC1)
+          {
+            img.convertTo(img, CV_8UC1);
+          }
+          if(img.rows != patchSize || img.cols != patchSize)
+          {
+            cv::resize(img, img, cv::Size(patchSize, patchSize), cv::INTER_LINEAR);
+          }
+          result.insert({className, {img, fullFilePath}});
+        }
+        catch(...)
+        {
+          // just ignore any invalid files
+        }
+      }
+    }
+  }
+  return std::move(result);
+}
+
+
 
 void BallDetectorEvaluator::outputResults(std::string outFileName)
 {
@@ -318,7 +310,7 @@ void BallDetectorEvaluator::outputResults(std::string outFileName)
       // use a data URI to embed the image in PNG format
       std::string imgPNG = createPNG(it->patch);
       divFP.AppendChild(CTML::Node("img")
-                        .SetAttribute("title", std::to_string(it->idx) + "@" + it->fileName)
+                        .SetAttribute("title", it->fileName)
                         .SetAttribute("src", "data:image/png;base64," + base64Encoder.encode(imgPNG.c_str(), (int) imgPNG.size()))
       );
     }
@@ -334,7 +326,7 @@ void BallDetectorEvaluator::outputResults(std::string outFileName)
       // use a data URI to embed the image in PNG format
       std::string imgPNG = createPNG(it->patch);
       divFN.AppendChild(CTML::Node("img")
-                        .SetAttribute("title", std::to_string(it->idx) + "@" + it->fileName)
+                        .SetAttribute("title", it->fileName)
                         .SetAttribute("src", "data:image/png;base64," + base64Encoder.encode(imgPNG.c_str(), (int) imgPNG.size()))
       );
     }
@@ -347,7 +339,7 @@ void BallDetectorEvaluator::outputResults(std::string outFileName)
   html.close();
 }
 
-std::list<std::string> BallDetectorEvaluator::findModelNames()
+std::list<std::string> BallDetectorEvaluator::findHaarModelNames()
 {
   std::list<std::string> result;
   std::string dirlocation = modelDir;
@@ -383,137 +375,39 @@ std::list<std::string> BallDetectorEvaluator::findModelNames()
   return result;
 }
 
-unsigned int BallDetectorEvaluator::executeSingleFile(std::string file, const ExperimentParameters& params, ExperimentResult& r)
+unsigned int BallDetectorEvaluator::executeSingleImageSet(const std::multimap<std::string, InputPatch> &imageSet,
+                                                          const ExperimentParameters& params, ExperimentResult& r)
 {
-  LogFileScanner logFileScanner(file);
 
-  std::set<unsigned int> expectedBallIdx;
-  unsigned int maxValidIdx = loadGroundTruth(file, expectedBallIdx);
+  unsigned int numberOfImages = 0;
 
-  unsigned int patchIdx = 0;
-
-  // read in each frame
-  LogFileScanner::FrameIterator secondLastFrame = logFileScanner.end();
-  secondLastFrame--;
-  for(LogFileScanner::FrameIterator it = logFileScanner.begin(); it != secondLastFrame; it++)
+  for(const std::pair<std::string, InputPatch>& imageEntry : imageSet)
   {
-    // reset all existing candidates
-    getBallCandidates().reset();
-    getBallCandidatesTop().reset();
-
-    LogFileScanner::Frame frame;
-    logFileScanner.readFrame(*it, frame);
-
-    // deserialize all ball candidates (bottom and top camera)
-    LogFileScanner::Frame::const_iterator frameBallCandidate = frame.find("BallCandidates");
-    LogFileScanner::Frame::const_iterator frameBallCandidateTop = frame.find("BallCandidatesTop");
-    if(frameBallCandidate!= frame.end())
-    {
-      std::istrstream stream(frameBallCandidate->second.data.data(), frameBallCandidate->second.data.size());
-      naoth::Serializer<BallCandidates>::deserialize(stream, getBallCandidates());
-    }
-    if(frameBallCandidateTop != frame.end())
-    {
-      std::istrstream stream(frameBallCandidateTop->second.data.data(), frameBallCandidateTop->second.data.size());
-      naoth::Serializer<BallCandidatesTop>::deserialize(stream, getBallCandidatesTop());
-    }
-
-
-    BallCandidates::PatchesList bottomPatches;
-    if(!getBallCandidates().patchesYUVClassified.empty())
-    {
-      bottomPatches = PatchWork::toPatchList(getBallCandidates().patchesYUVClassified);
-    }
-    else if(!getBallCandidates().patches.empty())
-    {
-      bottomPatches = getBallCandidates().patches;
-    }
-
-    BallCandidates::PatchesList topPatches;
-    if(!getBallCandidatesTop().patchesYUVClassified.empty())
-    {
-      topPatches = PatchWork::toPatchList(getBallCandidatesTop().patchesYUVClassified);
-    }
-    else if(!getBallCandidatesTop().patches.empty())
-    {
-      topPatches = getBallCandidatesTop().patches;
-    }
-
-    // The python script will always read the bottom patches first, thus in order to have the correct index
-    // the loops have to bee in the same order.
-    for(const BallCandidates::Patch& p : bottomPatches)
-    {
-      evaluatePatch(p, patchIdx++, CameraInfo::Bottom, expectedBallIdx, file, params, r);
-    }
-
-    for(const BallCandidates::Patch& p : topPatches)
-    {
-      evaluatePatch(p, patchIdx++, CameraInfo::Top, expectedBallIdx, file, params, r);
-    }
-
-    if(patchIdx >= maxValidIdx)
-    {
-      break;
-    }
+    evaluateImage(imageEntry.second.img, imageEntry.first == "ball", imageEntry.second.fileName, params, r);
+    numberOfImages++;
   }
 
-  return patchIdx;
+  return numberOfImages;
 }
 
-void BallDetectorEvaluator::evaluatePatch(const BallCandidates::Patch &p, unsigned int patchIdx,
-                                          CameraInfo::CameraID camID,
-                                          const std::set<unsigned int>& expectedBallIdx,
-                                          std::string fileName,
-                                          const ExperimentParameters &params,
-                                          ExperimentResult& r)
+void BallDetectorEvaluator::evaluateImage(cv::Mat img,
+                                          bool ballExpected, std::string fileName, const ExperimentParameters &params, ExperimentResult &r)
 {
-  // resize patch if necessary
-  cv::Mat wrappedImg;
-  if(p.data.size() == 12*12)
+
+  BallCandidates::Patch patch;
+  cv::Mat transposedImg;
+  cv::transpose(img, transposedImg);
+  patch.data = std::vector<unsigned char>(transposedImg.begin<unsigned char>(), transposedImg.end<unsigned char>());
+
+  bool actual = false;
+  if(params.type == ExperimentParameters::Type::haar)
   {
-    wrappedImg = cv::Mat(12, 12, CV_8U, (void*) p.data.data());
-  }
-  else if(p.data.size() == 16*16)
-  {
-    wrappedImg = cv::Mat(16, 16, CV_8U, (void*) p.data.data());
-  }
-  else if(p.data.size() == 24*24)
-  {
-    wrappedImg = cv::Mat(24, 24, CV_8U, (void*) p.data.data());
-  }
-  else if(p.data.size() == 36*36)
-  {
-    wrappedImg = cv::Mat(36, 36, CV_8U, (void*) p.data.data());
+    actual = classifierHaar.classify(patch, params.minNeighbours, params.maxWindowSize) > 0;
   }
 
-  const unsigned int patchSize = 16;
-
-  cv::Mat img;
-  if(wrappedImg.cols == patchSize && wrappedImg.rows == patchSize)
+  if(ballExpected == actual)
   {
-    wrappedImg = img; // only copies the header, not the image itself
-  }
-  else
-  {
-    cv::resize(wrappedImg, img, cv::Size(patchSize,patchSize));
-  }
-
-  BallCandidates::Patch resizedPatch;
-  resizedPatch.data = std::vector<unsigned char>(img.begin<unsigned char>(), img.end<unsigned char>());
-
-  bool expected = expectedBallIdx.find(patchIdx) != expectedBallIdx.end();
-  bool actual;
-  if(params.modelName == "cnn")
-  {
-    actual = cnnClassifier.classify(resizedPatch);
-  }
-  else
-  {
-    actual = classifier.classify(resizedPatch, params.minNeighbours, params.maxWindowSize) > 0;
-  }
-  if(expected == actual)
-  {
-    if(expected)
+    if(ballExpected)
     {
       r.truePositives++;
     }
@@ -521,8 +415,7 @@ void BallDetectorEvaluator::evaluatePatch(const BallCandidates::Patch &p, unsign
   else
   {
     ErrorEntry error;
-    error.patch= p;
-    error.idx = patchIdx;
+    error.patch= img;
     error.fileName = fileName;
     if(actual)
     {
@@ -537,82 +430,27 @@ void BallDetectorEvaluator::evaluatePatch(const BallCandidates::Patch &p, unsign
   }
 }
 
-int BallDetectorEvaluator::loadGroundTruth(std::string file, std::set<unsigned int>& expectedBallIdx)
-{
-  // TODO: replace it with ModernJSON
-  typedef std::vector<picojson::value> array;
-  typedef std::map<std::string, picojson::value> object;
-
-  int maxValidIdx = 0;
-
-
-  size_t dotPos = file.find_last_of('.');
-
-  std::string jsonFile = dotPos == std::string::npos ? file : file.substr(0, dotPos) + ".json";
-  std::cout << "loading ground truth from '" << jsonFile << "'" << std::endl;
-  std::ifstream groundTruthStream(jsonFile);
-
-  picojson::value parsedJson;
-  picojson::parse(parsedJson, groundTruthStream);
-
-  groundTruthStream.close();
-
-  array ballIdx;
-  array noBallIdx;
-  if(parsedJson.is<object>())
-  {
-    if(parsedJson.get("ball").is<array>())
-    {
-      ballIdx = parsedJson.get("ball").get<array>();
-    }
-
-    if(parsedJson.get("noball").is<array>())
-    {
-      noBallIdx = parsedJson.get("noball").get<array>();
-    }
-
-    for(picojson::value idx : ballIdx)
-    {
-      if(idx.is<double>())
-      {
-        int idxVal = static_cast<int>(idx.get<double>());
-        expectedBallIdx.insert(idxVal);
-        maxValidIdx = std::max(maxValidIdx, idxVal);
-      }
-    }
-
-    for(picojson::value idx : noBallIdx)
-    {
-      if(idx.is<double>())
-      {
-        int idxVal = static_cast<int>(idx.get<double>());
-        maxValidIdx = std::max(maxValidIdx, idxVal);
-      }
-    }
-  }
-
-
-  return maxValidIdx;
-}
 
 std::string BallDetectorEvaluator::createPGM(const BallCandidates::Patch &p)
 {
   std::stringstream str;
 
+  unsigned int patchSize = static_cast<unsigned int>(std::sqrt(p.data.size()));
+
   // header (we are gray scale, thus P2)
   str << "P2\n";
   // the width and the height of the image
-  str << BallCandidates::Patch::SIZE << "\n" << BallCandidates::Patch::SIZE << "\n";
+  str << patchSize << "\n" << patchSize << "\n";
   // the maximum value we use
   str << "255\n";
 
   // output each pixel
-  for(unsigned int y=0; y < BallCandidates::Patch::SIZE; y++)
+  for(unsigned int y=0; y < patchSize; y++)
   {
-    for(unsigned int x=0; x < BallCandidates::Patch::SIZE; x++)
+    for(unsigned int x=0; x < patchSize; x++)
     {
-      str << (int) p.data[x*BallCandidates::Patch::SIZE + y];
-      if(x < BallCandidates::Patch::SIZE - 1)
+      str << (int) p.data[x*patchSize + y];
+      if(x < patchSize - 1)
       {
         str << " ";
       }
@@ -622,30 +460,68 @@ std::string BallDetectorEvaluator::createPGM(const BallCandidates::Patch &p)
   return str.str();
 }
 
-std::string BallDetectorEvaluator::createPNG(const BallCandidates::Patch &p)
+std::string BallDetectorEvaluator::createPNG(cv::Mat img)
 {
-  cv::Mat wrappedImg;
-  if(p.data.size() == 12*12)
-  {
-    wrappedImg = cv::Mat(12, 12, CV_8UC1, (void*) p.data.data());
-  }
-  else if(p.data.size() == 24*24)
-  {
-    wrappedImg = cv::Mat(24, 24, CV_8UC1, (void*) p.data.data());
-  }
-  else if(p.data.size() == 36*36)
-  {
-    wrappedImg = cv::Mat(36, 36, CV_8UC1, (void*) p.data.data());
-  }
-  cv::transpose(wrappedImg, wrappedImg);
-  //cv::flip(wrappedImg,wrappedImg, 1);
-
   std::vector<uchar> buffer;
 
   std::vector<int> params;
   params.push_back(cv::ImwriteFlags::IMWRITE_PNG_COMPRESSION);
   params.push_back(9);
-  cv::imencode(".png", wrappedImg, buffer, params);
+  cv::imencode(".png", img, buffer, params);
 
   return std::string(buffer.begin(), buffer.end());
+}
+
+bool BallDetectorEvaluator::isDirectory(const std::string &path)
+{
+  DIR* dirTest;
+  if((dirTest = opendir(path.c_str())) != nullptr)
+  {
+    closedir(dirTest);
+
+    return true;
+  }
+  return false;
+}
+
+std::list<std::string> BallDetectorEvaluator::findSubdirectories(const std::string &rootDir, std::string pathSep)
+{
+  std::list<std::string> result;
+
+  for(const std::string& entry : findDirectoryChildren(rootDir))
+  {
+    if(isDirectory(rootDir + pathSep + entry))
+    {
+      result.push_back(entry);
+    }
+  }
+  return std::move(result);
+}
+
+std::list<std::string> BallDetectorEvaluator::findDirectoryChildren(const std::string &rootDir)
+{
+  std::list<std::string> result;
+  DIR *dir;
+  struct dirent *ent;
+  if ((dir = opendir (rootDir.c_str())) != nullptr)
+  {
+    while ((ent = readdir (dir)) != nullptr)
+    {
+      std::string fileName(ent->d_name);
+      if(fileName != "." && fileName != "..")
+      {
+        result.push_back(fileName);
+      }
+
+    }
+    closedir (dir);
+  }
+  return std::move(result);
+}
+
+bool BallDetectorEvaluator::hasFileSuffix(const std::string &fileName, const std::string &fileSuffix)
+{
+  return fileName.size() > fileSuffix.size() &&
+      fileName.compare(fileName.size() - fileSuffix.size(), fileSuffix.size(), fileSuffix) == 0;
+
 }
