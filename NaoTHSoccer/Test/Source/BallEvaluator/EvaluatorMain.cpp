@@ -18,12 +18,12 @@ int main(int argc, char** argv)
       if(argc > 3)
       {
         BallDetectorEvaluator evaluator(argv[2], argv[3]);
-        evaluator.execute();
+        evaluator.executeHaarBall();
       }
       else
       {
         BallDetectorEvaluator evaluator(argv[2], "");
-        evaluator.execute();
+        evaluator.executeHaarBall();
       }
       return 0;
     }
