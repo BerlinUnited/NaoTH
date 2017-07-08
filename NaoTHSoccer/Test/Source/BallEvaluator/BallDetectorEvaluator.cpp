@@ -19,6 +19,8 @@
 
 #include <Tools/naoth_opencv.h>
 
+#include <Cognition/Modules/VisualCortex/BallDetector/Classifier/CNNClassifier.h>
+
 #if defined(__GNUC__) && defined(_NAOTH_CHECK_CONVERSION_)
 #if (__GNUC__ > 3 && __GNUC_MINOR__ > 5) || (__GNUC__ > 4) // version >= 4.6
 #pragma GCC diagnostic push
@@ -168,6 +170,43 @@ void BallDetectorEvaluator::executeHaarBall()
         }
       }
     }
+  }
+
+  outputResults(outFileName);
+  std::cout << "Written detailed report to " << outFileName << std::endl;
+}
+
+void BallDetectorEvaluator::executeCNNBall()
+{
+  std::cout << "Loading test image set from " << fileArg << std::endl;
+  std::multimap<std::string, InputPatch> imagesByClasses = loadImageSets(fileArg);
+  std::cout << "Loaded " << imagesByClasses.size() << " images." << std::endl;
+
+  results.clear();
+  std::string fileArgBase(g_path_get_basename(fileArg.c_str()));
+  std::string outFileName = "cnn_ball_" + fileArgBase + ".html";
+
+
+
+  bestRecall90 = 0.0;
+  bestRecall95 = 0.0;
+  bestRecall99 = 0.0;
+
+  cnnClassifiers.clear();
+  cnnClassifiers["cnn"] = std::make_shared<CNNClassifier>();
+
+
+  ExperimentParameters cnnParams;
+  cnnParams.type = ExperimentParameters::Type::cnn;
+
+  bestRecallParam90 = cnnParams;
+  bestRecallParam95 = cnnParams;
+  bestRecallParam99 = cnnParams;
+
+  for(auto& classifierEntry : cnnClassifiers)
+  {
+    cnnParams.modelName = classifierEntry.first;
+    results[cnnParams] = executeParam(cnnParams, imagesByClasses);
   }
 
   outputResults(outFileName);
@@ -403,6 +442,17 @@ void BallDetectorEvaluator::evaluateImage(cv::Mat img,
   if(params.type == ExperimentParameters::Type::haar)
   {
     actual = classifierHaar.classify(patch, params.minNeighbours, params.maxWindowSize) > 0;
+  }
+  else if(params.type == ExperimentParameters::Type::cnn)
+  {
+    auto classifier = cnnClassifiers.find(params.modelName);
+    if(classifier != cnnClassifiers.end())
+    {
+      if(classifier->second)
+      {
+        actual = classifier->second->classify(patch);
+      }
+    }
   }
 
   if(ballExpected == actual)
