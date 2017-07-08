@@ -223,25 +223,26 @@ int RansacLineDetector::ransacEllipse(Ellipse& result)
       bestInlier = inlier;
       bestInlierError = inlierError;
     }
-
-    // update the outliers
-    // todo: make it faster
-    std::vector<size_t> newOutliers;
-    newOutliers.reserve(outliers.size() - bestInlier + 1);
-
-    for(size_t i: outliers)
-    {
-      const Edgel& e = getLineGraphPercept().edgels[i];
-      double d = bestModel.error_to(e.point.x, e.point.y);
-
-      if(d < params.circle_outlierThreshold) {
-        newOutliers.push_back(i);
-      }
-    }
-    outliers = newOutliers;
-
-    // return results
-    result = bestModel;
-    return bestInlier;
   }
+
+  // update the outliers
+  // todo: make it faster
+  std::vector<size_t> newOutliers;
+  newOutliers.reserve(outliers.size() - bestInlier + 1);
+
+  for(size_t i: outliers)
+  {
+    const Edgel& e = getLineGraphPercept().edgels[i];
+    double d = bestModel.error_to(e.point.x, e.point.y);
+
+    if(d < params.circle_outlierThreshold) {
+      newOutliers.push_back(i);
+    }
+  }
+  outliers = newOutliers;
+
+  // return results
+  result = bestModel;
+  return bestInlier;
+
 }
