@@ -17,6 +17,7 @@ import de.naoth.rc.messages.Representations;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -179,10 +180,13 @@ public class SPLMessage {
         this.data = new byte[this.numOfDataBytes];
         buffer.get(this.data, 0, this.data.length);
 
-        try {
-            this.user = Representations.BUUserTeamMessage.parseFrom(this.data);
-        } catch (InvalidProtocolBufferException ex) {
-            // it's not our message
+        if(this.data.length > 12) {
+            byte[] dataWithOffset = Arrays.copyOfRange(this.data, 12, this.data.length);
+            try {
+                this.user = Representations.BUUserTeamMessage.parseFrom(dataWithOffset);
+            } catch (InvalidProtocolBufferException ex) {
+                // it's not our message
+            }
         }
     }
 
