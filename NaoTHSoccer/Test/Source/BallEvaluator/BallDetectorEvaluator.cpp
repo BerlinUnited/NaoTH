@@ -62,9 +62,8 @@ BallDetectorEvaluator::ExperimentResult BallDetectorEvaluator::executeParam(
   r.falsePositives = 0;
   r.falsePositivePatches.clear();
   r.falseNegativePatches.clear();
-  r.totalSize = 0;
 
-  executeSingleImageSet(imageSet, params, r);
+  r.totalSize = executeSingleImageSet(imageSet, params, r);
 
   r.precision = 1.0;
   if(r.truePositives + r.falsePositives > 0)
