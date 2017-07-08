@@ -43,16 +43,17 @@ void RansacLineDetector::execute()
     outliers[i] = i;
   }
 
-  //std::cout << "EDGELS: " << getLineGraphPercept().edgels.size() << "#" << std::endl;
-
-  //Circle circResult;
   Ellipse circResult;
+
+  bool foundLines = false;
+  int bestInlierCirc;
 
   for(int i = 0; i < 11; ++i)
   {
     Math::LineSegment result;
-    if(ransac(result) > 0) 
+    if(ransac(result) > 0)
     {
+      foundLines = true;
       LinePercept::FieldLineSegment fieldLine;
       fieldLine.lineOnField = result;
       getLinePercept().lines.push_back(fieldLine);
@@ -60,7 +61,7 @@ void RansacLineDetector::execute()
     else {
       // Check for circle
       //ransacCirc(circResult);
-      ransacEllipse(circResult);
+      bestInlierCirc = ransacEllipse(circResult);
       break;
     }
   }
@@ -68,45 +69,48 @@ void RansacLineDetector::execute()
   DEBUG_REQUEST("Vision:RansacLineDetector:draw_lines_field",
     FIELD_DRAWING_CONTEXT;
 
-    for(const LinePercept::FieldLineSegment& line: getLinePercept().lines)
-    {
-      PEN("999999", 50);
-      LINE(
-        line.lineOnField.begin().x, line.lineOnField.begin().y,
-        line.lineOnField.end().x, line.lineOnField.end().y);
-      //CIRCLE(circResult.center[0], circResult.center[1], 30);
+    if (foundLines) {
+      for(const LinePercept::FieldLineSegment& line: getLinePercept().lines)
+      {
+        PEN("999999", 50);
+        LINE(
+          line.lineOnField.begin().x, line.lineOnField.begin().y,
+          line.lineOnField.end().x, line.lineOnField.end().y);
+      }
     }
 
-    double c[2];
-    circResult.getCenter(c);
+    if (bestInlierCirc > 0) {
+      double c[2];
+      circResult.getCenter(c);
 
-    double a[2];
-    circResult.axesLength(a);
+      double a[2];
+      circResult.axesLength(a);
 
-    PEN("009900", 50);
+      PEN("009900", 50);
 
-    CIRCLE(c[0], c[1], 30);
-    OVAL_ROTATED(c[0], c[1], a[0], a[1], circResult.rotationAngle());
+      CIRCLE(c[0], c[1], 30);
+      OVAL_ROTATED(c[0], c[1], a[0], a[1], circResult.rotationAngle());
 
-    PEN("0000AA", 20);
-    for(int i=0; i<circResult.x_toFit.size(); i++) {
-      CIRCLE(circResult.x_toFit[i], circResult.y_toFit[i], 20);
+      PEN("0000AA", 20);
+      for(int i=0; i<circResult.x_toFit.size(); i++) {
+        CIRCLE(circResult.x_toFit[i], circResult.y_toFit[i], 20);
+      }
+      /*
+      std::cout << "m: [ " << c[0] << ", " << c[1] << "]" << std::endl;
+      std::cout << "ax: [ " << a[0] << ", " << a[1] << "]" << std::endl;
+
+      std::cout << "x: [ ";
+      for(int i=0; i<5; i++) {
+        std::cout << circResult.x_toFit[i] << ", ";
+      }
+      std::cout << "]" << std::endl;
+      std::cout << "y: [ ";
+      for(int i=0; i<5; i++) {
+        std::cout << circResult.y_toFit[i] << ", ";
+      }
+      std::cout << "]" << std::endl;
+      */
     }
-    /*
-    std::cout << "m: [ " << c[0] << ", " << c[1] << "]" << std::endl;
-    std::cout << "ax: [ " << a[0] << ", " << a[1] << "]" << std::endl;
-
-    std::cout << "x: [ ";
-    for(int i=0; i<5; i++) {
-      std::cout << circResult.x_toFit[i] << ", ";
-    }
-    std::cout << "]" << std::endl;
-    std::cout << "y: [ ";
-    for(int i=0; i<5; i++) {
-      std::cout << circResult.y_toFit[i] << ", ";
-    }
-    std::cout << "]" << std::endl;
-    */
   );
 
 }
@@ -166,31 +170,33 @@ int RansacLineDetector::ransac(Math::LineSegment& result)
     }
   }
 
+  if(bestInlier > 2) {
+    // update the outliers
+    // todo: make it faster
+    std::vector<size_t> newOutliers;
+    newOutliers.reserve(outliers.size() - bestInlier + 1);
+    double minT = 0;
+    double maxT = 0;
 
-  // update the outliers
-  // todo: make it faster
-  std::vector<size_t> newOutliers;
-  newOutliers.reserve(outliers.size() - bestInlier + 1);
-  double minT = 0;
-  double maxT = 0;
+    for(size_t i: outliers)
+    {
+      const Edgel& e = getLineGraphPercept().edgels[i];
+      double d = bestModel.minDistance(e.point);
 
-  for(size_t i: outliers) 
-  {
-    const Edgel& e = getLineGraphPercept().edgels[i];
-    double d = bestModel.minDistance(e.point);
-
-    if(d < params.outlierThreshold && sim(bestModel, e) > params.directionSimilarity) {
-      double t = bestModel.project(e.point);
-      minT = std::min(t, minT);
-      maxT = std::max(t, maxT);
-    } else {
-      newOutliers.push_back(i);
+      if(d < params.outlierThreshold && sim(bestModel, e) > params.directionSimilarity) {
+        double t = bestModel.project(e.point);
+        minT = std::min(t, minT);
+        maxT = std::max(t, maxT);
+      } else {
+        newOutliers.push_back(i);
+      }
     }
-  }
-  outliers = newOutliers;
+    outliers = newOutliers;
 
-  // return results
-  result = Math::LineSegment(bestModel.point(minT), bestModel.point(maxT));
+    // return results
+    result = Math::LineSegment(bestModel.point(minT), bestModel.point(maxT));
+  }
+
   return bestInlier;
 }
 

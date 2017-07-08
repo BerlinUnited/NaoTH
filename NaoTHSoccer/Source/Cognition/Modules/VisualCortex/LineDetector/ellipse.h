@@ -57,8 +57,7 @@ public:
     double d = ( ( (xx * params[0]) + (yy * b) ) * xx) +
                ( ( (xx * b) + (yy * params[2]) ) * yy);
 
-    // percentage
-    return std::fabs(d - r)/r;
+    return std::fabs(d - r);//r;
   }
 
   void getCenter(double (&C)[2]);
