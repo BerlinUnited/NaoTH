@@ -10,17 +10,12 @@ using namespace std;
 
 TeamCommSender::TeamCommSender()
   :lastSentTimestamp(0),
-   send_interval(400),
-   send_doberman_header(true)
+   send_interval(400)
 {
   naoth::Configuration& config = naoth::Platform::getInstance().theConfiguration;
   if ( config.hasKey("teamcomm", "send_interval") )
   {
     send_interval = config.getInt("teamcomm", "send_interval");
-  }
-  if ( config.hasKey("teamcomm", "send_doberman_header") )
-  {
-    send_doberman_header = config.getBool("teamcomm", "send_doberman_header");
   }
 }
 
