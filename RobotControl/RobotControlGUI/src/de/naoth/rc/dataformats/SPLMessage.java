@@ -17,6 +17,7 @@ import de.naoth.rc.messages.Representations;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -34,6 +35,15 @@ public class SPLMessage {
     
     public static final int BU_CUSTOM_DATA_OFFSET = 12;
 
+    public static class DoBerManCustomHeader
+    {
+        public long timestamp;
+        public byte teamID;
+        public byte isPenalized;
+        public byte whistleDetected;
+        public byte dummy;
+    }
+    
     //public byte header[4]; // 4
     //public byte version; // 1
     public byte playerNum; // 1
@@ -86,6 +96,8 @@ public class SPLMessage {
     public byte[] data;
 
     public transient Representations.BUUserTeamMessage user = null;
+    
+    public transient DoBerManCustomHeader doberHeader = null;
 
     public SPLMessage()
     {
@@ -182,6 +194,18 @@ public class SPLMessage {
         this.data = new byte[this.numOfDataBytes];
         buffer.get(this.data, 0, this.data.length);
 
+        if(this.data.length >= BU_CUSTOM_DATA_OFFSET) {
+            byte[] dataClipped = Arrays.copyOfRange(this.data, 0, BU_CUSTOM_DATA_OFFSET);
+            ByteBuffer doberHeader = ByteBuffer.wrap(data).order(ByteOrder.LITTLE_ENDIAN);
+            
+            this.doberHeader = new DoBerManCustomHeader();
+            this.doberHeader.timestamp = doberHeader.getLong();
+            this.doberHeader.teamID = doberHeader.get();
+            this.doberHeader.isPenalized = doberHeader.get();
+            this.doberHeader.whistleDetected = doberHeader.get();
+            this.doberHeader.dummy = doberHeader.get();
+            
+        }
         if(this.data.length > BU_CUSTOM_DATA_OFFSET) {
             byte[] dataWithOffset = Arrays.copyOfRange(this.data, BU_CUSTOM_DATA_OFFSET, this.data.length);
             try {
