@@ -11,7 +11,7 @@ option arms_control
         stay;
     }
     action {
-      arm.type = arms_none;
+      arm.type = arms_down;
     }
   }
 
@@ -31,8 +31,12 @@ option arms_control
   state arms_back_by_collision
   {
     decision {
-      if(arm.control_mode != back && state_time > 3000)
+      if(state_time > 3000)
         goto arms_take_down;
+      else if(arm.control_mode == back)
+        goto arms_back;
+      else if(arm.control_mode != synchronised_with_walk)
+        goto arms_normal;
       else
         stay;
     }
