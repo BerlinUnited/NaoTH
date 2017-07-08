@@ -194,8 +194,8 @@ private:
 private:
   CVHaarClassifier cvHaarClassifier;
 
-  AbstractCCNClassifier* cnnClassifier;
-  std::map<std::string, std::unique_ptr<AbstractCCNClassifier> > cnnMap;
+  std::shared_ptr<AbstractCNNClassifier> currentCNNClassifier;
+  std::map<std::string, std::shared_ptr<AbstractCNNClassifier> > cnnMap;
 
   ModuleCreator<BallKeyPointExtractor>* theBallKeyPointExtractor;
   BestPatchList best;

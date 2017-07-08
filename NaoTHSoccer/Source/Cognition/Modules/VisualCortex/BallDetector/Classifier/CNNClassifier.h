@@ -5,9 +5,9 @@
 
 #include <fstream>
 
-#include "AbstractCCNClassifier.h"
+#include "AbstractCNNClassifier.h"
 
-class CNNClassifier : public AbstractCCNClassifier {
+class CNNClassifier : public AbstractCNNClassifier {
 
 public:
     CNNClassifier(){out.open("example.txt");}

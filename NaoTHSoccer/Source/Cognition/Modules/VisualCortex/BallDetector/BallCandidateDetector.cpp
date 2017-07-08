@@ -33,9 +33,9 @@ BallCandidateDetector::BallCandidateDetector()
   getDebugParameterList().add(&params);
 
   //register classifier
-  cnnMap.insert(std::pair<std::string,std::unique_ptr<AbstractCCNClassifier> >("CNN",  new CNNClassifier()));
-  cnnMap.insert(std::pair<std::string,std::unique_ptr<AbstractCCNClassifier> >("CNN1", new CNNClassifier()));
-  cnnClassifier = cnnMap.at("CNN").get();
+  cnnMap.insert({"CNN", std::make_shared<CNNClassifier>()});
+  // TODO: add more
+  currentCNNClassifier = cnnMap["CNN"];
 }
 
 BallCandidateDetector::~BallCandidateDetector()
@@ -227,9 +227,9 @@ void BallCandidateDetector::calculateCandidates()
         patchedBorder.max.x = patchedBorder.max.x + postBorder;
         patchedBorder.max.y = patchedBorder.max.y + postBorder;
 
-        std::map<std::string,std::unique_ptr<AbstractCCNClassifier> >::iterator location = cnnMap.find(params.CNN);
+        auto location = cnnMap.find(params.CNN);
         if(location != cnnMap.end()){
-          cnnClassifier = location->second.get();
+          currentCNNClassifier = location->second;
         }
 
         if(getImage().isInside(patchedBorder.min.x, patchedBorder.min.y) && getImage().isInside(patchedBorder.max.x, patchedBorder.max.y))
@@ -244,7 +244,7 @@ void BallCandidateDetector::calculateCandidates()
 
           PatchWork::subsampling(getImage(), patchedBorder.data, patchedBorder.min.x, patchedBorder.min.y, patchedBorder.max.x, patchedBorder.max.y, patch_size);
           //if(cvHaarClassifier.classify(patchedBorder, params.haarDetector.minNeighbors, params.haarDetector.windowSize) > 0) {
-          if (cnnClassifier->classify(patchedBorder)) {
+          if (currentCNNClassifier->classify(patchedBorder)) {
             
             if(!params.blackKeysCheck.enable || blackKeysOK(*i)) {
               addBallPercept(Vector2i((min.x + max.x)/2, (min.y + max.y)/2), (max.x - min.x)/2);
@@ -259,7 +259,7 @@ void BallCandidateDetector::calculateCandidates()
 
             PatchWork::subsampling(getImage(), p.data, min.x, min.y, max.x, max.y, patch_size);
             //if(cvHaarClassifier.classify(p, params.haarDetector.minNeighbors, params.haarDetector.windowSize) > 0) {
-            if (cnnClassifier->classify(p)) {
+            if (currentCNNClassifier->classify(p)) {
 
               if(!params.blackKeysCheck.enable || blackKeysOK(*i)) {
                 addBallPercept(Vector2i((min.x + max.x)/2, (min.y + max.y)/2), (max.x - min.x)/2);

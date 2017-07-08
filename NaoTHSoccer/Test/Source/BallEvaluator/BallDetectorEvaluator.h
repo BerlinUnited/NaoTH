@@ -4,7 +4,7 @@
 #include <string>
 
 #include <Cognition/Modules/VisualCortex/BallDetector/Tools/CVHaarClassifier.h>
-#include <Cognition/Modules/VisualCortex/BallDetector/Classifier/AbstractCCNClassifier.h>
+#include <Cognition/Modules/VisualCortex/BallDetector/Classifier/AbstractCNNClassifier.h>
 
 #include <map>
 
@@ -176,7 +176,7 @@ private:
 
   // TODO: allow more classifiers (including the ones that have the more complex filter logic)
   CVHaarClassifier classifierHaar;
-  std::map<std::string, std::shared_ptr<AbstractCCNClassifier>> cnnClassifiers;
+  std::map<std::string, std::shared_ptr<AbstractCNNClassifier>> cnnClassifiers;
 
   std::map<ExperimentParameters, ExperimentResult, cmpExperimentParameters> results;
 
