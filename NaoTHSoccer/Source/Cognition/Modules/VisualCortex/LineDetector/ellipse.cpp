@@ -2,7 +2,7 @@
 
 Ellipse::Ellipse()
 {
-  for(int i=0; i<5; i++) {
+  for(int i=0; i<6; i++) {
     params[i] = 0;
   }
 }
@@ -76,11 +76,11 @@ void Ellipse::fitPoints(Eigen::VectorXd x,  Eigen::VectorXd y) {
 
   // normalize
   double norm = 0;
-  for(int i=0; i<5; ++i) {
+  for(int i=0; i<6; ++i) {
     norm += params[i] * params[i];
   }
   norm = sqrt(norm);
-  for(int i=0; i<5; ++i) {
+  for(int i=0; i<6; ++i) {
     params[i] /= norm;
   }
 

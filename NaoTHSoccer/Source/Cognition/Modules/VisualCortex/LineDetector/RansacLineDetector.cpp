@@ -86,9 +86,27 @@ void RansacLineDetector::execute()
     PEN("009900", 50);
 
     CIRCLE(c[0], c[1], 30);
-
-    PEN("009900", 50);
     OVAL_ROTATED(c[0], c[1], a[0], a[1], circResult.rotationAngle());
+
+    PEN("0000AA", 20);
+    for(int i=0; i<circResult.x_toFit.size(); i++) {
+      CIRCLE(circResult.x_toFit[i], circResult.y_toFit[i], 20);
+    }
+    /*
+    std::cout << "m: [ " << c[0] << ", " << c[1] << "]" << std::endl;
+    std::cout << "ax: [ " << a[0] << ", " << a[1] << "]" << std::endl;
+
+    std::cout << "x: [ ";
+    for(int i=0; i<5; i++) {
+      std::cout << circResult.x_toFit[i] << ", ";
+    }
+    std::cout << "]" << std::endl;
+    std::cout << "y: [ ";
+    for(int i=0; i<5; i++) {
+      std::cout << circResult.y_toFit[i] << ", ";
+    }
+    std::cout << "]" << std::endl;
+    */
   );
 
 }
@@ -192,16 +210,19 @@ int RansacLineDetector::ransacEllipse(Ellipse& result)
     // create model
     Ellipse ellipse;
 
-    double x[5], y[5];
+    std::vector<double> x, y;
+    x.reserve(5);
+    y.reserve(5);
+    //double x[5], y[5];
     for(int t=0; t<5; t++) {
       size_t r = swap_random(outliers, (int) outliers.size()-(t+1));
       const Edgel& e = getLineGraphPercept().edgels[r];
 
-      x[t] = e.point.x;
-      y[t] = e.point.y;
+      x.push_back(e.point.x);
+      y.push_back(e.point.y);
     }
 
-    ellipse.fitPoints(x,y,5);
+    ellipse.fitPoints(x,y);
 
     // check model
     double inlierError = 0;

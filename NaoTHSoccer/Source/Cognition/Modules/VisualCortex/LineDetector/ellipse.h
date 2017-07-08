@@ -22,6 +22,16 @@ public:
     fitPoints(vx, vy);
   }
 
+  void fitPoints(std::vector<double> x, std::vector<double> y) {
+    x_toFit = x;
+    y_toFit = y;
+
+    Eigen::Map<Eigen::VectorXd> vx(x.data(), x.size());
+    Eigen::Map<Eigen::VectorXd> vy(y.data(), y.size());
+
+    fitPoints(vx, vy);
+  }
+
   double error_to(double x, double y) {
     double b = params[1]/2;
 
@@ -58,10 +68,13 @@ public:
   double rotationAngle();
 
   //Ellipse: ax^2+bxy+cy^2+dx+fy+g=0
-  double params[5];
+  double params[6];
   double center[2];
   double axes[2];
   double angle;
+
+  std::vector<double> x_toFit;
+  std::vector<double> y_toFit;
 };
 
 #endif // ELLIPSE_H
