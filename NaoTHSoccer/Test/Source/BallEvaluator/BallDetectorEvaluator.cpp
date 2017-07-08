@@ -188,17 +188,24 @@ std::multimap<std::string, BallDetectorEvaluator::InputPatch> BallDetectorEvalua
       if(!isDirectory(fullFilePath))
       {
         // get the image using opencv
-        cv::Mat img = cv::imread(fullFilePath);
+        try
+        {
+          cv::Mat img = cv::imread(fullFilePath);
 
-        if(img.type() != CV_8UC1)
-        {
-          img.convertTo(img, CV_8UC1);
+          if(img.type() != CV_8UC1)
+          {
+            img.convertTo(img, CV_8UC1);
+          }
+          if(img.rows != patchSize || img.cols != patchSize)
+          {
+            cv::resize(img, img, cv::Size(patchSize, patchSize), cv::INTER_LINEAR);
+          }
+          result.insert({className, {img, fullFilePath}});
         }
-        if(img.rows != patchSize || img.cols != patchSize)
+        catch(...)
         {
-          cv::resize(img, img, cv::Size(patchSize, patchSize), cv::INTER_LINEAR);
+          // just ignore any invalid files
         }
-        result.insert({className, {img, fullFilePath}});
       }
     }
   }
