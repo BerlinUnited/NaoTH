@@ -5,17 +5,17 @@
 
 #include <fstream>
 
-#include "Representations/Perception/BallCandidates.h"
+#include "AbstractCCNClassifier.h"
 
-class CNNClassifier {
+class CNNClassifier : public AbstractCCNClassifier {
 
 public:
-	CNNClassifier(){out.open("example.txt");}
+    CNNClassifier(){out.open("example.txt");}
 
 	~CNNClassifier(){out.close();}
 
 std::ofstream out;
-	bool classify(const BallCandidates::Patch& p);
+    bool classify(const BallCandidates::Patch& p);
 
 	// declare copied intial input array
 	float out_step0[16][16][1];

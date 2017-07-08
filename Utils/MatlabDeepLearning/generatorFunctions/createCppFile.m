@@ -11,9 +11,9 @@ fprintf(HeaderFile,strcat('#define _',name,'_H_\n\n'));
 fprintf(HeaderFile,'#include <limits>\n\n');
 fprintf(HeaderFile,'#include <fstream>\n\n');
 
-fprintf(HeaderFile,'#include "Representations/Perception/BallCandidates.h"\n\n');
+fprintf(HeaderFile,'#include "AbstractCCNClassifier.h"\n\n');
 
-fprintf(HeaderFile,'class %s{\n\n',name);
+fprintf(HeaderFile,'class %s : public AbstractCCNClassifier {\n\n',name);
 fprintf(HeaderFile,'public:\n');
 fprintf(HeaderFile,'\t%s(){out.open("example.txt");}\n\n',name);
 fprintf(HeaderFile,'\t~%s(){out.close();}\n\n',name);

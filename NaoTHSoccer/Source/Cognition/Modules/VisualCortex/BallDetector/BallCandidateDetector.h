@@ -44,6 +44,8 @@
 #include "Tools/Debug/DebugModify.h"
 #include "Tools/Debug/DebugDrawings.h"
 
+#include <memory>
+
 BEGIN_DECLARE_MODULE(BallCandidateDetector)
   PROVIDE(DebugRequest)
   PROVIDE(DebugDrawings)
@@ -128,6 +130,8 @@ private:
       PARAMETER_REGISTER(blackKeysCheck.enable) = false;
       PARAMETER_REGISTER(blackKeysCheck.minSizeToCheck) = 60;
       PARAMETER_REGISTER(blackKeysCheck.minValue) = 20;
+
+      PARAMETER_REGISTER(CNN) = "CNN";
       
       syncWithConfig();
     }
@@ -166,6 +170,8 @@ private:
     int contrastVariant;
     double contrastMinimum;
 
+    std::string CNN;
+
   } params;
 
 
@@ -187,7 +193,10 @@ private:
 
 private:
   CVHaarClassifier cvHaarClassifier;
-  CNNClassifier cnnClassifier;
+
+  AbstractCCNClassifier* cnnClassifier;
+  std::map<std::string, std::unique_ptr<AbstractCCNClassifier> > cnnMap;
+
   ModuleCreator<BallKeyPointExtractor>* theBallKeyPointExtractor;
   BestPatchList best;
 
