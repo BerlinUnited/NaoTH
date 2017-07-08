@@ -29,7 +29,7 @@ void Serializer<CollisionPercept>::deserialize(std::istream& stream, CollisionPe
   if(message.ParseFromZeroCopyStream(&buf))
   {
     representation.timeCollisionArmLeft = message.timecollisionarmleft();
-    representation.timeCollisionArmRight = message.timecollisionarmleft();
+    representation.timeCollisionArmRight = message.timecollisionarmright();
   }
   else
   {

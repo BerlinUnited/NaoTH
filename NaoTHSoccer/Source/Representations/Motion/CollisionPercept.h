@@ -33,7 +33,7 @@ public:
   virtual void print(std::ostream& stream) const
   {
     stream << "timeCollisionArmLeft = " << timeCollisionArmLeft << '\n';
-    stream << "timeCollisionArmRight = " << timeCollisionArmLeft << '\n';
+    stream << "timeCollisionArmRight = " << timeCollisionArmRight << '\n';
   }
 };
 
