@@ -31,6 +31,8 @@ public class SPLMessage {
     public static final int SPL_STANDARD_MESSAGE_DATA_SIZE = 780;
     public static final int SPL_STANDARD_MESSAGE_SIZE = 70 + SPL_STANDARD_MESSAGE_DATA_SIZE;
     public static final int SPL_STANDARD_MESSAGE_MAX_NUM_OF_PLAYERS = 5;
+    
+    public static final int BU_CUSTOM_DATA_OFFSET = 12;
 
     //public byte header[4]; // 4
     //public byte version; // 1
@@ -180,8 +182,8 @@ public class SPLMessage {
         this.data = new byte[this.numOfDataBytes];
         buffer.get(this.data, 0, this.data.length);
 
-        if(this.data.length > 12) {
-            byte[] dataWithOffset = Arrays.copyOfRange(this.data, 12, this.data.length);
+        if(this.data.length > BU_CUSTOM_DATA_OFFSET) {
+            byte[] dataWithOffset = Arrays.copyOfRange(this.data, BU_CUSTOM_DATA_OFFSET, this.data.length);
             try {
                 this.user = Representations.BUUserTeamMessage.parseFrom(dataWithOffset);
                 // additionally check if the magic string matches
