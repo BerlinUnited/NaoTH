@@ -12,7 +12,6 @@
 #include <ModuleFramework/Module.h>
 
 #include <Tools/DataStructures/ParameterList.h>
-#include "Tools/Debug/DebugParameterList.h"
 
 // representations
 #include <Representations/Infrastructure/RobotInfo.h>
