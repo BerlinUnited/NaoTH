@@ -108,7 +108,7 @@ public class SPLMessage {
 
         this.averageWalkSpeed = -1;
 
-        this.ballAge = msg.getBallAge() / 1000.0f;
+        this.ballAge = msg.getBallAge();
 
         this.ballVel_x = (float) msg.getBallVelocity().getX();
         this.ballVel_y = (float) msg.getBallVelocity().getY();
