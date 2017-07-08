@@ -15,7 +15,7 @@
 #include <Representations/Infrastructure/JointData.h>
 
 #include "Representations/Motion/MotionStatus.h"
-#include "Representations/Motion/Request/ArmMotionRequest.h"
+#include "Representations/Motion/Request/MotionRequest.h"
 #include "Representations/Motion/CollisionPercept.h"
 
 // tools
@@ -37,7 +37,7 @@ BEGIN_DECLARE_MODULE(ArmCollisionDetector)
   REQUIRE(MotorJointData)
   REQUIRE(SensorJointData)
   REQUIRE(MotionStatus)
-  REQUIRE(ArmMotionRequest)
+  REQUIRE(MotionRequest)
 
   PROVIDE(CollisionPercept)
 END_DECLARE_MODULE(ArmCollisionDetector)
