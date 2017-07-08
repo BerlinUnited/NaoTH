@@ -113,7 +113,8 @@ void TeamCommReceiver::handleMessage(const std::string& data)
   else if (parameters.acceptMixedTeamMessages)
   {
     // TODO: accept mixed team communication
-    msg.custom.isPenalized = getGameData().getOwnRobotInfo(msg.playerNumber).isPenalized();
+    // TODO: this needs to be fixed
+    //msg.custom.isPenalized = getGameData().getOwnRobotInfo(msg.playerNumber).isPenalized();
   }
   else
   {
