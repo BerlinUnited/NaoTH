@@ -184,6 +184,10 @@ public class SPLMessage {
             byte[] dataWithOffset = Arrays.copyOfRange(this.data, 12, this.data.length);
             try {
                 this.user = Representations.BUUserTeamMessage.parseFrom(dataWithOffset);
+                // additionally check if the magic string matches
+                if(!"naoth".equals(this.user.getKey())) {
+                    this.user = null;
+                }
             } catch (InvalidProtocolBufferException ex) {
                 // it's not our message
             }
