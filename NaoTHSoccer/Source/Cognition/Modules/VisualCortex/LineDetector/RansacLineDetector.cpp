@@ -233,7 +233,7 @@ int RansacLineDetector::ransacEllipse(Ellipse& result)
       const Edgel& e = getLineGraphPercept().edgels[i];
       double d = ellipse.error_to(e.point.x, e.point.y);
 
-      if(d < params.circle_outlierThreshold) {
+      if(d <= params.circle_outlierThreshold) {
         ++inlier;
         inlierError += d;
         continue;
@@ -246,24 +246,35 @@ int RansacLineDetector::ransacEllipse(Ellipse& result)
     }
   }
 
-  // update the outliers
-  // todo: make it faster
-  std::vector<size_t> newOutliers;
-  newOutliers.reserve(outliers.size() - bestInlier + 1);
+  if (bestInlier > 5) {
+    // update the outliers
+    // todo: make it faster
+    std::vector<size_t> newOutliers;
+    newOutliers.reserve(outliers.size() - bestInlier + 1);
 
-  for(size_t i: outliers)
-  {
-    const Edgel& e = getLineGraphPercept().edgels[i];
-    double d = bestModel.error_to(e.point.x, e.point.y);
+    std::vector<double> inliers_x, inliers_y;
+    inliers_x.reserve(bestInlier);
+    inliers_y.reserve(bestInlier);
 
-    if(d < params.circle_outlierThreshold) {
-      newOutliers.push_back(i);
+    for(size_t i: outliers)
+    {
+      const Edgel& e = getLineGraphPercept().edgels[i];
+      double d = bestModel.error_to(e.point.x, e.point.y);
+
+      if(d > params.circle_outlierThreshold) {
+        newOutliers.push_back(i);
+      } else {
+        inliers_x.push_back(e.point.x);
+        inliers_y.push_back(e.point.y);
+      }
     }
-  }
-  outliers = newOutliers;
+    outliers = newOutliers;
 
-  // return results
-  result = bestModel;
+    // return results
+    bestModel.fitPoints(inliers_x, inliers_y);
+    result = bestModel;
+  }
+
   return bestInlier;
 
 }
