@@ -3,8 +3,7 @@
 #include <glib.h>
 #include <glib/gstdio.h>
 
-// Windows version is available from https://github.com/tronkko/dirent
-#include <dirent.h>
+#include <Tools/Extern/dirent.h>
 
 #include <strstream>
 #include <fstream>
