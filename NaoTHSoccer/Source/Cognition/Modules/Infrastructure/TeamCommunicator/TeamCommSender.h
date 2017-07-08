@@ -50,7 +50,7 @@ public:
 private:
   unsigned int lastSentTimestamp;
   unsigned int send_interval;
-  bool send_dobermann_time;
+  bool send_doberman_header;
 
   void fillMessageBeforeSending() const;
 };
