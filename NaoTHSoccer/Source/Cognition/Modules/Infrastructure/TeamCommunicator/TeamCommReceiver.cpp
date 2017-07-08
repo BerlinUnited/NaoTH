@@ -113,8 +113,17 @@ void TeamCommReceiver::handleMessage(const std::string& data)
   else if (parameters.acceptMixedTeamMessages)
   {
     // TODO: accept mixed team communication
-    // TODO: this needs to be fixed
-    //msg.custom.isPenalized = getGameData().getOwnRobotInfo(msg.playerNumber).isPenalized();
+    msg.custom.wantsToBeStriker = (msg.intention == 3);
+    msg.custom.wasStriker = (msg.intention == 3);
+    
+    // estimate time to ball for dortmund guys
+    const double stepTime = 200; //ms
+    const double speed = 50.0 / stepTime; // mm/ms
+    const double turnSpeed = Math::fromDegrees(30) / stepTime;
+
+    if (msg.ballAge < 1000) {
+      msg.custom.timeToBall = static_cast<unsigned int>((msg.ballPosition.abs() / speed) + (fabs(msg.ballPosition.angle()) / turnSpeed));
+    }
   }
   else
   {

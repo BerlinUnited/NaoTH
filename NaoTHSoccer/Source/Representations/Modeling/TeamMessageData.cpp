@@ -180,6 +180,7 @@ void TeamMessageData::print(std::ostream &stream) const
                    << shootingTo.x << "; "
                    << shootingTo.y <<"\n"
           ;
+    stream << "\t" << "intention: " << intention << "\n";
     
     custom.print(stream);
 }//end print
