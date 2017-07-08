@@ -112,7 +112,6 @@ void VirtualVisionProcessor::updateBall()
     ballPercept.positionOnField.x = p.x;
     ballPercept.positionOnField.y = p.y;
 
-    getMultiBallPercept().reset();
     getMultiBallPercept().add(ballPercept);
     getMultiBallPercept().frameInfoWhenBallWasSeen = theFrameInfo;
   }

@@ -74,3 +74,29 @@ void PatchWork::subsampling(const Image& image, const FieldColorPercept& fielCol
     xi++;
   }
 }
+
+void PatchWork::toPatch(const BallCandidates::PatchYUVClassified &src, BallCandidates::Patch &target)
+{
+  target.data.clear();;
+  target.min = src.min;
+  target.max = src.max;
+  for(std::vector<BallCandidates::ClassifiedPixel>::const_iterator it=src.data.begin();
+      it != src.data.end(); it++)
+  {
+    const BallCandidates::ClassifiedPixel& origPixel = *it;
+    target.data.push_back(origPixel.pixel.y);
+  }
+}
+
+BallCandidates::PatchesList PatchWork::toPatchList(const BallCandidates::PatchYUVClassifiedList &src)
+{
+  std::list<BallCandidates::Patch> result;
+  for(BallCandidates::PatchYUVClassifiedList::const_iterator it=src.begin();
+      it != src.end(); it++)
+  {
+    BallCandidates::Patch p;
+    toPatch(*it, p);
+    result.push_back(p);
+  }
+  return result;
+}

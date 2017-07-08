@@ -19,8 +19,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.DefaultComboBoxModel;
@@ -362,8 +362,8 @@ private void jToggleButtonListActionPerformed(java.awt.event.ActionEvent evt)//G
      * Prepares the the parameter configuration for saving and/or sending to the nao.
      * @return the "prepared" parameter configuration
      */
-    private HashMap<String,String> getText() {
-        HashMap<String, String> result = new HashMap();
+    private Map<String,String> getText() {
+        TreeMap<String, String> result = new TreeMap();
         String text = this.jTextArea.getText();
         text = text.replaceAll("( |\t)+", "");
         String[] lines = text.split("(\n)+");

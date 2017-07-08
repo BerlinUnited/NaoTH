@@ -52,6 +52,7 @@ BEGIN_DECLARE_MODULE(Walk)
   REQUIRE(MotionRequest)
 
   REQUIRE(InertialSensorData)
+  REQUIRE(IMUData)
   REQUIRE(CalibrationData)
   REQUIRE(InertialModel)
   REQUIRE(GyrometerData)

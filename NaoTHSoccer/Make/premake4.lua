@@ -24,6 +24,11 @@ end
 -- print("INFO:" .. (os.findlib("Controller") or "couldn't fined the lib Controller"))
 
 newoption {
+   trigger     = "Test",
+   description = "Generate test projects"
+}
+
+newoption {
    trigger     = "Wno-conversion",
    description = "Disable the -Wconversion warning for gcc"
 }
@@ -83,7 +88,7 @@ solution "NaoTHSoccer"
     },
     FRAMEWORK_PATH .. "/Commons/Source/Messages/", 
     "../../RobotControl/RobotConnector/src/", 
-    "../../Utils/pyLogEvaluator",
+    "../../Utils/py/naoth/naoth",
     {COMMONS_MESSAGES}
   )
 
@@ -91,7 +96,7 @@ solution "NaoTHSoccer"
     {"../Messages/Representations.proto"}, 
     "../Source/Messages/", 
     "../../RobotControl/RobotConnector/src/", 
-    "../../Utils/pyLogEvaluator",
+    "../../Utils/py/naoth/naoth",
     {COMMONS_MESSAGES, "../Messages/"}
   )
   
@@ -162,7 +167,7 @@ solution "NaoTHSoccer"
   
   
   configuration {"macosx"}
-    defines { "BOOST_SIGNALS_NO_DEPRECATION_WARNING" }
+    defines { "BOOST_SIGNALS_NO_DEPRECATION_WARNING", "EIGEN_DONT_ALIGN" }
     buildoptions {"-std=c++11"}
     -- disable some warnings
     buildoptions {"-Wno-deprecated-declarations"}
@@ -215,4 +220,12 @@ solution "NaoTHSoccer"
       kind "SharedLib"
       links { "NaoTHSoccer", "Commons" }
       vpaths { ["*"] = FRAMEWORK_PATH .. "/Platforms/Source/LogSimulatorJNI" }
+      
+    -- generate tests if required
+    if _OPTIONS["Test"] ~= nil then
+      dofile ("../Test/Make/BallEvaluator.lua")
+        kind "ConsoleApp"
+        links { "NaoTHSoccer", "Commons" }
+        vpaths { ["*"] = "../Test/Source/BallEvaluator" }
+    end
   end

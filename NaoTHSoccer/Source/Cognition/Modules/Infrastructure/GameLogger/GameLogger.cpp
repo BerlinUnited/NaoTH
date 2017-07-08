@@ -25,6 +25,10 @@ GameLogger::~GameLogger()
 
 void GameLogger::execute()
 {
+  // HACK: wait a bit before starting recording
+  if(!logfileManager.is_ready()) {
+    return;
+  }
 
   if( getBehaviorStateComplete().state.IsInitialized() &&
       getBehaviorStateSparse().state.IsInitialized())

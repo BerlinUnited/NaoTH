@@ -17,6 +17,8 @@ import de.naoth.rc.messages.Representations;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.nio.ByteBuffer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -80,7 +82,7 @@ public class SPLMessage {
 
     public byte[] data;
 
-    public Representations.BUUserTeamMessage user = null;
+    public transient Representations.BUUserTeamMessage user = null;
 
     public SPLMessage()
     {
@@ -248,6 +250,16 @@ public class SPLMessage {
                 drawings.add(new Circle((int) shootingTo_x, (int) shootingTo_y, 65));
                 drawings.add(new Pen(Color.gray, new BasicStroke(10, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{100, 50}, 0)));
                 drawings.add(new Arrow((int) globalBall.x, (int) globalBall.y, (int) shootingTo_x, (int) shootingTo_y));
+            }
+        }
+    }
+    
+    public void parseCustomFromData() {
+        if(data != null) {
+            try {
+                user = Representations.BUUserTeamMessage.parseFrom(data);
+            } catch (InvalidProtocolBufferException ex) {
+                Logger.getLogger(SPLMessage.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
