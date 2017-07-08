@@ -27,6 +27,7 @@ fprintf(BodyFile,strcat('#include "',name,'.h"\n\n'));
 fprintf(BodyFile,'bool %s::classify(const BallCandidates::Patch& p){\n',name);
 
 layers = convnet.Layers;
+level = 1;
 for i = 1:numel(layers)
    
    layer = convnet.Layers(i);
@@ -40,29 +41,42 @@ for i = 1:numel(layers)
        
        addInitialCopyFromInput(HeaderFile,BodyFile,rows,cols,channels);
 
-       addImageInputLayer(HeaderFile,BodyFile,i,layer);
+       addImageInputLayer(HeaderFile,BodyFile,level,layer);
+       level = level + 1;
        
        fprintf(' [done]');
        
     case 'nnet.cnn.layer.Convolution2DLayer'
-       [rows, cols, channels] = addConvolution2Dlayer(HeaderFile,BodyFile,i,layer,rows,cols);
+       [rows, cols, channels] = addConvolution2Dlayer(HeaderFile,BodyFile,level,layer,rows,cols);
+       level = level + 1;
+       
        fprintf(' [done]');
     case 'nnet.cnn.layer.ReLULayer'
-       addReLULayer(HeaderFile,BodyFile,i,rows,cols,channels);
+       addReLULayer(HeaderFile,BodyFile,level,rows,cols,channels);
+       level = level + 1;
+       
        fprintf(' [done]');
     case 'nnet.cnn.layer.MaxPooling2DLayer'
-       [rows, cols, channels] = addMaxPolling2dLayer(HeaderFile,BodyFile,i,layer,rows,cols,channels);
+       [rows, cols, channels] = addMaxPolling2dLayer(HeaderFile,BodyFile,level,layer,rows,cols,channels);
+       level = level + 1;
+       
        fprintf(' [done]');
     case 'nnet.cnn.layer.FullyConnectedLayer'
-       [rows,cols, channels] = addFullyConnectedLayer(HeaderFile,BodyFile,i,layer,rows,cols,channels);
+       [rows,cols, channels] = addFullyConnectedLayer(HeaderFile,BodyFile,level,layer,rows,cols,channels);
+       level = level + 1;
+       
        fprintf(' [done]');
     case 'nnet.cnn.layer.SoftmaxLayer'
-       addSoftMaxLayer(HeaderFile,BodyFile,i,rows,cols,channels);
+       addSoftMaxLayer(HeaderFile,BodyFile,level,rows,cols,channels);
+       level = level + 1;
+       
        fprintf(' [done]');
     case 'nnet.cnn.layer.ClassificationOutputLayer'
-       addClassificationOutputLayer(HeaderFile,BodyFile,i,rows,cols);
+       addClassificationOutputLayer(HeaderFile,BodyFile,level,rows,cols);
+       
        fprintf(' [in development]');
     otherwise
+        fprintf(2,'[skip unknown layer] ');
    end
    
    fprintf('\n');
