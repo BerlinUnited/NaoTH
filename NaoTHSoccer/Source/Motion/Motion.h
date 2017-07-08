@@ -186,13 +186,7 @@ private:
 
 private:
   RingBuffer<double,100> currentsRingBuffer[naoth::JointData::numOfJoint];
-
   RingBuffer<double,4> motorJointDataBuffer[naoth::JointData::numOfJoint];
-
-  RingBufferWithSum<double, 100> collisionBufferLeft;
-  RingBufferWithSum<double, 100> collisionBufferRight;
-  naoth::FrameInfo frameWhenArmsBack;
-  ArmMotionRequest::ArmMotionID armStatus;
 };
 
 
