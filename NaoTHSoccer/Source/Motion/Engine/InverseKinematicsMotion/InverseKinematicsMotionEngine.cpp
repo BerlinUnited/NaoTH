@@ -929,11 +929,11 @@ void InverseKinematicsMotionEngine::armsSynchronisedWithWalk(
     jointData.set(JointData::RShoulderPitch, Math::fromDegrees(90) + targetRShoulderPitch, max_delta);
     jointData.set(JointData::LShoulderPitch, Math::fromDegrees(90) + targetLShoulderPitch, max_delta);
 
-    jointData.set(JointData::RShoulderRoll, Math::fromDegrees(-5), max_delta);
-    jointData.set(JointData::LShoulderRoll, Math::fromDegrees(5), max_delta);
+    jointData.set(JointData::RShoulderRoll, Math::fromDegrees(-10), max_delta);
+    jointData.set(JointData::LShoulderRoll, Math::fromDegrees(10), max_delta);
 
-    jointData.set(JointData::RElbowYaw, Math::fromDegrees(90), max_delta);
-    jointData.set(JointData::LElbowYaw, Math::fromDegrees(-90), max_delta);
+    jointData.set(JointData::RElbowYaw, Math::fromDegrees(0), max_delta);
+    jointData.set(JointData::LElbowYaw, Math::fromDegrees(0), max_delta);
 
     jointData.set(JointData::RElbowRoll, Math::fromDegrees(0), max_delta);
     jointData.set(JointData::LElbowRoll, Math::fromDegrees(0), max_delta);
