@@ -46,17 +46,25 @@ void TeamCommSender::fillMessageBeforeSending() const
     msg.intention = getPlayerInfo().isPlayingStriker ? 3 : (getPlayerInfo().playerNumber == 1 ? 1 : 0);
     msg.positionConfidence = 100;
     msg.sideConfidence = 100;
-    if(getBallModel().valid) {
-        msg.ballAge = getFrameInfo().getTimeSince(getBallModel().getFrameInfoWhenBallWasSeen().getTime());
-        msg.ballPosition = getBallModel().position;
-        msg.ballVelocity = getBallModel().speed;
-    } else {
-        msg.ballAge = -1;
-        msg.ballPosition.x = std::numeric_limits<double>::max();
-        msg.ballPosition.y = std::numeric_limits<double>::max();
-        msg.ballVelocity.x = 0;
-        msg.ballVelocity.y = 0;
+
+    // if(getBallModel().valid)
+    if (getBallModel().getFrameInfoWhenBallWasSeen().getTime() > 0)
+    {
+      // here in milliseconds (conversion to seconds is in SPLStandardMessage::createSplMessage())
+      msg.ballAge = getFrameInfo().getTimeSince(getBallModel().getFrameInfoWhenBallWasSeen().getTime());
+      msg.ballPosition = getBallModel().position;
+      msg.ballVelocity = getBallModel().speed;
+    } 
+    else 
+    {
+      // only sent these values if the ball was never seen
+      msg.ballAge = -1;
+      msg.ballPosition.x = std::numeric_limits<double>::max();
+      msg.ballPosition.y = std::numeric_limits<double>::max();
+      msg.ballVelocity.x = 0;
+      msg.ballVelocity.y = 0;
     }
+
     msg.fallen = getBodyState().fall_down_state != BodyState::upright;
     msg.walkingTo = getRobotPose().translation;
     msg.shootingTo = getPlayerInfo().isPlayingStriker ? getKickActionModel().expectedBallPos : getRobotPose().translation;
