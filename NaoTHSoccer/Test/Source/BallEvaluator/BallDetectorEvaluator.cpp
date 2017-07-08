@@ -185,7 +185,7 @@ std::multimap<std::string, BallDetectorEvaluator::InputPatch> BallDetectorEvalua
     for(const std::string& file : findDirectoryChildren(rootDir + pathSep + className))
     {
       std::string fullFilePath = rootDir + pathSep + className + pathSep + file;
-      if(!isDirectory(fullFilePath))
+      if(!isDirectory(fullFilePath) && hasFileSuffix(file, ".png"))
       {
         // get the image using opencv
         try
@@ -517,4 +517,11 @@ std::list<std::string> BallDetectorEvaluator::findDirectoryChildren(const std::s
     closedir (dir);
   }
   return std::move(result);
+}
+
+bool BallDetectorEvaluator::hasFileSuffix(const std::string &fileName, const std::string &fileSuffix)
+{
+  return fileName.size() > fileSuffix.size() &&
+      fileName.compare(fileName.size() - fileSuffix.size(), fileSuffix.size(), fileSuffix) == 0;
+
 }

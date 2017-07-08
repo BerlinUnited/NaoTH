@@ -153,6 +153,7 @@ private:
   bool isDirectory(const std::string& path);
   std::list<std::string> findSubdirectories(const std::string &rootDir, std::string pathSep="/");
   std::list<std::string> findDirectoryChildren(const std::string& rootDir);
+  bool hasFileSuffix(const std::string& fileName, const std::string& fileSuffix);
 
 private:
   const std::string fileArg;
