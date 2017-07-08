@@ -12,10 +12,12 @@ using namespace naoth;
 
 ArmCollisionDetector::ArmCollisionDetector()
 {
+  getDebugParameterList().add(&params);
 }
 
 ArmCollisionDetector::~ArmCollisionDetector()
 {
+  getDebugParameterList().remove(&params);
 }
 
 void ArmCollisionDetector::execute()

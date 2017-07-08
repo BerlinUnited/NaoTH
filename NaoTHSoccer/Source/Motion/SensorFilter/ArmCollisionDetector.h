@@ -32,6 +32,7 @@ BEGIN_DECLARE_MODULE(ArmCollisionDetector)
   PROVIDE(DebugRequest)
   PROVIDE(DebugPlot)
   PROVIDE(DebugModify)
+  PROVIDE(DebugParameterList)
 
   REQUIRE(FrameInfo)
   REQUIRE(MotorJointData)
