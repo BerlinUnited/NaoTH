@@ -71,7 +71,7 @@ SPLStandardMessage TeamMessageData::createSplMessage() const
         spl.numOfDataBytes = static_cast<uint16_t>(userSize);
 
         // 1. write custom data as DoBerMan header
-        mempcpy(spl.data, userMsgDoBer.c_str(), doberUserSize);
+        memcpy(spl.data, userMsgDoBer.c_str(), doberUserSize);
 
         // 2. write custom data in BerlinUnited format
         userMsgBU.SerializeToArray(spl.data + doberUserSize, userSize);
