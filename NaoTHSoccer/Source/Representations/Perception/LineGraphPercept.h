@@ -24,6 +24,7 @@ class LineGraphPercept
 public:
   void reset() {
     edgels.clear();
+    coEdgels.clear();
     edgelsInImage.clear();
     edgelsInImageTop.clear();
   }
