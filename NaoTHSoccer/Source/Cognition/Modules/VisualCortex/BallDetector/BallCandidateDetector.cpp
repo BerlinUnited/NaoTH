@@ -244,9 +244,17 @@ void BallCandidateDetector::calculateCandidates()
             );
 
           PatchWork::subsampling(getImage(), patchedBorder.data, patchedBorder.min.x, patchedBorder.min.y, patchedBorder.max.x, patchedBorder.max.y, patch_size);
+
+          int found;
+          stopwatch.start();
+              // Hack!: the haar classifier is now a AbstractCNNClassifier, the params are only for the cv haar classifier
+              found = currentCNNClassifier->classify(patchedBorder,params.haarDetector.minNeighbors, params.haarDetector.windowSize);
+          stopwatch.stop();
+          stopwatch_values.push_back(static_cast<double>(stopwatch.lastValue) * 0.001);
+
           // Hack!: the haar classifier is now a AbstractCNNClassifier, the params are only for the cv haar classifier
-          if (currentCNNClassifier->classify(patchedBorder,params.haarDetector.minNeighbors, params.haarDetector.windowSize)) {
-            
+          if (found) {
+
             if(!params.blackKeysCheck.enable || blackKeysOK(*i)) {
               addBallPercept(Vector2i((min.x + max.x)/2, (min.y + max.y)/2), (max.x - min.x)/2);
 
@@ -259,8 +267,15 @@ void BallCandidateDetector::calculateCandidates()
             p.max = (*i).max;
 
             PatchWork::subsampling(getImage(), p.data, min.x, min.y, max.x, max.y, patch_size);
-            // Hack!: the haar classifier is now a AbstractCNNClassifier, the params are only for the cv haar classifier
-            if (currentCNNClassifier->classify(p,params.haarDetector.minNeighbors, params.haarDetector.windowSize)) {
+
+            int found;
+            stopwatch.start();
+                // Hack!: the haar classifier is now a AbstractCNNClassifier, the params are only for the cv haar classifier
+                found = currentCNNClassifier->classify(p,params.haarDetector.minNeighbors, params.haarDetector.windowSize);
+            stopwatch.stop();
+            stopwatch_values.push_back(static_cast<double>(stopwatch.lastValue) * 0.001);
+
+            if (found) {
 
               if(!params.blackKeysCheck.enable || blackKeysOK(*i)) {
                 addBallPercept(Vector2i((min.x + max.x)/2, (min.y + max.y)/2), (max.x - min.x)/2);
