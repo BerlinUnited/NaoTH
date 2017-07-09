@@ -34,6 +34,7 @@ BallCandidateDetector::BallCandidateDetector()
 
   //register classifier
   cnnMap.insert({"CNN", std::make_shared<CNNClassifier>()});
+  cnnMap.insert({"CVHaar", std::make_shared<CVHaarClassifier>(params.haarDetector.model_file)}); //Hack!
   // TODO: add more
   currentCNNClassifier = cnnMap["CNN"];
 }
@@ -243,8 +244,8 @@ void BallCandidateDetector::calculateCandidates()
             );
 
           PatchWork::subsampling(getImage(), patchedBorder.data, patchedBorder.min.x, patchedBorder.min.y, patchedBorder.max.x, patchedBorder.max.y, patch_size);
-          //if(cvHaarClassifier.classify(patchedBorder, params.haarDetector.minNeighbors, params.haarDetector.windowSize) > 0) {
-          if (currentCNNClassifier->classify(patchedBorder)) {
+          // Hack!: the haar classifier is now a AbstractCNNClassifier, the params are only for the cv haar classifier
+          if (currentCNNClassifier->classify(patchedBorder,params.haarDetector.minNeighbors, params.haarDetector.windowSize)) {
             
             if(!params.blackKeysCheck.enable || blackKeysOK(*i)) {
               addBallPercept(Vector2i((min.x + max.x)/2, (min.y + max.y)/2), (max.x - min.x)/2);
@@ -258,8 +259,8 @@ void BallCandidateDetector::calculateCandidates()
             p.max = (*i).max;
 
             PatchWork::subsampling(getImage(), p.data, min.x, min.y, max.x, max.y, patch_size);
-            //if(cvHaarClassifier.classify(p, params.haarDetector.minNeighbors, params.haarDetector.windowSize) > 0) {
-            if (currentCNNClassifier->classify(p)) {
+            // Hack!: the haar classifier is now a AbstractCNNClassifier, the params are only for the cv haar classifier
+            if (currentCNNClassifier->classify(p,params.haarDetector.minNeighbors, params.haarDetector.windowSize)) {
 
               if(!params.blackKeysCheck.enable || blackKeysOK(*i)) {
                 addBallPercept(Vector2i((min.x + max.x)/2, (min.y + max.y)/2), (max.x - min.x)/2);
