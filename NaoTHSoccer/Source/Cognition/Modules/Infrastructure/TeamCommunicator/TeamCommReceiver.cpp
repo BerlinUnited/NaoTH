@@ -121,7 +121,7 @@ void TeamCommReceiver::handleMessage(const std::string& data)
     const double speed = 50.0 / stepTime; // mm/ms
     const double turnSpeed = Math::fromDegrees(30) / stepTime;
 
-    if (msg.ballAge < 1000) {
+    if (msg.ballAge >= 0) {
       msg.custom.timeToBall = static_cast<unsigned int>((msg.ballPosition.abs() / speed) + (fabs(msg.ballPosition.angle()) / turnSpeed));
     }
   }
