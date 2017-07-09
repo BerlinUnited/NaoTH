@@ -14,6 +14,11 @@
 #include "Tools/ImageProcessing/Edgel.h"
 #include <Tools/DataStructures/Serializer.h>
 
+struct CoEdgels {
+  Edgel left;
+  Edgel right;
+};
+
 class LineGraphPercept
 { 
 public:
@@ -26,6 +31,8 @@ public:
 public:
   //TODO: should this be double?
   std::vector<Edgel>  edgels;
+
+  std::vector<CoEdgels> coEdgels;
 
   std::vector<EdgelD> edgelsInImage;
   std::vector<EdgelD> edgelsInImageTop;

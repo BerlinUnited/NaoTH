@@ -80,6 +80,12 @@ void LineGraphProvider::execute(CameraInfo::CameraID id)
     const double projectedWidthLeft = (edgelProjectionsBegin[edgelPair.left] - edgelProjectionsEnd[edgelPair.left]).abs();
     const double projectedWidthRight = (edgelProjectionsBegin[edgelPair.right] - edgelProjectionsEnd[edgelPair.right]).abs();
 
+
+    CoEdgels coEdgel;
+    //TODO: Direction
+    coEdgel.left.point = edgelLeft;
+    coEdgel.right.point = edgelRight;
+
 	  //TODO: should this be double?
     Edgel edgel;
     edgel.point = Vector2d(edgelLeft + edgelRight)*0.5;
@@ -90,6 +96,7 @@ void LineGraphProvider::execute(CameraInfo::CameraID id)
 
     if(projectedWidthLeft > parameters.maximalProjectedLineWidth && projectedWidthRight > parameters.maximalProjectedLineWidth) {
       getLineGraphPercept().edgels.push_back(edgel);
+      getLineGraphPercept().coEdgels.push_back(coEdgel);
         
       DEBUG_REQUEST("Vision:LineGraphProvider:draw_line_graph",
         FIELD_DRAWING_CONTEXT;
