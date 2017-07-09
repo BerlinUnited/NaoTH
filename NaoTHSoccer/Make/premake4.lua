@@ -24,6 +24,11 @@ end
 -- print("INFO:" .. (os.findlib("Controller") or "couldn't fined the lib Controller"))
 
 newoption {
+   trigger     = "Test",
+   description = "Generate test projects"
+}
+
+newoption {
    trigger     = "Wno-conversion",
    description = "Disable the -Wconversion warning for gcc"
 }
@@ -215,4 +220,12 @@ solution "NaoTHSoccer"
       kind "SharedLib"
       links { "NaoTHSoccer", "Commons" }
       vpaths { ["*"] = FRAMEWORK_PATH .. "/Platforms/Source/LogSimulatorJNI" }
+      
+    -- generate tests if required
+    if _OPTIONS["Test"] ~= nil then
+      dofile ("../Test/Make/BallEvaluator.lua")
+        kind "ConsoleApp"
+        links { "NaoTHSoccer", "Commons" }
+        vpaths { ["*"] = "../Test/Source/BallEvaluator" }
+    end
   end
