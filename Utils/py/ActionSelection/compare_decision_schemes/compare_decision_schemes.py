@@ -39,6 +39,10 @@ def main():
     y_range = range(int(-field.y_length * 0.5) + cell_width, int(field.y_length * 0.5), 2 * cell_width)
     rot_range = range(0, 360, rotation_step)
 
+    #x_range = range(-100, 100, 100)
+    #y_range = range(-100, 100, 100)
+    #rot_range = range(0, 360, 360)
+
     # run for the whole field
     for x in x_range:
         for y in y_range:
@@ -46,10 +50,10 @@ def main():
                 # Todo compare the times for given robot state for different schemes
                 time_particle_filter = particle_filter(x, y, rot, state)
                 time_current_impl = current_impl(x, y, rot, state, num_iter)
-                print(time_current_impl)
+                # print ("CurrentImpl: " + " X: " + str(x) + " Y: " + str(y) + " Rot: " + str(rot) + " " + str(time_current_impl))
                 print("Difference: " + str(time_current_impl - time_particle_filter))
 
-                dummy_container.append([x, y, rot, time_current_impl, time_particle_filter])
+                # dummy_container.append([x, y, rot, time_current_impl, time_particle_filter])
 
     pickle.dump(dummy_container, open('../data/compare_decision_schemes.pickle', "wb"))
 

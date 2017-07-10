@@ -72,7 +72,7 @@ def main(x, y, rot, state, num_iter):
         goal_scored = False
         total_time = 0
         choosen_rotation = 'none'
-        state.update_pos(m2d.Vector2(start_x, start_x), rotation=rot)
+        state.update_pos(m2d.Vector2(start_x, start_y), rotation=rot)
         while not goal_scored:
             actions_consequences = []
             # Simulate Consequences
@@ -94,7 +94,7 @@ def main(x, y, rot, state, num_iter):
             inside_field = field.field_rect.inside(state.pose * expected_ball_pos)
 
             # Assert that expected_ball_pos is inside field or inside opp goal
-            if not inside_field and not goal_scored:
+            if not inside_field and not goal_scored:  # and not action_list[best_action].name == "none":
                 # print("Error: This position doesn't manage a goal")
                 total_time = float('nan')
                 break
@@ -145,6 +145,6 @@ def main(x, y, rot, state, num_iter):
 
 if __name__ == "__main__":
     state = State()
-    total_time = main(state.pose.translation.x, state.pose.translation.y, state.pose.rotation, state, num_iter=1)
+    total_time = main(state.pose.translation.x, state.pose.translation.y, math.degrees(state.pose.rotation), state, num_iter=1)
 
     print("Total time to goal: " + str(total_time))

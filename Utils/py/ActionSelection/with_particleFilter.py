@@ -59,7 +59,11 @@ def normalize(likelihood):
     m = np.min(likelihood)
     # M = np.max(likelihood)
     l = likelihood - m
-    return l/np.sum(l)
+    s = np.sum(l)
+    if s == 0:
+        return likelihood
+    else:
+        return l / s
   
   
 def resample(samples, likelihoods, n, sigma):

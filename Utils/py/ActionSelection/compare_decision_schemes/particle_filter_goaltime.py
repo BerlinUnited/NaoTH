@@ -230,4 +230,4 @@ def main(x, y, rot, state):
 if __name__ == "__main__":
     state = State()
     rotation_step = 10
-    total_time = main(state.pose.translation.x, state.pose.translation.y, state.pose.rotation, state)
+    total_time = main(state.pose.translation.x, state.pose.translation.y, math.degrees(state.pose.rotation), state)
