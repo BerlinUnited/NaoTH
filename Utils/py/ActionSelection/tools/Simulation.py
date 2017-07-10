@@ -160,8 +160,8 @@ def decide_smart(actions_consequences, state):
         best_action = 0
         best_value = float("inf")  # assuming potential is [0.0, inf]
         for index in acceptable_actions:
-            potential = pf.benji_field(actions_consequences[index], state, state.opp_robots, state.own_robots)
-            # potential = pf.evaluate_action2(actions_consequences[index], state)
+            # potential = pf.benji_field(actions_consequences[index], state, state.opp_robots, state.own_robots)
+            potential = pf.evaluate_action2(actions_consequences[index], state)
             if potential < best_value:
                 best_action = index
                 best_value = potential
@@ -173,8 +173,8 @@ def decide_smart(actions_consequences, state):
     for index in goal_actions:
         # FIXME Test for different potential fields
 
-        potential = pf.benji_field(actions_consequences[index], state, state.opp_robots, state.own_robots)
-        # potential = pf.evaluate_action2(actions_consequences[index], state)
+        # potential = pf.benji_field(actions_consequences[index], state, state.opp_robots, state.own_robots)
+        potential = pf.evaluate_action2(actions_consequences[index], state)
         if potential < best_value:
             best_action = index
             best_value = potential
