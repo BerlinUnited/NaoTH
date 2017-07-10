@@ -13,8 +13,8 @@ from tools import raw_attack_direction_provider as attack_dir
 class State:
     def __init__(self):
         self.pose = m2d.Pose2D()
-        self.pose.translation = m2d.Vector2(-4000, -700)
-        self.pose.rotation = math.radians(-40)
+        self.pose.translation = m2d.Vector2(0, 0)
+        self.pose.rotation = math.radians(0)
 
         self.ball_position = m2d.Vector2(100.0, 0.0)
         self.rotation_vel = 60  # degrees per sec
@@ -23,7 +23,7 @@ class State:
 
     def update_pos(self, glob_pos, rotation):
         self.pose.translation = glob_pos
-        self.pose.rotation = rotation
+        self.pose.rotation = math.radians(rotation)
 
 
 def draw_robot_walk(actions_consequences, state, expected_ball_pos, best_action):
@@ -50,10 +50,10 @@ def draw_robot_walk(actions_consequences, state, expected_ball_pos, best_action)
     plt.pause(0.5)
 
 
-def main(x, y, state, num_iter):
+def main(x, y, rot, state, num_iter):
     start_x = x
     start_y = y
-    state.update_pos(m2d.Vector2(start_x, start_y), rotation=0)
+    state.update_pos(m2d.Vector2(start_x, start_y), rotation=rot)
 
     no_action = a.Action("none", 0, 0, 0, 0)
     kick_short = a.Action("kick_short", 780, 150, 8.454482265522328, 6.992268841997358)
@@ -61,14 +61,18 @@ def main(x, y, state, num_iter):
     sidekick_right = a.Action("sidekick_right", 750, 150, -89.657943335302260, 10.553726275058064)
 
     action_list = [no_action, kick_short, sidekick_left, sidekick_right]
+    # This is used for deciding the rotation direction once per none decision
+    choosen_rotation = 'none'
 
-    # Todo: Maybe do several decision cycles not just one to get rid of accidental decisions
+    # Do several decision cycles not just one to get rid of accidental decisions
     timings = []
     for idx in range(num_iter):
         num_kicks = 0
         num_turn_degrees = 0
         goal_scored = False
         total_time = 0
+        choosen_rotation = 'none'
+        state.update_pos(m2d.Vector2(start_x, start_x), rotation=rot)
         while not goal_scored:
             actions_consequences = []
             # Simulate Consequences
@@ -92,7 +96,7 @@ def main(x, y, state, num_iter):
             # Assert that expected_ball_pos is inside field or inside opp goal
             if not inside_field and not goal_scored:
                 # print("Error: This position doesn't manage a goal")
-                total_time = float('inf')
+                total_time = float('nan')
                 break
 
             if not action_list[best_action].name == "none":
@@ -101,13 +105,16 @@ def main(x, y, state, num_iter):
 
                 # calculate the time needed
                 rotation = np.arctan2(expected_ball_pos.y, expected_ball_pos.x)
-                rotation_time = np.abs(rotation / state.rotation_vel)
+                rotation_time = np.abs(math.degrees(rotation) / state.rotation_vel)
                 distance = np.hypot(expected_ball_pos.x, expected_ball_pos.y)
                 distance_time = distance / state.walking_vel
                 total_time += distance_time + rotation_time
 
+                # reset the rotation direction
+                choosen_rotation = 'none'
+
                 # update the robots position
-                state.update_pos(state.pose * expected_ball_pos, state.pose.rotation + rotation)
+                state.update_pos(state.pose * expected_ball_pos, math.degrees(state.pose.rotation + rotation))
                 num_kicks += 1
 
             elif action_list[best_action].name == "none":
@@ -115,14 +122,16 @@ def main(x, y, state, num_iter):
                 # draw_robot_walk(actions_consequences, state, state.pose * expected_ball_pos, action_list[best_action].name)
 
                 # Calculate rotation time
-                total_time += np.abs(math.radians(10) / state.rotation_vel)
+                total_time += np.abs(10 / state.rotation_vel)
 
                 attack_direction = attack_dir.get_attack_direction(state)
-                # Todo: can run in a deadlock for some reason
-                if attack_direction > 0:
-                    state.update_pos(state.pose.translation, state.pose.rotation + math.radians(10))  # Should be turn right
-                else:
-                    state.update_pos(state.pose.translation, state.pose.rotation - math.radians(10))  # Should be turn left
+
+                if attack_direction > 0 and (choosen_rotation is 'none' or choosen_rotation is 'right'):
+                    state.update_pos(state.pose.translation, math.degrees(state.pose.rotation) + 10)  # Should be turn right
+                    choosen_rotation = 'right'
+                elif attack_direction <= 0 and (choosen_rotation is 'none' or choosen_rotation is 'left'):
+                    state.update_pos(state.pose.translation, math.degrees(state.pose.rotation) - 10)  # Should be turn left
+                    choosen_rotation = 'left'
 
                 num_turn_degrees += 1
 
@@ -130,11 +139,12 @@ def main(x, y, state, num_iter):
         # print("Num Turns: " + str(num_turn_degrees))
         # print("Total time to goal: " + str(total_time))
         timings.append(total_time)
-    return timings
+
+    return np.nanmean(timings)
 
 
 if __name__ == "__main__":
     state = State()
-    total_time = main(state.pose.translation.x, state.pose.translation.y, state, num_iter=1)
+    total_time = main(state.pose.translation.x, state.pose.translation.y, state.pose.rotation, state, num_iter=1)
 
     print("Total time to goal: " + str(total_time))

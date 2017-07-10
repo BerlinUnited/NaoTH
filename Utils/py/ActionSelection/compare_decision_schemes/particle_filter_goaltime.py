@@ -20,8 +20,8 @@ from tools import field_info as field
 class State:
     def __init__(self):
         self.pose = m2d.Pose2D()
-        self.pose.translation = m2d.Vector2(1000, 0)
-        self.pose.rotation = math.radians(20)
+        self.pose.translation = m2d.Vector2(0, 0)
+        self.pose.rotation = math.radians(0)
         self.rotation_vel = 60  # degrees per sec
         self.walking_vel = 200  # mm per sec
         self.ball_position = m2d.Vector2(100.0, 0.0)
@@ -70,7 +70,11 @@ def normalize(likelihood):
     m = np.min(likelihood)
     # M = np.max(likelihood)
     l = likelihood - m
-    return l/np.sum(l)
+    s = np.sum(l)
+    if s == 0:
+        return likelihood
+    else:
+        return l/s
 
 
 def resample(samples, likelihoods, n, sigma):
@@ -131,7 +135,6 @@ def calculate_best_direction(x, y, iterations, show, state, action):
     samples = (np.random.random(num_angle_particle) - 0.5) * 2 * 180.0
     likelihoods = np.ones(samples.shape) * (1 / float(num_angle_particle))
 
-    ####################################################################################################################
     m_min = 0
     m_max = 0
     mean_angle = None
@@ -155,16 +158,21 @@ def calculate_best_direction(x, y, iterations, show, state, action):
     return np.radians(mean_angle), np.radians(np.std(samples))
 
 
-def main(state):
+def main(x, y, rot, state):
 
     no_action = a.Action("none", 0, 0, 0, 0)
     kick_short = a.Action("kick_short", 980, 150, 8.454482265522328, 6.992268841997358)
     sidekick_left = a.Action("sidekick_left", 750, 150, 86.170795364136380, 10.669170653645670)
     sidekick_right = a.Action("sidekick_right", 750, 150, -89.657943335302260, 10.553726275058064)
-    test_action = a.Action("test", 1000, 150, 0, 8)
     action_list = [no_action, kick_short, sidekick_left, sidekick_right]
 
+    state.update_pos(m2d.Vector2(x, y), rotation=rot)  # rot is in degrees
+
+    # TODO do it multiple times
+    num_kicks = 0
+    num_turn_degrees = 0
     goal_scored = False
+    total_time = 0
     while not goal_scored:
         actions_consequences = []
         # Simulate Consequences
@@ -177,10 +185,14 @@ def main(state):
 
         # Change Angle of best action according to the particle filter
         # best_dir is the global rotation for that kick
-        best_dir, _ = calculate_best_direction(state.pose.translation.x, state.pose.translation.y, 50, True, state, action_list[best_action])
+        best_dir, _ = calculate_best_direction(state.pose.translation.x, state.pose.translation.y, 50, False, state, action_list[best_action])
 
         # Rotate the robot so that the shooting angle == best_dir
         state.pose.rotation = state.pose.rotation + best_dir
+
+        total_time += np.abs(math.degrees(best_dir) / state.rotation_vel)
+
+        #
         single_consequence = a.ActionResults([])
         actions_consequences.append(Sim.simulate_consequences(action_list[best_action], single_consequence, state, a.num_particles))
 
@@ -195,7 +207,27 @@ def main(state):
         goal_scored = opp_goal_box.inside(state.pose * expected_ball_pos)
         inside_field = field.field_rect.inside(state.pose * expected_ball_pos)
 
+        # Assert that expected_ball_pos is inside field or inside opp goal
+        if not inside_field and not goal_scored:
+            # print("Error: This position doesn't manage a goal")
+            total_time = float('nan')
+            break
+
+        # calculate the time needed
+        rotation = np.arctan2(expected_ball_pos.y, expected_ball_pos.x)
+        rotation_time = np.abs(math.degrees(rotation) / state.rotation_vel)
+        distance = np.hypot(expected_ball_pos.x, expected_ball_pos.y)
+        distance_time = distance / state.walking_vel
+
+        total_time += distance_time + rotation_time
+
+        # update the robots position
+        state.update_pos(state.pose * expected_ball_pos, math.degrees(state.pose.rotation + rotation))
+        num_kicks += 1
+
+    return total_time
+
 if __name__ == "__main__":
     state = State()
     rotation_step = 10
-    main(state)
+    total_time = main(state.pose.translation.x, state.pose.translation.y, state.pose.rotation, state)
