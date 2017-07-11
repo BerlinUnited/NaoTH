@@ -61,8 +61,6 @@ def main(x, y, rot, state, num_iter):
     sidekick_right = a.Action("sidekick_right", 750, 150, -89.657943335302260, 10.553726275058064)
 
     action_list = [no_action, kick_short, sidekick_left, sidekick_right]
-    # This is used for deciding the rotation direction once per none decision
-    choosen_rotation = 'none'
 
     # Do several decision cycles not just one to get rid of accidental decisions
     timings = []
@@ -71,7 +69,7 @@ def main(x, y, rot, state, num_iter):
         num_turn_degrees = 0
         goal_scored = False
         total_time = 0
-        choosen_rotation = 'none'
+        choosen_rotation = 'none'  # This is used for deciding the rotation direction once per none decision
         state.update_pos(m2d.Vector2(start_x, start_y), rotation=rot)
         while not goal_scored:
             actions_consequences = []
@@ -96,7 +94,7 @@ def main(x, y, rot, state, num_iter):
             # Assert that expected_ball_pos is inside field or inside opp goal
             if not inside_field and not goal_scored:  # and not action_list[best_action].name == "none":
                 # print("Error: This position doesn't manage a goal")
-                total_time = float('nan')
+                total_time = float('nan')  # TODO check if np nan is better are is equavivalent
                 break
 
             if not action_list[best_action].name == "none":
@@ -126,12 +124,12 @@ def main(x, y, rot, state, num_iter):
 
                 attack_direction = attack_dir.get_attack_direction(state)
 
-                if attack_direction > 0 and (choosen_rotation is 'none' or choosen_rotation is 'right'):
-                    state.update_pos(state.pose.translation, math.degrees(state.pose.rotation) + 10)  # Should be turn right
-                    choosen_rotation = 'right'
-                elif attack_direction <= 0 and (choosen_rotation is 'none' or choosen_rotation is 'left'):
-                    state.update_pos(state.pose.translation, math.degrees(state.pose.rotation) - 10)  # Should be turn left
+                if attack_direction > 0 and (choosen_rotation is 'none' or choosen_rotation is 'left'):
+                    state.update_pos(state.pose.translation, math.degrees(state.pose.rotation) + 10)  # Should turn right
                     choosen_rotation = 'left'
+                elif attack_direction <= 0 and (choosen_rotation is 'none' or choosen_rotation is 'right'):
+                    state.update_pos(state.pose.translation, math.degrees(state.pose.rotation) - 10)  # Should turn left
+                    choosen_rotation = 'right'
 
                 num_turn_degrees += 1
 
