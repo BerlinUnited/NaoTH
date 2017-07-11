@@ -2,12 +2,10 @@ import math
 import pickle
 from naoth import math2d as m2d
 from tools import field_info as field
-from current_impl_goaltime import main as current_impl
-from particle_filter_goaltime import main as particle_filter
+from compare_decision_schemes.current_impl_goaltime import main as current_impl
+from compare_decision_schemes.particle_filter_goaltime import main as particle_filter
 
 '''
-    using the best angle by goal time is a terrible idea - since it only differs from our normal implementation in the
-    beginning
     TODO: only compare our current implementation with the particle filter one 
 '''
 
@@ -50,10 +48,10 @@ def main():
                 # Todo compare the times for given robot state for different schemes
                 time_particle_filter = particle_filter(x, y, rot, state)
                 time_current_impl = current_impl(x, y, rot, state, num_iter)
-                # print ("CurrentImpl: " + " X: " + str(x) + " Y: " + str(y) + " Rot: " + str(rot) + " " + str(time_current_impl))
-                print("Difference: " + str(time_current_impl - time_particle_filter))
+                print ("CurrentImpl: " + " X: " + str(x) + " Y: " + str(y) + " rot: " + str(rot) +
+                       " " + str(time_current_impl - time_particle_filter))
 
-                # dummy_container.append([x, y, rot, time_current_impl, time_particle_filter])
+                dummy_container.append([x, y, rot, time_current_impl, time_particle_filter])
 
     pickle.dump(dummy_container, open('../data/compare_decision_schemes.pickle', "wb"))
 

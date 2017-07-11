@@ -73,4 +73,5 @@ if __name__ == "__main__":
 
     main(args.num_particles, args.num_reps, args.res_x, args.res_y, args.res_rot)
 
-    # for killing all screens: screen -ls | grep Detached | cut -d. -f1 | awk '{print $1}' | xargs kill
+    # python simulate_every_pos.py -p 12 -r 100
+  	# for killing all screens: screen -ls | grep Detached | cut -d. -f1 | awk '{print $1}' | xargs kill

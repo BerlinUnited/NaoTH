@@ -1,15 +1,18 @@
 import math
 import copy
 import numpy as np
-
 from matplotlib import pyplot as plt
 from matplotlib.patches import Circle
-
 from tools import action as a
 from tools import Simulation as Sim
 from tools import potential_field as pf
 from naoth import math2d as m2d
 from tools import tools
+
+'''
+    Computes the best kick direction based on particle filter sampling over possible angles. 
+    Uses manually crafted potential field for evaluation
+'''
 
 
 class State:
