@@ -1,8 +1,7 @@
 import math
-
+import numpy as np
 from matplotlib import pyplot as plt
 from naoth import math2d as m2d
-
 from potentialfield_generation.best_angle_by_goaltime import main as simulate_best_angle
 from tools import field_info as field
 from tools import tools
@@ -39,15 +38,20 @@ def main():
     axes = plt.gca()
     tools.draw_field()
 
-    # run for the whole field
-    for x in range(int(-field.x_length * 0.5) + cell_width, int(field.x_length * 0.5), 2 * cell_width):
-        for y in range(int(-field.y_length * 0.5) + cell_width, int(field.y_length * 0.5), 2 * cell_width):
-            time, angle = simulate_best_angle(x, y, state, rotation_step)
-            v = m2d.Vector2(100.0, 0.0).rotate(math.radians(angle))
-            axes.arrow(x, y, v.x, v.y, head_width=100, head_length=100, fc='k', ec='k')
+    x_range = range(int(-field.x_length * 0.5) + 2 * cell_width, int(field.x_length * 0.5) - cell_width, 2 * cell_width)
+    y_range = range(int(-field.y_length * 0.5) + 2 * cell_width, int(field.y_length * 0.5) - cell_width, 2 * cell_width)
 
-    # plt.show()
-    plt.savefig('goal_time.png')
+    # run for the whole field
+    for x in x_range:  # range(-3000, 1000, 2 * cell_width):
+        for y in y_range:  # range(-3000, 1000, 2 * cell_width):
+            time, angle = simulate_best_angle(x, y, state, rotation_step)
+            if not np.isinf(time):
+                print(time)
+                v = m2d.Vector2(100.0, 0.0).rotate(math.radians(angle))
+                axes.arrow(x, y, v.x, v.y, head_width=100, head_length=100, fc='k', ec='k')
+
+    plt.show()
+    #plt.savefig('goal_time.png')
 
 
 if __name__ == "__main__":
