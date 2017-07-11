@@ -15,7 +15,7 @@ from tools import raw_attack_direction_provider as attack_dir
 class State:
     def __init__(self):
         self.pose = m2d.Pose2D()
-        self.pose.translation = m2d.Vector2(2000, 0)
+        self.pose.translation = m2d.Vector2(4000, 0)
         self.pose.rotation = math.radians(0)
         self.rotation_vel = 60  # degrees per sec
         self.walking_vel = 200  # mm per sec
