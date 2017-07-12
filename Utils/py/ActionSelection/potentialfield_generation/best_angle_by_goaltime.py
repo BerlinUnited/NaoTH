@@ -20,7 +20,7 @@ from tools import raw_attack_direction_provider as attack_dir
 class State:
     def __init__(self):
         self.pose = m2d.Pose2D()
-        self.pose.translation = m2d.Vector2(3500, 200)
+        self.pose.translation = m2d.Vector2(-100, 1800)
         self.pose.rotation = math.radians(0)
         self.rotation_vel = 60  # degrees per sec
         self.walking_vel = 200  # mm per sec
@@ -149,7 +149,7 @@ def main(x, y, s, rotation_step):
                 else:
                     sys.exit("There should not be other actions")
 
-                # draw_robot_walk(s, s.pose * expected_ball_pos, action_list[best_action].name)
+                draw_robot_walk(s, s.pose * expected_ball_pos, action_list[best_action].name)
 
             if pos_total_time > total_time and not np.isnan(total_time):
                 pos_total_time = total_time
