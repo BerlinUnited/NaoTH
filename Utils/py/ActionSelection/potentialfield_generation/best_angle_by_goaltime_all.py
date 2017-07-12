@@ -1,4 +1,6 @@
+import os
 import math
+import pickle
 import numpy as np
 from matplotlib import pyplot as plt
 from naoth import math2d as m2d
@@ -30,9 +32,10 @@ class State:
 
 def main():
     state = State()
-
+    file_idx = 0
     cell_width = 200
     rotation_step = 30
+    dummy_container = []
 
     plt.figure()
     axes = plt.gca()
@@ -49,11 +52,17 @@ def main():
                 v = m2d.Vector2(100.0, 0.0).rotate(math.radians(angle))
                 axes.arrow(x, y, v.x, v.y, head_width=100, head_length=100, fc='k', ec='k')
             else:
+                print("WARNING: Time is Nan")
                 v = m2d.Vector2(100.0, 0.0).rotate(math.radians(angle))
                 axes.arrow(x, y, v.x, v.y, head_width=100, head_length=100, fc='r', ec='r')
-    # TODO save the data -> make it more fine grained
-    plt.show()
-    # plt.savefig('goal_time.png')
+            dummy_container.append([x, y, time, angle])
+
+    # plt.show()
+    while (os.path.exists('{}{:d}.png'.format('../data/potential_field_generation/potential_field_gen', file_idx)) or
+           os.path.exists('{}{:d}.pickle'.format('../data/potential_field_generation/potential_field_gen', file_idx))):
+        file_idx += 1
+    plt.savefig('{}{:d}.png'.format('../data/potential_field_generation/potential_field_gen', file_idx))
+    pickle.dump(dummy_container, open('../data/potential_field_generation/potential_field_gen' + str(file_idx) + '.pickle', "wb"))  # make sure not to overwrite anything
 
 
 if __name__ == "__main__":
