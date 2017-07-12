@@ -1,3 +1,5 @@
+from __future__ import division
+import sys
 import math
 import numpy as np
 from matplotlib import pyplot as plt
@@ -26,22 +28,22 @@ class State:
         self.pose.rotation = math.radians(rotation)
 
 
-def draw_robot_walk(actions_consequences, state, expected_ball_pos, best_action):
+def draw_robot_walk(actions_consequences, s, expected_ball_pos, best_action):
     plt.clf()
     axes = plt.gca()
-    origin = state.pose.translation
-    arrow_head = m2d.Vector2(500, 0).rotate(state.pose.rotation)
+    origin = s.pose.translation
+    arrow_head = m2d.Vector2(500, 0).rotate(s.pose.rotation)
     x = np.array([])
     y = np.array([])
 
     tools.draw_field()
-    axes.add_artist(Circle(xy=(state.pose.translation.x, state.pose.translation.y), radius=100, fill=False, edgecolor='white'))
+    axes.add_artist(Circle(xy=(s.pose.translation.x, s.pose.translation.y), radius=100, fill=False, edgecolor='white'))
     axes.add_artist(Circle(xy=(expected_ball_pos.x, expected_ball_pos.y), radius=120, fill=True, edgecolor='blue'))
     axes.arrow(origin.x, origin.y, arrow_head.x, arrow_head.y, head_width=100, head_length=100, fc='k', ec='k')
     axes.text(0, 0, best_action, fontsize=12)
     for consequence in actions_consequences:
         for particle in consequence.positions():
-            ball_pos = state.pose * particle.ball_pos  # transform in global coordinates
+            ball_pos = s.pose * particle.ball_pos  # transform in global coordinates
 
             x = np.append(x, [ball_pos.x])
             y = np.append(y, [ball_pos.y])
@@ -90,14 +92,17 @@ def main(x, y, rot, state, num_iter):
 
             goal_scored = opp_goal_box.inside(state.pose * expected_ball_pos)
             inside_field = field.field_rect.inside(state.pose * expected_ball_pos)
+            if goal_scored:
+                # print("Goal " + str(total_time) + " " + str(math.degrees(s.pose.rotation)))
+                break
 
-            # Assert that expected_ball_pos is inside field or inside opp goal
-            if not inside_field and not goal_scored:  # and not action_list[best_action].name == "none":
+            elif not inside_field and not goal_scored:
+                # Assert that expected_ball_pos is inside field or inside opp goal
                 # print("Error: This position doesn't manage a goal")
                 total_time = float('nan')  # TODO check if np nan is better are is equavivalent
                 break
 
-            if not action_list[best_action].name == "none":
+            elif not action_list[best_action].name == "none":
 
                 # draw_robot_walk(actions_consequences, state, state.pose * expected_ball_pos, action_list[best_action].name)
 
@@ -124,15 +129,16 @@ def main(x, y, rot, state, num_iter):
 
                 attack_direction = attack_dir.get_attack_direction(state)
 
-                if attack_direction > 0 and (choosen_rotation is 'none' or choosen_rotation is 'left'):
+                if (attack_direction > 0 and choosen_rotation) is 'none' or choosen_rotation is 'left':
                     state.update_pos(state.pose.translation, math.degrees(state.pose.rotation) + 10)  # Should turn right
                     choosen_rotation = 'left'
-                elif attack_direction <= 0 and (choosen_rotation is 'none' or choosen_rotation is 'right'):
+                elif (attack_direction <= 0 and choosen_rotation is 'none') or choosen_rotation is 'right':
                     state.update_pos(state.pose.translation, math.degrees(state.pose.rotation) - 10)  # Should turn left
                     choosen_rotation = 'right'
 
                 num_turn_degrees += 1
-
+            else:
+                sys.exit("There should not be other actions")
         # print("Num Kicks: " + str(num_kicks))
         # print("Num Turns: " + str(num_turn_degrees))
         # print("Total time to goal: " + str(total_time))
