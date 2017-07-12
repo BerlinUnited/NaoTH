@@ -38,20 +38,22 @@ def main():
     axes = plt.gca()
     tools.draw_field()
 
-    x_range = range(int(-field.x_length * 0.5) + 2 * cell_width, int(field.x_length * 0.5) - cell_width, 2 * cell_width)
-    y_range = range(int(-field.y_length * 0.5) + 2 * cell_width, int(field.y_length * 0.5) - cell_width, 2 * cell_width)
+    x_range = range(int(-field.x_length * 0.5), int(field.x_length * 0.5) + cell_width, 2 * cell_width)
+    y_range = range(int(-field.y_length * 0.5), int(field.y_length * 0.5) + cell_width, 2 * cell_width)
 
     # run for the whole field
     for x in x_range:  # range(-3000, 1000, 2 * cell_width):
-        for y in y_range:  # range(-3000, 1000, 2 * cell_width):
+        for y in y_range:  # range(-3000, -1000, 2 * cell_width):
             time, angle = simulate_best_angle(x, y, state, rotation_step)
             if not np.isinf(time):
-                print(time)
                 v = m2d.Vector2(100.0, 0.0).rotate(math.radians(angle))
                 axes.arrow(x, y, v.x, v.y, head_width=100, head_length=100, fc='k', ec='k')
-
+            else:
+                v = m2d.Vector2(100.0, 0.0).rotate(math.radians(angle))
+                axes.arrow(x, y, v.x, v.y, head_width=100, head_length=100, fc='r', ec='r')
+    # TODO save the data -> make it more fine grained
     plt.show()
-    #plt.savefig('goal_time.png')
+    # plt.savefig('goal_time.png')
 
 
 if __name__ == "__main__":
