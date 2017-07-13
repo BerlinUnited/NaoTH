@@ -249,8 +249,8 @@ void TeamMessageCustom::parseFromDoBerManHeader(const uint8_t* rawHeader, size_t
   }
   // copy the parsed data
   timestamp = header.timestamp;
-  isPenalized = header.isPenalized;
-  whistleDetected = header.whistleDetected;
+  isPenalized = (header.isPenalized > 0);
+  whistleDetected = (header.whistleDetected > 0);
 }
 
 std::string TeamMessageCustom::toDoBerManHeader() const
