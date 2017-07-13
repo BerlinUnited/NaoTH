@@ -149,7 +149,7 @@ def main(x, y, s, rotation_step):
                 else:
                     sys.exit("There should not be other actions")
 
-                draw_robot_walk(s, s.pose * expected_ball_pos, action_list[best_action].name)
+                # draw_robot_walk(s, s.pose * expected_ball_pos, action_list[best_action].name)
 
             if pos_total_time > total_time and not np.isnan(total_time):
                 pos_total_time = total_time
