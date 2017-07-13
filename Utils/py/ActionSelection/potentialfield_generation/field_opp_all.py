@@ -4,7 +4,7 @@ import pickle
 import numpy as np
 from matplotlib import pyplot as plt
 from naoth import math2d as m2d
-from potentialfield_generation.best_angle_by_goaltime import main as simulate_best_angle
+from potentialfield_generation.field_own import main as simulate_best_angle
 from tools import field_info as field
 from tools import tools
 

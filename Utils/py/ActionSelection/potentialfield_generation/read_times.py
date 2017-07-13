@@ -1,6 +1,6 @@
 import csv
 import matplotlib.pyplot as plt
-from numpy import concatenate,array,ones,linalg,vstack, append
+from numpy import array, ones, linalg, vstack
 
 
 with open('data_sort_y.csv', 'rt') as csvfile:
@@ -9,7 +9,7 @@ with open('data_sort_y.csv', 'rt') as csvfile:
     x_vals = [[]]
     times = [[]]
     y_vals = []
-    spamreader.next() #skipping header
+    spamreader.next()  # skipping header
     first_row = spamreader.next()
     y = first_row[3]
 
@@ -34,9 +34,8 @@ with open('data_sort_y.csv', 'rt') as csvfile:
 
     for i in range(len(times)):
         plt.figure(1)
-        plt.plot(x_vals[i], times[i], label = y_vals[i])
+        plt.plot(x_vals[i], times[i], label=y_vals[i])
         plt.legend()
-
 
     for i in range(len(times)):
         for j in range(len(times[i])):
@@ -44,7 +43,7 @@ with open('data_sort_y.csv', 'rt') as csvfile:
             x_vals[i][j] = float(x_vals[i][j])
             y_vals[i] = float(y_vals[i])
 
-    weights = [] # lineare regression durchfuehren
+    weights = []  # lineare regression durchfuehren
     for i in range(len(times)):
         x = array(x_vals[i])
         A = vstack([x, ones(len(x))]).T
@@ -54,7 +53,7 @@ with open('data_sort_y.csv', 'rt') as csvfile:
         # y = mx + c -- m first c second value
         weights.append(w.tolist())
 
-    print weights
+    print(weights)
 
     for i in range(len(weights)):
         plt.figure(2)
@@ -65,9 +64,3 @@ with open('data_sort_y.csv', 'rt') as csvfile:
         plt.legend()
 
     plt.show()
-
-
-
-
-
-
