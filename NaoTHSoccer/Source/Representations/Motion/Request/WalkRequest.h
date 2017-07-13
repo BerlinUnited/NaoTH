@@ -55,7 +55,8 @@ public:
       moveLeftFoot(false),
       time(0),
       speedDirection(0),
-      scale(1.0)
+      scale(1.0),
+      isFromPathPlanner(false)
     {}
 
     enum StepType {
@@ -74,6 +75,8 @@ public:
     // time scale for the step trajectory (0..1], 
     // e.g., scale = 1 => normal step trajectory, scale < 1 => faster step
     double scale;
+
+    bool isFromPathPlanner;
   };
 
   // indicates speed and stability, in range [0, 1]

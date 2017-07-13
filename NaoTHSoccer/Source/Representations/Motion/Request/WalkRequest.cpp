@@ -36,6 +36,7 @@ void Serializer<WalkRequest>::serialize(const WalkRequest& representation, naoth
     DataConversion::toMessage(representation.stepControl.target, *(stepControl->mutable_target()));
     stepControl->set_speeddirection(representation.stepControl.speedDirection);
     stepControl->set_scale(representation.stepControl.scale);
+    stepControl->set_isfrompathplanner(representation.stepControl.isFromPathPlanner);
   }
 }
 
@@ -66,6 +67,7 @@ void Serializer<WalkRequest>::deserialize(const naothmessages::WalkRequest* msg,
     DataConversion::fromMessage(stepControl.target(), representation.stepControl.target);
     representation.stepControl.speedDirection = stepControl.speeddirection();
     representation.stepControl.scale = stepControl.scale();
+    representation.stepControl.isFromPathPlanner = stepControl.isfrompathplanner();
   }
   else
   {

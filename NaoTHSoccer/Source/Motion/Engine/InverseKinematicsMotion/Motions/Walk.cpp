@@ -226,6 +226,15 @@ void Walk::calculateNewStep(const Step& lastStep, Step& newStep, const WalkReque
       newStep.footStep = theFootStepPlanner.zeroStep(lastStep.footStep);
     }
 
+    if (do_emergency_stop)
+    {
+      std::cout << "EMERGENCY STOP" << std::endl;
+    }
+    else
+    {
+      std::cout << "BAD IDS" << std::endl;
+    }
+
     newStep.numberOfCycles = (newStep.footStep.liftingFoot() == FootStep::NONE)?1:parameters().step.duration/getRobotInfo().basicTimeStep;
     newStep.type = STEP_WALK;
 
@@ -248,20 +257,24 @@ void Walk::calculateNewStep(const Step& lastStep, Step& newStep, const WalkReque
   {
     //WalkRequest myRequest = walkRequest;
     //myRequest.target = walkRequest.stepControl.target;
+    bool isFromPathPlanner = walkRequest.stepControl.isFromPathPlanner;
     switch (walkRequest.stepControl.type)
     {
     case WalkRequest::StepControlRequest::ZEROSTEP:
       newStep.footStep = theFootStepPlanner.zeroStep(lastStep.footStep);
       newStep.numberOfCycles = walkRequest.stepControl.time / getRobotInfo().basicTimeStep;
       newStep.type = STEP_CONTROL;
+      std::cout << "ZEROSTEP" << " -- " << isFromPathPlanner << std::endl;
       break;
     case WalkRequest::StepControlRequest::KICKSTEP:
       newStep.footStep = theFootStepPlanner.controlStep(lastStep.footStep, walkRequest);
       newStep.numberOfCycles = walkRequest.stepControl.time / getRobotInfo().basicTimeStep;
       newStep.type = STEP_CONTROL;
+      std::cout << "KICKSTEP" << " -- " << isFromPathPlanner << std::endl;
       break;
     case WalkRequest::StepControlRequest::WALKSTEP:
       newStep.footStep = theFootStepPlanner.controlStep(lastStep.footStep, walkRequest);
+      std::cout << "WALKSTEP" << " -- " << isFromPathPlanner << std::endl;
 
       // STABILIZATION
       if (parameters().stabilization.dynamicStepsize) {

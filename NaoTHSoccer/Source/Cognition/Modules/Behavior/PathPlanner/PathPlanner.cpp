@@ -343,6 +343,10 @@ void PathPlanner::sidekick(const Foot foot)
       double character = 1.0;
       Foot step_foot = foot == Foot::RIGHT ? Foot::LEFT : Foot::RIGHT;
       double scale = 1.0;
+
+      // dirty hack for testing
+      add_step(pose, StepType::ZEROSTEP, coordinate, character, step_foot, scale, speed_direction);
+
       add_step(pose, type, coordinate, character, step_foot, scale, speed_direction);
 
       type = StepType::ZEROSTEP;
@@ -400,21 +404,25 @@ void PathPlanner::manage_step_buffer()
 
 void PathPlanner::execute_step_buffer()
 {
+  STOPWATCH_START("PathPlanner:execute_steplist");
+
   if (step_buffer.empty()) {
     return;
   }
 
-  STOPWATCH_START("PathPlanner:execute_steplist");
-  getMotionRequest().id = motion::walk;
-  getMotionRequest().standardStand = false;
-  getMotionRequest().walkRequest.coordinate                 = step_buffer.front().coordinate;
-  getMotionRequest().walkRequest.character                  = step_buffer.front().character;
-  getMotionRequest().walkRequest.stepControl.scale          = step_buffer.front().scale;
-  getMotionRequest().walkRequest.stepControl.stepID         = getMotionStatus().stepControl.stepID;
-  getMotionRequest().walkRequest.stepControl.type           = step_buffer.front().type;
-  getMotionRequest().walkRequest.stepControl.time           = step_buffer.front().time;
-  getMotionRequest().walkRequest.stepControl.speedDirection = step_buffer.front().speedDirection;
-  getMotionRequest().walkRequest.stepControl.target         = step_buffer.front().pose;
+  std::cout << step_buffer.size() << std::endl;
+
+  getMotionRequest().id                                        = motion::walk;
+  getMotionRequest().standardStand                             = false;
+  getMotionRequest().walkRequest.coordinate                    = step_buffer.front().coordinate;
+  getMotionRequest().walkRequest.character                     = step_buffer.front().character;
+  getMotionRequest().walkRequest.stepControl.scale             = step_buffer.front().scale;
+  getMotionRequest().walkRequest.stepControl.stepID            = getMotionStatus().stepControl.stepID;
+  getMotionRequest().walkRequest.stepControl.type              = step_buffer.front().type;
+  getMotionRequest().walkRequest.stepControl.time              = step_buffer.front().time;
+  getMotionRequest().walkRequest.stepControl.speedDirection    = step_buffer.front().speedDirection;
+  getMotionRequest().walkRequest.stepControl.target            = step_buffer.front().pose;
+  getMotionRequest().walkRequest.stepControl.isFromPathPlanner = true;
 
   // normal walking WALKSTEPs use Foot::NONE, for KICKSTEPs the foot to use has to be specified
   if (step_buffer.front().foot == Foot::NONE)
