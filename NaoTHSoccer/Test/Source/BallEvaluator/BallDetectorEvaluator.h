@@ -79,7 +79,7 @@ private:
 
   std::multimap<std::string, InputPatch> loadImageSets(const std::string& rootDir, const std::string &pathSep="/");
 
-  ExperimentResult executeParam(const ExperimentParameters& params, const std::multimap<std::__cxx11::string, InputPatch> &imageSet);
+  ExperimentResult executeParam(const ExperimentParameters& params, const std::multimap<std::string, InputPatch> &imageSet);
   unsigned int executeSingleImageSet(const std::multimap<std::string, InputPatch> &imageSet, const ExperimentParameters &params, ExperimentResult &r);
 
   void evaluateImage(cv::Mat img, bool ballExpected, std::string fileName, const ExperimentParameters &params, ExperimentResult &r);
@@ -103,6 +103,9 @@ private:
     {
       return params.modelName + "_" + std::to_string(params.minNeighbours) + "_" + std::to_string(params.maxWindowSize);
     }
+    // FIXME: what shall I return?
+    assert(false);
+    return "";
   }
 
   std::string toDesc(const ExperimentParameters& params)
