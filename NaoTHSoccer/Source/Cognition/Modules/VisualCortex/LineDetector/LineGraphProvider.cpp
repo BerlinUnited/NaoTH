@@ -24,6 +24,8 @@ LineGraphProvider::LineGraphProvider()
 
   DEBUG_REQUEST_REGISTER("Vision:LineGraphProvider:draw_line_graph", "", false);
 
+  DEBUG_REQUEST_REGISTER("Vision:LineGraphProvider:draw_extended_line_graph", "", false);
+
   getDebugParameterList().add(&parameters);
 }
 
@@ -70,6 +72,32 @@ void LineGraphProvider::execute(CameraInfo::CameraID id)
     //pair.projectedWidth = Vector2d(beginPointOnField - endPointOnField).abs();
   }
 
+  // extend line graph
+  extendLineGraph(edgelPairs);
+  for(size_t i = 0; i < edgelProjectionsBegin.size(); i++) {
+    Edgel edgel;
+    edgel.point = (edgelProjectionsBegin[i] + edgelProjectionsEnd[i])*0.5;
+
+    getLineGraphPercept().edgelsProjected.push_back(edgel);
+  }
+
+  DEBUG_REQUEST("Vision:LineGraphProvider:draw_extended_line_graph",
+    FIELD_DRAWING_CONTEXT;
+    PEN("000000",2);
+
+    for(std::vector<int> subgraph : getLineGraphPercept().lineGraphs) {
+      int st = subgraph[0];
+
+      for(int s : subgraph) {
+        Vector2d start = getLineGraphPercept().edgelsProjected[st].point;
+        Vector2d next = getLineGraphPercept().edgelsProjected[s].point;
+        CIRCLE( next.x, next.y, 25);
+        LINE(start.x,start.y,next.x,next.y);
+        st = s;
+      }
+    }
+  );
+
   // calculate the LineGraphPercept
   for(size_t j = 0; j < edgelPairs.size(); j++)
   {
@@ -79,12 +107,6 @@ void LineGraphProvider::execute(CameraInfo::CameraID id)
 
     const double projectedWidthLeft = (edgelProjectionsBegin[edgelPair.left] - edgelProjectionsEnd[edgelPair.left]).abs();
     const double projectedWidthRight = (edgelProjectionsBegin[edgelPair.right] - edgelProjectionsEnd[edgelPair.right]).abs();
-
-
-    CoEdgels coEdgel;
-    //TODO: Direction
-    coEdgel.left.point = edgelLeft;
-    coEdgel.right.point = edgelRight;
 
 	  //TODO: should this be double?
     Edgel edgel;
@@ -96,7 +118,6 @@ void LineGraphProvider::execute(CameraInfo::CameraID id)
 
     if(projectedWidthLeft > parameters.maximalProjectedLineWidth && projectedWidthRight > parameters.maximalProjectedLineWidth) {
       getLineGraphPercept().edgels.push_back(edgel);
-      getLineGraphPercept().coEdgels.push_back(coEdgel);
         
       DEBUG_REQUEST("Vision:LineGraphProvider:draw_line_graph",
         FIELD_DRAWING_CONTEXT;
@@ -317,6 +338,36 @@ void LineGraphProvider::execute(CameraInfo::CameraID id)
   );
 
 }//end execute
+
+void LineGraphProvider::extendLineGraph(std::vector<EdgelPair>& edgelPairs) {
+  std::vector<bool> processed(edgelPairs.size(), false);
+  processed.reserve(edgelPairs.size());
+
+  for (int i=0; i<processed.size(); i++) {
+    if(processed[i]) continue;
+
+    if(edgelPairs[i].left != -1) {
+      continue;
+    }
+
+    std::vector<int> subGraph;
+
+    EdgelPair n = edgelPairs[i];
+    int ii = i;
+
+    //extend right
+    while(n.right > -1) {
+      subGraph.push_back(ii);
+      processed[ii] = true;
+      ii = n.right;
+      n = edgelPairs[n.right];
+    }
+
+    if (subGraph.size() > 0) {
+      getLineGraphPercept().lineGraphs.push_back(subGraph);
+    }
+  }
+}
 
 double LineGraphProvider::edgelSim(const EdgelT<double>& e1, const EdgelT<double>& e2)
 {

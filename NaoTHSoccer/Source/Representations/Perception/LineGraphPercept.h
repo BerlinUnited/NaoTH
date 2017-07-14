@@ -14,26 +14,25 @@
 #include "Tools/ImageProcessing/Edgel.h"
 #include <Tools/DataStructures/Serializer.h>
 
-struct CoEdgels {
-  Edgel left;
-  Edgel right;
-};
-
 class LineGraphPercept
 { 
 public:
   void reset() {
     edgels.clear();
-    coEdgels.clear();
+    edgelsProjected.clear();
     edgelsInImage.clear();
     edgelsInImageTop.clear();
+
+    lineGraphs.clear();
   }
 
 public:
   //TODO: should this be double?
   std::vector<Edgel>  edgels;
 
-  std::vector<CoEdgels> coEdgels;
+  std::vector<std::vector<int>> lineGraphs;
+
+  std::vector<Edgel> edgelsProjected;
 
   std::vector<EdgelD> edgelsInImage;
   std::vector<EdgelD> edgelsInImageTop;
