@@ -31,7 +31,8 @@ void RansacLineDetector::execute()
       PEN("000000",0.1);
       LINE(e.point.x, e.point.y, e.point.x + e.direction.x*100.0, e.point.y + e.direction.y*100.0);
     }
-
+    // draw coedgels
+    /*
     for(const CoEdgels& co: getLineGraphPercept().coEdgels)
     {
       PEN("0000FF",2);
@@ -44,6 +45,7 @@ void RansacLineDetector::execute()
         CIRCLE(co.right.point.x, co.right.point.y, 25);
       }
     }
+    */
   );
 
 
@@ -56,10 +58,10 @@ void RansacLineDetector::execute()
     outliers[i] = i;
   }
 
-  Ellipse circResult;
-
   bool foundLines = false;
-  int bestInlierCirc;
+  int bestInlierCirc = 0;
+
+  Ellipse circResult;
 
   for(int i = 0; i < 11; ++i)
   {
@@ -73,8 +75,9 @@ void RansacLineDetector::execute()
     } 
     else {
       // Check for circle
-      //ransacCirc(circResult);
-      bestInlierCirc = ransacEllipse(circResult);
+      if (params.fit_circle) {
+        bestInlierCirc = ransacEllipse(circResult);
+      }
       break;
     }
   }
@@ -108,21 +111,6 @@ void RansacLineDetector::execute()
       for(int i=0; i<circResult.x_toFit.size(); i++) {
         CIRCLE(circResult.x_toFit[i], circResult.y_toFit[i], 20);
       }
-      /*
-      std::cout << "m: [ " << c[0] << ", " << c[1] << "]" << std::endl;
-      std::cout << "ax: [ " << a[0] << ", " << a[1] << "]" << std::endl;
-
-      std::cout << "x: [ ";
-      for(int i=0; i<5; i++) {
-        std::cout << circResult.x_toFit[i] << ", ";
-      }
-      std::cout << "]" << std::endl;
-      std::cout << "y: [ ";
-      for(int i=0; i<5; i++) {
-        std::cout << circResult.y_toFit[i] << ", ";
-      }
-      std::cout << "]" << std::endl;
-      */
     }
   );
 

@@ -58,6 +58,7 @@ private:
       PARAMETER_REGISTER(inlierMin) = 10;
       PARAMETER_REGISTER(directionSimilarity) = 0.8;
 
+      PARAMETER_REGISTER(fit_circle) = false;
       PARAMETER_REGISTER(circle_iterations) = 20;
       PARAMETER_REGISTER(circle_outlierThreshold) = 70;
       PARAMETER_REGISTER(circle_inlierMin) = 10;
@@ -67,12 +68,12 @@ private:
 
     virtual ~Parameters() {
     }
-
     int iterations;
     double outlierThreshold;
     int inlierMin;
     double directionSimilarity;
 
+    bool fit_circle;
     int circle_iterations;
     double circle_outlierThreshold;
     int circle_inlierMin;
