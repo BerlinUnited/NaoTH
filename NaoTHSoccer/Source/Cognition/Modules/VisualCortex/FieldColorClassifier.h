@@ -109,6 +109,17 @@ private:
     FieldColorPercept::HSISeparatorOptimized::Parameter red;
   } parameters;
 
+private: // doublecam
+
+    // id of the camera the module is curently running on
+    CameraInfo::CameraID cameraID;
+
+    DOUBLE_CAM_PROVIDE(FieldColorClassifier, DebugImageDrawings);
+
+    DOUBLE_CAM_REQUIRE(FieldColorClassifier, Image);
+    DOUBLE_CAM_REQUIRE(FieldColorClassifier, BodyContour);
+    DOUBLE_CAM_REQUIRE(FieldColorClassifier, ArtificialHorizon);
+    DOUBLE_CAM_PROVIDE(FieldColorClassifier, FieldColorPercept);
 
 private:
   FieldColorPercept::HSISeparatorOptimized::Parameter cacheParameter;
@@ -164,17 +175,6 @@ private: // debug
   void draw_YChromaSeparator(double brightnesConeOffset, double brightnesConeRadiusBlack, double brightnesConeRadiusWhite) const;
   void draw_histogramUV(const Histogram2D& histUV) const;
 
-private: // doublecam
-  
-  // id of the camera the module is curently running on
-  CameraInfo::CameraID cameraID;
-  
-  DOUBLE_CAM_PROVIDE(FieldColorClassifier, DebugImageDrawings);
-
-  DOUBLE_CAM_REQUIRE(FieldColorClassifier, Image);
-  DOUBLE_CAM_REQUIRE(FieldColorClassifier, BodyContour);
-  DOUBLE_CAM_REQUIRE(FieldColorClassifier, ArtificialHorizon);
-  DOUBLE_CAM_PROVIDE(FieldColorClassifier, FieldColorPercept);
 };
 
 #endif  /* _FieldColorClassifier_H_ */
