@@ -33,6 +33,7 @@ namespace ConvexHull
     vector<T> convexHull(vector<T> P)
     {
         // TODO: guard against overflow with std::limits<int>
+        // TODO: this should be completly changed 2017.07.14
         int n = static_cast<int> (P.size()), k = 0;
 
         if(n <= 1)
