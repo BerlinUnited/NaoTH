@@ -37,8 +37,8 @@ def main(num_particles, num_reps, x_step, y_step, rotation_step):
     whole_decisions = []
 
     for rot in range(0, 360, rotation_step):
-        for x in range(int(-field.x_field_length*0.5)+x_step, int(field.x_field_length*0.5), 2*x_step):
-            for y in range(int(-field.y_field_length*0.5)+y_step, int(field.y_field_length*0.5), 2*y_step):
+        for x in range(int(-field.x_field_length*0.5)+x_step, int(field.x_field_length*0.5), x_step):
+            for y in range(int(-field.y_field_length*0.5)+y_step, int(field.y_field_length*0.5), y_step):
                 state.update_pos(m2d.Vector2(x, y), rotation=math.radians(rot))
                 # Do this multiple times and write the decisions as a histogram
                 decision_histogramm = [0, 0, 0, 0]  # ordinal scale -> define own metric in evaluation script
