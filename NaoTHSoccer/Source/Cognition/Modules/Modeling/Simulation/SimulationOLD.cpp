@@ -1,31 +1,31 @@
 /**
 * @file Simulation.cpp
 * @author <a href="mailto:schlottb@informatik.hu-berlin.de">Benjamin Schlotter</a>
-* Implementation of class Simulation
+* Implementation of class SimulationOLD
 */
 
-#include "Simulation.h"
+#include "SimulationOLD.h"
 
 using namespace naoth;
 using namespace std;
 
-Simulation::Simulation()
+SimulationOLD::SimulationOLD()
  // : obstacleFilter(0.01, 0.1)
 {
-  DEBUG_REQUEST_REGISTER("Simulation:draw_ball","draw_ball", false);
-  DEBUG_REQUEST_REGISTER("Simulation:draw_goal_collisions", "", false);
-  DEBUG_REQUEST_REGISTER("Simulation:ActionTarget","ActionTarget", false);
-  DEBUG_REQUEST_REGISTER("Simulation:draw_best_action","best action",false);
-  DEBUG_REQUEST_REGISTER("Simulation:draw_potential_field","Draw Potential Field",false);
-  DEBUG_REQUEST_REGISTER("Simulation:use_Parameters","use_Parameters",false);
-  DEBUG_REQUEST_REGISTER("Simulation:OwnGoal","OwnGoal",false);
-  DEBUG_REQUEST_REGISTER("Simulation:ObstacleLine","ObstacleLine",false);
+  DEBUG_REQUEST_REGISTER("SimulationOLD:draw_ball","draw_ball", false);
+  DEBUG_REQUEST_REGISTER("SimulationOLD:draw_goal_collisions", "", false);
+  DEBUG_REQUEST_REGISTER("SimulationOLD:ActionTarget","ActionTarget", false);
+  DEBUG_REQUEST_REGISTER("SimulationOLD:draw_best_action","best action",false);
+  DEBUG_REQUEST_REGISTER("SimulationOLD:draw_potential_field","Draw Potential Field",false);
+  DEBUG_REQUEST_REGISTER("SimulationOLD:use_Parameters","use_Parameters",false);
+  DEBUG_REQUEST_REGISTER("SimulationOLD:OwnGoal","OwnGoal",false);
+  DEBUG_REQUEST_REGISTER("SimulationOLD:ObstacleLine","ObstacleLine",false);
 
-  DEBUG_REQUEST_REGISTER("Simulation:ActionTarget:None","DrawNone",false);
-  DEBUG_REQUEST_REGISTER("Simulation:ActionTarget:Short","DrawShortKick",false);
-  //DEBUG_REQUEST_REGISTER("Simulation:ActionTarget:Long","DrawLongKick",false);
-  DEBUG_REQUEST_REGISTER("Simulation:ActionTarget:Left","DrawLeftKick",false);
-  DEBUG_REQUEST_REGISTER("Simulation:ActionTarget:Right","DrawRightKick",false);
+  DEBUG_REQUEST_REGISTER("SimulationOLD:ActionTarget:None","DrawNone",false);
+  DEBUG_REQUEST_REGISTER("SimulationOLD:ActionTarget:Short","DrawShortKick",false);
+  //DEBUG_REQUEST_REGISTER("SimulationOLD:ActionTarget:Long","DrawLongKick",false);
+  DEBUG_REQUEST_REGISTER("SimulationOLD:ActionTarget:Left","DrawLeftKick",false);
+  DEBUG_REQUEST_REGISTER("SimulationOLD:ActionTarget:Right","DrawRightKick",false);
 
   getDebugParameterList().add(&theParameters);
 
@@ -41,17 +41,17 @@ Simulation::Simulation()
   actionsConsequences.resize(action_local.size());
 }
 
-Simulation::~Simulation()
+SimulationOLD::~SimulationOLD()
 {
   getDebugParameterList().remove(&theParameters);
 }
 
-void Simulation::execute()
+void SimulationOLD::execute()
 {
   //obstacleFilter.setParameter(theParameters.obstacleFilter.g0, theParameters.obstacleFilter.g1);
   //obstacleFilter.update(getObstacleModel().frontDistance < 400, 0.3, 0.7);
 
-  DEBUG_REQUEST("Simulation:use_Parameters",
+  DEBUG_REQUEST("SimulationOLD:use_Parameters",
     action_local.clear();
     action_local.reserve(KickActionModel::numOfActions);
 
@@ -71,7 +71,7 @@ void Simulation::execute()
   }
 
   // draw the ball
-  DEBUG_REQUEST("Simulation:draw_ball",
+  DEBUG_REQUEST("SimulationOLD:draw_ball",
     FIELD_DRAWING_CONTEXT;
     PEN("FF0000", 1);
     Vector2d ball = getRobotPose() * getBallModel().positionPreview;
@@ -80,31 +80,31 @@ void Simulation::execute()
 
   
   // simulate the consequences for all actions
-  STOPWATCH_START("Simulation:simulateConsequences");
+  STOPWATCH_START("SimulationOLD:simulateConsequences");
   for(size_t i=0; i < action_local.size(); i++) {
     simulateConsequences(action_local[i], actionsConsequences[i]);
   }
-  STOPWATCH_STOP("Simulation:simulateConsequences");
+  STOPWATCH_STOP("SimulationOLD:simulateConsequences");
 
 
   // plot projected actions
-  DEBUG_REQUEST("Simulation:ActionTarget:None", draw_action_results(actionsConsequences[0], Color(1.0,1.0,1.0,0.7)); );
-  DEBUG_REQUEST("Simulation:ActionTarget:Short", draw_action_results(actionsConsequences[1], Color(255.0/255,172.0/255,18.0/255,0.7)); );
-  //DEBUG_REQUEST("Simulation:ActionTarget:Long", draw_action_results(actionsConsequences[-1], Color(1.0,1.0,1.0,0.7)); );
-  DEBUG_REQUEST("Simulation:ActionTarget:Left", draw_action_results(actionsConsequences[2], Color(0.0/255,13.0/255,191.0/255,0.7)); );
-  DEBUG_REQUEST("Simulation:ActionTarget:Right", draw_action_results(actionsConsequences[3], Color(0.0/255,191.0/255,51.0/255,0.7)); );
+  DEBUG_REQUEST("SimulationOLD:ActionTarget:None", draw_action_results(actionsConsequences[0], Color(1.0,1.0,1.0,0.7)); );
+  DEBUG_REQUEST("SimulationOLD:ActionTarget:Short", draw_action_results(actionsConsequences[1], Color(255.0/255,172.0/255,18.0/255,0.7)); );
+  //DEBUG_REQUEST("SimulationOLD:ActionTarget:Long", draw_action_results(actionsConsequences[-1], Color(1.0,1.0,1.0,0.7)); );
+  DEBUG_REQUEST("SimulationOLD:ActionTarget:Left", draw_action_results(actionsConsequences[2], Color(0.0/255,13.0/255,191.0/255,0.7)); );
+  DEBUG_REQUEST("SimulationOLD:ActionTarget:Right", draw_action_results(actionsConsequences[3], Color(0.0/255,191.0/255,51.0/255,0.7)); );
 
   
   // now decide which action to execute given their consequences
-  STOPWATCH_START("Simulation:decide");
+  STOPWATCH_START("SimulationOLD:decide");
   size_t best_action = decide_smart(actionsConsequences);
-  STOPWATCH_STOP("Simulation:decide");  
+  STOPWATCH_STOP("SimulationOLD:decide");  
 
   getKickActionModel().bestAction = action_local[best_action].id();
   //Arghhh BUG: this expected ball pos is not affected by goal boarders/ obstacles
   getKickActionModel().expectedBallPos = getRobotPose() * action_local[best_action].predict(getBallModel().positionPreview, false);
 
-  DEBUG_REQUEST("Simulation:draw_best_action",
+  DEBUG_REQUEST("SimulationOLD:draw_best_action",
     FIELD_DRAWING_CONTEXT;
     /*
     PEN("FF69B4", 35);
@@ -124,13 +124,13 @@ void Simulation::execute()
     ARROW(from.x, from.y, to.x, to.y);
   );
 
-  DEBUG_REQUEST("Simulation:draw_potential_field",
+  DEBUG_REQUEST("SimulationOLD:draw_potential_field",
      draw_potential_field();
   );
 
 }//end execute
 
-void Simulation::simulateConsequences(
+void SimulationOLD::simulateConsequences(
   const Action& action,
   ActionResults& categorizedBallPositions
   ) const
@@ -149,7 +149,7 @@ void Simulation::simulateConsequences(
   Math::LineSegment ownGoalLineGlobal(ownLeftEndpoint, ownRightEndpoint);
 
   // draw own goal line
-  DEBUG_REQUEST("Simulation:OwnGoal",
+  DEBUG_REQUEST("SimulationOLD:OwnGoal",
     FIELD_DRAWING_CONTEXT;
     PEN("DADADA", 7);
     LINE(ownGoalLineGlobal.begin().x,ownGoalLineGlobal.begin().y,
@@ -198,7 +198,7 @@ void Simulation::simulateConsequences(
         globalBallEndPosition = shootLine.end();
         
         // draw balls and goal box if there are collisions
-        DEBUG_REQUEST("Simulation:draw_goal_collisions",
+        DEBUG_REQUEST("SimulationOLD:draw_goal_collisions",
           FIELD_DRAWING_CONTEXT;
         
           PEN("000000", 10);
@@ -285,7 +285,7 @@ void Simulation::simulateConsequences(
   }
 }
 
-size_t Simulation::decide_smart(const std::vector<ActionResults>& actionsConsequences ) const
+size_t SimulationOLD::decide_smart(const std::vector<ActionResults>& actionsConsequences) const
 {
   std::vector<size_t> acceptableActions;
 
@@ -384,7 +384,7 @@ size_t Simulation::decide_smart(const std::vector<ActionResults>& actionsConsequ
 }
 
 //correction of distance in percentage, angle in degrees
-Vector2d Simulation::Action::predict(const Vector2d& ball, bool noise) const
+Vector2d SimulationOLD::Action::predict(const Vector2d& ball, bool noise) const
 {
 	double gforce = Math::g*1e3; // mm/s^2
 	double distance;
@@ -404,7 +404,7 @@ Vector2d Simulation::Action::predict(const Vector2d& ball, bool noise) const
   return ball + predictedAction;
 }
 
-double Simulation::exp256(const double& x) const
+double SimulationOLD::exp256(const double& x) const
 {
   // exp(x) = lim(n->inf) (1 + x/n)^n
   // for n=256 about 10x faster than exp but around 2.5 % off on x in [-10, 10]
@@ -420,19 +420,19 @@ double Simulation::exp256(const double& x) const
   return y;
 }
 
-double Simulation::gaussian(const double& x, const double& y, const double& muX, const double& muY, const double& sigmaX, const double& sigmaY) const
+double SimulationOLD::gaussian(const double& x, const double& y, const double& muX, const double& muY, const double& sigmaX, const double& sigmaY) const
 {
   double facX = (x - muX) * (x - muX) / (2.0 * sigmaX * sigmaX);
   double facY = (y - muY) * (y - muY) / (2.0 * sigmaY * sigmaY);
   return exp256(-1.0 * (facX + facY));
 }
 
-double Simulation::slope(const double& x, const double& y, const double& slopeX, const double& slopeY) const
+double SimulationOLD::slope(const double& x, const double& y, const double& slopeX, const double& slopeY) const
 {
   return slopeX * x + slopeY * y;
 }
 
-double Simulation::evaluateAction(const Vector2d& a) const
+double SimulationOLD::evaluateAction(const Vector2d& a) const
 {
   double xPosOpponentGoal = getFieldInfo().xPosOpponentGoal;
   double yPosLeftSideline = getFieldInfo().yPosLeftSideline;
@@ -450,7 +450,7 @@ double Simulation::evaluateAction(const Vector2d& a) const
   return f;
 }
 
-double Simulation::evaluateAction(const ActionResults& results) const
+double SimulationOLD::evaluateAction(const ActionResults& results) const
 {
   double sumPotential = 0.0;
   double numberOfActions = 0.0;
@@ -467,7 +467,7 @@ double Simulation::evaluateAction(const ActionResults& results) const
   return sumPotential;
 }
 
-void Simulation::draw_potential_field() const
+void SimulationOLD::draw_potential_field() const
 {
   static const int ySize = 20;
   static const int xSize = 30;
@@ -513,7 +513,7 @@ void Simulation::draw_potential_field() const
 }//end draw_closest_points
 
 
-void Simulation::draw_action_results(const ActionResults& actionsResults, const Color& color) const 
+void SimulationOLD::draw_action_results(const ActionResults& actionsResults, const Color& color) const
 {
   FIELD_DRAWING_CONTEXT;
   std::vector<CategorizedBallPosition>::const_iterator ballPosition = actionsResults.positions().begin();

@@ -11,7 +11,7 @@
 #include <ModuleFramework/ModuleManager.h>
 
 //
-#include "Simulation.h"
+#include "SimulationOLD.h"
 
 // Representations
 #include "Representations/Infrastructure/FrameInfo.h"
@@ -74,7 +74,7 @@ public:
   static const int CELL_WIDTH = 100;
 
 private:
-  ModuleCreator<Simulation>* simulationModule;
+  ModuleCreator<SimulationOLD>* simulationModule;
   void draw_function_multicolor(const std::vector<SimulationTest::MultiColorValue>& function) const;
 
 };

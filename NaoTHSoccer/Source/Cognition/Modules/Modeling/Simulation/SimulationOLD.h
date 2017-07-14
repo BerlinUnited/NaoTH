@@ -4,8 +4,8 @@
 * Declaration of class Simulation
 */
 
-#ifndef _Simulation_H
-#define _Simulation_H
+#ifndef _SimulationOLD_H
+#define _SimulationOLD_H
 
 #include <ModuleFramework/Module.h>
 
@@ -31,7 +31,7 @@
 // Debug
 #include <Tools/Debug/DebugRequest.h>
 
-BEGIN_DECLARE_MODULE(Simulation)
+BEGIN_DECLARE_MODULE(SimulationOLD)
   PROVIDE(DebugModify)
   PROVIDE(DebugRequest)
   PROVIDE(DebugDrawings)
@@ -46,13 +46,13 @@ BEGIN_DECLARE_MODULE(Simulation)
   //REQUIRE(SelfLocGoalModel)
 
   PROVIDE(KickActionModel)
-END_DECLARE_MODULE(Simulation)
+  END_DECLARE_MODULE(SimulationOLD)
 
-class Simulation: public SimulationBase
+class SimulationOLD : public SimulationOLDBase
 {
 public:
-  Simulation();
-  ~Simulation();
+  SimulationOLD();
+  ~SimulationOLD();
 
   virtual void execute();
 
@@ -251,4 +251,4 @@ private:
   void draw_action_results(const ActionResults& actionsConsequences, const Color& color)const;
 };
 
-#endif  /* _Simulation_H */
+#endif  /* _SimulationOLD_H */

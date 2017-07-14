@@ -12,7 +12,7 @@ using namespace std;
 SimulationTest::SimulationTest()
   : globRobotRotation(0.0)
 {
-  simulationModule = registerModule<Simulation>(std::string("Simulation"), true);
+  simulationModule = registerModule<SimulationOLD>(std::string("SimulationOLD"), true);
 	DEBUG_REQUEST_REGISTER("SimulationTest:draw_decision","draw_decision", false);
 }
 
