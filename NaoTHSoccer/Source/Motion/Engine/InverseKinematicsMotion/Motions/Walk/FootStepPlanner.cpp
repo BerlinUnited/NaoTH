@@ -221,10 +221,10 @@ void FootStepPlanner::restrictStepSize(Pose2D& step, double character) const
     double cosa = cos(alpha);
     double sina = sin(alpha);
 
-    const double maxStepLength2 = pow(maxStepLength, 2);
-    const double maxStepWidth2 = pow(maxStepWidth, 2);
-    double length = sqrt((maxStepLength2 * maxStepWidth2) / (maxStepLength2 * pow(sina, 2) + maxStepWidth2 * pow(cosa, 2)));
-    if ( step.translation.abs2() > pow(length, 2) )
+    const double maxStepLength2 = Math::sqr(maxStepLength);
+    const double maxStepWidth2 = Math::sqr(maxStepWidth);
+    double length = sqrt((maxStepLength2 * maxStepWidth2) / (maxStepLength2 * Math::sqr(sina) + maxStepWidth2 * Math::sqr(cosa)));
+    if (step.translation.abs2() > Math::sqr(length))
     {
       step.translation.x = length * cosa;
       step.translation.y = length * sina;
@@ -277,10 +277,10 @@ void FootStepPlanner::restrictStepSizeControlStep(Pose2D& step, double character
     double cosa = cos(alpha);
     double sina = sin(alpha);
 
-    const double maxStepLength2 = pow(maxStepLength, 2);
-    const double maxStepWidth2 = pow(maxStepWidth, 2);
-    double length = sqrt((maxStepLength2 * maxStepWidth2) / (maxStepLength2 * pow(sina, 2) + maxStepWidth2 * pow(cosa, 2)));
-    if ( step.translation.abs2() > pow(length, 2) )
+    const double maxStepLength2 = Math::sqr(maxStepLength);
+    const double maxStepWidth2 = Math::sqr(maxStepWidth);
+    double length = sqrt((maxStepLength2 * maxStepWidth2) / (maxStepLength2 * Math::sqr(sina) + maxStepWidth2 * Math::sqr(cosa)));
+    if (step.translation.abs2() > Math::sqr(length))
     {
       step.translation.x = length * cosa;
       step.translation.y = length * sina;
