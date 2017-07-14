@@ -56,13 +56,13 @@ void SensorSymbols::registerSymbols(xabsl::Engine& engine)
   //engine.registerBooleanInputSymbol("collision.colliding", &getCollisionModel().isColliding);
 
   // integrated obstacle model
-  engine.registerDecimalInputSymbol("path.next_point_to_go_x", &getPath().nextPointToGo.x);
-  engine.registerDecimalInputSymbol("path.next_point_to_go_y", &getPath().nextPointToGo.y);
-  engine.registerDecimalInputSymbol("path.time_since_not_valid", &getTimeNoNodeExpandable);
+  //engine.registerDecimalInputSymbol("path.next_point_to_go_x", &getPath().nextPointToGo.x);
+  //engine.registerDecimalInputSymbol("path.next_point_to_go_y", &getPath().nextPointToGo.y);
+  //engine.registerDecimalInputSymbol("path.time_since_not_valid", &getTimeNoNodeExpandable);
 
   // target to control the path
-  engine.registerDecimalOutputSymbol("path.target_x", &setTargetpointX, &getTargetPointX);
-  engine.registerDecimalOutputSymbol("path.target_y", &setTargetpointY, &getTargetPointY);
+  //engine.registerDecimalOutputSymbol("path.target_x", &setTargetpointX, &getTargetPointX);
+  //engine.registerDecimalOutputSymbol("path.target_y", &setTargetpointY, &getTargetPointY);
   
   engine.registerBooleanInputSymbol("button.bumper.pressed.left", &getBumberLeftPressed);
   engine.registerBooleanInputSymbol("button.head.pressed.front", &getButtonHeadFront);
@@ -195,7 +195,7 @@ double SensorSymbols::getInertialSensorY()
 {
   return Math::toDegrees(theInstance->getInertialSensorData().data.y);
 }
-
+/*
 double SensorSymbols::getTargetPointX()
 {
   return theInstance->getPath().targetPoint.x;
@@ -220,7 +220,7 @@ void SensorSymbols::setTargetpointY(double targetY)
 {
   theInstance->getPath().targetPoint.y = targetY;
 }
-
+*/
 
 bool SensorSymbols::getCollisionArmLeft()
 {

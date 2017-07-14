@@ -21,7 +21,7 @@
 #include "Representations/Modeling/BodyState.h"
 #include "Representations/Modeling/ObstacleModel.h"
 //#include "Representations/Modeling/CollisionModel.h"
-#include "Representations/Modeling/Path.h"
+//#include "Representations/Modeling/Path.h"
 #include "Representations/Infrastructure/Image.h"
 #include "Representations/Infrastructure/CalibrationData.h"
 #include "Representations/Motion/CollisionPercept.h"
@@ -49,7 +49,7 @@ BEGIN_DECLARE_MODULE(SensorSymbols)
 
   PROVIDE(WhistleControl)
 
-  PROVIDE(Path)
+  //PROVIDE(Path)
 END_DECLARE_MODULE(SensorSymbols)
 
 class SensorSymbols: public SensorSymbolsBase
