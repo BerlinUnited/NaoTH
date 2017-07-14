@@ -43,6 +43,8 @@ void SensorSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerBooleanInputSymbol("body.foot.groundcontact.right", &getBodyState().standByRightFoot);
   engine.registerDecimalInputSymbol("body.foot.groundcontact.statetime", &getFootStateTime);
 
+  engine.registerBooleanInputSymbol("body.collision.arm.left", &getCollisionArmLeft);
+  engine.registerBooleanInputSymbol("body.collision.arm.right", &getCollisionArmRight);
 
   engine.registerDecimalInputSymbol("platform.frameNumber", &getFrameNumber);
 
@@ -51,7 +53,7 @@ void SensorSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalInputSymbol("obstacle.ultrasound.right.distance", &getObstacleDistanceRight);
   engine.registerDecimalInputSymbol("obstacle.ultrasound.blockedtime", &getBlockedTime);
 
-  engine.registerBooleanInputSymbol("collision.colliding", &getCollisionModel().isColliding);
+  //engine.registerBooleanInputSymbol("collision.colliding", &getCollisionModel().isColliding);
 
   // integrated obstacle model
   engine.registerDecimalInputSymbol("path.next_point_to_go_x", &getPath().nextPointToGo.x);
@@ -70,6 +72,7 @@ void SensorSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerBooleanInputSymbol("battery.isDischarging", &getisDischarging);
 
   engine.registerDecimalOutputSymbol("whistle.switch",&setWhistleSwitch, &getWhistleSwitch);
+
 }//end registerSymbols
 
 SensorSymbols* SensorSymbols::theInstance = NULL;
@@ -216,4 +219,19 @@ void SensorSymbols::setTargetpointX(double targetX)
 void SensorSymbols::setTargetpointY(double targetY)
 {
   theInstance->getPath().targetPoint.y = targetY;
+}
+
+
+bool SensorSymbols::getCollisionArmLeft()
+{
+  return
+    theInstance->getCollisionPercept().timeCollisionArmLeft > 0 &&
+    theInstance->getFrameInfo().getTimeSince(theInstance->getCollisionPercept().timeCollisionArmLeft) < 100;
+}
+
+bool SensorSymbols::getCollisionArmRight()
+{
+  return
+    theInstance->getCollisionPercept().timeCollisionArmRight > 0 &&
+    theInstance->getFrameInfo().getTimeSince(theInstance->getCollisionPercept().timeCollisionArmRight) < 100;
 }

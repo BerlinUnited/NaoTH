@@ -20,10 +20,11 @@
 #include "Representations/Infrastructure/FrameInfo.h"
 #include "Representations/Modeling/BodyState.h"
 #include "Representations/Modeling/ObstacleModel.h"
-#include "Representations/Modeling/CollisionModel.h"
+//#include "Representations/Modeling/CollisionModel.h"
 #include "Representations/Modeling/Path.h"
 #include "Representations/Infrastructure/Image.h"
 #include "Representations/Infrastructure/CalibrationData.h"
+#include "Representations/Motion/CollisionPercept.h"
 
 #include <Representations/Infrastructure/ButtonData.h>
 #include <Representations/Infrastructure/WhistleControl.h>
@@ -40,9 +41,12 @@ BEGIN_DECLARE_MODULE(SensorSymbols)
   REQUIRE(BodyState)
   REQUIRE(ObstacleModel)
   REQUIRE(Image)
-  REQUIRE(CollisionModel)
+  // todo: remove?
+  //REQUIRE(CollisionModel)
   REQUIRE(CalibrationData)
   REQUIRE(ButtonData)
+  REQUIRE(CollisionPercept)
+
   PROVIDE(WhistleControl)
 
   PROVIDE(Path)
@@ -101,6 +105,9 @@ private:
 
   static double getWhistleSwitch();
   static void setWhistleSwitch(double whistle);
+
+  static bool getCollisionArmLeft();
+  static bool getCollisionArmRight();
 };
 
 #endif  /* _SENSORSYMBOLS_H */
