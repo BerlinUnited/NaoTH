@@ -29,24 +29,14 @@ void ActionSimulator::simulateAction(const Action& action, ActionResults& result
   //categorizedBallPositions.reserve(static_cast<int>(theParameters.numParticles));
   result.reset();
 
-  // calculate the own goal line
+  // own goal
+  vector<Math::LineSegment> ownGoalBackSides = {
+    Math::LineSegment(getFieldInfo().ownGoalPostLeft, getFieldInfo().ownGoalBackRight),
+    Math::LineSegment(getFieldInfo().ownGoalPostLeft, getFieldInfo().ownGoalBackLeft),
+    Math::LineSegment(getFieldInfo().ownGoalPostRight, getFieldInfo().ownGoalBackRight) };
 
-  //TODO move to field Info as well
-  Vector2d ownGoalDir = (getFieldInfo().ownGoalPostRight - getFieldInfo().ownGoalPostLeft).normalize();
-  Vector2d ownLeftEndpoint = getFieldInfo().ownGoalPostLeft + ownGoalDir*(getFieldInfo().goalpostRadius + getFieldInfo().ballRadius);
-  Vector2d ownRightEndpoint = getFieldInfo().ownGoalPostRight - ownGoalDir*(getFieldInfo().goalpostRadius + getFieldInfo().ballRadius);
-  Math::LineSegment ownGoalLineGlobal(ownLeftEndpoint, ownRightEndpoint);
-
-  // draw own goal line
-  DEBUG_REQUEST("Simulation:OwnGoal",
-    FIELD_DRAWING_CONTEXT;
-    PEN("DADADA", 7);
-    LINE(ownGoalLineGlobal.begin().x,ownGoalLineGlobal.begin().y,
-         ownGoalLineGlobal.end().x,ownGoalLineGlobal.end().y);
-  );
-  
   // opp goal
-  vector<Math::LineSegment> goalBackSides = {
+  vector<Math::LineSegment> oppGoalBackSides = {
       Math::LineSegment(getFieldInfo().oppGoalBackLeft      , getFieldInfo().oppGoalBackRight),
       Math::LineSegment(getFieldInfo().opponentGoalPostLeft , getFieldInfo().oppGoalBackLeft),
       Math::LineSegment(getFieldInfo().opponentGoalPostRight, getFieldInfo().oppGoalBackRight)};
@@ -66,26 +56,44 @@ void ActionSimulator::simulateAction(const Action& action, ActionResults& result
     // if the ball start and end positions are inside of the field, you don't need to check
     if(!getFieldInfo().fieldRect.inside(globalBallEndPosition) || !getFieldInfo().fieldRect.inside(globalBallStartPosition))
 	  {
-      // calculate if there is a collision with the opponen goal and where the ball would stop
-      bool collisionWithGoal = calculateCollision(goalBackSides, globalBallStartPosition, globalBallEndPosition, globalBallEndPosition);
+      // calculate if there is a collision with the opponent goal and where the ball would stop
+      bool collisionWithOppGoal = calculateCollision(oppGoalBackSides, globalBallStartPosition, globalBallEndPosition, globalBallEndPosition);
+      bool collisionWithOwnGoal = calculateCollision(ownGoalBackSides, globalBallStartPosition, globalBallEndPosition, globalBallEndPosition);
 
       // draw balls and goal box if there are collisions
       DEBUG_REQUEST("Simulation:draw_goal_collisions",
-        if(collisionWithGoal) 
-        {
-          FIELD_DRAWING_CONTEXT;
-        
-          PEN("000000", 10);
-          BOX(getFieldInfo().oppGoalRect.min().x, getFieldInfo().oppGoalRect.min().y, getFieldInfo().oppGoalRect.max().x, getFieldInfo().oppGoalRect.max().y);
+      if (collisionWithOppGoal)
+      {
+        FIELD_DRAWING_CONTEXT;
 
-          if (getFieldInfo().oppGoalRect.inside(globalBallEndPosition)) {
-            PEN("0000AA66", 1);
-          } else {
-            PEN("FF00AA66", 1);
-          }
-          const double r = getFieldInfo().ballRadius;
-          FILLOVAL(globalBallEndPosition.x, globalBallEndPosition.y, r, r);
-      });
+        PEN("000000", 10);
+        BOX(getFieldInfo().oppGoalRect.min().x, getFieldInfo().oppGoalRect.min().y, getFieldInfo().oppGoalRect.max().x, getFieldInfo().oppGoalRect.max().y);
+
+        if (getFieldInfo().oppGoalRect.inside(globalBallEndPosition)) {
+          PEN("0000AA66", 1);
+        }
+        else {
+          PEN("FF00AA66", 1);
+        }
+        const double r = getFieldInfo().ballRadius;
+        FILLOVAL(globalBallEndPosition.x, globalBallEndPosition.y, r, r);
+      }
+      else if (collisionWithOwnGoal){
+        FIELD_DRAWING_CONTEXT;
+
+        PEN("000000", 10);
+        BOX(getFieldInfo().ownGoalRect.min().x, getFieldInfo().ownGoalRect.min().y, getFieldInfo().ownGoalRect.max().x, getFieldInfo().ownGoalRect.max().y);
+
+        if (getFieldInfo().ownGoalRect.inside(globalBallEndPosition)) {
+          PEN("0000AA66", 1);
+        }
+        else {
+          PEN("FF00AA66", 1);
+        }
+        const double r = getFieldInfo().ballRadius;
+        FILLOVAL(globalBallEndPosition.x, globalBallEndPosition.y, r, r);
+      }
+      );
     }
 
     // default category
