@@ -33,7 +33,7 @@ public:
 
   struct StepControlStatus
   {
-    StepControlStatus() : stepID(0), moveableFoot(NONE), stepRequestID(0) {}
+    StepControlStatus() : stepID(0), stepRequestID(0), moveableFoot(NONE) {}
 
     enum MoveableFoot
     {

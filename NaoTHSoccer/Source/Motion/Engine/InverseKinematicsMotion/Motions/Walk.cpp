@@ -239,7 +239,6 @@ void Walk::calculateNewStep(const Step& lastStep, Step& newStep, const WalkReque
     // update last stepRequestID so it matches the requested stepRequestID
     getMotionStatus().stepControl.stepRequestID += 1;
 
-    bool isFromPathPlanner = walkRequest.stepControl.isFromPathPlanner;
     switch (walkRequest.stepControl.type)
     {
     case WalkRequest::StepControlRequest::ZEROSTEP:
