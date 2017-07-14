@@ -56,7 +56,9 @@ public:
       time(0),
       speedDirection(0),
       scale(1.0),
-      isFromPathPlanner(false)
+      isFromPathPlanner(false),
+      isInterruptable(true),
+      stepRequestID(0)
     {}
 
     enum StepType {
@@ -76,7 +78,9 @@ public:
     // e.g., scale = 1 => normal step trajectory, scale < 1 => faster step
     double scale;
 
-    bool isFromPathPlanner;
+    bool isFromPathPlanner;      // is the step requested by the pathplanner?
+    bool isInterruptable;        // determine if the request is interruptible (e.g. kicks should not be!)
+    unsigned int stepRequestID;  // this ID is for stepControl request PathPlanning
   };
 
   // indicates speed and stability, in range [0, 1]

@@ -11,7 +11,7 @@ PathPlanner::PathPlanner()
 :
 step_buffer({}),
 foot_to_use(Foot::RIGHT),
-last_stepcontrol_stepID(0),
+last_stepRequestID(1),
 kick_planned(false)
 {
   DEBUG_REQUEST_REGISTER("PathPlanner:walk_to_ball", "Walks to the ball from far.", false);
@@ -94,7 +94,6 @@ void PathPlanner::execute()
   STOPWATCH_STOP("PathPlanner");
 }
 
-// Primitive Maneuvers
 void PathPlanner::walk_to_ball(const Foot foot, const bool go_fast)
 {
   Vector2d ballPos                   = Vector2d();
@@ -344,9 +343,6 @@ void PathPlanner::sidekick(const Foot foot)
       Foot step_foot = foot == Foot::RIGHT ? Foot::LEFT : Foot::RIGHT;
       double scale = 1.0;
 
-      // dirty hack for testing
-      add_step(pose, StepType::ZEROSTEP, coordinate, character, step_foot, scale, speed_direction);
-
       add_step(pose, type, coordinate, character, step_foot, scale, speed_direction);
 
       type = StepType::ZEROSTEP;
@@ -388,17 +384,12 @@ void PathPlanner::manage_step_buffer()
     return;
   }
 
-  // stepID higher than the last one means, stepControl request with the
-  // last_stepcontrol_stepID has been accepted
-  if (last_stepcontrol_stepID < getMotionStatus().stepControl.stepID)
+  // requested step has been accepted
+  if (last_stepRequestID == getMotionStatus().stepControl.stepRequestID)
   {
     step_buffer.erase(step_buffer.begin());
-    last_stepcontrol_stepID = getMotionStatus().stepControl.stepID;
-  }
-
-  // Correct last_stepcontrol_stepID if neccessary
-  if (getMotionStatus().stepControl.stepID < last_stepcontrol_stepID) {
-    last_stepcontrol_stepID = getMotionStatus().stepControl.stepID;
+    last_stepRequestID = getMotionStatus().stepControl.stepRequestID + 1;
+    std::cout << "last_stepRequestID " << last_stepRequestID << std::endl;
   }
 }
 
@@ -423,6 +414,10 @@ void PathPlanner::execute_step_buffer()
   getMotionRequest().walkRequest.stepControl.speedDirection    = step_buffer.front().speedDirection;
   getMotionRequest().walkRequest.stepControl.target            = step_buffer.front().pose;
   getMotionRequest().walkRequest.stepControl.isFromPathPlanner = true;
+  getMotionRequest().walkRequest.stepControl.isInterruptable   = step_buffer.front().type == StepType::KICKSTEP ? false : true;
+  getMotionRequest().walkRequest.stepControl.stepRequestID     = last_stepRequestID;
+
+  std::cout << "REQUEST: " << getMotionRequest().walkRequest.stepControl.stepRequestID << std::endl;
 
   // normal walking WALKSTEPs use Foot::NONE, for KICKSTEPs the foot to use has to be specified
   if (step_buffer.front().foot == Foot::NONE)

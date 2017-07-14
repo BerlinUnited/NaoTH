@@ -26,7 +26,8 @@ void Serializer<WalkRequest>::serialize(const WalkRequest& representation, naoth
   DataConversion::toMessage(representation.offset, *(msg->mutable_offset()));
 
   // step control
-  if ( representation.stepControl.stepID > 0 )
+  // PathPlanner starts with stepRequestID of 1, because MotionStatus starts with stepRequestID of 0
+  if (representation.stepControl.stepRequestID > 0)
   {
     naothmessages::StepControlRequest* stepControl = msg->mutable_stepcontrol();
     stepControl->set_stepid(representation.stepControl.stepID);
@@ -37,6 +38,8 @@ void Serializer<WalkRequest>::serialize(const WalkRequest& representation, naoth
     stepControl->set_speeddirection(representation.stepControl.speedDirection);
     stepControl->set_scale(representation.stepControl.scale);
     stepControl->set_isfrompathplanner(representation.stepControl.isFromPathPlanner);
+    stepControl->set_isinterruptable(representation.stepControl.isInterruptable);
+    stepControl->set_steprequestid(representation.stepControl.stepRequestID);
   }
 }
 
@@ -68,6 +71,8 @@ void Serializer<WalkRequest>::deserialize(const naothmessages::WalkRequest* msg,
     representation.stepControl.speedDirection = stepControl.speeddirection();
     representation.stepControl.scale = stepControl.scale();
     representation.stepControl.isFromPathPlanner = stepControl.isfrompathplanner();
+    representation.stepControl.isInterruptable = stepControl.isinterruptable();
+    representation.stepControl.stepRequestID = stepControl.steprequestid();
   }
   else
   {

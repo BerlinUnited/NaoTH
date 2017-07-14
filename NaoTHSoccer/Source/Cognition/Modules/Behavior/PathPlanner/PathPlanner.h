@@ -95,7 +95,7 @@ private:
   Foot foot_to_use;
 
   // Used to synchronize stepIDs of WalkEngine to take control
-  unsigned int last_stepcontrol_stepID;
+  unsigned int last_stepRequestID;
 
   void add_step(Pose2D &pose,
                 const StepType &type,

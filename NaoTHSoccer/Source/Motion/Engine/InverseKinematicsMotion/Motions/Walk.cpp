@@ -215,24 +215,13 @@ void Walk::calculateNewStep(const Step& lastStep, Step& newStep, const WalkReque
   // STABILIZATION
   bool do_emergency_stop = com_errors.size() == com_errors.getMaxEntries() && com_errors.getAverage() > parameters().stabilization.emergencyStopError;
 
-  if ( (getMotionRequest().id != getId() || do_emergency_stop)
-      //|| walkRequest.stepControl.stepID + 1 != stepBuffer.stepId())
-      )
+  if ( getMotionRequest().id != getId() || (do_emergency_stop && walkRequest.stepControl.isInterruptable))
   {
     // try to make a last step to align the feet if it is required
     if ( getMotionRequest().standardStand) {
       newStep.footStep = theFootStepPlanner.finalStep(lastStep.footStep, walkRequest);
     } else {
       newStep.footStep = theFootStepPlanner.zeroStep(lastStep.footStep);
-    }
-
-    if (do_emergency_stop)
-    {
-      std::cout << "EMERGENCY STOP" << std::endl;
-    }
-    else
-    {
-      std::cout << "BAD IDS" << std::endl;
     }
 
     newStep.numberOfCycles = (newStep.footStep.liftingFoot() == FootStep::NONE)?1:parameters().step.duration/getRobotInfo().basicTimeStep;
@@ -245,18 +234,11 @@ void Walk::calculateNewStep(const Step& lastStep, Step& newStep, const WalkReque
     return;
   }
 
-  // indicates whether the requested foot is movable in this step
-  // i.e., it was NOT moved in the last step
-  /*
-   bool stepControlPossible =
-        lastStep.footStep.liftingFoot() == FootStep::NONE
-    || (lastStep.footStep.liftingFoot() == FootStep::RIGHT && walkRequest.stepControl.moveLeftFoot)
-    || (lastStep.footStep.liftingFoot() == FootStep::LEFT && !walkRequest.stepControl.moveLeftFoot);
-  */
-  if (walkRequest.stepControl.stepID + 1 == stepBuffer.stepId()) // step control
+  if (walkRequest.stepControl.stepRequestID == getMotionStatus().stepControl.stepRequestID + 1)
   {
-    //WalkRequest myRequest = walkRequest;
-    //myRequest.target = walkRequest.stepControl.target;
+    // update last stepRequestID so it matches the requested stepRequestID
+    getMotionStatus().stepControl.stepRequestID += 1;
+
     bool isFromPathPlanner = walkRequest.stepControl.isFromPathPlanner;
     switch (walkRequest.stepControl.type)
     {
@@ -264,17 +246,14 @@ void Walk::calculateNewStep(const Step& lastStep, Step& newStep, const WalkReque
       newStep.footStep = theFootStepPlanner.zeroStep(lastStep.footStep);
       newStep.numberOfCycles = walkRequest.stepControl.time / getRobotInfo().basicTimeStep;
       newStep.type = STEP_CONTROL;
-      std::cout << "ZEROSTEP" << " -- " << isFromPathPlanner << std::endl;
       break;
     case WalkRequest::StepControlRequest::KICKSTEP:
       newStep.footStep = theFootStepPlanner.controlStep(lastStep.footStep, walkRequest);
       newStep.numberOfCycles = walkRequest.stepControl.time / getRobotInfo().basicTimeStep;
       newStep.type = STEP_CONTROL;
-      std::cout << "KICKSTEP" << " -- " << isFromPathPlanner << std::endl;
       break;
     case WalkRequest::StepControlRequest::WALKSTEP:
       newStep.footStep = theFootStepPlanner.controlStep(lastStep.footStep, walkRequest);
-      std::cout << "WALKSTEP" << " -- " << isFromPathPlanner << std::endl;
 
       // STABILIZATION
       if (parameters().stabilization.dynamicStepsize) {
@@ -446,7 +425,7 @@ Pose3D Walk::calculateLiftingFootPos(const Step& step) const
       step.walkRequest.stepControl.speedDirection,
       step.walkRequest.stepControl.scale);
   }
-  else //if( step.type == STEP_WALK )
+  else
   {
     if(parameters().step.splineFootTrajectory)
     {
