@@ -79,6 +79,28 @@ public:
     execute(CameraInfo::Top);
     
     getProbabilisticQuadCompas().normalize();
+
+
+
+    DEBUG_REQUEST("Vision:LineGraphProvider:draw_extended_line_graph",
+      FIELD_DRAWING_CONTEXT;
+      int c = 0; 
+      for(const std::vector<EdgelD>& subgraph : getLineGraphPercept().lineGraphs) {     
+
+        PEN(ColorClasses::colorClassToHex((ColorClasses::Color)c),2);
+        c = (c+1) % ColorClasses::numOfColors;
+
+        for(size_t i = 0; i < subgraph.size(); i++) {
+          const Vector2d& first = subgraph[i].point;
+          CIRCLE( subgraph[i].point.x, subgraph[i].point.y, 25);
+
+          if(i+1 < subgraph.size()) {
+            const Vector2d& next = subgraph[i+1].point;
+            LINE(first.x,first.y,next.x,next.y);
+          }
+        }
+      }
+    );
   }
 
   class Parameters: public ParameterList
@@ -128,6 +150,8 @@ private: // data members
 
   std::vector<Vector2d> edgelProjectionsBegin;
   std::vector<Vector2d> edgelProjectionsEnd;
+
+  std::vector<std::vector<int>> lineGraphsIds;
 
 private: // method members
   static double edgelSim(const EdgelT<double>& e1, const EdgelT<double>& e2);

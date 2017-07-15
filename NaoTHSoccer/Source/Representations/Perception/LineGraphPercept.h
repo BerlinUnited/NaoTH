@@ -19,7 +19,7 @@ class LineGraphPercept
 public:
   void reset() {
     edgels.clear();
-    edgelsProjected.clear();
+
     edgelsInImage.clear();
     edgelsInImageTop.clear();
 
@@ -30,12 +30,10 @@ public:
   //TODO: should this be double?
   std::vector<Edgel>  edgels;
 
-  std::vector<std::vector<int>> lineGraphs;
-
-  std::vector<Edgel> edgelsProjected;
-
   std::vector<EdgelD> edgelsInImage;
   std::vector<EdgelD> edgelsInImageTop;
+
+  std::vector<std::vector<EdgelD>> lineGraphs;
 };
 
 namespace naoth

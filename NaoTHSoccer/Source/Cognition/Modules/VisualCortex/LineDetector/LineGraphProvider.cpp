@@ -42,7 +42,6 @@ void LineGraphProvider::execute(CameraInfo::CameraID id)
 
   calculatePairsAndNeigbors(getScanLineEdgelPercept().pairs, edgelPairs, edgelNeighbors, parameters.edgelSimThreshold);
 
-  
 
   // calculate the projection for all edgels
   edgelProjectionsBegin.resize(getScanLineEdgelPercept().pairs.size());
@@ -73,29 +72,21 @@ void LineGraphProvider::execute(CameraInfo::CameraID id)
   }
 
   // extend line graph
+  lineGraphsIds.clear();
   extendLineGraph(edgelNeighbors);
-  for(size_t i = 0; i < edgelProjectionsBegin.size(); i++) {
-    Edgel edgel;
-    edgel.point = (edgelProjectionsBegin[i] + edgelProjectionsEnd[i])*0.5;
 
-    getLineGraphPercept().edgelsProjected.push_back(edgel);
-  }
+  // add the graphs to the representation
+  for(const std::vector<int>& subgraph : lineGraphsIds)
+  {
+    getLineGraphPercept().lineGraphs.emplace_back();
+    for(size_t i = 0; i < subgraph.size(); ++i) {
+      
+      EdgelD edgel;
+      edgel.point = (edgelProjectionsBegin[subgraph[i]] + edgelProjectionsEnd[subgraph[i]])*0.5;
 
-  DEBUG_REQUEST("Vision:LineGraphProvider:draw_extended_line_graph",
-    FIELD_DRAWING_CONTEXT;
-    PEN("000000",2);
-    for(std::vector<int> subgraph : getLineGraphPercept().lineGraphs) {      
-      for(size_t i = 0; i < subgraph.size(); i++) {
-        const Vector2d& first = getLineGraphPercept().edgelsProjected[subgraph[i]].point;
-        CIRCLE( first.x, first.y, 25);
-
-        if(i+1 < subgraph.size()) {
-          const Vector2d& next = getLineGraphPercept().edgelsProjected[subgraph[i+1]].point;
-          LINE(first.x,first.y,next.x,next.y);
-        }
-      }
+      getLineGraphPercept().lineGraphs.back().push_back(edgel);
     }
-  );
+  }
 
   // calculate the LineGraphPercept
   for(size_t j = 0; j < edgelPairs.size(); j++)
@@ -341,29 +332,23 @@ void LineGraphProvider::execute(CameraInfo::CameraID id)
 void LineGraphProvider::extendLineGraph(std::vector<Neighbors>& neighbors) {
   std::vector<bool> processed(neighbors.size(), false);
 
-  for (int i=0; i<processed.size(); i++) {
-    if(processed[i] || neighbors[i].left != -1) {
+  for (size_t i=0; i<processed.size(); i++) {
+    if(processed[i] || 
+        (neighbors[i].left != -1 && neighbors[neighbors[i].left].right == i)) // not a begin of a graph
+    {
       continue;
     }
 
     std::vector<int> subGraph;
+    
+    int in = i;
+    do {
+      subGraph.push_back(in);
+      processed[in] = true;
+    } while((in = neighbors[in].right) > -1);
 
-    Neighbors n = neighbors[i];
-    int ii = i;
-
-    while(1) {
-      subGraph.push_back(ii);
-      processed[ii] = true;
-      if (n.right > -1) {
-        ii = n.right;
-        n = neighbors[n.right];
-      } else {
-        break;
-      }
-    }
-
-    if (subGraph.size() > 0) {
-      getLineGraphPercept().lineGraphs.push_back(subGraph);
+    if (subGraph.size() >= 2) {
+      lineGraphsIds.push_back(subGraph);
     }
   }
 }
