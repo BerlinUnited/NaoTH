@@ -35,6 +35,8 @@
 
 // sensor percepts
 #include "Representations/Perception/GoalPercept.h"
+#include "Representations/Perception/LinePercept.h"
+
 
 // local models
 #include "Representations/Modeling/ProbabilisticQuadCompas.h"
@@ -84,6 +86,7 @@ BEGIN_DECLARE_MODULE(MonteCarloSelfLocator)
   REQUIRE(SensingGoalModel)
   REQUIRE(ProbabilisticQuadCompas)
   REQUIRE(LineGraphPercept)
+  REQUIRE(LinePercept)
 
   PROVIDE(RobotPose)
   PROVIDE(SelfLocGoalModel)
@@ -136,6 +139,9 @@ private: // local types
       PARAMETER_REGISTER(linePointsSigmaAngle) = 0.1;
       PARAMETER_REGISTER(linePointsMaxNumber) = 10;
 
+      PARAMETER_REGISTER(updateByLinePercept) = true;
+
+
       PARAMETER_REGISTER(updateByOldPose) = false;
       PARAMETER_REGISTER(oldPoseSigmaDistance) = 0.1;
 
@@ -179,6 +185,9 @@ private: // local types
     double linePointsSigmaDistance;
     double linePointsSigmaAngle;
     int linePointsMaxNumber;
+
+    bool updateByLinePercept;
+    
 
     bool updateByOldPose;
     double oldPoseSigmaDistance;
@@ -265,6 +274,7 @@ private: // workers
   void updateBySingleGoalPost(const GoalPercept::GoalPost& goalPost, SampleSet& sampleSet) const;
   void updateByCompas(SampleSet& sampleSet) const;
   void updateByLinePoints(const LineGraphPercept& linePercept, SampleSet& sampleSet) const;
+  void updateByLines(const LinePercept& linePercept, SampleSet& sampleSet) const;
 
   // A-Priori knowledge based on the game state
   void updateBySidePositions(SampleSet& sampleSet) const;
