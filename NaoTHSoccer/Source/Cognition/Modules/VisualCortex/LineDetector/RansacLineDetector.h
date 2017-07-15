@@ -53,12 +53,14 @@ private:
   public:
     Parameters() : ParameterList("RansacLineDetector")
     {
-      PARAMETER_REGISTER(iterations) = 20;
-      PARAMETER_REGISTER(outlierThreshold) = 70;
-      PARAMETER_REGISTER(inlierMin) = 10;
-      PARAMETER_REGISTER(directionSimilarity) = 0.8;
-
+      //Lines
+      PARAMETER_REGISTER(iterations) = 50;
+      PARAMETER_REGISTER(outlierThreshold) = 40;
+      PARAMETER_REGISTER(inlierMin) = 5;
+      PARAMETER_REGISTER(directionSimilarity) = 0.9;
       PARAMETER_REGISTER(maxLines) = 11;
+
+      //Circle
       PARAMETER_REGISTER(circle_iterations) = 20;
       PARAMETER_REGISTER(circle_outlierThreshold) = 70;
       PARAMETER_REGISTER(circle_inlierMin) = 10;
