@@ -137,8 +137,7 @@ private: // method members
     std::vector<EdgelPair>& edgelPairs, 
     std::vector<Neighbors>& neighbors, double threshold) const;
 
-  void extendLineGraph(std::vector<EdgelPair>& edgelPairs);
-  void extendLineGraphLeft(std::vector<Neighbors>& neighbors, std::vector<int>& subGraph, std::vector<bool>& processed, int i);
+  void extendLineGraph(std::vector<Neighbors>& neighbors);
 
   DOUBLE_CAM_PROVIDE(LineGraphProvider, DebugImageDrawings);
 

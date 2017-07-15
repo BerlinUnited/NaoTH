@@ -73,7 +73,7 @@ void LineGraphProvider::execute(CameraInfo::CameraID id)
   }
 
   // extend line graph
-  extendLineGraph(edgelPairs);
+  extendLineGraph(edgelNeighbors);
   for(size_t i = 0; i < edgelProjectionsBegin.size(); i++) {
     Edgel edgel;
     edgel.point = (edgelProjectionsBegin[i] + edgelProjectionsEnd[i])*0.5;
@@ -84,16 +84,15 @@ void LineGraphProvider::execute(CameraInfo::CameraID id)
   DEBUG_REQUEST("Vision:LineGraphProvider:draw_extended_line_graph",
     FIELD_DRAWING_CONTEXT;
     PEN("000000",2);
+    for(std::vector<int> subgraph : getLineGraphPercept().lineGraphs) {      
+      for(size_t i = 0; i < subgraph.size(); i++) {
+        const Vector2d& first = getLineGraphPercept().edgelsProjected[subgraph[i]].point;
+        CIRCLE( first.x, first.y, 25);
 
-    for(std::vector<int> subgraph : getLineGraphPercept().lineGraphs) {
-      int st = subgraph[0];
-
-      for(int s : subgraph) {
-        Vector2d start = getLineGraphPercept().edgelsProjected[st].point;
-        Vector2d next = getLineGraphPercept().edgelsProjected[s].point;
-        CIRCLE( next.x, next.y, 25);
-        LINE(start.x,start.y,next.x,next.y);
-        st = s;
+        if(i+1 < subgraph.size()) {
+          const Vector2d& next = getLineGraphPercept().edgelsProjected[subgraph[i+1]].point;
+          LINE(first.x,first.y,next.x,next.y);
+        }
       }
     }
   );
@@ -339,28 +338,28 @@ void LineGraphProvider::execute(CameraInfo::CameraID id)
 
 }//end execute
 
-void LineGraphProvider::extendLineGraph(std::vector<EdgelPair>& edgelPairs) {
-  std::vector<bool> processed(edgelPairs.size(), false);
-  processed.reserve(edgelPairs.size());
+void LineGraphProvider::extendLineGraph(std::vector<Neighbors>& neighbors) {
+  std::vector<bool> processed(neighbors.size(), false);
 
   for (int i=0; i<processed.size(); i++) {
-    if(processed[i]) continue;
-
-    if(edgelPairs[i].left != -1) {
+    if(processed[i] || neighbors[i].left != -1) {
       continue;
     }
 
     std::vector<int> subGraph;
 
-    EdgelPair n = edgelPairs[i];
+    Neighbors n = neighbors[i];
     int ii = i;
 
-    //extend right
-    while(n.right > -1) {
+    while(1) {
       subGraph.push_back(ii);
       processed[ii] = true;
-      ii = n.right;
-      n = edgelPairs[n.right];
+      if (n.right > -1) {
+        ii = n.right;
+        n = neighbors[n.right];
+      } else {
+        break;
+      }
     }
 
     if (subGraph.size() > 0) {
