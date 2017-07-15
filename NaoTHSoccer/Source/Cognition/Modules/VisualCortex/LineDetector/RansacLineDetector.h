@@ -56,8 +56,8 @@ private:
       //Lines
       PARAMETER_REGISTER(iterations) = 50;
       PARAMETER_REGISTER(outlierThreshold) = 40;
-      PARAMETER_REGISTER(inlierMin) = 5;
-      PARAMETER_REGISTER(directionSimilarity) = 0.9;
+      PARAMETER_REGISTER(inlierMin) = 8;
+      PARAMETER_REGISTER(directionSimilarity) = 0.8;
       PARAMETER_REGISTER(maxLines) = 11;
 
       //Circle
