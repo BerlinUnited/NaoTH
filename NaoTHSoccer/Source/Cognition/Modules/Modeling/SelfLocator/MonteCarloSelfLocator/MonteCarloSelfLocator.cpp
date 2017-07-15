@@ -648,12 +648,13 @@ void MonteCarloSelfLocator::updateByLines(const LinePercept& linePercept, Sample
       Vector2d p2 = ref_line.projection(abs_end);
       Vector2d pm = p_mid.position;
 
-
+      /*
       DEBUG_REQUEST("MCSL:draw_corner_votes",
         if(linePercept.lines[lp].type != LinePercept::C) {
           LINE(p1.x, p1.y, pm.x, pm.y);
           LINE(p2.x, p2.y, pm.x, pm.y);
       });
+      */
 
       {
         Vector2d relP1(sample/p1);
@@ -701,10 +702,12 @@ void MonteCarloSelfLocator::updateByLines(const LinePercept& linePercept, Sample
 
   }//end for
 
+  /*
   shortestLine = shortestLine;
   DEBUG_REQUEST("MCSL:plots",
     PLOT("MonteCarloSelfLocator:shortestLine", shortestLine);
   );
+  */
 }//end updateByLinesTable
 
 
