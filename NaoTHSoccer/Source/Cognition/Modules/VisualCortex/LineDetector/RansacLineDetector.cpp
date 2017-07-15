@@ -31,21 +31,6 @@ void RansacLineDetector::execute()
       PEN("000000",0.1);
       LINE(e.point.x, e.point.y, e.point.x + e.direction.x*100.0, e.point.y + e.direction.y*100.0);
     }
-    // draw coedgels
-    /*
-    for(const CoEdgels& co: getLineGraphPercept().coEdgels)
-    {
-      PEN("0000FF",2);
-
-      if(co.left.point.x > 0 || co.left.point.y > 0) {
-        CIRCLE(co.left.point.x, co.left.point.y, 25);
-      }
-
-      if(co.right.point.x > 0 || co.right.point.y > 0) {
-        CIRCLE(co.right.point.x, co.right.point.y, 25);
-      }
-    }
-    */
   );
 
 
