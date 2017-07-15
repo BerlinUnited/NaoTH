@@ -5,6 +5,7 @@
 */
 
 #include "ActionSimulator.h"
+#include <algorithm>
 
 using namespace naoth;
 using namespace std;
@@ -253,10 +254,8 @@ void ActionSimulator::draw_potential_field() const
     }
   }
   
-  // TODO: replace by std::minmax_element in C++11
-  double maxValue = *std::max_element(potential.begin(), potential.end());
-  double minValue = *std::min_element(potential.begin(), potential.end());
-  double range = maxValue - minValue;
+  auto result = std::minmax_element(potential.begin(), potential.end());
+  double range = *result.second - *result.first;
 
   if(range == 0) { return; }
 
@@ -266,7 +265,7 @@ void ActionSimulator::draw_potential_field() const
     {
       Vector2d point(xWidth*(2*x-xSize+1), yWidth*(2*y-ySize+1));
       
-      double t = (potential[idx++] - minValue) / range;
+      double t = (potential[idx++] - *result.first) / range;
       Color color = black*t + white*(1-t);
       PEN(color, 20);
       FILLBOX(point.x - xWidth, point.y - yWidth, point.x+xWidth, point.y+yWidth);
