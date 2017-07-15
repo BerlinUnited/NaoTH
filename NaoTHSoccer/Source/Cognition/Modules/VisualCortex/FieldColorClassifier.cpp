@@ -10,9 +10,8 @@
 using namespace std;
 
 FieldColorClassifier::FieldColorClassifier()
-: 
-  uniformGrid(getImage().width(), getImage().height(), 60, 40),
-  cameraID(CameraInfo::Bottom)
+: cameraID(CameraInfo::Bottom),
+  uniformGrid(getImage().width(), getImage().height(), 60, 40)
 {
   DEBUG_REQUEST_REGISTER("Vision:FieldColorClassifier:CamTop", "", false);
   DEBUG_REQUEST_REGISTER("Vision:FieldColorClassifier:CamBottom", "", false);
