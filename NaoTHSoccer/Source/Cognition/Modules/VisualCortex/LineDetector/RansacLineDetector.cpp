@@ -95,7 +95,7 @@ void RansacLineDetector::execute()
       OVAL_ROTATED(c[0], c[1], a[0], a[1], circResult.rotationAngle());
 
       PEN("0000AA", 20);
-      for(int i=0; i<circResult.x_toFit.size(); i++) {
+      for(size_t i=0; i<circResult.x_toFit.size(); i++) {
         CIRCLE(circResult.x_toFit[i], circResult.y_toFit[i], 20);
       }
     }
