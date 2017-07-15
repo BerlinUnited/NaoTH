@@ -75,6 +75,7 @@ public:
   void calculateKeyPointsBetter(BestPatchList& best) const {
     //calculateKeyPoints(getBallDetectorIntegralImage(), best);
     calculateKeyPointsFast(getBallDetectorIntegralImage(), best);
+    //calculateKeyPointsFull(getBallDetectorIntegralImage(), best);
   }
 
   // scan the integral image for white key points
@@ -274,10 +275,10 @@ void BallKeyPointExtractor::calculateKeyPointsFast(const ImageType& integralImag
   {
     double estimatedRadius = CameraGeometry::estimatedBallRadius(
       getCameraMatrix(), getImage().cameraInfo, getFieldInfo().ballRadius,
-      point.x*FACTOR, point.y*FACTOR);
+      getImage().width()/2, point.y*FACTOR);
     
     // Note: we have a minimal allowed radius
-    int radius = (int)(std::max(6.0, estimatedRadius) / FACTOR + 0.5);
+    int radius = (int)(estimatedRadius / FACTOR + 0.5);
 
     // smalest ball size == 3 => ball size == FACTOR*3 == 12
     if (point.y < radius || point.y + radius >= (int)integralImage.getHeight()) {
@@ -288,7 +289,7 @@ void BallKeyPointExtractor::calculateKeyPointsFast(const ImageType& integralImag
     {
       //evaluatePatch(integralImage, best, point, size, border);
 
-      if(cameraID == CameraInfo::Bottom && point.y+radius >(int)(integralImage.getHeight()/4*3) &&
+      if(cameraID == CameraInfo::Bottom && //point.y+radius >(int)(integralImage.getHeight()/2) &&
          getBodyContour().isOccupied(point.x*integralImage.FACTOR, (point.y+radius)*integralImage.FACTOR)) {
         continue;
       }
@@ -354,47 +355,40 @@ void BallKeyPointExtractor::calculateKeyPointsFull(const ImageType& integralImag
   {
     double estimatedRadius = CameraGeometry::estimatedBallRadius(
       getCameraMatrix(), getImage().cameraInfo, getFieldInfo().ballRadius,
-      point.x*FACTOR, point.y*FACTOR);
+      getImage().width()/2, point.y*FACTOR);
     
-    double radius = std::max( 6.0, estimatedRadius);
-    int size   = (int)(radius*2.0/FACTOR+0.5);
-    int border = (int)(radius*params.borderRadiusFactorClose/FACTOR+0.5);
-    int rad = (int)(estimatedRadius/FACTOR +0.5);
-
-    // HACK: different parameters depending on size
-    if(size < 40/FACTOR) {
-      border = (int)(radius*params.borderRadiusFactorFar/FACTOR+0.5);
-    }
-    border = std::max( 2, border);
+    
+    int radius = (int)(estimatedRadius / FACTOR + 0.5);
 
     // smalest ball size == 3 => ball size == FACTOR*3 == 12
-    if (point.y < rad || point.y + rad >= (int)integralImage.getHeight()) {
+    if (point.y < radius || point.y + radius >= (int)integralImage.getHeight()) {
       continue;
     }
-    
-    for(point.x = rad; point.x+rad < (int)integralImage.getWidth(); ++point.x)
+
+    for(point.x = radius; point.x+radius < (int)integralImage.getWidth(); ++point.x)
     {
       //evaluatePatch(integralImage, best, point, size, border);
 
-      if(cameraID == CameraInfo::Bottom && getBodyContour().isOccupied(point.x*integralImage.FACTOR, (point.y+rad)*integralImage.FACTOR)) {
+      if(cameraID == CameraInfo::Bottom && getBodyContour().isOccupied(point.x*integralImage.FACTOR, (point.y+radius)*integralImage.FACTOR)) {
         values[point.x][point.y][0] = 0.0;
-        values[point.x][point.y][1] = rad;
+        values[point.x][point.y][1] = radius;
         continue;
       }
 
-      int inner = integralImage.getSumForRect(point.x-rad, point.y-rad, point.x+rad, point.y+rad, 0);
-      double greeInner = integralImage.getDensityForRect(point.x-rad, point.y-rad, point.x+rad, point.y+rad, 1);
+      int inner = integralImage.getSumForRect(point.x-radius, point.y-radius, point.x+radius, point.y+radius, 0);
+      double greeInner = integralImage.getDensityForRect(point.x-radius, point.y-radius, point.x+radius, point.y+radius, 1);
+      const int size = radius*2;
 
       if (inner*2 > size*size && greeInner < 0.5)
       {
         double value = ((double)inner)/((double)(size)*(size));
         values[point.x][point.y][0] = value;
-        values[point.x][point.y][1] = rad;
+        values[point.x][point.y][1] = radius;
       }
       else 
       {
         values[point.x][point.y][0] = 0.0;
-        values[point.x][point.y][1] = rad;
+        values[point.x][point.y][1] = radius;
       }
     }
   }
@@ -415,7 +409,7 @@ void BallKeyPointExtractor::calculateKeyPointsFull(const ImageType& integralImag
         {
           double value = values[x][y][0];
           int rad = (int)values[x][y][1];
-          best.addMean(
+          best.add(
             (x-rad)*integralImage.FACTOR, 
             (y-rad)*integralImage.FACTOR, 
             (x+rad)*integralImage.FACTOR, 
