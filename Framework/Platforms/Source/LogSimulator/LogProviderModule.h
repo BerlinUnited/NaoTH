@@ -9,7 +9,7 @@
 #define _LogProviderModule_h_
 
 #include <ModuleFramework/Module.h>
-#include "LogFileScanner.h"
+#include <Tools/Logfile/LogFileScanner.h>
 
 #include <Tools/Debug/DebugRequest.h>
 

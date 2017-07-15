@@ -288,42 +288,9 @@ public class Simspark extends AbstractDialog
 
     private void btnConnectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConnectActionPerformed
         if (btnConnect.isSelected()) {
-                if (simspark_comm != null) {
-                    try {
-                        simspark_comm.disconnect();
-                    } catch (IOException | InterruptedException ex) {
-                        Logger.getLogger(Simspark.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                }
-                try {
-                    simspark_comm = new SimsparkMonitor();
-                    simspark_comm.connect(tf_monitor_ip.getText().trim(), Integer.parseInt(tf_monitor_port.getText().trim()));
-
-                    // start/schedule UI-updater
-                    this.timerUpdater = new Timer();
-                    this.timerUpdater.scheduleAtFixedRate(new UpdateTableTask(simspark_comm.state), 100, 33);
-
-                    // update UI
-                    tb_monitor.setIcon(connectionIcon);
-                    tf_monitor_ip.setEnabled(false);
-                    tf_monitor_port.setEnabled(false);
-                } catch (IOException ex) {
-                    JOptionPane.showMessageDialog(null, "Couldn't connect!", "Couldn't connect", JOptionPane.WARNING_MESSAGE);
-                    simspark_comm = null;
-                    btnConnect.setSelected(false);
-                }
+            connect();
         } else {
-            if (simspark_comm != null) {
-                try {
-                    simspark_comm.disconnect();
-                } catch (IOException | InterruptedException ex) {
-                    Logger.getLogger(Simspark.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-            simspark_comm = null;
-            tb_monitor.setIcon(null);
-            tf_monitor_ip.setEnabled(true);
-            tf_monitor_port.setEnabled(true);
+            disconnect();
         }
     }//GEN-LAST:event_btnConnectActionPerformed
 
@@ -397,6 +364,54 @@ public class Simspark extends AbstractDialog
         return default_val;
     }
     
+    private void connect() {
+        if (simspark_comm != null) {
+            try {
+                simspark_comm.disconnect();
+            } catch (IOException | InterruptedException ex) {
+                Logger.getLogger(Simspark.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        try {
+            simspark_comm = new SimsparkMonitor();
+            simspark_comm.connect(tf_monitor_ip.getText().trim(), Integer.parseInt(tf_monitor_port.getText().trim()));
+
+            // start/schedule UI-updater
+            this.timerUpdater = new Timer();
+            this.timerUpdater.scheduleAtFixedRate(new UpdateTableTask(simspark_comm.state), 100, 33);
+
+            // update UI
+            tb_monitor.setIcon(connectionIcon);
+            tf_monitor_ip.setEnabled(false);
+            tf_monitor_port.setEnabled(false);
+        } catch (IOException ex) {
+            JOptionPane.showMessageDialog(null, "Couldn't connect!", "Couldn't connect", JOptionPane.WARNING_MESSAGE);
+            simspark_comm = null;
+            btnConnect.setSelected(false);
+        }
+    }
+    
+    private void disconnect() {
+        if (simspark_comm != null) {
+            try {
+                simspark_comm.disconnect();
+            } catch (IOException | InterruptedException ex) {
+                Logger.getLogger(Simspark.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        if(timerUpdater != null) {
+            timerUpdater.cancel();
+        }
+        simspark_comm = null;
+        timerUpdater = null;
+        
+        // update UI
+        tb_monitor.setIcon(null);
+        tf_monitor_ip.setEnabled(true);
+        tf_monitor_port.setEnabled(true);
+        btnConnect.setSelected(false);
+    }
+    
     private class UpdateTableTask extends TimerTask {
         SimsparkState state;
         public UpdateTableTask(SimsparkState state) {
@@ -405,9 +420,13 @@ public class Simspark extends AbstractDialog
             
         @Override
         public void run() {
-            TableModel model = jTable1.getModel();
-            for (int i = 0; i < model.getRowCount(); i++) {
-                model.setValueAt(state.get(model.getValueAt(i, 0)), i, 1);
+            if(simspark_comm != null && simspark_comm.isAlive()) {
+                TableModel model = jTable1.getModel();
+                for (int i = 0; i < model.getRowCount(); i++) {
+                    model.setValueAt(state.get(model.getValueAt(i, 0)), i, 1);
+                }
+            } else {
+                disconnect();
             }
         } // end run
     }

@@ -13,11 +13,13 @@ patch_size = (24, 24)  # width, height
 def parse_arguments(argv):
     input_file = ''
     flag = ''
+    
     try:
         opts, args = getopt.getopt(argv, "hi:f:", ["ifile=", "flag"])
-    except getopt.GetoptError:
-        print('patch_export.py -i <input file>')
+    except getopt.GetoptError as ex:
+        print('cannot parse file arguments: ', ex)
         sys.exit(2)
+        
     if opts == []:
         print('patch_export.py -i <input file>')
         sys.exit(2)
@@ -107,7 +109,7 @@ def exportPatches(patchdata, labels, label_names, target_path):
 
 def exportPatchesAll(patchdata, target_path):
 
-    # create the ourput directories for all labels
+    # create the output directories for all labels
     export_path = os.path.join(target_path, 'patch')
     if not os.path.exists(export_path):
         os.makedirs(export_path)
