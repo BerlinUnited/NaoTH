@@ -47,7 +47,7 @@ BallCandidateDetector::BallCandidateDetector()
   cnnMap.insert({"full", std::make_shared<CNNFull>()});
   cnnMap.insert({"small", std::make_shared<CNNSmall>()});
 
-  currentCNNClassifier = cnnMap["cnn"];
+  currentCNNClassifier = cnnMap["aug2"];
 }
 
 BallCandidateDetector::~BallCandidateDetector()
