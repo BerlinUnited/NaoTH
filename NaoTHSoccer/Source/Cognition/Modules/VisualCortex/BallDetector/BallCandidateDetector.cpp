@@ -12,6 +12,12 @@
 #include "Tools/CVClassifier.h"
 #include "Tools/BlackSpotExtractor.h"
 
+#include "Classifier/CNNAugmented1.h"
+#include "Classifier/CNNAugmented2.h"
+#include "Classifier/CNNClassifier.h"
+#include "Classifier/CNNFull.h"
+#include "Classifier/CNNSmall.h"
+
 using namespace std;
 
 BallCandidateDetector::BallCandidateDetector()
@@ -33,10 +39,15 @@ BallCandidateDetector::BallCandidateDetector()
   getDebugParameterList().add(&params);
 
   //register classifier
-  cnnMap.insert({"CNN", std::make_shared<CNNClassifier>()});
   cnnMap.insert({"CVHaar", std::make_shared<CVHaarClassifier>(params.haarDetector.model_file)}); //Hack!
-  // TODO: add more
-  currentCNNClassifier = cnnMap["CNN"];
+
+  cnnMap.insert({"aug2", std::make_shared<CNNAugmented2>()});
+  cnnMap.insert({"aug1", std::make_shared<CNNAugmented1>()});
+  cnnMap.insert({"cnn", std::make_shared<CNNClassifier>()});
+  cnnMap.insert({"full", std::make_shared<CNNFull>()});
+  cnnMap.insert({"small", std::make_shared<CNNSmall>()});
+
+  currentCNNClassifier = cnnMap["cnn"];
 }
 
 BallCandidateDetector::~BallCandidateDetector()
@@ -57,14 +68,23 @@ void BallCandidateDetector::execute(CameraInfo::CameraID id)
   //theBallKeyPointExtractor->getModuleT()->calculateKeyPoints(best);
   theBallKeyPointExtractor->getModuleT()->calculateKeyPointsBetter(best);
 
+
+  // update selected classifier from parameters
+  // TODO: make it more efficient
+  auto location = cnnMap.find(params.classifier);
+  if(location != cnnMap.end()){
+    currentCNNClassifier = location->second;
+  }
+
+
   if(best.size() > 0) {
     calculateCandidates();
   }
 
   DEBUG_REQUEST("Vision:BallCandidateDetector:refinePatches",
     for(BestPatchList::reverse_iterator i = best.rbegin(); i != best.rend(); ++i) {
-      BestPatchList::Patch p = theBallKeyPointExtractor->getModuleT()->refineKeyPoint(*i);
-      RECT_PX(ColorClasses::red, p.min.x, p.min.y, p.max.x, p.max.y);
+      //BestPatchList::Patch p = theBallKeyPointExtractor->getModuleT()->refineKeyPoint(*i);
+      RECT_PX(ColorClasses::red, (*i).min.x, (*i).min.y, (*i).max.x, (*i).max.y);
     }
   );
 
@@ -128,8 +148,8 @@ void BallCandidateDetector::calculateCandidates()
         break;
       }
 
-      const Vector2i& min((*i).min);
-      const Vector2i& max((*i).max);
+      Vector2i min((*i).min);
+      Vector2i max((*i).max);
 
       // (1) check green below
       bool checkGreenBelow = false;
@@ -200,6 +220,37 @@ void BallCandidateDetector::calculateCandidates()
           }
       }
 
+      /*
+      Vector2i maxMin(min);
+      Vector2i maxMax(max);
+      double maxDiv = 0;
+      int size = maxMax.x - maxMin.x;
+      
+      for (int dx = -size/4; dx < size/4; dx+=4) {
+        for (int dy = -size/4; dy < size/4; dy+=4) {
+          if (getImage().isInside(min.x + dx, min.y + dy) && getImage().isInside(max.x + dx, max.y+dy)) {
+            
+            int inner = getBallDetectorIntegralImage().getSumForRect((min.x + dx)/FACTOR, (min.y + dy)/FACTOR, (max.x + dx)/FACTOR, (max.y + dy)/FACTOR, 0);
+            //double stddev = calculateContrastIterative(getImage(), getFieldColorPercept(), min.x + dx, min.y + dy, max.x + dx, max.y + dy, patch_size);
+            double stddev = ((double)inner)/((double)(size)*(size));
+            if (stddev > maxDiv) {
+              maxDiv = stddev;
+              maxMin.x = min.x + dx;
+              maxMin.y = min.y + dy;
+              maxMax.x = max.x + dx;
+              maxMax.y = max.y + dy;
+            }
+          }
+        }
+      }
+      min = maxMin;
+      max = maxMax;
+      
+      DEBUG_REQUEST("Vision:BallCandidateDetector:drawCandidates",
+        RECT_PX(ColorClasses::yellow, maxMin.x, maxMin.y, maxMax.x, maxMax.y);
+      );
+      */
+      
 
       //if(checkGreenBelow && checkGreenInside)
       if(params.haarDetector.execute)
@@ -211,8 +262,8 @@ void BallCandidateDetector::calculateCandidates()
 
         BallCandidates::Patch patchedBorder(0);
         //int size = ((*i).max.x - (*i).min.x)/2;
-        patchedBorder.min = (*i).min;// - Vector2i(size,size);
-        patchedBorder.max = (*i).max;// + Vector2i(size,size);
+        patchedBorder.min = min;//(*i).min;// - Vector2i(size,size);
+        patchedBorder.max = max;//(*i).max;// + Vector2i(size,size);
 
         // add an additional border as post-processing
         int size = patchedBorder.max.x - patchedBorder.min.x;
@@ -228,11 +279,7 @@ void BallCandidateDetector::calculateCandidates()
         patchedBorder.max.x = patchedBorder.max.x + postBorder;
         patchedBorder.max.y = patchedBorder.max.y + postBorder;
 
-        auto location = cnnMap.find(params.CNN);
-        if(location != cnnMap.end()){
-          currentCNNClassifier = location->second;
-        }
-
+        
         if(getImage().isInside(patchedBorder.min.x, patchedBorder.min.y) && getImage().isInside(patchedBorder.max.x, patchedBorder.max.y))
         {
 
@@ -263,8 +310,8 @@ void BallCandidateDetector::calculateCandidates()
           }
         } else if(getImage().isInside(min.x, min.y) && getImage().isInside(max.x, max.y)) {
             BallCandidates::Patch p(0);
-            p.min = (*i).min;
-            p.max = (*i).max;
+            p.min = min;//(*i).min;
+            p.max = max;//(*i).max;
 
             PatchWork::subsampling(getImage(), p.data, min.x, min.y, max.x, max.y, patch_size);
 

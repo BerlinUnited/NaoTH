@@ -33,7 +33,6 @@
 #include "Tools/BestPatchList.h"
 #include "Tools/BallKeyPointExtractor.h"
 #include "Tools/CVHaarClassifier.h"
-#include "Classifier/CNNClassifier.h"
 #include "Tools/BlackSpotExtractor.h"
 #include "Tools/DataStructures/RingBufferWithSum.h"
 
@@ -150,7 +149,7 @@ private:
       PARAMETER_REGISTER(blackKeysCheck.minSizeToCheck) = 60;
       PARAMETER_REGISTER(blackKeysCheck.minValue) = 20;
 
-      PARAMETER_REGISTER(CNN) = "CNN";
+      PARAMETER_REGISTER(classifier) = "cnn";
       
       syncWithConfig();
     }
@@ -189,7 +188,7 @@ private:
     int contrastVariant;
     double contrastMinimum;
 
-    std::string CNN;
+    std::string classifier;
 
   } params;
 
