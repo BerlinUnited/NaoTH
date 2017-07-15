@@ -11,6 +11,7 @@ using namespace std;
 
 ActionSimulator::ActionSimulator()
 {
+  DEBUG_REQUEST_REGISTER("Simulation:draw_goal_collisions", "draw goal collisions", false);
 }
 
 ActionSimulator::~ActionSimulator(){}

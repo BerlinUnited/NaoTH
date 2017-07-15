@@ -148,7 +148,7 @@ public:
       return ballPositions;
     }
 
-    int categorie(BallPositionCategory cat) const {
+    int category(BallPositionCategory cat) const {
       return cat_histogram[cat];
     }
 
@@ -171,13 +171,11 @@ public:
   };
 
 private:
-  void simulateAction(const Action& action, ActionResults& result, size_t numParticles) const;
   bool calculateCollision(const std::vector<Math::LineSegment>& lines, const Vector2d& start, const Vector2d& end, Vector2d& result) const;
 
   BallPositionCategory classifyBallPosition( const Vector2d& ballPosition ) const;
 
   double evaluateAction(const Vector2d& a) const;
-  double evaluateAction(const ActionResults& results) const;
 
 private: // debug
   void draw_potential_field() const;
@@ -210,6 +208,10 @@ private:
   {
     return slopeX * x + slopeY * y;
   }
+
+public:
+  void simulateAction(const Action& action, ActionResults& result, size_t numParticles) const;
+  double evaluateAction(const ActionResults& results) const;
 };
 
 #endif  /* _ActionSimulator_H */

@@ -50,6 +50,7 @@ void KickDirectionSimulator::normalize(SampleSet& samples) const
 
 void KickDirectionSimulator::update(SampleSet& samples) const
 {
+  std::cout << samples.size();
 }
 
 int KickDirectionSimulator::resample(SampleSet& sampleSet, int n, double sigma) const
