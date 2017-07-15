@@ -5,6 +5,7 @@ RansacLineDetector::RansacLineDetector()
   // initialize some stuff here
   DEBUG_REQUEST_REGISTER("Vision:RansacLineDetector:draw_edgels_field", "", false);
   DEBUG_REQUEST_REGISTER("Vision:RansacLineDetector:draw_lines_field", "", false);
+  DEBUG_REQUEST_REGISTER("Vision:RansacLineDetector:fit_and_draw_circle_field", "", false);
 
   getDebugParameterList().add(&params);
 }
@@ -44,11 +45,8 @@ void RansacLineDetector::execute()
   }
 
   bool foundLines = false;
-  int bestInlierCirc = 0;
 
-  Ellipse circResult;
-
-  for(int i = 0; i < 11; ++i)
+  for(int i = 0; i < params.maxLines; ++i)
   {
     Math::LineSegment result;
     if(ransac(result) > 0)
@@ -59,10 +57,6 @@ void RansacLineDetector::execute()
       getLinePercept().lines.push_back(fieldLine);
     } 
     else {
-      // Check for circle
-      if (params.fit_circle) {
-        bestInlierCirc = ransacEllipse(circResult);
-      }
       break;
     }
   }
@@ -79,6 +73,14 @@ void RansacLineDetector::execute()
           line.lineOnField.end().x, line.lineOnField.end().y);
       }
     }
+  );
+
+  DEBUG_REQUEST("Vision:RansacLineDetector:fit_and_draw_circle_field",
+    FIELD_DRAWING_CONTEXT;
+    // fit ellipse
+    Ellipse circResult;
+
+    int bestInlierCirc = ransacEllipse(circResult);
 
     if (bestInlierCirc > 0) {
       double c[2];
@@ -98,7 +100,6 @@ void RansacLineDetector::execute()
       }
     }
   );
-
 }
 
 int RansacLineDetector::ransac(Math::LineSegment& result)
@@ -205,7 +206,6 @@ int RansacLineDetector::ransacEllipse(Ellipse& result)
     std::vector<double> x, y;
     x.reserve(5);
     y.reserve(5);
-    //double x[5], y[5];
     for(int t=0; t<5; t++) {
       size_t r = swap_random(outliers, (int) outliers.size()-(t+1));
       const Edgel& e = getLineGraphPercept().edgels[r];

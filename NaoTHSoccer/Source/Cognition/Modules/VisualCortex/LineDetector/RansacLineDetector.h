@@ -18,7 +18,7 @@
 
 #include "Tools/Debug/DebugParameterList.h"
 
-#include "Cognition/Modules/VisualCortex/LineDetector/ellipse.h"
+#include "Cognition/Modules/VisualCortex/LineDetector/Ellipse.h"
 
 BEGIN_DECLARE_MODULE(RansacLineDetector)
   PROVIDE(DebugRequest)
@@ -58,7 +58,7 @@ private:
       PARAMETER_REGISTER(inlierMin) = 10;
       PARAMETER_REGISTER(directionSimilarity) = 0.8;
 
-      PARAMETER_REGISTER(fit_circle) = false;
+      PARAMETER_REGISTER(maxLines) = 11;
       PARAMETER_REGISTER(circle_iterations) = 20;
       PARAMETER_REGISTER(circle_outlierThreshold) = 70;
       PARAMETER_REGISTER(circle_inlierMin) = 10;
@@ -72,8 +72,8 @@ private:
     double outlierThreshold;
     int inlierMin;
     double directionSimilarity;
+    int maxLines;
 
-    bool fit_circle;
     int circle_iterations;
     double circle_outlierThreshold;
     int circle_inlierMin;
