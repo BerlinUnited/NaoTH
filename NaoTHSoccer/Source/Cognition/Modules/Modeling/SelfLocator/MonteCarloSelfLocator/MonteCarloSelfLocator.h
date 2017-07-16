@@ -134,7 +134,7 @@ private: // local types
       PARAMETER_REGISTER(goalPostSigmaDistance) = 0.1;
       PARAMETER_REGISTER(goalPostSigmaAngle) = 0.1;
 
-      PARAMETER_REGISTER(updateByLinePoints) = true;
+      PARAMETER_REGISTER(updateByLinePoints) = false;
       PARAMETER_REGISTER(linePointsSigmaDistance) = 0.1;
       PARAMETER_REGISTER(linePointsSigmaAngle) = 0.1;
       PARAMETER_REGISTER(linePointsMaxNumber) = 10;
