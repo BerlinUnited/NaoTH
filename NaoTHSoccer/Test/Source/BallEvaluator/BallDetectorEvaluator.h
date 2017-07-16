@@ -103,6 +103,10 @@ private:
     {
       return params.modelName + "_" + std::to_string(params.minNeighbours) + "_" + std::to_string(params.maxWindowSize);
     }
+    else if(params.type == ExperimentParameters::Type::cnn)
+    {
+      return params.modelName;
+    }
     // FIXME: what shall I return?
     assert(false);
     return "";
