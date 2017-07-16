@@ -84,7 +84,7 @@ private:
 
   // calculate the simmilarity to the other edgel
   // returns a value [0,1], 0 - not simmilar, 1 - very simmilar
-  inline double sim(const Math::Line& line, const Edgel& edgel) const
+  inline double sim(const Math::Line& line, const EdgelD& edgel) const
   {
     double s = 0.0;
     if(line.getDirection()*edgel.direction > 0) {

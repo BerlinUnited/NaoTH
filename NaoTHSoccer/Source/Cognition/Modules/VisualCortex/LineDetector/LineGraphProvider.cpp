@@ -84,10 +84,14 @@ void LineGraphProvider::execute(CameraInfo::CameraID id)
   for(const std::vector<int>& subgraph : lineGraphsIds)
   {
     graph.emplace_back();
-    for(size_t i = 0; i < subgraph.size(); ++i) {
+    for(size_t left=0, right=1; right < subgraph.size(); ++left, ++right) {
+
+      const Vector2d& edgelLeft = (edgelProjectionsBegin[subgraph[left]] + edgelProjectionsEnd[subgraph[left]])*0.5;
+      const Vector2d& edgelRight = (edgelProjectionsBegin[subgraph[right]] + edgelProjectionsEnd[subgraph[right]])*0.5;
 
       EdgelD edgel;
-      edgel.point = (edgelProjectionsBegin[subgraph[i]] + edgelProjectionsEnd[subgraph[i]])*0.5;
+      edgel.point = Vector2d(edgelLeft + edgelRight)*0.5;
+      edgel.direction = (edgelRight - edgelLeft).normalize();
 
       graph.back().push_back(edgel);
     }

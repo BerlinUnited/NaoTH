@@ -109,6 +109,10 @@ int RansacLineDetectorOnGraphs::ransac(Math::LineSegment& result, const std::vec
     const EdgelD& a = subgraph[i0];
     const EdgelD& b = subgraph[i1];
 
+    if(a.sim(b) < params.directionSimilarity) {
+      continue;
+    }
+
     Math::Line model(a.point, b.point-a.point);
 
     double inlierError = 0;
@@ -118,7 +122,7 @@ int RansacLineDetectorOnGraphs::ransac(Math::LineSegment& result, const std::vec
       double d = model.minDistance(e.point);
 
       // inlier
-      if(d < params.outlierThreshold) {
+      if(d < params.outlierThreshold && sim(model, e) > params.directionSimilarity) {
         ++inlier;
         inlierError += d;
       }
@@ -133,7 +137,6 @@ int RansacLineDetectorOnGraphs::ransac(Math::LineSegment& result, const std::vec
   }
 
   if(bestInlier) {
-
     double minT = 0;
     double maxT = 0;
 
@@ -141,7 +144,7 @@ int RansacLineDetectorOnGraphs::ransac(Math::LineSegment& result, const std::vec
     {
       double d = bestModel.minDistance(e.point);
 
-      if(d < params.outlierThreshold) {
+      if(d < params.outlierThreshold && sim(bestModel, e) > params.directionSimilarity) {
         double t = bestModel.project(e.point);
         minT = std::min(t, minT);
         maxT = std::max(t, maxT);
