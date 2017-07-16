@@ -19,8 +19,12 @@ class LineGraphPercept
 public:
   void reset() {
     edgels.clear();
+
     edgelsInImage.clear();
     edgelsInImageTop.clear();
+
+    lineGraphs.clear();
+    lineGraphsTop.clear();
   }
 
 public:
@@ -29,6 +33,9 @@ public:
 
   std::vector<EdgelD> edgelsInImage;
   std::vector<EdgelD> edgelsInImageTop;
+
+  std::vector<std::vector<EdgelD>> lineGraphs;
+  std::vector<std::vector<EdgelD>> lineGraphsTop;
 };
 
 namespace naoth
