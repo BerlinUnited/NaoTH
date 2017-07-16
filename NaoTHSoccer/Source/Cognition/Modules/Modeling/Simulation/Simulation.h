@@ -127,7 +127,7 @@ private:
   std::vector<ActionSimulator::Action> action_local;
   std::vector<ActionSimulator::ActionResults> actionsConsequences;
 
-  void Simulation::draw_action_results(const ActionSimulator::ActionResults& actionsResults, const Color& color) const;
+  void draw_action_results(const ActionSimulator::ActionResults& actionsResults, const Color& color) const;
 
 };
 
