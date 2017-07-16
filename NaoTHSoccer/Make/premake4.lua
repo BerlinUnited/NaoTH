@@ -24,6 +24,11 @@ end
 -- print("INFO:" .. (os.findlib("Controller") or "couldn't fined the lib Controller"))
 
 newoption {
+   trigger     = "Test",
+   description = "Generate test projects"
+}
+
+newoption {
    trigger     = "Wno-conversion",
    description = "Disable the -Wconversion warning for gcc"
 }
@@ -141,6 +146,9 @@ solution "NaoTHSoccer"
     -- may be needed for newer glib2 versions, remove if not needed
     buildoptions {"-Wno-deprecated-declarations"}
     buildoptions {"-Wno-deprecated"}
+    -- Prohibit GCC to be clever and use undefined behavior for some optimizations
+    -- (see http://www.airs.com/blog/archives/120 for some nice explanation)
+    buildoptions {"-fno-strict-overflow"}
     buildoptions {"-std=c++11"}
     --flags { "ExtraWarnings" }
     links {"pthread"}
@@ -215,4 +223,12 @@ solution "NaoTHSoccer"
       kind "SharedLib"
       links { "NaoTHSoccer", "Commons" }
       vpaths { ["*"] = FRAMEWORK_PATH .. "/Platforms/Source/LogSimulatorJNI" }
+      
+    -- generate tests if required
+    if _OPTIONS["Test"] ~= nil then
+      dofile ("../Test/Make/BallEvaluator.lua")
+        kind "ConsoleApp"
+        links { "NaoTHSoccer", "Commons" }
+        vpaths { ["*"] = "../Test/Source/BallEvaluator" }
+    end
   end
