@@ -79,7 +79,8 @@ private:
   void resetSamples(SampleSet& samples, size_t n) const;
   void normalize(SampleSet& samples) const;
   void update(SampleSet& samples);
-  int resample(SampleSet& sampleSet, int n, double sigma) const;
+  void resample(SampleSet& sampleSet, int n, double sigma) const;
+  void KickDirectionSimulator::calculate_best_direction(size_t iterations, size_t num_angle_particle);
 
 public:
   double m_max;
