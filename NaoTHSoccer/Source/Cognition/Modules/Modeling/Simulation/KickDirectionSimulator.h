@@ -8,6 +8,7 @@
 #define _KickDirectionSimulator_H
 
 #include <ModuleFramework/Module.h>
+#include <ModuleFramework/ModuleManager.h>
 
 // Representations
 #include "Representations/Infrastructure/FrameInfo.h"
@@ -27,6 +28,9 @@
 #include "Tools/Debug/DebugModify.h"
 #include <Representations/Debug/Stopwatch.h>
 #include "Tools/Filters/AssymetricalBoolFilter.h"
+
+//
+#include "Tools/ActionSimulator.h"
 
 // Debug
 #include <Tools/Debug/DebugRequest.h>
@@ -48,7 +52,7 @@ BEGIN_DECLARE_MODULE(KickDirectionSimulator)
   PROVIDE(KickActionModel)
 END_DECLARE_MODULE(KickDirectionSimulator)
 
-class KickDirectionSimulator: public KickDirectionSimulatorBase
+class KickDirectionSimulator : public KickDirectionSimulatorBase, public ModuleManager
 {
 public:
   KickDirectionSimulator();
@@ -70,10 +74,16 @@ private:
 
 
 private:
+  ModuleCreator<ActionSimulator>* simulationModule;
+
   void resetSamples(SampleSet& samples, size_t n) const;
   void normalize(SampleSet& samples) const;
-  void update(SampleSet& samples) const;
+  void update(SampleSet& samples);
   int resample(SampleSet& sampleSet, int n, double sigma) const;
+
+public:
+  double m_max;
+  double m_min;
 };
 
 #endif  /* _KickDirectionSimulator_H */
