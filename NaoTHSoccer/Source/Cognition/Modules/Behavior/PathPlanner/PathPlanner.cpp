@@ -389,7 +389,6 @@ void PathPlanner::manage_step_buffer()
   {
     step_buffer.erase(step_buffer.begin());
     last_stepRequestID = getMotionStatus().stepControl.stepRequestID + 1;
-    std::cout << "last_stepRequestID " << last_stepRequestID << std::endl;
   }
 }
 
@@ -400,8 +399,6 @@ void PathPlanner::execute_step_buffer()
   if (step_buffer.empty()) {
     return;
   }
-
-  std::cout << step_buffer.size() << std::endl;
 
   getMotionRequest().id                                        = motion::walk;
   getMotionRequest().standardStand                             = false;

@@ -98,6 +98,8 @@ Pose3D FootTrajectorGenerator::stepControl(
 
     vector<Vector2d > vecY;
     vecY.push_back(Vector2d(0.0, oldFoot.translation.y));
+    vecY.push_back(Vector2d(0.5, oldFoot.translation.y));
+    vecY.push_back(Vector2d(0.75, /*oldFoot.translation.y + ((targetFoot.translation.y - oldFoot.translation.y) / 2)*/ targetFoot.translation.y - speedTarget.translation.y));
     vecY.push_back(Vector2d(1.0, targetFoot.translation.y));
     vecY.push_back(Vector2d(1.1, speedTarget.translation.y));
     CubicSpline theCubicSplineY(vecY);

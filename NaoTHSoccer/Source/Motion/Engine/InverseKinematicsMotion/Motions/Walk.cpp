@@ -232,7 +232,7 @@ void Walk::calculateNewStep(const Step& lastStep, Step& newStep, const WalkReque
   if ( getMotionRequest().id != getId() || (do_emergency_stop && walkRequest.stepControl.isInterruptable))
   {
     // try to make a last step to align the feet if it is required
-    if ( getMotionRequest().standardStand) {
+    if ( getMotionRequest().standardStand ) {
       newStep.footStep = theFootStepPlanner.finalStep(lastStep.footStep, walkRequest);
     } else {
       newStep.footStep = theFootStepPlanner.zeroStep(lastStep.footStep);
@@ -285,7 +285,7 @@ void Walk::calculateNewStep(const Step& lastStep, Step& newStep, const WalkReque
     }
   }
   else // regular walk 
-  { 
+  {
     newStep.footStep = theFootStepPlanner.nextStep(lastStep.footStep, walkRequest);
     newStep.numberOfCycles = parameters().step.duration / getRobotInfo().basicTimeStep;
     newStep.type = STEP_WALK;
@@ -340,6 +340,9 @@ void Walk::planZMP()
     getDebugDrawings().pen(Color::BLUE, 5.0);
     getDebugDrawings().drawCircle(zmp.x, zmp.y, 10);
   );
+
+  PLOT("Walk:DRAW_ZMP_x", zmp.x);
+  PLOT("Walk:DRAW_ZMP_y", zmp.y);
 
   planningStep.planningCycle++;
 }
