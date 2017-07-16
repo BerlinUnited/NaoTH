@@ -314,8 +314,10 @@ void BallDetectorEvaluator::outputResults(std::string outFileName)
 
     CTML::Node tr("tr");
     tr.AppendChild(CTML::Node("td", params.modelName));
-    tr.AppendChild(CTML::Node("td", std::to_string(params.minNeighbours)));
-    tr.AppendChild(CTML::Node("td", std::to_string(params.maxWindowSize)));
+    tr.AppendChild(CTML::Node("td", params.type == ExperimentParameters::Type::haar ?
+                                std::to_string(params.minNeighbours) : ""));
+    tr.AppendChild(CTML::Node("td", params.type == ExperimentParameters::Type::haar?
+                                std::to_string(params.maxWindowSize) : ""));
     tr.AppendChild(CTML::Node("td", std::to_string(r.precision)).SetAttribute("class", precisionClass(r.precision)));
     tr.AppendChild(CTML::Node("td", std::to_string(r.recall)).SetAttribute("class", recallClass(r.recall)));
     tr.AppendChild(CTML::Node("td").AppendChild(CTML::Node("a", "details").SetAttribute("href", "#result_" + toID(params))));
