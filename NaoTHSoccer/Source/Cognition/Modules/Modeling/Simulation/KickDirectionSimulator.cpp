@@ -25,12 +25,22 @@ KickDirectionSimulator::~KickDirectionSimulator(){}
 void KickDirectionSimulator::execute()
 {
   size_t num_angle_particle = 30;
-  size_t iterations = 1;
+  size_t iterations = 10;
   //resetSamples(samples, num_angle_particle);
   
  
   calculate_best_direction(iterations, num_angle_particle);
-
+  
+  FIELD_DRAWING_CONTEXT;
+  for (size_t i = 0; i < samples.size(); i++)
+  {
+    Vector2d point(100,0);
+    point.rotate(samples[i].rotation);
+    point = getRobotPose() * point;
+    PEN("000000", 1);
+    FILLOVAL(point.x, point.y, 50, 50);
+  }
+  
 }//end execute
 
 void KickDirectionSimulator::calculate_best_direction(size_t iterations, size_t num_angle_particle){
@@ -54,8 +64,8 @@ void KickDirectionSimulator::calculate_best_direction(size_t iterations, size_t 
     double b = 0;
     for (size_t i = 0; i < samples.size(); ++i)
     {
-      a += sin(a);
-      b += sin(b);
+      a += sin(samples[i].rotation);
+      b += cos(samples[i].rotation);
     }
     double mean_angle = atan2(a, b);
 
@@ -64,26 +74,26 @@ void KickDirectionSimulator::calculate_best_direction(size_t iterations, size_t 
 
     Vector2d to = getRobotPose() * Vector2d(500, 0).rotate(mean_angle);
 
-    PEN("FF0000", 50);
-    ARROW(getRobotPose().translation.x, getRobotPose().translation.y, to.x, to.y);
+      PEN("FF0000", 50);
+      ARROW(getRobotPose().translation.x, getRobotPose().translation.y, to.x, to.y);
     );
   }
 }
 
 void KickDirectionSimulator::update(SampleSet& sampleSet)
 {
-  //Somehow get a specific action here
-  ActionSimulator::ActionParams blablaParams;
-  blablaParams.angle = 0.0;
-  blablaParams.speed = 1080.0;
-  blablaParams.angle_std = 0;
-  blablaParams.speed_std = 0;
-  double friction = 0.0275;
-
-  ActionSimulator::ActionResults actionsConsequences;
-  size_t simulation_num_particles = 1;
-
   for (size_t i = 0; i < sampleSet.size(); i++){
+    //Somehow get a specific action here
+    ActionSimulator::ActionParams blablaParams;
+    blablaParams.angle = 0.0;
+    blablaParams.speed = 1080.0;
+    blablaParams.angle_std = 6;
+    blablaParams.speed_std = 150;
+    double friction = 0.0275;
+
+    size_t simulation_num_particles = 1;
+    ActionSimulator::ActionResults actionsConsequences;
+
     blablaParams.angle += Math::toDegrees(sampleSet[i].rotation);
     auto blablaAction = ActionSimulator::Action(KickActionModel::kick_short, blablaParams, friction);
     simulationModule->getModuleT()->simulateAction(blablaAction, actionsConsequences, simulation_num_particles);
@@ -98,15 +108,6 @@ void KickDirectionSimulator::update(SampleSet& sampleSet)
     }
     else{
       sampleSet[i].likelihood = m_min;
-    }
-    //
-    FIELD_DRAWING_CONTEXT;
-    std::vector<ActionSimulator::CategorizedBallPosition>::const_iterator ballPosition = actionsConsequences.positions().begin();
-    for (; ballPosition != actionsConsequences.positions().end(); ++ballPosition)
-    {
-      Vector2d ball = getRobotPose() * ballPosition->pos();
-      PEN("000000", 1);
-      FILLOVAL(ball.x, ball.y, 50, 50);
     }
   }
 
