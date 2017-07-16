@@ -341,7 +341,7 @@ void LineGraphProvider::extendLineGraph(std::vector<Neighbors>& neighbors) {
 
     std::vector<int> subGraph;
     
-    int in = i;
+    int in = static_cast<int>(i);
     do {
       subGraph.push_back(in);
       processed[in] = true;
