@@ -25,6 +25,7 @@ LineGraphProvider::LineGraphProvider()
   DEBUG_REQUEST_REGISTER("Vision:LineGraphProvider:draw_line_graph", "", false);
 
   DEBUG_REQUEST_REGISTER("Vision:LineGraphProvider:draw_extended_line_graph", "", false);
+  DEBUG_REQUEST_REGISTER("Vision:LineGraphProvider:draw_extended_line_graph_top", "", false);
 
   getDebugParameterList().add(&parameters);
 }
@@ -75,16 +76,20 @@ void LineGraphProvider::execute(CameraInfo::CameraID id)
   lineGraphsIds.clear();
   extendLineGraph(edgelNeighbors);
 
+  std::vector<std::vector<EdgelD>>& graph = (cameraID == CameraInfo::Top)?
+        getLineGraphPercept().lineGraphsTop:
+        getLineGraphPercept().lineGraphs;
+
   // add the graphs to the representation
   for(const std::vector<int>& subgraph : lineGraphsIds)
   {
-    getLineGraphPercept().lineGraphs.emplace_back();
+    graph.emplace_back();
     for(size_t i = 0; i < subgraph.size(); ++i) {
-      
+
       EdgelD edgel;
       edgel.point = (edgelProjectionsBegin[subgraph[i]] + edgelProjectionsEnd[subgraph[i]])*0.5;
 
-      getLineGraphPercept().lineGraphs.back().push_back(edgel);
+      graph.back().push_back(edgel);
     }
   }
 

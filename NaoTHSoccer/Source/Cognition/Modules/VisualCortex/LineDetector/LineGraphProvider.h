@@ -101,6 +101,25 @@ public:
         }
       }
     );
+    DEBUG_REQUEST("Vision:LineGraphProvider:draw_extended_line_graph_top",
+      FIELD_DRAWING_CONTEXT;
+      int c = 0;
+      for(const std::vector<EdgelD>& subgraph : getLineGraphPercept().lineGraphsTop) {
+
+        PEN(ColorClasses::colorClassToHex((ColorClasses::Color)c),2);
+        c = (c+1) % ColorClasses::numOfColors;
+
+        for(size_t i = 0; i < subgraph.size(); i++) {
+          const Vector2d& first = subgraph[i].point;
+          CIRCLE( subgraph[i].point.x, subgraph[i].point.y, 25);
+
+          if(i+1 < subgraph.size()) {
+            const Vector2d& next = subgraph[i+1].point;
+            LINE(first.x,first.y,next.x,next.y);
+          }
+        }
+      }
+    );
   }
 
   class Parameters: public ParameterList
