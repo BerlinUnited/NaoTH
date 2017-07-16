@@ -5,20 +5,28 @@ clear all;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % select a meaningful name for the network
-netName="CNN_aug1_synthetic";
+netName="CNN_aug1_synthetic3";
 
 % select (multiple) directories containing "ball"/"noball" subdirectories with 
 % training data
 dataSetPath = {...
     '../data/augmented/test1/', ...
-    '../data/synthetic_ballonly'
+    '../data/synthetic_ballonly' ...
     };
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ACTUAL CODE: DO NOT CHANGE                                              %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+%%
 addpath('../generatorFunctions');
+
+% create result output directory and fail if output directory already exists
+resultFolder =  'result_' + netName;
+[~, errorMsg, ~] = mkdir(char(resultFolder));
+if ~isempty(errorMsg)
+    error('Aborting because output directory "%s" already exists!', resultFolder)
+end
+
 
 data = imageDatastore(dataSetPath, ...
         'IncludeSubfolders',true,...
@@ -90,9 +98,7 @@ options = trainingOptions('sgdm',...
 convnet = trainNetwork(data,layers,options);
 
 %%
-% create result output directory
-resultFolder =  'result_' + netName;
-mkdir(char(resultFolder));
+% save the resulting model
 save(resultFolder + '/convnet.mat', 'convnet');
 
 % also create the final C++ class
