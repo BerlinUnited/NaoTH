@@ -14,6 +14,7 @@ using namespace std;
 KickDirectionSimulator::KickDirectionSimulator()
  // : obstacleFilter(0.01, 0.1)
 {
+  simulationModule = registerModule<ActionSimulator>(std::string("Simulation"), true);
   DEBUG_REQUEST_REGISTER("KickDirectionSimulator:draw_best_direction", "best direction", false);
 }
 
