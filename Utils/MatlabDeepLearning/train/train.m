@@ -5,17 +5,20 @@ clear all;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % select a meaningful name for the network
-netName="CNN_XXX";
+netName="CNN_aug1_synthetic";
 
-% give (multiple) directory containing "ball"/"noball" subdirectories with 
+% select (multiple) directories containing "ball"/"noball" subdirectories with 
 % training data
 digitDatasetPath = {...
-    '../data/synthetic'
+    '../data/augmented/test1/', ...
+    '../data/synthetic_ballonly'
     };
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ACTUAL CODE: DO NOT CHANGE                                              %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+addpath('../generatorFunctions');
 
 digitData = imageDatastore(digitDatasetPath, ...
         'IncludeSubfolders',true,...
