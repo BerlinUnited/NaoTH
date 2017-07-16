@@ -9,7 +9,7 @@ netName="CNN_aug1_synthetic";
 
 % select (multiple) directories containing "ball"/"noball" subdirectories with 
 % training data
-digitDatasetPath = {...
+dataSetPath = {...
     '../data/augmented/test1/', ...
     '../data/synthetic_ballonly'
     };
@@ -20,22 +20,22 @@ digitDatasetPath = {...
 
 addpath('../generatorFunctions');
 
-digitData = imageDatastore(digitDatasetPath, ...
+data = imageDatastore(dataSetPath, ...
         'IncludeSubfolders',true,...
         'LabelSource','foldernames', 'ReadFcn',@imgReader);
 
 
 %%
 % The labels for each patch is automatically determined by the name of the
-% subfolder from digitDatasetPath the image is located at
-countLabel = digitData.countEachLabel;
+% subfolder from dataSetPath the image is located at
+countLabel = data.countEachLabel;
 disp(countLabel)
 numBallPatches = countLabel.Count(1)
 %%
-trainingNumFiles = round(numBallPatches*0.75);
+%trainingNumFiles = round(numBallPatches*0.75);
 %rng(1) % For reproducibility
-[trainDigitData,testDigitData] = splitEachLabel(digitData, ...
-				trainingNumFiles,'randomize');
+%[trainData,testData] = splitEachLabel(data, ...
+%				trainingNumFiles,'randomize');
 
 layers = [imageInputLayer([16 16 1], 'DataAugmentation',{'randfliplr', 'randcrop'}) % ,'randcrop'
           %dropoutLayer()
@@ -87,7 +87,7 @@ options = trainingOptions('sgdm',...
     'MaxEpochs', 30, ...
     'MiniBatchSize', 30); % 'cpu', 'parallel'
 
-convnet = trainNetwork(digitData,layers,options);
+convnet = trainNetwork(data,layers,options);
 
 %%
 % create result output directory
