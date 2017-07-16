@@ -6,7 +6,7 @@
 
 #include "KickDirectionSimulator.h"
 #include <algorithm>
-#include <numeric>
+#include <cmath>
 
 using namespace naoth;
 using namespace std;
@@ -50,11 +50,14 @@ void KickDirectionSimulator::calculate_best_direction(size_t iterations, size_t 
 
     // calculate mean angle
     // TODO do it differently since the values are circular
-    double mean_angle = 0;
-    for (size_t i = 0; i < samples.size(); i++){
-      mean_angle += samples[i].rotation;
+    double a = 0;
+    double b = 0;
+    for (size_t i = 0; i < samples.size(); ++i)
+    {
+      a += sin(a);
+      b += sin(b);
     }
-    mean_angle = mean_angle / samples.size();
+    double mean_angle = atan2(a, b);
 
     DEBUG_REQUEST("KickDirectionSimulator:draw_best_direction",
       FIELD_DRAWING_CONTEXT;
@@ -74,7 +77,7 @@ void KickDirectionSimulator::update(SampleSet& sampleSet)
   blablaParams.angle = 0.0;
   blablaParams.speed = 1080.0;
   blablaParams.angle_std = 0;
-  blablaParams.speed_std = 150;
+  blablaParams.speed_std = 0;
   double friction = 0.0275;
 
   ActionSimulator::ActionResults actionsConsequences;
