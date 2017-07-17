@@ -78,7 +78,7 @@ FootStep FootStepPlanner::nextStep(const FootStep& lastStep, const WalkRequest& 
     return firstStep(lastStep.end(), lastStep.offset(), lastStep.stepRequest(), req);
   } else {
     FootStep::Foot liftingFoot = (lastStep.liftingFoot()==FootStep::LEFT)?FootStep::RIGHT:FootStep::LEFT;
-    return calculateNextWalkStep(lastStep.end(), lastStep.offset(), lastStep.stepRequest(), liftingFoot, req);
+    return calculateNextWalkStep(lastStep.end(), lastStep.offset(), lastStep.stepRequest(), liftingFoot, req, false);
   }
 }
 
@@ -156,6 +156,11 @@ FootStep FootStepPlanner::calculateNextWalkStep(const InverseKinematic::FeetPose
     restrictStepSizeControlStep(stepRequest, req.character);
   } 
   else if (stepControl && req.stepControl.restriction == WalkRequest::StepControlRequest::RestrictionMode::HARD)
+  {
+    restrictStepSize(stepRequest, req.character);
+    restrictStepChange(stepRequest, lastStepRequest);
+  }
+  else
   {
     restrictStepSize(stepRequest, req.character);
     restrictStepChange(stepRequest, lastStepRequest);
