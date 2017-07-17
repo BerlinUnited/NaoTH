@@ -20,7 +20,7 @@ from tools import raw_attack_direction_provider as attack_dir
 class State:
     def __init__(self):
         self.pose = m2d.Pose2D()
-        self.pose.translation = m2d.Vector2(-100, 1800)
+        self.pose.translation = m2d.Vector2(4500, 1200)
         self.pose.rotation = math.radians(0)
         self.rotation_vel = 60  # degrees per sec
         self.walking_vel = 200  # mm per sec
@@ -49,6 +49,7 @@ def draw_robot_walk(s, expected_ball_pos, best_action):
 
 
 def main(x, y, s, rotation_step):
+    enable_drawing = False
 
     start_x = x
     start_y = y
@@ -61,13 +62,17 @@ def main(x, y, s, rotation_step):
 
     action_list = [no_action, kick_short]
 
-    repetitions = 1  # TODO make it an argument
+    repetitions = 1  # TODO make it an argument - repetitions are not useful here since there is no noise
     best_times = []
     best_rotations = []
 
     for reps in range(repetitions):
         pos_total_time = sys.float_info.max
         best_rotation = 0
+
+        # Container for all times and corresponding rotations for one position
+        times_single_position = np.array([])
+        single_position_rot = np.array([])
 
         for rot in range(0, 360, rotation_step):
             # print("Start Rotation: " + str(rot))
@@ -84,7 +89,8 @@ def main(x, y, s, rotation_step):
                 # Simulate Consequences
                 for action in action_list:
                     single_consequence = a.ActionResults([])
-                    actions_consequences.append(Sim.simulate_consequences(action, single_consequence, s, a.num_particles))
+                    # a.num_particles can be 1 since there is no noise at all
+                    actions_consequences.append(Sim.simulate_consequences(action, single_consequence, s, 1))
 
                 # Decide best action
                 best_action = Sim.decide_smart(actions_consequences, s)
@@ -100,6 +106,11 @@ def main(x, y, s, rotation_step):
                 inside_field = field.field_rect.inside(s.pose * expected_ball_pos)
                 if goal_scored:
                     # print("Goal " + str(total_time) + " " + str(math.degrees(s.pose.rotation)))
+                    rotation = np.arctan2(expected_ball_pos.y, expected_ball_pos.x)
+                    rotation_time = np.abs(math.degrees(rotation) / s.rotation_vel)
+                    distance = np.hypot(expected_ball_pos.x, expected_ball_pos.y)
+                    distance_time = distance / s.walking_vel
+                    #total_time += distance_time  #  + rotation_time  # TODO test
                     break
 
                 elif not inside_field and not goal_scored:
@@ -110,10 +121,11 @@ def main(x, y, s, rotation_step):
                     break
 
                 elif not action_list[best_action].name == "none":
-
+                    if enable_drawing is True:
+                        draw_robot_walk(s, s.pose * expected_ball_pos, action_list[best_action].name)
                     # calculate the time needed
                     rotation = np.arctan2(expected_ball_pos.y, expected_ball_pos.x)
-                    rotation_time = np.abs(rotation / s.rotation_vel)
+                    rotation_time = np.abs(math.degrees(rotation) / s.rotation_vel)
                     distance = np.hypot(expected_ball_pos.x, expected_ball_pos.y)
                     distance_time = distance / s.walking_vel
                     total_time += distance_time + rotation_time
@@ -127,18 +139,19 @@ def main(x, y, s, rotation_step):
                     num_kicks += 1
 
                 elif action_list[best_action].name == "none":
-
+                    if enable_drawing is True:
+                        draw_robot_walk(s, s.pose * expected_ball_pos, action_list[best_action].name)
                     # Calculate rotation time
-                    total_time += np.abs(10 / s.rotation_vel)
+                    total_time += np.abs(5 / s.rotation_vel)
 
                     attack_direction = attack_dir.get_attack_direction(s)
                     attack_direction = math.degrees((attack_direction.angle()))
 
                     if (attack_direction > 0 and choosen_rotation is 'none') or choosen_rotation is 'left':
-                        s.update_pos(s.pose.translation, math.degrees(s.pose.rotation) + 10)  # Should turn right
+                        s.update_pos(s.pose.translation, math.degrees(s.pose.rotation) + 5)  # Should turn right
                         choosen_rotation = 'left'
                     elif (attack_direction <= 0 and choosen_rotation is 'none') or choosen_rotation is 'right':
-                        s.update_pos(s.pose.translation, math.degrees(s.pose.rotation) - 10)  # Should turn left
+                        s.update_pos(s.pose.translation, math.degrees(s.pose.rotation) - 5)  # Should turn left
                         choosen_rotation = 'right'
                     else:
                         print("Error at: " + str(s.pose.translation.x) + " - " + str(s.pose.translation.y) + " - " + str(math.degrees(s.pose.rotation)))
@@ -149,15 +162,27 @@ def main(x, y, s, rotation_step):
                 else:
                     sys.exit("There should not be other actions")
 
-                # draw_robot_walk(s, s.pose * expected_ball_pos, action_list[best_action].name)
+            # TODO consider equal times as well
+            if not np.isnan(total_time):  # Maybe this already works
+                times_single_position = np.append(times_single_position, total_time)
+                single_position_rot = np.append(single_position_rot, rot)
 
-            if pos_total_time > total_time and not np.isnan(total_time):
-                pos_total_time = total_time
-                best_rotation = rot
+        # end while not goal scored
+        # TODO FIX THIS!!!
+        if len(times_single_position) is 0:  # This can happen for positions on the field borders
+            print("Every Rotation would shoot out")
+            best_times.append(float('nan'))
+            best_rotations.append(best_rotation)
+        else:
+            min_val = times_single_position.min()
+            min_idx = np.where(times_single_position == min_val)
+            # best_rotation = np.mean(single_position_rot[min_idx])
 
-        best_times.append(pos_total_time)
-        best_rotations.append(best_rotation)
-
+            best_rotation = np.arctan2(np.sum(np.sin(np.deg2rad(single_position_rot[min_idx]))), np.sum(np.cos(np.deg2rad(single_position_rot[min_idx]))))
+            best_rotation = np.rad2deg(best_rotation)
+            best_times.append(np.min(times_single_position))
+            best_rotations.append(best_rotation)
+    # end all rotations
     print("Shortest Time: " + str(np.nanmean(best_times)) + " with global Rotation of robot: " +
           str(np.mean(best_rotations)) + " StartX " + str(start_x) + " Y: " + str(start_y))
 
@@ -166,5 +191,5 @@ def main(x, y, s, rotation_step):
 
 if __name__ == "__main__":
     state = State()
-    rot_step = 30
+    rot_step = 5
     main(state.pose.translation.x, state.pose.translation.y, state, rot_step)
