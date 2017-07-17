@@ -56,7 +56,7 @@ public:
       time(0),
       speedDirection(0),
       scale(1.0),
-      kickSequence(false),
+      restriction(RestrictionMode::HARD),   
       isInterruptable(true),
       stepRequestID(0)
     {}
@@ -78,7 +78,8 @@ public:
     // e.g., scale = 1 => normal step trajectory, scale < 1 => faster step
     double scale;
 
-    bool kickSequence;           // is the step requested part of a kick sequence?
+    enum RestrictionMode { HARD, SOFT };
+    RestrictionMode restriction; // additionally to restrictStepSize use restrictStepChange ?
     bool isInterruptable;        // determine if the request is interruptible (e.g. kicks should not be!)
     unsigned int stepRequestID;  // this ID is for stepControl request PathPlanning
   };

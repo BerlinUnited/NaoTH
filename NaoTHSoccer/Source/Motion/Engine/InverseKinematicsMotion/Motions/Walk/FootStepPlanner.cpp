@@ -149,14 +149,13 @@ FootStep FootStepPlanner::calculateNextWalkStep(const InverseKinematic::FeetPose
   } else if(req.coordinate == WalkRequest::RFoot) {
     stepRequest = supportOrigin.invert() * pose.right.projectXY() * stepRequest * targetOriginOffset;
   }
-  
 
-  // do "path planing" :)
-  if (stepControl && req.stepControl.type == WalkRequest::StepControlRequest::KICKSTEP)
+  // apply restriction mode
+  if (stepControl && req.stepControl.restriction == WalkRequest::StepControlRequest::RestrictionMode::SOFT)
   {
     restrictStepSizeControlStep(stepRequest, req.character);
   } 
-  else 
+  else if (stepControl && req.stepControl.restriction == WalkRequest::StepControlRequest::RestrictionMode::HARD)
   {
     restrictStepSize(stepRequest, req.character);
     restrictStepChange(stepRequest, lastStepRequest);

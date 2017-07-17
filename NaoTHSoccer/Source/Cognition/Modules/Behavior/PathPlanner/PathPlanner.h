@@ -107,7 +107,7 @@ private:
     double scale;
     Foot foot;
     WalkRequest::Coordinate coordinate;
-    bool kickSequence;
+    WalkRequest::StepControlRequest::RestrictionMode restriction;
   };
   std::vector<Step_Buffer_Element> step_buffer;
 
@@ -125,7 +125,7 @@ private:
                 const Foot foot,
                 const double scale,
                 const double speedDirection,
-                const bool kickSequence);
+                const WalkRequest::StepControlRequest::RestrictionMode restriction);
   void update_step(Pose2D &pose);
   void manage_step_buffer();
   void execute_step_buffer();

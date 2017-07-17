@@ -37,7 +37,7 @@ void Serializer<WalkRequest>::serialize(const WalkRequest& representation, naoth
     DataConversion::toMessage(representation.stepControl.target, *(stepControl->mutable_target()));
     stepControl->set_speeddirection(representation.stepControl.speedDirection);
     stepControl->set_scale(representation.stepControl.scale);
-    stepControl->set_kicksequence(representation.stepControl.kickSequence);
+    stepControl->set_restriction((naothmessages::StepControlRequest::RestrictionMode)representation.stepControl.restriction);
     stepControl->set_isinterruptable(representation.stepControl.isInterruptable);
     stepControl->set_steprequestid(representation.stepControl.stepRequestID);
   }
@@ -70,7 +70,7 @@ void Serializer<WalkRequest>::deserialize(const naothmessages::WalkRequest* msg,
     DataConversion::fromMessage(stepControl.target(), representation.stepControl.target);
     representation.stepControl.speedDirection = stepControl.speeddirection();
     representation.stepControl.scale = stepControl.scale();
-    representation.stepControl.kickSequence = stepControl.kicksequence();
+    representation.stepControl.restriction = (WalkRequest::StepControlRequest::RestrictionMode) stepControl.restriction();
     representation.stepControl.isInterruptable = stepControl.isinterruptable();
     representation.stepControl.stepRequestID = stepControl.steprequestid();
   }
