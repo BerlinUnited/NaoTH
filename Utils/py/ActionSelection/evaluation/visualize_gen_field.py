@@ -43,5 +43,11 @@ for pos in gen_field_own:
     g[ny[y], nx[-x]] = time
 
 
+# Export for Heinrich
+np.savetxt('f.out', nyi, delimiter=',')   # X is an array
+# Test Import
+# f2 = np.loadtxt('f.out', delimiter=',')
+
+# Plot potentials
 plt.pcolor(nxi, nyi, f-g, cmap="Greys_r", alpha=0.5)
 plt.show()
