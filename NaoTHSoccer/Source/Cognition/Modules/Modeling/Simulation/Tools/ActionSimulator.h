@@ -100,6 +100,9 @@ public:
 	Vector2d predict(const Vector2d& ball, bool noise) const;
     KickActionModel::ActionId id() const { return _id; }
     const std::string& name() const { return _name; }
+    //getter and setter???
+    void setAngle(double angle){ action_angle = angle; }
+    double getAngle(){ return action_angle; }
   };
   
   enum BallPositionCategory

@@ -17,6 +17,15 @@ KickDirectionSimulator::KickDirectionSimulator()
   simulationModule = registerModule<ActionSimulator>(std::string("Simulation"), true);
   DEBUG_REQUEST_REGISTER("KickDirectionSimulator:draw_best_direction", "best direction", false);
   resetSamples(samples, 30);
+
+  //calculate the actions
+  
+  action_local.reserve(KickActionModel::numOfActions); // here we dont simulate the none action so it could be numOfActions-1
+  action_local.push_back(ActionSimulator::Action(KickActionModel::kick_short, theParameters.kick_short, theParameters.friction)); // short
+  action_local.push_back(ActionSimulator::Action(KickActionModel::sidekick_left, theParameters.sidekick_left, theParameters.friction)); // left
+  action_local.push_back(ActionSimulator::Action(KickActionModel::sidekick_right, theParameters.sidekick_right, theParameters.friction)); // right
+
+  actionsConsequences.resize(action_local.size());  
 }
 
 KickDirectionSimulator::~KickDirectionSimulator(){}
@@ -24,13 +33,27 @@ KickDirectionSimulator::~KickDirectionSimulator(){}
 
 void KickDirectionSimulator::execute()
 {
-  size_t num_angle_particle = 30;
-  size_t iterations = 10;
   //resetSamples(samples, num_angle_particle);
-  
- 
-  calculate_best_direction(iterations, num_angle_particle);
-  
+
+  //TestCase with action defined here - should produce the same result as before
+  //Somehow get a specific action here
+  ActionSimulator::ActionParams blablaParams;
+  blablaParams.angle = 0.0;
+  blablaParams.speed = 1080.0;
+  blablaParams.angle_std = 6;
+  blablaParams.speed_std = 150;
+  ActionSimulator::Action& blablaAction = ActionSimulator::Action(KickActionModel::kick_short, blablaParams, theParameters.friction);
+  calculate_best_direction(blablaAction);
+
+
+  //end test Case
+  // simulate the best directions for all actions
+  /*
+  for (size_t i = 0; i < action_local.size(); i++) {
+    calculate_best_direction(); // TODO do it for every action
+    //simulateConsequences(action_local[i], actionsConsequences[i]);
+  }
+  */
   FIELD_DRAWING_CONTEXT;
   for (size_t i = 0; i < samples.size(); i++)
   {
@@ -43,23 +66,22 @@ void KickDirectionSimulator::execute()
   
 }//end execute
 
-void KickDirectionSimulator::calculate_best_direction(size_t iterations, size_t num_angle_particle){
+void KickDirectionSimulator::calculate_best_direction(ActionSimulator::Action& action){
 
   m_min = 0;
   m_max = 0;
 
-  for (size_t i = 0; i < iterations; i++){
+  for(int i = 0; i < theParameters.iterations; i++){
     //evaluate the particles
 
-    update(samples);
+    update(action);
 
     //resample
-    resample(samples, num_angle_particle, Math::fromDegrees(5.0));
+    resample(samples, Math::fromDegrees(5.0));
 
     // add random samples - currently disabled
 
     // calculate mean angle
-    // TODO do it differently since the values are circular
     double a = 0;
     double b = 0;
     for (size_t i = 0; i < samples.size(); ++i)
@@ -80,40 +102,33 @@ void KickDirectionSimulator::calculate_best_direction(size_t iterations, size_t 
   }
 }
 
-void KickDirectionSimulator::update(SampleSet& sampleSet)
+void KickDirectionSimulator::update(ActionSimulator::Action& blablaAction)
 {
-  for (size_t i = 0; i < sampleSet.size(); i++){
-    //Somehow get a specific action here
-    ActionSimulator::ActionParams blablaParams;
-    blablaParams.angle = 0.0;
-    blablaParams.speed = 1080.0;
-    blablaParams.angle_std = 6;
-    blablaParams.speed_std = 150;
-    double friction = 0.0275;
-
+  for (size_t i = 0; i < samples.size(); i++){
     size_t simulation_num_particles = 1;
-    ActionSimulator::ActionResults actionsConsequences;
+    ActionSimulator::ActionResults turningConsequences;
 
-    blablaParams.angle += Math::toDegrees(sampleSet[i].rotation);
-    auto blablaAction = ActionSimulator::Action(KickActionModel::kick_short, blablaParams, friction);
-    simulationModule->getModuleT()->simulateAction(blablaAction, actionsConsequences, simulation_num_particles);
+    //FIXME Dirty getter and setter
+    blablaAction.setAngle(blablaAction.getAngle() + Math::toDegrees(samples[i].rotation));
+    
+    simulationModule->getModuleT()->simulateAction(blablaAction, turningConsequences, simulation_num_particles);
 
-    if (actionsConsequences.category(ActionSimulator::BallPositionCategory::INFIELD) > 0){
-      sampleSet[i].likelihood = -simulationModule->getModuleT()->evaluateAction(actionsConsequences);
-      m_min = std::min(m_min, sampleSet[i].likelihood);
-      m_max = std::max(m_max, sampleSet[i].likelihood);
+    if (turningConsequences.category(ActionSimulator::BallPositionCategory::INFIELD) > 0){
+      samples[i].likelihood = -simulationModule->getModuleT()->evaluateAction(turningConsequences);
+      m_min = std::min(m_min, samples[i].likelihood);
+      m_max = std::max(m_max, samples[i].likelihood);
     }
-    else if (actionsConsequences.category(ActionSimulator::BallPositionCategory::OPPGOAL) > 0){
-      sampleSet[i].likelihood = m_max;
+    else if (turningConsequences.category(ActionSimulator::BallPositionCategory::OPPGOAL) > 0){
+      samples[i].likelihood = m_max;
     }
     else{
-      sampleSet[i].likelihood = m_min;
+      samples[i].likelihood = m_min;
     }
   }
 
 }
 
-void KickDirectionSimulator::resample(SampleSet& sampleSet, int n, double sigma) const
+void KickDirectionSimulator::resample(SampleSet& sampleSet, double sigma) const
 {
   SampleSet oldSampleSet = sampleSet;
   normalize(oldSampleSet);
@@ -124,7 +139,7 @@ void KickDirectionSimulator::resample(SampleSet& sampleSet, int n, double sigma)
   normalize(oldSampleSet);
   //END TEST
 
-  double likelihood_step = 1.0/n; // the step in the weighting so we get exactly n particles
+  double likelihood_step = 1.0 / theParameters.num_angle_particle; // the step in the weighting so we get exactly n particles
   
   double targetSum = Math::random()*likelihood_step;
   double currentSum = 0;
