@@ -86,7 +86,7 @@ message StepControlRequest
   required double speedDirection = 5;
   required double scale = 6;
   required StepType steptype = 7;
-  required bool isfrompathplanner = 8;
+  required bool kickSequence = 8;
   required bool isInterruptable = 9;
   required uint32 stepRequestID = 10;
 }

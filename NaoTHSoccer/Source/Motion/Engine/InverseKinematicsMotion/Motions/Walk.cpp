@@ -269,7 +269,7 @@ void Walk::calculateNewStep(const Step& lastStep, Step& newStep, const WalkReque
       newStep.footStep = theFootStepPlanner.controlStep(lastStep.footStep, walkRequest);
 
       // STABILIZATION
-      if (parameters().stabilization.dynamicStepsize) {
+      if (parameters().stabilization.dynamicStepsize && !walkRequest.stepControl.isInterruptable) {
         adaptStepSize(newStep.footStep);
         currentComErrorBuffer.clear();
       }
@@ -310,11 +310,28 @@ void Walk::planZMP()
   ASSERT(!planningStep.isPlanned());
 
   Vector3d zmp;
-  if(planningStep.footStep.liftingFoot() == FootStep::NONE)
+  if(planningStep.footStep.liftingFoot() == FootStep::NONE)// && !planningStep.walkRequest.stepControl.kickSequence)
   {
-    Pose3D finalBody = calculateStableCoMByFeet(planningStep.footStep.end(), getEngine().getParameters().walk.general.bodyPitchOffset);
-    zmp = finalBody.translation;
-  } else {
+    /*if (planningStep.walkRequest.stepControl.kickSequence && planningStep.type == STEP_CONTROL)
+    {
+      FeetPose feet(planningStep.footStep.end());
+      feet.left.translate(getEngine().getParameters().walk.general.hipOffsetX, 0, 0);
+      feet.right.translate(getEngine().getParameters().walk.general.hipOffsetX, 0, 0);
+
+      Pose3D com;
+      com.rotation = calculateBodyRotation(feet, getEngine().getParameters().walk.general.bodyPitchOffset);
+      com.translation = feet.left.translation;
+      com.translation.z = parameters().hip.comHeight;
+
+      zmp = com.translation;
+    }
+    else*/
+    {
+      Pose3D finalBody = calculateStableCoMByFeet(planningStep.footStep.end(), getEngine().getParameters().walk.general.bodyPitchOffset);
+      zmp = finalBody.translation;
+    }
+  }
+  else {
     double zmpOffsetYParameter;
     if (planningStep.type == STEP_CONTROL && planningStep.walkRequest.stepControl.type == WalkRequest::StepControlRequest::KICKSTEP)
     {
@@ -373,17 +390,20 @@ void Walk::executeStep()
     {
       theCoMFeetPose.feet.left = calculateLiftingFootPos(executingStep);
       theCoMFeetPose.feet.right = executingStep.footStep.supFoot();
+      std::cout << "LEFT" << std::endl;
       break;
     }
     case FootStep::RIGHT:
     {
       theCoMFeetPose.feet.left = executingStep.footStep.supFoot();
       theCoMFeetPose.feet.right = calculateLiftingFootPos(executingStep);
+      std::cout << "RIGHT" << std::endl;
       break;
     }
     case FootStep::NONE:
     {
       theCoMFeetPose.feet = executingStep.footStep.begin();
+      std::cout << "NONE" << std::endl;
       break;
     }
     default: ASSERT(false);

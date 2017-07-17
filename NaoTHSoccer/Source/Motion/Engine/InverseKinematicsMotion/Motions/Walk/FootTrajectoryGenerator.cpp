@@ -89,7 +89,7 @@ Pose3D FootTrajectorGenerator::stepControl(
 
     // TODO: optmize
     Pose3D speedTarget = targetFoot;
-    speedTarget.translate(cos(speedDirection)*30, sin(speedDirection)*30, 0);
+    speedTarget.translate(cos(speedDirection) * 30, sin(speedDirection) * 30, 0);
     vector<Vector2d > vecX;
     vecX.push_back(Vector2d(0.0, oldFoot.translation.x));
     vecX.push_back(Vector2d(1.0, targetFoot.translation.x));
@@ -98,8 +98,6 @@ Pose3D FootTrajectorGenerator::stepControl(
 
     vector<Vector2d > vecY;
     vecY.push_back(Vector2d(0.0, oldFoot.translation.y));
-    vecY.push_back(Vector2d(0.5, oldFoot.translation.y));
-    vecY.push_back(Vector2d(0.75, /*oldFoot.translation.y + ((targetFoot.translation.y - oldFoot.translation.y) / 2)*/ targetFoot.translation.y - speedTarget.translation.y));
     vecY.push_back(Vector2d(1.0, targetFoot.translation.y));
     vecY.push_back(Vector2d(1.1, speedTarget.translation.y));
     CubicSpline theCubicSplineY(vecY);
