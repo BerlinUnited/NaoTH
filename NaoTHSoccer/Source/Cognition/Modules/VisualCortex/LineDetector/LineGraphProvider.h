@@ -73,9 +73,7 @@ public:
   void execute()
   {
     getProbabilisticQuadCompas().reset();
-    getLineGraphPercept().edgels.clear();
-    getLineGraphPercept().edgelsInImage.clear();
-    getLineGraphPercept().edgelsInImageTop.clear();
+    getLineGraphPercept().reset();
 
     execute(CameraInfo::Bottom);
     execute(CameraInfo::Top);
@@ -127,7 +125,9 @@ private: // data members
 
   std::vector<Neighbors> edgelNeighbors;
   std::vector<EdgelPair> edgelPairs;
-  std::vector<Vector2d> edgelProjections;
+
+  std::vector<Vector2d> edgelProjectionsBegin;
+  std::vector<Vector2d> edgelProjectionsEnd;
 
 private: // method members
   static double edgelSim(const EdgelT<double>& e1, const EdgelT<double>& e2);

@@ -146,6 +146,9 @@ solution "NaoTHSoccer"
     -- may be needed for newer glib2 versions, remove if not needed
     buildoptions {"-Wno-deprecated-declarations"}
     buildoptions {"-Wno-deprecated"}
+    -- Prohibit GCC to be clever and use undefined behavior for some optimizations
+    -- (see http://www.airs.com/blog/archives/120 for some nice explanation)
+    buildoptions {"-fno-strict-overflow"}
     buildoptions {"-std=c++11"}
     --flags { "ExtraWarnings" }
     links {"pthread"}

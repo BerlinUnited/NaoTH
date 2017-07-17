@@ -22,7 +22,8 @@ public:
   BallModel()
     :
       valid(false),
-      knows(false)
+      knows(false),
+      timeBallIsSeen(0)
     {}
 
   ~BallModel(){}
