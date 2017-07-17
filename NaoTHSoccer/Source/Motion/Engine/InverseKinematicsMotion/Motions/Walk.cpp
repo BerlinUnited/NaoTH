@@ -269,7 +269,7 @@ void Walk::calculateNewStep(const Step& lastStep, Step& newStep, const WalkReque
       newStep.footStep = theFootStepPlanner.controlStep(lastStep.footStep, walkRequest);
 
       // STABILIZATION
-      if (parameters().stabilization.dynamicStepsize && !walkRequest.stepControl.isInterruptable) {
+      if (parameters().stabilization.dynamicStepsize && walkRequest.stepControl.isInterruptable) {
         adaptStepSize(newStep.footStep);
         currentComErrorBuffer.clear();
       }
@@ -313,9 +313,8 @@ void Walk::planZMP()
   if(planningStep.footStep.liftingFoot() == FootStep::NONE)
   {
     Pose3D finalBody = calculateStableCoMByFeet(planningStep.footStep.end(), getEngine().getParameters().walk.general.bodyPitchOffset);
-     zmp = finalBody.translation;
-  }
-  else {
+    zmp = finalBody.translation;
+  } else {
     double zmpOffsetYParameter;
     if (planningStep.type == STEP_CONTROL && planningStep.walkRequest.stepControl.type == WalkRequest::StepControlRequest::KICKSTEP)
     {

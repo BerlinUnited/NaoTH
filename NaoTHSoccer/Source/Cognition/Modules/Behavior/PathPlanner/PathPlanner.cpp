@@ -11,7 +11,7 @@ PathPlanner::PathPlanner()
 :
 step_buffer({}),
 foot_to_use(Foot::RIGHT),
-last_stepRequestID(1),
+last_stepRequestID(1),      // WalkRequest stepRequestID starts at 0, we have to start at 1
 kick_planned(false)
 {
   DEBUG_REQUEST_REGISTER("PathPlanner:walk_to_ball", "Walks to the ball from far.", false);
@@ -400,7 +400,7 @@ void PathPlanner::execute_step_buffer()
   getMotionRequest().walkRequest.stepControl.speedDirection    = step_buffer.front().speedDirection;
   getMotionRequest().walkRequest.stepControl.target            = step_buffer.front().pose;
   getMotionRequest().walkRequest.stepControl.restriction       = step_buffer.front().restriction;
-  getMotionRequest().walkRequest.stepControl.isInterruptable   = step_buffer.front().type == StepType::KICKSTEP ? false : true;
+  getMotionRequest().walkRequest.stepControl.isInterruptable   = (step_buffer.front().type != StepType::KICKSTEP);
   getMotionRequest().walkRequest.stepControl.stepRequestID     = last_stepRequestID;
 
   // normal walking WALKSTEPs use Foot::NONE, for KICKSTEPs the foot to use has to be specified
@@ -434,6 +434,6 @@ void PathPlanner::execute_step_buffer()
     foot_to_use = step_buffer.front().foot;
   }
   // false means right foot
-  getMotionRequest().walkRequest.stepControl.moveLeftFoot = foot_to_use == Foot::RIGHT ? false : true;
+  getMotionRequest().walkRequest.stepControl.moveLeftFoot = (foot_to_use != Foot::RIGHT);
   STOPWATCH_STOP("PathPlanner:execute_steplist");
 }
