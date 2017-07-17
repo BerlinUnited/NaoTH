@@ -114,7 +114,10 @@ public:
     PLOT("BallCandidateDetector:mean",mean);
     PLOT("BallCandidateDetector:mean_of_means",average_mean);
   }
- 
+
+  static std::map<std::string, std::shared_ptr<AbstractCNNClassifier>> createCNNMap();
+
+
 private:
   struct Parameters: public ParameterList
   {

@@ -17,6 +17,10 @@
 #include "Classifier/CNNClassifier.h"
 #include "Classifier/CNNFull.h"
 #include "Classifier/CNNSmall.h"
+#include "Classifier/CNN_aug1_synthetic.h"
+#include "Classifier/CNN_aug2_full_conv.h"
+#include "Classifier/CNN_basic_synthetic_fusion.h"
+#include "Classifier/CNN_synth_full_conv.h"
 
 using namespace std;
 
@@ -39,13 +43,9 @@ BallCandidateDetector::BallCandidateDetector()
   getDebugParameterList().add(&params);
 
   //register classifier
+  cnnMap = createCNNMap();
+  // additionally insert the legacy haar classifier
   cnnMap.insert({"CVHaar", std::make_shared<CVHaarClassifier>(params.haarDetector.model_file)}); //Hack!
-
-  cnnMap.insert({"aug2", std::make_shared<CNNAugmented2>()});
-  cnnMap.insert({"aug1", std::make_shared<CNNAugmented1>()});
-  cnnMap.insert({"cnn", std::make_shared<CNNClassifier>()});
-  cnnMap.insert({"full", std::make_shared<CNNFull>()});
-  cnnMap.insert({"small", std::make_shared<CNNSmall>()});
 
   currentCNNClassifier = cnnMap["aug2"];
 }
@@ -118,6 +118,24 @@ void BallCandidateDetector::execute(CameraInfo::CameraID id)
       }
     }
   );
+}
+
+std::map<string, std::shared_ptr<AbstractCNNClassifier> > BallCandidateDetector::createCNNMap()
+{
+  std::map<string, std::shared_ptr<AbstractCNNClassifier> > result;
+
+  result.insert({"aug2", std::make_shared<CNNAugmented2>()});
+  result.insert({"aug1", std::make_shared<CNNAugmented1>()});
+  result.insert({"cnn", std::make_shared<CNNClassifier>()});
+  result.insert({"full", std::make_shared<CNNFull>()});
+  result.insert({"small", std::make_shared<CNNSmall>()});
+
+  result.insert({"aug1_synthetic", std::make_shared<CNN_aug1_synthetic>()});
+  result.insert({"aug2_full_conv", std::make_shared<CNN_aug2_full_conv>()});
+  result.insert({"basic_synthetic_fusion", std::make_shared<CNN_basic_synthetic_fusion>()});
+  result.insert({"synth_full_conv", std::make_shared<CNN_synth_full_conv>()});
+
+  return std::move(result);
 }
 
 
