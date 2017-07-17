@@ -241,10 +241,10 @@ void PathPlanner::short_kick(const Foot foot)
 
     switch (foot) {
     case Foot::LEFT:
-      coordinate = WalkRequest::RFoot;
+      coordinate = WalkRequest::LFoot;
       break;
     case Foot::RIGHT:
-      coordinate = WalkRequest::LFoot;
+      coordinate = WalkRequest::RFoot;
       break;
     case Foot::NONE:
       ASSERT(false);
@@ -259,9 +259,12 @@ void PathPlanner::short_kick(const Foot foot)
       double speed_direction = 0.0;
       add_step(pose, type, coordinate, character, foot, scale, speed_direction, WalkRequest::StepControlRequest::SOFT);
 
+      type = StepType::ZEROSTEP;
+      add_step(pose, type, coordinate, character, foot, scale, speed_direction, WalkRequest::StepControlRequest::SOFT);
+
       pose = { 0.0, 0.0, 0.0 };
       type = StepType::WALKSTEP;
-      add_step(pose, type, coordinate, character, foot, scale, speed_direction, WalkRequest::StepControlRequest::SOFT);
+      add_step(pose, type, coordinate, character, foot, scale, speed_direction, WalkRequest::StepControlRequest::HARD);
 
       kick_planned = true;
     }
@@ -276,10 +279,10 @@ void PathPlanner::long_kick(const Foot foot)
 
     switch (foot) {
     case Foot::LEFT:
-      coordinate = WalkRequest::RFoot;
+      coordinate = WalkRequest::LFoot;
       break;
     case Foot::RIGHT:
-      coordinate = WalkRequest::LFoot;
+      coordinate = WalkRequest::RFoot;
       break;
     case Foot::NONE:
       ASSERT(false);
@@ -294,9 +297,12 @@ void PathPlanner::long_kick(const Foot foot)
       double speed_direction = 0.0;
       add_step(pose, type, coordinate, character, foot, scale, speed_direction, WalkRequest::StepControlRequest::SOFT);
 
+      type = StepType::ZEROSTEP;
+      add_step(pose, type, coordinate, character, foot, scale, speed_direction, WalkRequest::StepControlRequest::SOFT);
+
       pose = { 0.0, 0.0, 0.0 };
       type = StepType::WALKSTEP;
-      add_step(pose, type, coordinate, character, foot, scale, speed_direction, WalkRequest::StepControlRequest::SOFT);
+      add_step(pose, type, coordinate, character, foot, scale, speed_direction, WalkRequest::StepControlRequest::HARD);
 
       kick_planned = true;
     }
