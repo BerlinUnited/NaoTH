@@ -228,6 +228,13 @@ int RansacLineDetectorOnGraphs::ransacEllipse(Ellipse& result, const std::vector
 
     ellipse.fitPoints(x,y);
 
+    // check aspect ratio
+    double a[2];
+    ellipse.axesLength(a);
+    if ( ((a[0] <= a[1]) && (a[0]/a[1] < params.circle_degeneration)) ||  ((a[1] <= a[0]) && (a[1]/a[0] < params.circle_degeneration))) {
+      continue;
+    }
+
     // check model
     double inlierError = 0;
     int inlier = 0;
