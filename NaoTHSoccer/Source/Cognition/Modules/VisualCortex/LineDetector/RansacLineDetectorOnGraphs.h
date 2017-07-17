@@ -45,7 +45,7 @@ public:
 private:
   int ransac(Math::LineSegment& result, const std::vector<EdgelD>& subgraph, std::vector<EdgelD>& inlierList);
 
-  int ransacEllipse(Ellipse& result);
+  int ransacEllipse(Ellipse& result, const std::vector<std::vector<EdgelD>>& graph);
 
 //private:
   class Parameters: public ParameterList

@@ -84,6 +84,48 @@ void RansacLineDetectorOnGraphs::execute()
 
 
   );
+
+  DEBUG_REQUEST("Vision:RansacLineDetectorOnGraphs:fit_and_draw_circle_field",
+    FIELD_DRAWING_CONTEXT;
+    // fit ellipse
+    Ellipse circResult;
+
+    if (ransacEllipse(circResult, getLineGraphPercept().lineGraphs)) {
+      double c[2];
+      circResult.getCenter(c);
+
+      double a[2];
+      circResult.axesLength(a);
+
+      PEN("009900", 50);
+
+      CIRCLE(c[0], c[1], 30);
+      OVAL_ROTATED(c[0], c[1], a[0], a[1], circResult.rotationAngle());
+
+      PEN("0000AA", 20);
+      for(size_t i=0; i<circResult.x_toFit.size(); i++) {
+        CIRCLE(circResult.x_toFit[i], circResult.y_toFit[i], 20);
+      }
+    }
+
+    if (ransacEllipse(circResult, getLineGraphPercept().lineGraphsTop)) {
+      double c[2];
+      circResult.getCenter(c);
+
+      double a[2];
+      circResult.axesLength(a);
+
+      PEN("009900", 50);
+
+      CIRCLE(c[0], c[1], 30);
+      OVAL_ROTATED(c[0], c[1], a[0], a[1], circResult.rotationAngle());
+
+      PEN("0000AA", 20);
+      for(size_t i=0; i<circResult.x_toFit.size(); i++) {
+        CIRCLE(circResult.x_toFit[i], circResult.y_toFit[i], 20);
+      }
+    }
+  );
 }
 
 int RansacLineDetectorOnGraphs::ransac(Math::LineSegment& result, const std::vector<EdgelD>& subgraph, std::vector<EdgelD>& inlierList)
@@ -128,7 +170,6 @@ int RansacLineDetectorOnGraphs::ransac(Math::LineSegment& result, const std::vec
       }
     }
 
-
     if(inlier >= params.inlierMin && (inlier > bestInlier || (inlier == bestInlier && inlierError < bestInlierError))) {
       bestModel = model;
       bestInlier = inlier;
@@ -158,3 +199,62 @@ int RansacLineDetectorOnGraphs::ransac(Math::LineSegment& result, const std::vec
   return bestInlier;
 }
 
+int RansacLineDetectorOnGraphs::ransacEllipse(Ellipse& result, const std::vector<std::vector<EdgelD>>& graph)
+{
+
+  if(graph.empty()) {
+    return 0;
+  }
+
+  Ellipse bestModel;
+  int bestInlier = 0;
+  double bestInlierError = 0;
+
+  // TODO: i < params.circle_iterations ?
+  for(size_t i = 0; i < graph.size(); ++i)
+  {
+    if (graph[i].size() < 5) continue;
+    // create model
+    Ellipse ellipse;
+
+
+    std::vector<double> x, y;
+    x.reserve(graph[i].size());
+    y.reserve(graph[i].size());
+    for(const EdgelD& e : graph[i]) {
+      x.push_back(e.point.x);
+      y.push_back(e.point.y);
+    }
+
+    ellipse.fitPoints(x,y);
+
+    // check model
+    double inlierError = 0;
+    int inlier = 0;
+
+    for(const std::vector<EdgelD>& subgraph : graph) {
+      for(const EdgelD& e : subgraph) {
+        double d = ellipse.error_to(e.point.x, e.point.y);
+
+        if(d <= params.circle_outlierThreshold) {
+          ++inlier;
+          inlierError += d;
+          continue;
+        }
+      }
+    }
+
+    if(inlier >= params.circle_inlierMin && (inlier > bestInlier || (inlier == bestInlier && inlierError < bestInlierError))) {
+      bestModel = ellipse;
+      bestInlier = inlier;
+      bestInlierError = inlierError;
+    }
+  }
+
+  if (bestInlier) {
+    result = bestModel;
+  }
+
+  return bestInlier;
+
+}
