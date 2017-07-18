@@ -11,7 +11,7 @@ PathPlanner::PathPlanner()
 :
 step_buffer({}),
 foot_to_use(Foot::RIGHT),
-last_stepRequestID(1),      // WalkRequest stepRequestID starts at 0, we have to start at 1
+last_stepRequestID(getMotionStatus().stepControl.stepRequestID + 1),      // WalkRequest stepRequestID starts at 0, we have to start at 1
 kick_planned(false)
 {
   DEBUG_REQUEST_REGISTER("PathPlanner:walk_to_ball", "Walks to the ball from far.", false);
