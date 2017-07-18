@@ -241,10 +241,10 @@ void PathPlanner::short_kick(const Foot foot)
 
     switch (foot) {
     case Foot::LEFT:
-      coordinate = WalkRequest::LFoot;
+      coordinate = WalkRequest::RFoot;
       break;
     case Foot::RIGHT:
-      coordinate = WalkRequest::RFoot;
+      coordinate = WalkRequest::LFoot;
       break;
     case Foot::NONE:
       ASSERT(false);
@@ -279,10 +279,10 @@ void PathPlanner::long_kick(const Foot foot)
 
     switch (foot) {
     case Foot::LEFT:
-      coordinate = WalkRequest::LFoot;
+      coordinate = WalkRequest::RFoot;
       break;
     case Foot::RIGHT:
-      coordinate = WalkRequest::RFoot;
+      coordinate = WalkRequest::LFoot;
       break;
     case Foot::NONE:
       ASSERT(false);
