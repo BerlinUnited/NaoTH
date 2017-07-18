@@ -587,7 +587,7 @@ public class TeamCommViewer extends AbstractDialog {
                         msg.message.draw(drawings, rs.robotColor, msg.isOpponent());
                     }
                 } // end for
-                Plugin.drawingEventManager.fireDrawingEvent(drawings);
+                Plugin.drawingEventManager.fireDrawingEvent(drawings, this);
             } // end synchronized
         } // end run
     }

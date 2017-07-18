@@ -162,6 +162,11 @@ message ScanLineEndPoint {
   required uint32 ScanLineID = 4;
 }
 
+message DoubleEdgel {
+  required DoubleVector2 point = 1;
+  required DoubleVector2 direction = 2;
+}
+
 message Edgel {
   required IntVector2 point = 1;
   required DoubleVector2 direction = 2;
@@ -177,6 +182,13 @@ message ScanLineEdgelPercept {
   repeated Edgel edgels = 1;
   repeated EdgelPair pairs = 3;
   repeated ScanLineEndPoint endPoints = 2;
+}
+
+message LineGraphPercept {
+  repeated Edgel edgelsOnField = 1;
+  
+  repeated DoubleEdgel edgelsInImageTop = 2;
+  repeated DoubleEdgel edgelsInImage = 3;
 }
 
 message StepControlStatus
@@ -344,4 +356,10 @@ message GroundContactModel {
   required bool leftGroundContact = 1;
   required bool rightGroundContact = 2;
   required Foot supportFoot = 3;
+}
+
+
+message CollisionPercept {
+  required uint32 timeCollisionArmLeft = 1;
+  required uint32 timeCollisionArmRight = 2;
 }

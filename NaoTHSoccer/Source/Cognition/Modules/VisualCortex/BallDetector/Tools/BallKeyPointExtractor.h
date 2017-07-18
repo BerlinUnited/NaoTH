@@ -13,7 +13,7 @@
 #include "Representations/Perception/MultiChannelIntegralImage.h"
 #include "Representations/Perception/FieldPercept.h"
 #include "Representations/Perception/CameraMatrix.h"
-
+#include "Representations/Perception/BodyContour.h"
 // tools
 #include "BestPatchList.h"
 #include "Tools/DoubleCamHelpers.h"
@@ -43,6 +43,9 @@ BEGIN_DECLARE_MODULE(BallKeyPointExtractor)
   REQUIRE(BallDetectorIntegralImage)
   REQUIRE(BallDetectorIntegralImageTop)
 
+  REQUIRE(BodyContour)
+  REQUIRE(BodyContourTop)
+
   REQUIRE(CameraMatrix)
   REQUIRE(CameraMatrixTop)
 
@@ -70,12 +73,20 @@ public:
   }
 
   void calculateKeyPointsBetter(BestPatchList& best) const {
-    calculateKeyPoints(getBallDetectorIntegralImage(), best);
+    //calculateKeyPoints(getBallDetectorIntegralImage(), best);
+    calculateKeyPointsFast(getBallDetectorIntegralImage(), best);
+    //calculateKeyPointsFull(getBallDetectorIntegralImage(), best);
   }
 
   // scan the integral image for white key points
   template<class ImageType>
   void calculateKeyPoints(const ImageType& integralImage, BestPatchList& best) const;
+
+  template<class ImageType>
+  void calculateKeyPointsFast(const ImageType& integralImage, BestPatchList& best) const;
+
+  template<class ImageType>
+  void calculateKeyPointsFull(const ImageType& integralImage, BestPatchList& best) const;
 
   BestPatchList::Patch refineKeyPoint(const BestPatchList::Patch& patch) const;
 
@@ -113,8 +124,9 @@ private:
   {
     int inner = integralImage.getSumForRect(point.x, point.y, point.x+size, point.y+size, 0);
     double greenBelow = integralImage.getDensityForRect(point.x, point.y+size, point.x+size, point.y+size+border, 1);
+    double greeInner = integralImage.getDensityForRect(point.x, point.y, point.x+size, point.y+size, 1);
 
-    if (inner*2 > size*size && greenBelow > 0.3)
+    if (inner*2 > size*size && greenBelow > 0.3 && greeInner < 0.5)
     {
       int outer = integralImage.getSumForRect(point.x-border, point.y+size, point.x+size+border, point.y+size+border, 0);
       double value = (double)(inner - (outer - inner))/((double)(size+border)*(size+border));
@@ -127,16 +139,39 @@ private:
         (point.y+size+border)*integralImage.FACTOR, 
         value);
     }
+    /*
+    int inner = integralImage.getSumForRect(point.x, point.y, point.x+size, point.y+size, 0);
+    //double greenBelow = integralImage.getDensityForRect(point.x, point.y+size, point.x+size, point.y+size+border, 1);
+
+    double greeInner = integralImage.getDensityForRect(point.x, point.y, point.x+size, point.y+size, 1);
+
+    if (inner*2 > size*size && greeInner < 0.5) // && greenBelow > 0.3)
+    {
+      //int outer = integralImage.getSumForRect(point.x-border, point.y+size, point.x+size+border, point.y+size+border, 0);
+      //double value = (double)(inner - (outer - inner))/((double)(size+border)*(size+border));
+      double value = ((double)inner)/((double)(size)*(size));// (double)(inner - (outer - inner)) / ((double)(size + border)*(size + border));
+
+      // scale the patch up to the image coordinates
+      best.add( 
+        (point.x-border)*integralImage.FACTOR, 
+        (point.y-border)*integralImage.FACTOR, 
+        (point.x+size+border)*integralImage.FACTOR, 
+        (point.y+size+border)*integralImage.FACTOR, 
+        value);
+    }*/
   }
 
 private:
   Parameter params;
   CameraInfo::CameraID cameraID;
 
+  mutable double values[640/4][480/4][2];
+
   // double cam stuff
   DOUBLE_CAM_REQUIRE(BallKeyPointExtractor, Image);
   DOUBLE_CAM_REQUIRE(BallKeyPointExtractor, CameraMatrix);
   DOUBLE_CAM_REQUIRE(BallKeyPointExtractor, FieldPercept);
+  DOUBLE_CAM_REQUIRE(BallKeyPointExtractor, BodyContour);
 
   DOUBLE_CAM_REQUIRE(BallKeyPointExtractor, GameColorIntegralImage);
   DOUBLE_CAM_REQUIRE(BallKeyPointExtractor, BallDetectorIntegralImage);
@@ -199,6 +234,189 @@ void BallKeyPointExtractor::calculateKeyPoints(const ImageType& integralImage, B
     for(point.x = border; point.x+size+border < (int)integralImage.getWidth(); ++point.x)
     {
       evaluatePatch(integralImage, best, point, size, border);
+    }
+  }
+}
+
+
+template<class ImageType>
+void BallKeyPointExtractor::calculateKeyPointsFast(const ImageType& integralImage, BestPatchList& best) const
+{
+  //
+  // STEP I: find the maximal height minY to be scanned in the image
+  //
+  if(!getFieldPercept().valid) {
+    return;
+  }
+
+  // we search for key points only inside the field polygon
+  const FieldPercept::FieldPoly& fieldPolygon = getFieldPercept().getValidField();
+
+  // find the top point of the polygon
+  int minY = getImage().height();
+  for(int i = 0; i < fieldPolygon.length ; i++)
+  {
+    if(fieldPolygon.points[i].y < minY && fieldPolygon.points[i].y >= 0) {
+      minY = fieldPolygon.points[i].y;
+    }
+  }
+
+  // double check: polygon is empty
+  if(minY == (int)getImage().height() || minY < 0) {
+    return;
+  }
+
+  // todo needs a better place
+  const int32_t FACTOR = integralImage.FACTOR;
+
+  Vector2i point;
+  
+  for(point.y = minY/FACTOR; point.y < (int)integralImage.getHeight(); ++point.y)
+  {
+    double estimatedRadius = CameraGeometry::estimatedBallRadius(
+      getCameraMatrix(), getImage().cameraInfo, getFieldInfo().ballRadius,
+      getImage().width()/2, point.y*FACTOR);
+    
+    // Note: we have a minimal allowed radius
+    int radius = (int)(estimatedRadius / FACTOR + 0.5);
+
+    // smalest ball size == 3 => ball size == FACTOR*3 == 12
+    if (point.y < radius || point.y + radius >= (int)integralImage.getHeight()) {
+      continue;
+    }
+    
+    for(point.x = radius; point.x + radius < (int)integralImage.getWidth(); ++point.x)
+    {
+      //evaluatePatch(integralImage, best, point, size, border);
+
+      if(cameraID == CameraInfo::Bottom && //point.y+radius >(int)(integralImage.getHeight()/2) &&
+         getBodyContour().isOccupied(point.x*integralImage.FACTOR, (point.y+radius)*integralImage.FACTOR)) {
+        continue;
+      }
+
+      int inner = integralImage.getSumForRect(point.x-radius, point.y-radius, point.x+radius, point.y+radius, 0);
+      double greeInner = integralImage.getDensityForRect(point.x-radius, point.y-radius, point.x+radius, point.y+radius, 1);
+      const int size = radius*2;
+      
+      if (inner*2 > size*size && greeInner < 0.5)
+      {
+        double value = ((double)inner)/((double)(size*size));
+        best.add( 
+            (point.x-radius)*integralImage.FACTOR, 
+            (point.y-radius)*integralImage.FACTOR, 
+            (point.x+radius)*integralImage.FACTOR, 
+            (point.y+radius)*integralImage.FACTOR, 
+            value);
+      }
+    }
+  }
+}
+
+
+template<class ImageType>
+void BallKeyPointExtractor::calculateKeyPointsFull(const ImageType& integralImage, BestPatchList& best) const
+{
+  //
+  // STEP I: find the maximal height minY to be scanned in the image
+  //
+  if(!getFieldPercept().valid) {
+    return;
+  }
+
+  // we search for key points only inside the field polygon
+  const FieldPercept::FieldPoly& fieldPolygon = getFieldPercept().getValidField();
+
+  // find the top point of the polygon
+  int minY = getImage().height();
+  for(int i = 0; i < fieldPolygon.length ; i++)
+  {
+    if(fieldPolygon.points[i].y < minY && fieldPolygon.points[i].y >= 0) {
+      minY = fieldPolygon.points[i].y;
+    }
+  }
+
+  // double check: polygon is empty
+  if(minY == (int)getImage().height() || minY < 0) {
+    return;
+  }
+
+  // todo needs a better place
+  const int32_t FACTOR = integralImage.FACTOR;
+
+  Vector2i point;
+
+  for(int y = 1; y+1 < 480/4; ++y) {
+    for(int x = 1; x+1 < 640/4; ++x) {
+      values[x][y][0] = 0.0;
+    }
+  }
+  
+  for(point.y = minY/FACTOR; point.y < (int)integralImage.getHeight(); ++point.y)
+  {
+    double estimatedRadius = CameraGeometry::estimatedBallRadius(
+      getCameraMatrix(), getImage().cameraInfo, getFieldInfo().ballRadius,
+      getImage().width()/2, point.y*FACTOR);
+    
+    
+    int radius = (int)(estimatedRadius / FACTOR + 0.5);
+
+    // smalest ball size == 3 => ball size == FACTOR*3 == 12
+    if (point.y < radius || point.y + radius >= (int)integralImage.getHeight()) {
+      continue;
+    }
+
+    for(point.x = radius; point.x+radius < (int)integralImage.getWidth(); ++point.x)
+    {
+      //evaluatePatch(integralImage, best, point, size, border);
+
+      if(cameraID == CameraInfo::Bottom && getBodyContour().isOccupied(point.x*integralImage.FACTOR, (point.y+radius)*integralImage.FACTOR)) {
+        values[point.x][point.y][0] = 0.0;
+        values[point.x][point.y][1] = radius;
+        continue;
+      }
+
+      int inner = integralImage.getSumForRect(point.x-radius, point.y-radius, point.x+radius, point.y+radius, 0);
+      double greeInner = integralImage.getDensityForRect(point.x-radius, point.y-radius, point.x+radius, point.y+radius, 1);
+      const int size = radius*2;
+
+      if (inner*2 > size*size && greeInner < 0.5)
+      {
+        double value = ((double)inner)/((double)(size)*(size));
+        values[point.x][point.y][0] = value;
+        values[point.x][point.y][1] = radius;
+      }
+      else 
+      {
+        values[point.x][point.y][0] = 0.0;
+        values[point.x][point.y][1] = radius;
+      }
+    }
+  }
+
+
+  for(int y = 1; y+1 < 480/4; ++y) {
+    for(int x = 1; x+1 < 640/4; ++x) {
+      if(values[x][y][0] > 0) {
+        if( values[x][y][0] > values[x-1][y][0] && 
+            values[x][y][0] > values[x+1][y][0] && 
+            values[x][y][0] > values[x  ][y-1][0] && 
+            values[x][y][0] > values[x  ][y+1][0] &&
+
+            values[x][y][0] > values[x-1][y-1][0] && 
+            values[x][y][0] > values[x+1][y-1][0] && 
+            values[x][y][0] > values[x-1][y+1][0] && 
+            values[x][y][0] > values[x+1][y+1][0])
+        {
+          double value = values[x][y][0];
+          int rad = (int)values[x][y][1];
+          best.add(
+            (x-rad)*integralImage.FACTOR, 
+            (y-rad)*integralImage.FACTOR, 
+            (x+rad)*integralImage.FACTOR, 
+            (y+rad)*integralImage.FACTOR, 
+            value);
+        }
+      }
     }
   }
 }
