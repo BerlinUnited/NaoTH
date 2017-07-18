@@ -102,7 +102,7 @@ public:
     const std::string& name() const { return _name; }
     //getter and setter???
     void setAngle(double angle){ action_angle = angle; }
-    double getAngle(){ return action_angle; }
+    double getAngle() const { return action_angle; }
   };
   
   enum BallPositionCategory

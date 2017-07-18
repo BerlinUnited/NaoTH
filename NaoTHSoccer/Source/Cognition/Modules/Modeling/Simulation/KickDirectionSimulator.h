@@ -138,18 +138,14 @@ private:
   ModuleCreator<ActionSimulator>* simulationModule;
 
   std::vector<ActionSimulator::Action> action_local;
-  std::vector<ActionSimulator::ActionResults> actionsConsequences; //TODO maybe not needed
-
-  void calculate_best_direction(ActionSimulator::Action& action);
-  void update(ActionSimulator::Action& action);
-
-
-  void resetSamples(SampleSet& samples, size_t n) const;
-  void normalize(SampleSet& samples) const;
-  
+  //actionsConsequences now contain the angles in which the robot should turn -> rename it accordingly
+  std::vector<double> actionsConsequences;
+  std::vector<double> actionsConsequencesAbs;
+  double calculate_best_direction(const ActionSimulator::Action& action);
+  void update(const ActionSimulator::Action& action);
   void resample(SampleSet& sampleSet, double sigma) const;
-
-  
+  void normalize(SampleSet& samples) const;
+  void resetSamples(SampleSet& samples, size_t n) const;  
 
 public:
   double m_max;
