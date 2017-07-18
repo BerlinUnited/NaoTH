@@ -407,7 +407,7 @@ void PathPlanner::execute_step_buffer()
   getMotionRequest().walkRequest.stepControl.speedDirection    = step_buffer.front().speedDirection;
   getMotionRequest().walkRequest.stepControl.target            = step_buffer.front().pose;
   getMotionRequest().walkRequest.stepControl.restriction       = step_buffer.front().restriction;
-  getMotionRequest().walkRequest.stepControl.isInterruptable   = step_buffer.front().isProtected;//(step_buffer.front().type != StepType::KICKSTEP);
+  getMotionRequest().walkRequest.stepControl.isProtected       = step_buffer.front().isProtected;
   getMotionRequest().walkRequest.stepControl.stepRequestID     = last_stepRequestID;
 
   // normal walking WALKSTEPs use Foot::NONE, for KICKSTEPs the foot to use has to be specified

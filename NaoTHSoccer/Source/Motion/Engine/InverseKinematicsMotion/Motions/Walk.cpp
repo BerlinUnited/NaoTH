@@ -229,7 +229,7 @@ void Walk::calculateNewStep(const Step& lastStep, Step& newStep, const WalkReque
   // STABILIZATION
   bool do_emergency_stop = com_errors.size() == com_errors.getMaxEntries() && com_errors.getAverage() > parameters().stabilization.emergencyStopError;
 
-  if ( getMotionRequest().id != getId() || (do_emergency_stop && walkRequest.stepControl.isInterruptable))
+  if ( getMotionRequest().id != getId() || (do_emergency_stop && !walkRequest.stepControl.isProtected))
   {
     // try to make a last step to align the feet if it is required
     if ( getMotionRequest().standardStand ) {
@@ -267,13 +267,6 @@ void Walk::calculateNewStep(const Step& lastStep, Step& newStep, const WalkReque
       break;
     case WalkRequest::StepControlRequest::WALKSTEP:
       newStep.footStep = theFootStepPlanner.controlStep(lastStep.footStep, walkRequest);
-
-      // STABILIZATION
-      if (parameters().stabilization.dynamicStepsize && walkRequest.stepControl.isInterruptable) {
-        adaptStepSize(newStep.footStep);
-        currentComErrorBuffer.clear();
-      }
-
       newStep.numberOfCycles = parameters().step.duration / getRobotInfo().basicTimeStep;
       newStep.type = STEP_CONTROL;
 
@@ -283,8 +276,15 @@ void Walk::calculateNewStep(const Step& lastStep, Step& newStep, const WalkReque
     default:
       ASSERT(false);
     }
+
+    // STABILIZATION
+    if (parameters().stabilization.dynamicStepsize && !walkRequest.stepControl.isProtected) {
+      adaptStepSize(newStep.footStep);
+      currentComErrorBuffer.clear();
+    }
+
   }
-  else // regular walk 
+  else // regular walk
   {
     newStep.footStep = theFootStepPlanner.nextStep(lastStep.footStep, walkRequest);
     newStep.numberOfCycles = parameters().step.duration / getRobotInfo().basicTimeStep;

@@ -93,7 +93,7 @@ message StepControlRequest
   };
   
   required RestrictionMode restriction = 8;
-  required bool isInterruptable = 9;
+  required bool isProtected = 9;
   required uint32 stepRequestID = 10;
 }
 

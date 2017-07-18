@@ -57,7 +57,7 @@ public:
       speedDirection(0),
       scale(1.0),
       restriction(RestrictionMode::HARD),   
-      isInterruptable(true),
+      isProtected(false),
       stepRequestID(0)
     {}
 
@@ -80,7 +80,7 @@ public:
 
     enum RestrictionMode { HARD, SOFT };
     RestrictionMode restriction; // additionally to restrictStepSize use restrictStepChange ?
-    bool isInterruptable;        // determine if the request is interruptible (e.g. kicks should not be!)
+    bool isProtected;            // determine if the request is protected from stabilization of any sort
     unsigned int stepRequestID;  // this ID is for stepControl request PathPlanning
   };
 
