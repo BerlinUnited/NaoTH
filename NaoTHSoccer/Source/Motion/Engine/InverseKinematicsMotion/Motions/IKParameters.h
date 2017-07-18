@@ -153,6 +153,11 @@ public:
       double dynamicStepsizeP;
       double dynamicStepsizeD;
     } stabilization;
+
+    struct ZMP{
+        double transitionScaling;
+    } zmp;
+
   } walk;
 
 
