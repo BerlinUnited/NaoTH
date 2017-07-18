@@ -357,3 +357,9 @@ message GroundContactModel {
   required bool rightGroundContact = 2;
   required Foot supportFoot = 3;
 }
+
+
+message CollisionPercept {
+  required uint32 timeCollisionArmLeft = 1;
+  required uint32 timeCollisionArmRight = 2;
+}
