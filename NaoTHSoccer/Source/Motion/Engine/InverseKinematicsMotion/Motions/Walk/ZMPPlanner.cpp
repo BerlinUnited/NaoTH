@@ -55,3 +55,40 @@ Vector2d ZMPPlanner::betterOne(
     supFoot.translation.x*(1.0-t) + t*targetFoot.translation.x, 
     supFoot.translation.y*(1.0-s) + s*targetFoot.translation.y);
 }//end betterOne
+
+Vector2d ZMPPlanner::bezierBased(
+  const FootStep& step, double offsetX, double offsetY,
+  double cycle,
+  double samplesDoubleSupport, double samplesSingleSupport,
+  double scaling)
+{
+  double t = cycle / (samplesSingleSupport+samplesDoubleSupport);
+  Pose3D supFoot = step.supFoot();
+  supFoot.translate(offsetX, offsetY * step.liftingFoot(), 0);
+
+  Pose3D targetFoot = step.footEnd();
+  targetFoot.translate(offsetX, -offsetY * step.liftingFoot(), 0);
+
+  //static std::vector<Vector2d> polygon = {Vector2d(0.0,0.0), Vector2d(0.9,0.0), Vector2d(0.3,1.0),Vector2d(1.0, 1.0)}; // ("time", value)
+  static std::vector<Vector2d> polygon = {Vector2d(0.0,0.0), Vector2d(0.5,0.0), Vector2d(0.5,1.0),Vector2d(1.0, 1.0)}; // ("time", value)
+  static std::vector<Vector2d> trajectory;
+  static unsigned int idx;
+
+  if(cycle < 0.000001 || trajectory.empty()){
+       idx = 0;
+       trajectory = FourPointBezier2D(polygon, 200);
+  }
+
+  double tt = t/scaling;
+  double s = 1;
+
+  if(tt < 1){
+      for(; trajectory[idx].x < tt && idx+1 < trajectory.size(); ++idx);
+
+      s = trajectory[idx].y;
+  }
+
+  return Vector2d(
+    supFoot.translation.x*(1.0-t) + t*targetFoot.translation.x,
+    supFoot.translation.y*(1.0-s) + s*targetFoot.translation.y);
+}//end betterOne

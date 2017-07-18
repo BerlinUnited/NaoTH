@@ -143,10 +143,10 @@ void Walk::execute()
 
   // WIEDERLICHER HACK: force the hip joint
   if (getMotorJointData().position[JointData::LHipRoll] < 0) {
-    getMotorJointData().position[JointData::LHipRoll] *= parameters().general.hipRollSingleSupFactorLeft;
+    getMotorJointData().position[JointData::LHipRoll] *= parameters().general.hipRollSingleSupFactorLeft; // if = 1 no damping or amplifing
   }
   if (getMotorJointData().position[JointData::RHipRoll] > 0) {
-    getMotorJointData().position[JointData::RHipRoll] *= parameters().general.hipRollSingleSupFactorRight;
+    getMotorJointData().position[JointData::RHipRoll] *= parameters().general.hipRollSingleSupFactorRight; // if = 1 no damping or amplifing
   }
 
   // STABILIZATION
@@ -340,14 +340,24 @@ void Walk::planZMP()
       int samplesSingleSupport = planningStep.numberOfCycles - samplesDoubleSupport;
       ASSERT(samplesSingleSupport >= 0 && samplesDoubleSupport >= 0);
 
-      Vector2d zmp_new = ZMPPlanner::betterOne(
+//      Vector2d zmp_new = ZMPPlanner::betterOne(
+//        planningStep.footStep, zmpOffsetX, zmpOffsetY,
+//        planningStep.planningCycle,
+//        samplesDoubleSupport,
+//        samplesSingleSupport,
+//        parameters().hip.newZMP_offset,
+//        parameters().hip.newZMP_width);
+//      zmp = Vector3d(zmp_new.x, zmp_new.y, parameters().hip.comHeight);
+
+      Vector2d zmp_new = ZMPPlanner::bezierBased(
         planningStep.footStep, zmpOffsetX, zmpOffsetY,
         planningStep.planningCycle,
-        samplesDoubleSupport, 
+        samplesDoubleSupport,
         samplesSingleSupport,
-        parameters().hip.newZMP_offset,
-        parameters().hip.newZMP_width);
+        parameters().zmp.transitionScaling);
       zmp = Vector3d(zmp_new.x, zmp_new.y, parameters().hip.comHeight);
+
+
     } else {
       Vector2d zmp_simple = ZMPPlanner::simplest(planningStep.footStep, zmpOffsetX, zmpOffsetY);
       zmp = Vector3d(zmp_simple.x, zmp_simple.y, parameters().hip.comHeight);
