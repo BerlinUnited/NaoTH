@@ -114,7 +114,10 @@ public:
     PLOT("BallCandidateDetector:mean",mean);
     PLOT("BallCandidateDetector:mean_of_means",average_mean);
   }
- 
+
+  static std::map<std::string, std::shared_ptr<AbstractCNNClassifier>> createCNNMap();
+
+
 private:
   struct Parameters: public ParameterList
   {
@@ -149,7 +152,7 @@ private:
       PARAMETER_REGISTER(blackKeysCheck.minSizeToCheck) = 60;
       PARAMETER_REGISTER(blackKeysCheck.minValue) = 20;
 
-      PARAMETER_REGISTER(classifier) = "cnn";
+      PARAMETER_REGISTER(classifier) = "aug1";
       
       syncWithConfig();
     }
