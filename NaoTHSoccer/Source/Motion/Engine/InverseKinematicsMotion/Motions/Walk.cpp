@@ -84,10 +84,10 @@ void Walk::execute()
   HipFeetPose cassert(c);
   cassert.localInHip();
   ASSERT(std::abs(cassert.feet.left.translation.x) < 150);
-  ASSERT(std::abs(cassert.feet.left.translation.y) < 150);
+  ASSERT(std::abs(cassert.feet.left.translation.y) < 200);
   ASSERT(std::abs(cassert.feet.left.translation.z) < 350);
   ASSERT(std::abs(cassert.feet.right.translation.x) < 150);
-  ASSERT(std::abs(cassert.feet.right.translation.y) < 150);
+  ASSERT(std::abs(cassert.feet.right.translation.y) < 200);
   ASSERT(std::abs(cassert.feet.right.translation.z) < 350);
 
   // STABILIZATION
@@ -387,6 +387,7 @@ void Walk::executeStep()
     {
       theCoMFeetPose.feet.left = executingStep.footStep.supFoot();
       theCoMFeetPose.feet.right = calculateLiftingFootPos(executingStep);
+      PLOT("Walk:liftingFootRightTrajec", theCoMFeetPose.feet.right.translation.y);
       break;
     }
     case FootStep::NONE:
