@@ -76,6 +76,13 @@ void Walk::execute()
     commandPoseBuffer.add(theCoMFeetPose);
   }
 
+  // set arms
+  // Attention: this will be overwritten by the arm motion engine if the ArmMotionRequest's MotionID is not equal to "none" or "arms_synchronised_with_walk"
+  // NOTE: we set the arms before the calculation of the com, so  the motion of the com can be adjusted to the arms
+  if(parameters().general.useArm) {
+    getEngine().armsSynchronisedWithWalk(getRobotInfo(), theCoMFeetPose, getMotorJointData());
+  }
+
 
   // apply inverse kinematic
   bool solved = false;
@@ -136,11 +143,6 @@ void Walk::execute()
   getEngine().solveHipFeetIK(c);
   getEngine().copyLegJoints(getMotorJointData().position);
 
-  // set arms
-  // Attention: this will be overwritten by the arm motion engine if the ArmMotionRequest's MotionID is not equal to "none" or "arms_synchronised_with_walk"
-  if(parameters().general.useArm) {
-    getEngine().armsSynchronisedWithWalk(getRobotInfo(), c, getMotorJointData());
-  }
 
   // set stiffness for the arms
   for (size_t i = JointData::RShoulderRoll; i <= JointData::LElbowYaw; ++i) {
