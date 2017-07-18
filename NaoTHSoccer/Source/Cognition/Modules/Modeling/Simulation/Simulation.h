@@ -111,8 +111,8 @@ public:
     ActionSimulator::ActionParams kick_long;
     double friction;
     double good_threshold_percentage;
-    double numParticles; //should be size_t
-    double minGoalParticles;
+    int numParticles; //should be size_t
+    int minGoalParticles;
 
   } theParameters;
 
