@@ -21,7 +21,7 @@ dataSetPath = {...
 addpath('../generatorFunctions');
 
 % create result output directory and fail if output directory already exists
-resultFolder =  'result_' + netName;
+resultFolder =  '../generated/result_' + netName;
 [~, errorMsg, ~] = mkdir(char(resultFolder));
 if ~isempty(errorMsg)
     error('Aborting because output directory "%s" already exists!', resultFolder)
