@@ -27,9 +27,7 @@ public class DrawingEventManagerImpl implements DrawingEventManager {
     }
     
     @Override
-    public synchronized void fireDrawingEvent(Drawable drawing) {
-        for(DrawingListener l: listeners) {
-            l.newDrawing(drawing);
-        }
+    public synchronized void fireDrawingEvent(Drawable drawing, Object src) {
+        listeners.forEach(l->{ l.newDrawing(drawing, src); });
     }
 }
