@@ -108,6 +108,7 @@ private:
     Foot foot;
     WalkRequest::Coordinate coordinate;
     WalkRequest::StepControlRequest::RestrictionMode restriction;
+    bool isProtected;
   };
   std::vector<Step_Buffer_Element> step_buffer;
 
@@ -125,7 +126,8 @@ private:
                 const Foot foot,
                 const double scale,
                 const double speedDirection,
-                const WalkRequest::StepControlRequest::RestrictionMode restriction);
+                const WalkRequest::StepControlRequest::RestrictionMode restriction,
+                const bool isProtected);
   void update_step(Pose2D &pose);
   void manage_step_buffer();
   void execute_step_buffer();
