@@ -64,6 +64,23 @@ def mirror_images(picture_files, options, dir_to_copy):
       mirrored_image_files.append(filename_new)
   return mirrored_image_files
 
+def farball_images(picture_files, options, dir_to_copy):
+  farball_image_files = []
+  if options['active']:
+    for i, f in enumerate(picture_files):
+      # resize image to half size then use original size again
+      img = cv2.imread(f, cv2.CV_LOAD_IMAGE_UNCHANGED)
+      img_small = cv2.resize(img, (0,0), fx=0.5, fy=0.5, interpolation=cv2.INTER_LINEAR) 
+      img_resized = cv2.resize(img_small, (0,0), fx=2.0, fy=2.0, interpolation=cv2.INTER_NEAREST)
+
+      path = splitext(f)[0]
+      splitted_path = path.split('/')
+      splitted_path.extend(path.split('\\'))
+      filename_new = dir_to_copy + splitted_path[-2] + '_' + str(i) + '_far.png'
+      cv2.imwrite(filename_new,img_resized)
+      farball_image_files.append(filename_new)
+  return farball_image_files
+
 def rotate_images(picture_files, options, dir_to_copy):
   rotated_image_files = []
   if options['active']:
@@ -164,6 +181,13 @@ def augment_files(src_root_folder, dir_to_copy, augment_options, amounts_per_cla
       for c in amounts_per_class:
         shift_images(files[c][0:amounts_per_class[c]], augment_options[option], dir_to_copy + '/' + c + '/')
 
+    if option == 'farball':
+      for c in amounts_per_class:
+        farball_files = farball_images(files[c][0:amounts_per_class[c]], augment_options[option], dir_to_copy + '/' + c + '/')
+        if farball_files != []:
+          scale_brightness(farball_files, augment_options['brightness'], dir_to_copy + '/' + c + '/')
+          shift_images(farball_files, augment_options['shift'], dir_to_copy + '/' + c + '/')
+
 ########################################################################################################################
 #   Main
 ########################################################################################################################
@@ -177,13 +201,15 @@ if __name__ == '__main__':
               'mirror':{'active':False},
               'rotate':{'active':True, 'rotations':[90, 180, 270]},
               'brightness':{'active':True, 'scales':[0.7, 1.3]},
-              'shift':{'active':False, 'offsets':[1, 2]}
+              'shift':{'active':False, 'offsets':[1, 2]},
+              'farball': {'active': True}
               }
   settings_noball = {'copy_original':{'active':True},
               'mirror':{'active':False},
               'rotate':{'active':False, 'rotations':[90, 180, 270]},
               'brightness':{'active':True, 'scales':[0.7, 1.3]},
-              'shift':{'active':False, 'offsets':[1, 2]}
+              'shift':{'active':False, 'offsets':[1, 2]},
+              'farball': {'active': True}
               }
   augment_files(dir_from, dir_to, settings_ball, {'ball':10})
   augment_files(dir_from, dir_to, settings_noball, {'noball': 40})

@@ -19,12 +19,7 @@
 
 #include <Tools/naoth_opencv.h>
 
-#include <Cognition/Modules/VisualCortex/BallDetector/Classifier/CNNClassifier.h>
-#include <Cognition/Modules/VisualCortex/BallDetector/Classifier/CNNAugmented1.h>
-#include <Cognition/Modules/VisualCortex/BallDetector/Classifier/CNNAugmented2.h>
-#include <Cognition/Modules/VisualCortex/BallDetector/Classifier/CNNClassifier.h>
-#include <Cognition/Modules/VisualCortex/BallDetector/Classifier/CNNFull.h>
-#include <Cognition/Modules/VisualCortex/BallDetector/Classifier/CNNSmall.h>
+#include <Cognition/Modules/VisualCortex/BallDetector/BallCandidateDetector.h>
 
 #if defined(__GNUC__) && defined(_NAOTH_CHECK_CONVERSION_)
 #if (__GNUC__ > 3 && __GNUC_MINOR__ > 5) || (__GNUC__ > 4) // version >= 4.6
@@ -197,14 +192,7 @@ void BallDetectorEvaluator::executeCNNBall()
   bestRecall95 = 0.0;
   bestRecall99 = 0.0;
 
-  cnnClassifiers.clear();
-  cnnClassifiers.insert({"aug2", std::make_shared<CNNAugmented2>()});
-  cnnClassifiers.insert({"aug1", std::make_shared<CNNAugmented1>()});
-  cnnClassifiers.insert({"cnn", std::make_shared<CNNClassifier>()});
-  cnnClassifiers.insert({"full", std::make_shared<CNNFull>()});
-  cnnClassifiers.insert({"small", std::make_shared<CNNSmall>()});
-  cnnClassifiers["cnn"] = std::make_shared<CNNClassifier>();
-
+  cnnClassifiers = BallCandidateDetector::createCNNMap();
 
   ExperimentParameters cnnParams;
   cnnParams.type = ExperimentParameters::Type::cnn;
