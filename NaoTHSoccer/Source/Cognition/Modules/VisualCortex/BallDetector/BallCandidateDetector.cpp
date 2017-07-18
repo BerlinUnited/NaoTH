@@ -47,7 +47,7 @@ BallCandidateDetector::BallCandidateDetector()
   // additionally insert the legacy haar classifier
   cnnMap.insert({"CVHaar", std::make_shared<CVHaarClassifier>(params.haarDetector.model_file)}); //Hack!
 
-  currentCNNClassifier = cnnMap["aug2"];
+  currentCNNClassifier = cnnMap["aug1"];
 }
 
 BallCandidateDetector::~BallCandidateDetector()
