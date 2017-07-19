@@ -908,11 +908,11 @@ void InverseKinematicsMotionEngine::armsBasedOnInertialModel(
 
 void InverseKinematicsMotionEngine::armsSynchronisedWithWalk(
         const RobotInfo& theRobotInfo,
-        const InverseKinematic::HipFeetPose& currentPose,
+        const InverseKinematic::CoMFeetPose& currentPose,
         JointData& jointData)
 {
-    InverseKinematic::HipFeetPose localizedPose(currentPose);
-    localizedPose.localInHip();
+    InverseKinematic::CoMFeetPose localizedPose(currentPose);
+    localizedPose.localInCoM();
     const Pose3D& lFoot = localizedPose.feet.left;
     const Pose3D& rFoot = localizedPose.feet.right;
 
