@@ -19,7 +19,9 @@ class KickActionModel:public naoth::Printable
 {
 public:
 
-  KickActionModel() {}
+  KickActionModel()
+    : bestAction(none)
+  {}
 
   virtual ~KickActionModel() {}
 

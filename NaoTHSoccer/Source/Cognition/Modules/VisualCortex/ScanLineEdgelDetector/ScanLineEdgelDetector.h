@@ -138,34 +138,6 @@ private:
     pair.point = Vector2d(begin.point + end.point)*0.5;
     pair.direction = (begin.direction - end.direction).normalize();
 
-    // hack:
-    pair.width = Vector2d(begin.point - end.point).abs();
-
-    bool widthProjected = false;
-    Vector2d beginPointOnField;
-    Vector2d endPointOnField;
-    if(CameraGeometry::imagePixelToFieldCoord(
-        getCameraMatrix(), getCameraInfo(),
-        begin.point, 
-        0.0, 
-        beginPointOnField)) 
-    {
-      if(CameraGeometry::imagePixelToFieldCoord(
-          getCameraMatrix(), getCameraInfo(),
-          end.point, 
-          0.0, 
-          endPointOnField)) 
-      {
-        widthProjected = true;
-      }
-    }
-    pair.projectedWidth = 0.0;
-    if(widthProjected)
-    {
-      pair.projectedWidth = Vector2d(beginPointOnField - endPointOnField).abs();
-    }
-    
-
     getScanLineEdgelPercept().pairs.push_back(pair);
   }
 

@@ -12,6 +12,7 @@
 
 #include "Tools/DataStructures/Printable.h"
 #include "Tools/DataStructures/Serializer.h"
+#include "Tools/Math/Common.h"
 
 namespace naoth
 {
@@ -99,6 +100,10 @@ class JointData
     bool isLegStiffnessOn() const;
     
     int checkStiffness() const;
+
+    void set(JointID joint, const double value, const double max_delta) {
+      position[joint] += Math::clamp(value - position[joint], -max_delta, max_delta);
+    }
 
   protected:
     double mirrorData(JointID joint) const;
