@@ -34,17 +34,33 @@ KickDirectionSimulator::~KickDirectionSimulator(){}
 
 void KickDirectionSimulator::execute()
 {
-  resetSamples(samples, theParameters.num_angle_particle); 
-  
+  //int bestID = 0;
+  //double smalestAngle = 0;
   for (size_t i = 0; i < action_local.size(); i++) {
+    resetSamples(samples, theParameters.num_angle_particle);
     actionsConsequences[i] = calculate_best_direction(action_local[i]);
     actionsConsequencesAbs[i] = abs(actionsConsequences[i]);
+    /*
+    if (i == 0 || actionsConsequencesAbs[i] < smalestAngle) {
+      smalestAngle = actionsConsequencesAbs[i];
+      bestID = i;
+    }
+    */
   }
   int bestActionID = std::min_element(actionsConsequencesAbs.begin(), actionsConsequencesAbs.end()) - actionsConsequencesAbs.begin();
-  getKickActionModel().bestAction = action_local[bestActionID].id();
-  getKickActionModel().rotation = actionsConsequences[bestActionID];
-  std::cout << "Best Action: " << action_local[bestActionID].name() << std::endl;
-
+  
+  getKickActionModel().bestAction = KickActionModel::none;
+  //TODO replace 5.0 with value of angle_std
+  if (fabs(actionsConsequences[bestActionID]) < Math::fromDegrees(5.0)) {
+    getKickActionModel().bestAction = action_local[bestActionID].id();
+  }
+  
+  Vector2d attackDirection(1.0,0.0);
+  attackDirection.rotate(actionsConsequences[bestActionID]);
+  getSoccerStrategy().attackDirection = attackDirection;
+  //getKickActionModel().rotation = actionsConsequences[bestActionID];
+  //std::cout << "Best Action: " << action_local[bestActionID].name() << std::endl;
+  /*
   FIELD_DRAWING_CONTEXT;
   for (size_t i = 0; i < samples.size(); i++)
   {
@@ -54,14 +70,14 @@ void KickDirectionSimulator::execute()
     PEN("000000", 1);
     FILLOVAL(point.x, point.y, 50, 50);
   }
-  
+  */
 }//end execute
 
 double KickDirectionSimulator::calculate_best_direction(const ActionSimulator::Action& basisAction){
 
   m_min = 0;
   m_max = 0;
-  double mean_angle;
+  double mean_angle = 0.0;
   for(int i = 0; i < theParameters.iterations; i++){
     //evaluate the particles
 

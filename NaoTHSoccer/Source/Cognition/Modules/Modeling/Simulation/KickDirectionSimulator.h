@@ -18,6 +18,7 @@
 #include "Representations/Modeling/RobotPose.h"
 #include "Representations/Modeling/KickActionModel.h"
 #include "Representations/Modeling/ObstacleModel.h"
+#include "Representations/Modeling/SoccerStrategy.h"
 
 //Tools
 #include <Tools/Math/Vector2.h>
@@ -48,6 +49,9 @@ BEGIN_DECLARE_MODULE(KickDirectionSimulator)
   REQUIRE(BallModel)
   REQUIRE(RobotPose)
   //REQUIRE(SelfLocGoalModel)
+
+  //Hack?
+  PROVIDE(SoccerStrategy)
 
   PROVIDE(KickActionModel)
 END_DECLARE_MODULE(KickDirectionSimulator)
