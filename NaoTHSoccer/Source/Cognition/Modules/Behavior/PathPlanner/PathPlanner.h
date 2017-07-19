@@ -15,6 +15,7 @@
 // debug
 #include "Tools/Debug/DebugRequest.h"
 #include "Tools/Debug/DebugModify.h"
+#include "Tools/Debug/DebugParameterList.h"
 
 // representations
 #include "Representations/Infrastructure/FieldInfo.h"
@@ -31,6 +32,7 @@
 BEGIN_DECLARE_MODULE(PathPlanner)
 PROVIDE(DebugRequest)
 PROVIDE(DebugModify)
+PROVIDE(DebugParameterList)
 
 REQUIRE(FieldInfo)
 REQUIRE(BallPercept)
@@ -44,15 +46,33 @@ PROVIDE(HeadMotionRequest)
 PROVIDE(StopwatchManager)
 END_DECLARE_MODULE(PathPlanner)
 
+
+
 class PathPlanner: public PathPlannerBase
 {
 public:
   PathPlanner();
-  ~PathPlanner(){};
+  ~PathPlanner();
 
   virtual void execute();
 
 private:
+  class Parameters : public ParameterList
+  {
+  public:
+    Parameters() : ParameterList("PathPlanner")
+    {
+      PARAMETER_REGISTER(sidekick_scale) = 1.0;
+      PARAMETER_REGISTER(kick_time) = 300;
+
+      syncWithConfig();
+    }
+    virtual ~Parameters(){}
+
+    double sidekick_scale;
+    int kick_time;
+  } params;
+
   // NONE means hip
   enum Foot
   {
@@ -87,6 +107,8 @@ private:
     double scale;
     Foot foot;
     WalkRequest::Coordinate coordinate;
+    WalkRequest::StepControlRequest::RestrictionMode restriction;
+    bool isProtected;
   };
   std::vector<Step_Buffer_Element> step_buffer;
 
@@ -95,7 +117,7 @@ private:
   Foot foot_to_use;
 
   // Used to synchronize stepIDs of WalkEngine to take control
-  unsigned int last_stepcontrol_stepID;
+  unsigned int last_stepRequestID;
 
   void add_step(Pose2D &pose,
                 const StepType &type,
@@ -103,7 +125,9 @@ private:
                 const double character,
                 const Foot foot,
                 const double scale,
-                const double speedDirection);
+                const double speedDirection,
+                const WalkRequest::StepControlRequest::RestrictionMode restriction,
+                const bool isProtected);
   void update_step(Pose2D &pose);
   void manage_step_buffer();
   void execute_step_buffer();

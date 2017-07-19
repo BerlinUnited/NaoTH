@@ -26,7 +26,8 @@ void Serializer<WalkRequest>::serialize(const WalkRequest& representation, naoth
   DataConversion::toMessage(representation.offset, *(msg->mutable_offset()));
 
   // step control
-  if ( representation.stepControl.stepID > 0 )
+  // PathPlanner starts with stepRequestID of 1, because MotionStatus starts with stepRequestID of 0
+  if (representation.stepControl.stepRequestID > 0)
   {
     naothmessages::StepControlRequest* stepControl = msg->mutable_stepcontrol();
     stepControl->set_stepid(representation.stepControl.stepID);
@@ -36,6 +37,9 @@ void Serializer<WalkRequest>::serialize(const WalkRequest& representation, naoth
     DataConversion::toMessage(representation.stepControl.target, *(stepControl->mutable_target()));
     stepControl->set_speeddirection(representation.stepControl.speedDirection);
     stepControl->set_scale(representation.stepControl.scale);
+    stepControl->set_restriction((naothmessages::StepControlRequest::RestrictionMode)representation.stepControl.restriction);
+    stepControl->set_isprotected(representation.stepControl.isProtected);
+    stepControl->set_steprequestid(representation.stepControl.stepRequestID);
   }
 }
 
@@ -66,6 +70,9 @@ void Serializer<WalkRequest>::deserialize(const naothmessages::WalkRequest* msg,
     DataConversion::fromMessage(stepControl.target(), representation.stepControl.target);
     representation.stepControl.speedDirection = stepControl.speeddirection();
     representation.stepControl.scale = stepControl.scale();
+    representation.stepControl.restriction = (WalkRequest::StepControlRequest::RestrictionMode) stepControl.restriction();
+    representation.stepControl.isProtected = stepControl.isprotected();
+    representation.stepControl.stepRequestID = stepControl.steprequestid();
   }
   else
   {
