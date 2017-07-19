@@ -61,9 +61,12 @@ IKParameters::IKParameters()
   PARAMETER_REGISTER(walk.hip.newZMP_ON) = false;
   PARAMETER_REGISTER(walk.hip.newZMP_offset) = 0.8;
   PARAMETER_REGISTER(walk.hip.newZMP_width) = 0.4;
-  PARAMETER_REGISTER(walk.zmp.transitionScaling) = 0.2;
-  PARAMETER_REGISTER(walk.zmp.inFootScalingY) = 4;
-  PARAMETER_REGISTER(walk.zmp.bezierOffsetY) = 32;
+
+  PARAMETER_REGISTER(walk.zmp.bezier.transitionScaling) = 0.2;
+  PARAMETER_REGISTER(walk.zmp.bezier.inFootScalingY) = 4;
+  PARAMETER_REGISTER(walk.zmp.bezier.offsetY) = 32;
+  PARAMETER_REGISTER(walk.zmp.bezier2.offsetY) = 0;
+  PARAMETER_REGISTER(walk.zmp.bezier2.offsetT) = 0;
 
   // step geometry
   PARAMETER_REGISTER(walk.step.duration) = 300;

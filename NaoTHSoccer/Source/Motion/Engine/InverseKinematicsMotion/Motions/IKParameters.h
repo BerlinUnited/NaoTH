@@ -156,9 +156,16 @@ public:
     } stabilization;
 
     struct ZMP{
-        double transitionScaling;
-        double inFootScalingY;
-        double bezierOffsetY;
+        struct Bezier{
+            double transitionScaling;
+            double inFootScalingY;
+            double offsetY;
+        } bezier;
+
+        struct Bezier2{
+            double offsetT;
+            double offsetY;
+        } bezier2;
     } zmp;
 
   } walk;

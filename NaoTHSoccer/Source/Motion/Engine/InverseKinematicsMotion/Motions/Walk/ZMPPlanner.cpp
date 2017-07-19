@@ -124,3 +124,48 @@ Vector2d ZMPPlanner::bezierBased(const FootStep& step, double offsetX, double of
     //start*(1.0-s) + s*target
     s);
 }//end betterOne
+
+Vector2d ZMPPlanner::bezierBased2(const FootStep& step, double offsetX, double offsetY,
+  double cycle,
+  double samplesDoubleSupport, double samplesSingleSupport,
+  double offsetT)
+{
+  Pose3D supFoot = step.supFoot();
+  Pose3D startFoot  = step.footBegin();
+  Pose3D targetFoot = step.footEnd();
+
+  // don't apply offset befor determining start and target because applying offsets first will add discontinuities (start of step i won't be target of step i-1)
+  double start    = (supFoot.translation.y + startFoot.translation.y)/2;
+  double target   = (supFoot.translation.y + targetFoot.translation.y)/2;
+
+  supFoot.translate(offsetX, offsetY * step.liftingFoot(), 0);
+  double supFootY = supFoot.translation.y;
+
+  //targetFoot.translate(offsetX, -offsetY * step.liftingFoot(), 0);
+
+  //static std::vector<Vector2d> polygon = {Vector2d(0.0,0.0), Vector2d(0.9,0.0), Vector2d(0.3,1.0),Vector2d(1.0, 1.0)}; // ("time", value)
+  //static std::vector<Vector2d> polygon_right_lifting = {Vector2d(0.0,0.0), Vector2d(0.2,1.33), Vector2d(0.8,1.33),Vector2d(1.0, 0.0)}; // ("time", value)
+  //static std::vector<Vector2d> polygon_left_lifting = {Vector2d(0.0,0.0), Vector2d(0.2,-1.33), Vector2d(0.8,-1.33),Vector2d(1.0, 0.0)}; // ("time", value)
+  static std::vector<Vector2d> trajectory;
+  static unsigned int idx;
+
+  if(cycle < 0.000001 || trajectory.empty()){
+      idx = 0;
+      trajectory.clear();
+
+      trajectory = FourPointBezier2D({Vector2d(0,start),
+                                      Vector2d(0+offsetT,supFootY),
+                                      Vector2d(1-offsetT,supFootY),
+                                      Vector2d(1.0, target)}, 200);
+  }
+
+  double t = cycle / (samplesSingleSupport+samplesDoubleSupport);
+  for(; trajectory[idx].x < t && idx+1 < trajectory.size(); ++idx);
+
+  double s = trajectory[idx].y;
+
+  return Vector2d(
+    supFoot.translation.x*(1.0-t) + t*targetFoot.translation.x,
+    //start*(1.0-s) + s*target
+    s);
+}//end betterOne
