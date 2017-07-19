@@ -84,6 +84,8 @@ public:
 
     // ACHTUNG: time can be negative (!)
     int secsTillUnpenalised;          // estimate of time till unpenalised
+
+    bool isPenalized() const { return penalty != none; }
   };
 
   struct TeamInfo

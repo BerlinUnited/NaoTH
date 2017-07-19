@@ -17,6 +17,8 @@ import de.naoth.rc.messages.Representations;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -30,7 +32,18 @@ public class SPLMessage {
     public static final int SPL_STANDARD_MESSAGE_DATA_SIZE = 780;
     public static final int SPL_STANDARD_MESSAGE_SIZE = 70 + SPL_STANDARD_MESSAGE_DATA_SIZE;
     public static final int SPL_STANDARD_MESSAGE_MAX_NUM_OF_PLAYERS = 5;
+    
+    public static final int BU_CUSTOM_DATA_OFFSET = 12;
 
+    public static class DoBerManCustomHeader
+    {
+        public long timestamp;
+        public byte teamID;
+        public byte isPenalized;
+        public byte whistleDetected;
+        public byte dummy;
+    }
+    
     //public byte header[4]; // 4
     //public byte version; // 1
     public byte playerNum; // 1
@@ -83,6 +96,8 @@ public class SPLMessage {
     public byte[] data;
 
     public transient Representations.BUUserTeamMessage user = null;
+    
+    public transient DoBerManCustomHeader doberHeader = null;
 
     public SPLMessage()
     {
@@ -93,7 +108,7 @@ public class SPLMessage {
 
         this.averageWalkSpeed = -1;
 
-        this.ballAge = msg.getBallAge() / 1000.0f;
+        this.ballAge = msg.getBallAge();
 
         this.ballVel_x = (float) msg.getBallVelocity().getX();
         this.ballVel_y = (float) msg.getBallVelocity().getY();
@@ -179,10 +194,29 @@ public class SPLMessage {
         this.data = new byte[this.numOfDataBytes];
         buffer.get(this.data, 0, this.data.length);
 
-        try {
-            this.user = Representations.BUUserTeamMessage.parseFrom(this.data);
-        } catch (InvalidProtocolBufferException ex) {
-            // it's not our message
+        if(this.data.length >= BU_CUSTOM_DATA_OFFSET) {
+            byte[] dataClipped = Arrays.copyOfRange(this.data, 0, BU_CUSTOM_DATA_OFFSET);
+            ByteBuffer doberHeader = ByteBuffer.wrap(data).order(ByteOrder.LITTLE_ENDIAN);
+            
+            this.doberHeader = new DoBerManCustomHeader();
+            this.doberHeader.timestamp = doberHeader.getLong();
+            this.doberHeader.teamID = doberHeader.get();
+            this.doberHeader.isPenalized = doberHeader.get();
+            this.doberHeader.whistleDetected = doberHeader.get();
+            this.doberHeader.dummy = doberHeader.get();
+            
+        }
+        if(this.data.length > BU_CUSTOM_DATA_OFFSET) {
+            byte[] dataWithOffset = Arrays.copyOfRange(this.data, BU_CUSTOM_DATA_OFFSET, this.data.length);
+            try {
+                this.user = Representations.BUUserTeamMessage.parseFrom(dataWithOffset);
+                // additionally check if the magic string matches
+                if(!"naoth".equals(this.user.getKey())) {
+                    this.user = null;
+                }
+            } catch (InvalidProtocolBufferException ex) {
+                // it's not our message
+            }
         }
     }
 
