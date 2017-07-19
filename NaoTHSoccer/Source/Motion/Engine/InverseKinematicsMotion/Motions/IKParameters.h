@@ -157,6 +157,8 @@ public:
 
     struct ZMP{
         double transitionScaling;
+        double inFootScalingY;
+        double bezierOffsetY;
     } zmp;
 
   } walk;

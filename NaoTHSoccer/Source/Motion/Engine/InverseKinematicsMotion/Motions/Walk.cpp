@@ -319,6 +319,7 @@ void Walk::planZMP()
   ASSERT(!planningStep.isPlanned());
 
   Vector3d zmp;
+  Vector3d other_zmp;
   if(planningStep.footStep.liftingFoot() == FootStep::NONE)
   {
     Pose3D finalBody = calculateStableCoMByFeet(planningStep.footStep.end(), getEngine().getParameters().walk.general.bodyPitchOffset);
@@ -354,22 +355,43 @@ void Walk::planZMP()
 //      zmp = Vector3d(zmp_new.x, zmp_new.y, parameters().hip.comHeight);
 
       Vector2d zmp_new = ZMPPlanner::bezierBased(
-        planningStep.footStep, zmpOffsetX, zmpOffsetY,
+        planningStep.footStep, zmpOffsetX, parameters().zmp.bezierOffsetY,
         planningStep.planningCycle,
         samplesDoubleSupport,
         samplesSingleSupport,
+        parameters().zmp.inFootScalingY,
         parameters().zmp.transitionScaling);
       zmp = Vector3d(zmp_new.x, zmp_new.y, parameters().hip.comHeight);
 
+      // just for plotting and debugging
+      Vector2d zmp_simple = ZMPPlanner::simplest(planningStep.footStep, zmpOffsetX, zmpOffsetY);
+      other_zmp = Vector3d(zmp_simple.x, zmp_simple.y, parameters().hip.comHeight);
 
     } else {
       Vector2d zmp_simple = ZMPPlanner::simplest(planningStep.footStep, zmpOffsetX, zmpOffsetY);
       zmp = Vector3d(zmp_simple.x, zmp_simple.y, parameters().hip.comHeight);
+
+      // just for plotting and debugging
+      int samplesDoubleSupport = std::max(0, (int) (parameters().step.doubleSupportTime / getRobotInfo().basicTimeStep));
+      int samplesSingleSupport = planningStep.numberOfCycles - samplesDoubleSupport;
+      ASSERT(samplesSingleSupport >= 0 && samplesDoubleSupport >= 0);
+
+      Vector2d zmp_new = ZMPPlanner::bezierBased(
+        planningStep.footStep, zmpOffsetX, parameters().zmp.bezierOffsetY,
+        planningStep.planningCycle,
+        samplesDoubleSupport,
+        samplesSingleSupport,
+        parameters().zmp.inFootScalingY,
+        parameters().zmp.transitionScaling);
+      other_zmp = Vector3d(zmp_new.x, zmp_new.y, parameters().hip.comHeight);
     }
   }
 
   PLOT("Walk:zmp:x", zmp.x);
   PLOT("Walk:zmp:y", zmp.y);
+
+  PLOT("Walk:other_zmp:x", other_zmp.x);
+  PLOT("Walk:other_zmp:y", other_zmp.y);
   //PLOT_GENERIC("Walk:zmp:xy", zmp.x, zmp.y);
 
   //zmp.z = parameters().hip.comHeight;

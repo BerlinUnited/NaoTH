@@ -25,7 +25,7 @@ public:
     double cycle, double samplesDoubleSupport, double samplesSingleSupport, double offset, double width);
 
   static Vector2d bezierBased(const FootStep& step, double offsetX, double offsetY,
-                              double cycle, double samplesDoubleSupport, double samplesSingleSupport, double scaling);
+                              double cycle, double samplesDoubleSupport, double samplesSingleSupport, double inFootScalingY, double transitionScaling);
 
 private:
   static std::vector<Vector2d> FourPointBezier2D(const std::vector<Vector2d>& polygon, unsigned int number_of_samples){
