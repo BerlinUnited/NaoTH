@@ -12,6 +12,16 @@
 #include "Tools/CVClassifier.h"
 #include "Tools/BlackSpotExtractor.h"
 
+#include "Classifier/CNNAugmented1.h"
+#include "Classifier/CNNAugmented2.h"
+#include "Classifier/CNNClassifier.h"
+#include "Classifier/CNNFull.h"
+#include "Classifier/CNNSmall.h"
+#include "Classifier/CNN_aug1_synthetic.h"
+#include "Classifier/CNN_aug2_full_conv.h"
+#include "Classifier/CNN_basic_synthetic_fusion.h"
+#include "Classifier/CNN_synth_full_conv.h"
+
 using namespace std;
 
 BallCandidateDetector::BallCandidateDetector()
@@ -31,6 +41,13 @@ BallCandidateDetector::BallCandidateDetector()
 
   theBallKeyPointExtractor = registerModule<BallKeyPointExtractor>("BallKeyPointExtractor", true);
   getDebugParameterList().add(&params);
+
+  //register classifier
+  cnnMap = createCNNMap();
+  // additionally insert the legacy haar classifier
+  cnnMap.insert({"CVHaar", std::make_shared<CVHaarClassifier>(params.haarDetector.model_file)}); //Hack!
+
+  currentCNNClassifier = cnnMap["aug1"];
 }
 
 BallCandidateDetector::~BallCandidateDetector()
@@ -51,14 +68,23 @@ void BallCandidateDetector::execute(CameraInfo::CameraID id)
   //theBallKeyPointExtractor->getModuleT()->calculateKeyPoints(best);
   theBallKeyPointExtractor->getModuleT()->calculateKeyPointsBetter(best);
 
+
+  // update selected classifier from parameters
+  // TODO: make it more efficient
+  auto location = cnnMap.find(params.classifier);
+  if(location != cnnMap.end()){
+    currentCNNClassifier = location->second;
+  }
+
+
   if(best.size() > 0) {
     calculateCandidates();
   }
 
   DEBUG_REQUEST("Vision:BallCandidateDetector:refinePatches",
     for(BestPatchList::reverse_iterator i = best.rbegin(); i != best.rend(); ++i) {
-      BestPatchList::Patch p = theBallKeyPointExtractor->getModuleT()->refineKeyPoint(*i);
-      RECT_PX(ColorClasses::red, p.min.x, p.min.y, p.max.x, p.max.y);
+      //BestPatchList::Patch p = theBallKeyPointExtractor->getModuleT()->refineKeyPoint(*i);
+      RECT_PX(ColorClasses::red, (*i).min.x, (*i).min.y, (*i).max.x, (*i).max.y);
     }
   );
 
@@ -94,6 +120,24 @@ void BallCandidateDetector::execute(CameraInfo::CameraID id)
   );
 }
 
+std::map<string, std::shared_ptr<AbstractCNNClassifier> > BallCandidateDetector::createCNNMap()
+{
+  std::map<string, std::shared_ptr<AbstractCNNClassifier> > result;
+
+  result.insert({"aug2", std::make_shared<CNNAugmented2>()});
+  result.insert({"aug1", std::make_shared<CNNAugmented1>()});
+  result.insert({"cnn", std::make_shared<CNNClassifier>()});
+  result.insert({"full", std::make_shared<CNNFull>()});
+  result.insert({"small", std::make_shared<CNNSmall>()});
+
+  result.insert({"aug1_synthetic", std::make_shared<CNN_aug1_synthetic>()});
+  result.insert({"aug2_full_conv", std::make_shared<CNN_aug2_full_conv>()});
+  result.insert({"basic_synthetic_fusion", std::make_shared<CNN_basic_synthetic_fusion>()});
+  result.insert({"synth_full_conv", std::make_shared<CNN_synth_full_conv>()});
+
+  return std::move(result);
+}
+
 
 void BallCandidateDetector::calculateCandidates()
 {
@@ -122,8 +166,8 @@ void BallCandidateDetector::calculateCandidates()
         break;
       }
 
-      const Vector2i& min((*i).min);
-      const Vector2i& max((*i).max);
+      Vector2i min((*i).min);
+      Vector2i max((*i).max);
 
       // (1) check green below
       bool checkGreenBelow = false;
@@ -194,19 +238,50 @@ void BallCandidateDetector::calculateCandidates()
           }
       }
 
+      /*
+      Vector2i maxMin(min);
+      Vector2i maxMax(max);
+      double maxDiv = 0;
+      int size = maxMax.x - maxMin.x;
+      
+      for (int dx = -size/4; dx < size/4; dx+=4) {
+        for (int dy = -size/4; dy < size/4; dy+=4) {
+          if (getImage().isInside(min.x + dx, min.y + dy) && getImage().isInside(max.x + dx, max.y+dy)) {
+            
+            int inner = getBallDetectorIntegralImage().getSumForRect((min.x + dx)/FACTOR, (min.y + dy)/FACTOR, (max.x + dx)/FACTOR, (max.y + dy)/FACTOR, 0);
+            //double stddev = calculateContrastIterative(getImage(), getFieldColorPercept(), min.x + dx, min.y + dy, max.x + dx, max.y + dy, patch_size);
+            double stddev = ((double)inner)/((double)(size)*(size));
+            if (stddev > maxDiv) {
+              maxDiv = stddev;
+              maxMin.x = min.x + dx;
+              maxMin.y = min.y + dy;
+              maxMax.x = max.x + dx;
+              maxMax.y = max.y + dy;
+            }
+          }
+        }
+      }
+      min = maxMin;
+      max = maxMax;
+      
+      DEBUG_REQUEST("Vision:BallCandidateDetector:drawCandidates",
+        RECT_PX(ColorClasses::yellow, maxMin.x, maxMin.y, maxMax.x, maxMax.y);
+      );
+      */
+      
 
       //if(checkGreenBelow && checkGreenInside)
       if(params.haarDetector.execute)
       {
         // hack: if the classifier has not been loaded yet
-        if(!cvHaarClassifier.modelLoaded()) {
-          cvHaarClassifier.loadModel(params.haarDetector.model_file);
-        }
+        //if(!cvHaarClassifier.modelLoaded()) {
+        //  cvHaarClassifier.loadModel(params.haarDetector.model_file);
+        //}
 
         BallCandidates::Patch patchedBorder(0);
         //int size = ((*i).max.x - (*i).min.x)/2;
-        patchedBorder.min = (*i).min;// - Vector2i(size,size);
-        patchedBorder.max = (*i).max;// + Vector2i(size,size);
+        patchedBorder.min = min;//(*i).min;// - Vector2i(size,size);
+        patchedBorder.max = max;//(*i).max;// + Vector2i(size,size);
 
         // add an additional border as post-processing
         int size = patchedBorder.max.x - patchedBorder.min.x;
@@ -222,6 +297,7 @@ void BallCandidateDetector::calculateCandidates()
         patchedBorder.max.x = patchedBorder.max.x + postBorder;
         patchedBorder.max.y = patchedBorder.max.y + postBorder;
 
+        
         if(getImage().isInside(patchedBorder.min.x, patchedBorder.min.y) && getImage().isInside(patchedBorder.max.x, patchedBorder.max.y))
         {
 
@@ -233,8 +309,17 @@ void BallCandidateDetector::calculateCandidates()
             );
 
           PatchWork::subsampling(getImage(), patchedBorder.data, patchedBorder.min.x, patchedBorder.min.y, patchedBorder.max.x, patchedBorder.max.y, patch_size);
-          if(cvHaarClassifier.classify(patchedBorder, params.haarDetector.minNeighbors, params.haarDetector.windowSize) > 0) {
-            
+
+          int found;
+          stopwatch.start();
+              // Hack!: the haar classifier is now a AbstractCNNClassifier, the params are only for the cv haar classifier
+              found = currentCNNClassifier->classify(patchedBorder,params.haarDetector.minNeighbors, params.haarDetector.windowSize);
+          stopwatch.stop();
+          stopwatch_values.push_back(static_cast<double>(stopwatch.lastValue) * 0.001);
+
+          // Hack!: the haar classifier is now a AbstractCNNClassifier, the params are only for the cv haar classifier
+          if (found) {
+
             if(!params.blackKeysCheck.enable || blackKeysOK(*i)) {
               addBallPercept(Vector2i((min.x + max.x)/2, (min.y + max.y)/2), (max.x - min.x)/2);
 
@@ -243,11 +328,19 @@ void BallCandidateDetector::calculateCandidates()
           }
         } else if(getImage().isInside(min.x, min.y) && getImage().isInside(max.x, max.y)) {
             BallCandidates::Patch p(0);
-            p.min = (*i).min;
-            p.max = (*i).max;
+            p.min = min;//(*i).min;
+            p.max = max;//(*i).max;
 
             PatchWork::subsampling(getImage(), p.data, min.x, min.y, max.x, max.y, patch_size);
-            if(cvHaarClassifier.classify(p, params.haarDetector.minNeighbors, params.haarDetector.windowSize) > 0) {
+
+            int found;
+            stopwatch.start();
+                // Hack!: the haar classifier is now a AbstractCNNClassifier, the params are only for the cv haar classifier
+                found = currentCNNClassifier->classify(p,params.haarDetector.minNeighbors, params.haarDetector.windowSize);
+            stopwatch.stop();
+            stopwatch_values.push_back(static_cast<double>(stopwatch.lastValue) * 0.001);
+
+            if (found) {
 
               if(!params.blackKeysCheck.enable || blackKeysOK(*i)) {
                 addBallPercept(Vector2i((min.x + max.x)/2, (min.y + max.y)/2), (max.x - min.x)/2);

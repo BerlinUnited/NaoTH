@@ -4,12 +4,15 @@
 #include <string>
 
 #include <Cognition/Modules/VisualCortex/BallDetector/Tools/CVHaarClassifier.h>
+#include <Cognition/Modules/VisualCortex/BallDetector/Classifier/AbstractCNNClassifier.h>
 
 #include <map>
 
 #include <opencv2/opencv.hpp>
 
 #include <Tools/Extern/picojson.h>
+
+#include <memory>
 
 
 #define NAOTH_STRUCT_COMPARE(a, b) {if(a < b) {return true;} else if(a > b) {return false;}}
@@ -21,6 +24,7 @@ public:
   virtual ~BallDetectorEvaluator();
 
   void executeHaarBall();
+  void executeCNNBall();
 
 public:
   struct ErrorEntry
@@ -31,7 +35,7 @@ public:
 
   struct ExperimentParameters
   {
-    enum class Type {haar};
+    enum class Type {haar, cnn};
 
     Type type;
 
@@ -75,7 +79,7 @@ private:
 
   std::multimap<std::string, InputPatch> loadImageSets(const std::string& rootDir, const std::string &pathSep="/");
 
-  ExperimentResult executeParam(const ExperimentParameters& params, const std::multimap<std::__cxx11::string, InputPatch> &imageSet);
+  ExperimentResult executeParam(const ExperimentParameters& params, const std::multimap<std::string, InputPatch> &imageSet);
   unsigned int executeSingleImageSet(const std::multimap<std::string, InputPatch> &imageSet, const ExperimentParameters &params, ExperimentResult &r);
 
   void evaluateImage(cv::Mat img, bool ballExpected, std::string fileName, const ExperimentParameters &params, ExperimentResult &r);
@@ -99,6 +103,13 @@ private:
     {
       return params.modelName + "_" + std::to_string(params.minNeighbours) + "_" + std::to_string(params.maxWindowSize);
     }
+    else if(params.type == ExperimentParameters::Type::cnn)
+    {
+      return params.modelName;
+    }
+    // FIXME: what shall I return?
+    assert(false);
+    return "";
   }
 
   std::string toDesc(const ExperimentParameters& params)
@@ -106,6 +117,15 @@ private:
     if(params.type == ExperimentParameters::Type::haar)
     {
       return params.modelName + " (Haar) " + " minNeighbours=" + std::to_string(params.minNeighbours) + " maxWindowSize=" + std::to_string(params.maxWindowSize);
+    }
+    else if(params.type == ExperimentParameters::Type::cnn)
+    {
+      return params.modelName + " (CNN)";
+    }
+    else
+    {
+      // fallback
+      return params.modelName;
     }
   }
 
@@ -163,6 +183,7 @@ private:
 
   // TODO: allow more classifiers (including the ones that have the more complex filter logic)
   CVHaarClassifier classifierHaar;
+  std::map<std::string, std::shared_ptr<AbstractCNNClassifier>> cnnClassifiers;
 
   std::map<ExperimentParameters, ExperimentResult, cmpExperimentParameters> results;
 
