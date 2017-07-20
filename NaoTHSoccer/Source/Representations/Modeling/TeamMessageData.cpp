@@ -74,7 +74,7 @@ SPLStandardMessage TeamMessageData::createSplMessage() const
         memcpy(spl.data, userMsgDoBer.c_str(), doberUserSize);
 
         // 2. write custom data in BerlinUnited format
-        userMsgBU.SerializeToArray(spl.data + doberUserSize, userSize);
+        userMsgBU.SerializeToArray(spl.data + doberUserSize, static_cast<int>(userSize));
     } else {
         spl.numOfDataBytes = 0;
     }
@@ -140,7 +140,7 @@ bool TeamMessageData::parseFromSplMessage(const SPLStandardMessage &spl)
       naothmessages::BUUserTeamMessage userData;
       try
       {
-        if (userData.ParseFromArray(spl.data + customOffset, spl.numOfDataBytes-customOffset)) {
+        if (userData.ParseFromArray(spl.data + customOffset, static_cast<int>(spl.numOfDataBytes)-static_cast<int>(customOffset))) {
             custom.parseFromProto(userData);
         } else {
           return false;
