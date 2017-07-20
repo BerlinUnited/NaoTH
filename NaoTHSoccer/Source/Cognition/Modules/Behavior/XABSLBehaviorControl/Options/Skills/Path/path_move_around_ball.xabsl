@@ -10,11 +10,8 @@ option path_move_around_ball
     {
       goto face_to_ball;
     }
-    else if(@direction > 0){
-      goto turn_right;
-    }
-    else if (true) {
-      goto turn_left;
+    else {
+      goto turn;
     }
   }
 
@@ -30,27 +27,17 @@ option path_move_around_ball
     }
   }
   
-  state turn_left
+  state turn
   {
   
     action {
       path.routine = move_around_ball;
+      path.direction = @direction;
+      path.radius = @radius;
       
       //loook at percept
       head.control_mode = look_at_ball_percept;
 
-    }
-  }
-
-  state turn_right
-  {
-    action {
-      path.routine = move_around_ball;
-      
-      //loook at percept
-      head.control_mode = look_at_ball_percept;
-
-      
     }
   }
 }
