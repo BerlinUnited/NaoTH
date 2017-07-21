@@ -11,8 +11,8 @@ option path_play_soccer
   }
   
 
-  initial state idle{
-    decision{
+  initial state idle {
+    decision {
       else if ( game.current_mode == playing ||
 				        game.current_mode == ready || 
 				        game.current_mode == set )
@@ -178,7 +178,7 @@ option path_play_soccer
 	    else if(action_done || !team.calc_if_is_striker)
 	      goto play;
 	    else
-	      stay; 
+	      stay;
 	  }
 	  action {
 	    initial_striker();
@@ -187,5 +187,4 @@ option path_play_soccer
   }
 
   // from set to play: if would be striker -> be inital striker for e.i. 20 sec?
-  
 }

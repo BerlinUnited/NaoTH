@@ -14,18 +14,14 @@ namespace internal_symbols("Internal Symbols") {
   };
   
   enum game.internal_mode internal game.current_mode;
+  
   enum game.internal_mode internal game.last_mode;
-  /* */
-  bool internal special_kickoff_done;
+
+  
   /* */
   bool internal last_state_was_penalized;
-  /** Wether a situtation can be aborted */
-  bool internal situation.abortable;
-  /** Wether a common situation is allowed to interfere */
-  bool internal common_decision.allowed;
-  /** Will be set once to true if the ball was outside the center circle */
-  bool internal ball_was_outside_circle;
 
+  
   /* motion_symbols */
 
   /** The head motion control modes. This specifies how behavior should be moving the head. */
@@ -69,9 +65,6 @@ namespace internal_symbols("Internal Symbols") {
 
   /* Kick symbols */
   
-  /** remember attack direction for hysteresis */
-  float internal attack.direction.used;
-
   /** this is used by the situation_based_striker, don't use itanywhere else*/
   bool internal situation_abortable;
 }
