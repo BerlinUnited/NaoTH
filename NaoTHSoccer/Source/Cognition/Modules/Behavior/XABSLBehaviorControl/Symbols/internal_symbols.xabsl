@@ -13,16 +13,24 @@ namespace internal_symbols("Internal Symbols") {
     unknown
   };
   
+  /** state of the game */
   enum game.internal_mode internal game.current_mode;
-  
-  enum game.internal_mode internal game.last_mode;
 
-  
-  /* */
+  // not calculated yet
+  //enum game.internal_mode internal game.last_mode;
+
+  // todo: replace with game.last_mode
   bool internal last_state_was_penalized;
 
+  /** state of the body */
+  bool internal body.ready_to_walk;
+
+
+  /** This is used to indicate not interruptable states */
+  bool internal situation_abortable;
+
   
-  /* motion_symbols */
+  /* motion control symbols */
 
   /** The head motion control modes. This specifies how behavior should be moving the head. */
   enum head.control_mode internal 
@@ -52,19 +60,4 @@ namespace internal_symbols("Internal Symbols") {
   enum arm.control_mode internal arm.control_mode;
   // needed by the get up motion
   enum arm.control_mode internal arm.control_mode_before_fall;
-  
-
-  bool internal body.ready_to_walk;
-
-  /* strategy symbols*/
-
-  /** remembers the dircetion for turning for search (@see search_ball)*/
-  float internal search_ball.search_direction;
-  /** remembers the numbers of turns while search (@see search_ball)*/
-  float internal search_ball.turns_for_searching;
-
-  /* Kick symbols */
-  
-  /** this is used by the situation_based_striker, don't use itanywhere else*/
-  bool internal situation_abortable;
 }
