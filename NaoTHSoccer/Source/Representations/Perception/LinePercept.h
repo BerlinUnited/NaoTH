@@ -165,8 +165,6 @@ public:
     Vector2d posOnField;
   };
 
-  const static int INITIAL_NUMBER_OF_LINES = 11;
-
   // seen lines
   std::vector<FieldLineSegment> lines;
   // seen corners
@@ -212,10 +210,10 @@ public:
   void reset()
   {
     lines.clear();
-    lines.reserve(INITIAL_NUMBER_OF_LINES);
+    //lines.reserve(INITIAL_NUMBER_OF_LINES);
 
     intersections.clear();
-    intersections.reserve(INITIAL_NUMBER_OF_LINES);
+    //intersections.reserve(INITIAL_NUMBER_OF_LINES);
 
     flags.clear();
 

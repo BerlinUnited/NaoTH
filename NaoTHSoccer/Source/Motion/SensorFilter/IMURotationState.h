@@ -46,7 +46,7 @@ class RotationState : public UKFStateRotationBase<RotationState<M1,/* M2,*/ dim,
         // TODO: should these functions be part of the filter?
 
         // state transition function
-        void predict(Eigen::Vector3d& u, double dt) {
+        void predict(const Eigen::Vector3d& u, double dt) {
             // continue rotation assuming constant velocity
             // rotational_velocity to quaternion
             Eigen::Vector3d rot_vel = u * dt;
@@ -58,7 +58,7 @@ class RotationState : public UKFStateRotationBase<RotationState<M1,/* M2,*/ dim,
 
             // TODO: compare with rotation_increment*rotation which sounds more reasonable
             Eigen::Quaterniond new_rotation = this->getRotationAsQuaternion() * rotation_increment; // follows paper
-            Eigen::AngleAxisd  new_angle_axis(new_rotation);
+            Eigen::AngleAxisd  new_angle_axis(new_rotation); 
             this->rotation() = new_angle_axis.angle() * new_angle_axis.axis();
         }
 

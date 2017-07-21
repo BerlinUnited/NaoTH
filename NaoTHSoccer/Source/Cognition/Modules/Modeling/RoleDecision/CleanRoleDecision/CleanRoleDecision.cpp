@@ -50,6 +50,7 @@ void CleanRoleDecision::computeStrikers()
         bool isRobotInactive = msg.fallen
                 || msg.custom.isPenalized
                 || msg.ballAge < 0 //Ball hasn't been seen
+                // FIXME: msg.ballAge is set to -1, when the model is not valid anymore. This cancels loose_ball_bonus out.
                 || (msg.ballAge + getFrameInfo().getTimeSince(msg.frameInfo.getTime()) > parameters.maxBallLostTime + loose_ball_bonus); //Ball isn't fresh
 
         // ignore "DEAD" and inactive robots
