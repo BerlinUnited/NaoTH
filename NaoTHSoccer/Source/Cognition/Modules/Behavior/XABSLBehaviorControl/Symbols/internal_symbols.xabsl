@@ -22,7 +22,7 @@ namespace internal_symbols("Internal Symbols") {
   // todo: replace with game.last_mode
   bool internal last_state_was_penalized;
 
-  /** state of the body */
+  /** state of the body: false when lifted, or fallen */
   bool internal body.ready_to_walk;
 
 
