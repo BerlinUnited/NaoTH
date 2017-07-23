@@ -45,6 +45,7 @@ IKParameters::IKParameters()
   PARAMETER_ANGLE_REGISTER(walk.general.bodyPitchOffset) = 0.2;
   PARAMETER_REGISTER(walk.general.hipOffsetX) = 15;
   PARAMETER_REGISTER(walk.general.stiffness) = 0.7;
+  PARAMETER_REGISTER(walk.general.stiffnessArms) = 0.7;
   PARAMETER_REGISTER(walk.general.useArm) = false;
   PARAMETER_REGISTER(walk.general.hipRollSingleSupFactorLeft) = 0.4;
   PARAMETER_REGISTER(walk.general.hipRollSingleSupFactorRight) = 0.4;
@@ -116,14 +117,12 @@ IKParameters::IKParameters()
   PARAMETER_REGISTER(rotationStabilize.threshold.y) = 3;
 
   // arm parameter
-  PARAMETER_REGISTER(arm.shoulderPitchInterialSensorRate) = -10;
-  PARAMETER_REGISTER(arm.shoulderRollInterialSensorRate) = -10;
+  PARAMETER_REGISTER(arm.inertialModelBasedMovement.shoulderPitchInterialSensorRate) = -10;
+  PARAMETER_REGISTER(arm.inertialModelBasedMovement.shoulderRollInterialSensorRate)  = -10;
+  PARAMETER_REGISTER(arm.synchronisedWithWalk.shoulderPitchRate) = 0.5;
+  PARAMETER_REGISTER(arm.synchronisedWithWalk.shoulderRollRate)  = 0.5;
+  PARAMETER_REGISTER(arm.synchronisedWithWalk.elbowRollRate)     = 0.5;
   PARAMETER_REGISTER(arm.maxSpeed) = 60;
-  PARAMETER_REGISTER(arm.alwaysEnabled)  = false;
-  PARAMETER_REGISTER(arm.kickEnabled) = true;
-  PARAMETER_REGISTER(arm.walkEnabled) = true;
-  PARAMETER_REGISTER(arm.takeBack) = false;
-
 
   PARAMETER_REGISTER(balanceCoM.kP) = 0;
   PARAMETER_REGISTER(balanceCoM.kI) = 0;
@@ -131,7 +130,6 @@ IKParameters::IKParameters()
   PARAMETER_REGISTER(balanceCoM.threshold) = 10;
 
   syncWithConfig();
-
 }
 
 IKParameters::~IKParameters()
