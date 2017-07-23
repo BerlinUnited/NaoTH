@@ -62,12 +62,9 @@ void RansacLineDetectorOnGraphs::execute()
     graphEdgelsTop.push_back(subgraphEdgels);
   }
 
-  //TODO: Remove this after Debug
-  std::vector<EdgelD> inlierList;
-
   for (std::vector<GraphEdgel>& subgraphEdgels: graphEdgels) {
     Math::LineSegment result;
-    if (ransac(result, subgraphEdgels, getLineGraphPercept().lineGraphs, inlierList)) {
+    if (ransac(result, subgraphEdgels, getLineGraphPercept().lineGraphs)) {
       LinePercept::FieldLineSegment fieldLine;
       fieldLine.lineOnField = result;
       getLinePercept().lines.push_back(fieldLine);
@@ -76,7 +73,7 @@ void RansacLineDetectorOnGraphs::execute()
 
   for (std::vector<GraphEdgel>& subgraphEdgels: graphEdgelsTop) {
     Math::LineSegment result;
-    if (ransac(result, subgraphEdgels, getLineGraphPercept().lineGraphsTop, inlierList)) {
+    if (ransac(result, subgraphEdgels, getLineGraphPercept().lineGraphsTop)) {
       LinePercept::FieldLineSegment fieldLine;
       fieldLine.lineOnField = result;
       getLinePerceptTop().lines.push_back(fieldLine);
@@ -172,7 +169,7 @@ void RansacLineDetectorOnGraphs::execute()
   );
 }
 
-int RansacLineDetectorOnGraphs::ransac(Math::LineSegment& result, std::vector<GraphEdgel>& subgraphEdgels, const std::vector<std::vector<EdgelD>>& lineGraphs, std::vector<EdgelD>& inlierList)
+int RansacLineDetectorOnGraphs::ransac(Math::LineSegment& result, std::vector<GraphEdgel>& subgraphEdgels, const std::vector<std::vector<EdgelD>>& lineGraphs)
 {
   if(subgraphEdgels.size() < params.inlierMin) {
     return 0;
@@ -238,7 +235,6 @@ int RansacLineDetectorOnGraphs::ransac(Math::LineSegment& result, std::vector<Gr
         double t = bestModel.project(e.point);
         minT = std::min(t, minT);
         maxT = std::max(t, maxT);
-        inlierList.push_back(e);
         ge.line_id = 1;
       }
     }
@@ -263,10 +259,9 @@ int RansacLineDetectorOnGraphs::ransacEllipse(Ellipse& result, std::vector<std::
   // TODO: i < params.circle_iterations ?
   for(size_t i = 0; i < graphEdgels.size(); ++i)
   {
-    if (graph[i].size() < 5) continue;
+    if (graphEdgels[i].size() < 5) continue;
     // create model
     Ellipse ellipse;
-
 
     std::vector<double> x, y;
     x.reserve(graphEdgels[i].size());

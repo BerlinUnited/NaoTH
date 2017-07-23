@@ -53,7 +53,7 @@ public:
   std::vector<std::vector<GraphEdgel>> graphEdgelsTop;
 
 private:
-  int ransac(Math::LineSegment& result, std::vector<GraphEdgel>& subgraphEdgels, const std::vector<std::vector<EdgelD>>& lineGraphs, std::vector<EdgelD>& inlierList);
+  int ransac(Math::LineSegment& result, std::vector<GraphEdgel>& subgraphEdgels, const std::vector<std::vector<EdgelD>>& lineGraphs);
 
   int ransacEllipse(Ellipse& result, std::vector<std::vector<GraphEdgel>>& graphEdgels, const std::vector<std::vector<EdgelD>>& lineGraphs);
 
