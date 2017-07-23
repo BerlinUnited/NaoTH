@@ -7,15 +7,11 @@ option path_move_around_ball
   common decision
   {
     if (abs(value=ball.angle)>30)
-    {
       goto face_to_ball;
-    }
-    else if(@direction > 0){
+    else if(@direction > 0)
       goto turn_right;
-    }
-    else if (true) {
+    else if (true)
       goto turn_left;
-    }
   }
 
   initial state face_to_ball
@@ -32,13 +28,13 @@ option path_move_around_ball
   
   state turn_left
   {
-  
     action {
       path.routine = move_around_ball;
+      path.direction = @direction;
+      path.radius = @radius;
       
       //loook at percept
       head.control_mode = look_at_ball_percept;
-
     }
   }
 
@@ -46,11 +42,11 @@ option path_move_around_ball
   {
     action {
       path.routine = move_around_ball;
+      path.direction = @direction;
+      path.radius = @radius;
       
       //loook at percept
       head.control_mode = look_at_ball_percept;
-
-      
     }
   }
 }
