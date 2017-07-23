@@ -128,7 +128,7 @@ solution "NaoTHSoccer"
     
   -- additional defines for visual studio
   configuration {"windows", "vs*"}
-    defines {"WIN32", "NOMINMAX", "EIGEN_DONT_ALIGN"}
+    defines {"WIN32", "NOMINMAX", "NOGDI", "EIGEN_DONT_ALIGN"}
     buildoptions {"/wd4351"} -- disable warning: "...new behavior: elements of array..."
     buildoptions {"/wd4996"} -- disable warning: "...deprecated..."
     buildoptions {"/wd4290"} -- exception specification ignored (typed stecifications are ignored)

@@ -43,7 +43,7 @@ public:
   void messageReceived(unsigned int message_receiveTime, double interpolation=0.0);
   void update(unsigned int currentTime);
   inline double normalDensity(double x) {
-    return 1.0/std::sqrt(2 * Math::pi * varianceMsgInterval) * std::exp(-std::pow(x - avgMsgInterval, 2)/(2 * varianceMsgInterval));
+    return 1.0 / std::sqrt(2 * Math::pi * varianceMsgInterval) * std::exp(-Math::sqr(x - avgMsgInterval) / (2 * varianceMsgInterval));
   };
   double exponentialDistribution(double x);
   double probability(double lower, double upper);

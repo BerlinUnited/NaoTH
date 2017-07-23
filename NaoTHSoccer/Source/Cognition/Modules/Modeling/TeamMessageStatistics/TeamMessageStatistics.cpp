@@ -43,17 +43,17 @@ void TeamMessageStatistics::execute() {
           getTeamMessageStatisticsModel().avgMsgInterval = (getTeamMessageStatisticsModel().avgMsgInterval * old_amountOfMessages + currentMessageInterval)
             /getTeamMessageStatisticsModel().amountOfMessages;
           getTeamMessageStatisticsModel().expectation_xSquared = (getTeamMessageStatisticsModel().expectation_xSquared * old_amountOfMessages + 
-            std::pow(currentMessageInterval, 2))/getTeamMessageStatisticsModel().amountOfMessages;
+            Math::sqr(currentMessageInterval)) / getTeamMessageStatisticsModel().amountOfMessages;
         }
         else {
           //Interpolation of message intervals
           getTeamMessageStatisticsModel().avgMsgInterval = parameters.interpolation * currentMessageInterval + 
             (1.0 - parameters.interpolation) * getTeamMessageStatisticsModel().avgMsgInterval;
-          getTeamMessageStatisticsModel().expectation_xSquared = parameters.interpolation * std::pow(currentMessageInterval, 2) + 
+          getTeamMessageStatisticsModel().expectation_xSquared = parameters.interpolation * Math::sqr(currentMessageInterval) +
             (1.0 - parameters.interpolation) * getTeamMessageStatisticsModel().expectation_xSquared;
         }
         getTeamMessageStatisticsModel().varianceMsgInterval = getTeamMessageStatisticsModel().expectation_xSquared - 
-          std::pow(getTeamMessageStatisticsModel().avgMsgInterval, 2);
+          Math::sqr(getTeamMessageStatisticsModel().avgMsgInterval);
         PLOT("MessageStatistics:Team:MessageInterval", currentMessageInterval);
       }
     }

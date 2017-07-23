@@ -60,7 +60,7 @@ option path_short_kick
 
   state short_freeze {
     decision {
-      if(state_time > 2000)
+      if(state_time > 500)
         goto finished;
       else 
         stay; 
