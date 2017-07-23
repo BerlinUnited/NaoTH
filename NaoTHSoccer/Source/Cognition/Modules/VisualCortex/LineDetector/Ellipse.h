@@ -1,5 +1,5 @@
-#ifndef ELLIPSE_H
-#define ELLIPSE_H
+#ifndef _ELLIPSE_H_
+#define _ELLIPSE_H_
 
 #include <iostream>
 #include <vector>
@@ -76,4 +76,4 @@ public:
   std::vector<double> y_toFit;
 };
 
-#endif // ELLIPSE_H
+#endif // _ELLIPSE_H_
