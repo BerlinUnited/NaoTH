@@ -256,7 +256,7 @@ public:
 
   void armsSynchronisedWithWalk(
     const naoth::RobotInfo& theRobotInfo,
-    const InverseKinematic::HipFeetPose& currentPose, 
+    const InverseKinematic::CoMFeetPose& feet, 
     naoth::JointData& jointData);
 
   void armsOnBack(

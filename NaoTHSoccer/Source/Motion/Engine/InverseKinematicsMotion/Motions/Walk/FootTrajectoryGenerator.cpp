@@ -89,7 +89,7 @@ Pose3D FootTrajectorGenerator::stepControl(
 
     // TODO: optmize
     Pose3D speedTarget = targetFoot;
-    speedTarget.translate(cos(speedDirection)*30, sin(speedDirection)*30, 0);
+    speedTarget.translate(cos(speedDirection) * 30, sin(speedDirection) * 30, 0);
     vector<Vector2d > vecX;
     vecX.push_back(Vector2d(0.0, oldFoot.translation.x));
     vecX.push_back(Vector2d(1.0, targetFoot.translation.x));
