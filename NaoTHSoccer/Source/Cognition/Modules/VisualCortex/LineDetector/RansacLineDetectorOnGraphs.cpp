@@ -35,21 +35,48 @@ void RansacLineDetectorOnGraphs::execute()
     }
   );
 
+  graphEdgels.clear();
+  graphEdgelsTop.clear();
+  for (size_t subgraph_id = 0; subgraph_id<getLineGraphPercept().lineGraphs.size(); subgraph_id++) {
+    std::vector<GraphEdgel> subgraphEdgels;
+    subgraphEdgels.reserve(getLineGraphPercept().lineGraphs[subgraph_id].size());
+    for (size_t edgel_id = 0; edgel_id<getLineGraphPercept().lineGraphs[subgraph_id].size(); edgel_id++) {
+      GraphEdgel graphEdgel;
+      graphEdgel.subgraph_id = subgraph_id;
+      graphEdgel.edgel_id = edgel_id;
+      graphEdgel.line_id = -1;
+      subgraphEdgels.push_back(graphEdgel);
+    }
+    graphEdgels.push_back(subgraphEdgels);
+  }
+  for (size_t subgraph_id = 0; subgraph_id<getLineGraphPercept().lineGraphsTop.size(); subgraph_id++) {
+    std::vector<GraphEdgel> subgraphEdgels;
+    subgraphEdgels.reserve(getLineGraphPercept().lineGraphsTop[subgraph_id].size());
+    for (size_t edgel_id = 0; edgel_id<getLineGraphPercept().lineGraphsTop[subgraph_id].size(); edgel_id++) {
+      GraphEdgel graphEdgel;
+      graphEdgel.subgraph_id = subgraph_id;
+      graphEdgel.edgel_id = edgel_id;
+      graphEdgel.line_id = -1;
+      subgraphEdgels.push_back(graphEdgel);
+    }
+    graphEdgelsTop.push_back(subgraphEdgels);
+  }
+
   //TODO: Remove this after Debug
   std::vector<EdgelD> inlierList;
 
-  for (const std::vector<EdgelD>& subgraph : getLineGraphPercept().lineGraphs) {
+  for (std::vector<GraphEdgel>& subgraphEdgels: graphEdgels) {
     Math::LineSegment result;
-    if (ransac(result, subgraph, inlierList)) {
+    if (ransac(result, subgraphEdgels, getLineGraphPercept().lineGraphs, inlierList)) {
       LinePercept::FieldLineSegment fieldLine;
       fieldLine.lineOnField = result;
       getLinePercept().lines.push_back(fieldLine);
     }
   }
 
-  for (const std::vector<EdgelD>& subgraph : getLineGraphPercept().lineGraphsTop) {
+  for (std::vector<GraphEdgel>& subgraphEdgels: graphEdgelsTop) {
     Math::LineSegment result;
-    if (ransac(result, subgraph, inlierList)) {
+    if (ransac(result, subgraphEdgels, getLineGraphPercept().lineGraphsTop, inlierList)) {
       LinePercept::FieldLineSegment fieldLine;
       fieldLine.lineOnField = result;
       getLinePerceptTop().lines.push_back(fieldLine);
@@ -78,11 +105,28 @@ void RansacLineDetectorOnGraphs::execute()
       }
     }
 
-    for(const EdgelD& e : inlierList) {
-      CIRCLE(e.point.x, e.point.y, 25);
+    for(const std::vector<GraphEdgel>& subgraphEdgels : graphEdgels) {
+      for (const GraphEdgel& ge : subgraphEdgels) {
+        if(ge.line_id > -1) {
+          PEN("00FF00", 5);
+        } else {
+          PEN("FF0000", 5);
+        }
+        const EdgelD& e = getLineGraphPercept().lineGraphs[ge.subgraph_id][ge.edgel_id];
+        CIRCLE(e.point.x, e.point.y, 25);
+      }
     }
-
-
+    for(const std::vector<GraphEdgel>& subgraphEdgels : graphEdgelsTop) {
+      for (const GraphEdgel& ge : subgraphEdgels) {
+        if(ge.line_id > -1) {
+          PEN("00FF00", 5);
+        } else {
+          PEN("FF0000", 5);
+        }
+        const EdgelD& e = getLineGraphPercept().lineGraphsTop[ge.subgraph_id][ge.edgel_id];
+        CIRCLE(e.point.x, e.point.y, 25);
+      }
+    }
   );
 
   DEBUG_REQUEST("Vision:RansacLineDetectorOnGraphs:fit_and_draw_circle_field",
@@ -90,7 +134,7 @@ void RansacLineDetectorOnGraphs::execute()
     // fit ellipse
     Ellipse circResult;
 
-    if (ransacEllipse(circResult, getLineGraphPercept().lineGraphs)) {
+    if (ransacEllipse(circResult, graphEdgels, getLineGraphPercept().lineGraphs)) {
       double c[2];
       circResult.getCenter(c);
 
@@ -108,7 +152,7 @@ void RansacLineDetectorOnGraphs::execute()
       }
     }
 
-    if (ransacEllipse(circResult, getLineGraphPercept().lineGraphsTop)) {
+    if (ransacEllipse(circResult, graphEdgelsTop, getLineGraphPercept().lineGraphsTop)) {
       double c[2];
       circResult.getCenter(c);
 
@@ -128,9 +172,9 @@ void RansacLineDetectorOnGraphs::execute()
   );
 }
 
-int RansacLineDetectorOnGraphs::ransac(Math::LineSegment& result, const std::vector<EdgelD>& subgraph, std::vector<EdgelD>& inlierList)
+int RansacLineDetectorOnGraphs::ransac(Math::LineSegment& result, std::vector<GraphEdgel>& subgraphEdgels, const std::vector<std::vector<EdgelD>>& lineGraphs, std::vector<EdgelD>& inlierList)
 {
-  if(subgraph.size() < params.inlierMin) {
+  if(subgraphEdgels.size() < params.inlierMin) {
     return 0;
   }
 
@@ -141,15 +185,17 @@ int RansacLineDetectorOnGraphs::ransac(Math::LineSegment& result, const std::vec
   for(int i = 0; i < params.iterations; ++i)
   {
     //pick two random points
-    int i0 = Math::random((int)subgraph.size());
-    int i1 = Math::random((int)subgraph.size());
+    int i0 = Math::random((int)subgraphEdgels.size());
+    int i1 = Math::random((int)subgraphEdgels.size());
 
     if(i0 == i1) {
       continue;
     }
 
-    const EdgelD& a = subgraph[i0];
-    const EdgelD& b = subgraph[i1];
+    const GraphEdgel& gEdgel1 = subgraphEdgels[i0];
+    const GraphEdgel& gEdgel2 = subgraphEdgels[i1];
+    const EdgelD& a = lineGraphs[gEdgel1.subgraph_id][gEdgel1.edgel_id];
+    const EdgelD& b = lineGraphs[gEdgel2.subgraph_id][gEdgel2.edgel_id];
 
     if(a.sim(b) < params.directionSimilarity) {
       continue;
@@ -160,7 +206,8 @@ int RansacLineDetectorOnGraphs::ransac(Math::LineSegment& result, const std::vec
     double inlierError = 0;
     int inlier = 0;
 
-    for(const EdgelD& e : subgraph) {
+    for(const GraphEdgel& ge : subgraphEdgels) {
+      const EdgelD& e = lineGraphs[ge.subgraph_id][ge.edgel_id];
       double d = model.minDistance(e.point);
 
       // inlier
@@ -181,8 +228,10 @@ int RansacLineDetectorOnGraphs::ransac(Math::LineSegment& result, const std::vec
     double minT = 0;
     double maxT = 0;
 
-    for(const EdgelD& e : subgraph)
+    for(GraphEdgel& ge : subgraphEdgels)
     {
+      const EdgelD& e = lineGraphs[ge.subgraph_id][ge.edgel_id];
+
       double d = bestModel.minDistance(e.point);
 
       if(d < params.outlierThreshold && sim(bestModel, e) > params.directionSimilarity) {
@@ -190,6 +239,7 @@ int RansacLineDetectorOnGraphs::ransac(Math::LineSegment& result, const std::vec
         minT = std::min(t, minT);
         maxT = std::max(t, maxT);
         inlierList.push_back(e);
+        ge.line_id = 1;
       }
     }
     // return results
@@ -199,10 +249,10 @@ int RansacLineDetectorOnGraphs::ransac(Math::LineSegment& result, const std::vec
   return bestInlier;
 }
 
-int RansacLineDetectorOnGraphs::ransacEllipse(Ellipse& result, const std::vector<std::vector<EdgelD>>& graph)
+int RansacLineDetectorOnGraphs::ransacEllipse(Ellipse& result, std::vector<std::vector<GraphEdgel>>& graphEdgels, const std::vector<std::vector<EdgelD>>& graph)
 {
 
-  if(graph.empty()) {
+  if(graphEdgels.empty()) {
     return 0;
   }
 
@@ -211,7 +261,7 @@ int RansacLineDetectorOnGraphs::ransacEllipse(Ellipse& result, const std::vector
   double bestInlierError = 0;
 
   // TODO: i < params.circle_iterations ?
-  for(size_t i = 0; i < graph.size(); ++i)
+  for(size_t i = 0; i < graphEdgels.size(); ++i)
   {
     if (graph[i].size() < 5) continue;
     // create model
@@ -219,9 +269,10 @@ int RansacLineDetectorOnGraphs::ransacEllipse(Ellipse& result, const std::vector
 
 
     std::vector<double> x, y;
-    x.reserve(graph[i].size());
-    y.reserve(graph[i].size());
-    for(const EdgelD& e : graph[i]) {
+    x.reserve(graphEdgels[i].size());
+    y.reserve(graphEdgels[i].size());
+    for(const GraphEdgel& ge : graphEdgels[i]) {
+      const EdgelD& e = graph[ge.subgraph_id][ge.edgel_id];
       x.push_back(e.point.x);
       y.push_back(e.point.y);
     }
@@ -239,8 +290,9 @@ int RansacLineDetectorOnGraphs::ransacEllipse(Ellipse& result, const std::vector
     double inlierError = 0;
     int inlier = 0;
 
-    for(const std::vector<EdgelD>& subgraph : graph) {
-      for(const EdgelD& e : subgraph) {
+    for(const std::vector<GraphEdgel>& subgraphEdgels : graphEdgels) {
+      for(const GraphEdgel& ge : subgraphEdgels) {
+        const EdgelD& e = graph[ge.subgraph_id][ge.edgel_id];
         double d = ellipse.error_to(e.point.x, e.point.y);
 
         if(d <= params.circle_outlierThreshold) {

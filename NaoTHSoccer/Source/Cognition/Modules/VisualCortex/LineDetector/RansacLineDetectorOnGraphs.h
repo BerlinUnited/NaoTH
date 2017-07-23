@@ -42,10 +42,20 @@ public:
 
  virtual void execute();
 
-private:
-  int ransac(Math::LineSegment& result, const std::vector<EdgelD>& subgraph, std::vector<EdgelD>& inlierList);
+  struct GraphEdgel
+  {
+    size_t subgraph_id;
+    size_t edgel_id;
+    int line_id;
+  };
 
-  int ransacEllipse(Ellipse& result, const std::vector<std::vector<EdgelD>>& graph);
+  std::vector<std::vector<GraphEdgel>> graphEdgels;
+  std::vector<std::vector<GraphEdgel>> graphEdgelsTop;
+
+private:
+  int ransac(Math::LineSegment& result, std::vector<GraphEdgel>& subgraphEdgels, const std::vector<std::vector<EdgelD>>& lineGraphs, std::vector<EdgelD>& inlierList);
+
+  int ransacEllipse(Ellipse& result, std::vector<std::vector<GraphEdgel>>& graphEdgels, const std::vector<std::vector<EdgelD>>& lineGraphs);
 
 //private:
   class Parameters: public ParameterList
