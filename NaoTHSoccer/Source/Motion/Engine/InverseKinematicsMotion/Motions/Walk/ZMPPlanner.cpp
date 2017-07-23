@@ -73,20 +73,15 @@ Vector2d ZMPPlanner::bezierBased(const FootStep& step, double offsetX, double of
   supFoot.translate(offsetX, offsetY * step.liftingFoot(), 0);
   double supFootY = supFoot.translation.y;
 
-  //targetFoot.translate(offsetX, -offsetY * step.liftingFoot(), 0);
-
-  //static std::vector<Vector2d> polygon = {Vector2d(0.0,0.0), Vector2d(0.9,0.0), Vector2d(0.3,1.0),Vector2d(1.0, 1.0)}; // ("time", value)
-  //static std::vector<Vector2d> polygon_right_lifting = {Vector2d(0.0,0.0), Vector2d(0.2,1.33), Vector2d(0.8,1.33),Vector2d(1.0, 0.0)}; // ("time", value)
-  //static std::vector<Vector2d> polygon_left_lifting = {Vector2d(0.0,0.0), Vector2d(0.2,-1.33), Vector2d(0.8,-1.33),Vector2d(1.0, 0.0)}; // ("time", value)
   static std::vector<Vector2d> trajectory;
   static unsigned int idx;
 
   if(cycle < 0.000001 || trajectory.empty()){
        idx = 0;
        trajectory.clear();
-       //if(step.liftingFoot()) {
+
             static std::vector<Vector2d> temp;
-           // trajectory from start to foot
+           // trajectory from start to foot as (time, value) pairs
            std::vector<Vector2d> start_to_foot = {Vector2d(0.0,start),
                                                   Vector2d(transitionScaling/4,(start+supFootY)/2),
                                                   Vector2d(transitionScaling/4,(start+supFootY)/2),
@@ -94,7 +89,7 @@ Vector2d ZMPPlanner::bezierBased(const FootStep& step, double offsetX, double of
            temp = FourPointBezier2D(start_to_foot, 200);
            trajectory.insert(trajectory.end(),temp.begin(),temp.end());
 
-           // trajectory in foot
+           // trajectory in foot as (time, value) pairs
            std::vector<Vector2d> in_foot =  {Vector2d(transitionScaling/2,supFootY),
                                              Vector2d(transitionScaling/2+transitionScaling/4,supFootY+(supFootY-start)/2*inFootScalingY),
                                              Vector2d(1-transitionScaling/2-transitionScaling/4,supFootY+(supFootY-target)/2*inFootScalingY),
@@ -102,16 +97,13 @@ Vector2d ZMPPlanner::bezierBased(const FootStep& step, double offsetX, double of
            temp = FourPointBezier2D(in_foot, 200);
            trajectory.insert(trajectory.end(),temp.begin(),temp.end());
 
-           // trajectory from foot to target
+           // trajectory from foot to target as (time, value) pairs
            std::vector<Vector2d> foot_to_target = {Vector2d(1-transitionScaling/2,supFootY),
                                                    Vector2d(1-transitionScaling/4,(target+supFootY)/2),
                                                    Vector2d(1-transitionScaling/4,(target+supFootY)/2),
                                                    Vector2d(1.0, target)};
            temp = FourPointBezier2D(foot_to_target, 200);
            trajectory.insert(trajectory.end(),temp.begin(),temp.end());
-//       } else {
-//           trajectory = FourPointBezier2D(polygon_right_lifting, 200);
-//       }
   }
 
   double t = cycle / (samplesSingleSupport+samplesDoubleSupport);
@@ -121,7 +113,6 @@ Vector2d ZMPPlanner::bezierBased(const FootStep& step, double offsetX, double of
 
   return Vector2d(
     supFoot.translation.x*(1.0-t) + t*targetFoot.translation.x,
-    //start*(1.0-s) + s*target
     s);
 }//end betterOne
 
