@@ -147,6 +147,33 @@ void RansacLineDetectorOnGraphs::execute()
       for(size_t i=0; i<circResult.x_toFit.size(); i++) {
         CIRCLE(circResult.x_toFit[i], circResult.y_toFit[i], 20);
       }
+
+      for(int i=0; i < 100; i++) {
+        double x_test = Math::random(c[0] - (a[0]*2), c[0] + (a[0]*2));
+        double y_test = Math::random(c[1] - (a[1]*2), c[1] + (a[1]*2));
+
+
+        if (circResult.mahalanobis_distance(x_test, y_test) < circResult.mahalanobis_radius()) {
+          PEN("007700", 10);
+        } else {
+          PEN("770000", 10);
+        }
+        CIRCLE(x_test, y_test, 30);
+      }
+      /*
+      for(size_t i=0; i<circResult.x_toFit.size(); i++) {
+        std::cout << circResult.x_toFit[i] << ", ";
+      }
+      std::cout << std::endl;
+      for(size_t i=0; i<circResult.y_toFit.size(); i++) {
+        std::cout << circResult.y_toFit[i] << ", ";
+      }
+      std::cout << std::endl;
+      for(size_t i=0; i<6; i++) {
+        std::cout << circResult.params[i] << ", ";
+      }
+      std::cout << std::endl;
+      */
     }
 
     if (ransacEllipse(circResult, graphEdgelsTop, getLineGraphPercept().lineGraphsTop)) {
@@ -165,6 +192,32 @@ void RansacLineDetectorOnGraphs::execute()
       for(size_t i=0; i<circResult.x_toFit.size(); i++) {
         CIRCLE(circResult.x_toFit[i], circResult.y_toFit[i], 20);
       }
+
+      for(int i=0; i < 100; i++) {
+        double x_test = Math::random(c[0] - (a[0]*2), c[0] + (a[0]*2));
+        double y_test = Math::random(c[1] - (a[1]*2), c[1] + (a[1]*2));
+
+        if (circResult.mahalanobis_distance(x_test, y_test) < circResult.mahalanobis_radius()) {
+          PEN("007700", 10);
+        } else {
+          PEN("770000", 10);
+        }
+        CIRCLE(x_test, y_test, 30);
+      }
+      /*
+      for(size_t i=0; i<circResult.x_toFit.size(); i++) {
+        std::cout << circResult.x_toFit[i] << ", ";
+      }
+      std::cout << std::endl;
+      for(size_t i=0; i<circResult.y_toFit.size(); i++) {
+        std::cout << circResult.y_toFit[i] << ", ";
+      }
+      std::cout << std::endl;
+      for(size_t i=0; i<6; i++) {
+        std::cout << circResult.params[i] << ", ";
+      }
+      std::cout << std::endl;
+      */
     }
   );
 }
@@ -245,15 +298,15 @@ int RansacLineDetectorOnGraphs::ransac(Math::LineSegment& result, std::vector<Gr
   return bestInlier;
 }
 
-int RansacLineDetectorOnGraphs::ransacEllipse(Ellipse& result, std::vector<std::vector<GraphEdgel>>& graphEdgels, const std::vector<std::vector<EdgelD>>& graph)
+int RansacLineDetectorOnGraphs::ransacEllipse(Ellipse& bestModel, std::vector<std::vector<GraphEdgel>>& graphEdgels, const std::vector<std::vector<EdgelD>>& graph)
 {
 
   if(graphEdgels.empty()) {
     return 0;
   }
 
-  Ellipse bestModel;
   int bestInlier = 0;
+  int bestValidity = 0;
   double bestInlierError = 0;
 
   // TODO: i < params.circle_iterations ?
@@ -284,29 +337,39 @@ int RansacLineDetectorOnGraphs::ransacEllipse(Ellipse& result, std::vector<std::
     // check model
     double inlierError = 0;
     int inlier = 0;
+    int validity = 0;
 
     for(const std::vector<GraphEdgel>& subgraphEdgels : graphEdgels) {
       for(const GraphEdgel& ge : subgraphEdgels) {
         const EdgelD& e = graph[ge.subgraph_id][ge.edgel_id];
-        double d = ellipse.error_to(e.point.x, e.point.y);
+        double err = ellipse.error_to(e.point.x, e.point.y);
 
-        if(d <= params.circle_outlierThreshold) {
+        double r = ellipse.mahalanobis_radius();
+        double d = ellipse.mahalanobis_distance(e.point.x, e.point.y);
+
+        if((ge.line_id > -1) && (ge.subgraph_id != i) && (d < (r-(r/2)))) {
+          //std::cout << "d: " << d << " r: " << r << " e: " << err << " !" << std::endl << std::endl;
+          ++validity;
+        }
+        if(err <= params.circle_outlierThreshold) {
           ++inlier;
-          inlierError += d;
+          inlierError += err;
           continue;
         }
+
       }
     }
 
-    if(inlier >= params.circle_inlierMin && (inlier > bestInlier || (inlier == bestInlier && inlierError < bestInlierError))) {
+    if(inlier >= params.circle_inlierMin && validity > bestValidity && (inlier > bestInlier || (inlier == bestInlier && inlierError < bestInlierError))) {
       bestModel = ellipse;
+      bestValidity = validity;
       bestInlier = inlier;
       bestInlierError = inlierError;
     }
   }
 
-  if (bestInlier) {
-    result = bestModel;
+  if (bestInlier && bestValidity) {
+    std::cout << "Valid: " << bestValidity << "!" << std::endl << std::endl;
   }
 
   return bestInlier;
