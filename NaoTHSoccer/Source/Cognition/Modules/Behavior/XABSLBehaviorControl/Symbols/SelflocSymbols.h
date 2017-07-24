@@ -107,6 +107,8 @@ private:
 
   Pose2D robotPosePlanned;
   double angleOnFieldPlanned;
+
+  double look_in_direction_factor;
 };// End class SelflocSymbols
 
 
