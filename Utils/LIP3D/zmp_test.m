@@ -16,7 +16,9 @@ end
 z = 0.260; % m
 dt = 0.010; % s
 previewTime = 0.5; % s
-[A, b, c, Ki, Ks, F] = previewcontrol(z, dt, previewTime);
+R = 1;
+q = 1e10;
+[A, b, c, Ki, Ks, F] = previewcontrol(z, dt, previewTime,R,q);
 
 % test
 X = [0; 0; 0];
