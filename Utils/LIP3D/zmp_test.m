@@ -29,7 +29,7 @@ singleSupportSamples = StepSamples - doubleSupportSamples;
 N = previewTime / dt;
 
 %ZMP = [0, 0, -0.5, 0.1, -0.1, 0.1, 0, 0, 0, 0];
-ZMP = [0, 0.05, -0.05, 0.05, -0.05, 0.05, -0.05, 0, 0, 0];
+ZMP = [-100, 0.0, -100, 0.0, -100, 0.0, -100, 0, 0, 0];
 
 pp  = [];
 px  = [];
@@ -50,7 +50,7 @@ t = (0:(length(ZMP)-1)*singleSupportSamples)/singleSupportSamples*stepTime;
 
 Pref = zeros(4,numel(t));
 
-Pref(1,:)  = pchip(px,pp,t);
+Pref(1,:) = pchip(px,pp,t);
 Pref(2,:) = bezierApprox(px,pp,t); % use one dimensional bezier curves to approx discret zmp trajectory
 
 sigma = 2;
@@ -61,6 +61,10 @@ gaussFilter = gaussFilter / sum (gaussFilter); % normalize
 Pref(3,:) = conv (stepFunc(px2,pp,t), gaussFilter, 'same');
 
 Pref(4,:) = stepFunc(px2,pp,t);
+
+offset = 0.25;
+
+Pref(5,:) = generateTrajectory(5, t);
 
 %for i = 1:length(ZMP)
     %Pref = addPref(Pref, ZMP(i), singleSupportSamples, doubleSupportSamples);
@@ -76,16 +80,18 @@ hold on
 plot(t, Pref(2,:),'x','DisplayName','bezier')
 plot(t, Pref(3,:),'DisplayName','Gaussian filter')
 plot(t, Pref(4,:),'DisplayName','step function')
+plot(t, Pref(5,:),'DisplayName','bezier steps')
 plot(px, pp,'DisplayName','input')
 legend('show')
 hold off
 
 t = 0;
 %J = 0;
-k = size(Pref);
+k = [4,5];
+l = 1;
 
 figure(3)
-for j = 1:k(1)
+for j = k
     U   = [];
     x   = [];
     dx  = [];
@@ -112,14 +118,15 @@ for j = 1:k(1)
         t = t + dt;
     end
 
-    totalU(j) = sum(U.^2);
-    varU(j)   = var(U);
+    % without starting end stopping step
+    totalU(l) = sum(U(25:end-25).^2);
+    varU(l)   = var(U(25:end-25));
     
-    subplot(k(1),1,j);
+    subplot(numel(k),1,l);
+    l = l+1;
     plot(x)
     hold on
     plot(dx,'g')
-    %plot(ddx,'g--')
     plot(zmp,'r')
     plot(Pref(j,:),'k--')
     hold off
@@ -136,3 +143,4 @@ display(varU)
 format('long')
 A = A';
 save('previewcontrol.prm','A', 'b', 'c', 'Ki', 'Ks',  'F', '-ascii');
+
