@@ -187,6 +187,11 @@ public class TeamCommViewer extends AbstractDialog {
         portNumberOwn.setText("10004");
         portNumberOwn.setToolTipText("Own team port number");
         portNumberOwn.setMinimumSize(new java.awt.Dimension(76, 19));
+        portNumberOwn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                portNumberOwnActionPerformed(evt);
+            }
+        });
         toolbarPanel.add(portNumberOwn);
 
         jLabel2.setText("Red:");
@@ -196,6 +201,11 @@ public class TeamCommViewer extends AbstractDialog {
         portNumberOpponent.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#"))));
         portNumberOpponent.setToolTipText("Opponent team port number");
         portNumberOpponent.setMinimumSize(new java.awt.Dimension(76, 19));
+        portNumberOpponent.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                portNumberOpponentActionPerformed(evt);
+            }
+        });
         toolbarPanel.add(portNumberOpponent);
 
         btnTeamColor.setIcon(new javax.swing.ImageIcon(getClass().getResource("/data/bibliothek/gui/dock/core/flap_auto.png"))); // NOI18N
@@ -401,6 +411,14 @@ public class TeamCommViewer extends AbstractDialog {
         });
     }//GEN-LAST:event_pmTeamColorPopupMenuWillBecomeVisible
 
+    private void portNumberOwnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_portNumberOwnActionPerformed
+        btListen.doClick();
+    }//GEN-LAST:event_portNumberOwnActionPerformed
+
+    private void portNumberOpponentActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_portNumberOpponentActionPerformed
+        btListen.doClick();
+    }//GEN-LAST:event_portNumberOpponentActionPerformed
+
     @Override
     public void dispose() {
         // TODO: should we stop all listener-threads?!
@@ -569,7 +587,7 @@ public class TeamCommViewer extends AbstractDialog {
                         msg.message.draw(drawings, rs.robotColor, msg.isOpponent());
                     }
                 } // end for
-                Plugin.drawingEventManager.fireDrawingEvent(drawings);
+                Plugin.drawingEventManager.fireDrawingEvent(drawings, this);
             } // end synchronized
         } // end run
     }

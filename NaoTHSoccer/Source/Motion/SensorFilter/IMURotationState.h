@@ -46,7 +46,7 @@ class RotationState : public UKFStateRotationBase<RotationState<M1,/* M2,*/ dim,
         // TODO: should these functions be part of the filter?
 
         // state transition function
-        void predict(Eigen::Vector3d& u, double dt) {
+        void predict(const Eigen::Vector3d& u, double dt) {
             // continue rotation assuming constant velocity
             // rotational_velocity to quaternion
             Eigen::Vector3d rot_vel = u * dt;
@@ -58,37 +58,16 @@ class RotationState : public UKFStateRotationBase<RotationState<M1,/* M2,*/ dim,
 
             // TODO: compare with rotation_increment*rotation which sounds more reasonable
             Eigen::Quaterniond new_rotation = this->getRotationAsQuaternion() * rotation_increment; // follows paper
-            Eigen::AngleAxisd  new_angle_axis(new_rotation);
+            Eigen::AngleAxisd  new_angle_axis(new_rotation); 
             this->rotation() = new_angle_axis.angle() * new_angle_axis.axis();
         }
 
         // state to measurement transformation function
         // HACK: add return type as parameter to enable overloading...
         M1 asMeasurement(const M1& /*z*/) const {
-            // state to measurement function
-            // transform acceleration part of the state into local measurement space (the robot's body frame = frame of accelerometer), the bias is already in this frame
-            //Eigen::Vector3d rotational_velocity_in_measurement_space = rotational_velocity();// + bias_rotational_velocity();
-
-            // determine rotation around x and y axis
-//            Eigen::Quaterniond q;
-//            q.setFromTwoVectors(this->getRotationAsQuaternion().inverse()._transformVector(Eigen::Vector3d(0,0,-1)),Eigen::Vector3d(0,0,-1));
-//            Eigen::AngleAxisd temp(q);
-//            Eigen::Vector3d   rotation_in_measurement_space(temp.angle() * temp.axis());
-
-//            M1 return_val(z); // HACK: prevent "unused parameter" warning
-//            return_val << rotation_in_measurement_space/*, rotational_velocity_in_measurement_space*/;
-
-//            return return_val;
-
             return this->getRotationAsQuaternion().inverse()._transformVector(Eigen::Vector3d(0,0,-1));
         }
 
-        // HACK: add return type as parameter to enable overloading...
-//        M2 asMeasurement(const M2& z) const {
-//            M2 return_val(z);
-//            return_val << rotational_velocity();
-//            return return_val;
-//        }
         static const int size = dim;
 };
 
@@ -150,9 +129,6 @@ class State : public Eigen::Matrix<double,dim,1>{
         }
 
         static const int size = dim;
-//        static int size() {
-//            return dim;
-//        }
 };
 
 #endif // IMUROTATIONSTATE_H

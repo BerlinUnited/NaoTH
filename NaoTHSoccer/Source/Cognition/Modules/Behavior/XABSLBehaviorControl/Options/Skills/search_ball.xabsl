@@ -7,12 +7,14 @@ option search_ball
     decision {
       if(ball.know_where_itis)
         goto finish;
-      else if(state_time > 1500)
+      else //if(state_time > 2000)
       {
-        goto start;
+        //goto start;
+        if(ball.preview.y > 0)
+          goto search_ball_rot_left;
+        else
+          goto search_ball_rot_right;
       }
-      else
-        stay;
     }
     action {
       motion.type = walk;

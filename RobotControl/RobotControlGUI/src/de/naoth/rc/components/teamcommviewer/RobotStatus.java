@@ -101,6 +101,8 @@ public class RobotStatus {
         this.fallen = msg.fallen;
         this.ballAge = msg.ballAge;
 
+        
+        
         if (msg.user != null) {
             this.temperature = msg.user.getTemperature();
             this.cpuTemperature = msg.user.getCpuTemperature();
@@ -110,6 +112,18 @@ public class RobotStatus {
             this.wasStriker = msg.user.getWasStriker();
             this.isPenalized = msg.user.getIsPenalized();
 //            this.whistleDetected = msg.user.getWhistleDetected(); // used in another branch!
+        } else if(msg.doberHeader != null) {
+            
+            this.temperature = -1;
+            this.cpuTemperature = -1;
+            this.batteryCharge = -1;
+            this.timeToBall = -1;
+            this.wantsToBeStriker = false;
+            this.wasStriker = false;
+
+            this.isPenalized = msg.doberHeader.isPenalized > 0;
+            this.whistleDetected = msg.doberHeader.whistleDetected > 0;
+
         } else {
             this.temperature = -1;
             this.cpuTemperature = -1;

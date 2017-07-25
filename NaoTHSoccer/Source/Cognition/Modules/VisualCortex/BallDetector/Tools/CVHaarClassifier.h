@@ -8,9 +8,11 @@
 #define _CVHaarClassifier_H_
 
 #include "Tools/naoth_opencv.h"
+#include "../Classifier/AbstractCNNClassifier.h" // HACK!
+
 #include "Representations/Perception/BallCandidates.h"
 
-class CVHaarClassifier
+class CVHaarClassifier : public AbstractCNNClassifier // HACK!
 {
 private:
   cv::CascadeClassifier cascadeClasifier;
@@ -24,6 +26,14 @@ public:
     idx = 0;
   }
 
+  CVHaarClassifier(const std::string& name) : buffer(24, 24, CV_8UC1, cv::Scalar(128)) {
+    //setLoadModel("experiment1.xml");
+    idx = 0;
+
+    loadModel(name);
+
+  }
+
   bool modelLoaded() const {
     return !cascadeClasifier.empty();
   }
@@ -35,6 +45,12 @@ public:
     ASSERT(modelLoaded());
   }
 
+  // only defined because of inheritance
+  bool classify(const BallCandidates::Patch &p){
+    return classify(p, 0, 18) > 0;
+  }
+
+  // overload classify from AbstractCNNClassifier
   int classify(const BallCandidates::Patch& p, unsigned int minNeighbours=0, unsigned int windowSize=12)
   {
     out.clear();

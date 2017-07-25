@@ -65,6 +65,8 @@
 #include "Modules/Perception/VirtualVisionProcessor/VirtualVisionProcessor.h"
 #include "Modules/Perception/PerceptionsVisualizer/PerceptionsVisualizer.h"
 
+#include "Modules/VisualCortex/LineDetector/RansacLineDetector.h"
+
 // modeling
 #include "Modules/Modeling/BodyStateProvider/BodyStateProvider.h"
 #include "Modules/Modeling/FieldCompass/FieldCompass.h"
@@ -96,7 +98,6 @@
 #include "Modules/Behavior/BasicTestBehavior/BasicTestBehavior.h"
 #include "Modules/Behavior/XABSLBehaviorControl/XABSLBehaviorControl.h"
 #include "Modules/Behavior/PathPlanner/PathPlanner.h"
-#include "Modules/Behavior/RemoteControlBehavior/RemoteControlBehavior.h"
 
 using namespace std;
 
@@ -175,6 +176,8 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(VirtualVisionProcessor);
   REGISTER_MODULE(PerceptionsVisualizer);
 
+  REGISTER_MODULE(RansacLineDetector);
+
   // modeling
   REGISTER_MODULE(SituationPriorProvider);
   REGISTER_MODULE(BodyStateProvider);
@@ -203,7 +206,6 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(BasicTestBehavior);
   REGISTER_MODULE(XABSLBehaviorControl);
   REGISTER_MODULE(PathPlanner);
-  REGISTER_MODULE(RemoteControlBehavior);
 
   REGISTER_MODULE(TeamCommSender);
   

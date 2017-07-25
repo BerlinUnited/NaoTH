@@ -42,7 +42,7 @@ public:
   }
 
 
-  bool classify(BallCandidates::Patch& p, naoth::CameraInfo::CameraID cameraId)
+  bool classify(const BallCandidates::Patch& p, naoth::CameraInfo::CameraID cameraId)
   {
     cv::Ptr<cv::ml::SVM>& histModel = cameraId == naoth::CameraInfo::Top ? histModelTop : histModelBottom;
     assert(histModel && !histModel->empty());

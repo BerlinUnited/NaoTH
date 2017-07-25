@@ -34,6 +34,18 @@ using namespace naoth;
 class TeamMessageCustom : public naoth::Printable 
 {
 
+private:
+
+  // we define this struct private because no one else needs to know about the internals of the DoBerManHeader
+  struct DoBerManHeader
+  {
+    uint64_t timestamp;
+    int8_t teamID;
+    int8_t isPenalized;
+    int8_t whistleDetected;
+    int8_t dummy;
+  };
+
 public:
   TeamMessageCustom();
 
@@ -58,6 +70,14 @@ public:
 
   /** Creates a protobuf message with the registered data. */
   naothmessages::BUUserTeamMessage toProto() const;
+
+  /** Sets the data according to a binary DoBerMan Header */
+  void parseFromDoBerManHeader(const uint8_t *rawHeader, size_t headerSize);
+
+  /** Creates a binary array containing some of the registered data in the DoBerMan header "format" */
+  std::string toDoBerManHeader() const;
+
+  static size_t getCustomOffset() {return sizeof(DoBerManHeader);}
 
   void print(std::ostream &stream) const;
 };

@@ -50,7 +50,7 @@ public class DynamicCanvasPanel extends javax.swing.JPanel
   private boolean fitToViewport = false;
   
   private Drawable backgroundDrawing = null;
-  private final List<Drawable> drawingList = Collections.synchronizedList(new ArrayList<Drawable>());
+  private final List<Drawable> drawingList = Collections.synchronizedList(new ArrayList<>());
 
   public DynamicCanvasPanel()
   {
@@ -213,13 +213,8 @@ public class DynamicCanvasPanel extends javax.swing.JPanel
     }
     
     if(!onlyBackground) {
-        synchronized(drawingList)
-        {
-            for (Drawable object : drawingList) {
-              if(object != null) {
-                  object.draw(g2d);
-              }
-            }
+        synchronized(drawingList) {
+            drawingList.forEach(d -> { if(d!=null){d.draw(g2d);} });
         }
     }
     

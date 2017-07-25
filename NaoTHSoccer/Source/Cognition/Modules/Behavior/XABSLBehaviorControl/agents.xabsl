@@ -76,6 +76,24 @@ include "Options/Soccer/Strategy/decide_and_go_to_ready_position.xabsl";
 include "Options/Soccer/Strategy/positioning_for_own_kickoff.xabsl";
 include "Options/Soccer/Strategy/positioning_for_opp_kickoff.xabsl";
 
+// Path
+include "Options/Soccer/path_spl_play_soccer.xabsl";
+include "Options/Soccer/Strategy/Path/path_play_soccer.xabsl";
+include "Options/Soccer/Strategy/Path/path_decide_role.xabsl";
+include "Options/Soccer/Strategy/Path/path_basic_goalie.xabsl";
+include "Options/Soccer/Strategy/Striker/Path/path_striker.xabsl";
+include "Options/Soccer/Strategy/Striker/Path/path_sidekick_left.xabsl";
+include "Options/Soccer/Strategy/Striker/Path/path_sidekick_right.xabsl";
+include "Options/Soccer/Strategy/Striker/Path/path_kick_short_with_approach.xabsl";
+include "Options/Soccer/Strategy/Striker/Path/path_kick_long_with_approach.xabsl";
+include "Options/Soccer/Strategy/Striker/Path/path_turn_to_attack_direction.xabsl";
+include "Options/Skills/Path/path_move_around_ball.xabsl";
+include "Options/Skills/Path/path_go_to_ball_with_USOA.xabsl";
+include "Options/Skills/Path/path_go_to_ball_with_foot_dynamic.xabsl";
+include "Options/Skills/Path/path_long_kick.xabsl";
+include "Options/Skills/Path/path_short_kick.xabsl";
+include "Options/Skills/Path/path_sidekick.xabsl";
+
 //Action Selection Striker
 include "Options/Soccer/Strategy/Striker/striker.xabsl";
 include "Options/Soccer/Strategy/Striker/sidekick_left.xabsl";
@@ -160,22 +178,11 @@ include "Options/Test/pathplanner_test_long_kick.xabsl";
 include "Options/Test/pathplanner_sidekick.xabsl";
 include "Options/Test/pathplanner_kick_short.xabsl";
 include "Options/Test/pathplanner_kick_long.xabsl";
-include "Options/Test/path_go_to_ball_with_USOA.xabsl";
-include "Options/Test/path_go_to_ball_with_foot_dynamic.xabsl";
-include "Options/Test/path_long_kick.xabsl";
-include "Options/Test/path_short_kick.xabsl";
-include "Options/Test/path_sidekick.xabsl";
-include "Options/Soccer/path_spl_play_soccer.xabsl";
-include "Options/Soccer/Strategy/path_play_soccer.xabsl";
-include "Options/Soccer/Strategy/path_decide_role.xabsl";
-include "Options/Soccer/Strategy/Striker/path_striker.xabsl";
-include "Options/Soccer/Strategy/Striker/path_sidekick_left.xabsl";
-include "Options/Soccer/Strategy/Striker/path_sidekick_right.xabsl";
-include "Options/Soccer/Strategy/Striker/path_kick_short_with_approach.xabsl";
-include "Options/Soccer/Strategy/Striker/path_kick_long_with_approach.xabsl";
-include "Options/Soccer/Strategy/Striker/path_turn_to_attack_direction.xabsl";
-include "Options/Skills/path_move_around_ball.xabsl";
-include "Options/Soccer/Strategy/path_basic_goalie.xabsl";
+// Kick only
+include "Options/Test/pathplanner_test_only_sidekick.xabsl";
+include "Options/Test/pathplanner_sidekick_only.xabsl";
+include "Options/Test/pathplanner_test_only_shortkick.xabsl";
+include "Options/Test/pathplanner_shortkick_only.xabsl";
 
 
 
@@ -284,6 +291,10 @@ agent dribble_test_agent("dribble_test_agent", dribble_test_agent);
 agent pathplanner_test_sidekick("pathplanner_test_sidekick", pathplanner_test_sidekick);
 agent pathplanner_test_short_kick("pathplanner_test_short_kick", pathplanner_test_short_kick);
 agent pathplanner_test_long_kick("pathplanner_test_long_kick", pathplanner_test_long_kick);
+// Kicks only
+agent pathplanner_test_only_sidekick("pathplanner_test_only_sidekick", pathplanner_test_only_sidekick);
+agent pathplanner_test_only_shortkick("pathplanner_test_only_shortkick", pathplanner_test_only_shortkick);
+
 
 
 // Test agents search

@@ -2,3 +2,6 @@ test/*
 test2/*
 statistics/*
 experimental/*
+*.pickle
+*.txt
+*.png
