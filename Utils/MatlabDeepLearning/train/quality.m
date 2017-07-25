@@ -1,7 +1,7 @@
-function quality(convnet, netName)
-    datasetPath = {...
-        '../data/augmented/test1'
-        };
+function quality(convnet, netName, datasetPath)
+%     datasetPath = {...
+%         '../data/augmented/test1'
+%         };
 
     dataTest = imageDatastore(datasetPath, ...
             'IncludeSubfolders',true,...
@@ -42,6 +42,7 @@ function quality(convnet, netName)
     end
 
     disp('generating confusion matrix')
+    figure
     plotconfusion(test, pred, netName)
 
 

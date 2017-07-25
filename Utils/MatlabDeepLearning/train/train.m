@@ -107,5 +107,9 @@ createCppFile(convnet, char(resultFolder + '/' + netName));
 % save the current train file as backup and "documentation"
 copyfile('train.m', char(resultFolder + '/train.m'));
 
+dataTestsetPath = {...
+    '..\data\tk-test-complete\'
+    };
+
 % check quality and create confusion matrix
-quality(convnet, netName)
+quality(convnet, netName, dataTestsetPath)
