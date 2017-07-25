@@ -267,6 +267,8 @@ void BallDetectorEvaluator::outputResults(std::string outFileName)
   std::ofstream html;
   html.open(outFileName);
 
+  doc.AddNodeToHead(CTML::Node("meta name = \"format-detection\" content = \"telephone=no\""));
+
   doc.AddNodeToHead(CTML::Node("style",
     "img.patch {width: 36px; height: 36px;}\n"
     "table, th, td {border: 1px solid; border-collapse: collapse; }\n"
