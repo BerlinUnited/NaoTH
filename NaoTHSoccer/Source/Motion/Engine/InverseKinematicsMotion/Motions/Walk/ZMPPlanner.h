@@ -24,8 +24,8 @@ public:
   static Vector2d betterOne(const FootStep& step, double offsetX, double offsetY,
     double cycle, double samplesDoubleSupport, double samplesSingleSupport, double offset, double width);
 
-  static Vector2d bezierBased(const FootStep& step, double offsetX, double offsetY,
-                              double cycle, double samplesDoubleSupport, double samplesSingleSupport, double inFootScalingY, double transitionScaling);
+  static Vector2d bezierBased(const FootStep step, double cycle, double samplesDoubleSupport, double samplesSingleSupport,
+                              double offsetX, double offsetY,double inFootScalingY, double inFootSpacing, double transitionScaling);
 
   static Vector2d bezierBased2(const FootStep& step, double offsetX, double offsetY,  double cycle,
                                     double samplesDoubleSupport, double samplesSingleSupport,

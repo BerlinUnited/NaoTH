@@ -49,71 +49,107 @@ Vector2d ZMPPlanner::betterOne(
     s = spline(ts);
   }
 
-  
-
   return Vector2d(
     supFoot.translation.x*(1.0-t) + t*targetFoot.translation.x, 
     supFoot.translation.y*(1.0-s) + s*targetFoot.translation.y);
 }//end betterOne
 
-Vector2d ZMPPlanner::bezierBased(const FootStep& step, double offsetX, double offsetY,
+Vector2d ZMPPlanner::bezierBased(
+  const FootStep step,
   double cycle,
   double samplesDoubleSupport, double samplesSingleSupport,
+  double offsetX, double offsetY,
   double inFootScalingY,
+  double inFootSpacingY,
   double transitionScaling)
 {
-  Pose3D supFoot = step.supFoot();
-  Pose3D startFoot  = step.footBegin();
-  Pose3D targetFoot = step.footEnd();
+    Pose3D supFoot, startFoot, targetFoot;
 
-  // don't apply offset befor determining start and target because applying offsets first will add discontinuities (start of step i won't be target of step i-1)
-  double start    = (supFoot.translation.y + startFoot.translation.y)/2;
-  double target   = (supFoot.translation.y + targetFoot.translation.y)/2;
+    // poses in support foot coordinates
+    if(step.liftingFoot() == FootStep::LEFT){
+        InverseKinematic::FeetPose begin = step.begin();
+        begin.localInRightFoot();
+        InverseKinematic::FeetPose end   = step.end();
+        end.localInRightFoot();
 
-  supFoot.translate(offsetX, offsetY * step.liftingFoot(), 0);
-  double supFootY = supFoot.translation.y;
+        supFoot    = begin.right;
+        startFoot  = begin.left;
+        targetFoot = end.left;
+
+        inFootSpacingY *= -1;
+    } else {
+        InverseKinematic::FeetPose begin = step.begin();
+        begin.localInLeftFoot();
+        InverseKinematic::FeetPose end   = step.end();
+        end.localInLeftFoot();
+
+        supFoot    = begin.left;
+        startFoot  = begin.right;
+        targetFoot = end.right;
+    }
+
+  // Don't apply offset befor determining start and target for y.
+  // Applying offsets first will add discontinuities in y (start of step i won't be target of step i-1)
+  // because the y offset will be applied in different directions depending on th lifting foot
+  double start_y  = (supFoot.translation.y + startFoot.translation.y)/2;
+  double target_y = (supFoot.translation.y + targetFoot.translation.y)/2;
+
+  double start_x  = (supFoot.translation.x + startFoot.translation.x)/2  + offsetX;
+  double target_x = (supFoot.translation.x + targetFoot.translation.x)/2 + offsetX;
+
+  double supFootY = supFoot.translation.y + offsetY * step.liftingFoot();
 
   static std::vector<Vector2d> trajectory;
   static unsigned int idx;
 
   if(cycle < 0.000001 || trajectory.empty()){
-       idx = 0;
-       trajectory.clear();
+      idx = 0;
+      trajectory.clear();
+      static std::vector<Vector2d> temp;
 
-            static std::vector<Vector2d> temp;
-           // trajectory from start to foot as (time, value) pairs
-           std::vector<Vector2d> start_to_foot = {Vector2d(0.0,start),
-                                                  Vector2d(transitionScaling/4,(start+supFootY)/2),
-                                                  Vector2d(transitionScaling/4,(start+supFootY)/2),
-                                                  Vector2d(transitionScaling/2, supFootY)};
-           temp = FourPointBezier2D(start_to_foot, 200);
-           trajectory.insert(trajectory.end(),temp.begin(),temp.end());
+      // trajectory from start to foot as (time, value) pairs
+      std::vector<Vector2d> start_to_foot = {Vector2d(0.0,start_y),
+                                             Vector2d(transitionScaling/4,(start_y+supFootY-inFootSpacingY)/2),
+                                             Vector2d(transitionScaling/4,(start_y+supFootY-inFootSpacingY)/2),
+                                             Vector2d(transitionScaling/2, supFootY-inFootSpacingY)};
+      temp = FourPointBezier2D(start_to_foot, 200);
+      trajectory.insert(trajectory.end(),temp.begin(),temp.end());
 
-           // trajectory in foot as (time, value) pairs
-           std::vector<Vector2d> in_foot =  {Vector2d(transitionScaling/2,supFootY),
-                                             Vector2d(transitionScaling/2+transitionScaling/4,supFootY+(supFootY-start)/2*inFootScalingY),
-                                             Vector2d(1-transitionScaling/2-transitionScaling/4,supFootY+(supFootY-target)/2*inFootScalingY),
-                                             Vector2d(1-transitionScaling/2, supFootY)};
-           temp = FourPointBezier2D(in_foot, 200);
-           trajectory.insert(trajectory.end(),temp.begin(),temp.end());
+      // trajectory in foot as (time, value) pairs
+      Vector2d inFootStart = Vector2d(transitionScaling/2,supFootY-inFootSpacingY);
+      Vector2d inDirection = Vector2d(transitionScaling/2+transitionScaling/4,supFootY-inFootSpacingY+(supFootY-inFootSpacingY-start_y)/2) - inFootStart;
 
-           // trajectory from foot to target as (time, value) pairs
-           std::vector<Vector2d> foot_to_target = {Vector2d(1-transitionScaling/2,supFootY),
-                                                   Vector2d(1-transitionScaling/4,(target+supFootY)/2),
-                                                   Vector2d(1-transitionScaling/4,(target+supFootY)/2),
-                                                   Vector2d(1.0, target)};
-           temp = FourPointBezier2D(foot_to_target, 200);
-           trajectory.insert(trajectory.end(),temp.begin(),temp.end());
+      Vector2d inFootEnd    = Vector2d(1-transitionScaling/2, supFootY-inFootSpacingY);
+      Vector2d outDirection = inFootEnd - Vector2d(1-transitionScaling/2-transitionScaling/4,supFootY-inFootSpacingY+(supFootY-inFootSpacingY-target_y)/2);
+
+      //scaling directions to let the control points be on supFootY+inFootSpacingY
+      inDirection  *= (supFootY+inFootSpacingY)/inDirection.y;
+      outDirection *= -(supFootY+inFootSpacingY)/outDirection.y;
+
+      std::vector<Vector2d> in_foot =  {inFootStart,
+                                        inFootStart + (inDirection  * inFootScalingY),
+                                        inFootEnd   - (outDirection * inFootScalingY),
+                                        inFootEnd};
+
+      temp = FourPointBezier2D(in_foot, 200);
+      trajectory.insert(trajectory.end(),temp.begin(),temp.end());
+
+      // trajectory from foot to target as (time, value) pairs
+      std::vector<Vector2d> foot_to_target = {Vector2d(1-transitionScaling/2,supFootY-inFootSpacingY),
+                                              Vector2d(1-transitionScaling/4,(target_y+supFootY-inFootSpacingY)/2),
+                                              Vector2d(1-transitionScaling/4,(target_y+supFootY-inFootSpacingY)/2),
+                                              Vector2d(1.0, target_y)};
+      temp = FourPointBezier2D(foot_to_target, 200);
+      trajectory.insert(trajectory.end(),temp.begin(),temp.end());
   }
 
   double t = cycle / (samplesSingleSupport+samplesDoubleSupport);
   for(; trajectory[idx].x < t && idx+1 < trajectory.size(); ++idx);
 
-  double s = trajectory[idx].y;
+  double y = trajectory[idx].y;
+  double x = start_x*(1.0-t) + t*target_x;
 
-  return Vector2d(
-    supFoot.translation.x*(1.0-t) + t*targetFoot.translation.x,
-    s);
+  return step.supFoot().projectXY()*Vector2d(x, y);
 }//end betterOne
 
 Vector2d ZMPPlanner::bezierBased2(const FootStep& step, double offsetX, double offsetY,

@@ -159,6 +159,8 @@ public:
         struct Bezier{
             double transitionScaling;
             double inFootScalingY;
+            double inFootSpacing;
+            double offsetX;
             double offsetY;
         } bezier;
 

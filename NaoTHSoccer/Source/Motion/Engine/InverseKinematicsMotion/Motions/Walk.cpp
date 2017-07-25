@@ -348,33 +348,27 @@ void Walk::planZMP()
       int samplesSingleSupport = planningStep.numberOfCycles - samplesDoubleSupport;
       ASSERT(samplesSingleSupport >= 0 && samplesDoubleSupport >= 0);
 
-//      Vector2d zmp_new = ZMPPlanner::betterOne(
-//        planningStep.footStep, zmpOffsetX, zmpOffsetY,
-//        planningStep.planningCycle,
-//        samplesDoubleSupport,
-//        samplesSingleSupport,
-//        parameters().hip.newZMP_offset,
-//        parameters().hip.newZMP_width);
-//      zmp = Vector3d(zmp_new.x, zmp_new.y, parameters().hip.comHeight);
-
       Vector2d zmp_new;
 
       zmp_new = ZMPPlanner::bezierBased(
-        planningStep.footStep, zmpOffsetX, parameters().zmp.bezier.offsetY,
-        planningStep.planningCycle,
-        samplesDoubleSupport,
-        samplesSingleSupport,
-        parameters().zmp.bezier.inFootScalingY,
-        parameters().zmp.bezier.transitionScaling);
+                  planningStep.footStep,
+                  planningStep.planningCycle,
+                  samplesDoubleSupport,
+                  samplesSingleSupport,
+                  parameters().zmp.bezier.offsetX,
+                  parameters().zmp.bezier.offsetY,
+                  parameters().zmp.bezier.inFootScalingY,
+                  parameters().zmp.bezier.inFootSpacing,
+                  parameters().zmp.bezier.transitionScaling);
 
-      DEBUG_REQUEST("Walk:useBezierBased2",
-      zmp_new = ZMPPlanner::bezierBased2(
-        planningStep.footStep, zmpOffsetX, parameters().zmp.bezier2.offsetY,
-        planningStep.planningCycle,
-        samplesDoubleSupport,
-        samplesSingleSupport,
-        parameters().zmp.bezier2.offsetT);
-      );
+//      DEBUG_REQUEST("Walk:useBezierBased2",
+//      zmp_new = ZMPPlanner::bezierBased2(
+//        planningStep.footStep, zmpOffsetX, parameters().zmp.bezier2.offsetY,
+//        planningStep.planningCycle,
+//        samplesDoubleSupport,
+//        samplesSingleSupport,
+//        parameters().zmp.bezier2.offsetT);
+//      );
 
       zmp = Vector3d(zmp_new.x, zmp_new.y, parameters().hip.comHeight);
 
@@ -393,31 +387,36 @@ void Walk::planZMP()
 
       Vector2d zmp_new;
       zmp_new = ZMPPlanner::bezierBased(
-        planningStep.footStep, zmpOffsetX, parameters().zmp.bezier.offsetY,
+        planningStep.footStep,
         planningStep.planningCycle,
         samplesDoubleSupport,
         samplesSingleSupport,
+        parameters().zmp.bezier.offsetX,
+        parameters().zmp.bezier.offsetY,
         parameters().zmp.bezier.inFootScalingY,
+        parameters().zmp.bezier.inFootSpacing,
         parameters().zmp.bezier.transitionScaling);
 
-      DEBUG_REQUEST("Walk:useBezierBased2",
-      zmp_new = ZMPPlanner::bezierBased2(
-        planningStep.footStep, zmpOffsetX, parameters().zmp.bezier2.offsetY,
-        planningStep.planningCycle,
-        samplesDoubleSupport,
-        samplesSingleSupport,
-        parameters().zmp.bezier2.offsetT);
-      );
+//      DEBUG_REQUEST("Walk:useBezierBased2",
+//      zmp_new = ZMPPlanner::bezierBased2(
+//        planningStep.footStep, zmpOffsetX, parameters().zmp.bezier2.offsetY,
+//        planningStep.planningCycle,
+//        samplesDoubleSupport,
+//        samplesSingleSupport,
+//        parameters().zmp.bezier2.offsetT);
+//      );
 
       other_zmp = Vector3d(zmp_new.x, zmp_new.y, parameters().hip.comHeight);
     }
   }
 
-  PLOT("Walk:zmp:x", zmp.x);
-  PLOT("Walk:zmp:y", zmp.y);
+  Vector2d zmp_in_local = planningStep.footStep.supFoot().projectXY()/Vector2d(zmp.x,zmp.y);
+  PLOT("Walk:zmp:x", zmp_in_local.x);
+  PLOT("Walk:zmp:y", zmp_in_local.y);
 
-  PLOT("Walk:other_zmp:x", other_zmp.x);
-  PLOT("Walk:other_zmp:y", other_zmp.y);
+  Vector2d other_zmp_in_local = planningStep.footStep.supFoot().projectXY()/Vector2d(other_zmp.x,other_zmp.y);
+  PLOT("Walk:other_zmp:x", other_zmp_in_local.x);
+  PLOT("Walk:other_zmp:y", other_zmp_in_local.y);
   //PLOT_GENERIC("Walk:zmp:xy", zmp.x, zmp.y);
 
   //zmp.z = parameters().hip.comHeight;
