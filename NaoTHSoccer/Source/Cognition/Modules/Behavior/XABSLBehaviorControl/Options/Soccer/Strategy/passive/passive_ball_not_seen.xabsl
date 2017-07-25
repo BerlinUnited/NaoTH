@@ -28,7 +28,7 @@ option passive_ball_not_seen
   state turn_to_left {
     decision {
       /* stop turning, if robot should at least look around for more than 1s */
-      else if(state_time > 2500 &&(look_in_direction_factor * 5000) > 1000)
+      else if(state_time > 2500 &&(look_in_direction_factor * 10000) > 1000)
         goto look_around_left;
       else
         stay;
@@ -45,7 +45,7 @@ option passive_ball_not_seen
   state turn_to_right {
     decision {
       /* stop turning, if robot should at least look around for more than 1s */
-      else if(state_time > 2500 && (look_in_direction_factor * 5000) > 1000)
+      else if(state_time > 2500 && (look_in_direction_factor * 10000) > 1000)
         goto look_around_right;
       else
         stay;
@@ -61,7 +61,7 @@ option passive_ball_not_seen
 
   state look_around_left {
     decision {
-      else if(state_time > (look_in_direction_factor * 5000)){
+      else if(state_time > (look_in_direction_factor * 10000)){
           goto turn_to_left;
       }
       else
@@ -75,7 +75,7 @@ option passive_ball_not_seen
 
   state look_around_right {
     decision {
-      else if(state_time > (look_in_direction_factor * 5000)){
+      else if(state_time > (look_in_direction_factor * 10000)){
           goto turn_to_right;
       }
       else
