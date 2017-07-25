@@ -10,7 +10,7 @@ from tools import tools
 """
 
 # gen_field = pickle.load(open("../data/potential_field_generation/potential_field_gen_own0.pickle", "rb"))
-gen_field_own = pickle.load(open("../data/potential_field_generation/potential_field_gen_own23.pickle", "rb"))
+gen_field_own = pickle.load(open("../data/potential_field_generation/potential_field_gen_own1.pickle", "rb"))
 
 plt.clf()
 tools.draw_field()
@@ -38,16 +38,21 @@ f = np.zeros((len(ny), len(nx)))
 g = np.zeros((len(ny), len(nx)))
 for pos in gen_field_own:
     x, y, time, _ = pos
-
-    f[ny[y], nx[x]] = time
-    g[ny[y], nx[-x]] = time
+    if np.isnan(time):
+        print("blablablabla")
+        # HACK TODO give the value of its neighbor
+        #f[ny[y], nx[x]] = 100
+        #g[ny[y], nx[-x]] = 100
+    else:
+        f[ny[y], nx[x]] = time
+        g[ny[y], nx[-x]] = time
 
 
 # Export for Heinrich
-np.savetxt('f.out', nyi, delimiter=',')   # X is an array
+#np.savetxt('f.out', nyi, delimiter=',')   # X is an array
 # Test Import
 # f2 = np.loadtxt('f.out', delimiter=',')
 
 # Plot potentials
-plt.pcolor(nxi, nyi, f-g, cmap="Greys_r", alpha=0.5)
+plt.pcolor(nxi, nyi, f-g, cmap="Greys_r", alpha=0.8)
 plt.show()
