@@ -65,6 +65,8 @@
 #include "Modules/Perception/VirtualVisionProcessor/VirtualVisionProcessor.h"
 #include "Modules/Perception/PerceptionsVisualizer/PerceptionsVisualizer.h"
 
+#include "Modules/VisualCortex/LineDetector/RansacLineDetector.h"
+
 // modeling
 #include "Modules/Modeling/BodyStateProvider/BodyStateProvider.h"
 #include "Modules/Modeling/FieldCompass/FieldCompass.h"
@@ -171,6 +173,8 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
 
   REGISTER_MODULE(VirtualVisionProcessor);
   REGISTER_MODULE(PerceptionsVisualizer);
+
+  REGISTER_MODULE(RansacLineDetector);
 
   // modeling
   REGISTER_MODULE(SituationPriorProvider);

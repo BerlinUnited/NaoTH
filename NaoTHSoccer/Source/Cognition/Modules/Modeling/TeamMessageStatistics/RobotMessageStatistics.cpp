@@ -33,16 +33,16 @@ void RobotMessageStatistics::messageReceived(unsigned int message_receiveTime, d
     if (interpolation == 0.0 || old_amountOfMessages == 0 || 1.0/amountOfMessages > interpolation) {
       //No interpolation, compute unweighted average
       avgMsgInterval = (avgMsgInterval * old_amountOfMessages + currentMessageInterval)/amountOfMessages;
-      expectation_xSquared = (expectation_xSquared * old_amountOfMessages + std::pow(currentMessageInterval, 2))/amountOfMessages;
-      varianceMsgInterval = expectation_xSquared - std::pow(avgMsgInterval, 2);
+      expectation_xSquared = (expectation_xSquared * old_amountOfMessages + Math::sqr(currentMessageInterval)) / amountOfMessages;
+      varianceMsgInterval = expectation_xSquared - Math::sqr(avgMsgInterval);
     }
     else {
       //Interpolation of message intervals
       avgMsgInterval = interpolation * currentMessageInterval + (1.0 - interpolation) * avgMsgInterval;
-      expectation_xSquared = interpolation * std::pow(currentMessageInterval, 2) + 
+      expectation_xSquared = interpolation * Math::sqr(currentMessageInterval) +
         (1.0 - interpolation) * expectation_xSquared;
       varianceMsgInterval = expectation_xSquared - 
-        std::pow(avgMsgInterval, 2);
+        Math::sqr(avgMsgInterval);
     }
   }
   else {

@@ -241,11 +241,6 @@ public:
     const Pose3D& rightHand,
     double (&position)[naoth::JointData::numOfJoint]);
 
-  void autoArms(
-    const naoth::RobotInfo& theRobotInfo,
-    const InverseKinematic::HipFeetPose& pose, 
-    double (&position)[naoth::JointData::numOfJoint]);
-
   Vector3<double> sensorCoMIn(
     const KinematicChainSensor& theKinematicChain,
     KinematicChain::LinkID link) const;
@@ -255,12 +250,14 @@ public:
     const KinematicChainSensor& theKinematicChain,
     const Vector3d& lastReqCoM, KinematicChain::LinkID link) const;
 
-  void gotoArms(
-    const MotionStatus& theMotionStatus,
+  void armsBasedOnInertialModel(
     const InertialModel& theInertialModel,
-    const naoth::RobotInfo& theRobotInfo,
-    const InverseKinematic::HipFeetPose& currentPose, 
     double (&position)[naoth::JointData::numOfJoint]);
+
+  void armsSynchronisedWithWalk(
+    const naoth::RobotInfo& theRobotInfo,
+    const InverseKinematic::CoMFeetPose& feet, 
+    naoth::JointData& jointData);
 
   void armsOnBack(
     const RobotInfo& theRobotInfo,

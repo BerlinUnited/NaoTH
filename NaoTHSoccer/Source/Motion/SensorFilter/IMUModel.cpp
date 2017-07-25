@@ -41,7 +41,7 @@ void IMUModel::execute(){
     Eigen::Vector3d gyro;
     // gyro z axis seems to measure in opposite direction (turning left measures negative angular velocity, should be positive)
     gyro << getGyrometerData().data.x, getGyrometerData().data.y, -getGyrometerData().data.z;
-    ukf_rot.predict(gyro,0.01);
+    ukf_rot.predict(gyro,0.01); // getRobotInfo().getBasicTimeStepInSecond()
 
     // don't generate sigma points again because the process noise would be applied a second time
     // ukf.generateSigmaPoints();
@@ -63,7 +63,7 @@ void IMUModel::execute(){
     IMU_AccMeasurementGlobal z_acc = ukf_rot.state.getRotationAsQuaternion()._transformVector(acceleration);
     double u_acc = 0;
     ukf_acc_global.generateSigmaPoints();
-    ukf_acc_global.predict(u_acc, 0.01);
+    ukf_acc_global.predict(u_acc, 0.01); // getRobotInfo().getBasicTimeStepInSecond()
     ukf_acc_global.update(z_acc, R_acc);
 
     writeIMUData();
@@ -79,12 +79,12 @@ void IMUModel::writeIMUData(){
     getIMUData().acceleration_sensor = getAccelerometerData().data;
 
     // global position data
-    getIMUData().location += getIMUData().velocity * 0.01;
-    getIMUData().velocity += getIMUData().acceleration * 0.01;
-
+    getIMUData().location += getIMUData().velocity * 0.01; // is this a timestep?
+    getIMUData().velocity += getIMUData().acceleration * 0.01; // is this a timestep? getRobotInfo().getBasicTimeStepInSecond()
+    
     getIMUData().acceleration.x = ukf_acc_global.state.acceleration()(0,0);
     getIMUData().acceleration.y = ukf_acc_global.state.acceleration()(1,0);
-    getIMUData().acceleration.z = ukf_acc_global.state.acceleration()(2,0) + 9.81;
+    getIMUData().acceleration.z = ukf_acc_global.state.acceleration()(2,0) + 9.81; //Math::g
 
     Eigen::Quaterniond q;
     q = ukf_rot.state.getRotationAsQuaternion();
@@ -110,7 +110,7 @@ void IMUModel::plots(){
                       -getGyrometerData().data.y*0.01, getGyrometerData().data.x*0.01,                               1;
 
         // continue rotation assuming constant velocity
-        integrated = integrated * Eigen::Quaterniond(rot_vel_mat);;
+        integrated = integrated * Eigen::Quaterniond(rot_vel_mat);
 
         Vector3d translation(0,250,250);
         LINE_3D(ColorClasses::red, translation, translation + quaternionToVector3D(integrated) * 100.0);
