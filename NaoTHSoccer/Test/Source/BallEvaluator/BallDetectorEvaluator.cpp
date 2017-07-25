@@ -423,8 +423,12 @@ unsigned int BallDetectorEvaluator::executeSingleImageSet(const std::multimap<st
 
   for(const std::pair<std::string, InputPatch>& imageEntry : imageSet)
   {
-    evaluateImage(imageEntry.second.img, imageEntry.first == "ball", imageEntry.second.fileName, params, r);
-    numberOfImages++;
+    // only evaluate balls and non-balls
+    if(imageEntry.first == "ball" || imageEntry.first == "noball")
+    {
+      evaluateImage(imageEntry.second.img, imageEntry.first == "ball", imageEntry.second.fileName, params, r);
+      numberOfImages++;
+    }
   }
 
   return numberOfImages;
