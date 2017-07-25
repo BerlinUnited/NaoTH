@@ -17,6 +17,8 @@ public:
         return classify(p);
     }
 
+    virtual float getBallConfidence() = 0;
+    virtual float getNoballConfidence() = 0;
 };
 
 #endif // ABSTRACTCNNCLASSIFIER_H

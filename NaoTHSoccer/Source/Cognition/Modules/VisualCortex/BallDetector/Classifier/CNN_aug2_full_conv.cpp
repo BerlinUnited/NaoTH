@@ -5617,3 +5617,11 @@ for ( int i = 0; i < 1; i++){
 return out_step10[0][0][0] > out_step10[0][0][1];
 }
 
+float CNN_aug2_full_conv::getBallConfidence(){
+ return out_step10[0][0][0];
+}
+
+float CNN_aug2_full_conv::getNoballConfidence(){
+ return out_step10[0][0][1];
+}
+

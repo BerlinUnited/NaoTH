@@ -42,6 +42,8 @@ public:
     unsigned int minNeighbours;
     unsigned int maxWindowSize;
 
+    double threshold;
+
     std::string modelName;
   };
 
@@ -53,6 +55,7 @@ public:
         NAOTH_STRUCT_COMPARE(a.modelName, b.modelName);
         NAOTH_STRUCT_COMPARE(a.minNeighbours, b.minNeighbours);
         NAOTH_STRUCT_COMPARE(a.maxWindowSize, b.maxWindowSize);
+        NAOTH_STRUCT_COMPARE(a.threshold, b.threshold);
         return false;
       }
   };
@@ -105,7 +108,7 @@ private:
     }
     else if(params.type == ExperimentParameters::Type::cnn)
     {
-      return params.modelName;
+      return params.modelName + "_" + std::to_string(params.threshold);
     }
     // FIXME: what shall I return?
     assert(false);
@@ -120,7 +123,7 @@ private:
     }
     else if(params.type == ExperimentParameters::Type::cnn)
     {
-      return params.modelName + " (CNN)";
+      return params.modelName + " (CNN)" + " threshold=" + std::to_string(params.threshold);
     }
     else
     {

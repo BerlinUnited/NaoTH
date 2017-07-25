@@ -7285,3 +7285,10 @@ for ( int i = 0; i < 2; i++){
 return out_step11[0][0][0] > out_step11[1][0][0];
 }
 
+float CNN_rc17_augmented_2::getBallConfidence(){
+ return out_step11[0][0][0];
+}
+
+float CNN_rc17_augmented_2::getNoballConfidence(){
+ return out_step11[1][0][0];
+}
