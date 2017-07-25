@@ -89,8 +89,8 @@ void SelflocSymbols::execute()
   angleOnFieldPlanned = Math::toDegrees(robotPosePlanned.rotation);
 
   // calculate the distance to the sidelines
-  double distance2back = getFieldInfo().xLength/2.0 + (abs(getRobotPose().translation.x) * Math::sgn(getRobotPose().translation.x));
-  double distance2right = getFieldInfo().yLength/2.0 + (abs(getRobotPose().translation.y) * Math::sgn(getRobotPose().translation.y));
+  double distance2back = getFieldInfo().xLength/2.0 + (std::abs(getRobotPose().translation.x) * Math::sgn(getRobotPose().translation.x));
+  double distance2right = getFieldInfo().yLength/2.0 + (std::abs(getRobotPose().translation.y) * Math::sgn(getRobotPose().translation.y));
   // clip too large/small distance (out of bounds)
   distance2back = distance2back < 0 ? 0 : (distance2back > getFieldInfo().xLength? getFieldInfo().xLength : distance2back);
   distance2right = distance2right < 0 ? 0 : (distance2right > getFieldInfo().yLength ? getFieldInfo().yLength : distance2right);
