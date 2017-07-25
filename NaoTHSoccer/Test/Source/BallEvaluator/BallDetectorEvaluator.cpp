@@ -227,7 +227,8 @@ std::multimap<std::string, BallDetectorEvaluator::InputPatch> BallDetectorEvalua
         // get the image using opencv
         try
         {
-          cv::Mat img = cv::imread(fullFilePath);
+          //we assume input images are grayscale
+          cv::Mat img = cv::imread(fullFilePath, CV_LOAD_IMAGE_GRAYSCALE);
 
           if(img.type() != CV_8UC1)
           {
