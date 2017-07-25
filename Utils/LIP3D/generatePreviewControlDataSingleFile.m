@@ -5,7 +5,7 @@ format('long')
 dt = 0.010; % s ~10ms
 
 % time to preview in the future
-previewTime = 1.0; %s
+previewTime = 0.5; %s
 
 % number of preview steps, i.e., length of F
 N = floor(previewTime / dt);
