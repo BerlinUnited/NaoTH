@@ -29,7 +29,16 @@ dumped_decisions.append(pickle.load(open("../data/decision-simulate_every_pos-60
 dumped_decisions.append(pickle.load(open("../data/decision-simulate_every_pos-70-100.pickle", "rb")))
 dumped_decisions.append(pickle.load(open("../data/decision-simulate_every_pos-80-100.pickle", "rb")))
 dumped_decisions.append(pickle.load(open("../data/decision-simulate_every_pos-90-100.pickle", "rb")))
-
+dumped_decisions.append(pickle.load(open("../data/decision-simulate_every_pos-100-100.pickle", "rb")))
+dumped_decisions.append(pickle.load(open("../data/decision-simulate_every_pos-200-100.pickle", "rb")))
+dumped_decisions.append(pickle.load(open("../data/decision-simulate_every_pos-300-100.pickle", "rb")))
+dumped_decisions.append(pickle.load(open("../data/decision-simulate_every_pos-400-100.pickle", "rb")))
+dumped_decisions.append(pickle.load(open("../data/decision-simulate_every_pos-500-100.pickle", "rb")))
+dumped_decisions.append(pickle.load(open("../data/decision-simulate_every_pos-600-100.pickle", "rb")))
+dumped_decisions.append(pickle.load(open("../data/decision-simulate_every_pos-700-100.pickle", "rb")))
+dumped_decisions.append(pickle.load(open("../data/decision-simulate_every_pos-800-100.pickle", "rb")))
+dumped_decisions.append(pickle.load(open("../data/decision-simulate_every_pos-100-100.pickle", "rb")))
+dumped_decisions.append(pickle.load(open("../data/decision-simulate_every_pos-1000-100.pickle", "rb")))
 for decisions in dumped_decisions:
     confidence_vector = []
 
