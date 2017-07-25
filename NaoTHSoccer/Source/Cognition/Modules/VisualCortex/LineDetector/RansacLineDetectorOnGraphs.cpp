@@ -347,7 +347,7 @@ int RansacLineDetectorOnGraphs::ransacEllipse(Ellipse& bestModel, std::vector<st
         double r = ellipse.mahalanobis_radius();
         double d = ellipse.mahalanobis_distance(e.point.x, e.point.y);
 
-        if((ge.line_id > -1) && (ge.subgraph_id != i) && (d < (r-(r/2)))) {
+        if((ge.line_id > -1) && (ge.subgraph_id != i) && (d < params.circle_line_threshold * r)) {
           //std::cout << "d: " << d << " r: " << r << " e: " << err << " !" << std::endl << std::endl;
           ++validity;
         }
@@ -367,11 +367,11 @@ int RansacLineDetectorOnGraphs::ransacEllipse(Ellipse& bestModel, std::vector<st
       bestInlierError = inlierError;
     }
   }
-
+  /*
   if (bestInlier && bestValidity) {
     std::cout << "Valid: " << bestValidity << "!" << std::endl << std::endl;
   }
-
+  */
   return bestInlier;
 
 }

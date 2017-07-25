@@ -75,6 +75,7 @@ private:
       PARAMETER_REGISTER(circle_outlierThreshold) = 70;
       PARAMETER_REGISTER(circle_inlierMin) = 10;
       PARAMETER_REGISTER(circle_degeneration) = 0.5;
+      PARAMETER_REGISTER(circle_line_threshold) = 0.5;
 
       syncWithConfig();
     }
@@ -91,6 +92,7 @@ private:
     double circle_outlierThreshold;
     int circle_inlierMin;
     double circle_degeneration;
+    double circle_line_threshold;
 
   } params;
 

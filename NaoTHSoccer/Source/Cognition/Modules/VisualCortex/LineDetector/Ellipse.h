@@ -40,7 +40,7 @@ public:
     double yy = y-center[1];
 
     double d = xx*xx*a + xx*yy*b + yy*yy*c;
-    return std::fabs(d);
+    return std::sqrt(std::fabs(d));
   }
 
   double mahalanobis_radius() {
@@ -50,7 +50,7 @@ public:
 
     double r = center[0]*center[0]*a + center[0]*center[1]*b + center[1]*center[1]*c;
 
-    return std::fabs(r - params[5]);
+    return std::sqrt(std::fabs(r - params[5]));
   }
 
   double error_to(double x, double y) {
