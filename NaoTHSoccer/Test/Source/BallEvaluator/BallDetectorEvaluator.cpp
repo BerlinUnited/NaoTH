@@ -193,6 +193,8 @@ void BallDetectorEvaluator::executeCNNBall()
   bestRecall99 = 0.0;
 
   cnnClassifiers = BallCandidateDetector::createCNNMap();
+  // also add the legacy Haar as baseline
+  cnnClassifiers["baseline-haar6-18-2"] = std::make_shared<CVHaarClassifier>("haar6.xml");
 
   ExperimentParameters cnnParams;
   cnnParams.type = ExperimentParameters::Type::cnn;
@@ -455,7 +457,8 @@ void BallDetectorEvaluator::evaluateImage(cv::Mat img,
     {
       if(classifier->second)
       {
-        actual = classifier->second->classify(patch);
+        // the parameters are for the haar6 baseline
+        actual = classifier->second->classify(patch, 2, 18);
       }
     }
   }
