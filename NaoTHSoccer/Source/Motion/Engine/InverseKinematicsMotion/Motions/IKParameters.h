@@ -149,6 +149,17 @@ public:
       bool dynamicStepsize;
       double dynamicStepsizeP;
       double dynamicStepsizeD;
+
+      struct HipOffsetBasedOnStepChange {
+          double x;
+          double y;
+      } hipOffsetBasedOnStepChange;
+
+      struct HipOffsetBasedOnStepLength {
+          double x;
+          double y;
+      } hipOffsetBasedOnStepLength;
+
     } stabilization;
   } walk;
 
