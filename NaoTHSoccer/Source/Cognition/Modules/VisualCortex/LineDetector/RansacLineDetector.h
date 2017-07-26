@@ -60,6 +60,7 @@ private:
       PARAMETER_REGISTER(directionSimilarity) = 0.8;
       PARAMETER_REGISTER(maxLines) = 11;
       PARAMETER_REGISTER(maxVariance) = 40;
+      PARAMETER_REGISTER(length_of_var_check) = 700;
 
       //Circle
       PARAMETER_REGISTER(circle_iterations) = 20;
@@ -76,7 +77,9 @@ private:
     int inlierMin;
     double directionSimilarity;
     int maxLines;
+
     double maxVariance;
+    double length_of_var_check;
 
     int circle_iterations;
     double circle_outlierThreshold;
