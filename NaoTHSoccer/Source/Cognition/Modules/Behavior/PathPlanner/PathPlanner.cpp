@@ -28,11 +28,10 @@ void PathPlanner::execute()
 {
   // --- DEBUG REQUESTS ---
   DEBUG_REQUEST("PathPlanner:walk_to_ball",
-                if (getBallModel().positionPreview.x > 250)
-                {
-                  walk_to_ball(Foot::NONE);
-                }
-                );
+    if (getBallModel().positionPreview.x > 250) {
+      walk_to_ball(Foot::NONE);
+    }
+  );
   // --- DEBUG REQUESTS ---
 
   getPathModel().kick_executed = false;
@@ -45,6 +44,12 @@ void PathPlanner::execute()
   // Tells XABSL to jump into next state
   if (kick_planned && step_buffer.empty()) {
     getPathModel().kick_executed = true;
+  }
+
+  // HACK: xabsl set a firced motion request => clear everything
+  if(getPathModel().path_routine == PathModel::PathRoutine::NONE && getMotionRequest().forced) {
+    step_buffer.clear();
+    return;
   }
 
   switch (getPathModel().path_routine)
