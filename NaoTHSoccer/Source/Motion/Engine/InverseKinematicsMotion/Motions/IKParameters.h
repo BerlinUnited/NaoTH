@@ -90,6 +90,7 @@ public:
     struct Step
     {
       int duration;
+      bool dynamicDuration;
       int doubleSupportTime;
     
       double stepHeight;

@@ -279,13 +279,30 @@ void Walk::calculateNewStep(const Step& lastStep, Step& newStep, const WalkReque
       newStep.type = STEP_CONTROL;
       break;
     case WalkRequest::StepControlRequest::WALKSTEP:
+    {
       newStep.footStep = theFootStepPlanner.controlStep(lastStep.footStep, walkRequest);
-      newStep.numberOfCycles = parameters().step.duration / getRobotInfo().basicTimeStep;
+
+      int duration = parameters().step.duration;
+
+      if(parameters().step.dynamicDuration)
+      {
+        if(walkRequest.character == 0.3) {
+          duration = 300;
+        } else if(walkRequest.character == 0.7) {
+          duration = 280;
+        } else if(walkRequest.character == 1) {
+          duration = 260;
+        }
+      }
+
+      //newStep.numberOfCycles = parameters().step.duration / getRobotInfo().basicTimeStep;
+      newStep.numberOfCycles = duration / getRobotInfo().basicTimeStep;
       newStep.type = STEP_CONTROL;
 
       PLOT("Walk:after_adaptStepSize_x", newStep.footStep.footEnd().translation.x);
       PLOT("Walk:after_adaptStepSize_y", newStep.footStep.footEnd().translation.y);
       break;
+    }
     default:
       ASSERT(false);
     }

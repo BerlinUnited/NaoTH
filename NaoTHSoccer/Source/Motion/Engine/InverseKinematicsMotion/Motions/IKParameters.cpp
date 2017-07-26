@@ -74,6 +74,7 @@ IKParameters::IKParameters()
 
   // step geometry
   PARAMETER_REGISTER(walk.step.duration) = 300;
+  PARAMETER_REGISTER(walk.step.dynamicDuration) = true;
   PARAMETER_REGISTER(walk.step.doubleSupportTime) = 40;
 
   PARAMETER_REGISTER(walk.step.stepHeight) = 15;
