@@ -217,7 +217,16 @@ void PathPlanner::approach_ball(const Foot foot)
     ASSERT(false);
   }
 
-  Pose2D pose = { stepRotation, 0.7 * stepX, 0.7 * stepY };
+  Pose2D pose;
+  if (   params.approach_ball_adapt_control
+      && Pose2D(0.7*stepX, 0.7*stepY).translation.abs() < params.approach_ball_adapt_threshold)
+  {
+    pose = { stepRotation, stepX, stepY };
+  }
+  else
+  {
+    pose = { stepRotation, 0.7 * stepX, 0.7 * stepY };
+  }
 
   if (step_buffer.empty())
   {
