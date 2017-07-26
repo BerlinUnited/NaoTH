@@ -20,8 +20,6 @@
 #include "Representations/Infrastructure/FrameInfo.h"
 #include "Representations/Modeling/BodyState.h"
 #include "Representations/Modeling/ObstacleModel.h"
-//#include "Representations/Modeling/CollisionModel.h"
-//#include "Representations/Modeling/Path.h"
 #include "Representations/Infrastructure/Image.h"
 #include "Representations/Infrastructure/CalibrationData.h"
 #include "Representations/Motion/CollisionPercept.h"
@@ -41,15 +39,11 @@ BEGIN_DECLARE_MODULE(SensorSymbols)
   REQUIRE(BodyState)
   REQUIRE(ObstacleModel)
   REQUIRE(Image)
-  // todo: remove?
-  //REQUIRE(CollisionModel)
   REQUIRE(CalibrationData)
   REQUIRE(ButtonData)
   REQUIRE(CollisionPercept)
 
   PROVIDE(WhistleControl)
-
-  //PROVIDE(Path)
 END_DECLARE_MODULE(SensorSymbols)
 
 class SensorSymbols: public SensorSymbolsBase
@@ -72,8 +66,7 @@ public:
 private:
   static SensorSymbols* theInstance;
 
-  //get-method
-  static double getIRButtonNumber();
+  //getters
   static double getFrameNumber();
   static double simplePassLeftSensor();
   static double simplePassRightSensor();

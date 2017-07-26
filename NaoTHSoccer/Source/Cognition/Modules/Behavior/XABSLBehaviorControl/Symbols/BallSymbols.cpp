@@ -52,18 +52,6 @@ void BallSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalInputSymbol("ball.position.field.x", &ballPositionField.x);
   engine.registerDecimalInputSymbol("ball.position.field.y", &ballPositionField.y);
 
-  // team
-  engine.registerDecimalInputSymbol("ball.team.time_since_last_update", &getTeamBallTimeSinceLastUpdate);
-  engine.registerDecimalInputSymbol("ball.team.position.x", &getTeamBallModel().position.x);
-  engine.registerDecimalInputSymbol("ball.team.position.y", &getTeamBallModel().position.y);
-
-  engine.registerDecimalInputSymbol("ball.team.goalie.time_since_last_update", &getTeamBallGoalieTimeSinceLastUpdate);
-  engine.registerDecimalInputSymbol("ball.team.goalie.position.x", &getTeamBallModel().goaliePosition.x);
-  engine.registerDecimalInputSymbol("ball.team.goalie.position.y", &getTeamBallModel().goaliePosition.y);
-
-  engine.registerDecimalInputSymbol("ball.team.striker.time_since_last_update", &getTeamBallStrikerTimeSinceLastUpdate);
-  engine.registerDecimalInputSymbol("ball.team.striker.position.x", &getTeamBallModel().strikerPosition.x);
-  engine.registerDecimalInputSymbol("ball.team.striker.position.y", &getTeamBallModel().strikerPosition.y);
 
   DEBUG_REQUEST_REGISTER("XABSL:BallSymbols:ballLeftFoot", "draw the ball model in left foot's coordinates on field", false);
   DEBUG_REQUEST_REGISTER("XABSL:BallSymbols:ballRightFoot", "draw the ball model in right foot's coordinates on field", false);
@@ -127,7 +115,6 @@ void BallSymbols::execute()
 BallSymbols* BallSymbols::theInstance = NULL;
 
 
-
 double BallSymbols::getBallDistance() {
   return theInstance->getBallModel().position.abs();
 }
@@ -143,17 +130,3 @@ double BallSymbols::getBallTimeSinceLastSeen() {
 double BallSymbols::getBallTimeSeen() {
   return theInstance->getBallModel().getTimeBallIsSeen();
 }
-
-double BallSymbols::getTeamBallTimeSinceLastUpdate() {
-  return theInstance->getFrameInfo().getTimeSince(theInstance->getTeamBallModel().time);
-}
-
-double BallSymbols::getTeamBallGoalieTimeSinceLastUpdate() {
-  return theInstance->getFrameInfo().getTimeSince(theInstance->getTeamBallModel().goalieTime);
-}
-
-double BallSymbols::getTeamBallStrikerTimeSinceLastUpdate() {
-  return theInstance->getFrameInfo().getTimeSince(theInstance->getTeamBallModel().strikerTime);
-}
-
-

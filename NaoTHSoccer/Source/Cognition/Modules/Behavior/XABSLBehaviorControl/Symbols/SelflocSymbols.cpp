@@ -49,17 +49,6 @@ void SelflocSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalInputSymbol("robot_pose.planned.rotation",&angleOnFieldPlanned);
 
 
-
-
-  engine.registerDecimalInputSymbol("rel2fieldX", &getRel2fieldX);
-  engine.registerDecimalInputSymbolDecimalParameter("rel2fieldX", "rel2fieldX.x", &rel2fieldX_x);
-  engine.registerDecimalInputSymbolDecimalParameter("rel2fieldX", "rel2fieldX.y", &rel2fieldX_y);
-
-  engine.registerDecimalInputSymbol("rel2fieldY", &getRel2fieldY);
-  engine.registerDecimalInputSymbolDecimalParameter("rel2fieldY", "rel2fieldY.x", &rel2fieldY_x);
-  engine.registerDecimalInputSymbolDecimalParameter("rel2fieldY", "rel2fieldY.y", &rel2fieldY_y);
-
-
   // "field_to_relative.x"
   engine.registerDecimalInputSymbol("locator.field_to_relative.x", &getFieldToRelativeX);
   engine.registerDecimalInputSymbolDecimalParameter("locator.field_to_relative.x", "locator.field_to_relative.x.x", &parameterVector.x);
@@ -87,26 +76,6 @@ void SelflocSymbols::execute()
   robotPosePlanned = getRobotPose() + getMotionStatus().plannedMotion.hip;
   angleOnFieldPlanned = Math::toDegrees(robotPosePlanned.rotation);
 }//end execute
-
-double SelflocSymbols::getRel2fieldX()
-{
-  Pose2D result = theInstance->getRobotPose();
-  Vector2<double> add;
-  add.x = theInstance->rel2fieldX_x;
-  add.y = theInstance->rel2fieldX_y;
-
-  return (result*add).x;
-}
-
-double SelflocSymbols::getRel2fieldY()
-{
-  Pose2D result = theInstance->getRobotPose();
-  Vector2<double> add;
-  add.x = theInstance->rel2fieldY_x;
-  add.y = theInstance->rel2fieldY_y;
-
-  return (result*add).y;
-}
 
 double SelflocSymbols::getFieldToRelativeX()
 {
