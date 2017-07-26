@@ -8,6 +8,8 @@ import os
 import random
 import string
 
+# HACK: this parameter has different name in opencv3
+MY_CV_LOAD_IMAGE_UNCHANGED = -1
 
 # TODO: move changed images in seperate subfolder
 '''
@@ -42,7 +44,7 @@ def copy_images(picture_files, options, dir_to_copy):
   if options['active']:
     for i, f in enumerate(picture_files):
       # Mirror Images
-      img = cv2.imread(f, cv2.CV_LOAD_IMAGE_UNCHANGED)
+      img = cv2.imread(f, MY_CV_LOAD_IMAGE_UNCHANGED)
       path = splitext(f)[0]
       splitted_path = path.split('/')
       splitted_path.extend(path.split('\\'))
@@ -54,7 +56,7 @@ def mirror_images(picture_files, options, dir_to_copy):
   if options['active']:
     for i, f in enumerate(picture_files):
       # Mirror Images
-      img = cv2.imread(f, cv2.CV_LOAD_IMAGE_UNCHANGED)
+      img = cv2.imread(f, MY_CV_LOAD_IMAGE_UNCHANGED)
       img_flip = cv2.flip(img, 1)
 
       path = splitext(f)[0]
@@ -70,7 +72,7 @@ def farball_images(picture_files, options, dir_to_copy):
   if options['active']:
     for i, f in enumerate(picture_files):
       # resize image to half size then use original size again
-      img = cv2.imread(f, cv2.CV_LOAD_IMAGE_UNCHANGED)
+      img = cv2.imread(f, MY_CV_LOAD_IMAGE_UNCHANGED)
       img_small = cv2.resize(img, (0,0), fx=0.5, fy=0.5, interpolation=cv2.INTER_LINEAR) 
       img_resized = cv2.resize(img_small, (0,0), fx=2.0, fy=2.0, interpolation=cv2.INTER_NEAREST)
 
@@ -87,7 +89,7 @@ def rotate_images(picture_files, options, dir_to_copy):
   if options['active']:
     rotations = options['rotations']
     for i, f in enumerate(picture_files):
-      img = cv2.imread(f, cv2.CV_LOAD_IMAGE_UNCHANGED)
+      img = cv2.imread(f, MY_CV_LOAD_IMAGE_UNCHANGED)
       for r in rotations:
         rows, cols = img.shape
         M = cv2.getRotationMatrix2D((cols / 2, rows / 2), r, 1)
@@ -106,7 +108,7 @@ def scale_brightness(picture_files, options, dir_to_copy):
   if options['active']:
     scales=options['scales']
     for i, f in enumerate(picture_files):
-      img = cv2.imread(f, cv2.CV_LOAD_IMAGE_UNCHANGED)
+      img = cv2.imread(f, MY_CV_LOAD_IMAGE_UNCHANGED)
       # Scale Brightness
       for s in scales:
         # Assumes that images are in gray scale
@@ -124,7 +126,7 @@ def shift_images(picture_files, options, dir_to_copy):
   if options['active']:
     shift_offsets = options['offsets']
     for i, f in enumerate(picture_files):
-      img = cv2.imread(f, cv2.CV_LOAD_IMAGE_UNCHANGED)
+      img = cv2.imread(f, MY_CV_LOAD_IMAGE_UNCHANGED)
       for shift in shift_offsets:
         img_shift0 = img[shift:, shift:]
         img_shift1 = img[shift:, :-shift]
