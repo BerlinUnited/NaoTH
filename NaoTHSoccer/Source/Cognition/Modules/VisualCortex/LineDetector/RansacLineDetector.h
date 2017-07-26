@@ -61,6 +61,7 @@ private:
       PARAMETER_REGISTER(maxLines) = 11;
       PARAMETER_REGISTER(maxVariance) = 40;
       PARAMETER_REGISTER(length_of_var_check) = 700;
+      PARAMETER_REGISTER(min_line_length) = 300;
 
       //Circle
       PARAMETER_REGISTER(circle_iterations) = 20;
@@ -80,6 +81,7 @@ private:
 
     double maxVariance;
     double length_of_var_check;
+    double min_line_length;
 
     int circle_iterations;
     double circle_outlierThreshold;

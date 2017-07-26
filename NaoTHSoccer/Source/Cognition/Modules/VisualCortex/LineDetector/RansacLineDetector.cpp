@@ -199,8 +199,11 @@ int RansacLineDetector::ransac(Math::LineSegment& result, std::vector<size_t>& i
       angle_var /= static_cast<int>(inliers.size());
 
       result = Math::LineSegment(bestModel.point(minT), bestModel.point(maxT));
+      double line_length = result.getLength();
 
-      if (result.getLength() < params.length_of_var_check && angle_var > params.maxVariance) {
+      if (line_length < params.min_line_length) {
+        return 0;
+      } else if(line_length < params.length_of_var_check && angle_var > (params.maxVariance - (line_length/params.length_of_var_check))) {
         return 0;
       } else {
         outliers = newOutliers;
