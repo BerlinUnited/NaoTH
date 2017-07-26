@@ -109,6 +109,7 @@ void PathPlanner::execute()
 void PathPlanner::walk_to_ball(const Foot foot, const bool go_fast)
 {
   Vector2d ballPos                   = Vector2d();
+  double ballRadius                  = getFieldInfo().ballRadius;
   WalkRequest::Coordinate coordinate = WalkRequest::Hip;
   switch (foot) {
     case Foot::LEFT:
@@ -126,7 +127,7 @@ void PathPlanner::walk_to_ball(const Foot foot, const bool go_fast)
   }
   double ballRotation = ballPos.angle();
 
-  Pose2D pose           = { ballRotation, 0.7*(ballPos.x - getPathModel().distance), ballPos.y };
+  Pose2D pose           = { ballRotation, 0.7*(ballPos.x - getPathModel().distance - ballRadius), ballPos.y };
 
   if (step_buffer.empty())
   {
