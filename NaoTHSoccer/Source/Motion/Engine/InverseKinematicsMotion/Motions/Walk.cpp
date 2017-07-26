@@ -341,71 +341,32 @@ void Walk::planZMP()
     double zmpOffsetY = zmpOffsetYParameter + parameters().hip.ZMPOffsetYByCharacter * (1-planningStep.walkRequest.character);
     double zmpOffsetX = getEngine().getParameters().walk.general.hipOffsetX;
 
+    int samplesDoubleSupport = std::max(0, (int) (parameters().step.doubleSupportTime / getRobotInfo().basicTimeStep));
+    int samplesSingleSupport = planningStep.numberOfCycles - samplesDoubleSupport;
+    ASSERT(samplesSingleSupport >= 0 && samplesDoubleSupport >= 0);
+
+    Vector2d zmp_new;
+    zmp_new = ZMPPlanner::bezierBased(
+                planningStep.footStep,
+                planningStep.planningCycle,
+                samplesDoubleSupport,
+                samplesSingleSupport,
+                parameters().zmp.bezier.offsetX,
+                parameters().zmp.bezier.offsetY + parameters().hip.ZMPOffsetYByCharacter * (1-planningStep.walkRequest.character),
+                parameters().zmp.bezier.inFootScalingY,
+                parameters().zmp.bezier.inFootSpacing,
+                parameters().zmp.bezier.transitionScaling);
+
+    // old zmp
+    Vector2d zmp_simple = ZMPPlanner::simplest(planningStep.footStep, zmpOffsetX, zmpOffsetY);
+
     //
     if(parameters().hip.newZMP_ON) 
     {
-      int samplesDoubleSupport = std::max(0, (int) (parameters().step.doubleSupportTime / getRobotInfo().basicTimeStep));
-      int samplesSingleSupport = planningStep.numberOfCycles - samplesDoubleSupport;
-      ASSERT(samplesSingleSupport >= 0 && samplesDoubleSupport >= 0);
-
-      Vector2d zmp_new;
-
-      zmp_new = ZMPPlanner::bezierBased(
-                  planningStep.footStep,
-                  planningStep.planningCycle,
-                  samplesDoubleSupport,
-                  samplesSingleSupport,
-                  parameters().zmp.bezier.offsetX,
-                  parameters().zmp.bezier.offsetY,
-                  parameters().zmp.bezier.inFootScalingY,
-                  parameters().zmp.bezier.inFootSpacing,
-                  parameters().zmp.bezier.transitionScaling);
-
-//      DEBUG_REQUEST("Walk:useBezierBased2",
-//      zmp_new = ZMPPlanner::bezierBased2(
-//        planningStep.footStep, zmpOffsetX, parameters().zmp.bezier2.offsetY,
-//        planningStep.planningCycle,
-//        samplesDoubleSupport,
-//        samplesSingleSupport,
-//        parameters().zmp.bezier2.offsetT);
-//      );
-
       zmp = Vector3d(zmp_new.x, zmp_new.y, parameters().hip.comHeight);
-
-      // just for plotting and debugging
-      Vector2d zmp_simple = ZMPPlanner::simplest(planningStep.footStep, zmpOffsetX, zmpOffsetY);
       other_zmp = Vector3d(zmp_simple.x, zmp_simple.y, parameters().hip.comHeight);
-
     } else {
-      Vector2d zmp_simple = ZMPPlanner::simplest(planningStep.footStep, zmpOffsetX, zmpOffsetY);
       zmp = Vector3d(zmp_simple.x, zmp_simple.y, parameters().hip.comHeight);
-
-      // just for plotting and debugging
-      int samplesDoubleSupport = std::max(0, (int) (parameters().step.doubleSupportTime / getRobotInfo().basicTimeStep));
-      int samplesSingleSupport = planningStep.numberOfCycles - samplesDoubleSupport;
-      ASSERT(samplesSingleSupport >= 0 && samplesDoubleSupport >= 0);
-
-      Vector2d zmp_new;
-      zmp_new = ZMPPlanner::bezierBased(
-        planningStep.footStep,
-        planningStep.planningCycle,
-        samplesDoubleSupport,
-        samplesSingleSupport,
-        parameters().zmp.bezier.offsetX,
-        parameters().zmp.bezier.offsetY,
-        parameters().zmp.bezier.inFootScalingY,
-        parameters().zmp.bezier.inFootSpacing,
-        parameters().zmp.bezier.transitionScaling);
-
-//      DEBUG_REQUEST("Walk:useBezierBased2",
-//      zmp_new = ZMPPlanner::bezierBased2(
-//        planningStep.footStep, zmpOffsetX, parameters().zmp.bezier2.offsetY,
-//        planningStep.planningCycle,
-//        samplesDoubleSupport,
-//        samplesSingleSupport,
-//        parameters().zmp.bezier2.offsetT);
-//      );
-
       other_zmp = Vector3d(zmp_new.x, zmp_new.y, parameters().hip.comHeight);
     }
   }
