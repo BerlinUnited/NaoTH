@@ -68,6 +68,8 @@ namespace internal_symbols("Internal Symbols") {
   float internal search_ball.search_direction;
   /** remembers the numbers of turns while search (@see search_ball)*/
   float internal search_ball.turns_for_searching;
+  /** Counts the state changes turn/look in passive_ball_not_seen */
+  float internal search_ball.turn_stop_motion_count;
 
   /* Kick symbols */
   
