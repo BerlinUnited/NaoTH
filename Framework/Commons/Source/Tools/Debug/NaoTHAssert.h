@@ -46,6 +46,9 @@
 #else
 #define ASSERT(cond) if(!(cond)) {Trace::getInstance().dump(); assert(false);}
 #endif
+
+#define ASSERT_MSG(cond, msg) if(!(cond)) { std::cerr << "ERROR: " << msg << std::endl; Trace::getInstance().dump(); assert(false);}
+
 /**
  * VERIFY prints a message if cond is false and DEBUG is defined.
  * VERIFY does evaluate cond even if DEBUG is not defined.
