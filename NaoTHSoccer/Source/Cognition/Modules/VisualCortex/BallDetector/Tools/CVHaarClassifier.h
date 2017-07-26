@@ -47,7 +47,7 @@ public:
 
   // only defined because of inheritance
   bool classify(const BallCandidates::Patch &p){
-    return classify(p, 0, 18) > 0;
+    return classify(p, 0, 18);
   }
 
   // overload classify from AbstractCNNClassifier
