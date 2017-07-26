@@ -458,7 +458,7 @@ void BallDetectorEvaluator::evaluateImage(cv::Mat img,
   bool actual = false;
   if(params.type == ExperimentParameters::Type::haar)
   {
-    actual = classifierHaar.classify(patch, params.minNeighbours, params.maxWindowSize) > 0;
+    actual = classifierHaar.classify(patch, params.minNeighbours, params.maxWindowSize);
   }
   else if(params.type == ExperimentParameters::Type::cnn)
   {

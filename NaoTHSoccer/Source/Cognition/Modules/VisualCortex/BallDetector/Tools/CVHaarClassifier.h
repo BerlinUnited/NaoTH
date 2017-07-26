@@ -47,14 +47,14 @@ public:
 
   // only defined because of inheritance
   bool classify(const BallCandidates::Patch &p){
-    return classify(p, 0, 18) > 0;
+    return classify(p, 0, 18);
   }
 
   virtual float getBallConfidence() {return 1.0;}
   virtual float getNoballConfidence() {return 1.0;}
 
   // overload classify from AbstractCNNClassifier
-  int classify(const BallCandidates::Patch& p, unsigned int minNeighbours=0, unsigned int windowSize=12)
+  bool classify(const BallCandidates::Patch& p, unsigned int minNeighbours=0, unsigned int windowSize=12)
   {
     out.clear();
 
@@ -93,7 +93,7 @@ public:
     return false;
     */
     
-    return static_cast<int>(out.size());
+    return out.size() > 0;
   }
 };
 

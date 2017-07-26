@@ -315,7 +315,7 @@ void BallCandidateDetector::calculateCandidates()
 
           PatchWork::subsampling(getImage(), patchedBorder.data, patchedBorder.min.x, patchedBorder.min.y, patchedBorder.max.x, patchedBorder.max.y, patch_size);
 
-          int found;
+          bool found;
           stopwatch.start();
               // Hack!: the haar classifier is now a AbstractCNNClassifier, the params are only for the cv haar classifier
               found = currentCNNClassifier->classify(patchedBorder,
@@ -339,7 +339,7 @@ void BallCandidateDetector::calculateCandidates()
 
             PatchWork::subsampling(getImage(), p.data, min.x, min.y, max.x, max.y, patch_size);
 
-            int found;
+            bool found;
             stopwatch.start();
                 // Hack!: the haar classifier is now a AbstractCNNClassifier, the params are only for the cv haar classifier
                 found = currentCNNClassifier->classify(p, params.haarDetector.minNeighbors, params.haarDetector.windowSize);
