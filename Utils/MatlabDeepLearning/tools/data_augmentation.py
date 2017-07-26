@@ -1,5 +1,6 @@
+import sys
 from os import listdir
-from os.path import isfile, join, splitext
+from os.path import isfile, join, splitext, isdir, exists
 import cv2
 import numpy as np
 import operator
@@ -194,6 +195,18 @@ def augment_files(src_root_folder, dir_to_copy, augment_options, amounts_per_cla
 if __name__ == '__main__':
   dir_from = '../data/basic/16x16'
   dir_to   = '../data/augmented/16x16/test1'
+  
+  if len(sys.argv) > 2:
+	dir_from = sys.argv[1]
+	dir_to = sys.argv[2]
+	
+  if not exists(dir_from) or not isdir(dir_from):
+	print "Input, directory does not exists: {0}".format(dir_from)
+	quit()
+	
+  if not exists(dir_to) or not isdir(dir_to):
+	print "Output, directory does not exists: {0}".format(dir_to)
+	quit()
 
   # sample for augmenting the classes ball and noball differently
   # balls with rotated images + brightness scaling and noball only brightness scaling
