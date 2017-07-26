@@ -113,8 +113,8 @@ IKParameters::IKParameters()
   PARAMETER_REGISTER(walk.stabilization.hipOffsetBasedOnStepChange.x) = 0.1;
   PARAMETER_REGISTER(walk.stabilization.hipOffsetBasedOnStepChange.y) = 0.1;
 
-  PARAMETER_REGISTER(walk.stabilization.hipOffsetBasedOnStepLength.x) = 5;
-  PARAMETER_REGISTER(walk.stabilization.hipOffsetBasedOnStepLength.y) = 0;
+  PARAMETER_REGISTER(walk.stabilization.maxHipOffsetBasedOnStepLength.x) = 5;
+  PARAMETER_REGISTER(walk.stabilization.maxHipOffsetBasedOnStepLength.y) = 0;
 
   // rotation stabilize parameter
   PARAMETER_REGISTER(rotationStabilize.k.x) = -0.5;

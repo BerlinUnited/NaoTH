@@ -363,9 +363,9 @@ void Walk::planZMP()
     // TODO: should it be a part of the Step?
     // TODO: hipOffsetBasedOnStepLength.y?
     double zmpOffsetY = zmpOffsetYParameter + parameters().hip.ZMPOffsetYByCharacter * (1-planningStep.walkRequest.character);
-    double zmpOffsetX = getEngine().getParameters().walk.general.hipOffsetX + parameters().stabilization.hipOffsetBasedOnStepLength.x * std::abs(currentStepLength.x)/parameters().limits.maxStepLength;
+    double zmpOffsetX = getEngine().getParameters().walk.general.hipOffsetX + parameters().stabilization.maxHipOffsetBasedOnStepLength.x * std::abs(currentStepLength.x)/parameters().limits.maxStepLength;
 
-    PLOT("Walk:hipOffsetBasedOnStepLength.x", parameters().stabilization.hipOffsetBasedOnStepLength.x * std::abs(currentStepLength.x)/parameters().limits.maxStepLength);
+    PLOT("Walk:hipOffsetBasedOnStepLength.x", parameters().stabilization.maxHipOffsetBasedOnStepLength.x * std::abs(currentStepLength.x)/parameters().limits.maxStepLength);
 
     Vector2d zmp_simple = ZMPPlanner::simplest(planningStep.footStep, zmpOffsetX, zmpOffsetY);
     zmp = Vector3d(zmp_simple.x, zmp_simple.y, parameters().hip.comHeight);

@@ -158,7 +158,7 @@ public:
       struct HipOffsetBasedOnStepLength {
           double x;
           double y;
-      } hipOffsetBasedOnStepLength;
+      } maxHipOffsetBasedOnStepLength;
 
     } stabilization;
   } walk;
