@@ -65,7 +65,7 @@ IKParameters::IKParameters()
   PARAMETER_REGISTER(walk.zmp.bezier.transitionScaling) = 0.6;
   PARAMETER_REGISTER(walk.zmp.bezier.inFootScalingY) = 1;
   PARAMETER_REGISTER(walk.zmp.bezier.inFootSpacing)  = 10;
-  PARAMETER_REGISTER(walk.zmp.bezier.offsetX) = 15;
+  PARAMETER_REGISTER(walk.zmp.bezier.offsetX) = 20;
   PARAMETER_REGISTER(walk.zmp.bezier.offsetY) = 0;
   PARAMETER_REGISTER(walk.zmp.bezier.offsetYForKicks) = 0;
 
