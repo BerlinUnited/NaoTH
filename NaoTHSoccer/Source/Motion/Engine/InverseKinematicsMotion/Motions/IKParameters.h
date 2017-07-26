@@ -80,6 +80,10 @@ public:
       double comStepOffsetY;
       double ZMPOffsetY;
       double ZMPOffsetYByCharacter;
+
+      bool newZMP_ON;
+      double newZMP_offset;
+      double newZMP_width;
     } hip;
 
     // step geometry
@@ -161,6 +165,23 @@ public:
       } maxHipOffsetBasedOnStepLength;
 
     } stabilization;
+
+    struct ZMP{
+        struct Bezier{
+            double transitionScaling;
+            double inFootScalingY;
+            double inFootSpacing;
+            double offsetX;
+            double offsetY;
+            double offsetYForKicks;
+        } bezier;
+
+        struct Bezier2{
+            double offsetT;
+            double offsetY;
+        } bezier2;
+    } zmp;
+
   } walk;
 
 
