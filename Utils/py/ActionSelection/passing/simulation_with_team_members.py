@@ -7,6 +7,11 @@ from tools import Simulation as Sim
 from naoth import math2d as m2d
 from tools import tools
 
+"""
+    This script is basically the same as run_simulation.py but it draws other robots as well
+    TODO: use the robots positions for changing the decisions
+"""
+
 
 class State:
     def __init__(self):
@@ -17,8 +22,8 @@ class State:
         self.ball_position = m2d.Vector2(100.0, 0.0)
 
         self.obstacle_list = ([])  # is in global coordinates
-        self.own_robots = [m2d.Vector2(-2250, -1000)]
-        self.opp_robots = [m2d.Vector2(-1800, -1000)]
+        # TODO introduce a robot_list
+        robot_list = []
 
 
 def draw_actions(actions_consequences, state, best_action):
@@ -26,15 +31,10 @@ def draw_actions(actions_consequences, state, best_action):
     tools.draw_field()
 
     axes = plt.gca()
+    # axes.text(0, 0, best_action, fontsize=12)
     axes.add_artist(Circle(xy=(state.pose.translation.x, state.pose.translation.y), radius=100, fill=False, edgecolor='white'))
-    axes.text(0, 0, best_action, fontsize=12)
-
-    for own in state.own_robots:
-        axes.add_artist(
-            Circle(xy=(own.x, own.y), radius=100, fill=True, edgecolor='blue'))
-    for opp in state.opp_robots:
-        axes.add_artist(
-            Circle(xy=(opp.x, opp.y), radius=100, fill=True, edgecolor='red'))
+    # Add the other robots
+    axes.add_artist(Circle(xy=(-2700, -1000), radius=100, fill=True, edgecolor='blue'))
 
     x = np.array([])
     y = np.array([])

@@ -1,11 +1,11 @@
 /**
-* @file Simulation.h
+* @file KickDirectionSimulator.h
 * @author <a href="mailto:schlottb@informatik.hu-berlin.de">Benjamin Schlotter</a>
-* Declaration of class Simulation
+* Declaration of class KickDirectionSimulator
 */
 
-#ifndef _Simulation_H
-#define _Simulation_H
+#ifndef _KickDirectionSimulator_H
+#define _KickDirectionSimulator_H
 
 #include <ModuleFramework/Module.h>
 #include <ModuleFramework/ModuleManager.h>
@@ -18,6 +18,7 @@
 #include "Representations/Modeling/RobotPose.h"
 #include "Representations/Modeling/KickActionModel.h"
 #include "Representations/Modeling/ObstacleModel.h"
+#include "Representations/Modeling/SoccerStrategy.h"
 
 //Tools
 #include <Tools/Math/Vector2.h>
@@ -29,44 +30,46 @@
 #include <Representations/Debug/Stopwatch.h>
 #include "Tools/Filters/AssymetricalBoolFilter.h"
 
-// Debug
-#include <Tools/Debug/DebugRequest.h>
-
 //
 #include "Tools/ActionSimulator.h"
 
-BEGIN_DECLARE_MODULE(Simulation)
-PROVIDE(DebugModify)
-PROVIDE(DebugRequest)
-PROVIDE(DebugDrawings)
-PROVIDE(DebugParameterList)
-PROVIDE(StopwatchManager)
+// Debug
+#include <Tools/Debug/DebugRequest.h>
 
-REQUIRE(FrameInfo)
-REQUIRE(FieldInfo)
-REQUIRE(ObstacleModel)
-REQUIRE(BallModel)
-REQUIRE(RobotPose)
-//REQUIRE(SelfLocGoalModel)
+BEGIN_DECLARE_MODULE(KickDirectionSimulator)
+  PROVIDE(DebugModify)
+  PROVIDE(DebugRequest)
+  PROVIDE(DebugDrawings)
+  PROVIDE(DebugParameterList)
+  PROVIDE(StopwatchManager)
 
-PROVIDE(KickActionModel)
-END_DECLARE_MODULE(Simulation)
+  REQUIRE(FrameInfo)
+  REQUIRE(FieldInfo)  
+  REQUIRE(ObstacleModel)
+  REQUIRE(BallModel)
+  REQUIRE(RobotPose)
+  //REQUIRE(SelfLocGoalModel)
 
-class Simulation : public SimulationBase, public ModuleManager
+  //Hack?
+  PROVIDE(SoccerStrategy)
+
+  PROVIDE(KickActionModel)
+END_DECLARE_MODULE(KickDirectionSimulator)
+
+class KickDirectionSimulator : public KickDirectionSimulatorBase, public ModuleManager
 {
 public:
-  Simulation();
-  ~Simulation();
+  KickDirectionSimulator();
+  ~KickDirectionSimulator();
 
   virtual void execute();
-
 
   /** parameters for the module */
   class Parameters : public ParameterList
   {
   public:
 
-    Parameters() : ParameterList("ActionSimulatorParams")
+    Parameters() : ParameterList("KickDirectionSimulatorParams")
     {
       PARAMETER_REGISTER(sidekick_right.speed) = 750;
       PARAMETER_REGISTER(sidekick_right.speed_std) = 150;
@@ -97,6 +100,10 @@ public:
       PARAMETER_REGISTER(obstacleFilter.g0) = 0.01;
       PARAMETER_REGISTER(obstacleFilter.g1) = 0.1;
 
+      //KickDirection Stuff
+      PARAMETER_REGISTER(num_angle_particle) = 30;
+      PARAMETER_REGISTER(iterations) = 10;
+
       syncWithConfig();
     }
 
@@ -111,24 +118,42 @@ public:
     ActionSimulator::ActionParams kick_long;
     double friction;
     double good_threshold_percentage;
-    int numParticles; //should be size_t
+    int numParticles;
     int minGoalParticles;
+    //KickDirection Stuff
+    int num_angle_particle;
+    int iterations; // Number of update calls of particle filter
 
   } theParameters;
 
+private:
+  class Sample {
+  public:
+    Sample() : rotation(0.0), likelihood(0.0) {}
+    double rotation;
+    double likelihood;
+  };
+
+  typedef std::vector<Sample> SampleSet;
+  SampleSet samples;
+
 
 private:
-  //AssymetricalBoolHysteresisFilter obstacleFilter;
-
   ModuleCreator<ActionSimulator>* simulationModule;
 
-  size_t decide_smart(const std::vector<ActionSimulator::ActionResults>& actionsConsequences) const;
-
   std::vector<ActionSimulator::Action> action_local;
-  std::vector<ActionSimulator::ActionResults> actionsConsequences;
+  //actionsConsequences now contain the angles in which the robot should turn -> rename it accordingly
+  std::vector<double> actionsConsequences;
+  std::vector<double> actionsConsequencesAbs;
+  double calculate_best_direction(const ActionSimulator::Action& action);
+  void update(const ActionSimulator::Action& action);
+  void resample(SampleSet& sampleSet, double sigma) const;
+  void normalize(SampleSet& samples) const;
+  void resetSamples(SampleSet& samples, size_t n) const;  
 
-  void draw_action_results(const ActionSimulator::ActionResults& actionsResults, const Color& color) const;
-
+public:
+  double m_max;
+  double m_min;
 };
 
-#endif  /* _Simulation_H */
+#endif  /* _KickDirectionSimulator_H */

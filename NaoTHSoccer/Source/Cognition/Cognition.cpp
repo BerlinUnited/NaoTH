@@ -89,6 +89,8 @@
 
 #include "Modules/Modeling/Simulation/SimulationTest.h"
 #include "Modules/Modeling/Simulation/Simulation.h"
+#include "Modules/Modeling/Simulation/SimulationOLD.h"
+#include "Modules/Modeling/Simulation/KickDirectionSimulator.h"
 #include "Modules/Modeling/SelfLocator/SituationPriorProvider/SituationPriorProvider.h"
 
 
@@ -195,7 +197,10 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(DummyActiveGoalLocator);
   REGISTER_MODULE(KalmanFilterBallLocator);
   REGISTER_MODULE(MultiKalmanBallLocator);
+
+  REGISTER_MODULE(KickDirectionSimulator);
   REGISTER_MODULE(Simulation);
+  REGISTER_MODULE(SimulationOLD);
   REGISTER_MODULE(SimulationTest);
   REGISTER_MODULE(StaticDebugModelProvider);
 
