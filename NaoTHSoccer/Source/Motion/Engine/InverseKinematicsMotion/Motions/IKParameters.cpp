@@ -110,8 +110,8 @@ IKParameters::IKParameters()
   PARAMETER_REGISTER(walk.stabilization.dynamicStepsizeP) = -1;
   PARAMETER_REGISTER(walk.stabilization.dynamicStepsizeD) = 0.5;
 
-  PARAMETER_REGISTER(walk.stabilization.hipOffsetBasedOnStepChange.x) = 0.1;
-  PARAMETER_REGISTER(walk.stabilization.hipOffsetBasedOnStepChange.y) = 0.1;
+  PARAMETER_REGISTER(walk.stabilization.hipOffsetBasedOnStepChange.x) = 0.0;
+  PARAMETER_REGISTER(walk.stabilization.hipOffsetBasedOnStepChange.y) = 0.0;
 
   PARAMETER_REGISTER(walk.stabilization.maxHipOffsetBasedOnStepLength.x) = 5;
   PARAMETER_REGISTER(walk.stabilization.maxHipOffsetBasedOnStepLength.y) = 0;
