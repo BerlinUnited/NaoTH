@@ -328,14 +328,17 @@ void Walk::planZMP()
     Pose3D finalBody = calculateStableCoMByFeet(planningStep.footStep.end(), getEngine().getParameters().walk.general.bodyPitchOffset);
     zmp = finalBody.translation;
   } else {
-    double zmpOffsetYParameter;
+    double zmpOffsetYParameter, newZMPOffsetYParameter;
+
     if (planningStep.type == STEP_CONTROL && planningStep.walkRequest.stepControl.type == WalkRequest::StepControlRequest::KICKSTEP)
     {
-      zmpOffsetYParameter = parameters().kick.ZMPOffsetY;
+      zmpOffsetYParameter    = parameters().kick.ZMPOffsetY;
+      newZMPOffsetYParameter = parameters().zmp.bezier.offsetYForKicks;
     }
     else
     {
-      zmpOffsetYParameter = parameters().hip.ZMPOffsetY;
+      zmpOffsetYParameter    = parameters().hip.ZMPOffsetY;
+      newZMPOffsetYParameter = parameters().zmp.bezier.offsetY;
     }
     // TODO: should it be a part of the Step?
     double zmpOffsetY = zmpOffsetYParameter + parameters().hip.ZMPOffsetYByCharacter * (1-planningStep.walkRequest.character);
@@ -352,7 +355,7 @@ void Walk::planZMP()
                 samplesDoubleSupport,
                 samplesSingleSupport,
                 parameters().zmp.bezier.offsetX,
-                parameters().zmp.bezier.offsetY + parameters().hip.ZMPOffsetYByCharacter * (1-planningStep.walkRequest.character),
+                newZMPOffsetYParameter + parameters().hip.ZMPOffsetYByCharacter * (1-planningStep.walkRequest.character),
                 parameters().zmp.bezier.inFootScalingY,
                 parameters().zmp.bezier.inFootSpacing,
                 parameters().zmp.bezier.transitionScaling);
@@ -360,7 +363,6 @@ void Walk::planZMP()
     // old zmp
     Vector2d zmp_simple = ZMPPlanner::simplest(planningStep.footStep, zmpOffsetX, zmpOffsetY);
 
-    //
     if(parameters().hip.newZMP_ON) 
     {
       zmp = Vector3d(zmp_new.x, zmp_new.y, parameters().hip.comHeight);

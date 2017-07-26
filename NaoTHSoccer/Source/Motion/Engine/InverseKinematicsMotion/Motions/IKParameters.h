@@ -162,6 +162,7 @@ public:
             double inFootSpacing;
             double offsetX;
             double offsetY;
+            double offsetYForKicks;
         } bezier;
 
         struct Bezier2{
