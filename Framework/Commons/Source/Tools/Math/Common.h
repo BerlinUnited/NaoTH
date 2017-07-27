@@ -239,17 +239,23 @@ namespace Math {
   inline double meanAngle(double a, double b) {
     return atan2( sin(a)+sin(b), cos(a)+cos(b) );
   }
+
+  /* TODO: This needs to be tested
   template<typename T>
-  T vectorMeanAngle(std::vector<T> values){
+  T vectorMeanAngle(const std::vector<T> values) {
+    // TODO: remove assert when the method was tested 
+    assert(true);
+    
     double a = 0;
     double b = 0;
     for (size_t i = 0; i < values.size(); ++i)
     {
-      a += sin(a);
-      b += sin(b);
+      a += sin(values[i]);
+      b += cos(values[i]);
     }
     return atan2(a, b);
   }
+  */
 
   // NOTE: the input vector is copied and sorted internally, this can be slow for large vectors
   template<typename T>
