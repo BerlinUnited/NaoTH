@@ -218,6 +218,21 @@ void BallDetectorEvaluator::executeCNNBall()
   std::cout << "Written detailed report to " << outFileName << std::endl;
 }
 
+cv::Mat BallDetectorEvaluator::loadImage(std::string fullFilePath)
+{
+  //we assume input images are grayscale
+  cv::Mat img = cv::imread(fullFilePath, CV_LOAD_IMAGE_GRAYSCALE);
+
+  if (img.type() != CV_8UC1)
+  {
+    img.convertTo(img, CV_8UC1);
+  }
+  if (img.rows != patchSize || img.cols != patchSize)
+  {
+    cv::resize(img, img, cv::Size(patchSize, patchSize), cv::INTER_LINEAR);
+  }
+  return img;
+}
 
 std::multimap<std::string, BallDetectorEvaluator::InputPatch> BallDetectorEvaluator::loadImageSets(const std::string &rootDir, const std::string& pathSep)
 {
@@ -234,17 +249,7 @@ std::multimap<std::string, BallDetectorEvaluator::InputPatch> BallDetectorEvalua
         // get the image using opencv
         try
         {
-          //we assume input images are grayscale
-          cv::Mat img = cv::imread(fullFilePath, CV_LOAD_IMAGE_GRAYSCALE);
-
-          if(img.type() != CV_8UC1)
-          {
-            img.convertTo(img, CV_8UC1);
-          }
-          if(img.rows != patchSize || img.cols != patchSize)
-          {
-            cv::resize(img, img, cv::Size(patchSize, patchSize), cv::INTER_LINEAR);
-          }
+          cv::Mat img = loadImage(fullFilePath);
           result.insert({className, {img, fullFilePath}});
         }
         catch(...)
@@ -359,8 +364,9 @@ void BallDetectorEvaluator::outputResults(std::string outFileName)
 
     for(std::list<ErrorEntry>::const_iterator it=r.falsePositivePatches.begin(); it != r.falsePositivePatches.end(); it++)
     {
+      cv::Mat img = loadImage(it->fileName);
       // use a data URI to embed the image in PNG format
-      std::string imgPNG = createPNG(it->patch);
+      std::string imgPNG = createPNG(img);
       divFP.AppendChild(CTML::Node("img")
                         .SetAttribute("title", it->fileName)
                         .SetAttribute("src", "data:image/png;base64," + base64Encoder.encode(imgPNG.c_str(), (int) imgPNG.size()))
@@ -376,7 +382,8 @@ void BallDetectorEvaluator::outputResults(std::string outFileName)
     for(std::list<ErrorEntry>::const_iterator it=r.falseNegativePatches.begin(); it != r.falseNegativePatches.end(); it++)
     {
       // use a data URI to embed the image in PNG format
-      std::string imgPNG = createPNG(it->patch);
+      cv::Mat img = loadImage(it->fileName);
+      std::string imgPNG = createPNG(img);
       divFN.AppendChild(CTML::Node("img")
                         .SetAttribute("title", it->fileName)
                         .SetAttribute("src", "data:image/png;base64," + base64Encoder.encode(imgPNG.c_str(), (int) imgPNG.size()))
@@ -488,7 +495,7 @@ void BallDetectorEvaluator::evaluateImage(cv::Mat img,
   else
   {
     ErrorEntry error;
-    error.patch= img;
+//    error.patch= img;
     error.fileName = fileName;
     if(actual)
     {

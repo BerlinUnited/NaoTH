@@ -29,7 +29,6 @@ public:
 public:
   struct ErrorEntry
   {
-    cv::Mat patch;
     std::string fileName;
   };
 
@@ -80,8 +79,9 @@ public:
 
 private:
 
-  std::multimap<std::string, InputPatch> loadImageSets(const std::string& rootDir, const std::string &pathSep="/");
-
+  std::multimap<std::string, InputPatch> loadImageSets(const std::string& rootDir, const std::string &pathSep="/");  
+  cv::Mat BallDetectorEvaluator::loadImage(std::string fullFilePath);
+  
   ExperimentResult executeParam(const ExperimentParameters& params, const std::multimap<std::string, InputPatch> &imageSet);
   unsigned int executeSingleImageSet(const std::multimap<std::string, InputPatch> &imageSet, const ExperimentParameters &params, ExperimentResult &r);
 
