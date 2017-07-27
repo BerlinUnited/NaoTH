@@ -47,7 +47,7 @@ void KickDirectionSimulator::execute()
     }
     */
   }
-  int bestActionID = std::min_element(actionsConsequencesAbs.begin(), actionsConsequencesAbs.end()) - actionsConsequencesAbs.begin();
+  int bestActionID = static_cast<int>(std::min_element(actionsConsequencesAbs.begin(), actionsConsequencesAbs.end()) - actionsConsequencesAbs.begin());
   
   getKickActionModel().bestAction = KickActionModel::none;
   //TODO replace 5.0 with value of angle_std
