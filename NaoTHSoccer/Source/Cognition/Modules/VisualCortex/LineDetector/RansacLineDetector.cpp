@@ -19,29 +19,15 @@ void RansacLineDetector::execute()
 {
   getLinePercept().reset();
 
-  DEBUG_REQUEST("Vision:RansacLineDetector:draw_edgels_field",
-    FIELD_DRAWING_CONTEXT;
-
-    for(const Edgel& e: getLineGraphPercept().edgels)
-    {
-      PEN("FF0000",2);
-
-      if(e.point.x > 0 || e.point.y > 0) {
-        CIRCLE(e.point.x, e.point.y, 25);
-      }
-      PEN("000000",0.1);
-      LINE(e.point.x, e.point.y, e.point.x + e.direction.x*100.0, e.point.y + e.direction.y*100.0);
-    }
-  );
-
-
   // copy the edgels
   // todo: can this be optimized?
   //outliers.assign(getLineGraphPercept().edgels.begin(), getLineGraphPercept().edgels.end());
   outliers.resize(getLineGraphPercept().edgels.size());
+  getLinePercept().edgelLineIDs.resize(getLineGraphPercept().edgels.size());
 
   for(size_t i = 0; i < getLineGraphPercept().edgels.size(); ++i) {
     outliers[i] = i;
+    getLinePercept().edgelLineIDs[i] = -1;
   }
 
   bool foundLines = false;
@@ -63,6 +49,27 @@ void RansacLineDetector::execute()
     }
     inliers.clear();
   }
+
+  DEBUG_REQUEST("Vision:RansacLineDetector:draw_edgels_field",
+    FIELD_DRAWING_CONTEXT;
+
+    for(int i=0; i<getLineGraphPercept().edgels.size(); i++)
+    {
+      const Edgel& e = getLineGraphPercept().edgels[i];
+
+      if(getLinePercept().edgelLineIDs[i] > -1) {
+        PEN("00FF00",2);
+      } else {
+        PEN("FF0000",2);
+      }
+
+      if(e.point.x > 0 || e.point.y > 0) {
+        CIRCLE(e.point.x, e.point.y, 25);
+      }
+      PEN("000000",0.1);
+      LINE(e.point.x, e.point.y, e.point.x + e.direction.x*100.0, e.point.y + e.direction.y*100.0);
+    }
+  );
 
   DEBUG_REQUEST("Vision:RansacLineDetector:draw_lines_field",
     FIELD_DRAWING_CONTEXT;
@@ -182,6 +189,7 @@ int RansacLineDetector::ransac(Math::LineSegment& result, std::vector<size_t>& i
         inliers.push_back(i);
 
         mean_angle += Math::toDegrees(e.direction.angle());
+        getLinePercept().edgelLineIDs[i] = static_cast<int>(getLinePercept().lines.size());
       } else {
         newOutliers.push_back(i);
       }
