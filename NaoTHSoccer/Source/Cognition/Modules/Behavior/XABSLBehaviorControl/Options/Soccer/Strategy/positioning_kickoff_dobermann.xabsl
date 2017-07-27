@@ -31,8 +31,8 @@ option positioning_kickoff_dobermann
     action
     {
       go_to_point_with_USOA(
-        x=field.xPosOwnPenaltyMark + 500, 
-        y=field.yPosLeftGoal-700,
+        x=-700, 
+        y=field.yPosLeftGoal-500,
         rot=0);
 
       head.control_mode = look_around;

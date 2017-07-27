@@ -23,8 +23,8 @@ option decide_and_go_to_passive_position_dobermann_no_search
     action
     {
       go_to_and_keep_passive_position(
-        x=field.xPosOwnPenaltyMark + 500, 
-        y=field.yPosLeftGoal-700,
+        x=1000, 
+        y=field.yPosLeftGoal-500,
         rot=0);
 
       head.control_mode = look_around;
