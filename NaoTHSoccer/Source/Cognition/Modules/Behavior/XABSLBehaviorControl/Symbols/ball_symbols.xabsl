@@ -7,6 +7,22 @@ namespace ball_symbols("Ball Symbols") {
   float input ball.x [mm];
   /** Position of the ball in y direction relative to the field in mm */
   float input ball.y [mm];
+  
+  /** Distance of the ball in mm */
+  float input ball.distance "mm";
+  /** Angle to the ball in deg */
+  float input ball.angle [-180..180]"deg";
+
+  /** Position of the ball in x direction relative to the left foot */
+  float input ball.left_foot.x "mm";
+  /** Position of the ball in y direction relative to the left foot */
+  float input ball.left_foot.y "mm";
+
+  /** Position of the ball in x direction relative to the right foot */
+  float input ball.right_foot.x "mm";
+  /** Position of the ball in y direction relative to the right foot */
+  float input ball.right_foot.y "mm";
+
 
   /** Position of the ball in previewed model */
   float input ball.preview.x [mm];
@@ -15,6 +31,7 @@ namespace ball_symbols("Ball Symbols") {
   float input ball.preview.left_foot.y [mm];
   float input ball.preview.right_foot.x [mm];
   float input ball.preview.right_foot.y [mm];
+
 
   /** x direction of speed */
   float input ball.speed.x [mm/s];
@@ -27,9 +44,9 @@ namespace ball_symbols("Ball Symbols") {
   /** Time since the ball is seen in ms*/
   float input ball.time_seen "ms";
   
-  /** a filtered version of ball.percept.was_seen*/
+  /** there is a valig model of a ball */
   bool input ball.know_where_itis;
-
+  /** a filtered version of ball.percept.was_seen*/
   bool input ball.see_where_itis;
   
   /** relative ball position to the robot based on a current percept*/
@@ -38,18 +55,6 @@ namespace ball_symbols("Ball Symbols") {
   float input ball.percept.y "mm";
   /** Whether the ball was seen in the current frame */
   bool input ball.percept.was_seen;
-
-
-  /** Distance of the ball in mm */
-  float input ball.distance "mm";
-  /** Angle to the ball in deg */
-  float input ball.angle [-180..180]"deg";
-
-  
-  /** Position of the ball center in the image */
-  float input ball.center_in_image.x "px";
-  /** Position of the ball center in the image */
-  float input ball.center_in_image.y "px";
 
 
   /** Position of the ball in x direction relative to the field */
@@ -63,21 +68,5 @@ namespace ball_symbols("Ball Symbols") {
   float input ball.team.position.x "mm";
   float input ball.team.position.y "mm";
   float input ball.team.rmse "mm";
-
-  /** Position of the ball in x direction relative to the left foot */
-  float input ball.left_foot.x "mm";
-  /** Position of the ball in y direction relative to the left foot */
-  float input ball.left_foot.y "mm";
-
-  /** Position of the ball in x direction relative to the right foot */
-  float input ball.right_foot.x "mm";
-  /** Position of the ball in y direction relative to the right foot */
-  float input ball.right_foot.y "mm";
-
-  /** Go to the ball with right or left foot for Cognition/Behavior/PathPlanner */
-  bool output ball.goto_ball_right;
-  bool output ball.goto_ball_left;
-  float output ball.goto_distance;
-  float output ball.goto_yOffset;
 }
   

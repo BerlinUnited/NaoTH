@@ -23,8 +23,16 @@ class Action:
         if self.speed == 0:  # means action is none
             return ball
         if noise:
-            speed = np.random.normal(self.speed, self.speed_std)
-            angle = np.random.normal(math.radians(self.angle), math.radians(self.angle_std))
+            if self.speed_std > 0:
+              speed = np.random.normal(self.speed, self.speed_std)
+            else:
+              speed = self.speed
+              
+            if self.angle_std > 0:
+              angle = np.random.normal(math.radians(self.angle), math.radians(self.angle_std))
+            else:
+              angle = math.radians(self.angle)
+              
             distance = speed * speed / friction / gforce / 2.0  # friction*mass*gforce*distance = 1/2*mass*speed*speed
         else:
             distance = self.speed*self.speed / friction / gforce / 2.0

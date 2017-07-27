@@ -46,10 +46,12 @@ void RansacLineDetector::execute()
 
   bool foundLines = false;
 
+  std::vector<size_t> inliers;
+
   for(int i = 0; i < params.maxLines; ++i)
   {
     Math::LineSegment result;
-    if(ransac(result) > 0)
+    if(ransac(result, inliers) > 0)
     {
       foundLines = true;
       LinePercept::FieldLineSegment fieldLine;
@@ -59,6 +61,7 @@ void RansacLineDetector::execute()
     else {
       break;
     }
+    inliers.clear();
   }
 
   DEBUG_REQUEST("Vision:RansacLineDetector:draw_lines_field",
@@ -102,7 +105,7 @@ void RansacLineDetector::execute()
   );
 }
 
-int RansacLineDetector::ransac(Math::LineSegment& result)
+int RansacLineDetector::ransac(Math::LineSegment& result, std::vector<size_t>& inliers)
 {
   if(outliers.size() <= 2) {
     return 0;
@@ -165,6 +168,8 @@ int RansacLineDetector::ransac(Math::LineSegment& result)
     double minT = 0;
     double maxT = 0;
 
+    double mean_angle = 0;
+
     for(size_t i: outliers)
     {
       const Edgel& e = getLineGraphPercept().edgels[i];
@@ -174,14 +179,36 @@ int RansacLineDetector::ransac(Math::LineSegment& result)
         double t = bestModel.project(e.point);
         minT = std::min(t, minT);
         maxT = std::max(t, maxT);
+        inliers.push_back(i);
+
+        mean_angle += Math::toDegrees(e.direction.angle());
       } else {
         newOutliers.push_back(i);
       }
     }
-    outliers = newOutliers;
 
-    // return results
-    result = Math::LineSegment(bestModel.point(minT), bestModel.point(maxT));
+    double angle_var = 0;
+
+    if(inliers.size()) {
+      mean_angle /= static_cast<int>(inliers.size());
+
+      for(size_t i : inliers) {
+        const Edgel& e = getLineGraphPercept().edgels[i];
+        angle_var += std::pow(Math::toDegrees(e.direction.angle()) - mean_angle, 2);
+      }
+      angle_var /= static_cast<int>(inliers.size());
+
+      result = Math::LineSegment(bestModel.point(minT), bestModel.point(maxT));
+      double line_length = result.getLength();
+
+      if (line_length < params.min_line_length) {
+        return 0;
+      } else if(line_length < params.length_of_var_check && angle_var > (params.maxVariance - (line_length/params.length_of_var_check))) {
+        return 0;
+      } else {
+        outliers = newOutliers;
+      }
+    }
   }
 
   return bestInlier;

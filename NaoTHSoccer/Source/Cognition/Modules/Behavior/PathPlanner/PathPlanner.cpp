@@ -28,11 +28,10 @@ void PathPlanner::execute()
 {
   // --- DEBUG REQUESTS ---
   DEBUG_REQUEST("PathPlanner:walk_to_ball",
-                if (getBallModel().positionPreview.x > 250)
-                {
-                  walk_to_ball(Foot::NONE);
-                }
-                );
+    if (getBallModel().positionPreview.x > 250) {
+      walk_to_ball(Foot::NONE);
+    }
+  );
   // --- DEBUG REQUESTS ---
 
   getPathModel().kick_executed = false;
@@ -45,6 +44,12 @@ void PathPlanner::execute()
   // Tells XABSL to jump into next state
   if (kick_planned && step_buffer.empty()) {
     getPathModel().kick_executed = true;
+  }
+
+  // HACK: xabsl set a firced motion request => clear everything
+  if(getPathModel().path_routine == PathModel::PathRoutine::NONE && getMotionRequest().forced) {
+    step_buffer.clear();
+    return;
   }
 
   switch (getPathModel().path_routine)
@@ -104,6 +109,7 @@ void PathPlanner::execute()
 void PathPlanner::walk_to_ball(const Foot foot, const bool go_fast)
 {
   Vector2d ballPos                   = Vector2d();
+  double ballRadius                  = getFieldInfo().ballRadius;
   WalkRequest::Coordinate coordinate = WalkRequest::Hip;
   switch (foot) {
     case Foot::LEFT:
@@ -121,7 +127,7 @@ void PathPlanner::walk_to_ball(const Foot foot, const bool go_fast)
   }
   double ballRotation = ballPos.angle();
 
-  Pose2D pose           = { ballRotation, 0.7*(ballPos.x - getPathModel().distance), ballPos.y };
+  Pose2D pose           = { ballRotation, 0.7*(ballPos.x - getPathModel().distance - ballRadius), ballPos.y };
 
   if (step_buffer.empty())
   {

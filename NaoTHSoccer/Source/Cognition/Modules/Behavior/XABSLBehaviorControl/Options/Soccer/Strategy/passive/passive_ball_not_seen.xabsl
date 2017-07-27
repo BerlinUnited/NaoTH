@@ -55,34 +55,37 @@ option passive_ball_not_seen
 
   state turn_to_left {
     decision {
-      else if(state_time > 2500)
+      /* stop turning, if robot should at least look around for more than 1s */
+      else if(state_time > 2500 &&(look_in_direction_factor * 10000) > 1000) {
         //goto look_around_left;
         goto state_change_left;
-      else
+      } else
         stay;
     }
     action {
       motion.type=walk;
       motion.walk_speed.x=0;
       motion.walk_speed.y=0;
-      motion.walk_speed.rot= 20; //90
+      motion.walk_speed.rot= 20; //90
       head.control_mode = search_for_ball;      
     }
   }
 
   state turn_to_right {
     decision {
-      else if(state_time > 2500)
+      /* stop turning, if robot should at least look around for more than 1s */
+      else if(state_time > 2500 && (look_in_direction_factor * 10000) > 1000) {
        //goto look_around_right;
         goto state_change_right;
-      else
+      } else
         stay;
     }
     action {
       motion.type=walk;
       motion.walk_speed.x=0;
       motion.walk_speed.y=0;
-      motion.walk_speed.rot= -20; //-90
+      motion.walk_speed.rot= -20;
+ //-90
       head.control_mode = search_for_ball;      
     }
   }
@@ -115,7 +118,7 @@ option passive_ball_not_seen
 
   state look_around_left {
     decision {
-      else if(state_time > 5000) {
+      else if(state_time > (look_in_direction_factor * 10000)){
           goto turn_to_left;
       }
       else
@@ -129,7 +132,7 @@ option passive_ball_not_seen
 
   state look_around_right {
     decision {
-      else if(state_time > 5000) {
+      else if(state_time > (look_in_direction_factor * 10000)){
           goto turn_to_right;
       }
       else

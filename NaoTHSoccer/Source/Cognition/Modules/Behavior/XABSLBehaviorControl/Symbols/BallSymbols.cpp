@@ -120,7 +120,6 @@ void BallSymbols::execute()
 BallSymbols* BallSymbols::theInstance = NULL;
 
 
-
 double BallSymbols::getBallDistance() {
   return theInstance->getBallModel().position.abs();
 }

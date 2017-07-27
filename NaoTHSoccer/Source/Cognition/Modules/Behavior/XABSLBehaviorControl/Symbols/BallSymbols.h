@@ -14,14 +14,13 @@
 #include "Tools/Math/Pose2D.h"
 
 // representations
-#include "Representations/Modeling/BallModel.h"
-#include "Representations/Perception/MultiBallPercept.h"
-#include "Representations/Modeling/TeamBallModel.h"
 #include "Representations/Infrastructure/FrameInfo.h"
 #include "Representations/Infrastructure/FieldInfo.h"
+
+#include "Representations/Perception/MultiBallPercept.h"
+#include "Representations/Modeling/BallModel.h"
 #include "Representations/Modeling/RobotPose.h"
 #include "Representations/Modeling/KinematicChain.h"
-#include "Representations/Modeling/SoccerStrategy.h"
 
 #include <Tools/DataStructures/ParameterList.h>
 #include "Tools/Debug/DebugParameterList.h"
@@ -30,18 +29,20 @@
 #include "Tools/Debug/DebugPlot.h"
 
 BEGIN_DECLARE_MODULE(BallSymbols)
-  PROVIDE(BallModel) // PROVIDE so that XABSL bool can be read out
-  REQUIRE(MultiBallPercept)
-  REQUIRE(FrameInfo)
-  REQUIRE(RobotPose)
-  REQUIRE(TeamBallModel)
-  REQUIRE(FieldInfo)
-  REQUIRE(KinematicChain)
-  REQUIRE(SoccerStrategy)
+  
+PROVIDE(BallModel) // PROVIDE so that XABSL bool can be read out
   PROVIDE(DebugRequest)
   PROVIDE(DebugPlot)
   PROVIDE(DebugDrawings)
   PROVIDE(DebugParameterList)
+
+  REQUIRE(FrameInfo)
+  REQUIRE(FieldInfo)
+  REQUIRE(MultiBallPercept)
+  
+  REQUIRE(RobotPose)
+
+  REQUIRE(KinematicChain)
 END_DECLARE_MODULE(BallSymbols)
 
 class BallSymbols: public BallSymbolsBase

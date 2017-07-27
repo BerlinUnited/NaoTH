@@ -35,3 +35,93 @@ def evaluate_action2(results, state):
     assert number_of_actions > 0
     sum_potential /= number_of_actions
     return sum_potential
+
+
+# Todo write a new function like evaluate_action2 which also takes into consideration the potentialfields of the teammates
+# then build a static test case which shows what happens when teammates are considered
+
+# TODO use better potential field -> like in timeEstimation.py
+
+def robot_field(robot_pos, ball_pos):
+
+    vel_rot = 60.
+    vel_walk = 200.
+
+    x = ball_pos.x
+    y = ball_pos.y
+    sigma_x = field.x_opponent_goal / 2.0
+    sigma_y = field.y_left_sideline / 2.5
+
+    # check if ball near robot
+
+    translated_ball_pos = ball_pos - robot_pos
+    distance = translated_ball_pos.abs()
+
+    if distance > 1000.:
+        return 0.0  # if ball if to far away the robot field has no impact
+
+    # evaluation function
+
+    value = distance / vel_walk  # time to ball, very naive evaluation
+    value /= 5.
+    value = 1 - value
+
+    return value
+
+
+def evaluate_action_with_robots(ball_pos, opp_robots, own_robots):
+    x = ball_pos.x
+    y = ball_pos.y
+    sigma_x = field.x_opponent_goal / 2.0
+    sigma_y = field.y_left_sideline / 2.5
+    f = slope(x, y, -1.0 / field.x_opponent_goal, 0.0) \
+        - gaussian(x, y, field.x_opponent_goal, 0.0, sigma_x, sigma_y) \
+        + gaussian(x, y, field.x_own_goal, 0.0, 1.5 * sigma_x, sigma_y)
+
+    for opp_rob in opp_robots:  # adding infuence of own and opponent robots into the field
+        f_rob = robot_field(opp_rob, ball_pos)
+        if f_rob != 0:
+            if f_rob + f <= 1 and f_rob != 0.:
+                f = f_rob
+            else:
+                f += f_rob
+
+    for own_rob in own_robots:
+        f_rob = robot_field(own_rob, ball_pos)
+        if f_rob != 0:
+            if f - f_rob <= -0.5:
+                f -= f_rob
+            else:
+                f = -f_rob
+    return f
+
+
+def benji_field(results, state, opp_robots, own_robots):
+    sum_potential = 0.0
+    number_of_actions = 0.0
+    for p in results.positions():
+        if p.cat() == "INFIELD" or p.cat() == "OPPGOAL":
+            sum_potential += evaluate_action_with_robots(state.pose * p.pos(), opp_robots, own_robots)
+            number_of_actions += 1
+
+    assert number_of_actions > 0
+    sum_potential /= number_of_actions
+    return sum_potential
+
+
+def evaluate_action_with_robots2(ball_pos, opp_robots, own_robots):
+    x = ball_pos.x
+    y = ball_pos.y
+    sigma_x = field.x_opponent_goal / 2.0
+    sigma_y = field.y_left_sideline / 2.5
+
+    f = 0
+    for opp_rob in opp_robots:  # adding influence of own and opponent robots into the field
+        f += robot_field(opp_rob, ball_pos)
+    for own_rob in own_robots:
+        f -= robot_field(own_rob, ball_pos)
+    if f == 0:
+        f = slope(x, y, -1.0 / field.x_opponent_goal, 0.0) \
+            - gaussian(x, y, field.x_opponent_goal, 0.0, sigma_x, sigma_y) \
+            + gaussian(x, y, field.x_own_goal, 0.0, 1.5 * sigma_x, sigma_y)
+    return f
