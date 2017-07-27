@@ -7567,3 +7567,12 @@ for ( int i = 0; i < 2; i++){
 return out_step9[0][0][0] > out_step9[1][0][0];
 }
 
+
+float CNNClassifier::getBallConfidence(){
+ return out_step9[0][0][0];
+}
+
+float CNNClassifier::getNoballConfidence(){
+ return out_step9[1][0][0];
+}
+

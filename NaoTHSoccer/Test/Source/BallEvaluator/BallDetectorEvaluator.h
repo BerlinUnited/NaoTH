@@ -29,7 +29,6 @@ public:
 public:
   struct ErrorEntry
   {
-    cv::Mat patch;
     std::string fileName;
   };
 
@@ -42,6 +41,8 @@ public:
     unsigned int minNeighbours;
     unsigned int maxWindowSize;
 
+    double threshold;
+
     std::string modelName;
   };
 
@@ -53,6 +54,7 @@ public:
         NAOTH_STRUCT_COMPARE(a.modelName, b.modelName);
         NAOTH_STRUCT_COMPARE(a.minNeighbours, b.minNeighbours);
         NAOTH_STRUCT_COMPARE(a.maxWindowSize, b.maxWindowSize);
+        NAOTH_STRUCT_COMPARE(a.threshold, b.threshold);
         return false;
       }
   };
@@ -77,8 +79,9 @@ public:
 
 private:
 
-  std::multimap<std::string, InputPatch> loadImageSets(const std::string& rootDir, const std::string &pathSep="/");
-
+  std::multimap<std::string, InputPatch> loadImageSets(const std::string& rootDir, const std::string &pathSep="/");  
+  cv::Mat BallDetectorEvaluator::loadImage(std::string fullFilePath);
+  
   ExperimentResult executeParam(const ExperimentParameters& params, const std::multimap<std::string, InputPatch> &imageSet);
   unsigned int executeSingleImageSet(const std::multimap<std::string, InputPatch> &imageSet, const ExperimentParameters &params, ExperimentResult &r);
 
@@ -105,7 +108,7 @@ private:
     }
     else if(params.type == ExperimentParameters::Type::cnn)
     {
-      return params.modelName;
+      return params.modelName + "_" + std::to_string(params.threshold);
     }
     // FIXME: what shall I return?
     assert(false);
@@ -120,7 +123,7 @@ private:
     }
     else if(params.type == ExperimentParameters::Type::cnn)
     {
-      return params.modelName + " (CNN)";
+      return params.modelName + " (CNN)" + " threshold=" + std::to_string(params.threshold);
     }
     else
     {

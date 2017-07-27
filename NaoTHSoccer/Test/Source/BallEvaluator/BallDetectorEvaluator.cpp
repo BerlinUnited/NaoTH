@@ -193,9 +193,12 @@ void BallDetectorEvaluator::executeCNNBall()
   bestRecall99 = 0.0;
 
   cnnClassifiers = BallCandidateDetector::createCNNMap();
+  // also add the legacy Haar as baseline
+  cnnClassifiers["baseline-haar6-18-2"] = std::make_shared<CVHaarClassifier>("haar6.xml");
 
   ExperimentParameters cnnParams;
   cnnParams.type = ExperimentParameters::Type::cnn;
+  cnnParams.threshold = 0.0;
 
   bestRecallParam90 = cnnParams;
   bestRecallParam95 = cnnParams;
@@ -204,13 +207,32 @@ void BallDetectorEvaluator::executeCNNBall()
   for(auto& classifierEntry : cnnClassifiers)
   {
     cnnParams.modelName = classifierEntry.first;
-    results[cnnParams] = executeParam(cnnParams, imagesByClasses);
+    for(double t : {0.0, 0.6, 0.7, 0.8, 0.9})
+    {
+      cnnParams.threshold = t;
+      results[cnnParams] = executeParam(cnnParams, imagesByClasses);
+    }
   }
 
   outputResults(outFileName);
   std::cout << "Written detailed report to " << outFileName << std::endl;
 }
 
+cv::Mat BallDetectorEvaluator::loadImage(std::string fullFilePath)
+{
+  //we assume input images are grayscale
+  cv::Mat img = cv::imread(fullFilePath, CV_LOAD_IMAGE_GRAYSCALE);
+
+  if (img.type() != CV_8UC1)
+  {
+    img.convertTo(img, CV_8UC1);
+  }
+  if (img.rows != patchSize || img.cols != patchSize)
+  {
+    cv::resize(img, img, cv::Size(patchSize, patchSize), cv::INTER_LINEAR);
+  }
+  return img;
+}
 
 std::multimap<std::string, BallDetectorEvaluator::InputPatch> BallDetectorEvaluator::loadImageSets(const std::string &rootDir, const std::string& pathSep)
 {
@@ -227,16 +249,7 @@ std::multimap<std::string, BallDetectorEvaluator::InputPatch> BallDetectorEvalua
         // get the image using opencv
         try
         {
-          cv::Mat img = cv::imread(fullFilePath);
-
-          if(img.type() != CV_8UC1)
-          {
-            img.convertTo(img, CV_8UC1);
-          }
-          if(img.rows != patchSize || img.cols != patchSize)
-          {
-            cv::resize(img, img, cv::Size(patchSize, patchSize), cv::INTER_LINEAR);
-          }
+          cv::Mat img = loadImage(fullFilePath);
           result.insert({className, {img, fullFilePath}});
         }
         catch(...)
@@ -258,6 +271,8 @@ void BallDetectorEvaluator::outputResults(std::string outFileName)
   CTML::Document doc;
   std::ofstream html;
   html.open(outFileName);
+
+  doc.AddNodeToHead(CTML::Node("meta name = \"format-detection\" content = \"telephone=no\""));
 
   doc.AddNodeToHead(CTML::Node("style",
     "img.patch {width: 36px; height: 36px;}\n"
@@ -285,6 +300,7 @@ void BallDetectorEvaluator::outputResults(std::string outFileName)
   CTML::Node thead("thead");
   CTML::Node headRow("tr");
   headRow.AppendChild(CTML::Node("th", "modelName"));
+  headRow.AppendChild(CTML::Node("th", "threshold").SetAttribute("data-sort-method", "number"));
   headRow.AppendChild(CTML::Node("th", "minNeighbours").SetAttribute("data-sort-method", "number"));
   headRow.AppendChild(CTML::Node("th", "windowSize").SetAttribute("data-sort-method", "number"));
   headRow.AppendChild(CTML::Node("th", "precision").SetAttribute("data-sort-method", "number"));
@@ -302,6 +318,8 @@ void BallDetectorEvaluator::outputResults(std::string outFileName)
 
     CTML::Node tr("tr");
     tr.AppendChild(CTML::Node("td", params.modelName));
+    tr.AppendChild(CTML::Node("td", params.type == ExperimentParameters::Type::cnn ?
+                                std::to_string(params.threshold) : ""));
     tr.AppendChild(CTML::Node("td", params.type == ExperimentParameters::Type::haar ?
                                 std::to_string(params.minNeighbours) : ""));
     tr.AppendChild(CTML::Node("td", params.type == ExperimentParameters::Type::haar?
@@ -346,8 +364,9 @@ void BallDetectorEvaluator::outputResults(std::string outFileName)
 
     for(std::list<ErrorEntry>::const_iterator it=r.falsePositivePatches.begin(); it != r.falsePositivePatches.end(); it++)
     {
+      cv::Mat img = loadImage(it->fileName);
       // use a data URI to embed the image in PNG format
-      std::string imgPNG = createPNG(it->patch);
+      std::string imgPNG = createPNG(img);
       divFP.AppendChild(CTML::Node("img")
                         .SetAttribute("title", it->fileName)
                         .SetAttribute("src", "data:image/png;base64," + base64Encoder.encode(imgPNG.c_str(), (int) imgPNG.size()))
@@ -363,7 +382,8 @@ void BallDetectorEvaluator::outputResults(std::string outFileName)
     for(std::list<ErrorEntry>::const_iterator it=r.falseNegativePatches.begin(); it != r.falseNegativePatches.end(); it++)
     {
       // use a data URI to embed the image in PNG format
-      std::string imgPNG = createPNG(it->patch);
+      cv::Mat img = loadImage(it->fileName);
+      std::string imgPNG = createPNG(img);
       divFN.AppendChild(CTML::Node("img")
                         .SetAttribute("title", it->fileName)
                         .SetAttribute("src", "data:image/png;base64," + base64Encoder.encode(imgPNG.c_str(), (int) imgPNG.size()))
@@ -422,8 +442,12 @@ unsigned int BallDetectorEvaluator::executeSingleImageSet(const std::multimap<st
 
   for(const std::pair<std::string, InputPatch>& imageEntry : imageSet)
   {
-    evaluateImage(imageEntry.second.img, imageEntry.first == "ball", imageEntry.second.fileName, params, r);
-    numberOfImages++;
+    // only evaluate balls and non-balls
+    if(imageEntry.first == "ball" || imageEntry.first == "noball")
+    {
+      evaluateImage(imageEntry.second.img, imageEntry.first == "ball", imageEntry.second.fileName, params, r);
+      numberOfImages++;
+    }
   }
 
   return numberOfImages;
@@ -450,7 +474,13 @@ void BallDetectorEvaluator::evaluateImage(cv::Mat img,
     {
       if(classifier->second)
       {
-        actual = classifier->second->classify(patch);
+        // the parameters are for the haar6 baseline
+        actual = classifier->second->classify(patch, 2, 18);
+        if(actual)
+        {
+          // also check the threshold
+          actual = classifier->second->getBallConfidence() >= params.threshold;
+        }
       }
     }
   }
@@ -465,7 +495,7 @@ void BallDetectorEvaluator::evaluateImage(cv::Mat img,
   else
   {
     ErrorEntry error;
-    error.patch= img;
+//    error.patch= img;
     error.fileName = fileName;
     if(actual)
     {

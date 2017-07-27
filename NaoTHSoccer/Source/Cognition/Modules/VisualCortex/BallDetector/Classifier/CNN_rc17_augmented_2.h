@@ -1,5 +1,5 @@
-#ifndef _CNNAugmented2_H_
-#define _CNNAugmented2_H_
+#ifndef _CNN_rc17_augmented_2_H_
+#define _CNN_rc17_augmented_2_H_
 
 #include <limits>
 
@@ -7,12 +7,12 @@
 
 #include "AbstractCNNClassifier.h"
 
-class CNNAugmented2 : public AbstractCNNClassifier {
+class CNN_rc17_augmented_2 : public AbstractCNNClassifier {
 
 public:
-	CNNAugmented2(){out.open("example.txt");}
+	CNN_rc17_augmented_2(){out.open("example.txt");}
 
-	~CNNAugmented2(){out.close();}
+	~CNN_rc17_augmented_2(){out.close();}
 
 std::ofstream out;
 	bool classify(const BallCandidates::Patch& p);
