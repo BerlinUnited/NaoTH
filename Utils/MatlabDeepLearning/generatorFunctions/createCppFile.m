@@ -72,7 +72,7 @@ for i = 1:numel(layers)
        
        fprintf(' [done]');
     case 'nnet.cnn.layer.ClassificationOutputLayer'
-       addClassificationOutputLayer(HeaderFile,BodyFile,level,rows,cols);
+       addClassificationOutputLayer(HeaderFile,BodyFile,level,rows,cols,channels,name);
        
        fprintf(' [in development]');
     otherwise
