@@ -240,15 +240,10 @@ void Walk::calculateNewStep(const Step& lastStep, Step& newStep, const WalkReque
   newStep.walkRequest = walkRequest;
 
   // STABILIZATION
-  bool do_emergency_stop = com_errors.isFull() && com_errors.getAverage() > parameters().stabilization.emergencyStopError;
+  bool do_emergency_stop = com_errors.size() == com_errors.getMaxEntries() && com_errors.getAverage() > parameters().stabilization.emergencyStopError;
 
   if ( getMotionRequest().id != getId() || (do_emergency_stop && !walkRequest.stepControl.isProtected))
   {
-    // clear the buffer after emergency
-    if(do_emergency_stop) {
-      com_errors.clear();
-    }
-
     // try to make a last step to align the feet if it is required
     if ( getMotionRequest().standardStand ) {
       newStep.footStep = theFootStepPlanner.finalStep(lastStep.footStep, walkRequest);
@@ -753,7 +748,6 @@ void Walk::calculateError()
 
   // we need enough history
   if(commandPoseBuffer.size() == 0 || commandPoseBuffer.size() <= index ) {
-    com_errors.clear();
     return;
   }
 
@@ -787,9 +781,6 @@ void Walk::calculateError()
     footObs.rotation = RotationMatrix::getRotationY(footObs.rotation.getYAngle()); // assume the foot is flat on the ground
     observed_com = footObs.invert() * getKinematicChainSensor().CoM;
   }
-
-  PLOT("Walk:com_errors", currentComError.abs2());
-  PLOT("Walk:com_errors_avg", com_errors.getAverage());
   
   currentComError = requested_com - observed_com;
   com_errors.add(currentComError.abs2());
