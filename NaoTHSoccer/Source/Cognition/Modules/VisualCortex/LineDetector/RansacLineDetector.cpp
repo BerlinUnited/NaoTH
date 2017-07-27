@@ -58,7 +58,13 @@ void RansacLineDetector::execute()
       const Edgel& e = getLineGraphPercept().edgels[i];
 
       if(getLinePercept().edgelLineIDs[i] > -1) {
-        PEN("00FF00",2);
+        std::string color;
+        switch(getLinePercept().edgelLineIDs[i]%3) {
+          case 0: color = "00FF00"; break;
+          case 1: color = "0000FF"; break;
+          default: color = "00FFFF"; break;
+        }
+        PEN(color,2);
       } else {
         PEN("FF0000",2);
       }
@@ -69,20 +75,28 @@ void RansacLineDetector::execute()
       PEN("000000",0.1);
       LINE(e.point.x, e.point.y, e.point.x + e.direction.x*100.0, e.point.y + e.direction.y*100.0);
     }
+
   );
 
   DEBUG_REQUEST("Vision:RansacLineDetector:draw_lines_field",
     FIELD_DRAWING_CONTEXT;
 
     if (foundLines) {
-      for(const LinePercept::FieldLineSegment& line: getLinePercept().lines)
+      for(int i=0; i<getLinePercept().lines.size(); i++)
       {
-        PEN("999999", 50);
+        std::string color;
+        switch(i%3) {
+          case 0: color = "00FF00"; break;
+          case 1: color = "0000FF"; break;
+          default: color = "00FFFF"; break;
+        }
+        PEN(color, 50);
         LINE(
-          line.lineOnField.begin().x, line.lineOnField.begin().y,
-          line.lineOnField.end().x, line.lineOnField.end().y);
+          getLinePercept().lines[i].lineOnField.begin().x, getLinePercept().lines[i].lineOnField.begin().y,
+          getLinePercept().lines[i].lineOnField.end().x, getLinePercept().lines[i].lineOnField.end().y);
       }
     }
+
   );
 
   DEBUG_REQUEST("Vision:RansacLineDetector:fit_and_draw_circle_field",
@@ -189,7 +203,6 @@ int RansacLineDetector::ransac(Math::LineSegment& result, std::vector<size_t>& i
         inliers.push_back(i);
 
         mean_angle += Math::toDegrees(e.direction.angle());
-        getLinePercept().edgelLineIDs[i] = static_cast<int>(getLinePercept().lines.size());
       } else {
         newOutliers.push_back(i);
       }
@@ -215,6 +228,9 @@ int RansacLineDetector::ransac(Math::LineSegment& result, std::vector<size_t>& i
         return 0;
       } else {
         outliers = newOutliers;
+        for(size_t i : inliers) {
+          getLinePercept().edgelLineIDs[i] = static_cast<int>(getLinePercept().lines.size());
+        }
       }
     }
   }
