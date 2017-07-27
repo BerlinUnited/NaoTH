@@ -31,8 +31,6 @@ option striker
     action{
       situation_abortable = true;
 
-      motion.walk.style = stable;
-      head.angleVelocity = 30; // will be reseted in spl_play_soccer
       search_ball();
     }
   }
