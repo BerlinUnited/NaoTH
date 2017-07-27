@@ -223,6 +223,12 @@ void PathPlanner::approach_ball(const Foot foot)
     ASSERT(false);
   }
 
+  //if (ballPos.x < getPathModel().distance + 30 && ballPos.x > getPathModel().distance - 30)
+  if (stepX < 0 && ballPos.x > getPathModel().distance + 30)
+  {
+    stepX = 0;
+  }
+
   const double slow_down_factor = 0.7;
   Pose2D pose;
   if (   params.approach_ball_adapt_control

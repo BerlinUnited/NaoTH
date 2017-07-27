@@ -38,7 +38,7 @@ option path_striker
     decision{
 
       else if(action_done && state_time > 1000 &&
-         ball.preview.x < 300 && abs(value = ball.preview.y) < 50) // && vector.abs(x=ball.speed.x, y=ball.speed.y) < 150
+         ball.preview.x < 300 && abs(value = ball.preview.y) < 50)// && vector.abs(x=ball.speed.x, y=ball.speed.y) < 150)
       {
 	      if(attack.best_action == kick_long)
 	        goto long_kick;
