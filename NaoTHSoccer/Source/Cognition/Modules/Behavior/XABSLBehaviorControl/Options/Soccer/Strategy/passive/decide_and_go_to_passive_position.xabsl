@@ -16,6 +16,8 @@ if (action_done || state_time > 10000)
         stay;
 	  }
 	  action {
+      motion.walk.style = stable;
+      head.angleVelocity = 30; // will be reseted in spl_play_soccer
       search_ball();
 	  }
 	}  

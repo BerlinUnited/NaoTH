@@ -23,7 +23,7 @@ enum direction @search_direction;
 	  }
 	  action {
 	    motion.type = walk;
-	    motion.walk.style = fast;
+	    motion.walk.style = stable;
 	    
 	    motion.walk.coordinate = hip;
 	    motion.walk_speed.x = -100;
@@ -51,7 +51,7 @@ enum direction @search_direction;
 	  }
 	  action {
 	    motion.type = walk;
-	    motion.walk.style = fast;
+	    motion.walk.style = stable;
 	    
 	    motion.walk.coordinate = hip;
 	    motion.walk_speed.x = -10000;
@@ -76,7 +76,7 @@ enum direction @search_direction;
 	  }
 	  action {
 	    motion.type = walk;
-	    motion.walk.style = fast;
+	    motion.walk.style = stable;
 	    
 	    motion.walk.coordinate = hip;
 	    motion.walk_speed.x = -10000;
@@ -142,7 +142,7 @@ enum direction @search_direction;
 	  }
 	  action {
 	    motion.type = walk;
-	    motion.walk.style = fast;
+	    motion.walk.style = stable;
 	    
 	    motion.walk.coordinate = hip;
 	    motion.walk_speed.x = -10000;
@@ -166,7 +166,7 @@ enum direction @search_direction;
 	  }
 	  action {
 	    motion.type = walk;
-	    motion.walk.style = fast;
+	    motion.walk.style = stable;
 	    
 	    motion.walk.coordinate = hip;
 	    motion.walk_speed.x = -10000;
