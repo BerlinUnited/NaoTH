@@ -11,9 +11,22 @@ using namespace naoth;
 using namespace std;
 
 ActionSimulator::ActionSimulator()
+  : // own goal
+    ownGoalBackSides({
+      Math::LineSegment(getFieldInfo().ownGoalPostLeft, getFieldInfo().ownGoalBackRight),
+      Math::LineSegment(getFieldInfo().ownGoalPostLeft, getFieldInfo().ownGoalBackLeft),
+      Math::LineSegment(getFieldInfo().ownGoalPostRight, getFieldInfo().ownGoalBackRight) }),
+    // opp goal
+    oppGoalBackSides({
+        Math::LineSegment(getFieldInfo().oppGoalBackLeft      , getFieldInfo().oppGoalBackRight),
+        Math::LineSegment(getFieldInfo().opponentGoalPostLeft , getFieldInfo().oppGoalBackLeft),
+        Math::LineSegment(getFieldInfo().opponentGoalPostRight, getFieldInfo().oppGoalBackRight)}
+    )
+
 {
   DEBUG_REQUEST_REGISTER("Simulation:draw_goal_collisions", "draw goal collisions", false);
 }
+
 
 ActionSimulator::~ActionSimulator(){}
 
@@ -30,19 +43,6 @@ void ActionSimulator::simulateAction(const Action& action, ActionResults& result
   //categorizedBallPositions.clear();
   //categorizedBallPositions.reserve(static_cast<int>(theParameters.numParticles));
   result.reset();
-
-  // own goal
-  vector<Math::LineSegment> ownGoalBackSides = {
-    Math::LineSegment(getFieldInfo().ownGoalPostLeft, getFieldInfo().ownGoalBackRight),
-    Math::LineSegment(getFieldInfo().ownGoalPostLeft, getFieldInfo().ownGoalBackLeft),
-    Math::LineSegment(getFieldInfo().ownGoalPostRight, getFieldInfo().ownGoalBackRight) };
-
-  // opp goal
-  vector<Math::LineSegment> oppGoalBackSides = {
-      Math::LineSegment(getFieldInfo().oppGoalBackLeft      , getFieldInfo().oppGoalBackRight),
-      Math::LineSegment(getFieldInfo().opponentGoalPostLeft , getFieldInfo().oppGoalBackLeft),
-      Math::LineSegment(getFieldInfo().opponentGoalPostRight, getFieldInfo().oppGoalBackRight)};
-  
 
   // current ball position
   Vector2d globalBallStartPosition = getRobotPose() * getBallModel().positionPreview;
