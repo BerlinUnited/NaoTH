@@ -83,6 +83,8 @@ option search_ball
     }
     action {
       search_ball_simple(search_direction = left);
+      motion.walk.style = stable;
+      head.angleVelocity = 30; // will be reseted in spl_play_soccer
     }
   }
 
@@ -96,6 +98,8 @@ option search_ball
     }
     action {
       search_ball_simple(search_direction = right);
+      motion.walk.style = stable;
+      head.angleVelocity = 30; // will be reseted in spl_play_soccer
     }
   }
 
