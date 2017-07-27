@@ -1,0 +1,148 @@
+/* 
+ * File:   CompassProvider.h
+ * Author: Heinrich Mellmann
+ *
+ */
+
+#ifndef _CompassProvider_H_
+#define _CompassProvider_H_
+
+#include <ModuleFramework/Module.h>
+
+// Tools
+#include "Tools/ColorClasses.h"
+#include "Tools/Math/Vector2.h"
+
+#include "Tools/ImageProcessing/Edgel.h"
+#include "Tools/Math/Line.h"
+
+// Representations
+#include "Representations/Perception/ScanLineEdgelPercept.h"
+#include "Representations/Infrastructure/CameraInfo.h"
+#include "Representations/Perception/CameraMatrix.h"
+
+#include "Representations/Modeling/OdometryData.h"
+
+
+#include "Representations/Modeling/ProbabilisticQuadCompas.h"
+#include "Representations/Perception/LineGraphPercept.h"
+
+#include "Tools/DoubleCamHelpers.h"
+#include <algorithm>
+#include <set>
+
+#include "Representations/Debug/Stopwatch.h"
+#include "Tools/Debug/DebugRequest.h"
+#include "Tools/Debug/DebugModify.h"
+#include "Tools/Debug/DebugDrawings.h"
+#include "Tools/Debug/DebugImageDrawings.h"
+#include "Tools/Debug/DebugParameterList.h"
+
+BEGIN_DECLARE_MODULE(CompassProvider)
+  PROVIDE(StopwatchManager)
+  PROVIDE(DebugRequest)
+  PROVIDE(DebugModify)
+  PROVIDE(DebugDrawings)
+  PROVIDE(DebugImageDrawings)
+  PROVIDE(DebugImageDrawingsTop)
+  PROVIDE(DebugParameterList)
+
+  REQUIRE(ScanLineEdgelPercept)
+  REQUIRE(ScanLineEdgelPerceptTop)
+  REQUIRE(CameraInfo)
+  REQUIRE(CameraInfoTop)
+
+  REQUIRE(OdometryData)
+
+  REQUIRE(CameraMatrix)
+  REQUIRE(CameraMatrixTop)
+
+  REQUIRE(LineGraphPercept)
+
+  PROVIDE(ProbabilisticQuadCompas)
+END_DECLARE_MODULE(CompassProvider)
+
+
+class CompassProvider : private CompassProviderBase
+{
+public:
+  CompassProvider();
+  virtual ~CompassProvider();
+
+  virtual void execute(CameraInfo::CameraID id);
+
+  void execute()
+  {
+    getProbabilisticQuadCompas().reset();
+
+    execute(CameraInfo::Bottom);
+    execute(CameraInfo::Top);
+    
+    getProbabilisticQuadCompas().normalize();
+  }
+
+  class Parameters: public ParameterList
+  {
+  public:
+    Parameters() : ParameterList("CompassProvider")
+    {
+      PARAMETER_REGISTER(edgelSimThreshold) = 0.8;
+      PARAMETER_REGISTER(quadCompasSmoothingFactor) = 0.4;
+      PARAMETER_REGISTER(minimalNumberOfPairs) = 0;
+      PARAMETER_REGISTER(maximalProjectedLineWidth) = 30;
+
+      syncWithConfig();
+    }
+
+    virtual ~Parameters() {
+    }
+
+    double edgelSimThreshold;
+    double quadCompasSmoothingFactor;
+    int minimalNumberOfPairs;
+    int maximalProjectedLineWidth;
+  } parameters;
+
+  struct Neighbors {
+    Neighbors():left(-1), right(-1), w_left(0), w_right(0){}
+    int left;
+    int right;
+    double w_left;
+    double w_right;
+    int operator[](int i){ return i==0?left:right; }
+    void reset() {left = right= -1; w_left = w_right = 0; }
+  };
+  
+  struct EdgelPair {
+    int left;
+    int right;
+    double sim;
+    EdgelPair(int left, int right, double sim) : left(left), right(right), sim(sim) {}
+  };
+
+private: // data members
+  CameraInfo::CameraID cameraID;
+
+  std::vector<Neighbors> edgelNeighbors;
+  std::vector<EdgelPair> edgelPairs;
+
+  std::vector<Vector2d> edgelProjectionsBegin;
+  std::vector<Vector2d> edgelProjectionsEnd;
+
+private: // method members
+  //static double edgelSim(const EdgelT<double>& e1, const EdgelT<double>& e2);
+
+  //void calculatePairsAndNeigbors(
+  //  const std::vector<ScanLineEdgelPercept::EdgelPair>& edgels, 
+  //  std::vector<EdgelPair>& edgelPairs, 
+  //  std::vector<Neighbors>& neighbors, double threshold) const;
+
+  DOUBLE_CAM_PROVIDE(CompassProvider, DebugImageDrawings);
+
+  DOUBLE_CAM_REQUIRE(CompassProvider, CameraInfo);
+  DOUBLE_CAM_REQUIRE(CompassProvider, CameraMatrix);
+  DOUBLE_CAM_REQUIRE(CompassProvider, ScanLineEdgelPercept);
+};
+
+#endif  /* _CompassProvider_H_ */
+
