@@ -62,7 +62,7 @@ public:
   double cpuTemperature;      // the temperature of the cpu
   bool whistleDetected;       // whether the robot heard/detected the whistle
   int whistleCount;           // who many whistle the robot detected
-  Vector2d teamBallVisualizeOnly;// global position of the team ball for visualization in RC!!
+  Vector2d teamBall;// global position of the team ball for visualization in RC!!
   // opponents ?
 
   /** Sets the data according to the protobuf message. */

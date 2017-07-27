@@ -200,7 +200,7 @@ TeamMessageCustom::TeamMessageCustom() :
   whistleDetected(false),
   whistleCount(0),
   // init with "invalid" position
-  teamBallVisualizeOnly(std::nan(""), std::nan(""))
+  teamBall(std::nan(""), std::nan(""))
 {
 }
 
@@ -220,7 +220,7 @@ void TeamMessageCustom::print(std::ostream &stream) const
     << "\t" << "whistleDetected: " << (whistleDetected ? "yes" : "no") << "\n"
     << "\t" << "whistleCount: " << whistleCount << "\n"
     << "\t" << "teamball position: "
-        << teamBallVisualizeOnly.x << "/" << teamBallVisualizeOnly.y << "\n";
+        << teamBall.x << "/" << teamBall.y << "\n";
   stream << std::endl;
 }//end print
 
@@ -239,8 +239,8 @@ naothmessages::BUUserTeamMessage TeamMessageCustom::toProto() const
     userMsg.set_cputemperature((float)cpuTemperature);
     userMsg.set_whistledetected(whistleDetected);
     userMsg.set_whistlecount(whistleCount);
-    if(!std::isnan(teamBallVisualizeOnly.x) && !std::isnan(teamBallVisualizeOnly.y)) {
-        DataConversion::toMessage(teamBallVisualizeOnly, *(userMsg.mutable_teamballvisualizeonly()));
+    if(!std::isnan(teamBall.x) && !std::isnan(teamBall.y)) {
+        DataConversion::toMessage(teamBall, *(userMsg.mutable_teamball()));
     }
     userMsg.set_key(key);
     return userMsg;
@@ -300,11 +300,11 @@ void TeamMessageCustom::parseFromProto(const naothmessages::BUUserTeamMessage &u
     
     whistleDetected = userData.whistledetected();
     whistleCount = userData.whistlecount();
-    if(userData.has_teamballvisualizeonly()) {
-        DataConversion::fromMessage(userData.teamballvisualizeonly(),teamBallVisualizeOnly);
+    if(userData.has_teamball()) {
+        DataConversion::fromMessage(userData.teamball(),teamBall);
     } else {
-        teamBallVisualizeOnly.x = std::nan("");
-        teamBallVisualizeOnly.y = std::nan("");
+        teamBall.x = std::nan("");
+        teamBall.y = std::nan("");
     }
 }
 

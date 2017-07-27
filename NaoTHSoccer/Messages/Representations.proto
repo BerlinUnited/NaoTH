@@ -291,7 +291,7 @@ message BUUserTeamMessage
   optional bool whistleDetected = 12 [default=false];
   optional int32 whistleCount = 13 [default=0];
   // only for visualizing teamball position in RC
-  optional DoubleVector2 teamBallVisualizeOnly = 14;
+  optional DoubleVector2 teamBall = 14;
   optional string key = 100 [default="none"];
 }
 

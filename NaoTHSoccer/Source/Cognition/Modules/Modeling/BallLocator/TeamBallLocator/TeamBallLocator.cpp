@@ -23,6 +23,14 @@ void TeamBallLocator::execute()
     {
       const unsigned int& playerNumber = it.first;
       const TeamMessageData& msg = it.second;
+
+      // check if the robot is able to play
+      bool isRobotInactive = msg.fallen || msg.custom.isPenalized;
+
+      // TODO: check for "DEAD" robots!? (see CleanRoleDecision)
+
+      // inactive robots
+      if(isRobotInactive) { continue; }
       
       // -1 means invalid ball
       if(msg.ballAge >= 0 && lastMessages[playerNumber] < msg.frameInfo.getTime())
@@ -138,5 +146,5 @@ void TeamBallLocator::execute()
     TEXT_DRAWING(getTeamBallModel().positionOnField.x+100, getTeamBallModel().positionOnField.y+100, ballPosHist.size());
     TEXT_DRAWING(getTeamBallModel().positionOnField.x+100, getTeamBallModel().positionOnField.y-100, getTeamBallModel().rmse);
   );
-  getTeamMessageData().custom.teamBallVisualizeOnly = getTeamBallModel().positionOnField;
+  getTeamMessageData().custom.teamBall = getTeamBallModel().positionOnField;
 }
