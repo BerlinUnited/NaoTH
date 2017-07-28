@@ -223,7 +223,23 @@ void PathPlanner::approach_ball(const Foot foot)
     ASSERT(false);
   }
 
-  Pose2D pose = { stepRotation, 0.7 * stepX, 0.7 * stepY };
+  //if (ballPos.x < getPathModel().distance + 30 && ballPos.x > getPathModel().distance - 30)
+  if (stepX < 0 && ballPos.x > getPathModel().distance + 30)
+  {
+    stepX = 0;
+  }
+
+  const double slow_down_factor = 0.7;
+  Pose2D pose;
+  if (   params.approach_ball_adapt_control
+      && Vector2d(stepX, stepY).abs() < params.approach_ball_adapt_threshold)
+  {
+    pose = { stepRotation, stepX, stepY };
+  }
+  else
+  {
+    pose = { stepRotation, slow_down_factor * stepX, slow_down_factor * stepY };
+  }
 
   if (step_buffer.empty())
   {

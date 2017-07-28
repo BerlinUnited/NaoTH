@@ -246,7 +246,7 @@ public class SPLMessage {
 
         
         // ball
-        if (ballAge >= 0) {
+        if (ballAge >= 0 && ballAge < 3) {
             drawings.add(new Pen(1, Color.orange));
 
             drawings.add(new FillOval((int) globalBall.x, (int) globalBall.y, 65, 65));
