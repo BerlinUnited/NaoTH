@@ -109,12 +109,27 @@ IKParameters::IKParameters()
   PARAMETER_REGISTER(walk.stabilization.rotationStabilize) = true;
   PARAMETER_REGISTER(walk.stabilization.rotationStabilizeRC16) = false;
   PARAMETER_REGISTER(walk.stabilization.rotationStabilizeNewIMU) = false;
-  PARAMETER_REGISTER(walk.stabilization.rotationP.x) = 0;
-  PARAMETER_REGISTER(walk.stabilization.rotationP.y) = 0;
-  PARAMETER_REGISTER(walk.stabilization.rotationVelocityP.x) = 0;
-  PARAMETER_REGISTER(walk.stabilization.rotationVelocityP.y) = 0;
-  PARAMETER_REGISTER(walk.stabilization.rotationD.x) = 0;
-  PARAMETER_REGISTER(walk.stabilization.rotationD.y) = 0;
+
+  PARAMETER_REGISTER(walk.rotationStabilization.rotationP.x) = -0.05;
+  PARAMETER_REGISTER(walk.rotationStabilization.rotationP.y) = -0.6;
+  PARAMETER_REGISTER(walk.rotationStabilization.rotationD.x) = 0;
+  PARAMETER_REGISTER(walk.rotationStabilization.rotationD.y) = 0;
+  PARAMETER_REGISTER(walk.rotationStabilization.rotationVelocityP.x) = 0.02;
+  PARAMETER_REGISTER(walk.rotationStabilization.rotationVelocityP.y) = 0.01;
+
+  PARAMETER_REGISTER(walk.rotationStabilizationRC16.rotationP.x) = -0.05;
+  PARAMETER_REGISTER(walk.rotationStabilizationRC16.rotationP.y) = -0.6;
+  PARAMETER_REGISTER(walk.rotationStabilizationRC16.rotationD.x) = 0;
+  PARAMETER_REGISTER(walk.rotationStabilizationRC16.rotationD.y) = 0;
+  PARAMETER_REGISTER(walk.rotationStabilizationRC16.rotationVelocityP.x) = 0.02;
+  PARAMETER_REGISTER(walk.rotationStabilizationRC16.rotationVelocityP.y) = 0.01;
+
+  PARAMETER_REGISTER(walk.rotationStabilizationNewIMU.rotationP.x) = 0;
+  PARAMETER_REGISTER(walk.rotationStabilizationNewIMU.rotationP.y) = 0;
+  PARAMETER_REGISTER(walk.rotationStabilizationNewIMU.rotationD.x) = 0;
+  PARAMETER_REGISTER(walk.rotationStabilizationNewIMU.rotationD.y) = 0;
+  PARAMETER_REGISTER(walk.rotationStabilizationNewIMU.rotationVelocityP.x) = 0;
+  PARAMETER_REGISTER(walk.rotationStabilizationNewIMU.rotationVelocityP.y) = 0;
 
   PARAMETER_REGISTER(walk.stabilization.stabilizeFeet) = true;
   PARAMETER_REGISTER(walk.stabilization.stabilizeFeetP.x) = 0.04;

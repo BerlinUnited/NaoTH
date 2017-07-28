@@ -460,15 +460,15 @@ bool InverseKinematicsMotionEngine::rotationStabilizeRC16(
     const Vector2d error = requestedVelocity - filteredGyro;
     //const Vector2d errorDerivative = (error - lastGyroError) / timeDelta;
 
-    double correctionY = getParameters().walk.stabilization.rotationVelocityP.y * error.y; 
-    //                     getParameters().walk.stabilization.rotationD.y * errorDerivative.y;
+    double correctionY = getParameters().walk.rotationStabilizationRC16.rotationVelocityP.y * error.y;
+    //                     getParameters().walk.rotationStabilizationRC16.rotationD.y * errorDerivative.y;
 
-    double correctionX = getParameters().walk.stabilization.rotationVelocityP.x * error.x; 
-    //                     + getParameters().walk.stabilization.rotationD.x * errorDerivative.x;
+    double correctionX = getParameters().walk.rotationStabilizationRC16.rotationVelocityP.x * error.x;
+    //                     + getParameters().walk.rotationStabilizationRC16.rotationD.x * errorDerivative.x;
 
     const Vector2d& inertial = theInertialSensorData.data;
-    correctionX += getParameters().walk.stabilization.rotationP.x * inertial.x;
-    correctionY += getParameters().walk.stabilization.rotationP.y * inertial.y;
+    correctionX += getParameters().walk.rotationStabilizationRC16.rotationP.x * inertial.x;
+    correctionY += getParameters().walk.rotationStabilizationRC16.rotationP.y * inertial.y;
 
     //p.localInHip();
     //p.hip.rotateX(correctionX);
@@ -486,7 +486,7 @@ bool InverseKinematicsMotionEngine::rotationStabilizeRC16(
   return true;
 }
 
-bool InverseKinematicsMotionEngine::rotationStabilizenNewIMU(
+bool InverseKinematicsMotionEngine::rotationStabilizeNewIMU(
   const IMUData& imuData,
   //const InertialModel& theInertialModel,
   const GyrometerData& theGyrometerData,
@@ -517,15 +517,15 @@ bool InverseKinematicsMotionEngine::rotationStabilizenNewIMU(
     const Vector2d error = requestedVelocity - filteredGyro;
     //const Vector2d errorDerivative = (error - lastGyroError) / timeDelta;
 
-    double correctionY = getParameters().walk.stabilization.rotationVelocityP.y * error.y;
-    //                     getParameters().walk.stabilization.rotationD.y * errorDerivative.y;
+    double correctionY = getParameters().walk.rotationStabilizationNewIMU.rotationVelocityP.y * error.y;
+    //                     getParameters().walk.rotationStabilizationNewIMU.rotationD.y * errorDerivative.y;
 
-    double correctionX = getParameters().walk.stabilization.rotationVelocityP.x * error.x;
-    //                     + getParameters().walk.stabilization.rotationD.x * errorDerivative.x;
+    double correctionX = getParameters().walk.rotationStabilizationNewIMU.rotationVelocityP.x * error.x;
+    //                     + getParameters().walk.rotationStabilizationNewIMU.rotationD.x * errorDerivative.x;
 
     const Vector2d& inertial = imuData.orientation;
-    correctionX += getParameters().walk.stabilization.rotationP.x * inertial.x;
-    correctionY += getParameters().walk.stabilization.rotationP.y * inertial.y;
+    correctionX += getParameters().walk.rotationStabilizationNewIMU.rotationP.x * inertial.x;
+    correctionY += getParameters().walk.rotationStabilizationNewIMU.rotationP.y * inertial.y;
 
     //p.localInHip();
     //p.hip.rotateX(correctionX);
@@ -574,15 +574,15 @@ bool InverseKinematicsMotionEngine::rotationStabilize(
     const Vector2d error = requestedVelocity - filteredGyro;
     const Vector2d errorDerivative = (error - lastGyroError) / timeDelta;
 
-    double correctionY = getParameters().walk.stabilization.rotationVelocityP.y * error.y + 
-                         getParameters().walk.stabilization.rotationD.y * errorDerivative.y;
+    double correctionY = getParameters().walk.rotationStabilization.rotationVelocityP.y * error.y +
+                         getParameters().walk.rotationStabilization.rotationD.y * errorDerivative.y;
 
-    double correctionX = getParameters().walk.stabilization.rotationVelocityP.x * error.x + 
-                         getParameters().walk.stabilization.rotationD.x * errorDerivative.x;
+    double correctionX = getParameters().walk.rotationStabilization.rotationVelocityP.x * error.x +
+                         getParameters().walk.rotationStabilization.rotationD.x * errorDerivative.x;
 
     const Vector2d& inertial = theInertialModel.orientation;
-    correctionX += getParameters().walk.stabilization.rotationP.x * inertial.x;
-    correctionY += getParameters().walk.stabilization.rotationP.y * inertial.y;
+    correctionX += getParameters().walk.rotationStabilization.rotationP.x * inertial.x;
+    correctionY += getParameters().walk.rotationStabilization.rotationP.y * inertial.y;
 
     p.localInHip();
     p.hip.rotateX(correctionX);

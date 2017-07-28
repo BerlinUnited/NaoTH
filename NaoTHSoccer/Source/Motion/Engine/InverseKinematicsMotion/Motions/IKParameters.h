@@ -146,10 +146,6 @@ public:
       Vector2d stabilizeFeetP;
       Vector2d stabilizeFeetD;
 
-      Vector2d rotationP;
-      Vector2d rotationVelocityP;
-      Vector2d rotationD;
-
       // enable the synamic adaptation of the stepsize
       bool dynamicStepsize;
       double dynamicStepsizeP;
@@ -166,6 +162,12 @@ public:
       } maxHipOffsetBasedOnStepLength;
 
     } stabilization;
+
+    struct RotationStabilization{
+        Vector2d rotationP;
+        Vector2d rotationVelocityP;
+        Vector2d rotationD;
+    } rotationStabilization, rotationStabilizationRC16, rotationStabilizationNewIMU;
 
     struct ZMP{
         struct Bezier{

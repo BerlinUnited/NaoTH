@@ -144,7 +144,7 @@ void Walk::execute()
       c.localInHip();
     }
 
-    getEngine().rotationStabilizenNewIMU(
+    getEngine().rotationStabilizeNewIMU(
       getIMUData(),
       getGyrometerData(),
       getRobotInfo().getBasicTimeStepInSecond(),
