@@ -20,9 +20,9 @@ function quality(convnet, netName, datasetPath)
     % TestNoballs = TTest(TTest == 'noball');
 
     precision = sum(YTest == TTest)/numel(TTest);
-
-    disp({'Precision: ', precision})
-
+% 
+%     disp({'Precision: ', precision})
+% 
     test = zeros(2, numel(TTest));
     pred = zeros(2, numel(YTest));
     for i = 1:numel(TTest)
