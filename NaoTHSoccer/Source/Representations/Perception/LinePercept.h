@@ -167,6 +167,9 @@ public:
 
   // seen lines
   std::vector<FieldLineSegment> lines;
+  // TODO Hack
+  std::vector<int> edgelLineIDs;
+
   // seen corners
   std::vector<Intersection> intersections;
   // seen flags (only S3D)
