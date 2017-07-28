@@ -9,14 +9,27 @@ option path_sidekick
   {
     decision
     {
-      if(@to == right)
+      /* don't get stuck if run when in stand */
+      if(executed_motion.type != walk)
+        stay;
+      /* check if the kicking foot was support foot before kicking,
+         if not make a step before kicking so that the CoM can handle the kick with the foot*/
+      else if(executed_motion.step_control.right_movable && @to == right)
         goto sidekick_left_foot;
-      else
+      else if (executed_motion.step_control.left_movable && @to == left)
         goto sidekick_right_foot;
+      else
+        stay;
     }
     action
     {
       head.control_mode = search_for_ball;
+      motion.walk.style = normal;
+
+      motion.type = walk;
+      motion.walk_speed.x = 0;
+      motion.walk_speed.y = 0;
+      motion.walk_speed.rot = 0;
     }
   }
 
