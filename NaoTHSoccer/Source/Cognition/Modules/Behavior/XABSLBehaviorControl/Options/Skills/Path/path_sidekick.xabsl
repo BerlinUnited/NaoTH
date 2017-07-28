@@ -14,7 +14,7 @@ option path_sidekick
         stay;
       /* check if the kicking foot was support foot before kicking,
          if not make a step before kicking so that the CoM can handle the kick with the foot*/
-      if(executed_motion.step_control.right_movable && @to == right)
+      else if(executed_motion.step_control.right_movable && @to == right)
         goto sidekick_left_foot;
       else if (executed_motion.step_control.left_movable && @to == left)
         goto sidekick_right_foot;
