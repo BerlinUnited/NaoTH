@@ -71,7 +71,7 @@ void CompassProvider::execute()
       // TODO: mean difference?
       //double r = (edgelProjectionsBegin[edgelPair.left] - edgelProjectionsBegin[edgelPair.right]).angle();
 
-      if(getLinePercept().edgelLineIDs[j] > 0) {
+      if(getLinePercept().edgelLineIDs[j] > -1) {
         double r = getLineGraphPercept().edgels[j].direction.angle();
         //getProbabilisticQuadCompas().add(r, edgelPair.sim);
         getProbabilisticQuadCompas().add(r);
@@ -102,7 +102,7 @@ void CompassProvider::execute()
         if(x > 0) {
 
           double d = Math::clamp(std::min(v, last_v)/0.1, 0.0, 1.0);
-          Color c(d, 0.0, 1-d);
+          Color c(0.0, d, 1-d);
           PEN(c, 10);
 
           LINE(last.x,last.y,a.x,a.y);
