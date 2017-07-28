@@ -67,6 +67,7 @@ IKParameters::IKParameters()
   PARAMETER_REGISTER(walk.zmp.bezier.inFootSpacing)  = 10;
   PARAMETER_REGISTER(walk.zmp.bezier.offsetX) = 20;
   PARAMETER_REGISTER(walk.zmp.bezier.offsetY) = 0;
+  PARAMETER_REGISTER(walk.zmp.bezier.offsetXForKicks) = 0;
   PARAMETER_REGISTER(walk.zmp.bezier.offsetYForKicks) = 0;
 
   PARAMETER_REGISTER(walk.zmp.bezier2.offsetY) = 0;
@@ -131,6 +132,8 @@ IKParameters::IKParameters()
 
   PARAMETER_REGISTER(walk.stabilization.maxHipOffsetBasedOnStepLength.x) = 5;
   PARAMETER_REGISTER(walk.stabilization.maxHipOffsetBasedOnStepLength.y) = 0;
+  PARAMETER_REGISTER(walk.stabilization.maxHipOffsetBasedOnStepLengthForKicks.x) = 5;
+  PARAMETER_REGISTER(walk.stabilization.maxHipOffsetBasedOnStepLengthForKicks.y) = 0;
 
   // rotation stabilize parameter
   PARAMETER_REGISTER(rotationStabilize.k.x) = -0.5;

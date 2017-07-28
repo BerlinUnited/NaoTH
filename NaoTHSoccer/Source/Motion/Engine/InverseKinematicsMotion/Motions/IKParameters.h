@@ -163,7 +163,7 @@ public:
       struct HipOffsetBasedOnStepLength {
           double x;
           double y;
-      } maxHipOffsetBasedOnStepLength;
+      } maxHipOffsetBasedOnStepLength, maxHipOffsetBasedOnStepLengthForKicks;
 
     } stabilization;
 
@@ -174,6 +174,7 @@ public:
             double inFootSpacing;
             double offsetX;
             double offsetY;
+            double offsetXForKicks;
             double offsetYForKicks;
         } bezier;
 
