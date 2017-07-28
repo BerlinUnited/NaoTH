@@ -25,6 +25,7 @@
 
 #include "Representations/Modeling/ProbabilisticQuadCompas.h"
 #include "Representations/Perception/LineGraphPercept.h"
+#include "Representations/Perception/LinePercept.h"
 
 #include "Tools/DoubleCamHelpers.h"
 #include <algorithm>
@@ -54,6 +55,8 @@ BEGIN_DECLARE_MODULE(CompassProvider)
   REQUIRE(CameraMatrixTop)
 
   REQUIRE(LineGraphPercept)
+
+  REQUIRE(LinePercept)
 
   PROVIDE(ProbabilisticQuadCompas)
 END_DECLARE_MODULE(CompassProvider)

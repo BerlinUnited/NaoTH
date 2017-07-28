@@ -70,9 +70,12 @@ void CompassProvider::execute()
 
       // TODO: mean difference?
       //double r = (edgelProjectionsBegin[edgelPair.left] - edgelProjectionsBegin[edgelPair.right]).angle();
-      double r = getLineGraphPercept().edgels[j].direction.angle();
-      //getProbabilisticQuadCompas().add(r, edgelPair.sim);
-      getProbabilisticQuadCompas().add(r);
+
+      if(getLinePercept().edgelLineIDs[j] > 0) {
+        double r = getLineGraphPercept().edgels[j].direction.angle();
+        //getProbabilisticQuadCompas().add(r, edgelPair.sim);
+        getProbabilisticQuadCompas().add(r);
+      }
     }
   }
 
