@@ -48,7 +48,7 @@ option pathplanner_kick_short
     }
     action{
       situation_abortable = true;
-      path_go_to_ball_with_USOA(distance = 300);
+      path_go_to_ball_with_USOA(distance = 250);
       
       //loook at percept
       head.control_mode = look_at_ball_percept;

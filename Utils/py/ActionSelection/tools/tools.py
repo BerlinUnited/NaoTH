@@ -47,5 +47,5 @@ def draw_field():
 
     ax.set_xlim([-f.x_field_length * 0.5, f.x_field_length * 0.5])
     ax.set_ylim([-f.y_field_length * 0.5, f.y_field_length * 0.5])
-    ax.set_axis_bgcolor('green')
+    ax.set_facecolor('green')
     ax.set_aspect("equal")

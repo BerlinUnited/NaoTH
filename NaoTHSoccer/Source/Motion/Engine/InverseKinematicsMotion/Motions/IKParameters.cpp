@@ -57,8 +57,24 @@ IKParameters::IKParameters()
   PARAMETER_REGISTER(walk.hip.ZMPOffsetY) = 5;
   PARAMETER_REGISTER(walk.hip.ZMPOffsetYByCharacter) = 0;
 
+  // experimental: new ZMP
+  PARAMETER_REGISTER(walk.hip.newZMP_ON) = false;
+  PARAMETER_REGISTER(walk.hip.newZMP_offset) = 0.8;
+  PARAMETER_REGISTER(walk.hip.newZMP_width) = 0.4;
+
+  PARAMETER_REGISTER(walk.zmp.bezier.transitionScaling) = 0.6;
+  PARAMETER_REGISTER(walk.zmp.bezier.inFootScalingY) = 1;
+  PARAMETER_REGISTER(walk.zmp.bezier.inFootSpacing)  = 10;
+  PARAMETER_REGISTER(walk.zmp.bezier.offsetX) = 20;
+  PARAMETER_REGISTER(walk.zmp.bezier.offsetY) = 0;
+  PARAMETER_REGISTER(walk.zmp.bezier.offsetYForKicks) = 0;
+
+  PARAMETER_REGISTER(walk.zmp.bezier2.offsetY) = 0;
+  PARAMETER_REGISTER(walk.zmp.bezier2.offsetT) = 0;
+
   // step geometry
   PARAMETER_REGISTER(walk.step.duration) = 300;
+  PARAMETER_REGISTER(walk.step.dynamicDuration) = true;
   PARAMETER_REGISTER(walk.step.doubleSupportTime) = 40;
 
   PARAMETER_REGISTER(walk.step.stepHeight) = 15;
@@ -110,8 +126,8 @@ IKParameters::IKParameters()
   PARAMETER_REGISTER(walk.stabilization.dynamicStepsizeP) = -1;
   PARAMETER_REGISTER(walk.stabilization.dynamicStepsizeD) = 0.5;
 
-  PARAMETER_REGISTER(walk.stabilization.hipOffsetBasedOnStepChange.x) = 0.1;
-  PARAMETER_REGISTER(walk.stabilization.hipOffsetBasedOnStepChange.y) = 0.1;
+  PARAMETER_REGISTER(walk.stabilization.hipOffsetBasedOnStepChange.x) = 0.0;
+  PARAMETER_REGISTER(walk.stabilization.hipOffsetBasedOnStepChange.y) = 0.0;
 
   PARAMETER_REGISTER(walk.stabilization.maxHipOffsetBasedOnStepLength.x) = 5;
   PARAMETER_REGISTER(walk.stabilization.maxHipOffsetBasedOnStepLength.y) = 0;

@@ -5614,6 +5614,14 @@ for ( int i = 0; i < 1; i++){
 }
 
 // return classification
-return out_step10[0][0][0] > out_step10[1][0][0];
+return out_step10[0][0][0] > out_step10[0][0][1];
+}
+
+float CNN_synth_full_conv::getBallConfidence(){
+ return out_step10[0][0][0];
+}
+
+float CNN_synth_full_conv::getNoballConfidence(){
+ return out_step10[0][0][1];
 }
 

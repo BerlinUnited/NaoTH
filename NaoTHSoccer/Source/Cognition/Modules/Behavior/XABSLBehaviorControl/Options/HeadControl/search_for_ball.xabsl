@@ -148,6 +148,9 @@ option search_for_ball
       head.point_in_world.x = ball.percept.x * clip(value=vector.abs(x=ball.percept.x, y=ball.percept.y), min=250, max=500) / vector.abs(x=ball.percept.x, y=ball.percept.y);
       head.point_in_world.y = ball.percept.y * clip(value=vector.abs(x=ball.percept.x, y=ball.percept.y), min=250, max=500) / vector.abs(x=ball.percept.x, y=ball.percept.y);
       head.point_in_world.z = ball.radius;
+
+      // look at ball percept fast!
+      head.angleVelocity = 300;
     }
   }
 

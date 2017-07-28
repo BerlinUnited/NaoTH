@@ -137,6 +137,8 @@ private:
       PARAMETER_REGISTER(haarDetector.windowSize) = 12;
       PARAMETER_REGISTER(haarDetector.model_file) = "lbp1.xml";
 
+      PARAMETER_REGISTER(cnn.threshold) = 0.0;
+
       PARAMETER_REGISTER(maxNumberOfKeys) = 4;
       PARAMETER_REGISTER(numberOfExportBestPatches) = 2;
 
@@ -151,6 +153,8 @@ private:
       PARAMETER_REGISTER(blackKeysCheck.enable) = false;
       PARAMETER_REGISTER(blackKeysCheck.minSizeToCheck) = 60;
       PARAMETER_REGISTER(blackKeysCheck.minValue) = 20;
+
+
 
       PARAMETER_REGISTER(classifier) = "aug1";
       
@@ -180,6 +184,10 @@ private:
       int minSizeToCheck;
       int minValue;
     } blackKeysCheck;
+
+    struct CNN {
+      double threshold;
+    } cnn;
 
     int maxNumberOfKeys;
     int numberOfExportBestPatches;
