@@ -67,6 +67,8 @@
 
 #include "Modules/VisualCortex/LineDetector/RansacLineDetector.h"
 
+#include "Modules/Modeling/CompassProvider/CompassProvider.h"
+
 // modeling
 #include "Modules/Modeling/BodyStateProvider/BodyStateProvider.h"
 #include "Modules/Modeling/FieldCompass/FieldCompass.h"
@@ -177,6 +179,8 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(PerceptionsVisualizer);
 
   REGISTER_MODULE(RansacLineDetector);
+
+  REGISTER_MODULE(CompassProvider);
 
   // modeling
   REGISTER_MODULE(SituationPriorProvider);
