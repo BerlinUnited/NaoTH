@@ -45,7 +45,7 @@ public:
 
         struct StiffnessControl {
             bool   enable;
-            double deadTime;
+//            double deadTime;
             double minAngle;
             double minStiffness;
             double maxAngle;
@@ -82,8 +82,6 @@ public:
       double ZMPOffsetYByCharacter;
 
       bool newZMP_ON;
-      double newZMP_offset;
-      double newZMP_width;
     } hip;
 
     // step geometry
@@ -186,12 +184,11 @@ public:
 
   } walk;
 
-
-  struct RotationStabilize 
-  {
-      Vector2d k;
-      Vector2d threshold;
-  } rotationStabilize;
+//  struct RotationStabilize
+//  {
+//      Vector2d k;
+//      Vector2d threshold;
+//  } rotationStabilize;
 
   struct Arm 
   {

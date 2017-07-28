@@ -1,6 +1,7 @@
 package de.naoth.rc.components.teamcommviewer;
 
 import de.naoth.rc.dataformats.SPLMessage;
+import de.naoth.rc.math.Vector2D;
 import de.naoth.rc.server.ConnectionStatusEvent;
 import de.naoth.rc.server.ConnectionStatusListener;
 import de.naoth.rc.server.MessageServer;
@@ -45,6 +46,7 @@ public class RobotStatus {
     public boolean wasStriker;
     public boolean isPenalized;
     public boolean whistleDetected;
+    public Vector2D teamBall;
     
     public boolean showOnField = true;
     
@@ -112,6 +114,7 @@ public class RobotStatus {
             this.wasStriker = msg.user.getWasStriker();
             this.isPenalized = msg.user.getIsPenalized();
 //            this.whistleDetected = msg.user.getWhistleDetected(); // used in another branch!
+            this.teamBall = new Vector2D(msg.user.getTeamBall().getX(), msg.user.getTeamBall().getY());
         } else if(msg.doberHeader != null) {
             
             this.temperature = -1;
@@ -123,7 +126,7 @@ public class RobotStatus {
 
             this.isPenalized = msg.doberHeader.isPenalized > 0;
             this.whistleDetected = msg.doberHeader.whistleDetected > 0;
-
+            this.teamBall = new Vector2D(0,0);
         } else {
             this.temperature = -1;
             this.cpuTemperature = -1;
@@ -133,6 +136,7 @@ public class RobotStatus {
             this.wasStriker = false;
             this.isPenalized = false;
             this.whistleDetected = false;
+            this.teamBall = new Vector2D(0,0);
         }
         this.statusChanged();
     }

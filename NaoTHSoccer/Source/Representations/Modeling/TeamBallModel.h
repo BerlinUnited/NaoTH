@@ -8,36 +8,39 @@
 #ifndef _TEAMBALLMODEL_H
 #define  _TEAMBALLMODEL_H
 
-class TeamBallModel
+#include "Tools/DataStructures/Printable.h"
+#include "Tools/Math/Vector2.h"
+
+class TeamBallModel  : public naoth::Printable
 {
 public:
   TeamBallModel()
-      : time(0),
-        goalieTime(0),
-        strikerTime(0)
+      : time(0)
   {
   }
 
   // the global position of ball
-  Vector2<double> positionOnField;
+  Vector2d positionOnField;
 
   // the position of ball in local coordination
-  Vector2<double> position;
+  Vector2d position;
+  
+  // root mean squared error of the estimate [m]
+  double rmse;
 
-  // the time of message
+  // the time of message [ms]
   unsigned int time;
 
-  Vector2<double> goaliePositionOnField;
-  Vector2<double> goaliePosition;
-  unsigned int goalieTime;
-
-  Vector2<double> strikerPositionOnField;
-  Vector2<double> strikerPosition;
-  unsigned int strikerTime;
-
   virtual ~TeamBallModel()
-  {
+  {}
 
+  virtual void print(std::ostream& stream) const
+  {
+      stream << "global position: " << positionOnField.x << "/" << positionOnField.y << "\n"
+             << "local position: " << position.x << "/" << position.y << "\n"
+             << "root mean squared error: " << rmse << "\n"
+             << "time: " << time << "\n"
+             << std::endl;
   }
 
 };

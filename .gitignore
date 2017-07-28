@@ -28,3 +28,6 @@ Framework/Commons/Source/Messages
 
 #particular files
 behavior-ic.dat
+
+#vim swap files
+.*.swp
