@@ -28,7 +28,10 @@ option path_play_soccer
     decision
     {
       else if(sensor.inertial.calibrated)
-        if(last_state_was_penalized && game.player_number != 1 ) // the goalie has no passive position
+        if(last_state_was_penalized 
+        && game.player_number != 1 // the goalie has no passive position
+        && game.current_mode == playing // don't walk around in ready
+        ) 
           goto localize_after_penalized; // always localize after penalized!!!)
         else
           goto localize;
