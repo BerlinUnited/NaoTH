@@ -24,9 +24,10 @@ Simulation::Simulation()
   action_local.reserve(KickActionModel::numOfActions);
 
   action_local.push_back(ActionSimulator::Action(KickActionModel::none, ActionSimulator::ActionParams(), theParameters.friction));
+  action_local.push_back(ActionSimulator::Action(KickActionModel::kick_long, theParameters.kick_short, theParameters.friction)); // long
   action_local.push_back(ActionSimulator::Action(KickActionModel::kick_short, theParameters.kick_short, theParameters.friction)); // short
-  //action_local.push_back(ActionSimulator::Action(KickActionModel::sidekick_left, theParameters.sidekick_left, theParameters.friction)); // left
-  //action_local.push_back(ActionSimulator::Action(KickActionModel::sidekick_right, theParameters.sidekick_right, theParameters.friction)); // right
+  action_local.push_back(ActionSimulator::Action(KickActionModel::sidekick_left, theParameters.sidekick_left, theParameters.friction)); // left
+  action_local.push_back(ActionSimulator::Action(KickActionModel::sidekick_right, theParameters.sidekick_right, theParameters.friction)); // right
 
   actionsConsequences.resize(action_local.size());
 }
@@ -43,6 +44,7 @@ void Simulation::execute()
     action_local.reserve(KickActionModel::numOfActions);
 
     action_local.push_back(ActionSimulator::Action(KickActionModel::none, ActionSimulator::ActionParams(), theParameters.friction));
+    action_local.push_back(ActionSimulator::Action(KickActionModel::kick_long, theParameters.kick_short, theParameters.friction)); // long
     action_local.push_back(ActionSimulator::Action(KickActionModel::kick_short, theParameters.kick_short, theParameters.friction)); // short
     action_local.push_back(ActionSimulator::Action(KickActionModel::sidekick_left, theParameters.sidekick_left, theParameters.friction)); // left
     action_local.push_back(ActionSimulator::Action(KickActionModel::sidekick_right, theParameters.sidekick_right, theParameters.friction)); // right
