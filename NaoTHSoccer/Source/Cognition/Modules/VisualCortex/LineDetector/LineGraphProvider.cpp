@@ -123,7 +123,7 @@ void LineGraphProvider::execute(CameraInfo::CameraID id)
       }
     }
   }
-
+  /*
   // fill the compas
   if((int)edgelPairs.size() > parameters.minimalNumberOfPairs)
   {
@@ -170,7 +170,7 @@ void LineGraphProvider::execute(CameraInfo::CameraID id)
       }
     }
   );
-
+  */
 
   DEBUG_REQUEST("Vision:LineGraphProvider:edgel_pairs",
     CANVAS(((cameraID == CameraInfo::Top) ? "ImageTop" : "ImageBottom"));
