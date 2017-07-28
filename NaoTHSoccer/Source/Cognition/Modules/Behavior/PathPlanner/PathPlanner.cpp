@@ -274,7 +274,7 @@ void PathPlanner::short_kick(const Foot foot)
 
     if (step_buffer.empty())
     {
-      Pose2D pose            = { 0.0, 500 , 0.0 };
+      Pose2D pose            = { 0.0, 500, 0.0 };
       StepType type          = StepType::KICKSTEP;
       double character       = 1.0;
       double scale           = 0.7;
@@ -312,11 +312,17 @@ void PathPlanner::long_kick(const Foot foot)
 
     if (step_buffer.empty())
     {
-      Pose2D pose            = { 0.0, 500, 0.0 };
-      StepType type          = StepType::KICKSTEP;
+      Pose2D pose            = { 0.0, 5.0, 0.0 };
+      StepType type          = StepType::WALKSTEP;
       double character       = 1.0;
       double scale           = 0.7;
       double speed_direction = 0.0;
+      Foot other_foot        = foot == Foot::LEFT ? Foot::RIGHT : Foot::LEFT;
+      add_step(pose, type, coordinate, character, other_foot, scale, speed_direction, WalkRequest::StepControlRequest::SOFT, true);
+
+      // KICK
+      pose = { 0.0, 500, 0.0 };
+      type = StepType::KICKSTEP;
       add_step(pose, type, coordinate, character, foot, scale, speed_direction, WalkRequest::StepControlRequest::SOFT, true);
 
       type = StepType::ZEROSTEP;

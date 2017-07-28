@@ -6,10 +6,12 @@ option path_long_kick
   {
     decision
     {
+      /* conditions have to be reversed because first there is a step with the other foot 
+          before kicking with the right or left foot */
       if (@foot == right && executed_motion.step_control.left_movable)
-        goto prepare_right_kick;
+        goto kick_right_foot;
       else if(@foot == left && executed_motion.step_control.right_movable)
-        goto prepare_left_kick;
+        goto kick_left_foot;
       else
         stay;
     }
