@@ -20,7 +20,7 @@ LineGraphProvider::LineGraphProvider()
   DEBUG_REQUEST_REGISTER("Vision:LineGraphProvider:edgel_cluster", "mark the edgels on the image", false);
   DEBUG_REQUEST_REGISTER("Vision:LineGraphProvider:draw_lines", "draw the esimated lines in the image", false);
 
-  DEBUG_REQUEST_REGISTER("Vision:LineGraphProvider:draw_compas", "draw compas direcion based on the edgel directions", false);
+  //DEBUG_REQUEST_REGISTER("Vision:LineGraphProvider:draw_compas", "draw compas direcion based on the edgel directions", false);
 
   DEBUG_REQUEST_REGISTER("Vision:LineGraphProvider:draw_line_graph", "", false);
 
