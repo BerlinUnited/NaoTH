@@ -53,7 +53,7 @@ void RansacLineDetector::execute()
   DEBUG_REQUEST("Vision:RansacLineDetector:draw_edgels_field",
     FIELD_DRAWING_CONTEXT;
 
-    for(int i=0; i<getLineGraphPercept().edgels.size(); i++)
+    for(size_t i=0; i<getLineGraphPercept().edgels.size(); i++)
     {
       const Edgel& e = getLineGraphPercept().edgels[i];
 
@@ -82,7 +82,7 @@ void RansacLineDetector::execute()
     FIELD_DRAWING_CONTEXT;
 
     if (foundLines) {
-      for(int i=0; i<getLinePercept().lines.size(); i++)
+      for(size_t i=0; i<getLinePercept().lines.size(); i++)
       {
         std::string color;
         switch(i%3) {
