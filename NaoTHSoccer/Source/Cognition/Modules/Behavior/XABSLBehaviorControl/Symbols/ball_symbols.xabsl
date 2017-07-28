@@ -62,5 +62,11 @@ namespace ball_symbols("Ball Symbols") {
   /** Position of the ball in y direction relative to the field */
   float input ball.position.field.y "mm";
 
+  /** Time since the team ball was update in ms */
+  float input ball.team.time_since_last_update "ms";
+  /** Position of the team ball in x direction relative to the field in mm */
+  float input ball.team.position.x "mm";
+  float input ball.team.position.y "mm";
+  float input ball.team.rmse "mm";
 }
   
