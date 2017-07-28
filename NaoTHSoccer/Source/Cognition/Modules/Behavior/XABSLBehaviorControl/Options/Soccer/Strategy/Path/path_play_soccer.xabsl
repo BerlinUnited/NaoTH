@@ -108,7 +108,8 @@ option path_play_soccer
     }
     action 
     {
-      decide_and_go_to_passive_position_after_penalized();
+      //decide_and_go_to_passive_position_after_penalized();
+      decide_and_go_to_passive_position_dobermann_no_search();
     }
   }
 
@@ -126,7 +127,10 @@ option path_play_soccer
     }
     action 
     {
-      decide_and_go_to_ready_position();
+      //decide_and_go_to_ready_position();
+
+      // play dobermann
+      positioning_kickoff_dobermann();
       
       //only the first we know that we are in our own half
       situationStatusOwnHalf = (game.msecsRemaining >= 540000);
