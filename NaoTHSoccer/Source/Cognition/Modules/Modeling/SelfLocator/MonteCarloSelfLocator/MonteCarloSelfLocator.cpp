@@ -361,7 +361,7 @@ void MonteCarloSelfLocator::updateBySituation()
 
 bool MonteCarloSelfLocator::updateBySensors(SampleSet& sampleSet) const
 {
-  if(parameters.updateByGoalPost)
+  if(parameters.updateByGoalPost && getPlayerInfo().robotState == PlayerInfo::ready)
   {
     if(getGoalPercept().getNumberOfSeenPosts() > 0) {
       updateByGoalPosts(getGoalPercept(), sampleSet);
