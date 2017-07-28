@@ -17,7 +17,14 @@ TeamCommSender::TeamCommSender()
   {
     send_interval = config.getInt("teamcomm", "send_interval");
   }
+
+  getDebugParameterList().add(&parameters);
 }
+
+TeamCommSender::~TeamCommSender() {
+  getDebugParameterList().remove(&parameters);
+}
+
 
 void TeamCommSender::execute()
 {
@@ -47,8 +54,13 @@ void TeamCommSender::fillMessageBeforeSending() const
     msg.positionConfidence = 100;
     msg.sideConfidence = 100;
 
-    // if(getBallModel().valid)
-    if (getBallModel().getFrameInfoWhenBallWasSeen().getTime() > 0)
+
+    bool sendBallModel = getBallModel().valid;
+    if(parameters.sendBallAgeDobermann) {
+      sendBallModel = (getBallModel().getFrameInfoWhenBallWasSeen().getTime() > 0);
+    }
+
+    if(sendBallModel)
     {
       // here in milliseconds (conversion to seconds is in SPLStandardMessage::createSplMessage())
       msg.ballAge = getFrameInfo().getTimeSince(getBallModel().getFrameInfoWhenBallWasSeen().getTime());
