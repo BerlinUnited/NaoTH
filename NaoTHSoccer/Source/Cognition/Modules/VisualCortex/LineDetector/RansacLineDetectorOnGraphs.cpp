@@ -131,15 +131,6 @@ void RansacLineDetectorOnGraphs::execute()
     );
   }
 
-  if (ransacEllipse(circResult, graphEdgels, getLineGraphPercept().lineGraphs)) {
-    double c[2];
-    circResult.getCenter(c);
-
-    double a[2];
-    circResult.axesLength(a);
-  }
-
-
   DEBUG_REQUEST("Vision:RansacLineDetectorOnGraphs:draw_lines_field",
     FIELD_DRAWING_CONTEXT;
 
