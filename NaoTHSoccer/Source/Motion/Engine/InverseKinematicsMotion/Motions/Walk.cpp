@@ -248,7 +248,9 @@ void Walk::calculateNewStep(const Step& lastStep, Step& newStep, const WalkReque
   {
     // TODO: find reason for deadlock
     // current fix: force leaving emergency_stop after some cycles
-    emergencyCounter++;
+    if(do_emergency_stop) {
+      emergencyCounter++;
+    }
 
     PLOT("Walk:emergencyCounter",emergencyCounter);
 
