@@ -20,8 +20,12 @@ MonteCarloSelfLocator::MonteCarloSelfLocator()
   state(LOCALIZE),
   lastState(LOCALIZE),
   islocalized(false),
+  updatedByGoalPosts(false),
   theSampleSet(100),
-  canopyClustering(parameters.thresholdCanopy)
+  canopyClustering(parameters.thresholdCanopy),
+  slowWeighting(0.0),
+  fastWeighting(0.0),
+  effective_number_of_samples(0.0)
 {
   // debug
   DEBUG_REQUEST_REGISTER("MCSLS:reset_samples", "reset the sample set", false);
@@ -64,6 +68,8 @@ MonteCarloSelfLocator::~MonteCarloSelfLocator()
 
 void MonteCarloSelfLocator::execute()
 {
+  // reset
+  updatedByGoalPosts = false;
 
   DEBUG_REQUEST("MCSLS:reset_samples",
 
@@ -160,6 +166,20 @@ void MonteCarloSelfLocator::execute()
       updateByOdometry(theSampleSet, parameters.motionNoise);
     
       theSampleSet.resetLikelihood();
+
+      // HACK: separate update by the goal posts
+      if(parameters.updateByGoalPostLocalize)
+      {
+        if(getGoalPercept().getNumberOfSeenPosts() > 0) {
+          updateByGoalPosts(getGoalPercept(), theSampleSet);
+          updatedByGoalPosts = true;
+        }
+        if(getGoalPerceptTop().getNumberOfSeenPosts() > 0) {
+          updateByGoalPosts(getGoalPerceptTop(), theSampleSet);
+          updatedByGoalPosts = true;
+        }
+      }
+
       updateBySensors(theSampleSet);
 
       // use prior knowledge
@@ -207,6 +227,20 @@ void MonteCarloSelfLocator::execute()
       updateByOdometry(theSampleSet, parameters.motionNoise);
 
       theSampleSet.resetLikelihood();
+
+      // HACK: separate update by the goal posts
+      if(parameters.updateByGoalPostTracking)
+      {
+        if(getGoalPercept().getNumberOfSeenPosts() > 0) {
+          updateByGoalPosts(getGoalPercept(), theSampleSet);
+          updatedByGoalPosts = true;
+        }
+        if(getGoalPerceptTop().getNumberOfSeenPosts() > 0) {
+          updateByGoalPosts(getGoalPerceptTop(), theSampleSet);
+          updatedByGoalPosts = true;
+        }
+      }
+
       updateBySensors(theSampleSet);
 
 
@@ -361,7 +395,8 @@ void MonteCarloSelfLocator::updateBySituation()
 
 bool MonteCarloSelfLocator::updateBySensors(SampleSet& sampleSet) const
 {
-  if(parameters.updateByGoalPost && getPlayerInfo().robotState == PlayerInfo::ready)
+  /*
+  if(parameters.updateByGoalPost)
   {
     if(getGoalPercept().getNumberOfSeenPosts() > 0) {
       updateByGoalPosts(getGoalPercept(), sampleSet);
@@ -370,6 +405,7 @@ bool MonteCarloSelfLocator::updateBySensors(SampleSet& sampleSet) const
       updateByGoalPosts(getGoalPerceptTop(), sampleSet);
     }
   }
+  */
 
   if(parameters.updateByCompas && getProbabilisticQuadCompas().isValid()) {
     updateByCompas(sampleSet);
@@ -1087,7 +1123,7 @@ int MonteCarloSelfLocator::resampleSUS(SampleSet& sampleSet, int n) const
       sampleSet[j] = oldSampleSet[i];
       targetSum += likelihood_step;
 
-      if((getGoalPercept().getNumberOfSeenPosts() > 0 || getGoalPerceptTop().getNumberOfSeenPosts() > 0)) {
+      if(updatedByGoalPosts) {
         applySimpleNoise(sampleSet[j], parameters.processNoiseDistance, parameters.processNoiseAngle);
       } else {
         applySimpleNoise(sampleSet[j], 0.0, parameters.processNoiseAngle);
@@ -1126,7 +1162,7 @@ void MonteCarloSelfLocator::resampleGT07(SampleSet& sampleSet, bool noise) const
       
       // copy the selected particle
       sampleSet[n] = oldSampleSet[m];
-      if(noise && (getGoalPercept().getNumberOfSeenPosts() > 0 || getGoalPerceptTop().getNumberOfSeenPosts() > 0)) {
+      if(noise && updatedByGoalPosts) {
         applySimpleNoise(sampleSet[n], parameters.processNoiseDistance, parameters.processNoiseAngle);
       } else {
         applySimpleNoise(sampleSet[n], 0.0, parameters.processNoiseAngle);
