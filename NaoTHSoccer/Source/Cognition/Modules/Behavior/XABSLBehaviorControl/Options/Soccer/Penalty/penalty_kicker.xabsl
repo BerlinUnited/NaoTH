@@ -70,7 +70,9 @@ option penalty_kicker
   {
     decision
     {
-      if (ball.preview.right_foot.y < -100)
+      // set to 300 for kicking perfectly to the corner
+      // but the kick is not strong enough
+      if (ball.preview.y > 260)
         goto approach_ball_right;
       else
         stay;
@@ -82,6 +84,8 @@ option penalty_kicker
       motion.walk_speed.x = 0;
       motion.walk_speed.y = -50;
       motion.walk_speed.rot = 0;
+      
+      head.control_mode = look_at_ball_no_search;
     }
   }
   
