@@ -16,7 +16,6 @@ option decide_and_go_to_passive_position
 	  action {
       search_ball();
       motion.walk.style = stable;
-      head.angleVelocity = 30; // will be reseted in spl_play_soccer
 	  }
 	}  
   
