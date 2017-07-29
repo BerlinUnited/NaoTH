@@ -343,7 +343,7 @@ void LineGraphProvider::extendLineGraph(std::vector<Neighbors>& neighbors) {
 
   for (size_t i=0; i<processed.size(); i++) {
     if(processed[i] || 
-        (neighbors[i].left != -1 && neighbors[neighbors[i].left].right == i)) // not a begin of a graph
+        (neighbors[i].left != -1 && neighbors[neighbors[i].left].right == static_cast<int>(i))) // not a begin of a graph
     {
       continue;
     }

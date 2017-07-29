@@ -65,7 +65,7 @@ private:
     Parameters() : ParameterList("RansacLineDetectorOnGraphs")
     {
       //Lines
-      PARAMETER_REGISTER(iterations) = 3;
+      PARAMETER_REGISTER(iterations) = 10;
       PARAMETER_REGISTER(outlierThreshold) = 40;
       PARAMETER_REGISTER(inlierMin) = 4;
       PARAMETER_REGISTER(directionSimilarity) = 0.8;

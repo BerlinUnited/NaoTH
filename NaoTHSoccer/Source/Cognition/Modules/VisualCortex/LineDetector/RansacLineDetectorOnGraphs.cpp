@@ -229,7 +229,7 @@ void RansacLineDetectorOnGraphs::execute()
 
 int RansacLineDetectorOnGraphs::ransac(Math::LineSegment& result, std::vector<GraphEdgel>& subgraphEdgels, const std::vector<std::vector<EdgelD>>& lineGraphs)
 {
-  if(subgraphEdgels.size() < params.inlierMin) {
+  if(static_cast<int>(subgraphEdgels.size()) < params.inlierMin) {
     return 0;
   }
 
