@@ -77,6 +77,7 @@ BEGIN_DECLARE_MODULE(Motion)
   PROVIDE(OdometryData) // hack
   REQUIRE(InertialModel)
   REQUIRE(CalibrationData)
+  REQUIRE(IMUData)
 
   PROVIDE(CameraMatrix)// TODO:strange...
   PROVIDE(CameraMatrixTop)// TODO:strange...
@@ -147,12 +148,14 @@ private:
       PARAMETER_REGISTER(useGyroRotationOdometry) = true;
       //PARAMETER_REGISTER(useIMUModel) = false;
       PARAMETER_REGISTER(useInertiaSensorCalibration) = true;
+      PARAMETER_REGISTER(useIMUDataForRotationOdometry) = false;
       syncWithConfig();
     }
 
     bool useGyroRotationOdometry;
     //bool useIMUModel;
     bool useInertiaSensorCalibration;
+    bool useIMUDataForRotationOdometry;
 
   } parameter;
 
