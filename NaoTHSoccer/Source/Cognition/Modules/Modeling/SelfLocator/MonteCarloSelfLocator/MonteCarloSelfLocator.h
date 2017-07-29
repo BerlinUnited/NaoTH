@@ -142,6 +142,10 @@ private: // local types
       PARAMETER_REGISTER(updateByLinePercept) = true;
 
 
+      PARAMETER_REGISTER(updateByMiddleCircle) = true;
+      PARAMETER_REGISTER(sigmaDistanceCenterCircle) = 0.2;
+      PARAMETER_REGISTER(sigmaAngleCenterCircle) = 0.1;
+
       PARAMETER_REGISTER(updateByOldPose) = false;
       PARAMETER_REGISTER(oldPoseSigmaDistance) = 0.1;
 
@@ -188,6 +192,9 @@ private: // local types
 
     bool updateByLinePercept;
     
+    bool updateByMiddleCircle;
+    double sigmaDistanceCenterCircle;
+    double sigmaAngleCenterCircle;
 
     bool updateByOldPose;
     double oldPoseSigmaDistance;
@@ -275,6 +282,7 @@ private: // workers
   void updateByCompas(SampleSet& sampleSet) const;
   void updateByLinePoints(const LineGraphPercept& linePercept, SampleSet& sampleSet) const;
   void updateByLines(const LinePercept& linePercept, SampleSet& sampleSet) const;
+  void updateByMiddleCircle(const LinePercept& linePercept, SampleSet& sampleSet) const;
 
   // A-Priori knowledge based on the game state
   void updateBySidePositions(SampleSet& sampleSet) const;
