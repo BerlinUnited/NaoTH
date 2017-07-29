@@ -6,6 +6,8 @@ RansacLineDetectorOnGraphs::RansacLineDetectorOnGraphs()
   DEBUG_REQUEST_REGISTER("Vision:RansacLineDetectorOnGraphs:draw_edgels_field", "", false);
   DEBUG_REQUEST_REGISTER("Vision:RansacLineDetectorOnGraphs:draw_lines_field", "", false);
   DEBUG_REQUEST_REGISTER("Vision:RansacLineDetectorOnGraphs:fit_and_draw_circle_field", "", false);
+  DEBUG_REQUEST_REGISTER("Vision:RansacLineDetectorOnGraphs:draw_circle_field", "", false);
+  DEBUG_REQUEST_REGISTER("Vision:RansacLineDetectorOnGraphs:draw_circle_field_top", "", false);
 
   getDebugParameterList().add(&params);
 }
@@ -85,6 +87,59 @@ void RansacLineDetectorOnGraphs::execute()
     }
   }
 
+  Ellipse circResult;
+
+  getLinePercept().middleCircleWasSeen = false;
+
+  if (ransacEllipse(circResult, graphEdgels, getLineGraphPercept().lineGraphs)) {
+    getLinePercept().middleCircleWasSeen = true;
+
+    double c[2];
+    circResult.getCenter(c);
+    getLinePercept().middleCircleCenter.x = c[0];
+    getLinePercept().middleCircleCenter.y = c[1];
+
+    DEBUG_REQUEST("Vision:RansacLineDetectorOnGraphs:draw_circle_field",
+      FIELD_DRAWING_CONTEXT;
+      double a[2];
+      circResult.axesLength(a);
+
+      PEN("009900", 50);
+
+      CIRCLE(c[0], c[1], 30);
+      OVAL_ROTATED(c[0], c[1], a[0], a[1], circResult.rotationAngle());
+    );
+  }
+
+  if (ransacEllipse(circResult, graphEdgelsTop, getLineGraphPercept().lineGraphsTop)) {
+    getLinePercept().middleCircleWasSeen = true;
+
+    double c[2];
+    circResult.getCenter(c);
+    getLinePercept().middleCircleCenter.x = c[0];
+    getLinePercept().middleCircleCenter.y = c[1];
+
+    DEBUG_REQUEST("Vision:RansacLineDetectorOnGraphs:draw_circle_field_top",
+      FIELD_DRAWING_CONTEXT;
+      double a[2];
+      circResult.axesLength(a);
+
+      PEN("009900", 50);
+
+      CIRCLE(c[0], c[1], 30);
+      OVAL_ROTATED(c[0], c[1], a[0], a[1], circResult.rotationAngle());
+    );
+  }
+
+  if (ransacEllipse(circResult, graphEdgels, getLineGraphPercept().lineGraphs)) {
+    double c[2];
+    circResult.getCenter(c);
+
+    double a[2];
+    circResult.axesLength(a);
+  }
+
+
   DEBUG_REQUEST("Vision:RansacLineDetectorOnGraphs:draw_lines_field",
     FIELD_DRAWING_CONTEXT;
 
@@ -130,6 +185,8 @@ void RansacLineDetectorOnGraphs::execute()
       }
     }
   );
+
+
 
   DEBUG_REQUEST("Vision:RansacLineDetectorOnGraphs:fit_and_draw_circle_field",
     FIELD_DRAWING_CONTEXT;
