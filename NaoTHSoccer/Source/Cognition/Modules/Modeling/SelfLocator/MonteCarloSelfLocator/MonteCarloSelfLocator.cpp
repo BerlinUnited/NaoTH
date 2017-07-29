@@ -575,7 +575,7 @@ void MonteCarloSelfLocator::updateByLines(const LinePercept& linePercept, Sample
   double shortestLine = 1e+5; // very long...
 
   // todo: parameter for max lines to update by
-  for(size_t lp=0; lp < getLinePercept().lines.size() && lp < 3; lp++)
+  for(size_t lp=0; lp < linePercept.lines.size() && lp < 3; lp++)
   {
     //int idx = Math::random((int)linePercept.lines.size());
     // dont use the lines which are parts of the circle 
@@ -726,7 +726,7 @@ void MonteCarloSelfLocator::updateByShortLines(const LinePercept& linePercept, S
   double shortestLine = 1e+5; // very long...
 
   // todo: parameter for max lines to update by
-  for(size_t lp=0; lp < getLinePercept().lines.size() && lp < 3; lp++)
+  for(size_t lp=0; lp < linePercept.short_lines.size() && lp < 3; lp++)
   {
     //int idx = Math::random((int)linePercept.lines.size());
     // dont use the lines which are parts of the circle 
@@ -734,7 +734,7 @@ void MonteCarloSelfLocator::updateByShortLines(const LinePercept& linePercept, S
     //if(linePercept.lines[idx].type == LinePercept::C && linePercept.middleCircleWasSeen)
     //  continue;
 
-    if(linePercept.lines[lp].lineOnField.getLength() < 300) { // don't use too short lines
+    if(linePercept.short_lines[lp].lineOnField.getLength() < 300) { // don't use too short lines
       continue;
     }
 
@@ -752,7 +752,7 @@ void MonteCarloSelfLocator::updateByShortLines(const LinePercept& linePercept, S
     //int lineVotes[30] = {0};
     //int maxIdx = 0;
 
-    const Math::LineSegment& relPercept = linePercept.lines[lp].lineOnField;
+    const Math::LineSegment& relPercept = linePercept.short_lines[lp].lineOnField;
 
     for(size_t s=0; s < sampleSet.size(); s++)
     {
@@ -771,7 +771,7 @@ void MonteCarloSelfLocator::updateByShortLines(const LinePercept& linePercept, S
       // todo: this may make problems when the lines are distored
       int length    = (relPercept.getLength() > 700)?LinesTable::long_lines:LinesTable::short_lines|LinesTable::circle_lines|LinesTable::long_lines;
       int direction = (fabs(abs_direction.x) > fabs(abs_direction.y))?LinesTable::along_lines:LinesTable::across_lines;
-      int type      = (linePercept.lines[lp].type == LinePercept::C)?LinesTable::circle_lines:length|direction;
+      int type      = (linePercept.short_lines[lp].type == LinePercept::C)?LinesTable::circle_lines:length|direction;
 
       /*
       const LinesTable::NamedPoint& p_mid = 
