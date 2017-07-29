@@ -992,7 +992,7 @@ void MonteCarloSelfLocator::resampleSimple(SampleSet& sampleSet, int number) con
   }
 }
 
-//MetropolisHastings
+//Metropolis Hastings
 void MonteCarloSelfLocator::resampleMH(SampleSet& sampleSet)
 {
   if(mhBackendSet.size() != sampleSet.size()) {
