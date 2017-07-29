@@ -42,7 +42,7 @@ void TeamBallLocator::execute()
         ballPosTS.t = msg.frameInfo.getTime() - static_cast<int>(msg.ballAge);
         ballPosHist.push_back(ballPosTS);
 
-        // set time
+        // set time to the latest received message
         if (msg.frameInfo.getTime() > getTeamBallModel().time )
         {
           getTeamBallModel().time = msg.frameInfo.getTime();
@@ -77,6 +77,7 @@ void TeamBallLocator::execute()
       break;
     }
   }
+
   ballPosHist.erase(ballPosHist.begin(), cutOff);
   
   // find oldest messages and erase them
@@ -134,11 +135,14 @@ void TeamBallLocator::execute()
     getTeamBallModel().rmse = getTeamBallModel().rmse / static_cast<double>(ballPosHist.size());
     getTeamBallModel().rmse = sqrt(getTeamBallModel().rmse);
 
-    // write result and transform  
+    // write result and transform
     getTeamBallModel().positionOnField = teamball;
     getTeamBallModel().position = getRobotPose() / getTeamBallModel().positionOnField;
   }
- 
+
+  // set validity of the teamball -> invalidate after a certain time
+  getTeamBallModel().valid = (getTeamBallModel().time + theParameters.maxTimeValid >= getFrameInfo().getTime());
+
   DEBUG_REQUEST("TeamBallLocator:draw_ball_on_field",
     FIELD_DRAWING_CONTEXT;
     PEN("FF0000", 20);
@@ -146,5 +150,4 @@ void TeamBallLocator::execute()
     TEXT_DRAWING(getTeamBallModel().positionOnField.x+100, getTeamBallModel().positionOnField.y+100, ballPosHist.size());
     TEXT_DRAWING(getTeamBallModel().positionOnField.x+100, getTeamBallModel().positionOnField.y-100, getTeamBallModel().rmse);
   );
-  getTeamMessageData().custom.teamBall = getTeamBallModel().positionOnField;
 }
