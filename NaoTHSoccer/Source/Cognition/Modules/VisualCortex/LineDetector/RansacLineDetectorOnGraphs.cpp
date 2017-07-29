@@ -67,7 +67,9 @@ void RansacLineDetectorOnGraphs::execute()
     if (ransac(result, subgraphEdgels, getLineGraphPercept().lineGraphs)) {
       LinePercept::FieldLineSegment fieldLine;
       fieldLine.lineOnField = result;
-      getLinePercept().lines.push_back(fieldLine);
+      getLinePercept().extended_lines.push_back(fieldLine);
+
+      getLinePercept().short_lines.push_back(fieldLine);
     }
   }
 
@@ -76,15 +78,18 @@ void RansacLineDetectorOnGraphs::execute()
     if (ransac(result, subgraphEdgels, getLineGraphPercept().lineGraphsTop)) {
       LinePercept::FieldLineSegment fieldLine;
       fieldLine.lineOnField = result;
-      getLinePerceptTop().lines.push_back(fieldLine);
+      getLinePerceptTop().extended_lines.push_back(fieldLine);
+
+      // Top and Bottom graphs are provided in Bottom Line Percept
+      getLinePercept().short_lines.push_back(fieldLine);
     }
   }
 
   DEBUG_REQUEST("Vision:RansacLineDetectorOnGraphs:draw_lines_field",
     FIELD_DRAWING_CONTEXT;
 
-    if (!getLinePercept().lines.empty()) {
-      for(const LinePercept::FieldLineSegment& line: getLinePercept().lines)
+    if (!getLinePercept().extended_lines.empty()) {
+      for(const LinePercept::FieldLineSegment& line: getLinePercept().extended_lines)
       {
         PEN("FF0000", 30);
         LINE(
@@ -92,8 +97,8 @@ void RansacLineDetectorOnGraphs::execute()
           line.lineOnField.end().x, line.lineOnField.end().y);
       }
     }
-    if (!getLinePerceptTop().lines.empty()) {
-      for(const LinePercept::FieldLineSegment& line: getLinePerceptTop().lines)
+    if (!getLinePerceptTop().extended_lines.empty()) {
+      for(const LinePercept::FieldLineSegment& line: getLinePerceptTop().extended_lines)
       {
         PEN("0000FF", 30);
         LINE(

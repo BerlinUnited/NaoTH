@@ -49,6 +49,7 @@ public:
     int line_id;
   };
 
+  //TODO: Provide this!
   std::vector<std::vector<GraphEdgel>> graphEdgels;
   std::vector<std::vector<GraphEdgel>> graphEdgelsTop;
 
