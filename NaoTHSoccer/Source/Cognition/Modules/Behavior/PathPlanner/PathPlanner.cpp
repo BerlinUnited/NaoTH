@@ -312,7 +312,7 @@ void PathPlanner::long_kick(const Foot foot)
 
     if (step_buffer.empty())
     {
-      Pose2D pose            = { 0.0, 5.0, 0.0 };
+      Pose2D pose            = { 0.0, 100.0, 0.0 };
       StepType type          = StepType::WALKSTEP;
       double character       = 1.0;
       double scale           = 0.7;

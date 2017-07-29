@@ -60,7 +60,7 @@ option penalty_kicker
     }
     action
     {
-      go_to_ball_with_foot(right=true, distance=160);
+      go_to_ball_with_foot(right=true, distance=180);
       head.control_mode = look_at_ball_no_search; // don't look around
       
     }
@@ -95,7 +95,8 @@ option penalty_kicker
     }
     action
     {
-      path_short_kick(foot = right);
+      //path_short_kick(foot = right);
+      path_long_kick(foot = right);
       head.control_mode = look_at_ball_no_search;
       
     }
