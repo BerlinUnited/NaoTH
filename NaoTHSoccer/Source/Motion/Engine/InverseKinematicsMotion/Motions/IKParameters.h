@@ -132,6 +132,7 @@ public:
       //int maxWaitLandingCount; // <0 means wait for ever until landing
 
       double emergencyStopError;
+      unsigned int maxEmergencyCounter;
 
       // enable stabilization by rotating the body
       bool rotationStabilize;
