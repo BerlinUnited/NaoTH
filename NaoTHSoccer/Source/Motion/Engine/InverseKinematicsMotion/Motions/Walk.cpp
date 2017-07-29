@@ -346,77 +346,79 @@ void Walk::planZMP()
     Pose3D finalBody = calculateStableCoMByFeet(planningStep.footStep.end(), getEngine().getParameters().walk.general.bodyPitchOffset);
     zmp = finalBody.translation;
   } else {
-    double zmpOffsetYParameter, newZMPOffsetYParameter;
+      // TODO: need to be done only once per step
+      Pose3D startFoot, targetFoot;
+      if(planningStep.footStep.liftingFoot() == FootStep::LEFT){
+          InverseKinematic::FeetPose begin = planningStep.footStep.begin();
+          begin.localInRightFoot();
+          InverseKinematic::FeetPose end   = planningStep.footStep.end();
+          end.localInRightFoot();
 
-    if (planningStep.type == STEP_CONTROL && planningStep.walkRequest.stepControl.type == WalkRequest::StepControlRequest::KICKSTEP)
-    {
-      zmpOffsetYParameter    = parameters().kick.ZMPOffsetY;
-      newZMPOffsetYParameter = parameters().zmp.bezier.offsetYForKicks;
-    }
-    else
-    {
-      zmpOffsetYParameter    = parameters().hip.ZMPOffsetY;
-      newZMPOffsetYParameter = parameters().zmp.bezier.offsetY;
-    }
+          startFoot  = begin.left;
+          targetFoot = end.left;
+      } else {
+          InverseKinematic::FeetPose begin = planningStep.footStep.begin();
+          begin.localInLeftFoot();
+          InverseKinematic::FeetPose end   = planningStep.footStep.end();
+          end.localInLeftFoot();
 
-    // TODO: need to be done only once per step
-    Pose3D startFoot, targetFoot;
-    if(planningStep.footStep.liftingFoot() == FootStep::LEFT){
-            InverseKinematic::FeetPose begin = planningStep.footStep.begin();
-            begin.localInRightFoot();
-            InverseKinematic::FeetPose end   = planningStep.footStep.end();
-            end.localInRightFoot();
+          startFoot  = begin.right;
+          targetFoot = end.right;
+      }
 
-            startFoot  = begin.left;
-            targetFoot = end.left;
+      Vector2d currentStepLength = targetFoot.projectXY().translation - startFoot.projectXY().translation;
 
-        } else {
-            InverseKinematic::FeetPose begin = planningStep.footStep.begin();
-            begin.localInLeftFoot();
-            InverseKinematic::FeetPose end   = planningStep.footStep.end();
-            end.localInLeftFoot();
+      PLOT("Walk:hipOffsetBasedOnStepLength.x", parameters().stabilization.maxHipOffsetBasedOnStepLength.x * std::abs(currentStepLength.x)/parameters().limits.maxStepLength);
+      // TODO end
 
-            startFoot  = begin.right;
-            targetFoot = end.right;
-        }
+      double zmpOffsetY, newZMPOffsetY, zmpOffsetX, newZMPOffsetX;
 
-    Vector2d currentStepLength = targetFoot.projectXY().translation - startFoot.projectXY().translation;
-    // TODO end
+      // TODO: should it be a part of the Step?
+      // TODO: hipOffsetBasedOnStepLength.y?
+      if (planningStep.type == STEP_CONTROL && planningStep.walkRequest.stepControl.type == WalkRequest::StepControlRequest::KICKSTEP)
+      {
+          zmpOffsetX = parameters().general.hipOffsetX + parameters().stabilization.maxHipOffsetBasedOnStepLengthForKicks.x * std::abs(currentStepLength.x)/parameters().limits.maxCtrlLength;
+          zmpOffsetY = parameters().kick.ZMPOffsetY    + parameters().hip.ZMPOffsetYByCharacter * (1-planningStep.walkRequest.character);
 
-    // TODO: should it be a part of the Step?
-    // TODO: hipOffsetBasedOnStepLength.y?
-    double zmpOffsetY = zmpOffsetYParameter + parameters().hip.ZMPOffsetYByCharacter * (1-planningStep.walkRequest.character);
-    double zmpOffsetX = getEngine().getParameters().walk.general.hipOffsetX + parameters().stabilization.maxHipOffsetBasedOnStepLength.x * std::abs(currentStepLength.x)/parameters().limits.maxStepLength;
+          newZMPOffsetX = parameters().zmp.bezier.offsetXForKicks + parameters().stabilization.maxHipOffsetBasedOnStepLengthForKicks.x * std::abs(currentStepLength.x)/parameters().limits.maxCtrlLength;
+          newZMPOffsetY = parameters().zmp.bezier.offsetYForKicks + parameters().hip.ZMPOffsetYByCharacter * (1-planningStep.walkRequest.character);
+      }
+      else
+      {
+          zmpOffsetX = parameters().general.hipOffsetX + parameters().stabilization.maxHipOffsetBasedOnStepLength.x * std::abs(currentStepLength.x)/parameters().limits.maxStepLength;
+          zmpOffsetY = parameters().hip.ZMPOffsetY     + parameters().hip.ZMPOffsetYByCharacter * (1-planningStep.walkRequest.character);
 
-    PLOT("Walk:hipOffsetBasedOnStepLength.x", parameters().stabilization.maxHipOffsetBasedOnStepLength.x * std::abs(currentStepLength.x)/parameters().limits.maxStepLength);
+          newZMPOffsetX = parameters().zmp.bezier.offsetX + parameters().stabilization.maxHipOffsetBasedOnStepLength.x * std::abs(currentStepLength.x)/parameters().limits.maxStepLength;
+          newZMPOffsetY = parameters().zmp.bezier.offsetY + parameters().hip.ZMPOffsetYByCharacter * (1-planningStep.walkRequest.character);
+      }
 
-    int samplesDoubleSupport = std::max(0, (int) (parameters().step.doubleSupportTime / getRobotInfo().basicTimeStep));
-    int samplesSingleSupport = planningStep.numberOfCycles - samplesDoubleSupport;
-    ASSERT(samplesSingleSupport >= 0 && samplesDoubleSupport >= 0);
+      int samplesDoubleSupport = std::max(0, (int) (parameters().step.doubleSupportTime / getRobotInfo().basicTimeStep));
+      int samplesSingleSupport = planningStep.numberOfCycles - samplesDoubleSupport;
+      ASSERT(samplesSingleSupport >= 0 && samplesDoubleSupport >= 0);
 
-    Vector2d zmp_new;
-    zmp_new = ZMPPlanner::bezierBased(
-                planningStep.footStep,
-                planningStep.planningCycle,
-                samplesDoubleSupport,
-                samplesSingleSupport,
-                parameters().zmp.bezier.offsetX,
-                newZMPOffsetYParameter + parameters().hip.ZMPOffsetYByCharacter * (1-planningStep.walkRequest.character),
-                parameters().zmp.bezier.inFootScalingY,
-                parameters().zmp.bezier.inFootSpacing,
-                parameters().zmp.bezier.transitionScaling);
+      Vector2d zmp_new;
+      zmp_new = ZMPPlanner::bezierBased(
+                  planningStep.footStep,
+                  planningStep.planningCycle,
+                  samplesDoubleSupport,
+                  samplesSingleSupport,
+                  newZMPOffsetX,
+                  newZMPOffsetY,
+                  parameters().zmp.bezier.inFootScalingY,
+                  parameters().zmp.bezier.inFootSpacing,
+                  parameters().zmp.bezier.transitionScaling);
 
-    // old zmp
-    Vector2d zmp_simple = ZMPPlanner::simplest(planningStep.footStep, zmpOffsetX, zmpOffsetY);
+      // old zmp
+      Vector2d zmp_simple = ZMPPlanner::simplest(planningStep.footStep, zmpOffsetX, zmpOffsetY);
 
-    if(parameters().hip.newZMP_ON) 
-    {
-      zmp = Vector3d(zmp_new.x, zmp_new.y, parameters().hip.comHeight);
-      other_zmp = Vector3d(zmp_simple.x, zmp_simple.y, parameters().hip.comHeight);
-    } else {
-      zmp = Vector3d(zmp_simple.x, zmp_simple.y, parameters().hip.comHeight);
-      other_zmp = Vector3d(zmp_new.x, zmp_new.y, parameters().hip.comHeight);
-    }
+      if(parameters().hip.newZMP_ON)
+      {
+          zmp = Vector3d(zmp_new.x, zmp_new.y, parameters().hip.comHeight);
+          other_zmp = Vector3d(zmp_simple.x, zmp_simple.y, parameters().hip.comHeight);
+      } else {
+          zmp = Vector3d(zmp_simple.x, zmp_simple.y, parameters().hip.comHeight);
+          other_zmp = Vector3d(zmp_new.x, zmp_new.y, parameters().hip.comHeight);
+      }
   }
 
   Vector2d zmp_in_local = planningStep.footStep.supFoot().projectXY()/Vector2d(zmp.x,zmp.y);
@@ -432,9 +434,9 @@ void Walk::planZMP()
   getEngine().zmpControl.push(zmp);
 
   DEBUG_REQUEST("Walk:draw_step_plan_geometry",
-    FIELD_DRAWING_CONTEXT;
-    getDebugDrawings().pen(Color::BLUE, 5.0);
-    getDebugDrawings().drawCircle(zmp.x, zmp.y, 10);
+                FIELD_DRAWING_CONTEXT;
+          getDebugDrawings().pen(Color::BLUE, 5.0);
+  getDebugDrawings().drawCircle(zmp.x, zmp.y, 10);
   );
 
   PLOT("Walk:DRAW_ZMP_x", zmp.x);
