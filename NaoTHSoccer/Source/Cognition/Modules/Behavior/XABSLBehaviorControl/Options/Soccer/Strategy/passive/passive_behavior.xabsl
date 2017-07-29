@@ -40,7 +40,6 @@ option passive_behavior{
     }
     action {
       passive_ball_not_seen();
-      head.angleVelocity = 30; // will be reseted in spl_play_soccer
       motion.walk.style  = stable;
     }
   }
