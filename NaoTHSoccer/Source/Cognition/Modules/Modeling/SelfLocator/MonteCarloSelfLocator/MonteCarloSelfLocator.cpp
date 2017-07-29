@@ -361,7 +361,7 @@ void MonteCarloSelfLocator::updateBySituation()
 
 bool MonteCarloSelfLocator::updateBySensors(SampleSet& sampleSet) const
 {
-  if(parameters.updateByGoalPost)
+  if(parameters.updateByGoalPost && getPlayerInfo().robotState == PlayerInfo::ready)
   {
     if(getGoalPercept().getNumberOfSeenPosts() > 0) {
       updateByGoalPosts(getGoalPercept(), sampleSet);
@@ -992,7 +992,7 @@ void MonteCarloSelfLocator::resampleSimple(SampleSet& sampleSet, int number) con
   }
 }
 
-//Metropolis–Hastings
+//MetropolisÂ–Hastings
 void MonteCarloSelfLocator::resampleMH(SampleSet& sampleSet)
 {
   if(mhBackendSet.size() != sampleSet.size()) {

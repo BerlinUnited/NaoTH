@@ -7,11 +7,14 @@ option path_short_kick
   {
     decision
     {
+      /* don't get stuck if run when in stand */
       if(executed_motion.type != walk)
         stay;
-      else if(@foot == right)
+      /* check if the kicking foot was support foot before kicking,
+         if not make a step before kicking so that the CoM can handle the kick with the foot*/
+      else if(executed_motion.step_control.right_movable && @foot == right)
         goto kick_with_right_foot;
-      else if(@foot == left)
+      else if(executed_motion.step_control.left_movable && @foot == left)
         goto kick_with_left_foot;
       else
         stay;
@@ -19,6 +22,12 @@ option path_short_kick
     action
     {
       head.control_mode = search_for_ball;
+      motion.walk.style = normal;
+
+      motion.type = walk;
+      motion.walk_speed.x = 0;
+      motion.walk_speed.y = 0;
+      motion.walk_speed.rot = 0;
     }
   }
 
