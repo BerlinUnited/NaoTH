@@ -9,7 +9,7 @@ option penalty_kicker
       if(state_time > 3000)
       {
         if(ball.know_where_itis)
-          goto approach_ball_right;
+          goto go_right;//approach_ball_right;
         else
           goto move_closer;
       }
@@ -63,6 +63,25 @@ option penalty_kicker
       go_to_ball_with_foot(right=true, distance=180);
       head.control_mode = look_at_ball_no_search; // don't look around
       
+    }
+  }
+
+  state go_right
+  {
+    decision
+    {
+      if (ball.preview.right_foot.y < -100)
+        goto approach_ball_right;
+      else
+        stay;
+    }
+    action
+    {
+      motion.type = walk;
+      motion.walk.style = stable;
+      motion.walk_speed.x = 0;
+      motion.walk_speed.y = -50;
+      motion.walk_speed.rot = 0;
     }
   }
   
