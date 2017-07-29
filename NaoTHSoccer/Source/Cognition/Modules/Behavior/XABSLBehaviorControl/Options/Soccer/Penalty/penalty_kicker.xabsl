@@ -9,7 +9,23 @@ option penalty_kicker
       if(state_time > 3000)
       {
         if(ball.know_where_itis)
-          goto go_right;//approach_ball_right;
+        {
+          if(random() > 0.3)
+          {
+            if(random() > 0.5)
+            {
+              goto go_right;
+            }
+            else
+            {
+              goto go_left;
+            }
+          }
+          else
+          {
+            goto approach_ball_right;
+          }
+        }
         else
           goto move_closer;
       }
@@ -83,6 +99,28 @@ option penalty_kicker
       motion.walk.style = stable;
       motion.walk_speed.x = 0;
       motion.walk_speed.y = -50;
+      motion.walk_speed.rot = 0;
+      
+      head.control_mode = look_at_ball_no_search;
+    }
+  }
+  state go_left
+  {
+    decision
+    {
+      // set to 300 for kicking perfectly to the corner
+      // but the kick is not strong enough
+      if (ball.preview.y < -260)
+        goto approach_ball_right;
+      else
+        stay;
+    }
+    action
+    {
+      motion.type = walk;
+      motion.walk.style = stable;
+      motion.walk_speed.x = 0;
+      motion.walk_speed.y = 50;
       motion.walk_speed.rot = 0;
       
       head.control_mode = look_at_ball_no_search;
