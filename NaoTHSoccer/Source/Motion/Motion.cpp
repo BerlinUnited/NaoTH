@@ -259,6 +259,12 @@ void Motion::processSensorData()
     getOdometryData().rotation = rotationGyroZ;
   }
 
+  if(parameter.useIMUDataForRotationOdometry)
+  {
+    PLOT("Motion:rotationZ", getIMUData().rotation.z);
+    getOdometryData().rotation = getIMUData().rotation.z;
+  }
+
   // store the MotorJointData
   theLastMotorJointData = getMotorJointData();
 
