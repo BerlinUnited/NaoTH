@@ -93,6 +93,14 @@ void TeamCommSender::fillMessageBeforeSending() const
     msg.custom.batteryCharge = getBatteryData().charge;
     msg.custom.temperature = std::max(getBodyState().temperatureLeftLeg, getBodyState().temperatureRightLeg);
     msg.custom.cpuTemperature = getCpuData().temperature;
+    // update teamball in teamcomm
+    if(getTeamBallModel().valid) {
+      getTeamMessageData().custom.teamBall = getTeamBallModel().positionOnField;
+    } else {
+      // set teamball in teamcomm to an invalid value
+      getTeamMessageData().custom.teamBall.x = std::numeric_limits<double>::infinity();
+      getTeamMessageData().custom.teamBall.y = std::numeric_limits<double>::infinity();
+    }
     // TODO: shall we put it into config?
     msg.custom.key = NAOTH_TEAMCOMM_MESAGE_KEY;
 }

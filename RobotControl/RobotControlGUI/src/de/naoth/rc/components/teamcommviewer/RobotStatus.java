@@ -103,8 +103,6 @@ public class RobotStatus {
         this.fallen = msg.fallen;
         this.ballAge = msg.ballAge;
 
-        
-        
         if (msg.user != null) {
             this.temperature = msg.user.getTemperature();
             this.cpuTemperature = msg.user.getCpuTemperature();
@@ -126,7 +124,7 @@ public class RobotStatus {
 
             this.isPenalized = msg.doberHeader.isPenalized > 0;
             this.whistleDetected = msg.doberHeader.whistleDetected > 0;
-            this.teamBall = new Vector2D(0,0);
+            this.teamBall = new Vector2D(Double.POSITIVE_INFINITY,Double.POSITIVE_INFINITY);
         } else {
             this.temperature = -1;
             this.cpuTemperature = -1;
@@ -136,7 +134,7 @@ public class RobotStatus {
             this.wasStriker = false;
             this.isPenalized = false;
             this.whistleDetected = false;
-            this.teamBall = new Vector2D(0,0);
+            this.teamBall = new Vector2D(Double.POSITIVE_INFINITY,Double.POSITIVE_INFINITY);
         }
         this.statusChanged();
     }

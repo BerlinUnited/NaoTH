@@ -19,6 +19,7 @@
 #include "Representations/Modeling/SoccerStrategy.h"
 #include "Representations/Modeling/PlayersModel.h"
 #include "Representations/Modeling/KickActionModel.h"
+#include "Representations/Modeling/TeamBallModel.h"
 
 #include "Tools/Debug/DebugParameterList.h"
 
@@ -39,6 +40,7 @@ BEGIN_DECLARE_MODULE(TeamCommSender)
   REQUIRE(BatteryData)
   REQUIRE(KickActionModel)
   REQUIRE(CpuData)
+  REQUIRE(TeamBallModel)
 
   PROVIDE(TeamMessageData)
   PROVIDE(TeamMessageDataOut)
