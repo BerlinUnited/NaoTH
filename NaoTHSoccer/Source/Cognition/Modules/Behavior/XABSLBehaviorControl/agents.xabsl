@@ -87,6 +87,7 @@ include "Options/Soccer/Strategy/Striker/Path/path_sidekick_right.xabsl";
 include "Options/Soccer/Strategy/Striker/Path/path_kick_short_with_approach.xabsl";
 include "Options/Soccer/Strategy/Striker/Path/path_kick_long_with_approach.xabsl";
 include "Options/Soccer/Strategy/Striker/Path/path_turn_to_attack_direction.xabsl";
+include "Options/Soccer/Strategy/Striker/Path/path_dash.xabsl";
 include "Options/Skills/Path/path_move_around_ball.xabsl";
 include "Options/Skills/Path/path_go_to_ball_with_USOA.xabsl";
 include "Options/Skills/Path/path_go_to_ball_with_foot_dynamic.xabsl";
