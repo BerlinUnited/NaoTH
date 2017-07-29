@@ -45,7 +45,7 @@ option penalty_kicker
       motion.walk_speed.y = 0;
       motion.walk_speed.rot = 0;
       
-      head.control_mode = look_at_ball;
+      head.control_mode = look_at_ball_no_search;
     }
   }
 
@@ -54,14 +54,33 @@ option penalty_kicker
     decision
     {
       if (action_done)
-        goto do_kick;
+        goto look_for_ball_tmp;//do_kick;
       else
         stay;
     }
     action
     {
       go_to_ball_with_foot(right=true, distance=160);
-      head.control_mode = look_at_ball; // don't look around
+      head.control_mode = look_at_ball_no_search; // don't look around
+      
+    }
+  }
+  
+  state look_for_ball_tmp
+  {
+    decision
+    {
+      if(state_time > 100)
+      {
+        goto do_kick;
+      }
+      else
+        stay;
+    }
+    action
+    { 
+      motion.type = stand;
+      head.control_mode = look_at_ball_no_search;
     }
   }
 
@@ -76,8 +95,9 @@ option penalty_kicker
     }
     action
     {
-      fast_forward_kick(foot = right);
-      head.control_mode = look_at_ball;
+      path_short_kick(foot = right);
+      head.control_mode = look_at_ball_no_search;
+      
     }
   }
 
