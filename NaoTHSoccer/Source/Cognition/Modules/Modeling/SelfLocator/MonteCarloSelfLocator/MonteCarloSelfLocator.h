@@ -130,7 +130,8 @@ private: // local types
       PARAMETER_REGISTER(motionNoiseDistance) = 5.0;
       PARAMETER_REGISTER(motionNoiseAngle) = 0.01;
 
-      PARAMETER_REGISTER(updateByGoalPost) = true;
+      PARAMETER_REGISTER(updateByGoalPostTracking) = false;
+      PARAMETER_REGISTER(updateByGoalPostLocalize) = true;
       PARAMETER_REGISTER(goalPostSigmaDistance) = 0.1;
       PARAMETER_REGISTER(goalPostSigmaAngle) = 0.1;
 
@@ -177,7 +178,8 @@ private: // local types
     double motionNoiseDistance;
     double motionNoiseAngle;
 
-    bool updateByGoalPost;
+    bool updateByGoalPostTracking;
+    bool updateByGoalPostLocalize;
     double goalPostSigmaDistance;
     double goalPostSigmaAngle;
 
@@ -250,6 +252,10 @@ private: // local types
             segment.end().y + 100*sin(angle));
     }
   };
+
+
+private: // goal posts
+  bool updatedByGoalPosts;
 
 
 private: // data members
