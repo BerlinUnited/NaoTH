@@ -37,13 +37,18 @@ option path_striker
   state goto_ball {
     decision {
 
-      else if(action_done && state_time > 1000 &&
+      else if(//action_done && state_time > 1000 &&
          ball.preview.x < 300 && abs(value = ball.preview.y) < 50)// && vector.abs(x=ball.speed.x, y=ball.speed.y) < 150)
       {
 	      if(attack.best_action == kick_long)
 	        goto long_kick;
 	      else if(attack.best_action == kick_short)
-	        goto short_kick;
+        {
+          if(random() > 0.3)
+	          goto short_kick;
+          else
+            goto dash;
+        }
 	      else if(attack.best_action == sidekick_left)
 	        goto sidekick_left;
 	      else if(attack.best_action == sidekick_right)
@@ -74,7 +79,12 @@ option path_striker
       else if(attack.best_action == kick_long)
         goto long_kick;
       else if(attack.best_action == kick_short)
-        goto short_kick;
+      {
+        if(random() > 0.3)
+          goto short_kick;
+        else
+          goto dash;
+      }
       else if(attack.best_action == sidekick_left)
         goto sidekick_left;
       else if(attack.best_action == sidekick_right)
@@ -126,7 +136,7 @@ option path_striker
     }
   }
 
-    state short_kick {
+  state short_kick {
     decision{
       else if(action_done)
         goto goto_ball;
@@ -138,5 +148,19 @@ option path_striker
       path_kick_short_with_approach();
     }
   }
+
+  state dash {
+    decision{
+      else if(action_done)
+        goto goto_ball;
+      else
+        stay;
+    }
+    action{
+      situation_abortable = true;
+      path_dash();
+    }
+  }
+
 
 }
