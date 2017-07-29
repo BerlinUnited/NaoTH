@@ -57,7 +57,7 @@ BEGIN_DECLARE_MODULE(LineGraphProvider)
   REQUIRE(CameraMatrix)
   REQUIRE(CameraMatrixTop)
 
-  PROVIDE(ProbabilisticQuadCompas)
+  //PROVIDE(ProbabilisticQuadCompas)
   PROVIDE(LineGraphPercept)
 END_DECLARE_MODULE(LineGraphProvider)
 
@@ -72,13 +72,13 @@ public:
 
   void execute()
   {
-    getProbabilisticQuadCompas().reset();
+    //getProbabilisticQuadCompas().reset();
     getLineGraphPercept().reset();
 
     execute(CameraInfo::Bottom);
     execute(CameraInfo::Top);
     
-    getProbabilisticQuadCompas().normalize();
+    //getProbabilisticQuadCompas().normalize();
 
 
 

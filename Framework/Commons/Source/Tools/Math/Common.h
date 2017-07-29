@@ -233,28 +233,29 @@ namespace Math {
     return std*sqrt(-2.0*log((rand()+1.0)/r_max))*sin(2.0*pi*rand()/r_max)+mean;
   }
 
-  /** This method returns the bisector (average) of two angles. It deals
-   *  with the boundary problem, thus when 'angMin' equals 170 and 'angMax'
-   *  equals -100, -145 is returned.
-   *  @param[in] angMin minimum angle [-180,180]
-   *  @param[in] angMax maximum angle [-180,180]
-   *  @return average of angMin and angMax.
-   */
-  inline double calculateMeanAngle(double angMin, double angMax)
-  {
-    angMin = normalizeAngle(angMin);
-    angMax = normalizeAngle(angMax);
-    double ang = (angMin + angMax)* 0.5;
-    if (angMin > angMax) ang += pi;
-    return normalizeAngle(ang);
-  }
-
   /**
   * http://en.wikipedia.org/wiki/Mean_of_circular_quantities
   */
   inline double meanAngle(double a, double b) {
     return atan2( sin(a)+sin(b), cos(a)+cos(b) );
   }
+
+  /* TODO: This needs to be tested
+  template<typename T>
+  T vectorMeanAngle(const std::vector<T> values) {
+    // TODO: remove assert when the method was tested 
+    assert(true);
+    
+    double a = 0;
+    double b = 0;
+    for (size_t i = 0; i < values.size(); ++i)
+    {
+      a += sin(values[i]);
+      b += cos(values[i]);
+    }
+    return atan2(a, b);
+  }
+  */
 
   // NOTE: the input vector is copied and sorted internally, this can be slow for large vectors
   template<typename T>

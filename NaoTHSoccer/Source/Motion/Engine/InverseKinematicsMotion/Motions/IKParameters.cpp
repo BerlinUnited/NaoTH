@@ -26,7 +26,7 @@ IKParameters::IKParameters()
   PARAMETER_REGISTER(stand.relax.enable) = true;
   PARAMETER_REGISTER(stand.relax.allowedDeviation) = 5;   // [mm]
   PARAMETER_ANGLE_REGISTER(stand.relax.allowedRotationDeviation) = 5; // [rad]
-  PARAMETER_REGISTER(stand.relax.timeBonusForCorrection)   = 1000; // [ms]
+  //PARAMETER_REGISTER(stand.relax.timeBonusForCorrection)   = 1000; // [ms]
 
   PARAMETER_REGISTER(stand.relax.jointOffsetTuning.enable) = true;
   PARAMETER_REGISTER(stand.relax.jointOffsetTuning.deadTime)         = 1000;         // [ms]
@@ -34,7 +34,7 @@ IKParameters::IKParameters()
   PARAMETER_REGISTER(stand.relax.jointOffsetTuning.minimalJointStep) = 0.0013962634; // [rad]
 
   PARAMETER_REGISTER(stand.relax.stiffnessControl.enable) = true;
-  PARAMETER_REGISTER(stand.relax.stiffnessControl.deadTime)     = 100;  // [ms]
+  //PARAMETER_REGISTER(stand.relax.stiffnessControl.deadTime)     = 100;  // [ms]
   PARAMETER_REGISTER(stand.relax.stiffnessControl.minAngle)     = 0.08; // [°]
   PARAMETER_REGISTER(stand.relax.stiffnessControl.maxAngle)     = 2;    // [°]
   PARAMETER_REGISTER(stand.relax.stiffnessControl.minStiffness) = 0.3;
@@ -57,10 +57,24 @@ IKParameters::IKParameters()
   PARAMETER_REGISTER(walk.hip.ZMPOffsetY) = 5;
   PARAMETER_REGISTER(walk.hip.ZMPOffsetYByCharacter) = 0;
 
+  // experimental: new ZMP
+  PARAMETER_REGISTER(walk.hip.newZMP_ON) = false;
+
+  PARAMETER_REGISTER(walk.zmp.bezier.transitionScaling) = 0.6;
+  PARAMETER_REGISTER(walk.zmp.bezier.inFootScalingY) = 1;
+  PARAMETER_REGISTER(walk.zmp.bezier.inFootSpacing)  = 10;
+  PARAMETER_REGISTER(walk.zmp.bezier.offsetX) = 20;
+  PARAMETER_REGISTER(walk.zmp.bezier.offsetY) = -5;
+  PARAMETER_REGISTER(walk.zmp.bezier.offsetXForKicks) = 0;
+  PARAMETER_REGISTER(walk.zmp.bezier.offsetYForKicks) = -20;
+
+  PARAMETER_REGISTER(walk.zmp.bezier2.offsetY) = 0;
+  PARAMETER_REGISTER(walk.zmp.bezier2.offsetT) = 0;
+
   // step geometry
   PARAMETER_REGISTER(walk.step.duration) = 300;
+  PARAMETER_REGISTER(walk.step.dynamicDuration) = true;
   PARAMETER_REGISTER(walk.step.doubleSupportTime) = 40;
-
   PARAMETER_REGISTER(walk.step.stepHeight) = 15;
   PARAMETER_REGISTER(walk.step.splineFootTrajectory) = true;
 
@@ -83,10 +97,10 @@ IKParameters::IKParameters()
 
   // Stabilization
   //PARAMETER_REGISTER(walk.stabilization.enableFSRProtection) = true;
+  //PARAMETER_REGISTER(walk.stabilization.maxWaitLandingCount) = 20;
   //PARAMETER_REGISTER(walk.stabilization.enableWaitLanding) = false;
   //PARAMETER_REGISTER(walk.stabilization.minFSRProtectionCount) = 0;
   //PARAMETER_REGISTER(walk.stabilization.maxUnsupportedCount) = 0;
-  //PARAMETER_REGISTER(walk.stabilization.maxWaitLandingCount) = 20;
 
   PARAMETER_REGISTER(walk.stabilization.emergencyStopError) = 500;
 
@@ -110,11 +124,19 @@ IKParameters::IKParameters()
   PARAMETER_REGISTER(walk.stabilization.dynamicStepsizeP) = -1;
   PARAMETER_REGISTER(walk.stabilization.dynamicStepsizeD) = 0.5;
 
-  // rotation stabilize parameter
-  PARAMETER_REGISTER(rotationStabilize.k.x) = -0.5;
-  PARAMETER_REGISTER(rotationStabilize.k.y) = -0.2;
-  PARAMETER_REGISTER(rotationStabilize.threshold.x) = 2;
-  PARAMETER_REGISTER(rotationStabilize.threshold.y) = 3;
+  PARAMETER_REGISTER(walk.stabilization.hipOffsetBasedOnStepChange.x) = 0.0;
+  PARAMETER_REGISTER(walk.stabilization.hipOffsetBasedOnStepChange.y) = 0.0;
+
+  PARAMETER_REGISTER(walk.stabilization.maxHipOffsetBasedOnStepLength.x) = 5;
+  PARAMETER_REGISTER(walk.stabilization.maxHipOffsetBasedOnStepLength.y) = 0;
+  PARAMETER_REGISTER(walk.stabilization.maxHipOffsetBasedOnStepLengthForKicks.x) = 0;
+  PARAMETER_REGISTER(walk.stabilization.maxHipOffsetBasedOnStepLengthForKicks.y) = 0;
+
+//  // rotation stabilize parameter
+//  PARAMETER_REGISTER(rotationStabilize.k.x) = -0.5;
+//  PARAMETER_REGISTER(rotationStabilize.k.y) = -0.2;
+//  PARAMETER_REGISTER(rotationStabilize.threshold.x) = 2;
+//  PARAMETER_REGISTER(rotationStabilize.threshold.y) = 3;
 
   // arm parameter
   PARAMETER_REGISTER(arm.inertialModelBasedMovement.shoulderPitchInterialSensorRate) = -10;

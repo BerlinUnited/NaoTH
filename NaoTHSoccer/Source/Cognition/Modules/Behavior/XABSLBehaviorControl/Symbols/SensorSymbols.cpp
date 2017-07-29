@@ -21,8 +21,6 @@ void SensorSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalInputSymbol("sensor.ultrasound.left", &simplePassLeftSensor);
   engine.registerDecimalInputSymbol("sensor.ultrasound.right", &simplePassRightSensor);
 
-  engine.registerDecimalInputSymbol("button.remote", &getIRButtonNumber);
-
   engine.registerDecimalInputSymbol("platform.battery", &getBatteryData().charge);
 
   engine.registerEnumElement("fall_down_state", "fall_down_state.undefined", BodyState::undefined);
@@ -53,17 +51,6 @@ void SensorSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalInputSymbol("obstacle.ultrasound.right.distance", &getObstacleDistanceRight);
   engine.registerDecimalInputSymbol("obstacle.ultrasound.blockedtime", &getBlockedTime);
 
-  //engine.registerBooleanInputSymbol("collision.colliding", &getCollisionModel().isColliding);
-
-  // integrated obstacle model
-  //engine.registerDecimalInputSymbol("path.next_point_to_go_x", &getPath().nextPointToGo.x);
-  //engine.registerDecimalInputSymbol("path.next_point_to_go_y", &getPath().nextPointToGo.y);
-  //engine.registerDecimalInputSymbol("path.time_since_not_valid", &getTimeNoNodeExpandable);
-
-  // target to control the path
-  //engine.registerDecimalOutputSymbol("path.target_x", &setTargetpointX, &getTargetPointX);
-  //engine.registerDecimalOutputSymbol("path.target_y", &setTargetpointY, &getTargetPointY);
-  
   engine.registerBooleanInputSymbol("button.bumper.pressed.left", &getBumberLeftPressed);
   engine.registerBooleanInputSymbol("button.head.pressed.front", &getButtonHeadFront);
   engine.registerBooleanInputSymbol("button.head.pressed.middle", &getButtonHeadMiddle);
@@ -114,11 +101,6 @@ bool SensorSymbols::getButtonHeadMiddle()
 bool SensorSymbols::getButtonHeadRear()
 {
   return (theInstance->getButtonData().isPressed[ButtonData::HeadRear]);
-}
-
-double SensorSymbols::getIRButtonNumber()
-{
-  return (double)(theInstance->getIRReceiveData().data[IRReceiveData::RightRCByte2]);
 }
 
 double SensorSymbols::getFrameNumber()
@@ -195,32 +177,6 @@ double SensorSymbols::getInertialSensorY()
 {
   return Math::toDegrees(theInstance->getInertialSensorData().data.y);
 }
-/*
-double SensorSymbols::getTargetPointX()
-{
-  return theInstance->getPath().targetPoint.x;
-}
-
-double SensorSymbols::getTargetPointY()
-{
-  return theInstance->getPath().targetPoint.y;
-}
-
-double SensorSymbols::getTimeNoNodeExpandable()
-{
-  return theInstance->getPath().getTimeNoNodeExpandable();
-}
-
-void SensorSymbols::setTargetpointX(double targetX)
-{
-  theInstance->getPath().targetPoint.x = targetX;
-}
-
-void SensorSymbols::setTargetpointY(double targetY)
-{
-  theInstance->getPath().targetPoint.y = targetY;
-}
-*/
 
 bool SensorSymbols::getCollisionArmLeft()
 {

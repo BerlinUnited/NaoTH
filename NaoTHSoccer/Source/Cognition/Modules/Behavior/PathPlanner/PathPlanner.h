@@ -64,6 +64,8 @@ private:
     {
       PARAMETER_REGISTER(sidekick_scale) = 1.0;
       PARAMETER_REGISTER(kick_time) = 300;
+      PARAMETER_REGISTER(approach_ball_adapt_control) = true;
+      PARAMETER_REGISTER(approach_ball_adapt_threshold) = 10;
 
       syncWithConfig();
     }
@@ -71,6 +73,8 @@ private:
 
     double sidekick_scale;
     int kick_time;
+    bool approach_ball_adapt_control;
+    int approach_ball_adapt_threshold;
   } params;
 
   // NONE means hip

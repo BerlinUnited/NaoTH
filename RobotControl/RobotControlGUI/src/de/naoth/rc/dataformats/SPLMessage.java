@@ -246,7 +246,7 @@ public class SPLMessage {
 
         
         // ball
-        if (ballAge >= 0) {
+        if (ballAge >= 0 && ballAge < 3) {
             drawings.add(new Pen(1, Color.orange));
 
             drawings.add(new FillOval((int) globalBall.x, (int) globalBall.y, 65, 65));
@@ -285,6 +285,16 @@ public class SPLMessage {
                 drawings.add(new Pen(Color.gray, new BasicStroke(10, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{100, 50}, 0)));
                 drawings.add(new Arrow((int) globalBall.x, (int) globalBall.y, (int) shootingTo_x, (int) shootingTo_y));
             }
+        }
+        
+        // if it is our player ...
+        if(user != null)
+        {
+            // ... draw the teamball position
+            drawings.add(new Pen(5.0f, robotColor));
+            drawings.add(new Circle((int) user.getTeamBall().getX(), (int) user.getTeamBall().getY(), 65));
+            drawings.add(new Pen(robotColor, new BasicStroke(10, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{25, 50, 75, 100}, 0)));
+            drawings.add(new Arrow((int) robotPose.translation.x, (int) robotPose.translation.y, (int) user.getTeamBall().getX(), (int) user.getTeamBall().getY()));
         }
     }
     
