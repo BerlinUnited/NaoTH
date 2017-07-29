@@ -371,6 +371,10 @@ bool MonteCarloSelfLocator::updateBySensors(SampleSet& sampleSet) const
     }
   }
 
+  if(parameters.updateByMiddleCircle) {
+    updateByMiddleCircle(getLinePercept(), sampleSet);
+  }
+
   if(parameters.updateByCompas && getProbabilisticQuadCompas().isValid()) {
     updateByCompas(sampleSet);
   }
@@ -868,6 +872,41 @@ void MonteCarloSelfLocator::updateByShortLines(const LinePercept& linePercept, S
   */
 }//end updateByLinesTable
 
+void MonteCarloSelfLocator::updateByMiddleCircle(const LinePercept& linePercept, SampleSet& sampleSet) const
+{
+  if(!linePercept.middleCircleWasSeen) {
+    return;
+  }
+
+  double sigmaDistance = parameters.sigmaDistanceCenterCircle;
+  double sigmaAngle    = parameters.sigmaAngleCenterCircle;
+  double cameraHeight  = getCameraMatrix().translation.z;
+
+  Vector2<double> centerCirclePosition; // (0,0)
+
+  for(size_t s=0; s < sampleSet.size(); s++)
+  {
+    Sample& sample = sampleSet[s];
+
+    // translate the center circle to local coord 
+    Vector2d localCircle = sample/centerCirclePosition;
+
+    double expectedDistance = localCircle.abs();
+    double expectedAngle = localCircle.angle();
+
+    double seenDistance = linePercept.middleCircleCenter.abs();
+    double seenAngle = linePercept.middleCircleCenter.angle();
+
+    //double distanceDiff = fabs(expectedDistance - seenDistance);
+    //double angleDiff = Math::normalize(seenAngle - expectedAngle);
+    //sample.likelihood *= exp(-pow((distanceDiff)/sigmaDistance,2));
+    //sample.likelihood *= exp(-pow((angleDiff)/sigmaAngle,2));
+
+    sample.likelihood *= computeDistanceWeight(seenDistance, expectedDistance, cameraHeight, sigmaDistance);
+    sample.likelihood *= computeAngleWeight(seenAngle, expectedAngle, sigmaAngle);
+  }//end for
+
+}//end updateByMiddleCircle
 
 void MonteCarloSelfLocator::updateBySidePositions(SampleSet& sampleSet) const
 {
