@@ -146,13 +146,13 @@ private:
     {
       PARAMETER_REGISTER(useGyroRotationOdometry) = true;
       //PARAMETER_REGISTER(useIMUModel) = false;
-      PARAMETER_REGISTER(useInertiaSensorCalibration) = true;
+      //PARAMETER_REGISTER(useInertiaSensorCalibration) = true;
       syncWithConfig();
     }
 
     bool useGyroRotationOdometry;
     //bool useIMUModel;
-    bool useInertiaSensorCalibration;
+    //bool useInertiaSensorCalibration;
 
   } parameter;
 

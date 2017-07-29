@@ -215,16 +215,14 @@ void Motion::processSensorData()
       getSensorJointData().position[i] = getSensorJointData().position[i] - getOffsetJointData().position[i];
   }
 
-  if(parameter.useInertiaSensorCalibration){
-      // calibrate inertia sensors
-      theInertiaSensorCalibrator->execute();
+  // calibrate inertia sensors
+  theInertiaSensorCalibrator->execute();
 
-      //TODO: introduce calibrated versions of the data
-      //TODO: correct the sensors z is inverted => don't forget to check all modules requiring/providing GyrometerData
-      getGyrometerData().data      += getCalibrationData().gyroSensorOffset;
-      getInertialSensorData().data += getCalibrationData().inertialSensorOffset;
-      getAccelerometerData().data  += getCalibrationData().accSensorOffset;
-  }
+  //TODO: introduce calibrated versions of the data
+  //TODO: correct the sensors z is inverted => don't forget to check all modules requiring/providing GyrometerData
+  getGyrometerData().data      += getCalibrationData().gyroSensorOffset;
+  getInertialSensorData().data += getCalibrationData().inertialSensorOffset;
+  getAccelerometerData().data  += getCalibrationData().accSensorOffset;
 
   theIMUModel->execute();
   theInertiaSensorFilterBH->execute();
