@@ -23,6 +23,8 @@
 #include "Classifier/CNN_synth_full_conv.h"
 #include "Classifier/CNN_rc17_augmented_1.h"
 #include "Classifier/CNN_rc17_augmented_2.h"
+#include "Classifier/CNN_rc17_augmented_7.h"
+#include "Classifier/DortmundCNN/CNN_dortmund.h"
 
 using namespace std;
 
@@ -139,6 +141,9 @@ std::map<string, std::shared_ptr<AbstractCNNClassifier> > BallCandidateDetector:
 
   result.insert({"rc17_augmented_1", std::make_shared<CNN_rc17_augmented_1>()});
   result.insert({"rc17_augmented_2", std::make_shared<CNN_rc17_augmented_2>()});
+
+  result.insert({"rc17_augmented_7", std::make_shared<CNN_rc17_augmented_7>()});
+  result.insert({"dortmund", std::make_shared<CNN_dortmund>()});
 
   return std::move(result);
 }
