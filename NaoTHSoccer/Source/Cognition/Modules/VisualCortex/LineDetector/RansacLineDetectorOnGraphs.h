@@ -75,7 +75,7 @@ private:
       PARAMETER_REGISTER(circle_iterations) = 20;
       PARAMETER_REGISTER(circle_outlierThreshold) = 70;
       PARAMETER_REGISTER(circle_inlierMin) = 10;
-      PARAMETER_REGISTER(circle_degeneration) = 0.5;
+      PARAMETER_REGISTER(circle_degeneration) = 0.9;
       PARAMETER_REGISTER(circle_line_threshold) = 0.5;
 
       syncWithConfig();
