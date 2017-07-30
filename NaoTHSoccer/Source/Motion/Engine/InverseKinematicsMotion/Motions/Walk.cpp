@@ -111,13 +111,16 @@ void Walk::execute()
     } else {
       c.localInHip();
     }
-      
+
     getEngine().rotationStabilize(
       getInertialModel(),
       getGyrometerData(),
       getRobotInfo().getBasicTimeStepInSecond(),
-      c);
-  } 
+      c,
+      parameters().rotationStabilization.rotationP,
+      parameters().rotationStabilization.rotationVelocityP,
+      parameters().rotationStabilization.rotationD);
+  }
   else if(getCalibrationData().calibrated && parameters().stabilization.rotationStabilizeRC16)
   {
     if(stepBuffer.first().footStep.liftingFoot() == FootStep::LEFT) {
@@ -132,7 +135,10 @@ void Walk::execute()
       getInertialSensorData(),
       getGyrometerData(),
       getRobotInfo().getBasicTimeStepInSecond(),
-      c);
+      c,
+      parameters().rotationStabilizationRC16.rotationP,
+      parameters().rotationStabilizationRC16.rotationVelocityP,
+      parameters().rotationStabilizationRC16.rotationD);
   }
   else if(getCalibrationData().calibrated && parameters().stabilization.rotationStabilizeNewIMU)
   {
@@ -148,7 +154,10 @@ void Walk::execute()
       getIMUData(),
       getGyrometerData(),
       getRobotInfo().getBasicTimeStepInSecond(),
-      c);
+      c,
+      parameters().rotationStabilizationNewIMU.rotationP,
+      parameters().rotationStabilizationNewIMU.rotationVelocityP,
+      parameters().rotationStabilizationNewIMU.rotationD);
   }
 
   getEngine().solveHipFeetIK(c);
