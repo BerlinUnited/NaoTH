@@ -104,7 +104,7 @@ void IMUModel::writeIMUData(){
                                         atan2(-rot[0].z, rot[2].z));
 
     // only to enable transparent switching with InertiaSensorFilter
-    //getInertialModel().orientation = getIMUData().orientation;
+    getInertialModel().orientation = getIMUData().orientation;
 }
 
 void IMUModel::plots(){
