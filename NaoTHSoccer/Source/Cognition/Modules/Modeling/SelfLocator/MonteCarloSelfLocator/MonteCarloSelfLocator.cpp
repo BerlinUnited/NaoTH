@@ -431,7 +431,7 @@ bool MonteCarloSelfLocator::updateBySensors(SampleSet& sampleSet) const
 
   if(parameters.updateByShortLinePercept)
   {
-    if(!getLinePercept().lines.empty()) {
+    if(!getLinePercept().short_lines.empty()) {
       updateByShortLines(getLinePercept(), sampleSet);
     }
   }
