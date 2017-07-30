@@ -29,6 +29,12 @@ public:
     double bodyPitchOffset;
     double hipOffsetX;
 
+    struct RotationStabilization{
+        Vector2d rotationP;
+        Vector2d rotationVelocityP;
+        Vector2d rotationD;
+    } rotationStabilization, rotationStabilizationRC16;
+
     struct Relax {
 
         bool   enable;
