@@ -426,7 +426,7 @@ void PathPlanner::execute_step_buffer()
   getMotionRequest().walkRequest.stepControl.stepID            = getMotionStatus().stepControl.stepID;
   getMotionRequest().walkRequest.stepControl.type              = step_buffer.front().type;
   getMotionRequest().walkRequest.stepControl.time              = step_buffer.front().time;
-  getMotionRequest().walkRequest.stepControl.speedDirection    = step_buffer.front().speedDirection;
+  getMotionRequest().walkRequest.stepControl.speedDirection    = Math::fromDegrees(step_buffer.front().speedDirection);
   getMotionRequest().walkRequest.stepControl.target            = step_buffer.front().pose;
   getMotionRequest().walkRequest.stepControl.restriction       = step_buffer.front().restriction;
   getMotionRequest().walkRequest.stepControl.isProtected       = step_buffer.front().isProtected;
