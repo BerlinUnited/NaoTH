@@ -23,6 +23,8 @@ Walk::Walk() : IKMotion(getInverseKinematicsMotionEngineService(), motion::walk,
   DEBUG_REQUEST_REGISTER("Walk:plot_genTrajectoryWithSplines", "plot spline interpolation to parametrize 3D foot trajectory", false);
 
   DEBUG_REQUEST_REGISTER("Walk:useBezierBased2", "use method 2 for bezier interpolation", false);
+
+  emergencyCounter = 0;
 }
   
 void Walk::execute()
@@ -244,6 +246,19 @@ void Walk::calculateNewStep(const Step& lastStep, Step& newStep, const WalkReque
 
   if ( getMotionRequest().id != getId() || (do_emergency_stop && !walkRequest.stepControl.isProtected))
   {
+    // TODO: find reason for deadlock
+    // current fix: force leaving emergency_stop after some cycles
+    if(do_emergency_stop) {
+      emergencyCounter++;
+    }
+
+    PLOT("Walk:emergencyCounter",emergencyCounter);
+
+    if(emergencyCounter > parameters().stabilization.maxEmergencyCounter){
+        emergencyCounter = 0;
+        com_errors.clear();
+    }
+
     // try to make a last step to align the feet if it is required
     if ( getMotionRequest().standardStand ) {
       newStep.footStep = theFootStepPlanner.finalStep(lastStep.footStep, walkRequest);
@@ -259,6 +274,9 @@ void Walk::calculateNewStep(const Step& lastStep, Step& newStep, const WalkReque
       std::cout << "walk stopping ..." << std::endl;
     }
     return;
+  } else {
+      // reset emergencyCounter if the stop was succesful (no deadlock case)
+      emergencyCounter = 0;
   }
 
   if (walkRequest.stepControl.stepRequestID == getMotionStatus().stepControl.stepRequestID + 1)
@@ -385,10 +403,10 @@ void Walk::planZMP()
       }
       else
       {
-          zmpOffsetX = parameters().general.hipOffsetX + parameters().stabilization.maxHipOffsetBasedOnStepLength.x * std::abs(currentStepLength.x)/parameters().limits.maxStepLength;
+          zmpOffsetX = parameters().general.hipOffsetX + parameters().stabilization.maxHipOffsetBasedOnStepLength.x * ((currentStepLength.x > 0) ? currentStepLength.x / parameters().limits.maxStepLength : 0);
           zmpOffsetY = parameters().hip.ZMPOffsetY     + parameters().hip.ZMPOffsetYByCharacter * (1-planningStep.walkRequest.character);
 
-          newZMPOffsetX = parameters().zmp.bezier.offsetX + parameters().stabilization.maxHipOffsetBasedOnStepLength.x * std::abs(currentStepLength.x)/parameters().limits.maxStepLength;
+          newZMPOffsetX = parameters().zmp.bezier.offsetX + parameters().stabilization.maxHipOffsetBasedOnStepLength.x * ((currentStepLength.x > 0) ? currentStepLength.x / parameters().limits.maxStepLength : 0);
           newZMPOffsetY = parameters().zmp.bezier.offsetY + parameters().hip.ZMPOffsetYByCharacter * (1-planningStep.walkRequest.character);
       }
 

@@ -102,7 +102,8 @@ IKParameters::IKParameters()
   //PARAMETER_REGISTER(walk.stabilization.minFSRProtectionCount) = 0;
   //PARAMETER_REGISTER(walk.stabilization.maxUnsupportedCount) = 0;
 
-  PARAMETER_REGISTER(walk.stabilization.emergencyStopError) = 500;
+  PARAMETER_REGISTER(walk.stabilization.emergencyStopError)  = 500;
+  PARAMETER_REGISTER(walk.stabilization.maxEmergencyCounter) = 1000;
 
   PARAMETER_REGISTER(walk.stabilization.rotationStabilize) = true;
   PARAMETER_REGISTER(walk.stabilization.rotationStabilizeRC16) = false;

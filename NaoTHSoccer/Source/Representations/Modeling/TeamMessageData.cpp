@@ -200,7 +200,7 @@ TeamMessageCustom::TeamMessageCustom() :
   whistleDetected(false),
   whistleCount(0),
   // init with "invalid" position
-  teamBall(std::nan(""), std::nan(""))
+  teamBall(std::numeric_limits<double>::infinity(), std::numeric_limits<double>::infinity())
 {
 }
 
@@ -239,9 +239,7 @@ naothmessages::BUUserTeamMessage TeamMessageCustom::toProto() const
     userMsg.set_cputemperature((float)cpuTemperature);
     userMsg.set_whistledetected(whistleDetected);
     userMsg.set_whistlecount(whistleCount);
-    if(!std::isnan(teamBall.x) && !std::isnan(teamBall.y)) {
-        DataConversion::toMessage(teamBall, *(userMsg.mutable_teamball()));
-    }
+    DataConversion::toMessage(teamBall, *(userMsg.mutable_teamball()));
     userMsg.set_key(key);
     return userMsg;
 }
@@ -269,7 +267,6 @@ std::string TeamMessageCustom::toDoBerManHeader() const
   header.teamID = 4;
   header.isPenalized = isPenalized;
   header.whistleDetected = whistleDetected;
-
 
   // create the result byte array by mapping the header struct
   std::string result;
@@ -303,8 +300,8 @@ void TeamMessageCustom::parseFromProto(const naothmessages::BUUserTeamMessage &u
     if(userData.has_teamball()) {
         DataConversion::fromMessage(userData.teamball(),teamBall);
     } else {
-        teamBall.x = std::nan("");
-        teamBall.y = std::nan("");
+        teamBall.x = std::numeric_limits<double>::infinity();
+        teamBall.y = std::numeric_limits<double>::infinity();
     }
 }
 
