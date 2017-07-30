@@ -43,7 +43,6 @@ public class SPLMessage {
         public byte isPenalized;
         public byte whistleDetected;
         public byte dummy;
-        public byte size;
         
         public static DoBerManCustomHeader parseData(byte[] data) {
             // WARNING! HACK!
@@ -58,7 +57,6 @@ public class SPLMessage {
                 mixed.isPenalized = doberHeader.get();
                 mixed.whistleDetected = doberHeader.get();
                 mixed.dummy = doberHeader.get();
-                mixed.size = BU_CUSTOM_DATA_OFFSET_X64;
             }
             
             return mixed;
@@ -221,17 +219,10 @@ public class SPLMessage {
         // if we could parse the mixed team header ...
         if(this.doberHeader != null) {
             // parse our own part ...
-            if(this.data.length > this.doberHeader.size) {
-                byte[] dataWithOffset = Arrays.copyOfRange(this.data, this.doberHeader.size, this.data.length);
-                try {
-                    this.user = Representations.BUUserTeamMessage.parseFrom(dataWithOffset);
-                    // additionally check if the magic string matches
-                    if(!"naoth".equals(this.user.getKey())) {
-                        this.user = null;
-                    }
-                } catch (InvalidProtocolBufferException ex) {
-                    // it's not our message
-                }
+            // WARNING! HACK!
+            // the struct size is different in 32/64 bit
+            if(!this.extractCustomData(BU_CUSTOM_DATA_OFFSET_X32)) {
+                this.extractCustomData(BU_CUSTOM_DATA_OFFSET_X64);
             }
         }
     }
@@ -318,6 +309,7 @@ public class SPLMessage {
     }
     
     public void parseCustomFromData() {
+        // TODO: check if this needs to be changed - 'cause of dobermanheader!?!
         if(data != null) {
             try {
                 user = Representations.BUUserTeamMessage.parseFrom(data);
@@ -327,4 +319,20 @@ public class SPLMessage {
         }
     }
 
+    public boolean extractCustomData(int size) {
+        if(this.data.length > size) {
+            byte[] dataWithOffset = Arrays.copyOfRange(this.data, size, this.data.length);
+            try {
+                this.user = Representations.BUUserTeamMessage.parseFrom(dataWithOffset);
+                // additionally check if the magic string matches
+                if(!"naoth".equals(this.user.getKey())) {
+                    this.user = null;
+                }
+                return this.user != null;
+            } catch (InvalidProtocolBufferException ex) {
+                // it's not our message
+            }
+        }
+        return false;
+    }
 }
