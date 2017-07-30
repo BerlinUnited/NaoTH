@@ -95,7 +95,6 @@ private:
   static double getBallAngle();
   static double getBallTimeSinceLastSeen();
   static double getBallTimeSeen();
-  static double getTeamBallTimeSinceLastUpdate();
 
   // some local members
   Vector2d ballPositionField;

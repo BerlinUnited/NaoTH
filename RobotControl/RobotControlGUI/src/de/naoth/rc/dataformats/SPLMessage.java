@@ -33,7 +33,8 @@ public class SPLMessage {
     public static final int SPL_STANDARD_MESSAGE_SIZE = 70 + SPL_STANDARD_MESSAGE_DATA_SIZE;
     public static final int SPL_STANDARD_MESSAGE_MAX_NUM_OF_PLAYERS = 5;
     
-    public static final int BU_CUSTOM_DATA_OFFSET = 12;
+    public static final int BU_CUSTOM_DATA_OFFSET_X32 = 12;
+    public static final int BU_CUSTOM_DATA_OFFSET_X64 = 16;
 
     public static class DoBerManCustomHeader
     {
@@ -42,6 +43,26 @@ public class SPLMessage {
         public byte isPenalized;
         public byte whistleDetected;
         public byte dummy;
+        public byte size;
+        
+        public static DoBerManCustomHeader parseData(byte[] data) {
+            // WARNING! HACK!
+            // the struct size is different in 32/64 bit
+            // but it looks like, java can parse both, not matter which size ...
+            DoBerManCustomHeader mixed = null;
+            if(data.length >= BU_CUSTOM_DATA_OFFSET_X64) {
+                ByteBuffer doberHeader = ByteBuffer.wrap(data).order(ByteOrder.LITTLE_ENDIAN);
+                mixed = new DoBerManCustomHeader();
+                mixed.timestamp = doberHeader.getLong();
+                mixed.teamID = doberHeader.get();
+                mixed.isPenalized = doberHeader.get();
+                mixed.whistleDetected = doberHeader.get();
+                mixed.dummy = doberHeader.get();
+                mixed.size = BU_CUSTOM_DATA_OFFSET_X64;
+            }
+            
+            return mixed;
+        }
     }
     
     //public byte header[4]; // 4
@@ -193,29 +214,24 @@ public class SPLMessage {
         this.numOfDataBytes = buffer.getShort();
         this.data = new byte[this.numOfDataBytes];
         buffer.get(this.data, 0, this.data.length);
-
-        if(this.data.length >= BU_CUSTOM_DATA_OFFSET) {
-            byte[] dataClipped = Arrays.copyOfRange(this.data, 0, BU_CUSTOM_DATA_OFFSET);
-            ByteBuffer doberHeader = ByteBuffer.wrap(data).order(ByteOrder.LITTLE_ENDIAN);
-            
-            this.doberHeader = new DoBerManCustomHeader();
-            this.doberHeader.timestamp = doberHeader.getLong();
-            this.doberHeader.teamID = doberHeader.get();
-            this.doberHeader.isPenalized = doberHeader.get();
-            this.doberHeader.whistleDetected = doberHeader.get();
-            this.doberHeader.dummy = doberHeader.get();
-            
-        }
-        if(this.data.length > BU_CUSTOM_DATA_OFFSET) {
-            byte[] dataWithOffset = Arrays.copyOfRange(this.data, BU_CUSTOM_DATA_OFFSET, this.data.length);
-            try {
-                this.user = Representations.BUUserTeamMessage.parseFrom(dataWithOffset);
-                // additionally check if the magic string matches
-                if(!"naoth".equals(this.user.getKey())) {
-                    this.user = null;
+        
+        // parse mixed team header
+        this.doberHeader = DoBerManCustomHeader.parseData(this.data);
+        
+        // if we could parse the mixed team header ...
+        if(this.doberHeader != null) {
+            // parse our own part ...
+            if(this.data.length > this.doberHeader.size) {
+                byte[] dataWithOffset = Arrays.copyOfRange(this.data, this.doberHeader.size, this.data.length);
+                try {
+                    this.user = Representations.BUUserTeamMessage.parseFrom(dataWithOffset);
+                    // additionally check if the magic string matches
+                    if(!"naoth".equals(this.user.getKey())) {
+                        this.user = null;
+                    }
+                } catch (InvalidProtocolBufferException ex) {
+                    // it's not our message
                 }
-            } catch (InvalidProtocolBufferException ex) {
-                // it's not our message
             }
         }
     }
@@ -290,11 +306,14 @@ public class SPLMessage {
         // if it is our player ...
         if(user != null)
         {
-            // ... draw the teamball position
-            drawings.add(new Pen(5.0f, robotColor));
-            drawings.add(new Circle((int) user.getTeamBall().getX(), (int) user.getTeamBall().getY(), 65));
-            drawings.add(new Pen(robotColor, new BasicStroke(10, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{25, 50, 75, 100}, 0)));
-            drawings.add(new Arrow((int) robotPose.translation.x, (int) robotPose.translation.y, (int) user.getTeamBall().getX(), (int) user.getTeamBall().getY()));
+            double[] tb = {user.getTeamBall().getX(), user.getTeamBall().getY()};
+            if(!Double.isInfinite(tb[0]) && !Double.isInfinite(tb[1])) {
+                // ... draw the teamball position
+                drawings.add(new Pen(5.0f, robotColor));
+                drawings.add(new Circle((int) tb[0], (int) tb[1], 65));
+                drawings.add(new Pen(robotColor, new BasicStroke(10, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{25, 50, 75, 100}, 0)));
+                drawings.add(new Arrow((int) robotPose.translation.x, (int) robotPose.translation.y, (int) tb[0], (int) tb[1]));
+            }
         }
     }
     

@@ -15,6 +15,8 @@ InertiaSensorCalibrator::InertiaSensorCalibrator()
 {
   DEBUG_REQUEST_REGISTER("InertiaSensorCalibrator:force_calibrate", "", false);
   reset();
+
+  getDebugParameterList().add(&parameter);
 }
 
 // check all request joints' speed, return true if all joints are almost not moving
@@ -48,6 +50,18 @@ void InertiaSensorCalibrator::reset()
 
 void InertiaSensorCalibrator::execute()
 {
+  // disable calibration and set representation to reasonable values
+  if(parameter.disable){
+      // needed in behavior
+      getCalibrationData().calibrated = true;
+
+      // will be applied directly to the corresponding representations
+      getCalibrationData().accSensorOffset  = Vector3d();
+      getCalibrationData().gyroSensorOffset = Vector3d();
+      getCalibrationData().inertialSensorOffset = Vector2d();
+
+      return;
+  }
   // inertial params
   Vector2d inertialBiasProcessNoise = Vector2d(0.05, 0.05);
   MODIFY("InertiaSensorCalibrator:inertialBiasProcessNoise.x", inertialBiasProcessNoise.x);

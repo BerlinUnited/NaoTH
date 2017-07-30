@@ -24,6 +24,9 @@ LineGraphProvider::LineGraphProvider()
 
   DEBUG_REQUEST_REGISTER("Vision:LineGraphProvider:draw_line_graph", "", false);
 
+  DEBUG_REQUEST_REGISTER("Vision:LineGraphProvider:draw_extended_line_graph", "", false);
+  DEBUG_REQUEST_REGISTER("Vision:LineGraphProvider:draw_extended_line_graph_top", "", false);
+
   getDebugParameterList().add(&parameters);
 }
 
@@ -40,7 +43,6 @@ void LineGraphProvider::execute(CameraInfo::CameraID id)
 
   calculatePairsAndNeigbors(getScanLineEdgelPercept().pairs, edgelPairs, edgelNeighbors, parameters.edgelSimThreshold);
 
-  
 
   // calculate the projection for all edgels
   edgelProjectionsBegin.resize(getScanLineEdgelPercept().pairs.size());
@@ -68,6 +70,31 @@ void LineGraphProvider::execute(CameraInfo::CameraID id)
       edgelProjectionsBegin[i]);
 
     //pair.projectedWidth = Vector2d(beginPointOnField - endPointOnField).abs();
+  }
+
+  // extend line graph
+  lineGraphsIds.clear();
+  extendLineGraph(edgelNeighbors);
+
+  std::vector<std::vector<EdgelD>>& graph = (cameraID == CameraInfo::Top)?
+        getLineGraphPercept().lineGraphsTop:
+        getLineGraphPercept().lineGraphs;
+
+  // add the graphs to the representation
+  for(const std::vector<int>& subgraph : lineGraphsIds)
+  {
+    graph.emplace_back();
+    for(size_t left=0, right=1; right < subgraph.size(); ++left, ++right) {
+
+      const Vector2d& edgelLeft = (edgelProjectionsBegin[subgraph[left]] + edgelProjectionsEnd[subgraph[left]])*0.5;
+      const Vector2d& edgelRight = (edgelProjectionsBegin[subgraph[right]] + edgelProjectionsEnd[subgraph[right]])*0.5;
+
+      EdgelD edgel;
+      edgel.point = Vector2d(edgelLeft + edgelRight)*0.5;
+      edgel.direction = (edgelRight - edgelLeft).normalize();
+
+      graph.back().push_back(edgel);
+    }
   }
 
   // calculate the LineGraphPercept
@@ -310,6 +337,30 @@ void LineGraphProvider::execute(CameraInfo::CameraID id)
   );
 
 }//end execute
+
+void LineGraphProvider::extendLineGraph(std::vector<Neighbors>& neighbors) {
+  std::vector<bool> processed(neighbors.size(), false);
+
+  for (size_t i=0; i<processed.size(); i++) {
+    if(processed[i] || 
+        (neighbors[i].left != -1 && neighbors[neighbors[i].left].right == static_cast<int>(i))) // not a begin of a graph
+    {
+      continue;
+    }
+
+    std::vector<int> subGraph;
+    
+    int in = static_cast<int>(i);
+    do {
+      subGraph.push_back(in);
+      processed[in] = true;
+    } while((in = neighbors[in].right) > -1);
+
+    if (subGraph.size() >= 2) {
+      lineGraphsIds.push_back(subGraph);
+    }
+  }
+}
 
 double LineGraphProvider::edgelSim(const EdgelT<double>& e1, const EdgelT<double>& e2)
 {

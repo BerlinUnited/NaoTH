@@ -130,7 +130,8 @@ private: // local types
       PARAMETER_REGISTER(motionNoiseDistance) = 5.0;
       PARAMETER_REGISTER(motionNoiseAngle) = 0.01;
 
-      PARAMETER_REGISTER(updateByGoalPost) = true;
+      PARAMETER_REGISTER(updateByGoalPostTracking) = false;
+      PARAMETER_REGISTER(updateByGoalPostLocalize) = true;
       PARAMETER_REGISTER(goalPostSigmaDistance) = 0.1;
       PARAMETER_REGISTER(goalPostSigmaAngle) = 0.1;
 
@@ -141,6 +142,11 @@ private: // local types
 
       PARAMETER_REGISTER(updateByLinePercept) = true;
 
+      PARAMETER_REGISTER(updateByShortLinePercept) = false;
+
+      PARAMETER_REGISTER(updateByMiddleCircle) = true;
+      PARAMETER_REGISTER(sigmaDistanceCenterCircle) = 0.2;
+      PARAMETER_REGISTER(sigmaAngleCenterCircle) = 0.1;
 
       PARAMETER_REGISTER(updateByOldPose) = false;
       PARAMETER_REGISTER(oldPoseSigmaDistance) = 0.1;
@@ -177,7 +183,8 @@ private: // local types
     double motionNoiseDistance;
     double motionNoiseAngle;
 
-    bool updateByGoalPost;
+    bool updateByGoalPostTracking;
+    bool updateByGoalPostLocalize;
     double goalPostSigmaDistance;
     double goalPostSigmaAngle;
 
@@ -187,7 +194,12 @@ private: // local types
     int linePointsMaxNumber;
 
     bool updateByLinePercept;
+    bool updateByShortLinePercept;
+
     
+    bool updateByMiddleCircle;
+    double sigmaDistanceCenterCircle;
+    double sigmaAngleCenterCircle;
 
     bool updateByOldPose;
     double oldPoseSigmaDistance;
@@ -252,6 +264,10 @@ private: // local types
   };
 
 
+private: // goal posts
+  bool updatedByGoalPosts;
+
+
 private: // data members
   OdometryData lastRobotOdometry;
   SampleSet theSampleSet;
@@ -275,7 +291,9 @@ private: // workers
   void updateByCompas(SampleSet& sampleSet) const;
   void updateByLinePoints(const LineGraphPercept& linePercept, SampleSet& sampleSet) const;
   void updateByLines(const LinePercept& linePercept, SampleSet& sampleSet) const;
+  void updateByShortLines(const LinePercept& linePercept, SampleSet& sampleSet) const;
 
+  void updateByMiddleCircle(const LinePercept& linePercept, SampleSet& sampleSet) const;
   // A-Priori knowledge based on the game state
   void updateBySidePositions(SampleSet& sampleSet) const;
   void updateByStartPositions(SampleSet& sampleSet) const;
