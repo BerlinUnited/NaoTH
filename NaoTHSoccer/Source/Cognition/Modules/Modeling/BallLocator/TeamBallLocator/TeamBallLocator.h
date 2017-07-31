@@ -73,11 +73,12 @@ class TeamBallLocator : protected TeamBallLocatorBase
       Parameters() : ParameterList("TeamBallParameters")
       {
         PARAMETER_REGISTER(maxTimeOffset) = 1000;
-        
+        PARAMETER_REGISTER(maxTimeValid) = 5000;
         syncWithConfig();
       }
       
       unsigned int maxTimeOffset;
+      unsigned int maxTimeValid;
 
     } theParameters;
 

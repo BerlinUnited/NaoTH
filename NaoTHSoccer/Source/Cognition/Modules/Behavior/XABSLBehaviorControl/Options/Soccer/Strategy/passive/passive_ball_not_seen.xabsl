@@ -11,7 +11,7 @@ option passive_ball_not_seen
   {
     decision {
       else if(state_time > 1000){
-          if (ball.team.time_since_last_update < 5000) {
+          if (ball.team.is_valid) {
             // if we got a 'valid' team ball - turn to and look at
             goto look_at_team_ball;
           } else {

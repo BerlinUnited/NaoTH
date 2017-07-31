@@ -14,10 +14,7 @@
 class TeamBallModel  : public naoth::Printable
 {
 public:
-  TeamBallModel()
-      : time(0)
-  {
-  }
+  TeamBallModel() {}
 
   // the global position of ball
   Vector2d positionOnField;
@@ -28,15 +25,19 @@ public:
   // root mean squared error of the estimate [m]
   double rmse;
 
-  // the time of message [ms]
-  unsigned int time;
+  // the time of message [ms] (last received teamcomm message)
+  unsigned int time = 0;
+
+  // validity of the model: true => the teamball-locator was able to determine a teamball
+  bool valid = false;
 
   virtual ~TeamBallModel()
   {}
 
   virtual void print(std::ostream& stream) const
   {
-      stream << "global position: " << positionOnField.x << "/" << positionOnField.y << "\n"
+      stream << "valid: " << (valid ? "true" : "false") << "\n"
+             << "global position: " << positionOnField.x << "/" << positionOnField.y << "\n"
              << "local position: " << position.x << "/" << position.y << "\n"
              << "root mean squared error: " << rmse << "\n"
              << "time: " << time << "\n"

@@ -138,6 +138,7 @@ public:
       //int maxWaitLandingCount; // <0 means wait for ever until landing
 
       double emergencyStopError;
+      unsigned int maxEmergencyCounter;
 
       // enable stabilization by rotating the body
       bool rotationStabilize;
@@ -163,7 +164,7 @@ public:
       struct HipOffsetBasedOnStepLength {
           double x;
           double y;
-      } maxHipOffsetBasedOnStepLength;
+      } maxHipOffsetBasedOnStepLength, maxHipOffsetBasedOnStepLengthForKicks;
 
     } stabilization;
 
@@ -180,6 +181,7 @@ public:
             double inFootSpacing;
             double offsetX;
             double offsetY;
+            double offsetXForKicks;
             double offsetYForKicks;
         } bezier;
 

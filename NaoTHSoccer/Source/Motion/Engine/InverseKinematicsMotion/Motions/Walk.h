@@ -186,6 +186,8 @@ private: // stabilization
   RingBuffer<InverseKinematic::CoMFeetPose, 10> commandPoseBuffer;
   RingBuffer<FootStep::Foot, 10> commandFootIdBuffer;
 
+  unsigned int emergencyCounter;
+
   void adaptStepSize(FootStep& step) const;
   void calculateError();
   void feetStabilize(const Step& executingStep, double (&position)[naoth::JointData::numOfJoint]) const;

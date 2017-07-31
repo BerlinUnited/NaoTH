@@ -53,7 +53,7 @@ void BallSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalInputSymbol("ball.position.field.y", &ballPositionField.y);
 
   // team
-  engine.registerDecimalInputSymbol("ball.team.time_since_last_update", &getTeamBallTimeSinceLastUpdate);
+  engine.registerBooleanInputSymbol("ball.team.is_valid", &getTeamBallModel().valid);
   engine.registerDecimalInputSymbol("ball.team.position.x", &getTeamBallModel().position.x);
   engine.registerDecimalInputSymbol("ball.team.position.y", &getTeamBallModel().position.y);
   engine.registerDecimalInputSymbol("ball.team.rmse", &getTeamBallModel().rmse);
@@ -134,8 +134,4 @@ double BallSymbols::getBallTimeSinceLastSeen() {
 
 double BallSymbols::getBallTimeSeen() {
   return theInstance->getBallModel().getTimeBallIsSeen();
-}
-
-double BallSymbols::getTeamBallTimeSinceLastUpdate() {
-  return theInstance->getFrameInfo().getTimeSince(theInstance->getTeamBallModel().time);
 }
