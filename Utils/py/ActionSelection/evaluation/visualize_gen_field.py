@@ -6,7 +6,7 @@ import scipy.io
 
 from tools import tools
 """
- should read in pickle files from data/potential_field_generation
+ reads pickle files from data/potential_field_generation
  Pickle File format:  x, y, time, angle
 """
 
@@ -15,8 +15,6 @@ gen_field_own = pickle.load(open("../data/potential_field_generation/potential_f
 
 plt.clf()
 tools.draw_field()
-axes = plt.gca()
-patches = []
 
 nx = {}
 ny = {}
@@ -24,7 +22,6 @@ for pos in gen_field_own:
     x, y, time, angle = pos
     nx[x] = x
     ny[y] = y
-
 
 nxi = np.array(sorted(nx.keys()))
 nyi = np.array(sorted(ny.keys()))
