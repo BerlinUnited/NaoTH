@@ -4,11 +4,11 @@ import field_info as f
 import matplotlib as mpl
 
 
-def draw_field():
+def draw_field(axis=plt.gca()):
 
     mpl.rcParams['lines.linewidth'] = 2.33513514  # was 2 before
 
-    ax = plt.gca()
+    ax = axis
     ax.plot([0, 0], [-f.y_length * 0.5, f.y_length * 0.5], 'white')  # Middle line
 
     ax.plot([f.x_opponent_groundline, f.x_opponent_groundline], [f.y_left_sideline, f.y_right_sideline], 'white')  # opponent ground line
