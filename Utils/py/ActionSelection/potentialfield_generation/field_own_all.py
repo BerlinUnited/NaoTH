@@ -34,6 +34,7 @@ def main():
     state = State()
     file_idx = 0
     cell_width = 50
+    iteration = 1
     rotation_step = 5
     dummy_container = []
 
@@ -49,7 +50,7 @@ def main():
     # run for the whole field
     for x in x_range:  # range(-3000, 1000, 2 * cell_width):
         for y in y_range:  # range(-3000, -1000, 2 * cell_width):
-            time, angle = simulate_best_angle(x, y, state, rotation_step)
+            time, angle = simulate_best_angle(x, y, state, rotation_step, iteration)
             if not np.isinf(time):
                 v = m2d.Vector2(100.0, 0.0).rotate(math.radians(angle))
                 axes.arrow(x, y, v.x, v.y, head_width=100, head_length=100, fc='k', ec='k')

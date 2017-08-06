@@ -17,8 +17,6 @@ class State:
         self.ball_position = m2d.Vector2(100.0, 0.0)
 
         self.obstacle_list = ([])  # is in global coordinates
-        #self.own_robots = [m2d.Vector2(-2250, -1000)]
-        #self.opp_robots = [m2d.Vector2(-1800, -1000)]
 
 
 def draw_actions(actions_consequences, state, best_action):
@@ -28,13 +26,6 @@ def draw_actions(actions_consequences, state, best_action):
     axes = plt.gca()
     axes.add_artist(Circle(xy=(state.pose.translation.x, state.pose.translation.y), radius=100, fill=False, edgecolor='white'))
     axes.text(0, 0, best_action, fontsize=12)
-
-    #for own in state.own_robots:
-    #    axes.add_artist(
-    #        Circle(xy=(own.x, own.y), radius=100, fill=True, edgecolor='blue'))
-    #for opp in state.opp_robots:
-    #    axes.add_artist(
-    #        Circle(xy=(opp.x, opp.y), radius=100, fill=True, edgecolor='red'))
 
     x = np.array([])
     y = np.array([])

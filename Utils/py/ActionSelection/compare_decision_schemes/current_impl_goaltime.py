@@ -104,7 +104,7 @@ def main(x, y, rot, s, num_iter):
                 break
 
             elif not inside_field and not goal_scored:
-                # Assert that expected_ball_pos is inside field or inside opp goal
+                # Asserts that expected_ball_pos is inside field or inside opp goal
                 # print("Error: This position doesn't manage a goal")
                 total_time = float('nan')
                 break

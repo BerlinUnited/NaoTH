@@ -13,7 +13,7 @@ from tools import tools
  Pickle File format:  x, y, rot, c_kicks, c_turns, p_kicks, p_turns
 """
 
-version = 3
+version = 4
 
 strategies = pickle.load(open("../data/strategy_times" + str(version) + ".pickle", "rb"))
 actions = pickle.load(open("../data/strategy_actions" + str(version) + ".pickle", "rb"))

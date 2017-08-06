@@ -41,8 +41,8 @@ def main():
     y_range = range(int(-field.y_length * 0.5) + cell_width, int(field.y_length * 0.5), 2 * cell_width)
     rot = 0
 
-    # x_range = range(-800, 800, 200)
-    # y_range = range(-800, 800, 200)
+    # x_range = range(-400, 400, 200)
+    # y_range = range(-400, 400, 200)
 
     # run for the whole field
     for x in x_range:
@@ -59,8 +59,8 @@ def main():
     while (os.path.exists('{}{:d}.pickle'.format('data/strategy_times', file_idx)) or
            os.path.exists('{}{:d}.pickle'.format('data/strategy_actions', file_idx))):
         file_idx += 1
-    pickle.dump(timing_container, open('data/strategy_times' + str(file_idx) + '.pickle', "wb"))
-    pickle.dump(kick_container, open('data/strategy_actions' + str(file_idx) + '.pickle', "wb"))
+    pickle.dump(timing_container, open('data/strategy_times' + "-rot" + str(rot) + str(file_idx) + '.pickle', "wb"))
+    pickle.dump(kick_container, open('data/strategy_actions' + "-rot" + str(rot) + str(file_idx) + '.pickle', "wb"))
 
 
 if __name__ == "__main__":

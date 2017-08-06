@@ -11,6 +11,9 @@ from tools import tools
 from tools import field_info as field
 from tools import raw_attack_direction_provider as attack_dir
 
+# TODO update this with all the bugfixes from other scripts
+# TODO make it possible to switch between variations and standard
+
 
 class State:
     def __init__(self):

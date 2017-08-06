@@ -56,5 +56,4 @@ if __name__ == "__main__":
         ax.add_artist(Circle(xy=(robot.x, robot.y), radius=80, fill=True, color='red'))
         # ax.arrow(robot.x, origin.y, arrow_head.x, arrow_head.y, head_width=100, head_length=100, fc='k', ec='k')
 
-
     plt.show()
