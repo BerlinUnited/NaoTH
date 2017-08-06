@@ -13,8 +13,10 @@ from tools import tools
  Pickle File format:  x, y, rot, c_kicks, c_turns, p_kicks, p_turns
 """
 
-strategies = pickle.load(open("../data/strategy_times1.pickle", "rb"))
-actions = pickle.load(open("../data/strategy_actions0.pickle", "rb"))
+version = 3
+
+strategies = pickle.load(open("../data/strategy_times" + str(version) + ".pickle", "rb"))
+actions = pickle.load(open("../data/strategy_actions" + str(version) + ".pickle", "rb"))
 
 ax = plt.gca()
 tools.draw_field(ax)
@@ -41,7 +43,7 @@ f = np.zeros((len(ny), len(nx)))
 for pos in strategies:
     x, y, _, time_old, time_particle = pos
     if np.isnan(time_old) or np.isnan(time_particle):
-        # f[ny[y], nx[x]] = 0
+        f[ny[y], nx[x]] = 100
         print("nan found")
     else:
         if time_old - time_particle < -10:  # old approach is at least 10 seconds faster

@@ -32,7 +32,6 @@ def main():
     file_idx = 0
 
     cell_width = 200
-    rotation_step = 30
 
     num_iter = 10  # repeats for current implementation
     timing_container = []
@@ -40,23 +39,21 @@ def main():
 
     x_range = range(int(-field.x_length * 0.5) + cell_width, int(field.x_length * 0.5), 2 * cell_width)
     y_range = range(int(-field.y_length * 0.5) + cell_width, int(field.y_length * 0.5), 2 * cell_width)
-    rot_range = range(0, 360, rotation_step)
 
     x_range = range(-800, 800, 200)
     y_range = range(-800, 800, 200)
-    rot_range = range(0, 360, 360)
+    rot = 0
 
     # run for the whole field
     for x in x_range:
         for y in y_range:
-            for rot in rot_range:
-                c_time, c_kicks, c_turns = current_impl(x, y, rot, state, num_iter)
-                p_time, p_kicks, p_turns = particle_filter(x, y, rot, state, num_iter)
-                print("CurrentImpl: " + " X: " + str(x) + " Y: " + str(y) + " rot: " + str(rot) + " " + str(c_time))
-                print("ParticleImpl: " + " X: " + str(x) + " Y: " + str(y) + " rot: " + str(rot) + " " + str(p_time))
+              c_time, c_kicks, c_turns = current_impl(x, y, rot, state, num_iter)
+              p_time, p_kicks, p_turns = particle_filter(x, y, rot, state, num_iter)
+              print("CurrentImpl: " + " X: " + str(x) + " Y: " + str(y) + " rot: " + str(rot) + " " + str(c_time))
+              print("ParticleImpl: " + " X: " + str(x) + " Y: " + str(y) + " rot: " + str(rot) + " " + str(p_time))
 
-                timing_container.append([x, y, rot, c_time, p_time])
-                kick_container.append([x, y, rot, c_kicks, c_turns, p_kicks, p_turns])
+              timing_container.append([x, y, rot, c_time, p_time])
+              kick_container.append([x, y, rot, c_kicks, c_turns, p_kicks, p_turns])
 
     # make sure not to overwrite anything
     while (os.path.exists('{}{:d}.pickle'.format('data/strategy_times', file_idx)) or
