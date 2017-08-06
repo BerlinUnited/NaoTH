@@ -24,20 +24,6 @@ void GameSymbols::registerSymbols(xabsl::Engine& engine)
   // current game state
   engine.registerEnumeratedInputSymbol("game.state", "game.state", &getGameState);
 
-
-  // enum type for play mode (simulation)
-  /*
-  for(int i = 0; i < GameData::numOfPlayMode; i++)
-  {
-    string str("game.playmode.");
-    str.append(GameData::playModeToString((GameData::PlayMode)i));
-    engine.registerEnumElement("game.playmode", str.c_str(), i);
-  }*/
-
-  // register the play mode
-  // (int*)&playerInfo.playMode
-  //engine.registerEnumeratedInputSymbol("game.playmode", "game.playmode", &getPlayMode);
-
   engine.registerDecimalInputSymbol("game.player_number", &getPlayerNumber);
   engine.registerDecimalInputSymbol("game.msecsRemaining", &getMsecsRemaining);
   engine.registerBooleanInputSymbol("game.own_kickoff", &getOwnKickOff);
@@ -70,8 +56,3 @@ double GameSymbols::getMsecsRemaining() {
 int GameSymbols::getGameState() {
   return theInstance->getPlayerInfo().robotState;
 }
-
-/*
-int GameSymbols::getPlayMode() {
-  return theInstance->getPlayerInfo().gameData.playMode;
-}*/

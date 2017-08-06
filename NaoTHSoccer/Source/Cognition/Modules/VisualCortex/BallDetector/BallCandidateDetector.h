@@ -114,7 +114,10 @@ public:
     PLOT("BallCandidateDetector:mean",mean);
     PLOT("BallCandidateDetector:mean_of_means",average_mean);
   }
- 
+
+  static std::map<std::string, std::shared_ptr<AbstractCNNClassifier>> createCNNMap();
+
+
 private:
   struct Parameters: public ParameterList
   {
@@ -134,6 +137,8 @@ private:
       PARAMETER_REGISTER(haarDetector.windowSize) = 12;
       PARAMETER_REGISTER(haarDetector.model_file) = "lbp1.xml";
 
+      PARAMETER_REGISTER(cnn.threshold) = 0.0;
+
       PARAMETER_REGISTER(maxNumberOfKeys) = 4;
       PARAMETER_REGISTER(numberOfExportBestPatches) = 2;
 
@@ -149,7 +154,9 @@ private:
       PARAMETER_REGISTER(blackKeysCheck.minSizeToCheck) = 60;
       PARAMETER_REGISTER(blackKeysCheck.minValue) = 20;
 
-      PARAMETER_REGISTER(classifier) = "cnn";
+
+
+      PARAMETER_REGISTER(classifier) = "aug1";
       
       syncWithConfig();
     }
@@ -177,6 +184,10 @@ private:
       int minSizeToCheck;
       int minValue;
     } blackKeysCheck;
+
+    struct CNN {
+      double threshold;
+    } cnn;
 
     int maxNumberOfKeys;
     int numberOfExportBestPatches;

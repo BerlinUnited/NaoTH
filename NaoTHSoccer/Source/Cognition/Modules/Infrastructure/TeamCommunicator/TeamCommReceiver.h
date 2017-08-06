@@ -7,6 +7,7 @@
 #include "Representations/Modeling/TeamMessage.h"
 #include "Representations/Modeling/TeamMessageData.h"
 #include "Representations/Modeling/PlayerInfo.h"
+#include "Representations/Infrastructure/GameData.h"
 
 #include <Tools/DataStructures/RingBuffer.h>
 
@@ -18,13 +19,15 @@
 #include <MessagesSPL/SPLStandardMessage.h>
 
 BEGIN_DECLARE_MODULE(TeamCommReceiver)
-  REQUIRE(FrameInfo)
-  REQUIRE(PlayerInfo)
-  REQUIRE(TeamMessageDataIn)
-
   PROVIDE(DebugRequest)
   PROVIDE(DebugParameterList)
   PROVIDE(DebugPlot)
+
+  REQUIRE(FrameInfo)
+  REQUIRE(PlayerInfo)
+
+  REQUIRE(TeamMessageDataIn)
+  REQUIRE(GameData)
 
   PROVIDE(TeamMessage)
   PROVIDE(TeamMessageData)
@@ -48,6 +51,7 @@ private:
     {
       PARAMETER_REGISTER(monotonicTimestampCheckResetTime) = 30000;
       PARAMETER_REGISTER(monotonicTimestampCheck) = true;
+      PARAMETER_REGISTER(acceptMixedTeamMessages) = false;
       
       // load from the file after registering all parameters
       syncWithConfig();
@@ -55,6 +59,7 @@ private:
 
     int monotonicTimestampCheckResetTime;
     bool monotonicTimestampCheck;
+    bool acceptMixedTeamMessages;
     
     virtual ~Parameters() {}
   } parameters;

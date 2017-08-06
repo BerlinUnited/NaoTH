@@ -60,6 +60,7 @@ void StableRoleDecision::execute()
     }
 
     if (robotNumber == getPlayerInfo().playerNumber && (msg.fallen || msg.custom.isPenalized || 
+      // FIXME: msg.ballAge is set to -1, when the model is not valid anymore. This cancels loose_ball_bonus out.
       msg.ballAge < 0 || msg.ballAge > parameters.maxBallLostTime + time_bonus)) 
     {
       wantsToBeStriker = false;

@@ -1,9 +1,9 @@
 #include "TeamMessageData.h"
+#include <Tools/DataConversion.h>
 
 #include <limits>
 
 using namespace naoth;
-
 
 TeamMessageData::TeamMessageData():TeamMessageData(FrameInfo())
 {}
@@ -62,13 +62,20 @@ SPLStandardMessage TeamMessageData::createSplMessage() const
     spl.averageWalkSpeed = (int16_t) averageWalkSpeed;
     spl.maxKickDistance = (int16_t) maxKickDistance;
 
-    // TODO: 
-    // user defined data
-    naothmessages::BUUserTeamMessage userMsg = custom.toProto();
-    int userSize = userMsg.ByteSize();
+    // user defined data, this includes our own data and the DoBerMan mixed team common header
+    naothmessages::BUUserTeamMessage userMsgBU = custom.toProto();
+    std::string userMsgDoBer = custom.toDoBerManHeader();
+    size_t buUserSize = userMsgBU.ByteSize();
+    size_t doberUserSize = userMsgDoBer.size();
+    size_t userSize = buUserSize + doberUserSize;
     if (userSize < SPL_STANDARD_MESSAGE_DATA_SIZE) {
-        spl.numOfDataBytes = (uint16_t) userSize;
-        userMsg.SerializeToArray(spl.data, userSize);
+        spl.numOfDataBytes = static_cast<uint16_t>(userSize);
+
+        // 1. write custom data as DoBerMan header
+        memcpy(spl.data, userMsgDoBer.c_str(), doberUserSize);
+
+        // 2. write custom data in BerlinUnited format
+        userMsgBU.SerializeToArray(spl.data + doberUserSize, static_cast<int>(userSize));
     } else {
         spl.numOfDataBytes = 0;
     }
@@ -122,23 +129,32 @@ bool TeamMessageData::parseFromSplMessage(const SPLStandardMessage &spl)
 
     // parses the user-defined part of a SplMessage
     ASSERT(spl.numOfDataBytes <= SPL_STANDARD_MESSAGE_DATA_SIZE);
-    naothmessages::BUUserTeamMessage userData;
-    
-    try
+
+    const size_t customOffset = TeamMessageCustom::getCustomOffset();
+
+    // parse DoBerMan part of user data
+    custom.parseFromDoBerManHeader(spl.data, spl.numOfDataBytes);
+
+    // parse BerlinUnited part of user data
+    if(spl.numOfDataBytes > customOffset)
     {
-      if (userData.ParseFromArray(spl.data, spl.numOfDataBytes)) {
-          custom.parseFromProto(userData);
-      } else {
+      naothmessages::BUUserTeamMessage userData;
+      try
+      {
+        if (userData.ParseFromArray(spl.data + customOffset, static_cast<int>(spl.numOfDataBytes)-static_cast<int>(customOffset))) {
+            custom.parseFromProto(userData);
+        } else {
+          return false;
+        }
+      }
+      catch (...) {
+        // well, this is not one of our messages, ignore
+
+        // TODO: we might want to maintain a list of robots which send
+        // non-compliant messages in order to avoid overhead when trying to parse it
+        //std::cout << "could not parse custom part" << std::endl;
         return false;
       }
-    } 
-    catch (...) {
-      // well, this is not one of our messages, ignore
-
-      // TODO: we might want to maintain a list of robots which send
-      // non-compliant messages in order to avoid overhead when trying to parse it
-      //std::cout << "could not parse custom part" << std::endl;
-      return false;
     }
 
     return true; // return "success"
@@ -165,6 +181,7 @@ void TeamMessageData::print(std::ostream &stream) const
                    << shootingTo.x << "; "
                    << shootingTo.y <<"\n"
           ;
+    stream << "\t" << "intention: " << intention << "\n";
     
     custom.print(stream);
 }//end print
@@ -181,7 +198,9 @@ TeamMessageCustom::TeamMessageCustom() :
   temperature(0.0),
   cpuTemperature(0.0),
   whistleDetected(false),
-  whistleCount(0)
+  whistleCount(0),
+  // init with "invalid" position
+  teamBall(std::numeric_limits<double>::infinity(), std::numeric_limits<double>::infinity())
 {
 }
 
@@ -200,7 +219,8 @@ void TeamMessageCustom::print(std::ostream &stream) const
     << "\t" << "CPU: " << cpuTemperature << "°C\n"
     << "\t" << "whistleDetected: " << (whistleDetected ? "yes" : "no") << "\n"
     << "\t" << "whistleCount: " << whistleCount << "\n"
-    ;
+    << "\t" << "teamball position: "
+        << teamBall.x << "/" << teamBall.y << "\n";
   stream << std::endl;
 }//end print
 
@@ -219,23 +239,69 @@ naothmessages::BUUserTeamMessage TeamMessageCustom::toProto() const
     userMsg.set_cputemperature((float)cpuTemperature);
     userMsg.set_whistledetected(whistleDetected);
     userMsg.set_whistlecount(whistleCount);
+    DataConversion::toMessage(teamBall, *(userMsg.mutable_teamball()));
     userMsg.set_key(key);
     return userMsg;
 }
 
+void TeamMessageCustom::parseFromDoBerManHeader(const uint8_t* rawHeader, size_t headerSize)
+{
+  // initialize with some values so the compiler is happy
+  DoBerManHeader header = {timestamp, 0, isPenalized, whistleDetected, 0};
+  if(headerSize >= sizeof(DoBerManHeader))
+  {
+    memcpy(&header, rawHeader, sizeof(DoBerManHeader));
+  }
+  // copy the parsed data
+  timestamp = header.timestamp;
+  isPenalized = (header.isPenalized > 0);
+  whistleDetected = (header.whistleDetected > 0);
+}
+
+std::string TeamMessageCustom::toDoBerManHeader() const
+{
+  // copy the information into an internal struct
+  DoBerManHeader header;
+  header.timestamp = timestamp;
+  // TODO: make the DoBerMan team ID configurable, now it is fixed to 4
+  header.teamID = 4;
+  header.isPenalized = isPenalized;
+  header.whistleDetected = whistleDetected;
+
+  // create the result byte array by mapping the header struct
+  std::string result;
+  result.assign((char*)&header, sizeof(DoBerManHeader));
+
+  // we don't need any of this data anymore, move it
+  return std::move(result);
+}
+
 void TeamMessageCustom::parseFromProto(const naothmessages::BUUserTeamMessage &userData)
 {
+    // basic info
+    key = userData.key();
     timestamp = userData.timestamp();
     bodyID = userData.bodyid();
-    wasStriker = userData.wasstriker();
-    wantsToBeStriker = userData.wantstobestriker();
-    timeToBall = userData.timetoball();
-    isPenalized = userData.ispenalized();
+    
+    // body status
     batteryCharge = userData.batterycharge();
     temperature = userData.temperature();
     cpuTemperature = userData.cputemperature();
+
+    // strategic info
+    timeToBall = userData.timetoball();
+    wasStriker = userData.wasstriker();
+    wantsToBeStriker = userData.wantstobestriker();
+    
+    isPenalized = userData.ispenalized(); // TODO: remove and use game data instead
+    
     whistleDetected = userData.whistledetected();
     whistleCount = userData.whistlecount();
-    key = userData.key();
+    if(userData.has_teamball()) {
+        DataConversion::fromMessage(userData.teamball(),teamBall);
+    } else {
+        teamBall.x = std::numeric_limits<double>::infinity();
+        teamBall.y = std::numeric_limits<double>::infinity();
+    }
 }
 

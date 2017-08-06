@@ -21,7 +21,7 @@ SimulationTest::~SimulationTest(){}
 
 void SimulationTest::execute()
 {
-	DEBUG_REQUEST("SimulationTest:draw_decision",
+	//DEBUG_REQUEST("SimulationTest:draw_decision",
 
 		// ball just in front of the robot
 		getBallModel().position = Vector2d(150, 0);
@@ -40,18 +40,16 @@ void SimulationTest::execute()
 			{
         MultiColorValue v(KickActionModel::numOfActions);
         v.position = p; //Draw the ball position later
-
         for(size_t i=0; i<10; ++i)
         {
           getRobotPose().translation = p;
 				  getRobotPose().rotation =  Math::fromDegrees(globRobotRotation);
 				  
           // run the simulation module
-				  simulationModule->execute();
+          simulationModule->execute();
 
           v.values[getKickActionModel().bestAction]++;
         }
-
         functionMulticolor.push_back(v);
 			}
 		}
@@ -69,9 +67,8 @@ void SimulationTest::execute()
 
 
     globRobotRotation += 10.0;
-	);
+	//);
 }//end execute
-
 
 
 void SimulationTest::draw_function_multicolor(const std::vector<SimulationTest::MultiColorValue>& function) const
