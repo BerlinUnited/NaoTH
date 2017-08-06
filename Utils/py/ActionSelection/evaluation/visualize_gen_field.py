@@ -120,12 +120,10 @@ for pos in gen_field_own:
 
 
 # Export for Heinrich
-# np.savetxt('f.out', nyi, delimiter=',')   # X is an array
-# Test Import
-# f2 = np.loadtxt('f.out', delimiter=',')
+np.savetxt('../data/potential_field_generation/f.out', nyi, delimiter=',')   # X is an array
 
 # Matlab Export
-# scipy.io.savemat('../data/potential_field_generation/potentials.mat', mdict={'potentials': f-g})
+scipy.io.savemat('../data/potential_field_generation/potentials.mat', mdict={'potentials': f-g})
 
 # Plot potentials
 plt.pcolor(nxi, nyi, f-g, cmap="Greys_r", alpha=0.8)

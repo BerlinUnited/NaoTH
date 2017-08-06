@@ -34,8 +34,6 @@ class State:
 
 
 def draw_actions(actions_consequences, s, best_action, normal_angle, better_angle, angle_list):
-    # TODO add subfigure with choosen action
-    # TODO add subfigure with global robot rotation
     plt.clf()
     axes = plt.gca()
     tools.draw_field(axes)

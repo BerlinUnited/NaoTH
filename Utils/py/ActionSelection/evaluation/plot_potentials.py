@@ -4,7 +4,7 @@ from matplotlib.mlab import griddata
 import numpy as np
 import pickle
 
-#TODO use data that the matlab script uses as well
+# TODO use data that the matlab script uses as well
 # one file has all the potentials (time to goal) for one team
 potentials_own = pickle.load(open("../data/potential_field_generation/potential_field_gen_own1.pickle", "rb"))
 # potentials_opp = pickle.load(open("../data/potential_field_generation/potential_field_gen_opp0.pickle", "rb"))

@@ -45,6 +45,7 @@ def main():
     y_range = range(int(-field.y_length * 0.5) + 4*cell_width, int(field.y_length * 0.5), 4*cell_width)
     # x_range = range(1000, int(field.x_length * 0.5), 4 * cell_width)
     # y_range = range(0, int(field.y_length * 0.5), 4 * cell_width)
+
     # run for the whole field
     for x in x_range:  # range(-3000, 1000, 2 * cell_width):
         for y in y_range:  # range(-3000, -1000, 2 * cell_width):
