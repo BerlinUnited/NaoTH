@@ -54,7 +54,7 @@ public:
  void removeRobotNumbers();
  inline double normalDensity(double x) {
    return 1.0/std::sqrt(2 * Math::pi * getTeamMessageStatisticsModel().varianceMsgInterval) * 
-     std::exp(-std::pow(x - getTeamMessageStatisticsModel().avgMsgInterval, 2)/(2 * getTeamMessageStatisticsModel().varianceMsgInterval));
+     std::exp(-Math::sqr(x - getTeamMessageStatisticsModel().avgMsgInterval) / (2 * getTeamMessageStatisticsModel().varianceMsgInterval));
  };
  double probability(double lower, double upper);
  double exponentialDistribution(double x);

@@ -78,7 +78,7 @@ message StepControlRequest
 	KICKSTEP = 1;
 	ZEROSTEP = 2;
   };
-  
+
   required uint32 stepID = 1;
   required bool moveLeftFoot = 2;
   required Pose2D target = 3;
@@ -86,6 +86,15 @@ message StepControlRequest
   required double speedDirection = 5;
   required double scale = 6;
   required StepType steptype = 7;
+  
+  enum RestrictionMode {
+	HARD = 0;
+	SOFT = 1;
+  };
+  
+  required RestrictionMode restriction = 8;
+  required bool isProtected = 9;
+  required uint32 stepRequestID = 10;
 }
 
 message WalkRequest {
@@ -194,7 +203,8 @@ message LineGraphPercept {
 message StepControlStatus
 {
   required uint32 stepID = 1;
-  required uint32 moveableFoot =2;
+  required uint32 moveableFoot = 2;
+  required uint32 stepRequestID = 3;
 }
 
 message MotionStatus
@@ -280,6 +290,8 @@ message BUUserTeamMessage
   optional float cpuTemperature = 11 [default=0.0];
   optional bool whistleDetected = 12 [default=false];
   optional int32 whistleCount = 13 [default=0];
+  // only for visualizing teamball position in RC
+  optional DoubleVector2 teamBall = 14;
   optional string key = 100 [default="none"];
 }
 
@@ -356,4 +368,10 @@ message GroundContactModel {
   required bool leftGroundContact = 1;
   required bool rightGroundContact = 2;
   required Foot supportFoot = 3;
+}
+
+
+message CollisionPercept {
+  required uint32 timeCollisionArmLeft = 1;
+  required uint32 timeCollisionArmRight = 2;
 }

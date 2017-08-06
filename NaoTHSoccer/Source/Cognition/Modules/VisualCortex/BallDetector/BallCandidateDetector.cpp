@@ -17,6 +17,14 @@
 #include "Classifier/CNNClassifier.h"
 #include "Classifier/CNNFull.h"
 #include "Classifier/CNNSmall.h"
+#include "Classifier/CNN_aug1_synthetic.h"
+#include "Classifier/CNN_aug2_full_conv.h"
+#include "Classifier/CNN_basic_synthetic_fusion.h"
+#include "Classifier/CNN_synth_full_conv.h"
+#include "Classifier/CNN_rc17_augmented_1.h"
+#include "Classifier/CNN_rc17_augmented_2.h"
+#include "Classifier/CNN_rc17_augmented_7.h"
+#include "Classifier/DortmundCNN/CNN_dortmund.h"
 
 using namespace std;
 
@@ -39,15 +47,11 @@ BallCandidateDetector::BallCandidateDetector()
   getDebugParameterList().add(&params);
 
   //register classifier
+  cnnMap = createCNNMap();
+  // additionally insert the legacy haar classifier
   cnnMap.insert({"CVHaar", std::make_shared<CVHaarClassifier>(params.haarDetector.model_file)}); //Hack!
 
-  cnnMap.insert({"aug2", std::make_shared<CNNAugmented2>()});
-  cnnMap.insert({"aug1", std::make_shared<CNNAugmented1>()});
-  cnnMap.insert({"cnn", std::make_shared<CNNClassifier>()});
-  cnnMap.insert({"full", std::make_shared<CNNFull>()});
-  cnnMap.insert({"small", std::make_shared<CNNSmall>()});
-
-  currentCNNClassifier = cnnMap["aug2"];
+  currentCNNClassifier = cnnMap["aug1"];
 }
 
 BallCandidateDetector::~BallCandidateDetector()
@@ -118,6 +122,30 @@ void BallCandidateDetector::execute(CameraInfo::CameraID id)
       }
     }
   );
+}
+
+std::map<string, std::shared_ptr<AbstractCNNClassifier> > BallCandidateDetector::createCNNMap()
+{
+  std::map<string, std::shared_ptr<AbstractCNNClassifier> > result;
+
+  result.insert({"aug2", std::make_shared<CNNAugmented2>()});
+  result.insert({"aug1", std::make_shared<CNNAugmented1>()});
+  result.insert({"cnn", std::make_shared<CNNClassifier>()});
+  result.insert({"full", std::make_shared<CNNFull>()});
+  result.insert({"small", std::make_shared<CNNSmall>()});
+
+  result.insert({"aug1_synthetic", std::make_shared<CNN_aug1_synthetic>()});
+  result.insert({"aug2_full_conv", std::make_shared<CNN_aug2_full_conv>()});
+  result.insert({"basic_synthetic_fusion", std::make_shared<CNN_basic_synthetic_fusion>()});
+  result.insert({"synth_full_conv", std::make_shared<CNN_synth_full_conv>()});
+
+  result.insert({"rc17_augmented_1", std::make_shared<CNN_rc17_augmented_1>()});
+  result.insert({"rc17_augmented_2", std::make_shared<CNN_rc17_augmented_2>()});
+
+  result.insert({"rc17_augmented_7", std::make_shared<CNN_rc17_augmented_7>()});
+  result.insert({"dortmund", std::make_shared<CNN_dortmund>()});
+
+  return std::move(result);
 }
 
 
@@ -292,15 +320,16 @@ void BallCandidateDetector::calculateCandidates()
 
           PatchWork::subsampling(getImage(), patchedBorder.data, patchedBorder.min.x, patchedBorder.min.y, patchedBorder.max.x, patchedBorder.max.y, patch_size);
 
-          int found;
+          bool found;
           stopwatch.start();
               // Hack!: the haar classifier is now a AbstractCNNClassifier, the params are only for the cv haar classifier
-              found = currentCNNClassifier->classify(patchedBorder,params.haarDetector.minNeighbors, params.haarDetector.windowSize);
+              found = currentCNNClassifier->classify(patchedBorder,
+                                                     params.haarDetector.minNeighbors, params.haarDetector.windowSize);
           stopwatch.stop();
           stopwatch_values.push_back(static_cast<double>(stopwatch.lastValue) * 0.001);
 
           // Hack!: the haar classifier is now a AbstractCNNClassifier, the params are only for the cv haar classifier
-          if (found) {
+          if (found && currentCNNClassifier->getBallConfidence() >= params.cnn.threshold) {
 
             if(!params.blackKeysCheck.enable || blackKeysOK(*i)) {
               addBallPercept(Vector2i((min.x + max.x)/2, (min.y + max.y)/2), (max.x - min.x)/2);
@@ -315,14 +344,14 @@ void BallCandidateDetector::calculateCandidates()
 
             PatchWork::subsampling(getImage(), p.data, min.x, min.y, max.x, max.y, patch_size);
 
-            int found;
+            bool found;
             stopwatch.start();
                 // Hack!: the haar classifier is now a AbstractCNNClassifier, the params are only for the cv haar classifier
-                found = currentCNNClassifier->classify(p,params.haarDetector.minNeighbors, params.haarDetector.windowSize);
+                found = currentCNNClassifier->classify(p, params.haarDetector.minNeighbors, params.haarDetector.windowSize);
             stopwatch.stop();
             stopwatch_values.push_back(static_cast<double>(stopwatch.lastValue) * 0.001);
 
-            if (found) {
+            if (found && currentCNNClassifier->getBallConfidence() >= params.cnn.threshold) {
 
               if(!params.blackKeysCheck.enable || blackKeysOK(*i)) {
                 addBallPercept(Vector2i((min.x + max.x)/2, (min.y + max.y)/2), (max.x - min.x)/2);

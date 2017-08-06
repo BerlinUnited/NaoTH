@@ -152,10 +152,6 @@ private:
   /** Estimates the gradient of the gray-gradient at the point by a Sobel Operator. */
   Vector2d calculateGradient(const Vector2i& point) const;
 
-  inline double calculateMeanAngle(double a, double b) const {
-    return atan2( sin(a)+sin(b), cos(a)+cos(b) );
-  }
-
   DOUBLE_CAM_PROVIDE(ScanLineEdgelDetector, DebugImageDrawings);
 
   DOUBLE_CAM_REQUIRE(ScanLineEdgelDetector, Image);

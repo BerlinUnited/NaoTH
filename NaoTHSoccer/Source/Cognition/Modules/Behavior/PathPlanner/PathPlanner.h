@@ -15,6 +15,7 @@
 // debug
 #include "Tools/Debug/DebugRequest.h"
 #include "Tools/Debug/DebugModify.h"
+#include "Tools/Debug/DebugParameterList.h"
 
 // representations
 #include "Representations/Infrastructure/FieldInfo.h"
@@ -31,6 +32,7 @@
 BEGIN_DECLARE_MODULE(PathPlanner)
 PROVIDE(DebugRequest)
 PROVIDE(DebugModify)
+PROVIDE(DebugParameterList)
 
 REQUIRE(FieldInfo)
 REQUIRE(BallPercept)
@@ -44,15 +46,37 @@ PROVIDE(HeadMotionRequest)
 PROVIDE(StopwatchManager)
 END_DECLARE_MODULE(PathPlanner)
 
+
+
 class PathPlanner: public PathPlannerBase
 {
 public:
   PathPlanner();
-  ~PathPlanner(){};
+  ~PathPlanner();
 
   virtual void execute();
 
 private:
+  class Parameters : public ParameterList
+  {
+  public:
+    Parameters() : ParameterList("PathPlanner")
+    {
+      PARAMETER_REGISTER(sidekick_scale) = 1.0;
+      PARAMETER_REGISTER(kick_time) = 300;
+      PARAMETER_REGISTER(approach_ball_adapt_control) = true;
+      PARAMETER_REGISTER(approach_ball_adapt_threshold) = 10;
+
+      syncWithConfig();
+    }
+    virtual ~Parameters(){}
+
+    double sidekick_scale;
+    int kick_time;
+    bool approach_ball_adapt_control;
+    int approach_ball_adapt_threshold;
+  } params;
+
   // NONE means hip
   enum Foot
   {
@@ -62,20 +86,20 @@ private:
   };
   typedef WalkRequest::StepControlRequest::StepType StepType;
 
-  // Primitive Routines
-  // Walks to the ball from far away
+  // XABSL go_to_ball_with_USOA
   void walk_to_ball(const Foot foot, const bool go_fast = false);
-  // Moves around the ball
+  // XABSL move_around_ball
   void move_around_ball(const double direction, const double radius);
-  // Approaches the ball from near - if neccessary 
-  // keep the rotation of the robot, walk back and then approach it
+  // XABSL go_to_ball_with_foot_dynamic
   void approach_ball(const Foot foot);
-  // Short kick forward
+  // XABSL fast_forward_kick
   void short_kick(const Foot foot);
-  // Long kick forward
+  // XABSL kick_with_foot
   void long_kick(const Foot foot);
-  // Sidekick (with left foot == Foot::LEFT kicks to the left, and foot == FOOT::RIGHT to the right)
+  // XABSL sidekick (with foot == Foot::LEFT kicks to the left, and foot == FOOT::RIGHT to the right)
   void sidekick(const Foot foot);
+
+  void control_ball(const Foot foot);
 
   // Stepcontrol
   struct Step_Buffer_Element {
@@ -87,6 +111,8 @@ private:
     double scale;
     Foot foot;
     WalkRequest::Coordinate coordinate;
+    WalkRequest::StepControlRequest::RestrictionMode restriction;
+    bool isProtected;
   };
   std::vector<Step_Buffer_Element> step_buffer;
 
@@ -95,10 +121,18 @@ private:
   Foot foot_to_use;
 
   // Used to synchronize stepIDs of WalkEngine to take control
-  unsigned int last_stepcontrol_stepID;
+  unsigned int last_stepRequestID;
 
-  void add_step(Pose2D &pose, const StepType &type, const WalkRequest::Coordinate &coordinate, const double character = 0.5, const Foot foot = Foot::NONE, const double scale = 1.0, const double speedDirection = 0.0);
-  bool add_single_step(Pose2D &pose, const StepType &type, const WalkRequest::Coordinate &coordinate);void update_step(Pose2D &pose);
+  void add_step(Pose2D &pose,
+                const StepType &type,
+                const WalkRequest::Coordinate &coordinate,
+                const double character,
+                const Foot foot,
+                const double scale,
+                const double speedDirection,
+                const WalkRequest::StepControlRequest::RestrictionMode restriction,
+                const bool isProtected);
+  void update_step(Pose2D &pose);
   void manage_step_buffer();
   void execute_step_buffer();
 

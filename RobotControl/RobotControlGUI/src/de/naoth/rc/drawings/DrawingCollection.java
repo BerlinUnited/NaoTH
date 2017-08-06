@@ -12,19 +12,17 @@ import java.util.ArrayList;
  */
 public class DrawingCollection implements Drawable {
 
-    protected final ArrayList<Drawable> drawables = new ArrayList<Drawable>();
+    protected final ArrayList<Drawable> drawables = new ArrayList<>();
 
     public void add(Drawable d) {
-        this.drawables.add(d);
+        if(d != null) {
+            this.drawables.add(d);
+        }
     }
 
     @Override
     public void draw(Graphics2D g2d) {
-        for (Drawable drawing : drawables) {
-            if (drawing != null) {
-                drawing.draw(g2d);
-            }
-        }
+        drawables.forEach(d -> { d.draw(g2d); });
     }
     
     public boolean isEmpty() {

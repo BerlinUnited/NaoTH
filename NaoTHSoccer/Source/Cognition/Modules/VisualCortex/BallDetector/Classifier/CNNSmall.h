@@ -18,6 +18,9 @@ public:
 std::ofstream out;
 	bool classify(const BallCandidates::Patch& p);
 
+  virtual float getBallConfidence();
+  virtual float getNoballConfidence();
+
 	// declare copied intial input array
 	float out_step0[16][16][1];
 
