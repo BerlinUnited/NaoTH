@@ -56,8 +56,8 @@ def main():
             kick_container.append([x, y, rot, c_kicks, c_turns, p_kicks, p_turns])
 
     # make sure not to overwrite anything
-    while (os.path.exists('{}{:d}.pickle'.format('data/strategy_times' + "-rot" + str(rot) + "-" + str(file_idx))) or
-           os.path.exists('{}{:d}.pickle'.format('data/strategy_actions' + "-rot" + str(rot) + "-" + str(file_idx)))):
+    while (os.path.exists('{}{:d}.pickle'.format('data/strategy_times' + "-rot" + str(rot) + "-", file_idx)) or
+           os.path.exists('{}{:d}.pickle'.format('data/strategy_actions' + "-rot" + str(rot) + "-", file_idx))):
         file_idx += 1
     pickle.dump(timing_container, open('data/strategy_times' + "-rot" + str(rot) + "-" + str(file_idx) + '.pickle', "wb"))
     pickle.dump(kick_container, open('data/strategy_actions' + "-rot" + str(rot) + "-" + str(file_idx) + '.pickle', "wb"))
