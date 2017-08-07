@@ -6,7 +6,7 @@ def clamp(x, minimum, maximum):
 
 
 class Vector2:
-    def __init__(self, x=0, y=0):
+    def __init__(self, x=0.0, y=0.0):
         self.x = x
         self.y = y
 
@@ -35,6 +35,8 @@ class Vector2:
         else:
             return NotImplemented
 
+    # TODO python3: use __truediv__
+    # https://docs.python.org/3/library/operator.html
     def __div__(self, fraction):
         return Vector2(self.x/fraction, self.y/fraction)
 
@@ -76,6 +78,8 @@ class Pose2D:
         p.translation = (Vector2() - self.translation).rotate(p.rotation)
         return p
 
+    # TODO python3: use __truediv__
+    # https://docs.python.org/3/library/operator.html
     def __div__(self, point):
         return (point - self.translation).rotate(-self.rotation)
 
