@@ -172,6 +172,9 @@ public:
       cat_histogram[NUMBER_OF_BallPositionCategory]++;
     }
   };
+private:
+  const std::vector<Math::LineSegment> ownGoalBackSides;
+  const std::vector<Math::LineSegment> oppGoalBackSides;
 
 private:
   bool calculateCollision(const std::vector<Math::LineSegment>& lines, const Vector2d& start, const Vector2d& end, Vector2d& result) const;

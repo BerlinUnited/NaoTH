@@ -65,6 +65,11 @@
 #include "Modules/Perception/VirtualVisionProcessor/VirtualVisionProcessor.h"
 #include "Modules/Perception/PerceptionsVisualizer/PerceptionsVisualizer.h"
 
+#include "Modules/VisualCortex/LineDetector/RansacLineDetector.h"
+#include "Modules/VisualCortex/LineDetector/RansacLineDetectorOnGraphs.h"
+
+#include "Modules/Modeling/CompassProvider/CompassProvider.h"
+
 // modeling
 #include "Modules/Modeling/BodyStateProvider/BodyStateProvider.h"
 #include "Modules/Modeling/FieldCompass/FieldCompass.h"
@@ -82,6 +87,8 @@
 #include "Modules/Modeling/GoalModel/DummyActiveGoalLocator/DummyActiveGoalLocator.h"
 #include "Modules/Modeling/GoalModel/WholeGoalLocator/WholeGoalLocator.h"
 #include "Modules/Modeling/BallLocator/KalmanFilterBallLocator/KalmanFilterBallLocator.h"
+
+#include "Modules/Modeling/BallLocator/TeamBallLocator/TeamBallLocator.h"
 #include "Modules/Modeling/BallLocator/MultiKalmanBallLocator/MultiKalmanBallLocator.h"
 #include "Modules/Modeling/StaticDebugModelProvider/StaticDebugModelProvider.h"
 
@@ -174,6 +181,11 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(VirtualVisionProcessor);
   REGISTER_MODULE(PerceptionsVisualizer);
 
+  REGISTER_MODULE(RansacLineDetector);
+  REGISTER_MODULE(RansacLineDetectorOnGraphs);
+
+  REGISTER_MODULE(CompassProvider);
+
   // modeling
   REGISTER_MODULE(SituationPriorProvider);
   REGISTER_MODULE(BodyStateProvider);
@@ -192,6 +204,7 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(WholeGoalLocator);
   REGISTER_MODULE(DummyActiveGoalLocator);
   REGISTER_MODULE(KalmanFilterBallLocator);
+  REGISTER_MODULE(TeamBallLocator);
   REGISTER_MODULE(MultiKalmanBallLocator);
 
   REGISTER_MODULE(KickDirectionSimulator);
