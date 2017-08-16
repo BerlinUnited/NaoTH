@@ -395,10 +395,12 @@ void Walk::planZMP()
       // TODO: hipOffsetBasedOnStepLength.y?
       if (planningStep.type == STEP_CONTROL && planningStep.walkRequest.stepControl.type == WalkRequest::StepControlRequest::KICKSTEP)
       {
-          zmpOffsetX = parameters().general.hipOffsetX + parameters().stabilization.maxHipOffsetBasedOnStepLengthForKicks.x * std::abs(currentStepLength.x)/parameters().limits.maxCtrlLength;
+          zmpOffsetX = parameters().general.hipOffsetX
+                     + parameters().stabilization.maxHipOffsetBasedOnStepLengthForKicks.x * ((currentStepLength.x > 0) ? currentStepLength.x / parameters().limits.maxCtrlLength : 0);
           zmpOffsetY = parameters().kick.ZMPOffsetY    + parameters().hip.ZMPOffsetYByCharacter * (1-planningStep.walkRequest.character);
 
-          newZMPOffsetX = parameters().zmp.bezier.offsetXForKicks + parameters().stabilization.maxHipOffsetBasedOnStepLengthForKicks.x * std::abs(currentStepLength.x)/parameters().limits.maxCtrlLength;
+          newZMPOffsetX = parameters().zmp.bezier.offsetXForKicks
+                        + parameters().stabilization.maxHipOffsetBasedOnStepLengthForKicks.x * ((currentStepLength.x > 0) ? currentStepLength.x / parameters().limits.maxCtrlLength : 0);
           newZMPOffsetY = parameters().zmp.bezier.offsetYForKicks + parameters().hip.ZMPOffsetYByCharacter * (1-planningStep.walkRequest.character);
       }
       else
