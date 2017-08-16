@@ -28,6 +28,9 @@
 #include "Representations/Modeling/PathModel.h"
 #include "Representations/Debug/Stopwatch.h"
 
+// PathPlanner
+#include "LPGPathPlanner.h"
+
 
 BEGIN_DECLARE_MODULE(PathPlanner)
 PROVIDE(DebugRequest)
@@ -136,8 +139,6 @@ private:
   void manage_step_buffer();
   void execute_step_buffer();
 
-
-private:
   bool kick_planned;
 };
 
