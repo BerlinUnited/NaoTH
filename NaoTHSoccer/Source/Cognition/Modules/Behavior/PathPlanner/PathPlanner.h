@@ -93,6 +93,8 @@ private:
   LPGPathPlanner LPGPlanner;
 
   PathPlannerAlgorithm algorithm;
+  // Just for implementation purposes (testing)
+  Vector3d generate_obst(Vector2d obst, double radius);
 
   // NONE means hip
   enum Foot

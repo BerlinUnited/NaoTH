@@ -119,6 +119,13 @@ void PathPlanner::execute()
   STOPWATCH_STOP("PathPlanner");
 }
 
+// Just for implementation purposes (testing)
+Vector3d PathPlanner::generate_obst(Vector2d obst, double radius)
+{
+  obst = getRobotPose() / obst;
+  return Vector3d(obst.x, obst.y, radius);
+}
+
 void PathPlanner::walk_to_ball(const Foot foot, const bool go_fast)
 {
   Vector2d ballPos                   = Vector2d();
@@ -143,12 +150,14 @@ void PathPlanner::walk_to_ball(const Foot foot, const bool go_fast)
   Pose2D pose;
   if (algorithm == PathPlannerAlgorithm::LPG)
   {
-    Vector2d obst {100.0, 0.0};
-    //obst = getRobotPose() * obst;
-    //std::cout << obst.x << " --- " << obst.y << std::endl;
-    std::vector<Vector3d> empty {Vector3d(obst.x, obst.y, 300.0)};
+    // Hardcoded obstacles for testing purposes
+    std::vector<Vector3d> obstacles;
+    obstacles.push_back(generate_obst(Vector2d(2500.0, 0.0), 300));
+    obstacles.push_back(generate_obst(Vector2d(3000.0, 500.0), 300));
+    obstacles.push_back(generate_obst(Vector2d(1250.0, -500.0), 300));
+
     Vector2d goal = Vector2d(0.7 * (ballPos.x - getPathModel().distance - ballRadius), ballPos.y);
-    Vector2d gait = LPGPlanner.get_gait(goal, empty);
+    Vector2d gait = LPGPlanner.get_gait(goal, obstacles);
     pose = {ballRotation, gait.x, gait.y};
   }
   else
