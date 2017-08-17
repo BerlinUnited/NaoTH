@@ -158,7 +158,7 @@ Vector2d LPGPathPlanner::get_gait(Vector2d goal,
   }
 
   // Compute the gait
-  Vector2d gait         = helper.cell_middle(*waypoints.end());
+  Vector2d gait         = helper.cell_middle(waypoints[0]);
   double distance       = helper.distance(Vector2d(0, 0), gait);
   double max_steplength = std::max(-60.0, std::min(60.0, distance));
 
