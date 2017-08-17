@@ -43,7 +43,7 @@ double LPGHelper::obst_func(const LPGHelper::Cell &the_cell) const
     obst_dist_to_mid = distance(obst, Vector2d(0, 0));
     r_d              = obst_dist_to_mid / 10;
 
-    a = (r_f - r_d);// * 10;   // cost of constant part
+    a = (r_f - r_d);// * 20;   // cost of constant part
     r = r_f + r_d;           // radius of constant part
     s = parameter_s * r;     // radius of linear decreasing part
 
@@ -95,51 +95,7 @@ bool LPGState::IsGoal(LPGState &nodeGoal)
 bool LPGState::GetSuccessors(AStarSearch<LPGState> *astarsearch,
                              LPGState *parent_node)
 {
-  LPGState new_suc;
-  if (!parent_node)
-  {
-    new_suc.the_cell = LPGHelper::Cell(0, 0);
-    astarsearch->AddSuccessor(new_suc);
-    new_suc.the_cell = LPGHelper::Cell(0, 1);
-    astarsearch->AddSuccessor(new_suc);
-    new_suc.the_cell = LPGHelper::Cell(0, -1);
-    astarsearch->AddSuccessor(new_suc);
-    new_suc.the_cell = LPGHelper::Cell(1, 0);
-    astarsearch->AddSuccessor(new_suc);
-    new_suc.the_cell = LPGHelper::Cell(1, 1);
-    astarsearch->AddSuccessor(new_suc);
-    new_suc.the_cell = LPGHelper::Cell(1, -1);
-    astarsearch->AddSuccessor(new_suc);
-    new_suc.the_cell = LPGHelper::Cell(-1, 0);
-    astarsearch->AddSuccessor(new_suc);
-    new_suc.the_cell = LPGHelper::Cell(-1, 1);
-    astarsearch->AddSuccessor(new_suc);
-    new_suc.the_cell = LPGHelper::Cell(-1, -1);
-    astarsearch->AddSuccessor(new_suc);
-  }
-  else
-  {
-    new_suc.the_cell = LPGHelper::Cell(parent_node->the_cell.r + 0, parent_node->the_cell.a + 0);
-    astarsearch->AddSuccessor(new_suc);
-    new_suc.the_cell = LPGHelper::Cell(parent_node->the_cell.r + 0, parent_node->the_cell.a + 1);
-    astarsearch->AddSuccessor(new_suc);
-    new_suc.the_cell = LPGHelper::Cell(parent_node->the_cell.r + 0, parent_node->the_cell.a - 1);
-    astarsearch->AddSuccessor(new_suc);
-    new_suc.the_cell = LPGHelper::Cell(parent_node->the_cell.r + 1, parent_node->the_cell.a + 0);
-    astarsearch->AddSuccessor(new_suc);
-    new_suc.the_cell = LPGHelper::Cell(parent_node->the_cell.r + 1, parent_node->the_cell.a + 1);
-    astarsearch->AddSuccessor(new_suc);
-    new_suc.the_cell = LPGHelper::Cell(parent_node->the_cell.r + 1, parent_node->the_cell.a - 1);
-    astarsearch->AddSuccessor(new_suc);
-    new_suc.the_cell = LPGHelper::Cell(parent_node->the_cell.r - 1, parent_node->the_cell.a + 0);
-    astarsearch->AddSuccessor(new_suc);
-    new_suc.the_cell = LPGHelper::Cell(parent_node->the_cell.r - 1, parent_node->the_cell.a + 1);
-    astarsearch->AddSuccessor(new_suc);
-    new_suc.the_cell = LPGHelper::Cell(parent_node->the_cell.r - 1, parent_node->the_cell.a - 1);
-    astarsearch->AddSuccessor(new_suc);
-  }
-
-  /*for (int i = -1; i <= 1; i++)
+  for (int i = -1; i <= 1; i++)
   {
     for (int k = -1; k <= 1; k++)
     {
@@ -154,12 +110,9 @@ bool LPGState::GetSuccessors(AStarSearch<LPGState> *astarsearch,
         new_suc.the_cell.r = parent_node->the_cell.r + i;
         new_suc.the_cell.a = parent_node->the_cell.a + k;
       }
-
-      //std::cout << new_suc.the_cell.r << " --- " << new_suc.the_cell.a << std::endl;
-
       astarsearch->AddSuccessor(new_suc);
     }
-  }*/
+  }
   return true;  // TODO: add range check of grid
 }
 
@@ -207,8 +160,19 @@ Vector2d LPGPathPlanner::get_gait(Vector2d goal,
   }
 
   // Compute the gait
-  Vector2d gait         = helper.cell_middle(waypoints[1]);
-  double distance       = helper.distance(Vector2d(0, 0), gait);
+  Vector2d gait;
+  double distance;
+  int counter = 0;
+  do
+  {
+    if (counter == waypoints.size()) {break;}
+    gait     = helper.cell_middle(waypoints[counter]);
+    distance = helper.distance(Vector2d(0, 0), gait);
+    counter++;
+  } while (distance < 60);
+
+  std::cout << "gait: " << gait << std::endl;
+
   // Dirty: Let the FootStepPlanner actually limit the step to the maximum
   double max_steplength = 100;
 
@@ -247,7 +211,7 @@ std::vector<LPGHelper::Cell> LPGPathPlanner::get_waypoints(Vector2d goal)
     int StepCount = astar.GetStepCount();
     if (StepCount == 100)
     {
-      astar.CancelSearch();
+      //astar.CancelSearch();
     }
   } while (SearchState == AStarSearch<LPGState>::SEARCH_STATE_SEARCHING);
 

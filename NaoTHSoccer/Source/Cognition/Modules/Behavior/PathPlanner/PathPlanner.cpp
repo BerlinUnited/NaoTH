@@ -156,6 +156,10 @@ void PathPlanner::walk_to_ball(const Foot foot, const bool go_fast)
     obstacles.push_back(generate_obst(Vector2d(3000.0, 500.0), 300));
     obstacles.push_back(generate_obst(Vector2d(1250.0, -500.0), 300));
 
+    std::cout << "obstacles:" << std::endl << obstacles[0].x << " --- " << obstacles[0].y << std::endl
+              << obstacles[1].x << " --- " << obstacles[1].y << std::endl
+              << obstacles[2].x << " --- " << obstacles[2].y << std::endl;
+
     Vector2d goal = Vector2d(0.7 * (ballPos.x - getPathModel().distance - ballRadius), ballPos.y);
     Vector2d gait = LPGPlanner.get_gait(goal, obstacles);
     pose = {ballRotation, gait.x, gait.y};
