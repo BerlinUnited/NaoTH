@@ -144,7 +144,8 @@ void PathPlanner::walk_to_ball(const Foot foot, const bool go_fast)
   if (algorithm == PathPlannerAlgorithm::LPG)
   {
     std::vector<Vector3d> empty;
-    Vector2d gait = LPGPlanner.get_gait(ballPos, empty);
+    Vector2d goal = Vector2d(0.7 * (ballPos.x - getPathModel().distance - ballRadius), ballPos.y);
+    Vector2d gait = LPGPlanner.get_gait(goal, empty);
     pose = {ballRotation, gait.x, gait.y};
   }
   else
