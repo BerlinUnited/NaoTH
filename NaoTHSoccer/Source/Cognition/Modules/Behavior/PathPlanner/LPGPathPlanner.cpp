@@ -151,20 +151,22 @@ Vector2d LPGPathPlanner::get_gait(Vector2d goal,
   }
   else
   {
-    /*for (LPGHelper::Cell cell : waypoints)
+    for (LPGHelper::Cell cell : waypoints)
     {
       std::cout << cell.r << " -- " << cell.a << " -- " << helper.cell_middle(cell) << std::endl;
-    }*/
+    }
   }
 
   // Compute the gait
   Vector2d gait         = helper.cell_middle(waypoints[0]);
   double distance       = helper.distance(Vector2d(0, 0), gait);
-  double max_steplength = std::max(-60.0, std::min(60.0, distance));
+  // Dirty: Let the FootStepPlanner actually limit the step to the maximum
+  double max_steplength = 100;
 
   gait.x = gait.x / distance * max_steplength;
   gait.y = gait.y / distance * max_steplength;
 
+  // If the maximized step would overstep the goal
   if (helper.length(gait) > helper.length(goal))
   {
     gait = goal;
@@ -192,11 +194,12 @@ std::vector<LPGHelper::Cell> LPGPathPlanner::get_waypoints(Vector2d goal)
 
     // Don't search for too long
     // TODO: FIND A GOOD BREAK NUMBER
-    /*int StepCount = astar.GetStepCount();
-    if (StepCount == 10)
+    // 100 seems to work good, 0.05 to 0.2 ms stopwatch for whole PathPlanner module (on my laptop!!! NEED ROBOT)
+    int StepCount = astar.GetStepCount();
+    if (StepCount == 100)
     {
       astar.CancelSearch();
-    }*/
+    }
   } while (SearchState == AStarSearch<LPGState>::SEARCH_STATE_SEARCHING);
 
   // Searching is done, check for the result
@@ -204,21 +207,19 @@ std::vector<LPGHelper::Cell> LPGPathPlanner::get_waypoints(Vector2d goal)
   {
     LPGState *node = astar.GetSolutionStart();
     waypoints.push_back(node->get_cell());
-    std::cout << node->get_cell().r << " -- " << node->get_cell().a << " -- " << helper.cell_middle(node->get_cell()) << std::endl;
 
     for (;;)
     {
       node = astar.GetSolutionNext();
-      if (!node) {std::cout << "break!" << std::endl;break;}
-      std::cout << node->get_cell().r << " -- " << node->get_cell().a << " -- " << helper.cell_middle(node->get_cell()) << std::endl;
+      if (!node) {break;}
       waypoints.push_back(node->get_cell());
     }
 
     // Reset A*
     astar.FreeSolutionNodes();
   }
-  // This is called when search fails or is canceled
-  // All nodes will be freed
+  // This is called when search fails or is canceled or out of memory
+  // All nodes will be freed implicitly
   else if (SearchState == AStarSearch<LPGState>::SEARCH_STATE_FAILED)
   {
     return waypoints; // empty vector
