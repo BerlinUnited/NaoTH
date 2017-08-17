@@ -80,6 +80,17 @@ private:
     int approach_ball_adapt_threshold;
   } params;
 
+  enum PathPlannerAlgorithm
+  {
+    NAIVE,
+    LPG,
+    BISEC
+  };
+
+  LPGPathPlanner LPGPlanner;
+
+  PathPlannerAlgorithm algorithm;
+
   // NONE means hip
   enum Foot
   {

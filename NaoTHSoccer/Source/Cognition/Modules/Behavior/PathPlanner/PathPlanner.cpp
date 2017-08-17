@@ -9,12 +9,16 @@
 
 PathPlanner::PathPlanner()
 :
+algorithm(PathPlannerAlgorithm::LPG),
 step_buffer({}),
 foot_to_use(Foot::RIGHT),
 last_stepRequestID(getMotionStatus().stepControl.stepRequestID + 1),      // WalkRequest stepRequestID starts at 0, we have to start at 1
 kick_planned(false)
 {
   DEBUG_REQUEST_REGISTER("PathPlanner:walk_to_ball", "Walks to the ball from far.", false);
+  DEBUG_REQUEST_REGISTER("PathPlanner:Algorithm:LPG", "Uses the LPG Algorithm for Path Planning.", false);
+  DEBUG_REQUEST_REGISTER("PathPlanner:Algorithm:BISEC", "Uses the BISECTION Algorithm for Path Planning.", false);
+  DEBUG_REQUEST_REGISTER("PathPlanner:Algorithm:NAIVE", "Uses the NAIVE Algorithm for Path Planning.", false);
 
   getDebugParameterList().add(&params);
 }
@@ -31,6 +35,15 @@ void PathPlanner::execute()
     if (getBallModel().positionPreview.x > 250) {
       walk_to_ball(Foot::NONE);
     }
+  );
+  DEBUG_REQUEST("PathPlanner:Algorithm:LPG",
+                algorithm = PathPlannerAlgorithm::LPG;
+  );
+  DEBUG_REQUEST("PathPlanner:Algorithm:BISEC",
+                algorithm = PathPlannerAlgorithm::BISEC;
+  );
+  DEBUG_REQUEST("PathPlanner:Algorithm:NAIVE",
+                algorithm = PathPlannerAlgorithm::NAIVE;
   );
   // --- DEBUG REQUESTS ---
 
@@ -127,12 +140,22 @@ void PathPlanner::walk_to_ball(const Foot foot, const bool go_fast)
   }
   double ballRotation = ballPos.angle();
 
-  Pose2D pose           = { ballRotation, 0.7*(ballPos.x - getPathModel().distance - ballRadius), ballPos.y };
+  Pose2D pose;
+  if (algorithm == PathPlannerAlgorithm::LPG)
+  {
+    std::vector<Vector3d> empty;
+    Vector2d gait = LPGPlanner.get_gait(ballPos, empty);
+    pose = {ballRotation, gait.x, gait.y};
+  }
+  else
+  {
+    pose = { ballRotation, 0.7*(ballPos.x - getPathModel().distance - ballRadius), ballPos.y };
+  }
 
   if (step_buffer.empty())
   {
-    StepType type         = StepType::WALKSTEP;
-    double scale          = 1.0;
+    StepType type          = StepType::WALKSTEP;
+    double scale           = 1.0;
     double speed_direction = Math::fromDegrees(0.0);
 
     if (go_fast)
