@@ -22,9 +22,10 @@ public:
   {
     // Constructor
     Cell() : r(0), a(0) {}
+    Cell(int r, int a) : r(r), a(a) {}
 
-    unsigned int r;      // rings
-    unsigned int a;      // angular
+    int r;      // rings
+    int a;      // angular
   };
 
   Cell compute_cell(const Vector2d &coords) const;
@@ -45,7 +46,7 @@ private:
   double angular_part = 16.0;
 
   // parameters for obstacle function
-  double parameter_s  = 0.5;
+  double parameter_s  = 1.0;
 };
 
 // A* State Class
