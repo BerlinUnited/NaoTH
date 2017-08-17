@@ -43,7 +43,7 @@ double LPGHelper::obst_func(const LPGHelper::Cell &the_cell) const
     obst_dist_to_mid = distance(obst, Vector2d(0, 0));
     r_d              = obst_dist_to_mid / 10;
 
-    a = (r_f - r_d) * 10;   // cost of constant part
+    a = (r_f - r_d);// * 10;   // cost of constant part
     r = r_f + r_d;           // radius of constant part
     s = parameter_s * r;     // radius of linear decreasing part
 
@@ -261,7 +261,7 @@ std::vector<LPGHelper::Cell> LPGPathPlanner::get_waypoints(Vector2d goal)
     {
       node = astar.GetSolutionNext();
       if (!node) {break;}
-      if ((waypoints.back().r == node->get_cell().r && waypoints.back().a == node->get_cell().a)) {continue;}
+      if (waypoints.back().r == node->get_cell().r && waypoints.back().a == node->get_cell().a) {continue;}
       waypoints.push_back(node->get_cell());
     }
 
