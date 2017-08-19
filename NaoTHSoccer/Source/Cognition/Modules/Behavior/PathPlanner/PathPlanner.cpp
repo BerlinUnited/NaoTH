@@ -154,10 +154,10 @@ void PathPlanner::walk_to_ball(const Foot foot, const bool go_fast)
   {
     // Hardcoded obstacles for testing purposes
     std::vector<Vector3d> obstacles;
-    obstacles.push_back(Vector3d(-1500.0,    0.0, 300));
-    obstacles.push_back(Vector3d(-1500.0,  300.0, 300));
-    obstacles.push_back(Vector3d(-1500.0, -300.0, 300));
-    obstacles.push_back(Vector3d(-1500.0, -600.0, 300));
+    obstacles.push_back(Vector3d(-2500.0,    0.0, 300));
+    obstacles.push_back(Vector3d(-2500.0,  300.0, 300));
+    obstacles.push_back(Vector3d(-2500.0, -300.0, 300));
+    obstacles.push_back(Vector3d(-3000.0, -600.0, 300));
     obstacles.push_back(Vector3d(-1500.0,  600.0, 300));
 
     DEBUG_REQUEST("PathPlanner:LPG:draw_obstacles_and_ball",

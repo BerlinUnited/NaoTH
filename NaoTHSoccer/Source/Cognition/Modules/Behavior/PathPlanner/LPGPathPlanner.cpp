@@ -43,14 +43,12 @@ double LPGHelper::obst_func(const LPGHelper::Cell& the_cell) const
     obst_dist_to_mid = distance(obst, Vector2d(0, 0));
     r_d              = obst_dist_to_mid / 10;
 
-    a = (r_f - r_d);// * 100;   // cost of constant part
-    r = r_f + r_d;           // radius of constant part
-    s = parameter_s * r;     // radius of linear decreasing part
+    a = r_f - r_d;       // cost of constant part
+    r = r_f + r_d;       // radius of constant part
+    s = parameter_s * r; // radius of linear decreasing part
 
     sum += std::max(std::min(1 - ((dist_to_obst_mid - r) / s), 1.0), 0.0) * a;
   }
-
-  //std::cout << sum << std::endl;
 
   return sum;
 }
@@ -99,15 +97,15 @@ bool LPGState::GetSuccessors(AStarSearch<LPGState> *astarsearch,
   {
     for (int k = -1; k <= 1; k++)
     {
-      // Continue when same node
-      if (i == 0 && k == 0 && parent_node)
-      {
-        continue;
-      }
-
       LPGState new_suc;
       if (parent_node)
       {
+        // Continue when same node
+        if (i == 0 && k == 0)
+        {
+          continue;
+        }
+
         new_suc.the_cell.r = the_cell.r + i;
         new_suc.the_cell.a = the_cell.a + k;
       }
@@ -117,10 +115,11 @@ bool LPGState::GetSuccessors(AStarSearch<LPGState> *astarsearch,
         new_suc.the_cell.a = k;
       }
 
+      // Only add if new_suc isn't the same as its parent node
+      // or if there isn't a parent node (first nodes that are generated)
       if (!parent_node || !(parent_node->IsSameState(new_suc)))
       {
         astarsearch->AddSuccessor(new_suc);
-        //std::cout << "SUCCESSOR: " << new_suc.the_cell.r << " --- " << new_suc.the_cell.a << std::endl;
       }
     }
   }
@@ -161,15 +160,6 @@ Vector2d LPGPathPlanner::get_gait(const Vector2d& goal,
     return Vector2d(0, 0);
   }
 
-  /*else
-  {
-    for (LPGHelper::Cell cell : waypoints)
-    {
-      std::cout << cell.r << " -- " << cell.a << " -- " << helper.cell_middle(cell) << std::endl;
-    }
-    std::cout << std::endl;
-  }*/
-
   // Compute the gait
   Vector2d gait;
   double distance;
@@ -181,8 +171,6 @@ Vector2d LPGPathPlanner::get_gait(const Vector2d& goal,
     distance = helper.distance(Vector2d(0, 0), gait);
     counter++;
   } while (distance < 60);
-
-  //std::cout << "gait: " << gait << std::endl;
 
   // Dirty: Let the FootStepPlanner actually limit the step to the maximum
   double max_steplength = 100;
