@@ -170,9 +170,7 @@ void PathPlanner::walk_to_ball(const Foot foot, const bool go_fast)
 
                   // Draw the ball position
                   PEN("FF4444", 20);
-                  Vector2d draw_ball_pos = getBallModel().positionPreview;
-                  draw_ball_pos.rotate(getRobotPose().rotation);
-                  draw_ball_pos = getRobotPose().translation + draw_ball_pos;
+                  Vector2d draw_ball_pos = getRobotPose() * getBallModel().positionPreview;
                   CIRCLE(draw_ball_pos.x, draw_ball_pos.y, ballRadius);
     );
 
