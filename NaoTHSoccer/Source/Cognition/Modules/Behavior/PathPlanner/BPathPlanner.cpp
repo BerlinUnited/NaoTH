@@ -1,9 +1,8 @@
-//
-//  BPathPlanner.cpp
-//  NaoTHSoccer
-//
-//  Created by Yigit Akcay on 19.08.17.
-//
-//
+/**
+ * @file BPathPlanner.cpp
+ *
+ * @author <a href="mailto:akcayyig@hu-berlin.de">Yigit Can Akcay</a>
+ * Implementation of class BPathPlanner (BISEC)
+ */
 
-#include "BPathPlanner.hpp"
+#include "BPathPlanner.h"
