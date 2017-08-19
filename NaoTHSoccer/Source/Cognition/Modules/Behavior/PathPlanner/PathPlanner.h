@@ -15,6 +15,7 @@
 // debug
 #include "Tools/Debug/DebugRequest.h"
 #include "Tools/Debug/DebugModify.h"
+#include "Tools/Debug/DebugDrawings.h"
 #include "Tools/Debug/DebugParameterList.h"
 
 // representations
@@ -37,6 +38,7 @@
 BEGIN_DECLARE_MODULE(PathPlanner)
 PROVIDE(DebugRequest)
 PROVIDE(DebugModify)
+PROVIDE(DebugDrawings)
 PROVIDE(DebugParameterList)
 
 REQUIRE(FieldInfo)
@@ -54,7 +56,7 @@ END_DECLARE_MODULE(PathPlanner)
 
 
 
-class PathPlanner: public PathPlannerBase
+class PathPlanner : public PathPlannerBase
 {
 public:
   PathPlanner();
@@ -90,11 +92,10 @@ private:
     BISEC
   };
 
-  LPGPathPlanner LPGPlanner;
-
+  LPGPathPlanner lpgPlanner;
   PathPlannerAlgorithm algorithm;
   // Just for implementation purposes (testing)
-  Vector3d generate_obst(Vector2d obst, double radius);
+  Vector3d generate_obst(const Vector3d& obst) const;
 
   // NONE means hip
   enum Foot
@@ -142,16 +143,16 @@ private:
   // Used to synchronize stepIDs of WalkEngine to take control
   unsigned int last_stepRequestID;
 
-  void add_step(Pose2D &pose,
-                const StepType &type,
-                const WalkRequest::Coordinate &coordinate,
+  void add_step(Pose2D& pose,
+                const StepType& type,
+                const WalkRequest::Coordinate& coordinate,
                 const double character,
                 const Foot foot,
                 const double scale,
                 const double speedDirection,
                 const WalkRequest::StepControlRequest::RestrictionMode restriction,
                 const bool isProtected);
-  void update_step(Pose2D &pose);
+  void update_step(Pose2D& pose);
   void manage_step_buffer();
   void execute_step_buffer();
 

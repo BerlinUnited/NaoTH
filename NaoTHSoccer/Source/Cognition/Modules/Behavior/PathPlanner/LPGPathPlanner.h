@@ -28,13 +28,13 @@ public:
     int a;      // angular
   };
 
-  Cell compute_cell(const Vector2d &coords) const;
-  double distance_between_cells(const Cell &a, const Cell &b) const;
-  void set_obstacles(std::vector<Vector3d> obstacles);
-  double obst_func(const Cell &the_cell) const;
-  Vector2d cell_middle(const Cell &the_cell) const;
-  double distance(const Vector2d &a, const Vector2d &b) const;
-  double length(const Vector2d &coords) const;
+  Cell compute_cell(const Vector2d& coords) const;
+  double distance_between_cells(const Cell& a, const Cell& b) const;
+  void set_obstacles(const std::vector<Vector3d>& obstacles);
+  double obst_func(const Cell& the_cell) const;
+  Vector2d cell_middle(const Cell& the_cell) const;
+  double distance(const Vector2d& a, const Vector2d& b) const;
+  double length(const Vector2d& coords) const;
 
 private:
 
@@ -46,7 +46,7 @@ private:
   double angular_part = 16.0;
 
   // parameters for obstacle function
-  double parameter_s  = 1.0;
+  double parameter_s  = 0.5;
 };
 
 // A* State Class
@@ -77,13 +77,23 @@ public:
   LPGPathPlanner();
   ~LPGPathPlanner();
 
-  Vector2d get_gait(Vector2d goal, std::vector<Vector3d> obstacles);
+  Vector2d get_gait(const Vector2d& goal, const std::vector<Vector3d>& obstacles) const;
+  const std::vector<Vector2d>& get_waypoint_coordinates() const;
 
 private:
 
-  AStarSearch<LPGState> astar;
+  mutable std::vector<LPGHelper::Cell> waypoints;
+  mutable std::vector<Vector2d> waypoint_coordinates;
 
-  std::vector<LPGHelper::Cell> get_waypoints(Vector2d goal);
+  // parameters for LPG
+  double base         = 1.1789;
+  double minimal_cell = 100.0;
+  double angular_part = 16.0;
+
+  // parameters for obstacle function
+  double parameter_s  = 0.5;
+
+  std::vector<LPGHelper::Cell> compute_waypoints(const Vector2d& goal) const;
 
 };
 

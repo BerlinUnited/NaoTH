@@ -19,6 +19,8 @@ kick_planned(false)
   DEBUG_REQUEST_REGISTER("PathPlanner:Algorithm:LPG", "Uses the LPG Algorithm for Path Planning.", false);
   DEBUG_REQUEST_REGISTER("PathPlanner:Algorithm:BISEC", "Uses the BISECTION Algorithm for Path Planning.", false);
   DEBUG_REQUEST_REGISTER("PathPlanner:Algorithm:NAIVE", "Uses the NAIVE Algorithm for Path Planning.", false);
+  DEBUG_REQUEST_REGISTER("PathPlanner:LPG:draw_waypoints", "Draws computed waypoints.", true);
+  DEBUG_REQUEST_REGISTER("PathPlanner:LPG:draw_obstacles", "Draws the obstacles.", true);
 
   getDebugParameterList().add(&params);
 }
@@ -120,10 +122,10 @@ void PathPlanner::execute()
 }
 
 // Just for implementation purposes (testing)
-Vector3d PathPlanner::generate_obst(Vector2d obst, double radius)
+Vector3d PathPlanner::generate_obst(const Vector3d& obst) const
 {
-  obst = getRobotPose() / obst;
-  return Vector3d(obst.x, obst.y, radius);
+  Vector2d obst_transformed = getRobotPose() * Vector2d(obst.x, obst.y);
+  return Vector3d(obst_transformed.x, obst_transformed.y, obst.z);
 }
 
 void PathPlanner::walk_to_ball(const Foot foot, const bool go_fast)
@@ -152,16 +154,44 @@ void PathPlanner::walk_to_ball(const Foot foot, const bool go_fast)
   {
     // Hardcoded obstacles for testing purposes
     std::vector<Vector3d> obstacles;
-    obstacles.push_back(generate_obst(Vector2d(2500.0, 0.0), 300));
-    obstacles.push_back(generate_obst(Vector2d(3000.0, 500.0), 300));
-    obstacles.push_back(generate_obst(Vector2d(1250.0, -500.0), 300));
+    obstacles.push_back(Vector3d(-1500.0,    0.0, 300));
+    obstacles.push_back(Vector3d(-1500.0,  300.0, 300));
+    obstacles.push_back(Vector3d(-1500.0, -300.0, 300));
+    obstacles.push_back(Vector3d(-1500.0, -600.0, 300));
+    obstacles.push_back(Vector3d(-1500.0,  600.0, 300));
 
-    std::cout << "obstacles:" << std::endl << obstacles[0].x << " --- " << obstacles[0].y << std::endl
-              << obstacles[1].x << " --- " << obstacles[1].y << std::endl
-              << obstacles[2].x << " --- " << obstacles[2].y << std::endl;
+    DEBUG_REQUEST("PathPlanner:LPG:draw_obstacles",
+                  FIELD_DRAWING_CONTEXT;
+                  PEN("FFFFFF", 20);
+                  for (const Vector3d& obstacle : obstacles)
+                  {
+                    CIRCLE(obstacle.x, obstacle.y, 300);
+                  }
 
-    Vector2d goal = Vector2d(0.7 * (ballPos.x - getPathModel().distance - ballRadius), ballPos.y);
-    Vector2d gait = LPGPlanner.get_gait(goal, obstacles);
+                  // Draw the ball position
+                  PEN("FF4444", 20);
+                  CIRCLE(ballPos.x, ballPos.y, ballRadius);
+    );
+
+    for (Vector3d& obstacle : obstacles)
+    {
+      obstacle = generate_obst(obstacle);
+    }
+
+    //Vector2d goal = Vector2d(0.7 * (ballPos.x - getPathModel().distance - ballRadius), ballPos.y);
+    Vector2d goal = ballPos;
+    Vector2d gait = lpgPlanner.get_gait(goal, obstacles);
+    DEBUG_REQUEST("PathPlanner:LPG:draw_waypoints",
+                  FIELD_DRAWING_CONTEXT;
+                  PEN("000000", 20);
+                  for (Vector2d waypoint : lpgPlanner.get_waypoint_coordinates())
+                  {
+                    // First rotate (important)
+                    waypoint.rotate(getRobotPose().getAngle());
+                    waypoint = getRobotPose().translation + waypoint;
+                    CIRCLE(waypoint.x, waypoint.y, 10);
+                  }
+    );
     pose = {ballRotation, gait.x, gait.y};
   }
   else

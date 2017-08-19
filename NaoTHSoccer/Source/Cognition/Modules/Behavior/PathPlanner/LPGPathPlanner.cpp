@@ -10,7 +10,7 @@
 static LPGHelper helper;
 
 // --- Helper ---
-LPGHelper::Cell LPGHelper::compute_cell(const Vector2d &coords) const
+LPGHelper::Cell LPGHelper::compute_cell(const Vector2d& coords) const
 {
   LPGHelper::Cell the_cell;
   the_cell.r = std::floor(std::log(((std::sqrt(std::pow(coords.x, 2) + std::pow(coords.y, 2)) * (base - 1)) / minimal_cell) + 1) / log(base));
@@ -19,17 +19,17 @@ LPGHelper::Cell LPGHelper::compute_cell(const Vector2d &coords) const
   return the_cell;
 }
 
-double LPGHelper::distance_between_cells(const LPGHelper::Cell &a, const LPGHelper::Cell &b) const
+double LPGHelper::distance_between_cells(const LPGHelper::Cell& a, const LPGHelper::Cell& b) const
 {
   return distance(cell_middle(a), cell_middle(b));
 }
 
-void LPGHelper::set_obstacles(const std::vector<Vector3d> obstacles)
+void LPGHelper::set_obstacles(const std::vector<Vector3d>& obstacles)
 {
   this->obstacles = obstacles;
 }
 
-double LPGHelper::obst_func(const LPGHelper::Cell &the_cell) const
+double LPGHelper::obst_func(const LPGHelper::Cell& the_cell) const
 {
   Vector2d obst;
   double sum = 0;
@@ -43,7 +43,7 @@ double LPGHelper::obst_func(const LPGHelper::Cell &the_cell) const
     obst_dist_to_mid = distance(obst, Vector2d(0, 0));
     r_d              = obst_dist_to_mid / 10;
 
-    a = (r_f - r_d);// * 20;   // cost of constant part
+    a = (r_f - r_d);// * 100;   // cost of constant part
     r = r_f + r_d;           // radius of constant part
     s = parameter_s * r;     // radius of linear decreasing part
 
@@ -55,19 +55,19 @@ double LPGHelper::obst_func(const LPGHelper::Cell &the_cell) const
   return sum;
 }
 
-Vector2d LPGHelper::cell_middle(const LPGHelper::Cell &the_cell) const
+Vector2d LPGHelper::cell_middle(const LPGHelper::Cell& the_cell) const
 {
   double prd = (((std::pow(base, the_cell.r+0.5) - 1) * minimal_cell) / (base - 1));
   return Vector2d(std::cos(the_cell.a * (2*Math::pi/16)) * prd,
                   std::sin(the_cell.a * (2*Math::pi/16)) * prd);
 }
 
-double LPGHelper::distance(const Vector2d &a, const Vector2d &b) const
+double LPGHelper::distance(const Vector2d& a, const Vector2d& b) const
 {
   return std::sqrt(std::pow(a.x - b.x, 2) + std::pow(a.y - b.y, 2));
 }
 
-double LPGHelper::length(const Vector2d &coords) const
+double LPGHelper::length(const Vector2d& coords) const
 {
   return std::sqrt(std::pow(coords.x, 2) + std::pow(coords.y, 2));
 }
@@ -82,82 +82,93 @@ LPGHelper::Cell LPGState::get_cell() const
   return the_cell;
 }
 
-float LPGState::GoalDistanceEstimate(LPGState &nodeGoal)
+float LPGState::GoalDistanceEstimate(LPGState& nodeGoal)
 {
   return helper.distance_between_cells(the_cell, nodeGoal.the_cell);
 }
 
-bool LPGState::IsGoal(LPGState &nodeGoal)
+bool LPGState::IsGoal(LPGState& nodeGoal)
 {
   return IsSameState(nodeGoal);
 }
 
 bool LPGState::GetSuccessors(AStarSearch<LPGState> *astarsearch,
-                             LPGState *parent_node)
+                             LPGState* parent_node)
 {
   for (int i = -1; i <= 1; i++)
   {
     for (int k = -1; k <= 1; k++)
     {
+      // Continue when same node
+      if (i == 0 && k == 0 && parent_node)
+      {
+        continue;
+      }
+
       LPGState new_suc;
-      if (!parent_node)
+      if (parent_node)
+      {
+        new_suc.the_cell.r = the_cell.r + i;
+        new_suc.the_cell.a = the_cell.a + k;
+      }
+      else
       {
         new_suc.the_cell.r = i;
         new_suc.the_cell.a = k;
       }
-      else
+
+      if (!parent_node || !(parent_node->IsSameState(new_suc)))
       {
-        new_suc.the_cell.r = parent_node->the_cell.r + i;
-        new_suc.the_cell.a = parent_node->the_cell.a + k;
+        astarsearch->AddSuccessor(new_suc);
+        //std::cout << "SUCCESSOR: " << new_suc.the_cell.r << " --- " << new_suc.the_cell.a << std::endl;
       }
-      astarsearch->AddSuccessor(new_suc);
     }
   }
   return true;  // TODO: add range check of grid
 }
 
-float LPGState::GetCost(LPGState &successor)
+float LPGState::GetCost(LPGState& successor)
 {
   return helper.distance_between_cells(the_cell, successor.the_cell) + helper.obst_func(successor.the_cell);
 }
 
-bool LPGState::IsSameState(LPGState &rhs)
+bool LPGState::IsSameState(LPGState& rhs)
 {
   return (the_cell.r == rhs.the_cell.r && the_cell.a == rhs.the_cell.a);
 }
 // --- A* ---
 
 // --- LPG PathPlanner ---
-LPGPathPlanner::LPGPathPlanner()
-{
+LPGPathPlanner::LPGPathPlanner() {}
 
-}
+LPGPathPlanner::~LPGPathPlanner() {}
 
-LPGPathPlanner::~LPGPathPlanner()
-{
-
-}
-
-Vector2d LPGPathPlanner::get_gait(Vector2d goal,
-                                  std::vector<Vector3d> obstacles)
+Vector2d LPGPathPlanner::get_gait(const Vector2d& goal,
+                                  const std::vector<Vector3d>& obstacles) const
 {
   // Pass the obstacles to LPGHelper before computing waypoints
   helper.set_obstacles(obstacles);
-  std::vector<LPGHelper::Cell> waypoints = get_waypoints(goal);
+  waypoints = compute_waypoints(goal);
+
+  waypoint_coordinates = {};
+  for (LPGHelper::Cell& cell : waypoints)
+  {
+    waypoint_coordinates.push_back(helper.cell_middle(cell));
+  }
 
   if (waypoints.empty())
   {
-    std::cout << "empty" << std::endl;
     return Vector2d(0, 0);
   }
-  else
+
+  /*else
   {
     for (LPGHelper::Cell cell : waypoints)
     {
       std::cout << cell.r << " -- " << cell.a << " -- " << helper.cell_middle(cell) << std::endl;
     }
     std::cout << std::endl;
-  }
+  }*/
 
   // Compute the gait
   Vector2d gait;
@@ -171,7 +182,7 @@ Vector2d LPGPathPlanner::get_gait(Vector2d goal,
     counter++;
   } while (distance < 60);
 
-  std::cout << "gait: " << gait << std::endl;
+  //std::cout << "gait: " << gait << std::endl;
 
   // Dirty: Let the FootStepPlanner actually limit the step to the maximum
   double max_steplength = 100;
@@ -188,13 +199,19 @@ Vector2d LPGPathPlanner::get_gait(Vector2d goal,
   return gait;
 }
 
-std::vector<LPGHelper::Cell> LPGPathPlanner::get_waypoints(Vector2d goal)
+const std::vector<Vector2d>& LPGPathPlanner::get_waypoint_coordinates() const
+{
+  return waypoint_coordinates;
+}
+
+std::vector<LPGHelper::Cell> LPGPathPlanner::compute_waypoints(const Vector2d& goal) const
 {
   std::vector<LPGHelper::Cell> waypoints;
 
   LPGState startNode((LPGHelper::Cell()));
   LPGState endNode(helper.compute_cell(goal));
 
+  AStarSearch<LPGState> astar;
   astar.SetStartAndGoalStates(startNode, endNode);
 
   unsigned int SearchState;
@@ -236,10 +253,12 @@ std::vector<LPGHelper::Cell> LPGPathPlanner::get_waypoints(Vector2d goal)
   // All nodes will be freed implicitly
   else if (SearchState == AStarSearch<LPGState>::SEARCH_STATE_FAILED)
   {
+    std::cout << "SEARCH FAILED" << std::endl;
     return waypoints; // empty vector
   }
   else if (SearchState == AStarSearch<LPGState>::SEARCH_STATE_OUT_OF_MEMORY)
   {
+    std::cout << "OUT OF MEMORY" << std::endl;
     return waypoints; //empty vector
   }
 
