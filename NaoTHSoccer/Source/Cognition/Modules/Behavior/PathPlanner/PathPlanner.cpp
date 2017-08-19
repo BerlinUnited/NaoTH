@@ -20,7 +20,7 @@ kick_planned(false)
   DEBUG_REQUEST_REGISTER("PathPlanner:Algorithm:BISEC", "Uses the BISECTION Algorithm for Path Planning.", false);
   DEBUG_REQUEST_REGISTER("PathPlanner:Algorithm:NAIVE", "Uses the NAIVE Algorithm for Path Planning.", false);
   DEBUG_REQUEST_REGISTER("PathPlanner:LPG:draw_waypoints", "Draws computed waypoints.", true);
-  DEBUG_REQUEST_REGISTER("PathPlanner:LPG:draw_obstacles", "Draws the obstacles.", true);
+  DEBUG_REQUEST_REGISTER("PathPlanner:LPG:draw_obstacles_and_ball", "Draws the obstacles and the ball.", true);
 
   getDebugParameterList().add(&params);
 }
@@ -124,7 +124,7 @@ void PathPlanner::execute()
 // Just for implementation purposes (testing)
 Vector3d PathPlanner::generate_obst(const Vector3d& obst) const
 {
-  Vector2d obst_transformed = getRobotPose() * Vector2d(obst.x, obst.y);
+  Vector2d obst_transformed = getRobotPose() / Vector2d(obst.x, obst.y);
   return Vector3d(obst_transformed.x, obst_transformed.y, obst.z);
 }
 
@@ -160,7 +160,7 @@ void PathPlanner::walk_to_ball(const Foot foot, const bool go_fast)
     obstacles.push_back(Vector3d(-1500.0, -600.0, 300));
     obstacles.push_back(Vector3d(-1500.0,  600.0, 300));
 
-    DEBUG_REQUEST("PathPlanner:LPG:draw_obstacles",
+    DEBUG_REQUEST("PathPlanner:LPG:draw_obstacles_and_ball",
                   FIELD_DRAWING_CONTEXT;
                   PEN("FFFFFF", 20);
                   for (const Vector3d& obstacle : obstacles)
@@ -170,7 +170,10 @@ void PathPlanner::walk_to_ball(const Foot foot, const bool go_fast)
 
                   // Draw the ball position
                   PEN("FF4444", 20);
-                  CIRCLE(ballPos.x, ballPos.y, ballRadius);
+                  Vector2d draw_ball_pos = getBallModel().positionPreview;
+                  draw_ball_pos.rotate(getRobotPose().rotation);
+                  draw_ball_pos = getRobotPose().translation + draw_ball_pos;
+                  CIRCLE(draw_ball_pos.x, draw_ball_pos.y, ballRadius);
     );
 
     for (Vector3d& obstacle : obstacles)
@@ -178,8 +181,7 @@ void PathPlanner::walk_to_ball(const Foot foot, const bool go_fast)
       obstacle = generate_obst(obstacle);
     }
 
-    //Vector2d goal = Vector2d(0.7 * (ballPos.x - getPathModel().distance - ballRadius), ballPos.y);
-    Vector2d goal = ballPos;
+    Vector2d goal = Vector2d(0.7 * (ballPos.x - getPathModel().distance - ballRadius), ballPos.y);
     Vector2d gait = lpgPlanner.get_gait(goal, obstacles);
     DEBUG_REQUEST("PathPlanner:LPG:draw_waypoints",
                   FIELD_DRAWING_CONTEXT;
