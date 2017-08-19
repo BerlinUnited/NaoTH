@@ -19,6 +19,7 @@ kick_planned(false)
   DEBUG_REQUEST_REGISTER("PathPlanner:Algorithm:LPG", "Uses the LPG Algorithm for Path Planning.", false);
   DEBUG_REQUEST_REGISTER("PathPlanner:Algorithm:BISEC", "Uses the BISECTION Algorithm for Path Planning.", false);
   DEBUG_REQUEST_REGISTER("PathPlanner:Algorithm:NAIVE", "Uses the NAIVE Algorithm for Path Planning.", false);
+  // WHEN YOU CHANGE THESE TWO TO FALSE, DON't FORGOT GPS_SELFLOCATOR !!!!!!!
   DEBUG_REQUEST_REGISTER("PathPlanner:LPG:draw_waypoints", "Draws computed waypoints.", true);
   DEBUG_REQUEST_REGISTER("PathPlanner:LPG:draw_obstacles_and_ball", "Draws the obstacles and the ball.", true);
 

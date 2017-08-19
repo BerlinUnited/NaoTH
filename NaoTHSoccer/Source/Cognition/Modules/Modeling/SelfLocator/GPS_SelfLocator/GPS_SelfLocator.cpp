@@ -9,7 +9,7 @@
 
 GPS_SelfLocator::GPS_SelfLocator()
 {
-  DEBUG_REQUEST_REGISTER("GPS_SelfLocator:draw_GPSData", "draw the GPS data", false); 
+  DEBUG_REQUEST_REGISTER("GPS_SelfLocator:draw_GPSData", "draw the GPS data", true);
   DEBUG_REQUEST_REGISTER("GPS_SelfLocator:use_GPSData", "use the GPS data", true);
 }
 
