@@ -8,6 +8,8 @@
 #ifndef _BPathPlanner_H_
 #define _BPathPlanner_H_
 
+#include <iostream>
+
 #include "Tools/Math/Vector2.h"
 #include "Tools/Math/Vector3.h"
 
@@ -17,11 +19,6 @@ public:
   BPathPlanner();
   ~BPathPlanner();
 
-  Vector2d get_gait(const Vector2d& goal,
-                    const std::vector<Vector3d>& obstacles) const;
-
-private:
-
   struct Trajectory
   {
     Trajectory(const Vector2d& start, const Vector2d& end) : start(start), end(end) {}
@@ -29,6 +26,14 @@ private:
     Vector2d start;
     Vector2d end;
   };
+
+  Vector2d get_gait(const Vector2d& goal,
+                    const std::vector<Vector3d>& obstacles) const;
+  std::vector<Trajectory> get_trajectory() const;
+
+private:
+
+  mutable std::vector<Trajectory> trajectory;
 
   struct Obstacle
   {
@@ -38,12 +43,12 @@ private:
     double radius;
   };
 
-  std::vector<Obstacle>& obstacles;
+  mutable std::vector<Obstacle> obstacles;
 
   // Only used in hit_obstacle
-  struct Vector4
+  struct CollisionElement
   {
-    Vector4(const Obstacle& obstacle, const double t) : obstacle(obstacle), t(t) {}
+    CollisionElement(const Obstacle& obstacle, const double t) : obstacle(obstacle), t(t) {}
 
     Obstacle obstacle;
     double t;
@@ -55,12 +60,11 @@ private:
   double length(const Vector2d& vector) const;
   double length_of_trajectory(const Vector2d& start,
                               const Vector2d& end) const;
-  int hit_obstacle(const Vector2d& start,
-                   const Vector2d& end) const;
+  Obstacle* hit_obstacle(const Vector2d& start,
+                         const Vector2d& end) const;
   bool still_colliding(const Vector2d* sub_target) const;
-  std::vector<Trajectory> compute_path(const Vector2d& start,
-                                       const Vector2d& end,
-                                       unsigned int depth) const;
+  bool compute_path(const Vector2d& start,
+                    const Vector2d& end) const;
   Vector2d* compute_sub_target(const Vector2d& start, const Vector2d& end, const int sign) const;
   
 };

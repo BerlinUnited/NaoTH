@@ -78,7 +78,7 @@ public:
   ~LPGPathPlanner();
 
   Vector2d get_gait(const Vector2d& goal, const std::vector<Vector3d>& obstacles) const;
-  const std::vector<Vector2d>& get_waypoint_coordinates() const;
+  std::vector<Vector2d>& get_waypoint_coordinates() const;
 
 private:
 

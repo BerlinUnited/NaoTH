@@ -189,7 +189,7 @@ Vector2d LPGPathPlanner::get_gait(const Vector2d& goal,
   return gait;
 }
 
-const std::vector<Vector2d>& LPGPathPlanner::get_waypoint_coordinates() const
+std::vector<Vector2d>& LPGPathPlanner::get_waypoint_coordinates() const
 {
   return waypoint_coordinates;
 }

@@ -33,6 +33,7 @@
 
 // PathPlanner
 #include "LPGPathPlanner.h"
+#include "BPathPlanner.h"
 
 
 BEGIN_DECLARE_MODULE(PathPlanner)
@@ -93,6 +94,7 @@ private:
   };
 
   LPGPathPlanner lpgPlanner;
+  BPathPlanner bPlanner;
   PathPlannerAlgorithm algorithm;
   // Just for implementation purposes (testing)
   Vector3d generate_obst(const Vector3d& obst) const;
