@@ -117,13 +117,15 @@ bool LPGState::GetSuccessors(AStarSearch<LPGState> *astarsearch,
 
       // Only add if new_suc isn't the same as its parent node
       // or if there isn't a parent node (first nodes that are generated)
-      if (!parent_node || !(parent_node->IsSameState(new_suc)))
+      if (!parent_node || !(parent_node->IsSameState(new_suc))
+          && std::abs(new_suc.the_cell.r) < 17
+          && std::abs(new_suc.the_cell.a) < 17)
       {
         astarsearch->AddSuccessor(new_suc);
       }
     }
   }
-  return true;  // TODO: add range check of grid
+  return true;
 }
 
 float LPGState::GetCost(LPGState& successor)
