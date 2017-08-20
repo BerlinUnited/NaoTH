@@ -129,6 +129,10 @@ bool BPathPlanner::compute_path(const Vector2d& start,
                                 const Vector2d& end) const
 {
   std::vector<BPathPlanner::Trajectory> trajectory {Trajectory(start, end)};
+  if (this->trajectory.empty())
+  {
+    this->trajectory = trajectory;
+  }
 
   std::vector<Vector2d> waypoints {start, end};
 
@@ -168,13 +172,13 @@ bool BPathPlanner::compute_path(const Vector2d& start,
         // Insert new sub_targets to tmp_waypoints
         for (int k = 0; k < waypoints.size(); k++)
         {
-          tmp_waypoints1.push_back(waypoints[k]);
-          tmp_waypoints2.push_back(waypoints[k]);
           if (k == i)
           {
             tmp_waypoints1.push_back(*sub_target1);
             tmp_waypoints2.push_back(*sub_target2);
           }
+          tmp_waypoints1.push_back(waypoints[k]);
+          tmp_waypoints2.push_back(waypoints[k]);
         }
 
         // Compute length of the two competing trajectories
