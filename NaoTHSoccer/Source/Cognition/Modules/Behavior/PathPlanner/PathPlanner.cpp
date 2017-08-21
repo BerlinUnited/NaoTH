@@ -157,7 +157,7 @@ void PathPlanner::walk_to_ball(const Foot foot, const bool go_fast)
   obstacles.push_back(Vector3d(-2500.0,  300.0, 300));
   obstacles.push_back(Vector3d(-2500.0, -300.0, 300));
   obstacles.push_back(Vector3d(-3000.0, -600.0, 300));
-  //obstacles.push_back(Vector3d(-1500.0,  600.0, 300));
+  obstacles.push_back(Vector3d(-1500.0,  600.0, 300));
 
   DEBUG_REQUEST("PathPlanner:draw_obstacles_and_ball",
                 FIELD_DRAWING_CONTEXT;
@@ -202,11 +202,12 @@ void PathPlanner::walk_to_ball(const Foot foot, const bool go_fast)
   {
     Vector2d goal = ballPos;
     Vector2d gait = bPlanner.get_gait(goal, obstacles);
+    std::vector<BPathPlanner::Trajectory> path = bPlanner.get_trajectory();
 
     DEBUG_REQUEST("PathPlanner:BISEC:draw_path",
                   FIELD_DRAWING_CONTEXT;
                   PEN("000000", 20);
-                  for (BPathPlanner::Trajectory trajectory : bPlanner.get_trajectory())
+                  for (BPathPlanner::Trajectory trajectory : path)
                   {
                     // First rotate (important)
                     trajectory.start.rotate(getRobotPose().getAngle());
@@ -217,6 +218,10 @@ void PathPlanner::walk_to_ball(const Foot foot, const bool go_fast)
                     LINE(trajectory.start.x, trajectory.start.y, trajectory.end.x, trajectory.end.y);
                   }
     );
+    if (path.size() != 1)
+    {
+      ballRotation = 0;
+    }
     pose = {ballRotation, gait.x, gait.y};
   }
   else

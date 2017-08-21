@@ -65,6 +65,11 @@ private:
   bool still_colliding(const Vector2d* sub_target) const;
   bool compute_path(const Vector2d& start,
                     const Vector2d& end) const;
+  std::vector<Trajectory> compute_path_alt(const Vector2d& start,
+                                           const Vector2d& end,
+                                           const int sign) const;
+  std::vector<Trajectory> compare_paths(const std::vector<Trajectory>& trajectory1,
+                                        const std::vector<Trajectory>& trajectory2) const;
   Vector2d* compute_sub_target(const Vector2d& start, const Vector2d& end, const int sign) const;
   
 };

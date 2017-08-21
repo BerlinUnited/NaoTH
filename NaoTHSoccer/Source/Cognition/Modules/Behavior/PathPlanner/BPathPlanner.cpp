@@ -15,7 +15,11 @@ Vector2d BPathPlanner::get_gait(const Vector2d& goal,
 {
   this->obstacles = transform(obstacles);
 
-  compute_path(Vector2d(0, 0), goal);
+  //compute_path(Vector2d(0, 0), goal);
+  std::vector<BPathPlanner::Trajectory> path1 = compute_path_alt(Vector2d(0, 0), goal, +1);
+  std::vector<BPathPlanner::Trajectory> path2 = compute_path_alt(Vector2d(0, 0), goal, -1);
+
+  this->trajectory = compare_paths(path1, path2);
 
   Vector2d direction   = trajectory[0].end - trajectory[0].start;
   double direction_len = length(direction);
@@ -76,12 +80,12 @@ BPathPlanner::Obstacle* BPathPlanner::hit_obstacle(const Vector2d& start,
     Vector2d point;
     if (t < 0)
     {
-      point = start;
+      // point = start;
       continue;
     }
     else if (t > 1)
     {
-      point = end;
+      // point = end;
       continue;
     }
     else
@@ -106,7 +110,7 @@ BPathPlanner::Obstacle* BPathPlanner::hit_obstacle(const Vector2d& start,
       }
     }
 
-    return &hits[index].obstacle;
+    return &(hits[index].obstacle);
   }
 
   return nullptr;
@@ -136,7 +140,7 @@ bool BPathPlanner::compute_path(const Vector2d& start,
 
   for (;;)
   {
-    if (depth > 10)
+    if (depth > 2)
     {
       std::cout << "BPathPlanner: Max. depth reached!" << std::endl;
       this->trajectory = trajectory;
@@ -152,6 +156,8 @@ bool BPathPlanner::compute_path(const Vector2d& start,
     // Counts the collisions on current trajectory - 0 means we are done
     unsigned int counter = 0;
 
+    int last_sub_target_sign = 0;
+
     // Check for collision and compute waypoints with shortest sub_target
     for (unsigned int i = 0; i < waypoints.size() - 1; i++)
     {
@@ -161,7 +167,6 @@ bool BPathPlanner::compute_path(const Vector2d& start,
       // Did a collision happen so that sub_targets were computed?
       if (sub_target1 && sub_target2)
       {
-        Vector2d sub_target;
         std::vector<Vector2d> tmp_waypoints1 = waypoints;
         std::vector<Vector2d> tmp_waypoints2 = waypoints;
 
@@ -180,20 +185,33 @@ bool BPathPlanner::compute_path(const Vector2d& start,
           dist2 += length_of_trajectory(tmp_waypoints2[k], tmp_waypoints2[k+1]);
         }
 
+        auto tmp_waypoints_it = tmp_waypoints.begin() + i + 1;
         // Which trajectory is shorter?
         if (dist1 < dist2)
         {
-          sub_target = *sub_target1;
+          if (last_sub_target_sign == 1)
+          {
+            tmp_waypoints[i] = *sub_target1;
+          }
+          else
+          {
+            tmp_waypoints.insert(tmp_waypoints_it, *sub_target1);
+          }
         }
         else
         {
-          sub_target = *sub_target2;
+          if (last_sub_target_sign == -1)
+          {
+            tmp_waypoints[i] = *sub_target2;
+          }
+          else
+          {
+            tmp_waypoints.insert(tmp_waypoints_it, *sub_target2);
+          }
         }
         delete sub_target1;
         delete sub_target2;
 
-        auto tmp_waypoints_it = tmp_waypoints.begin() + i + 1;
-        tmp_waypoints.insert(tmp_waypoints_it, sub_target);
 
         // Count up the collision counter
         counter++;
@@ -221,6 +239,105 @@ bool BPathPlanner::compute_path(const Vector2d& start,
     }
   }
 }
+std::vector<BPathPlanner::Trajectory> BPathPlanner::compute_path_alt(const Vector2d& start,
+                                                                     const Vector2d& end,
+                                                                     const int sign) const
+{
+  std::vector<BPathPlanner::Trajectory> trajectory {Trajectory(start, end)};
+
+  std::vector<Vector2d> waypoints {start, end};
+
+  unsigned int depth = 0;
+
+  for (;;)
+  {
+    if (depth > 10)
+    {
+      std::cout << "BPathPlanner: Max. depth reached!" << std::endl;
+      return trajectory;
+    }
+
+    depth++;
+
+    // Used to save waypoints including new sub_targets temporarily
+    // while going through all waypoints of original trajectory
+    std::vector<Vector2d> tmp_waypoints  = waypoints;
+
+    // Counts the collisions on current trajectory - 0 means we are done
+    unsigned int counter = 0;
+
+    // Check for collision and compute waypoints with shortest sub_target
+    for (unsigned int i = 0; i < waypoints.size() - 1; i++)
+    {
+      Vector2d* sub_target = compute_sub_target(waypoints[i], waypoints[i+1], sign);
+
+      // Did a collision happen so that sub_targets were computed?
+      if (sub_target)
+      {
+        tmp_waypoints = waypoints;
+
+        auto tmp_waypoints_it = tmp_waypoints.begin() + i + 1;
+
+        if (tmp_waypoints_it > tmp_waypoints.end())
+        {
+          tmp_waypoints_it = tmp_waypoints.end();
+        }
+
+        tmp_waypoints.insert(tmp_waypoints_it, *sub_target);
+
+        delete sub_target;
+
+        // Count up the collision counter
+        counter++;
+      }
+      else
+      {
+        // No collision between waypoints[i] and waypoints[i+1], continue with next two waypoints
+        continue;
+      }
+    }
+
+    // Produce new trajectory with final waypoints
+    trajectory = {};
+    waypoints = tmp_waypoints;
+    for (unsigned int i = 0; i < waypoints.size() - 1; i++)
+    {
+      trajectory.push_back(Trajectory(waypoints[i], waypoints[i+1]));
+    }
+
+    // If there wasn't any collision, return new trajectory
+    if (counter == 0)
+    {
+      return trajectory;
+    }
+  }
+}
+
+std::vector<BPathPlanner::Trajectory> BPathPlanner::compare_paths(const std::vector<Trajectory>& trajectory1,
+                                                                  const std::vector<Trajectory>& trajectory2) const
+{
+  // Compute length of the two competing trajectories
+  double dist1 = 0;
+  double dist2 = 0;
+  for (unsigned int k = 0; k < trajectory1.size(); k++)
+  {
+    dist1 += length_of_trajectory(trajectory1[k].end, trajectory1[k].start);
+  }
+  for (unsigned int k = 0; k < trajectory2.size(); k++)
+  {
+    dist2 += length_of_trajectory(trajectory2[k].end, trajectory2[k].start);
+  }
+
+  // Which trajectory is shorter?
+  if (dist1 < dist2)
+  {
+    return trajectory1;
+  }
+  else
+  {
+    return trajectory2;
+  }
+}
 
 Vector2d* BPathPlanner::compute_sub_target(const Vector2d& start,
                                            const Vector2d& end,
@@ -230,7 +347,7 @@ Vector2d* BPathPlanner::compute_sub_target(const Vector2d& start,
   if (!collision) {return nullptr;}
 
   // Used to push out the sub_target more if it still collides
-  double offset = 2;
+  double offset = 1;
 
   // Compute unit vector
   Vector2d target_vec = (end - start);
