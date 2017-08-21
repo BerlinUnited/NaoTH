@@ -129,10 +129,6 @@ bool BPathPlanner::compute_path(const Vector2d& start,
                                 const Vector2d& end) const
 {
   std::vector<BPathPlanner::Trajectory> trajectory {Trajectory(start, end)};
-  if (this->trajectory.empty())
-  {
-    this->trajectory = trajectory;
-  }
 
   std::vector<Vector2d> waypoints {start, end};
 
@@ -142,8 +138,8 @@ bool BPathPlanner::compute_path(const Vector2d& start,
   {
     if (depth > 10)
     {
-      std::cout << "Max. depth reached!" << std::endl;
-      //this->trajectory = trajectory;
+      std::cout << "BPathPlanner: Max. depth reached!" << std::endl;
+      this->trajectory = trajectory;
       return false;
     }
 
@@ -166,20 +162,14 @@ bool BPathPlanner::compute_path(const Vector2d& start,
       if (sub_target1 && sub_target2)
       {
         Vector2d sub_target;
-        std::vector<Vector2d> tmp_waypoints1;
-        std::vector<Vector2d> tmp_waypoints2;
+        std::vector<Vector2d> tmp_waypoints1 = waypoints;
+        std::vector<Vector2d> tmp_waypoints2 = waypoints;
 
-        // Insert new sub_targets to tmp_waypoints
-        for (int k = 0; k < waypoints.size(); k++)
-        {
-          if (k == i)
-          {
-            tmp_waypoints1.push_back(*sub_target1);
-            tmp_waypoints2.push_back(*sub_target2);
-          }
-          tmp_waypoints1.push_back(waypoints[k]);
-          tmp_waypoints2.push_back(waypoints[k]);
-        }
+        auto tmp_waypoints1_it = tmp_waypoints1.begin() + i + 1;
+        auto tmp_waypoints2_it = tmp_waypoints2.begin() + i + 1;
+
+        tmp_waypoints1.insert(tmp_waypoints1_it, *sub_target1);
+        tmp_waypoints2.insert(tmp_waypoints2_it, *sub_target2);
 
         // Compute length of the two competing trajectories
         double dist1 = 0;
@@ -226,7 +216,6 @@ bool BPathPlanner::compute_path(const Vector2d& start,
     // If there wasn't any collision, return new trajectory
     if (counter == 0)
     {
-      std::cout << "Collision free path found!" << std::endl;
       this->trajectory = trajectory;
       return true;
     }
