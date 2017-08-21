@@ -30,10 +30,12 @@ public:
   Vector2d get_gait(const Vector2d& goal,
                     const std::vector<Vector3d>& obstacles) const;
   std::vector<Trajectory> get_trajectory() const;
+  std::vector<Trajectory> get_trajectory_alt() const;
 
 private:
 
   mutable std::vector<Trajectory> trajectory;
+  mutable std::vector<Trajectory> trajectory_alt;
 
   struct Obstacle
   {

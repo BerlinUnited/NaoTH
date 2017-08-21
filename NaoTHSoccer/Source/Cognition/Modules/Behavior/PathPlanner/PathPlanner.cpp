@@ -202,11 +202,12 @@ void PathPlanner::walk_to_ball(const Foot foot, const bool go_fast)
   {
     Vector2d goal = ballPos;
     Vector2d gait = bPlanner.get_gait(goal, obstacles);
+    std::vector<BPathPlanner::Trajectory> path_alt = bPlanner.get_trajectory_alt();
     std::vector<BPathPlanner::Trajectory> path = bPlanner.get_trajectory();
 
     DEBUG_REQUEST("PathPlanner:BISEC:draw_path",
                   FIELD_DRAWING_CONTEXT;
-                  PEN("000000", 20);
+                  PEN("1551c3", 20);
                   for (BPathPlanner::Trajectory trajectory : path)
                   {
                     // First rotate (important)
@@ -217,8 +218,19 @@ void PathPlanner::walk_to_ball(const Foot foot, const bool go_fast)
                     trajectory.end   = getRobotPose().translation + trajectory.end;
                     LINE(trajectory.start.x, trajectory.start.y, trajectory.end.x, trajectory.end.y);
                   }
+                  PEN("000000", 20);
+                  for (BPathPlanner::Trajectory trajectory : path_alt)
+                  {
+                    // First rotate (important)
+                    trajectory.start.rotate(getRobotPose().getAngle());
+                    trajectory.end.rotate(getRobotPose().getAngle());
+
+                    trajectory.start = getRobotPose().translation + trajectory.start;
+                    trajectory.end   = getRobotPose().translation + trajectory.end;
+                    LINE(trajectory.start.x, trajectory.start.y, trajectory.end.x, trajectory.end.y);
+                  }
     );
-    if (path.size() != 1)
+    if (path_alt.size() != 1)
     {
       ballRotation = 0;
     }

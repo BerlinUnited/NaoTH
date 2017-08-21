@@ -15,11 +15,11 @@ Vector2d BPathPlanner::get_gait(const Vector2d& goal,
 {
   this->obstacles = transform(obstacles);
 
-  //compute_path(Vector2d(0, 0), goal);
-  std::vector<BPathPlanner::Trajectory> path1 = compute_path_alt(Vector2d(0, 0), goal, +1);
-  std::vector<BPathPlanner::Trajectory> path2 = compute_path_alt(Vector2d(0, 0), goal, -1);
+  //std::vector<BPathPlanner::Trajectory> path1 = compute_path_alt(Vector2d(0, 0), goal, +1);
+  //std::vector<BPathPlanner::Trajectory> path2 = compute_path_alt(Vector2d(0, 0), goal, -1);
 
-  this->trajectory = compare_paths(path1, path2);
+  compute_path(Vector2d(0, 0), goal);
+  //this->trajectory_alt = compare_paths(path1, path2);
 
   Vector2d direction   = trajectory[0].end - trajectory[0].start;
   double direction_len = length(direction);
@@ -37,6 +37,10 @@ Vector2d BPathPlanner::get_gait(const Vector2d& goal,
 std::vector<BPathPlanner::Trajectory> BPathPlanner::get_trajectory() const
 {
   return trajectory;
+}
+std::vector<BPathPlanner::Trajectory> BPathPlanner::get_trajectory_alt() const
+{
+  return trajectory_alt;
 }
 
 std::vector<BPathPlanner::Obstacle> BPathPlanner::transform(const std::vector<Vector3d>& obstacles) const
@@ -140,9 +144,8 @@ bool BPathPlanner::compute_path(const Vector2d& start,
 
   for (;;)
   {
-    if (depth > 2)
+    if (depth > 10)
     {
-      std::cout << "BPathPlanner: Max. depth reached!" << std::endl;
       this->trajectory = trajectory;
       return false;
     }
@@ -253,7 +256,7 @@ std::vector<BPathPlanner::Trajectory> BPathPlanner::compute_path_alt(const Vecto
   {
     if (depth > 10)
     {
-      std::cout << "BPathPlanner: Max. depth reached!" << std::endl;
+      //std::cout << "BPathPlanner: Max. depth reached!" << std::endl;
       return trajectory;
     }
 
