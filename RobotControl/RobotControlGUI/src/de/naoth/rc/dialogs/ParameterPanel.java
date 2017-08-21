@@ -19,13 +19,15 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.DefaultListModel;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.event.ListSelectionEvent;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
@@ -75,7 +77,31 @@ public class ParameterPanel extends AbstractDialog
         }
       }
     });
+    
+    
+    listOfParameters.addListSelectionListener((ListSelectionEvent e) -> {
+        if(!e.getValueIsAdjusting())
+        {
+            getParameterList();
+        }
+    });
   }//end constructor
+  
+  ParameterListItem getCurrentParameterList() {
+      if(listOfParameters.getSelectedIndex() != -1) {
+        return listOfParameters.getModel().getElementAt(listOfParameters.getSelectedIndex());
+      }
+      return null;
+  }
+  
+  ArrayList<ParameterListItem> getAllParameterLists() {
+      ArrayList<ParameterListItem> result = new ArrayList<>();
+      for (int i = 0; i < listOfParameters.getModel().getSize(); i++) {
+        result.add(listOfParameters.getModel().getElementAt(i));
+      }
+      return result;
+  }
+  
 
     private void updateParameterLists() 
     {
@@ -83,28 +109,27 @@ public class ParameterPanel extends AbstractDialog
 
         if (updateSources == EXPECTED_SOURCES) {
             
-            ParameterListItem selectedList = null;
-            if (cbParameterId.getSelectedItem() != null) {
-                selectedList = (ParameterListItem) cbParameterId.getSelectedItem();
-            }
-            
-            DefaultComboBoxModel boxModel = new DefaultComboBoxModel();
+            // save selection
+            ParameterListItem selectedList = getCurrentParameterList();
+
+            DefaultListModel<ParameterListItem> model = new DefaultListModel();
             for (ParameterListItem i : parameterLists) {
-                boxModel.addElement(i);
+                model.addElement(i);
             }
             
-            this.cbParameterId.setModel(boxModel);
+            listOfParameters.setModel(model);
             
             if(selectedList != null) {
-                this.cbParameterId.setSelectedItem(selectedList);
+                this.listOfParameters.setSelectedValue(selectedList, true);
             } else {
-                this.cbParameterId.setSelectedIndex(0);
+                this.listOfParameters.setSelectedIndex(0);
             }
             
             parameterLists.clear();
             updateSources = 0;
             
             System.out.println(selectedList);
+            
         }
     }
 
@@ -122,23 +147,26 @@ public class ParameterPanel extends AbstractDialog
         fcSaveParametersDialog = new javax.swing.JFileChooser();
         jToolBar1 = new javax.swing.JToolBar();
         jToggleButtonList = new javax.swing.JToggleButton();
-        cbParameterId = new javax.swing.JComboBox();
         jToggleButtonRefresh = new javax.swing.JToggleButton();
         jButtonSend = new javax.swing.JButton();
         jSeparator1 = new javax.swing.JToolBar.Separator();
         btnSave = new javax.swing.JButton();
         btnPopupMenu = new javax.swing.JToggleButton();
-        jScrollPane1 = new javax.swing.JScrollPane();
+        main = new javax.swing.JPanel();
+        jSplitPane1 = new javax.swing.JSplitPane();
+        names = new javax.swing.JScrollPane();
+        listOfParameters = new javax.swing.JList<>();
+        parameterPane = new javax.swing.JScrollPane();
         jTextArea = new javax.swing.JTextArea();
 
         popupMenu.setInvoker(btnPopupMenu);
         popupMenu.addPopupMenuListener(new javax.swing.event.PopupMenuListener() {
-            public void popupMenuWillBecomeVisible(javax.swing.event.PopupMenuEvent evt) {
+            public void popupMenuCanceled(javax.swing.event.PopupMenuEvent evt) {
             }
             public void popupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {
                 popupMenuPopupMenuWillBecomeInvisible(evt);
             }
-            public void popupMenuCanceled(javax.swing.event.PopupMenuEvent evt) {
+            public void popupMenuWillBecomeVisible(javax.swing.event.PopupMenuEvent evt) {
             }
         });
 
@@ -170,13 +198,6 @@ public class ParameterPanel extends AbstractDialog
             }
         });
         jToolBar1.add(jToggleButtonList);
-
-        cbParameterId.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cbParameterIdActionPerformed(evt);
-            }
-        });
-        jToolBar1.add(cbParameterId);
 
         jToggleButtonRefresh.setText("Get");
         jToggleButtonRefresh.setFocusable(false);
@@ -224,23 +245,39 @@ public class ParameterPanel extends AbstractDialog
         });
         jToolBar1.add(btnPopupMenu);
 
+        main.setLayout(new java.awt.BorderLayout());
+
+        jSplitPane1.setDividerSize(3);
+
+        names.setMinimumSize(new java.awt.Dimension(100, 23));
+
+        listOfParameters.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        listOfParameters.setMaximumSize(new java.awt.Dimension(100, 80));
+        names.setViewportView(listOfParameters);
+
+        jSplitPane1.setLeftComponent(names);
+
         jTextArea.setColumns(20);
         jTextArea.setRows(5);
-        jScrollPane1.setViewportView(jTextArea);
+        parameterPane.setViewportView(jTextArea);
+
+        jSplitPane1.setRightComponent(parameterPane);
+
+        main.add(jSplitPane1, java.awt.BorderLayout.CENTER);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, 555, Short.MAX_VALUE)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 555, Short.MAX_VALUE)
+            .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, 521, Short.MAX_VALUE)
+            .addComponent(main, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 281, Short.MAX_VALUE))
+                .addGap(0, 0, 0)
+                .addComponent(main, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -255,11 +292,6 @@ private void jButtonSendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
   sendParameters();
 }//GEN-LAST:event_jButtonSendActionPerformed
 
-private void cbParameterIdActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_cbParameterIdActionPerformed
-{//GEN-HEADEREND:event_cbParameterIdActionPerformed
-    getParameterList();
-}//GEN-LAST:event_cbParameterIdActionPerformed
-
 private void jToggleButtonListActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jToggleButtonListActionPerformed
 {//GEN-HEADEREND:event_jToggleButtonListActionPerformed
     listParameters();
@@ -267,16 +299,15 @@ private void jToggleButtonListActionPerformed(java.awt.event.ActionEvent evt)//G
 
     private void btnSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveActionPerformed
         // check if a parameter configuration was selected ..
-        if(cbParameterId.getSelectedItem() == null) {
+        ParameterListItem selecedList = getCurrentParameterList();
+        if(selecedList == null) {
             JOptionPane.showMessageDialog(null, "You have to choose a parameter configuration!", "Error", JOptionPane.ERROR_MESSAGE);
         } else {
-            // get parameter item
-            ParameterListItem pli = ((ParameterListItem) cbParameterId.getSelectedItem());
             // configure the filechooser ...
-            fcSaveParametersDialog.setSelectedFile(new java.io.File(pli.name + ".cfg"));
+            fcSaveParametersDialog.setSelectedFile(new java.io.File(selecedList.name + ".cfg"));
             fcSaveParametersDialog.setFileSelectionMode(JFileChooser.FILES_ONLY);
             fcSaveParametersDialog.setAcceptAllFileFilterUsed(false);
-            fcSaveParametersDialog.setDialogTitle("Save configuration ("+pli.toString()+")");
+            fcSaveParametersDialog.setDialogTitle("Save configuration ("+selecedList.toString()+")");
             fcSaveParametersDialog.setFileFilter(new FileNameExtensionFilter("Config files (*.cfg)", "cfg"));
             // show save dialog
             if(fcSaveParametersDialog.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
@@ -292,7 +323,7 @@ private void jToggleButtonListActionPerformed(java.awt.event.ActionEvent evt)//G
                         new FileWriter(f).close(); // trigger exception (if couldn't write)
                         
                         // create file and write parameter configuration to this file
-                        this.writeParameterConfig(pli, f);
+                        this.writeParameterConfig(selecedList, f);
                     } catch (IOException ex) {
                         Logger.getLogger(ParameterPanel.class.getName()).log(Level.SEVERE, null, ex);
                         JOptionPane.showMessageDialog(null, "Selected file is not writeable!", "Not writeable", JOptionPane.ERROR_MESSAGE);
@@ -314,7 +345,8 @@ private void jToggleButtonListActionPerformed(java.awt.event.ActionEvent evt)//G
         // make sure, we're connected!
         if(Plugin.parent.checkConnected()) {
             // update ui after connecting ...
-            if(cbParameterId.getSelectedItem() == null) {
+            ParameterListItem selecedList = getCurrentParameterList();
+            if(selecedList == null) {
                 listParameters();
             }
             // configure filechooser ...
@@ -336,11 +368,9 @@ private void jToggleButtonListActionPerformed(java.awt.event.ActionEvent evt)//G
                             File f = File.createTempFile("tmp_"+Math.random(), ".tmp", d);
                             f.delete();
                             // iterate over all listed parameter configurations
-                            int n = cbParameterId.getItemCount();
-                            for (int i = 0; i < n; i++)
+                            ArrayList<ParameterListItem> allParameterLists = getAllParameterLists();
+                            for (ParameterListItem next : allParameterLists)
                             {
-                                // retrieve the parameter configurations ..
-                                ParameterListItem next = (ParameterListItem) cbParameterId.getItemAt(i);
                                 Plugin.commandExecutor.executeCommand(new ParameterWriterGet(
                                     next,
                                     new File(d.getPath()+File.separator+next.owner+"_"+next.name+".cfg")
@@ -362,8 +392,8 @@ private void jToggleButtonListActionPerformed(java.awt.event.ActionEvent evt)//G
      * Prepares the the parameter configuration for saving and/or sending to the nao.
      * @return the "prepared" parameter configuration
      */
-    private HashMap<String,String> getText() {
-        HashMap<String, String> result = new HashMap();
+    private Map<String,String> getText() {
+        TreeMap<String, String> result = new TreeMap();
         String text = this.jTextArea.getText();
         text = text.replaceAll("( |\t)+", "");
         String[] lines = text.split("(\n)+");
@@ -548,12 +578,15 @@ private void sendParameters()
 {
   if (Plugin.parent.checkConnected())
   {
-    Command cmd = ((ParameterListItem) cbParameterId.getSelectedItem()).getCommandSET();
-    for (Map.Entry<String, String> cfg : this.getText().entrySet()) {
-        cmd.addArg(cfg.getKey(), cfg.getValue());
+    ParameterListItem item = getCurrentParameterList();
+    if(item != null) {
+        Command cmd = item.getCommandSET();
+        for (Map.Entry<String, String> cfg : this.getText().entrySet()) {
+            cmd.addArg(cfg.getKey(), cfg.getValue());
+        }
+
+        Plugin.commandExecutor.executeCommand(new ParameterListHandlerSet(), cmd);
     }
-    
-    Plugin.commandExecutor.executeCommand(new ParameterListHandlerSet(), cmd);
     
     // update everything
     //listParameters();
@@ -582,13 +615,11 @@ private void listParameters()
 
   private void getParameterList()
   {
-    System.out.println("test");
     if (Plugin.parent.checkConnected())
     {
-      if (cbParameterId.getSelectedItem() != null)
-      {
-        Command cmd = ((ParameterListItem) cbParameterId.getSelectedItem()).getCommandGET();
-        Plugin.commandExecutor.executeCommand(new ParameterListHandlerGet(), cmd);
+      ParameterListItem item = getCurrentParameterList();
+      if(item != null) {
+          Plugin.commandExecutor.executeCommand(new ParameterListHandlerGet(), item.getCommandGET());
       }
     }
     else
@@ -606,16 +637,19 @@ private void listParameters()
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JToggleButton btnPopupMenu;
     private javax.swing.JButton btnSave;
-    private javax.swing.JComboBox cbParameterId;
     private javax.swing.JFileChooser fcSaveParametersDialog;
     private javax.swing.JButton jButtonSend;
-    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JToolBar.Separator jSeparator1;
+    private javax.swing.JSplitPane jSplitPane1;
     private javax.swing.JTextArea jTextArea;
     private javax.swing.JToggleButton jToggleButtonList;
     private javax.swing.JToggleButton jToggleButtonRefresh;
     private javax.swing.JToolBar jToolBar1;
+    private javax.swing.JList<ParameterListItem> listOfParameters;
+    private javax.swing.JPanel main;
     private javax.swing.JMenuItem miSaveAll;
+    private javax.swing.JScrollPane names;
+    private javax.swing.JScrollPane parameterPane;
     private javax.swing.JPopupMenu popupMenu;
     // End of variables declaration//GEN-END:variables
 }

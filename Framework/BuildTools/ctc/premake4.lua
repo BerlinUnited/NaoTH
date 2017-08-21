@@ -6,7 +6,7 @@ local linux = "i686-naoth-linux-gnu"
 local crossSystemDir = crossDir .. "/" .. linux
 
 -- intel atom
-local cpu_flags = "-m32 -march=i686 -msse -msse2 -mssse3"
+local cpu_flags = "-m32 -march=i686 -msse -msse2 -msse3 -mssse3"
 
 -- system pathes needed for cross compilation
 local cross_flags = 

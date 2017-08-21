@@ -1,8 +1,6 @@
-function [A, b, c, Ki, Ks,  F] = previewcontrol(z, dt, pt)
+function [A, b, c, Ki, Ks,  F] = previewcontrol(z, dt, pt, R, q)
 
 g = 9.810; % m/s^2
-R = 1;
-q = 1e10;
 
 A = [1, 1, dt, dt^2/2 - z/g;
      0, 1, dt, dt^2/2;

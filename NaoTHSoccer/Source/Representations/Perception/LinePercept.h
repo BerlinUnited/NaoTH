@@ -165,10 +165,12 @@ public:
     Vector2d posOnField;
   };
 
-  const static int INITIAL_NUMBER_OF_LINES = 11;
-
   // seen lines
   std::vector<FieldLineSegment> lines;
+  std::vector<FieldLineSegment> short_lines;
+  std::vector<FieldLineSegment> extended_lines;
+  std::vector<int> edgelLineIDs;
+
   // seen corners
   std::vector<Intersection> intersections;
   // seen flags (only S3D)
@@ -212,10 +214,12 @@ public:
   void reset()
   {
     lines.clear();
-    lines.reserve(INITIAL_NUMBER_OF_LINES);
+    short_lines.clear();
+    extended_lines.clear();
+    //lines.reserve(INITIAL_NUMBER_OF_LINES);
 
     intersections.clear();
-    intersections.reserve(INITIAL_NUMBER_OF_LINES);
+    //intersections.reserve(INITIAL_NUMBER_OF_LINES);
 
     flags.clear();
 
