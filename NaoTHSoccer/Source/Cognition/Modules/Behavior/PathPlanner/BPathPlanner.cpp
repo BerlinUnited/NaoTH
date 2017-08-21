@@ -98,7 +98,7 @@ BPathPlanner::Obstacle* BPathPlanner::hit_obstacle(const Vector2d& start,
   if (hits.size() > 0)
   {
     int index = 0;
-    for (int i = 1; i < hits.size(); i++)
+    for (unsigned int i = 1; i < hits.size(); i++)
     {
       if (hits[i].t < hits[index].t)
       {
@@ -174,7 +174,7 @@ bool BPathPlanner::compute_path(const Vector2d& start,
         // Compute length of the two competing trajectories
         double dist1 = 0;
         double dist2 = 0;
-        for (int k = 0; k < tmp_waypoints1.size() - 1; k++)
+        for (unsigned int k = 0; k < tmp_waypoints1.size() - 1; k++)
         {
           dist1 += length_of_trajectory(tmp_waypoints1[k], tmp_waypoints1[k+1]);
           dist2 += length_of_trajectory(tmp_waypoints2[k], tmp_waypoints2[k+1]);
@@ -208,7 +208,7 @@ bool BPathPlanner::compute_path(const Vector2d& start,
     // Produce new trajectory with final waypoints
     trajectory = {};
     waypoints = tmp_waypoints;
-    for (int i = 0; i < waypoints.size() - 1; i++)
+    for (unsigned int i = 0; i < waypoints.size() - 1; i++)
     {
       trajectory.push_back(Trajectory(waypoints[i], waypoints[i+1]));
     }

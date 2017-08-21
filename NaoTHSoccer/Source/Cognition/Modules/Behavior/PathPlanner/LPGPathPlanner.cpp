@@ -13,8 +13,8 @@ static LPGHelper helper;
 LPGHelper::Cell LPGHelper::compute_cell(const Vector2d& coords) const
 {
   LPGHelper::Cell the_cell;
-  the_cell.r = std::floor(std::log(((std::sqrt(std::pow(coords.x, 2) + std::pow(coords.y, 2)) * (base - 1)) / minimal_cell) + 1) / log(base));
-  the_cell.a = std::floor((angular_part / (2*Math::pi)) * (std::atan2(coords.y, coords.x == 0 ? 1 : coords.x)) + 0.5);
+  the_cell.r = static_cast<int>(std::floor(std::log(((std::sqrt(std::pow(coords.x, 2) + std::pow(coords.y, 2)) * (base - 1)) / minimal_cell) + 1) / log(base)));
+  the_cell.a = static_cast<int>(std::floor((angular_part / (2*Math::pi)) * (std::atan2(coords.y, coords.x == 0 ? 1 : coords.x)) + 0.5));
 
   return the_cell;
 }
@@ -82,7 +82,7 @@ LPGHelper::Cell LPGState::get_cell() const
 
 float LPGState::GoalDistanceEstimate(LPGState& nodeGoal)
 {
-  return helper.distance_between_cells(the_cell, nodeGoal.the_cell);
+  return static_cast<float>(helper.distance_between_cells(the_cell, nodeGoal.the_cell));
 }
 
 bool LPGState::IsGoal(LPGState& nodeGoal)
@@ -117,7 +117,7 @@ bool LPGState::GetSuccessors(AStarSearch<LPGState> *astarsearch,
 
       // Only add if new_suc isn't the same as its parent node
       // or if there isn't a parent node (first nodes that are generated)
-      if (!parent_node || !(parent_node->IsSameState(new_suc))
+      if ((!parent_node || !(parent_node->IsSameState(new_suc)))
           && std::abs(new_suc.the_cell.r) < 17
           && std::abs(new_suc.the_cell.a) < 17)
       {
@@ -130,7 +130,7 @@ bool LPGState::GetSuccessors(AStarSearch<LPGState> *astarsearch,
 
 float LPGState::GetCost(LPGState& successor)
 {
-  return helper.distance_between_cells(the_cell, successor.the_cell) + helper.obst_func(successor.the_cell);
+  return static_cast<float>(helper.distance_between_cells(the_cell, successor.the_cell) + helper.obst_func(successor.the_cell));
 }
 
 bool LPGState::IsSameState(LPGState& rhs)
@@ -164,8 +164,8 @@ Vector2d LPGPathPlanner::get_gait(const Vector2d& goal,
 
   // Compute the gait
   Vector2d gait;
-  double distance;
-  int counter = 0;
+  double distance      = 0;
+  unsigned int counter = 0;
   do
   {
     if (counter == waypoints.size()) {break;}
