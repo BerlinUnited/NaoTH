@@ -43,6 +43,8 @@
 #include <sstream>
 #include <algorithm>
 
+#include "OptiTrackParser.h"
+
 // local tools
 #include "Tools/IPCData.h"
 #include "Tools/NaoTime.h"
@@ -114,7 +116,6 @@ public:
   void get(CpuData& data) { theCPUTemperatureReader.get(data); }
 
   std::vector<std::string> gpsdata;
-  static const int NAT_FRAMEOFDATA = 7;
 
   void get(GPSData& data) 
   { 
@@ -122,127 +123,17 @@ public:
     theGPSListener->receive(gpsdata);
     //std::cout << gpsdata.size() << std::endl;
 
+    optiTrackParser.reset();
+
     for (const std::string& s : gpsdata) {
       //std::cout << s.size() << std::endl;
-      stringstream ss(s);
+      optiTrackParser.parseMessage(s);
 
-      unsigned short messageID(0);
-      ss.read((char*)&messageID, 2);
+      if(!optiTrackParser.getTrackables().empty()) {
+        const Pose3D& p = optiTrackParser.getTrackables().begin()->second;
 
-      unsigned short packetSize(0);
-      ss.read((char*)&packetSize, 2);
-
-      if (messageID == NAT_FRAMEOFDATA) {
-        unsigned int frameNumber = 0;
-        ss.read((char*)&frameNumber, 4);
-
-        unsigned int markerSetCount = 0;
-        ss.read((char*)&markerSetCount, 4);
-        
-        //ASSERT(markerSetCount == 0); // not supported
-
-        for (unsigned int i = 0; i < markerSetCount; ++i)
-        {
-          // read the name of the representation
-          std::string modelName;
-          char c = '\0';
-          ss.read(&c, 1);
-          while (c != '\0') {
-            modelName += c;
-            ss.read(&c, 1);
-          }
-          
-          unsigned int markerCount = 0;
-          ss.read((char*)&markerCount, 4);
-
-          for (unsigned int i = 0; i < markerCount; ++i) {
-            Vector3f pos;
-            ss.read((char*)&pos.x, 4);
-            ss.read((char*)&pos.y, 4);
-            ss.read((char*)&pos.z, 4);
-          }
-        }
-
-        unsigned int unlabeledMarkersCount = 0;
-        ss.read((char*)&unlabeledMarkersCount, 4);
-        
-        for (unsigned int i = 0; i < unlabeledMarkersCount; ++i) {
-          Vector3f pos;
-          ss.read((char*)&pos.x, 4);
-          ss.read((char*)&pos.y, 4);
-          ss.read((char*)&pos.z, 4);
-        }
-
-        unsigned int rigidBodyCount = 0;
-        ss.read((char*)&rigidBodyCount, 4);
-
-        for (unsigned int i = 0; i < rigidBodyCount; ++i) {
-          unsigned int id = 0;
-          ss.read((char*)&id, 4);
-
-          Vector3f pos;
-          ss.read((char*)&pos.x, 4);
-          ss.read((char*)&pos.y, 4);
-          ss.read((char*)&pos.z, 4);
-
-          Vector3f new_pos;
-          new_pos.x = -pos.z;
-          new_pos.y = -pos.x;
-          new_pos.z =  pos.y;
-
-          data.data.translation.x = new_pos.x;
-          data.data.translation.y = new_pos.y;
-          data.data.translation.z = new_pos.z;
-          data.data.translation *= 1000.0;
-
-          //std::cout << data.data.translation.x << " " << data.data.translation.y << " " << data.data.translation.z << id << std::endl;
-
-
-          // rotation
-          float qx, qy, qz, qw;
-          ss.read((char*)&qx, 4);
-          ss.read((char*)&qy, 4);
-          ss.read((char*)&qz, 4);
-          ss.read((char*)&qw, 4);
-
-          if (qx == 0) {
-            continue;
-          }
-
-          double ysqr = qy * qy;
-
-
-          // roll(x - axis rotation)
-          double t0 = +2.0 * (qw * qx + qy * qz);
-          double t1 = +1.0 - 2.0 * (qx * qx + ysqr);
-          double roll = atan2(t0, t1);
-
-          //pitch(y - axis rotation)
-          double t2 = +2.0 * (qw * qy - qz * qx);
-          t2 = t2 > 1.0f ? 1.0 : t2;
-          t2 = t2 < -1.0f ? -1.0 : t2;
-          double pitch = asin(t2); // HACK: constant offset
-
-          //yaw(z - axis rotation)
-          double t3 = +2.0 * (qw * qz + qx * qy);
-          double t4 = +1.0 - 2.0 * (ysqr + qz * qz);
-          double yaw = atan2(t3, t4);
-
-          
-          data.data.rotation = RotationMatrix(yaw, pitch, roll); //RotationMatrix::getRotationZ(pitch + Math::fromDegrees(25.0));
-          
-          yaw = data.data.rotation.getZAngle();
-          pitch = data.data.rotation.getYAngle();// +Math::fromDegrees(25.0);
-          roll = data.data.rotation.getXAngle();
-
-          //data.data.rotation = RotationMatrix::getRotationZ(-pitch + Math::fromDegrees(25.0));
-          
-          Pose2D pose(-data.data.rotation.getYAngle() + Math::fromDegrees(27.0), data.data.translation.x, data.data.translation.y);
-          pose.translate(150.0, 0.0);
-          data.data = Pose3D::embedXY(pose);
-
-          //std::cout << Math::toDegrees(yaw) << " " << Math::toDegrees(pitch) << " " << Math::toDegrees(roll) << id << std::endl;
-        }
+        Pose2D pose(-p.rotation.getYAngle(), p.translation.x, p.translation.y);
+        data.data = Pose3D::embedXY(pose);
       }
     }
 
@@ -342,6 +233,8 @@ protected:
   SPLGameController* theGameController;
   DebugServer* theDebugServer;
   CPUTemperatureReader theCPUTemperatureReader;
+
+  OptiTrackParser optiTrackParser;
 };
 
 } // end namespace naoth
