@@ -185,6 +185,9 @@ include "Options/Test/pathplanner_test_only_sidekick.xabsl";
 include "Options/Test/pathplanner_sidekick_only.xabsl";
 include "Options/Test/pathplanner_test_only_shortkick.xabsl";
 include "Options/Test/pathplanner_shortkick_only.xabsl";
+// PathPlanning Algorithm test
+include "Options/Test/pathplanner_test_algorithm.xabsl";
+include "Options/Test/pathplanner_algorithm.xabsl";
 
 
 
@@ -296,6 +299,8 @@ agent pathplanner_test_long_kick("pathplanner_test_long_kick", pathplanner_test_
 // Kicks only
 agent pathplanner_test_only_sidekick("pathplanner_test_only_sidekick", pathplanner_test_only_sidekick);
 agent pathplanner_test_only_shortkick("pathplanner_test_only_shortkick", pathplanner_test_only_shortkick);
+// Bachelor's experiment agent
+agent pathplanner_test_algorithm("pathplanner_test_algorithm", pathplanner_test_algorithm);
 
 
 
