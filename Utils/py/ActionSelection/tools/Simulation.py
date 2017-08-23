@@ -101,6 +101,7 @@ def simulate_consequences(action, categorized_ball_positions, state, num_particl
 
         categorized_ball_positions.add(state.pose / global_ball_end_position, category)
     categorized_ball_positions.expected_ball_pos = m2d.Vector2(np.mean(mean_test_list_x), np.mean(mean_test_list_y))
+    categorized_ball_positions.expected_ball_pos2 = m2d.Vector2(np.median(mean_test_list_x), np.median(mean_test_list_y))
     return categorized_ball_positions
 
 

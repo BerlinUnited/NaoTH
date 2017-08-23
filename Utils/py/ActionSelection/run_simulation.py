@@ -31,6 +31,10 @@ def draw_actions(actions_consequences, state, best_action):
     y = np.array([])
 
     for consequence in actions_consequences:
+        expected_ball_pos = state.pose * consequence.expected_ball_pos
+        expected_ball_pos2 = state.pose * consequence.expected_ball_pos2
+        axes.add_artist(Circle(xy=(expected_ball_pos.x, expected_ball_pos.y), radius=100, fill=False, edgecolor='yellow'))
+        axes.add_artist(Circle(xy=(expected_ball_pos2.x, expected_ball_pos2.y), radius=100, fill=False, edgecolor='blue'))
         for particle in consequence.positions():
             ball_pos = state.pose * particle.ball_pos  # transform in global coordinates
 
