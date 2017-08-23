@@ -23,7 +23,6 @@ NaoController::NaoController()
     theTeamCommSender(NULL),
     theTeamCommListener(NULL),
     theRemoteCommandListener(NULL),
-    theGPSListener(NULL),
     theDebugServer(NULL)
 {
   // init shared memory
@@ -153,9 +152,7 @@ NaoController::NaoController()
 
   cout << "[NaoController] " << "init RemoteCommandListener" << endl;
   theRemoteCommandListener = new UDPReceiver(10401, 4096);
-  cout << "[NaoController] " << "init GPSListener" << endl;
-  theGPSListener = new UDPReceiver(1511, 32768, true); // 32KB
-
+  
   // start the debug server at the default debug port
   std::cout << "[NaoController] " << "Init DebugServer" << endl;
   int debug_port = 5401; // default port

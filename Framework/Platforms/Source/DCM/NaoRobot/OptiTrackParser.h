@@ -7,20 +7,47 @@
 #include <Tools/Math/Pose2D.h>
 #include <Tools/Math/Pose3D.h>
 
+#include <Tools/Communication/Network/BroadCaster.h>
+
 class OptiTrackParser
 {
 public:
-  static const int NAT_FRAMEOFDATA = 7;
-  
+
+  static const int NAT_PING                  = 0;
+  static const int NAT_PINGRESPONSE          = 1;
+  static const int NAT_REQUEST               = 2;
+  static const int NAT_RESPONSE              = 3;
+  static const int NAT_REQUEST_MODELDEF      = 4;
+  static const int NAT_MODELDEF              = 5;
+  static const int NAT_REQUEST_FRAMEOFDATA   = 6;
+  static const int NAT_FRAMEOFDATA           = 7;
+  static const int NAT_MESSAGESTRING         = 8;
+  static const int NAT_DISCONNECT            = 9;
+  static const int NAT_UNRECOGNIZED_REQUEST  = 100;
   
 public:
-  //OptiTrackParser();
+  OptiTrackParser()
+  {
+    requestDefinitions();
+  }
   //~OptiTrackParser();
 
+  std::string requestDefinitions() {
+    std::stringstream ss;
+
+    uint16_t cmd = NAT_REQUEST_MODELDEF;
+    ss.write((const char*)&cmd, 2);
+
+    uint16_t packetSize = 0;
+    ss.write((const char*)&packetSize, 2);
+
+    ss << '\0';
+    return ss.str();
+  }
   
-  void parseMessage(const std::string& msg) {
-    
-    stringstream ss(msg);
+  void parseMessage(const std::string& msg) 
+  {  
+    std::stringstream ss(msg);
 
     unsigned short messageID(0);
     ss.read((char*)&messageID, 2);
@@ -28,7 +55,12 @@ public:
     unsigned short packetSize(0);
     ss.read((char*)&packetSize, 2);
 
-    if (messageID == NAT_FRAMEOFDATA) {
+    if(messageID == NAT_MODELDEF) 
+    {
+      std::cout << "Pickle Riiiick!!!" << std::endl;
+    }
+    else if (messageID == NAT_FRAMEOFDATA) 
+    {
       unsigned int frameNumber = 0;
       ss.read((char*)&frameNumber, 4);
 
@@ -137,6 +169,10 @@ public:
         //data.data = Pose3D::embedXY(pose);
       }
     }
+    else {
+      std::cout << "[OptiTrackParser] Unknown message!" << std::endl;
+      assert(false);
+    }
   }
   
   void reset() {
@@ -149,6 +185,8 @@ public:
   
 private:
   std::map<unsigned int,Pose3D> trackables;
+
+
 };
 
 #endif // OptiTrackParser_H

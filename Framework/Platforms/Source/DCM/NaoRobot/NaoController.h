@@ -43,7 +43,7 @@
 #include <sstream>
 #include <algorithm>
 
-#include "OptiTrackParser.h"
+#include "OptiTrackClient.h"
 
 // local tools
 #include "Tools/IPCData.h"
@@ -119,32 +119,12 @@ public:
 
   void get(GPSData& data) 
   { 
-    gpsdata.clear();
-    theGPSListener->receive(gpsdata);
-    //std::cout << gpsdata.size() << std::endl;
+    if(!optiTrackClient.optiTrackParser.getTrackables().empty()) {
+      const Pose3D& p = optiTrackClient.optiTrackParser.getTrackables().begin()->second;
 
-    optiTrackParser.reset();
-
-    for (const std::string& s : gpsdata) {
-      //std::cout << s.size() << std::endl;
-      optiTrackParser.parseMessage(s);
-
-      if(!optiTrackParser.getTrackables().empty()) {
-        const Pose3D& p = optiTrackParser.getTrackables().begin()->second;
-
-        Pose2D pose(-p.rotation.getYAngle(), p.translation.x, p.translation.y);
-        data.data = Pose3D::embedXY(pose);
-      }
+      Pose2D pose(-p.rotation.getYAngle(), p.translation.x, p.translation.y);
+      data.data = Pose3D::embedXY(pose);
     }
-
-    // process message
-    //if (gpsdata.size() > 0) {
-      //stringstream ss;
-      //std::copy(gpsdata.begin(), gpsdata.end());
-      //unsigned char messageID;
-
-
-    //}
   }
 
   // write directly to the shared memory
@@ -229,12 +209,11 @@ protected:
   BroadCaster* theTeamCommSender;
   UDPReceiver* theTeamCommListener;
   UDPReceiver* theRemoteCommandListener;
-  UDPReceiver* theGPSListener;
   SPLGameController* theGameController;
   DebugServer* theDebugServer;
+  
   CPUTemperatureReader theCPUTemperatureReader;
-
-  OptiTrackParser optiTrackParser;
+  OptiTrackClient optiTrackClient;
 };
 
 } // end namespace naoth
