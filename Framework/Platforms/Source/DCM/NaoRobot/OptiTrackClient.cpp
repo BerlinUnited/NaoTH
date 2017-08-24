@@ -18,7 +18,8 @@ OptiTrackClient::OptiTrackClient()
     exiting(false), 
     commandPort(1510),
     dataPort(1511),
-    socket(NULL)
+    socket(NULL),
+    serverAddress(NULL)
 {
   GError* err = bindAndListenMulticast(dataPort);
   if(err)
@@ -120,10 +121,11 @@ void OptiTrackClient::handleMessage(const char* data, size_t dataSize)
 {
   optiTrackParser.reset();
   std::string msg(data, dataSize);
-  optiTrackParser.parseMessage(msg);
+  std::string cmd = optiTrackParser.parseMessage(msg);
   
-  std::string cmd = optiTrackParser.requestDefinitions();
-  send(cmd.c_str(), cmd.size());
+  if(!cmd.empty()) {
+    send(cmd.c_str(), cmd.size());
+  }
 }
 
 void OptiTrackClient::socketLoop()
@@ -135,16 +137,15 @@ void OptiTrackClient::socketLoop()
   while(!exiting)
   {
     GSocketAddress* senderAddress = NULL;
-    int size = g_socket_receive_from(socket, &senderAddress,
+    gssize size = g_socket_receive_from(socket, &senderAddress,
                                      readBuffer, readBufferSize,
                                      NULL, NULL);
-
+                             
     if(senderAddress != NULL)
     {
       // construct a proper return address from the receiver
       GInetAddress* rawAddress = g_inet_socket_address_get_address(G_INET_SOCKET_ADDRESS(senderAddress));
-      if(serverAddress != NULL)
-      {
+      if(serverAddress != NULL) {
         g_object_unref(serverAddress);
       }
       serverAddress = g_inet_socket_address_new(rawAddress, static_cast<guint16>(commandPort));

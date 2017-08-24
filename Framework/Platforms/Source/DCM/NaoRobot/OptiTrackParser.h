@@ -45,7 +45,7 @@ public:
     return ss.str();
   }
   
-  void parseMessage(const std::string& msg) 
+  std::string parseMessage(const std::string& msg) 
   {  
     std::stringstream ss(msg);
 
@@ -57,7 +57,60 @@ public:
 
     if(messageID == NAT_MODELDEF) 
     {
-      std::cout << "Pickle Riiiick!!!" << std::endl;
+      std::cout << "[OptiTrackParser] update definitions: " << std::endl;
+      trackable_names.clear();
+      
+      unsigned int datasetCount = 0;
+      ss.read((char*)&datasetCount, 4);
+      
+      for(unsigned int i = 0; i < datasetCount; ++i) {
+        unsigned int type = 0;
+        ss.read((char*)&type, 4);
+        
+        if(type == 0) // __unpackMarkerSetDescription
+        {
+          std::string name;
+          std::getline( ss, name, '\0' );
+          
+          unsigned int markerCount = 0;
+          ss.read((char*)&markerCount, 4);
+          
+          for(unsigned int j = 0; j < markerCount; ++j) {
+            std::string marker_name;
+            std::getline( ss, marker_name, '\0' );
+          }
+          
+        } 
+        else if(type == 1) 
+        {
+          std::string name;
+          std::getline( ss, name, '\0' );
+          
+          unsigned int id = 0;
+          ss.read((char*)&id, 4);
+          
+          unsigned int parentID = 0;
+          ss.read((char*)&parentID, 4);
+          
+          // skip the timestamp
+          ss.seekg(12, std::ios_base::cur);
+          
+          std::cout << "[OptiTrackParser] trackable: " << "(" << id << ") " << name << std::endl;
+          
+          trackable_names.insert(std::make_pair(id, name));
+        } 
+        else if(type == 2) // __unpackSkeletonDescription
+        {
+          std::cout << "[OptiTrackParser] unsupported description type: " << type << std::endl;
+          assert(false);
+        }
+        else 
+        {
+          std::cout << "[OptiTrackParser] unsupported description type: " << type << std::endl;
+          assert(false);
+        }
+      }
+      
     }
     else if (messageID == NAT_FRAMEOFDATA) 
     {
@@ -158,7 +211,10 @@ public:
         double yaw = atan2(t3, t4);
 
         pose3.rotation = RotationMatrix(yaw, pitch, roll);
-        trackables.insert(std::make_pair(id, pose3));
+        if(!addTrackable(id, pose3)) {
+          reset();
+          return requestDefinitions();
+        }
         
         //yaw = pose3.rotation.getZAngle();
         //pitch = pose3.rotation.getYAngle();
@@ -173,19 +229,31 @@ public:
       std::cout << "[OptiTrackParser] Unknown message!" << std::endl;
       assert(false);
     }
+    
+    return std::string();
   }
   
   void reset() {
     trackables.clear();
   }
   
-  const std::map<unsigned int,Pose3D>& getTrackables() const {
+  const std::map<std::string,Pose3D>& getTrackables() const {
     return trackables;
   }
   
 private:
-  std::map<unsigned int,Pose3D> trackables;
+  bool addTrackable(unsigned int id, const Pose3D& pose) {
+    std::map<unsigned int,std::string>::iterator name_it = trackable_names.find(id);
+    if(name_it == trackable_names.end()) {
+      return false;
+    }
+    
+    trackables.insert(std::make_pair(name_it->second, pose));
+    return true;
+  }
 
+  std::map<std::string,Pose3D> trackables;
+  std::map<unsigned int,std::string> trackable_names;
 
 };
 
