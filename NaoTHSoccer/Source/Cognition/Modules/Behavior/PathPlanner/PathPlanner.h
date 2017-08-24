@@ -29,6 +29,7 @@
 #include "Representations/Modeling/PathModel.h"
 #include "Representations/Debug/Stopwatch.h"
 #include "Representations/Modeling/RobotPose.h"
+#include "Representations/Modeling/PlayersModel.h"
 
 
 // PathPlanner
@@ -48,6 +49,7 @@ REQUIRE(MultiBallPercept)
 REQUIRE(MotionStatus)
 REQUIRE(BallModel)
 REQUIRE(RobotPose)
+REQUIRE(PlayersModel)
 
 PROVIDE(PathModel)
 PROVIDE(MotionRequest)
