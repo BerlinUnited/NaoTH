@@ -120,7 +120,9 @@ NaoController::NaoController()
   registerInput<UltraSoundReceiveData>(*this);
   registerInput<WhistlePercept>(*this);
   registerInput<CpuData>(*this);
+  
   registerInput<GPSData>(*this);
+  registerInput<OptiTrackData>(*this);
 
   // register command output
   registerOutput<const MotorJointData>(*this);

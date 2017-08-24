@@ -38,7 +38,9 @@
 #include "Representations/Infrastructure/SoundData.h"
 #include "Representations/Infrastructure/WhistlePercept.h"
 #include "Representations/Infrastructure/WhistleControl.h"
+
 #include "Representations/Infrastructure/GPSData.h"
+#include "Representations/Infrastructure/OptiTrackData.h"
 
 #include <sstream>
 #include <algorithm>
@@ -119,12 +121,18 @@ public:
 
   void get(GPSData& data) 
   { 
-    if(!optiTrackClient.optiTrackParser.getTrackables().empty()) {
-      const Pose3D& p = optiTrackClient.optiTrackParser.getTrackables().begin()->second;
+    std::map<std::string,Pose3D>::const_iterator it = optiTrackClient.optiTrackParser.getTrackables().find(getRobotName());
+  
+    if(it != optiTrackClient.optiTrackParser.getTrackables().end()) {
+      const Pose3D& p = it->second;
 
       Pose2D pose(-p.rotation.getYAngle(), p.translation.x, p.translation.y);
       data.data = Pose3D::embedXY(pose);
     }
+  }
+  
+  void get(OptiTrackData& data) {
+    data.trackables = optiTrackClient.optiTrackParser.getTrackables();
   }
 
   // write directly to the shared memory
