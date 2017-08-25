@@ -165,6 +165,10 @@ void PathPlanner::walk_to_ball(const Foot foot, const bool go_fast)
   }
   for (auto player : getPlayersModel().teammates)
   {
+    if (player.globalPose.translation.x < 2.0 && player.globalPose.translation.y < 2.0)
+    {
+      continue;
+    }
     obstacles.push_back(Vector3d(player.globalPose.translation.x, player.globalPose.translation.y, 300));
   }
 
