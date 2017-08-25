@@ -6,14 +6,15 @@
 * Definition of class PlayersModel
 */
 
-#ifndef __PlayersModel_h_
-#define __PlayersModel_h_
+#ifndef _PlayersModel_h_
+#define _PlayersModel_h_
 
 #include <vector>
 #include "Tools/Math/Pose2D.h"
 #include "Representations/Infrastructure/FrameInfo.h"
+#include <Tools/DataStructures/Printable.h>
 
-class PlayersModel
+class PlayersModel : public naoth::Printable
 {
 public:
   PlayersModel() 
@@ -27,7 +28,7 @@ public:
   class Player
   {
   public:
-    Player():number(0){}
+    Player() : number(0) {}
     
     unsigned int number; // 0 means unknow
     Pose2D pose;
@@ -35,8 +36,33 @@ public:
     naoth::FrameInfo frameInfoWhenWasSeen;
   };
 
+  virtual void print(std::ostream& stream) const 
+  {
+    stream << "Teammates:" << std::endl;
+    for(const auto& player : teammates) {
+      stream << "\ttime when seen: " << player.frameInfoWhenWasSeen.getTime() << std::endl;
+      stream << "\tpose: " << player.pose << std::endl;
+      stream << "\tglobalPose: " << player.globalPose << std::endl;
+      stream << std::endl;
+    }
+
+    stream << "Opponents:" << std::endl;
+    for(const auto& player : opponents) {
+      stream << "\ttime when seen: " << player.frameInfoWhenWasSeen.getTime() << std::endl;
+      stream << "\tpose: " << player.pose << std::endl;
+      stream << "\tglobalPose: " << player.globalPose << std::endl;
+      stream << std::endl;
+    }
+  }
+
+  void reset() {
+    opponents.clear();
+    teammates.clear();
+  }
+
   std::vector<Player> opponents;
   std::vector<Player> teammates;
+
   Player oppClosestToBall;
   Player ownClosestToBall;
 };//end class PlayersModel
