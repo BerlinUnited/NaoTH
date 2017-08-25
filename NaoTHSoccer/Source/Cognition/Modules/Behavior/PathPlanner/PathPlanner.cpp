@@ -129,7 +129,7 @@ Vector3d PathPlanner::generate_obst(const Vector3d& obst) const
 }
 void PathPlanner::execute_pathplanner_algorithm()
 {
-  Vector2d ballPos  = getBallModel().positionPreview;
+  Vector2d ballPos  = Vector2d(4000, 0);
   double ballRadius = getFieldInfo().ballRadius;
 
   std::vector<Vector3d> obstacles;
