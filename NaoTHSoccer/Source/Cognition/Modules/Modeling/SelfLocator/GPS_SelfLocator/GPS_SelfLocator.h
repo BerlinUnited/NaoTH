@@ -15,6 +15,7 @@
 #include "Tools/Debug/DebugDrawings.h"
 #include "Tools/Debug/DebugPlot.h"
 #include "Tools/Debug/DebugModify.h"
+#include "Tools/Debug/DebugParameterList.h"
 
 // Representations
 #include "Representations/Infrastructure/GPSData.h"
@@ -26,6 +27,7 @@
 #include "Representations/Infrastructure/FieldInfo.h"
 #include "Representations/Modeling/GoalModel.h"
 
+#include <Representations/Modeling/KinematicChain.h>
 
 //////////////////// BEGIN MODULE INTERFACE DECLARATION ////////////////////
 
@@ -34,12 +36,15 @@ BEGIN_DECLARE_MODULE(GPS_SelfLocator)
   PROVIDE(DebugDrawings)
   PROVIDE(DebugPlot)
   PROVIDE(DebugModify)
+  PROVIDE(DebugParameterList)
 
   REQUIRE(FrameInfo)
   REQUIRE(GPSData)
   REQUIRE(OdometryData)
   REQUIRE(PlayerInfo)
   REQUIRE(FieldInfo)
+
+  REQUIRE(KinematicChain)
 
   PROVIDE(RobotPose)
   PROVIDE(SelfLocGoalModel)
@@ -49,10 +54,24 @@ END_DECLARE_MODULE(GPS_SelfLocator)
 
 class GPS_SelfLocator : public GPS_SelfLocatorBase
 {
+private:
+  class Parameters:  public ParameterList
+  {
+    public:
+    Parameters() : ParameterList("GPS_SelfLocator")
+    {
+      PARAMETER_REGISTER(subtractHeadRotation) = false;
+            
+      syncWithConfig();
+    }
+
+    bool subtractHeadRotation;
+  } params;
+
 public:
 
   GPS_SelfLocator();
-  ~GPS_SelfLocator(){}
+  ~GPS_SelfLocator();
 
 
   /** executes the module */
