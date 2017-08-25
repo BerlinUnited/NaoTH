@@ -6,6 +6,7 @@
  */
 
 #include "BPathPlanner.h"
+#include <Tools/Debug/NaoTHAssert.h>
 
 BPathPlanner::BPathPlanner() {}
 BPathPlanner::~BPathPlanner() {}
@@ -136,7 +137,7 @@ bool BPathPlanner::compute_path(const Vector2d& start,
     unsigned int counter = 0;
 
     // Check for collision and compute waypoints with shortest sub_target
-    for (unsigned int i = 0; i < waypoints.size() - 1; i++)
+    for (unsigned int i = 0; i + 1 < waypoints.size(); i++)
     {
 
       // Did a collision happen? => calculate sub_targets
@@ -158,7 +159,7 @@ bool BPathPlanner::compute_path(const Vector2d& start,
         // Compute length of the two competing trajectories
         double dist1 = 0;
         double dist2 = 0;
-        for (unsigned int k = 0; k < tmp_waypoints1.size() - 1; k++)
+        for (unsigned int k = 0; k+1 < tmp_waypoints1.size(); k++)
         {
           dist1 += length_of_trajectory(tmp_waypoints1[k], tmp_waypoints1[k+1]);
           dist2 += length_of_trajectory(tmp_waypoints2[k], tmp_waypoints2[k+1]);
@@ -188,7 +189,7 @@ bool BPathPlanner::compute_path(const Vector2d& start,
     // Produce new trajectory with final waypoints
     trajectory = {};
     waypoints = tmp_waypoints;
-    for (unsigned int i = 0; i < waypoints.size() - 1; i++)
+    for (unsigned int i = 0; i+1 < waypoints.size(); i++)
     {
       trajectory.push_back(Trajectory(waypoints[i], waypoints[i+1]));
     }
@@ -229,7 +230,7 @@ std::vector<BPathPlanner::Trajectory> BPathPlanner::compute_path_alt(const Vecto
     unsigned int counter = 0;
 
     // Check for collision and compute waypoints with shortest sub_target
-    for (unsigned int i = 0; i < waypoints.size() - 1; i++)
+    for (unsigned int i = 0; i+1 < waypoints.size(); i++)
     {
       // Did a collision happen? => calculate sub_targets
       Obstacle collision;
@@ -260,7 +261,7 @@ std::vector<BPathPlanner::Trajectory> BPathPlanner::compute_path_alt(const Vecto
     // Produce new trajectory with final waypoints
     trajectory = {};
     waypoints = tmp_waypoints;
-    for (unsigned int i = 0; i < waypoints.size() - 1; i++)
+    for (unsigned int i = 0; i+1 < waypoints.size(); i++)
     {
       trajectory.push_back(Trajectory(waypoints[i], waypoints[i+1]));
     }
@@ -305,6 +306,7 @@ Vector2d BPathPlanner::compute_sub_target(
   const Vector2d& end,
   const int sign) const
 {
+  ASSERT(sign == 1 || sign == -1);
   // Used to push out the sub_target more if it still collides
   const double offset_step = 1.0;
 
