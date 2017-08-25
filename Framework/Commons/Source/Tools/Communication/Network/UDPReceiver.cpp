@@ -11,14 +11,23 @@
 
 using namespace naoth;
 
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
 
-UDPReceiver::UDPReceiver(unsigned int port, unsigned int buffersize)
+UDPReceiver::UDPReceiver(unsigned int port, unsigned int buffersize, bool multicast)
   : exiting(false), socket(NULL)
 {
   bufferSize = buffersize;
   buffer = new char[buffersize];
 
-  GError* err = bindAndListen(port);
+  GError* err = NULL; 
+  if (multicast) {
+    err = bindAndListenMulticast(port);
+  } else { 
+    err = bindAndListen(port);
+  }
 
   if(err)
   {
@@ -49,6 +58,37 @@ UDPReceiver::~UDPReceiver()
 
   delete [] buffer;
 }
+
+GError* UDPReceiver::bindAndListenMulticast(unsigned int port)
+{
+  GError* err = NULL;
+  socket = g_socket_new(G_SOCKET_FAMILY_IPV4, G_SOCKET_TYPE_DATAGRAM, G_SOCKET_PROTOCOL_UDP, &err);
+  if (err) return err;
+
+  g_socket_set_blocking(socket, true);
+
+  GInetAddress* inetAddress = g_inet_address_new_any(G_SOCKET_FAMILY_IPV4);
+  GSocketAddress* socketAddress = g_inet_socket_address_new(inetAddress, static_cast<unsigned short>(port));
+
+  g_socket_bind(socket, socketAddress, true, &err);
+
+  struct ip_mreq mreq;
+  mreq.imr_multiaddr.s_addr = inet_addr("239.255.42.99");
+  mreq.imr_interface.s_addr = htonl(INADDR_ANY);
+
+  int fd = g_socket_get_fd(socket);
+  std::cout << "file descriptor " << fd << std::endl;
+  if (setsockopt(fd, IPPROTO_IP, IP_ADD_MEMBERSHIP, &mreq, sizeof(mreq)) < 0) {
+    perror("setsockopt");
+    exit(1);
+  }
+
+  g_object_unref(inetAddress);
+  g_object_unref(socketAddress);
+
+  return err;
+}
+
 
 GError* UDPReceiver::bindAndListen(unsigned int port)
 {

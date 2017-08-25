@@ -39,6 +39,14 @@
 #include "Representations/Infrastructure/WhistlePercept.h"
 #include "Representations/Infrastructure/WhistleControl.h"
 
+#include "Representations/Infrastructure/GPSData.h"
+#include "Representations/Infrastructure/OptiTrackData.h"
+
+#include <sstream>
+#include <algorithm>
+
+#include "OptiTrackClient.h"
+
 // local tools
 #include "Tools/IPCData.h"
 #include "Tools/NaoTime.h"
@@ -108,6 +116,24 @@ public:
   void get(UltraSoundReceiveData& data) { naoSensorData.get(data); }
   void get(WhistlePercept& data) {data.counter = whistleSensorData.data(); }
   void get(CpuData& data) { theCPUTemperatureReader.get(data); }
+
+  std::vector<std::string> gpsdata;
+
+  void get(GPSData& data) 
+  { 
+    std::map<std::string,Pose3D>::const_iterator it = optiTrackClient.optiTrackParser.getTrackables().find(getRobotName());
+  
+    if(it != optiTrackClient.optiTrackParser.getTrackables().end()) {
+      const Pose3D& p = it->second;
+
+      Pose2D pose(-p.rotation.getYAngle(), p.translation.x, p.translation.y);
+      data.data = Pose3D::embedXY(pose);
+    }
+  }
+  
+  void get(OptiTrackData& data) {
+    data.trackables = optiTrackClient.optiTrackParser.getTrackables();
+  }
 
   // write directly to the shared memory
   // ACHTUNG: each set calls swapWriting()
@@ -193,7 +219,9 @@ protected:
   UDPReceiver* theRemoteCommandListener;
   SPLGameController* theGameController;
   DebugServer* theDebugServer;
+  
   CPUTemperatureReader theCPUTemperatureReader;
+  OptiTrackClient optiTrackClient;
 };
 
 } // end namespace naoth
