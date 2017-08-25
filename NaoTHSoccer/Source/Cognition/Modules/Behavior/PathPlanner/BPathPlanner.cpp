@@ -13,7 +13,7 @@ BPathPlanner::~BPathPlanner() {}
 Vector2d BPathPlanner::get_gait(const Vector2d& goal,
                                 const std::vector<Vector3d>& obstacles) const
 {
-  this->obstacles = transform(obstacles);
+  transform(obstacles, this->obstacles);
 
   //std::vector<BPathPlanner::Trajectory> path1 = compute_path_alt(Vector2d(0, 0), goal, +1);
   //std::vector<BPathPlanner::Trajectory> path2 = compute_path_alt(Vector2d(0, 0), goal, -1);
@@ -43,16 +43,13 @@ std::vector<BPathPlanner::Trajectory> BPathPlanner::get_trajectory_alt() const
   return trajectory_alt;
 }
 
-std::vector<BPathPlanner::Obstacle> BPathPlanner::transform(const std::vector<Vector3d>& obstacles) const
+void BPathPlanner::transform(const std::vector<Vector3d>& obstacles, std::vector<Obstacle>& result) const
 {
-  std::vector<BPathPlanner::Obstacle> transformed;
-
+  result.clear();
   for (const Vector3d& obstacle : obstacles)
   {
-    transformed.push_back(BPathPlanner::Obstacle(obstacle));
+    result.emplace_back(obstacle);
   }
-
-  return transformed;
 }
 
 double BPathPlanner::length(const Vector2d& vector) const
@@ -66,10 +63,10 @@ double BPathPlanner::length_of_trajectory(const Vector2d& start,
   return (end - start).abs();
 }
 
-BPathPlanner::Obstacle* BPathPlanner::hit_obstacle(const Vector2d& start,
-                                                   const Vector2d& end) const
+bool BPathPlanner::hit_obstacle(const Vector2d& start, const Vector2d& end, Obstacle& result) const
 {
-  std::vector<BPathPlanner::CollisionElement> hits;
+  double min_t = -1;
+  const double collision_margin = 100.0;
 
   for (const Obstacle& obstacle : obstacles)
   {
@@ -81,50 +78,29 @@ BPathPlanner::Obstacle* BPathPlanner::hit_obstacle(const Vector2d& start,
 
     double t = start_dot_obst / line_mag;
 
-    Vector2d point;
-    if (t < 0)
-    {
-      // point = start;
-      continue;
-    }
-    else if (t > 1)
-    {
-      // point = end;
-      continue;
-    }
-    else
-    {
-      point = start + line * t;
-    }
-
-    if (length_of_trajectory(point, obstacle.pos) <= obstacle.radius + robot_radius - 50)
-    {
-      hits.push_back(BPathPlanner::CollisionElement(obstacle, t));
-    }
-  }
-
-  if (hits.size() > 0)
-  {
-    int index = 0;
-    for (unsigned int i = 1; i < hits.size(); i++)
-    {
-      if (hits[i].t < hits[index].t)
+    // The collision is within the segment
+    if(t >= 0.0 && t <= 1.0) {
+      Vector2d point = start + line * t;
+      if (length_of_trajectory(point, obstacle.pos) <= obstacle.radius + robot_radius - collision_margin)
       {
-        index = i;
+        // take the closest one
+        if(min_t == -1 || t < min_t) {
+          min_t = t;
+          result = obstacle;
+        }
       }
     }
-
-    return &(hits[index].obstacle);
   }
 
-  return nullptr;
+  // a collision was found
+  return min_t != -1;
 }
 
-bool BPathPlanner::still_colliding(const Vector2d* sub_target) const
+bool BPathPlanner::still_colliding(const Vector2d& sub_target) const
 {
   for (const BPathPlanner::Obstacle& obstacle : obstacles)
   {
-    if (length_of_trajectory(*sub_target, obstacle.pos) <= obstacle.radius + robot_radius)
+    if (length_of_trajectory(sub_target, obstacle.pos) <= obstacle.radius + robot_radius)
     {
       return true;
     }
@@ -159,25 +135,25 @@ bool BPathPlanner::compute_path(const Vector2d& start,
     // Counts the collisions on current trajectory - 0 means we are done
     unsigned int counter = 0;
 
-    int last_sub_target_sign = 0;
-
     // Check for collision and compute waypoints with shortest sub_target
     for (unsigned int i = 0; i < waypoints.size() - 1; i++)
     {
-      Vector2d* sub_target1 = compute_sub_target(waypoints[i], waypoints[i+1], +1);
-      Vector2d* sub_target2 = compute_sub_target(waypoints[i], waypoints[i+1], -1);
 
-      // Did a collision happen so that sub_targets were computed?
-      if (sub_target1 && sub_target2)
+      // Did a collision happen? => calculate sub_targets
+      Obstacle collision;
+      if (hit_obstacle(waypoints[i], waypoints[i+1], collision))
       {
+        Vector2d sub_target1 = compute_sub_target(collision, waypoints[i], waypoints[i+1], +1);
+        Vector2d sub_target2 = compute_sub_target(collision, waypoints[i], waypoints[i+1], -1);
+
         std::vector<Vector2d> tmp_waypoints1 = waypoints;
         std::vector<Vector2d> tmp_waypoints2 = waypoints;
 
         auto tmp_waypoints1_it = tmp_waypoints1.begin() + i + 1;
         auto tmp_waypoints2_it = tmp_waypoints2.begin() + i + 1;
 
-        tmp_waypoints1.insert(tmp_waypoints1_it, *sub_target1);
-        tmp_waypoints2.insert(tmp_waypoints2_it, *sub_target2);
+        tmp_waypoints1.insert(tmp_waypoints1_it, sub_target1);
+        tmp_waypoints2.insert(tmp_waypoints2_it, sub_target2);
 
         // Compute length of the two competing trajectories
         double dist1 = 0;
@@ -192,29 +168,12 @@ bool BPathPlanner::compute_path(const Vector2d& start,
         // Which trajectory is shorter?
         if (dist1 < dist2)
         {
-          if (last_sub_target_sign == 1)
-          {
-            tmp_waypoints[i] = *sub_target1;
-          }
-          else
-          {
-            tmp_waypoints.insert(tmp_waypoints_it, *sub_target1);
-          }
+          tmp_waypoints.insert(tmp_waypoints_it, sub_target1);
         }
         else
         {
-          if (last_sub_target_sign == -1)
-          {
-            tmp_waypoints[i] = *sub_target2;
-          }
-          else
-          {
-            tmp_waypoints.insert(tmp_waypoints_it, *sub_target2);
-          }
+          tmp_waypoints.insert(tmp_waypoints_it, sub_target2);
         }
-        delete sub_target1;
-        delete sub_target2;
-
 
         // Count up the collision counter
         counter++;
@@ -272,11 +231,11 @@ std::vector<BPathPlanner::Trajectory> BPathPlanner::compute_path_alt(const Vecto
     // Check for collision and compute waypoints with shortest sub_target
     for (unsigned int i = 0; i < waypoints.size() - 1; i++)
     {
-      Vector2d* sub_target = compute_sub_target(waypoints[i], waypoints[i+1], sign);
-
-      // Did a collision happen so that sub_targets were computed?
-      if (sub_target)
+      // Did a collision happen? => calculate sub_targets
+      Obstacle collision;
+      if (hit_obstacle(waypoints[i], waypoints[i+1], collision))
       {
+        Vector2d sub_target = compute_sub_target(collision, waypoints[i], waypoints[i+1], sign);
         tmp_waypoints = waypoints;
 
         auto tmp_waypoints_it = tmp_waypoints.begin() + i + 1;
@@ -286,9 +245,7 @@ std::vector<BPathPlanner::Trajectory> BPathPlanner::compute_path_alt(const Vecto
           tmp_waypoints_it = tmp_waypoints.end();
         }
 
-        tmp_waypoints.insert(tmp_waypoints_it, *sub_target);
-
-        delete sub_target;
+        tmp_waypoints.insert(tmp_waypoints_it, sub_target);
 
         // Count up the collision counter
         counter++;
@@ -342,48 +299,29 @@ std::vector<BPathPlanner::Trajectory> BPathPlanner::compare_paths(const std::vec
   }
 }
 
-Vector2d* BPathPlanner::compute_sub_target(const Vector2d& start,
-                                           const Vector2d& end,
-                                           const int sign) const
+Vector2d BPathPlanner::compute_sub_target(
+  const Obstacle& collision,
+  const Vector2d& start,
+  const Vector2d& end,
+  const int sign) const
 {
-  Obstacle* collision = hit_obstacle(start, end);
-  if (!collision) {return nullptr;}
-
   // Used to push out the sub_target more if it still collides
-  double offset = 1;
+  const double offset_step = 1.0;
 
   // Compute unit vector
-  Vector2d target_vec = (end - start);
-  target_vec          = target_vec / length(target_vec);
+  const Vector2d target_vec = (end - start).normalize();
 
-  // Compute orthogonal vectors
-  Vector2d orth_vec1 = Vector2d(target_vec.y * -1, target_vec.x);
-  Vector2d orth_vec2 = Vector2d(target_vec.y, target_vec.x * -1);
+  // Compute orthogonal vector
+  const Vector2d orth_vec = Vector2d(-target_vec.y,  target_vec.x) * sign;
 
-  // Compute first sub_target
-  Vector2d* sub_target = new Vector2d();
-  if (sign == 1)
-  {
-    *sub_target = orth_vec1 * (offset * robot_radius) + collision->pos;
-  }
-  else
-  {
-    *sub_target = orth_vec2 * (offset * robot_radius) + collision->pos;
-  }
+  Vector2d sub_target = collision.pos;
 
   // Check if computed sub_target still collides, push out further if it is the case
-  while (still_colliding(sub_target))
+  do
   {
-    offset += 1;
-    if (sign == 1)
-    {
-      *sub_target = orth_vec1 * (offset * robot_radius) + collision->pos;
-    }
-    else
-    {
-      *sub_target = orth_vec2 * (offset * robot_radius) + collision->pos;
-    }
-  }
+    sub_target += orth_vec * (offset_step * robot_radius);
+  } while (still_colliding(sub_target));
+
 
   return sub_target;
 }
