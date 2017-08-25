@@ -11,6 +11,13 @@ GPS_SelfLocator::GPS_SelfLocator()
 {
   DEBUG_REQUEST_REGISTER("GPS_SelfLocator:draw_GPSData", "draw the GPS data", true);
   DEBUG_REQUEST_REGISTER("GPS_SelfLocator:use_GPSData", "use the GPS data", true);
+
+  getDebugParameterList().add(&params);
+}
+
+GPS_SelfLocator::~GPS_SelfLocator()
+{
+  getDebugParameterList().remove(&params);
 }
 
 
@@ -64,6 +71,12 @@ Pose2D GPS_SelfLocator::calculateFromGPS(const GPSData& gps) const
   pose.translation.x = gps.data.translation.x;
   pose.translation.y = gps.data.translation.y;
   pose.rotation = gps.data.rotation.getZAngle();
+
+  // HACK: subtract the head rotation
+  if(params.subtractHeadRotation) {
+    const double headAngle = getKinematicChain().getLink(KinematicChain::Head).R.getZAngle();
+    pose.rotation = Math::normalize(pose.rotation - headAngle);
+  }
 
   return pose;
 }//end calculateFromGPS
