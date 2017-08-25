@@ -177,7 +177,7 @@ public:
         pose3.translation.z = new_pos.z;
         pose3.translation *= 1000.0;
 
-        //std::cout << data.data.translation.x << " " << data.data.translation.y << " " << data.data.translation.z << id << std::endl;
+        //std::cout << "id: " << id << std::endl;
 
 
         // rotation
@@ -187,6 +187,42 @@ public:
         ss.read((char*)&qz, 4);
         ss.read((char*)&qw, 4);
 
+        
+        unsigned int markerCount = 0;
+        ss.read((char*)&markerCount, 4);
+        
+        // marker positions
+        for (unsigned int j = 0; j < markerCount; ++j) {
+          Vector3f m;
+          ss.read((char*)&m.x, 4);
+          ss.read((char*)&m.y, 4);
+          ss.read((char*)&m.z, 4);
+          // TODO: do nothing for now
+        }
+        
+        // marker id's
+        for (unsigned int j = 0; j < markerCount; ++j) {
+          unsigned int m_id = 0;
+          ss.read((char*)&m_id, 4);
+          // TODO: do nothing for now
+        }
+        
+        // marker sizes
+        for (unsigned int j = 0; j < markerCount; ++j) {
+          float m_size = 0.0f;
+          ss.read((char*)&m_size, 4);
+          // TODO: do nothing for now
+        }
+        
+        float marker_error = 0.0f;
+        ss.read((char*)&marker_error, 4);
+        //std::cout << "error: " << marker_error << std::endl;
+        
+        //Version 2.6 and later
+        //unsigned short trackingValid = 0;
+        //ss.read((char*)&trackingValid, 2);
+        
+        
         if (qx == 0) {
           continue;
         }
@@ -245,6 +281,7 @@ private:
   bool addTrackable(unsigned int id, const Pose3D& pose) {
     std::map<unsigned int,std::string>::iterator name_it = trackable_names.find(id);
     if(name_it == trackable_names.end()) {
+      std::cout << "[OptiTrackParser] Unknown id: " << id << std::endl;
       return false;
     }
     
