@@ -23,7 +23,6 @@ void PathSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerEnumElement("path.routine", "path.routine.sidekick_right",      PathModel::PathRoutine::SIDEKICK_RIGHT);
   engine.registerEnumElement("path.routine", "path.routine.sidekick_left",       PathModel::PathRoutine::SIDEKICK_LEFT);
 
-
   engine.registerEnumeratedOutputSymbol("path.routine", "path.routine", (int*)&getPathModel().path_routine);
 
   // go to ball: distance and yOffset

@@ -15,7 +15,7 @@ foot_to_use(Foot::RIGHT),
 last_stepRequestID(getMotionStatus().stepControl.stepRequestID + 1),      // WalkRequest stepRequestID starts at 0, we have to start at 1
 kick_planned(false)
 {
-  DEBUG_REQUEST_REGISTER("PathPlanner:walk_to_ball", "Walks to the ball from far.", false);
+  DEBUG_REQUEST_REGISTER("PathPlanner:execute_pathplanner_algorithm", "Executes the pathplanning algorithms without walking towards the ball.", true);
   DEBUG_REQUEST_REGISTER("PathPlanner:Algorithm:LPG", "Uses the LPG Algorithm for Path Planning.", false);
   DEBUG_REQUEST_REGISTER("PathPlanner:Algorithm:BISEC", "Uses the BISECTION Algorithm for Path Planning.", false);
   DEBUG_REQUEST_REGISTER("PathPlanner:Algorithm:NAIVE", "Uses the NAIVE Algorithm for Path Planning.", false);
@@ -35,10 +35,8 @@ PathPlanner::~PathPlanner()
 void PathPlanner::execute()
 {
   // --- DEBUG REQUESTS ---
-  DEBUG_REQUEST("PathPlanner:walk_to_ball",
-    if (getBallModel().positionPreview.x > 250) {
-      walk_to_ball(Foot::NONE);
-    }
+  DEBUG_REQUEST("PathPlanner:execute_pathplanner_algorithm",
+                execute_pathplanner_algorithm();
   );
   DEBUG_REQUEST("PathPlanner:Algorithm:LPG",
                 algorithm = PathPlannerAlgorithm::LPG;
@@ -129,6 +127,102 @@ Vector3d PathPlanner::generate_obst(const Vector3d& obst) const
   Vector2d obst_transformed = getRobotPose() / Vector2d(obst.x, obst.y);
   return Vector3d(obst_transformed.x, obst_transformed.y, obst.z);
 }
+void PathPlanner::execute_pathplanner_algorithm()
+{
+  Vector2d ballPos  = getBallModel().positionPreview;
+  double ballRadius = getFieldInfo().ballRadius;
+
+  std::vector<Vector3d> obstacles;
+  /*obstacles.push_back(Vector3d(-2500.0,    0.0, 300));
+   obstacles.push_back(Vector3d(-2500.0,  300.0, 300));
+   obstacles.push_back(Vector3d(-2500.0, -300.0, 300));
+   obstacles.push_back(Vector3d(-3000.0, -600.0, 300));
+   obstacles.push_back(Vector3d(-1500.0,  600.0, 300));*/
+
+  for (auto player : getPlayersModel().opponents)
+  {
+    obstacles.push_back(Vector3d(player.globalPose.translation.x, player.globalPose.translation.y, 300));
+  }
+  for (auto player : getPlayersModel().teammates)
+  {
+    Vector2d obst = getRobotPose() / player.globalPose.translation;
+    if (obst.x < 2.0 && obst.y < 2.0)
+    {
+      continue;
+    }
+    obstacles.push_back(Vector3d(player.globalPose.translation.x, player.globalPose.translation.y, 300));
+  }
+
+  DEBUG_REQUEST("PathPlanner:draw_obstacles_and_ball",
+                FIELD_DRAWING_CONTEXT;
+                PEN("FFFFFF", 20);
+                for (const Vector3d& obstacle : obstacles)
+                {
+                  CIRCLE(obstacle.x, obstacle.y, 300);
+                }
+
+                // Draw the ball position
+                PEN("FF4444", 20);
+                Vector2d draw_ball_pos = getRobotPose() * ballPos;
+                CIRCLE(draw_ball_pos.x, draw_ball_pos.y, ballRadius);
+                );
+
+  for (Vector3d& obstacle : obstacles)
+  {
+    obstacle = generate_obst(obstacle);
+  }
+
+  if (algorithm == PathPlannerAlgorithm::LPG)
+  {
+    Vector2d goal = Vector2d(0.7 * (ballPos.x - getPathModel().distance - ballRadius), ballPos.y);
+    lpgPlanner.get_gait(goal, obstacles);
+
+    DEBUG_REQUEST("PathPlanner:LPG:draw_waypoints",
+                  FIELD_DRAWING_CONTEXT;
+                  PEN("000000", 20);
+                  for (Vector2d waypoint : lpgPlanner.get_waypoint_coordinates())
+                  {
+                    // First rotate (important)
+                    waypoint.rotate(getRobotPose().getAngle());
+                    waypoint = getRobotPose().translation + waypoint;
+                    CIRCLE(waypoint.x, waypoint.y, 10);
+                  }
+    );
+  }
+  else if (algorithm == PathPlannerAlgorithm::BISEC)
+  {
+    Vector2d goal = ballPos;
+    bPlanner.get_gait(goal, obstacles);
+    std::vector<BPathPlanner::Trajectory> path_alt = bPlanner.get_trajectory_alt();
+    std::vector<BPathPlanner::Trajectory> path = bPlanner.get_trajectory();
+
+    DEBUG_REQUEST("PathPlanner:BISEC:draw_path",
+                  FIELD_DRAWING_CONTEXT;
+                  PEN("1551c3", 20);
+                  for (BPathPlanner::Trajectory trajectory : path)
+                  {
+                    // First rotate (important)
+                    trajectory.start.rotate(getRobotPose().getAngle());
+                    trajectory.end.rotate(getRobotPose().getAngle());
+
+                    trajectory.start = getRobotPose().translation + trajectory.start;
+                    trajectory.end   = getRobotPose().translation + trajectory.end;
+                    LINE(trajectory.start.x, trajectory.start.y, trajectory.end.x, trajectory.end.y);
+                  }
+                  PEN("000000", 20);
+                  for (BPathPlanner::Trajectory trajectory : path_alt)
+                  {
+                    // First rotate (important)
+                    trajectory.start.rotate(getRobotPose().getAngle());
+                    trajectory.end.rotate(getRobotPose().getAngle());
+
+                    trajectory.start = getRobotPose().translation + trajectory.start;
+                    trajectory.end   = getRobotPose().translation + trajectory.end;
+                    LINE(trajectory.start.x, trajectory.start.y, trajectory.end.x, trajectory.end.y);
+                  }
+    );
+  }
+}
 
 void PathPlanner::walk_to_ball(const Foot foot, const bool go_fast)
 {
@@ -151,7 +245,6 @@ void PathPlanner::walk_to_ball(const Foot foot, const bool go_fast)
   }
   double ballRotation = ballPos.angle();
 
-  // Hardcoded obstacles for testing purposes
   std::vector<Vector3d> obstacles;
   /*obstacles.push_back(Vector3d(-2500.0,    0.0, 300));
   obstacles.push_back(Vector3d(-2500.0,  300.0, 300));

@@ -110,6 +110,9 @@ private:
   };
   typedef WalkRequest::StepControlRequest::StepType StepType;
 
+  // Test different algorithms
+  void execute_pathplanner_algorithm();
+
   // XABSL go_to_ball_with_USOA
   void walk_to_ball(const Foot foot, const bool go_fast = false);
   // XABSL move_around_ball
