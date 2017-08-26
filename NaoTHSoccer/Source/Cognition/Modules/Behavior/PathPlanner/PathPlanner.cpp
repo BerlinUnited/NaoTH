@@ -51,7 +51,6 @@ void PathPlanner::execute()
 
   getPathModel().kick_executed = false;
 
-  //STOPWATCH_START("PathPlanner");
   // Always executed first
   manage_step_buffer();
 
@@ -61,7 +60,7 @@ void PathPlanner::execute()
     getPathModel().kick_executed = true;
   }
 
-  // HACK: xabsl set a firced motion request => clear everything
+  // HACK: xabsl set a forced motion request => clear everything
   if(getPathModel().path_routine == PathModel::PathRoutine::NONE && getMotionRequest().forced) {
     step_buffer.clear();
     return;
@@ -117,8 +116,6 @@ void PathPlanner::execute()
 
   // Always executed last
   execute_step_buffer();
-
-  //STOPWATCH_STOP("PathPlanner");
 }
 
 // Just for implementation purposes (testing)
@@ -133,12 +130,6 @@ void PathPlanner::execute_pathplanner_algorithm()
   double ballRadius = getFieldInfo().ballRadius;
 
   std::vector<Vector3d> obstacles;
-  /*obstacles.push_back(Vector3d(-2500.0,    0.0, 300));
-   obstacles.push_back(Vector3d(-2500.0,  300.0, 300));
-   obstacles.push_back(Vector3d(-2500.0, -300.0, 300));
-   obstacles.push_back(Vector3d(-3000.0, -600.0, 300));
-   obstacles.push_back(Vector3d(-1500.0,  600.0, 300));*/
-
   for (auto player : getPlayersModel().opponents)
   {
     obstacles.push_back(Vector3d(player.globalPose.translation.x, player.globalPose.translation.y, 300));

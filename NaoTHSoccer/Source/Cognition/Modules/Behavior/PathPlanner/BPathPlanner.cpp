@@ -66,7 +66,7 @@ double BPathPlanner::length_of_trajectory(const Vector2d& start,
 
 bool BPathPlanner::hit_obstacle(const Vector2d& start, const Vector2d& end, Obstacle& result) const
 {
-  double min_t = -1;
+  double min_t                  = -1;
   const double collision_margin = 100.0;
 
   for (const Obstacle& obstacle : obstacles)
@@ -86,7 +86,7 @@ bool BPathPlanner::hit_obstacle(const Vector2d& start, const Vector2d& end, Obst
       {
         // take the closest one
         if(min_t == -1 || t < min_t) {
-          min_t = t;
+          min_t  = t;
           result = obstacle;
         }
       }
@@ -139,7 +139,6 @@ bool BPathPlanner::compute_path(const Vector2d& start,
     // Check for collision and compute waypoints with shortest sub_target
     for (unsigned int i = 0; i + 1 < waypoints.size(); i++)
     {
-
       // Did a collision happen? => calculate sub_targets
       Obstacle collision;
       if (hit_obstacle(waypoints[i], waypoints[i+1], collision))
