@@ -99,7 +99,6 @@ def robot_field(robot_pos, ball_pos):
     # TEST
     total_time /= 5.
     total_time = 1 - total_time
-    print(total_time)
     return total_time
 
 

@@ -3,8 +3,17 @@ from matplotlib import pyplot as plt
 from matplotlib.patches import Circle
 import numpy as np
 from tools import potential_field as pfield
+from tools import tools
 from naoth import math2d as m2d
+import matplotlib as mlp
 
+pgf_with_rc_fonts = {
+    "font.family": "serif",
+    "font.size": 16,
+    "legend.fontsize": 16,
+    "font.sans-serif": ["DejaVu Sans"],  # use a specific sans-serif font
+}
+mlp.rcParams.update(pgf_with_rc_fonts)
 
 if __name__ == "__main__":
     # Constants for robot
@@ -13,8 +22,8 @@ if __name__ == "__main__":
     size_x = 4500
     size_y = 3000
 
-    x = np.arange(-size_x, size_x, 50)
-    y = np.arange(-size_y, size_y, 50)
+    x = np.arange(-size_x, size_x, 10)
+    y = np.arange(-size_y, size_y, 10)
     xm, ym = np.meshgrid(x, y)
 
     x_dim = x.size
@@ -33,7 +42,7 @@ if __name__ == "__main__":
     # plot
     fig = plt.figure(frameon=False)
     ax = fig.gca()
-
+    # tools.draw_field(ax)
     ax.set_aspect("equal")
     ax.set_xlabel("x [mm]")
     ax.set_ylabel("y [mm]")
@@ -48,11 +57,11 @@ if __name__ == "__main__":
     ax.get_xaxis().tick_bottom()   # remove unneeded ticks
     ax.get_yaxis().tick_left()
 
-    CS1 = plt.contourf(x, y, zm, 10, alpha=0.5, cmap="coolwarm", frameon=False)
+    CS1 = plt.contourf(x, y, zm, 10, alpha=0.6, cmap="coolwarm", frameon=False)
 
     CS = plt.contour(CS1, levels=CS1.levels)
     plt.clabel(CS, inline=1, fontsize=10)
-
+    '''
     count1 = 1
     for robot in own_robots:
         ax.add_artist(Circle(xy=(robot.x, robot.y), radius=50, fill=True, color='white'))
@@ -66,5 +75,5 @@ if __name__ == "__main__":
         # ax.arrow(robot.x, origin.y, arrow_head.x, arrow_head.y, head_width=100, head_length=100, fc='k', ec='k')
         ax.text(robot.x, robot.y, "opp " + str(count2), fontsize=5)
         count2 += 1
-
+    '''
     plt.show()
