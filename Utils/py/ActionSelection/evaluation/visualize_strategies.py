@@ -40,20 +40,27 @@ for i, v in enumerate(nyi):
 f = np.zeros((len(ny), len(nx)))
 
 # visualize the fastest approach
+min_time = 0
+max_time = 0
 for pos in strategies:
     x, y, _, time_old, time_particle = pos
     if np.isnan(time_old) or np.isnan(time_particle):
         f[ny[y], nx[x]] = 100
-        print("nan found")
-    else:
-        if time_old - time_particle < -10:  # old approach is at least 10 seconds faster
-            f[ny[y], nx[x]] = 50  # red
-        elif time_particle - time_old < -10:  # new approach is at least 10 seconds faster
-            f[ny[y], nx[x]] = 100  # green
-        else:
-            f[ny[y], nx[x]] = 0  # blue  # new significant changes
 
-ax.pcolor(nxi, nyi, f, cmap="brg", alpha=0.8)
+    else:
+        f[ny[y], nx[x]] = time_particle - time_old
+        if time_particle - time_old < min_time:
+            min_time = time_particle - time_old
+        if time_particle - time_old > max_time:
+            max_time = time_particle - time_old
+    #    if time_old - time_particle < -10:  # old approach is at least 10 seconds faster
+    #        f[ny[y], nx[x]] = 50  # red
+    #    elif time_particle - time_old < -10:  # new approach is at least 10 seconds faster
+    #        f[ny[y], nx[x]] = 100  # green
+    #    else:
+    #        f[ny[y], nx[x]] = 0  # blue  # new significant changes
+
+ax.pcolor(nxi, nyi, f, cmap="brg", alpha=0.8, vmin=min_time, vmax=max_time)
 plt.show()
 
 # visualize which approach takes less kicks
@@ -78,7 +85,7 @@ tools.draw_field(ax)
 t = np.zeros((len(ny), len(nx)))
 for action in actions:
     x, y, _, c_kicks, c_turns, p_kicks, p_turns = action
-    print(c_turns, p_turns)
+
     if c_turns < p_turns:
         t[ny[y], nx[x]] = 50  # red
     elif c_turns > p_turns:

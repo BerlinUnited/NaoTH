@@ -1,4 +1,5 @@
 import math
+import sys
 import copy
 import numpy as np
 from tools import action as a
@@ -12,15 +13,15 @@ from tools import field_info as field
 
 
 """
-    The best direction for each kick is calculated via a particle filter and a potential field. The kick with the minimum
-    rotation is chosen
+    The best direction for each kick is calculated via a particle filter and a potential field. The kick with the maximum strategic value after the applying the best rotation
+    is chosen
 """
 
 
 class State:
     def __init__(self):
         self.pose = m2d.Pose2D()
-        self.pose.translation = m2d.Vector2(-800, -800)
+        self.pose.translation = m2d.Vector2(0, 0)
         self.pose.rotation = math.radians(0)
         self.rotation_vel = 60  # degrees per sec
         self.walking_vel = 200  # mm per sec
@@ -37,18 +38,15 @@ def draw_actions(actions_consequences, s, best_action, normal_angle, better_angl
     plt.clf()
     axes = plt.gca()
     tools.draw_field(axes)
-    arrow_head_test = m2d.Vector2(500, 0).rotate(s.pose.rotation)
 
-    axes.add_artist(Circle(xy=(s.pose.translation.x, s.pose.translation.y), radius=100, fill=False, edgecolor='white'))
-    # Draw robot rotation
-    axes.arrow(-3000, 2000, arrow_head_test.x, arrow_head_test.y, head_width=100, head_length=100, fc='k', ec='k')
-    axes.text(-4500, 3150, best_action, fontsize=12)
+    axes.add_artist(
+        Circle(xy=(s.pose.translation.x, s.pose.translation.y), radius=100, fill=False, edgecolor='white'))
+    axes.text(0, 0, best_action, fontsize=12)
 
     origin = s.pose.translation
     # arrow_head = m2d.Vector2(500, 0).rotate(math.radians(normal_angle + better_angle))
 
     for angle in angle_list:
-        # draws arrow with angle: action angle + sample
         arrow_head = m2d.Vector2(500, 0).rotate(s.pose.rotation + math.radians(normal_angle + angle))
         axes.arrow(origin.x, origin.y, arrow_head.x, arrow_head.y, head_width=100, head_length=100, fc='k', ec='k')
 
@@ -77,7 +75,7 @@ def normalize(likelihood):
     if s == 0:
         return likelihood
     else:
-        return l/s
+        return l / s
 
 
 def resample(samples, likelihoods, n, sigma):
@@ -156,7 +154,7 @@ def calculate_best_direction(s, action, show, iterations):
         if show:
             draw_actions(simulation_consequences, s, action.name, action.angle, mean_angle, samples)
 
-    return np.radians(mean_angle), np.radians(np.std(samples))
+    return np.radians(mean_angle), np.radians(np.std(samples)), simulation_consequences
 
 
 def main(x, y, rot, s, num_iter):
@@ -179,34 +177,50 @@ def main(x, y, rot, s, num_iter):
         total_time = 0
         s.update_pos(m2d.Vector2(x, y), rotation=rot)
         while not goal_scored:
+            # Test:
+            print(state.pose.translation.x, state.pose.translation.y, math.degrees(state.pose.rotation) % 360)
+
+
             # Change Angle of all actions according to the particle filter
             # best_dir is the global rotation for that kick
-            best_dir = 360
             best_action = 0
+            actions_consequences = []
+            best_dirs = [0]
+            old_rotation = s.pose.rotation
             for ix, action in enumerate(action_list):
                 if action.name is "none":
                     continue
-                tmp, _ = calculate_best_direction(s, action_list[ix], False, iterations=20)
-                # print("Best dir: " + str(math.degrees(tmp)) + " for action: " + action_list[idx].name)
-                if np.abs(tmp) < np.abs(best_dir):
-                    best_dir = tmp
-                    best_action = ix
-            # print("Best dir: " + str(math.degrees(best_dir)) + " for action: " + action_list[best_action].name)
 
+                tmp, _, consequences = calculate_best_direction(s, action_list[ix], False, iterations=20)
+
+                # TODO simulate again normally for each rotation
+                s.pose.rotation = old_rotation + tmp  # TODO change it back
+                best_dirs.append(tmp)
+
+                single_consequence = a.ActionResults([])
+                actions_consequences.append(Sim.simulate_consequences(action, single_consequence, s, a.num_particles))
+
+                print("Best dir: " + str(math.degrees(tmp)) + " for action: " + action_list[ix].name)
+
+            best_action = Sim.decide_smart(actions_consequences, s)
             # Rotate the robot so that the shooting angle == best_dir
-            s.pose.rotation = s.pose.rotation + best_dir
+            best_dir = best_dirs[best_action]
+            print("Total Best dir: " + str(math.degrees(best_dir)) + " for action: " + action_list[best_action].name)
+            s.pose.rotation = old_rotation + best_dir
+            print(state.pose.translation.x, state.pose.translation.y, math.degrees(state.pose.rotation) % 360)
+            # sys.exit()
             # only model turning when it's significant
             if np.abs(best_dir) > 5:
                 total_time += np.abs(math.degrees(best_dir) / s.rotation_vel)
                 num_turn_degrees += np.abs(math.degrees(best_dir))
 
             # after turning evaluate the best action again to calculate the expected ball position
-            actions_consequences = []
             single_consequence = a.ActionResults([])
-            actions_consequences.append(Sim.simulate_consequences(action_list[best_action], single_consequence, s, a.num_particles))
+            actions_consequences.append(
+                Sim.simulate_consequences(action_list[best_action], single_consequence, s, a.num_particles))
 
             # expected_ball_pos should be in local coordinates for rotation calculations
-            expected_ball_pos = actions_consequences[0].expected_ball_pos
+            expected_ball_pos = actions_consequences[best_action].expected_ball_pos
 
             # Check if expected_ball_pos inside opponent goal
             opp_goal_back_right = m2d.Vector2(field.opponent_goalpost_right.x + field.goal_depth,
@@ -242,8 +256,9 @@ def main(x, y, rot, s, num_iter):
 
     return np.nanmin(timings), np.nanmean(n_kicks), np.nanmean(n_turns)
 
+
 if __name__ == "__main__":
-    for i in range(30):
+    for i in range(1):
         state = State()
         rotation_step = 10
         time, kicks, turns = main(state.pose.translation.x, state.pose.translation.y, math.degrees(state.pose.rotation), state, num_iter=10)

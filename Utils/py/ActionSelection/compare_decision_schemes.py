@@ -39,7 +39,7 @@ def main():
 
     x_range = range(int(-field.x_length * 0.5) + cell_width, int(field.x_length * 0.5), 2 * cell_width)
     y_range = range(int(-field.y_length * 0.5) + cell_width, int(field.y_length * 0.5), 2 * cell_width)
-    rot = 0
+    rot = 45
 
     # x_range = range(-400, 400, 200)
     # y_range = range(-400, 400, 200)
@@ -56,11 +56,11 @@ def main():
             kick_container.append([x, y, rot, c_kicks, c_turns, p_kicks, p_turns])
 
     # make sure not to overwrite anything
-    while (os.path.exists('{}{:d}.pickle'.format('data/strategy_times', file_idx)) or
-           os.path.exists('{}{:d}.pickle'.format('data/strategy_actions', file_idx))):
+    while (os.path.exists('{}{:d}.pickle'.format('data/strategy_times' + "-rot" + str(rot) + "-", file_idx)) or
+           os.path.exists('{}{:d}.pickle'.format('data/strategy_actions' + "-rot" + str(rot) + "-", file_idx))):
         file_idx += 1
-    pickle.dump(timing_container, open('data/strategy_times' + "-rot" + str(rot) + str(file_idx) + '.pickle', "wb"))
-    pickle.dump(kick_container, open('data/strategy_actions' + "-rot" + str(rot) + str(file_idx) + '.pickle', "wb"))
+    pickle.dump(timing_container, open('data/strategy_times' + "-rot" + str(rot) + "-" + str(file_idx) + '.pickle', "wb"))
+    pickle.dump(kick_container, open('data/strategy_actions' + "-rot" + str(rot) + "-" + str(file_idx) + '.pickle', "wb"))
 
 
 if __name__ == "__main__":
