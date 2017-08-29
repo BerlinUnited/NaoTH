@@ -166,9 +166,18 @@ Vector2d LPGPathPlanner::get_gait(const Vector2d& goal,
     waypoint_coordinates.push_back(helper->cell_to_coords(cell));
   }
 
+  Vector2d gait;
   if (waypoints.empty())
   {
     return Vector2d(0, 0);
+  }
+  else if (waypoints.size() > 1)
+  {
+    gait = helper->cell_to_coords(waypoints[1]);
+  }
+  else
+  {
+    gait = helper->cell_to_coords(waypoints[0]);
   }
 
   // Compute the gait
@@ -185,8 +194,6 @@ Vector2d LPGPathPlanner::get_gait(const Vector2d& goal,
     counter++;
   } while (distance < 60);
   */
-
-  Vector2d gait = helper->cell_to_coords(waypoints.front());
 
   // Dirty: Let the FootStepPlanner actually limit the step to the maximum
   const double max_steplength = 100;
@@ -208,7 +215,7 @@ std::vector<LPGGrid::Cell> LPGPathPlanner::compute_waypoints(const Vector2d& goa
   LPGState endNode(helper, helper->coords_to_cell(goal));
 
   // TODO: remove the magic 16, 17
-  ASSERT(abs(endNode.get_cell().r) < 17 && endNode.get_cell().a >= 0 && endNode.get_cell().a < 16 );
+  ASSERT(endNode.get_cell().r >= 0 && endNode.get_cell().a >= 0 && endNode.get_cell().a < 16 );
 
   astar.SetStartAndGoalStates(startNode, endNode);
 

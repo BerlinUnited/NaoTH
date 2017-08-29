@@ -320,8 +320,13 @@ void PathPlanner::walk_to_ball(const Foot foot, const bool go_fast)
                     waypoint.rotate(getRobotPose().getAngle());
                     waypoint = getRobotPose().translation + waypoint;
                     CIRCLE(waypoint.x, waypoint.y, 10);
+                    Vector2d gait_to_draw = gait;
+                    gait_to_draw.rotate(getRobotPose().getAngle());
+                    gait_to_draw = getRobotPose().translation + gait_to_draw;
+                    LINE(getRobotPose().translation.x, getRobotPose().translation.y, gait_to_draw.x, gait_to_draw.y);
                   }
     );
+    ballRotation = 0;
     pose = {ballRotation, gait.x, gait.y};
   }
   else if (algorithm == PathPlannerAlgorithm::BISEC)
