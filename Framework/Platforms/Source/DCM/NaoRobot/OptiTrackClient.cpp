@@ -1,7 +1,6 @@
 
 #include "OptiTrackClient.h"
 
-#include <PlatformInterface/Platform.h>
 #include "Tools/Communication/NetAddr.h"
 #include <Tools/ThreadUtil.h>
 
@@ -66,22 +65,18 @@ GError* OptiTrackClient::bindAndListenMulticast(unsigned int port)
   return err;
 }
 
-/*
-void OptiTrackClient::get(GameData& gameData)
-{
+
+void OptiTrackClient::get(OptiTrackData& data)
+{ 
+  data.trackables.clear();
+  
   std::unique_lock<std::mutex> lock(dataMutex, std::try_to_lock);
   if ( lock.owns_lock() )
   {
-    if(data.valid) {
-      gameData = data;
-      data.valid = false; // invalidate after copy
-    } else {
-      // no new message received
-      gameData.valid = false;
-    }
+    data.trackables = optiTrackParser.getTrackables();
   }
 }
-*/
+
 
 OptiTrackClient::~OptiTrackClient()
 {
@@ -119,9 +114,18 @@ void OptiTrackClient::send(const char* data, size_t dataSize)
 
 void OptiTrackClient::handleMessage(const char* data, size_t dataSize) 
 {
+  std::lock_guard<std::mutex> lock(dataMutex);
+  
   optiTrackParser.reset();
   std::string msg(data, dataSize);
-  std::string cmd = optiTrackParser.parseMessage(msg);
+  std::string cmd;
+  
+  try {
+    cmd = optiTrackParser.parseMessage(msg);
+  }
+  catch (const std::length_error& le) {
+    std::cout << "[OptiTrackClient] : error in parseMessage " << le.what() << std::endl;
+  }
   
   if(!cmd.empty()) {
     send(cmd.c_str(), cmd.size());

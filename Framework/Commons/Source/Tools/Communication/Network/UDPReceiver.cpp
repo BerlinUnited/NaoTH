@@ -12,9 +12,17 @@
 using namespace naoth;
 
 #include <sys/types.h>
+
+#ifndef WIN32
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#else
+#include <winsock.h>
+#if !defined(socklen_t)
+typedef int socklen_t;
+#endif
+#endif
 
 UDPReceiver::UDPReceiver(unsigned int port, unsigned int buffersize, bool multicast)
   : exiting(false), socket(NULL)
@@ -78,7 +86,7 @@ GError* UDPReceiver::bindAndListenMulticast(unsigned int port)
 
   int fd = g_socket_get_fd(socket);
   std::cout << "file descriptor " << fd << std::endl;
-  if (setsockopt(fd, IPPROTO_IP, IP_ADD_MEMBERSHIP, &mreq, sizeof(mreq)) < 0) {
+  if (setsockopt(fd, IPPROTO_IP, IP_ADD_MEMBERSHIP, (char*)&mreq, sizeof(mreq)) < 0) {
     perror("setsockopt");
     exit(1);
   }

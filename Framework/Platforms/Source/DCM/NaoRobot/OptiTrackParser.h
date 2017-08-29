@@ -126,12 +126,7 @@ public:
       {
         // read the name of the representation
         std::string modelName;
-        char c = '\0';
-        ss.read(&c, 1);
-        while (c != '\0') {
-          modelName += c;
-          ss.read(&c, 1);
-        }
+        std::getline( ss, modelName, '\0' );
         
         unsigned int markerCount = 0;
         ss.read((char*)&markerCount, 4);
@@ -262,7 +257,7 @@ public:
       }
     }
     else {
-      std::cout << "[OptiTrackParser] Unknown message!" << std::endl;
+      std::cout << "[OptiTrackParser] Unknown message: " << messageID << std::endl;
       assert(false);
     }
     

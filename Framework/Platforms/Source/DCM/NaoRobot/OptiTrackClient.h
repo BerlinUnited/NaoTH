@@ -7,6 +7,7 @@
 #include <thread>
 
 #include "OptiTrackParser.h"
+#include <Representations/Infrastructure/OptiTrackData.h>
 
 class OptiTrackClient
 {
@@ -32,12 +33,11 @@ private:
   GSocket* socket;
   GSocketAddress* serverAddress;
   std::thread socketThread;
-
-  // results
-  //naoth::GameData data;
+  
   std::mutex  dataMutex;
 
 public:
+  void get(naoth::OptiTrackData& data);
   OptiTrackParser optiTrackParser;
 };
 

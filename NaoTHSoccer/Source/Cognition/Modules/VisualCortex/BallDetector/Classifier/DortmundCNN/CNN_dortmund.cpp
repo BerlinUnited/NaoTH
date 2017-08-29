@@ -2,6 +2,11 @@
 
 #include <xmmintrin.h>
 
+// NOTE: VisualStudio 2013 doesn't have alignas
+#ifdef WIN32
+#define alignas(x)
+#endif
+
 CNN_dortmund::CNN_dortmund()
 {
   res[0] = 0;
