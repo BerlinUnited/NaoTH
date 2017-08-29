@@ -131,9 +131,7 @@ public:
     }
   }
   
-  void get(OptiTrackData& data) {
-    data.trackables = optiTrackClient.optiTrackParser.getTrackables();
-  }
+  void get(OptiTrackData& data) { optiTrackClient.get(data); }
 
   // write directly to the shared memory
   // ACHTUNG: each set calls swapWriting()
