@@ -17,8 +17,8 @@
 
 #include <Tools/Debug/DebugDrawings.h>
 
-// Helper Class
-class LPGHelper
+
+class LPGGrid
 {
 public:
 
@@ -32,35 +32,41 @@ public:
     int a;      // angular
   };
 
-  Cell compute_cell(const Vector2d& coords) const;
+public:
+  Cell coords_to_cell(const Vector2d& coords) const;
+  Vector2d cell_to_coords(const Cell& the_cell) const;
   double distance_between_cells(const Cell& a, const Cell& b) const;
-  void set_obstacles(const std::vector<Vector3d>& obstacles);
-  double obst_func(const Cell& the_cell) const;
-  Vector2d cell_middle(const Cell& the_cell) const;
-  double distance(const Vector2d& a, const Vector2d& b) const;
 
 private:
-
-  std::vector<Vector3d> obstacles;
-
   // parameters for LPG
   double base         = 1.1789;
   double minimal_cell = 100.0;
   double angular_part = 16.0;
 
+
+public:
+  void set_obstacles(const std::vector<Vector3d>& obstacles) {
+    this->obstacles = obstacles;
+  }
+  double obst_func(const Cell& the_cell) const;
+
+private:
   // parameters for obstacle function
   double parameter_s  = 0.5;
+  std::vector<Vector3d> obstacles;
 };
 
 // A* State Class
 class LPGState
 {
 public:
-  LPGState();
-  LPGState(std::shared_ptr<LPGHelper> helper);
-  LPGState(std::shared_ptr<LPGHelper> helper, LPGHelper::Cell the_cell);
 
-  const LPGHelper::Cell& get_cell() const {
+  LPGState() : helper(nullptr), the_cell(LPGGrid::Cell()), is_origin(false) {}
+  LPGState(std::shared_ptr<LPGGrid> helper) : helper(helper), the_cell(LPGGrid::Cell()), is_origin(false) {}
+  LPGState(std::shared_ptr<LPGGrid> helper, LPGGrid::Cell the_cell) : helper(helper), the_cell(the_cell), is_origin(false) {}
+  LPGState(std::shared_ptr<LPGGrid> helper, bool is_origin) : helper(helper), the_cell(LPGGrid::Cell()), is_origin(is_origin) {}
+
+  const LPGGrid::Cell& get_cell() const {
     return the_cell;
   }
 
@@ -71,10 +77,15 @@ public:
   float GetCost(LPGState &successor);
   bool IsSameState(LPGState &rhs);
 
+  bool isOrigin() { return is_origin; }
+
 private:
-  std::shared_ptr<LPGHelper> helper;
-  LPGHelper::Cell the_cell;
+  std::shared_ptr<LPGGrid> helper;
+  LPGGrid::Cell the_cell;
  
+  // HACK?
+  // indicates the empty virtual cell at the center of the grid
+  bool is_origin;
 };
 
 // PathPlanner
@@ -91,15 +102,15 @@ public:
   }
 
 private:
-  std::vector<LPGHelper::Cell> compute_waypoints(const Vector2d& goal, DrawingCanvas2D& canvas) const;
+  std::vector<LPGGrid::Cell> compute_waypoints(const Vector2d& goal, DrawingCanvas2D& canvas) const;
 
 // internal state
 private:
 
-  mutable std::vector<LPGHelper::Cell> waypoints;
+  mutable std::vector<LPGGrid::Cell> waypoints;
   mutable std::vector<Vector2d> waypoint_coordinates;
 
-  mutable std::shared_ptr<LPGHelper> helper;
+  mutable std::shared_ptr<LPGGrid> helper;
   mutable AStarSearch<LPGState> astar;
 };
 
