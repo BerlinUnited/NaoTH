@@ -20,6 +20,7 @@
 
 // representations
 #include "Representations/Infrastructure/FieldInfo.h"
+#include "Representations/Infrastructure/FrameInfo.h"
 #include "Representations/Motion/Request/HeadMotionRequest.h"
 #include "Representations/Motion/Request/MotionRequest.h"
 #include "Representations/Motion/MotionStatus.h"
@@ -43,6 +44,7 @@ PROVIDE(DebugModify)
 PROVIDE(DebugDrawings)
 PROVIDE(DebugParameterList)
 
+REQUIRE(FrameInfo)
 REQUIRE(FieldInfo)
 REQUIRE(BallPercept)
 REQUIRE(MultiBallPercept)

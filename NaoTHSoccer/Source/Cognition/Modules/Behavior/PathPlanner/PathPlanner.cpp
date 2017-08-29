@@ -24,6 +24,8 @@ kick_planned(false)
   DEBUG_REQUEST_REGISTER("PathPlanner:LPG:draw_waypoints", "Draws computed waypoints.", true);
   DEBUG_REQUEST_REGISTER("PathPlanner:BISEC:draw_path", "Draws computed path.", true);
 
+  DEBUG_REQUEST_REGISTER("PathPlanner:add_static_obstacles_for_path_search","",false);
+
   getDebugParameterList().add(&params);
 }
 
@@ -130,18 +132,33 @@ void PathPlanner::execute_pathplanner_algorithm()
   double ballRadius = getFieldInfo().ballRadius;
 
   std::vector<Vector3d> obstacles;
-  for (auto player : getPlayersModel().opponents)
+
+  DEBUG_REQUEST("PathPlanner:add_static_obstacles_for_path_search",
+    obstacles.push_back(Vector3d(-2500.0,    0.0, 300));
+    obstacles.push_back(Vector3d(-2500.0,  300.0, 300));
+    obstacles.push_back(Vector3d(-2500.0, -300.0, 300));
+    obstacles.push_back(Vector3d(-3000.0, -600.0, 300));
+    obstacles.push_back(Vector3d(-1500.0,  600.0, 300));
+  );
+
+
+  for (const auto& player : getPlayersModel().opponents)
   {
-    obstacles.push_back(Vector3d(player.globalPose.translation.x, player.globalPose.translation.y, 300));
-  }
-  for (auto player : getPlayersModel().teammates)
-  {
-    Vector2d obst = getRobotPose() / player.globalPose.translation;
-    if (obst.x < 2.0 && obst.y < 2.0)
-    {
-      continue;
+    if(player.frameInfoWhenWasSeen.getFrameNumber() > 0 && getFrameInfo().getTimeSince(player.frameInfoWhenWasSeen.getTime()) < 2000) {
+      obstacles.push_back(Vector3d(player.globalPose.translation.x, player.globalPose.translation.y, 300));
     }
-    obstacles.push_back(Vector3d(player.globalPose.translation.x, player.globalPose.translation.y, 300));
+  }
+
+  for (const auto& player : getPlayersModel().teammates)
+  {
+    if(player.frameInfoWhenWasSeen.getFrameNumber() > 0 && getFrameInfo().getTimeSince(player.frameInfoWhenWasSeen.getTime()) < 2000) {
+      Vector2d obst = getRobotPose() / player.globalPose.translation;
+      if (obst.x < 2.0 && obst.y < 2.0)
+      {
+        continue;
+      }
+      obstacles.push_back(Vector3d(player.globalPose.translation.x, player.globalPose.translation.y, 300));
+    }
   }
 
   DEBUG_REQUEST("PathPlanner:draw_obstacles_and_ball",
@@ -165,8 +182,14 @@ void PathPlanner::execute_pathplanner_algorithm()
 
   if (algorithm == PathPlannerAlgorithm::LPG)
   {
-    Vector2d goal = Vector2d(0.7 * (ballPos.x - getPathModel().distance - ballRadius), ballPos.y);
-    lpgPlanner.get_gait(goal, obstacles);
+    //Vector2d goal = Vector2d(0.7 * (ballPos.x - getPathModel().distance - ballRadius), ballPos.y);
+    //FIELD_DRAWING_CONTEXT;
+    //getDebugDrawings().translate(getRobotPose().translation.x, getRobotPose().translation.y);
+    //getDebugDrawings().rotate(getRobotPose().rotation);
+    lpgPlanner.get_gait(ballPos, obstacles, getDebugDrawings());
+    //getDebugDrawings().rotate(-getRobotPose().rotation);
+    //getDebugDrawings().translate(-getRobotPose().translation.x, -getRobotPose().translation.y);
+    
 
     DEBUG_REQUEST("PathPlanner:LPG:draw_waypoints",
                   FIELD_DRAWING_CONTEXT;
@@ -280,7 +303,13 @@ void PathPlanner::walk_to_ball(const Foot foot, const bool go_fast)
   if (algorithm == PathPlannerAlgorithm::LPG)
   {
     Vector2d goal = Vector2d(0.7 * (ballPos.x - getPathModel().distance - ballRadius), ballPos.y);
-    Vector2d gait = lpgPlanner.get_gait(goal, obstacles);
+
+    //FIELD_DRAWING_CONTEXT;
+    //getDebugDrawings().translate(getRobotPose().translation.x, getRobotPose().translation.y);
+    //getDebugDrawings().rotate(getRobotPose().rotation);
+    Vector2d gait = lpgPlanner.get_gait(goal, obstacles, getDebugDrawings());
+    //getDebugDrawings().rotate(-getRobotPose().rotation);
+    //getDebugDrawings().translate(-getRobotPose().translation.x, -getRobotPose().translation.y);
 
     DEBUG_REQUEST("PathPlanner:LPG:draw_waypoints",
                   FIELD_DRAWING_CONTEXT;
