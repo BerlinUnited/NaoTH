@@ -14,7 +14,7 @@ LPGGrid::Cell LPGGrid::coords_to_cell(const Vector2d& coords) const
   LPGGrid::Cell the_cell;
   // NOTE: the_cell.r is allways >= 0
   the_cell.r = static_cast<int>(std::log(((coords.abs() * (base - 1.0)) / minimal_cell) + 1.0) / log(base));
-  the_cell.a = static_cast<int>( angular_part * (coords.angle() + Math::pi) / Math::pi2 + 0.5);
+  the_cell.a = static_cast<int>( angular_part * (coords.angle() / Math::pi2) + 0.5);
 
   // normalize rotation
   if(the_cell.a < 0) {
