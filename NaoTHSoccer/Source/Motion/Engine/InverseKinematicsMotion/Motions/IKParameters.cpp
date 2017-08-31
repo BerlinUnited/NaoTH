@@ -22,8 +22,8 @@ IKParameters::IKParameters()
   PARAMETER_ANGLE_REGISTER(stand.bodyPitchOffset) = 0.2;
   PARAMETER_REGISTER(stand.hipOffsetX) = 15;
 
-  PARAMETER_REGISTER(stand.rotationStabilization.rotationP.x) = -0.01;
-  PARAMETER_REGISTER(stand.rotationStabilization.rotationP.y) = -0.05;
+  PARAMETER_REGISTER(stand.rotationStabilization.rotationP.x) = -0.05;
+  PARAMETER_REGISTER(stand.rotationStabilization.rotationP.y) = -0.6;
   PARAMETER_REGISTER(stand.rotationStabilization.rotationD.x) = 0;
   PARAMETER_REGISTER(stand.rotationStabilization.rotationD.y) = 0;
   PARAMETER_REGISTER(stand.rotationStabilization.rotationVelocityP.x) = 0.02;
