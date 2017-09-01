@@ -29,11 +29,13 @@ public:
     double bodyPitchOffset;
     double hipOffsetX;
 
-    struct RotationStabilization{
-        Vector2d rotationP;
-        Vector2d rotationVelocityP;
-        Vector2d rotationD;
-    } rotationStabilization, rotationStabilizationRC16;
+    struct Stabilization{
+        struct RotationStabilization{
+            Vector2d rotationP;
+            Vector2d rotationVelocityP;
+            Vector2d rotationD;
+        } rotation, rotationRC16;
+    } stabilization;
 
     struct Relax {
 
@@ -166,13 +168,13 @@ public:
           double y;
       } maxHipOffsetBasedOnStepLength, maxHipOffsetBasedOnStepLengthForKicks;
 
-    } stabilization;
+      struct RotationStabilization{
+          Vector2d rotationP;
+          Vector2d rotationVelocityP;
+          Vector2d rotationD;
+      } rotation, rotationRC16, rotationNewIMU;
 
-    struct RotationStabilization{
-        Vector2d rotationP;
-        Vector2d rotationVelocityP;
-        Vector2d rotationD;
-    } rotationStabilization, rotationStabilizationRC16, rotationStabilizationNewIMU;
+    } stabilization;
 
     struct ZMP{
         struct Bezier{

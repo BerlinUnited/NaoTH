@@ -119,9 +119,9 @@ void Walk::execute()
       getGyrometerData(),
       getRobotInfo().getBasicTimeStepInSecond(),
       c,
-      parameters().rotationStabilization.rotationP,
-      parameters().rotationStabilization.rotationVelocityP,
-      parameters().rotationStabilization.rotationD);
+      parameters().stabilization.rotation.rotationP,
+      parameters().stabilization.rotation.rotationVelocityP,
+      parameters().stabilization.rotation.rotationD);
   }
   else if(getCalibrationData().calibrated && parameters().stabilization.rotationStabilizeRC16)
   {
@@ -138,9 +138,9 @@ void Walk::execute()
       getGyrometerData(),
       getRobotInfo().getBasicTimeStepInSecond(),
       c,
-      parameters().rotationStabilizationRC16.rotationP,
-      parameters().rotationStabilizationRC16.rotationVelocityP,
-      parameters().rotationStabilizationRC16.rotationD);
+      parameters().stabilization.rotationRC16.rotationP,
+      parameters().stabilization.rotationRC16.rotationVelocityP,
+      parameters().stabilization.rotationRC16.rotationD);
   }
   else if(getCalibrationData().calibrated && parameters().stabilization.rotationStabilizeNewIMU)
   {
@@ -157,9 +157,9 @@ void Walk::execute()
       getGyrometerData(),
       getRobotInfo().getBasicTimeStepInSecond(),
       c,
-      parameters().rotationStabilizationNewIMU.rotationP,
-      parameters().rotationStabilizationNewIMU.rotationVelocityP,
-      parameters().rotationStabilizationNewIMU.rotationD);
+      parameters().stabilization.rotationNewIMU.rotationP,
+      parameters().stabilization.rotationNewIMU.rotationVelocityP,
+      parameters().stabilization.rotationNewIMU.rotationD);
   }
 
   getEngine().solveHipFeetIK(c);
