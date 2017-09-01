@@ -237,18 +237,18 @@ void StandMotion::applyPose(const InverseKinematic::CoMFeetPose& p)
         getGyrometerData(),
         getRobotInfo().getBasicTimeStepInSecond(),
         c,
-        getEngine().getParameters().stand.stabilization.rotation.rotationP,
-        getEngine().getParameters().stand.stabilization.rotation.rotationVelocityP,
-        getEngine().getParameters().stand.stabilization.rotation.rotationD);
+        getEngine().getParameters().stand.stabilization.rotation.P,
+        getEngine().getParameters().stand.stabilization.rotation.VelocityP,
+        getEngine().getParameters().stand.stabilization.rotation.D);
     } else if(getEngine().getParameters().stand.enableStabilizationRC16) {
       getEngine().rotationStabilizeRC16(
         getInertialSensorData().data,
         getGyrometerData(),
         getRobotInfo().getBasicTimeStepInSecond(),
         c,
-        getEngine().getParameters().stand.stabilization.rotationRC16.rotationP,
-        getEngine().getParameters().stand.stabilization.rotationRC16.rotationVelocityP,
-        getEngine().getParameters().stand.stabilization.rotationRC16.rotationD);
+        getEngine().getParameters().stand.stabilization.rotationRC16.P,
+        getEngine().getParameters().stand.stabilization.rotationRC16.VelocityP,
+        getEngine().getParameters().stand.stabilization.rotationRC16.D);
     }
   }
 

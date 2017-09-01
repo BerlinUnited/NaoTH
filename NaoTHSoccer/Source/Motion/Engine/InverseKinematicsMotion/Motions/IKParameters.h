@@ -31,9 +31,9 @@ public:
 
     struct Stabilization{
         struct RotationStabilization{
-            Vector2d rotationP;
-            Vector2d rotationVelocityP;
-            Vector2d rotationD;
+            Vector2d P;
+            Vector2d VelocityP;
+            Vector2d D;
         } rotation, rotationRC16;
     } stabilization;
 
@@ -169,9 +169,9 @@ public:
       } maxHipOffsetBasedOnStepLength, maxHipOffsetBasedOnStepLengthForKicks;
 
       struct RotationStabilization{
-          Vector2d rotationP;
-          Vector2d rotationVelocityP;
-          Vector2d rotationD;
+          Vector2d P;
+          Vector2d VelocityP;
+          Vector2d D;
       } rotation, rotationRC16, rotationNewIMU;
 
     } stabilization;
