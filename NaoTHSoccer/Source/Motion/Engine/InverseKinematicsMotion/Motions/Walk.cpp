@@ -134,7 +134,7 @@ void Walk::execute()
     }
     
     getEngine().rotationStabilizeRC16(
-      getInertialSensorData(),
+      getInertialSensorData().data,
       getGyrometerData(),
       getRobotInfo().getBasicTimeStepInSecond(),
       c,
@@ -152,8 +152,8 @@ void Walk::execute()
       c.localInHip();
     }
 
-    getEngine().rotationStabilizeNewIMU(
-      getIMUData(),
+    getEngine().rotationStabilizeRC16(
+      getIMUData().orientation,
       getGyrometerData(),
       getRobotInfo().getBasicTimeStepInSecond(),
       c,

@@ -428,70 +428,8 @@ void InverseKinematicsMotionEngine::feetStabilize(
   lastGyro = gyro;
 }//end feetStabilize
 
-
-
 bool InverseKinematicsMotionEngine::rotationStabilizeRC16(
-  const naoth::InertialSensorData& theInertialSensorData,
-  const GyrometerData& theGyrometerData,
-  double timeDelta,
-  InverseKinematic::HipFeetPose& p,
-        Vector2d rotationP,
-        Vector2d rotationVelocityP,
-        Vector2d /*rotationD*/)
-{
-  const double alpha = 0.8;
-  Vector2d gyro = Vector2d(theGyrometerData.data.x, theGyrometerData.data.y);
-  static Vector2d filteredGyro = gyro;
-  filteredGyro = filteredGyro * (1.0f - alpha) + gyro * alpha;
-
-  const double observerMeasurementDelay = 40;
-  const int frameDelay = static_cast<int>(observerMeasurementDelay / (timeDelta*1000));
-
-  static RingBuffer<Vector2d, 10> buffer;
-  static Vector2d lastGyroError;
-  static RotationMatrix lastBodyRotationMatrix = p.hip.rotation;
-
-  const RotationMatrix relativeRotation = p.hip.rotation.invert() * lastBodyRotationMatrix;
-  lastBodyRotationMatrix = p.hip.rotation;
-
-  const double rotationY = atan2(relativeRotation.c[2].x, relativeRotation.c[2].z);
-  buffer.add(Vector2d(relativeRotation.getXAngle(), rotationY));
-
-  if(buffer.isFull() && frameDelay > 0 && frameDelay < buffer.size())
-  {
-    const Vector2d requestedVelocity = (buffer[frameDelay-1] - buffer[frameDelay]) / timeDelta;
-    const Vector2d error = requestedVelocity - filteredGyro;
-    //const Vector2d errorDerivative = (error - lastGyroError) / timeDelta;
-
-    double correctionY = rotationVelocityP.y * error.y;
-    //                     + rotationD.y * errorDerivative.y;
-
-    double correctionX = rotationVelocityP.x * error.x;
-    //                     + rotationD.x * errorDerivative.x;
-
-    const Vector2d& inertial = theInertialSensorData.data;
-    correctionX += rotationP.x * inertial.x;
-    correctionY += rotationP.y * inertial.y;
-
-    //p.localInHip();
-    //p.hip.rotateX(correctionX);
-    //p.hip.rotateY(correctionY);
-
-    double height = NaoInfo::ThighLength + NaoInfo::TibiaLength + NaoInfo::FootHeight;
-    p.hip.translate(0, 0, -height);
-    p.hip.rotateX(correctionX);
-    p.hip.rotateY(correctionY);
-    p.hip.translate(0, 0, height);
-
-    lastGyroError = error;
-  }
-
-  return true;
-}
-
-bool InverseKinematicsMotionEngine::rotationStabilizeNewIMU(
-  const IMUData& imuData,
-  //const InertialModel& theInertialModel,
+  const Vector2d& inertial,
   const GyrometerData& theGyrometerData,
   double timeDelta,
   InverseKinematic::HipFeetPose& p,
@@ -529,7 +467,6 @@ bool InverseKinematicsMotionEngine::rotationStabilizeNewIMU(
     double correctionX = rotationVelocityP.x * error.x;
     //                     + rotationD.x * errorDerivative.x;
 
-    const Vector2d& inertial = imuData.orientation;
     correctionX += rotationP.x * inertial.x;
     correctionY += rotationP.y * inertial.y;
 
@@ -548,7 +485,6 @@ bool InverseKinematicsMotionEngine::rotationStabilizeNewIMU(
 
   return true;
 }
-
 
 bool InverseKinematicsMotionEngine::rotationStabilize(
   const InertialModel& theInertialModel,
