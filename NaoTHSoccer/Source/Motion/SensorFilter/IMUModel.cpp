@@ -86,19 +86,25 @@ void IMUModel::writeIMUData(){
     getIMUData().acceleration.y = ukf_acc_global.state.acceleration()(1,0);
     getIMUData().acceleration.z = ukf_acc_global.state.acceleration()(2,0) + 9.81; //Math::g
 
-    Eigen::Quaterniond q;
-    q = ukf_rot.state.getRotationAsQuaternion();
-    Eigen::Vector3d angles = q.toRotationMatrix().eulerAngles(0,1,2);
-    getIMUData().rotation.x = angles(0);
-    getIMUData().rotation.y = angles(1);
-    getIMUData().rotation.z = angles(2);
+    // convert to framework compliant x,y,z angles
+    Eigen::Vector3d temp2 = ukf_rot.state.rotation();
+    Vector3d rot_vec(temp2(0),temp2(1),temp2(2));
+    RotationMatrix rot(rot_vec);
+    getIMUData().rotation.x = rot.getXAngle();
+    getIMUData().rotation.y = rot.getYAngle();
+    getIMUData().rotation.z = rot.getZAngle();
+
+
 
     // from inertiasensorfilter
-    getIMUData().orientation = Vector2d(atan2(q.toRotationMatrix()(2,1),  q.toRotationMatrix()(2,2)),
-                                        atan2(-q.toRotationMatrix()(2,0), q.toRotationMatrix()(2,2)));
+    //getIMUData().orientation = Vector2d(atan2( q.toRotationMatrix()(2,1), q.toRotationMatrix()(2,2)),
+    //                                    atan2(-q.toRotationMatrix()(2,0), q.toRotationMatrix()(2,2)));
+
+    getIMUData().orientation = Vector2d(atan2( rot[1].z, rot[2].z),
+                                        atan2(-rot[0].z, rot[2].z));
 
     // only to enable transparent switching with InertiaSensorFilter
-    //getInertialModel().orientation = getIMUData().orientation;
+    getInertialModel().orientation = getIMUData().orientation;
 }
 
 void IMUModel::plots(){
