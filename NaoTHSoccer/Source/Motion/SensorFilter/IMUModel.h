@@ -114,80 +114,103 @@ private:
 
            PARAMETER_REGISTER(enableWhileWalking) = true;
 
-           PARAMETER_REGISTER(stand.processNoiseAccQ00) = 0.01; // [m^2/s^4]
-           PARAMETER_REGISTER(stand.processNoiseAccQ11) = 0.01; // [m^2/s^4]
-           PARAMETER_REGISTER(stand.processNoiseAccQ22) = 0.01; // [m^2/s^4]
+           /* acceleration filter parameter */
+           // while standing
+           PARAMETER_REGISTER(acceleration.stand.processNoiseQ00) = 0.01; // [m^2/s^4]
+           PARAMETER_REGISTER(acceleration.stand.processNoiseQ11) = 0.01; // [m^2/s^4]
+           PARAMETER_REGISTER(acceleration.stand.processNoiseQ22) = 0.01; // [m^2/s^4]
 
-           PARAMETER_REGISTER(stand.processNoiseRotationQ00) = 0.1; // [rad^2] 9.86 ~ std of angle around x = pi
-           PARAMETER_REGISTER(stand.processNoiseRotationQ11) = 0.1; // [rad^2]
-           PARAMETER_REGISTER(stand.processNoiseRotationQ22) = 0.1; // [rad^2]
+           PARAMETER_REGISTER(acceleration.stand.measurementNoiseR00) =  1.243597518737325602e+00; // [m^2/s^4]
+           PARAMETER_REGISTER(acceleration.stand.measurementNoiseR01) =  4.170491338560008421e-01; // [m^2/s^4]
+           PARAMETER_REGISTER(acceleration.stand.measurementNoiseR02) = -3.246651961728642261e-02; // [m^2/s^4]
+           PARAMETER_REGISTER(acceleration.stand.measurementNoiseR11) =  3.447355924530388194e+00; // [m^2/s^4]
+           PARAMETER_REGISTER(acceleration.stand.measurementNoiseR12) = -5.760325107959280988e-01; // [m^2/s^4]
+           PARAMETER_REGISTER(acceleration.stand.measurementNoiseR22) =  1.204579269450257506e+01; // [m^2/s^4]
 
-           PARAMETER_REGISTER(stand.measurementNoiseAccR00) =  1.243597518737325602e+00; // [m^2/s^4]
-           PARAMETER_REGISTER(stand.measurementNoiseAccR01) =  4.170491338560008421e-01; // [m^2/s^4]
-           PARAMETER_REGISTER(stand.measurementNoiseAccR02) = -3.246651961728642261e-02; // [m^2/s^4]
-           PARAMETER_REGISTER(stand.measurementNoiseAccR11) =  3.447355924530388194e+00; // [m^2/s^4]
-           PARAMETER_REGISTER(stand.measurementNoiseAccR12) = -5.760325107959280988e-01; // [m^2/s^4]
-           PARAMETER_REGISTER(stand.measurementNoiseAccR22) =  1.204579269450257506e+01; // [m^2/s^4]
+           // walking
+           PARAMETER_REGISTER(acceleration.walk.processNoiseQ00) = 0.01; // [m^2/s^4]
+           PARAMETER_REGISTER(acceleration.walk.processNoiseQ11) = 0.01; // [m^2/s^4]
+           PARAMETER_REGISTER(acceleration.walk.processNoiseQ22) = 0.01; // [m^2/s^4]
+
+           PARAMETER_REGISTER(acceleration.walk.measurementNoiseR00) =  1.243597518737325602e+00; // [m^2/s^4]
+           PARAMETER_REGISTER(acceleration.walk.measurementNoiseR01) =  4.170491338560008421e-01; // [m^2/s^4]
+           PARAMETER_REGISTER(acceleration.walk.measurementNoiseR02) = -3.246651961728642261e-02; // [m^2/s^4]
+           PARAMETER_REGISTER(acceleration.walk.measurementNoiseR11) =  3.447355924530388194e+00; // [m^2/s^4]
+           PARAMETER_REGISTER(acceleration.walk.measurementNoiseR12) = -5.760325107959280988e-01; // [m^2/s^4]
+           PARAMETER_REGISTER(acceleration.walk.measurementNoiseR22) =  1.204579269450257506e+01; // [m^2/s^4]
+           /* acceleration filter parameter end */
+
+           /* rotation filter parameter */
+           // while standing
+           PARAMETER_REGISTER(rotation.stand.processNoiseQ00) = 0.1; // [rad^2] 9.86 ~ std of angle around x = pi
+           PARAMETER_REGISTER(rotation.stand.processNoiseQ11) = 0.1; // [rad^2]
+           PARAMETER_REGISTER(rotation.stand.processNoiseQ22) = 0.1; // [rad^2]
 
            // sqrt(R00,R11,R22) ~ the standard derivation rotation with axis sqrt(R00,R11,R22) and angle |(R00,R11,R22)|
-           PARAMETER_REGISTER(stand.measurementNoiseRotationR00) =  0.5;  // [rad^2]
-           PARAMETER_REGISTER(stand.measurementNoiseRotationR01) =  0.0; // [rad^2]
-           PARAMETER_REGISTER(stand.measurementNoiseRotationR02) =  0.0; // [rad^2]
-           PARAMETER_REGISTER(stand.measurementNoiseRotationR11) =  0.5;  // [rad^2]
-           PARAMETER_REGISTER(stand.measurementNoiseRotationR12) =  0.0; // [rad^2]
-           PARAMETER_REGISTER(stand.measurementNoiseRotationR22) =  0.5; // [rad^2]
+           PARAMETER_REGISTER(rotation.stand.measurementNoiseR00) =  0.5;  // [rad^2]
+           PARAMETER_REGISTER(rotation.stand.measurementNoiseR01) =  0.0; // [rad^2]
+           PARAMETER_REGISTER(rotation.stand.measurementNoiseR02) =  0.0; // [rad^2]
+           PARAMETER_REGISTER(rotation.stand.measurementNoiseR11) =  0.5;  // [rad^2]
+           PARAMETER_REGISTER(rotation.stand.measurementNoiseR12) =  0.0; // [rad^2]
+           PARAMETER_REGISTER(rotation.stand.measurementNoiseR22) =  0.5; // [rad^2]
 
-           // walk
-           PARAMETER_REGISTER(walk.processNoiseAccQ00) = 0.01; // [m^2/s^4]
-           PARAMETER_REGISTER(walk.processNoiseAccQ11) = 0.01; // [m^2/s^4]
-           PARAMETER_REGISTER(walk.processNoiseAccQ22) = 0.01; // [m^2/s^4]
+           // while walking
+           PARAMETER_REGISTER(rotation.walk.processNoiseQ00) = 0.1; // [rad^2]
+           PARAMETER_REGISTER(rotation.walk.processNoiseQ11) = 0.1; // [rad^2]
+           PARAMETER_REGISTER(rotation.walk.processNoiseQ22) = 0.1; // [rad^2]
 
-           PARAMETER_REGISTER(walk.processNoiseRotationQ00) = 0.1; // [rad^2]
-           PARAMETER_REGISTER(walk.processNoiseRotationQ11) = 0.1; // [rad^2]
-           PARAMETER_REGISTER(walk.processNoiseRotationQ22) = 0.1; // [rad^2]
-
-           PARAMETER_REGISTER(walk.measurementNoiseAccR00) =  1.243597518737325602e+00; // [m^2/s^4]
-           PARAMETER_REGISTER(walk.measurementNoiseAccR01) =  4.170491338560008421e-01; // [m^2/s^4]
-           PARAMETER_REGISTER(walk.measurementNoiseAccR02) = -3.246651961728642261e-02; // [m^2/s^4]
-           PARAMETER_REGISTER(walk.measurementNoiseAccR11) =  3.447355924530388194e+00; // [m^2/s^4]
-           PARAMETER_REGISTER(walk.measurementNoiseAccR12) = -5.760325107959280988e-01; // [m^2/s^4]
-           PARAMETER_REGISTER(walk.measurementNoiseAccR22) =  1.204579269450257506e+01; // [m^2/s^4]
-
-           PARAMETER_REGISTER(walk.measurementNoiseRotationR00) =  50; // [rad^2]
-           PARAMETER_REGISTER(walk.measurementNoiseRotationR01) =  0.0; // [rad^2]
-           PARAMETER_REGISTER(walk.measurementNoiseRotationR02) =  0.0; // [rad^2]
-           PARAMETER_REGISTER(walk.measurementNoiseRotationR11) =  50; // [rad^2]
-           PARAMETER_REGISTER(walk.measurementNoiseRotationR12) =  0.0; // [rad^2]
-           PARAMETER_REGISTER(walk.measurementNoiseRotationR22) =  50; // [rad^2]
+           PARAMETER_REGISTER(rotation.walk.measurementNoiseR00) =  50; // [rad^2]
+           PARAMETER_REGISTER(rotation.walk.measurementNoiseR01) =  0.0; // [rad^2]
+           PARAMETER_REGISTER(rotation.walk.measurementNoiseR02) =  0.0; // [rad^2]
+           PARAMETER_REGISTER(rotation.walk.measurementNoiseR11) =  50; // [rad^2]
+           PARAMETER_REGISTER(rotation.walk.measurementNoiseR12) =  0.0; // [rad^2]
+           PARAMETER_REGISTER(rotation.walk.measurementNoiseR22) =  50; // [rad^2]
+           /* rotation filter parameter end */
 
            syncWithConfig();
        }
 
        bool enableWhileWalking;
 
-       struct Params{
-       double processNoiseAccQ00;
-       double processNoiseAccQ11;
-       double processNoiseAccQ22;
+       struct Filter{
+           struct Mode{
+                double processNoiseQ00;
+                double processNoiseQ11;
+                double processNoiseQ22;
 
-       double processNoiseRotationQ00;
-       double processNoiseRotationQ11;
-       double processNoiseRotationQ22;
+                double measurementNoiseR00;
+                double measurementNoiseR01;
+                double measurementNoiseR02;
+                double measurementNoiseR11;
+                double measurementNoiseR12;
+                double measurementNoiseR22;
 
-       double measurementNoiseAccR00;
-       double measurementNoiseAccR01;
-       double measurementNoiseAccR02;
-       double measurementNoiseAccR11;
-       double measurementNoiseAccR12;
-       double measurementNoiseAccR22;
+           } walk, stand;
+       } acceleration, rotation;
 
-       double measurementNoiseRotationR00;
-       double measurementNoiseRotationR01;
-       double measurementNoiseRotationR02;
-       double measurementNoiseRotationR11;
-       double measurementNoiseRotationR12;
-       double measurementNoiseRotationR22;
-       } stand, walk;
+//       struct Params{
+//       double processNoiseAccQ00;
+//       double processNoiseAccQ11;
+//       double processNoiseAccQ22;
+
+//       double processNoiseRotationQ00;
+//       double processNoiseRotationQ11;
+//       double processNoiseRotationQ22;
+
+//       double measurementNoiseAccR00;
+//       double measurementNoiseAccR01;
+//       double measurementNoiseAccR02;
+//       double measurementNoiseAccR11;
+//       double measurementNoiseAccR12;
+//       double measurementNoiseAccR22;
+
+//       double measurementNoiseRotationR00;
+//       double measurementNoiseRotationR01;
+//       double measurementNoiseRotationR02;
+//       double measurementNoiseRotationR11;
+//       double measurementNoiseRotationR12;
+//       double measurementNoiseRotationR22;
+//       } stand, walk;
 
     } imuParameters;
 

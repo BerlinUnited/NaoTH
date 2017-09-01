@@ -146,47 +146,43 @@ void IMUModel::plots(){
 }
 
 void IMUModel::reloadParameters()
-{   /* parameters for stand */
-    // covariances of the acceleration filter
-    ukf_acc_global.Q << imuParameters.stand.processNoiseAccQ00,                                0,                                0,
-                                                       0, imuParameters.stand.processNoiseAccQ11,                                0,
-                                                       0,                                0, imuParameters.stand.processNoiseAccQ22;
+{   /* parameters for the acceleration filter */
+    // process noise
+    ukf_acc_global.Q << imuParameters.acceleration.stand.processNoiseQ00,                                0,                                0,
+                                                       0, imuParameters.acceleration.stand.processNoiseQ11,                                0,
+                                                       0,                                0, imuParameters.acceleration.stand.processNoiseQ22;
 
-    // covariances of the rotation filter
-    ukf_rot.Q << imuParameters.stand.processNoiseRotationQ00,                                     0,                               0,
-                                                     0, imuParameters.stand.processNoiseRotationQ11,                                     0,
-                                                     0,                                     0, imuParameters.stand.processNoiseRotationQ22;
+    ukf_acc_global.Q << imuParameters.acceleration.walk.processNoiseQ00,                                0,                                0,
+                                                       0, imuParameters.acceleration.walk.processNoiseQ11,                                0,
+                                                       0,                                0, imuParameters.acceleration.walk.processNoiseQ22;
     
-    // measurement covariance matrix for the acceleration while stepping
-    R_acc << imuParameters.stand.measurementNoiseAccR00, imuParameters.stand.measurementNoiseAccR01, imuParameters.stand.measurementNoiseAccR02,
-             imuParameters.stand.measurementNoiseAccR01, imuParameters.stand.measurementNoiseAccR11, imuParameters.stand.measurementNoiseAccR12,
-             imuParameters.stand.measurementNoiseAccR02, imuParameters.stand.measurementNoiseAccR12, imuParameters.stand.measurementNoiseAccR22;
+    // measurement covariance matrix
+    R_acc << imuParameters.acceleration.stand.measurementNoiseR00, imuParameters.acceleration.stand.measurementNoiseR01, imuParameters.acceleration.stand.measurementNoiseR02,
+             imuParameters.acceleration.stand.measurementNoiseR01, imuParameters.acceleration.stand.measurementNoiseR11, imuParameters.acceleration.stand.measurementNoiseR12,
+             imuParameters.acceleration.stand.measurementNoiseR02, imuParameters.acceleration.stand.measurementNoiseR12, imuParameters.acceleration.stand.measurementNoiseR22;
 
-    // measurement covariance matrix for the rotation while stepping
-    R_rotation << imuParameters.stand.measurementNoiseRotationR00, imuParameters.stand.measurementNoiseRotationR01, imuParameters.stand.measurementNoiseRotationR02,
-                  imuParameters.stand.measurementNoiseRotationR01, imuParameters.stand.measurementNoiseRotationR11, imuParameters.stand.measurementNoiseRotationR12,
-                  imuParameters.stand.measurementNoiseRotationR02, imuParameters.stand.measurementNoiseRotationR12, imuParameters.stand.measurementNoiseRotationR22;
+    R_acc_walk << imuParameters.acceleration.walk.measurementNoiseR00, imuParameters.acceleration.walk.measurementNoiseR01, imuParameters.acceleration.walk.measurementNoiseR02,
+                  imuParameters.acceleration.walk.measurementNoiseR01, imuParameters.acceleration.walk.measurementNoiseR11, imuParameters.acceleration.walk.measurementNoiseR12,
+                  imuParameters.acceleration.walk.measurementNoiseR02, imuParameters.acceleration.walk.measurementNoiseR12, imuParameters.acceleration.walk.measurementNoiseR22;
 
-    /* parameters or walk */
-    // covariances of the acceleration filter
-    ukf_acc_global.Q << imuParameters.walk.processNoiseAccQ00,                                0,                                0,
-                                                       0, imuParameters.walk.processNoiseAccQ11,                                0,
-                                                       0,                                0, imuParameters.walk.processNoiseAccQ22;
+    /* parameters for the rotation filter */
+    // process noise
+    ukf_rot.Q << imuParameters.rotation.stand.processNoiseQ00,                                     0,                               0,
+                                               0, imuParameters.rotation.stand.processNoiseQ11,                                     0,
+                                               0,                                     0, imuParameters.rotation.stand.processNoiseQ22;
 
-    // covariances of the rotation filter
-    ukf_rot.Q << imuParameters.walk.processNoiseRotationQ00,                                     0,                                     0,
-                                                     0, imuParameters.walk.processNoiseRotationQ11,                                     0,
-                                                     0,                                     0, imuParameters.walk.processNoiseRotationQ22;
+    ukf_rot.Q << imuParameters.rotation.walk.processNoiseQ00,                                     0,                                     0,
+                                                     0, imuParameters.rotation.walk.processNoiseQ11,                                     0,
+                                                     0,                                     0, imuParameters.rotation.walk.processNoiseQ22;
 
-    // measurement covariance matrix for the acceleration while stepping
-    R_acc_walk << imuParameters.walk.measurementNoiseAccR00, imuParameters.walk.measurementNoiseAccR01, imuParameters.walk.measurementNoiseAccR02,
-                  imuParameters.walk.measurementNoiseAccR01, imuParameters.walk.measurementNoiseAccR11, imuParameters.walk.measurementNoiseAccR12,
-                  imuParameters.walk.measurementNoiseAccR02, imuParameters.walk.measurementNoiseAccR12, imuParameters.walk.measurementNoiseAccR22;
+    // measurement covariance matrix
+    R_rotation << imuParameters.rotation.stand.measurementNoiseR00, imuParameters.rotation.stand.measurementNoiseR01, imuParameters.rotation.stand.measurementNoiseR02,
+                  imuParameters.rotation.stand.measurementNoiseR01, imuParameters.rotation.stand.measurementNoiseR11, imuParameters.rotation.stand.measurementNoiseR12,
+                  imuParameters.rotation.stand.measurementNoiseR02, imuParameters.rotation.stand.measurementNoiseR12, imuParameters.rotation.stand.measurementNoiseR22;
 
-    // measurement covariance matrix for the rotation while stepping
-    R_rotation_walk << imuParameters.walk.measurementNoiseRotationR00, imuParameters.walk.measurementNoiseRotationR01, imuParameters.walk.measurementNoiseRotationR02,
-                       imuParameters.walk.measurementNoiseRotationR01, imuParameters.walk.measurementNoiseRotationR11, imuParameters.walk.measurementNoiseRotationR12,
-                       imuParameters.walk.measurementNoiseRotationR02, imuParameters.walk.measurementNoiseRotationR12, imuParameters.walk.measurementNoiseRotationR22;
+    R_rotation_walk << imuParameters.rotation.walk.measurementNoiseR00, imuParameters.rotation.walk.measurementNoiseR01, imuParameters.rotation.walk.measurementNoiseR02,
+                       imuParameters.rotation.walk.measurementNoiseR01, imuParameters.rotation.walk.measurementNoiseR11, imuParameters.rotation.walk.measurementNoiseR12,
+                       imuParameters.rotation.walk.measurementNoiseR02, imuParameters.rotation.walk.measurementNoiseR12, imuParameters.rotation.walk.measurementNoiseR22;
 }
 
 #if defined(__GNUC__)
