@@ -36,6 +36,12 @@ void IMUModel::execute(){
         reloadParameters();
     );
 
+    if(getMotionStatus().currentMotion == motion::walk){
+        ukf_rot.Q = Q_rotation_walk;
+    } else {
+        ukf_rot.Q = Q_rotation;
+    }
+
     ukf_rot.generateSigmaPoints();
 
     Eigen::Vector3d gyro;
@@ -52,7 +58,6 @@ void IMUModel::execute(){
     z << acceleration.normalized();
 
     if(getMotionStatus().currentMotion == motion::walk){
-        //TODO: mhmhmhmh...
         if(imuParameters.enableWhileWalking){
             ukf_rot.update(z, R_rotation_walk);
         }
@@ -61,10 +66,24 @@ void IMUModel::execute(){
     }
 
     IMU_AccMeasurementGlobal z_acc = ukf_rot.state.getRotationAsQuaternion()._transformVector(acceleration);
-    double u_acc = 0;
+
+    if(getMotionStatus().currentMotion == motion::walk){
+        ukf_acc_global.Q = Q_acc_walk;
+    } else {
+        ukf_acc_global.Q = Q_acc;
+    }
     ukf_acc_global.generateSigmaPoints();
+
+    double u_acc = 0; // TODO: use generated jerk as control vector?
     ukf_acc_global.predict(u_acc, 0.01); // getRobotInfo().getBasicTimeStepInSecond()
-    ukf_acc_global.update(z_acc, R_acc);
+
+    if(getMotionStatus().currentMotion == motion::walk){
+        if(imuParameters.enableWhileWalking){
+            ukf_acc_global.update(z_acc, R_acc_walk);
+        }
+    } else {
+        ukf_acc_global.update(z_acc, R_acc);
+    }
 
     writeIMUData();
 
@@ -148,11 +167,11 @@ void IMUModel::plots(){
 void IMUModel::reloadParameters()
 {   /* parameters for the acceleration filter */
     // process noise
-    ukf_acc_global.Q << imuParameters.acceleration.stand.processNoiseQ00,                                0,                                0,
+    Q_acc << imuParameters.acceleration.stand.processNoiseQ00,                                0,                                0,
                                                        0, imuParameters.acceleration.stand.processNoiseQ11,                                0,
                                                        0,                                0, imuParameters.acceleration.stand.processNoiseQ22;
 
-    ukf_acc_global.Q << imuParameters.acceleration.walk.processNoiseQ00,                                0,                                0,
+    Q_acc_walk << imuParameters.acceleration.walk.processNoiseQ00,                                0,                                0,
                                                        0, imuParameters.acceleration.walk.processNoiseQ11,                                0,
                                                        0,                                0, imuParameters.acceleration.walk.processNoiseQ22;
     
@@ -167,11 +186,11 @@ void IMUModel::reloadParameters()
 
     /* parameters for the rotation filter */
     // process noise
-    ukf_rot.Q << imuParameters.rotation.stand.processNoiseQ00,                                     0,                               0,
+    Q_rotation << imuParameters.rotation.stand.processNoiseQ00,                                     0,                               0,
                                                0, imuParameters.rotation.stand.processNoiseQ11,                                     0,
                                                0,                                     0, imuParameters.rotation.stand.processNoiseQ22;
 
-    ukf_rot.Q << imuParameters.rotation.walk.processNoiseQ00,                                     0,                                     0,
+    Q_rotation_walk << imuParameters.rotation.walk.processNoiseQ00,                                     0,                                     0,
                                                      0, imuParameters.rotation.walk.processNoiseQ11,                                     0,
                                                      0,                                     0, imuParameters.rotation.walk.processNoiseQ22;
 
