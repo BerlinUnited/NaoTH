@@ -9,23 +9,23 @@
 
 PathPlanner::PathPlanner()
 :
-algorithm(PathPlannerAlgorithm::BISEC),
-gait(Vector2d()),
+algorithm(PathPlannerAlgorithm::NAIVE),
 obstacles({}),
+gait({0,0}),
 step_buffer({}),
 foot_to_use(Foot::RIGHT),
 last_stepRequestID(getMotionStatus().stepControl.stepRequestID + 1),      // WalkRequest stepRequestID starts at 0, we have to start at 1
 kick_planned(false)
 {
-  DEBUG_REQUEST_REGISTER("PathPlanner:execute_pathplanner_algorithm", "Executes the pathplanning algorithms without walking towards the ball.", true);
   DEBUG_REQUEST_REGISTER("PathPlanner:Algorithm:LPG", "Uses the LPG Algorithm for Path Planning.", false);
   DEBUG_REQUEST_REGISTER("PathPlanner:Algorithm:BISEC", "Uses the BISECTION Algorithm for Path Planning.", false);
   DEBUG_REQUEST_REGISTER("PathPlanner:Algorithm:NAIVE", "Uses the NAIVE Algorithm for Path Planning.", false);
   // WHEN YOU CHANGE THESE TO FALSE, DON't FORGET GPS_SELFLOCATOR !!!!!!!
+  DEBUG_REQUEST_REGISTER("PathPlanner:execute_pathplanner_algorithm", "Executes LPG or BISEC pathplanning algorithms.", false);
   DEBUG_REQUEST_REGISTER("PathPlanner:draw_obstacles", "Draws the obstacles and the ball.", true);
   DEBUG_REQUEST_REGISTER("PathPlanner:LPG:draw_waypoints", "Draws computed waypoints.", true);
   DEBUG_REQUEST_REGISTER("PathPlanner:BISEC:draw_path", "Draws computed path.", true);
-
+  DEBUG_REQUEST_REGISTER("PathPlanner:draw_ball", "Draws the ball.", true);
   DEBUG_REQUEST_REGISTER("PathPlanner:add_static_obstacles_for_path_search","",false);
 
   getDebugParameterList().add(&params);
@@ -212,13 +212,13 @@ void PathPlanner::execute_pathplanner_algorithm()
   {
     Vector2d goal = ballPos;
     gait = bPlanner.get_gait(goal, obstacles);
-    std::vector<BPathPlanner::Trajectory> path_alt = bPlanner.get_trajectory_alt();
-    std::vector<BPathPlanner::Trajectory> path = bPlanner.get_trajectory();
+    //std::vector<BPathPlanner::Trajectory> path_alt = bPlanner.get_trajectory_alt();
+    //std::vector<BPathPlanner::Trajectory> path = bPlanner.get_trajectory();
 
     DEBUG_REQUEST("PathPlanner:BISEC:draw_path",
                   FIELD_DRAWING_CONTEXT;
                   PEN("1551c3", 20);
-                  for (BPathPlanner::Trajectory trajectory : path)
+                  for (BPathPlanner::Trajectory trajectory : bPlanner.get_trajectory() /*path*/)
                   {
                     // First rotate (important)
                     trajectory.start.rotate(getRobotPose().getAngle());
@@ -228,7 +228,7 @@ void PathPlanner::execute_pathplanner_algorithm()
                     trajectory.end   = getRobotPose().translation + trajectory.end;
                     LINE(trajectory.start.x, trajectory.start.y, trajectory.end.x, trajectory.end.y);
                   }
-                  PEN("000000", 20);
+                  /*PEN("000000", 20);
                   for (BPathPlanner::Trajectory trajectory : path_alt)
                   {
                     // First rotate (important)
@@ -238,7 +238,7 @@ void PathPlanner::execute_pathplanner_algorithm()
                     trajectory.start = getRobotPose().translation + trajectory.start;
                     trajectory.end   = getRobotPose().translation + trajectory.end;
                     LINE(trajectory.start.x, trajectory.start.y, trajectory.end.x, trajectory.end.y);
-                  }
+                  }*/
     );
   }
 }

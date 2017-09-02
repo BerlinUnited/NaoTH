@@ -97,17 +97,14 @@ private:
     BISEC
   };
 
+  PathPlannerAlgorithm algorithm;
   LPGPathPlanner lpgPlanner;
   BPathPlanner bPlanner;
-  PathPlannerAlgorithm algorithm;
-  // Just for implementation purposes (testing)
-  mutable std::vector<Vector3d> obstacles;
-  Vector3d generate_obst(const Vector3d& obst) const;
-  void update_obstacles() const;
-  // Test different algorithms
   void execute_pathplanner_algorithm();
-  Vector2d gait;
 
+  mutable std::vector<Vector3d> obstacles;
+  void update_obstacles() const;
+  Vector3d generate_obst(const Vector3d& obst) const;  Vector2d gait;
 
   // NONE means hip
   enum Foot
