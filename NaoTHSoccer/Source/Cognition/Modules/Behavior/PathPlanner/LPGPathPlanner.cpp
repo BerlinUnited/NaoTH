@@ -34,10 +34,6 @@ Vector2d LPGGrid::cell_to_coords(const LPGGrid::Cell& the_cell) const
                   std::sin(the_cell.a * (Math::pi2/angular_part)) * prd);
 }
 
-double LPGGrid::distance_between_cells(const LPGGrid::Cell& a, const LPGGrid::Cell& b) const
-{
-  return (cell_to_coords(a) - cell_to_coords(b)).abs();
-}
 
 double LPGGrid::obst_func(const LPGGrid::Cell& the_cell) const
 {
@@ -68,18 +64,9 @@ double LPGGrid::obst_func(const LPGGrid::Cell& the_cell) const
 
 // --- A* State ---
 
-float LPGState::GoalDistanceEstimate(LPGState& nodeGoal)
-{
-  return static_cast<float>(helper->distance_between_cells(the_cell, nodeGoal.the_cell));
-}
-
-bool LPGState::IsGoal(LPGState& nodeGoal)
-{
-  return IsSameState(nodeGoal);
-}
 
 bool LPGState::GetSuccessors(AStarSearch<LPGState> *astarsearch,
-                             LPGState* /*parent_node*/)
+                             LPGState* /*parent_node*/) const
 {
 
   // add initial nodes
@@ -141,17 +128,7 @@ bool LPGState::GetSuccessors(AStarSearch<LPGState> *astarsearch,
   return true;
 }
 
-float LPGState::GetCost(LPGState& successor)
-{
-  // TODO: replace obst_func by a functor
-  ASSERT(helper != nullptr);
-  return static_cast<float>(helper->distance_between_cells(the_cell, successor.the_cell) + helper->obst_func(successor.the_cell));
-}
 
-bool LPGState::IsSameState(LPGState& rhs)
-{
-  return (the_cell.r == rhs.the_cell.r && the_cell.a == (rhs.the_cell.a % 16));
-}
 // --- A* ---
 
 // --- LPG PathPlanner ---

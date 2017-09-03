@@ -35,7 +35,10 @@ public:
 public:
   Cell coords_to_cell(const Vector2d& coords) const;
   Vector2d cell_to_coords(const Cell& the_cell) const;
-  double distance_between_cells(const Cell& a, const Cell& b) const;
+
+  inline double distance_between_cells(const Cell& a, const Cell& b) const {
+    return (cell_to_coords(a) - cell_to_coords(b)).abs();
+  }
 
 private:
   // parameters for LPG
@@ -45,7 +48,7 @@ private:
 
 
 public:
-  void set_obstacles(const std::vector<Vector3d>& obstacles) {
+  inline void set_obstacles(const std::vector<Vector3d>& obstacles) {
     this->obstacles = obstacles;
   }
   double obst_func(const Cell& the_cell) const;
@@ -70,14 +73,28 @@ public:
     return the_cell;
   }
 
-  float GoalDistanceEstimate(LPGState &nodeGoal);
-  bool IsGoal(LPGState &nodeGoal);
   bool GetSuccessors(AStarSearch<LPGState> *astarsearch,
-                     LPGState *parent_node);
-  float GetCost(LPGState &successor);
-  bool IsSameState(LPGState &rhs);
+                     LPGState *parent_node) const;
 
-  bool isOrigin() { return is_origin; }
+  float GetCost(const LPGState& successor) const {
+    // TODO: replace obst_func by a functor
+    ASSERT(helper != nullptr);
+    return static_cast<float>(helper->distance_between_cells(the_cell, successor.the_cell) + helper->obst_func(successor.the_cell));
+  }
+
+  float GoalDistanceEstimate(const LPGState& nodeGoal) const {
+    return static_cast<float>(helper->distance_between_cells(the_cell, nodeGoal.the_cell));
+  }
+
+  bool IsGoal(const LPGState& nodeGoal) const {
+    return IsSameState(nodeGoal);
+  }
+
+  bool IsSameState(const LPGState& rhs) const {
+    return (the_cell.r == rhs.the_cell.r && the_cell.a == (rhs.the_cell.a % 16));
+  }
+
+  bool isOrigin() const { return is_origin; }
 
 private:
   std::shared_ptr<LPGGrid> helper;
