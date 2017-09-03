@@ -119,18 +119,7 @@ public:
 
   std::vector<std::string> gpsdata;
 
-  void get(GPSData& data) 
-  { 
-    std::map<std::string,Pose3D>::const_iterator it = optiTrackClient.optiTrackParser.getTrackables().find(getRobotName());
-  
-    if(it != optiTrackClient.optiTrackParser.getTrackables().end()) {
-      const Pose3D& p = it->second;
-
-      Pose2D pose(-p.rotation.getYAngle(), p.translation.x, p.translation.y);
-      data.data = Pose3D::embedXY(pose);
-    }
-  }
-  
+  void get(GPSData& data) { optiTrackClient.get(data, getRobotName()); }
   void get(OptiTrackData& data) { optiTrackClient.get(data); }
 
   // write directly to the shared memory

@@ -8,6 +8,7 @@
 
 #include "OptiTrackParser.h"
 #include <Representations/Infrastructure/OptiTrackData.h>
+#include <Representations/Infrastructure/GPSData.h>
 
 class OptiTrackClient
 {
@@ -35,10 +36,11 @@ private:
   std::thread socketThread;
   
   std::mutex  dataMutex;
-
+  OptiTrackParser optiTrackParser;
+  
 public:
   void get(naoth::OptiTrackData& data);
-  OptiTrackParser optiTrackParser;
+  void get(naoth::GPSData& data, const std::string& name);
 };
 
 #endif // _OptiTrackClient_H_
