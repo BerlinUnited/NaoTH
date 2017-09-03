@@ -77,6 +77,22 @@ void OptiTrackClient::get(OptiTrackData& data)
   }
 }
 
+void OptiTrackClient::get(GPSData& data, const std::string& name) 
+{ 
+  std::unique_lock<std::mutex> lock(dataMutex, std::try_to_lock);
+  if ( lock.owns_lock() )
+  {
+    std::map<std::string,Pose3D>::const_iterator it = optiTrackParser.getTrackables().find(name);
+
+    if(it != optiTrackParser.getTrackables().end()) {
+      const Pose3D& p = it->second;
+
+      Pose2D pose(-p.rotation.getYAngle(), p.translation.x, p.translation.y);
+      data.data = Pose3D::embedXY(pose);
+    }
+  }
+}
+
 
 OptiTrackClient::~OptiTrackClient()
 {
