@@ -134,8 +134,7 @@ function add_gcc_ignore_pragmas(files)
 end
 
 function invokeprotoc(inputFiles, cppOut, javaOut, pythonOut, ipaths)
-    
-	-- cack if protobuf compile is explicitely requested
+	-- check if protobuf compile is explicitely requested
     local compile = (_OPTIONS["protoc"] ~= nil)
 
 	-- iterate over all files to check if any of them was changed
