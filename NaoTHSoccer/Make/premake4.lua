@@ -20,9 +20,6 @@ if COMPILER_PATH_NAO ~= nil then
 	include (COMPILER_PATH_NAO)
 end
 
--- test
--- print("INFO:" .. (os.findlib("Controller") or "couldn't fined the lib Controller"))
-
 newoption {
    trigger     = "Test",
    description = "Generate test projects"

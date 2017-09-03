@@ -51,7 +51,7 @@ end
 local function protocCompile(inputFiles, cppOut, javaOut, pythonOut, ipaths)
   -- get the protobuf compiler from the EXTERN_PATH
   compiler = "protoc"
-  if(os.is("windows")) then
+  if(os.host("windows")) then
     compiler = "protoc.exe"
   end
   -- TODO: should we search on additional locations?
