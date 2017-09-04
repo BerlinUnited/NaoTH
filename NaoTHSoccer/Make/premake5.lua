@@ -43,14 +43,10 @@ workspace "NaoTHSoccer-Test"
   
 	-- global include path for all projects and configurations
 	includedirs (PATH["includes"])
-  
-	-- global links ( needed by NaoTHSoccer )
-	links {
-		"opencv_core",
-		"opencv_ml",
-		"opencv_imgproc",
-		"opencv_objdetect"
-	}
+	
+	-- Test
+	-- this is on by default in premake4 stuff
+	functionlevellinking "on"
 	
 	-- set the repository information
 	defines {
@@ -87,13 +83,17 @@ workspace "NaoTHSoccer-Test"
 	)
 
 	filter "configurations:Debug"
-		defines { "DEBUG" }
-		flags { "FatalWarnings" }
+		defines { "DEBUG" }		
+		-- FatalWarnings treats compiler/linker warnings as errors
+		-- in premake4 linker warnings are not enabled
+		flags { "FatalCompileWarnings" }
 		symbols "On"
 
 	filter "configurations:OptDebug"	
 		defines { "DEBUG" }
-		flags { "FatalWarnings" }
+		-- FatalWarnings treats compiler/linker warnings as errors
+		-- in premake4 linker warnings are not enabled
+		flags { "FatalCompileWarnings" }
 		optimize "Speed"
 
 	filter { "platforms:Native" }

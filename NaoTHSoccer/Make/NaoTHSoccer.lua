@@ -9,7 +9,11 @@ project "NaoTHSoccer"
   
   includedirs { "../Source/" }
 
-  links { "Commons" }
-  
+  links { "Commons",
+		"opencv_core",
+		"opencv_ml",
+		"opencv_imgproc",
+		"opencv_objdetect"
+	}
   targetname "naoth-soccer"
 
