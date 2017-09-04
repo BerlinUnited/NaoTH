@@ -1,4 +1,4 @@
-----------------------------------------
+--------------------------------------------------------------
 function printPath(prefix, path)
 	local msg = tostring(prefix) .. tostring(path)
 	if path == nil then
@@ -15,7 +15,6 @@ function table.append(t,s)
 			table.insert(t, 1, v)
 	end end end
 end
-
 --------------------------------------------------------------
 PATH = {}
 PATH.libs = {}
@@ -41,17 +40,14 @@ function PATH:print()
 	end
 end
 --------------------------------------------------------------
-
-
-
 -- load local user settings if available
 if os.isfile("projectconfig.user.lua") then
 	print("INFO: loading local user path settings")
 	dofile "projectconfig.user.lua"
 end
 
-
 -------------- Set default paths if not set by the user ------------
+
 -- path to the framework
 if FRAMEWORK_PATH == nil then
 	FRAMEWORK_PATH = path.getabsolute("../../Framework")
@@ -80,14 +76,9 @@ if COMPILER_PATH_NAO == nil and NAO_CTC ~= nil then
 end
 
 -- (optional) path to the aldebarans naoqi directory for Nao
--- used to compile the NaoSMAL
+-- used to compile the NaoSMAL and the WhistleDetector
 if AL_DIR == nil then
 	AL_DIR = os.getenv("AL_DIR")
-end
--- (optional) path to the installation of webots, e.g., C:\Program files\Webots
--- needed by webots platform
-if WEBOTS_HOME == nil then
-	WEBOTS_HOME = os.getenv("WEBOTS_HOME")
 end
 
 --------------------------------------------------------------
@@ -102,9 +93,7 @@ printPath("  NAO_CTC = ", tostring(NAO_CTC))
 printPath("  EXTERN_PATH_NAO = ", tostring(EXTERN_PATH_NAO))
 printPath("  COMPILER_PATH_NAO = ", tostring(COMPILER_PATH_NAO))
 printPath("  AL_DIR = ", tostring(AL_DIR))
-printPath("  WEBOTS_HOME = ", tostring(WEBOTS_HOME))
 --------------------------------------------------------------
-
 
 -- define pathes depending on the platform
 if PLATFORM == "Nao" then
@@ -117,10 +106,6 @@ if PLATFORM == "Nao" then
 else
 	assert(EXTERN_PATH_NATIVE ~= nil, "EXTERN_PATH_NATIVE is need to be able to compile.")
 	EXTERN_PATH = path.getabsolute(EXTERN_PATH_NATIVE)
-	if WEBOTS_HOME ~= nil then
-		PATH:includedirs {WEBOTS_HOME .. "/include/controller/c"}
-		PATH:libdirs {WEBOTS_HOME .. "/lib"}
-	end
 end
 
 -- add general pathes
@@ -130,11 +115,10 @@ PATH:includedirs {
 	FRAMEWORK_PATH .. "/Commons/Source/Messages",
 	EXTERN_PATH .. "/include",
 	EXTERN_PATH .. "/include/glib-2.0",
-	EXTERN_PATH .. "/include/gio-unix-2.0",
+	-- EXTERN_PATH .. "/include/gio-unix-2.0", -- does not exists anymore
 	EXTERN_PATH .. "/lib/glib-2.0/include"
 	}
 PATH:libdirs { EXTERN_PATH .. "/lib"}
-
 
 --------------------------------------------------------------
 PATH:print()
