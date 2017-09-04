@@ -22,9 +22,9 @@ dofile (FRAMEWORK_PATH .. "/BuildTools/qtcreator.lua")
 dofile (FRAMEWORK_PATH .. "/BuildTools/qtcreator_2.7+.lua")
 
 -- include the Nao platform
---if COMPILER_PATH_NAO ~= nil then
---	include (COMPILER_PATH_NAO)
---end
+if COMPILER_PATH_NAO ~= nil then
+	include (COMPILER_PATH_NAO)
+end
 
 print("INFO: generating solution NaoTHSoccer")
 print("  PLATFORM = " .. PLATFORM)
@@ -43,6 +43,14 @@ workspace "NaoTHSoccer-Test"
   
 	-- global include path for all projects and configurations
 	includedirs (PATH["includes"])
+	
+	-- global links ( needed by NaoTHSoccer )
+	links {
+			"opencv_core",
+			"opencv_ml",
+			"opencv_imgproc",
+			"opencv_objdetect"
+	}
 	
 	-- Test
 	-- this is on by default in premake4 stuff
