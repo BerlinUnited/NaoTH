@@ -4,17 +4,13 @@ import sys
 import numpy as np
 from tools import action as a
 from matplotlib.patches import Circle
+from matplotlib import pyplot as plt
+
 from tools import Simulation as Sim
 from naoth import math2d as m2d
 from tools import tools
 from tools import field_info as field
-from matplotlib import pyplot as plt
 from tools import raw_attack_direction_provider as attack_dir
-
-"""
-    This file simulates the best angle for a given robot position on the field by simulation all the steps necessary to 
-    score a goal and compares the time for each rotation. The rotation with the shortest time to goal is the best.
-"""
 
 
 class State:
@@ -95,7 +91,7 @@ def main(x, y, s, rotation_step, num_iter):
                 best_action = Sim.decide_smart(actions_consequences, s)
 
                 # expected_ball_pos should be in local coordinates for rotation calculations
-                expected_ball_pos = actions_consequences[best_action].expected_ball_pos
+                expected_ball_pos = actions_consequences[best_action].expected_ball_pos_mean
 
                 # Check if expected_ball_pos inside opponent goal
                 opp_goal_back_right = m2d.Vector2(field.opponent_goalpost_right.x + field.goal_depth, field.opponent_goalpost_right.y)

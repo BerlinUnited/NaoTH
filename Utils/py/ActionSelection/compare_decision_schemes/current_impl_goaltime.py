@@ -46,7 +46,7 @@ def draw_robot_walk(actions_consequences, s, expected_ball_pos, best_action):
     axes.add_artist(Circle(xy=(s.pose.translation.x, s.pose.translation.y), radius=100, fill=False, edgecolor='white'))
     axes.add_artist(Circle(xy=(expected_ball_pos.x, expected_ball_pos.y), radius=120, fill=True, edgecolor='blue'))
     axes.arrow(origin.x, origin.y, arrow_head.x, arrow_head.y, head_width=100, head_length=100, fc='k', ec='k')
-    axes.text(0, 0, best_action, fontsize=12)
+    axes.text(-4500, 3150, best_action, fontsize=12)
     for consequence in actions_consequences:
         for particle in consequence.positions():
             ball_pos = s.pose * particle.ball_pos  # transform in global coordinates
@@ -90,7 +90,7 @@ def main(x, y, rot, s, num_iter):
             best_action = Sim.decide_smart(actions_consequences, s)
 
             # expected_ball_pos should be in local coordinates for rotation calculations
-            expected_ball_pos = actions_consequences[best_action].expected_ball_pos
+            expected_ball_pos = actions_consequences[best_action].expected_ball_pos_mean
 
             # Check if expected_ball_pos inside opponent goal
             opp_goal_back_right = m2d.Vector2(field.opponent_goalpost_right.x + field.goal_depth, field.opponent_goalpost_right.y)

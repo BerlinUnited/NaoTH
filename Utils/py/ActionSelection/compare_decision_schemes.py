@@ -6,9 +6,16 @@ from tools import field_info as field
 from compare_decision_schemes.current_impl_goaltime import main as current_impl
 from compare_decision_schemes.particle_filter_goaltime import main as particle_filter
 
-'''
-    TODO: only compare our current implementation with the particle filter one 
-'''
+"""
+For every position(x, y) and a fixed rotation the time and the number of kicks and turns are calculated for different strategies.
+The output is written in two pickle files. The strategy evaluation scripts for a single position are located in
+the compare_decision_schemes subfolder. The script takes care not to overwrite previous calculated data.
+
+Example:
+    run without any parameters
+
+        $ python compare_decision_schemes.py
+"""
 
 
 class State:
@@ -40,9 +47,6 @@ def main():
     x_range = range(int(-field.x_length * 0.5) + cell_width, int(field.x_length * 0.5), 2 * cell_width)
     y_range = range(int(-field.y_length * 0.5) + cell_width, int(field.y_length * 0.5), 2 * cell_width)
     rot = 45
-
-    # x_range = range(-400, 400, 200)
-    # y_range = range(-400, 400, 200)
 
     # run for the whole field
     for x in x_range:

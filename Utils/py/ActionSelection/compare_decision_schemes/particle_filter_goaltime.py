@@ -206,7 +206,7 @@ def main(x, y, rot, s, num_iter):
             actions_consequences.append(Sim.simulate_consequences(action_list[best_action], single_consequence, s, a.num_particles))
 
             # expected_ball_pos should be in local coordinates for rotation calculations
-            expected_ball_pos = actions_consequences[0].expected_ball_pos
+            expected_ball_pos = actions_consequences[0].expected_ball_pos_mean
 
             # Check if expected_ball_pos inside opponent goal
             opp_goal_back_right = m2d.Vector2(field.opponent_goalpost_right.x + field.goal_depth,
