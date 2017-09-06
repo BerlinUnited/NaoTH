@@ -22,12 +22,12 @@ IKParameters::IKParameters()
   PARAMETER_ANGLE_REGISTER(stand.bodyPitchOffset) = 0.2;
   PARAMETER_REGISTER(stand.hipOffsetX) = 15;
 
-  PARAMETER_REGISTER(stand.stabilization.rotation.P.x) = -0.05;
-  PARAMETER_REGISTER(stand.stabilization.rotation.P.y) = -0.6;
+  PARAMETER_REGISTER(stand.stabilization.rotation.P.x) = -0.03;
+  PARAMETER_REGISTER(stand.stabilization.rotation.P.y) = -0.03;
   PARAMETER_REGISTER(stand.stabilization.rotation.D.x) = 0;
   PARAMETER_REGISTER(stand.stabilization.rotation.D.y) = 0;
-  PARAMETER_REGISTER(stand.stabilization.rotation.VelocityP.x) = 0.02;
-  PARAMETER_REGISTER(stand.stabilization.rotation.VelocityP.y) = 0.01;
+  PARAMETER_REGISTER(stand.stabilization.rotation.VelocityP.x) = 0.03;
+  PARAMETER_REGISTER(stand.stabilization.rotation.VelocityP.y) = 0.03;
 
   PARAMETER_REGISTER(stand.stabilization.rotationRC16.P.x) = -0.05;
   PARAMETER_REGISTER(stand.stabilization.rotationRC16.P.y) = -0.05;
@@ -137,8 +137,8 @@ IKParameters::IKParameters()
   PARAMETER_REGISTER(walk.stabilization.rotationRC16.VelocityP.x) = 0.02;
   PARAMETER_REGISTER(walk.stabilization.rotationRC16.VelocityP.y) = 0.01;
 
-  PARAMETER_REGISTER(walk.stabilization.rotationNewIMU.P.x) = -0.02;
-  PARAMETER_REGISTER(walk.stabilization.rotationNewIMU.P.y) = -0.02;
+  PARAMETER_REGISTER(walk.stabilization.rotationNewIMU.P.x) = -0.2;
+  PARAMETER_REGISTER(walk.stabilization.rotationNewIMU.P.y) = -0.2;
   PARAMETER_REGISTER(walk.stabilization.rotationNewIMU.D.x) = 0;
   PARAMETER_REGISTER(walk.stabilization.rotationNewIMU.D.y) = 0;
   PARAMETER_REGISTER(walk.stabilization.rotationNewIMU.VelocityP.x) = 0.03;
