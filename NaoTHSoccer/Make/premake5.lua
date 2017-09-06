@@ -143,8 +143,9 @@ workspace "NaoTHSoccer-Test"
 		-- use clang on macOS -> there is actual clang support via the toolset function
 		-- NOTE: configuration doesn't affect these settings, they NEED to be in a if
 		if (os.ishost("macosx") and _OPTIONS["platform"] ~= "Nao") then
-		  premake.gcc.cc = 'clang'
-		  premake.gcc.cxx = 'clang++'
+		  toolset ("clang")
+		  --premake.gcc.cc = 'clang'
+		  --premake.gcc.cxx = 'clang++'
 		end
 		
 	-- for linux systems and cygwin 
