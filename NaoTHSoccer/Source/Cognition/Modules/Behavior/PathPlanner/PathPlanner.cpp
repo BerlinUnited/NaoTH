@@ -91,10 +91,10 @@ void PathPlanner::execute()
     }
     break;
   case PathModel::PathRoutine::GO_TO_BALL_FAST:
-    walk_to_ball(Foot::NONE , true);
+    walk_to_ball(Foot::NONE, false);
     break;
   case PathModel::PathRoutine::GO_TO_BALL_SLOW:
-    walk_to_ball(Foot::NONE);
+    walk_to_ball(Foot::NONE, false);
     break;
   case PathModel::PathRoutine::MOVE_AROUND_BALL:
     move_around_ball(getPathModel().direction, getPathModel().radius);
@@ -137,6 +137,7 @@ Vector3d PathPlanner::generate_obst(const Vector3d& obst) const
 }
 void PathPlanner::update_obstacles() const
 {
+  obstacles.clear();
   for (const auto& player : getPlayersModel().opponents)
   {
     if(player.frameInfoWhenWasSeen.getFrameNumber() > 0 && getFrameInfo().getTimeSince(player.frameInfoWhenWasSeen.getTime()) < 2000) {
