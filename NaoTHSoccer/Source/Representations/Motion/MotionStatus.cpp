@@ -49,7 +49,10 @@ void Serializer<MotionStatus>::deserialize(std::istream& stream, MotionStatus& r
     DataConversion::fromMessage(message.plannedmotionleftfoot(), representation.plannedMotion.lFoot);
     DataConversion::fromMessage(message.plannedmotionrightfoot(), representation.plannedMotion.rFoot);
     DataConversion::fromMessage(message.plannedmotionhip(), representation.plannedMotion.hip);
-    DataConversion::fromMessage(message.currentsteprequest(), representation.currentStepRequest);
+    if (message.has_currentsteprequest())
+    {
+      DataConversion::fromMessage(message.currentsteprequest(), representation.currentStepRequest);
+    }
 
     // step control
     const naothmessages::StepControlStatus& stepControlStatus =  message.stepcontrolstatus();
