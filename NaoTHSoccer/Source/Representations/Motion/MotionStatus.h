@@ -67,6 +67,7 @@ public:
   motion::State currentMotionState;
   HeadMotionRequest::HeadMotionID headMotion;
   PlannedMotion plannedMotion;
+  Pose2D currentStepRequest;
   StepControlStatus stepControl;
 
 
