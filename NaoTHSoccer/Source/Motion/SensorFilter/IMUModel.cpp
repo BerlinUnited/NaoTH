@@ -36,6 +36,7 @@ void IMUModel::execute(){
         reloadParameters();
     );
 
+    /* handle ukf filter for rotation */
     if(getMotionStatus().currentMotion == motion::walk){
         ukf_rot.Q = Q_rotation_walk;
     } else {
@@ -47,7 +48,7 @@ void IMUModel::execute(){
     Eigen::Vector3d gyro;
     // gyro z axis seems to measure in opposite direction (turning left measures negative angular velocity, should be positive)
     gyro << getGyrometerData().data.x, getGyrometerData().data.y, -getGyrometerData().data.z;
-    ukf_rot.predict(gyro,0.01); // getRobotInfo().getBasicTimeStepInSecond()
+    ukf_rot.predict(gyro, getRobotInfo().getBasicTimeStepInSecond());
 
     // don't generate sigma points again because the process noise would be applied a second time
     // ukf.generateSigmaPoints();
@@ -64,7 +65,10 @@ void IMUModel::execute(){
     } else {
         ukf_rot.update(z, R_rotation);
     }
+    /* rotation ukf end */
 
+    /* handle ukf filter for global acceleration */
+    // transform acceleration measurement into global reference frame
     IMU_AccMeasurementGlobal z_acc = ukf_rot.state.getRotationAsQuaternion()._transformVector(acceleration);
 
     if(getMotionStatus().currentMotion == motion::walk){
@@ -72,10 +76,11 @@ void IMUModel::execute(){
     } else {
         ukf_acc_global.Q = Q_acc;
     }
+
     ukf_acc_global.generateSigmaPoints();
 
     double u_acc = 0; // TODO: use generated jerk as control vector?
-    ukf_acc_global.predict(u_acc, 0.01); // getRobotInfo().getBasicTimeStepInSecond()
+    ukf_acc_global.predict(u_acc, getRobotInfo().getBasicTimeStepInSecond());
 
     if(getMotionStatus().currentMotion == motion::walk){
         if(imuParameters.enableWhileWalking){
@@ -84,6 +89,7 @@ void IMUModel::execute(){
     } else {
         ukf_acc_global.update(z_acc, R_acc);
     }
+    /* acc ukf end */
 
     writeIMUData();
 
@@ -98,8 +104,8 @@ void IMUModel::writeIMUData(){
     getIMUData().acceleration_sensor = getAccelerometerData().data;
 
     // global position data
-    getIMUData().location += getIMUData().velocity * 0.01; // is this a timestep?
-    getIMUData().velocity += getIMUData().acceleration * 0.01; // is this a timestep? getRobotInfo().getBasicTimeStepInSecond()
+    getIMUData().location += getIMUData().velocity * getRobotInfo().getBasicTimeStepInSecond();
+    getIMUData().velocity += getIMUData().acceleration * getRobotInfo().getBasicTimeStepInSecond();
     
     getIMUData().acceleration.x = ukf_acc_global.state.acceleration()(0,0);
     getIMUData().acceleration.y = ukf_acc_global.state.acceleration()(1,0);
@@ -112,12 +118,6 @@ void IMUModel::writeIMUData(){
     getIMUData().rotation.x = rot.getXAngle();
     getIMUData().rotation.y = rot.getYAngle();
     getIMUData().rotation.z = rot.getZAngle();
-
-
-
-    // from inertiasensorfilter
-    //getIMUData().orientation = Vector2d(atan2( q.toRotationMatrix()(2,1), q.toRotationMatrix()(2,2)),
-    //                                    atan2(-q.toRotationMatrix()(2,0), q.toRotationMatrix()(2,2)));
 
     getIMUData().orientation = Vector2d(atan2( rot[1].z, rot[2].z),
                                         atan2(-rot[0].z, rot[2].z));

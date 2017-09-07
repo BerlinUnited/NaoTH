@@ -13,6 +13,8 @@
 #include <Representations/Infrastructure/AccelerometerData.h>
 
 #include "Representations/Infrastructure/FrameInfo.h"
+#include "Representations/Infrastructure/RobotInfo.h"
+
 #include <Representations/Modeling/IMUData.h>
 #include <Representations/Modeling/InertialModel.h>
 
@@ -30,6 +32,7 @@ BEGIN_DECLARE_MODULE(IMUModel)
     PROVIDE(DebugParameterList)
 
     REQUIRE(FrameInfo)
+    REQUIRE(RobotInfo)
 
     REQUIRE(GyrometerData)
     REQUIRE(AccelerometerData)
