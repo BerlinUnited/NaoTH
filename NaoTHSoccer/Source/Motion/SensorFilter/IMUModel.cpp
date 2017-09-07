@@ -9,6 +9,7 @@ IMUModel::IMUModel():
     integrated(1,0,0,0)
 {
     DEBUG_REQUEST_REGISTER("IMUModel:reset_filter", "reset filter", false);
+    DEBUG_REQUEST_REGISTER("IMUModel:reset_representation", "reset representation", false);
     DEBUG_REQUEST_REGISTER("IMUModel:reloadParameters", "", false);
     DEBUG_REQUEST_REGISTER("IMUModel:enableFilterWhileWalking", "enables filter update while walking", false);
 
@@ -30,6 +31,10 @@ void IMUModel::execute(){
                   ukf_rot.reset();
                   ukf_acc_global.reset();
                   integrated=Eigen::Quaterniond(1,0,0,0);
+    );
+
+    DEBUG_REQUEST("IMUModel:reset_representation",
+        getIMUData().reset();
     );
 
     DEBUG_REQUEST("IMUModel:reloadParameters",
@@ -70,6 +75,9 @@ void IMUModel::execute(){
 
     /* handle ukf filter for global acceleration */
     // transform acceleration measurement into global reference frame
+    // TODO: Odometry as location measurement?
+    // TODO: velocity of trunk in supfoot / local robot frame as velocity measurement
+    // TODO: really needs bias removal or "calibration" of g
     IMU_AccMeasurementGlobal z_acc = ukf_rot.state.getRotationAsQuaternion()._transformVector(acceleration);
 
     if(getMotionStatus().currentMotion == motion::walk){
@@ -102,15 +110,17 @@ void IMUModel::execute(){
 void IMUModel::writeIMUData(){
     // raw sensor values
     getIMUData().rotational_velocity_sensor = getGyrometerData().data;
-    getIMUData().acceleration_sensor = getAccelerometerData().data;
+    getIMUData().acceleration_sensor        = getAccelerometerData().data;
 
     // global position data
-    getIMUData().location += getIMUData().velocity * getRobotInfo().getBasicTimeStepInSecond();
-    getIMUData().velocity += getIMUData().acceleration * getRobotInfo().getBasicTimeStepInSecond();
-    
+    // TODO: check for correct integration
+    // TODO: prediction or state?
     getIMUData().acceleration.x = ukf_acc_global.state.acceleration()(0,0);
     getIMUData().acceleration.y = ukf_acc_global.state.acceleration()(1,0);
     getIMUData().acceleration.z = ukf_acc_global.state.acceleration()(2,0) + 9.81; //Math::g
+
+    getIMUData().location += getIMUData().velocity * getRobotInfo().getBasicTimeStepInSecond() + getIMUData().acceleration * getRobotInfo().getBasicTimeStepInSecond() * getRobotInfo().getBasicTimeStepInSecond() * 0.5;
+    getIMUData().velocity += getIMUData().acceleration * getRobotInfo().getBasicTimeStepInSecond();
 
     // convert to framework compliant x,y,z angles
     Eigen::Vector3d temp2 = ukf_rot.state.rotation();
@@ -125,6 +135,10 @@ void IMUModel::writeIMUData(){
 
     // only to enable transparent switching with InertiaSensorFilter
     getInertialModel().orientation = getIMUData().orientation;
+
+    getIMUData().rotational_velocity.x = ukf_rot.state.rotational_velocity()(0,0);
+    getIMUData().rotational_velocity.y = ukf_rot.state.rotational_velocity()(1,0);
+    getIMUData().rotational_velocity.z = ukf_rot.state.rotational_velocity()(2,0);
 }
 
 void IMUModel::plots(){
