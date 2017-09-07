@@ -7,6 +7,8 @@
 
 #include "Tools/Math/Pose3D.h"
 #include "Tools/DataStructures/Printable.h"
+#include "Tools/DataStructures/Serializer.h"
+#include <map>  
 
 namespace naoth
 {
@@ -28,6 +30,14 @@ public:
   }
   
   std::map<std::string,Pose3D> trackables;
+};
+
+template<> 
+class Serializer<OptiTrackData>
+{
+  public:
+  static void serialize(const OptiTrackData& representation, std::ostream& stream);
+  static void deserialize(std::istream& stream, OptiTrackData& representation);
 };
 
 }
