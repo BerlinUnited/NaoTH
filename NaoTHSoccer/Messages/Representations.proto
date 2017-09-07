@@ -219,6 +219,7 @@ message MotionStatus
   required Pose2D plannedMotionHip = 8;
   optional StepControlStatus stepControlStatus = 9;
   optional Pose2D currentStepRequest = 10;
+  optional uint32 currentStepID = 11;
 }
 
 message OdometryData

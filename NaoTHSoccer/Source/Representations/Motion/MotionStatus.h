@@ -55,7 +55,8 @@ public:
   lastMotion(motion::num_of_motions),
   currentMotion(motion::num_of_motions),
   currentMotionState(motion::stopped),
-  headMotion(HeadMotionRequest::numOfHeadMotion)
+  headMotion(HeadMotionRequest::numOfHeadMotion),
+  currentStepID(0)
   {
   }
 
@@ -68,6 +69,7 @@ public:
   HeadMotionRequest::HeadMotionID headMotion;
   PlannedMotion plannedMotion;
   Pose2D currentStepRequest;
+  unsigned int currentStepID;
   StepControlStatus stepControl;
 
 

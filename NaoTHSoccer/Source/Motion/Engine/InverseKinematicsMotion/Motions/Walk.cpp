@@ -708,6 +708,9 @@ void Walk::updateMotionStatus(MotionStatus& motionStatus) const
     motionStatus.plannedMotion.lFoot = Pose2D();
     motionStatus.plannedMotion.rFoot = Pose2D();
     motionStatus.plannedMotion.hip = Pose2D();
+
+    motionStatus.currentStepRequest = Pose2D();
+    motionStatus.currentStepID = 0;
   }
   else
   {
@@ -721,7 +724,9 @@ void Walk::updateMotionStatus(MotionStatus& motionStatus) const
     motionStatus.plannedMotion.hip   = plannedHip.projectXY();
     motionStatus.plannedMotion.lFoot = plannedlFoot.projectXY();
     motionStatus.plannedMotion.rFoot = plannedrFoot.projectXY();
+    
     motionStatus.currentStepRequest  = stepBuffer.first().footStep.stepRequest();
+    motionStatus.currentStepID = stepBuffer.first().id()+1;
   }
 
   // step control
