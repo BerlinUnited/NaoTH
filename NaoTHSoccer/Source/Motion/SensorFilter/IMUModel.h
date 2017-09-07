@@ -59,12 +59,27 @@ public:
 private:
     FrameInfo lastFrameInfo;
 
-    UKF<RotationState<Measurement<3>,3> > ukf_rot;
+    /* filter for rotation */
+    UKF<RotationState<Measurement<6>,6> > ukf_rot;
+
+    typedef Measurement<6> IMU_RotationMeasurement;
+
+    Eigen::Matrix<double,6,6> Q_rotation;
+    Eigen::Matrix<double,6,6> Q_rotation_walk;
+    Eigen::Matrix<double,6,6> R_rotation;
+    Eigen::Matrix<double,6,6> R_rotation_walk;
+
+    /* filter for global acceleration */
     UKF<State<Measurement<3>, 3> > ukf_acc_global;
 
-    typedef Measurement<3> IMU_RotationMeasurement;
     typedef Measurement<3> IMU_AccMeasurementGlobal;
 
+    Eigen::Matrix<double,3,3> Q_acc;
+    Eigen::Matrix<double,3,3> Q_acc_walk;
+    Eigen::Matrix<double,3,3> R_acc;
+    Eigen::Matrix<double,3,3> R_acc_walk;
+
+private: /* small helper */
     Eigen::Vector3d quaternionToRotationVector(const Eigen::Quaterniond& q) const{
         Eigen::AngleAxisd temp(q);
         return temp.angle() * temp.axis();
@@ -79,16 +94,6 @@ private:
     Vector3d eigenVectorToVector3D(const Eigen::Vector3d& v) const {
         return Vector3d(v(0),v(1),v(2));
     }
-
-    Eigen::Matrix<double,3,3> Q_acc;
-    Eigen::Matrix<double,3,3> Q_acc_walk;
-    Eigen::Matrix<double,3,3> R_acc;
-    Eigen::Matrix<double,3,3> R_acc_walk;
-
-    Eigen::Matrix<double,3,3> Q_rotation;
-    Eigen::Matrix<double,3,3> Q_rotation_walk;
-    Eigen::Matrix<double,3,3> R_rotation;
-    Eigen::Matrix<double,3,3> R_rotation_walk;
 
     void reloadParameters();
 
@@ -149,29 +154,35 @@ private:
 
            /* rotation filter parameter */
            // while standing
-           PARAMETER_REGISTER(rotation.stand.processNoiseQ00) = 0.1; // [rad^2] 9.86 ~ std of angle around x = pi
-           PARAMETER_REGISTER(rotation.stand.processNoiseQ11) = 0.1; // [rad^2]
-           PARAMETER_REGISTER(rotation.stand.processNoiseQ22) = 0.1; // [rad^2]
+           PARAMETER_REGISTER(rotation.stand.processNoiseQ00) =  0.1; // [rad^2] 9.86 ~ std of angle around x = pi
+           PARAMETER_REGISTER(rotation.stand.processNoiseQ11) =  0.1; // [rad^2]
+           PARAMETER_REGISTER(rotation.stand.processNoiseQ22) =  0.1; // [rad^2]
+           PARAMETER_REGISTER(rotation.stand.processNoiseQ33) = 0.01; // [rad^2/s^2]
+           PARAMETER_REGISTER(rotation.stand.processNoiseQ44) = 0.01; // [rad^2/s^2]
+           PARAMETER_REGISTER(rotation.stand.processNoiseQ55) = 0.01; // [rad^2/s^2]
 
-           // the measurement is the measured acceleration vector
-           PARAMETER_REGISTER(rotation.stand.measurementNoiseR00) =  10;  // [m^2/s^4]
-           PARAMETER_REGISTER(rotation.stand.measurementNoiseR01) =  10;  // [m^2/s^4]
-           PARAMETER_REGISTER(rotation.stand.measurementNoiseR02) =  0.0; // [m^2/s^4]
-           PARAMETER_REGISTER(rotation.stand.measurementNoiseR11) =  10;  // [m^2/s^4]
-           PARAMETER_REGISTER(rotation.stand.measurementNoiseR12) =  0.0; // [m^2/s^4]
-           PARAMETER_REGISTER(rotation.stand.measurementNoiseR22) =  10;  // [m^2/s^4]
+           // the measurement is the measured acceleration and gyrometer vector
+           PARAMETER_REGISTER(rotation.stand.measurementNoiseR00) = 10.0;  // [m^2/s^4]
+           PARAMETER_REGISTER(rotation.stand.measurementNoiseR11) = 10.0;  // [m^2/s^4]
+           PARAMETER_REGISTER(rotation.stand.measurementNoiseR22) = 10.0;  // [m^2/s^4]
+           PARAMETER_REGISTER(rotation.stand.measurementNoiseR33) =  1.0; // [rad^2/s^2]
+           PARAMETER_REGISTER(rotation.stand.measurementNoiseR44) =  1.0; // [rad^2/s^2]
+           PARAMETER_REGISTER(rotation.stand.measurementNoiseR55) =  1.0; // [rad^2/s^2]
 
            // while walking
            PARAMETER_REGISTER(rotation.walk.processNoiseQ00) = 0.01; // [rad^2]
            PARAMETER_REGISTER(rotation.walk.processNoiseQ11) = 0.01; // [rad^2]
            PARAMETER_REGISTER(rotation.walk.processNoiseQ22) = 0.01; // [rad^2]
+           PARAMETER_REGISTER(rotation.walk.processNoiseQ33) = 0.01; // [rad^2/s^2]
+           PARAMETER_REGISTER(rotation.walk.processNoiseQ44) = 0.01; // [rad^2/s^2]
+           PARAMETER_REGISTER(rotation.walk.processNoiseQ55) = 0.01; // [rad^2/s^2]
 
-           PARAMETER_REGISTER(rotation.walk.measurementNoiseR00) =  50;  // [m^2/s^4]
-           PARAMETER_REGISTER(rotation.walk.measurementNoiseR01) =  0.0; // [m^2/s^4]
-           PARAMETER_REGISTER(rotation.walk.measurementNoiseR02) =  0.0; // [m^2/s^4]
-           PARAMETER_REGISTER(rotation.walk.measurementNoiseR11) =  50;  // [m^2/s^4]
-           PARAMETER_REGISTER(rotation.walk.measurementNoiseR12) =  0.0; // [m^2/s^4]
-           PARAMETER_REGISTER(rotation.walk.measurementNoiseR22) =  50;  // [m^2/s^4]
+           PARAMETER_REGISTER(rotation.walk.measurementNoiseR00) = 50.0;  // [m^2/s^4]
+           PARAMETER_REGISTER(rotation.walk.measurementNoiseR11) = 50.0;  // [m^2/s^4]
+           PARAMETER_REGISTER(rotation.walk.measurementNoiseR22) = 50.0;  // [m^2/s^4]
+           PARAMETER_REGISTER(rotation.walk.measurementNoiseR33) =  1.0; // [rad^2/s^2]
+           PARAMETER_REGISTER(rotation.walk.measurementNoiseR44) =  1.0; // [rad^2/s^2]
+           PARAMETER_REGISTER(rotation.walk.measurementNoiseR55) =  1.0; // [rad^2/s^2]
            /* rotation filter parameter end */
 
            syncWithConfig();
@@ -191,9 +202,27 @@ private:
                 double measurementNoiseR11;
                 double measurementNoiseR12;
                 double measurementNoiseR22;
-
            } walk, stand;
-       } acceleration, rotation;
+       } acceleration;
+
+       struct Filter2{
+           struct Mode{
+                double processNoiseQ00;
+                double processNoiseQ11;
+                double processNoiseQ22;
+                double processNoiseQ33;
+                double processNoiseQ44;
+                double processNoiseQ55;
+
+                //TODO: provide all entries of the covariance matrix?
+                double measurementNoiseR00;
+                double measurementNoiseR11;
+                double measurementNoiseR22;
+                double measurementNoiseR33;
+                double measurementNoiseR44;
+                double measurementNoiseR55;
+           } walk, stand;
+       } rotation;
 
     } imuParameters;
 

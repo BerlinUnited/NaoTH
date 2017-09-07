@@ -13,7 +13,7 @@ IMUModel::IMUModel():
     DEBUG_REQUEST_REGISTER("IMUModel:enableFilterWhileWalking", "enables filter update while walking", false);
 
     ukf_acc_global.P = Eigen::Matrix<double,3,3>::Identity(); // covariance matrix of current state
-    ukf_rot.P        = Eigen::Matrix<double,3,3>::Identity(); // covariance matrix of current state
+    ukf_rot.P        = Eigen::Matrix<double,6,6>::Identity(); // covariance matrix of current state
 
     getDebugParameterList().add(&imuParameters);
 
@@ -45,18 +45,19 @@ void IMUModel::execute(){
 
     ukf_rot.generateSigmaPoints();
 
-    Eigen::Vector3d gyro;
-    // gyro z axis seems to measure in opposite direction (turning left measures negative angular velocity, should be positive)
-    gyro << getGyrometerData().data.x, getGyrometerData().data.y, -getGyrometerData().data.z;
-    ukf_rot.predict(gyro, getRobotInfo().getBasicTimeStepInSecond());
+    Eigen::Vector3d u_rot(0,0,0); // TODO: use generated angular acceleration as control vector?
+    ukf_rot.predict(u_rot, getRobotInfo().getBasicTimeStepInSecond());
 
     // don't generate sigma points again because the process noise would be applied a second time
     // ukf.generateSigmaPoints();
 
+    Eigen::Vector3d gyro;
+    // gyro z axis seems to measure in opposite direction (turning left measures negative angular velocity, should be positive)
+    gyro << getGyrometerData().data.x, getGyrometerData().data.y, -getGyrometerData().data.z;
     Eigen::Vector3d acceleration = Eigen::Vector3d(getAccelerometerData().data.x, getAccelerometerData().data.y, getAccelerometerData().data.z);
 
     IMU_RotationMeasurement z;
-    z << acceleration.normalized();
+    z << acceleration.normalized(), gyro;
 
     if(getMotionStatus().currentMotion == motion::walk){
         if(imuParameters.enableWhileWalking){
@@ -79,7 +80,7 @@ void IMUModel::execute(){
 
     ukf_acc_global.generateSigmaPoints();
 
-    double u_acc = 0; // TODO: use generated jerk as control vector?
+    Eigen::Vector3d u_acc(0,0,0); // TODO: use generated jerk as control vector?
     ukf_acc_global.predict(u_acc, getRobotInfo().getBasicTimeStepInSecond());
 
     if(getMotionStatus().currentMotion == motion::walk){
@@ -186,22 +187,38 @@ void IMUModel::reloadParameters()
 
     /* parameters for the rotation filter */
     // process noise
-    Q_rotation << imuParameters.rotation.stand.processNoiseQ00,                                     0,                               0,
-                                               0, imuParameters.rotation.stand.processNoiseQ11,                                     0,
-                                               0,                                     0, imuParameters.rotation.stand.processNoiseQ22;
+    Q_rotation << Eigen::Matrix<double,6,6>::Zero();
+    Q_rotation(0,0) = imuParameters.rotation.stand.processNoiseQ00;
+    Q_rotation(1,1) = imuParameters.rotation.stand.processNoiseQ11;
+    Q_rotation(2,2) = imuParameters.rotation.stand.processNoiseQ22;
+    Q_rotation(3,3) = imuParameters.rotation.stand.processNoiseQ33;
+    Q_rotation(4,4) = imuParameters.rotation.stand.processNoiseQ44;
+    Q_rotation(5,5) = imuParameters.rotation.stand.processNoiseQ55;
 
-    Q_rotation_walk << imuParameters.rotation.walk.processNoiseQ00,                                     0,                                     0,
-                                                     0, imuParameters.rotation.walk.processNoiseQ11,                                     0,
-                                                     0,                                     0, imuParameters.rotation.walk.processNoiseQ22;
+    Q_rotation_walk << Eigen::Matrix<double,6,6>::Zero();
+    Q_rotation_walk(0,0) = imuParameters.rotation.walk.processNoiseQ00;
+    Q_rotation_walk(1,1) = imuParameters.rotation.walk.processNoiseQ11;
+    Q_rotation_walk(2,2) = imuParameters.rotation.walk.processNoiseQ22;
+    Q_rotation_walk(3,3) = imuParameters.rotation.walk.processNoiseQ33;
+    Q_rotation_walk(4,4) = imuParameters.rotation.walk.processNoiseQ44;
+    Q_rotation_walk(5,5) = imuParameters.rotation.walk.processNoiseQ55;
 
     // measurement covariance matrix
-    R_rotation << imuParameters.rotation.stand.measurementNoiseR00, imuParameters.rotation.stand.measurementNoiseR01, imuParameters.rotation.stand.measurementNoiseR02,
-                  imuParameters.rotation.stand.measurementNoiseR01, imuParameters.rotation.stand.measurementNoiseR11, imuParameters.rotation.stand.measurementNoiseR12,
-                  imuParameters.rotation.stand.measurementNoiseR02, imuParameters.rotation.stand.measurementNoiseR12, imuParameters.rotation.stand.measurementNoiseR22;
+    R_rotation << Eigen::Matrix<double,6,6>::Zero();
+    R_rotation(0,0) = imuParameters.rotation.stand.measurementNoiseR00;
+    R_rotation(1,1) = imuParameters.rotation.stand.measurementNoiseR11;
+    R_rotation(2,2) = imuParameters.rotation.stand.measurementNoiseR22;
+    R_rotation(3,3) = imuParameters.rotation.stand.measurementNoiseR33;
+    R_rotation(4,4) = imuParameters.rotation.stand.measurementNoiseR44;
+    R_rotation(5,5) = imuParameters.rotation.stand.measurementNoiseR55;
 
-    R_rotation_walk << imuParameters.rotation.walk.measurementNoiseR00, imuParameters.rotation.walk.measurementNoiseR01, imuParameters.rotation.walk.measurementNoiseR02,
-                       imuParameters.rotation.walk.measurementNoiseR01, imuParameters.rotation.walk.measurementNoiseR11, imuParameters.rotation.walk.measurementNoiseR12,
-                       imuParameters.rotation.walk.measurementNoiseR02, imuParameters.rotation.walk.measurementNoiseR12, imuParameters.rotation.walk.measurementNoiseR22;
+    R_rotation_walk << Eigen::Matrix<double,6,6>::Zero();
+    R_rotation_walk(0,0) = imuParameters.rotation.walk.measurementNoiseR00;
+    R_rotation_walk(1,1) = imuParameters.rotation.walk.measurementNoiseR11;
+    R_rotation_walk(2,2) = imuParameters.rotation.walk.measurementNoiseR22;
+    R_rotation_walk(3,3) = imuParameters.rotation.walk.measurementNoiseR33;
+    R_rotation_walk(4,4) = imuParameters.rotation.walk.measurementNoiseR44;
+    R_rotation_walk(5,5) = imuParameters.rotation.walk.measurementNoiseR55;
 }
 
 #if defined(__GNUC__)
