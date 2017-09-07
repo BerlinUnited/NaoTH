@@ -122,3 +122,14 @@ message GPSData
 {
   required Pose3D pose = 1;
 }
+
+
+message OptiTrackData
+{
+  message TrackableItem {
+    required string name = 1;
+    required Pose3D pose = 2;
+  }
+  
+  repeated TrackableItem trackables = 1;
+}
