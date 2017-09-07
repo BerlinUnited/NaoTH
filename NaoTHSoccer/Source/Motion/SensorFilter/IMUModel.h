@@ -154,9 +154,9 @@ private: /* small helper */
 
            /* rotation filter parameter */
            // while standing
-           PARAMETER_REGISTER(rotation.stand.processNoiseQ00) =  0.1; // [rad^2] 9.86 ~ std of angle around x = pi
-           PARAMETER_REGISTER(rotation.stand.processNoiseQ11) =  0.1; // [rad^2]
-           PARAMETER_REGISTER(rotation.stand.processNoiseQ22) =  0.1; // [rad^2]
+           PARAMETER_REGISTER(rotation.stand.processNoiseQ00) = 0.01; // [rad^2] 9.86 ~ std of angle around x = pi
+           PARAMETER_REGISTER(rotation.stand.processNoiseQ11) = 0.01; // [rad^2]
+           PARAMETER_REGISTER(rotation.stand.processNoiseQ22) = 0.01; // [rad^2]
            PARAMETER_REGISTER(rotation.stand.processNoiseQ33) = 0.01; // [rad^2/s^2]
            PARAMETER_REGISTER(rotation.stand.processNoiseQ44) = 0.01; // [rad^2/s^2]
            PARAMETER_REGISTER(rotation.stand.processNoiseQ55) = 0.01; // [rad^2/s^2]
@@ -180,9 +180,9 @@ private: /* small helper */
            PARAMETER_REGISTER(rotation.walk.measurementNoiseR00) = 50.0;  // [m^2/s^4]
            PARAMETER_REGISTER(rotation.walk.measurementNoiseR11) = 50.0;  // [m^2/s^4]
            PARAMETER_REGISTER(rotation.walk.measurementNoiseR22) = 50.0;  // [m^2/s^4]
-           PARAMETER_REGISTER(rotation.walk.measurementNoiseR33) =  1.0; // [rad^2/s^2]
-           PARAMETER_REGISTER(rotation.walk.measurementNoiseR44) =  1.0; // [rad^2/s^2]
-           PARAMETER_REGISTER(rotation.walk.measurementNoiseR55) =  1.0; // [rad^2/s^2]
+           PARAMETER_REGISTER(rotation.walk.measurementNoiseR33) =  0.1; // [rad^2/s^2]
+           PARAMETER_REGISTER(rotation.walk.measurementNoiseR44) =  0.1; // [rad^2/s^2]
+           PARAMETER_REGISTER(rotation.walk.measurementNoiseR55) =  0.1; // [rad^2/s^2]
            /* rotation filter parameter end */
 
            syncWithConfig();
