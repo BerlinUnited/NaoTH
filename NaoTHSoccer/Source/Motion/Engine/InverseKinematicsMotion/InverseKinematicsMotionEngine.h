@@ -182,25 +182,22 @@ public:
   void solveHipFeetIK(const InverseKinematic::HipFeetPose& p);
   
   bool rotationStabilizeRC16(
-    //const InertialModel& theInertialModel,
-    const naoth::InertialSensorData& theInertialSensorData,
+    const Vector2d& inertial,
     const GyrometerData& theGyrometerData,
     double timeDelta,
-    InverseKinematic::HipFeetPose& p);
-
-  bool rotationStabilizenNewIMU(
-          //const InertialModel& theInertialModel,
-          const IMUData& imuData,
-          //const InertialModel& theInertialModel,
-          const GyrometerData& theGyrometerData,
-          double timeDelta,
-          InverseKinematic::HipFeetPose& p);
+    InverseKinematic::HipFeetPose& p,
+    Vector2d rotationP,
+    Vector2d rotationVelocityP,
+    Vector2d rotationD);
 
   bool rotationStabilize(
     const InertialModel& theInertialModel,
     const GyrometerData& theGyrometerData,
     double timeDelta,
-    InverseKinematic::HipFeetPose& p);
+    InverseKinematic::HipFeetPose& p,
+    Vector2d rotationP,
+    Vector2d rotationVelocityP,
+    Vector2d rotationD);
 
   /**
    * PID stabilizer controlling the feet of the robot directly
