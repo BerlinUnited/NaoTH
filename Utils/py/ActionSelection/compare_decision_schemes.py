@@ -1,20 +1,28 @@
 import math
+import os
 import pickle
 from naoth import math2d as m2d
 from tools import field_info as field
 from compare_decision_schemes.current_impl_goaltime import main as current_impl
 from compare_decision_schemes.particle_filter_goaltime import main as particle_filter
 
-'''
-    TODO: only compare our current implementation with the particle filter one 
-'''
+"""
+For every position(x, y) and a fixed rotation the time and the number of kicks and turns are calculated for different strategies.
+The output is written in two pickle files. The strategy evaluation scripts for a single position are located in
+the compare_decision_schemes subfolder. The script takes care not to overwrite previous calculated data.
+
+Example:
+    run without any parameters
+
+        $ python compare_decision_schemes.py
+"""
 
 
 class State:
     def __init__(self):
         self.pose = m2d.Pose2D()
-        self.pose.translation = m2d.Vector2(-4000, -700)
-        self.pose.rotation = math.radians(-40)
+        self.pose.translation = m2d.Vector2(0, 0)
+        self.pose.rotation = math.radians(0)
 
         self.ball_position = m2d.Vector2(100.0, 0.0)
         self.rotation_vel = 60  # degrees per sec
@@ -28,32 +36,36 @@ class State:
 
 def main():
     state = State()
+    file_idx = 0
+
     cell_width = 200
-    rotation_step = 30
-    num_iter = 1
-    dummy_container = []
+
+    num_iter = 10  # repeats for current implementation
+    timing_container = []
+    kick_container = []
 
     x_range = range(int(-field.x_length * 0.5) + cell_width, int(field.x_length * 0.5), 2 * cell_width)
     y_range = range(int(-field.y_length * 0.5) + cell_width, int(field.y_length * 0.5), 2 * cell_width)
-    rot_range = range(0, 360, rotation_step)
-
-    #x_range = range(-100, 100, 100)
-    #y_range = range(-100, 100, 100)
-    #rot_range = range(0, 360, 360)
+    rot = 45
 
     # run for the whole field
     for x in x_range:
         for y in y_range:
-            for rot in rot_range:
-                # Todo compare the times for given robot state for different schemes
-                time_particle_filter = particle_filter(x, y, rot, state)
-                time_current_impl = current_impl(x, y, rot, state, num_iter)
-                print ("CurrentImpl: " + " X: " + str(x) + " Y: " + str(y) + " rot: " + str(rot) +
-                       " " + str(time_current_impl - time_particle_filter))
+            c_time, c_kicks, c_turns = current_impl(x, y, rot, state, num_iter)
+            p_time, p_kicks, p_turns = particle_filter(x, y, rot, state, num_iter)
+            print("CurrentImpl: " + " X: " + str(x) + " Y: " + str(y) + " rot: " + str(rot) + " " + str(c_time))
+            print("ParticleImpl: " + " X: " + str(x) + " Y: " + str(y) + " rot: " + str(rot) + " " + str(p_time))
 
-                dummy_container.append([x, y, rot, time_current_impl, time_particle_filter])
+            timing_container.append([x, y, rot, c_time, p_time])
+            kick_container.append([x, y, rot, c_kicks, c_turns, p_kicks, p_turns])
 
-    pickle.dump(dummy_container, open('../data/compare_decision_schemes.pickle', "wb"))
+    # make sure not to overwrite anything
+    while (os.path.exists('{}{:d}.pickle'.format('data/strategy_times' + "-rot" + str(rot) + "-", file_idx)) or
+           os.path.exists('{}{:d}.pickle'.format('data/strategy_actions' + "-rot" + str(rot) + "-", file_idx))):
+        file_idx += 1
+    pickle.dump(timing_container, open('data/strategy_times' + "-rot" + str(rot) + "-" + str(file_idx) + '.pickle', "wb"))
+    pickle.dump(kick_container, open('data/strategy_actions' + "-rot" + str(rot) + "-" + str(file_idx) + '.pickle', "wb"))
+
 
 if __name__ == "__main__":
     main()
