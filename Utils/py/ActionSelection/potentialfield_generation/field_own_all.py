@@ -51,7 +51,7 @@ def main():
 
     x_range = range(int(-field.x_length * 0.5) + 4*cell_width, int(field.x_length * 0.5), 4*cell_width)
     y_range = range(int(-field.y_length * 0.5) + 4*cell_width, int(field.y_length * 0.5), 4*cell_width)
-    y_range = [200]
+
     # run for the whole field
     for x in x_range:
         for y in y_range:
