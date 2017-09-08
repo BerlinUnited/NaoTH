@@ -44,13 +44,14 @@ def main():
     rotation_step = 5
     dummy_container = []
 
-    plt.figure()
+    show_image = False
+
     axes = plt.gca()
-    tools.draw_field()
+    tools.draw_field(axes)
 
     x_range = range(int(-field.x_length * 0.5) + 4*cell_width, int(field.x_length * 0.5), 4*cell_width)
     y_range = range(int(-field.y_length * 0.5) + 4*cell_width, int(field.y_length * 0.5), 4*cell_width)
-
+    y_range = [200]
     # run for the whole field
     for x in x_range:
         for y in y_range:
@@ -64,13 +65,14 @@ def main():
                 axes.arrow(x, y, v.x, v.y, head_width=100, head_length=100, fc='r', ec='r')
             dummy_container.append([x, y, time, angle])
 
-    plt.show()
+
     while (os.path.exists('{}{:d}.png'.format('../data/potential_field_generation/potential_field_gen_own', file_idx)) or
            os.path.exists('{}{:d}.pickle'.format('../data/potential_field_generation/potential_field_gen_own', file_idx))):
         file_idx += 1
     plt.savefig('{}{:d}.png'.format('../data/potential_field_generation/potential_field_gen_own', file_idx))
     pickle.dump(dummy_container, open('../data/potential_field_generation/potential_field_gen_own' + str(file_idx) + '.pickle', "wb"))  # make sure not to overwrite anything
 
-
+    if show_image:
+      plt.show()
 if __name__ == "__main__":
     main()
