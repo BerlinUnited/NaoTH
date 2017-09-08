@@ -31,6 +31,8 @@ def simulate_consequences(action, categorized_ball_positions, state, num_particl
     opp_goal_box = m2d.Rect2d(opp_goal_back_right, field.opponent_goalpost_left)
 
     # current ball position
+    # FIXME state.pose.rotation can become inf
+    #print(state.pose.translation.x, state.pose.translation.y, state.pose.rotation)
     global_ball_start_position = state.pose * state.ball_position
 
     # virtual ultrasound obstacle line
@@ -98,7 +100,8 @@ def simulate_consequences(action, categorized_ball_positions, state, num_particl
         mean_test_list_y.append(local_test_pos.y)
 
         categorized_ball_positions.add(state.pose / global_ball_end_position, category)
-    categorized_ball_positions.expected_ball_pos = m2d.Vector2(np.mean(mean_test_list_x), np.mean(mean_test_list_y))
+    categorized_ball_positions.expected_ball_pos_mean = m2d.Vector2(np.mean(mean_test_list_x), np.mean(mean_test_list_y))
+    categorized_ball_positions.expected_ball_pos_median = m2d.Vector2(np.median(mean_test_list_x), np.median(mean_test_list_y))
     return categorized_ball_positions
 
 
@@ -113,7 +116,8 @@ def decide_smart(actions_consequences, state):
 
         # ignore actions with too high chance of kicking out
         score = results.likelihood("INFIELD") + results.likelihood("OPPGOAL")
-        if score <= max(0.0, a.good_threshold_percentage):
+        if score < max(0.0, a.good_threshold_percentage):
+            # print("Threshhold is too low for action: " + str(i) + "with score: " + str(score) )
             continue
 
         # all actions which are not too bad
