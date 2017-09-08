@@ -397,10 +397,13 @@ public class NaoSCP extends javax.swing.JFrame {
                             if (commentFile.exists()) {
                                 String backup_name = FileUtils.readFile(commentFile);
 
-                                if (deployDir.renameTo(new File(targetDir, backup_name))) {
+                                File backup_dir = new File(targetDir, backup_name);
+                                if(backup_dir.exists()) {
+                                    Logger.getGlobal().log(Level.WARNING, String.format("Could not back up the deploy directory, file already exists: %s", backup_dir.getAbsolutePath()));
+                                } else if (deployDir.renameTo(backup_dir)) {
                                     deployDir = new File(targetDir, "deploy");
                                 } else {
-                                    Logger.getGlobal().log(Level.WARNING, "Could not back up the deploy directory: " + deployDir.getAbsolutePath());
+                                    Logger.getGlobal().log(Level.WARNING, String.format("Could not back up the deploy directory %s to %s", deployDir.getAbsolutePath(), backup_dir.getAbsolutePath()));
                                 }
                             } else {
                                 FileUtils.deleteDir(deployDir);
