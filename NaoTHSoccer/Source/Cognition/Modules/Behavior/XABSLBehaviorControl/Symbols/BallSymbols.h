@@ -21,6 +21,7 @@
 #include "Representations/Modeling/BallModel.h"
 #include "Representations/Modeling/RobotPose.h"
 #include "Representations/Modeling/KinematicChain.h"
+#include "Representations/Modeling/TeamBallModel.h"
 
 #include <Tools/DataStructures/ParameterList.h>
 #include "Tools/Debug/DebugParameterList.h"
@@ -39,7 +40,7 @@ PROVIDE(BallModel) // PROVIDE so that XABSL bool can be read out
   REQUIRE(FrameInfo)
   REQUIRE(FieldInfo)
   REQUIRE(MultiBallPercept)
-  
+  REQUIRE(TeamBallModel)
   REQUIRE(RobotPose)
 
   REQUIRE(KinematicChain)

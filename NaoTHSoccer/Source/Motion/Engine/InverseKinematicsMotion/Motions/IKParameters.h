@@ -45,7 +45,7 @@ public:
 
         struct StiffnessControl {
             bool   enable;
-            double deadTime;
+//            double deadTime;
             double minAngle;
             double minStiffness;
             double maxAngle;
@@ -80,12 +80,15 @@ public:
       double comStepOffsetY;
       double ZMPOffsetY;
       double ZMPOffsetYByCharacter;
+
+      bool newZMP_ON;
     } hip;
 
     // step geometry
     struct Step
     {
       int duration;
+      bool dynamicDuration;
       int doubleSupportTime;
     
       double stepHeight;
@@ -129,6 +132,7 @@ public:
       //int maxWaitLandingCount; // <0 means wait for ever until landing
 
       double emergencyStopError;
+      unsigned int maxEmergencyCounter;
 
       // enable stabilization by rotating the body
       bool rotationStabilize;
@@ -149,15 +153,43 @@ public:
       bool dynamicStepsize;
       double dynamicStepsizeP;
       double dynamicStepsizeD;
+
+      struct HipOffsetBasedOnStepChange {
+          double x;
+          double y;
+      } hipOffsetBasedOnStepChange;
+
+      struct HipOffsetBasedOnStepLength {
+          double x;
+          double y;
+      } maxHipOffsetBasedOnStepLength, maxHipOffsetBasedOnStepLengthForKicks;
+
     } stabilization;
+
+    struct ZMP{
+        struct Bezier{
+            double transitionScaling;
+            double inFootScalingY;
+            double inFootSpacing;
+            double offsetX;
+            double offsetY;
+            double offsetXForKicks;
+            double offsetYForKicks;
+        } bezier;
+
+        struct Bezier2{
+            double offsetT;
+            double offsetY;
+        } bezier2;
+    } zmp;
+
   } walk;
 
-
-  struct RotationStabilize 
-  {
-      Vector2d k;
-      Vector2d threshold;
-  } rotationStabilize;
+//  struct RotationStabilize
+//  {
+//      Vector2d k;
+//      Vector2d threshold;
+//  } rotationStabilize;
 
   struct Arm 
   {

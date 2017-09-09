@@ -17,7 +17,14 @@ TeamCommSender::TeamCommSender()
   {
     send_interval = config.getInt("teamcomm", "send_interval");
   }
+
+  getDebugParameterList().add(&parameters);
 }
+
+TeamCommSender::~TeamCommSender() {
+  getDebugParameterList().remove(&parameters);
+}
+
 
 void TeamCommSender::execute()
 {
@@ -47,8 +54,13 @@ void TeamCommSender::fillMessageBeforeSending() const
     msg.positionConfidence = 100;
     msg.sideConfidence = 100;
 
-    // if(getBallModel().valid)
-    if (getBallModel().getFrameInfoWhenBallWasSeen().getTime() > 0)
+
+    bool sendBallModel = getBallModel().valid;
+    if(parameters.sendBallAgeDobermann) {
+      sendBallModel = (getBallModel().getFrameInfoWhenBallWasSeen().getTime() > 0);
+    }
+
+    if(sendBallModel)
     {
       // here in milliseconds (conversion to seconds is in SPLStandardMessage::createSplMessage())
       msg.ballAge = getFrameInfo().getTimeSince(getBallModel().getFrameInfoWhenBallWasSeen().getTime());
@@ -81,6 +93,14 @@ void TeamCommSender::fillMessageBeforeSending() const
     msg.custom.batteryCharge = getBatteryData().charge;
     msg.custom.temperature = std::max(getBodyState().temperatureLeftLeg, getBodyState().temperatureRightLeg);
     msg.custom.cpuTemperature = getCpuData().temperature;
+    // update teamball in teamcomm
+    if(getTeamBallModel().valid) {
+      getTeamMessageData().custom.teamBall = getTeamBallModel().positionOnField;
+    } else {
+      // set teamball in teamcomm to an invalid value
+      getTeamMessageData().custom.teamBall.x = std::numeric_limits<double>::infinity();
+      getTeamMessageData().custom.teamBall.y = std::numeric_limits<double>::infinity();
+    }
     // TODO: shall we put it into config?
     msg.custom.key = NAOTH_TEAMCOMM_MESAGE_KEY;
 }

@@ -32,32 +32,29 @@ public:
     fitPoints(vx, vy);
   }
 
+  double mahalanobis_distance(double x, double y) {
+    double a = params[0];
+    double b = params[1];
+    double c = params[2];
+    double xx = x-center[0];
+    double yy = y-center[1];
+
+    double d = xx*xx*a + xx*yy*b + yy*yy*c;
+    return std::sqrt(std::fabs(d));
+  }
+
+  double mahalanobis_radius() {
+    double a = params[0];
+    double b = params[1];
+    double c = params[2];
+
+    double r = center[0]*center[0]*a + center[0]*center[1]*b + center[1]*center[1]*c;
+
+    return std::sqrt(std::fabs(r - params[5]));
+  }
+
   double error_to(double x, double y) {
-    double b = params[1]/2;
-
-    double xx = center[0];
-    double yy = center[1];
-
-    double r = ( ( (xx * params[0]) + (yy * b) ) * xx) +
-               ( ( (xx * b) + (yy * params[2]) ) * yy);
-
-    r = std::fabs(params[5]) + std::fabs(r);
-
-    /*
-     * (x-m)^T * A * (x-m)
-     *
-     * A = ( a  b/2
-     *      b/2  c )
-     */
-
-    xx = x-center[0];
-    yy = y-center[1];
-
-
-    double d = ( ( (xx * params[0]) + (yy * b) ) * xx) +
-               ( ( (xx * b) + (yy * params[2]) ) * yy);
-
-    return std::fabs(d - r);//r;
+    return std::fabs( mahalanobis_distance(x,y) - mahalanobis_radius());
   }
 
   void getCenter(double (&C)[2]);
