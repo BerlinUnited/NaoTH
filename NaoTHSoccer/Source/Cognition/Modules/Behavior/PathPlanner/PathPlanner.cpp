@@ -149,34 +149,30 @@ void PathPlanner::update_obstacles() const
   {
     if(player.frameInfoWhenWasSeen.getFrameNumber() > 0 && getFrameInfo().getTimeSince(player.frameInfoWhenWasSeen.getTime()) < 2000) {
       Vector2d obst = getRobotPose() / player.globalPose.translation;
-      if (obst.x < 2.0 && obst.y < 2.0)
-      {
-        continue;
+      if (obst.abs() > 150.0) {
+        obstacles.push_back(Vector3d(player.globalPose.translation.x, player.globalPose.translation.y, 300));
       }
-      obstacles.push_back(Vector3d(player.globalPose.translation.x, player.globalPose.translation.y, 300));
     }
   }
 
   DEBUG_REQUEST("PathPlanner:add_static_obstacles_for_path_search",
-                obstacles.clear();
-                obstacles.push_back(Vector3d(-2500.0,    0.0, 300));
-                obstacles.push_back(Vector3d(-2500.0,  300.0, 300));
-                obstacles.push_back(Vector3d(-2500.0, -300.0, 300));
-                obstacles.push_back(Vector3d(-3000.0, -600.0, 300));
-                obstacles.push_back(Vector3d(-1500.0,  600.0, 300));
+    obstacles.clear();
+    obstacles.push_back(Vector3d(-2500.0,    0.0, 300));
+    obstacles.push_back(Vector3d(-2500.0,  300.0, 300));
+    obstacles.push_back(Vector3d(-2500.0, -300.0, 300));
+    obstacles.push_back(Vector3d(-3000.0, -600.0, 300));
+    obstacles.push_back(Vector3d(-1500.0,  600.0, 300));
   );
 
   DEBUG_REQUEST("PathPlanner:draw_obstacles",
-                FIELD_DRAWING_CONTEXT;
-                PEN("FFFFFF", 20);
-                for (const Vector3d& obstacle : obstacles)
-                {
-                  CIRCLE(obstacle.x, obstacle.y, 300);
-                }
+    FIELD_DRAWING_CONTEXT;
+    PEN("FFFFFF", 20);
+    for (const Vector3d& obstacle : obstacles) {
+      CIRCLE(obstacle.x, obstacle.y, obstacle.z);
+    }
   );
 
-  for (Vector3d& obstacle : obstacles)
-  {
+  for (Vector3d& obstacle : obstacles) {
     obstacle = generate_obst(obstacle);
   }
 }
@@ -193,7 +189,9 @@ void PathPlanner::execute_pathplanner_algorithm()
     //FIELD_DRAWING_CONTEXT;
     //getDebugDrawings().translate(getRobotPose().translation.x, getRobotPose().translation.y);
     //getDebugDrawings().rotate(getRobotPose().rotation);
+    STOPWATCH_START("PathPlanner:plan");
     gait = lpgPlanner.get_gait(ballPos, obstacles, getDebugDrawings());
+    STOPWATCH_STOP("PathPlanner:plan");
     //getDebugDrawings().rotate(-getRobotPose().rotation);
     //getDebugDrawings().translate(-getRobotPose().translation.x, -getRobotPose().translation.y);
 
@@ -212,7 +210,9 @@ void PathPlanner::execute_pathplanner_algorithm()
   else
   {
     Vector2d goal = ballPos;
+    STOPWATCH_START("PathPlanner:plan");
     gait = bPlanner.get_gait(goal, obstacles);
+    STOPWATCH_STOP("PathPlanner:plan");
     //std::vector<BPathPlanner::Trajectory> path_alt = bPlanner.get_trajectory_alt();
     //std::vector<BPathPlanner::Trajectory> path = bPlanner.get_trajectory();
 
