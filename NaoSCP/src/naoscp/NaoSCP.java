@@ -10,6 +10,7 @@ import java.io.*;
 import java.net.InetAddress;
 import java.net.URLDecoder;
 import java.net.UnknownHostException;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Properties;
@@ -31,6 +32,8 @@ import naoscp.tools.*;
  */
 public class NaoSCP extends javax.swing.JFrame {
 
+    private final DateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
+    
     private final String projectPath = getBasePath();
     private final String utilsPath = projectPath + "/Utils";
 
@@ -384,7 +387,10 @@ public class NaoSCP extends javax.swing.JFrame {
                 public void run() {
 
                     setEnabledAll(false);
-
+                    
+                    Logger.getGlobal().log(Level.INFO, "----" + dateFormat.format(new Date()) + "---");
+                    Logger.getGlobal().log(Level.INFO, "Write to USB: " + targetDir);
+                    
                     try {
                         // STEP 1: create the deploy directory for the playerNumber
                         File deployDir = new File(targetDir, "deploy");
