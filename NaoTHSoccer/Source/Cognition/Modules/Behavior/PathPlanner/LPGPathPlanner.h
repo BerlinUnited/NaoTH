@@ -36,9 +36,6 @@ public:
   Cell coords_to_cell(const Vector2d& coords) const;
   Vector2d cell_to_coords(const Cell& the_cell) const;
 
-  inline double distance_between_cells(const Cell& a, const Cell& b) const {
-    return (cell_to_coords(a) - cell_to_coords(b)).abs();
-  }
 
 private:
   // parameters for LPG
@@ -51,7 +48,7 @@ public:
   inline void set_obstacles(const std::vector<Vector3d>& obstacles) {
     this->obstacles = obstacles;
   }
-  double obst_func(const Cell& the_cell) const;
+  double obst_func(const Vector2d& cell_coords) const;
 
 private:
   // parameters for obstacle function
@@ -65,12 +62,17 @@ class LPGState
 public:
 
   LPGState() : helper(nullptr), the_cell(LPGGrid::Cell()), is_origin(false) {}
-  LPGState(std::shared_ptr<LPGGrid> helper) : helper(helper), the_cell(LPGGrid::Cell()), is_origin(false) {}
-  LPGState(std::shared_ptr<LPGGrid> helper, LPGGrid::Cell the_cell) : helper(helper), the_cell(the_cell), is_origin(false) {}
-  LPGState(std::shared_ptr<LPGGrid> helper, bool is_origin) : helper(helper), the_cell(LPGGrid::Cell()), is_origin(is_origin) {}
-
+  LPGState(std::shared_ptr<LPGGrid> helper) : helper(helper), the_cell(LPGGrid::Cell()), cell_coords(helper->cell_to_coords(the_cell)), is_origin(false) {}
+  LPGState(std::shared_ptr<LPGGrid> helper, bool is_origin) : helper(helper), the_cell(LPGGrid::Cell()), cell_coords(helper->cell_to_coords(the_cell)), is_origin(is_origin) {}
+  LPGState(std::shared_ptr<LPGGrid> helper, int r, int a) : helper(helper), the_cell(r,a), cell_coords(helper->cell_to_coords(the_cell)), is_origin(false) {}
+  LPGState(std::shared_ptr<LPGGrid> helper, LPGGrid::Cell the_cell) : helper(helper), the_cell(the_cell), cell_coords(helper->cell_to_coords(the_cell)), is_origin(false) {}
+  
   const LPGGrid::Cell& get_cell() const {
     return the_cell;
+  }
+
+  const Vector2d& get_coords() const {
+    return cell_coords;
   }
 
   bool GetSuccessors(AStarSearch<LPGState> *astarsearch,
@@ -79,11 +81,11 @@ public:
   float GetCost(const LPGState& successor) const {
     // TODO: replace obst_func by a functor
     ASSERT(helper != nullptr);
-    return static_cast<float>(helper->distance_between_cells(the_cell, successor.the_cell) + helper->obst_func(successor.the_cell));
+    return static_cast<float>((cell_coords - successor.cell_coords).abs() + helper->obst_func(successor.cell_coords));
   }
 
   float GoalDistanceEstimate(const LPGState& nodeGoal) const {
-    return static_cast<float>(helper->distance_between_cells(the_cell, nodeGoal.the_cell));
+    return static_cast<float>((cell_coords - nodeGoal.cell_coords).abs());
   }
 
   bool IsGoal(const LPGState& nodeGoal) const {
@@ -99,6 +101,7 @@ public:
 private:
   std::shared_ptr<LPGGrid> helper;
   LPGGrid::Cell the_cell;
+  Vector2d cell_coords;
  
   // HACK?
   // indicates the empty virtual cell at the center of the grid
@@ -115,17 +118,16 @@ public:
   Vector2d get_gait(const Vector2d& goal, const std::vector<Vector3d>& obstacles, DrawingCanvas2D& canvas) const;
   
   std::vector<Vector2d>& get_waypoint_coordinates() const {
-    return waypoint_coordinates;
+    return waypoints;
   }
 
 private:
-  std::vector<LPGGrid::Cell> compute_waypoints(const Vector2d& goal, DrawingCanvas2D& canvas) const;
+  void compute_waypoints(const Vector2d& goal, DrawingCanvas2D& /*canvas*/, std::vector<Vector2d>& waypoints) const;
 
 // internal state
 private:
 
-  mutable std::vector<LPGGrid::Cell> waypoints;
-  mutable std::vector<Vector2d> waypoint_coordinates;
+  mutable std::vector<Vector2d> waypoints;
 
   mutable std::shared_ptr<LPGGrid> helper;
   mutable AStarSearch<LPGState> astar;
