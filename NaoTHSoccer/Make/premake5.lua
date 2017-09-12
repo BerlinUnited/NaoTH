@@ -9,9 +9,6 @@
 require "tools/clean_action" -- get custom clean action
 dofile "tools/custom_options.lua" -- define custom options
 
--- Only for debugging - normally projectconfig.lua finds this folder
-FRAMEWORK_PATH = path.getabsolute("D:/RoboCup/NaoTH-2015/Framework")
-
 -- TODO implement projectconfig lua stuff
 dofile "projectconfig.lua" -- load the global default settings
 
