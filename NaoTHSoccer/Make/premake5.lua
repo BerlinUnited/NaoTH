@@ -6,6 +6,13 @@
 	
 	set options via ./premake5 --trigger
 ]]
+-- Test for checking the premake version
+
+if not premake.checkVersion(premake._VERSION, ">=5.0.0-alpha12") then
+	print("ERROR: Premake Version" .. premake._VERSION .. " is to old. Use at least 5.0.0-alpha12")
+	os.exit()
+end
+
 require "tools/clean_action" -- get custom clean action
 dofile "tools/custom_options.lua" -- define custom options
 
@@ -40,6 +47,14 @@ workspace "NaoTHSoccer-Test"
   
 	-- global include path for all projects and configurations
 	includedirs (PATH["includes"])
+
+	-- include libs with -isystem instead of -I
+	sysincludedirs { 
+		EXTERN_PATH .. "/include",
+		EXTERN_PATH .. "/include/glib-2.0",
+		EXTERN_PATH .. "/include/gio-unix-2.0", -- does not exists anymore
+		EXTERN_PATH .. "/lib/glib-2.0/include"
+	}
 	
 	-- global links ( needed by NaoTHSoccer )
 	links {
@@ -49,7 +64,6 @@ workspace "NaoTHSoccer-Test"
 			"opencv_objdetect"
 	}
 	
-	-- Test
 	-- this is on by default in premake4 stuff
 	functionlevellinking "on"
 	
@@ -109,12 +123,16 @@ workspace "NaoTHSoccer-Test"
 		defines { "NAO" }
 		targetdir "../dist/Nao"
 		warnings "Extra"
+
+		-- for debugging
+		-- buildoptions {"-time"}
+
 		-- disable warning "comparison always true due to limited range of data type"
 		-- this warning is caused by protobuf 2.4.1
 		buildoptions {"-Wno-type-limits"}
 		-- some of the protobuf messages are marked as deprecated but are still in use for legacy reasons
 		buildoptions {"-Wno-deprecated-declarations"}
-		buildoptions {"-Wconversion"}
+		-- buildoptions {"-Wconversion"}
 		buildoptions {"-std=c++11"}
 
 	-- additional defines for visual studio 	
@@ -161,6 +179,7 @@ workspace "NaoTHSoccer-Test"
 		-- (see http://www.airs.com/blog/archives/120 for some nice explanation)
 		buildoptions {"-fno-strict-overflow"}
 		buildoptions {"-std=c++11"}
+		
 		--flags { "ExtraWarnings" }
 		links {"pthread"}
 	  
