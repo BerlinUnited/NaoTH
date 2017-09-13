@@ -4,6 +4,7 @@
 #include <sstream>
 #include <map>
 
+#include <cmath>
 #include <Tools/Math/Pose2D.h>
 #include <Tools/Math/Pose3D.h>
 
@@ -28,9 +29,39 @@ public:
 public:
   OptiTrackParser()
   {
-    requestDefinitions();
+    // default version in our lab
+    natNetStreamVersion[0] = 2;
+    natNetStreamVersion[1] = 3;
+    natNetStreamVersion[2] = 0;
+    natNetStreamVersion[3] = 0;
   }
+
   //~OptiTrackParser();
+
+
+  RotationMatrix rotationFromQuaternion(float qx, float qy, float qz, float qw) const
+  {
+    double ysqr = qy * qy;
+
+    // roll(x - axis rotation)
+    double t0 = +2.0 * (qw * qx + qy * qz);
+    double t1 = +1.0 - 2.0 * (qx * qx + ysqr);
+    double roll = atan2(t0, t1);
+
+    //pitch(y - axis rotation)
+    double t2 = +2.0 * (qw * qy - qz * qx);
+    t2 = t2 > 1.0f ? 1.0 : t2;
+    t2 = t2 < -1.0f ? -1.0 : t2;
+    double pitch = asin(t2); // HACK: constant offset
+
+    //yaw(z - axis rotation)
+    double t3 = +2.0 * (qw * qz + qx * qy);
+    double t4 = +1.0 - 2.0 * (ysqr + qz * qz);
+    double yaw = atan2(t3, t4);
+
+    return RotationMatrix(yaw, pitch, roll);
+  }
+
 
   std::string requestDefinitions() {
     std::stringstream ss;
@@ -44,6 +75,83 @@ public:
     ss << '\0';
     return ss.str();
   }
+
+  bool parseTrackable(std::stringstream& ss, Pose3D& pose, unsigned int& id)
+  {
+    ss.read((char*)&id, 4);
+
+    Vector3f pos;
+    ss.read((char*)&pos.x, 4);
+    ss.read((char*)&pos.y, 4);
+    ss.read((char*)&pos.z, 4);
+
+    // rotation
+    float qx, qy, qz, qw;
+    ss.read((char*)&qx, 4);
+    ss.read((char*)&qy, 4);
+    ss.read((char*)&qz, 4);
+    ss.read((char*)&qw, 4);
+
+    // markers
+    unsigned int markerCount = 0;
+    ss.read((char*)&markerCount, 4);
+        
+    // marker positions
+    for (unsigned int j = 0; j < markerCount; ++j) {
+      Vector3f m;
+      ss.read((char*)&m.x, 4);
+      ss.read((char*)&m.y, 4);
+      ss.read((char*)&m.z, 4);
+      // TODO: do nothing for now
+    }
+        
+    // marker id's
+    for (unsigned int j = 0; j < markerCount; ++j) {
+      unsigned int m_id = 0;
+      ss.read((char*)&m_id, 4);
+      // TODO: do nothing for now
+    }
+        
+    // marker sizes
+    for (unsigned int j = 0; j < markerCount; ++j) {
+      float m_size = 0.0f;
+      ss.read((char*)&m_size, 4);
+      // TODO: do nothing for now
+    }
+        
+    float marker_error = 0.0f;
+    ss.read((char*)&marker_error, 4);
+    //std::cout << "error: " << marker_error << std::endl;
+        
+    //Version 2.6 and later
+    //unsigned short trackingValid = 0;
+    //ss.read((char*)&trackingValid, 2);
+        
+    // accept only valid transformations
+    if( !std::isfinite(pos.x) || !std::isfinite(pos.y) || !std::isfinite(pos.z) ||
+        !std::isfinite(qx) || !std::isfinite(qy) || !std::isfinite(qz) || !std::isfinite(qw) ) 
+    {
+      std::cout << "[OptiTrackParser] invalide value" << std::endl;
+      return false;
+    }
+
+    // this trackable is not tracked right now
+    if (qx == 0) {
+      return false;
+    }
+
+    // fill the pose
+    pose.translation.x = -pos.z;
+    pose.translation.y = -pos.x;
+    pose.translation.z =  pos.y;
+    pose.translation *= 1000.0;
+
+    // calculate the rotation
+    pose.rotation = rotationFromQuaternion(qx, qy, qz, qw);
+
+    return true;
+  }// end parseTrackable
+
   
   std::string parseMessage(const std::string& msg) 
   {  
@@ -55,7 +163,23 @@ public:
     unsigned short packetSize(0);
     ss.read((char*)&packetSize, 2);
 
-    if(messageID == NAT_MODELDEF) 
+    if(messageID == NAT_PINGRESPONSE)
+    {
+      // Skip the sending app's Name field
+      ss.seekg(256, std::ios_base::cur);
+      // Skip the sending app's Version info
+      ss.seekg(4, std::ios_base::cur);
+
+      // NOTE: not used yet
+      ss.read((char*)&natNetStreamVersion, 4);
+
+      std::cout << "[OptiTrackParser] NatNetStreamVersion (" 
+                << (int)natNetStreamVersion[0] << "," 
+                << (int)natNetStreamVersion[1] << "," 
+                << (int)natNetStreamVersion[2] << "," 
+                << (int)natNetStreamVersion[3] << ")" << std::endl;
+    }
+    else if(messageID == NAT_MODELDEF) 
     {
       std::cout << "[OptiTrackParser] update definitions: " << std::endl;
       trackable_names.clear();
@@ -152,108 +276,18 @@ public:
       unsigned int rigidBodyCount = 0;
       ss.read((char*)&rigidBodyCount, 4);
 
-      for (unsigned int i = 0; i < rigidBodyCount; ++i) {
+      for (unsigned int i = 0; i < rigidBodyCount; ++i) 
+      {
         unsigned int id = 0;
-        ss.read((char*)&id, 4);
-
-        Vector3f pos;
-        ss.read((char*)&pos.x, 4);
-        ss.read((char*)&pos.y, 4);
-        ss.read((char*)&pos.z, 4);
-
-        Vector3f new_pos;
-        new_pos.x = -pos.z;
-        new_pos.y = -pos.x;
-        new_pos.z =  pos.y;
-
-        Pose3D pose3;
-        pose3.translation.x = new_pos.x;
-        pose3.translation.y = new_pos.y;
-        pose3.translation.z = new_pos.z;
-        pose3.translation *= 1000.0;
-
-        //std::cout << "id: " << id << std::endl;
-
-
-        // rotation
-        float qx, qy, qz, qw;
-        ss.read((char*)&qx, 4);
-        ss.read((char*)&qy, 4);
-        ss.read((char*)&qz, 4);
-        ss.read((char*)&qw, 4);
-
-        
-        unsigned int markerCount = 0;
-        ss.read((char*)&markerCount, 4);
-        
-        // marker positions
-        for (unsigned int j = 0; j < markerCount; ++j) {
-          Vector3f m;
-          ss.read((char*)&m.x, 4);
-          ss.read((char*)&m.y, 4);
-          ss.read((char*)&m.z, 4);
-          // TODO: do nothing for now
-        }
-        
-        // marker id's
-        for (unsigned int j = 0; j < markerCount; ++j) {
-          unsigned int m_id = 0;
-          ss.read((char*)&m_id, 4);
-          // TODO: do nothing for now
-        }
-        
-        // marker sizes
-        for (unsigned int j = 0; j < markerCount; ++j) {
-          float m_size = 0.0f;
-          ss.read((char*)&m_size, 4);
-          // TODO: do nothing for now
-        }
-        
-        float marker_error = 0.0f;
-        ss.read((char*)&marker_error, 4);
-        //std::cout << "error: " << marker_error << std::endl;
-        
-        //Version 2.6 and later
-        //unsigned short trackingValid = 0;
-        //ss.read((char*)&trackingValid, 2);
-        
-        
-        if (qx == 0) {
+        Pose3D pose;
+        if(!parseTrackable(ss, pose, id)) {
           continue;
         }
 
-        // convert to Pose2d
-        double ysqr = qy * qy;
-
-        // roll(x - axis rotation)
-        double t0 = +2.0 * (qw * qx + qy * qz);
-        double t1 = +1.0 - 2.0 * (qx * qx + ysqr);
-        double roll = atan2(t0, t1);
-
-        //pitch(y - axis rotation)
-        double t2 = +2.0 * (qw * qy - qz * qx);
-        t2 = t2 > 1.0f ? 1.0 : t2;
-        t2 = t2 < -1.0f ? -1.0 : t2;
-        double pitch = asin(t2); // HACK: constant offset
-
-        //yaw(z - axis rotation)
-        double t3 = +2.0 * (qw * qz + qx * qy);
-        double t4 = +1.0 - 2.0 * (ysqr + qz * qz);
-        double yaw = atan2(t3, t4);
-
-        pose3.rotation = RotationMatrix(yaw, pitch, roll);
-        if(!addTrackable(id, pose3)) {
+        if(!addTrackable(id, pose)) {
           reset();
           return requestDefinitions();
         }
-        
-        //yaw = pose3.rotation.getZAngle();
-        //pitch = pose3.rotation.getYAngle();
-        //roll = pose3.rotation.getXAngle();
-
-        //Pose2D pose(-data.data.rotation.getYAngle() + Math::fromDegrees(27.0), data.data.translation.x, data.data.translation.y);
-        //pose.translate(150.0, 0.0);
-        //data.data = Pose3D::embedXY(pose);
       }
     }
     else {
@@ -279,7 +313,7 @@ private:
       std::cout << "[OptiTrackParser] Unknown id: " << id << std::endl;
       return false;
     }
-    
+
     trackables.insert(std::make_pair(name_it->second, pose));
     return true;
   }
@@ -287,6 +321,7 @@ private:
   std::map<std::string,Pose3D> trackables;
   std::map<unsigned int,std::string> trackable_names;
 
+  uint8_t natNetStreamVersion[4];
 };
 
 #endif // OptiTrackParser_H
