@@ -10,11 +10,11 @@
 * @author <a href="mailto:oberlies@sim.tu-darmstadt.de">Tobias Oberlies</a> (revised constructors and commenting) 
 */
 
-#ifndef __BresenhamLineScan_h_
-#define __BresenhamLineScan_h_
+#ifndef _BresenhamLineScan_h_
+#define _BresenhamLineScan_h_
 
 //#include "Tools/CameraGeometry.h"
-#include "Tools/Math/Common.h"
+//#include "Tools/Math/Common.h"
 #include "Tools/Math/Line.h"
 #include "Tools/Math/Vector2.h"
 #include "Tools/Math/MVTools.h"
@@ -164,4 +164,4 @@ private:
 };
 
 
-#endif //__BresenhamLineScan_h_
+#endif //_BresenhamLineScan_h_
