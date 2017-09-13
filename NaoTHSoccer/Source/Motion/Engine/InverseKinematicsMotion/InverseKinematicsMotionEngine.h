@@ -184,20 +184,20 @@ public:
   bool rotationStabilizeRC16(
     const Vector2d& inertial,
     const GyrometerData& theGyrometerData,
-    double timeDelta,
-    InverseKinematic::HipFeetPose& p,
-    Vector2d rotationP,
-    Vector2d rotationVelocityP,
-    Vector2d rotationD);
+    const double timeDelta,
+    const Vector2d&  rotationP,
+    const Vector2d&  rotationVelocityP,
+    const Vector2d&  rotationD,
+    InverseKinematic::HipFeetPose& p);
 
   bool rotationStabilize(
     const InertialModel& theInertialModel,
     const GyrometerData& theGyrometerData,
-    double timeDelta,
-    InverseKinematic::HipFeetPose& p,
-    Vector2d rotationP,
-    Vector2d rotationVelocityP,
-    Vector2d rotationD);
+    const double timeDelta,
+    const Vector2d&  rotationP,
+    const Vector2d&  rotationVelocityP,
+    const Vector2d&  rotationD,
+    InverseKinematic::HipFeetPose& p);
 
   /**
    * PID stabilizer controlling the feet of the robot directly

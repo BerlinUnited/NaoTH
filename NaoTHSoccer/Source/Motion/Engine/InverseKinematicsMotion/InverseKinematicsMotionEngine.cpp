@@ -431,11 +431,11 @@ void InverseKinematicsMotionEngine::feetStabilize(
 bool InverseKinematicsMotionEngine::rotationStabilizeRC16(
   const Vector2d& inertial,
   const GyrometerData& theGyrometerData,
-  double timeDelta,
-  InverseKinematic::HipFeetPose& p,
-  Vector2d rotationP,
-  Vector2d rotationVelocityP,
-  Vector2d /*rotationD*/)
+  const double timeDelta,
+  const Vector2d&  rotationP,
+  const Vector2d&  rotationVelocityP,
+  const Vector2d&  /*rotationD*/,
+  InverseKinematic::HipFeetPose& p)
 {
   const double alpha = 0.8;
   Vector2d gyro = Vector2d(theGyrometerData.data.x, theGyrometerData.data.y);
@@ -489,8 +489,11 @@ bool InverseKinematicsMotionEngine::rotationStabilizeRC16(
 bool InverseKinematicsMotionEngine::rotationStabilize(
   const InertialModel& theInertialModel,
   const GyrometerData& theGyrometerData,
-  double timeDelta,
-  InverseKinematic::HipFeetPose& p, Vector2d rotationP, Vector2d rotationVelocityP, Vector2d rotationD)
+  const double timeDelta,
+  const Vector2d&  rotationP, 
+  const Vector2d&  rotationVelocityP, 
+  const Vector2d&  rotationD,
+  InverseKinematic::HipFeetPose& p)
 {
   const double alpha = 0.5;
   Vector2d gyro = Vector2d(theGyrometerData.data.x, theGyrometerData.data.y);
