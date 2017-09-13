@@ -7,7 +7,7 @@ premake.qtcreator27 = { }
 --
 local qtc = premake.qtcreator27
 	
-  function qtc.header()
+function qtc.header()
     _p("<?xml version=\"1.0\" encoding=\"UTF-8\"?>")
     _p("<!DOCTYPE QtCreatorProject>")
     _p("<!-- Written by NaoTH qtc generator script -->")
@@ -59,23 +59,22 @@ local qtc = premake.qtcreator27
     _p(2, "<variable>ProjectExplorer.Project.PluginSettings</variable>")
     _p(2, "<valuemap type=\"QVariantMap\"/>")
 	_p(1, "</data>")
+end
 
-  end
-  
-  function qtc.footer()
-	_p("<data>")
-	_p(1, "<variable>ProjectExplorer.Project.Updater.FileVersion</variable>")
-	_p(1, "<value type=\"int\">12</value>")
-	_p("</data>")
-  
-	_p("</qtcreator>")
-  end
-  
-  function qtc.creator(prj)
+function qtc.footer()
+    _p("<data>")
+    _p(1, "<variable>ProjectExplorer.Project.Updater.FileVersion</variable>")
+    _p(1, "<value type=\"int\">12</value>")
+    _p("</data>")
+
+    _p("</qtcreator>")
+end
+
+function qtc.creator(prj)
     _p("[General]")
-  end
-  
-  function qtc.run_configuration(prj, cfg, cfgCounter)
+end
+
+function qtc.run_configuration(prj, cfg, cfgCounter)
     _p(2, "<valuemap type=\"QVariantMap\" key=\"ProjectExplorer.Target.RunConfiguration.%d\">", cfgCounter)
     _p(3, "<value type=\"bool\" key=\"Analyzer.Project.UseGlobal\">true</value>")
     _p(3, "<valuelist type=\"QVariantList\" key=\"Analyzer.Valgrind.AddedSuppressionFiles\"/>")
@@ -123,9 +122,9 @@ local qtc = premake.qtcreator27
     _p(3, "<value type=\"bool\" key=\"RunConfiguration.UseQmlDebugger\">false</value>")
     _p(3, "<value type=\"bool\" key=\"RunConfiguration.UseQmlDebuggerAuto\">true</value>")
     _p(2, "</valuemap>")
-  end
-  
-  function qtc.build_configuration(prj, cfg, cfgCounter, platform)
+end
+
+function qtc.build_configuration(prj, cfg, cfgCounter, platform)
     _p(2, "<valuemap type=\"QVariantMap\" key=\"ProjectExplorer.Target.BuildConfiguration.%d\">", cfgCounter)
     _p(3, "<value type=\"QString\" key=\"GenericProjectManager.GenericBuildConfiguration.BuildDirectory\"></value>")    
     -- the build steps for "Make"
@@ -147,26 +146,26 @@ local qtc = premake.qtcreator27
     _p(5, "<value type=\"QString\" key=\"ProjectExplorer.ProjectConfiguration.DisplayName\">premake4</value>")
     _p(5, "<value type=\"QByteArray\" key=\"ProjectExplorer.ProjectConfiguration.Id\">ProjectExplorer.ProcessStep</value>")
     _p(4, "</valuemap>")
-    
+
     _p(4, "<valuemap type=\"QVariantMap\" key=\"ProjectExplorer.BuildStepList.Step.1\">")
     _p(5, "<valuelist type=\"QVariantList\" key=\"GenericProjectManager.GenericMakeStep.BuildTargets\"/>")
-    
+
     _p(5, "<value type=\"bool\" key=\"GenericProjectManager.GenericMakeStep.Clean\">false</value>")
     _p(5, "<value type=\"QString\" key=\"GenericProjectManager.GenericMakeStep.MakeArguments\">-R config=%s %s</value>",  cfg.shortname, prj.name)
     _p(5, "<value type=\"QString\" key=\"GenericProjectManager.GenericMakeStep.MakeCommand\"></value>")
     _p(5, "<value type=\"bool\" key=\"ProjectExplorer.BuildStep.Enabled\">true</value>")
     _p(5, "<value type=\"QString\" key=\"ProjectExplorer.ProjectConfiguration.DefaultDisplayName\">Make %s</value>", prj.name)
     _p(5, "<value type=\"QString\" key=\"ProjectExplorer.ProjectConfiguration.DisplayName\">%s</value>",  cfg.shortname)
-    
+
     _p(5, "<value type=\"QByteArray\" key=\"ProjectExplorer.ProjectConfiguration.Id\">GenericProjectManager.GenericMakeStep</value>")
     _p(4, "</valuemap>")
-    
+
     _p(4, "<value type=\"int\" key=\"ProjectExplorer.BuildStepList.StepsCount\">2</value>")
     _p(4, "<value type=\"QString\" key=\"ProjectExplorer.ProjectConfiguration.DefaultDisplayName\">Build %s</value>", prj.name)
     _p(4, "<value type=\"QString\" key=\"ProjectExplorer.ProjectConfiguration.DisplayName\"></value>")
     _p(4, "<value type=\"QByteArray\" key=\"ProjectExplorer.ProjectConfiguration.Id\">ProjectExplorer.BuildSteps.Build</value>")  
     _p(3, "</valuemap>")
-    
+
     -- the build steps for "Clean"
     _p(3, "<valuemap type=\"QVariantMap\" key=\"ProjectExplorer.BuildConfiguration.BuildStepList.1\">")
     _p(4, "<valuemap type=\"QVariantMap\" key=\"ProjectExplorer.BuildStepList.Step.0\">")
@@ -194,26 +193,30 @@ local qtc = premake.qtcreator27
     _p(3, "<valuelist type=\"QVariantList\" key=\"ProjectExplorer.BuildConfiguration.UserEnvironmentChanges\">")
     _p(4, "<value type=\"QString\">PROMPT=TRUE</value>")
     _p(3, "</valuelist>")   
-    
+
     _p(3, "<value type=\"QString\" key=\"ProjectExplorer.ProjectConfiguration.DefaultDisplayName\"></value>")
     _p(3, "<value type=\"QString\" key=\"ProjectExplorer.ProjectConfiguration.DisplayName\">%s</value>", cfg.longname)
     _p(3, "<value type=\"QByteArray\" key=\"ProjectExplorer.ProjectConfiguration.Id\">GenericProjectManager.GenericBuildConfiguration</value>") 
 
     _p(2, "</valuemap>") -- end configuration valuemap
-  end
-  
-	function qtc.user(prj)
-		-- If necessary, set an explicit line ending sequence
-		-- io.eol = '\r\n'
-		
-		local cc = premake[_OPTIONS.cc]
-		local userPlatform = ""
-		if(_OPTIONS["platform"] ~= nil) then
-		  userPlatform = _OPTIONS.platform
-		end
-		local platforms = premake.filterplatforms(prj.solution, cc.platforms, "Native")
-		
-		qtc.header()
+end
+
+function qtc.user(prj)
+    -- If necessary, set an explicit line ending sequence
+    -- io.eol = '\r\n'
+
+    -- local cc = premake[_OPTIONS.cc]
+
+    local userPlatform = ""
+    if(_OPTIONS["platform"] ~= nil) then
+      userPlatform = _OPTIONS.platform
+    end
+    -- local platforms = premake.filterplatforms(prj.solution, cc.platforms, "Native")
+
+    -- TODO: platform should be a list of platforms, i guess
+    local platforms = "Native"
+
+	qtc.header()
 	  
     -- we need to set a valid "kit" ID as ProjectConfiguration.Id, otherwise the QtCreator will stop loading the project
     -- under *NIX-systems we can grab the configuration file
@@ -276,23 +279,23 @@ local qtc = premake.qtcreator27
 	
 	  -- run configurations
 	cfgCounter = 0
-	  for _, platform in ipairs(platforms) do
-	    for cfg in premake.eachconfig(prj, platform) do
-        if(cfg.kind == "ConsoleApp" or cfg.kind == "WindowedApp") then
-          qtc.run_configuration(prj, cfg, cfgCounter)
-          cfgCounter = cfgCounter + 1
-        end -- if kind == *App
-	    end
-	  end
-	  _p(2, "<value type=\"int\" key=\"ProjectExplorer.Target.RunConfigurationCount\">%d</value>", cfgCounter)
+    for _, platform in ipairs(platforms) do
+        for cfg in premake.eachconfig(prj, platform) do
+            if(cfg.kind == "ConsoleApp" or cfg.kind == "WindowedApp") then
+                qtc.run_configuration(prj, cfg, cfgCounter)
+                cfgCounter = cfgCounter + 1
+            end -- if kind == *App
+        end
+    end
+	 _p(2, "<value type=\"int\" key=\"ProjectExplorer.Target.RunConfigurationCount\">%d</value>", cfgCounter)
 		
-		_p(1, "</valuemap>")
-		_p("</data>")
+	_p(1, "</valuemap>")
+	_p("</data>")
 		
-	  _p("<data>")
+	_p("<data>")
     _p(1, "<variable>ProjectExplorer.Project.TargetCount</variable>")
     _p(1, "<value type=\"int\">1</value>")
     _p("</data>")
 		
 		qtc.footer()
-	end
+end
