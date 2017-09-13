@@ -12,5 +12,3 @@ project "NaoTHSoccer"
   links { "Commons"	}
   targetname "naoth-soccer"
   targetextension ("")
-  --TODO fileextension
-
