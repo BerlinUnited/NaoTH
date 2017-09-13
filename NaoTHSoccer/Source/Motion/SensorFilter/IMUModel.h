@@ -128,61 +128,29 @@ private: /* small helper */
 
            /* acceleration filter parameter */
            // while standing
-           PARAMETER_REGISTER(acceleration.stand.processNoiseQ00) = 0.01; // [m^2/s^4]
-           PARAMETER_REGISTER(acceleration.stand.processNoiseQ11) = 0.01; // [m^2/s^4]
-           PARAMETER_REGISTER(acceleration.stand.processNoiseQ22) = 0.01; // [m^2/s^4]
-
-           PARAMETER_REGISTER(acceleration.stand.measurementNoiseR00) =  1.243597518737325602e+00; // [m^2/s^4]
-           PARAMETER_REGISTER(acceleration.stand.measurementNoiseR01) =  4.170491338560008421e-01; // [m^2/s^4]
-           PARAMETER_REGISTER(acceleration.stand.measurementNoiseR02) = -3.246651961728642261e-02; // [m^2/s^4]
-           PARAMETER_REGISTER(acceleration.stand.measurementNoiseR11) =  3.447355924530388194e+00; // [m^2/s^4]
-           PARAMETER_REGISTER(acceleration.stand.measurementNoiseR12) = -5.760325107959280988e-01; // [m^2/s^4]
-           PARAMETER_REGISTER(acceleration.stand.measurementNoiseR22) =  1.204579269450257506e+01; // [m^2/s^4]
+           PARAMETER_REGISTER(acceleration.stand.processNoiseAcc) = 0.01; // [m^2/s^4]
+           PARAMETER_REGISTER(acceleration.stand.measurementNoiseAcc) =  1; // [m^2/s^4]
 
            // walking
-           PARAMETER_REGISTER(acceleration.walk.processNoiseQ00) = 0.01; // [m^2/s^4]
-           PARAMETER_REGISTER(acceleration.walk.processNoiseQ11) = 0.01; // [m^2/s^4]
-           PARAMETER_REGISTER(acceleration.walk.processNoiseQ22) = 0.01; // [m^2/s^4]
-
-           PARAMETER_REGISTER(acceleration.walk.measurementNoiseR00) =  1.243597518737325602e+00; // [m^2/s^4]
-           PARAMETER_REGISTER(acceleration.walk.measurementNoiseR01) =  4.170491338560008421e-01; // [m^2/s^4]
-           PARAMETER_REGISTER(acceleration.walk.measurementNoiseR02) = -3.246651961728642261e-02; // [m^2/s^4]
-           PARAMETER_REGISTER(acceleration.walk.measurementNoiseR11) =  3.447355924530388194e+00; // [m^2/s^4]
-           PARAMETER_REGISTER(acceleration.walk.measurementNoiseR12) = -5.760325107959280988e-01; // [m^2/s^4]
-           PARAMETER_REGISTER(acceleration.walk.measurementNoiseR22) =  1.204579269450257506e+01; // [m^2/s^4]
+           PARAMETER_REGISTER(acceleration.walk.processNoiseAcc) = 0.01; // [m^2/s^4]
+           PARAMETER_REGISTER(acceleration.walk.measurementNoiseAcc) =  1; // [m^2/s^4]
            /* acceleration filter parameter end */
 
            /* rotation filter parameter */
            // while standing
-           PARAMETER_REGISTER(rotation.stand.processNoiseQ00) = 0.01; // [rad^2] 9.86 ~ std of angle around x = pi
-           PARAMETER_REGISTER(rotation.stand.processNoiseQ11) = 0.01; // [rad^2]
-           PARAMETER_REGISTER(rotation.stand.processNoiseQ22) = 0.01; // [rad^2]
-           PARAMETER_REGISTER(rotation.stand.processNoiseQ33) = 0.01; // [rad^2/s^2]
-           PARAMETER_REGISTER(rotation.stand.processNoiseQ44) = 0.01; // [rad^2/s^2]
-           PARAMETER_REGISTER(rotation.stand.processNoiseQ55) = 0.01; // [rad^2/s^2]
+           PARAMETER_REGISTER(rotation.stand.processNoiseRot) = 0.01; // [rad^2] 9.86 ~ std of angle around x = pi
+           PARAMETER_REGISTER(rotation.stand.processNoiseGyro) = 0.01; // [rad^2/s^2]
 
            // the measurement is the measured acceleration and gyrometer vector
-           PARAMETER_REGISTER(rotation.stand.measurementNoiseR00) = 10.0;  // [m^2/s^4]
-           PARAMETER_REGISTER(rotation.stand.measurementNoiseR11) = 10.0;  // [m^2/s^4]
-           PARAMETER_REGISTER(rotation.stand.measurementNoiseR22) = 10.0;  // [m^2/s^4]
-           PARAMETER_REGISTER(rotation.stand.measurementNoiseR33) =  1.0; // [rad^2/s^2]
-           PARAMETER_REGISTER(rotation.stand.measurementNoiseR44) =  1.0; // [rad^2/s^2]
-           PARAMETER_REGISTER(rotation.stand.measurementNoiseR55) =  1.0; // [rad^2/s^2]
+           PARAMETER_REGISTER(rotation.stand.measurementNoiseAcc) = 10.0;  // [m^2/s^4]
+           PARAMETER_REGISTER(rotation.stand.measurementNoiseGyro) =  1.0; // [rad^2/s^2]
 
            // while walking
-           PARAMETER_REGISTER(rotation.walk.processNoiseQ00) = 0.01; // [rad^2]
-           PARAMETER_REGISTER(rotation.walk.processNoiseQ11) = 0.01; // [rad^2]
-           PARAMETER_REGISTER(rotation.walk.processNoiseQ22) = 0.01; // [rad^2]
-           PARAMETER_REGISTER(rotation.walk.processNoiseQ33) = 0.01; // [rad^2/s^2]
-           PARAMETER_REGISTER(rotation.walk.processNoiseQ44) = 0.01; // [rad^2/s^2]
-           PARAMETER_REGISTER(rotation.walk.processNoiseQ55) = 0.01; // [rad^2/s^2]
+           PARAMETER_REGISTER(rotation.walk.processNoiseRot) = 0.01; // [rad^2]
+           PARAMETER_REGISTER(rotation.walk.processNoiseGyro) = 0.01; // [rad^2/s^2]
 
-           PARAMETER_REGISTER(rotation.walk.measurementNoiseR00) = 50.0;  // [m^2/s^4]
-           PARAMETER_REGISTER(rotation.walk.measurementNoiseR11) = 50.0;  // [m^2/s^4]
-           PARAMETER_REGISTER(rotation.walk.measurementNoiseR22) = 50.0;  // [m^2/s^4]
-           PARAMETER_REGISTER(rotation.walk.measurementNoiseR33) =  0.1; // [rad^2/s^2]
-           PARAMETER_REGISTER(rotation.walk.measurementNoiseR44) =  0.1; // [rad^2/s^2]
-           PARAMETER_REGISTER(rotation.walk.measurementNoiseR55) =  0.1; // [rad^2/s^2]
+           PARAMETER_REGISTER(rotation.walk.measurementNoiseAcc) = 50.0;  // [m^2/s^4]
+           PARAMETER_REGISTER(rotation.walk.measurementNoiseGyro) =  0.1; // [rad^2/s^2]
            /* rotation filter parameter end */
 
            syncWithConfig();
@@ -192,35 +160,20 @@ private: /* small helper */
 
        struct Filter{
            struct Mode{
-                double processNoiseQ00;
-                double processNoiseQ11;
-                double processNoiseQ22;
+                double processNoiseAcc;
 
-                double measurementNoiseR00;
-                double measurementNoiseR01;
-                double measurementNoiseR02;
-                double measurementNoiseR11;
-                double measurementNoiseR12;
-                double measurementNoiseR22;
+                double measurementNoiseAcc;
            } walk, stand;
        } acceleration;
 
        struct Filter2{
            struct Mode{
-                double processNoiseQ00;
-                double processNoiseQ11;
-                double processNoiseQ22;
-                double processNoiseQ33;
-                double processNoiseQ44;
-                double processNoiseQ55;
+                double processNoiseRot;
+                double processNoiseGyro;
 
                 //TODO: provide all entries of the covariance matrix?
-                double measurementNoiseR00;
-                double measurementNoiseR11;
-                double measurementNoiseR22;
-                double measurementNoiseR33;
-                double measurementNoiseR44;
-                double measurementNoiseR55;
+                double measurementNoiseAcc;
+                double measurementNoiseGyro;
            } walk, stand;
        } rotation;
 
