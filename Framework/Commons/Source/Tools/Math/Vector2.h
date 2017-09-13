@@ -1,5 +1,5 @@
-#ifndef __Vector2_h__
-#define __Vector2_h__
+#ifndef _Vector2_h_
+#define _Vector2_h_
 
 #include <cmath>
 #include <ostream>
@@ -154,8 +154,8 @@ template <class V> class Vector2{
   /** Calculation of the length of this vector.
   *\return The length.
   */
-  V abs() const
-  {return static_cast<V>(std::sqrt(static_cast<double>(x*x+y*y)));}
+  inline V abs() const
+  //{return static_cast<V>(std::sqrt(static_cast<double>(x*x+y*y)));}
 
   /** calculation of the length^2 */
   V abs2() const
@@ -266,4 +266,4 @@ typedef Vector2<float> Vector2f;
 typedef Vector2<double> Vector2d;
 typedef Vector2<int> Vector2i;
 
-#endif // __Vector2_h__
+#endif // _Vector2_h_
