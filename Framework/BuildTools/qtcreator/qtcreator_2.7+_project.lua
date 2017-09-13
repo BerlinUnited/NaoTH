@@ -131,19 +131,19 @@ function qtc.build_configuration(prj, cfg, cfgCounter, platform)
                 _p(4, "<valuemap type=\"QVariantMap\" key=\"ProjectExplorer.BuildStepList.Step.0\">")
                     _p(5, "<value type=\"bool\" key=\"ProjectExplorer.BuildStep.Enabled\">true</value>")
     if string.endswith(cfg.longname, platform) and platform ~= "" then
-      _p(5, "<value type=\"QString\" key=\"ProjectExplorer.ProcessStep.Arguments\">--platform=&quot;".. platform .."&quot; --file=../Make/premake4.lua gmake</value>")
+      _p(5, "<value type=\"QString\" key=\"ProjectExplorer.ProcessStep.Arguments\">--platform=&quot;".. platform .."&quot; --file=../Make/premake5.lua gmake</value>")
     else
       -- what is this supposed to be?  
       if _OPTIONS.Test == nil then
-        _p(5, "<value type=\"QString\" key=\"ProjectExplorer.ProcessStep.Arguments\">--file=../Make/premake4.lua gmake</value>")
+        _p(5, "<value type=\"QString\" key=\"ProjectExplorer.ProcessStep.Arguments\">--file=../Make/premake5.lua gmake</value>")
       else
-        _p(5, "<value type=\"QString\" key=\"ProjectExplorer.ProcessStep.Arguments\">--Test --file=../Make/premake4.lua gmake</value>")        
+        _p(5, "<value type=\"QString\" key=\"ProjectExplorer.ProcessStep.Arguments\">--Test --file=../Make/premake5.lua gmake</value>")        
       end
     end
-                    _p(5, "<value type=\"QString\" key=\"ProjectExplorer.ProcessStep.Command\">premake4</value>")
+                    _p(5, "<value type=\"QString\" key=\"ProjectExplorer.ProcessStep.Command\">premake5</value>")
                     _p(5, "<value type=\"QString\" key=\"ProjectExplorer.ProcessStep.WorkingDirectory\">%%{buildDir}</value>")
-                    _p(5, "<value type=\"QString\" key=\"ProjectExplorer.ProjectConfiguration.DefaultDisplayName\">Generate Makefiles with premake4</value>")
-                    _p(5, "<value type=\"QString\" key=\"ProjectExplorer.ProjectConfiguration.DisplayName\">premake4</value>")
+                    _p(5, "<value type=\"QString\" key=\"ProjectExplorer.ProjectConfiguration.DefaultDisplayName\">Generate Makefiles with premake5</value>")
+                    _p(5, "<value type=\"QString\" key=\"ProjectExplorer.ProjectConfiguration.DisplayName\">premake5</value>")
                     _p(5, "<value type=\"QByteArray\" key=\"ProjectExplorer.ProjectConfiguration.Id\">ProjectExplorer.ProcessStep</value>")
                 _p(4, "</valuemap>")
 
@@ -151,7 +151,7 @@ function qtc.build_configuration(prj, cfg, cfgCounter, platform)
                     _p(5, "<valuelist type=\"QVariantList\" key=\"GenericProjectManager.GenericMakeStep.BuildTargets\"/>")
 
                     _p(5, "<value type=\"bool\" key=\"GenericProjectManager.GenericMakeStep.Clean\">false</value>")
-                    _p(5, "<value type=\"QString\" key=\"GenericProjectManager.GenericMakeStep.MakeArguments\">-R config=%s %s</value>",  cfg.shortname, prj.name)
+                    _p(5, "<value type=\"QString\" key=\"GenericProjectManager.GenericMakeStep.MakeArguments\">config=%s %s</value>", cfg.shortname, prj.name)
                     _p(5, "<value type=\"QString\" key=\"GenericProjectManager.GenericMakeStep.MakeCommand\"></value>")
                     _p(5, "<value type=\"bool\" key=\"ProjectExplorer.BuildStep.Enabled\">true</value>")
                     _p(5, "<value type=\"QString\" key=\"ProjectExplorer.ProjectConfiguration.DefaultDisplayName\">Make %s</value>", prj.name)
@@ -213,8 +213,8 @@ function qtc.user(prj)
     end
     -- local platforms = premake.filterplatforms(prj.solution, cc.platforms, "Native")
 
-    -- TODO: platform should be a list of platforms, i guess
-    local platforms = "Native"
+    -- TODO: add Nao to platforms - is this even needed anymore?
+    local platforms = {"Native"}
 
     qtc.header()
       
@@ -254,12 +254,12 @@ function qtc.user(prj)
         _p(2, "<value type=\"int\" key=\"ProjectExplorer.Target.ActiveDeployConfiguration\">0</value>")
         _p(2, "<value type=\"int\" key=\"ProjectExplorer.Target.ActiveRunConfiguration\">0</value>")
         local cfgCounter = 0
-        for _, platform in ipairs(platforms) do
-          for cfg in premake.eachconfig(prj, platform) do
+
+        for cfg in premake.project.eachconfig(prj) do
             qtc.build_configuration(prj, cfg, cfgCounter, userPlatform)
-          cfgCounter = cfgCounter + 1
-          end
+            cfgCounter = cfgCounter + 1
         end
+
         _p(2, "<value type=\"int\" key=\"ProjectExplorer.Target.BuildConfigurationCount\">%d</value>", cfgCounter)
 
         _p(2, "<valuemap type=\"QVariantMap\" key=\"ProjectExplorer.Target.DeployConfiguration.0\">")
@@ -279,14 +279,14 @@ function qtc.user(prj)
     
         -- run configurations
         cfgCounter = 0
-        for _, platform in ipairs(platforms) do
-            for cfg in premake.eachconfig(prj, platform) do
-                if(cfg.kind == "ConsoleApp" or cfg.kind == "WindowedApp") then
-                    qtc.run_configuration(prj, cfg, cfgCounter)
-                    cfgCounter = cfgCounter + 1
-                end -- if kind == *App
-            end
+
+        for cfg in premake.project.eachconfig(prj) do
+            if(cfg.kind == "ConsoleApp" or cfg.kind == "WindowedApp") then
+                qtc.run_configuration(prj, cfg, cfgCounter)
+                cfgCounter = cfgCounter + 1
+            end -- if kind == *App
         end
+        
         _p(2, "<value type=\"int\" key=\"ProjectExplorer.Target.RunConfigurationCount\">%d</value>", cfgCounter)
     _p(1, "</valuemap>")
     _p("</data>")

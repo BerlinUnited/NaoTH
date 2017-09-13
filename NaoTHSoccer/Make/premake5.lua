@@ -1,11 +1,3 @@
- --[[
-	Simplest Premake5 script, generates one project
-	TODO: put notes below in extra markdown thing as docu
-	workspace corresponds to solution in visual studio
-	a premake project is the same as a project in visual studio
-	
-	set options via ./premake5 --trigger
-]]
 -- Test for checking the premake version
 
 if not premake.checkVersion(premake._VERSION, ">=5.0.0-alpha12") then
@@ -22,7 +14,7 @@ dofile "projectconfig.lua" -- load the global default settings
 -- load some helpers
 dofile (FRAMEWORK_PATH .. "/BuildTools/info.lua")
 dofile (FRAMEWORK_PATH .. "/BuildTools/protoc.lua")
-dofile (FRAMEWORK_PATH .. "/BuildTools/qtcreator.lua")
+-- dofile (FRAMEWORK_PATH .. "/BuildTools/qtcreator.lua")
 dofile (FRAMEWORK_PATH .. "/BuildTools/qtcreator_2.7+.lua")
 
 -- include the Nao platform
@@ -49,6 +41,7 @@ workspace "NaoTHSoccer-Test"
 	includedirs (PATH["includes"])
 
 	-- include libs with -isystem instead of -I
+	-- Why are the libdirs and includedirs not set in the same way? What is the benefit?
 	sysincludedirs { 
 		EXTERN_PATH .. "/include",
 		EXTERN_PATH .. "/include/glib-2.0",
@@ -105,14 +98,14 @@ workspace "NaoTHSoccer-Test"
 		defines { "DEBUG" }		
 		-- FatalWarnings treats compiler/linker warnings as errors
 		-- in premake4 linker warnings are not enabled
-		flags { "FatalCompileWarnings" }
+		flags { "FatalWarnings" }
 		symbols "On"
 
 	filter "configurations:OptDebug"	
 		defines { "DEBUG" }
 		-- FatalWarnings treats compiler/linker warnings as errors
 		-- in premake4 linker warnings are not enabled
-		flags { "FatalCompileWarnings" }
+		flags { "FatalWarnings" }
 		optimize "Speed"
 
 	filter { "platforms:Native" }
