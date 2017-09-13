@@ -155,7 +155,7 @@ template <class V> class Vector2{
   *\return The length.
   */
   inline V abs() const
-  //{return static_cast<V>(std::sqrt(static_cast<double>(x*x+y*y)));}
+  {return static_cast<V>(std::sqrt(static_cast<double>(x*x+y*y)));}
 
   /** calculation of the length^2 */
   V abs2() const
