@@ -29,7 +29,7 @@ print("  ACTION = " .. (_ACTION or "NONE"))
 print()
 
 
-workspace "NaoTHSoccer-Test"
+workspace "NaoTHSoccer"
 	platforms {"Native", "Nao"}
 	configurations {"OptDebug", "Debug"}
 	location "../build"
@@ -40,14 +40,6 @@ workspace "NaoTHSoccer-Test"
 	-- global include path for all projects and configurations
 	includedirs (PATH["includes"])
 
-	-- include libs with -isystem instead of -I
-	-- Why are the libdirs and includedirs not set in the same way? What is the benefit?
-	sysincludedirs { 
-		EXTERN_PATH .. "/include",
-		EXTERN_PATH .. "/include/glib-2.0",
-		EXTERN_PATH .. "/include/gio-unix-2.0", -- does not exists anymore
-		EXTERN_PATH .. "/lib/glib-2.0/include"
-	}
 	
 	-- global links ( needed by NaoTHSoccer )
 	links {
@@ -98,14 +90,14 @@ workspace "NaoTHSoccer-Test"
 		defines { "DEBUG" }		
 		-- FatalWarnings treats compiler/linker warnings as errors
 		-- in premake4 linker warnings are not enabled
-		flags { "FatalWarnings" }
+		flags { "FatalCompileWarnings" }
 		symbols "On"
 
 	filter "configurations:OptDebug"	
 		defines { "DEBUG" }
 		-- FatalWarnings treats compiler/linker warnings as errors
 		-- in premake4 linker warnings are not enabled
-		flags { "FatalWarnings" }
+		flags { "FatalCompileWarnings" }
 		optimize "Speed"
 
 	filter { "platforms:Native" }
@@ -115,7 +107,7 @@ workspace "NaoTHSoccer-Test"
 	filter { "platforms:Nao" }
 		defines { "NAO" }
 		targetdir "../dist/Nao"
-		warnings "Extra"
+		--warnings "Extra"
 
 		-- for debugging
 		-- buildoptions {"-time"}

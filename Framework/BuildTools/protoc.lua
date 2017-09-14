@@ -89,7 +89,7 @@ local function protocCompile(inputFiles, cppOut, javaOut, pythonOut, ipaths)
   
   -- generate the message files
   print("INFO: executing " .. cmd)
-  local returnCode = os.execute(cmd)
+  local succ, status, returnCode = os.execute(cmd)
   
   if returnCode == 0 then
     -- add few lines to suppress the conversion warnings to each of the generated *.cc files
@@ -158,7 +158,7 @@ function invokeprotoc(inputFiles, cppOut, javaOut, pythonOut, ipaths)
           touchShadow(inputFiles[i], time)
       end -- end for each file to compile
      else
-      print ("ERROR: protoc not sucessful")
+      print ("ERROR: protoc not successful")
      end
     end -- end if compile
 end
