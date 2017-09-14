@@ -112,7 +112,11 @@ end
 -- this mainly reflects the internal structure of the extern directory
 PATH:includedirs {
 	FRAMEWORK_PATH .. "/Commons/Source",
-	FRAMEWORK_PATH .. "/Commons/Source/Messages"
+	FRAMEWORK_PATH .. "/Commons/Source/Messages",
+	EXTERN_PATH .. "/include",
+	EXTERN_PATH .. "/include/glib-2.0",
+	EXTERN_PATH .. "/include/gio-unix-2.0", -- does not exists anymore
+	EXTERN_PATH .. "/lib/glib-2.0/include"
 	}
 
 
