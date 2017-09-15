@@ -182,57 +182,37 @@ void IMUModel::plots(){
 void IMUModel::reloadParameters()
 {   /* parameters for the acceleration filter */
     // process noise
-    Q_acc << imuParameters.acceleration.stand.processNoiseQ00,                                0,                                0,
-                                                       0, imuParameters.acceleration.stand.processNoiseQ11,                                0,
-                                                       0,                                0, imuParameters.acceleration.stand.processNoiseQ22;
+    Q_acc.setIdentity();
+    Q_acc *= imuParameters.acceleration.stand.processNoiseAcc;
 
-    Q_acc_walk << imuParameters.acceleration.walk.processNoiseQ00,                                0,                                0,
-                                                       0, imuParameters.acceleration.walk.processNoiseQ11,                                0,
-                                                       0,                                0, imuParameters.acceleration.walk.processNoiseQ22;
+    Q_acc_walk.setIdentity();
+    Q_acc *= imuParameters.acceleration.walk.processNoiseAcc;
     
     // measurement covariance matrix
-    R_acc << imuParameters.acceleration.stand.measurementNoiseR00, imuParameters.acceleration.stand.measurementNoiseR01, imuParameters.acceleration.stand.measurementNoiseR02,
-             imuParameters.acceleration.stand.measurementNoiseR01, imuParameters.acceleration.stand.measurementNoiseR11, imuParameters.acceleration.stand.measurementNoiseR12,
-             imuParameters.acceleration.stand.measurementNoiseR02, imuParameters.acceleration.stand.measurementNoiseR12, imuParameters.acceleration.stand.measurementNoiseR22;
+    R_acc.setIdentity();
+    R_acc *= imuParameters.acceleration.stand.measurementNoiseAcc;
 
-    R_acc_walk << imuParameters.acceleration.walk.measurementNoiseR00, imuParameters.acceleration.walk.measurementNoiseR01, imuParameters.acceleration.walk.measurementNoiseR02,
-                  imuParameters.acceleration.walk.measurementNoiseR01, imuParameters.acceleration.walk.measurementNoiseR11, imuParameters.acceleration.walk.measurementNoiseR12,
-                  imuParameters.acceleration.walk.measurementNoiseR02, imuParameters.acceleration.walk.measurementNoiseR12, imuParameters.acceleration.walk.measurementNoiseR22;
+    R_acc_walk.setIdentity();
+    R_acc_walk *= imuParameters.acceleration.walk.measurementNoiseAcc;
 
     /* parameters for the rotation filter */
     // process noise
-    Q_rotation << Eigen::Matrix<double,6,6>::Zero();
-    Q_rotation(0,0) = imuParameters.rotation.stand.processNoiseQ00;
-    Q_rotation(1,1) = imuParameters.rotation.stand.processNoiseQ11;
-    Q_rotation(2,2) = imuParameters.rotation.stand.processNoiseQ22;
-    Q_rotation(3,3) = imuParameters.rotation.stand.processNoiseQ33;
-    Q_rotation(4,4) = imuParameters.rotation.stand.processNoiseQ44;
-    Q_rotation(5,5) = imuParameters.rotation.stand.processNoiseQ55;
+    Q_rotation.setIdentity();
+    Q_rotation.block<3,3>(0,0) *= imuParameters.rotation.stand.processNoiseRot;
+    Q_rotation.block<3,3>(3,3) *= imuParameters.rotation.stand.processNoiseGyro;
 
-    Q_rotation_walk << Eigen::Matrix<double,6,6>::Zero();
-    Q_rotation_walk(0,0) = imuParameters.rotation.walk.processNoiseQ00;
-    Q_rotation_walk(1,1) = imuParameters.rotation.walk.processNoiseQ11;
-    Q_rotation_walk(2,2) = imuParameters.rotation.walk.processNoiseQ22;
-    Q_rotation_walk(3,3) = imuParameters.rotation.walk.processNoiseQ33;
-    Q_rotation_walk(4,4) = imuParameters.rotation.walk.processNoiseQ44;
-    Q_rotation_walk(5,5) = imuParameters.rotation.walk.processNoiseQ55;
+    Q_rotation_walk.setIdentity();
+    Q_rotation.block<3,3>(0,0) *= imuParameters.rotation.walk.processNoiseRot;
+    Q_rotation.block<3,3>(3,3) *= imuParameters.rotation.walk.processNoiseGyro;
 
     // measurement covariance matrix
-    R_rotation << Eigen::Matrix<double,6,6>::Zero();
-    R_rotation(0,0) = imuParameters.rotation.stand.measurementNoiseR00;
-    R_rotation(1,1) = imuParameters.rotation.stand.measurementNoiseR11;
-    R_rotation(2,2) = imuParameters.rotation.stand.measurementNoiseR22;
-    R_rotation(3,3) = imuParameters.rotation.stand.measurementNoiseR33;
-    R_rotation(4,4) = imuParameters.rotation.stand.measurementNoiseR44;
-    R_rotation(5,5) = imuParameters.rotation.stand.measurementNoiseR55;
+    R_rotation.setIdentity();
+    R_rotation.block<3,3>(0,0) *= imuParameters.rotation.stand.measurementNoiseAcc;
+    R_rotation.block<3,3>(3,3) *= imuParameters.rotation.stand.measurementNoiseGyro;
 
-    R_rotation_walk << Eigen::Matrix<double,6,6>::Zero();
-    R_rotation_walk(0,0) = imuParameters.rotation.walk.measurementNoiseR00;
-    R_rotation_walk(1,1) = imuParameters.rotation.walk.measurementNoiseR11;
-    R_rotation_walk(2,2) = imuParameters.rotation.walk.measurementNoiseR22;
-    R_rotation_walk(3,3) = imuParameters.rotation.walk.measurementNoiseR33;
-    R_rotation_walk(4,4) = imuParameters.rotation.walk.measurementNoiseR44;
-    R_rotation_walk(5,5) = imuParameters.rotation.walk.measurementNoiseR55;
+    R_rotation_walk.setIdentity();
+    R_rotation_walk.block<3,3>(0,0) *= imuParameters.rotation.walk.measurementNoiseAcc;
+    R_rotation_walk.block<3,3>(3,3) *= imuParameters.rotation.walk.measurementNoiseGyro;
 }
 
 #if defined(__GNUC__)
