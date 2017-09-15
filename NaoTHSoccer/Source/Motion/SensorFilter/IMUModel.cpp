@@ -122,8 +122,14 @@ void IMUModel::writeIMUData(){
     getIMUData().location += getIMUData().velocity * getRobotInfo().getBasicTimeStepInSecond() + getIMUData().acceleration * getRobotInfo().getBasicTimeStepInSecond() * getRobotInfo().getBasicTimeStepInSecond() * 0.5;
     getIMUData().velocity += getIMUData().acceleration * getRobotInfo().getBasicTimeStepInSecond();
 
+    // the state we are estimating in ukf_rot is 20 ms in the past. so predict 20 ms as estimate for the real current state
+    UKF<RotationState<Measurement<6>,6> > sensor_delay_corrected_rot = ukf_rot;
+    sensor_delay_corrected_rot.generateSigmaPoints();
+    Eigen::Vector3d u_rot(0,0,0);
+    sensor_delay_corrected_rot.predict(u_rot, 2 * getBasicTimeStepInSecond());
+
     // convert to framework compliant x,y,z angles
-    Eigen::Vector3d temp2 = ukf_rot.state.rotation();
+    Eigen::Vector3d temp2 = sensor_delay_corrected_rot.state.rotation();
     Vector3d rot_vec(temp2(0),temp2(1),temp2(2));
     RotationMatrix rot(rot_vec);
     getIMUData().rotation.x = rot.getXAngle();
