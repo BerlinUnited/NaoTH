@@ -126,7 +126,7 @@ void IMUModel::writeIMUData(){
     UKF<RotationState<Measurement<6>,6> > sensor_delay_corrected_rot = ukf_rot;
     sensor_delay_corrected_rot.generateSigmaPoints();
     Eigen::Vector3d u_rot(0,0,0);
-    sensor_delay_corrected_rot.predict(u_rot, 2 * getBasicTimeStepInSecond());
+    sensor_delay_corrected_rot.predict(u_rot, 2 * getRobotInfo().getBasicTimeStepInSecond());
 
     // convert to framework compliant x,y,z angles
     Eigen::Vector3d temp2 = sensor_delay_corrected_rot.state.rotation();
