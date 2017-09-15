@@ -123,12 +123,12 @@ IKParameters::IKParameters()
   PARAMETER_REGISTER(walk.stabilization.rotationStabilizeRC16) = false;
   PARAMETER_REGISTER(walk.stabilization.rotationStabilizeNewIMU) = true;
 
-  PARAMETER_REGISTER(walk.stabilization.rotation.P.x) = -0.05;
-  PARAMETER_REGISTER(walk.stabilization.rotation.P.y) = -0.6;
+  PARAMETER_REGISTER(walk.stabilization.rotation.P.x) = -0.03;
+  PARAMETER_REGISTER(walk.stabilization.rotation.P.y) = -0.03;
   PARAMETER_REGISTER(walk.stabilization.rotation.D.x) = 0;
   PARAMETER_REGISTER(walk.stabilization.rotation.D.y) = 0;
-  PARAMETER_REGISTER(walk.stabilization.rotation.VelocityP.x) = 0.02;
-  PARAMETER_REGISTER(walk.stabilization.rotation.VelocityP.y) = 0.01;
+  PARAMETER_REGISTER(walk.stabilization.rotation.VelocityP.x) = 0.03;
+  PARAMETER_REGISTER(walk.stabilization.rotation.VelocityP.y) = 0.03;
 
   PARAMETER_REGISTER(walk.stabilization.rotationRC16.P.x) = -0.05;
   PARAMETER_REGISTER(walk.stabilization.rotationRC16.P.y) = -0.05;
