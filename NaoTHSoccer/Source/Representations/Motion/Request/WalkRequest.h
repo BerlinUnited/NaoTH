@@ -13,6 +13,9 @@
 #include <Tools/DataStructures/Printable.h>
 #include <Tools/DataStructures/Serializer.h>
 
+// NOTE: this has to be here because of the special serialize methods
+#include <Messages/Representations.pb.h>
+
 /**
 * This describes the WalkRequest
 */
