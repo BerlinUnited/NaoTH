@@ -18,7 +18,7 @@
 
 #include "Tools/Debug/DebugParameterList.h"
 
-#include "Cognition/Modules/VisualCortex/LineDetector/Ellipse.h"
+#include "Ellipse.h"
 
 BEGIN_DECLARE_MODULE(RansacLineDetectorOnGraphs)
   PROVIDE(DebugRequest)
