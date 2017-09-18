@@ -50,15 +50,11 @@ end
 
 local function protocCompile(inputFiles, cppOut, javaOut, pythonOut, ipaths)
   -- get the protobuf compiler from the EXTERN_PATH
-  compiler = "protoc"
-  if(os.host("windows")) then
-    compiler = "protoc.exe"
-  end
+  compiler = os.ishost("windows") and "protoc.exe" or "protoc"
+  
   -- TODO: should we search on additional locations?
-  compilerPath = os.pathsearch(compiler, EXTERN_PATH .. "/bin/")
-  if compilerPath == nil then
-	compilerPath = os.pathsearch(compiler, EXTERN_PATH_NATIVE .. "/bin/")
-  end
+  compilerPath = os.pathsearch(compiler, EXTERN_PATH .. "/bin/") or os.pathsearch(compiler, EXTERN_PATH_NATIVE .. "/bin/")
+  
   if compilerPath == nil then
     print ("ERROR: could not find protoc compiler executable in \"" .. EXTERN_PATH .. "/bin/" .. "\"")
     return false
@@ -149,7 +145,6 @@ function invokeprotoc(inputFiles, cppOut, javaOut, pythonOut, ipaths)
     if(compile) then
       -- execute compile process for each file
       local time = os.time()
-      
       -- do the recompilation
      if( protocCompile(inputFiles, cppOut, javaOut, pythonOut, ipaths)) then
        -- if successfull touch the shadow files
@@ -198,7 +193,7 @@ newoption {
 -- to generate and where to generate them
 newaction {
   trigger = "protoc",
-  description = "Compile premake4 messages given as argument",
+  description = "Compile premake5 messages given as argument",
   execute = function ()
     invokeprotoc(_ARGS, _OPTIONS["protoc-cpp"], _OPTIONS["protoc-java"], _OPTIONS["protoc-python"], split(_OPTIONS["protoc-ipath"], ":") )    
   end
