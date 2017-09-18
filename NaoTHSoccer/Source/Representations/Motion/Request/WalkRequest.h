@@ -11,7 +11,6 @@
 #include <string>
 #include <Tools/Math/Pose2D.h>
 #include <Tools/DataStructures/Printable.h>
-#include <Messages/Representations.pb.h>
 #include <Tools/DataStructures/Serializer.h>
 
 /**
