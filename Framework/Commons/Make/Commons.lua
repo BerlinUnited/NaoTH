@@ -6,7 +6,6 @@ project "Commons"
   -- in premake4 linker warnings are not enabled
   flags {"FatalCompileWarnings"}
   targetname "commons"
-  targetextension ("")
   
   includedirs {
     "../Source/",

@@ -16,6 +16,7 @@ print("Generating files for NaoSMAL")
 project "NaoSMAL"
   kind "SharedLib"
   language "C++"
+  flags {"FatalCompileWarnings"}
   
   includedirs {
 	"../Source/DCM"
@@ -40,3 +41,4 @@ project "NaoSMAL"
 	}
 	
   targetname "naosmal"
+  targetextension ("")
