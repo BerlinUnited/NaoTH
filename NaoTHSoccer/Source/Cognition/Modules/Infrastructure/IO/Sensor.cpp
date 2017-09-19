@@ -26,6 +26,7 @@ void Sensor::init(naoth::ProcessInterface& platformInterface, const naoth::Platf
   robot.bodyNickName = platform.getBodyNickName();
   robot.bodyID = platform.getBodyID();
   robot.basicTimeStep = platform.getBasicTimeStep();
+  robot.scheme = Platform::getInstance().theScheme;
   
   REG_INPUT(Image);
   REG_INPUT(ImageTop);

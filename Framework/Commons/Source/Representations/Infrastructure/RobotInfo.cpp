@@ -14,6 +14,7 @@ void Serializer<RobotInfo>::serialize(const RobotInfo& representation, std::ostr
   info.set_headnickname(representation.headNickName);
   info.set_bodyid(representation.bodyID);
   info.set_basictimestep(representation.basicTimeStep);
+  info.set_scheme(representation.scheme);
 
   google::protobuf::io::OstreamOutputStream buf(&stream);
   info.SerializePartialToZeroCopyStream(&buf);
@@ -44,6 +45,10 @@ void Serializer<RobotInfo>::deserialize(std::istream& stream, RobotInfo& represe
   if(info.has_basictimestep())
   {
     representation.basicTimeStep = info.basictimestep();
+  }
+  if(info.has_scheme())
+  {
+    representation.scheme = info.scheme();
   }
 }
 

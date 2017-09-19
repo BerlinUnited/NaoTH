@@ -44,6 +44,7 @@ public class RobotInfoImpl implements RobotInfo, ConnectionStatusListener
     private String headId = "?";
     private String player = "?";
     private String team   = "?";
+    private String scheme = "?";
     
     public RobotInfoImpl() {
         // create icon/label with custom tooltip placement
@@ -112,6 +113,7 @@ public class RobotInfoImpl implements RobotInfo, ConnectionStatusListener
                 + "<tr><td align=\"right\"><b>HeadID:</b></td><td>"+bodyId+"</td></tr>"
                 + "<tr><td align=\"right\"><b>Player number:</b></td><td>"+player+"</td></tr>"
                 + "<tr><td align=\"right\"><b>Team number:</b></td><td>"+team+"</td></tr>"
+                + "<tr><td align=\"right\"><b>Scheme:</b></td><td>"+scheme+"</td></tr>"
                 + "</table>"
                 + "</html>"
             );
@@ -130,6 +132,7 @@ public class RobotInfoImpl implements RobotInfo, ConnectionStatusListener
                     FrameworkRepresentations.RobotInfo info = FrameworkRepresentations.RobotInfo.parseFrom(object);
                     headId = info.getHeadNickName();
                     bodyId = info.getBodyNickName();
+                    scheme = info.getScheme().isEmpty() ? "-" : info.getScheme();
                 } catch (InvalidProtocolBufferException ex) {/* ignore exception */}
             }
 
