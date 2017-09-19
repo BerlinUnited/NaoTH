@@ -16,6 +16,12 @@ newaction {
 	execute = function()
 		bla = os.rmdir("../build")
 		blub = os.rmdir("../dist")
+		
+		-- force protobuf to recompile
+		if isfile("../Messages/.Representations.proto.lastCompile~") then
+			print("found protobuf file")
+			-- asdf = os.remove("../Messages/.Representations.proto.lastCompile~")
+		end
 		--[[
 		if bla == nil then
 			print("Error: could not delete build folder")
