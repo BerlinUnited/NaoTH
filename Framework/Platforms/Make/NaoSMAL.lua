@@ -41,4 +41,3 @@ project "NaoSMAL"
 	}
 	
   targetname "naosmal"
-  targetextension ("")
