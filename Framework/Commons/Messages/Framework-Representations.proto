@@ -85,7 +85,6 @@ message RobotInfo {
   optional string headNickName = 3;
   optional string bodyID = 4;
   optional uint32 basicTimeStep = 5;
-  optional string scheme = 6;
 }
 
 message FSRData {

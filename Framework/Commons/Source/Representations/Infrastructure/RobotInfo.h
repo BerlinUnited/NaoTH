@@ -27,10 +27,7 @@ public:
   std::string bodyID;
 
   /** The time of each step which depends on platforms */
-  unsigned int basicTimeStep; 
-
-  /** the currently used scheme. */
-  std::string scheme;
+  unsigned int basicTimeStep;
   
   /**
   * The method returns the basic time step in seconds
@@ -45,7 +42,6 @@ public:
     stream << "BodyNickName: " << bodyNickName << std::endl;
     stream << "BodyID: " << bodyID << std::endl;
     stream << "basicTimeStep: " << basicTimeStep << std::endl;
-    stream << "active scheme: " << (scheme.empty()?"-":scheme) << std::endl;
   }
 };
 

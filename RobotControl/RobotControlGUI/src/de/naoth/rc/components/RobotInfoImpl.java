@@ -11,6 +11,8 @@ import de.naoth.rc.server.ConnectionStatusListener;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.swing.JLabel;
@@ -37,7 +39,7 @@ public class RobotInfoImpl implements RobotInfo, ConnectionStatusListener
     
     /** the icon/label placed in the RC statusbar */
     private final JLabel l;
-    private static final Pattern numExtract = Pattern.compile(".+=\\s*(\\d+).*");
+    private static final Pattern KEY_VALUE_PATTERN = Pattern.compile("^(?<key>.+)=(?<value>.*)$", Pattern.MULTILINE);
     
     /* vars for the tooltip */
     private String bodyId = "?";
@@ -132,7 +134,6 @@ public class RobotInfoImpl implements RobotInfo, ConnectionStatusListener
                     FrameworkRepresentations.RobotInfo info = FrameworkRepresentations.RobotInfo.parseFrom(object);
                     headId = info.getHeadNickName();
                     bodyId = info.getBodyNickName();
-                    scheme = info.getScheme().isEmpty() ? "-" : info.getScheme();
                 } catch (InvalidProtocolBufferException ex) {/* ignore exception */}
             }
 
@@ -144,11 +145,16 @@ public class RobotInfoImpl implements RobotInfo, ConnectionStatusListener
         commandExecutor.executeCommand(new ObjectListener<byte[]>() {
             @Override
             public void newObjectReceived(byte[] object) {
-                String[] lines = new String(object).split("\\n");
-                Matcher m = numExtract.matcher(lines[0]);
-                player = m.find() ? m.group(1) : "?";
-                m = numExtract.matcher(lines[1]);
-                team = m.find() ? m.group(1) : "?";
+                // extract representation from string
+                Map<String, String> repr = new HashMap<>();
+                Matcher m = KEY_VALUE_PATTERN.matcher(new String(object));
+                while (m.find()) {
+                    repr.put(m.group("key").trim(), m.group("value").trim());
+                }
+                // set vars
+                player = repr.getOrDefault("playerNumber", "?");
+                team = repr.getOrDefault("teamNumber", "?");
+                scheme = repr.getOrDefault("active scheme", "?");
             }
 
             @Override
