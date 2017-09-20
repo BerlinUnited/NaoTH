@@ -8,6 +8,7 @@ import de.naoth.rc.messages.FrameworkRepresentations;
 import de.naoth.rc.server.Command;
 import de.naoth.rc.server.ConnectionStatusEvent;
 import de.naoth.rc.server.ConnectionStatusListener;
+import java.awt.FontMetrics;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -16,6 +17,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.swing.JLabel;
+import javax.swing.UIManager;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.events.PluginLoaded;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
@@ -50,12 +52,7 @@ public class RobotInfoImpl implements RobotInfo, ConnectionStatusListener
     
     public RobotInfoImpl() {
         // create icon/label with custom tooltip placement
-        l = new JLabel(new javax.swing.ImageIcon(getClass().getResource("/de/naoth/rc/res/network-idle.png"))) {
-            @Override
-            public Point getToolTipLocation(MouseEvent event) {
-                return new Point(20, -this.getPreferredSize().height);
-            }
-        };
+        l = new ConnectionIcon();
         // disable by default
         l.setEnabled(false);
         updateTooltip();
@@ -108,6 +105,7 @@ public class RobotInfoImpl implements RobotInfo, ConnectionStatusListener
     
     private void updateTooltip() {
         if(l.isEnabled()) {
+            // INFO: the number of rows/lines should be equivalent to the tooltip location calculation!
             l.setToolTipText(
                   "<html>"
                 + "<table border=\"0\">"
@@ -160,5 +158,23 @@ public class RobotInfoImpl implements RobotInfo, ConnectionStatusListener
             @Override
             public void errorOccured(String cause) {/* ignore error */}
         }, cmd_pi);
+    }
+    
+    class ConnectionIcon extends JLabel
+    {
+        private final int tooltipHeight;
+
+        public ConnectionIcon() {
+            setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/naoth/rc/res/network-idle.png")));
+            
+            // calculate tooltip height: line-height * line-num + spacing-height * spacing-num + statusbar-height
+            FontMetrics metrics = this.getFontMetrics(UIManager.getLookAndFeelDefaults().getFont("ToolTip.font"));
+            tooltipHeight = metrics.getHeight() * 5 + 5*6 + 25;
+        }
+        
+        @Override
+        public Point getToolTipLocation(MouseEvent event) {
+            return new Point(0, -tooltipHeight);
+        }
     }
 }
