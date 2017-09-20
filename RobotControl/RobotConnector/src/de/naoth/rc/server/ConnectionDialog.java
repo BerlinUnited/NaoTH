@@ -13,9 +13,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.Properties;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
@@ -30,6 +33,7 @@ public class ConnectionDialog extends javax.swing.JDialog
 
   private final MessageServer messageServer;
   private final Properties properties;
+  private final ExecutorService executor = Executors.newCachedThreadPool();
 
   public ConnectionDialog(java.awt.Frame parent, MessageServer messageServer)
   {
@@ -166,10 +170,7 @@ public class ConnectionDialog extends javax.swing.JDialog
         
         this.messageServer.connect(host, port);
 
-        DefaultComboBoxModel model = (DefaultComboBoxModel) cbHost.getModel();
-        if(model.getIndexOf(host) == -1) {
-            cbHost.addItem(host);
-        }
+        addItemToCombobox(host);
         
         this.properties.put("hostname", host);
         this.properties.put("port", "" + port);
@@ -196,7 +197,41 @@ public class ConnectionDialog extends javax.swing.JDialog
       }
     }//GEN-LAST:event_btConnectActionPerformed
 
- 
+    @Override
+    public void setVisible(boolean b) {
+        // check for available hosts only when dialog is visible
+        if(b) {
+            String[] nets = { "10.0.4.", "192.168.13."};
+            int[] major = { 8, 9 };
+            int[] minor = { 1, 6 };
+            
+            for (int i = 0; i < nets.length; i++) {
+                for (int j = major[0]; j <= major[1]; j++) {
+                    for (int k = minor[0]; k <= minor[1]; k++) {
+                        final String ip = nets[i] + j + k;
+                        executor.submit(() -> {
+                            try {
+                                InetAddress address = InetAddress.getByName(ip);
+                                if(address.isReachable(500)) {
+                                    synchronized(cbHost) {
+                                        addItemToCombobox(ip);
+                                    }
+                                }
+                            } catch (Exception e) { /* ignore exception */ }
+                        });
+                    }
+                }
+            }
+        }
+        super.setVisible(b);
+    }
+    
+    private void addItemToCombobox(String host) {
+        DefaultComboBoxModel model = (DefaultComboBoxModel) cbHost.getModel();
+        if(model.getIndexOf(host) == -1) {
+            cbHost.addItem(host);
+        }
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btCancel;
