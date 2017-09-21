@@ -64,7 +64,7 @@ solution "NaoTHSoccer"
   includedirs (PATH["includes"])
   
   -- global links ( needed by NaoTHSoccer )
-  links {
+  links_naoth = {
     "opencv_core",
     "opencv_ml",
     "opencv_imgproc",
@@ -207,21 +207,28 @@ solution "NaoTHSoccer"
       buildoptions {"-std=gnu++11"}
     dofile (FRAMEWORK_PATH .. "/Platforms/Make/NaoRobot.lua")
       kind "ConsoleApp"
-      links { "NaoTHSoccer", "Commons" }
+      links { "NaoTHSoccer", "Commons", links_naoth }
       vpaths { ["*"] = FRAMEWORK_PATH .. "/Platforms/Source/NaoRobot" }
+    
+    -- generate tests if required
+    if _OPTIONS["Test"] ~= nil then
+      dofile ("../Test/Make/EigenPerformance.lua")
+        kind "ConsoleApp"
+        vpaths { ["*"] = "../Test/Source/EigenPerformance" }
+    end
   else
     dofile (FRAMEWORK_PATH .. "/Platforms/Make/SimSpark.lua")
       kind "ConsoleApp"
-      links { "NaoTHSoccer", "Commons" }
+      links { "NaoTHSoccer", "Commons", links_naoth }
       vpaths { ["*"] = FRAMEWORK_PATH .. "/Platforms/Source/SimSpark" }
       debugargs { "--sync" }
     dofile (FRAMEWORK_PATH .. "/Platforms/Make/LogSimulator.lua")
       kind "ConsoleApp"
-      links { "NaoTHSoccer", "Commons" }
+      links { "NaoTHSoccer", "Commons", links_naoth }
       vpaths { ["*"] = FRAMEWORK_PATH .. "/Platforms/Source/LogSimulator" }
     dofile (FRAMEWORK_PATH .. "/Platforms/Make/LogSimulatorJNI.lua")
       kind "SharedLib"
-      links { "NaoTHSoccer", "Commons" }
+      links { "NaoTHSoccer", "Commons", links_naoth}
       vpaths { ["*"] = FRAMEWORK_PATH .. "/Platforms/Source/LogSimulatorJNI" }
       
     -- generate tests if required
@@ -230,5 +237,8 @@ solution "NaoTHSoccer"
         kind "ConsoleApp"
         links { "NaoTHSoccer", "Commons" }
         vpaths { ["*"] = "../Test/Source/BallEvaluator" }
+      dofile ("../Test/Make/EigenPerformance.lua")
+        kind "ConsoleApp"
+        vpaths { ["*"] = "../Test/Source/EigenPerformance" }
     end
   end
