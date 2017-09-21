@@ -39,16 +39,24 @@ workspace "NaoTHSoccer"
   
 	-- global include path for all projects and configurations
 	includedirs (PATH["includes"])
-
-	
-	-- global links ( needed by NaoTHSoccer )
+  
+  -- global dependencies ( needed by NaoTHSoccer )
+  --[[
 	links {
 			"opencv_core",
 			"opencv_ml",
 			"opencv_imgproc",
 			"opencv_objdetect"
 	}
-	
+  ]]--
+  -- these dependencies are included in the link lists of the binary projects
+  naoth_links = {
+			"opencv_core",
+			"opencv_ml",
+			"opencv_imgproc",
+			"opencv_objdetect"
+	}
+  
 	-- this is on by default in premake4 stuff
 	functionlevellinking "on"
 	
@@ -127,6 +135,15 @@ workspace "NaoTHSoccer"
 		buildoptions {"/wd4996"} -- disable warning: "...deprecated..."
 		buildoptions {"/wd4290"} -- exception specification ignored (typed specifications are ignored)
 		links {"ws2_32"}
+    
+    linkoptions{ "/NODEFAULTLIB:MSVCRT" }
+    --[[
+    -- this is needed to supress the linker warning in VS2013 if gloabal links are used 
+    linkoptions {
+			"/ignore:4221", -- LNK4221: This object file does not define any previously undefined public symbols, so it will not be used by any link operation that consumes this library
+		}
+    ]]--
+    
 		debugdir "$(SolutionDir).."
 		
 		-- remove the nao platform if action is vs*
@@ -203,30 +220,36 @@ workspace "NaoTHSoccer"
       defines { "BOOST_SIGNALS_NO_DEPRECATION_WARNING" }
       -- ACHTUNG: NaoSMAL doesn't build with the flag -std=c++11 (because of Boost)
       buildoptions {"-std=gnu++11"}
+      targetextension ("")
+      
     dofile (FRAMEWORK_PATH .. "/Platforms/Make/NaoRobot.lua")
       kind "ConsoleApp"
-      links { "NaoTHSoccer", "Commons" }
+      links { "NaoTHSoccer", "Commons", naoth_links}
       vpaths { ["*"] = FRAMEWORK_PATH .. "/Platforms/Source/NaoRobot" }
+      targetextension ("")
+      
   else
     dofile (FRAMEWORK_PATH .. "/Platforms/Make/SimSpark.lua")
       kind "ConsoleApp"
-      links { "NaoTHSoccer", "Commons" }
+      links { "NaoTHSoccer", "Commons", naoth_links}
       vpaths { ["*"] = FRAMEWORK_PATH .. "/Platforms/Source/SimSpark" }
       debugargs { "--sync" }
+      
     dofile (FRAMEWORK_PATH .. "/Platforms/Make/LogSimulator.lua")
       kind "ConsoleApp"
-      links { "NaoTHSoccer", "Commons" }
+      links { "NaoTHSoccer", "Commons", naoth_links}
       vpaths { ["*"] = FRAMEWORK_PATH .. "/Platforms/Source/LogSimulator" }
+      
     dofile (FRAMEWORK_PATH .. "/Platforms/Make/LogSimulatorJNI.lua")
       kind "SharedLib"
-      links { "NaoTHSoccer", "Commons" }
+      links { "NaoTHSoccer", "Commons", naoth_links}
       vpaths { ["*"] = FRAMEWORK_PATH .. "/Platforms/Source/LogSimulatorJNI" }
       
     -- generate tests if required
     if _OPTIONS["Test"] ~= nil then
       dofile ("../Test/Make/BallEvaluator.lua")
         kind "ConsoleApp"
-        links { "NaoTHSoccer", "Commons" }
+        links { "NaoTHSoccer", "Commons", naoth_links}
         vpaths { ["*"] = "../Test/Source/BallEvaluator" }
     end
   end
