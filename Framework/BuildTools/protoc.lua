@@ -191,6 +191,8 @@ newoption {
 -- the action protoc takes the files to compile as argument
 -- see also the "protoc-cpp" and "protoc-java" arguments for specifying what kind of file
 -- to generate and where to generate them
+
+--[[
 newaction {
   trigger = "protoc",
   description = "Compile premake5 messages given as argument",
@@ -198,3 +200,4 @@ newaction {
     invokeprotoc(_ARGS, _OPTIONS["protoc-cpp"], _OPTIONS["protoc-java"], _OPTIONS["protoc-python"], split(_OPTIONS["protoc-ipath"], ":") )    
   end
 }
+]]--
