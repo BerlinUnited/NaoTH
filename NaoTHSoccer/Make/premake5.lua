@@ -230,8 +230,6 @@ workspace "NaoTHSoccer"
       
   else
     dofile (FRAMEWORK_PATH .. "/Platforms/Make/SimSpark.lua")
-      -- HACK: protobuf makes problems
-      buildoptions {"-Wno-conversion"}
       kind "ConsoleApp"
       links { "NaoTHSoccer", "Commons", naoth_links}
       vpaths { ["*"] = FRAMEWORK_PATH .. "/Platforms/Source/SimSpark" }
