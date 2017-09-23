@@ -65,6 +65,8 @@ public:
   {
   public:
     virtual const std::string getTypeName() const = 0;
+
+    // NOTE: used by module manager. Can it be removed?
     virtual const Representation& getRepresentation() const = 0;
     virtual Representation& getRepresentation() = 0;
 
