@@ -31,15 +31,12 @@
 #include "Tools/Debug/DebugRequest.h"
 #include "Tools/Debug/DebugModify.h"
 #include "Tools/Debug/DebugDrawings.h"
-#include <Tools/DataStructures/ParameterList.h>
-#include <Tools/Debug/DebugParameterList.h>
 
 BEGIN_DECLARE_MODULE(SituationPriorProvider)
   PROVIDE(DebugRequest)
   PROVIDE(DebugPlot)
   PROVIDE(DebugModify)
   PROVIDE(DebugDrawings)
-  PROVIDE(DebugParameterList)
 
   REQUIRE(FieldInfo)
   REQUIRE(FrameInfo)
@@ -60,20 +57,6 @@ public:
  ~SituationPriorProvider();
 
  virtual void execute();
-
- /** parameters for the module */
- class Parameters : public ParameterList
- {
- public:
-
-   Parameters() : ParameterList("SituationPriorProvider")
-   {
-     PARAMETER_REGISTER(enable_priors) = true;
-     syncWithConfig();
-   }
-   bool enable_priors;
-
- } theParameters;
 
 private:
 
