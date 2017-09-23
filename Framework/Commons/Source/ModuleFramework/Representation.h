@@ -45,31 +45,25 @@ protected:
 
   Representation(const std::string& name)
     : name(name)
-  {
-  }
-
+  {}
 
 public:
   virtual ~Representation() {}
   const std::string& getName() const { return name; }
 
-  void registerProvide(const Module& module)
-  {
+  void registerProvide(const Module& module) {
     provide.push_back(&module);
   }
   
-  void unregisterProvide(const Module& module)
-  {
+  void unregisterProvide(const Module& module) {
     provide.remove(&module);
   }
 
-  void registerRequire(const Module& module)
-  {
+  void registerRequire(const Module& module) {
     require.push_back(&module);
   }
 
-  void unregisterRequire(const Module& module)
-  {
+  void unregisterRequire(const Module& module) {
     require.remove(&module);
   }
 
@@ -81,7 +75,7 @@ public:
   {
     // use representation name as fallback
     stream << name;
-  }//end print
+  }
 
 
   virtual bool serializable() const = 0;
