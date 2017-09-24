@@ -34,21 +34,33 @@ workspace "NaoTHSoccer"
 	configurations {"OptDebug", "Debug"}
 	location "../build"
 	
+  -- add general pathes
+  -- this mainly reflects the internal structure of the extern directory
+  sysincludedirs {
+    FRAMEWORK_PATH .. "/Commons/Source/Messages",
+    
+    EXTERN_PATH .. "/include",
+    EXTERN_PATH .. "/include/glib-2.0",
+    EXTERN_PATH .. "/include/gio-unix-2.0", -- does not exists anymore
+    EXTERN_PATH .. "/lib/glib-2.0/include"
+  }
+
+  includedirs { 
+    FRAMEWORK_PATH .. "/Commons/Source" 
+  }
+
+  syslibdirs { EXTERN_PATH .. "/lib"}
+
+  -- TODO: deprecated
 	-- global lib path for all configurations
-	libdirs (PATH["libs"])
+	syslibdirs (PATH["libs"])
   
+  -- TODO: deprecated
 	-- global include path for all projects and configurations
-	includedirs (PATH["includes"])
+	sysincludedirs (PATH["includes"])
+  
   
   -- global dependencies ( needed by NaoTHSoccer )
-  --[[
-	links {
-			"opencv_core",
-			"opencv_ml",
-			"opencv_imgproc",
-			"opencv_objdetect"
-	}
-  ]]--
   -- these dependencies are included in the link lists of the binary projects
   naoth_links = {
 			"opencv_core",
@@ -69,8 +81,7 @@ workspace "NaoTHSoccer"
 	
 	-- TODO: howto compile the framework representations properly *inside* the project?
 	local COMMONS_MESSAGES = FRAMEWORK_PATH .. "/Commons/Messages/"
-
-	local COMMONS_MESSAGES = FRAMEWORK_PATH .. "/Commons/Messages/"
+  
 	invokeprotoc(
 		{ 
 		  COMMONS_MESSAGES .. "CommonTypes.proto", 

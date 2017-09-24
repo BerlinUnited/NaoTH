@@ -12,6 +12,7 @@ project "NaoTHSoccer"
   naorobot_main = path.getabsolute(FRAMEWORK_PATH) .. "/Platforms/Source/DCM/NaoRobot/main.cpp"
   prebuildcommands { "touch " .. naorobot_main } -- it updates this multiple times
   
+  sysincludedirs { "../Source/Messages/" }
   includedirs { "../Source/" }
   
   links { "Commons"	}

@@ -87,33 +87,27 @@ local function protocCompile(inputFiles, cppOut, javaOut, pythonOut, ipaths)
   print("INFO: (Protbuf) executing " .. cmd)
   local succ, status, returnCode = os.execute(cmd)
   
+  -- TODO: deprecated
+  --[[
   if returnCode == 0 then
     print("NOTE: (Protbuf) supressing warnings in " .. cppOut)
     -- add few lines to suppress the conversion warnings to each of the generated *.cc files
     add_gcc_ignore_pragmas(os.matchfiles(path.join(cppOut,"**.pb.cc")))
     add_gcc_ignore_pragmas(os.matchfiles(path.join(cppOut,"**.pb.h")))
   end
+  ]]--
   
   return returnCode == 0
 end
 
-
+-- TODO: deprecated
 function add_gcc_ignore_pragmas(files)
-	-- add gcc pragma to suppress the conversion warnings to each of the generated *.cc files
-	-- NOTE: we assume GCC version >= 4.9
+  -- add GCC pragmas: declare the auto generated files as system headers to prevent any warnings
 	local prefix = "// added by NaoTH \n" ..
 				 "#if defined(__GNUC__)\n" ..
-				 "#pragma GCC diagnostic push\n" ..
-				 "#pragma GCC diagnostic ignored \"-Wconversion\"\n" ..
-				 "#pragma GCC diagnostic ignored \"-Wunused-parameter\"\n" ..
+				 "#pragma GCC system_header\n" ..
 				 "#endif\n\n"
          
-	-- restore the previous state at the end
-	local suffix = "\n\n// added by NaoTH \n" ..
-				 "#if defined(__GNUC__)\n" ..
-				 "#pragma GCC diagnostic pop\n" ..
-				 "#endif\n\n"
-	
   numberFiles = 0
 	for i,v in ipairs(files) do
     print("NOTE: process " .. v)
@@ -127,7 +121,7 @@ function add_gcc_ignore_pragmas(files)
 		local f = io.open(v, "w+")
 		f:write(prefix);
 		f:write(content);
-		f:write(suffix);
+		--f:write(suffix);
 		f:close()
     numberFiles = numberFiles + 1
 	end
@@ -136,6 +130,7 @@ function add_gcc_ignore_pragmas(files)
     print("WARNING: (Protbuf) no message files were processed")
   end
 end
+
 
 function invokeprotoc(inputFiles, cppOut, javaOut, pythonOut, ipaths)
 	-- check if protobuf compile is explicitely requested
