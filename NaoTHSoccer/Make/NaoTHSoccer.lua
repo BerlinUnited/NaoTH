@@ -10,4 +10,6 @@ project "NaoTHSoccer"
   
   includedirs { "../Source/" }
   
+  links { "Commons"	}
+  
   targetname "naoth-soccer"
