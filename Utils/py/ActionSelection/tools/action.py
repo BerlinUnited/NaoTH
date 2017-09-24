@@ -5,8 +5,8 @@ from naoth import math2d as m2d
 
 num_particles = 30
 friction = 0.0275
-good_threshold_percentage = 0.85
-minGoalParticles = 9
+good_threshold_percentage = 1  # experimental TODO expose this value
+minGoalParticles = 25  # experimental was 9 before
 
 
 class Action:
@@ -24,14 +24,14 @@ class Action:
             return ball
         if noise:
             if self.speed_std > 0:
-              speed = np.random.normal(self.speed, self.speed_std)
+                speed = np.random.normal(self.speed, self.speed_std)
             else:
-              speed = self.speed
+                speed = self.speed
               
             if self.angle_std > 0:
-              angle = np.random.normal(math.radians(self.angle), math.radians(self.angle_std))
+                angle = np.random.normal(math.radians(self.angle), math.radians(self.angle_std))
             else:
-              angle = math.radians(self.angle)
+                angle = math.radians(self.angle)
               
             distance = speed * speed / friction / gforce / 2.0  # friction*mass*gforce*distance = 1/2*mass*speed*speed
         else:
@@ -66,7 +66,8 @@ class ActionResults:
     def __init__(self, categorized_ball_position_list):
         self.ball_positions = categorized_ball_position_list  # type is list of CategorizedBallPosition
         self.cat_histogram = [0]*len(Categories)  # type is list
-        self.expected_ball_pos = m2d.Vector2()  # should be in local coordinates
+        self.expected_ball_pos_mean = m2d.Vector2()  # mean - should be in local coordinates
+        self.expected_ball_pos_median = m2d.Vector2()  # median - should be in local coordinates
 
     def positions(self):
         # returns a list of CategorizedBallPosition

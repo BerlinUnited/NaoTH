@@ -7,39 +7,46 @@ from tools import Simulation as Sim
 from naoth import math2d as m2d
 from tools import tools
 
+"""
+This module visualizes the samples and the decision calculated by the Simulation Based Algorithm.
+The red circles represents a sample. The white circle is the robot. The yellow circle is the mean
+of the samples and the blue circle is the median of the samples. The position of the robot and the
+relative ball position can be changed by modifying the state class.
+
+Example:
+    run without any parameters
+
+        $ python run_simulation.py
+"""
+
 
 class State:
     def __init__(self):
         self.pose = m2d.Pose2D()
-        self.pose.translation = m2d.Vector2(-2900, -2200)
-        self.pose.rotation = math.radians(45)
+        self.pose.translation = m2d.Vector2(-1000, -1000)
+        self.pose.rotation = math.radians(0)
 
         self.ball_position = m2d.Vector2(100.0, 0.0)
 
         self.obstacle_list = ([])  # is in global coordinates
-        self.own_robots = [m2d.Vector2(-2250, -1000)]
-        self.opp_robots = [m2d.Vector2(-1800, -1000)]
 
 
 def draw_actions(actions_consequences, state, best_action):
     plt.clf()
-    tools.draw_field()
+    tools.draw_field(plt.gca())
 
     axes = plt.gca()
     axes.add_artist(Circle(xy=(state.pose.translation.x, state.pose.translation.y), radius=100, fill=False, edgecolor='white'))
-    axes.text(0, 0, best_action, fontsize=12)
-
-    for own in state.own_robots:
-        axes.add_artist(
-            Circle(xy=(own.x, own.y), radius=100, fill=True, edgecolor='blue'))
-    for opp in state.opp_robots:
-        axes.add_artist(
-            Circle(xy=(opp.x, opp.y), radius=100, fill=True, edgecolor='red'))
+    axes.text(-4500, 3150, best_action, fontsize=12)
 
     x = np.array([])
     y = np.array([])
 
     for consequence in actions_consequences:
+        expected_ball_pos_mean = state.pose * consequence.expected_ball_pos_mean
+        expected_ball_pos_median = state.pose * consequence.expected_ball_pos_median
+        axes.add_artist(Circle(xy=(expected_ball_pos_mean.x, expected_ball_pos_mean.y), radius=100, fill=False, edgecolor='yellow'))
+        axes.add_artist(Circle(xy=(expected_ball_pos_median.x, expected_ball_pos_median.y), radius=100, fill=False, edgecolor='blue'))
         for particle in consequence.positions():
             ball_pos = state.pose * particle.ball_pos  # transform in global coordinates
 

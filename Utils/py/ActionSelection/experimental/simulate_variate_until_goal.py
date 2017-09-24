@@ -11,6 +11,19 @@ from tools import tools
 from tools import field_info as field
 from tools import raw_attack_direction_provider as attack_dir
 
+"""
+Visualization of Action Selection Algorithm until a goal is scored, with extra variations not considered in Action Model
+definition.
+
+Example:
+    run without any parameters
+
+        $ python simulate_variate_until_goal.py
+"""
+
+# TODO update this with all the bugfixes from other scripts
+# TODO make it possible to switch between variations and standard
+
 
 class State:
     def __init__(self):
@@ -64,8 +77,9 @@ def var_kick(kick_type, ball_pos, shorten_kicks=True):
 
 def draw_robot_walk_lines(line):
     plt.clf()
-    tools.draw_field()
     axes = plt.gca()
+    tools.draw_field(axes)
+
     count = 0
     action_name_list = ["none", "short", "left", "right"]
     for state in line:
@@ -120,7 +134,7 @@ def simulate_goal_cycle(variation=False):
         sim_data[len(sim_data)-1].next_action = best_action
 
         # expected_ball_pos should be in local coordinates for rotation calculations
-        expected_ball_pos = actions_consequences[best_action].expected_ball_pos
+        expected_ball_pos = actions_consequences[best_action].expected_ball_pos_mean
 
         if variation is True:
             expected_ball_pos = var_kick(best_action, expected_ball_pos)
