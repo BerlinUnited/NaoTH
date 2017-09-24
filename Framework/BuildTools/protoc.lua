@@ -84,13 +84,14 @@ local function protocCompile(inputFiles, cppOut, javaOut, pythonOut, ipaths)
   os.mkdir(javaOut)
   
   -- generate the message files
-  print("INFO: executing " .. cmd)
+  print("INFO: (Protbuf) executing " .. cmd)
   local succ, status, returnCode = os.execute(cmd)
   
   if returnCode == 0 then
+    print("NOTE: (Protbuf) supressing warnings in " .. cppOut)
     -- add few lines to suppress the conversion warnings to each of the generated *.cc files
-    add_gcc_ignore_pragmas(os.matchfiles(cppOut .. "**.pb.cc"))
-    add_gcc_ignore_pragmas(os.matchfiles(cppOut .. "**.pb.h"))
+    add_gcc_ignore_pragmas(os.matchfiles(path.join(cppOut,"**.dpb.cc")))
+    add_gcc_ignore_pragmas(os.matchfiles(path.join(cppOut,"**.dpb.h")))
   end
   
   return returnCode == 0
@@ -113,10 +114,12 @@ function add_gcc_ignore_pragmas(files)
 				 "#pragma GCC diagnostic pop\n" ..
 				 "#endif\n\n"
 	
+  numberFiles = 0
 	for i,v in ipairs(files) do
+    print("NOTE: process " .. v)
 		local f = io.open(v, "r")
 		if (f == nil) then
-			print ("ERROR: could not open file \"" .. v)
+			print ("ERROR: (Protbuf) could not open file \"" .. v)
 		end
 		local content = f:read("*all")
 		f:close()
@@ -126,7 +129,12 @@ function add_gcc_ignore_pragmas(files)
 		f:write(content);
 		f:write(suffix);
 		f:close()
+    numberFiles = numberFiles + 1
 	end
+  
+  if numberFiles == 0 then
+    print("WARNING: (Protbuf) no message files were processed")
+  end
 end
 
 function invokeprotoc(inputFiles, cppOut, javaOut, pythonOut, ipaths)
