@@ -15,23 +15,28 @@ newaction {
 
 	execute = function()
 		if os.isdir("../build") then
-			bla = os.rmdir("../build")
+			os.rmdir("../build")
 		end
 		if os.isdir("../dist") then
-			blub = os.rmdir("../dist")
+			os.rmdir("../dist")
 		end
 		
 		-- force protobuf to recompile
 		if os.isfile("../Messages/.Representations.proto.lastCompile~") then
-			asdf = os.remove("../Messages/.Representations.proto.lastCompile~")
+			os.remove("../Messages/.Representations.proto.lastCompile~")
 		end
-		--[[
-		if bla == nil then
-			print("Error: could not delete build folder")
+		
+		if os.isfile("../../Framework/Commons/Messages/.CommonTypes.proto.lastCompile~") then
+			os.remove("../../Framework/Commons/Messages/.CommonTypes.proto.lastCompile~")
 		end
-		]]--
-		-- TODO throw error if removal failed
-		-- TODO delete dist folder as well
+		
+		if os.isfile("../../Framework/Commons/Messages/.Framework-Representations.proto.lastCompile~") then
+			os.remove("../../Framework/Commons/Messages/.Framework-Representations.proto.lastCompile~")
+		end
+		
+		if os.isfile("../../Framework/Commons/Messages/.Messages.proto.lastCompile~") then
+			os.remove("../../Framework/Commons/Messages/.Messages.proto.lastCompile~")
+		end
 	end,
 }
 
