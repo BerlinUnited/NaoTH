@@ -98,14 +98,14 @@ workspace "NaoTHSoccer"
 		defines { "DEBUG" }		
 		-- FatalWarnings treats compiler/linker warnings as errors
 		-- in premake4 linker warnings are not enabled
-		flags { "FatalCompileWarnings" }
+		flags { "FatalCompileWarnings"}
 		symbols "On"
 
 	filter "configurations:OptDebug"	
 		defines { "DEBUG" }
 		-- FatalWarnings treats compiler/linker warnings as errors
 		-- in premake4 linker warnings are not enabled
-		flags { "FatalCompileWarnings" }
+		flags { "FatalCompileWarnings" } --"LinkTimeOptimization"
 		optimize "Speed"
 
 	filter { "platforms:Native" }
@@ -115,7 +115,7 @@ workspace "NaoTHSoccer"
 	filter { "platforms:Nao" }
 		defines { "NAO" }
 		targetdir "../dist/Nao"
-		--warnings "Extra"
+		warnings "Extra"
 
 		-- for debugging
 		-- buildoptions {"-time"}
@@ -125,7 +125,7 @@ workspace "NaoTHSoccer"
 		buildoptions {"-Wno-type-limits"}
 		-- some of the protobuf messages are marked as deprecated but are still in use for legacy reasons
 		buildoptions {"-Wno-deprecated-declarations"}
-		-- buildoptions {"-Wconversion"}
+		buildoptions {"-Wconversion"}
 		buildoptions {"-std=c++11"}
 
 	-- additional defines for visual studio 	
