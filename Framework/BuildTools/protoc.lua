@@ -90,8 +90,8 @@ local function protocCompile(inputFiles, cppOut, javaOut, pythonOut, ipaths)
   if returnCode == 0 then
     print("NOTE: (Protbuf) supressing warnings in " .. cppOut)
     -- add few lines to suppress the conversion warnings to each of the generated *.cc files
-    add_gcc_ignore_pragmas(os.matchfiles(path.join(cppOut,"**.dpb.cc")))
-    add_gcc_ignore_pragmas(os.matchfiles(path.join(cppOut,"**.dpb.h")))
+    add_gcc_ignore_pragmas(os.matchfiles(path.join(cppOut,"**.pb.cc")))
+    add_gcc_ignore_pragmas(os.matchfiles(path.join(cppOut,"**.pb.h")))
   end
   
   return returnCode == 0
