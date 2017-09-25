@@ -87,42 +87,59 @@ local function protocCompile(inputFiles, cppOut, javaOut, pythonOut, ipaths)
   print("INFO: (Protbuf) executing " .. cmd)
   local succ, status, returnCode = os.execute(cmd)
   
-  -- TODO: deprecated
-  --[[
   if returnCode == 0 then
     print("NOTE: (Protbuf) supressing warnings in " .. cppOut)
     -- add few lines to suppress the conversion warnings to each of the generated *.cc files
     add_gcc_ignore_pragmas(os.matchfiles(path.join(cppOut,"**.pb.cc")))
     add_gcc_ignore_pragmas(os.matchfiles(path.join(cppOut,"**.pb.h")))
   end
-  ]]--
-  
+
   return returnCode == 0
 end
 
--- TODO: deprecated
+function file_add_prefix_sufix(file_name, prefix, suffix)
+  local f = io.open(file_name, "r")
+  if (f == nil) then
+    print ("ERROR: (Protbuf) could not open file \"" .. file_name)
+  end
+  local content = f:read("*all")
+  f:close()
+  
+  local f = io.open(file_name, "w+")
+  f:write(prefix);
+  f:write(content);
+  f:write(suffix);
+  f:close()
+end
+
 function add_gcc_ignore_pragmas(files)
   -- add GCC pragmas: declare the auto generated files as system headers to prevent any warnings
+  --[[
 	local prefix = "// added by NaoTH \n" ..
 				 "#if defined(__GNUC__)\n" ..
 				 "#pragma GCC system_header\n" ..
 				 "#endif\n\n"
+  ]]--
+  
+  -- add gcc pragma to suppress the conversion warnings to each of the generated *.cc files
+	-- NOTE: we assume GCC version >= 4.9
+	local prefix = "// added by NaoTH \n" ..
+				 "#if defined(__GNUC__)\n" ..
+				 "#pragma GCC diagnostic push\n" ..
+				 "#pragma GCC diagnostic ignored \"-Wconversion\"\n" ..
+				 "#pragma GCC diagnostic ignored \"-Wunused-parameter\"\n" ..
+				 "#endif\n\n"
+         
+	-- restore the previous state at the end
+	local suffix = "\n\n// added by NaoTH \n" ..
+				 "#if defined(__GNUC__)\n" ..
+				 "#pragma GCC diagnostic pop\n" ..
+				 "#endif\n\n"
          
   numberFiles = 0
-	for i,v in ipairs(files) do
+	for i,file in ipairs(files) do
     print("NOTE: process " .. v)
-		local f = io.open(v, "r")
-		if (f == nil) then
-			print ("ERROR: (Protbuf) could not open file \"" .. v)
-		end
-		local content = f:read("*all")
-		f:close()
-		
-		local f = io.open(v, "w+")
-		f:write(prefix);
-		f:write(content);
-		--f:write(suffix);
-		f:close()
+		file_add_prefix_sufix(file, suffix, prefix)
     numberFiles = numberFiles + 1
 	end
   
