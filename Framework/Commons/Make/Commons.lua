@@ -8,7 +8,9 @@ project "Commons"
   targetname "commons"
   
   includedirs {
-    "../Source/",
+    "../Source/"
+  }
+  sysincludedirs {
     "../Source/Messages/"
   }
   
