@@ -5,10 +5,12 @@ package naoscp;
 
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.SftpException;
+import java.awt.Font;
 import java.io.*;
 import java.net.InetAddress;
 import java.net.URLDecoder;
 import java.net.UnknownHostException;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Properties;
@@ -16,6 +18,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.UIDefaults;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 import naoscp.components.DeployDialog;
 import naoscp.components.NetwokPanel;
 import naoscp.tools.*;
@@ -26,6 +32,8 @@ import naoscp.tools.*;
  */
 public class NaoSCP extends javax.swing.JFrame {
 
+    private final DateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
+    
     private final String projectPath = getBasePath();
     private final String utilsPath = projectPath + "/Utils";
 
@@ -40,19 +48,43 @@ public class NaoSCP extends javax.swing.JFrame {
      * Creates new form NaoSCP
      */
     public NaoSCP() {
-        initComponents();
+      
+      boolean configLoaded = false;
+      try {
+        config.load(new FileReader(configPath));
+        config.setProperty("naoscp.naothsoccerpath", projectPath + "/NaoTHSoccer");
+        configLoaded = true;
+      } catch (IOException ex) {
+        Logger.getGlobal().log(Level.INFO,
+                "Could not open the config file. It will be created after the first execution.");
+      }
+        
+      try {
+        final String fontSizeProp = config.getProperty("naoscp.font-size");
+        if (fontSizeProp != null) {
+          UIManager.setLookAndFeel(new NimbusLookAndFeel() {
+            @Override
+            public UIDefaults getDefaults() {
+              UIDefaults defaults = super.getDefaults();
+              defaults.put("defaultFont", new Font(Font.SANS_SERIF, Font.PLAIN, Integer.parseInt(fontSizeProp)));
+              return defaults;
+            }
 
-        Logger.getGlobal().addHandler(logTextPanel.getLogHandler());
-        Logger.getGlobal().setLevel(Level.ALL);
-
-        try {
-            config.load(new FileReader(configPath));
-            config.setProperty("naoscp.naothsoccerpath", projectPath + "/NaoTHSoccer");
-            naoTHPanel.setProperties(config);
-        } catch (IOException ex) {
-            Logger.getGlobal().log(Level.INFO,
-                    "Could not open the config file. It will be created after the first execution.");
+          });
         }
+      } catch (UnsupportedLookAndFeelException ex) {
+        Logger.getGlobal().log(Level.INFO,
+                "Could not set look and feel/font size.");
+      }
+      
+      initComponents();
+
+      Logger.getGlobal().addHandler(logTextPanel.getLogHandler());
+      Logger.getGlobal().setLevel(Level.ALL);
+
+      if (configLoaded) {
+        naoTHPanel.setProperties(config);
+      }
     }
 
     public String getBasePath() {
@@ -284,6 +316,8 @@ public class NaoSCP extends javax.swing.JFrame {
                         //scp.run("/home/nao/tmp", "./setup.sh");
 
                         Scp.CommandStream shell = scp.getShell();
+                        // HACK: always stop naoth before proceeding
+                        shell.run("naoth stop", "killing naoth cognition processes");
                         shell.run("su", "Password:");
                         shell.run("root");
                         shell.run("cd /home/nao/tmp/");
@@ -353,7 +387,10 @@ public class NaoSCP extends javax.swing.JFrame {
                 public void run() {
 
                     setEnabledAll(false);
-
+                    
+                    Logger.getGlobal().log(Level.INFO, "----" + dateFormat.format(new Date()) + "---");
+                    Logger.getGlobal().log(Level.INFO, "Write to USB: " + targetDir);
+                    
                     try {
                         // STEP 1: create the deploy directory for the playerNumber
                         File deployDir = new File(targetDir, "deploy");
@@ -366,10 +403,13 @@ public class NaoSCP extends javax.swing.JFrame {
                             if (commentFile.exists()) {
                                 String backup_name = FileUtils.readFile(commentFile);
 
-                                if (deployDir.renameTo(new File(targetDir, backup_name))) {
+                                File backup_dir = new File(targetDir, backup_name);
+                                if(backup_dir.exists()) {
+                                    Logger.getGlobal().log(Level.WARNING, String.format("Could not back up the deploy directory, file already exists: %s", backup_dir.getAbsolutePath()));
+                                } else if (deployDir.renameTo(backup_dir)) {
                                     deployDir = new File(targetDir, "deploy");
                                 } else {
-                                    Logger.getGlobal().log(Level.WARNING, "Could not back up the deploy directory: " + deployDir.getAbsolutePath());
+                                    Logger.getGlobal().log(Level.WARNING, String.format("Could not back up the deploy directory %s to %s", deployDir.getAbsolutePath(), backup_dir.getAbsolutePath()));
                                 }
                             } else {
                                 FileUtils.deleteDir(deployDir);

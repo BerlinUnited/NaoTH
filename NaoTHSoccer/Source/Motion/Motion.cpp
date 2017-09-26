@@ -65,13 +65,18 @@ Motion::Motion()
   //theSupportPolygonGenerator = registerModule<SupportPolygonGenerator>("SupportPolygonGenerator", true);
   theOdometryCalculator = registerModule<OdometryCalculator>("OdometryCalculator", true);
   theKinematicChainProvider = registerModule<KinematicChainProviderMotion>("KinematicChainProvider", true);
+  theIMUModel = registerModule<IMUModel>("IMUModel", true);
+
+  theArmCollisionDetector = registerModule<ArmCollisionDetector>("ArmCollisionDetector", true);
 
   theMotionEngine = registerModule<MotionEngine>("MotionEngine", true);
+
+  getDebugParameterList().add(&parameter);
 }
 
 Motion::~Motion()
 {
-
+  getDebugParameterList().remove(&parameter);
 }
 
 void Motion::init(naoth::ProcessInterface& platformInterface, const naoth::PlatformBase& platform)
@@ -119,6 +124,7 @@ void Motion::init(naoth::ProcessInterface& platformInterface, const naoth::Platf
   platformInterface.registerOutputChanel(getInertialModel());
   platformInterface.registerOutputChanel(getBodyStatus());
   platformInterface.registerOutputChanel(getGroundContactModel());
+  platformInterface.registerOutputChanel(getCollisionPercept());
 
   // messages from cognition to motion
   platformInterface.registerInputChanel(getCameraInfo());
@@ -213,13 +219,13 @@ void Motion::processSensorData()
   theInertiaSensorCalibrator->execute();
 
   //TODO: introduce calibrated versions of the data
-  // correct the sensors
+  //TODO: correct the sensors z is inverted => don't forget to check all modules requiring/providing GyrometerData
+  getGyrometerData().data      += getCalibrationData().gyroSensorOffset;
   getInertialSensorData().data += getCalibrationData().inertialSensorOffset;
-  getGyrometerData().data += getCalibrationData().gyroSensorOffset;
-  getAccelerometerData().data += getCalibrationData().accSensorOffset;
+  getAccelerometerData().data  += getCalibrationData().accSensorOffset;
 
-  //
-  theInertiaSensorFilterBH->execute();
+  theIMUModel->execute();
+  //theInertiaSensorFilterBH->execute();
 
   //
   theFootGroundContactDetector->execute();
@@ -236,6 +242,9 @@ void Motion::processSensorData()
   //
   theOdometryCalculator->execute();
 
+  theArmCollisionDetector->execute();
+
+
   // NOTE: highly experimental
   static double rotationGyroZ = 0.0;
   if(getCalibrationData().calibrated) {
@@ -248,6 +257,12 @@ void Motion::processSensorData()
   {
     PLOT("Motion:rotationZ", rotationGyroZ);
     getOdometryData().rotation = rotationGyroZ;
+  }
+
+  if(parameter.useIMUDataForRotationOdometry)
+  {
+    PLOT("Motion:rotationZ", getIMUData().rotation.z);
+    getOdometryData().rotation = getIMUData().rotation.z;
   }
 
   // store the MotorJointData

@@ -334,7 +334,7 @@ public class BehaviorViewer extends AbstractDialog
         dc.add(robot);
         dc.add(ball);
      
-     Plugin.drawingEventManager.fireDrawingEvent(dc);
+     Plugin.drawingEventManager.fireDrawingEvent(dc, this);
      
     }catch(Exception ex)
     {

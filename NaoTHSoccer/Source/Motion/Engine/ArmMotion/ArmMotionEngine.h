@@ -12,7 +12,6 @@
 #include <ModuleFramework/Module.h>
 
 #include <Tools/DataStructures/ParameterList.h>
-#include "Tools/Debug/DebugParameterList.h"
 
 // representations
 #include <Representations/Infrastructure/RobotInfo.h>
@@ -117,7 +116,7 @@ private:
 
   bool armsDown();
   bool armsOnBack();
-
+  bool armsSynchronisedWithWalk();
 
   bool moveToJoints(const double (&position)[JointData::numOfJoint]);
 

@@ -18,6 +18,8 @@ include "Symbols/goal_symbols.xabsl";
 include "Symbols/selfloc_symbols.xabsl";
 include "Symbols/sound_symbols.xabsl";
 include "Symbols/field_symbols.xabsl";
+include "Symbols/remote_symbols.xabsl";
+include "Symbols/path_symbols.xabsl";
 
 // Head Control
 include "Options/HeadControl/head_control.xabsl";
@@ -25,6 +27,7 @@ include "Options/HeadControl/search_for_ball.xabsl";
 include "Options/HeadControl/search_for_goal.xabsl";
 include "Options/HeadControl/look_around.xabsl";
 include "Options/HeadControl/look_at_ball_percept.xabsl";
+include "Options/HeadControl/look_at_team_ball.xabsl";
 
 // Arm Control
 include "Options/Skills/arms_control.xabsl";
@@ -73,6 +76,25 @@ include "Options/Soccer/Strategy/decide_and_go_to_ready_position.xabsl";
 include "Options/Soccer/Strategy/positioning_for_own_kickoff.xabsl";
 include "Options/Soccer/Strategy/positioning_for_opp_kickoff.xabsl";
 
+// Path
+include "Options/Soccer/path_spl_play_soccer.xabsl";
+include "Options/Soccer/Strategy/Path/path_play_soccer.xabsl";
+include "Options/Soccer/Strategy/Path/path_decide_role.xabsl";
+include "Options/Soccer/Strategy/Path/path_basic_goalie.xabsl";
+include "Options/Soccer/Strategy/Striker/Path/path_striker.xabsl";
+include "Options/Soccer/Strategy/Striker/Path/path_sidekick_left.xabsl";
+include "Options/Soccer/Strategy/Striker/Path/path_sidekick_right.xabsl";
+include "Options/Soccer/Strategy/Striker/Path/path_kick_short_with_approach.xabsl";
+include "Options/Soccer/Strategy/Striker/Path/path_kick_long_with_approach.xabsl";
+include "Options/Soccer/Strategy/Striker/Path/path_turn_to_attack_direction.xabsl";
+include "Options/Soccer/Strategy/Striker/Path/path_dash.xabsl";
+include "Options/Skills/Path/path_move_around_ball.xabsl";
+include "Options/Skills/Path/path_go_to_ball_with_USOA.xabsl";
+include "Options/Skills/Path/path_go_to_ball_with_foot_dynamic.xabsl";
+include "Options/Skills/Path/path_long_kick.xabsl";
+include "Options/Skills/Path/path_short_kick.xabsl";
+include "Options/Skills/Path/path_sidekick.xabsl";
+
 //Action Selection Striker
 include "Options/Soccer/Strategy/Striker/striker.xabsl";
 include "Options/Soccer/Strategy/Striker/sidekick_left.xabsl";
@@ -87,6 +109,7 @@ include "Options/Soccer/Strategy/passive/decide_and_go_to_passive_position_after
 include "Options/Soccer/Strategy/passive/passive_behavior.xabsl";
 include "Options/Soccer/Strategy/passive/passive_ball_seen.xabsl";
 include "Options/Soccer/Strategy/passive/passive_ball_not_seen.xabsl";
+include "Options/Soccer/Strategy/passive/passive_look_at_team_ball.xabsl";
 include "Options/Soccer/Strategy/passive/go_to_and_keep_passive_position.xabsl";
 
 //Goalie
@@ -107,6 +130,13 @@ include "Options/Soccer/Test/passive_player_agent.xabsl";
 include "Options/Soccer/Test/basic_goali_agent.xabsl";
 include "Options/Soccer/Test/striker_agent.xabsl";
 
+// remote
+include "Options/Remote/spl_remote_agent.xabsl";
+include "Options/Remote/spl_remote_decide_gamestate.xabsl";
+include "Options/Remote/spl_remote_play.xabsl";
+include "Options/Remote/spl_remote_play_direct_control.xabsl";
+include "Options/Remote/spl_remote_play_lock_control.xabsl";
+include "Options/Remote/spl_remote_secondary_actions.xabsl";
 
 /* Test section */
 // Test agents Head Control
@@ -142,6 +172,21 @@ include "Options/Test/agent/clown_walk_test_agent.xabsl";
 include "Options/Test/agent/obstacle_test_agent.xabsl";
 include "Options/Test/agent/dribble_test_agent.xabsl";
 include "Options/Test/agent/walk_forward_agent.xabsl";
+
+// PathPlanner Tests
+include "Options/Test/pathplanner_test_sidekick.xabsl";
+include "Options/Test/pathplanner_test_short_kick.xabsl";
+include "Options/Test/pathplanner_test_long_kick.xabsl";
+include "Options/Test/pathplanner_sidekick.xabsl";
+include "Options/Test/pathplanner_kick_short.xabsl";
+include "Options/Test/pathplanner_kick_long.xabsl";
+// Kick only
+include "Options/Test/pathplanner_test_only_sidekick.xabsl";
+include "Options/Test/pathplanner_sidekick_only.xabsl";
+include "Options/Test/pathplanner_test_only_shortkick.xabsl";
+include "Options/Test/pathplanner_shortkick_only.xabsl";
+
+
 
 // Test agents (options) Behaviour Tests
 include "Options/Test/agent/role_change_test_agent.xabsl";
@@ -199,8 +244,12 @@ include "Options/Test/change_state_input_test.xabsl";
 
 /** The soccer competition agent */
 agent spl_soccer("SPL Soccer", spl_play_soccer);
+/** PathPlanner **/
+agent path_spl_soccer("Path SPL Soccer", path_spl_play_soccer);
+/** PathPlanner **/
 agent penalty("Penalty", play_penalty);
 
+agent spl_remote("Remote Player", spl_remote_agent);
 
 /** simple soccer agents **/
 agent role_basic_goali("basic_goali", basic_goali_agent);
@@ -239,6 +288,16 @@ agent goto_point_with_USOA_test("go_to_point_with_USOA_test_agent", go_to_point_
 
 agent walk_forward("walk_forward_agent", walk_forward_agent);
 agent dribble_test_agent("dribble_test_agent", dribble_test_agent);
+
+// PathPlanner Test Agents
+agent pathplanner_test_sidekick("pathplanner_test_sidekick", pathplanner_test_sidekick);
+agent pathplanner_test_short_kick("pathplanner_test_short_kick", pathplanner_test_short_kick);
+agent pathplanner_test_long_kick("pathplanner_test_long_kick", pathplanner_test_long_kick);
+// Kicks only
+agent pathplanner_test_only_sidekick("pathplanner_test_only_sidekick", pathplanner_test_only_sidekick);
+agent pathplanner_test_only_shortkick("pathplanner_test_only_shortkick", pathplanner_test_only_shortkick);
+
+
 
 // Test agents search
 agent search_test_agent("search_test_agent",search_test_agent);

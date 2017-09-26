@@ -17,7 +17,7 @@ option look_around
   {
     decision
     {
-      if (state_time > 1200)
+      if (head.yaw > 60)
         goto look_right;
       else 
         stay;
@@ -35,7 +35,7 @@ option look_around
   {
     decision
     {
-      if (state_time > 1200)
+      if (head.yaw < -60)
         goto look_left;
       else 
         stay;

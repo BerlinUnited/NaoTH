@@ -22,4 +22,3 @@ namespace naoth
 }
 
 #endif  /* _BATTERY_DATA_H */
-

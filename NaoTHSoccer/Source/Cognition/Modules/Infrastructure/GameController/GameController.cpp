@@ -6,6 +6,7 @@
 GameController::GameController()
   : 
   lastWhistleCount(0),
+  lastGameState(GameData::GameState::unknown_game_state),
   returnMessage(GameReturnData::alive)
 {
   DEBUG_REQUEST_REGISTER("gamecontroller:play", "force the play state", false);
@@ -14,6 +15,7 @@ GameController::GameController()
   DEBUG_REQUEST_REGISTER("gamecontroller:ready", "force the ready state", false);
   DEBUG_REQUEST_REGISTER("gamecontroller:set", "force the set state", false);
   DEBUG_REQUEST_REGISTER("gamecontroller:finished", "force the finished state", false);
+  DEBUG_REQUEST_REGISTER("whistle:blow", "the robot recognizes a whistle", false);
 
   // TODO: make it parameters?
   // load values from config
@@ -59,6 +61,15 @@ GameController::GameController()
   } else {
     std::cerr << "[GameData] " << "No team color (TeamColor) given" << std::endl;
   }
+
+  // use the team configuration if avaliable
+  const std::string& name = naoth::Platform::getInstance().theRobotName;
+  if (config.hasKey("team", name)) {
+    getPlayerInfo().playerNumber = config.getInt("team", name);
+  }
+
+  // set whistle count on init; otherwise we're detecting a whistle on startup!
+  lastWhistleCount = getWhistlePercept().counter;
 }
 
 void GameController::execute()
@@ -99,12 +110,12 @@ void GameController::execute()
   handleDebugRequest();  
 
   
-  // remember the whistle counter before set
-  if(getPlayerInfo().robotState == PlayerInfo::ready) {
+  // remember the whistle counter before and after set (ready/playing)
+  if(getPlayerInfo().robotState == PlayerInfo::ready || (lastGameState == GameData::set && getGameData().gameState == GameData::playing)) {
     lastWhistleCount = getWhistlePercept().counter;
   }
-  // whistle overrides gamecontroller when in set
-  else if(getGameData().gameState == GameData::set)
+  // whistle overrides state when in set
+  else if(getPlayerInfo().robotState == PlayerInfo::set)
   {
     // switch from set to play
     if(getWhistlePercept().counter > lastWhistleCount) {
@@ -119,6 +130,12 @@ void GameController::execute()
   {
     updateLEDs();
   }
+
+  // remember last game state (from gamecontroller)
+  lastGameState = getGameData().gameState;
+  // set teamcomm: whistle detected!
+  getTeamMessageData().custom.whistleDetected = getWhistlePercept().counter > lastWhistleCount;
+  getTeamMessageData().custom.whistleCount = getWhistlePercept().counter;
 
   // provide the return message
   getGameReturnData().team = getPlayerInfo().teamNumber;
@@ -148,6 +165,11 @@ void GameController::handleDebugRequest()
   );
   DEBUG_REQUEST("gamecontroller:finished",
     debugState = PlayerInfo::finished;
+  );
+
+  DEBUG_REQUEST("whistle:blow",
+    // kinda "hack": we don't increment the whistle counter, instead ...
+    lastWhistleCount--;
   );
 
   // NOTE: same behavior as the button interface

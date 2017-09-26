@@ -269,6 +269,19 @@ bool SimSparkController::init(const std::string& modelPath, const std::string& t
   //DEBUG_REQUEST_REGISTER("SimSparkController:beam", "beam to start pose", false);
   //REGISTER_DEBUG_COMMAND("beam", "beam to given pose", this);
 
+
+  Configuration& config = Platform::getInstance().theConfiguration;
+  // if player number wasn't set by configuration -> use the number from the simulation
+  if(config.getInt("player", "PlayerNumber") == 0) {
+    config.setInt("player", "PlayerNumber", theGameInfo.playerNumber);
+  }
+  // if team name wasn't set by configuration -> use the name from the simulation
+  if (!config.hasKey("player", "TeamName"))
+  {
+    config.setString("player", "TeamName", theGameInfo.teamName);
+  }
+  cout << "Player number: " << theGameInfo.playerNumber << endl;
+
   theLastSenseTime = NaoTime::getNaoTimeInMilliSeconds();
   theLastActTime = theLastSenseTime;
   calculateNextActTime();
@@ -1423,7 +1436,7 @@ void SimSparkController::say()
   }
 
   // make sure all robot have chance to say something
-  if ( ( static_cast<int>(floor(theSenseTime*1000/getBasicTimeStep()/2)) % theGameInfo.playersPerTeam) +1 != theGameInfo.playersPerTeam ) {
+  if ( ( static_cast<int>(floor(theSenseTime*1000/getBasicTimeStep()/2)) % theGameInfo.playersPerTeam) +1 != theGameInfo.playerNumber ) {
     return;
   }
 
@@ -1447,7 +1460,8 @@ bool SimSparkController::hear(const sexp_t* sexp)
     return false;
   }
 
-  sexp = sexp->next;
+  // in new simspark version (0.6.8+) an additional "team" field was added!
+  sexp = sexp->next; // direction or teamname
   /*
   std::string direction;
   double dir;
@@ -1474,6 +1488,13 @@ bool SimSparkController::hear(const sexp_t* sexp)
   sexp = sexp->next;
   string msg;
   SexpParser::parseValue(sexp, msg);
+
+  // we got the "correct" msg value, if we - at least - got the SPL-message size!
+  if(msg.size() < (sizeof(SPLStandardMessage) - SPL_STANDARD_MESSAGE_DATA_SIZE)) {
+      // ... otherwise we have to read another field/value! (simspark 0.6.8+)
+      sexp = sexp->next;
+      SexpParser::parseValue(sexp, msg);
+  }
 
   if ( !msg.empty() && msg != ""){
     theTeamMessageDataIn.data.push_back(msg);

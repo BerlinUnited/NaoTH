@@ -29,6 +29,8 @@
 #include <Representations/Infrastructure/VirtualVision.h>
 #include <Representations/Infrastructure/DebugMessage.h>
 #include "Representations/Infrastructure/CalibrationData.h"
+#include <Representations/Infrastructure/CpuData.h>
+#include "Representations/Motion/CollisionPercept.h"
 
 #include "Representations/Infrastructure/GPSData.h"
 //#include "Representations/Infrastructure/SerialSensorData.h"
@@ -69,6 +71,7 @@ BEGIN_DECLARE_MODULE(Sensor)
   PROVIDE(BatteryData)
   PROVIDE(UltraSoundReceiveData)
   PROVIDE(SoundCaptureData)
+  PROVIDE(CpuData)
 
   PROVIDE(TeamMessageDataIn)
   PROVIDE(RemoteMessageDataIn)
@@ -94,6 +97,7 @@ BEGIN_DECLARE_MODULE(Sensor)
   PROVIDE(CalibrationData)
   PROVIDE(BodyStatus)
   PROVIDE(GroundContactModel)
+  PROVIDE(CollisionPercept)
 END_DECLARE_MODULE(Sensor)
 
 class Sensor : public SensorBase

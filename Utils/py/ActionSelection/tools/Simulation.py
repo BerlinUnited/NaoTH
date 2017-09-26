@@ -6,7 +6,7 @@ import potential_field as pf
 from naoth import math2d as m2d
 
 
-def simulate_consequences(action, categorized_ball_positions, state):
+def simulate_consequences(action, categorized_ball_positions, state, num_particles):
 
     categorized_ball_positions.reset()
 
@@ -31,6 +31,8 @@ def simulate_consequences(action, categorized_ball_positions, state):
     opp_goal_box = m2d.Rect2d(opp_goal_back_right, field.opponent_goalpost_left)
 
     # current ball position
+    # FIXME state.pose.rotation can become inf
+    #print(state.pose.translation.x, state.pose.translation.y, state.pose.rotation)
     global_ball_start_position = state.pose * state.ball_position
 
     # virtual ultrasound obstacle line
@@ -40,7 +42,7 @@ def simulate_consequences(action, categorized_ball_positions, state):
     mean_test_list_y = []
 
     # now generate predictions and categorize
-    for i in range(0, a.num_particles):
+    for i in range(0, num_particles):
         # predict and calculate shoot line
         global_ball_end_position = state.pose * action.predict(state.ball_position, True)
 
@@ -54,11 +56,11 @@ def simulate_consequences(action, categorized_ball_positions, state):
             t_min = shootline.length
             for side in goal_backsides:
                 t = shootline.line_intersection(side)
-                if 0 <= t < t_min:
+                if 0 <= t < t_min and side.intersect(shootline):
                     t_min = t
                     collision_with_goal = True
 
-        # if there are collisions with the back goal lines, calulate where the ball will stop
+        # if there are collisions with the back goal lines, calculate where the ball will stop
         if collision_with_goal:
             shootline = m2d.LineSegment(global_ball_start_position, shootline.point(t_min-field.ball_radius))
             global_ball_end_position = shootline.end()
@@ -72,14 +74,13 @@ def simulate_consequences(action, categorized_ball_positions, state):
             if dist < 400 and shootline.intersect(obstacle_line):
                 obstacle_collision = True
 
-        category = "INFIELD"
         if opp_goal_box.inside(global_ball_end_position):
             category = "OPPGOAL"
         elif obstacle_collision and obstacle_line.intersect(shootline) and shootline.intersect(obstacle_line):
             category = "COLLISION"
         elif (field.field_rect.inside(global_ball_end_position) or
-                  (global_ball_end_position.x <= field.opponent_goalpost_right.x and
-                field.opponent_goalpost_left.y > global_ball_end_position.y > field.opponent_goalpost_right.y)):
+              (global_ball_end_position.x <= field.opponent_goalpost_right.x and
+              field.opponent_goalpost_left.y > global_ball_end_position.y > field.opponent_goalpost_right.y)):
             category = "INFIELD"
         elif shootline.intersect(own_goal_line_global) and own_goal_line_global.intersect(shootline):
             category = "OWNGOAL"
@@ -99,7 +100,8 @@ def simulate_consequences(action, categorized_ball_positions, state):
         mean_test_list_y.append(local_test_pos.y)
 
         categorized_ball_positions.add(state.pose / global_ball_end_position, category)
-    categorized_ball_positions.expected_ball_pos = m2d.Vector2(np.mean(mean_test_list_x), np.mean(mean_test_list_y))
+    categorized_ball_positions.expected_ball_pos_mean = m2d.Vector2(np.mean(mean_test_list_x), np.mean(mean_test_list_y))
+    categorized_ball_positions.expected_ball_pos_median = m2d.Vector2(np.median(mean_test_list_x), np.median(mean_test_list_y))
     return categorized_ball_positions
 
 
@@ -114,7 +116,8 @@ def decide_smart(actions_consequences, state):
 
         # ignore actions with too high chance of kicking out
         score = results.likelihood("INFIELD") + results.likelihood("OPPGOAL")
-        if score <= max(0.0, a.good_threshold_percentage):
+        if score < max(0.0, a.good_threshold_percentage):
+            # print("Threshhold is too low for action: " + str(i) + "with score: " + str(score) )
             continue
 
         # all actions which are not too bad
@@ -161,6 +164,7 @@ def decide_smart(actions_consequences, state):
         best_action = 0
         best_value = float("inf")  # assuming potential is [0.0, inf]
         for index in acceptable_actions:
+            # potential = pf.benji_field(actions_consequences[index], state, state.opp_robots, state.own_robots)
             potential = pf.evaluate_action2(actions_consequences[index], state)
             if potential < best_value:
                 best_action = index
@@ -171,6 +175,9 @@ def decide_smart(actions_consequences, state):
     best_action = 0
     best_value = float("inf")  # assuming potential is [0.0, inf]
     for index in goal_actions:
+        # FIXME Test for different potential fields
+
+        # potential = pf.benji_field(actions_consequences[index], state, state.opp_robots, state.own_robots)
         potential = pf.evaluate_action2(actions_consequences[index], state)
         if potential < best_value:
             best_action = index

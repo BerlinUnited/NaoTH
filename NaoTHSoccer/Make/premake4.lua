@@ -24,6 +24,11 @@ end
 -- print("INFO:" .. (os.findlib("Controller") or "couldn't fined the lib Controller"))
 
 newoption {
+   trigger     = "Test",
+   description = "Generate test projects"
+}
+
+newoption {
    trigger     = "Wno-conversion",
    description = "Disable the -Wconversion warning for gcc"
 }
@@ -83,7 +88,7 @@ solution "NaoTHSoccer"
     },
     FRAMEWORK_PATH .. "/Commons/Source/Messages/", 
     "../../RobotControl/RobotConnector/src/", 
-    "../../Utils/pyLogEvaluator",
+    "../../Utils/py/naoth/naoth",
     {COMMONS_MESSAGES}
   )
 
@@ -91,7 +96,7 @@ solution "NaoTHSoccer"
     {"../Messages/Representations.proto"}, 
     "../Source/Messages/", 
     "../../RobotControl/RobotConnector/src/", 
-    "../../Utils/pyLogEvaluator",
+    "../../Utils/py/naoth/naoth",
     {COMMONS_MESSAGES, "../Messages/"}
   )
   
@@ -101,7 +106,7 @@ solution "NaoTHSoccer"
   
   configuration { "OptDebug" }
     defines { "DEBUG" }
-    flags { "Optimize", "FatalWarnings" }
+    flags { "OptimizeSpeed", "FatalWarnings" }
     
     
   configuration{"Native"}
@@ -123,7 +128,7 @@ solution "NaoTHSoccer"
     
   -- additional defines for visual studio
   configuration {"windows", "vs*"}
-    defines {"WIN32", "NOMINMAX", "EIGEN_DONT_ALIGN"}
+    defines {"WIN32", "NOMINMAX", "NOGDI", "EIGEN_DONT_ALIGN"}
     buildoptions {"/wd4351"} -- disable warning: "...new behavior: elements of array..."
     buildoptions {"/wd4996"} -- disable warning: "...deprecated..."
     buildoptions {"/wd4290"} -- exception specification ignored (typed stecifications are ignored)
@@ -141,6 +146,9 @@ solution "NaoTHSoccer"
     -- may be needed for newer glib2 versions, remove if not needed
     buildoptions {"-Wno-deprecated-declarations"}
     buildoptions {"-Wno-deprecated"}
+    -- Prohibit GCC to be clever and use undefined behavior for some optimizations
+    -- (see http://www.airs.com/blog/archives/120 for some nice explanation)
+    buildoptions {"-fno-strict-overflow"}
     buildoptions {"-std=c++11"}
     --flags { "ExtraWarnings" }
     links {"pthread"}
@@ -162,7 +170,7 @@ solution "NaoTHSoccer"
   
   
   configuration {"macosx"}
-    defines { "BOOST_SIGNALS_NO_DEPRECATION_WARNING" }
+    defines { "BOOST_SIGNALS_NO_DEPRECATION_WARNING", "EIGEN_DONT_ALIGN" }
     buildoptions {"-std=c++11"}
     -- disable some warnings
     buildoptions {"-Wno-deprecated-declarations"}
@@ -178,31 +186,49 @@ solution "NaoTHSoccer"
 
   -- commons
   dofile (FRAMEWORK_PATH .. "/Commons/Make/Commons.lua")
+    vpaths { ["*"] = FRAMEWORK_PATH .. "/Commons/Source" }
   
   -- core
   dofile "NaoTHSoccer.lua"
+    vpaths { ["*"] = "../Source" }
   
   -- set up platforms
   if _OPTIONS["platform"] == "Nao" then
     dofile (FRAMEWORK_PATH .. "/Platforms/Make/NaoSMAL.lua")
+      vpaths { ["*"] = FRAMEWORK_PATH .. "/Platforms/Source/NaoSMAL" }
       -- HACK: boost from NaoQI SDK makes problems
       buildoptions {"-Wno-conversion"}
+      -- these warning came in Windows with the toolchain 2013
+      buildoptions {"-Wno-unused-parameter"}
+      buildoptions {"-Wno-ignored-qualifiers"}
+      buildoptions {"-Wno-extra"}
       defines { "BOOST_SIGNALS_NO_DEPRECATION_WARNING" }
       -- ACHTUNG: NaoSMAL doesn't build with the flag -std=c++11 (because of Boost)
       buildoptions {"-std=gnu++11"}
     dofile (FRAMEWORK_PATH .. "/Platforms/Make/NaoRobot.lua")
       kind "ConsoleApp"
       links { "NaoTHSoccer", "Commons" }
+      vpaths { ["*"] = FRAMEWORK_PATH .. "/Platforms/Source/NaoRobot" }
   else
     dofile (FRAMEWORK_PATH .. "/Platforms/Make/SimSpark.lua")
       kind "ConsoleApp"
       links { "NaoTHSoccer", "Commons" }
+      vpaths { ["*"] = FRAMEWORK_PATH .. "/Platforms/Source/SimSpark" }
       debugargs { "--sync" }
     dofile (FRAMEWORK_PATH .. "/Platforms/Make/LogSimulator.lua")
       kind "ConsoleApp"
       links { "NaoTHSoccer", "Commons" }
+      vpaths { ["*"] = FRAMEWORK_PATH .. "/Platforms/Source/LogSimulator" }
     dofile (FRAMEWORK_PATH .. "/Platforms/Make/LogSimulatorJNI.lua")
       kind "SharedLib"
       links { "NaoTHSoccer", "Commons" }
+      vpaths { ["*"] = FRAMEWORK_PATH .. "/Platforms/Source/LogSimulatorJNI" }
+      
+    -- generate tests if required
+    if _OPTIONS["Test"] ~= nil then
+      dofile ("../Test/Make/BallEvaluator.lua")
+        kind "ConsoleApp"
+        links { "NaoTHSoccer", "Commons" }
+        vpaths { ["*"] = "../Test/Source/BallEvaluator" }
+    end
   end
-  

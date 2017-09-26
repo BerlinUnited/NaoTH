@@ -8,37 +8,42 @@
 
 using namespace std;
 
-TeamCommReceiver::TeamCommReceiver() : droppedMessages(0)
+TeamCommReceiver::TeamCommReceiver():
+    dropNoSplMessage(0),
+    dropNotOurTeam(0),
+    dropNotParseable(0),
+    dropKeyFail(0),
+    dropMonotonic(0)
 {
   DEBUG_REQUEST_REGISTER("TeamCommReceiver:artificial_delay",
                          "Add an artificial delay to all team comm messages", false );
 
-
   getDebugParameterList().add(&parameters);
+}
+
+TeamCommReceiver::~TeamCommReceiver()
+{
+  getDebugParameterList().remove(&parameters);
 }
 
 void TeamCommReceiver::execute()
 {
-  const naoth::TeamMessageDataIn& teamMessageData = getTeamMessageDataIn();
-
   bool usingDelayBuffer = false;
   DEBUG_REQUEST("TeamCommReceiver:artificial_delay",
     usingDelayBuffer = true;
   );
 
-  for(vector<string>::const_iterator iter = teamMessageData.data.begin();
-      iter != teamMessageData.data.end(); ++iter)
-  {
+  // process all incomming messages
+  for (auto const &it : getTeamMessageDataIn().data) {
     if(usingDelayBuffer) {
-      delayBuffer.add(*iter);
+      delayBuffer.add(it); // can be used for debugging
     } else {
-      handleMessage(*iter);
+      handleMessage(it);
     }
   }
 
   // handle messages if buffer half full (so we get really old messages)
-  if(usingDelayBuffer
-     && delayBuffer.size() >= delayBuffer.getMaxEntries()/2)
+  if(usingDelayBuffer && delayBuffer.size() >= delayBuffer.getMaxEntries()/2)
   {
     // only handle a quarter of the messages
     for(int i=0; i < delayBuffer.getMaxEntries()/4; i++)
@@ -48,150 +53,114 @@ void TeamCommReceiver::execute()
     }
   }
 
-  // add our own status as artifical message
-  // (so we are not dependant on a lousy network)
-
-  TeamMessage::Data ownTeamData;
-  TeamCommSender::fillMessage(getPlayerInfo(), getRobotInfo(), getFrameInfo(),
-                              getBallModel(), getRobotPose(), getBodyState(),
-                              getRoleDecisionModel(), getSoccerStrategy(), getPlayersModel(),
-                              getBatteryData(),getKickActionModel(),
-                              ownTeamData);
-  // we don't have the right player number in the beginning, wait to send
-  // one to ourself until we have a valid one
-  if(ownTeamData.playerNum > 0)
+  // wait until we got a valid player number
+  if (getPlayerInfo().playerNumber > 0 && 
+      getTeamMessageData().frameInfo.getFrameNumber() + 1 == getFrameInfo().getFrameNumber() &&
+      getTeamMessageData().playerNumber == getPlayerInfo().playerNumber &&
+      getTeamMessageData().teamNumber == getPlayerInfo().teamNumber) 
   {
-    SPLStandardMessage ownSPLMsg;
-    TeamCommSender::convertToSPLMessage(ownTeamData, ownSPLMsg);
-
-    std::string ownMsgData;
-    ownMsgData.assign((char*) &ownSPLMsg, sizeof(SPLStandardMessage));
-    handleMessage(ownMsgData, true);
+    // copying our own (old) message to the inbox
+    getTeamMessage().data[getPlayerInfo().playerNumber] = getTeamMessageData();
   }
 
-  PLOT("TeamCommReceiver:droppedMessages", droppedMessages);
+  // marking the begin of the outgoing message
+  getTeamMessageData().frameInfo = getFrameInfo();
+  // TODO: should we clear the old state?!? (see TeamMessageData::clear())
+
+  PLOT("TeamCommReceiver:dropNoSplMessage", dropNoSplMessage);
+  PLOT("TeamCommReceiver:dropNotOurTeam",   dropNotOurTeam);
+  PLOT("TeamCommReceiver:dropNotParseable", dropNotParseable);
+  PLOT("TeamCommReceiver:dropKeyFail",      dropKeyFail);
+  PLOT("TeamCommReceiver:dropMonotonic",    dropMonotonic);
 }
 
-TeamCommReceiver::~TeamCommReceiver()
-{
-  getDebugParameterList().remove(&parameters);
-}
-
-bool TeamCommReceiver::parseSPLStandardMessage(const std::string& data, SPLStandardMessage& msg) const
-{
-  if(data.size() > sizeof(SPLStandardMessage)) {
-    //std::cerr << "wrong package size for teamcomm (allow own: " << allowOwn << ")"  << std::endl;
-    // invalid message size
-    return false;
-  }
-
-  memcpy(&msg, data.c_str(), data.size()); // data.size() <= sizeof(SPLStandardMessage)
-
-  // furter sanity check for header and version
-  if(msg.header[0] != 'S' ||
-     msg.header[1] != 'P' ||
-     msg.header[2] != 'L' ||
-     msg.header[3] != ' ')
-  {
-    //std::cerr << "wrong header '" << spl.header  << "' for teamcomm (allow own: " << allowOwn << ")"  << std::endl;
-    return false;
-  }
-
-  if(msg.version != SPL_STANDARD_MESSAGE_STRUCT_VERSION) {
-    //std::cerr << "wrong version for teamcomm (allow own: " << allowOwn << ")"  << std::endl;
-    return false;
-  }
-
-  return true;
-}
-
-bool TeamCommReceiver::parseTeamMessage(const SPLStandardMessage& spl, TeamMessage::Data& msg) const
-{
-  msg.frameInfo = getFrameInfo();
-
-  msg.playerNum = spl.playerNum;
-  msg.teamNumber = spl.teamNum;
-
-
-  msg.pose.translation.x = spl.pose[0];
-  msg.pose.translation.y = spl.pose[1];
-  msg.pose.rotation = spl.pose[2];
-
-  // convert from seconds to milliseconds
-  msg.ballAge = (int) (spl.ballAge*1000.0f);
-
-  msg.ballPosition.x = spl.ball[0];
-  msg.ballPosition.y = spl.ball[1];
-
-  msg.ballVelocity.x = spl.ballVel[0];
-  msg.ballVelocity.y = spl.ballVel[1];
-
-  msg.fallen = (spl.fallen == 1);
-
-  msg.expectedBallPos.x = spl.shootingTo[0];
-  msg.expectedBallPos.x = spl.shootingTo[1];
-
-
-  // check if we can deserialize the user defined data
-  if(spl.numOfDataBytes > 0 && spl.numOfDataBytes <= SPL_STANDARD_MESSAGE_DATA_SIZE)
-  {
-    naothmessages::BUUserTeamMessage userData;
-    try
-    {
-      if(userData.ParseFromArray(spl.data, spl.numOfDataBytes))
-      {
-        msg.timestamp = userData.timestamp();
-        msg.bodyID = userData.bodyid();
-        msg.wasStriker = userData.wasstriker();
-        msg.timeToBall = userData.timetoball();
-        msg.isPenalized = userData.ispenalized();
-        msg.batteryCharge = userData.batterycharge();
-        msg.temperature = userData.temperature();
-        msg.opponents = std::vector<TeamMessage::Opponent>(userData.opponents_size());
-        for(size_t i=0; i < msg.opponents.size(); i++)
-        {
-          const naothmessages::Opponent& oppMsg = userData.opponents((int) i);
-          TeamMessage::Opponent& opp = msg.opponents[i];
-          opp.playerNum = oppMsg.playernum();
-          DataConversion::fromMessage(oppMsg.poseonfield(), opp.poseOnField);
-        }
-      }
-    }
-    catch(...)
-    {
-      // well, this is not one of our messages, ignore
-
-      // TODO: we might want to maintain a list of robots which send
-      // non-compliant messages in order to avoid overhead when trying to parse it
-      return false;
-    }
-  }
-
-  return true;
-}
-
-void TeamCommReceiver::handleMessage(const std::string& data, bool allowOwn)
+void TeamCommReceiver::handleMessage(const std::string& data)
 {
   SPLStandardMessage spl;
-  if(!parseSPLStandardMessage(data, spl)) {
+  // only legal SPL messages
+  if (!parseFromSplMessageString(data, spl)) {
+    dropNoSplMessage++;
     return;
   }
 
-  unsigned int dataTeamNum = (unsigned int)(spl.teamNum);
-  unsigned int dataPlayerNum = (unsigned int)(spl.playerNum);
-  if ( dataTeamNum == getPlayerInfo().teamNumber
-       // ignore our own messages, we are adding it artficially later
-       && (allowOwn || dataPlayerNum != getPlayerInfo().playerNumber)
-     )
+  // only messages from own "team"
+  if (spl.teamNum != (int)getPlayerInfo().teamNumber) {
+    dropNotOurTeam++;
+    return;
+  }
+
+  // ignore own messages
+  if (spl.playerNum == (int)getPlayerInfo().playerNumber) {
+    return;
+  }
+
+  // unpack the message and make sure the user part can be parsed
+  TeamMessageData msg(getFrameInfo());
+  if (msg.parseFromSplMessage(spl))
   {
-    TeamMessage::Data msg;
-    if(parseTeamMessage(spl, msg)) {
-      // copy new data to the blackboard if it's a message from our team
-      if(!parameters.monotonicTimestampCheck || monotonicTimeStamp(msg)) {
-        getTeamMessage().data[msg.playerNum] = msg;
-      } else {
-        droppedMessages++;
-      }
+    // make sure it's really our message
+    if (msg.custom.key != NAOTH_TEAMCOMM_MESAGE_KEY) {
+      dropKeyFail++;
+      return;
+    }
+
+    // make sure the time step is monotonically rising
+    if (parameters.monotonicTimestampCheck && !monotonicTimeStamp(msg)) {
+      dropMonotonic++;
+      return;
     }
   }
+  else if (parameters.acceptMixedTeamMessages)
+  {
+    // TODO: accept mixed team communication
+    msg.custom.wantsToBeStriker = (msg.intention == 3);
+    msg.custom.wasStriker = (msg.intention == 3);
+    
+    // estimate time to ball for dortmund guys
+    const double stepTime = 200; //ms
+    const double speed = 50.0 / stepTime; // mm/ms
+    const double turnSpeed = Math::fromDegrees(30) / stepTime;
+
+    if (msg.ballAge >= 0) {
+      msg.custom.timeToBall = static_cast<unsigned int>((msg.ballPosition.abs() / speed) + (fabs(msg.ballPosition.angle()) / turnSpeed));
+    }
+  }
+  else
+  {
+    dropNotParseable++;
+    return;
+  }
+
+  // copy the message to the blackboard
+  getTeamMessage().data[msg.playerNumber] = msg;
+}
+
+bool TeamCommReceiver::parseFromSplMessageString(const std::string &data, SPLStandardMessage& spl)
+{
+  // invalid message size
+  if (data.size() > sizeof(SPLStandardMessage)) {
+    std::cout << "invalid size" << std::endl;
+    return false;
+  }
+
+  // convert back to struct
+  memcpy(&spl, data.c_str(), data.size());
+
+  // furter sanity check for header and version
+  if (spl.header[0] != 'S' ||
+      spl.header[1] != 'P' ||
+      spl.header[2] != 'L' ||
+      spl.header[3] != ' ' ||
+      spl.version != SPL_STANDARD_MESSAGE_STRUCT_VERSION)
+  {
+    std::cout << "invalid header/version" << std::endl;
+    return false;
+  }
+
+  // check if the size of the user part is meaningfull 
+  if (spl.numOfDataBytes > SPL_STANDARD_MESSAGE_DATA_SIZE) {
+    return false;
+  }
+
+  return true;
 }

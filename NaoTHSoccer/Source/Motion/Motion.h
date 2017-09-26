@@ -23,6 +23,8 @@
 #include "MorphologyProcessor/KinematicChainProviderMotion.h"
 #include "SensorFilter/InertiaSensorCalibrator.h"
 #include "SensorFilter/InertiaSensorFilter.h"
+#include "SensorFilter/IMUModel.h"
+#include "SensorFilter/ArmCollisionDetector.h"
 
 //#include <Representations/Modeling/CameraMatrixOffset.h>
 
@@ -38,7 +40,9 @@
 #include <Representations/Infrastructure/AccelerometerData.h>
 #include <Representations/Infrastructure/GyrometerData.h>
 #include <Representations/Infrastructure/DebugMessage.h>
+#include <Representations/Modeling/IMUData.h>
 #include "Representations/Modeling/GroundContactModel.h"
+#include "Representations/Motion/CollisionPercept.h"
 
 // debug
 #include <Representations/Debug/Stopwatch.h>
@@ -55,6 +59,7 @@
 #include <Representations/Modeling/BodyState.h>
 
 #include <Tools/DataStructures/ParameterList.h>
+#include <Tools/DataStructures/RingBufferWithSum.h>
 
 BEGIN_DECLARE_MODULE(Motion)
   REQUIRE(GroundContactModel)
@@ -72,6 +77,7 @@ BEGIN_DECLARE_MODULE(Motion)
   PROVIDE(OdometryData) // hack
   REQUIRE(InertialModel)
   REQUIRE(CalibrationData)
+  REQUIRE(IMUData)
 
   PROVIDE(CameraMatrix)// TODO:strange...
   PROVIDE(CameraMatrixTop)// TODO:strange...
@@ -97,6 +103,7 @@ BEGIN_DECLARE_MODULE(Motion)
   PROVIDE(DebugMessageOut)
 
   PROVIDE(CameraMatrixOffset)
+  REQUIRE(CollisionPercept)
 
   // from cognition
   PROVIDE(CameraInfo)
@@ -139,11 +146,16 @@ private:
     Parameter() : ParameterList("Motion")
     {
       PARAMETER_REGISTER(useGyroRotationOdometry) = true;
-
+      //PARAMETER_REGISTER(useIMUModel) = false;
+      //PARAMETER_REGISTER(useInertiaSensorCalibration) = true;
+      PARAMETER_REGISTER(useIMUDataForRotationOdometry) = false;
       syncWithConfig();
     }
 
     bool useGyroRotationOdometry;
+    //bool useIMUModel;
+    //bool useInertiaSensorCalibration;
+    bool useIMUDataForRotationOdometry;
 
   } parameter;
 
@@ -162,6 +174,9 @@ private:
   //ModuleCreator<SupportPolygonGenerator>* theSupportPolygonGenerator;
   ModuleCreator<OdometryCalculator>* theOdometryCalculator;
   ModuleCreator<KinematicChainProviderMotion>* theKinematicChainProvider;
+  ModuleCreator<IMUModel>* theIMUModel;
+  ModuleCreator<ArmCollisionDetector>* theArmCollisionDetector;
+  
 
   ModuleCreator<MotionEngine>* theMotionEngine;
 
@@ -174,7 +189,6 @@ private:
 
 private:
   RingBuffer<double,100> currentsRingBuffer[naoth::JointData::numOfJoint];
-
   RingBuffer<double,4> motorJointDataBuffer[naoth::JointData::numOfJoint];
 };
 

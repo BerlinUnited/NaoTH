@@ -78,7 +78,7 @@ FootStep FootStepPlanner::nextStep(const FootStep& lastStep, const WalkRequest& 
     return firstStep(lastStep.end(), lastStep.offset(), lastStep.stepRequest(), req);
   } else {
     FootStep::Foot liftingFoot = (lastStep.liftingFoot()==FootStep::LEFT)?FootStep::RIGHT:FootStep::LEFT;
-    return calculateNextWalkStep(lastStep.end(), lastStep.offset(), lastStep.stepRequest(), liftingFoot, req);
+    return calculateNextWalkStep(lastStep.end(), lastStep.offset(), lastStep.stepRequest(), liftingFoot, req, false);
   }
 }
 
@@ -149,12 +149,19 @@ FootStep FootStepPlanner::calculateNextWalkStep(const InverseKinematic::FeetPose
   } else if(req.coordinate == WalkRequest::RFoot) {
     stepRequest = supportOrigin.invert() * pose.right.projectXY() * stepRequest * targetOriginOffset;
   }
-  
 
-  // do "path planing" :)
-  if(stepControl) {
+  // apply restriction mode
+  if (stepControl && req.stepControl.restriction == WalkRequest::StepControlRequest::RestrictionMode::SOFT)
+  {
     restrictStepSizeControlStep(stepRequest, req.character);
-  } else {
+  } 
+  else if (stepControl && req.stepControl.restriction == WalkRequest::StepControlRequest::RestrictionMode::HARD)
+  {
+    restrictStepSize(stepRequest, req.character);
+    restrictStepChange(stepRequest, lastStepRequest);
+  }
+  else
+  {
     restrictStepSize(stepRequest, req.character);
     restrictStepChange(stepRequest, lastStepRequest);
   }
@@ -218,10 +225,10 @@ void FootStepPlanner::restrictStepSize(Pose2D& step, double character) const
     double cosa = cos(alpha);
     double sina = sin(alpha);
 
-    const double maxStepLength2 = pow(maxStepLength, 2);
-    const double maxStepWidth2 = pow(maxStepWidth, 2);
-    double length = sqrt((maxStepLength2 * maxStepWidth2) / (maxStepLength2 * pow(sina, 2) + maxStepWidth2 * pow(cosa, 2)));
-    if ( step.translation.abs2() > pow(length, 2) )
+    const double maxStepLength2 = Math::sqr(maxStepLength);
+    const double maxStepWidth2 = Math::sqr(maxStepWidth);
+    double length = sqrt((maxStepLength2 * maxStepWidth2) / (maxStepLength2 * Math::sqr(sina) + maxStepWidth2 * Math::sqr(cosa)));
+    if (step.translation.abs2() > Math::sqr(length))
     {
       step.translation.x = length * cosa;
       step.translation.y = length * sina;
@@ -274,10 +281,10 @@ void FootStepPlanner::restrictStepSizeControlStep(Pose2D& step, double character
     double cosa = cos(alpha);
     double sina = sin(alpha);
 
-    const double maxStepLength2 = pow(maxStepLength, 2);
-    const double maxStepWidth2 = pow(maxStepWidth, 2);
-    double length = sqrt((maxStepLength2 * maxStepWidth2) / (maxStepLength2 * pow(sina, 2) + maxStepWidth2 * pow(cosa, 2)));
-    if ( step.translation.abs2() > pow(length, 2) )
+    const double maxStepLength2 = Math::sqr(maxStepLength);
+    const double maxStepWidth2 = Math::sqr(maxStepWidth);
+    double length = sqrt((maxStepLength2 * maxStepWidth2) / (maxStepLength2 * Math::sqr(sina) + maxStepWidth2 * Math::sqr(cosa)));
+    if (step.translation.abs2() > Math::sqr(length))
     {
       step.translation.x = length * cosa;
       step.translation.y = length * sina;
