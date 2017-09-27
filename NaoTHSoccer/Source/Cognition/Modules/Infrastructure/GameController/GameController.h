@@ -11,6 +11,8 @@
 #include "Representations/Infrastructure/SoundData.h"
 #include "Representations/Modeling/PlayerInfo.h"
 #include "Representations/Infrastructure/WhistlePercept.h"
+#include "Representations/Infrastructure/GameData.h"
+#include "Representations/Modeling/TeamMessageData.h"
 
 using namespace naoth;
 
@@ -22,6 +24,7 @@ BEGIN_DECLARE_MODULE(GameController)
   REQUIRE(FrameInfo)
   REQUIRE(WhistlePercept)
 
+  PROVIDE(TeamMessageData)
   PROVIDE(GameReturnData)
   PROVIDE(GameControllerLEDRequest)
   PROVIDE(PlayerInfo)
@@ -36,12 +39,14 @@ public:
   virtual ~GameController();
 
 private:
+  void handleDebugRequest();
   void handleButtons();
   void handleHeadButtons();
   void updateLEDs();
 
 private:
   int lastWhistleCount;
+  GameData::GameState lastGameState;
   GameReturnData::Message returnMessage;
 };
 

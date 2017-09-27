@@ -33,7 +33,7 @@ public:
 
   struct StepControlStatus
   {
-    StepControlStatus() : stepID(0), moveableFoot(NONE) {}
+    StepControlStatus() : stepID(0), stepRequestID(0), moveableFoot(NONE) {}
 
     enum MoveableFoot
     {
@@ -43,8 +43,9 @@ public:
       BOTH
     };
 
-    unsigned int stepID; // the walk only accept request with this id
-    MoveableFoot moveableFoot; // which foot can be controlled
+    unsigned int stepID;        // the walk only accept request with this id
+    unsigned int stepRequestID; // for PathPlanner
+    MoveableFoot moveableFoot;  // which foot can be controlled
   };
 
   /** constructor */
@@ -67,6 +68,7 @@ public:
   HeadMotionRequest::HeadMotionID headMotion;
   PlannedMotion plannedMotion;
   StepControlStatus stepControl;
+
 
   virtual void print(std::ostream& stream) const
   {

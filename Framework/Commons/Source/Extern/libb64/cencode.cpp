@@ -6,10 +6,11 @@ For details, see http://sourceforge.net/projects/libb64
 
 Modified for SimSpark (http://simspark.sourceforge.net)
 */
-#if defined(__GNUC__) && defined(_NAOTH_CHECK_CONVERSION_)
-#if __GNUC__ > 3 && __GNUC_MINOR__ > 5
+// NOTE: we assume GCC version >= 4.9
+#if defined(__GNUC__)
+// save the current state
 #pragma GCC diagnostic push
-#endif
+// ignore warnings
 #pragma GCC diagnostic ignored "-Wconversion"
 #endif
 
@@ -107,9 +108,7 @@ int base64_encode_blockend(char* code_out, base64_encodestate* state_in)
   return codechar - code_out;
 }
 
-#if defined(__GNUC__) && defined(_NAOTH_CHECK_CONVERSION_)
-#if __GNUC__ > 3 && __GNUC_MINOR__ > 5
-#pragma GCC diagnostic push
-#endif
-#pragma GCC diagnostic error "-Wconversion"
+#if defined(__GNUC__)
+// restore the old state
+#pragma GCC diagnostic pop
 #endif

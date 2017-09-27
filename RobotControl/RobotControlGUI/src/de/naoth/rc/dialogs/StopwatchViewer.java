@@ -8,6 +8,8 @@ package de.naoth.rc.dialogs;
 import de.naoth.rc.RobotControl;
 import de.naoth.rc.components.SimpleProgressBar;
 import de.naoth.rc.core.dialog.AbstractDialog;
+import de.naoth.rc.core.dialog.DialogPlugin;
+import de.naoth.rc.core.dialog.RCDialog;
 import de.naoth.rc.core.manager.ObjectListener;
 import de.naoth.rc.manager.ModuleStopwatchManager;
 import de.naoth.rc.manager.StopwatchManager;
@@ -26,17 +28,21 @@ import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
  *
  * @author  thomas
  */
-@PluginImplementation
 public class StopwatchViewer extends AbstractDialog
   implements ObjectListener<HashMap<String, Integer>>
 {
 
-  @InjectPlugin
-  public static RobotControl parent;
-  @InjectPlugin
-  public StopwatchManager stopwatchManager;
-  @InjectPlugin
-  public ModuleStopwatchManager moduleStopwatchManager;
+  @RCDialog(category = RCDialog.Category.Status, name = "Stopwatch")
+  @PluginImplementation
+  public static class Plugin extends DialogPlugin<StopwatchViewer>
+  {
+    @InjectPlugin
+    static public RobotControl parent;
+    @InjectPlugin
+    static public StopwatchManager stopwatchManager;
+    @InjectPlugin
+    static public ModuleStopwatchManager moduleStopwatchManager;
+  }
 
   private final HashMap<String, SimpleProgressBar> progressBars = new HashMap<String, SimpleProgressBar>();
   private final HashMap<String, StopwatchEntry> stopwatchEntries = new HashMap<String, StopwatchEntry>();
@@ -184,12 +190,12 @@ private void btShowStopwatchActionPerformed(java.awt.event.ActionEvent evt) {//G
 
 private void registerListeners()
 {
-  if (!parent.checkConnected()) {
+  if (!Plugin.parent.checkConnected()) {
       return;
   }
       
-  stopwatchManager.removeListener(this);
-  moduleStopwatchManager.removeListener(this);
+  Plugin.stopwatchManager.removeListener(this);
+  Plugin.moduleStopwatchManager.removeListener(this);
   
   if(btShowStopwatch.isSelected()) 
   {
@@ -197,11 +203,11 @@ private void registerListeners()
     
     if(cbModulesOnly.isSelected())
     {
-      moduleStopwatchManager.addListener(this);
+      Plugin.moduleStopwatchManager.addListener(this);
     }
     else
     {
-      stopwatchManager.addListener(this);
+      Plugin.stopwatchManager.addListener(this);
     }
   }
 }
@@ -378,10 +384,10 @@ private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
   public void errorOccured(String cause)
   {
     btShowStopwatch.setSelected(false);
-    stopwatchManager.removeListener(this);
+    Plugin.stopwatchManager.removeListener(this);
 
     Logger.getAnonymousLogger().log(Level.SEVERE, cause);
-  }//end errorOccured
+  }
   
   
   class StopwatchEntry
@@ -449,6 +455,6 @@ private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
   @Override
   public void dispose()
   {
-    stopwatchManager.removeListener(this);
+    Plugin.stopwatchManager.removeListener(this);
   }
 }

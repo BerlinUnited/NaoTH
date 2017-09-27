@@ -14,14 +14,14 @@
 #include "Tools/Math/Pose2D.h"
 
 // representations
-#include "Representations/Modeling/BallModel.h"
-#include "Representations/Perception/MultiBallPercept.h"
-#include "Representations/Modeling/TeamBallModel.h"
 #include "Representations/Infrastructure/FrameInfo.h"
 #include "Representations/Infrastructure/FieldInfo.h"
+
+#include "Representations/Perception/MultiBallPercept.h"
+#include "Representations/Modeling/BallModel.h"
 #include "Representations/Modeling/RobotPose.h"
 #include "Representations/Modeling/KinematicChain.h"
-#include "Representations/Modeling/SoccerStrategy.h"
+#include "Representations/Modeling/TeamBallModel.h"
 
 #include <Tools/DataStructures/ParameterList.h>
 #include "Tools/Debug/DebugParameterList.h"
@@ -30,18 +30,20 @@
 #include "Tools/Debug/DebugPlot.h"
 
 BEGIN_DECLARE_MODULE(BallSymbols)
-  REQUIRE(BallModel)
-  REQUIRE(MultiBallPercept)
-  REQUIRE(FrameInfo)
-  REQUIRE(RobotPose)
-  REQUIRE(TeamBallModel)
-  REQUIRE(FieldInfo)
-  REQUIRE(KinematicChain)
-  REQUIRE(SoccerStrategy)
+  
+PROVIDE(BallModel) // PROVIDE so that XABSL bool can be read out
   PROVIDE(DebugRequest)
   PROVIDE(DebugPlot)
   PROVIDE(DebugDrawings)
   PROVIDE(DebugParameterList)
+
+  REQUIRE(FrameInfo)
+  REQUIRE(FieldInfo)
+  REQUIRE(MultiBallPercept)
+  REQUIRE(TeamBallModel)
+  REQUIRE(RobotPose)
+
+  REQUIRE(KinematicChain)
 END_DECLARE_MODULE(BallSymbols)
 
 class BallSymbols: public BallSymbolsBase
@@ -51,7 +53,7 @@ public:
   BallSymbols() :
     ballPerceptSeen(false),
     ball_seen_filter(0.01, 0.1),
-    ball_know_where_itis(false)
+    ball_see_where_itis(false)
   {
     theInstance = this;
     getDebugParameterList().add(&parameters);
@@ -93,9 +95,6 @@ private:
   static double getBallAngle();
   static double getBallTimeSinceLastSeen();
   static double getBallTimeSeen();
-  static double getTeamBallTimeSinceLastUpdate();
-  static double getTeamBallGoalieTimeSinceLastUpdate();
-  static double getTeamBallStrikerTimeSinceLastUpdate();
 
   // some local members
   Vector2d ballPositionField;
@@ -131,7 +130,7 @@ private:
   };
 
   AssymetricalBoolFilter ball_seen_filter;
-  bool ball_know_where_itis;
+  bool ball_see_where_itis;
 
 };//end class BallSymbols
 

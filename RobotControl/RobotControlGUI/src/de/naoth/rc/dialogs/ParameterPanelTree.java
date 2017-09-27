@@ -10,6 +10,7 @@ import de.naoth.rc.components.treetable.ParameterDataModel;
 import de.naoth.rc.components.treetable.TreeTable;
 import de.naoth.rc.core.dialog.AbstractDialog;
 import de.naoth.rc.core.dialog.DialogPlugin;
+import de.naoth.rc.core.dialog.RCDialog;
 import de.naoth.rc.core.manager.ObjectListener;
 import de.naoth.rc.core.manager.SwingCommandExecutor;
 import de.naoth.rc.server.Command;
@@ -22,7 +23,7 @@ import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
  */
 public class ParameterPanelTree extends AbstractDialog
 {
-
+  @RCDialog(category = RCDialog.Category.Configure, name = "ParameterTree")
   @PluginImplementation
   public static class Plugin extends DialogPlugin<ParameterPanelTree>
   {
@@ -147,15 +148,35 @@ private void jToggleButtonListActionPerformed(java.awt.event.ActionEvent evt)//G
             ParameterDataModel.ParameterDataNode n = treeTableModel.insertPath(item.name + "." + s[0], "\\.");
             n.listener = null;
             
-            try {
-                n.setValue(new Double(Double.parseDouble(s[1])));
-            } catch (NumberFormatException ex) {
-                try {
-                    n.setValue(new Boolean(Boolean.parseBoolean(s[1])));
-                } catch (NumberFormatException bex) 
-                {
+            String value = "";
+            if (s.length == 2 && s[1] != null) {
+                value = s[1];
+            } else {
+                n.setValue(value);
+            }
+            
+            try { // try int
+                n.setValue(Integer.parseInt(value));
+            } catch(NumberFormatException exi) {
+                try {// try double
+                    n.setValue(Double.parseDouble(value));
+                } catch (NumberFormatException exd) {
+                    // NOTE: Boolean.parseBoolean returns false for every string != true
+                    switch (value.toLowerCase()) {
+                        case "true":
+                            n.setValue(true);
+                            break;
+                        case "false":
+                            n.setValue(false);
+                            break;
+                        default:
+                            n.setValue(value);// string
+                            break;
+                    }
                 }
             }
+
+            
             
             n.listener = new ParameterDataModel.ValueChangedListener() {
                 @Override

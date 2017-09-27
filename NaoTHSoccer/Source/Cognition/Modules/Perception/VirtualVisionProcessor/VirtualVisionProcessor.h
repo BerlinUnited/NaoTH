@@ -26,6 +26,7 @@
 #include "Representations/Perception/LinePercept.h"
 #include "Representations/Perception/PlayersPercept.h"
 #include "Representations/Modeling/PlayerInfo.h"
+#include "Representations/Perception/MultiBallPercept.h"
 
 #include "Tools/DoubleCamHelpers.h"
 
@@ -52,6 +53,9 @@ BEGIN_DECLARE_MODULE(VirtualVisionProcessor)
 
   PROVIDE(BallPercept)
   PROVIDE(BallPerceptTop)
+
+  PROVIDE(MultiBallPercept)
+
   PROVIDE(GoalPercept)
   PROVIDE(GoalPerceptTop)
   PROVIDE(LinePercept)
@@ -70,6 +74,8 @@ public:
 
   virtual void execute()
   {
+    getMultiBallPercept().reset();
+
     execute(CameraInfo::Top);
     execute(CameraInfo::Bottom);
   }

@@ -189,6 +189,10 @@ public:
     double cycle, double samplesDoubleSupport, double samplesSingleSupport,
     double stepHeight, double footPitchOffset, double footRollOffset,
                             double speedDirection, double scale);
+
+  static Pose3D genTrajectoryWithSplines(const Pose3D& oldFoot, const Pose3D& targetFoot,
+                                         double cycle, double duration,
+                                         double stepHeight, double footPitchOffset, double footRollOffset );
 };
 
 

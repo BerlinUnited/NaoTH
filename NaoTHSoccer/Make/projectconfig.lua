@@ -63,7 +63,7 @@ if EXTERN_PATH_NATIVE == nil then
 end
 
 -- path to the directory containing the nao cross compile tool chain
--- in a default configuration the directory NAO_CTC has the followinf layout
+-- in a default configuration the directory NAO_CTC has the following layout
 -- NAO_CTC
 --  |-- compiler
 --  `-- extern

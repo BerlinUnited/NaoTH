@@ -7,11 +7,14 @@
 *.cpp    text diff=cpp
 *.c      text diff=cpp
 *.cc     text diff=cpp
-*.java	 text diff=java
-*.py	 text diff=python
+*.java   text diff=java
+*.py     text diff=python
 
 *.lua    text
 *.proto  text
+
+# Netbeans *.form files
+*.form   text
 
 # Declare files that will always have LF line endings on checkout.
 *.sh     text eol=lf
@@ -22,6 +25,7 @@
 *.properties text
 *.form   text
 *.html   text
+*.xabsl  text
 
 # Images should be treated as binary
 # (binary is a macro for -text -diff)

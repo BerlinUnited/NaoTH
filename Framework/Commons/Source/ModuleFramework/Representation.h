@@ -84,7 +84,7 @@ public:
   }//end print
 
 
-
+  virtual bool serializable() const = 0;
   virtual void serialize(MsgOut<Representation>::type& stream) const = 0;
   virtual void deserialize(MsgIn<Representation>::type& stream) = 0;
 };

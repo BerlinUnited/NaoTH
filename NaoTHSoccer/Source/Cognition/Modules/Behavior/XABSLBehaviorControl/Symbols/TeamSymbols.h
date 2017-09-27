@@ -84,7 +84,6 @@ private:
   static int whoIsFastestToBall();
   static bool getWasStriker();
   static void setWasStriker(bool striker);
-  static bool calculateIfTheLast();
 };
 
 #endif  /* _TEAMSYMBOLS_H */

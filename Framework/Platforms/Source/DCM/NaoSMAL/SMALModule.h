@@ -15,6 +15,8 @@
 #include "Tools/BasicMotion.h"
 
 
+#include <thread>
+
 //
 // This is to suppress the following gcc warning 
 // thrown because by the old version of boost used by naoqi
@@ -51,10 +53,14 @@ public:
   virtual void init();
   virtual void exit();
 
+  // 
+  void slowDcmUpdate();
+
   //
   void motionCallbackPre();
   void motionCallbackPost();
-
+private:
+  void shutdownCallback();
   
 private:
   // needed by theDCMHandler 
@@ -118,6 +124,9 @@ private:
   // syncronize with NaoController
   sem_t* sem;
 
+  // sync with slowDCM
+  pthread_t slowDCM;
+  bool slowDCMupdateCanRun;
 
   // sitdown motion in case the Controller dies
   bool command_data_available;
@@ -127,6 +136,9 @@ private:
   InertialSensorData theInertialSensorData;
   ButtonData theButtonData;
   BasicMotion* initialMotion;
+
+  // thread for shutdown
+  std::thread shutdownCallbackThread;
 };
 
 }//end namespace naoth

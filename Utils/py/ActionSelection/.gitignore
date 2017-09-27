@@ -1,0 +1,4 @@
+# ignore generated data
+*.pickle
+*.txt
+*.png

@@ -19,5 +19,5 @@ public interface DrawingEventManager extends Plugin {
 
     void removeListener(DrawingListener l);
     
-    void fireDrawingEvent(Drawable drawing);
+    void fireDrawingEvent(Drawable drawing, Object src);
 }

@@ -77,7 +77,7 @@ option kick_long_with_approach
       motion.walk.coordinate = hip;
       motion.walk.style = normal;
 
-      //loook at percept
+      //look at percept
       head.control_mode = look_at_ball_percept;
     }
   }

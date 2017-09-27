@@ -19,6 +19,7 @@
 #include <Representations/Infrastructure/RobotInfo.h>
 #include <Representations/Infrastructure/CameraInfo.h>
 #include "Representations/Modeling/InertialModel.h"
+#include "Representations/Infrastructure/InertialSensorData.h"
 #include "Representations/Modeling/KinematicChain.h"
 #include "Representations/Motion/Request/HeadMotionRequest.h"
 #include <Representations/Infrastructure/JointData.h>
@@ -41,6 +42,7 @@ BEGIN_DECLARE_MODULE(HeadMotionEngine)
 
   REQUIRE(RobotInfo)
   REQUIRE(InertialModel)
+  REQUIRE(InertialSensorData)
   REQUIRE(KinematicChainSensor)
   REQUIRE(HeadMotionRequest)
   REQUIRE(SensorJointData)

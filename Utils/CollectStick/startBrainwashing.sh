@@ -5,6 +5,29 @@
 #		- plays "1.wav" if a copy-error occurred (game.log, Config/)
 #		- plays "nicknacknuck.wav" at the end
 
+# define functions
+check_for_errors() {
+	if [ "$?" -ne 0 ]
+	then
+		sudo -u nao /usr/bin/paplay /home/nao/naoqi/Media/1.wav
+		# if argument is available - write to systemlog
+		if [ ! -z "$1" ]
+		then
+			logger "$1"
+		fi
+	fi
+}
+
+exec_cmd_and_return_or_default() {
+	result=$(eval "$1" 2>&1)
+	if [ "$?" -ne 0 ]; then
+		echo "$2"
+		exit 1
+	fi
+	echo $result
+}
+
+
 # set file vars
 infoFile="/home/nao/Config/nao.info"
 errorFile="/home/nao/brainwasher.log"
@@ -18,17 +41,10 @@ current_nao_player=$(cat /home/nao/Config/robots/$current_nao_name/player.cfg | 
 
 current_boot_time=$(</proc/uptime awk '{printf "%d", $1 / 60}')
 
-check_for_errors() {
-	if [ "$?" -ne 0 ]
-	then
-		sudo -u nao /usr/bin/paplay /home/nao/naoqi/Media/1.wav
-		# if argument is available - write to systemlog
-		if [ ! -z "$1" ]
-		then
-			logger "$1"
-		fi
-	fi
-}
+current_compile_branch=$(exec_cmd_and_return_or_default 'grep "Branch path" /var/log/messages | tail -1 | grep -o "Branch path.*"' 'Branch path: UNKNOWN')
+current_compile_revision=$(exec_cmd_and_return_or_default 'grep "Revision number" /var/log/messages | tail -1 | grep -o "Revision number.*"' 'Revision number: UNKNOWN')
+current_compile_time=$(exec_cmd_and_return_or_default 'grep "NaoTH compiled on" /var/log/messages | tail -1 | grep -o "NaoTH compiled on.*"' 'NaoTH compiled on: UNKNOWN')
+current_compile_owner=$(exec_cmd_and_return_or_default 'grep "Owner" /var/log/messages | tail -1 | grep -o "Owner.*"' 'Owner: UNKNOWN')
 
 # write to systemlog
 logger "Brainwasher:start $current_date, $current_nao, Player $current_nao_player"
@@ -56,6 +72,10 @@ cp $infoFile /media/brainwasher/$current_date-$current_nao/nao.info
 echo "Name=$current_nao_name" >> /media/brainwasher/$current_date-$current_nao/nao.info
 echo "Number=$current_nao_number" >> /media/brainwasher/$current_date-$current_nao/nao.info
 echo "$current_nao_player" >> /media/brainwasher/$current_date-$current_nao/nao.info
+echo "$current_compile_branch" >> /media/brainwasher/$current_date-$current_nao/nao.info
+echo "$current_compile_revision" >> /media/brainwasher/$current_date-$current_nao/nao.info
+echo "$current_compile_time" >> /media/brainwasher/$current_date-$current_nao/nao.info
+echo "$current_compile_owner" >> /media/brainwasher/$current_date-$current_nao/nao.info
 
 # find log files and copy them to the created directory
 #find -L /tmp -type d -name media -prune -o -name "*.log" -exec cp {} /media/brainwasher/$current_date-$current_nao \;
@@ -78,6 +98,24 @@ logger -f $errorFile
 # find and copy trace dump files since boot and log errors
 find /home/nao -maxdepth 1 -type f -mmin -$current_boot_time -iname "trace.dump.*" -exec cp {} /media/brainwasher/$current_date-$current_nao/dumps/ \; 2> $errorFile
 logger -f $errorFile
+# if no error occurred, we can savely delete all trace dump files, which were previously copied
+if [ ! -s "$errorFile" ]; then
+  find /home/nao -maxdepth 1 -type f -mmin -$current_boot_time -iname "trace.dump.*" -exec rm {} \; 2> $errorFile
+  logger -f $errorFile
+fi
+
+# create whistle folder and log errors
+mkdir -p /media/brainwasher/$current_date-$current_nao/whistle 2> $errorFile
+logger -f $errorFile
+
+# find and copy whistle raw files and log errors
+find /tmp/ -maxdepth 1 -type f -iname "capture_*.raw" -exec cp {} /media/brainwasher/$current_date-$current_nao/whistle/ \; 2> $errorFile
+logger -f $errorFile
+# if no error occurred, we can savely delete all whistle files
+if [ ! -s "$errorFile" ]; then
+  find /tmp/ -maxdepth 1 -type f -iname "capture_*.raw" -exec rm {} \; 2> $errorFile
+  logger -f $errorFile
+fi
 
 # remove error log file
 rm $errorFile

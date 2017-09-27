@@ -33,7 +33,9 @@ public:
   {
   public:
     static const int SIZE = 12;
-    PatchT(int) : data(SIZE*SIZE) 
+    PatchT() : data(SIZE*SIZE)
+    {}
+    PatchT(int) : data(SIZE*SIZE)
     {}
     Vector2i min;
     Vector2i max;
