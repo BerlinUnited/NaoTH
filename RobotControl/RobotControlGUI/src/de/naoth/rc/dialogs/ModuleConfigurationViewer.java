@@ -472,8 +472,7 @@ public class ModuleConfigurationViewer extends AbstractDialog
     }
 
     @Override
-    public void newObjectReceived(final ModuleConfiguration graph
-    )
+    public void newObjectReceived(final ModuleConfiguration graph)
     {
         this.moduleGraph = graph;
 
@@ -518,6 +517,7 @@ public class ModuleConfigurationViewer extends AbstractDialog
         this.cbModulesSearch.revalidateModel();
         this.cbRepresentationsSearch.revalidateModel();
 
+        moduleConfigTree.cleanTree();
         moduleConfigTree.expandPath(processName, ':');
         moduleConfigTree.repaint();
 
