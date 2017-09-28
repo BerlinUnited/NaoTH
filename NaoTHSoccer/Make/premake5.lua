@@ -124,6 +124,10 @@ workspace "NaoTHSoccer"
 
   -- special defines for the Nao robot
 	filter { "platforms:Nao" }
+    system ("linux")
+    -- HACK: system() desn't set the target system properly => set the target system manually
+    _TARGET_OS = "linux"
+    print("NOTE: set the target OS to " .. os.target())
 		defines { "NAO" }
 		targetdir "../dist/Nao"
 		warnings "Extra"
@@ -227,21 +231,19 @@ workspace "NaoTHSoccer"
       end
       vpaths { ["*"] = FRAMEWORK_PATH .. "/Platforms/Source/NaoSMAL" }
       -- HACK: boost from NaoQI SDK makes problems
-      buildoptions {"-Wno-conversion"}
+      --buildoptions {"-Wno-conversion"}
       -- these warning came in Windows with the toolchain 2013
-      buildoptions {"-Wno-unused-parameter"}
-      buildoptions {"-Wno-ignored-qualifiers"}
-      buildoptions {"-Wno-extra"}
+      --buildoptions {"-Wno-unused-parameter"}
+      --buildoptions {"-Wno-ignored-qualifiers"}
+      --buildoptions {"-Wno-extra"}
       defines { "BOOST_SIGNALS_NO_DEPRECATION_WARNING" }
       -- ACHTUNG: NaoSMAL doesn't build with the flag -std=c++11 (because of Boost)
       buildoptions {"-std=gnu++11"}
-      targetextension ("")
       
     dofile (FRAMEWORK_PATH .. "/Platforms/Make/NaoRobot.lua")
       kind "ConsoleApp"
       links { "NaoTHSoccer", "Commons", naoth_links}
       vpaths { ["*"] = FRAMEWORK_PATH .. "/Platforms/Source/NaoRobot" }
-      targetextension ("")
       
   else
     dofile (FRAMEWORK_PATH .. "/Platforms/Make/SimSpark.lua")
