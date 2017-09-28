@@ -124,26 +124,26 @@ workspace "NaoTHSoccer"
 
   -- special defines for the Nao robot
 	filter { "platforms:Nao" }
+		targetdir "../dist/Nao"
+    defines { "NAO" }
     system ("linux")
+    
     -- HACK: system() desn't set the target system properly => set the target system manually
     _TARGET_OS = "linux"
     print("NOTE: set the target OS to " .. os.target())
-		defines { "NAO" }
-		targetdir "../dist/Nao"
+		
+    cppdialect "c++11"
+    
 		warnings "Extra"
-
+    -- Wconversion is not included in Wall and Wextra
+    buildoptions {"-Wconversion"}
+    -- Wsign-conversion might be useful and is not included in Wconversion
+    --buildoptions {"-Wsign-conversion"}
+    
 		-- for debugging
 		-- buildoptions {"-time"}
 
-		-- disable warning "comparison always true due to limited range of data type"
-		-- this warning is caused by protobuf 2.4.1
-		--buildoptions {"-Wno-type-limits"}
-		-- some of the protobuf messages are marked as deprecated but are still in use for legacy reasons
-		--buildoptions {"-Wno-deprecated-declarations"}
-		--buildoptions {"-Wconversion"}
-		--buildoptions {"-std=c++11"}
-    cppdialect "c++11"
-
+    
 	-- additional defines for visual studio 	
 	filter {"system:windows", "action:vs*"}
 		defines {"WIN32", "NOMINMAX", "NOGDI", "EIGEN_DONT_ALIGN"}
@@ -153,13 +153,10 @@ workspace "NaoTHSoccer"
 		links {"ws2_32"}
     
     ignoredefaultlibraries { "MSVCRT" }
-    --[[
+
     -- this is needed to supress the linker warning in VS2013 if gloabal links are used 
-    linkoptions {
-			"/ignore:4221", -- LNK4221: This object file does not define any previously undefined public symbols, so it will not be used by any link operation that consumes this library
-		}
-    ]]--
-    
+    -- linkoptions { "/ignore:4221" } -- LNK4221: This object file does not define any previously undefined public symbols, so it will not be used by any link operation that consumes this library
+
 		debugdir "$(SolutionDir).."
 		
 		-- remove the nao platform if action is vs*
