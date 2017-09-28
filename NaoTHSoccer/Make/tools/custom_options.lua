@@ -23,6 +23,12 @@ newoption {
    description = "Set the target platform",
 }
 
+newoption {
+   trigger     = "verbose",
+   description = "Print additional information regarding the include and lib paths",
+}
+
+
 if _OPTIONS["Test"] ~= nil then
       print("DEBUG: Generate test projects")
 end
@@ -43,4 +49,27 @@ PLATFORM = _OPTIONS["platform"]
 if PLATFORM == nil then
   defaultplatform "Native"
   PLATFORM = "Native" -- just a variable for printing the platform name
+end
+
+-- 
+if _OPTIONS["verbose"] ~= nil then
+  local validate_project = premake.validation.elements.project
+  
+  premake.validation.elements.project = function(prj)
+    print ("\n")
+    print ("INFO: project " .. prj.name .. ":")
+    
+    -- print some debug output
+    print("INFO: list includedirs")
+    checkPaths(prj.includedirs)
+    print("INFO: list libdirs")
+    checkPaths(prj.libdirs)
+    print("INFO: list sysincludedirs")
+    checkPaths(prj.sysincludedirs)
+    print("INFO: list syslibdirs")
+    checkPaths(prj.syslibdirs)
+    
+    -- call the default premake function
+    return validate_project(prj)
+  end
 end
