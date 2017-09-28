@@ -137,11 +137,12 @@ workspace "NaoTHSoccer"
 
 		-- disable warning "comparison always true due to limited range of data type"
 		-- this warning is caused by protobuf 2.4.1
-		buildoptions {"-Wno-type-limits"}
+		--buildoptions {"-Wno-type-limits"}
 		-- some of the protobuf messages are marked as deprecated but are still in use for legacy reasons
-		buildoptions {"-Wno-deprecated-declarations"}
-		buildoptions {"-Wconversion"}
-		buildoptions {"-std=c++11"}
+		--buildoptions {"-Wno-deprecated-declarations"}
+		--buildoptions {"-Wconversion"}
+		--buildoptions {"-std=c++11"}
+    cppdialect "c++11"
 
 	-- additional defines for visual studio 	
 	filter {"system:windows", "action:vs*"}
@@ -151,7 +152,7 @@ workspace "NaoTHSoccer"
 		buildoptions {"/wd4290"} -- exception specification ignored (typed specifications are ignored)
 		links {"ws2_32"}
     
-    linkoptions{ "/NODEFAULTLIB:MSVCRT" }
+    ignoredefaultlibraries { "MSVCRT" }
     --[[
     -- this is needed to supress the linker warning in VS2013 if gloabal links are used 
     linkoptions {
@@ -167,7 +168,8 @@ workspace "NaoTHSoccer"
 	-- TODO test this on a mac	
 	filter "system:macosx"
 		defines { "BOOST_SIGNALS_NO_DEPRECATION_WARNING", "EIGEN_DONT_ALIGN" }
-		buildoptions {"-std=c++11"}
+		--buildoptions {"-std=c++11"}
+    cppdialect "c++11"
 		-- disable some warnings
 		buildoptions {"-Wno-deprecated-declarations"}
 		buildoptions {"-Wno-deprecated-register"}
@@ -195,7 +197,8 @@ workspace "NaoTHSoccer"
 		-- Prohibit GCC to be clever and use undefined behavior for some optimizations
 		-- (see http://www.airs.com/blog/archives/120 for some nice explanation)
 		buildoptions {"-fno-strict-overflow"}
-		buildoptions {"-std=c++11"}
+		--buildoptions {"-std=c++11"}
+    cppdialect "c++11"
 		
 		--flags { "ExtraWarnings" }
 		links {"pthread"}
@@ -232,7 +235,8 @@ workspace "NaoTHSoccer"
       vpaths { ["*"] = FRAMEWORK_PATH .. "/Platforms/Source/NaoSMAL" }
       defines { "BOOST_SIGNALS_NO_DEPRECATION_WARNING" }
       -- ACHTUNG: NaoSMAL doesn't build with the flag -std=c++11 (because of Boost)
-      buildoptions {"-std=gnu++11"}
+      --buildoptions {"-std=gnu++11"}
+      cppdialect "gnu++11"
       
     dofile (FRAMEWORK_PATH .. "/Platforms/Make/NaoRobot.lua")
       kind "ConsoleApp"
