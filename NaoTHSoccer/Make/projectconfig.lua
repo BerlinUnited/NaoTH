@@ -10,37 +10,17 @@ function printPath(prefix, path)
 	end
 end
 
--- TODO: this is deprecated
-function table.append(t,s)
-	if s ~= nil then for _,v in pairs(s) do if v ~= nil then
-			table.insert(t, 1, v)
-	end end end
-end
---------------------------------------------------------------
-PATH = {}
-PATH.libs = {}
-PATH.includes = {}
-	
-function PATH:includedirs(s)
-	table.append(self.includes,s)
-end
-
-function PATH:libdirs(s)
-	table.append(self.libs,s)
-end
 
 -- for debug
-function PATH:print()
-	print("INFO: list includedirs")
-	for _,v in pairs(self.includes) do
-		printPath("> ",v)
-	end
-	print("INFO: list libdirs")
-	for _,v in pairs(self.libs) do
+function checkPaths(paths)
+	for _,v in pairs(paths) do
 		printPath("> ",v)
 	end
 end
 
+-- this function does nothing by default and can be redefined in projectconfig.user.lua
+function set_user_defined_paths()
+end
 
 --------------------------------------------------------------
 -- load local user settings if available
@@ -115,25 +95,4 @@ else
 	EXTERN_PATH = path.getabsolute(EXTERN_PATH_NATIVE)
 end
 
---[[
--- add general pathes
--- this mainly reflects the internal structure of the extern directory
-sysincludedirs {
-	FRAMEWORK_PATH .. "/Commons/Source/Messages",
-  
-	EXTERN_PATH .. "/include",
-	EXTERN_PATH .. "/include/glib-2.0",
-	EXTERN_PATH .. "/include/gio-unix-2.0", -- does not exists anymore
-	EXTERN_PATH .. "/lib/glib-2.0/include"
-}
-
-includedirs { 
-  FRAMEWORK_PATH .. "/Commons/Source" 
-}
-
-sysincludedirs { EXTERN_PATH .. "/lib"}
-]]--
---------------------------------------------------------------
---PATH:print()
---print()
 
