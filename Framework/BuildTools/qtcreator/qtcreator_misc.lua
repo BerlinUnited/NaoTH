@@ -17,6 +17,12 @@
   
   function qc.includes(prj)
   
+    -- add system includes
+    for _, inc in ipairs(prj.sysincludedirs) do
+      _p(inc)
+    end
+  
+    -- add project includes
     for _, inc in ipairs(prj.includedirs) do
       _p(inc)
     end
