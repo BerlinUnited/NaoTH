@@ -6,6 +6,7 @@ if not premake.checkVersion(premake._VERSION, ">=5.0.0-alpha12") then
 end
 
 require "tools/clean_action" -- get custom clean action
+require "tools/tools"
 dofile "tools/custom_options.lua" -- define custom options
 
 -- TODO implement projectconfig lua stuff
@@ -28,6 +29,11 @@ print("  OS = " .. os.target())
 print("  ACTION = " .. (_ACTION or "NONE"))
 print()
 
+
+-- touch main.cpp to make sure that the repository defines have effect
+if _OPTIONS["platform"] == "Nao" then
+  touchfile(path.join(FRAMEWORK_PATH,"Platforms/Source/DCM/NaoRobot/main.cpp"))
+end
 
 workspace "NaoTHSoccer"
   platforms {"Native", "Nao"}
