@@ -104,10 +104,12 @@ printPath("  AL_DIR = ", tostring(AL_DIR))
 if PLATFORM == "Nao" then
   assert(EXTERN_PATH_NAO ~= nil, "EXTERN_PATH_NAO is needed to be able to compile for nao.")
 	EXTERN_PATH = path.getabsolute(EXTERN_PATH_NAO)
+  --[[
 	if AL_DIR ~= nil then
 		sysincludedirs {AL_DIR .. "/include"}
 		syslibdirs {AL_DIR .. "/lib"}
 	end
+  ]]--
 else
 	assert(EXTERN_PATH_NATIVE ~= nil, "EXTERN_PATH_NATIVE is need to be able to compile.")
 	EXTERN_PATH = path.getabsolute(EXTERN_PATH_NATIVE)

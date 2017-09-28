@@ -221,6 +221,10 @@ workspace "NaoTHSoccer"
   -- set up platforms
   if _OPTIONS["platform"] == "Nao" then
     dofile (FRAMEWORK_PATH .. "/Platforms/Make/NaoSMAL.lua")
+      if AL_DIR ~= nil then
+        sysincludedirs {AL_DIR .. "/include"}
+        syslibdirs {AL_DIR .. "/lib"}
+      end
       vpaths { ["*"] = FRAMEWORK_PATH .. "/Platforms/Source/NaoSMAL" }
       -- HACK: boost from NaoQI SDK makes problems
       buildoptions {"-Wno-conversion"}
