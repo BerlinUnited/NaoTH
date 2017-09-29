@@ -138,8 +138,8 @@ void DCM_led::init(boost::shared_ptr<ALBroker> pB)
   //connect to DCM
   try {
     dcm = boost::shared_ptr<AL::DCMProxy>(new DCMProxy(pB));
-  } catch(ALError e) {
-    std::cerr << "Failed to init DCMHandler: " << e.toString() << endl;
+  } catch(ALError& e) {
+    std::cerr << "Failed to init DCMHandler: " << e.what() << endl;
     return; // TODO: assert
   }
   
@@ -164,9 +164,9 @@ void DCM_led::init(boost::shared_ptr<ALBroker> pB)
 
     dcm->createAlias(aliasCommand);
   }
-  catch(ALError e)
+  catch(ALError& e)
   {
-    std::cerr << "[NaoSMAL] Failed to create LED-Alias: " << e.toString() << endl;
+    std::cerr << "[NaoSMAL] Failed to create LED-Alias: " << e.what() << endl;
   }
 
 
@@ -268,8 +268,8 @@ bool DCM_led::setSingleLED(const LEDData& data, int dcmTime)
       }
     }
 
-  } catch(ALError e) {
-    std::cerr << "[NaoSMAL] Failed to set LEDs: " << e.toString() << endl;
+  } catch(ALError& e) {
+    std::cerr << "[NaoSMAL] Failed to set LEDs: " << e.what() << endl;
   }
   return result;
 }//end setSingleLED
@@ -290,8 +290,8 @@ void DCM_led::setAllLED(const LEDData& data, int dcmTime)
 
   try {
     dcm->setAlias(allLedCommand);
-  } catch(ALError e) {
-    std::cerr << "[NaoSMAL] Failed to set LEDs: " << e.toString() << endl;
+  } catch(ALError& e) {
+    std::cerr << "[NaoSMAL] Failed to set LEDs: " << e.what() << endl;
   }
 }//end setAllLED
 
