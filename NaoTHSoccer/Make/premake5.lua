@@ -1,14 +1,14 @@
 -- Test for checking the premake version
-
 if not premake.checkVersion(premake._VERSION, ">=5.0.0-alpha12") then
   print("ERROR: Premake Version" .. premake._VERSION .. " is to old. Use at least 5.0.0-alpha12")
   os.exit()
 end
 
+
 require "tools/clean_action" -- get custom clean action
 require "tools/tools"
 dofile "tools/custom_options.lua" -- define custom options
-
+require "tools/help"
 -- TODO implement projectconfig lua stuff
 dofile "projectconfig.lua" -- load the global default settings
 
@@ -22,6 +22,8 @@ dofile (FRAMEWORK_PATH .. "/BuildTools/qtcreator_2.7+.lua")
 if COMPILER_PATH_NAO ~= nil then
   include (COMPILER_PATH_NAO)
 end
+
+
 
 print("INFO: generating solution NaoTHSoccer")
 print("  PLATFORM = " .. PLATFORM)
