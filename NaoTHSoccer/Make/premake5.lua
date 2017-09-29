@@ -133,8 +133,10 @@ workspace "NaoTHSoccer"
     system ("linux")
     
     -- HACK: system() desn't set the target system properly => set the target system manually
-    _TARGET_OS = "linux"
-    print("NOTE: set the target OS to " .. os.target())
+    if _OPTIONS["platform"] == "Nao" then
+      _TARGET_OS = "linux"
+      print("NOTE: set the target OS to " .. os.target())
+    end
     
     cppdialect "c++11"
     
