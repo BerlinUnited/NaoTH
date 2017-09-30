@@ -31,8 +31,6 @@ def simulate_consequences(action, categorized_ball_positions, state, num_particl
     opp_goal_box = m2d.Rect2d(opp_goal_back_right, field.opponent_goalpost_left)
 
     # current ball position
-    # FIXME state.pose.rotation can become inf
-    #print(state.pose.translation.x, state.pose.translation.y, state.pose.rotation)
     global_ball_start_position = state.pose * state.ball_position
 
     # virtual ultrasound obstacle line
@@ -107,6 +105,16 @@ def simulate_consequences(action, categorized_ball_positions, state, num_particl
 
 def decide_smart(actions_consequences, state):
 
+    # choose potentialfield function
+    if state.potential_field_function == "influence_01":
+        evaluate = pf.evaluate_action_with_robots
+    elif state.potential_field_function == "normal":
+        # normal potentialfield without influence regions
+        evaluate = pf.evaluate_action
+    else:
+        # normal potentialfield without influence regions
+        evaluate = pf.evaluate_action
+
     acceptable_actions = []
     # select acceptable actions
     for i, results in enumerate(actions_consequences):
@@ -117,7 +125,7 @@ def decide_smart(actions_consequences, state):
         # ignore actions with too high chance of kicking out
         score = results.likelihood("INFIELD") + results.likelihood("OPPGOAL")
         if score < max(0.0, a.good_threshold_percentage):
-            # print("Threshhold is too low for action: " + str(i) + "with score: " + str(score) )
+            # print("Threshold is too low for action: " + str(i) + "with score: " + str(score) )
             continue
 
         # all actions which are not too bad
@@ -164,8 +172,9 @@ def decide_smart(actions_consequences, state):
         best_action = 0
         best_value = float("inf")  # assuming potential is [0.0, inf]
         for index in acceptable_actions:
+            # TODO: make signature of each potentialfield function equal
             # potential = pf.benji_field(actions_consequences[index], state, state.opp_robots, state.own_robots)
-            potential = pf.evaluate_action2(actions_consequences[index], state)
+            potential = evaluate(actions_consequences[index], state)
             if potential < best_value:
                 best_action = index
                 best_value = potential
@@ -175,10 +184,7 @@ def decide_smart(actions_consequences, state):
     best_action = 0
     best_value = float("inf")  # assuming potential is [0.0, inf]
     for index in goal_actions:
-        # FIXME Test for different potential fields
-
-        # potential = pf.benji_field(actions_consequences[index], state, state.opp_robots, state.own_robots)
-        potential = pf.evaluate_action2(actions_consequences[index], state)
+        potential = evaluate(actions_consequences[index], state)
         if potential < best_value:
             best_action = index
             best_value = potential

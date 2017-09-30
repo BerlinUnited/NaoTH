@@ -28,7 +28,11 @@ class State:
 
         self.ball_position = m2d.Vector2(100.0, 0.0)
 
-        self.obstacle_list = ([])  # is in global coordinates
+        # Possible options: normal, influence_01
+        self.potential_field_function = "normal"
+
+        self.opp_robots = ([])  # is in global coordinates
+        self.own_robots = ([])  # is in global coordinates
 
 
 def draw_actions(actions_consequences, state, best_action):
