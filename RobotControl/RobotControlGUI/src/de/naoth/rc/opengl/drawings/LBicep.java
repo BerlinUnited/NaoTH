@@ -14,6 +14,7 @@ import de.naoth.rc.opengl.representations.Primitive;
  *
  * @author robert
  */
+@Deprecated
 public class LBicep extends GLDrawable {
 
     public LBicep(String[] args) {

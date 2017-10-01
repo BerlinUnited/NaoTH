@@ -9,13 +9,13 @@ import com.jogamp.opengl.GL3;
 import de.naoth.rc.opengl.model.GLComplex;
 import de.naoth.rc.opengl.model.GLObject;
 import de.naoth.rc.opengl.representations.GLCache;
-import java.awt.Color;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  *
  * @author robert
  */
+@Deprecated
 public class Nao implements GLComplex {    
     /*
     protected Color color;

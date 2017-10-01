@@ -14,6 +14,7 @@ import de.naoth.rc.opengl.representations.Primitive;
  *
  * @author robert
  */
+@Deprecated
 public class Torso extends GLDrawable {
 
     public Torso(String[] args) {

@@ -312,7 +312,7 @@ final class GLEventListenerImpl implements GLEventListener, ObjectListener<Strin
                     message = new String[]{GLDrawable.class.getPackage().getName() + ".ExampleGLDrawable"};
                     messages[i++] = message;
                      */
-                    message = new String[]{GLDrawable.class.getPackage().getName() + ".Field"};
+                    message = new String[]{GLDrawable.class.getPackage().getName() + ".Torso", "Torso", String.valueOf(g((double) x)), String.valueOf(f((double) x)+6), "3"};
                     messages[i++] = message;
                     
                     newObjectReceived(messages);
