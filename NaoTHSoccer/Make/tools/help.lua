@@ -8,7 +8,6 @@ local original_help = premake.showhelp
 
 premake.showhelp = function(prj)
   -- display the basic usage
-    print("Blablablabla")
     printf("Premake %s, a build script generator", _PREMAKE_VERSION)
     printf(_PREMAKE_COPYRIGHT)
     printf("%s %s", _VERSION, _COPYRIGHT)
@@ -32,8 +31,19 @@ premake.showhelp = function(prj)
       end
     end
 
-    -- TODO: define a table of triggers that should not show up in the help
+    -- define a table of triggers that should not show up in the help
+    hidden_options = {}
+    hidden_options["systemscript"] = true
+    hidden_options["scripts"] = true 
+    hidden_options["os"] = true
+    hidden_options["dotnet"] = true
+    hidden_options["dc"] = true
+    hidden_options["cc"] = true
 
+    hidden_options["fatal"] = true
+    hidden_options["insecure"] = true
+    hidden_options["interactive"] = true
+    
     -- display all options
     for k, options in spairs(categories) do
       printf(k)
@@ -48,11 +58,9 @@ premake.showhelp = function(prj)
 
       for _, option in ipairs(options) do
         local trigger = option.trigger
-        print(option.trigger)
-        if trigger == "TEST" then
-            print(" BLALKSAJDOIUJASDÖLJ")
-        end
-        --if not trigger == "os" then
+
+        -- only show options if not hidden
+        if not hidden_options[string.lower(trigger)] then
           local description = option.description
           if (option.value) then trigger = trigger .. "=" .. option.value end
           if (option.allowed) then description = description .. "; one of:" end
@@ -64,7 +72,7 @@ premake.showhelp = function(prj)
             end
             printf("")
           end
-        --end        
+        end        
       end
       printf("")
     end
