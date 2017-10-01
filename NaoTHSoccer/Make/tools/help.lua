@@ -32,6 +32,8 @@ premake.showhelp = function(prj)
       end
     end
 
+    -- TODO: define a table of triggers that should not show up in the help
+
     -- display all options
     for k, options in spairs(categories) do
       printf(k)
@@ -46,17 +48,23 @@ premake.showhelp = function(prj)
 
       for _, option in ipairs(options) do
         local trigger = option.trigger
-        local description = option.description
-        if (option.value) then trigger = trigger .. "=" .. option.value end
-        if (option.allowed) then description = description .. "; one of:" end
-
-        printf(" --%-" .. length .. "s %s", trigger, description)
-        if (option.allowed) then
-          for _, value in ipairs(option.allowed) do
-            printf("     %-" .. length-1 .. "s %s", value[1], value[2])
-          end
-          printf("")
+        print(option.trigger)
+        if trigger == "TEST" then
+            print(" BLALKSAJDOIUJASDÖLJ")
         end
+        --if not trigger == "os" then
+          local description = option.description
+          if (option.value) then trigger = trigger .. "=" .. option.value end
+          if (option.allowed) then description = description .. "; one of:" end
+
+          printf(" --%-" .. length .. "s %s", trigger, description)
+          if (option.allowed) then
+            for _, value in ipairs(option.allowed) do
+              printf("     %-" .. length-1 .. "s %s", value[1], value[2])
+            end
+            printf("")
+          end
+        --end        
       end
       printf("")
     end
