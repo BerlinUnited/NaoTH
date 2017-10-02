@@ -10,14 +10,13 @@
 class CNN_basic_synthetic_fusion : public AbstractCNNClassifier {
 
 public:
-	CNN_basic_synthetic_fusion(){out.open("example.txt");}
 
-	~CNN_basic_synthetic_fusion(){out.close();}
-
-std::ofstream out;
 	bool classify(const BallCandidates::Patch& p);
+
   virtual float getBallConfidence();
   virtual float getNoballConfidence();
+
+private:
 
 	// declare copied intial input array
 	float out_step0[16][16][1];
