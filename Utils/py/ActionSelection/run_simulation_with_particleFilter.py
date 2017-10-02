@@ -11,7 +11,10 @@ from tools import tools
 
 '''
     Computes the best kick direction based on particle filter sampling over possible angles. 
-    Uses manually crafted potential field for evaluation
+    Uses manually crafted potential field for evaluation.
+    
+    TODO: fix problems with particle filter
+    TODO: better way to enable drawings
 '''
 
 
@@ -28,11 +31,11 @@ class State:
 
 def draw_actions(actions_consequences, state, best_action, normal_angle, better_angle, angle_list):
     plt.clf()
-    tools.draw_field()
+    tools.draw_field(plt.gca())
 
     axes = plt.gca()
     axes.add_artist(Circle(xy=(state.pose.translation.x, state.pose.translation.y), radius=100, fill=False, edgecolor='white'))
-    axes.text(0, 0, best_action, fontsize=12)
+    axes.text(-4500, 3150, best_action, fontsize=12)
 
     origin = state.pose.translation
     # arrow_head = m2d.Vector2(500, 0).rotate(math.radians(normal_angle + better_angle))
@@ -105,7 +108,7 @@ def update(samples, likelihoods, state, action, m_min, m_max):
         simulation_consequences.append(Sim.simulate_consequences(test_action, test_action_consequence, state, simulation_num_particles))
         
         if test_action_consequence.category("INFIELD") > 0:
-            potential = -pf.evaluate_action2(test_action_consequence, state)
+            potential = -pf.evaluate_action(test_action_consequence, state)
             likelihoods[i] = potential
             m_min = min(m_min, potential)
             m_max = max(m_max, potential)
@@ -153,7 +156,7 @@ def calculate_best_direction(x, y, iterations, show):
 
 
 if __name__ == "__main__":
-    single_run = False
+    single_run = True
 
     if single_run:
         # run a single direction
@@ -170,7 +173,7 @@ if __name__ == "__main__":
         print(xx.shape, len(x_pos), len(y_pos))
         for ix in range(0, len(x_pos)):
             for iy in range(0, len(y_pos)):
-                direction, direction_std = calculate_best_direction(float(x_pos[ix]), float(y_pos[iy]), 10, False)
+                direction, direction_std = calculate_best_direction(float(x_pos[ix]), float(y_pos[iy]), 10, True)
 
                 v = m2d.Vector2(100.0, 0.0).rotate(direction)
                 vx[iy, ix] = v.x
