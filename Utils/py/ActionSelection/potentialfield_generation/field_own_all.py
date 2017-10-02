@@ -8,6 +8,7 @@ from naoth import math2d as m2d
 from potentialfield_generation.field_own import main as simulate_best_angle
 from tools import field_info as field
 from tools import tools
+from state import State
 
 """
 This file simulates the  best angle for all positions on the field by simulation all the steps necessary to 
@@ -18,22 +19,6 @@ Example:
 
         $ python field_own_all.py
 """
-
-
-class State:
-    def __init__(self):
-        self.pose = m2d.Pose2D()
-        self.pose.translation = m2d.Vector2(-4000, -2000)
-        self.pose.rotation = math.radians(0)
-        self.rotation_vel = 60  # degrees per sec
-        self.walking_vel = 200  # mm per sec
-        self.ball_position = m2d.Vector2(100.0, 0.0)
-
-        self.obstacle_list = ([])  # is in global coordinates
-
-    def update_pos(self, glob_pos, rotation):
-        self.pose.translation = glob_pos
-        self.pose.rotation = math.radians(rotation)
 
 
 def main():
@@ -65,14 +50,16 @@ def main():
                 axes.arrow(x, y, v.x, v.y, head_width=100, head_length=100, fc='r', ec='r')
             dummy_container.append([x, y, time, angle])
 
-
+    # make sure not to overwrite anything
     while (os.path.exists('{}{:d}.png'.format('../data/potential_field_generation/potential_field_gen_own', file_idx)) or
            os.path.exists('{}{:d}.pickle'.format('../data/potential_field_generation/potential_field_gen_own', file_idx))):
         file_idx += 1
     plt.savefig('{}{:d}.png'.format('../data/potential_field_generation/potential_field_gen_own', file_idx))
-    pickle.dump(dummy_container, open('../data/potential_field_generation/potential_field_gen_own' + str(file_idx) + '.pickle', "wb"))  # make sure not to overwrite anything
+    pickle.dump(dummy_container, open('../data/potential_field_generation/potential_field_gen_own' + str(file_idx) + '.pickle', "wb"))
 
     if show_image:
-      plt.show()
+        plt.show()
+
+
 if __name__ == "__main__":
     main()

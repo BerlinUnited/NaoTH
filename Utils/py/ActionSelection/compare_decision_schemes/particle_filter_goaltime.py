@@ -9,28 +9,13 @@ from tools import tools
 from matplotlib import pyplot as plt
 from matplotlib.patches import Circle
 from tools import field_info as field
+from state import State
 
 
 """
     The best direction for each kick is calculated via a particle filter and a potential field. The kick with the minimum
     rotation is chosen
 """
-
-
-class State:
-    def __init__(self):
-        self.pose = m2d.Pose2D()
-        self.pose.translation = m2d.Vector2(-800, -800)
-        self.pose.rotation = math.radians(0)
-        self.rotation_vel = 60  # degrees per sec
-        self.walking_vel = 200  # mm per sec
-        self.ball_position = m2d.Vector2(100.0, 0.0)
-
-        self.obstacle_list = ([])  # is in global coordinates
-
-    def update_pos(self, glob_pos, rotation):
-        self.pose.translation = glob_pos
-        self.pose.rotation = math.radians(rotation)
 
 
 def draw_actions(actions_consequences, s, best_action, normal_angle, better_angle, angle_list):
@@ -116,7 +101,7 @@ def update(samples, likelihoods, s, action, m_min, m_max):
             Sim.simulate_consequences(test_action, test_action_consequence, s, simulation_num_particles))
 
         if test_action_consequence.category("INFIELD") > 0:
-            potential = -pf.evaluate_action2(test_action_consequence, s)
+            potential = -pf.evaluate_action(test_action_consequence, s)
             likelihoods[idx] = potential
             m_min = min(m_min, potential)
             m_max = max(m_max, potential)

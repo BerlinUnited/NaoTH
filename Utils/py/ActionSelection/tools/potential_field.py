@@ -1,7 +1,6 @@
 from __future__ import division
 import numpy as np
 import field_info as field
-
 """ General Functions """
 
 
@@ -66,15 +65,17 @@ def evaluate_single_pos_with_robots(ball_pos, opp_robots, own_robots):
         + gaussian(ball_pos.x, ball_pos.y, field.x_own_goal, 0.0, 1.5 * sigma_x, sigma_y)
 
     for opp_rob in opp_robots:  # adding influence of own and opponent robots into the field
-        f_rob = robot_field(opp_rob, ball_pos)
+        f_rob = robot_field_opp(opp_rob, ball_pos)
+
+        # this makes the influence region uniform - it might not be what we want
         if f_rob != 0:
-            if f_rob + f <= 1 and f_rob != 0.:
+            if f_rob + f <= 1:
                 f = f_rob
             else:
                 f += f_rob
 
     for own_rob in own_robots:
-        f_rob = robot_field(own_rob, ball_pos)
+        f_rob = robot_field_own(own_rob, ball_pos)
         if f_rob != 0:
             if f - f_rob <= -0.5:
                 f -= f_rob
@@ -82,77 +83,50 @@ def evaluate_single_pos_with_robots(ball_pos, opp_robots, own_robots):
                 f = -f_rob
     return f
 
-# TODO there could be potentially many different versions of this, also differentiate between own and opponent
-# TODO make it possible to overload this function via a switch in state class
-def robot_field(robot_pos, ball_pos):
+
+def robot_field_own(robot_pos, ball_pos):
     # gets called by evaluate_single_pos_with_robots
-    # TODO check if ball_pos is in local coordinates
     vel_rot = 60  # grad pro second
     vel_walk = 200  # mm pro second
 
-    x = ball_pos.x
-    y = ball_pos.y
-
-    # check if ball near robot -> TODO  Maybe not needed
-
-    # translated_ball_pos = ball_pos - robot_pos
-    # distance = translated_ball_pos.abs()
-
-    # if distance > 1000.:
-    #    return 0.0  # if ball if to far away the robot field has no impact
+    # ball_pos = robot_pos / ball_pos  # somehow the operator is not recognized here,
+    # so I copied the implementation of the transformation here
+    ball_pos = (ball_pos - robot_pos.translation).rotate(-robot_pos.rotation)
 
     # evaluation function
-    angle = np.degrees(np.arctan2(y, x))
+    angle = np.degrees(np.arctan2(ball_pos.y, ball_pos.x))
     rot_time = np.abs(angle / vel_rot)
-    distance = np.hypot(x, y)
+    distance = np.hypot(ball_pos.x, ball_pos.y)
     distance_time = distance / vel_walk
     total_time = distance_time + rot_time
 
     if total_time >= 5:
         total_time = 5
 
-    # total_time -= 5
-    # TEST
     total_time /= 5.
     total_time = 1 - total_time
     return total_time
 
 
-""" Potentialfield with other robots - different version """
+def robot_field_opp(robot_pos, ball_pos):
+    # gets called by evaluate_single_pos_with_robots
+    vel_rot = 60  # grad pro second
+    vel_walk = 200  # mm pro second
 
-
-def evaluate_action_with_robots2(ball_pos, opp_robots, own_robots):
-    # TODO: whats wrong whith that one?
-    sigma_x = field.x_opponent_goal / 2.0
-    sigma_y = field.y_left_sideline / 2.5
-
-    f = 0
-    for opp_rob in opp_robots:  # adding influence of own and opponent robots into the field
-        f += robot_field_simple(opp_rob, ball_pos)
-    for own_rob in own_robots:
-        f -= robot_field_simple(own_rob, ball_pos)
-    if f == 0:
-        f = slope(ball_pos.x, ball_pos.y, -1.0 / field.x_opponent_goal, 0.0) \
-            - gaussian(ball_pos.x, ball_pos.y, field.x_opponent_goal, 0.0, sigma_x, sigma_y) \
-            + gaussian(ball_pos.x, ball_pos.y, field.x_own_goal, 0.0, 1.5 * sigma_x, sigma_y)
-    return f
-
-
-def robot_field_simple(robot_pos, ball_pos):
-    # gets called by evaluate_action_with_robots2
-    vel_rot = 60.
-    vel_walk = 200.
-
-    # check if ball near robot
-    translated_ball_pos = ball_pos - robot_pos
-    distance = translated_ball_pos.abs()
-
-    if distance > 1000.:
-        return 0.0  # if ball if to far away the robot field has no impact
+    # ball_pos = robot_pos / ball_pos  # somehow the operator is not recognized here,
+    # so I copied the implementation of the transformation here
+    ball_pos = (ball_pos - robot_pos.translation).rotate(-robot_pos.rotation)
 
     # evaluation function
-    value = distance / vel_walk  # time to ball, very naive evaluation
-    value /= 5.
-    value = 1 - value
+    angle = np.degrees(np.arctan2(ball_pos.y, ball_pos.x))
+    rot_time = np.abs(angle / vel_rot)
+    distance = np.hypot(ball_pos.x, ball_pos.y)
+    distance_time = distance / vel_walk
+    total_time = distance_time + rot_time
 
-    return value
+    if total_time >= 5:
+        total_time = 5
+
+    total_time /= 5.
+    total_time = 1 - total_time
+    return total_time

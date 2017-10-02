@@ -1,6 +1,6 @@
 from __future__ import division
 import sys
-import math as m
+import math
 import numpy as np
 from matplotlib import pyplot as plt
 from matplotlib.patches import Circle
@@ -10,28 +10,7 @@ from naoth import math2d as m2d
 from tools import tools
 from tools import field_info as field
 from tools import raw_attack_direction_provider as attack_dir
-
-
-"""
-TODO introduce DEBUG LEVEL -> maybe use logging module
-     need to easily enable/disable output but also drawing
-"""
-
-
-class State:
-    def __init__(self):
-        self.pose = m2d.Pose2D()
-        self.pose.translation = m2d.Vector2(-1000, -1000)
-        self.pose.rotation = m.radians(0)
-
-        self.ball_position = m2d.Vector2(100.0, 0.0)
-        self.rotation_vel = 60  # degrees per sec
-        self.walking_vel = 200  # mm per sec
-        self.obstacle_list = ([])  # is in global coordinates
-
-    def update_pos(self, glob_pos, rotation):
-        self.pose.translation = glob_pos
-        self.pose.rotation = m.radians(rotation)
+from state import State
 
 
 def draw_robot_walk(actions_consequences, s, expected_ball_pos, best_action):
@@ -77,7 +56,7 @@ def main(x, y, rot, s, num_iter):
         num_turn_degrees = 0
         goal_scored = False
         total_time = 0
-        choosen_rotation = 'none'  # This is used for deciding the rotation direction once per none decision
+        chosen_rotation = 'none'  # This is used for deciding the rotation direction once per none decision
         s.update_pos(m2d.Vector2(x, y), rotation=rot)
         while not goal_scored:
             actions_consequences = []
@@ -115,19 +94,19 @@ def main(x, y, rot, s, num_iter):
 
                 # calculate the time needed
                 rotation = np.arctan2(expected_ball_pos.y, expected_ball_pos.x)
-                rotation_time = np.abs(m.degrees(rotation) / s.rotation_vel)
+                rotation_time = np.abs(math.degrees(rotation) / s.rotation_vel)
                 distance = np.hypot(expected_ball_pos.x, expected_ball_pos.y)
                 distance_time = distance / s.walking_vel
                 total_time += distance_time + rotation_time
 
                 # update total turns
-                num_turn_degrees += np.abs(m.degrees(rotation))
+                num_turn_degrees += np.abs(math.degrees(rotation))
 
                 # reset the rotation direction
-                choosen_rotation = 'none'
+                chosen_rotation = 'none'
 
                 # update the robots position
-                s.update_pos(s.pose * expected_ball_pos, m.degrees(s.pose.rotation + rotation))
+                s.update_pos(s.pose * expected_ball_pos, math.degrees(s.pose.rotation + rotation))
                 num_kicks += 1
 
             elif action_list[best_action].name == "none":
@@ -139,12 +118,12 @@ def main(x, y, rot, s, num_iter):
 
                 attack_direction = attack_dir.get_attack_direction(s)
 
-                if (attack_direction > 0 and choosen_rotation) is 'none' or choosen_rotation is 'left':
-                    s.update_pos(s.pose.translation, m.degrees(s.pose.rotation) + turn_rotation_step)  # Should turn right
-                    choosen_rotation = 'left'
-                elif (attack_direction <= 0 and choosen_rotation is 'none') or choosen_rotation is 'right':
-                    s.update_pos(s.pose.translation, m.degrees(s.pose.rotation) - turn_rotation_step)  # Should turn left
-                    choosen_rotation = 'right'
+                if (attack_direction > 0 and chosen_rotation) is 'none' or chosen_rotation is 'left':
+                    s.update_pos(s.pose.translation, math.degrees(s.pose.rotation) + turn_rotation_step)  # Should turn right
+                    chosen_rotation = 'left'
+                elif (attack_direction <= 0 and chosen_rotation is 'none') or chosen_rotation is 'right':
+                    s.update_pos(s.pose.translation, math.degrees(s.pose.rotation) - turn_rotation_step)  # Should turn left
+                    chosen_rotation = 'right'
 
                 num_turn_degrees += turn_rotation_step
             else:
@@ -164,5 +143,5 @@ if __name__ == "__main__":
     # repeat it multiple times to see how reliable the result is
     for i in range(30):
         state = State()
-        time, kicks, turns = main(state.pose.translation.x, state.pose.translation.y, m.degrees(state.pose.rotation), state, num_iter=10)
+        time, kicks, turns = main(state.pose.translation.x, state.pose.translation.y, math.degrees(state.pose.rotation), state, num_iter=10)
         print("Total time to goal: " + str(time) + " #Kicks: " + str(kicks) + " #Turns: " + str(turns))

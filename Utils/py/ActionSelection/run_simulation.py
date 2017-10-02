@@ -1,11 +1,10 @@
-import math
 import numpy as np
 from matplotlib import pyplot as plt
 from matplotlib.patches import Circle
 from tools import action as a
 from tools import Simulation as Sim
-from naoth import math2d as m2d
 from tools import tools
+from state import State
 
 """
 This module visualizes the samples and the decision calculated by the Simulation Based Algorithm.
@@ -19,22 +18,7 @@ Example:
         $ python run_simulation.py
 """
 
-
-class State:
-    def __init__(self):
-        self.pose = m2d.Pose2D()
-        self.pose.translation = m2d.Vector2(-1000, -1000)
-        self.pose.rotation = math.radians(0)
-
-        self.ball_position = m2d.Vector2(100.0, 0.0)
-
-        # Possible options: normal, influence_01
-        self.potential_field_function = "normal"
-
-        self.opp_robots = ([])  # is in global coordinates
-        self.own_robots = ([])  # is in global coordinates
-
-
+      
 def draw_actions(actions_consequences, state, best_action):
     plt.clf()
     tools.draw_field(plt.gca())

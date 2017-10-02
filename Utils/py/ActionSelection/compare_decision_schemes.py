@@ -1,10 +1,9 @@
-import math
 import os
 import pickle
-from naoth import math2d as m2d
 from tools import field_info as field
 from compare_decision_schemes.current_impl_goaltime import main as current_impl
 from compare_decision_schemes.particle_filter_goaltime import main as particle_filter
+from state import State
 
 """
 For every position(x, y) and a fixed rotation the time and the number of kicks and turns are calculated for different strategies.
@@ -16,22 +15,6 @@ Example:
 
         $ python compare_decision_schemes.py
 """
-
-
-class State:
-    def __init__(self):
-        self.pose = m2d.Pose2D()
-        self.pose.translation = m2d.Vector2(0, 0)
-        self.pose.rotation = math.radians(0)
-
-        self.ball_position = m2d.Vector2(100.0, 0.0)
-        self.rotation_vel = 60  # degrees per sec
-        self.walking_vel = 200  # mm per sec
-        self.obstacle_list = ([])  # is in global coordinates
-
-    def update_pos(self, glob_pos, rotation):
-        self.pose.translation = glob_pos
-        self.pose.rotation = rotation
 
 
 def main():

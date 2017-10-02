@@ -10,8 +10,7 @@ from tools import tools
  Pickle File format:  x, y, time, angle
 """
 
-# gen_field = pickle.load(open("../data/potential_field_generation/potential_field_gen_own0.pickle", "rb"))
-gen_field_own = pickle.load(open("../data/potential_field_generation/potential_field_gen_own1.pickle", "rb"))
+gen_field_own = pickle.load(open("../data/potential_field_generation/potential_field_gen_own0.pickle", "rb"))
 
 plt.clf()
 tools.draw_field()
@@ -120,11 +119,32 @@ for pos in gen_field_own:
 
 
 # Export for Heinrich
-np.savetxt('../data/potential_field_generation/f.out', nyi, delimiter=',')   # X is an array
+# np.savetxt('../data/potential_field_generation/f.out', nyi, delimiter=',')   # X is an array
 
 # Matlab Export
-scipy.io.savemat('../data/potential_field_generation/potentials.mat', mdict={'potentials': f-g})
+# scipy.io.savemat('../data/potential_field_generation/potentials.mat', mdict={'potentials': f-g})
 
 # Plot potentials
 plt.pcolor(nxi, nyi, f-g, cmap="Greys_r", alpha=0.8)
 plt.show()
+
+
+"""
+# Test contour plot
+for own in potentials_own:
+    i += 1
+    x, y, time, angle = own
+    x_own = np.append(x_own, x)  # x_own.append(x)
+    y_own = np.append(y_own, y)  # y_own.append(y)
+    times_own = np.append(times_own, time)  # times_own.append(time)
+
+# Through the unstructured data get the structured data by interpolation
+xi = np.linspace(x_own.min()-1, x_own.max()+1, 100)
+yi = np.linspace(y_own.min()-1, y_own.max()+1, 100)
+zi = griddata(x_own, y_own, times_own, xi, yi, interp='linear')
+
+CS = plt.contourf(xi, yi, zi, 10, alpha=0.5, cmap="coolwarm", frameon=False)
+plt.colorbar()
+plt.show()
+
+"""
