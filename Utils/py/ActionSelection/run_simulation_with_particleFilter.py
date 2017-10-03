@@ -9,6 +9,7 @@ from tools import potential_field as pf
 from naoth import math2d as m2d
 from tools import tools
 from state import State
+from tools import field_info as field
 
 '''
     Computes the best kick direction based on particle filter sampling over possible angles. 
@@ -113,7 +114,8 @@ def calculate_best_direction(x, y, iterations):
     action = a.Action("KickForward", 1000, 150, 0, 8)
     
     # particles
-    num_angle_particle = 30
+    # using at least 60 particles seems to always generate the correct kick direction
+    num_angle_particle = 60
     n_random = 0
     
     samples = (np.random.random(num_angle_particle)-0.5)*2 * 180.0
@@ -153,14 +155,16 @@ if __name__ == "__main__":
         calculate_best_direction(1000, 1000, 50)
     else:
         # run for the whole field
-        x_pos = range(-5200, 5300, 250)
-        y_pos = range(-3700, 3800, 250)
+        # add 100 to make sure field.x_field_length/2 and field.y_field_length/2 are included
+        x_pos = range(-field.x_field_length/2, field.x_field_length/2 + 100, 250)
+        y_pos = range(-field.y_field_length/2, field.y_field_length/2 + 100, 250)
+
         xx, yy = np.meshgrid(x_pos, y_pos)
         vx = np.zeros(xx.shape)
         vy = np.zeros(xx.shape)
         f = np.zeros(xx.shape)
 
-        print(xx.shape, len(x_pos), len(y_pos))
+        # print(xx.shape, len(x_pos), len(y_pos))
         for ix in range(0, len(x_pos)):
             for iy in range(0, len(y_pos)):
                 direction, direction_std = calculate_best_direction(float(x_pos[ix]), float(y_pos[iy]), 10)
@@ -169,8 +173,7 @@ if __name__ == "__main__":
                 vx[iy, ix] = v.x
                 vy[iy, ix] = v.y
                 f[iy, ix] = direction_std
-        
-        plt.figure()
-        tools.draw_field()
+
+        tools.draw_field(plt.gca())
         Q = plt.quiver(xx, yy, vx, vy, np.degrees(f))
         plt.show()

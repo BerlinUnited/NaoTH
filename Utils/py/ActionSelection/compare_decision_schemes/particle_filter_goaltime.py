@@ -115,7 +115,7 @@ def update(samples, likelihoods, s, action, m_min, m_max):
 
 def calculate_best_direction(s, action, show, iterations):
     # particles
-    num_angle_particle = 30
+    num_angle_particle = 60
     n_random = 0
 
     samples = (np.random.random(num_angle_particle) - 0.5) * 2 * 180.0
