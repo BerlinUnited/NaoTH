@@ -2,8 +2,9 @@
 #define IMUROTATIONSTATE_H
 
 #include "Tools/Filters/KalmanFilter/UnscentedKalmanFilter/UKFStateRotationBase.h"
-
+#include <Tools/naoth_eigen.h>
 // TODO: remove pragma
+/*
 #if defined(__GNUC__)
 #pragma GCC diagnostic ignored "-Wconversion"
 #endif
@@ -12,6 +13,7 @@
 #if defined(__GNUC__)
 #pragma GCC diagnostic pop
 #endif
+*/
 
 // state for rotation and rotational velocity
 template <class M1,/* class M2,*/ int dim, int dim_cov = dim, int rotation_index = 0>
@@ -33,27 +35,29 @@ class RotationState : public UKFStateRotationBase<RotationState<M1,/* M2,*/ dim,
         {}
 
     public: // accessors
-//        Eigen::Block<Eigen::Matrix<double,dim,1> > rotational_velocity(){
-//            return UKFStateRotationBase<RotationState<M1, /*M2,*/ dim, dim_cov>, rotation_index, dim>::accessElements(3,0,3,1);
-//        }
+        Eigen::Block<Eigen::Matrix<double,dim,1> > rotational_velocity(){
+            return UKFStateRotationBase<RotationState<M1, /*M2,*/ dim, dim_cov>, rotation_index, dim>::accessElements(3,0,3,1);
+        }
 
-//        const Eigen::Block<const Eigen::Matrix<double,dim,1> > rotational_velocity() const{
-//            return UKFStateRotationBase<RotationState<M1, /*M2,*/ dim, dim_cov>, rotation_index, dim>::accessElements(3,0,3,1);
-//        }
+        const Eigen::Block<const Eigen::Matrix<double,dim,1> > rotational_velocity() const{
+            return UKFStateRotationBase<RotationState<M1, /*M2,*/ dim, dim_cov>, rotation_index, dim>::accessElements(3,0,3,1);
+        }
 
     public:
         // functions requiered by the unscented kalman filter
         // TODO: should these functions be part of the filter?
 
         // state transition function
-        void predict(const Eigen::Vector3d& u, double dt) {
+        void predict(const Eigen::Vector3d& /*u*/,const double dt) {
             // continue rotation assuming constant velocity
             // rotational_velocity to quaternion
-            Eigen::Vector3d rot_vel = u * dt;
+            Eigen::Vector3d rot_vel;
+            rot_vel << this->rotational_velocity() * dt;
+
             Eigen::Matrix3d rot_vel_mat;
-            rot_vel_mat << 1                     , -rot_vel(2),  rot_vel(1),
-                           rot_vel(2),                       1, -rot_vel(0),
-                          -rot_vel(1),  rot_vel(0),                       1;
+            rot_vel_mat << 1         , -rot_vel(2),  rot_vel(1),
+                           rot_vel(2),           1, -rot_vel(0),
+                          -rot_vel(1),  rot_vel(0),           1;
             Eigen::Quaterniond rotation_increment(rot_vel_mat);
 
             // TODO: compare with rotation_increment*rotation which sounds more reasonable
@@ -65,7 +69,9 @@ class RotationState : public UKFStateRotationBase<RotationState<M1,/* M2,*/ dim,
         // state to measurement transformation function
         // HACK: add return type as parameter to enable overloading...
         M1 asMeasurement(const M1& /*z*/) const {
-            return this->getRotationAsQuaternion().inverse()._transformVector(Eigen::Vector3d(0,0,-1));
+            M1 return_val;
+            return_val << this->getRotationAsQuaternion().inverse()._transformVector(Eigen::Vector3d(0,0,-1)), this->rotational_velocity();
+            return return_val;
         }
 
         static const int size = dim;
@@ -107,7 +113,7 @@ class State : public Eigen::Matrix<double,dim,1>{
         // TODO: should these functions be part of the filter?
 
         // state transition function
-        void predict(double /*u*/, double /*dt*/) {
+        void predict(const Eigen::Vector3d& /*u*/, const double /*dt*/) {
             // assume constant acceleration
         }
 
