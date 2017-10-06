@@ -36,10 +36,10 @@ def main(num_samples, num_reps, x_step, y_step, rotation_step):
     action_list = [no_action, kick_short, sidekick_left, sidekick_right]
 
     whole_decisions = []
-
+    #TODO change the parameters to incoperate the whole field
     for rot in range(0, 360, rotation_step):
-        for x in range(int(-field.x_field_length*0.5)+x_step, int(field.x_field_length*0.5), x_step):
-            for y in range(int(-field.y_field_length*0.5)+y_step, int(field.y_field_length*0.5), y_step):
+        for x in range(int(-field.x_field_length*0.5)+100, int(field.x_field_length*0.5), 200):
+            for y in range(int(-field.y_field_length*0.5)+100, int(field.y_field_length*0.5), 200):
                 state.update_pos(m2d.Vector2(x, y), rotation=rot)
                 # Do this multiple times and write the decisions as a histogram
                 decision_histogramm = [0, 0, 0, 0]  # ordinal scale -> define own metric in evaluation script
@@ -68,7 +68,7 @@ if __name__ == "__main__":
     parser.add_argument("-r", "--num_reps", help="input the number of repeats per position", type=int, default=1)
     parser.add_argument("-x", "--res_x", help="input the step size for rotation", type=int, default=200)
     parser.add_argument("-y", "--res_y", help="input the step size for rotation", type=int, default=200)
-    parser.add_argument("-rot", "--res_rot", help="input the step size for rotation", type=int, default=30)
+    parser.add_argument("-rot", "--res_rot", help="input the step size for rotation", type=int, default=20)
 
     args = parser.parse_args()
 
