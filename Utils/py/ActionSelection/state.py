@@ -3,7 +3,7 @@ from naoth import math2d as m2d
 
 
 class State:
-    def __init__(self, x=-1000, y=-1000):
+    def __init__(self, x=1000, y=100):
         self.pose = m2d.Pose2D()
         self.pose.translation = m2d.Vector2(x, y)
         self.pose.rotation = math.radians(0)
