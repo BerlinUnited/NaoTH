@@ -43,7 +43,7 @@ def main(num_samples, num_reps, x_step, y_step, rotation_step):
 
     # use this to just iterate over the playing field
     x_range = range(int(-field.x_length * 0.5), int(field.x_length * 0.5) + x_step, x_step)
-    y_range = range(int(-field.y_length * 0.5), int(field.y_length * 0.5) + x_step, x_step)
+    y_range = range(int(-field.y_length * 0.5), int(field.y_length * 0.5) + x_step, y_step)
 
     for rot in range(0, 360, rotation_step):
         for x in field_x_range:
