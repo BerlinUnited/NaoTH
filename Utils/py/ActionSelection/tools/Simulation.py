@@ -5,6 +5,9 @@ import field_info as field
 import potential_field as pf
 from naoth import math2d as m2d
 
+good_threshold_percentage = 0.85  # experimental TODO expose this value
+minGoalLikelihood = 0.3 
+#minGoalParticles = 9
 
 def simulate_consequences(action, categorized_ball_positions, state, num_particles):
 
@@ -60,8 +63,8 @@ def simulate_consequences(action, categorized_ball_positions, state, num_particl
 
         # if there are collisions with the back goal lines, calculate where the ball will stop
         if collision_with_goal:
-            shootline = m2d.LineSegment(global_ball_start_position, shootline.point(t_min-field.ball_radius))
-            global_ball_end_position = shootline.end()
+            global_ball_end_position = shootline.point(t_min-field.ball_radius)
+            shootline = m2d.LineSegment(global_ball_start_position, global_ball_end_position)
 
         # Obstacle Detection
         obstacle_collision = False
@@ -100,6 +103,8 @@ def simulate_consequences(action, categorized_ball_positions, state, num_particl
         mean_test_list_y.append(local_test_pos.y)
 
         categorized_ball_positions.add(state.pose / global_ball_end_position, category)
+        
+    # calculate the most likely ball position in a separate simulation run
     categorized_ball_positions.expected_ball_pos_mean = m2d.Vector2(np.mean(mean_test_list_x), np.mean(mean_test_list_y))
     categorized_ball_positions.expected_ball_pos_median = m2d.Vector2(np.median(mean_test_list_x), np.median(mean_test_list_y))
     return categorized_ball_positions
@@ -126,7 +131,7 @@ def decide_smart(actions_consequences, state):
 
         # ignore actions with too high chance of kicking out
         score = results.likelihood("INFIELD") + results.likelihood("OPPGOAL")
-        if score < max(0.0, a.good_threshold_percentage):
+        if score < max(0.0, good_threshold_percentage):
             # print("Threshold is too low for action: " + str(i) + "with score: " + str(score) )
             continue
 
@@ -147,7 +152,8 @@ def decide_smart(actions_consequences, state):
         results = actions_consequences[index]
 
         # chance of scoring a goal must be significant
-        if results.category("OPPGOAL") < a.minGoalParticles:
+        #if results.category("OPPGOAL") < a.minGoalParticles:
+        if results.likelihood("OPPGOAL") < minGoalLikelihood:
             continue
 
         # there is no other action to compare yet
@@ -190,4 +196,5 @@ def decide_smart(actions_consequences, state):
         if potential < best_value:
             best_action = index
             best_value = potential
+            
     return best_action
