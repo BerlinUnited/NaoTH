@@ -41,12 +41,12 @@ def draw_actions(actions_consequences, state, best_action):
             x = np.append(x, [ball_pos.x])
             y = np.append(y, [ball_pos.y])
 
-    plt.scatter(x, y, c='r', alpha=0.5)
+    plt.scatter(x, y, c='r', alpha=0.5, zorder=100)
     plt.pause(0.0001)
 
 
 def main():
-    state = State()
+    state = State(1000, 0)
 
     no_action = a.Action("none", 0, 0, 0, 0)
     kick_short = a.Action("kick_short", 1800, 150, 0, 7)
@@ -55,12 +55,13 @@ def main():
 
     action_list = [no_action, kick_short, sidekick_left, sidekick_right]
 
-    while True:
+    #while True:
+    while plt.get_fignums():
         actions_consequences = []
         # Simulate Consequences
         for action in action_list:
             single_consequence = a.ActionResults([])
-            actions_consequences.append(Sim.simulate_consequences(action, single_consequence, state, 30))
+            actions_consequences.append(Sim.simulate_consequences(action, single_consequence, state, 40))
 
         # actions_consequences is now a list of ActionResults
 

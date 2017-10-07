@@ -3,10 +3,11 @@ import numpy as np
 import math
 from naoth import math2d as m2d
 
-num_particles = 30
+#num_particles = 30
 friction = 0.0275
-good_threshold_percentage = 1  # experimental TODO expose this value
-minGoalParticles = 25  # experimental was 9 before
+#good_threshold_percentage = 0.85  # experimental TODO expose this value
+#minGoalLikelihood = 0.3 
+#minGoalParticles = 25  # experimental was 9 before
 
 
 class Action:
