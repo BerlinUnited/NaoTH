@@ -49,7 +49,7 @@ def main():
     state = State(1000, 0)
 
     no_action = a.Action("none", 0, 0, 0, 0)
-    kick_short = a.Action("kick_short", 1800, 150, 0, 7)
+    kick_short = a.Action("kick_short", 1080, 150, 0, 7)
     sidekick_left = a.Action("sidekick_left", 750, 150, 90, 10)
     sidekick_right = a.Action("sidekick_right", 750, 150, -90, 10)
 
