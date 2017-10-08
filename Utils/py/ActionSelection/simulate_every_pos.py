@@ -1,4 +1,5 @@
 from __future__ import print_function  # needed for unpacking elements of a list for printing
+import os
 import argparse
 import pickle
 from tools import action as a
@@ -25,8 +26,9 @@ Example:
 
 
 def main(num_samples, num_reps, x_step, y_step, rotation_step):
-    # This takes hours
     state = State()
+
+    file_idx = 0
 
     no_action = a.Action("none", 0, 0, 0, 0)
     kick_short = a.Action("kick_short", 1080, 150, 0, 7)
@@ -46,8 +48,9 @@ def main(num_samples, num_reps, x_step, y_step, rotation_step):
     y_range = range(int(-field.y_length * 0.5), int(field.y_length * 0.5) + x_step, y_step)
 
     for rot in range(0, 360, rotation_step):
-        for x in field_x_range:
-            for y in field_y_range:
+        print("Rotation: " + str(rot))
+        for x in x_range:
+            for y in y_range:
                 state.update_pos(m2d.Vector2(x, y), rotation=rot)
                 # Do this multiple times and write the decisions as a histogram
                 decision_histogramm = [0, 0, 0, 0]  # ordinal scale -> define own metric in evaluation script
@@ -65,7 +68,12 @@ def main(num_samples, num_reps, x_step, y_step, rotation_step):
                 # write the position and decision in on list
                 whole_decisions.append([x, y, rot, decision_histogramm])
 
-    pickle.dump(whole_decisions, open('data/humanoids/decision-simulate_every_pos-' + str(num_samples) + '-' + str(num_reps) + '.pickle', "wb"))
+    # make sure not to overwrite anything
+    while os.path.exists('{}{:d}.pickle'.format('data/simulate_every_pos-' + str(num_samples) + '-' + str(num_reps) + '-v', file_idx)):
+        file_idx += 1
+
+    pickle.dump(whole_decisions, open(
+                'data/simulate_every_pos-' + str(num_samples) + '-' + str(num_reps) + '-v' + str(file_idx) + '.pickle', "wb"))
 
 
 if __name__ == "__main__":
