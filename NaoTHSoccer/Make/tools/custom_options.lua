@@ -4,6 +4,11 @@ newoption {
 }
 
 newoption {
+   trigger     = "JNI",
+   description = "Generate LogSimulatorJNI project"
+}
+
+newoption {
    trigger     = "Wno-conversion",
    description = "Disable the -Wconversion warning for gcc"
 }
@@ -31,6 +36,10 @@ newoption {
 
 if _OPTIONS["Test"] ~= nil then
       print("DEBUG: Generate test projects")
+end
+
+if _OPTIONS["JNI"] ~= nil then
+      print("Generate LogSimulatorJNI project")
 end
 
 if _OPTIONS["Wno-conversion"] ~= nil then

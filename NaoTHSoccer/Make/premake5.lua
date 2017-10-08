@@ -9,7 +9,6 @@ require "tools/clean_action" -- get custom clean action
 require "tools/tools"
 dofile "tools/custom_options.lua" -- define custom options
 require "tools/help"
--- TODO implement projectconfig lua stuff
 dofile "projectconfig.lua" -- load the global default settings
 
 -- load some helpers
@@ -146,7 +145,7 @@ workspace "NaoTHSoccer"
     -- Wsign-conversion might be useful and is not included in Wconversion
     --buildoptions {"-Wsign-conversion"}
     
-    -- for debugging
+    -- for debugging:
     -- buildoptions {"-time"}
 
     
@@ -260,16 +259,19 @@ workspace "NaoTHSoccer"
       links { "NaoTHSoccer", "Commons", naoth_links}
       vpaths { ["*"] = FRAMEWORK_PATH .. "/Platforms/Source/LogSimulator" }
       
-    dofile (FRAMEWORK_PATH .. "/Platforms/Make/LogSimulatorJNI.lua")
-      kind "SharedLib"
-      links { "NaoTHSoccer", "Commons", naoth_links}
-      vpaths { ["*"] = FRAMEWORK_PATH .. "/Platforms/Source/LogSimulatorJNI" }
-      
     -- generate tests if required
     if _OPTIONS["Test"] ~= nil then
       dofile ("../Test/Make/BallEvaluator.lua")
         kind "ConsoleApp"
         links { "NaoTHSoccer", "Commons", naoth_links}
         vpaths { ["*"] = "../Test/Source/BallEvaluator" }
+    end
+
+    -- generate LogSimulatorJNI if required
+    if _OPTIONS["JNI"] ~= nil then
+      dofile (FRAMEWORK_PATH .. "/Platforms/Make/LogSimulatorJNI.lua")
+        kind "SharedLib"
+        links { "NaoTHSoccer", "Commons", naoth_links}
+        vpaths { ["*"] = FRAMEWORK_PATH .. "/Platforms/Source/LogSimulatorJNI" }
     end
   end
