@@ -17,7 +17,7 @@ score a goal and compares the time for each rotation. The rotation with the shor
 Example:
     run without any parameters
 
-        $ python field_own_all.py
+        $ python generate_potential_field.py
 """
 
 
