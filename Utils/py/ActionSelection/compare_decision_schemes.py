@@ -21,33 +21,40 @@ def main():
     state = State()
     file_idx = 0
 
-    cell_width = 200
+    x_step = 200
+    y_step = 200
+    fixed_rot = 0
 
     num_iter = 10  # repeats for current implementation
     timing_container = []
     kick_container = []
 
-    x_range = range(int(-field.x_length * 0.5) + cell_width, int(field.x_length * 0.5), 2 * cell_width)
-    y_range = range(int(-field.y_length * 0.5) + cell_width, int(field.y_length * 0.5), 2 * cell_width)
-    rot = 45
+    # use this to iterate over the whole green
+    field_x_range = range(int(-field.x_field_length * 0.5), int(field.x_field_length * 0.5) + x_step, x_step)
+    field_y_range = range(int(-field.y_field_length * 0.5), int(field.y_field_length * 0.5) + y_step, y_step)
+
+    # use this to just iterate over the playing field
+    x_range = range(int(-field.x_length * 0.5), int(field.x_length * 0.5) + x_step, x_step)
+    y_range = range(int(-field.y_length * 0.5), int(field.y_length * 0.5) + x_step, y_step)
 
     # run for the whole field
     for x in x_range:
         for y in y_range:
-            c_time, c_kicks, c_turns = current_impl(x, y, rot, state, num_iter)
-            p_time, p_kicks, p_turns = particle_filter(x, y, rot, state, num_iter)
-            print("CurrentImpl: " + " X: " + str(x) + " Y: " + str(y) + " rot: " + str(rot) + " " + str(c_time))
-            print("ParticleImpl: " + " X: " + str(x) + " Y: " + str(y) + " rot: " + str(rot) + " " + str(p_time))
+            c_time, c_kicks, c_turns = current_impl(x, y, fixed_rot, state, num_iter)
+            p_time, p_kicks, p_turns = particle_filter(x, y, fixed_rot, state, num_iter)
+            print("CurrentImpl: " + " X: " + str(x) + " Y: " + str(y) + " rot: " + str(fixed_rot) + " " + str(c_time))
+            print("ParticleImpl: " + " X: " + str(x) + " Y: " + str(y) + " rot: " + str(fixed_rot) + " " + str(p_time))
 
-            timing_container.append([x, y, rot, c_time, p_time])
-            kick_container.append([x, y, rot, c_kicks, c_turns, p_kicks, p_turns])
+            timing_container.append([x, y, fixed_rot, c_time, p_time])
+            kick_container.append([x, y, fixed_rot, c_kicks, c_turns, p_kicks, p_turns])
 
     # make sure not to overwrite anything
-    while (os.path.exists('{}{:d}.pickle'.format('data/strategy_times' + "-rot" + str(rot) + "-", file_idx)) or
-           os.path.exists('{}{:d}.pickle'.format('data/strategy_actions' + "-rot" + str(rot) + "-", file_idx))):
+    while (os.path.exists('{}{:d}.pickle'.format('data/strategy_times' + "-rot" + str(fixed_rot) + "-", file_idx)) or
+           os.path.exists('{}{:d}.pickle'.format('data/strategy_actions' + "-rot" + str(fixed_rot) + "-", file_idx))):
         file_idx += 1
-    pickle.dump(timing_container, open('data/strategy_times' + "-rot" + str(rot) + "-" + str(file_idx) + '.pickle', "wb"))
-    pickle.dump(kick_container, open('data/strategy_actions' + "-rot" + str(rot) + "-" + str(file_idx) + '.pickle', "wb"))
+
+    pickle.dump(timing_container, open('data/strategy_times' + "-rot" + str(fixed_rot) + "-" + str(file_idx) + '.pickle', "wb"))
+    pickle.dump(kick_container, open('data/strategy_actions' + "-rot" + str(fixed_rot) + "-" + str(file_idx) + '.pickle', "wb"))
 
 
 if __name__ == "__main__":

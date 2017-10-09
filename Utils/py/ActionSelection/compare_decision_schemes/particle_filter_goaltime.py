@@ -118,7 +118,10 @@ def calculate_best_direction(s, action, show, iterations):
     num_angle_particle = 60
     n_random = 0
 
-    samples = (np.random.random(num_angle_particle) - 0.5) * 2 * 180.0
+    # test uniform distribution for samples(angles)
+    samples = np.arange(-180, 180, int(360/num_angle_particle))
+    # previous sample creation
+    # samples = (np.random.random(num_angle_particle) - 0.5) * 2 * 180.0
     likelihoods = np.ones(samples.shape) * (1 / float(num_angle_particle))
 
     m_min = 0
@@ -146,9 +149,9 @@ def calculate_best_direction(s, action, show, iterations):
 
 def main(x, y, rot, s, num_iter):
     no_action = a.Action("none", 0, 0, 0, 0)
-    kick_short = a.Action("kick_short", 1280, 0, 0, 0)
-    sidekick_left = a.Action("sidekick_left", 750, 0, 90, 0)
-    sidekick_right = a.Action("sidekick_right", 750, 0, -90, 0)
+    kick_short = a.Action("kick_short", 1080, 150, 0, 7)
+    sidekick_left = a.Action("sidekick_left", 750, 150, 90, 10)
+    sidekick_right = a.Action("sidekick_right", 750, 50, -90, 10)
     action_list = [no_action, kick_short, sidekick_left, sidekick_right]
 
     s.update_pos(m2d.Vector2(x, y), rotation=rot)  # rot is in degrees
@@ -188,7 +191,7 @@ def main(x, y, rot, s, num_iter):
             # after turning evaluate the best action again to calculate the expected ball position
             actions_consequences = []
             single_consequence = a.ActionResults([])
-            actions_consequences.append(Sim.simulate_consequences(action_list[best_action], single_consequence, s, a.num_particles))
+            actions_consequences.append(Sim.simulate_consequences(action_list[best_action], single_consequence, s, num_particles=30))
 
             # expected_ball_pos should be in local coordinates for rotation calculations
             expected_ball_pos = actions_consequences[0].expected_ball_pos_mean
@@ -226,6 +229,7 @@ def main(x, y, rot, s, num_iter):
         n_turns.append(num_turn_degrees)
 
     return np.nanmin(timings), np.nanmean(n_kicks), np.nanmean(n_turns)
+
 
 if __name__ == "__main__":
     for i in range(30):

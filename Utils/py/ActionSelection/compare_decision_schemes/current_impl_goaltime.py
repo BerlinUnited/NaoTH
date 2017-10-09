@@ -41,9 +41,9 @@ def main(x, y, rot, s, num_iter):
     s.update_pos(m2d.Vector2(x, y), rotation=rot)
 
     no_action = a.Action("none", 0, 0, 0, 0)
-    kick_short = a.Action("kick_short", 1280, 0, 0, 0)
-    sidekick_left = a.Action("sidekick_left", 750, 0, 90, 0)
-    sidekick_right = a.Action("sidekick_right", 750, 0, -90, 0)
+    kick_short = a.Action("kick_short", 1080, 150, 0, 7)
+    sidekick_left = a.Action("sidekick_left", 750, 150, 90, 10)
+    sidekick_right = a.Action("sidekick_right", 750, 50, -90, 10)
 
     action_list = [no_action, kick_short, sidekick_left, sidekick_right]
 
@@ -63,7 +63,7 @@ def main(x, y, rot, s, num_iter):
             # Simulate Consequences
             for action in action_list:
                 single_consequence = a.ActionResults([])
-                actions_consequences.append(Sim.simulate_consequences(action, single_consequence, s, a.num_particles))
+                actions_consequences.append(Sim.simulate_consequences(action, single_consequence, s, num_particles=30))
 
             # Decide best action
             best_action = Sim.decide_smart(actions_consequences, s)
