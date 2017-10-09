@@ -24,7 +24,10 @@ Example:
 def main():
     state = State()
     file_idx = 0
-    cell_width = 50
+
+    x_step = 200
+    y_step = 200
+
     iteration = 1
     rotation_step = 5
     dummy_container = []
@@ -34,8 +37,13 @@ def main():
     axes = plt.gca()
     tools.draw_field(axes)
 
-    x_range = range(int(-field.x_length * 0.5) + 4*cell_width, int(field.x_length * 0.5), 4*cell_width)
-    y_range = range(int(-field.y_length * 0.5) + 4*cell_width, int(field.y_length * 0.5), 4*cell_width)
+    # use this to iterate over the whole green
+    field_x_range = range(int(-field.x_field_length * 0.5), int(field.x_field_length * 0.5) + x_step, x_step)
+    field_y_range = range(int(-field.y_field_length * 0.5), int(field.y_field_length * 0.5) + y_step, y_step)
+
+    # use this to just iterate over the playing field
+    x_range = range(int(-field.x_length * 0.5), int(field.x_length * 0.5) + x_step, x_step)
+    y_range = range(int(-field.y_length * 0.5), int(field.y_length * 0.5) + x_step, y_step)
 
     # run for the whole field
     for x in x_range:

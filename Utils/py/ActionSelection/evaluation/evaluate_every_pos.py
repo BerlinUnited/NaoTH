@@ -110,7 +110,8 @@ def calculate_uncertainties():
 def plot_uncertainties():  # Plot the uncertainties in a scalar plot
     fixed_rotation = 0
     # load single decision file
-    decisions = pickle.load(open("../data/simulate_every_pos-30-100.pickle", "rb"))
+    data_prefix = "D:/RoboCup/Paper-Repos/2017-humanoids-action-selection/data/"
+    decisions = pickle.load(open(str(data_prefix) + "simulate_every_pos-30-100-v0.pickle", "rb"))
 
     #
     nx = {}

@@ -134,7 +134,6 @@ def cleanup_nan_values(generated_field):
 
 
 def plot_combined_scalar_field(cleaned_field):
-    # Load data:
     # create a structure for the scalar field
     nx = {}
     ny = {}

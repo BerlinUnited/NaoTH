@@ -5,9 +5,10 @@ import field_info as field
 import potential_field as pf
 from naoth import math2d as m2d
 
-good_threshold_percentage = 0.85  # experimental TODO expose this value
+good_threshold_percentage = 0.85
 minGoalLikelihood = 0.3 
-#minGoalParticles = 9
+# minGoalParticles = 9
+
 
 def simulate_consequences(action, categorized_ball_positions, state, num_particles):
 
@@ -118,6 +119,9 @@ def decide_smart(actions_consequences, state):
     elif state.potential_field_function == "normal":
         # normal potentialfield without influence regions
         evaluate = pf.evaluate_action
+    elif state.potential_field_function == "generated":
+        # use generated potential field values
+        evaluate = pf.evaluate_action_gen_field
     else:
         # normal potentialfield without influence regions
         evaluate = pf.evaluate_action
@@ -152,7 +156,7 @@ def decide_smart(actions_consequences, state):
         results = actions_consequences[index]
 
         # chance of scoring a goal must be significant
-        #if results.category("OPPGOAL") < a.minGoalParticles:
+        # if results.category("OPPGOAL") < a.minGoalParticles:
         if results.likelihood("OPPGOAL") < minGoalLikelihood:
             continue
 
@@ -180,8 +184,6 @@ def decide_smart(actions_consequences, state):
         best_action = 0
         best_value = float("inf")  # assuming potential is [0.0, inf]
         for index in acceptable_actions:
-            # TODO: make signature of each potentialfield function equal
-            # potential = pf.benji_field(actions_consequences[index], state, state.opp_robots, state.own_robots)
             potential = evaluate(actions_consequences[index], state)
             if potential < best_value:
                 best_action = index

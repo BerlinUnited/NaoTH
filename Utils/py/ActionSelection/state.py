@@ -13,7 +13,7 @@ class State:
 
         self.ball_position = m2d.Vector2(100.0, 0.0)
 
-        # Possible options: normal, influence_01
+        # Possible options: normal, influence_01, generated
         self.potential_field_function = "normal"
 
         self.opp_robots = ([])  # is in global coordinates

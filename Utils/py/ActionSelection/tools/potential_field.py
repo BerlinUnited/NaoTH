@@ -1,7 +1,13 @@
 from __future__ import division
 import numpy as np
 import field_info as field
+import pickle
+from evaluation.potentialfield_generated_plot import cleanup_nan_values
+
 """ General Functions """
+gen_field = []
+nx = []
+ny = []
 
 
 def gaussian(x, y, mu_x, mu_y, sigma_x, sigma_y):
@@ -130,3 +136,61 @@ def robot_field_opp(robot_pos, ball_pos):
     total_time /= 5.
     total_time = 1 - total_time
     return total_time
+
+
+""" Generated Potentialfield """
+
+
+def evaluate_action_gen_field(results, state):
+    sum_potential = 0.0
+    number_of_actions = 0.0
+    for p in results.positions():
+        if p.cat() == "INFIELD" or p.cat() == "OPPGOAL":
+            sum_potential += evaluate_single_pos(state.pose * p.pos())
+            number_of_actions += 1
+
+    assert number_of_actions > 0
+    sum_potential /= number_of_actions
+    return sum_potential
+
+
+def evaluate_single_pos_gen_field(ball_pos):
+    # TODO round ball_pos.x and ball_pos.y to the nearest position int the lookup table
+    ball_pos.x = int(round(x / 200.0) * 200.0)
+    ball_pos.y = int(round(x / 200.0) * 200.0)
+    f = gen_field[ny[ball_pos.y], nx[ball_pos.x]]
+    return f
+
+
+if __name__ == "__main__":
+    data_prefix = "D:/RoboCup/Paper-Repos/Bachelor-Schlotter/data/"
+    gen_field = pickle.load(open(str(data_prefix) + "potential_field_generation/potential_field_gen_own1.pickle", "rb"))
+
+    gen_field = cleanup_nan_values(gen_field)
+    # create a structure for the scalar field
+    nx = {}
+    ny = {}
+    for pos in gen_field:
+        x, y, time, angle = pos
+        nx[x] = x
+        ny[y] = y
+
+    nxi = np.array(sorted(nx.keys()))
+    nyi = np.array(sorted(ny.keys()))
+
+    for i, v in enumerate(nxi):
+        nx[v] = i
+
+    for i, v in enumerate(nyi):
+        ny[v] = i
+
+    f = np.zeros((len(ny), len(nx)))
+    g = np.zeros((len(ny), len(nx)))
+
+    # create the scalar fields
+    for position in gen_field:
+        x, y, time, _ = position
+        f[ny[y], nx[x]] = time
+        g[ny[y], nx[-x]] = time
+
+    gen_field = f-g
