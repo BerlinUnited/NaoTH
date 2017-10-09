@@ -3,6 +3,7 @@ import numpy as np
 import field_info as field
 import pickle
 from evaluation.potentialfield_generated_plot import cleanup_nan_values
+from action import Category
 
 """ General Functions """
 gen_field = []
@@ -11,9 +12,9 @@ ny = []
 
 
 def gaussian(x, y, mu_x, mu_y, sigma_x, sigma_y):
-    fac_x = np.power(x - mu_x, 2.0) / (2.0 * sigma_x * sigma_x)
-    fac_y = np.power(y - mu_y, 2.0) / (2.0 * sigma_y * sigma_y)
-    return np.exp(-1.0 * (fac_x + fac_y))
+    fac_x = ((x - mu_x)/sigma_x)**2
+    fac_y = ((y - mu_y)/sigma_y)**2
+    return np.exp(-0.5 * (fac_x + fac_y))
 
 
 def slope(x, y, slope_x, slope_y):
@@ -27,7 +28,7 @@ def evaluate_action(results, state):
     sum_potential = 0.0
     number_of_actions = 0.0
     for p in results.positions():
-        if p.cat() == "INFIELD" or p.cat() == "OPPGOAL":
+        if p.cat() == Category.INFIELD or p.cat() == Category.OPPGOAL:
             sum_potential += evaluate_single_pos(state.pose * p.pos())
             number_of_actions += 1
 
@@ -43,6 +44,7 @@ def evaluate_single_pos(ball_pos):  # evaluates the potential field at a x,y pos
     f = slope(ball_pos.x, ball_pos.y, -1.0 / field.x_opponent_goal, 0.0)\
         - gaussian(ball_pos.x, ball_pos.y, field.x_opponent_goal, 0.0, sigma_x, sigma_y)\
         + gaussian(ball_pos.x, ball_pos.y, field.x_own_goal, 0.0, 1.5 * sigma_x, sigma_y)
+    
     return f
 
 
@@ -53,7 +55,7 @@ def evaluate_action_with_robots(results, state):
     sum_potential = 0.0
     number_of_actions = 0.0
     for p in results.positions():
-        if p.cat() == "INFIELD" or p.cat() == "OPPGOAL":
+        if p.cat() == Category.INFIELD or p.cat() == Category.OPPGOAL:
             sum_potential += evaluate_single_pos_with_robots(state.pose * p.pos(), state.opp_robots, state.own_robots)
             number_of_actions += 1
 
@@ -145,7 +147,7 @@ def evaluate_action_gen_field(results, state):
     sum_potential = 0.0
     number_of_actions = 0.0
     for p in results.positions():
-        if p.cat() == "INFIELD" or p.cat() == "OPPGOAL":
+        if p.cat() == Category.INFIELD or p.cat() == Category.OPPGOAL:
             sum_potential += evaluate_single_pos(state.pose * p.pos())
             number_of_actions += 1
 

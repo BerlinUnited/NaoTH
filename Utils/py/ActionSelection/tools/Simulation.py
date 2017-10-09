@@ -1,6 +1,7 @@
 import math
 import numpy as np
 import action as a
+from action import Category
 import field_info as field
 import potential_field as pf
 from naoth import math2d as m2d
@@ -8,7 +9,7 @@ from naoth import math2d as m2d
 good_threshold_percentage = 0.85
 minGoalLikelihood = 0.3 
 # minGoalParticles = 9
-
+  
 
 def simulate_consequences(action, categorized_ball_positions, state, num_particles):
 
@@ -79,25 +80,25 @@ def simulate_consequences(action, categorized_ball_positions, state, num_particl
                 obstacle_collision = True
         '''
         if opp_goal_box.inside(global_ball_end_position):
-            category = "OPPGOAL"
+            category = Category.OPPGOAL
         elif obstacle_collision and obstacle_line.intersect(shootline) and shootline.intersect(obstacle_line):
-            category = "COLLISION"
+            category = Category.COLLISION
         elif (field.field_rect.inside(global_ball_end_position) or
               (global_ball_end_position.x <= field.opponent_goalpost_right.x and
               field.opponent_goalpost_left.y > global_ball_end_position.y > field.opponent_goalpost_right.y)):
-            category = "INFIELD"
+            category = Category.INFIELD
         elif shootline.intersect(own_goal_line_global) and own_goal_line_global.intersect(shootline):
-            category = "OWNGOAL"
+            category = Category.OWNGOAL
         elif global_ball_end_position.x > field.x_opponent_groundline:
-            category = "OPPOUT"
+            category = Category.OPPOUT
         elif global_ball_end_position.x < field.x_opponent_groundline:
-            category = "OWNOUT"
+            category = Category.OWNOUT
         elif global_ball_end_position.y > field.y_left_sideline:
-            category = "LEFTOUT"
+            category = Category.LEFTOUT
         elif global_ball_end_position.y < field.y_right_sideline:
-            category = "RIGHTOUT"
+            category = Category.RIGHTOUT
         else:
-            category = "INFIELD"
+            category = Category.INFIELD
 
         local_test_pos = state.pose / global_ball_end_position
         mean_test_list_x.append(local_test_pos.x)
@@ -130,11 +131,11 @@ def decide_smart(actions_consequences, state):
     # select acceptable actions
     for i, results in enumerate(actions_consequences):
         # if an own-goal is detected, ignore the action
-        if results.category("OWNGOAL") > 0:
+        if results.category(Category.OWNGOAL) > 0:
             continue
 
         # ignore actions with too high chance of kicking out
-        score = results.likelihood("INFIELD") + results.likelihood("OPPGOAL")
+        score = results.likelihood(Category.INFIELD) + results.likelihood(Category.OPPGOAL)
         if score < max(0.0, good_threshold_percentage):
             # print("Threshold is too low for action: " + str(i) + "with score: " + str(score) )
             continue
@@ -156,8 +157,8 @@ def decide_smart(actions_consequences, state):
         results = actions_consequences[index]
 
         # chance of scoring a goal must be significant
-        # if results.category("OPPGOAL") < a.minGoalParticles:
-        if results.likelihood("OPPGOAL") < minGoalLikelihood:
+        # if results.category(Category.OPPGOAL) < a.minGoalParticles:
+        if results.likelihood(Category.OPPGOAL) < minGoalLikelihood:
             continue
 
         # there is no other action to compare yet
@@ -166,12 +167,12 @@ def decide_smart(actions_consequences, state):
             continue
 
         # the action with the highest chance of scoring the goal is the best
-        if actions_consequences[goal_actions[0]].category("OPPGOAL") < results.category("OPPGOAL"):
+        if actions_consequences[goal_actions[0]].category(Category.OPPGOAL) < results.category(Category.OPPGOAL):
             goal_actions = ([])
             goal_actions.append(index)
             continue
 
-        if actions_consequences[goal_actions[0]].category("OPPGOAL") == results.category("OPPGOAL"):
+        if actions_consequences[goal_actions[0]].category(Category.OPPGOAL) == results.category(Category.OPPGOAL):
             goal_actions.append(index)
             continue
 
