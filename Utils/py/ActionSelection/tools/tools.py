@@ -15,7 +15,7 @@ def draw_field(axis=plt.gca()):
     ax.add_patch( 
       patches.Rectangle(
         (-f.x_field_length/2, -f.y_field_length/2), f.x_field_length, f.y_field_length,  
-        facecolor="green"
+        facecolor="green", zorder=0
       )
     )
     
