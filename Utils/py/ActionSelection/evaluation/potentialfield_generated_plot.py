@@ -1,5 +1,6 @@
 from __future__ import division
 from matplotlib import pyplot as plt
+from matplotlib.mlab import griddata
 import pickle
 import numpy as np
 import scipy.io
@@ -10,11 +11,14 @@ from tools import tools
  Pickle File format:  x, y, time, angle
 """
 
-gen_field_own = pickle.load(open("../data/potential_field_generation/potential_field_gen_own0.pickle", "rb"))
+data_prefix = "D:/RoboCup/Paper-Repos/Bachelor-Schlotter/data/"
+
+gen_field_own = pickle.load(open(str(data_prefix) + "potential_field_generation/potential_field_gen_own1.pickle", "rb"))
 
 plt.clf()
-tools.draw_field()
+tools.draw_field(plt.gca())
 
+#
 nx = {}
 ny = {}
 for pos in gen_field_own:
@@ -33,6 +37,8 @@ for i, v in enumerate(nyi):
 
 f = np.zeros((len(ny), len(nx)))
 g = np.zeros((len(ny), len(nx)))
+
+# create the scalar fields
 for pos in gen_field_own:
     x, y, time, _ = pos
     if np.isnan(time):
@@ -43,6 +49,7 @@ for pos in gen_field_own:
         g[ny[y], nx[-x]] = time
 
 # Fix nan outlier
+# TODO: create new cleaned up version
 for pos in gen_field_own:
     x, y, time, _ = pos
     if np.isnan(time):
@@ -115,36 +122,44 @@ for pos in gen_field_own:
 
         f[ny[y], nx[x]] = mean_val
         g[ny[y], nx[-x]] = mean_val
-        print(x, y, f[ny[y], nx[x]])
 
 
-# Export for Heinrich
-# np.savetxt('../data/potential_field_generation/f.out', nyi, delimiter=',')   # X is an array
-
-# Matlab Export
-# scipy.io.savemat('../data/potential_field_generation/potentials.mat', mdict={'potentials': f-g})
-
-# Plot potentials
-plt.pcolor(nxi, nyi, f-g, cmap="Greys_r", alpha=0.8)
-plt.show()
+def plot_combined_scalar_field():
+    # Plot potentials
+    plt.pcolor(nxi, nyi, f-g, cmap="Greys_r", alpha=0.8, zorder=100)
+    plt.show()
 
 
-"""
-# Test contour plot
-for own in potentials_own:
-    i += 1
-    x, y, time, angle = own
-    x_own = np.append(x_own, x)  # x_own.append(x)
-    y_own = np.append(y_own, y)  # y_own.append(y)
-    times_own = np.append(times_own, time)  # times_own.append(time)
+def contour_plot():
+    # Test contour plot
+    i = 0
+    x_own = ([])
+    y_own = ([])
+    times_own = ([])
+    for own in gen_field_own:
+        i += 1
+        x, y, time, angle = own
+        x_own = np.append(x_own, x)
+        y_own = np.append(y_own, y)
+        times_own = np.append(times_own, time)  # times_own.append(time)
 
-# Through the unstructured data get the structured data by interpolation
-xi = np.linspace(x_own.min()-1, x_own.max()+1, 100)
-yi = np.linspace(y_own.min()-1, y_own.max()+1, 100)
-zi = griddata(x_own, y_own, times_own, xi, yi, interp='linear')
+    # Through the unstructured data get the structured data by interpolation
+    xi = np.linspace(x_own.min()-1, x_own.max()+1, 100)
+    yi = np.linspace(y_own.min()-1, y_own.max()+1, 100)
+    zi = griddata(x_own, y_own, times_own, xi, yi, interp='linear')
 
-CS = plt.contourf(xi, yi, zi, 10, alpha=0.5, cmap="coolwarm", frameon=False)
-plt.colorbar()
-plt.show()
+    CS = plt.contourf(xi, yi, zi, 10, alpha=0.5, cmap="coolwarm", frameon=False, zorder=100)
+    plt.colorbar()
+    plt.show()
 
-"""
+
+if __name__ == "__main__":
+    # plot_combined_scalar_field()
+
+    contour_plot()
+
+    # Export for Heinrich
+    # np.savetxt('../data/potential_field_generation/f.out', nyi, delimiter=',')   # X is an array
+
+    # Matlab Export
+    # scipy.io.savemat('../data/potential_field_generation/potentials.mat', mdict={'potentials': f-g})
