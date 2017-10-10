@@ -11,6 +11,8 @@ from tools import tools
 from tools import field_info as field
 from tools import raw_attack_direction_provider as attack_dir
 
+from run_simulation_with_particleFilter import calculate_best_direction as heinrich_test
+
 """
 Visualization of Action Selection Algorithm until a goal is scored, with extra variations not considered in Action Model
 definition.
@@ -43,16 +45,10 @@ class State:
 
     def update_pos(self, glob_pos, rotation):
         self.pose.translation = glob_pos
-        self.pose.rotation = rotation
+        self.pose.rotation = math.radians(rotation)
 
 
-def draw_robot_walk_lines(line):
-    plt.clf()
-    axes = plt.gca()
-    tools.draw_field(axes)
-
-    count = 0
-    action_name_list = ["none", "short", "left", "right"]
+def draw_robot_walk_lines(axes, line, position_color):
     for state in line:
 
         origin = state.pose.translation
@@ -61,18 +57,11 @@ def draw_robot_walk_lines(line):
         arrow_head = m2d.Vector2(500, 0).rotate(state.pose.rotation)
 
         axes.add_artist(Circle(xy=(origin.x, origin.y), radius=100, fill=False, edgecolor='white'))
-        axes.add_artist(Circle(xy=(ball_pos.x, ball_pos.y), radius=120, fill=True, edgecolor='blue'))
+        axes.add_artist(Circle(xy=(ball_pos.x, ball_pos.y), radius=120, fill=True, color=position_color))
         axes.arrow(origin.x, origin.y, arrow_head.x, arrow_head.y, head_width=100, head_length=100, fc='k', ec='k')
 
-        # -- Add counter for moves
-        # -- Add executed action
-        # -- prove Ball position ist correct
-        # -- Haeufungspunkte (z.B. rotieren um Ball) Zahlen verbessern - mehr Uebersichtlichkeit
 
-    plt.show()
-
-
-def simulate_goal_cycle():
+def simulate_goal_cycle_current_impl():
     state = State()
     sim_data = [copy.deepcopy(state)]
 
@@ -82,10 +71,6 @@ def simulate_goal_cycle():
     sidekick_right = a.Action("sidekick_right", 750, 150, -90, 10)
 
     action_list = [no_action, kick_short, sidekick_left, sidekick_right]
-
-    num_kicks = 0
-    num_turn_degrees = 0
-    goal_scored = False
 
     # while not goal_scored:
     # do a fixed number of steps
@@ -105,61 +90,95 @@ def simulate_goal_cycle():
         # expected_ball_pos should be in local coordinates for rotation calculations
         expected_ball_pos = actions_consequences[best_action].expected_ball_pos_mean
 
-        # Check if expected_ball_pos inside opponent goal
-        opp_goal_back_right = m2d.Vector2(field.opponent_goalpost_right.x + field.goal_depth,
-                                          field.opponent_goalpost_right.y)
-        opp_goal_box = m2d.Rect2d(opp_goal_back_right, field.opponent_goalpost_left)
-
-        goal_scored = opp_goal_box.inside(state.pose * expected_ball_pos)
-        inside_field = field.field_rect.inside(state.pose * expected_ball_pos)
-
-        # Assert that expected_ball_pos is inside field or inside opp goal
-        if not inside_field and not goal_scored:
-            sim_data.append(copy.deepcopy(state))
-            print("Error")
-            # For histogram -> note the this position doesnt manage a goal
-            break
-
         if not action_list[best_action].name == "none":
-
-            # print(str(state.pose * expected_ball_pos) + " Decision: " + str(action_list[best_action].name))
-
             # update the robots position
             rotation = np.arctan2(expected_ball_pos.y, expected_ball_pos.x)
             # print(math.degrees(rotation))
-            state.update_pos(state.pose * expected_ball_pos, state.pose.rotation + rotation)
-            sim_data.append(copy.deepcopy(state))
+            state.update_pos(state.pose * expected_ball_pos, math.degrees(state.pose.rotation) + rotation)
 
-            num_kicks += 1
+            # reset the rotation direction
+            chosen_rotation = 'none'
+
+            sim_data.append(copy.deepcopy(state))
 
         elif action_list[best_action].name == "none":
-            # print(str(state.pose * expected_ball_pos) + " Decision: " + str(action_list[best_action].name))
-
+            turn_rotation_step = 5
+            # Calculate rotation time
             attack_direction = attack_dir.get_attack_direction(state)
-            # Todo: can run in a deadlock for some reason
-            if attack_direction > 0:
-                state.update_pos(state.pose.translation, state.pose.rotation + math.radians(10))  # Should be turn right
-                # state.pose.rotation += math.radians(10)  # Should be turn right
-                print("Robot turns right - global rotation turns left")
 
-            else:
-                state.update_pos(state.pose.translation, state.pose.rotation - math.radians(10))  # Should be turn left
-                # state.pose.rotation -= math.radians(10)  # Should be turn left
-                # print("Robot turns left - global rotation turns right")
+            if (attack_direction > 0 and chosen_rotation) is 'none' or chosen_rotation is 'left':
+                state.update_pos(state.pose.translation, math.degrees(state.pose.rotation) + turn_rotation_step)  # Should turn right
+                chosen_rotation = 'left'
+            elif (attack_direction <= 0 and chosen_rotation is 'none') or chosen_rotation is 'right':
+                state.update_pos(state.pose.translation, math.degrees(state.pose.rotation) - turn_rotation_step)  # Should turn left
+                chosen_rotation = 'right'
 
             sim_data.append(copy.deepcopy(state))
-
-            num_turn_degrees += 1
-
-    # print("Num Kicks: " + str(num_kicks))
-    # print("Num Turns: " + str(num_turn_degrees))
 
     return sim_data
 
 
+def simulate_goal_cycle_particle():
+    state = State()
+    sim_data = [copy.deepcopy(state)]
+
+    no_action = a.Action("none", 0, 0, 0, 0)
+    kick_short = a.Action("kick_short", 1080, 150, 0, 7)
+    sidekick_left = a.Action("sidekick_left", 750, 150, 90, 10)
+    sidekick_right = a.Action("sidekick_right", 750, 150, -90, 10)
+
+    action_list = [no_action, kick_short, sidekick_left, sidekick_right]
+
+    for i in range(2):
+        # Change Angle of all actions according to the particle filter
+        # best_dir is the global rotation for that kick
+        best_dir = 360
+        best_action = 0
+        for ix, action in enumerate(action_list):
+            if action.name is "none":
+                continue
+            tmp, _ = heinrich_test(state, action_list[ix], False, iterations=20)
+            # print("Best dir: " + str(math.degrees(tmp)) + " for action: " + action_list[idx].name)
+            if np.abs(tmp) < np.abs(best_dir):
+                best_dir = tmp
+                best_action = ix
+        # print("Best dir: " + str(math.degrees(best_dir)) + " for action: " + action_list[best_action].name)
+
+        # Rotate the robot so that the shooting angle == best_dir
+        state.pose.rotation = state.pose.rotation + best_dir
+
+        new_action = a.Action("new_action", action_list[best_action].speed, action_list[best_action].speed_std,
+                              action_list[best_action].angle, 0)
+        # after turning evaluate the best action again to calculate the expected ball position
+        actions_consequences = []
+        single_consequence = a.ActionResults([])
+        actions_consequences.append(Sim.simulate_consequences(new_action, single_consequence, state, num_particles=30))
+
+        # expected_ball_pos should be in local coordinates for rotation calculations
+        expected_ball_pos = actions_consequences[0].expected_ball_pos_mean
+
+        # calculate the time needed
+        rotation = np.arctan2(expected_ball_pos.y, expected_ball_pos.x)
+
+        # update the robots position
+        state.update_pos(state.pose * expected_ball_pos, math.degrees(state.pose.rotation + rotation))
+
+        sim_data.append(copy.deepcopy(state))
+    return sim_data
+
+
 def main():
-    ball_line = simulate_goal_cycle()
-    draw_robot_walk_lines(ball_line)
+    plt.clf()
+    axes = plt.gca()
+    tools.draw_field(axes)
+
+    ball_line_current = simulate_goal_cycle_current_impl()
+    ball_line_particle = simulate_goal_cycle_particle()
+
+    draw_robot_walk_lines(axes, ball_line_current, position_color='blue')
+    draw_robot_walk_lines(axes, ball_line_particle, position_color='red')
+
+    plt.show()
 
 
 if __name__ == "__main__":
