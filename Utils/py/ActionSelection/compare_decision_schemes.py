@@ -4,7 +4,7 @@ from tools import field_info as field
 from compare_decision_schemes.current_impl_goaltime import main as current_impl
 from compare_decision_schemes.particle_filter_goaltime import main as particle_filter
 from state import State
-
+import timeit
 """
 For every position(x, y) and a fixed rotation the time and the number of kicks and turns are calculated for different strategies.
 The output is written in two pickle files. The strategy evaluation scripts for a single position are located in
@@ -21,11 +21,11 @@ def main():
     state = State()
     file_idx = 0
 
-    x_step = 200
-    y_step = 200
-    fixed_rot = 0
+    x_step = 300
+    y_step = 300
+    fixed_rot = 180
 
-    num_iter = 10  # repeats for current implementation
+    num_iter = 3  # repeats for current implementation
     timing_container = []
     kick_container = []
 
@@ -37,11 +37,13 @@ def main():
     x_range = range(int(-field.x_length * 0.5), int(field.x_length * 0.5) + x_step, x_step)
     y_range = range(int(-field.y_length * 0.5), int(field.y_length * 0.5) + x_step, y_step)
 
-    x_range = range(0, int(field.x_length * 0.5) + x_step, x_step)
-
     # run for the whole field
+    num_done = 0
+    time_mean = 0
     for x in x_range:
-        for y in [0]:
+        for y in y_range:
+            start_time = timeit.default_timer()
+        
             c_time, c_kicks, c_turns = current_impl(x, y, fixed_rot, state, num_iter)
             p_time, p_kicks, p_turns = particle_filter(x, y, fixed_rot, state, num_iter)
             print("CurrentImpl: " + " X: " + str(x) + " Y: " + str(y) + " rot: " + str(fixed_rot) + " " + str(c_time))
@@ -49,6 +51,12 @@ def main():
 
             timing_container.append([x, y, fixed_rot, c_time, p_time])
             kick_container.append([x, y, fixed_rot, c_kicks, c_turns, p_kicks, p_turns])
+            
+            num_done += 1
+            num_todo = len(x_range)*len(y_range) - num_done
+            time_mean = 0.5*(time_mean + timeit.default_timer() - start_time)
+            print ("compitation time: {0}s ({1}s to go)".format(timeit.default_timer() - start_time, time_mean*num_todo))
+            
 
     # make sure not to overwrite anything
     while (os.path.exists('{}{:d}.pickle'.format('data/strategy_times' + "-rot" + str(fixed_rot) + "-", file_idx)) or
