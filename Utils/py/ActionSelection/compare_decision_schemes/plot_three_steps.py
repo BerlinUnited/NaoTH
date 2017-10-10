@@ -49,16 +49,20 @@ class State:
 
 
 def draw_robot_walk_lines(axes, line, position_color):
-    for state in line:
+    previous_state = 0
+    for rec_state in line:
+        origin = rec_state.pose.translation
 
-        origin = state.pose.translation
-        ball_pos = state.pose * state.ball_position
-
-        arrow_head = m2d.Vector2(500, 0).rotate(state.pose.rotation)
+        #ball_pos = state.pose * state.ball_position
 
         axes.add_artist(Circle(xy=(origin.x, origin.y), radius=100, fill=False, edgecolor='white'))
-        axes.add_artist(Circle(xy=(ball_pos.x, ball_pos.y), radius=120, fill=True, color=position_color))
-        axes.arrow(origin.x, origin.y, arrow_head.x, arrow_head.y, head_width=100, head_length=100, fc='k', ec='k')
+        #axes.add_artist(Circle(xy=(ball_pos.x, ball_pos.y), radius=120, fill=True, color=position_color))
+
+        if previous_state != 0:
+            axes.arrow(previous_state.x, previous_state.y, origin.x - previous_state.x, origin.y-previous_state.y,
+                       head_width=100, head_length=100, color=position_color)
+
+        previous_state = origin
 
 
 def simulate_goal_cycle_current_impl():
@@ -118,7 +122,7 @@ def simulate_goal_cycle_current_impl():
     return sim_data
 
 
-def simulate_goal_cycle_particle():
+def simulate_goal_cycle_particle(use_sidekicks=True):
     state = State()
     sim_data = [copy.deepcopy(state)]
 
@@ -127,7 +131,9 @@ def simulate_goal_cycle_particle():
     sidekick_left = a.Action("sidekick_left", 750, 150, 90, 10)
     sidekick_right = a.Action("sidekick_right", 750, 150, -90, 10)
 
-    action_list = [no_action, kick_short, sidekick_left, sidekick_right]
+    action_list = [no_action, kick_short]
+    if use_sidekicks:
+      action_list += [sidekick_left, sidekick_right]
 
     for i in range(2):
         # Change Angle of all actions according to the particle filter
@@ -173,10 +179,12 @@ def main():
     tools.draw_field(axes)
 
     ball_line_current = simulate_goal_cycle_current_impl()
-    ball_line_particle = simulate_goal_cycle_particle()
+    ball_line_particle = simulate_goal_cycle_particle(True)  # mixed scheme
+    ball_line_particle2 = simulate_goal_cycle_particle(False)
 
     draw_robot_walk_lines(axes, ball_line_current, position_color='blue')
     draw_robot_walk_lines(axes, ball_line_particle, position_color='red')
+    draw_robot_walk_lines(axes, ball_line_particle2, position_color='yellow')
 
     plt.show()
 
