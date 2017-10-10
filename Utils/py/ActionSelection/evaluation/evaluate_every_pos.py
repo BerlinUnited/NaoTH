@@ -22,44 +22,18 @@ def check_equality(lst):
 dumped_decisions = ([])
 sample_list = ([])
 
+
 def load_bachelor_decisions():
     # the data con be downloaded from https://www2.informatik.hu-berlin.de/~schlottb/ressources/ActionSelectionBA_data.zip
     # define prefix for data
     data_prefix = "D:/RoboCup/Paper-Repos/Bachelor-Schlotter/data/"
 
-    # one pickle file encodes a decision histogram(size 100) for each position
-    dumped_decisions.append(pickle.load(open(str(data_prefix) + "simulate_every_pos-1-100.pickle", "rb")))
-    dumped_decisions.append(pickle.load(open(str(data_prefix) + "simulate_every_pos-2-100.pickle", "rb")))
-    dumped_decisions.append(pickle.load(open(str(data_prefix) + "simulate_every_pos-3-100.pickle", "rb")))
-    dumped_decisions.append(pickle.load(open(str(data_prefix) + "simulate_every_pos-4-100.pickle", "rb")))
-    dumped_decisions.append(pickle.load(open(str(data_prefix) + "simulate_every_pos-5-100.pickle", "rb")))
-    dumped_decisions.append(pickle.load(open(str(data_prefix) + "simulate_every_pos-6-100.pickle", "rb")))
-    dumped_decisions.append(pickle.load(open(str(data_prefix) + "simulate_every_pos-7-100.pickle", "rb")))
-    dumped_decisions.append(pickle.load(open(str(data_prefix) + "simulate_every_pos-8-100.pickle", "rb")))
-    dumped_decisions.append(pickle.load(open(str(data_prefix) + "simulate_every_pos-9-100.pickle", "rb")))
-    dumped_decisions.append(pickle.load(open(str(data_prefix) + "simulate_every_pos-10-100.pickle", "rb")))
-    dumped_decisions.append(pickle.load(open(str(data_prefix) + "simulate_every_pos-11-100.pickle", "rb")))
-    dumped_decisions.append(pickle.load(open(str(data_prefix) + "simulate_every_pos-20-100.pickle", "rb")))
-    dumped_decisions.append(pickle.load(open(str(data_prefix) + "simulate_every_pos-30-100.pickle", "rb")))
-    dumped_decisions.append(pickle.load(open(str(data_prefix) + "simulate_every_pos-40-100.pickle", "rb")))
-    dumped_decisions.append(pickle.load(open(str(data_prefix) + "simulate_every_pos-50-100.pickle", "rb")))
-    dumped_decisions.append(pickle.load(open(str(data_prefix) + "simulate_every_pos-60-100.pickle", "rb")))
-    dumped_decisions.append(pickle.load(open(str(data_prefix) + "simulate_every_pos-70-100.pickle", "rb")))
-    dumped_decisions.append(pickle.load(open(str(data_prefix) + "simulate_every_pos-80-100.pickle", "rb")))
-    dumped_decisions.append(pickle.load(open(str(data_prefix) + "simulate_every_pos-90-100.pickle", "rb")))
-    dumped_decisions.append(pickle.load(open(str(data_prefix) + "simulate_every_pos-100-100.pickle", "rb")))
-    dumped_decisions.append(pickle.load(open(str(data_prefix) + "simulate_every_pos-200-100.pickle", "rb")))
-    dumped_decisions.append(pickle.load(open(str(data_prefix) + "simulate_every_pos-300-100.pickle", "rb")))
-    dumped_decisions.append(pickle.load(open(str(data_prefix) + "simulate_every_pos-400-100.pickle", "rb")))
-    dumped_decisions.append(pickle.load(open(str(data_prefix) + "simulate_every_pos-500-100.pickle", "rb")))
-    dumped_decisions.append(pickle.load(open(str(data_prefix) + "simulate_every_pos-600-100.pickle", "rb")))
-    dumped_decisions.append(pickle.load(open(str(data_prefix) + "simulate_every_pos-700-100.pickle", "rb")))
-    dumped_decisions.append(pickle.load(open(str(data_prefix) + "simulate_every_pos-800-100.pickle", "rb")))
-    dumped_decisions.append(pickle.load(open(str(data_prefix) + "simulate_every_pos-900-100.pickle", "rb")))
-    dumped_decisions.append(pickle.load(open(str(data_prefix) + "simulate_every_pos-1000-100.pickle", "rb")))
-
     sample_list.extend([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 20, 30, 40, 50, 60, 70, 80, 90, 100, 200, 300])
     sample_list.extend([400, 500, 600, 700, 800, 900, 1000])
+
+    for i in sample_list:
+        filename = '{}{:d}{}'.format(str(data_prefix) + "simulate_every_pos-", i, "-100.pickle")
+        dumped_decisions.append(pickle.load(open(filename, "rb")))
 
 
 def load_humanoids_decision():
@@ -67,13 +41,16 @@ def load_humanoids_decision():
     # define prefix for data
     data_prefix = "D:/RoboCup/Paper-Repos/2017-humanoids-action-selection/data/"
 
+    sample_list.extend([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 30, 40, 50, 60, 70])
+    for i in sample_list:
+        filename = '{}{:d}{}'.format(str(data_prefix) + "simulate_every_pos-", i, "-100-v0.pickle")
+        dumped_decisions.append(pickle.load(open(filename, "rb")))
+
 
 def check_data_consistency():
     # check if the number of states is the same for all experiments
     counts = []
     for decisions in dumped_decisions:
-        state_count = 0
-
         counts.append(len(decisions))
 
     print("Number of states in each experiment: ")
@@ -90,6 +67,7 @@ def calculate_uncertainties():
     while os.path.exists("../data/total_uncertainties_" + str(file_idx) + ".txt"):
         file_idx += 1
 
+    # TODO change name according to percentage
     with open("../data/total_uncertainties_" + str(file_idx) + ".txt", "w") as f:
         print("Number of states with too uncertain decisions / total number of states")
         for count, decisions in enumerate(dumped_decisions):
@@ -102,7 +80,7 @@ def calculate_uncertainties():
                 confidence_vector.append(max(new_decision_histogram) / 100)
 
             # filter the states where the decision was too uncertain
-            x = [i for i in confidence_vector if i <= 0.8]
+            x = [i for i in confidence_vector if i <= 0.5]
             print(len(x) / len(confidence_vector))  # len(confidence_vector) = number of states
             f.write(str(sample_list[count]) + "\t" + str(len(x) / len(confidence_vector)) + "\n")
 
@@ -147,6 +125,7 @@ def plot_uncertainties():  # Plot the uncertainties in a scalar plot
 
 if __name__ == "__main__":
     # load_bachelor_decisions()
+    # load_humanoids_decision()
 
     # check_data_consistency()
     # calculate_uncertainties()

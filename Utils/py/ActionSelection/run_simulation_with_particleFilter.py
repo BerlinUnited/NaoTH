@@ -68,7 +68,7 @@ def normalize(likelihood):
   
 def resample(samples, likelihoods, n, sigma):
     likelihoods = normalize(likelihoods)
-    #likelihoods = normalize(np.power(likelihoods, 2))
+    # likelihoods = normalize(np.power(likelihoods, 2))
     
     new_samples = np.zeros(n)
     likelihood_step = 1.0/float(n)
@@ -83,8 +83,8 @@ def resample(samples, likelihoods, n, sigma):
         current_sum += v
 
         if v > best:
-          best = v
-          best_s = s
+            best = v
+            best_s = s
         
         while target_sum < current_sum and j < len(new_samples):
             new_samples[j] = s + (np.random.random(1) - 0.5)*2*sigma
@@ -92,7 +92,7 @@ def resample(samples, likelihoods, n, sigma):
             j += 1
     
     new_samples[0] = best_s + (np.random.random(1) - 0.5)*2*sigma
-    #for j in range(0,new_samples.shape[0]/2):
+    # for j in range(0,new_samples.shape[0]/2):
     #  new_samples[j] = best_s + (np.random.random(1) - 0.5)*2*sigma
     
     return new_samples
@@ -105,7 +105,7 @@ def update(samples, likelihoods, state, action, m_min, m_max):
     
     simulation_num_particles = 1
     
-    stats = np.zeros((len(samples),3))
+    stats = np.zeros((len(samples), 3))
     number = 0.0
     
     for i in range(0, len(samples)):
@@ -115,26 +115,26 @@ def update(samples, likelihoods, state, action, m_min, m_max):
         results = a.ActionResults([])
         simulation_consequences.append(Sim.simulate_consequences(test_action, results, state, simulation_num_particles))
         
-        stats[i,0] = results.likelihood(Category.OPPGOAL)
-        stats[i,1] = results.likelihood(Category.INFIELD)
+        stats[i, 0] = results.likelihood(Category.OPPGOAL)
+        stats[i, 1] = results.likelihood(Category.INFIELD)
         number = results.likelihood(Category.NUMBER)
         
-        if stats[i,0] + stats[i,1] > 0:
+        if stats[i, 0] + stats[i, 1] > 0:
             potential = -pf.evaluate_action(results, state)
-            stats[i,2] = potential
+            stats[i, 2] = potential
         
-    max_goal = np.max(stats[:,0])
-    min_value = np.min(stats[:,2])
-    max_value = np.max(stats[:,2])
+    max_goal = np.max(stats[:, 0])
+    min_value = np.min(stats[:, 2])
+    max_value = np.max(stats[:, 2])
     diff = max_value - min_value
     if diff == 0:
-      diff = 1.0
+        diff = 1.0
     
     for i in range(0, len(samples)):
-      if stats[i,1] + stats[i,0] >= max(0.0, Sim.good_threshold_percentage):
-        likelihoods[i] = (stats[i,1] + stats[i,0])*( (stats[i,2] - min_value) / diff ) + stats[i,0]
-      else:
-        likelihoods[i] = 0
+        if stats[i, 1] + stats[i, 0] >= max(0.0, Sim.good_threshold_percentage):
+            likelihoods[i] = (stats[i, 1] + stats[i, 0])*((stats[i, 2] - min_value) / diff) + stats[i, 0]
+        else:
+            likelihoods[i] = 0
                         
     return likelihoods, simulation_consequences, m_min, m_max
 
@@ -173,13 +173,13 @@ def calculate_best_direction(x, y, iterations):
         x = np.sum(np.sin(np.radians(samples)))
         y = np.sum(np.cos(np.radians(samples)))
         mean_angle = np.arctan2(x,y)
-        #mean_angle = np.mean(samples)
+        # mean_angle = np.mean(samples)
         
         if show_drawings:
-          if plt.get_fignums():
-            draw_actions(simulation_consequences, likelihoods, state, action.name, action.angle,  mean_angle, samples)
-          else:
-            break
+            if plt.get_fignums():
+                draw_actions(simulation_consequences, likelihoods, state, action.name, action.angle,  mean_angle, samples)
+            else:
+                break
     
     return mean_angle, np.radians(np.std(samples))
 
@@ -222,7 +222,7 @@ if __name__ == "__main__":
                 f[iy, ix] = direction_std
                 
                 if not plt.get_fignums():
-                  quit()
+                    quit()
                   
                 Q.set_UVC(vx, vy, np.degrees(f))
                 plt.pause(0.001)
