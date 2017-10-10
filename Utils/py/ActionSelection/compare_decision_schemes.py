@@ -37,9 +37,11 @@ def main():
     x_range = range(int(-field.x_length * 0.5), int(field.x_length * 0.5) + x_step, x_step)
     y_range = range(int(-field.y_length * 0.5), int(field.y_length * 0.5) + x_step, y_step)
 
+    x_range = range(0, int(field.x_length * 0.5) + x_step, x_step)
+
     # run for the whole field
     for x in x_range:
-        for y in y_range:
+        for y in [0]:
             c_time, c_kicks, c_turns = current_impl(x, y, fixed_rot, state, num_iter)
             p_time, p_kicks, p_turns = particle_filter(x, y, fixed_rot, state, num_iter)
             print("CurrentImpl: " + " X: " + str(x) + " Y: " + str(y) + " rot: " + str(fixed_rot) + " " + str(c_time))

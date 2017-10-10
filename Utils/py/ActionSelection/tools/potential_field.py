@@ -2,7 +2,7 @@ from __future__ import division
 import numpy as np
 import field_info as field
 import pickle
-from evaluation.potentialfield_generated_plot import cleanup_nan_values
+# from evaluation.potentialfield_generated_plot import cleanup_nan_values
 from action import Category
 
 """ General Functions """
@@ -142,7 +142,7 @@ def robot_field_opp(robot_pos, ball_pos):
 
 """ Generated Potentialfield """
 
-
+"""
 def evaluate_action_gen_field(results, state):
     sum_potential = 0.0
     number_of_actions = 0.0
@@ -162,9 +162,10 @@ def evaluate_single_pos_gen_field(ball_pos):
     ball_pos.y = int(round(x / 200.0) * 200.0)
     f = gen_field[ny[ball_pos.y], nx[ball_pos.x]]
     return f
-
+"""
 
 if __name__ == "__main__":
+    """
     data_prefix = "D:/RoboCup/Paper-Repos/Bachelor-Schlotter/data/"
     gen_field = pickle.load(open(str(data_prefix) + "potential_field_generation/potential_field_gen_own1.pickle", "rb"))
 
@@ -196,3 +197,4 @@ if __name__ == "__main__":
         g[ny[y], nx[-x]] = time
 
     gen_field = f-g
+    """

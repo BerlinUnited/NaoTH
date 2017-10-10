@@ -80,6 +80,12 @@ def main(x, y, rot, s, num_iter):
             if goal_scored:
                 num_kicks += 1
                 # print("Goal " + str(total_time) + " " + str(math.degrees(s.pose.rotation)))
+                rotation = np.arctan2(expected_ball_pos.y, expected_ball_pos.x)
+                rotation_time = np.abs(math.degrees(rotation) / s.rotation_vel)
+                distance = np.hypot(expected_ball_pos.x, expected_ball_pos.y)
+                distance_time = distance / s.walking_vel
+                total_time += distance_time + rotation_time
+
                 break
 
             elif not inside_field and not goal_scored:

@@ -13,10 +13,10 @@ from tools import tools
  Pickle File format:  x, y, rot, c_kicks, c_turns, p_kicks, p_turns
 """
 
-version = 4
+data_prefix = "../data/"
 
-strategies = pickle.load(open("../data/strategy_times" + str(version) + ".pickle", "rb"))
-actions = pickle.load(open("../data/strategy_actions" + str(version) + ".pickle", "rb"))
+actions = pickle.load(open(str(data_prefix) + "strategy_actions-rot0-4.pickle", "rb"))
+strategies = pickle.load(open(str(data_prefix) + "strategy_times-rot0-4.pickle", "rb"))
 
 ax = plt.gca()
 tools.draw_field(ax)
@@ -49,10 +49,13 @@ for pos in strategies:
 
     else:
         f[ny[y], nx[x]] = time_particle - time_old
+        print(time_particle- time_old, time_particle, time_old)
+        '''
         if time_particle - time_old < min_time:
             min_time = time_particle - time_old
         if time_particle - time_old > max_time:
             max_time = time_particle - time_old
+        '''
     #    if time_old - time_particle < -10:  # old approach is at least 10 seconds faster
     #        f[ny[y], nx[x]] = 50  # red
     #    elif time_particle - time_old < -10:  # new approach is at least 10 seconds faster
@@ -60,9 +63,11 @@ for pos in strategies:
     #    else:
     #        f[ny[y], nx[x]] = 0  # blue  # new significant changes
 
-ax.pcolor(nxi, nyi, f, cmap="brg", alpha=0.8, vmin=min_time, vmax=max_time)
+print (f.shape, nyi.shape)
+nyi = np.array([-100, 100])
+ax.pcolor(nxi, nyi, f, cmap="gray", alpha=0.8)
 plt.show()
-
+"""
 # visualize which approach takes less kicks
 ax = plt.gca()
 tools.draw_field(ax)
@@ -95,3 +100,4 @@ for action in actions:
     # print(c_kicks, p_kicks)
 ax.pcolor(nxi, nyi, t, cmap="brg", vmin=0, vmax=100)
 plt.show()
+"""

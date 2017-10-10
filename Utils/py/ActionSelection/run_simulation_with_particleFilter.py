@@ -139,16 +139,15 @@ def update(samples, likelihoods, state, action, m_min, m_max):
     return likelihoods, simulation_consequences, m_min, m_max
 
   
-def calculate_best_direction(x, y, iterations):
-    state = State(x, y)
-    action = a.Action("KickForward", 1000, 150, 0, 8)
-    
+def calculate_best_direction(state, action, show, iterations):
     # particles
     # using at least 60 particles seems to always generate the correct kick direction
     num_angle_particle = 30
     n_random = 0
     
-    samples = (np.random.random(num_angle_particle)-0.5)*2 * 180.0
+    #samples = (np.random.random(num_angle_particle)-0.5)*2 * 180.0
+    # test uniform distribution for samples(angles)
+    samples = np.arange(-180, 180, int(360/num_angle_particle))
     likelihoods = np.ones(samples.shape) * (1/float(num_angle_particle))
     
     ####################################################################################################################
@@ -174,25 +173,28 @@ def calculate_best_direction(x, y, iterations):
         y = np.sum(np.cos(np.radians(samples)))
         mean_angle = np.arctan2(x,y)
         # mean_angle = np.mean(samples)
-        
-        if show_drawings:
-            if plt.get_fignums():
-                draw_actions(simulation_consequences, likelihoods, state, action.name, action.angle,  mean_angle, samples)
-            else:
-                break
+
+        if show:
+          if plt.get_fignums():
+            draw_actions(simulation_consequences, likelihoods, state, action.name, action.angle,  mean_angle, samples)
+          else:
+            break
+
     
     return mean_angle, np.radians(np.std(samples))
 
 
 if __name__ == "__main__":
-    single_run = False
-    show_drawings = False
+    single_run = True
 
     if single_run:
-        show_drawings = True
         # run a single direction
         start_time = timeit.default_timer()
-        calculate_best_direction(-4000, 1000, 10)
+        
+        state = State(-4000, 1000)
+        action = a.Action("KickForward", 1000, 150, 0, 8)
+    
+        calculate_best_direction(state, action, True, 10)
         print (timeit.default_timer() - start_time)
     else:
         # run for the whole field
@@ -210,11 +212,16 @@ if __name__ == "__main__":
         Q = plt.quiver(xx, yy, vx, vy, np.degrees(f), angles='uv', scale_units='xy', scale=1)
         plt.pause(0.001)
         
+        # we simulate the same action for different positions
+        action = a.Action("KickForward", 1000, 150, 0, 8)
+        
         # print(xx.shape, len(x_pos), len(y_pos))
         start_time = timeit.default_timer()
         for ix in range(0, len(x_pos)):
             for iy in range(0, len(y_pos)):
-                direction, direction_std = calculate_best_direction(float(x_pos[ix]), float(y_pos[iy]), 10)
+            
+                state = State(float(x_pos[ix]), float(y_pos[iy]))
+                direction, direction_std = calculate_best_direction(state, action, False, 10)
 
                 v = m2d.Vector2(step/4.0*3.0, 0.0).rotate(direction)
                 vx[iy, ix] = v.x

@@ -41,7 +41,7 @@ def load_humanoids_decision():
     # define prefix for data
     data_prefix = "D:/RoboCup/Paper-Repos/2017-humanoids-action-selection/data/"
 
-    sample_list.extend([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 30, 40, 50, 60, 70])
+    sample_list.extend([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 30, 40, 50, 60, 70, 80])
     for i in sample_list:
         filename = '{}{:d}{}'.format(str(data_prefix) + "simulate_every_pos-", i, "-100-v0.pickle")
         dumped_decisions.append(pickle.load(open(filename, "rb")))

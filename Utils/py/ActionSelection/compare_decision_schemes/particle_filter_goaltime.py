@@ -11,6 +11,7 @@ from matplotlib.patches import Circle
 from tools import field_info as field
 from state import State
 
+from run_simulation_with_particleFilter import calculate_best_direction as heinrich_test
 
 """
     The best direction for each kick is calculated via a particle filter and a potential field. The kick with the minimum
@@ -174,7 +175,7 @@ def main(x, y, rot, s, num_iter):
             for ix, action in enumerate(action_list):
                 if action.name is "none":
                     continue
-                tmp, _ = calculate_best_direction(s, action_list[ix], False, iterations=20)
+                tmp, _ = heinrich_test(s, action_list[ix], False, iterations=20)
                 # print("Best dir: " + str(math.degrees(tmp)) + " for action: " + action_list[idx].name)
                 if np.abs(tmp) < np.abs(best_dir):
                     best_dir = tmp
@@ -188,14 +189,14 @@ def main(x, y, rot, s, num_iter):
                 total_time += np.abs(math.degrees(best_dir) / s.rotation_vel)
                 num_turn_degrees += np.abs(math.degrees(best_dir))
 
+            new_action = a.Action("new_action", action_list[best_action].speed, action_list[best_action].speed_std, action_list[best_action].angle, 0)
             # after turning evaluate the best action again to calculate the expected ball position
             actions_consequences = []
             single_consequence = a.ActionResults([])
-            actions_consequences.append(Sim.simulate_consequences(action_list[best_action], single_consequence, s, num_particles=30))
+            actions_consequences.append(Sim.simulate_consequences(new_action, single_consequence, s, num_particles=30))
 
             # expected_ball_pos should be in local coordinates for rotation calculations
             expected_ball_pos = actions_consequences[0].expected_ball_pos_mean
-
             # Check if expected_ball_pos inside opponent goal
             opp_goal_back_right = m2d.Vector2(field.opponent_goalpost_right.x + field.goal_depth,
                                               field.opponent_goalpost_right.y)
@@ -207,7 +208,7 @@ def main(x, y, rot, s, num_iter):
             # Assert that expected_ball_pos is inside field or inside opp goal
             if not inside_field and not goal_scored:
                 # print("Error: This position doesn't manage a goal")
-                # total_time = float('nan')
+                total_time = np.nan
                 # Maybe still treat it as goal since it's some weird issue with particle not inside the goal which screws up the mean
                 break
 
@@ -228,7 +229,7 @@ def main(x, y, rot, s, num_iter):
         n_kicks.append(num_kicks)
         n_turns.append(num_turn_degrees)
 
-    return np.nanmin(timings), np.nanmean(n_kicks), np.nanmean(n_turns)
+    return np.nanmean(timings), np.nanmean(n_kicks), np.nanmean(n_turns)
 
 
 if __name__ == "__main__":
