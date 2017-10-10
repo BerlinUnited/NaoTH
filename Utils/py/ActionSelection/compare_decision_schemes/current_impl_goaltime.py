@@ -48,14 +48,28 @@ def main(x, y, rot, s, num_iter):
     action_list = [no_action, kick_short, sidekick_left, sidekick_right]
 
     # Do several decision cycles not just one to get rid of accidental decisions
-    timings = []
-    n_kicks = []
-    n_turns = []
-    for idx in range(num_iter):
+    #timings = []
+    #n_kicks = []
+    #n_turns = []
+    num_kicks_list = []
+    num_turn_degrees_list = []
+    num_turn_ball_degrees_list = []
+    dist_walked_list = []
+    
+    current_iter = 0
+    #for idx in range(num_iter):
+    while len(num_kicks_list) < num_iter:
+        current_iter += 1
+        if current_iter > num_iter:
+            print("WARNING: overiteration " + num_iter)
+            
         num_kicks = 0
         num_turn_degrees = 0
+        num_turn_ball_degrees = 0
+        dist_walked = 0
+        
         goal_scored = False
-        total_time = 0
+        #total_time = 0
         chosen_rotation = 'none'  # This is used for deciding the rotation direction once per none decision
         s.update_pos(m2d.Vector2(x, y), rotation=rot)
         while not goal_scored:
@@ -81,17 +95,25 @@ def main(x, y, rot, s, num_iter):
                 num_kicks += 1
                 # print("Goal " + str(total_time) + " " + str(math.degrees(s.pose.rotation)))
                 rotation = np.arctan2(expected_ball_pos.y, expected_ball_pos.x)
-                rotation_time = np.abs(math.degrees(rotation) / s.rotation_vel)
                 distance = np.hypot(expected_ball_pos.x, expected_ball_pos.y)
-                distance_time = distance / s.walking_vel
-                total_time += distance_time + rotation_time
-
+                #rotation_time = np.abs(math.degrees(rotation) / s.rotation_vel)
+                #distance_time = distance / s.walking_vel
+                #total_time += distance_time + rotation_time
+                
+                dist_walked += distance
+                num_turn_degrees += np.abs(math.degrees(rotation)) #turn around own axis
+                
                 break
 
-            elif not inside_field and not goal_scored:
+            elif not inside_field:# and not goal_scored: # it already in the else of if goal_scored
                 # Asserts that expected_ball_pos is inside field or inside opp goal
                 # print("Error: This position doesn't manage a goal")
-                total_time = float('nan')
+                #total_time = float('nan')
+                
+                num_kicks = np.nan
+                num_turn_degrees = np.nan
+                num_turn_ball_degrees = np.nan
+                dist_walked = np.nan
                 break
 
             elif not action_list[best_action].name == "none":
@@ -100,13 +122,17 @@ def main(x, y, rot, s, num_iter):
 
                 # calculate the time needed
                 rotation = np.arctan2(expected_ball_pos.y, expected_ball_pos.x)
-                rotation_time = np.abs(math.degrees(rotation) / s.rotation_vel)
                 distance = np.hypot(expected_ball_pos.x, expected_ball_pos.y)
-                distance_time = distance / s.walking_vel
-                total_time += distance_time + rotation_time
+                
+                #rotation_time = np.abs(math.degrees(rotation) / s.rotation_vel)
+                #distance_time = distance / s.walking_vel
+                #total_time += distance_time + rotation_time
 
+                dist_walked += distance
+                num_turn_ball_degrees += np.abs(math.degrees(rotation)) #turn around ball
+                
                 # update total turns
-                num_turn_degrees += np.abs(math.degrees(rotation))
+                #num_turn_degrees += np.abs(math.degrees(rotation))
 
                 # reset the rotation direction
                 chosen_rotation = 'none'
@@ -118,9 +144,11 @@ def main(x, y, rot, s, num_iter):
             elif action_list[best_action].name == "none":
                 # print(str(state.pose * expected_ball_pos) + " Decision: " + str(action_list[best_action].name))
                 # draw_robot_walk(actions_consequences, state, state.pose * expected_ball_pos, action_list[best_action].name)
-                turn_rotation_step = 5
+                turn_rotation_step = 1
                 # Calculate rotation time
-                total_time += np.abs(turn_rotation_step / s.rotation_vel)
+                #total_time += np.abs(turn_rotation_step / s.rotation_vel)
+                #num_turn_degrees += turn_rotation_step
+                num_turn_ball_degrees += turn_rotation_step #turn around ball
 
                 attack_direction = attack_dir.get_attack_direction(s)
 
@@ -131,18 +159,22 @@ def main(x, y, rot, s, num_iter):
                     s.update_pos(s.pose.translation, math.degrees(s.pose.rotation) - turn_rotation_step)  # Should turn left
                     chosen_rotation = 'right'
 
-                num_turn_degrees += turn_rotation_step
             else:
                 sys.exit("There should not be other actions")
         # print("Total time to goal: " + str(total_time))
         # print("Num Kicks: " + str(num_kicks))
         # print("Num Turns: " + str(num_turn_degrees))
 
-        timings.append(total_time)
-        n_kicks.append(num_kicks)
-        n_turns.append(num_turn_degrees)
+        #timings.append(total_time)
+        #n_kicks.append(num_kicks)
+        #n_turns.append(num_turn_degrees)
+        
+        num_kicks_list += [num_kicks]
+        num_turn_degrees_list += [num_turn_degrees]
+        num_turn_ball_degrees_list += [num_turn_ball_degrees]
+        dist_walked_list += [dist_walked]
 
-    return np.nanmean(timings), np.nanmean(n_kicks), np.nanmean(n_turns)
+    return np.nanmean(num_kicks_list), np.nanmean(num_turn_degrees_list), np.nanmean(num_turn_ball_degrees_list), np.nanmean(dist_walked_list)
 
 
 if __name__ == "__main__":

@@ -8,7 +8,8 @@ from matplotlib import pyplot as plt
 import pickle
 import numpy as np
 from tools import tools
-
+from tools import field_info as field
+from state import State
 
 """
  reads data/strategy_times.pickle
@@ -20,8 +21,8 @@ from tools import tools
 
 data_prefix = "./data/"
 
-actions = pickle.load(open(str(data_prefix) + "strategy_actions-rot0-1.pickle", "rb"))
-strategies = pickle.load(open(str(data_prefix) + "strategy_times-rot0-1.pickle", "rb"))
+actions = pickle.load(open(str(data_prefix) + "strategy_actions-rot180-7.pickle", "rb"))
+strategies = pickle.load(open(str(data_prefix) + "strategy_times-rot180-7.pickle", "rb"))
 
 ax = plt.gca()
 tools.draw_field(ax)
@@ -29,7 +30,7 @@ tools.draw_field(ax)
 nx = {}
 ny = {}
 for pos in strategies:
-    x, y, angle, time_old, time_particle = pos
+    x, y, fixed_rot, c_num_turn_degrees, c_num_turn_ball_degrees, c_dist_walked, p_num_turn_degrees, p_num_turn_ball_degrees, p_dist_walked, o_num_turn_degrees, o_num_turn_ball_degrees, o_dist_walked = pos
     nx[x] = x
     ny[y] = y
 
@@ -48,13 +49,16 @@ f = np.zeros((len(ny), len(nx)))
 min_time = 0
 max_time = 0
 for pos in strategies:
-    x, y, _, time_old, time_particle = pos
-    if np.isnan(time_old) or np.isnan(time_particle):
-        f[ny[y], nx[x]] = 100
-
+    x, y, fixed_rot, c_num_turn_degrees, c_num_turn_ball_degrees, c_dist_walked, p_num_turn_degrees, p_num_turn_ball_degrees, p_dist_walked, o_num_turn_degrees, o_num_turn_ball_degrees, o_dist_walked = pos
+    
+    value = c_dist_walked
+    
+    if np.isnan(value):# or np.isnan(time_particle):
+        f[ny[y], nx[x]] = 0
     else:
-        f[ny[y], nx[x]] = (time_particle - time_old) / np.max(np.abs([time_particle,time_old]))
-        print(time_particle- time_old, time_particle, time_old)
+        f[ny[y], nx[x]] = (value)# / np.max(np.abs([time_particle,time_old]))
+        print f[ny[y], nx[x]]
+        #print(time_particle- time_old, time_particle, time_old)
         '''
         if time_particle - time_old < min_time:
             min_time = time_particle - time_old
@@ -68,8 +72,19 @@ for pos in strategies:
     #    else:
     #        f[ny[y], nx[x]] = 0  # blue  # new significant changes
 
-print (f.shape, nyi.shape)
-ax.pcolor(nxi, nyi, f, cmap="jet", alpha=0.8, vmin=-1, vmax = 1)
+'''
+for pos in actions:
+    x, y, fixed_rot, c_kicks, c_turns, p_kicks, p_turns, o_kicks, o_turns, = pos
+    f[ny[y], nx[x]] = o_turns < c_turns
+    print p_turns
+'''
+x_step = 300
+y_step = 300
+x_range = range(int(-field.x_length / 2 ), int(field.x_length / 2)+x_step, x_step)
+y_range = range(int(-field.y_length / 2 ), int(field.y_length / 2)+y_step, y_step)
+	
+print (np.max(np.max(f)))
+ax.pcolor(x_range, y_range, f, cmap="jet", alpha=0.8) #, vmin=-1, vmax = 1
 plt.show()
 """
 # visualize which approach takes less kicks

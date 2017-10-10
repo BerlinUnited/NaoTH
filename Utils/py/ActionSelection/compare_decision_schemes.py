@@ -25,17 +25,17 @@ def main():
     y_step = 300
     fixed_rot = 180
 
-    num_iter = 3  # repeats for current implementation
+    num_iter = 2  # repeats for current implementation
     timing_container = []
     kick_container = []
 
     # use this to iterate over the whole green
-    field_x_range = range(int(-field.x_field_length * 0.5), int(field.x_field_length * 0.5) + x_step, x_step)
-    field_y_range = range(int(-field.y_field_length * 0.5), int(field.y_field_length * 0.5) + y_step, y_step)
+    #field_x_range = range(int(-field.x_field_length * 0.5), int(field.x_field_length * 0.5) + x_step, x_step)
+    #field_y_range = range(int(-field.y_field_length * 0.5), int(field.y_field_length * 0.5) + y_step, y_step)
 
     # use this to just iterate over the playing field
-    x_range = range(int(-field.x_length * 0.5), int(field.x_length * 0.5) + x_step, x_step)
-    y_range = range(int(-field.y_length * 0.5), int(field.y_length * 0.5) + x_step, y_step)
+    x_range = range(int(-field.x_length / 2 + x_step/2), int(field.x_length / 2), x_step)
+    y_range = range(int(-field.y_length / 2 + y_step/2), int(field.y_length / 2), y_step)
 
     # run for the whole field
     num_done = 0
@@ -43,14 +43,24 @@ def main():
     for x in x_range:
         for y in y_range:
             start_time = timeit.default_timer()
-        
-            c_time, c_kicks, c_turns = current_impl(x, y, fixed_rot, state, num_iter)
-            p_time, p_kicks, p_turns = particle_filter(x, y, fixed_rot, state, num_iter)
-            print("CurrentImpl: " + " X: " + str(x) + " Y: " + str(y) + " rot: " + str(fixed_rot) + " " + str(c_time))
-            print("ParticleImpl: " + " X: " + str(x) + " Y: " + str(y) + " rot: " + str(fixed_rot) + " " + str(p_time))
+            
+            num_iter = 5
+            #c_time, c_kicks, c_turns = 0,0,0
+            c_num_kicks, c_num_turn_degrees, c_num_turn_ball_degrees, c_dist_walked = current_impl(x, y, fixed_rot, state, num_iter)
+            
+            num_iter = 3
+            p_num_kicks, p_num_turn_degrees, p_num_turn_ball_degrees, p_dist_walked = 0,0,0,0
+            #p_num_kicks, p_num_turn_degrees, p_num_turn_ball_degrees, p_dist_walked = particle_filter(x, y, fixed_rot, state, num_iter, False)
+            
+            num_iter = 2
+            #o_num_kicks, o_num_turn_degrees, o_num_turn_ball_degrees, o_dist_walked = 0,0,0,0
+            o_num_kicks, o_num_turn_degrees, o_num_turn_ball_degrees, o_dist_walked = particle_filter(x, y, fixed_rot, state, num_iter, True)
+            
+            print("CurrentImpl: " + " X: " + str(x) + " Y: " + str(y) + " rot: " + str(fixed_rot) + " " + str(c_dist_walked))
+            print("ParticleImpl: " + " X: " + str(x) + " Y: " + str(y) + " rot: " + str(fixed_rot) + " " + str(p_dist_walked))
 
-            timing_container.append([x, y, fixed_rot, c_time, p_time])
-            kick_container.append([x, y, fixed_rot, c_kicks, c_turns, p_kicks, p_turns])
+            timing_container.append([x, y, fixed_rot, c_num_turn_degrees, c_num_turn_ball_degrees, c_dist_walked, p_num_turn_degrees, p_num_turn_ball_degrees, p_dist_walked, o_num_turn_degrees, o_num_turn_ball_degrees, o_dist_walked])
+            kick_container.append([x, y, fixed_rot, c_num_kicks, p_num_kicks, o_num_kicks])
             
             num_done += 1
             num_todo = len(x_range)*len(y_range) - num_done
