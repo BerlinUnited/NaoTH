@@ -1,4 +1,9 @@
 from __future__ import division
+import os, sys, inspect
+cmd_subfolder = os.path.realpath(os.path.abspath(os.path.join(os.path.split(inspect.getfile( inspect.currentframe() ))[0],"..")))
+if cmd_subfolder not in sys.path:
+    sys.path.insert(0, cmd_subfolder)
+
 from matplotlib import pyplot as plt
 import pickle
 import numpy as np
@@ -13,10 +18,10 @@ from tools import tools
  Pickle File format:  x, y, rot, c_kicks, c_turns, p_kicks, p_turns
 """
 
-data_prefix = "../data/"
+data_prefix = "./data/"
 
-actions = pickle.load(open(str(data_prefix) + "strategy_actions-rot0-4.pickle", "rb"))
-strategies = pickle.load(open(str(data_prefix) + "strategy_times-rot0-4.pickle", "rb"))
+actions = pickle.load(open(str(data_prefix) + "strategy_actions-rot0-1.pickle", "rb"))
+strategies = pickle.load(open(str(data_prefix) + "strategy_times-rot0-1.pickle", "rb"))
 
 ax = plt.gca()
 tools.draw_field(ax)
@@ -48,7 +53,7 @@ for pos in strategies:
         f[ny[y], nx[x]] = 100
 
     else:
-        f[ny[y], nx[x]] = time_particle - time_old
+        f[ny[y], nx[x]] = (time_particle - time_old) / np.max(np.abs([time_particle,time_old]))
         print(time_particle- time_old, time_particle, time_old)
         '''
         if time_particle - time_old < min_time:
@@ -64,8 +69,7 @@ for pos in strategies:
     #        f[ny[y], nx[x]] = 0  # blue  # new significant changes
 
 print (f.shape, nyi.shape)
-nyi = np.array([-100, 100])
-ax.pcolor(nxi, nyi, f, cmap="gray", alpha=0.8)
+ax.pcolor(nxi, nyi, f, cmap="jet", alpha=0.8, vmin=-1, vmax = 1)
 plt.show()
 """
 # visualize which approach takes less kicks
