@@ -169,22 +169,16 @@ def main(x, y, rot, s, num_iter, use_sidekicks=True):
     s.update_pos(m2d.Vector2(x, y), rotation=rot)  # rot is in degrees
 
     # Do several decision cycles not just one to get rid of accidental decisions
-    #timings = []
-    #n_kicks = []
-    #n_turns = []
     num_kicks_list = []
     num_turn_degrees_list = []
     num_turn_ball_degrees_list = []
     dist_walked_list = []
-    
-    #for idx in range(num_iter):
+
     current_iter = 0
     while len(num_kicks_list) < num_iter:
         current_iter += 1
         if current_iter > num_iter:
             print("WARNING: overiteration " + num_iter)
-        #num_kicks = 0
-        #num_turn_degrees = 0
         
         num_kicks = 0
         num_turn_degrees = 0
@@ -192,7 +186,6 @@ def main(x, y, rot, s, num_iter, use_sidekicks=True):
         dist_walked = 0
         
         goal_scored = False
-        #total_time = 0
         s.update_pos(m2d.Vector2(x, y), rotation=rot)
         while not goal_scored:
             # Change Angle of all actions according to the particle filter
@@ -213,10 +206,8 @@ def main(x, y, rot, s, num_iter, use_sidekicks=True):
             # Rotate the robot so that the shooting angle == best_dir
             s.pose.rotation = s.pose.rotation + best_dir
             # only model turning when it's significant
-            #if np.abs(best_dir) > 5:
-            
-            #total_time += np.abs(math.degrees(best_dir) / s.rotation_vel)
-            #NOTE: turn around ball
+
+            # NOTE: turn around ball
             num_turn_ball_degrees += np.abs(math.degrees(best_dir))
 
             new_action = a.Action("new_action", action_list[best_action].speed, action_list[best_action].speed_std, action_list[best_action].angle, 0)
@@ -238,9 +229,6 @@ def main(x, y, rot, s, num_iter, use_sidekicks=True):
             # Assert that expected_ball_pos is inside field or inside opp goal
             if not inside_field and not goal_scored:
                 # print("Error: This position doesn't manage a goal")
-                #total_time = np.nan
-                # Maybe still treat it as goal since it's some weird issue with particle not inside the goal which screws up the mean
-                
                 num_kicks = np.nan
                 num_turn_degrees = np.nan
                 num_turn_ball_degrees = np.nan
@@ -250,22 +238,14 @@ def main(x, y, rot, s, num_iter, use_sidekicks=True):
 
             # calculate the time needed
             rotation = np.arctan2(expected_ball_pos.y, expected_ball_pos.x)
-            #rotation_time = np.abs(math.degrees(rotation) / s.rotation_vel)
             distance = np.hypot(expected_ball_pos.x, expected_ball_pos.y)
-            #distance_time = distance / s.walking_vel
-
-            #total_time += distance_time + rotation_time
             dist_walked += distance
             
             # update the robots position
             s.update_pos(s.pose * expected_ball_pos, math.degrees(s.pose.rotation + rotation))
-            num_turn_degrees += np.abs(math.degrees(rotation)) # turn around own axis
+            num_turn_degrees += np.abs(math.degrees(rotation))  # turn around own axis
             num_kicks += 1
 
-        #timings.append(total_time)
-        #n_kicks.append(num_kicks)
-        #n_turns.append(num_turn_degrees)
-        
         num_kicks_list += [num_kicks]
         num_turn_degrees_list += [num_turn_degrees]
         num_turn_ball_degrees_list += [num_turn_ball_degrees]
@@ -278,6 +258,6 @@ if __name__ == "__main__":
     for i in range(30):
         state = State()
         rotation_step = 10
-        time, kicks, turns = main(state.pose.translation.x, state.pose.translation.y, math.degrees(state.pose.rotation), state, num_iter=10)
+        time, kicks, turns, turns_ball = main(state.pose.translation.x, state.pose.translation.y, math.degrees(state.pose.rotation), state, num_iter=10)
 
-        print("Total time to goal: " + str(time) + " #Kicks: " + str(kicks) + " #Turns: " + str(turns))
+        print("Total time to goal: " + str(time) + " #Kicks: " + str(kicks) + " #Turns: " + str(turns) + " #TurnsBall: " + str(turns_ball))
