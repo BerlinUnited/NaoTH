@@ -37,11 +37,12 @@ def load_bachelor_decisions():
 
 
 def load_humanoids_decision():
-    # the data con be downloaded from https://www2.informatik.hu-berlin.de/~schlottb/ressources/ActionSelection_data.zip
+    # the data con be downloaded from https://www2.informatik.hu-berlin.de/~schlottb/ressources/HumanoidsData/
     # define prefix for data
     data_prefix = "D:/RoboCup/Paper-Repos/2017-humanoids-action-selection/data/"
 
-    sample_list.extend([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 30, 40, 50, 60, 70, 80])
+    sample_list.extend([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+                        21, 22, 23, 24, 25, 30, 40, 50, 60, 70, 80, 90, 100, 110])
     for i in sample_list:
         filename = '{}{:d}{}'.format(str(data_prefix) + "simulate_every_pos-", i, "-100-v0.pickle")
         dumped_decisions.append(pickle.load(open(filename, "rb")))
@@ -63,12 +64,13 @@ def calculate_uncertainties():
     # Calculate the uncertainty of the decisions
     file_idx = 0
 
+    uncertainty_threshold = 0.8
+
     # check if file already exists
-    while os.path.exists("../data/total_uncertainties_" + str(file_idx) + ".txt"):
+    while os.path.exists("../data/uncertainties_below_" + str(uncertainty_threshold*100) + "_v" + str(file_idx) + ".txt"):
         file_idx += 1
 
-    # TODO change name according to percentage
-    with open("../data/total_uncertainties_" + str(file_idx) + ".txt", "w") as f:
+    with open("../data/uncertainties_below_" + str(uncertainty_threshold*100) + "_v" + str(file_idx) + ".txt", "w") as f:
         print("Number of states with too uncertain decisions / total number of states")
         for count, decisions in enumerate(dumped_decisions):
             confidence_vector = []
@@ -80,7 +82,7 @@ def calculate_uncertainties():
                 confidence_vector.append(max(new_decision_histogram) / 100)
 
             # filter the states where the decision was too uncertain
-            x = [i for i in confidence_vector if i <= 0.5]
+            x = [i for i in confidence_vector if i <= uncertainty_threshold]
             print(len(x) / len(confidence_vector))  # len(confidence_vector) = number of states
             f.write(str(sample_list[count]) + "\t" + str(len(x) / len(confidence_vector)) + "\n")
 

@@ -1,3 +1,7 @@
+from __future__ import division
+import sys
+import os
+import inspect
 import math
 import copy
 import numpy as np
@@ -10,8 +14,12 @@ from matplotlib import pyplot as plt
 from matplotlib.patches import Circle
 from tools import field_info as field
 from state import State
-
 from run_simulation_with_particleFilter import calculate_best_direction as heinrich_test
+
+cmd_subfolder = os.path.realpath(os.path.abspath(os.path.join(os.path.split(inspect.getfile(inspect.currentframe()))[0], "..")))
+if cmd_subfolder not in sys.path:
+    sys.path.insert(0, cmd_subfolder)
+
 
 """
     The best direction for each kick is calculated via a particle filter and a potential field. The kick with the minimum
@@ -148,14 +156,14 @@ def calculate_best_direction(s, action, show, iterations):
     return np.radians(mean_angle), np.radians(np.std(samples))
 
 
-def main(x, y, rot, s, num_iter, use_sitekicks=True):
+def main(x, y, rot, s, num_iter, use_sidekicks=True):
     no_action = a.Action("none", 0, 0, 0, 0)
     kick_short = a.Action("kick_short", 1080, 150, 0, 7)
     sidekick_left = a.Action("sidekick_left", 750, 150, 90, 10)
     sidekick_right = a.Action("sidekick_right", 750, 50, -90, 10)
-    #action_list = [no_action, kick_short, sidekick_left, sidekick_right]
+
     action_list = [no_action, kick_short]
-    if use_sitekicks:
+    if use_sidekicks:
         action_list += [sidekick_left, sidekick_right]
 
     s.update_pos(m2d.Vector2(x, y), rotation=rot)  # rot is in degrees
