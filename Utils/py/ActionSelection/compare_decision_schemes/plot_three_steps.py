@@ -1,6 +1,5 @@
 import math
 import numpy as np
-import random
 import copy
 from matplotlib import pyplot as plt
 from matplotlib.patches import Circle
@@ -8,7 +7,6 @@ from tools import action as a
 from tools import Simulation as Sim
 from naoth import math2d as m2d
 from tools import tools
-from tools import field_info as field
 from tools import raw_attack_direction_provider as attack_dir
 
 from run_simulation_with_particleFilter import calculate_best_direction as heinrich_test
@@ -23,15 +21,12 @@ Example:
         $ python simulate_variate_until_goal.py
 """
 
-# TODO update this with all the bugfixes from other scripts
-# TODO make it possible to switch between variations and standard
-
 
 class State:
     def __init__(self):
         self.pose = m2d.Pose2D()
-        self.pose.translation = m2d.Vector2(-4000, -700)
-        self.pose.rotation = math.radians(0)
+        self.pose.translation = m2d.Vector2(-2000, -700)
+        self.pose.rotation = math.radians(45)
 
         self.ball_position = m2d.Vector2(100.0, 0.0)
 
@@ -53,10 +48,10 @@ def draw_robot_walk_lines(axes, line, position_color):
     for rec_state in line:
         origin = rec_state.pose.translation
 
-        #ball_pos = state.pose * state.ball_position
+        # ball_pos = state.pose * state.ball_position
 
         axes.add_artist(Circle(xy=(origin.x, origin.y), radius=100, fill=False, edgecolor='white'))
-        #axes.add_artist(Circle(xy=(ball_pos.x, ball_pos.y), radius=120, fill=True, color=position_color))
+        # axes.add_artist(Circle(xy=(ball_pos.x, ball_pos.y), radius=120, fill=True, color=position_color))
 
         if previous_state != 0:
             axes.arrow(previous_state.x, previous_state.y, origin.x - previous_state.x, origin.y-previous_state.y,
@@ -65,7 +60,7 @@ def draw_robot_walk_lines(axes, line, position_color):
         previous_state = origin
 
 
-def simulate_goal_cycle_current_impl():
+def simulate_goal_cycle_current_impl(iterations):
     state = State()
     sim_data = [copy.deepcopy(state)]
 
@@ -78,7 +73,7 @@ def simulate_goal_cycle_current_impl():
 
     # while not goal_scored:
     # do a fixed number of steps
-    for i in range(2):
+    for i in range(iterations):
         actions_consequences = []
         # Simulate Consequences
         for action in action_list:
@@ -122,7 +117,7 @@ def simulate_goal_cycle_current_impl():
     return sim_data
 
 
-def simulate_goal_cycle_particle(use_sidekicks=True):
+def simulate_goal_cycle_particle(iterations=4, use_sidekicks=True):
     state = State()
     sim_data = [copy.deepcopy(state)]
 
@@ -133,9 +128,9 @@ def simulate_goal_cycle_particle(use_sidekicks=True):
 
     action_list = [no_action, kick_short]
     if use_sidekicks:
-      action_list += [sidekick_left, sidekick_right]
+        action_list += [sidekick_left, sidekick_right]
 
-    for i in range(2):
+    for i in range(iterations):
         # Change Angle of all actions according to the particle filter
         # best_dir is the global rotation for that kick
         best_dir = 360
@@ -178,12 +173,12 @@ def main():
     axes = plt.gca()
     tools.draw_field(axes)
 
-    ball_line_current = simulate_goal_cycle_current_impl()
-    ball_line_particle = simulate_goal_cycle_particle(True)  # mixed scheme
-    ball_line_particle2 = simulate_goal_cycle_particle(False)
+    ball_line_current = simulate_goal_cycle_current_impl(iterations=7)
+    ball_line_particle = simulate_goal_cycle_particle(iterations=4, use_sidekicks=True)  # mixed scheme
+    ball_line_particle2 = simulate_goal_cycle_particle(iterations=3, use_sidekicks=False)
 
     draw_robot_walk_lines(axes, ball_line_current, position_color='blue')
-    draw_robot_walk_lines(axes, ball_line_particle, position_color='red')
+    draw_robot_walk_lines(axes, ball_line_particle, position_color='red')  # mixed scheme
     draw_robot_walk_lines(axes, ball_line_particle2, position_color='yellow')
 
     plt.show()
