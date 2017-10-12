@@ -24,31 +24,30 @@ Example:
 
 def run_experiment(origin, strategy, action_list):
   
-  state = copy.deepcopy(origin)
-  simulator = Striker.Simulator(state, strategy, action_list)
+    state = copy.deepcopy(origin)
+    simulator = Striker.Simulator(state, strategy, action_list)
 
-  # record the whole state of the simulator
-  results = [copy.deepcopy(simulator)]
-  
-  iter = 0
-  while True:
-    
-    simulator.step()
-    
-    results += [copy.deepcopy(simulator)]
+    # record the whole state of the simulator
+    results = [copy.deepcopy(simulator)]
 
-    if simulator.goal_scored:
-      #print ("success")
-      break
-    elif not simulator.inside_field:
-      #print ("failure")
-      break
-    elif iter > 30:
-      print ("WARNING: max iterations reached")
-      break
-       
-  return results
-  
+    iter = 0
+    while True:
+
+        simulator.step()
+
+        results += [copy.deepcopy(simulator)]
+
+        if simulator.goal_scored:
+            # print ("success")
+            break
+        elif not simulator.inside_field:
+            # print ("failure")
+            break
+        elif iter > 30:
+            print ("WARNING: max iterations reached")
+            break
+
+    return results
   
 
 def main():
@@ -57,36 +56,35 @@ def main():
     y_step = 300
     
     # use this to iterate over the whole green
-    #field_x_range = range(int(-field.x_field_length * 0.5), int(field.x_field_length * 0.5) + x_step, x_step)
-    #field_y_range = range(int(-field.y_field_length * 0.5), int(field.y_field_length * 0.5) + y_step, y_step)
+    # field_x_range = range(int(-field.x_field_length * 0.5), int(field.x_field_length * 0.5) + x_step, x_step)
+    # field_y_range = range(int(-field.y_field_length * 0.5), int(field.y_field_length * 0.5) + y_step, y_step)
 
     # use this to just iterate over the playing field
     x_range = range(int(-field.x_length / 2 + x_step/2), int(field.x_length / 2), x_step)
     y_range = range(int(-field.y_length / 2 + y_step/2), int(field.y_length / 2), y_step)
-
     
     origin = State()
     origin.pose.rotation = np.radians(180)
     origin.pose.translation.x = 0
     origin.pose.translation.y = 0
     
-    # set up the avaliable actions
+    # set up the available actions
     actions = {
-      "none" : a.Action("none", 0, 0, 0, 0),
-      "kick_short" : a.Action("kick_short", 1080, 150, 0, 7),
-      "sidekick_left" : a.Action("sidekick_left", 750, 150, 90, 10),
-      "sidekick_right" : a.Action("sidekick_right", 750, 50, -90, 10)
+      "none": a.Action("none", 0, 0, 0, 0),
+      "kick_short": a.Action("kick_short", 1080, 150, 0, 7),
+      "sidekick_left": a.Action("sidekick_left", 750, 150, 90, 10),
+      "sidekick_right": a.Action("sidekick_right", 750, 50, -90, 10)
     }
     
     # record the experiment header
     experiment = {
-      'x_step' : x_step,
-      'y_step' : y_step,
-      'fixed_rot' : origin.pose.rotation,
-      'x_size' : len(x_range),
-      'y_size' : len(y_range),
-      'actions' : actions,
-      'frames' : []
+      'x_step': x_step,
+      'y_step': y_step,
+      'fixed_rot': origin.pose.rotation,
+      'x_size': len(x_range),
+      'y_size': len(y_range),
+      'actions': actions,
+      'frames': []
     }
 
     all_actions = Striker.select(actions, ["none", "kick_short", "sidekick_left", "sidekick_right"])
@@ -98,7 +96,7 @@ def main():
         for iy, y in enumerate(y_range):
             start_time = timeit.default_timer()
             
-            run = { 'x' : x, 'y' : y, 'ix' : ix, 'iy' : iy, 'sim': {} }
+            run = {'x': x, 'y': y, 'ix': ix, 'iy': iy, 'sim': {}}
             
             origin.pose.translation.x = x
             origin.pose.translation.y = y
@@ -125,12 +123,13 @@ def main():
     # make sure not to overwrite anything
     file_idx = 0
     while True:
-      file = 'data/simulation_{0}.pickle'.format(file_idx)
-      if os.path.exists(file):
-        file_idx += 1
-      else:
-        pickle.dump(experiment, open(file, "wb"))
-        break
+        file = 'data/simulation_{0}.pickle'.format(file_idx)
+        if os.path.exists(file):
+            file_idx += 1
+        else:
+            pickle.dump(experiment, open(file, "wb"))
+            break
+
 
 if __name__ == "__main__":
     main()

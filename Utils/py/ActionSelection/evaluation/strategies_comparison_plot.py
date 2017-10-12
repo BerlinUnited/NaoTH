@@ -19,7 +19,7 @@ from state import State
  Pickle File format:  x, y, rot, c_kicks, c_turns, p_kicks, p_turns
 """
 
-data_prefix = "./data/"
+data_prefix = "../data/"
 
 actions = pickle.load(open(str(data_prefix) + "strategy_actions-rot180-7.pickle", "rb"))
 strategies = pickle.load(open(str(data_prefix) + "strategy_times-rot180-7.pickle", "rb"))
