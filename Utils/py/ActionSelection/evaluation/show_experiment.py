@@ -16,70 +16,15 @@ if cmd_subfolder not in sys.path:
     sys.path.insert(0, cmd_subfolder)
 
 
-if __name__ == "__main__":
-
+def plot_matrix(data):
     plt.clf()
     axes = plt.gca()
     tools.draw_field(axes)
-    data_prefix = "D:/RoboCup/Paper-Repos/2017-humanoids-action-selection/data/"
-
-    experiment = pickle.load(open(str(data_prefix) + "simulation_0.pickle", "rb"))
-
-    # print(experiment['frames'][0]['sim']['optimal_one'][1].turn_around_ball)
-
-    # test for iterating over all frames
-    """
-    num_frames = len(experiment['frames'])
-    for i in range(num_frames):
-        test_x = experiment['frames'][i]['sim']['optimal_one'][0].state.pose.translation.x
-        test_y = experiment['frames'][i]['sim']['optimal_one'][0].state.pose.translation.y
-        axes.add_artist(Circle(xy=(test_x, test_y), radius=100, fill=False, edgecolor='white'))
-
-    plt.show()
-    """
-    # test for iterating over one trace
-    """
-    fixed_frame = 435
-    trace_length = len(experiment['frames'][fixed_frame]['sim']['optimal_one'])
-    for i in range(trace_length):
-        test_x = experiment['frames'][fixed_frame]['sim']['optimal_one'][i].state.pose.translation.x
-        test_y = experiment['frames'][fixed_frame]['sim']['optimal_one'][i].state.pose.translation.y
-        axes.add_artist(Circle(xy=(test_x, test_y), radius=100, fill=False, edgecolor='white'))
-
-        print("Step: " + str(i))
-        print("Strategy: " + str(experiment['frames'][fixed_frame]['sim']['optimal_one'][i].strategy))
-        print("ActionList: " + str(experiment['frames'][fixed_frame]['sim']['optimal_one'][i].action_list))
-        print("Goal: " + str(experiment['frames'][fixed_frame]['sim']['optimal_one'][i].goal_scored))
-        print("Inside: " + str(experiment['frames'][fixed_frame]['sim']['optimal_one'][i].inside_field))
-        print("ChosenAction: " + str(experiment['frames'][fixed_frame]['sim']['optimal_one'][i].selected_action_idx))
-        print("TurnBall: " + str(experiment['frames'][fixed_frame]['sim']['optimal_one'][i].turn_around_ball))
-        print("Rotate: " + str(experiment['frames'][fixed_frame]['sim']['optimal_one'][i].rotate))
-        print("WalkDist: " + str(experiment['frames'][fixed_frame]['sim']['optimal_one'][i].walk_dist))
-        print("------------------------------------------------")
-    plt.show()
-    """
-    # get turn times for each position
-
-    num_frames = len(experiment['frames'])
-    all_ball_turns = []
-
-    for frame in range(num_frames):
-        exp = experiment['frames'][frame]['sim']['optimal_one']
-        trace_length = len(exp)
-        ball_turns = 0
-        for i in range(trace_length):
-            #ball_turns += np.abs(experiment['frames'][frame]['sim']['optimal_one'][i].turn_around_ball)
-            #ball_turns = max(ball_turns, np.abs(exp[i].turn_around_ball))
-            ball_turns += np.abs(exp[i].walk_dist)
-
-        test_x = exp[0].state.pose.translation.x
-        test_y = exp[0].state.pose.translation.y
-        all_ball_turns.append([test_x, test_y, ball_turns])
 
     nx = {}
     ny = {}
-    for pos in all_ball_turns:
-        x, y, c_num_turn_ball_degrees = pos
+    for pos in data:
+        x, y, value = pos
         nx[x] = x
         ny[y] = y
 
@@ -94,20 +39,64 @@ if __name__ == "__main__":
 
     f = np.zeros((len(ny), len(nx)))
 
-    for pos in all_ball_turns:
-        x, y, c_num_turn_ball_degrees = pos
+    for pos in data:
+        x, y, value = pos
 
-        value = c_num_turn_ball_degrees
+        value = value
 
-        if np.isnan(value):  # or np.isnan(time_particle):
+        if np.isnan(value):
             f[ny[y], nx[x]] = 0
         else:
-            f[ny[y], nx[x]] = value  # / np.max(np.abs([time_particle,time_old]))
+            f[ny[y], nx[x]] = value
 
-    x_step = 300
-    y_step = 300
+    x_step = y_step = 300
+
     x_range = range(int(-field.x_length / 2), int(field.x_length / 2) + x_step, x_step)
     y_range = range(int(-field.y_length / 2), int(field.y_length / 2) + y_step, y_step)
 
-    axes.pcolor(x_range, y_range, f, cmap="jet", alpha=0.8)  # , vmin=-1, vmax = 1
+    axes.pcolor(x_range, y_range, f, cmap="jet", alpha=0.8)
+    plt.show()
+
+
+if __name__ == "__main__":
+
+    data_prefix = "D:/RoboCup/Paper-Repos/2017-humanoids-action-selection/data/"
+
+    experiment = pickle.load(open(str(data_prefix) + "simulation_0.pickle", "rb"))
+
+    num_frames = len(experiment['frames'])
+    all_rotations = []
+    all_ball_turns = []
+    all_walking = []
+
+    for frame in range(num_frames):
+        exp = experiment['frames'][frame]['sim']['optimal_one']
+        trace_length = len(exp)
+        start_x = exp[0].state.pose.translation.x
+        start_y = exp[0].state.pose.translation.y
+        rotation = 0
+        turn_around_ball = 0
+        walk_distance = 0
+
+        for i in range(trace_length):
+            rotation += np.abs(exp[i].rotate)
+            turn_around_ball += np.abs(exp[i].turn_around_ball)
+            walk_distance += np.abs(exp[i].walk_dist)
+
+        all_rotations.append([start_x, start_y, rotation])
+        all_ball_turns.append([start_x, start_y, turn_around_ball])
+        all_walking.append([start_x, start_y, walk_distance])
+
+    # plot_matrix(all_ball_turns)
+
+    # Test histogram for one value
+    rotation_values = []
+    for frame in range(num_frames):
+        exp = experiment['frames'][frame]['sim']['optimal_all']
+        trace_length = len(exp)
+
+        for i in range(trace_length):
+            rotation_values.append(math.degrees(exp[i].walk_dist))
+
+    plt.hist(rotation_values)
     plt.show()
