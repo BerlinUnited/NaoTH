@@ -117,9 +117,6 @@ def main():
             time_mean = 0.5*(time_mean + timeit.default_timer() - start_time)
             print ("computation time: {0}s ({1}s to go)".format(timeit.default_timer() - start_time, time_mean*num_todo))
             
-            break
-        break
-            
     # make sure not to overwrite anything
     file_idx = 0
     while True:
