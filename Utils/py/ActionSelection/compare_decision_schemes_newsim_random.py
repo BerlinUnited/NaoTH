@@ -1,6 +1,6 @@
 import os
 import pickle
-from random import sample
+from random import randint
 from tools import field_info as field
 from state import State
 from tools import action as a
@@ -92,14 +92,12 @@ def main():
     num_done = 0
     time_mean = 0
 
-    x_range = range(int(-field.x_length / 2 + x_step / 2), int(field.x_length / 2), 20)
-    y_range = range(int(-field.y_length / 2 + y_step / 2), int(field.y_length / 2), 20)
-    r_range = range(0, 360, 1)
-    r_range = np.radians(r_range)
-    random_x = sample(x_range, 100)
-    random_y = sample(y_range, 100)
-    random_r = sample(r_range, 100)
-    print(len(random_x))
+    num_random_pos = 10000
+    random_x = [randint(int(-field.x_length / 2 + x_step / 2), int(field.x_length / 2)) for p in range(num_random_pos)]
+    random_y = [randint(int(-field.y_length / 2 + x_step / 2), int(field.y_length / 2)) for p in range(num_random_pos)]
+    random_r = np.random.randint(360, size=num_random_pos)
+    random_r = np.radians(random_r)
+
     for idx, pos in enumerate(random_x):
         start_time = timeit.default_timer()
 
@@ -121,7 +119,7 @@ def main():
         experiment['frames'] += [run]
 
         num_done += 1
-        num_todo = len(x_range)*len(y_range) - num_done
+        num_todo = len(random_x) - num_done
         time_mean = 0.5*(time_mean + timeit.default_timer() - start_time)
         print ("computation time: {0}s ({1}s to go)".format(timeit.default_timer() - start_time, time_mean*num_todo))
             
