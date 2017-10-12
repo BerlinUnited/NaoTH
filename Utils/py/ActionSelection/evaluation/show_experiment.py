@@ -16,10 +16,66 @@ if cmd_subfolder not in sys.path:
     sys.path.insert(0, cmd_subfolder)
 
 
-def plot_matrix(data):
+def plot_start_positions(exp):
+    # test for iterating over all frames
     plt.clf()
     axes = plt.gca()
     tools.draw_field(axes)
+
+    for i in range(len(experiment['frames'])):
+        start_x = experiment['frames'][i]['sim']['optimal_one'][0].state.pose.translation.x
+        start_y = experiment['frames'][i]['sim']['optimal_one'][0].state.pose.translation.y
+        axes.add_artist(Circle(xy=(start_x, start_y), radius=100, fill=False, edgecolor='white'))
+
+    plt.show()
+
+
+def plot_histogram(exp):
+    # Test histogram for one value
+    num_frames = len(exp['frames'])
+    rotation_values = []
+    for frame in range(num_frames):
+        e = exp['frames'][frame]['sim']['optimal_all']
+        trace_length = len(e)
+
+        for i in range(trace_length):
+            rotation_values.append(math.degrees(e[i].turn_around_ball))
+
+    plt.hist(rotation_values)
+    plt.show()
+
+
+def plot_matrix(exp):
+    all_rotations = []
+    all_ball_turns = []
+    all_walking = []
+
+    num_frames = len(exp['frames'])
+
+    for frame in range(num_frames):
+        e = exp['frames'][frame]['sim']['optimal_one']
+        trace_length = len(e)
+        start_x = e[0].state.pose.translation.x
+        start_y = e[0].state.pose.translation.y
+        rotation = 0
+        turn_around_ball = 0
+        walk_distance = 0
+
+        for i in range(trace_length):
+            rotation += np.abs(e[i].rotate)
+            turn_around_ball += np.abs(e[i].turn_around_ball)
+            walk_distance += np.abs(e[i].walk_dist)
+
+        all_rotations.append([start_x, start_y, rotation])
+        all_ball_turns.append([start_x, start_y, turn_around_ball])
+        all_walking.append([start_x, start_y, walk_distance])
+
+
+    plt.clf()
+    axes = plt.gca()
+    tools.draw_field(axes)
+
+    data = all_rotations
 
     nx = {}
     ny = {}
@@ -61,42 +117,12 @@ def plot_matrix(data):
 if __name__ == "__main__":
 
     data_prefix = "D:/RoboCup/Paper-Repos/2017-humanoids-action-selection/data/"
+    data_prefix = "../data/"
 
-    experiment = pickle.load(open(str(data_prefix) + "simulation_0.pickle", "rb"))
+    experiment = pickle.load(open(str(data_prefix) + "simulation_5.pickle", "rb"))
 
-    num_frames = len(experiment['frames'])
-    all_rotations = []
-    all_ball_turns = []
-    all_walking = []
+    # plot_start_positions(experiment)
 
-    for frame in range(num_frames):
-        exp = experiment['frames'][frame]['sim']['optimal_one']
-        trace_length = len(exp)
-        start_x = exp[0].state.pose.translation.x
-        start_y = exp[0].state.pose.translation.y
-        rotation = 0
-        turn_around_ball = 0
-        walk_distance = 0
+    # plot_matrix(experiment)
 
-        for i in range(trace_length):
-            rotation += np.abs(exp[i].rotate)
-            turn_around_ball += np.abs(exp[i].turn_around_ball)
-            walk_distance += np.abs(exp[i].walk_dist)
-
-        all_rotations.append([start_x, start_y, rotation])
-        all_ball_turns.append([start_x, start_y, turn_around_ball])
-        all_walking.append([start_x, start_y, walk_distance])
-
-    # plot_matrix(all_ball_turns)
-
-    # Test histogram for one value
-    rotation_values = []
-    for frame in range(num_frames):
-        exp = experiment['frames'][frame]['sim']['optimal_all']
-        trace_length = len(exp)
-
-        for i in range(trace_length):
-            rotation_values.append(math.degrees(exp[i].walk_dist))
-
-    plt.hist(rotation_values)
-    plt.show()
+    plot_histogram(experiment)
