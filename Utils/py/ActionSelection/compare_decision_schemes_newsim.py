@@ -22,34 +22,6 @@ Example:
 """
 
 
-def run_experiment(origin, strategy, action_list):
-  
-    state = copy.deepcopy(origin)
-    simulator = Striker.Simulator(state, strategy, action_list)
-
-    # record the whole state of the simulator
-    results = [copy.deepcopy(simulator)]
-
-    iter = 0
-    while True:
-
-        simulator.step()
-
-        results += [copy.deepcopy(simulator)]
-
-        if simulator.goal_scored:
-            # print ("success")
-            break
-        elif not simulator.inside_field:
-            # print ("failure")
-            break
-        elif iter > 30:
-            print ("WARNING: max iterations reached")
-            break
-
-    return results
-  
-
 def main():
 
     x_step = 300
@@ -101,13 +73,13 @@ def main():
             origin.pose.translation.x = x
             origin.pose.translation.y = y
     
-            o_sim = run_experiment(origin, Striker.optimal_kick_strategy, Striker.select(actions, ["none", "kick_short"]))
+            o_sim = Striker.run_experiment(origin, Striker.optimal_kick_strategy, Striker.select(actions, ["none", "kick_short"]))
             run['sim']['optimal_one'] = o_sim
             
-            p_sim = run_experiment(origin, Striker.optimal_kick_strategy, all_actions)
+            p_sim = Striker.run_experiment(origin, Striker.optimal_kick_strategy, all_actions)
             run['sim']['optimal_all'] = p_sim
         
-            c_sim = run_experiment(origin, Striker.direct_kick_strategy, all_actions)
+            c_sim = Striker.run_experiment(origin, Striker.direct_kick_strategy, all_actions)
             run['sim']['fast'] = c_sim
             
             experiment['frames'] += [run]

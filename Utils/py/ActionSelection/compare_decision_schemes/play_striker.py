@@ -144,17 +144,19 @@ class Simulator:
             self.state.ball_position = new_ball_position.pos()
     
     
-def run(state, strategy, action_list):
+def run_experiment(origin, strategy, action_list, max_iterations = 30):
   
+    state = copy.deepcopy(origin)
     simulator = Simulator(state, strategy, action_list)
 
-    history = [[state.pose.translation.x, state.pose.translation.y]]
+    # record the state of the simulator
+    history = [copy.deepcopy(simulator)]
 
     while True:
 
         simulator.step()
 
-        history += [[simulator.state.pose.translation.x, simulator.state.pose.translation.y]]
+        history += [copy.deepcopy(simulator)]
 
         if simulator.state_category == a.Category.OPPGOAL:
             # print ("success")
@@ -162,13 +164,13 @@ def run(state, strategy, action_list):
         elif simulator.state_category != a.Category.INFIELD:
             # print ("failure")
             break
-        else:
+        elif len(history) > max_iterations:
             # continue
-            pass
+            break
 
     # hack: make the last run
     simulator.step()
-    history += [[simulator.state.pose.translation.x, simulator.state.pose.translation.y]]
+    history += [copy.deepcopy(simulator)]
             
     return history
 
@@ -200,23 +202,23 @@ if __name__ == "__main__":
         
         state = copy.deepcopy(origin)
         print("run optimal_kick_strategy")
-        history1 = run(state, optimal_kick_strategy, select(actions, ["none", "kick_short"]))
+        history1 = run_experiment(state, optimal_kick_strategy, select(actions, ["none", "kick_short"]))
         
         state = copy.deepcopy(origin)
         print("run optimal_kick_strategy")
-        history2 = run(state, optimal_kick_strategy, all_actions)
+        history2 = run_experiment(state, optimal_kick_strategy, all_actions)
         
         state = copy.deepcopy(origin)
         print("run direct_kick_strategy")
-        history3 = run(state, direct_kick_strategy, all_actions)
+        history3 = run_experiment(state, direct_kick_strategy, all_actions)
         
         plt.clf()
         axes = plt.gca()
         tools.draw_field(axes)
         
-        h1 = np.array(history1)
-        h2 = np.array(history2)
-        h3 = np.array(history3)
+        h1 = np.array([[h.state.pose.translation.x, h.state.pose.translation.y] for h in history1])
+        h2 = np.array([[h.state.pose.translation.x, h.state.pose.translation.y] for h in history2])
+        h3 = np.array([[h.state.pose.translation.x, h.state.pose.translation.y] for h in history3])
         
         plt.plot(h1[:, 0], h1[:, 1], '-ob')
         plt.plot(h2[:, 0], h2[:, 1], '-ok')
