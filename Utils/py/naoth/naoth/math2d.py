@@ -41,7 +41,7 @@ class Vector2:
         return Vector2(self.x/fraction, self.y/fraction)
 
     def __str__(self):
-        return str(self.x) + " " + str(self.y)
+        return "({0},{1})".format(self.x, self.y)
 
     def normalize(self):
         if Vector2.abs(self) != 0:
@@ -99,6 +99,9 @@ class Pose2D:
         else:
             return NotImplemented
 
+    def __str__(self):
+        return "(translation = {0}, rotation = {1})".format(self.translation, self.rotation)
+        
     def rotate(self, a):
       self.rotation += a
 
