@@ -59,8 +59,8 @@ def main():
     # field_y_range = range(int(-field.y_field_length * 0.5), int(field.y_field_length * 0.5) + y_step, y_step)
 
     # use this to just iterate over the playing field
-    x_range = range(int(-field.x_length / 2 + x_step/2), int(field.x_length / 2), x_step)
-    y_range = range(int(-field.y_length / 2 + y_step/2), int(field.y_length / 2), y_step)
+    #x_range = range(int(-field.x_length / 2 + x_step/2), int(field.x_length / 2), x_step)
+    #y_range = range(int(-field.y_length / 2 + y_step/2), int(field.y_length / 2), y_step)
     
     origin = State()
     origin.pose.rotation = np.radians([180])
@@ -75,17 +75,6 @@ def main():
       "sidekick_right": a.Action("sidekick_right", 750, 50, -90, 10)
     }
     
-    # record the experiment header
-    experiment = {
-      'x_step': x_step,
-      'y_step': y_step,
-      'fixed_rot': origin.pose.rotation,
-      'x_size': len(x_range),
-      'y_size': len(y_range),
-      'actions': actions,
-      'frames': []
-    }
-
     all_actions = striker.select(actions, ["none", "kick_short", "sidekick_left", "sidekick_right"])
     
     # run for the whole field
@@ -98,6 +87,18 @@ def main():
     random_r = np.random.randint(360, size=num_random_pos)
     random_r = np.radians(random_r)
 
+    # record the experiment header
+    experiment = {
+      'kind': 'random',
+      #'x_step': x_step,
+      #'y_step': y_step,
+      #'fixed_rot': origin.pose.rotation,
+      #'x_size': len(x_range),
+      #'y_size': len(y_range),
+      'actions': actions,
+      'frames': []
+    }
+    
     for idx, pos in enumerate(random_x):
         start_time = timeit.default_timer()
 
