@@ -64,11 +64,12 @@ def optimal_kick_strategy(state, action_list):
   
     action_dir = None
     selected_action_idx = 0
+    
     for ix, action in enumerate(action_list):
         if action.name is "none":
             continue
 
-        rotation, _ = heinrich_test(state, action_list[ix], False, iterations=20)
+        rotation, _ = heinrich_test(state, action, False, iterations=20)
 
         if action_dir is None or np.abs(rotation) < np.abs(action_dir):
             action_dir = rotation
@@ -81,13 +82,13 @@ def optimal_value_strategy(state, action_list):
   
     actions_consequences = []
     rotations = []
-    for ix, action in enumerate(action_list):
+    for action in action_list:
         
         if action.name is "none":
             rotation = 0
         else:
           # optimize action
-          rotation, _ = heinrich_test(state, action_list[ix], False, iterations=20)
+          rotation, _ = heinrich_test(state, action, False, iterations=20)
         
         rotations += [rotation]
         
@@ -150,9 +151,9 @@ class Simulator:
         # ---------------
         #  execute the action
         # ---------------
-
         if selected_action.name == "none":
             print("WARNING: action is NONE, what should we do here? " + str(self.selected_action_idx))
+            print("STATE: robot = {0}".format(self.state.pose))
         else:
             # rotate around ball if necessary
             self.state.pose.rotate(self.turn_around_ball)
