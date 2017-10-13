@@ -75,8 +75,38 @@ def optimal_kick_strategy(state, action_list):
             selected_action_idx = ix
 
     return selected_action_idx, action_dir
-  
 
+    
+def optimal_value_strategy(state, action_list):
+  
+    actions_consequences = []
+    rotations = []
+    for ix, action in enumerate(action_list):
+        
+        if action.name is "none":
+            rotation = 0
+        else:
+          # optimize action
+          rotation, _ = heinrich_test(state, action_list[ix], False, iterations=20)
+        
+        rotations += [rotation]
+        
+        # apply optimized rotation
+        state.pose.rotate(rotation)
+        
+        single_consequence = a.ActionResults([])
+        actions_consequences.append(Sim.simulate_consequences(action, single_consequence, state, num_particles=30))
+        
+        # restore previous rotation
+        state.pose.rotate(-rotation)
+        
+        
+    # Decide best action
+    selected_action_idx = Sim.decide_smart(actions_consequences, state)
+
+    return selected_action_idx, rotations[selected_action_idx]    
+
+    
 class Simulator:
     def __init__(self, state, strategy, action_list):
         self.state = state
@@ -212,6 +242,11 @@ if __name__ == "__main__":
         print("run direct_kick_strategy")
         history3 = run_experiment(state, direct_kick_strategy, all_actions)
         
+        state = copy.deepcopy(origin)
+        print("run optimal_value_strategy")
+        history4 = run_experiment(state, optimal_value_strategy, all_actions)
+        
+        
         plt.clf()
         axes = plt.gca()
         tools.draw_field(axes)
@@ -219,9 +254,11 @@ if __name__ == "__main__":
         h1 = np.array([[h.state.pose.translation.x, h.state.pose.translation.y] for h in history1])
         h2 = np.array([[h.state.pose.translation.x, h.state.pose.translation.y] for h in history2])
         h3 = np.array([[h.state.pose.translation.x, h.state.pose.translation.y] for h in history3])
+        h4 = np.array([[h.state.pose.translation.x, h.state.pose.translation.y] for h in history4])
         
         plt.plot(h1[:, 0], h1[:, 1], '-ob')
         plt.plot(h2[:, 0], h2[:, 1], '-ok')
         plt.plot(h3[:, 0], h3[:, 1], '-or')
+        plt.plot(h4[:, 0], h4[:, 1], '-oy')
         
-        plt.pause(1)
+        plt.pause(2)
