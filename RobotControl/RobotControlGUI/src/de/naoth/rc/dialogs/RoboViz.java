@@ -5,6 +5,8 @@ import de.naoth.rc.core.dialog.AbstractDialog;
 import de.naoth.rc.core.dialog.DialogPlugin;
 import de.naoth.rc.core.dialog.RCDialog;
 import java.awt.BorderLayout;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.File;
 import java.lang.reflect.Method;
 import java.net.URL;
@@ -25,6 +27,7 @@ import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 public class RoboViz extends AbstractDialog
 {
     private static final String CONFIG_KEY = "RoboViz";
+    private final MouseAdapter labelMouseListener;
     
     @RCDialog(category = RCDialog.Category.Tools, name = "RoboViz")
     @PluginImplementation
@@ -37,7 +40,15 @@ public class RoboViz extends AbstractDialog
      * Creates new RoboViz panel
      */
     public RoboViz() {
+        // reusable mouse listener
+        labelMouseListener = new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                labelClicked(evt);
+            }
+        };
+        
         initComponents();
+        jarFileLabel.addMouseListener(labelMouseListener);
         
         String jarFile = Plugin.parent.getConfig().getProperty(CONFIG_KEY);
         if(jarFile != null) {
@@ -73,9 +84,15 @@ public class RoboViz extends AbstractDialog
             replaceCenterComponent(panel);
             // successfully loaded roboviz panel
             return true;
+        } catch (java.lang.ClassNotFoundException ex) {
+            Logger.getLogger(RoboViz.class.getName()).log(Level.SEVERE, null, ex);
+            errorLabel.setText("<html><h2>Unable to load class '"+ex.getMessage()+"'!</h2><br>Was Roboviz compiled with 'panel'-support?!</html>");
+            errorLabel.addMouseListener(labelMouseListener);
+            replaceCenterComponent(errorLabel);
         } catch (Exception ex) {
             Logger.getLogger(RoboViz.class.getName()).log(Level.SEVERE, null, ex);
             errorLabel.setText("<html><h2>An error occurred!</h2><br>"+ex.getMessage()+"</html>");
+            errorLabel.removeMouseListener(labelMouseListener);
             replaceCenterComponent(errorLabel);
         }
         return false;
@@ -113,6 +130,25 @@ public class RoboViz extends AbstractDialog
         add(c, BorderLayout.CENTER);
         revalidate();
     }
+    
+    /**
+     * Mouselistener callback for labels.
+     * @param ev 
+     */
+    private void labelClicked(MouseEvent ev) {
+        if(jarFileChooser.showOpenDialog(this) ==  javax.swing.JFileChooser.APPROVE_OPTION) {
+            File jar = jarFileChooser.getSelectedFile();
+            if(checkRoboVizJarFile(jar)) {
+                if(showRoboViz(jar)) {
+                    Plugin.parent.getConfig().setProperty(CONFIG_KEY, jar.getAbsolutePath());
+                } else {
+                    replaceCenterComponent(jarFileLabel);
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "The selected jar file isn't a valid RoboViz jar file!", "Invalid jar file", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
 
     /**
      * This method is called from within the constructor to initialize the form. WARNING: Do NOT
@@ -137,28 +173,8 @@ public class RoboViz extends AbstractDialog
 
         jarFileLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jarFileLabel.setText("Select the RoboViz jar file ...");
-        jarFileLabel.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jarFileLabelMouseClicked(evt);
-            }
-        });
         add(jarFileLabel, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
-
-    private void jarFileLabelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jarFileLabelMouseClicked
-        if(jarFileChooser.showOpenDialog(this) ==  javax.swing.JFileChooser.APPROVE_OPTION) {
-            File jar = jarFileChooser.getSelectedFile();
-            if(checkRoboVizJarFile(jar)) {
-                if(showRoboViz(jar)) {
-                    Plugin.parent.getConfig().setProperty(CONFIG_KEY, jar.getAbsolutePath());
-                } else {
-                    replaceCenterComponent(jarFileLabel);
-                }
-            } else {
-                JOptionPane.showMessageDialog(this, "The selected jar file isn't a valid RoboViz jar file!", "Invalid jar file", JOptionPane.ERROR_MESSAGE);
-            }
-        }
-    }//GEN-LAST:event_jarFileLabelMouseClicked
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel errorLabel;
