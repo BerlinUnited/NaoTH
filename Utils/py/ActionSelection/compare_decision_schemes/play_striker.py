@@ -2,6 +2,11 @@ from __future__ import division
 import os
 import sys
 import inspect
+
+cmd_subfolder = os.path.realpath(os.path.abspath(os.path.join(os.path.split(inspect.getfile(inspect.currentframe()))[0], "..")))
+if cmd_subfolder not in sys.path:
+    sys.path.insert(0, cmd_subfolder)
+
 import math
 import copy
 import numpy as np
@@ -13,12 +18,10 @@ from tools import tools
 from tools import field_info as field
 from tools import raw_attack_direction_provider as attack_dir
 from state import State
+from naoth import math2d as m2d
 
 from run_simulation_with_particleFilter import calculate_best_direction as heinrich_test
 
-cmd_subfolder = os.path.realpath(os.path.abspath(os.path.join(os.path.split(inspect.getfile(inspect.currentframe()))[0], "..")))
-if cmd_subfolder not in sys.path:
-    sys.path.insert(0, cmd_subfolder)
 
 
 def direct_kick_strategy(state, action_list):
@@ -49,7 +52,7 @@ def direct_kick_strategy(state, action_list):
             attack_direction = attack_dir.get_attack_direction(state)
 
             if turn_direction == 0:
-                turn_direction = np.sign(attack_direction)  # "> 0" => left, "< 0" => right
+                turn_direction = -np.sign(attack_direction)  # "> 0" => left, "< 0" => right
 
             # set motion request
             action_dir += turn_direction*turn_speed
@@ -81,8 +84,7 @@ class Simulator:
         self.action_list = action_list
 
         #
-        self.goal_scored = None
-        self.inside_field = None
+        self.state_category = None
 
         # actions
         self.selected_action_idx = None
@@ -97,6 +99,17 @@ class Simulator:
         self.rotate = 0
         self.walk_dist = 0
 
+        # ---------------
+        # approach ball
+        # ---------------
+        self.rotate = self.state.ball_position.angle()
+        self.walk_dist = self.state.ball_position.abs()
+
+        # HACK: execute motion request
+        self.state.pose.rotate(self.rotate)
+        self.state.pose.translate(self.walk_dist, 0)
+        self.state.ball_position = m2d.Vector2(100.0, 0.0)
+        
         # ---------------
         #  make a decision
         # ---------------
@@ -114,37 +127,21 @@ class Simulator:
             # rotate around ball if necessary
             self.state.pose.rotate(self.turn_around_ball)
 
-            # create a new action which will actually be executed
-            new_action = a.Action("new_action", selected_action.speed, selected_action.speed_std, selected_action.angle, 0)
-
-            single_consequence = a.ActionResults([])
-            single_consequence = Sim.simulate_consequences(new_action, single_consequence, self.state, num_particles=30)
-
+            # hack: perfect world without noise
+            perfect_world = False
+            if perfect_world:
+              real_action = a.Action("real_action", selected_action.speed, 0, selected_action.angle, 0)
+            else:
+              real_action = selected_action
+              
             # expected_ball_pos should be in local coordinates for rotation calculations
-            new_ball_position = single_consequence.expected_ball_pos_mean
-
-            # walk to ball now
-            # set motion request
-            self.rotate = new_ball_position.angle()
-            self.walk_dist = new_ball_position.abs()
-
-            # self.state.update_pos(self.state.pose * new_ball_position, math.degrees(self.state.pose.rotation + self.rotate))
-            self.state.pose.rotate(self.rotate)
-            self.state.pose.translate(self.walk_dist, 0)
-
-        # ---------------
-        #  evaluate the real situation
-        # ---------------
-
-        # Check if expected_ball_pos inside opponent goal
-        opp_goal_back_right = m2d.Vector2(field.opponent_goalpost_right.x + field.goal_depth, field.opponent_goalpost_right.y)
-        opp_goal_box = m2d.Rect2d(opp_goal_back_right, field.opponent_goalpost_left)
-
-        ball_pos_global = self.state.pose * self.state.ball_position
-
-        # update the internal state
-        self.goal_scored = opp_goal_box.inside(ball_pos_global)
-        self.inside_field = field.field_rect.inside(ball_pos_global)
+            action_results = a.ActionResults([])
+            action_results = Sim.simulate_consequences(real_action, action_results, self.state, num_particles=1)
+            
+            # store the state and update the state
+            new_ball_position = action_results.positions()[0]
+            self.state_category = new_ball_position.cat()
+            self.state.ball_position = new_ball_position.pos()
     
     
 def run(state, strategy, action_list):
@@ -159,16 +156,20 @@ def run(state, strategy, action_list):
 
         history += [[simulator.state.pose.translation.x, simulator.state.pose.translation.y]]
 
-        if simulator.goal_scored:
+        if simulator.state_category == a.Category.OPPGOAL:
             # print ("success")
             break
-        elif not simulator.inside_field:
+        elif simulator.state_category != a.Category.INFIELD:
             # print ("failure")
             break
         else:
             # continue
             pass
 
+    # hack: make the last run
+    simulator.step()
+    history += [[simulator.state.pose.translation.x, simulator.state.pose.translation.y]]
+            
     return history
 
   
