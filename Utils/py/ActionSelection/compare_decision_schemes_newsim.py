@@ -64,7 +64,7 @@ def main():
     y_range = range(int(-field.y_length / 2 + y_step/2), int(field.y_length / 2), y_step)
     
     origin = State()
-    origin.pose.rotation = np.radians(180)
+    origin.pose.rotation = np.radians([180])
     origin.pose.translation.x = 0
     origin.pose.translation.y = 0
     

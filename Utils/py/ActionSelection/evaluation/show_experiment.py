@@ -9,9 +9,8 @@ from matplotlib import pyplot as plt
 from matplotlib.patches import Circle
 from tools import tools
 from tools import field_info as field
-from state import State
 
-cmd_subfolder = os.path.realpath(os.path.abspath(os.path.join(os.path.split(inspect.getfile( inspect.currentframe() ))[0],"..")))
+cmd_subfolder = os.path.realpath(os.path.abspath(os.path.join(os.path.split(inspect.getfile(inspect.currentframe()))[0], "..")))
 if cmd_subfolder not in sys.path:
     sys.path.insert(0, cmd_subfolder)
 
@@ -22,9 +21,9 @@ def plot_start_positions(exp):
     axes = plt.gca()
     tools.draw_field(axes)
 
-    for i in range(len(experiment['frames'])):
-        start_x = experiment['frames'][i]['sim']['optimal_one'][0].state.pose.translation.x
-        start_y = experiment['frames'][i]['sim']['optimal_one'][0].state.pose.translation.y
+    for i in range(len(exp['frames'])):
+        start_x = exp['frames'][i]['sim']['optimal_one'][0].state.pose.translation.x
+        start_y = exp['frames'][i]['sim']['optimal_one'][0].state.pose.translation.y
         axes.add_artist(Circle(xy=(start_x, start_y), radius=100, fill=False, edgecolor='white'))
 
     plt.show()
@@ -69,7 +68,6 @@ def plot_matrix(exp):
         all_rotations.append([start_x, start_y, rotation])
         all_ball_turns.append([start_x, start_y, turn_around_ball])
         all_walking.append([start_x, start_y, walk_distance])
-
 
     plt.clf()
     axes = plt.gca()
@@ -117,7 +115,6 @@ def plot_matrix(exp):
 if __name__ == "__main__":
 
     data_prefix = "D:/RoboCup/Paper-Repos/2017-humanoids-action-selection/data/"
-    data_prefix = "../data/"
 
     experiment = pickle.load(open(str(data_prefix) + "simulation_5.pickle", "rb"))
 

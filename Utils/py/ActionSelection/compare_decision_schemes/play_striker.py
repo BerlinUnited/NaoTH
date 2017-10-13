@@ -6,7 +6,6 @@ import math
 import copy
 import numpy as np
 from matplotlib import pyplot as plt
-from matplotlib.patches import Circle
 from tools import action as a
 from tools import Simulation as Sim
 from naoth import math2d as m2d
@@ -17,7 +16,7 @@ from state import State
 
 from run_simulation_with_particleFilter import calculate_best_direction as heinrich_test
 
-cmd_subfolder = os.path.realpath(os.path.abspath(os.path.join(os.path.split(inspect.getfile( inspect.currentframe() ))[0], "..")))
+cmd_subfolder = os.path.realpath(os.path.abspath(os.path.join(os.path.split(inspect.getfile(inspect.currentframe()))[0], "..")))
 if cmd_subfolder not in sys.path:
     sys.path.insert(0, cmd_subfolder)
 
@@ -41,7 +40,7 @@ def direct_kick_strategy(state, action_list):
         # Decide best action
         selected_action_idx = Sim.decide_smart(actions_consequences, state)
 
-        # restore the previous oriantation
+        # restore the previous orientation
         state.pose.rotate(-action_dir)
 
         if selected_action_idx != 0:
@@ -50,7 +49,7 @@ def direct_kick_strategy(state, action_list):
             attack_direction = attack_dir.get_attack_direction(state)
 
             if turn_direction == 0:
-                turn_direction = np.sign(attack_direction) # "> 0" => left, "< 0" => right
+                turn_direction = np.sign(attack_direction)  # "> 0" => left, "< 0" => right
 
             # set motion request
             action_dir += turn_direction*turn_speed
@@ -118,7 +117,6 @@ class Simulator:
             # create a new action which will actually be executed
             new_action = a.Action("new_action", selected_action.speed, selected_action.speed_std, selected_action.angle, 0)
 
-            actions_consequences = []
             single_consequence = a.ActionResults([])
             single_consequence = Sim.simulate_consequences(new_action, single_consequence, self.state, num_particles=30)
 
@@ -132,7 +130,7 @@ class Simulator:
 
             # self.state.update_pos(self.state.pose * new_ball_position, math.degrees(self.state.pose.rotation + self.rotate))
             self.state.pose.rotate(self.rotate)
-            self.state.pose.translate(self.walk_dist,0)
+            self.state.pose.translate(self.walk_dist, 0)
 
         # ---------------
         #  evaluate the real situation
@@ -162,10 +160,10 @@ def run(state, strategy, action_list):
         history += [[simulator.state.pose.translation.x, simulator.state.pose.translation.y]]
 
         if simulator.goal_scored:
-            #print ("success")
+            # print ("success")
             break
         elif not simulator.inside_field:
-            #print ("failure")
+            # print ("failure")
             break
         else:
             # continue
@@ -180,7 +178,7 @@ def select(actions, ids):
 
 if __name__ == "__main__":
     
-    # set up the avaliable actions
+    # set up the available actions
     actions = {
       "none": a.Action("none", 0, 0, 0, 0),
       "kick_short": a.Action("kick_short", 1080, 150, 0, 7),
