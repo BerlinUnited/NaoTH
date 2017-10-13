@@ -93,8 +93,8 @@ def main():
     time_mean = 0
 
     num_random_pos = 10000
-    random_x = [randint(int(-field.x_length / 2 + x_step / 2), int(field.x_length / 2)) for p in range(num_random_pos)]
-    random_y = [randint(int(-field.y_length / 2 + x_step / 2), int(field.y_length / 2)) for p in range(num_random_pos)]
+    random_x = [randint(int(-field.x_length / 2 + 25), int(field.x_length / 2 - 25)) for p in range(num_random_pos)]
+    random_y = [randint(int(-field.y_length / 2 + 25), int(field.y_length / 2 - 25)) for p in range(num_random_pos)]
     random_r = np.random.randint(360, size=num_random_pos)
     random_r = np.radians(random_r)
 
