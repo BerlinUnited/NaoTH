@@ -1,8 +1,14 @@
 from __future__ import division
-import os
-import sys
-import math
+import os, sys
 import inspect
+
+cmd_subfolder = os.path.realpath(os.path.abspath(os.path.join(os.path.split(inspect.getfile(inspect.currentframe()))[0], "..")))
+if cmd_subfolder not in sys.path:
+    sys.path.insert(0, cmd_subfolder)
+
+
+import math
+
 import pickle
 import numpy as np
 from matplotlib import pyplot as plt
@@ -10,9 +16,7 @@ from matplotlib.patches import Circle
 from tools import tools
 from tools import field_info as field
 
-cmd_subfolder = os.path.realpath(os.path.abspath(os.path.join(os.path.split(inspect.getfile(inspect.currentframe()))[0], "..")))
-if cmd_subfolder not in sys.path:
-    sys.path.insert(0, cmd_subfolder)
+
 
 
 def plot_start_positions(exp):
@@ -29,18 +33,21 @@ def plot_start_positions(exp):
     plt.show()
 
 
+def extractValues(exp, strategy, getValue):
+  return np.array([getValue(e) for frame in exp['frames'] for e in frame['sim'][strategy]])
+    
 def plot_histogram(exp):
-    # Test histogram for one value
-    num_frames = len(exp['frames'])
-    rotation_values = []
-    for frame in range(num_frames):
-        e = exp['frames'][frame]['sim']['optimal_all']
-        trace_length = len(e)
 
-        for i in range(trace_length):
-            rotation_values.append(math.degrees(e[i].turn_around_ball))
+    num = exp['frames'][0]['sim']
+    f, ax = plt.subplots(1, 3, sharey=True)
 
-    plt.hist(rotation_values)
+    for i, strategy in enumerate(exp['frames'][0]['sim']):
+      print strategy
+      values = extractValues(exp, strategy, lambda x: x.turn_around_ball)
+      ax[i].hist(np.abs(np.degrees(values)), range=[0, 180], rwidth=1, bins=18)
+      ax[i].set_title(strategy)
+
+    #plt.legend()
     plt.show()
 
 
@@ -113,13 +120,17 @@ def plot_matrix(exp):
 
 
 if __name__ == "__main__":
-
-    data_prefix = "D:/RoboCup/Paper-Repos/2017-humanoids-action-selection/data/"
-
-    experiment = pickle.load(open(str(data_prefix) + "simulation_5.pickle", "rb"))
+    
+    data_prefix = os.path.realpath(os.path.abspath(os.path.join(cmd_subfolder,"../data")))
+    data_prefix = "./data/"
+    file = data_prefix + "simulation_2.pickle"
+    print "read file: "+ file
+    
+    experiment = pickle.load(open(file, "rb"))
 
     # plot_start_positions(experiment)
 
     # plot_matrix(experiment)
 
+    
     plot_histogram(experiment)
