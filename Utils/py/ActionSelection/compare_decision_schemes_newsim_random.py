@@ -87,6 +87,9 @@ def main():
 
         c_sim = striker.run_experiment(origin, striker.direct_kick_strategy, all_actions)
         run['sim']['fast'] = c_sim
+        
+        c_sim = striker.run_experiment(origin, striker.optimal_value_strategy, all_actions)
+        run['sim']['optimal_value'] = c_sim
 
         experiment['frames'] += [run]
 
