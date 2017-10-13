@@ -14,6 +14,7 @@ ax = axes;
 box on
 hold on;
 
+%y0 = [0; 1.2; 0; 0; -parameter.l0*cos(parameter.touchdown_angle(1)); 0]; % avoid x=0 as start if jumping on place... causes instabilities somehow
 y0 = [0; 1.1; 0; 0; 1; 0]; % avoid x=0 as start if jumping on place... causes instabilities somehow
 [tout, yout, teout, yeout, ieout, tsout, sout] = SLIP3D(y0,parameter);
 
@@ -26,7 +27,21 @@ odeplot([],[],'done');
 
 figure(2);
 plot(yout(:,1),yout(:,3));
+xlabel('x');
+ylabel('y');
+
 figure(3);
 plot(yout(:,1),yout(:,5));
+xlabel('x');
+zlabel('z');
+
 figure(4);
 plot(tsout,sout);
+xlabel('time');
+ylabel('state');
+
+figure(5);
+plot3(yout(:,1), yout(:,3), yout(:,5));
+xlabel('x');
+ylabel('y');
+zlabel('z');

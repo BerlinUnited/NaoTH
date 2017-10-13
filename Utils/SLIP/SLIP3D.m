@@ -24,8 +24,8 @@ function [tout, yout, teout, yeout, ieout, tsout, sout] = SLIP3D(y0, parameter)
     sout  = [];
     
     state = 'left_support';    
-    left_tdp  = [0;0;0];
-    right_tdp = [0;0;0];
+    left_tdp  = [0,0,0];%[y0(1); y0(3); y0(5)] + l0 * [sin(left_tda(1)) * cos(pi/2); sin(left_tda(1)) * sin(pi/2); cos(left_tda(1))]; 
+    right_tdp = [y0(1); y0(3); y0(5)] + l0 * [sin(right_tda(1)) * cos(-pi/2); sin(right_tda(1)) * sin(-pi/2); cos(right_tda(1))];
 
     while(tout(end) < parameter.maxTime)       
         switch state
