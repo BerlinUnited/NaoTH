@@ -7,7 +7,10 @@ from tools import action as a
 import timeit
 import copy
 import numpy as np
+from naoth import math2d as m2d
 from compare_decision_schemes import play_striker as striker
+
+import multiprocessing as mp
 
 """
 For every position(x, y) and a fixed rotation the time and the number of kicks and turns are calculated for different strategies.
@@ -20,39 +23,39 @@ Example:
         $ python compare_decision_schemes.py
 """
 
+# set up the available actions
+actions = {
+  "none": a.Action("none", 0, 0, 0, 0),
+  "kick_short": a.Action("kick_short", 1080, 150, 0, 7),
+  "sidekick_left": a.Action("sidekick_left", 750, 150, 90, 10),
+  "sidekick_right": a.Action("sidekick_right", 750, 50, -90, 10)
+}
+
+all_actions = striker.select(actions, ["none", "kick_short", "sidekick_left", "sidekick_right"])
+
+
+def make_run(pose):
+      run = {'pose': pose, 'sim': {}}
+
+      origin = State()
+      origin.pose = pose
+
+      # make an alias
+      re = striker.run_experiment
+      print ('optimal_one')
+      run['sim']['optimal_one'] = re(origin, striker.optimal_kick_strategy, striker.select(actions, ["none", "kick_short"]))
+      print ('optimal_all')
+      run['sim']['optimal_all'] = re(origin, striker.optimal_kick_strategy, all_actions)
+      print ('fast')
+      run['sim']['fast'] = re(origin, striker.direct_kick_strategy, all_actions)
+      print ('optimal_value')
+      run['sim']['optimal_value'] = re(origin, striker.optimal_value_strategy, all_actions)
+    
+      return run
+
 def main():
 
-    x_step = 300
-    y_step = 300
-    
-    # use this to iterate over the whole green
-    # field_x_range = range(int(-field.x_field_length * 0.5), int(field.x_field_length * 0.5) + x_step, x_step)
-    # field_y_range = range(int(-field.y_field_length * 0.5), int(field.y_field_length * 0.5) + y_step, y_step)
-
-    # use this to just iterate over the playing field
-    #x_range = range(int(-field.x_length / 2 + x_step/2), int(field.x_length / 2), x_step)
-    #y_range = range(int(-field.y_length / 2 + y_step/2), int(field.y_length / 2), y_step)
-    
-    origin = State()
-    origin.pose.rotation = np.radians([180])
-    origin.pose.translation.x = 0
-    origin.pose.translation.y = 0
-    
-    # set up the available actions
-    actions = {
-      "none": a.Action("none", 0, 0, 0, 0),
-      "kick_short": a.Action("kick_short", 1080, 150, 0, 7),
-      "sidekick_left": a.Action("sidekick_left", 750, 150, 90, 10),
-      "sidekick_right": a.Action("sidekick_right", 750, 50, -90, 10)
-    }
-    
-    all_actions = striker.select(actions, ["none", "kick_short", "sidekick_left", "sidekick_right"])
-    
-    # run for the whole field
-    num_done = 0
-    time_mean = 0
-
-    num_random_pos = 10000
+    num_random_pos = 10
     random_x = [randint(int(-field.x_length / 2 + 25), int(field.x_length / 2 - 25)) for p in range(num_random_pos)]
     random_y = [randint(int(-field.y_length / 2 + 25), int(field.y_length / 2 - 25)) for p in range(num_random_pos)]
     random_r = np.random.randint(360, size=num_random_pos)
@@ -61,43 +64,16 @@ def main():
     # record the experiment header
     experiment = {
       'kind': 'random',
-      #'x_step': x_step,
-      #'y_step': y_step,
-      #'fixed_rot': origin.pose.rotation,
-      #'x_size': len(x_range),
-      #'y_size': len(y_range),
       'actions': actions,
       'frames': []
     }
     
-    for idx, pos in enumerate(random_x):
-        start_time = timeit.default_timer()
-
-        run = {'x': random_x[idx], 'y': random_y[idx], 'ix': idx, 'iy': idx, 'sim': {}}
-
-        origin.pose.translation.x = random_x[idx]
-        origin.pose.translation.y = random_y[idx]
-        origin.pose.rotation = random_r[idx]
-
-        o_sim = striker.run_experiment(origin, striker.optimal_kick_strategy, striker.select(actions, ["none", "kick_short"]))
-        run['sim']['optimal_one'] = o_sim
-
-        p_sim = striker.run_experiment(origin, striker.optimal_kick_strategy, all_actions)
-        run['sim']['optimal_all'] = p_sim
-
-        c_sim = striker.run_experiment(origin, striker.direct_kick_strategy, all_actions)
-        run['sim']['fast'] = c_sim
-        
-        c_sim = striker.run_experiment(origin, striker.optimal_value_strategy, all_actions)
-        run['sim']['optimal_value'] = c_sim
-
-        experiment['frames'] += [run]
-
-        num_done += 1
-        num_todo = len(random_x) - num_done
-        time_mean = 0.5*(time_mean + timeit.default_timer() - start_time)
-        print ("computation time: {0}s ({1}s to go)".format(timeit.default_timer() - start_time, time_mean*num_todo))
-            
+    positions = [m2d.Pose2D(m2d.Vector2(x,y),r) for (x,y,r) in zip(random_x,random_y,random_r)]
+    
+    pool = mp.Pool(processes=4)
+    experiment['frames'] = pool.map(make_run, positions)
+    
+    
     # make sure not to overwrite anything
     file_idx = 0
     while True:
