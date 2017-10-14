@@ -221,9 +221,6 @@ def decide_minimal(actions_consequences, state):
   best_goal_value = None
   best_goal_likelihood = None
   
-  best_value_idx = None
-  best_value = None
-
   for i, results in enumerate(actions_consequences):
     
     score = results.likelihood(Category.INFIELD) + results.likelihood(Category.OPPGOAL)
@@ -233,20 +230,15 @@ def decide_minimal(actions_consequences, state):
     value = -evaluate(results, state)
     goal_likeligood = results.likelihood(Category.OPPGOAL)
   
-    if (
-        goal_likeligood > minGoalLikelihood and 
-        (best_goal_idx is None or goal_likeligood > best_goal_likelihood or 
-        (goal_likeligood == best_goal_likelihood and value > best_goal_value))
-      ):
+    if best_goal_idx is None:
       best_goal_idx, best_goal_value = i, value
-      
-    if best_value is None or value > best_value:
-      best_value_idx, best_value = i, value
+  
+    if ( (goal_likeligood > best_goal_likelihood or 
+         (goal_likeligood == best_goal_likelihood and value > best_goal_value)) ):
+      best_goal_idx, best_goal_value, best_goal_likelihood = i, value, goal_likeligood
       
   if best_goal_idx is not None:
     return best_goal_idx
-  elif best_value_idx is not None:
-    return best_value_idx
   else:
     # HACK
     return 0
