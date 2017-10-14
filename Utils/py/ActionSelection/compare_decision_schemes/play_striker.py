@@ -48,10 +48,13 @@ def direct_kick_strategy(state, action_list):
 
         if selected_action_idx != 0:
             break
+        elif np.abs(action_dir) > math.pi:
+            print ("WARNING: in direct_kick_strategy no kick found after rotation {0}.".format(action_dir))
+            break
         else:
-            attack_direction = attack_dir.get_attack_direction(state)
-
+            # decide on rotation direction once
             if turn_direction == 0:
+                attack_direction = attack_dir.get_attack_direction(state)
                 turn_direction = -np.sign(attack_direction)  # "> 0" => left, "< 0" => right
 
             # set motion request
@@ -183,7 +186,7 @@ def run_experiment(origin, strategy, action_list, max_iterations = 30):
     # record the state of the simulator
     history = [copy.deepcopy(simulator)]
 
-    while True:
+    while len(history) < max_iterations:
 
         simulator.step()
 
@@ -194,9 +197,6 @@ def run_experiment(origin, strategy, action_list, max_iterations = 30):
             break
         elif simulator.state_category != a.Category.INFIELD:
             # print ("failure")
-            break
-        elif len(history) > max_iterations:
-            # continue
             break
 
     # hack: make the last run
