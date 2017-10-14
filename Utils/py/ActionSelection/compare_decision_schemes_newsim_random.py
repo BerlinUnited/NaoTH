@@ -11,6 +11,7 @@ from naoth import math2d as m2d
 from compare_decision_schemes import play_striker as striker
 
 import multiprocessing as mp
+import time
 
 """
 For every position(x, y) and a fixed rotation the time and the number of kicks and turns are calculated for different strategies.
@@ -71,8 +72,13 @@ def main():
     positions = [m2d.Pose2D(m2d.Vector2(x,y),r) for (x,y,r) in zip(random_x,random_y,random_r)]
     
     pool = mp.Pool(processes=4)
-    experiment['frames'] = pool.map(make_run, positions)
+    result = pool.map_async(make_run, positions)
     
+    while not result.ready():
+        print("num left: {}".format(result._number_left))
+        time.sleep(1)
+    
+    experiment['frames'] = result.get()
     
     # make sure not to overwrite anything
     file_idx = 0
