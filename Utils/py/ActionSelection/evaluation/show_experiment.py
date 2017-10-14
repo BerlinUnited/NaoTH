@@ -11,12 +11,39 @@ import math
 
 import pickle
 import numpy as np
+import matplotlib as mpl
 from matplotlib import pyplot as plt
 from matplotlib.patches import Circle
 from tools import tools
 from tools import field_info as field
 
 
+from matplotlib.backends.backend_pgf import FigureCanvasPgf
+mpl.backend_bases.register_backend('pgf', FigureCanvasPgf)
+
+pgf_params = {                      # setup matplotlib to use latex for output
+    'pgf.texsystem': 'pdflatex',        # change this if using xetex or lautex
+    'text.usetex': True,                # use LaTeX to write all text
+    'font.family': 'serif',
+    'font.serif': [],                   # blank entries should cause plots to inherit fonts from the document
+    'font.sans-serif': [],
+    'font.monospace': [],
+#    'font.size': 10,
+#    'axes.labelsize': 10,               # LaTeX default is 10pt font.
+#    'legend.fontsize': 8,               # Make the legend/label fonts a little smaller
+#    'xtick.labelsize': 8,
+#    'ytick.labelsize': 8,
+#    'figure.figsize': figsize(0.8), #[6, 4],     # default fig size of 0.9 textwidth
+    'figure.autolayout' : True,
+    'pgf.preamble': [
+        r'\usepackage[utf8x]{inputenc}',    # use utf8 fonts becasue your computer can handle it :)
+        r'\usepackage[T1]{fontenc}',        # plots will be generated using this preamble
+        ]
+    }
+mpl.rcParams.update(pgf_params)
+
+mpl.rcParams['xtick.direction'] = 'in'
+mpl.rcParams['ytick.direction'] = 'in'
 
 
 def plot_start_positions(exp):
@@ -34,22 +61,43 @@ def plot_start_positions(exp):
 
 
 def extractValues(exp, strategy, getValue):
-  return np.array([getValue(e) for frame in exp['frames'] for e in frame['sim'][strategy]])
+  return [getValue(e) for frame in exp['frames'] for e in frame['sim'][strategy]]
     
 def plot_histogram(exp):
 
     num = exp['frames'][0]['sim']
-    f, ax = plt.subplots(1, 3, sharey=True)
+    #f, ax = plt.subplots(1, 4, sharey=True)
 
+    names = {'optimal_one':'optimal one', 'optimal_all':'optimal all', 'fast':'fast', 'optimal_value':'optimal value'}
+    
+    kick_values = []
+    labels = []
+    values = []
+    
     for i, strategy in enumerate(exp['frames'][0]['sim']):
       print strategy
-      values = extractValues(exp, strategy, lambda x: x.turn_around_ball)
-      ax[i].hist(np.abs(np.degrees(values)), range=[0, 180], rwidth=1, bins=18)
-      ax[i].set_title(strategy)
+      values += [np.abs(np.degrees(extractValues(exp, strategy, lambda x: x.turn_around_ball)))]
+      
+      kick_values += [[len(frame['sim'][strategy])-1 for frame in exp['frames']]]
+      labels += [names[strategy]]
+      
+      #ax[i].hist(np.abs(np.degrees(values)), range=[0, 180], rwidth=1, bins=18)
+      #ax[i].hist(values, range=[0, 15], bins=15, cumulative=True, histtype='step')
+      #ax[i].set_title(strategy)
 
-    #plt.legend()
+    #
+    #plt.xkcd()
+    f, ax = plt.subplots(2, 1)
+    ax[0].hist(values, range=[0, 180], rwidth=1, bins=9, label=labels, align='mid')
+    ax[0].legend()
+    
+    ax[1].boxplot(np.transpose(np.array(kick_values)), labels=labels)
+    ax[1].set_ylabel('Number of kicks until goal.')
+    
+    
+    plt.tight_layout()
+    plt.savefig('{}.pgf'.format("kick_box"))
     plt.show()
-
 
 def plot_matrix(exp):
     all_rotations = []
@@ -123,7 +171,7 @@ if __name__ == "__main__":
     
     data_prefix = os.path.realpath(os.path.abspath(os.path.join(cmd_subfolder,"../data")))
     data_prefix = "./data/"
-    file = data_prefix + "simulation_2.pickle"
+    file = data_prefix + "simulation_4_0.pickle"
     print "read file: "+ file
     
     experiment = pickle.load(open(file, "rb"))
