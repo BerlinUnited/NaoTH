@@ -2,6 +2,8 @@ import math
 import numpy as np
 import action as a
 from action import Category
+from action import ActionResults
+
 import field_info as field
 import potential_field as pf
 from naoth import math2d as m2d
@@ -111,6 +113,144 @@ def simulate_consequences(action, categorized_ball_positions, state, num_particl
     categorized_ball_positions.expected_ball_pos_median = m2d.Vector2(np.median(mean_test_list_x), np.median(mean_test_list_y))
     return categorized_ball_positions
 
+    
+    
+def simulateAction(action, state, num_particles):
+    result = ActionResults([])
+    
+    # current ball position
+    global_ball_start = state.pose * state.ball_position
+    
+    opp_goal_backsides = [
+      m2d.LineSegment(field.opp_goal_back_left     , field.opp_goal_back_right),
+      m2d.LineSegment(field.opponent_goalpost_left , field.opp_goal_back_left),
+      m2d.LineSegment(field.opponent_goalpost_right, field.opp_goal_back_right)
+    ]
+    
+    own_goal_backsides = [
+      m2d.LineSegment(field.own_goal_back_left, field.own_goal_back_right),
+      m2d.LineSegment(field.own_goalpost_left , field.own_goal_back_left),
+      m2d.LineSegment(field.own_goalpost_right, field.own_goal_back_right)
+    ]
+
+    # now generate predictions and categorize
+    for i in range(0, num_particles):
+    
+        # predict and calculate shoot line
+        global_ball_end = state.pose * action.predict(state.ball_position, True)
+        
+        # ball is crossing a field line
+        if not field.field_rect.inside(global_ball_end) or not field.field_rect.inside(global_ball_start):
+          
+          global_ball_end, _ = calculateCollision(opp_goal_backsides, global_ball_start, global_ball_end)
+          global_ball_end, _ = calculateCollision(own_goal_backsides, global_ball_start, global_ball_end)
+    
+        category = classifyBallPosition(global_ball_end)
+        
+        result.add(state.pose / global_ball_end, category)
+    
+    
+    # calculate the most likely ball position in a separate simulation run
+    ball_pos_array = [[p.pos().x, p.pos().y] for p in result.positions()]
+    mean = np.mean(ball_pos_array, axis=0)
+    median = np.median(ball_pos_array, axis=0)
+    result.expected_ball_pos_mean = m2d.Vector2(mean[0], mean[1])
+    result.expected_ball_pos_median = m2d.Vector2(median[0], median[1])
+    
+    return result
+    
+    
+def calculateCollision(lines, start, end):
+    
+    motionLine = m2d.LineSegment(start, end)
+    t_min = motionLine.length
+    
+    collision = False
+    for segment in lines:
+        t = motionLine.line_intersection(segment)
+        if 0 <= t < t_min and segment.intersect(motionLine):
+            t_min = t
+            collision = True
+
+    # if there are collisions with the back goal lines, calculate where the ball will stop
+    if collision:
+        return (motionLine.point(t_min-field.ball_radius), True)
+    else:
+        return (end, False)
+
+
+    
+def classifyBallPosition(global_ball_position):
+  
+  if field.opp_goal_box.inside(global_ball_position):
+      category = Category.OPPGOAL
+  elif field.own_goal_box.inside(global_ball_position):
+      category = Category.OWNGOAL
+  elif field.field_rect.inside(global_ball_position):
+      category = Category.INFIELD
+  elif global_ball_position.x > field.x_opponent_groundline:
+      category = Category.OPPOUT
+  elif global_ball_position.x < field.x_opponent_groundline:
+      category = Category.OWNOUT
+  elif global_ball_position.y > field.y_left_sideline:
+      category = Category.LEFTOUT
+  elif global_ball_position.y < field.y_right_sideline:
+      category = Category.RIGHTOUT
+  else:
+      category = Category.INFIELD
+    
+  return category
+  
+  
+def decide_minimal(actions_consequences, state):
+  
+  # choose potentialfield function
+  if state.potential_field_function == "influence_01":
+      evaluate = pf.evaluate_action_with_robots
+  elif state.potential_field_function == "normal":
+      # normal potentialfield without influence regions
+      evaluate = pf.evaluate_action
+  elif state.potential_field_function == "generated":
+      # use generated potential field values
+      evaluate = pf.evaluate_action_gen_field
+  else:
+      # normal potentialfield without influence regions
+      evaluate = pf.evaluate_action
+  
+  best_goal_idx = None
+  best_goal_value = None
+  best_goal_likelihood = None
+  
+  best_value_idx = None
+  best_value = None
+
+  for i, results in enumerate(actions_consequences):
+    
+    score = results.likelihood(Category.INFIELD) + results.likelihood(Category.OPPGOAL)
+    if score < max(0.0, good_threshold_percentage):
+        continue
+  
+    value = -evaluate(results, state)
+    goal_likeligood = results.likelihood(Category.OPPGOAL)
+  
+    if (
+        goal_likeligood > minGoalLikelihood and 
+        (best_goal_idx is None or goal_likeligood > best_goal_likelihood or 
+        (goal_likeligood == best_goal_likelihood and value > best_goal_value))
+      ):
+      best_goal_idx, best_goal_value = i, value
+      
+    if best_value is None or value > best_value:
+      best_value_idx, best_value = i, value
+      
+  if best_goal_idx is not None:
+    return best_goal_idx
+  elif best_value_idx is not None:
+    return best_value_idx
+  else:
+    # HACK
+    return 0
+  
 
 def decide_smart(actions_consequences, state):
 

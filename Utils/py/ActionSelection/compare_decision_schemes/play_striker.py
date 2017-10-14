@@ -34,15 +34,12 @@ def direct_kick_strategy(state, action_list):
         # turn towards the direction of the action
         state.pose.rotate(action_dir)
 
-        actions_consequences = []
         # Simulate Consequences
-        for action in action_list:
-            single_consequence = a.ActionResults([])
-            actions_consequences.append(Sim.simulate_consequences(action, single_consequence, state, num_particles=30))
+        actions_consequences = [Sim.simulateAction(action, state, num_particles=30) for action in action_list]
 
         # Decide best action
-        selected_action_idx = Sim.decide_smart(actions_consequences, state)
-
+        selected_action_idx = Sim.decide_minimal(actions_consequences, state)
+        
         # restore the previous orientation
         state.pose.rotate(-action_dir)
 
@@ -98,15 +95,14 @@ def optimal_value_strategy(state, action_list):
         # apply optimized rotation
         state.pose.rotate(rotation)
         
-        single_consequence = a.ActionResults([])
-        actions_consequences.append(Sim.simulate_consequences(action, single_consequence, state, num_particles=30))
+        actions_consequences.append(Sim.simulateAction(action, state, num_particles=30))
         
         # restore previous rotation
         state.pose.rotate(-rotation)
         
         
     # Decide best action
-    selected_action_idx = Sim.decide_smart(actions_consequences, state)
+    selected_action_idx = Sim.decide_minimal(actions_consequences, state)
 
     return selected_action_idx, rotations[selected_action_idx]    
 
@@ -169,8 +165,7 @@ class Simulator:
               real_action = selected_action
               
             # expected_ball_pos should be in local coordinates for rotation calculations
-            action_results = a.ActionResults([])
-            action_results = Sim.simulate_consequences(real_action, action_results, self.state, num_particles=1)
+            action_results = Sim.simulateAction(real_action, self.state, num_particles=1)
             
             # store the state and update the state
             new_ball_position = action_results.positions()[0]
