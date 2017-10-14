@@ -11,7 +11,6 @@ from naoth import math2d as m2d
 from compare_decision_schemes import play_striker as striker
 
 import multiprocessing as mp
-import time
 
 """
 For every position(x, y) and a fixed rotation the time and the number of kicks and turns are calculated for different strategies.
@@ -34,25 +33,27 @@ actions = {
 
 all_actions = striker.select(actions, ["none", "kick_short", "sidekick_left", "sidekick_right"])
 
+def make_run((idx, pose)):
+    print ("[{0}] start".format(idx))
+    run = {'pose': pose, 'sim': {}}
 
-def make_run(pose):
-      run = {'pose': pose, 'sim': {}}
-
-      origin = State()
-      origin.pose = pose
-
-      # make an alias
-      re = striker.run_experiment
-      print ('optimal_one')
-      run['sim']['optimal_one'] = re(origin, striker.optimal_kick_strategy, striker.select(actions, ["none", "kick_short"]))
-      print ('optimal_all')
-      run['sim']['optimal_all'] = re(origin, striker.optimal_kick_strategy, all_actions)
-      print ('fast')
-      run['sim']['fast'] = re(origin, striker.direct_kick_strategy, all_actions)
-      print ('optimal_value')
-      run['sim']['optimal_value'] = re(origin, striker.optimal_value_strategy, all_actions)
+    origin = State()
+    origin.pose = pose
     
-      return run
+    # make an alias
+    re = striker.run_experiment
+    #print ('optimal_one')
+    run['sim']['optimal_one'] = re(origin, striker.optimal_kick_strategy, striker.select(actions, ["none", "kick_short"]))
+    #print ('optimal_all')
+    run['sim']['optimal_all'] = re(origin, striker.optimal_kick_strategy, all_actions)
+    #print ('fast')
+    run['sim']['fast'] = re(origin, striker.direct_kick_strategy, all_actions)
+    #print ('optimal_value')
+    run['sim']['optimal_value'] = re(origin, striker.optimal_value_strategy, all_actions)
+  
+    print ("[{0}] done".format(idx))
+    
+    return run
 
 def main():
 
@@ -69,16 +70,11 @@ def main():
       'frames': []
     }
     
-    positions = [m2d.Pose2D(m2d.Vector2(x,y),r) for (x,y,r) in zip(random_x,random_y,random_r)]
+    positions = [(idx, m2d.Pose2D(m2d.Vector2(x,y),r)) for idx, (x,y,r) in enumerate(zip(random_x,random_y,random_r))]
     
     pool = mp.Pool(processes=4)
-    result = pool.map_async(make_run, positions)
-    
-    while not result.ready():
-        print("num left: {}".format(result._number_left))
-        time.sleep(1)
-    
-    experiment['frames'] = result.get()
+    experiment['frames'] = pool.map(make_run, positions)
+    pool.close()
     
     # make sure not to overwrite anything
     file_idx = 0
