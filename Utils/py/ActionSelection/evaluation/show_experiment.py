@@ -9,12 +9,14 @@ if cmd_subfolder not in sys.path:
 
 import math
 
-import pickle
+import cPickle as pickle
+#import pickle
 import numpy as np
 import matplotlib as mpl
 from matplotlib import pyplot as plt
 from matplotlib.patches import Circle
 from tools import tools
+from tools.action import Category
 from tools import field_info as field
 
 
@@ -61,12 +63,11 @@ def plot_start_positions(exp):
 
 
 def extractValues(exp, strategy, getValue):
-  return [getValue(e) for frame in exp['frames'] for e in frame['sim'][strategy]]
+  #NOTE: we ignore the last element here
+  # for extraction of 'rotation' and 'walk_dist' the last element should included.
+  return [getValue(e) for frame in exp['frames'] for e in frame['sim'][strategy][0:-1]]
     
 def plot_histogram(exp):
-
-    num = exp['frames'][0]['sim']
-    #f, ax = plt.subplots(1, 4, sharey=True)
 
     names = {'optimal_one':'optimal one', 'optimal_all':'optimal all', 'fast':'fast', 'optimal_value':'optimal value'}
     
@@ -166,12 +167,39 @@ def plot_matrix(exp):
     axes.pcolor(x_range, y_range, f, cmap="jet", alpha=0.8)
     plt.show()
 
+    
+def show_run(run):
+  plt.clf()
+  axes = plt.gca()
+  tools.draw_field(axes)
+  
+  h1 = np.array([[h.state.pose.translation.x, h.state.pose.translation.y] for h in run])
+  plt.plot(h1[:, 0], h1[:, 1], '-or')
+  plt.show()
+    
+def extractInvalidRuns(experiment, strategy):
+    return [frame['sim'][strategy] for frame in experiment['frames'] if frame['sim'][strategy][-2].state_category != Category.OPPGOAL]
+    
+def test(experiment):
+  
+  bad_cases = {}
+  for i, strategy in enumerate(experiment['frames'][0]['sim']):
+      bad_cases[strategy] = extractInvalidRuns(experiment, strategy)
+      print "{0}: {1}%".format(strategy, len(bad_cases[strategy]) / len(experiment['frames'])*100)
+      
+  for strategy,cases in bad_cases.iteritems():
+      if strategy=='fast':
+        for run in cases:
+          if np.abs(np.degrees(run[-1].turn_around_ball)) > 100:
+            show_run(run)
+  
+    
 
 if __name__ == "__main__":
     
     data_prefix = os.path.realpath(os.path.abspath(os.path.join(cmd_subfolder,"../data")))
     data_prefix = "./data/"
-    file = data_prefix + "simulation_4_0.pickle"
+    file = data_prefix + "simulation_4.pickle"
     print "read file: "+ file
     
     experiment = pickle.load(open(file, "rb"))
@@ -180,5 +208,6 @@ if __name__ == "__main__":
 
     # plot_matrix(experiment)
 
-    
+    #test(experiment)
     plot_histogram(experiment)
+
