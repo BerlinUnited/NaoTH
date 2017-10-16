@@ -52,7 +52,7 @@ def direct_kick_strategy(state, action_list):
             # decide on rotation direction once
             if turn_direction == 0:
                 attack_direction = attack_dir.get_attack_direction(state)
-                turn_direction = -np.sign(attack_direction)  # "> 0" => left, "< 0" => right
+                turn_direction = np.sign(attack_direction)  # "> 0" => left, "< 0" => right
 
             # set motion request
             action_dir += turn_direction*turn_speed
@@ -256,5 +256,12 @@ if __name__ == "__main__":
         plt.plot(h2[:, 0], h2[:, 1], '-ok')
         plt.plot(h3[:, 0], h3[:, 1], '-or')
         plt.plot(h4[:, 0], h4[:, 1], '-oy')
+        
+        '''
+        v3 = np.array([[np.cos(h.state.pose.rotation), np.sin(h.state.pose.rotation)] for h in history3])*200
+        plt.quiver(h3[:, 0], h3[:, 1], v3[:, 0], v3[:, 1], units='width')
+        print [np.degrees(h.turn_around_ball) for h in history3[0:-1]]
+        print [h.selected_action_idx for h in history3[0:-1]]
+        '''
         
         plt.pause(2)
