@@ -23,19 +23,19 @@ from tools import field_info as field
 from matplotlib.backends.backend_pgf import FigureCanvasPgf
 mpl.backend_bases.register_backend('pgf', FigureCanvasPgf)
 
-pgf_params = {                      # setup matplotlib to use latex for output
+pgf_params = {                          # setup matplotlib to use latex for output
     'pgf.texsystem': 'pdflatex',        # change this if using xetex or lautex
     'text.usetex': True,                # use LaTeX to write all text
     'font.family': 'serif',
     'font.serif': [],                   # blank entries should cause plots to inherit fonts from the document
     'font.sans-serif': [],
     'font.monospace': [],
-#    'font.size': 10,
-#    'axes.labelsize': 10,               # LaTeX default is 10pt font.
-#    'legend.fontsize': 8,               # Make the legend/label fonts a little smaller
-#    'xtick.labelsize': 8,
-#    'ytick.labelsize': 8,
-#    'figure.figsize': figsize(0.8), #[6, 4],     # default fig size of 0.9 textwidth
+    # 'font.size': 10,
+    # 'axes.labelsize': 10,               # LaTeX default is 10pt font.
+    # 'legend.fontsize': 8,               # Make the legend/label fonts a little smaller
+    # 'xtick.labelsize': 8,
+    # 'ytick.labelsize': 8,
+    # 'figure.figsize': figsize(0.8), #[6, 4],     # default fig size of 0.9 textwidth
     'figure.autolayout' : True,
     'pgf.preamble': [
         r'\usepackage[utf8x]{inputenc}',    # use utf8 fonts becasue your computer can handle it :)
@@ -63,42 +63,47 @@ def plot_start_positions(exp):
 
 
 def extractValues(exp, strategy, getValue):
-  #NOTE: we ignore the last element here
-  # for extraction of 'rotation' and 'walk_dist' the last element should included.
-  return [getValue(e) for frame in exp['frames'] for e in frame['sim'][strategy][0:-1]]
-    
+    # NOTE: we ignore the last element here
+    # for extraction of 'rotation' and 'walk_dist' the last element should included.
+    return [getValue(e) for frame in exp['frames'] for e in frame['sim'][strategy][0:-1]]
+
+
 def plot_histogram(exp):
 
-    names = {'optimal_one':'optimal one', 'optimal_all':'optimal all', 'fast':'fast', 'optimal_value':'optimal value'}
+    names = {'optimal_one': 'optimal one', 'optimal_all': 'optimal all', 'fast': 'fast', 'optimal_value': 'optimal value'}
     
     kick_values = []
     labels = []
     values = []
-    
+
     for i, strategy in enumerate(exp['frames'][0]['sim']):
-      print strategy
-      values += [np.abs(np.degrees(extractValues(exp, strategy, lambda x: x.turn_around_ball)))]
-      
-      kick_values += [[len(frame['sim'][strategy])-1 for frame in exp['frames']]]
-      labels += [names[strategy]]
-      
-      #ax[i].hist(np.abs(np.degrees(values)), range=[0, 180], rwidth=1, bins=18)
-      #ax[i].hist(values, range=[0, 15], bins=15, cumulative=True, histtype='step')
-      #ax[i].set_title(strategy)
+        print(strategy)
+        values += [np.abs(np.degrees(extractValues(exp, strategy, lambda x: x.turn_around_ball)))]
+
+        kick_values += [[len(frame['sim'][strategy])-1 for frame in exp['frames']]]
+        labels += [names[strategy]]
+
+        max_value = max(np.abs(np.degrees(extractValues(exp, strategy, lambda x: x.turn_around_ball))))
+
+        print(max_value)
+
+        # ax[i].hist(np.abs(np.degrees(values)), range=[0, 180], rwidth=1, bins=18)
+        # ax[i].hist(values, range=[0, 15], bins=15, cumulative=True, histtype='step')
+        # ax[i].set_title(strategy)
 
     #
-    #plt.xkcd()
+    # plt.xkcd()
     f, ax = plt.subplots(2, 1)
     ax[0].hist(values, range=[0, 180], rwidth=1, bins=9, label=labels, align='mid')
     ax[0].legend()
     
     ax[1].boxplot(np.transpose(np.array(kick_values)), labels=labels)
     ax[1].set_ylabel('Number of kicks until goal.')
-    
-    
+
     plt.tight_layout()
     plt.savefig('{}.pgf'.format("kick_box"))
     plt.show()
+
 
 def plot_matrix(exp):
     all_rotations = []
@@ -169,38 +174,41 @@ def plot_matrix(exp):
 
     
 def show_run(run):
-  plt.clf()
-  axes = plt.gca()
-  tools.draw_field(axes)
-  
-  h1 = np.array([[h.state.pose.translation.x, h.state.pose.translation.y] for h in run])
-  plt.plot(h1[:, 0], h1[:, 1], '-or')
-  plt.show()
-    
+    plt.clf()
+    axes = plt.gca()
+    tools.draw_field(axes)
+
+    h1 = np.array([[h.state.pose.translation.x, h.state.pose.translation.y] for h in run])
+    plt.plot(h1[:, 0], h1[:, 1], '-or')
+    plt.show()
+
+
 def extractInvalidRuns(experiment, strategy):
     return [frame['sim'][strategy] for frame in experiment['frames'] if frame['sim'][strategy][-2].state_category != Category.OPPGOAL]
-    
+
+
 def test(experiment):
+    bad_cases = {}
+    for i, strategy in enumerate(experiment['frames'][0]['sim']):
+        bad_cases[strategy] = extractInvalidRuns(experiment, strategy)
+        print("{0}: {1}%".format(strategy, len(bad_cases[strategy]) / len(experiment['frames'])*100))
+
+    for strategy, cases in bad_cases.iteritems():
+        if strategy == 'fast':
+            for run in cases:
+
+                if np.max(np.abs(np.degrees([e.turn_around_ball for e in run[0:-1]]))) >= 110:
+                    print np.degrees(run[0].state.pose.rotation)
+                    print [(np.degrees(e.turn_around_ball), e.selected_action_idx) for e in run[0:-1]]
+                    show_run(run)
   
-  bad_cases = {}
-  for i, strategy in enumerate(experiment['frames'][0]['sim']):
-      bad_cases[strategy] = extractInvalidRuns(experiment, strategy)
-      print "{0}: {1}%".format(strategy, len(bad_cases[strategy]) / len(experiment['frames'])*100)
-      
-  for strategy,cases in bad_cases.iteritems():
-      if strategy=='fast':
-        for run in cases:
-          if np.abs(np.degrees(run[-1].turn_around_ball)) > 100:
-            show_run(run)
-  
-    
 
 if __name__ == "__main__":
     
     data_prefix = os.path.realpath(os.path.abspath(os.path.join(cmd_subfolder,"../data")))
     data_prefix = "./data/"
-    file = data_prefix + "simulation_4.pickle"
-    print "read file: "+ file
+    file = data_prefix + "simulation_5.pickle"
+    print("read file: " + file)
     
     experiment = pickle.load(open(file, "rb"))
 
@@ -208,6 +216,7 @@ if __name__ == "__main__":
 
     # plot_matrix(experiment)
 
-    #test(experiment)
+    # test(experiment)
+
     plot_histogram(experiment)
 
