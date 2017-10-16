@@ -47,7 +47,7 @@ def make_run((idx, pose)):
     #print ('optimal_all')
     run['sim']['optimal_all'] = re(origin, striker.optimal_kick_strategy, all_actions)
     #print ('fast')
-    run['sim']['fast'] = re(origin, striker.direct_kick_strategy, all_actions)
+    run['sim']['fast'] = re(origin, striker.direct_kick_strategy_cool, all_actions)
     #print ('optimal_value')
     run['sim']['optimal_value'] = re(origin, striker.optimal_value_strategy, all_actions)
   
