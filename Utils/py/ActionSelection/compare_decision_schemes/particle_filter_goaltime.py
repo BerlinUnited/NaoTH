@@ -5,21 +5,21 @@ import inspect
 import math
 import copy
 import numpy as np
-from tools import action as a
-from tools import Simulation as Sim
-from tools import potential_field as pf
 from naoth import math2d as m2d
-from tools import tools
 from matplotlib import pyplot as plt
 from matplotlib.patches import Circle
-from tools import field_info as field
-from state import State
 from run_simulation_with_particleFilter import calculate_best_direction as heinrich_test
 
 cmd_subfolder = os.path.realpath(os.path.abspath(os.path.join(os.path.split(inspect.getfile(inspect.currentframe()))[0], "..")))
 if cmd_subfolder not in sys.path:
     sys.path.insert(0, cmd_subfolder)
 
+from tools import tools
+from tools import field_info as field
+from state import State
+from tools import action as a
+from tools import Simulation as Sim
+from tools import potential_field as pf
 
 """
     The best direction for each kick is calculated via a particle filter and a potential field. The kick with the minimum

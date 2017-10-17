@@ -1,20 +1,17 @@
 from __future__ import division
-import os, sys
+import os
+import sys
 import inspect
-
-cmd_subfolder = os.path.realpath(os.path.abspath(os.path.join(os.path.split(inspect.getfile(inspect.currentframe()))[0], "..")))
-if cmd_subfolder not in sys.path:
-    sys.path.insert(0, cmd_subfolder)
-
-
-import math
-
-import cPickle as pickle
-#import pickle
+import pickle
 import numpy as np
 import matplotlib as mpl
 from matplotlib import pyplot as plt
 from matplotlib.patches import Circle
+# TODO make a tools script in root folder which imports all the scripts in tools folder
+cmd_subfolder = os.path.realpath(os.path.abspath(os.path.join(os.path.split(inspect.getfile(inspect.currentframe()))[0], "..")))
+if cmd_subfolder not in sys.path:
+    sys.path.insert(0, cmd_subfolder)
+
 from tools import tools
 from tools.action import Category
 from tools import field_info as field
@@ -24,7 +21,7 @@ from matplotlib.backends.backend_pgf import FigureCanvasPgf
 mpl.backend_bases.register_backend('pgf', FigureCanvasPgf)
 
 pgf_params = {                          # setup matplotlib to use latex for output
-    'pgf.texsystem': 'pdflatex',        # change this if using xetex or lautex
+    'pgf.texsystem': 'pdflatex',        # change this if using xetex or luatex
     'text.usetex': True,                # use LaTeX to write all text
     'font.family': 'serif',
     'font.serif': [],                   # blank entries should cause plots to inherit fonts from the document
@@ -36,9 +33,9 @@ pgf_params = {                          # setup matplotlib to use latex for outp
     # 'xtick.labelsize': 8,
     # 'ytick.labelsize': 8,
     # 'figure.figsize': figsize(0.8), #[6, 4],     # default fig size of 0.9 textwidth
-    'figure.autolayout' : True,
+    'figure.autolayout': True,
     'pgf.preamble': [
-        r'\usepackage[utf8x]{inputenc}',    # use utf8 fonts becasue your computer can handle it :)
+        r'\usepackage[utf8x]{inputenc}',    # use utf8 fonts because your computer can handle it :)
         r'\usepackage[T1]{fontenc}',        # plots will be generated using this preamble
         ]
     }
@@ -62,10 +59,10 @@ def plot_start_positions(exp):
     plt.show()
 
 
-def extractValues(exp, strategy, getValue):
+def extract_values(exp, strategy, get_value):
     # NOTE: we ignore the last element here
     # for extraction of 'rotation' and 'walk_dist' the last element should included.
-    return [getValue(e) for frame in exp['frames'] for e in frame['sim'][strategy][0:-1]]
+    return [get_value(e) for frame in exp['frames'] for e in frame['sim'][strategy][0:-1]]
 
 
 def plot_histogram(exp):
@@ -78,12 +75,12 @@ def plot_histogram(exp):
 
     for i, strategy in enumerate(exp['frames'][0]['sim']):
         print(strategy)
-        values += [np.abs(np.degrees(extractValues(exp, strategy, lambda x: x.turn_around_ball)))]
+        values += [np.abs(np.degrees(extract_values(exp, strategy, lambda x: x.turn_around_ball)))]
 
         kick_values += [[len(frame['sim'][strategy])-1 for frame in exp['frames']]]
         labels += [names[strategy]]
 
-        max_value = max(np.abs(np.degrees(extractValues(exp, strategy, lambda x: x.turn_around_ball))))
+        max_value = max(np.abs(np.degrees(extract_values(exp, strategy, lambda x: x.turn_around_ball))))
 
         print(max_value)
 
@@ -183,34 +180,34 @@ def show_run(run):
     plt.show()
 
 
-def extractInvalidRuns(experiment, strategy):
-    return [frame['sim'][strategy] for frame in experiment['frames'] if frame['sim'][strategy][-2].state_category != Category.OPPGOAL]
+def extract_invalid_runs(exp, strategy):
+    return [frame['sim'][strategy] for frame in exp['frames'] if frame['sim'][strategy][-2].state_category != Category.OPPGOAL]
 
 
-def test(experiment):
+def test(exp):
     bad_cases = {}
-    for i, strategy in enumerate(experiment['frames'][0]['sim']):
-        bad_cases[strategy] = extractInvalidRuns(experiment, strategy)
-        print("{0}: {1}%".format(strategy, len(bad_cases[strategy]) / len(experiment['frames'])*100))
+    for i, strategy in enumerate(exp['frames'][0]['sim']):
+        bad_cases[strategy] = extract_invalid_runs(exp, strategy)
+        print("{0}: {1}%".format(strategy, len(bad_cases[strategy]) / len(exp['frames']) * 100))
 
     for strategy, cases in bad_cases.iteritems():
         if strategy == 'fast':
             for run in cases:
 
                 if np.max(np.abs(np.degrees([e.turn_around_ball for e in run[0:-1]]))) >= 110:
-                    print np.degrees(run[0].state.pose.rotation)
-                    print [(np.degrees(e.turn_around_ball), e.selected_action_idx) for e in run[0:-1]]
+                    print(np.degrees(run[0].state.pose.rotation))
+                    print([(np.degrees(e.turn_around_ball), e.selected_action_idx) for e in run[0:-1]])
                     show_run(run)
   
 
 if __name__ == "__main__":
     
-    data_prefix = os.path.realpath(os.path.abspath(os.path.join(cmd_subfolder,"../data")))
-    data_prefix = "./data/"
-    file = data_prefix + "simulation_5.pickle"
-    print("read file: " + file)
+    data_prefix = os.path.realpath(os.path.abspath(os.path.join(cmd_subfolder, "../data")))
+    data_prefix = "../data/"
+    input_file = data_prefix + "simulation_5.pickle"
+    print("read file: " + input_file)
     
-    experiment = pickle.load(open(file, "rb"))
+    experiment = pickle.load(open(input_file, "rb"))
 
     # plot_start_positions(experiment)
 
@@ -219,4 +216,3 @@ if __name__ == "__main__":
     # test(experiment)
 
     plot_histogram(experiment)
-

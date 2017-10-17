@@ -145,7 +145,7 @@ def calculate_best_direction(state, action, show, iterations):
     num_angle_particle = 30
     n_random = 0
     
-    #samples = (np.random.random(num_angle_particle)-0.5)*2 * 180.0
+    # samples = (np.random.random(num_angle_particle)-0.5)*2 * 180.0
     # test uniform distribution for samples(angles)
     samples = np.arange(-180, 180, int(360/num_angle_particle))
     likelihoods = np.ones(samples.shape) * (1/float(num_angle_particle))
@@ -171,16 +171,15 @@ def calculate_best_direction(state, action, show, iterations):
         
         x = np.sum(np.sin(np.radians(samples)))
         y = np.sum(np.cos(np.radians(samples)))
-        mean_angle = np.arctan2(x,y)
+        mean_angle = np.arctan2(x, y)
         # mean_angle = np.mean(samples)
 
         if show:
-          if plt.get_fignums():
-            draw_actions(simulation_consequences, likelihoods, state, action.name, action.angle,  mean_angle, samples)
-          else:
-            break
+            if plt.get_fignums():
+                draw_actions(simulation_consequences, likelihoods, state, action.name, action.angle,  mean_angle, samples)
+            else:
+                break
 
-    
     return mean_angle, np.radians(np.std(samples))
 
 
@@ -237,4 +236,3 @@ if __name__ == "__main__":
             print ("progress: {0}% ({1}s)".format(float(ix+1)/(float(len(x_pos)))*100.0, timeit.default_timer() - start_time))
         
         plt.show()
-        
