@@ -65,12 +65,12 @@ def plot_start_positions(exp):
 def extractValues(exp, strategy, getValue):
     # NOTE: we ignore the last element here
     # for extraction of 'rotation' and 'walk_dist' the last element should included.
-    return [getValue(e) for frame in exp['frames'] for e in frame['sim'][strategy][0:-1]]
+    return [getValue(e) for frame in exp['frames'] for e in frame['sim'][strategy][1:-1] if getValue(e) != 0] #if np.abs(getValue(e)) > np.radians(10)
 
 
 def plot_histogram(exp):
 
-    names = {'optimal_one': 'optimal one', 'optimal_all': 'optimal all', 'fast': 'fast', 'optimal_value': 'optimal value'}
+    names = {'optimal_one': 'optimal one', 'optimal_all': 'optimal all', 'fast': 'fast', 'optimal_value': 'optimal value', 'fast_best': 'fast best'}
     
     kick_values = []
     labels = []
@@ -94,11 +94,15 @@ def plot_histogram(exp):
     #
     # plt.xkcd()
     f, ax = plt.subplots(2, 1)
-    ax[0].hist(values, range=[0, 180], rwidth=1, bins=9, label=labels, align='mid')
+    ax[0].hist(values, range=[0, 180], rwidth=1, bins=16, label=labels, align='mid')
     ax[0].legend()
+    ax[0].set_yscale("log")
+    ax[0].set_ylabel('Number of occurrences.')
+    ax[0].set_xlabel('Turn around ball in deg.')
     
     ax[1].boxplot(np.transpose(np.array(kick_values)), labels=labels)
     ax[1].set_ylabel('Number of kicks until goal.')
+    ax[1].grid()
 
     plt.tight_layout()
     plt.savefig('{}.pgf'.format("kick_box"))
@@ -207,11 +211,20 @@ if __name__ == "__main__":
     
     data_prefix = os.path.realpath(os.path.abspath(os.path.join(cmd_subfolder,"../data")))
     data_prefix = "./data/"
-    file = data_prefix + "simulation_5.pickle"
-    print("read file: " + file)
+    #file = data_prefix + "simulation_6.pickle"
+    #print("read file: " + file)
     
-    experiment = pickle.load(open(file, "rb"))
-
+    
+    experiment = pickle.load(open(data_prefix + 'simulation_1.pickle', "rb"))
+    '''
+    experiment = pickle.load(open(data_prefix + "simulation_6.pickle", "rb"))
+    experiment2 = pickle.load(open(data_prefix + "simulation_7.pickle", "rb"))
+    experiment3 = pickle.load(open(data_prefix + "simulation_8.pickle", "rb"))
+    experiment['frames'] += experiment2['frames']
+    experiment['frames'] += experiment3['frames']
+    '''
+    print len(experiment['frames'])
+    
     # plot_start_positions(experiment)
 
     # plot_matrix(experiment)
