@@ -33,31 +33,45 @@ actions = {
 
 all_actions = striker.select(actions, ["none", "kick_short", "sidekick_left", "sidekick_right"])
 
+
+counter = None
+
+def init(args):
+    ''' store the counter for later use '''
+    global counter
+    counter = args
+
+def wrap_experiment(strategy, actions):
+  return lambda origin: striker.run_experiment(origin, strategy, actions)
+
+simulations = {
+  'optimal_one'   : wrap_experiment(striker.optimal_kick_strategy         , striker.select(actions, ["none", "kick_short"])),
+  'optimal_all'   : wrap_experiment(striker.optimal_kick_strategy         , all_actions),
+  'fast'          : wrap_experiment(striker.direct_kick_strategy_cool     , all_actions),
+  'fast_best'     : wrap_experiment(striker.direct_kick_strategy_cool_best, all_actions),
+  'optimal_value' : wrap_experiment(striker.optimal_value_strategy        , all_actions)
+}
+  
 def make_run((idx, pose)):
-    print ("[{0}] start".format(idx))
+
     run = {'pose': pose, 'sim': {}}
 
     origin = State()
     origin.pose = pose
     
-    # make an alias
-    re = striker.run_experiment
-    #print ('optimal_one')
-    run['sim']['optimal_one'] = re(origin, striker.optimal_kick_strategy, striker.select(actions, ["none", "kick_short"]))
-    #print ('optimal_all')
-    run['sim']['optimal_all'] = re(origin, striker.optimal_kick_strategy, all_actions)
-    #print ('fast')
-    run['sim']['fast'] = re(origin, striker.direct_kick_strategy_cool, all_actions)
-    #print ('optimal_value')
-    run['sim']['optimal_value'] = re(origin, striker.optimal_value_strategy, all_actions)
+    for name, s in simulations.iteritems():
+      run['sim'][name] = s(origin)
+      
+    global counter
+    with counter.get_lock():
+        counter.value += 1
+        print "{0} done".format(counter.value)
   
-    print ("[{0}] done".format(idx))
-    
     return run
 
 def main():
 
-    num_random_pos = 10
+    num_random_pos = 20
     random_x = [randint(int(-field.x_length / 2 + 25), int(field.x_length / 2 - 25)) for p in range(num_random_pos)]
     random_y = [randint(int(-field.y_length / 2 + 25), int(field.y_length / 2 - 25)) for p in range(num_random_pos)]
     random_r = np.random.randint(360, size=num_random_pos)
@@ -72,7 +86,9 @@ def main():
     
     positions = [(idx, m2d.Pose2D(m2d.Vector2(x,y),r)) for idx, (x,y,r) in enumerate(zip(random_x,random_y,random_r))]
     
-    pool = mp.Pool(processes=4)
+    counter = mp.Value('i', 0)
+
+    pool = mp.Pool(initializer = init, initargs = (counter, ), processes=4)
     experiment['frames'] = pool.map(make_run, positions)
     pool.close()
     
