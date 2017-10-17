@@ -57,8 +57,10 @@ def minimal_rotation(state, action, turn_direction):
 
     return action_dir
   
+def direct_kick_strategy_cool_best(state, action_list):
+  return direct_kick_strategy_cool(state, action_list, True)
 
-def direct_kick_strategy_cool(state, action_list):
+def direct_kick_strategy_cool(state, action_list, take_best = False):
   
     actions_consequences = []
     rotations = []
@@ -98,10 +100,13 @@ def direct_kick_strategy_cool(state, action_list):
                 fastest_action_idx = idx
         
     # Decide best action
-    # selected_action_idx = Sim.decide_minimal(actions_consequences, state)
-    # return selected_action_idx, rotations[selected_action_idx]
+    if take_best:
+    	selected_action_idx = Sim.decide_minimal(actions_consequences, state)
+    	return selected_action_idx, rotations[selected_action_idx] 
+    else:
+      	# print fastest_action_idx, selected_action_idx
+      	return fastest_action_idx, fastest_action_dir
 
-    return fastest_action_idx, fastest_action_dir
     
 
 def direct_kick_strategy(state, action_list):
@@ -231,8 +236,10 @@ class Simulator:
         #  execute the action
         # ---------------
         if selected_action.name == "none":
-            print("WARNING: action is NONE, what should we do here? " + str(self.selected_action_idx))
-            print("STATE: robot = {0}".format(self.state.pose))
+            # print("INFO: NONE action while ball outside of the field.")
+            if self.state_category == a.Category.INFIELD:
+              print("WARNING: action is NONE, what should we do here? " + str(self.selected_action_idx))
+              print("STATE: robot = {0}".format(self.state.pose))
         else:
             # rotate around ball if necessary
             self.state.pose.rotate(self.turn_around_ball)
