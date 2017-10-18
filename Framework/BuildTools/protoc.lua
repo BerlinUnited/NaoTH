@@ -80,8 +80,12 @@ local function protocCompile(inputFiles, cppOut, javaOut, pythonOut, ipaths)
     end
   end 
 
-  args = args .. table.concat(inputFiles, " ")
-  local cmd = compilerPath .. "/" .. compiler .. " " .. args
+  --args = args .. table.concat(inputFiles, " ")
+  for i,v in pairs(inputFiles) do
+	args = args .. " \"" .. v .. "\""
+  end
+  
+  local cmd = "\"" .. compilerPath .. "/" .. compiler .. "\" " .. args
   
   -- HACK: create the output directories if needed
   os.mkdir(cppOut)
@@ -89,7 +93,7 @@ local function protocCompile(inputFiles, cppOut, javaOut, pythonOut, ipaths)
   
   -- generate the message files
   print("INFO: executing " .. cmd)
-  local returnCode = os.execute(cmd)
+  local returnCode = os.execute("\"" .. cmd .. "\"")
   
   if returnCode == 0 then
     -- add few lines to suppress the conversion warnings to each of the generated *.cc files
