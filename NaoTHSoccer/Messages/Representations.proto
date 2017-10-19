@@ -1,3 +1,4 @@
+syntax = "proto2";
 package naothmessages;
 option java_package= "de.naoth.rc.messages";
 
