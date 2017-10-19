@@ -5,6 +5,13 @@ import pickle
 # from evaluation.potentialfield_generated_plot import cleanup_nan_values
 from action import Category
 
+import Simulation as Sim
+import action as a
+from naoth import math2d as m2d
+import copy
+
+
+
 """ General Functions """
 gen_field = []
 nx = []
@@ -52,6 +59,8 @@ def evaluate_single_pos(ball_pos):  # evaluates the potential field at a x,y pos
 
 
 def evaluate_action_with_robots(results, state):
+    pf_normal_value = evaluate_action(results, state)
+
     sum_potential = 0.0
     number_of_actions = 0.0
     for p in results.positions():
@@ -61,7 +70,48 @@ def evaluate_action_with_robots(results, state):
 
     assert number_of_actions > 0
     sum_potential /= number_of_actions
+
+    squared_difference = np.abs(pf_normal_value - sum_potential) # decide whether considering other robots is appropriate
+    if squared_difference < 0.05: # upper bound - how to choose?
+        return pf_normal_value
+
+    # ab hier experimental
+    # new Ball pos with passing
+
+    new_ball_pos = results.expected_ball_pos_mean
+
+    #update state
+    new_state = copy.copy(state)
+    new_state.ball_position = m2d.Vector2(0.0, 0.0) # Ball = Robot
+    new_state.translation = new_ball_pos
+    #new_state.rotation = pass # maybe rotation as needed for direkt / shortest path to the ball
+    new_state.potential_field_function = "normal"
+
+
+    # Simulation as in Simulation.py (decide_smart)
+
+    actions_consequences = []
+    # Simulate Consequences
+    for action in new_state.actions: #new_state.actions includes the possible kicks
+        single_consequence = a.ActionResults([])
+        actions_consequences.append(Sim.simulate_consequences(action, single_consequence, new_state, 30))
+
+    best_action_with_team = Sim.decide_smart(actions_consequences, state)
+
+
+
+    # compare new best action
+    # TODO: Add simulation of a second kick without other robots to have better comparison
+    # needed: action which would have been done without other robots
+    # what should get returned?? to compare with other actions
+    """
+    if best_value > pf_normal_value:
+        return sum_potential
+    """
+
     return sum_potential
+
+
 
 
 def evaluate_single_pos_with_robots(ball_pos, opp_robots, own_robots):
@@ -73,22 +123,32 @@ def evaluate_single_pos_with_robots(ball_pos, opp_robots, own_robots):
         + gaussian(ball_pos.x, ball_pos.y, field.x_own_goal, 0.0, 1.5 * sigma_x, sigma_y)
 
     for opp_rob in opp_robots:  # adding influence of own and opponent robots into the field
+        f += robot_field_opp(opp_rob, ball_pos)
+
+        """
+        # this makes the influence region uniform - it might not be what we want
         f_rob = robot_field_opp(opp_rob, ball_pos)
 
-        # this makes the influence region uniform - it might not be what we want
+
         if f_rob != 0:
             if f_rob + f <= 1:
                 f = f_rob
             else:
                 f += f_rob
+        """
 
     for own_rob in own_robots:
+        f -= robot_field_own(own_rob, ball_pos)
+
+        """
         f_rob = robot_field_own(own_rob, ball_pos)
+
         if f_rob != 0:
             if f - f_rob <= -0.5:
                 f -= f_rob
             else:
                 f = -f_rob
+        """
     return f
 
 
@@ -99,7 +159,9 @@ def robot_field_own(robot_pos, ball_pos):
 
     # ball_pos = robot_pos / ball_pos  # somehow the operator is not recognized here,
     # so I copied the implementation of the transformation here
-    ball_pos = (ball_pos - robot_pos.translation).rotate(-robot_pos.rotation)
+    # ball_pos = (ball_pos - robot_pos.translation).rotate(-robot_pos.rotation)
+    ball_pos = (ball_pos - robot_pos)
+
 
     # evaluation function
     angle = np.degrees(np.arctan2(ball_pos.y, ball_pos.x))
@@ -123,7 +185,8 @@ def robot_field_opp(robot_pos, ball_pos):
 
     # ball_pos = robot_pos / ball_pos  # somehow the operator is not recognized here,
     # so I copied the implementation of the transformation here
-    ball_pos = (ball_pos - robot_pos.translation).rotate(-robot_pos.rotation)
+    # ball_pos = (ball_pos - robot_pos.translation).rotate(-robot_pos.rotation)
+    ball_pos = (ball_pos - robot_pos)
 
     # evaluation function
     angle = np.degrees(np.arctan2(ball_pos.y, ball_pos.x))
