@@ -9,13 +9,15 @@
 
 class CNN_rc17_augmented_7 : public AbstractCNNClassifier {
 
+
 public:
-	CNN_rc17_augmented_7(){out.open("example.txt");}
 
-	~CNN_rc17_augmented_7(){out.close();}
-
-std::ofstream out;
 	bool classify(const BallCandidates::Patch& p);
+
+  virtual float getBallConfidence();
+  virtual float getNoballConfidence();
+
+private:
 
 	// declare copied intial input array
 	float out_step0[16][16][1];
@@ -52,10 +54,6 @@ std::ofstream out;
 
 	// declare output for this SoftMax step
 	float out_step11[2][1][1];
-
-	virtual float getBallConfidence();
-
-	virtual float getNoballConfidence();
 
 };
 

@@ -88,15 +88,11 @@ do
 done
 
 # copy the config directory
-cp -r /home/nao/naoqi/Config /media/brainwasher/$current_date-$current_nao
+tar cfzv /media/brainwasher/$current_date-$current_nao/config.tar.gz -C /home/nao/naoqi Config
 check_for_errors "Brainwasher:ERROR copying config"
 
-# create dump folder and log errors
-mkdir -p /media/brainwasher/$current_date-$current_nao/dumps 2> $errorFile
-logger -f $errorFile
-
 # find and copy trace dump files since boot and log errors
-find /home/nao -maxdepth 1 -type f -mmin -$current_boot_time -iname "trace.dump.*" -exec cp {} /media/brainwasher/$current_date-$current_nao/dumps/ \; 2> $errorFile
+find /home/nao -maxdepth 1 -type f -mmin -$current_boot_time -iname "trace.dump.*"  -print0 | tar czvf /media/brainwasher/$current_date-$current_nao/dumps.tar.gz -P --null -T -  2> $errorFile
 logger -f $errorFile
 # if no error occurred, we can savely delete all trace dump files, which were previously copied
 if [ ! -s "$errorFile" ]; then

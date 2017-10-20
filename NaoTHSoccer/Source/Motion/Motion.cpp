@@ -297,7 +297,7 @@ void Motion::postProcess()
 #endif
 
   // apply the offset to motor joint data
-  for( i = 0; i < JointData::numOfJoint; i++){
+  for(int i = 0; i < JointData::numOfJoint; i++){
       mjd.position[i] = mjd.position[i] + getOffsetJointData().position[i];
   }
 
