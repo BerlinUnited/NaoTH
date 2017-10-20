@@ -197,31 +197,30 @@ public class ConnectionDialog extends javax.swing.JDialog
       }
     }//GEN-LAST:event_btConnectActionPerformed
 
+    // TODO: for now it's adjusted for the current NaoTH addresses. Make it more general.
+    private void updateAvaliableHosts() {
+        
+        String[] ips = this.properties.getProperty("iplist","").split(",");
+        
+        for(final String ip: ips) {
+            executor.submit(() -> {
+                try {
+                    InetAddress address = InetAddress.getByName(ip);
+                    if(address.isReachable(500)) {
+                        synchronized(cbHost) {
+                            addItemToCombobox(ip);
+                        }
+                    }
+                } catch (Exception e) { /* ignore exception */ }
+            });
+        }
+    }
+    
     @Override
     public void setVisible(boolean b) {
         // check for available hosts only when dialog is visible
         if(b) {
-            String[] nets = { "10.0.4.", "192.168.13."};
-            int[] major = { 8, 9 };
-            int[] minor = { 1, 6 };
-            
-            for (int i = 0; i < nets.length; i++) {
-                for (int j = major[0]; j <= major[1]; j++) {
-                    for (int k = minor[0]; k <= minor[1]; k++) {
-                        final String ip = nets[i] + j + k;
-                        executor.submit(() -> {
-                            try {
-                                InetAddress address = InetAddress.getByName(ip);
-                                if(address.isReachable(500)) {
-                                    synchronized(cbHost) {
-                                        addItemToCombobox(ip);
-                                    }
-                                }
-                            } catch (Exception e) { /* ignore exception */ }
-                        });
-                    }
-                }
-            }
+            updateAvaliableHosts();
         }
         super.setVisible(b);
     }
