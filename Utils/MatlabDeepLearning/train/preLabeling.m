@@ -1,5 +1,4 @@
-clear all;
-tic;
+clear variables;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % This script creates a json file like the python label script does. The
 % folders and the json file along with the original log file can be used in
@@ -10,7 +9,7 @@ tic;
 load cn4.mat
 net = convnet;
 %Set the root folder of the images to be labeled
-srcDir = 'data/unlabeled';
+srcDir = '../data/unlabeled';
 
 % Load iamges
 digitData = imageDatastore(srcDir, ...
@@ -19,11 +18,15 @@ digitData = imageDatastore(srcDir, ...
 % classify the images
 classified_data = classify(net,digitData);
 
-%
+% %
+noball_names = [];
+ball_names = [];
+files = digitData.Files; % for speed up
+% 
 noball_counter = 1;
 ball_counter = 1;
 for i = 1:length(classified_data)
-    [~,name,~] = fileparts(digitData.Files{i});
+    [~,name,~] = fileparts(files{i});
     test = str2double(name);
     if classified_data(i) == 'noball'
        noball_names(noball_counter) = test;
@@ -35,8 +38,8 @@ for i = 1:length(classified_data)
 end
 
 % Output the json file
+outputfile = fullfile(srcDir, 'game.json');
 json_labels = jsonencode(struct('noball',noball_names, 'ball',ball_names));
-fileID = fopen('data/game.json','w');
-fprintf(fileID,'%s', json_labels);
+fileID = fopen(outputfile,'w');
+    fprintf(fileID,'%s', json_labels);
 fclose(fileID);
-toc;
