@@ -3,6 +3,7 @@ package de.naoth.rc.dialogs;
 import de.naoth.rc.core.dialog.AbstractDialog;
 import de.naoth.rc.core.dialog.DialogPlugin;
 import de.naoth.rc.RobotControl;
+import de.naoth.rc.core.dialog.RCDialog;
 import de.naoth.rc.dataformats.JanusImage;
 import de.naoth.rc.drawings.Canvas;
 import de.naoth.rc.drawings.Drawable;
@@ -12,7 +13,13 @@ import de.naoth.rc.drawings.DrawingsContainer;
 import de.naoth.rc.manager.DebugDrawingManager;
 import de.naoth.rc.manager.ImageManagerBottom;
 import de.naoth.rc.core.manager.ObjectListener;
+import de.naoth.rc.logmanager.BlackBoard;
+import de.naoth.rc.logmanager.LogDataFrame;
+import de.naoth.rc.logmanager.LogFileEventManager;
+import de.naoth.rc.logmanager.LogFrameListener;
+import de.naoth.rc.manager.ImageManagerBottomImpl;
 import de.naoth.rc.manager.ImageManagerTop;
+import de.naoth.rc.manager.ImageManagerTopImpl;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
@@ -25,7 +32,8 @@ import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
  */
 public class ImageViewer extends AbstractDialog
 {
-    
+   
+  @RCDialog(category = RCDialog.Category.View, name = "Image")
   @PluginImplementation
   public static class Plugin extends DialogPlugin<ImageViewer> {
     @InjectPlugin
@@ -36,6 +44,8 @@ public class ImageViewer extends AbstractDialog
     public static ImageManagerTop imageManagerTop;
     @InjectPlugin
     public static DebugDrawingManager debugDrawingManager;
+    @InjectPlugin
+    public static LogFileEventManager logFileEventManager;
   }//end Plugin
 
   private long timestampOfTheLastImage;
@@ -53,10 +63,37 @@ public class ImageViewer extends AbstractDialog
     this.imageCanvasBottom.setVisible(false);
     this.imageCanvasTop.setVisible(false);
     
-    this.timestampOfTheLastImage = 0;
     this.drawingsListener = new DrawingsListener();
     this.imageListenerBottom = new ImageListenerBottom();
     this.imageListenerTop = new ImageListenerTop();
+    
+    Plugin.logFileEventManager.addListener(new LogBehaviorListener());
+  }
+  
+  private class LogBehaviorListener implements LogFrameListener
+  {
+    @Override
+    public void newFrame(BlackBoard b) {
+        
+
+        LogDataFrame f = b.get("Image");
+        if(f != null) {
+          ImageManagerBottomImpl im = new ImageManagerBottomImpl();
+          JanusImage janusImage = im.convertByteArrayToType(f.getData());
+          
+          ImageViewer.this.imageCanvasBottom.setImage(janusImage.getRgb());
+          ImageViewer.this.imageCanvasBottom.repaint();
+        }
+        
+        f = b.get("ImageTop");
+        if(f != null) {
+          ImageManagerTopImpl im = new ImageManagerTopImpl();
+          JanusImage janusImage = im.convertByteArrayToType(f.getData());
+          
+          ImageViewer.this.imageCanvasTop.setImage(janusImage.getRgb());
+          ImageViewer.this.imageCanvasTop.repaint();
+        }
+    }
   }
 
   /** This method is called from within the constructor to
@@ -224,8 +261,12 @@ public class ImageViewer extends AbstractDialog
 
     if (this.btReceiveImagesTop.isSelected())
     {
-      this.imageCanvasTop.setVisible(true);
-      Plugin.imageManagerTop.addListener(this.imageListenerTop);
+      if(Plugin.parent.checkConnected()) {
+        this.imageCanvasTop.setVisible(true);
+        Plugin.imageManagerTop.addListener(this.imageListenerTop);
+      } else {
+        this.btReceiveImagesTop.setSelected(false);
+      }
     }
     else
     {
@@ -252,7 +293,7 @@ public class ImageViewer extends AbstractDialog
               this.imageCanvasBottom.setShowDrawings(true);
               this.imageCanvasTop.setShowDrawings(true);
           } else {
-              this.btReceiveImagesTop.setSelected(false);
+              btReceiveDrawings.setSelected(false);
           }
       } else {
           Plugin.debugDrawingManager.removeListener(this.drawingsListener);
@@ -266,8 +307,12 @@ public class ImageViewer extends AbstractDialog
     
     if (btReceiveImagesBottom.isSelected())
     {
-      this.imageCanvasBottom.setVisible(true);
-      Plugin.imageManagerBottom.addListener(this.imageListenerBottom);
+      if(Plugin.parent.checkConnected()) {
+        this.imageCanvasBottom.setVisible(true);
+        Plugin.imageManagerBottom.addListener(this.imageListenerBottom);
+      } else {
+        btReceiveImagesBottom.setSelected(false);
+      }
     }
     else
     {
@@ -342,7 +387,7 @@ public class ImageViewer extends AbstractDialog
         }
         
         Canvas canvasBottom = objectList.get("ImageBottom");
-        if (canvasTop != null) {
+        if (canvasBottom != null) {
           ImageViewer.this.imageCanvasBottom.getDrawingList().add(canvasBottom);
         }
         

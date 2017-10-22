@@ -79,7 +79,7 @@ void Configuration::loadFromDir(std::string dirlocation,
     loadFromSingleDir(privateKeyFile, privateDir);
   } else
   {
-    g_warning("Could not load configuration from %s: directory does not exist", dirlocation.c_str());
+    std::cout << "[WARN] Could not load configuration from " << dirlocation << ": directory does not exist" << std::endl;
   }
 }
 
@@ -124,7 +124,7 @@ void Configuration::loadFile(GKeyFile* keyFile, std::string file, std::string gr
   g_key_file_load_from_file(tmpKeyFile, file.c_str(), G_KEY_FILE_NONE, &err);
   if (err != NULL)
   {
-    g_error("%s: %s", file.c_str(), err->message);
+    std::cerr << "[ERROR] " << file << ": " << err->message << std::endl;
     g_error_free(err);
   } else
   {
@@ -138,7 +138,7 @@ void Configuration::loadFile(GKeyFile* keyFile, std::string file, std::string gr
       if (g_strcmp0(groups[i], groupName.c_str()) != 0)
       {
         groupOK = false;
-        g_error("%s: config file contains illegal group \"%s\"", file.c_str(), groups[i]);
+        std::cerr << "[ERROR] " << file << ": config file contains illegal group \"" << groups[i] << "\"" << std::endl;
         break;
       }
     }
@@ -156,7 +156,7 @@ void Configuration::loadFile(GKeyFile* keyFile, std::string file, std::string gr
       }
       g_strfreev(keys);
       
-      g_message("loaded %s", file.c_str());
+      std::cout << "[INFO] loaded " << file << std::endl;
     }
 
     g_strfreev(groups);
@@ -193,7 +193,7 @@ void Configuration::saveFile(GKeyFile* keyFile, const std::string& file, const s
     gchar* buffer = g_key_file_get_value(keyFile, group.c_str(), keys[i], &err);
     if(err != NULL)
     {
-      g_warning("%s", err->message);
+      std::cout << "[WARN] " << err->message << std::endl;
     }
     g_key_file_set_value(tmpKeyFile, group.c_str(), keys[i], buffer);
     g_free(buffer);
@@ -210,14 +210,14 @@ void Configuration::saveFile(GKeyFile* keyFile, const std::string& file, const s
         outFile.write(data, dataLength);
         outFile.close();
       } else {
-        g_error("could not open the file %s", file.c_str());
+        std::cerr << "[ERROR] could not open the file " << file << std::endl;
       }
       g_free(data);
     }
   }
   else
   {
-    g_error("could not save configuration file %s: %s", file.c_str(), err->message);
+    std::cerr << "[ERROR] could not save configuration file " << file << ": " << err->message << std::endl;
     g_error_free(err);
   }
 

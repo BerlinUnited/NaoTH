@@ -7,6 +7,7 @@ package de.naoth.rc.components;
 
 import de.naoth.rc.drawings.Arrow;
 import de.naoth.rc.drawings.Drawable;
+import de.naoth.rc.drawings.BoundingBox;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
@@ -46,8 +47,10 @@ public class DynamicCanvasPanel extends javax.swing.JPanel
   private double dragOffsetX;
   private double dragOffsetY;
   private boolean antializing;
+  private boolean fitToViewport = false;
   
-  private final List<Drawable> drawingList = Collections.synchronizedList(new ArrayList<Drawable>());
+  private Drawable backgroundDrawing = null;
+  private final List<Drawable> drawingList = Collections.synchronizedList(new ArrayList<>());
 
   public DynamicCanvasPanel()
   {
@@ -107,21 +110,24 @@ public class DynamicCanvasPanel extends javax.swing.JPanel
   int oldHeight = 0;
   private void formComponentResized(java.awt.event.ComponentEvent evt)//GEN-FIRST:event_formComponentResized
   {//GEN-HEADEREND:event_formComponentResized
-      if(oldWidth != 0 && oldHeight != 0)
-      {
-          double sw = ((double)this.getWidth()) / ((double)oldWidth);
-          double sh = ((double)this.getHeight()) / ((double)oldHeight);
-          
-          double s = (Math.abs(sh-1.0) < Math.abs(sw-1.0))? sw: sh;
-          
-          this.scale *= s;
-          this.offsetX = (int)( ((double)this.offsetX) * s +0.5);
-          this.offsetY = (int)( ((double)this.offsetY) * s +0.5);
+      if(this.fitToViewport) {
+          fitToViewport();
+      } else {
+        if(oldWidth != 0 && oldHeight != 0)
+        {
+            double sw = ((double)this.getWidth()) / ((double)oldWidth);
+            double sh = ((double)this.getHeight()) / ((double)oldHeight);
+
+            double s = (Math.abs(sh-1.0) < Math.abs(sw-1.0))? sw: sh;
+
+            this.scale *= s;
+            this.offsetX = (int)( ((double)this.offsetX) * s +0.5);
+            this.offsetY = (int)( ((double)this.offsetY) * s +0.5);
+        }
+
+        oldWidth = this.getWidth();
+        oldHeight = this.getHeight();
       }
-      
-      oldWidth = this.getWidth();
-      oldHeight = this.getHeight();
-      
       this.repaint();
   }//GEN-LAST:event_formComponentResized
 
@@ -161,8 +167,30 @@ public class DynamicCanvasPanel extends javax.swing.JPanel
     paintDrawings(g2d, offsetX, offsetY, rotation, scale);
   }
   
+    public void fitToViewport() {
+        BoundingBox bb = new BoundingBox();
+        paintDrawings(bb, offsetX, offsetY, rotation, scale, true);
+        
+        if(bb.getWidth() == 0 && bb.getHeight() == 0) {
+            return;
+        }
+        
+        // "add" a 10px margin and calculate scale
+        double scale_x = ((double) this.getWidth() - 10) / (bb.getWidth());
+        double scale_y = ((double) this.getHeight() - 10) / (bb.getHeight());
+        setScale(scale_x < scale_y ? scale_x : scale_y);
+        // center drawings
+        setOffsetX(getWidth() / 2.);
+        setOffsetY(getHeight() / 2.);
+        // repaint everything
+        repaint();
+    }
   
-  public void paintDrawings(Graphics2D g2d, double x, double y, double r, double s) 
+  public void paintDrawings(Graphics2D g2d, double x, double y, double r, double s) {
+      paintDrawings(g2d, x, y, r, s, false);
+  }
+    
+  private void paintDrawings(Graphics2D g2d, double x, double y, double r, double s, boolean onlyBackground) 
   {
     if (this.antializing)
     {
@@ -180,12 +208,13 @@ public class DynamicCanvasPanel extends javax.swing.JPanel
     g2d.rotate(r);
     g2d.scale(s, s);
 
-    synchronized(drawingList)
-    {
-        for (Drawable object : drawingList) {
-          if(object != null) {
-              object.draw(g2d);
-          }
+    if(backgroundDrawing != null) {
+        backgroundDrawing.draw(g2d);
+    }
+    
+    if(!onlyBackground) {
+        synchronized(drawingList) {
+            drawingList.forEach(d -> { if(d!=null){d.draw(g2d);} });
         }
     }
     
@@ -197,10 +226,11 @@ public class DynamicCanvasPanel extends javax.swing.JPanel
     }
     g2d.translate(-x, -y);
     
-    if(this.showCoordinates) {
+    if(this.showCoordinates && !onlyBackground) {
         drawCoordinateSystem(g2d, this.getSize().width-30, this.getSize().height-30);
     }
   }
+  
   
   void drawCoordinateSystem(Graphics2D g2d, int x, int y)
   {
@@ -220,13 +250,11 @@ public class DynamicCanvasPanel extends javax.swing.JPanel
     g2d.setStroke(new BasicStroke(2.0f));
     g2d.setColor(Color.red);
     g2d.drawString("X", (int)p3.getX(), (int)p3.getY());
-    //g2d.drawLine((int)p0.getX(), (int)p0.getY(), (int)p1.getX(), (int)p1.getY());
-    Arrow.drawArrow(g2d, (int)p0.getX(), (int)p0.getY(), (int)p1.getX(), (int)p1.getY(), 2.0f);
+    new Arrow((int)p0.getX(), (int)p0.getY(), (int)p1.getX(), (int)p1.getY()).draw(g2d);
     
     g2d.setColor(Color.black);
     g2d.drawString("Y", (int)p4.getX(), (int)p4.getY());
-    //g2d.drawLine((int)p0.getX(), (int)p0.getY(), (int)p2.getX(), (int)p2.getY());
-    Arrow.drawArrow(g2d, (int)p0.getX(), (int)p0.getY(), (int)p2.getX(), (int)p2.getY(), 2.0f);
+    new Arrow((int)p0.getX(), (int)p0.getY(), (int)p2.getX(), (int)p2.getY()).draw(g2d);
   }
   
   public Point.Double canvasCoordinatesToInternal(Point.Double p)
@@ -420,7 +448,27 @@ public class DynamicCanvasPanel extends javax.swing.JPanel
   {
     this.showCoordinates = showCoordinates;
   }
+
+    public Drawable getBackgroundDrawing() {
+        return backgroundDrawing;
+    }
+
+    public void setBackgroundDrawing(Drawable background) {
+        this.backgroundDrawing = background;
+    }
+  
+  
+  
     
   // </editor-fold>
+
+    public boolean isFitToViewport() {
+        return fitToViewport;
+    }
+
+    public void setFitToViewport(boolean fitToViewport) {
+        this.fitToViewport = fitToViewport;
+        fitToViewport();
+    }
 }//end DynamicCanvasPanel
 

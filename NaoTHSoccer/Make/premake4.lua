@@ -24,8 +24,13 @@ end
 -- print("INFO:" .. (os.findlib("Controller") or "couldn't fined the lib Controller"))
 
 newoption {
+   trigger     = "Test",
+   description = "Generate test projects"
+}
+
+newoption {
    trigger     = "Wno-conversion",
-   description = "Disable te -Wconversion warnin for gCC"
+   description = "Disable the -Wconversion warning for gcc"
 }
 
 newoption {
@@ -44,7 +49,12 @@ solution "NaoTHSoccer"
   configurations {"OptDebug", "Debug", "Release"}
   location "../build"
   
-  print("generating solution NaoTHSoccer for platform " .. PLATFORM)
+  
+  print("INFO: generating solution NaoTHSoccer")
+  print("  PLATFORM = " .. PLATFORM)
+  print("  OS = " .. os.get())
+  print("  ACTION = " .. (_ACTION or "NONE"))
+  
   
   -- global lib path for all configurations
   -- additional includes
@@ -57,14 +67,15 @@ solution "NaoTHSoccer"
   links {
     "opencv_core",
     "opencv_ml",
-    "opencv_imgproc"
+    "opencv_imgproc",
+    "opencv_objdetect"
 	}
   
-  -- set the remository information
+  -- set the repository information
   defines {
-	"REVISION=\"" .. REVISION .. "\"",
-	"USER_NAME=\"" .. USER_NAME .. "\"",
-	"BRANCH_PATH=\"" .. BRANCH_PATH .. "\""
+    "REVISION=\"" .. REVISION .. "\"",
+    "USER_NAME=\"" .. USER_NAME .. "\"",
+    "BRANCH_PATH=\"" .. BRANCH_PATH .. "\""
 	}
   
 
@@ -77,7 +88,7 @@ solution "NaoTHSoccer"
     },
     FRAMEWORK_PATH .. "/Commons/Source/Messages/", 
     "../../RobotControl/RobotConnector/src/", 
-    "../../Utils/pyLogEvaluator",
+    "../../Utils/py/naoth/naoth",
     {COMMONS_MESSAGES}
   )
 
@@ -85,25 +96,23 @@ solution "NaoTHSoccer"
     {"../Messages/Representations.proto"}, 
     "../Source/Messages/", 
     "../../RobotControl/RobotConnector/src/", 
-    "../../Utils/pyLogEvaluator",
+    "../../Utils/py/naoth/naoth",
     {COMMONS_MESSAGES, "../Messages/"}
   )
-
   
-  -- debug configuration
   configuration { "Debug" }
     defines { "DEBUG" }
-    defines { "BOOST_SIGNALS_NO_DEPRECATION_WARNING" }
     flags { "Symbols", "FatalWarnings" }
   
   configuration { "OptDebug" }
     defines { "DEBUG" }
-    defines { "BOOST_SIGNALS_NO_DEPRECATION_WARNING" }
-    flags { "Optimize", "FatalWarnings" }
-  
+    flags { "OptimizeSpeed", "FatalWarnings" }
+    
+    
   configuration{"Native"}
     targetdir "../dist/Native"
     
+  -- special defines for the Nao robot
   configuration {"Nao"}
     defines { "NAO" }
     targetdir "../dist/Nao"
@@ -113,92 +122,113 @@ solution "NaoTHSoccer"
     buildoptions {"-Wno-type-limits"}
     -- some of the protobuf messages are marked as deprecated but are still in use for legacy reasons
     buildoptions {"-Wno-deprecated-declarations"}
-    if _OPTIONS["Wno-conversion"] == nil then
-		  buildoptions {"-Wconversion"}
-		  defines { "_NAOTH_CHECK_CONVERSION_" }
-    end
+    buildoptions {"-Wconversion"}
+    buildoptions {"-std=c++11"}
 
-  -- additional defines for windows
-  if(_OPTIONS["platform"] ~= "Nao" and _ACTION ~= "gmake") then
-    configuration {"windows"}
-    defines {"WIN32", "NOMINMAX", "EIGEN_DONT_ALIGN"}
-    buildoptions {"/wd4351", -- disable warning: "...new behavior: elements of array..."
-                  "/wd4996", -- disable warning: "...deprecated..."
-                  "/wd4290"} -- exception specification ignored (typed stecifications are ignored)
+    
+  -- additional defines for visual studio
+  configuration {"windows", "vs*"}
+    defines {"WIN32", "NOMINMAX", "NOGDI", "EIGEN_DONT_ALIGN"}
+    buildoptions {"/wd4351"} -- disable warning: "...new behavior: elements of array..."
+    buildoptions {"/wd4996"} -- disable warning: "...deprecated..."
+    buildoptions {"/wd4290"} -- exception specification ignored (typed stecifications are ignored)
     links {"ws2_32"}
     debugdir "$(SolutionDir).."
-  end
   
-  configuration {"linux"}
-    if(_ACTION == "gmake") then
-      -- "position-independent code" needed to compile shared libraries.
-      -- In our case it's only the NaoSMAL. So, we probably don't need this one.
-      -- Premake4 automatically includes -fPIC if a project is declared as a SharedLib.
-      -- http://www.akkadia.org/drepper/dsohowto.pdf
-      buildoptions {"-fPIC"}
-      -- may be needed for newer glib2 versions, remove if not needed
-      buildoptions {"-Wno-deprecated-declarations"}
-      buildoptions {"-Wno-deprecated"}
-      buildoptions {"-std=c++11"}
-      flags { "ExtraWarnings" }
-      links {"pthread"}
+  
+  configuration {"Native", "linux", "gmake"}
+    -- "position-independent code" needed to compile shared libraries.
+    -- In our case it's only the NaoSMAL. So, we probably don't need this one.
+    -- Premake4 automatically includes -fPIC if a project is declared as a SharedLib.
+    -- http://www.akkadia.org/drepper/dsohowto.pdf
+    buildoptions {"-fPIC"}
     
-      if _OPTIONS["Wno-conversion"] == nil then
-        buildoptions {"-Wconversion"}
-        defines { "_NAOTH_CHECK_CONVERSION_" }
-      end
-
-      if _OPTIONS["Wno-misleading-indentation"] ~= nil then
-        buildoptions {"-Wno-misleading-indentation"}
-      end
-
-      if _OPTIONS["Wno-ignored-attributes"] ~= nil then
-        buildoptions {"-Wno-ignored-attributes"}
-      end
-    
-      -- Why? OpenCV is always dynamically linked and we can only garantuee that there is one version in Extern (Thomas)
-      linkoptions {"-Wl,-rpath \"" .. path.getabsolute(EXTERN_PATH .. "/lib/") .. "\""}
+    -- may be needed for newer glib2 versions, remove if not needed
+    buildoptions {"-Wno-deprecated-declarations"}
+    buildoptions {"-Wno-deprecated"}
+    -- Prohibit GCC to be clever and use undefined behavior for some optimizations
+    -- (see http://www.airs.com/blog/archives/120 for some nice explanation)
+    buildoptions {"-fno-strict-overflow"}
+    buildoptions {"-std=c++11"}
+    --flags { "ExtraWarnings" }
+    links {"pthread"}
+  
+    if _OPTIONS["Wno-conversion"] == nil then
+      buildoptions {"-Wconversion"}
     end
-   
-  -- base
+
+    if _OPTIONS["Wno-misleading-indentation"] ~= nil then
+      buildoptions {"-Wno-misleading-indentation"}
+    end
+
+    if _OPTIONS["Wno-ignored-attributes"] ~= nil then
+      buildoptions {"-Wno-ignored-attributes"}
+    end
+  
+    -- Why? OpenCV is always dynamically linked and we can only garantuee that there is one version in Extern (Thomas)
+    linkoptions {"-Wl,-rpath \"" .. path.getabsolute(EXTERN_PATH .. "/lib/") .. "\""}
+  
+  
+  configuration {"macosx"}
+    defines { "BOOST_SIGNALS_NO_DEPRECATION_WARNING", "EIGEN_DONT_ALIGN" }
+    buildoptions {"-std=c++11"}
+    -- disable some warnings
+    buildoptions {"-Wno-deprecated-declarations"}
+    buildoptions {"-Wno-deprecated-register"}
+    buildoptions {"-Wno-logical-op-parentheses"}
+    -- use clang on macOS
+    -- NOTE: configuration doesn't affect these settings, they NEED to be in a if
+    if (os.is("macosx") and _OPTIONS["platform"] ~= "Nao") then
+      premake.gcc.cc = 'clang'
+      premake.gcc.cxx = 'clang++'
+    end
+
+
+  -- commons
   dofile (FRAMEWORK_PATH .. "/Commons/Make/Commons.lua")
-    configuration {"Nao"}
-      buildoptions {"-std=c++11"}
+    vpaths { ["*"] = FRAMEWORK_PATH .. "/Commons/Source" }
   
   -- core
   dofile "NaoTHSoccer.lua"
-    configuration {"Nao"}
-      buildoptions {"-std=c++11"}
+    vpaths { ["*"] = "../Source" }
   
   -- set up platforms
   if _OPTIONS["platform"] == "Nao" then
     dofile (FRAMEWORK_PATH .. "/Platforms/Make/NaoSMAL.lua")
+      vpaths { ["*"] = FRAMEWORK_PATH .. "/Platforms/Source/NaoSMAL" }
       -- HACK: boost from NaoQI SDK makes problems
       buildoptions {"-Wno-conversion"}
-     -- ACHTUNG: NaoSMAL doesn't build with the flag -std=c++11 (because of Boost)
+      -- these warning came in Windows with the toolchain 2013
+      buildoptions {"-Wno-unused-parameter"}
+      buildoptions {"-Wno-ignored-qualifiers"}
+      buildoptions {"-Wno-extra"}
+      defines { "BOOST_SIGNALS_NO_DEPRECATION_WARNING" }
+      -- ACHTUNG: NaoSMAL doesn't build with the flag -std=c++11 (because of Boost)
       buildoptions {"-std=gnu++11"}
     dofile (FRAMEWORK_PATH .. "/Platforms/Make/NaoRobot.lua")
       kind "ConsoleApp"
       links { "NaoTHSoccer", "Commons" }
-      buildoptions {"-std=c++11"}
+      vpaths { ["*"] = FRAMEWORK_PATH .. "/Platforms/Source/NaoRobot" }
   else
     dofile (FRAMEWORK_PATH .. "/Platforms/Make/SimSpark.lua")
       kind "ConsoleApp"
       links { "NaoTHSoccer", "Commons" }
+      vpaths { ["*"] = FRAMEWORK_PATH .. "/Platforms/Source/SimSpark" }
       debugargs { "--sync" }
     dofile (FRAMEWORK_PATH .. "/Platforms/Make/LogSimulator.lua")
       kind "ConsoleApp"
       links { "NaoTHSoccer", "Commons" }
+      vpaths { ["*"] = FRAMEWORK_PATH .. "/Platforms/Source/LogSimulator" }
     dofile (FRAMEWORK_PATH .. "/Platforms/Make/LogSimulatorJNI.lua")
       kind "SharedLib"
       links { "NaoTHSoccer", "Commons" }
+      vpaths { ["*"] = FRAMEWORK_PATH .. "/Platforms/Source/LogSimulatorJNI" }
+      
+    -- generate tests if required
+    if _OPTIONS["Test"] ~= nil then
+      dofile ("../Test/Make/BallEvaluator.lua")
+        kind "ConsoleApp"
+        links { "NaoTHSoccer", "Commons" }
+        vpaths { ["*"] = "../Test/Source/BallEvaluator" }
+    end
   end
-  
-  
-  -- tests
-  --if(_OPTIONS["platform"] ~= "Nao") then
-	--dofile (FRAMEWORK_PATH .. "/NaoTH-Commons/Make/Tests.lua")
-	--dofile "Tests.lua"
-  --end
-  
-  

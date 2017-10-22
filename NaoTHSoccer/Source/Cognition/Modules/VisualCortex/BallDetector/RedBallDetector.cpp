@@ -322,6 +322,7 @@ void RedBallDetector::calculateBallPercept(const Vector2i& center, double radius
     ballPercept.cameraId = cameraID;
     ballPercept.centerInImage = center;
     ballPercept.radiusInImage = radius;
+    ballPercept.positionOnField = getBallPercept().bearingBasedOffsetOnField;
 
     getMultiBallPercept().add(ballPercept);
     getMultiBallPercept().frameInfoWhenBallWasSeen = getFrameInfo();

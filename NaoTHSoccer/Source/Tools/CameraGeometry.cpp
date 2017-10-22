@@ -228,3 +228,97 @@ Pose3D CameraGeometry::calculateCameraMatrix(
 
   return pose;
 }//end calculateCameraMatrix
+
+Pose3D CameraGeometry::calculateCameraMatrix(
+  const CameraMatrixOffset& theCameraMatrixOffset,
+  const KinematicChain&     theKinematicChain,
+  const InertialModel&      theInertialModel,
+  const SensorJointData&    theSensorJointData,
+  const Vector3d& translationOffset,
+  double rotationOffsetY,
+  const naoth::CameraInfo::CameraID cameraID)
+{
+    // get the pose of the head
+    Pose3D chest(theKinematicChain.theLinks[KinematicChain::Torso].M);
+
+    //overwrite rotation using information from the ineratial model
+    chest.rotation = RotationMatrix::getRotationX(theInertialModel.orientation.x + theCameraMatrixOffset.body_rot.x);
+    chest.rotateY(theInertialModel.orientation.y + theCameraMatrixOffset.body_rot.y);
+
+    //translate pose into neck/head
+    chest.translate(Vector3d(0,0,NaoInfo::NeckOffsetZ)); //neck = head
+
+    //apply rotation of neck angles with offsets
+    chest.rotateZ(theSensorJointData.position[JointData::HeadYaw]   + theCameraMatrixOffset.head_rot.z);
+    chest.rotateY(theSensorJointData.position[JointData::HeadPitch] + theCameraMatrixOffset.head_rot.y);
+    chest.rotateX(theCameraMatrixOffset.head_rot.x);
+
+    //translate pose into camera
+    chest.translate(translationOffset);
+
+    //apply rotation parameter of the camera
+    chest.rotateZ(theCameraMatrixOffset.cam_rot[cameraID].z)
+            .rotateY(theCameraMatrixOffset.cam_rot[cameraID].y + rotationOffsetY) // tilt
+            .rotateX(theCameraMatrixOffset.cam_rot[cameraID].x); // roll
+
+    return chest;
+}
+
+// calculates the location of the camera like in forward kinematics but incorporates different angular offset in the kinematic chain from chest to camera
+Pose3D CameraGeometry::calculateCameraMatrixFromChestPose(
+    Pose3D chest,
+    const Vector3d& translationOffset,
+    double rotationOffsetY,
+    const Vector2d& theBodyCorrectionOffset,
+    const Vector3d& theHeadCorrectionOffset,
+    const Vector3d& theCameraCorrectionOffset,
+    double headYaw,
+    double headPitch,
+    const Vector2d& bodyRotation
+  )
+{   //overwrite rotation using information from the ineratial model
+    chest.rotation = RotationMatrix::getRotationX(bodyRotation.x + theBodyCorrectionOffset.x);
+    chest.rotateY(bodyRotation.y + theBodyCorrectionOffset.y);
+
+    //translate pose into neck/head
+    chest.translate(Vector3d(0,0,NaoInfo::NeckOffsetZ)); //neck = head
+
+    //apply rotation of neck angles with offsets
+    chest.rotateZ(headYaw   + theHeadCorrectionOffset.z);
+    chest.rotateY(headPitch + theHeadCorrectionOffset.y);
+    chest.rotateX(theHeadCorrectionOffset.x);
+
+    //translate pose into camera
+    chest.translate(translationOffset);
+
+    //apply rotation parameter of the camera
+    chest.rotateZ(theCameraCorrectionOffset.z)
+            .rotateY(theCameraCorrectionOffset.y + rotationOffsetY) // tilt
+            .rotateX(theCameraCorrectionOffset.x); // roll
+
+    return chest;
+}//end calculateCameraMatrix
+
+double CameraGeometry::estimatedBallRadius(const Pose3D& cameraMatrix, const CameraInfo& cameraInfo, const double ballRadius, int x, int y)
+{
+  Vector2d pointOnField;
+  if(!imagePixelToFieldCoord(
+		  cameraMatrix, 
+		  cameraInfo,
+		  x, 
+		  y, 
+		  ballRadius,
+		  pointOnField))
+  {
+    return -1;
+  }
+
+  Vector3d d = cameraMatrix.invert()*Vector3d(pointOnField.x, pointOnField.y, ballRadius);
+  double cameraBallDistance = d.abs();
+  if(cameraBallDistance > ballRadius) {
+    double a = atan2(ballRadius, cameraBallDistance);
+    return a / cameraInfo.getOpeningAngleHeight() * cameraInfo.resolutionHeight;
+  }
+  
+  return -1;
+}

@@ -63,6 +63,10 @@ BasicTestBehavior::BasicTestBehavior()
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:dance", "Let's dance", false);
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:protect_falling", "Don't hurt me!", false);
 
+  // parallelkinematik
+  DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:parallel_stepper", "parallel_stepper", false);
+  DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:parallel_dance", "parallel_dance", false);
+
   // needed by the motion editor
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:play_editor_motionnet", "play the motion editor motion", false);
 
@@ -107,6 +111,11 @@ void BasicTestBehavior::execute()
   DEBUG_REQUEST("BasicTestBehavior:arms:03_arms_none", 
     getMotionRequest().armMotionRequest.id = ArmMotionRequest::arms_none;);
 
+
+  if (getRemoteControlCommand().action == RemoteControlCommand::WALK) {
+    getMotionRequest().id = motion::walk;
+    getMotionRequest().walkRequest.target.translation.x = 0;
+  }
 
   DEBUG_REQUEST("BasicTestBehavior:start_whistle",
   if(getWhistleControl().onOffSwitch != 1)
@@ -228,8 +237,11 @@ void BasicTestBehavior::testHead()
     MODIFY("BasicTestBehavior:head:headYaw_deg",yaw);
     double pitch = -14;
     MODIFY("BasicTestBehavior:head:headPitch_deg",pitch);
+    double velocity = 300;
+    MODIFY("BasicTestBehavior:head:headVelocity",velocity);
     getHeadMotionRequest().targetJointPosition.x = Math::fromDegrees(yaw);
     getHeadMotionRequest().targetJointPosition.y = Math::fromDegrees(pitch);
+    getHeadMotionRequest().velocity = velocity;
   );
 
 
@@ -395,6 +407,14 @@ void BasicTestBehavior::testMotion()
   
   DEBUG_REQUEST("BasicTestBehavior:motion:force",
     getMotionRequest().forced = true;
+  );
+
+
+  DEBUG_REQUEST("BasicTestBehavior:motion:parallel_stepper", 
+    getMotionRequest().id = motion::parallel_stepper;
+  );
+  DEBUG_REQUEST("BasicTestBehavior:motion:parallel_dance", 
+    getMotionRequest().id = motion::parallel_dance;
   );
   
 }//end testMotion

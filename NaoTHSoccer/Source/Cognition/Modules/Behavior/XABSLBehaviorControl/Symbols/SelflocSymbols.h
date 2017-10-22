@@ -4,8 +4,8 @@
 * @author <a href="mailto:martius@informatik.hu-berlin.de">Martin Martius</a>
 * Definition of class SelflocSymbols */
 
-#ifndef __SelflocSymbols_h_
-#define __SelflocSymbols_h_
+#ifndef _SelflocSymbols_h_
+#define _SelflocSymbols_h_
 
 #include <ModuleFramework/Module.h>
 #include <XabslEngine/XabslEngine.h>
@@ -43,10 +43,6 @@ public:
   SelflocSymbols()
   :
     angleOnField(Math::toDegrees(getRobotPose().rotation)),
-    rel2fieldX_x(0.0),
-    rel2fieldX_y(0.0),
-    rel2fieldY_x(0.0),
-    rel2fieldY_y(0.0),
     angleOnFieldPlanned(Math::toDegrees(getRobotPose().rotation))
   {
     theInstance = this;
@@ -69,7 +65,7 @@ private:
       distanceToCenter(0.0)
     {} // needed for first initalization
 
-    Goal(const Vector2<double>& leftPost, const Vector2<double>& rightPost)
+    Goal(const Vector2d& leftPost, const Vector2d& rightPost)
       : leftPost(leftPost),
         rightPost(rightPost)
     {
@@ -80,9 +76,9 @@ private:
 
     double angleToCenter;
     double distanceToCenter;
-    Vector2<double> center;
-    Vector2<double> leftPost;
-    Vector2<double> rightPost;
+    Vector2d center;
+    Vector2d leftPost;
+    Vector2d rightPost;
   };
 
   Goal oppGoal;
@@ -90,25 +86,19 @@ private:
 
   static double getFieldToRelativeX();
   static double getFieldToRelativeY();
-  Vector2<double> parameterVector;
+  Vector2d parameterVector;
 
   static SelflocSymbols* theInstance;
 
   // rotation of robotPose in degrees
   double angleOnField;
 
-  static double getRel2fieldX();
-  static double getRel2fieldY();
-  double rel2fieldX_x;
-  double rel2fieldX_y;
-  double rel2fieldY_x;
-  double rel2fieldY_y;
-
-
   Pose2D robotPosePlanned;
   double angleOnFieldPlanned;
+
+  double look_in_direction_factor;
 };// End class SelflocSymbols
 
 
-#endif // __SelflocSymbols_h_
+#endif // _SelflocSymbols_h_
 

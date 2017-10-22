@@ -14,8 +14,8 @@ PerceptionsVisualizer::PerceptionsVisualizer()
 {
   DEBUG_REQUEST_REGISTER("PerceptionsVisualizer:image:draw_horizon", "draw the hizon line in the image", false);
 
-  DEBUG_REQUEST_REGISTER("PerceptionsVisualizer:field:CamTop", "execute for the top cam", false);
-  DEBUG_REQUEST_REGISTER("PerceptionsVisualizer:field:CamBottom", "execute for the bottom cam", false);
+  DEBUG_REQUEST_REGISTER("PerceptionsVisualizer:CamTop", "execute for the top cam", false);
+  DEBUG_REQUEST_REGISTER("PerceptionsVisualizer:CamBottom", "execute for the bottom cam", false);
 
   DEBUG_REQUEST_REGISTER("PerceptionsVisualizer:field:ball_percept", "draw ball percept", false);
   DEBUG_REQUEST_REGISTER("PerceptionsVisualizer:image:ball_percept", "draw ball percept", false);
@@ -47,10 +47,10 @@ PerceptionsVisualizer::PerceptionsVisualizer()
 
 void PerceptionsVisualizer::execute()
 {
-  DEBUG_REQUEST("PerceptionsVisualizer:field:CamTop",
+  DEBUG_REQUEST("PerceptionsVisualizer:CamTop",
     execute(CameraInfo::Top);
   );
-  DEBUG_REQUEST("PerceptionsVisualizer:field:CamBottom",
+  DEBUG_REQUEST("PerceptionsVisualizer:CamBottom",
     execute(CameraInfo::Bottom);
   );
 
@@ -97,7 +97,18 @@ void PerceptionsVisualizer::execute(CameraInfo::CameraID id)
         (int)getBallPercept().centerInImage.y,
         (int)getBallPercept().radiusInImage);
     }
+
+	  for (MultiBallPercept::ConstABPIterator i = getMultiBallPercept().begin(); i != getMultiBallPercept().end(); ++i) {
+		  CANVAS((((*i).cameraId == CameraInfo::Top) ? "ImageTop" : "ImageBottom"));
+		  PEN("FF9900", 3);
+		  CIRCLE(
+			  (*i).centerInImage.x,
+			  (*i).centerInImage.y,
+			  (*i).radiusInImage);
+	  }
   );
+
+  
 
   DEBUG_REQUEST("PerceptionsVisualizer:image_px:ball_percept",
     if(getBallPercept().ballWasSeen) 

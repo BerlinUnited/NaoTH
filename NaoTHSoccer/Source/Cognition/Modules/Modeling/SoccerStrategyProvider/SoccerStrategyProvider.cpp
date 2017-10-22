@@ -141,7 +141,7 @@ double SoccerStrategyProvider::estimateTimeToBall() const
   for( size_t i = 0; i < getBallModel().futurePosition.size(); i++)
   {
     double t = estimateTimeToPoint(getBallModel().futurePosition[i]);
-    if ( t < i ) {
+    if ( t < static_cast<double>(i) ) {
       return t; // we can catch the ball
     }
   }
@@ -153,8 +153,8 @@ double SoccerStrategyProvider::estimateTimeToBall() const
 double SoccerStrategyProvider::estimateTimeToPoint(const Vector2d& p) const
 {
   // the simplest case: this speed should get from motion
-  const double stepTime = 140; //ms
-  const double speed = 90.0/stepTime; // mm/ms
+  const double stepTime = 300; //ms
+  const double speed = 50.0/stepTime; // mm/ms
   const double turnSpeed = Math::fromDegrees(30) / stepTime;
 
 

@@ -11,6 +11,7 @@
 #include <ModuleFramework/ModuleManager.h>
 
 //
+#include "SimulationOLD.h"
 #include "Simulation.h"
 
 // Representations
@@ -76,7 +77,6 @@ public:
 private:
   ModuleCreator<Simulation>* simulationModule;
   void draw_function_multicolor(const std::vector<SimulationTest::MultiColorValue>& function) const;
-
 };
 
 #endif  /* _SimulationTest_H */

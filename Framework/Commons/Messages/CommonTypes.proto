@@ -23,7 +23,8 @@ enum CameraID {
   bottom = 1;
 }
 
-// TODO: who needs it?
+// this can be used to verify the order of joints
+// it should be the same order as in JointData.h
 enum JointID {
   HeadPitch = 0;
   HeadYaw = 1;
@@ -47,6 +48,13 @@ enum JointID {
   LAnklePitch = 19;
   RAnkleRoll = 20;
   LAnkleRoll = 21;
+  
+  // NOTE: those values don't exist on the old V3.2/V3.3 robots
+  //       so, we pu them at the end for easier support for the old format
+  LWristYaw = 22;
+  RWristYaw = 23;
+  LHand = 24;
+  RHand = 25;
 }
 
 message FloatVector2 {

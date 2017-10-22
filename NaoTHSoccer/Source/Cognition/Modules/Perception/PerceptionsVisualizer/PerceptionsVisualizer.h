@@ -21,7 +21,7 @@
 #include "Representations/Perception/LinePercept.h"
 #include "Representations/Perception/ScanLineEdgelPercept.h"
 #include "Representations/Perception/CameraMatrix.h"
-
+#include "Representations/Perception/MultiBallPercept.h"
 #include "Representations/Infrastructure/FieldInfo.h"
 
 //common representations
@@ -50,6 +50,8 @@ BEGIN_DECLARE_MODULE(PerceptionsVisualizer)
   REQUIRE(ArtificialHorizonTop)
   REQUIRE(BallPercept)
   REQUIRE(BallPerceptTop)
+  PROVIDE(MultiBallPercept)
+
   REQUIRE(FieldPercept)
   REQUIRE(FieldPerceptTop)
   REQUIRE(GoalPercept)

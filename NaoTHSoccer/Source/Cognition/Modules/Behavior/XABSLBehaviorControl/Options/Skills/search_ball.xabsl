@@ -2,7 +2,32 @@ option search_ball
 {  
 
   // stop first
-  initial state start
+  initial state walk_back
+  {
+    decision {
+      if(ball.know_where_itis)
+        goto finish;
+      else //if(state_time > 2000)
+      {
+        //goto start;
+        if(ball.preview.y > 0)
+          goto search_ball_rot_left;
+        else
+          goto search_ball_rot_right;
+      }
+    }
+    action {
+      motion.type = walk;
+      motion.walk_speed.x = -50; // mm
+      motion.walk_speed.y = 0; // mm
+      motion.walk_speed.rot = 0; //deg
+      motion.walk.coordinate = hip;
+      head.control_mode = search_for_ball;
+    }
+  }
+
+
+  state start
   {
     decision {
       if(executed_motion.type == stand)
@@ -16,6 +41,7 @@ option search_ball
         stay;
     }
     action {
+      path.routine = none;
       motion.type = stand;
       head.control_mode = search_for_ball;
     }
@@ -57,6 +83,7 @@ option search_ball
     }
     action {
       search_ball_simple(search_direction = left);
+      motion.walk.style = stable;
     }
   }
 
@@ -70,6 +97,7 @@ option search_ball
     }
     action {
       search_ball_simple(search_direction = right);
+      motion.walk.style = stable;
     }
   }
 

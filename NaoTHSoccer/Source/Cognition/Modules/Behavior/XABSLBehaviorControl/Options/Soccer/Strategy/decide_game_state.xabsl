@@ -22,6 +22,7 @@ option decide_game_state
       motion.type = init;
       arm.control_mode = normal;
       head.control_mode = stay_as_forced;
+      whistle.switch = 0;  //whistledetector off
       situationStatusOwnHalf = true;
       last_state_was_penalized = false;
     }
@@ -32,8 +33,10 @@ option decide_game_state
     {
       game.current_mode = ready;
       motion.type = stand;
-      arm.control_mode = back;
+      //arm.control_mode = back;
+      arm.control_mode = synchronised_with_walk;
       head.control_mode = stay_as_forced;
+      whistle.switch = 0;  //whistledetector off
       treat_lifted();
       fall_down_and_stand_up();
       last_state_was_penalized = false;
@@ -46,7 +49,8 @@ option decide_game_state
     {
       game.current_mode = set;
       motion.type = stand;
-      arm.control_mode = back;
+      //arm.control_mode = back;
+      arm.control_mode = synchronised_with_walk;
       head.control_mode = stay_as_forced;
       whistle.switch = 1; //whistledetector on
       treat_lifted();
@@ -61,7 +65,8 @@ option decide_game_state
     {
       game.current_mode = playing;
       motion.type = stand;
-      arm.control_mode = back;
+      //arm.control_mode = back;
+      arm.control_mode = synchronised_with_walk;
       head.control_mode = stay_as_forced;
       whistle.switch = 0;  //whistledetector off
       treat_lifted();
@@ -78,6 +83,7 @@ option decide_game_state
       motion.type = stand;
       arm.control_mode = normal;
       head.control_mode = (state_time < 2000) ? look_straight_ahead : stay_as_forced;
+      whistle.switch = 0;  //whistledetector off
       situationStatusOwnHalf = true;
       last_state_was_penalized = true;
     }
@@ -90,6 +96,7 @@ option decide_game_state
       motion.type = stand;
       arm.control_mode = normal;
       head.control_mode = stay_as_forced;
+      whistle.switch = 0;  //whistledetector off
       last_state_was_penalized = false;
     }
   }

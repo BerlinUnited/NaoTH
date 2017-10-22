@@ -49,6 +49,8 @@ END_DECLARE_MODULE(FieldDetector)
 class FieldDetector : private FieldDetectorBase
 {
 public:
+
+
   FieldDetector();
   virtual ~FieldDetector();
 
@@ -73,6 +75,16 @@ public:
     }
     double pruneThresholdArea;
   } theParameters;
+
+private:
+
+
+  struct cmpVectorX {
+    bool operator()(const Vector2i &first, const Vector2i &second) const {
+
+    return (first.x<second.x);
+    }
+  } cmpVectorInstance;
 
 private:
   CameraInfo::CameraID cameraID;

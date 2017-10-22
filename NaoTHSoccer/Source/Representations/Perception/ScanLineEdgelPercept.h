@@ -24,7 +24,7 @@ public:
   class EndPoint
   {
   public:
-    EndPoint():color(ColorClasses::none), ScanLineID(0), valid(false), greenFound(false){}
+    EndPoint() : color(ColorClasses::none), ScanLineID(0), valid(false), greenFound(false) {}
     Vector2i posInImage;
     Vector2d posOnField;
     ColorClasses::Color color;

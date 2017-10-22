@@ -69,11 +69,12 @@ private:
     Parameters() : ParameterList("GameLogger")
     {
       PARAMETER_REGISTER(logBallCandidates) = false;
-      
+      PARAMETER_REGISTER(logBodyStatus) = false;
       syncWithConfig();
     }
 
-    int logBallCandidates;
+    bool logBallCandidates;
+    bool logBodyStatus;
   } params;
 
 private:
@@ -82,7 +83,9 @@ private:
   LogfileManager < 30 > logfileManager;
 
   unsigned int lastCompleteFrameNumber;
-  bool ignore_init_state;
+  
+  PlayerInfo::RobotState oldState;
+  bool firstRecording;
 };
 
 #endif // GAMELOGGER_H
