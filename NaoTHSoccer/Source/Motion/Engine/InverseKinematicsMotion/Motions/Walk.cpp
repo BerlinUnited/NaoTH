@@ -23,6 +23,8 @@ Walk::Walk() : IKMotion(getInverseKinematicsMotionEngineService(), motion::walk,
   DEBUG_REQUEST_REGISTER("Walk:plot_genTrajectoryWithSplines", "plot spline interpolation to parametrize 3D foot trajectory", false);
 
   DEBUG_REQUEST_REGISTER("Walk:useBezierBased2", "use method 2 for bezier interpolation", false);
+
+  emergencyCounter = 0;
 }
   
 void Walk::execute()
@@ -111,13 +113,16 @@ void Walk::execute()
     } else {
       c.localInHip();
     }
-      
+
     getEngine().rotationStabilize(
       getInertialModel(),
       getGyrometerData(),
       getRobotInfo().getBasicTimeStepInSecond(),
+      parameters().stabilization.rotation.P,
+      parameters().stabilization.rotation.VelocityP,
+      parameters().stabilization.rotation.D,
       c);
-  } 
+  }
   else if(getCalibrationData().calibrated && parameters().stabilization.rotationStabilizeRC16)
   {
     if(stepBuffer.first().footStep.liftingFoot() == FootStep::LEFT) {
@@ -129,9 +134,12 @@ void Walk::execute()
     }
     
     getEngine().rotationStabilizeRC16(
-      getInertialSensorData(),
+      getInertialSensorData().data,
       getGyrometerData(),
       getRobotInfo().getBasicTimeStepInSecond(),
+      parameters().stabilization.rotationRC16.P,
+      parameters().stabilization.rotationRC16.VelocityP,
+      parameters().stabilization.rotationRC16.D,
       c);
   }
   else if(getCalibrationData().calibrated && parameters().stabilization.rotationStabilizeNewIMU)
@@ -144,10 +152,13 @@ void Walk::execute()
       c.localInHip();
     }
 
-    getEngine().rotationStabilizenNewIMU(
-      getIMUData(),
+    getEngine().rotationStabilizeRC16(
+      getIMUData().orientation,
       getGyrometerData(),
       getRobotInfo().getBasicTimeStepInSecond(),
+      parameters().stabilization.rotationNewIMU.P,
+      parameters().stabilization.rotationNewIMU.VelocityP,
+      parameters().stabilization.rotationNewIMU.D,
       c);
   }
 
@@ -244,6 +255,19 @@ void Walk::calculateNewStep(const Step& lastStep, Step& newStep, const WalkReque
 
   if ( getMotionRequest().id != getId() || (do_emergency_stop && !walkRequest.stepControl.isProtected))
   {
+    // TODO: find reason for deadlock
+    // current fix: force leaving emergency_stop after some cycles
+    if(do_emergency_stop) {
+      emergencyCounter++;
+    }
+
+    PLOT("Walk:emergencyCounter",emergencyCounter);
+
+    if(emergencyCounter > parameters().stabilization.maxEmergencyCounter){
+        emergencyCounter = 0;
+        com_errors.clear();
+    }
+
     // try to make a last step to align the feet if it is required
     if ( getMotionRequest().standardStand ) {
       newStep.footStep = theFootStepPlanner.finalStep(lastStep.footStep, walkRequest);
@@ -259,6 +283,9 @@ void Walk::calculateNewStep(const Step& lastStep, Step& newStep, const WalkReque
       std::cout << "walk stopping ..." << std::endl;
     }
     return;
+  } else {
+      // reset emergencyCounter if the stop was succesful (no deadlock case)
+      emergencyCounter = 0;
   }
 
   if (walkRequest.stepControl.stepRequestID == getMotionStatus().stepControl.stepRequestID + 1)
@@ -377,10 +404,12 @@ void Walk::planZMP()
       // TODO: hipOffsetBasedOnStepLength.y?
       if (planningStep.type == STEP_CONTROL && planningStep.walkRequest.stepControl.type == WalkRequest::StepControlRequest::KICKSTEP)
       {
-          zmpOffsetX = parameters().general.hipOffsetX + parameters().stabilization.maxHipOffsetBasedOnStepLengthForKicks.x * std::abs(currentStepLength.x)/parameters().limits.maxCtrlLength;
+          zmpOffsetX = parameters().general.hipOffsetX
+                     + parameters().stabilization.maxHipOffsetBasedOnStepLengthForKicks.x * ((currentStepLength.x > 0) ? currentStepLength.x / parameters().limits.maxCtrlLength : 0);
           zmpOffsetY = parameters().kick.ZMPOffsetY    + parameters().hip.ZMPOffsetYByCharacter * (1-planningStep.walkRequest.character);
 
-          newZMPOffsetX = parameters().zmp.bezier.offsetXForKicks + parameters().stabilization.maxHipOffsetBasedOnStepLengthForKicks.x * std::abs(currentStepLength.x)/parameters().limits.maxCtrlLength;
+          newZMPOffsetX = parameters().zmp.bezier.offsetXForKicks
+                        + parameters().stabilization.maxHipOffsetBasedOnStepLengthForKicks.x * ((currentStepLength.x > 0) ? currentStepLength.x / parameters().limits.maxCtrlLength : 0);
           newZMPOffsetY = parameters().zmp.bezier.offsetYForKicks + parameters().hip.ZMPOffsetYByCharacter * (1-planningStep.walkRequest.character);
       }
       else

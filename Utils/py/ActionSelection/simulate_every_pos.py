@@ -7,6 +7,22 @@ from tools import Simulation as Sim
 from naoth import math2d as m2d
 from tools import field_info as field
 
+"""
+For every position(x, y, rot) the decision is calculated r times with s samples. This script runs
+for a long time. It is recommended to run each instance with a seperate screen. The results are written
+in a data subfolder (make sure it exists before) as pickle file. An example for analyzing this data is
+located in evaluation/evaluate_every_pos.py
+
+
+For killing all screens: 
+    screen -ls | grep Detached | cut -d. -f1 | awk '{print $1}' | xargs kill
+
+Example:
+    for using the 12 samples and 100 repetitions run:
+
+        $ python simulate_every_pos.py -s 12 -r 100
+"""
+
 
 class State:
     def __init__(self):
@@ -23,7 +39,7 @@ class State:
         self.pose.rotation = rotation
 
 
-def main(num_particles, num_reps, x_step, y_step, rotation_step):
+def main(num_samples, num_reps, x_step, y_step, rotation_step):
     # This takes hours
     state = State()
 
@@ -47,7 +63,7 @@ def main(num_particles, num_reps, x_step, y_step, rotation_step):
                     # Simulate Consequences
                     for action in action_list:
                         single_consequence = a.ActionResults([])
-                        actions_consequences.append(Sim.simulate_consequences(action, single_consequence, state, num_particles))
+                        actions_consequences.append(Sim.simulate_consequences(action, single_consequence, state, num_samples))
 
                     # Decide best action
                     best_action = Sim.decide_smart(actions_consequences, state)
@@ -56,14 +72,14 @@ def main(num_particles, num_reps, x_step, y_step, rotation_step):
                 # write the position and decision in on list
                 whole_decisions.append([x, y, rot, decision_histogramm])
 
-    pickle.dump(whole_decisions, open('data/decision-simulate_every_pos-' + str(num_particles) + '-' + str(num_reps) + '.pickle', "wb"))
+    pickle.dump(whole_decisions, open('data/decision-simulate_every_pos-' + str(num_samples) + '-' + str(num_reps) + '.pickle', "wb"))
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description='Calculates a histogram of decisions for each position on the field',
     )
-    parser.add_argument("-p", "--num_particles", help="input the number of particles used for on action", type=int, default=30)
+    parser.add_argument("-s", "--num_samples", help="input the number of samples used for on action", type=int, default=30)
     parser.add_argument("-r", "--num_reps", help="input the number of repeats per position", type=int, default=1)
     parser.add_argument("-x", "--res_x", help="input the step size for rotation", type=int, default=200)
     parser.add_argument("-y", "--res_y", help="input the step size for rotation", type=int, default=200)
@@ -71,7 +87,4 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    main(args.num_particles, args.num_reps, args.res_x, args.res_y, args.res_rot)
-
-    # python simulate_every_pos.py -p 12 -r 100
-  	# for killing all screens: screen -ls | grep Detached | cut -d. -f1 | awk '{print $1}' | xargs kill
+    main(args.num_samples, args.num_reps, args.res_x, args.res_y, args.res_rot)

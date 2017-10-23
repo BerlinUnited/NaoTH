@@ -17,8 +17,9 @@
 #include "Representations/Motion/MotionStatus.h"
 #include "Representations/Modeling/RoleDecisionModel.h"
 #include "Representations/Modeling/SoccerStrategy.h"
-#include "Representations/Modeling/PlayersModel.h"
+//#include "Representations/Modeling/PlayersModel.h"
 #include "Representations/Modeling/KickActionModel.h"
+#include "Representations/Modeling/TeamBallModel.h"
 
 #include "Tools/Debug/DebugParameterList.h"
 
@@ -34,11 +35,12 @@ BEGIN_DECLARE_MODULE(TeamCommSender)
   REQUIRE(MotionStatus)
   REQUIRE(RoleDecisionModel)
   REQUIRE(SoccerStrategy)
-  REQUIRE(PlayersModel)
+  //REQUIRE(PlayersModel)
   REQUIRE(TeamMessage)
   REQUIRE(BatteryData)
   REQUIRE(KickActionModel)
   REQUIRE(CpuData)
+  REQUIRE(TeamBallModel)
 
   PROVIDE(TeamMessageData)
   PROVIDE(TeamMessageDataOut)

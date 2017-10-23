@@ -126,7 +126,7 @@ void FieldInfo::calculateCrossings()
 
 
   ownGoalBackLeft = Vector2d(ownGoalPostLeft.x - goalDepth, ownGoalPostLeft.y);
-  ownGoalBackRight = Vector2d(ownGoalPostRight.x - goalDepth, opponentGoalPostRight.y);  
+  ownGoalBackRight = Vector2d(ownGoalPostRight.x - goalDepth, ownGoalPostRight.y);  
   ownGoalRect = Geometry::Rect2d(ownGoalBackRight, ownGoalPostLeft); 
 
   oppGoalBackLeft = Vector2d(opponentGoalPostLeft.x + goalDepth, opponentGoalPostLeft.y);

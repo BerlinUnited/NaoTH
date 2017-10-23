@@ -8,7 +8,6 @@ pgf_with_rc_fonts = {
     "font.family": "serif",
     "font.size": 16,
     "legend.fontsize": 16,
-    # "font.serif": [],                   # use latex default serif font
     "font.sans-serif": ["DejaVu Sans"],  # use a specific sans-serif font
 }
 mlp.rcParams.update(pgf_with_rc_fonts)

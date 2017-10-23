@@ -21,11 +21,10 @@ if __name__ == "__main__":
     y_dim = y.size
     zm = np.zeros((y_dim, x_dim))
 
-    own_robots = [m2d.Vector2(-2000, -2000), m2d.Vector2(2000, 1000)]
-    opp_robots = [m2d.Vector2(0, 1000), m2d.Vector2(3000, 2000), m2d.Vector2(-1500, -500)]
+    own_robots = [m2d.Vector2(0, 0)]
     # TODO where should the friendly robot be according to the graphic in my thesis
     # own_robots = []
-    # opp_robots = []
+    opp_robots = []
     for i in range(int(y_dim)):
         for j in range(int(x_dim)):
             zm[i, j] = pfield.evaluate_action_with_robots(m2d.Vector2(xm[i][j], ym[i][j]), opp_robots, own_robots)
@@ -53,18 +52,8 @@ if __name__ == "__main__":
     CS = plt.contour(CS1, levels=CS1.levels)
     plt.clabel(CS, inline=1, fontsize=10)
 
-    count1 = 1
     for robot in own_robots:
-        ax.add_artist(Circle(xy=(robot.x, robot.y), radius=50, fill=True, color='white'))
+        ax.add_artist(Circle(xy=(robot.x, robot.y), radius=80, fill=True, color='red'))
         # ax.arrow(robot.x, origin.y, arrow_head.x, arrow_head.y, head_width=100, head_length=100, fc='k', ec='k')
-        ax.text(robot.x, robot.y, "own "+str(count1), fontsize=5)
-        count1 += 1
-
-    count2 = 1
-    for robot in opp_robots:
-        ax.add_artist(Circle(xy=(robot.x, robot.y), radius=50, fill=True, color='red'))
-        # ax.arrow(robot.x, origin.y, arrow_head.x, arrow_head.y, head_width=100, head_length=100, fc='k', ec='k')
-        ax.text(robot.x, robot.y, "opp " + str(count2), fontsize=5)
-        count2 += 1
 
     plt.show()
