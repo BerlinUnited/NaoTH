@@ -61,7 +61,8 @@ class Serializer<DebugPlot>
 
 #ifdef DEBUG
 /** Debug output stream, usage like "DOUT("ball_pos:" << x << ", " << y */
-#define PLOT_GENERIC(id,x,y) { ASSERT(std::isfinite(x)); ASSERT(std::isfinite(y)); getDebugPlot().addPlot(id,x,y); } ((void)0)
+// HACK: std::isfinite doen't work for integral types in VS2013
+#define PLOT_GENERIC(id,x,y) { ASSERT(std::isfinite(static_cast<double>(x))); ASSERT(std::isfinite(static_cast<double>(y))); getDebugPlot().addPlot(id,x,y); } ((void)0)
 #define PLOT(id,value) DEBUG_REQUEST_SLOPPY(std::string("Plot:")+std::string(id), PLOT_GENERIC(id, getFrameInfo().getTime() ,value); )
 #else
 /* ((void)0) - that's a do-nothing statement */
