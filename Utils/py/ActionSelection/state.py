@@ -1,6 +1,7 @@
 import math
 from naoth import math2d as m2d
 
+# represents the robots view on the situation
 
 class State:
     def __init__(self, x=1000, y=100):
