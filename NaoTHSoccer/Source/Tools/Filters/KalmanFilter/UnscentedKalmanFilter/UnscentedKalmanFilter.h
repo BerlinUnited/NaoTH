@@ -4,15 +4,15 @@
 #include <Tools/naoth_eigen.h>
 
 #include <vector>
-#include <Eigen/StdVector>
-
+//#include <Eigen/StdVector>
+/*
 // TODO: remove pragma
 #if defined(__GNUC__)
 #pragma GCC diagnostic ignored "-Wconversion"
 #endif
 #include <Eigen/Geometry>
 #include <Eigen/Dense>
-
+*/
 template <class S>
 class UKF {
 

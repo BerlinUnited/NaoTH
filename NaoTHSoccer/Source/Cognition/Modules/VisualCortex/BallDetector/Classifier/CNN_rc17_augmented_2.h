@@ -10,14 +10,13 @@
 class CNN_rc17_augmented_2 : public AbstractCNNClassifier {
 
 public:
-	CNN_rc17_augmented_2(){out.open("example.txt");}
 
-	~CNN_rc17_augmented_2(){out.close();}
-
-std::ofstream out;
 	bool classify(const BallCandidates::Patch& p);
+
   virtual float getBallConfidence();
   virtual float getNoballConfidence();
+
+private:
 
 	// declare copied intial input array
 	float out_step0[16][16][1];
