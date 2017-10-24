@@ -13,14 +13,13 @@ from compare_decision_schemes import play_striker as striker
 import multiprocessing as mp
 
 """
-For every position(x, y) and a fixed rotation the time and the number of kicks and turns are calculated for different strategies.
-The output is written in two pickle files. The strategy evaluation scripts for a single position are located in
-the compare_decision_schemes sub folder. The script takes care not to overwrite previous calculated data.
+  For a certain amount of random positions on the field the path to the goal is calculated for each
+  strategy and written in a pickle file.
 
 Example:
     run without any parameters
 
-        $ python compare_decision_schemes.py
+        $ python compare_decision_schemes_newsim_random.py
 """
 
 # set up the available actions
@@ -33,25 +32,28 @@ actions = {
 
 all_actions = striker.select(actions, ["none", "kick_short", "sidekick_left", "sidekick_right"])
 
-
 counter = None
 
+
 def init(args):
-    ''' store the counter for later use '''
+    """ store the counter for later use """
     global counter
     counter = args
 
+
 def wrap_experiment(strategy, actions):
-  return lambda origin: striker.run_experiment(origin, strategy, actions)
+    return lambda origin: striker.run_experiment(origin, strategy, actions)
+
 
 simulations = {
-  'optimal_one'   : wrap_experiment(striker.optimal_kick_strategy         , striker.select(actions, ["none", "kick_short"])),
-  'optimal_all'   : wrap_experiment(striker.optimal_kick_strategy         , all_actions),
-  'fast'          : wrap_experiment(striker.direct_kick_strategy_cool     , all_actions),
-  'fast_best'     : wrap_experiment(striker.direct_kick_strategy_cool_best, all_actions),
-  'optimal_value' : wrap_experiment(striker.optimal_value_strategy        , all_actions)
+  'optimal_one': wrap_experiment(striker.optimal_kick_strategy, striker.select(actions, ["none", "kick_short"])),
+  'optimal_all': wrap_experiment(striker.optimal_kick_strategy, all_actions),
+  'fast': wrap_experiment(striker.direct_kick_strategy_cool, all_actions),
+  'fast_best': wrap_experiment(striker.direct_kick_strategy_cool_best, all_actions),
+  'optimal_value': wrap_experiment(striker.optimal_value_strategy, all_actions)
 }
-  
+
+
 def make_run((idx, pose)):
 
     run = {'pose': pose, 'sim': {}}
@@ -60,14 +62,15 @@ def make_run((idx, pose)):
     origin.pose = pose
     
     for name, s in simulations.iteritems():
-      run['sim'][name] = s(origin)
+        run['sim'][name] = s(origin)
       
     global counter
     with counter.get_lock():
         counter.value += 1
-        print "{0} done".format(counter.value)
+        print("{0} done".format(counter.value))
   
     return run
+
 
 def main():
 
@@ -84,11 +87,11 @@ def main():
       'frames': []
     }
     
-    positions = [(idx, m2d.Pose2D(m2d.Vector2(x,y),r)) for idx, (x,y,r) in enumerate(zip(random_x,random_y,random_r))]
+    positions = [(idx, m2d.Pose2D(m2d.Vector2(x, y), r)) for idx, (x, y, r) in enumerate(zip(random_x, random_y, random_r))]
     
     counter = mp.Value('i', 0)
 
-    pool = mp.Pool(initializer = init, initargs = (counter, ), processes=4)
+    pool = mp.Pool(initializer=init, initargs=(counter, ), processes=4)
     experiment['frames'] = pool.map(make_run, positions)
     pool.close()
     
