@@ -12,6 +12,9 @@
 
 #include "Matrix3x3.h"
 
+#include <cmath>
+#include <limits>
+
 /**
  * Representation for 3x3 RotationMatrices
  */
@@ -234,7 +237,7 @@ public:
   {
     DATATYPE theta = acos((this->c[0][0] + this->c[1][1] + this->c[2][2] - 1) / 2);
     DATATYPE k = theta / 2 / sin(theta);
-    if (Math::isNan(k)) {
+    if (std::isnan(k)) {
       k = 0.5;
     }
     return Vector3<DATATYPE> (this->c[1][2] - this->c[2][1],

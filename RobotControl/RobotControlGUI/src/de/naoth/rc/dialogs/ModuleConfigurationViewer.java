@@ -478,6 +478,7 @@ public class ModuleConfigurationViewer extends AbstractDialog
 
         this.cbModules.removeAllItems();
         this.cbRepresentations.removeAllItems();
+        this.moduleConfigTree.clear(); // clear before adding/updating new ones
 
         ArrayList<Node> modules = new ArrayList<Node>();
         ArrayList<Node> representations = new ArrayList<Node>();
