@@ -9,7 +9,7 @@
 
 #include <Tools/Math/Vector2.h>
 #include <Tools/ImageProcessing/ImagePrimitives.h>
-#include <Tools/ColorClasses.h>
+//#include <Tools/ColorClasses.h>
 
 #include <Tools/DataStructures/Serializer.h>
 

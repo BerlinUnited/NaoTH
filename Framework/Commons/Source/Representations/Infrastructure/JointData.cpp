@@ -1,10 +1,9 @@
 
-#include <iterator>
+#include "JointData.h"
 
-#include "Representations/Infrastructure/JointData.h"
-#include "Tools/Math/Common.h"
 #include "PlatformInterface/Platform.h"
 #include "Tools/Debug/NaoTHAssert.h"
+
 #include "Messages/Framework-Representations.pb.h"
 #include <google/protobuf/io/zero_copy_stream_impl.h>
 
