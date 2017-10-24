@@ -16,6 +16,7 @@ import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
@@ -52,7 +53,11 @@ public class RoboViz extends AbstractDialog
         
         String jarFile = Plugin.parent.getConfig().getProperty(CONFIG_KEY);
         if(jarFile != null) {
-            showRoboViz(new File(jarFile));
+            // load/show roboviz after everything else was initialized and is displayed
+            // INFO: if RC/JavaVM crashes, we have to wait longer -> 'till the frame is shown!
+            SwingUtilities.invokeLater(() -> {
+                showRoboViz(new File(jarFile));
+            });
         }
     }
     
