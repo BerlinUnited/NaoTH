@@ -12,10 +12,6 @@
 #include <XabslEngine/XabslEngine.h>
 
 
-#include "Tools/Math/Common.h"
-#include <math.h>
-
-
 // representations
 #include "Representations/Infrastructure/LEDRequest.h"
 
