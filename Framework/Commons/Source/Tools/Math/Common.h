@@ -5,6 +5,7 @@
 
 #include <assert.h>
 #include <math.h>
+#include <ctime>
 
 #include <algorithm>
 #include <vector>
