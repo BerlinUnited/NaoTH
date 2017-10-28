@@ -37,8 +37,8 @@ SPLStandardMessage TeamMessageData::createSplMessage() const
     spl.currentPositionConfidence = (uint8_t) positionConfidence;
     spl.currentSideConfidence = (uint8_t) sideConfidence;
 
-    // in seconds!
-    spl.ballAge = (float) (ballAge / 1000.0);
+    // in seconds (only if positive)!
+    spl.ballAge = (float) ((ballAge < 0)? ballAge : ballAge / 1000.0);
     spl.ball[0] = (float) ballPosition.x;
     spl.ball[1] = (float) ballPosition.y;
     spl.ballVel[0] = (float) ballVelocity.x;
