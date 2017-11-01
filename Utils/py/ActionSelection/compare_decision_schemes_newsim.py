@@ -1,14 +1,11 @@
 import os
 import pickle
 from tools import field_info as field
-from compare_decision_schemes.current_impl_goaltime import main as current_impl
-from compare_decision_schemes.particle_filter_goaltime import main as particle_filter
 from state import State
 from tools import action as a
 import timeit
-import copy
 import numpy as np
-from compare_decision_schemes import play_striker as Striker
+from compare_decision_schemes import play_striker as striker
 
 """
 For every position(x, y) and a fixed rotation the time and the number of kicks and turns are calculated for different strategies.
@@ -59,7 +56,7 @@ def main():
       'frames': []
     }
 
-    all_actions = Striker.select(actions, ["none", "kick_short", "sidekick_left", "sidekick_right"])
+    all_actions = striker.select(actions, ["none", "kick_short", "sidekick_left", "sidekick_right"])
     
     # run for the whole field
     num_done = 0
@@ -73,13 +70,13 @@ def main():
             origin.pose.translation.x = x
             origin.pose.translation.y = y
     
-            o_sim = Striker.run_experiment(origin, Striker.optimal_kick_strategy, Striker.select(actions, ["none", "kick_short"]))
+            o_sim = striker.run_experiment(origin, striker.optimal_kick_strategy, striker.select(actions, ["none", "kick_short"]))
             run['sim']['optimal_one'] = o_sim
             
-            p_sim = Striker.run_experiment(origin, Striker.optimal_kick_strategy, all_actions)
+            p_sim = striker.run_experiment(origin, striker.optimal_kick_strategy, all_actions)
             run['sim']['optimal_all'] = p_sim
         
-            c_sim = Striker.run_experiment(origin, Striker.direct_kick_strategy, all_actions)
+            c_sim = striker.run_experiment(origin, striker.direct_kick_strategy, all_actions)
             run['sim']['fast'] = c_sim
             
             experiment['frames'] += [run]
@@ -92,11 +89,11 @@ def main():
     # make sure not to overwrite anything
     file_idx = 0
     while True:
-        file = 'data/simulation_{0}.pickle'.format(file_idx)
-        if os.path.exists(file):
+        output_file = 'data/simulation_{0}.pickle'.format(file_idx)
+        if os.path.exists(output_file):
             file_idx += 1
         else:
-            pickle.dump(experiment, open(file, "wb"))
+            pickle.dump(experiment, open(output_file, "wb"))
             break
 
 

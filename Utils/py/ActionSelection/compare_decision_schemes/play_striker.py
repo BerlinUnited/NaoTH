@@ -56,11 +56,13 @@ def minimal_rotation(state, action, turn_direction):
             action_dir += turn_direction*turn_speed
 
     return action_dir
-  
-def direct_kick_strategy_cool_best(state, action_list):
-  return direct_kick_strategy_cool(state, action_list, True)
 
-def direct_kick_strategy_cool(state, action_list, take_best = False):
+
+def direct_kick_strategy_cool_best(state, action_list):
+    return direct_kick_strategy_cool(state, action_list, True)
+
+
+def direct_kick_strategy_cool(state, action_list, take_best=False):
   
     actions_consequences = []
     rotations = []
@@ -101,13 +103,12 @@ def direct_kick_strategy_cool(state, action_list, take_best = False):
         
     # Decide best action
     if take_best:
-    	selected_action_idx = Sim.decide_minimal(actions_consequences, state)
-    	return selected_action_idx, rotations[selected_action_idx] 
+        selected_action_idx = Sim.decide_minimal(actions_consequences, state)
+        return selected_action_idx, rotations[selected_action_idx]
     else:
-      	# print fastest_action_idx, selected_action_idx
-      	return fastest_action_idx, fastest_action_dir
+        # print fastest_action_idx, selected_action_idx
+        return fastest_action_idx, fastest_action_dir
 
-    
 
 def direct_kick_strategy(state, action_list):
   
@@ -184,8 +185,7 @@ def optimal_value_strategy(state, action_list):
         
         # restore previous rotation
         state.pose.rotate(-rotation)
-        
-        
+
     # Decide best action
     selected_action_idx = Sim.decide_minimal(actions_consequences, state)
 
@@ -260,7 +260,7 @@ class Simulator:
             self.state.ball_position = new_ball_position.pos()
     
     
-def run_experiment(origin, strategy, action_list, max_iterations = 30):
+def run_experiment(origin, strategy, action_list, max_iterations=30):
   
     state = copy.deepcopy(origin)
     simulator = Simulator(state, strategy, action_list)
