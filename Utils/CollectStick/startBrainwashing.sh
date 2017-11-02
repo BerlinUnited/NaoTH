@@ -9,7 +9,7 @@
 check_for_errors() {
 	if [ "$?" -ne 0 ]
 	then
-		sudo -u nao /usr/bin/paplay /home/nao/naoqi/Media/1.wav
+		sudo -u nao /usr/bin/paplay /home/nao/naoqi/Media/error_while_collecting_logs.wav
 		# if argument is available - write to systemlog
 		if [ ! -z "$1" ]
 		then
@@ -120,7 +120,7 @@ rm $errorFile
 sync
 
 # needed to play sound before starting naoth! otherwise the sound could get "lost" (no sound)
-sudo -u nao /usr/bin/paplay /home/nao/naoqi/Media/nicknacknuck.wav
+sudo -u nao /usr/bin/paplay /home/nao/naoqi/Media/finished_collecting_logs.wav
 
 logger "Brainwasher:END, starting naoth"
 

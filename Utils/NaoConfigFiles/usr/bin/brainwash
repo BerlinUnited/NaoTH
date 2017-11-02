@@ -13,8 +13,10 @@ then
   if [ $(blkid -s TYPE -o value /dev/brainwasher) != "vfat" ]
   then
     logger -t brainwasher "ERROR: usb wrong filesystem"
+    sudo -u nao /usr/bin/paplay /home/nao/naoqi/Media/error_usb_wrong_filesystem.wav
   else
     logger -t brainwasher "ERROR: usb unknown mount error"
+    sudo -u nao /usr/bin/paplay /home/nao/naoqi/Media/error_usb_unknown_mount_error.wav
   fi
 else
   cd /media/brainwasher
@@ -25,6 +27,7 @@ else
     ./startBrainwashing.sh
   else
     logger -t brainwasher "ERROR: missing brainwasher script"
+    sudo -u nao /usr/bin/paplay /home/nao/naoqi/Media/error_missing_usb_brainwasher_script.wav
   fi
 
   # mountpoint cleanup
@@ -36,9 +39,9 @@ else
     # max. "COUNTER" attempts to unmount device, otherwise force unmount and break -> prevent infinite loop
     if [ $COUNTER -le 0 ]
     then
-      logger -t brainwasher "ERROR: unmounting usb"
       # play error sound
-      sudo -u nao /usr/bin/paplay /usr/share/naoqi/wav/outch.wav
+      logger -t brainwasher "ERROR: unmounting usb"
+      sudo -u nao /usr/bin/paplay /home/nao/naoqi/Media/error_unmounting_usb_drive.wav
       # kill all process accessing mount point
       fuser -c -k /media/brainwasher &> /dev/null
       # force unmounting
