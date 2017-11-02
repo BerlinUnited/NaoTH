@@ -207,7 +207,7 @@ void InertiaSensorCalibrator::execute()
     // calculate expected acceleration sensor reading
     Vector2d inertialExpected(calculatedRotation.getXAngle(), calculatedRotation.getYAngle());
     Vector3d accExpected(calculatedRotation[0].z, calculatedRotation[1].z, calculatedRotation[2].z);
-    accExpected *= -Math::g;
+    accExpected *= Math::g;
 
     // add sensor reading to the collection
     inertialValues.add(inertialExpected - getInertialSensorData().data);
