@@ -91,6 +91,12 @@ done
 tar cfzv /media/brainwasher/$current_date-$current_nao/config.tar.gz -C /home/nao/naoqi Config
 check_for_errors "Brainwasher:ERROR copying config"
 
+# copy logs of naoth binary (std::out/::err) and clear them afterwards
+cp "/var/log/naoth.log" "/var/log/naoth_err.log" /media/brainwasher/$current_date-$current_nao/
+check_for_errors "Brainwasher:ERROR copying /var/log/naoth.log"
+> /var/log/naoth.log
+> /var/log/naoth_err.log
+
 # find and copy trace dump files since boot and log errors
 find /home/nao -maxdepth 1 -type f -mmin -$current_boot_time -iname "trace.dump.*"  -print0 | tar czvf /media/brainwasher/$current_date-$current_nao/dumps.tar.gz -P --null -T -  2> $errorFile
 logger -f $errorFile
