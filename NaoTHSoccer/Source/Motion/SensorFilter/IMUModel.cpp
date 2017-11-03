@@ -117,7 +117,7 @@ void IMUModel::writeIMUData(){
     // TODO: prediction or state?
     getIMUData().acceleration.x = ukf_acc_global.state.acceleration()(0,0);
     getIMUData().acceleration.y = ukf_acc_global.state.acceleration()(1,0);
-    getIMUData().acceleration.z = ukf_acc_global.state.acceleration()(2,0) + 9.81; //Math::g
+    getIMUData().acceleration.z = ukf_acc_global.state.acceleration()(2,0) - 9.81; //Math::g
 
     getIMUData().location += getIMUData().velocity * getRobotInfo().getBasicTimeStepInSecond() + getIMUData().acceleration * getRobotInfo().getBasicTimeStepInSecond() * getRobotInfo().getBasicTimeStepInSecond() * 0.5;
     getIMUData().velocity += getIMUData().acceleration * getRobotInfo().getBasicTimeStepInSecond();
