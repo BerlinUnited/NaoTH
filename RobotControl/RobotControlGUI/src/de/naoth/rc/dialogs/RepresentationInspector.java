@@ -322,6 +322,7 @@ public class RepresentationInspector extends AbstractDialog {
         @Override
         public void newObjectReceived(byte[] object) {
             //System.out.println(new String(result));
+            String lastSelection = (String) representationList.getSelectedValue();
             String[] representations = new String(object).split("\n");
 
             DefaultListModel model = new DefaultListModel();
@@ -329,6 +330,7 @@ public class RepresentationInspector extends AbstractDialog {
                 model.addElement(representation);
             }
             representationList.setModel(model);
+            representationList.setSelectedValue(lastSelection, true);
         }
 
         @Override
