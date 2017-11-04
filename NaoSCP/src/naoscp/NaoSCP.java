@@ -46,6 +46,7 @@ public class NaoSCP extends javax.swing.JPanel {
     private final File configPath = new File(configlocation, "config");
 
     private final Properties config = new Properties();
+    private Frame parentFrame = null;
 
     /**
      * Creates new form NaoSCP
@@ -367,7 +368,7 @@ public class NaoSCP extends javax.swing.JPanel {
           
         this.logTextPanel.clear();
         
-        final DeployDialog deployDialog = new DeployDialog((Frame) getParent());
+        final DeployDialog deployDialog = new DeployDialog(getParentFrame());
 
         if (deployDialog.showOpenDialog(this) == DeployDialog.OPTION.APPROVE) {
             
@@ -648,6 +649,23 @@ public class NaoSCP extends javax.swing.JPanel {
         } catch (IOException ex) {
             Logger.getGlobal().log(Level.SEVERE, "Could not write config file.", ex);
         }
+    }
+    
+    /**
+     * Returns the Frame this panel belongs to.
+     * If the parent container isn't a Frame and there wasn't set any parent frame, then 'null' is returned.
+     * @return the parent frame or null
+     */
+    public Frame getParentFrame() {
+        return parentFrame==null?((getParent() instanceof Frame)?(Frame)getParent():null):parentFrame;
+    }
+    
+    /**
+     * Sets the parent frame of this panel.
+     * @param f the frame this panel should belong to
+     */
+    public void setParentFrame(Frame f) {
+        parentFrame = f;
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
