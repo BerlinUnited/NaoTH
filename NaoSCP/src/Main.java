@@ -38,10 +38,10 @@ public class Main {
     
     // set frame attributes
     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    frame.setTitle("NaoSCP 1.1");
+    frame.setTitle("NaoSCP " + NaoSCP.VERSION);
     frame.setLocationByPlatform(true);
-    frame.setMinimumSize(new java.awt.Dimension(0, 495));
-    
+    frame.setMinimumSize(new java.awt.Dimension(1028, 570));
+    frame.setPreferredSize(new java.awt.Dimension(1028, 570));
     // set content (panel)
     Container content = frame.getContentPane();
     content.setLayout(new BoxLayout(content, BoxLayout.PAGE_AXIS));

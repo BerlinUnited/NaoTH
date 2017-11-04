@@ -33,6 +33,8 @@ import naoscp.tools.*;
  */
 public class NaoSCP extends javax.swing.JPanel {
 
+    public static final String VERSION = "1.1";
+    
     private final DateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
     
     private final String projectPath = getBasePath();
