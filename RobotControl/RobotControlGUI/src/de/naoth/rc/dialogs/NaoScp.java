@@ -70,29 +70,24 @@ public class NaoScp extends AbstractDialog
         try {
             // subclassed classloader
             URLClassLoader loader = new URLClassLoader (new URL[] {file.toURI().toURL()}, this.getClass().getClassLoader());
-            // use the loader for the panel (adding lib paths)
-//            Class viewerLoader = Class.forName ("rv.ViewerPanelLoader", true, loader);
-//            Method add = viewerLoader.getDeclaredMethod ("load");
-//            Object v = add.invoke(null);
             // load the panel class
-            Class viewerClass = Class.forName ("naoscp.NaoSCP", true, loader);
-            JPanel panel = (JPanel) viewerClass.getConstructor().newInstance();
-//            System.out.println(v);
+            Class panelClass = Class.forName ("naoscp.NaoSCP", true, loader);
+            JPanel panel = (JPanel) panelClass.getConstructor().newInstance();
             // set the parent frame to the RC frame
-//            Method setParentFrame = viewerClass.getDeclaredMethod ("setFrame", javax.swing.JFrame.class);
-//            setParentFrame.invoke(v, Plugin.parent);
-            // retrieve and add roboviz panel
+            Method setParentFrame = panelClass.getDeclaredMethod ("setParentFrame", java.awt.Frame.class);
+            setParentFrame.invoke(panel, Plugin.parent);
+            // retrieve and add naoscp panel
             replaceCenterComponent(panel);
-            // successfully loaded roboviz panel
+            // successfully loaded naoscp panel
             return true;
         } catch (java.lang.ClassNotFoundException ex) {
             Logger.getLogger(NaoScp.class.getName()).log(Level.SEVERE, null, ex);
-            errorLabel.setText("<html><h2>Unable to load class '"+ex.getMessage()+"'!</h2><br>Was Roboviz compiled with 'panel'-support?!</html>");
+            errorLabel.setText("<html><h2>Unable to load class '"+ex.getMessage()+"'!</h2></html>");
             errorLabel.addMouseListener(labelMouseListener);
             replaceCenterComponent(errorLabel);
         } catch (Exception ex) {
             Logger.getLogger(NaoScp.class.getName()).log(Level.SEVERE, null, ex);
-            errorLabel.setText("<html><h2>An error occurred!</h2><br>"+ex.getMessage()+"</html>");
+            errorLabel.setText("<html><h2>An error occurred!</h2><br>"+ex.getMessage()+"<br>Was NaoSCP compiled with 'panel'-support?!</html>");
             errorLabel.removeMouseListener(labelMouseListener);
             replaceCenterComponent(errorLabel);
         }
@@ -111,10 +106,10 @@ public class NaoScp extends AbstractDialog
                 // subclassed classloader
                 URLClassLoader loader = new URLClassLoader (new URL[] {f.toURI().toURL()}, this.getClass().getClassLoader());
                 // use the loader to check for existing classes
-                Class.forName ("naoscp.NaoSCP", false, loader);
-                // TODO: check if "naoscp.NaoSCP" is a JPanel!!
                 // an exception would be thrown, if the class isn't available
-                return true;
+                Class cls = Class.forName ("naoscp.NaoSCP", false, loader);
+                // check if the NaoSCP class is a subclass of JPanel
+                return !JPanel.class.isAssignableFrom(cls);
             } catch (Exception e) {
                 /* ignore exceptions */
             }
@@ -147,7 +142,7 @@ public class NaoScp extends AbstractDialog
                     replaceCenterComponent(jarFileLabel);
                 }
             } else {
-                JOptionPane.showMessageDialog(this, "The selected jar file isn't a valid RoboViz jar file!", "Invalid jar file", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "The selected jar file isn't a valid NaoScp jar file!", "Invalid jar file", JOptionPane.ERROR_MESSAGE);
             }
         }
     }
