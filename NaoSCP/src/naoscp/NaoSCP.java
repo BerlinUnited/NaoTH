@@ -7,6 +7,8 @@ import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.SftpException;
 import java.awt.Font;
 import java.awt.Frame;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.io.*;
 import java.net.InetAddress;
 import java.net.URLDecoder;
@@ -156,34 +158,54 @@ public class NaoSCP extends javax.swing.JPanel {
 
         netwokPanel = new naoscp.components.NetwokPanel();
         naoTHPanel = new naoscp.components.NaoTHPanel();
+        statusBarPanel = new javax.swing.JPanel();
+        txtRobotNumber = new javax.swing.JFormattedTextField();
         btDeploy = new javax.swing.JButton();
-        logTextPanel = new naoscp.components.LogTextPanel();
+        txtDeployTag = new javax.swing.JTextField();
         btWriteToStick = new javax.swing.JButton();
-        jProgressBar = new javax.swing.JProgressBar();
         btSetNetwork = new javax.swing.JButton();
         btInintRobot = new javax.swing.JButton();
-        txtRobotNumber = new javax.swing.JFormattedTextField();
-        txtDeployTag = new javax.swing.JTextField();
+        logPanel = new javax.swing.JPanel();
+        logTextPanel = new naoscp.components.LogTextPanel();
+        jProgressBar = new javax.swing.JProgressBar();
 
+        addComponentListener(new java.awt.event.ComponentAdapter() {
+            public void componentResized(java.awt.event.ComponentEvent evt) {
+                formComponentResized(evt);
+            }
+        });
         setLayout(new java.awt.GridBagLayout());
 
         netwokPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Network"));
+        netwokPanel.setMinimumSize(new java.awt.Dimension(410, 245));
+        netwokPanel.setName(""); // NOI18N
+        netwokPanel.setPreferredSize(new java.awt.Dimension(410, 245));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
-        gridBagConstraints.gridwidth = 7;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         add(netwokPanel, gridBagConstraints);
 
         naoTHPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("NaoTH"));
+        naoTHPanel.setMaximumSize(new java.awt.Dimension(32777, 32777));
+        naoTHPanel.setMinimumSize(new java.awt.Dimension(539, 270));
+        naoTHPanel.setPreferredSize(new java.awt.Dimension(539, 270));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
-        gridBagConstraints.gridwidth = 7;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         add(naoTHPanel, gridBagConstraints);
+
+        statusBarPanel.setMinimumSize(new java.awt.Dimension(550, 24));
+        statusBarPanel.setPreferredSize(new java.awt.Dimension(550, 24));
+        statusBarPanel.setLayout(new javax.swing.BoxLayout(statusBarPanel, javax.swing.BoxLayout.X_AXIS));
+
+        txtRobotNumber.setColumns(3);
+        txtRobotNumber.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0"))));
+        txtRobotNumber.setToolTipText("");
+        statusBarPanel.add(txtRobotNumber);
 
         btDeploy.setText("Send toRobot");
         btDeploy.addActionListener(new java.awt.event.ActionListener() {
@@ -191,23 +213,11 @@ public class NaoSCP extends javax.swing.JPanel {
                 btDeployActionPerformed(evt);
             }
         });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 3;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        add(btDeploy, gridBagConstraints);
+        statusBarPanel.add(btDeploy);
 
-        logTextPanel.setPreferredSize(new java.awt.Dimension(400, 22));
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 7;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.gridheight = 3;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
-        add(logTextPanel, gridBagConstraints);
+        txtDeployTag.setColumns(10);
+        txtDeployTag.setToolTipText("");
+        statusBarPanel.add(txtDeployTag);
 
         btWriteToStick.setText("Write to Stick");
         btWriteToStick.addActionListener(new java.awt.event.ActionListener() {
@@ -215,16 +225,7 @@ public class NaoSCP extends javax.swing.JPanel {
                 btWriteToStickActionPerformed(evt);
             }
         });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 3;
-        gridBagConstraints.gridy = 3;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        add(btWriteToStick, gridBagConstraints);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 7;
-        gridBagConstraints.gridy = 3;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        add(jProgressBar, gridBagConstraints);
+        statusBarPanel.add(btWriteToStick);
 
         btSetNetwork.setText("Set Network");
         btSetNetwork.addActionListener(new java.awt.event.ActionListener() {
@@ -232,11 +233,7 @@ public class NaoSCP extends javax.swing.JPanel {
                 btSetNetworkActionPerformed(evt);
             }
         });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 4;
-        gridBagConstraints.gridy = 3;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        add(btSetNetwork, gridBagConstraints);
+        statusBarPanel.add(btSetNetwork);
 
         btInintRobot.setText("Initialize Robot");
         btInintRobot.addActionListener(new java.awt.event.ActionListener() {
@@ -244,26 +241,36 @@ public class NaoSCP extends javax.swing.JPanel {
                 btInintRobotActionPerformed(evt);
             }
         });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 5;
-        gridBagConstraints.gridy = 3;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        add(btInintRobot, gridBagConstraints);
+        statusBarPanel.add(btInintRobot);
 
-        txtRobotNumber.setColumns(3);
-        txtRobotNumber.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0"))));
-        txtRobotNumber.setToolTipText("");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 3;
-        add(txtRobotNumber, gridBagConstraints);
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTHWEST;
+        add(statusBarPanel, gridBagConstraints);
 
-        txtDeployTag.setColumns(10);
-        txtDeployTag.setToolTipText("");
+        logPanel.setMinimumSize(new java.awt.Dimension(22, 0));
+        logPanel.setPreferredSize(new java.awt.Dimension(550, 46));
+        logPanel.setLayout(new java.awt.BorderLayout());
+
+        logTextPanel.setPreferredSize(new java.awt.Dimension(400, 22));
+        logPanel.add(logTextPanel, java.awt.BorderLayout.CENTER);
+
+        jProgressBar.setMinimumSize(new java.awt.Dimension(10, 24));
+        jProgressBar.setPreferredSize(new java.awt.Dimension(10, 24));
+        logPanel.add(jProgressBar, java.awt.BorderLayout.SOUTH);
+
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 2;
-        gridBagConstraints.gridy = 3;
-        add(txtDeployTag, gridBagConstraints);
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.gridheight = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        add(logPanel, gridBagConstraints);
     }// </editor-fold>//GEN-END:initComponents
 
     private void btDeployActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btDeployActionPerformed
@@ -641,6 +648,30 @@ public class NaoSCP extends javax.swing.JPanel {
 
     }//GEN-LAST:event_btSetNetworkActionPerformed
 
+    private boolean isExtended = true;
+    private void formComponentResized(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_formComponentResized
+        // switch layout between different widths and prevent multiple 're-layouts'
+        if(isExtended && getWidth() < 750) {
+            isExtended = false;
+            GridBagLayout l = (GridBagLayout)getLayout();
+            GridBagConstraints c = l.getConstraints(logPanel);
+            c.gridx = 0;
+            c.gridy = 2;
+            c.gridwidth  = 1;
+            c.gridheight = 1;
+            l.setConstraints(logPanel, c);
+        } else if(!isExtended && getWidth() >= 750) {
+            isExtended = true;
+            GridBagLayout l = (GridBagLayout)getLayout();
+            GridBagConstraints c = l.getConstraints(logPanel);
+            c.gridx = 1;
+            c.gridy = 0;
+            c.gridwidth  = GridBagConstraints.REMAINDER;
+            c.gridheight = GridBagConstraints.REMAINDER;
+            l.setConstraints(logPanel, c);
+        }
+    }//GEN-LAST:event_formComponentResized
+
     public void formWindowClosing() {
         try {
             // save configuration to file
@@ -674,9 +705,11 @@ public class NaoSCP extends javax.swing.JPanel {
     private javax.swing.JButton btSetNetwork;
     private javax.swing.JButton btWriteToStick;
     private javax.swing.JProgressBar jProgressBar;
+    private javax.swing.JPanel logPanel;
     private naoscp.components.LogTextPanel logTextPanel;
     private naoscp.components.NaoTHPanel naoTHPanel;
     private naoscp.components.NetwokPanel netwokPanel;
+    private javax.swing.JPanel statusBarPanel;
     private javax.swing.JTextField txtDeployTag;
     private javax.swing.JFormattedTextField txtRobotNumber;
     // End of variables declaration//GEN-END:variables
