@@ -22,7 +22,7 @@ square_display_size = 10
 board_x = columns * square_display_size
 board_y = rows * square_display_size
 
-actions = ["up","down","right","left"]
+actions = ["right","up","down"] # "left"
 
 field = {} # general field i.e. cells and arrows
 
@@ -34,16 +34,16 @@ def fill_specials():
 
             # add own goal
             if (3000 <= j * square_size < 4600) and (0 <= i * square_size < 800):
-                specials[(i, j)] = (1, "green")
-            elif (3000 <= j * square_size < 4600) and (9800 <= i * square_size < 10600):
                 specials[(i, j)] = (-1, "red")
+            elif (3000 <= j * square_size < 4600) and (9800 <= i * square_size < 10600):
+                specials[(i, j)] = (1, "green")
             elif j * square_size < 800 or j * square_size >= 6800 or i * square_size < 800 or i * square_size >= 9800:
-                specials[(i, j)] = (-0.5, "orange")
+                specials[(i, j)] = (-0.85, "orange")
 
 fill_specials()
 
 
-agent_start_position = (5,5)
+agent_start_position = (15,10)
 
 agent_position = agent_start_position
 
@@ -52,6 +52,8 @@ reset = False
 score_min, score_max = -0.2, 0.2
 
 score = 1
+
+move_cost = -0.01
 
 board = Canvas(master, width= board_x, height=board_y)
 
@@ -69,7 +71,7 @@ def create_world():
             if (i,j) in specials:
                 field[(i, j)].append(board.create_rectangle(i * square_display_size, j * square_display_size,
                     (i + 1) * square_display_size, (j + 1) * square_display_size, fill=specials[(i,j)][1], width=1))
-                print specials[(i,j)][1]
+
             # fill everything else white - denoted as neutral
             else:
                 field[(i, j)].append(board.create_rectangle(i * square_display_size, j * square_display_size,
@@ -121,6 +123,7 @@ def set_cell_color(coords, val):
 
 
 def convert((x,y)):
+    # TODO: So nicht richtig, da Anstosspunkt = Mittelpunkt
     # converts field position to cell in the grid
     i = int( x / square_size )
     j = int( y / square_size )
@@ -158,7 +161,11 @@ def check_infield(coords):
 # TODO: def check_special for special events like goal or out
 
 def check_special(coords):
-    pass
+    if coords in specials:
+        return True
+    else:
+        return False
+
 
 """
 def render_grid():
@@ -210,22 +217,37 @@ def create_arrows():
 """
 
 
-# TODO: add special fields such as goals, opponents
-
 # TODO: add try_move function
 
 def try_move(relative_coords):
-    global agent_position, reset
+    global agent_position, reset, score, specials
+
     if reset == True:
-        reset_agent() # when should be reset_agent be used ??!!
+        reset_agent() # used in special occasions e.g. force stop or enemies / opponents
+
     (dx ,dy) = relative_coords
-    if check_special():
-        pass
-    if check_infield((agent_position[0] + dx, agent_position[1] + dy)):
-        move_agent(relative=(agent_position[0] + dx, agent_position[1] + dy))
+    if check_special((agent_position[0] + dx, agent_position[1] + dy)):
+        special_field = specials[(agent_position[0] + dx, agent_position[1] + dy)]
+        score += move_cost
+        score += special_field[0]
+        if score > 1:
+            print "GOAL!"
+        else:
+            print "next time..."
+        print "Final score: ", score
+        reset = True
+        return
+    elif check_infield((agent_position[0] + dx, agent_position[1] + dy)):
+        score += move_cost
+        move_agent(relative=(dx, dy))
     else:
         print "unkown situation \n resetting agent..."
-        reset_agent()
+        reset = True
+        return
+
+    print "score: ", score
+
+
 
 
 create_world()
@@ -236,24 +258,20 @@ agent_display = board.create_oval(agent_position[0]*square_display_size,agent_po
                             (agent_position[0]+1)*square_display_size,(agent_position[1]+1)*square_display_size,fill="orange", width=1, tag="agent")
 
 
-def run():
+def test_run():
     global agent_position
     # run routine
-    some_number = 0
     while True:
-        if check_infield(agent_position):
-            move_agent(relative = (2,1*(-1)**some_number))
-            update_arrow((agent_position),actions[some_number])
-            time.sleep(0.005)
-            set_cell_color(agent_position, some_number/10.*(-1)**some_number)
-            some_number += 1
-            some_number %= 4
-        else:
-            reset_agent()
+        try_move((1,1))
+        time.sleep(0.05)
 
+def start_field():
+    master.mainloop()
 
-t = threading.Thread(target=run)
+"""
+t = threading.Thread(target=test_run)
 t.daemon = True
 t.start()
 master.mainloop()
+"""
 
