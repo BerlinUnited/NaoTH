@@ -13,6 +13,7 @@ import java.io.*;
 import java.net.InetAddress;
 import java.net.URLDecoder;
 import java.net.UnknownHostException;
+import java.nio.file.Files;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -276,7 +277,19 @@ public class NaoSCP extends javax.swing.JPanel {
     private void btDeployActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btDeployActionPerformed
         this.logTextPanel.clear();
 
-        final File targetDir = new File("./tmp");
+        if(txtRobotNumber.getText().trim().isEmpty()) {
+            Logger.getGlobal().log(Level.WARNING, "Missing robot number!");
+            return;
+        }
+
+        // create deploy directory in systems 'temp' directory
+        final File targetDir;
+        try {
+            targetDir = Files.createTempDirectory("nao_scp_").toFile();
+        } catch (IOException ex) {
+            Logger.getGlobal().log(Level.SEVERE, "Can not create temporary deploy directory in systems temp directory.");
+            return;
+        }
 
         new Thread(new Runnable() {
             @Override
@@ -660,6 +673,8 @@ public class NaoSCP extends javax.swing.JPanel {
             c.gridwidth  = 1;
             c.gridheight = 1;
             l.setConstraints(logPanel, c);
+            revalidate();
+            repaint();
         } else if(!isExtended && getWidth() >= 750) {
             isExtended = true;
             GridBagLayout l = (GridBagLayout)getLayout();
@@ -669,6 +684,8 @@ public class NaoSCP extends javax.swing.JPanel {
             c.gridwidth  = GridBagConstraints.REMAINDER;
             c.gridheight = GridBagConstraints.REMAINDER;
             l.setConstraints(logPanel, c);
+            revalidate();
+            repaint();
         }
     }//GEN-LAST:event_formComponentResized
 
