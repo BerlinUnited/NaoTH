@@ -109,7 +109,7 @@ public class NaoScp extends AbstractDialog
                 // an exception would be thrown, if the class isn't available
                 Class cls = Class.forName ("naoscp.NaoSCP", false, loader);
                 // check if the NaoSCP class is a subclass of JPanel
-                return !JPanel.class.isAssignableFrom(cls);
+                return JPanel.class.isAssignableFrom(cls);
             } catch (Exception e) {
                 /* ignore exceptions */
             }
