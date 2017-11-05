@@ -205,7 +205,7 @@ public class NaoSCP extends javax.swing.JPanel {
 
         txtRobotNumber.setColumns(3);
         txtRobotNumber.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0"))));
-        txtRobotNumber.setToolTipText("");
+        txtRobotNumber.setToolTipText("Last octet of the robots ip address.");
         statusBarPanel.add(txtRobotNumber);
 
         btDeploy.setText("Send toRobot");
@@ -217,7 +217,7 @@ public class NaoSCP extends javax.swing.JPanel {
         statusBarPanel.add(btDeploy);
 
         txtDeployTag.setColumns(10);
-        txtDeployTag.setToolTipText("");
+        txtDeployTag.setToolTipText("Small description of the deploying binary / test case.");
         statusBarPanel.add(txtDeployTag);
 
         btWriteToStick.setText("Write to Stick");
