@@ -1,6 +1,7 @@
 package de.naoth.rc.dialogs;
 
 import de.naoth.rc.RobotControl;
+import de.naoth.rc.components.FileDrop;
 import de.naoth.rc.core.dialog.AbstractDialog;
 import de.naoth.rc.core.dialog.DialogPlugin;
 import de.naoth.rc.core.dialog.RCDialog;
@@ -59,6 +60,28 @@ public class NaoScp extends AbstractDialog
                 showNaoScp(new File(jarFile));
             });
         }
+        // 'install' drop target on this dialog (only for setting NaoSCP jar file)
+        new FileDrop(this, (files) -> {
+            File jar = null;
+            for (File file : files) {
+                if(checkNaoScpJarFile(file)) {
+                    if(jar != null) {
+                        JOptionPane.showMessageDialog(this, "Only one valid NaoScp jar file can be used!", "Multiple jar files", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                    jar = file;
+                }
+            }
+            if(jar != null) {
+                if(showNaoScp(jar)) {
+                    Plugin.parent.getConfig().setProperty(CONFIG_KEY, jar.getAbsolutePath());
+                } else {
+                    replaceCenterComponent(jarFileLabel);
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "No valid NaoScp jar file dropped!", "Invalid jar file(s)", JOptionPane.ERROR_MESSAGE);
+            }
+        });
     }
     
     /**
@@ -96,6 +119,8 @@ public class NaoScp extends AbstractDialog
             setParentFrame.invoke(panel, Plugin.parent);
             // retrieve and add naoscp panel
             replaceCenterComponent(panel);
+            // remove file drop - don't need it any more
+            FileDrop.remove(this);
             // successfully loaded naoscp panel
             return true;
         } catch (java.lang.ClassNotFoundException ex) {
