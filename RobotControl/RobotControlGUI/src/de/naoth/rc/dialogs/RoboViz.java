@@ -1,6 +1,7 @@
 package de.naoth.rc.dialogs;
 
 import de.naoth.rc.RobotControl;
+import de.naoth.rc.components.FileDrop;
 import de.naoth.rc.core.dialog.AbstractDialog;
 import de.naoth.rc.core.dialog.DialogPlugin;
 import de.naoth.rc.core.dialog.RCDialog;
@@ -59,6 +60,28 @@ public class RoboViz extends AbstractDialog
                 showRoboViz(new File(jarFile));
             });
         }
+        // 'install' drop target on this dialog (only for setting RoboViz jar file)
+        new FileDrop(this, (files) -> {
+            File jar = null;
+            for (File file : files) {
+                if(checkRoboVizJarFile(file)) {
+                    if(jar != null) {
+                        JOptionPane.showMessageDialog(this, "Only one valid RoboViz jar file can be used!", "Multiple jar files", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                    jar = file;
+                }
+            }
+            if(jar != null) {
+                if(showRoboViz(jar)) {
+                    Plugin.parent.getConfig().setProperty(CONFIG_KEY, jar.getAbsolutePath());
+                } else {
+                    replaceCenterComponent(jarFileLabel);
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "No valid RoboViz jar file dropped!", "Invalid jar file(s)", JOptionPane.ERROR_MESSAGE);
+            }
+        });
     }
     
     /**
@@ -87,6 +110,8 @@ public class RoboViz extends AbstractDialog
             Method getPanel = viewerClass.getDeclaredMethod ("getPanel");
             JPanel panel = (JPanel) getPanel.invoke(v);
             replaceCenterComponent(panel);
+            // remove file drop - don't need it any more
+            FileDrop.remove(this);
             // successfully loaded roboviz panel
             return true;
         } catch (java.lang.ClassNotFoundException ex) {
