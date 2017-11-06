@@ -10,6 +10,7 @@ import java.awt.event.MouseEvent;
 import java.io.File;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.logging.Level;
@@ -68,6 +69,23 @@ public class NaoScp extends AbstractDialog
      */
     private boolean showNaoScp(File file) {
         try {
+            // NOTE: currently it is not necessary to include the NaoSCP-libs, 'cause the same libs are already in RC available.
+            //       But to be fully complete, we're still including them
+            // NOTE #2: Don't know what happens, if the library versions (RC <> NaoSCP) differ!? :P
+
+            // add NaoScp libraries to the current (search) path
+            File lib = new File(file.getParent() + "/lib");
+            if(lib.exists() && lib.isDirectory()) {
+                // add the lib directoy itself to the search path
+                addPath(lib);
+                // iterate through the files of the lib directory and add all jar files to the search path
+                File[] files = lib.listFiles();
+                for(File f : files) {
+                    if(f.isFile() && f.getName().endsWith(".jar")) {
+                        addPath(f);
+                    }
+                }
+            }
             // subclassed classloader
             URLClassLoader loader = new URLClassLoader (new URL[] {file.toURI().toURL()}, this.getClass().getClassLoader());
             // load the panel class
@@ -145,6 +163,21 @@ public class NaoScp extends AbstractDialog
                 JOptionPane.showMessageDialog(this, "The selected jar file isn't a valid NaoScp jar file!", "Invalid jar file", JOptionPane.ERROR_MESSAGE);
             }
         }
+    }
+
+    /**
+     * Appends the specified URL to the list of URLs to search for classes and resources.
+     * 
+     * @param f the File which should be added to the search path.
+     * @throws Exception 
+     */
+    private static void addPath(File f) throws Exception {
+        URI u = f.toURI();
+        URLClassLoader urlClassLoader = (URLClassLoader) ClassLoader.getSystemClassLoader();
+        Class<URLClassLoader> urlClass = URLClassLoader.class;
+        Method method = urlClass.getDeclaredMethod("addURL", new Class[]{URL.class});
+        method.setAccessible(true);
+        method.invoke(urlClassLoader, new Object[]{u.toURL()});
     }
 
     /**
