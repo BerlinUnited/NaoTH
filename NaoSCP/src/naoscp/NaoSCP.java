@@ -283,13 +283,8 @@ public class NaoSCP extends javax.swing.JPanel {
         }
 
         // create deploy directory in systems 'temp' directory
-        final File targetDir;
-        try {
-            targetDir = Files.createTempDirectory("nao_scp_").toFile();
-        } catch (IOException ex) {
-            Logger.getGlobal().log(Level.SEVERE, "Can not create temporary deploy directory in systems temp directory.");
-            return;
-        }
+        final File targetDir = createTemporaryDirectory("nao_scp_deploy_");
+        if(targetDir == null) {return;}
 
         new Thread(new Runnable() {
             @Override
@@ -487,12 +482,14 @@ public class NaoSCP extends javax.swing.JPanel {
                 return;
             }
             config.setProperty("naoscp.libpath", libDir.getAbsolutePath());
+            
+            final File tmpDir = createTemporaryDirectory("nao_scp_init_");
+            if(tmpDir == null) {return;}
 
             new Thread(new Runnable() {
                 @Override
                 public void run() {
                     try {
-                        File tmpDir = new File("./tmp");
                         File setupDir = new File(tmpDir, "setup");
 
                         if (setupDir.isDirectory()) {
@@ -604,19 +601,26 @@ public class NaoSCP extends javax.swing.JPanel {
          */
 
         String robotNumberRaw = JOptionPane.showInputDialog(NaoSCP.this, "Robot number");
-        int robotNr = 0;
+        // dialog canceled ...
+        if(robotNumberRaw == null || robotNumberRaw.trim().isEmpty()) {
+            Logger.getGlobal().log(Level.INFO, "Canceled.");
+            return;
+        }
+        // default number
+        int robotNr = 100;
         try {
             robotNr = Integer.parseInt(robotNumberRaw.trim());
         } catch (NullPointerException | NumberFormatException ex) {
             JOptionPane.showMessageDialog(NaoSCP.this, "Could not parse robot number, defaulting to 100");
         }
         final int robotNrFinal = robotNr;
+        final File tmpDir = createTemporaryDirectory("nao_scp_setup_");
+        if(tmpDir == null){return;}
 
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
-                    File tmpDir = new File("./tmp");
                     File setupDir = new File(tmpDir, "setup");
 
                     if (setupDir.isDirectory()) {
@@ -633,7 +637,11 @@ public class NaoSCP extends javax.swing.JPanel {
                         FileUtils.copyFiles(new File(utilsPath, "/NaoConfigFiles/init_net.sh"), setupDir);
 
                         // copy to robot
-                        String ip = JOptionPane.showInputDialog(this, "Robot ip address");
+                        String ip = JOptionPane.showInputDialog(NaoSCP.this, "Robot ip address");
+                        if(ip == null || ip.trim().isEmpty()) {
+                            Logger.getGlobal().log(Level.INFO, "Canceled.");
+                            return;
+                        }
                         Scp scp = new Scp(ip, "nao", "nao");
                         scp.setProgressMonitor(new BarProgressMonitor(jProgressBar));
 
@@ -714,6 +722,20 @@ public class NaoSCP extends javax.swing.JPanel {
      */
     public void setParentFrame(Frame f) {
         parentFrame = f;
+    }
+    
+    /**
+     * Creates a temporary directory in systems 'temp' folder with the given prefix.
+     * @param prefix the temporary directory should prepend with.
+     * @return a File object to the temporary directory
+     */
+    private File createTemporaryDirectory(String prefix) {
+        try {
+            return Files.createTempDirectory(prefix).toFile();
+        } catch (IOException ex) {
+            Logger.getGlobal().log(Level.SEVERE, "Can not create temporary directory in systems temp directory.");
+        }
+        return null;
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
