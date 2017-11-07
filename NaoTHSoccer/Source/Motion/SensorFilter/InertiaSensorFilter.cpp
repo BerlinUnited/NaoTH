@@ -86,7 +86,7 @@ void InertiaSensorFilter::execute()
       Kinematics::ForwardKinematics::calcChestFeetRotation(getKinematicChainSensor());
 
     Vector3d accGravOnly(calculatedRotation[0].z, calculatedRotation[1].z, calculatedRotation[2].z);
-    accGravOnly *= -Math::g;
+    accGravOnly *= Math::g;
 
 
     PLOT("InertiaSensorFilter:accGravOnly:x", accGravOnly.x);
