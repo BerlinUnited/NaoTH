@@ -358,7 +358,7 @@ void Motion::debugPlots()
   // TODO: shouldn't this be part of kinematicChainProvider?
   DEBUG_REQUEST("Motion:KinematicChain:orientation_test",
     RotationMatrix calculatedRotation =
-      Kinematics::ForwardKinematics::calcChestFeetRotation(getKinematicChainSensor());
+      Kinematics::ForwardKinematics::calcChestToFeetRotation(getKinematicChainSensor());
 
     // calculate expected acceleration sensor reading
     Vector2d inertialExpected(calculatedRotation.getXAngle(), calculatedRotation.getYAngle());

@@ -201,11 +201,9 @@ void InertiaSensorCalibrator::execute()
   if(!unstable)
   {
     // Body rotation, which was calculated using kinematics.
-    RotationMatrix calculatedRotation = 
-      Kinematics::ForwardKinematics::calcChestFeetRotation(getKinematicChainSensor());
+    RotationMatrix calculatedRotation = Kinematics::ForwardKinematics::calcChestToFeetRotation(getKinematicChainSensor());
 
     // calculate expected acceleration sensor reading
-    //Vector2d inertialExpected(calculatedRotation.getXAngle(), calculatedRotation.getYAngle());
     Vector2d inertialExpected(atan2(calculatedRotation[1].z, calculatedRotation[2].z), atan2(-calculatedRotation[0].z, calculatedRotation[2].z));
     Vector3d accExpected(calculatedRotation[0].z, calculatedRotation[1].z, calculatedRotation[2].z);
     accExpected *= Math::g;
@@ -223,6 +221,12 @@ void InertiaSensorCalibrator::execute()
 
     PLOT("InertiaSensorCalibrator:error:x", Math::toDegrees(inertialValues.last().x));
     PLOT("InertiaSensorCalibrator:error:y", Math::toDegrees(inertialValues.last().y));
+    
+    PLOT("InertiaSensorCalibrator:use_acos:x_inverse", Math::toDegrees(calculatedRotation.invert().getXAngle()));
+    PLOT("InertiaSensorCalibrator:use_acos:y_inverse", Math::toDegrees(calculatedRotation.invert().getYAngle()));
+
+    PLOT("InertiaSensorCalibrator:use_atan2:x_inverse", Math::toDegrees(atan2(calculatedRotation.invert()[2].y, calculatedRotation.invert()[2].z)));
+    PLOT("InertiaSensorCalibrator:use_atan2:y_inverse", Math::toDegrees(atan2(-calculatedRotation.invert()[2].x, calculatedRotation.invert()[2].z)));
 
     if(!collectionStartTime) {
       collectionStartTime = getFrameInfo().getTime();

@@ -83,7 +83,7 @@ void InertiaSensorFilter::execute()
     // use a modeled acceleration, if the feet are on the ground
 
     RotationMatrix calculatedRotation = 
-      Kinematics::ForwardKinematics::calcChestFeetRotation(getKinematicChainSensor());
+      Kinematics::ForwardKinematics::calcChestToFeetRotation(getKinematicChainSensor());
 
     Vector3d accGravOnly(calculatedRotation[0].z, calculatedRotation[1].z, calculatedRotation[2].z);
     accGravOnly *= -Math::g;
