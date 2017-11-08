@@ -13,3 +13,7 @@ std::string KickActionModel::getName(ActionId id)
     default: return "unknown action";
   }
 }
+
+double KickActionModel::getRotation(){
+  return rotation;
+}

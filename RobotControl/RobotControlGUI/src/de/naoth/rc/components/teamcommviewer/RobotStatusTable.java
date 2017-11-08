@@ -86,6 +86,7 @@ public class RobotStatusTable extends javax.swing.JPanel {
         new Column("wasStriker", Boolean.class, (RobotStatus r) -> r.wasStriker, null, true,false,false),
         new Column("isPenalized", Boolean.class, (RobotStatus r) -> r.isPenalized, null, true,false,false),
         new Column("whistleDetected", Boolean.class, (RobotStatus r) -> r.whistleDetected, null, true,false,false),
+        new Column("teamBall", String.class, (RobotStatus r) -> r.teamBall.toString(), null, true,false,false),
         new Column("show on field", Boolean.class, (RobotStatus r) -> r.showOnField, null, true,false,true),
         new Column("", RobotStatus.class, (RobotStatus r) -> r, new ButtonRenderer(), false,true,false)
     );

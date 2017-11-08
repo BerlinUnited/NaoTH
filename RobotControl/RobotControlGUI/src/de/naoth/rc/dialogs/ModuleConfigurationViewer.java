@@ -472,13 +472,13 @@ public class ModuleConfigurationViewer extends AbstractDialog
     }
 
     @Override
-    public void newObjectReceived(final ModuleConfiguration graph
-    )
+    public void newObjectReceived(final ModuleConfiguration graph)
     {
         this.moduleGraph = graph;
 
         this.cbModules.removeAllItems();
         this.cbRepresentations.removeAllItems();
+        this.moduleConfigTree.clear(); // clear before adding/updating new ones
 
         ArrayList<Node> modules = new ArrayList<Node>();
         ArrayList<Node> representations = new ArrayList<Node>();
@@ -518,6 +518,7 @@ public class ModuleConfigurationViewer extends AbstractDialog
         this.cbModulesSearch.revalidateModel();
         this.cbRepresentationsSearch.revalidateModel();
 
+        moduleConfigTree.cleanTree();
         moduleConfigTree.expandPath(processName, ':');
         moduleConfigTree.repaint();
 

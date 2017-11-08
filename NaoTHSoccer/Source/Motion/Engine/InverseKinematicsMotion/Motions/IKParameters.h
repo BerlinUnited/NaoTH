@@ -29,6 +29,14 @@ public:
     double bodyPitchOffset;
     double hipOffsetX;
 
+    struct Stabilization{
+        struct RotationStabilization{
+            Vector2d P;
+            Vector2d VelocityP;
+            Vector2d D;
+        } rotation, rotationRC16;
+    } stabilization;
+
     struct Relax {
 
         bool   enable;
@@ -45,7 +53,7 @@ public:
 
         struct StiffnessControl {
             bool   enable;
-            double deadTime;
+//            double deadTime;
             double minAngle;
             double minStiffness;
             double maxAngle;
@@ -80,12 +88,15 @@ public:
       double comStepOffsetY;
       double ZMPOffsetY;
       double ZMPOffsetYByCharacter;
+
+      bool newZMP_ON;
     } hip;
 
     // step geometry
     struct Step
     {
       int duration;
+      bool dynamicDuration;
       int doubleSupportTime;
     
       double stepHeight;
@@ -129,6 +140,7 @@ public:
       //int maxWaitLandingCount; // <0 means wait for ever until landing
 
       double emergencyStopError;
+      unsigned int maxEmergencyCounter;
 
       // enable stabilization by rotating the body
       bool rotationStabilize;
@@ -141,23 +153,53 @@ public:
       Vector2d stabilizeFeetP;
       Vector2d stabilizeFeetD;
 
-      Vector2d rotationP;
-      Vector2d rotationVelocityP;
-      Vector2d rotationD;
-
       // enable the synamic adaptation of the stepsize
       bool dynamicStepsize;
       double dynamicStepsizeP;
       double dynamicStepsizeD;
+
+      struct HipOffsetBasedOnStepChange {
+          double x;
+          double y;
+      } hipOffsetBasedOnStepChange;
+
+      struct HipOffsetBasedOnStepLength {
+          double x;
+          double y;
+      } maxHipOffsetBasedOnStepLength, maxHipOffsetBasedOnStepLengthForKicks;
+
+      struct RotationStabilization{
+          Vector2d P;
+          Vector2d VelocityP;
+          Vector2d D;
+      } rotation, rotationRC16, rotationNewIMU;
+
     } stabilization;
+
+    struct ZMP{
+        struct Bezier{
+            double transitionScaling;
+            double inFootScalingY;
+            double inFootSpacing;
+            double offsetX;
+            double offsetY;
+            double offsetXForKicks;
+            double offsetYForKicks;
+        } bezier;
+
+        struct Bezier2{
+            double offsetT;
+            double offsetY;
+        } bezier2;
+    } zmp;
+
   } walk;
 
-
-  struct RotationStabilize 
-  {
-      Vector2d k;
-      Vector2d threshold;
-  } rotationStabilize;
+//  struct RotationStabilize
+//  {
+//      Vector2d k;
+//      Vector2d threshold;
+//  } rotationStabilize;
 
   struct Arm 
   {

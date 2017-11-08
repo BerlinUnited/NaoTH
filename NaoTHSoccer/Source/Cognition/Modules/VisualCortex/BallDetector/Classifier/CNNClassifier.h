@@ -10,14 +10,13 @@
 class CNNClassifier : public AbstractCNNClassifier {
 
 public:
-    CNNClassifier(){out.open("example.txt");}
 
-	~CNNClassifier(){out.close();}
+	bool classify(const BallCandidates::Patch& p);
 
-std::ofstream out;
-    bool classify(const BallCandidates::Patch& p);
-    virtual float getBallConfidence();
-    virtual float getNoballConfidence();
+  virtual float getBallConfidence();
+  virtual float getNoballConfidence();
+
+private:
 
 	// declare copied intial input array
 	float out_step0[16][16][1];

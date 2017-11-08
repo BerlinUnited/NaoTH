@@ -8,15 +8,14 @@ option decide_and_go_to_passive_position
 
   initial state idle {
 	  decision {
-      else 
-if (action_done || state_time > 10000)
- // search for maximum 10s
+      else if (action_done || state_time > 10000) // search for maximum 10s
         goto check_player_number;
       else
         stay;
 	  }
 	  action {
       search_ball();
+      motion.walk.style = stable;
 	  }
 	}  
   
@@ -75,7 +74,7 @@ if (action_done || state_time > 10000)
     }
     action {
       go_to_and_keep_passive_position(
-        x=(field.xPosOwnPenaltyArea+field.xPosOwnPenaltyMark)/2, 
+        x=field.xPosOwnPenaltyMark, 
         y=field.yPosRightGoal+400, 
         rot=0);
 

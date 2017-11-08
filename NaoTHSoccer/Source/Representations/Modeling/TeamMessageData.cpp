@@ -1,4 +1,5 @@
 #include "TeamMessageData.h"
+#include <Tools/DataConversion.h>
 
 #include <limits>
 
@@ -36,8 +37,8 @@ SPLStandardMessage TeamMessageData::createSplMessage() const
     spl.currentPositionConfidence = (uint8_t) positionConfidence;
     spl.currentSideConfidence = (uint8_t) sideConfidence;
 
-    // in seconds!
-    spl.ballAge = (float) (ballAge / 1000.0);
+    // in seconds (only if positive)!
+    spl.ballAge = (float) ((ballAge < 0)? ballAge : ballAge / 1000.0);
     spl.ball[0] = (float) ballPosition.x;
     spl.ball[1] = (float) ballPosition.y;
     spl.ballVel[0] = (float) ballVelocity.x;
@@ -197,7 +198,9 @@ TeamMessageCustom::TeamMessageCustom() :
   temperature(0.0),
   cpuTemperature(0.0),
   whistleDetected(false),
-  whistleCount(0)
+  whistleCount(0),
+  // init with "invalid" position
+  teamBall(std::numeric_limits<double>::infinity(), std::numeric_limits<double>::infinity())
 {
 }
 
@@ -216,7 +219,8 @@ void TeamMessageCustom::print(std::ostream &stream) const
     << "\t" << "CPU: " << cpuTemperature << "°C\n"
     << "\t" << "whistleDetected: " << (whistleDetected ? "yes" : "no") << "\n"
     << "\t" << "whistleCount: " << whistleCount << "\n"
-    ;
+    << "\t" << "teamball position: "
+        << teamBall.x << "/" << teamBall.y << "\n";
   stream << std::endl;
 }//end print
 
@@ -235,6 +239,7 @@ naothmessages::BUUserTeamMessage TeamMessageCustom::toProto() const
     userMsg.set_cputemperature((float)cpuTemperature);
     userMsg.set_whistledetected(whistleDetected);
     userMsg.set_whistlecount(whistleCount);
+    DataConversion::toMessage(teamBall, *(userMsg.mutable_teamball()));
     userMsg.set_key(key);
     return userMsg;
 }
@@ -262,7 +267,6 @@ std::string TeamMessageCustom::toDoBerManHeader() const
   header.teamID = 4;
   header.isPenalized = isPenalized;
   header.whistleDetected = whistleDetected;
-
 
   // create the result byte array by mapping the header struct
   std::string result;
@@ -293,5 +297,11 @@ void TeamMessageCustom::parseFromProto(const naothmessages::BUUserTeamMessage &u
     
     whistleDetected = userData.whistledetected();
     whistleCount = userData.whistlecount();
+    if(userData.has_teamball()) {
+        DataConversion::fromMessage(userData.teamball(),teamBall);
+    } else {
+        teamBall.x = std::numeric_limits<double>::infinity();
+        teamBall.y = std::numeric_limits<double>::infinity();
+    }
 }
 

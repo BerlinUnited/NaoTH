@@ -11,6 +11,7 @@ fprintf(BodyFile,'// return classification\n');
 fprintf(BodyFile,'return getBallConfidence() > getNoballConfidence();\n');
 fprintf(BodyFile,'}\n\n'); % close function definition of classify    
 
+fprintf(HeaderFile,'public:\n');
 fprintf(HeaderFile,'\tvirtual float getBallConfidence();\n\n');
 fprintf(HeaderFile,'\tvirtual float getNoballConfidence();\n\n');
 

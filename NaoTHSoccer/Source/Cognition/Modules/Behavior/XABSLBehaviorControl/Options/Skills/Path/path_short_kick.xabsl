@@ -7,8 +7,11 @@ option path_short_kick
   {
     decision
     {
+      /* don't get stuck if run when in stand */
       if(executed_motion.type != walk)
         stay;
+      /* check if the kicking foot was support foot before kicking,
+         if not make a step before kicking so that the CoM can handle the kick with the foot*/
       else if(executed_motion.step_control.right_movable && @foot == right)
         goto kick_with_right_foot;
       else if(executed_motion.step_control.left_movable && @foot == left)
@@ -32,7 +35,7 @@ option path_short_kick
   {
     decision
     {
-      if(state_time > 300 && executed_motion.step_control.left_movable)
+      if(path.kick_executed)
         goto short_freeze;
       else
         stay;
@@ -47,7 +50,7 @@ option path_short_kick
   {
     decision
     {
-      if(state_time > 300 && executed_motion.step_control.right_movable)
+      if(path.kick_executed)
         goto short_freeze;
       else
         stay;
