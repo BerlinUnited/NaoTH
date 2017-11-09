@@ -63,7 +63,8 @@ if __name__ == '__main__':
         exit(1)
 
     #args = { 'device': 'wifi0', 'ssid': 'NAOCAM', 'password':'a1b0a1b0a1' }
-    #  GP26329941 / cycle9210
+    # GP26329941 / cycle9210
+    # GP26297683 / epic0546
     args = parseArguments()
 
     logger = setupLogger(args.verbose)
