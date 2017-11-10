@@ -6,10 +6,14 @@ import time
 
 class NetworkManager:
     def __init__(self):
-        logger.info("instanstiated")
-        print("instanstiated", self)
+        pass
 
     def getWifiDevices(self):
+        ''' Retrieves all wifi devices.
+
+        :return:        a list of available wifi devices
+        '''
+
         return []
 
     def getWifiDevice(self, device:str=None):
@@ -19,6 +23,7 @@ class NetworkManager:
         :param device:  the device, which should be checked
         :return:        a wifi device or None
         '''
+
         if device is None:
             devices = self.getWifiDevices()
             if len(devices) > 1:
@@ -34,14 +39,16 @@ class NetworkManager:
         return None
 
     def getCurrentSSID(self, device: str):
+        ''' Checks if the given device is currently connected and returns the SSID of the connected network otherwise returns None.
+
+        :param device:  name of the device from which we want to get the current SSID
+        :return:        the current SSID of the device
+        '''
+
         return None
 
     def connectToSSID(self, device:str, ssid:str, passwd:str=None):
         ''' Connects the given device to the given SSID with the provided password.
-            used commands:
-                > nmcli connection show <ssid>
-                > nmcli connection up <ssid> ifname <device>
-                > nmcli device wifi connect <ssid> password <passwd> ifname <device>
 
         :param device:  name of the device we're like to connect with
         :param ssid:    SSID of the network we're like to connect with
@@ -59,12 +66,9 @@ class NetworkManager:
 
 class NetworkManagerNmcli(NetworkManager):
     def getWifiDevices(self):
-        ''' Retrieves all wifi devices.
-            used command: nmcli -t device
-
-        :return:        a list of available wifi devices
         '''
-
+            getting available devices:  nmcli -t device
+        '''
         wifi_devices = []
 
         logger.debug("Get all available wifi devices: 'nmcli -t device'")
@@ -77,15 +81,10 @@ class NetworkManagerNmcli(NetworkManager):
         return wifi_devices
 
     def getCurrentSSID(self, device:str):
-        ''' Checks if the given device is currently connected and returns the SSID of the connected network otherwise returns None.
-            command for
-                > checking connection: nmcli -g GENERAL.STATE device show <device>
-                > determine network: nmcli -g GENERAL.CONNECTION device show <device>
-
-        :param device:  name of the device from which we want to get the current SSID
-        :return:        the current SSID of the device
         '''
-
+            checking connection:        nmcli -g GENERAL.STATE device show <device>
+            determine network:          nmcli -g GENERAL.CONNECTION device show <device>
+        '''
         logger.debug("Check device state: 'nmcli -g GENERAL.STATE device show %s'", device)
         state = subprocess.run(['nmcli', '-g', 'GENERAL.STATE', 'device', 'show', device], stdout=subprocess.PIPE).stdout.decode('utf-8').strip()
         # do we have an established connection
@@ -96,6 +95,11 @@ class NetworkManagerNmcli(NetworkManager):
         return None
 
     def _connect(self, device:str, ssid:str, passwd:str=None):
+        '''
+            get existing networks:      nmcli connection show <ssid>
+            connect to network:         nmcli connection up <ssid> ifname <device>
+            create/connect network:     nmcli device wifi connect <ssid> password <passwd> ifname <device>
+        '''
         logger.debug("Check if wifi network profile already exists: 'nmcli connection show %s'", ssid)
         # exists a saved wifi network with the given SSID?
         if subprocess.run(['nmcli', 'connection', 'show', ssid], stdout=subprocess.DEVNULL,
@@ -126,10 +130,8 @@ class NetworkManagerNmcli(NetworkManager):
 
 class NetworkManagerIw(NetworkManager):
     def getWifiDevices(self):
-        ''' Retrieves all wifi devices.
-            used command: nmcli -t device
-
-        :return:        a list of available wifi devices
+        '''
+            getting available devices:  iw dev
         '''
 
         wifi_devices = []
@@ -144,13 +146,8 @@ class NetworkManagerIw(NetworkManager):
         return wifi_devices
 
     def getCurrentSSID(self, device:str):
-        ''' Checks if the given device is currently connected and returns the SSID of the connected network otherwise returns None.
-            command for
-                > checking connection: nmcli -g GENERAL.STATE device show <device>
-                > determine network: nmcli -g GENERAL.CONNECTION device show <device>
-
-        :param device:  name of the device from which we want to get the current SSID
-        :return:        the current SSID of the device
+        '''
+            determine current network:  iwgetid <device> -r
         '''
 
         logger.debug("Get current wifi SSID: 'iwgetid %s -r'", device)
@@ -164,6 +161,13 @@ class NetworkManagerIw(NetworkManager):
 
 
     def _connect(self, device:str, ssid:str, passwd:str=None):
+        '''
+            activate device:            ifconfig <device> up
+            check existing networks:    wpa_cli -i <device> list_networks
+            connect to network:         wpa_cli -i <device> select_network <network_id>
+            configure new network:      wpa_cli -i <device> reconfigure
+        '''
+
         # make sure the device is up
         logger.debug("Bringing device up: 'ifconfig %s up'", device)
         subprocess.run(['ifconfig', device, 'up'], stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
@@ -174,15 +178,15 @@ class NetworkManagerIw(NetworkManager):
         result = subprocess.run(['wpa_cli', '-i', device, 'list_networks'], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL).stdout.decode('utf-8').strip()
         # ... and find network ID of configured wpa network, which is the given one
         for networks in result.split('\n'):
-            match = re.search('(\d+)\s+(\w+)\s+(\w+)\s+(.*)', networks.strip())
+            match = re.search('(\d+)\s+(\w+)\s+(\w+)', networks.strip())
             if match and match.group(2) == ssid:
                 network_id = int(match.group(1))
 
         # exists a saved wifi network with the given SSID?
         if network_id >= 0:
-            logger.debug("Connect to existing wifi network profile: 'nmcli connection up %s ifname %s'", ssid, device)
+            logger.debug("Connect to existing wifi network profile: 'wpa_cli -i %s select_network %d'", device, network_id)
             # try to activate the saved wifi network with the given SSID
-            r = subprocess.run(['wpa_cli', '-i', device, 'select_network', str(network_id)], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            subprocess.run(['wpa_cli', '-i', device, 'select_network', str(network_id)], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
             # wait max. 10s or until connected
             it = 0
             while self.getCurrentSSID(device) is None and it < 10:
@@ -191,13 +195,20 @@ class NetworkManagerIw(NetworkManager):
             # check if connecting was successful
             if ssid == self.getCurrentSSID(device):
                 return ssid
-            logger.error("Couldn't connect to network '%s' with device '%s'!\n\twhat: unknown", ssid, device)
+            logger.error("Couldn't connect to network '%s' with device '%s'!", ssid, device)
         # ... else create new connection - if password given
         elif passwd is not None:
-            logger.debug("Create a new wifi network profile and connect: 'nmcli device wifi connect %s password %s ifname %s'", ssid, passwd, device)
-
-            # TODO: write to /etc/wpa_supplicant/wpa_supplicant.conf
-            # TODO: ... and connect
+            logger.debug("Create a new wifi network profile in '/etc/wpa_supplicant/wpa_supplicant.conf'")
+            try:
+                f = open("/etc/wpa_supplicant/wpa_supplicant.conf", "a")
+                f.writelines(['network={\n', 'ssid="'+ssid+'"\n', 'psk="'+passwd+'"\n','}\n'])
+                f.close()
+                logger.debug("Update network config: 'wpa_cli -i %s reconfigure'", device)
+                subprocess.run(['wpa_cli', '-i', device, 'reconfigure'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                # don't provide passwd, otherwise we could write 'new' config multiple time!
+                return self._connect(device,ssid)
+            except:
+                logger.critical("Root permission needed to add wifi network!")
         else:
             logger.error("Could not connect to %s, password required!", ssid)
         return None

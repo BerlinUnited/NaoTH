@@ -273,7 +273,7 @@ class GoPro:
 	
 	def shutter(self,param):
 		if self.whichCam() == "gpcontrol":
-			print(self.gpControlCommand("shutter?p=" + param))
+			self.gpControlCommand("shutter?p=" + param)
 		else:
 			if len(param) == 1:
 				param = "0" + param
@@ -282,7 +282,7 @@ class GoPro:
 	
 	def mode(self, mode, submode="0"):
 		if self.whichCam() == "gpcontrol":
-			print(self.gpControlCommand("sub_mode?mode=" + mode + "&sub_mode=" + submode))
+			self.gpControlCommand("sub_mode?mode=" + mode + "&sub_mode=" + submode)
 		else:
 			if len(mode) == 1:
 				mode = "0" + mode

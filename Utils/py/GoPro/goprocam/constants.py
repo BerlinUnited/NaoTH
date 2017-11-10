@@ -24,7 +24,7 @@ class Status:
 		BatchPhotosTaken="36"
 		VideosTaken="39"
 		PhotosTaken="38"
-		IsRecording="8"
+		IsRecording="10"
 		RemainingSpace="54"
 		TotalHiLights="58"
 		LastHiLight="59"

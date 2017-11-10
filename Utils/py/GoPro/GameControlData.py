@@ -1,3 +1,8 @@
+'''
+    Copied structure from the GameController "data.GameControlData.java" file.
+'''
+
+import logging
 from struct import Struct
 
 
@@ -26,29 +31,12 @@ class GameControlData(Struct):
     def __init__(self, data=None):
         """Constructor."""
         super(GameControlData, self).__init__('4sh8b3h')
+        self.logger = logging.getLogger("GameControlData")
         # based on the given data the message is initialized with default values or parsed from the data string
-        if data is not None:
-            self.unpack(data)
-        else:
+        if data is None or self.unpack(data)[0]:
             self.setDefaults()
 
     def setDefaults(self):
-        '''
-    // GAMECONTROLLER_STRUCT_HEADER                             // header to identify the structure
-    // GAMECONTROLLER_STRUCT_VERSION                            // version of the data structure
-    public byte packetNumber = 0;
-    public byte playersPerTeam = (byte) Rules.league.teamSize;   // The number of players on a team
-    public byte gameType = GAME_ROUNDROBIN;                     // type of the game (GAME_ROUNDROBIN, GAME_PLAYOFF, GAME_DROPIN)
-    public byte gameState = STATE_INITIAL;                      // state of the game (STATE_READY, STATE_PLAYING, etc)
-    public byte firstHalf = C_TRUE;                             // 1 = game in first half, 0 otherwise
-    public byte kickOffTeam;                                    // the next team to kick off
-    public byte secGameState = STATE2_NORMAL;                   // Extra state information - (STATE2_NORMAL, STATE2_PENALTYSHOOT, etc)
-    public byte dropInTeam;                                     // team that caused last drop in
-    protected short dropInTime = -1;                            // number of seconds passed since the last drop in. -1 before first dropin
-    public short secsRemaining = (short) Rules.league.halfTime; // estimate of number of seconds remaining in the half
-    public short secondaryTime = 0;                             // sub-time (remaining in ready state etc.) in seconds
-    public TeamInfo[] team = new TeamInfo[2];
-        '''
         self.packetNumber = 0
         self.playersPerTeam = 6
         self.gameType = self.GAME_ROUNDROBIN
@@ -60,24 +48,22 @@ class GameControlData(Struct):
         self.dropInTime = -1
         self.secsRemaining = 600
         self.secondaryTime = 0
+        # INFO: ignoring data, currently not need: TeamInfo
 
     def unpack(self, data):
         # check 'data' length
         if len(data) < self.size:
-            print("ERROR: Not an SPL Message.")
-            #raise NotAnSplMessage("Not an SPL Message.")
+            return (False, "Not well formed GameControlData!")
 
         msg = Struct.unpack(self, data[:self.size])
 
         # check header
         if msg[0] != self.GAMECONTROLLER_STRUCT_HEADER:
-            #raise InvalidSplHeader("Invalid header!")
-            print("ERROR: wrong message type!")
+            return (False, "Invalid message type!")
 
         # check spl message version
         if msg[1] != self.GAMECONTROLLER_STRUCT_VERSION:
-            #raise WrongSplMessageVersion("Wrong version: received " + msg[1] + ", but expected " + self.SPL_STANDARD_MESSAGE_STRUCT_VERSION)
-            print("ERROR: wrong version!")
+            return (False, "Wrong version!")
 
         # assign data
         it = iter(msg[2:])
@@ -92,6 +78,8 @@ class GameControlData(Struct):
         self.dropInTime = next(it)
         self.secsRemaining = next(it)
         self.secondaryTime = next(it)
+
+        return (True, None)
 
 
     def pack(self):
