@@ -1,4 +1,4 @@
-function [tout, yout, teout, yeout, ieout, tsout, sout] = SLIP3D(y0, parameter)
+function [tout, yout, teout, yeout, ieout, tsout, sout, tdpout] = SLIP3D(y0, parameter)
 %SLIP  simulates a basic SLIP model.
 %   This function uses the ODE45 solver to simulate the SLIP model
 %   Attention: angles are interpreted as polar coordinates tda=[theta, phi]
@@ -22,14 +22,17 @@ function [tout, yout, teout, yeout, ieout, tsout, sout] = SLIP3D(y0, parameter)
     ieout = [];
     tsout = [];
     sout  = [];
+    tdpout = [];
     
     state = 'left_support';    
-    left_tdp  = [0,0,0];%[y0(1); y0(3); y0(5)] + l0 * [sin(left_tda(1)) * cos(pi/2); sin(left_tda(1)) * sin(pi/2); cos(left_tda(1))]; 
+    left_tdp  = [0;0;0];%[y0(1); y0(3); y0(5)] + l0 * [sin(left_tda(1)) * cos(pi/2); sin(left_tda(1)) * sin(pi/2); cos(left_tda(1))]; 
     right_tdp = [y0(1); y0(3); y0(5)] + l0 * [sin(right_tda(1)) * cos(-pi/2); sin(right_tda(1)) * sin(-pi/2); cos(right_tda(1))];
 
     while(tout(end) < parameter.maxTime)       
         switch state
             case 'left_support'
+                tdpout = [tdpout; [tout(end), 1, left_tdp']];
+                
                 tsout = [tsout; tout(end)];
                 sout  = [sout; 1];
                 event = @(t,y) events_singleSupport(t,y,l0,left_tdp,right_tda);
@@ -54,7 +57,7 @@ function [tout, yout, teout, yeout, ieout, tsout, sout] = SLIP3D(y0, parameter)
                     % timestep, so use it for faster computation.  'refine' is 4 by default.
                     %options = odeset(options,'InitialStep',t(nt)-t(nt-options.Refine),...
                     %    'MaxStep',t(nt)-t(1));
-
+                    
                     tstart = t(nt); 
                 end
                 
@@ -68,11 +71,17 @@ function [tout, yout, teout, yeout, ieout, tsout, sout] = SLIP3D(y0, parameter)
                 else %liftoff and touchdown
                     state = 'right_support';
                     right_tdp = [y(end,1); y(end,3); y(end,5)] + l0 * [sin(right_tda(1)) * cos(right_tda(2)); sin(right_tda(1)) * sin(right_tda(2)); cos(right_tda(1))];
+                    
+                    if(right_tdp(3) < 0) % the touch down event is an artefact from the first integration step, e.g. after a flying phase
+                        state = 'flying';
+                    end
                 end
                 
                 last_support_foot_was_left = true;
                 
             case 'right_support'
+                tdpout = [tdpout; [tout(end), 0, right_tdp']];
+                
                 tsout = [tsout; tout(end)];
                 sout  = [sout; 2];
                 event = @(t,y) events_singleSupport(t,y,l0,right_tdp,left_tda);
@@ -111,6 +120,10 @@ function [tout, yout, teout, yeout, ieout, tsout, sout] = SLIP3D(y0, parameter)
                 else %liftoff and touchdown
                     state = 'left_support';
                     left_tdp = [y(end,1); y(end,3); y(end,5)] + l0 * [sin(left_tda(1)) * cos(left_tda(2)); sin(left_tda(1)) * sin(left_tda(2)); cos(left_tda(1))];
+                    
+                    if(left_tdp(3) < 0) % the touch down event is an artefact from the first integration step, e.g. after a flying phase
+                        state = 'flying';
+                    end
                 end
                 
                 last_support_foot_was_left = false;
