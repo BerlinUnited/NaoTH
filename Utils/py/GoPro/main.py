@@ -7,6 +7,10 @@
 '''
 
 import sys
+import os
+import tempfile
+import atexit
+import signal
 import socket
 import traceback
 import argparse
@@ -55,6 +59,46 @@ def setCamVideoMode(cam):
     # wait for the command to be executed
     time.sleep(0.5)
 
+def checkInstance(dir:str=None, name:str="gopro"):
+    # define vars, if not set
+    if dir is None:
+        dir = tempfile.gettempdir()
+    if not name:
+        name = os.path.basename(sys.argv[0])
+
+    # check for existing lock file and running process
+    lock_file = os.path.join(dir, name + '.lock')
+    if os.path.isfile(lock_file):
+        with open(lock_file, 'r') as lock:
+            try:
+                # read PID and send signal
+                pid = int(lock.readline())
+                os.kill(pid, signal.SIGHUP)
+                # exit if we get here
+                logger.error("An instance of this script is already running!")
+                exit(2)
+            except (ProcessLookupError, ValueError):
+                pass
+    # write PID to lock file
+    with open(lock_file, 'w') as lock:
+        lock.write(str(os.getpid()))
+    logger.debug("Created lock file")
+
+    # register cleanup on exit
+    atexit.register(cleanupInstance, lock_file)
+    signal.signal(signal.SIGHUP, sighupHandler)
+
+def cleanupInstance(lock:str):
+    # delete 'lock/pid' file
+    try:
+        os.unlink(lock)
+    except:
+        pass
+    logger.debug("Removed lock file")
+
+def sighupHandler(num, frm):
+    # ignore SIGHUP singals
+    logger.debug("Got poked!")
 
 class LogFormatter(logging.Formatter):
     def format(self, record):
@@ -97,11 +141,15 @@ if __name__ == '__main__':
         exit(1)
 
     #args = { 'device': 'wifi0', 'ssid': 'NAOCAM', 'password':'a1b0a1b0a1' }
+    # NAOCAM / a1b0a1b0a1
     # GP26329941 / cycle9210
     # GP26297683 / epic0546
     args = parseArguments()
 
     logger = setupLogger(args.quiet, args.verbose)
+
+    checkInstance()
+    #exit(3)
 
     logger.info("Setting up network")
 
