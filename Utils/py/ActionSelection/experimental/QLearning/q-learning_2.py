@@ -1,39 +1,24 @@
 import gamefield
 import threading
 import time
-import random
 import numpy as np
-import copy
 
-discount = 0.99 # future influence - discount factor
+# TODO: change Color display
+# TODO: Something is wrong with the game color update; every second move just gets updated
+#
+
+discount = 0.95 # future influence - discount factor
 actions = gamefield.actions
 states = gamefield.field
 specials = gamefield.specials
 number_of_actions = len(actions) - 1
 
-Q = {}
+Qm = np.zeros((gamefield.rows, gamefield.columns))
 
 
-for key in states: # auslagern  in gamefield ??
-    if key not in gamefield.specials:
-
-        temp = {}
-        # set triangles for every position
-        for action in actions:
-            temp[action] = 0.
-            gamefield.set_cell_color(key, temp[action])
-        # initiate the Q matrix - dictionary
-        Q[key] = temp
-
-for key in gamefield.specials:
-    # get good and bad fields in (specials)
-    for action in actions:
-        temp[action] = gamefield.specials[key][0]
-    # initiate the Q matrix - dictionary
-    Q[key] = temp
 
 def do_action(action):
-    agent = gamefield.agent_position
+    old_state = gamefield.agent_position
     reward = -gamefield.score
     if action == actions[0]: # right
         gamefield.try_move((1, 0))
@@ -41,15 +26,38 @@ def do_action(action):
         gamefield.try_move((0, -1))
     elif action == actions[2]: # down
         gamefield.try_move((0, 1))
-    elif action == actions[3]: # left (excluded for now)
+    elif action == actions[3]: # left
         gamefield.try_move((-1, 0))
     else:
         return
-    s2 = gamefield.agent_position
+    new_state = gamefield.agent_position
     reward += gamefield.score
-    return agent, action, reward, s2
+    return old_state, action, reward, new_state
+
+def update_Q(state, reward, max_val, alpha):
+    # Q learning stategy
+    # no maximisation over rewards
+    Qm[state[1],state[0]] += alpha * (reward + discount * max_val - Qm[state[1],state[0]])
+    gamefield.set_cell_color(state, Qm[state[1],state[0]])
 
 
+def max_Q(state):
+    Qs = []
+    for action in actions:
+        if action == "up":
+            Qs.append(Qm[state[1]-1,state[0]])
+        elif action == "down":
+            Qs.append(Qm[state[1]+1,state[0]])
+        elif action == "right":
+            Qs.append(Qm[state[1],state[0]+1])
+        elif action == "left":
+            Qs.append(Qm[state[1],state[0]-1])
+
+    val = max(Qs)
+    act = actions[Qs.index(val)]
+    return val, act
+
+"""
 def max_Q(s): # TODO add different policy, maximise over two steps ?!
     val = None
     act = None
@@ -74,14 +82,12 @@ def take_Q(s): # Take Q, with uncertainty ##not right like this!!
     else:
         j = random.randint(0,number_of_actions-1)
         return Qvals[j]
-
-
+        
 def inc_Q(s, a, alpha, inc):
     Q[s][a] *= 1 - alpha
     Q[s][a] += alpha * inc
     gamefield.set_cell_color(s, Q[s][a])
-
-
+"""
 
 def run():
     global discount
@@ -91,15 +97,14 @@ def run():
     while True:
         # Pick the right action
         s = gamefield.agent_position
-        max_act, max_val = take_Q(s)
-        #max_act, max_val = max_Q(s)
-        gamefield.update_arrow(s,max_act)
-        (s, a, r, s2) = do_action(max_act)
+        (max_val, act) = max_Q(s)
+        gamefield.update_arrow(s, act)
 
-        # Update Q
-        #max_act, max_val = max_Q(s2)
-        max_act, max_val = take_Q(s2)
-        inc_Q(s, a, alpha, r + discount * max_val)
+        (s, act, reward, s_new) = do_action(act)
+
+        # update Q Value
+        (max_val, act) = max_Q(s_new)
+        update_Q(s, reward, max_val, alpha)
 
         # Check if the game has restarted
         t += 1.0
@@ -119,3 +124,11 @@ t = threading.Thread(target=run)
 t.daemon = True
 t.start()
 gamefield.start_field()
+
+
+
+# evaluate action
+
+# update action
+
+# Q Values - matrix

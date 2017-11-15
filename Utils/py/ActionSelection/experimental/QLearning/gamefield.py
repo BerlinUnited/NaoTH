@@ -22,7 +22,7 @@ square_display_size = 10
 board_x = columns * square_display_size
 board_y = rows * square_display_size
 
-actions = ["right","up","down"] # "left"
+actions = ["right" ,"up" ,"down", "left"]
 
 field = {} # general field i.e. cells and arrows
 
@@ -34,16 +34,16 @@ def fill_specials():
 
             # add own goal
             if (3000 <= j * square_size < 4600) and (0 <= i * square_size < 800):
-                specials[(i, j)] = (-1, "red")
+                specials[(i, j)] = (-1., "red")
             elif (3000 <= j * square_size < 4600) and (9800 <= i * square_size < 10600):
-                specials[(i, j)] = (1, "green")
+                specials[(i, j)] = (1., "green")
             elif j * square_size < 800 or j * square_size >= 6800 or i * square_size < 800 or i * square_size >= 9800:
-                specials[(i, j)] = (-0.85, "orange")
+                specials[(i, j)] = (-0.7, "orange")
 
 fill_specials()
 
 
-agent_start_position = (15,10)
+agent_start_position = (30,30)
 
 agent_position = agent_start_position
 
@@ -54,6 +54,10 @@ score_min, score_max = -0.2, 0.2
 score = 1
 
 move_cost = -0.01
+
+def move_cost_action():
+    # move cost in relation to actio
+    pass
 
 board = Canvas(master, width= board_x, height=board_y)
 
@@ -226,6 +230,12 @@ def try_move(relative_coords):
         reset_agent() # used in special occasions e.g. force stop or enemies / opponents
 
     (dx ,dy) = relative_coords
+
+    if agent_position[0] + dx < agent_start_position[0]-1: # don't allow to go behind starting position
+        reset = True
+        score -= 1.
+        print "don't go back!"
+        return
     if check_special((agent_position[0] + dx, agent_position[1] + dy)):
         special_field = specials[(agent_position[0] + dx, agent_position[1] + dy)]
         score += move_cost
@@ -244,8 +254,10 @@ def try_move(relative_coords):
         print "unkown situation \n resetting agent..."
         reset = True
         return
+    if score < -40.:
+        reset = True
 
-    print "score: ", score
+    #print "score: ", score
 
 
 
