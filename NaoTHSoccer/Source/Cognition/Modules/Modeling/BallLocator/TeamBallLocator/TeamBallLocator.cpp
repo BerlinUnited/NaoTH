@@ -33,7 +33,7 @@ void TeamBallLocator::execute()
       // inactive robots
       if(isRobotInactive) { continue; }
       
-      // -1 means invalid ball and only "new" messages
+      // -1 means "ball never seen" and only "new" messages
       if(msg.ballAge >= 0 && lastMessages[playerNumber] < msg.frameInfo.getTime())
       {
         lastMessages[playerNumber] = msg.frameInfo.getTime();
@@ -55,7 +55,7 @@ void TeamBallLocator::execute()
       const unsigned int& playerNumber = it.first;
       const TeamMessageData& msg = it.second;
       
-      // -1 means invalid ball
+      // -1 means "ball never seen"
       if(msg.ballAge >= 0 && lastMessages[playerNumber] < msg.frameInfo.getTime())
       {
         lastMessages[playerNumber] = msg.frameInfo.getTime();
