@@ -10,7 +10,7 @@ using namespace std;
 Vector3d AccelerometerData::getAcceleration() const
 {
   Vector3d acc(data);
-  acc.z += Math::g;
+  acc.z -= Math::g;
   return acc;
 }
 
