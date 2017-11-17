@@ -139,9 +139,24 @@ void IMUModel::writeIMUData(){
      * Note: using bodyIntoGlobalMapping would be wrong because the global frame can be rotate around z regarding the body
      * this would result in a redistribution of the inclination on the x,y axis.
      * (e.g. z rotation about 90° -> a rotation about the body's y axis becomes a rotation about the global x axis)
+     * Note: don't use the y axis to determine the inclination in YZ plane because it might be mapped onto the x axis (a rotation about 90° around z)
+     * this results in huge devation of the angles determined by atan2 because the projected y axis might end up in the second or third quadrant of the YZ plane
      */
-    getIMUData().orientation = Vector2d(-atan2(bodyIntoGlobalMapping[2].y, bodyIntoGlobalMapping[1].y),
+
+    RotationMatrix globalIntoBodyMapping = bodyIntoGlobalMapping.invert();
+
+    getIMUData().orientation = Vector2d(-atan2(-globalIntoBodyMapping[2].y, globalIntoBodyMapping[2].z),
+                                        -atan2(globalIntoBodyMapping[2].x, globalIntoBodyMapping[2].z));
+
+    // just for debug
+    PLOT("IMUModel:State:orientation:x", Math::toDegrees(getIMUData().orientation.x));
+    PLOT("IMUModel:State:orientation:y", Math::toDegrees(getIMUData().orientation.y));
+
+    getIMUData().orientation = Vector2d(-atan2(-bodyIntoGlobalMapping[1].z, bodyIntoGlobalMapping[2].z),
                                         -atan2(bodyIntoGlobalMapping[0].z, bodyIntoGlobalMapping[2].z));
+
+    PLOT("IMUModel:State:orientation:x_inverse", Math::toDegrees(getIMUData().orientation.x));
+    PLOT("IMUModel:State:orientation:y_inverse", Math::toDegrees(getIMUData().orientation.y));
 
     // only to enable transparent switching with InertiaSensorFilter
     getInertialModel().orientation = getIMUData().orientation;

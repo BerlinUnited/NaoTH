@@ -215,6 +215,8 @@ void Motion::processSensorData()
       getSensorJointData().position[i] = getSensorJointData().position[i] - getOffsetJointData().position[i];
   }
 
+  theIMUModel->execute();
+
   // calibrate inertia sensors
   theInertiaSensorCalibrator->execute();
 
@@ -224,7 +226,6 @@ void Motion::processSensorData()
   getInertialSensorData().data += getCalibrationData().inertialSensorOffset;
   getAccelerometerData().data  += getCalibrationData().accSensorOffset;
 
-  theIMUModel->execute();
   //theInertiaSensorFilterBH->execute();
 
   //
