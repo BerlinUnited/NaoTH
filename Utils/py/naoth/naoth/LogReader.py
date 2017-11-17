@@ -152,10 +152,10 @@ class LogReader:
       raise StopIteration
     
     if bytes == 0:
-      return []
+      return ''
     
     data = self.log.read(bytes)
-    if data == '':
+    if len(data) != bytes:
       raise StopIteration
     
     return data
