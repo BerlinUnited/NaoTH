@@ -1,0 +1,31 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Compile Game",
+            "type": "shell",
+            "options": {
+                "cwd": "${workspaceFolder}/NaoTHSoccer/Make"
+            },
+            "group": "build",
+            "command": "./compileGame.sh",
+            "problemMatcher": [
+                "$gcc"
+            ]
+        },
+        {
+            "label": "LogSimulator",
+            "type": "shell",
+            "options": {
+                "cwd": "${workspaceFolder}/NaoTHSoccer/Make"
+            },
+            "group": "build",
+            "command": "premake4 gmake && make -C ${workspaceFolder}/NaoTHSoccer/build LogSimulator",
+            "problemMatcher": [
+                "$gcc"
+            ]
+        }
+    ]
+}
