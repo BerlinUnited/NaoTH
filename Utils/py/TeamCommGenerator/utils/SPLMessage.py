@@ -29,14 +29,11 @@ class SPLMessage(Struct):
         self.currentSideConfidence = 100
 
         self.data = Representations_pb2.BUUserTeamMessage()
-        self.data.key = "naoth"
-        self.data.timestamp = 0
-        self.data.bodyID = 'unknown'
-        self.data.wasStriker = False
-        self.data.timeToBall = 0  # sys.maxsize
-        self.data.isPenalized = False
-        self.data.batteryCharge = 0.0
-        self.data.temperature = 0.0
+
+        # set known default values of custom message part
+        for field in self.data.DESCRIPTOR.fields:
+            if field.has_default_value:
+                setattr(self.data, field.name, field.default_value)
 
         self.numOfDataBytes = self.data.ByteSize()
 
