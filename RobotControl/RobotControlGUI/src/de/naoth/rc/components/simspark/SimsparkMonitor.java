@@ -5,6 +5,7 @@ import de.naoth.rc.components.teamcomm.TeamCommMessage;
 import de.naoth.rc.dataformats.SPLMessage;
 import de.naoth.rc.dataformats.Sexp;
 import de.naoth.rc.dataformats.SimsparkState;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
@@ -39,22 +40,25 @@ public class SimsparkMonitor extends Simspark {
     /**
      * Main method of the simspark monitor thread.
      */
+    @Override
     public void run() {
         if (socket == null) {
             return;
         }
         ExecutorService s = Executors.newSingleThreadExecutor();
         
-        while (isRunning) {
+        while (isConnected.get()) {
             try {
-                sleep(1);
-                final String msg = getServerMessage();
+                final String msg;
+                msg = receiveMessage();
+
                 if (msg != null) {
                     // parse message in another thread
                     s.submit(new SimsparkMonitorMessageParser(msg));
                 }
-            } catch (InterruptedException ex) {
-                Logger.getLogger(SimsparkMonitor.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (IOException ex) {
+                // NOTE: is there a way to notiy the user?!
+                checkConnection();
             }
         }
     }
@@ -69,6 +73,7 @@ public class SimsparkMonitor extends Simspark {
             this.parser.setExpression(msg);
         }
 
+        @Override
         public void run() {
             parseMessages(parser.parseSexp());
         }
@@ -136,7 +141,7 @@ public class SimsparkMonitor extends Simspark {
                         // see SimSparkController.cpp, ~line: 280, "calculate debug communicaiton port"
                         String.format("%s:%d", ip, ((side==1?5400:5500)+spl.playerNum)),
                         spl,
-                        spl.teamNum == 4) // TOOD: can we set anywhere our team number?!?
+                        ((int)spl.teamNum) != 4) // TOOD: can we set anywhere our team number?!?
                     );
                 } catch (Exception ex) {
                     Logger.getLogger(SimsparkMonitor.class.getName()).log(Level.SEVERE, null, ex);

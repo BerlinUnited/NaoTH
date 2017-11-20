@@ -9,7 +9,7 @@
 
 #include <Tools/Math/Vector2.h>
 #include <Tools/ImageProcessing/ImagePrimitives.h>
-#include <Tools/ColorClasses.h>
+//#include <Tools/ColorClasses.h>
 
 #include <Tools/DataStructures/Serializer.h>
 
@@ -33,7 +33,9 @@ public:
   {
   public:
     static const int SIZE = 12;
-    PatchT(int) : data(SIZE*SIZE) 
+    PatchT() : data(SIZE*SIZE)
+    {}
+    PatchT(int) : data(SIZE*SIZE)
     {}
     Vector2i min;
     Vector2i max;

@@ -21,6 +21,9 @@ option basic_play
       
       head.control_mode = stay_as_forced;
 
+      //HACK: reset head.angleVelocity
+      head.angleVelocity = 300;
+
       // team symbols
       team.is_playing_as_striker = false;
 

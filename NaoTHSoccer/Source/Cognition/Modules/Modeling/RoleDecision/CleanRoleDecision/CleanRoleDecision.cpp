@@ -49,7 +49,7 @@ void CleanRoleDecision::computeStrikers()
         // check if the robot is able to play and sees the ball
         bool isRobotInactive = msg.fallen
                 || msg.custom.isPenalized
-                || msg.ballAge < 0 //Ball hasn't been seen
+                || msg.ballAge < 0 //Ball was never seen
                 || (msg.ballAge + getFrameInfo().getTimeSince(msg.frameInfo.getTime()) > parameters.maxBallLostTime + loose_ball_bonus); //Ball isn't fresh
 
         // ignore "DEAD" and inactive robots

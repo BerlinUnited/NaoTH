@@ -1,4 +1,4 @@
-test/*
-test2/*
-statistics/*
-experimental/*
+# ignore generated data
+*.pickle
+*.txt
+*.png

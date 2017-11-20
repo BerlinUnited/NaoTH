@@ -135,7 +135,11 @@ local qtc = premake.qtcreator27
     if string.endswith(cfg.longname, platform) and platform ~= "" then
       _p(5, "<value type=\"QString\" key=\"ProjectExplorer.ProcessStep.Arguments\">--platform=&quot;".. platform .."&quot; --file=../Make/premake4.lua gmake</value>")
     else
-      _p(5, "<value type=\"QString\" key=\"ProjectExplorer.ProcessStep.Arguments\">--file=../Make/premake4.lua gmake</value>")
+      if _OPTIONS.Test == nil then
+        _p(5, "<value type=\"QString\" key=\"ProjectExplorer.ProcessStep.Arguments\">--file=../Make/premake4.lua gmake</value>")
+      else
+        _p(5, "<value type=\"QString\" key=\"ProjectExplorer.ProcessStep.Arguments\">--Test --file=../Make/premake4.lua gmake</value>")        
+      end
     end
     _p(5, "<value type=\"QString\" key=\"ProjectExplorer.ProcessStep.Command\">premake4</value>")
     _p(5, "<value type=\"QString\" key=\"ProjectExplorer.ProcessStep.WorkingDirectory\">%%{buildDir}</value>")

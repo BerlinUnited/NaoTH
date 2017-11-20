@@ -133,8 +133,8 @@ public:
       
 
       bool is_stationary() const {
-        return thePreviewController.com_velocity().abs() < 1;// && 
-               //thePreviewController.com_acceleration().abs2() < 1;
+        return thePreviewController.com_velocity().abs2() < 1 && 
+               thePreviewController.com_acceleration().abs2() < 1;
       }
 
       bool pop(Vector3d& com)
@@ -182,24 +182,21 @@ public:
   void solveHipFeetIK(const InverseKinematic::HipFeetPose& p);
   
   bool rotationStabilizeRC16(
-    //const InertialModel& theInertialModel,
-    const naoth::InertialSensorData& theInertialSensorData,
+    const Vector2d& inertial,
     const GyrometerData& theGyrometerData,
-    double timeDelta,
+    const double timeDelta,
+    const Vector2d&  rotationP,
+    const Vector2d&  rotationVelocityP,
+    const Vector2d&  rotationD,
     InverseKinematic::HipFeetPose& p);
-
-  bool rotationStabilizenNewIMU(
-          //const InertialModel& theInertialModel,
-          const IMUData& imuData,
-          //const InertialModel& theInertialModel,
-          const GyrometerData& theGyrometerData,
-          double timeDelta,
-          InverseKinematic::HipFeetPose& p);
 
   bool rotationStabilize(
     const InertialModel& theInertialModel,
     const GyrometerData& theGyrometerData,
-    double timeDelta,
+    const double timeDelta,
+    const Vector2d&  rotationP,
+    const Vector2d&  rotationVelocityP,
+    const Vector2d&  rotationD,
     InverseKinematic::HipFeetPose& p);
 
   /**
@@ -241,11 +238,6 @@ public:
     const Pose3D& rightHand,
     double (&position)[naoth::JointData::numOfJoint]);
 
-  void autoArms(
-    const naoth::RobotInfo& theRobotInfo,
-    const InverseKinematic::HipFeetPose& pose, 
-    double (&position)[naoth::JointData::numOfJoint]);
-
   Vector3<double> sensorCoMIn(
     const KinematicChainSensor& theKinematicChain,
     KinematicChain::LinkID link) const;
@@ -255,12 +247,14 @@ public:
     const KinematicChainSensor& theKinematicChain,
     const Vector3d& lastReqCoM, KinematicChain::LinkID link) const;
 
-  void gotoArms(
-    const MotionStatus& theMotionStatus,
+  void armsBasedOnInertialModel(
     const InertialModel& theInertialModel,
-    const naoth::RobotInfo& theRobotInfo,
-    const InverseKinematic::HipFeetPose& currentPose, 
     double (&position)[naoth::JointData::numOfJoint]);
+
+  void armsSynchronisedWithWalk(
+    const naoth::RobotInfo& theRobotInfo,
+    const InverseKinematic::CoMFeetPose& feet, 
+    naoth::JointData& jointData);
 
   void armsOnBack(
     const RobotInfo& theRobotInfo,

@@ -30,6 +30,7 @@ option striker
     }
     action{
       situation_abortable = true;
+
       search_ball();
     }
   }
