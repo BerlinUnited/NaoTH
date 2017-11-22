@@ -1,5 +1,12 @@
 # Action Selection Python Project
 
-The scripts were developed for the Bachelor thesis: "Selection of Actions based on Forward Simulations"
+The scripts were developed for Benjamin Schlotters Bachelor thesis:
+"Selection of Actions based on Forward Simulations" and the following Papers:
+[Simulation based selection of actions for a humanoid soccer-robot](http://www.naoteamhumboldt.de/wp-content/papercite-data/pdf/2016-mellmannschlotterblum.pdf)
 
-Not all scripts are useful beyond their purpose for the thesis.
+[Advances on simulation based selection of actions for a humanoid soccer-robot](http://www.naoteamhumboldt.de/wp-content/papercite-data/pdf/hsr-mellmannschlotter-17.pdf)
+
+
+## Todo
+- das generierte Potentialfeld muss wieder nutzbar gemacht werden
+-
