@@ -143,20 +143,11 @@ void IMUModel::writeIMUData(){
      * this results in huge devation of the angles determined by atan2 because the projected y axis might end up in the second or third quadrant of the YZ plane
      */
 
-    RotationMatrix globalIntoBodyMapping = bodyIntoGlobalMapping.invert();
-
-    getIMUData().orientation = Vector2d(-atan2(-globalIntoBodyMapping[2].y, globalIntoBodyMapping[2].z),
-                                        -atan2(globalIntoBodyMapping[2].x, globalIntoBodyMapping[2].z));
-
-    // just for debug
-    PLOT("IMUModel:State:orientation:x", Math::toDegrees(getIMUData().orientation.x));
-    PLOT("IMUModel:State:orientation:y", Math::toDegrees(getIMUData().orientation.y));
-
     getIMUData().orientation = Vector2d(-atan2(-bodyIntoGlobalMapping[1].z, bodyIntoGlobalMapping[2].z),
                                         -atan2(bodyIntoGlobalMapping[0].z, bodyIntoGlobalMapping[2].z));
 
-    PLOT("IMUModel:State:orientation:x_inverse", Math::toDegrees(getIMUData().orientation.x));
-    PLOT("IMUModel:State:orientation:y_inverse", Math::toDegrees(getIMUData().orientation.y));
+    PLOT("IMUModel:State:orientation:x", Math::toDegrees(getIMUData().orientation.x));
+    PLOT("IMUModel:State:orientation:y", Math::toDegrees(getIMUData().orientation.y));
 
     // only to enable transparent switching with InertiaSensorFilter
     getInertialModel().orientation = getIMUData().orientation;
