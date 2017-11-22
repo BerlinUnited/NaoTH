@@ -308,15 +308,15 @@ public class SPLMessage {
         }
     }
     
-    public void parseCustomFromData() {
+    public boolean parseCustomFromData() {
         // TODO: check if this needs to be changed - 'cause of dobermanheader!?!
         if(data != null) {
             try {
                 user = Representations.BUUserTeamMessage.parseFrom(data);
-            } catch (InvalidProtocolBufferException ex) {
-                Logger.getLogger(SPLMessage.class.getName()).log(Level.SEVERE, null, ex);
-            }
+                return true;
+            } catch (InvalidProtocolBufferException ex) { /* ignore! instead "false" is returned. */ }
         }
+        return false;
     }
 
     public boolean extractCustomData(int size) {
