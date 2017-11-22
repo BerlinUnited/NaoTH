@@ -11,7 +11,6 @@ from naoth import math2d as m2d
 import copy
 
 
-
 """ General Functions """
 gen_field = []
 nx = []
@@ -71,8 +70,8 @@ def evaluate_action_with_robots(results, state):
     assert number_of_actions > 0
     sum_potential /= number_of_actions
 
-    squared_difference = np.abs(pf_normal_value - sum_potential) # decide whether considering other robots is appropriate
-    if squared_difference < 0.05: # upper bound - how to choose?
+    squared_difference = np.abs(pf_normal_value - sum_potential)  # decide whether considering other robots is appropriate
+    if squared_difference < 0.05:  # upper bound - how to choose?
         return pf_normal_value
 
     # ab hier experimental
@@ -80,25 +79,22 @@ def evaluate_action_with_robots(results, state):
 
     new_ball_pos = results.expected_ball_pos_mean
 
-    #update state
+    # update state
     new_state = copy.copy(state)
     new_state.ball_position = m2d.Vector2(0.0, 0.0) # Ball = Robot
     new_state.translation = new_ball_pos
-    #new_state.rotation = pass # maybe rotation as needed for direkt / shortest path to the ball
+    # new_state.rotation = pass # maybe rotation as needed for direkt / shortest path to the ball
     new_state.potential_field_function = "normal"
-
 
     # Simulation as in Simulation.py (decide_smart)
 
     actions_consequences = []
     # Simulate Consequences
-    for action in new_state.actions: #new_state.actions includes the possible kicks
+    for action in new_state.actions:  # new_state.actions includes the possible kicks
         single_consequence = a.ActionResults([])
         actions_consequences.append(Sim.simulate_consequences(action, single_consequence, new_state, 30))
 
     best_action_with_team = Sim.decide_smart(actions_consequences, state)
-
-
 
     # compare new best action
     # TODO: Add simulation of a second kick without other robots to have better comparison
@@ -110,8 +106,6 @@ def evaluate_action_with_robots(results, state):
     """
 
     return sum_potential
-
-
 
 
 def evaluate_single_pos_with_robots(ball_pos, opp_robots, own_robots):
@@ -161,7 +155,6 @@ def robot_field_own(robot_pos, ball_pos):
     # so I copied the implementation of the transformation here
     # ball_pos = (ball_pos - robot_pos.translation).rotate(-robot_pos.rotation)
     ball_pos = (ball_pos - robot_pos)
-
 
     # evaluation function
     angle = np.degrees(np.arctan2(ball_pos.y, ball_pos.x))
