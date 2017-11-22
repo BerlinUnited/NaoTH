@@ -192,12 +192,12 @@ public:
    * Get the y-angle of a RotationMatrix.
    *
    * \return  The angle around the y-axis between the original
-   *          and the rotated x-axis projected on the x-z-plane
+   *          and the rotated z-axis projected on the x-z-plane
    */
   DATATYPE getYAngle() const
   {
-        DATATYPE h = sqrt(this->c[0].x * this->c[0].x + this->c[0].z * this->c[0].z);
-        return h ? acos(this->c[0].x / h) * (this->c[0].z > 0 ? -1 : 1) : 0;
+        DATATYPE h = sqrt(this->c[2].x * this->c[2].x + this->c[2].z * this->c[2].z);
+        return h ? acos(this->c[2].z / h) * (this->c[2].x > 0 ? 1 : -1) : 0;
   }
 
   /**
