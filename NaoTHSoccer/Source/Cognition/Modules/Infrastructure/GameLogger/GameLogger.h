@@ -74,11 +74,13 @@ private:
     {
       PARAMETER_REGISTER(logBallCandidates) = false;
       PARAMETER_REGISTER(logBodyStatus) = false;
+      PARAMETER_REGISTER(logPlainImages) = false;
       syncWithConfig();
     }
 
     bool logBallCandidates;
     bool logBodyStatus;
+    bool logPlainImages;
   } params;
 
 private:

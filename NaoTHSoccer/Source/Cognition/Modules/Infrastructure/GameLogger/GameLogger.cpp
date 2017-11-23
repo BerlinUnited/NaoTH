@@ -90,7 +90,7 @@ void GameLogger::execute()
       LOGSTUFF(TeamMessage);
 
       // record images every 1s
-      if(getFrameInfo().getTimeSince(lastTimeImageRecorded) > 2000 && imageOutFile.is_open() && !imageOutFile.fail()) {
+      if(params.logPlainImages && getFrameInfo().getTimeSince(lastTimeImageRecorded) > 2000 && imageOutFile.is_open() && !imageOutFile.fail()) {
         unsigned int frameNumber = getFrameInfo().getFrameNumber();
         imageOutFile.write((const char*)(&frameNumber), sizeof(unsigned int));
 
