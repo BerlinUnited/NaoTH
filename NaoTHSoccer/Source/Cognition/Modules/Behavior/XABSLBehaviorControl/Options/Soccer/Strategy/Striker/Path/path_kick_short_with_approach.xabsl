@@ -1,6 +1,18 @@
 option path_kick_short_with_approach
 {
-  initial state decide
+	initial state finish_turning {
+	  decision {
+	      if(action_done)
+	        goto decide;
+	      else
+	        stay;
+	    }
+	    action{
+	      situation_abortable = false;
+	      path_turn_to_attack_direction();
+	    }
+	}
+  state decide
   {
     decision {
       if(ball.preview.y > 0)
