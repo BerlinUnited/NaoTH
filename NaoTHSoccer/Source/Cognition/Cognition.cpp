@@ -156,7 +156,6 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(ArtificialHorizonCalculator);
   REGISTER_MODULE(BodyContourProvider);
   REGISTER_MODULE(CameraMatrixCorrector);
-  REGISTER_MODULE(CameraMatrixCorrectorV2);
 
   REGISTER_MODULE(HistogramProvider);
   REGISTER_MODULE(IntegralImageProvider);
@@ -219,6 +218,8 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(PathPlanner);
 
   REGISTER_MODULE(TeamCommSender);
+
+  REGISTER_MODULE(CameraMatrixCorrectorV2); // need to overwrite behavior's motion requests
   
   // debug
   REGISTER_MODULE(GameLogger);

@@ -19,6 +19,7 @@
 #include "Representations/Modeling/KinematicChain.h"
 
 #include "Representations/Motion/Request/HeadMotionRequest.h"
+#include "Representations/Motion/Request/MotionRequest.h"
 
 #include "Tools/DoubleCamHelpers.h"
 #include "Tools/CameraGeometry.h"
@@ -42,9 +43,7 @@ BEGIN_DECLARE_MODULE(CamMatErrorFunction)
   REQUIRE(FieldInfo)
   REQUIRE(CameraInfo)
   REQUIRE(CameraInfoTop)
-
   REQUIRE(CameraMatrixOffset)
-
 END_DECLARE_MODULE(CamMatErrorFunction)
 
 BEGIN_DECLARE_MODULE(CameraMatrixCorrectorV2)
@@ -60,6 +59,7 @@ BEGIN_DECLARE_MODULE(CameraMatrixCorrectorV2)
   REQUIRE(InertialModel)
 
   PROVIDE(HeadMotionRequest)
+  PROVIDE(MotionRequest)
   PROVIDE(CameraMatrixOffset)
 END_DECLARE_MODULE(CameraMatrixCorrectorV2)
 
