@@ -3,6 +3,7 @@ from tools import field_info as field
 from Tkinter import *
 import threading
 import time
+import random
 
 
 master = Tk()
@@ -34,16 +35,18 @@ def fill_specials():
 
             # add own goal
             if (3000 <= j * square_size < 4600) and (0 <= i * square_size < 800):
-                specials[(i, j)] = (-1., "red")
+                specials[(i, j)] = (-.5, "red")
             elif (3000 <= j * square_size < 4600) and (9800 <= i * square_size < 10600):
-                specials[(i, j)] = (1., "green")
+                specials[(i, j)] = (.5, "green")
             elif j * square_size < 800 or j * square_size >= 6800 or i * square_size < 800 or i * square_size >= 9800:
-                specials[(i, j)] = (-0.7, "orange")
+                specials[(i, j)] = (-0.3, "orange")
 
 fill_specials()
 
 
 agent_start_position = (30,30)
+#agent_start_position = (random.randint(5,columns-4),random.randint(5,rows-4))
+
 
 agent_position = agent_start_position
 
@@ -51,7 +54,7 @@ reset = False
 
 score_min, score_max = -0.2, 0.2
 
-score = 1
+score = 0
 
 move_cost = -0.01
 
@@ -108,14 +111,14 @@ def update_arrow(coords, action):
                           i*square_display_size, j*square_display_size + 0.5*square_display_size)
         board.itemconfigure(field[coords][1],arrow="last")
     else:
-        print "no arrow drawn for field: ", (i,j)
+        print "no arrow drawn for field: (" + str(i) + ", " + str(j) + ")"
 
 
 def set_cell_color(coords, val):
     global score_min, score_max
     cell = field[coords][0]
     # color setting
-    green_dec = int(min(255, max(0, (val - score_min) * 255.0 / (score_max - score_min))))
+    green_dec = int(min(255, max(0, (val - score_min )* 255.0 / (score_max - score_min))))
     green = hex(green_dec)[2:]
     red = hex(255-green_dec)[2:]
     if len(red) == 1:
@@ -146,10 +149,13 @@ def move_agent(absolute = None, relative = None):
                  (agent_position[0] + 1) * square_display_size, (agent_position[1] + 1) * square_display_size)
 
 
-def reset_agent():
+def reset_agent(random_start_position = True):
     global agent_position, score, agent_display, reset, agent_start_position
-    agent_position = agent_start_position
-    score = 1 # don't know yet what this is for, remains since it could be forgotten otherwise
+    if random_start_position:
+        agent_position = (random.randint(agent_start_position[0], columns - 5), random.randint(5, rows - 5))
+    else:
+        agent_position = agent_start_position
+    score = 1
     reset = False
     board.coords(agent_display, agent_position[0] * square_display_size, agent_position[1] * square_display_size,
                  (agent_position[0] + 1) * square_display_size, (agent_position[1] + 1) * square_display_size)
@@ -162,13 +168,15 @@ def check_infield(coords):
     else:
         return False
 
-# TODO: def check_special for special events like goal or out
-
 def check_special(coords):
-    if coords in specials:
-        return True
-    else:
-        return False
+    """
+    
+    :param coords: state of the agent, position on the field
+    :return: boolean value, weather the agent is on a special field or not
+    """
+    return coords in specials
+
+
 
 
 """
@@ -221,15 +229,13 @@ def create_arrows():
 """
 
 
-# TODO: add try_move function
-
-def try_move(relative_coords):
+def try_move((dx,dy)):
     global agent_position, reset, score, specials
 
     if reset == True:
-        reset_agent() # used in special occasions e.g. force stop or enemies / opponents
+        reset_agent()
 
-    (dx ,dy) = relative_coords
+    # (dx ,dy) = relative_coords
 
     if agent_position[0] + dx < agent_start_position[0]-1: # don't allow to go behind starting position
         reset = True
@@ -240,6 +246,7 @@ def try_move(relative_coords):
         special_field = specials[(agent_position[0] + dx, agent_position[1] + dy)]
         score += move_cost
         score += special_field[0]
+        move_agent(relative=(dx, dy))
         if score > 1:
             print "GOAL!"
         else:
@@ -254,8 +261,8 @@ def try_move(relative_coords):
         print "unkown situation \n resetting agent..."
         reset = True
         return
-    if score < -40.:
-        reset = True
+    #if score_min <= score <= score_max: # good!?
+    #    reset = True
 
     #print "score: ", score
 
