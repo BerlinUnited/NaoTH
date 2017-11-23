@@ -14,13 +14,15 @@
 
 #include <Tools/naoth_eigen.h>
 
+#include <tuple>
+
 template<int numOfFunctions, int numOfParameter, class ErrorFunction>
 class GaussNewtonMinimizer
 {
 public:
     GaussNewtonMinimizer();
 
-    Eigen::Matrix<double, numOfParameter, 1> minimizeOneStep(ErrorFunction& errorFunction, double epsilon);
+    std::tuple<Eigen::Matrix<double, numOfParameter, 1>, double > minimizeOneStep(ErrorFunction& errorFunction, double epsilon);
 
 private:
     Eigen::Matrix<double, numOfFunctions, numOfParameter> determineJacobian(ErrorFunction& errorFunction, double epsilon);
@@ -58,7 +60,7 @@ Eigen::Matrix<double, numOfFunctions, numOfParameters> GaussNewtonMinimizer<numO
 }
 
 template<int numOfFunctions, int numOfParameters, class ErrorFunction>
-Eigen::Matrix<double, numOfParameters, 1> GaussNewtonMinimizer<numOfFunctions, numOfParameters, ErrorFunction>::minimizeOneStep(ErrorFunction& errorFunction, double epsilon){
+std::tuple<Eigen::Matrix<double, numOfParameters, 1>, double> GaussNewtonMinimizer<numOfFunctions, numOfParameters, ErrorFunction>::minimizeOneStep(ErrorFunction& errorFunction, double epsilon){
 
     Eigen::Matrix<double, numOfParameters, 1> offset = Eigen::Matrix<double, numOfParameters, 1>::Zero();
 
@@ -82,7 +84,7 @@ Eigen::Matrix<double, numOfParameters, 1> GaussNewtonMinimizer<numOfFunctions, n
         offset = offset.normalized()*lambda;
     }
 
-    return offset;
+    return std::make_tuple(offset, w);
 }
 
 #endif // MINIMIZER_H

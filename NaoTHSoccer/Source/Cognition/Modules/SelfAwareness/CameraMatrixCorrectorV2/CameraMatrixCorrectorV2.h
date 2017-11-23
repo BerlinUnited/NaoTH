@@ -24,12 +24,15 @@
 #include "Tools/DoubleCamHelpers.h"
 #include "Tools/CameraGeometry.h"
 #include <Tools/NaoInfo.h>
+#include <Tools/DataStructures/RingBufferWithSum.h>
 
 // debug
 #include "Tools/Debug/DebugRequest.h"
 #include "Tools/Debug/DebugDrawings.h"
 #include "Tools/Debug/DebugModify.h"
 #include "Tools/Debug/DebugParameterList.h"
+#include "Tools/Debug/DebugPlot.h"
+#include "Representations/Infrastructure/FrameInfo.h"
 
 #include <Tools/Math/Minimizer.h>
 
@@ -51,6 +54,8 @@ BEGIN_DECLARE_MODULE(CameraMatrixCorrectorV2)
   PROVIDE(DebugDrawings)
   PROVIDE(DebugModify)
   PROVIDE(DebugParameterList)
+  PROVIDE(DebugPlot)
+  REQUIRE(FrameInfo)
 
   // data needed for calibration
   REQUIRE(LineGraphPercept)
@@ -305,14 +310,21 @@ private:
   int last_idx_yaw,last_idx_pitch;
   double damping;
 
-  typedef double (CameraMatrixCorrectorV2::*ErrorFunction)(double, double);
-
   GaussNewtonMinimizer<1, 11, CamMatErrorFunction> gn_minimizer;
 
-  void calibrate();
+  bool calibrate();
   void reset_calibration();
+  bool movingHead();
+  void collectingData();
+  void doItAutomatically();
 
   ModuleCreator<CamMatErrorFunction>* theCamMatErrorFunction;
+
+  // for automatic calibration
+  bool auto_cleared_data, auto_collected, auto_calibrated;
+  RingBufferWithSum<double, 100> derrors;
+  double last_error;
+  FrameInfo last_frame_info;
 
 };
 
