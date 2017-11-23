@@ -5,6 +5,7 @@
 #include <Tools/Logfile/LogfileManager.h>
 
 #include <Representations/Infrastructure/FrameInfo.h>
+#include <Representations/Infrastructure/Image.h>
 #include <Representations/Infrastructure/RobotInfo.h>
 #include <Representations/Modeling/BehaviorStateComplete.h>
 #include <Representations/Modeling/BehaviorStateSparse.h>
@@ -35,6 +36,9 @@ BEGIN_DECLARE_MODULE(GameLogger)
 
   REQUIRE(BehaviorStateSparse)
   REQUIRE(BehaviorStateComplete)
+
+  REQUIRE(Image)
+  REQUIRE(ImageTop)
 
   REQUIRE(OdometryData)
   REQUIRE(CameraMatrix)
@@ -81,6 +85,9 @@ private:
   // TODO: make a memory aware LogfileManager that flushes whenever a certain memory
   // treshold is reached.
   LogfileManager < 30 > logfileManager;
+  
+  ofstream imageOutFile;
+  FrameInfo lastTimeImageRecorded;
 
   unsigned int lastCompleteFrameNumber;
   

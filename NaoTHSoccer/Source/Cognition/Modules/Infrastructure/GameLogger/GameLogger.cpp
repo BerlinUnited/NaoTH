@@ -8,6 +8,9 @@ GameLogger::GameLogger()
   firstRecording(true)
 {
   logfileManager.openFile("/tmp/game.log");
+  
+  imageOutFile.open("/tmp/images.log", ios::out | ios::binary);
+  lastTimeImageRecorded = getFrameInfo();
 
   getDebugParameterList().add(&params);
 }
@@ -15,7 +18,7 @@ GameLogger::GameLogger()
 GameLogger::~GameLogger()
 {
   logfileManager.closeFile();
-
+  imageOutFile.close();
   getDebugParameterList().remove(&params);
 }
 
@@ -85,6 +88,15 @@ void GameLogger::execute()
       }
 
       LOGSTUFF(TeamMessage);
+
+      // record images every 1s
+      if(getFrameInfo().getTimeSince(lastTimeImageRecorded) > 2000 && imageOutFile.is_open() && !imageOutFile.fail()) {
+        unsigned int frameNumber = getFrameInfo().getFrameNumber();
+        imageOutFile.write((const char*)(&frameNumber), sizeof(unsigned int));
+
+        imageOutFile.write((const char*)getImageTop().data(), getImageTop().data_size());
+        lastTimeImageRecorded = getFrameInfo();
+      }
 
       something_recorded = true;
     }
