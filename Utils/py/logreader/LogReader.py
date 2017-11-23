@@ -7,6 +7,7 @@ from google.protobuf import text_format
 
 import mmap
 
+# TODO: Does the LogReader need to be thread safe?
 from threading import Lock
 
 import struct
@@ -73,7 +74,7 @@ class LogScanner:
 
             name = self.__readString()
             message_size = self.__readLong()
-
+            # TODO: create a more verbose representation
             dataPos = (self.logFile.tell(), message_size, None)
 
             # skip data
@@ -180,5 +181,8 @@ class LogReader:
 
 if __name__ == "__main__":
     with LogReader("./cognition.log") as log:
+        print(log[100]["FrameInfo"])
+
+
         for frame in log.read():
             print(frame["FrameInfo"])
