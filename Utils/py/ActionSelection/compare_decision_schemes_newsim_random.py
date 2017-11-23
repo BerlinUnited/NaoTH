@@ -8,7 +8,7 @@ import timeit
 import copy
 import numpy as np
 from naoth import math2d as m2d
-from compare_decision_schemes import play_striker as striker
+import play_striker as striker
 
 import multiprocessing as mp
 

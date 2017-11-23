@@ -5,7 +5,7 @@ from state import State
 from tools import action as a
 import timeit
 import numpy as np
-from compare_decision_schemes import play_striker as striker
+import play_striker as striker
 
 """
 For every position(x, y) and a fixed rotation the time and the number of kicks and turns are calculated for different strategies.

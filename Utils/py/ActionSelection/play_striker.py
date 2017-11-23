@@ -1,17 +1,9 @@
 from __future__ import division
-import os
-import sys
-import inspect
 import math
 import copy
 import numpy as np
 from matplotlib import pyplot as plt
 from naoth import math2d as m2d
-
-cmd_subfolder = os.path.realpath(os.path.abspath(os.path.join(os.path.split(inspect.getfile(inspect.currentframe()))[0], "..")))
-if cmd_subfolder not in sys.path:
-    sys.path.insert(0, cmd_subfolder)
-
 from tools import action as a
 from tools import Simulation as Sim
 from tools import tools
@@ -225,21 +217,21 @@ class Simulator:
         self.state.pose.translate(self.walk_dist, 0)
         self.state.ball_position = m2d.Vector2(100.0, 0.0)
         
-        # ---------------
+        # -----------------
         #  make a decision
-        # ---------------
+        # -----------------
 
         self.selected_action_idx, self.turn_around_ball = self.strategy(self.state, self.action_list)
         selected_action = self.action_list[self.selected_action_idx]
 
-        # ---------------
+        # --------------------
         #  execute the action
-        # ---------------
+        # --------------------
         if selected_action.name == "none":
             # print("INFO: NONE action while ball outside of the field.")
             if self.state_category == a.Category.INFIELD:
-              print("WARNING: action is NONE, what should we do here? " + str(self.selected_action_idx))
-              print("STATE: robot = {0}".format(self.state.pose))
+                print("WARNING: action is NONE, what should we do here? " + str(self.selected_action_idx))
+                print("STATE: robot = {0}".format(self.state.pose))
         else:
             # rotate around ball if necessary
             self.state.pose.rotate(self.turn_around_ball)
