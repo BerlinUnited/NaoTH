@@ -16,9 +16,9 @@ function classifyImages(convnet, srcDir, tgtDir, useImgReader)
     end
 
     YTest = classify(convnet,digitData);
-
+    files = digitData.Files; % this is much faster in the for loop
     for i = 1:length(YTest)
-        fileOld = string(digitData.Files(i));
+        fileOld = files{i};
         pathOld = strsplit(fileOld,{'/','\'});
         fileName = pathOld(end);
         fileNew = tgtDir + string(YTest(i)) + '\' + fileName;

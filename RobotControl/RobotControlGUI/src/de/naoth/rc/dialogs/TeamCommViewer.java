@@ -421,7 +421,14 @@ public class TeamCommViewer extends AbstractDialog {
 
     @Override
     public void dispose() {
-        // TODO: should we stop all listener-threads?!
+        // stop listener threads!
+        try {
+            listenerOwn.disconnect();
+        } catch (IOException | InterruptedException ex) {}
+        try {
+            listenerOpponent.disconnect();
+        } catch (IOException | InterruptedException ex) {}
+        
         this.log.stopLogging();
     }
 

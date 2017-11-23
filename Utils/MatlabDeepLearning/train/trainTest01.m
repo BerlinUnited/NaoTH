@@ -10,7 +10,8 @@ figure;
 perm = randperm(length(digitData.Files),20);
 for i = 1:20
     subplot(4,5,i);
-    imshow(digitData.Files{perm(i)});
+    % accessing digitData in a loop is slow
+    imshow(digitData.Files{perm(i)}); 
 end
 %%
 % The labels for each patch is automatically determined by the name of the
