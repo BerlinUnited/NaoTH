@@ -15,6 +15,7 @@ import socket
 import traceback
 import argparse
 import logging
+import logging.handlers
 import threading
 import json
 import time
@@ -29,17 +30,20 @@ LOGGER_FMT  = '%(levelname)s: %(message)s'
 LOGGER_FMT_CHILD = '%(levelname)s[%(name)s]: %(message)s'
 
 def parseArguments():
+    use_config = '-c' in sys.argv or '--config' in sys.argv
     parser = argparse.ArgumentParser(description='Starts a GoPro controller (on linux!)', epilog="Example: {} -n 10.0.4.255 -p 10004".format(sys.argv[0]))
     parser.add_argument('-v', '--verbose', action='store_true', help='activate verbose mode')
+    parser.add_argument('-c', '--config', action='store_true', help='use config for network setup')
     parser.add_argument('-q', '--quiet', action='store_true', help="doesn\'t print out anything, except errors; '-v' is ignored!")
     parser.add_argument('-b', '--background', action='store_true', help='autom. forks to background, no "status" will be printed out')
     parser.add_argument('-d', '--device', action='store', help='the device used to connect to the GoPro wifi network (eg. "wifi0")')
-    parser.add_argument('-s', '--ssid',   action='store', required=True, help='the SSID name of the GoPro wifi network (eg. "NAOCAM")')
-    parser.add_argument('-p', '--passwd', action='store', required=True, help='the password of the GoPro wifi network')
+    parser.add_argument('-s', '--ssid',   action='store', required=not use_config, help='the SSID name of the GoPro wifi network (eg. "NAOCAM")')
+    parser.add_argument('-p', '--passwd', action='store', required=not use_config, help='the password of the GoPro wifi network')
+    parser.add_argument('--syslog', action='store_true', help='writes log to system log (too)')
 
     return parser.parse_args()
 
-def setupLogger(quiet:bool = False, verbose:bool = False):
+def setupLogger(quiet:bool = False, verbose:bool = False, syslog:bool = False):
     lh = logging.StreamHandler()
     lh.setFormatter(LogFormatter())
 
@@ -51,6 +55,13 @@ def setupLogger(quiet:bool = False, verbose:bool = False):
 
     Network.logger.addHandler(lh)
     Network.logger.propagate = False
+
+    if syslog:
+        sh = logging.handlers.SysLogHandler(address='/dev/log')
+        sh.setFormatter(logging.Formatter('GoPro:'+LOGGER_FMT))
+
+        logger.addHandler(sh)
+        Network.logger.addHandler(sh)
 
     return logger
 
@@ -157,6 +168,7 @@ def main():
                         previous_output = output
                         previous_state = gc_data.gameState
                     except (KeyboardInterrupt, SystemExit):
+                        logger.debug("Interrupted or Exit")
                         print("") # intentionally print empty line
                         break
                     except:
@@ -171,11 +183,6 @@ if __name__ == '__main__':
         sys.stderr.write("Only linux based systems are currently supported!")
         exit(1)
 
-    # NAOCAM / a1b0a1b0a1
-    # NAOCAM_2 / a1b0a1b0a1
-    # GP26329941 / cycle9210
-    # GP26297683 / epic0546
-
     # define vars
     tempdir = tempfile.gettempdir()
     name = 'pyGoPro' #os.path.basename(sys.argv[0])
@@ -184,7 +191,16 @@ if __name__ == '__main__':
 
     # args = { 'device': 'wifi0', 'ssid': 'NAOCAM', 'password':'a1b0a1b0a1' }
     args = parseArguments()
-    logger = setupLogger(args.quiet, args.verbose)
+    # use config for network setup
+    if args.config:
+        try:
+            import config
+            args.ssid = config.ssid
+            args.passwd = config.passwd
+        except:
+            pass  # no config available!
+
+    logger = setupLogger(args.quiet, args.verbose, args.syslog)
 
     daemon = Daemonize(app=name, pid=lock_file, action=main, logger=logger, foreground=not args.background)
     daemon.start()
