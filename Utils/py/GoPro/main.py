@@ -70,6 +70,7 @@ class LogFormatter(logging.Formatter):
         return logging.Formatter.format(self, record) #super(LogFormatter, self).format(format)
 
 class CamStatus(threading.Thread):
+    """Thread retrieves the current state of the camera and tries to keep the cam alive."""
     def __init__(self, cam:GoProCamera.GoPro, interval:int=5):
         threading.Thread.__init__(self)
         self.cam = cam
@@ -84,6 +85,7 @@ class CamStatus(threading.Thread):
             js = json.loads(self.cam.getStatusRaw())
             self.status['mode'] = self.cam.parse_value("mode", js[constants.Status.Status][constants.Status.STATUS.Mode])
             self.status['recording'] = js[constants.Status.Status][constants.Status.STATUS.IsRecording] == 1
+            self.cam.power_on(self.cam._mac_address)
             self.sleeper.wait(self.interval)
 
     def stop(self):
@@ -120,6 +122,7 @@ def main():
                 s.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
                 s.bind(('', 3838))
 
+                # status monitor and cam keep alive thread
                 status = CamStatus(cam, 1)
                 status.start()
 
