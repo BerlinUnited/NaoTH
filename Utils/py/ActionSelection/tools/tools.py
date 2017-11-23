@@ -1,5 +1,6 @@
 from matplotlib import pyplot as plt
 from matplotlib.patches import Circle
+import matplotlib.patches as patches
 import field_info as f
 import matplotlib as mpl
 
@@ -9,6 +10,15 @@ def draw_field(axis=plt.gca()):
     mpl.rcParams['lines.linewidth'] = 2.33513514  # was 2 before
 
     ax = axis
+    
+    # draw field background
+    ax.add_patch( 
+      patches.Rectangle(
+        (-f.x_field_length/2, -f.y_field_length/2), f.x_field_length, f.y_field_length,  
+        facecolor="green", zorder=0
+      )
+    )
+    
     ax.plot([0, 0], [-f.y_length * 0.5, f.y_length * 0.5], 'white')  # Middle line
 
     ax.plot([f.x_opponent_groundline, f.x_opponent_groundline], [f.y_left_sideline, f.y_right_sideline], 'white')  # opponent ground line
@@ -47,5 +57,5 @@ def draw_field(axis=plt.gca()):
 
     ax.set_xlim([-f.x_field_length * 0.5, f.x_field_length * 0.5])
     ax.set_ylim([-f.y_field_length * 0.5, f.y_field_length * 0.5])
-    ax.set_facecolor('green')
+    #ax.set_facecolor('green')
     ax.set_aspect("equal")

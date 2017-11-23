@@ -37,11 +37,11 @@ class Vector2:
 
     # TODO python3: use __truediv__
     # https://docs.python.org/3/library/operator.html
-    def __div__(self, fraction):
-        return Vector2(self.x/fraction, self.y/fraction)
+    def __div__(self, divisor):
+        return Vector2(self.x/divisor, self.y/divisor)
 
     def __str__(self):
-        return str(self.x) + " " + str(self.y)
+        return "({0},{1})".format(self.x, self.y)
 
     def normalize(self):
         if Vector2.abs(self) != 0:
@@ -55,6 +55,7 @@ class Vector2:
         else:
             return (Vector2(self.x, self.y)*length) / self.abs()
 
+    # TODO is this function really necessary?
     def rotate_right(self):
         x = self.x
         y = self.y
@@ -63,16 +64,30 @@ class Vector2:
     def angle(self):
         return math.atan2(self.y, self.x)
 
+    def copy(self):
+        return Vector2(self.x, self.y)
+
 
 class Pose2D:
     def __init__(self, translation=Vector2(), rotation=0):
-        self.translation = translation
+        self.translation = translation.copy()
         self.rotation = rotation
 
     def __mul__(self, other):
-        return other.rotate(self.rotation) + self.translation
+        if isinstance(other, Vector2):
+            return other.rotate(self.rotation) + self.translation
+        elif isinstance(other, Pose2D):
+            p = Pose2D()
+            p.translation = self*other.translation
+            p.rotation = (self.rotation + other.rotation + math.pi) % (2*math.pi) - math.pi
+            return p
+        else:
+            return NotImplemented
 
     def __invert__(self):
+        return self.invert()
+
+    def invert(self):
         p = Pose2D()
         p.rotation = -self.rotation
         p.translation = (Vector2() - self.translation).rotate(p.rotation)
@@ -80,8 +95,23 @@ class Pose2D:
 
     # TODO python3: use __truediv__
     # https://docs.python.org/3/library/operator.html
-    def __div__(self, point):
-        return (point - self.translation).rotate(-self.rotation)
+    def __div__(self, other):
+        if isinstance(other, Vector2):
+            return (other - self.translation).rotate(-self.rotation)
+        else:
+            return NotImplemented
+
+    def __str__(self):
+        return "(translation = {0}, rotation = {1})".format(self.translation, self.rotation)
+        
+    def rotate(self, a):
+        self.rotation += a
+
+    def translate(self, x, y):
+        self.translation = self * Vector2(x, y)
+
+    def copy(self):
+        return Pose2D(self.translation.copy(), self.rotation)
 
 
 class LineSegment(object):

@@ -46,8 +46,13 @@ own_goalpost_left = m2d.Vector2(x_own_goal-25, y_left_goalpost)
 own_goalpost_right = m2d.Vector2(x_own_goal-25, y_right_goalpost)
 
 # From Simulation.cpp
-opp_goal_back_left = m2d.Vector2(opponent_goalpost_left.x + goal_depth, opponent_goalpost_left.y)
+opp_goal_back_left  = m2d.Vector2(opponent_goalpost_left.x + goal_depth, opponent_goalpost_left.y)
 opp_goal_back_right = m2d.Vector2(opponent_goalpost_right.x + goal_depth, opponent_goalpost_right.y)
+opp_goal_box = m2d.Rect2d(opp_goal_back_right, opponent_goalpost_left)
 
+
+own_goal_back_left  = m2d.Vector2(own_goalpost_left.x - goal_depth, own_goalpost_left.y)
+own_goal_back_right = m2d.Vector2(own_goalpost_right.x - goal_depth, own_goalpost_right.y)
+own_goal_box = m2d.Rect2d(own_goal_back_right, own_goalpost_left)
 
 field_rect = m2d.Rect2d(m2d.Vector2(-x_length*0.5, -y_length*0.5), m2d.Vector2(x_length*0.5, y_length*0.5))

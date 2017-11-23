@@ -15,9 +15,6 @@ mlp.rcParams.update(pgf_with_rc_fonts)
 
 def estimate_time(x, y):
 
-    # strength = 1.5
-    # radius = 2
-    
     angle = np.degrees(np.arctan2(y, x))
     rot_time = np.abs(angle/velRot)
 
