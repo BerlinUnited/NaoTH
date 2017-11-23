@@ -1,10 +1,13 @@
-
 # protobuf
 from CommonTypes_pb2 import *
 from Framework_Representations_pb2 import *
 from Messages_pb2 import *
 from Representations_pb2 import *
 from google.protobuf import text_format
+
+import mmap
+
+from threading import Lock
 
 import struct
 
@@ -33,6 +36,8 @@ class LogScanner:
         self.logFile = logFile
         self.scanPosition = 0
 
+        self.lock = Lock()
+
     def __readBytes(self, N):
         if N == 0:
             return ''
@@ -60,24 +65,26 @@ class LogScanner:
       return string
 
     def scanFrameMember(self):
-        self.logFile.seek(self.scanPosition)
+        with self.lock:
+            self.logFile.seek(self.scanPosition)
 
-        # read message header
-        frameNumber = self.__readLong()
+            # read message header
+            frameNumber = self.__readLong()
 
-        name = self.__readString()
-        message_size = self.__readLong()
+            name = self.__readString()
+            message_size = self.__readLong()
 
-        dataPos = (self.logFile.tell(), message_size, None)
+            dataPos = (self.logFile.tell(), message_size, None)
 
-        # skip data
-        self.scanPosition = self.logFile.tell() + message_size
+            # skip data
+            self.scanPosition = self.logFile.tell() + message_size
 
         return frameNumber, name, dataPos
 
     def scanFrame(self, position, size):
-        self.logFile.seek(position)
-        data = self.__readBytes(size)
+        with self.lock:
+            self.logFile.seek(position)
+            data = self.__readBytes(size)
 
         return data
 
@@ -105,42 +112,58 @@ class Frame:
     return message
 
 
+from functools import wraps
+
 class LogReader:
-    def __init__(self, path, parser=LogParser()):
-        self.logFile = open(path, "rb")
+    def __init__(self, path, parser=LogParser(), filter=lambda x: x):
+        self.fileptr = open(path, "rb")
+
+        # TODO: test this on windows!
+        self.logFile = mmap.mmap(self.fileptr.fileno(), 0, prot=mmap.PROT_READ)
+
         self.scanner = LogScanner(self.logFile)
         self.parser = parser
 
         self.frames = []
 
+        self.filter = filter
+
+
     def __enter__(self):
         return self
 
     def __exit__(self, type, value, traceback):
-        # Todo: error handling
-        self.logFile.close()
+        # TODO: error handling
+        self.close()
 
     def close(self):
-        # Todo: use __exit__ ?
         self.logFile.close()
+        self.fileptr.close()
 
     def read(self):
         frame = None
 
+        i=0
         while 1:
-            try:
-                frameNumber, name, dataPos = self.scanner.scanFrameMember()
-            except EOFError as eof:
-                return
-
-            if not frame:
-                frame = Frame(frameNumber, self.scanner, self.parser)
-            elif frameNumber != frame.number:
-                self.frames.append(frame)
-                yield frame
-                frame = Frame(frameNumber, self.scanner, self.parser)
+            # TODO: cleanup!
+            if i+1 <= len(self.frames):
+                yield self.frames[i]
             else:
-                frame.messages[name] = dataPos
+                try:
+                    frameNumber, name, dataPos = self.scanner.scanFrameMember()
+                except EOFError as eof:
+                    return
+
+                if not frame:
+                    frame = Frame(frameNumber, self.scanner, self.parser)
+                elif frameNumber != frame.number:
+                    self.frames.append(frame)
+                    yield self.filter(frame)
+                    frame = Frame(frameNumber, self.scanner, self.parser)
+                else:
+                    frame.messages[name] = dataPos
+
+            i+=1
 
     def readFrame(self, i):
         if len(self.frames) < i+1:
@@ -150,7 +173,7 @@ class LogReader:
             else:
                 return None
         else:
-            return self.frames[i]
+            return self.filter(self.frames[i])
 
     def __getitem__(self, i):
         return self.readFrame(i)
@@ -158,4 +181,4 @@ class LogReader:
 if __name__ == "__main__":
     with LogReader("./cognition.log") as log:
         for frame in log.read():
-            print(frame.number, frame["ScanLineEdgelPercept"])
+            print(frame["FrameInfo"])
