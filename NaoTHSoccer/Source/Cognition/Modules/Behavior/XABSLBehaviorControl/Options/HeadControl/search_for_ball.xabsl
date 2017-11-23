@@ -68,7 +68,7 @@ option search_for_ball
         head.point_in_world.z = 0;
         head.motion_type = look_at_world_point;
 
-        head.angleVelocity = 30; // will be reseted in spl_play_soccer
+        head.angleVelocity = 60; // will be reseted in spl_play_soccer
     }
   }
 
@@ -90,7 +90,7 @@ option search_for_ball
       head.point_in_world.z = 0;
       head.motion_type = look_at_world_point;
 
-      head.angleVelocity = 30; // will be reseted in spl_play_soccer
+      head.angleVelocity = 60; // will be reseted in spl_play_soccer
     }
   }
 
@@ -112,7 +112,7 @@ option search_for_ball
         head.point_in_world.z = 0;
         head.motion_type = look_at_world_point;
 
-        head.angleVelocity = 30; // will be reseted in spl_play_soccer
+        head.angleVelocity = 60; // will be reseted in spl_play_soccer
     }
   }
 
@@ -134,7 +134,7 @@ option search_for_ball
       head.point_in_world.z = 0;
       head.motion_type = look_at_world_point;
 
-      head.angleVelocity = 30; // will be reseted in spl_play_soccer
+      head.angleVelocity = 60; // will be reseted in spl_play_soccer
     }
   }
     
@@ -202,7 +202,7 @@ option search_for_ball
     action{
       head.camera.id = Top;
       look_around();
-      head.angleVelocity = 30; // will be reseted in spl_play_soccer
+      head.angleVelocity = 60; // will be reseted in spl_play_soccer
     }
   }
 }
