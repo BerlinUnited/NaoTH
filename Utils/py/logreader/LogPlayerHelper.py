@@ -23,27 +23,19 @@ class LogPlayerHelper:
 
         self.isClosed = False
 
-        self.guiProcess = GuiCreator()
-        self.guiProcess.start()
+        self.frameQueue = Queue(maxsize=1)
 
+        self.loadLog()
+
+        self.guiProcess = GuiCreator(logReader, self.frameQueue)
+        self.guiProcess.start()
 
         #self.loaderThread = Thread(target=self.loadLog)
         #self.loaderThread.start()
 
     def loadLog(self):
-        print('readLog')
-        firstFrame = None
         for frame in self.logRead():
-            frameInfo = frame["FrameInfo"]
-            """
-            if not firstFrame:
-                firstFrame = frameInfo.frameNumber
-                self.form.setSliderInterval( (firstFrame, firstFrame) )
-            else:
-                self.form.setSliderInterval( (firstFrame, frameInfo.frameNumber) )
-            """
-            if self.isClosed:
-                break
+            pass
 
     def close(self):
         self.guiProcess.join()
@@ -54,45 +46,42 @@ class LogPlayerHelper:
 
 
     def read(self):
-        return self.logRead
+        while 1:
+            yield self.frameQueue.get()
 
 class GuiCreator(Process):
 
-    def __init__(self):
+    def __init__(self, logReader, frameQueue):
         super(GuiCreator, self).__init__()
 
         self.app = QtGui.QApplication(sys.argv)
         self.form = PlayerWindow()
 
-        self.logLoadUpdater = LogLoadUpdater(self.form)
-        self.logLoadUpdater.start()
+        self.form.setSliderInterval(0, len(logReader.frames))
+
+        self.callbackManager = CallbackManager(self.form, logReader, frameQueue)
+        self.callbackManager.start()
 
     def run(self):
         self.form.show()
         self.app.exec_()
 
 class CallbackManager(Thread):
-    def __init__(self):
+    def __init__(self, form, logReader, frameQueue):
         Thread.__init__(self)
-        pass
 
-    def run(self):
-        pass
-
-class LogLoadUpdater(Thread):
-    def __init__(self, form):
-        Thread.__init__(self)
         self.form = form
+        self.logReader = logReader
+        self.frameQueue = frameQueue
 
     def run(self):
-        i = 1
+        print("CallbackManager GO")
         while 1:
-            a = 0
-            b = i
-            self.form.setSliderInterval(a, b)
-            print("running")
+            if self.form.isPlaying:
+                print('PUSH')
+                sliderPos = self.logReader.getSliderPos()
+                self.frameQueue.put(self.logReader[sliderPos])
             time.sleep(1)
-            i+=1
 
 class PlayerWindow(QtGui.QMainWindow, LogPlayerForm.Ui_PlayerForm):
     def __init__(self, parent=None):
@@ -107,6 +96,9 @@ class PlayerWindow(QtGui.QMainWindow, LogPlayerForm.Ui_PlayerForm):
     def setSliderInterval(self, a, b):
         self.horizontalSlider.setMinimum(a)
         self.horizontalSlider.setMaximum(b)
+
+    def getSliderPos(self):
+        return self.horizontalSlider.tickPosition()
 
     def playButton_clicked(self):
         if self.isPlaying:
@@ -128,6 +120,5 @@ if __name__ == '__main__':
 
         LogPlayerHelper(log)
 
-        log.read()
-        #for frame in log.read():
-        #    print(frame["FrameInfo"])
+        for frame in log.read():
+            print(frame["FrameInfo"])
