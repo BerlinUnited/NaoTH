@@ -283,6 +283,7 @@ void PathPlanner::short_kick(const Foot foot)
 
       type = StepType::ZEROSTEP;
       add_step(pose, type, coordinate, character, foot, scale, speed_direction, WalkRequest::StepControlRequest::SOFT, true);
+      step_buffer.back().time = 100;
 
       pose = { 0.0, 0.0, 0.0 };
       type = StepType::WALKSTEP;
@@ -366,6 +367,7 @@ void PathPlanner::sidekick(const Foot foot)
 
       type = StepType::ZEROSTEP;
       add_step(pose, type, coordinate, character, step_foot, scale, speed_direction, WalkRequest::StepControlRequest::SOFT, true);
+      step_buffer.back().time = 100;
 
       pose = { 0.0, 0.0, 0.0 };
       type = StepType::WALKSTEP;
