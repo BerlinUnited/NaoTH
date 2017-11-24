@@ -8,7 +8,6 @@ option pathplanner_test_long_kick {
 
       pathplanner_kick_long();
       
-      arm.control_mode = back;
       // control the arms
       arms_control();
 

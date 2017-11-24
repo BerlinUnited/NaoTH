@@ -23,10 +23,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-import javax.swing.UIDefaults;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
-import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 import net.xeoh.plugins.base.PluginManager;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.events.PluginLoaded;
@@ -43,10 +41,10 @@ public class RobotControlImpl extends javax.swing.JFrame
   implements ByteRateUpdateHandler, RobotControl
 {
 
-  private static final String configlocation = System.getProperty("user.home")
+  private static final String USER_CONFIG_DIR = System.getProperty("user.home")
     + "/.naoth/robotcontrol/";
-  private final File layoutFile = new File(configlocation, "layout_df1.1.1.xml");
-  private final File fConfig = new File(configlocation, "config");
+  private final File userLayoutFile = new File(USER_CONFIG_DIR, "layout_df1.1.1.xml");
+  private final File userConfigFile = new File(USER_CONFIG_DIR, "config");
   
   private final MessageServer messageServer;
   
@@ -467,10 +465,10 @@ public class RobotControlImpl extends javax.swing.JFrame
       public void run()
       {
         // create the configlocation is not existing
-        File configDir = new File(configlocation);
+        File configDir = new File(USER_CONFIG_DIR);
         if(!(configDir.exists() && configDir.isDirectory()) && !configDir.mkdirs()) {
             Logger.getLogger(RobotControlImpl.class.getName()).log(Level.SEVERE, null, 
-                    "Could not create the configuration path: \"" + configlocation + "\".");
+                    "Could not create the configuration path: \"" + USER_CONFIG_DIR + "\".");
         }
         
         final JSPFProperties props = new JSPFProperties();
@@ -594,11 +592,11 @@ public class RobotControlImpl extends javax.swing.JFrame
     try
     {
       // save configuration to file
-      new File(configlocation).mkdirs();
-      getConfig().store(new FileWriter(fConfig), "");
+      new File(USER_CONFIG_DIR).mkdirs();
+      getConfig().store(new FileWriter(userConfigFile), "");
 
       // save layout
-     this.dialogRegistry.saveToFile(layoutFile);
+     this.dialogRegistry.saveToFile(userLayoutFile);
     }
     catch(IOException ex)
     {
@@ -609,7 +607,17 @@ public class RobotControlImpl extends javax.swing.JFrame
   private void readConfigFromFile()
   {
     try {
-      config.load(new FileReader(fConfig));
+      // load main config
+      Properties mainConfig = new Properties();
+      mainConfig.load(RobotControlImpl.class.getResourceAsStream("config"));
+      config.putAll(mainConfig);
+      
+      if(userConfigFile.exists() && !userConfigFile.isDirectory()) {
+        Properties userConfig = new Properties();
+        userConfig.load(new FileReader(userConfigFile));
+        config.putAll(userConfig);
+      }
+      
     } catch(IOException ex) {
       Logger.getLogger(RobotControlImpl.class.getName()).log(Level.INFO, 
               "Could not open the config file. It will be created after the first execution.");
@@ -619,9 +627,9 @@ public class RobotControlImpl extends javax.swing.JFrame
   private void loadLayout()
   {
     try {
-      this.dialogRegistry.loadFromFile(layoutFile);
+      this.dialogRegistry.loadFromFile(userLayoutFile);
     } catch(FileNotFoundException ex) {
-      Logger.getLogger(RobotControlImpl.class.getName()).log(Level.INFO, "Could not find the layout file: {0}", layoutFile.getAbsolutePath());
+      Logger.getLogger(RobotControlImpl.class.getName()).log(Level.INFO, "Could not find the layout file: {0}", userLayoutFile.getAbsolutePath());
     } catch(IOException ex) {
         Helper.handleException("Error while reading the layout file.", ex);
     }

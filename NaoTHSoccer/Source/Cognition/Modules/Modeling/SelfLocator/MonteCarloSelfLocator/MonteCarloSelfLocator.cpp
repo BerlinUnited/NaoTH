@@ -564,8 +564,8 @@ void MonteCarloSelfLocator::updateByCompas(SampleSet& sampleSet) const
 
 void MonteCarloSelfLocator::updateByLinePoints(const LineGraphPercept& lineGraphPercept, SampleSet& sampleSet) const
 {
-  const double sigmaDistance = parameters.goalPostSigmaDistance;
-  //const double sigmaAngle    = parameters.goalPostSigmaAngle;
+  const double sigmaDistance = parameters.linePointsSigmaDistance;
+  //const double sigmaAngle    = parameters.linePointsSigmaAngle;
   const double cameraHeight  = getCameraMatrix().translation.z;
 
   DEBUG_REQUEST("MCSLS:draw_updateByLinePoints",

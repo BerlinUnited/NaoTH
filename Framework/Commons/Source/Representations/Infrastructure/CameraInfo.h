@@ -5,12 +5,11 @@
  * Created on 1. Februar 2009, 20:07
  */
 
-#ifndef _CAMERAINFO_H
-#define _CAMERAINFO_H
+#ifndef _CAMERAINFO_H_
+#define _CAMERAINFO_H_
 
 #include "CameraInfoConstants.h"
-#include "Tools/Math/Pose3D.h"
-#include "Tools/Math/Common.h"
+
 #include "Tools/DataStructures/ParameterList.h"
 #include "Tools/DataStructures/Printable.h"
 #include "Tools/DataStructures/Serializer.h"
@@ -123,10 +122,9 @@ namespace naoth
   };
 
   template<>
-  class Serializer<CameraInfoTop> : public Serializer<CameraInfo>
-  {};
+  class Serializer<CameraInfoTop> : public Serializer<CameraInfo>{};
   
 }
 
-#endif  /* _CAMERAINFO_H */
+#endif  /* _CAMERAINFO_H_ */
 
