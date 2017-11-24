@@ -203,9 +203,8 @@ void PathPlanner::approach_ball(const Foot foot)
   WalkRequest::Coordinate coordinate = WalkRequest::Hip;
   double stepX                       = 0.0;
   double stepY                       = 0.0;
-  double ballRadius                  = getFieldInfo().ballRadius;
-  double stepRotation                = ballPos.abs() > 250 ? ballPos.angle() : 0;
-
+  const double ballRadius            = getFieldInfo().ballRadius;
+  
   switch (foot) {
   case Foot::LEFT:
     ballPos    = getBallModel().positionPreviewInLFoot;
@@ -223,28 +222,33 @@ void PathPlanner::approach_ball(const Foot foot)
     ASSERT(false);
   }
 
+  // don't rotate close to the ball
+  double stepRotation = ballPos.abs() > 250 ? ballPos.angle() : 0;
+
   //if (ballPos.x < getPathModel().distance + 30 && ballPos.x > getPathModel().distance - 30)
-  if (stepX < 0 && ballPos.x > getPathModel().distance + 30)
-  {
+  if (stepX < 0 && ballPos.x > getPathModel().distance + 30) {
     stepX = 0;
   }
 
+  Pose2D pose = { stepRotation, stepX, stepY };
+
+  // damp the steps while aproaching
+  // params.approach_ball_adapt_threshold defines a small circle around the ball without damping
   const double slow_down_factor = 0.7;
-  Pose2D pose;
-  if (   params.approach_ball_adapt_control
-      && Vector2d(stepX, stepY).abs() < params.approach_ball_adapt_threshold)
-  {
-    pose = { stepRotation, stepX, stepY };
+  if (params.approach_ball_adapt_control && Vector2d(stepX, stepY).abs() > params.approach_ball_adapt_threshold) {
+    pose.translation *= slow_down_factor;
   }
-  else
-  {
-    pose = { stepRotation, slow_down_factor * stepX, slow_down_factor * stepY };
+
+  // approach the ball slowly
+  double character = 0.7;
+  if (Vector2d(stepX, stepY).abs() < params.approach_ball_slow_distance) {
+    character = 0.3;
   }
 
   if (step_buffer.empty())
   {
     StepType type          = StepType::WALKSTEP;
-    double character       = 0.7;
+    //double character       = 0.7;
     double scale           = 1.0;
     double speed_direction = Math::fromDegrees(0.0);
     add_step(pose, type, coordinate, character, Foot::NONE, scale, speed_direction, WalkRequest::StepControlRequest::HARD, false);
