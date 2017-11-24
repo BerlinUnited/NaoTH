@@ -47,8 +47,8 @@ public:
   static void updateKinematicChainFrom(Link* l);
   static void updateKinematicChainFrom(KinematicChain& theKinematicChain, KinematicChain::LinkID start);
 
-  /** calculate rotation based on foot-torso transformation */
-  static RotationMatrix calcChestFeetRotation(const KinematicChain& theKinematicChain);
+  /** calculates the rotation matrix which rotates vectors from the chest coordinate system into the foot coordinate system */
+  static RotationMatrix calcChestToFeetRotation(const KinematicChain& theKinematicChain);
 
   /** translate the whole kinematic chain by vector t */
   static void translate(KinematicChain& theKinematicChain, const Vector3d& t);
