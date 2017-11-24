@@ -121,6 +121,8 @@ class LogReader:
 
         # TODO: test this on windows!
         self.logFile = mmap.mmap(self.fileptr.fileno(), 0, prot=mmap.PROT_READ)
+        # WINDOWS needs it to be:
+        #   self.logFile = mmap.mmap(self.fileptr.fileno(), 0, access=mmap.ACCESS_READ)
 
         self.scanner = LogScanner(self.logFile)
         self.parser = parser
