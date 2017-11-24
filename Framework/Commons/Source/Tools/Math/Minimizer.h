@@ -16,75 +16,65 @@
 
 #include <tuple>
 
-template<int numOfFunctions, int numOfParameter, class ErrorFunction>
+template<class ErrorFunction>
 class GaussNewtonMinimizer
 {
 public:
-    GaussNewtonMinimizer();
+    GaussNewtonMinimizer(){}
 
-    std::tuple<Eigen::Matrix<double, numOfParameter, 1>, double > minimizeOneStep(ErrorFunction& errorFunction, double epsilon);
+    // TODO: fix dimension problem
+    template<class T>
+    std::tuple<Eigen::Matrix<double, 1, T::ColsAtCompileTime>, double > minimizeOneStep(ErrorFunction& errorFunction, T epsilon){
+        Eigen::Matrix<double, 1, T::ColsAtCompileTime> offset(Eigen::Matrix<double, 1, T::ColsAtCompileTime>::Zero());
+
+        Eigen::Matrix<double, T::RowsAtCompileTime, T::ColsAtCompileTime> dg = determineJacobian(errorFunction, epsilon);
+
+        // g(x) - target
+        double w = errorFunction(offset);
+
+        //Eigen::Matrix<double, T::RowsAtCompileTime, T::ColsAtCompileTime> z_GN = (-((dg.transpose()*dg).inverse()*dg.transpose()*w));
+        Eigen::Matrix<double, T::RowsAtCompileTime, T::ColsAtCompileTime> z_GN = -((dg*dg.transpose()).inverse()*dg*w);
+
+        //beware the inverse!
+        assert(!z_GN.hasNaN());
+
+        //Vector2d z_GN = dg * (-w / (dg * dg));
+        offset += z_GN;
+
+        /*double lambda = 0.005;
+        //MODIFY("CameraMatrixCorrectorV2:lambda", lambda);
+        if (offset.norm() > lambda) {
+            offset = offset.normalized()*lambda;
+        }*/
+
+        return std::make_tuple(offset, w);
+    }
 
 private:
-    Eigen::Matrix<double, numOfFunctions, numOfParameter> determineJacobian(ErrorFunction& errorFunction, double epsilon);
+    template<class T>
+    Eigen::Matrix<double, T::RowsAtCompileTime,T::ColsAtCompileTime> determineJacobian(ErrorFunction& errorFunction, T epsilon){
+        Eigen::Matrix<double, 1, T::ColsAtCompileTime> parameterVector = Eigen::Matrix<double, 1, T::ColsAtCompileTime>::Zero();
+        Eigen::Matrix<double, T::RowsAtCompileTime, T::ColsAtCompileTime> mat;
 
-};
+        for(int p = 0; p < T::ColsAtCompileTime; ++p){
+            if(p > 0) {
+                parameterVector(p-1) = 0;
+            }
 
-template<int numOfFunctions, int numOfParameters, class ErrorFunction>
-GaussNewtonMinimizer<numOfFunctions, numOfParameters, ErrorFunction>::GaussNewtonMinimizer()
-{
-}
+            Eigen::Matrix<double, T::RowsAtCompileTime,1> dg1,dg2;
 
-template<int numOfFunctions, int numOfParameters, class ErrorFunction>
-Eigen::Matrix<double, numOfFunctions, numOfParameters> GaussNewtonMinimizer<numOfFunctions,  numOfParameters, ErrorFunction>::determineJacobian(ErrorFunction& errorFunction, double epsilon){
+            parameterVector(p) = epsilon(p);
+            dg1 << errorFunction(parameterVector);
 
-    Eigen::Matrix<double, 1, numOfParameters> parameterVector = Eigen::Matrix<double, 1, numOfParameters>::Zero();
-    Eigen::Matrix<double, numOfFunctions, numOfParameters> mat;
+            parameterVector(p) = -epsilon(p);
+            dg2 << errorFunction(parameterVector);
 
-    for(int p = 0; p < numOfParameters; ++p){
-        if(p > 0) {
-            parameterVector(p-1) = 0;
+            mat.col(p) = (dg1-dg2) / (2*epsilon(p));
         }
 
-        Eigen::Matrix<double, numOfFunctions,1> dg1,dg2;
-
-        parameterVector(p) = epsilon;
-        dg1 << errorFunction(parameterVector);
-
-        parameterVector(p) = -epsilon;
-        dg2 << errorFunction(parameterVector);
-
-        mat.col(p) = (dg1-dg2) / (2*epsilon);
+        return mat;
     }
 
-    return mat;
-}
-
-template<int numOfFunctions, int numOfParameters, class ErrorFunction>
-std::tuple<Eigen::Matrix<double, numOfParameters, 1>, double> GaussNewtonMinimizer<numOfFunctions, numOfParameters, ErrorFunction>::minimizeOneStep(ErrorFunction& errorFunction, double epsilon){
-
-    Eigen::Matrix<double, numOfParameters, 1> offset = Eigen::Matrix<double, numOfParameters, 1>::Zero();
-
-    Eigen::Matrix<double, numOfFunctions, numOfParameters> dg = determineJacobian(errorFunction, epsilon);
-
-    // g(x) - target
-    double w = errorFunction(offset);
-
-    //Vector2<double> z_GN = (-((Dg.transpose()*Dg).invert()*Dg.transpose()*w));
-    Eigen::Matrix<double, numOfFunctions, numOfParameters> z_GN = -((dg*dg.transpose()).inverse()*dg*w);
-
-    //beware the inverse!
-    assert(!z_GN.hasNaN());
-
-    //Vector2d z_GN = dg * (-w / (dg * dg));
-    offset += z_GN;
-
-    double lambda = 0.005;
-    //MODIFY("CameraMatrixCorrectorV2:lambda", lambda);
-    if (offset.norm() > lambda) {
-        offset = offset.normalized()*lambda;
-    }
-
-    return std::make_tuple(offset, w);
-}
+};
 
 #endif // MINIMIZER_H
