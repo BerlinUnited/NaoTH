@@ -70,7 +70,7 @@ class RotationState : public UKFStateRotationBase<RotationState<M1,/* M2,*/ dim,
         // HACK: add return type as parameter to enable overloading...
         M1 asMeasurement(const M1& /*z*/) const {
             M1 return_val;
-            return_val << this->getRotationAsQuaternion().inverse()._transformVector(Eigen::Vector3d(0,0,-1)), this->rotational_velocity();
+            return_val << this->getRotationAsQuaternion().inverse()._transformVector(Eigen::Vector3d(0,0,1)), this->rotational_velocity();
             return return_val;
         }
 
