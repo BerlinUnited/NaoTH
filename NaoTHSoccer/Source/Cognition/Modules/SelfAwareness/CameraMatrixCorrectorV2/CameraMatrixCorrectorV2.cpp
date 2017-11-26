@@ -22,21 +22,22 @@ CameraMatrixCorrectorV2::CameraMatrixCorrectorV2()
 
   DEBUG_REQUEST_REGISTER("CameraMatrixV2:enable_CamMatErrorFunction_drawings", "needed to be activated for error function drawings", false);
 
-  DEBUG_REQUEST_REGISTER("CameraMatrixV2:automatic_mode","try to do automatic calibration", false);
+  DEBUG_REQUEST_REGISTER("CameraMatrixV2:automatic_mode","try to do automatic calibration", true);
 
   DEBUG_REQUEST_REGISTER("CameraMatrixV2:calibrateOnlyPos","",false);
-  DEBUG_REQUEST_REGISTER("CameraMatrixV2:calibrateOnlyOffsets","",true);
+  DEBUG_REQUEST_REGISTER("CameraMatrixV2:calibrateOnlyOffsets","",false);
 
   theCamMatErrorFunction = registerModule<CamMatErrorFunction>("CamMatErrorFunction", true);
   last_idx_yaw   = 0;
   last_idx_pitch = 0;
-  damping = 0.1 * 0.005;
+  damping_cam_offsets = 0.005;
+  damping_pose = 0.01;
 
   head_state      = look_left;
   last_head_state = initial;
 
-   auto_cleared_data = auto_collected = auto_calibrated = false;
-   last_error = 0;
+  auto_cleared_data = auto_collected = auto_calibrated = false;
+  last_error = 0;
 }
 
 CameraMatrixCorrectorV2::~CameraMatrixCorrectorV2()
@@ -45,13 +46,6 @@ CameraMatrixCorrectorV2::~CameraMatrixCorrectorV2()
 
 void CameraMatrixCorrectorV2::execute()
 {
-  // just for debug
-  DEBUG_REQUEST("CameraMatrixV2:reset_calibration",
-        reset_calibration();
-        derrors.clear();
-        last_error = 0;
-  );
-
   // sit down if auto calibrated
   if(auto_calibrated){
     getMotionRequest().id = motion::sit;
@@ -91,7 +85,7 @@ void CameraMatrixCorrectorV2::execute()
       }
   } else { // manual mode
       DEBUG_REQUEST("CameraMatrixV2:clear_calibration_data",
-        (theCamMatErrorFunction->getModuleT())->calibrationData.clear();
+        (theCamMatErrorFunction->getModuleT())->clear();
       );
 
       bool collect_data = false;
@@ -144,7 +138,9 @@ void CameraMatrixCorrectorV2::execute()
       );
 
       DEBUG_REQUEST("CameraMatrixV2:reset_calibration",
-          reset_calibration();
+            reset_calibration();
+            derrors.clear();
+            last_error = 0;
       );
 
       DEBUG_REQUEST_ON_DEACTIVE("CameraMatrixV2:reset_calibration",
@@ -169,7 +165,7 @@ void CameraMatrixCorrectorV2::reset_calibration()
 bool CameraMatrixCorrectorV2::calibrate()
 {
     DEBUG_REQUEST("CameraMatrixV2:calibrateOnlyPos",
-                  return calibrateOnlyPos();
+                  return calibrateOnlyPose();
                   );
 
     DEBUG_REQUEST("CameraMatrixV2:calibrateOnlyOffsets",
@@ -179,14 +175,14 @@ bool CameraMatrixCorrectorV2::calibrate()
   double dt = getFrameInfo().getTimeInSeconds()-last_frame_info.getTimeInSeconds();
 
   // calibrate the camera matrix
-  Eigen::Matrix<double, 1, 14> epsilon = 1e-4*Eigen::Matrix<double, 1, 14>::Constant(1);
+  Eigen::Matrix<double, 14, 1> epsilon = 1e-4*Eigen::Matrix<double, 14, 1>::Constant(1);
   epsilon(11) = 1e2;
   epsilon(12) = 1e2;
   epsilon(13) = Math::pi_4/2;
 
-  std::tuple<Eigen::Matrix<double, 1, 14>, double > r_val = gn_minimizer.minimizeOneStep(*(theCamMatErrorFunction->getModuleT()),epsilon);
+  std::tuple<Eigen::Matrix<double, 14, 1>, double> r_val = gn_minimizer.minimizeOneStep(*(theCamMatErrorFunction->getModuleT()),epsilon);
 
-  Eigen::Matrix<double, 1, 14> offset = std::get<0>(r_val);
+  Eigen::Matrix<double, 14, 1> offset = std::get<0>(r_val);
   double error = std::get<1>(r_val);
   double de_dt = (error-last_error)/dt; // improvement per second
 
@@ -200,16 +196,19 @@ bool CameraMatrixCorrectorV2::calibrate()
   PLOT("CameraMatrixV2:avg_derror", derrors.getAverage());
 
   // TODO: remove damping in gauss newtwon (prefered in the one step) or this one
-  MODIFY("CameraMatrixV2:damping_factor", damping);
+  MODIFY("CameraMatrixV2:damping:calibrate_only_pose:angle", damping_pose);
+  double damping_translation = damping_pose;
+  MODIFY("CameraMatrixV2:damping:calibrate_only_pose:location", damping_translation);
+  MODIFY("CameraMatrixV2:damping:calibrate_only_offsets", damping_cam_offsets);
 
   // update offsets
-  getCameraMatrixOffset().body_rot += Vector2d(offset(0),offset(1)) * damping;
-  getCameraMatrixOffset().head_rot += Vector3d(offset(2),offset(3),offset(4)) * damping;
-  getCameraMatrixOffset().cam_rot[CameraInfo::Top]    += Vector3d(offset(5),offset(6),offset(7))  * damping;
-  getCameraMatrixOffset().cam_rot[CameraInfo::Bottom] += Vector3d(offset(8),offset(9),offset(10)) * damping;
-  (theCamMatErrorFunction->getModuleT())->globalPosition.x += offset(11) * damping; // scaling
-  (theCamMatErrorFunction->getModuleT())->globalPosition.y += offset(12) * damping; // scaling
-  (theCamMatErrorFunction->getModuleT())->globalPosition.z += offset(13) * damping; // scaling
+  getCameraMatrixOffset().body_rot += Vector2d(offset(0),offset(1)) * damping_cam_offsets;
+  getCameraMatrixOffset().head_rot += Vector3d(offset(2),offset(3),offset(4)) * damping_cam_offsets;
+  getCameraMatrixOffset().cam_rot[CameraInfo::Top]    += Vector3d(offset(5),offset(6),offset(7))  * damping_cam_offsets;
+  getCameraMatrixOffset().cam_rot[CameraInfo::Bottom] += Vector3d(offset(8),offset(9),offset(10)) * damping_cam_offsets;
+  (theCamMatErrorFunction->getModuleT())->globalPosition.x += offset(11) * damping_pose; // scaling
+  (theCamMatErrorFunction->getModuleT())->globalPosition.y += offset(12) * damping_pose; // scaling
+  (theCamMatErrorFunction->getModuleT())->globalPosition.z += offset(13) * damping_pose; // scaling
 
   return (    (derrors.getAverage() > -50) // average error decreases by less than this per second
            && (derrors.getAverage() < 0)   // but it decreases
@@ -218,13 +217,13 @@ bool CameraMatrixCorrectorV2::calibrate()
 }//end calibrate
 
 // returns true if the averaged reduction per second decreases under a heuristic value
-bool CameraMatrixCorrectorV2::calibrateOnlyPos()
+bool CameraMatrixCorrectorV2::calibrateOnlyPose()
 {
   double dt = getFrameInfo().getTimeInSeconds()-last_frame_info.getTimeInSeconds();
 
   // calibrate the camera matrix
-  Eigen::Matrix<double, 1, 3> offset;
-  Eigen::Matrix<double, 1, 3> epsilon;
+  Eigen::Matrix<double, 3, 1> offset;
+  Eigen::Matrix<double, 3, 1> epsilon;
 
   double epsilon_pos = 1e2;
   double epsilon_angle = Math::pi_4/2;
@@ -234,7 +233,7 @@ bool CameraMatrixCorrectorV2::calibrateOnlyPos()
 
   epsilon << epsilon_pos, epsilon_pos, epsilon_angle;
 
-  std::tuple<Eigen::Matrix<double, 1, 3>, double > r_val = gn_minimizer.minimizeOneStep(*(theCamMatErrorFunction->getModuleT()),epsilon);
+  std::tuple<Eigen::Matrix<double, 3, 1>, double > r_val = gn_minimizer.minimizeOneStep(*(theCamMatErrorFunction->getModuleT()),epsilon);
 
   offset = std::get<0>(r_val);
   double error = std::get<1>(r_val);
@@ -250,14 +249,14 @@ bool CameraMatrixCorrectorV2::calibrateOnlyPos()
   PLOT("CameraMatrixV2:avg_derror", derrors.getAverage());
 
   // TODO: remove damping in gauss newtwon (prefered in the one step) or this one
-  MODIFY("CameraMatrixV2:damping_factor", damping);
-  double damping_pos = damping;
-  MODIFY("CameraMatrixV2:damping_factor_pos", damping_pos);
+  MODIFY("CameraMatrixV2:damping:calibrate_only_pose:angle", damping_pose);
+  double damping_translation = damping_pose;
+  MODIFY("CameraMatrixV2:damping:calibrate_only_pose:location", damping_translation);
 
   // update offsets
-  (theCamMatErrorFunction->getModuleT())->globalPosition.x += offset(0) * damping_pos; // scaling
-  (theCamMatErrorFunction->getModuleT())->globalPosition.y += offset(1) * damping_pos; // scaling
-  (theCamMatErrorFunction->getModuleT())->globalPosition.z += offset(2) * damping; // scaling
+  (theCamMatErrorFunction->getModuleT())->globalPosition.x += offset(0) * damping_translation;
+  (theCamMatErrorFunction->getModuleT())->globalPosition.y += offset(1) * damping_translation;
+  (theCamMatErrorFunction->getModuleT())->globalPosition.z += offset(2) * damping_pose;
 
   return (    (derrors.getAverage() > -50) // average error decreases by less than this per second
            && (derrors.getAverage() < 0)   // but it decreases
@@ -271,10 +270,10 @@ bool CameraMatrixCorrectorV2::calibrateOnlyOffsets()
   double dt = getFrameInfo().getTimeInSeconds()-last_frame_info.getTimeInSeconds();
 
   // calibrate the camera matrix
-  Eigen::Matrix<double, 1, 11> offset;
-  Eigen::Matrix<double, 1, 11> epsilon = 1e-4*Eigen::Matrix<double, 1, 11>::Constant(1);
+  Eigen::Matrix<double, 11, 1> offset;
+  Eigen::Matrix<double, 11, 1> epsilon = Eigen::Matrix<double, 11, 1>::Constant(1e-4);
 
-  std::tuple<Eigen::Matrix<double, 1, 11>, double > r_val = gn_minimizer.minimizeOneStep(*(theCamMatErrorFunction->getModuleT()),epsilon);
+  std::tuple<Eigen::Matrix<double, 11, 1>, double > r_val = gn_minimizer.minimizeOneStep(*(theCamMatErrorFunction->getModuleT()),epsilon);
 
   offset = std::get<0>(r_val);
   double error = std::get<1>(r_val);
@@ -289,14 +288,13 @@ bool CameraMatrixCorrectorV2::calibrateOnlyOffsets()
   PLOT("CameraMatrixV2:de/dt", de_dt);
   PLOT("CameraMatrixV2:avg_derror", derrors.getAverage());
 
-  // TODO: remove damping in gauss newtwon (prefered in the one step) or this one
-  MODIFY("CameraMatrixV2:damping_factor", damping);
+  MODIFY("CameraMatrixV2:damping:calibrate_only_offsets", damping_cam_offsets);
 
   // update offsets
-  getCameraMatrixOffset().body_rot += Vector2d(offset(0),offset(1)) * damping;
-  getCameraMatrixOffset().head_rot += Vector3d(offset(2),offset(3),offset(4)) * damping;
-  getCameraMatrixOffset().cam_rot[CameraInfo::Top]    += Vector3d(offset(5),offset(6),offset(7))  * damping;
-  getCameraMatrixOffset().cam_rot[CameraInfo::Bottom] += Vector3d(offset(8),offset(9),offset(10)) * damping;
+  getCameraMatrixOffset().body_rot += Vector2d(offset(0),offset(1)) * damping_cam_offsets;
+  getCameraMatrixOffset().head_rot += Vector3d(offset(2),offset(3),offset(4)) * damping_cam_offsets;
+  getCameraMatrixOffset().cam_rot[CameraInfo::Top]    += Vector3d(offset(5),offset(6),offset(7))  * damping_cam_offsets;
+  getCameraMatrixOffset().cam_rot[CameraInfo::Bottom] += Vector3d(offset(8),offset(9),offset(10)) * damping_cam_offsets;
 
   return (    (derrors.getAverage() > -50) // average error decreases by less than this per second
            && (derrors.getAverage() < 0)   // but it decreases
@@ -405,31 +403,27 @@ bool CameraMatrixCorrectorV2::movingHead()
 void CameraMatrixCorrectorV2::collectingData()
 {
     if(last_head_state != initial) {
-        CamMatErrorFunction::CalibrationData& c_data = (theCamMatErrorFunction->getModuleT())->calibrationData;
-
         int current_index_yaw   = static_cast<int>((Math::toDegrees(getSensorJointData().position[JointData::HeadYaw])/15.0) + 0.5);
         int current_index_pitch = static_cast<int>((Math::toDegrees(getSensorJointData().position[JointData::HeadPitch])/5.0) + 0.5);
 
-        std::pair<int,int> index;
-        index.first  = current_index_yaw;
-        index.second = current_index_pitch;
-
         if(last_idx_pitch != current_index_pitch || last_idx_yaw != current_index_yaw) {
-            std::vector<CamMatErrorFunction::CalibrationDataSample>& data = c_data[index];
 
             LineGraphPercept lineGraphPercept(getLineGraphPercept());
 
-            if(head_state == look_right_up || head_state == look_left_up
-               || last_head_state == look_right_up || last_head_state == look_left_up){
+            // TODO: ignore upper image if the center is above the horizon
+            // HACK: ignore it if headpitch is smaller than -15
+            //if(head_state == look_right_up || head_state == look_left_up
+            //   || last_head_state == look_right_up || last_head_state == look_left_up){
+            if(Math::toDegrees(getSensorJointData().position[JointData::HeadPitch]) < -15) {
                 lineGraphPercept.edgelsInImageTop.clear();
             }
 
-            data.push_back(CamMatErrorFunction::CalibrationDataSample(getKinematicChain().theLinks[KinematicChain::Torso].M,
-                                                                      lineGraphPercept,
-                                                                      getInertialModel(),
-                                                                      getSensorJointData().position[JointData::HeadYaw],
-                                                                      getSensorJointData().position[JointData::HeadPitch]
-                                                                    ));
+            (theCamMatErrorFunction->getModuleT())->add(CamMatErrorFunction::CalibrationDataSample(getKinematicChain().theLinks[KinematicChain::Torso].M,
+                                                                        lineGraphPercept,
+                                                                        getInertialModel(),
+                                                                        getSensorJointData().position[JointData::HeadYaw],
+                                                                        getSensorJointData().position[JointData::HeadPitch]
+                                                                       ));
 
             last_idx_pitch = current_index_pitch;
             last_idx_yaw   = current_index_yaw;
@@ -440,7 +434,7 @@ void CameraMatrixCorrectorV2::collectingData()
 void CameraMatrixCorrectorV2::doItAutomatically()
 {
     if(!auto_cleared_data) {
-        (theCamMatErrorFunction->getModuleT())->calibrationData.clear();
+        (theCamMatErrorFunction->getModuleT())->clear();
         reset_calibration();
         auto_cleared_data = true;
     }
