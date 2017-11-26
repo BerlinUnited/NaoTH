@@ -3,6 +3,8 @@
 package naoscp.components;
 
 import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import javax.swing.JFileChooser;
 
@@ -42,6 +44,14 @@ public class DeployDialog extends javax.swing.JDialog {
         this.jFileChooser.setAcceptAllFileFilterUsed(false);
         
         this.usbPanel.addFileChooser(this.jFileChooser);
+        
+        // hide dialog on ESC key
+        this.getRootPane().registerKeyboardAction(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                setVisible(false);
+            }
+        }, javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_ESCAPE, 0), javax.swing.JComponent.WHEN_FOCUSED);
     }
     
     public OPTION showOpenDialog(Component c) {

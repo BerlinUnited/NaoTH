@@ -19,10 +19,12 @@ function start_function() {
     echo "starting naoth cognition process"
     cd /home/nao/naoqi/
 
+    # using "warn" level, otherwise messages wouldn't be written to "/var/log/messages"!
+    exec > >(logger -t "naoth[INFO]" -p local3.info) 2> >(logger -t "naoth[ERROR]" -p local3.warning)
     if [ nao = `whoami` ]; then
-      nohup /etc/init.d/cognition-common 2>&1 | logger &
+      nohup /etc/init.d/cognition-common &
     else
-      su -c 'nohup /etc/init.d/cognition-common 2>&1 | logger &' nao
+      su -c 'nohup /etc/init.d/cognition-common &' nao
     fi
 }
 

@@ -215,6 +215,8 @@ void Motion::processSensorData()
       getSensorJointData().position[i] = getSensorJointData().position[i] - getOffsetJointData().position[i];
   }
 
+  theIMUModel->execute();
+
   // calibrate inertia sensors
   theInertiaSensorCalibrator->execute();
 
@@ -224,7 +226,6 @@ void Motion::processSensorData()
   getInertialSensorData().data += getCalibrationData().inertialSensorOffset;
   getAccelerometerData().data  += getCalibrationData().accSensorOffset;
 
-  theIMUModel->execute();
   //theInertiaSensorFilterBH->execute();
 
   //
@@ -358,7 +359,7 @@ void Motion::debugPlots()
   // TODO: shouldn't this be part of kinematicChainProvider?
   DEBUG_REQUEST("Motion:KinematicChain:orientation_test",
     RotationMatrix calculatedRotation =
-      Kinematics::ForwardKinematics::calcChestFeetRotation(getKinematicChainSensor());
+      Kinematics::ForwardKinematics::calcChestToFeetRotation(getKinematicChainSensor());
 
     // calculate expected acceleration sensor reading
     Vector2d inertialExpected(calculatedRotation.getXAngle(), calculatedRotation.getYAngle());

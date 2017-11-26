@@ -5,6 +5,8 @@
 * 
 */
 
+// TODO: do we need this file?
+
 #ifndef _LIB_NAOTH_H
 #define	_LIB_NAOTH_H
 

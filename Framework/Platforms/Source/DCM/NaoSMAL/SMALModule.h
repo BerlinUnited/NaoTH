@@ -14,18 +14,8 @@
 #include "Tools/SharedMemoryIO.h"
 #include "Tools/BasicMotion.h"
 
-
 #include <thread>
 
-//
-// This is to suppress the following gcc warning 
-// thrown because by the old version of boost used by naoqi
-// albroker.h and alproxy.h 
-// produce those:
-//   boost/function/function_base.hpp:325: 
-//   warning: dereferencing type-punned pointer will break strict-aliasing rules
-#pragma GCC diagnostic ignored "-Wstrict-aliasing"
-#pragma GCC diagnostic ignored "-Wunused-local-typedefs"
 #include "DCMHandler.h"
 
 #include <alcommon/almodule.h>
