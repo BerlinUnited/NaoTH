@@ -22,46 +22,32 @@ class GaussNewtonMinimizer
 public:
     GaussNewtonMinimizer(){}
 
-    // TODO: fix dimension problem
     template<class T>
-    std::tuple<Eigen::Matrix<double, 1, T::ColsAtCompileTime>, double > minimizeOneStep(ErrorFunction& errorFunction, T epsilon){
-        Eigen::Matrix<double, 1, T::ColsAtCompileTime> offset(Eigen::Matrix<double, 1, T::ColsAtCompileTime>::Zero());
-
-        Eigen::Matrix<double, T::RowsAtCompileTime, T::ColsAtCompileTime> dg = determineJacobian(errorFunction, epsilon);
-
-        // g(x) - target
-        double w = errorFunction(offset);
-
-        //Eigen::Matrix<double, T::RowsAtCompileTime, T::ColsAtCompileTime> z_GN = (-((dg.transpose()*dg).inverse()*dg.transpose()*w));
-        Eigen::Matrix<double, T::RowsAtCompileTime, T::ColsAtCompileTime> z_GN = -((dg*dg.transpose()).inverse()*dg*w);
+    std::tuple<Eigen::Matrix<double, T::RowsAtCompileTime, 1>, double > minimizeOneStep(ErrorFunction& errorFunction, T epsilon){
+        T zero = T::Zero();
+        Eigen::VectorXd r = errorFunction(zero);
+        Eigen::MatrixXd J = determineJacobian(errorFunction, epsilon);
+        Eigen::Matrix<double, T::RowsAtCompileTime,1> offset = -(J.transpose()*J).inverse()*J.transpose()*r;
 
         //beware the inverse!
-        assert(!z_GN.hasNaN());
+        assert(!offset.hasNaN());
 
-        //Vector2d z_GN = dg * (-w / (dg * dg));
-        offset += z_GN;
-
-        /*double lambda = 0.005;
-        //MODIFY("CameraMatrixCorrectorV2:lambda", lambda);
-        if (offset.norm() > lambda) {
-            offset = offset.normalized()*lambda;
-        }*/
-
-        return std::make_tuple(offset, w);
+        return std::make_tuple(offset, r.sum());
     }
 
 private:
     template<class T>
-    Eigen::Matrix<double, T::RowsAtCompileTime,T::ColsAtCompileTime> determineJacobian(ErrorFunction& errorFunction, T epsilon){
-        Eigen::Matrix<double, 1, T::ColsAtCompileTime> parameterVector = Eigen::Matrix<double, 1, T::ColsAtCompileTime>::Zero();
-        Eigen::Matrix<double, T::RowsAtCompileTime, T::ColsAtCompileTime> mat;
+    Eigen::Matrix<double, Eigen::Dynamic, T::RowsAtCompileTime> determineJacobian(ErrorFunction& errorFunction, T epsilon){
+        Eigen::Matrix<double, T::RowsAtCompileTime, 1> parameterVector = Eigen::Matrix<double, T::RowsAtCompileTime, 1>::Zero();
+        Eigen::Matrix<double, Eigen::Dynamic, T::RowsAtCompileTime> mat(errorFunction.getNumberOfResudials(), epsilon.rows());
 
-        for(int p = 0; p < T::ColsAtCompileTime; ++p){
+        Eigen::VectorXd dg1(errorFunction.getNumberOfResudials());
+        Eigen::VectorXd dg2(errorFunction.getNumberOfResudials());
+
+        for(int p = 0; p < T::RowsAtCompileTime; ++p){
             if(p > 0) {
                 parameterVector(p-1) = 0;
             }
-
-            Eigen::Matrix<double, T::RowsAtCompileTime,1> dg1,dg2;
 
             parameterVector(p) = epsilon(p);
             dg1 << errorFunction(parameterVector);
@@ -74,7 +60,6 @@ private:
 
         return mat;
     }
-
 };
 
 #endif // MINIMIZER_H
