@@ -14,6 +14,10 @@ import de.naoth.rc.core.dialog.RCDialog;
 import de.naoth.rc.core.manager.ObjectListener;
 import de.naoth.rc.core.manager.SwingCommandExecutor;
 import de.naoth.rc.server.Command;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 
@@ -36,6 +40,9 @@ public class ParameterPanelTree extends AbstractDialog
   private final ParameterDataModel treeTableModel = new ParameterDataModel();
   private TreeTable myTreeTable;
   
+  private final Command cmd_pi = new Command("Cognition:representation:print").addArg("PlayerInfo");
+  private static final Pattern KEY_VALUE_PATTERN = Pattern.compile("^(?<key>.+)=(?<value>.*)$", Pattern.MULTILINE);
+  
   public ParameterPanelTree()
   {
     initComponents();
@@ -55,6 +62,9 @@ public class ParameterPanelTree extends AbstractDialog
 
         jToolBar1 = new javax.swing.JToolBar();
         jToggleButtonList = new javax.swing.JToggleButton();
+        jSeparator1 = new javax.swing.JToolBar.Separator();
+        activeScheme = new javax.swing.JLabel();
+        jSeparator2 = new javax.swing.JToolBar.Separator();
         jScrollPane = new javax.swing.JScrollPane();
 
         jToolBar1.setFloatable(false);
@@ -70,6 +80,11 @@ public class ParameterPanelTree extends AbstractDialog
             }
         });
         jToolBar1.add(jToggleButtonList);
+        jToolBar1.add(jSeparator1);
+
+        activeScheme.setText("scheme:");
+        jToolBar1.add(activeScheme);
+        jToolBar1.add(jSeparator2);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -90,6 +105,7 @@ public class ParameterPanelTree extends AbstractDialog
 private void jToggleButtonListActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jToggleButtonListActionPerformed
 {//GEN-HEADEREND:event_jToggleButtonListActionPerformed
     listParameters();
+    updateActiveScheme();
 }//GEN-LAST:event_jToggleButtonListActionPerformed
 
   private class ParameterListItem
@@ -266,8 +282,31 @@ private void listParameters()
     System.out.println("Dispose is not implemented for: " + this.getClass().getName());
   }
   
+  private void updateActiveScheme() {
+      /* command for PlayerInfo */
+      Plugin.commandExecutor.executeCommand(new ObjectListener<byte[]>() {
+            @Override
+            public void newObjectReceived(byte[] object) {
+                // extract representation from string
+                Map<String, String> repr = new HashMap<>();
+                Matcher m = KEY_VALUE_PATTERN.matcher(new String(object));
+                while (m.find()) {
+                    repr.put(m.group("key").trim(), m.group("value").trim());
+                }
+                String scheme = repr.getOrDefault("active scheme", "?");
+                activeScheme.setText("scheme: " + (scheme.equals("-")?"default parameter":scheme));
+            }
+
+            @Override
+            public void errorOccured(String cause) {/* ignore error */}
+        }, cmd_pi);
+  }
+  
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel activeScheme;
     private javax.swing.JScrollPane jScrollPane;
+    private javax.swing.JToolBar.Separator jSeparator1;
+    private javax.swing.JToolBar.Separator jSeparator2;
     private javax.swing.JToggleButton jToggleButtonList;
     private javax.swing.JToolBar jToolBar1;
     // End of variables declaration//GEN-END:variables
