@@ -4,6 +4,7 @@
 
 print("Generating files for NaoSMAL")
 
+-- TODO: this warning doesn't appear anymore, shall the following comment be removed?
 -- ld throws the following warning when linking NaoSMAL:
 -- 'warning: creating a DT_TEXTREL in object.'
 --
@@ -16,27 +17,24 @@ print("Generating files for NaoSMAL")
 project "NaoSMAL"
   kind "SharedLib"
   language "C++"
+  flags {"FatalCompileWarnings"}
   
   includedirs {
-	"../Source/DCM"
-	}
+    "../Source/DCM"
+  }
 
   links {
-	"Commons",
-	"almemoryfastaccess", -- Aldebaran NaoQi
-	"alcommon", -- Aldebaran NaoQi
-	"gthread-2.0", 
-	"glib-2.0",
-	"gio-2.0",
-	"gobject-2.0",
-	"protobuf"
-	}
+    "Commons",
+    "almemoryfastaccess", -- Aldebaran NaoQi
+    "alcommon", -- Aldebaran NaoQi
+    "protobuf"
+  }
 
   files{
-	"../Source/DCM/NaoSMAL/**.cpp", 
-	"../Source/DCM/NaoSMAL/**.h",
-	"../Source/DCM/Tools/**.cpp", 
-	"../Source/DCM/Tools/**.h"
-	}
-	
+    "../Source/DCM/NaoSMAL/**.cpp", 
+    "../Source/DCM/NaoSMAL/**.h",
+    "../Source/DCM/Tools/**.cpp", 
+    "../Source/DCM/Tools/**.h"
+  }
+  
   targetname "naosmal"

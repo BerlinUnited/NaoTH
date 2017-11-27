@@ -42,6 +42,7 @@ namespace naoth
     * @return The number of ms passed since the given time stamp.
     */
     inline int getTimeSince(unsigned timeStamp) const {return int(time - timeStamp);}
+    inline int getTimeSince(const FrameInfo& other) const {return int(time - other.time);}
 
     /**
     * The method returns the corrent time in seconds current frame time.
