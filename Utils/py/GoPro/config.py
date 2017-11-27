@@ -5,3 +5,4 @@
 
 ssid = 'GP26329941'
 passwd = 'cycle9210'
+retries = -1
