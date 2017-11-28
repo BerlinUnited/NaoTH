@@ -47,7 +47,7 @@ Link::~Link()
 
 void Link::normalizeJointAngle()
 {
-  (*q) = Math::normalizeAngle(*q);
+  (*q) = Math::normalize(*q);
 }
 
 Link& Link::connect(Link& c)

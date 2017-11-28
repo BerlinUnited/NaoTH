@@ -13,9 +13,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.Properties;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
@@ -30,6 +33,7 @@ public class ConnectionDialog extends javax.swing.JDialog
 
   private final MessageServer messageServer;
   private final Properties properties;
+  private final ExecutorService executor = Executors.newCachedThreadPool();
 
   public ConnectionDialog(java.awt.Frame parent, MessageServer messageServer)
   {
@@ -166,10 +170,7 @@ public class ConnectionDialog extends javax.swing.JDialog
         
         this.messageServer.connect(host, port);
 
-        DefaultComboBoxModel model = (DefaultComboBoxModel) cbHost.getModel();
-        if(model.getIndexOf(host) == -1) {
-            cbHost.addItem(host);
-        }
+        addItemToCombobox(host);
         
         this.properties.put("hostname", host);
         this.properties.put("port", "" + port);
@@ -196,7 +197,40 @@ public class ConnectionDialog extends javax.swing.JDialog
       }
     }//GEN-LAST:event_btConnectActionPerformed
 
- 
+    // TODO: for now it's adjusted for the current NaoTH addresses. Make it more general.
+    private void updateAvaliableHosts() {
+        
+        String[] ips = this.properties.getProperty("iplist","").split(",");
+        
+        for(final String ip: ips) {
+            executor.submit(() -> {
+                try {
+                    InetAddress address = InetAddress.getByName(ip);
+                    if(address.isReachable(500)) {
+                        synchronized(cbHost) {
+                            addItemToCombobox(ip);
+                        }
+                    }
+                } catch (Exception e) { /* ignore exception */ }
+            });
+        }
+    }
+    
+    @Override
+    public void setVisible(boolean b) {
+        // check for available hosts only when dialog is visible
+        if(b) {
+            updateAvaliableHosts();
+        }
+        super.setVisible(b);
+    }
+    
+    private void addItemToCombobox(String host) {
+        DefaultComboBoxModel model = (DefaultComboBoxModel) cbHost.getModel();
+        if(model.getIndexOf(host) == -1) {
+            cbHost.addItem(host);
+        }
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btCancel;
