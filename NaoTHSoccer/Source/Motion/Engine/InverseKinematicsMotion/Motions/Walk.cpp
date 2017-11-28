@@ -313,11 +313,11 @@ void Walk::calculateNewStep(const Step& lastStep, Step& newStep, const WalkReque
 
       if(parameters().step.dynamicDuration)
       {
-        if(walkRequest.character == 0.3) {
+        if(walkRequest.character <= 0.3) {
           duration = 300;
-        } else if(walkRequest.character == 0.7) {
+        } else if(walkRequest.character <= 0.7) {
           duration = 280;
-        } else if(walkRequest.character == 1) {
+        } else {// if(walkRequest.character == 1) {
           duration = 260;
         }
       }

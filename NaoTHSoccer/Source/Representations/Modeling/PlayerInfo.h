@@ -64,6 +64,9 @@ public:
   /** Whether the behavior decided to play as striker */
   bool isPlayingStriker;
 
+  /** the currently used scheme. */
+  std::string scheme;
+
   bool isGoalie() const {
       return playerNumber == 1;
   }

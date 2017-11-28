@@ -5,11 +5,8 @@
  *
  */
 
-#include <glib.h>
-#include <glib-object.h>
-
-
-#include "alincludes.h"
+#include <alcommon/almodule.h>
+#include <alcommon/albrokermanager.h>
 
 #include "SMALModule.h"
 
@@ -17,9 +14,7 @@ extern "C"
 {
 
 int _createModule(boost::shared_ptr<AL::ALBroker> broker)
-{      
-  g_type_init();
-
+{
   // init broker with the main broker instance
   // from the parent executable
   AL::ALBrokerManager::setInstance(broker->fBrokerManager.lock());

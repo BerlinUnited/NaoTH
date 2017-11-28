@@ -48,8 +48,7 @@ option play_soccer
   {
     decision
     {
-      else if((robot_pose.is_valid && state_time > 6000) || 
-        state_time>12000)
+      else if(robot_pose.is_valid || state_time > 12000)
       {
         if(game.current_mode == playing)
           goto play;

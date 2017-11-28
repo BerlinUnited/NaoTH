@@ -117,7 +117,7 @@ void IMUModel::writeIMUData(){
     // TODO: prediction or state?
     getIMUData().acceleration.x = ukf_acc_global.state.acceleration()(0,0);
     getIMUData().acceleration.y = ukf_acc_global.state.acceleration()(1,0);
-    getIMUData().acceleration.z = ukf_acc_global.state.acceleration()(2,0) + 9.81; //Math::g
+    getIMUData().acceleration.z = ukf_acc_global.state.acceleration()(2,0) - 9.81; //Math::g
 
     getIMUData().location += getIMUData().velocity * getRobotInfo().getBasicTimeStepInSecond() + getIMUData().acceleration * getRobotInfo().getBasicTimeStepInSecond() * getRobotInfo().getBasicTimeStepInSecond() * 0.5;
     getIMUData().velocity += getIMUData().acceleration * getRobotInfo().getBasicTimeStepInSecond();
@@ -125,13 +125,29 @@ void IMUModel::writeIMUData(){
     // convert to framework compliant x,y,z angles
     Eigen::Vector3d temp2 = ukf_rot.state.rotation();
     Vector3d rot_vec(temp2(0),temp2(1),temp2(2));
-    RotationMatrix rot(rot_vec);
-    getIMUData().rotation.x = rot.getXAngle();
-    getIMUData().rotation.y = rot.getYAngle();
-    getIMUData().rotation.z = rot.getZAngle();
+    RotationMatrix bodyIntoGlobalMapping(rot_vec);
+    getIMUData().rotation.x = bodyIntoGlobalMapping.getXAngle();
+    getIMUData().rotation.y = bodyIntoGlobalMapping.getYAngle();
+    getIMUData().rotation.z = bodyIntoGlobalMapping.getZAngle();
 
-    getIMUData().orientation = Vector2d(atan2( rot[1].z, rot[2].z),
-                                        atan2(-rot[0].z, rot[2].z));
+    /*
+     * Note: the following code lines use the inverse mapping, i.e. globalIntoBodyMapping
+     * Note: The negative of the determined angles is the correct solution in this case because the projected "global" z axis is not pointing upwards in the torso's coordinate system.
+     * The projected "global" z axis in the Body frame is NOT (0,0,1)!
+     * So actually we want the inverse mapping.
+     * Inverting the angle is sufficient because it's basically only a 2D rotation in the XZ or YZ plane
+     * Note: using bodyIntoGlobalMapping would be wrong because the global frame can be rotate around z regarding the body
+     * this would result in a redistribution of the inclination on the x,y axis.
+     * (e.g. z rotation about 90° -> a rotation about the body's y axis becomes a rotation about the global x axis)
+     * Note: don't use the y axis to determine the inclination in YZ plane because it might be mapped onto the x axis (a rotation about 90° around z)
+     * this results in huge devation of the angles determined by atan2 because the projected y axis might end up in the second or third quadrant of the YZ plane
+     */
+
+    getIMUData().orientation = Vector2d(-atan2(-bodyIntoGlobalMapping[1].z, bodyIntoGlobalMapping[2].z),
+                                        -atan2(bodyIntoGlobalMapping[0].z, bodyIntoGlobalMapping[2].z));
+
+    PLOT("IMUModel:State:orientation:x", Math::toDegrees(getIMUData().orientation.x));
+    PLOT("IMUModel:State:orientation:y", Math::toDegrees(getIMUData().orientation.y));
 
     // only to enable transparent switching with InertiaSensorFilter
     getInertialModel().orientation = getIMUData().orientation;
@@ -177,6 +193,9 @@ void IMUModel::plots(){
     PLOT("IMUModel:Measurement:rotational_velocity:x", getGyrometerData().data.x);
     PLOT("IMUModel:Measurement:rotational_velocity:y", getGyrometerData().data.y);
     PLOT("IMUModel:Measurement:rotational_velocity:z", getGyrometerData().data.z);
+
+    PLOT("IMUModel:State:orientation:x", Math::toDegrees(getIMUData().orientation.x));
+    PLOT("IMUModel:State:orientation:y", Math::toDegrees(getIMUData().orientation.y));
 }
 
 void IMUModel::reloadParameters()

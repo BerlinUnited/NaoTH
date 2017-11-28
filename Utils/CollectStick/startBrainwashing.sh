@@ -9,7 +9,7 @@
 check_for_errors() {
 	if [ "$?" -ne 0 ]
 	then
-		sudo -u nao /usr/bin/paplay /home/nao/naoqi/Media/1.wav
+		sudo -u nao /usr/bin/paplay /home/nao/naoqi/Media/error_while_collecting_logs.wav
 		# if argument is available - write to systemlog
 		if [ ! -z "$1" ]
 		then
@@ -93,6 +93,12 @@ zip -q -r -0 /media/brainwasher/$current_date-$current_nao/config.zip Config
 cd -
 check_for_errors "Brainwasher:ERROR copying config"
 
+# copy logs of naoth binary (std::out/::err) and clear them afterwards
+cp "/var/log/naoth.log" "/var/log/naoth_err.log" /media/brainwasher/$current_date-$current_nao/
+check_for_errors "Brainwasher:ERROR copying /var/log/naoth.log"
+> /var/log/naoth.log
+> /var/log/naoth_err.log
+
 # find and copy trace dump files since boot and log errors
 find /home/nao -maxdepth 1 -type f -mmin -$current_boot_time -iname "trace.dump.*" -exec zip -q -0 /media/brainwasher/$current_date-$current_nao/dumps.zip {} + 2> $errorFile
 logger -f $errorFile
@@ -118,7 +124,7 @@ rm $errorFile
 sync
 
 # needed to play sound before starting naoth! otherwise the sound could get "lost" (no sound)
-sudo -u nao /usr/bin/paplay /home/nao/naoqi/Media/nicknacknuck.wav
+sudo -u nao /usr/bin/paplay /home/nao/naoqi/Media/finished_collecting_logs.wav
 
 logger "Brainwasher:END, starting naoth"
 
