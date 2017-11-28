@@ -2,6 +2,25 @@ from struct import Struct
 from .Math import Vector2, Vector3, Pose2D
 from naoth import Representations_pb2
 
+
+class MixedTeamMessage(Struct):
+    def __init__(self):
+        super(MixedTeamMessage, self).__init__('Q4B')
+        self.timestamp = 0
+        self.teamID = 0
+        self.isPenalized = False
+        self.whistleDetected = False
+        self.dummy = 42
+
+    def pack(self):
+        return Struct.pack(self,
+                           self.timestamp,
+                           self.teamID,
+                           self.isPenalized,
+                           self.whistleDetected,
+                           self.dummy
+                          )
+
 class SPLMessage(Struct):
     """Representation of the standard SPLMessage."""
 
@@ -28,6 +47,8 @@ class SPLMessage(Struct):
         self.currentPositionConfidence = 100
         self.currentSideConfidence = 100
 
+        self._mixed = MixedTeamMessage()
+
         self.data = Representations_pb2.BUUserTeamMessage()
 
         # set known default values of custom message part
@@ -35,7 +56,7 @@ class SPLMessage(Struct):
             if field.has_default_value:
                 setattr(self.data, field.name, field.default_value)
 
-        self.numOfDataBytes = self.data.ByteSize()
+        self.numOfDataBytes = self.data.ByteSize() + self._mixed.size
 
     def pack(self):
         return Struct.pack(self,
@@ -56,8 +77,9 @@ class SPLMessage(Struct):
                            self.maxKickDistance,
                            self.currentPositionConfidence,
                            self.currentSideConfidence,
-                           self.data.ByteSize(),
-                           ) + self.data.SerializeToString()
+                           (self.data.ByteSize() + self._mixed.size),
+                           ) + self._mixed.pack()\
+                             + self.data.SerializeToString()
 
     def __repr__(self):
         """Returns all 'active' message fields as string."""
@@ -70,6 +92,9 @@ class SPLMessage(Struct):
                     if fields[custom_attr].GetOptions().deprecated:
                         continue
                     result += "\t" + custom_attr + " = " + str(getattr(self.__dict__[attr], custom_attr)) + "\n"
+            elif attr.startswith("_"):
+                # skip attributes starting with '_' (private)
+                continue
             else:
                 result += "\t" + attr + " = " + str(self.__dict__[attr]) + "\n"
         return result
