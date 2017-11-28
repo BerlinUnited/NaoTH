@@ -30,6 +30,15 @@ if '__main__' == __name__:
 
     tc = utils.TeamCommGenerator(args.net, args.port, args.delay)  # "10.0.4.255"
 
+    # import config and set known values
+    try:
+        import config
+        for i in config.__dict__:
+            if not i.startswith("__") and tc.hasMessageField(i):
+                tc.setMessageField(i, getattr(config, i))
+    except:
+        print("Error importing config file! Ignoring...")
+
     tc.start()
 
     utils.CommandParser(tc).cmdloop()
