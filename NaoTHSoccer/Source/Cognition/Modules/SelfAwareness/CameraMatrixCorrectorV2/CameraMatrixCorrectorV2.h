@@ -91,13 +91,19 @@ public:
     typedef std::vector<CalibrationDataSample> CalibrationData;
 
 private:
-    CameraInfo::CameraID cameraID;
+    //CameraInfo::CameraID cameraID;
     CalibrationData calibrationData;
     size_t numberOfResudials;
 
-    DOUBLE_CAM_REQUIRE(CamMatErrorFunction,CameraInfo);
+    const CameraInfo& getCameraInfo(int cameraID) const {
+      if(cameraID == CameraInfo::Top) {
+        return CamMatErrorFunctionBase::getCameraInfoTop();
+      } else {
+        return CamMatErrorFunctionBase::getCameraInfo();
+      }
+    }
 
-    const std::vector<EdgelD>& getEdgelsInImage(std::vector<CalibrationDataSample>::const_iterator& sample) const {
+    const std::vector<EdgelD>& getEdgelsInImage(std::vector<CalibrationDataSample>::const_iterator& sample, int cameraID) const {
       if(cameraID == CameraInfo::Top) {
         return sample->lineGraphPercept.edgelsInImageTop;
       } else {
@@ -106,9 +112,7 @@ private:
     }
 
 public:
-    CamMatErrorFunction()
-        : cameraID(CameraInfo::Bottom)
-    {
+    CamMatErrorFunction(){
         DEBUG_REQUEST_REGISTER("CamMatErrorFunction:debug_drawings:only_bottom", "", false);
         DEBUG_REQUEST_REGISTER("CamMatErrorFunction:debug_drawings:only_top", "", false);
         DEBUG_REQUEST_REGISTER("CamMatErrorFunction:debug_drawings:draw_projected_edgels", "", false);
@@ -161,9 +165,7 @@ public:
         }
     }
 
-    void actual_plotting(CameraInfo::CameraID i){
-        cameraID = i;
-
+    void actual_plotting(CameraInfo::CameraID cameraID){
         for(CalibrationData::const_iterator sample = calibrationData.begin(); sample != calibrationData.end(); ++sample){
                 CameraMatrix tmpCM = CameraGeometry::calculateCameraMatrixFromChestPose(
                             sample->chestPose,
@@ -182,15 +184,15 @@ public:
                 tmpCM.rotation = RotationMatrix::getRotationZ(globalPosition.z) * tmpCM.rotation; // why? shouldn't it be the other way around?
 
                 std::vector<Vector2d> edgelProjections;
-                edgelProjections.resize(getEdgelsInImage(sample).size());
+                edgelProjections.resize(getEdgelsInImage(sample,cameraID).size());
 
                 // draw projected edgels to field
-                for(size_t i = 0; i < getEdgelsInImage(sample).size(); i++)
+                for(size_t i = 0; i < getEdgelsInImage(sample,cameraID).size(); i++)
                 {
-                    const EdgelT<double>& edgelOne = getEdgelsInImage(sample)[i];
+                    const EdgelT<double>& edgelOne = getEdgelsInImage(sample,cameraID)[i];
 
                     CameraGeometry::imagePixelToFieldCoord(
-                                tmpCM, getCameraInfo(),
+                                tmpCM, getCameraInfo(cameraID),
                                 edgelOne.point.x,
                                 edgelOne.point.y,
                                 0.0,
@@ -238,7 +240,7 @@ public:
         }
     }
 
-    Eigen::VectorXd operator()(const Eigen::Matrix<double, 14, 1>& parameter){
+    Eigen::VectorXd operator()(const Eigen::Matrix<double, 14, 1>& parameter) const {
         Eigen::VectorXd r(numberOfResudials);
 
         Vector2d offsetBody(parameter(0),parameter(1));
@@ -251,10 +253,11 @@ public:
         double global_z_angle_offset = parameter(13);
 
         size_t idx = 0;
-        for(int i = 0; i < CameraInfo::numOfCamera; i++){
-            cameraID = static_cast<CameraInfo::CameraID>(i);
+        size_t empty = 0;
+        for(int cameraID = 0; cameraID < CameraInfo::numOfCamera; cameraID++){
             for(CalibrationData::const_iterator sample = calibrationData.begin(); sample != calibrationData.end(); ++sample){
-                if (getEdgelsInImage(sample).size() == 0) {
+                if (getEdgelsInImage(sample,cameraID).empty()) {
+                    ++empty;
                     continue;
                 }
 
@@ -276,15 +279,15 @@ public:
                 tmpCM.rotation = RotationMatrix::getRotationZ(globalPosition.z + global_z_angle_offset) * tmpCM.rotation; // why? shouldn't it be the other way around?
 
                 std::vector<Vector2d> edgelProjections;
-                edgelProjections.resize(getEdgelsInImage(sample).size());
+                edgelProjections.resize(getEdgelsInImage(sample,cameraID).size());
 
                 // project edgels pairs to field
-                for(size_t i = 0; i < getEdgelsInImage(sample).size(); i++)
+                for(size_t i = 0; i < getEdgelsInImage(sample,cameraID).size(); i++)
                 {
-                    const EdgelT<double>& edgelOne = getEdgelsInImage(sample)[i];
+                    const EdgelT<double>& edgelOne = getEdgelsInImage(sample,cameraID)[i];
 
                     CameraGeometry::imagePixelToFieldCoord(
-                                tmpCM, getCameraInfo(),
+                                tmpCM, getCameraInfo(cameraID),
                                 edgelOne.point.x,
                                 edgelOne.point.y,
                                 0.0,
@@ -314,11 +317,12 @@ public:
             }
         }
 
+        ASSERT(empty+idx == calibrationData.size()*2)
         ASSERT(idx == numberOfResudials);
         return r;
     }
 
-    Eigen::VectorXd operator()(const Eigen::Matrix<double, 11, 1>& parameter){
+    Eigen::VectorXd operator()(const Eigen::Matrix<double, 11, 1>& parameter) const {
         Eigen::VectorXd r(numberOfResudials);
 
         Vector2d offsetBody(parameter(0),parameter(1));
@@ -328,10 +332,9 @@ public:
         offsetCam[CameraInfo::Bottom] = Vector3d(parameter(8), parameter(9),parameter(10));
 
         size_t idx = 0;
-        for(int i = 0; i < CameraInfo::numOfCamera; i++){
-            cameraID = static_cast<CameraInfo::CameraID>(i);
+        for(int cameraID = 0; cameraID < CameraInfo::numOfCamera; cameraID++){
             for(CalibrationData::const_iterator sample = calibrationData.begin(); sample != calibrationData.end(); ++sample){
-                if (getEdgelsInImage(sample).size() == 0) {
+                if (getEdgelsInImage(sample,cameraID).size() == 0) {
                     continue;
                 }
 
@@ -353,15 +356,15 @@ public:
                 tmpCM.rotation = RotationMatrix::getRotationZ(globalPosition.z) * tmpCM.rotation; // why? shouldn't it be the other way around?
 
                 std::vector<Vector2d> edgelProjections;
-                edgelProjections.resize(getEdgelsInImage(sample).size());
+                edgelProjections.resize(getEdgelsInImage(sample,cameraID).size());
 
                 // project edgels pairs to field
-                for(size_t i = 0; i < getEdgelsInImage(sample).size(); i++)
+                for(size_t i = 0; i < getEdgelsInImage(sample,cameraID).size(); i++)
                 {
-                    const EdgelT<double>& edgelOne = getEdgelsInImage(sample)[i];
+                    const EdgelT<double>& edgelOne = getEdgelsInImage(sample,cameraID)[i];
 
                     CameraGeometry::imagePixelToFieldCoord(
-                                tmpCM, getCameraInfo(),
+                                tmpCM, getCameraInfo(cameraID),
                                 edgelOne.point.x,
                                 edgelOne.point.y,
                                 0.0,
@@ -395,7 +398,7 @@ public:
         return r;
     }
 
-    Eigen::VectorXd operator()(const Eigen::Matrix<double, 3, 1>& parameter){
+    Eigen::VectorXd operator()(const Eigen::Matrix<double, 3, 1>& parameter) const {
         Eigen::VectorXd r(numberOfResudials);
 
         double global_x_offset = parameter(0);
@@ -403,10 +406,9 @@ public:
         double global_z_angle_offset = parameter(2);
 
         size_t idx = 0;
-        for(int i = 0; i < CameraInfo::numOfCamera; i++){
-            cameraID = static_cast<CameraInfo::CameraID>(i);
+        for(int cameraID = 0; cameraID < CameraInfo::numOfCamera; cameraID++){
             for(CalibrationData::const_iterator sample = calibrationData.begin(); sample != calibrationData.end(); ++sample){
-                if (getEdgelsInImage(sample).size() == 0) {
+                if (getEdgelsInImage(sample,cameraID).size() == 0) {
                     continue;
                 }
 
@@ -428,15 +430,15 @@ public:
                 tmpCM.rotation = RotationMatrix::getRotationZ(globalPosition.z + global_z_angle_offset) * tmpCM.rotation; // why? shouldn't it be the other way around?
 
                 std::vector<Vector2d> edgelProjections;
-                edgelProjections.resize(getEdgelsInImage(sample).size());
+                edgelProjections.resize(getEdgelsInImage(sample,cameraID).size());
 
                 // project edgels pairs to field
-                for(size_t i = 0; i < getEdgelsInImage(sample).size(); i++)
+                for(size_t i = 0; i < getEdgelsInImage(sample,cameraID).size(); i++)
                 {
-                    const EdgelT<double>& edgelOne = getEdgelsInImage(sample)[i];
+                    const EdgelT<double>& edgelOne = getEdgelsInImage(sample,cameraID)[i];
 
                     CameraGeometry::imagePixelToFieldCoord(
-                                tmpCM, getCameraInfo(),
+                                tmpCM, getCameraInfo(cameraID),
                                 edgelOne.point.x,
                                 edgelOne.point.y,
                                 0.0,
