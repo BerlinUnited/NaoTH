@@ -26,9 +26,9 @@ namespace naoth
   /**
    * This is a thread-safe queue that has a blocking pop() function.
    *
-   * It is possible to shutdown a queue. If a queue is shutdown, no new entries
+   * It is possible to close a queue. If a queue is closed, no new entries
    * can be added: as soon as the queue is empty the pop() funtion will return immediatly instead of waiting forever.
-   * A shutdown can't be undone.
+   * Closing the queue can't be undone.
    */
   template<typename T>
   class SharedQueue
@@ -36,14 +36,14 @@ namespace naoth
   public:
 
     SharedQueue()
-    : isShutdown(false)
+    : isClosed(false)
     {
 
     }
 
     /**
      * @brief Retrieve an item from the queue. This will block until an item is available. If the queue is empty
-     * and shut-down it will return immediatly with "false" as a result.
+     * and closed it will return immediatly with "false" as a result.
      * @param item
      * @return "true" if an item was retrieved from the queue, false if not.
      */
@@ -51,10 +51,10 @@ namespace naoth
     {
       std::unique_lock<std::mutex> lock(queueMutex);
 
-      addedCondition.wait(lock, [this] {return this->isShutdown || !this->queue.empty();});
-      if(isShutdown && queue.empty())
+      addedCondition.wait(lock, [this] {return this->isClosed || !this->queue.empty();});
+      if(isClosed && queue.empty())
       {
-        // queue is empty and since it is shut down no new entries will be added.
+        // queue is empty and since it is closed no new entries will be added.
         return false;
       }
 
@@ -68,14 +68,14 @@ namespace naoth
 
     /**
      * @brief Try to retrieve an item from the queue. This will *not* block until an item is available.
-     * If the queue is empty or shut-down it will return immediatly with "false" as a result.
+     * If the queue is empty or closed it will return immediatly with "false" as a result.
      * @param item
      * @return
      */
     bool try_pop(T& item)
     {
       std::unique_lock<std::mutex> lock(queueMutex);
-      if(isShutdown && queue.empty())
+      if(isClosed && queue.empty())
       {
         return false;
       }
@@ -90,7 +90,7 @@ namespace naoth
     {
       std::unique_lock<std::mutex> lock(queueMutex);
 
-      if(isShutdown)
+      if(isClosed)
       {
         return;
       }
@@ -104,7 +104,7 @@ namespace naoth
     {
       std::unique_lock<std::mutex> lock(queueMutex);
 
-      if(isShutdown)
+      if(isClosed)
       {
         return;
       }
@@ -114,12 +114,15 @@ namespace naoth
       addedCondition.notify_one();
     }
 
-    void shutdown()
+    /**
+     * Close this queue which means it will not accept any new items.
+     */
+    void close()
     {
       std::unique_lock<std::mutex> lock(queueMutex);
-      if(!isShutdown)
+      if(!isClosed)
       {
-        isShutdown = true;
+        isClosed = true;
 
         lock.unlock();
 
@@ -128,7 +131,7 @@ namespace naoth
     }
 
     /**
-     * @brief Remove all entries from the queue but do not shut it down.
+     * @brief Remove all entries from the queue but do not close it.
      */
     void clear()
     {
@@ -154,7 +157,7 @@ namespace naoth
 
   private:
 
-    bool isShutdown;
+    bool isClosed;
 
     std::queue<T> queue;
 
