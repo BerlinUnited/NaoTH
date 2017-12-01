@@ -6,5 +6,7 @@
         "**/CVS": true,
         "**/.DS_Store": true,
         "**/build/" : true
-    }
+    },
+    "telemetry.enableTelemetry": false,
+    "telemetry.enableCrashReporter": false
 }
