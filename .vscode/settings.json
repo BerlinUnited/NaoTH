@@ -1,5 +1,4 @@
 {
-    "C_Cpp.intelliSenseEngineFallback": "Disabled",
     "files.exclude": {
         "**/.git": true,
         "**/.svn": true,
