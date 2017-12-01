@@ -16,28 +16,40 @@
             ]
         },
         {
-            "label": "LogSimulator",
+            "label": "LogSimulator (Debug)",
             "type": "shell",
             "options": {
                 "cwd": "${workspaceFolder}/NaoTHSoccer/Make"
             },
             "group": "build",
-            "command": "premake5 gmake && make -C ${workspaceFolder}/NaoTHSoccer/build LogSimulator",
+            "command": "premake5 gmake && make -C ${workspaceFolder}/NaoTHSoccer/build config=debug_native LogSimulator",
             "problemMatcher": [
                 "$gcc"
             ]
         },
         {
-            "label": "Simspark",
+            "label": "SimSpark (Debug)",
             "type": "shell",
             "options": {
                 "cwd": "${workspaceFolder}/NaoTHSoccer/Make"
             },
             "group": "build",
-            "command": "premake5 gmake && make -C ${workspaceFolder}/NaoTHSoccer/build SimSpark",
+            "command": "premake5 gmake && make -C ${workspaceFolder}/NaoTHSoccer/build config=debug_native SimSpark",
             "problemMatcher": [
                 "$gcc"
             ]
-        }
+        },
+        {
+            "label": "NaoSMAL",
+            "type": "shell",
+            "options": {
+                "cwd": "${workspaceFolder}/NaoTHSoccer/Make"
+            },
+            "group": "build",
+            "command": "./compileNaoSMAL.sh",
+            "problemMatcher": [
+                "$gcc"
+            ]
+        },
     ]
 }
