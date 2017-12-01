@@ -58,7 +58,7 @@ namespace naoth
         return false;
       }
 
-      item.swap(queue.front());
+      item = std::move(queue.front());
       queue.pop();
 
       lock.unlock();
@@ -79,7 +79,7 @@ namespace naoth
       {
         return false;
       }
-      item.swap(queue.front());
+      item = std::move(queue.front());
       queue.pop();
       lock.unlock();
 
