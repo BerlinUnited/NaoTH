@@ -14,6 +14,9 @@
             "problemMatcher": {
                 "base" : "$gcc",
                 "fileLocation" : ["relative" , "${workspaceFolder}/NaoTHSoccer/build"]
+            },
+            "presentation": {
+                "panel": "shared"
             }
         },
         {
@@ -27,6 +30,9 @@
             "problemMatcher": {
                 "base" : "$gcc",
                 "fileLocation" : ["relative" , "${workspaceFolder}/NaoTHSoccer/build"]
+            },
+            "presentation": {
+                "panel": "shared"
             }
         },
         {
@@ -40,6 +46,9 @@
             "problemMatcher": {
                 "base" : "$gcc",
                 "fileLocation" : ["relative" , "${workspaceFolder}/NaoTHSoccer/build"]
+            },
+            "presentation": {
+                "panel": "shared"
             }
         },
         {
@@ -53,6 +62,9 @@
             "problemMatcher": {
                 "base" : "$gcc",
                 "fileLocation" : ["relative" , "${workspaceFolder}/NaoTHSoccer/build"]
+            },
+            "presentation": {
+                "panel": "shared"
             }
         }
     ]
