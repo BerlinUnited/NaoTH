@@ -22,7 +22,19 @@
                 "cwd": "${workspaceFolder}/NaoTHSoccer/Make"
             },
             "group": "build",
-            "command": "premake4 gmake && make -C ${workspaceFolder}/NaoTHSoccer/build LogSimulator",
+            "command": "premake5 gmake && make -C ${workspaceFolder}/NaoTHSoccer/build LogSimulator",
+            "problemMatcher": [
+                "$gcc"
+            ]
+        },
+        {
+            "label": "Simspark",
+            "type": "shell",
+            "options": {
+                "cwd": "${workspaceFolder}/NaoTHSoccer/Make"
+            },
+            "group": "build",
+            "command": "premake5 gmake && make -C ${workspaceFolder}/NaoTHSoccer/build SimSpark",
             "problemMatcher": [
                 "$gcc"
             ]
