@@ -17,6 +17,7 @@
 #include <DebugCommunication/DebugCommandManager.h>
 #include <Tools/NaoTime.h>
 #include <Tools/NaoInfo.h>
+#include <Tools/Math/Common.h>
 
 #include <Tools/Communication/ASCIIEncoder.h>
 
@@ -269,6 +270,19 @@ bool SimSparkController::init(const std::string& modelPath, const std::string& t
   //DEBUG_REQUEST_REGISTER("SimSparkController:beam", "beam to start pose", false);
   //REGISTER_DEBUG_COMMAND("beam", "beam to given pose", this);
 
+
+  Configuration& config = Platform::getInstance().theConfiguration;
+  // if player number wasn't set by configuration -> use the number from the simulation
+  if(config.getInt("player", "PlayerNumber") == 0) {
+    config.setInt("player", "PlayerNumber", theGameInfo.playerNumber);
+  }
+  // if team name wasn't set by configuration -> use the name from the simulation
+  if (!config.hasKey("player", "TeamName"))
+  {
+    config.setString("player", "TeamName", theGameInfo.teamName);
+  }
+  cout << "Player number: " << theGameInfo.playerNumber << endl;
+
   theLastSenseTime = NaoTime::getNaoTimeInMilliSeconds();
   theLastActTime = theLastSenseTime;
   calculateNextActTime();
@@ -520,14 +534,13 @@ bool SimSparkController::updateSensors(std::string& msg)
   pcont = init_continuation(c);
   sexp = iparse_sexp(c, msg.size(), pcont);
 
-  {
-    std::unique_lock<std::mutex> lock(theCognitionInputMutex);
+  std::unique_lock<std::mutex> lock(theCognitionInputMutex);
 
-    // clear FSR data, since if there is no FSR data, it means no touch
-    for (int i = 0; i < FSRData::numOfFSR; i++)
-    {
-      theFSRData.data[i] = 0;
-    }
+  // clear FSR data, since if there is no FSR data, it means no touch
+  for (int i = 0; i < FSRData::numOfFSR; i++) {
+    theFSRData.dataLeft[i] = 0;
+    theFSRData.dataRight[i] = 0;
+  }
 
     while(sexp)
     {
@@ -605,7 +618,7 @@ bool SimSparkController::updateSensors(std::string& msg)
     if ( isNewImage || isNewVirtualVision ){
       theCognitionInputCond.notify_one();
     }
-  }
+  
   destroy_sexp(sexp);
   destroy_continuation(pcont);
 
@@ -798,7 +811,7 @@ bool SimSparkController::updateHingeJoint(const sexp_t* sexp)
     ax *= -1;
   }
 
-  theSensorJointData.dp[jid] = Math::clamp(Math::normalizeAngle(ax - theSensorJointData.position[jid]) / theStepTime,
+  theSensorJointData.dp[jid] = Math::clamp(Math::normalize(ax - theSensorJointData.position[jid]) / theStepTime,
     -maxJointAbsSpeed, maxJointAbsSpeed);
   theSensorJointData.position[jid] = ax;
   return true;
@@ -1045,33 +1058,40 @@ bool SimSparkController::updateFSR(const sexp_t* sexp)
     return false;
   }
 
+  const FSRData::SensorID id0 = FSRData::RearLeft;
+  const FSRData::SensorID id1 = FSRData::RearRight;
+  const FSRData::SensorID id2 = FSRData::FrontLeft;
+  const FSRData::SensorID id3 = FSRData::FrontRight;
+  
+  double f = F[2] / 4;
+  double fx = f * ( C[1]*1000 + 30);
+  double fy = f * (-C[0]*1000);
 
-  FSRData::FSRID id0, id1, id2, id3;
   if ("lf" == name)
   {
-    id0 = FSRData::LFsrBL;
-    id1 = FSRData::LFsrBR;
-    id2 = FSRData::LFsrFL;
-    id3 = FSRData::LFsrFR;
-  } else if ("rf" == name)
+    const Vector3d* positions = NaoInfo::FSRPositionsLeft;
+    std::vector<double>& values = theFSRData.dataLeft;
+
+    calFSRForce(f, fx, fy, positions, values, id0, id1, id2);
+    calFSRForce(f, fx, fy, positions, values, id1, id2, id3);
+    calFSRForce(f, fx, fy, positions, values, id2, id3, id0);
+    calFSRForce(f, fx, fy, positions, values, id3, id0, id1);
+  } 
+  else if ("rf" == name)
   {
-    id0 = FSRData::RFsrBL;
-    id1 = FSRData::RFsrBR;
-    id2 = FSRData::RFsrFL;
-    id3 = FSRData::RFsrFR;
-  } else
+    const Vector3d* positions = NaoInfo::FSRPositionsRight;
+    std::vector<double>& values = theFSRData.dataRight;
+
+    calFSRForce(f, fx, fy, positions, values, id0, id1, id2);
+    calFSRForce(f, fx, fy, positions, values, id1, id2, id3);
+    calFSRForce(f, fx, fy, positions, values, id2, id3, id0);
+    calFSRForce(f, fx, fy, positions, values, id3, id0, id1);
+  } 
+  else
   {
     cerr << "unknow ForceResistancePerceptor name: " << name << endl;
     return false;
   }
-
-  double f = F[2] / 4;
-  double fx = f * (C[1]*1000 + 30);
-  double fy = f * (-C[0]*1000);
-  calFSRForce(f, fx, fy, id0, id1, id2);
-  calFSRForce(f, fx, fy, id1, id2, id3);
-  calFSRForce(f, fx, fy, id2, id3, id0);
-  calFSRForce(f, fx, fy, id3, id0, id1);
 
   return true;
 }
@@ -1082,12 +1102,16 @@ Vector3d SimSparkController::decomposeForce(double f, double fx, double fy, cons
   return A.invert() * Vector3d(f, fx, fy);
 }
 
-void SimSparkController::calFSRForce(double f, double x, double y, FSRData::FSRID id0, FSRData::FSRID id1, FSRData::FSRID id2)
+void SimSparkController::calFSRForce(
+  double f, double x, double y,
+  const Vector3d* positions,
+  std::vector<double>& values,
+  FSRData::SensorID id0, FSRData::SensorID id1, FSRData::SensorID id2)
 {
-  Vector3d F = decomposeForce(f, x, y, NaoInfo::FSRPositions[id0], NaoInfo::FSRPositions[id1], NaoInfo::FSRPositions[id2]);
-  theFSRData.data[id0] += F.x;
-  theFSRData.data[id1] += F.y;
-  theFSRData.data[id2] += F.z;
+  Vector3d F = decomposeForce(f, x, y, positions[id0], positions[id1], positions[id2]);
+  values[id0] += F.x;
+  values[id1] += F.y;
+  values[id2] += F.z;
 }
 
 bool SimSparkController::updateSee(VirtualVision& virtualVision, const sexp_t* sexp)
@@ -1261,10 +1285,6 @@ void SimSparkController::get(GyrometerData& data)
 
 void SimSparkController::get(FSRData& data)
 {
-  for (int i = 0; i < FSRData::numOfFSR; i++)
-  {
-    theFSRData.force[i] = Math::clamp(theFSRData.data[i], 0.0, 25.0);
-  }
   data = theFSRData;
 }
 
@@ -1417,7 +1437,7 @@ void SimSparkController::say()
   }
 
   // make sure all robot have chance to say something
-  if ( ( static_cast<int>(floor(theSenseTime*1000/getBasicTimeStep()/2)) % theGameInfo.playersPerTeam) +1 != theGameInfo.playersPerTeam ) {
+  if ( ( static_cast<int>(floor(theSenseTime*1000/getBasicTimeStep()/2)) % theGameInfo.playersPerTeam) +1 != theGameInfo.playerNumber ) {
     return;
   }
 
@@ -1441,7 +1461,8 @@ bool SimSparkController::hear(const sexp_t* sexp)
     return false;
   }
 
-  sexp = sexp->next;
+  // in new simspark version (0.6.8+) an additional "team" field was added!
+  sexp = sexp->next; // direction or teamname
   /*
   std::string direction;
   double dir;
@@ -1468,6 +1489,13 @@ bool SimSparkController::hear(const sexp_t* sexp)
   sexp = sexp->next;
   string msg;
   SexpParser::parseValue(sexp, msg);
+
+  // we got the "correct" msg value, if we - at least - got the SPL-message size!
+  if(msg.size() < (sizeof(SPLStandardMessage) - SPL_STANDARD_MESSAGE_DATA_SIZE)) {
+      // ... otherwise we have to read another field/value! (simspark 0.6.8+)
+      sexp = sexp->next;
+      SexpParser::parseValue(sexp, msg);
+  }
 
   if ( !msg.empty() && msg != ""){
     theTeamMessageDataIn.data.push_back(msg);

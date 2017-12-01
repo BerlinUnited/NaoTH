@@ -22,7 +22,9 @@ def parse_arguments(argv):
     except getopt.GetoptError:
         print('ExportImages.py -i <input file> -o <output directory>')
         sys.exit(2)
-        
+    if opts == []:
+        print('ExportImages.py -i <input file>')
+        sys.exit(2)    
     for opt, arg in opts:
         if opt == '-h':
             print('ExportImages.py -i <input file> -o <output directory>')
@@ -51,7 +53,7 @@ def get_x_angle(m):
 
 def get_y_angle(m):
     c = m.rotation
-    h = math.sqrt(c[2].y * c[2].y + c[2].z * c[2].z)
+    h = math.sqrt(c[0].x * c[0].x + c[0].z * c[0].z)
     
     if h > 0:
         if c[0].z > 0:

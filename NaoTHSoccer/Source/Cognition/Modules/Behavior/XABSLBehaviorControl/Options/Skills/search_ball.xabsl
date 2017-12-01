@@ -7,12 +7,14 @@ option search_ball
     decision {
       if(ball.know_where_itis)
         goto finish;
-      else if(state_time > 1500)
+      else //if(state_time > 2000)
       {
-        goto start;
+        //goto start;
+        if(ball.preview.y > 0)
+          goto search_ball_rot_left;
+        else
+          goto search_ball_rot_right;
       }
-      else
-        stay;
     }
     action {
       motion.type = walk;
@@ -39,6 +41,7 @@ option search_ball
         stay;
     }
     action {
+      path.routine = none;
       motion.type = stand;
       head.control_mode = search_for_ball;
     }
@@ -80,6 +83,7 @@ option search_ball
     }
     action {
       search_ball_simple(search_direction = left);
+      motion.walk.style = stable;
     }
   }
 
@@ -93,6 +97,7 @@ option search_ball
     }
     action {
       search_ball_simple(search_direction = right);
+      motion.walk.style = stable;
     }
   }
 

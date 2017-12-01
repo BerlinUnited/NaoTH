@@ -1,4 +1,4 @@
- /* 
+ /*
  * File:   DCMHandler.h
  * Author: Oliver Welter (welter@informatik.hu-berlin.de)
  *
@@ -9,16 +9,19 @@
 #define	_DCMHANDLER_H
 
 #include <string>
-#include <sstream>
-#include <iostream>
 
 #include <boost/shared_ptr.hpp>
 #include <alvalue/alvalue.h>
 
+#include <alcommon/albroker.h>
+#include <alproxies/dcmproxy.h>
+
+#include <alproxies/almemoryproxy.h>
+// TODO: why don't we use fastmemoryaccess anymore?
+//http://doc.aldebaran.com/2-1/dev/cpp/examples/sensors/fastgetsetdcm/fastgetsetexample.html?highlight=almemoryfastaccess
+//#include <almemoryfastaccess/almemoryfastaccess.h>
+
 #include "Tools/IPCData.h"
-
-#include "alincludes.h"
-
 #include "DCM_led.h"
 
 namespace naoth
@@ -40,7 +43,7 @@ private:
   std::string DCMPath_SensorJointPosition[JointData::numOfJoint];
   std::string DCMPath_SensorJointElectricCurrent[JointData::numOfJoint];
   std::string DCMPath_SensorJointTemperature[JointData::numOfJoint];
-    
+
   //FSR
   std::string DCMPath_FSR_Left[FSRData::numOfFSR];
   std::string DCMPath_FSR_Right[FSRData::numOfFSR];
@@ -60,7 +63,7 @@ private:
   //IR
   std::string DCMPath_IRSend[IRSendData::numOfIRSend];
   std::string DCMPath_IRReceive[IRReceiveData::numOfIRReceive];
-    
+
   //UltraSound
   std::string DCMPath_UltraSoundReceive;
   std::string DCMPath_UltraSoundReceiveLeft[UltraSoundReceiveData::numOfUSEcho];
@@ -75,11 +78,11 @@ private:
   std::string DCMPath_BatteryCharge;
   std::string DCMPath_BatteryCurrent;
   std::string DCMPath_BatteryTemperature;
-  
+
   //State of the devices
   std::string DCMPath_DeviceState;
 
-  // 
+  //
   std::string allSensorsList[numOfSensors];
 
 
@@ -94,7 +97,7 @@ private:
   * For multiple data use al_memory->getListData() directly
   */
   AL::ALValue getFromALMemory(const std::string& path);
-  
+
   void sendToDCM(const std::string& path, const double value, const int timestamp);
 
   void initFSR();
@@ -113,10 +116,10 @@ private:
   void initAllSensorData();
 
 public:
-  // 
+  //
   float* sensorPtrs[numOfSensors];
 
-  // remember last commands (needed by "smart" methods) 
+  // remember last commands (needed by "smart" methods)
   MotorJointData lastMotorJointData;
 
 
@@ -131,9 +134,9 @@ public:
 
   // read sensor data from AL memory
   void readSensorData(float* dest);
-    
+
   void setSingleMotorData(const JointData::JointID jointID, const MotorJointData *theMotorJointData, int dcmTime);
-    
+
   void setAllPositionData(const MotorJointData& mjd, int dcmTime);
   void setAllHardnessData(const MotorJointData& mjd, int dcmTime);
   void setAllHardnessData(double value, int dcmTime);
@@ -149,4 +152,3 @@ public:
 
 }//end namespace naoth
 #endif	/* _DCMHANDLER_H */
-

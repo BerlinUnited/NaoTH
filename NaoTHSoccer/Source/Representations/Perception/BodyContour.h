@@ -92,26 +92,37 @@ public:
 
   Vector2i getCellCoord(const Vector2i& point) const
   {
-    Vector2i cell;
-    cell.x = point.x / stepSize;
-    cell.y = point.y / stepSize;
-    if (cell.x == xDensity) {
-      cell.x = cell.x - 1;
-    }
-    if (cell.y == yDensity) {
-      cell.y = cell.y - 1;
-    }
-    return cell;
+    return getCellCoord(point.x, point.y);
+  }
+
+  Vector2i getCellCoord(const unsigned x, const unsigned y) const
+  {
+    // this is allways true for unsigned x and unsigned y
+    //ASSERT(x >= 0 && y >= 0)
+    ASSERT(x < (unsigned)cameraResolution.x && y < (unsigned)cameraResolution.y);
+    return Vector2i(x / stepSize, y / stepSize);
   }
 
   inline const Grid& getGrid() const {
     return grid;
   }
 
+  const Cell& getCellFromImageCoords(const Vector2i& point) const
+  {
+    return getCell(point.x/stepSize, point.y/stepSize);
+  }
+
   const Cell& getCell(const Vector2i& point) const
   {
-    ASSERT(point.x > -1 && point.y > -1 && point.x < xDensity && point.y < yDensity);
-    return grid[point.x][point.y];
+    return getCell(point.x, point.y);
+  }
+
+  const Cell& getCell(const unsigned x, const unsigned y) const
+  {
+    // this is allways true for unsigned x and unsigned y
+    //ASSERT(x >= 0 && y >= 0)
+    ASSERT(x < (unsigned)xDensity && y < (unsigned)yDensity);
+    return grid[x][y];
   }
 
   void setCell(int x, int y, BodyPartID id, bool value)
@@ -121,16 +132,27 @@ public:
     grid[x][y].occupied = value;
   }
 
+  bool isOccupied(const unsigned x, const unsigned y) const
+  {
+    if (grid.empty()) {
+      return false;
+    }
+
+    ASSERT(x < (unsigned)cameraResolution.x);
+    ASSERT(y < (unsigned)cameraResolution.y);
+
+    return grid[x/stepSize][y/stepSize].occupied;
+  }
+
   bool isOccupied(const Vector2i& point) const
   {
-    Vector2i temp = getCellCoord(point);
-    return !grid.empty() && grid[temp.x][temp.y].occupied;
+    return isOccupied(point.x, point.y);
   }
 
   Vector2i getFirstFreeCell(const Vector2i& start) const
   {
     ASSERT(start.x >= 0 && start.x < cameraResolution.x && start.y >= 0 && start.y < cameraResolution.y);
-    Vector2i cell_coord = getCellCoord(start);
+    Vector2i cell_coord(start.x/stepSize, start.y/stepSize);
     
     // do nothing if the cell is free
     if(!grid[cell_coord.x][cell_coord.y].occupied) {

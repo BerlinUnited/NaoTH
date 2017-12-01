@@ -25,6 +25,13 @@
 *.properties text
 *.form   text
 *.html   text
+*.xabsl  text
+
+# keep the message files allways lf
+*_pb2.py text eol=lf
+*.pb.h   text eol=lf
+*.pb.cc  text eol=lf
+RobotControl/RobotConnector/src/de/naoth/rc/messages/*  text eol=lf
 
 # Images should be treated as binary
 # (binary is a macro for -text -diff)

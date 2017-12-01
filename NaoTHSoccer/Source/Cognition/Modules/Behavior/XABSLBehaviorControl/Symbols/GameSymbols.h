@@ -42,7 +42,6 @@ private:
   static double getPlayerNumber();
   static double getMsecsRemaining();
   static int getGameState();
-  //static int getPlayMode();
 
 };//end class GameSymbols
 

@@ -23,26 +23,26 @@ option decide_and_go_to_passive_position_after_penalized
   // 3
   state goto_passive_position_striker {
     decision {
-      stay;
+        stay;
     }
     action {
       go_to_and_keep_passive_position(
-        x  = field.centerCircleRadius,
-        y  = field.yPosLeftPenaltyArea, 
-        rot= 0);
+        x  =(field.xPosOppPenaltyMark + field.centerCircleRadius)/2,
+        y = field.yPosRightGoal, 
+        rot = 140);
     }
   }
 
   // 5
   state goto_passive_position_supporter {
     decision {
-      stay;
+        stay;
     }
     action {
       go_to_and_keep_passive_position(
-        x  =(field.xPosOppPenaltyMark + field.centerCircleRadius)/2,
-        y = field.yPosRightFlank, 
-        rot = 140);
+        x = -field.centerCircleRadius,
+        y = -field.centerCircleRadius/2, 
+        rot = 0);
     }
   }
 
@@ -52,9 +52,10 @@ option decide_and_go_to_passive_position_after_penalized
     }
     action {
       go_to_and_keep_passive_position(
-        x =(field.xPosOwnPenaltyMark+field.centerCircleRadius)/2, 
-        y =field.yPosRightPenaltyArea, 
+        x=field.xPosOwnPenaltyMark, 
+        y=field.yPosRightGoal+400, 
         rot=0);
+
     }
   }
 
@@ -64,9 +65,11 @@ option decide_and_go_to_passive_position_after_penalized
     }
     action {
       go_to_and_keep_passive_position(
-        x = field.xPosOwnPenaltyMark + 500, 
-        y = field.yPosLeftGoal, 
-        rot=-15);
+        x=field.xPosOwnPenaltyMark + 500, 
+        y=field.yPosLeftGoal-400,
+        rot=0);
     }
   }
+
+
 }

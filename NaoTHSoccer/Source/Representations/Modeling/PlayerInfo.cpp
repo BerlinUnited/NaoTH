@@ -5,6 +5,7 @@
 //
 
 #include "PlayerInfo.h"
+#include "PlatformInterface/Platform.h"
 
 using namespace naoth;
 using namespace std;
@@ -17,7 +18,8 @@ PlayerInfo::PlayerInfo()
   teamColor(naoth::GameData::unknown_team_color),
   kickoff(false),
   robotState(initial),
-  isPlayingStriker(false)
+  isPlayingStriker(false),
+  scheme(Platform::getInstance().theScheme)
 {
 }
 
@@ -52,5 +54,6 @@ void PlayerInfo::print(ostream& stream) const
   stream << "kickoff = " << (kickoff?"yes":"no") << endl;
   stream << "robotState = " << toString(robotState) << endl;
   stream << "isPlayingStriker = " << (isPlayingStriker?"yes":"no") << endl;
+  stream << "active scheme = " << (scheme.empty()?"-":scheme) << std::endl;
 }
 

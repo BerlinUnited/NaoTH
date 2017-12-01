@@ -52,6 +52,7 @@ BEGIN_DECLARE_MODULE(Walk)
   REQUIRE(MotionRequest)
 
   REQUIRE(InertialSensorData)
+  REQUIRE(IMUData)
   REQUIRE(CalibrationData)
   REQUIRE(InertialModel)
   REQUIRE(GyrometerData)
@@ -184,6 +185,8 @@ private: // stabilization
   // needed by stabilization
   RingBuffer<InverseKinematic::CoMFeetPose, 10> commandPoseBuffer;
   RingBuffer<FootStep::Foot, 10> commandFootIdBuffer;
+
+  unsigned int emergencyCounter;
 
   void adaptStepSize(FootStep& step) const;
   void calculateError();

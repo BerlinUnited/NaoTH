@@ -64,6 +64,13 @@ public:
   /** Whether the behavior decided to play as striker */
   bool isPlayingStriker;
 
+  /** the currently used scheme. */
+  std::string scheme;
+
+  bool isGoalie() const {
+      return playerNumber == 1;
+  }
+
   static std::string toString(RobotState value);
 
   virtual void print(std::ostream& stream) const;

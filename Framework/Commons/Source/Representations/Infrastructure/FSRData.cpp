@@ -38,7 +38,7 @@ void FSRData::print(ostream& stream) const
             << dataLeft[i] << " ";
   }
 
-  stream << "Right:"<< std::endl;
+  stream << std::endl << "Right:" << std::endl;
   for(int i = 0; i < numOfFSR; i++) {
     stream  << getFSRName((SensorID)i) << " : " 
             << dataRight[i] << " ";

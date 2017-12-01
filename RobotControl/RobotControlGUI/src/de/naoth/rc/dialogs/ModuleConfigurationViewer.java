@@ -26,12 +26,17 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.stream.Collectors;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JCheckBox;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
+import javax.swing.tree.TreePath;
 import net.xeoh.plugins.base.annotations.events.Init;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
@@ -132,7 +137,8 @@ public class ModuleConfigurationViewer extends AbstractDialog
      */
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
-    private void initComponents() {
+    private void initComponents()
+    {
 
         fileChooser = new de.naoth.rc.components.ExtendedFileChooser();
         jToolBar1 = new javax.swing.JToolBar();
@@ -163,8 +169,10 @@ public class ModuleConfigurationViewer extends AbstractDialog
         jToggleButtonRefresh.setFocusable(false);
         jToggleButtonRefresh.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jToggleButtonRefresh.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jToggleButtonRefresh.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
+        jToggleButtonRefresh.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
                 jToggleButtonRefreshActionPerformed(evt);
             }
         });
@@ -175,8 +183,10 @@ public class ModuleConfigurationViewer extends AbstractDialog
         btExport.setFocusable(false);
         btExport.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btExport.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        btExport.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
+        btExport.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
                 btExportActionPerformed(evt);
             }
         });
@@ -187,8 +197,10 @@ public class ModuleConfigurationViewer extends AbstractDialog
         btSave.setFocusable(false);
         btSave.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btSave.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        btSave.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
+        btSave.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
                 btSaveActionPerformed(evt);
             }
         });
@@ -199,16 +211,20 @@ public class ModuleConfigurationViewer extends AbstractDialog
         btSend.setFocusable(false);
         btSend.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btSend.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        btSend.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
+        btSend.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
                 btSendActionPerformed(evt);
             }
         });
         jToolBar1.add(btSend);
 
         cbProcess.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Cognition", "Motion" }));
-        cbProcess.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
+        cbProcess.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
                 cbProcessActionPerformed(evt);
             }
         });
@@ -216,8 +232,10 @@ public class ModuleConfigurationViewer extends AbstractDialog
 
         cbModules.setEditable(true);
         cbModules.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "<empty>" }));
-        cbModules.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
+        cbModules.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
                 cbModulesActionPerformed(evt);
             }
         });
@@ -225,8 +243,10 @@ public class ModuleConfigurationViewer extends AbstractDialog
 
         cbRepresentations.setEditable(true);
         cbRepresentations.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "<empty>" }));
-        cbRepresentations.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
+        cbRepresentations.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
                 cbRepresentationsActionPerformed(evt);
             }
         });
@@ -456,14 +476,33 @@ public class ModuleConfigurationViewer extends AbstractDialog
     Plugin.moduleConfigurationManager.removeListener(this);
     }
 
+    private void nodeExpander(String strPath, String sep) {
+        ArrayList<Object> oPath = new ArrayList<>();
+        String[] parts = strPath.split(sep);
+        List<SelectableTreeNode> nodes = Arrays.asList(moduleConfigTree.getRootNode());
+
+        for (String part : parts) {
+            for (SelectableTreeNode node : nodes) {
+                if (node.getText().equals(part)) {
+                    oPath.add(node);
+                    nodes = Collections.list(node.children());
+                    break;
+                }
+            }
+        }
+        moduleConfigTree.expandPath(new TreePath(oPath.toArray()));
+    }
+
     @Override
-    public void newObjectReceived(final ModuleConfiguration graph
-    )
+    public void newObjectReceived(final ModuleConfiguration graph)
     {
         this.moduleGraph = graph;
+        // get expanded nodes
+        Enumeration<TreePath> expendedNodes = moduleConfigTree.getExpandedDescendants(new TreePath(moduleConfigTree.getModel().getRoot()));
 
         this.cbModules.removeAllItems();
         this.cbRepresentations.removeAllItems();
+        this.moduleConfigTree.clear(); // clear before adding/updating new ones
 
         ArrayList<Node> modules = new ArrayList<Node>();
         ArrayList<Node> representations = new ArrayList<Node>();
@@ -503,8 +542,17 @@ public class ModuleConfigurationViewer extends AbstractDialog
         this.cbModulesSearch.revalidateModel();
         this.cbRepresentationsSearch.revalidateModel();
 
+        moduleConfigTree.cleanTree();
         moduleConfigTree.expandPath(processName, ':');
         moduleConfigTree.repaint();
+        // previously expended nodes ...
+        if (expendedNodes != null) {
+            // get "restored"
+            while (expendedNodes.hasMoreElements()) {
+                String path = Arrays.stream(expendedNodes.nextElement().getPath()).map((t) -> { return t.toString(); }).collect(Collectors.joining(":"));
+                nodeExpander(path, ":");
+            }
+        }
 
         //check for unprovided or not required Representations
         makeCheck();
