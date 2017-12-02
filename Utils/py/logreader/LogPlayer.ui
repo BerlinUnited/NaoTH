@@ -26,7 +26,7 @@
     <string>Play/Pause</string>
    </property>
   </widget>
-  <widget class="QSlider" name="horizontalSlider">
+  <widget class="QSlider" name="seekSlider">
    <property name="geometry">
     <rect>
      <x>140</x>
@@ -42,10 +42,10 @@
   <widget class="QLCDNumber" name="frameCounter">
    <property name="geometry">
     <rect>
-     <x>540</x>
+     <x>453</x>
      <y>100</y>
-     <width>64</width>
-     <height>23</height>
+     <width>151</width>
+     <height>51</height>
     </rect>
    </property>
   </widget>
