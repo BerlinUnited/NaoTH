@@ -7,8 +7,7 @@ from google.protobuf import text_format
 
 import mmap
 
-from threading import Lock
-
+import os
 import struct
 
 
@@ -35,8 +34,6 @@ class LogScanner:
     def __init__(self, logFile):
         self.logFile = logFile
         self.scanPosition = 0
-
-        self.lock = Lock()
 
     def __readBytes(self, N):
         if N == 0:
@@ -65,26 +62,24 @@ class LogScanner:
       return string
 
     def scanFrameMember(self):
-        with self.lock:
-            self.logFile.seek(self.scanPosition)
+        self.logFile.seek(self.scanPosition)
 
-            # read message header
-            frameNumber = self.__readLong()
+        # read message header
+        frameNumber = self.__readLong()
 
-            name = self.__readString()
-            message_size = self.__readLong()
+        name = self.__readString()
+        message_size = self.__readLong()
+        # TODO: create a more verbose representation
+        dataPos = (self.logFile.tell(), message_size, None)
 
-            dataPos = (self.logFile.tell(), message_size, None)
-
-            # skip data
-            self.scanPosition = self.logFile.tell() + message_size
+        # skip data
+        self.scanPosition = self.logFile.tell() + message_size
 
         return frameNumber, name, dataPos
 
     def scanFrame(self, position, size):
-        with self.lock:
-            self.logFile.seek(position)
-            data = self.__readBytes(size)
+        self.logFile.seek(position)
+        data = self.__readBytes(size)
 
         return data
 
@@ -111,15 +106,16 @@ class Frame:
 
     return message
 
-
-from functools import wraps
-
 class LogReader:
     def __init__(self, path, parser=LogParser(), filter=lambda x: x):
         self.fileptr = open(path, "rb")
 
-        # TODO: test this on windows!
-        self.logFile = mmap.mmap(self.fileptr.fileno(), 0, prot=mmap.PROT_READ)
+        # TODO: test this on all platforms
+        if os.name == 'nt':
+          # WINDOWS needs it to be:
+          self.logFile = mmap.mmap(self.fileptr.fileno(), 0, access=mmap.ACCESS_READ)
+        else:
+          self.logFile = mmap.mmap(self.fileptr.fileno(), 0, prot=mmap.PROT_READ)
 
         self.scanner = LogScanner(self.logFile)
         self.parser = parser
@@ -180,5 +176,8 @@ class LogReader:
 
 if __name__ == "__main__":
     with LogReader("./cognition.log") as log:
+        print(log[100]["FrameInfo"])
+
+
         for frame in log.read():
             print(frame["FrameInfo"])
