@@ -1,157 +1,107 @@
 import sys
-from PyQt4 import QtGui, uic
-from PyQt4.phonon import Phonon
+from PyQt5.QtWidgets import QApplication, QWidget
 
-import LogPlayerForm
+from LogPlayerForm import Ui_PlayerForm
 
-from multiprocessing import Process, Queue, Pipe
-from threading import Thread
+from threading import Thread, Lock
+from queue import Queue
 
 import numpy as np
 
 import time
 
-from enum import Enum
-
 
 class LogPlayerHelper:
 
-    def __init__(self, logReader):
-        # decorate LogReader read and exit fuctions
+    def __init__(self, logReader, worker_func):
+        # decorate LogReader read function
         self.logRead = logReader.read
         logReader.read = self.read
 
-        self.logClose = logReader.close
-        logReader.close = self.close
-
         self.logReader = logReader
-
-        self.isClosed = False
 
         # scan frames in log
         for frame in self.logRead():
             pass
 
-        # create ui connections
-        self.log_conn, self.ui_conn = Pipe()
+        # queue to post seek slider events
+        self.seekQueue = Queue()
+        self.playLock = Lock()
 
         # create gui
-        self.guiProcess = GuiCreator((0, len(logReader.frames)), self.log_conn, self.ui_conn)
-        self.guiProcess.start()
+        self.app = QApplication(sys.argv)
+        self.form = PlayerWindow(self.seekQueue, self.playLock)
 
+        # TODO: Don't access logReader.frames directly
+        self.form.setSliderInterval(0, len(self.logReader.frames))
 
-    def close(self):
-        self.guiProcess.join()
-        #self.loaderThread.join()
-        print('joined!')
+        self.uiRunning = True
 
-        self.logClose()
+        worker = Thread(target = worker_func)
+        worker.start()
+
+        self.form.show()
+        # wait for ui to exit
+        self.app.exec_()
+        self.uiRunning = False
+        worker.join()
 
 
     def read(self):
-        #TODO: cleanup
-
         i=0
-        while i < len(self.logReader.frames):
+        while self.uiRunning:
+            # block if user pauses
+            with self.playLock:
+                pass
+
+            if not self.seekQueue.empty():
+                i = self.seekQueue.get()
+            while i >= len(self.logReader.frames):
+                i = self.seekQueue.get()
+
             frame = self.logReader[i]
 
-            newSliderPos = -1
-
-            while self.ui_conn.poll():
-                event =  self.ui_conn.recv()
-
-                if isinstance(event, bool):
-                    if event:
-                        continue
-                    while self.ui_conn.poll(None):
-                        event =  self.ui_conn.recv()
-
-                        if isinstance(event, bool):
-                            if event:
-                                break
-                        elif isinstance(event, int):
-                            newSliderPos = event
-
-                elif isinstance(event, int):
-                    newSliderPos = event
-
-            if newSliderPos != -1:
-                i = newSliderPos
-
-
-
-            self.ui_conn.send((i, frame["FrameInfo"].frameNumber))
+            self.form.setSliderPos(i, frame["FrameInfo"].frameNumber)
             yield frame
             i+=1
 
-class GuiCreator(Process):
+class PlayerWindow(QWidget):
+    def __init__(self, seekQueue, playLock):
+        super(PlayerWindow, self).__init__()
 
-    def __init__(self, slider_range, log_conn, ui_conn):
-        super(GuiCreator, self).__init__()
+        self.ui = Ui_PlayerForm()
 
-        self.app = QtGui.QApplication(sys.argv)
-        self.form = PlayerWindow(log_conn)
+        self.ui.setupUi(self)
+        self.ui.playButton.clicked.connect(self.playButton_clicked)
 
-        self.form.setSliderInterval(*slider_range)
+        self.ui.seekSlider.sliderReleased.connect(self.seek)
 
-        self.callbackManager = CallbackManager(self.form, log_conn, self.form.setSliderPos)
-
-    def run(self):
-        self.form.show()
-        self.callbackManager.start()
-
-        self.app.exec_()
-
-
-class CallbackManager(Thread):
-    def __init__(self, form, log_conn, setSliderPos):
-        Thread.__init__(self)
-
-        self.setSliderPos = setSliderPos
-
-        self.form = form
-        self.log_conn = log_conn
-
-    def run(self):
-        while 1:
-            # wait for slider update
-            self.setSliderPos(*self.log_conn.recv())
-
-class PlayerWindow(QtGui.QMainWindow, LogPlayerForm.Ui_PlayerForm):
-    def __init__(self, log_conn, parent=None):
-        super(PlayerWindow, self).__init__(parent)
-        self.setupUi(self)
-        self.playButton.clicked.connect(self.playButton_clicked)
-
-        self.seekSlider.sliderReleased.connect(self.seek)
-
-        self.log_conn = log_conn
+        self.seekQueue = seekQueue
+        self.playLock = playLock
 
         self.isPlaying = True
 
     def setSliderPos(self, i, frameNumber):
 
-        if not self.seekSlider.isSliderDown():
-            self.seekSlider.setValue(i)
+        if not self.ui.seekSlider.isSliderDown():
+            self.ui.seekSlider.setValue(i)
 
         # update lcd display
-        self.frameCounter.display(frameNumber)
+        self.ui.frameCounter.display(frameNumber)
 
     def seek(self):
-        self.log_conn.send(self.seekSlider.value())
+        self.seekQueue.put(self.ui.seekSlider.value())
 
     def setSliderInterval(self, a, b):
-        self.seekSlider.setMinimum(a)
-        self.seekSlider.setMaximum(b)
+        self.ui.seekSlider.setMinimum(a)
+        self.ui.seekSlider.setMaximum(b)
 
     def playButton_clicked(self):
         if self.isPlaying:
-            print("PAUSE")
-            self.log_conn.send(False)
+            self.playLock.acquire()
             self.isPlaying = False
         else:
-            print("PLAY")
-            self.log_conn.send(True)
+            self.playLock.release()
             self.isPlaying = True
 
 if __name__ == '__main__':
@@ -159,9 +109,11 @@ if __name__ == '__main__':
 
     with LogReader("./cognition.log") as log:
 
-        LogPlayerHelper(log)
+        def worker():
+            for frame in log.read():
+                print(frame["FrameInfo"])
+                # doing some serious work
+                time.sleep(0.1)
 
-        for frame in log.read():
-            print(frame["FrameInfo"])
-            # doing some serious work
-            time.sleep(0.5)
+        # spawn log player
+        LogPlayerHelper(log, worker)

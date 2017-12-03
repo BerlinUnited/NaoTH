@@ -11,44 +11,38 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Form</string>
+   <string>LogPlayer</string>
   </property>
-  <widget class="QPushButton" name="playButton">
-   <property name="geometry">
-    <rect>
-     <x>20</x>
-     <y>70</y>
-     <width>80</width>
-     <height>25</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Play/Pause</string>
-   </property>
-  </widget>
-  <widget class="QSlider" name="seekSlider">
-   <property name="geometry">
-    <rect>
-     <x>140</x>
-     <y>70</y>
-     <width>461</width>
-     <height>21</height>
-    </rect>
-   </property>
-   <property name="orientation">
-    <enum>Qt::Horizontal</enum>
-   </property>
-  </widget>
-  <widget class="QLCDNumber" name="frameCounter">
-   <property name="geometry">
-    <rect>
-     <x>453</x>
-     <y>100</y>
-     <width>151</width>
-     <height>51</height>
-    </rect>
-   </property>
-  </widget>
+  <property name="autoFillBackground">
+   <bool>false</bool>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout_2">
+   <item>
+    <layout class="QVBoxLayout" name="verticalLayout">
+     <item>
+      <widget class="QSlider" name="seekSlider">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout">
+       <item>
+        <widget class="QPushButton" name="playButton">
+         <property name="text">
+          <string>Play/Pause</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLCDNumber" name="frameCounter"/>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </item>
+  </layout>
  </widget>
  <resources/>
  <connections/>
