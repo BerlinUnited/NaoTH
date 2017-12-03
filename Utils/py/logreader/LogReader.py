@@ -119,10 +119,12 @@ class LogReader:
     def __init__(self, path, parser=LogParser(), filter=lambda x: x):
         self.fileptr = open(path, "rb")
 
-        # TODO: test this on windows!
-        self.logFile = mmap.mmap(self.fileptr.fileno(), 0, prot=mmap.PROT_READ)
-        # WINDOWS needs it to be:
-        #   self.logFile = mmap.mmap(self.fileptr.fileno(), 0, access=mmap.ACCESS_READ)
+        # TODO: test this on all platforms
+        if os.name == 'nt':
+          # WINDOWS needs it to be:
+          self.logFile = mmap.mmap(self.fileptr.fileno(), 0, access=mmap.ACCESS_READ)
+        else:
+          self.logFile = mmap.mmap(self.fileptr.fileno(), 0, prot=mmap.PROT_READ)
 
         self.scanner = LogScanner(self.logFile)
         self.parser = parser
