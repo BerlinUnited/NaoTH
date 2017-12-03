@@ -7,9 +7,7 @@ from google.protobuf import text_format
 
 import mmap
 
-# TODO: Does the LogReader need to be thread safe?
-from threading import Lock
-
+import os
 import struct
 
 
@@ -36,8 +34,6 @@ class LogScanner:
     def __init__(self, logFile):
         self.logFile = logFile
         self.scanPosition = 0
-
-        self.lock = Lock()
 
     def __readBytes(self, N):
         if N == 0:
@@ -66,26 +62,24 @@ class LogScanner:
       return string
 
     def scanFrameMember(self):
-        with self.lock:
-            self.logFile.seek(self.scanPosition)
+        self.logFile.seek(self.scanPosition)
 
-            # read message header
-            frameNumber = self.__readLong()
+        # read message header
+        frameNumber = self.__readLong()
 
-            name = self.__readString()
-            message_size = self.__readLong()
-            # TODO: create a more verbose representation
-            dataPos = (self.logFile.tell(), message_size, None)
+        name = self.__readString()
+        message_size = self.__readLong()
+        # TODO: create a more verbose representation
+        dataPos = (self.logFile.tell(), message_size, None)
 
-            # skip data
-            self.scanPosition = self.logFile.tell() + message_size
+        # skip data
+        self.scanPosition = self.logFile.tell() + message_size
 
         return frameNumber, name, dataPos
 
     def scanFrame(self, position, size):
-        with self.lock:
-            self.logFile.seek(position)
-            data = self.__readBytes(size)
+        self.logFile.seek(position)
+        data = self.__readBytes(size)
 
         return data
 
@@ -111,9 +105,6 @@ class Frame:
         self.messages[name] = (position, size, message)
 
     return message
-
-
-from functools import wraps
 
 class LogReader:
     def __init__(self, path, parser=LogParser(), filter=lambda x: x):
