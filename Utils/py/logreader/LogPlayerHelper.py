@@ -1,14 +1,22 @@
-import sys
 from PyQt5.QtWidgets import QApplication, QWidget
 
 from LogPlayerForm import Ui_PlayerForm
 
-from threading import Thread, Lock
+from threading import Thread, ThreadError, Lock
 from queue import Queue
 
-import numpy as np
-
 import time
+
+# call this function to create a QApplication and only start a LogPlayerHelper ui
+def spawnLogPlayer(logReader, worker_func):
+    app = QApplication([])
+    playerUI = LogPlayerHelper(logReader, worker_func)
+    playerUI.show()
+
+    # start application
+    app.exec_()
+
+    playerUI.close()
 
 
 class LogPlayerHelper:
@@ -29,7 +37,6 @@ class LogPlayerHelper:
         self.playLock = Lock()
 
         # create gui
-        self.app = QApplication(sys.argv)
         self.form = PlayerWindow(self.seekQueue, self.playLock)
 
         # TODO: Don't access logReader.frames directly
@@ -37,14 +44,20 @@ class LogPlayerHelper:
 
         self.uiRunning = True
 
-        worker = Thread(target = worker_func)
-        worker.start()
+        self.worker = Thread(target = worker_func)
+        self.worker.start()
 
+
+    def show(self):
         self.form.show()
-        # wait for ui to exit
-        self.app.exec_()
+
+    def close(self):
         self.uiRunning = False
-        worker.join()
+        try:
+            self.playLock.release()
+        except ThreadError:
+            pass
+        self.worker.join()
 
 
     def read(self):
@@ -115,5 +128,4 @@ if __name__ == '__main__':
                 # doing some serious work
                 time.sleep(0.1)
 
-        # spawn log player
-        LogPlayerHelper(log, worker)
+        spawnLogPlayer(log, worker)
