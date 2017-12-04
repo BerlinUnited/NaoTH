@@ -36,7 +36,7 @@ deployDirectory() {
 		# backup directory files
 		if [ -d "$DIR" ]; then
 			mkdir -p $BACKUP_DIRECTORY/$DIR
-			mv -f $DIR $BACKUP_DIRECTORY/$DIR
+			mv -f $DIR/* $BACKUP_DIRECTORY/$DIR/
 		fi
 		# copy files
 		cp -r $DEPLOY_DIRECTORY/$DIR $DIR
