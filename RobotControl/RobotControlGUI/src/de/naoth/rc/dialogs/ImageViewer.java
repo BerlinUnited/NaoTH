@@ -261,8 +261,8 @@ public class ImageViewer extends AbstractDialog
 
     if (this.btReceiveImagesTop.isSelected())
     {
-      this.imageCanvasTop.setVisible(true);
-      Plugin.imageManagerTop.addListener(this.imageListenerTop);
+     this.imageCanvasTop.setVisible(true);
+     Plugin.imageManagerTop.addListener(this.imageListenerTop);
     }
     else
     {
@@ -289,7 +289,7 @@ public class ImageViewer extends AbstractDialog
               this.imageCanvasBottom.setShowDrawings(true);
               this.imageCanvasTop.setShowDrawings(true);
           } else {
-              this.btReceiveImagesTop.setSelected(false);
+              btReceiveDrawings.setSelected(false);
           }
       } else {
           Plugin.debugDrawingManager.removeListener(this.drawingsListener);

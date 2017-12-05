@@ -1,3 +1,4 @@
+import naoth
 import cv2
 import os
 import random

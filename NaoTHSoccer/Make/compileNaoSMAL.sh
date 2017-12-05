@@ -1,8 +1,8 @@
 echo "###### MAKE FILES ######" && \
-premake4 --platform=Nao gmake && \
+premake5 --platform=Nao gmake && \
 echo "###### C++ ######" && \
 cd ../build/ &&
-make -R config=optdebugnao NaoSMAL $@ && \
+make config=optdebug_nao NaoSMAL $@ && \
 cd ../Make/ && \
 echo "###### FINISH ######" && exit 0 \
 

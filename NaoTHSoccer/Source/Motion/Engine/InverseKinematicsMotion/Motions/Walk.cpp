@@ -251,7 +251,7 @@ void Walk::calculateNewStep(const Step& lastStep, Step& newStep, const WalkReque
   newStep.walkRequest = walkRequest;
 
   // STABILIZATION
-  bool do_emergency_stop = com_errors.size() == com_errors.getMaxEntries() && com_errors.getAverage() > parameters().stabilization.emergencyStopError;
+  bool do_emergency_stop = com_errors.isFull() && com_errors.getAverage() > parameters().stabilization.emergencyStopError;
 
   if ( getMotionRequest().id != getId() || (do_emergency_stop && !walkRequest.stepControl.isProtected))
   {
@@ -313,11 +313,11 @@ void Walk::calculateNewStep(const Step& lastStep, Step& newStep, const WalkReque
 
       if(parameters().step.dynamicDuration)
       {
-        if(walkRequest.character == 0.3) {
+        if(walkRequest.character <= 0.3) {
           duration = 300;
-        } else if(walkRequest.character == 0.7) {
+        } else if(walkRequest.character <= 0.7) {
           duration = 280;
-        } else if(walkRequest.character == 1) {
+        } else {// if(walkRequest.character == 1) {
           duration = 260;
         }
       }

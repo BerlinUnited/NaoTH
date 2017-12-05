@@ -9,7 +9,7 @@
 check_for_errors() {
 	if [ "$?" -ne 0 ]
 	then
-		sudo -u nao /usr/bin/paplay /home/nao/naoqi/Media/1.wav
+		sudo -u nao /usr/bin/paplay /home/nao/naoqi/Media/error_while_collecting_logs.wav
 		# if argument is available - write to systemlog
 		if [ ! -z "$1" ]
 		then
@@ -88,15 +88,19 @@ do
 done
 
 # copy the config directory
-cp -r /home/nao/naoqi/Config /media/brainwasher/$current_date-$current_nao
+cd /home/nao/naoqi
+zip -q -r -0 /media/brainwasher/$current_date-$current_nao/config.zip Config
+cd -
 check_for_errors "Brainwasher:ERROR copying config"
 
-# create dump folder and log errors
-mkdir -p /media/brainwasher/$current_date-$current_nao/dumps 2> $errorFile
-logger -f $errorFile
+# copy logs of naoth binary (std::out/::err) and clear them afterwards
+cp "/var/log/naoth.log" "/var/log/naoth_err.log" /media/brainwasher/$current_date-$current_nao/
+check_for_errors "Brainwasher:ERROR copying /var/log/naoth.log"
+> /var/log/naoth.log
+> /var/log/naoth_err.log
 
 # find and copy trace dump files since boot and log errors
-find /home/nao -maxdepth 1 -type f -mmin -$current_boot_time -iname "trace.dump.*" -exec cp {} /media/brainwasher/$current_date-$current_nao/dumps/ \; 2> $errorFile
+find /home/nao -maxdepth 1 -type f -mmin -$current_boot_time -iname "trace.dump.*" -exec zip -q -0 /media/brainwasher/$current_date-$current_nao/dumps.zip {} + 2> $errorFile
 logger -f $errorFile
 # if no error occurred, we can savely delete all trace dump files, which were previously copied
 if [ ! -s "$errorFile" ]; then
@@ -104,12 +108,8 @@ if [ ! -s "$errorFile" ]; then
   logger -f $errorFile
 fi
 
-# create whistle folder and log errors
-mkdir -p /media/brainwasher/$current_date-$current_nao/whistle 2> $errorFile
-logger -f $errorFile
-
 # find and copy whistle raw files and log errors
-find /tmp/ -maxdepth 1 -type f -iname "capture_*.raw" -exec cp {} /media/brainwasher/$current_date-$current_nao/whistle/ \; 2> $errorFile
+find /tmp/ -maxdepth 1 -type f -iname "capture_*.raw" -exec zip -q -0 /media/brainwasher/$current_date-$current_nao/whistle.zip {} + 2> $errorFile
 logger -f $errorFile
 # if no error occurred, we can savely delete all whistle files
 if [ ! -s "$errorFile" ]; then
@@ -124,7 +124,7 @@ rm $errorFile
 sync
 
 # needed to play sound before starting naoth! otherwise the sound could get "lost" (no sound)
-sudo -u nao /usr/bin/paplay /home/nao/naoqi/Media/nicknacknuck.wav
+sudo -u nao /usr/bin/paplay /home/nao/naoqi/Media/finished_collecting_logs.wav
 
 logger "Brainwasher:END, starting naoth"
 

@@ -263,7 +263,7 @@ public:
   */
   Pose2T& rotate(const T angle)
   {
-    rotation = Math::normalizeAngle(rotation+angle);
+    rotation = Math::normalize(rotation+angle);
     return *this;
   }
 

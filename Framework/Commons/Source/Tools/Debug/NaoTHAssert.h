@@ -20,6 +20,7 @@
 #include "Trace.h"
 
 #undef ASSERT
+#undef ASSERT_MSG
 #undef VERIFY
 #undef THROW
 
@@ -65,6 +66,7 @@
 #else //DEBUG
 /* ((void)0) - that's a do-nothing statement */
 #define ASSERT(cond) ((void)0)
+#define ASSERT_MSG(cond, msg) ((void)0)
 #define VERIFY(cond) ((void)(cond))
 #define THROW(msg) { std::cerr<<msg<<std::endl; }
 #endif //DEBUG

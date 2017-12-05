@@ -9,16 +9,19 @@
 #define	_DCMHANDLER_H
 
 #include <string>
-#include <sstream>
-#include <iostream>
 
 #include <boost/shared_ptr.hpp>
 #include <alvalue/alvalue.h>
 
+#include <alcommon/albroker.h>
+#include <alproxies/dcmproxy.h>
+
+#include <alproxies/almemoryproxy.h>
+// TODO: why don't we use fastmemoryaccess anymore?
+//http://doc.aldebaran.com/2-1/dev/cpp/examples/sensors/fastgetsetdcm/fastgetsetexample.html?highlight=almemoryfastaccess
+//#include <almemoryfastaccess/almemoryfastaccess.h>
+
 #include "Tools/IPCData.h"
-
-#include "alincludes.h"
-
 #include "DCM_led.h"
 
 namespace naoth
