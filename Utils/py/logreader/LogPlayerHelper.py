@@ -10,8 +10,11 @@ import time
 # call this function to create a QApplication and only start a LogPlayerHelper ui
 def spawnLogPlayer(logReader, worker_func):
     app = QApplication([])
-    playerUI = LogPlayerHelper(logReader, worker_func)
+    playerUI = LogPlayerHelper(logReader)
     playerUI.show()
+
+    worker = Thread(target = worker_func)
+    worker.start()
 
     # start application
     app.exec_()
@@ -21,7 +24,7 @@ def spawnLogPlayer(logReader, worker_func):
 
 class LogPlayerHelper:
 
-    def __init__(self, logReader, worker_func):
+    def __init__(self, logReader, block=True, loop=False):
         # decorate LogReader read function
         self.logRead = logReader.read
         logReader.read = self.read
@@ -36,6 +39,9 @@ class LogPlayerHelper:
         self.seekQueue = Queue()
         self.playLock = Lock()
 
+        self.block = block
+        self.loop = loop
+
         # create gui
         self.form = PlayerWindow(self.seekQueue, self.playLock)
 
@@ -43,10 +49,6 @@ class LogPlayerHelper:
         self.form.setSliderInterval(0, len(self.logReader.frames))
 
         self.uiRunning = True
-
-        self.worker = Thread(target = worker_func)
-        self.worker.start()
-
 
     def show(self):
         self.form.show()
@@ -57,20 +59,32 @@ class LogPlayerHelper:
             self.playLock.release()
         except ThreadError:
             pass
-        self.worker.join()
-
 
     def read(self):
+        frame = self.logReader[0]
         i=0
         while self.uiRunning:
-            # block if user pauses
-            with self.playLock:
-                pass
+            # user pauses
+            if self.block:
+                with self.playLock:
+                    pass
+            else:
+                if not self.form.isPlaying:
+                    yield frame
+                    continue
 
             if not self.seekQueue.empty():
                 i = self.seekQueue.get()
+
             while i >= len(self.logReader.frames):
-                i = self.seekQueue.get()
+                if self.loop:
+                    i = 0
+                elif self.block:
+                    # wait for slider change
+                    i = self.seekQueue.get()
+                else:
+                    i = len(self.logReader.frames)-1
+                    break
 
             frame = self.logReader[i]
 
