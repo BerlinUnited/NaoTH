@@ -14,6 +14,7 @@ unsigned long long max_counter = 1e6;
 Matrix3f inverse3x3;
 Matrix<float,6,6> inverse6x6;
 Matrix<float,4,100> y;
+Matrix<float,2,1> y2;
 
 void test_invert(){
     time_point begin;
@@ -103,6 +104,33 @@ void test_sse(){
 
     std::cout << std::endl;
     std::cout << "average time 4x4*4x100 float: " << sum.count()/max_counter << " ns" << std::endl;
+
+    sum = duration::zero();
+    counter = 0;
+
+    Matrix<float, 2,2> A2;
+    Matrix<float, 2,1> x2;
+
+    while (counter < max_counter ){
+        A2 << Matrix<float,2,2>::Random();
+        x2 << Matrix<float,2,1>::Random();
+
+        begin = std::chrono::high_resolution_clock::now();
+        y2 = A2*x2;
+        end = std::chrono::high_resolution_clock::now();
+
+        // we assume, that difference doesn't exeed the size of int
+        sum += end - begin;
+
+        counter++;
+
+        if(counter%(max_counter/10) == 0){
+            std::cout << "." << std::flush;
+        }
+    }
+
+    std::cout << std::endl;
+    std::cout << "average time 2x2*2x1 float: " << sum.count()/max_counter << " ns" << std::endl;
 }
 
 int main(int /*argc*/, char** /*argv*/){
