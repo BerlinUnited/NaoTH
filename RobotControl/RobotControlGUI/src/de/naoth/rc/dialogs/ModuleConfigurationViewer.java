@@ -24,14 +24,21 @@ import de.naoth.rc.server.Command;
 import de.naoth.rc.server.CommandSender;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Point;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.stream.Collectors;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JCheckBox;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
+import javax.swing.tree.TreePath;
 import net.xeoh.plugins.base.annotations.events.Init;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
@@ -471,14 +478,37 @@ public class ModuleConfigurationViewer extends AbstractDialog
     Plugin.moduleConfigurationManager.removeListener(this);
     }
 
+    private void nodeExpander(String strPath, String sep) {
+        ArrayList<Object> oPath = new ArrayList<>();
+        String[] parts = strPath.split(sep);
+        List<SelectableTreeNode> nodes = Arrays.asList(moduleConfigTree.getRootNode());
+
+        for (String part : parts) {
+            for (SelectableTreeNode node : nodes) {
+                if (node.getText().equals(part)) {
+                    oPath.add(node);
+                    nodes = Collections.list(node.children());
+                    break;
+                }
+            }
+        }
+        moduleConfigTree.expandPath(new TreePath(oPath.toArray()));
+    }
+
     @Override
-    public void newObjectReceived(final ModuleConfiguration graph
-    )
+    public void newObjectReceived(final ModuleConfiguration graph)
     {
         this.moduleGraph = graph;
+        // get expanded nodes
+        Enumeration<TreePath> expendedNodes = moduleConfigTree.getExpandedDescendants(new TreePath(moduleConfigTree.getModel().getRoot()));
+        // save last scrollbar position (viewport)
+        final Point scrollPosition = jScrollPane.getViewport().getViewPosition();
+        // save last selection
+        TreePath selection = moduleConfigTree.getSelectionPath();
 
         this.cbModules.removeAllItems();
         this.cbRepresentations.removeAllItems();
+        this.moduleConfigTree.clear(); // clear before adding/updating new ones
 
         ArrayList<Node> modules = new ArrayList<Node>();
         ArrayList<Node> representations = new ArrayList<Node>();
@@ -518,8 +548,27 @@ public class ModuleConfigurationViewer extends AbstractDialog
         this.cbModulesSearch.revalidateModel();
         this.cbRepresentationsSearch.revalidateModel();
 
+        moduleConfigTree.cleanTree();
         moduleConfigTree.expandPath(processName, ':');
         moduleConfigTree.repaint();
+        // previously expended nodes ...
+        if (expendedNodes != null) {
+            // get "restored"
+            while (expendedNodes.hasMoreElements()) {
+                String path = Arrays.stream(expendedNodes.nextElement().getPath()).map((t) -> { return t.toString(); }).collect(Collectors.joining(":"));
+                nodeExpander(path, ":");
+            }
+        }
+        // restore selection
+        if(selection != null) {
+            // we need to remove the root node ... :/
+            String path = Arrays.stream(selection.getPath()).map((t) -> { return t.toString(); }).collect(Collectors.joining(":"));
+            moduleConfigTree.selectNode(path.substring(moduleConfigTree.getModel().getRoot().toString().length()+1), ':');
+        }
+        // restore last scrollbar position (viewport)
+        SwingUtilities.invokeLater(() -> {
+            jScrollPane.getViewport().setViewPosition(scrollPosition);
+        });
 
         //check for unprovided or not required Representations
         makeCheck();
