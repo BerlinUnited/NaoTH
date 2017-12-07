@@ -8,9 +8,9 @@ from queue import Queue
 import time
 
 # call this function to create a QApplication and only start a LogPlayerHelper ui
-def spawnLogPlayer(logReader, worker_func):
+def spawnLogPlayer(logReader, worker_func, *args, **kwargs):
     app = QApplication([])
-    playerUI = LogPlayerHelper(logReader)
+    playerUI = LogPlayerHelper(logReader, *args, **kwargs)
     playerUI.show()
 
     worker = Thread(target = worker_func)
@@ -24,7 +24,7 @@ def spawnLogPlayer(logReader, worker_func):
 
 class LogPlayerHelper:
 
-    def __init__(self, logReader, block=True, loop=False):
+    def __init__(self, logReader, block=True, loop=False, realtime=False):
         # decorate LogReader read function
         self.logRead = logReader.read
         logReader.read = self.read
@@ -40,13 +40,16 @@ class LogPlayerHelper:
         self.playLock = Lock()
 
         self.block = block
-        self.loop = loop
 
         # create gui
         self.form = PlayerWindow(self.seekQueue, self.playLock)
 
         # TODO: Don't access logReader.frames directly
         self.form.setSliderInterval(0, len(self.logReader.frames))
+
+        self.form.ui.loopCheckBox.setChecked(loop)
+        self.form.ui.realTimeCheckBox.setChecked(realtime)
+        self.form.setRealTime()
 
         self.uiRunning = True
 
@@ -62,8 +65,17 @@ class LogPlayerHelper:
 
     def read(self):
         frame = self.logReader[0]
+
+        currentFrameTime = frame["FrameInfo"].time
+
+        timeMillis = lambda: int(round(time.time() * 1000))
+        systemTime = timeMillis()
+        updateTime = time.time()
+
         i=0
         while self.uiRunning:
+            userSeeked = False
+
             # user pauses
             if self.block:
                 with self.playLock:
@@ -75,20 +87,39 @@ class LogPlayerHelper:
 
             if not self.seekQueue.empty():
                 i = self.seekQueue.get()
+                userSeeked = True
 
             while i >= len(self.logReader.frames):
-                if self.loop:
+                if self.form.ui.loopCheckBox.isChecked():
                     i = 0
                 elif self.block:
                     # wait for slider change
                     i = self.seekQueue.get()
+                    userSeeked = True
                 else:
                     i = len(self.logReader.frames)-1
                     break
 
+            if not userSeeked and self.form.ui.realTimeCheckBox.isChecked():
+                timePassed = timeMillis() - systemTime
+                frameTimePassed = self.logReader[i]["FrameInfo"].time - currentFrameTime
+                frameTimePassed /= self.form.ui.multiplierBox.value()
+                if frameTimePassed > timePassed:
+                    if self.block:
+                        time.sleep((frameTimePassed-timePassed)/1000)
+                    else:
+                        yield frame
+                        continue
+
             frame = self.logReader[i]
 
+            systemTime = timeMillis()
+            currentFrameTime = frame["FrameInfo"].time
+
+            # TODO: The Slider freezes randomly if update in Thread
             self.form.setSliderPos(i, frame["FrameInfo"].frameNumber)
+            updateTime = time.time()
+
             yield frame
             i+=1
 
@@ -101,12 +132,19 @@ class PlayerWindow(QWidget):
         self.ui.setupUi(self)
         self.ui.playButton.clicked.connect(self.playButton_clicked)
 
+        #self.ui.multiplierBox.setEnabled(False)
+        self.ui.realTimeCheckBox.stateChanged.connect(self.setRealTime)
+
         self.ui.seekSlider.sliderReleased.connect(self.seek)
 
         self.seekQueue = seekQueue
         self.playLock = playLock
 
         self.isPlaying = True
+
+    def setRealTime(self):
+        isChecked = self.ui.realTimeCheckBox.isChecked()
+        self.ui.multiplierBox.setEnabled(isChecked)
 
     def setSliderPos(self, i, frameNumber):
 
@@ -140,6 +178,6 @@ if __name__ == '__main__':
             for frame in log.read():
                 print(frame["FrameInfo"])
                 # doing some serious work
-                time.sleep(0.1)
+                #time.sleep(0.1)
 
-        spawnLogPlayer(log, worker)
+        spawnLogPlayer(log, worker, realtime=True)

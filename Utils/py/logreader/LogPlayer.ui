@@ -29,14 +29,53 @@
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
-        <widget class="QPushButton" name="playButton">
-         <property name="text">
-          <string>Play/Pause</string>
-         </property>
-        </widget>
+        <layout class="QVBoxLayout" name="verticalLayout_3">
+         <item>
+          <widget class="QPushButton" name="playButton">
+           <property name="text">
+            <string>Play/Pause</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_2">
+           <item>
+            <widget class="QCheckBox" name="loopCheckBox">
+             <property name="text">
+              <string>loop</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="realTimeCheckBox">
+             <property name="text">
+              <string>realtime</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QSpinBox" name="multiplierBox">
+             <property name="toolTip">
+              <string>multiplier</string>
+             </property>
+             <property name="minimum">
+              <number>1</number>
+             </property>
+             <property name="maximum">
+              <number>10</number>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+        </layout>
        </item>
        <item>
-        <widget class="QLCDNumber" name="frameCounter"/>
+        <widget class="QLCDNumber" name="frameCounter">
+         <property name="toolTip">
+          <string>Current frame</string>
+         </property>
+        </widget>
        </item>
       </layout>
      </item>
