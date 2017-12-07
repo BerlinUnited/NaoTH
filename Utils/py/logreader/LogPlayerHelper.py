@@ -81,7 +81,7 @@ class LogPlayerHelper:
                 with self.playLock:
                     pass
             else:
-                if not self.form.isPlaying:
+                if self.playLock.locked():
                     yield frame
                     continue
 
@@ -89,16 +89,14 @@ class LogPlayerHelper:
                 i = self.seekQueue.get()
                 userSeeked = True
 
-            while i >= len(self.logReader.frames):
+            if i >= len(self.logReader.frames):
                 if self.form.ui.loopCheckBox.isChecked():
                     i = 0
-                elif self.block:
-                    # wait for slider change
-                    i = self.seekQueue.get()
                     userSeeked = True
                 else:
+                    self.form.playButton_clicked()
                     i = len(self.logReader.frames)-1
-                    break
+                    continue
 
             if not userSeeked and self.form.ui.realTimeCheckBox.isChecked():
                 timePassed = timeMillis() - systemTime
@@ -140,8 +138,6 @@ class PlayerWindow(QWidget):
         self.seekQueue = seekQueue
         self.playLock = playLock
 
-        self.isPlaying = True
-
     def setRealTime(self):
         isChecked = self.ui.realTimeCheckBox.isChecked()
         self.ui.multiplierBox.setEnabled(isChecked)
@@ -162,12 +158,10 @@ class PlayerWindow(QWidget):
         self.ui.seekSlider.setMaximum(b)
 
     def playButton_clicked(self):
-        if self.isPlaying:
-            self.playLock.acquire()
-            self.isPlaying = False
-        else:
+        if self.playLock.locked():
             self.playLock.release()
-            self.isPlaying = True
+        else:
+            self.playLock.acquire()
 
 if __name__ == '__main__':
     from LogReader import LogReader
