@@ -179,11 +179,10 @@ bool CameraMatrixCorrectorV2::calibrate()
   epsilon(11) = 1e2;
   epsilon(12) = 1e2;
   epsilon(13) = Math::pi_4/2;
+  double error;
 
-  std::tuple<Eigen::Matrix<double, 14, 1>, double> r_val = gn_minimizer.minimizeOneStep(*(theCamMatErrorFunction->getModuleT()),epsilon);
+  Eigen::Matrix<double, 14, 1> offset = gn_minimizer.minimizeOneStep(*(theCamMatErrorFunction->getModuleT()),epsilon,error);
 
-  Eigen::Matrix<double, 14, 1> offset = std::get<0>(r_val);
-  double error = std::get<1>(r_val);
   double de_dt = (error-last_error)/dt; // improvement per second
 
   if(last_error != 0){ //ignore the jump from zero to initial error value
@@ -222,7 +221,6 @@ bool CameraMatrixCorrectorV2::calibrateOnlyPose()
   double dt = getFrameInfo().getTimeInSeconds()-last_frame_info.getTimeInSeconds();
 
   // calibrate the camera matrix
-  Eigen::Matrix<double, 3, 1> offset;
   Eigen::Matrix<double, 3, 1> epsilon;
 
   double epsilon_pos = 1e2;
@@ -232,11 +230,10 @@ bool CameraMatrixCorrectorV2::calibrateOnlyPose()
   MODIFY("CameraMatrixV2:epsilon:angle", epsilon_angle);
 
   epsilon << epsilon_pos, epsilon_pos, epsilon_angle;
+  double error;
 
-  std::tuple<Eigen::Matrix<double, 3, 1>, double > r_val = gn_minimizer.minimizeOneStep(*(theCamMatErrorFunction->getModuleT()),epsilon);
+  Eigen::Matrix<double, 3, 1> offset = gn_minimizer.minimizeOneStep(*(theCamMatErrorFunction->getModuleT()),epsilon,error);
 
-  offset = std::get<0>(r_val);
-  double error = std::get<1>(r_val);
   double de_dt = (error-last_error)/dt; // improvement per second
 
   if(last_error != 0){ //ignore the jump from zero to initial error value
@@ -270,13 +267,10 @@ bool CameraMatrixCorrectorV2::calibrateOnlyOffsets()
   double dt = getFrameInfo().getTimeInSeconds()-last_frame_info.getTimeInSeconds();
 
   // calibrate the camera matrix
-  Eigen::Matrix<double, 11, 1> offset;
   Eigen::Matrix<double, 11, 1> epsilon = Eigen::Matrix<double, 11, 1>::Constant(1e-4);
+  double error;
+  Eigen::Matrix<double, 11, 1> offset = gn_minimizer.minimizeOneStep(*(theCamMatErrorFunction->getModuleT()),epsilon,error);
 
-  std::tuple<Eigen::Matrix<double, 11, 1>, double > r_val = gn_minimizer.minimizeOneStep(*(theCamMatErrorFunction->getModuleT()),epsilon);
-
-  offset = std::get<0>(r_val);
-  double error = std::get<1>(r_val);
   double de_dt = (error-last_error)/dt; // improvement per second
 
   if(last_error != 0){ //ignore the jump from zero to initial error value
