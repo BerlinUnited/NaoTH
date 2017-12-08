@@ -8,26 +8,70 @@
 
 #include <tuple>
 
-template<class ErrorFunction>
-
-class GaussNewtonMinimizer
+template<class ErrorFunction, int init_lambda, int init_v>
+class LevenbergMarquardtMinimizer
 {
 public:
-    GaussNewtonMinimizer(){}
+    LevenbergMarquardtMinimizer(){
+        lambda = init_lambda;
+        v = init_v;
+    }
+
+    double lambda;
+    double v;
+
+    void reset(){
+        lambda = init_lambda;
+        v = init_v;
+    }
 
     template<class T>
-   Eigen::Matrix<double, T::RowsAtCompileTime, 1> minimizeOneStep(const ErrorFunction& errorFunction, const T& epsilon, double& error){
+    Eigen::Matrix<double, T::RowsAtCompileTime, 1> minimizeOneStep(const ErrorFunction& errorFunction, const T& epsilon, double& error){
         T zero = T::Zero();
         Eigen::VectorXd r = errorFunction(zero);
         Eigen::MatrixXd J = determineJacobian(errorFunction, epsilon);
-        //Eigen::Matrix<double, T::RowsAtCompileTime,1> offset = -(J.transpose()*J).inverse()*J.transpose()*r;
-        Eigen::Matrix<double, T::RowsAtCompileTime,1> offset = (J.transpose()*J).ldlt().solve(-J.transpose() * r);
-
-        //beware the inverse!
-        assert(!offset.hasNaN());
-
+        Eigen::MatrixXd JtJ = J.transpose()*J;
+        Eigen::MatrixXd JtJdiag = (JtJ).diagonal().asDiagonal();
         error = r.sum();
-        return offset; // used std::make_tuple(offset,r.sum())>, but maybe problems with alignment of the eigen object offset?
+
+        //Eigen::Matrix<double, T::RowsAtCompileTime,1> offset = -(J.transpose()*J).inverse()*J.transpose()*r;
+        Eigen::Matrix<double, T::RowsAtCompileTime,1> offset1 = (JtJ + lambda   * JtJdiag).ldlt().solve(-J.transpose() * r);
+        Eigen::Matrix<double, T::RowsAtCompileTime,1> offset2 = (JtJ + lambda/v * JtJdiag).ldlt().solve(-J.transpose() * r);
+
+        if(offset1.hasNaN() || offset2.hasNaN()){
+            return zero;
+        }
+
+        double r_o1_sum = errorFunction(offset1).sum();
+        double r_o2_sum = errorFunction(offset2).sum();
+
+        if(r_o1_sum > error && r_o2_sum > error){
+            while(true){//for( int i = 0; i < 10; i++){ // retry at most 10 times
+                lambda *= v; // didn't get a better result so increase damping and retry
+                offset1 = (JtJ + lambda * JtJdiag).ldlt().solve(-J.transpose() * r);
+
+                if(offset1.hasNaN()){
+                    return zero;
+                }
+
+                r_o1_sum = errorFunction(offset1).sum();
+
+                if(r_o1_sum < error){
+                    error = r_o1_sum;
+                    return offset1;
+                }
+            }
+        } else if(r_o1_sum > r_o2_sum) {
+            lambda /= v; // got better result with decreased damping
+            error = r_o2_sum;
+            return offset2;
+        } else {
+            error = r_o1_sum;
+            return offset1; // got better result with current damping
+        }
+
+        return zero;
+        //return offset; // used std::make_tuple(offset,r.sum())>, but maybe problems with alignment of the eigen object offset?
     }
 
 private:

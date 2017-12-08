@@ -492,7 +492,7 @@ private:
   double damping_cam_offsets;
   double damping_pose;
 
-  GaussNewtonMinimizer<CamMatErrorFunction> gn_minimizer;
+  LevenbergMarquardtMinimizer<CamMatErrorFunction, 1, 2> lm_minimizer;
 
   bool calibrate();
   bool calibrateOnlyPose();

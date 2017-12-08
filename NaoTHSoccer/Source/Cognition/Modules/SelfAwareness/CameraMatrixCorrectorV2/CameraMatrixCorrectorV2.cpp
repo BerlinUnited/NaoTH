@@ -30,8 +30,8 @@ CameraMatrixCorrectorV2::CameraMatrixCorrectorV2()
   theCamMatErrorFunction = registerModule<CamMatErrorFunction>("CamMatErrorFunction", true);
   last_idx_yaw   = 0;
   last_idx_pitch = 0;
-  damping_cam_offsets = 0.005;
-  damping_pose = 0.01;
+  damping_cam_offsets = 1;// 0.005;
+  damping_pose = 1; 0.01;
 
   head_state      = look_left;
   last_head_state = initial;
@@ -139,6 +139,7 @@ void CameraMatrixCorrectorV2::execute()
 
       DEBUG_REQUEST("CameraMatrixV2:reset_calibration",
             reset_calibration();
+            lm_minimizer.reset();
             derrors.clear();
             last_error = 0;
       );
@@ -181,7 +182,7 @@ bool CameraMatrixCorrectorV2::calibrate()
   epsilon(13) = Math::pi_4/2;
   double error;
 
-  Eigen::Matrix<double, 14, 1> offset = gn_minimizer.minimizeOneStep(*(theCamMatErrorFunction->getModuleT()),epsilon,error);
+  Eigen::Matrix<double, 14, 1> offset = lm_minimizer.minimizeOneStep(*(theCamMatErrorFunction->getModuleT()),epsilon,error);
 
   double de_dt = (error-last_error)/dt; // improvement per second
 
@@ -232,7 +233,7 @@ bool CameraMatrixCorrectorV2::calibrateOnlyPose()
   epsilon << epsilon_pos, epsilon_pos, epsilon_angle;
   double error;
 
-  Eigen::Matrix<double, 3, 1> offset = gn_minimizer.minimizeOneStep(*(theCamMatErrorFunction->getModuleT()),epsilon,error);
+  Eigen::Matrix<double, 3, 1> offset = lm_minimizer.minimizeOneStep(*(theCamMatErrorFunction->getModuleT()),epsilon,error);
 
   double de_dt = (error-last_error)/dt; // improvement per second
 
@@ -269,7 +270,7 @@ bool CameraMatrixCorrectorV2::calibrateOnlyOffsets()
   // calibrate the camera matrix
   Eigen::Matrix<double, 11, 1> epsilon = Eigen::Matrix<double, 11, 1>::Constant(1e-4);
   double error;
-  Eigen::Matrix<double, 11, 1> offset = gn_minimizer.minimizeOneStep(*(theCamMatErrorFunction->getModuleT()),epsilon,error);
+  Eigen::Matrix<double, 11, 1> offset = lm_minimizer.minimizeOneStep(*(theCamMatErrorFunction->getModuleT()),epsilon,error);
 
   double de_dt = (error-last_error)/dt; // improvement per second
 
