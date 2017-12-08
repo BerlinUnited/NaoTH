@@ -251,6 +251,7 @@ public class RobotControlImpl extends javax.swing.JFrame
         lblReceivedBytesS = new javax.swing.JLabel();
         lblSentBytesS = new javax.swing.JLabel();
         lblFramesS = new javax.swing.JLabel();
+        statusPanelPlugins = new javax.swing.JPanel();
         mainMenuBar = new de.naoth.rc.MainMenuBar();
         mainControlMenu = new javax.swing.JMenu();
         connectMenuItem = new javax.swing.JMenuItem();
@@ -290,6 +291,13 @@ public class RobotControlImpl extends javax.swing.JFrame
 
         lblFramesS.setText("Frames/s: ");
 
+        statusPanelPlugins.setFocusable(false);
+        statusPanelPlugins.setMaximumSize(new java.awt.Dimension(32767, 24));
+        statusPanelPlugins.setMinimumSize(new java.awt.Dimension(0, 24));
+        statusPanelPlugins.setOpaque(false);
+        statusPanelPlugins.setPreferredSize(new java.awt.Dimension(100, 24));
+        statusPanelPlugins.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
+
         javax.swing.GroupLayout statusPanelLayout = new javax.swing.GroupLayout(statusPanel);
         statusPanel.setLayout(statusPanelLayout);
         statusPanelLayout.setHorizontalGroup(
@@ -302,18 +310,23 @@ public class RobotControlImpl extends javax.swing.JFrame
                 .addComponent(lblSentBytesS, javax.swing.GroupLayout.PREFERRED_SIZE, 164, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(lblFramesS, javax.swing.GroupLayout.PREFERRED_SIZE, 173, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 235, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(statusPanelPlugins, javax.swing.GroupLayout.DEFAULT_SIZE, 189, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(lblConnect)
                 .addContainerGap())
         );
         statusPanelLayout.setVerticalGroup(
             statusPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, statusPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+            .addGroup(statusPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                 .addComponent(btManager, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addComponent(lblConnect, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(lblReceivedBytesS)
                 .addComponent(lblSentBytesS)
                 .addComponent(lblFramesS))
+            .addGroup(statusPanelLayout.createSequentialGroup()
+                .addComponent(statusPanelPlugins, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
 
         getContentPane().add(statusPanel, java.awt.BorderLayout.PAGE_END);
@@ -561,6 +574,7 @@ public class RobotControlImpl extends javax.swing.JFrame
     private de.naoth.rc.MainMenuBar mainMenuBar;
     private javax.swing.JMenuItem resetLayoutMenuItem;
     private javax.swing.JPanel statusPanel;
+    private javax.swing.JPanel statusPanelPlugins;
     // End of variables declaration//GEN-END:variables
 
     
@@ -659,5 +673,7 @@ public class RobotControlImpl extends javax.swing.JFrame
       return Toolkit.getDefaultToolkit().getScreenSize().width > 2000;
   }
   
-  
+  public void addToStatusBar(Component c) {
+      this.statusPanelPlugins.add(c);
+  }
 }

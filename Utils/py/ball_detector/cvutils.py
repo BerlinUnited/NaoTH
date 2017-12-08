@@ -1,5 +1,5 @@
 #!/usr/bin/python
-
+import naoth
 import cv2
 import numpy as np
 

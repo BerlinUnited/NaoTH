@@ -261,12 +261,8 @@ public class ImageViewer extends AbstractDialog
 
     if (this.btReceiveImagesTop.isSelected())
     {
-      if(Plugin.parent.checkConnected()) {
-        this.imageCanvasTop.setVisible(true);
-        Plugin.imageManagerTop.addListener(this.imageListenerTop);
-      } else {
-        this.btReceiveImagesTop.setSelected(false);
-      }
+     this.imageCanvasTop.setVisible(true);
+     Plugin.imageManagerTop.addListener(this.imageListenerTop);
     }
     else
     {
@@ -307,12 +303,8 @@ public class ImageViewer extends AbstractDialog
     
     if (btReceiveImagesBottom.isSelected())
     {
-      if(Plugin.parent.checkConnected()) {
-        this.imageCanvasBottom.setVisible(true);
-        Plugin.imageManagerBottom.addListener(this.imageListenerBottom);
-      } else {
-        btReceiveImagesBottom.setSelected(false);
-      }
+      this.imageCanvasBottom.setVisible(true);
+      Plugin.imageManagerBottom.addListener(this.imageListenerBottom);
     }
     else
     {
