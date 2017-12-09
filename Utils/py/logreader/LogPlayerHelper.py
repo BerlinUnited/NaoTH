@@ -1,4 +1,5 @@
 from PyQt5.QtWidgets import QApplication, QWidget
+from PyQt5.QtCore import QTimer
 
 from LogPlayerForm import Ui_PlayerForm
 
@@ -7,45 +8,24 @@ from queue import Queue
 
 import time
 
-# call this function to create a QApplication and only start a LogPlayerHelper ui
-def spawnLogPlayer(logReader, worker_func, *args, **kwargs):
-    app = QApplication([])
-    playerUI = LogPlayerHelper(logReader, *args, **kwargs)
-    playerUI.show()
-
-    worker = Thread(target = worker_func)
-    worker.start()
-
-    # start application
-    app.exec_()
-
-    playerUI.close()
-
-
 class LogPlayerHelper:
 
-    def __init__(self, logReader, block=True, loop=False, realtime=False):
-        # decorate LogReader read function
-        self.logRead = logReader.read
-        logReader.read = self.read
-
+    def __init__(self, logReader, loop=False, realtime=False):
         self.logReader = logReader
 
         # scan frames in log
-        for frame in self.logRead():
+        for frame in self.logReader.read():
             pass
 
         # queue to post seek slider events
         self.seekQueue = Queue()
         self.playLock = Lock()
 
-        self.block = block
-
         # create gui
         self.form = PlayerWindow(self.seekQueue, self.playLock)
 
         # TODO: Don't access logReader.frames directly
-        self.form.setSliderInterval(0, len(self.logReader.frames))
+        self.form.setSliderInterval(0, len(self.logReader.frames)-1)
 
         self.form.ui.loopCheckBox.setChecked(loop)
         self.form.ui.realTimeCheckBox.setChecked(realtime)
@@ -66,60 +46,53 @@ class LogPlayerHelper:
     def read(self):
         frame = self.logReader[0]
 
-        currentFrameTime = frame["FrameInfo"].time
-
         timeMillis = lambda: int(round(time.time() * 1000))
         systemTime = timeMillis()
-        updateTime = time.time()
 
         i=0
+        # TODO: change to widget is running
         while self.uiRunning:
             userSeeked = False
+            playNextFrame = False
 
-            # user pauses
-            if self.block:
-                with self.playLock:
-                    pass
-            else:
-                if self.playLock.locked():
-                    yield frame
-                    continue
-
-            if not self.seekQueue.empty():
+            # check if user changed sliderPos
+            while not self.seekQueue.empty():
                 i = self.seekQueue.get()
                 userSeeked = True
 
-            if i >= len(self.logReader.frames):
-                if self.form.ui.loopCheckBox.isChecked():
-                    i = 0
-                    userSeeked = True
-                else:
-                    self.form.playButton_clicked()
-                    i = len(self.logReader.frames)-1
-                    continue
+            if not userSeeked and not self.playLock.locked():
 
-            if not userSeeked and self.form.ui.realTimeCheckBox.isChecked():
-                timePassed = timeMillis() - systemTime
-                frameTimePassed = self.logReader[i]["FrameInfo"].time - currentFrameTime
-                frameTimePassed /= self.form.ui.multiplierBox.value()
-                if frameTimePassed > timePassed:
-                    if self.block:
-                        time.sleep((frameTimePassed-timePassed)/1000)
+                # check if current frame is not the last
+                if i+1 >= len(self.logReader.frames):
+                    if self.form.ui.loopCheckBox.isChecked():
+                        i = 0
                     else:
-                        yield frame
-                        continue
+                        # pause player
+                        self.form.playButton_clicked()
+                        i = len(self.logReader.frames)-1
+                # check if it's time for a new frame
+                elif self.form.ui.realTimeCheckBox.isChecked():
+                    timePassed = timeMillis() - systemTime
+                    nextFrame = self.logReader.frames[i+1]
 
-            frame = self.logReader[i]
+                    frameTimePassed = nextFrame["FrameInfo"].time - frame["FrameInfo"].time
+                    frameTimePassed /= self.form.ui.multiplierBox.value()
 
-            systemTime = timeMillis()
-            currentFrameTime = frame["FrameInfo"].time
+                    if timePassed > frameTimePassed:
+                        i+=1
+                        systemTime = timeMillis()
+                else:
+                    i+=1
+                    systemTime = timeMillis()
 
-            # TODO: The Slider freezes randomly if update in Thread
-            self.form.setSliderPos(i, frame["FrameInfo"].frameNumber)
-            updateTime = time.time()
+
+            frame = self.logReader.frames[i]
+
+            if not userSeeked:
+                self.form.setSliderPos(i)
+            self.form.setFrameNumber(frame["FrameInfo"].frameNumber)
 
             yield frame
-            i+=1
 
 class PlayerWindow(QWidget):
     def __init__(self, seekQueue, playLock):
@@ -133,6 +106,7 @@ class PlayerWindow(QWidget):
         #self.ui.multiplierBox.setEnabled(False)
         self.ui.realTimeCheckBox.stateChanged.connect(self.setRealTime)
 
+        self.ui.seekSlider.sliderMoved.connect(self.seek)
         self.ui.seekSlider.sliderReleased.connect(self.seek)
 
         self.seekQueue = seekQueue
@@ -142,13 +116,14 @@ class PlayerWindow(QWidget):
         isChecked = self.ui.realTimeCheckBox.isChecked()
         self.ui.multiplierBox.setEnabled(isChecked)
 
-    def setSliderPos(self, i, frameNumber):
-
-        if not self.ui.seekSlider.isSliderDown():
-            self.ui.seekSlider.setValue(i)
-
+    def setFrameNumber(self, frameNumber):
         # update lcd display
         self.ui.frameCounter.display(frameNumber)
+
+
+    def setSliderPos(self, i):
+        if not self.ui.seekSlider.isSliderDown():
+            self.ui.seekSlider.setValue(i)
 
     def seek(self):
         self.seekQueue.put(self.ui.seekSlider.value())
@@ -166,12 +141,25 @@ class PlayerWindow(QWidget):
 if __name__ == '__main__':
     from LogReader import LogReader
 
-    with LogReader("./cognition.log") as log:
+    app = QApplication([])
 
-        def worker():
-            for frame in log.read():
-                print(frame["FrameInfo"])
-                # doing some serious work
-                #time.sleep(0.1)
+    with LogReader("./cognition.log") as logReader:
 
-        spawnLogPlayer(log, worker, realtime=True)
+        logPlayer = LogPlayerHelper(logReader, realtime=True, loop=True)
+        logPlayer.show()
+
+        frames = logPlayer.read()
+        def update():
+            frame = next(frames)
+            print(frame["FrameInfo"])
+            # doing some serious work
+            #time.sleep(0.1)
+
+        timer = QTimer()
+        timer.timeout.connect(update)
+        # update gui with 60 fps
+        timer.start(1/60)
+
+        # start application
+        app.exec_()
+        logPlayer.close()

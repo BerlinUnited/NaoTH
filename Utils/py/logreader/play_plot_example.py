@@ -38,10 +38,10 @@ if __name__ == '__main__':
         edgelPlotTop.setTitle("Edgels Top")
 
         # Log Player window
-        playerUI = LogPlayerHelper(log, block=False, loop=True)
-        playerUI.show()
+        logPlayer = LogPlayerHelper(log, loop=True)
+        logPlayer.show()
 
-        frames = log.read()
+        frames = logPlayer.read()
         def update():
             frame = next(frames)
 
@@ -70,8 +70,8 @@ if __name__ == '__main__':
 
         timer = QTimer()
         timer.timeout.connect(update)
-        timer.start(0)
+        timer.start(1/60)
 
 
         app.exec_()
-        playerUI.close()
+        logPlayer.close()
