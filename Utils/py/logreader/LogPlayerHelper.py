@@ -5,12 +5,13 @@ from LogPlayerForm import Ui_PlayerForm
 
 from threading import Thread, ThreadError, Lock
 from queue import Queue
+from peekQueue import PeekQueue
 
 import time
 
 class LogPlayerHelper:
 
-    def __init__(self, logReader, loop=False, realtime=False):
+    def __init__(self, logReader, worker_func=None, loop=False, realtime=False):
         self.logReader = logReader
 
         # scan frames in log
@@ -24,14 +25,24 @@ class LogPlayerHelper:
         # create gui
         self.form = PlayerWindow(self.seekQueue, self.playLock)
 
-        # TODO: Don't access logReader.frames directly
-        self.form.setSliderInterval(0, len(self.logReader.frames)-1)
+        # TODO: Don't access logReader members directly
+        # TODO: cleanup quick fix len(self.logReader.frames)-2
+        self.form.setSliderInterval(0, len(self.logReader.frames)-2)
 
         self.form.ui.loopCheckBox.setChecked(loop)
         self.form.ui.realTimeCheckBox.setChecked(realtime)
         self.form.setRealTime()
 
         self.uiRunning = True
+
+        self.work_queue = PeekQueue(maxsize=1)
+        self.worker = None
+        if worker_func is not None:
+            self.worker = Thread(target=worker_func, args=(self,))
+            self.worker.start()
+        self.newWokerResult = False
+        self.workerResult = None
+        self.workerResultPending = Queue(maxsize=1)
 
     def show(self):
         self.form.show()
@@ -43,17 +54,33 @@ class LogPlayerHelper:
         except ThreadError:
             pass
 
+    def work(self):
+        # TODO: close thread
+        while 1:
+            yield self.work_queue.peek()
+            self.work_queue.get()
+
+    # TODO: raise exeption if no worker exists
+    def sendToUi(self, data):
+        self.workerResultPending.put(data)
+
+    def recvWorkerResult(self):
+        if self.newWokerResult:
+            self.newWokerResult = False
+            return self.workerResult
+
     def read(self):
         frame = self.logReader[0]
 
         timeMillis = lambda: int(round(time.time() * 1000))
         systemTime = timeMillis()
 
+        playNextFrame = False
+
         i=0
         # TODO: change to widget is running
         while self.uiRunning:
             userSeeked = False
-            playNextFrame = False
 
             # check if user changed sliderPos
             while not self.seekQueue.empty():
@@ -65,6 +92,7 @@ class LogPlayerHelper:
                 # check if current frame is not the last
                 if i+1 >= len(self.logReader.frames):
                     if self.form.ui.loopCheckBox.isChecked():
+                        # TODO: Woker is out of sync for the first frame if looped back
                         i = 0
                     else:
                         # pause player
@@ -78,16 +106,36 @@ class LogPlayerHelper:
                     frameTimePassed = nextFrame["FrameInfo"].time - frame["FrameInfo"].time
                     frameTimePassed /= self.form.ui.multiplierBox.value()
 
-                    if timePassed > frameTimePassed:
-                        i+=1
+                    if playNextFrame or timePassed > frameTimePassed:
+                        playNextFrame = True
                         systemTime = timeMillis()
                 else:
-                    i+=1
+                    playNextFrame = True
                     systemTime = timeMillis()
 
 
-            frame = self.logReader.frames[i]
+            if self.worker is None:
+                if playNextFrame:
+                    i+=1
+                    playNextFrame = False
+                frame = self.logReader.frames[i]
+            else:
+                if self.work_queue.empty():
+                    if playNextFrame:
+                        i+=1
+                        playNextFrame = False
 
+                        self.work_queue.put(self.logReader.frames[i])
+                        frame = self.logReader.frames[i-1]
+                    else:
+                        self.work_queue.put(self.logReader.frames[i])
+                        frame = self.logReader.frames[i]
+
+                    if not self.workerResultPending.empty():
+                        self.workerResult = self.workerResultPending.get()
+                        self.newWokerResult = True
+
+            # update slider pos
             if not userSeeked:
                 self.form.setSliderPos(i)
             self.form.setFrameNumber(frame["FrameInfo"].frameNumber)
@@ -144,7 +192,6 @@ if __name__ == '__main__':
     app = QApplication([])
 
     with LogReader("./cognition.log") as logReader:
-
         logPlayer = LogPlayerHelper(logReader, realtime=True, loop=True)
         logPlayer.show()
 
