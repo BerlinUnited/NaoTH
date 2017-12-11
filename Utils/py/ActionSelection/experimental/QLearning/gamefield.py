@@ -56,7 +56,7 @@ score_min, score_max = -0.2, 0.2
 
 score = 0
 
-move_cost = -0.01
+move_cost = -0.02
 
 def move_cost_action():
     # move cost in relation to actio
@@ -240,18 +240,18 @@ def try_move((dx,dy)):
     if agent_position[0] + dx < agent_start_position[0]-1: # don't allow to go behind starting position
         reset = True
         score -= 1.
-        print "don't go back!"
+        #print "don't go back!"
         return
     if check_special((agent_position[0] + dx, agent_position[1] + dy)):
         special_field = specials[(agent_position[0] + dx, agent_position[1] + dy)]
         score += move_cost
         score += special_field[0]
         move_agent(relative=(dx, dy))
-        if score > 1:
-            print "GOAL!"
-        else:
-            print "next time..."
-        print "Final score: ", score
+        #if score > 1:
+        #    print "GOAL!"
+        #else:
+        #    print "next time..."
+        #print "Final score: ", score
         reset = True
         return
     elif check_infield((agent_position[0] + dx, agent_position[1] + dy)):
