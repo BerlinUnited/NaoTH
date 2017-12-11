@@ -23,7 +23,7 @@ class LogPlayerHelper:
         self.playLock = Lock()
 
         # create gui
-        self.form = PlayerWindow(self.seekQueue, self.playLock)
+        self.form = PlayerWindow(self.seekQueue, self.playLock, self.close)
 
         # TODO: Don't access logReader members directly
         # TODO: cleanup quick fix len(self.logReader.frames)-2
@@ -49,16 +49,16 @@ class LogPlayerHelper:
 
     def close(self):
         self.uiRunning = False
-        try:
-            self.playLock.release()
-        except ThreadError:
-            pass
+        if not self.worker is None:
+            self.work_queue.put(None)
+            self.worker.join()
 
     def work(self):
-        # TODO: close thread
-        while 1:
-            yield self.work_queue.peek()
+        newWork = self.work_queue.peek()
+        while not newWork is None:
+            yield newWork
             self.work_queue.get()
+            newWork = self.work_queue.peek()
 
     # TODO: raise exeption if no worker exists
     def sendToUi(self, data):
@@ -78,7 +78,6 @@ class LogPlayerHelper:
         playNextFrame = False
 
         i=0
-        # TODO: change to widget is running
         while self.uiRunning:
             userSeeked = False
 
@@ -92,7 +91,7 @@ class LogPlayerHelper:
                 # check if current frame is not the last
                 if i+1 >= len(self.logReader.frames):
                     if self.form.ui.loopCheckBox.isChecked():
-                        # TODO: Woker is out of sync for the first frame if looped back
+                        # TODO: Worker is out of sync for the first frame if looped back
                         i = 0
                     else:
                         # pause player
@@ -143,8 +142,10 @@ class LogPlayerHelper:
             yield frame
 
 class PlayerWindow(QWidget):
-    def __init__(self, seekQueue, playLock):
+    def __init__(self, seekQueue, playLock, closeAction):
         super(PlayerWindow, self).__init__()
+
+        self.closeAction = closeAction
 
         self.ui = Ui_PlayerForm()
 
@@ -199,8 +200,6 @@ if __name__ == '__main__':
         def update():
             frame = next(frames)
             print(frame["FrameInfo"])
-            # doing some serious work
-            #time.sleep(0.1)
 
         timer = QTimer()
         timer.timeout.connect(update)
@@ -209,4 +208,3 @@ if __name__ == '__main__':
 
         # start application
         app.exec_()
-        logPlayer.close()
