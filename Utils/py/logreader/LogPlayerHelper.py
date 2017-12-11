@@ -23,7 +23,7 @@ class LogPlayerHelper:
         self.playLock = Lock()
 
         # create gui
-        self.form = PlayerWindow(self.seekQueue, self.playLock, self.close)
+        self.form = PlayerWindow(self.seekQueue, self.playLock)
 
         # TODO: Don't access logReader members directly
         # TODO: cleanup quick fix len(self.logReader.frames)-2
@@ -142,10 +142,8 @@ class LogPlayerHelper:
             yield frame
 
 class PlayerWindow(QWidget):
-    def __init__(self, seekQueue, playLock, closeAction):
+    def __init__(self, seekQueue, playLock):
         super(PlayerWindow, self).__init__()
-
-        self.closeAction = closeAction
 
         self.ui = Ui_PlayerForm()
 
