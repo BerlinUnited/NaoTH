@@ -1,5 +1,5 @@
 import unittest
-from naoth import math2d as m2d
+import math2d as m2d
 
 
 class TestVectorMethods(unittest.TestCase):
@@ -7,6 +7,7 @@ class TestVectorMethods(unittest.TestCase):
         a = m2d.Vector2(100, 100)
         b = m2d.Vector2(1000, 10)
         c = a + b
+        
         self.assertEqual(c.x, 1100)
         self.assertEqual(c.y, 110)
 
