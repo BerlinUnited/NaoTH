@@ -12,10 +12,9 @@ function [tout, yout, teout, yeout, ieout, tsout, sout, tdpout] = SLIP3D(y0, par
     
     options = parameter.options;
 
-    tstart = 0;
     deltaT = 1;
 
-    tout = tstart;
+    tout = 0;
     yout = y0.';
     teout = [];
     yeout = [];
@@ -26,7 +25,8 @@ function [tout, yout, teout, yeout, ieout, tsout, sout, tdpout] = SLIP3D(y0, par
     
     state = 'left_support';    
     left_tdp  = [0;0;0];
-    right_tdp = [y0(1); y0(3); y0(5)] + l0 * [sin(right_tda(1)) * cos(-pi/2); sin(right_tda(1)) * sin(-pi/2); cos(right_tda(1))];
+    right_tdp = [y0(1); y0(3); y0(5)] ...
+              + l0 * [sin(right_tda(1)) * cos(-pi/2); sin(right_tda(1)) * sin(-pi/2); cos(right_tda(1))];
 
     while(tout(end) < parameter.maxTime)     
         switch state
@@ -60,7 +60,8 @@ function [tout, yout, teout, yeout, ieout, tsout, sout, tdpout] = SLIP3D(y0, par
         ie = 0;
         
         while ~any(ie)
-            [t,y,te,ye,ie] = ode45(f,[tstart tstart + deltaT],y0,options);
+            % system is  time-invariant
+            [t,y,te,ye,ie] = ode45(f,[0 deltaT],yout(end,:),options);
             
             % filter events: events happening in the first step are
             % reported but they are
@@ -68,18 +69,16 @@ function [tout, yout, teout, yeout, ieout, tsout, sout, tdpout] = SLIP3D(y0, par
             % 2) maybe an artifact of the last state(?) -> might be
             %    handled better
             ie = ie(abs(te) > 10e-16);
+            ye = ye(abs(te) > 10e-16,:);
             te = te(abs(te) > 10e-16);
             
             % Accumulate output.  This could be passed out as output arguments.
-            nt = length(t);
-            tout = [tout; t(2:nt)];
-            yout = [yout; y(2:nt,:)];
+            tout = [tout; tout(end) + t(2:end)];
+            yout = [yout; y(2:end,:)];
             teout = [teout; te];          % Events at tstart are never reported.
             yeout = [yeout; ye];
             ieout = [ieout; ie];
-            
-            y0 = y(nt,:);
-            tstart = t(nt);
+
         end
         
         if any(ie == 1) % fallen
