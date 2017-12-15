@@ -47,19 +47,30 @@ hold on;
 % init_z_vel      =  0.28402; 
 
 % some best found number of states times (final x - abs(y))
-td_angle_theta  =  2.9675;
-td_angle_phi    =  0.249;
-init_leg_length =  0.99917;
-init_leg_theta  =  0.011187;
-init_x_vel      =  0.81274;
+%td_angle_theta  =  2.9675;
+%td_angle_phi    =  0.249;
+%X.init_leg_length =  0.99917;
+%X.init_leg_theta  =  0.011187;
+%X.init_x_vel      =  0.81274;
+
+% some best found using quater step optimization
+% td_angle_theta  =  2.992;
+% td_angle_phi    =  0.207;
+% X.init_leg_length =  0.99869;
+% X.init_leg_theta  =  0.00075871;
+% X.init_x_vel      =  1.0166;
+% parameter.k = 13347;
+
+td_angle_theta    =  3.023376101367882;
+td_angle_phi      =  5.406824135029759e-06;
+parameter.k       = 1.334700000309406e+04;
+X.init_leg_length =  0.999999981695486;
+X.init_leg_theta  =  0;
+X.init_x_vel      =  0.913163569029949;
                                                         
 parameter.touchdown_angle = [td_angle_theta, td_angle_phi];  % [theta, phi]
 
-init_pos = init_leg_length * [sin(init_leg_theta) * cos(-pi/2);
-                              sin(init_leg_theta) * sin(-pi/2);
-                              cos(init_leg_theta)]; 
-                     
-y0 = [init_pos(1); init_x_vel; init_pos(2); 0; init_pos(3); 0];  % avoid x=0 as start if jumping on place... causes somehow instabilities             
+y0 = convertToSLIPState(X,'spherical');
 
 parameter.enable_assert = true;
 parameter.terminal_ms = false;
