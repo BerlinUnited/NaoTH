@@ -36,6 +36,9 @@ function p = SLIP_performance(X)
                      
     y0 = [init_pos(1); X.init_x_vel; init_pos(2); 0; init_pos(3); 0];  % avoid x=0 as start if jumping on place... causes somehow instabilities             
                  
+    parameter.enable_assert = true;
+    parameter.terminal_ms = false;
+    parameter.terminal_lh = false;
     [tout, yout, teout, yeout, ieout, tsout, sout] = SLIP3D(y0,parameter);
     
     % bayesopt minimizes a loss
