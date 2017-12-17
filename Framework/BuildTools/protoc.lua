@@ -139,7 +139,7 @@ function add_gcc_ignore_pragmas(files)
   numberFiles = 0
 	for i,file in ipairs(files) do
     print("NOTE: process " .. file)
-		file_add_prefix_sufix(file, suffix, prefix)
+		file_add_prefix_sufix(file, prefix, suffix)
     numberFiles = numberFiles + 1
 	end
   
