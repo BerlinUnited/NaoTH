@@ -4,8 +4,6 @@ from random import randint
 from tools import field_info as field
 from state import State
 from tools import action as a
-import timeit
-import copy
 import numpy as np
 from naoth import math2d as m2d
 import play_striker as striker
@@ -19,7 +17,7 @@ import multiprocessing as mp
 Example:
     run without any parameters
 
-        $ python compare_decision_schemes_newsim_random.py
+        $ python compare_decision_schemes_random.py
 """
 
 # set up the available actions

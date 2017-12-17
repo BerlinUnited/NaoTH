@@ -344,13 +344,6 @@ if __name__ == "__main__":
         print("run direct_kick_strategy")
         history3 = run_experiment(state, direct_kick_strategy_cool, all_actions)
         
-        '''
-        mm = np.max(np.abs([np.degrees(h.turn_around_ball) for h in history3[0:-1]]))
-        if mm < 140:
-          print mm
-          continue
-        '''
-        
         print([np.degrees(h.turn_around_ball) for h in history3[0:-1]])
         print ([h.selected_action_idx for h in history3[0:-1]])
         
