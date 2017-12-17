@@ -29,6 +29,7 @@ class Vector2:
 
     def __mul__(self, other):
         if isinstance(other, Vector2):
+            # interpret multiplication as other^t * self (scalarproduct of the vectors, where ^t means transpose)
             return self.x*other.x + self.y*other.y
         elif isinstance(other, (int, float, long)):
             return Vector2(self.x*other, self.y*other)
