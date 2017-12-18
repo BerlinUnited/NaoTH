@@ -2,6 +2,7 @@ import math
 
 
 def clamp(x, minimum, maximum):
+    # function f where f(x)=x if min<= x <= max, f(x) = minimum if x < minimum, f(x) = maximum if x > maximum
     return max(minimum, min(x, maximum))
 
 
@@ -86,7 +87,7 @@ class Pose2D:
 
 
 class LineSegment(object):
-    def __init__(self, begin, end):
+    def __init__(self, begin=Vector2(), end=Vector2()):
         self.base = begin
         self.direction = end-self.base
         self.length = Vector2.abs(self.direction)
@@ -103,13 +104,19 @@ class LineSegment(object):
         return self.base+self.direction*self.length
 
     def point(self, t):
+        # waere es nicht besser hier auch noch zu normieren, damit man t in [0,1] waehlen kann, mit t = 0 -> base point
+        # t = 1 -> end point
         t = clamp(t, 0.0, self.length)
         return self.base + self.direction*t
 
     def project(self, p):
+        # TODO: das macht so keinen Sinn, was soll hier ueberhaupt projiziert werden und wohin
+        # ist auch nicht richtig definiert, sprich die Methode funktioniert nicht, hier wird von einem Vector ein
+        # Skalar abgezogen => fehler
         return self.direction*p - self.direction*self.base
 
     def projection(self, p):
+        # TODO: identisches problem wie bei project
         t = self.direction*p - self.direction*self.base
         return self.point(t)
 
@@ -121,10 +128,14 @@ class LineSegment(object):
 
         t = normal*(other.base-self.base)/t
         t = clamp(t, 0.0, self.length)
+        # was soll t sein??
+        # Interpretation der Rueckgabe?
 
         return t
 
     def line_intersection(self, other):
+        # maybe rename methods, this one and the one above; the return ist on how to skale the direction
+        # vector to get the intersect point from the start (base) point. this is not derivable from the name
         normal = Vector2(-other.direction.y, other.direction.x)
         t = normal*self.direction
         if t == 0:

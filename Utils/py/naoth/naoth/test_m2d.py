@@ -226,32 +226,163 @@ class test_m2d(unittest.TestCase):
 
     # LineSegment
 
-    def test_str(self):
-        pass
-
-    def test_begin(self):
-        pass
-
     def test_end(self):
-        pass
+        begin1 = m2d.Vector2(1, 0)
+        end1 = m2d.Vector2(1, 1)
+        begin2 = m2d.Vector2(-1, -1)
+        end2 = m2d.Vector2(2, 2)
+        begin3 = m2d.Vector2(1, 1)
+        end3 = m2d.Vector2(-1, 1)
+
+        line1 = m2d.LineSegment(begin1, end1)
+        line2 = m2d.LineSegment(begin2, end2)
+        line3 = m2d.LineSegment(begin3, end3)
+
+        line_end1 = line1.end()
+        line_end2 = line2.end()
+        line_end3 = line3.end()
+
+        self.assertEqual(line_end1.x, 1)
+        self.assertEqual(line_end1.y, 1)
+        self.assertEqual(line_end2.x, 2)
+        self.assertEqual(line_end2.y, 2)
+        self.assertEqual(line_end3.x, -1)
+        self.assertEqual(line_end3.y, 1)
 
     def test_project(self):
-        pass
+        begin1 = m2d.Vector2(1, 0)
+        end1 = m2d.Vector2(1, 1)
+        begin2 = m2d.Vector2(-1, -1)
+        end2 = m2d.Vector2(2, 2)
+        begin3 = m2d.Vector2(1, 1)
+        end3 = m2d.Vector2(-1, 1)
+
+        line1 = m2d.LineSegment(begin1, end1)
+        line2 = m2d.LineSegment(begin2, end2)
+        line3 = m2d.LineSegment(begin3, end3)
+
+        line_end1 = line1.end()
+        line_end2 = line2.end()
+        line_end3 = line3.end()
+
+        self.assertEqual(line_end1.x, 1)
+        self.assertEqual(line_end1.y, 1)
+        self.assertEqual(line_end2.x, 2)
+        self.assertEqual(line_end2.y, 2)
+        self.assertEqual(line_end3.x, -1)
+        self.assertEqual(line_end3.y, 1)
 
     def test_point(self):
-        pass
+        begin1 = m2d.Vector2(1, 0)
+        end1 = m2d.Vector2(1, 1)
+        begin2 = m2d.Vector2(-1, -1)
+        end2 = m2d.Vector2(2, 2)
+        begin3 = m2d.Vector2(1, 1)
+        end3 = m2d.Vector2(-1, 1)
+
+        line1 = m2d.LineSegment(begin1, end1)
+        line2 = m2d.LineSegment(begin2, end2)
+        line3 = m2d.LineSegment(begin3, end3)
+
+        line_point1 = line1.point(20)
+        line_point2 = line1.point(0.5)
+        line_point3 = line2.point(3)
+        line_point4 = line3.point(1)
+
+        self.assertEqual(line_point1.x, 1) # equal to end point
+        self.assertEqual(line_point1.y, 1)
+        self.assertEqual(line_point2.x, 1)
+        self.assertEqual(line_point2.y, 0.5)
+        self.assertAlmostEquals(line_point3.x, 3/math.sqrt(2)-1)
+        self.assertAlmostEquals(line_point3.y, 3/math.sqrt(2)-1)
+        self.assertEqual(line_point4.x, 0)
+        self.assertEqual(line_point4.y, 1)
 
     def test_projection(self):
+        """
+        #TODO: change method!! Does not work in any case
+        begin1 = m2d.Vector2(1, 0)
+        end1 = m2d.Vector2(1, 1)
+        begin2 = m2d.Vector2(-1, -1)
+        end2 = m2d.Vector2(2, 2)
+        begin3 = m2d.Vector2(1, 1)
+        end3 = m2d.Vector2(-1, 1)
+
+        line1 = m2d.LineSegment(begin1, end1)
+        line2 = m2d.LineSegment(begin2, end2)
+        line3 = m2d.LineSegment(begin3, end3)
+
+        project1 = line1.project(1)
+        project2 = line2.project(0)
+        """
         pass
 
     def test_intersection(self):
-        pass
+        begin1 = m2d.Vector2(1, 0)
+        end1 = m2d.Vector2(1, 1)
+        begin2 = m2d.Vector2(-1, -1)
+        end2 = m2d.Vector2(2, 2)
+        begin3 = m2d.Vector2(1, 1)
+        end3 = m2d.Vector2(-1, 1)
+
+        line1 = m2d.LineSegment(begin1, end1)
+        line2 = m2d.LineSegment(begin2, end2)
+        line3 = m2d.LineSegment(begin3, end3)
+
+        intersect1 = line1.intersect(line2)
+        intersect2 = line2.intersect(line3)
+        intersect3 = line3.intersect(line1)
+
+        self.assertEqual(intersect1, 1)
+        self.assertEqual(intersect2, 1)
+        self.assertEqual(intersect3, 1)
+
 
     def test_line_intersection(self):
-        pass
+        begin1 = m2d.Vector2(1, 0)
+        end1 = m2d.Vector2(1, 1)
+        begin2 = m2d.Vector2(-1, -1)
+        end2 = m2d.Vector2(2, 2)
+        begin3 = m2d.Vector2(1, 1)
+        end3 = m2d.Vector2(-1, 1)
+
+        line1 = m2d.LineSegment(begin1, end1)
+        line2 = m2d.LineSegment(begin2, end2)
+        line3 = m2d.LineSegment(begin3, end3)
+
+        line_intersection1 = line1.line_intersection(line2)
+        line_intersection2 = line2.line_intersection(line3)
+        line_intersection3 = line3.line_intersection(line1)
+
+        self.assertEqual(line_intersection1, 1)
+        self.assertAlmostEquals(line_intersection2, math.sqrt(8))
+        self.assertEqual(line_intersection3, 0)
+
 
     def test_intersect(self):
-        pass
+        begin1 = m2d.Vector2(1, 0)
+        end1 = m2d.Vector2(1, 1)
+        begin2 = m2d.Vector2(-1, -1)
+        end2 = m2d.Vector2(2, 2)
+        begin3 = m2d.Vector2(1, 1)
+        end3 = m2d.Vector2(-1, 1)
+        begin4 = m2d.Vector2(-1, 1)
+        end4 = m2d.Vector2(-1, -1)
+
+        line1 = m2d.LineSegment(begin1, end1)
+        line2 = m2d.LineSegment(begin2, end2)
+        line3 = m2d.LineSegment(begin3, end3)
+        line4 = m2d.LineSegment(begin4, end4)
+
+        intersect1 = line1.intersect(line2)
+        intersect2 = line2.intersect(line3)
+        intersect3 = line3.intersect(line1)
+        intersect4 = line4.intersect(line1)
+
+        self.assertEqual(intersect1, 1)
+        self.assertEqual(intersect2, 1)
+        self.assertEqual(intersect3, 1)
+        self.assertEqual(intersect4, 0)
 
     # Rect2d methods
 
