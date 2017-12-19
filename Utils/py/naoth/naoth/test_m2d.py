@@ -3,7 +3,7 @@ import math2d as m2d
 import math
 
 
-class test_m2d(unittest.TestCase):
+class TestMath2D(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         pass
@@ -115,8 +115,8 @@ class test_m2d(unittest.TestCase):
         g = -2
 
         ae = a * e
-        fa = f * a
-        ga = g * a
+        fa = a * f
+        ga = a * g
 
         self.assertEqual(ae.x, 25)
         self.assertEqual(ae.y, -25)
@@ -128,11 +128,10 @@ class test_m2d(unittest.TestCase):
         self.assertEqual(ga.y, 100)
 
     def test_div(self):
-        a = m2d.Vector2(20,-20)
-        b = m2d.Vector2(-10,-5.)
+        a = m2d.Vector2(20, -20)
 
-        self.assertEqual(a/5, m2d.Vector2(4,-4))
-        self.assertEqual(a/-2.5, m2d.Vector(4.,2.))
+        self.assertEqual(a/5, m2d.Vector2(4, -4))
+        self.assertEqual(a/-2.5, m2d.Vector2(4., 2.))
 
     def test_normalize(self):
         a = m2d.Vector2(1, 0)
@@ -195,7 +194,6 @@ class test_m2d(unittest.TestCase):
 
         self.assertEqual(a.x, 0)
         self.assertEqual(a.y, 1)
-
 
     def test_angle(self):
         a = m2d.Vector2(1, 0)
@@ -289,7 +287,7 @@ class test_m2d(unittest.TestCase):
         line_point3 = line2.point(3)
         line_point4 = line3.point(1)
 
-        self.assertEqual(line_point1.x, 1) # equal to end point
+        self.assertEqual(line_point1.x, 1)  # equal to end point
         self.assertEqual(line_point1.y, 1)
         self.assertEqual(line_point2.x, 1)
         self.assertEqual(line_point2.y, 0.5)
@@ -337,7 +335,6 @@ class test_m2d(unittest.TestCase):
         self.assertEqual(intersect2, 1)
         self.assertEqual(intersect3, 1)
 
-
     def test_line_intersection(self):
         begin1 = m2d.Vector2(1, 0)
         end1 = m2d.Vector2(1, 1)
@@ -357,7 +354,6 @@ class test_m2d(unittest.TestCase):
         self.assertEqual(line_intersection1, 1)
         self.assertAlmostEquals(line_intersection2, math.sqrt(8))
         self.assertEqual(line_intersection3, 0)
-
 
     def test_intersect(self):
         begin1 = m2d.Vector2(1, 0)
@@ -387,8 +383,8 @@ class test_m2d(unittest.TestCase):
     # Rect2d methods
 
     def test_inside(self):
-        a1 = m2d.Vector2(0,0)
-        a2 = m2d.Vector2(1,1)
+        a1 = m2d.Vector2(0, 0)
+        a2 = m2d.Vector2(1, 1)
         a = m2d.Rect2d(a1, a2)
 
         b1 = m2d.Vector2(-1, -1)
@@ -410,7 +406,6 @@ class test_m2d(unittest.TestCase):
         self.assertEqual(a.inside(m2d.Vector2(2, -0.5)), 0)
         self.assertEqual(b.inside(m2d.Vector2(0, -1.1)), 0)
         self.assertEqual(c.inside(m2d.Vector2(1, -1)), 1)
-
 
     def test_min(self):
         a1 = m2d.Vector2(0, 0)
@@ -442,7 +437,6 @@ class test_m2d(unittest.TestCase):
         self.assertEqual(d_min.x, -1)
         self.assertEqual(d_min.y, -1)
 
-
     def test_max(self):
         a1 = m2d.Vector2(0, 0)
         a2 = m2d.Vector2(1, 1)
@@ -472,6 +466,7 @@ class test_m2d(unittest.TestCase):
         self.assertEqual(c_max.y, 1)
         self.assertEqual(d_max.x, 1)
         self.assertEqual(d_max.y, 1)
+
 
 if __name__ == '__main__':
     unittest.main()
