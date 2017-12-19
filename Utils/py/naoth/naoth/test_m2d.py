@@ -387,13 +387,91 @@ class test_m2d(unittest.TestCase):
     # Rect2d methods
 
     def test_inside(self):
-        pass
+        a1 = m2d.Vector2(0,0)
+        a2 = m2d.Vector2(1,1)
+        a = m2d.Rect2d(a1, a2)
+
+        b1 = m2d.Vector2(-1, -1)
+        b2 = m2d.Vector2(1, 1)
+        b = m2d.Rect2d(b1, b2)
+
+        c1 = m2d.Vector2(1, 1)
+        c2 = m2d.Vector2(1, -1)
+        c = m2d.Rect2d(c1, c2)
+
+        self.assertEqual(a.inside(m2d.Vector2(0, 0)), 1)
+        self.assertEqual(b.inside(m2d.Vector2(0, 0)), 1)
+        self.assertEqual(c.inside(m2d.Vector2(0, 0)), 0)
+
+        self.assertEqual(a.inside(m2d.Vector2(1, 0.5)), 1)
+        self.assertEqual(b.inside(m2d.Vector2(1, 0.5)), 1)
+        self.assertEqual(c.inside(m2d.Vector2(1, 0.5)), 1)
+
+        self.assertEqual(a.inside(m2d.Vector2(2, -0.5)), 0)
+        self.assertEqual(b.inside(m2d.Vector2(0, -1.1)), 0)
+        self.assertEqual(c.inside(m2d.Vector2(1, -1)), 1)
+
 
     def test_min(self):
-        pass
+        a1 = m2d.Vector2(0, 0)
+        a2 = m2d.Vector2(1, 1)
+        a = m2d.Rect2d(a1, a2)
+        a_min = a.min()
+
+        b1 = m2d.Vector2(-1, -1)
+        b2 = m2d.Vector2(1, 1)
+        b = m2d.Rect2d(b1, b2)
+        b_min = b.min()
+
+        c1 = m2d.Vector2(1, 1)
+        c2 = m2d.Vector2(1, -1)
+        c = m2d.Rect2d(c1, c2)
+        c_min = c.min()
+
+        d1 = m2d.Vector2(-1, 1)
+        d2 = m2d.Vector2(1, -1)
+        d = m2d.Rect2d(d1, d2)
+        d_min = d.min()
+
+        self.assertEqual(a_min.x, 0)
+        self.assertEqual(a_min.y, 0)
+        self.assertEqual(b_min.x, -1)
+        self.assertEqual(b_min.y, -1)
+        self.assertEqual(c_min.x, 1)
+        self.assertEqual(c_min.y, -1)
+        self.assertEqual(d_min.x, -1)
+        self.assertEqual(d_min.y, -1)
+
 
     def test_max(self):
-        pass
+        a1 = m2d.Vector2(0, 0)
+        a2 = m2d.Vector2(1, 1)
+        a = m2d.Rect2d(a1, a2)
+        a_max = a.max()
+
+        b1 = m2d.Vector2(-1, -1)
+        b2 = m2d.Vector2(1, 1)
+        b = m2d.Rect2d(b1, b2)
+        b_max = b.max()
+
+        c1 = m2d.Vector2(1, 1)
+        c2 = m2d.Vector2(1, -1)
+        c = m2d.Rect2d(c1, c2)
+        c_max = c.max()
+
+        d1 = m2d.Vector2(-1, 1)
+        d2 = m2d.Vector2(1, -1)
+        d = m2d.Rect2d(d1, d2)
+        d_max = d.max()
+
+        self.assertEqual(a_max.x, 1)
+        self.assertEqual(a_max.y, 1)
+        self.assertEqual(b_max.x, 1)
+        self.assertEqual(b_max.y, 1)
+        self.assertEqual(c_max.x, 1)
+        self.assertEqual(c_max.y, 1)
+        self.assertEqual(d_max.x, 1)
+        self.assertEqual(d_max.y, 1)
 
 if __name__ == '__main__':
     unittest.main()
