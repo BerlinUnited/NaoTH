@@ -185,7 +185,7 @@ function dydt = doubleSupport(t,y,k,m,l0,left_tdp,right_tdp) % y(1)= x, y(2)=v_x
     right_ll = norm(right_leg);
     g = [0, 0, -9.81];
     dydt = [y(2); b*(l0/left_ll-1)*left_leg(1) + b*(l0/right_ll-1)*right_leg(1) + g(1); ...
-            y(4); b*(l0/left_ll-1)*left_leg(2) + b*(l0/right_ll-1)*right_leg(2) + g(2);
+            y(4); b*(l0/left_ll-1)*left_leg(2) + b*(l0/right_ll-1)*right_leg(2) + g(2); ...
             y(6); b*(l0/left_ll-1)*left_leg(3) + b*(l0/right_ll-1)*right_leg(3) + g(3)];
 end
 

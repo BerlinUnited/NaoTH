@@ -75,7 +75,18 @@ function p = SLIP_performance(x)
     % as much double support phases, as far on x without going to left or right as possible
     %p = sum(sout == 3) * -(yout(end,1) - yout(end,3)^2);
     
-    % performance index from paper for quater step optimization
+    %p = determineQuaterStepPerformance(ieout, teout, yeout, tdpout, yout);
+    
+    p = determineStepPerformance(y0, ieout, yeout, teout, tdpout, yout);
+end
+
+function [c,ceq] = nonlcon(x)
+    c   = [0,0,0,0,0,0];
+    ceq = [0,0,0,0,0,0];
+end
+
+function p = determineQuaterStepPerformance(ieout, teout, yeout, tdpout, yout)
+   % performance index from paper for quater step optimization
     tdp_A = [0;0];
     
     % find tdp of right foot during midstance
@@ -87,7 +98,7 @@ function p = SLIP_performance(x)
         if(isempty(idx))
             tdp_B = yout(end,[1,3]); % if no tdp with right foot during midstance -> flying phase -> use projected com
         else
-            tdp_B = tdpout(idx,3:4);
+            tdp_B = tdpout(idx,[3 5]);
         end
     end
       
@@ -102,7 +113,26 @@ function p = SLIP_performance(x)
     p = norm(0.5*(tdp_A + tdp_B) - c_lh)^2;
 end
 
-function [c,ceq] = nonlcon(x)
-    c   = [0,0,0,0,0,0];
-    ceq = [0,0,0,0,0,0];
+function p = determineStepPerformance(y0, ieout, yeout, teout, tdpout, yout)
+   % performance index from paper for quater step optimization
+    initial_state = [y0(1), y0(3), y0(5), y0(2), y0(4)];
+    
+    % find tdp of right foot during midstance
+    idx = find(ieout == 2, 1); % will get only one idx at most (terminating event)
+    if(isempty(idx))
+        final_state = yout(end,[1 3 5 2 4]); % no midstance event occured -> fallen
+    else
+        idx2 = find((tdpout(:,1) < teout(idx) & (tdpout(:,2) == 0)), 1, 'last');
+        if(isempty(idx2))
+            final_state = yout(end,[1 3 5 2 4]); % if no tdp with right foot during midstance -> flying phase -> use projected com
+        else
+            final_state = yeout(idx,[1 3 5 2 4]);
+            final_state(1) = final_state(1) - tdpout(idx,3);
+            final_state(2) = final_state(2) - tdpout(idx,5);
+        end
+    end
+     
+    p =  norm(initial_state([1 3 4 5])-final_state([1 3 4 5]))^2 ...
+        + (initial_state(2) + final_state(2))^2;
+        
 end

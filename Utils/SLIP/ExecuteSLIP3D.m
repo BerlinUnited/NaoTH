@@ -61,12 +61,12 @@ hold on;
 % X.init_x_vel      =  1.0166;
 % parameter.k = 13347;
 
-td_angle_theta    =  3.023376101367882;
-td_angle_phi      =  5.406824135029759e-06;
-parameter.k       = 1.334700000309406e+04;
-X.init_leg_length =  0.999999981695486;
-X.init_leg_theta  =  0;
-X.init_x_vel      =  0.913163569029949;
+td_angle_theta    =  3.141581978495935;
+td_angle_phi      =  0.314120525499899;
+parameter.k       =  1.334700011221722e+04;
+X.init_leg_length =  0.941200262077128;
+X.init_leg_theta  =  2.133886204937885e-08;
+X.init_x_vel      =  0.533409442718020;
                                                         
 parameter.touchdown_angle = [td_angle_theta, td_angle_phi];  % [theta, phi]
 
