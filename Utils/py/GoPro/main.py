@@ -41,6 +41,9 @@ def parseArguments():
     parser.add_argument('-p', '--passwd', action='store', required=not use_config, help='the password of the GoPro wifi network')
     parser.add_argument('--syslog', action='store_true', help='writes log to system log (too)')
     parser.add_argument('-r', '--retries', action='store', type=int, default=-1, help='How many retries should be attempted to connect to wifi before giving up.')
+    parser.add_argument('-m', '--max-time', action='store', type=int, default=600, help='How many seconds should be continued to record, after playing time expired and "finished" state wasn\'t set. (precaution to prevent endless recording!; default: 600s)')
+    parser.add_argument('-i', '--ignore', action='store_true', help='Ignores the "max time" option - possible infinity recording, if "finished" state isn\'t set.')
+    parser.add_argument('-gc', '--check-gc', action='store_true', help='Tries to listen to GameController and print its state (for debugging).')
 
     return parser.parse_args()
 
@@ -148,6 +151,7 @@ def main_gopro(loopControl:threading.Event):
         s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         s.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
         s.bind(('', 3838))
+        s.settimeout(5) # in sec
 
         # status monitor and cam keep alive thread
         status = CamStatus(cam, 1)
@@ -168,10 +172,16 @@ def main_loop(cam:GoProCamera.GoPro, cam_status:CamStatus, gc_socket:socket.sock
     gc_data = GameControlData()
     while not loopControl.is_set():
         try:
-            # receive GC data
-            message, address = gc_socket.recvfrom(8192)
-            gc_data.unpack(message)
-
+            try:
+                # receive GC data
+                message, address = gc_socket.recvfrom(8192)
+                gc_data.unpack(message)
+            except socket.timeout:
+                # didn't receive anything from GameController - stop recording (if necessary)
+                if cam_status['recording']:
+                    logger.warning("Not connected to GameController?")
+                    stopRecording(cam)
+                continue
             # handle output
             if not args.background and not args.quiet:
                 output = "%s | %s | game state: %s |" % (
@@ -179,20 +189,18 @@ def main_loop(cam:GoProCamera.GoPro, cam_status:CamStatus, gc_socket:socket.sock
                 print("\r" + output + " " * (len(previous_output) - len(output)), end="", flush=True)
 
             # handle game state changes
-            if not cam_status['recording'] and (
+            if not args.ignore and gc_data.secsRemaining < -args.max_time:
+                # only stop, if we're still recording
+                if cam_status['recording']:
+                    stopRecording(cam)
+            elif not cam_status['recording'] and (
                         gc_data.gameState in [GameControlData.STATE_READY, GameControlData.STATE_SET,
                                               GameControlData.STATE_PLAYING]):
-                if cam_status['mode'] != "Video":
-                    setCamVideoMode(cam)
-                logger.debug("Start recording")
-                cam.shutter(constants.start)
-                time.sleep(1)  # wait for the command to be executed
+                startRecording(cam, cam_status)
             elif cam_status['recording'] and not (
                         gc_data.gameState in [GameControlData.STATE_READY, GameControlData.STATE_SET,
                                               GameControlData.STATE_PLAYING]):
-                logger.debug("Stop recording")
-                cam.shutter(constants.stop)
-                time.sleep(1)  # wait for the command to be executed
+                stopRecording(cam)
 
             # just for debugging/logging
             if previous_state != gc_data.gameState:
@@ -207,6 +215,52 @@ def main_loop(cam:GoProCamera.GoPro, cam_status:CamStatus, gc_socket:socket.sock
             loopControl.set()
         except:
             traceback.print_exc()
+
+def checkGameController(loopControl:threading.Event):
+    # listen to gamecontroller
+    logger.info("Listen to GameController")
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    s.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+    s.bind(('', 3838))
+    s.settimeout(5)  # in sec
+
+    gc_data = GameControlData()
+
+    while not loopControl.is_set():
+        try:
+            try:
+                # receive GC data
+                message, address = s.recvfrom(8192)
+                gc_data.unpack(message)
+            except socket.timeout:
+                logger.warning("Not connected to GameController?")
+                continue
+
+            print(gc_data)
+
+            previous_state = gc_data.gameState
+        except (KeyboardInterrupt, SystemExit):
+            logger.debug("Interrupted or Exit")
+            print("")  # intentionally print empty line
+            loopControl.set()
+        except:
+            traceback.print_exc()
+    # close socket
+    s.close()
+
+
+def startRecording(cam, cam_status):
+    if cam_status['mode'] != "Video":
+        setCamVideoMode(cam)
+    logger.debug("Start recording")
+    cam.shutter(constants.start)
+    time.sleep(1)  # wait for the command to be executed
+
+def stopRecording(cam):
+    logger.debug("Stop recording")
+    cam.shutter(constants.stop)
+    time.sleep(1)  # wait for the command to be executed
 
 if __name__ == '__main__':
     if not sys.platform.startswith('linux'):
@@ -224,17 +278,21 @@ if __name__ == '__main__':
 
     logger = setupLogger(args.quiet, args.verbose, args.syslog)
 
-    # use config for network setup
-    if args.config:
-        try:
-            import config
-            args.ssid = config.ssid
-            args.passwd = config.passwd
-            args.retries = config.retries
-        except:
-            # no config available!
-            logger.error("No config available OR invalid config!")
-            exit(2)
+    if args.check_gc:
+        loopControl = threading.Event()
+        checkGameController(loopControl)
+    else:
+        # use config for network setup
+        if args.config:
+            try:
+                import config
+                args.ssid = config.ssid
+                args.passwd = config.passwd
+                args.retries = config.retries
+            except:
+                # no config available!
+                logger.error("No config available OR invalid config!")
+                exit(2)
 
-    daemon = Daemonize(app=name, pid=lock_file, action=main, logger=logger, foreground=not args.background)
-    daemon.start()
+        daemon = Daemonize(app=name, pid=lock_file, action=main, logger=logger, foreground=not args.background)
+        daemon.start()
