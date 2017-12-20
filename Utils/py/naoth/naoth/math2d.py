@@ -127,12 +127,6 @@ class LineSegment(object):
         t = clamp(t, 0.0, self.length)
         return self.base + self.direction*t
 
-    def project(self, p):
-        # TODO: das macht so keinen Sinn, was soll hier ueberhaupt projiziert werden und wohin
-        # ist auch nicht richtig definiert, sprich die Methode funktioniert nicht, hier wird von einem Vector ein
-        # Skalar abgezogen => fehler
-        return self.direction*p - self.direction*self.base
-
     def projection(self, p):
         # TODO: identisches problem wie bei project
         t = self.direction*p - self.direction*self.base

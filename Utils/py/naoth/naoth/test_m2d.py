@@ -267,29 +267,6 @@ class TestMath2D(unittest.TestCase):
         self.assertEqual(line_end3.x, -1)
         self.assertEqual(line_end3.y, 1)
 
-    def test_project(self):
-        begin1 = m2d.Vector2(1, 0)
-        end1 = m2d.Vector2(1, 1)
-        begin2 = m2d.Vector2(-1, -1)
-        end2 = m2d.Vector2(2, 2)
-        begin3 = m2d.Vector2(1, 1)
-        end3 = m2d.Vector2(-1, 1)
-
-        line1 = m2d.LineSegment(begin1, end1)
-        line2 = m2d.LineSegment(begin2, end2)
-        line3 = m2d.LineSegment(begin3, end3)
-
-        line_end1 = line1.end()
-        line_end2 = line2.end()
-        line_end3 = line3.end()
-
-        self.assertEqual(line_end1.x, 1)
-        self.assertEqual(line_end1.y, 1)
-        self.assertEqual(line_end2.x, 2)
-        self.assertEqual(line_end2.y, 2)
-        self.assertEqual(line_end3.x, -1)
-        self.assertEqual(line_end3.y, 1)
-
     def test_point(self):
         begin1 = m2d.Vector2(1, 0)
         end1 = m2d.Vector2(1, 1)
