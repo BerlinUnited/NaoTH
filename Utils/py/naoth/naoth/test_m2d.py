@@ -4,20 +4,6 @@ import math
 
 
 class TestMath2D(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        pass
-
-    @classmethod
-    def tearDownClass(cls):
-        pass
-
-    def setUp(self):
-        pass
-
-    def tearDown(self):
-        pass
-
     # Vector2 methods
 
     def test_add(self):
@@ -97,26 +83,26 @@ class TestMath2D(unittest.TestCase):
         c = m2d.Vector2(0, 1)
         d = m2d.Vector2(0.5, 7)
 
+        # Scalarproduct
         ab = a * b
         ac = a * c
         ad = a * d
 
-        self.assertEqual(ab.x, 50)
-        self.assertEqual(ab.y, 0)
-
-        self.assertEqual(ac.x, 0)
-        self.assertEqual(ac.y, -50)
-
-        self.assertEqual(ad.x, 25)
-        self.assertEqual(ad.y, -350)
+        self.assertEqual(ab, 50)
+        self.assertEqual(ac, -50)
+        self.assertEqual(ad, -325)
 
         e = 0.5
         f = 0
         g = -2
 
+        ea = e * a  # Test for __rmul__
         ae = a * e
         fa = a * f
         ga = a * g
+
+        self.assertEqual(ea.x, 25)
+        self.assertEqual(ea.y, -25)
 
         self.assertEqual(ae.x, 25)
         self.assertEqual(ae.y, -25)
@@ -129,9 +115,17 @@ class TestMath2D(unittest.TestCase):
 
     def test_div(self):
         a = m2d.Vector2(20, -20)
+        b = m2d.Vector2(4, -4)
+        c = m2d.Vector2(-8., 8.)
 
-        self.assertEqual(a/5, m2d.Vector2(4, -4))
-        self.assertEqual(a/-2.5, m2d.Vector2(4., 2.))
+        d = a/5
+        e = a/-2.5
+
+        self.assertEqual(d.x, b.x)
+        self.assertEqual(d.y, b.y)
+
+        self.assertEqual(e.x, c.x)
+        self.assertEqual(e.y, c.y)
 
     def test_normalize(self):
         a = m2d.Vector2(1, 0)
@@ -213,14 +207,40 @@ class TestMath2D(unittest.TestCase):
 
     # Pose2D methods
 
-    def test_mul(self):
-        pass
+    def test_global_transformation(self):
+        # the multiplication transforms a vector in local coordinates to global coordinates.
+        # syntax pose3d(robot) in global coordinates * a vector in the robots coordinate system
+        glob_robot_pose = m2d.Pose2D(m2d.Vector2(-1000, -1000), 0)
+
+        # test the init method
+        self.assertEqual(glob_robot_pose.translation.x, -1000)
+        self.assertEqual(glob_robot_pose.translation.y, -1000)
+        self.assertEqual(glob_robot_pose.rotation, 0)
+
+        rel_ball_position = m2d.Vector2(100, 0)
+
+        glob_ball_pos = glob_robot_pose * rel_ball_position
+        self.assertEqual(glob_ball_pos.x, -900)
+        self.assertEqual(glob_ball_pos.y, -1000)
 
     def test_invert(self):
-        pass
+        glob_robot_pose = m2d.Pose2D(m2d.Vector2(-1000, -1000), 20)
+        test = ~glob_robot_pose
+        testtest = ~test
 
-    def test_div(self):
-        pass
+        self.assertAlmostEqual(glob_robot_pose.translation.x, testtest.translation.x, places=9)
+        self.assertAlmostEqual(glob_robot_pose.translation.y, testtest.translation.y, places=9)
+        self.assertAlmostEqual(glob_robot_pose.rotation, testtest.rotation, places=9)
+
+    def test_local_transformation(self):
+        # the division transforms a vector in global coordinates to local coordinates.
+        # vector in local coord = pose3d(robot) in global coordinates / global vector
+        glob_robot_pose = m2d.Pose2D(m2d.Vector2(1000, 0), 0)
+        glob_ball_pose = m2d.Vector2(1200, 0)
+
+        test = glob_robot_pose / glob_ball_pose
+        self.assertEqual(test.x, 200)
+        self.assertEqual(test.y, 0)
 
     # LineSegment
 

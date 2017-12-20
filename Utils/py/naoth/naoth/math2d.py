@@ -30,10 +30,19 @@ class Vector2:
 
     def __mul__(self, other):
         if isinstance(other, Vector2):
-            # interpret multiplication as other^t * self (scalarproduct of the vectors, where ^t means transpose)
+            # interpret multiplication as other^t * self (scalar product of the vectors, where ^t means transpose)
             return self.x*other.x + self.y*other.y
         elif isinstance(other, (int, float, long)):
             return Vector2(self.x*other, self.y*other)
+        else:
+            return NotImplemented
+
+    def __rmul__(self, other):
+        if isinstance(other, Vector2):
+            # interpret multiplication as other^t * self (scalar product of the vectors, where ^t means transpose)
+            return self.x * other.x + self.y * other.y
+        elif isinstance(other, (int, float, long)):
+            return Vector2(self.x * other, self.y * other)
         else:
             return NotImplemented
 
@@ -44,6 +53,12 @@ class Vector2:
 
     def __str__(self):
         return str(self.x) + " " + str(self.y)
+
+    def __eq__(self, other):
+        if self.x == other.x and self.y == other.y:
+            return True
+        else:
+            return False
 
     def normalize(self):
         if Vector2.abs(self) != 0:
@@ -84,6 +99,9 @@ class Pose2D:
     # https://docs.python.org/3/library/operator.html
     def __div__(self, point):
         return (point - self.translation).rotate(-self.rotation)
+
+    def __str__(self):
+        return str(self.translation.x) + " " + str(self.translation.y) + " " + str(self.rotation)
 
 
 class LineSegment(object):
