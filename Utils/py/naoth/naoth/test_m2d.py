@@ -209,7 +209,7 @@ class TestMath2D(unittest.TestCase):
 
     def test_global_transformation(self):
         # the multiplication transforms a vector in local coordinates to global coordinates.
-        # syntax pose3d(robot) in global coordinates * a vector in the robots coordinate system
+        # syntax pose2d(robot) in global coordinates * a vector in the robots coordinate system
         glob_robot_pose = m2d.Pose2D(m2d.Vector2(-1000, -1000), 0)
 
         # test the init method
@@ -294,23 +294,18 @@ class TestMath2D(unittest.TestCase):
         self.assertEqual(line_point4.y, 1)
 
     def test_projection(self):
-        """
-        #TODO: change method!! Does not work in any case
-        begin1 = m2d.Vector2(1, 0)
-        end1 = m2d.Vector2(1, 1)
-        begin2 = m2d.Vector2(-1, -1)
-        end2 = m2d.Vector2(2, 2)
-        begin3 = m2d.Vector2(1, 1)
-        end3 = m2d.Vector2(-1, 1)
+
+        begin1 = m2d.Vector2(-1, 0)
+        end1 = m2d.Vector2(1, 0)
 
         line1 = m2d.LineSegment(begin1, end1)
-        line2 = m2d.LineSegment(begin2, end2)
-        line3 = m2d.LineSegment(begin3, end3)
 
-        project1 = line1.project(1)
-        project2 = line2.project(0)
-        """
-        pass
+        project1 = line1.projection(m2d.Vector2(0, 1))
+        project2 = line1.projection(m2d.Vector2(5, 1))
+        self.assertEqual(project1.x, 0)
+        self.assertEqual(project1.y, 0)
+        self.assertEqual(project2.x, 1)
+        self.assertEqual(project2.y, 0)
 
     def test_intersection(self):
         begin1 = m2d.Vector2(1, 0)

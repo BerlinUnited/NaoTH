@@ -128,8 +128,7 @@ class LineSegment(object):
         return self.base + self.direction*t
 
     def projection(self, p):
-        # TODO: identisches problem wie bei project
-        t = self.direction*p - self.direction*self.base
+        t = self.direction * p - self.direction * self.base
         return self.point(t)
 
     def intersection(self, other):
