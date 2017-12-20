@@ -21,9 +21,11 @@ x0 = [     2.992, ...
       0.00075871, ...
           1.0166];
     
-opts = optimset('TolFun',   1e-12); % default 1e-6) ;
+opts = optimset('TolFun',   1e-12, ...% default 1e-6
+                'MaxFunEvals', 1000 * numel(x0)); % default 200 * numel(x0)) ;
       
 results = fminsearch(@SLIP_performance, x0, opts);
+p = SLIP_performance(results);
 
 function p = SLIP_performance(x)
     parameter.maxTime = 100;
@@ -77,11 +79,6 @@ function p = SLIP_performance(x)
     p = determineStepPerformance(y0, ieout, yeout, teout, tdpout, yout);
 end
 
-function [c,ceq] = nonlcon(x)
-    c   = [0,0,0,0,0,0];
-    ceq = [0,0,0,0,0,0];
-end
-
 function p = determineQuaterStepPerformance(ieout, teout, yeout, tdpout, yout)
    % performance index from paper for quater step optimization
     tdp_A = [0;0];
@@ -91,11 +88,11 @@ function p = determineQuaterStepPerformance(ieout, teout, yeout, tdpout, yout)
     if(isempty(idx))
         tdp_B = yout(end,[1,3]); % no midstance event occured -> fallen
     else
-        idx = find((tdpout(:,1) < teout(idx) & (tdpout(:,2) == 0)), 1, 'last');
-        if(isempty(idx))
+        idx2 = find((tdpout(:,1) < teout(idx) & (tdpout(:,2) == 0)), 1, 'last');
+        if(isempty(idx2))
             tdp_B = yout(end,[1,3]); % if no tdp with right foot during midstance -> flying phase -> use projected com
         else
-            tdp_B = tdpout(idx,[3 5]);
+            tdp_B = tdpout(idx2,[3 5]);
         end
     end
       
@@ -112,7 +109,7 @@ end
 
 function p = determineStepPerformance(y0, ieout, yeout, teout, tdpout, yout)
    % performance index from paper for quater step optimization
-    initial_state = [y0(1), y0(3), y0(5), y0(2), y0(4)];
+    initial_state = [y0(1), y0(3), y0(5), y0(2), y0(4)]; % [x,y,z,x',y']
     
     % find tdp of right foot during midstance
     idx = find(ieout == 2, 1); % will get only one idx at most (terminating event)
@@ -124,8 +121,8 @@ function p = determineStepPerformance(y0, ieout, yeout, teout, tdpout, yout)
             final_state = yout(end,[1 3 5 2 4]); % if no tdp with right foot during midstance -> flying phase -> use projected com
         else
             final_state = yeout(idx,[1 3 5 2 4]);
-            final_state(1) = final_state(1) - tdpout(idx,3);
-            final_state(2) = final_state(2) - tdpout(idx,5);
+            final_state(1) = final_state(1) - tdpout(idx2,3);
+            final_state(2) = final_state(2) - tdpout(idx2,5);
         end
     end
      
