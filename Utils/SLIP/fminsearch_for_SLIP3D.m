@@ -1,47 +1,61 @@
-clear all;
-
-lower_bound= [pi-pi/18, ... % td_angle_theta
+clear all;     
+    
+lower_bound = [pi-pi/18, ... % td_angle_theta
                      0, ... % td_angle_phi
                  12000, ... % k
                    0.8, ... % init_leg_length
-                     0, ... % init_leg_theta
-                   0.5];    % init_x_vel
+                     0]; %, ... % init_leg_theta
+                 %  0.5];    % init_x_vel
 
-upper_bound= [   pi, ... % td_angle_theta
+upper_bound = [   pi, ... % td_angle_theta
               pi/10, ... % td_angle_phi
               16000, ... % k
                   1, ... % init_leg_length
-               pi/4, ... % init_leg_theta
-                1.5];    % init_x_vel
-            
-x0 = [     2.992, ...
-           0.207, ...
-           13347, ...
-         0.99869, ...
-      0.00075871, ...
-          1.0166];
-    
-opts = optimset('TolFun',   1e-12, ...% default 1e-6
-                'MaxFunEvals', 1000 * numel(x0)); % default 200 * numel(x0)) ;
-      
-results = fminsearch(@SLIP_performance, x0, opts);
-p = SLIP_performance(results);
+               pi/4]; %, ... % init_leg_theta
+                %1.5];    % init_x_vel
 
-function p = SLIP_performance(x)
+opts = optimset('TolFun',   1e-12, ...% default 1e-6
+                'MaxFunEvals', 1000 * numel(6)); % default 200 * numel(x0)) ;
+    
+X = generateStartingPoints();  
+idx = randi(size(X,1),1,100);
+
+results = zeros(100,6);
+p  = zeros(100,1);
+
+parfor i = 1:100
+    disp(i);
+    x0 = bound_min_max(X(idx(i),1:5), lower_bound, upper_bound);
+    
+    [r, p(i)] = fminsearch(@(x) SLIP_performance(x, X(idx(i),6), lower_bound, upper_bound), x0, opts);
+    
+    results(i,:) = [unbound_min_max(r, lower_bound, upper_bound), X(idx(i),6)];
+end
+
+function p = SLIP_performance(x,x_vel, lower_bound, upper_bound)
+    x_ub = unbound_min_max(x, lower_bound, upper_bound);
+    
+    assert(isreal(x_ub));
+
     parameter.maxTime = 100;
-    parameter.options = odeset( ... %'OutputFcn', @odeplot,'OutputSel', [1 3],
-        'Refine',4, 'RelTol', 1e-6, 'AbsTol', 1e-9);
+    parameter.options = odeset( ...%'OutputFcn', @odeplot,'OutputSel', [1 3], ...
+        'RelTol', 1e-6, ...
+        'AbsTol', 1e-9, ...
+        'Refine', 1, ...
+        'MaxStep', 1e-2);
 
     parameter.l0 = 1;   % m
     parameter.m  = 80;   % kg
-    parameter.k  = x(3); % N/m
-    parameter.touchdown_angle = [x(1), x(2)];
+    parameter.k  = x_ub(3); % N/m
+    parameter.touchdown_angle = [x_ub(1), x_ub(2)];
 
-    X.init_leg_length =x(4);
-    X.init_leg_theta = x(5);
-    X.init_x_vel = x(6);
+    X.init_leg_length = x_ub(4);
+    X.init_leg_theta  = x_ub(5);
+    X.init_x_vel = x_vel;
 
     y0 = convertToSLIPState(X,'spherical');
+    
+    assert(isreal(y0));
     
     parameter.enable_assert = true;
     parameter.terminal_ms = true;
@@ -76,7 +90,7 @@ function p = SLIP_performance(x)
     
     %p = determineQuaterStepPerformance(ieout, teout, yeout, tdpout, yout);
     
-    p = determineStepPerformance(y0, ieout, yeout, teout, tdpout, yout);
+    p = determineStepPerformance(y0, ieout, yeout, teout, tdpout, yout(end,:));
 end
 
 function p = determineQuaterStepPerformance(ieout, teout, yeout, tdpout, yout)
@@ -105,28 +119,4 @@ function p = determineQuaterStepPerformance(ieout, teout, yeout, tdpout, yout)
     end
     
     p = norm(0.5*(tdp_A + tdp_B) - c_lh)^2;
-end
-
-function p = determineStepPerformance(y0, ieout, yeout, teout, tdpout, yout)
-   % performance index from paper for quater step optimization
-    initial_state = [y0(1), y0(3), y0(5), y0(2), y0(4)]; % [x,y,z,x',y']
-    
-    % find tdp of right foot during midstance
-    idx = find(ieout == 2, 1); % will get only one idx at most (terminating event)
-    if(isempty(idx))
-        final_state = yout(end,[1 3 5 2 4]); % no midstance event occured -> fallen
-    else
-        idx2 = find((tdpout(:,1) < teout(idx) & (tdpout(:,2) == 0)), 1, 'last');
-        if(isempty(idx2))
-            final_state = yout(end,[1 3 5 2 4]); % if no tdp with right foot during midstance -> flying phase -> use projected com
-        else
-            final_state = yeout(idx,[1 3 5 2 4]);
-            final_state(1) = final_state(1) - tdpout(idx2,3);
-            final_state(2) = final_state(2) - tdpout(idx2,5);
-        end
-    end
-     
-    p =  norm(initial_state([1 3 4 5])-final_state([1 3 4 5]))^2 ...
-        + (initial_state(2) + final_state(2))^2;
-        
 end

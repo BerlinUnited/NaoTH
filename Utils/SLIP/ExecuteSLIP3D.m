@@ -3,10 +3,13 @@ clear all;
 
 parameter.l0 = 1;   % m
 parameter.m  = 80;   % kg
-parameter.k  = 14000; % N/m
 parameter.maxTime = 100;
+
 parameter.options = odeset( ...%'OutputFcn', @odeplot,'OutputSel', [1 3], ...
-    'Refine',4, 'RelTol', 1e-6, 'AbsTol', 1e-9);
+    'RelTol', 1e-6, ...
+    'AbsTol', 1e-9, ...
+    'Refine', 1, ...
+    'MaxStep', 1e-2);
 
 fig = figure(1);
 ax = axes;
@@ -61,12 +64,12 @@ hold on;
 % X.init_x_vel      =  1.0166;
 % parameter.k = 13347;
 
-td_angle_theta    =  2.986908915783091;
-td_angle_phi      =  -0.037655089189095;
-parameter.k       =  12.071034031138998e+04;
-X.init_leg_length =  0.996511603123221;
-X.init_leg_theta  =  0.001067743974264;
-X.init_x_vel      =  1.019633014487454;
+td_angle_theta    =  2.97162702610267;
+td_angle_phi      =  2.18681539959303e-07;
+parameter.k       =  15011.6575775283;
+X.init_leg_length =  0.995891964424831;
+X.init_leg_theta  =  2.04009876352827e-08;
+X.init_x_vel      =  0.611111111111111;
                                                         
 parameter.touchdown_angle = [td_angle_theta, td_angle_phi];  % [theta, phi]
 

@@ -6,13 +6,10 @@ function [tout, yout, teout, yeout, ieout, tsout, sout, tdpout] = SLIP3D(y0, par
     l0 = parameter.l0; % m
     m  = parameter.m;  % kg
     k  = parameter.k;  % N/m
+            
     right_tda = parameter.touchdown_angle; % TODO: Binary Search, GS, CMA-ES
+    right_tda(2) = -right_tda(2);
     left_tda  = parameter.touchdown_angle;
-    if(parameter.touchdown_angle(2) < 0)
-        left_tda(2)  = -left_tda(2);
-    else
-        right_tda(2) = -right_tda(2);
-    end
     
     options = parameter.options;
 
@@ -72,9 +69,9 @@ function [tout, yout, teout, yeout, ieout, tsout, sout, tdpout] = SLIP3D(y0, par
             % 1) never terminal
             % 2) maybe an artifact of the last state(?) -> might be
             %    handled better
-            ie = ie(abs(te) > 10e-16);
-            ye = ye(abs(te) > 10e-16,:);
-            te = te(abs(te) > 10e-16);
+            ie = ie(abs(te) > t(2));
+            ye = ye(abs(te) > t(2),:);
+            te = te(abs(te) > t(2));
             
             % Accumulate output.  This could be passed out as output arguments.
             tout = [tout; tout(end) + t(2:end)];
@@ -109,7 +106,7 @@ function [tout, yout, teout, yeout, ieout, tsout, sout, tdpout] = SLIP3D(y0, par
                 else %liftoff and touchdown
                     
                     if (parameter.enable_assert)
-                        save('error.mat', y0, parameter);
+                        save('error.mat', 'y0', 'parameter');
                         assert(false,'liftoff and touchdown 2at the same time", logical error?');
                     end
                     
@@ -136,7 +133,7 @@ function [tout, yout, teout, yeout, ieout, tsout, sout, tdpout] = SLIP3D(y0, par
                 else %liftoff and touchdown
                     
                     if (parameter.enable_assert)
-                        save('error.mat', y0, parameter);
+                        save('error.mat', 'y0', 'parameter');
                         assert(false,'liftoff and touchdown 2at the same time", logical error?');
                     end
                     
@@ -161,14 +158,16 @@ function [tout, yout, teout, yeout, ieout, tsout, sout, tdpout] = SLIP3D(y0, par
                 end
                 
             case 'flying'
-                if(last_support_foot_was_left)
-                    state = 'right_support';
-                    right_tdp = [y(end,1); y(end,3); y(end,5)] + l0 * [sin(right_tda(1)) * cos(right_tda(2)); sin(right_tda(1)) * sin(right_tda(2)); cos(right_tda(1))];
-                    tdpout = [tdpout; [tout(end), 0, right_tdp']];
-                else
-                    state = 'left_support';
-                    left_tdp  = [y(end,1); y(end,3); y(end,5)] + l0 * [sin(left_tda(1)) * cos(left_tda(2)); sin(left_tda(1)) * sin(left_tda(2)); cos(left_tda(1))];
-                    tdpout = [tdpout; [tout(end), 1, left_tdp']];
+                if any(ie == 4)
+                    if(last_support_foot_was_left)
+                        state = 'right_support';
+                        right_tdp = [y(end,1); y(end,3); y(end,5)] + l0 * [sin(right_tda(1)) * cos(right_tda(2)); sin(right_tda(1)) * sin(right_tda(2)); cos(right_tda(1))];
+                        tdpout = [tdpout; [tout(end), 0, right_tdp']];
+                    else
+                        state = 'left_support';
+                        left_tdp  = [y(end,1); y(end,3); y(end,5)] + l0 * [sin(left_tda(1)) * cos(left_tda(2)); sin(left_tda(1)) * sin(left_tda(2)); cos(left_tda(1))];
+                        tdpout = [tdpout; [tout(end), 1, left_tdp']];
+                    end
                 end
         end
     end
