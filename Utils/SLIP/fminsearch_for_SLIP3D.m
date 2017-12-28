@@ -24,10 +24,11 @@ results = zeros(100,6);
 p  = zeros(100,1);
 
 parfor i = 1:100
+    state = X(idx(i),:);
     disp(i);
-    x0 = bound_min_max(X(idx(i),1:5), lower_bound, upper_bound);
+    x0 = bound_min_max(state(1:5), lower_bound, upper_bound);
     
-    [r, p(i)] = fminsearch(@(x) SLIP_performance(x, X(idx(i),6), lower_bound, upper_bound), x0, opts);
+    [r, p(i)] = fminsearch(@(x) SLIP_performance(x, state(6), lower_bound, upper_bound), x0, opts);
     
     results(i,:) = [unbound_min_max(r, lower_bound, upper_bound), X(idx(i),6)];
 end
@@ -90,7 +91,7 @@ function p = SLIP_performance(x,x_vel, lower_bound, upper_bound)
     
     %p = determineQuaterStepPerformance(ieout, teout, yeout, tdpout, yout);
     
-    p = determineStepPerformance(y0, ieout, yeout, teout, tdpout, yout(end,:));
+    p = midstanceToMidstancePerf(y0, ieout, yeout, teout, tdpout, yout(end,:));
 end
 
 function p = determineQuaterStepPerformance(ieout, teout, yeout, tdpout, yout)

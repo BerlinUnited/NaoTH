@@ -1,4 +1,4 @@
-function p = determineStepPerformance(y0, ieout, yeout, teout, tdpout, yend)
+function p = midstanceToMidstancePerf(y0, ieout, yeout, teout, tdpout, yend)
    % performance index from paper for quater step optimization
     initial_state = [y0(1), y0(3), y0(5), y0(2), y0(4)]; % [x,y,z,x',y']
     
