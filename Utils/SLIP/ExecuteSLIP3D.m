@@ -16,53 +16,9 @@ ax = axes;
 box on
 hold on;
 
-%y0 = [0; 1.2; 0; 0; -parameter.l0*cos(parameter.touchdown_angle(1)); 0]; % avoid x=0 as start if jumping on place... causes instabilities somehow
-%y0 = [0; 1.1; 0; 0; 1; 0]; % avoid x=0 as start if jumping on place... causes instabilities somehow
-
-% opt tout                           
-% td_angle_theta  =  2.3469;
-% td_angle_phi    = -0.11703;
-% init_leg_length =  0.67807;
-% init_leg_theta  = -0.61583;
-% init_leg_phi    = -0.40995;
-% init_x_vel      =  0.28869;
-% init_y_vel      =  0.019281;
-% init_z_vel      =  1.8528;    
-
-% opt final state 
-% td_angle_theta  =  2.2593;
-% td_angle_phi    = -1.2734;
-% init_leg_length =  0.54033;
-% init_leg_theta  = -0.16329;
-% init_leg_phi    = -1.257;
-% init_x_vel      =  1.9829;
-% init_y_vel      =  0.1106;
-% init_z_vel      =  1.641;  
-
-% opt final number of states                                                               
-% td_angle_theta  =  2.4564;
-% td_angle_phi    = -0.54891;
-% init_leg_length =  0.90997;
-% init_leg_theta  = -0.31314;
-% init_leg_phi    = -0.12494;
-% init_x_vel      =  1.959;
-% init_y_vel      =  1.085;
-% init_z_vel      =  0.28402; 
-
-% some best found number of states times (final x - abs(y))
-%td_angle_theta  =  2.9675;
-%td_angle_phi    =  0.249;
-%X.init_leg_length =  0.99917;
-%X.init_leg_theta  =  0.011187;
-%X.init_x_vel      =  0.81274;
-
-% some best found using quater step optimization
-% td_angle_theta  =  2.992;
-% td_angle_phi    =  0.207;
-% X.init_leg_length =  0.99869;
-% X.init_leg_theta  =  0.00075871;
-% X.init_x_vel      =  1.0166;
-% parameter.k = 13347;
+parameter.A = [1 0 0 0 0;0 1 0 0 0;0 0 -1 0 0;0 0 0 -1 0;0 0 0 0 1];
+parameter.B = [1 0 0;0 -1 0;0 0 1];
+parameter.K = [-0.654890233934113 -0.642836212808432 1.46507289075606e-07 1.44720561048440e-07 0.267316287317275;-1.10657752276589e-06 -5.64008412954113e-05 -4.10806021567492 -3.40151422440362 -0.000823412401939584;3.64169830823154e-06 -4.52183343289762e-05 8.16438359388338e-11 6.25291743129772e-11 -0.000723199441127653];
 
 td_angle_theta    =  2.97162702610267;
 td_angle_phi      =  2.18681539959303e-07;

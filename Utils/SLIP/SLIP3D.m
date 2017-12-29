@@ -1,6 +1,6 @@
 function [tout, yout, teout, yeout, ieout, tsout, sout, tdpout] = SLIP3D(y0, parameter)
-%SLIP  simulates a basic SLIP model.
-%   This function uses the ODE45 solver to simulate the SLIP model
+%SLIP3D  simulates a 3D SLIP model.
+%   This function uses the ODE45 solver to simulate the 3D SLIP model
 %   Attention: angles are interpreted as polar coordinates tda=[theta, phi]
 
     l0 = parameter.l0; % m
@@ -35,15 +35,15 @@ function [tout, yout, teout, yeout, ieout, tsout, sout, tdpout] = SLIP3D(y0, par
         switch state
             case 'left_support' 
                 sout  = [sout; 1];
-                event = @(t,y) events_singleSupport(t,y,l0,left_tdp,right_tda, parameter.terminal_ms, parameter.terminal_lh);
+                event = @(t,y) events_singleSupport(t,y,l0,left_tdp,right_tda, parameter.terminal_ms || isfield(parameter,'K'), parameter.terminal_lh);
                 f = @(t,y) singleSupport(t,y,k,m,l0,left_tdp);
             case 'right_support'               
                 sout  = [sout; 3];
-                event = @(t,y) events_singleSupport(t,y,l0,right_tdp,left_tda, parameter.terminal_ms, parameter.terminal_lh);
+                event = @(t,y) events_singleSupport(t,y,l0,right_tdp,left_tda, parameter.terminal_ms || isfield(parameter,'K'), parameter.terminal_lh);
                 f = @(t,y) singleSupport(t,y,k,m,l0,right_tdp);
             case 'double_support'
                 sout  = [sout; 2];
-                event = @(t,y) events_doubleSupport(t,y,l0,left_tdp,right_tdp, parameter.terminal_ms, parameter.terminal_lh);
+                event = @(t,y) events_doubleSupport(t,y,l0,left_tdp,right_tdp, parameter.terminal_ms || isfield(parameter,'K'), parameter.terminal_lh);
                 f = @(t,y) doubleSupport(t,y,k,m,l0,left_tdp,right_tdp);
             case 'flying'
                 sout  = [sout; 4];
@@ -52,7 +52,7 @@ function [tout, yout, teout, yeout, ieout, tsout, sout, tdpout] = SLIP3D(y0, par
                 else
                     tda = left_tda;
                 end
-                event = @(t,y) events_flying(t,y,l0,tda, parameter.terminal_ms, parameter.terminal_lh);
+                event = @(t,y) events_flying(t,y,l0,tda, parameter.terminal_ms || isfield(parameter,'K'), parameter.terminal_lh);
                 f = @(t,y) flying(t,y);
         end
                 
@@ -86,8 +86,33 @@ function [tout, yout, teout, yeout, ieout, tsout, sout, tdpout] = SLIP3D(y0, par
             break;
         end
         
-        if(parameter.terminal_ms && any(ie == 2)) % midstance
-            break;
+        if(any(ie == 2)) % midstance
+            if(parameter.terminal_ms)
+                break;
+            elseif (isfield(parameter,'K'))
+                y_des = y0(1:5);
+                y = yout(end,1:5);
+                y([1 3 5]) = y([1 3 5]) - tdpout(end,3:5);
+                
+                u_des = [parameter.touchdown_angle parameter.k]';
+                
+                switch state
+                    case 'left_support'
+                        u = u_des + parameter.K * (y' - y_des); 
+                    case 'right_support'
+                        u = u_des + parameter.K * (parameter.A * y' - y_des);
+                    case 'flying'
+                        assert(false,'midstance in flying');
+                    case 'double_support'
+                        assert(false,'midstance in double support');
+                end
+                      
+                k = u(3);  % N/m
+            
+                right_tda = u(1:2); % TODO: Binary Search, GS, CMA-ES
+                right_tda(2) = -right_tda(2);
+                left_tda  = u(1:2);
+            end
         end
         
         if(parameter.terminal_lh && any(ie == 3)) % lowest hight
@@ -103,7 +128,7 @@ function [tout, yout, teout, yeout, ieout, tsout, sout, tdpout] = SLIP3D(y0, par
                     right_tdp = [y(end,1); y(end,3); y(end,5)] + l0 * [sin(right_tda(1)) * cos(right_tda(2)); sin(right_tda(1)) * sin(right_tda(2)); cos(right_tda(1))];
                     
                     tdpout = [tdpout; [tout(end), 0, right_tdp']];
-                else %liftoff and touchdown
+                elseif any(ie == 5) && any(ie == 4) %liftoff and touchdown
                     
                     if (parameter.enable_assert)
                         save('error.mat', 'y0', 'parameter');
@@ -118,6 +143,9 @@ function [tout, yout, teout, yeout, ieout, tsout, sout, tdpout] = SLIP3D(y0, par
                     %if(right_tdp(3) < 0) % the touch down event is an artefact from the first integration step, e.g. after a flying phase
                     %    state = 'flying';
                     %end
+                elseif any(ie == 2)
+                    % just midstance
+                    continue;
                 end
                 
                 last_support_foot_was_left = true;
@@ -130,7 +158,7 @@ function [tout, yout, teout, yeout, ieout, tsout, sout, tdpout] = SLIP3D(y0, par
                     left_tdp = [y(end,1); y(end,3); y(end,5)] + l0 * [sin(left_tda(1)) * cos(left_tda(2)); sin(left_tda(1)) * sin(left_tda(2)); cos(left_tda(1))];
                     
                     tdpout = [tdpout; [tout(end), 1, left_tdp']];
-                else %liftoff and touchdown
+                elseif any(ie == 5)  && any(ie == 4) %liftoff and touchdown
                     
                     if (parameter.enable_assert)
                         save('error.mat', 'y0', 'parameter');
@@ -144,6 +172,9 @@ function [tout, yout, teout, yeout, ieout, tsout, sout, tdpout] = SLIP3D(y0, par
                     %if(left_tdp(3) < 0) % the touch down event is an artefact from the first integration step, e.g. after a flying phase
                     %    state = 'flying';
                     %end
+                elseif any(ie == 2)
+                    % just midstance
+                    continue;
                 end
                 
                 last_support_foot_was_left = false;
