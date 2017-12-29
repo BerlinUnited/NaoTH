@@ -11,6 +11,6 @@ switch type
                  
     case 'cartesian'
         % avoid x=0 as start if jumping on place... causes somehow instabilities             
-        y0 = [X.init_x; X.init_x_vel; X.init_y; 0; X.init_z; 0]; 
+        y0 = [0; X.init_x_vel; X.init_y; 0; X.init_z; 0]; 
 end
 
