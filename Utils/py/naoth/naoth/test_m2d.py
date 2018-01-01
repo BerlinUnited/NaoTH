@@ -1,5 +1,6 @@
 import unittest
 import math2d as m2d
+import math3d as m3d
 import math
 
 
@@ -112,6 +113,13 @@ class TestMath2D(unittest.TestCase):
 
         self.assertEqual(ga.x, -100)
         self.assertEqual(ga.y, 100)
+
+        # Negative Test
+        with self.assertRaises(TypeError):
+            t = m2d.Vector2(50, -50)
+            z = m3d.Vector3(1, 0, 1)
+            t * z
+
 
     def test_div(self):
         a = m2d.Vector2(20, -20)
