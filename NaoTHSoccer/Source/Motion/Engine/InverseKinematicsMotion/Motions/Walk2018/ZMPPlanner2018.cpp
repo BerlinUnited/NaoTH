@@ -10,10 +10,27 @@
 using namespace InverseKinematic;
 
 void ZMPPlanner2018::execute(){
-    ASSERT(!getStepBuffer().empty());
+
+    // TODO: into a init or constructor...
+    if(getStepBuffer().empty())
+    {
+        CoMFeetPose currentCOMFeetPose = getInverseKinematicsMotionEngineService().getEngine().getCurrentCoMFeetPose();
+        currentCOMFeetPose.localInLeftFoot();
+        Vector3d targetZMP(currentCOMFeetPose.com.translation);
+        targetZMP.z = getInverseKinematicsMotionEngineService().getEngine().getParameters().walk.hip.comHeight;
+        // initialize the zmp buffer with the current com pose
+
+        // TODO: previewSteps aka initial step size parameter for stepbuffer, zmpbuffer and zmp controller
+        // initial_step_size = zmp_preview_size - 1;
+        size_t initial_step_size = 100;
+        for (size_t i = 0; i+1 < initial_step_size; i++) {
+          double t = static_cast<double>(i) / static_cast<double>(initial_step_size-1);
+          Vector3d zmp = currentCOMFeetPose.com.translation*(1.0-t) + targetZMP*t;
+          getZMPReferenceBuffer().push(zmp);
+        }
+    }
 
     Step& planningStep = getStepBuffer().last();
-    ASSERT(!planningStep.isPlanned());
 
     Vector3d zmp;
     Vector3d other_zmp;

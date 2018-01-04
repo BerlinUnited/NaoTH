@@ -54,6 +54,7 @@ void FootStepPlanner2018::execute(){
     // add the initial step
     // NOTE: zmp for this step it already completely planed,
     //       so we add the actual first step right after
+    // TODO: into a init or constructor
     if(getStepBuffer().empty())
     {
       std::cout << "walk start" << std::endl;
@@ -62,16 +63,13 @@ void FootStepPlanner2018::execute(){
       CoMFeetPose currentCOMFeetPose = getInverseKinematicsMotionEngineService().getEngine().getCurrentCoMFeetPose();
       currentCOMFeetPose.localInLeftFoot();
 
-      Vector3d startZMPTarget(currentCOMFeetPose.com.translation);
-      startZMPTarget.z = getInverseKinematicsMotionEngineService().getEngine().getParameters().walk.hip.comHeight;
-
+      // TODO: previewSteps aka initial step size parameter for stepbuffer, zmpbuffer and zmp controller
+      // initial_step_size = zmp_preview_size - 1;
       // new step (don't move the feet)
       Step& initialStep = getStepBuffer().add();
       initialStep.footStep = FootStep(currentCOMFeetPose.feet, FootStep::NONE);
-
-      // initialize the zmp buffer with the current com pose
-      initialStep.numberOfCycles = getInverseKinematicsMotionEngineService().getEngine().zmpControl.init(currentCOMFeetPose.com.translation, startZMPTarget);
-      initialStep.planningCycle = initialStep.numberOfCycles;
+      initialStep.numberOfCycles = 100; // TODO: parameter for initial step size... was zmp preview
+      initialStep.planningCycle  = initialStep.numberOfCycles;
     }
 
     // current step has been executed, remove
