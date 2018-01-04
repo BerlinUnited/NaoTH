@@ -24,14 +24,45 @@ class ZMPReferenceBuffer : public naoth::Printable
     std::list<double> refZMPy;
     std::list<double> refZMPz;
 
-    void push(const Vector3d& zmp){
+    const std::list<double>& getXRef(){
+        return refZMPx;
+    }
+
+    const std::list<double>& getYRef(){
+        return refZMPy;
+    }
+
+    void pop() {
+      refZMPx.pop_front();
+      refZMPy.pop_front();
+      refZMPz.pop_front();
+    }
+
+    void push(const Vector3d& zmp) {
         refZMPx.push_back(zmp.x);
         refZMPy.push_back(zmp.y);
         refZMPz.push_back(zmp.z);
     }
 
-    virtual void print(std::ostream& /*stream*/) const
-    {
+    Vector3d front() const {
+      return Vector3d(refZMPx.front(), refZMPy.front(), refZMPz.front());
+    }
+
+    Vector3d back() const {
+      return Vector3d(refZMPx.back(), refZMPy.back(), refZMPz.back());
+    }
+
+    void clear() {
+      refZMPx.clear();
+      refZMPy.clear();
+      refZMPz.clear();
+    }
+
+    Vector3<size_t> size(){
+        return Vector3<size_t>(refZMPx.size(),refZMPy.size(),refZMPz.size());
+    }
+
+    virtual void print(std::ostream& /*stream*/) const {
     }
 };
 
