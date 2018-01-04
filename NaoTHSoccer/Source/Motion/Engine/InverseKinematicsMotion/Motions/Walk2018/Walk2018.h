@@ -27,6 +27,8 @@
 
 #include "Representations/Motion/Walk2018/StepBuffer.h"
 #include "Representations/Motion/Walk2018/CommandBuffer.h"
+#include "Representations/Motion/Walk2018/TargetCoMFeetPose.h"
+#include "Representations/Motion/Walk2018/TargetHipFeetPose.h"
 
 // debug
 #include "Tools/Debug/DebugModify.h"
@@ -40,6 +42,12 @@
 #include "CoMErrorProvider.h"
 #include "FootStepPlanner2018.h"
 #include "ZMPPlanner2018.h"
+#include "ZMPPreviewController.h"
+#include "FootTrajectoryGenerator2018.h"
+#include "HipRotationOffsetModifier.h"
+#include "LiftingFootCompensator.h"
+#include "TorsoRotationStabilizer.h"
+#include "FeetStabilizer.h"
 #include "../IKPose.h"
 #include "Tools/DataStructures/RingBufferWithSum.h"
 
@@ -67,26 +75,31 @@ BEGIN_DECLARE_MODULE(Walk2018)
   PROVIDE(MotionStatus)
   PROVIDE(MotorJointData)
 
-
   // PROVIDE AND REQUIRE
   PROVIDE(StepBuffer)
   PROVIDE(CommandBuffer)
-
+  PROVIDE(TargetCoMFeetPose)
+  PROVIDE(TargetHipFeetPose)
 END_DECLARE_MODULE(Walk2018)
 
 class Walk2018: private Walk2018Base, public IKMotion, public ModuleManager
 {
 public:
   Walk2018();
+  //TODO: destructor...?
   
   virtual void execute();
 
 private:
-  ModuleCreator<CoMErrorProvider>*    theCoMErrorProvider;
-  ModuleCreator<FootStepPlanner2018>* theFootStepPlanner;
-  ModuleCreator<ZMPPlanner2018>*      theZMPPlanner;
-
-  InverseKinematic::CoMFeetPose theCoMFeetPose;
+  ModuleCreator<CoMErrorProvider>*            theCoMErrorProvider;
+  ModuleCreator<FootStepPlanner2018>*         theFootStepPlanner;
+  ModuleCreator<ZMPPlanner2018>*              theZMPPlanner;
+  ModuleCreator<ZMPPreviewController>*        theZMPPreviewController;
+  ModuleCreator<FootTrajectoryGenerator2018>* theFootTrajectoryGenerator;
+  ModuleCreator<HipRotationOffsetModifier>*   theHipRotationOffsetModifier;
+  ModuleCreator<LiftingFootCompensator>*      theLiftingFootCompensator;
+  ModuleCreator<TorsoRotationStabilizer>*     theTorsoRotationStabilizer;
+  ModuleCreator<FeetStabilizer>*              theFeetStabilizer;
 
   const IKParameters::Walk& parameters() const {
     return getEngine().getParameters().walk;
@@ -94,16 +107,33 @@ private:
 
 private:
   void planZMP();
-  void executeStep();
-
-  Pose3D calculateLiftingFootPos(const Step& step) const;
-
-
+  void calculateTargetCoMFeetPose();
+  void calculateJoints();
 
   void updateMotionStatus(MotionStatus& motionStatus) const;
 
-private: // stabilization
-  void feetStabilize(const Step& executingStep, double (&position)[naoth::JointData::numOfJoint]) const;
+private:
+  // duplicates of ZMPPlanner2018, needed by updateMotionStatus
+  // TODO: check if really required and correctly used in updateMotionStatus
+  //       Options: deletion or moving into a helper header
+  Pose3D calculateStableCoMByFeet(InverseKinematic::FeetPose feet, double pitch) const
+  {
+    feet.left.translate(parameters().general.hipOffsetX, 0, 0);
+    feet.right.translate(parameters().general.hipOffsetX, 0, 0);
+
+    Pose3D com;
+    com.rotation = calculateBodyRotation(feet, pitch);
+    com.translation = (feet.left.translation + feet.right.translation) * 0.5;
+    com.translation.z = parameters().hip.comHeight;
+
+    return com;
+  }
+
+  RotationMatrix calculateBodyRotation(const InverseKinematic::FeetPose& feet, double pitch) const
+  {
+    double bodyAngleZ = Math::meanAngle(feet.left.rotation.getZAngle(), feet.right.rotation.getZAngle());
+    return RotationMatrix::getRotationZ(bodyAngleZ) * RotationMatrix::getRotationY(pitch);
+  }
 };
 
 #endif // _Walk2018_H_
