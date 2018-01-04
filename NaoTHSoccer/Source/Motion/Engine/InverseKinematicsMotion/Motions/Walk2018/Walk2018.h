@@ -39,6 +39,7 @@
 #include <queue>
 #include "CoMErrorProvider.h"
 #include "FootStepPlanner2018.h"
+#include "ZMPPlanner2018.h"
 #include "../IKPose.h"
 #include "Tools/DataStructures/RingBufferWithSum.h"
 
@@ -83,6 +84,7 @@ public:
 private:
   ModuleCreator<CoMErrorProvider>*    theCoMErrorProvider;
   ModuleCreator<FootStepPlanner2018>* theFootStepPlanner;
+  ModuleCreator<ZMPPlanner2018>*      theZMPPlanner;
 
   InverseKinematic::CoMFeetPose theCoMFeetPose;
 
@@ -95,8 +97,8 @@ private:
   void executeStep();
 
   Pose3D calculateLiftingFootPos(const Step& step) const;
-  RotationMatrix calculateBodyRotation(const InverseKinematic::FeetPose& feet, double pitch) const;
-  Pose3D calculateStableCoMByFeet(InverseKinematic::FeetPose feet, double pitch) const;
+
+
 
   void updateMotionStatus(MotionStatus& motionStatus) const;
 
