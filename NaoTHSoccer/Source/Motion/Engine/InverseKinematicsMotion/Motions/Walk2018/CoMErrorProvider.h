@@ -10,20 +10,15 @@
 
 #include <ModuleFramework/Module.h>
 
-#include "FootStep.h"
-#include "../IKParameters.h"
+#include "Motion/Engine/InverseKinematicsMotion/Motions/IKPose.h"
 #include "Representations/Motion/Walk2018/CommandBuffer.h"
 #include "Representations/Motion/Walk2018/CoMErrors.h"
 
-#include "Motion/Engine/InverseKinematicsMotion/InverseKinematicsMotionEngine.h"
-
-#include "Tools/Debug/DebugRequest.h"
-
 BEGIN_DECLARE_MODULE(CoMErrorProvider)
-  REQUIRE(KinematicChainSensor)
-  REQUIRE(CommandBuffer)
+  REQUIRE(KinematicChainSensor) // required to calculate current CoM in support foot
+  REQUIRE(CommandBuffer)        // required to compare current CoM with the requested one
 
-  PROVIDE(CoMErrors)
+  PROVIDE(CoMErrors)            // provide the error, absolute error to the power of 2 and relative (3D)
 END_DECLARE_MODULE(CoMErrorProvider)
 
 class CoMErrorProvider : private CoMErrorProviderBase
@@ -45,38 +40,30 @@ public:
 
       Vector3d requested_com;
       Vector3d observed_com;
+      Pose3D footObs;
 
       // if right support
       if(getCommandBuffer().footIds[index] == FootStep::LEFT)
       {
-        //const Pose3D& footRef_right = expectedCoMFeetPose.feet.right;
-        //requested_com = footRef_right.local(expectedCoMFeetPose.com).translation;
         expectedCoMFeetPose.localInRightFoot();
-        requested_com = expectedCoMFeetPose.com.translation;
-
-        Pose3D footObs = getKinematicChainSensor().theLinks[KinematicChain::RFoot].M;
-        footObs.translate(0, 0, -NaoInfo::FootHeight);
-        footObs.rotation = RotationMatrix::getRotationY(footObs.rotation.getYAngle()); // assume the foot is flat on the ground
-        observed_com = footObs.invert() * getKinematicChainSensor().CoM;
+        footObs = getKinematicChainSensor().theLinks[KinematicChain::RFoot].M;
       }
       else
       {
-        //const Pose3D& footRef_left = expectedCoMFeetPose.feet.left;
-        //requested_com = footRef_left.local(expectedCoMFeetPose.com).translation;
         expectedCoMFeetPose.localInLeftFoot();
-        requested_com = expectedCoMFeetPose.com.translation;
-
-        Pose3D footObs = getKinematicChainSensor().theLinks[KinematicChain::LFoot].M;
-        footObs.translate(0, 0, -NaoInfo::FootHeight);
-        footObs.rotation = RotationMatrix::getRotationY(footObs.rotation.getYAngle()); // assume the foot is flat on the ground
-        observed_com = footObs.invert() * getKinematicChainSensor().CoM;
+        footObs = getKinematicChainSensor().theLinks[KinematicChain::LFoot].M;
       }
 
+      footObs.translate(0, 0, -NaoInfo::FootHeight);
+      // TODO: check, why is x and z ignored?
+      footObs.rotation = RotationMatrix::getRotationY(footObs.rotation.getYAngle()); // assume the foot is flat on the ground
+      observed_com = footObs.invert() * getKinematicChainSensor().CoM;
+
+      requested_com = expectedCoMFeetPose.com.translation;
       Vector3d e = requested_com - observed_com;
       getCoMErrors().absolute2.add(e.abs2());
       getCoMErrors().e.add(e);
   }
-
 };
 
 #endif // _COM_ERROR_PROVIDER_H
