@@ -50,27 +50,21 @@ void FootStepPlanner2018::updateParameters(const IKParameters& parameters)
   theMaxChangeY = theMaxStepWidth * parameters.walk.limits.maxStepChange;
 }
 
+void FootStepPlanner2018::init(int initial_number_of_cycles, FeetPose initialFeetPose){
+    // TODO: previewSteps aka initial step size parameter for stepbuffer, zmpbuffer and zmp controller
+    // initial_step_size = zmp_preview_size - 1;
+    // new step (don't move the feet)
+    Step& initialStep = getStepBuffer().add();
+    initialStep.footStep = FootStep(initialFeetPose, FootStep::NONE);
+    initialStep.numberOfCycles = initial_number_of_cycles - 1; // TODO: why?
+    initialStep.planningCycle  = initialStep.numberOfCycles;
+}
+
 void FootStepPlanner2018::execute(){
     // add the initial step
     // NOTE: zmp for this step it already completely planed,
     //       so we add the actual first step right after
-    // TODO: into a init or constructor
-    if(getStepBuffer().empty())
-    {
-      std::cout << "walk start" << std::endl;
 
-      // use the current com pose as a basis for start
-      CoMFeetPose currentCOMFeetPose = getInverseKinematicsMotionEngineService().getEngine().getCurrentCoMFeetPose();
-      currentCOMFeetPose.localInLeftFoot();
-
-      // TODO: previewSteps aka initial step size parameter for stepbuffer, zmpbuffer and zmp controller
-      // initial_step_size = zmp_preview_size - 1;
-      // new step (don't move the feet)
-      Step& initialStep = getStepBuffer().add();
-      initialStep.footStep = FootStep(currentCOMFeetPose.feet, FootStep::NONE);
-      initialStep.numberOfCycles = 100; // TODO: parameter for initial step size... was zmp preview
-      initialStep.planningCycle  = initialStep.numberOfCycles;
-    }
 
     // current step has been executed, remove
     if ( getStepBuffer().first().isExecuted() ) {
@@ -95,7 +89,7 @@ void FootStepPlanner2018::calculateNewStep(const Step& lastStep, Step& newStep, 
   // STABILIZATION
   bool do_emergency_stop = getCoMErrors().absolute2.isFull() && getCoMErrors().absolute2.getAverage() > getInverseKinematicsMotionEngineService().getEngine().getParameters().walk.stabilization.emergencyStopError;
 
-  if ( getMotionRequest().id != motion::walk2018 /*getId()*/ || (do_emergency_stop && !walkRequest.stepControl.isProtected))
+  if ( getMotionRequest().id != motion::walk /*getId()*/ || (do_emergency_stop && !walkRequest.stepControl.isProtected))
   {
     // TODO: find reason for deadlock
     // current fix: force leaving emergency_stop after some cycles

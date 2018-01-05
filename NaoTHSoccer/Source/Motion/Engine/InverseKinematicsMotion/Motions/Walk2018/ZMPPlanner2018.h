@@ -40,6 +40,8 @@ class ZMPPlanner2018 : private ZMPPlanner2018Base
   public:
     ZMPPlanner2018(){}
 
+    void init(int initial_number_of_cycles, Vector3d initialZMP, Vector3d targetZMP);
+
     virtual void execute();
 
     /**

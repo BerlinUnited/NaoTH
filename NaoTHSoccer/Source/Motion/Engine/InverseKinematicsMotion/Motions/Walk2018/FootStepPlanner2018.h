@@ -43,6 +43,8 @@ public:
 
   virtual void execute();
 
+  void init(int initial_number_of_cycles, InverseKinematic::FeetPose initialFeetPose);
+
   void calculateNewStep(const Step& lastStep, Step& newStep, const WalkRequest& walkRequest);
 
   void adaptStepSize(FootStep& step) const;
