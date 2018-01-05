@@ -39,23 +39,18 @@ class HipRotationOffsetModifier : private HipRotationOffsetModifierBase
   public:
     HipRotationOffsetModifier():
         lastStepLength(),
-        hipRotationOffsetBasedOnStepChange(),
-        first_run(true)
+        hipRotationOffsetBasedOnStepChange()
     {}
 
   virtual void execute(){
     // apply rotation offset depending on step change
     const Step& executingStep = getStepBuffer().first();
 
-    // new step, determine step length of last step
-    if(! first_run && executingStep.executingCycle == 0){
-        lastStepLength = targetFoot.projectXY().translation - startFoot.projectXY().translation;
-    }
-
     // new step, determine hip rotation offset based on step change for this step
     if(executingStep.executingCycle == 0){
         InverseKinematic::FeetPose begin = executingStep.footStep.begin();
         InverseKinematic::FeetPose end   = executingStep.footStep.end();
+        Pose3D startFoot, targetFoot;
         if(executingStep.footStep.liftingFoot() == FootStep::LEFT){
                 begin.localInRightFoot();
                 end.localInRightFoot();
@@ -76,6 +71,9 @@ class HipRotationOffsetModifier : private HipRotationOffsetModifierBase
 
         PLOT("Walk:currentStepChange.x", currentStepChange.x);
         PLOT("Walk:currentStepChange.y", currentStepChange.y);
+
+        // remember for next step
+        lastStepLength = currentStepLength;
     }
 
     // TODO: check this
@@ -93,12 +91,14 @@ class HipRotationOffsetModifier : private HipRotationOffsetModifierBase
     getTargetCoMFeetPose().pose.com.rotation = calculateBodyRotation(getTargetCoMFeetPose().pose.feet, scaleOffset(t)*Math::fromDegrees(hipRotationOffsetBasedOnStepChange.x) + getInverseKinematicsMotionEngineService().getEngine().getParameters().walk.general.bodyPitchOffset);
   }
 
+
+  void reset() {
+    lastStepLength = Vector2d();
+  }
+
   private:
     Vector2d lastStepLength;
     Vector2d hipRotationOffsetBasedOnStepChange;
-    bool first_run;
-
-    Pose3D startFoot, targetFoot;
 
     RotationMatrix calculateBodyRotation(const InverseKinematic::FeetPose& feet, double pitch) const
     {
