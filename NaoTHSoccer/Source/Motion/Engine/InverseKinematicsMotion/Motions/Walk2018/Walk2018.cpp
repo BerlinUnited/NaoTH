@@ -32,9 +32,22 @@ Walk2018::Walk2018() : IKMotion(getInverseKinematicsMotionEngineService(), motio
   theTorsoRotationStabilizer   = registerModule<TorsoRotationStabilizer>("TorsoRotationStabilizer", true);
   theFeetStabilizer            = registerModule<FeetStabilizer>("FeetStabilizer", true);
 
-  CoMFeetPose currentCOMFeetPose = getEngine().getCurrentCoMFeetPose();
+  CoMFeetPose currentCOMFeetPose = getInverseKinematicsMotionEngineService().getEngine().getCurrentCoMFeetPose();
   currentCOMFeetPose.localInLeftFoot();
+  Vector3d targetZMP(currentCOMFeetPose.com.translation);
+  targetZMP.z = getInverseKinematicsMotionEngineService().getEngine().getParameters().walk.hip.comHeight;
+
+  // init state of preview controller
   theZMPPreviewController->getModuleT()->init(currentCOMFeetPose.com.translation);
+  int inital_number_of_cycles = static_cast<int>(theZMPPreviewController->getModuleT()->previewSteps());
+
+  // init step buffer using the foot step planner
+  theFootStepPlanner->getModuleT()->init(inital_number_of_cycles,currentCOMFeetPose.feet);
+
+  // init zmp reference buffer using the zmp planner
+  theZMPPlanner->getModuleT()->init(inital_number_of_cycles, currentCOMFeetPose.com.translation, targetZMP);
+
+  std::cout << "walk start" << std::endl;
 }
   
 void Walk2018::execute()
@@ -94,6 +107,14 @@ void Walk2018::execute()
   updateMotionStatus(getMotionStatus());
 
   if(getMotionRequest().id != getId() && theZMPPreviewController->getModuleT()->is_stationary()) {
+    // reset buffers
+    getCoMErrors().reset();
+    getCommandBuffer().reset();
+    getStepBuffer().reset();
+    getZMPReferenceBuffer().reset();
+
+    theHipRotationOffsetModifier->getModuleT()->reset();
+
     setCurrentState(motion::stopped);
     std::cout << "walk stopped" << std::endl;
   } else {

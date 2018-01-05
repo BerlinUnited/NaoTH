@@ -25,7 +25,9 @@
 #include "Representations/Modeling/InertialModel.h"
 #include <Representations/Infrastructure/InertialSensorData.h>
 
+#include "Representations/Motion/Walk2018/CoMErrors.h"
 #include "Representations/Motion/Walk2018/StepBuffer.h"
+#include "Representations/Motion/Walk2018/ZMPReferenceBuffer.h"
 #include "Representations/Motion/Walk2018/CommandBuffer.h"
 #include "Representations/Motion/Walk2018/TargetCoMFeetPose.h"
 #include "Representations/Motion/Walk2018/TargetHipFeetPose.h"
@@ -76,8 +78,10 @@ BEGIN_DECLARE_MODULE(Walk2018)
   PROVIDE(MotorJointData)
 
   // PROVIDE AND REQUIRE
-  PROVIDE(StepBuffer)
-  PROVIDE(CommandBuffer)
+  PROVIDE(StepBuffer)         // reason: resetting after walk is finished
+  PROVIDE(ZMPReferenceBuffer) // reason: resetting after walk is finished
+  PROVIDE(CommandBuffer)      // reason: write final CoMFeetPose into buffer for CoMErrorProvider and resetting after walk is finished
+  PROVIDE(CoMErrors)          // reason: resetting after walk is finished
   PROVIDE(TargetCoMFeetPose)
   PROVIDE(TargetHipFeetPose)
 END_DECLARE_MODULE(Walk2018)
@@ -106,10 +110,8 @@ private:
   }
 
 private:
-  void planZMP();
   void calculateTargetCoMFeetPose();
   void calculateJoints();
-
   void updateMotionStatus(MotionStatus& motionStatus) const;
 
 private:
