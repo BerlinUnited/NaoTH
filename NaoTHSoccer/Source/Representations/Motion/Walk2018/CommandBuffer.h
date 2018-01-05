@@ -27,6 +27,11 @@ class CommandBuffer : public naoth::Printable
     RingBuffer<InverseKinematic::CoMFeetPose, 10> poses;
     RingBuffer<FootStep::Foot, 10> footIds;
 
+    void reset(){
+        poses.clear();
+        footIds.clear();
+    }
+
     virtual void print(std::ostream& /*stream*/) const
     {
     }

@@ -25,6 +25,11 @@ public:
         return e.last();
     }
 
+    void reset(){
+        absolute2.clear();
+        e.clear();
+    }
+
     virtual void print(std::ostream& /*stream*/) const
     {
     }

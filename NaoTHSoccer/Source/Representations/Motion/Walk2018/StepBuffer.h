@@ -66,6 +66,10 @@ private:
 public:
   StepBuffer() : id(0) {}
 
+  inline void reset() {
+      steps.clear();
+  }
+
   inline Step& add() {
     steps.push_back(Step(id++));
     return steps.back();

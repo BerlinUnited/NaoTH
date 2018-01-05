@@ -17,12 +17,13 @@
 
 class ZMPReferenceBuffer : public naoth::Printable
 {
-  public:
-    ZMPReferenceBuffer(){}
-
+  private:
     std::list<double> refZMPx;
     std::list<double> refZMPy;
     std::list<double> refZMPz;
+
+  public:
+    ZMPReferenceBuffer(){}
 
     const std::list<double>& getXRef(){
         return refZMPx;
@@ -52,7 +53,7 @@ class ZMPReferenceBuffer : public naoth::Printable
       return Vector3d(refZMPx.back(), refZMPy.back(), refZMPz.back());
     }
 
-    void clear() {
+    void reset() {
       refZMPx.clear();
       refZMPy.clear();
       refZMPz.clear();
