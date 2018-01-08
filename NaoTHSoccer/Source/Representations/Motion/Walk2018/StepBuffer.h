@@ -1,21 +1,18 @@
 /**
-* @file MotionStatus.h
+* @file StepBuffer.h
 *
-* @author <a href="mailto:krause@informatik.hu-berlin.de">Thomas Krause</a>
 * @author <a href="mailto:xu@informatik.hu-berlin.de">Xu, Yuan</a>
-* Definition of the class MotionStatus
+* @author <a href="mailto:mellmann@informatik.hu-berlin.de">Heinrich, Mellmann</a>
+* @author <a href="mailto:kaden@informatik.hu-berlin.de">Steffen, Kaden</a>
 */
 
-#ifndef __StepBuffer_h_
-#define __StepBuffer_h_
+#ifndef _STEPBUFFER_H_
+#define _STEPBUFFER_H_
 
 #include "Tools/DataStructures/Printable.h"
 #include "Representations/Motion/Request/WalkRequest.h"
-#include <list>
-
 #include "Motion/Engine/InverseKinematicsMotion/Motions/Walk2018/FootStep.h"
-
-#include <string>
+#include <list>
 
 class Step
 {
@@ -29,13 +26,10 @@ public:
     STEP_CONTROL
   };
 
-  Step(unsigned int _id)
-    :
+  Step(unsigned int _id) :
     _id(_id),
-
     planningCycle(0),
     executingCycle(0),
-
     type(STEP_WALK)
   {}
 
@@ -66,8 +60,10 @@ private:
 public:
   StepBuffer() : id(0) {}
 
+  inline bool empty() const { return steps.empty(); }
+
   inline void reset() {
-      steps.clear();
+    steps.clear();
   }
 
   inline Step& add() {
@@ -75,14 +71,25 @@ public:
     return steps.back();
   }
 
-  // deligated accessors
-  inline const Step& first() const { return steps.front(); }
-  inline Step& first() { return steps.front(); }
-  inline const Step& last() const { return steps.back(); }
-  inline Step& last() { return steps.back(); }
-  inline bool empty() const { return steps.empty(); }
-  inline void pop() { return steps.pop_front(); }
-  inline unsigned int stepId() const { return id; }
+  inline void remove() {
+    return steps.pop_front();
+  }
+
+  inline const Step& first() const {
+    return steps.front();
+  }
+
+  inline Step& first() {
+    return steps.front();
+  }
+
+  inline const Step& last() const {
+    return steps.back();
+  }
+
+  inline Step& last() {
+    return steps.back();
+  }
 
   void draw(DrawingCanvas2D& canvas) const
   {
@@ -107,4 +114,4 @@ public:
 //  };
 //}
 
-#endif // __StepBuffer_h_
+#endif // __STEPBUFFER_H_
