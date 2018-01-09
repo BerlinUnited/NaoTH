@@ -9,31 +9,21 @@
 #define _FOOT_TRAJECTORY_GENERATOR_2018_H
 
 #include <ModuleFramework/Module.h>
+
 #include "Tools/Math/Pose3D.h"
-
-//#include "FootStep.h"
-//#include "../IKParameters.h"
-//#include "Motion/Engine/InverseKinematicsMotion/InverseKinematicsMotionEngine.h"
-
-//#include <list>
-//#include <vector>
-//#include <map>
-
-//#include "Tools/Math/Matrix3x3.h"
-//#include "Tools/Math/Vector2.h"
 
 #include "Representations/Motion/Walk2018/StepBuffer.h"
 #include "Representations/Motion/Walk2018/TargetCoMFeetPose.h"
 #include "Motion/Engine/InverseKinematicsMotion/InverseKinematicsMotionEngine.h"
 
 #include "Tools/Debug/DebugPlot.h"
-#include "Tools/Debug/DebugDrawings.h"
 #include "Tools/Debug/DebugRequest.h"
+
+#include "Tools/DataStructures/Spline.h"
 
 BEGIN_DECLARE_MODULE(FootTrajectoryGenerator2018)
     PROVIDE(DebugPlot)
     PROVIDE(DebugRequest)
-    PROVIDE(DebugDrawings)
 
     REQUIRE(FrameInfo)
     REQUIRE(InverseKinematicsMotionEngineService)
@@ -46,7 +36,13 @@ END_DECLARE_MODULE(FootTrajectoryGenerator2018)
 class FootTrajectoryGenerator2018 : private FootTrajectoryGenerator2018Base
 {
   public:
-    FootTrajectoryGenerator2018(){}
+    FootTrajectoryGenerator2018(){
+        theCubicSplineXY.set_boundary(tk::spline::first_deriv,0.0, tk::spline::first_deriv,0.0, false);
+        theCubicSplineXY.set_points(xA,yA);
+
+        theCubicSplineZ.set_boundary(tk::spline::first_deriv,0.0, tk::spline::first_deriv,0.0, false);
+        theCubicSplineZ.set_points(xB,yB);
+    }
 
     virtual void execute();
 
@@ -65,6 +61,35 @@ class FootTrajectoryGenerator2018 : private FootTrajectoryGenerator2018Base
                                     double stepHeight, double footPitchOffset, double footRollOffset ) const;
 
     Pose3D calculateLiftingFootPos(const Step& step) const;
+
+  private:
+    // reference points for splines in xy
+    const std::vector<double> xA{0.0, 0.125, 0.25, 0.5, 0.75, 0.875, 1.0};
+    const std::vector<double> yA{
+      0.0,
+      (1 - cos(0.125*Math::pi))*0.5,
+      (1 - cos(0.25 *Math::pi))*0.5,
+      (1 - cos(0.5  *Math::pi))*0.5,
+      (1 - cos(0.75 *Math::pi))*0.5,
+      (1 - cos(0.875*Math::pi))*0.5,
+      1.0
+    };
+
+    tk::spline theCubicSplineXY;
+
+    // reference points for splines in z
+    const std::vector<double> xB{0.0, 0.125, 0.25, 0.5, 0.75, 0.875, 1.0};
+    const std::vector<double> yB{
+      0.0,
+      (1 - cos(0.125*Math::pi2))*0.5,
+      (1 - cos(0.25 *Math::pi2))*0.5,
+      1.0,
+      (1 - cos(0.75 *Math::pi2))*0.5,
+      (1 - cos(0.875*Math::pi2))*0.5,
+      0.0
+    };
+
+    tk::spline theCubicSplineZ;
 };
 
 

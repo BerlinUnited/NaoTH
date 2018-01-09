@@ -6,7 +6,6 @@
  */
 
 #include "FootTrajectoryGenerator2018.h"
-#include "Tools/DataStructures/Spline.h"
 #include "Tools/Math/CubicSpline.h"
 
 using namespace std;
@@ -170,6 +169,7 @@ Pose3D FootTrajectoryGenerator2018::stepControl(
     double zp = (1 - cos(t*Math::pi2))*0.5;
 
     // TODO: optmize
+    // TODO: use tk::spline?
     Pose3D speedTarget = targetFoot;
     speedTarget.translate(cos(speedDirection) * 30, sin(speedDirection) * 30, 0);
     vector<Vector2d > vecX;
@@ -216,75 +216,6 @@ Pose3D FootTrajectoryGenerator2018::genTrajectoryWithSplines(
 {
     double t = cycle/duration;
 
-    // parameter for the step curve
-    // NOTE: xyp is used to interpolate the motion in x/y-plane, while
-    //       zp is for the motion in the z-axis
-
-
-    std::vector<double> xA = {0.0, 0.125, 0.25, 0.5, 0.75, 0.875, 1.0};
-    std::vector<double> yA = {
-      0.0,  
-      (1 - cos(0.125*Math::pi))*0.5,
-      (1 - cos(0.25 *Math::pi))*0.5,
-      (1 - cos(0.5  *Math::pi))*0.5,
-      (1 - cos(0.75 *Math::pi))*0.5,
-      (1 - cos(0.875*Math::pi))*0.5,
-      1.0
-    };
-
-    tk::spline theCubicSplineXY;
-    theCubicSplineXY.set_boundary(tk::spline::first_deriv,0.0, tk::spline::first_deriv,0.0, false);
-    theCubicSplineXY.set_points(xA,yA);
-
-    /*
-    vector<Vector2d > vecXY;
-    vecXY.push_back(Vector2d(-0.1, 0.0));
-
-    vecXY.push_back(Vector2d(0.0,  0.0));
-    vecXY.push_back(Vector2d(0.125, (1 - cos(0.125*Math::pi))*0.5));
-    vecXY.push_back(Vector2d(0.25,  (1 - cos(0.25 *Math::pi))*0.5));
-    vecXY.push_back(Vector2d(0.5,   (1 - cos(0.5  *Math::pi))*0.5));
-    vecXY.push_back(Vector2d(0.75,  (1 - cos(0.75 *Math::pi))*0.5));
-    vecXY.push_back(Vector2d(0.875, (1 - cos(0.875*Math::pi))*0.5));
-    vecXY.push_back(Vector2d(1.0, 1.0));
-
-    vecXY.push_back(Vector2d(1.1, 1.0));
-    CubicSpline theCubicSplineXY(vecXY);
-    
-
-    vector<Vector2d > vecZ;
-    vecZ.push_back(Vector2d(-0.1, 0.0));
-
-    vecZ.push_back(Vector2d(0.0,  0.0));
-    vecZ.push_back(Vector2d(0.125, (1 - cos(0.125*Math::pi2))*0.5));
-    vecZ.push_back(Vector2d(0.25,  (1 - cos(0.25 *Math::pi2))*0.5));
-    vecZ.push_back(Vector2d(0.5,  1));
-    vecZ.push_back(Vector2d(0.75,  (1 - cos(0.75 *Math::pi2))*0.5));
-    vecZ.push_back(Vector2d(0.875, (1 - cos(0.875*Math::pi2))*0.5));
-    vecZ.push_back(Vector2d(1.0, 0.0));
-
-    vecZ.push_back(Vector2d(1.1, 0.0));
-    CubicSpline theCubicSplineZ(vecZ);
-    */
-
-    std::vector<double> xB = {0.0, 0.125, 0.25, 0.5, 0.75, 0.875, 1.0};
-    std::vector<double> yB = {
-      0.0,  
-      (1 - cos(0.125*Math::pi2))*0.5,
-      (1 - cos(0.25 *Math::pi2))*0.5,
-      1.0,
-      (1 - cos(0.75 *Math::pi2))*0.5,
-      (1 - cos(0.875*Math::pi2))*0.5,
-      0.0
-    };
-
-    tk::spline theCubicSplineZ;
-    theCubicSplineZ.set_boundary(tk::spline::first_deriv,0.0, tk::spline::first_deriv,0.0, false);
-    theCubicSplineZ.set_points(xB,yB);
-
-
-    //double xyp = theCubicSplineXY.y(t);
-    //double zp  = theCubicSplineZ.y(t);
     double xyp = theCubicSplineXY(t);
     double zp  = theCubicSplineZ(t);
 
