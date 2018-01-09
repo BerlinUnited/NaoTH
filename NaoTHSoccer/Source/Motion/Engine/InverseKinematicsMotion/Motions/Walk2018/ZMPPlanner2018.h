@@ -11,7 +11,6 @@
 #include <ModuleFramework/Module.h>
 
 #include "FootStep.h"
-#include "../IKParameters.h"
 #include "Motion/Engine/InverseKinematicsMotion/InverseKinematicsMotionEngine.h"
 
 #include "Representations/Motion/Walk2018/ZMPReferenceBuffer.h"
@@ -22,17 +21,16 @@
 #include "Tools/Debug/DebugRequest.h"
 
 BEGIN_DECLARE_MODULE(ZMPPlanner2018)
-PROVIDE(DebugPlot)
-PROVIDE(DebugRequest)
-PROVIDE(DebugDrawings)
+    PROVIDE(DebugPlot)
+    PROVIDE(DebugRequest)
+    PROVIDE(DebugDrawings)
 
-REQUIRE(FrameInfo)
-REQUIRE(RobotInfo)
-REQUIRE(InverseKinematicsMotionEngineService)
+    REQUIRE(FrameInfo)
+    REQUIRE(RobotInfo)
+    REQUIRE(InverseKinematicsMotionEngineService)
 
-PROVIDE(StepBuffer)         // reason: increasing planning cycle
-PROVIDE(ZMPReferenceBuffer)
-
+    PROVIDE(StepBuffer)         // reason: increasing planning cycle
+    PROVIDE(ZMPReferenceBuffer)
 END_DECLARE_MODULE(ZMPPlanner2018)
 
 class ZMPPlanner2018 : private ZMPPlanner2018Base
@@ -75,6 +73,9 @@ class ZMPPlanner2018 : private ZMPPlanner2018Base
       return getInverseKinematicsMotionEngineService().getEngine().getParameters().walk;
     }
 
+    double zmpOffsetY, newZMPOffsetY, zmpOffsetX, newZMPOffsetX;
+
+    int samplesDoubleSupport, samplesSingleSupport;
 };
 
 #endif // _ZMP_PLANNER_2018_H
