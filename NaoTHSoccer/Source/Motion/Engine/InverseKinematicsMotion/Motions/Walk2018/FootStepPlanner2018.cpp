@@ -51,9 +51,6 @@ void FootStepPlanner2018::updateParameters(const IKParameters& parameters)
 }
 
 void FootStepPlanner2018::init(int initial_number_of_cycles, FeetPose initialFeetPose){
-    // TODO: previewSteps aka initial step size parameter for stepbuffer, zmpbuffer and zmp controller
-    // initial_step_size = zmp_preview_size - 1;
-    // new step (don't move the feet)
     Step& initialStep = getStepBuffer().add();
     initialStep.footStep = FootStep(initialFeetPose, FootStep::NONE);
     initialStep.numberOfCycles = initial_number_of_cycles - 1; // TODO: why?
@@ -61,14 +58,9 @@ void FootStepPlanner2018::init(int initial_number_of_cycles, FeetPose initialFee
 }
 
 void FootStepPlanner2018::execute(){
-    // add the initial step
-    // NOTE: zmp for this step it already completely planed,
-    //       so we add the actual first step right after
-
-
     // current step has been executed, remove
     if ( getStepBuffer().first().isExecuted() ) {
-      getStepBuffer().pop();
+      getStepBuffer().remove();
     }
 
     // add a new step
@@ -169,13 +161,6 @@ void FootStepPlanner2018::calculateNewStep(const Step& lastStep, Step& newStep, 
     default:
       ASSERT(false);
     }
-
-    // STABILIZATION
-    if (getInverseKinematicsMotionEngineService().getEngine().getParameters().walk.stabilization.dynamicStepsize && !walkRequest.stepControl.isProtected) {
-      adaptStepSize(newStep.footStep);
-      getCoMErrors().e.clear();
-    }
-
   }
   else // regular walk
   {
@@ -183,14 +168,14 @@ void FootStepPlanner2018::calculateNewStep(const Step& lastStep, Step& newStep, 
     newStep.numberOfCycles = getInverseKinematicsMotionEngineService().getEngine().getParameters().walk.step.duration / getRobotInfo().basicTimeStep;
     newStep.type = Step::STEP_WALK;
 
-    // STABILIZATION
-    if (getInverseKinematicsMotionEngineService().getEngine().getParameters().walk.stabilization.dynamicStepsize) {
-      adaptStepSize(newStep.footStep);
-      getCoMErrors().e.clear();
-    }
-
     PLOT("Walk:XABSL_after_adaptStepSize_x", newStep.footStep.footEnd().translation.x);
     PLOT("Walk:XABSL_after_adaptStepSize_y", newStep.footStep.footEnd().translation.y);
+  }
+
+  // STABILIZATION
+  if (getInverseKinematicsMotionEngineService().getEngine().getParameters().walk.stabilization.dynamicStepsize && !walkRequest.stepControl.isProtected) {
+    adaptStepSize(newStep.footStep);
+    getCoMErrors().e.clear();
   }
 }
 
@@ -213,8 +198,7 @@ void FootStepPlanner2018::adaptStepSize(FootStep& step) const
   }
 }//end adaptStepSize
 
-FootStep FootStepPlanner2018::finalStep(const FootStep& lastStep, const WalkRequest& /*req*/)
-{
+FootStep FootStepPlanner2018::finalStep(const FootStep& lastStep, const WalkRequest& /*req*/) {
   // don't move the feet if they stoped moving once
   if(lastStep.liftingFoot() == FootStep::NONE) {
     return zeroStep(lastStep);
@@ -236,6 +220,18 @@ FootStep FootStepPlanner2018::finalStep(const FootStep& lastStep, const WalkRequ
   }
 }
 
+FootStep FootStepPlanner2018::controlStep(const FootStep& lastStep, const WalkRequest& req) {
+  WalkRequest myReq = req;
+  myReq.target = req.stepControl.target;//HACK
+
+  FootStep::Foot liftingFoot = req.stepControl.moveLeftFoot?FootStep::LEFT:FootStep::RIGHT;
+  return calculateNextWalkStep(lastStep.end(), lastStep.offset(), lastStep.stepRequest(), liftingFoot, myReq, true);
+}
+
+FootStep FootStepPlanner2018::zeroStep(const FootStep& lastStep) const {
+  return FootStep(lastStep.end(), FootStep::NONE);
+}
+
 FootStep FootStepPlanner2018::nextStep(const FootStep& lastStep, const WalkRequest& req)
 {
   if ( lastStep.liftingFoot() == FootStep::NONE ) {
@@ -246,29 +242,15 @@ FootStep FootStepPlanner2018::nextStep(const FootStep& lastStep, const WalkReque
   }
 }
 
-
-FootStep FootStepPlanner2018::controlStep(const FootStep& lastStep, const WalkRequest& req)
-{
-  WalkRequest myReq = req;
-  myReq.target = req.stepControl.target;//HACK
-
-  FootStep::Foot liftingFoot = req.stepControl.moveLeftFoot?FootStep::LEFT:FootStep::RIGHT;
-  return calculateNextWalkStep(lastStep.end(), lastStep.offset(), lastStep.stepRequest(), liftingFoot, myReq, true);
-}
-
-FootStep FootStepPlanner2018::zeroStep(const FootStep& lastStep) const
-{
-  return FootStep(lastStep.end(), FootStep::NONE);
-}
-
-FootStep FootStepPlanner2018::firstStep(const InverseKinematic::FeetPose& pose, const Pose2D& offset, const Pose2D& lastStepRequest, const WalkRequest& req)
-{
-  FootStep firstStepLeft = calculateNextWalkStep(pose, offset, lastStepRequest, FootStep::LEFT, req);
+FootStep FootStepPlanner2018::firstStep(const InverseKinematic::FeetPose& pose, const Pose2D& offset, const Pose2D& lastStepRequest, const WalkRequest& req) {
+  FootStep firstStepLeft  = calculateNextWalkStep(pose, offset, lastStepRequest, FootStep::LEFT, req);
   FootStep firstStepRight = calculateNextWalkStep(pose, offset, lastStepRequest, FootStep::RIGHT, req);
   
-  Pose3D leftMove = firstStepLeft.footBegin().invert() * firstStepLeft.footEnd();
+  Pose3D leftMove  = firstStepLeft.footBegin().invert() * firstStepLeft.footEnd();
   Pose3D rightMove = firstStepRight.footBegin().invert() * firstStepRight.footEnd();
 
+  // TODO: think about criteria, it should be better to always take the step which aligns the rotation at most
+  //       proposal: remove else part
   if ( fabs(req.target.rotation) > theMaxTurnInner )
   {
     // choose foot by rotation
@@ -314,27 +296,20 @@ FootStep FootStepPlanner2018::calculateNextWalkStep(const InverseKinematic::Feet
     stepRequest = supportOrigin.invert() * pose.right.projectXY() * stepRequest * targetOriginOffset;
   }
 
+  restrictStepSize(stepRequest, req.character, stepControl);
+
   // apply restriction mode
-  if (stepControl && req.stepControl.restriction == WalkRequest::StepControlRequest::RestrictionMode::SOFT)
-  {
-    restrictStepSizeControlStep(stepRequest, req.character);
-  } 
-  else if (stepControl && req.stepControl.restriction == WalkRequest::StepControlRequest::RestrictionMode::HARD)
-  {
-    restrictStepSize(stepRequest, req.character);
-    restrictStepChange(stepRequest, lastStepRequest);
-  }
-  else
-  {
-    restrictStepSize(stepRequest, req.character);
+  if (!stepControl || req.stepControl.restriction == WalkRequest::StepControlRequest::RestrictionMode::HARD) {
     restrictStepChange(stepRequest, lastStepRequest);
   }
 
   // create a new step
   FootStep newStep(pose, movingFoot);
   newStep.offset() = req.offset;
-  newStep.stepRequest() = stepRequest; // HACK: save the step request before geometrical restrictions
 
+  // HACK: save the step request before geometrical restrictions
+  // TODO: why?
+  newStep.stepRequest() = stepRequest;
 
   // apply geometric restrictions to the step request
   if(movingFoot == FootStep::RIGHT) {
@@ -351,115 +326,61 @@ FootStep FootStepPlanner2018::calculateNextWalkStep(const InverseKinematic::Feet
   return newStep;
 }//end calculateNextWalkStep
 
-
-void FootStepPlanner2018::restrictStepSize(Pose2D& step, double character) const
-{
+//TODO: do we really need different parameters for normal and step control steps?
+void FootStepPlanner2018::restrictStepSize(Pose2D& step, double character, bool stepControl) const {
   // scale the character: [0, 1] --> [0.5, 1]
   character = 0.5*character + 0.5;
 
+  double maxTurn, maxStepLength, maxStepLengthBack, maxStepWidth;
 
-  double maxTurn = theMaxStepTurn * character;
-  
-  /*double maxLen = sqrt(theMaxStepLength * theMaxStepLength + theMaxStepWidth * theMaxStepWidth) * character;
-
-  if (maxLen > 1)
-  {
-    Pose3D lastHip = lastStep.supFoot();
-    lastHip.translate(0, static_cast<int>(lastStep.liftingFoot())*theFootOffsetY*2, 0);
-    double lastStepLen = (lastStep.footEnd().translation - lastHip.translation).abs();
-    maxTurn *= Math::clamp(1 - lastStepLen / maxLen, 0.5, 1.0);
-  }*/
-
-  // limit the rotation
-  step.rotation = Math::clamp(step.rotation, -maxTurn, maxTurn);
-
-  double maxStepLength = theMaxStepLength * character;
-  double maxStepLengthBack = theMaxStepLengthBack * character;
-  double maxStepWidth = theMaxStepWidth * character;
-  if ( step.translation.x < 0 )
-  {
-    maxStepLength = maxStepLengthBack;
+  if(stepControl){
+      maxTurn       = theMaxCtrlTurn   * character;
+      maxStepLength = theMaxCtrlLength * character;
+      maxStepWidth  = theMaxCtrlWidth  * character;
+  } else {
+      maxTurn           = theMaxStepTurn       * character;
+      maxStepLength     = theMaxStepLength     * character;
+      maxStepWidth      = theMaxStepWidth      * character;
   }
 
+  maxStepLengthBack = theMaxStepLengthBack * character;
 
-  if ( maxStepLength > 0.5  && maxStepWidth > 0.5 )
-  {
+  if ( step.translation.x < 0 ) {
+      maxStepLength = maxStepLengthBack;
+  }
+
+  // limit translation
+  if ( maxStepLength > 0.5 && maxStepWidth > 0.5 ) {
     // restrict the step size in an ellipse
     double alpha = step.translation.angle();
-    double cosa = cos(alpha);
-    double sina = sin(alpha);
+    double cosa  = cos(alpha);
+    double sina  = sin(alpha);
 
     const double maxStepLength2 = Math::sqr(maxStepLength);
-    const double maxStepWidth2 = Math::sqr(maxStepWidth);
+    const double maxStepWidth2  = Math::sqr(maxStepWidth);
     double length = sqrt((maxStepLength2 * maxStepWidth2) / (maxStepLength2 * Math::sqr(sina) + maxStepWidth2 * Math::sqr(cosa)));
+
     if (step.translation.abs2() > Math::sqr(length))
     {
       step.translation.x = length * cosa;
       step.translation.y = length * sina;
     }
-
-    ASSERT( step.translation.x > -maxStepLengthBack - 1e-5 );
-    ASSERT( step.translation.x < maxStepLength + 1e-5 );
-    ASSERT( fabs(step.translation.y) < maxStepWidth + 1e-5 );
+  } else {
+    step.translation.x = Math::clamp(step.translation.x, -maxStepLengthBack, maxStepLength);
+    step.translation.y = Math::clamp(step.translation.y, -maxStepWidth, maxStepWidth);
   }
-  else
-  {
-    if (step.translation.x < -maxStepLengthBack) {
-      step.translation.x = -maxStepLengthBack;
-    } else if (step.translation.x > maxStepLength ) {
-      step.translation.x = maxStepLength;
-    }
-    
-    if (theMaxStepWidth > numeric_limits<double>::epsilon()) {
-      step.translation.y = Math::clamp(step.translation.y, -maxStepWidth, maxStepWidth);
-    } else {
-      step.translation.y = 0;
-    }
 
-    ASSERT( fabs(step.translation.x) <= maxStepLength );
-    ASSERT( fabs(step.translation.y) <= maxStepWidth );
-  }
+  ASSERT( step.translation.x >= -maxStepLengthBack);
+  ASSERT( fabs(step.translation.x) <= maxStepLength);
+  ASSERT( fabs(step.translation.y) <= maxStepWidth);
+
+  // limit rotation
+  step.rotation = Math::clamp(step.rotation, -maxTurn, maxTurn);  // limit the rotation
 
   if ( maxTurn > Math::fromDegrees(1.0) ) {
     step.translation *= cos( step.rotation/maxTurn * Math::pi / 2);
   }
 }//end restrictStepSize
-
-
-void FootStepPlanner2018::restrictStepSizeControlStep(Pose2D& step, double character) const
-{
-  character = 0.5*character + 0.5;
-
-  double maxTurn =  theMaxCtrlTurn * character;
-  double maxStepLength = theMaxCtrlLength * character;
-  double maxStepWidth = theMaxCtrlWidth * character;
-
-  // limit the rotation
-  step.rotation = Math::clamp(step.rotation, -maxTurn, maxTurn);
-
-  // limit translation
-  if ( maxStepLength > 0.5  && maxStepWidth > 0.5 )
-  {
-    // restrict the step size in an ellipse
-    double alpha = step.translation.angle();
-    double cosa = cos(alpha);
-    double sina = sin(alpha);
-
-    const double maxStepLength2 = Math::sqr(maxStepLength);
-    const double maxStepWidth2 = Math::sqr(maxStepWidth);
-    double length = sqrt((maxStepLength2 * maxStepWidth2) / (maxStepLength2 * Math::sqr(sina) + maxStepWidth2 * Math::sqr(cosa)));
-    if (step.translation.abs2() > Math::sqr(length))
-    {
-      step.translation.x = length * cosa;
-      step.translation.y = length * sina;
-    }
-
-    //ASSERT( step.translation.x > -maxStepLengthBack - 1e-5 );
-    ASSERT( step.translation.x < maxStepLength + 1e-5 );
-    ASSERT( fabs(step.translation.y) < maxStepWidth + 1e-5 );
-  }
-}//end restrictStepSizeControlStep
-
 
 void FootStepPlanner2018::restrictStepChange(Pose2D& step, const Pose2D& lastStep) const
 {

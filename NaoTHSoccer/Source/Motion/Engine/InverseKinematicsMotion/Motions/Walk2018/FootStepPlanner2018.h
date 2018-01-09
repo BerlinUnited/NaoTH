@@ -33,7 +33,6 @@ BEGIN_DECLARE_MODULE(FootStepPlanner2018)
   PROVIDE(CoMErrors)    // reason: clearing buffers after adaptStepSize or emergency stop
   PROVIDE(MotionStatus) // reason: increasing stepControl.stepRequestID
   PROVIDE(StepBuffer)
-
 END_DECLARE_MODULE(FootStepPlanner2018)
 
 class FootStepPlanner2018 : private FootStepPlanner2018Base
@@ -45,6 +44,7 @@ public:
 
   void init(int initial_number_of_cycles, InverseKinematic::FeetPose initialFeetPose);
 
+private:
   void calculateNewStep(const Step& lastStep, Step& newStep, const WalkRequest& walkRequest);
 
   void adaptStepSize(FootStep& step) const;
@@ -59,17 +59,14 @@ public:
 
   FootStep zeroStep(const FootStep& lastStep) const;
 
-private:
   FootStep calculateNextWalkStep(const InverseKinematic::FeetPose& pose, const Pose2D& offset, const Pose2D& lastStepRequest, FootStep::Foot movingFoot, const WalkRequest& req, bool stepControl = false);
+
   FootStep firstStep(const InverseKinematic::FeetPose& pose, const Pose2D& offset, const Pose2D& lastStepRequest, const WalkRequest& req);
 
-  void restrictStepSize(Pose2D& step, double character) const;
-  void restrictStepSizeControlStep(Pose2D& step, double character) const;
+  void restrictStepSize(Pose2D& step, double character, bool stepControl) const;
+
   void restrictStepChange(Pose2D& step, const Pose2D& lastStep) const;
 
-private:
-
-  // parameters
   double theMaxTurnInner;
   double theMaxStepTurn;
   double theMaxStepLength;
