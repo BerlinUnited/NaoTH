@@ -13,12 +13,11 @@
 
 #include "Representations/Motion/Walk2018/StepBuffer.h"
 #include "Representations/Motion/Walk2018/TargetCoMFeetPose.h"
-#include "Motion/Engine/InverseKinematicsMotion/InverseKinematicsMotionEngine.h"
-//#include "Motion/Engine/InverseKinematicsMotion/Motions/IKPose.h"
 
 #include "Tools/Debug/DebugPlot.h"
 #include "Tools/Debug/DebugDrawings.h"
 #include "Tools/Debug/DebugRequest.h"
+#include "Tools/Debug/DebugParameterList.h"
 
 #include "Tools/DataStructures/Spline.h"
 
@@ -26,9 +25,9 @@ BEGIN_DECLARE_MODULE(HipRotationOffsetModifier)
     PROVIDE(DebugPlot)
     PROVIDE(DebugRequest)
     PROVIDE(DebugDrawings)
+    PROVIDE(DebugParameterList)
 
     REQUIRE(FrameInfo)
-    REQUIRE(InverseKinematicsMotionEngineService)
     REQUIRE(StepBuffer)
 
     PROVIDE(TargetCoMFeetPose)  // modifying com rotation
@@ -40,7 +39,13 @@ class HipRotationOffsetModifier : private HipRotationOffsetModifierBase
     HipRotationOffsetModifier():
         lastStepLength(),
         hipRotationOffsetBasedOnStepChange()
-    {}
+    {
+      getDebugParameterList().add(&parameters);
+    }
+
+    virtual ~HipRotationOffsetModifier(){
+      getDebugParameterList().remove(&parameters);
+    }
 
   virtual void execute(){
     // apply rotation offset depending on step change
@@ -66,8 +71,8 @@ class HipRotationOffsetModifier : private HipRotationOffsetModifierBase
         Vector2d currentStepLength = targetFoot.projectXY().translation - startFoot.projectXY().translation;
         Vector2d currentStepChange = currentStepLength - lastStepLength;
 
-        hipRotationOffsetBasedOnStepChange = Vector2d(getInverseKinematicsMotionEngineService().getEngine().getParameters().walk.stabilization.hipOffsetBasedOnStepChange.x * currentStepChange.x,
-                                                      getInverseKinematicsMotionEngineService().getEngine().getParameters().walk.stabilization.hipOffsetBasedOnStepChange.y * currentStepChange.y);
+        hipRotationOffsetBasedOnStepChange = Vector2d(parameters.hipOffsetBasedOnStepChange.x * currentStepChange.x,
+                                                      parameters.hipOffsetBasedOnStepChange.y * currentStepChange.y);
 
         PLOT("Walk:currentStepChange.x", currentStepChange.x);
         PLOT("Walk:currentStepChange.y", currentStepChange.y);
@@ -88,7 +93,7 @@ class HipRotationOffsetModifier : private HipRotationOffsetModifierBase
     scaleOffset.set_points(xA,yA);
 
     double t = executingStep.executingCycle/executingStep.numberOfCycles;
-    getTargetCoMFeetPose().pose.com.rotation = calculateBodyRotation(getTargetCoMFeetPose().pose.feet, scaleOffset(t)*Math::fromDegrees(hipRotationOffsetBasedOnStepChange.x) + getInverseKinematicsMotionEngineService().getEngine().getParameters().walk.general.bodyPitchOffset);
+    getTargetCoMFeetPose().pose.com.rotation = calculateBodyRotation(getTargetCoMFeetPose().pose.feet, scaleOffset(t)*Math::fromDegrees(hipRotationOffsetBasedOnStepChange.x) + parameters.bodyPitchOffset);
   }
 
 
@@ -103,8 +108,25 @@ class HipRotationOffsetModifier : private HipRotationOffsetModifierBase
     RotationMatrix calculateBodyRotation(const InverseKinematic::FeetPose& feet, double pitch) const
     {
       double bodyAngleZ = Math::meanAngle(feet.left.rotation.getZAngle(), feet.right.rotation.getZAngle());
+      // TODO: check, shouldn't it be RotationMatrix::getRotationY(pitch) * RotationMatrix::getRotationZ(bodyAngleZ)?
+      //       i.e. rotation first about some "global" z axis and then about the rotated y (pitch) axis
       return RotationMatrix::getRotationZ(bodyAngleZ) * RotationMatrix::getRotationY(pitch);
     }
+
+    class Parameters: public ParameterList{
+    public:
+        Parameters() : ParameterList("HipRotationOffsetModifier")
+        {
+          PARAMETER_REGISTER(hipOffsetBasedOnStepChange.x) = 0;
+          PARAMETER_REGISTER(hipOffsetBasedOnStepChange.y) = 0;
+          PARAMETER_ANGLE_REGISTER(bodyPitchOffset) = 0.1;
+
+          syncWithConfig();
+        }
+
+        Vector2d hipOffsetBasedOnStepChange;
+        double   bodyPitchOffset;
+    } parameters;
 };
 
 
