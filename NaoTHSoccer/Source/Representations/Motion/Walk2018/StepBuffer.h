@@ -42,6 +42,9 @@ public:
   int planningCycle;
   int executingCycle;
 
+  int samplesDoubleSupport;
+  int samplesSingleSupport;
+
   StepType type;
   // store the request which has been used to create this step
   WalkRequest walkRequest;

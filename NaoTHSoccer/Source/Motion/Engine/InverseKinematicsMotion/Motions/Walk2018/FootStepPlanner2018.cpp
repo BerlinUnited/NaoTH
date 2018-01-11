@@ -55,6 +55,9 @@ void FootStepPlanner2018::init(int initial_number_of_cycles, FeetPose initialFee
     initialStep.footStep = FootStep(initialFeetPose, FootStep::NONE);
     initialStep.numberOfCycles = initial_number_of_cycles - 1; // TODO: why?
     initialStep.planningCycle  = initialStep.numberOfCycles;
+    initialStep.samplesDoubleSupport = std::max(0, (int) (getInverseKinematicsMotionEngineService().getEngine().getParameters().walk.step.doubleSupportTime / getRobotInfo().basicTimeStep));
+    initialStep.samplesSingleSupport = initialStep.numberOfCycles - initialStep.samplesDoubleSupport;
+    ASSERT(initialStep.samplesSingleSupport >= 0 && initialStep.samplesDoubleSupport >= 0);
 }
 
 void FootStepPlanner2018::execute(){
@@ -103,7 +106,16 @@ void FootStepPlanner2018::calculateNewStep(const Step& lastStep, Step& newStep, 
       newStep.footStep = zeroStep(lastStep.footStep);
     }
 
-    newStep.numberOfCycles = (newStep.footStep.liftingFoot() == FootStep::NONE)?1:getInverseKinematicsMotionEngineService().getEngine().getParameters().walk.step.duration/getRobotInfo().basicTimeStep;
+    if(newStep.footStep.liftingFoot() == FootStep::NONE){
+      newStep.numberOfCycles = 1;
+      newStep.samplesDoubleSupport = 1;
+      newStep.samplesSingleSupport = 0;
+    } else {
+      newStep.numberOfCycles = getInverseKinematicsMotionEngineService().getEngine().getParameters().walk.step.duration/getRobotInfo().basicTimeStep;
+      newStep.samplesDoubleSupport = std::max(0, (int) (getInverseKinematicsMotionEngineService().getEngine().getParameters().walk.step.doubleSupportTime / getRobotInfo().basicTimeStep));
+      newStep.samplesSingleSupport = newStep.numberOfCycles - newStep.samplesDoubleSupport;
+    }
+    ASSERT(newStep.samplesSingleSupport >= 0 && newStep.samplesDoubleSupport >= 0);
     newStep.type = Step::STEP_WALK;
 
     // print it only once
@@ -171,6 +183,11 @@ void FootStepPlanner2018::calculateNewStep(const Step& lastStep, Step& newStep, 
     PLOT("Walk:XABSL_after_adaptStepSize_x", newStep.footStep.footEnd().translation.x);
     PLOT("Walk:XABSL_after_adaptStepSize_y", newStep.footStep.footEnd().translation.y);
   }
+
+  // TODO: is the following assert always hold by special steps if doubleSupportTime != 0 ?
+  newStep.samplesDoubleSupport = std::max(0, (int) (getInverseKinematicsMotionEngineService().getEngine().getParameters().walk.step.doubleSupportTime / getRobotInfo().basicTimeStep));
+  newStep.samplesSingleSupport = newStep.numberOfCycles - newStep.samplesDoubleSupport;
+  ASSERT(newStep.samplesSingleSupport >= 0 && newStep.samplesDoubleSupport >= 0);
 
   // STABILIZATION
   if (getInverseKinematicsMotionEngineService().getEngine().getParameters().walk.stabilization.dynamicStepsize && !walkRequest.stepControl.isProtected) {
