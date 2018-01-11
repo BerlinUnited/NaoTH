@@ -9,6 +9,10 @@
 
 using namespace InverseKinematic;
 
+ZMPPlanner2018::~ZMPPlanner2018(){
+    getDebugParameterList().remove(&parameters);
+}
+
 void ZMPPlanner2018::init(int initial_number_of_cycles, Vector3d initialZMP, Vector3d targetZMP){
     for (size_t i = 0; i+1 < initial_number_of_cycles; i++) {
       double t = static_cast<double>(i) / static_cast<double>(initial_number_of_cycles - 1); // why? it should be only initial_number_of_cycles
@@ -24,8 +28,11 @@ void ZMPPlanner2018::execute(){
     Vector3d other_zmp;
     if(planningStep.footStep.liftingFoot() == FootStep::NONE)
     {
-      Pose3D finalBody = calculateStableCoMByFeet(planningStep.footStep.end(), parameters().general.bodyPitchOffset);
-      zmp = finalBody.translation;
+      if(parameters.newZMP_ON) {
+        zmp = calculateStableCoMByFeet(planningStep.footStep.end(), parameters.bezierZMP.offsetX);
+      } else {
+        zmp = calculateStableCoMByFeet(planningStep.footStep.end(), parameters.simpleZMP.offsetX);
+      }
     } else {
         if(planningStep.planningCycle == 0){ // only need to be done once per step
             Pose3D startFoot, targetFoot;
@@ -47,56 +54,61 @@ void ZMPPlanner2018::execute(){
 
             Vector2d currentStepLength = targetFoot.projectXY().translation - startFoot.projectXY().translation;
 
-            PLOT("Walk:hipOffsetBasedOnStepLength.x", parameters().stabilization.maxHipOffsetBasedOnStepLength.x * std::abs(currentStepLength.x)/parameters().limits.maxStepLength);
+            // HACK: hard coded maximal step lengths
+            // TODO: replace maxHipOffsetBasedOnStepLength by a scaling factor
+            //       alternative: remove it at all, it isn't really used and its effectiveness is questionable
+            double maxStepLength = 50;
+            double maxCtrlLength = 80;
+
+            PLOT("Walk:hipOffsetBasedOnStepLength.x", parameters.stabilization.maxHipOffsetBasedOnStepLength.x * std::abs(currentStepLength.x)/maxStepLength);
 
             // TODO: should it be a part of the Step?
             // TODO: hipOffsetBasedOnStepLength.y?
-            if (planningStep.type == Step::STEP_CONTROL && planningStep.walkRequest.stepControl.type == WalkRequest::StepControlRequest::KICKSTEP)
-            {
-                zmpOffsetX = parameters().general.hipOffsetX
-                           + parameters().stabilization.maxHipOffsetBasedOnStepLengthForKicks.x * ((currentStepLength.x > 0) ? currentStepLength.x / parameters().limits.maxCtrlLength : 0);
-                zmpOffsetY = parameters().kick.ZMPOffsetY    + parameters().hip.ZMPOffsetYByCharacter * (1-planningStep.walkRequest.character);
+            if (planningStep.type == Step::STEP_CONTROL && planningStep.walkRequest.stepControl.type == WalkRequest::StepControlRequest::KICKSTEP) {
+                zmpOffsetX = parameters.simpleZMP.offsetX
+                           + parameters.stabilization.maxHipOffsetBasedOnStepLengthForKicks.x * ((currentStepLength.x > 0) ? currentStepLength.x / maxCtrlLength : 0);
+                zmpOffsetY = parameters.simpleZMP.kickOffsetY
+                           + parameters.ZMPOffsetYByCharacter * (1-planningStep.walkRequest.character);
 
-                newZMPOffsetX = parameters().zmp.bezier.offsetXForKicks
-                              + parameters().stabilization.maxHipOffsetBasedOnStepLengthForKicks.x * ((currentStepLength.x > 0) ? currentStepLength.x / parameters().limits.maxCtrlLength : 0);
-                newZMPOffsetY = parameters().zmp.bezier.offsetYForKicks + parameters().hip.ZMPOffsetYByCharacter * (1-planningStep.walkRequest.character);
+                newZMPOffsetX = parameters.bezierZMP.offsetXForKicks
+                              + parameters.stabilization.maxHipOffsetBasedOnStepLengthForKicks.x * ((currentStepLength.x > 0) ? currentStepLength.x / maxCtrlLength : 0);
+                newZMPOffsetY = parameters.bezierZMP.offsetYForKicks
+                              + parameters.ZMPOffsetYByCharacter * (1-planningStep.walkRequest.character);
+            } else {
+                zmpOffsetX = parameters.simpleZMP.offsetX
+                           + parameters.stabilization.maxHipOffsetBasedOnStepLength.x * ((currentStepLength.x > 0) ? currentStepLength.x / maxStepLength : 0);
+                zmpOffsetY = parameters.simpleZMP.offsetY
+                           + parameters.ZMPOffsetYByCharacter * (1-planningStep.walkRequest.character);
+
+                newZMPOffsetX = parameters.bezierZMP.offsetX
+                              + parameters.stabilization.maxHipOffsetBasedOnStepLength.x * ((currentStepLength.x > 0) ? currentStepLength.x / maxStepLength : 0);
+                newZMPOffsetY = parameters.bezierZMP.offsetY
+                              + parameters.ZMPOffsetYByCharacter * (1-planningStep.walkRequest.character);
             }
-            else
-            {
-                zmpOffsetX = parameters().general.hipOffsetX + parameters().stabilization.maxHipOffsetBasedOnStepLength.x * ((currentStepLength.x > 0) ? currentStepLength.x / parameters().limits.maxStepLength : 0);
-                zmpOffsetY = parameters().hip.ZMPOffsetY     + parameters().hip.ZMPOffsetYByCharacter * (1-planningStep.walkRequest.character);
-
-                newZMPOffsetX = parameters().zmp.bezier.offsetX + parameters().stabilization.maxHipOffsetBasedOnStepLength.x * ((currentStepLength.x > 0) ? currentStepLength.x / parameters().limits.maxStepLength : 0);
-                newZMPOffsetY = parameters().zmp.bezier.offsetY + parameters().hip.ZMPOffsetYByCharacter * (1-planningStep.walkRequest.character);
-            }
-
-            samplesDoubleSupport = std::max(0, (int) (parameters().step.doubleSupportTime / getRobotInfo().basicTimeStep));
-            samplesSingleSupport = planningStep.numberOfCycles - samplesDoubleSupport;
-            ASSERT(samplesSingleSupport >= 0 && samplesDoubleSupport >= 0);
         }
 
         Vector2d zmp_new;
         zmp_new = bezierBased(
                     planningStep.footStep,
                     planningStep.planningCycle,
-                    samplesDoubleSupport,
-                    samplesSingleSupport,
+                    planningStep.samplesDoubleSupport,
+                    planningStep.samplesSingleSupport,
                     newZMPOffsetX,
                     newZMPOffsetY,
-                    parameters().zmp.bezier.inFootScalingY,
-                    parameters().zmp.bezier.inFootSpacing,
-                    parameters().zmp.bezier.transitionScaling);
+                    parameters.bezierZMP.inFootScalingY,
+                    parameters.bezierZMP.inFootSpacing,
+                    parameters.bezierZMP.transitionScaling);
 
         // old zmp
         Vector2d zmp_simple = simplest(planningStep.footStep, zmpOffsetX, zmpOffsetY);
 
-        if(parameters().hip.newZMP_ON)
+        if(parameters.newZMP_ON)
         {
-            zmp = Vector3d(zmp_new.x, zmp_new.y, parameters().hip.comHeight);
-            other_zmp = Vector3d(zmp_simple.x, zmp_simple.y, parameters().hip.comHeight);
+            zmp = Vector3d(zmp_new.x, zmp_new.y, parameters.comHeight);
+            other_zmp = Vector3d(zmp_simple.x, zmp_simple.y, parameters.comHeight);
         } else {
-            zmp = Vector3d(zmp_simple.x, zmp_simple.y, parameters().hip.comHeight);
-            other_zmp = Vector3d(zmp_new.x, zmp_new.y, parameters().hip.comHeight);
+            zmp = Vector3d(zmp_simple.x, zmp_simple.y, parameters.comHeight);
+            other_zmp = Vector3d(zmp_new.x, zmp_new.y, parameters.comHeight);
         }
     }
 
@@ -229,21 +241,14 @@ Vector2d ZMPPlanner2018::bezierBased(
   return step.supFoot().projectXY()*Vector2d(x, y);
 }//end bezierBased
 
-Pose3D ZMPPlanner2018::calculateStableCoMByFeet(FeetPose feet, double pitch) const
+Vector3d ZMPPlanner2018::calculateStableCoMByFeet(FeetPose feet, double offsetX) const
 {
-  feet.left.translate(parameters().general.hipOffsetX, 0, 0);
-  feet.right.translate(parameters().general.hipOffsetX, 0, 0);
+  feet.left.translate(offsetX, 0, 0);
+  feet.right.translate(offsetX, 0, 0);
 
-  Pose3D com;
-  com.rotation = calculateBodyRotation(feet, pitch);
-  com.translation = (feet.left.translation + feet.right.translation) * 0.5;
-  com.translation.z = parameters().hip.comHeight;
+  Vector3d com;
+  com = (feet.left.translation + feet.right.translation) * 0.5;
+  com.z = parameters.comHeight;
 
   return com;
-}
-
-RotationMatrix ZMPPlanner2018::calculateBodyRotation(const FeetPose& feet, double pitch) const
-{
-  double bodyAngleZ = Math::meanAngle(feet.left.rotation.getZAngle(), feet.right.rotation.getZAngle());
-  return RotationMatrix::getRotationZ(bodyAngleZ) * RotationMatrix::getRotationY(pitch);
 }
