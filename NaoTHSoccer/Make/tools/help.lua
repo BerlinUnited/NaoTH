@@ -87,4 +87,12 @@ premake.showhelp = function(prj)
 
     -- see more
     printf("For additional information, see https://github.com/premake/premake-core/wiki")
+
+    -- NaoTH Notes:
+    printf("")
+    printf("after running premake, the makefile can be run with the following configs:")
+    printf("optdebug_nao, optdebug_native, debug_nao, debug_native")
+    printf("")
+    printf("optdebug disables the gcc debug symbols, but our own debug symbols, e.g. PLOTS, DebugRequests and MODIFY are still working")
+
 end

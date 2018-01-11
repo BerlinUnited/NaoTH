@@ -225,15 +225,15 @@ public class RobotControlImpl extends javax.swing.JFrame
   @Override
   public boolean checkConnected()
   {
-    if(messageServer.isConnected())
+    if(enforceConnection.isSelected() && !messageServer.isConnected())
+    {
+      connectionDialog.setVisible(true);
+      return messageServer.isConnected();
+    }
+    else
     {
       return true;
     }
-
-    // show connection dialog
-    connectionDialog.setVisible(true);
-
-    return messageServer.isConnected();
   }//end checkConnected
 
   /**
@@ -251,10 +251,12 @@ public class RobotControlImpl extends javax.swing.JFrame
         lblReceivedBytesS = new javax.swing.JLabel();
         lblSentBytesS = new javax.swing.JLabel();
         lblFramesS = new javax.swing.JLabel();
+        statusPanelPlugins = new javax.swing.JPanel();
         mainMenuBar = new de.naoth.rc.MainMenuBar();
         mainControlMenu = new javax.swing.JMenu();
         connectMenuItem = new javax.swing.JMenuItem();
         disconnectMenuItem = new javax.swing.JMenuItem();
+        enforceConnection = new javax.swing.JCheckBoxMenuItem();
         resetLayoutMenuItem = new javax.swing.JMenuItem();
         jSeparator1 = new javax.swing.JSeparator();
         exitMenuItem = new javax.swing.JMenuItem();
@@ -277,7 +279,6 @@ public class RobotControlImpl extends javax.swing.JFrame
 
         btManager.setText("Running Manager --");
         btManager.setToolTipText("Shows the number of currently registered Manager");
-        btManager.setBorder(null);
         btManager.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btManagerActionPerformed(evt);
@@ -289,6 +290,13 @@ public class RobotControlImpl extends javax.swing.JFrame
         lblSentBytesS.setText("Sent byte/s: ");
 
         lblFramesS.setText("Frames/s: ");
+
+        statusPanelPlugins.setFocusable(false);
+        statusPanelPlugins.setMaximumSize(new java.awt.Dimension(32767, 24));
+        statusPanelPlugins.setMinimumSize(new java.awt.Dimension(0, 24));
+        statusPanelPlugins.setOpaque(false);
+        statusPanelPlugins.setPreferredSize(new java.awt.Dimension(100, 24));
+        statusPanelPlugins.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
 
         javax.swing.GroupLayout statusPanelLayout = new javax.swing.GroupLayout(statusPanel);
         statusPanel.setLayout(statusPanelLayout);
@@ -302,18 +310,23 @@ public class RobotControlImpl extends javax.swing.JFrame
                 .addComponent(lblSentBytesS, javax.swing.GroupLayout.PREFERRED_SIZE, 164, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(lblFramesS, javax.swing.GroupLayout.PREFERRED_SIZE, 173, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 235, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(statusPanelPlugins, javax.swing.GroupLayout.DEFAULT_SIZE, 189, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(lblConnect)
                 .addContainerGap())
         );
         statusPanelLayout.setVerticalGroup(
             statusPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, statusPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+            .addGroup(statusPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                 .addComponent(btManager, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addComponent(lblConnect, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(lblReceivedBytesS)
                 .addComponent(lblSentBytesS)
                 .addComponent(lblFramesS))
+            .addGroup(statusPanelLayout.createSequentialGroup()
+                .addComponent(statusPanelPlugins, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
 
         getContentPane().add(statusPanel, java.awt.BorderLayout.PAGE_END);
@@ -342,6 +355,11 @@ public class RobotControlImpl extends javax.swing.JFrame
             }
         });
         mainControlMenu.add(disconnectMenuItem);
+
+        enforceConnection.setSelected(true);
+        enforceConnection.setText("Enforce Connection");
+        enforceConnection.setToolTipText("Make sure that RobotControl is connected to a robot when dialogs try to receive data");
+        mainControlMenu.add(enforceConnection);
 
         resetLayoutMenuItem.setText("Reset layout");
         resetLayoutMenuItem.setToolTipText("\"Resets all layout information");
@@ -550,6 +568,7 @@ public class RobotControlImpl extends javax.swing.JFrame
     private javax.swing.JButton btManager;
     private javax.swing.JMenuItem connectMenuItem;
     private javax.swing.JMenuItem disconnectMenuItem;
+    private javax.swing.JCheckBoxMenuItem enforceConnection;
     private javax.swing.JMenuItem exitMenuItem;
     private javax.swing.JMenu helpMenu;
     private javax.swing.JSeparator jSeparator1;
@@ -561,6 +580,7 @@ public class RobotControlImpl extends javax.swing.JFrame
     private de.naoth.rc.MainMenuBar mainMenuBar;
     private javax.swing.JMenuItem resetLayoutMenuItem;
     private javax.swing.JPanel statusPanel;
+    private javax.swing.JPanel statusPanelPlugins;
     // End of variables declaration//GEN-END:variables
 
     
@@ -659,5 +679,7 @@ public class RobotControlImpl extends javax.swing.JFrame
       return Toolkit.getDefaultToolkit().getScreenSize().width > 2000;
   }
   
-  
+  public void addToStatusBar(Component c) {
+      this.statusPanelPlugins.add(c);
+  }
 }

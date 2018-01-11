@@ -17,12 +17,6 @@ dofile (FRAMEWORK_PATH .. "/BuildTools/protoc.lua")
 -- dofile (FRAMEWORK_PATH .. "/BuildTools/qtcreator.lua")
 dofile (FRAMEWORK_PATH .. "/BuildTools/qtcreator_2.7+.lua")
 
--- include the Nao platform
-if COMPILER_PATH_NAO ~= nil then
-  include (COMPILER_PATH_NAO)
-end
-
-
 
 print("INFO: generating solution NaoTHSoccer")
 print("  PLATFORM = " .. PLATFORM)
@@ -133,6 +127,10 @@ workspace "NaoTHSoccer"
     
     -- HACK: system() desn't set the target system properly => set the target system manually
     if _OPTIONS["platform"] == "Nao" then
+      -- include the Nao platform
+      if COMPILER_PATH_NAO ~= nil then
+        include (COMPILER_PATH_NAO)
+      end
       _TARGET_OS = "linux"
       print("NOTE: set the target OS to " .. os.target())
     end
