@@ -18,21 +18,20 @@
 #include "Representations/Infrastructure/RobotInfo.h"
 #include "Representations/Infrastructure/JointData.h"
 
-#include "Motion/Engine/InverseKinematicsMotion/InverseKinematicsMotionEngine.h"
-
 #include "Tools/Debug/DebugPlot.h"
 #include "Tools/Debug/DebugRequest.h"
+#include "Tools/Debug/DebugParameterList.h"
 
 BEGIN_DECLARE_MODULE(FeetStabilizer)
     PROVIDE(DebugPlot)
     PROVIDE(DebugRequest)
+    PROVIDE(DebugParameterList)
 
     REQUIRE(FrameInfo)
     REQUIRE(InertialModel)
     REQUIRE(GyrometerData)
     REQUIRE(RobotInfo)
     REQUIRE(StepBuffer)
-    REQUIRE(InverseKinematicsMotionEngineService)
 
     PROVIDE(MotorJointData)
 END_DECLARE_MODULE(FeetStabilizer)
@@ -40,16 +39,21 @@ END_DECLARE_MODULE(FeetStabilizer)
 class FeetStabilizer : private FeetStabilizerBase
 {
   public:
-    FeetStabilizer(){}
+    FeetStabilizer(){
+      getDebugParameterList().add(&parameters);
+    }
+
+    virtual ~FeetStabilizer(){
+      getDebugParameterList().remove(&parameters);
+    }
 
   virtual void execute(){
+    if (!parameters.stabilizeFeet) return;
+
     const Step& executingStep = getStepBuffer().first();
 
-    // the same as in "FootTrajectorGenerator::genTrajectory"
-    // TODO: remove dupication
-    double samplesDoubleSupport = std::max(0, (int) (getInverseKinematicsMotionEngineService().getEngine().getParameters().walk.step.doubleSupportTime / getRobotInfo().basicTimeStep));
-    double samplesSingleSupport = executingStep.numberOfCycles - samplesDoubleSupport;
-    ASSERT(samplesSingleSupport >= 0 && samplesDoubleSupport >= 0);
+    double samplesDoubleSupport = executingStep.samplesDoubleSupport;
+    double samplesSingleSupport = executingStep.samplesSingleSupport;
 
     double doubleSupportEnd = samplesDoubleSupport / 2;
     double doubleSupportBegin = samplesDoubleSupport / 2 + samplesSingleSupport;
@@ -73,30 +77,30 @@ class FeetStabilizer : private FeetStabilizerBase
 
     Vector2d weight;
     weight.x =
-        getInverseKinematicsMotionEngineService().getEngine().getParameters().walk.stabilization.stabilizeFeetP.x * inertial.x
-      + getInverseKinematicsMotionEngineService().getEngine().getParameters().walk.stabilization.stabilizeFeetD.x * filteredGyro.x;
+        parameters.P.x * inertial.x
+      + parameters.D.x * filteredGyro.x;
 
     weight.y =
-        getInverseKinematicsMotionEngineService().getEngine().getParameters().walk.stabilization.stabilizeFeetP.y * inertial.y
-      + getInverseKinematicsMotionEngineService().getEngine().getParameters().walk.stabilization.stabilizeFeetD.y * filteredGyro.y;
+        parameters.P.y * inertial.y
+      + parameters.D.y * filteredGyro.y;
 
     switch(executingStep.footStep.liftingFoot()) {
         case FootStep::LEFT:
           // adjust left
-          getMotorJointData().position[JointData::LAnkleRoll] -= inertial.x*z;
+          getMotorJointData().position[JointData::LAnkleRoll]  -= inertial.x*z;
           getMotorJointData().position[JointData::LAnklePitch] -= inertial.y*z;
 
           // stabilize right
-          getMotorJointData().position[JointData::RAnkleRoll] += weight.x*z;
+          getMotorJointData().position[JointData::RAnkleRoll]  += weight.x*z;
           getMotorJointData().position[JointData::RAnklePitch] += weight.y*z;
           break;
       case FootStep::RIGHT:
           // adjust right
-          getMotorJointData().position[JointData::RAnkleRoll] -= inertial.x*z;
+          getMotorJointData().position[JointData::RAnkleRoll]  -= inertial.x*z;
           getMotorJointData().position[JointData::RAnklePitch] -= inertial.y*z;
 
           // stabilize left
-          getMotorJointData().position[JointData::LAnkleRoll] += weight.x*z;
+          getMotorJointData().position[JointData::LAnkleRoll]  += weight.x*z;
           getMotorJointData().position[JointData::LAnklePitch] += weight.y*z;
           break;
       default:
@@ -106,6 +110,26 @@ class FeetStabilizer : private FeetStabilizerBase
     lastGyro = gyro;
   }
 
+  private:
+    class Parameters: public ParameterList{
+      public:
+        Parameters() : ParameterList("FeetStabilizer")
+        {
+          PARAMETER_REGISTER(stabilizeFeet) = true;
+
+          PARAMETER_REGISTER(P.x) = -0.4;
+          PARAMETER_REGISTER(P.y) = -0.3;
+          PARAMETER_REGISTER(D.x) = 0.04;
+          PARAMETER_REGISTER(D.y) = 0.035;
+
+          syncWithConfig();
+        }
+
+        Vector2d P;
+        Vector2d D;
+
+        bool stabilizeFeet;
+    } parameters;
 };
 
 #endif  /* _FEET_STABILIZER_H */
