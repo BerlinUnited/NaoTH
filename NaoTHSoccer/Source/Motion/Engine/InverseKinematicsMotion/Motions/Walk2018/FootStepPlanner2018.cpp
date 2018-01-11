@@ -10,44 +10,26 @@
 using namespace InverseKinematic;
 using namespace std;
 
-FootStepPlanner2018::FootStepPlanner2018()
-:
-  theMaxTurnInner(0.0),
-  theMaxStepTurn(0.0),
-  theMaxStepLength(0.0),
-  theMaxStepLengthBack(0.0),
-  theMaxStepWidth(0.0),
+FootStepPlanner2018::FootStepPlanner2018():
   theFootOffsetY(0.0),
   theMaxChangeTurn(0.0),
   theMaxChangeX(0.0),
   theMaxChangeY(0.0),
-
-  theMaxCtrlTurn(0.0),
-  theMaxCtrlLength(0.0),
-  theMaxCtrlWidth(0.0),
   emergencyCounter(0)
 {
+  getDebugParameterList().add(&parameters);
 }
 
-void FootStepPlanner2018::updateParameters(const IKParameters& parameters)
-{
-  theMaxTurnInner = Math::fromDegrees(parameters.walk.limits.maxTurnInner);
-  theMaxStepTurn = Math::fromDegrees(parameters.walk.limits.maxStepTurn);
-  theMaxStepLength = parameters.walk.limits.maxStepLength;
-  theMaxStepLengthBack = parameters.walk.limits.maxStepLengthBack;
-  theMaxStepWidth = parameters.walk.limits.maxStepWidth;
-  
-  // step control
-  theMaxCtrlTurn = parameters.walk.limits.maxCtrlTurn;
-  theMaxCtrlLength = parameters.walk.limits.maxCtrlLength;
-  theMaxCtrlWidth = parameters.walk.limits.maxCtrlWidth;
+FootStepPlanner2018::~FootStepPlanner2018(){
+  getDebugParameterList().remove(&parameters);
+}
 
-
-  theFootOffsetY = NaoInfo::HipOffsetY + parameters.footOffsetY;
+void FootStepPlanner2018::updateParameters(){
+  theFootOffsetY   = NaoInfo::HipOffsetY + parameters.footOffsetY;
   
-  theMaxChangeTurn = theMaxStepTurn * parameters.walk.limits.maxStepChange;
-  theMaxChangeX = theMaxStepLength * parameters.walk.limits.maxStepChange;
-  theMaxChangeY = theMaxStepWidth * parameters.walk.limits.maxStepChange;
+  theMaxChangeTurn = parameters.limits.maxStepTurn   * parameters.limits.maxStepChange;
+  theMaxChangeX    = parameters.limits.maxStepLength * parameters.limits.maxStepChange;
+  theMaxChangeY    = parameters.limits.maxStepWidth  * parameters.limits.maxStepChange;
 }
 
 void FootStepPlanner2018::init(int initial_number_of_cycles, FeetPose initialFeetPose){
@@ -55,7 +37,7 @@ void FootStepPlanner2018::init(int initial_number_of_cycles, FeetPose initialFee
     initialStep.footStep = FootStep(initialFeetPose, FootStep::NONE);
     initialStep.numberOfCycles = initial_number_of_cycles - 1; // TODO: why?
     initialStep.planningCycle  = initialStep.numberOfCycles;
-    initialStep.samplesDoubleSupport = std::max(0, (int) (getInverseKinematicsMotionEngineService().getEngine().getParameters().walk.step.doubleSupportTime / getRobotInfo().basicTimeStep));
+    initialStep.samplesDoubleSupport = std::max(0, (int) (parameters.step.doubleSupportTime / getRobotInfo().basicTimeStep));
     initialStep.samplesSingleSupport = initialStep.numberOfCycles - initialStep.samplesDoubleSupport;
     ASSERT(initialStep.samplesSingleSupport >= 0 && initialStep.samplesDoubleSupport >= 0);
 }
@@ -77,13 +59,14 @@ void FootStepPlanner2018::execute(){
 void FootStepPlanner2018::calculateNewStep(const Step& lastStep, Step& newStep, const WalkRequest& walkRequest) //const
 {
   // update the parameters in case they have changed
-  updateParameters(getInverseKinematicsMotionEngineService().getEngine().getParameters());
+  updateParameters();
 
   newStep.walkRequest = walkRequest;
 
   // STABILIZATION
-  bool do_emergency_stop = getCoMErrors().absolute2.isFull() && getCoMErrors().absolute2.getAverage() > getInverseKinematicsMotionEngineService().getEngine().getParameters().walk.stabilization.emergencyStopError;
+  bool do_emergency_stop = getCoMErrors().absolute2.isFull() && getCoMErrors().absolute2.getAverage() > parameters.stabilization.emergencyStopError;
 
+  // TODO: maybe move the check back to walk2018 and call a special function for finishing the motion
   if ( getMotionRequest().id != motion::walk /*getId()*/ || (do_emergency_stop && !walkRequest.stepControl.isProtected))
   {
     // TODO: find reason for deadlock
@@ -94,7 +77,7 @@ void FootStepPlanner2018::calculateNewStep(const Step& lastStep, Step& newStep, 
 
     PLOT("Walk:emergencyCounter",emergencyCounter);
 
-    if(emergencyCounter > getInverseKinematicsMotionEngineService().getEngine().getParameters().walk.stabilization.maxEmergencyCounter){
+    if(emergencyCounter > parameters.stabilization.maxEmergencyCounter){
         emergencyCounter = 0;
         getCoMErrors().absolute2.clear();
     }
@@ -111,8 +94,8 @@ void FootStepPlanner2018::calculateNewStep(const Step& lastStep, Step& newStep, 
       newStep.samplesDoubleSupport = 1;
       newStep.samplesSingleSupport = 0;
     } else {
-      newStep.numberOfCycles = getInverseKinematicsMotionEngineService().getEngine().getParameters().walk.step.duration/getRobotInfo().basicTimeStep;
-      newStep.samplesDoubleSupport = std::max(0, (int) (getInverseKinematicsMotionEngineService().getEngine().getParameters().walk.step.doubleSupportTime / getRobotInfo().basicTimeStep));
+      newStep.numberOfCycles = parameters.step.duration/getRobotInfo().basicTimeStep;
+      newStep.samplesDoubleSupport = std::max(0, (int) (parameters.step.doubleSupportTime / getRobotInfo().basicTimeStep));
       newStep.samplesSingleSupport = newStep.numberOfCycles - newStep.samplesDoubleSupport;
     }
     ASSERT(newStep.samplesSingleSupport >= 0 && newStep.samplesDoubleSupport >= 0);
@@ -149,9 +132,9 @@ void FootStepPlanner2018::calculateNewStep(const Step& lastStep, Step& newStep, 
     {
       newStep.footStep = controlStep(lastStep.footStep, walkRequest);
 
-      int duration = getInverseKinematicsMotionEngineService().getEngine().getParameters().walk.step.duration;
+      int duration = parameters.step.duration;
 
-      if(getInverseKinematicsMotionEngineService().getEngine().getParameters().walk.step.dynamicDuration)
+      if(parameters.step.dynamicDuration)
       {
         if(walkRequest.character <= 0.3) {
           duration = 300;
@@ -177,7 +160,7 @@ void FootStepPlanner2018::calculateNewStep(const Step& lastStep, Step& newStep, 
   else // regular walk
   {
     newStep.footStep = nextStep(lastStep.footStep, walkRequest);
-    newStep.numberOfCycles = getInverseKinematicsMotionEngineService().getEngine().getParameters().walk.step.duration / getRobotInfo().basicTimeStep;
+    newStep.numberOfCycles = parameters.step.duration / getRobotInfo().basicTimeStep;
     newStep.type = Step::STEP_WALK;
 
     PLOT("Walk:XABSL_after_adaptStepSize_x", newStep.footStep.footEnd().translation.x);
@@ -185,12 +168,12 @@ void FootStepPlanner2018::calculateNewStep(const Step& lastStep, Step& newStep, 
   }
 
   // TODO: is the following assert always hold by special steps if doubleSupportTime != 0 ?
-  newStep.samplesDoubleSupport = std::max(0, (int) (getInverseKinematicsMotionEngineService().getEngine().getParameters().walk.step.doubleSupportTime / getRobotInfo().basicTimeStep));
+  newStep.samplesDoubleSupport = std::max(0, (int) (parameters.step.doubleSupportTime / getRobotInfo().basicTimeStep));
   newStep.samplesSingleSupport = newStep.numberOfCycles - newStep.samplesDoubleSupport;
   ASSERT(newStep.samplesSingleSupport >= 0 && newStep.samplesDoubleSupport >= 0);
 
   // STABILIZATION
-  if (getInverseKinematicsMotionEngineService().getEngine().getParameters().walk.stabilization.dynamicStepsize && !walkRequest.stepControl.isProtected) {
+  if (parameters.stabilization.dynamicStepSize && !walkRequest.stepControl.isProtected) {
     adaptStepSize(newStep.footStep);
     getCoMErrors().e.clear();
   }
@@ -204,8 +187,8 @@ void FootStepPlanner2018::adaptStepSize(FootStep& step) const
     Vector3d errorCoM = getCoMErrors().e.getAverage();
     static Vector3d lastCoMError = errorCoM;
 
-    Vector3d comCorrection = errorCoM*getInverseKinematicsMotionEngineService().getEngine().getParameters().walk.stabilization.dynamicStepsizeP +
-                          (errorCoM - lastCoMError)*getInverseKinematicsMotionEngineService().getEngine().getParameters().walk.stabilization.dynamicStepsizeD;
+    Vector3d comCorrection = errorCoM * parameters.stabilization.dynamicStepSizeP +
+                          (errorCoM - lastCoMError) * parameters.stabilization.dynamicStepSizeD;
 
     Vector3d stepCorrection = step.supFoot().rotation * comCorrection;
     step.footEnd().translation.x += stepCorrection.x;
@@ -268,7 +251,7 @@ FootStep FootStepPlanner2018::firstStep(const InverseKinematic::FeetPose& pose, 
 
   // TODO: think about criteria, it should be better to always take the step which aligns the rotation at most
   //       proposal: remove else part
-  if ( fabs(req.target.rotation) > theMaxTurnInner )
+  if ( fabs(req.target.rotation) > parameters.limits.maxTurnInner )
   {
     // choose foot by rotation
     double leftTurn = leftMove.rotation.getZAngle();
@@ -330,9 +313,9 @@ FootStep FootStepPlanner2018::calculateNextWalkStep(const InverseKinematic::Feet
 
   // apply geometric restrictions to the step request
   if(movingFoot == FootStep::RIGHT) {
-    stepRequest = Pose2D(min(theMaxTurnInner, stepRequest.rotation), stepRequest.translation.x, min(0.0, stepRequest.translation.y));
+    stepRequest = Pose2D(min(parameters.limits.maxTurnInner, stepRequest.rotation), stepRequest.translation.x, min(0.0, stepRequest.translation.y));
   } else {
-    stepRequest = Pose2D(max(-theMaxTurnInner, stepRequest.rotation), stepRequest.translation.x, max(0.0, stepRequest.translation.y));
+    stepRequest = Pose2D(max(-parameters.limits.maxTurnInner, stepRequest.rotation), stepRequest.translation.x, max(0.0, stepRequest.translation.y));
   }
 
   // apply the planed motion and calculate the coordinates of the moving foot
@@ -351,16 +334,16 @@ void FootStepPlanner2018::restrictStepSize(Pose2D& step, double character, bool 
   double maxTurn, maxStepLength, maxStepLengthBack, maxStepWidth;
 
   if(stepControl){
-      maxTurn       = theMaxCtrlTurn   * character;
-      maxStepLength = theMaxCtrlLength * character;
-      maxStepWidth  = theMaxCtrlWidth  * character;
+      maxTurn       = parameters.limits.maxCtrlTurn   * character;
+      maxStepLength = parameters.limits.maxCtrlLength * character;
+      maxStepWidth  = parameters.limits.maxCtrlWidth  * character;
   } else {
-      maxTurn           = theMaxStepTurn       * character;
-      maxStepLength     = theMaxStepLength     * character;
-      maxStepWidth      = theMaxStepWidth      * character;
+      maxTurn           = parameters.limits.maxStepTurn       * character;
+      maxStepLength     = parameters.limits.maxStepLength     * character;
+      maxStepWidth      = parameters.limits.maxStepWidth      * character;
   }
 
-  maxStepLengthBack = theMaxStepLengthBack * character;
+  maxStepLengthBack = parameters.limits.maxStepLengthBack * character;
 
   if ( step.translation.x < 0 ) {
       maxStepLength = maxStepLengthBack;
