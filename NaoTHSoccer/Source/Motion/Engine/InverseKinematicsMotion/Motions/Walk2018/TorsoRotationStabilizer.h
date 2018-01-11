@@ -17,14 +17,14 @@
 #include "Representations/Infrastructure/GyrometerData.h"
 #include "Representations/Infrastructure/RobotInfo.h"
 
-#include "Motion/Engine/InverseKinematicsMotion/InverseKinematicsMotionEngine.h"
-
 #include "Tools/Debug/DebugPlot.h"
 #include "Tools/Debug/DebugRequest.h"
+#include "Tools/Debug/DebugParameterList.h"
 
 BEGIN_DECLARE_MODULE(TorsoRotationStabilizer)
     PROVIDE(DebugPlot)
     PROVIDE(DebugRequest)
+    PROVIDE(DebugParameterList)
 
     REQUIRE(FrameInfo)
     REQUIRE(CalibrationData)
@@ -32,7 +32,6 @@ BEGIN_DECLARE_MODULE(TorsoRotationStabilizer)
     REQUIRE(GyrometerData)
     REQUIRE(RobotInfo)
     REQUIRE(StepBuffer)
-    REQUIRE(InverseKinematicsMotionEngineService)
 
     PROVIDE(TargetHipFeetPose)
 END_DECLARE_MODULE(TorsoRotationStabilizer)
@@ -40,10 +39,16 @@ END_DECLARE_MODULE(TorsoRotationStabilizer)
 class TorsoRotationStabilizer : private TorsoRotationStabilizerBase
 {
   public:
-    TorsoRotationStabilizer(){}
+    TorsoRotationStabilizer(){
+      getDebugParameterList().add(&parameters);
+    }
+
+    virtual ~TorsoRotationStabilizer(){
+      getDebugParameterList().remove(&parameters);
+    }
 
   virtual void execute(){
-    if(getCalibrationData().calibrated && getInverseKinematicsMotionEngineService().getEngine().getParameters().walk.stabilization.rotationStabilize) {
+    if(getCalibrationData().calibrated && parameters.rotationStabilize) {
       if(getStepBuffer().first().footStep.liftingFoot() == FootStep::LEFT) {
         getTargetHipFeetPose().pose.localInRightFoot();
       } else if(getStepBuffer().first().footStep.liftingFoot() == FootStep::RIGHT) {
@@ -56,9 +61,9 @@ class TorsoRotationStabilizer : private TorsoRotationStabilizerBase
         getInertialModel(),
         getGyrometerData(),
         getRobotInfo().getBasicTimeStepInSecond(),
-        getInverseKinematicsMotionEngineService().getEngine().getParameters().walk.stabilization.rotation.P,
-        getInverseKinematicsMotionEngineService().getEngine().getParameters().walk.stabilization.rotation.VelocityP,
-        getInverseKinematicsMotionEngineService().getEngine().getParameters().walk.stabilization.rotation.D,
+        parameters.rotation.P,
+        parameters.rotation.VelocityP,
+        parameters.rotation.D,
         getTargetHipFeetPose().pose
       );
     }
@@ -117,6 +122,31 @@ class TorsoRotationStabilizer : private TorsoRotationStabilizerBase
 
         return true;
       }
+
+    class Parameters: public ParameterList{
+      public:
+        Parameters() : ParameterList("TorsoRotationStabilizer")
+        {
+          PARAMETER_REGISTER(rotationStabilize) = true;
+
+          PARAMETER_REGISTER(rotation.P.x) = -0.02;
+          PARAMETER_REGISTER(rotation.P.y) = -0.03;
+          PARAMETER_REGISTER(rotation.VelocityP.x) = 0.02;
+          PARAMETER_REGISTER(rotation.VelocityP.x) = 0.02;
+          PARAMETER_REGISTER(rotation.D.x) = 0;
+          PARAMETER_REGISTER(rotation.D.y) = 0;
+
+          syncWithConfig();
+        }
+
+        struct RotationStabilization{
+            Vector2d P;
+            Vector2d VelocityP;
+            Vector2d D;
+        } rotation;
+
+        bool rotationStabilize;
+    } parameters;
 };
 
 #endif  /* _TORSO_ROTATION_STABILIZER_H */
