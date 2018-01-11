@@ -10,16 +10,14 @@
 
 #include <ModuleFramework/Module.h>
 
-#include "FootStep.h"
-#include "../IKParameters.h"
-#include "Motion/Engine/InverseKinematicsMotion/InverseKinematicsMotionEngine.h"
-
 #include <list>
 #include <vector>
 #include <map>
 
 #include "Tools/Math/Matrix3x3.h"
 #include "Tools/Math/Vector2.h"
+
+#include "Representations/Infrastructure/FrameInfo.h"
 
 #include "Representations/Motion/Walk2018/ZMPReferenceBuffer.h"
 #include "Representations/Motion/Walk2018/TargetCoMFeetPose.h"

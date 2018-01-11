@@ -6,11 +6,8 @@
 */
 
 #include "ZMPPreviewController.h"
-#include <map>
 #include <PlatformInterface/Platform.h>
-#include <Tools/DataConversion.h>
 
-using namespace InverseKinematic;
 using namespace std;
 
 void ZMPPreviewController::execute(){
