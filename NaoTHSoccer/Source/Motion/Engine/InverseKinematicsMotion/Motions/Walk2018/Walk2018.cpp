@@ -23,8 +23,8 @@ Walk2018::Walk2018() : IKMotion(getInverseKinematicsMotionEngineService(), motio
   DEBUG_REQUEST_REGISTER("Walk:plot_genTrajectoryWithSplines", "plot spline interpolation to parametrize 3D foot trajectory", false);
 
   theCoMErrorProvider          = registerModule<CoMErrorProvider>("CoMErrorProvider", true);
-  theFootStepPlanner           = registerModule<FootStepPlanner2018>("FootStepPlanner2018", true);   // TODO: call init()
-  theZMPPlanner                = registerModule<ZMPPlanner2018>("ZMPPlanner2018", true);             // TODO: call init()
+  theFootStepPlanner           = registerModule<FootStepPlanner2018>("FootStepPlanner2018", true);
+  theZMPPlanner                = registerModule<ZMPPlanner2018>("ZMPPlanner2018", true);
   theZMPPreviewController      = registerModule<ZMPPreviewController>("ZMPPreviewController", true);
   theFootTrajectoryGenerator   = registerModule<FootTrajectoryGenerator2018>("FootTrajectoryGenerator2018", true);
   theHipRotationOffsetModifier = registerModule<HipRotationOffsetModifier>("HipRotationOffsetModifier", true);
@@ -61,6 +61,11 @@ void Walk2018::execute()
   // add new steps or delete executed ones if necessary
   theFootStepPlanner->execute();
 
+  DEBUG_REQUEST("Walk:draw_step_plan_geometry",
+    FIELD_DRAWING_CONTEXT;
+    getStepBuffer().draw(getDebugDrawings());
+  );
+
   // NOTE: check the integrity of the step buffer
   ASSERT(!getStepBuffer().empty());
   ASSERT(!getStepBuffer().last().isPlanned());
@@ -69,11 +74,6 @@ void Walk2018::execute()
   // running phase
   ASSERT(!getStepBuffer().first().isExecuted());
   calculateTargetCoMFeetPose();
-
-  DEBUG_REQUEST("Walk:draw_step_plan_geometry",
-    FIELD_DRAWING_CONTEXT;
-    getStepBuffer().draw(getDebugDrawings());
-  );
 
   // set arms
   // Attention: this will be overwritten by the arm motion engine if the ArmMotionRequest's MotionID is not equal to "none" or "arms_synchronised_with_walk"
@@ -98,11 +98,6 @@ void Walk2018::execute()
   theTorsoRotationStabilizer->execute();
 
   calculateJoints();
-
-  // STABILIZATION
-  if(parameters().stabilization.stabilizeFeet) {
-    theFeetStabilizer->execute();
-  }
 
   updateMotionStatus(getMotionStatus());
 
@@ -158,8 +153,7 @@ void Walk2018::calculateJoints() {
     getMotorJointData().stiffness[JointData::LWristYaw] = parameters().general.stiffnessArms;
     getMotorJointData().stiffness[JointData::RWristYaw] = parameters().general.stiffnessArms;
 
-
-      // set the legs stiffness for walking
+    // set the legs stiffness for walking
     for (size_t i = JointData::RHipYawPitch; i <= JointData::LAnkleRoll; ++i) {
       getMotorJointData().stiffness[i] = parameters().general.stiffness;
     }
@@ -171,6 +165,9 @@ void Walk2018::calculateJoints() {
     if (getMotorJointData().position[JointData::RHipRoll] > 0) {
       getMotorJointData().position[JointData::RHipRoll] *= parameters().general.hipRollSingleSupFactorRight; // if = 1 no damping or amplifing
     }
+
+    // STABILIZATION
+    theFeetStabilizer->execute();
 }
 
 void Walk2018::updateMotionStatus(MotionStatus& motionStatus) const
