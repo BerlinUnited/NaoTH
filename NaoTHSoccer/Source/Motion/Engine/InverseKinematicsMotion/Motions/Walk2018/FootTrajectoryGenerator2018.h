@@ -12,21 +12,24 @@
 
 #include "Tools/Math/Pose3D.h"
 
+#include "Representations/Infrastructure/FrameInfo.h"
+#include "Representations/Infrastructure/RobotInfo.h"
+
 #include "Representations/Motion/Walk2018/StepBuffer.h"
 #include "Representations/Motion/Walk2018/TargetCoMFeetPose.h"
-#include "Motion/Engine/InverseKinematicsMotion/InverseKinematicsMotionEngine.h"
 
 #include "Tools/Debug/DebugPlot.h"
 #include "Tools/Debug/DebugRequest.h"
+#include "Tools/Debug/DebugParameterList.h"
 
 #include "Tools/DataStructures/Spline.h"
 
 BEGIN_DECLARE_MODULE(FootTrajectoryGenerator2018)
     PROVIDE(DebugPlot)
     PROVIDE(DebugRequest)
+    PROVIDE(DebugParameterList)
 
     REQUIRE(FrameInfo)
-    REQUIRE(InverseKinematicsMotionEngineService)
     REQUIRE(StepBuffer)
     REQUIRE(RobotInfo)
 
@@ -42,6 +45,12 @@ class FootTrajectoryGenerator2018 : private FootTrajectoryGenerator2018Base
 
         theCubicSplineZ.set_boundary(tk::spline::first_deriv,0.0, tk::spline::first_deriv,0.0, false);
         theCubicSplineZ.set_points(xB,yB);
+
+        getDebugParameterList().add(&parameters);
+    }
+
+    virtual ~FootTrajectoryGenerator2018(){
+      getDebugParameterList().remove(&parameters);
     }
 
     virtual void execute();
@@ -90,6 +99,22 @@ class FootTrajectoryGenerator2018 : private FootTrajectoryGenerator2018Base
     };
 
     tk::spline theCubicSplineZ;
+
+    class Parameters: public ParameterList{
+    public:
+        Parameters() : ParameterList("FootTrajectoryGenerator2018")
+        {
+          PARAMETER_REGISTER(stepHeight) = 25;
+          PARAMETER_REGISTER(kickHeight) = 35;
+          PARAMETER_REGISTER(useSplineFootTrajectory)  = true;
+
+          syncWithConfig();
+        }
+
+        double kickHeight;
+        double stepHeight;
+        bool   useSplineFootTrajectory;
+    } parameters;
 };
 
 

@@ -42,19 +42,15 @@ void FootTrajectoryGenerator2018::execute(){
 
 Pose3D FootTrajectoryGenerator2018::calculateLiftingFootPos(const Step& step) const
 {
-  int samplesDoubleSupport = std::max(0, (int) (getInverseKinematicsMotionEngineService().getEngine().getParameters().walk.step.doubleSupportTime / getRobotInfo().basicTimeStep));
-  int samplesSingleSupport = step.numberOfCycles - samplesDoubleSupport;
-  ASSERT(samplesSingleSupport >= 0 && samplesDoubleSupport >= 0);
-
   if ( step.type == Step::STEP_CONTROL && step.walkRequest.stepControl.type == WalkRequest::StepControlRequest::KICKSTEP)
   {
     return stepControl(
       step.footStep.footBegin(),
       step.footStep.footEnd(),
       step.executingCycle,
-      samplesDoubleSupport,
-      samplesSingleSupport,
-      getInverseKinematicsMotionEngineService().getEngine().getParameters().walk.kick.stepHeight,
+      step.samplesDoubleSupport,
+      step.samplesSingleSupport,
+      parameters.kickHeight,
       0, //footPitchOffset
       0, //footRollOffset
       step.walkRequest.stepControl.speedDirection,
@@ -62,14 +58,14 @@ Pose3D FootTrajectoryGenerator2018::calculateLiftingFootPos(const Step& step) co
   }
   else
   {
-    if(getInverseKinematicsMotionEngineService().getEngine().getParameters().walk.step.splineFootTrajectory)
+    if(parameters.useSplineFootTrajectory)
     {
       return genTrajectoryWithSplines(
               step.footStep.footBegin(),
               step.footStep.footEnd(),
               step.executingCycle,
-              samplesSingleSupport,
-              getInverseKinematicsMotionEngineService().getEngine().getParameters().walk.step.stepHeight,
+              step.samplesSingleSupport,
+              parameters.stepHeight,
               0, // footPitchOffset
               0  // footRollOffset
             );
@@ -80,9 +76,9 @@ Pose3D FootTrajectoryGenerator2018::calculateLiftingFootPos(const Step& step) co
               step.footStep.footBegin(),
               step.footStep.footEnd(),
               step.executingCycle,
-              samplesDoubleSupport,
-              samplesSingleSupport,
-              getInverseKinematicsMotionEngineService().getEngine().getParameters().walk.step.stepHeight,
+              step.samplesDoubleSupport,
+              step.samplesSingleSupport,
+              parameters.stepHeight,
               0, // footPitchOffset
               0  // footRollOffset
       );
