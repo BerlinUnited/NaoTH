@@ -11,11 +11,18 @@
 
 package de.naoth.rc;
 
+import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.net.URL;
+import javafx.application.Platform;
+import javafx.embed.swing.JFXPanel;
+import javafx.scene.Scene;
+import javafx.scene.text.FontSmoothingType;
+import javafx.scene.web.WebView;
 import javax.swing.JComponent;
 import javax.swing.KeyStroke;
 
@@ -47,7 +54,40 @@ public class HelpDialog extends javax.swing.JDialog {
         KeyStroke stroke = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0);
         this.getRootPane().registerKeyboardAction(actionListener, stroke, JComponent.WHEN_IN_FOCUSED_WINDOW);
     }
+
+    HelpDialog(Frame parent, boolean b, URL res) {
+        Dimension defaultSize = new Dimension(400,300);
+        this.setPreferredSize(defaultSize);
+        this.setSize(defaultSize);
+        this.parent = parent;
+        
+        JFXPanel jfxPanel = new JFXPanel();
+        this.add(jfxPanel);
+
+        // Creation of scene and future interactions with JFXPanel
+        // should take place on the JavaFX Application Thread
+        Platform.runLater(() -> {
+            WebView webView = new WebView();
+            webView.setFontSmoothingType(FontSmoothingType.LCD);
+            webView.setContextMenuEnabled(false);
+            jfxPanel.setScene(new Scene(webView));
+            if(res == null) {
+                webView.getEngine().loadContent("For this dialog is no help avaliable.");
+            } else {
+                webView.getEngine().load(res.toExternalForm());
+            }
+        });
+        
+        ActionListener actionListener = new ActionListener() {
+          public void actionPerformed(ActionEvent actionEvent) {
+              setVisible(false);
+          }
+        };
     
+        KeyStroke stroke = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0);
+        this.getRootPane().registerKeyboardAction(actionListener, stroke, JComponent.WHEN_IN_FOCUSED_WINDOW);
+    }
+
     public void showHelp()
     {
       if(!this.isVisible())
@@ -58,6 +98,7 @@ public class HelpDialog extends javax.swing.JDialog {
       }//end if
 
       this.setVisible(true);
+      this.requestFocus();
     }//end show
 
     /** This method is called from within the constructor to
