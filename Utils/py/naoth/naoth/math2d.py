@@ -2,6 +2,7 @@ import math
 
 
 def clamp(x, minimum, maximum):
+    # function f where f(x)=x if min<= x <= max, f(x) = minimum if x < minimum, f(x) = maximum if x > maximum
     return max(minimum, min(x, maximum))
 
 
@@ -29,9 +30,19 @@ class Vector2:
 
     def __mul__(self, other):
         if isinstance(other, Vector2):
+            # interpret multiplication as other^t * self (scalar product of the vectors, where ^t means transpose)
             return self.x*other.x + self.y*other.y
         elif isinstance(other, (int, float, long)):
             return Vector2(self.x*other, self.y*other)
+        else:
+            return NotImplemented
+
+    def __rmul__(self, other):
+        if isinstance(other, Vector2):
+            # interpret multiplication as other^t * self (scalar product of the vectors, where ^t means transpose)
+            return self.x * other.x + self.y * other.y
+        elif isinstance(other, (int, float, long)):
+            return Vector2(self.x * other, self.y * other)
         else:
             return NotImplemented
 
@@ -42,6 +53,12 @@ class Vector2:
 
     def __str__(self):
         return str(self.x) + " " + str(self.y)
+
+    def __eq__(self, other):
+        if self.x == other.x and self.y == other.y:
+            return True
+        else:
+            return False
 
     def normalize(self):
         if Vector2.abs(self) != 0:
@@ -83,9 +100,12 @@ class Pose2D:
     def __div__(self, point):
         return (point - self.translation).rotate(-self.rotation)
 
+    def __str__(self):
+        return str(self.translation.x) + " " + str(self.translation.y) + " " + str(self.rotation)
+
 
 class LineSegment(object):
-    def __init__(self, begin, end):
+    def __init__(self, begin=Vector2(), end=Vector2()):
         self.base = begin
         self.direction = end-self.base
         self.length = Vector2.abs(self.direction)
@@ -102,14 +122,13 @@ class LineSegment(object):
         return self.base+self.direction*self.length
 
     def point(self, t):
+        # waere es nicht besser hier auch noch zu normieren, damit man t in [0,1] waehlen kann, mit t = 0 -> base point
+        # t = 1 -> end point
         t = clamp(t, 0.0, self.length)
         return self.base + self.direction*t
 
-    def project(self, p):
-        return self.direction*p - self.direction*self.base
-
     def projection(self, p):
-        t = self.direction*p - self.direction*self.base
+        t = self.direction * p - self.direction * self.base
         return self.point(t)
 
     def intersection(self, other):
@@ -120,10 +139,14 @@ class LineSegment(object):
 
         t = normal*(other.base-self.base)/t
         t = clamp(t, 0.0, self.length)
+        # was soll t sein??
+        # Interpretation der Rueckgabe?
 
         return t
 
     def line_intersection(self, other):
+        # maybe rename methods, this one and the one above; the return ist on how to skale the direction
+        # vector to get the intersect point from the start (base) point. this is not derivable from the name
         normal = Vector2(-other.direction.y, other.direction.x)
         t = normal*self.direction
         if t == 0:

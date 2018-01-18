@@ -13,20 +13,16 @@ deployFile() {
 	local RIGHTS="$3"
 
 	if [ -f "$DEPLOY_DIRECTORY/$FILE" ]; then
+		logger -t naoth "Deploy file '$FILE' for $OWNER with $RIGHTS"
 		# backup existing file
 		if [ -f "$FILE" ]; then
-			mkdir -p "$BACKUP_DIRECTORY/$(dirname '$FILE')"
-			mv -f "$FILE" "$BACKUP_DIRECTORY/$FILE"
+			mkdir -p $BACKUP_DIRECTORY/$(dirname $FILE)
+			mv -f $FILE $BACKUP_DIRECTORY/$FILE
 		fi
-		cp -f "$DEPLOY_DIRECTORY/$FILE" "$FILE"
+		cp -f $DEPLOY_DIRECTORY/$FILE $FILE
 		# copy user and access rights
-		if [ -f "$BACKUP_DIRECTORY/$FILE" ]; then
-			chown --reference="$BACKUP_DIRECTORY/$FILE" "$FILE"
-			chmod --reference="$BACKUP_DIRECTORY/$FILE" "$FILE"
-		else
-			chown "$OWNER:$OWNER" "$FILE"
-			chmod "$RIGHTS" "$FILE"
-		fi
+		chown $OWNER:$OWNER $FILE
+		chmod $RIGHTS $FILE
 	fi
 }
 
@@ -36,16 +32,17 @@ deployDirectory() {
 	local RIGHTS="$3"
 
 	if [ -d "$DEPLOY_DIRECTORY/$DIR" ]; then
+		logger -t naoth "Deploy directory '$DIR' for $OWNER with $RIGHTS"
 		# backup directory files
 		if [ -d "$DIR" ]; then
-			mkdir -p "$BACKUP_DIRECTORY/$DIR"
-			mv -f "$DIR" "$BACKUP_DIRECTORY/$DIR"
+			mkdir -p $BACKUP_DIRECTORY/$DIR
+			mv -f $DIR/* $BACKUP_DIRECTORY/$DIR/
 		fi
 		# copy files
-		cp -r "DEPLOY_DIRECTORY/$DIR" "$DIR"
+		cp -r $DEPLOY_DIRECTORY/$DIR $DIR
 
-		chown -R "$OWNER:$OWNER" "$DIR"
-		chmod -R "$RIGHTS" "$DIR"
+		chown -R $OWNER:$OWNER $DIR
+		chmod -R $RIGHTS $DIR
 	fi
 }
 
@@ -137,19 +134,20 @@ fi
 # ==================== libs stuff ====================
 
 if [ -d "$DEPLOY_DIRECTORY/home/nao/lib" ]; then
+	logger -t naoth "Deploy libs"
 	# update the system wide libstdc++
 	if [ -f "$DEPLOY_DIRECTORY/home/nao/lib/libstdc++.so" ]
 	then
-		mkdir -p "$BACKUP_DIRECTORY/usr/lib/"
-	    mv -f "/usr/lib/libstdc++.*" "$BACKUP_DIRECTORY/usr/lib/"
-	    cp "$DEPLOY_DIRECTORY/home/nao/lib/libstdc++.*" "/usr/lib/"
+		mkdir -p $BACKUP_DIRECTORY/usr/lib/
+	    mv -f /usr/lib/libstdc++.* $BACKUP_DIRECTORY/usr/lib/
+	    cp $DEPLOY_DIRECTORY/home/nao/lib/libstdc++.* /usr/lib/
 	    # copy user and access rights
-	    chown --reference="$BACKUP_DIRECTORY/usr/lib/libstdc++.so" "/usr/lib/libstdc++.*"
-	    chmod --reference="$BACKUP_DIRECTORY/usr/lib/libstdc++.so" "/usr/lib/libstdc++.*"
+	    chown root:root /usr/lib/libstdc++.*
+	    chmod 755 /usr/lib/libstdc++.*
 	fi
 
 	# copy local libs
-	deployDirectory "/home/nao/lib" "root" "644"
+	deployDirectory "/home/nao/lib" "nao" "744"
 
 	# configure the lib dependencies
 	ldconfig
@@ -162,7 +160,7 @@ deployFile "/home/nao/bin/libnaosmal.so" "nao" "755"
 deployFile "/home/nao/bin/naoth" "nao" "755"
 
 # deploy media
-deployDirectory "/home/nao/naoqi/Media" "nao" "644"
+deployDirectory "/home/nao/naoqi/Media" "nao" "744"
 
 # add link to the Media directory
 if [ ! -h /home/nao/Media ]
@@ -214,5 +212,8 @@ chmod +s /sbin/reboot
 if [ ! -f "./noreboot" ]; then
 	reboot
 fi
+
+# play initial sound
+sudo -u nao /usr/bin/paplay /home/nao/naoqi/Media/usb_stop.wav
 
 echo "DONE"
