@@ -1,4 +1,4 @@
-import struct, os
+import struct, os, io
 
 # protobuf
 from CommonTypes_pb2 import *
@@ -54,23 +54,16 @@ class LogReader:
       return message
 
       
-  class Iterator:
-    def __init__(self, reader):
-      self.idx = -1
-      self.reader = reader
-      
-    def __iter__(self):
-      return self
-    
-    def next(self):
-      self.idx += 1
-      return self.reader[self.idx]
-      
-      
   def __init__(self, path, parser=Parser(), filter = lambda x: x):
-    statinfo = os.stat(path)
-    self.size = statinfo.st_size
-    self.log = open(path, "rb")
+    if isinstance(path, io.IOBase):
+      self.size = os.stat(path.name).st_size
+      if path.mode != "rb":
+        raise Exception("File opend with the wrong mode! is {}, should be 'rb'".format(path.mode))
+      self.log = path
+    else:
+      statinfo = os.stat(path)
+      self.size = statinfo.st_size
+      self.log = open(path, "rb")
     self.parser = parser
     self.filter = filter
     
@@ -80,11 +73,7 @@ class LogReader:
     self.scanPosition = 0
     # get the first frame
     self.__scanFrame()
-    
-    
-  def __iter__(self):
-    return LogReader.Iterator(self)
-    
+
   def __scan(self):
 
     try:
@@ -95,7 +84,7 @@ class LogReader:
         #  self.names.append(name)
         
     except StopIteration as ex:
-      print ex
+      print(ex)
       
   def __scanFrame(self):
     if self.scanPosition == -1:
@@ -169,10 +158,10 @@ class LogReader:
   # read a '\0' terminated string
   def readString(self):
     str = ''
-    c = self.readChar()
+    c = self.readChar().decode("utf-8")
     while c != "\0":
       str += c
-      c = self.readChar()
+      c = self.readChar().decode("utf-8")
     return str
     
   def __getitem__(self, i):
@@ -193,4 +182,4 @@ if __name__ == "__main__":
   myParser.register("CameraMatrixTop", "CameraMatrix")
 
   for i in LogReader("./cognition.log", myParser):
-    print i.frameNumber, i.name
+    print(i.frameNumber, i.name)
