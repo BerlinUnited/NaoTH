@@ -2,6 +2,11 @@ import struct
 import os
 import io
 
+from CommonTypes_pb2 import *
+from Framework_Representations_pb2 import *
+from Messages_pb2 import *
+from Representations_pb2 import *
+from google.protobuf import text_format
 
 class Parser:
     def __init__(self):
