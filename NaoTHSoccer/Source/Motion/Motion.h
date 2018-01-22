@@ -43,6 +43,7 @@
 #include <Representations/Modeling/IMUData.h>
 #include "Representations/Modeling/GroundContactModel.h"
 #include "Representations/Motion/CollisionPercept.h"
+#include "Representations/Motion/Walk2018/Walk2018Parameters.h"
 
 // debug
 #include <Representations/Debug/Stopwatch.h>
@@ -112,6 +113,8 @@ BEGIN_DECLARE_MODULE(Motion)
   PROVIDE(MotionRequest)
   PROVIDE(BodyStatus)
   PROVIDE(BodyState)
+
+  PROVIDE(Walk2018Parameters) // provide parameters for walk2018 modules, allows for modifying parameters without walking
 END_DECLARE_MODULE(Motion)
 
 

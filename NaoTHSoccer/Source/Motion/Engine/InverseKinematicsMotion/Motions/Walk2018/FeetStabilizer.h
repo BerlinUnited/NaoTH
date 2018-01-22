@@ -10,6 +10,8 @@
 
 #include <ModuleFramework/Module.h>
 
+#include "Representations/Motion/Walk2018/Walk2018Parameters.h"
+
 #include "Representations/Motion/Walk2018/StepBuffer.h"
 #include "Representations/Motion/Walk2018/TargetHipFeetPose.h"
 #include "Representations/Infrastructure/CalibrationData.h"
@@ -20,12 +22,12 @@
 
 #include "Tools/Debug/DebugPlot.h"
 #include "Tools/Debug/DebugRequest.h"
-#include "Tools/Debug/DebugParameterList.h"
 
 BEGIN_DECLARE_MODULE(FeetStabilizer)
     PROVIDE(DebugPlot)
     PROVIDE(DebugRequest)
-    PROVIDE(DebugParameterList)
+
+    REQUIRE(Walk2018Parameters)
 
     REQUIRE(FrameInfo)
     REQUIRE(InertialModel)
@@ -36,16 +38,13 @@ BEGIN_DECLARE_MODULE(FeetStabilizer)
     PROVIDE(MotorJointData)
 END_DECLARE_MODULE(FeetStabilizer)
 
+
 class FeetStabilizer : private FeetStabilizerBase
 {
   public:
-    FeetStabilizer(){
-      getDebugParameterList().add(&parameters);
-    }
+    FeetStabilizer() : parameters(getWalk2018Parameters().feetStabilizerParams) {}
 
-    virtual ~FeetStabilizer(){
-      getDebugParameterList().remove(&parameters);
-    }
+    const FeetStabilizerParameters& parameters;
 
   virtual void execute(){
     if (!parameters.stabilizeFeet) return;
@@ -110,26 +109,6 @@ class FeetStabilizer : private FeetStabilizerBase
     lastGyro = gyro;
   }
 
-  private:
-    class Parameters: public ParameterList{
-      public:
-        Parameters() : ParameterList("FeetStabilizer")
-        {
-          PARAMETER_REGISTER(stabilizeFeet) = true;
-
-          PARAMETER_REGISTER(P.x) = -0.4;
-          PARAMETER_REGISTER(P.y) = -0.3;
-          PARAMETER_REGISTER(D.x) = 0.04;
-          PARAMETER_REGISTER(D.y) = 0.035;
-
-          syncWithConfig();
-        }
-
-        Vector2d P;
-        Vector2d D;
-
-        bool stabilizeFeet;
-    } parameters;
 };
 
 #endif  /* _FEET_STABILIZER_H */

@@ -13,11 +13,11 @@
 
 #include "Representations/Motion/Walk2018/StepBuffer.h"
 #include "Representations/Motion/Walk2018/TargetCoMFeetPose.h"
+#include "Representations/Motion/Walk2018/Walk2018Parameters.h"
 
 #include "Tools/Debug/DebugPlot.h"
 #include "Tools/Debug/DebugDrawings.h"
 #include "Tools/Debug/DebugRequest.h"
-#include "Tools/Debug/DebugParameterList.h"
 
 #include "Tools/DataStructures/Spline.h"
 
@@ -25,7 +25,8 @@ BEGIN_DECLARE_MODULE(HipRotationOffsetModifier)
     PROVIDE(DebugPlot)
     PROVIDE(DebugRequest)
     PROVIDE(DebugDrawings)
-    PROVIDE(DebugParameterList)
+
+    REQUIRE(Walk2018Parameters)
 
     REQUIRE(FrameInfo)
     REQUIRE(StepBuffer)
@@ -38,14 +39,8 @@ class HipRotationOffsetModifier : private HipRotationOffsetModifierBase
   public:
     HipRotationOffsetModifier():
         lastStepLength(),
-        hipRotationOffsetBasedOnStepChange()
-    {
-      getDebugParameterList().add(&parameters);
-    }
-
-    virtual ~HipRotationOffsetModifier(){
-      getDebugParameterList().remove(&parameters);
-    }
+        hipRotationOffsetBasedOnStepChange(),
+        parameters(getWalk2018Parameters().hipRotationOffsetModifierParams) {}
 
   virtual void execute(){
     // apply rotation offset depending on step change
@@ -113,20 +108,8 @@ class HipRotationOffsetModifier : private HipRotationOffsetModifierBase
       return RotationMatrix::getRotationZ(bodyAngleZ) * RotationMatrix::getRotationY(pitch);
     }
 
-    class Parameters: public ParameterList{
-    public:
-        Parameters() : ParameterList("HipRotationOffsetModifier")
-        {
-          PARAMETER_REGISTER(hipOffsetBasedOnStepChange.x) = 0;
-          PARAMETER_REGISTER(hipOffsetBasedOnStepChange.y) = 0;
-          PARAMETER_ANGLE_REGISTER(bodyPitchOffset) = 0.1;
-
-          syncWithConfig();
-        }
-
-        Vector2d hipOffsetBasedOnStepChange;
-        double   bodyPitchOffset;
-    } parameters;
+  public:
+    const HipRotationOffsetModifierParameters& parameters;
 };
 
 

@@ -11,17 +11,12 @@ using namespace InverseKinematic;
 using namespace std;
 
 FootStepPlanner2018::FootStepPlanner2018():
+  parameters(getWalk2018Parameters().footStepPlanner2018Params),
   theFootOffsetY(0.0),
   theMaxChangeTurn(0.0),
   theMaxChangeX(0.0),
   theMaxChangeY(0.0),
-  emergencyCounter(0)
-{
-  getDebugParameterList().add(&parameters);
-}
-
-FootStepPlanner2018::~FootStepPlanner2018(){
-  getDebugParameterList().remove(&parameters);
+  emergencyCounter(0){
 }
 
 void FootStepPlanner2018::updateParameters(){

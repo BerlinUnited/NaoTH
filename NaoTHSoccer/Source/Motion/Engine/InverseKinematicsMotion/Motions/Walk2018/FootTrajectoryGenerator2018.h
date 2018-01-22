@@ -17,17 +17,17 @@
 
 #include "Representations/Motion/Walk2018/StepBuffer.h"
 #include "Representations/Motion/Walk2018/TargetCoMFeetPose.h"
+#include "Representations/Motion/Walk2018/Walk2018Parameters.h"
 
 #include "Tools/Debug/DebugPlot.h"
 #include "Tools/Debug/DebugRequest.h"
-#include "Tools/Debug/DebugParameterList.h"
 
 #include "Tools/DataStructures/Spline.h"
 
 BEGIN_DECLARE_MODULE(FootTrajectoryGenerator2018)
     PROVIDE(DebugPlot)
     PROVIDE(DebugRequest)
-    PROVIDE(DebugParameterList)
+    REQUIRE(Walk2018Parameters)
 
     REQUIRE(FrameInfo)
     REQUIRE(StepBuffer)
@@ -39,18 +39,12 @@ END_DECLARE_MODULE(FootTrajectoryGenerator2018)
 class FootTrajectoryGenerator2018 : private FootTrajectoryGenerator2018Base
 {
   public:
-    FootTrajectoryGenerator2018(){
+    FootTrajectoryGenerator2018() : parameters(getWalk2018Parameters().footTrajectoryGenerator2018Params) {
         theCubicSplineXY.set_boundary(tk::spline::first_deriv,0.0, tk::spline::first_deriv,0.0, false);
         theCubicSplineXY.set_points(xA,yA);
 
         theCubicSplineZ.set_boundary(tk::spline::first_deriv,0.0, tk::spline::first_deriv,0.0, false);
         theCubicSplineZ.set_points(xB,yB);
-
-        getDebugParameterList().add(&parameters);
-    }
-
-    virtual ~FootTrajectoryGenerator2018(){
-      getDebugParameterList().remove(&parameters);
     }
 
     virtual void execute();
@@ -100,21 +94,8 @@ class FootTrajectoryGenerator2018 : private FootTrajectoryGenerator2018Base
 
     tk::spline theCubicSplineZ;
 
-    class Parameters: public ParameterList{
-    public:
-        Parameters() : ParameterList("FootTrajectoryGenerator2018")
-        {
-          PARAMETER_REGISTER(stepHeight) = 25;
-          PARAMETER_REGISTER(kickHeight) = 35;
-          PARAMETER_REGISTER(useSplineFootTrajectory)  = true;
-
-          syncWithConfig();
-        }
-
-        double kickHeight;
-        double stepHeight;
-        bool   useSplineFootTrajectory;
-    } parameters;
+  public:
+    const FootTrajectoryGenerator2018Parameters &parameters;
 };
 
 

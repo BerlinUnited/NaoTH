@@ -14,20 +14,21 @@
 
 #include "Representations/Infrastructure/FrameInfo.h"
 #include "Representations/Infrastructure/RobotInfo.h"
-
 #include "Representations/Motion/Walk2018/ZMPReferenceBuffer.h"
 #include "Representations/Motion/Walk2018/StepBuffer.h"
+
+#include "Representations/Motion/Walk2018/Walk2018Parameters.h"
 
 #include "Tools/Debug/DebugPlot.h"
 #include "Tools/Debug/DebugDrawings.h"
 #include "Tools/Debug/DebugRequest.h"
-#include "Tools/Debug/DebugParameterList.h"
 
 BEGIN_DECLARE_MODULE(ZMPPlanner2018)
     PROVIDE(DebugPlot)
     PROVIDE(DebugRequest)
     PROVIDE(DebugDrawings)
-    PROVIDE(DebugParameterList)
+
+    REQUIRE(Walk2018Parameters)
 
     REQUIRE(FrameInfo)
     REQUIRE(RobotInfo)
@@ -39,11 +40,7 @@ END_DECLARE_MODULE(ZMPPlanner2018)
 class ZMPPlanner2018 : private ZMPPlanner2018Base
 {
   public:
-    ZMPPlanner2018(){
-      getDebugParameterList().add(&parameters);
-    }
-
-    virtual ~ZMPPlanner2018();
+    ZMPPlanner2018() : parameters(getWalk2018Parameters().zmpPlanner2018Params){}
 
     void init(int initial_number_of_cycles, Vector3d initialZMP, Vector3d targetZMP);
 
@@ -75,61 +72,8 @@ class ZMPPlanner2018 : private ZMPPlanner2018Base
         return  trajectory;
     }
 
-    class Parameters: public ParameterList{
-    public:
-      Parameters() : ParameterList("ZMPPlanner2018")
-      {
-          PARAMETER_REGISTER(bezierZMP.inFootScalingY) = 1;
-          PARAMETER_REGISTER(bezierZMP.inFootSpacing)  = 10;
-          PARAMETER_REGISTER(bezierZMP.transitionScaling) = 0.6;
-          PARAMETER_REGISTER(bezierZMP.offsetX) = 15;
-          PARAMETER_REGISTER(bezierZMP.offsetY) = 0;
-          PARAMETER_REGISTER(bezierZMP.offsetXForKicks) = 0;
-          PARAMETER_REGISTER(bezierZMP.offsetYForKicks) = -7;
-
-          PARAMETER_REGISTER(simpleZMP.offsetX) = 20;
-          PARAMETER_REGISTER(simpleZMP.offsetY) = -7;
-          PARAMETER_REGISTER(simpleZMP.kickOffsetY)  = -7;
-
-          PARAMETER_REGISTER(comHeight) = 260;
-          PARAMETER_REGISTER(ZMPOffsetYByCharacter) = 0;
-          PARAMETER_REGISTER(newZMP_ON) = true;
-
-          PARAMETER_REGISTER(stabilization.maxHipOffsetBasedOnStepLength.x) = 5;
-          PARAMETER_REGISTER(stabilization.maxHipOffsetBasedOnStepLength.y) = 0;
-          PARAMETER_REGISTER(stabilization.maxHipOffsetBasedOnStepLengthForKicks.x) = 0;
-          PARAMETER_REGISTER(stabilization.maxHipOffsetBasedOnStepLengthForKicks.y) = 0;
-
-          syncWithConfig();
-      }
-
-      struct Bezier {
-        double inFootScalingY;
-        double inFootSpacing;
-        double transitionScaling;
-
-        double offsetX;
-        double offsetY;
-        double offsetXForKicks;
-        double offsetYForKicks;
-      } bezierZMP;
-
-      struct Simple {
-        double offsetX;
-        double offsetY;
-        double kickOffsetY;
-      } simpleZMP;
-
-      struct Stabilization {
-        Vector2d maxHipOffsetBasedOnStepLength;
-        Vector2d maxHipOffsetBasedOnStepLengthForKicks;
-      } stabilization;
-
-      bool newZMP_ON;
-
-      double comHeight;
-      double ZMPOffsetYByCharacter;
-    } parameters;
+  public:
+    const ZMPPlanner2018Parameters& parameters;
 
     double zmpOffsetY, newZMPOffsetY, zmpOffsetX, newZMPOffsetX;
 };

@@ -12,15 +12,16 @@
 
 #include "Representations/Motion/Walk2018/StepBuffer.h"
 #include "Representations/Motion/Walk2018/TargetCoMFeetPose.h"
+#include "Representations/Motion/Walk2018/Walk2018Parameters.h"
 
 #include "Tools/Debug/DebugPlot.h"
 #include "Tools/Debug/DebugRequest.h"
-#include "Tools/Debug/DebugParameterList.h"
 
 BEGIN_DECLARE_MODULE(LiftingFootCompensator)
     PROVIDE(DebugPlot)
     PROVIDE(DebugRequest)
-    PROVIDE(DebugParameterList)
+
+    REQUIRE(Walk2018Parameters)
 
     REQUIRE(FrameInfo)
     REQUIRE(StepBuffer)
@@ -31,13 +32,7 @@ END_DECLARE_MODULE(LiftingFootCompensator)
 class LiftingFootCompensator : private LiftingFootCompensatorBase
 {
   public:
-    LiftingFootCompensator(){
-      getDebugParameterList().add(&parameters);
-    }
-
-    virtual ~LiftingFootCompensator(){
-      getDebugParameterList().remove(&parameters);
-    }
+    LiftingFootCompensator() : parameters(getWalk2018Parameters().liftingFootCompensatorParams) {}
 
   virtual void execute(){
     InverseKinematic::CoMFeetPose tmp(getTargetCoMFeetPose().pose);
@@ -57,20 +52,7 @@ class LiftingFootCompensator : private LiftingFootCompensatorBase
     PLOT("Walk:theCoMFeetPose:total_rotationY",tmp.com.rotation.getYAngle());
   }
 
-  private:
-    class Parameters: public ParameterList{
-      public:
-        Parameters() : ParameterList("LiftingFootCompensator")
-        {
-          PARAMETER_REGISTER(comHeightOffset) = 0.18;
-          PARAMETER_REGISTER(comStepOffsetY)  = 0;
-
-          syncWithConfig();
-        }
-
-        double comHeightOffset;
-        double comStepOffsetY;
-    } parameters;
+  LiftingFootCompensatorParameters parameters;
 };
 
 #endif  /* _LIFTING_FOOT_COMPENSATOR_H */

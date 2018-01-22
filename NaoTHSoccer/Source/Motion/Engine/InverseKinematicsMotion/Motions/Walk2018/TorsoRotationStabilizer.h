@@ -12,6 +12,7 @@
 
 #include "Representations/Motion/Walk2018/StepBuffer.h"
 #include "Representations/Motion/Walk2018/TargetHipFeetPose.h"
+#include "Representations/Motion/Walk2018/Walk2018Parameters.h"
 #include "Representations/Infrastructure/CalibrationData.h"
 #include "Representations/Modeling/InertialModel.h"
 #include "Representations/Infrastructure/GyrometerData.h"
@@ -24,7 +25,8 @@
 BEGIN_DECLARE_MODULE(TorsoRotationStabilizer)
     PROVIDE(DebugPlot)
     PROVIDE(DebugRequest)
-    PROVIDE(DebugParameterList)
+
+    REQUIRE(Walk2018Parameters)
 
     REQUIRE(FrameInfo)
     REQUIRE(CalibrationData)
@@ -39,13 +41,7 @@ END_DECLARE_MODULE(TorsoRotationStabilizer)
 class TorsoRotationStabilizer : private TorsoRotationStabilizerBase
 {
   public:
-    TorsoRotationStabilizer(){
-      getDebugParameterList().add(&parameters);
-    }
-
-    virtual ~TorsoRotationStabilizer(){
-      getDebugParameterList().remove(&parameters);
-    }
+    TorsoRotationStabilizer() : parameters(getWalk2018Parameters().torsoRotationStabilizerParams) {}
 
   virtual void execute(){
     if(getCalibrationData().calibrated && parameters.rotationStabilize) {
@@ -123,30 +119,8 @@ class TorsoRotationStabilizer : private TorsoRotationStabilizerBase
         return true;
       }
 
-    class Parameters: public ParameterList{
-      public:
-        Parameters() : ParameterList("TorsoRotationStabilizer")
-        {
-          PARAMETER_REGISTER(rotationStabilize) = true;
-
-          PARAMETER_REGISTER(rotation.P.x) = -0.02;
-          PARAMETER_REGISTER(rotation.P.y) = -0.03;
-          PARAMETER_REGISTER(rotation.VelocityP.x) = 0.02;
-          PARAMETER_REGISTER(rotation.VelocityP.x) = 0.02;
-          PARAMETER_REGISTER(rotation.D.x) = 0;
-          PARAMETER_REGISTER(rotation.D.y) = 0;
-
-          syncWithConfig();
-        }
-
-        struct RotationStabilization{
-            Vector2d P;
-            Vector2d VelocityP;
-            Vector2d D;
-        } rotation;
-
-        bool rotationStabilize;
-    } parameters;
+  public:
+      const TorsoRotationStabilizerParameters& parameters;
 };
 
 #endif  /* _TORSO_ROTATION_STABILIZER_H */
