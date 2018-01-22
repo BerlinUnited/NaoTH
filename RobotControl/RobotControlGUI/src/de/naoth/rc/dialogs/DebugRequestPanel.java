@@ -41,11 +41,6 @@ public class DebugRequestPanel extends AbstractDialog
         public static RobotControl parent;
         @InjectPlugin
         public static SwingCommandExecutor commandExecutor;
-        
-        @Override
-        public String getDisplayName() {
-          return "Debug Requests";
-        }
     }
     
   DebugRequestUpdater debugRequestUpdaterCognition = new DebugRequestUpdater("[Cognition]", "Cognition:debugrequest:set");
