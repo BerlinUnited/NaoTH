@@ -96,8 +96,8 @@ public class HelpDialog extends javax.swing.JDialog {
                 EventListener listener = (Event ev) -> {
                     String href = ((Element)ev.getTarget()).getAttribute("href");
                     System.out.println(href);
-                    /*
-                    // NOTE: doesn't work -> RC freezes/hangs!
+                    
+                    // NOTE: doesn't work on linux -> RC freezes/hangs!
                     Platform.runLater(() -> {
                         try {
                             if (Desktop.isDesktopSupported()) {
@@ -107,7 +107,7 @@ public class HelpDialog extends javax.swing.JDialog {
                             Logger.getLogger(HelpDialog.class.getName()).log(Level.SEVERE, null, ex);
                         }
                     });
-                    */
+                    
                     // stop executing "link click"
                     ev.preventDefault();
                 };
