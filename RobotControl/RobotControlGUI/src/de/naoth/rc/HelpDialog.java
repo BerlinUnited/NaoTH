@@ -11,20 +11,37 @@
 
 package de.naoth.rc;
 
+import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.concurrent.Worker;
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.Scene;
 import javafx.scene.text.FontSmoothingType;
 import javafx.scene.web.WebView;
 import javax.swing.JComponent;
 import javax.swing.KeyStroke;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.w3c.dom.events.Event;
+import org.w3c.dom.events.EventListener;
+import org.w3c.dom.events.EventTarget;
+import org.w3c.dom.html.HTMLAnchorElement;
 
 /**
  *
@@ -75,6 +92,36 @@ public class HelpDialog extends javax.swing.JDialog {
                 webView.getEngine().loadContent("For this dialog is no help avaliable.");
             } else {
                 webView.getEngine().load(res.toExternalForm());
+                // default event handler ("click") for all "a" tags
+                EventListener listener = (Event ev) -> {
+                    String href = ((Element)ev.getTarget()).getAttribute("href");
+                    System.out.println(href);
+                    /*
+                    // NOTE: doesn't work -> RC freezes/hangs!
+                    Platform.runLater(() -> {
+                        try {
+                            if (Desktop.isDesktopSupported()) {
+                                Desktop.getDesktop().browse(new URI(href));
+                            }
+                        } catch (URISyntaxException | IOException ex) {
+                            Logger.getLogger(HelpDialog.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    });
+                    */
+                    // stop executing "link click"
+                    ev.preventDefault();
+                };
+                // listen to document events
+                webView.getEngine().getLoadWorker().stateProperty().addListener((ObservableValue<? extends Worker.State> ov, Worker.State t, Worker.State t1) -> {
+                    // register listener to all "a" tags
+                    Document doc = webView.getEngine().getDocument();
+                    if(doc != null) {
+                        NodeList l = doc.getElementsByTagName("a");
+                        for (int i = 0; i < l.getLength(); i++) {
+                            ((EventTarget) l.item(i)).addEventListener("click", listener, false);
+                        }
+                    }
+                });
             }
         });
         
