@@ -95,19 +95,19 @@ public class HelpDialog extends javax.swing.JDialog {
                 // default event handler ("click") for all "a" tags
                 EventListener listener = (Event ev) -> {
                     String href = ((Element)ev.getTarget()).getAttribute("href");
-                    System.out.println(href);
-                    
-                    // NOTE: doesn't work on linux -> RC freezes/hangs!
-                    Platform.runLater(() -> {
-                        try {
-                            if (Desktop.isDesktopSupported()) {
-                                Desktop.getDesktop().browse(new URI(href));
-                            }
-                        } catch (URISyntaxException | IOException ex) {
-                            Logger.getLogger(HelpDialog.class.getName()).log(Level.SEVERE, null, ex);
-                        }
-                    });
-                    
+                    // open url in system browser
+                    if(Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
+                        // NOTE: on linux there's java bug, which leads to a crash/freeze of RC in Java 8!
+                        // bug: https://bugs.openjdk.java.net/browse/JDK-8184155
+                        // solution: https://stackoverflow.com/questions/23176624/javafx-freeze-on-desktop-openfile-desktop-browseuri
+                        new Thread(() -> {
+                               try {
+                                   Desktop.getDesktop().browse(new URI(href));
+                               } catch (IOException | URISyntaxException ex) {
+                                   Logger.getLogger(HelpDialog.class.getName()).log(Level.SEVERE, null, ex);
+                               }
+                           }).start();
+                    }
                     // stop executing "link click"
                     ev.preventDefault();
                 };
