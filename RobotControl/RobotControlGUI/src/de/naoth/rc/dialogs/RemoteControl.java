@@ -49,11 +49,11 @@ import net.java.games.input.EventQueue;
  *
  * @author Verena
  */
-public class RemoteTeamControl extends AbstractDialog {
+public class RemoteControl extends AbstractDialog {
 
     @RCDialog(category = RCDialog.Category.Debug, name = "RemoteControl")
     @PluginImplementation
-    public static class Plugin extends DialogPlugin<RemoteTeamControl> {
+    public static class Plugin extends DialogPlugin<RemoteControl> {
 
         @InjectPlugin
         public static RobotControl parent;
@@ -68,7 +68,7 @@ public class RemoteTeamControl extends AbstractDialog {
     private TeamCommListener teamCommListener;
     private final Timer timerCheckMessages;
     
-    public RemoteTeamControl() 
+    public RemoteControl() 
     {
         initComponents();
         
@@ -377,7 +377,7 @@ public class RemoteTeamControl extends AbstractDialog {
         }
         
         protected void log(String str) {
-            RemoteTeamControl.this.log(control.getName() + ": " + str);
+            RemoteControl.this.log(control.getName() + ": " + str);
         }
         
         @Override
