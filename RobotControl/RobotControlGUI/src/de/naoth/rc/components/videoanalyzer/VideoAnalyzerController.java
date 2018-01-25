@@ -1,14 +1,10 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package de.naoth.rc.components.videoanalyzer;
 
+import de.naoth.rc.dialogs.VideoAnalyzer;
 import de.naoth.rc.Helper;
-import static de.naoth.rc.components.videoanalyzer.VideoAnalyzer.KEY_SYNC_TIME_LOG;
-import static de.naoth.rc.components.videoanalyzer.VideoAnalyzer.KEY_SYNC_TIME_VIDEO;
-import static de.naoth.rc.components.videoanalyzer.VideoAnalyzer.KEY_VIDEO_FILE;
+import static de.naoth.rc.dialogs.VideoAnalyzer.KEY_SYNC_TIME_LOG;
+import static de.naoth.rc.dialogs.VideoAnalyzer.KEY_SYNC_TIME_VIDEO;
+import static de.naoth.rc.dialogs.VideoAnalyzer.KEY_VIDEO_FILE;
 import de.naoth.rc.dataformats.LogFile;
 import de.naoth.rc.logmanager.LogDataFrame;
 import java.io.File;
