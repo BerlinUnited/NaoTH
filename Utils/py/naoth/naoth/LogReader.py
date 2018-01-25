@@ -54,15 +54,8 @@ class LogReader:
             return message
 
     def __init__(self, path, parser=Parser(), filter=lambda x: x):
-        if isinstance(path, io.IOBase):
-            self.size = os.stat(path.name).st_size
-            if path.mode != "rb":
-                raise Exception("File opened with the wrong mode! is {}, should be 'rb'".format(path.mode))
-            self.log = path
-        else:
-            statinfo = os.stat(path)
-            self.size = statinfo.st_size
-            self.log = open(path, "rb")
+        self.__open(path)
+        self.log_file = self.log.name
         self.parser = parser
         self.filter = filter
 
@@ -72,6 +65,32 @@ class LogReader:
         self.scanPosition = 0
         # get the first frame
         self.__scanFrame()
+
+    def __open(self, path):
+        if isinstance(path, io.IOBase):
+            self.size = os.stat(path.name).st_size
+            if path.mode != "rb":
+                raise Exception("File opened with the wrong mode! is {}, should be 'rb'".format(path.mode))
+            self.log = path
+        else:
+            statinfo = os.stat(path)
+            self.size = statinfo.st_size
+            self.log = open(path, "rb")
+
+    def __getstate__(self):
+        """ This is called before pickling. """
+        state = self.__dict__.copy()
+        del state['log']
+        # NOTE: currently its not possible to preserve the filter
+        del state['filter']
+        return state
+
+    def __setstate__(self, state):
+        """ This is called while unpickling. """
+        self.__dict__.update(state)
+        self.__open(self.log_file)
+        # NOTE: currently its not possible to restore the filter
+        self.filter = lambda x: x
 
     def __scan(self):
         try:
