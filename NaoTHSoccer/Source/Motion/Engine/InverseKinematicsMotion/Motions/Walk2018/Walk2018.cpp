@@ -39,7 +39,7 @@ Walk2018::Walk2018() : IKMotion(getInverseKinematicsMotionEngineService(), motio
 
   // init state of preview controller
   theZMPPreviewController->getModuleT()->init(currentCOMFeetPose.com.translation);
-  int inital_number_of_cycles = static_cast<int>(theZMPPreviewController->getModuleT()->previewSteps());
+  size_t inital_number_of_cycles = static_cast<size_t>(theZMPPreviewController->getModuleT()->previewSteps());
 
   // init step buffer using the foot step planner
   theFootStepPlanner->getModuleT()->init(inital_number_of_cycles,currentCOMFeetPose.feet);

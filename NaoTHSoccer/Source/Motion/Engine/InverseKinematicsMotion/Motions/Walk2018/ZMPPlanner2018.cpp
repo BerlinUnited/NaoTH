@@ -9,7 +9,7 @@
 
 using namespace InverseKinematic;
 
-void ZMPPlanner2018::init(int initial_number_of_cycles, Vector3d initialZMP, Vector3d targetZMP){
+void ZMPPlanner2018::init(size_t initial_number_of_cycles, Vector3d initialZMP, Vector3d targetZMP){
     for (size_t i = 0; i+1 < initial_number_of_cycles; i++) {
       double t = static_cast<double>(i) / static_cast<double>(initial_number_of_cycles - 1); // why? it should be only initial_number_of_cycles
       Vector3d zmp = initialZMP*(1.0-t) + targetZMP*t;

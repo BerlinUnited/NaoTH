@@ -42,7 +42,7 @@ class ZMPPlanner2018 : private ZMPPlanner2018Base
   public:
     ZMPPlanner2018() : parameters(getWalk2018Parameters().zmpPlanner2018Params){}
 
-    void init(int initial_number_of_cycles, Vector3d initialZMP, Vector3d targetZMP);
+    void init(size_t initial_number_of_cycles, Vector3d initialZMP, Vector3d targetZMP);
 
     virtual void execute();
 

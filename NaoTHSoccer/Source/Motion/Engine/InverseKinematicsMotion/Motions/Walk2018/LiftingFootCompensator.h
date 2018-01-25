@@ -47,6 +47,7 @@ class LiftingFootCompensator : private LiftingFootCompensatorBase
         getTargetCoMFeetPose().pose.com.translation.z += parameters.comHeightOffset * tmp.feet.right.translation.z;
         getTargetCoMFeetPose().pose.com.translation.y += parameters.comStepOffsetY  * tmp.feet.right.translation.z;
         break;
+      case FootStep::NONE : break;
     }
 
     PLOT("Walk:theCoMFeetPose:total_rotationY",tmp.com.rotation.getYAngle());
