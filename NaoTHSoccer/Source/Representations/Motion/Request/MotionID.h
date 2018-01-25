@@ -27,7 +27,6 @@ namespace motion
     /* inverse kinematic */
     stand,
     walk,
-    walk2018,
     kick,
     dance,
     protect_falling,
