@@ -16,6 +16,7 @@ CameraMatrixCorrectorV2::CameraMatrixCorrectorV2()
     false);
 
   DEBUG_REQUEST_REGISTER("CameraMatrixV2:reset_calibration", "set the calibration offsets of the CM to 0", false);
+  DEBUG_REQUEST_REGISTER("CameraMatrixV2:reset_lm_minimizer", "reset lm parameters to initial values", false);
 
   DEBUG_REQUEST_REGISTER("CameraMatrixV2:collect_calibration_data", "collect the data for calibration", false);
   DEBUG_REQUEST_REGISTER("CameraMatrixV2:clear_calibration_data", "clears the data used for calibration", false);
@@ -26,6 +27,7 @@ CameraMatrixCorrectorV2::CameraMatrixCorrectorV2()
 
   DEBUG_REQUEST_REGISTER("CameraMatrixV2:calibrateOnlyPos","",false);
   DEBUG_REQUEST_REGISTER("CameraMatrixV2:calibrateOnlyOffsets","",false);
+  DEBUG_REQUEST_REGISTER("CameraMatrixV2:calibrateSimultaneously","",false);
 
   theCamMatErrorFunction = registerModule<CamMatErrorFunction>("CamMatErrorFunction", true);
   last_idx_yaw   = 0;
@@ -36,7 +38,7 @@ CameraMatrixCorrectorV2::CameraMatrixCorrectorV2()
   head_state      = look_left;
   last_head_state = initial;
 
-  auto_cleared_data = auto_collected = auto_calibrated = false;
+  auto_cleared_data = auto_collected = auto_calibrated_phase1 = auto_calibrated = false;
   last_error = 0;
 }
 
@@ -74,9 +76,20 @@ void CameraMatrixCorrectorV2::execute()
     last_head_state = initial;
     getHeadMotionRequest().id = HeadMotionRequest::hold;
 
-    auto_cleared_data = auto_collected = auto_calibrated = false;
+    auto_cleared_data = auto_collected = auto_calibrated_phase1 = auto_calibrated = false;
     derrors.clear();
+    derrors_pos.clear();
+    derrors_offset.clear();
     last_error = 0;
+    lm_minimizer.reset();
+    lm_minimizer_pos.reset();
+    lm_minimizer_offset.reset();
+  );
+
+  DEBUG_REQUEST("CameraMatrixV2:reset_lm_minimizer",
+        lm_minimizer.reset();
+        lm_minimizer_pos.reset();
+        lm_minimizer_offset.reset();
   );
 
   if(use_automatic_mode){
@@ -140,7 +153,11 @@ void CameraMatrixCorrectorV2::execute()
       DEBUG_REQUEST("CameraMatrixV2:reset_calibration",
             reset_calibration();
             lm_minimizer.reset();
+            lm_minimizer_pos.reset();
+            lm_minimizer_offset.reset();
             derrors.clear();
+            derrors_offset.clear();
+            derrors_pos.clear();
             last_error = 0;
       );
 
@@ -162,9 +179,11 @@ void CameraMatrixCorrectorV2::reset_calibration()
   theCamMatErrorFunction->getModuleT()->globalPosition = Vector3d();
 }
 
-// returns true if the averaged reduction per second decreases under a heuristic value
-bool CameraMatrixCorrectorV2::calibrate()
-{
+bool CameraMatrixCorrectorV2::calibrate(){
+    DEBUG_REQUEST("CameraMatrixV2:calibrateSimultaneously",
+                  return calibrateSimultaneously();
+                  );
+
     DEBUG_REQUEST("CameraMatrixV2:calibrateOnlyPos",
                   return calibrateOnlyPose();
                   );
@@ -172,7 +191,10 @@ bool CameraMatrixCorrectorV2::calibrate()
     DEBUG_REQUEST("CameraMatrixV2:calibrateOnlyOffsets",
                   return calibrateOnlyOffsets();
                   );
+}
 
+// returns true if the averaged reduction per second decreases under a heuristic value
+bool CameraMatrixCorrectorV2::calibrateSimultaneously() {
   double dt = getFrameInfo().getTimeInSeconds()-last_frame_info.getTimeInSeconds();
 
   // calibrate the camera matrix
@@ -195,24 +217,16 @@ bool CameraMatrixCorrectorV2::calibrate()
   PLOT("CameraMatrixV2:de/dt", de_dt);
   PLOT("CameraMatrixV2:avg_derror", derrors.getAverage());
 
-  // TODO: remove damping in gauss newtwon (prefered in the one step) or this one
-  MODIFY("CameraMatrixV2:damping:calibrate_only_pose:angle", damping_pose);
-  double damping_translation = damping_pose;
-  MODIFY("CameraMatrixV2:damping:calibrate_only_pose:location", damping_translation);
-  MODIFY("CameraMatrixV2:damping:calibrate_only_offsets", damping_cam_offsets);
-
   // update offsets
-  getCameraMatrixOffset().body_rot += Vector2d(offset(0),offset(1)) * damping_cam_offsets;
-  getCameraMatrixOffset().head_rot += Vector3d(offset(2),offset(3),offset(4)) * damping_cam_offsets;
-  getCameraMatrixOffset().cam_rot[CameraInfo::Top]    += Vector3d(offset(5),offset(6),offset(7))  * damping_cam_offsets;
-  getCameraMatrixOffset().cam_rot[CameraInfo::Bottom] += Vector3d(offset(8),offset(9),offset(10)) * damping_cam_offsets;
-  (theCamMatErrorFunction->getModuleT())->globalPosition.x += offset(11) * damping_pose; // scaling
-  (theCamMatErrorFunction->getModuleT())->globalPosition.y += offset(12) * damping_pose; // scaling
-  (theCamMatErrorFunction->getModuleT())->globalPosition.z += offset(13) * damping_pose; // scaling
+  getCameraMatrixOffset().body_rot += Vector2d(offset(0),offset(1));
+  getCameraMatrixOffset().head_rot += Vector3d(offset(2),offset(3),offset(4));
+  getCameraMatrixOffset().cam_rot[CameraInfo::Top]    += Vector3d(offset(5),offset(6),offset(7));
+  getCameraMatrixOffset().cam_rot[CameraInfo::Bottom] += Vector3d(offset(8),offset(9),offset(10));
+  (theCamMatErrorFunction->getModuleT())->globalPosition.x += offset(11);
+  (theCamMatErrorFunction->getModuleT())->globalPosition.y += offset(12);
+  (theCamMatErrorFunction->getModuleT())->globalPosition.z += offset(13);
 
   return (    (derrors.getAverage() > -50) // average error decreases by less than this per second
-           && (derrors.getAverage() < 0)   // but it decreases
-           && (de_dt < 0)                  // and the last step was an improvement
            && derrors.isFull() );          // and we have a full history
 }//end calibrate
 
@@ -233,33 +247,26 @@ bool CameraMatrixCorrectorV2::calibrateOnlyPose()
   epsilon << epsilon_pos, epsilon_pos, epsilon_angle;
   double error;
 
-  Eigen::Matrix<double, 3, 1> offset = lm_minimizer.minimizeOneStep(*(theCamMatErrorFunction->getModuleT()),epsilon,error);
+  Eigen::Matrix<double, 3, 1> offset = lm_minimizer_pos.minimizeOneStep(*(theCamMatErrorFunction->getModuleT()),epsilon,error);
 
   double de_dt = (error-last_error)/dt; // improvement per second
 
   if(last_error != 0){ //ignore the jump from zero to initial error value
-    derrors.add(de_dt);
+    derrors_pos.add(de_dt);
   }
   last_error = error;
 
   PLOT("CameraMatrixV2:error", error);
   PLOT("CameraMatrixV2:de/dt", de_dt);
-  PLOT("CameraMatrixV2:avg_derror", derrors.getAverage());
-
-  // TODO: remove damping in gauss newtwon (prefered in the one step) or this one
-  MODIFY("CameraMatrixV2:damping:calibrate_only_pose:angle", damping_pose);
-  double damping_translation = damping_pose;
-  MODIFY("CameraMatrixV2:damping:calibrate_only_pose:location", damping_translation);
+  PLOT("CameraMatrixV2:avg_derror_pose", derrors_pos.getAverage());
 
   // update offsets
-  (theCamMatErrorFunction->getModuleT())->globalPosition.x += offset(0) * damping_translation;
-  (theCamMatErrorFunction->getModuleT())->globalPosition.y += offset(1) * damping_translation;
-  (theCamMatErrorFunction->getModuleT())->globalPosition.z += offset(2) * damping_pose;
+  (theCamMatErrorFunction->getModuleT())->globalPosition.x += offset(0);
+  (theCamMatErrorFunction->getModuleT())->globalPosition.y += offset(1);
+  (theCamMatErrorFunction->getModuleT())->globalPosition.z += offset(2);
 
-  return (    (derrors.getAverage() > -50) // average error decreases by less than this per second
-           && (derrors.getAverage() < 0)   // but it decreases
-           && (de_dt < 0)                  // and the last step was an improvement
-           && derrors.isFull() );          // and we have a full history
+  return (    (derrors_pos.getAverage() > -50) // average error decreases by less than this per second
+           && derrors_pos.isFull() );          // and we have a full history
 }//end calibrate
 
 // returns true if the averaged reduction per second decreases under a heuristic value
@@ -270,31 +277,27 @@ bool CameraMatrixCorrectorV2::calibrateOnlyOffsets()
   // calibrate the camera matrix
   Eigen::Matrix<double, 11, 1> epsilon = Eigen::Matrix<double, 11, 1>::Constant(1e-4);
   double error;
-  Eigen::Matrix<double, 11, 1> offset = lm_minimizer.minimizeOneStep(*(theCamMatErrorFunction->getModuleT()),epsilon,error);
+  Eigen::Matrix<double, 11, 1> offset = lm_minimizer_offset.minimizeOneStep(*(theCamMatErrorFunction->getModuleT()),epsilon,error);
 
   double de_dt = (error-last_error)/dt; // improvement per second
 
   if(last_error != 0){ //ignore the jump from zero to initial error value
-    derrors.add(de_dt);
+    derrors_offset.add(de_dt);
   }
   last_error = error;
 
   PLOT("CameraMatrixV2:error", error);
   PLOT("CameraMatrixV2:de/dt", de_dt);
-  PLOT("CameraMatrixV2:avg_derror", derrors.getAverage());
-
-  MODIFY("CameraMatrixV2:damping:calibrate_only_offsets", damping_cam_offsets);
+  PLOT("CameraMatrixV2:avg_derror_offset", derrors_offset.getAverage());
 
   // update offsets
-  getCameraMatrixOffset().body_rot += Vector2d(offset(0),offset(1)) * damping_cam_offsets;
-  getCameraMatrixOffset().head_rot += Vector3d(offset(2),offset(3),offset(4)) * damping_cam_offsets;
-  getCameraMatrixOffset().cam_rot[CameraInfo::Top]    += Vector3d(offset(5),offset(6),offset(7))  * damping_cam_offsets;
-  getCameraMatrixOffset().cam_rot[CameraInfo::Bottom] += Vector3d(offset(8),offset(9),offset(10)) * damping_cam_offsets;
+  getCameraMatrixOffset().body_rot += Vector2d(offset(0),offset(1));
+  getCameraMatrixOffset().head_rot += Vector3d(offset(2),offset(3),offset(4));
+  getCameraMatrixOffset().cam_rot[CameraInfo::Top]    += Vector3d(offset(5),offset(6),offset(7));
+  getCameraMatrixOffset().cam_rot[CameraInfo::Bottom] += Vector3d(offset(8),offset(9),offset(10));
 
-  return (    (derrors.getAverage() > -50) // average error decreases by less than this per second
-           && (derrors.getAverage() < 0)   // but it decreases
-           && (de_dt < 0)                  // and the last step was an improvement
-           && derrors.isFull() );          // and we have a full history
+  return (    (derrors_offset.getAverage() > -50) // average error decreases by less than this per second
+           && derrors_offset.isFull() );          // and we have a full history
 }//end calibrate
 
 // returns true, if the trajectory is starting again from beginning
@@ -439,8 +442,16 @@ void CameraMatrixCorrectorV2::doItAutomatically()
         collectingData();
     }
 
-    if(auto_collected && !auto_calibrated){
-        auto_calibrated = calibrate();
+    if(auto_collected && !auto_calibrated_phase1){
+        auto_calibrated_phase1 = calibrateSimultaneously();
+        if(auto_calibrated_phase1){
+            derrors_offset.clear();
+            lm_minimizer_offset.reset();
+        }
+    }
+
+    if(auto_calibrated_phase1 && !auto_calibrated){
+        auto_calibrated = calibrateOnlyOffsets();
     }
 
     if(auto_calibrated){

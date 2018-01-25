@@ -493,10 +493,13 @@ private:
   double damping_pose;
 
   LevenbergMarquardtMinimizer<CamMatErrorFunction, 1, 2> lm_minimizer;
+  LevenbergMarquardtMinimizer<CamMatErrorFunction, 1, 2> lm_minimizer_pos;
+  LevenbergMarquardtMinimizer<CamMatErrorFunction, 1, 2> lm_minimizer_offset;
 
   bool calibrate();
   bool calibrateOnlyPose();
   bool calibrateOnlyOffsets();
+  bool calibrateSimultaneously();
   void reset_calibration();
   bool movingHead();
   void collectingData();
@@ -505,8 +508,10 @@ private:
   ModuleCreator<CamMatErrorFunction>* theCamMatErrorFunction;
 
   // for automatic calibration
-  bool auto_cleared_data, auto_collected, auto_calibrated;
-  RingBufferWithSum<double, 200> derrors;
+  bool auto_cleared_data, auto_collected, auto_calibrated_phase1, auto_calibrated;
+  RingBufferWithSum<double, 50> derrors;
+  RingBufferWithSum<double, 50> derrors_pos;
+  RingBufferWithSum<double, 50> derrors_offset;
   double last_error;
   FrameInfo last_frame_info;
 
