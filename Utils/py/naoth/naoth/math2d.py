@@ -132,6 +132,9 @@ class LineSegment(object):
         return self.point(t)
 
     def intersection(self, other):
+        # Difference to line_intersection is the additional check if t is within the length of the linesegment.
+        #HACK returns linesegment distance if intersection is not on linesegment
+
         normal = Vector2(-other.direction.y, other.direction.x)
         t = normal*self.direction
         if t == 0:
@@ -139,13 +142,11 @@ class LineSegment(object):
 
         t = normal*(other.base-self.base)/t
         t = clamp(t, 0.0, self.length)
-        # was soll t sein??
-        # Interpretation der Rueckgabe?
 
         return t
 
     def line_intersection(self, other):
-        # maybe rename methods, this one and the one above; the return ist on how to skale the direction
+        # maybe rename methods, this one and the one above; the return ist on how to scale the direction
         # vector to get the intersect point from the start (base) point. this is not derivable from the name
         normal = Vector2(-other.direction.y, other.direction.x)
         t = normal*self.direction
