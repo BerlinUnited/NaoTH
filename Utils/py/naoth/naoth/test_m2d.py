@@ -327,13 +327,13 @@ class TestMath2D(unittest.TestCase):
         line2 = m2d.LineSegment(begin2, end2)
         line3 = m2d.LineSegment(begin3, end3)
 
-        intersect1 = line1.intersect(line2)
-        intersect2 = line2.intersect(line3)
-        intersect3 = line3.intersect(line1)
+        intersection1 = line1.intersection(line2)
+        intersection2 = line2.intersection(line3)
+        intersection3 = line3.intersection(line1)
 
-        self.assertEqual(intersect1, 1)
-        self.assertEqual(intersect2, 1)
-        self.assertEqual(intersect3, 1)
+        self.assertEqual(intersection1, 1)
+        self.assertAlmostEquals(intersection2, math.sqrt(8))
+        self.assertEqual(intersection3, 0)
 
     def test_line_intersection(self):
         begin1 = m2d.Vector2(1, 0)
