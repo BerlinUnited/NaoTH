@@ -21,6 +21,8 @@
 #include "Representations/Motion/Request/HeadMotionRequest.h"
 #include "Representations/Motion/Request/MotionRequest.h"
 
+#include "Representations/Infrastructure/SoundData.h"
+
 #include "Tools/DoubleCamHelpers.h"
 #include "Tools/CameraGeometry.h"
 #include <Tools/NaoInfo.h>
@@ -66,6 +68,7 @@ BEGIN_DECLARE_MODULE(CameraMatrixCorrectorV2)
   PROVIDE(HeadMotionRequest)
   PROVIDE(MotionRequest)
   PROVIDE(CameraMatrixOffset)
+  PROVIDE(SoundPlayData)
 END_DECLARE_MODULE(CameraMatrixCorrectorV2)
 
 //////////////////// END MODULE INTERFACE DECLARATION //////////////////////
@@ -509,6 +512,7 @@ private:
 
   // for automatic calibration
   bool auto_cleared_data, auto_collected, auto_calibrated_phase1, auto_calibrated;
+  bool play_collecting, play_calibrating, play_calibrated;
   RingBufferWithSum<double, 50> derrors;
   RingBufferWithSum<double, 50> derrors_pos;
   RingBufferWithSum<double, 50> derrors_offset;

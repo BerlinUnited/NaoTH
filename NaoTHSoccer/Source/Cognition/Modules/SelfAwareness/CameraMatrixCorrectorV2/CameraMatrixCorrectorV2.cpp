@@ -32,13 +32,12 @@ CameraMatrixCorrectorV2::CameraMatrixCorrectorV2()
   theCamMatErrorFunction = registerModule<CamMatErrorFunction>("CamMatErrorFunction", true);
   last_idx_yaw   = 0;
   last_idx_pitch = 0;
-  damping_cam_offsets = 1;// 0.005;
-  damping_pose = 1; 0.01;
 
   head_state      = look_left;
   last_head_state = initial;
 
   auto_cleared_data = auto_collected = auto_calibrated_phase1 = auto_calibrated = false;
+  play_calibrated = play_calibrating = play_collecting = true;
   last_error = 0;
 }
 
@@ -48,6 +47,13 @@ CameraMatrixCorrectorV2::~CameraMatrixCorrectorV2()
 
 void CameraMatrixCorrectorV2::execute()
 {
+  if (getSoundPlayData().soundFile == "finished.wav"
+      || getSoundPlayData().soundFile == "collectingdata.wav"
+      || getSoundPlayData().soundFile == "calibrating.wav")
+  {
+    getSoundPlayData().mute = true;
+    getSoundPlayData().soundFile = "";
+  }
   // sit down if auto calibrated
   if(auto_calibrated){
     getMotionRequest().id = motion::sit;
@@ -77,6 +83,7 @@ void CameraMatrixCorrectorV2::execute()
     getHeadMotionRequest().id = HeadMotionRequest::hold;
 
     auto_cleared_data = auto_collected = auto_calibrated_phase1 = auto_calibrated = false;
+    play_calibrated = play_calibrating = play_collecting = true;
     derrors.clear();
     derrors_pos.clear();
     derrors_offset.clear();
@@ -191,6 +198,8 @@ bool CameraMatrixCorrectorV2::calibrate(){
     DEBUG_REQUEST("CameraMatrixV2:calibrateOnlyOffsets",
                   return calibrateOnlyOffsets();
                   );
+
+    return false;
 }
 
 // returns true if the averaged reduction per second decreases under a heuristic value
@@ -440,6 +449,12 @@ void CameraMatrixCorrectorV2::doItAutomatically()
     if(!auto_collected){
         auto_collected = movingHead();
         collectingData();
+
+        if(play_collecting){
+            getSoundPlayData().mute = false;
+            getSoundPlayData().soundFile = "collectingdata.wav";
+            play_collecting = false;
+        }
     }
 
     if(auto_collected && !auto_calibrated_phase1){
@@ -447,6 +462,12 @@ void CameraMatrixCorrectorV2::doItAutomatically()
         if(auto_calibrated_phase1){
             derrors_offset.clear();
             lm_minimizer_offset.reset();
+        }
+
+        if(play_calibrating){
+            getSoundPlayData().mute = false;
+            getSoundPlayData().soundFile = "calibrating.wav";
+            play_calibrating = false;
         }
     }
 
@@ -456,5 +477,11 @@ void CameraMatrixCorrectorV2::doItAutomatically()
 
     if(auto_calibrated){
         getCameraMatrixOffset().saveToConfig();
+
+        if(play_calibrated) {
+            getSoundPlayData().mute = false;
+            getSoundPlayData().soundFile = "finished.wav";
+            play_calibrated = false;
+        }
     }
 }
