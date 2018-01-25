@@ -139,13 +139,11 @@ public class ModuleConfigurationViewer extends AbstractDialog
      */
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
-    private void initComponents()
-    {
+    private void initComponents() {
 
         fileChooser = new de.naoth.rc.components.ExtendedFileChooser();
         jToolBar1 = new javax.swing.JToolBar();
         jToggleButtonRefresh = new javax.swing.JToggleButton();
-        btExport = new javax.swing.JButton();
         btSave = new javax.swing.JButton();
         btSend = new javax.swing.JButton();
         cbProcess = new javax.swing.JComboBox();
@@ -171,38 +169,20 @@ public class ModuleConfigurationViewer extends AbstractDialog
         jToggleButtonRefresh.setFocusable(false);
         jToggleButtonRefresh.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jToggleButtonRefresh.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jToggleButtonRefresh.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
+        jToggleButtonRefresh.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jToggleButtonRefreshActionPerformed(evt);
             }
         });
         jToolBar1.add(jToggleButtonRefresh);
-
-        btExport.setText("Export");
-        btExport.setToolTipText("export modules graph");
-        btExport.setFocusable(false);
-        btExport.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        btExport.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        btExport.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
-                btExportActionPerformed(evt);
-            }
-        });
-        jToolBar1.add(btExport);
 
         btSave.setIcon(new javax.swing.ImageIcon(getClass().getResource("/toolbarButtonGraphics/general/Save24.gif"))); // NOI18N
         btSave.setToolTipText("save the module configuration localy");
         btSave.setFocusable(false);
         btSave.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btSave.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        btSave.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
+        btSave.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btSaveActionPerformed(evt);
             }
         });
@@ -213,20 +193,16 @@ public class ModuleConfigurationViewer extends AbstractDialog
         btSend.setFocusable(false);
         btSend.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btSend.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        btSend.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
+        btSend.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btSendActionPerformed(evt);
             }
         });
         jToolBar1.add(btSend);
 
         cbProcess.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Cognition", "Motion" }));
-        cbProcess.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
+        cbProcess.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cbProcessActionPerformed(evt);
             }
         });
@@ -234,10 +210,8 @@ public class ModuleConfigurationViewer extends AbstractDialog
 
         cbModules.setEditable(true);
         cbModules.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "<empty>" }));
-        cbModules.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
+        cbModules.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cbModulesActionPerformed(evt);
             }
         });
@@ -245,10 +219,8 @@ public class ModuleConfigurationViewer extends AbstractDialog
 
         cbRepresentations.setEditable(true);
         cbRepresentations.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "<empty>" }));
-        cbRepresentations.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
+        cbRepresentations.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cbRepresentationsActionPerformed(evt);
             }
         });
@@ -356,11 +328,6 @@ public class ModuleConfigurationViewer extends AbstractDialog
             jToggleButtonRefresh.setSelected(false);
         }
 }//GEN-LAST:event_jToggleButtonRefreshActionPerformed
-
-    private void btExportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btExportActionPerformed
-        //ExportDialog export = new ExportDialog();
-        //export.showExportDialog(this, "Export view as ...", this.vv, "export");
-    }//GEN-LAST:event_btExportActionPerformed
 
     private void btSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btSaveActionPerformed
         JOptionPane.showMessageDialog(this,
@@ -833,7 +800,6 @@ public class ModuleConfigurationViewer extends AbstractDialog
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JToggleButton btErrors;
-    private javax.swing.JButton btExport;
     private javax.swing.JToggleButton btNotification;
     private javax.swing.JButton btSave;
     private javax.swing.JButton btSend;

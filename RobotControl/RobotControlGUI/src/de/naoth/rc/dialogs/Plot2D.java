@@ -1,5 +1,5 @@
 /*
- * SimpleValuePlotter.java
+ * Plot2D.java
  *
  * Created on 15.02.2011, 00:38:59
  */
@@ -33,11 +33,11 @@ import org.freehep.util.export.ExportDialog;
  *
  * @author Heinrich Mellmann
  */
-public class Plott2D extends AbstractDialog {
+public class Plot2D extends AbstractDialog {
 
     @RCDialog(category = RCDialog.Category.View, name = "Plot 2D")
     @PluginImplementation
-    public static class Plugin extends DialogPlugin<Plott2D> {
+    public static class Plugin extends DialogPlugin<Plot2D> {
 
         @InjectPlugin
         public static RobotControl parent;
@@ -50,7 +50,7 @@ public class Plott2D extends AbstractDialog {
 
     private final PlotDataHandler plotDataHandler = new PlotDataHandler();
 
-    public Plott2D() {
+    public Plot2D() {
         initComponents();
         
         this.plotPanel.setDontScrollOnStaticRegionData(cbDontScrollOnStaticRegionData.isSelected());
@@ -264,7 +264,7 @@ public class Plott2D extends AbstractDialog {
                     Plots plots = Plots.parseFrom(object);
                     for (PlotStroke2D stroke : plots.getPlotstrokesList()) {
                         for (DoubleVector2 point : stroke.getPointsList()) {
-                            Plott2D.this.plotPanel.addValue(stroke.getName(), point.getX(), point.getY());
+                            Plot2D.this.plotPanel.addValue(stroke.getName(), point.getX(), point.getY());
                         }
                     }
                 }
@@ -287,4 +287,4 @@ public class Plott2D extends AbstractDialog {
         Plugin.genericManagerFactory.getManager(commandGetPlotCognition).removeListener(plotDataHandler);
     }
 
-}//end class SimpleValuePlotter
+}//end class Plot2D
