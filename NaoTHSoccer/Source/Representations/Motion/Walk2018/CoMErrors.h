@@ -13,6 +13,8 @@
 #include "Tools/DataStructures/Printable.h"
 #include "Tools/DataStructures/RingBufferWithSum.h"
 
+#include <iomanip>
+
 class CoMErrors : public naoth::Printable
 {
 public:
@@ -30,8 +32,15 @@ public:
         e.clear();
     }
 
-    virtual void print(std::ostream& /*stream*/) const
+    virtual void print(std::ostream& stream) const
     {
+        stream << std::fixed << std::setprecision(3);
+        stream << "--- absolute error ---" << std::endl;
+        stream << "avg^2: " << std::setw(8) << absolute2.getAverage() << std::endl;
+        stream << "--- error --- " << std::endl;
+        stream << "avg x: " << std::setw(8) << e.getAverage().x << std::endl;
+        stream << "avg y: " << std::setw(8) << e.getAverage().y << std::endl;
+        stream << "avg z: " << std::setw(8) << e.getAverage().z << std::endl;
     }
 };
 
