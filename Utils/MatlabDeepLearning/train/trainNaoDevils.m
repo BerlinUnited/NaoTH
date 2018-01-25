@@ -7,7 +7,7 @@ clear all;
 netName = "CNN_ND_aug2_full_conv_test45";
 
 % load data
-load('../data/basic.mat');
+[data, labels] = load_from_mat('../data/basic.mat', '../data/augmented_rc17.mat');
 
 target = zeros(size(data,4),2);
 target(:,1) = (labels == 'ball');
