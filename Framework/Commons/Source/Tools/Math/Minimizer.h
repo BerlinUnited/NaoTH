@@ -34,9 +34,8 @@ public:
         Eigen::MatrixXd JtJdiag = (JtJ).diagonal().asDiagonal();
         error = r.sum();
 
-        //Eigen::Matrix<double, T::RowsAtCompileTime,1> offset = -(J.transpose()*J).inverse()*J.transpose()*r;
-        Eigen::Matrix<double, T::RowsAtCompileTime,1> offset1 = (JtJ + lambda   * JtJdiag).ldlt().solve(-J.transpose() * r);
-        Eigen::Matrix<double, T::RowsAtCompileTime,1> offset2 = (JtJ + lambda/v * JtJdiag).ldlt().solve(-J.transpose() * r);
+        Eigen::Matrix<double, T::RowsAtCompileTime,1> offset1 = (JtJ + lambda   * JtJdiag).colPivHouseholderQr().solve(-J.transpose() * r);
+        Eigen::Matrix<double, T::RowsAtCompileTime,1> offset2 = (JtJ + lambda/v * JtJdiag).colPivHouseholderQr().solve(-J.transpose() * r);
 
         if(offset1.hasNaN() || offset2.hasNaN()){
             return zero;
@@ -48,7 +47,7 @@ public:
         if(r_o1_sum > error && r_o2_sum > error){
             while(true){//for( int i = 0; i < 10; i++){ // retry at most 10 times
                 lambda *= v; // didn't get a better result so increase damping and retry
-                offset1 = (JtJ + lambda * JtJdiag).ldlt().solve(-J.transpose() * r);
+                offset1 = (JtJ + lambda * JtJdiag).colPivHouseholderQr().solve(-J.transpose() * r);
 
                 if(offset1.hasNaN()){
                     return zero;
