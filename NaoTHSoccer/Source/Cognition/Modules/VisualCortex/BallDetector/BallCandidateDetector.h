@@ -150,7 +150,7 @@ private:
       PARAMETER_REGISTER(blackKeysCheck.minSizeToCheck) = 60;
       PARAMETER_REGISTER(blackKeysCheck.minValue) = 20;
 
-      PARAMETER_REGISTER(classifier) = "aug1";
+      PARAMETER_REGISTER(classifier) = "dortmund";
       
       syncWithConfig();
     }

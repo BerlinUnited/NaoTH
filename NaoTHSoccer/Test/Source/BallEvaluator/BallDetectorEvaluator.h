@@ -3,7 +3,6 @@
 
 #include <string>
 
-#include <Cognition/Modules/VisualCortex/BallDetector/Tools/CVHaarClassifier.h>
 #include <Cognition/Modules/VisualCortex/BallDetector/Classifier/AbstractCNNClassifier.h>
 
 #include <map>
@@ -23,7 +22,6 @@ public:
   BallDetectorEvaluator(const std::string& fileArg, const std::string& modelDir, int patchSize=16);
   virtual ~BallDetectorEvaluator();
 
-  void executeHaarBall();
   void executeCNNBall();
 
 public:
@@ -185,7 +183,6 @@ private:
   const int patchSize;
 
   // TODO: allow more classifiers (including the ones that have the more complex filter logic)
-  CVHaarClassifier classifierHaar;
   std::map<std::string, std::shared_ptr<AbstractCNNClassifier>> cnnClassifiers;
 
   std::map<ExperimentParameters, ExperimentResult, cmpExperimentParameters> results;

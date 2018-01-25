@@ -128,54 +128,6 @@ BallDetectorEvaluator::ExperimentResult BallDetectorEvaluator::executeParam(
   return r;
 }
 
-
-void BallDetectorEvaluator::executeHaarBall()
-{
-  std::cout << "Loading test image set from " << fileArg << std::endl;
-  std::multimap<std::string, InputPatch> imagesByClasses = loadImageSets(fileArg);
-  std::cout << "Loaded " << imagesByClasses.size() << " images." << std::endl;
-
-  results.clear();
-  std::string fileArgBase(g_path_get_basename(fileArg.c_str()));
-  std::string outFileName = "haar_ball_" + fileArgBase + ".html";
-
-
-
-  bestRecall90 = 0.0;
-  bestRecall95 = 0.0;
-  bestRecall99 = 0.0;
-
-  for(std::string m : findHaarModelNames())
-  {
-    if(!m.empty())
-    {
-      classifierHaar.loadModel(m);
-
-      // do experiment for different parameters
-      for(unsigned int minNeighbours=0; minNeighbours <= 5; minNeighbours++)
-      {
-        for(unsigned int windowSize=12; windowSize <= 20; windowSize += 2)
-        {
-          ExperimentParameters haarParams;
-          haarParams.type = ExperimentParameters::Type::haar;
-          haarParams.modelName = m;
-          haarParams.minNeighbours = minNeighbours;
-          haarParams.maxWindowSize = windowSize;
-
-          bestRecallParam90 = haarParams;
-          bestRecallParam95 = haarParams;
-          bestRecallParam99 = haarParams;
-
-          results[haarParams] = executeParam(haarParams, imagesByClasses);
-        }
-      }
-    }
-  }
-
-  outputResults(outFileName);
-  std::cout << "Written detailed report to " << outFileName << std::endl;
-}
-
 void BallDetectorEvaluator::executeCNNBall()
 {
   std::cout << "Loading test image set from " << fileArg << std::endl;
@@ -186,15 +138,11 @@ void BallDetectorEvaluator::executeCNNBall()
   std::string fileArgBase(g_path_get_basename(fileArg.c_str()));
   std::string outFileName = "cnn_ball_" + fileArgBase + ".html";
 
-
-
   bestRecall90 = 0.0;
   bestRecall95 = 0.0;
   bestRecall99 = 0.0;
 
   cnnClassifiers = BallCandidateDetector::createCNNMap();
-  // also add the legacy Haar as baseline
-  cnnClassifiers["baseline-haar6-18-2"] = std::make_shared<CVHaarClassifier>("haar6.xml");
 
   ExperimentParameters cnnParams;
   cnnParams.type = ExperimentParameters::Type::cnn;
@@ -398,46 +346,9 @@ void BallDetectorEvaluator::outputResults(std::string outFileName)
   html.close();
 }
 
-std::list<std::string> BallDetectorEvaluator::findHaarModelNames()
-{
-  std::list<std::string> result;
-  std::string dirlocation = modelDir;
-
-  if(g_file_test(modelDir.c_str(), G_FILE_TEST_IS_DIR))
-  {
-    GDir* dir = g_dir_open(dirlocation.c_str(), 0, NULL);
-    if (dir != NULL)
-    {
-      const gchar* name;
-      while ((name = g_dir_read_name(dir)) != NULL)
-      {
-        if (g_str_has_suffix(name, ".xml"))
-        {
-          std::string completeFileName = dirlocation + name;
-          if (g_file_test(completeFileName.c_str(), G_FILE_TEST_EXISTS)
-              && g_file_test(completeFileName.c_str(), G_FILE_TEST_IS_REGULAR))
-          {
-            result.push_back(name);
-          }
-        }
-
-      }
-      g_dir_close(dir);
-    }
-    result.sort();
-  }
-  else
-  {
-   std::string baseName(g_path_get_basename(modelDir.c_str()));
-   result.push_back(baseName);
-  }
-  return result;
-}
-
 unsigned int BallDetectorEvaluator::executeSingleImageSet(const std::multimap<std::string, InputPatch> &imageSet,
                                                           const ExperimentParameters& params, ExperimentResult& r)
 {
-
   unsigned int numberOfImages = 0;
 
   for(const std::pair<std::string, InputPatch>& imageEntry : imageSet)
@@ -463,19 +374,17 @@ void BallDetectorEvaluator::evaluateImage(cv::Mat img,
   patch.data = std::vector<unsigned char>(transposedImg.begin<unsigned char>(), transposedImg.end<unsigned char>());
 
   bool actual = false;
-  if(params.type == ExperimentParameters::Type::haar)
+  
+  if(params.type == ExperimentParameters::Type::cnn)
   {
-    actual = classifierHaar.classify(patch, params.minNeighbours, params.maxWindowSize);
-  }
-  else if(params.type == ExperimentParameters::Type::cnn)
-  {
+	
     auto classifier = cnnClassifiers.find(params.modelName);
     if(classifier != cnnClassifiers.end())
     {
       if(classifier->second)
       {
         // the parameters are for the haar6 baseline
-        actual = classifier->second->classify(patch, 2, 18);
+        actual = classifier->second->classify(patch);
         if(actual)
         {
           // also check the threshold
@@ -495,7 +404,7 @@ void BallDetectorEvaluator::evaluateImage(cv::Mat img,
   else
   {
     ErrorEntry error;
-//    error.patch= img;
+	// error.patch= img;
     error.fileName = fileName;
     if(actual)
     {
