@@ -176,7 +176,8 @@ public class DialogRegistry {
                 this.text = "For this dialog is no help avaliable.";
             }
 
-            this.dlg = new HelpDialog(parent, true, text);
+            java.net.URL res = getClass().getResource("/de/naoth/rc/dialogs/" + title + ".html");
+            this.dlg = new HelpDialog(parent, true, res);
             this.dlg.setDefaultCloseOperation(javax.swing.WindowConstants.HIDE_ON_CLOSE);
             this.dlg.setTitle(title);
             this.dlg.setModal(false);
