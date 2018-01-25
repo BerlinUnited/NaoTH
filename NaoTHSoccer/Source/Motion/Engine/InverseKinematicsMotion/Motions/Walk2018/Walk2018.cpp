@@ -37,6 +37,14 @@ Walk2018::Walk2018() : IKMotion(getInverseKinematicsMotionEngineService(), motio
   Vector3d targetZMP(currentCOMFeetPose.com.translation);
   targetZMP.z = getInverseKinematicsMotionEngineService().getEngine().getParameters().walk.hip.comHeight;
 
+  // reset buffers
+  getCoMErrors().reset();
+  getCommandBuffer().reset();
+  getStepBuffer().reset();
+  getZMPReferenceBuffer().reset();
+
+  theHipRotationOffsetModifier->getModuleT()->reset();
+
   // init state of preview controller
   theZMPPreviewController->getModuleT()->init(currentCOMFeetPose.com.translation);
   size_t inital_number_of_cycles = static_cast<size_t>(theZMPPreviewController->getModuleT()->previewSteps());
@@ -102,14 +110,6 @@ void Walk2018::execute()
   updateMotionStatus(getMotionStatus());
 
   if(getMotionRequest().id != getId() && theZMPPreviewController->getModuleT()->is_stationary()) {
-    // reset buffers
-    getCoMErrors().reset();
-    getCommandBuffer().reset();
-    getStepBuffer().reset();
-    getZMPReferenceBuffer().reset();
-
-    theHipRotationOffsetModifier->getModuleT()->reset();
-
     setCurrentState(motion::stopped);
     std::cout << "walk stopped" << std::endl;
   } else {
