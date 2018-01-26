@@ -36,6 +36,13 @@
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="disconnectMenuItemActionPerformed"/>
               </Events>
             </MenuItem>
+            <MenuItem class="javax.swing.JCheckBoxMenuItem" name="enforceConnection">
+              <Properties>
+                <Property name="selected" type="boolean" value="true"/>
+                <Property name="text" type="java.lang.String" value="Enforce Connection"/>
+                <Property name="toolTipText" type="java.lang.String" value="Make sure that RobotControl is connected to a robot when dialogs try to receive data"/>
+              </Properties>
+            </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="resetLayoutMenuItem">
               <Properties>
                 <Property name="text" type="java.lang.String" value="Reset layout"/>
