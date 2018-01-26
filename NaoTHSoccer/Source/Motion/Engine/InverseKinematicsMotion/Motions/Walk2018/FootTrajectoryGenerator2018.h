@@ -40,6 +40,31 @@ class FootTrajectoryGenerator2018 : private FootTrajectoryGenerator2018Base
 {
   public:
     FootTrajectoryGenerator2018() : parameters(getWalk2018Parameters().footTrajectoryGenerator2018Params) {
+
+    // reference points for splines in xy
+    const std::vector<double> xA{ 0.0, 0.125, 0.25, 0.5, 0.75, 0.875, 1.0 };
+    const std::vector<double> yA{
+      0.0,
+      (1 - cos(0.125*Math::pi))*0.5,
+      (1 - cos(0.25 *Math::pi))*0.5,
+      (1 - cos(0.5  *Math::pi))*0.5,
+      (1 - cos(0.75 *Math::pi))*0.5,
+      (1 - cos(0.875*Math::pi))*0.5,
+      1.0
+    };
+
+    // reference points for splines in z
+    const std::vector<double> xB{ 0.0, 0.125, 0.25, 0.5, 0.75, 0.875, 1.0 };
+    const std::vector<double> yB{
+      0.0,
+      (1 - cos(0.125*Math::pi2))*0.5,
+      (1 - cos(0.25 *Math::pi2))*0.5,
+      1.0,
+      (1 - cos(0.75 *Math::pi2))*0.5,
+      (1 - cos(0.875*Math::pi2))*0.5,
+      0.0
+    };
+
         theCubicSplineXY.set_boundary(tk::spline::first_deriv,0.0, tk::spline::first_deriv,0.0, false);
         theCubicSplineXY.set_points(xA,yA);
 
@@ -66,32 +91,7 @@ class FootTrajectoryGenerator2018 : private FootTrajectoryGenerator2018Base
     Pose3D calculateLiftingFootPos(const Step& step) const;
 
   private:
-    // reference points for splines in xy
-    const std::vector<double> xA{0.0, 0.125, 0.25, 0.5, 0.75, 0.875, 1.0};
-    const std::vector<double> yA{
-      0.0,
-      (1 - cos(0.125*Math::pi))*0.5,
-      (1 - cos(0.25 *Math::pi))*0.5,
-      (1 - cos(0.5  *Math::pi))*0.5,
-      (1 - cos(0.75 *Math::pi))*0.5,
-      (1 - cos(0.875*Math::pi))*0.5,
-      1.0
-    };
-
     tk::spline theCubicSplineXY;
-
-    // reference points for splines in z
-    const std::vector<double> xB{0.0, 0.125, 0.25, 0.5, 0.75, 0.875, 1.0};
-    const std::vector<double> yB{
-      0.0,
-      (1 - cos(0.125*Math::pi2))*0.5,
-      (1 - cos(0.25 *Math::pi2))*0.5,
-      1.0,
-      (1 - cos(0.75 *Math::pi2))*0.5,
-      (1 - cos(0.875*Math::pi2))*0.5,
-      0.0
-    };
-
     tk::spline theCubicSplineZ;
 
   public:

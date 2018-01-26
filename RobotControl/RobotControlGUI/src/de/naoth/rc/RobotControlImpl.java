@@ -225,15 +225,15 @@ public class RobotControlImpl extends javax.swing.JFrame
   @Override
   public boolean checkConnected()
   {
-    if(messageServer.isConnected())
+    if(enforceConnection.isSelected() && !messageServer.isConnected())
+    {
+      connectionDialog.setVisible(true);
+      return messageServer.isConnected();
+    }
+    else
     {
       return true;
     }
-
-    // show connection dialog
-    connectionDialog.setVisible(true);
-
-    return messageServer.isConnected();
   }//end checkConnected
 
   /**
@@ -256,6 +256,7 @@ public class RobotControlImpl extends javax.swing.JFrame
         mainControlMenu = new javax.swing.JMenu();
         connectMenuItem = new javax.swing.JMenuItem();
         disconnectMenuItem = new javax.swing.JMenuItem();
+        enforceConnection = new javax.swing.JCheckBoxMenuItem();
         resetLayoutMenuItem = new javax.swing.JMenuItem();
         jSeparator1 = new javax.swing.JSeparator();
         exitMenuItem = new javax.swing.JMenuItem();
@@ -278,7 +279,6 @@ public class RobotControlImpl extends javax.swing.JFrame
 
         btManager.setText("Running Manager --");
         btManager.setToolTipText("Shows the number of currently registered Manager");
-        btManager.setBorder(null);
         btManager.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btManagerActionPerformed(evt);
@@ -355,6 +355,11 @@ public class RobotControlImpl extends javax.swing.JFrame
             }
         });
         mainControlMenu.add(disconnectMenuItem);
+
+        enforceConnection.setSelected(true);
+        enforceConnection.setText("Enforce Connection");
+        enforceConnection.setToolTipText("Make sure that RobotControl is connected to a robot when dialogs try to receive data");
+        mainControlMenu.add(enforceConnection);
 
         resetLayoutMenuItem.setText("Reset layout");
         resetLayoutMenuItem.setToolTipText("\"Resets all layout information");
@@ -563,6 +568,7 @@ public class RobotControlImpl extends javax.swing.JFrame
     private javax.swing.JButton btManager;
     private javax.swing.JMenuItem connectMenuItem;
     private javax.swing.JMenuItem disconnectMenuItem;
+    private javax.swing.JCheckBoxMenuItem enforceConnection;
     private javax.swing.JMenuItem exitMenuItem;
     private javax.swing.JMenu helpMenu;
     private javax.swing.JSeparator jSeparator1;

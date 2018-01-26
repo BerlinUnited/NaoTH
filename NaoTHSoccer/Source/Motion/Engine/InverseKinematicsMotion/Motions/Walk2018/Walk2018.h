@@ -91,6 +91,7 @@ class Walk2018: private Walk2018Base, public IKMotion, public ModuleManager
 public:
   Walk2018();
   //TODO: destructor...?
+  //zurzeit werden die representation des walks beim initialisieren aufgeraeumt. vielleicht waere es besser dies im destructor zu tun
   
   virtual void execute();
 
@@ -115,7 +116,6 @@ private:
   void updateMotionStatus(MotionStatus& motionStatus) const;
 
 private:
-  // duplicates of ZMPPlanner2018, needed by updateMotionStatus
   // TODO: check if really required and correctly used in updateMotionStatus
   //       Options: deletion or moving into a helper header
   Pose3D calculateStableCoMByFeet(InverseKinematic::FeetPose feet, double pitch) const

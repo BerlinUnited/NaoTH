@@ -48,7 +48,7 @@ import java.util.List;
  */
 public class TeamCommLogViewer extends AbstractDialog
 {
-    @RCDialog(category = RCDialog.Category.Team, name = "LogfilePlayer")
+    @RCDialog(category = RCDialog.Category.Team, name = "TeamCommLogViewer")
     @PluginImplementation
     public static class Plugin extends DialogPlugin<TeamCommLogViewer> {
         @InjectPlugin
