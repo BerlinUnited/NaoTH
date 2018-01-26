@@ -569,6 +569,11 @@ public class BehaviorViewer extends AbstractDialog
         cbOnlyOptions.setText("only options");
         cbOnlyOptions.setFocusable(false);
         cbOnlyOptions.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
+        cbOnlyOptions.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cbOnlyOptionsActionPerformed(evt);
+            }
+        });
         jToolBar1.add(cbOnlyOptions);
 
         btSend.setText("Send to Robot");
@@ -803,6 +808,10 @@ public class BehaviorViewer extends AbstractDialog
         }
         revalidate();
     }//GEN-LAST:event_btReceiveLogDataActionPerformed
+
+    private void cbOnlyOptionsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbOnlyOptionsActionPerformed
+        behaviorTreePanel.setShowOptionsOnly(cbOnlyOptions.isSelected());
+    }//GEN-LAST:event_cbOnlyOptionsActionPerformed
 
   
   private class LogBehaviorListener implements LogFrameListener

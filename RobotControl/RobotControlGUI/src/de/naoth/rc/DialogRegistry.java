@@ -162,7 +162,6 @@ public class DialogRegistry {
 
     public class HelpAction implements ActionListener {
 
-        private String text = null;
         private HelpDialog dlg = null;
 
         @Override
@@ -171,12 +170,8 @@ public class DialogRegistry {
         }
 
         public HelpAction(Frame parent, String title) {
-            this.text = Helper.getResourceAsString("/de/naoth/rc/dialogs/" + title + ".html");
-            if (this.text == null) {
-                this.text = "For this dialog is no help avaliable.";
-            }
-
-            this.dlg = new HelpDialog(parent, true, text);
+            java.net.URL res = getClass().getResource("/de/naoth/rc/dialogs/help/" + title + ".html");
+            this.dlg = new HelpDialog(parent, true, res);
             this.dlg.setDefaultCloseOperation(javax.swing.WindowConstants.HIDE_ON_CLOSE);
             this.dlg.setTitle(title);
             this.dlg.setModal(false);

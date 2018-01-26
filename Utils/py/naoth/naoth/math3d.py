@@ -27,6 +27,14 @@ class Vector3:
         else:
             return NotImplemented
 
+    def __rmul__(self, other):
+        if isinstance(other, Vector3):
+            return self.x * other.x + self.y * other.y + self.z * other.z
+        elif isinstance(other, (int, float, long)):
+            return Vector3(self.x * other, self.y * other, self.z * other)
+        else:
+            return NotImplemented
+
     def __str__(self):
         return "({0},{1},{2})".format(self.x, self.y, self.z)
 

@@ -106,13 +106,15 @@ public:
     return 0.0 <= t && t <= length;
   }
 
-  /** projection of the point to the line */
+  /*
+  // projection of the point to the line not to closest point on linesegment, if needed please adjust
   double project(const Vector2d& p) const
   {
     return direction*p - direction*base;
   }
+  */
 
-  /** projection of the point to the line */
+  /** projection of the point to the linesegment */
   Vector2d projection(const Vector2d& p) const
   {
     double t = direction*p - direction*base;
