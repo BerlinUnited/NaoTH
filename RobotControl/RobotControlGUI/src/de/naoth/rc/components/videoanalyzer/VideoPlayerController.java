@@ -213,6 +213,10 @@ public class VideoPlayerController implements Initializable
       double width = Math.max(0.0, videoEnd.getX()-videoStart.getX());
       double height = Math.max(0.0, videoEnd.getY()-videoStart.getY());
       
+      //clamp to media height
+      width = Math.min(width, media.getWidth()-videoStart.getX());
+      height = Math.min(height, media.getHeight()-videoStart.getY());
+      
       Rectangle2D newViewPort = new Rectangle2D(videoStart.getX(), videoStart.getY(), 
         width, height);
       
