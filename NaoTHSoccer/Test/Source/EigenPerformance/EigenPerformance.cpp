@@ -8,7 +8,7 @@ using Eigen::Matrix;
 typedef std::chrono::high_resolution_clock::time_point time_point;
 typedef std::chrono::high_resolution_clock::duration duration;
 
-unsigned long long max_counter = 1e6;
+unsigned long long max_counter = (unsigned long long)1e6;
 
 // the compiler is not allowed to optimize out global variables
 Matrix3f inverse3x3;
