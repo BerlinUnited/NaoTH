@@ -259,6 +259,11 @@ public class ImageViewer extends AbstractDialog
     }// </editor-fold>//GEN-END:initComponents
   private void btReceiveImagesTopActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btReceiveImagesTopActionPerformed
 
+    if (!Plugin.parent.checkConnected()) {
+      dispose();
+      return;
+    }
+      
     if (this.btReceiveImagesTop.isSelected())
     {
      this.imageCanvasTop.setVisible(true);
@@ -283,24 +288,30 @@ public class ImageViewer extends AbstractDialog
   }//GEN-LAST:event_cbStretchActionPerformed
 
   private void btReceiveDrawingsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btReceiveDrawingsActionPerformed
+      if (!Plugin.parent.checkConnected()) {
+        dispose();
+        return;
+      }
+      
       if (this.btReceiveDrawings.isSelected()) {
-          if (Plugin.parent.checkConnected()) {
-              Plugin.debugDrawingManager.addListener(this.drawingsListener);
-              this.imageCanvasBottom.setShowDrawings(true);
-              this.imageCanvasTop.setShowDrawings(true);
-          } else {
-              btReceiveDrawings.setSelected(false);
-          }
+        Plugin.debugDrawingManager.addListener(this.drawingsListener);
+        this.imageCanvasBottom.setShowDrawings(true);
+        this.imageCanvasTop.setShowDrawings(true);
       } else {
-          Plugin.debugDrawingManager.removeListener(this.drawingsListener);
-          this.imageCanvasBottom.setShowDrawings(false);
-          this.imageCanvasTop.setShowDrawings(false);
+        Plugin.debugDrawingManager.removeListener(this.drawingsListener);
+        this.imageCanvasBottom.setShowDrawings(false);
+        this.imageCanvasTop.setShowDrawings(false);
       }
   }//GEN-LAST:event_btReceiveDrawingsActionPerformed
 
   private void btReceiveImagesBottomActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btReceiveImagesBottomActionPerformed
   {//GEN-HEADEREND:event_btReceiveImagesBottomActionPerformed
     
+    if (!Plugin.parent.checkConnected()) {
+        dispose();
+        return;
+    }
+      
     if (btReceiveImagesBottom.isSelected())
     {
       this.imageCanvasBottom.setVisible(true);
