@@ -246,6 +246,12 @@ workspace "NaoTHSoccer"
       links { "NaoTHSoccer", "Commons", naoth_links}
       vpaths { ["*"] = FRAMEWORK_PATH .. "/Platforms/Source/NaoRobot" }
       
+    -- generate tests if required
+    if _OPTIONS["Test"] ~= nil then
+      dofile ("../Test/Make/EigenPerformance.lua")
+        kind "ConsoleApp"
+        vpaths { ["*"] = "../Test/Source/EigenPerformance" }
+    end
   else
     dofile (FRAMEWORK_PATH .. "/Platforms/Make/SimSpark.lua")
       kind "ConsoleApp"
@@ -264,6 +270,9 @@ workspace "NaoTHSoccer"
         kind "ConsoleApp"
         links { "NaoTHSoccer", "Commons", naoth_links}
         vpaths { ["*"] = "../Test/Source/BallEvaluator" }
+      dofile ("../Test/Make/EigenPerformance.lua")
+        kind "ConsoleApp"
+        vpaths { ["*"] = "../Test/Source/EigenPerformance" }
     end
 
     -- generate LogSimulatorJNI if required
