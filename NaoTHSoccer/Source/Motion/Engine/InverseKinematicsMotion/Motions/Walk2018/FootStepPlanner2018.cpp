@@ -27,10 +27,10 @@ void FootStepPlanner2018::updateParameters(){
   theMaxChangeY    = parameters.limits.maxStepWidth  * parameters.limits.maxStepChange;
 }
 
-void FootStepPlanner2018::init(int initial_number_of_cycles, FeetPose initialFeetPose){
+void FootStepPlanner2018::init(size_t initial_number_of_cycles, FeetPose initialFeetPose){
     Step& initialStep = getStepBuffer().add();
     initialStep.footStep = FootStep(initialFeetPose, FootStep::NONE);
-    initialStep.numberOfCycles = initial_number_of_cycles - 1; // TODO: why?
+    initialStep.numberOfCycles = static_cast<int>(initial_number_of_cycles) - 1; // TODO: why?
     initialStep.planningCycle  = initialStep.numberOfCycles;
     initialStep.samplesDoubleSupport = std::max(0, (int) (parameters.step.doubleSupportTime / getRobotInfo().basicTimeStep));
     initialStep.samplesSingleSupport = initialStep.numberOfCycles - initialStep.samplesDoubleSupport;

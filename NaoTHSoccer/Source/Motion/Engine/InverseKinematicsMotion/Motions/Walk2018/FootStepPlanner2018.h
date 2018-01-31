@@ -44,7 +44,7 @@ public:
 
   virtual void execute();
 
-  void init(int initial_number_of_cycles, InverseKinematic::FeetPose initialFeetPose);
+  void init(size_t initial_number_of_cycles, InverseKinematic::FeetPose initialFeetPose);
 
   const FootStepPlanner2018Parameters& parameters;
 
