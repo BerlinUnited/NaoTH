@@ -2,9 +2,9 @@
 Software base developed by the *Berlin United - Nao Team Humboldt* to control a humanoid robot in the context of the robot soccer competition RoboCup. 
 
 The doumentation (wiki) is placed here: [Wiki](https://github.com/BerlinUnited/NaoTH-2015/wiki)  
-Team webpage: https://naoth.de
-RoboCup: http://robocup.org
-RoboCup SPL: http://spl.robocup.org
+Team webpage: https://naoth.de   
+RoboCup: http://robocup.org   
+RoboCup SPL: http://spl.robocup.org   
 
 ### Table of contents
 
