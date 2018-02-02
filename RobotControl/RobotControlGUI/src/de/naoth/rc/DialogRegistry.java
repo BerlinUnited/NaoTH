@@ -190,7 +190,7 @@ public class DialogRegistry {
         for(int i = 0; i < this.control.getCDockableCount(); i++) {
             String name = ((DialogDockable)this.control.getCDockable(i)).getTitleText();
             
-            if(name.startsWith("Debug Request")) {
+            if(name.startsWith("Debug Request") || name.startsWith("DebugRequest")) {
                 center.gridAdd( 2, 0, 1, 1, new SingleCDockablePerspective( name ) );
             } else {
                 stack.add(new SingleCDockablePerspective( name ));
