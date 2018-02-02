@@ -388,4 +388,5 @@ message IMUData
  required DoubleVector3 rotational_velocity = 6;
  optional DoubleVector3 rotational_velocity_sensor = 7;
  required DoubleVector2 orientation = 8;
+ required DoubleVector3 orientation_rotvec = 9;
 }
