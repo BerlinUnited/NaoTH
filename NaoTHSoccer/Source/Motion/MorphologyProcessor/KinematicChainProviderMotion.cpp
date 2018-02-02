@@ -15,15 +15,13 @@ KinematicChainProviderMotion::KinematicChainProviderMotion()
 
 void KinematicChainProviderMotion::execute()
 {
-  
   // calculate the KinematicChainSensor based on sensor data
   Kinematics::ForwardKinematics::updateKinematicChainAll(
-    getInertialModel().orientation,
-    getAccelerometerData().getAcceleration(),
+    getIMUData().orientation_rotvec,
+    RotationMatrix(getIMUData().rotation).invert() * getIMUData().acceleration, // gravitiy adjusted global acceleration in body frame
     getRobotInfo().getBasicTimeStepInSecond(),
     getKinematicChainSensor(),
     getFSRPositions().pos);
-
   
   //
   Kinematics::ForwardKinematics::updateKinematicChainFrom(getKinematicChainMotor().theLinks);

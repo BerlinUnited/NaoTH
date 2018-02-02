@@ -32,7 +32,15 @@ public:
     KinematicChain& theKinematicChain,
     Vector3d* theFSRPos);
 
-  /** 
+  /** Update the whole kinematic chain based on the provided data. */
+  static void updateKinematicChainAll(
+    const Vector3<double>& theBodyRotation,
+    const Vector3<double>& theBodyAcceleration,
+    const double deltaTime,
+    KinematicChain& theKinematicChain,
+    Vector3d* theFSRPos);
+
+  /**
   * update the position, velocity and acceleration of the links according to joint angles data
   */
   static void forwardAllKinematics(Link* theLink);
@@ -61,6 +69,18 @@ public:
   static void updateChest(
           KinematicChain& kinematicChain,
           const Vector2d& theBodyRotation,
+          const Vector3d& theBodyAcceleration,
+          const double deltaTime);
+
+  /**
+  * Set the chest position to (0,0,0) and its rotation to the provided theBodyRotation.
+  * Update the speed and the acceleration.
+  * NOTE: only the link 'Torso' is modified.
+  * NOTE: this is used by motion
+  */
+  static void updateChest(
+          KinematicChain& kinematicChain,
+          const Vector3d& theBodyRotation,
           const Vector3d& theBodyAcceleration,
           const double deltaTime);
 

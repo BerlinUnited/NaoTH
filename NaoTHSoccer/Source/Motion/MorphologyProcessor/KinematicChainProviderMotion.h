@@ -13,7 +13,6 @@
 
 // representations
 #include <Representations/Infrastructure/FSRData.h>
-#include <Representations/Infrastructure/InertialSensorData.h>
 #include <Representations/Infrastructure/AccelerometerData.h>
 #include <Representations/Infrastructure/GyrometerData.h>
 #include <Representations/Infrastructure/JointData.h>
@@ -21,20 +20,16 @@
 
 #include "Representations/Modeling/KinematicChain.h"
 #include "Representations/Modeling/FSRPositions.h"
-#include "Representations/Modeling/InertialModel.h"
-
-// tools
-
+#include "Representations/Modeling/IMUData.h"
 
 BEGIN_DECLARE_MODULE(KinematicChainProviderMotion)
   PROVIDE(SensorJointData) // HACK
-  PROVIDE(MotorJointData) // HACK
+  PROVIDE(MotorJointData)  // HACK
   
   REQUIRE(RobotInfo)
-  PROVIDE(InertialSensorData)
-  PROVIDE(AccelerometerData)
-  PROVIDE(GyrometerData)
-  REQUIRE(InertialModel)
+  REQUIRE(IMUData)
+  REQUIRE(AccelerometerData)
+  REQUIRE(GyrometerData)
   REQUIRE(FSRData)
 
   PROVIDE(FSRPositions)
