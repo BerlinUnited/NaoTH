@@ -20,42 +20,85 @@ import java.util.logging.Logger;
 public class RobotStatus {
 
     public final static long MAX_TIME_BEFORE_DEAD = 5000; //ms
-    private final RingBuffer timestamps = new RingBuffer(10);
-    private final MessageServer messageServer;
-    public String ipAddress = "";
-    public boolean isConnected = false;
-
+    
     public static final Color COLOR_INFO = new Color(0.0f, 1.0f, 0.0f, 0.5f);
     public static final Color COLOR_WARNING = new Color(1.0f, 1.0f, 0.0f, 0.5f);
     public static final Color COLOR_DANGER = new Color(1.0f, 0.0f, 0.0f, 0.5f);
 
+    private final RingBuffer timestamps = new RingBuffer(10);
+    private final MessageServer messageServer;
+    
+    public String ipAddress = "";
+    public String getIpAddress() { return ipAddress; }
+    
+    public boolean isConnected = false;
+    public boolean getIsConnected() { return isConnected; };
+
     public byte playerNum;
+    public byte getPlayerNum() { return playerNum; };
+    
     public byte teamNum;
+    public byte getTeamNum() { return teamNum; };
+    
     public Color robotColor = Color.WHITE;
+    
     public double msgPerSecond;
+    public double getMsgPerSecond() { return msgPerSecond; };
+    
     public float ballAge;
+    public float getBallAge() { return ballAge; };
+    
     public byte fallen;
+    public byte getFallen() { return fallen; };
+    
     public boolean isDead;
+    public boolean getIsDead() { return isDead; };
+    
     private ArrayList<RobotStatusListener> listener = new ArrayList<>();
 
     public float temperature;
+    public float getTemperature() { return temperature; }
+    
     public float cpuTemperature;
+    public float getCpuTemperature() { return cpuTemperature; }
+    
     public float batteryCharge;
+    public float getBatteryCharge() { return batteryCharge; }
+    
     public float timeToBall;
+    public float getTimeToBall() { return timeToBall; }
+    
     public boolean wantsToBeStriker;
+    public boolean getWantsToBeStriker() { return wantsToBeStriker; }
+    
     public boolean wasStriker;
+    public boolean getWasStriker() { return wasStriker; }
+    
     public boolean isPenalized;
+    public boolean getIsPenalized() { return isPenalized; }
+    
     public boolean whistleDetected;
+    public boolean getWhistleDetected() { return whistleDetected; }
+    
     public Vector2D teamBall;
+    public Vector2D getTeamBall() { return teamBall; }
     
     public boolean showOnField = true;
+    public boolean getShowOnField() { return showOnField; }
+    
+    public SPLMessage lastMessage;
+    public boolean isOpponent;
     
     /**
      * Creates new form RobotStatus
+     * @param messageServer
+     * @param ipAddress
+     * @param isOpponent
      */
-    public RobotStatus(MessageServer messageServer, String ipAddress) {
+    public RobotStatus(MessageServer messageServer, String ipAddress, boolean isOpponent) {
         this.messageServer = messageServer;
         this.ipAddress = ipAddress;
+        this.isOpponent = isOpponent;
 
         this.messageServer.addConnectionStatusListener(new ConnectionStatusListener() {
 
@@ -86,6 +129,8 @@ public class RobotStatus {
      * @param msg 
      */
     public void updateStatus(long timestamp, SPLMessage msg) {
+        this.lastMessage = msg;
+        
         this.teamNum = msg.teamNum;
         this.playerNum = msg.playerNum;
 
@@ -166,9 +211,9 @@ public class RobotStatus {
      * Informs all listener of the changed status.
      */
     private void statusChanged() {
-        for (RobotStatusListener l : listener) {
+        listener.forEach((l) -> {
             l.statusChanged(this);
-        }
+        });
     }
     
     public boolean connect() {

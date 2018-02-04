@@ -555,7 +555,7 @@ public class TeamCommViewer extends AbstractDialog {
                             RobotStatus robotStatus = robotsMapSorted.get(address);
                             // ... new robot ...
                             if (robotStatus == null) {
-                                robotStatus = new RobotStatus(Plugin.parent.getMessageServer(), address);
+                                robotStatus = new RobotStatus(Plugin.parent.getMessageServer(), address, msg.isOpponent());
                                 // adds RobotStatus to a container
                                 robotsMapSorted.put(address, robotStatus);
                                 // clears the panel-view

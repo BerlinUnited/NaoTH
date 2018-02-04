@@ -44,11 +44,20 @@ public abstract class AbstractJFXDialog extends AbstractDialog implements Dialog
         Scene scene = createScene();
         container.setScene(scene);
         scene.getAccelerators().putAll(getGlobalShortcuts());
+        afterInit();
       }
     });
   }
 
   public abstract URL getFXMLRessource();
+  
+  protected boolean isSelfController() {
+      return false;
+  }
+  
+  public void afterInit() {
+      
+  }
 
   private Scene createScene()
   {
@@ -58,6 +67,9 @@ public abstract class AbstractJFXDialog extends AbstractDialog implements Dialog
     {
       loader = new FXMLLoader(getFXMLRessource());
       loader.setClassLoader(AbstractJFXDialog.class.getClassLoader());
+      if(isSelfController()) {
+        loader.setController(this);
+      }
       loader.load();
 
       Scene scene = new Scene(loader.getRoot());
