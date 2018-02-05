@@ -125,6 +125,7 @@ void Motion::init(naoth::ProcessInterface& platformInterface, const naoth::Platf
   platformInterface.registerOutputChanel(getBodyStatus());
   platformInterface.registerOutputChanel(getGroundContactModel());
   platformInterface.registerOutputChanel(getCollisionPercept());
+  platformInterface.registerOutputChanel(getIMUData());
 
   // messages from cognition to motion
   platformInterface.registerInputChanel(getCameraInfo());

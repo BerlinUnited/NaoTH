@@ -19,7 +19,7 @@ class IMUData: public naoth::Printable
 public:
   Vector3d location;            // simply integrated velocity
   Vector3d velocity;            // simply integrated acceleration
-  Vector3d acceleration;        // gravity adjusted, UKF-filtered acceleration in "global" inertial frame
+  Vector3d acceleration;        // gravity adjusted, UKF-filtered acceleration of body frame in "global" inertial frame
   Vector3d acceleration_sensor; // sensor values (TODO: offset adjustment)
 
   Vector3d rotation;                   // rotation vector representation (angle * unit_length_axis_vector) of UKF-filtered body rotation in inertial frame,
