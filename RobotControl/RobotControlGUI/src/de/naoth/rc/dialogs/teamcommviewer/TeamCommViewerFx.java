@@ -57,6 +57,8 @@ import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 // TODO: on close - save file if necessary?!
 // TODO: save/restore column config?!
 // TODO: Spinner editor / converter
+// TODO: use Menubar instead of Toolbar ?!
+// TODO: implement robotstatus with properties and put all changes in the fx thread
 
 /**
  *
