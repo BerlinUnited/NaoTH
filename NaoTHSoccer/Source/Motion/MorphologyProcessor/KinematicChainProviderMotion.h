@@ -12,9 +12,6 @@
 #include <ModuleFramework/Module.h>
 
 // representations
-#include <Representations/Infrastructure/FSRData.h>
-#include <Representations/Infrastructure/AccelerometerData.h>
-#include <Representations/Infrastructure/GyrometerData.h>
 #include <Representations/Infrastructure/JointData.h>
 #include <Representations/Infrastructure/RobotInfo.h>
 
@@ -28,9 +25,6 @@ BEGIN_DECLARE_MODULE(KinematicChainProviderMotion)
   
   REQUIRE(RobotInfo)
   REQUIRE(IMUData)
-  REQUIRE(AccelerometerData)
-  REQUIRE(GyrometerData)
-  REQUIRE(FSRData)
 
   PROVIDE(FSRPositions)
   PROVIDE(KinematicChainSensor)
