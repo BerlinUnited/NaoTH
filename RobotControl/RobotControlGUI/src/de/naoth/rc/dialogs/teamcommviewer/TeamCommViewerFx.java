@@ -19,12 +19,15 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.net.URL;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ReadOnlyObjectWrapper;
@@ -55,7 +58,6 @@ import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 
 // TODO: on close - save file if necessary?!
-// TODO: save/restore column config?!
 // TODO: Spinner editor / converter
 // TODO: use Menubar instead of Toolbar ?!
 // TODO: implement robotstatus with properties and put all changes in the fx thread
@@ -255,7 +257,36 @@ public class TeamCommViewerFx extends AbstractJFXDialog
                 Platform.runLater(() -> { teamColorPicker.setDisable(true); });
             }
         });
+        // restores column configuration
+        String columnConfigStr = Plugin.parent.getConfig().getProperty(this.getClass().getName()+".ColumnConfig", "");
+        List<String> columnConfig = columnConfigStr.isEmpty() ? null : Arrays.asList(columnConfigStr.split("\\|"));
+        if(columnConfig != null) {
+            statusTable.getColumns().forEach((column) -> {
+                if(!columnConfig.contains(column.getText())) {
+                    column.setVisible(false);
+                }
+            });
+        }
+        // adds listener for column visiblity changes
+        statusTable.getColumns().forEach((c) -> {
+            c.visibleProperty().addListener((o) -> {
+                saveColumnConfiguration();
+            });
+        });
     } // afterInit()
+
+    /**
+     * Saves the currently visible columns of the status table.
+     */
+    private void saveColumnConfiguration() {
+        ArrayList<String> items = new ArrayList<>();
+        statusTable.getColumns().forEach((column) -> {
+            if(column.isVisible()) {
+                items.add(column.getText());
+            }
+        });
+        Plugin.parent.getConfig().setProperty(this.getClass().getName()+".ColumnConfig", items.stream().collect(Collectors.joining("|")));
+    }
     
     /**
      * The handler for the listen button.
