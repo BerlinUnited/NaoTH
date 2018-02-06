@@ -71,7 +71,7 @@ int main(int argc, char** argv)
     }
     if (strcmp(argv[i], "-h") == 0) {
         std::cout << "syntax: (-b)? (-r)? (-h)? (-p <port number>)? <logfile>" << std::endl;
-        std::cout << "\"-b\" enable the backend mode which is only used by LogfilePlayer of RobotControl" << std::endl;
+        std::cout << "\"-b\" enable the backend mode which is only used by LogfileSimulatorJNI" << std::endl;
         std::cout << "\"-r\" play and loop the logfile according to the time recorded in the FrameInfo of the logfile" << std::endl;
         std::cout << "\"-p\" debug port number, range of valid values: [1,65535]" << std::endl;
         std::cout << "\"-h\" help" << std::endl;
