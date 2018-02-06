@@ -38,6 +38,8 @@ import javafx.collections.ObservableList;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.Label;
@@ -46,6 +48,7 @@ import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextFormatter;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.Tooltip;
 import javafx.scene.control.cell.CheckBoxTableCell;
@@ -53,12 +56,16 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
+import javafx.stage.Modality;
+import javafx.stage.StageStyle;
 import javafx.util.Callback;
+import javafx.util.StringConverter;
 import javax.swing.JFrame;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 
 // TODO: Spinner editor / converter
+// TODO: onAction on spinner!
 // TODO: use Menubar instead of Toolbar ?!
 // TODO: implement robotstatus with properties and put all changes in the fx thread
 
@@ -281,6 +288,17 @@ public class TeamCommViewerFx extends AbstractJFXDialog
                 stopLogging();
             }
         });
+        
+        // port submission/validation
+        ownPort.getValueFactory().setConverter(new PortStringConverter(ownPort));
+        oppPort.getValueFactory().setConverter(new PortStringConverter(oppPort));
+        // hook in a formatter with the same properties as the factory
+        TextFormatter ownPortFormatter = new TextFormatter(ownPort.getValueFactory().getConverter(), ownPort.getValueFactory().getValue());
+        ownPort.getEditor().setTextFormatter(ownPortFormatter);
+        ownPort.getValueFactory().valueProperty().bindBidirectional(ownPortFormatter.valueProperty()); // bidi-bind the values
+        TextFormatter oppPortFormatter = new TextFormatter(oppPort.getValueFactory().getConverter(), oppPort.getValueFactory().getValue());
+        oppPort.getEditor().setTextFormatter(oppPortFormatter);
+        oppPort.getValueFactory().valueProperty().bindBidirectional(oppPortFormatter.valueProperty()); // bidi-bind the values
     } // afterInit()
     
     /**
@@ -328,6 +346,7 @@ public class TeamCommViewerFx extends AbstractJFXDialog
         @Override
         public void handle(Event ev) {
             if(btnListen.isSelected()) {
+                
                 int port_own = (int) ownPort.getValue();
                 int port_opp = (int) oppPort.getValue();
                 // establish connection
@@ -578,4 +597,40 @@ public class TeamCommViewerFx extends AbstractJFXDialog
             } // end if
         } // end newTeamCommMessages()
     } // TeamCommMessageListener
+    
+    private class PortStringConverter extends StringConverter<Integer>
+    {
+        private final Spinner spinner;
+        public PortStringConverter(Spinner s) {
+            spinner = s;
+        }
+        
+        @Override
+        public String toString(Integer t) {
+            return t.toString();
+        }
+
+        @Override
+        public Integer fromString(String string) {
+            int result = (int) spinner.getValue();
+            try {
+                result = Integer.parseInt(string);
+                spinner.setStyle("");
+            } catch (Exception e) {
+                spinner.setStyle("-fx-background: red;");
+                spinner.requestFocus();
+                //JOptionPane.showMessageDialog((Component) Plugin.parent, result, string, result);
+                // NOTE: doesn't work as aspected! -> clicking somewhere else, while showing dialog, the dialog disappears! :/
+                Alert portError = new Alert(AlertType.ERROR);
+                portError.setTitle("Port input error");
+                portError.setHeaderText("Invalid port number!");
+                portError.initStyle(StageStyle.UTILITY);
+                portError.initModality(Modality.APPLICATION_MODAL);
+                portError.show();
+//                portError.showAndWait();
+        //        portError.initOwner(Plugin.parent);
+            }
+            return result;
+        }
+    } // PortStringConverter
 }
