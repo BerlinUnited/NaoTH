@@ -54,10 +54,10 @@ import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.util.Callback;
+import javax.swing.JFrame;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 
-// TODO: on close - save file if necessary?!
 // TODO: Spinner editor / converter
 // TODO: use Menubar instead of Toolbar ?!
 // TODO: implement robotstatus with properties and put all changes in the fx thread
@@ -78,7 +78,7 @@ public class TeamCommViewerFx extends AbstractJFXDialog
         @InjectPlugin
         public static TeamCommManager teamcommManager;
     }
-    
+
     private Timer timerUpdateStatusTable;
     private Timer timerDrawRobots;
     
@@ -204,8 +204,8 @@ public class TeamCommViewerFx extends AbstractJFXDialog
                 } else {
                     // select log file and enable logging!
                      File selectedFile = fileChooser.showSaveDialog(null);
-                     if (selectedFile != null && selectedFile.isFile()) {
-                         fileChooser.setInitialDirectory(selectedFile.getParentFile());
+                     if (selectedFile != null) {
+                        fileChooser.setInitialDirectory(selectedFile.getParentFile());
                         File dfile = (selectedFile.getName().lastIndexOf(".") == -1) ? new File(selectedFile+".log") : selectedFile;
 
                         // set log file, start logging and update ui
@@ -273,7 +273,23 @@ public class TeamCommViewerFx extends AbstractJFXDialog
                 saveColumnConfiguration();
             });
         });
+        
+        // on window close, stops teamcomm listener and logging thread
+        ((JFrame)Plugin.parent).addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+                stopLogging();
+            }
+        });
     } // afterInit()
+    
+    /**
+     * On dialog close, stops teamcomm listener and logging thread
+     */
+    @Override
+    public void dispose() {
+        stopLogging();
+    }
 
     /**
      * Saves the currently visible columns of the status table.
@@ -286,6 +302,21 @@ public class TeamCommViewerFx extends AbstractJFXDialog
             }
         });
         Plugin.parent.getConfig().setProperty(this.getClass().getName()+".ColumnConfig", items.stream().collect(Collectors.joining("|")));
+    }
+    
+    /**
+     * Stops the teamcomm listener and logging thread - if currently running.
+     */
+    private void stopLogging() {
+        // stop listener threads!
+        try {
+            listenerOwn.disconnect();
+        } catch (IOException | InterruptedException ex) {}
+        try {
+            listenerOpponent.disconnect();
+        } catch (IOException | InterruptedException ex) {}
+        
+        this.log.stopLogging();
     }
     
     /**
