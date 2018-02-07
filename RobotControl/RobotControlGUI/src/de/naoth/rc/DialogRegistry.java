@@ -162,7 +162,6 @@ public class DialogRegistry {
 
     public class HelpAction implements ActionListener {
 
-        private String text = null;
         private HelpDialog dlg = null;
 
         @Override
@@ -171,12 +170,7 @@ public class DialogRegistry {
         }
 
         public HelpAction(Frame parent, String title) {
-            this.text = Helper.getResourceAsString("/de/naoth/rc/dialogs/" + title + ".html");
-            if (this.text == null) {
-                this.text = "For this dialog is no help avaliable.";
-            }
-
-            java.net.URL res = getClass().getResource("/de/naoth/rc/dialogs/" + title + ".html");
+            java.net.URL res = getClass().getResource("/de/naoth/rc/dialogs/help/" + title + ".html");
             this.dlg = new HelpDialog(parent, true, res);
             this.dlg.setDefaultCloseOperation(javax.swing.WindowConstants.HIDE_ON_CLOSE);
             this.dlg.setTitle(title);
@@ -196,7 +190,7 @@ public class DialogRegistry {
         for(int i = 0; i < this.control.getCDockableCount(); i++) {
             String name = ((DialogDockable)this.control.getCDockable(i)).getTitleText();
             
-            if(name.startsWith("Debug Request")) {
+            if(name.startsWith("Debug Request") || name.startsWith("DebugRequest")) {
                 center.gridAdd( 2, 0, 1, 1, new SingleCDockablePerspective( name ) );
             } else {
                 stack.add(new SingleCDockablePerspective( name ));
