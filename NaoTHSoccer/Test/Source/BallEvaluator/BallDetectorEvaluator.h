@@ -32,12 +32,10 @@ public:
 
   struct ExperimentParameters
   {
-    enum class Type {haar, cnn};
+		//TODO delete type
+    enum class Type {cnn};
 
     Type type;
-
-    unsigned int minNeighbours;
-    unsigned int maxWindowSize;
 
     double threshold;
 
@@ -50,8 +48,6 @@ public:
 
         NAOTH_STRUCT_COMPARE(a.type, b.type);
         NAOTH_STRUCT_COMPARE(a.modelName, b.modelName);
-        NAOTH_STRUCT_COMPARE(a.minNeighbours, b.minNeighbours);
-        NAOTH_STRUCT_COMPARE(a.maxWindowSize, b.maxWindowSize);
         NAOTH_STRUCT_COMPARE(a.threshold, b.threshold);
         return false;
       }
@@ -100,13 +96,9 @@ private:
 
   std::string toID(const ExperimentParameters& params)
   {
-    if(params.type == ExperimentParameters::Type::haar)
+    if(params.type == ExperimentParameters::Type::cnn)
     {
-      return params.modelName + "_" + std::to_string(params.minNeighbours) + "_" + std::to_string(params.maxWindowSize);
-    }
-    else if(params.type == ExperimentParameters::Type::cnn)
-    {
-      return params.modelName + "_" + std::to_string(params.threshold);
+      return params.modelName;
     }
     // FIXME: what shall I return?
     assert(false);
@@ -115,13 +107,9 @@ private:
 
   std::string toDesc(const ExperimentParameters& params)
   {
-    if(params.type == ExperimentParameters::Type::haar)
+    if(params.type == ExperimentParameters::Type::cnn)
     {
-      return params.modelName + " (Haar) " + " minNeighbours=" + std::to_string(params.minNeighbours) + " maxWindowSize=" + std::to_string(params.maxWindowSize);
-    }
-    else if(params.type == ExperimentParameters::Type::cnn)
-    {
-      return params.modelName + " (CNN)" + " threshold=" + std::to_string(params.threshold);
+      return params.modelName + " (CNN)";
     }
     else
     {

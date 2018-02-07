@@ -146,7 +146,6 @@ void BallDetectorEvaluator::executeCNNBall()
 
   ExperimentParameters cnnParams;
   cnnParams.type = ExperimentParameters::Type::cnn;
-  cnnParams.threshold = 0.0;
 
   bestRecallParam90 = cnnParams;
   bestRecallParam95 = cnnParams;
@@ -155,11 +154,7 @@ void BallDetectorEvaluator::executeCNNBall()
   for(auto& classifierEntry : cnnClassifiers)
   {
     cnnParams.modelName = classifierEntry.first;
-    for(double t : {0.0, 0.6, 0.7, 0.8, 0.9})
-    {
-      cnnParams.threshold = t;
-      results[cnnParams] = executeParam(cnnParams, imagesByClasses);
-    }
+		results[cnnParams] = executeParam(cnnParams, imagesByClasses);
   }
 
   outputResults(outFileName);
@@ -248,9 +243,6 @@ void BallDetectorEvaluator::outputResults(std::string outFileName)
   CTML::Node thead("thead");
   CTML::Node headRow("tr");
   headRow.AppendChild(CTML::Node("th", "modelName"));
-  headRow.AppendChild(CTML::Node("th", "threshold").SetAttribute("data-sort-method", "number"));
-  headRow.AppendChild(CTML::Node("th", "minNeighbours").SetAttribute("data-sort-method", "number"));
-  headRow.AppendChild(CTML::Node("th", "windowSize").SetAttribute("data-sort-method", "number"));
   headRow.AppendChild(CTML::Node("th", "precision").SetAttribute("data-sort-method", "number"));
   headRow.AppendChild(CTML::Node("th", "recall").SetAttribute("data-sort-method", "number"));
   headRow.AppendChild(CTML::Node("th", "").SetAttribute("class", "no-sort"));
@@ -266,12 +258,6 @@ void BallDetectorEvaluator::outputResults(std::string outFileName)
 
     CTML::Node tr("tr");
     tr.AppendChild(CTML::Node("td", params.modelName));
-    tr.AppendChild(CTML::Node("td", params.type == ExperimentParameters::Type::cnn ?
-                                std::to_string(params.threshold) : ""));
-    tr.AppendChild(CTML::Node("td", params.type == ExperimentParameters::Type::haar ?
-                                std::to_string(params.minNeighbours) : ""));
-    tr.AppendChild(CTML::Node("td", params.type == ExperimentParameters::Type::haar?
-                                std::to_string(params.maxWindowSize) : ""));
     tr.AppendChild(CTML::Node("td", std::to_string(r.precision)).SetAttribute("class", precisionClass(r.precision)));
     tr.AppendChild(CTML::Node("td", std::to_string(r.recall)).SetAttribute("class", recallClass(r.recall)));
     tr.AppendChild(CTML::Node("td").AppendChild(CTML::Node("a", "details").SetAttribute("href", "#result_" + toID(params))));
@@ -365,7 +351,8 @@ unsigned int BallDetectorEvaluator::executeSingleImageSet(const std::multimap<st
 }
 
 void BallDetectorEvaluator::evaluateImage(cv::Mat img,
-                                          bool ballExpected, std::string fileName, const ExperimentParameters &params, ExperimentResult &r)
+                                          bool ballExpected, std::string fileName,
+																					const ExperimentParameters &params, ExperimentResult &r)
 {
 
   BallCandidates::Patch patch;
@@ -373,26 +360,25 @@ void BallDetectorEvaluator::evaluateImage(cv::Mat img,
   cv::transpose(img, transposedImg);
   patch.data = std::vector<unsigned char>(transposedImg.begin<unsigned char>(), transposedImg.end<unsigned char>());
 
-  bool actual = false;
+  bool actual = false;  
+
+	auto classifier = cnnClassifiers.find(params.modelName);
+	if(classifier != cnnClassifiers.end())
+	{
+		if(classifier->second)
+		{
+		// the parameters are for the haar6 baseline
+		actual = classifier->second->classify(patch);
+		/*
+		if(actual)
+		{
+			// also check the threshold
+			actual = classifier->second->getBallConfidence() >= params.threshold;
+		}
+		*/
+		}
+	}
   
-  if(params.type == ExperimentParameters::Type::cnn)
-  {
-	
-    auto classifier = cnnClassifiers.find(params.modelName);
-    if(classifier != cnnClassifiers.end())
-    {
-      if(classifier->second)
-      {
-        // the parameters are for the haar6 baseline
-        actual = classifier->second->classify(patch);
-        if(actual)
-        {
-          // also check the threshold
-          actual = classifier->second->getBallConfidence() >= params.threshold;
-        }
-      }
-    }
-  }
 
   if(ballExpected == actual)
   {
@@ -404,7 +390,7 @@ void BallDetectorEvaluator::evaluateImage(cv::Mat img,
   else
   {
     ErrorEntry error;
-	// error.patch= img;
+	  // error.patch= img;
     error.fileName = fileName;
     if(actual)
     {
