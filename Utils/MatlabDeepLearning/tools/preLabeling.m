@@ -4,14 +4,14 @@ clear variables;
 % folders and the json file along with the original log file can be used in
 % the python script to fix the label mistakes
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+addpath('../train');
 % Set the convolutional net used for classifying
-load cn4.mat
+load('../generated/result_CNN_rc17_augmented_4/convnet.mat')
 net = convnet;
 %Set the root folder of the images to be labeled
-srcDir = '../data/unlabeled';
+srcDir = 'D:\Downloads\RC17Games\2017-07-30_UPennalizers\half2\090917-0208-Nao0377-labeled\game\';
 
-% Load iamges
+% Load images
 digitData = imageDatastore(srcDir, ...
     'IncludeSubfolders',true,'LabelSource','foldernames', 'ReadFcn',@imgReader);
 

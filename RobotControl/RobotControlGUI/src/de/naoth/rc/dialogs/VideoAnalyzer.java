@@ -1,11 +1,8 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-package de.naoth.rc.components.videoanalyzer;
+package de.naoth.rc.dialogs;
 
 import de.naoth.rc.RobotControl;
+import de.naoth.rc.components.videoanalyzer.VideoAnalyzerController;
+import de.naoth.rc.components.videoanalyzer.VideoPlayerController;
 import de.naoth.rc.core.dialog.AbstractJFXDialog;
 import de.naoth.rc.core.dialog.DialogPlugin;
 import de.naoth.rc.core.dialog.RCDialog;
@@ -29,23 +26,16 @@ import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 public class VideoAnalyzer extends AbstractJFXDialog
 {
 
-  @RCDialog(category = RCDialog.Category.Log, name = "VideoAnalyzer")
+  @RCDialog(category = RCDialog.Category.Tools, name = "VideoAnalyzer")
   @PluginImplementation
   public static class Plugin extends DialogPlugin<VideoAnalyzer>
   {
-
     @InjectPlugin
     public static RobotControl parent;
     @InjectPlugin
     public static SwingCommandExecutor commandExecutor;
     @InjectPlugin
     public static LogFileEventManager logFileEventManager;
-
-    @Override
-    public String getDisplayName()
-    {
-      return "Video Analyzer";
-    }
   }
 
   public static class GameStateChange implements Serializable

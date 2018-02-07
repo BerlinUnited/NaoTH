@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package de.naoth.rc.components.videoanalyzer;
 
 import de.naoth.rc.Helper;
@@ -18,7 +13,6 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Point2D;
@@ -218,6 +212,10 @@ public class VideoPlayerController implements Initializable
       
       double width = Math.max(0.0, videoEnd.getX()-videoStart.getX());
       double height = Math.max(0.0, videoEnd.getY()-videoStart.getY());
+      
+      //clamp to media height
+      width = Math.min(width, media.getWidth()-videoStart.getX());
+      height = Math.min(height, media.getHeight()-videoStart.getY());
       
       Rectangle2D newViewPort = new Rectangle2D(videoStart.getX(), videoStart.getY(), 
         width, height);
