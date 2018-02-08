@@ -18,6 +18,8 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.net.URL;
+import java.text.NumberFormat;
+import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,9 +27,12 @@ import java.util.Date;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.function.UnaryOperator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import javafx.animation.Animation;
+import javafx.animation.Transition;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ReadOnlyObjectWrapper;
@@ -36,8 +41,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.Label;
@@ -46,6 +50,7 @@ import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.cell.CheckBoxTableCell;
@@ -53,17 +58,12 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
-import javafx.stage.Modality;
-import javafx.stage.StageStyle;
 import javafx.util.Callback;
-import javafx.util.StringConverter;
+import javafx.util.Duration;
 import javax.swing.JFrame;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 
-// TODO: Spinner editor / converter
-// TODO: onAction on spinner!
-// TODO: use Menubar instead of Toolbar ?!
 // TODO: implement robotstatus with properties and put all changes in the fx thread
 
 /**
@@ -157,15 +157,22 @@ public class TeamCommViewerFx extends AbstractJFXDialog
         ownPort.disableProperty().bind(btnListen.selectedProperty());
         oppPort.disableProperty().bind(btnListen.selectedProperty());
         // port submission/validation
-        ownPort.getValueFactory().setConverter(new PortStringConverter(ownPort));
-        oppPort.getValueFactory().setConverter(new PortStringConverter(oppPort));
         // hook in a formatter with the same properties as the factory
-        TextFormatter ownPortFormatter = new TextFormatter(ownPort.getValueFactory().getConverter(), ownPort.getValueFactory().getValue());
+        TextFormatter ownPortFormatter = new TextFormatter(ownPort.getValueFactory().getConverter(), ownPort.getValueFactory().getValue(), new PortInputValidator(ownPort));
         ownPort.getEditor().setTextFormatter(ownPortFormatter);
         ownPort.getValueFactory().valueProperty().bindBidirectional(ownPortFormatter.valueProperty()); // bidi-bind the values
-        TextFormatter oppPortFormatter = new TextFormatter(oppPort.getValueFactory().getConverter(), oppPort.getValueFactory().getValue());
+        TextFormatter oppPortFormatter = new TextFormatter(oppPort.getValueFactory().getConverter(), oppPort.getValueFactory().getValue(), new PortInputValidator(oppPort));
         oppPort.getEditor().setTextFormatter(oppPortFormatter);
         oppPort.getValueFactory().valueProperty().bindBidirectional(oppPortFormatter.valueProperty()); // bidi-bind the values
+        // establish connection, when pressing return/enter
+        ownPort.getEditor().setOnAction((t) -> {
+            ownPort.getEditor().commitValue();
+            btnListen.fire();
+        });
+        oppPort.getEditor().setOnAction((t) -> {
+            oppPort.getEditor().commitValue();
+            btnListen.fire();
+        });
         
         // init filechooser
         fileChooser.setTitle("Log file location");
@@ -607,39 +614,57 @@ public class TeamCommViewerFx extends AbstractJFXDialog
         } // end newTeamCommMessages()
     } // TeamCommMessageListener
     
-    private class PortStringConverter extends StringConverter<Integer>
+    /**
+     * Validator for checking the inserted characters.
+     * If validation fails, an error animation is played.
+     */
+    class PortInputValidator implements UnaryOperator<TextFormatter.Change>
     {
-        private final Spinner spinner;
-        public PortStringConverter(Spinner s) {
-            spinner = s;
+        private final Animation animation;
+        
+        public PortInputValidator(TextField tf) {
+            animation = new PortErrorAnimation(tf);
         }
         
-        @Override
-        public String toString(Integer t) {
-            return t.toString();
+        public PortInputValidator(Spinner s) {
+            animation = new PortErrorAnimation(s.getEditor());
         }
 
         @Override
-        public Integer fromString(String string) {
-            int result = (int) spinner.getValue();
-            try {
-                result = Integer.parseInt(string);
-                spinner.setStyle("");
-            } catch (Exception e) {
-                spinner.setStyle("-fx-background: red;");
-                spinner.requestFocus();
-                //JOptionPane.showMessageDialog((Component) Plugin.parent, result, string, result);
-                // NOTE: doesn't work as aspected! -> clicking somewhere else, while showing dialog, the dialog disappears! :/
-                Alert portError = new Alert(AlertType.ERROR);
-                portError.setTitle("Port input error");
-                portError.setHeaderText("Invalid port number!");
-                portError.initStyle(StageStyle.UTILITY);
-                portError.initModality(Modality.APPLICATION_MODAL);
-                portError.show();
-//                portError.showAndWait();
-        //        portError.initOwner(Plugin.parent);
+        public TextFormatter.Change apply(TextFormatter.Change c) {
+            if (c.isContentChange()) {
+                ParsePosition parsePosition = new ParsePosition(0);
+                // NumberFormat evaluates the beginning of the text
+                NumberFormat.getIntegerInstance().parse(c.getControlNewText(), parsePosition);
+                // reject parsing the complete text failed
+                if (parsePosition.getIndex() == 0 || parsePosition.getIndex() < c.getControlNewText().length()) {
+                    Platform.runLater(() -> { animation.play(); });
+                    return null;
+                }
             }
-            return result;
+            return c;
         }
-    } // PortStringConverter
+    }
+    
+    /**
+     * Animation for flashing the background of a port input field.
+     * From red to white in 300ms.
+     */
+    class PortErrorAnimation extends Transition
+    {
+        javafx.scene.paint.Color from = javafx.scene.paint.Color.RED;
+        javafx.scene.paint.Color to = javafx.scene.paint.Color.WHITE;
+        Node node;
+        
+        public PortErrorAnimation(Node n) {
+            setCycleDuration(Duration.millis(300));
+            node = n;
+        }
+        
+        @Override
+        protected void interpolate(double frac) {
+            javafx.scene.paint.Color c = from.interpolate(to, frac);
+            node.setStyle("-fx-control-inner-background: rgba(" + ((int) (c.getRed() * 255)) + "," + ((int) (c.getGreen() * 255)) + "," + ((int) (c.getBlue() * 255)) + ");");
+        }
+    } // PortErrorAnimation
 }
