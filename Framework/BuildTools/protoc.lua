@@ -83,13 +83,17 @@ local function protocCompile(inputFiles, cppOut, javaOut, pythonOut, ipaths)
   
   local cmd = "\"" .. compilerPath .. "/" .. compiler .. "\" " .. args
   
+  if os.ishost("windows") then
+    cmd = "\"" .. cmd .. "\""
+  end
+  
   -- HACK: create the output directories if needed
   os.mkdir(cppOut)
   os.mkdir(javaOut)
   
   -- generate the message files
   print("INFO: (Protbuf) executing " .. cmd)
-  local succ, status, returnCode = os.execute("\"" .. cmd .. "\"")
+  local succ, status, returnCode = os.execute(cmd)
   
   if returnCode == 0 then
     print("NOTE: (Protbuf) supressing warnings in " .. cppOut)
