@@ -17,12 +17,6 @@ dofile (FRAMEWORK_PATH .. "/BuildTools/protoc.lua")
 -- dofile (FRAMEWORK_PATH .. "/BuildTools/qtcreator.lua")
 dofile (FRAMEWORK_PATH .. "/BuildTools/qtcreator_2.7+.lua")
 
--- include the Nao platform
-if COMPILER_PATH_NAO ~= nil then
-  include (COMPILER_PATH_NAO)
-end
-
-
 
 print("INFO: generating solution NaoTHSoccer")
 print("  PLATFORM = " .. PLATFORM)
@@ -133,6 +127,10 @@ workspace "NaoTHSoccer"
     
     -- HACK: system() desn't set the target system properly => set the target system manually
     if _OPTIONS["platform"] == "Nao" then
+      -- include the Nao platform
+      if COMPILER_PATH_NAO ~= nil then
+        include (COMPILER_PATH_NAO)
+      end
       _TARGET_OS = "linux"
       print("NOTE: set the target OS to " .. os.target())
     end
@@ -248,6 +246,18 @@ workspace "NaoTHSoccer"
       links { "NaoTHSoccer", "Commons", naoth_links}
       vpaths { ["*"] = FRAMEWORK_PATH .. "/Platforms/Source/NaoRobot" }
       
+    -- generate tests if required
+    if _OPTIONS["Test"] ~= nil then
+      dofile ("../Test/Make/EigenPerformance.lua")
+        kind "ConsoleApp"
+        vpaths { ["*"] = "../Test/Source/EigenPerformance" }
+        
+	  dofile ("../Test/Make/GeneralAlignment.lua")
+        kind "ConsoleApp"
+        vpaths { ["*"] = "../Test/Source/GeneralAlignment" }
+    end
+
+    
   else
     dofile (FRAMEWORK_PATH .. "/Platforms/Make/SimSpark.lua")
       kind "ConsoleApp"
@@ -266,6 +276,14 @@ workspace "NaoTHSoccer"
         kind "ConsoleApp"
         links { "NaoTHSoccer", "Commons", naoth_links}
         vpaths { ["*"] = "../Test/Source/BallEvaluator" }
+
+      dofile ("../Test/Make/EigenPerformance.lua")
+        kind "ConsoleApp"
+        vpaths { ["*"] = "../Test/Source/EigenPerformance" }
+
+      dofile ("../Test/Make/GeneralAlignment.lua")
+        kind "ConsoleApp"
+        vpaths { ["*"] = "../Test/Source/GeneralAlignment" }
     end
 
     -- generate LogSimulatorJNI if required

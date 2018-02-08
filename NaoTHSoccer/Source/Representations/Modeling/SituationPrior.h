@@ -14,7 +14,7 @@ class SituationPrior : public naoth::Printable
 {
 public:
 
-  SituationPrior() {}
+  SituationPrior() : currentPrior(none) {}
 
   virtual ~SituationPrior() {}
   
