@@ -35,8 +35,6 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.Event;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -50,7 +48,6 @@ import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextFormatter;
 import javafx.scene.control.ToggleButton;
-import javafx.scene.control.Tooltip;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -118,6 +115,9 @@ public class TeamCommViewerFx extends AbstractJFXDialog
     private TableView<RobotStatus> statusTable;
     
     @FXML
+    private Label statusTablePlaceholder;
+    
+    @FXML
     private Spinner ownPort;
     
     @FXML
@@ -151,44 +151,21 @@ public class TeamCommViewerFx extends AbstractJFXDialog
 
     @Override
     public void afterInit() {
-        // connect ui updates
+        initStatusTable();
+        
+        // setup port Bindings
         ownPort.disableProperty().bind(btnListen.selectedProperty());
         oppPort.disableProperty().bind(btnListen.selectedProperty());
-        ownPort.setTooltip(new Tooltip("Own team port number"));
-        oppPort.setTooltip(new Tooltip("Opponent team port number"));
-        
-        btnListen.setOnAction(new ListenButtonEventHandler());
-        
-        // prepare status table
-        Label l = new Label();
-        l.textProperty().bind(Bindings.when(btnListen.selectedProperty()).then("No data available ...").otherwise("Not connected ..."));
-        l.setStyle("-fx-font-size: 16px; -fx-alignment: CENTER; -fx-border-style: dashed; -fx-border-width: 2px; -fx-background-color: lightgrey; -fx-pref-width: 400px; -fx-pref-height: 200px;");
-        statusTable.setPlaceholder(l);
-        statusTable.setItems(robots);
-        
-        // available columns
-        Column[] cols = {
-            new Column<> ("#TN",            "teamNum", (p) -> new ColoredTableCell()),
-            new Column<> ("#PN",             "playerNum", null),
-            new Column<> ("IP",              "ipAddress", null),
-            new Column<> ("msg/s",           "msgPerSecond", (p) -> new PingTableCell()),
-            new Column<> ("BallAge (s)",     "ballAge", null),
-            new Column<> ("State",           "fallen", (p) -> new StateTableCell()),
-            new Column<> ("Temperature",     "temperature", (p) -> new TemperatureTableCell()),
-            new Column<> ("CPU-Temperature", "cpuTemperature", (p) -> new TemperatureTableCell()),
-            new Column<> ("Battery",         "batteryCharge", (p) -> new BatteryTableCell()),
-            new Column<> ("TimeToBall",      "timeToBall", null),
-            new Column<> ("wantToBeStriker", "wantsToBeStriker", (p) -> new CheckBoxTableCell<>()),
-            new Column<> ("wasStriker",      "wasStriker", (p) -> new CheckBoxTableCell<>()),
-            new Column<> ("isPenalized",     "isPenalized", (p) -> new CheckBoxTableCell<>()),
-            new Column<> ("whistleDetected", "whistleDetected", (p) -> new CheckBoxTableCell<>()),
-            new Column<> ("teamBall",        "teamBall", (p) -> new Vector2DTableCell()),
-            new Column<> ("show on field",   "showOnField", (p) -> new CheckBoxTableCell<>()),
-            new Column<> ("Connect to",      "isConnected", (p) -> new ButtonTableCell()),
-        };
-        
-        // add columns to table
-        statusTable.getColumns().addAll(cols);
+        // port submission/validation
+        ownPort.getValueFactory().setConverter(new PortStringConverter(ownPort));
+        oppPort.getValueFactory().setConverter(new PortStringConverter(oppPort));
+        // hook in a formatter with the same properties as the factory
+        TextFormatter ownPortFormatter = new TextFormatter(ownPort.getValueFactory().getConverter(), ownPort.getValueFactory().getValue());
+        ownPort.getEditor().setTextFormatter(ownPortFormatter);
+        ownPort.getValueFactory().valueProperty().bindBidirectional(ownPortFormatter.valueProperty()); // bidi-bind the values
+        TextFormatter oppPortFormatter = new TextFormatter(oppPort.getValueFactory().getConverter(), oppPort.getValueFactory().getValue());
+        oppPort.getEditor().setTextFormatter(oppPortFormatter);
+        oppPort.getValueFactory().valueProperty().bindBidirectional(oppPortFormatter.valueProperty()); // bidi-bind the values
         
         // init filechooser
         fileChooser.setTitle("Log file location");
@@ -201,58 +178,61 @@ public class TeamCommViewerFx extends AbstractJFXDialog
         fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
         
         btnRecord.setGraphic(new ImageView(new Image("/de/naoth/rc/res/media-record.png")));
-        btnRecord.setOnAction((evt) -> {
-            // record-button got pressed
-            if(btnRecord.isSelected()) {
-                // log file already set; just enable logging
-                if(this.log.isActive()) {
-                    this.log.resumeLogging();
-                    btnRecord.setSelected(true);
-                } else {
-                    // select log file and enable logging!
-                     File selectedFile = fileChooser.showSaveDialog(null);
-                     if (selectedFile != null) {
-                        fileChooser.setInitialDirectory(selectedFile.getParentFile());
-                        File dfile = (selectedFile.getName().lastIndexOf(".") == -1) ? new File(selectedFile+".log") : selectedFile;
-
-                        // set log file, start logging and update ui
-                        if(this.log.setLogFile(dfile)) {
-                            this.log.startLogging();
-                            btnRecord.setSelected(true);
-                            recordingFile.set("Recording to " + dfile.getName());
-                            recording.set(true);
-                        }
-                     } else {
-                         btnRecord.setSelected(false);
-                     }
-                }
-            } else {
-                // release button
-                this.log.pauseLogging();
-            }
-        });
-        btnRecord.setTooltip(new Tooltip());
         btnRecord.tooltipProperty().get().textProperty().bind(Bindings.when(recording).then(recordingFile).otherwise("Start new recording"));
+        
         btnStop.setGraphic(new ImageView(new Image("/toolbarButtonGraphics/media/Stop24.gif", 16, 16, true, true)));
-        btnStop.setTooltip(new Tooltip("Stops recording and closes log file."));
         btnStop.disableProperty().bind(recording.not());
-        btnStop.setOnAction((evt) -> {
-            // stop log file recording, flush and close logfile
-            this.log.stopLogging();
-            // ... update UI
-            recordingFile.set("<not set>");
-            recording.set(false);
-            btnRecord.setSelected(false);
-        });
         
         // init team color picker
-        teamColorPicker.setTooltip(new Tooltip("Change color of teams."));
         teamColorPicker.setOnAction((t) -> {
             javafx.scene.paint.Color fx = teamColorPicker.getValue();
             Color c = new Color((float)fx.getRed(), (float)fx.getGreen(), (float)fx.getBlue(), (float)fx.getOpacity());
             byte tn = statusTable.getSelectionModel().getSelectedItem().teamNum;
             robots.stream().filter((rs) -> { return rs.teamNum == tn;}).forEach((rs) -> { rs.robotColor = c; });
         });
+        
+        // on window close, stops teamcomm listener and logging thread
+        ((JFrame)Plugin.parent).addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+                stopLogging();
+            }
+        });
+    } // afterInit()
+    
+    /**
+     * Initializes the status table.
+     * Sets the available columns, connects properties and sets some listeners.
+     */
+    private void initStatusTable() {
+        // binding for displaying the tables placeholder label
+        statusTablePlaceholder.textProperty().bind(Bindings.when(btnListen.selectedProperty()).then("No data available ...").otherwise("Not connected ..."));
+        
+        // available columns
+        Column[] cols = {
+            new Column<> ("#TN",            "teamNum",          (p) -> new ColoredTableCell()),
+            new Column<> ("#PN",             "playerNum",       null),
+            new Column<> ("IP",              "ipAddress",       null),
+            new Column<> ("msg/s",           "msgPerSecond",    (p) -> new PingTableCell()),
+            new Column<> ("BallAge (s)",     "ballAge",         null),
+            new Column<> ("State",           "fallen",          (p) -> new StateTableCell()),
+            new Column<> ("Temperature",     "temperature",     (p) -> new TemperatureTableCell()),
+            new Column<> ("CPU-Temperature", "cpuTemperature",  (p) -> new TemperatureTableCell()),
+            new Column<> ("Battery",         "batteryCharge",   (p) -> new BatteryTableCell()),
+            new Column<> ("TimeToBall",      "timeToBall",      null),
+            new Column<> ("wantToBeStriker", "wantsToBeStriker",(p) -> new CheckBoxTableCell<>()),
+            new Column<> ("wasStriker",      "wasStriker",      (p) -> new CheckBoxTableCell<>()),
+            new Column<> ("isPenalized",     "isPenalized",     (p) -> new CheckBoxTableCell<>()),
+            new Column<> ("whistleDetected", "whistleDetected", (p) -> new CheckBoxTableCell<>()),
+            new Column<> ("teamBall",        "teamBall",        (p) -> new Vector2DTableCell()),
+            new Column<> ("show on field",   "showOnField",     (p) -> new CheckBoxTableCell<>()),
+            new Column<> ("Connect to",      "isConnected",     (p) -> new ButtonTableCell()),
+        };
+        
+        // add columns to table
+        statusTable.getColumns().addAll(cols);
+        
+        // listener for changing the teamcolor of a selected robot
         statusTable.getSelectionModel().selectedItemProperty().addListener((ov, o, n) -> {
             if(n != null) {
                 float[] c = n.robotColor.getRGBComponents(null);
@@ -264,6 +244,10 @@ public class TeamCommViewerFx extends AbstractJFXDialog
                 Platform.runLater(() -> { teamColorPicker.setDisable(true); });
             }
         });
+        
+        // (empty) table data
+        statusTable.setItems(robots);
+        
         // restores column configuration
         String columnConfigStr = Plugin.parent.getConfig().getProperty(this.getClass().getName()+".ColumnConfig", "");
         List<String> columnConfig = columnConfigStr.isEmpty() ? null : Arrays.asList(columnConfigStr.split("\\|"));
@@ -274,32 +258,14 @@ public class TeamCommViewerFx extends AbstractJFXDialog
                 }
             });
         }
+        
         // adds listener for column visiblity changes
         statusTable.getColumns().forEach((c) -> {
             c.visibleProperty().addListener((o) -> {
                 saveColumnConfiguration();
             });
         });
-        
-        // on window close, stops teamcomm listener and logging thread
-        ((JFrame)Plugin.parent).addWindowListener(new java.awt.event.WindowAdapter() {
-            @Override
-            public void windowClosing(java.awt.event.WindowEvent windowEvent) {
-                stopLogging();
-            }
-        });
-        
-        // port submission/validation
-        ownPort.getValueFactory().setConverter(new PortStringConverter(ownPort));
-        oppPort.getValueFactory().setConverter(new PortStringConverter(oppPort));
-        // hook in a formatter with the same properties as the factory
-        TextFormatter ownPortFormatter = new TextFormatter(ownPort.getValueFactory().getConverter(), ownPort.getValueFactory().getValue());
-        ownPort.getEditor().setTextFormatter(ownPortFormatter);
-        ownPort.getValueFactory().valueProperty().bindBidirectional(ownPortFormatter.valueProperty()); // bidi-bind the values
-        TextFormatter oppPortFormatter = new TextFormatter(oppPort.getValueFactory().getConverter(), oppPort.getValueFactory().getValue());
-        oppPort.getEditor().setTextFormatter(oppPortFormatter);
-        oppPort.getValueFactory().valueProperty().bindBidirectional(oppPortFormatter.valueProperty()); // bidi-bind the values
-    } // afterInit()
+    } // initStatusTable
     
     /**
      * On dialog close, stops teamcomm listener and logging thread
@@ -336,97 +302,141 @@ public class TeamCommViewerFx extends AbstractJFXDialog
         
         this.log.stopLogging();
     }
-    
+
     /**
      * The handler for the listen button.
      * Start/Stops all listener and updates the ui accordingly.
      */
-    private class ListenButtonEventHandler implements EventHandler
-    {
-        @Override
-        public void handle(Event ev) {
-            if(btnListen.isSelected()) {
-                
-                int port_own = (int) ownPort.getValue();
-                int port_opp = (int) oppPort.getValue();
-                // establish connection
-                if(!connectListener(listenerOwn, port_own) && !connectListener(listenerOpponent, port_opp)) {
-                    Platform.runLater(() -> { btnListen.setSelected(false); });
-                } else {
-                    // listen to TeamCommMessages
-                    Plugin.teamcommManager.addListener(teamcommListener);
-                    // start/schedule FX UI-updater
-                    timerUpdateStatusTable = new Timer();
-                    timerUpdateStatusTable.scheduleAtFixedRate(new TimerTask() {
-                        @Override
-                        public void run() {
-                            Platform.runLater(() -> { statusTable.refresh(); });
-                        }
-                    }, 100, 250);
-                    // start/schedule robots field drawer
-                    timerDrawRobots = new Timer();
-                    timerDrawRobots.scheduleAtFixedRate(new TimerTask() {
-                        @Override
-                        public void run() {
-                            DrawingCollection drawings = new DrawingCollection();
-                            // if enabled, draw robots on the FieldViewer otherwise not
-                            robots.stream()
-                                  .filter((robotStatus) -> (robotStatus.showOnField))
-                                  .forEach((robotStatus) -> {
-                                        robotStatus.lastMessage.draw(drawings, robotStatus.robotColor, robotStatus.isOpponent);
-                                  }); 
-                            Plugin.drawingEventManager.fireDrawingEvent(drawings, this);
-                        }
-                    }, 100, 33);
-                }
+    @FXML
+    private void actionListen() {
+        if(btnListen.isSelected()) {
+            int port_own = (int) ownPort.getValue();
+            int port_opp = (int) oppPort.getValue();
+            // establish connection
+            if(!connectPortListener(listenerOwn, port_own) && !connectPortListener(listenerOpponent, port_opp)) {
+                Platform.runLater(() -> { btnListen.setSelected(false); });
             } else {
-                // disconnect
-                try {
-                    listenerOwn.disconnect();
-                    listenerOpponent.disconnect();
-                } catch (IOException | InterruptedException ex) {
-                    Helper.handleException("Error disconnecting to ports", ex);
-                }
-                // remove TeamCommMessage listener
-                Plugin.teamcommManager.removeListener(teamcommListener);
-                // stop UI-updater
-                if(timerDrawRobots != null) {
-                    timerDrawRobots.cancel();
-                    timerDrawRobots.purge();
-                    timerDrawRobots = null;
-                }
-                if(timerUpdateStatusTable != null) {
-                    timerUpdateStatusTable.cancel();
-                    timerUpdateStatusTable.purge();
-                    timerUpdateStatusTable = null;
-                }
-                // update fx ui
-                Platform.runLater(() -> {
-                    robots.clear();
-                    statusTable.refresh();
-                });
-            } // end if/else
-        } // end handle()
-
-        /**
-         * Connects the RobotTeamCommListener listener to the given port.
-         * 
-         * @param listener RobotTeamCommListener
-         * @param port the port where the listener should connect to
-         * @return true on success, false otherwise
-         */
-        private boolean connectListener(RobotTeamCommListener listener, int port) {
-            if(port != 0) {
-                try {
-                    listener.connect(port);
-                    return true;
-                } catch (IOException | InterruptedException ex) {
-                    Helper.handleException("Error connecting to ports", ex);
-                }
+                // listen to TeamCommMessages
+                Plugin.teamcommManager.addListener(teamcommListener);
+                // start/schedule FX UI-updater
+                timerUpdateStatusTable = new Timer();
+                timerUpdateStatusTable.scheduleAtFixedRate(new TimerTask() {
+                    @Override
+                    public void run() {
+                        Platform.runLater(() -> { statusTable.refresh(); });
+                    }
+                }, 100, 250);
+                // start/schedule robots field drawer
+                timerDrawRobots = new Timer();
+                timerDrawRobots.scheduleAtFixedRate(new TimerTask() {
+                    @Override
+                    public void run() {
+                        DrawingCollection drawings = new DrawingCollection();
+                        // if enabled, draw robots on the FieldViewer otherwise not
+                        robots.stream()
+                              .filter((robotStatus) -> (robotStatus.showOnField))
+                              .forEach((robotStatus) -> {
+                                    robotStatus.lastMessage.draw(drawings, robotStatus.robotColor, robotStatus.isOpponent);
+                              }); 
+                        Plugin.drawingEventManager.fireDrawingEvent(drawings, this);
+                    }
+                }, 100, 33);
             }
-            return false;
+        } else {
+            // disconnect
+            try {
+                listenerOwn.disconnect();
+                listenerOpponent.disconnect();
+            } catch (IOException | InterruptedException ex) {
+                Helper.handleException("Error disconnecting to ports", ex);
+            }
+            // remove TeamCommMessage listener
+            Plugin.teamcommManager.removeListener(teamcommListener);
+            // stop UI-updater
+            if(timerDrawRobots != null) {
+                timerDrawRobots.cancel();
+                timerDrawRobots.purge();
+                timerDrawRobots = null;
+            }
+            if(timerUpdateStatusTable != null) {
+                timerUpdateStatusTable.cancel();
+                timerUpdateStatusTable.purge();
+                timerUpdateStatusTable = null;
+            }
+            // update fx ui
+            Platform.runLater(() -> {
+                robots.clear();
+                statusTable.refresh();
+            });
+        } // end if/else
+    } // actionListen()
+    
+    /**
+     * Connects the RobotTeamCommListener listener to the given port.
+     * 
+     * @param listener RobotTeamCommListener
+     * @param port the port where the listener should connect to
+     * @return true on success, false otherwise
+     */
+    private boolean connectPortListener(RobotTeamCommListener listener, int port) {
+        if(port != 0) {
+            try {
+                listener.connect(port);
+                return true;
+            } catch (IOException | InterruptedException ex) {
+                Helper.handleException("Error connecting to ports", ex);
+            }
         }
-    } // end ListenButtonEventHandler
+        return false;
+    } // connectPortListener()
+    
+    /**
+     * Handles the record button (click) event.
+     * Starts/pauses recording of teamcomm log file.
+     */
+    @FXML
+    private void actionRecord() {
+        // record-button got pressed
+        if(btnRecord.isSelected()) {
+            // log file already set; just enable logging
+            if(this.log.isActive()) {
+                this.log.resumeLogging();
+                btnRecord.setSelected(true);
+            } else {
+                // select log file and enable logging!
+                 File selectedFile = fileChooser.showSaveDialog(null);
+                 if (selectedFile != null) {
+                    fileChooser.setInitialDirectory(selectedFile.getParentFile());
+                    File dfile = (selectedFile.getName().lastIndexOf(".") == -1) ? new File(selectedFile+".log") : selectedFile;
+
+                    // set log file, start logging and update ui
+                    if(this.log.setLogFile(dfile)) {
+                        this.log.startLogging();
+                        btnRecord.setSelected(true);
+                        recordingFile.set("Recording to " + dfile.getName());
+                        recording.set(true);
+                    }
+                 } else {
+                     btnRecord.setSelected(false);
+                 }
+            }
+        } else {
+            // release button
+            this.log.pauseLogging();
+        }
+    }
+    
+    /**
+     * Stops the log file recording, flush and close logfile.
+     */
+    @FXML
+    private void actionStop() {
+        this.log.stopLogging();
+        // ... update UI
+        recordingFile.set("<not set>");
+        recording.set(false);
+        btnRecord.setSelected(false);
+    }
     
     private class Column<T> extends TableColumn {
         public Field field;
@@ -556,7 +566,6 @@ public class TeamCommViewerFx extends AbstractJFXDialog
             });
             // make button smaller
             btn.setStyle("-fx-font-size: 10px; -fx-padding: .1em 0.5em .1em 0.5em;");
-            
         }
         
         @Override
