@@ -13,8 +13,6 @@
 #include "Representations/Motion/Walk2018/Walk2018Parameters.h"
 
 #include "Representations/Motion/Walk2018/StepBuffer.h"
-#include "Representations/Motion/Walk2018/TargetHipFeetPose.h"
-#include "Representations/Infrastructure/CalibrationData.h"
 #include "Representations/Modeling/InertialModel.h"
 #include "Representations/Infrastructure/GyrometerData.h"
 #include "Representations/Infrastructure/RobotInfo.h"
@@ -46,69 +44,72 @@ class FeetStabilizer : private FeetStabilizerBase
 
     const FeetStabilizerParameters& parameters;
 
-  virtual void execute(){
-    if (!parameters.stabilizeFeet) return;
+    virtual void execute(){
+        if (!parameters.stabilizeFeet) return;
 
-    const Step& executingStep = getStepBuffer().first();
+        const Step& executingStep = getStepBuffer().first();
 
-    double samplesDoubleSupport = executingStep.samplesDoubleSupport;
-    double samplesSingleSupport = executingStep.samplesSingleSupport;
+        double samplesDoubleSupport = executingStep.samplesDoubleSupport;
+        double samplesSingleSupport = executingStep.samplesSingleSupport;
 
-    double doubleSupportEnd = samplesDoubleSupport / 2;
-    double doubleSupportBegin = samplesDoubleSupport / 2 + samplesSingleSupport;
+        double doubleSupportEnd = samplesDoubleSupport / 2;
+        double doubleSupportBegin = samplesDoubleSupport / 2 + samplesSingleSupport;
 
-    double cycle = executingStep.executingCycle;
-    double z = 0;
+        double cycle = executingStep.executingCycle;
+        double z = 0;
 
-    if (cycle > doubleSupportEnd && cycle <= doubleSupportBegin)
-    {
-      double t = 1 - (doubleSupportBegin - cycle) / samplesSingleSupport;
-      t = t * Math::pi - Math::pi_2; // scale t
-      z = (1 + cos(t * 2))*0.5;
+        if (cycle > doubleSupportEnd && cycle <= doubleSupportBegin)
+        {
+          double t = 1 - (doubleSupportBegin - cycle) / samplesSingleSupport;
+          t = t * Math::pi - Math::pi_2; // scale t
+          z = (1 + cos(t * 2))*0.5;
+        }
+
+        const Vector2d& inertial = getInertialModel().orientation;
+        const Vector3d& gyro     = getGyrometerData().data;
+
+        // HACK: small filter...
+        filteredGyro = filteredGyro*0.8 + gyro*0.2;
+
+        Vector2d weight;
+        weight.x =
+            parameters.P.x * inertial.x
+          + parameters.D.x * filteredGyro.x;
+
+        weight.y =
+            parameters.P.y * inertial.y
+          + parameters.D.y * filteredGyro.y;
+
+        switch(executingStep.footStep.liftingFoot()) {
+            case FootStep::LEFT:
+              // adjust left
+              getMotorJointData().position[JointData::LAnkleRoll]  -= inertial.x*z;
+              getMotorJointData().position[JointData::LAnklePitch] -= inertial.y*z;
+
+              // stabilize right
+              getMotorJointData().position[JointData::RAnkleRoll]  += weight.x*z;
+              getMotorJointData().position[JointData::RAnklePitch] += weight.y*z;
+              break;
+          case FootStep::RIGHT:
+              // adjust right
+              getMotorJointData().position[JointData::RAnkleRoll]  -= inertial.x*z;
+              getMotorJointData().position[JointData::RAnklePitch] -= inertial.y*z;
+
+              // stabilize left
+              getMotorJointData().position[JointData::LAnkleRoll]  += weight.x*z;
+              getMotorJointData().position[JointData::LAnklePitch] += weight.y*z;
+              break;
+          default:
+              break; // don't stabilize in double support mode
+        };
     }
 
-    const Vector2d& inertial = getInertialModel().orientation;
-    const Vector3d& gyro     = getGyrometerData().data;
+    void reset(){
+        filteredGyro = Vector3d();
+    }
 
-    // HACK: small filter...
-    static Vector3d lastGyro = gyro;
-    Vector3d filteredGyro    = filteredGyro*0.8 + gyro*0.2;
-
-    Vector2d weight;
-    weight.x =
-        parameters.P.x * inertial.x
-      + parameters.D.x * filteredGyro.x;
-
-    weight.y =
-        parameters.P.y * inertial.y
-      + parameters.D.y * filteredGyro.y;
-
-    switch(executingStep.footStep.liftingFoot()) {
-        case FootStep::LEFT:
-          // adjust left
-          getMotorJointData().position[JointData::LAnkleRoll]  -= inertial.x*z;
-          getMotorJointData().position[JointData::LAnklePitch] -= inertial.y*z;
-
-          // stabilize right
-          getMotorJointData().position[JointData::RAnkleRoll]  += weight.x*z;
-          getMotorJointData().position[JointData::RAnklePitch] += weight.y*z;
-          break;
-      case FootStep::RIGHT:
-          // adjust right
-          getMotorJointData().position[JointData::RAnkleRoll]  -= inertial.x*z;
-          getMotorJointData().position[JointData::RAnklePitch] -= inertial.y*z;
-
-          // stabilize left
-          getMotorJointData().position[JointData::LAnkleRoll]  += weight.x*z;
-          getMotorJointData().position[JointData::LAnklePitch] += weight.y*z;
-          break;
-      default:
-          break; // don't stabilize in double support mode
-    };
-
-    lastGyro = gyro;
-  }
-
+  private:
+    Vector3d filteredGyro;
 };
 
 #endif  /* _FEET_STABILIZER_H */

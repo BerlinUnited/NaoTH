@@ -18,10 +18,10 @@ class FeetStabilizerParameters: public ParameterList{
         {
           PARAMETER_REGISTER(stabilizeFeet) = true;
 
-          PARAMETER_REGISTER(P.x) = -0.4;
-          PARAMETER_REGISTER(P.y) = -0.3;
-          PARAMETER_REGISTER(D.x) = 0.04;
-          PARAMETER_REGISTER(D.y) = 0.035;
+          PARAMETER_REGISTER(P.x) = -0.1;
+          PARAMETER_REGISTER(P.y) = -0.1;
+          PARAMETER_REGISTER(D.x) = 0.01;
+          PARAMETER_REGISTER(D.y) = 0.01;
 
           syncWithConfig();
         }

@@ -44,6 +44,7 @@ Walk2018::Walk2018() : IKMotion(getInverseKinematicsMotionEngineService(), motio
   getZMPReferenceBuffer().reset();
 
   theHipRotationOffsetModifier->getModuleT()->reset();
+  theFeetStabilizer->getModuleT()->reset();
 
   // init state of preview controller
   theZMPPreviewController->getModuleT()->init(currentCOMFeetPose.com.translation);
