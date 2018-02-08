@@ -176,6 +176,10 @@ private:
 
 
 private: // stabilization
+
+  // this is updated by feetStabilize()
+  mutable Vector3d filteredGyro;
+
   // observe the com error
   RingBufferWithSum<double, 100> com_errors;
   Vector3d currentComError;

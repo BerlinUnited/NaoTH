@@ -48,7 +48,7 @@ import java.util.List;
  */
 public class TeamCommLogViewer extends AbstractDialog
 {
-    @RCDialog(category = RCDialog.Category.Team, name = "LogfilePlayer")
+    @RCDialog(category = RCDialog.Category.Team, name = "TeamCommLogViewer")
     @PluginImplementation
     public static class Plugin extends DialogPlugin<TeamCommLogViewer> {
         @InjectPlugin
@@ -106,8 +106,6 @@ public class TeamCommLogViewer extends AbstractDialog
         jSeparator2 = new javax.swing.JToolBar.Separator();
         lblMessages = new javax.swing.JLabel();
         lblTimestamps = new javax.swing.JLabel();
-
-        teamCommFileChooser.setApproveButtonText("Open");
 
         pmConfig.addPopupMenuListener(new javax.swing.event.PopupMenuListener() {
             public void popupMenuWillBecomeVisible(javax.swing.event.PopupMenuEvent evt) {
@@ -221,7 +219,7 @@ public class TeamCommLogViewer extends AbstractDialog
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnTCLFActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTCLFActionPerformed
-        if(teamCommFileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+        if(teamCommFileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
             try {
                 // before loading new file, cleanup old one
                 resetMessages();

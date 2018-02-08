@@ -1,3 +1,4 @@
+syntax = "proto2";
 package naothmessages;
 option java_package= "de.naoth.rc.messages";
 
@@ -374,4 +375,17 @@ message GroundContactModel {
 message CollisionPercept {
   required uint32 timeCollisionArmLeft = 1;
   required uint32 timeCollisionArmRight = 2;
+}
+
+message IMUData
+{
+ required DoubleVector3 location = 1;
+ required DoubleVector3 velocity = 2;
+ required DoubleVector3 acceleration = 3;
+ optional DoubleVector3 acceleration_sensor = 4;
+
+ required DoubleVector3 rotation = 5;
+ required DoubleVector3 rotational_velocity = 6;
+ optional DoubleVector3 rotational_velocity_sensor = 7;
+ required DoubleVector2 orientation = 8;
 }
