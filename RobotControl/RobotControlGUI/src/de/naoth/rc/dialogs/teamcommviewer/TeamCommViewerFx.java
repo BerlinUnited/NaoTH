@@ -66,9 +66,6 @@ import javax.swing.JFrame;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 
-// TODO: "show on field" editable
-// TODO: RS doesn't get updated, when there's no message -> never "DEAD"?!
-
 /**
  *
  * @author Philipp Strobel <philippstrobel@posteo.de>
@@ -220,26 +217,29 @@ public class TeamCommViewerFx extends AbstractJFXDialog
         // available columns
         Column[] cols = {
             new Column<> ("#TN",            "teamNum",          (p) -> new ColoredTableCell()),
-            new Column<> ("#PN",             "playerNum",       null),
-            new Column<> ("IP",              "ipAddress",       null),
+            new Column<> ("#PN",             "playerNum"),
+            new Column<> ("IP",              "ipAddress"),
             new Column<> ("msg/s",           "msgPerSecond",    (p) -> new PingTableCell()),
-            new Column<> ("BallAge (s)",     "ballAge",         null),
+            new Column<> ("BallAge (s)",     "ballAge"),
             new Column<> ("State",           "fallen",          (p) -> new StateTableCell()),
             new Column<> ("Temperature",     "temperature",     (p) -> new TemperatureTableCell()),
             new Column<> ("CPU-Temperature", "cpuTemperature",  (p) -> new TemperatureTableCell()),
             new Column<> ("Battery",         "batteryCharge",   (p) -> new BatteryTableCell()),
-            new Column<> ("TimeToBall",      "timeToBall",      null),
+            new Column<> ("TimeToBall",      "timeToBall"),
             new Column<> ("wantToBeStriker", "wantsToBeStriker",(p) -> new CheckBoxTableCell<>()),
             new Column<> ("wasStriker",      "wasStriker",      (p) -> new CheckBoxTableCell<>()),
             new Column<> ("isPenalized",     "isPenalized",     (p) -> new CheckBoxTableCell<>()),
             new Column<> ("whistleDetected", "whistleDetected", (p) -> new CheckBoxTableCell<>()),
             new Column<> ("teamBall",        "teamBall",        (p) -> new Vector2DTableCell()),
-            new Column<> ("show on field",   "showOnField",     (p) -> new CheckBoxTableCell<>()),
+            new Column<> ("show on field",   "showOnField",     (p) -> new CheckBoxTableCell<>(), true),
             new Column<> ("Connect to",      "isConnected",     (p) -> new ButtonTableCell()),
         };
         
         // add columns to table
         statusTable.getColumns().addAll(cols);
+        
+        // in order to make the columns editable, the tableview has to be editable too!
+        statusTable.setEditable(true);
         
         // listener for changing the teamcolor of a selected robot
         statusTable.getSelectionModel().selectedItemProperty().addListener((ov, o, n) -> {
@@ -338,7 +338,9 @@ public class TeamCommViewerFx extends AbstractJFXDialog
                         robots.stream()
                               .filter((robotStatus) -> (robotStatus.getShowOnField()))
                               .forEach((robotStatus) -> {
+                                  if(robotStatus.lastMessage != null) {
                                     robotStatus.lastMessage.draw(drawings, robotStatus.getRobotColorAwt(), robotStatus.isOpponent);
+                                  }
                               }); 
                         Plugin.drawingEventManager.fireDrawingEvent(drawings, this);
                     }
@@ -435,21 +437,36 @@ public class TeamCommViewerFx extends AbstractJFXDialog
         btnRecord.setSelected(false);
     }
     
-    private class Column<T> extends TableColumn {
-        public Field field;
+    /**
+     * 
+     * @param <T> 
+     */
+    private class Column<T> extends TableColumn
+    {
+        private Field field;
+        
+        public Column(String name, String field) {
+            this(name, field, null);
+        }
 
         public Column(String name, String field, Callback cellFactory) {
+            this(name, field, cellFactory, false);
+        }
+
+        public Column(String name, String field, Callback cellFactory, boolean editable) {
             super(name);
             try {
                 this.field = RobotStatus.class.getDeclaredField(field);
             } catch (NoSuchFieldException | SecurityException ex) {
                 // should never happen
                 Logger.getLogger(TeamCommViewerFx.class.getName()).log(Level.SEVERE, null, ex);
+                this.field = null;
             }
             setCellValueFactory(new PropertyValueFactory(field));
             if(cellFactory != null) {
                 setCellFactory(cellFactory);
             }
+            setEditable(editable);
         }
     }
     
@@ -500,12 +517,7 @@ public class TeamCommViewerFx extends AbstractJFXDialog
         protected void updateItem(Object item, boolean empty) {
             super.updateItem(item, empty);
             if(!empty && item != null) {
-                RobotStatus rs = (RobotStatus)this.getTableRow().getItem();
-                if(rs != null && rs.getIsDead()) {
-                    setText("DEAD");
-                } else {
-                    setText(String.format("%4.2f", item));
-                }
+                setText((double)item == 0.0 ?"DEAD":String.format("%4.2f", item));
             }
         }
     }
@@ -591,7 +603,7 @@ public class TeamCommViewerFx extends AbstractJFXDialog
                         RobotStatus robotStatus = robots.stream().filter((t) -> { return t.getIpAddress().equals(address); }).findFirst().orElse(null);
                         // if not found - add robot
                         if (robotStatus == null) {
-                            robotStatus = new RobotStatus(Plugin.parent.getMessageServer(), address, message.isOpponent());
+                            robotStatus = new RobotStatus(Plugin.parent.getMessageServer(), address, message.isOpponent(), true);
                             robotStatus.robotColor.set(message.isOpponent() ? javafx.scene.paint.Color.RED : javafx.scene.paint.Color.BLUE);
                             robots.add(robotStatus);
                         }
@@ -602,7 +614,7 @@ public class TeamCommViewerFx extends AbstractJFXDialog
             } // end if
         } // end newTeamCommMessages()
     } // TeamCommMessageListener
-    
+
     /**
      * Validator for checking the inserted characters.
      * If validation fails, an error animation is played.

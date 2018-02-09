@@ -116,8 +116,9 @@ public class RobotStatus {
     public boolean getShowOnField() { return showOnField.get(); }
     public void setShowOnField(boolean b) { showOnField.set(b); }
     
-    public SPLMessage lastMessage;
+    public SPLMessage lastMessage = null;
     public boolean isOpponent;
+    private IsDeadTimer isDeadTimer = null;
     
     /**
      * Creates new form RobotStatus
@@ -126,9 +127,23 @@ public class RobotStatus {
      * @param isOpponent
      */
     public RobotStatus(MessageServer messageServer, String ipAddress, boolean isOpponent) {
+        this(messageServer, ipAddress, isOpponent, false);
+    }
+
+    public RobotStatus(MessageServer messageServer, String ipAddress, boolean isOpponent, boolean useIsDeadTimer) {
         this.messageServer = messageServer;
         this.ipAddress.set(ipAddress);
         this.isOpponent = isOpponent;
+        if(useIsDeadTimer) {
+            isDeadTimer = new IsDeadTimer();
+            isDeadTimer.start();
+        }
+        // when robot is 'dead', set msgPerSecond to zero
+        isDead.addListener((s, o, n) -> {
+            if(n) {
+                msgPerSecond.set(0.0);
+            }
+        });
 
         this.messageServer.addConnectionStatusListener(new ConnectionStatusListener() {
 
@@ -145,7 +160,15 @@ public class RobotStatus {
             }
         });
     }
-    
+
+    @Override
+    protected void finalize() throws Throwable {
+        if(isDeadTimer != null) {
+            isDeadTimer.cancel();
+        }
+        super.finalize();
+    }
+
     public void addListener(RobotStatusListener l) {
         listener.add(l);
     }
@@ -173,7 +196,11 @@ public class RobotStatus {
             timestamps.add(timestamp);
             lastSeen = timestamp;
         }
-        this.isDead.set(((System.currentTimeMillis() - lastSeen) > MAX_TIME_BEFORE_DEAD || this.msgPerSecond.get() <= 0.0));
+        if(isDeadTimer == null) {
+            this.isDead.set(((System.currentTimeMillis() - lastSeen) > MAX_TIME_BEFORE_DEAD || this.msgPerSecond.get() <= 0.0));
+        } else {
+            isDeadTimer.reset();
+        }
         this.msgPerSecond.set(calculateMsgPerSecond());
         this.fallen.set(msg.fallen == 1);
         this.ballAge.set(msg.ballAge);
@@ -286,6 +313,45 @@ public class RobotStatus {
             }
 
             return r;
+        }
+    }
+    
+    private class IsDeadTimer extends Thread
+    {
+        private long startTime;
+        private volatile boolean running = true;
+        private final Object sync = new Object();
+        
+        public IsDeadTimer() {
+            reset();
+        }
+        
+        public void reset() {
+            synchronized(sync) {
+                startTime = System.currentTimeMillis();
+                isDead.set(false);
+                sync.notify();
+            }
+        }
+        
+        public void cancel() {
+            running = false;
+            interrupt();
+        }
+        
+        @Override
+        public void run() {
+            while (running) {
+                synchronized(sync) {
+                    long c = (startTime + MAX_TIME_BEFORE_DEAD) - System.currentTimeMillis();
+                    if(c<=0) {
+                        isDead.set(true);
+                    }
+                    try {
+                        sync.wait(c<0?0:c);
+                    } catch (InterruptedException ex) {}
+                }
+            }
         }
     }
 }
