@@ -13,7 +13,6 @@ import de.naoth.rc.core.dialog.RCDialog;
 import de.naoth.rc.drawingmanager.DrawingEventManager;
 import de.naoth.rc.drawings.DrawingCollection;
 import de.naoth.rc.math.Vector2D;
-import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -35,12 +34,12 @@ import javafx.animation.Animation;
 import javafx.animation.Transition;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ColorPicker;
@@ -48,14 +47,17 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.cell.CheckBoxTableCell;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.CornerRadii;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.util.Callback;
@@ -64,7 +66,8 @@ import javax.swing.JFrame;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 
-// TODO: implement robotstatus with properties and put all changes in the fx thread
+// TODO: "show on field" editable
+// TODO: RS doesn't get updated, when there's no message -> never "DEAD"?!
 
 /**
  *
@@ -83,7 +86,6 @@ public class TeamCommViewerFx extends AbstractJFXDialog
         public static TeamCommManager teamcommManager;
     }
 
-    private Timer timerUpdateStatusTable;
     private Timer timerDrawRobots;
     
     /**
@@ -192,10 +194,10 @@ public class TeamCommViewerFx extends AbstractJFXDialog
         
         // init team color picker
         teamColorPicker.setOnAction((t) -> {
-            javafx.scene.paint.Color fx = teamColorPicker.getValue();
-            Color c = new Color((float)fx.getRed(), (float)fx.getGreen(), (float)fx.getBlue(), (float)fx.getOpacity());
-            byte tn = statusTable.getSelectionModel().getSelectedItem().teamNum;
-            robots.stream().filter((rs) -> { return rs.teamNum == tn;}).forEach((rs) -> { rs.robotColor = c; });
+            int tn = statusTable.getSelectionModel().getSelectedItem().getTeamNum();
+            Platform.runLater(() -> {
+                robots.stream().filter((rs) -> { return rs.getTeamNum() == tn;}).forEach((rs) -> { rs.robotColor.set(teamColorPicker.getValue()); });
+            });
         });
         
         // on window close, stops teamcomm listener and logging thread
@@ -241,11 +243,12 @@ public class TeamCommViewerFx extends AbstractJFXDialog
         
         // listener for changing the teamcolor of a selected robot
         statusTable.getSelectionModel().selectedItemProperty().addListener((ov, o, n) -> {
+            System.out.println("selected: " + n);
             if(n != null) {
-                float[] c = n.robotColor.getRGBComponents(null);
                 Platform.runLater(() -> {
                     teamColorPicker.setDisable(false);
-                    teamColorPicker.setValue(javafx.scene.paint.Color.color(c[0], c[1], c[2], c[3]));
+                    teamColorPicker.setValue(n.robotColor.get());
+                    System.out.println("disabled: " + teamColorPicker.isDisabled());
                 });
             } else {
                 Platform.runLater(() -> { teamColorPicker.setDisable(true); });
@@ -325,14 +328,6 @@ public class TeamCommViewerFx extends AbstractJFXDialog
             } else {
                 // listen to TeamCommMessages
                 Plugin.teamcommManager.addListener(teamcommListener);
-                // start/schedule FX UI-updater
-                timerUpdateStatusTable = new Timer();
-                timerUpdateStatusTable.scheduleAtFixedRate(new TimerTask() {
-                    @Override
-                    public void run() {
-                        Platform.runLater(() -> { statusTable.refresh(); });
-                    }
-                }, 100, 250);
                 // start/schedule robots field drawer
                 timerDrawRobots = new Timer();
                 timerDrawRobots.scheduleAtFixedRate(new TimerTask() {
@@ -341,9 +336,9 @@ public class TeamCommViewerFx extends AbstractJFXDialog
                         DrawingCollection drawings = new DrawingCollection();
                         // if enabled, draw robots on the FieldViewer otherwise not
                         robots.stream()
-                              .filter((robotStatus) -> (robotStatus.showOnField))
+                              .filter((robotStatus) -> (robotStatus.getShowOnField()))
                               .forEach((robotStatus) -> {
-                                    robotStatus.lastMessage.draw(drawings, robotStatus.robotColor, robotStatus.isOpponent);
+                                    robotStatus.lastMessage.draw(drawings, robotStatus.getRobotColorAwt(), robotStatus.isOpponent);
                               }); 
                         Plugin.drawingEventManager.fireDrawingEvent(drawings, this);
                     }
@@ -364,11 +359,6 @@ public class TeamCommViewerFx extends AbstractJFXDialog
                 timerDrawRobots.cancel();
                 timerDrawRobots.purge();
                 timerDrawRobots = null;
-            }
-            if(timerUpdateStatusTable != null) {
-                timerUpdateStatusTable.cancel();
-                timerUpdateStatusTable.purge();
-                timerUpdateStatusTable = null;
             }
             // update fx ui
             Platform.runLater(() -> {
@@ -456,15 +446,7 @@ public class TeamCommViewerFx extends AbstractJFXDialog
                 // should never happen
                 Logger.getLogger(TeamCommViewerFx.class.getName()).log(Level.SEVERE, null, ex);
             }
-            setCellValueFactory((p) -> {
-                try {
-                    return new ReadOnlyObjectWrapper(Column.this.field.get(((CellDataFeatures<RobotStatus, T>) p).getValue()));
-                } catch (IllegalArgumentException | IllegalAccessException ex) {
-                    // should never happen
-                    Logger.getLogger(TeamCommViewerFx.class.getName()).log(Level.SEVERE, null, ex);
-                }
-                return null;
-            });
+            setCellValueFactory(new PropertyValueFactory(field));
             if(cellFactory != null) {
                 setCellFactory(cellFactory);
             }
@@ -476,7 +458,7 @@ public class TeamCommViewerFx extends AbstractJFXDialog
         protected void updateItem(Object item, boolean empty) {
             super.updateItem(item, empty);
             if(!empty && item != null) {
-                float temp = (float) item;
+                double temp = (double) item;
                 if (temp >= 75.0) { // 75 °C
                     java.awt.Color c = RobotStatus.COLOR_DANGER;
                     setStyle("-fx-background-color: rgba("+c.getRed()+","+c.getGreen()+","+c.getBlue()+","+c.getTransparency()+");");
@@ -496,7 +478,7 @@ public class TeamCommViewerFx extends AbstractJFXDialog
         protected void updateItem(Object item, boolean empty) {
             super.updateItem(item, empty);
             if(!empty && item != null) {
-                double bat = ((float) item)/100.0;
+                double bat = ((double) item)/100.0;
                 
                 java.awt.Color c;
                 if (bat <= 0.3) {
@@ -518,7 +500,12 @@ public class TeamCommViewerFx extends AbstractJFXDialog
         protected void updateItem(Object item, boolean empty) {
             super.updateItem(item, empty);
             if(!empty && item != null) {
-                setText(String.format("%4.2f", item));
+                RobotStatus rs = (RobotStatus)this.getTableRow().getItem();
+                if(rs != null && rs.getIsDead()) {
+                    setText("DEAD");
+                } else {
+                    setText(String.format("%4.2f", item));
+                }
             }
         }
     }
@@ -540,8 +527,11 @@ public class TeamCommViewerFx extends AbstractJFXDialog
             super.updateItem(item, empty);
             if(!empty && item != null) {
                 RobotStatus rs = (RobotStatus) this.getTableRow().getItem();
-                if(rs != null) {
-                    setStyle("-fx-background-color: rgba("+rs.robotColor.getRed()+","+rs.robotColor.getGreen()+","+rs.robotColor.getBlue()+","+rs.robotColor.getTransparency()+");");
+                // create background binding with robot color
+                if(rs != null && !backgroundProperty().isBound()) {
+                    backgroundProperty().bind(Bindings.createObjectBinding(() -> {
+                        return new Background(new BackgroundFill(rs.robotColor.get(), CornerRadii.EMPTY, Insets.EMPTY));
+                    }, rs.robotColor));
                 }
                 setText(item.toString());
             }
@@ -553,10 +543,7 @@ public class TeamCommViewerFx extends AbstractJFXDialog
         protected void updateItem(Object item, boolean empty) {
             super.updateItem(item, empty);
             if(!empty && item != null) {
-                RobotStatus rs = (RobotStatus) this.getTableRow().getItem();
-                if(rs != null) {
-                    setText(rs.isDead ? "DEAD" : (rs.fallen == 1 ? "FALLEN" : "NOT FALLEN"));
-                }
+                setText((Boolean)item ? "FALLEN" : "NOT FALLEN");
             }
         }
     }
@@ -595,21 +582,23 @@ public class TeamCommViewerFx extends AbstractJFXDialog
         @Override
         public void newTeamCommMessages(List<TeamCommMessage> messages) {
             if (!messages.isEmpty()) {
-                for (TeamCommMessage message : messages) {
-                    // determine source address
-                    String address = message.address == null ? message.message.teamNum+".0.0."+message.message.playerNum : message.address;
-                    
-                    // get robot with address from robots list
-                    RobotStatus robotStatus = robots.stream().filter((t) -> { return t.ipAddress.equals(address); }).findFirst().orElse(null);
-                    // if not found - add robot
-                    if (robotStatus == null) {
-                        robotStatus = new RobotStatus(Plugin.parent.getMessageServer(), address, message.isOpponent());
-                        robotStatus.robotColor = message.isOpponent() ? Color.RED : Color.BLUE;
-                        robots.add(robotStatus);
-                    }
-                    // updates the robotStatus
-                    robotStatus.updateStatus(message.timestamp, message.message);
-                } // end for
+                Platform.runLater(() -> {
+                    for (TeamCommMessage message : messages) {
+                        // determine source address
+                        String address = message.address == null ? message.message.teamNum+".0.0."+message.message.playerNum : message.address;
+
+                        // get robot with address from robots list
+                        RobotStatus robotStatus = robots.stream().filter((t) -> { return t.getIpAddress().equals(address); }).findFirst().orElse(null);
+                        // if not found - add robot
+                        if (robotStatus == null) {
+                            robotStatus = new RobotStatus(Plugin.parent.getMessageServer(), address, message.isOpponent());
+                            robotStatus.robotColor.set(message.isOpponent() ? javafx.scene.paint.Color.RED : javafx.scene.paint.Color.BLUE);
+                            robots.add(robotStatus);
+                        }
+                        // updates the robotStatus
+                        robotStatus.updateStatus(message.timestamp, message.message);
+                    } // end for
+                });
             } // end if
         } // end newTeamCommMessages()
     } // TeamCommMessageListener

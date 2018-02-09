@@ -11,6 +11,16 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 
 /**
  * Representation of all known information about a robot.
@@ -27,64 +37,84 @@ public class RobotStatus {
 
     private final RingBuffer timestamps = new RingBuffer(10);
     private final MessageServer messageServer;
+    private final ArrayList<RobotStatusListener> listener = new ArrayList<>();
     
-    public String ipAddress = "";
-    public String getIpAddress() { return ipAddress; }
+    private final StringProperty ipAddress = new SimpleStringProperty("");
+    public StringProperty ipAddressProperty() { return ipAddress; }
+    public String getIpAddress() { return ipAddress.get(); }
     
-    public boolean isConnected = false;
-    public boolean getIsConnected() { return isConnected; };
+    private final BooleanProperty isConnected = new SimpleBooleanProperty(false);
+    public BooleanProperty isConnectedProperty() { return isConnected; }
+    public boolean getIsConnected(){ return isConnected.get(); }
 
-    public byte playerNum;
-    public byte getPlayerNum() { return playerNum; };
+    private final IntegerProperty playerNum = new SimpleIntegerProperty(0);
+    public IntegerProperty playerNumProperty() { return playerNum; };
+    public int getPlayerNum() { return playerNum.get(); }
     
-    public byte teamNum;
-    public byte getTeamNum() { return teamNum; };
+    private final IntegerProperty teamNum = new SimpleIntegerProperty(0);
+    public IntegerProperty teamNumProperty() { return teamNum; };
+    public int getTeamNum() { return teamNum.get(); }
     
-    public Color robotColor = Color.WHITE;
+    public final ObjectProperty<javafx.scene.paint.Color> robotColor = new SimpleObjectProperty<>(javafx.scene.paint.Color.WHITE); //color, "color", javafx.scene.paint.Color.WHITE
+    public ObjectProperty getRobotColor() { return robotColor; }
+    public Color getRobotColorAwt() { return new Color((float)robotColor.get().getRed(), (float)robotColor.get().getGreen(), (float)robotColor.get().getBlue(), (float)robotColor.get().getOpacity()); }
+    public void setRobotColorAwt(Color color) { float[] c = color.getRGBComponents(null); robotColor.set(new javafx.scene.paint.Color(c[0], c[1], c[2], c[3])); }
     
-    public double msgPerSecond;
-    public double getMsgPerSecond() { return msgPerSecond; };
+    private final DoubleProperty msgPerSecond = new SimpleDoubleProperty(0.0);
+    public DoubleProperty msgPerSecondProperty() { return msgPerSecond; };
+    public double getMsgPerSecond() { return msgPerSecond.get(); }
     
-    public float ballAge;
-    public float getBallAge() { return ballAge; };
+    private final DoubleProperty ballAge = new SimpleDoubleProperty(0.0);
+    public DoubleProperty ballAgeProperty() { return ballAge; };
+    public double getBallAge() { return ballAge.get(); }
     
-    public byte fallen;
-    public byte getFallen() { return fallen; };
+    private final BooleanProperty fallen = new SimpleBooleanProperty(false);
+    public BooleanProperty fallenProperty() { return fallen; }
+    public boolean getFallen() { return fallen.get(); }
     
-    public boolean isDead;
-    public boolean getIsDead() { return isDead; };
+    private final BooleanProperty isDead = new SimpleBooleanProperty(false);
+    public BooleanProperty isDeadProperty() { return isDead; }
+    public boolean getIsDead() { return isDead.get(); }
     
-    private ArrayList<RobotStatusListener> listener = new ArrayList<>();
-
-    public float temperature;
-    public float getTemperature() { return temperature; }
+    private final DoubleProperty temperature = new SimpleDoubleProperty(0.0);
+    public DoubleProperty temperatureProperty() { return temperature; };
+    public double getTemperature() { return temperature.get(); }
     
-    public float cpuTemperature;
-    public float getCpuTemperature() { return cpuTemperature; }
+    private final DoubleProperty cpuTemperature = new SimpleDoubleProperty(0.0);
+    public DoubleProperty cpuTemperatureProperty() { return cpuTemperature; };
+    public double getCpuTemperature() { return cpuTemperature.get(); }
     
-    public float batteryCharge;
-    public float getBatteryCharge() { return batteryCharge; }
+    private final DoubleProperty batteryCharge = new SimpleDoubleProperty(0.0);
+    public DoubleProperty batteryChargeProperty() { return batteryCharge; };
+    public double getBatteryCharge() { return batteryCharge.get(); }
     
-    public float timeToBall;
-    public float getTimeToBall() { return timeToBall; }
+    private final DoubleProperty timeToBall = new SimpleDoubleProperty(0.0);
+    public DoubleProperty timeToBallProperty() { return timeToBall; };
+    public double getTimeToBall() { return timeToBall.get(); }
     
-    public boolean wantsToBeStriker;
-    public boolean getWantsToBeStriker() { return wantsToBeStriker; }
+    private final BooleanProperty wantsToBeStriker = new SimpleBooleanProperty(false);
+    public BooleanProperty wantsToBeStrikerProperty() { return wantsToBeStriker; }
+    public boolean getWantsToBeStriker() { return wantsToBeStriker.get(); }
     
-    public boolean wasStriker;
-    public boolean getWasStriker() { return wasStriker; }
+    private final BooleanProperty wasStriker = new SimpleBooleanProperty(false);
+    public BooleanProperty wasStrikerProperty() { return wasStriker; }
+    public boolean getWasStriker() { return wasStriker.get(); }
     
-    public boolean isPenalized;
-    public boolean getIsPenalized() { return isPenalized; }
+    private final BooleanProperty isPenalized = new SimpleBooleanProperty(false);
+    public BooleanProperty isPenalizedProperty() { return isPenalized; }
+    public boolean getIsPenalized() { return isPenalized.get(); }
     
-    public boolean whistleDetected;
-    public boolean getWhistleDetected() { return whistleDetected; }
+    private final BooleanProperty whistleDetected = new SimpleBooleanProperty(false);
+    public BooleanProperty whistleDetectedProperty() { return whistleDetected; }
+    public boolean getWhistleDetected() { return whistleDetected.get(); }
     
-    public Vector2D teamBall;
+    private Vector2D teamBall;
     public Vector2D getTeamBall() { return teamBall; }
     
-    public boolean showOnField = true;
-    public boolean getShowOnField() { return showOnField; }
+    private final BooleanProperty showOnField = new SimpleBooleanProperty(true);
+    public BooleanProperty showOnFieldProperty() { return showOnField; }
+    public boolean getShowOnField() { return showOnField.get(); }
+    public void setShowOnField(boolean b) { showOnField.set(b); }
     
     public SPLMessage lastMessage;
     public boolean isOpponent;
@@ -97,20 +127,20 @@ public class RobotStatus {
      */
     public RobotStatus(MessageServer messageServer, String ipAddress, boolean isOpponent) {
         this.messageServer = messageServer;
-        this.ipAddress = ipAddress;
+        this.ipAddress.set(ipAddress);
         this.isOpponent = isOpponent;
 
         this.messageServer.addConnectionStatusListener(new ConnectionStatusListener() {
 
             @Override
             public void connected(ConnectionStatusEvent event) {
-                isConnected = true;
+                isConnected.set(true);
                 statusChanged();
             }
 
             @Override
             public void disconnected(ConnectionStatusEvent event) {
-                isConnected = false;
+                isConnected.set(false);
                 statusChanged();
             }
         });
@@ -131,8 +161,8 @@ public class RobotStatus {
     public void updateStatus(long timestamp, SPLMessage msg) {
         this.lastMessage = msg;
         
-        this.teamNum = msg.teamNum;
-        this.playerNum = msg.playerNum;
+        this.teamNum.set(msg.teamNum);
+        this.playerNum.set(msg.playerNum);
 
         // don't add the timestamp if it did not change compared to the last time
         long lastSeen = Long.MIN_VALUE;
@@ -143,42 +173,41 @@ public class RobotStatus {
             timestamps.add(timestamp);
             lastSeen = timestamp;
         }
-        this.isDead = ((System.currentTimeMillis() - lastSeen) > MAX_TIME_BEFORE_DEAD || this.msgPerSecond <= 0.0);
-        this.msgPerSecond = calculateMsgPerSecond();
-        this.fallen = msg.fallen;
-        this.ballAge = msg.ballAge;
+        this.isDead.set(((System.currentTimeMillis() - lastSeen) > MAX_TIME_BEFORE_DEAD || this.msgPerSecond.get() <= 0.0));
+        this.msgPerSecond.set(calculateMsgPerSecond());
+        this.fallen.set(msg.fallen == 1);
+        this.ballAge.set(msg.ballAge);
 
         if (msg.user != null) {
-            this.temperature = msg.user.getTemperature();
-            this.cpuTemperature = msg.user.getCpuTemperature();
-            this.batteryCharge = msg.user.getBatteryCharge() * 100.0f;
-            this.timeToBall = msg.user.getTimeToBall();
-            this.wantsToBeStriker = msg.user.getWantsToBeStriker();
-            this.wasStriker = msg.user.getWasStriker();
-            this.isPenalized = msg.user.getIsPenalized();
+            this.temperature.set(msg.user.getTemperature());
+            this.cpuTemperature.set(msg.user.getCpuTemperature());
+            this.batteryCharge.set(msg.user.getBatteryCharge() * 100.0f);
+            this.timeToBall.set(msg.user.getTimeToBall());
+            this.wantsToBeStriker.set(msg.user.getWantsToBeStriker());
+            this.wasStriker.set(msg.user.getWasStriker());
+            this.isPenalized.set(msg.user.getIsPenalized());
 //            this.whistleDetected = msg.user.getWhistleDetected(); // used in another branch!
             this.teamBall = new Vector2D(msg.user.getTeamBall().getX(), msg.user.getTeamBall().getY());
         } else if(msg.doberHeader != null) {
-            
-            this.temperature = -1;
-            this.cpuTemperature = -1;
-            this.batteryCharge = -1;
-            this.timeToBall = -1;
-            this.wantsToBeStriker = false;
-            this.wasStriker = false;
+            this.temperature.set(-1);
+            this.cpuTemperature.set(-1);
+            this.batteryCharge.set(-1);
+            this.timeToBall.set(-1);
+            this.wantsToBeStriker.set(false);
+            this.wasStriker.set(false);
 
-            this.isPenalized = msg.doberHeader.isPenalized > 0;
-            this.whistleDetected = msg.doberHeader.whistleDetected > 0;
+            this.isPenalized.set(msg.doberHeader.isPenalized > 0);
+            this.whistleDetected.set(msg.doberHeader.whistleDetected > 0);
             this.teamBall = new Vector2D(Double.POSITIVE_INFINITY,Double.POSITIVE_INFINITY);
         } else {
-            this.temperature = -1;
-            this.cpuTemperature = -1;
-            this.batteryCharge = -1;
-            this.timeToBall = -1;
-            this.wantsToBeStriker = false;
-            this.wasStriker = false;
-            this.isPenalized = false;
-            this.whistleDetected = false;
+            this.temperature.set(-1);
+            this.cpuTemperature.set(-1);
+            this.batteryCharge.set(-1);
+            this.timeToBall.set(-1);
+            this.wantsToBeStriker.set(false);
+            this.wasStriker.set(false);
+            this.isPenalized.set(false);
+            this.whistleDetected.set(false);
             this.teamBall = new Vector2D(Double.POSITIVE_INFINITY,Double.POSITIVE_INFINITY);
         }
         this.statusChanged();
@@ -219,7 +248,7 @@ public class RobotStatus {
     public boolean connect() {
         if (!this.messageServer.isConnected()) {
             try {
-                String host = this.ipAddress;
+                String host = this.ipAddress.get();
                 int port = 5401;
                 // if the ip address contains a ':', the port is included!
                 if(host.contains(":")){
