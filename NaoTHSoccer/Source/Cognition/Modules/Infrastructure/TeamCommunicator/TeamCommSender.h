@@ -1,3 +1,7 @@
+/**!
+ * ## File Doc
+ * This should describe the purpose of the file.
+ **/
 #ifndef TEAMCOMMSENDER_H
 #define TEAMCOMMSENDER_H
 
@@ -23,6 +27,11 @@
 
 #include "Tools/Debug/DebugParameterList.h"
 
+/**!
+ * ### Module Doc
+ *
+ * This is _the documentation_ of the **TeamCommSender** module.
+ **/
 BEGIN_DECLARE_MODULE(TeamCommSender)
   PROVIDE(DebugParameterList)
 
@@ -46,6 +55,7 @@ BEGIN_DECLARE_MODULE(TeamCommSender)
   PROVIDE(TeamMessageDataOut)
 END_DECLARE_MODULE(TeamCommSender)
 
+/**! Class Doc **/
 class TeamCommSender: public TeamCommSenderBase
 {
 public:
@@ -55,6 +65,7 @@ public:
   virtual void execute();
 
 private:
+  /**! This class holds the parameter for the TeamCommSender. **/
   class Parameters: public ParameterList
   {
   public: 
