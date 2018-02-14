@@ -243,12 +243,13 @@ public class TeamCommViewerFx extends AbstractJFXDialog
         
         // listener for changing the teamcolor of a selected robot
         statusTable.getSelectionModel().selectedItemProperty().addListener((ov, o, n) -> {
-            System.out.println("selected: " + n);
+//            System.out.println("selected: " + n);
             if(n != null) {
                 Platform.runLater(() -> {
                     teamColorPicker.setDisable(false);
                     teamColorPicker.setValue(n.robotColor.get());
-                    System.out.println("disabled: " + teamColorPicker.isDisabled());
+                    // NOTE: sometimes the colopicker is displayed as "disabled" despite its not?!
+//                    System.out.println("disabled: " + teamColorPicker.isDisabled());
                 });
             } else {
                 Platform.runLater(() -> { teamColorPicker.setDisable(true); });
