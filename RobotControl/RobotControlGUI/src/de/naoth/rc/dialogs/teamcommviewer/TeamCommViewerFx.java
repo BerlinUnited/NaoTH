@@ -72,7 +72,7 @@ import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
  */
 public class TeamCommViewerFx extends AbstractJFXDialog
 {
-    @RCDialog(category = RCDialog.Category.Tools, name = "TeamCommViewerFx")
+    @RCDialog(category = RCDialog.Category.Team, name = "TeamCommViewerFx")
     @PluginImplementation
     public static class Plugin extends DialogPlugin<TeamCommViewerFx> {
         @InjectPlugin
@@ -438,6 +438,12 @@ public class TeamCommViewerFx extends AbstractJFXDialog
     }
     
     /**
+     * Helper class.
+     * Thereby the column definition can be realized much shorter and compact. The column just needs
+     * to know the title of the column, the RobotStatus attribute (field) which should be shown, a
+     * object how the column is displayed and whether or not the column should be editable (or not).
+     * The RobotStatus field is accessed via reflection - the developer has to make sure, that the 
+     * equivalent field exits!
      * 
      * @param <T> 
      */
@@ -470,6 +476,10 @@ public class TeamCommViewerFx extends AbstractJFXDialog
         }
     }
     
+    /**
+     * Changes the background color based on the contained value, reflecting the temperature of the player.
+     * The value is also 'properly' formatted.
+     */
     private class TemperatureTableCell extends TableCell {
         @Override
         protected void updateItem(Object item, boolean empty) {
@@ -490,6 +500,10 @@ public class TeamCommViewerFx extends AbstractJFXDialog
         }
     }
     
+    /**
+     * Changes the background color based on the contained value, reflecting the battery status of the player.
+     * The value is also 'properly' formatted.
+     */
     private class BatteryTableCell extends TableCell {
         @Override
         protected void updateItem(Object item, boolean empty) {
@@ -512,6 +526,10 @@ public class TeamCommViewerFx extends AbstractJFXDialog
         }
     }
     
+    /**
+     * Shows the received messages per second of the player or "DEAD" if there was no messages received
+     * for a certain amount of time.
+     */
     private class PingTableCell extends TableCell {
         @Override
         protected void updateItem(Object item, boolean empty) {
@@ -522,6 +540,9 @@ public class TeamCommViewerFx extends AbstractJFXDialog
         }
     }
     
+    /**
+     * Shows the content of a Vedtor2D. (e.g. teamball)
+     */
     private class Vector2DTableCell extends TableCell {
         @Override
         protected void updateItem(Object item, boolean empty) {
@@ -533,6 +554,10 @@ public class TeamCommViewerFx extends AbstractJFXDialog
         }
     }
     
+    /**
+     * Shows a colored background cell, based on the players (team) color.
+     * Therefor a color binding is created once and changes were immediatly applied.
+     */
     private class ColoredTableCell extends TableCell {
         @Override
         protected void updateItem(Object item, boolean empty) {
@@ -550,6 +575,9 @@ public class TeamCommViewerFx extends AbstractJFXDialog
         }
     }
     
+    /**
+     * Shows the state of the player based on the contained boolean value. ("Fallen"/"Not Fallen")
+     */
     private class StateTableCell extends TableCell {
         @Override
         protected void updateItem(Object item, boolean empty) {
@@ -560,6 +588,9 @@ public class TeamCommViewerFx extends AbstractJFXDialog
         }
     }
     
+    /**
+     * Shows a 'connect' button for each player.
+     */
     private class ButtonTableCell extends TableCell
     {
         final Button btn = new Button("Connect");
