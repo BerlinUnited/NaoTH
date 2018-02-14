@@ -51,12 +51,24 @@ public abstract class AbstractJFXDialog extends AbstractDialog implements Dialog
 
   public abstract URL getFXMLRessource();
   
+  /**
+   * Indicates, whether the dialog itself acts as JavaFx-Controller or if a separate controller exists.
+   * Extending classes should override this method and return 'true' if the dialog should be the
+   * javafx controller.
+   * 
+   * @return true, if this dialog acts as javafx controller, false otherwise
+   */
   protected boolean isSelfController() {
       return false;
   }
   
+  /**
+   * Gets called, after the fxml file was loaded and an appropiate scene is created.
+   * This method is especially usefull, if the dialog itself act as javafx controller. When this
+   * method is called, all javafx elements are initialized and can be used for setting up bindings, 
+   * action listeners and other stuff, which needs accessing the javafx components.
+   */
   public void afterInit() {
-      
   }
 
   private Scene createScene()
@@ -67,6 +79,7 @@ public abstract class AbstractJFXDialog extends AbstractDialog implements Dialog
     {
       loader = new FXMLLoader(getFXMLRessource());
       loader.setClassLoader(AbstractJFXDialog.class.getClassLoader());
+      // checks if this dialog should be the controller for this fxml file
       if(isSelfController()) {
         loader.setController(this);
       }
