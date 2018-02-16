@@ -14,6 +14,7 @@ import patchReader as patchReader
 patchdata = None
 labels = None
 window_idx = 0
+shift_is_held = False
 
 fig = plt.figure()
 image_canvas = None
@@ -46,13 +47,19 @@ def parse_arguments(argv):
 def patch_pos(x, y):
     return x*(patch_size[0]+1)-1, y*(patch_size[1]+1)-1
 
+
 patches = []
 selected = []
+invalid = []
+invalid_selected = []
+
 for i in range(0, show_size[0]*show_size[1]):
     y = i // show_size[0]
     x = i % show_size[0]
     patches.append(ptc.Rectangle(patch_pos(x, y), width=patch_size[0]+1, height=patch_size[1]+1, alpha=0.3))
+    invalid.append(ptc.Rectangle(patch_pos(x, y), width=patch_size[0]+1, height=patch_size[1]+1, color="Red", alpha=0.3))
     selected.append(False)
+    invalid_selected.append(False)
 
 
 def set_marker(i, v):
@@ -63,6 +70,13 @@ def set_marker(i, v):
         ax = plt.gca()
         ax.add_patch(patches[i])
         selected[i] = True
+    elif v == 0 and invalid_selected[i]:
+        invalid[i].remove()
+        invalid_selected[i] = False
+    elif v == 2 and not invalid_selected[i]:
+        ax = plt.gca()
+        ax.add_patch(invalid[i])
+        invalid_selected[i] = True
     
     
 def on_click(event):
@@ -70,12 +84,13 @@ def on_click(event):
     if event.xdata is not None and event.ydata is not None:
         y = int(event.ydata+0.5) / (patch_size[1]+1)
         x = int(event.xdata+0.5) / (patch_size[0]+1)
-        
+        global shift_is_held
         if 0 <= y < show_size[1] and 0 <= x < show_size[0]:
             i = show_size[0]*y + x
-            
-            if labels[window_idx+i] <= 0:
+            if labels[window_idx+i] <= 0 and not shift_is_held:
                 labels[window_idx+i] = 1
+            elif labels[window_idx+i] <= 0 and shift_is_held:
+                labels[window_idx+i] = 2
             else:
                 labels[window_idx+i] = 0
                 
@@ -84,14 +99,15 @@ def on_click(event):
         
  
 def key_pressed(event):
-    
+    global shift_is_held
     for i in range(show_size[0]*show_size[1]):
             set_marker(i, 0)
-            
+
     if event.key == 'enter' or event.key == ' ' \
             or event.key == 'w' or event.key == 'a' or event.key == 'd' \
             or event.key == 'c' or event.key == 'y' \
-            or event.key == '+' or event.key == '-':
+            or event.key == '+' or event.key == '-' \
+            or event.key == 'shift':
             
         save_labels(label_file)
         global window_idx
@@ -114,6 +130,8 @@ def key_pressed(event):
         elif event.key == '-':  # deselect all
             end_idx = min(idx_step, len(labels) - window_idx)
             labels[window_idx:window_idx+end_idx] = 0
+        elif event.key == 'shift':  # set invalid label
+            shift_is_held = True
         else:
             window_idx += idx_step
         show_patches()
@@ -121,17 +139,26 @@ def key_pressed(event):
         exit(0)
 
 
+def key_release(event):
+    global shift_is_held
+    if event.key == 'shift':
+        shift_is_held = False
+
+
 def save_labels(json_file):
-    l = []
+    ball = []
     noball = []
+    inval = []
     for i, val in enumerate(labels):
         if val == 1:
-            l.append(i)
+            ball.append(i)
+        elif val == 2:
+          inval.append(i)
         elif val == 0:
             noball.append(i)
         
     with open(json_file, 'w') as outfile:
-                json.dump({"ball": l, "noball": noball}, outfile)
+                json.dump({"ball": ball, "noball": noball, "invalid": inval}, outfile)
 
 
 def load_labels(json_file):
@@ -144,11 +171,15 @@ def load_labels(json_file):
         tmp_labels[ball_labels["ball"]] = 1
         if "noball" in ball_labels:
             tmp_labels[ball_labels["noball"]] = 0
+        elif "invalid" in ball_labels:
+            tmp_labels[ball_labels["invalid"]] = 2
+            print("invalid label loaded")
         else:
             # set all values to 0 since we have to assume everything unmarked is no ball
             tmp_labels = np.zeros((len(patchdata),))
-            
+
         tmp_labels[ball_labels["ball"]] = 1
+        tmp_labels[ball_labels["invalid"]] = 2
         
     return tmp_labels
     
@@ -171,6 +202,10 @@ def show_patches():
         y = i // show_size[0]
         x = i % show_size[0]
         image[y*(patch_size[1]+1):y*(patch_size[1]+1)+patch_size[1], x*(patch_size[0]+1):x*(patch_size[0]+1)+patch_size[0]] = a
+
+        if labels[window_idx+i] == 2:
+            print("invalid label shown")
+
         if labels[window_idx+i] < 0:
             # remember this former invalid column as seen
             labels[window_idx+i] = 0
@@ -207,6 +242,7 @@ if __name__ == "__main__":
     show_patches()
     plt.connect('button_press_event', on_click)
     plt.connect("key_press_event", key_pressed)
+    plt.connect('key_release_event', key_release)
 
     # fig.gca().xticks(())
     # fig.gca().yticks(())
