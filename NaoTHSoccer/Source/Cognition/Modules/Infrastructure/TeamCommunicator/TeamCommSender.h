@@ -1,7 +1,7 @@
-/**!
+/*!
  * ## File Doc
  * This should describe the purpose of the file.
- **/
+ */
 #ifndef TEAMCOMMSENDER_H
 #define TEAMCOMMSENDER_H
 

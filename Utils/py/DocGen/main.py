@@ -1,6 +1,8 @@
 import argparse
-import os, mmap, re, markdown
-
+import os
+import mmap
+import re
+import markdown
 from file_info import FileInfo
 
 
@@ -11,10 +13,11 @@ module_pattern = re.compile(rb"^\s*BEGIN_DECLARE_MODULE\((?P<name>\S+)\)(?P<def>
 require_pattern = re.compile(rb'^\s+REQUIRE\((\S+)\)', re.IGNORECASE | re.MULTILINE)
 provide_pattern = re.compile(rb'^\s+PROVIDE\((\S+)\)', re.IGNORECASE | re.MULTILINE)
 
-naoth_doc_pattern = re.compile(rb'/\*\*!(.*?)\*\*/', re.DOTALL)
+naoth_doc_pattern = re.compile(rb'/\*!(.*?)\*/', re.DOTALL)
 
 empty_pattern = re.compile(rb'^\s*$')
 clear_pattern = re.compile(rb'^\s*\*', re.MULTILINE)
+
 
 def parseFileMM(file):
     info = FileInfo(file)
@@ -23,7 +26,7 @@ def parseFileMM(file):
             docs = []
             for i in naoth_doc_pattern.finditer(m):
                 str = clearDocString(i[1]).decode('utf-8').strip()
-                docs.append({'start':i.start(), 'end':i.end(), 'value': str})
+                docs.append({'start': i.start(), 'end': i.end(), 'value': str})
                 if empty_pattern.fullmatch(m[0:i.start()]):
                     info.setDocs(str)
             # find "includes"
@@ -35,7 +38,7 @@ def parseFileMM(file):
 
             for match in module_pattern.finditer(m):
                 module_name = match[1].decode('utf-8')
-                module_repr = match[2] #.decode('utf-8')
+                module_repr = match[2]  # .decode('utf-8')
                 module_require = []
                 module_provide = []
 
@@ -49,6 +52,7 @@ def parseFileMM(file):
 
     return info
 
+
 def checkDocs(docs, data, start):
     for d in docs:
         if d['end'] <= start:
@@ -56,15 +60,17 @@ def checkDocs(docs, data, start):
                 return d['value']
     return None
 
+
 def clearDocString(str):
     return clear_pattern.sub(b'', str)
+
 
 def writeHtmlFile(file, data, filter=lambda x: True):
     with open(file, 'w') as f:
         f.write("<html><head><title>NaoTH-Docs</title></head><body>")
         for idx in data:
             if filter(data[idx]):
-                html = '<h2 id="{}">{}</h2>'.format(idx.replace('/','-'),idx)
+                html = '<h2 id="{}">{}</h2>'.format(idx.replace('/', '-'), idx)
                 if data[idx].hasDocs():
                     html += markdown.markdown(data[idx].docs)
                 if data[idx].hasIncludes():
@@ -73,7 +79,7 @@ def writeHtmlFile(file, data, filter=lambda x: True):
                     for i in data[idx].includes:
                         html += "<li>"
                         if i in data:
-                            html += '<a href="#' + i.replace('/','-') + '">' + i + '</a>'
+                            html += '<a href="#' + i.replace('/', '-') + '">' + i + '</a>'
                         else:
                             html += i
                         html += "</li>"
@@ -96,20 +102,21 @@ def writeHtmlFile(file, data, filter=lambda x: True):
                             html += ":<br>" + markdown.markdown(data[idx].modules[m].docs)
                         html += "</li>"
                     html += "</ul>"
-                #print(idx, str(data[idx]))
+                # print(idx, str(data[idx]))
                 f.write(html)
         f.write("</body></html>")
 
+
 def parseArgs():
     parser = argparse.ArgumentParser(description='Generate documentation for the NaoTH project.')
-    parser.add_argument('-s','--src', type=str, default="../../../NaoTHSoccer/Source", help='Location of the source files')
-    parser.add_argument('-f','--file', type=str, default="info.html", help='Location of the source files')
+    parser.add_argument('-s', '--src', type=str, default="../../../NaoTHSoccer/Source", help='Location of the source files')
+    parser.add_argument('-f', '--file', type=str, default="../../../doc/info.html", help='Location of the output files')
     return parser.parse_args()
 
 
 if __name__ == "__main__":
     args = parseArgs()
-    #print(args)
+    # print(args)
 
     source_directory = args.src
     html_file = args.file
@@ -122,6 +129,6 @@ if __name__ == "__main__":
                 file_idx = os.path.join(root, file).replace(source_directory+'/', '')
                 code_structure[file_idx] = parseFileMM(os.path.join(root, file))
 
-    #lambda f: f.hasDocs()
-    #lambda f: f.hasModules()
+    # lambda f: f.hasDocs()
+    # lambda f: f.hasModules()
     writeHtmlFile(html_file, code_structure)

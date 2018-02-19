@@ -1,0 +1,5 @@
+# TODO: obviously change that later, once actual documentation is available
+# Ignore everything in this directory
+*
+# Except this file
+!.gitignore
