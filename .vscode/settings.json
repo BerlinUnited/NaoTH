@@ -8,5 +8,6 @@
         "**/build/" : true
     },
     "telemetry.enableTelemetry": false,
-    "telemetry.enableCrashReporter": false
+    "telemetry.enableCrashReporter": false,
+    "cquery.cacheDirectory": "${workspaceFolder}/.vscode/cquery_cached_index/"
 }
