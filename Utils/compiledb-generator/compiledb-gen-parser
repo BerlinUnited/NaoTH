@@ -86,7 +86,8 @@ def parse_flags(build_log, proj_dir, inc_prefix, verbose):
         "-[iIDF].*",
         "-std=[a-z0-9+]+",
         "-(no)?std(lib|inc)",
-        "-D([a-zA-Z0-9_]+)=(.*)"
+        "-D([a-zA-Z0-9_]+)=(.*)",
+        "--sysroot=(.*)"
     ]
     flags_whitelist = re.compile("|".join(map("^{}$".format, flags_whitelist)))
 
@@ -129,10 +130,15 @@ def parse_flags(build_log, proj_dir, inc_prefix, verbose):
         else:
             continue
 
+        cmds = split_cmd_line(line)
+        compiler = cmds[0]
+
         arguments = [compiler]
-        words = split_cmd_line(line)[1:]
+
+        words = cmds[1:]
         filepath = None
         line_count += 1
+
 
         for (i, word) in enumerate(words):
             word = word.strip('"')
