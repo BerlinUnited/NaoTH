@@ -43,14 +43,15 @@ workspace "NaoTHSoccer"
     EXTERN_PATH .. "/include",
     EXTERN_PATH .. "/include/glib-2.0",
     EXTERN_PATH .. "/include/gio-unix-2.0", -- does not exists anymore
-    EXTERN_PATH .. "/lib/glib-2.0/include"
+    EXTERN_PATH .. "/lib/glib-2.0/include",
+    EXTERN_PATH .. "/lib64/glib-2.0/include",
   }
 
   includedirs { 
     FRAMEWORK_PATH .. "/Commons/Source" 
   }
 
-  syslibdirs { EXTERN_PATH .. "/lib"}
+  syslibdirs { EXTERN_PATH .. "/lib", EXTERN_PATH .. "/lib64"}
 
   -- this function should be defined in 
   if set_user_defined_paths ~= nil then 
