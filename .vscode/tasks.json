@@ -71,10 +71,13 @@
             "label": "rebuild compile_commands.json",
             "type": "shell",
             "options": {
-                "cwd": "${workspaceFolder}/NaoTHSoccer/Make"
+                "cwd": "${workspaceFolder}/NaoTHSoccer/Make",
+                "env": {
+                    "CXX" : "/usr/bin/c++"
+                }
             },
             "group": "build",
-            "command": "premake5 gmake && ${workspaceFolder}/Utils/compiledb-generator/compiledb-gen-make -C ${workspaceFolder}/NaoTHSoccer/build/ config=optdebug_native NaoTHSoccer -- -o ${workspaceFolder}/compile_commands.json",
+            "command": "premake5 gmake && ${workspaceFolder}/Utils/compiledb-generator/compiledb-gen-make -C ${workspaceFolder}/NaoTHSoccer/build/ config=optdebug_native -- -o ${workspaceFolder}/compile_commands.json",
             "problemMatcher": {
                 "base" : "$gcc",
                 "fileLocation" : ["relative" , "${workspaceFolder}/NaoTHSoccer/build"]

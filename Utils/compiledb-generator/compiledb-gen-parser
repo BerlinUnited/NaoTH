@@ -82,7 +82,7 @@ def parse_flags(build_log, proj_dir, inc_prefix, verbose):
     flags_whitelist = [
         "-c",
         "-m.+",
-        "-W[^,]*",
+        #"-W[^,]*",
         "-[iIDF].*",
         "-std=[a-z0-9+]+",
         "-(no)?std(lib|inc)",
