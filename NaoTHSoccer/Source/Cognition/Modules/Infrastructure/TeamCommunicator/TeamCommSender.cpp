@@ -4,8 +4,6 @@
 
 #include <Tools/NaoTime.h>
 
-#include <Tools/DoberMannTime.h>
-
 using namespace std;
 
 TeamCommSender::TeamCommSender()
