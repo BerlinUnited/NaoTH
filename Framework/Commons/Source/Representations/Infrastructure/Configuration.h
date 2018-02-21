@@ -187,7 +187,7 @@ private:
   GKeyFile* privateKeyFile;
   std::string privateDir;
 
-  // returns true is the path exists and is a directory, false otherwise
+  // returns true if the path exists and is a directory, false otherwise
   bool isDir(std::string& path) const {
     return g_file_test(path.c_str(), G_FILE_TEST_EXISTS) && g_file_test(path.c_str(), G_FILE_TEST_IS_DIR);
   }
