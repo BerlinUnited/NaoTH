@@ -9,5 +9,7 @@
     },
     "telemetry.enableTelemetry": false,
     "telemetry.enableCrashReporter": false,
-    "cquery.cacheDirectory": "${workspaceFolder}/.vscode/cquery_cached_index/"
+    "cquery.cacheDirectory": "${workspaceFolder}/.vscode/cquery_cached_index/",
+    "cSpell.enabled": false,
+    "C_Cpp.errorSquiggles": "Disabled"
 }
