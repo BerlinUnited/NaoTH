@@ -21,7 +21,7 @@
 set -e
 
 scriptdir=$(cd "$(dirname "$0")" && pwd)
-parser_cmd=${scriptdir}/compiledb-gen-parser
+parser_cmd=${scriptdir}/compiledb-gen-parser.py
 
 show_help() {
     cat << EOF

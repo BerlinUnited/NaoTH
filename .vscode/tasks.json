@@ -68,7 +68,7 @@
             }
         },
         {
-            "label": "rebuild compile_commands.json",
+            "label": "Rebuild compile_commands.json",
             "type": "shell",
             "options": {
                 "cwd": "${workspaceFolder}/NaoTHSoccer/Make",
@@ -77,7 +77,7 @@
                 }
             },
             "group": "build",
-            "command": "premake5 gmake && ${workspaceFolder}/Utils/compiledb-generator/compiledb-gen-make -C ${workspaceFolder}/NaoTHSoccer/build/ config=optdebug_native -- -o ${workspaceFolder}/compile_commands.json",
+            "command": "./generate.compile-database.sh",
             "problemMatcher": {
                 "base" : "$gcc",
                 "fileLocation" : ["relative" , "${workspaceFolder}/NaoTHSoccer/build"]

@@ -21,7 +21,7 @@
 set -e
 
 scriptdir=$(cd "$(dirname "$0")" && pwd)
-make_cmd=${scriptdir}/compiledb-gen-make
+make_cmd=${scriptdir}/compiledb-gen-make.sh
 
 VERBOSE=0
 
