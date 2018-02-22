@@ -67,10 +67,14 @@ void Configuration::loadFromDir(std::string dirlocation,
 
   loadFromSingleDir(publicKeyFile, dirlocation + "general/");
   loadFromSingleDir(publicKeyFile, dirlocation + "platform/" + platform + "/");
+
   if(scheme.size() > 0) {
     loadFromSingleDir(publicKeyFile, dirlocation + "scheme/" + scheme + "/");
   }
-  loadFromSingleDir(publicKeyFile, dirlocation + "robots/" + robotName + "/");
+
+  if(platform != "SimSpark" && platform != "LogSimulator"){
+    loadFromSingleDir(publicKeyFile, dirlocation + "robots/" + robotName + "/");
+  }
 
   loadFromSingleDir(publicKeyFile, dirlocation + "robots_bodies/" + bodyID + "/", false);
   loadFromSingleDir(publicKeyFile, dirlocation + "robot_heads/" + headID + "/", false);
