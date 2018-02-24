@@ -37,20 +37,20 @@ class RotationState : public Eigen::Matrix<double,dim,1> { //public RotationStat
         }
 
     public: // accessors
-        Eigen::Block<Eigen::Matrix<double,dim,1> > rotation(){
-            return Eigen::Block<Eigen::Matrix<double,dim,1> >(this->derived(), 0, 0, 3, 1);
+        Eigen::Block<Eigen::Matrix<double,dim,1>, 3, 1> rotation(){
+            return Eigen::Block<Eigen::Matrix<double,dim,1>, 3, 1>(this->derived(), 0, 0);
         }
 
-        const Eigen::Block<const Eigen::Matrix<double,dim,1> > rotation() const{
-            return Eigen::Block<const Eigen::Matrix<double,dim,1> >(this->derived(), 0, 0, 3, 1);
+        const Eigen::Block<const Eigen::Matrix<double,dim,1>, 3, 1> rotation() const{
+            return Eigen::Block<const Eigen::Matrix<double,dim,1>,3 , 1>(this->derived(), 0, 0);
         }
 
-        Eigen::Block<Eigen::Matrix<double,dim,1> > rotational_velocity(){
-            return Eigen::Block<Eigen::Matrix<double,dim,1> >(this->derived(), 3, 0, 3, 1);
+        Eigen::Block<Eigen::Matrix<double,dim,1>, 3, 1> rotational_velocity(){
+            return Eigen::Block<Eigen::Matrix<double,dim,1>, 3, 1>(this->derived(), 3, 0);
         }
 
-        const Eigen::Block<const Eigen::Matrix<double,dim,1> > rotational_velocity() const{
-            return Eigen::Block<const Eigen::Matrix<double,dim,1> >(this->derived(), 3, 0, 3, 1);
+        const Eigen::Block<const Eigen::Matrix<double,dim,1>, 3, 1> rotational_velocity() const{
+            return Eigen::Block<const Eigen::Matrix<double,dim,1>, 3, 1>(this->derived(), 3, 0);
         }
 
     public: // some helper functions
@@ -65,24 +65,18 @@ class RotationState : public Eigen::Matrix<double,dim,1> { //public RotationStat
             return Eigen::Quaterniond(rot2);
         }
 
-        void setRotationFromRotationVector(Eigen::Vector3d rotVector){
-            this->rotation() = rotVector;
+        Eigen::AngleAxisd getRotationAsAngleAxisd() const {
+            double norm = rotation().norm();
+            if(norm > 0){
+                return Eigen::AngleAxisd(norm, rotation().normalized());
+            }
+                return Eigen::AngleAxisd(0, Eigen::Vector3d::UnitX());
         }
 
     public: // define arithmetics
         // unary operator
         RotationState operator-() const{
-            RotationState temp = *this;
-            Eigen::Quaterniond temp_rotation = temp.getRotationAsQuaternion();
-
-            // invert directions
-            temp = Eigen::Matrix<double,dim,1>::operator-();
-
-            // replace with correct inverse rotation
-            Eigen::AngleAxisd rot(temp_rotation.inverse());
-            temp.setRotationFromRotationVector(rot.angle()*rot.axis());
-
-            return temp;
+            return this->Eigen::Matrix<double, dim,1>::operator-();
         }
 
         // binary operators
@@ -105,12 +99,12 @@ class RotationState : public Eigen::Matrix<double,dim,1> { //public RotationStat
 
         // add other to this state, i.e., the resulting rotation describes a rotation which rotates at first by "other" and then by "this"
         RotationState& operator +=(const RotationState& other){
-            Eigen::Quaterniond temp_rotation = this->getRotationAsQuaternion() * other.getRotationAsQuaternion();
+            Eigen::Quaterniond temp_rotation = this->getRotationAsAngleAxisd() * other.getRotationAsAngleAxisd();
             Eigen::Matrix<double,dim,1>::operator+=(other);
 
             // replace with correct rotation
             Eigen::AngleAxisd rot(temp_rotation);
-            setRotationFromRotationVector(rot.angle() * rot.axis());
+            rotation() = rot.angle() * rot.axis();
 
             return *this;
         }
