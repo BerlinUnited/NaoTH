@@ -13,6 +13,8 @@ IMUModel::IMUModel():
     DEBUG_REQUEST_REGISTER("IMUModel:reloadParameters", "", false);
     DEBUG_REQUEST_REGISTER("IMUModel:enableFilterWhileWalking", "enables filter update while walking", false);
 
+    DEBUG_REQUEST_REGISTER("IMUModel:enablePlotsAndDrawings", "enables plots and the drawings in 3d viewer", false);
+
     ukf_acc_global.P = Eigen::Matrix<double,3,3>::Identity(); // covariance matrix of current state
     ukf_rot.P        = Eigen::Matrix<double,6,6>::Identity(); // covariance matrix of current state
 
@@ -102,7 +104,9 @@ void IMUModel::execute(){
 
     writeIMUData();
 
-    plots();
+    DEBUG_REQUEST("IMUModel:enablePlotsAndDrawings",
+        plots();
+    );
 
     lastFrameInfo = getFrameInfo();
 }
