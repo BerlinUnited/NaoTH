@@ -1,0 +1,66 @@
+/**********************************************************************************************************************/
+/* General */
+/**********************************************************************************************************************/
+
+* {
+    margin: 0;
+    padding: 0;
+}
+body{
+    padding: 0 10px 0 10px;
+}
+/**********************************************************************************************************************/
+/* Index */
+/**********************************************************************************************************************/
+#wrapper{
+    display: flex;
+}
+
+#index{
+    border: 1px solid red;
+    width: 600px;
+}
+
+#content{
+    width: 200px;
+    height: 400px;
+    border: 1px solid blue;
+}
+
+h2 {
+  font: 400 40px/1.5 Helvetica, Verdana, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+li {
+  font: 200 20px/1.5 Helvetica, Verdana, sans-serif;
+  border-bottom: 1px solid #ccc;
+}
+
+li:last-child {
+  border: none;
+}
+
+li a {
+  text-decoration: none;
+  color: #000;
+  display: block;
+
+  -webkit-transition: font-size 0.3s ease, background-color 0.3s ease;
+  -moz-transition: font-size 0.3s ease, background-color 0.3s ease;
+  -o-transition: font-size 0.3s ease, background-color 0.3s ease;
+  -ms-transition: font-size 0.3s ease, background-color 0.3s ease;
+  transition: font-size 0.3s ease, background-color 0.3s ease;
+}
+
+li a:hover {
+  font-size: 30px;
+  background: #f6f6f6;
+}

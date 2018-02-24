@@ -1,10 +1,17 @@
 import argparse
 import os
+import shutil
 import mmap
 import re
 import markdown
 from file_info import FileInfo
+from jinja2 import Environment, FileSystemLoader
 
+PATH = os.path.dirname(os.path.abspath(__file__))
+TEMPLATE_ENVIRONMENT = Environment(
+  autoescape=False,
+  loader=FileSystemLoader(os.path.join(PATH, 'templates')),
+  trim_blocks=False)
 
 include_pattern = re.compile(rb'#include [<\"\'](.+)[>\"\']', re.IGNORECASE)  # | re.MULTILINE re.DOTALL |
 class_pattern = re.compile(rb'^\s*class\s+(\S+)\s*[\n:{]', re.IGNORECASE | re.MULTILINE)  # | re.MULTILINE re.DOTALL |
@@ -107,15 +114,81 @@ def writeHtmlFile(file, data, filter=lambda x: True):
         f.write("</body></html>")
 
 
-def parseArgs():
+def parse_cognition(file, data, filter=lambda x: True):
+    fname = file
+    header = []
+    behavior = []
+    infrastructure = []
+    modeling = []
+    perception = []
+    selfawareness = []
+    visualcortex = []
+    for idx in data:
+        if filter(data[idx]):
+            idx = os.path.normpath(idx)
+            path_list = idx.split(os.sep)
+            # remove prefix
+            path_list = [e for e in path_list if e not in ('..', 'NaoTHSoccer', 'Source', 'Cognition')]
+            if len(path_list) > 1:
+                # print(path_list[1])  # these are the categories
+                if path_list[1] == "Behavior":
+                    # behavior.append(os.path.join(*path_list))
+                    behavior.append(path_list[-1])
+                if path_list[1] == "Infrastructure":
+                    # infrastructure.append(os.path.join(*path_list))
+                    infrastructure.append(path_list[-1])
+                if path_list[1] == "Modeling":
+                    # modeling.append(os.path.join(*path_list))
+                    modeling.append(path_list[-1])
+                if path_list[1] == "Perception":
+                    # perception.append(os.path.join(*path_list))
+                    perception.append(path_list[-1])
+                if path_list[1] == "SelfAwareness":
+                    # selfawareness.append(os.path.join(*path_list))
+                    selfawareness.append(path_list[-1])
+                if path_list[1] == "VisualCortex":
+                    # visualcortex.append(os.path.join(*path_list))
+                    visualcortex.append(path_list[-1])
+            else:
+                header.append(os.path.join(*path_list))
+    context = {
+      'header': header,
+      'behavior': behavior,
+      'infrastructure': infrastructure,
+      'modeling': modeling,
+      'perception': perception,
+      'selfawareness': selfawareness,
+      'visualcortex': visualcortex
+    }
+
+    with open(fname, 'w') as f:
+        html = render_template('template.html', context)
+        f.write(html)
+
+    # TODO seperate doc files for each class
+    # get a list of each filename without file ending
+
+    # copy all static files to the doc folder
+    src_files = os.listdir('static/')
+    for file_name in src_files:
+        full_file_name = os.path.join('static/', file_name)
+        if os.path.isfile(full_file_name):
+            shutil.copy(full_file_name, "../../../doc/")
+
+
+def render_template(template_filename, context):
+    return TEMPLATE_ENVIRONMENT.get_template(template_filename).render(context)
+
+
+def parse_args():
     parser = argparse.ArgumentParser(description='Generate documentation for the NaoTH project.')
-    parser.add_argument('-s', '--src', type=str, default="../../../NaoTHSoccer/Source", help='Location of the source files')
-    parser.add_argument('-f', '--file', type=str, default="../../../doc/info.html", help='Location of the output files')
+    parser.add_argument('-s', '--src', type=str, default="../../../NaoTHSoccer/Source/Cognition", help='Location of the source files')
+    parser.add_argument('-f', '--file', type=str, default="../../../doc/index.html", help='Location of the output files')
     return parser.parse_args()
 
 
 if __name__ == "__main__":
-    args = parseArgs()
+    args = parse_args()
     # print(args)
 
     source_directory = args.src
@@ -131,4 +204,9 @@ if __name__ == "__main__":
 
     # lambda f: f.hasDocs()
     # lambda f: f.hasModules()
-    writeHtmlFile(html_file, code_structure)
+    # writeHtmlFile(html_file, code_structure)
+
+    # write_html soll am ende parse_cognition, parse_motion, parse_xabsl etc aufrufen, das heißt parseFileMM muss mehrmals aufgerufen
+    # werden
+
+    parse_cognition(html_file, code_structure)

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>NaoTH Documentation</title>
+    <link rel="stylesheet" type="text/css" href="style.css"/>
+</head>
+<body>
+    <header>
+        <h1>NaoTH Documentation 2018</h1>
+        <p>
+            ~generated at 2018-02-27
+        </p>
+    </header>
+    <div id="wrapper">
+        <section id="index">
+
+            <ul>
+                {% set counter = 0 -%}
+                {% for class_header in header -%}
+                <li><a href="">{{ class_header }}</a></li>
+                    {% set counter = counter + 1 -%}
+                {% endfor -%}
+            </ul>
+            <h2>Behavior</h2>
+            <ul>
+                {% set counter = 0 -%}
+                {% for class_header in behavior -%}
+                    <li><a href="">{{ class_header }}</a></li>
+                    {% set counter = counter + 1 -%}
+                {% endfor -%}
+            </ul>
+            <h2>Infrastructure</h2>
+            <ul>
+                {% set counter = 0 -%}
+                {% for class_header in infrastructure -%}
+                    <li><a href="">{{ class_header }}</a></li>
+                    {% set counter = counter + 1 -%}
+                {% endfor -%}
+            </ul>
+            <h2>Modeling</h2>
+            <ul>
+                {% set counter = 0 -%}
+                {% for class_header in modeling -%}
+                    <li><a href="">{{ class_header }}</a></li>
+                    {% set counter = counter + 1 -%}
+                {% endfor -%}
+            </ul>
+            <h2>Perception</h2>
+            <ul>
+                {% set counter = 0 -%}
+                {% for class_header in perception -%}
+                    <li><a href="">{{ class_header }}</a></li>
+                    {% set counter = counter + 1 -%}
+                {% endfor -%}
+            </ul>
+            <h2>SelfAwareness</h2>
+            <ul>
+                {% set counter = 0 -%}
+                {% for class_header in selfawareness -%}
+                    <li><a href="">{{ class_header }}</a></li>
+                    {% set counter = counter + 1 -%}
+                {% endfor -%}
+            </ul>
+            <h2>VisualCortex</h2>
+            <ul>
+                {% set counter = 0 -%}
+                {% for class_header in visualcortex -%}
+                    <li><a href="">{{ class_header }}</a></li>
+                    {% set counter = counter + 1 -%}
+                {% endfor -%}
+            </ul>
+        </section>
+    <section id="content">
+
+    </section>
+    </div>
+</body>
+</html>
