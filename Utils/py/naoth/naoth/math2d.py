@@ -103,9 +103,11 @@ class Pose2D:
         p.translation = (Vector2() - self.translation).rotate(p.rotation)
         return p
 
+    # operator method for '/' in python2
     def __div__(self, point):
         return (point - self.translation).rotate(-self.rotation)
 
+    # operator method for '/' in python3
     def __truediv__(self, point):
         return (point - self.translation).rotate(-self.rotation)
 
