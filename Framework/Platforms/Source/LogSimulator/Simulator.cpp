@@ -134,7 +134,7 @@ char Simulator::getInput()
   }
 }
 
-void Simulator::main()
+void Simulator::main(bool start)
 {
   init();
 
@@ -143,8 +143,8 @@ void Simulator::main()
 
   jumpToBegin();
 
-  char c;
-  while((c = getInput()) && c != 'q' && c != 'x')
+  char c = start ? 'p' : ' ';
+  while(c != 'q' && c != 'x')
   {
     if(c == 'd') {
       stepForward();
@@ -170,6 +170,8 @@ void Simulator::main()
       printHelp();
       printCurrentLineInfo();
     }
+    // get new cmd char
+    c = getInput();
   }// while
 
   cout << endl << "bye bye!" << endl;

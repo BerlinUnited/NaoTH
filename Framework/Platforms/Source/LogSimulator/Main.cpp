@@ -55,6 +55,7 @@ int main(int argc, char** argv)
   bool backendMode = false;
   bool realTime = false;
   unsigned short port = 5401;
+  bool start = false;
 
   char* logpath = getenv("NAOTH_LOGFILE");
   if(logpath == NULL && argc > 1) {
@@ -74,6 +75,7 @@ int main(int argc, char** argv)
         std::cout << "\"-b\" enable the backend mode which is only used by LogfileSimulatorJNI" << std::endl;
         std::cout << "\"-r\" play and loop the logfile according to the time recorded in the FrameInfo of the logfile" << std::endl;
         std::cout << "\"-p\" debug port number, range of valid values: [1,65535]" << std::endl;
+        std::cout << "\"-s\" starts playing the log file immediatly" << std::endl;
         std::cout << "\"-h\" help" << std::endl;
         return (EXIT_SUCCESS);
     }
@@ -84,6 +86,9 @@ int main(int argc, char** argv)
           return (EXIT_FAILURE);
       }
     }
+    if (strcmp(argv[i], "-s") == 0) {
+       start = true;
+    }
   }
 
   if(logpath == NULL)
@@ -93,6 +98,7 @@ int main(int argc, char** argv)
     cerr << "\"-b\" enable the backend mode which is only used by LogfilePlayer of RobotControl" << endl;
     cerr << "\"-r\" play and loop the logfile according to the time recorded in the FrameInfo of the logfile" << endl;
     cerr << "\"-p\" debug port number, range of valid values: [1,65535]" << std::endl;
+    cerr << "\"-s\" starts playing the log file immediatly" << std::endl;
     cerr << "\"-h\" help" << endl;
     return (EXIT_FAILURE);
   }
@@ -137,7 +143,7 @@ int main(int argc, char** argv)
   theLogProviderMotion->getModuleT()->init(sim.logFileScanner, sim.getRepresentations(), sim.getIncludedRepresentations());
 
   // start the execution
-  sim.main();
+  sim.main(start);
   
   // dump some debug information
   //StopwatchManager::getInstance().dump();
