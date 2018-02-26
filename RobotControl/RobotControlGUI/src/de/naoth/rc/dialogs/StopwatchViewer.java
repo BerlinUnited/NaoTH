@@ -54,6 +54,9 @@ public class StopwatchViewer extends AbstractDialog
     @InjectPlugin
     public static GenericManagerFactory genericManagerFactory;
   }
+  
+  private final Color normalColor = new Color(100,200,255);
+  private final Color warnColor = new Color(255,150,150);
 
   final StopWatchListener stopWatchListener = new StopWatchListener();
   GenericManager currentManager = null;
@@ -462,7 +465,11 @@ private void btResetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST
     }
     }
   
-  private Color interpolate(Color c1, Color c2, float t) {
+  private Color interpolate(Color c1, Color c2, Color c3, float t) {
+      if (t >= 1.0) {
+          return c3;
+      }
+      
       t = Math.max(Math.min(t, 1.0f), 0.0f);
       float r = Math.max(Math.min((c1.getRed()*(1.0f-t) + c2.getRed()*t) / 255.0f, 1.0f), 0.0f);
       float g = Math.max(Math.min((c1.getGreen()*(1.0f-t) + c2.getGreen()*t) / 255.0f, 1.0f), 0.0f);
@@ -490,13 +497,13 @@ private void btResetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST
               if(defaultColorOdd == null) {
                 defaultColorOdd = l.getBackground();
               } else if (!isSelected) {
-                  l.setBackground(interpolate(defaultColorOdd, Color.red, t));
+                  l.setBackground(interpolate(defaultColorOdd, normalColor, warnColor,t));
               }
           } else {
               if(defaultColorEven == null) {
                 defaultColorEven = l.getBackground();
               } else if (!isSelected) {
-                  l.setBackground(interpolate(defaultColorEven, Color.red, t));
+                  l.setBackground(interpolate(defaultColorEven, normalColor, warnColor, t));
               }
           }
           
