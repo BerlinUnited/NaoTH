@@ -51,7 +51,7 @@ public class ModuleConfigurationViewer extends AbstractDialog
         implements ObjectListener<ModuleConfiguration>
 {
 
-  @RCDialog(category = RCDialog.Category.Configure, name = "Modules")
+    @RCDialog(category = RCDialog.Category.Configure, name = "Modules")
     @PluginImplementation
     public static class Plugin extends DialogPlugin<ModuleConfigurationViewer>
     {
@@ -796,7 +796,7 @@ public class ModuleConfigurationViewer extends AbstractDialog
     public void dispose()
     {
         System.out.println("Dispose is not implemented for: " + this.getClass().getName());
-    }//end dispose
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JToggleButton btErrors;
