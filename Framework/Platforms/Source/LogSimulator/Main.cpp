@@ -74,19 +74,19 @@ int main(int argc, char** argv)
         std::cout << "syntax: (-b)? (-r)? (-h)? (-p <port number>)? <logfile>" << std::endl;
         std::cout << "\"-b\" enable the backend mode which is only used by LogfileSimulatorJNI" << std::endl;
         std::cout << "\"-r\" play and loop the logfile according to the time recorded in the FrameInfo of the logfile" << std::endl;
-        std::cout << "\"-p\" debug port number, range of valid values: [1,65535]" << std::endl;
-        std::cout << "\"-s\" starts playing the log file immediatly" << std::endl;
+        std::cout << "\"--port\" debug port number, range of valid values: [1,65535]" << std::endl;
+        std::cout << "\"-a\" autoplay the log file immediately" << std::endl;
         std::cout << "\"-h\" help" << std::endl;
         return (EXIT_SUCCESS);
     }
-    if (strcmp(argv[i], "-p") == 0) {
+    if (strcmp(argv[i], "--port") == 0) {
       port = (unsigned short) strtol(argv[++i],0,10);
       if (port == 0) {
           cerr << "invalid port number" << endl;
           return (EXIT_FAILURE);
       }
     }
-    if (strcmp(argv[i], "-s") == 0) {
+    if (strcmp(argv[i], "-a") == 0) {
        start = true;
     }
   }
@@ -97,8 +97,8 @@ int main(int argc, char** argv)
     cerr << "arguments: (-b)? (-r)? (-h)? (-p <port number>)? <logfile>" << endl;
     cerr << "\"-b\" enable the backend mode which is only used by LogfilePlayer of RobotControl" << endl;
     cerr << "\"-r\" play and loop the logfile according to the time recorded in the FrameInfo of the logfile" << endl;
-    cerr << "\"-p\" debug port number, range of valid values: [1,65535]" << std::endl;
-    cerr << "\"-s\" starts playing the log file immediatly" << std::endl;
+    cerr << "\"--port\" debug port number, range of valid values: [1,65535]" << std::endl;
+    cerr << "\"-a\" starts playing the log file immediatly" << std::endl;
     cerr << "\"-h\" help" << endl;
     return (EXIT_FAILURE);
   }
