@@ -160,6 +160,12 @@ public class DialogRegistry {
         this.control.getController().setFocusedDockable(dockableDialog.intern(), true);
     }//dockDialog
 
+    protected void disposeOnClose() {
+        for(int i = 0; i < this.control.getCDockableCount(); i++) {
+            ((DialogDockable)this.control.getCDockable(i)).dialog.dispose();
+        }
+    }
+    
     public class HelpAction implements ActionListener {
 
         private HelpDialog dlg = null;
