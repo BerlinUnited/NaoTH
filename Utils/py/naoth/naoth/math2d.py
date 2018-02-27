@@ -64,6 +64,14 @@ class Vector2:
         else:
             return False
 
+    def __getitem__(self, k):
+        if k == 0:
+            return self.x
+        elif k == 1:
+            return self.y
+        else:
+            raise IndexError()
+
     def normalize(self):
         if Vector2.abs(self) != 0:
             return self / Vector2.abs(self)
