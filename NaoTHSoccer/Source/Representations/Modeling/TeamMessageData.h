@@ -30,6 +30,7 @@ using namespace naoth;
 // this key is sent with every team message to indicate that the message belongs to us
 #define NAOTH_TEAMCOMM_MESAGE_KEY "naoth"
 
+/** Contains data for a NTP request. */
 struct NtpRequest
 {
     NtpRequest(unsigned int p = 0, unsigned long long s = 0, unsigned long long r = 0)

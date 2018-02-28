@@ -31,9 +31,9 @@ END_DECLARE_MODULE(SimpleNetworkTimeProtocol)
 class SimpleNetworkTimeProtocol : public SimpleNetworkTimeProtocolBase
 {
 public:
-    /** Constructor */
+    /** Constructor: registers debug parameters */
     SimpleNetworkTimeProtocol();
-    /** Destructor */
+    /** Destructor: unregisters debug parameters */
     virtual ~SimpleNetworkTimeProtocol();
     /** Module execution method. */
     virtual void execute();
@@ -51,7 +51,7 @@ protected:
         unsigned int maxSyncingPlayer;
     } params;
 private:
-    /** Creates an ntp request for an randomly selected teammate. */
+    /** Creates an ntp request for randomly selected teammates. */
     void createNtpRequest();
     /** Updates the players team message statistics. */
     void updateMessageStatistics();

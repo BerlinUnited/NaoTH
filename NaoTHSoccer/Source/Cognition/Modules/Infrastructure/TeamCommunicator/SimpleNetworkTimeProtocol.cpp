@@ -11,23 +11,10 @@ SimpleNetworkTimeProtocol::~SimpleNetworkTimeProtocol() {
 }
 
 void SimpleNetworkTimeProtocol::execute() {
-    // TODO: only in set? - make it configurable
-
     // updates the time offsets (if new offsets available)
     updateMessageStatistics();
     // create sync request for teammate (random)
     createNtpRequest();
-
-    // TODO: only if debug request?!
-    /*
-    for(auto const& it : getTimeSync().data) {
-        std::string name = "SimpleNtp:Player#"+std::to_string(it.second.number);
-        PLOT(name+":Buffer", it.second.getBufferSize());
-        PLOT(name+":Latency", it.second.getLatency());
-        PLOT(name+":Offset", it.second.getOffset());
-        PLOT(name+":AvgOffset", it.second.getAverageOffset());
-    }
-    */
 }
 
 void SimpleNetworkTimeProtocol::createNtpRequest()
@@ -44,11 +31,11 @@ void SimpleNetworkTimeProtocol::createNtpRequest()
     // clear requests from previous round
     msg.custom.ntpRequests.clear();
 
-    // if another player is active/available ...
+    // if another player is present
     if(!players.empty() && params.maxSyncingPlayer > 0) {
         // randomly select teammates
         std::random_shuffle(players.begin(), players.end());
-        // fill ntp request with max. syncing partners
+        // fill ntp request for max. syncing partners
         for(unsigned int i = 0; i<players.size() && i<params.maxSyncingPlayer; ++i) {
             auto& player = tm.data.at(players.at(i));
             msg.custom.ntpRequests.push_back(
@@ -70,7 +57,7 @@ void SimpleNetworkTimeProtocol::updateMessageStatistics()
         }
         TeamMessageTimeStatistics::Player& player = getTeamMessageTimeStatistics().getPlayer(data.playerNumber);
         // Update only with newer information
-        if(data.frameInfo.getFrameNumber() > player.lastUpdate.getFrameNumber())
+        if(data.frameInfo > player.lastUpdate)
         {
             // search for myself in teammates response messages
             auto response = std::find_if(
@@ -85,8 +72,8 @@ void SimpleNetworkTimeProtocol::updateMessageStatistics()
                 const auto& t2 = response->received;
                 const auto& t3 = data.custom.timestamp;
                 const auto& t4 = data.timestampParsed;
-                const auto rtt = (t4 - t1) - (t3 - t2);
-                const auto lat = rtt / 2;
+                const long long rtt = (t4 - t1) - (t3 - t2);
+                const long long lat = rtt / 2;
                 if(player.rtt == 0 || player.rtt > rtt) {
                     player.rtt = rtt;
                     player.latency = lat;

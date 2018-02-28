@@ -13,7 +13,7 @@ using namespace naoth;
 class TeamMessageTimeStatistics : public naoth::Printable
 {
 public:
-    /** */
+    /** Stores message time inforamtions. */
     struct Player
     {
         Player(unsigned int n = 0) : number(n) {}
@@ -22,21 +22,21 @@ public:
         unsigned int number;
         /** last update of this player */
         FrameInfo lastUpdate;
-        /** */
+        /** the fastest round trip time / latency and the resulting time offset (difference) */
         long long rtt = 0.0;
         long long latency = 0.0;
         long long offset = 0.0;
-        /** */
+        /** Returns the (estimated) timestamp of the player */
         long long getTimeInMilliSeconds() {
             return naoth::NaoTime::getSystemTimeInMilliSeconds() - offset;
         }
     };
 
-    /** Collection for storing the various player syncing infos */
+    /** Collection for storing the various player time measure infos */
     std::map<unsigned int, Player> data;
 
     /**
-     * @brief Prints the available syncing infos to the given stream.
+     * @brief Prints the available time measure infos to the given stream.
      * @param stream the stream, where the infos should be printed to
      */
     virtual void print(std::ostream& stream) const
@@ -48,11 +48,9 @@ public:
             for (auto it = data.cbegin(); it != data.cend(); ++it) {
                 Player player = it->second;
                 stream << "player: " << player.number << ",\n"
-                       //<< "  - buffer: " << player.getBufferSize() << ",\n"
                        << "  - rtt: "     << player.rtt << "ms,\n"
                        << "  - latency: " << player.latency << "ms,\n"
                        << "  - offset: "  << player.offset << "ms,\n"
-                       //<< "  - avg.offset: " << player.getAverageOffset() << "ms,\n"
                        << "  - timestamp: " << player.getTimeInMilliSeconds() << "ms"
                        << "\n";
             }
@@ -61,9 +59,9 @@ public:
 
     /**
      * @brief Returns the team message statistic representation of a player with the player number "number".
-     *        If there's no player with the number, "nullptr" is returned!
+     *        If there's no player with the number, a new one is created.
      * @param number the player number
-     * @return pointer to the player representation or nullptr
+     * @return Player reference to the players time measure info
      */
     Player& getPlayer(const unsigned int& number) {
         Player& ply = data[number];
