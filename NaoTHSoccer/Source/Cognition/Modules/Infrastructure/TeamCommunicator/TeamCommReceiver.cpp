@@ -96,6 +96,9 @@ void TeamCommReceiver::handleMessage(const std::string& data)
 
   // unpack the message and make sure the user part can be parsed
   TeamMessageData msg(getFrameInfo());
+  // current timestamp as parsing time
+  msg.timestampParsed = naoth::NaoTime::getSystemTimeInMilliSeconds();
+  // parse data to message
   if (msg.parseFromSplMessage(spl))
   {
     // make sure it's really our message
