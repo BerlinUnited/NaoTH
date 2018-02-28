@@ -70,6 +70,8 @@ class Agent:
         self.gen_features = lambda position: gen_features(position)
         # gen_features has to generate an numpy array from a field position
         # -- the used features
+        #self.theta = np.zeros(self.gen_features(Vec(0, 0)).shape)
+        #self.theta = np.concatenate((self.theta, np.array([[1]])))
         self.theta = 5 * np.random.random(self.gen_features(Vec(0, 0)).shape) - 2.5
 
         self.actions = Actions(add_noise=False)
