@@ -161,9 +161,7 @@ public class DialogRegistry {
     }//dockDialog
 
     protected void disposeOnClose() {
-        for(int i = 0; i < this.control.getCDockableCount(); i++) {
-            ((DialogDockable)this.control.getCDockable(i)).dialog.dispose();
-        }
+        this.control.destroy();
     }
     
     public class HelpAction implements ActionListener {

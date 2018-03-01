@@ -74,12 +74,17 @@ public class LogfileInspector extends AbstractDialog
       });
   }
 
+  private void reset()
+  {
+      if(logFile != null) {
+          logFile.close();
+      }
+      this.jSlider1.setEnabled(false);
+  }
+
   @Override
   public void dispose() {
-    if(logFile != null) {
-        logFile.close();
-    }
-    this.jSlider1.setEnabled(false);
+      reset();
   }
 
     /** This method is called from within the constructor to
@@ -265,7 +270,7 @@ public class LogfileInspector extends AbstractDialog
      
             try {
                 // clear the old file
-                dispose();
+                reset();
 
                 logFile = new LogFile(f);
 
