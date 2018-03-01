@@ -735,7 +735,7 @@ public class NaoSCP extends javax.swing.JPanel {
         } catch (IOException ex) {
             Logger.getGlobal().log(Level.SEVERE, "Can not create temporary directory in systems temp directory.");
         }
-        return null;
+        return null; 
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
