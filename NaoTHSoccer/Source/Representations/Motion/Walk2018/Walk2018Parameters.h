@@ -147,7 +147,7 @@ class TorsoRotationStabilizerParameters: public ParameterList{
       PARAMETER_REGISTER(rotation.P.x) = -0.02;
       PARAMETER_REGISTER(rotation.P.y) = -0.03;
       PARAMETER_REGISTER(rotation.VelocityP.x) = 0.02;
-      PARAMETER_REGISTER(rotation.VelocityP.x) = 0.02;
+      PARAMETER_REGISTER(rotation.VelocityP.y) = 0.02;
       PARAMETER_REGISTER(rotation.D.x) = 0;
       PARAMETER_REGISTER(rotation.D.y) = 0;
 
