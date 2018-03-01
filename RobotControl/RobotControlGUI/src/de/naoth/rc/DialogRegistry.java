@@ -97,7 +97,6 @@ public class DialogRegistry {
         
         public void dispose()
         {
-            this.dialog.dispose();
             this.dialog.destroy();
             this.getContentPane().removeAll();
             this.getControl().removeSingleDockable(this.getTitleText());
