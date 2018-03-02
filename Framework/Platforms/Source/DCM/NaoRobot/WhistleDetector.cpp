@@ -246,7 +246,7 @@ void WhistleDetector::loadReferenceWhistles()
   std::ifstream whistleFile;
 
   //read text file with list of reference whistle spectrum files to use
-  std::string referenceWhistleList = "../Config/referenceWhistles/whistles.lst";
+  std::string referenceWhistleList = "Config/referenceWhistles/whistles.lst";
   whistleListFile.open(referenceWhistleList.c_str());
   ASSERT_MSG(whistleListFile.is_open(), "Couldn't find/open file with list of reference whistles ("+referenceWhistleList+")!");
 
@@ -265,7 +265,7 @@ void WhistleDetector::loadReferenceWhistles()
       // "trim" line to file extension
       line.erase(ext+1);
 
-      std::string whistleFileName = "../Config/referenceWhistles/" + line;
+      std::string whistleFileName = "Config/referenceWhistles/" + line;
       whistleFile.open(whistleFileName.c_str(), std::ios_base::binary);
       if(whistleFile.is_open())
       {

@@ -53,8 +53,6 @@ protected:
   bool detectWhistles(int channel);
 
   pa_simple* paSimple;
-  //SharedMemoryWriter<Accessor<int> > shmWriter;
-  //SharedMemoryReader<int> shmReader;
   //RingBufferWithSum<int, 10> detectedCountBuffer;
   double signalBuffer[NUM_CHANNELS_RX][WHISTLE_BUFF_LEN];
   double* signal2correlateBuffer;
