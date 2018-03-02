@@ -1,9 +1,15 @@
 #include "WhistleDetector.h"
 
+#include <Tools/ThreadUtil.h>
+#include <chrono>
 #include <iostream>
 #include <cmath>
 #include <pulse/error.h>
 
+#include "Tools/Debug/NaoTHAssert.h"
+
+namespace naoth
+{
 
 WhistleDetector::WhistleDetector()
   : 
@@ -14,9 +20,9 @@ WhistleDetector::WhistleDetector()
    deinitCyclesCounter(0)
    
 {
-  //shmWriter.open("/whistleDetector.count");
-  //shmReader.open("/whistleDetector.commands");
-  //shmWriter.set(overallWhistleEventCounter);
+  std::cout << "[INFO] CPUTemperatureReader start thread" << std::endl;
+  whistleDetectorThread = std::thread([this] {this->execute();});
+  ThreadUtil::setPriority(whistleDetectorThread, ThreadUtil::Priority::lowest);
 
   signal2correlateBuffer = (double*) fftw_malloc(sizeof(double) * WHISTLE_FFT_LEN);
   fftOut = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * (WHISTLE_BUFF_LEN + 1));
@@ -37,6 +43,12 @@ WhistleDetector::WhistleDetector()
 
 WhistleDetector::~WhistleDetector()
 { 
+
+  if(whistleDetectorThread.joinable())
+  {
+    whistleDetectorThread.join();
+  }
+
   fftw_destroy_plan(planFFT);
   fftw_destroy_plan(planIFFT);
 
@@ -56,7 +68,26 @@ WhistleDetector::~WhistleDetector()
   }
 }
 
-void WhistleDetector::execute(){  
+void WhistleDetector::get(naoth::WhistlePercept& perceptData)
+{
+  std::unique_lock<std::mutex> lock(getMutex, std::try_to_lock);
+  if ( lock.owns_lock() )
+  {
+    perceptData.counter = overallWhistleEventCounter;
+  }
+}
+
+void WhistleDetector::set(const naoth::WhistleControl& controlData)
+{
+  std::unique_lock<std::mutex> lock(setMutex, std::try_to_lock);
+  if ( lock.owns_lock() )
+  {
+    command = controlData.onOffSwitch;
+  }
+}
+
+void WhistleDetector::execute()
+{
   running = true;
 
   // return;
@@ -64,7 +95,6 @@ void WhistleDetector::execute(){
   {
     int error = 0;
 
-    //int command = shmReader.data();  //TODO fix that
     int command = 1;
     /*
     if(testFileMode)
@@ -168,7 +198,6 @@ void WhistleDetector::execute(){
         if(deinitCyclesCounter == 0 && activeChannels[c] == '1' && detectWhistles(c))
         {
           overallWhistleEventCounter++;
-          shmWriter.set(overallWhistleEventCounter);
         }
       }
       
@@ -324,7 +353,8 @@ void WhistleDetector::loadReferenceWhistles()
           //whistleOut.close();
         }
       }
-      else{
+      else
+      {
         std::cout << "Could not load: " << whistleFileName.c_str() << std::endl;
       }
     }
@@ -447,4 +477,7 @@ void WhistleDetector::deinitAudio()
     }
   }
   recording = false;
+}
+
+
 }

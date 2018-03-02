@@ -1,6 +1,8 @@
 #ifndef _WhistleDetector_H
 #define _WhistleDetector_H
 
+#include <mutex>
+#include <thread>
 #include <vector>
 #include <fstream>
 #include <sstream>
@@ -12,13 +14,26 @@
 
 #include "SoundConfig.h"
 
+#include "Representations/Infrastructure/WhistlePercept.h"
+#include "Representations/Infrastructure/WhistleControl.h"
+
+namespace naoth
+{
+
 class WhistleDetector
 {
 public:
   WhistleDetector();
   virtual ~WhistleDetector();
 
+  void get(naoth::WhistlePercept& perceptData);
+  void set(const naoth::WhistleControl& controlData);
+
 protected:
+  std::thread whistleDetectorThread;
+  std::mutex getMutex;
+  std::mutex setMutex;
+  int command;
 
   //Parameter Substitute:
   std::string whistleListFile = "whistles.lst";
@@ -73,4 +88,5 @@ protected:
 
 };
 
+}
 #endif // _WhistleDetector_H
