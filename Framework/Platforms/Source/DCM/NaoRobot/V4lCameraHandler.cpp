@@ -60,7 +60,8 @@ V4lCameraHandler::V4lCameraHandler()
   settingsOrder.push_back(CameraSettings::Exposure);
   settingsOrder.push_back(CameraSettings::Gain);
   settingsOrder.push_back(CameraSettings::WhiteBalance);
-  //settingsOrder.push_back(CameraSettings::BacklightCompensation);
+  // this throws errors sometimes and slows down the robot, check whats wrong before activating it
+//  settingsOrder.push_back(CameraSettings::BacklightCompensation);
   settingsOrder.push_back(CameraSettings::FadeToBlack);
   
 
