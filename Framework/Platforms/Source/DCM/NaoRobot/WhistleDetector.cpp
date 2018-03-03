@@ -114,8 +114,8 @@ void WhistleDetector::execute()
     {
       if(command == 0)
       {
-        //deinit audio device ~2 seconds after switch off command was set
-        //TODO warum sind 63 Zyklen ca. 2 Sekunden. Das läuft doch außerhalb von Cognition?
+        // deinit audio device ~8 seconds after switch off command was set
+        // (recording has blocking behaviour 1024 samples eqal 128 ms 63*128 equals ~8s
         if(deinitCyclesCounter >= 63)
         {
           std::cout << "stop recording" << std::endl;
