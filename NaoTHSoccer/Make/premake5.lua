@@ -77,30 +77,29 @@ workspace "NaoTHSoccer"
   }
   
   -- TODO: howto compile the framework representations properly *inside* the project?
-  local COMMONS_MESSAGES = FRAMEWORK_PATH .. "/Commons/Messages/"
+  -- We dont want to assume the location of the NaoTH Make folder for debug purposes
+  local NAOTH_PROJECT = path.join(FRAMEWORK_PATH, "..")
+  local COMMONS_MESSAGES = path.join(FRAMEWORK_PATH, "Commons/Messages/")
   
-  invokeprotoc(
-    { 
-      COMMONS_MESSAGES .. "CommonTypes.proto", 
-      COMMONS_MESSAGES .. "Framework-Representations.proto", 
-      COMMONS_MESSAGES .. "Messages.proto"
-    },
-    FRAMEWORK_PATH .. "/Commons/Source/Messages/", 
-    "../../RobotControl/RobotConnector/src/", 
-    "../../Utils/py/naoth/naoth",
-    {COMMONS_MESSAGES}
-  )
-  -- I dont want to assume the location of the NaoTH Make folder for debug purposes
-  NAOTH_MAKE = path.join(FRAMEWORK_PATH, "../NaoTHSoccer/Make")
-
+  makeprotoc 
+  {
+    inputFiles  = os.matchfiles(path.join(COMMONS_MESSAGES, "*.proto")),
+    cppOut      = path.join(FRAMEWORK_PATH,"Commons/Source/Messages/"),
+    javaOut     = path.join(NAOTH_PROJECT, "RobotControl/RobotConnector/src/"),
+    pythonOut   = path.join(NAOTH_PROJECT, "Utils/py/naoth/naoth"),
+    includeDirs = {COMMONS_MESSAGES}
+  }
+  
   -- relative to naoth Make folder
-  invokeprotoc(
-    {path.join(NAOTH_MAKE, "../Messages/Representations.proto")},
-    path.join(NAOTH_MAKE, "../Source/Messages/"),
-    path.join(NAOTH_MAKE, "../../RobotControl/RobotConnector/src/"),
-    path.join(NAOTH_MAKE, "../../Utils/py/naoth/naoth"),
-    {COMMONS_MESSAGES, path.join(NAOTH_MAKE, "../Messages/")}
-  )
+  makeprotoc 
+  {
+    inputFiles  = os.matchfiles(path.join(NAOTH_PROJECT, "NaoTHSoccer/Messages/*.proto")),
+    cppOut      = path.join(NAOTH_PROJECT, "NaoTHSoccer/Source/Messages/"),
+    javaOut     = path.join(NAOTH_PROJECT, "RobotControl/RobotConnector/src/"),
+    pythonOut   = path.join(NAOTH_PROJECT, "Utils/py/naoth/naoth"),
+    includeDirs = {COMMONS_MESSAGES, path.join(NAOTH_PROJECT, "NaoTHSoccer/Messages/")}
+  }
+  
 
   filter "configurations:Debug"
     defines { "DEBUG" }

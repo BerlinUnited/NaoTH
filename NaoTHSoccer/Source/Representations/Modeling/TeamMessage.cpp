@@ -1,7 +1,7 @@
 #include "TeamMessage.h"
 
 #include <Tools/DataConversion.h>
-#include <Messages/Representations.pb.h>
+#include <Messages/TeamMessage.pb.h>
 #include <google/protobuf/io/zero_copy_stream_impl.h>
 
 using namespace naoth;

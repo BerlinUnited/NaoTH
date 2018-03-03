@@ -148,8 +148,13 @@ function add_gcc_ignore_pragmas(files)
   end
 end
 
+-- a wrapper for an easier access with names parameters
+-- e.g., makeprotoc{inputFiles = {""}, ...}
+function makeprotoc(arg)
+  invokeprotoc(arg.inputFiles, arg.cppOut, arg.javaOut, arg.pythonOut, arg.includeDirs)
+end
 
-function invokeprotoc(inputFiles, cppOut, javaOut, pythonOut, ipaths)
+function invokeprotoc(inputFiles, cppOut, javaOut, pythonOut, includeDirs)
 	-- check if protobuf compile is explicitely requested
     local compile = (_OPTIONS["protoc"] ~= nil)
 
@@ -166,7 +171,7 @@ function invokeprotoc(inputFiles, cppOut, javaOut, pythonOut, ipaths)
       -- execute compile process for each file
       local time = os.time()
       -- do the recompilation
-     if( protocCompile(inputFiles, cppOut, javaOut, pythonOut, ipaths)) then
+     if( protocCompile(inputFiles, cppOut, javaOut, pythonOut, includeDirs)) then
        -- if successfull touch the shadow files
        for i = 1, #inputFiles do
           -- touch shadow file in order to remember this build date
