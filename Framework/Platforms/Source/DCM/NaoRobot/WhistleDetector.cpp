@@ -20,7 +20,7 @@ WhistleDetector::WhistleDetector()
    deinitCyclesCounter(0)
    
 {
-  std::cout << "[INFO] CPUTemperatureReader start thread" << std::endl;
+  std::cout << "[INFO] WhistleDetector start thread" << std::endl;
   whistleDetectorThread = std::thread([this] {this->execute();});
   ThreadUtil::setPriority(whistleDetectorThread, ThreadUtil::Priority::lowest);
 
@@ -134,7 +134,7 @@ void WhistleDetector::execute()
       int samplesToRead = SAMPLE_NEW_COUNT * NUM_CHANNELS_RX; //BUFFER_SIZE_RX;
       int bytesToRead = samplesToRead * static_cast<int>(sizeof(short));
 
-      // Record some data ...
+      // Record some data
       if (!paSimple || paSimple == NULL)
       {
         std::cerr << "[PulseAudio] pa_simple == NULL" << std::endl;
@@ -161,6 +161,7 @@ void WhistleDetector::execute()
 
       //
       // Order of audio channels while recording 4 channels is for V4 Naos as follows:
+      // TODO: is this the same for the newer Naos?
       // - Channel 0 - Left  Microphone
       // - Channel 1 - Front Microphone
       // - Channel 2 - Right Microphone
@@ -369,7 +370,7 @@ bool WhistleDetector::detectWhistles(int channel)
   for(size_t idxWhistle = 0; idxWhistle < referenceWhistleSpectra.size(); idxWhistle++)
   {
     
-    // Now multiply the FFT of dataIn with the conjugate FFT of cmpData    
+    // Now multiply the FFT of dataIn with the conjugate FFT of cmpData
     for(int j = 0; j < WHISTLE_BUFF_LEN + 1; j++)
     {
       const double realFFTIn = fftOut[j][0];
