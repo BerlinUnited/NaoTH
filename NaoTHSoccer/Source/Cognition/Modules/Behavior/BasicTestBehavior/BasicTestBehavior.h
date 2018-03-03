@@ -80,11 +80,12 @@ public:
 private:
   int lastWhistleCount;
   int idleCounter;
-  bool isWalking;
+	bool whistleDetected;
 
   void testHead();
   void testMotion();
   void testLED();
-};//end class ImageProcessor
+	void testWhistle();
+};
 
 #endif // _BasicTestBehavior_H_
