@@ -37,8 +37,10 @@ class GameControlData2018(Struct):
     
     def __init__(self, data=None):
         """Constructor."""
-        super(GameControlData, self).__init__('4sh8b3h')
-        self.logger = logging.getLogger("GameControlData")
+        # initialize with the struct format characters as described here
+        # https://docs.python.org/2/library/struct.html
+        super(GameControlData2018, self).__init__('4sH10B3H')
+        self.logger = logging.getLogger("GameControlData2018")
         # based on the given data the message is initialized with default values or parsed from the data string
         if data is None or self.unpack(data)[0]:
             self.setDefaults()
@@ -79,8 +81,8 @@ class GameControlData2018(Struct):
 
         # assign data
         it = iter(msg[2:])
-        self.packetNumber = next(it)
-        self.playersPerTeam = next(it)
+        self.packetNumber     = next(it)
+        self.playersPerTeam   = next(it)
         
         self.competitionPhase = next(it)
         self.competitionType  = next(it)
@@ -139,7 +141,6 @@ class GameControlData2018(Struct):
             
         out += "\n"
         out += "        kickingTeam: " + str(self.kickingTeam) + "\n"
-        out += "       secGameState: " + self.getSecGameState() + "\n"
         out += "         dropInTeam: " + str(self.dropInTeam) + "\n"
         out += "         dropInTime: " + str(self.dropInTime) + "\n"
         out += "      secsRemaining: " + str(self.secsRemaining) + "\n"
@@ -170,25 +171,25 @@ class GameControlData2018(Struct):
             
     def getGamePhase(self):
       return self.getName({
-        GAME_PHASE_NORMAL: "normal",
-        GAME_PHASE_PENALTYSHOOT: "penalty shoot",
-        GAME_PHASE_OVERTIME: "over time",
-        GAME_PHASE_TIMEOUT: "timeout"
+        self.GAME_PHASE_NORMAL: "normal",
+        self.GAME_PHASE_PENALTYSHOOT: "penalty shoot",
+        self.GAME_PHASE_OVERTIME: "over time",
+        self.GAME_PHASE_TIMEOUT: "timeout"
       }, self.gamePhase)
             
     def getGameState(self):
       return self.getName({
-        STATE_INITIAL: "initial",
-        STATE_READY: "ready",
-        STATE_SET: "set",
-        STATE_PLAYING: "playing",
-        STATE_FINISHED: "finished"
+        self.STATE_INITIAL: "initial",
+        self.STATE_READY: "ready",
+        self.STATE_SET: "set",
+        self.STATE_PLAYING: "playing",
+        self.STATE_FINISHED: "finished"
       }, self.gameState)
     
     def getSetPlay(self):
       return self.getName({
-        SET_PLAY_NONE: "none",
-        SET_PLAY_GOAL_FREE_KICK: "goal free kick",
-        SET_PLAY_PUSHING_FREE_KICK: "pushing free kick"
+        self.SET_PLAY_NONE: "none",
+        self.SET_PLAY_GOAL_FREE_KICK: "goal free kick",
+        self.SET_PLAY_PUSHING_FREE_KICK: "pushing free kick"
       }, self.setPlay)
 
