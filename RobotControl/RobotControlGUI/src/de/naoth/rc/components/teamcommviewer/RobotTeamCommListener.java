@@ -40,7 +40,7 @@ public class RobotTeamCommListener implements Runnable {
         private final boolean isOpponent;
 
         public RobotTeamCommListener(boolean isOpponent) {
-            this.readBuffer = ByteBuffer.allocateDirect(SPLMessage.SPL_STANDARD_MESSAGE_SIZE);
+            this.readBuffer = ByteBuffer.allocateDirect(SPLMessage.SPL_MAXIMAL_MESSAGE_SIZE);
             this.readBuffer.order(ByteOrder.LITTLE_ENDIAN);
             this.isOpponent = isOpponent;
         }
@@ -81,7 +81,7 @@ public class RobotTeamCommListener implements Runnable {
 
                     try {
                         long timestamp = System.currentTimeMillis();
-                        SPLMessage spl_msg = new SPLMessage(this.readBuffer);
+                        SPLMessage spl_msg = SPLMessage.parseFromBuffer(this.readBuffer);//new SPLMessage(this.readBuffer);
                         TeamCommMessage tc_msg = new TeamCommMessage(timestamp, ((InetSocketAddress) address).getHostString(), spl_msg, this.isOpponent);
 
                         if (address instanceof InetSocketAddress && Plugin.teamcommManager != null) {

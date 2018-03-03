@@ -1,6 +1,7 @@
 package de.naoth.rc.components.teamcommviewer;
 
 import de.naoth.rc.dataformats.SPLMessage;
+import de.naoth.rc.dataformats.SPLMessage2017;
 import de.naoth.rc.math.Vector2D;
 import de.naoth.rc.server.ConnectionStatusEvent;
 import de.naoth.rc.server.ConnectionStatusListener;
@@ -29,12 +30,12 @@ public class RobotStatus {
     public static final Color COLOR_WARNING = new Color(1.0f, 1.0f, 0.0f, 0.5f);
     public static final Color COLOR_DANGER = new Color(1.0f, 0.0f, 0.0f, 0.5f);
 
-    public byte playerNum;
-    public byte teamNum;
+    public int playerNum;
+    public int teamNum;
     public Color robotColor = Color.WHITE;
     public double msgPerSecond;
     public float ballAge;
-    public byte fallen;
+    public boolean fallen;
     public boolean isDead;
     private ArrayList<RobotStatusListener> listener = new ArrayList<>();
 
@@ -86,8 +87,8 @@ public class RobotStatus {
      * @param msg 
      */
     public void updateStatus(long timestamp, SPLMessage msg) {
-        this.teamNum = msg.teamNum;
-        this.playerNum = msg.playerNum;
+        this.teamNum = msg.getTeamNumber();
+        this.playerNum = msg.getPlayerNumber();
 
         // don't add the timestamp if it did not change compared to the last time
         long lastSeen = Long.MIN_VALUE;
@@ -100,20 +101,20 @@ public class RobotStatus {
         }
         this.isDead = ((System.currentTimeMillis() - lastSeen) > MAX_TIME_BEFORE_DEAD || this.msgPerSecond <= 0.0);
         this.msgPerSecond = calculateMsgPerSecond();
-        this.fallen = msg.fallen;
-        this.ballAge = msg.ballAge;
+        this.fallen = (msg.getValue("fallen", (byte)0) == 1);
+        this.ballAge = msg.getValue("ballAge", -1.0f);
 
-        if (msg.user != null) {
-            this.temperature = msg.user.getTemperature();
-            this.cpuTemperature = msg.user.getCpuTemperature();
-            this.batteryCharge = msg.user.getBatteryCharge() * 100.0f;
-            this.timeToBall = msg.user.getTimeToBall();
-            this.wantsToBeStriker = msg.user.getWantsToBeStriker();
-            this.wasStriker = msg.user.getWasStriker();
-            this.isPenalized = msg.user.getIsPenalized();
+        if (msg.getUser() != null) {
+            this.temperature = msg.getUser().getTemperature();
+            this.cpuTemperature = msg.getUser().getCpuTemperature();
+            this.batteryCharge = msg.getUser().getBatteryCharge() * 100.0f;
+            this.timeToBall = msg.getUser().getTimeToBall();
+            this.wantsToBeStriker = msg.getUser().getWantsToBeStriker();
+            this.wasStriker = msg.getUser().getWasStriker();
+            this.isPenalized = msg.getUser().getIsPenalized();
 //            this.whistleDetected = msg.user.getWhistleDetected(); // used in another branch!
-            this.teamBall = new Vector2D(msg.user.getTeamBall().getX(), msg.user.getTeamBall().getY());
-        } else if(msg.doberHeader != null) {
+            this.teamBall = new Vector2D(msg.getUser().getTeamBall().getX(), msg.getUser().getTeamBall().getY());
+        } else if(msg.hasValue("doberHeader")) {
             
             this.temperature = -1;
             this.cpuTemperature = -1;
@@ -122,8 +123,11 @@ public class RobotStatus {
             this.wantsToBeStriker = false;
             this.wasStriker = false;
 
-            this.isPenalized = msg.doberHeader.isPenalized > 0;
-            this.whistleDetected = msg.doberHeader.whistleDetected > 0;
+            SPLMessage2017.DoBerManCustomHeader doberHeader = null;
+            doberHeader = msg.getValue("doberHeader", doberHeader);
+            // TODO: doberHeader can be potentially null
+            this.isPenalized = doberHeader.isPenalized > 0;
+            this.whistleDetected = doberHeader.whistleDetected > 0;
             this.teamBall = new Vector2D(Double.POSITIVE_INFINITY,Double.POSITIVE_INFINITY);
         } else {
             this.temperature = -1;

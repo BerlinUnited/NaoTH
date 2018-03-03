@@ -161,7 +161,7 @@ public class RobotStatusPanel extends javax.swing.JPanel implements RobotStatusL
             this.jlTimestamp.setText(String.format("%4.2f msg/s", rs.msgPerSecond));
             this.jlTimestamp.setForeground(Color.black);
         }
-        this.jlFallenTime.setText(rs.fallen == 1 ? "FALLEN" : "NOT FALLEN");
+        this.jlFallenTime.setText(rs.fallen ? "FALLEN" : "NOT FALLEN");
         this.jlBallAge.setText("" + rs.ballAge + "s");
         
         jlTemperature.setForeground(Color.black);
