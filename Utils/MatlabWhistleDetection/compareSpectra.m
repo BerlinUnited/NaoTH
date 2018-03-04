@@ -33,14 +33,14 @@ norm_mat_calc_spectrum = norm_mat_calc_spectrum(1:1025);
 
 figure
 plot(abs(norm_mat_calc_spectrum), 'r')
-hold on
-plot(abs(norm_cpp_calc_spectrum), 'b')
+%hold on
+%plot(abs(norm_cpp_calc_spectrum), 'b')
 
 %
-diff = norm_mat_calc_spectrum - norm_cpp_calc_spectrum;
+%diff = norm_mat_calc_spectrum - norm_cpp_calc_spectrum;
 
-figure
-plot(abs(diff), 'r')
-title('Differenz')
+%figure
+%plot(abs(diff), 'r')
+%title('Differenz')
 
 

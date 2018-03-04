@@ -41,9 +41,7 @@ protected:
 
   double threshold = 0.25;
   bool checkAllWhistles = true;
-  bool saveLog = false;
-  bool saveSpectrum = false;
-  bool saveRawAudio = false;
+  bool saveRawAudio = true;
 
   void initAudio();
   void clearBuffers();
