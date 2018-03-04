@@ -12,7 +12,9 @@ namespace naoth
 {
 
 WhistleDetector::WhistleDetector()
-  : 
+  :
+   command(0),
+   overallWhistleEventCounter(0),
    audioReadBuffer(BUFFER_SIZE_RX, 0),
    running(false),
    recording(false),
@@ -95,7 +97,6 @@ void WhistleDetector::execute()
   {
     int error = 0;
 
-    int command = 1;
     /*
     if(testFileMode)
     {
