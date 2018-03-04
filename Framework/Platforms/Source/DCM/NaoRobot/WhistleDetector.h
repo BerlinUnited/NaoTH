@@ -69,7 +69,7 @@ protected:
   //bool testFileMode;
 
   std::vector<fftw_complex*> referenceWhistleSpectra;
-  std::vector<float> referenceWhistleAutoCorrelationMaxima;
+  std::vector<double> referenceWhistleAutoCorrelationMaxima;
   std::vector<std::string> referenceWhistleNames;
 
 

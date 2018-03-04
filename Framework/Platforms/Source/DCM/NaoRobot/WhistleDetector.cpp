@@ -40,7 +40,10 @@ WhistleDetector::WhistleDetector()
   loadReferenceWhistles();
 
   // Load reference whistle
-  //ASSERT_MSG(referenceWhistleSpectra.size(), "Couldn't load any reference whistle!");
+  if(referenceWhistleSpectra.size() <= 0)
+  {
+    std::cerr << "Couldn't load any reference whistle!" << std::endl;
+  }
 }
 
 WhistleDetector::~WhistleDetector()
@@ -273,7 +276,7 @@ void WhistleDetector::loadReferenceWhistles()
       {
         std::cout << "trying to load '" << whistleFileName << "'." << std::endl;
         fftw_complex* whistleSpectrum = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * (WHISTLE_BUFF_LEN + 1));
-        float autoCorrelationMax = 0.0f;
+        double autoCorrelationMax = 0.0;
 
         //read file content byte wise
         for(int j = 0; j < WHISTLE_BUFF_LEN + 1; j++)
@@ -281,7 +284,7 @@ void WhistleDetector::loadReferenceWhistles()
           whistleFile.read(reinterpret_cast<char*>(&(whistleSpectrum[j][0])), sizeof(double));
           whistleFile.read(reinterpret_cast<char*>(&(whistleSpectrum[j][1])), sizeof(double));
         }
-        whistleFile.read(reinterpret_cast<char*>(&autoCorrelationMax), sizeof(float));
+        whistleFile.read(reinterpret_cast<char*>(&autoCorrelationMax), sizeof(double));
         whistleFile.close();
 
         for(int i = 0; i < WHISTLE_FFT_LEN; i++)
