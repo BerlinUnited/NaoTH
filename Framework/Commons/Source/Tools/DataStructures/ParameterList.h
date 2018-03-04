@@ -77,6 +77,18 @@ protected:
       virtual T get() const { ASSERT(value != NULL); return Math::toDegrees(*value); }
   };
 
+  template<class T, size_t Precision>
+  class ParameterFloatToFixedPoint : public Parameter<T> {
+    protected:
+      T* value;
+    public:
+      ParameterFloatToFixedPoint(const std::string& name, T* value) : Parameter<T>(name), value(value) {}
+      ~ParameterFloatToFixedPoint(){}
+      virtual void set(T v) { *value = static_cast<T>(Math::toFixPoint<Precision>((float) v)); }
+      virtual T get() const { ASSERT(value != NULL); return Math::fromFixPoint<Precision>(*value); }
+  };
+
+
 protected:
   // ACHTUNG: never copy the content of the parameter list
   ParameterList(const ParameterList& /*obj*/) {}
