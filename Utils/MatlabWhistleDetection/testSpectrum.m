@@ -1,4 +1,4 @@
-fileID = fopen ('andyDark_8kHz_1channels.dat', 'r');
+fileID = fopen ('data/andyDark_8kHz_1channels.dat', 'r');
     cpp_calc_spectrum = fread(fileID, 'double', 'ieee-le');
 fclose(fileID);
 
