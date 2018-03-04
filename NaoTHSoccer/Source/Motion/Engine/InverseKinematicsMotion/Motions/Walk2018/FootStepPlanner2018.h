@@ -49,23 +49,23 @@ public:
   const FootStepPlanner2018Parameters& parameters;
 
 private:
-  void calculateNewStep(const Step& lastStep, Step& newStep, const WalkRequest& walkRequest);
+  void calculateNewStep(const Step& lastStep, Step& newStep, const WalkRequest& walkRequest); // const;
 
   void adaptStepSize(FootStep& step) const;
 
   void updateParameters();
 
-  FootStep nextStep(const FootStep& lastStep, const WalkRequest& req);
+  FootStep nextStep(const FootStep& lastStep, const WalkRequest& req) const;
 
-  FootStep controlStep(const FootStep& lastStep, const WalkRequest& req);
+  FootStep controlStep(const FootStep& lastStep, const WalkRequest& req) const;
   
-  FootStep finalStep(const FootStep& lastStep, const WalkRequest& req);
+  FootStep finalStep(const FootStep& lastStep, const WalkRequest& req) const;
 
   FootStep zeroStep(const FootStep& lastStep) const;
 
-  FootStep calculateNextWalkStep(const InverseKinematic::FeetPose& pose, const Pose2D& offset, const Pose2D& lastStepRequest, FootStep::Foot movingFoot, const WalkRequest& req, bool stepControl = false);
+  FootStep calculateNextWalkStep(const InverseKinematic::FeetPose& pose, const Pose2D& offset, const Pose2D& lastStepRequest, FootStep::Foot movingFoot, const WalkRequest& req, bool stepControl = false) const;
 
-  FootStep firstStep(const InverseKinematic::FeetPose& pose, const Pose2D& offset, const Pose2D& lastStepRequest, const WalkRequest& req);
+  FootStep firstStep(const InverseKinematic::FeetPose& pose, const Pose2D& offset, const Pose2D& lastStepRequest, const WalkRequest& req) const;
 
   void restrictStepSize(Pose2D& step, double character, bool stepControl) const;
 

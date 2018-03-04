@@ -10,16 +10,16 @@
 using namespace InverseKinematic;
 using namespace std;
 
-FootStepPlanner2018::FootStepPlanner2018():
+FootStepPlanner2018::FootStepPlanner2018() :
   parameters(getWalk2018Parameters().footStepPlanner2018Params),
   theFootOffsetY(0.0),
   theMaxChangeTurn(0.0),
   theMaxChangeX(0.0),
   theMaxChangeY(0.0),
-  emergencyCounter(0){
-}
+  emergencyCounter(0)
+{}
 
-void FootStepPlanner2018::updateParameters(){
+void FootStepPlanner2018::updateParameters() {
   theFootOffsetY   = NaoInfo::HipOffsetY + parameters.footOffsetY;
   
   theMaxChangeTurn = parameters.limits.maxStepTurn   * parameters.limits.maxStepChange;
@@ -27,7 +27,8 @@ void FootStepPlanner2018::updateParameters(){
   theMaxChangeY    = parameters.limits.maxStepWidth  * parameters.limits.maxStepChange;
 }
 
-void FootStepPlanner2018::init(size_t initial_number_of_cycles, FeetPose initialFeetPose){
+void FootStepPlanner2018::init(size_t initial_number_of_cycles, FeetPose initialFeetPose)
+{
     Step& initialStep = getStepBuffer().add();
     initialStep.footStep = FootStep(initialFeetPose, FootStep::NONE);
     initialStep.numberOfCycles = static_cast<int>(initial_number_of_cycles) - 1; // TODO: why?
@@ -37,7 +38,8 @@ void FootStepPlanner2018::init(size_t initial_number_of_cycles, FeetPose initial
     ASSERT(initialStep.samplesSingleSupport >= 0 && initialStep.samplesDoubleSupport >= 0);
 }
 
-void FootStepPlanner2018::execute(){
+void FootStepPlanner2018::execute()
+{
     // current step has been executed, remove
     if ( getStepBuffer().first().isExecuted() ) {
       getStepBuffer().remove();
@@ -72,7 +74,7 @@ void FootStepPlanner2018::calculateNewStep(const Step& lastStep, Step& newStep, 
 
     PLOT("Walk:emergencyCounter",emergencyCounter);
 
-    if(emergencyCounter > parameters.stabilization.maxEmergencyCounter){
+    if(emergencyCounter > parameters.stabilization.maxEmergencyCounter) {
         emergencyCounter = 0;
         getCoMErrors().absolute2.clear();
     }
@@ -84,7 +86,7 @@ void FootStepPlanner2018::calculateNewStep(const Step& lastStep, Step& newStep, 
       newStep.footStep = zeroStep(lastStep.footStep);
     }
 
-    if(newStep.footStep.liftingFoot() == FootStep::NONE){
+    if(newStep.footStep.liftingFoot() == FootStep::NONE) {
       newStep.numberOfCycles = 1;
       newStep.samplesDoubleSupport = 1;
       newStep.samplesSingleSupport = 0;
@@ -193,7 +195,8 @@ void FootStepPlanner2018::adaptStepSize(FootStep& step) const
   }
 }//end adaptStepSize
 
-FootStep FootStepPlanner2018::finalStep(const FootStep& lastStep, const WalkRequest& /*req*/) {
+FootStep FootStepPlanner2018::finalStep(const FootStep& lastStep, const WalkRequest& /*req*/) const
+{
   // don't move the feet if they stoped moving once
   if(lastStep.liftingFoot() == FootStep::NONE) {
     return zeroStep(lastStep);
@@ -215,7 +218,8 @@ FootStep FootStepPlanner2018::finalStep(const FootStep& lastStep, const WalkRequ
   }
 }
 
-FootStep FootStepPlanner2018::controlStep(const FootStep& lastStep, const WalkRequest& req) {
+FootStep FootStepPlanner2018::controlStep(const FootStep& lastStep, const WalkRequest& req) const
+{
   WalkRequest myReq = req;
   myReq.target = req.stepControl.target;//HACK
 
@@ -227,7 +231,7 @@ FootStep FootStepPlanner2018::zeroStep(const FootStep& lastStep) const {
   return FootStep(lastStep.end(), FootStep::NONE);
 }
 
-FootStep FootStepPlanner2018::nextStep(const FootStep& lastStep, const WalkRequest& req)
+FootStep FootStepPlanner2018::nextStep(const FootStep& lastStep, const WalkRequest& req) const
 {
   if ( lastStep.liftingFoot() == FootStep::NONE ) {
     return firstStep(lastStep.end(), lastStep.offset(), lastStep.stepRequest(), req);
@@ -237,7 +241,8 @@ FootStep FootStepPlanner2018::nextStep(const FootStep& lastStep, const WalkReque
   }
 }
 
-FootStep FootStepPlanner2018::firstStep(const InverseKinematic::FeetPose& pose, const Pose2D& offset, const Pose2D& lastStepRequest, const WalkRequest& req) {
+FootStep FootStepPlanner2018::firstStep(const InverseKinematic::FeetPose& pose, const Pose2D& offset, const Pose2D& lastStepRequest, const WalkRequest& req) const
+{
   FootStep firstStepLeft  = calculateNextWalkStep(pose, offset, lastStepRequest, FootStep::LEFT, req);
   FootStep firstStepRight = calculateNextWalkStep(pose, offset, lastStepRequest, FootStep::RIGHT, req);
   
@@ -269,7 +274,7 @@ FootStep FootStepPlanner2018::firstStep(const InverseKinematic::FeetPose& pose, 
 }//end firstStep
 
 // TODO: parameter for the foot to move
-FootStep FootStepPlanner2018::calculateNextWalkStep(const InverseKinematic::FeetPose& pose, const Pose2D& offset, const Pose2D& lastStepRequest, FootStep::Foot movingFoot, const WalkRequest& req, bool stepControl)
+FootStep FootStepPlanner2018::calculateNextWalkStep(const InverseKinematic::FeetPose& pose, const Pose2D& offset, const Pose2D& lastStepRequest, FootStep::Foot movingFoot, const WalkRequest& req, bool stepControl) const
 {
   // TODO: how to deal with zero steps properly
   ASSERT(movingFoot != FootStep::NONE);
@@ -291,10 +296,20 @@ FootStep FootStepPlanner2018::calculateNextWalkStep(const InverseKinematic::Feet
     stepRequest = supportOrigin.invert() * pose.right.projectXY() * stepRequest * targetOriginOffset;
   }
 
-  restrictStepSize(stepRequest, req.character, stepControl);
-
   // apply restriction mode
-  if (!stepControl || req.stepControl.restriction == WalkRequest::StepControlRequest::RestrictionMode::HARD) {
+  if (stepControl && req.stepControl.restriction == WalkRequest::StepControlRequest::RestrictionMode::SOFT) 
+  {
+    restrictStepSize(stepRequest, req.character, true);
+  } 
+  // the stepControl with restriction mode HARD behaves the same way as regular walk request 
+  else if (stepControl && req.stepControl.restriction == WalkRequest::StepControlRequest::RestrictionMode::HARD)
+  {
+    restrictStepSize(stepRequest, req.character, false);
+    restrictStepChange(stepRequest, lastStepRequest);
+  }
+  else // regular walk request 
+  {
+    restrictStepSize(stepRequest, req.character, false);
     restrictStepChange(stepRequest, lastStepRequest);
   }
 
@@ -322,20 +337,21 @@ FootStep FootStepPlanner2018::calculateNextWalkStep(const InverseKinematic::Feet
 }//end calculateNextWalkStep
 
 //TODO: do we really need different parameters for normal and step control steps?
-void FootStepPlanner2018::restrictStepSize(Pose2D& step, double character, bool stepControl) const {
+void FootStepPlanner2018::restrictStepSize(Pose2D& step, double character, bool stepControl) const 
+{
   // scale the character: [0, 1] --> [0.5, 1]
   character = 0.5*character + 0.5;
 
   double maxTurn, maxStepLength, maxStepLengthBack, maxStepWidth;
 
-  if(stepControl){
+  if(stepControl) {
       maxTurn       = parameters.limits.maxCtrlTurn   * character;
       maxStepLength = parameters.limits.maxCtrlLength * character;
       maxStepWidth  = parameters.limits.maxCtrlWidth  * character;
   } else {
-      maxTurn           = parameters.limits.maxStepTurn       * character;
-      maxStepLength     = parameters.limits.maxStepLength     * character;
-      maxStepWidth      = parameters.limits.maxStepWidth      * character;
+      maxTurn       = parameters.limits.maxStepTurn   * character;
+      maxStepLength = parameters.limits.maxStepLength * character;
+      maxStepWidth  = parameters.limits.maxStepWidth  * character;
   }
 
   maxStepLengthBack = parameters.limits.maxStepLengthBack * character;

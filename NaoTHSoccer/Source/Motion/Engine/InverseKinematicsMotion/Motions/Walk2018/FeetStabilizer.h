@@ -44,7 +44,8 @@ class FeetStabilizer : private FeetStabilizerBase
 
     const FeetStabilizerParameters& parameters;
 
-    virtual void execute(){
+    virtual void execute()
+    {
         if (!parameters.stabilizeFeet) return;
 
         const Step& executingStep = getStepBuffer().first();

@@ -75,9 +75,10 @@ class TorsoRotationStabilizer : private TorsoRotationStabilizerBase
         const Vector2d&  rotationD,
         InverseKinematic::HipFeetPose& p)
       {
-        const double alpha = 0.5;
         Vector2d gyro = Vector2d(theGyrometerData.data.x, theGyrometerData.data.y);
         static Vector2d filteredGyro = gyro;
+
+        const double alpha = 0.2;
         filteredGyro = filteredGyro * (1.0f - alpha) + gyro * alpha;
 
         const double observerMeasurementDelay = 40;
