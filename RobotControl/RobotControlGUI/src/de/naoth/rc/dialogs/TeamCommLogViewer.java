@@ -40,6 +40,7 @@ import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 import de.naoth.rc.components.teamcomm.TeamCommManager;
 import de.naoth.rc.core.dialog.RCDialog;
+import de.naoth.rc.dataformats.SPLMessage2017;
 import java.util.List;
 
 /**
@@ -329,9 +330,11 @@ public class TeamCommLogViewer extends AbstractDialog
         jr.beginArray();
         while (jr.hasNext()) {
             TeamCommMessage p = json.fromJson(jr, TeamCommMessage.class);
-            if(p.message != null) {
+            
+            // HACK: this work now only for SPLMessage2017 messages
+            if(p.message != null && p.message instanceof SPLMessage2017 ) {
                 // custom part doesn't get (de-)serialized, but we have everything in data!
-                p.message.parseCustomFromData();
+                ((SPLMessage2017)p.message).parseCustomFromData();
                 if(!messages.containsKey(p.timestamp)) {
                     messages.put(p.timestamp, new Timestamp(p.timestamp));
                 }
@@ -361,7 +364,7 @@ public class TeamCommLogViewer extends AbstractDialog
         timestampList.addListSelectionListener(new SelectionListener());
         
         // add all messages to list (if available)
-        if(messages == null || messages.size() == 0) {
+        if(messages == null || messages.isEmpty()) {
             JOptionPane.showMessageDialog(null, "No messeges read ...", "No messages", JOptionPane.INFORMATION_MESSAGE);
         } else {
             for (Map.Entry<Long, Timestamp> entry : messages.entrySet()) {
@@ -370,11 +373,17 @@ public class TeamCommLogViewer extends AbstractDialog
         }
     }
     
+    private void addNodeFromName(MessageTreeNode msgNode, SPLMessage spl, String name) {
+        if(spl.hasValue(name)) {
+            msgNode.add(new DefaultMutableTreeNode("%s=%s".format(name, spl.getValue(name, null))));
+        }
+    }
+    
     /**
      * Updates the tree component and shows the TeamCommMessages of the timestamp.
      * @param ts 
      */
-    public void updateTree(Timestamp ts) {
+    private void updateTree(Timestamp ts) {
         // clear previous message tree
         treeRootNode.removeAllChildren();
         
@@ -382,7 +391,8 @@ public class TeamCommLogViewer extends AbstractDialog
             TeamCommMessage teamCommMessage = ts.messages.get(i);
             MessageTreeNode msgNode = new MessageTreeNode("#"+(i+1)+" message", teamCommMessage.isOpponent());
             // add tree nodes for each message field
-            SPLMessage spl = teamCommMessage.message;
+            // HACK: this work now only for SPLMessage2017 messages
+            SPLMessage2017 spl = (SPLMessage2017)teamCommMessage.message;
             msgNode.add(new DefaultMutableTreeNode("playerNum=" + spl.playerNum));
             msgNode.add(new DefaultMutableTreeNode("teamNum=" + spl.teamNum));
             msgNode.add(new DefaultMutableTreeNode("fallen=" + spl.fallen));

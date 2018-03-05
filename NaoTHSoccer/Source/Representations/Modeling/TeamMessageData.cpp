@@ -14,13 +14,7 @@ TeamMessageData::TeamMessageData(FrameInfo fi):
     playerNumber(0),
     teamNumber(0),
     fallen(false),
-    ballAge(-1),
-    suggestion(SPL_STANDARD_MESSAGE_MAX_NUM_OF_PLAYERS, 0),
-    intention(0),
-    averageWalkSpeed(160),
-    maxKickDistance(3000),
-    positionConfidence(0),
-    sideConfidence(0)
+    ballAge(-1)
 {}
 
 SPLStandardMessage TeamMessageData::createSplMessage() const
@@ -34,33 +28,12 @@ SPLStandardMessage TeamMessageData::createSplMessage() const
     spl.pose[1] = (float) pose.translation.y;
     spl.pose[2] = (float) pose.rotation;
 
-    spl.currentPositionConfidence = (uint8_t) positionConfidence;
-    spl.currentSideConfidence = (uint8_t) sideConfidence;
-
     // in seconds (only if positive)!
     spl.ballAge = (float) ((ballAge < 0)? ballAge : ballAge / 1000.0);
     spl.ball[0] = (float) ballPosition.x;
     spl.ball[1] = (float) ballPosition.y;
-    spl.ballVel[0] = (float) ballVelocity.x;
-    spl.ballVel[1] = (float) ballVelocity.y;
 
     spl.fallen = (uint8_t) fallen;
-
-    spl.walkingTo[0] = (float) walkingTo.x;
-    spl.walkingTo[1] = (float) walkingTo.y;
-
-    spl.shootingTo[0] = (float) shootingTo.x;
-    spl.shootingTo[1] = (float) shootingTo.y;
-
-    ASSERT(suggestion.size() == SPL_STANDARD_MESSAGE_MAX_NUM_OF_PLAYERS);
-    for(int i = 0; i < SPL_STANDARD_MESSAGE_MAX_NUM_OF_PLAYERS; ++i) {
-        spl.suggestion[i] = (int8_t) suggestion[i];
-    }
-
-    spl.intention = (uint8_t) intention;
-
-    spl.averageWalkSpeed = (int16_t) averageWalkSpeed;
-    spl.maxKickDistance = (int16_t) maxKickDistance;
 
     // user defined data, this includes our own data and the DoBerMan mixed team common header
     naothmessages::BUUserTeamMessage userMsgBU = custom.toProto();
@@ -107,25 +80,7 @@ bool TeamMessageData::parseFromSplMessage(const SPLStandardMessage &spl)
     ballAge = spl.ballAge * 1000.0f;
     ballPosition.x = spl.ball[0];
     ballPosition.y = spl.ball[1];
-    ballVelocity.x = spl.ballVel[0];
-    ballVelocity.y = spl.ballVel[1];
-
     fallen = (spl.fallen == 1);
-
-    walkingTo.x = spl.walkingTo[0];
-    walkingTo.y = spl.walkingTo[1];
-
-    shootingTo.x = spl.shootingTo[0];
-    shootingTo.y = spl.shootingTo[1];
-
-    suggestion.assign(spl.suggestion, spl.suggestion+SPL_STANDARD_MESSAGE_MAX_NUM_OF_PLAYERS);
-    intention = spl.intention;
-
-    averageWalkSpeed = spl.averageWalkSpeed;
-    maxKickDistance = spl.maxKickDistance;
-
-    positionConfidence = spl.currentPositionConfidence;
-    sideConfidence = spl.currentSideConfidence;
 
     // parses the user-defined part of a SplMessage
     ASSERT(spl.numOfDataBytes <= SPL_STANDARD_MESSAGE_DATA_SIZE);
@@ -178,11 +133,7 @@ void TeamMessageData::print(std::ostream &stream) const
            << "\t" << "TimeSinceBallwasSeen: " << ballAge <<"\n"
            << "\t" << "fallenDown: " << (fallen ? "yes" : "no") <<"\n"
            << "\t" << "team number: " << teamNumber <<"\n"
-           << "\t" << "expectedBallPos (x; y) = "
-                   << shootingTo.x << "; "
-                   << shootingTo.y <<"\n"
           ;
-    stream << "\t" << "intention: " << intention << "\n";
     
     custom.print(stream);
 }//end print

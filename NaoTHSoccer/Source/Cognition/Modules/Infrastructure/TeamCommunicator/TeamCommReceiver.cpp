@@ -115,9 +115,10 @@ void TeamCommReceiver::handleMessage(const std::string& data)
   }
   else if (parameters.acceptMixedTeamMessages)
   {
-    // TODO: accept mixed team communication
-    msg.custom.wantsToBeStriker = (msg.intention == 3);
-    msg.custom.wasStriker = (msg.intention == 3);
+    // this needs to be fixed vefore mixed team comm can be used again
+    ASSERT(false);
+    //msg.custom.wantsToBeStriker = (msg.intention == 3);
+    //msg.custom.wasStriker = (msg.intention == 3);
     
     // estimate time to ball for dortmund guys
     const double stepTime = 200; //ms
