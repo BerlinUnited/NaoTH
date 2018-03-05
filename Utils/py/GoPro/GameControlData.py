@@ -59,11 +59,11 @@ class GameControlData(Struct):
 
         # check header
         if msg[0] != self.GAMECONTROLLER_STRUCT_HEADER:
-            return (False, "Invalid message type!")
+            raise Exception("Invalid message type!")
 
         # check spl message version
         if msg[1] != self.GAMECONTROLLER_STRUCT_VERSION:
-            return (False, "Wrong version!")
+            raise Exception("Wrong version!")
 
         # assign data
         it = iter(msg[2:])

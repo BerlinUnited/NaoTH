@@ -524,7 +524,7 @@ public class TeamCommViewer extends AbstractDialog {
                 synchronized (messageBuffer) {
                     // "convert" list to map using address as key
                     messageBuffer.putAll(messages.stream().collect(Collectors.toMap(
-                        m -> m.address == null ? m.message.teamNum+".0.0."+m.message.playerNum : m.address,
+                        m -> m.address == null ? m.message.getTeamNumber()+".0.0."+m.message.getPlayerNumber() : m.address,
                         m -> m,
                         (m1, m2) -> m2 // if two messages are from the same robot, take the last one
                     )));
