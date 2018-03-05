@@ -629,7 +629,7 @@ public class TeamCommViewerFx extends AbstractJFXDialog
                 Platform.runLater(() -> {
                     for (TeamCommMessage message : messages) {
                         // determine source address
-                        String address = message.address == null ? message.message.teamNum+".0.0."+message.message.playerNum : message.address;
+                        String address = message.address == null ? message.message.getTeamNumber()+".0.0."+message.message.getPlayerNumber() : message.address;
 
                         // get robot with address from robots list
                         RobotStatus robotStatus = robots.stream().filter((t) -> { return t.getIpAddress().equals(address); }).findFirst().orElse(null);

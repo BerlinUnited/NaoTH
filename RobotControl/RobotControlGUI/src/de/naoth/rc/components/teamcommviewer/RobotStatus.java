@@ -1,6 +1,8 @@
 package de.naoth.rc.components.teamcommviewer;
 
 import de.naoth.rc.dataformats.SPLMessage;
+import de.naoth.rc.dataformats.SPLMessage2017;
+import de.naoth.rc.dataformats.SPLMessage2018;
 import de.naoth.rc.math.Vector2D;
 import de.naoth.rc.server.ConnectionStatusEvent;
 import de.naoth.rc.server.ConnectionStatusListener;
@@ -184,8 +186,8 @@ public class RobotStatus {
     public void updateStatus(long timestamp, SPLMessage msg) {
         this.lastMessage = msg;
         
-        this.teamNum.set(msg.teamNum);
-        this.playerNum.set(msg.playerNum);
+        this.teamNum.set(msg.getTeamNumber());
+        this.playerNum.set(msg.getPlayerNumber());
 
         // don't add the timestamp if it did not change compared to the last time
         long lastSeen = Long.MIN_VALUE;
@@ -202,20 +204,20 @@ public class RobotStatus {
             isDeadTimer.reset();
         }
         this.msgPerSecond.set(calculateMsgPerSecond());
-        this.fallen.set(msg.fallen == 1);
-        this.ballAge.set(msg.ballAge);
+        this.fallen.set(msg.getValue("fallen", (byte)0) == 1);
+        this.ballAge.set(msg.getValue("ballAge", -1.0f));
 
-        if (msg.user != null) {
-            this.temperature.set(msg.user.getTemperature());
-            this.cpuTemperature.set(msg.user.getCpuTemperature());
-            this.batteryCharge.set(msg.user.getBatteryCharge() * 100.0f);
-            this.timeToBall.set(msg.user.getTimeToBall());
-            this.wantsToBeStriker.set(msg.user.getWantsToBeStriker());
-            this.wasStriker.set(msg.user.getWasStriker());
-            this.isPenalized.set(msg.user.getIsPenalized());
+        if (msg.getUser() != null) {
+            this.temperature.set(msg.getUser().getTemperature());
+            this.cpuTemperature.set(msg.getUser().getCpuTemperature());
+            this.batteryCharge.set(msg.getUser().getBatteryCharge() * 100.0f);
+            this.timeToBall.set(msg.getUser().getTimeToBall());
+            this.wantsToBeStriker.set(msg.getUser().getWantsToBeStriker());
+            this.wasStriker.set(msg.getUser().getWasStriker());
+            this.isPenalized.set(msg.getUser().getIsPenalized());
 //            this.whistleDetected = msg.user.getWhistleDetected(); // used in another branch!
-            this.teamBall = new Vector2D(msg.user.getTeamBall().getX(), msg.user.getTeamBall().getY());
-        } else if(msg.doberHeader != null) {
+            this.teamBall = new Vector2D(msg.getUser().getTeamBall().getX(), msg.getUser().getTeamBall().getY());
+        } else if(msg.hasValue("doberHeader")) {
             this.temperature.set(-1);
             this.cpuTemperature.set(-1);
             this.batteryCharge.set(-1);
@@ -223,8 +225,19 @@ public class RobotStatus {
             this.wantsToBeStriker.set(false);
             this.wasStriker.set(false);
 
-            this.isPenalized.set(msg.doberHeader.isPenalized > 0);
-            this.whistleDetected.set(msg.doberHeader.whistleDetected > 0);
+            if (msg instanceof SPLMessage2017) {
+                SPLMessage2017.DoBerManCustomHeader doberHeader = null;
+                doberHeader = msg.getValue("doberHeader", doberHeader);
+            
+                this.isPenalized.set(doberHeader.isPenalized > 0);
+                this.whistleDetected.set(doberHeader.whistleDetected > 0);
+            } else if (msg instanceof SPLMessage2018) {
+                SPLMessage2018.DoBerManCustomHeader doberHeader = null;
+                doberHeader = msg.getValue("doberHeader", doberHeader);
+            
+                this.isPenalized.set(doberHeader.isPenalized > 0);
+                this.whistleDetected.set(doberHeader.whistleDetected > 0);
+            }
             this.teamBall = new Vector2D(Double.POSITIVE_INFINITY,Double.POSITIVE_INFINITY);
         } else {
             this.temperature.set(-1);
