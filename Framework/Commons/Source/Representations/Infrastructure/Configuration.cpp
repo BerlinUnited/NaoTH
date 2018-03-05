@@ -72,9 +72,8 @@ void Configuration::loadFromDir(std::string dirlocation,
     loadFromSingleDir(publicKeyFile, dirlocation + "scheme/" + scheme + "/");
   }
 
-  if(platform != "SimSpark" && platform != "LogSimulator"){
-    loadFromSingleDir(publicKeyFile, dirlocation + "robots/" + robotName + "/");
-  }
+  bool robot_config_required = (platform == "Nao" || platform == "nao");
+  loadFromSingleDir(publicKeyFile, dirlocation + "robots/" + robotName + "/", robot_config_required);
 
   loadFromSingleDir(publicKeyFile, dirlocation + "robots_bodies/" + bodyID + "/", false);
   loadFromSingleDir(publicKeyFile, dirlocation + "robot_heads/" + headID + "/", false);

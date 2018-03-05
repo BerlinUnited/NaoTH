@@ -14,7 +14,6 @@ dofile "projectconfig.lua" -- load the global default settings
 -- load some helpers
 dofile (FRAMEWORK_PATH .. "/BuildTools/info.lua")
 dofile (FRAMEWORK_PATH .. "/BuildTools/protoc.lua")
--- dofile (FRAMEWORK_PATH .. "/BuildTools/qtcreator.lua")
 dofile (FRAMEWORK_PATH .. "/BuildTools/qtcreator_2.7+.lua")
 
 
@@ -42,15 +41,16 @@ workspace "NaoTHSoccer"
     
     EXTERN_PATH .. "/include",
     EXTERN_PATH .. "/include/glib-2.0",
-    EXTERN_PATH .. "/include/gio-unix-2.0", -- does not exists anymore
-    EXTERN_PATH .. "/lib/glib-2.0/include"
+    EXTERN_PATH .. "/include/gio-unix-2.0",
+    EXTERN_PATH .. "/lib/glib-2.0/include",
+    EXTERN_PATH .. "/lib64/glib-2.0/include", -- for os that differentiate between lib and lib64
   }
 
   includedirs { 
     FRAMEWORK_PATH .. "/Commons/Source" 
   }
 
-  syslibdirs { EXTERN_PATH .. "/lib"}
+  syslibdirs { EXTERN_PATH .. "/lib", EXTERN_PATH .. "/lib64"} -- for os that differentiate between lib and lib64
 
   -- this function should be defined in 
   if set_user_defined_paths ~= nil then 

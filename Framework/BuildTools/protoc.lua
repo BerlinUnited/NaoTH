@@ -76,8 +76,16 @@ local function protocCompile(inputFiles, cppOut, javaOut, pythonOut, ipaths)
     end
   end 
 
-  args = args .. table.concat(inputFiles, " ")
-  local cmd = compilerPath .. "/" .. compiler .. " " .. args
+  --args = args .. table.concat(inputFiles, " ")
+  for i,v in pairs(inputFiles) do
+	args = args .. " \"" .. v .. "\""
+  end
+  
+  local cmd = "\"" .. compilerPath .. "/" .. compiler .. "\" " .. args
+  
+  if os.ishost("windows") then
+    cmd = "\"" .. cmd .. "\""
+  end
   
   -- HACK: create the output directories if needed
   os.mkdir(cppOut)
