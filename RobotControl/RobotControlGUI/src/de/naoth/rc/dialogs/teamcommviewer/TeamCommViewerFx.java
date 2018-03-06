@@ -62,6 +62,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.util.Callback;
 import javafx.util.Duration;
+import javafx.util.converter.IntegerStringConverter;
 import javax.swing.JFrame;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
@@ -155,6 +156,9 @@ public class TeamCommViewerFx extends AbstractJFXDialog
         // setup port Bindings
         ownPort.disableProperty().bind(btnListen.selectedProperty());
         oppPort.disableProperty().bind(btnListen.selectedProperty());
+        // set 'safer' string to integer converter for port spinner
+        ownPort.getValueFactory().setConverter(new IntegerStringConverterSafe());
+        oppPort.getValueFactory().setConverter(new IntegerStringConverterSafe());
         // port submission/validation
         // hook in a formatter with the same properties as the factory
         TextFormatter ownPortFormatter = new TextFormatter(ownPort.getValueFactory().getConverter(), ownPort.getValueFactory().getValue(), new PortInputValidator(ownPort));
@@ -324,9 +328,7 @@ public class TeamCommViewerFx extends AbstractJFXDialog
             int port_own = (int) ownPort.getValue();
             int port_opp = (int) oppPort.getValue();
             // establish connection
-            if(!connectPortListener(listenerOwn, port_own) && !connectPortListener(listenerOpponent, port_opp)) {
-                Platform.runLater(() -> { btnListen.setSelected(false); });
-            } else {
+            if(connectPortListener(listenerOwn, port_own) && connectPortListener(listenerOpponent, port_opp)) {
                 // listen to TeamCommMessages
                 Plugin.teamcommManager.addListener(teamcommListener);
                 // start/schedule robots field drawer
@@ -346,6 +348,8 @@ public class TeamCommViewerFx extends AbstractJFXDialog
                         Plugin.drawingEventManager.fireDrawingEvent(drawings, this);
                     }
                 }, 100, 33);
+            } else {
+                Platform.runLater(() -> { btnListen.setSelected(false); });
             }
         } else {
             // disconnect
@@ -382,12 +386,12 @@ public class TeamCommViewerFx extends AbstractJFXDialog
         if(port != 0) {
             try {
                 listener.connect(port);
-                return true;
-            } catch (IOException | InterruptedException ex) {
+            } catch (IOException | InterruptedException | IllegalArgumentException ex) {
                 Helper.handleException("Error connecting to ports", ex);
+                return false;
             }
         }
-        return false;
+        return true;
     } // connectPortListener()
     
     /**
@@ -670,7 +674,7 @@ public class TeamCommViewerFx extends AbstractJFXDialog
                 // NumberFormat evaluates the beginning of the text
                 NumberFormat.getIntegerInstance().parse(c.getControlNewText(), parsePosition);
                 // reject parsing the complete text failed
-                if (parsePosition.getIndex() == 0 || parsePosition.getIndex() < c.getControlNewText().length()) {
+                if (!c.getControlNewText().isEmpty() && (parsePosition.getIndex() == 0 || parsePosition.getIndex() < c.getControlNewText().length())) {
                     Platform.runLater(() -> { animation.play(); });
                     return null;
                 }
@@ -700,4 +704,16 @@ public class TeamCommViewerFx extends AbstractJFXDialog
             node.setStyle("-fx-control-inner-background: rgba(" + ((int) (c.getRed() * 255)) + "," + ((int) (c.getGreen() * 255)) + "," + ((int) (c.getBlue() * 255)) + ");");
         }
     } // PortErrorAnimation
+    
+    /**
+     * Safer string to integer converter.
+     * On empty strings the converter returns zero.
+     */
+    class IntegerStringConverterSafe extends IntegerStringConverter
+    {
+        @Override
+        public Integer fromString(String value) {
+            return value.isEmpty() ? 0 : super.fromString(value);
+        }
+    }
 }
