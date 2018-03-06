@@ -160,7 +160,7 @@ public class RemoteRobotPanel extends javax.swing.JPanel {
       //this.jlFallenTime.setText(msg.fallen == 1 ? "FALLEN" : "NOT FALLEN");
       //this.jlBallAge.setText("" + msg.ballAge + "s");
       
-      if(msg.getUser() != null)
+      if(msg.user != null)
       {
         /*
         temperatureBar.setValue((int)msg.user.getTemperature());
@@ -186,7 +186,7 @@ public class RemoteRobotPanel extends javax.swing.JPanel {
         }
         */
           
-        this.jlTeamNumber.setText("" + msg.getTeamNumber());
+        this.jlTeamNumber.setText("" + msg.teamNum);
       }
       
       this.repaint();
@@ -234,41 +234,41 @@ public class RemoteRobotPanel extends javax.swing.JPanel {
       
       g2d.setColor(Color.orange);
       g2d.setFont(new Font("TimesRoman", Font.BOLD, 100));
-      String playyerNumber = "" + currentMesage.getPlayerNumber();
+      String playyerNumber = "" + currentMesage.playerNum;
       FontMetrics fm = g.getFontMetrics();
       int y = (fm.getAscent() + ((int)(hPanel+0.5) - (fm.getAscent() + fm.getDescent())) / 2);
       int x = (int)((wPanel-fm.stringWidth(playyerNumber))/2);
       g2d.drawString(playyerNumber, x, y);
       
       // temperature
-      if(getMessage().getUser().getTemperature() >= 80.0f){
+      if(getMessage().user.getTemperature() >= 80.0f){
         g2d.setColor(colorDanger);
-      } else if(getMessage().getUser().getTemperature() >= 60.0f) {
+      } else if(getMessage().user.getTemperature() >= 60.0f) {
         g2d.setColor(colorWarning);
       } else {
           g2d.setColor(colorInfoBlue);
       }
       g2d.drawImage(temperatur_ico, 0, 0, (int)(wPanel*0.1), (int)(wPanel*0.1), this);
-      double temperatureValue = getMessage().getUser().getTemperature()/100.0*hPanel;
+      double temperatureValue = getMessage().user.getTemperature()/100.0*hPanel;
       g2d.fillRect(0, (int)(hPanel-temperatureValue), (int)(wPanel*0.1), (int)temperatureValue);
       
       // battery
-      if(getMessage().getUser().getBatteryCharge() <= 0.3f){
+      if(getMessage().user.getBatteryCharge() <= 0.3f){
         g2d.setColor(colorDanger);
-      } else if(getMessage().getUser().getBatteryCharge() <= 0.6f) {
+      } else if(getMessage().user.getBatteryCharge() <= 0.6f) {
         g2d.setColor(colorWarning);
       } else {
         g2d.setColor(colorInfo);
       }
       g2d.drawImage(battery_ico, (int)(wPanel*0.9), 0, (int)(wPanel*0.1), (int)(wPanel*0.1), this);
-      double batteryValue = getMessage().getUser().getBatteryCharge()*hPanel;
+      double batteryValue = getMessage().user.getBatteryCharge()*hPanel;
       g2d.fillRect((int)(wPanel*0.9), (int)(hPanel-batteryValue), (int)(wPanel), (int)batteryValue);
       
       g2d.translate(5, (int)hPanel / 2);
       g2d.rotate(Math.PI*0.5);
       g2d.setColor(Color.white);
       g2d.setFont(new Font("TimesRoman", Font.PLAIN, 18));
-      g2d.drawString(String.format("%3.1f °C", getMessage().getUser().getTemperature()), 0, 0);
+      g2d.drawString(String.format("%3.1f °C", getMessage().user.getTemperature()), 0, 0);
       g2d.rotate(-Math.PI*0.5);
       g2d.translate(-5, -(int)hPanel / 2);
       
@@ -276,7 +276,7 @@ public class RemoteRobotPanel extends javax.swing.JPanel {
       g2d.rotate(Math.PI*0.5);
       g2d.setColor(Color.white);
       g2d.setFont(new Font("TimesRoman", Font.PLAIN, 18));
-      g2d.drawString(String.format("%3.0f%%", getMessage().getUser().getBatteryCharge()*100), 0,0);
+      g2d.drawString(String.format("%3.0f%%", getMessage().user.getBatteryCharge()*100), 0,0);
       g2d.rotate(-Math.PI*0.5);
       g2d.translate(-(int)(wPanel - 17), -(int)hPanel / 2);
     }//end paintComponent

@@ -40,7 +40,6 @@ import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 import de.naoth.rc.components.teamcomm.TeamCommManager;
 import de.naoth.rc.core.dialog.RCDialog;
-import de.naoth.rc.dataformats.SPLMessage2017;
 import java.util.List;
 
 /**
@@ -330,11 +329,9 @@ public class TeamCommLogViewer extends AbstractDialog
         jr.beginArray();
         while (jr.hasNext()) {
             TeamCommMessage p = json.fromJson(jr, TeamCommMessage.class);
-            
-            // HACK: this work now only for SPLMessage2017 messages
-            if(p.message != null && p.message instanceof SPLMessage2017 ) {
+            if(p.message != null) {
                 // custom part doesn't get (de-)serialized, but we have everything in data!
-                ((SPLMessage2017)p.message).parseCustomFromData();
+                p.message.parseCustomFromData();
                 if(!messages.containsKey(p.timestamp)) {
                     messages.put(p.timestamp, new Timestamp(p.timestamp));
                 }
@@ -372,13 +369,7 @@ public class TeamCommLogViewer extends AbstractDialog
             }
         }
     }
-    
-    private void addNodeFromName(MessageTreeNode msgNode, SPLMessage spl, String name) {
-        if(spl.hasValue(name)) {
-            msgNode.add(new DefaultMutableTreeNode("%s=%s".format(name, spl.getValue(name, null))));
-        }
-    }
-    
+
     /**
      * Updates the tree component and shows the TeamCommMessages of the timestamp.
      * @param ts 
@@ -391,8 +382,7 @@ public class TeamCommLogViewer extends AbstractDialog
             TeamCommMessage teamCommMessage = ts.messages.get(i);
             MessageTreeNode msgNode = new MessageTreeNode("#"+(i+1)+" message", teamCommMessage.isOpponent());
             // add tree nodes for each message field
-            // HACK: this work now only for SPLMessage2017 messages
-            SPLMessage2017 spl = (SPLMessage2017)teamCommMessage.message;
+            SPLMessage spl = teamCommMessage.message;
             msgNode.add(new DefaultMutableTreeNode("playerNum=" + spl.playerNum));
             msgNode.add(new DefaultMutableTreeNode("teamNum=" + spl.teamNum));
             msgNode.add(new DefaultMutableTreeNode("fallen=" + spl.fallen));

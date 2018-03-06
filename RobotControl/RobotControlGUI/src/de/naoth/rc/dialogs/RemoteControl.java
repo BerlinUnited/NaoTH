@@ -692,7 +692,7 @@ public class RemoteControl extends AbstractDialog {
     }
     
     private void addPanel(RemoteRobotPanel robotStatus) {
-        if(!filterTeam.isSelected() || teamSelectionBox.getSelectedIndex() == robotStatus.getMessage().getTeamNumber())
+        if(!filterTeam.isSelected() || teamSelectionBox.getSelectedIndex() == robotStatus.getMessage().teamNum)
         {
             robotPanel.add(robotStatus);
             robotPanel.repaint();
@@ -740,7 +740,7 @@ public class RemoteControl extends AbstractDialog {
         private final ByteBuffer readBuffer;
 
         public TeamCommListener() {
-            this.readBuffer = ByteBuffer.allocateDirect(SPLMessage.SPL_MAXIMAL_MESSAGE_SIZE);
+            this.readBuffer = ByteBuffer.allocateDirect(SPLMessage.size());
             this.readBuffer.order(ByteOrder.LITTLE_ENDIAN);
         }
 
@@ -780,7 +780,7 @@ public class RemoteControl extends AbstractDialog {
 
                     try {
                         long timestamp = System.currentTimeMillis();
-                        SPLMessage spl_msg = SPLMessage.parseFromBuffer(this.readBuffer);
+                        SPLMessage spl_msg = SPLMessage.parseFrom(this.readBuffer);
                         TeamCommMessage tc_msg = new TeamCommMessage(timestamp, spl_msg);
                         
                         if (address instanceof InetSocketAddress) {

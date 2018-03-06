@@ -227,12 +227,12 @@ public class LogfileInspector extends AbstractDialog
                 LogDataFrame frame = f.get("TeamMessage");
                 List<TeamCommMessage> c = new ArrayList<>();
                 TeamMessageOuterClass.TeamMessage.parseFrom(frame.getData()).getDataList().stream().forEach(msg->{
-                    SPLMessage spl = SPLMessage.parseFromProtobuf(msg);
+                    SPLMessage spl = SPLMessage.parseFrom(msg);
                     c.add(new TeamCommMessage(
                         System.currentTimeMillis(),
-                        "10.0."+spl.getTeamNumber()+"."+spl.getPlayerNumber(), // artificially set an ip
+                        "10.0."+spl.teamNum+"."+spl.playerNum, // artificially set an ip
                         spl,
-                        spl.getTeamNumber() != 4) // TOOD: can we set anywhere our team number?!?
+                        spl.teamNum != 4) // TOOD: can we set anywhere our team number?!?
                     );
                 });
                 Plugin.teamcommManager.receivedMessages(c);
