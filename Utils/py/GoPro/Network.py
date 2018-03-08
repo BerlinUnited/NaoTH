@@ -128,6 +128,7 @@ class NetworkManagerNmcli(NetworkManager):
             logger.error("Could not connect to %s, password required!", ssid)
         return None
 
+
 class NetworkManagerIw(NetworkManager):
     def getWifiDevices(self):
         '''

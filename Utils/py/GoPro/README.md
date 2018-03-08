@@ -1,6 +1,8 @@
 INSTALLATION
 ==============
 
+- connect to the raspberry pi
+
 Startup-Script:
 - copy the "gopro" file to "/etc/init.d"
 	sudo cp gopro /etc/init.d/
