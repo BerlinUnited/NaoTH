@@ -3,3 +3,4 @@
 
 # Declare files that will always have LF line endings on checkout.
 gopro     text eol=lf
+*.py      text eol=lf
