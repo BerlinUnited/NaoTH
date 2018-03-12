@@ -69,11 +69,13 @@ def setupLogger(quiet:bool = False, verbose:bool = False, syslog:bool = False):
 
     return logger
 
+
 def setCamVideoMode(cam):
     logger.debug("Set GoPro to 'video' mode")
     cam.mode(constants.Mode.VideoMode)
     # wait for the command to be executed
     time.sleep(0.5)
+
 
 class LogFormatter(logging.Formatter):
     def format(self, record):
@@ -82,15 +84,16 @@ class LogFormatter(logging.Formatter):
         else:
             self._style._fmt = LOGGER_FMT
 
-        return logging.Formatter.format(self, record) #super(LogFormatter, self).format(format)
+        return logging.Formatter.format(self, record)  # super(LogFormatter, self).format(format)
+
 
 class CamStatus(threading.Thread):
     """Thread retrieves the current state of the camera and tries to keep the cam alive."""
-    def __init__(self, cam:GoProCamera.GoPro, interval:int=5):
+    def __init__(self, cam: GoProCamera.GoPro, interval: int=5):
         threading.Thread.__init__(self)
         self.cam = cam
         self.interval = interval
-        self.status = { 'recording': False, 'mode': None }
+        self.status = {'recording': False, 'mode': None}
 
         self.running = threading.Event()
         self.sleeper = threading.Event()
@@ -137,7 +140,8 @@ def main():
             logger.debug("Interrupted ...")
             loopControl.set()
 
-def main_gopro(loopControl:threading.Event):
+
+def main_gopro(loopControl: threading.Event):
     # get GoPro
     logger.info("Connecting to GoPro ...")
     cam = GoProCamera.GoPro()
@@ -151,7 +155,7 @@ def main_gopro(loopControl:threading.Event):
         s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         s.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
         s.bind(('', 3838))
-        s.settimeout(5) # in sec
+        s.settimeout(5)  # in sec
 
         # status monitor and cam keep alive thread
         status = CamStatus(cam, 1)
@@ -165,7 +169,8 @@ def main_gopro(loopControl:threading.Event):
         # close socket
         s.close()
 
-def main_loop(cam:GoProCamera.GoPro, cam_status:CamStatus, gc_socket:socket.socket, loopControl:threading.Event):
+
+def main_loop(cam: GoProCamera.GoPro, cam_status: CamStatus, gc_socket: socket.socket, loopControl: threading.Event):
     previous_state = GameControlData.STATE_INITIAL
     previous_output = ""
     output = ""
@@ -216,6 +221,7 @@ def main_loop(cam:GoProCamera.GoPro, cam_status:CamStatus, gc_socket:socket.sock
         except:
             traceback.print_exc()
 
+
 def checkGameController(loopControl:threading.Event):
     # listen to gamecontroller
     logger.info("Listen to GameController")
@@ -257,10 +263,12 @@ def startRecording(cam, cam_status):
     cam.shutter(constants.start)
     time.sleep(1)  # wait for the command to be executed
 
+
 def stopRecording(cam):
     logger.debug("Stop recording")
     cam.shutter(constants.stop)
     time.sleep(1)  # wait for the command to be executed
+
 
 if __name__ == '__main__':
     if not sys.platform.startswith('linux'):
@@ -269,7 +277,7 @@ if __name__ == '__main__':
 
     # define vars
     tempdir = tempfile.gettempdir()
-    name = 'pyGoPro' #os.path.basename(sys.argv[0])
+    name = 'pyGoPro'  # os.path.basename(sys.argv[0])
     # check for existing lock file and running process
     lock_file = os.path.join(tempdir, name + '.lock')
 
