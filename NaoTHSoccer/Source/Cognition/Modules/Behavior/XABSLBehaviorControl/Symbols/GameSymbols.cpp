@@ -33,6 +33,13 @@ void GameSymbols::registerSymbols(xabsl::Engine& engine)
   //       it's used to prevent waiting of additional 10s in case it's opponents kickoff
   engine.registerBooleanInputSymbol("game.state.playing_is_set_by_game_controller", &getPlayingIsSetByGameController);
 
+
+  engine.registerEnumElement("game.set_play","game.set_play.none", GameData::set_none);
+  engine.registerEnumElement("game.set_play","game.set_play.goal_free_kick", GameData::goal_free_kick);
+  engine.registerEnumElement("game.set_play","game.set_play.pushing_free_kick", GameData::pushing_free_kick);
+
+  engine.registerEnumeratedInputSymbol("game.set_play", "game.set_play", &getSetPlay);
+
 }//end registerSymbols
 
 GameSymbols* GameSymbols::theInstance = NULL;
@@ -55,4 +62,8 @@ double GameSymbols::getMsecsRemaining() {
 
 int GameSymbols::getGameState() {
   return theInstance->getPlayerInfo().robotState;
+}
+
+int GameSymbols::getSetPlay() {
+  return theInstance->getGameData().setPlay;
 }
