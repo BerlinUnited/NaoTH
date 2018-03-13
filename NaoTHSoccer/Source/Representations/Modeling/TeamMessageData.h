@@ -30,6 +30,17 @@ using namespace naoth;
 // this key is sent with every team message to indicate that the message belongs to us
 #define NAOTH_TEAMCOMM_MESAGE_KEY "naoth"
 
+/** Contains data for a NTP request. */
+struct NtpRequest
+{
+    NtpRequest(unsigned int p = 0, unsigned long long s = 0, unsigned long long r = 0)
+        : playerNumber(p), sent(s), received(r)
+    {}
+    unsigned int playerNumber;
+    unsigned long long sent;
+    unsigned long long received;
+};
+
 // this message is communicated as the user part of the standard spl message
 class TeamMessageCustom : public naoth::Printable 
 {
@@ -63,6 +74,7 @@ public:
   bool whistleDetected;       // whether the robot heard/detected the whistle
   int whistleCount;           // who many whistle the robot detected
   Vector2d teamBall;// global position of the team ball for visualization in RC!!
+  std::vector<NtpRequest> ntpRequests; // ntp requests to teammates
   // opponents ?
 
   /** Sets the data according to the protobuf message. */
@@ -86,6 +98,7 @@ class TeamMessageData : public naoth::Printable
 {
 public:
     FrameInfo frameInfo;
+    unsigned long long timestampParsed; //Timestamp when the message was parsed.
     /*** BEGIN +++ TEAMMESSAGEFIELDS *****************************************/
     /*************************************************************************/
     /* SPL-Message-Fields ****************************************************/

@@ -20,7 +20,7 @@ import threading
 import json
 import time
 
-from GameControlData2018 import GameControlData2018 as GameControlData
+from GameControlData import GameControlData
 from goprocam import GoProCamera, constants
 from daemonize import Daemonize
 import Network

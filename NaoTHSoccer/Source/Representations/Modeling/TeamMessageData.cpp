@@ -122,6 +122,7 @@ void TeamMessageData::print(std::ostream &stream) const
     stream << "\t" << "last received = "
                    << frameInfo.getFrameNumber()
                    << " @ " << frameInfo.getTime() << "\n"
+                   << "Parsed at: " << timestampParsed << "\n"
            << "\t" << "Pos (x; y; rotation) = "
                    << pose.translation.x << "; "
                    << pose.translation.y << "; "
@@ -172,6 +173,12 @@ void TeamMessageCustom::print(std::ostream &stream) const
     << "\t" << "whistleCount: " << whistleCount << "\n"
     << "\t" << "teamball position: "
         << teamBall.x << "/" << teamBall.y << "\n";
+  if(!ntpRequests.empty()) {
+      stream << "\t" << "ntp request for: \n";
+      for(auto const& request : ntpRequests) {
+          stream << "\t\t" << request.playerNumber << ", " << request.sent << " -> " << request.received << std::endl;
+      }
+  }
   stream << std::endl;
 }//end print
 
@@ -191,6 +198,17 @@ naothmessages::BUUserTeamMessage TeamMessageCustom::toProto() const
     userMsg.set_whistledetected(whistleDetected);
     userMsg.set_whistlecount(whistleCount);
     DataConversion::toMessage(teamBall, *(userMsg.mutable_teamball()));
+    // only if any sync data is set
+    if(ntpRequests.size() > 0)
+    {
+        // ... set the time syncing info
+        for(auto const& request: ntpRequests) {
+            auto msgPlayer = userMsg.add_ntprequest();
+            msgPlayer->set_playernum(request.playerNumber);
+            msgPlayer->set_sent(request.sent);
+            msgPlayer->set_received(request.received);
+          }
+    }
     userMsg.set_key(key);
     return userMsg;
 }
@@ -253,6 +271,17 @@ void TeamMessageCustom::parseFromProto(const naothmessages::BUUserTeamMessage &u
     } else {
         teamBall.x = std::numeric_limits<double>::infinity();
         teamBall.y = std::numeric_limits<double>::infinity();
+    }
+
+    ntpRequests = std::vector<NtpRequest>(userData.ntprequest_size());
+    if(userData.ntprequest_size() > 0) {
+        for(int i=0; i < userData.ntprequest_size(); i++) {
+            auto& request = userData.ntprequest((int)i);
+            auto& syncingPlayer = ntpRequests[i];
+            syncingPlayer.playerNumber = request.playernum();
+            syncingPlayer.sent = request.sent();
+            syncingPlayer.received = request.received();
+        }
     }
 }
 

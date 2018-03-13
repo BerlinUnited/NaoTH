@@ -27,6 +27,12 @@ message Opponent {
   optional Pose2D poseOnField = 2;
 }
 
+message Ntp {
+  required int32 playerNum = 1 [default=0];
+  optional uint64 sent = 2 [default=0];
+  optional uint64 received = 3 [default=0];
+}
+
 message BUUserTeamMessage
 {
   optional string bodyID = 1 [default="unknown"];
@@ -44,6 +50,7 @@ message BUUserTeamMessage
   optional int32 whistleCount = 13 [default=0];
   // only for visualizing teamball position in RC
   optional DoubleVector2 teamBall = 14;
+  repeated Ntp ntpRequest = 15;
   optional string key = 100 [default="none"];
 }
 
@@ -56,15 +63,11 @@ message TeamMessage
     optional Pose2D pose = 3;
     optional int32 ballAge = 4 [default=-1];
     optional DoubleVector2 ballPosition = 5;
-    optional DoubleVector2 ballVelocity = 6 [deprecated=true];
+    optional DoubleVector2 ballVelocity = 6;
     optional bool fallen = 10 [default=false];
     optional BUUserTeamMessage user = 8;
     optional FrameInfo frameInfo = 9;
     optional uint32 teamNumber = 12 [default=0];
   }
-  
   repeated Data data = 1;
 }
-
-
-

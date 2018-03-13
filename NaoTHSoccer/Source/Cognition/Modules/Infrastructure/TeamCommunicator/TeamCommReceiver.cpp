@@ -96,6 +96,9 @@ void TeamCommReceiver::handleMessage(const std::string& data)
 
   // unpack the message and make sure the user part can be parsed
   TeamMessageData msg(getFrameInfo());
+  // current timestamp as parsing time
+  msg.timestampParsed = naoth::NaoTime::getSystemTimeInMilliSeconds();
+  // parse data to message
   if (msg.parseFromSplMessage(spl))
   {
     // make sure it's really our message
@@ -112,7 +115,8 @@ void TeamCommReceiver::handleMessage(const std::string& data)
   }
   else if (parameters.acceptMixedTeamMessages)
   {
-    // this needs to be fixed vefore mixed team comm can be used again
+    // TODO: this needs to be fixed vefore mixed team comm can be used again
+    //       see: https://gitlab.informatik.hu-berlin.de/berlinunited/NaoTH-2018/issues/36
     ASSERT(false);
     //msg.custom.wantsToBeStriker = (msg.intention == 3);
     //msg.custom.wasStriker = (msg.intention == 3);
