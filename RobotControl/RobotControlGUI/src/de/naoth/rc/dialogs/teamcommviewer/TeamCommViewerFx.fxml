@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ColorPicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Spinner?>
+<?import javafx.scene.control.SpinnerValueFactory.IntegerSpinnerValueFactory?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.layout.BorderPane?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="893.0" xmlns="http://javafx.com/javafx/8.0.162-ea" xmlns:fx="http://javafx.com/fxml/1">
+   <top>
+      <ToolBar prefHeight="41.0" prefWidth="682.0" BorderPane.alignment="CENTER">
+        <items>
+            <ToggleButton fx:id="btnListen" mnemonicParsing="false" onAction="#actionListen" text="Listen to TeamComm" />
+            <Label text="Blue:" />
+            <Spinner fx:id="ownPort" editable="true">
+              <valueFactory>
+                <SpinnerValueFactory.IntegerSpinnerValueFactory initialValue="10004" max="1000000" min="0" />
+              </valueFactory>
+              <tooltip>
+                <Tooltip text="Own team port number" />
+              </tooltip>
+            </Spinner>
+            <Label text="Red:" />
+            <Spinner fx:id="oppPort" editable="true">
+              <valueFactory>
+                <SpinnerValueFactory.IntegerSpinnerValueFactory initialValue="0" max="1000000" min="0" />
+              </valueFactory>
+              <tooltip>
+                <Tooltip text="Opponent team port number" />
+              </tooltip>
+            </Spinner>
+            <ColorPicker fx:id="teamColorPicker" disable="true" promptText="TeamColor" style="-fx-color-label-visible: false;">
+              <tooltip>
+                <Tooltip text="Change color of teams." />
+              </tooltip>
+            </ColorPicker>
+            <ToggleButton fx:id="btnRecord" mnemonicParsing="false" onAction="#actionRecord" text="Record TeamComm">
+              <tooltip>
+                <Tooltip text="Start new recording" />
+              </tooltip>
+            </ToggleButton>
+            <Button fx:id="btnStop" contentDisplay="GRAPHIC_ONLY" disable="true" mnemonicParsing="false" onAction="#actionStop" text="Stop">
+              <tooltip>
+                <Tooltip text="Stops recording and closes log file." />
+              </tooltip>
+            </Button>
+        </items>
+      </ToolBar>
+   </top>
+   <center>
+      <TableView fx:id="statusTable" prefHeight="359.0" prefWidth="912.0" tableMenuButtonVisible="true" BorderPane.alignment="CENTER">
+        <placeholder>
+          <Label fx:id="statusTablePlaceholder" style="-fx-font-size: 16px; -fx-alignment: CENTER; -fx-border-style: dashed; -fx-border-width: 2px; -fx-background-color: lightgrey; -fx-pref-width: 400px; -fx-pref-height: 200px;" text="Not connected ..." />
+        </placeholder>
+      </TableView>
+   </center>
+</BorderPane>
