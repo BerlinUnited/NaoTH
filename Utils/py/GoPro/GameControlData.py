@@ -39,8 +39,8 @@ class GameControlData(Struct):
         """Constructor."""
         # initialize with the struct format characters as described here
         # https://docs.python.org/2/library/struct.html
-        super(GameControlData2018, self).__init__('4sH10B3H')
-        self.logger = logging.getLogger("GameControlData2018")
+        super(GameControlData, self).__init__('4sH10B3H')
+        self.logger = logging.getLogger("GameControlData")
         # based on the given data the message is initialized with default values or parsed from the data string
         if data is None or self.unpack(data)[0]:
             self.setDefaults()
