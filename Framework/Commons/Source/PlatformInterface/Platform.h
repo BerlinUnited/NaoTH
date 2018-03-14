@@ -39,7 +39,7 @@ private:
       // retrieve the config dir from environment var
       const std::string env = std::getenv("NAOTH_CONFIGDIR") != NULL ? std::string(std::getenv("NAOTH_CONFIGDIR")) : "";
       if(!env.empty()) {
-          _configDir = env;
+          _configDir = env + (env.back() != '/' ? "/" : "");
       }
   }
 
