@@ -40,10 +40,10 @@ from bpy.types import (Panel,
 class UISettings(PropertyGroup):
     
     op_mode = EnumProperty(name="Dropdown:",
-    description="Operation mode.",
-    items=[('OP1', "Patch", ""),
-            ('OP2', "Patch with mask", ""),
-            ('OP3', "Image with mask", ""),])
+                           description="Operation mode.",
+                           items=[('OP1', "Patch", ""),
+                                  ('OP2', "Patch with mask", ""),
+                                  ('OP3', "Image with mask", ""), ])
     
     patch_size = IntProperty(
         name="Patch size",
@@ -93,7 +93,7 @@ class UISettings(PropertyGroup):
         default=True)
         
     generate_no_ball = BoolProperty(
-        name="Generate NumImages no ball images",
+        name="Generate noball images",
         description="If disabled numBall ball patches are generated with their masks and no noball images are generated.",
         default=False)
 
@@ -141,6 +141,15 @@ class State:
         self.path_img = None
         self.path_img_bw = None
         self.path_mask = None
+
+        # Patch with masks paths
+        self.path_ball_patch = None
+        self.path_ball_patch_bw = None
+        self.path_ball_patch_mask = None
+        self.path_noball_patch = None
+        self.path_noball_patch_bw = None
+        self.path_noball_patch_mask = None
+        #
         
         self.old_res_x = 0
         self.old_res_y = 0
@@ -221,32 +230,38 @@ class State:
 
 
 class IO:
-    def mkdirs(state, list_of_paths):
+    @staticmethod
+    def mkdirs(list_of_paths):
         for path in list_of_paths:
             IO.mkdir(path)
-            
+
+    @staticmethod
     def mkdir(path):
-        if (path is not None) and (os.path.isdir(path) == False):
-            os.mkdir(path)        
-    
+        if (path is not None) and (os.path.isdir(path) is False):
+            os.mkdir(path)
+
+    @staticmethod
     def rename_file(path, old_name, new_name):
         old_path_to_file = os.path.join(path, old_name)
         new_path_to_file = os.path.join(path, new_name)
 
-        if(old_path_to_file is not None) and (os.path.isfile(old_path_to_file) == True):
+        if(old_path_to_file is not None) and (os.path.isfile(old_path_to_file) is True):
             os.rename(old_path_to_file, new_path_to_file)
         else:
             print(old_path_to_file + " -> " + new_path_to_file)
             raise RuntimeError("Could not rename, file does not exist.")
-    
+
+    @staticmethod
     def print_frame_counter(frame, total_frames):
         print("Frame " + str(frame) + " / " + str(total_frames))
-    
+
+    @staticmethod
     def print_statistics(elapsed_time, estimated_exec_time):
         print("Render time of current frame: " + str(datetime.timedelta(seconds=elapsed_time)))
         print("Estimated time to completion: " + str(datetime.timedelta(seconds=estimated_exec_time)))
         print("")
 
+    @staticmethod
     def print_error(message):
         print("-----------------------")
         print(" " + message)
@@ -258,6 +273,7 @@ class IO:
 
 
 class SceneEditing:
+    @staticmethod
     def set_file_output_nodes(use_mask_output):
         scene = bpy.context.scene
         if(use_mask_output is False) and len(scene.node_tree.nodes["file_output_mask"].inputs[0].links) > 0:
@@ -265,14 +281,16 @@ class SceneEditing:
         elif use_mask_output is True:
             scene.node_tree.links.new(scene.node_tree.nodes["Mix"].outputs["Image"],
                                       scene.node_tree.nodes["file_output_mask"].inputs[0])
-            
+
+    @staticmethod
     def add_keyframes_to_objs_for(frame_x, used_frames=None):
         for target in bpy.context.scene.objects:
             SceneEditing.add_keyframes_for(target, frame_x)
 
-        if(used_frames is not None):
+        if used_frames is not None:
             used_frames.add(frame_x)
-            
+
+    @staticmethod
     def add_keyframes_for(target, frame_x, used_frames=None):
         target.keyframe_insert(data_path="location", frame=frame_x)
         target.keyframe_insert(data_path="rotation_euler", frame=frame_x)
@@ -280,27 +298,31 @@ class SceneEditing:
 
         if(used_frames is not None) and (frame_x in used_frames):
             used_frames.remove(frame_x)
-        
+
+    @staticmethod
     def remove_keyframes_from_objs_for(frame_x, used_frames=None):
         for target in bpy.context.scene.objects:
             SceneEditing.remove_keyframes_for(target, frame_x)
 
         if(used_frames is not None) and (frame_x in used_frames):
             used_frames.remove(frame_x)
-            
+
+    @staticmethod
     def remove_keyframes_for(target, frame_x):
         target.keyframe_delete(data_path="location", frame=frame_x)
         target.keyframe_delete(data_path="rotation_euler", frame=frame_x)
         target.keyframe_delete(data_path="scale", frame=frame_x)
-            
+
+    @staticmethod
     def get_point_rotated(point_x, point_y, center_x, center_y, angle_in_degree):
         rotated_point_x = (point_x * math.cos(math.radians(angle_in_degree))
                            - point_y * math.sin(math.radians(angle_in_degree))) + center_x
         rotated_point_y = (point_x * math.sin(math.radians(angle_in_degree))
                            + point_y * math.cos(math.radians(angle_in_degree))) + center_y
         
-        return (rotated_point_x, rotated_point_y)
-   
+        return rotated_point_x, rotated_point_y
+
+    @staticmethod
     def get_vertices_world_space(object_name):
         obj = bpy.data.objects[object_name] 
         vertices = obj.data.vertices
@@ -311,7 +333,8 @@ class SceneEditing:
             vertex = obj.matrix_world * vertex
             
         return obj_co
-                
+
+    @staticmethod
     def change_rotation_euler(target, change_x, change_y, change_z, min_x, max_x, min_y, max_y, min_z, max_z):
         rotation_euler = SceneEditing.get_random_rot(min_x, max_x, min_y, max_y, min_z, max_z)
         
@@ -321,7 +344,8 @@ class SceneEditing:
             target.rotation_euler[1] = rotation_euler[1]
         if change_z is True:
             target.rotation_euler[2] = rotation_euler[2]
-            
+
+    @staticmethod
     def change_rotation(target, change_x, change_y, change_z, min_x, max_x, min_y, max_y, min_z, max_z):
         rot_x = random.uniform(min_x, max_x)
         rot_y = random.uniform(min_y, max_y)
@@ -333,7 +357,8 @@ class SceneEditing:
             target.rotation[1] = math.radians(rot_y)
         if change_z is True:
             target.rotation[2] = math.radians(rot_z)
-    
+
+    @staticmethod
     def change_location(target, change_x, change_y, change_z, min_x, max_x, min_y, max_y, min_z, max_z):
         location = SceneEditing.get_random_loc(min_x, max_x, min_y, max_y, min_z, max_z)
 
@@ -344,13 +369,15 @@ class SceneEditing:
         if change_z is True:
             target.location[2] = location[2]
 
+    @staticmethod
     def get_random_loc(min_x, max_x, min_y, max_y, min_z, max_z):
         loc_x = random.uniform(min_x, max_x)
         loc_y = random.uniform(min_y, max_y)
         loc_z = random.uniform(min_z, max_z)
         
         return mathutils.Vector((loc_x, loc_y, loc_z))
-    
+
+    @staticmethod
     def get_random_rot(min_angle_x, max_angle_x,
                        min_angle_y, max_angle_y,
                        min_angle_z, max_angle_z):
@@ -385,8 +412,9 @@ class RenderSetup:
         
         self.scene_setup.create_checkpoint()
         self.scene_setup.configure_scene()
-                     
-    def render(self):
+
+    @staticmethod
+    def render():
         # Dirty hack
         # INVOKE_DEFAULT is used to set the execution context.
         # It allows to display the rendering progress and keeps
@@ -457,7 +485,7 @@ class RenderSetup:
             self.state.mean_exec_time_per_frame = self.state.elapsed_time
                 
         self.state.estimated_exec_time = (self.state.mean_exec_time_per_frame * 
-                                            (self.state.total_frames - self.state.current_frame))
+                                          (self.state.total_frames - self.state.current_frame))
 
 # ------------------------------------------------------------------------
 #    Scene Setup provides a basic recipe for scene configuration
@@ -483,7 +511,7 @@ class SceneSetup(ABC):
                          self.state.path_img_bw,
                          self.state.path_mask]
 
-        IO.mkdirs(self.state, list_of_paths)
+        IO.mkdirs(list_of_paths)
         SceneEditing.set_file_output_nodes(self.state.use_mask_output)
         self._set_current_paths()
     
@@ -549,7 +577,8 @@ class SceneSetup(ABC):
     def _config_naos(self):
         pass
 
-    def _config_world(self):
+    @staticmethod
+    def _config_world():
         env_map = bpy.data.worlds['World'].node_tree.nodes["Mapping"] 
         SceneEditing.change_rotation(env_map, True, True, True, 0.0, 360.0, 0.0, 360.0, 0.0, 360.0)
 
@@ -717,7 +746,6 @@ class SceneSetupPatch(SceneSetup):
                 SceneEditing.change_rotation_euler(target, False, False, True, 0.0, 0.0, 0.0, 0.0, 0.0, 360.0)
 
     def rename_files(self):
-        frame = 0
         if self.state.current_frame < self.state.num_balls:
             frame = self.state.current_frame
         else:
@@ -762,22 +790,16 @@ class SceneSetupPatchMask(SceneSetup):
         
         self.state.base_path = os.path.join(self.state.path, datetime.datetime.now().strftime('%Y%m%d_%H%M%S') + "_patchMask")
         if self.state.generate_no_ball:
-            # This is not correct
-            self.state.path_ball = os.path.join(self.state.base_path, "ball")
-            self.state.path_ball_bw = os.path.join(self.state.base_path, "ball_bw")
-            self.state.path_no_ball = os.path.join(self.state.base_path, "no_ball")
-            self.state.path_no_ball_bw = os.path.join(self.state.base_path, "no_ball_bw")
-        else:
-            self.state.path_ball = None
-            self.state.path_ball_bw = None
-            self.state.path_no_ball = None
-            self.state.path_no_ball_bw = None
+            # TODO i did this  -  This is not correct
+            # change current paths so that the contain the string ball in it
+            # then we need to create folder for no ball
+            self.state.path_noball_patch = os.path.join(self.state.base_path, "noball_patch")
+            self.state.path_noball_patch_bw = os.path.join(self.state.base_path, "noball_patch_bw")
+            self.state.path_noball_patch_mask = os.path.join(self.state.base_path, "noball_patch_mask")
 
-        # Should this be renamed? Why is it called img?
-        # img folder name is used also for fullscale images
-        self.state.path_img = os.path.join(self.state.base_path, "img")
-        self.state.path_img_bw = os.path.join(self.state.base_path, "img_bw")
-        self.state.path_mask = os.path.join(self.state.base_path, "mask")
+        self.state.path_ball_patch = os.path.join(self.state.base_path, "ball_patch")
+        self.state.path_ball_patch_bw = os.path.join(self.state.base_path, "ball_patch_bw")
+        self.state.path_ball_patch_mask = os.path.join(self.state.base_path, "ball_patch_mask")
         
         self.state.old_res_x = self.scene.render.resolution_x
         self.state.old_res_y = self.scene.render.resolution_y
@@ -788,7 +810,7 @@ class SceneSetupPatchMask(SceneSetup):
         self.state.current_path_bw = None
         self.state.current_path_mask = None         
         self.state.current_frame = 0
-        self.state.total_frames = self.state.num_images
+        self.state.total_frames = self.state.num_images * 2  # TODO change name of number of images to number of balls or something
         
         self.state.start_time = 0
         self.state.end_time = 0
@@ -807,18 +829,25 @@ class SceneSetupPatchMask(SceneSetup):
         self.state.is_set = True
 
     def _set_current_paths(self):
-        self.state.current_path = self.state.path_img
-        self.state.current_path_bw = self.state.path_img_bw
-        self.state.current_path_mask = self.state.path_mask
-            
-        self.scene.node_tree.nodes["file_output_col"].base_path = self.state.current_path
-        self.scene.node_tree.nodes["file_output_col"].file_slots[0].path = str(self.state.current_frame)+"#"
-        self.scene.node_tree.nodes["file_output_bw"].base_path = self.state.current_path_bw
-        self.scene.node_tree.nodes["file_output_bw"].file_slots[0].path = str(self.state.current_frame)+"#"
-        self.scene.node_tree.nodes["file_output_mask"].base_path = self.state.current_path_mask
-        self.scene.node_tree.nodes["file_output_mask"].file_slots[0].path = str(self.state.current_frame)+"#"
 
-        # TODO handle new paths
+        if self.state.current_frame < self.state.num_images:
+            print("Ball Frame: ", self.state.current_frame)
+            self.state.current_path = self.state.path_ball_patch
+            self.state.current_path_bw = self.state.path_ball_patch_bw
+            self.state.current_path_mask = self.state.path_ball_patch_mask
+        else:
+            print("Noball Frame: ", self.state.current_frame)
+
+            self.state.current_path = self.state.path_noball_patch
+            self.state.current_path_bw = self.state.path_noball_patch_bw
+            self.state.current_path_mask = self.state.path_noball_patch_mask
+
+        self.scene.node_tree.nodes["file_output_col"].base_path = self.state.current_path
+        self.scene.node_tree.nodes["file_output_col"].file_slots[0].path = str(self.state.current_frame) + "#"
+        self.scene.node_tree.nodes["file_output_bw"].base_path = self.state.current_path_bw
+        self.scene.node_tree.nodes["file_output_bw"].file_slots[0].path = str(self.state.current_frame) + "#"
+        self.scene.node_tree.nodes["file_output_mask"].base_path = self.state.current_path_mask
+        self.scene.node_tree.nodes["file_output_mask"].file_slots[0].path = str(self.state.current_frame) + "#"
 
     def _config_anchor(self):
         anchor = bpy.data.objects["anchor_main"]
@@ -837,7 +866,7 @@ class SceneSetupPatchMask(SceneSetup):
             self.scene.camera = bpy.data.objects["camera_bottom"]
 
         hide_ball = 0  # random.randint(0, 1)
-  
+        """
         if hide_ball == 1:
             bpy.data.objects["ball_top"].hide_render = True
             bpy.data.objects["ball_bottom"].hide_render = True
@@ -849,6 +878,17 @@ class SceneSetupPatchMask(SceneSetup):
         SceneEditing.change_location(bpy.data.objects["ball_bottom"], True, True, False, 0.0, 0.05, 0.0, 0.05, 0.0, 0.0)
         SceneEditing.change_rotation_euler(bpy.data.objects["ball_top"], True, True, True, 0.0, 360.0, 0.0, 360.0, 0.0, 360.0)
         SceneEditing.change_rotation_euler(bpy.data.objects["ball_bottom"], True, True, True, 0.0, 360.0, 0.0, 360.0, 0.0, 360.0)
+        """
+        if self.state.current_frame >= self.state.num_images:
+            bpy.data.objects["ball_top"].hide_render = True
+            bpy.data.objects["ball_bottom"].hide_render = True
+        else:
+            bpy.data.objects["ball_top"].hide_render = False
+            bpy.data.objects["ball_bottom"].hide_render = False
+            SceneEditing.change_location(bpy.data.objects["ball_top"], True, True, False, 0.0, 0.05, 0.0, 0.05, 0.0, 0.0)
+            SceneEditing.change_location(bpy.data.objects["ball_bottom"], True, True, False, 0.0, 0.05, 0.0, 0.05, 0.0, 0.0)
+            SceneEditing.change_rotation_euler(bpy.data.objects["ball_top"], True, True, True, 0.0, 360.0, 0.0, 360.0, 0.0, 360.0)
+            SceneEditing.change_rotation_euler(bpy.data.objects["ball_bottom"], True, True, True, 0.0, 360.0, 0.0, 360.0, 0.0, 360.0)
 
     def _config_naos(self):
         for target in self.scene.objects:
@@ -861,9 +901,14 @@ class SceneSetupPatchMask(SceneSetup):
                 target.location[1] = loc_armature[1]
                 SceneEditing.change_rotation_euler(target, False, False, True, 0.0, 0.0, 0.0, 0.0, 0.0, 360.0)
 
-    def rename_files(self):        
-        old_name = str(self.state.current_frame)+str(self.scene.frame_current)+".png"
-        new_name = str(self.state.current_frame)+".png"
+    def rename_files(self):
+        if self.state.current_frame < self.state.num_images:
+            frame = self.state.current_frame
+        else:
+            frame = self.state.current_frame - self.state.num_images
+
+        old_name = str(self.state.current_frame) + str(self.scene.frame_current) + ".png"
+        new_name = str(frame) + ".png"
         
         if self.state.current_path is not None:
             IO.rename_file(self.state.current_path, old_name, new_name)
@@ -1168,7 +1213,7 @@ class UIAddonPanel(Panel):
     bl_context = "objectmode"   
 
     @classmethod
-    def poll(self, context):
+    def poll(cls, context):
         return context.object is not None
 
     def draw(self, context):
