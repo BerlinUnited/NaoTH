@@ -113,6 +113,10 @@ public class RobotControlImpl extends javax.swing.JFrame
   public RobotControlImpl()
   {  
     splashScreenMessage("Welcome to RobotControl");
+    
+    // load the configuration
+    readConfigFromFile();
+    
     try
     {
       //UIManager.setLookAndFeel(new PlasticXPLookAndFeel());
@@ -132,9 +136,6 @@ public class RobotControlImpl extends javax.swing.JFrame
 
     initComponents();
 
-    // load the configuration
-    readConfigFromFile();
-    
     // restore the bounds and the state of the frame from the config
     defaultWindowBounds = getBounds();
     defaultWindowBounds.x = readValueFromConfig("frame.position.x", defaultWindowBounds.x);
@@ -634,6 +635,7 @@ public class RobotControlImpl extends javax.swing.JFrame
 
   private void readConfigFromFile()
   {
+    splashScreenMessage("Loading config file ...");
     try {
       // load main config
       Properties mainConfig = new Properties();
@@ -683,7 +685,8 @@ public class RobotControlImpl extends javax.swing.JFrame
   @Override
   public boolean isHighDPI() 
   {
-      return Toolkit.getDefaultToolkit().getScreenSize().width > 2000;
+      return Boolean.valueOf(this.getConfig().getProperty("useHiDPI", "true"))
+          && Toolkit.getDefaultToolkit().getScreenSize().width > 2000;
   }
   
   public void addToStatusBar(Component c) {
