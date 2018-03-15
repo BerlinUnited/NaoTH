@@ -182,6 +182,10 @@ def main_loop(cam:GoProCamera.GoPro, cam_status:CamStatus, gc_socket:socket.sock
                     logger.warning("Not connected to GameController?")
                     stopRecording(cam)
                 continue
+            except Exception as ex:
+              print(ex)
+              continue
+                
             # handle output
             if not args.background and not args.quiet:
                 output = "%s | %s | game state: %s |" % (
@@ -236,6 +240,9 @@ def checkGameController(loopControl:threading.Event):
             except socket.timeout:
                 logger.warning("Not connected to GameController?")
                 continue
+            except Exception as ex:
+              print(ex)
+              continue
 
             print(gc_data)
 
