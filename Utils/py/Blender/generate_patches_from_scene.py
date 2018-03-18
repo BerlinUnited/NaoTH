@@ -790,9 +790,6 @@ class SceneSetupPatchMask(SceneSetup):
         
         self.state.base_path = os.path.join(self.state.path, datetime.datetime.now().strftime('%Y%m%d_%H%M%S') + "_patchMask")
         if self.state.generate_no_ball:
-            # TODO i did this  -  This is not correct
-            # change current paths so that the contain the string ball in it
-            # then we need to create folder for no ball
             self.state.path_noball_patch = os.path.join(self.state.base_path, "noball_patch")
             self.state.path_noball_patch_bw = os.path.join(self.state.base_path, "noball_patch_bw")
             self.state.path_noball_patch_mask = os.path.join(self.state.base_path, "noball_patch_mask")
@@ -810,7 +807,10 @@ class SceneSetupPatchMask(SceneSetup):
         self.state.current_path_bw = None
         self.state.current_path_mask = None         
         self.state.current_frame = 0
-        self.state.total_frames = self.state.num_images * 2  # TODO change name of number of images to number of balls or something
+        if self.state.generate_no_ball:
+            self.state.total_frames = self.state.num_images * 2
+        else:
+            self.state.total_frames = self.state.num_images
         
         self.state.start_time = 0
         self.state.end_time = 0
@@ -831,13 +831,10 @@ class SceneSetupPatchMask(SceneSetup):
     def _set_current_paths(self):
 
         if self.state.current_frame < self.state.num_images:
-            print("Ball Frame: ", self.state.current_frame)
             self.state.current_path = self.state.path_ball_patch
             self.state.current_path_bw = self.state.path_ball_patch_bw
             self.state.current_path_mask = self.state.path_ball_patch_mask
         else:
-            print("Noball Frame: ", self.state.current_frame)
-
             self.state.current_path = self.state.path_noball_patch
             self.state.current_path_bw = self.state.path_noball_patch_bw
             self.state.current_path_mask = self.state.path_noball_patch_mask
@@ -865,20 +862,6 @@ class SceneSetupPatchMask(SceneSetup):
         else:
             self.scene.camera = bpy.data.objects["camera_bottom"]
 
-        hide_ball = 0  # random.randint(0, 1)
-        """
-        if hide_ball == 1:
-            bpy.data.objects["ball_top"].hide_render = True
-            bpy.data.objects["ball_bottom"].hide_render = True
-        else:
-            bpy.data.objects["ball_top"].hide_render = False
-            bpy.data.objects["ball_bottom"].hide_render = False
-
-        SceneEditing.change_location(bpy.data.objects["ball_top"], True, True, False, 0.0, 0.05, 0.0, 0.05, 0.0, 0.0)
-        SceneEditing.change_location(bpy.data.objects["ball_bottom"], True, True, False, 0.0, 0.05, 0.0, 0.05, 0.0, 0.0)
-        SceneEditing.change_rotation_euler(bpy.data.objects["ball_top"], True, True, True, 0.0, 360.0, 0.0, 360.0, 0.0, 360.0)
-        SceneEditing.change_rotation_euler(bpy.data.objects["ball_bottom"], True, True, True, 0.0, 360.0, 0.0, 360.0, 0.0, 360.0)
-        """
         if self.state.current_frame >= self.state.num_images:
             bpy.data.objects["ball_top"].hide_render = True
             bpy.data.objects["ball_bottom"].hide_render = True
