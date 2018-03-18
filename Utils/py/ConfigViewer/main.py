@@ -36,8 +36,10 @@ class FolderExistsAction(argparse.Action):
         setattr(namespace, self.dest, folders)
 
 def parseArguments():
+    source_path = os.path.dirname(os.path.realpath(__file__))
+
     parser = argparse.ArgumentParser(description='Shows the module configuration')
-    parser.add_argument('config_dir', default='../../../NaoTHSoccer/Config', nargs='?', action=FolderExistsAction, help='the config directory')
+    parser.add_argument('config_dir', default=source_path+'/../../../NaoTHSoccer/Config', nargs='?', action=FolderExistsAction, help='the config directory')
 
     return parser.parse_args()
 
