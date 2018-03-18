@@ -1,7 +1,7 @@
 import os, configparser
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QStandardItemModel, QStandardItem
+from PyQt5.QtGui import QStandardItemModel, QStandardItem, QFont
 
 import ConfigViewerUi
 from PyQt5.QtWidgets import QWidget, QStyle
@@ -25,11 +25,11 @@ class Widget(QWidget):
         self.ui = ConfigViewerUi.Ui_Form()
         self.ui.setupUi(self)
 
-        self.ui.platforms.currentIndexChanged.connect(self.__update_modules)
-        self.ui.schemes.currentIndexChanged.connect(self.__update_modules)
-        self.ui.robots.currentIndexChanged.connect(self.__update_modules)
-        self.ui.bodies.currentIndexChanged.connect(self.__update_modules)
-        self.ui.heads.currentIndexChanged.connect(self.__update_modules)
+        self.ui.platforms.currentIndexChanged.connect(self.__update_tree)
+        self.ui.schemes.currentIndexChanged.connect(self.__update_tree)
+        self.ui.robots.currentIndexChanged.connect(self.__update_tree)
+        self.ui.bodies.currentIndexChanged.connect(self.__update_tree)
+        self.ui.heads.currentIndexChanged.connect(self.__update_tree)
 
         self.setWindowTitle("Modules Config Viewer")
         self.setWindowIcon(self.style().standardIcon(QStyle.SP_FileDialogContentsView))
@@ -45,7 +45,7 @@ class Widget(QWidget):
         self.__reset_ui()
         self.__read_scheme_file()
         self.__read_config_directory()
-        self.__update_modules()
+        self.__update_tree()
 
         self.ui.config_dir.setText(self.config)
 
@@ -105,18 +105,12 @@ class Widget(QWidget):
         if box.count() <= 1:
             box.setDisabled(True)
 
-    def __update_modules(self):
+    def __update_tree(self):
         self.ui.modules.setEnabled(False)
 
         config = configparser.ConfigParser()
-
-        self.__update_modules_part(config, 'general')
-        self.__update_modules_part(config, 'platform', self.ui.platforms)
-        self.__update_modules_part(config, 'scheme', self.ui.schemes)
-        self.__update_modules_part(config, 'robots', self.ui.robots)
-        self.__update_modules_part(config, 'robots_bodies', self.ui.bodies)
-        self.__update_modules_part(config, 'robot_heads', self.ui.heads)
-        self.__update_modules_part(config, 'private')
+        config.optionxform = str
+        self.__update_config(config, 'modules.cfg')
 
         model = QStandardItemModel()
         parent_item = model.invisibleRootItem()  # type: QStandardItem
@@ -125,6 +119,13 @@ class Widget(QWidget):
                 text_item = QStandardItem(m)
                 text_item.setEditable(False)
                 text_item.setCheckState(Qt.Checked if config.getboolean('modules', m) else Qt.Unchecked)
+
+                # NOTE: some modules name their parameters differently than themselves
+                if config.getboolean('modules', m):
+                    self.__update_config(config, m + '.cfg')
+
+                self.__update_sub_tree(config, text_item, m)
+
                 parent_item.appendRow(text_item)
 
         model.setHeaderData(0, Qt.Horizontal, "Modules")
@@ -132,11 +133,29 @@ class Widget(QWidget):
 
         self.ui.modules.setEnabled(True)
 
-    def __update_modules_part(self, config, dir, box = None):
-        subdir = box.currentText() + os.sep if box else ""
-        if os.path.isfile(self.config + self.dirs[dir] + subdir + "modules.cfg"):
-            config.read(self.config + self.dirs[dir] + subdir + "modules.cfg")
+    def __update_sub_tree(self, config, parent, section):
+        if config.has_section(section):
+            for i in sorted(config.options(section)):
+                item = QStandardItem(i + " = " + config.get(section, i))
+                item.setEditable(False)
+                font = QFont()
+                font.setItalic(True)
+                item.setFont(font)
+                parent.appendRow(item)
 
+    def __update_config(self, config, file):
+        self.__update_config_part(config, file, 'general')
+        self.__update_config_part(config, file, 'platform', self.ui.platforms)
+        self.__update_config_part(config, file, 'scheme', self.ui.schemes)
+        self.__update_config_part(config, file, 'robots', self.ui.robots)
+        self.__update_config_part(config, file, 'robots_bodies', self.ui.bodies)
+        self.__update_config_part(config, file, 'robot_heads', self.ui.heads)
+        self.__update_config_part(config, file, 'private')
+
+    def __update_config_part(self, config, file, dir, box = None):
+        subdir = box.currentText() + os.sep if box else ""
+        if os.path.isfile(self.config + self.dirs[dir] + subdir + file):
+            config.read(self.config + self.dirs[dir] + subdir + file)
 
     def dragEnterEvent(self, e):
         # only one item drop allowed
