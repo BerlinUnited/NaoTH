@@ -175,7 +175,7 @@ public class DialogRegistry {
             this.dlg.setDefaultCloseOperation(javax.swing.WindowConstants.HIDE_ON_CLOSE);
             this.dlg.setTitle(title);
             this.dlg.setModal(false);
-            //this.dlg.setAlwaysOnTop(true);
+            this.dlg.setAlwaysOnTop(true);
             this.dlg.setVisible(false);
         }
     }//end HelpAction

@@ -92,11 +92,18 @@
               <Format format="#0" subtype="-1" type="0"/>
             </Property>
             <Property name="toolTipText" type="java.lang.String" value="Last octet of the robots ip address."/>
+            <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+              <Dimension value="[40, 18]"/>
+            </Property>
           </Properties>
         </Component>
         <Component class="javax.swing.JButton" name="btDeploy">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Send toRobot"/>
+            <Property name="text" type="java.lang.String" value="Send to Robot"/>
+            <Property name="toolTipText" type="java.lang.String" value="Send to Robot"/>
+            <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+              <Dimension value="[114, 24]"/>
+            </Property>
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btDeployActionPerformed"/>
@@ -106,11 +113,15 @@
           <Properties>
             <Property name="columns" type="int" value="10"/>
             <Property name="toolTipText" type="java.lang.String" value="Small description of the deploying binary / test case."/>
+            <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+              <Dimension value="[40, 18]"/>
+            </Property>
           </Properties>
         </Component>
         <Component class="javax.swing.JButton" name="btWriteToStick">
           <Properties>
             <Property name="text" type="java.lang.String" value="Write to Stick"/>
+            <Property name="toolTipText" type="java.lang.String" value="Write to Stick"/>
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btWriteToStickActionPerformed"/>
@@ -119,6 +130,7 @@
         <Component class="javax.swing.JButton" name="btSetNetwork">
           <Properties>
             <Property name="text" type="java.lang.String" value="Set Network"/>
+            <Property name="toolTipText" type="java.lang.String" value="Set Network"/>
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btSetNetworkActionPerformed"/>
@@ -127,6 +139,7 @@
         <Component class="javax.swing.JButton" name="btInintRobot">
           <Properties>
             <Property name="text" type="java.lang.String" value="Initialize Robot"/>
+            <Property name="toolTipText" type="java.lang.String" value="Initialize Robot"/>
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btInintRobotActionPerformed"/>

@@ -128,6 +128,7 @@ class NetworkManagerNmcli(NetworkManager):
             logger.error("Could not connect to %s, password required!", ssid)
         return None
 
+
 class NetworkManagerIw(NetworkManager):
     def getWifiDevices(self):
         '''
@@ -189,7 +190,7 @@ class NetworkManagerIw(NetworkManager):
             subprocess.run(['wpa_cli', '-i', device, 'select_network', str(network_id)], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
             # wait max. 10s or until connected
             it = 0
-            while self.getCurrentSSID(device) is None and it < 10:
+            while (self.getCurrentSSID(device) is None or self.getCurrentSSID(device) != ssid) and it < 10:
                 time.sleep(1)
                 it += 1
             # check if connecting was successful

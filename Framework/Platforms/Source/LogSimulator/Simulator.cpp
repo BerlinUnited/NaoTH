@@ -134,7 +134,7 @@ char Simulator::getInput()
   }
 }
 
-void Simulator::main()
+void Simulator::main(bool autostart)
 {
   init();
 
@@ -142,36 +142,48 @@ void Simulator::main()
   printHelp();
 
   jumpToBegin();
-
-  char c;
-  while((c = getInput()) && c != 'q' && c != 'x')
-  {
-    if(c == 'd') {
-      stepForward();
-    } else if(c == 'a') {
-      stepBack();
-    } else if(c == 'w') {
-      jumpToBegin();
-    } else if(c == 's') {
-      jumpToEnd();
-    } else if(c == 'g') {
-      // read jump position
-      unsigned int jpos;
-      cout << " goto position: ";
-      cin >> jpos;
-      jumpTo(jpos);
-    } else if(c == 'p') {
-      play(false);
-    } else if(c == 'l') {
-      play(true);
-    } else if(c == 'r') {
-      executeCurrentFrame();
-    } else if(c == 'h') {
-      printHelp();
-      printCurrentLineInfo();
-    }
-  }// while
-
+	if (autostart){
+		play(false);
+	}
+	else{
+		char c;
+		while ((c = getInput()) && c != 'q' && c != 'x')
+		{
+			if (c == 'd') {
+				stepForward();
+			}
+			else if (c == 'a') {
+				stepBack();
+			}
+			else if (c == 'w') {
+				jumpToBegin();
+			}
+			else if (c == 's') {
+				jumpToEnd();
+			}
+			else if (c == 'g') {
+				// read jump position
+				unsigned int jpos;
+				cout << " goto position: ";
+				cin >> jpos;
+				jumpTo(jpos);
+			}
+			else if (c == 'p') {
+				play(false);
+			}
+			else if (c == 'l') {
+				play(true);
+			}
+			else if (c == 'r') {
+				executeCurrentFrame();
+			}
+			else if (c == 'h') {
+				printHelp();
+				printCurrentLineInfo();
+			}
+		}// while
+	}
+  
   cout << endl << "bye bye!" << endl;
 }//end main
 
