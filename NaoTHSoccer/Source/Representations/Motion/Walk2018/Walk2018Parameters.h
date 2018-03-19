@@ -14,7 +14,7 @@
 
 class FeetStabilizerParameters: public ParameterList{
       public:
-        FeetStabilizerParameters() : ParameterList("FeetStabilizer")
+        FeetStabilizerParameters() : ParameterList("Walk_FeetStabilizer")
         {
           PARAMETER_REGISTER(stabilizeFeet) = true;
 
@@ -34,7 +34,7 @@ class FeetStabilizerParameters: public ParameterList{
 
 class FootStepPlanner2018Parameters: public ParameterList{
     public:
-      FootStepPlanner2018Parameters() : ParameterList("FootStepPlanner2018")
+      FootStepPlanner2018Parameters() : ParameterList("Walk_FootStepPlanner2018")
       {
           PARAMETER_ANGLE_REGISTER(limits.maxTurnInner) = 10;
           PARAMETER_ANGLE_REGISTER(limits.maxStepTurn)  = 30;
@@ -95,7 +95,7 @@ class FootStepPlanner2018Parameters: public ParameterList{
 
 class LiftingFootCompensatorParameters: public ParameterList{
       public:
-        LiftingFootCompensatorParameters() : ParameterList("LiftingFootCompensator")
+        LiftingFootCompensatorParameters() : ParameterList("Walk_LiftingFootCompensator")
         {
           PARAMETER_REGISTER(comHeightOffset) = 0.18;
           PARAMETER_REGISTER(comStepOffsetY)  = 0;
@@ -109,9 +109,9 @@ class LiftingFootCompensatorParameters: public ParameterList{
 
 class FootTrajectoryGenerator2018Parameters: public ParameterList{
   public:
-      FootTrajectoryGenerator2018Parameters() : ParameterList("FootTrajectoryGenerator2018")
+      FootTrajectoryGenerator2018Parameters() : ParameterList("Walk_FootTrajectoryGenerator2018")
       {
-        PARAMETER_REGISTER(stepHeight) = 25;
+        PARAMETER_REGISTER(stepHeight) = 21;
         PARAMETER_REGISTER(kickHeight) = 35;
         PARAMETER_REGISTER(useSplineFootTrajectory)  = true;
 
@@ -125,7 +125,7 @@ class FootTrajectoryGenerator2018Parameters: public ParameterList{
 
 class HipRotationOffsetModifierParameters: public ParameterList{
     public:
-        HipRotationOffsetModifierParameters() : ParameterList("HipRotationOffsetModifier")
+        HipRotationOffsetModifierParameters() : ParameterList("Walk_HipRotationOffsetModifier")
         {
           PARAMETER_REGISTER(hipOffsetBasedOnStepChange.x) = 0;
           PARAMETER_REGISTER(hipOffsetBasedOnStepChange.y) = 0;
@@ -140,14 +140,14 @@ class HipRotationOffsetModifierParameters: public ParameterList{
 
 class TorsoRotationStabilizerParameters: public ParameterList{
   public:
-    TorsoRotationStabilizerParameters() : ParameterList("TorsoRotationStabilizer")
+    TorsoRotationStabilizerParameters() : ParameterList("Walk_TorsoRotationStabilizer")
     {
       PARAMETER_REGISTER(rotationStabilize) = true;
 
-      PARAMETER_REGISTER(rotation.P.x) = -0.02;
+      PARAMETER_REGISTER(rotation.P.x) = -0.03;
       PARAMETER_REGISTER(rotation.P.y) = -0.03;
-      PARAMETER_REGISTER(rotation.VelocityP.x) = 0.02;
-      PARAMETER_REGISTER(rotation.VelocityP.y) = 0.02;
+      PARAMETER_REGISTER(rotation.VelocityP.x) = 0.03;
+      PARAMETER_REGISTER(rotation.VelocityP.y) = 0.03;
       PARAMETER_REGISTER(rotation.D.x) = 0;
       PARAMETER_REGISTER(rotation.D.y) = 0;
 
@@ -165,15 +165,15 @@ class TorsoRotationStabilizerParameters: public ParameterList{
 
 class ZMPPlanner2018Parameters: public ParameterList{
 public:
-  ZMPPlanner2018Parameters() : ParameterList("ZMPPlanner2018")
+  ZMPPlanner2018Parameters() : ParameterList("Walk_ZMPPlanner2018")
   {
       PARAMETER_REGISTER(bezierZMP.inFootScalingY) = 1;
       PARAMETER_REGISTER(bezierZMP.inFootSpacing)  = 10;
       PARAMETER_REGISTER(bezierZMP.transitionScaling) = 0.6;
-      PARAMETER_REGISTER(bezierZMP.offsetX) = 15;
-      PARAMETER_REGISTER(bezierZMP.offsetY) = 0;
+      PARAMETER_REGISTER(bezierZMP.offsetX) = 20;
+      PARAMETER_REGISTER(bezierZMP.offsetY) = -10;
       PARAMETER_REGISTER(bezierZMP.offsetXForKicks) = 0;
-      PARAMETER_REGISTER(bezierZMP.offsetYForKicks) = -7;
+      PARAMETER_REGISTER(bezierZMP.offsetYForKicks) = -20;
 
       PARAMETER_REGISTER(simpleZMP.offsetX) = 20;
       PARAMETER_REGISTER(simpleZMP.offsetY) = -7;
