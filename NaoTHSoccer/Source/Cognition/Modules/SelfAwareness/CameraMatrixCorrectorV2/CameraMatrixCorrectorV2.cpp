@@ -54,6 +54,7 @@ void CameraMatrixCorrectorV2::execute()
     getSoundPlayData().mute = true;
     getSoundPlayData().soundFile = "";
   }
+
   // sit down if auto calibrated
   if(auto_calibrated){
     getMotionRequest().id = motion::sit;
@@ -63,7 +64,7 @@ void CameraMatrixCorrectorV2::execute()
 
   // enable debug drawings in manual and auto mode
   DEBUG_REQUEST("CameraMatrixV2:enable_CamMatErrorFunction_drawings",
-      theCamMatErrorFunction->getModuleT()->plot_CalibrationData();
+      theCamMatErrorFunction->getModuleT()->plot_CalibrationData(cam_mat_offsets);
   );
 
   bool use_automatic_mode = false;
@@ -74,6 +75,7 @@ void CameraMatrixCorrectorV2::execute()
   DEBUG_REQUEST_ON_DEACTIVE("CameraMatrixV2:automatic_mode",
     // Note: wanted behavior because we want to save the "best" solution so far
     if(!auto_calibrated){
+        writeToRepresentation();
         getCameraMatrixOffset().saveToConfig();
     }
 
@@ -125,35 +127,12 @@ void CameraMatrixCorrectorV2::execute()
           collectingData();
       }
 
-      MODIFY("CameraMatrixV2:OffsetRollTop",getCameraMatrixOffset().correctionOffset[naoth::CameraInfo::Top].x);
-      MODIFY("CameraMatrixV2:OffsetTiltTop",getCameraMatrixOffset().correctionOffset[naoth::CameraInfo::Top].y);
-      MODIFY("CameraMatrixV2:OffsetRollBottom",getCameraMatrixOffset().correctionOffset[naoth::CameraInfo::Bottom].x);
-      MODIFY("CameraMatrixV2:OffsetTiltBottom",getCameraMatrixOffset().correctionOffset[naoth::CameraInfo::Bottom].y);
-
-      MODIFY("CameraMatrixV2:Body:Roll",  getCameraMatrixOffset().body_rot.x);
-      MODIFY("CameraMatrixV2:Body:Pitch", getCameraMatrixOffset().body_rot.y);
-
-      MODIFY("CameraMatrixV2:Head:Roll",  getCameraMatrixOffset().head_rot.x);
-      MODIFY("CameraMatrixV2:Head:Pitch", getCameraMatrixOffset().head_rot.y);
-      MODIFY("CameraMatrixV2:Head:Yaw",   getCameraMatrixOffset().head_rot.z);
-
-      MODIFY("CameraMatrixV2:Cam:Top:Roll",  getCameraMatrixOffset().cam_rot[naoth::CameraInfo::Top].x);
-      MODIFY("CameraMatrixV2:Cam:Top:Pitch", getCameraMatrixOffset().cam_rot[naoth::CameraInfo::Top].y);
-      MODIFY("CameraMatrixV2:Cam:Top:Yaw",   getCameraMatrixOffset().cam_rot[naoth::CameraInfo::Top].z);
-
-      MODIFY("CameraMatrixV2:Cam:Bottom:Roll",  getCameraMatrixOffset().cam_rot[naoth::CameraInfo::Bottom].x);
-      MODIFY("CameraMatrixV2:Cam:Bottom:Pitch", getCameraMatrixOffset().cam_rot[naoth::CameraInfo::Bottom].y);
-      MODIFY("CameraMatrixV2:Cam:Bottom:Yaw",   getCameraMatrixOffset().cam_rot[naoth::CameraInfo::Bottom].z);
-
-      MODIFY("CameraMatrixV2:GlobalPosition:x",        theCamMatErrorFunction->getModuleT()->globalPosition.x);
-      MODIFY("CameraMatrixV2:GlobalPosition:y",        theCamMatErrorFunction->getModuleT()->globalPosition.y);
-      MODIFY("CameraMatrixV2:GlobalPosition:z_angle",  theCamMatErrorFunction->getModuleT()->globalPosition.z);
-
       DEBUG_REQUEST("CameraMatrixV2:calibrate_camera_matrix_line_matching",
           calibrate();
       );
 
       DEBUG_REQUEST_ON_DEACTIVE("CameraMatrixV2:calibrate_camera_matrix_line_matching",
+          writeToRepresentation();
           getCameraMatrixOffset().saveToConfig();
       );
 
@@ -169,6 +148,7 @@ void CameraMatrixCorrectorV2::execute()
       );
 
       DEBUG_REQUEST_ON_DEACTIVE("CameraMatrixV2:reset_calibration",
+          writeToRepresentation();
           getCameraMatrixOffset().saveToConfig();
       );
   }
@@ -183,7 +163,9 @@ void CameraMatrixCorrectorV2::reset_calibration()
   getCameraMatrixOffset().cam_rot[CameraInfo::Top]    = Vector3d();
   getCameraMatrixOffset().cam_rot[CameraInfo::Bottom] = Vector3d();
 
-  theCamMatErrorFunction->getModuleT()->globalPosition = Vector3d();
+  cam_mat_offsets = Eigen::Matrix<double, 14, 1>::Zero();
+
+  //theCamMatErrorFunction->getModuleT()->globalPosition = Vector3d();
 }
 
 bool CameraMatrixCorrectorV2::calibrate(){
@@ -211,9 +193,10 @@ bool CameraMatrixCorrectorV2::calibrateSimultaneously() {
   epsilon(11) = 1e2;
   epsilon(12) = 1e2;
   epsilon(13) = Math::pi_4/2;
+
   double error;
 
-  Eigen::Matrix<double, 14, 1> offset = lm_minimizer.minimizeOneStep(*(theCamMatErrorFunction->getModuleT()),epsilon,error);
+  Eigen::Matrix<double, 14, 1> offset = lm_minimizer.minimizeOneStep(*(theCamMatErrorFunction->getModuleT()), cam_mat_offsets, epsilon, error);
 
   double de_dt = (error-last_error)/dt; // improvement per second
 
@@ -227,13 +210,7 @@ bool CameraMatrixCorrectorV2::calibrateSimultaneously() {
   PLOT("CameraMatrixV2:avg_derror", derrors.getAverage());
 
   // update offsets
-  getCameraMatrixOffset().body_rot += Vector2d(offset(0),offset(1));
-  getCameraMatrixOffset().head_rot += Vector3d(offset(2),offset(3),offset(4));
-  getCameraMatrixOffset().cam_rot[CameraInfo::Top]    += Vector3d(offset(5),offset(6),offset(7));
-  getCameraMatrixOffset().cam_rot[CameraInfo::Bottom] += Vector3d(offset(8),offset(9),offset(10));
-  (theCamMatErrorFunction->getModuleT())->globalPosition.x += offset(11);
-  (theCamMatErrorFunction->getModuleT())->globalPosition.y += offset(12);
-  (theCamMatErrorFunction->getModuleT())->globalPosition.z += offset(13);
+  cam_mat_offsets += offset;
 
   return (    (derrors.getAverage() > -50) // average error decreases by less than this per second
            && derrors.isFull() );          // and we have a full history
@@ -245,7 +222,7 @@ bool CameraMatrixCorrectorV2::calibrateOnlyPose()
   double dt = getFrameInfo().getTimeInSeconds()-last_frame_info.getTimeInSeconds();
 
   // calibrate the camera matrix
-  Eigen::Matrix<double, 3, 1> epsilon;
+  Eigen::Matrix<double, 14, 1> epsilon = Eigen::Matrix<double, 14, 1>::Constant(std::numeric_limits<double>::quiet_NaN());
 
   double epsilon_pos = 1e2;
   double epsilon_angle = Math::pi_4/2;
@@ -253,10 +230,10 @@ bool CameraMatrixCorrectorV2::calibrateOnlyPose()
   MODIFY("CameraMatrixV2:epsilon:pos", epsilon_pos);
   MODIFY("CameraMatrixV2:epsilon:angle", epsilon_angle);
 
-  epsilon << epsilon_pos, epsilon_pos, epsilon_angle;
+  epsilon.block<3,1>(11,0) << epsilon_pos, epsilon_pos, epsilon_angle;
   double error;
 
-  Eigen::Matrix<double, 3, 1> offset = lm_minimizer_pos.minimizeOneStep(*(theCamMatErrorFunction->getModuleT()),epsilon,error);
+  Eigen::Matrix<double, 14, 1> offset = lm_minimizer_pos.minimizeOneStep(*(theCamMatErrorFunction->getModuleT()), cam_mat_offsets, epsilon, error);
 
   double de_dt = (error-last_error)/dt; // improvement per second
 
@@ -270,9 +247,7 @@ bool CameraMatrixCorrectorV2::calibrateOnlyPose()
   PLOT("CameraMatrixV2:avg_derror_pose", derrors_pos.getAverage());
 
   // update offsets
-  (theCamMatErrorFunction->getModuleT())->globalPosition.x += offset(0);
-  (theCamMatErrorFunction->getModuleT())->globalPosition.y += offset(1);
-  (theCamMatErrorFunction->getModuleT())->globalPosition.z += offset(2);
+  cam_mat_offsets += offset;
 
   return (    (derrors_pos.getAverage() > -50) // average error decreases by less than this per second
            && derrors_pos.isFull() );          // and we have a full history
@@ -284,9 +259,11 @@ bool CameraMatrixCorrectorV2::calibrateOnlyOffsets()
   double dt = getFrameInfo().getTimeInSeconds()-last_frame_info.getTimeInSeconds();
 
   // calibrate the camera matrix
-  Eigen::Matrix<double, 11, 1> epsilon = Eigen::Matrix<double, 11, 1>::Constant(1e-4);
+  Eigen::Matrix<double, 14, 1> epsilon = Eigen::Matrix<double, 14, 1>::Constant(1e-4);
+  epsilon.block<3,1>(11,0) << std::numeric_limits<double>::quiet_NaN(), std::numeric_limits<double>::quiet_NaN(), std::numeric_limits<double>::quiet_NaN();
   double error;
-  Eigen::Matrix<double, 11, 1> offset = lm_minimizer_offset.minimizeOneStep(*(theCamMatErrorFunction->getModuleT()),epsilon,error);
+
+  Eigen::Matrix<double, 14, 1> offset = lm_minimizer_offset.minimizeOneStep(*(theCamMatErrorFunction->getModuleT()), cam_mat_offsets, epsilon, error);
 
   double de_dt = (error-last_error)/dt; // improvement per second
 
@@ -300,10 +277,7 @@ bool CameraMatrixCorrectorV2::calibrateOnlyOffsets()
   PLOT("CameraMatrixV2:avg_derror_offset", derrors_offset.getAverage());
 
   // update offsets
-  getCameraMatrixOffset().body_rot += Vector2d(offset(0),offset(1));
-  getCameraMatrixOffset().head_rot += Vector3d(offset(2),offset(3),offset(4));
-  getCameraMatrixOffset().cam_rot[CameraInfo::Top]    += Vector3d(offset(5),offset(6),offset(7));
-  getCameraMatrixOffset().cam_rot[CameraInfo::Bottom] += Vector3d(offset(8),offset(9),offset(10));
+  cam_mat_offsets += offset;
 
   return (    (derrors_offset.getAverage() > -50) // average error decreases by less than this per second
            && derrors_offset.isFull() );          // and we have a full history
@@ -476,6 +450,7 @@ void CameraMatrixCorrectorV2::doItAutomatically()
     }
 
     if(auto_calibrated){
+        writeToRepresentation();
         getCameraMatrixOffset().saveToConfig();
 
         if(play_calibrated) {
@@ -484,4 +459,12 @@ void CameraMatrixCorrectorV2::doItAutomatically()
             play_calibrated = false;
         }
     }
+}
+
+void CameraMatrixCorrectorV2::writeToRepresentation()
+{
+  getCameraMatrixOffset().body_rot += Vector2d(cam_mat_offsets(0),cam_mat_offsets(1));
+  getCameraMatrixOffset().head_rot += Vector3d(cam_mat_offsets(2),cam_mat_offsets(3),cam_mat_offsets(4));
+  getCameraMatrixOffset().cam_rot[CameraInfo::Top]    += Vector3d(cam_mat_offsets(5),cam_mat_offsets(6),cam_mat_offsets(7));
+  getCameraMatrixOffset().cam_rot[CameraInfo::Bottom] += Vector3d(cam_mat_offsets(8),cam_mat_offsets(9),cam_mat_offsets(10));
 }

@@ -48,7 +48,6 @@ BEGIN_DECLARE_MODULE(CamMatErrorFunction)
   REQUIRE(FieldInfo)
   REQUIRE(CameraInfo)
   REQUIRE(CameraInfoTop)
-  REQUIRE(CameraMatrixOffset)
 END_DECLARE_MODULE(CamMatErrorFunction)
 
 BEGIN_DECLARE_MODULE(CameraMatrixCorrectorV2)
@@ -124,9 +123,6 @@ public:
 
     void execute(){}
 
-    // additional position parameter
-    Vector3d globalPosition; //x, y, z_angle
-
     size_t getNumberOfResudials() const {
         return numberOfResudials;
     }
@@ -144,7 +140,7 @@ public:
         numberOfResudials = 0;
     }
 
-    void plot_CalibrationData(){
+    void plot_CalibrationData(const Eigen::Matrix<double, 14, 1>& parameter){
         bool only_bottom = false;
         DEBUG_REQUEST("CamMatErrorFunction:debug_drawings:only_bottom",
                       only_bottom = true;
@@ -156,35 +152,44 @@ public:
         );
 
         if(only_bottom && only_top){
-            actual_plotting(CameraInfo::Bottom);
-            actual_plotting(CameraInfo::Top);
+            actual_plotting(parameter, CameraInfo::Bottom);
+            actual_plotting(parameter, CameraInfo::Top);
         } else if (only_bottom) {
-            actual_plotting(CameraInfo::Bottom);
+            actual_plotting(parameter, CameraInfo::Bottom);
         } else if (only_top) {
-            actual_plotting(CameraInfo::Top);
+            actual_plotting(parameter, CameraInfo::Top);
         } else {
-            actual_plotting(CameraInfo::Bottom);
-            actual_plotting(CameraInfo::Top);
+            actual_plotting(parameter, CameraInfo::Bottom);
+            actual_plotting(parameter, CameraInfo::Top);
         }
     }
 
-    void actual_plotting(CameraInfo::CameraID cameraID){
+    void actual_plotting(const Eigen::Matrix<double, 14, 1>& parameter, CameraInfo::CameraID cameraID){
         for(CalibrationData::const_iterator sample = calibrationData.begin(); sample != calibrationData.end(); ++sample){
+                Vector2d offsetBody(parameter(0),parameter(1));
+                Vector3d offsetHead(parameter(2), parameter(3),parameter(4));
+                Vector3d offsetCam[CameraInfo::numOfCamera];
+                offsetCam[CameraInfo::Top]    = Vector3d(parameter(5), parameter(6),parameter(7));
+                offsetCam[CameraInfo::Bottom] = Vector3d(parameter(8), parameter(9),parameter(10));
+                double global_x_offset = parameter(11);
+                double global_y_offset = parameter(12);
+                double global_z_angle_offset = parameter(13);
+
                 CameraMatrix tmpCM = CameraGeometry::calculateCameraMatrixFromChestPose(
                             sample->chestPose,
                             NaoInfo::robotDimensions.cameraTransform[cameraID].offset,
                             NaoInfo::robotDimensions.cameraTransform[cameraID].rotationY,
-                            getCameraMatrixOffset().body_rot,
-                            getCameraMatrixOffset().head_rot,
-                            getCameraMatrixOffset().cam_rot[cameraID],
+                            offsetBody,
+                            offsetHead,
+                            offsetCam[cameraID],
                             sample->headYaw,
                             sample->headPitch,
                             sample->inertialModel.orientation
                             );
 
-                tmpCM.translation += Vector3d(globalPosition.x, globalPosition.y,0); // move around on field
+                tmpCM.translation += Vector3d(global_x_offset, global_y_offset, 0); // move around on field
                 //tmpCM.rotation    *= RotationMatrix::getRotationZ(globalPosition.z); // and rotate first around the global z axis
-                tmpCM.rotation = RotationMatrix::getRotationZ(globalPosition.z) * tmpCM.rotation; // why? shouldn't it be the other way around?
+                tmpCM.rotation = RotationMatrix::getRotationZ(global_z_angle_offset) * tmpCM.rotation; // why? shouldn't it be the other way around?
 
                 std::vector<Vector2d> edgelProjections;
                 edgelProjections.resize(getEdgelsInImage(sample,cameraID).size());
@@ -211,7 +216,7 @@ public:
                 DEBUG_REQUEST("CamMatErrorFunction:debug_drawings:draw_projected_edgels",
                         FIELD_DRAWING_CONTEXT;
                         PEN("FF0000", 10);
-                        ROBOT(globalPosition.x, globalPosition.y, globalPosition.z);
+                        ROBOT(global_x_offset, global_y_offset, global_z_angle_offset);
                 );
 
                 DEBUG_REQUEST("CamMatErrorFunction:debug_drawings:draw_matching_global",
@@ -238,7 +243,7 @@ public:
                     }
 
                     PEN("FF0000", 10);
-                    ROBOT(globalPosition.x, globalPosition.y, globalPosition.z);
+                    ROBOT(global_x_offset, global_y_offset, global_z_angle_offset);
                 );
         }
     }
@@ -269,17 +274,17 @@ public:
                             sample->chestPose,
                             NaoInfo::robotDimensions.cameraTransform[cameraID].offset,
                             NaoInfo::robotDimensions.cameraTransform[cameraID].rotationY,
-                            getCameraMatrixOffset().body_rot + offsetBody,
-                            getCameraMatrixOffset().head_rot + offsetHead,
-                            getCameraMatrixOffset().cam_rot[cameraID]  + offsetCam[cameraID],
+                            offsetBody,
+                            offsetHead,
+                            offsetCam[cameraID],
                             sample->headYaw,
                             sample->headPitch,
                             sample->inertialModel.orientation
                             );
 
-                tmpCM.translation += Vector3d(globalPosition.x + global_x_offset, globalPosition.y + global_y_offset,0); // move around on field
+                tmpCM.translation += Vector3d(global_x_offset, global_y_offset,0); // move around on field
                 //tmpCM.rotation    *= RotationMatrix::getRotationZ(globalPosition.z + global_z_angle_offset); // and rotate first around the global z axis
-                tmpCM.rotation = RotationMatrix::getRotationZ(globalPosition.z + global_z_angle_offset) * tmpCM.rotation; // why? shouldn't it be the other way around?
+                tmpCM.rotation = RotationMatrix::getRotationZ(global_z_angle_offset) * tmpCM.rotation; // why? shouldn't it be the other way around?
 
                 std::vector<Vector2d> edgelProjections;
                 edgelProjections.resize(getEdgelsInImage(sample,cameraID).size());
@@ -324,157 +329,6 @@ public:
         ASSERT(idx == numberOfResudials);
         return r;
     }
-
-    Eigen::VectorXd operator()(const Eigen::Matrix<double, 11, 1>& parameter) const {
-        Eigen::VectorXd r(numberOfResudials);
-
-        Vector2d offsetBody(parameter(0),parameter(1));
-        Vector3d offsetHead(parameter(2), parameter(3),parameter(4));
-        Vector3d offsetCam[CameraInfo::numOfCamera];
-        offsetCam[CameraInfo::Top]    = Vector3d(parameter(5), parameter(6),parameter(7));
-        offsetCam[CameraInfo::Bottom] = Vector3d(parameter(8), parameter(9),parameter(10));
-
-        size_t idx = 0;
-        for(int cameraID = 0; cameraID < CameraInfo::numOfCamera; cameraID++){
-            for(CalibrationData::const_iterator sample = calibrationData.begin(); sample != calibrationData.end(); ++sample){
-                if (getEdgelsInImage(sample,cameraID).size() == 0) {
-                    continue;
-                }
-
-                CameraMatrix tmpCM = CameraGeometry::calculateCameraMatrixFromChestPose(
-                            //sample->kinematicChain,
-                            sample->chestPose,
-                            NaoInfo::robotDimensions.cameraTransform[cameraID].offset,
-                            NaoInfo::robotDimensions.cameraTransform[cameraID].rotationY,
-                            getCameraMatrixOffset().body_rot + offsetBody,
-                            getCameraMatrixOffset().head_rot + offsetHead,
-                            getCameraMatrixOffset().cam_rot[cameraID]  + offsetCam[cameraID],
-                            sample->headYaw,
-                            sample->headPitch,
-                            sample->inertialModel.orientation
-                            );
-
-                tmpCM.translation += Vector3d(globalPosition.x, globalPosition.y,0); // move around on field
-                //tmpCM.rotation    *= RotationMatrix::getRotationZ(globalPosition.z + global_z_angle_offset); // and rotate first around the global z axis
-                tmpCM.rotation = RotationMatrix::getRotationZ(globalPosition.z) * tmpCM.rotation; // why? shouldn't it be the other way around?
-
-                std::vector<Vector2d> edgelProjections;
-                edgelProjections.resize(getEdgelsInImage(sample,cameraID).size());
-
-                // project edgels pairs to field
-                for(size_t i = 0; i < getEdgelsInImage(sample,cameraID).size(); i++)
-                {
-                    const EdgelT<double>& edgelOne = getEdgelsInImage(sample,cameraID)[i];
-
-                    CameraGeometry::imagePixelToFieldCoord(
-                                tmpCM, getCameraInfo(cameraID),
-                                edgelOne.point.x,
-                                edgelOne.point.y,
-                                0.0,
-                                edgelProjections[i]);
-                }
-
-                double total_sum = 0;
-                // determine distance to nearst field line and the total aberration
-                for(std::vector<Vector2d>::const_iterator seen_point_relative = edgelProjections.begin(); seen_point_relative != edgelProjections.end(); ++seen_point_relative){
-                    Pose2D   robotPose;
-                    Vector2d seen_point_global = robotPose * (*seen_point_relative);
-
-                    LinesTable::NamedPoint line_point_global = getFieldInfo().fieldLinesTable.get_closest_point(seen_point_global, LinesTable::all_lines);
-
-                    // there is no such line or point
-                    if(line_point_global.id == -1 /*&& corner.id == -1*/) {
-                        continue;
-                    }
-
-                    double dist = (seen_point_global - line_point_global.position).abs();
-
-                    total_sum += dist;
-                }
-
-                r(idx) = total_sum;
-                ++idx;
-            }
-        }
-
-        ASSERT(idx == numberOfResudials);
-        return r;
-    }
-
-    Eigen::VectorXd operator()(const Eigen::Matrix<double, 3, 1>& parameter) const {
-        Eigen::VectorXd r(numberOfResudials);
-
-        double global_x_offset = parameter(0);
-        double global_y_offset = parameter(1);
-        double global_z_angle_offset = parameter(2);
-
-        size_t idx = 0;
-        for(int cameraID = 0; cameraID < CameraInfo::numOfCamera; cameraID++){
-            for(CalibrationData::const_iterator sample = calibrationData.begin(); sample != calibrationData.end(); ++sample){
-                if (getEdgelsInImage(sample,cameraID).size() == 0) {
-                    continue;
-                }
-
-                CameraMatrix tmpCM = CameraGeometry::calculateCameraMatrixFromChestPose(
-                            //sample->kinematicChain,
-                            sample->chestPose,
-                            NaoInfo::robotDimensions.cameraTransform[cameraID].offset,
-                            NaoInfo::robotDimensions.cameraTransform[cameraID].rotationY,
-                            getCameraMatrixOffset().body_rot,
-                            getCameraMatrixOffset().head_rot,
-                            getCameraMatrixOffset().cam_rot[cameraID],
-                            sample->headYaw,
-                            sample->headPitch,
-                            sample->inertialModel.orientation
-                            );
-
-                tmpCM.translation += Vector3d(globalPosition.x + global_x_offset, globalPosition.y + global_y_offset,0); // move around on field
-                //tmpCM.rotation    *= RotationMatrix::getRotationZ(globalPosition.z + global_z_angle_offset); // and rotate first around the global z axis
-                tmpCM.rotation = RotationMatrix::getRotationZ(globalPosition.z + global_z_angle_offset) * tmpCM.rotation; // why? shouldn't it be the other way around?
-
-                std::vector<Vector2d> edgelProjections;
-                edgelProjections.resize(getEdgelsInImage(sample,cameraID).size());
-
-                // project edgels pairs to field
-                for(size_t i = 0; i < getEdgelsInImage(sample,cameraID).size(); i++)
-                {
-                    const EdgelT<double>& edgelOne = getEdgelsInImage(sample,cameraID)[i];
-
-                    CameraGeometry::imagePixelToFieldCoord(
-                                tmpCM, getCameraInfo(cameraID),
-                                edgelOne.point.x,
-                                edgelOne.point.y,
-                                0.0,
-                                edgelProjections[i]);
-                }
-
-                double total_sum = 0;
-                // determine distance to nearst field line and the total aberration
-                for(std::vector<Vector2d>::const_iterator seen_point_relative = edgelProjections.begin(); seen_point_relative != edgelProjections.end(); ++seen_point_relative){
-                    Pose2D   robotPose;
-                    Vector2d seen_point_global = robotPose * (*seen_point_relative);
-
-                    LinesTable::NamedPoint line_point_global = getFieldInfo().fieldLinesTable.get_closest_point(seen_point_global, LinesTable::all_lines);
-
-                    // there is no such line or point
-                    if(line_point_global.id == -1 /*&& corner.id == -1*/) {
-                        continue;
-                    }
-
-                    double dist = (seen_point_global - line_point_global.position).abs();
-
-                    total_sum += dist;
-                }
-
-                r(idx) = total_sum;
-                ++idx;
-            }
-        }
-
-        ASSERT(idx == numberOfResudials);
-        return r;
-    }
-
 };
 
 // HACK: shouldn't be a ModuleManager but has to be because of the CamMatErrorFunction... see above
@@ -495,6 +349,8 @@ private:
   double damping_cam_offsets;
   double damping_pose;
 
+  Eigen::Matrix<double, 14, 1> cam_mat_offsets;
+
   LevenbergMarquardtMinimizer<CamMatErrorFunction, 1, 2> lm_minimizer;
   LevenbergMarquardtMinimizer<CamMatErrorFunction, 1, 2> lm_minimizer_pos;
   LevenbergMarquardtMinimizer<CamMatErrorFunction, 1, 2> lm_minimizer_offset;
@@ -507,6 +363,8 @@ private:
   bool movingHead();
   void collectingData();
   void doItAutomatically();
+
+  void writeToRepresentation();
 
   ModuleCreator<CamMatErrorFunction>* theCamMatErrorFunction;
 
