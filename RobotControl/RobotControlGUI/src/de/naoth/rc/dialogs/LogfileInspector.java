@@ -16,7 +16,7 @@ import de.naoth.rc.core.dialog.RCDialog;
 import de.naoth.rc.dataformats.LogFile;
 import de.naoth.rc.dataformats.SPLMessage;
 import de.naoth.rc.logmanager.LogFileEventManager;
-import de.naoth.rc.messages.Representations;
+import de.naoth.rc.messages.TeamMessageOuterClass;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.io.File;
@@ -226,8 +226,8 @@ public class LogfileInspector extends AbstractDialog
             if(f.containsKey("TeamMessage")) {
                 LogDataFrame frame = f.get("TeamMessage");
                 List<TeamCommMessage> c = new ArrayList<>();
-                Representations.TeamMessage.parseFrom(frame.getData()).getDataList().stream().forEach(msg->{
-                    SPLMessage spl = new SPLMessage(msg);
+                TeamMessageOuterClass.TeamMessage.parseFrom(frame.getData()).getDataList().stream().forEach(msg->{
+                    SPLMessage spl = SPLMessage.parseFrom(msg);
                     c.add(new TeamCommMessage(
                         System.currentTimeMillis(),
                         "10.0."+spl.teamNum+"."+spl.playerNum, // artificially set an ip

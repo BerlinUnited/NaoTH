@@ -8,13 +8,13 @@ package naoscp.components;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import naoscp.tools.Config;
 import naoscp.tools.FileUtils;
@@ -286,6 +286,63 @@ public class NaoTHPanel extends javax.swing.JPanel {
             properties.setProperty("naoscp.scheme", scheme);
         }
         
+        updateScheme();
+        this.revalidate();
+    }//GEN-LAST:event_jSchemeBoxActionPerformed
+
+    private void cbCopyConfigActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbCopyConfigActionPerformed
+        setConfigEditable(this.cbCopyConfig.isSelected());
+    }//GEN-LAST:event_cbCopyConfigActionPerformed
+
+    private void setConfigEditable(boolean v) {
+        this.jSchemeBox.setEnabled(v);
+        this.jColorBox.setEnabled(v);
+        this.jTeamNumber.setEnabled(v);
+        this.jTeamCommPort.setEnabled(v);
+        Arrays.asList(this.playerNumberPanel.getComponents()).stream().forEach(x->((JComponent)x).setEnabled(v));
+    }
+    
+    private void updateForm(File projectFile)
+    {
+        if(!projectFile.isDirectory()) {
+            return;
+        }
+        
+        naothProjectFile = projectFile;
+        jDirPathLabel.setText(naothProjectFile.getAbsolutePath());
+        
+        // load the defaults for the configs
+        File configDir = new File(naothProjectFile, "Config");
+        loadPlayerCfg(new File(configDir, "general"));
+        loadTeamCommCfg(new File(configDir, "general"));
+        loadConfigSchemes(configDir);
+        
+        updateScheme();
+        
+        // this is set in updateScheme()
+        //playerNumberPanel.setRobots(configDir);
+        //playerNumberPanel.setRobotsFromTeamFile(new File(configDir, "general"));
+        
+        // check for the binaries
+        if(new File(naothProjectFile, CopyConfigAction.localBinPath + "/naoth").exists()) {
+            cbCopyExe.setEnabled(true);
+        } else {
+            cbCopyExe.setEnabled(false);
+            cbCopyExe.setSelected(false);
+        }
+        if(new File(naothProjectFile, CopyConfigAction.localBinPath + "/libnaosmal.so").exists()) {
+            cbCopyLib.setEnabled(true);
+        } else {
+            cbCopyLib.setEnabled(false);
+            cbCopyLib.setSelected(false);
+        }
+        
+        setConfigEditable(this.cbCopyConfig.isSelected());
+    }
+    
+    private void updateScheme() {
+        String scheme = (String)this.jSchemeBox.getSelectedItem();
+        
         File configDir = new File(naothProjectFile, "Config");
         File schemeDir = new File(configDir, "/scheme/"+scheme);
 
@@ -304,52 +361,7 @@ public class NaoTHPanel extends javax.swing.JPanel {
         if(new File(schemeDir, "team.cfg").exists()) {
             playerNumberPanel.setRobotsFromTeamFile(schemeDir);
         } else {
-            //playerNumberPanel.setRobotsFromTeamFile(new File(configDir, "general"));
-        }
-        this.revalidate();
-    }//GEN-LAST:event_jSchemeBoxActionPerformed
-
-    private void cbCopyConfigActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbCopyConfigActionPerformed
-        setConfigEditable(this.cbCopyConfig.isSelected());
-    }//GEN-LAST:event_cbCopyConfigActionPerformed
-
-    private void setConfigEditable(boolean v) {
-        this.jSchemeBox.setEnabled(v);
-        this.jColorBox.setEnabled(v);
-        this.jTeamNumber.setEnabled(v);
-        this.jTeamCommPort.setEnabled(v);
-    }
-    
-    private void updateForm(File projectFile)
-    {
-        if(!projectFile.isDirectory()) {
-            return;
-        }
-        
-        naothProjectFile = projectFile;
-        jDirPathLabel.setText(naothProjectFile.getAbsolutePath());
-        
-        // load the defaults for the configs
-        File configDir = new File(naothProjectFile, "Config");
-        loadPlayerCfg(new File(configDir, "general"));
-        loadTeamCommCfg(new File(configDir, "general"));
-        loadConfigSchemes(configDir);
-        
-        //playerNumberPanel.setRobots(configDir);
-        playerNumberPanel.setRobotsFromTeamFile(new File(configDir, "general"));
-        
-        // check for the binaries
-        if(new File(naothProjectFile, CopyConfigAction.localBinPath + "/naoth").exists()) {
-            cbCopyExe.setEnabled(true);
-        } else {
-            cbCopyExe.setEnabled(false);
-            cbCopyExe.setSelected(false);
-        }
-        if(new File(naothProjectFile, CopyConfigAction.localBinPath + "/libnaosmal.so").exists()) {
-            cbCopyLib.setEnabled(true);
-        } else {
-            cbCopyLib.setEnabled(false);
-            cbCopyLib.setSelected(false);
+            playerNumberPanel.setRobotsFromTeamFile(new File(configDir, "general"));
         }
     }
     
@@ -361,8 +373,7 @@ public class NaoTHPanel extends javax.swing.JPanel {
   private boolean loadConfigSchemes(File configPath)
   {
     File schemePath = new File(configPath, "scheme");
-    if( !configPath.isDirectory() || !schemePath.isDirectory() )
-    {
+    if( !configPath.isDirectory() || !schemePath.isDirectory() ) {
       return false;
     }
 

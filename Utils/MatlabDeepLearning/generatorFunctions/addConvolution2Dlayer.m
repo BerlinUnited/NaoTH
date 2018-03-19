@@ -5,8 +5,8 @@ function [out_dim_x, out_dim_y, out_dim_z] = addConvolution2Dlayer(HeaderFile,Bo
 
     stride_x  = layer.Stride(1);
     stride_y  = layer.Stride(2);
-    padding_x = layer.Padding(1);
-    padding_y = layer.Padding(2);
+    padding_x = layer.PaddingSize(1);
+    padding_y = layer.PaddingSize(2);
     
     filter_dim_x = layer.FilterSize(1);
     filter_dim_y = layer.FilterSize(2);

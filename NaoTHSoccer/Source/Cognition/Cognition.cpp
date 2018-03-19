@@ -30,6 +30,7 @@
 
 #include "Modules/Infrastructure/TeamCommunicator/TeamCommReceiver.h"
 #include "Modules/Infrastructure/TeamCommunicator/TeamCommSender.h"
+#include "Modules/Infrastructure/TeamCommunicator/SimpleNetworkTimeProtocol.h"
 
 #include "Modules/Infrastructure/Debug/CameraDebug.h"
 #include "Modules/Infrastructure/Camera/CameraInfoSetter.h"
@@ -86,7 +87,6 @@
 #include "Modules/Modeling/SelfLocator/OdometrySelfLocator/OdometrySelfLocator.h"
 #include "Modules/Modeling/GoalModel/DummyActiveGoalLocator/DummyActiveGoalLocator.h"
 #include "Modules/Modeling/GoalModel/WholeGoalLocator/WholeGoalLocator.h"
-#include "Modules/Modeling/BallLocator/KalmanFilterBallLocator/KalmanFilterBallLocator.h"
 
 #include "Modules/Modeling/BallLocator/TeamBallLocator/TeamBallLocator.h"
 #include "Modules/Modeling/BallLocator/MultiKalmanBallLocator/MultiKalmanBallLocator.h"
@@ -141,6 +141,7 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
 
   // infrastructure
   REGISTER_MODULE(TeamCommReceiver);
+  REGISTER_MODULE(SimpleNetworkTimeProtocol);
   REGISTER_MODULE(GameController);
   REGISTER_MODULE(BatteryAlert);
   REGISTER_MODULE(ButtonEventMonitor);
@@ -203,7 +204,6 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(OdometrySelfLocator);
   REGISTER_MODULE(WholeGoalLocator);
   REGISTER_MODULE(DummyActiveGoalLocator);
-  REGISTER_MODULE(KalmanFilterBallLocator);
   REGISTER_MODULE(TeamBallLocator);
   REGISTER_MODULE(MultiKalmanBallLocator);
 

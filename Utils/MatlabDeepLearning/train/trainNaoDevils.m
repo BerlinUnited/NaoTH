@@ -1,42 +1,47 @@
+addpath('../tools');
+addpath('../generatorFunctions');
+
 clear all;
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% CHANGE PARAMETERS HERE                                                  %
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 % select a meaningful name for the network
-netName="CNN_ND_aug2_full_conv";
+netName = "CNN_ND_aug2_full_conv_test45";
+
+% load data
+[data, labels] = load_from_mat('../data/basic.mat', '../data/augmented_rc17.mat');
+
+target = zeros(size(data,4),2);
+target(:,1) = (labels == 'ball');
+target(:,2) = (labels == 'noball');
+
+
 
 % select (multiple) directories containing "ball"/"noball" subdirectories with 
 % training data
+%{
 dataSetPath = {...
     '../data/augmented/test2/' ...
     };
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% ACTUAL CODE: DO NOT CHANGE                                              %
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%
-addpath('../generatorFunctions');
+addpath('../tools');
+ball = read_from_one_image('../data/rc17_1_ball.png');
+noball = read_from_one_image('../data/rc17_1_noball.png');
+data = cat(4,ball,noball);
+size(data)
+labels = zeros(size(data,4),2);
+labels(1:size(ball,4),1) = 1;
+labels((size(ball,4)+1):end,2) = 1;
+%labels = [ones(size(ball,4),1);zeros(size(noball,4),1)];
 
-% create result output directory and fail if output directory already exists
+%labels = categorical(labels,[1,0],{'ball','noball'});
+%}
+
+% check if output directory already exists
 resultFolder =  'result_' + netName;
-[~, errorMsg, ~] = mkdir(char(resultFolder));
-if ~isempty(errorMsg)
+if isdir(resultFolder)
     error('Aborting because output directory "%s" already exists!', resultFolder)
 end
 
 
-data = imageDatastore(dataSetPath, ...
-        'IncludeSubfolders',true,...
-        'LabelSource','foldernames', 'ReadFcn',@imgReader);
-
-
-%%
-% The labels for each patch is automatically determined by the name of the
-% subfolder from dataSetPath the image is located at
-countLabel = data.countEachLabel;
-disp(countLabel)
 %numBallPatches = countLabel.Count(1)
 %%
 %trainingNumFiles = round(numBallPatches*0.75);
@@ -49,12 +54,13 @@ layers = [imageInputLayer([16 16 1], 'DataAugmentation',{'randfliplr', 'randcrop
           convolution2dLayer(5, 4, 'Stride', 2, 'Padding', 2)
           maxPooling2dLayer(4, 'Stride', 2, 'Padding', 1)
           dropoutLayer(0.25)
-          convolution2dLayer(3, 12, 'Stride', 2, 'Padding', 1)
+          convolution2dLayer(3, 4, 'Stride', 1, 'Padding', 1)
           reluLayer
           dropoutLayer()
+          convolution2dLayer(3, 12, 'Stride', 2, 'Padding', 1)
+          reluLayer
           convolution2dLayer(2, 2, 'Stride', 1, 'Padding', 0)
-          softmaxLayer
-          classificationLayer];
+          regressionLayer];
 
 % Initialize the first convolutional layer weights using normally distributed 
 % random numbers with standard deviation of 0.0001.
@@ -84,20 +90,25 @@ options = trainingOptions('sgdm',...
     'Momentum', 0.9, ...
     'InitialLearnRate', 0.001, ...
     'LearnRateSchedule', 'piecewise', ...
-    'LearnRateDropFactor', 0.1, ...
-    'LearnRateDropPeriod', 5, ...
-    'L2Regularization', 0.004, ...
-    'MaxEpochs', 30, ...
-    'MiniBatchSize', 128); % 'cpu', 'parallel'
+    'LearnRateDropFactor', 0.5, ...
+    'LearnRateDropPeriod', 1, ...
+    'MaxEpochs', 3, ...
+    'MiniBatchSize', 32); % 'cpu', 'parallel'     %'L2Regularization', 0.004, ...
 
-convnet = trainNetwork(data,layers,options);
+convnet = trainNetwork(data, target, layers, options);
+
+% create the output directory if necessary
+[~, errorMsg, ~] = mkdir(char(resultFolder));
+if ~isempty(errorMsg)
+    error('Aborting because output directory "%s" already exists!', resultFolder)
+end
 
 %%
 % save the resulting model
 save(resultFolder + '/convnet.mat', 'convnet');
 
 % also create the final C++ class
-createCppFile(convnet, char(resultFolder + '/' + netName));
+%createCppFile(convnet, char(resultFolder + '/' + netName));
 
 % save the current train file as backup and "documentation"
 copyfile('trainNaoDevils.m', char(resultFolder + '/train.m'));
