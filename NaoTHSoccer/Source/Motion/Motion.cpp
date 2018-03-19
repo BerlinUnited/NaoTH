@@ -43,6 +43,9 @@ Motion::Motion()
 
   DEBUG_REQUEST_REGISTER("Motion:KinematicChain:orientation_test", "", false);
 
+  DEBUG_REQUEST_REGISTER("Motion:KinematicChain:drawMotor3D", "", false);
+  DEBUG_REQUEST_REGISTER("Motion:KinematicChain:drawSensor3D", "", false);
+
   REGISTER_DEBUG_COMMAND("DebugPlot:get", "get the plots", &getDebugPlot());
 
   // parameter
@@ -173,6 +176,8 @@ void Motion::call()
   postProcess();
   STOPWATCH_STOP("Motion:postProcess");
 
+  DEBUG_REQUEST("Motion:KinematicChain:drawSensor3D",  drawRobot3D(getKinematicChainSensor()); );
+  DEBUG_REQUEST("Motion:KinematicChain:drawMotor3D",  drawRobot3D(getKinematicChainMotor()); );
 
   // todo: execute debug commands => find a better place for this
   getDebugMessageOut().reset();
@@ -504,3 +509,21 @@ void Motion::updateCameraMatrix()
   getCameraMatrixTop().timestamp = getSensorJointData().timestamp;
   getCameraMatrixTop().valid = true;
 }// end updateCameraMatrix
+
+void Motion::drawRobot3D(const KinematicChain& kinematicChain)
+{
+  const Kinematics::Link* theLink = kinematicChain.theLinks;
+
+  for (int i = 0; i < KinematicChain::numOfLinks; i++)
+  {
+    if ( i != KinematicChain::Neck
+      && i != KinematicChain::LShoulder 
+      && i != KinematicChain::LElbow
+      && i != KinematicChain::RShoulder 
+      && i != KinematicChain::RElbow
+      && i != KinematicChain::Hip)
+    {
+      ENTITY(KinematicChain::getLinkName((KinematicChain::LinkID)i), theLink[i].M);
+    }
+  }//end for
+}//end drawRobot3D

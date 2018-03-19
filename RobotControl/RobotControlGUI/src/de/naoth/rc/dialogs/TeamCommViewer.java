@@ -555,7 +555,7 @@ public class TeamCommViewer extends AbstractDialog {
                             RobotStatus robotStatus = robotsMapSorted.get(address);
                             // ... new robot ...
                             if (robotStatus == null) {
-                                robotStatus = new RobotStatus(Plugin.parent.getMessageServer(), address);
+                                robotStatus = new RobotStatus(Plugin.parent.getMessageServer(), address, msg.isOpponent());
                                 // adds RobotStatus to a container
                                 robotsMapSorted.put(address, robotStatus);
                                 // clears the panel-view
@@ -572,9 +572,9 @@ public class TeamCommViewer extends AbstractDialog {
                             // updates the robotStatus
                             robotStatus.updateStatus(msg.timestamp, msg.message);
                             // new team -> add color
-                            if(!teamColor.containsKey((int)robotStatus.teamNum)) {
+                            if(!teamColor.containsKey(robotStatus.getTeamNum())) {
                                 teamColor.put(
-                                    (int)robotStatus.teamNum, 
+                                    (int)robotStatus.getTeamNum(), 
                                     // opponent gets "red" by default
                                     msg.isOpponent() ? Color.RED : (
                                         // "our" team gets "blue" or another
@@ -585,13 +585,13 @@ public class TeamCommViewer extends AbstractDialog {
                                     )
                                 );
                             }
-                            robotStatus.robotColor =  teamColor.get((int)robotStatus.teamNum);
+                            robotStatus.setRobotColorAwt(teamColor.get(robotStatus.getTeamNum()));
                         }
                     });
                     // if enabled, draw robots on the FieldViewer otherwise not
                     RobotStatus rs = robotsMapSorted.get(address);
-                    if(rs != null && rs.showOnField) {
-                        msg.message.draw(drawings, rs.robotColor, msg.isOpponent());
+                    if(rs != null && rs.getShowOnField()) {
+                        msg.message.draw(drawings, rs.getRobotColorAwt(), msg.isOpponent());
                     }
                 } // end for
                 Plugin.drawingEventManager.fireDrawingEvent(drawings, this);

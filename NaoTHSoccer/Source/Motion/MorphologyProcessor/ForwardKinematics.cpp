@@ -204,7 +204,7 @@ RotationMatrix ForwardKinematics::calcChestToFeetRotation(const KinematicChain& 
   Pose3D bodyInLeftFoot(footLeft.local(body));
   Pose3D bodyInRightFoot(footRight.local(body));
     
-  if(bodyInLeftFoot.translation.z > bodyInLeftFoot.translation.z)
+  if(bodyInLeftFoot.translation.z > bodyInRightFoot.translation.z)
   {
     calculatedRotation = bodyInLeftFoot.rotation;
   }

@@ -36,7 +36,6 @@ void PathPlanner::execute()
 
   getPathModel().kick_executed = false;
 
-  STOPWATCH_START("PathPlanner");
   // Always executed first
   manage_step_buffer();
 
@@ -102,8 +101,6 @@ void PathPlanner::execute()
 
   // Always executed last
   execute_step_buffer();
-
-  STOPWATCH_STOP("PathPlanner");
 }
 
 void PathPlanner::walk_to_ball(const Foot foot, const bool go_fast)

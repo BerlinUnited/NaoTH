@@ -6,10 +6,10 @@ import de.naoth.rc.core.dialog.AbstractDialog;
 import de.naoth.rc.core.dialog.DialogPlugin;
 import de.naoth.rc.core.dialog.RCDialog;
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.net.URI;
 import java.net.URL;
@@ -37,7 +37,7 @@ public class NaoScp extends AbstractDialog
     public static class Plugin extends DialogPlugin<NaoScp> {
         @InjectPlugin
         public static RobotControl parent;
-    }//end Plugin
+    }
     
     /**
      * Creates new form NaoScp
@@ -45,6 +45,7 @@ public class NaoScp extends AbstractDialog
     public NaoScp() {
         // reusable mouse listener
         labelMouseListener = new java.awt.event.MouseAdapter() {
+            @Override
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 labelClicked(evt);
             }
@@ -82,6 +83,18 @@ public class NaoScp extends AbstractDialog
                 JOptionPane.showMessageDialog(this, "No valid NaoScp jar file dropped!", "Invalid jar file(s)", JOptionPane.ERROR_MESSAGE);
             }
         });
+    }
+    
+    @Override
+    public void dispose() {
+        Component c = ((BorderLayout)getLayout()).getLayoutComponent(BorderLayout.CENTER);
+        
+        try {
+          Method formWindowClosing = c.getClass().getMethod("formWindowClosing", (Class<?>[]) null);
+          formWindowClosing.invoke(c, (Object[]) null);
+        } catch (Exception ex) {
+          Logger.getLogger(NaoScp.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
     /**

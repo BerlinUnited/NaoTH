@@ -89,12 +89,12 @@ void GameController::execute()
 
     // reset return message if old message was accepted
     if( returnMessage == GameReturnData::manual_penalise
-        && getGameData().getOwnRobotInfo(getPlayerInfo().playerNumber).penalty != GameData::none)
+        && getGameData().getOwnRobotInfo(getPlayerInfo().playerNumber).penalty != GameData::penalty_none)
     {
       returnMessage = GameReturnData::alive;
     }
     else if(returnMessage == GameReturnData::manual_unpenalise
-            && getGameData().getOwnRobotInfo(getPlayerInfo().playerNumber).penalty == GameData::none)
+            && getGameData().getOwnRobotInfo(getPlayerInfo().playerNumber).penalty == GameData::penalty_none)
     {
       returnMessage = GameReturnData::alive;
     }

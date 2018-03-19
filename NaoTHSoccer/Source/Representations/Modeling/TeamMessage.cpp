@@ -1,7 +1,7 @@
 #include "TeamMessage.h"
 
 #include <Tools/DataConversion.h>
-#include <Messages/Representations.pb.h>
+#include <Messages/TeamMessage.pb.h>
 #include <google/protobuf/io/zero_copy_stream_impl.h>
 
 using namespace naoth;
@@ -20,7 +20,6 @@ void Serializer<TeamMessage>::serialize(const TeamMessage& r, std::ostream& stre
     DataConversion::toMessage(d.pose, *(msg->mutable_pose()));
     msg->set_ballage((int)d.ballAge);
     DataConversion::toMessage(d.ballPosition, *(msg->mutable_ballposition()));
-    DataConversion::toMessage(d.ballVelocity, *(msg->mutable_ballvelocity()));
     msg->set_fallen(d.fallen);
     msg->mutable_user()->CopyFrom(d.custom.toProto());
     msg->mutable_frameinfo()->set_framenumber(d.frameInfo.getFrameNumber());
@@ -65,7 +64,6 @@ void Serializer<TeamMessage>::deserialize(std::istream& stream, TeamMessage& r)
     DataConversion::fromMessage(msg.pose(), d.pose);
     d.ballAge = msg.ballage();
     DataConversion::fromMessage(msg.ballposition(), d.ballPosition);
-    DataConversion::fromMessage(msg.ballvelocity(), d.ballVelocity);
     d.fallen = msg.fallen();
 
     d.custom.parseFromProto(msg.user());

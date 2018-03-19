@@ -52,7 +52,7 @@ public:
   virtual std::string getHeadNickName() const {return "naoth"; }
   virtual std::string getRobotName() const { return "naoth-logsimulator"; }
 
-  void main();
+  void main(bool start = false);
 
   void printRepresentations();
   void printHelp();
