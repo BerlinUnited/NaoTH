@@ -382,13 +382,14 @@ void FootStepPlanner2018::restrictStepSize(Pose2D& step, double character, bool 
   }
 
   ASSERT( step.translation.x >= -maxStepLengthBack);
-  ASSERT( fabs(step.translation.x) <= maxStepLength);
+  ASSERT( step.translation.x <=  maxStepLength);
   ASSERT( fabs(step.translation.y) <= maxStepWidth);
 
   // limit rotation
   step.rotation = Math::clamp(step.rotation, -maxTurn, maxTurn);  // limit the rotation
 
-  if ( maxTurn > Math::fromDegrees(1.0) ) {
+  // limit translation depending on rotation if not doing a stepControl
+  if (!stepControl && maxTurn > Math::fromDegrees(1.0) ) {
     step.translation *= cos( step.rotation/maxTurn * Math::pi / 2);
   }
 }//end restrictStepSize
