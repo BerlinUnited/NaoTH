@@ -19,9 +19,9 @@ _sym_db = _symbol_database.Default()
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='CommonTypes.proto',
   package='naothmessages',
+  syntax='proto2',
   serialized_pb=_b('\n\x11\x43ommonTypes.proto\x12\rnaothmessages\"$\n\x0c\x46loatVector2\x12\t\n\x01x\x18\x01 \x02(\x02\x12\t\n\x01y\x18\x02 \x02(\x02\"%\n\rDoubleVector2\x12\t\n\x01x\x18\x01 \x02(\x01\x12\t\n\x01y\x18\x02 \x02(\x01\"\"\n\nIntVector2\x12\t\n\x01x\x18\x01 \x02(\x05\x12\t\n\x01y\x18\x02 \x02(\x05\"M\n\x06Pose2D\x12\x31\n\x0btranslation\x18\x01 \x02(\x0b\x32\x1c.naothmessages.DoubleVector2\x12\x10\n\x08rotation\x18\x02 \x02(\x01\"0\n\rDoubleVector3\x12\t\n\x01x\x18\x01 \x02(\x01\x12\t\n\x01y\x18\x02 \x02(\x01\x12\t\n\x01z\x18\x03 \x02(\x01\"\x19\n\x0c\x44oubleVector\x12\t\n\x01v\x18\x01 \x03(\x01\"k\n\x06Pose3D\x12\x31\n\x0btranslation\x18\x01 \x02(\x0b\x32\x1c.naothmessages.DoubleVector3\x12.\n\x08rotation\x18\x02 \x03(\x0b\x32\x1c.naothmessages.DoubleVector3\"z\n\x0bLineSegment\x12*\n\x04\x62\x61se\x18\x01 \x02(\x0b\x32\x1c.naothmessages.DoubleVector2\x12/\n\tdirection\x18\x02 \x02(\x0b\x32\x1c.naothmessages.DoubleVector2\x12\x0e\n\x06length\x18\x03 \x02(\x01\"\xdf\x02\n\x0cIntersection\x12\x30\n\nposInImage\x18\x01 \x01(\x0b\x32\x1c.naothmessages.DoubleVector2\x12\x30\n\nposOnField\x18\x02 \x01(\x0b\x32\x1c.naothmessages.DoubleVector2\x12:\n\x04type\x18\x03 \x01(\x0e\x32,.naothmessages.Intersection.IntersectionType\x12\x17\n\x0fsegmentOneIndex\x18\x06 \x01(\r\x12\x17\n\x0fsegmentTwoIndex\x18\x07 \x01(\r\x12\x1a\n\x12segmentOneDistance\x18\x08 \x01(\x01\x12\x1a\n\x12segmentTwoDistance\x18\t \x01(\x01\"E\n\x10IntersectionType\x12\x0b\n\x07unknown\x10\x00\x12\x05\n\x01T\x10\x01\x12\x05\n\x01L\x10\x02\x12\x05\n\x01\x43\x10\x03\x12\x08\n\x04none\x10\x04\x12\x05\n\x01X\x10\x05*\x90\x01\n\x05\x43olor\x12\x08\n\x04none\x10\x00\x12\n\n\x06orange\x10\x01\x12\n\n\x06yellow\x10\x02\x12\x0b\n\x07skyblue\x10\x03\x12\t\n\x05white\x10\x04\x12\x07\n\x03red\x10\x05\x12\x08\n\x04\x62lue\x10\x06\x12\t\n\x05green\x10\x07\x12\t\n\x05\x62lack\x10\x08\x12\x08\n\x04pink\x10\t\x12\x08\n\x04gray\x10\n\x12\x10\n\x0cyellowOrange\x10\x0b*\x1f\n\x08\x43\x61meraID\x12\x07\n\x03top\x10\x00\x12\n\n\x06\x62ottom\x10\x01*\xa5\x03\n\x07JointID\x12\r\n\tHeadPitch\x10\x00\x12\x0b\n\x07HeadYaw\x10\x01\x12\x11\n\rRShoulderRoll\x10\x02\x12\x11\n\rLShoulderRoll\x10\x03\x12\x12\n\x0eRShoulderPitch\x10\x04\x12\x12\n\x0eLShoulderPitch\x10\x05\x12\x0e\n\nRElbowRoll\x10\x06\x12\x0e\n\nLElbowRoll\x10\x07\x12\r\n\tRElbowYaw\x10\x08\x12\r\n\tLElbowYaw\x10\t\x12\x10\n\x0cRHipYawPitch\x10\n\x12\x10\n\x0cLHipYawPitch\x10\x0b\x12\r\n\tRHipPitch\x10\x0c\x12\r\n\tLHipPitch\x10\r\x12\x0c\n\x08RHipRoll\x10\x0e\x12\x0c\n\x08LHipRoll\x10\x0f\x12\x0e\n\nRKneePitch\x10\x10\x12\x0e\n\nLKneePitch\x10\x11\x12\x0f\n\x0bRAnklePitch\x10\x12\x12\x0f\n\x0bLAnklePitch\x10\x13\x12\x0e\n\nRAnkleRoll\x10\x14\x12\x0e\n\nLAnkleRoll\x10\x15\x12\r\n\tLWristYaw\x10\x16\x12\r\n\tRWristYaw\x10\x17\x12\t\n\x05LHand\x10\x18\x12\t\n\x05RHand\x10\x19\x42\x16\n\x14\x64\x65.naoth.rc.messages')
 )
-_sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 _COLOR = _descriptor.EnumDescriptor(
   name='Color',
@@ -319,14 +319,14 @@ _FLOATVECTOR2 = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='x', full_name='naothmessages.FloatVector2.x', index=0,
       number=1, type=2, cpp_type=6, label=2,
-      has_default_value=False, default_value=0,
+      has_default_value=False, default_value=float(0),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
       name='y', full_name='naothmessages.FloatVector2.y', index=1,
       number=2, type=2, cpp_type=6, label=2,
-      has_default_value=False, default_value=0,
+      has_default_value=False, default_value=float(0),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -338,6 +338,7 @@ _FLOATVECTOR2 = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
   oneofs=[
   ],
@@ -356,14 +357,14 @@ _DOUBLEVECTOR2 = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='x', full_name='naothmessages.DoubleVector2.x', index=0,
       number=1, type=1, cpp_type=5, label=2,
-      has_default_value=False, default_value=0,
+      has_default_value=False, default_value=float(0),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
       name='y', full_name='naothmessages.DoubleVector2.y', index=1,
       number=2, type=1, cpp_type=5, label=2,
-      has_default_value=False, default_value=0,
+      has_default_value=False, default_value=float(0),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -375,6 +376,7 @@ _DOUBLEVECTOR2 = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
   oneofs=[
   ],
@@ -412,6 +414,7 @@ _INTVECTOR2 = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
   oneofs=[
   ],
@@ -437,7 +440,7 @@ _POSE2D = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='rotation', full_name='naothmessages.Pose2D.rotation', index=1,
       number=2, type=1, cpp_type=5, label=2,
-      has_default_value=False, default_value=0,
+      has_default_value=False, default_value=float(0),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -449,6 +452,7 @@ _POSE2D = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
   oneofs=[
   ],
@@ -467,21 +471,21 @@ _DOUBLEVECTOR3 = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='x', full_name='naothmessages.DoubleVector3.x', index=0,
       number=1, type=1, cpp_type=5, label=2,
-      has_default_value=False, default_value=0,
+      has_default_value=False, default_value=float(0),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
       name='y', full_name='naothmessages.DoubleVector3.y', index=1,
       number=2, type=1, cpp_type=5, label=2,
-      has_default_value=False, default_value=0,
+      has_default_value=False, default_value=float(0),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
       name='z', full_name='naothmessages.DoubleVector3.z', index=2,
       number=3, type=1, cpp_type=5, label=2,
-      has_default_value=False, default_value=0,
+      has_default_value=False, default_value=float(0),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -493,6 +497,7 @@ _DOUBLEVECTOR3 = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
   oneofs=[
   ],
@@ -523,6 +528,7 @@ _DOUBLEVECTOR = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
   oneofs=[
   ],
@@ -560,6 +566,7 @@ _POSE3D = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
   oneofs=[
   ],
@@ -592,7 +599,7 @@ _LINESEGMENT = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='length', full_name='naothmessages.LineSegment.length', index=2,
       number=3, type=1, cpp_type=5, label=2,
-      has_default_value=False, default_value=0,
+      has_default_value=False, default_value=float(0),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -604,6 +611,7 @@ _LINESEGMENT = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
   oneofs=[
   ],
@@ -657,14 +665,14 @@ _INTERSECTION = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='segmentOneDistance', full_name='naothmessages.Intersection.segmentOneDistance', index=5,
       number=8, type=1, cpp_type=5, label=1,
-      has_default_value=False, default_value=0,
+      has_default_value=False, default_value=float(0),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
       name='segmentTwoDistance', full_name='naothmessages.Intersection.segmentTwoDistance', index=6,
       number=9, type=1, cpp_type=5, label=1,
-      has_default_value=False, default_value=0,
+      has_default_value=False, default_value=float(0),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -677,6 +685,7 @@ _INTERSECTION = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
   oneofs=[
   ],
@@ -705,6 +714,7 @@ DESCRIPTOR.message_types_by_name['Intersection'] = _INTERSECTION
 DESCRIPTOR.enum_types_by_name['Color'] = _COLOR
 DESCRIPTOR.enum_types_by_name['CameraID'] = _CAMERAID
 DESCRIPTOR.enum_types_by_name['JointID'] = _JOINTID
+_sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 FloatVector2 = _reflection.GeneratedProtocolMessageType('FloatVector2', (_message.Message,), dict(
   DESCRIPTOR = _FLOATVECTOR2,

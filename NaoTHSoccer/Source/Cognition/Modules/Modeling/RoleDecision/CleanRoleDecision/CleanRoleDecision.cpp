@@ -35,7 +35,7 @@ void CleanRoleDecision::computeStrikers()
     // skip "first frame"! (until i add myself to teamcomm)
     if(getTeamMessage().data.find(getPlayerInfo().playerNumber) == getTeamMessage().data.end()) { return; }
 
-    // container storing robots, which want to be striker, and their time to ball
+    // container storing robots, which want to be striker, sorted by their playernumber and their time to ball
     std::map<unsigned int, unsigned int> possible_striker;
 
     // iterate over all robots(messages)
@@ -49,15 +49,14 @@ void CleanRoleDecision::computeStrikers()
         // check if the robot is able to play and sees the ball
         bool isRobotInactive = msg.fallen
                 || msg.custom.isPenalized
-                || msg.ballAge < 0 //Ball hasn't been seen
-                // FIXME: msg.ballAge is set to -1, when the model is not valid anymore. This cancels loose_ball_bonus out.
+                || msg.ballAge < 0 //Ball was never seen
                 || (msg.ballAge + getFrameInfo().getTimeSince(msg.frameInfo.getTime()) > parameters.maxBallLostTime + loose_ball_bonus); //Ball isn't fresh
 
         // ignore "DEAD" and inactive robots
         if(isRobotDead(robotNumber) || isRobotInactive) { continue; }
 
-        // for all active robots, which sees the ball AND previously announced to want to be striker ...
-        if (msg.custom.wantsToBeStriker) {
+        // for all active robots, which sees the ball AND previously announced to want to be striker OR is striker ...
+        if (msg.custom.wantsToBeStriker || msg.custom.wasStriker) {
             // ... remember them as possible striker with their time to ball
             possible_striker[robotNumber] = msg.custom.timeToBall;
         }
@@ -79,6 +78,8 @@ void CleanRoleDecision::computeStrikers()
     // set the new striker
     for (auto it = possible_striker.cbegin(); it != possible_striker.cend(); ++it) {
         //If two robots want to be striker, the one with a smaller number is favoured => is the first in the map!!
+        // NOTE: we're doesn't using 'timeToBall' as decision criteria by intention!
+        //       if goalie is striker, he get's the first striker
         if(getRoleDecisionModel().firstStriker == std::numeric_limits<int>::max()) {
             getRoleDecisionModel().firstStriker = it->first;
         } else if (getRoleDecisionModel().secondStriker == std::numeric_limits<int>::max()) {

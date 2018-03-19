@@ -57,10 +57,10 @@ public:
       stream << "y   : " << acceleration.y     << " (" << acceleration_sensor.y << ")" << " m/s^2" << std::endl;
       stream << "z   : " << acceleration.z     << " (" << acceleration_sensor.z << ")" << " m/s^2" << std::endl;
       stream << "|a| : " << acceleration.abs() << " (" << acceleration_sensor.abs() << ")" << " m/s^2" << std::endl;
-//      stream << "----acceleration bias--------------" << std::endl;
-//      stream << "x : " << bias_acceleration.x << " m/s^2"<< std::endl;
-//      stream << "y : " << bias_acceleration.y << " m/s^2"<< std::endl;
-//      stream << "z : " << bias_acceleration.z << " m/s^2"<< std::endl;
+      //stream << "----acceleration bias--------------" << std::endl;
+	  //stream << "x : " << bias_acceleration.x << " m/s^2"<< std::endl;
+	  //stream << "y : " << bias_acceleration.y << " m/s^2"<< std::endl;
+      //stream << "z : " << bias_acceleration.z << " m/s^2"<< std::endl;
       stream << "----rotation-----------------------" << std::endl;
       stream << "x : " << rotation.x << " rad"<< std::endl;
       stream << "y : " << rotation.y << " rad"<< std::endl;
@@ -69,23 +69,23 @@ public:
       stream << "x : " << rotational_velocity.x << " (" << rotational_velocity_sensor.x << ")" << " rad/s"<< std::endl;
       stream << "y : " << rotational_velocity.y << " (" << rotational_velocity_sensor.y << ")" << " rad/s"<< std::endl;
       stream << "z : " << rotational_velocity.z << " (" << rotational_velocity_sensor.z << ")" << " rad/s"<< std::endl;
-//      stream << "----rotational velocity bias-------" << std::endl;
-//      stream << "x : " << bias_rotational_velocity.x << " rad/s"<< std::endl;
-//      stream << "y : " << bias_rotational_velocity.y << " rad/s"<< std::endl;
-//      stream << "z : " << bias_rotational_velocity.z << " rad/s"<< std::endl;
+	  //stream << "----rotational velocity bias-------" << std::endl;
+	  //stream << "x : " << bias_rotational_velocity.x << " rad/s"<< std::endl;
+	  //stream << "y : " << bias_rotational_velocity.y << " rad/s"<< std::endl;
+	  //stream << "z : " << bias_rotational_velocity.z << " rad/s"<< std::endl;
       stream << "----orientation--------------------" << std::endl;
       stream << "x : " << Math::toDegrees(orientation.x) << " °"<< std::endl;
       stream << "y : " << Math::toDegrees(orientation.y) << " °"<< std::endl;
   }
 };
 
-  /*template<>
+  template<>
   class Serializer<IMUData>
   {
   public:
     static void serialize(const IMUData& representation, std::ostream& stream);
     static void deserialize(std::istream& stream, IMUData& representation);
-  };*/
+  };
 }
 
 #endif // IMUDATA_H

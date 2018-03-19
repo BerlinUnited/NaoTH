@@ -2,8 +2,9 @@
 #define IMUROTATIONSTATE_H
 
 #include "Tools/Filters/KalmanFilter/UnscentedKalmanFilter/UKFStateRotationBase.h"
-
+#include <Tools/naoth_eigen.h>
 // TODO: remove pragma
+/*
 #if defined(__GNUC__)
 #pragma GCC diagnostic ignored "-Wconversion"
 #endif
@@ -12,6 +13,7 @@
 #if defined(__GNUC__)
 #pragma GCC diagnostic pop
 #endif
+*/
 
 // state for rotation and rotational velocity
 template <class M1,/* class M2,*/ int dim, int dim_cov = dim, int rotation_index = 0>
@@ -68,7 +70,7 @@ class RotationState : public UKFStateRotationBase<RotationState<M1,/* M2,*/ dim,
         // HACK: add return type as parameter to enable overloading...
         M1 asMeasurement(const M1& /*z*/) const {
             M1 return_val;
-            return_val << this->getRotationAsQuaternion().inverse()._transformVector(Eigen::Vector3d(0,0,-1)), this->rotational_velocity();
+            return_val << this->getRotationAsQuaternion().inverse()._transformVector(Eigen::Vector3d(0,0,1)), this->rotational_velocity();
             return return_val;
         }
 
