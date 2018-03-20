@@ -5,8 +5,6 @@ function evaluate(convnet, image)
     
     for i = 1:numel(layers)
         
-        % calculate the layer activations
-        activationCN = activations(convnet, image, i);
         layer = layers(i);
         
         switch class(layer)
@@ -24,10 +22,15 @@ function evaluate(convnet, image)
                 activation = calc_softmax(layer, activation);
             case 'nnet.cnn.layer.ClassificationOutputLayer'
                 activation= calc_classificationOutput(layer, activation);
+            case 'nnet.cnn.layer.BatchNormalizationLayer'
+                activation= calc_batchNormalizationLayer(layer, activation);
             otherwise
-                fprintf('[unknown layer] %s', class(layers(i)));
+                fprintf('[unknown layer] %s\n', class(layers(i)));
                 continue;
         end
+        
+        % calculate the layer activations
+        activationCN = activations(convnet, image, i);
         
         % compare the potputs
         output = reshape(activation, 1, numel(activation));
@@ -55,8 +58,8 @@ function output = calc_convolution2D(layer, input)
     
     stride_x  = layer.Stride(1);
     stride_y  = layer.Stride(2);
-    padding_x = layer.Padding(1);
-    padding_y = layer.Padding(2);
+    padding_x = layer.PaddingSize(1);
+    padding_y = layer.PaddingSize(2);
 
     filter_dim_x = layer.FilterSize(1);
     filter_dim_y = layer.FilterSize(2);
@@ -142,6 +145,7 @@ end
 
 function output = cals_MaxPolling2D(layer, input)
 
+classify()
     in_dim_x = size(input,1);
     in_dim_y = size(input,2);
     in_dim_z = size(input,3);
@@ -186,4 +190,31 @@ function output = cals_MaxPolling2D(layer, input)
         end % x
     end % z_out
    
+end
+
+
+function output = calc_batchNormalizationLayer(layer, input)
+    e = sqrt(layer.TrainedVariance + layer.Epsilon);
+    weights = layer.Scale./e;
+    bias = layer.Offset - layer.TrainedMean.*layer.Scale./e;
+
+    %output = input.*weights + bias;
+    
+    in_dim_x = size(input,1);
+    in_dim_y = size(input,2);
+    in_dim_z = size(input,3);
+    
+    output = zeros(in_dim_x, in_dim_y, in_dim_z);
+    
+    % iterate over input
+    for x = 1 : in_dim_x
+        for y = 1 : in_dim_y
+            for z = 1 : in_dim_z
+                output(x,y,z) = input(x,y,z)*weights(z) + bias(z);
+            end
+        end
+    end
+    
+    %output = (input - layer.TrainedMean)./sqrt(layer.TrainedVariance + layer.Epsilon);
+    %output = output.*layer.Scale + layer.Offset;
 end
