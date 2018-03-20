@@ -1,0 +1,10 @@
+[Unit]
+Description=Python-GoPro-GameController controller startup-script
+After=multi-user.target
+
+[Service]
+Type=idle
+ExecStart=/usr/bin/python3 /home/pi/GoPro/main.py -b -v -c --syslog
+
+[Install]
+WantedBy=multi-user.target
