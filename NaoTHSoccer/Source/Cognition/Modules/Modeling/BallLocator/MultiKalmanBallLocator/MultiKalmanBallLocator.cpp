@@ -31,8 +31,6 @@ MultiKalmanBallLocator::MultiKalmanBallLocator():
 
     DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:draw_trust_the_ball", "..", false);
 
-    h.ball_height = 32.5;
-
     updateAssociationFunction = &likelihood;
 
     getDebugParameterList().add(&kfParameters);
@@ -594,6 +592,7 @@ void MultiKalmanBallLocator::reloadParameters()
                                       kfParameters.initialStateStdP10, kfParameters.initialStateStdP11;
 
     // filter unspecific parameters
+    h.ballRadius      = kfParameters.ballRadius;
     c_RR              = kfParameters.c_RR;
     area95Threshold   = kfParameters.area95Threshold;
 
