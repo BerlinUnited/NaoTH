@@ -140,7 +140,7 @@ class PatchLabeling:
             if val == 1:
                 ball.append(i)
             elif val == 2:
-              inval.append(i)
+                inval.append(i)
             elif val == 0:
                 noball.append(i)
 
@@ -205,7 +205,7 @@ class PatchLabeling:
 '''
 
 USAGE:
-    python ball_patch_label.py -i ball-move-around-patches.log
+    python ball_patch_label.py -i game.log
 
 '''
 if __name__ == "__main__":
