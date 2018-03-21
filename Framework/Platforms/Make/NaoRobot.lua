@@ -25,7 +25,9 @@ project "NaoRobot"
     "gobject-2.0",
     "protobuf",
     "asound",
-    "pthread"
+    "pthread",
+    "jpeg",
+    "turbojpeg"
   }
 
   targetname "naoth"

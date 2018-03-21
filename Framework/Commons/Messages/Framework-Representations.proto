@@ -10,6 +10,7 @@ message Image {
   enum Format {
     YUV = 0;
     YUV422 = 1;
+    JPEG = 2;
   }
   
   required bytes data = 1;
