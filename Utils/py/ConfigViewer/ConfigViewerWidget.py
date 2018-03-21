@@ -1,3 +1,4 @@
+import glob, json, collections
 import os, configparser
 
 from PyQt5.QtCore import Qt
@@ -13,17 +14,19 @@ class Widget(QWidget):
         super().__init__()
 
         self.dirs = {
-            'general':  'general/',
-            'platform': 'platform/',
-            'scheme':   'scheme/',
-            'robots':   'robots/',
-            'robots_bodies': 'robots_bodies/',
-            'robot_heads':  'robot_heads/',
-            'private':  'private/',
+            'general':      ('general/', False),
+            'platform':     ('platform/', True),
+            'scheme':       ('scheme/', True),
+            'robots':       ('robots/', True),
+            'robots_bodies':('robots_bodies/', True),
+            'robot_heads':  ('robot_heads/', True),
+            'private':      ('private/', False),
         }
 
         self.ui = ConfigViewerUi.Ui_Form()
         self.ui.setupUi(self)
+
+        self.__init_config(config)
 
         self.ui.platforms.currentIndexChanged.connect(self.__update_tree)
         self.ui.schemes.currentIndexChanged.connect(self.__update_tree)
@@ -35,12 +38,12 @@ class Widget(QWidget):
         self.setWindowIcon(self.style().standardIcon(QStyle.SP_FileDialogContentsView))
         self.setAcceptDrops(True)
 
-        self.__init_config(config)
 
     def __init_config(self, config):
 
         self.config = config + "/" if config[-1] != "/" else ""
         self.scheme = None
+        self.configuration = {}
 
         self.__reset_ui()
         self.__read_scheme_file()
@@ -77,27 +80,52 @@ class Widget(QWidget):
             with open(self.config + "scheme.cfg", "r") as f:
                 self.scheme = f.readline().strip()
 
+    def __read_config_part(self, key):
+        self.configuration[key] = {}
+        # does directory exist
+        if os.path.isdir(self.config + self.dirs[key][0]):
+            # read subdirectory
+            if self.dirs[key][1]:
+                for d in os.scandir(self.config + self.dirs[key][0]):
+                    if d.is_dir():
+                        self.configuration[key][d.name] = self.__read_config_files(self.config + self.dirs[key][0] + d.name)
+            else:
+                self.configuration[key] = self.__read_config_files(self.config + self.dirs[key][0])
+
+    def __read_config_files(self,  dir):
+        parser = configparser.ConfigParser(delimiters='=')
+        parser.optionxform = str
+
+        for cfg in glob.glob(dir + "/*.cfg", recursive=True):
+            try:
+                parser.read(cfg)
+            except configparser.DuplicateOptionError as e:
+                # TODO: hint on duplicate option in the ui
+                print(e)
+        return parser._sections
+
     def __read_config_directory(self):
-        if os.path.isdir(self.config + self.dirs['platform']):
-            self.ui.platforms.addItems(sorted(os.listdir(self.config + self.dirs['platform'])))
+        for p in self.dirs:
+            self.__read_config_part(p)
+
+        #print(json.dumps(self.configuration, indent=4))
+
+        self.ui.platforms.addItems(sorted(self.configuration['platform'].keys()))
         self.__setComboboxDisabled(self.ui.platforms)
 
-        if os.path.isdir(self.config + self.dirs['scheme']):
-            self.ui.schemes.addItems(sorted(os.listdir(self.config + self.dirs['scheme'])))
-            if self.scheme:
-                self.ui.schemes.setCurrentIndex(self.ui.schemes.findText(self.scheme))
+        self.ui.schemes.addItems(sorted(self.configuration['scheme'].keys()))
+        # enable defined scheme in combobox
+        if self.scheme:
+            self.ui.schemes.setCurrentIndex(self.ui.schemes.findText(self.scheme))
         self.__setComboboxDisabled(self.ui.schemes)
 
-        if os.path.isdir(self.config + self.dirs['robots']):
-            self.ui.robots.addItems(sorted(os.listdir(self.config + self.dirs['robots'])))
+        self.ui.robots.addItems(sorted(self.configuration['robots'].keys()))
         self.__setComboboxDisabled(self.ui.robots)
 
-        if os.path.isdir(self.config + self.dirs['robots_bodies']):
-            self.ui.bodies.addItems(sorted([e for e in os.scandir(self.config + self.dirs['robots_bodies']) if e.is_dir()]))
+        self.ui.bodies.addItems(sorted(self.configuration['robots_bodies'].keys()))
         self.__setComboboxDisabled(self.ui.bodies)
 
-        if os.path.isdir(self.config + self.dirs['robot_heads']):
-            self.ui.heads.addItems(sorted([ e for e in os.scandir(self.config + self.dirs['robot_heads']) if e.is_dir()]))
+        self.ui.heads.addItems(sorted(self.configuration['robot_heads'].keys()))
         self.__setComboboxDisabled(self.ui.heads)
 
 
@@ -108,25 +136,35 @@ class Widget(QWidget):
     def __update_tree(self):
         self.ui.modules.setEnabled(False)
 
-        config = configparser.ConfigParser()
-        config.optionxform = str
-        self.__update_config(config, 'modules.cfg')
+        current = {}
+        self.__update_config_part(current, 'general')
+        self.__update_config_part(current, 'platform', self.ui.platforms)
+        self.__update_config_part(current, 'scheme', self.ui.schemes)
+        self.__update_config_part(current, 'robots', self.ui.robots)
+        self.__update_config_part(current, 'robots_bodies', self.ui.bodies)
+        self.__update_config_part(current, 'robot_heads', self.ui.heads)
+        self.__update_config_part(current, 'private')
+        modules = current['modules'] if 'modules' in current else {}
+        #print(json.dumps(current, indent=4))
+
+        #self.__update_config(config, 'modules.cfg')
 
         model = QStandardItemModel()
         parent_item = model.invisibleRootItem()  # type: QStandardItem
-        if config.has_section('modules'):
-            for m in sorted(config.options('modules')):
-                text_item = QStandardItem(m)
-                text_item.setEditable(False)
-                text_item.setCheckState(Qt.Checked if config.getboolean('modules', m) else Qt.Unchecked)
 
-                # NOTE: some modules name their parameters differently than themselves
-                if config.getboolean('modules', m):
-                    self.__update_config(config, m + '.cfg')
+        for m in sorted(modules):
+            text_item = QStandardItem(m)
+            text_item.setEditable(False)
+            text_item.setCheckState(Qt.Checked if json.loads(modules[m].lower()) else Qt.Unchecked)
 
-                self.__update_sub_tree(config, text_item, m)
+            # NOTE: some modules name their parameters differently than themselves
+            '''
+            if config.getboolean('modules', m):
+                self.__update_config(config, m + '.cfg')
 
-                parent_item.appendRow(text_item)
+            self.__update_sub_tree(config, text_item, m)
+            '''
+            parent_item.appendRow(text_item)
 
         model.setHeaderData(0, Qt.Horizontal, "Modules")
         self.ui.modules.setModel(model)
@@ -143,19 +181,24 @@ class Widget(QWidget):
                 item.setFont(font)
                 parent.appendRow(item)
 
-    def __update_config(self, config, file):
-        self.__update_config_part(config, file, 'general')
-        self.__update_config_part(config, file, 'platform', self.ui.platforms)
-        self.__update_config_part(config, file, 'scheme', self.ui.schemes)
-        self.__update_config_part(config, file, 'robots', self.ui.robots)
-        self.__update_config_part(config, file, 'robots_bodies', self.ui.bodies)
-        self.__update_config_part(config, file, 'robot_heads', self.ui.heads)
-        self.__update_config_part(config, file, 'private')
+    def __update_config_part(self, config, key, box = None):
+        if key in self.configuration:
+            if box is None:
+                #print(">>",key)
+                self.update_dict(config, self.configuration[key])
+                #config.update(self.configuration[key])
+            elif box.currentText() in self.configuration[key]:
+                #print(">>", key, box.currentText())
+                #config.update(self.configuration[key][box.currentText()])
+                self.update_dict(config, self.configuration[key][box.currentText()])
 
-    def __update_config_part(self, config, file, dir, box = None):
-        subdir = box.currentText() + os.sep if box else ""
-        if os.path.isfile(self.config + self.dirs[dir] + subdir + file):
-            config.read(self.config + self.dirs[dir] + subdir + file)
+    def update_dict(self, d, u):
+        for k, v in u.items():
+            if isinstance(v, collections.Mapping):
+                d[k] = self.update_dict(d.get(k, {}), v)
+            else:
+                d[k] = v
+        return d
 
     def dragEnterEvent(self, e):
         # only one item drop allowed
