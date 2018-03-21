@@ -5,16 +5,16 @@ package de.naoth.rc.manager;
 
 import de.naoth.rc.core.manager.AbstractManagerPlugin;
 import com.google.protobuf.ByteString;
-import com.google.protobuf.InvalidProtocolBufferException;
 import de.naoth.rc.dataformats.ImageConversions;
 import de.naoth.rc.dataformats.JanusImage;
 import de.naoth.rc.messages.FrameworkRepresentations.Image;
 import de.naoth.rc.server.Command;
-import java.awt.GraphicsConfiguration;
-import java.awt.GraphicsEnvironment;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.imageio.ImageIO;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 
 /**
@@ -46,11 +46,14 @@ public class ImageManagerBottomImpl extends AbstractManagerPlugin<JanusImage>
         ImageConversions.convertYUV888toYUV888(src, dst);
       } else if(img.getFormat() == Image.Format.YUV422) {
         ImageConversions.convertYUV422toYUV888(src, dst);
+      } else if(img.getFormat() == Image.Format.JPEG) {
+        dst = ImageIO.read( src.newInput() );
+        return new JanusImage(dst, false);
       }
 
       return new JanusImage(dst, true);
     }
-    catch(InvalidProtocolBufferException ex)
+    catch(IOException ex)
     {
       Logger.getLogger(ImageManagerBottomImpl.class.getName()).log(Level.SEVERE, "could not parse message", ex);
     }
@@ -61,7 +64,8 @@ public class ImageManagerBottomImpl extends AbstractManagerPlugin<JanusImage>
   @Override
   public Command getCurrentCommand()
   {
-    return new Command("image");
+    //return new Command("image");
+    return new Command("Cognition:representation:get").addArg("ImageJPEG");
   }
 
 }//end class ImageManager

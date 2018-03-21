@@ -14,7 +14,11 @@
 //#include "Representations/Infrastructure/FieldInfo.h"
 #include <Representations/Infrastructure/GyrometerData.h>
 #include <Representations/Infrastructure/FrameInfo.h>
+
 #include <Representations/Infrastructure/Image.h>
+#include <Representations/Infrastructure/ImageJPEG.h>
+
+
 #include <Representations/Infrastructure/JointData.h>
 #include <Representations/Infrastructure/InertialSensorData.h>
 #include <Representations/Infrastructure/AccelerometerData.h>
@@ -66,6 +70,9 @@ BEGIN_DECLARE_MODULE(Debug)
 //  REQUIRE(FieldInfo)
   PROVIDE(Image)
   PROVIDE(ImageTop)
+
+  PROVIDE(ImageJPEG)
+  PROVIDE(ImageJPEGTop)
 
   // 3D drawings
   REQUIRE(RobotPose)
