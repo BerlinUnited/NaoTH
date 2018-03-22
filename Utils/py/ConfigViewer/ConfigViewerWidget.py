@@ -53,13 +53,15 @@ class Widget(QWidget):
             self.config_file = TargzConfig(config)
         elif zipfile.is_zipfile(config):
             self.config_file = ZipConfig(config)
+        else:
+            self.config_file = None
 
         self.__reset_ui()
         self.__read_scheme_file()
         self.__read_config_directory()
         self.__update_tree()
 
-        self.ui.config_dir.setText(self.config_file.getName())
+        self.ui.config_dir.setText(self.config_file.getName() if self.config_file else "ERROR: Invalid config file/directory")
 
     def __reset_ui(self):
         # enable everything
@@ -85,30 +87,31 @@ class Widget(QWidget):
         self.ui.heads.addItem("Heads")
 
     def __read_scheme_file(self):
-        self.scheme = self.config_file.getScheme()
+        self.scheme = self.config_file.getScheme() if self.config_file else None
 
     def __read_config_directory(self):
         # read defined directories of config directory
-        self.config = self.config_file.readConfig(self.dirs)
+        self.config = self.config_file.readConfig(self.dirs) if self.config_file else {}
 
-        # update ui comboboxes
-        self.ui.platforms.addItems(sorted(self.config['platform'].keys()))
-        self.__setComboboxDisabled(self.ui.platforms)
+        if self.config:
+            # update ui comboboxes
+            self.ui.platforms.addItems(sorted(self.config['platform'].keys()))
+            self.__setComboboxDisabled(self.ui.platforms)
 
-        self.ui.schemes.addItems(sorted(self.config['scheme'].keys()))
-        # enable defined scheme in combobox
-        if self.scheme:
-            self.ui.schemes.setCurrentIndex(self.ui.schemes.findText(self.scheme))
-        self.__setComboboxDisabled(self.ui.schemes)
+            self.ui.schemes.addItems(sorted(self.config['scheme'].keys()))
+            # enable defined scheme in combobox
+            if self.scheme:
+                self.ui.schemes.setCurrentIndex(self.ui.schemes.findText(self.scheme))
+            self.__setComboboxDisabled(self.ui.schemes)
 
-        self.ui.robots.addItems(sorted(self.config['robots'].keys()))
-        self.__setComboboxDisabled(self.ui.robots)
+            self.ui.robots.addItems(sorted(self.config['robots'].keys()))
+            self.__setComboboxDisabled(self.ui.robots)
 
-        self.ui.bodies.addItems(sorted(self.config['robots_bodies'].keys()))
-        self.__setComboboxDisabled(self.ui.bodies)
+            self.ui.bodies.addItems(sorted(self.config['robots_bodies'].keys()))
+            self.__setComboboxDisabled(self.ui.bodies)
 
-        self.ui.heads.addItems(sorted(self.config['robot_heads'].keys()))
-        self.__setComboboxDisabled(self.ui.heads)
+            self.ui.heads.addItems(sorted(self.config['robot_heads'].keys()))
+            self.__setComboboxDisabled(self.ui.heads)
 
     def __setComboboxDisabled(self, box):
         if box.count() <= 1:

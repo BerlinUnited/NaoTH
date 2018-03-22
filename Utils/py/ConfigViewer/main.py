@@ -5,41 +5,29 @@ from PyQt5.QtWidgets import QApplication
 
 from ConfigViewerWidget import Widget
 
-class NonFolderError(Exception):
-    '''
-    Raised when we expect a folder (directory) and did not get one
-    '''
-    pass
-
-class FolderExistsAction(argparse.Action):
-    '''
-    Custom action: verify the argument to be a folder (directory). If
-    not, raise a NonFolderError exception.
-    '''
-
-    def verify_folder_existence(self, folder_name):
-        '''
-        Return folder_name if exists. Throw NonFolderError if not.
-        '''
-        if not os.path.isdir(folder_name):
-            raise NonFolderError('ERROR: {0} is not a folder'.format(folder_name))
-
-        return os.path.abspath(folder_name)
-
+class ArgumentFileParser(argparse.Action):
     def __call__(self, parser, namespace, values, option_string=None):
-        if type(values) == list:
-            folders = map(self.verify_folder_existence, values)
+        if os.path.exists(values):
+            if os.path.isdir(values):
+                if os.access(values, os.R_OK):
+                    setattr(namespace,self.dest, os.path.abspath(values))
+                else:
+                    raise argparse.ArgumentTypeError("Directory is not readable: {}".format(values))
+            elif os.path.isfile(values):
+                if os.access(values, os.R_OK):
+                    setattr(namespace, self.dest, os.path.abspath(values))
+                else:
+                    raise argparse.ArgumentTypeError("File is not readable: {}".format(values))
+            else:
+                raise argparse.ArgumentTypeError("Unknown file type: {}".format(values))
         else:
-            folders = self.verify_folder_existence(values)
-
-        # Add the attribute
-        setattr(namespace, self.dest, folders)
+            raise argparse.ArgumentTypeError("File or directory doesn't exist: {}".format(values))
 
 def parseArguments():
     source_path = os.path.dirname(os.path.realpath(__file__))
 
     parser = argparse.ArgumentParser(description='Shows the module configuration')
-    parser.add_argument('config_dir', default=source_path+'/../../../NaoTHSoccer/Config', nargs='?', action=FolderExistsAction, help='the config directory')
+    parser.add_argument('config_dir', default=source_path+'/../../../NaoTHSoccer/Config', nargs='?', action=ArgumentFileParser, help='the config directory')
 
     return parser.parse_args()
 
