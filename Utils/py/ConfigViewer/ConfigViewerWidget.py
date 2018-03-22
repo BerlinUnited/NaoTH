@@ -1,4 +1,4 @@
-import glob, json, collections, re
+import glob, json, collections, re, zipfile
 import os, configparser, tarfile
 
 from PyQt5.QtCore import Qt
@@ -51,6 +51,8 @@ class Widget(QWidget):
             self.config_file = DirectoryConfig(config + "/" if config[-1] != "/" else "")
         elif tarfile.is_tarfile(config):
             self.config_file = TargzConfig(config)
+        elif zipfile.is_zipfile(config):
+            self.config_file = ZipConfig(config)
 
         self.__reset_ui()
         self.__read_scheme_file()
@@ -199,7 +201,11 @@ class Widget(QWidget):
         if e.mimeData().hasUrls() and len(e.mimeData().urls()) == 1:
             # only directories are accepted
             for url in e.mimeData().urls():
-                if url.isLocalFile() and (os.path.isdir(url.toLocalFile()) or tarfile.is_tarfile(url.toLocalFile())):
+                if url.isLocalFile() and (
+                       os.path.isdir(url.toLocalFile())
+                    or tarfile.is_tarfile(url.toLocalFile())
+                    or zipfile.is_zipfile(url.toLocalFile())
+                ):
                     e.accept()
         else:
             e.ignore()
@@ -209,6 +215,7 @@ class Widget(QWidget):
         if e.mimeData().hasUrls() and len(e.mimeData().urls()) == 1:
             # update ui and read file
             self.__init_config(e.mimeData().urls()[0].toLocalFile())
+
 
 class DirectoryConfig:
     def __init__(self, directory):
@@ -309,3 +316,64 @@ class TargzConfig:
                     print(e)
 
         return parser._sections
+
+
+class ZipConfig:
+    def __init__(self, file):
+        self.file = zipfile.ZipFile(file)
+
+    def getName(self):
+        return self.file.filename
+
+    def __getMember(self, name):
+        try:
+            return self.file.getinfo(name)
+        except:
+            pass
+        return None
+
+    def getScheme(self):
+        scheme_file = self.__getMember("Config/scheme.cfg")
+        #print(dir(scheme_file))
+        if scheme_file and not scheme_file.is_dir():
+            # read scheme file
+            return self.file.read(scheme_file).decode("utf-8").strip()
+        return None
+
+    def readConfig(self, config_dirs):
+        config = {}
+        for key in config_dirs:
+            config[key] = {}
+            directory = self.__getMember("Config/"+config_dirs[key][0])
+            # does directory exist
+            if directory and directory.is_dir():
+                # read subdirectory
+                if config_dirs[key][1]:
+                    for d in self.file.infolist():
+                        if d.is_dir():
+                            sub = re.search("Config/"+config_dirs[key][0]+"([^/]+)/$", d.filename)
+                            if sub and sub[1]:
+                                # read config files from subdirectories
+                                config[key][sub[1]] = self.__read_config_files(d.filename)
+
+                else:
+                    # read config files without traversing subdirectories
+                    config[key] = self.__read_config_files(directory.filename)
+        return config
+
+    def __read_config_files(self,  prefix):
+        # only use '=' as assignment delimiter and be case-sensitive
+        parser = configparser.ConfigParser(delimiters='=')
+        parser.optionxform = str
+
+        for m in self.file.infolist():
+            if not m.is_dir() and m.filename.startswith(prefix) and m.filename.endswith('.cfg'):
+                try:
+                    parser.read_string(self.file.read(m).decode("utf-8"), m.filename)
+                    pass
+                except configparser.DuplicateOptionError as e:
+                    # TODO: hint on duplicate option in the ui
+                    print(e)
+
+        return parser._sections
+
