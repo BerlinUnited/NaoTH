@@ -1,5 +1,5 @@
-import glob, json, collections
-import os, configparser
+import glob, json, collections, re
+import os, configparser, tarfile
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QStandardItemModel, QStandardItem, QFont
@@ -44,16 +44,20 @@ class Widget(QWidget):
 
     def __init_config(self, config):
         # reset 'global' vars
-        self.config_file = config + "/" if config[-1] != "/" else ""
         self.scheme = None
         self.config = {}
+
+        if os.path.isdir(config):
+            self.config_file = DirectoryConfig(config + "/" if config[-1] != "/" else "")
+        elif tarfile.is_tarfile(config):
+            self.config_file = TargzConfig(config)
 
         self.__reset_ui()
         self.__read_scheme_file()
         self.__read_config_directory()
         self.__update_tree()
 
-        self.ui.config_dir.setText(self.config_file)
+        self.ui.config_dir.setText(self.config_file.getName())
 
     def __reset_ui(self):
         # enable everything
@@ -79,14 +83,11 @@ class Widget(QWidget):
         self.ui.heads.addItem("Heads")
 
     def __read_scheme_file(self):
-        if os.path.isfile(self.config_file + "scheme.cfg"):
-            with open(self.config_file + "scheme.cfg", "r") as f:
-                self.scheme = f.readline().strip()
+        self.scheme = self.config_file.getScheme()
 
     def __read_config_directory(self):
         # read defined directories of config directory
-        for p in self.dirs:
-            self.__read_config_part(p)
+        self.config = self.config_file.readConfig(self.dirs)
 
         # update ui comboboxes
         self.ui.platforms.addItems(sorted(self.config['platform'].keys()))
@@ -106,33 +107,6 @@ class Widget(QWidget):
 
         self.ui.heads.addItems(sorted(self.config['robot_heads'].keys()))
         self.__setComboboxDisabled(self.ui.heads)
-
-    def __read_config_part(self, key):
-        self.config[key] = {}
-        # does directory exist
-        if os.path.isdir(self.config_file + self.dirs[key][0]):
-            # read subdirectory
-            if self.dirs[key][1]:
-                for d in os.scandir(self.config_file + self.dirs[key][0]):
-                    # read config files from subdirectories
-                    if d.is_dir():
-                        self.config[key][d.name] = self.__read_config_files(self.config_file + self.dirs[key][0] + d.name)
-            else:
-                # read config files without traversing subdirectories
-                self.config[key] = self.__read_config_files(self.config_file + self.dirs[key][0])
-
-    def __read_config_files(self,  dir):
-        # only use '=' as assignment delimiter and be case-sensitive
-        parser = configparser.ConfigParser(delimiters='=')
-        parser.optionxform = str
-        # read all config files in this directory
-        for cfg in glob.glob(dir + "/*.cfg", recursive=True):
-            try:
-                parser.read(cfg)
-            except configparser.DuplicateOptionError as e:
-                # TODO: hint on duplicate option in the ui
-                print(e)
-        return parser._sections
 
     def __setComboboxDisabled(self, box):
         if box.count() <= 1:
@@ -225,7 +199,7 @@ class Widget(QWidget):
         if e.mimeData().hasUrls() and len(e.mimeData().urls()) == 1:
             # only directories are accepted
             for url in e.mimeData().urls():
-                if url.isLocalFile() and os.path.isdir(url.toLocalFile()):
+                if url.isLocalFile() and (os.path.isdir(url.toLocalFile()) or tarfile.is_tarfile(url.toLocalFile())):
                     e.accept()
         else:
             e.ignore()
@@ -235,3 +209,103 @@ class Widget(QWidget):
         if e.mimeData().hasUrls() and len(e.mimeData().urls()) == 1:
             # update ui and read file
             self.__init_config(e.mimeData().urls()[0].toLocalFile())
+
+class DirectoryConfig:
+    def __init__(self, directory):
+        self.directory = directory
+
+    def getName(self):
+        return self.directory
+
+    def getScheme(self):
+        if os.path.isfile(self.directory + "scheme.cfg"):
+            with open(self.directory + "scheme.cfg", "r") as f:
+                return f.readline().strip()
+        return None
+
+    def readConfig(self, config_dirs):
+        config = {}
+        for key in config_dirs:
+            config[key] = {}
+            # does directory exist
+            if os.path.isdir(self.directory + config_dirs[key][0]):
+                # read subdirectory
+                if config_dirs[key][1]:
+                    for d in os.scandir(self.directory + config_dirs[key][0]):
+                        # read config files from subdirectories
+                        if d.is_dir():
+                            config[key][d.name] = self.__read_config_files(self.directory + config_dirs[key][0] + d.name)
+                else:
+                    # read config files without traversing subdirectories
+                    config[key] = self.__read_config_files(self.directory + config_dirs[key][0])
+        return config
+
+    def __read_config_files(self,  dir):
+        # only use '=' as assignment delimiter and be case-sensitive
+        parser = configparser.ConfigParser(delimiters='=')
+        parser.optionxform = str
+        # read all config files in this directory
+        for cfg in glob.glob(dir + "/*.cfg", recursive=True):
+            try:
+                parser.read(cfg)
+            except configparser.DuplicateOptionError as e:
+                # TODO: hint on duplicate option in the ui
+                print(e)
+        return parser._sections
+
+
+class TargzConfig:
+    def __init__(self, file):
+        self.file = tarfile.open(file)
+
+    def getName(self):
+        return self.file.name
+
+    def __getMember(self, name):
+        try:
+            return self.file.getmember(name)
+        except:
+            pass
+        return None
+
+    def getScheme(self):
+        scheme_file = self.__getMember("Config/scheme.cfg")
+        if scheme_file and scheme_file.isfile():
+            # read scheme file
+            return self.file.extractfile(scheme_file).readline().decode("utf-8").strip()
+        return None
+
+    def readConfig(self, config_dirs):
+        config = {}
+        for key in config_dirs:
+            config[key] = {}
+            directory = self.__getMember("Config/"+config_dirs[key][0].strip('/'))
+
+            # does directory exist
+            if directory and directory.isdir():
+                # read subdirectory
+                if config_dirs[key][1]:
+                    for d in self.file.getmembers():
+                        # read config files from subdirectories
+                        if d.isdir() and re.match("Config/"+config_dirs[key][0]+"[^/]+$", d.name) is not None:
+                            config[key][d.name.replace("Config/"+config_dirs[key][0],"")] = self.__read_config_files(d.name)
+                else:
+                    # read config files without traversing subdirectories
+                    config[key] = self.__read_config_files(directory.name)
+
+        return config
+
+    def __read_config_files(self,  prefix):
+        # only use '=' as assignment delimiter and be case-sensitive
+        parser = configparser.ConfigParser(delimiters='=')
+        parser.optionxform = str
+
+        for m in self.file.getmembers():
+            if m.name.startswith(prefix + '/') and m.isfile() and m.name.endswith('.cfg'):
+                try:
+                    parser.read_string(self.file.extractfile(m).read().decode("utf-8"), m.name)
+                except configparser.DuplicateOptionError as e:
+                    # TODO: hint on duplicate option in the ui
+                    print(e)
+
+        return parser._sections
