@@ -36,7 +36,7 @@ stop() {
   echo "Stop GoPro-Controller"
 	if [ -f "$PID" ]
 	then
-		pkill -F /tmp/pyGoPro.lock
+		pkill -F $PID
 	else
 		echo "GoPro-Controller not running!"
 	fi
