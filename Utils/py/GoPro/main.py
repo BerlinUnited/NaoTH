@@ -24,6 +24,7 @@ from GameControlData import GameControlData
 from goprocam import GoProCamera, constants
 from daemonize import Daemonize
 import Network
+from status import statusMonitor
 
 LOGGER_NAME = __name__
 LOGGER_FMT  = '%(levelname)s: %(message)s'
@@ -125,15 +126,20 @@ def main():
         try:
             attempts = 0
             while (args.retries == -1 or attempts < args.retries) and not loopControl.is_set():
+                
                 # check/connect to wifi network
+                statusMonitor.setConnect(11) # show that I'm alive
                 network = Network.connectToSSID(device, args.ssid, args.passwd)
+        
                 if network is not None:
                     logger.info("Connected to %s", network)
                     # connect to gopro and start main loop
                     main_gopro(loopControl)
                 else:
                     # wait before retry to connect
+                    statusMonitor.setConnect(11)
                     time.sleep(10)
+                
                 attempts += 1
                 logger.debug("Connecting network attempts: " + str(attempts))
         except KeyboardInterrupt as e:
