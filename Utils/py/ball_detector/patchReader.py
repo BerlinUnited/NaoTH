@@ -95,7 +95,8 @@ def read_all_patches_from_log(fileName, type=0):
                 camera_index.append([1])
     
     return patches, camera_index
-    
+
+
 if __name__ == "__main__":
 
     fileName = parse_arguments(sys.argv[1:])

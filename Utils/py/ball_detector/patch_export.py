@@ -64,14 +64,14 @@ def export_patches(patches, camera, labels, label_names, target_path):
     for label in label_names:
 
         # create output path for top images
-        path = os.path.join(target_path, 'top', label)
-        export_path_top.append(os.path.join(target_path, 'top', label))
+        path = os.path.join(target_path + '-top', label)
+        export_path_top.append(os.path.join(path))
         if not os.path.exists(path):
             os.makedirs(path)
 
         # create output path for bottom images
-        path = os.path.join(target_path, 'bottom', label)
-        export_path_bottom.append(os.path.join(target_path, 'bottom', label))
+        path = os.path.join(target_path + '-bottom', label)
+        export_path_bottom.append(path)
         if not os.path.exists(path):
             os.makedirs(path)
 
@@ -89,9 +89,9 @@ def export_patches(patches, camera, labels, label_names, target_path):
             a = np.transpose(np.reshape(a, patch_size))
 
         if camera[i][0] == 0:
-            file_path = os.path.join(export_path_top[labels[i]], str(i)+".png")
+            file_path = os.path.join(export_path_bottom[labels[i]], str(i)+".png")
         else:
-            file_path = os.path.join(export_path_bottom[labels[i]], str(i) + ".png")
+            file_path = os.path.join(export_path_top[labels[i]], str(i) + ".png")
 
         # rgba
         '''
@@ -123,6 +123,15 @@ def export_patches(patches, camera, labels, label_names, target_path):
 
 def export_patches_all(patches, camera, target_path):
 
+    # create an export directory
+    path = target_path + '-top'
+    if not os.path.exists(path):
+        os.makedirs(path)
+
+    path = target_path + '-bottom'
+    if not os.path.exists(path):
+        os.makedirs(path)
+
     # export the patches
     for i in range(len(patches)):
         p = patches[i]
@@ -137,10 +146,9 @@ def export_patches_all(patches, camera, target_path):
             a = np.transpose(np.reshape(a, patch_size))
 
         if camera[i][0] == 0:
-            file_path = os.path.join(target_path, 'bottom', str(i)+".png")
+            file_path = os.path.join(target_path + '-bottom', str(i)+".png")
         else:
-            file_path = os.path.join(target_path, 'top', str(i) + ".png")
-        print(file_path)
+            file_path = os.path.join(target_path + '-top', str(i) + ".png")
 
         # rgba
         '''
@@ -184,10 +192,6 @@ if __name__ == "__main__":
     base_file, file_extension = os.path.splitext(logFilePath)
 
     if flag:
-        # create an export directory
-        if not os.path.exists(base_file):
-            os.makedirs(os.path.join(base_file, 'top'))
-            os.makedirs(os.path.join(base_file, 'bottom'))
         export_patches_all(patchdata, camera_index, base_file)
     else:
         label_file = base_file + '.json'
