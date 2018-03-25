@@ -23,9 +23,9 @@ public:
         /** last update of this player */
         FrameInfo lastUpdate;
         /** the fastest round trip time / latency and the resulting time offset (difference) */
-        long long rtt = 0.0;
-        long long latency = 0.0;
-        long long offset = 0.0;
+        long long rtt = 0;
+        long long latency = 0;
+        long long offset = 0;
         /** Returns the (estimated) timestamp of the player */
         long long getTimeInMilliSeconds() {
             return naoth::NaoTime::getSystemTimeInMilliSeconds() - offset;
