@@ -163,6 +163,7 @@ private:
 private:
   void debugPlots();
   void updateCameraMatrix();
+  void drawRobot3D(const KinematicChain& kinematicChain);
 
 private:
   // HACK: needs a better solution

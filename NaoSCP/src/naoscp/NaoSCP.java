@@ -206,9 +206,12 @@ public class NaoSCP extends javax.swing.JPanel {
         txtRobotNumber.setColumns(3);
         txtRobotNumber.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0"))));
         txtRobotNumber.setToolTipText("Last octet of the robots ip address.");
+        txtRobotNumber.setMinimumSize(new java.awt.Dimension(40, 18));
         statusBarPanel.add(txtRobotNumber);
 
-        btDeploy.setText("Send toRobot");
+        btDeploy.setText("Send to Robot");
+        btDeploy.setToolTipText("Send to Robot");
+        btDeploy.setMinimumSize(new java.awt.Dimension(114, 24));
         btDeploy.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btDeployActionPerformed(evt);
@@ -218,9 +221,11 @@ public class NaoSCP extends javax.swing.JPanel {
 
         txtDeployTag.setColumns(10);
         txtDeployTag.setToolTipText("Small description of the deploying binary / test case.");
+        txtDeployTag.setMinimumSize(new java.awt.Dimension(40, 18));
         statusBarPanel.add(txtDeployTag);
 
         btWriteToStick.setText("Write to Stick");
+        btWriteToStick.setToolTipText("Write to Stick");
         btWriteToStick.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btWriteToStickActionPerformed(evt);
@@ -229,6 +234,7 @@ public class NaoSCP extends javax.swing.JPanel {
         statusBarPanel.add(btWriteToStick);
 
         btSetNetwork.setText("Set Network");
+        btSetNetwork.setToolTipText("Set Network");
         btSetNetwork.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btSetNetworkActionPerformed(evt);
@@ -237,6 +243,7 @@ public class NaoSCP extends javax.swing.JPanel {
         statusBarPanel.add(btSetNetwork);
 
         btInintRobot.setText("Initialize Robot");
+        btInintRobot.setToolTipText("Initialize Robot");
         btInintRobot.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btInintRobotActionPerformed(evt);
