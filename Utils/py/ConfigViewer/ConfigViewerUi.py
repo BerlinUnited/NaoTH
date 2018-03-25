@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ConfigViewer.ui'
 #
-# Created by: PyQt5 UI code generator 5.10
+# Created by: PyQt5 UI code generator 5.10.1
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -40,9 +40,35 @@ class Ui_Form(object):
         self.heads.addItem("")
         self.horizontalLayout.addWidget(self.heads)
         self.verticalLayout.addWidget(self.widget)
-        self.modules = QtWidgets.QTreeView(Form)
+        self.tabWidget = QtWidgets.QTabWidget(Form)
+        self.tabWidget.setTabPosition(QtWidgets.QTabWidget.South)
+        self.tabWidget.setTabShape(QtWidgets.QTabWidget.Rounded)
+        self.tabWidget.setObjectName("tabWidget")
+        self.tab = QtWidgets.QWidget()
+        self.tab.setObjectName("tab")
+        self.verticalLayout_4 = QtWidgets.QVBoxLayout(self.tab)
+        self.verticalLayout_4.setContentsMargins(0, 0, 0, 0)
+        self.verticalLayout_4.setObjectName("verticalLayout_4")
+        self.modules = QtWidgets.QTreeView(self.tab)
+        self.modules.setFrameShape(QtWidgets.QFrame.NoFrame)
+        self.modules.setFrameShadow(QtWidgets.QFrame.Plain)
+        self.modules.setLineWidth(0)
         self.modules.setObjectName("modules")
-        self.verticalLayout.addWidget(self.modules)
+        self.verticalLayout_4.addWidget(self.modules)
+        self.tabWidget.addTab(self.tab, "")
+        self.tab_2 = QtWidgets.QWidget()
+        self.tab_2.setObjectName("tab_2")
+        self.verticalLayout_5 = QtWidgets.QVBoxLayout(self.tab_2)
+        self.verticalLayout_5.setContentsMargins(0, 0, 0, 0)
+        self.verticalLayout_5.setObjectName("verticalLayout_5")
+        self.parameters = QtWidgets.QTreeView(self.tab_2)
+        self.parameters.setFrameShape(QtWidgets.QFrame.NoFrame)
+        self.parameters.setFrameShadow(QtWidgets.QFrame.Plain)
+        self.parameters.setLineWidth(0)
+        self.parameters.setObjectName("parameters")
+        self.verticalLayout_5.addWidget(self.parameters)
+        self.tabWidget.addTab(self.tab_2, "")
+        self.verticalLayout.addWidget(self.tabWidget)
         self.config_dir = QtWidgets.QLabel(Form)
         self.config_dir.setText("")
         self.config_dir.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
@@ -50,6 +76,7 @@ class Ui_Form(object):
         self.verticalLayout.addWidget(self.config_dir)
 
         self.retranslateUi(Form)
+        self.tabWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(Form)
 
     def retranslateUi(self, Form):
@@ -60,4 +87,6 @@ class Ui_Form(object):
         self.robots.setItemText(0, _translate("Form", "Robots"))
         self.bodies.setItemText(0, _translate("Form", "Bodies"))
         self.heads.setItemText(0, _translate("Form", "Heads"))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), _translate("Form", "Modules"))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), _translate("Form", "Parameters"))
 
