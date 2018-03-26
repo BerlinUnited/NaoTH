@@ -50,6 +50,7 @@
 
 // hack
 #include <Representations/Infrastructure/RemoteControlCommand.h>
+#include <Representations/Infrastructure/BDRControlCommand.h>
 
 using namespace naoth;
 
@@ -78,6 +79,7 @@ BEGIN_DECLARE_MODULE(Sensor)
 
   // EVIL HACK
   PROVIDE(RemoteControlCommand)
+  PROVIDE(BDRControlCommand)
 
   PROVIDE(WhistlePercept)
 
