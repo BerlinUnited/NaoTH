@@ -129,7 +129,6 @@ private:
             PARAMETER_REGISTER(initialStateStdP11) = 250;
 
             //PARAMETER_REGISTER(ballMass) = 0.026;
-            PARAMETER_REGISTER(ballRadius) = 50.0;
             PARAMETER_REGISTER(c_RR) = 0.0245;
             PARAMETER_REGISTER(area95Threshold) = 1000*1000*Math::pi;
 
@@ -163,7 +162,6 @@ private:
         double initialStateStdP11;
 
         //double ballMass;
-        double ballRadius;
         double c_RR;
         double area95Threshold;
 
