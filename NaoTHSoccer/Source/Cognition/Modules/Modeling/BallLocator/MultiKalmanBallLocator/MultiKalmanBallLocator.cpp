@@ -31,7 +31,7 @@ MultiKalmanBallLocator::MultiKalmanBallLocator():
 
     DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:draw_trust_the_ball", "..", false);
 
-    h.ball_height = 32.5;
+    h.ballRadius = getFieldInfo().ballRadius;
 
     updateAssociationFunction = &likelihood;
 
