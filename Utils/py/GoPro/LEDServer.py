@@ -33,7 +33,7 @@ class LED():
     GPIO.setup(self.PIN, GPIO.OUT)
     
     self.set(False)
-    self.blink = 0
+    self.blink_delay = 0
     
   def set(self, state):
     self.state = state
@@ -44,13 +44,16 @@ class LED():
     else:
       GPIO.output(self.PIN,GPIO.LOW)
       
-  def blink(self, delay):
-    self.blink = delay
-    if self.blink <= 0:
-      self.blink = 0
+  def blink(self, delay = 1.0):
+    self.blink_delay = delay
+    if self.blink_delay <= 0:
+      self.blink_delay = 0
+    else:
+      self.set(self.state)
 
   def update(self):
-    if self.blink > 0 and time.time() > self.time + 1000:
+    print ('update: ', self.time, self.blink_delay)
+    if self.blink_delay > 0 and time.time() > self.time + self.blink_delay:
       self.set(not self.state)
       
     
@@ -87,10 +90,10 @@ class LEDServer():
         data, address = self.sock.recvfrom(4096)
         
         print ('received %s bytes from %s' % (len(data), address))
-        print (str(data))
+        print (data.decode('utf-8'))
         
         # parse the message
-        msg = json.loads(str(data))
+        msg = json.loads(data.decode('utf-8'))
         
         for name in msg:
           if name in self.leds:
