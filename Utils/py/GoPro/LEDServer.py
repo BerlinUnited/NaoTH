@@ -18,6 +18,12 @@ class StatusMonitor():
     
   def setReceivedMessageFromGC(self, delay = 1):
     self.sendMessage('{{"green":"on", "delay":"{}"}}'.format(delay))
+    
+  def setDidntReceivedMessageFromGC(self, delay = 1):
+    self.sendMessage('{{"green":"off", "delay":"{}"}}'.format(delay))
+    
+  def setReceivedMessageFromGC(self, delay = 1):
+    self.sendMessage('{{"green":"on", "delay":"{}"}}'.format(delay))
   
   def setRecordingStart(self, delay = 1):
     self.sendMessage('{{"red":"on", "delay":"{}"}}'.format(delay))
@@ -104,8 +110,8 @@ class LEDServer():
             elif msg[name] == 'blink':
               self.leds[name].blink()
         
-        if 'time' in msg and int(msg['time']) > 0:
-          self.message_validity_time = time.time() + int(msg['time'])
+        if 'time' in msg and float(msg['time']) > 0:
+          self.message_validity_time = time.time() + float(msg['time'])
         else:
           self.message_validity_time = 0
           

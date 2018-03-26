@@ -106,6 +106,7 @@ class CamStatus(threading.Thread):
             self.status['recording'] = js[constants.Status.Status][constants.Status.STATUS.IsRecording] == 1
             self.cam.power_on(self.cam._mac_address)
             self.sleeper.wait(self.interval)
+            statusMonitor.setConnectedToGoPro(self.interval+1.0)
 
     def stop(self):
         self.running.set()
@@ -152,6 +153,8 @@ def main_gopro(loopControl: threading.Event):
     logger.info("Connecting to GoPro ...")
     cam = GoProCamera.GoPro()
     if cam.getStatusRaw():
+        statusMonitor.setConnectingToGoPro(10)
+        
         # set GoPro to video mode
         setCamVideoMode(cam)
 
@@ -187,7 +190,9 @@ def main_loop(cam: GoProCamera.GoPro, cam_status: CamStatus, gc_socket: socket.s
                 # receive GC data
                 message, address = gc_socket.recvfrom(8192)
                 gc_data.unpack(message)
+                statusMonitor.setReceivedMessageFromGC(5)
             except socket.timeout:
+                statusMonitor.setDidntReceivedMessageFromGC(1)
                 # didn't receive anything from GameController - stop recording (if necessary)
                 if cam_status['recording']:
                     logger.warning("Not connected to GameController?")
