@@ -14,7 +14,7 @@ FieldInfo::FieldInfo() : ParameterList("FieldInfo")
   ballColor = ColorClasses::orange;
   
   // default values as of SPL rules from 2012
-  PARAMETER_REGISTER(ballRadius) = 32.5;
+  PARAMETER_REGISTER(ballRadius) = 50.0;
 
   PARAMETER_REGISTER(xLength) = 6000;
   PARAMETER_REGISTER(yLength) = 4000;
