@@ -15,6 +15,7 @@ import de.naoth.rc.drawings.Drawable;
 import de.naoth.rc.drawings.DrawingCollection;
 import de.naoth.rc.drawings.DrawingOnField;
 import de.naoth.rc.drawings.DrawingsContainer;
+import de.naoth.rc.drawings.FieldDrawingBDR;
 import de.naoth.rc.drawings.FieldDrawingS3D2011;
 import de.naoth.rc.drawings.FieldDrawingSPL2012;
 import de.naoth.rc.drawings.FieldDrawingSPL2013;
@@ -111,6 +112,7 @@ public class FieldViewer extends AbstractDialog implements ActionListener
         new javax.swing.DefaultComboBoxModel(
         new Drawable[] 
         { 
+            new FieldDrawingBDR(),
             new FieldDrawingSPL2013(),
             new FieldDrawingSPL2012(),
             new FieldDrawingS3D2011(),
@@ -225,7 +227,7 @@ public class FieldViewer extends AbstractDialog implements ActionListener
         });
         jToolBar1.add(btClean);
 
-        cbBackground.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "SPL2013", "SPL2012", "S3D2011", "RADAR", "LOCAL" }));
+        cbBackground.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "SPL2013", "SPL2012", "BDR", "S3D2011", "RADAR", "LOCAL" }));
         cbBackground.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cbBackgroundActionPerformed(evt);

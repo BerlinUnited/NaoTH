@@ -97,12 +97,13 @@
         <Component class="javax.swing.JComboBox" name="cbBackground">
           <Properties>
             <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-              <StringArray count="5">
+              <StringArray count="6">
                 <StringItem index="0" value="SPL2013"/>
                 <StringItem index="1" value="SPL2012"/>
-                <StringItem index="2" value="S3D2011"/>
-                <StringItem index="3" value="RADAR"/>
-                <StringItem index="4" value="LOCAL"/>
+                <StringItem index="2" value="BDR"/>
+                <StringItem index="3" value="S3D2011"/>
+                <StringItem index="4" value="RADAR"/>
+                <StringItem index="5" value="LOCAL"/>
               </StringArray>
             </Property>
           </Properties>
