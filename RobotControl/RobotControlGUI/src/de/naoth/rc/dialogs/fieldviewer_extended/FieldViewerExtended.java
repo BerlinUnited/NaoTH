@@ -14,13 +14,12 @@ import de.naoth.rc.components.teamcomm.TeamCommMessage;
 import de.naoth.rc.components.teamcommviewer.RobotTeamCommListener;
 import de.naoth.rc.core.dialog.RCDialog;
 import de.naoth.rc.drawings.DrawingCollection;
-import de.naoth.rc.drawings.FieldDrawingSPL2013;
+import de.naoth.rc.drawings.FieldDrawingBDR;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
@@ -64,7 +63,7 @@ public class FieldViewerExtended extends AbstractDialog implements ActionListene
     public FieldViewerExtended() {
         initComponents();
 
-        this.fieldCanvas.setBackgroundDrawing(new FieldDrawingSPL2013());
+        this.fieldCanvas.setBackgroundDrawing(new FieldDrawingBDR());
         this.fieldCanvas.setToolTipText("");
         this.fieldCanvas.setFitToViewport(true);
 
@@ -142,7 +141,7 @@ public class FieldViewerExtended extends AbstractDialog implements ActionListene
         // add buffered drawings to field drawing list
         DrawingCollection drawings = new DrawingCollection();
         robots.forEach((ip, m) -> {
-            m.getMessage().draw(drawings, Color.BLUE, true);
+            m.getMessage().draw(drawings, m.getChestColor(), true);
         });
         fieldCanvas.getDrawingList().add(drawings);
 
@@ -159,6 +158,7 @@ public class FieldViewerExtended extends AbstractDialog implements ActionListene
             messages.forEach((m) -> {
                 if (!robots.containsKey(m.address)) {
                     RobotPanel p = new RobotPanel(m.address, m.message);
+                    p.setChestColor(Color.BLUE);
                     robots.put(m.address, p);
                     // the status panel should be ordered - remove all and readded it in order
                     statusPanel.removeAll();

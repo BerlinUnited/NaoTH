@@ -6,11 +6,7 @@
 
 package de.naoth.rc.dialogs.fieldviewer_extended;
 
-import de.naoth.rc.components.teamcommviewer.RobotStatus;
 import de.naoth.rc.dataformats.SPLMessage;
-import de.naoth.rc.server.ConnectionStatusEvent;
-import de.naoth.rc.server.ConnectionStatusListener;
-import de.naoth.rc.server.MessageServer;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -21,8 +17,6 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 
 // TODO: isConnected? -> disable Connect button
@@ -170,6 +164,10 @@ public class RobotPanel extends javax.swing.JPanel {
     public void setChestColor(Color chestColor) {
         this.chestColor = chestColor;
         this.repaint();
+    }
+    
+    public Color getChestColor() {
+        return chestColor;
     }
     
     @Override
