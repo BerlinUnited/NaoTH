@@ -8,6 +8,7 @@ start() {
 	if [ -x "$EXEC" ]
   then
     $EXEC
+    echo "$!" > $PID
 	else
 		echo "Missing LEDServer script!"
   fi
