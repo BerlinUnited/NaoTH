@@ -101,12 +101,16 @@ class CamStatus(threading.Thread):
 
     def run(self):
         while not self.running.is_set():
+          try:
             js = json.loads(self.cam.getStatusRaw())
             self.status['mode'] = self.cam.parse_value("mode", js[constants.Status.Status][constants.Status.STATUS.Mode])
             self.status['recording'] = js[constants.Status.Status][constants.Status.STATUS.IsRecording] == 1
             self.cam.power_on(self.cam._mac_address)
             self.sleeper.wait(self.interval)
             statusMonitor.setConnectedToGoPro(self.interval+1.0)
+          except:
+            self.running.set()
+            self.sleeper.set()
 
     def stop(self):
         self.running.set()
@@ -114,14 +118,116 @@ class CamStatus(threading.Thread):
         self.join()
 
     def __getitem__(self, item):
+        #if self.running.is_set():
+        #  raise Exception("thread is stopped")
+          
         return self.status[item]
 
+        
+class GameControllerThread(threading.Thread):
+    """Thread retrieves the current state of the camera and tries to keep the cam alive."""
+    def __init__(self):
+        threading.Thread.__init__(self)
+        
+        self.running = threading.Event()
+        self.sleeper = threading.Event()
+        
+        self.received = threading.Event()
+        self.message = None
+        
+        self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+        self.socket.bind(('', 3838))
+        self.socket.settimeout(5)  # in sec
+        
+    def run(self):
+        logger.info("Listen to GameController")
+        while not self.running.is_set():
+          
+          try:
+              # receive GC data
+              self.message, address = self.socket.recvfrom(8192)
+              self.received.set()
+              statusMonitor.setReceivedMessageFromGC(5)
+          except socket.timeout:
+              statusMonitor.setDidntReceivedMessageFromGC(1)
+              logger.warning("Not connected to GameController?")
+              self.message = None
+              continue
+          except Exception as ex:
+            self.message = None
+            print(ex)
+            continue
+
+    def readData(self, gc_data):
+      self.received.wait(5)
+      self.received.clear()
+      
+      if self.message is None:
+        raise Exception('ERROR: GC no message received')
+      else:
+        gc_data.unpack(self.message)
+    
+    '''
+    def stop(self):
+        self.running.set()
+        self.sleeper.set()
+        self.join()
+    '''
 
 def main():
     loopControl = threading.Event()
-    logger.info("Setting up network")
-    # check wifi device
-    device = Network.getWifiDevice(args.device)
+    
+    gameController = GameControllerThread()
+    gameController.start()
+    
+    # this is the main loop, run forever
+    while not loopControl.is_set():
+      try:
+        logger.info("Setting up network")
+        
+        # check wifi device
+        device = Network.getWifiDevice(args.device)
+        logger.info("Using device %s", device)
+        
+        # configure the interface
+        #statusMonitor.setConnectingToGoPro(11)
+        #network = Network.connectToSSID(device, args.ssid, args.passwd)
+        
+        # wait for connection
+        while not loopControl.is_set():
+          try:
+            
+            if not Network.getSSIDExists(device, args.ssid):
+              logger.info("SSID not found: %s", args.ssid)
+              statusMonitor.setNoGoProNetwork(0.1)
+              time.sleep(1)
+            else:
+              statusMonitor.setConnectingToGoPro(20)
+              logger.info("Waiting for connection to %s", args.ssid)
+              network = Network.connectToSSID(device, args.ssid, args.passwd)
+              
+              if network is None:
+                statusMonitor.setConnectingToGoPro(11)
+                time.sleep(10)
+              else:
+                logger.info("Connected to %s", network)
+                break
+              
+          except KeyboardInterrupt as e:
+                logger.debug("Interrupted ...")
+                loopControl.set()
+        
+        
+        if network is not None:
+          logger.info("Listening to %s", network)
+          # connect to gopro and start main loop
+          main_gopro(gameController, loopControl)
+          
+      except:
+        traceback.print_exc()    
+'''                   
     if device is not None:
         logger.info("Using device %s", device)
         try:
@@ -146,11 +252,12 @@ def main():
         except KeyboardInterrupt as e:
             logger.debug("Interrupted ...")
             loopControl.set()
+'''
 
-
-def main_gopro(loopControl: threading.Event):
+def main_gopro(gameController:GameControllerThread, loopControl: threading.Event):
     # get GoPro
     logger.info("Connecting to GoPro ...")
+    
     cam = GoProCamera.GoPro()
     if cam.getStatusRaw():
         statusMonitor.setConnectingToGoPro(10)
@@ -159,19 +266,21 @@ def main_gopro(loopControl: threading.Event):
         setCamVideoMode(cam)
 
         # listen to gamecontroller
+        '''
         logger.info("Listen to GameController")
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         s.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
         s.bind(('', 3838))
         s.settimeout(5)  # in sec
-
+        '''
+        
         # status monitor and cam keep alive thread
         status = CamStatus(cam, 1)
         status.start()
 
         # start main loop
-        main_loop(cam, status, s, loopControl)
+        main_loop(cam, status, gameController, loopControl)
 
         # stop status listener
         status.stop()
@@ -179,13 +288,15 @@ def main_gopro(loopControl: threading.Event):
         s.close()
 
 
-def main_loop(cam: GoProCamera.GoPro, cam_status: CamStatus, gc_socket: socket.socket, loopControl: threading.Event):
+def main_loop(cam: GoProCamera.GoPro, cam_status: CamStatus, gameController: GameControllerThread, loopControl: threading.Event):
     previous_state = GameControlData.STATE_INITIAL
     previous_output = ""
     output = ""
     gc_data = GameControlData()
-    while not loopControl.is_set():
+    while not loopControl.is_set() and not cam_status.running.is_set():
         try:
+        
+            '''
             try:
                 # receive GC data
                 message, address = gc_socket.recvfrom(8192)
@@ -200,6 +311,21 @@ def main_loop(cam: GoProCamera.GoPro, cam_status: CamStatus, gc_socket: socket.s
                 continue
             except Exception as ex:
               print(ex)
+              continue
+            '''
+            
+            if cam_status['recording']:
+              statusMonitor.setRecordingOn(5.0)
+            else:
+              statusMonitor.setRecordingOff(5.0)
+            
+            try:
+              gameController.readData(gc_data)
+            except Exception as ex:
+              print(ex)
+              if cam_status['recording']:
+                logger.warning("Not connected to GameController?")
+                stopRecording(cam)
               continue
                 
             # handle output
@@ -235,6 +361,7 @@ def main_loop(cam: GoProCamera.GoPro, cam_status: CamStatus, gc_socket: socket.s
             loopControl.set()
         except:
             traceback.print_exc()
+            return
 
 
 def checkGameController(loopControl:threading.Event):

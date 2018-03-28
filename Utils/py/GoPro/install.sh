@@ -6,8 +6,12 @@ GOPRO_HOME="/home/pi/GoPro/"
 chmod +x $GOPRO_HOME/gopro
 cp $GOPRO_HOME/gopro /usr/bin/
 
+chmod +x $GOPRO_HOME/led
+cp $GOPRO_HOME/led /usr/bin/
+
 #make main python file executable
 chmod +x $GOPRO_HOME/main.py
+chmod +x $GOPRO_HOME/LEDServer.py
 
 # install the gopro.service
 #copy the "gopro.service" file to "/lib/systemd/system/"

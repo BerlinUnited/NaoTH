@@ -160,7 +160,12 @@ class NetworkManagerIw(NetworkManager):
 
         return None
 
-
+    def getSSIDExists(self, device:str, ssid:str):
+      logger.debug("Scan for the SSID: 'iwlist %s scanning essid %s'", device, ssid)
+      result = subprocess.run(['iwlist', device, 'scanning', 'essid', ssid], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL).stdout.decode('utf-8').strip()
+      match = re.search(r'.*('+ssid+').*', result)
+      return (match is not None)
+      
     def _connect(self, device:str, ssid:str, passwd:str=None):
         '''
             activate device:            ifconfig <device> up
@@ -223,3 +228,4 @@ getWifiDevices = manager.getWifiDevices
 getWifiDevice  = manager.getWifiDevice
 getCurrentSSID = manager.getCurrentSSID
 connectToSSID  = manager.connectToSSID
+getSSIDExists  = manager.getSSIDExists

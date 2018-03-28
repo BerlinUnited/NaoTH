@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+# -*- coding: utf8 -*-
+
 import RPi.GPIO as GPIO
 import socket
 import time
@@ -10,26 +13,29 @@ class StatusMonitor():
   def sendMessage(self, msg):
     self.sock.sendto(msg.encode(), ("localhost", 8000))
     
+  def setNoGoProNetwork(self, delay = 1):
+    self.sendMessage('{{"blue":"on", "time":"{}"}}'.format(delay))
+    
   def setConnectingToGoPro(self, delay = 1):
-    self.sendMessage('{{"yellow":"blink", "time":"{}"}}'.format(delay))
+    self.sendMessage('{{"blue":"blink", "time":"{}"}}'.format(delay))
     
   def setConnectedToGoPro(self, delay = 1):
-    self.sendMessage('{{"yellow":"on", "time":"{}"}}'.format(delay))
+    self.sendMessage('{{"blue":"on", "time":"{}"}}'.format(delay))
     
   def setReceivedMessageFromGC(self, delay = 1):
-    self.sendMessage('{{"green":"on", "delay":"{}"}}'.format(delay))
+    self.sendMessage('{{"green":"on", "time":"{}"}}'.format(delay))
     
   def setDidntReceivedMessageFromGC(self, delay = 1):
-    self.sendMessage('{{"green":"off", "delay":"{}"}}'.format(delay))
+    self.sendMessage('{{"green":"off", "time":"{}"}}'.format(delay))
     
   def setReceivedMessageFromGC(self, delay = 1):
-    self.sendMessage('{{"green":"on", "delay":"{}"}}'.format(delay))
+    self.sendMessage('{{"green":"on", "time":"{}"}}'.format(delay))
   
-  def setRecordingStart(self, delay = 1):
-    self.sendMessage('{{"red":"on", "delay":"{}"}}'.format(delay))
+  def setRecordingOn(self, delay = 1):
+    self.sendMessage('{{"red":"blink", "time":"{}"}}'.format(delay))
     
-  def setRecordingStop(self, delay = 0):
-    self.sendMessage('{{"red":"off", "delay":"{}"}}'.format(delay))
+  def setRecordingOff(self, delay = 1):
+    self.sendMessage('{{"red":"off", "time":"{}"}}'.format(delay))
   
     
 class LED():
@@ -38,10 +44,11 @@ class LED():
 
     GPIO.setup(self.PIN, GPIO.OUT)
     
-    self.set(False)
+    self._set(False)
     self.blink_delay = 0
+    self.message_validity_time = 0
     
-  def set(self, state):
+  def _set(self, state):
     self.state = state
     self.time = time.time()
     
@@ -50,17 +57,28 @@ class LED():
     else:
       GPIO.output(self.PIN,GPIO.LOW)
       
+  def on(self):
+    self.blink_delay = 0
+    self._set(True)
+    
+  def off(self):
+    self.blink_delay = 0
+    self._set(False)
+      
   def blink(self, delay = 1.0):
     self.blink_delay = delay
     if self.blink_delay <= 0:
       self.blink_delay = 0
     else:
-      self.set(self.state)
+      self.update()
 
   def update(self):
     print ('update: ', self.time, self.blink_delay)
     if self.blink_delay > 0 and time.time() > self.time + self.blink_delay:
-      self.set(not self.state)
+      self._set(not self.state)
+    
+    if self.message_validity_time > 0 and time.time() > self.message_validity_time:
+      self._set(False)
       
     
 class LEDServer():
@@ -69,27 +87,44 @@ class LEDServer():
     GPIO.setmode(GPIO.BCM)
     
     self.leds = {
-      "red": LED(8),
-      "yellow": LED(7),
-      "green": LED(24)
+      "red":    LED(22),
+      "blue":   LED(17),
+      "green":  LED(27)
     }
     
     self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     self.sock.bind(("localhost", 8000))
-    self.sock.settimeout(1.0)
-    
-    self.message_validity_time = 0
+    self.sock.settimeout(0.1)
 
   def reset(self):
     for name in self.leds:
-      self.leds[name].set(False)
+      self.leds[name].off()
     
   def update(self):
     for name in self.leds:
       self.leds[name].update()
     
+  def start_animation(self):
+    
+    for name in self.leds:
+      self.leds[name].on()
+      self.leds[name].blink(0.1)
+      
+    for i in range(0,10):
+      self.update()
+      time.sleep(0.1)
+    
+    for name in self.leds:
+      self.leds[name].off()
+      
+    self.update()
+    
+      
   def run(self):
+  
+    self.start_animation()
+    
     while True:
       print ('\nwaiting to receive message')
       try:
@@ -103,23 +138,21 @@ class LEDServer():
         
         for name in msg:
           if name in self.leds:
+            led = self.leds[name]
             if msg[name] == 'on':
-              self.leds[name].set(True)
+              led.on()
             elif msg[name] == 'off':
-              self.leds[name].set(False)
+              led.off()
             elif msg[name] == 'blink':
-              self.leds[name].blink()
-        
-        if 'time' in msg and float(msg['time']) > 0:
-          self.message_validity_time = time.time() + float(msg['time'])
-        else:
-          self.message_validity_time = 0
+              led.blink()
+            
+            if 'time' in msg and float(msg['time']) > 0:
+              led.message_validity_time = time.time() + float(msg['time'])
           
       except socket.timeout:
-        if self.message_validity_time > 0 and time.time() > self.message_validity_time:
-          self.reset()
-        else:
-          self.update()
+        pass
+        
+      self.update()
 
 statusMonitor = StatusMonitor()
 
