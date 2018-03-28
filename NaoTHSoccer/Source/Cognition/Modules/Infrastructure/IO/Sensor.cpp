@@ -77,10 +77,18 @@ void Sensor::execute()
   // EVIL HACK: expect that only RemoteControlCommand are sent though RemoteMessageDataIn
   // read only the last message
   if (getRemoteMessageDataIn().data.size() > 0 ) {
-    std::stringstream ss(getRemoteMessageDataIn().data.back());
-    Serializer<RemoteControlCommand>::deserialize(ss, getRemoteControlCommand());
+    
+    if(false) {
+      std::stringstream ss(getRemoteMessageDataIn().data.back());
+      Serializer<RemoteControlCommand>::deserialize(ss, getRemoteControlCommand());
 
-    getRemoteControlCommand().frameInfoWhenUpdated = getFrameInfo();
+      getRemoteControlCommand().frameInfoWhenUpdated = getFrameInfo();
+    } else {
+      std::stringstream ss(getRemoteMessageDataIn().data.back());
+      Serializer<BDRControlCommand>::deserialize(ss, getBDRControlCommand());
+
+      getBDRControlCommand().frameInfoWhenUpdated = getFrameInfo();
+    }
   }
 
 }//end execute
