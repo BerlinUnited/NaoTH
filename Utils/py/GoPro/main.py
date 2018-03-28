@@ -234,9 +234,6 @@ def main():
           # connect to gopro and start main loop
           main_gopro(gameController, loopControl)
           
-        # something went wrong, wait for a bit before reconnecting
-        time.sleep(3)
-        
       except:
         traceback.print_exc()    
 '''                   
