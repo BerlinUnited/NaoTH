@@ -6,6 +6,10 @@ import socket
 import time
 import json
 
+import tempfile
+from daemonize import Daemonize
+import os
+
 class StatusMonitor():
   def __init__(self):
     self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -157,8 +161,20 @@ class LEDServer():
         
       self.update()
 
+def main():
+  server = LEDServer()
+  server.run()
+      
 statusMonitor = StatusMonitor()
 
 if __name__ == "__main__":
-  server = LEDServer()
-  server.run()
+  
+  # define vars
+  tempdir = tempfile.gettempdir()
+  name = 'led'  # os.path.basename(sys.argv[0])
+  # check for existing lock file and running process
+  lock_file = os.path.join(tempdir, name + '.lock')
+  
+  daemon = Daemonize(app=name, pid=lock_file, action=main, foreground=True)
+  daemon.start()
+  
