@@ -262,6 +262,9 @@ def checkGameController(loopControl:threading.Event):
               continue
 
             print(gc_data)
+            # check if one team is 'invisible'
+            if any([t.teamNumber == 0 for t in gc_data.team]):
+                print("-- INVISIBLES are playing! --\n")
 
             previous_state = gc_data.gameState
         except (KeyboardInterrupt, SystemExit):
