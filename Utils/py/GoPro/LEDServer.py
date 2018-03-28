@@ -22,6 +22,9 @@ class StatusMonitor():
   def setConnectedToGoPro(self, delay = 1):
     self.sendMessage('{{"blue":"on", "time":"{}"}}'.format(delay))
     
+  def setReceivedMessageFromGCWithInvisibleTeam(self, delay = 1):
+    self.sendMessage('{{"green":"blink", "time":"{}"}}'.format(delay))
+    
   def setReceivedMessageFromGC(self, delay = 1):
     self.sendMessage('{{"green":"on", "time":"{}"}}'.format(delay))
     
@@ -73,7 +76,7 @@ class LED():
       self.update()
 
   def update(self):
-    print ('update: ', self.time, self.blink_delay)
+    #print ('update: ', self.time, self.blink_delay)
     if self.blink_delay > 0 and time.time() > self.time + self.blink_delay:
       self._set(not self.state)
     
@@ -126,12 +129,12 @@ class LEDServer():
     self.start_animation()
     
     while True:
-      print ('\nwaiting to receive message')
+      #print ('\nwaiting to receive message')
       try:
         data, address = self.sock.recvfrom(4096)
         
-        print ('received %s bytes from %s' % (len(data), address))
-        print (data.decode('utf-8'))
+        #print ('received %s bytes from %s' % (len(data), address))
+        #print (data.decode('utf-8'))
         
         # parse the message
         msg = json.loads(data.decode('utf-8'))

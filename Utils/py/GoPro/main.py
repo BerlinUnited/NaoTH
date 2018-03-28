@@ -104,7 +104,7 @@ class CamStatus(threading.Thread):
           try:
             js = json.loads(self.cam.getStatusRaw())
             self.status['mode'] = self.cam.parse_value("mode", js[constants.Status.Status][constants.Status.STATUS.Mode])
-            self.status['recording'] = js[constants.Status.Status][constants.Status.STATUS.IsRecording] == 1
+            self.status['recording'] = (js[constants.Status.Status][constants.Status.STATUS.IsRecording] == 1)
             self.cam.power_on(self.cam._mac_address)
             self.sleeper.wait(self.interval)
             statusMonitor.setConnectedToGoPro(self.interval+1.0)
@@ -141,6 +141,8 @@ class GameControllerThread(threading.Thread):
         self.socket.bind(('', 3838))
         self.socket.settimeout(5)  # in sec
         
+        self.gc_data = GameControlData()
+        
     def run(self):
         logger.info("Listen to GameController")
         while not self.running.is_set():
@@ -149,7 +151,14 @@ class GameControllerThread(threading.Thread):
               # receive GC data
               self.message, address = self.socket.recvfrom(8192)
               self.received.set()
-              statusMonitor.setReceivedMessageFromGC(5)
+              
+              # one of the teams is invisible
+              self.gc_data.unpack(self.message)
+              if any([t.teamNumber == 0 for t in self.gc_data.team]):
+                statusMonitor.setReceivedMessageFromGCWithInvisibleTeam(5)
+              else:
+                statusMonitor.setReceivedMessageFromGC(5)
+              
           except socket.timeout:
               statusMonitor.setDidntReceivedMessageFromGC(1)
               logger.warning("Not connected to GameController?")
@@ -285,7 +294,7 @@ def main_gopro(gameController:GameControllerThread, loopControl: threading.Event
         # stop status listener
         status.stop()
         # close socket
-        s.close()
+        #s.close()
 
 
 def main_loop(cam: GoProCamera.GoPro, cam_status: CamStatus, gameController: GameControllerThread, loopControl: threading.Event):
@@ -293,6 +302,7 @@ def main_loop(cam: GoProCamera.GoPro, cam_status: CamStatus, gameController: Gam
     previous_output = ""
     output = ""
     gc_data = GameControlData()
+    
     while not loopControl.is_set() and not cam_status.running.is_set():
         try:
         
@@ -328,6 +338,12 @@ def main_loop(cam: GoProCamera.GoPro, cam_status: CamStatus, gameController: Gam
                 stopRecording(cam)
               continue
                 
+            # check if one team is 'invisible'
+            both_teams_valid = all([t.teamNumber > 0 for t in gc_data.team])
+                
+            #if not cam_status['recording'] and both_teams_valid:
+            #  statusMonitor.setRecordingOn(0.1)
+                
             # handle output
             if not args.background and not args.quiet:
                 output = "%s | %s | game state: %s |" % (
@@ -339,15 +355,16 @@ def main_loop(cam: GoProCamera.GoPro, cam_status: CamStatus, gameController: Gam
                 # only stop, if we're still recording
                 if cam_status['recording']:
                     stopRecording(cam)
-            elif not cam_status['recording'] and (
+            elif not cam_status['recording'] and both_teams_valid and (
                         gc_data.gameState in [GameControlData.STATE_READY, GameControlData.STATE_SET,
                                               GameControlData.STATE_PLAYING]):
-                startRecording(cam, cam_status)
+                  startRecording(cam, cam_status)
+                
             elif cam_status['recording'] and not (
                         gc_data.gameState in [GameControlData.STATE_READY, GameControlData.STATE_SET,
                                               GameControlData.STATE_PLAYING]):
                 stopRecording(cam)
-
+                
             # just for debugging/logging
             if previous_state != gc_data.gameState:
                 logger.debug("Changed game state to: %s", gc_data.getGameState())
