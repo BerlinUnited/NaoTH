@@ -138,6 +138,12 @@ include "Options/Remote/spl_remote_play_direct_control.xabsl";
 include "Options/Remote/spl_remote_play_lock_control.xabsl";
 include "Options/Remote/spl_remote_secondary_actions.xabsl";
 
+// Contract Work
+// BDR
+include "Options/ContractWork/BDR/bdr_remote_agent.xabsl";
+include "Options/ContractWork/BDR/bdr_remote_play.xabsl";
+include "Options/ContractWork/BDR/bdr_remote_autonomous.xabsl";
+
 /* Test section */
 // Test agents Head Control
 
@@ -250,6 +256,7 @@ agent path_spl_soccer("Path SPL Soccer", path_spl_play_soccer);
 agent penalty("Penalty", play_penalty);
 
 agent spl_remote("Remote Player", spl_remote_agent);
+agent bdr_remote("BDR_agent", bdr_remote_agent);
 
 /** simple soccer agents **/
 agent role_basic_goali("basic_goali", basic_goali_agent);
