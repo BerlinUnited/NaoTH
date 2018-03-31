@@ -46,7 +46,6 @@ class TestArguments:
     generate_no_ball = True
 
 
-
 # ------------------------------------------------------------------------
 #    Store settings from UI
 # ------------------------------------------------------------------------
@@ -129,7 +128,7 @@ class State:
         self.use_motion_blur = False
         self.generate_no_ball = False
 
-        #self.store_addon_settings(addon_settings)
+        # self.store_addon_settings(addon_settings)
 
         self.engine = 'CYCLES'
         self.use_persistent_data = True
@@ -411,12 +410,9 @@ class SceneEditing:
 
 class RenderSetup:
     def __init__(self, scene_setup):
-        print("DEBUG: init for RenderSetup")
         # Use local state since UI may change values
         self.scene_setup = scene_setup
         self.state = scene_setup.state
-
-        print("DEBUG: init end for RenderSetup")
 
     # def pre_render(self, context):
     def pre_render(self):
@@ -771,12 +767,10 @@ class SceneSetupPatch(SceneSetup):
                                                            0.0, 0.0)
 
                 if point_x < rotated_point[0]:
-                    if point_x <= loc_armature[0] <= rotated_point[0] and point_y <= loc_armature[1] <= rotated_point[
-                        1]:
+                    if point_x <= loc_armature[0] <= rotated_point[0] and point_y <= loc_armature[1] <= rotated_point[1]:
                         loc_armature[0] += rotated_point[0]
                 else:
-                    if rotated_point[0] <= loc_armature[0] <= point_x and rotated_point[1] <= loc_armature[
-                        1] <= point_y:
+                    if rotated_point[0] <= loc_armature[0] <= point_x and rotated_point[1] <= loc_armature[1] <= point_y:
                         loc_armature[0] += point_x
 
                 target.location[0] = loc_armature[0]
@@ -830,8 +824,6 @@ class SceneSetupPatchMask(SceneSetup):
         self.state.base_path = os.path.join(self.state.path,
                                             datetime.datetime.now().strftime('%Y%m%d_%H%M%S') + "_patchMask")
 
-        print("DEBUG: state.path: ", self.state.path)
-
         if self.state.generate_no_ball:
             self.state.path_noball_patch = os.path.join(self.state.base_path, "noball_patch")
             self.state.path_noball_patch_bw = os.path.join(self.state.base_path, "noball_patch_bw")
@@ -872,8 +864,6 @@ class SceneSetupPatchMask(SceneSetup):
         self.state.is_set = True
 
     def _set_current_paths(self):
-        print("DEBUG: _set_current_paths for SceneSetupPatchMask")
-
         if self.state.current_frame < self.state.num_images:
             self.state.current_path = self.state.path_ball_patch
             self.state.current_path_bw = self.state.path_ball_patch_bw
@@ -1216,12 +1206,10 @@ class ManageRender(bpy.types.Operator):
 
         self.timer = context.window_manager.event_timer_add(1.0, context.window)
         context.window_manager.modal_handler_add(self)
-
-        print("pre Modal")
+        
         return {"RUNNING_MODAL"}
 
     def modal(self, context, event):
-        print("Modal")
         if event.type == 'TIMER':
             if ((self.state.cancelled is True) or
                     (self.state.current_frame == self.state.total_frames and self.state.total_frames != 0)):
@@ -1307,8 +1295,6 @@ class UIAddonPanel(Panel):
 #    Register and unregister
 # ------------------------------------------------------------------------
 def register(arguments):
-    print("DEBUG: run register")
-
     bpy.utils.register_module(__name__)
     bpy.types.Scene.addon_settings = PointerProperty(type=UISettings)
 
@@ -1316,8 +1302,6 @@ def register(arguments):
         UISettings.is_modal_instance_running = True
         # calls ManageRender execute
         bpy.ops.render.manage(foo=True)
-
-    print("after modal")
 
 
 def unregister():
@@ -1337,12 +1321,12 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
 
-    # TODO hierachically arguments
+    # TODO hierarchically arguments
     parser.add_argument('-c', '--cmd', default=True, action='store_true', help='run from command line')
     parser.add_argument('-m', '--op_mode', type=str, default="OP2", help='Render Mode')
-    parser.add_argument('-p', '--path', type=str, default='/home/benji/', help='Output Path')
+    parser.add_argument('-p', '--path', type=str, default='.', help='Output Path')
     parser.add_argument('-ps', '--patch_size', type=int, default=16, help='Patch Size')
-    parser.add_argument('-n', '--num_images', type=int, default=1, help='Number of images')
+    parser.add_argument('-n', '--num_images', type=int, default=100, help='Number of images')
     parser.add_argument('-gnb', '--generate_no_ball', default=True, action='store_true', help='Flag for generating masks for noball patches')
 
     args = parser.parse_args(argv)
@@ -1352,8 +1336,5 @@ if __name__ == "__main__":
     TestArguments.patch_size = args.patch_size
     TestArguments.num_images = args.num_images
     TestArguments.generate_no_ball = args.generate_no_ball
-    print("Call register()")
+
     register(args)
-    print("end register()")
-
-
