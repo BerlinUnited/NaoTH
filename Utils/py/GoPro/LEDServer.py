@@ -5,6 +5,7 @@ import RPi.GPIO as GPIO
 import socket
 import time
 import json
+import traceback
 
 import tempfile
 from daemonize import Daemonize
@@ -18,7 +19,7 @@ class StatusMonitor():
     self.sock.sendto(msg.encode(), ("localhost", 8000))
     
   def setNoGoProNetwork(self, delay = 1):
-    self.sendMessage('{{"blue":"on", "time":"{}"}}'.format(delay))
+    self.sendMessage('{{"blue":"blink", "delay":"0.1", "time":"{}"}}'.format(delay))
     
   def setConnectingToGoPro(self, delay = 1):
     self.sendMessage('{{"blue":"blink", "time":"{}"}}'.format(delay))
@@ -49,6 +50,7 @@ class LED():
   def __init__(self, PIN):
     self.PIN = PIN
 
+    #GPIO.setwarnings(False)
     GPIO.setup(self.PIN, GPIO.OUT)
     
     self._set(False)
@@ -81,7 +83,14 @@ class LED():
 
   def update(self):
     #print ('update: ', self.time, self.blink_delay)
-    if self.blink_delay > 0 and time.time() > self.time + self.blink_delay:
+    
+    #hack: off phase is allways 1s
+    if self.state:
+      delay = self.blink_delay
+    else:
+      delay = 1.0
+      
+    if self.blink_delay > 0 and time.time() > self.time + delay:
       self._set(not self.state)
     
     if self.message_validity_time > 0 and time.time() > self.message_validity_time:
@@ -114,16 +123,19 @@ class LEDServer():
     
   def start_animation(self):
     
-    for name in self.leds:
-      self.leds[name].on()
-      self.leds[name].blink(0.1)
-      
-    for i in range(0,10):
+    for i in range(0,3):
+      for name in self.leds:
+        self.leds[name].on()
       self.update()
-      time.sleep(0.1)
-    
-    for name in self.leds:
-      self.leds[name].off()
+      
+      time.sleep(0.2)
+      
+      for name in self.leds:
+        self.leds[name].off()
+        
+      self.update()
+      
+      time.sleep(0.2)
       
     self.update()
     
@@ -151,13 +163,21 @@ class LEDServer():
             elif msg[name] == 'off':
               led.off()
             elif msg[name] == 'blink':
-              led.blink()
+              if "delay" in msg:
+                led.blink(float(msg['delay']))
+              else:
+                led.blink()
             
             if 'time' in msg and float(msg['time']) > 0:
               led.message_validity_time = time.time() + float(msg['time'])
           
       except socket.timeout:
         pass
+      except (KeyboardInterrupt, SystemExit):
+        logger.debug("Interrupted or Exit")
+        break
+      except:
+        traceback.print_exc()
         
       self.update()
 
