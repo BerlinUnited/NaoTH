@@ -30,6 +30,7 @@
 
 #include "Modules/Infrastructure/TeamCommunicator/TeamCommReceiver.h"
 #include "Modules/Infrastructure/TeamCommunicator/TeamCommSender.h"
+#include "Modules/Infrastructure/TeamCommunicator/SimpleNetworkTimeProtocol.h"
 
 #include "Modules/Infrastructure/Debug/CameraDebug.h"
 #include "Modules/Infrastructure/Camera/CameraInfoSetter.h"
@@ -140,6 +141,7 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
 
   // infrastructure
   REGISTER_MODULE(TeamCommReceiver);
+  REGISTER_MODULE(SimpleNetworkTimeProtocol);
   REGISTER_MODULE(GameController);
   REGISTER_MODULE(BatteryAlert);
   REGISTER_MODULE(ButtonEventMonitor);

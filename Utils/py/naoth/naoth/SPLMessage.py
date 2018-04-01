@@ -2,7 +2,7 @@
 from struct import Struct
 from math2d import Vector2, Pose2D
 from math3d import Vector3
-from naoth import Representations_pb2
+from naoth import TeamMessage_pb2
 
 
 class MixedTeamMessage(Struct):
@@ -87,7 +87,7 @@ class SPLMessage(Struct):
 
         self._mixed = MixedTeamMessage()
 
-        self.data = Representations_pb2.BUUserTeamMessage()
+        self.data = TeamMessage_pb2.BUUserTeamMessage()
 
         # set known default values of custom message part
         for field in self.data.DESCRIPTOR.fields:
@@ -153,19 +153,24 @@ class SPLMessage(Struct):
         self.currentSideConfidence = next(it)
         self.numOfDataBytes = next(it)
         self.data = data[self.size:self.size+self.numOfDataBytes]
-        # TODO: unpack MixedTeamData!?
-        #'''
-        #self._mixed = MixedTeamMessage()
+
+        # unpack mixed team part
+        self._mixed = MixedTeamMessage()
+        self._mixed.unpack(self.data[:self._mixed.size])
+
+        # check if we got a 'valid' mixed team message and adjust data offset
+        offset = self._mixed.size if self._mixed.teamID == 4 else 0
+
         custom = None
         try:
-            custom = Representations_pb2.BUUserTeamMessage()
-            custom.ParseFromString(data[self.size:self.size+self.numOfDataBytes])
+            custom = TeamMessage_pb2.BUUserTeamMessage()
+            custom.ParseFromString(data[self.size+offset:self.size+offset+self.numOfDataBytes])
         except:
             # if we can't parse custom data - it is not our message
             pass
         finally:
             # if its our custom data ...
-            if custom is not None and custom.ByteSize() > 0:
+            if custom is not None and custom.ByteSize() > 0 and (custom.HasField('key') and custom.key == "naoth"):
                 self.data = custom
 
 
