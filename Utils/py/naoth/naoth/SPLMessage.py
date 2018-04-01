@@ -153,19 +153,24 @@ class SPLMessage(Struct):
         self.currentSideConfidence = next(it)
         self.numOfDataBytes = next(it)
         self.data = data[self.size:self.size+self.numOfDataBytes]
-        # TODO: unpack MixedTeamData!?
-        #'''
-        #self._mixed = MixedTeamMessage()
+
+        # unpack mixed team part
+        self._mixed = MixedTeamMessage()
+        self._mixed.unpack(self.data[:self._mixed.size])
+
+        # check if we got a 'valid' mixed team message and adjust data offset
+        offset = self._mixed.size if self._mixed.teamID == 4 else 0
+
         custom = None
         try:
             custom = TeamMessage_pb2.BUUserTeamMessage()
-            custom.ParseFromString(data[self.size:self.size+self.numOfDataBytes])
+            custom.ParseFromString(data[self.size+offset:self.size+offset+self.numOfDataBytes])
         except:
             # if we can't parse custom data - it is not our message
             pass
         finally:
             # if its our custom data ...
-            if custom is not None and custom.ByteSize() > 0:
+            if custom is not None and custom.ByteSize() > 0 and (custom.HasField('key') and custom.key == "naoth"):
                 self.data = custom
 
 
