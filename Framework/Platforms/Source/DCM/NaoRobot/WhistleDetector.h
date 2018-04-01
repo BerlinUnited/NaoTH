@@ -80,6 +80,7 @@ protected:
 
   volatile bool running;
   bool recording;
+  bool resetting;
   std::ofstream outputFileStream;
   int startStopCount;
   int deinitCyclesCounter;
