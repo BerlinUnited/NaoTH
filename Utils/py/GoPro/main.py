@@ -98,6 +98,10 @@ class CamStatus(threading.Thread):
 
         self.running = threading.Event()
         self.sleeper = threading.Event()
+        
+        self.timestamp = time.time()
+        # HACK take a picture right aways to make sure that wifi is awake long enough
+        self.keepAlivePhoto()
 
     def run(self):
         while not self.running.is_set():
@@ -108,9 +112,22 @@ class CamStatus(threading.Thread):
             self.cam.power_on(self.cam._mac_address)
             self.sleeper.wait(self.interval)
             statusMonitor.setConnectedToGoPro(self.interval+1.0)
+            
+            # take a photo every 10 minutes if not recording to keep the camera alive
+            if self.status['recording']:
+              self.timestamp = time.time()
+            elif time.time() > self.timestamp + 60.0*5:
+              self.keepAlivePhoto()
+            
           except:
             self.running.set()
             self.sleeper.set()
+            
+    def keepAlivePhoto(self):
+      print("\ntake a picture to keep the cam alive")
+      self.timestamp = time.time()
+      self.cam.take_photo()
+      setCamVideoMode(self.cam)
 
     def stop(self):
         self.running.set()
@@ -200,6 +217,9 @@ def main():
         device = Network.getWifiDevice(args.device)
         logger.info("Using device %s", device)
         
+        mac = Network.getAPmac(device)
+        print(mac)
+        
         # configure the interface
         #statusMonitor.setConnectingToGoPro(11)
         #network = Network.connectToSSID(device, args.ssid, args.passwd)
@@ -210,7 +230,7 @@ def main():
             
             if not Network.getSSIDExists(device, args.ssid):
               logger.info("SSID not found: %s", args.ssid)
-              statusMonitor.setNoGoProNetwork(0.1)
+              statusMonitor.setNoGoProNetwork(5)
               time.sleep(1)
             else:
               statusMonitor.setConnectingToGoPro(20)
@@ -224,7 +244,7 @@ def main():
                 logger.info("Connected to %s", network)
                 break
               
-          except KeyboardInterrupt as e:
+          except (KeyboardInterrupt, SystemExit):
                 logger.debug("Interrupted ...")
                 loopControl.set()
         
@@ -234,6 +254,10 @@ def main():
           # connect to gopro and start main loop
           main_gopro(gameController, loopControl)
           
+      except (KeyboardInterrupt, SystemExit):
+        logger.debug("Interrupted or Exit")
+        print("")  # intentionally print empty line
+        loopControl.set()
       except:
         traceback.print_exc()    
 '''                   
