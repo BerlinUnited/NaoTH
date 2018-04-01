@@ -18,9 +18,9 @@ WhistleDetector::WhistleDetector()
    audioReadBuffer(BUFFER_SIZE_RX, 0),
    running(false),
    recording(false),
+   resetting(false),
    startStopCount(0),
    deinitCyclesCounter(0)
-   
 {
   std::cout << "[INFO] WhistleDetector start thread" << std::endl;
   whistleDetectorThread = std::thread([this] {this->execute();});
@@ -88,6 +88,27 @@ void WhistleDetector::set(const naoth::WhistleControl& controlData)
   if ( lock.owns_lock() )
   {
     command = controlData.onOffSwitch;
+
+    activeChannels = controlData.activeChannels;
+    if(whistleListFile != controlData.whistleListFile)
+    {
+      resetting =  true;
+      if(recording)
+      {
+        deinitAudio();
+      }
+      clearBuffers();
+      for(size_t i = 0; i < referenceWhistleSpectra.size(); i++)
+      {
+        fftw_free(referenceWhistleSpectra[i]);
+      }
+      referenceWhistleSpectra.clear();
+      referenceWhistleAutoCorrelationMaxima.clear();
+      referenceWhistleNames.clear();    
+      whistleListFile = controlData.whistleListFile;
+      loadReferenceWhistles();
+      resetting = false;
+    }
   }
 }
 
@@ -108,10 +129,14 @@ void WhistleDetector::execute()
     */
     if(!recording)
     {
-      if(command == 1)
+      if(!resetting && command == 1)
       {
         std::cout << "start recording" << std::endl;
         initAudio();
+      }
+      else if(resetting)
+      {
+        usleep(128);
       }
     }
     else
@@ -132,7 +157,7 @@ void WhistleDetector::execute()
       }
     }
 
-    if(recording)
+    if(!resetting && recording)
     {
       //calculate amount of samples needed
       int samplesToRead = SAMPLE_NEW_COUNT * NUM_CHANNELS_RX; //BUFFER_SIZE_RX;
@@ -468,6 +493,7 @@ void WhistleDetector::initAudio()
 
 void WhistleDetector::deinitAudio()
 {
+  recording = false;
   if(saveRawAudio)
   {
     outputFileStream.close();
@@ -481,7 +507,6 @@ void WhistleDetector::deinitAudio()
       paSimple = NULL;
     }
   }
-  recording = false;
 }
 
 
