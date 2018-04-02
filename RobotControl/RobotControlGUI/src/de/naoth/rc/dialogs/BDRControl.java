@@ -190,7 +190,7 @@ public class BDRControl extends AbstractDialog {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                    .addComponent(controlPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                    .addComponent(controlPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 165, Short.MAX_VALUE)))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -203,7 +203,7 @@ public class BDRControl extends AbstractDialog {
     }//GEN-LAST:event_teamSelectionBoxActionPerformed
 
     private void bt_stopActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bt_stopActionPerformed
-        if(this.currentSender != null) {
+        if(this.currentSender != null && this.bt_stop.isSelected()) {
             BDRControlCommand.Builder cmd = BDRControlCommand.newBuilder();
             cmd.setBehaviorMode(BDRControlCommand.BehaviorMode.DO_NOTHING);
             this.currentSender.send(cmd.build());
@@ -211,7 +211,7 @@ public class BDRControl extends AbstractDialog {
     }//GEN-LAST:event_bt_stopActionPerformed
 
     private void bt_autonomoisActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bt_autonomoisActionPerformed
-        if(this.currentSender != null) {
+        if(this.currentSender != null && this.bt_stop.isSelected()) {
             BDRControlCommand.Builder cmd = BDRControlCommand.newBuilder();
             cmd.setBehaviorMode(BDRControlCommand.BehaviorMode.AUTONOMOUS_PLAY);
             this.currentSender.send(cmd.build());
@@ -219,7 +219,7 @@ public class BDRControl extends AbstractDialog {
     }//GEN-LAST:event_bt_autonomoisActionPerformed
 
     private void bt_wartungActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bt_wartungActionPerformed
-        if(this.currentSender != null) {
+        if(this.currentSender != null && this.bt_stop.isSelected()) {
             BDRControlCommand.Builder cmd = BDRControlCommand.newBuilder();
             cmd.setBehaviorMode(BDRControlCommand.BehaviorMode.WARTUNG);
             this.currentSender.send(cmd.build());
