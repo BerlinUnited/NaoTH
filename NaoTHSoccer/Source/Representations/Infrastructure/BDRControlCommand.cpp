@@ -2,7 +2,7 @@
 #include "BDRControlCommand.h"
 
 
-#include "Messages/BDRControlCommand.pb.h"
+#include "Messages/BDRMessages.pb.h"
 #include <google/protobuf/io/zero_copy_stream_impl.h>
 #include <Tools/DataConversion.h>
 
@@ -12,7 +12,7 @@ void Serializer<BDRControlCommand>::serialize(const BDRControlCommand& represent
 {
   naothmessages::BDRControlCommand p;
 
-  p.set_behaviormode((naothmessages::BDRControlCommand_BehaviorMode)representation.behaviorMode);
+  p.set_behaviormode((naothmessages::BDRBehaviorMode)representation.behaviorMode);
 
   google::protobuf::io::OstreamOutputStream buf(&stream);
   p.SerializeToZeroCopyStream(&buf);

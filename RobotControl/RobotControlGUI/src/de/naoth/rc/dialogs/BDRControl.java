@@ -9,7 +9,8 @@ import de.naoth.rc.core.manager.ObjectListener;
 import de.naoth.rc.core.manager.SwingCommandExecutor;
 import de.naoth.rc.dataformats.SPLMessage;
 import de.naoth.rc.manager.GenericManagerFactory;
-import de.naoth.rc.messages.BDRControlCommandOuterClass.BDRControlCommand;
+import de.naoth.rc.messages.BDRMessages.BDRControlCommand;
+import de.naoth.rc.messages.BDRMessages.BDRBehaviorMode;
 import de.naoth.rc.messages.Representations;
 import java.io.IOException;
 import java.net.InetAddress;
@@ -190,7 +191,7 @@ public class BDRControl extends AbstractDialog {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                    .addComponent(controlPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 165, Short.MAX_VALUE)))
+                    .addComponent(controlPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 244, Short.MAX_VALUE)))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -205,15 +206,17 @@ public class BDRControl extends AbstractDialog {
     private void bt_stopActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bt_stopActionPerformed
         if(this.currentSender != null && this.bt_stop.isSelected()) {
             BDRControlCommand.Builder cmd = BDRControlCommand.newBuilder();
-            cmd.setBehaviorMode(BDRControlCommand.BehaviorMode.DO_NOTHING);
+            cmd.setBehaviorMode(BDRBehaviorMode.DO_NOTHING);
             this.currentSender.send(cmd.build());
+        } else {
+            this.bt_stop.setSelected(true);
         }
     }//GEN-LAST:event_bt_stopActionPerformed
 
     private void bt_autonomoisActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bt_autonomoisActionPerformed
         if(this.currentSender != null && this.bt_stop.isSelected()) {
             BDRControlCommand.Builder cmd = BDRControlCommand.newBuilder();
-            cmd.setBehaviorMode(BDRControlCommand.BehaviorMode.AUTONOMOUS_PLAY);
+            cmd.setBehaviorMode(BDRBehaviorMode.AUTONOMOUS_PLAY);
             this.currentSender.send(cmd.build());
         }
     }//GEN-LAST:event_bt_autonomoisActionPerformed
@@ -221,7 +224,7 @@ public class BDRControl extends AbstractDialog {
     private void bt_wartungActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bt_wartungActionPerformed
         if(this.currentSender != null && this.bt_stop.isSelected()) {
             BDRControlCommand.Builder cmd = BDRControlCommand.newBuilder();
-            cmd.setBehaviorMode(BDRControlCommand.BehaviorMode.WARTUNG);
+            cmd.setBehaviorMode(BDRBehaviorMode.WARTUNG);
             this.currentSender.send(cmd.build());
         }
     }//GEN-LAST:event_bt_wartungActionPerformed
