@@ -79,6 +79,7 @@ BasicTestBehavior::BasicTestBehavior()
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:arms:arms_back", "set arms request to back", false);
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:arms:arms_down", "set arms request to down", false);
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:arms:arms_none", "set arms request to none", false);
+  DEBUG_REQUEST_REGISTER("BasicTestBehavior:arms:arms_synchronised_with_walk", "set arms request to none", false);
 
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:whistle:start_whistle", "start whistle detection", false);
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:whistle:stop_whistle", "stop whistle detection", false);
@@ -107,6 +108,8 @@ void BasicTestBehavior::execute()
     getMotionRequest().armMotionRequest.id = ArmMotionRequest::arms_down;);
   DEBUG_REQUEST("BasicTestBehavior:arms:arms_none", 
     getMotionRequest().armMotionRequest.id = ArmMotionRequest::arms_none;);
+  DEBUG_REQUEST("BasicTestBehavior:arms:arms_synchronised_with_walk", 
+    getMotionRequest().armMotionRequest.id = ArmMotionRequest::arms_synchronised_with_walk;);
 
 
   if (getRemoteControlCommand().action == RemoteControlCommand::WALK) {

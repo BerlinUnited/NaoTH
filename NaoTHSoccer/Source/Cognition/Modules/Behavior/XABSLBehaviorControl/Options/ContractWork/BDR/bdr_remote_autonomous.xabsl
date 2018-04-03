@@ -1,0 +1,29 @@
+option bdr_remote_autonomous{
+
+    initial state go_to_ball{
+        decision {
+            if (action_done)
+                goto finished;
+            else
+                stay;
+        }
+
+        action {
+            go_to_ball(distance = 140);
+        }
+    }
+    
+    target state finished{
+        decision {
+            if (ball.time_seen > 100 && ball.distance > 500)
+                goto go_to_ball;
+            else
+                stay;
+        }
+
+        action {
+            head.control_mode = search_for_ball;
+            motion.type = stand;
+        }
+    }
+}

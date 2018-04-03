@@ -22,14 +22,22 @@ namespace remote("Remote Symbols") {
     say
   };
 
-  enum remote_control_mode input remote_control.mode;
-  enum remote_control_action input remote_control.action;
+  enum remote_control_mode          input remote_control.mode;
+  enum remote_control_action        input remote_control.action;
   enum remote_control_second_action input remote_control.second_action;
-
+  
   float input remote_control.target.x;
   float input remote_control.target.y;
   float input remote_control.target.rot;
   
   float input remote_control.time_since_update;
+
+  enum bdr_remote_control {
+    DO_NOTHING,
+    AUTONOMOUS_PLAY,
+    WARTUNG
+  };
+
+  enum bdr_remote_control input remote_control.bdr_control;
 }
   

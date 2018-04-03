@@ -24,6 +24,9 @@ void RemoteSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerEnumElement("remote_control_second_action", "remote_control_second_action.blink", RemoteControlCommand::BLINK);
   engine.registerEnumElement("remote_control_second_action", "remote_control_second_action.say", RemoteControlCommand::SAY);
 
+  engine.registerEnumElement("bdr_remote_control","bdr_remote_control.DO_NOTHING"     , BDRControlCommand::DO_NOTHING     );
+  engine.registerEnumElement("bdr_remote_control","bdr_remote_control.AUTONOMOUS_PLAY", BDRControlCommand::AUTONOMOUS_PLAY);
+  engine.registerEnumElement("bdr_remote_control","bdr_remote_control.WARTUNG"        , BDRControlCommand::WARTUNG        );
 
   // symbols
   engine.registerEnumeratedInputSymbol("remote_control.mode", "remote_control_mode", (int*)(&getRemoteControlCommand().controlMode));
@@ -35,6 +38,8 @@ void RemoteSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalInputSymbol("remote_control.target.rot", &getRemoteControlCommand().target.rotation);
 
   engine.registerDecimalInputSymbol("remote_control.time_since_update", &timeSinceUpdate);
+
+  engine.registerEnumeratedInputSymbol("remote_control.bdr_control", "bdr_remote_control", (int*)(&getBDRControlCommand().behaviorMode));
 
 }//end registerSymbols
 

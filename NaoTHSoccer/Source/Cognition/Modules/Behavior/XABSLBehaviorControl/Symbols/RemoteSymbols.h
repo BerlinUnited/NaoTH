@@ -9,6 +9,7 @@
 #include <XabslEngine/XabslEngine.h>
 
 #include "Representations/Infrastructure/RemoteControlCommand.h"
+#include "Representations/Infrastructure/BDRControlCommand.h"
 #include <Representations/Infrastructure/FrameInfo.h>
 
 // tools
@@ -17,6 +18,7 @@
 BEGIN_DECLARE_MODULE(RemoteSymbols)
   REQUIRE(FrameInfo)
   REQUIRE(RemoteControlCommand)
+  REQUIRE(BDRControlCommand)
 END_DECLARE_MODULE(RemoteSymbols)
 
 class RemoteSymbols: public RemoteSymbolsBase
