@@ -1,0 +1,48 @@
+option bdr_naoqi_test
+{
+  common decision
+  {
+    if(!body.ready_to_walk || game.current_mode != playing)
+        goto idle;
+  }
+  
+  initial state idle{
+    decision{
+      else
+        goto do_naoth;
+    } 
+    action{}
+  }
+
+  state do_naoth
+  {
+    decision
+    {
+      else if(state_time > 5000 && executed_motion.type == stand)
+        goto do_naoqi;
+      else
+        stay;
+    }
+    action
+    {
+      motion.type = stand;
+      head.control_mode = search_for_ball_and_look_around;
+    }
+  }
+
+  state do_naoqi
+  {
+    decision
+    {
+      else if(state_time > 5000 && executed_motion.type == bdr_sit)
+        goto do_naoth;
+      else
+        stay;
+    }
+    action
+    {
+        motion.type = bdr_sit;
+        head.control_mode = search_for_ball_and_look_around;
+    }
+  }
+}
