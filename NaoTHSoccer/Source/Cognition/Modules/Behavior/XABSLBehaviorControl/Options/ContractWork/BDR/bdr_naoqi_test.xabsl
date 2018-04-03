@@ -18,7 +18,7 @@ option bdr_naoqi_test
   {
     decision
     {
-      else if(state_time > 5000 && executed_motion.type == stand)
+      else if(executed_motion.time > 5000 && executed_motion.type == stand)
         goto do_naoqi;
       else
         stay;
@@ -34,7 +34,7 @@ option bdr_naoqi_test
   {
     decision
     {
-      else if(state_time > 5000 && executed_motion.type == bdr_sit)
+      else if(executed_motion.type == bdr_sit)
         goto do_naoth;
       else
         stay;
