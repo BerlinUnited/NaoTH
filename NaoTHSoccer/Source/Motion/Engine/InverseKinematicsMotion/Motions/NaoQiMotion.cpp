@@ -77,7 +77,7 @@ void NaoQiMotion::execute()
   case runningNaoQiMotion:
   {
     if(lastState != state) {
-      //TODO: deactivte NaoSMAL writings on joints and stiffness
+      getBDRNaoQiRequest().disable_DCM_writings = true;
       lastState = state;
     }
 
@@ -105,7 +105,7 @@ void NaoQiMotion::execute()
     if(lastState != state) {
       calcStandPose();
       lastState = state;
-      //TODO: reactivte NaoSMAL writings on joints and stiffness
+      getBDRNaoQiRequest().disable_DCM_writings = false;
      }
 
     if(interpolateToPose()){
