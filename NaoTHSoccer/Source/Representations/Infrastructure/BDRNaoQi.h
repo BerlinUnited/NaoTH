@@ -15,7 +15,8 @@ class BDRNaoQiRequest : public naoth::Printable
 {
 public:
     BDRNaoQiRequest():
-        behavior(none)
+        behavior(none),
+        disable_DCM_writings(false)
     {}
 
     enum BDRNaoQiBehavior{
@@ -23,6 +24,8 @@ public:
         sit,
         none
     } behavior;
+
+    bool disable_DCM_writings;
 
     static std::string getName(BDRNaoQiBehavior b){
         switch(b) {
