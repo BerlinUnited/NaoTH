@@ -1,21 +1,25 @@
-function [spectrum, auto_corr] = calculate_spectrum(raw)
+function [spectrum, max_auto_corr] = calculate_spectrum(raw_samples)
 %CALCULATE_SPECTRUM Summary of this function goes here
 %   Detailed explanation goes here
 
-mat_calc_spectrum = fft(raw, length(raw)*2);
-mat_calc_spectrum = conj(mat_calc_spectrum); % since c++ version is conjugated
-
-% normalize like the cpp implementation
+% normalize the raw samples like the cpp implementation
 short_max = 32767;
-norm_mat_calc_spectrum = mat_calc_spectrum / short_max;
-norm_mat_calc_spectrum = norm_mat_calc_spectrum(1:1025);
+raw_samples_norm = raw_samples / short_max;
 
-% TODO calculate auto correlation
-[acor,lag] = xcorr(norm_mat_calc_spectrum, norm_mat_calc_spectrum);
-[~,I] = max(abs(acor))
-lagDiff = lag(I);
+fftw('planner','estimate');
+mat_spectrum = fft(raw_samples_norm, length(raw_samples_norm)*2);
 
-spectrum = norm_mat_calc_spectrum;
-auto_corr = inputArg2;
+mat_spectrum_conj = conj(mat_spectrum); % since c++ version is conjugated
+
+intermediate_result = mat_spectrum .* mat_spectrum_conj;
+mat_correlation_func = ifft(intermediate_result, length(raw_samples_norm)*2);
+
+% unnormalize it because cpp implementation expects it that way
+% assumes that 2048 is length(raw_samples * 2)
+mat_correlation_func = mat_correlation_func * 2048;
+
+% only output half of the spectrum
+spectrum = mat_spectrum_conj(1:1025);
+max_auto_corr = max(mat_correlation_func);
 end
 
