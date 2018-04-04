@@ -12,7 +12,7 @@ BasicTestBehavior::BasicTestBehavior()
 :
   lastWhistleCount(0),
   idleCounter(11),
-  isWalking(false)
+	whistleDetected(false)
 {
   // test head control
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:head:Search", "Set the HeadMotion-Request to 'search'.", false);
@@ -31,44 +31,42 @@ BasicTestBehavior::BasicTestBehavior()
 
   // walk
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:force", "set the 'force' flag in the motion request true ", false);
-  DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:walk_forward", "Walk forward as fast as possible", false);
-  DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:walk_backward", "Walk backward as fast as possible", false);
-  DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:strafe_left", "Set the motion request to 'strafe'.", false);
-  DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:strafe_right", "Set the motion request to 'strafe'.", false);
-  DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:turn_left", "Set the motion request to 'turn_right'.", false);
-  DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:turn_right", "Set the motion request to 'turn_right'.", false);
-  DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:walk_forward", "Walk forward as fast as possible", false);
-  DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:stepping", "walk with zero speed", false);
+  DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:walk:forward", "Walk forward as fast as possible", false);
+  DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:walk:backward", "Walk backward as fast as possible", false);
+  DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:walk:strafe_left", "Set the motion request to 'strafe'.", false);
+  DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:walk:strafe_right", "Set the motion request to 'strafe'.", false);
+  DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:walk:turn_left", "Set the motion request to 'turn_right'.", false);
+  DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:walk:turn_right", "Set the motion request to 'turn_right'.", false);
+  DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:walk:stepping", "walk with zero speed", false);
+
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:step_control", "test step control", false);
 
-  DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:walk_normal", "normal walk", true);
-  DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:walk_stable", "fast walk", false);
-  DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:walk_fast", "stable walk", false);
+  DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:walk_style:normal", "normal walk", true);
+  DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:walk_style:stable", "fast walk", false);
+  DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:walk_style:fast", "stable walk", false);
 
-  DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:walk_hip", "hip as coordinate", true);
-  DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:walk_lfoot", "left foot as coordinate", false);
-  DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:walk_rfoot", "right foot as coordinate", false);
-
+  DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:walk_coordinate:hip", "hip as coordinate", true);
+  DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:walk_coordinate:LFoot", "left foot as coordinate", false);
+  DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:walk_coordinate:RFoot", "right foot as coordinate", false);
 
   // key frame motion
-  DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:stand_up_from_front", "Set the motion request to 'stand_up_from_front'", false);
-  DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:stand_up_from_back", "Set the motion request to 'stand_up_from_back'", false);
-  DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:stand_up_from_back_arms_back", "Set the motion request to 'stand_up_from_back'", false);
+  DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:StandUp:from_front", "Set the motion request to 'stand_up_from_front'", false);
+  DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:StandUp:from_back", "Set the motion request to 'stand_up_from_back'", false);
+  DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:StandUp:from_back_arms_back", "Set the motion request to 'stand_up_from_back'", false);
 
   // other motions
-  DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:dead", "Set the robot dead.", false);
-  DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:stand", "The default motion, otherwise do nothing", true);
-  DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:sit", "sit down, has a rest", false);
-  DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:init", "Set the robot init.", false);
-  DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:dance", "Let's dance", false);
-  DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:protect_falling", "Don't hurt me!", false);
+  DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:id:dead", "Set the robot dead.", false);
+  DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:id:stand", "The default motion, otherwise do nothing", true);
+  DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:id:sit", "sit down, has a rest", false);
+  DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:id:init", "Set the robot init.", false);
+  DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:id:dance", "Let's dance", false);
+  DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:id:protect_falling", "Don't hurt me!", false);
+	// needed by the motion editor
+	DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:id:play_editor_motionnet", "play the motion editor motion", false);
 
   // parallelkinematik
-  DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:parallel_stepper", "parallel_stepper", false);
-  DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:parallel_dance", "parallel_dance", false);
-
-  // needed by the motion editor
-  DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:play_editor_motionnet", "play the motion editor motion", false);
+  DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:ParallelKinematik:stepper", "parallel_stepper", false);
+  DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:ParallelKinematik:dance", "parallel_dance", false);
 
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:sound:test", "it is what it is...", false);
 
@@ -78,13 +76,13 @@ BasicTestBehavior::BasicTestBehavior()
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:led:HeadRearRight2", "it is what it is...", false);
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:led:all", "it is what it is...", false);
 
-  DEBUG_REQUEST_REGISTER("BasicTestBehavior:arms:01_arms_back", "set arms request to back", false);
-  DEBUG_REQUEST_REGISTER("BasicTestBehavior:arms:02_arms_down", "set arms request to down", false);
-  DEBUG_REQUEST_REGISTER("BasicTestBehavior:arms:03_arms_none", "set arms request to none", false);
+  DEBUG_REQUEST_REGISTER("BasicTestBehavior:arms:arms_back", "set arms request to back", false);
+  DEBUG_REQUEST_REGISTER("BasicTestBehavior:arms:arms_down", "set arms request to down", false);
+  DEBUG_REQUEST_REGISTER("BasicTestBehavior:arms:arms_none", "set arms request to none", false);
+  DEBUG_REQUEST_REGISTER("BasicTestBehavior:arms:arms_synchronised_with_walk", "set arms request to none", false);
 
-  DEBUG_REQUEST_REGISTER("BasicTestBehavior:start_whistle", "start whistle detection", false);
-  DEBUG_REQUEST_REGISTER("BasicTestBehavior:stop_whistle", "stop whistle detection", false);
-
+  DEBUG_REQUEST_REGISTER("BasicTestBehavior:whistle:start_whistle", "start whistle detection", false);
+  DEBUG_REQUEST_REGISTER("BasicTestBehavior:whistle:stop_whistle", "stop whistle detection", false);
 }
 
 void BasicTestBehavior::execute() 
@@ -104,12 +102,14 @@ void BasicTestBehavior::execute()
     getSoundPlayData().soundFile = "victory.wav";
   );
 
-  DEBUG_REQUEST("BasicTestBehavior:arms:01_arms_back", 
+  DEBUG_REQUEST("BasicTestBehavior:arms:arms_back", 
     getMotionRequest().armMotionRequest.id = ArmMotionRequest::arms_back;);
-  DEBUG_REQUEST("BasicTestBehavior:arms:02_arms_down", 
+  DEBUG_REQUEST("BasicTestBehavior:arms:arms_down", 
     getMotionRequest().armMotionRequest.id = ArmMotionRequest::arms_down;);
-  DEBUG_REQUEST("BasicTestBehavior:arms:03_arms_none", 
+  DEBUG_REQUEST("BasicTestBehavior:arms:arms_none", 
     getMotionRequest().armMotionRequest.id = ArmMotionRequest::arms_none;);
+  DEBUG_REQUEST("BasicTestBehavior:arms:arms_synchronised_with_walk", 
+    getMotionRequest().armMotionRequest.id = ArmMotionRequest::arms_synchronised_with_walk;);
 
 
   if (getRemoteControlCommand().action == RemoteControlCommand::WALK) {
@@ -117,51 +117,7 @@ void BasicTestBehavior::execute()
     getMotionRequest().walkRequest.target.translation.x = 0;
   }
 
-  DEBUG_REQUEST("BasicTestBehavior:start_whistle",
-  if(getWhistleControl().onOffSwitch != 1)
-  {
-    getWhistleControl().onOffSwitch = 1;
-    lastWhistleCount = getWhistlePercept().counter;
-  }
-  if(getWhistlePercept().counter != lastWhistleCount)
-  {
-    if(idleCounter > 10)
-    {
-      idleCounter = 0;
-    }
-    if(idleCounter == 0)
-    {
-      if(!isWalking)
-      {
-        getSoundPlayData().soundFile = "anDieArbeit.wav";
-//        getMotionRequest().id = motion::walk;
-//        getMotionRequest().walkRequest.target.translation.x = 500;
-        isWalking = true;
-      }
-      else
-      {
-//        getMotionRequest().id = motion::stand;
-        getSoundPlayData().soundFile = "victory.wav";
-        isWalking = false;
-      }
-    }
-    lastWhistleCount = getWhistlePercept().counter;
-  }
-  idleCounter++;
-  );
-
-  DEBUG_REQUEST("BasicTestBehavior:stop_whistle",
-  if(getWhistleControl().onOffSwitch != 0)
-  {
-    getWhistleControl().onOffSwitch = 0;
-    lastWhistleCount = getWhistlePercept().counter;
-  }
-  getMotionRequest().id = motion::stand;
-  );
-
-
-
-
+	testWhistle();
 
 }//end execute
 
@@ -257,13 +213,12 @@ void BasicTestBehavior::testHead()
 
 }//end testHead
 
-
 void BasicTestBehavior::testMotion() 
 {
   getMotionRequest().walkRequest.target = Pose2D();
   getMotionRequest().forced = false;
 
-  DEBUG_REQUEST("BasicTestBehavior:motion:stand", 
+  DEBUG_REQUEST("BasicTestBehavior:motion:id:stand", 
     getMotionRequest().id = motion::stand;
   );
   
@@ -273,95 +228,92 @@ void BasicTestBehavior::testMotion()
       getMotionRequest().standHeight = -1; // minus means the same value as walk
   );
 
-  DEBUG_REQUEST("BasicTestBehavior:motion:sit",
+  DEBUG_REQUEST("BasicTestBehavior:motion:id:sit",
     getMotionRequest().id = motion::sit;
   );
 
-  DEBUG_REQUEST("BasicTestBehavior:motion:walk_forward",
+  DEBUG_REQUEST("BasicTestBehavior:motion:walk:forward",
     getMotionRequest().id = motion::walk;
     getMotionRequest().walkRequest.target.translation.x = 500;
   );
 
-  DEBUG_REQUEST("BasicTestBehavior:motion:walk_backward",
+  DEBUG_REQUEST("BasicTestBehavior:motion:walk:backward",
     getMotionRequest().id = motion::walk;
     getMotionRequest().walkRequest.target.translation.x = -500;
   );
 
-
-  DEBUG_REQUEST("BasicTestBehavior:motion:strafe_right",
+  DEBUG_REQUEST("BasicTestBehavior:motion:walk:strafe_right",
     getMotionRequest().id = motion::walk;
     getMotionRequest().walkRequest.target.translation.y = -500;
   );
 
-  DEBUG_REQUEST("BasicTestBehavior:motion:strafe_left",
+  DEBUG_REQUEST("BasicTestBehavior:motion:walk:strafe_left",
     getMotionRequest().id = motion::walk;
     getMotionRequest().walkRequest.target.translation.y = 500;
   );
 
-  DEBUG_REQUEST("BasicTestBehavior:motion:turn_right",
+  DEBUG_REQUEST("BasicTestBehavior:motion:walk:turn_right",
     getMotionRequest().id = motion::walk;
     getMotionRequest().walkRequest.target.rotation = Math::fromDegrees(-60);
   );
 
-  DEBUG_REQUEST("BasicTestBehavior:motion:turn_left",
+  DEBUG_REQUEST("BasicTestBehavior:motion:walk:turn_left",
     getMotionRequest().id = motion::walk;
     getMotionRequest().walkRequest.target.rotation = Math::fromDegrees(60);
   );
 
-  DEBUG_REQUEST("BasicTestBehavior:motion:stepping",
+  DEBUG_REQUEST("BasicTestBehavior:motion:walk:stepping",
       getMotionRequest().id = motion::walk;
       getMotionRequest().walkRequest.target = Pose2D();
     );
 
   DEBUG_REQUEST("BasicTestBehavior:motion:step_control",
-   if ( getMotionStatus().stepControl.stepID % 5 == 0)
-  {
+   if ( getMotionStatus().stepControl.stepID % 5 == 0){
     getMotionRequest().walkRequest.stepControl.stepID = getMotionStatus().stepControl.stepID;
-    switch(getMotionStatus().stepControl.moveableFoot)
-  {
-    case MotionStatus::StepControlStatus::LEFT:
-    case MotionStatus::StepControlStatus::BOTH:
-    {
-      getMotionRequest().walkRequest.stepControl.moveLeftFoot = true;
-      getMotionRequest().walkRequest.coordinate = WalkRequest::LFoot;
-      break;
+    switch(getMotionStatus().stepControl.moveableFoot){
+			case MotionStatus::StepControlStatus::LEFT:
+			case MotionStatus::StepControlStatus::BOTH:
+			{
+				getMotionRequest().walkRequest.stepControl.moveLeftFoot = true;
+				getMotionRequest().walkRequest.coordinate = WalkRequest::LFoot;
+				break;
+			}
+			case MotionStatus::StepControlStatus::RIGHT:
+			{
+				getMotionRequest().walkRequest.stepControl.moveLeftFoot = false;
+				getMotionRequest().walkRequest.coordinate = WalkRequest::RFoot;
+				break;
+			}
+			default: ASSERT(false);
+			 break;
     }
-    case MotionStatus::StepControlStatus::RIGHT:
-    {
-      getMotionRequest().walkRequest.stepControl.moveLeftFoot = false;
-      getMotionRequest().walkRequest.coordinate = WalkRequest::RFoot;
-      break;
-    }
-    default: ASSERT(false);
-      break;
-    }
-  double stepTime = 1000;
-  double speedDirection = 0;
-  MODIFY("StepControl.time",stepTime);
-  MODIFY("StepControl.speedDirection",speedDirection);
+		double stepTime = 1000;
+		double speedDirection = 0;
+		MODIFY("StepControl.time",stepTime);
+		MODIFY("StepControl.speedDirection",speedDirection);
     getMotionRequest().walkRequest.stepControl.target = Pose2D(0, 100, 0);
     getMotionRequest().walkRequest.stepControl.time = (unsigned int)stepTime;
     getMotionRequest().walkRequest.stepControl.speedDirection = Math::fromDegrees(speedDirection);
   }
-    );
+ );
 
-  DEBUG_REQUEST("BasicTestBehavior:motion:walk_normal",
+  DEBUG_REQUEST("BasicTestBehavior:motion:walk_style:normal",
               getMotionRequest().walkRequest.character = 0.5;
   );
-  DEBUG_REQUEST("BasicTestBehavior:motion:walk_fast",
+  DEBUG_REQUEST("BasicTestBehavior:motion:walk_style:fast",
               getMotionRequest().walkRequest.character = 1;
   );
-  DEBUG_REQUEST("BasicTestBehavior:motion:walk_stable",
+  DEBUG_REQUEST("BasicTestBehavior:motion:walk_style:stable",
               getMotionRequest().walkRequest.character = 0;
   );
 
-  DEBUG_REQUEST("BasicTestBehavior:motion:walk_hip",
+  DEBUG_REQUEST("BasicTestBehavior:motion:walk_coordinate:hip",
               getMotionRequest().walkRequest.coordinate = WalkRequest::Hip;
   );
-  DEBUG_REQUEST("BasicTestBehavior:motion:walk_fast",
+  DEBUG_REQUEST("BasicTestBehavior:motion:walk_coordinate:LFoot",
               getMotionRequest().walkRequest.coordinate = WalkRequest::LFoot;
   );
-  DEBUG_REQUEST("BasicTestBehavior:motion:walk_stable",
+  DEBUG_REQUEST("BasicTestBehavior:motion:walk_coordinate:RFoot",
               getMotionRequest().walkRequest.coordinate = WalkRequest::RFoot;
   );
 
@@ -372,36 +324,36 @@ void BasicTestBehavior::testMotion()
   MODIFY("walk.offset.y", getMotionRequest().walkRequest.offset.translation.y);
   MODIFY("walk.character", getMotionRequest().walkRequest.character);
 
-  DEBUG_REQUEST("BasicTestBehavior:motion:stand_up_from_front",
+  DEBUG_REQUEST("BasicTestBehavior:motion:StandUp:from_front",
     getMotionRequest().id = motion::stand_up_from_front;
   );
 
-  DEBUG_REQUEST("BasicTestBehavior:motion:stand_up_from_back",
+  DEBUG_REQUEST("BasicTestBehavior:motion:StandUp:from_back",
     getMotionRequest().id = motion::stand_up_from_back;
   );
 
-  DEBUG_REQUEST("BasicTestBehavior:motion:stand_up_from_back_arms_back",
+  DEBUG_REQUEST("BasicTestBehavior:motion:StandUp:from_back_arms_back",
     getMotionRequest().id = motion::stand_up_from_back_arms_back;
   );
 
-  DEBUG_REQUEST("BasicTestBehavior:motion:dead",
+  DEBUG_REQUEST("BasicTestBehavior:motion:id:dead",
     getMotionRequest().id = motion::dead;
     getMotionRequest().forced = true;
   );
 
-  DEBUG_REQUEST("BasicTestBehavior:motion:init",
+  DEBUG_REQUEST("BasicTestBehavior:motion:id:init",
     getMotionRequest().id = motion::init;
   );
 
-  DEBUG_REQUEST("BasicTestBehavior:motion:dance",
+  DEBUG_REQUEST("BasicTestBehavior:motion:id:dance",
     getMotionRequest().id = motion::dance;
   );
 
-  DEBUG_REQUEST("BasicTestBehavior:motion:protect_falling",
+  DEBUG_REQUEST("BasicTestBehavior:motion:id:protect_falling",
     getMotionRequest().id = motion::protect_falling;
   );
 
-  DEBUG_REQUEST("BasicTestBehavior:motion:play_editor_motionnet",
+  DEBUG_REQUEST("BasicTestBehavior:motion:id:play_editor_motionnet",
     getMotionRequest().id = motion::play_editor_motionnet;
   );
   
@@ -409,20 +361,18 @@ void BasicTestBehavior::testMotion()
     getMotionRequest().forced = true;
   );
 
-
-  DEBUG_REQUEST("BasicTestBehavior:motion:parallel_stepper", 
+  DEBUG_REQUEST("BasicTestBehavior:motion:ParallelKinematik:stepper", 
     getMotionRequest().id = motion::parallel_stepper;
   );
-  DEBUG_REQUEST("BasicTestBehavior:motion:parallel_dance", 
+  DEBUG_REQUEST("BasicTestBehavior:motion:ParallelKinematik:dance", 
     getMotionRequest().id = motion::parallel_dance;
   );
   
 }//end testMotion
 
-
 void BasicTestBehavior::testLED() {
 
-  //init LEDs
+  //init some Mono LEDs
   for (int i = LEDData::HeadFrontLeft0; i <= LEDData::HeadRearRight2; i++) {
     getBehaviorLEDRequest().request.theMonoLED[i] = 0.0;
   }
@@ -452,3 +402,43 @@ void BasicTestBehavior::testLED() {
 
 } //testLED
 
+void BasicTestBehavior::testWhistle(){
+	DEBUG_REQUEST("BasicTestBehavior:whistle:start_whistle",
+		if (getWhistleControl().onOffSwitch != 1)
+		{
+			getWhistleControl().onOffSwitch = 1;
+			lastWhistleCount = getWhistlePercept().counter;
+		}
+	if (getWhistlePercept().counter != lastWhistleCount)
+	{
+		if (idleCounter > 10)
+		{
+			idleCounter = 0;
+		}
+		if (idleCounter == 0)
+		{
+			if (!whistleDetected)
+			{
+				getSoundPlayData().soundFile = "anDieArbeit.wav";
+				whistleDetected = true;
+			}
+			else
+			{
+				getSoundPlayData().soundFile = "victory.wav";
+				whistleDetected = false;
+			}
+		}
+		lastWhistleCount = getWhistlePercept().counter;
+	}
+	idleCounter++;
+	);
+
+	DEBUG_REQUEST("BasicTestBehavior:whistle:stop_whistle",
+		if (getWhistleControl().onOffSwitch != 0)
+		{
+			getWhistleControl().onOffSwitch = 0;
+			lastWhistleCount = getWhistlePercept().counter;
+		}
+	getMotionRequest().id = motion::stand;
+	);
+}

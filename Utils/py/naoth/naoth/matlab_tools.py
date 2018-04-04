@@ -1,5 +1,6 @@
 
 import scipy.io as spio
+import numpy as np
 
 # https://pyhogs.github.io/reading-mat-files.html
 def loadmat(filename):
@@ -36,6 +37,8 @@ def _todict(matobj):
     elem = matobj.__dict__[strg]
     if isinstance(elem, spio.matlab.mio5_params.mat_struct):
       dict[strg] = _todict(elem)
+    elif isinstance(elem, np.ndarray) and elem.dtype.type == np.dtype(spio.matlab.mio5_params.mat_struct).type:
+      dict[strg] = [_todict(e) for e in elem]
     else:
       dict[strg] = elem
   return dict
