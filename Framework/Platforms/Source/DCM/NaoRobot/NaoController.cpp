@@ -34,7 +34,7 @@ NaoController::NaoController()
   const std::string naoCommandUltraSoundSendDataPath = "/nao_command.UltraSoundSendData";
   const std::string naoCommandIRSendDataPath = "/nao_command.IRSendData";
   const std::string naoCommandLEDDataPath = "/nao_command.LEDData";
-  const std::string naoCommandBDRNaoQiRequestDataPath = "/nao_command.BDRequestData";
+  const std::string naoCommandBDRNaoQiRequestDataPath = "/nao_command.BDRRequestData";
 
   naoSensorData.open(naoSensorDataPath);
   naoSensorBDRNaoQiStatus.open(naoSensorBDRNaoQiStatusPath);

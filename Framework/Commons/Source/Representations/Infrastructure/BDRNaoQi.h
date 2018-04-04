@@ -20,9 +20,9 @@ public:
     {}
 
     enum BDRNaoQiBehavior{
+        none,
         entertainment,
-        sit,
-        none
+        sit
     } behavior;
 
     bool disable_DCM_writings;
@@ -39,6 +39,7 @@ public:
     virtual void print(std::ostream &stream) const
     {
         stream << "behavior:" << getName(behavior) << std::endl;
+        stream << "disable_DCM_writing:" << disable_DCM_writings << std::endl;
     }
 };
 

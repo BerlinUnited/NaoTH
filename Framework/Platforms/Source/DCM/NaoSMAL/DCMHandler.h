@@ -143,7 +143,7 @@ public:
   void setAllHardnessData(double value, int dcmTime);
   void setUltraSoundSend(const UltraSoundSendData& data, int dcmTime);
   void setIRSend(const IRSendData& theIRSendData, int dcmTime);
-  void setBDRNaoQiRequest(const BDRNaoQiRequest& r, int dcmTime);
+  void setBDRNaoQiRequest(const BDRNaoQiRequest& r, int);
 
   void setLED(const LEDData& data, int dcmTime) {
     if(disable_dcm_writings)

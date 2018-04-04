@@ -181,7 +181,7 @@ void SMALModule::init()
   const std::string naoCommandUltraSoundSendDataPath = "/nao_command.UltraSoundSendData";
   const std::string naoCommandIRSendDataPath = "/nao_command.IRSendData";
   const std::string naoCommandLEDDataPath = "/nao_command.LEDData";
-  const std::string naoCommandBDRNaoQiRequestDataPath = "/nao_command.BDRequestData";
+  const std::string naoCommandBDRNaoQiRequestDataPath = "/nao_command.BDRRequestData";
 
   std::cout << "Opening Shared Memory: " << naoCommandMotorJointDataPath << std::endl;
   naoCommandMotorJointData.open(naoCommandMotorJointDataPath);
