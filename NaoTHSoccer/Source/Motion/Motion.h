@@ -43,6 +43,7 @@
 #include <Representations/Modeling/IMUData.h>
 #include "Representations/Modeling/GroundContactModel.h"
 #include "Representations/Motion/CollisionPercept.h"
+#include "Representations/Infrastructure/BDRNaoQi.h"
 
 // debug
 #include <Representations/Debug/Stopwatch.h>
@@ -84,6 +85,8 @@ BEGIN_DECLARE_MODULE(Motion)
 
   // PROVIDE is needed to update the speed and acceleration
   PROVIDE(MotorJointData) // TODO: check
+  REQUIRE(BDRNaoQiRequest)
+  PROVIDE(BDRNaoQiStatus)
 
   PROVIDE(OffsetJointData)
   

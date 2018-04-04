@@ -28,18 +28,22 @@ NaoController::NaoController()
   // init shared memory
   // sensor data
   const std::string naoSensorDataPath = "/nao_sensor_data";
+  const std::string naoSensorBDRNaoQiStatusPath = "/nao_sensor_BDRNaoQiStatusPath";
   // command data
   const std::string naoCommandMotorJointDataPath = "/nao_command.MotorJointData";
   const std::string naoCommandUltraSoundSendDataPath = "/nao_command.UltraSoundSendData";
   const std::string naoCommandIRSendDataPath = "/nao_command.IRSendData";
   const std::string naoCommandLEDDataPath = "/nao_command.LEDData";
+  const std::string naoCommandBDRNaoQiRequestDataPath = "/nao_command.BDRequestData";
 
   naoSensorData.open(naoSensorDataPath);
+  naoSensorBDRNaoQiStatus.open(naoSensorBDRNaoQiStatusPath);
 
   naoCommandMotorJointData.open(naoCommandMotorJointDataPath);
   naoCommandUltraSoundSendData.open(naoCommandUltraSoundSendDataPath);
   naoCommandIRSendData.open(naoCommandIRSendDataPath);
   naoCommandLEDData.open(naoCommandLEDDataPath);
+  naoCommandBDRNaoQiRequestData.open(naoCommandBDRNaoQiRequestDataPath);
 
   whistleSensorData.open("/whistleDetector.count");
   whistleControlData.open("/whistleDetector.commands");
@@ -120,6 +124,7 @@ NaoController::NaoController()
   registerInput<UltraSoundReceiveData>(*this);
   registerInput<WhistlePercept>(*this);
   registerInput<CpuData>(*this);
+  registerInput<BDRNaoQiStatus>(*this);
 
   // register command output
   registerOutput<const MotorJointData>(*this);
@@ -127,6 +132,7 @@ NaoController::NaoController()
   registerOutput<const IRSendData>(*this);
   registerOutput<const UltraSoundSendData>(*this);
   registerOutput<const WhistleControl>(*this);
+  registerOutput<const BDRNaoQiRequest>(*this);
 
 
   /*  INIT DEVICES  */

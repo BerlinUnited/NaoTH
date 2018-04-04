@@ -30,6 +30,7 @@ namespace naoth
 class DCMHandler
 {
 private:
+  bool disable_dcm_writings;
   DCM_led ledHandler;
 
 private:
@@ -122,7 +123,6 @@ public:
   // remember last commands (needed by "smart" methods)
   MotorJointData lastMotorJointData;
 
-
   DCMHandler();
   ~DCMHandler();
   void init(boost::shared_ptr<AL::ALBroker> pB);
@@ -134,6 +134,7 @@ public:
 
   // read sensor data from AL memory
   void readSensorData(float* dest);
+  void getBDRNaoQiStatus(BDRNaoQiStatus* dest);
 
   void setSingleMotorData(const JointData::JointID jointID, const MotorJointData *theMotorJointData, int dcmTime);
 
@@ -142,8 +143,14 @@ public:
   void setAllHardnessData(double value, int dcmTime);
   void setUltraSoundSend(const UltraSoundSendData& data, int dcmTime);
   void setIRSend(const IRSendData& theIRSendData, int dcmTime);
+  void setBDRNaoQiRequest(const BDRNaoQiRequest& r, int dcmTime);
 
-  void setLED(const LEDData& data, int dcmTime) { ledHandler.setAllLED(data, dcmTime); }
+  void setLED(const LEDData& data, int dcmTime) {
+    if(disable_dcm_writings)
+      return;
+    ledHandler.setAllLED(data, dcmTime);
+  }
+
   bool setSingleLED(const LEDData& data, int dcmTime) { return ledHandler.setSingleLED(data, dcmTime);}
 
   // smart set_methods

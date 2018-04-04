@@ -43,6 +43,10 @@ public:
 };
 
 class BDRNaoQiStatus : public BDRNaoQiRequest{
+public:
+    void get(BDRNaoQiStatus& data) const {
+        data = *this;
+    }
 };
 
 #endif //__BDR_NAO_QI_H
