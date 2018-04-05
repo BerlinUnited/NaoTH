@@ -26,7 +26,6 @@ option bdr_naoqi_test
     action
     {
       motion.type = stand;
-      head.control_mode = search_for_ball_and_look_around;
     }
   }
 
@@ -34,7 +33,7 @@ option bdr_naoqi_test
   {
     decision
     {
-      else if(executed_motion.type == bdr_sit)
+      else if(executed_motion.type == bdr_sit && state_time > 10000)
         goto do_naoth;
       else
         stay;
@@ -42,7 +41,6 @@ option bdr_naoqi_test
     action
     {
         motion.type = bdr_sit;
-        head.control_mode = search_for_ball_and_look_around;
     }
   }
 }
