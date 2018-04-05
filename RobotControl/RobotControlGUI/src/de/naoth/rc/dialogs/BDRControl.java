@@ -12,6 +12,9 @@ import de.naoth.rc.manager.GenericManagerFactory;
 import de.naoth.rc.messages.BDRMessages.BDRControlCommand;
 import de.naoth.rc.messages.BDRMessages.BDRBehaviorMode;
 import de.naoth.rc.messages.Representations;
+import de.naoth.rc.server.Command;
+import de.naoth.rc.server.ConnectionStatusEvent;
+import de.naoth.rc.server.ConnectionStatusListener;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -47,8 +50,8 @@ public class BDRControl extends AbstractDialog {
         public static RobotControl parent;
         @InjectPlugin
         public static SwingCommandExecutor commandExecutor;
-        @InjectPlugin
-        public static GenericManagerFactory genericManagerFactory;
+        //@InjectPlugin
+        //public static GenericManagerFactory genericManagerFactory;
     }//end Plugin
 
     private final Map<String, TeamCommMessage> messageMap = Collections.synchronizedMap(new TreeMap<String, TeamCommMessage>());
@@ -81,6 +84,22 @@ public class BDRControl extends AbstractDialog {
         } catch (IOException ex) {
             ex.printStackTrace(System.err);
         }
+        
+        Plugin.parent.getMessageServer().addConnectionStatusListener(new ConnectionStatusListener() {
+            @Override
+            public void connected(ConnectionStatusEvent event) {
+                bt_autonomois.setEnabled(true);
+                bt_stop.setEnabled(true);
+                bt_wartung.setEnabled(true);
+            }
+
+            @Override
+            public void disconnected(ConnectionStatusEvent event) {
+                bt_autonomois.setEnabled(false);
+                bt_stop.setEnabled(false);
+                bt_wartung.setEnabled(false);
+            }
+        });
     }
 
     @Override
@@ -111,16 +130,7 @@ public class BDRControl extends AbstractDialog {
         bt_autonomois = new javax.swing.JToggleButton();
         bt_wartung = new javax.swing.JToggleButton();
 
-        javax.swing.GroupLayout robotPanelLayout = new javax.swing.GroupLayout(robotPanel);
-        robotPanel.setLayout(robotPanelLayout);
-        robotPanelLayout.setHorizontalGroup(
-            robotPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 650, Short.MAX_VALUE)
-        );
-        robotPanelLayout.setVerticalGroup(
-            robotPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 325, Short.MAX_VALUE)
-        );
+        robotPanel.setLayout(new java.awt.GridLayout(2, 2, 5, 5));
 
         robotPanel.setLayout(new de.naoth.rc.components.WrapLayout(java.awt.FlowLayout.LEFT));
 
@@ -191,7 +201,7 @@ public class BDRControl extends AbstractDialog {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                    .addComponent(controlPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 244, Short.MAX_VALUE)))
+                    .addComponent(controlPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 298, Short.MAX_VALUE)))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -204,10 +214,11 @@ public class BDRControl extends AbstractDialog {
     }//GEN-LAST:event_teamSelectionBoxActionPerformed
 
     private void bt_stopActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bt_stopActionPerformed
-        if(this.currentSender != null && this.bt_stop.isSelected()) {
+        if(this.currentSender != null) {
             BDRControlCommand.Builder cmd = BDRControlCommand.newBuilder();
             cmd.setBehaviorMode(BDRBehaviorMode.DO_NOTHING);
-            this.currentSender.send(cmd.build());
+            //this.currentSender.send(bdrCmd.build());
+            sendBDRCommand(cmd.build());
         } else {
             this.bt_stop.setSelected(true);
         }
@@ -217,7 +228,8 @@ public class BDRControl extends AbstractDialog {
         if(this.currentSender != null && this.bt_stop.isSelected()) {
             BDRControlCommand.Builder cmd = BDRControlCommand.newBuilder();
             cmd.setBehaviorMode(BDRBehaviorMode.AUTONOMOUS_PLAY);
-            this.currentSender.send(cmd.build());
+            //this.currentSender.send(cmd.build());
+            sendBDRCommand(cmd.build());
         }
     }//GEN-LAST:event_bt_autonomoisActionPerformed
 
@@ -225,7 +237,8 @@ public class BDRControl extends AbstractDialog {
         if(this.currentSender != null && this.bt_stop.isSelected()) {
             BDRControlCommand.Builder cmd = BDRControlCommand.newBuilder();
             cmd.setBehaviorMode(BDRBehaviorMode.WARTUNG);
-            this.currentSender.send(cmd.build());
+            //this.currentSender.send(cmd.build());
+            sendBDRCommand(cmd.build());
         }
     }//GEN-LAST:event_bt_wartungActionPerformed
 
@@ -242,6 +255,21 @@ public class BDRControl extends AbstractDialog {
         public void errorOccured(String cause) {
             System.out.println(cause);
         }
+    }
+    
+    private void sendBDRCommand(BDRControlCommand command) {
+        Command cmd = new Command("Cognition:representation:set").addArg("BDRControlCommand", command.toByteArray());
+        Plugin.commandExecutor.executeCommand(new ObjectListener<byte[]>() {
+            @Override
+            public void newObjectReceived(byte[] object) {
+                System.out.println(new String(object));
+            }
+
+            @Override
+            public void errorOccured(String cause) {
+                System.err.println(cause);
+            }
+        }, cmd);
     }
 
     private class CommandSender
@@ -286,7 +314,6 @@ public class BDRControl extends AbstractDialog {
     
     
     private void updateRoboPanel() {
-        //if(filterTeam.isSelected()) 
         {
             this.robotPanel.removeAll();
 
