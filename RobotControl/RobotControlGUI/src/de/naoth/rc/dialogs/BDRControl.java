@@ -1,5 +1,6 @@
 package de.naoth.rc.dialogs;
 
+import com.google.protobuf.InvalidProtocolBufferException;
 import de.naoth.rc.RobotControl;
 import de.naoth.rc.components.RemoteRobotPanel;
 import de.naoth.rc.core.dialog.AbstractDialog;
@@ -242,6 +243,34 @@ public class BDRControl extends AbstractDialog {
         }
     }//GEN-LAST:event_bt_wartungActionPerformed
 
+    class StatusUpdater implements ObjectListener<byte[]>
+    {
+        @Override
+        public void newObjectReceived(byte[] object) {
+            try {
+                BDRControlCommand command = BDRControlCommand.parseFrom(object);
+                
+                if(command.hasBehaviorMode()) {
+                    bt_autonomois.setEnabled(true);
+                    bt_stop.setEnabled(true);
+                    bt_wartung.setEnabled(true);
+                    
+                    bt_autonomois.setSelected(command.getBehaviorMode() == BDRBehaviorMode.AUTONOMOUS_PLAY);
+                    bt_stop.setSelected(command.getBehaviorMode() == BDRBehaviorMode.DO_NOTHING);
+                    bt_wartung.setSelected(command.getBehaviorMode() == BDRBehaviorMode.WARTUNG);
+                }
+                
+            } catch (InvalidProtocolBufferException ex) {
+                Logger.getLogger(TeamCommViewer.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+
+        @Override
+        public void errorOccured(String cause) {
+            System.err.println(cause);
+        }
+    }
+    
     class RemoteCommandResultHandler implements ObjectListener<byte[]> {
 
         @Override
@@ -258,11 +287,15 @@ public class BDRControl extends AbstractDialog {
     }
     
     private void sendBDRCommand(BDRControlCommand command) {
+        
         Command cmd = new Command("Cognition:representation:set").addArg("BDRControlCommand", command.toByteArray());
         Plugin.commandExecutor.executeCommand(new ObjectListener<byte[]>() {
             @Override
             public void newObjectReceived(byte[] object) {
                 System.out.println(new String(object));
+                
+                Command cmd = new Command("Cognition:representation:get").addArg("BDRControlCommand");
+                Plugin.commandExecutor.executeCommand(new StatusUpdater(), cmd);
             }
 
             @Override
@@ -270,6 +303,10 @@ public class BDRControl extends AbstractDialog {
                 System.err.println(cause);
             }
         }, cmd);
+        
+        bt_autonomois.setEnabled(false);
+        bt_stop.setEnabled(false);
+        bt_wartung.setEnabled(false);
     }
 
     private class CommandSender
