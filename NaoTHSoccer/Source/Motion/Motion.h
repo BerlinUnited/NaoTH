@@ -85,7 +85,7 @@ BEGIN_DECLARE_MODULE(Motion)
 
   // PROVIDE is needed to update the speed and acceleration
   PROVIDE(MotorJointData) // TODO: check
-  REQUIRE(BDRNaoQiRequest)
+  PROVIDE(BDRNaoQiRequest) // to disable dcm writings by debug request
   PROVIDE(BDRNaoQiStatus)
 
   PROVIDE(OffsetJointData)
