@@ -225,7 +225,7 @@ public class BDRControl extends AbstractDialog {
     }//GEN-LAST:event_bt_stopActionPerformed
 
     private void bt_autonomoisActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bt_autonomoisActionPerformed
-        if(this.currentSender != null && this.bt_stop.isSelected()) {
+        if(this.currentSender != null) {
             BDRControlCommand.Builder cmd = BDRControlCommand.newBuilder();
             cmd.setBehaviorMode(BDRBehaviorMode.AUTONOMOUS_PLAY);
             //this.currentSender.send(cmd.build());
@@ -234,7 +234,7 @@ public class BDRControl extends AbstractDialog {
     }//GEN-LAST:event_bt_autonomoisActionPerformed
 
     private void bt_wartungActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bt_wartungActionPerformed
-        if(this.currentSender != null && this.bt_stop.isSelected()) {
+        if(this.currentSender != null) {
             BDRControlCommand.Builder cmd = BDRControlCommand.newBuilder();
             cmd.setBehaviorMode(BDRBehaviorMode.WARTUNG);
             //this.currentSender.send(cmd.build());
