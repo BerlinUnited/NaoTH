@@ -1,5 +1,14 @@
 #include "WhistleDetectorConfigSetter.h"
 
+WhistleDetectorConfigSetter::WhistleDetectorConfigSetter(){
+	getDebugParameterList().add(&params);
+}
+
+WhistleDetectorConfigSetter::~WhistleDetectorConfigSetter()
+{
+	getDebugParameterList().remove(&params);
+}
+
 void WhistleDetectorConfigSetter::execute()
 {
   if(params.whistleListFile != getWhistleControl().whistleListFile)

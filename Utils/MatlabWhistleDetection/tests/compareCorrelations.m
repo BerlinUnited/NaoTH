@@ -33,10 +33,9 @@ intermediate_result = mat_spectrum .* conj(mat_spectrum);
 mat_correlation_func = ifft(intermediate_result, length(raw_samples_norm)*2);
 
 % Version 2 - different normalization
-[acor,lag] = xcorr(raw_samples_norm);
-[value, index] = max(abs(acor));
-%lagDiff = lag(index);
-
+[autocorrelation, shift] = xcorr(raw_samples_norm);
+[max_value, peak_index] = max(abs(autocorrelation));
+t_lag = abs(shift(peak_index));
 %% Plot unnormalized Correlation Functions
 subplot(3,3,1)
 plot(cpp_correlation_func)
@@ -45,12 +44,12 @@ subplot(3,3,2)
 plot(mat_correlation_func)
 title('unnormalized mat Correlation')
 subplot(3,3,3)  
-plot(lag, acor)
+plot(shift, autocorrelation)
 title('mat Correlation via xcorr')
 %% Plot Normalized Correlation Functions
 mat_correlation_func_norm = mat_correlation_func / max(abs(mat_correlation_func));
 cpp_correlation_func_norm = cpp_correlation_func / max(abs(cpp_correlation_func));
-acor_norm = acor / max(abs(acor));
+acor_norm = autocorrelation / max(abs(autocorrelation));
 
 subplot(3,3,4)
 plot(cpp_correlation_func_norm)
@@ -59,7 +58,7 @@ subplot(3,3,5)
 plot(mat_correlation_func_norm)
 title('normalized mat Correlation')
 subplot(3,3,6)
-plot(lag, acor_norm)
+plot(shift, acor_norm)
 title('normalized mat Correlation via xcorr')
 
 %% Relationship between mat correlation function and cpp correlation

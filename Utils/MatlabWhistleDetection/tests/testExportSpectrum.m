@@ -5,7 +5,7 @@ addpath(genpath('../MatDatabase'))
 fileID = fopen ('andyDark_8kHz_1channels.dat', 'r');
     original_spectrum = fread(fileID, 'double', 'ieee-le');
     % remove the correlation value from the array
-    max_auto_corr = original_spectrum(end);
+    original_max_auto_corr = original_spectrum(end);
     original_spectrum = original_spectrum(1:end-1);
     % convert array of doubles to array of complex values
     original_spectrum = complex(original_spectrum(1:2:end),original_spectrum(2:2:end));
@@ -18,7 +18,7 @@ fileID = fopen ('saved_andyDark_8kHz_1channels.dat', 'w');
     % interleave the real and imaginary part for output
     output = interleave(real_part, imag_part);
     % append max_auto_corr
-    output = [output max_auto_corr];
+    output = [output original_max_auto_corr];
     fwrite(fileID, output, 'double', 'ieee-le');
 fclose(fileID);
 
@@ -26,7 +26,7 @@ fclose(fileID);
 fileID = fopen ('saved_andyDark_8kHz_1channels.dat', 'r');
     saved_spectrum = fread(fileID, 'double', 'ieee-le');
     % remove the correlation value from the array
-    saved_max_auto_corr = original_spectrum(end);
+    saved_max_auto_corr = saved_spectrum(end);
     saved_spectrum = saved_spectrum(1:end-1);
     % convert array of doubles to array of complex values
     saved_spectrum = complex(saved_spectrum(1:2:end),saved_spectrum(2:2:end));
