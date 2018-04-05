@@ -1,0 +1,23 @@
+syntax = "proto2";
+package naothmessages;
+option java_package= "de.naoth.rc.messages";
+
+//import "CommonTypes.proto";
+//import "Framework-Representations.proto";
+
+enum BDRBehaviorMode
+{
+  DO_NOTHING = 0;
+  AUTONOMOUS_PLAY = 1;
+  WARTUNG = 2;
+}
+
+message BDRControlCommand 
+{
+  optional BDRBehaviorMode behaviorMode = 1;
+}
+
+message BDRStatus
+{
+  optional BDRBehaviorMode currentBehaviorMode = 1;
+}

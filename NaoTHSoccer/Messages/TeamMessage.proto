@@ -4,6 +4,7 @@ option java_package= "de.naoth.rc.messages";
 
 import "CommonTypes.proto";
 import "Framework-Representations.proto";
+import "BDRMessages.proto";
 
 enum TeamColor
 {
@@ -52,6 +53,8 @@ message BUUserTeamMessage
   optional DoubleVector2 teamBall = 14;
   repeated Ntp ntpRequest = 15;
   optional string key = 100 [default="none"];
+  
+  optional BDRStatus bdrstatus = 20;
 }
 
 message TeamMessage
