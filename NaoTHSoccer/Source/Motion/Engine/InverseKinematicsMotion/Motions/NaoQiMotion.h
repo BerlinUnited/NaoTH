@@ -61,8 +61,7 @@ BEGIN_DECLARE_MODULE(NaoQiMotion)
   REQUIRE(MotionStatus)
   //PROVIDE(SensorJointData)
 
-  PROVIDE(BDRNaoQiStatus)// just for testing will be REQUIRE
-
+  REQUIRE(BDRNaoQiStatus)// just for testing will be REQUIRE
   PROVIDE(BDRNaoQiRequest)
 
   REQUIRE(InverseKinematicsMotionEngineService)
@@ -72,6 +71,7 @@ BEGIN_DECLARE_MODULE(NaoQiMotion)
 
   PROVIDE(MotionLock)
   PROVIDE(MotorJointData)
+  PROVIDE(SensorJointData)
 END_DECLARE_MODULE(NaoQiMotion)
 
 class NaoQiMotion : private NaoQiMotionBase, public IKMotion

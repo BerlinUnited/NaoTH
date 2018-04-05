@@ -45,9 +45,9 @@ void NaoQiMotion::execute()
 
   PLOT("NaoQiMotion:State",(int)state);
 
-  double test_status = 2; //none
-  MODIFY("NaoQiMotion:BDRNaoQiStatus", test_status);
-  getBDRNaoQiStatus().behavior = static_cast<BDRNaoQiStatus::BDRNaoQiBehavior>(test_status);
+  //double test_status = 2; //none
+  //MODIFY("NaoQiMotion:BDRNaoQiStatus", test_status);
+  //getBDRNaoQiStatus().behavior = static_cast<BDRNaoQiStatus::BDRNaoQiBehavior>(test_status);
 
   switch(state)
   {
@@ -84,6 +84,11 @@ void NaoQiMotion::execute()
     if(getMotionRequest().id != getId()){
         state = stoppingNaoQiMotion;
     }
+
+    for (int i = 0; i < JointData::numOfJoint; i++)
+    {
+        getMotorJointData().position[i] = getSensorJointData().position[i];
+    }
   }
   break;
 
@@ -94,7 +99,7 @@ void NaoQiMotion::execute()
       lastState = state;
     }
 
-    if(getBDRNaoQiRequest().behavior == getBDRNaoQiStatus().behavior){
+    if(BDRNaoQiRequest::none == getBDRNaoQiStatus().behavior){
         state = goToStand;
     }
   }
@@ -102,15 +107,23 @@ void NaoQiMotion::execute()
 
   case goToStand:
   {
-    if(lastState != state) {
-      calcStandPose();
-      lastState = state;
-      getBDRNaoQiRequest().disable_DCM_writings = false;
-     }
+    //if(lastState != state) {
+    //  calcStandPose();
+    //  lastState = state;
+    //  getBDRNaoQiRequest().disable_DCM_writings = false;
+    // }
 
-    if(interpolateToPose()){
-        setCurrentState(motion::stopped);
+    //if(interpolateToPose()){
+    //    setCurrentState(motion::stopped);
+    //}
+    
+    getBDRNaoQiRequest().disable_DCM_writings = false;
+    for (int i = 0; i < JointData::numOfJoint; i++)
+    {
+        getMotorJointData().position[i] = getSensorJointData().position[i];
     }
+
+    setCurrentState(motion::stopped);
   }
   break;
   };
@@ -127,7 +140,7 @@ void NaoQiMotion::calcStandPose()
   comHeight = Math::clamp(comHeight, 160.0, 270.0); // valid range
       
   // use the sensors to estimate the current pose
-  startPose  = getEngine().getCurrentCoMFeetPose();//getEngine().getCoMFeetPoseBasedOnModel();//
+  startPose  = getEngine().getCoMFeetPoseBasedOnSensor();
   targetPose = getStandPose(comHeight, getEngine().getParameters().stand.hipOffsetX, getEngine().getParameters().stand.bodyPitchOffset, standardStand);
 
   targetPose.localInCoM();
