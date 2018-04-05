@@ -14,8 +14,11 @@ names = string(fieldnames(reference_database));
 for i=1:length(names)
     category = reference_database.(names(i));
     
-    % iterate over every reference whistle in this category
+    % create folders for the output
+    % TODO putput should be moved to the data folder
     [status, msg, msgID] = mkdir(names(i));
+    
+    % iterate over every reference whistle in this category
     for j=1:length(category)
         %TODO save spectrum in correct subfolders
         output_name = strcat(category(j).name, '.dat');
