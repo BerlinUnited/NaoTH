@@ -1,0 +1,27 @@
+option bdr_goto_charging_station
+{
+  initial state wait {
+      decision {
+          if(state_time < 2000)
+            stay;
+          else
+            goto approach;
+      }
+
+      action {
+          head.control_mode = look_around;
+          motion.type = stand;
+      }
+  }
+
+  state approach {
+      decision {
+        stay;
+      }
+
+      action {
+          head.control_mode = look_around;
+          go_to_point(x = 0, y = 500, rot = -90);
+      }
+  }
+}

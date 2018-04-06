@@ -57,8 +57,9 @@ option bdr_remote_play
     }
     action
     {
-        head.control_mode = look_around;
-        go_to_point(x = -500, y = 0, rot = 0);
+        //head.control_mode = look_around;
+        //go_to_point(x = -500, y = 0, rot = 0);
+        bdr_goto_charging_station();
     }
   }
 
