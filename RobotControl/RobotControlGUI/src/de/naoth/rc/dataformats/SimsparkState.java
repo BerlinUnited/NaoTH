@@ -1,15 +1,27 @@
 
 package de.naoth.rc.dataformats;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- *
+ * Representation of the simspark state.
+ * 
  * @author Philipp Strobel <philippstrobel@posteo.de>
  */
-public class SimsparkState {
-    private final ConcurrentHashMap<String, Object> data = new ConcurrentHashMap<>();
+public class SimsparkState
+{
+    /** Container holding the state of the connected simspark instance */
+    public final ConcurrentHashMap<String, Object> data = new ConcurrentHashMap<>();
+    
+    /** Indicator, whether the state was already updated or not. */
+    public boolean hasBeenUpdated = false;
+    
+    /**
+     * Constructor.
+     * Initializes this simspark state with known fields.
+     */
     public SimsparkState() {
         data.put("time", "");
         data.put("play_mode", "");
@@ -35,6 +47,12 @@ public class SimsparkState {
         data.put("messages", "");
     }
     
+    /**
+     * Updates a field of this simspark state representation with the given value.
+     * 
+     * @param key the field which should be updated/set
+     * @param value the value of the updated field
+     */
     public void set(String key, Object value) {
         switch(key) {
             case "FieldLength":
@@ -63,11 +81,18 @@ public class SimsparkState {
                 break;
             case "play_modes":
             case "messages":
-                data.replace(key, (value instanceof List ? value:null));
+                data.replace(key, (value instanceof List ? value:Collections.emptyList()));
                 break;
         }
+        hasBeenUpdated = true;
     }
 
+    /**
+     * Returns the value of this state field.
+     * 
+     * @param key the state field
+     * @return the value of the state field
+     */
     public Object get(Object key) {
         if(key == "play_mode") {
             return getPlayMode();
@@ -75,14 +100,26 @@ public class SimsparkState {
         return data.get(key);
     }
 
+    /**
+     * Returns the currently active play mode as string.
+     * 
+     * @return the active play mode
+     */
     public String getPlayMode() {
-        Integer playmode = (Integer) data.get("play_mode");
-        List<String> playmodes = (List<String>) data.get("play_modes");
-        if(playmode != null && playmodes != null){
-            if(playmodes.size() > playmode) {
-                return playmodes.get(playmode);
+        Object playmode = data.get("play_mode");
+        Object playmodes = data.get("play_modes");
+        // safety checks
+        if(playmode != null && playmode instanceof Integer && 
+           playmodes != null && playmodes instanceof List) {
+            List<String> playmodesList = (List<String>)playmodes;
+            Integer playmodeNum = (Integer) playmode;
+            // return "known" playmode
+            if(playmodesList.size() > playmodeNum) {
+                return playmodesList.get(playmodeNum);
             }
+            // return "unkown" num
+            return playmodeNum.toString();
         }
-        return playmode.toString();
+        return "unknown";
     }
 }

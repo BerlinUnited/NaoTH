@@ -79,6 +79,12 @@ abstract class Simspark extends Thread {
         return true;
 	}
 
+    /**
+     * Converts an integer to a byte array.
+     * 
+     * @param i the integer, which should be converted
+     * @return the converted integer as byte array
+     */
     private byte[] intToBytes(int i)
 	{
 		byte[] buf = new byte[4];
@@ -138,5 +144,29 @@ abstract class Simspark extends Thread {
             }
         }
         return !disconnect;
+    }
+    
+    /**
+     * Returns the host ip/name this instance is connected to simspark.
+     * 
+     * @return the host ip/name or null if not connected
+     */
+    public String getHost() {
+        if(socket != null && checkConnection()) {
+            return ((InetSocketAddress) socket.getRemoteSocketAddress()).getHostName();
+        }
+        return null;
+    }
+    
+    /**
+     * Returns the port this instance is connected to simspark.
+     * 
+     * @return the connected port, or zero if not connected
+     */
+    public int getPort() {
+        if(socket != null && checkConnection()) {
+            return ((InetSocketAddress) socket.getRemoteSocketAddress()).getPort();
+        }
+        return 0;
     }
 } // end class Simspark
