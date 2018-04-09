@@ -144,6 +144,8 @@ include "Options/ContractWork/BDR/bdr_remote_agent.xabsl";
 include "Options/ContractWork/BDR/bdr_remote_play.xabsl";
 include "Options/ContractWork/BDR/bdr_remote_autonomous.xabsl";
 include "Options/ContractWork/BDR/bdr_goto_charging_station.xabsl";
+include "Options/ContractWork/BDR/bdr_goto_exit.xabsl";
+include "Options/ContractWork/BDR/bdr_goto_point.xabsl";
 
 /* Test section */
 // Test agents Head Control
