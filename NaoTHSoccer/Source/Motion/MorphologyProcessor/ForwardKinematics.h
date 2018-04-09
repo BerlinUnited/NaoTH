@@ -26,13 +26,13 @@ public:
 
   /** Update the whole kinematic chain based on the provided data. */
   static void updateKinematicChainAll(
-    const Vector2<double>& theBodyRotation,
+    const RotationMatrix& theBodyRotation,
     const Vector3<double>& theBodyAcceleration,
     const double deltaTime,
     KinematicChain& theKinematicChain,
     Vector3d* theFSRPos);
 
-  /** 
+  /**
   * update the position, velocity and acceleration of the links according to joint angles data
   */
   static void forwardAllKinematics(Link* theLink);
@@ -60,7 +60,7 @@ public:
   */
   static void updateChest(
           KinematicChain& kinematicChain,
-          const Vector2d& theBodyRotation,
+          const RotationMatrix& theBodyRotation,
           const Vector3d& theBodyAcceleration,
           const double deltaTime);
 
