@@ -64,11 +64,14 @@ Motion::Motion()
   theMotionEngine = registerModule<MotionEngine>("MotionEngine", true);
 
   getDebugParameterList().add(&parameter);
+
+  getWalk2018Parameters().init(getDebugParameterList());
 }
 
 Motion::~Motion()
 {
   getDebugParameterList().remove(&parameter);
+  getWalk2018Parameters().remove(getDebugParameterList());
 }
 
 void Motion::init(naoth::ProcessInterface& platformInterface, const naoth::PlatformBase& platform)

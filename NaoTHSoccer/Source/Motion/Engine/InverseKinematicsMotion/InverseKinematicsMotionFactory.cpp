@@ -11,6 +11,7 @@
 #include "Motions/StandMotion.h"
 #include "Motions/Dance.h"
 #include "Motions/Walk.h"
+#include "Motions/Walk2018/Walk2018.h"
 //#include "Motions/ProtectFalling.h"
 //#include "Motions/IKDynamicKickMotion.h"
 
@@ -40,7 +41,12 @@ Module* InverseKinematicsMotionFactory::createMotion(const MotionRequest& motion
 
   REGISTER_MOTION(motion::stand, StandMotion);
   REGISTER_MOTION(motion::dance, DanceMotion);
-  REGISTER_MOTION(motion::walk, Walk);
+  if(getInverseKinematicsMotionEngineService().getEngine().getParameters().useWalk2018){
+      REGISTER_MOTION(motion::walk, Walk2018);
+  } else {
+      REGISTER_MOTION(motion::walk, Walk);
+  }
+  //REGISTER_MOTION(motion::walk2018, Walk2018);
   //REGISTER_MOTION(motion::protect_falling, ProtectFalling);
   //REGISTER_MOTION(motion::kick, IKDynamicKickMotion);
 
