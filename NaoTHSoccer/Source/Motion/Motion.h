@@ -191,6 +191,23 @@ private:
 private:
   RingBuffer<double,100> currentsRingBuffer[naoth::JointData::numOfJoint];
   RingBuffer<double,4> motorJointDataBuffer[naoth::JointData::numOfJoint];
+
+private:
+  // NOTE: copy from Debug.h
+  // TODO: generalize attaching the logger
+  void registerLogableRepresentationList()
+  {
+    const BlackBoard& blackBoard = BlackBoardInterface::getBlackBoard();
+    BlackBoard::Registry::const_iterator iter;
+
+    for(iter = blackBoard.getRegistry().begin(); iter != blackBoard.getRegistry().end(); ++iter)
+    {
+      const Representation& theRepresentation = iter->second->getRepresentation();
+      if(theRepresentation.serializable()) {
+        motionLogger.addRepresentation(&theRepresentation, iter->first);
+      }
+    }
+  }
 };
 
 

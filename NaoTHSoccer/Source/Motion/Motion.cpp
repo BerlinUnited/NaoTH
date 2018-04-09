@@ -27,19 +27,8 @@ Motion::Motion()
     theLogProvider(NULL),
     motionLogger("MotionLog")
 {
-
   REGISTER_DEBUG_COMMAND(motionLogger.getCommand(), motionLogger.getDescription(), &motionLogger);
-
-  #define ADD_LOGGER(R) motionLogger.addRepresentation(&(get##R()), #R);
-
-  ADD_LOGGER(FrameInfo);
-  ADD_LOGGER(SensorJointData);
-  ADD_LOGGER(MotorJointData);
-  ADD_LOGGER(InertialSensorData);
-  ADD_LOGGER(AccelerometerData);
-  ADD_LOGGER(GyrometerData);
-  ADD_LOGGER(FSRData);
-  ADD_LOGGER(MotionRequest);
+  registerLogableRepresentationList();
 
   DEBUG_REQUEST_REGISTER("Motion:KinematicChain:orientation_test", "", false);
 
