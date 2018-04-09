@@ -128,6 +128,11 @@ void MotionSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerBooleanInputSymbol("executed_motion.step_control.left_movable", &getMotionStatusLeftMovable);
   engine.registerBooleanInputSymbol("executed_motion.step_control.right_movable", &getMotionStatusRightMovable);
 
+  engine.registerDecimalInputSymbol("executed_motion.planed.target.x", &getMotionStatus().plannedMotion.hip.translation.x);
+  engine.registerDecimalInputSymbol("executed_motion.planed.target.y", &getMotionStatus().plannedMotion.hip.translation.y);
+  engine.registerDecimalInputSymbol("executed_motion.planed.target.rotation", &getMotionStatus().plannedMotion.hip.rotation);
+
+
   // universal enum type for direction
   engine.registerEnumElement("direction", "direction.right", -1);
   engine.registerEnumElement("direction", "direction.left", 1);
