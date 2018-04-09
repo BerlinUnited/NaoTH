@@ -11,6 +11,8 @@ namespace naoth
   {
   public:
     int onOffSwitch;
+    std::string whistleListFile;
+    std::string activeChannels;
 
     WhistleControl();
     virtual void print(std::ostream& stream) const;

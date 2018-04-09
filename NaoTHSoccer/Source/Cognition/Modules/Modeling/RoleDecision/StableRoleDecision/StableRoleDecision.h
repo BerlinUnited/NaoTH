@@ -40,7 +40,7 @@ BEGIN_DECLARE_MODULE(StableRoleDecision)
   REQUIRE(TeamMessage)
   REQUIRE(TeamMessageStatisticsModel)
 
-  PROVIDE(TeamMessageData)
+  REQUIRE(TeamMessageData)
 
   PROVIDE(RoleDecisionModel)
 END_DECLARE_MODULE(StableRoleDecision)
