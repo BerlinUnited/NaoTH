@@ -1,0 +1,6 @@
+data/*
+
+# ignore the whistle data 
+*.dat
+*.raw
+*.mat
