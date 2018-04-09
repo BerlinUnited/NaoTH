@@ -1,8 +1,11 @@
 import math
 import numpy as np
-import action as a
-import field_info as field
-import potential_field as pf
+from matplotlib import pyplot as plt
+from matplotlib.patches import Circle
+from tools import action as a
+from tools import tools
+from tools import field_info as field
+from tools import potential_field as pf
 from naoth import math2d as m2d
 
 
@@ -32,7 +35,7 @@ def simulate_consequences(action, categorized_ball_positions, state, num_particl
 
     # current ball position
     # FIXME state.pose.rotation can become inf
-    #print(state.pose.translation.x, state.pose.translation.y, state.pose.rotation)
+    # print(state.pose.translation.x, state.pose.translation.y, state.pose.rotation)
     global_ball_start_position = state.pose * state.ball_position
 
     # virtual ultrasound obstacle line
@@ -73,6 +76,7 @@ def simulate_consequences(action, categorized_ball_positions, state, num_particl
             # Todo it's wrong: Now if obstacle is near, then obstacle is in front of the robot
             if dist < 400 and shootline.intersect(obstacle_line):
                 obstacle_collision = True
+        """
 
         if opp_goal_box.inside(global_ball_end_position):
             category = "OPPGOAL"

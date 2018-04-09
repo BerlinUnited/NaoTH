@@ -36,7 +36,7 @@ class Vector2:
         if isinstance(other, Vector2):
             # interpret multiplication as other^t * self (scalar product of the vectors, where ^t means transpose)
             return self.x*other.x + self.y*other.y
-        elif isinstance(other, (int, float, long)):
+        elif isinstance(other, (int, float)):
             return Vector2(self.x*other, self.y*other)
         else:
             return NotImplemented
@@ -54,6 +54,9 @@ class Vector2:
     # https://docs.python.org/3/library/operator.html
     def __div__(self, fraction):
         return Vector2(self.x/fraction, self.y/fraction)
+
+    def __truediv__(self, fraction):
+      return Vector2(self.x / fraction, self.y / fraction)
 
     def __str__(self):
         return str(self.x) + " " + str(self.y)

@@ -67,12 +67,18 @@ def main():
 
     action_list = [no_action, kick_short, sidekick_left, sidekick_right]
 
+    # Test foe bouncing
+    kick_short = a.Action("kick_short", 1180, 0, 0, 0)
+    action_list = [kick_short]
+
+    num_particles = 1
+
     while True:
         actions_consequences = []
         # Simulate Consequences
         for action in action_list:
             single_consequence = a.ActionResults([])
-            actions_consequences.append(Sim.simulate_consequences(action, single_consequence, state, 30))
+            actions_consequences.append(Sim.simulate_consequences(action, single_consequence, state, num_particles))
 
         # actions_consequences is now a list of ActionResults
 
