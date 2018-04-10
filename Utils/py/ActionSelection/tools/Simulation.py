@@ -76,7 +76,6 @@ def simulate_consequences(action, categorized_ball_positions, state, num_particl
             # Todo it's wrong: Now if obstacle is near, then obstacle is in front of the robot
             if dist < 400 and shootline.intersect(obstacle_line):
                 obstacle_collision = True
-        """
 
         if opp_goal_box.inside(global_ball_end_position):
             category = "OPPGOAL"
