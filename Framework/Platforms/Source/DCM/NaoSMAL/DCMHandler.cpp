@@ -37,7 +37,6 @@ void DCMHandler::init(boost::shared_ptr<ALBroker> pB)
   disable_dcm_writings = false;
   al_memory->insertData("BDRNaoQiStatus",0);
   al_memory->insertData("BDRNaoQiRequest",0);
-  al_memory->declareEvent("BDRNaoQiRequestChanged");
 
   //Generate all strings for interaction
 
@@ -752,23 +751,11 @@ void DCMHandler::setUltraSoundSend(const UltraSoundSendData& data, int dcmTime)
   }
 }//end setUltraSoundSend
 
-// TODO: remove std::couts
 void DCMHandler::setBDRNaoQiRequest(const BDRNaoQiRequest& data, int /*dcmTime*/){
     al_memory->insertData("BDRNaoQiRequest", data.behavior);
-
-    static int old = data.behavior;
-
-    if (old != data.behavior){
-        al_memory->raiseEvent("BDRNaoQiRequestChanged", data.behavior);
-        std::cout << "Bang" << std::endl;
-    }
-    std::cout << old << "," << data.behavior << std::endl;
-
-    old = data.behavior;
-
     disable_dcm_writings = data.disable_DCM_writings;
 }
 
 void DCMHandler::getBDRNaoQiStatus(BDRNaoQiStatus *dest){
-    dest->behavior = static_cast<BDRNaoQiRequest::BDRNaoQiBehavior>(getFromALMemory("BDRNaoQiStatus").getUnionValue().asFloat+0.5);
+    dest->behavior = static_cast<BDRNaoQiRequest::BDRNaoQiBehavior>(getFromALMemory("BDRNaoQiStatus").getUnionValue().asInt);
 }
