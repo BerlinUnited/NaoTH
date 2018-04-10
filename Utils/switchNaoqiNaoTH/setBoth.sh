@@ -161,6 +161,17 @@ cat > /home/nao/naoqi/preferences/autoload.ini << EOL
 #the/full/path/to/your/program            # load program
 EOL
 
+# enable deactivation possibility of fall manager
+cat > /home/nao/.config/naoqi/ALMotion.xml << EOL
+<?xml version="1.0" encoding="UTF-8" ?>
+<ModulePreference name="aldebaran-robotics.com@ALMotion" xmlns="http://www.aldebaran-robotics.com/ns/ALPreference" schemaLocation="ModulePreference.xsd">
+    <Preference name="ENABLE_FOOT_CONTACT_PROTECTION" description="If true the walk task will be killed or prevented from launching if no foot contact(footContact)" value="true" type="bool" />
+    <Preference name="ENABLE_STIFFNESS_PROTECTION" description="If true the walk task will be killed or prevented from launching if one joint of the legs has a Stiffness equal or less than 0.6" value="true" type="bool" />
+    <Preference name="DIAGNOSTIC_IS_OK" description="If true the diagnostic of the robot is ok or have never been called" value="true" type="bool" />
+    <Preference name="ENABLE_DEACTIVATION_OF_FALL_MANAGER" description="If true the deactivation of Fall Manager and other critical safety reflexes is allowed" value="true" type="bool" />
+</ModulePreference>
+EOL
+
 sleep 2
 
 # restart the robot
