@@ -122,7 +122,7 @@ class MyClass(GeneratedClass):
                             <Output name="onError" type="3" type_size="1" nature="1" inner="0" tooltip="Output when error is raised by the behavior. Contains the error message." id="5" />
                             <Parameter name="key" inherits_from_parent="0" content_type="3" value="BDRNaoQiStatus" default_value="MyApplication/MyData" custom_choice="0" tooltip="" id="6" />
                         </Box>
-                        <Box name="Number Edit" id="8" localization="8" tooltip="Send the number you entered when the input is stimulated." plugin="numberedit_plugin" x="1028" y="26">
+                        <Box name="Number Edit" id="8" localization="8" tooltip="Send the number you entered when the input is stimulated." plugin="numberedit_plugin" x="1019" y="82">
                             <bitmap>media/images/box/interaction/vocabulary.png</bitmap>
                             <script language="4">
                                 <content>
@@ -142,7 +142,7 @@ class MyClass(GeneratedClass):
                             <Input name="onStart" type="1" type_size="1" nature="1" inner="0" tooltip="To send the number on the output." id="2" />
                             <Output name="onStopped" type="2" type_size="1" nature="2" inner="0" tooltip="The number you entered." id="3" />
                         </Box>
-                        <Box name="set BDRNaoQiStatus (1)" id="13" localization="8" tooltip="set BDRNaoQiStatus" x="1216" y="11">
+                        <Box name="set BDRNaoQiStatus (1)" id="13" localization="8" tooltip="set BDRNaoQiStatus" x="1207" y="67">
                             <bitmap>media/images/box/sensors/STM.png</bitmap>
                             <script language="4">
                                 <content>
@@ -193,7 +193,7 @@ class MyClass(GeneratedClass):
                             <Input name="onStart" type="1" type_size="1" nature="1" inner="0" tooltip="To send the number on the output." id="2" />
                             <Output name="onStopped" type="2" type_size="1" nature="2" inner="0" tooltip="The number you entered." id="3" />
                         </Box>
-                        <Box name="Set Stiffness" id="3" localization="8" tooltip="Stiffen the motors selected in parameters." x="1411" y="8">
+                        <Box name="Set Stiffness" id="3" localization="8" tooltip="Stiffen the motors selected in parameters." x="1402" y="64">
                             <bitmap>media/images/box/movement/stiffness.png</bitmap>
                             <script language="4">
                                 <content>
@@ -211,7 +211,6 @@ class MyClass(GeneratedClass):
         self.bIsRunning = False
 
     def setStiffness(self, stiffness):
-        self.motion.post.setSmartStiffnessEnabled(False)
         self.bIsRunning = True
         duration = self.getParameter("Duration (s)")
         if(self.getParameter("Head")):
@@ -228,9 +227,10 @@ class MyClass(GeneratedClass):
         self.bIsRunning = False
 
     def onInput_onSet(self):
-        if( self.bIsRunning ):
-            return
-        self.setStiffness(self.getParameter("Motors stiffness (%)")/100.)
+        self.motion.post.setSmartStiffnessEnabled(False)
+        #if( self.bIsRunning ):
+        #    return
+        #self.setStiffness(self.getParameter("Motors stiffness (%)")/100.)
         self.onReady() #~ activate output of the box]]>
 </content>
                             </script>

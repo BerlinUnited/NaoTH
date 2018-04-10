@@ -25,7 +25,9 @@ NaoQiMotion::NaoQiMotion()
   totalTime(0),
   time(0),
   height(-1000),
-  standardStand(true)
+  standardStand(true),
+  stiff_time(0),
+  stiff_totalTime(50)
 {
   // create 
   std::vector<double> x = {0.0, 0.5, 1.0};
@@ -102,28 +104,34 @@ void NaoQiMotion::execute()
     if(BDRNaoQiRequest::none == getBDRNaoQiStatus().behavior){
         state = goToStand;
     }
+
+    for (int i = 0; i < JointData::numOfJoint; i++)
+    {
+        getMotorJointData().position[i] = getSensorJointData().position[i];
+    }
   }
   break;
 
   case goToStand:
   {
-    //if(lastState != state) {
-    //  calcStandPose();
-    //  lastState = state;
-    //  getBDRNaoQiRequest().disable_DCM_writings = false;
-    // }
+    if(lastState != state) {
+      stiff_time = 0;
+      calcStandPose();
+      lastState = state;
+      getBDRNaoQiRequest().disable_DCM_writings = false;
+     }
 
-    //if(interpolateToPose()){
-    //    setCurrentState(motion::stopped);
-    //}
-    
-    getBDRNaoQiRequest().disable_DCM_writings = false;
-    for (int i = 0; i < JointData::numOfJoint; i++)
-    {
-        getMotorJointData().position[i] = getSensorJointData().position[i];
+    if(interpolateToPose()){
+        setCurrentState(motion::stopped);
     }
 
-    setCurrentState(motion::stopped);
+    if(stiff_time < stiff_totalTime){
+        // interpolate form current stiffness into target stiffness
+        for (int i = 0; i < JointData::numOfJoint; i++)
+        {
+            getMotorJointData().stiffness[i] = (1-stiff_time/stiff_totalTime) * getSensorJointData().stiffness[i] + (stiff_time/stiff_totalTime) * getMotorJointData().stiffness[i];
+        }
+    }
   }
   break;
   };

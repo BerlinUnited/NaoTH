@@ -108,7 +108,10 @@ private:
   double time;
   double height;
   bool standardStand;
-  
+
+  double stiff_time;
+  double stiff_totalTime;
+
   InverseKinematic::CoMFeetPose targetPose;
   InverseKinematic::CoMFeetPose startPose;
 };
