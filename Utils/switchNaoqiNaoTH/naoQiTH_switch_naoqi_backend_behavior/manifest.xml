@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<package uuid="naoqith_switch_naoqi_backend_behavior-3ab43e">
+ <names>
+  <name lang="en_US">naoQiTH_switch_naoqi_backend_behavior</name>
+ </names>
+ <supportedLanguages>
+  <language>en_US</language>
+ </supportedLanguages>
+ <descriptionLanguages>
+  <language>en_US</language>
+ </descriptionLanguages>
+ <contents>
+  <behaviorContent path="behavior_1">
+   <nature>interactive</nature>
+   <permissions/>
+  </behaviorContent>
+ </contents>
+</package>
