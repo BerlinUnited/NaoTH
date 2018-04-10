@@ -14,8 +14,8 @@
         <Timeline enable="0">
             <BehaviorLayer name="behavior_layer1">
                 <BehaviorKeyframe name="keyframe1" index="1">
-                    <Diagram scale="59.4604">
-                        <Box name="get BDRNaoQiRequest" id="4" localization="8" tooltip="get BDRNaoQiRequest" x="538" y="130">
+                    <Diagram>
+                        <Box name="get BDRNaoQiRequest" id="4" localization="8" tooltip="get BDRNaoQiRequest" x="590" y="81">
                             <bitmap>media/images/box/sensors/STM.png</bitmap>
                             <script language="4">
                                 <content>
@@ -46,7 +46,7 @@
                             <Output name="onError" type="3" type_size="1" nature="1" inner="0" tooltip="Output when error is raised by the behavior. Contains the error message." id="5" />
                             <Parameter name="key" inherits_from_parent="0" content_type="3" value="BDRNaoQiRequest" default_value="MyApplication/MyData" custom_choice="0" tooltip="" id="6" />
                         </Box>
-                        <Box name="Switch Case" id="6" localization="8" tooltip="Test input value and stimulate the output matching to this value. If there is no&#x0A;matching output, the default output (onDefault) is stimulated.&#x0A;&#x0A;You can edit a case by left double-clicking on the line. You can add a&#x0A;case by right clicking on a line and selecting &apos;Insert a row&apos;. You can delete&#x0A;a case by right clicking on a line and selecting &apos;Remove a row&apos;." plugin="dispatcher_plugin" x="682" y="118">
+                        <Box name="Switch Case" id="6" localization="8" tooltip="Test input value and stimulate the output matching to this value. If there is no&#x0A;matching output, the default output (onDefault) is stimulated.&#x0A;&#x0A;You can edit a case by left double-clicking on the line. You can add a&#x0A;case by right clicking on a line and selecting &apos;Insert a row&apos;. You can delete&#x0A;a case by right clicking on a line and selecting &apos;Remove a row&apos;." plugin="dispatcher_plugin" x="734" y="69">
                             <bitmap>media/images/box/interaction/choice.png</bitmap>
                             <script language="4">
                                 <content>
@@ -91,7 +91,7 @@ class MyClass(GeneratedClass):
                             <Output name="output_1" type="0" type_size="1" nature="2" inner="0" tooltip="This IO has been automatically added by box. Read box tooltip for more information." id="4" />
                             <Output name="output_2" type="0" type_size="1" nature="2" inner="0" tooltip="This IO has been automatically added by box. Read box tooltip for more information." id="5" />
                         </Box>
-                        <Box name="set BDRNaoQiStatus (3)" id="12" localization="8" tooltip="set BDRNaoQiStatus" x="1164" y="496">
+                        <Box name="set BDRNaoQiStatus" id="12" localization="8" tooltip="set BDRNaoQiStatus" x="1207" y="182">
                             <bitmap>media/images/box/sensors/STM.png</bitmap>
                             <script language="4">
                                 <content>
@@ -122,7 +122,7 @@ class MyClass(GeneratedClass):
                             <Output name="onError" type="3" type_size="1" nature="1" inner="0" tooltip="Output when error is raised by the behavior. Contains the error message." id="5" />
                             <Parameter name="key" inherits_from_parent="0" content_type="3" value="BDRNaoQiStatus" default_value="MyApplication/MyData" custom_choice="0" tooltip="" id="6" />
                         </Box>
-                        <Box name="Number Edit (1)" id="8" localization="8" tooltip="Send the number you entered when the input is stimulated." plugin="numberedit_plugin" x="1155" y="90">
+                        <Box name="Number Edit" id="8" localization="8" tooltip="Send the number you entered when the input is stimulated." plugin="numberedit_plugin" x="1028" y="26">
                             <bitmap>media/images/box/interaction/vocabulary.png</bitmap>
                             <script language="4">
                                 <content>
@@ -142,7 +142,7 @@ class MyClass(GeneratedClass):
                             <Input name="onStart" type="1" type_size="1" nature="1" inner="0" tooltip="To send the number on the output." id="2" />
                             <Output name="onStopped" type="2" type_size="1" nature="2" inner="0" tooltip="The number you entered." id="3" />
                         </Box>
-                        <Box name="set BDRNaoQiStatus (1)" id="13" localization="8" tooltip="set BDRNaoQiStatus" x="1367" y="80">
+                        <Box name="set BDRNaoQiStatus (1)" id="13" localization="8" tooltip="set BDRNaoQiStatus" x="1216" y="11">
                             <bitmap>media/images/box/sensors/STM.png</bitmap>
                             <script language="4">
                                 <content>
@@ -173,7 +173,7 @@ class MyClass(GeneratedClass):
                             <Output name="onError" type="3" type_size="1" nature="1" inner="0" tooltip="Output when error is raised by the behavior. Contains the error message." id="5" />
                             <Parameter name="key" inherits_from_parent="0" content_type="3" value="BDRNaoQiStatus" default_value="MyApplication/MyData" custom_choice="0" tooltip="" id="6" />
                         </Box>
-                        <Box name="Number Edit (2)" id="14" localization="8" tooltip="Send the number you entered when the input is stimulated." plugin="numberedit_plugin" x="980" y="512">
+                        <Box name="Number Edit (1)" id="14" localization="8" tooltip="Send the number you entered when the input is stimulated." plugin="numberedit_plugin" x="1023" y="198">
                             <bitmap>media/images/box/interaction/vocabulary.png</bitmap>
                             <script language="4">
                                 <content>
@@ -193,157 +193,7 @@ class MyClass(GeneratedClass):
                             <Input name="onStart" type="1" type_size="1" nature="1" inner="0" tooltip="To send the number on the output." id="2" />
                             <Output name="onStopped" type="2" type_size="1" nature="2" inner="0" tooltip="The number you entered." id="3" />
                         </Box>
-                        <Box name="Eye LEDs (1)" id="2" localization="8" tooltip="Set the LED color of the eyes. Note that you must open the box to enter the color." x="1365" y="508">
-                            <bitmap>media/images/box/interaction/LED.png</bitmap>
-                            <script language="4">
-                                <content>
-                                    <![CDATA[]]>
-</content>
-                            </script>
-                            <Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" />
-                            <Input name="onStart" type="1" type_size="1" nature="2" inner="0" tooltip="Box behavior starts when a signal is received on this input." id="2" />
-                            <Output name="onDone" type="1" type_size="1" nature="1" inner="0" tooltip="Signal sent when box behavior is finished." id="3" />
-                            <Parameter name="Side" inherits_from_parent="0" content_type="3" value="Both" default_value="Both" custom_choice="0" tooltip="Choose the eye where the LED light is set." id="4">
-                                <Choice value="Both" />
-                                <Choice value="Left" />
-                                <Choice value="Right" />
-                            </Parameter>
-                            <Parameter name="Duration (s)" inherits_from_parent="0" content_type="2" value="0.1" default_value="0.1" min="0" max="5" tooltip="Transition&apos;s duration in seconds." id="5" />
-                            <Timeline enable="0">
-                                <BehaviorLayer name="behavior_layer1">
-                                    <BehaviorKeyframe name="keyframe1" index="1">
-                                        <Diagram>
-                                            <Box name="Eyes LEDs" id="15" localization="8" tooltip="Set the color of LEDs of robot&apos;s eyes." x="281" y="41">
-                                                <bitmap>media/images/box/interaction/LED.png</bitmap>
-                                                <script language="4">
-                                                    <content>
-                                                        <![CDATA[class MyClass(GeneratedClass):
-    def __init__(self):
-        GeneratedClass.__init__(self, False)
-
-    def onLoad(self):
-        self.ids = []
-        self.leds = ALProxy("ALLeds")
-
-    def onUnload(self):
-        #~ puts code for box cleanup here
-        pass
-
-    def onInput_color(self, p):
-        if( self.getParameter("Side") == "Left" ):
-            sGroup = "LeftFaceLeds"
-        elif( self.getParameter("Side") == "Right" ):
-            sGroup = "RightFaceLeds"
-        else:
-            sGroup = "FaceLeds"
-        id = self.leds.post.fadeRGB(sGroup, 256*256*p[0] + 256*p[1] + p[2], self.getParameter("Duration (s)"))
-        self.ids.append(id)
-        self.leds.wait(id, 0)
-        self.ids.remove(id)
-        if( self.ids == [] ):
-            self.onDone() # activate output of the box]]>
-</content>
-                                                </script>
-                                                <Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" />
-                                                <Input name="color" type="2" type_size="3" nature="2" inner="0" tooltip="Color of robot&apos;s eyes." id="2" />
-                                                <Output name="onDone" type="1" type_size="1" nature="1" inner="0" tooltip="Signal sent when box behavior is finished." id="3" />
-                                                <Parameter name="Side" inherits_from_parent="1" content_type="3" value="Both" default_value="Both" custom_choice="0" tooltip="Choose the eye where the LED light is set." id="4">
-                                                    <Choice value="Both" />
-                                                    <Choice value="Left" />
-                                                    <Choice value="Right" />
-                                                </Parameter>
-                                                <Parameter name="Duration (s)" inherits_from_parent="1" content_type="2" value="0.1" default_value="0.1" min="0" max="5" tooltip="Transition&apos;s duration in seconds." id="5" />
-                                            </Box>
-                                            <Box name="Color Edit" id="16" localization="8" tooltip="Transmit a table of number [R,G,B] correponsding to the selected color." plugin="coloredit_plugin" x="105" y="61">
-                                                <bitmap>media/images/box/interaction/vocabulary.png</bitmap>
-                                                <script language="4">
-                                                    <content>
-                                                        <![CDATA[class MyClass(GeneratedClass):
-	def __init__(self):
-		GeneratedClass.__init__(self)
-
-	def onInput_onStart(self):
-		self.onStopped([0, 0, 255])]]>
-</content>
-                                                </script>
-                                                <pluginContent>
-                                                    <color>#0000ff</color>
-                                                </pluginContent>
-                                                <Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" />
-                                                <Input name="onStart" type="1" type_size="1" nature="2" inner="0" tooltip="To send the color on the output." id="2" />
-                                                <Output name="onStopped" type="2" type_size="3" nature="1" inner="0" tooltip="[R,G,B] with R, G and B between 0 and 255." id="3" />
-                                            </Box>
-                                            <Box name="Color Edit (1)" id="1" localization="8" tooltip="Transmit a table of number [R,G,B] correponsding to the selected color." plugin="coloredit_plugin" x="509" y="37">
-                                                <bitmap>media/images/box/interaction/vocabulary.png</bitmap>
-                                                <script language="4">
-                                                    <content>
-                                                        <![CDATA[class MyClass(GeneratedClass):
-	def __init__(self):
-		GeneratedClass.__init__(self)
-
-	def onInput_onStart(self):
-		self.onStopped([85, 255, 127])]]>
-</content>
-                                                </script>
-                                                <pluginContent>
-                                                    <color>#55ff7f</color>
-                                                </pluginContent>
-                                                <Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" />
-                                                <Input name="onStart" type="1" type_size="1" nature="2" inner="0" tooltip="To send the color on the output." id="2" />
-                                                <Output name="onStopped" type="2" type_size="3" nature="1" inner="0" tooltip="[R,G,B] with R, G and B between 0 and 255." id="3" />
-                                            </Box>
-                                            <Box name="Eyes LEDs (1)" id="2" localization="8" tooltip="Set the color of LEDs of robot&apos;s eyes." x="811" y="34">
-                                                <bitmap>media/images/box/interaction/LED.png</bitmap>
-                                                <script language="4">
-                                                    <content>
-                                                        <![CDATA[class MyClass(GeneratedClass):
-    def __init__(self):
-        GeneratedClass.__init__(self, False)
-
-    def onLoad(self):
-        self.ids = []
-        self.leds = ALProxy("ALLeds")
-
-    def onUnload(self):
-        #~ puts code for box cleanup here
-        pass
-
-    def onInput_color(self, p):
-        if( self.getParameter("Side") == "Left" ):
-            sGroup = "LeftFaceLeds"
-        elif( self.getParameter("Side") == "Right" ):
-            sGroup = "RightFaceLeds"
-        else:
-            sGroup = "FaceLeds"
-        id = self.leds.post.fadeRGB(sGroup, 256*256*p[0] + 256*p[1] + p[2], self.getParameter("Duration (s)"))
-        self.ids.append(id)
-        self.leds.wait(id, 0)
-        self.ids.remove(id)
-        if( self.ids == [] ):
-            self.onDone() # activate output of the box]]>
-</content>
-                                                </script>
-                                                <Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" />
-                                                <Input name="color" type="2" type_size="3" nature="2" inner="0" tooltip="Color of robot&apos;s eyes." id="2" />
-                                                <Output name="onDone" type="1" type_size="1" nature="1" inner="0" tooltip="Signal sent when box behavior is finished." id="3" />
-                                                <Parameter name="Side" inherits_from_parent="1" content_type="3" value="Both" default_value="Both" custom_choice="0" tooltip="Choose the eye where the LED light is set." id="4">
-                                                    <Choice value="Both" />
-                                                    <Choice value="Left" />
-                                                    <Choice value="Right" />
-                                                </Parameter>
-                                                <Parameter name="Duration (s)" inherits_from_parent="1" content_type="2" value="0.1" default_value="0.1" min="0" max="5" tooltip="Transition&apos;s duration in seconds." id="5" />
-                                            </Box>
-                                            <Link inputowner="15" indexofinput="2" outputowner="16" indexofoutput="3" />
-                                            <Link inputowner="16" indexofinput="2" outputowner="0" indexofoutput="2" />
-                                            <Link inputowner="1" indexofinput="2" outputowner="15" indexofoutput="3" />
-                                            <Link inputowner="2" indexofinput="2" outputowner="1" indexofoutput="3" />
-                                            <Link inputowner="0" indexofinput="3" outputowner="2" indexofoutput="3" />
-                                        </Diagram>
-                                    </BehaviorKeyframe>
-                                </BehaviorLayer>
-                            </Timeline>
-                        </Box>
-                        <Box name="Set Stiffness" id="3" localization="8" tooltip="Stiffen the motors selected in parameters." x="982" y="106">
+                        <Box name="Set Stiffness" id="3" localization="8" tooltip="Stiffen the motors selected in parameters." x="1411" y="8">
                             <bitmap>media/images/box/movement/stiffness.png</bitmap>
                             <script language="4">
                                 <content>
@@ -393,9 +243,285 @@ class MyClass(GeneratedClass):
                             <Parameter name="Left leg" inherits_from_parent="0" content_type="0" value="1" default_value="1" tooltip="Do we want to modify the left leg stiffness?" id="7" />
                             <Parameter name="Right leg" inherits_from_parent="0" content_type="0" value="1" default_value="1" tooltip="Do we want to modify the right leg stiffness?" id="8" />
                             <Parameter name="Motors stiffness (%)" inherits_from_parent="0" content_type="1" value="0" default_value="100" min="0" max="100" tooltip="Stiffness value the motors are set to." id="9" />
-                            <Parameter name="Duration (s)" inherits_from_parent="0" content_type="2" value="1" default_value="1" min="0.02" max="10" tooltip="How much time to go to the max/min stiffness in seconds." id="10" />
+                            <Parameter name="Duration (s)" inherits_from_parent="0" content_type="2" value="0.5" default_value="1" min="0.02" max="10" tooltip="How much time to go to the max/min stiffness in seconds." id="10" />
                         </Box>
-                        <Box name="Set Stiffness (1)" id="1" localization="8" tooltip="Stiffen the motors selected in parameters." x="991" y="275">
+                        <Box name="Wait For Signals" id="11" localization="8" tooltip="Wait for both inputs to be stimulated before stimulating its output." x="976" y="1164">
+                            <bitmap>media/images/box/wait.png</bitmap>
+                            <script language="4">
+                                <content>
+                                    <![CDATA[class MyClass(GeneratedClass):
+    def __init__(self):
+        GeneratedClass.__init__(self, False)
+
+    def onLoad(self):
+        self.ok = [False]*2
+
+    def onUnload(self):
+        #puts code for box cleanup here
+        ""
+
+    def onStart(self, nInput):
+        self.ok[nInput-1] = True
+        bOutput = True
+        for bOk in self.ok:
+            bOutput = bOutput and bOk
+        if( bOutput ):
+            self.ok = [False]*2
+            self.signalsReceived()
+
+    def onInput_signal1(self):
+        self.onStart(1)
+
+    def onInput_signal2(self):
+        self.onStart(2)]]>
+</content>
+                            </script>
+                            <Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when Diagram is loaded." id="1" />
+                            <Input name="signal1" type="1" type_size="1" nature="1" inner="0" tooltip="First signal to wait." id="2" />
+                            <Input name="signal2" type="1" type_size="1" nature="1" inner="0" tooltip="Second signal to wait." id="3" />
+                            <Output name="signalsReceived" type="1" type_size="1" nature="2" inner="0" tooltip="Signal sent when both inputs have been stimulated." id="4" />
+                        </Box>
+                        <Box name="Wait For Signals (1)" id="5" localization="8" tooltip="Wait for both inputs to be stimulated before stimulating its output." x="973" y="1046">
+                            <bitmap>media/images/box/wait.png</bitmap>
+                            <script language="4">
+                                <content>
+                                    <![CDATA[class MyClass(GeneratedClass):
+    def __init__(self):
+        GeneratedClass.__init__(self, False)
+
+    def onLoad(self):
+        self.ok = [False]*2
+
+    def onUnload(self):
+        #puts code for box cleanup here
+        ""
+
+    def onStart(self, nInput):
+        self.ok[nInput-1] = True
+        bOutput = True
+        for bOk in self.ok:
+            bOutput = bOutput and bOk
+        if( bOutput ):
+            self.ok = [False]*2
+            self.signalsReceived()
+
+    def onInput_signal1(self):
+        self.onStart(1)
+
+    def onInput_signal2(self):
+        self.onStart(2)]]>
+</content>
+                            </script>
+                            <Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when Diagram is loaded." id="1" />
+                            <Input name="signal1" type="1" type_size="1" nature="1" inner="0" tooltip="First signal to wait." id="2" />
+                            <Input name="signal2" type="1" type_size="1" nature="1" inner="0" tooltip="Second signal to wait." id="3" />
+                            <Output name="signalsReceived" type="1" type_size="1" nature="2" inner="0" tooltip="Signal sent when both inputs have been stimulated." id="4" />
+                        </Box>
+                        <Box name="get BDRNaoQiRequest (1)" id="9" localization="8" tooltip="get BDRNaoQiRequest" x="312" y="1074">
+                            <bitmap>media/images/box/sensors/STM.png</bitmap>
+                            <script language="4">
+                                <content>
+                                    <![CDATA[class MyClass(GeneratedClass):
+    def __init__(self):
+        GeneratedClass.__init__(self)
+        self.lastBDRNaoQiRequest = 0
+        pass
+
+    def onLoad(self):
+        self.memory = ALProxy("ALMemory")
+
+    def onUnload(self):
+        self.memory = None
+
+    def onInput_onStart(self):
+        result = self.memory.getData(self.getParameter("key"))
+        if result != self.lastBDRNaoQiRequest:
+            self.onStopped(self.lastBDRNaoQiRequest)
+            self.lastBDRNaoQiRequest = result
+
+    def onInput_onStop(self):
+        self.onUnload() #~ it is recommended to call onUnload of this box in a onStop method, as the code written in onUnload is used to stop the box as well
+        pass]]>
+</content>
+                            </script>
+                            <Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" />
+                            <Input name="onStart" type="1" type_size="1" nature="2" inner="0" tooltip="Box behavior starts when a signal is received on this input." id="2" />
+                            <Input name="onStop" type="1" type_size="1" nature="3" inner="0" tooltip="Box behavior stops when a signal is received on this input." id="3" />
+                            <Output name="onStopped" type="0" type_size="1" nature="1" inner="0" tooltip="Signal sent when box behavior is finished. It contains the retrieved value from ALMemory." id="4" />
+                            <Output name="onError" type="3" type_size="1" nature="1" inner="0" tooltip="Output when error is raised by the behavior. Contains the error message." id="5" />
+                            <Parameter name="key" inherits_from_parent="0" content_type="3" value="BDRNaoQiRequest" default_value="MyApplication/MyData" custom_choice="0" tooltip="" id="6" />
+                        </Box>
+                        <Box name="Switch Case (1)" id="10" localization="8" tooltip="Test input value and stimulate the output matching to this value. If there is no&#x0A;matching output, the default output (onDefault) is stimulated.&#x0A;&#x0A;You can edit a case by left double-clicking on the line. You can add a&#x0A;case by right clicking on a line and selecting &apos;Insert a row&apos;. You can delete&#x0A;a case by right clicking on a line and selecting &apos;Remove a row&apos;." plugin="dispatcher_plugin" x="509" y="1074">
+                            <bitmap>media/images/box/interaction/choice.png</bitmap>
+                            <script language="4">
+                                <content>
+                                    <![CDATA[# /!\ Generated content. Do not edit!
+class MyClass(GeneratedClass):
+	def __init__(self):
+		try: # disable autoBind
+		  GeneratedClass.__init__(self, False)
+		except TypeError: # if NAOqi < 1.14
+		  GeneratedClass.__init__( self )
+
+	def onInput_onStart(self, p):
+		p = self.typeConversion(p)
+		if(p == self.typeConversion(1)):
+			self.output_1(p)
+		elif(p == self.typeConversion(2)):
+			self.output_2(p)
+		else:
+			self.onDefault()
+
+	def typeConversion(self, p):
+		try:
+			p = float(p)
+			pint = int(p)
+			if( p == pint ):
+				p = pint
+		except:
+			p = str(p)
+		return p]]>
+</content>
+                            </script>
+                            <pluginContent>
+                                <keywords>
+                                    <keyword>1</keyword>
+                                    <keyword>2</keyword>
+                                    <keyword></keyword>
+                                </keywords>
+                            </pluginContent>
+                            <Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" />
+                            <Input name="onStart" type="0" type_size="1" nature="1" inner="0" tooltip="Value to test." id="2" />
+                            <Output name="onDefault" type="1" type_size="1" nature="2" inner="0" tooltip="If the input value does not match any value set on the box." id="3" />
+                            <Output name="output_1" type="0" type_size="1" nature="2" inner="0" tooltip="This IO has been automatically added by box. Read box tooltip for more information." id="4" />
+                            <Output name="output_2" type="0" type_size="1" nature="2" inner="0" tooltip="This IO has been automatically added by box. Read box tooltip for more information." id="5" />
+                        </Box>
+                        <Box name="Timer" id="15" localization="8" tooltip="Stimulate output repeatedly with the specified interval.&#x0A;Can be stopped anytime. &#x0A;Stimulating the input again restarts the timer.&#x0A;" x="130" y="860">
+                            <bitmap>media/images/box/wait.png</bitmap>
+                            <script language="4">
+                                <content>
+                                    <![CDATA[class MyClass(GeneratedClass):
+    def __init__(self):
+        GeneratedClass.__init__(self, False)
+
+    def onLoad(self):
+        self.timer = None
+
+    def onUnload(self):
+        self.cancelTimer()
+
+    def cancelTimer(self):
+        if self.timer:
+            self.timer.stop()
+        self.timer = None
+
+    def onTimer(self):
+        self.timerOutput()
+
+    def startTimer(self):
+        import qi
+        self.timer = qi.PeriodicTask()
+        self.timer.setCallback(self.onTimer)
+        self.timer.setUsPeriod(int(self.getParameter("Period (s)") * 1000 * 1000))
+        self.timer.start(True)
+
+    def onInput_onStart(self):
+        self.cancelTimer()
+        self.startTimer()
+
+    def onInput_onStop(self):
+        if self.timer and self.timer.isRunning():
+            self.onStopped()
+        self.onUnload()]]>
+</content>
+                            </script>
+                            <Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" />
+                            <Input name="onStart" type="1" type_size="1" nature="2" inner="0" tooltip="Start the timer using the configured period value." id="2" />
+                            <Input name="onStop" type="1" type_size="1" nature="3" inner="0" tooltip="Stop the timer." id="3" />
+                            <Output name="onStopped" type="1" type_size="1" nature="1" inner="0" tooltip="Signal sent when the box is stopped." id="4" />
+                            <Output name="timerOutput" type="1" type_size="1" nature="2" inner="0" tooltip="Send a bang periodically." id="5" />
+                            <Parameter name="Period (s)" inherits_from_parent="0" content_type="2" value="1" default_value="1" min="0" max="5000" tooltip="Defines the period of the timer box (in seconds).&#x0A;&#x0A;For example, if this parameter is equal to 1s, the timerOutput will be stimulated&#x0A;every second until the onStop input is stimulated." id="6" />
+                        </Box>
+                        <Box name="Set Fall Manager" id="1" localization="8" tooltip="Enable or disable the Fall Manager.&#x0A;&#x0A;It is automatically set to its previous state when the behavior is stopped." x="115" y="38">
+                            <bitmap>media/images/box/sensors/fall_manager.png</bitmap>
+                            <script language="4">
+                                <content>
+                                    <![CDATA[class MyClass(GeneratedClass):
+    def __init__(self):
+        GeneratedClass.__init__(self, False)
+        self.motion = ALProxy("ALMotion")
+        self.bFallManagerEnabled = True
+
+    def onLoad(self):
+        #~ puts code for box initialization here
+        pass
+
+    def onUnload(self):
+        self.motion.setFallManagerEnabled(self.bFallManagerEnabled)
+
+    def onInput_onSet(self):
+        self.bFallManagerEnabled = self.motion.getFallManagerEnabled()
+        enable = (self.getParameter("Action") == "Enable")
+        self.motion.setFallManagerEnabled(enable)
+        self.onDone()]]>
+</content>
+                            </script>
+                            <Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" />
+                            <Input name="onSet" type="1" type_size="1" nature="1" inner="0" tooltip="Box behavior starts when a signal is received on this input." id="2" />
+                            <Output name="onDone" type="1" type_size="1" nature="2" inner="0" tooltip="Signal sent when box behavior is finished." id="3" />
+                            <Parameter name="Action" inherits_from_parent="0" content_type="3" value="Disable" default_value="Enable" custom_choice="0" tooltip="Choose if you want to enable or disable the fall manager executing this box." id="4">
+                                <Choice value="Disable" />
+                                <Choice value="Enable" />
+                            </Parameter>
+                        </Box>
+                        <Box name="Go to position StandInit" id="7" localization="8" tooltip="Robot will go to the position StandInit&lt;br/&gt;Position description : Nao is ready to do anything from this position !" x="1226" y="359">
+                            <bitmap>media/images/positions/StandInit.png</bitmap>
+                            <script language="4">
+                                <content>
+                                    <![CDATA[#~ This script was generated automatically by drang&drop from Position Library
+class MyClass(GeneratedClass):
+    def __init__(self):
+        try: # disable autoBind
+          GeneratedClass.__init__(self, False)
+        except TypeError: # if NAOqi < 1.14
+          GeneratedClass.__init__( self )
+
+    def onLoad(self):
+        self.postureProxy = None
+        try:
+            self.postureProxy = ALProxy("ALRobotPosture")
+        except:
+            self.logger.error("Module 'ALRobotPosture' not found.")
+
+    def onUnload(self):
+        if(self.postureProxy != None):
+            self.postureProxy.stopMove()
+
+    def onInput_onStart(self):
+        if(self.postureProxy != None):
+            result = self.postureProxy.goToPosture("StandInit", 0.4)
+            if(result):
+                self.success()
+            else:
+                self.logger.error("Posture StandInit is not a part of the standard posture library or robot cannot reach the posture")
+                self.failure()
+        else:
+            self.failure()
+
+    def onInput_onStop(self):
+        self.onUnload() #~ it is recommanded to call onUnload of this box in a onStop method,               as the code written in onUnload is used to stop the box as well
+        pass]]>
+</content>
+                            </script>
+                            <Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" />
+                            <Input name="onStart" type="1" type_size="1" nature="2" inner="0" tooltip="Box behavior starts when a signal is received on this input." id="2" />
+                            <Input name="onStop" type="1" type_size="1" nature="3" inner="0" tooltip="Box behavior stops when a signal is received on this input." id="3" />
+                            <Output name="success" type="1" type_size="1" nature="1" inner="0" tooltip="Stimulated if the posture has been reached." id="4" />
+                            <Output name="failure" type="1" type_size="1" nature="1" inner="0" tooltip="Stimulated if the posture could not be reached." id="5" />
+                            <Resource name="All motors" type="Lock" timeout="0" />
+                            <Resource name="Stiffness" type="Lock" timeout="0" />
+                        </Box>
+                        <Box name="Set Stiffness (1)" id="2" localization="8" tooltip="Stiffen the motors selected in parameters." x="1019" y="362">
                             <bitmap>media/images/box/movement/stiffness.png</bitmap>
                             <script language="4">
                                 <content>
@@ -444,256 +570,27 @@ class MyClass(GeneratedClass):
                             <Parameter name="Left leg" inherits_from_parent="0" content_type="0" value="1" default_value="1" tooltip="Do we want to modify the left leg stiffness?" id="7" />
                             <Parameter name="Right leg" inherits_from_parent="0" content_type="0" value="1" default_value="1" tooltip="Do we want to modify the right leg stiffness?" id="8" />
                             <Parameter name="Motors stiffness (%)" inherits_from_parent="0" content_type="1" value="80" default_value="100" min="0" max="100" tooltip="Stiffness value the motors are set to." id="9" />
-                            <Parameter name="Duration (s)" inherits_from_parent="0" content_type="2" value="1" default_value="1" min="0.02" max="10" tooltip="How much time to go to the max/min stiffness in seconds." id="10" />
-                        </Box>
-                        <Box name="Rest" id="7" localization="0" tooltip="Call a Rest process.&#x0A;Apply crouch posture if the robot is Stand then unStiff all joints" x="1154" y="258">
-                            <bitmap>media/images/box/movement/stiffness.png</bitmap>
-                            <script language="4">
-                                <content>
-                                    <![CDATA[class MyClass(GeneratedClass):
-    def __init__(self):
-        GeneratedClass.__init__(self)
-        pass
-
-    def onLoad(self):
-        self.motion = ALProxy("ALMotion")
-        pass
-
-    def onUnload(self):
-        pass
-
-    def onInput_onStart(self):
-        self.motion.rest()
-        self.onStopped() #~ activate output of the box
-        pass
-
-    def onInput_onStop(self):
-        self.onUnload() #~ it is recommended to call onUnload of this box in a onStop method, as the code written in onUnload is used to stop the box as well
-        pass]]>
-</content>
-                            </script>
-                            <Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" />
-                            <Input name="onStart" type="1" type_size="1" nature="2" inner="0" tooltip="Box behavior starts when a signal is received on this input." id="2" />
-                            <Input name="onStop" type="1" type_size="1" nature="3" inner="0" tooltip="Box behavior stops when a signal is received on this input." id="3" />
-                            <Output name="onStopped" type="1" type_size="1" nature="1" inner="0" tooltip="Signal sent when box behavior is finished." id="4" />
-                            <Resource name="All motors" type="Lock" timeout="0" />
-                            <Resource name="Stiffness" type="Lock" timeout="0" />
-                        </Box>
-                        <Box name="Wait For Signals" id="11" localization="8" tooltip="Wait for both inputs to be stimulated before stimulating its output." x="924" y="1213">
-                            <bitmap>media/images/box/wait.png</bitmap>
-                            <script language="4">
-                                <content>
-                                    <![CDATA[class MyClass(GeneratedClass):
-    def __init__(self):
-        GeneratedClass.__init__(self, False)
-
-    def onLoad(self):
-        self.ok = [False]*2
-
-    def onUnload(self):
-        #puts code for box cleanup here
-        ""
-
-    def onStart(self, nInput):
-        self.ok[nInput-1] = True
-        bOutput = True
-        for bOk in self.ok:
-            bOutput = bOutput and bOk
-        if( bOutput ):
-            self.ok = [False]*2
-            self.signalsReceived()
-
-    def onInput_signal1(self):
-        self.onStart(1)
-
-    def onInput_signal2(self):
-        self.onStart(2)]]>
-</content>
-                            </script>
-                            <Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when Diagram is loaded." id="1" />
-                            <Input name="signal1" type="1" type_size="1" nature="1" inner="0" tooltip="First signal to wait." id="2" />
-                            <Input name="signal2" type="1" type_size="1" nature="1" inner="0" tooltip="Second signal to wait." id="3" />
-                            <Output name="signalsReceived" type="1" type_size="1" nature="2" inner="0" tooltip="Signal sent when both inputs have been stimulated." id="4" />
-                        </Box>
-                        <Box name="Wait For Signals (1)" id="5" localization="8" tooltip="Wait for both inputs to be stimulated before stimulating its output." x="921" y="1095">
-                            <bitmap>media/images/box/wait.png</bitmap>
-                            <script language="4">
-                                <content>
-                                    <![CDATA[class MyClass(GeneratedClass):
-    def __init__(self):
-        GeneratedClass.__init__(self, False)
-
-    def onLoad(self):
-        self.ok = [False]*2
-
-    def onUnload(self):
-        #puts code for box cleanup here
-        ""
-
-    def onStart(self, nInput):
-        self.ok[nInput-1] = True
-        bOutput = True
-        for bOk in self.ok:
-            bOutput = bOutput and bOk
-        if( bOutput ):
-            self.ok = [False]*2
-            self.signalsReceived()
-
-    def onInput_signal1(self):
-        self.onStart(1)
-
-    def onInput_signal2(self):
-        self.onStart(2)]]>
-</content>
-                            </script>
-                            <Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when Diagram is loaded." id="1" />
-                            <Input name="signal1" type="1" type_size="1" nature="1" inner="0" tooltip="First signal to wait." id="2" />
-                            <Input name="signal2" type="1" type_size="1" nature="1" inner="0" tooltip="Second signal to wait." id="3" />
-                            <Output name="signalsReceived" type="1" type_size="1" nature="2" inner="0" tooltip="Signal sent when both inputs have been stimulated." id="4" />
-                        </Box>
-                        <Box name="get BDRNaoQiRequest (1)" id="9" localization="8" tooltip="get BDRNaoQiRequest" x="260" y="1123">
-                            <bitmap>media/images/box/sensors/STM.png</bitmap>
-                            <script language="4">
-                                <content>
-                                    <![CDATA[class MyClass(GeneratedClass):
-    def __init__(self):
-        GeneratedClass.__init__(self)
-        self.lastBDRNaoQiRequest = 0
-        pass
-
-    def onLoad(self):
-        self.memory = ALProxy("ALMemory")
-
-    def onUnload(self):
-        self.memory = None
-
-    def onInput_onStart(self):
-        result = self.memory.getData(self.getParameter("key"))
-        if result != self.lastBDRNaoQiRequest:
-            self.onStopped(self.lastBDRNaoQiRequest)
-            self.lastBDRNaoQiRequest = result
-
-    def onInput_onStop(self):
-        self.onUnload() #~ it is recommended to call onUnload of this box in a onStop method, as the code written in onUnload is used to stop the box as well
-        pass]]>
-</content>
-                            </script>
-                            <Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" />
-                            <Input name="onStart" type="1" type_size="1" nature="2" inner="0" tooltip="Box behavior starts when a signal is received on this input." id="2" />
-                            <Input name="onStop" type="1" type_size="1" nature="3" inner="0" tooltip="Box behavior stops when a signal is received on this input." id="3" />
-                            <Output name="onStopped" type="0" type_size="1" nature="1" inner="0" tooltip="Signal sent when box behavior is finished. It contains the retrieved value from ALMemory." id="4" />
-                            <Output name="onError" type="3" type_size="1" nature="1" inner="0" tooltip="Output when error is raised by the behavior. Contains the error message." id="5" />
-                            <Parameter name="key" inherits_from_parent="0" content_type="3" value="BDRNaoQiRequest" default_value="MyApplication/MyData" custom_choice="0" tooltip="" id="6" />
-                        </Box>
-                        <Box name="Switch Case (1)" id="10" localization="8" tooltip="Test input value and stimulate the output matching to this value. If there is no&#x0A;matching output, the default output (onDefault) is stimulated.&#x0A;&#x0A;You can edit a case by left double-clicking on the line. You can add a&#x0A;case by right clicking on a line and selecting &apos;Insert a row&apos;. You can delete&#x0A;a case by right clicking on a line and selecting &apos;Remove a row&apos;." plugin="dispatcher_plugin" x="457" y="1123">
-                            <bitmap>media/images/box/interaction/choice.png</bitmap>
-                            <script language="4">
-                                <content>
-                                    <![CDATA[# /!\ Generated content. Do not edit!
-class MyClass(GeneratedClass):
-	def __init__(self):
-		try: # disable autoBind
-		  GeneratedClass.__init__(self, False)
-		except TypeError: # if NAOqi < 1.14
-		  GeneratedClass.__init__( self )
-
-	def onInput_onStart(self, p):
-		p = self.typeConversion(p)
-		if(p == self.typeConversion(1)):
-			self.output_1(p)
-		elif(p == self.typeConversion(2)):
-			self.output_2(p)
-		else:
-			self.onDefault()
-
-	def typeConversion(self, p):
-		try:
-			p = float(p)
-			pint = int(p)
-			if( p == pint ):
-				p = pint
-		except:
-			p = str(p)
-		return p]]>
-</content>
-                            </script>
-                            <pluginContent>
-                                <keywords>
-                                    <keyword>1</keyword>
-                                    <keyword>2</keyword>
-                                    <keyword></keyword>
-                                </keywords>
-                            </pluginContent>
-                            <Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" />
-                            <Input name="onStart" type="0" type_size="1" nature="1" inner="0" tooltip="Value to test." id="2" />
-                            <Output name="onDefault" type="1" type_size="1" nature="2" inner="0" tooltip="If the input value does not match any value set on the box." id="3" />
-                            <Output name="output_1" type="0" type_size="1" nature="2" inner="0" tooltip="This IO has been automatically added by box. Read box tooltip for more information." id="4" />
-                            <Output name="output_2" type="0" type_size="1" nature="2" inner="0" tooltip="This IO has been automatically added by box. Read box tooltip for more information." id="5" />
-                        </Box>
-                        <Box name="Timer" id="15" localization="8" tooltip="Stimulate output repeatedly with the specified interval.&#x0A;Can be stopped anytime. &#x0A;Stimulating the input again restarts the timer.&#x0A;" x="78" y="909">
-                            <bitmap>media/images/box/wait.png</bitmap>
-                            <script language="4">
-                                <content>
-                                    <![CDATA[class MyClass(GeneratedClass):
-    def __init__(self):
-        GeneratedClass.__init__(self, False)
-
-    def onLoad(self):
-        self.timer = None
-
-    def onUnload(self):
-        self.cancelTimer()
-
-    def cancelTimer(self):
-        if self.timer:
-            self.timer.stop()
-        self.timer = None
-
-    def onTimer(self):
-        self.timerOutput()
-
-    def startTimer(self):
-        import qi
-        self.timer = qi.PeriodicTask()
-        self.timer.setCallback(self.onTimer)
-        self.timer.setUsPeriod(int(self.getParameter("Period (s)") * 1000 * 1000))
-        self.timer.start(True)
-
-    def onInput_onStart(self):
-        self.cancelTimer()
-        self.startTimer()
-
-    def onInput_onStop(self):
-        if self.timer and self.timer.isRunning():
-            self.onStopped()
-        self.onUnload()]]>
-</content>
-                            </script>
-                            <Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" />
-                            <Input name="onStart" type="1" type_size="1" nature="2" inner="0" tooltip="Start the timer using the configured period value." id="2" />
-                            <Input name="onStop" type="1" type_size="1" nature="3" inner="0" tooltip="Stop the timer." id="3" />
-                            <Output name="onStopped" type="1" type_size="1" nature="1" inner="0" tooltip="Signal sent when the box is stopped." id="4" />
-                            <Output name="timerOutput" type="1" type_size="1" nature="2" inner="0" tooltip="Send a bang periodically." id="5" />
-                            <Parameter name="Period (s)" inherits_from_parent="0" content_type="2" value="1" default_value="1" min="0" max="5000" tooltip="Defines the period of the timer box (in seconds).&#x0A;&#x0A;For example, if this parameter is equal to 1s, the timerOutput will be stimulated&#x0A;every second until the onStop input is stimulated." id="6" />
+                            <Parameter name="Duration (s)" inherits_from_parent="0" content_type="2" value="0.5" default_value="1" min="0.02" max="10" tooltip="How much time to go to the max/min stiffness in seconds." id="10" />
                         </Box>
                         <Link inputowner="6" indexofinput="2" outputowner="4" indexofoutput="4" />
                         <Link inputowner="13" indexofinput="2" outputowner="8" indexofoutput="3" />
                         <Link inputowner="12" indexofinput="2" outputowner="14" indexofoutput="3" />
                         <Link inputowner="14" indexofinput="2" outputowner="6" indexofoutput="5" />
-                        <Link inputowner="3" indexofinput="2" outputowner="6" indexofoutput="3" />
-                        <Link inputowner="8" indexofinput="2" outputowner="3" indexofoutput="3" />
-                        <Link inputowner="7" indexofinput="2" outputowner="1" indexofoutput="3" />
                         <Link inputowner="4" indexofinput="2" outputowner="11" indexofoutput="4" />
-                        <Link inputowner="5" indexofinput="2" outputowner="13" indexofoutput="4" />
                         <Link inputowner="4" indexofinput="2" outputowner="5" indexofoutput="4" />
-                        <Link inputowner="2" indexofinput="2" outputowner="12" indexofoutput="4" />
                         <Link inputowner="5" indexofinput="3" outputowner="10" indexofoutput="3" />
                         <Link inputowner="11" indexofinput="3" outputowner="10" indexofoutput="5" />
                         <Link inputowner="10" indexofinput="2" outputowner="9" indexofoutput="4" />
-                        <Link inputowner="15" indexofinput="2" outputowner="0" indexofoutput="2" />
                         <Link inputowner="9" indexofinput="2" outputowner="15" indexofoutput="5" />
-                        <Link inputowner="4" indexofinput="2" outputowner="0" indexofoutput="2" />
-                        <Link inputowner="11" indexofinput="2" outputowner="2" indexofoutput="3" />
+                        <Link inputowner="1" indexofinput="2" outputowner="0" indexofoutput="2" />
+                        <Link inputowner="4" indexofinput="2" outputowner="1" indexofoutput="3" />
+                        <Link inputowner="15" indexofinput="2" outputowner="1" indexofoutput="3" />
+                        <Link inputowner="7" indexofinput="2" outputowner="2" indexofoutput="3" />
+                        <Link inputowner="2" indexofinput="2" outputowner="12" indexofoutput="4" />
+                        <Link inputowner="11" indexofinput="2" outputowner="7" indexofoutput="4" />
+                        <Link inputowner="3" indexofinput="2" outputowner="13" indexofoutput="4" />
+                        <Link inputowner="5" indexofinput="2" outputowner="3" indexofoutput="3" />
+                        <Link inputowner="8" indexofinput="2" outputowner="6" indexofoutput="3" />
                     </Diagram>
                 </BehaviorKeyframe>
             </BehaviorLayer>
