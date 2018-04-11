@@ -8,7 +8,9 @@
         <BehaviorDescription name="behavior" src="test_stand_motion" xar="behavior.xar" />
     </BehaviorDescriptions>
     <Dialogs />
-    <Resources />
+    <Resources>
+        <File name="swiftswords_ext" src="bdr_hmi/swiftswords_ext.mp3" />
+    </Resources>
     <Topics />
     <IgnoredPaths />
 </Package>
