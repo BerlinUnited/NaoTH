@@ -43,7 +43,7 @@ import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
  */
 public class BDRControl extends AbstractDialog {
 
-    @RCDialog(category = RCDialog.Category.Debug, name = "BDRControl")
+    @RCDialog(category = RCDialog.Category.BDR, name = "Control")
     @PluginImplementation
     public static class Plugin extends DialogPlugin<BDRControl> {
 
