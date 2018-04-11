@@ -38,7 +38,7 @@ import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 public class BDRMonitor extends AbstractDialog implements ActionListener, TeamCommListener
 {
 
-    @RCDialog(category = RCDialog.Category.View, name = "Field (extended)")
+    @RCDialog(category = RCDialog.Category.BDR, name = "Monitor")
     @PluginImplementation
     public static class Plugin extends DialogPlugin<BDRMonitor> {
 
