@@ -11,7 +11,7 @@ import de.naoth.rc.RobotControl;
 import de.naoth.rc.components.teamcomm.TeamCommListener;
 import de.naoth.rc.components.teamcomm.TeamCommManager;
 import de.naoth.rc.components.teamcomm.TeamCommMessage;
-import de.naoth.rc.components.teamcommviewer.RobotTeamCommListener;
+import de.naoth.rc.components.teamcomm.TeamCommUDPReceiver;
 import de.naoth.rc.core.dialog.RCDialog;
 import de.naoth.rc.drawings.DrawingCollection;
 import de.naoth.rc.drawings.FieldDrawingBDR;
@@ -22,11 +22,8 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.IOException;
 import java.util.List;
 import java.util.TreeMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.Timer;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
@@ -37,7 +34,6 @@ import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
  */
 public class BDRMonitor extends AbstractDialog implements ActionListener, TeamCommListener
 {
-
     @RCDialog(category = RCDialog.Category.BDR, name = "Monitor")
     @PluginImplementation
     public static class Plugin extends DialogPlugin<BDRMonitor> {
@@ -46,6 +42,8 @@ public class BDRMonitor extends AbstractDialog implements ActionListener, TeamCo
         public static RobotControl parent;
         @InjectPlugin
         public static TeamCommManager teamcommManager;
+        @InjectPlugin
+        public static TeamCommUDPReceiver teamCommUDPReceiver;
     }//end Plugin
     
     private final int port = 10004;
@@ -53,7 +51,7 @@ public class BDRMonitor extends AbstractDialog implements ActionListener, TeamCo
     /**
      * The robot-TeamCommProvider for our own team.
      */
-    private final RobotTeamCommListener teamcommListener = new RobotTeamCommListener(true);
+    //private final RobotTeamCommListener teamcommListener = new RobotTeamCommListener(true);
     
     private final TreeMap<String, RobotPanel> robots = new TreeMap<>();
     
@@ -95,9 +93,12 @@ public class BDRMonitor extends AbstractDialog implements ActionListener, TeamCo
         this.drawingTimer = new Timer(300, this);
         this.drawingTimer.start();
 
-        connect();
+        //connect();
+        Plugin.teamCommUDPReceiver.connect(this, port);
+        Plugin.teamcommManager.addListener(this);
     }
     
+    /*
     private void connect() {
         try {
             teamcommListener.connect(port);
@@ -119,11 +120,14 @@ public class BDRMonitor extends AbstractDialog implements ActionListener, TeamCo
             // TODO: hint dialog?!
         }
     }
-
+    */
+    
     @Override
     public void dispose() {
         // remove all the registered listeners
-        disconnect();
+        //disconnect();
+        Plugin.teamCommUDPReceiver.disconnect(this, port);
+        Plugin.teamcommManager.removeListener(this);
         if (drawingTimer.isRunning()) {
             drawingTimer.stop();
         }

@@ -3,48 +3,38 @@ package de.naoth.rc.dialogs.bdr;
 import com.google.protobuf.InvalidProtocolBufferException;
 import de.naoth.rc.RobotControl;
 import de.naoth.rc.components.RemoteRobotPanel;
+import de.naoth.rc.components.teamcomm.TeamCommListener;
+import de.naoth.rc.components.teamcomm.TeamCommManager;
+import de.naoth.rc.components.teamcomm.TeamCommMessage;
+import de.naoth.rc.components.teamcomm.TeamCommUDPReceiver;
 import de.naoth.rc.core.dialog.AbstractDialog;
 import de.naoth.rc.core.dialog.DialogPlugin;
 import de.naoth.rc.core.dialog.RCDialog;
 import de.naoth.rc.core.manager.ObjectListener;
 import de.naoth.rc.core.manager.SwingCommandExecutor;
-import de.naoth.rc.dataformats.SPLMessage;
 import de.naoth.rc.dialogs.TeamCommViewer;
-import de.naoth.rc.manager.GenericManagerFactory;
 import de.naoth.rc.messages.BDRMessages.BDRControlCommand;
 import de.naoth.rc.messages.BDRMessages.BDRBehaviorMode;
-import de.naoth.rc.messages.Representations;
 import de.naoth.rc.server.Command;
 import de.naoth.rc.server.ConnectionStatusEvent;
 import de.naoth.rc.server.ConnectionStatusListener;
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.SocketAddress;
-import java.net.SocketException;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.channels.AsynchronousCloseException;
-import java.nio.channels.DatagramChannel;
-import java.util.Collections;
+import java.awt.Color;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.SwingUtilities;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 
 /**
  *
- * @author Verena
+ * @author Heinrich Mellmann
  */
-public class BDRControl extends AbstractDialog {
+public class BDRControl extends AbstractDialog implements TeamCommListener {
 
     @RCDialog(category = RCDialog.Category.BDR, name = "Control")
+    
     @PluginImplementation
     public static class Plugin extends DialogPlugin<BDRControl> {
 
@@ -52,40 +42,26 @@ public class BDRControl extends AbstractDialog {
         public static RobotControl parent;
         @InjectPlugin
         public static SwingCommandExecutor commandExecutor;
-        //@InjectPlugin
-        //public static GenericManagerFactory genericManagerFactory;
+        @InjectPlugin
+        public static TeamCommManager teamcommManager;
+        @InjectPlugin
+        public static TeamCommUDPReceiver teamCommUDPReceiver;
     }//end Plugin
 
-    private final Map<String, TeamCommMessage> messageMap = Collections.synchronizedMap(new TreeMap<String, TeamCommMessage>());
-    private final HashMap<String, RemoteRobotPanel> robotsMap = new HashMap<>();
-    private TeamCommListener teamCommListener;
-    private final Timer timerCheckMessages;
+    private final int port = 10004;
     
-    CommandSender currentSender = null;
+    private final HashMap<String, RemoteRobotPanel> robotsMap = new HashMap<>();
     
     public BDRControl() 
     {
         initComponents();
-        
-        try {
-            teamCommListener = new TeamCommListener();
-            teamCommListener.connect(10004);
-        } catch (IOException | InterruptedException ex) {
-            ex.printStackTrace(System.err);
-        }
-        
+
         // dummy robot for tests
         //robotsMap.put("10.0.4.77", new RemoteRobotPanel(Plugin.parent.getMessageServer(),"10.0.4.77", new SPLMessage()));
         //updateRoboPanel();
         
-        this.timerCheckMessages = new Timer();
-        this.timerCheckMessages.scheduleAtFixedRate(new TeamCommListenTask(), 100, 100);
-        
-        try {
-            this.currentSender = new CommandSender(new InetSocketAddress(InetAddress.getByName("10.0.4.92"), 10401));
-        } catch (IOException ex) {
-            ex.printStackTrace(System.err);
-        }
+        Plugin.teamcommManager.addListener(this);
+        Plugin.teamCommUDPReceiver.connect(this, port);
         
         Plugin.parent.getMessageServer().addConnectionStatusListener(new ConnectionStatusListener() {
             @Override
@@ -103,14 +79,11 @@ public class BDRControl extends AbstractDialog {
             }
         });
     }
-
+    
     @Override
     public void dispose() {
-        try {
-            teamCommListener.disconnect();
-        } catch (IOException | InterruptedException ex) {
-            ex.printStackTrace(System.err);
-        }
+        Plugin.teamcommManager.removeListener(this);
+        Plugin.teamCommUDPReceiver.disconnect(this, port);
     }
 
     /**
@@ -216,32 +189,21 @@ public class BDRControl extends AbstractDialog {
     }//GEN-LAST:event_teamSelectionBoxActionPerformed
 
     private void bt_stopActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bt_stopActionPerformed
-        if(this.currentSender != null) {
-            BDRControlCommand.Builder cmd = BDRControlCommand.newBuilder();
-            cmd.setBehaviorMode(BDRBehaviorMode.DO_NOTHING);
-            //this.currentSender.send(bdrCmd.build());
-            sendBDRCommand(cmd.build());
-        } else {
-            this.bt_stop.setSelected(true);
-        }
+        BDRControlCommand.Builder cmd = BDRControlCommand.newBuilder();
+        cmd.setBehaviorMode(BDRBehaviorMode.DO_NOTHING);
+        sendBDRCommand(cmd.build());
     }//GEN-LAST:event_bt_stopActionPerformed
 
     private void bt_autonomoisActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bt_autonomoisActionPerformed
-        if(this.currentSender != null) {
-            BDRControlCommand.Builder cmd = BDRControlCommand.newBuilder();
-            cmd.setBehaviorMode(BDRBehaviorMode.AUTONOMOUS_PLAY);
-            //this.currentSender.send(cmd.build());
-            sendBDRCommand(cmd.build());
-        }
+        BDRControlCommand.Builder cmd = BDRControlCommand.newBuilder();
+        cmd.setBehaviorMode(BDRBehaviorMode.AUTONOMOUS_PLAY);
+        sendBDRCommand(cmd.build());
     }//GEN-LAST:event_bt_autonomoisActionPerformed
 
     private void bt_wartungActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bt_wartungActionPerformed
-        if(this.currentSender != null) {
-            BDRControlCommand.Builder cmd = BDRControlCommand.newBuilder();
-            cmd.setBehaviorMode(BDRBehaviorMode.WARTUNG);
-            //this.currentSender.send(cmd.build());
-            sendBDRCommand(cmd.build());
-        }
+        BDRControlCommand.Builder cmd = BDRControlCommand.newBuilder();
+        cmd.setBehaviorMode(BDRBehaviorMode.WARTUNG);
+        sendBDRCommand(cmd.build());
     }//GEN-LAST:event_bt_wartungActionPerformed
 
     class StatusUpdater implements ObjectListener<byte[]>
@@ -310,57 +272,13 @@ public class BDRControl extends AbstractDialog {
         bt_wartung.setEnabled(false);
     }
 
-    private class CommandSender
-    {
-        private final DatagramChannel channel;
-        private final InetSocketAddress targetAddress;
-        
-        public CommandSender(InetSocketAddress targetAddress)  throws IOException {
-            this.channel = DatagramChannel.open();
-            this.targetAddress = targetAddress;
-        }
-        
-        public String getAddress() {
-            return targetAddress.toString();
-        }
-        
-        public void send(BDRControlCommand command) 
-        {
-            try {
-                ByteBuffer buffer = ByteBuffer.wrap(command.toByteArray());
-                this.channel.send(buffer, targetAddress);
-                
-            } catch (IOException ex) {
-                ex.printStackTrace(System.err);
-            }
-        }
-    }
-    
-    public class Sender {
-        private final DatagramChannel channel;
-
-        public Sender() throws IOException {
-            this.channel = DatagramChannel.open();
-            this.channel.configureBlocking(true);
-        }
-        
-        void send(Representations.RemoteControlCommand rcc, InetSocketAddress address) throws IOException {
-            ByteBuffer buffer = ByteBuffer.wrap(rcc.toByteArray());
-            this.channel.send(buffer, new InetSocketAddress(InetAddress.getByName("10.0.4.85"), 10401));
-        }
-    }
-    
-    
     private void updateRoboPanel() {
-        {
-            this.robotPanel.removeAll();
+        this.robotPanel.removeAll();
 
-            for (Map.Entry<String, RemoteRobotPanel> msgEntry : robotsMap.entrySet()) 
-            {
-                addPanel(msgEntry.getValue());
-            }
-            this.robotPanel.repaint();
+        for (Map.Entry<String, RemoteRobotPanel> msgEntry : robotsMap.entrySet()) {
+            addPanel(msgEntry.getValue());
         }
+        this.robotPanel.repaint();
     }
     
     private void addPanel(RemoteRobotPanel robotStatus) {
@@ -371,120 +289,22 @@ public class BDRControl extends AbstractDialog {
         }
     }
 
-    private class TeamCommListenTask extends TimerTask {
-
-        @Override
-        public void run() {
-            synchronized (messageMap) {
-                if (messageMap.isEmpty()) {
-                    return;
+    @Override
+    public void newTeamCommMessages(List<TeamCommMessage> messages) {
+        if (!messages.isEmpty()) {
+            messages.forEach((m) -> {
+                if (!robotsMap.containsKey(m.address)) {
+                    RemoteRobotPanel p = new RemoteRobotPanel(Plugin.parent.getMessageServer(), m.address, m.message);
+                    p.setChestColor(Color.BLUE);
+                    robotsMap.put(m.address, p);
+                    updateRoboPanel();
+                } else {
+                    robotsMap.get(m.address).setStatus(m.timestamp, m.message);
                 }
-
-                
-                
-                for (Map.Entry<String, TeamCommMessage> msgEntry : messageMap.entrySet()) 
-                {
-                    final String address = msgEntry.getKey();
-                    final TeamCommMessage msg = msgEntry.getValue();
-                    
-                    SwingUtilities.invokeLater(new Runnable() {
-                        @Override
-                        public void run() {
-                            RemoteRobotPanel robotStatus = robotsMap.get(address);
-                            if (robotStatus == null) {
-                                robotStatus = new RemoteRobotPanel(Plugin.parent.getMessageServer(), address, msg.message);
-                                robotsMap.put(address, robotStatus);
-                                addPanel(robotStatus);
-                            }
-                            // update
-                            robotStatus.setStatus(msg.timestamp, msg.message);
-                        }
-                    });
-                }
-            } // end synchronized
-        } // end run
+            });
+        }
     }
 
-    public class TeamCommListener implements Runnable {
-        private DatagramChannel channel;
-        private Thread trigger;
-
-        private final ByteBuffer readBuffer;
-
-        public TeamCommListener() {
-            this.readBuffer = ByteBuffer.allocateDirect(SPLMessage.size());
-            this.readBuffer.order(ByteOrder.LITTLE_ENDIAN);
-        }
-
-        boolean isConnected() {
-            return this.channel != null && this.trigger != null;
-        }
-
-        public void connect(int port) throws IOException, InterruptedException {
-            disconnect();
-
-            this.channel = DatagramChannel.open();
-            this.channel.configureBlocking(true);
-            this.channel.bind(new InetSocketAddress(InetAddress.getByName("0.0.0.0"), port));
-
-            this.trigger = new Thread(this);
-            this.trigger.start();
-        }
-
-        public void disconnect() throws IOException, InterruptedException {
-            if (this.channel != null) {
-                this.channel.close();
-                this.channel = null;
-            }
-            if (this.trigger != null) {
-                this.trigger.join();
-                this.trigger = null;
-            }
-        }
-
-        @Override
-        public void run() {
-            try {
-                while (true) {
-                    this.readBuffer.clear();
-                    SocketAddress address = this.channel.receive(this.readBuffer);
-                    this.readBuffer.flip();
-
-                    try {
-                        long timestamp = System.currentTimeMillis();
-                        SPLMessage spl_msg = SPLMessage.parseFrom(this.readBuffer);
-                        TeamCommMessage tc_msg = new TeamCommMessage(timestamp, spl_msg);
-                        
-                        if (address instanceof InetSocketAddress) {
-                            messageMap.put(((InetSocketAddress) address).getHostString(), tc_msg);
-                        }
-
-                    } catch (Exception ex) {
-                        Logger.getLogger(TeamCommViewer.class.getName()).log(Level.INFO, null, ex);
-                    }
-
-                }
-            } catch (AsynchronousCloseException ex) {
-                /* socket was closed, that's fine */
-            } catch (SocketException ex) {
-                Logger.getLogger(TeamCommViewer.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (IOException ex) {
-                Logger.getLogger(TeamCommViewer.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-    }//end class TeamCommListener
-
-    public class TeamCommMessage {
-
-        public TeamCommMessage(long timestamp, SPLMessage message) {
-            this.timestamp = timestamp;
-            this.message = message;
-        }
-
-        public final long timestamp;
-        public final SPLMessage message;
-        
-    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JToggleButton bt_autonomois;
