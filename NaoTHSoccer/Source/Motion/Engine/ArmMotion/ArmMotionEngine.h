@@ -17,6 +17,7 @@
 #include <Representations/Infrastructure/RobotInfo.h>
 #include "Representations/Motion/Request/MotionRequest.h"
 #include <Representations/Infrastructure/JointData.h>
+#include <Representations/Infrastructure/FrameInfo.h>
 
 #include "Motion/Engine/InverseKinematicsMotion/InverseKinematicsMotionEngine.h"
 
@@ -35,6 +36,7 @@ BEGIN_DECLARE_MODULE(ArmMotionEngine)
   REQUIRE(RobotInfo)
   REQUIRE(MotionRequest)
   REQUIRE(SensorJointData)
+  REQUIRE(FrameInfo)
 
   REQUIRE(InverseKinematicsMotionEngineService)
 
@@ -84,9 +86,10 @@ private:
   ArmMotionParams theArmMotionParams;
 
 private:
-  bool init;
   naoth::JointData theMotorJointDataOld;
   naoth::JointData theJointData;
+
+  FrameInfo last_executed;
 
   naoth::SensorJointData theSensorJointData;
 
