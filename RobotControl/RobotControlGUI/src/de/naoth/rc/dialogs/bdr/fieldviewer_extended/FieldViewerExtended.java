@@ -3,7 +3,7 @@
  *
  * Created on 1. Mai 2008, 00:02
  */
-package de.naoth.rc.dialogs.fieldviewer_extended;
+package de.naoth.rc.dialogs.bdr.fieldviewer_extended;
 
 import de.naoth.rc.core.dialog.AbstractDialog;
 import de.naoth.rc.core.dialog.DialogPlugin;

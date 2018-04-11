@@ -1,4 +1,4 @@
-package de.naoth.rc.dialogs;
+package de.naoth.rc.dialogs.bdr;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 import de.naoth.rc.RobotControl;
@@ -9,6 +9,7 @@ import de.naoth.rc.core.dialog.RCDialog;
 import de.naoth.rc.core.manager.ObjectListener;
 import de.naoth.rc.core.manager.SwingCommandExecutor;
 import de.naoth.rc.dataformats.SPLMessage;
+import de.naoth.rc.dialogs.TeamCommViewer;
 import de.naoth.rc.manager.GenericManagerFactory;
 import de.naoth.rc.messages.BDRMessages.BDRControlCommand;
 import de.naoth.rc.messages.BDRMessages.BDRBehaviorMode;
