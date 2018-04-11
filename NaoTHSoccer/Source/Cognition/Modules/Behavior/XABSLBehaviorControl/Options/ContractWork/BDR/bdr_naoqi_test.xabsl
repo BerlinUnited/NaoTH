@@ -26,6 +26,7 @@ option bdr_naoqi_test
     action
     {
       motion.type = stand;
+      arm.control_mode = normal;
     }
   }
 
@@ -33,7 +34,7 @@ option bdr_naoqi_test
   {
     decision
     {
-      else if(executed_motion.type == bdr_sit && state_time > 10000)
+      else if(executed_motion.type == bdr_sit && state_time > 20000)
         goto do_naoth;
       else
         stay;
