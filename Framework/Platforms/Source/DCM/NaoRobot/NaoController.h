@@ -25,6 +25,7 @@
 #include "SoundControl.h"
 #include "SPLGameController.h"
 #include "CPUTemperatureReader.h"
+#include "WhistleDetector.h"
 #include "DebugCommunication/DebugServer.h"
 
 #include "Tools/Communication/Network/BroadCaster.h"
@@ -36,8 +37,6 @@
 #include "Representations/Infrastructure/RemoteMessageData.h"
 #include "Representations/Infrastructure/GameData.h"
 #include "Representations/Infrastructure/SoundData.h"
-#include "Representations/Infrastructure/WhistlePercept.h"
-#include "Representations/Infrastructure/WhistleControl.h"
 
 // local tools
 #include "Tools/IPCData.h"
@@ -106,7 +105,7 @@ public:
   void get(ButtonData& data) { naoSensorData.get(data); }
   void get(BatteryData& data) { naoSensorData.get(data); }
   void get(UltraSoundReceiveData& data) { naoSensorData.get(data); }
-  void get(WhistlePercept& data) {data.counter = whistleSensorData.data(); }
+  void get(WhistlePercept& data) { theWhistleDetector.get(data); }
   void get(CpuData& data) { theCPUTemperatureReader.get(data); }
   void get(BDRNaoQiStatus& data) { naoSensorBDRNaoQiStatus.get(data); }
 
@@ -116,7 +115,7 @@ public:
   void set(const LEDData& data) { naoCommandLEDData.set(data); }
   void set(const IRSendData& data) { naoCommandIRSendData.set(data); }
   void set(const UltraSoundSendData& data) { naoCommandUltraSoundSendData.set(data); }
-  void set(const WhistleControl& data) { whistleControlData.set(data.onOffSwitch); }
+  void set(const WhistleControl& data) { theWhistleDetector.set(data); }
   void set(const BDRNaoQiRequest& data) {naoCommandBDRNaoQiRequestData.set(data); }
 
 
@@ -181,11 +180,6 @@ protected:
   SharedMemoryWriter<Accessor<IRSendData> > naoCommandIRSendData;
   SharedMemoryWriter<Accessor<LEDData> > naoCommandLEDData;
   SharedMemoryWriter<Accessor<BDRNaoQiRequest> > naoCommandBDRNaoQiRequestData;
-
-  // WhistleDetector --> NaoController
-  SharedMemoryReader<int> whistleSensorData;
-  SharedMemoryWriter<Accessor<int> > whistleControlData;
-
   // -- end -- shared memory access --
 
   //
@@ -198,6 +192,7 @@ protected:
   SPLGameController* theGameController;
   DebugServer* theDebugServer;
   CPUTemperatureReader theCPUTemperatureReader;
+  WhistleDetector theWhistleDetector;
 };
 
 } // end namespace naoth

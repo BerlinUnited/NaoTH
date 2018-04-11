@@ -1,0 +1,27 @@
+option bdr_goto_exit
+{
+  initial state wait {
+      decision {
+          if(state_time < 2000)
+            stay;
+          else
+            goto approach;
+      }
+
+      action {
+          head.control_mode = look_around;
+          motion.type = stand;
+      }
+  }
+
+  state approach {
+      decision {
+        stay;
+      }
+
+      action {
+          head.control_mode = look_around;
+          bdr_goto_point(x = 0, y = -450, rot = 90);
+      }
+  }
+}

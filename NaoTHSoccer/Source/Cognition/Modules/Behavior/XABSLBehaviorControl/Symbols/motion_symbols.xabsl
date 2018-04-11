@@ -149,6 +149,9 @@ namespace motion_symbols("Motion Symbols") {
   /** indicates whether the RIGHT foot is currently avaliable for the step control */
   bool input executed_motion.step_control.right_movable;
   
+  float input executed_motion.planed.target.x  "mm/s";
+  float input executed_motion.planed.target.y "mm/s";
+  float input executed_motion.planed.target.rotation "deg/s";
   
   /** the universal enum type for direction */  
   enum direction   
