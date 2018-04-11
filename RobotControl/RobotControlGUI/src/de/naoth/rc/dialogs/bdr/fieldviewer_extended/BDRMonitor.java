@@ -35,12 +35,12 @@ import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
  *
  * @author  Heinrich Mellmann
  */
-public class FieldViewerExtended extends AbstractDialog implements ActionListener, TeamCommListener
+public class BDRMonitor extends AbstractDialog implements ActionListener, TeamCommListener
 {
 
     @RCDialog(category = RCDialog.Category.View, name = "Field (extended)")
     @PluginImplementation
-    public static class Plugin extends DialogPlugin<FieldViewerExtended> {
+    public static class Plugin extends DialogPlugin<BDRMonitor> {
 
         @InjectPlugin
         public static RobotControl parent;
@@ -60,7 +60,7 @@ public class FieldViewerExtended extends AbstractDialog implements ActionListene
     private final Timer drawingTimer;
 
     
-    public FieldViewerExtended() {
+    public BDRMonitor() {
         initComponents();
 
         this.fieldCanvas.setBackgroundDrawing(new FieldDrawingBDR());
@@ -104,7 +104,7 @@ public class FieldViewerExtended extends AbstractDialog implements ActionListene
             // listen to TeamCommMessages
             Plugin.teamcommManager.addListener(this);
         } catch (IOException | InterruptedException ex) {
-            Logger.getLogger(FieldViewerExtended.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(BDRMonitor.class.getName()).log(Level.SEVERE, null, ex);
             // TODO: hint dialog?!
         }
     }
@@ -115,7 +115,7 @@ public class FieldViewerExtended extends AbstractDialog implements ActionListene
             // listen to TeamCommMessages
             Plugin.teamcommManager.removeListener(this);
         } catch (IOException | InterruptedException ex) {
-            Logger.getLogger(FieldViewerExtended.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(BDRMonitor.class.getName()).log(Level.SEVERE, null, ex);
             // TODO: hint dialog?!
         }
     }
