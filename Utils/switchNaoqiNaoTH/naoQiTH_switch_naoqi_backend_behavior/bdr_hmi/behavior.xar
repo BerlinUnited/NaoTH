@@ -14,7 +14,7 @@
         <Timeline enable="0">
             <BehaviorLayer name="behavior_layer1">
                 <BehaviorKeyframe name="keyframe1" index="1">
-                    <Diagram>
+                    <Diagram scale="59.4604">
                         <Box name="get BDRNaoQiRequest" id="4" localization="8" tooltip="get BDRNaoQiRequest" x="693" y="186">
                             <bitmap>media/images/box/sensors/STM.png</bitmap>
                             <script language="4">
@@ -864,7 +864,7 @@ class MyClass(GeneratedClass):
                             <Resource name="All motors" type="Lock" timeout="0" />
                             <Resource name="Stiffness" type="Lock" timeout="0" />
                         </Box>
-                        <Box name="Set Fall Manager" id="18" localization="8" tooltip="Enable or disable the Fall Manager.&#x0A;&#x0A;It is automatically set to its previous state when the behavior is stopped." x="98" y="135">
+                        <Box name="Set Fall Manager" id="18" localization="8" tooltip="Enable or disable the Fall Manager.&#x0A;&#x0A;It is automatically set to its previous state when the behavior is stopped." x="226" y="209">
                             <bitmap>media/images/box/sensors/fall_manager.png</bitmap>
                             <script language="4">
                                 <content>
@@ -895,58 +895,6 @@ class MyClass(GeneratedClass):
                                 <Choice value="Disable" />
                                 <Choice value="Enable" />
                             </Parameter>
-                        </Box>
-                        <Box name="Set Stiffness (2)" id="19" localization="8" tooltip="Stiffen the motors selected in parameters." x="1516" y="133">
-                            <bitmap>media/images/box/movement/stiffness.png</bitmap>
-                            <script language="4">
-                                <content>
-                                    <![CDATA[import time
-
-class MyClass(GeneratedClass):
-    def __init__(self):
-        GeneratedClass.__init__(self, False)
-
-    def onLoad(self):
-        self.bIsRunning = False
-        self.motion = ALProxy("ALMotion")
-
-    def onUnload(self):
-        self.bIsRunning = False
-
-    def setStiffness(self, stiffness):
-        self.bIsRunning = True
-        duration = self.getParameter("Duration (s)")
-        if(self.getParameter("Head")):
-            self.motion.post.stiffnessInterpolation("Head", stiffness, duration)
-        if(self.getParameter("Left arm")):
-            self.motion.post.stiffnessInterpolation("LArm", stiffness, duration)
-        if(self.getParameter("Right arm")):
-            self.motion.post.stiffnessInterpolation("RArm", stiffness, duration)
-        if(self.getParameter("Left leg")):
-            self.motion.post.stiffnessInterpolation("LLeg", stiffness, duration)
-        if(self.getParameter("Right leg")):
-            self.motion.post.stiffnessInterpolation("RLeg", stiffness, duration)
-        time.sleep(duration)
-        self.bIsRunning = False
-
-    def onInput_onSet(self):
-        self.motion.post.setSmartStiffnessEnabled(False)
-        #if( self.bIsRunning ):
-        #    return
-        #self.setStiffness(self.getParameter("Motors stiffness (%)")/100.)
-        self.onReady() #~ activate output of the box]]>
-</content>
-                            </script>
-                            <Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" />
-                            <Input name="onSet" type="1" type_size="1" nature="1" inner="0" tooltip="When this input is stimulated, the stiffness of the selected motors is set to&#x0A;the stiffness parameter value." id="2" />
-                            <Output name="onReady" type="1" type_size="1" nature="2" inner="0" tooltip="Signal sent when stiffness has been set." id="3" />
-                            <Parameter name="Head" inherits_from_parent="0" content_type="0" value="1" default_value="1" tooltip="Do we want to modify the head stiffness?" id="4" />
-                            <Parameter name="Left arm" inherits_from_parent="0" content_type="0" value="1" default_value="1" tooltip="Do we want to modify the left arm stiffness?" id="5" />
-                            <Parameter name="Right arm" inherits_from_parent="0" content_type="0" value="1" default_value="1" tooltip="Do we want to modify the right arm stiffness?" id="6" />
-                            <Parameter name="Left leg" inherits_from_parent="0" content_type="0" value="1" default_value="1" tooltip="Do we want to modify the left leg stiffness?" id="7" />
-                            <Parameter name="Right leg" inherits_from_parent="0" content_type="0" value="1" default_value="1" tooltip="Do we want to modify the right leg stiffness?" id="8" />
-                            <Parameter name="Motors stiffness (%)" inherits_from_parent="0" content_type="1" value="0" default_value="100" min="0" max="100" tooltip="Stiffness value the motors are set to." id="9" />
-                            <Parameter name="Duration (s)" inherits_from_parent="0" content_type="2" value="0.5" default_value="1" min="0.02" max="10" tooltip="How much time to go to the max/min stiffness in seconds." id="10" />
                         </Box>
                         <Box name="Set Stiffness (3)" id="20" localization="8" tooltip="Stiffen the motors selected in parameters." x="1080" y="480">
                             <bitmap>media/images/box/movement/stiffness.png</bitmap>
@@ -999,6 +947,86 @@ class MyClass(GeneratedClass):
                             <Parameter name="Motors stiffness (%)" inherits_from_parent="0" content_type="1" value="80" default_value="100" min="0" max="100" tooltip="Stiffness value the motors are set to." id="9" />
                             <Parameter name="Duration (s)" inherits_from_parent="0" content_type="2" value="0.5" default_value="1" min="0.02" max="10" tooltip="How much time to go to the max/min stiffness in seconds." id="10" />
                         </Box>
+                        <Box name="disable smartstiffness" id="2" localization="8" tooltip="this box disables smart stiffness" x="88" y="214">
+                            <bitmap>media/images/box/movement/stiffness.png</bitmap>
+                            <script language="4">
+                                <content>
+                                    <![CDATA[class MyClass(GeneratedClass):
+    def __init__(self):
+        GeneratedClass.__init__(self)
+
+    def onLoad(self):
+        self.motion = ALProxy("ALMotion")
+        pass
+
+    def onUnload(self):
+        #put clean-up code here
+        pass
+
+    def onInput_onStart(self):
+        self.motion.setSmartStiffnessEnabled(False)
+        self.onStopped()
+
+    def onInput_onStop(self):
+        self.onUnload() #it is recommended to reuse the clean-up as the box is stopped
+        self.onStopped() #activate the output of the box]]>
+</content>
+                            </script>
+                            <Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" />
+                            <Input name="onStart" type="1" type_size="1" nature="2" inner="0" tooltip="Box behavior starts when a signal is received on this input." id="2" />
+                            <Output name="onStopped" type="1" type_size="1" nature="1" inner="0" tooltip="Signal sent when box behavior is finished." id="3" />
+                        </Box>
+                        <Box name="Set Stiffness" id="3" localization="8" tooltip="Stiffen the motors selected in parameters." x="940" y="478">
+                            <bitmap>media/images/box/movement/stiffness.png</bitmap>
+                            <script language="4">
+                                <content>
+                                    <![CDATA[import time
+
+class MyClass(GeneratedClass):
+    def __init__(self):
+        GeneratedClass.__init__(self, False)
+
+    def onLoad(self):
+        self.bIsRunning = False
+        self.motion = ALProxy("ALMotion")
+
+    def onUnload(self):
+        self.bIsRunning = False
+
+    def setStiffness(self, stiffness):
+        self.bIsRunning = True
+        duration = self.getParameter("Duration (s)")
+        if(self.getParameter("Head")):
+            self.motion.post.stiffnessInterpolation("Head", stiffness, duration)
+        if(self.getParameter("Left arm")):
+            self.motion.post.stiffnessInterpolation("LArm", stiffness, duration)
+        if(self.getParameter("Right arm")):
+            self.motion.post.stiffnessInterpolation("RArm", stiffness, duration)
+        if(self.getParameter("Left leg")):
+            self.motion.post.stiffnessInterpolation("LLeg", stiffness, duration)
+        if(self.getParameter("Right leg")):
+            self.motion.post.stiffnessInterpolation("RLeg", stiffness, duration)
+        time.sleep(duration)
+        self.bIsRunning = False
+
+    def onInput_onSet(self):
+        if( self.bIsRunning ):
+            return
+        self.setStiffness(self.getParameter("Motors stiffness (%)")/100.)
+        self.onReady() #~ activate output of the box]]>
+</content>
+                            </script>
+                            <Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" />
+                            <Input name="onSet" type="1" type_size="1" nature="1" inner="0" tooltip="When this input is stimulated, the stiffness of the selected motors is set to&#x0A;the stiffness parameter value." id="2" />
+                            <Output name="onReady" type="1" type_size="1" nature="2" inner="0" tooltip="Signal sent when stiffness has been set." id="3" />
+                            <Parameter name="Head" inherits_from_parent="0" content_type="0" value="1" default_value="1" tooltip="Do we want to modify the head stiffness?" id="4" />
+                            <Parameter name="Left arm" inherits_from_parent="0" content_type="0" value="1" default_value="1" tooltip="Do we want to modify the left arm stiffness?" id="5" />
+                            <Parameter name="Right arm" inherits_from_parent="0" content_type="0" value="1" default_value="1" tooltip="Do we want to modify the right arm stiffness?" id="6" />
+                            <Parameter name="Left leg" inherits_from_parent="0" content_type="0" value="1" default_value="1" tooltip="Do we want to modify the left leg stiffness?" id="7" />
+                            <Parameter name="Right leg" inherits_from_parent="0" content_type="0" value="1" default_value="1" tooltip="Do we want to modify the right leg stiffness?" id="8" />
+                            <Parameter name="Motors stiffness (%)" inherits_from_parent="0" content_type="1" value="0" default_value="100" min="0" max="100" tooltip="Stiffness value the motors are set to." id="9" />
+                            <Parameter name="Duration (s)" inherits_from_parent="0" content_type="2" value="0.02" default_value="1" min="0.02" max="10" tooltip="How much time to go to the max/min stiffness in seconds." id="10" />
+                        </Box>
                         <Link inputowner="6" indexofinput="2" outputowner="4" indexofoutput="4" />
                         <Link inputowner="13" indexofinput="2" outputowner="8" indexofoutput="3" />
                         <Link inputowner="12" indexofinput="2" outputowner="14" indexofoutput="3" />
@@ -1013,14 +1041,15 @@ class MyClass(GeneratedClass):
                         <Link inputowner="16" indexofinput="2" outputowner="11" indexofoutput="4" />
                         <Link inputowner="17" indexofinput="2" outputowner="16" indexofoutput="4" />
                         <Link inputowner="4" indexofinput="2" outputowner="17" indexofoutput="4" />
-                        <Link inputowner="18" indexofinput="2" outputowner="0" indexofoutput="2" />
                         <Link inputowner="4" indexofinput="2" outputowner="18" indexofoutput="3" />
                         <Link inputowner="15" indexofinput="2" outputowner="18" indexofoutput="3" />
                         <Link inputowner="8" indexofinput="2" outputowner="6" indexofoutput="3" />
-                        <Link inputowner="19" indexofinput="2" outputowner="13" indexofoutput="4" />
-                        <Link inputowner="5" indexofinput="2" outputowner="19" indexofoutput="3" />
                         <Link inputowner="7" indexofinput="2" outputowner="20" indexofoutput="3" />
-                        <Link inputowner="20" indexofinput="2" outputowner="12" indexofoutput="4" />
+                        <Link inputowner="2" indexofinput="2" outputowner="0" indexofoutput="2" />
+                        <Link inputowner="18" indexofinput="2" outputowner="2" indexofoutput="3" />
+                        <Link inputowner="3" indexofinput="2" outputowner="12" indexofoutput="4" />
+                        <Link inputowner="20" indexofinput="2" outputowner="3" indexofoutput="3" />
+                        <Link inputowner="5" indexofinput="2" outputowner="13" indexofoutput="4" />
                     </Diagram>
                 </BehaviorKeyframe>
             </BehaviorLayer>

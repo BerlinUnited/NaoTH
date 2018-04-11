@@ -91,7 +91,7 @@ class MyClass(GeneratedClass):
                             <Output name="output_1" type="0" type_size="1" nature="2" inner="0" tooltip="This IO has been automatically added by box. Read box tooltip for more information." id="4" />
                             <Output name="output_2" type="0" type_size="1" nature="2" inner="0" tooltip="This IO has been automatically added by box. Read box tooltip for more information." id="5" />
                         </Box>
-                        <Box name="set BDRNaoQiStatus (3)" id="12" localization="8" tooltip="set BDRNaoQiStatus" x="1164" y="496">
+                        <Box name="set BDRNaoQiStatus (3)" id="12" localization="8" tooltip="set BDRNaoQiStatus" x="1166" y="287">
                             <bitmap>media/images/box/sensors/STM.png</bitmap>
                             <script language="4">
                                 <content>
@@ -173,7 +173,7 @@ class MyClass(GeneratedClass):
                             <Output name="onError" type="3" type_size="1" nature="1" inner="0" tooltip="Output when error is raised by the behavior. Contains the error message." id="5" />
                             <Parameter name="key" inherits_from_parent="0" content_type="3" value="BDRNaoQiStatus" default_value="MyApplication/MyData" custom_choice="0" tooltip="" id="6" />
                         </Box>
-                        <Box name="Number Edit (2)" id="14" localization="8" tooltip="Send the number you entered when the input is stimulated." plugin="numberedit_plugin" x="980" y="512">
+                        <Box name="Number Edit (2)" id="14" localization="8" tooltip="Send the number you entered when the input is stimulated." plugin="numberedit_plugin" x="982" y="303">
                             <bitmap>media/images/box/interaction/vocabulary.png</bitmap>
                             <script language="4">
                                 <content>
@@ -193,7 +193,7 @@ class MyClass(GeneratedClass):
                             <Input name="onStart" type="1" type_size="1" nature="1" inner="0" tooltip="To send the number on the output." id="2" />
                             <Output name="onStopped" type="2" type_size="1" nature="2" inner="0" tooltip="The number you entered." id="3" />
                         </Box>
-                        <Box name="Eye LEDs (1)" id="2" localization="8" tooltip="Set the LED color of the eyes. Note that you must open the box to enter the color." x="1365" y="508">
+                        <Box name="Eye LEDs (1)" id="2" localization="8" tooltip="Set the LED color of the eyes. Note that you must open the box to enter the color." x="1367" y="299">
                             <bitmap>media/images/box/interaction/LED.png</bitmap>
                             <script language="4">
                                 <content>
