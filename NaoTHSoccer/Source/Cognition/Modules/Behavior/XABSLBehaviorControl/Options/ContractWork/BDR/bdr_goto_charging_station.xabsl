@@ -17,14 +17,43 @@ option bdr_goto_charging_station
   state approach {
       decision {
         if(action_done)
-          goto sit;
+          goto wait_and_localize;
         else
           stay;
       }
 
       action {
           head.control_mode = look_around;
-          bdr_goto_point(x = 0, y = 500, rot = -90);
+          bdr_goto_point(x = 0, y = 400, rot = -90);
+      }
+  }
+
+  state wait_and_localize{
+      decision {
+          if(state_time > 10000) {
+              goto approach_very_slowly;
+          }
+          else
+              stay;
+      }
+      
+      action{
+          motion.type = stand;
+          head.control_mode = look_around;
+      }
+  }
+
+  state approach_very_slowly{
+      decision{
+          if (action_done)
+              goto sit;
+          else
+              stay;
+      }
+
+      action {
+            head.control_mode = look_around;
+            bdr_align_carefully(x = 0, y = 500, rot = -90);
       }
   }
 
