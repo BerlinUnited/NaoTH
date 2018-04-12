@@ -84,7 +84,7 @@ leds
 #videorecorder
 #alvisualcompass
 #visualspacehistory
-#alsystem
+alsystem
 packagemanager
 alusersession
 
