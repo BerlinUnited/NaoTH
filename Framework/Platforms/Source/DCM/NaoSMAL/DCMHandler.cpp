@@ -33,6 +33,11 @@ void DCMHandler::init(boost::shared_ptr<ALBroker> pB)
   // init device handlers
   ledHandler.init(pB);
 
+  // init BDR stuff
+  disable_dcm_writings = false;
+  al_memory->insertData("BDRNaoQiStatus",0);
+  al_memory->insertData("BDRNaoQiRequest",0);
+
   //Generate all strings for interaction
 
    // init sensors
@@ -519,6 +524,8 @@ void DCMHandler::initMotorJoint()
 
 void DCMHandler::setSingleMotorData(const JointData::JointID jointID, const MotorJointData *theMotorJointData, int dcmTime)
 {
+  if(disable_dcm_writings)
+      return;
   sendToDCM(DCMPath_MotorJointHardness[jointID],theMotorJointData->stiffness[jointID],dcmTime);
   sendToDCM(DCMPath_MotorJointPosition[jointID],theMotorJointData->position[jointID],dcmTime);
 }
@@ -526,6 +533,9 @@ void DCMHandler::setSingleMotorData(const JointData::JointID jointID, const Moto
 
 void DCMHandler::setAllPositionData(const MotorJointData& mjd, int dcmTime)
 {
+  if (disable_dcm_writings)
+      return;
+
   allMotorPositionCommands[4][0] = dcmTime;
 
   //MotorJoints
@@ -550,6 +560,9 @@ void DCMHandler::setAllPositionData(const MotorJointData& mjd, int dcmTime)
 
 bool DCMHandler::setAllHardnessDataSmart(const MotorJointData& mjd, int dcmTime)
 {
+  if(disable_dcm_writings)
+      return false;
+
   // check if there are any changes
   for(int i=0;i<JointData::numOfJoint;i++)
   {
@@ -569,6 +582,8 @@ bool DCMHandler::setAllHardnessDataSmart(const MotorJointData& mjd, int dcmTime)
 
 void DCMHandler::setAllHardnessData(const MotorJointData& mjd, int dcmTime)
 {
+  if(disable_dcm_writings)
+      return;
   allMotorHardnessCommands[4][0] = dcmTime;
 
   //MotorJoints
@@ -593,6 +608,8 @@ void DCMHandler::setAllHardnessData(const MotorJointData& mjd, int dcmTime)
 
 void DCMHandler::setAllHardnessData(double value, int dcmTime)
 {
+  if(disable_dcm_writings)
+      return;
   allMotorHardnessCommands[4][0] = dcmTime;
 
   //MotorJoints
@@ -661,6 +678,8 @@ void DCMHandler::initIRSend()
 
 void DCMHandler::setIRSend(const IRSendData& data, int dcmTime)
 {
+  if (disable_dcm_writings)
+      return;
   if ( !data.changed ) return;
 
   irCommands[4][0] = dcmTime;
@@ -715,6 +734,8 @@ void DCMHandler::initUltraSoundSend()
 
 void DCMHandler::setUltraSoundSend(const UltraSoundSendData& data, int dcmTime)
 {
+  if (disable_dcm_writings)
+      return;
   if(data.mode > 0) // don't send negative values
   {
     usSendCommands[4][0] = dcmTime;
@@ -729,3 +750,12 @@ void DCMHandler::setUltraSoundSend(const UltraSoundSendData& data, int dcmTime)
     }
   }
 }//end setUltraSoundSend
+
+void DCMHandler::setBDRNaoQiRequest(const BDRNaoQiRequest& data, int /*dcmTime*/){
+    al_memory->insertData("BDRNaoQiRequest", data.behavior);
+    disable_dcm_writings = data.disable_DCM_writings;
+}
+
+void DCMHandler::getBDRNaoQiStatus(BDRNaoQiStatus *dest){
+    dest->behavior = static_cast<BDRNaoQiRequest::BDRNaoQiBehavior>(getFromALMemory("BDRNaoQiStatus").getUnionValue().asInt);
+}

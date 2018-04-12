@@ -107,6 +107,7 @@ public:
   void get(UltraSoundReceiveData& data) { naoSensorData.get(data); }
   void get(WhistlePercept& data) { theWhistleDetector.get(data); }
   void get(CpuData& data) { theCPUTemperatureReader.get(data); }
+  void get(BDRNaoQiStatus& data) { naoSensorBDRNaoQiStatus.get(data); }
 
   // write directly to the shared memory
   // ACHTUNG: each set calls swapWriting()
@@ -115,6 +116,7 @@ public:
   void set(const IRSendData& data) { naoCommandIRSendData.set(data); }
   void set(const UltraSoundSendData& data) { naoCommandUltraSoundSendData.set(data); }
   void set(const WhistleControl& data) { theWhistleDetector.set(data); }
+  void set(const BDRNaoQiRequest& data) {naoCommandBDRNaoQiRequestData.set(data); }
 
 
   virtual void getMotionInput()
@@ -170,12 +172,14 @@ protected:
   // -- begin -- shared memory access --
   // DCM --> NaoController
   SharedMemoryReader<NaoSensorData> naoSensorData;
+  SharedMemoryReader<BDRNaoQiStatus> naoSensorBDRNaoQiStatus;
 
   // NaoController --> DCM
   SharedMemoryWriter<Accessor<MotorJointData> > naoCommandMotorJointData;
   SharedMemoryWriter<Accessor<UltraSoundSendData> > naoCommandUltraSoundSendData;
   SharedMemoryWriter<Accessor<IRSendData> > naoCommandIRSendData;
   SharedMemoryWriter<Accessor<LEDData> > naoCommandLEDData;
+  SharedMemoryWriter<Accessor<BDRNaoQiRequest> > naoCommandBDRNaoQiRequestData;
   // -- end -- shared memory access --
 
   //

@@ -34,6 +34,7 @@ Motion::Motion()
 
   DEBUG_REQUEST_REGISTER("Motion:KinematicChain:drawMotor3D", "", false);
   DEBUG_REQUEST_REGISTER("Motion:KinematicChain:drawSensor3D", "", false);
+  DEBUG_REQUEST_REGISTER("Motion:disable_DCM_writings", "", false);
 
   REGISTER_DEBUG_COMMAND("DebugPlot:get", "get the plots", &getDebugPlot());
 
@@ -100,12 +101,14 @@ void Motion::init(naoth::ProcessInterface& platformInterface, const naoth::Platf
   REG_INPUT(FSRData);
   REG_INPUT(AccelerometerData);
   REG_INPUT(GyrometerData);
+  REG_INPUT(BDRNaoQiStatus);
 
   REG_INPUT(DebugMessageInMotion);
 
 #define REG_OUTPUT(R)                                                   \
   platformInterface.registerOutput(get##R())
 
+  REG_OUTPUT(BDRNaoQiRequest);
   REG_OUTPUT(MotorJointData);
   REG_OUTPUT(DebugMessageOut);
   //REG_OUTPUT(LEDData);
@@ -137,6 +140,13 @@ void Motion::init(naoth::ProcessInterface& platformInterface, const naoth::Platf
 
 void Motion::call()
 {
+  DEBUG_REQUEST("Motion:disable_DCM_writings",
+    getBDRNaoQiRequest().disable_DCM_writings = true;
+  );
+
+  DEBUG_REQUEST_ON_DEACTIVE("Motion:disable_DCM_writings",
+    getBDRNaoQiRequest().disable_DCM_writings = false;
+  );
 
   STOPWATCH_START("MotionExecute");
 
