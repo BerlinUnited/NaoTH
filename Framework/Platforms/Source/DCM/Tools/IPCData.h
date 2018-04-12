@@ -22,6 +22,8 @@
 #include "Representations/Infrastructure/BatteryData.h"
 #include "Representations/Infrastructure/CpuData.h"
 
+#include "Representations/Infrastructure/BDRNaoQi.h"
+
 namespace naoth
 {
 

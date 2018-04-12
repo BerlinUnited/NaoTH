@@ -74,8 +74,28 @@ void SelflocSymbols::execute()
   ownGoal = Goal(ownGoalModel.leftPost, ownGoalModel.rightPost);
   oppGoal = Goal(oppGoalModel.leftPost, oppGoalModel.rightPost);
 
+
   robotPosePlanned = getRobotPose() + getMotionStatus().plannedMotion.hip;
   angleOnFieldPlanned = Math::toDegrees(robotPosePlanned.rotation);
+
+  
+  const Pose3D& hip = getKinematicChain().getLink(KinematicChain::Hip).M;
+  
+  // feet in local coordinates
+  const Pose3D& lfoot = getKinematicChain().getLink(KinematicChain::LFoot).M;
+  Pose2D lfoot2d = hip.local(lfoot).projectXY() + getMotionStatus().plannedMotion.lFoot;
+
+  const Pose3D& rfoot = getKinematicChain().getLink(KinematicChain::RFoot).M;
+  Pose2D rfoot2d = hip.local(rfoot).projectXY() + getMotionStatus().plannedMotion.rFoot;
+
+  Pose2D plannedOrigin(Math::meanAngle(lfoot2d.getAngle(),rfoot2d.getAngle()), (lfoot2d.translation + rfoot2d.translation)*0.5);
+
+  robotPosePlanned = getRobotPose() + plannedOrigin;
+  angleOnFieldPlanned = Math::toDegrees(robotPosePlanned.rotation);
+
+  FIELD_DRAWING_CONTEXT;
+  PEN("FFFFFF", 20);
+  ROBOT(robotPosePlanned.translation.x, robotPosePlanned.translation.y, robotPosePlanned.rotation);
 
   // calculate the distance to the sidelines
   double distance2back = getFieldInfo().xLength/2.0 + (std::abs(getRobotPose().translation.x) * Math::sgn(getRobotPose().translation.x));

@@ -61,6 +61,9 @@ namespace motion
     goalie_sit_n_dive_left_test,
     goalie_sit_n_dive_right_test,
 
+    bdr_entertainment,
+    bdr_sit,
+
     // instantly load and run the play_editor_motionnet.mef
     // used by the motion editor
     play_editor_motionnet,
@@ -111,6 +114,9 @@ namespace motion
       case goalie_sit_n_dive_right: return "goalie_sit_n_dive_right";
       case goalie_sit_n_dive_left_test: return "goalie_sit_n_dive_left_test";
       case goalie_sit_n_dive_right_test: return "goalie_sit_n_dive_right_test";
+
+      case bdr_entertainment: return "bdr_entertainment";
+      case bdr_sit: return "bdr_sit";
 
       case play_editor_motionnet: return "play_editor_motionnet";
 

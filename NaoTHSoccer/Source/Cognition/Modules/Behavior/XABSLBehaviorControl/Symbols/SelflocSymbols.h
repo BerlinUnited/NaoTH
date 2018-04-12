@@ -23,8 +23,12 @@
 #include "Tools/Math/Geometry.h"
 #include "Tools/Debug/DebugRequest.h"
 #include "Tools/Debug/DebugDrawings.h"
+#include <Representations/Modeling/KinematicChain.h>
 
 BEGIN_DECLARE_MODULE(SelflocSymbols)
+  PROVIDE(DebugDrawings)
+  PROVIDE(DebugRequest)
+
   REQUIRE(RobotPose)
   REQUIRE(SelfLocGoalModel)
   REQUIRE(PlayerInfo)
@@ -32,8 +36,8 @@ BEGIN_DECLARE_MODULE(SelflocSymbols)
   REQUIRE(MotionStatus)
   REQUIRE(CompassDirection)
   REQUIRE(FieldInfo)
-  PROVIDE(DebugDrawings)
-  PROVIDE(DebugRequest)
+  REQUIRE(KinematicChain)
+
 END_DECLARE_MODULE(SelflocSymbols)
 
 class SelflocSymbols: public SelflocSymbolsBase

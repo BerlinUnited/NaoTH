@@ -51,7 +51,7 @@ option bdr_remote_play
     decision
     {
       else if(remote_control.bdr_control != WARTUNG)
-        goto transition;
+        goto localize_after_wartung;
       else
         stay;
     }
@@ -59,6 +59,22 @@ option bdr_remote_play
     {
         bdr_goto_charging_station();
         //bdr_goto_exit();
+    }
+  }
+
+  state localize_after_wartung
+  {
+    decision
+    {
+      else if(executed_motion.type == stand && executed_motion.time > 5000)
+        goto transition;
+      else
+        stay;
+    }
+    action
+    {
+        motion.type = stand;
+        head.control_mode = search_for_ball_and_look_around;
     }
   }
 
