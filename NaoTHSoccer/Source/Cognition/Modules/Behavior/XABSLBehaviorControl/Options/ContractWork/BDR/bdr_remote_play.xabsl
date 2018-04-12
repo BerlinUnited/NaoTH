@@ -9,9 +9,26 @@ option bdr_remote_play
   initial state idle{
     decision{
       else
-        goto transition;
+        goto localize;
     } 
     action{}
+  }
+
+  state localize
+  {
+    decision
+    {
+      else if(robot_pose.is_valid && executed_motion.time > 5000)
+        goto transition;
+      else
+        stay;
+    }
+    action
+    {
+        motion.type = stand;
+        head.control_mode = look_around;
+        situationStatusOwnHalf = last_state_was_penalized;
+    }
   }
 
   state do_nothing
