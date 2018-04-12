@@ -25,6 +25,7 @@ option bdr_goto_charging_station
       action {
           head.control_mode = look_around;
           bdr_goto_point(x = 0, y = 400, rot = -90);
+          motion.walk.style = stable;
       }
   }
 
@@ -53,7 +54,7 @@ option bdr_goto_charging_station
 
       action {
             head.control_mode = look_around;
-            bdr_align_carefully(x = 0, y = 500, rot = -90);
+            bdr_align_carefully(x = 0, y = 550, rot = -90);
       }
   }
 
