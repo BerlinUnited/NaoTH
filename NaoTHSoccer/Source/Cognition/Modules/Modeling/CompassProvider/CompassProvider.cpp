@@ -57,7 +57,7 @@ void CompassProvider::execute()
   }
   */
 
-
+  ASSERT(getLinePercept().edgelLineIDs.size() == getLineGraphPercept().edgelsOnField.size());
   // fill the compas
   if((int)getLineGraphPercept().edgelsOnField.size() > parameters.minimalNumberOfPairs)
   {

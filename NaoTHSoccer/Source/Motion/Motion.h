@@ -44,6 +44,7 @@
 #include "Representations/Modeling/GroundContactModel.h"
 #include "Representations/Motion/CollisionPercept.h"
 #include "Representations/Motion/Walk2018/Walk2018Parameters.h"
+#include "Representations/Infrastructure/BDRNaoQi.h"
 
 // debug
 #include <Representations/Debug/Stopwatch.h>
@@ -85,6 +86,8 @@ BEGIN_DECLARE_MODULE(Motion)
 
   // PROVIDE is needed to update the speed and acceleration
   PROVIDE(MotorJointData) // TODO: check
+  PROVIDE(BDRNaoQiRequest) // to disable dcm writings by debug request
+  PROVIDE(BDRNaoQiStatus)
 
   PROVIDE(OffsetJointData)
   

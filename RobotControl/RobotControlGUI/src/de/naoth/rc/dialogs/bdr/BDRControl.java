@@ -12,6 +12,7 @@ import de.naoth.rc.core.dialog.DialogPlugin;
 import de.naoth.rc.core.dialog.RCDialog;
 import de.naoth.rc.core.manager.ObjectListener;
 import de.naoth.rc.core.manager.SwingCommandExecutor;
+import de.naoth.rc.dataformats.SPLMessage;
 import de.naoth.rc.dialogs.TeamCommViewer;
 import de.naoth.rc.messages.BDRMessages.BDRControlCommand;
 import de.naoth.rc.messages.BDRMessages.BDRBehaviorMode;
@@ -21,7 +22,6 @@ import de.naoth.rc.server.ConnectionStatusListener;
 import java.awt.Color;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
@@ -57,7 +57,7 @@ public class BDRControl extends AbstractDialog implements TeamCommListener {
         initComponents();
 
         // dummy robot for tests
-        //robotsMap.put("10.0.4.77", new RemoteRobotPanel(Plugin.parent.getMessageServer(),"10.0.4.77", new SPLMessage()));
+        //robotsMap.put("10.0.4.77", new RemoteRobotPanel(Plugin.parent.getMessageServer(), "10.0.4.77", new SPLMessage()));
         //updateRoboPanel();
         
         Plugin.teamcommManager.addListener(this);
@@ -66,24 +66,29 @@ public class BDRControl extends AbstractDialog implements TeamCommListener {
         Plugin.parent.getMessageServer().addConnectionStatusListener(new ConnectionStatusListener() {
             @Override
             public void connected(ConnectionStatusEvent event) {
-                bt_autonomois.setEnabled(true);
-                bt_stop.setEnabled(true);
-                bt_wartung.setEnabled(true);
+                //setButtons(true);
+                updateStatus();
             }
 
             @Override
             public void disconnected(ConnectionStatusEvent event) {
-                bt_autonomois.setEnabled(false);
-                bt_stop.setEnabled(false);
-                bt_wartung.setEnabled(false);
+                setButtons(false);
             }
         });
+        
+        setButtons(false);
     }
     
     @Override
     public void dispose() {
         Plugin.teamcommManager.removeListener(this);
         Plugin.teamCommUDPReceiver.disconnect(this, port);
+    }
+    
+    private void setButtons(boolean flag) {
+        bt_autonomois.setEnabled(flag);
+        bt_stop.setEnabled(flag);
+        bt_wartung.setEnabled(flag);
     }
 
     /**
@@ -97,41 +102,17 @@ public class BDRControl extends AbstractDialog implements TeamCommListener {
 
         jScrollPane2 = new javax.swing.JScrollPane();
         robotPanel = new javax.swing.JPanel();
-        jToolBar1 = new javax.swing.JToolBar();
-        filterTeam = new javax.swing.JToggleButton();
-        teamSelectionBox = new javax.swing.JComboBox();
         controlPanel = new javax.swing.JPanel();
         bt_stop = new javax.swing.JToggleButton();
         bt_autonomois = new javax.swing.JToggleButton();
         bt_wartung = new javax.swing.JToggleButton();
 
+        robotPanel.setBackground(new java.awt.Color(255, 255, 255));
         robotPanel.setLayout(new java.awt.GridLayout(2, 2, 5, 5));
 
         robotPanel.setLayout(new de.naoth.rc.components.WrapLayout(java.awt.FlowLayout.LEFT));
 
         jScrollPane2.setViewportView(robotPanel);
-
-        jToolBar1.setFloatable(false);
-        jToolBar1.setRollover(true);
-
-        filterTeam.setText("Filter by Team");
-        filterTeam.setFocusable(false);
-        filterTeam.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        filterTeam.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        filterTeam.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                filterTeamActionPerformed(evt);
-            }
-        });
-        jToolBar1.add(filterTeam);
-
-        teamSelectionBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "0", "1", "2", "3", "4", "5", "6" }));
-        teamSelectionBox.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                teamSelectionBoxActionPerformed(evt);
-            }
-        });
-        jToolBar1.add(teamSelectionBox);
 
         controlPanel.setLayout(new java.awt.GridLayout(3, 0));
 
@@ -167,26 +148,13 @@ public class BDRControl extends AbstractDialog implements TeamCommListener {
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 426, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(controlPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 226, javax.swing.GroupLayout.PREFERRED_SIZE))
-            .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                    .addComponent(controlPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 298, Short.MAX_VALUE)))
+            .addComponent(jScrollPane2)
+            .addComponent(controlPanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 329, Short.MAX_VALUE)
         );
     }// </editor-fold>//GEN-END:initComponents
-
-    private void filterTeamActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_filterTeamActionPerformed
-        updateRoboPanel();
-    }//GEN-LAST:event_filterTeamActionPerformed
-
-    private void teamSelectionBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_teamSelectionBoxActionPerformed
-        updateRoboPanel();
-    }//GEN-LAST:event_teamSelectionBoxActionPerformed
 
     private void bt_stopActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bt_stopActionPerformed
         BDRControlCommand.Builder cmd = BDRControlCommand.newBuilder();
@@ -214,9 +182,7 @@ public class BDRControl extends AbstractDialog implements TeamCommListener {
                 BDRControlCommand command = BDRControlCommand.parseFrom(object);
                 
                 if(command.hasBehaviorMode()) {
-                    bt_autonomois.setEnabled(true);
-                    bt_stop.setEnabled(true);
-                    bt_wartung.setEnabled(true);
+                    setButtons(true);
                     
                     bt_autonomois.setSelected(command.getBehaviorMode() == BDRBehaviorMode.AUTONOMOUS_PLAY);
                     bt_stop.setSelected(command.getBehaviorMode() == BDRBehaviorMode.DO_NOTHING);
@@ -249,6 +215,11 @@ public class BDRControl extends AbstractDialog implements TeamCommListener {
         }
     }
     
+    private void updateStatus() {
+        Command cmd = new Command("Cognition:representation:get").addArg("BDRControlCommand");
+        Plugin.commandExecutor.executeCommand(new StatusUpdater(), cmd);
+    }
+    
     private void sendBDRCommand(BDRControlCommand command) {
         
         Command cmd = new Command("Cognition:representation:set").addArg("BDRControlCommand", command.toByteArray());
@@ -256,9 +227,7 @@ public class BDRControl extends AbstractDialog implements TeamCommListener {
             @Override
             public void newObjectReceived(byte[] object) {
                 System.out.println(new String(object));
-                
-                Command cmd = new Command("Cognition:representation:get").addArg("BDRControlCommand");
-                Plugin.commandExecutor.executeCommand(new StatusUpdater(), cmd);
+                updateStatus();
             }
 
             @Override
@@ -275,18 +244,10 @@ public class BDRControl extends AbstractDialog implements TeamCommListener {
     private void updateRoboPanel() {
         this.robotPanel.removeAll();
 
-        for (Map.Entry<String, RemoteRobotPanel> msgEntry : robotsMap.entrySet()) {
-            addPanel(msgEntry.getValue());
+        for (RemoteRobotPanel robot : robotsMap.values()) {
+            robotPanel.add(robot);
         }
         this.robotPanel.repaint();
-    }
-    
-    private void addPanel(RemoteRobotPanel robotStatus) {
-        if(!filterTeam.isSelected() || teamSelectionBox.getSelectedIndex() == robotStatus.getMessage().teamNum)
-        {
-            robotPanel.add(robotStatus);
-            robotPanel.repaint();
-        }
     }
 
     @Override
@@ -311,10 +272,7 @@ public class BDRControl extends AbstractDialog implements TeamCommListener {
     private javax.swing.JToggleButton bt_stop;
     private javax.swing.JToggleButton bt_wartung;
     private javax.swing.JPanel controlPanel;
-    private javax.swing.JToggleButton filterTeam;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JToolBar jToolBar1;
     private javax.swing.JPanel robotPanel;
-    private javax.swing.JComboBox teamSelectionBox;
     // End of variables declaration//GEN-END:variables
 }
