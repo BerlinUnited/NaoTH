@@ -27,9 +27,8 @@ chmod 744 ./checkRC.sh;
 # set naoth to default and enable the naoqi server
 ./checkRC.sh "naoth=default naopathe=boot nginx=boot"
 
-# set the network to be configured by connman
-# TODO: configure wlan0 like in naoth only case
-./checkRC.sh "connman=boot net.eth0=disable net.wlan0=disable"
+# set the network to be configured by config
+./checkRC.sh "connman=disable net.eth0=boot net.wlan0=boot"
 
 # Set autoload.ini in /etc/naoqi to Naoqi
 cat > /etc/naoqi/autoload.ini << EOL

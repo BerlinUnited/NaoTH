@@ -149,6 +149,7 @@ include "Options/ContractWork/BDR/bdr_goto_charging_station.xabsl";
 
 include "Options/ContractWork/BDR/bdr_goto_exit.xabsl";
 include "Options/ContractWork/BDR/bdr_goto_point.xabsl";
+include "Options/ContractWork/BDR/bdr_align_carefully.xabsl";
 
 /* Test section */
 // Test agents Head Control
