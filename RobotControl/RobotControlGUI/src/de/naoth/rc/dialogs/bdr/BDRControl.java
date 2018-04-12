@@ -66,24 +66,29 @@ public class BDRControl extends AbstractDialog implements TeamCommListener {
         Plugin.parent.getMessageServer().addConnectionStatusListener(new ConnectionStatusListener() {
             @Override
             public void connected(ConnectionStatusEvent event) {
-                bt_autonomois.setEnabled(true);
-                bt_stop.setEnabled(true);
-                bt_wartung.setEnabled(true);
+                //setButtons(true);
+                updateStatus();
             }
 
             @Override
             public void disconnected(ConnectionStatusEvent event) {
-                bt_autonomois.setEnabled(false);
-                bt_stop.setEnabled(false);
-                bt_wartung.setEnabled(false);
+                setButtons(false);
             }
         });
+        
+        setButtons(false);
     }
     
     @Override
     public void dispose() {
         Plugin.teamcommManager.removeListener(this);
         Plugin.teamCommUDPReceiver.disconnect(this, port);
+    }
+    
+    private void setButtons(boolean flag) {
+        bt_autonomois.setEnabled(flag);
+        bt_stop.setEnabled(flag);
+        bt_wartung.setEnabled(flag);
     }
 
     /**
@@ -214,9 +219,7 @@ public class BDRControl extends AbstractDialog implements TeamCommListener {
                 BDRControlCommand command = BDRControlCommand.parseFrom(object);
                 
                 if(command.hasBehaviorMode()) {
-                    bt_autonomois.setEnabled(true);
-                    bt_stop.setEnabled(true);
-                    bt_wartung.setEnabled(true);
+                    setButtons(true);
                     
                     bt_autonomois.setSelected(command.getBehaviorMode() == BDRBehaviorMode.AUTONOMOUS_PLAY);
                     bt_stop.setSelected(command.getBehaviorMode() == BDRBehaviorMode.DO_NOTHING);
@@ -249,6 +252,11 @@ public class BDRControl extends AbstractDialog implements TeamCommListener {
         }
     }
     
+    private void updateStatus() {
+        Command cmd = new Command("Cognition:representation:get").addArg("BDRControlCommand");
+        Plugin.commandExecutor.executeCommand(new StatusUpdater(), cmd);
+    }
+    
     private void sendBDRCommand(BDRControlCommand command) {
         
         Command cmd = new Command("Cognition:representation:set").addArg("BDRControlCommand", command.toByteArray());
@@ -256,9 +264,7 @@ public class BDRControl extends AbstractDialog implements TeamCommListener {
             @Override
             public void newObjectReceived(byte[] object) {
                 System.out.println(new String(object));
-                
-                Command cmd = new Command("Cognition:representation:get").addArg("BDRControlCommand");
-                Plugin.commandExecutor.executeCommand(new StatusUpdater(), cmd);
+                updateStatus();
             }
 
             @Override
