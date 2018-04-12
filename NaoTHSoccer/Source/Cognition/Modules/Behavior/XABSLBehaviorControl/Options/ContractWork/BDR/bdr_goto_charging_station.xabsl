@@ -16,7 +16,10 @@ option bdr_goto_charging_station
 
   state approach {
       decision {
-        stay;
+        if(action_done)
+          goto sit;
+        else
+          stay;
       }
 
       action {
@@ -24,4 +27,28 @@ option bdr_goto_charging_station
           bdr_goto_point(x = 0, y = 500, rot = -90);
       }
   }
+
+  state sit {
+      decision {
+        if(executed_motion.type == bdr_sit)
+          goto done;
+        else
+          stay;
+      }
+
+      action {
+          motion.type = bdr_sit;
+      }
+  }
+
+  target state done {
+      decision {
+        stay;
+      }
+
+      action {
+          motion.type = bdr_sit;
+      }
+  }
+
 }
