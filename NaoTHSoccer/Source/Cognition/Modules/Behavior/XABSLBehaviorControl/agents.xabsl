@@ -140,16 +140,16 @@ include "Options/Remote/spl_remote_secondary_actions.xabsl";
 
 // Contract Work
 // BDR
-include "Options/ContractWork/BDR/bdr_remote_agent.xabsl";
-include "Options/ContractWork/BDR/bdr_remote_play.xabsl";
-include "Options/ContractWork/BDR/bdr_remote_autonomous.xabsl";
+include "Options/ContractWork/BDR/bdr_agent.xabsl";
+include "Options/ContractWork/BDR/bdr_play.xabsl";
+include "Options/ContractWork/BDR/bdr_play_soccer.xabsl";
 include "Options/ContractWork/BDR/bdr_naoqi_agent.xabsl";
-include "Options/ContractWork/BDR/bdr_naoqi_test.xabsl";
 include "Options/ContractWork/BDR/bdr_goto_charging_station.xabsl";
+include "Options/ContractWork/BDR/bdr_goto_exit.xabsl";
 
-include "Options/ContractWork/BDR/bdr_goto_exit.xabsl";
-include "Options/ContractWork/BDR/bdr_goto_point.xabsl";
-include "Options/ContractWork/BDR/bdr_align_carefully.xabsl";
+include "Options/ContractWork/BDR/tools/bdr_naoqi_test.xabsl";
+include "Options/ContractWork/BDR/tools/bdr_goto_point.xabsl";
+include "Options/ContractWork/BDR/tools/bdr_align_carefully.xabsl";
 
 /* Test section */
 // Test agents Head Control
@@ -263,7 +263,7 @@ agent path_spl_soccer("Path SPL Soccer", path_spl_play_soccer);
 agent penalty("Penalty", play_penalty);
 
 agent spl_remote("Remote Player", spl_remote_agent);
-agent bdr_remote("BDR_agent", bdr_remote_agent);
+agent bdr_remote("BDR_agent", bdr_agent);
 agent bdr_naoqi("BDR_NaoQi_agent", bdr_naoqi_agent);
 
 /** simple soccer agents **/

@@ -1,4 +1,4 @@
-option bdr_remote_play
+option bdr_play
 {
   common decision
   {
@@ -59,7 +59,7 @@ option bdr_remote_play
     }
     action
     {
-        bdr_remote_autonomous();
+        bdr_play_soccer();
     }
   }
 
