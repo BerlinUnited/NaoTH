@@ -99,14 +99,16 @@ void MonteCarloSelfLocator::execute()
     state = KIDNAPPED;
   }
 
+  /*
   bool last_motion_ok = getMotionStatus().lastMotion == motion::stand ||
                         getMotionStatus().lastMotion == motion::walk;                    
+  */
 
   bool motion_ok = (getMotionStatus().currentMotion == motion::stand || 
-                    getMotionStatus().currentMotion == motion::walk)
+                    getMotionStatus().currentMotion == motion::walk);
                    // hack: give stand some time in case the last motion was not walk or stand
                    // remark: walk is only executed after walk or stand, so this condition is only relevant for stand
-                   && (last_motion_ok || getFrameInfo().getTimeSince(getMotionStatus().time) > 5000); 
+                   //&& (last_motion_ok || getFrameInfo().getTimeSince(getMotionStatus().time) > 5000); 
 
   bool body_upright = getBodyState().fall_down_state == BodyState::upright;
 

@@ -38,7 +38,7 @@ option bdr_goto_point
       if (   vector.abs(x=robot_pose.planned.x - @x, y=robot_pose.planned.y - @y) < 50
           && abs(value=robot_pose.planned.rotation - @rot) < 10 
           && vector.abs(x=executed_motion.planed.target.x, y=executed_motion.planed.target.y) < 25
-          && abs(value=executed_motion.planed.target.rotation) < 10 )
+          && abs(value=executed_motion.planed.target.rotation) < 5 )
         goto stop;
       else if ( vector.abs(x=robot_pose.planned.x - @x, y=robot_pose.planned.y - @y) > 300 )
         goto far_away;

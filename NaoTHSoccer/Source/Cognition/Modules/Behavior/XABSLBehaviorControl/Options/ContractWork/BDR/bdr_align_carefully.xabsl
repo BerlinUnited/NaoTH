@@ -14,9 +14,9 @@ option bdr_align_carefully
   {
     decision
     {
-      if (   vector.abs(x=robot_pose.planned.x - @x, y=robot_pose.planned.y - @y) < 20
+      if (   vector.abs(x=robot_pose.planned.x - @x, y=robot_pose.planned.y - @y) < 10
           && abs(value=robot_pose.planned.rotation - @rot) < 5
-          && vector.abs(x=executed_motion.planed.target.x, y=executed_motion.planed.target.y) < 10
+          && vector.abs(x=executed_motion.planed.target.x, y=executed_motion.planed.target.y) < 5
           && abs(value=executed_motion.planed.target.rotation) < 5 )
         goto stop;
       else
@@ -40,7 +40,7 @@ option bdr_align_carefully
   {
     decision
     {
-      if ( vector.abs(x=robot_pose.planned.x - @x, y=robot_pose.planned.y - @y) > 30 )
+      if ( vector.abs(x=robot_pose.planned.x - @x, y=robot_pose.planned.y - @y) > 20 )
         goto move;
       else
         stay;

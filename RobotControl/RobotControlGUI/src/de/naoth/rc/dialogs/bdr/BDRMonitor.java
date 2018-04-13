@@ -145,7 +145,7 @@ public class BDRMonitor extends AbstractDialog implements ActionListener, TeamCo
         // add buffered drawings to field drawing list
         DrawingCollection drawings = new DrawingCollection();
         robots.forEach((ip, m) -> {
-            m.getMessage().draw(drawings, m.getChestColor(), true);
+            m.getMessage().draw(drawings, m.getChestColor(), false);
         });
         fieldCanvas.getDrawingList().add(drawings);
 

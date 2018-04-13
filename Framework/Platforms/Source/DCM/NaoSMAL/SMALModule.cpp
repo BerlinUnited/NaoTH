@@ -303,7 +303,8 @@ void SMALModule::motionCallbackPre()
     
     theDCMHandler.setAllPositionData(commandData->get(), dcmTime);
     //stiffness_set = 
-    theDCMHandler.setAllHardnessDataSmart(commandData->get(), dcmTime);
+    //theDCMHandler.setAllHardnessDataSmart(commandData->get(), dcmTime);
+    theDCMHandler.setAllHardnessData(commandData->get(), dcmTime);
 
     drop_count = 0;
     command_data_available = true;
