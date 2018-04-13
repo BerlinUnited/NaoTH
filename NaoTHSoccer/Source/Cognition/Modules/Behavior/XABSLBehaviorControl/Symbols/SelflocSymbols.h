@@ -50,7 +50,10 @@ public:
     angleOnFieldPlanned(Math::toDegrees(getRobotPose().rotation))
   {
     theInstance = this;
+
+    DEBUG_REQUEST_REGISTER("SelflocSymbols:draw_global_origin", "", false);
   };
+
   virtual ~SelflocSymbols(){}
   
   /** registers the symbols at an engine */
