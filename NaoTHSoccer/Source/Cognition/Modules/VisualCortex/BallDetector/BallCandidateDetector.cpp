@@ -9,21 +9,8 @@
 #include "Tools/CameraGeometry.h"
 
 #include "Tools/PatchWork.h"
-#include "Tools/CVClassifier.h"
 #include "Tools/BlackSpotExtractor.h"
 
-#include "Classifier/CNNAugmented1.h"
-#include "Classifier/CNNAugmented2.h"
-#include "Classifier/CNNClassifier.h"
-#include "Classifier/CNNFull.h"
-#include "Classifier/CNNSmall.h"
-#include "Classifier/CNN_aug1_synthetic.h"
-#include "Classifier/CNN_aug2_full_conv.h"
-#include "Classifier/CNN_basic_synthetic_fusion.h"
-#include "Classifier/CNN_synth_full_conv.h"
-#include "Classifier/CNN_rc17_augmented_1.h"
-#include "Classifier/CNN_rc17_augmented_2.h"
-#include "Classifier/CNN_rc17_augmented_7.h"
 #include "Classifier/DortmundCNN/CNN_dortmund.h"
 
 using namespace std;
@@ -37,8 +24,6 @@ BallCandidateDetector::BallCandidateDetector()
   DEBUG_REQUEST_REGISTER("Vision:BallCandidateDetector:drawPercepts", "draw ball percepts", false);
   DEBUG_REQUEST_REGISTER("Vision:BallCandidateDetector:drawPatchContrast", "draw patch contrast (only when contrast-check is in use!", false);
 
-  DEBUG_REQUEST_REGISTER("Vision:BallCandidateDetector:lbpDetection", "draw ball percepts", false);
-
   DEBUG_REQUEST_REGISTER("Vision:BallCandidateDetector:extractPatches", "generate YUVC patches", false);
 
   DEBUG_REQUEST_REGISTER("Vision:BallCandidateDetector:keyPointsBlack", "draw black key points extracted from integral image", false);
@@ -48,10 +33,8 @@ BallCandidateDetector::BallCandidateDetector()
 
   //register classifier
   cnnMap = createCNNMap();
-  // additionally insert the legacy haar classifier
-  cnnMap.insert({"CVHaar", std::make_shared<CVHaarClassifier>(params.haarDetector.model_file)}); //Hack!
 
-  currentCNNClassifier = cnnMap["aug1"];
+  currentCNNClassifier = cnnMap["dortmund"];
 }
 
 BallCandidateDetector::~BallCandidateDetector()
@@ -128,21 +111,6 @@ std::map<string, std::shared_ptr<AbstractCNNClassifier> > BallCandidateDetector:
 {
   std::map<string, std::shared_ptr<AbstractCNNClassifier> > result;
 
-  result.insert({"aug2", std::make_shared<CNNAugmented2>()});
-  result.insert({"aug1", std::make_shared<CNNAugmented1>()});
-  result.insert({"cnn", std::make_shared<CNNClassifier>()});
-  result.insert({"full", std::make_shared<CNNFull>()});
-  result.insert({"small", std::make_shared<CNNSmall>()});
-
-  result.insert({"aug1_synthetic", std::make_shared<CNN_aug1_synthetic>()});
-  result.insert({"aug2_full_conv", std::make_shared<CNN_aug2_full_conv>()});
-  result.insert({"basic_synthetic_fusion", std::make_shared<CNN_basic_synthetic_fusion>()});
-  result.insert({"synth_full_conv", std::make_shared<CNN_synth_full_conv>()});
-
-  result.insert({"rc17_augmented_1", std::make_shared<CNN_rc17_augmented_1>()});
-  result.insert({"rc17_augmented_2", std::make_shared<CNN_rc17_augmented_2>()});
-
-  result.insert({"rc17_augmented_7", std::make_shared<CNN_rc17_augmented_7>()});
   result.insert({"dortmund", std::make_shared<CNN_dortmund>()});
 
   return std::move(result);
@@ -281,87 +249,80 @@ void BallCandidateDetector::calculateCandidates()
       
 
       //if(checkGreenBelow && checkGreenInside)
-      if(params.haarDetector.execute)
+
+      // hack: if the classifier has not been loaded yet
+      //if(!cvHaarClassifier.modelLoaded()) {
+      //  cvHaarClassifier.loadModel(params.haarDetector.model_file);
+      //}
+
+      BallCandidates::Patch patchedBorder(0);
+      //int size = ((*i).max.x - (*i).min.x)/2;
+      patchedBorder.min = min;//(*i).min;// - Vector2i(size,size);
+      patchedBorder.max = max;//(*i).max;// + Vector2i(size,size);
+
+      // add an additional border as post-processing
+      int size = patchedBorder.max.x - patchedBorder.min.x;
+      double radius = (double) size / 2.0;
+      int postBorder = (int)(radius*params.postBorderFactorFar);
+      if(size >= params.postMaxCloseSize) // HACK: use patch size as estimate if close or far away
       {
-        // hack: if the classifier has not been loaded yet
-        //if(!cvHaarClassifier.modelLoaded()) {
-        //  cvHaarClassifier.loadModel(params.haarDetector.model_file);
-        //}
+        postBorder = (int)(radius*params.postBorderFactorClose);
+      }
 
-        BallCandidates::Patch patchedBorder(0);
-        //int size = ((*i).max.x - (*i).min.x)/2;
-        patchedBorder.min = min;//(*i).min;// - Vector2i(size,size);
-        patchedBorder.max = max;//(*i).max;// + Vector2i(size,size);
-
-        // add an additional border as post-processing
-        int size = patchedBorder.max.x - patchedBorder.min.x;
-        double radius = (double) size / 2.0;
-        int postBorder = (int)(radius*params.postBorderFactorFar);
-        if(size >= params.postMaxCloseSize) // HACK: use patch size as estimate if close or far away
-        {
-          postBorder = (int)(radius*params.postBorderFactorClose);
-        }
-
-        patchedBorder.min.x = patchedBorder.min.x - postBorder;
-        patchedBorder.min.y = patchedBorder.min.y - postBorder;
-        patchedBorder.max.x = patchedBorder.max.x + postBorder;
-        patchedBorder.max.y = patchedBorder.max.y + postBorder;
+      patchedBorder.min.x = patchedBorder.min.x - postBorder;
+      patchedBorder.min.y = patchedBorder.min.y - postBorder;
+      patchedBorder.max.x = patchedBorder.max.x + postBorder;
+      patchedBorder.max.y = patchedBorder.max.y + postBorder;
 
         
-        if(getImage().isInside(patchedBorder.min.x, patchedBorder.min.y) && getImage().isInside(patchedBorder.max.x, patchedBorder.max.y))
-        {
+      if(getImage().isInside(patchedBorder.min.x, patchedBorder.min.y) && getImage().isInside(patchedBorder.max.x, patchedBorder.max.y))
+      {
 
-            auto r = (patchedBorder.max.x - patchedBorder.min.x)/2;
-            auto x = (patchedBorder.min.x + patchedBorder.max.x)/2;
-            auto y = (patchedBorder.min.y + patchedBorder.max.y)/2;
-            DEBUG_REQUEST("Vision:BallCandidateDetector:drawCandidatesResizes",
-              RECT_PX(ColorClasses::pink, x-r, y-r, x+r, y+r);
-            );
+          auto r = (patchedBorder.max.x - patchedBorder.min.x)/2;
+          auto x = (patchedBorder.min.x + patchedBorder.max.x)/2;
+          auto y = (patchedBorder.min.y + patchedBorder.max.y)/2;
+          DEBUG_REQUEST("Vision:BallCandidateDetector:drawCandidatesResizes",
+            RECT_PX(ColorClasses::pink, x-r, y-r, x+r, y+r);
+          );
 
-          PatchWork::subsampling(getImage(), patchedBorder.data, patchedBorder.min.x, patchedBorder.min.y, patchedBorder.max.x, patchedBorder.max.y, patch_size);
+        PatchWork::subsampling(getImage(), patchedBorder.data, patchedBorder.min.x, patchedBorder.min.y, patchedBorder.max.x, patchedBorder.max.y, patch_size);
 
-          bool found;
+
+        stopwatch.start();
+        
+        bool found = currentCNNClassifier->classify(patchedBorder);
+        stopwatch.stop();
+        stopwatch_values.push_back(static_cast<double>(stopwatch.lastValue) * 0.001);
+
+        if (found && currentCNNClassifier->getBallConfidence() >= params.cnn.threshold) {
+
+          if(!params.blackKeysCheck.enable || blackKeysOK(*i)) {
+            addBallPercept(Vector2i((min.x + max.x)/2, (min.y + max.y)/2), (max.x - min.x)/2);
+          }
+
+        }
+      } else if(getImage().isInside(min.x, min.y) && getImage().isInside(max.x, max.y)) {
+          BallCandidates::Patch p(0);
+          p.min = min;//(*i).min;
+          p.max = max;//(*i).max;
+
+          PatchWork::subsampling(getImage(), p.data, min.x, min.y, max.x, max.y, patch_size);
+
           stopwatch.start();
-              // Hack!: the haar classifier is now a AbstractCNNClassifier, the params are only for the cv haar classifier
-              found = currentCNNClassifier->classify(patchedBorder,
-                                                     params.haarDetector.minNeighbors, params.haarDetector.windowSize);
+
+          bool found = currentCNNClassifier->classify(p);
           stopwatch.stop();
           stopwatch_values.push_back(static_cast<double>(stopwatch.lastValue) * 0.001);
 
-          // Hack!: the haar classifier is now a AbstractCNNClassifier, the params are only for the cv haar classifier
           if (found && currentCNNClassifier->getBallConfidence() >= params.cnn.threshold) {
 
             if(!params.blackKeysCheck.enable || blackKeysOK(*i)) {
               addBallPercept(Vector2i((min.x + max.x)/2, (min.y + max.y)/2), (max.x - min.x)/2);
-
             }
-
           }
-        } else if(getImage().isInside(min.x, min.y) && getImage().isInside(max.x, max.y)) {
-            BallCandidates::Patch p(0);
-            p.min = min;//(*i).min;
-            p.max = max;//(*i).max;
-
-            PatchWork::subsampling(getImage(), p.data, min.x, min.y, max.x, max.y, patch_size);
-
-            bool found;
-            stopwatch.start();
-                // Hack!: the haar classifier is now a AbstractCNNClassifier, the params are only for the cv haar classifier
-                found = currentCNNClassifier->classify(p, params.haarDetector.minNeighbors, params.haarDetector.windowSize);
-            stopwatch.stop();
-            stopwatch_values.push_back(static_cast<double>(stopwatch.lastValue) * 0.001);
-
-            if (found && currentCNNClassifier->getBallConfidence() >= params.cnn.threshold) {
-
-              if(!params.blackKeysCheck.enable || blackKeysOK(*i)) {
-                addBallPercept(Vector2i((min.x + max.x)/2, (min.y + max.y)/2), (max.x - min.x)/2);
-
-              }
-            }
-        }
-
-        index++;
       }
+
+      index++;
 
 
       DEBUG_REQUEST("Vision:BallCandidateDetector:drawCandidates",
@@ -377,7 +338,6 @@ void BallCandidateDetector::calculateCandidates()
           CIRCLE_PX(ColorClasses::red, (min.x + max.x)/2, (min.y + max.y)/2, (max.x - min.x)/2);
         }
       );
-
 
       // TODO: provide ball candidates based on above criteria
       //getBallCandidates();

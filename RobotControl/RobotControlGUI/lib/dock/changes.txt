@@ -19,7 +19,7 @@
 - Layout: BasicStationPaint now uses the highlight-background color of TextField to paint. That should look better with different look and feels.
 - Bugfix: SplitDockStation's compare-method now ensures that the station does not overlap other, smaller stations
 - Layout: New "Eclipse Theme", written by Janni Kovacs
-- API: DockableDisplayer now tells whether a point lies inside its title or not. The drag n drop gets more flexibel this way
+- API: DockableDisplayer now tells whether a point lies inside its title or not. The drag n drop gets more flexible this way
 - Bugfix: SecureScreenDockDialog throws NPE when closing
 - API: DockActionSource has now to implement Iterable<DockAction>
 - API: New DockActionSource "FilteredDockActionSource"
@@ -1038,3 +1038,99 @@
 [v1.1.2p12e]
  - Bugfix: the DefaultDockRelator adds now a global MouseListener to make sure it does never miss a mouse-released event (on some systems the mouse-released events are not sent to the same Components as the mouse-pressed events)
  - API: added the property-key DefaultDockRelator.AUTO_DROP_ON_ANY_MOUSE_RELEASED_EVENT with which clients may disable the global-mouselistener of the DefaultDockRelator
+ 
+[v1.1.2p13]
+ - Bugfix: DefaultStackDockComponent will consume mouse-pressed MouseEvents that are triggered on its tabs. This means that MouseEvents no longer fall through the tab, making the framework believe the user wants to drag the StackDockStation when in fact the user wants to drag a child of the StackDockStation.
+ - Bugfix: DefaultDockRelocator remembers the last active MouseListener and calls its "mouse released" event whenever a MouseEvent from another listener is detected. The last active MouseListener is now unset whenever an drag-operation is modified by an outside force not known to the DefaultDockRelocator, as for example by the MouseListener that is created by the DefaultStackDockComponent. This prevents cancellation of drag operations that were not initiated by the DefaultDockRelocator.
+ 
+[v1.1.2p14]
+ ! API: DockStation got a new method called "getPlaceholderMapping" with which clients can access the placeholders that are stored on the station.
+ ! API: CDockables without location do now always show up as "normalized" Dockables. This change allows the LocationModeManager to decide about the initial location of a Dockable, instead of the DockFrontend. The LocationModeManager will be able to apply additional settings, like for example the CGroupBehavior.
+ - API: Added "applicationDefined" to the class "Location", this property informs the GroupingHistoryRewriter that a location of a Dockable was defined by the application and that location should not be rewritten.
+ - API: CPlaceholderStrategy is less aggressiv with removing invalid placeholders. Placeholders that are not matching the default scheme of how placeholders created by the framework itself look like, are now kept instead of removed.
+ - API: Added new methods to CGridPerspective, CMinimizePerspective and CExternalizePerspective that allows clients to insert placeholders into the layout.
+ - API: Added "PlaceholderGrouping" and an example application. "PlaceholderGrouping" allows clients to group CDockable.
+ 
+[v1.1.2p14a]
+ - API: DockableGrouping can now define the initial ExtendedMode of an invisible CDockable
+ - API: PlaceholderGrouping stores a "last placeholder" at the location where a dockable that is associated with group was last seen
+ 
+[v1.1.2p14b]
+- Bugfix: ScreenDockStation no longer tries to read data that does not exist in the layout-file
+- Bugfix: ScreenDockStation writes more data into the layout-file
+
+[v1.1.2p14c]
+- Bugfix: Found by Ti: reading the "area" of a CommonSingleDockable from an xml file failed, because CommonSingleDockableFactory was reading the wrong tag.
+- Bugfix: the FocusHistory now also returns those Dockables that never had the focus. These Dockable are ordered by their registration. This fixes an issue where CControl was unable to focus a dockable if the user did not yet interact with the application.
+
+[v1.1.2p14d]
+- Bugfix: Glass-EclipseThemeExtension will no longer register a title as "set by the client", instead is register a title as "set by the theme". This will allow the framework to remove the title if the theme is switched.
+! API: Rendering-hints of the operating system will be better respected when painting titles and taps (see DockRenderingHints).
+
+[v1.1.2p14e]
+- Bugfix: Externalizing some stacked CDockables that were part of a CWorkingArea did result in an exception, because the CExternalizedMode did enforce the working-area restriction as soon as there was a StackDockStation between CDockables and ScreenDockStation.
+- Bugfix: normalizing a stack of CDockables did not put the stack at its old location if the stack was a child of a CWorkingArea. This was caused by the class "Placeholder" being unable to handle anything put "placeholder-properties".
+- Bugfix: If DockableSelector receives a KeyEvent that opens its dialog, and the dialog is already open, just keep the dialog open. Don't close and reopen the dialog, because that only irritates the user.
+
+[v1.1.2p14f]
+- Bugfix: "Shrinking" big children of a ToolbarDockStation resulted in a NullPointerException
+- Bugfix: Various bugs that prevented a user from dragging a toolbar-item to the screen
+- API: A DockTitleFactory with priority "CLIENT" now overrides a DockTitleFactory that was loaded through an Extension
+
+[v1.1.2p15]
+- Bugfix: cancelling a DockRelocatorEvent did not reset the "onMove" flag
+- Bugfix: the GlobalMouseDispatcher did not dispatch events to a MouseMotionListener
+! API: renamed DockRelocator.setDragOnlyTitel to setDragOnlyTitle (which is the proper way to write the word 'title')
+
+[v1.1.2p16]
+- API: new property TabPane.USE_SMALL_MINIMUM_SIZE allows clients to use "really small" minimum sizes, or "good looking" minimum sizes (that are not very small at all)
+
+[v1.1.2p16a]
+- Bugfix: dropping a prepopulated CWorkingArea on anything did throw an unnecessary SplitDropTreeException
+
+[v1.1.2p17]
+- API: drag and drop operation can be cancelled by pressing CControl.KEY_CANCEL_OPERATION (default is ESCAPE)
+- API: refined behavior of ActionContentModifier, if a modifier represents many properties (e.g. disabled and vertical) then it can have many backup modifiers (e.g. just 'disabled' or just 'vertical')
+- Bugfix: many small fixes by Karl-Philipp Richter
+- Bugfix: DockStations having width or height smaller or equal to 0 do no longer support drag and drop (because they are invisible to the user)
+- API: Added DockStationDropLayerFactory, a way for clients to define which areas of the screen can be targets for drag-and-drop operations
+
+[v1.1.2p17a]
+- Bugfix: when moving around a working-area, the are could not be stacked with normal dockables because the WorkingAreaAcceptance believed that the working-area can only be combined with itself
+- Bugfix: when calling CDockable.setLocationAside an exception could be thrown if a PlaceholderMap with the wrong format was stored in the layout. Maps with the wrong format are now silently ignored
+
+[v1.1.2p17b]
+- Bugfix: changed how CDockables behave when setting or reading their location. A CDockable that is a "hidden root station" (a DockStation that is registered as root but without parent DockStation) is treated as it was invisible. As a result, calling "setLocation" will store the location instead of directly trying to apply it (which would fail because a root item cannot be moved)
+
+[v1.1.2p18]
+- API: New method AbstractCDockable.toFront allows clients to focus a Dockable, and a child Component of that Dockable with only one method call
+
+[v1.1.2p18a]
+- Bugfix: Tabs of the Flat-theme did not respect the foreground color that was set by the client.
+
+[v1.1.2p19]
+- Bugfix: An exception was thrown when a CDockable was externalized, the eclipse-theme was selected, and someone was calling CControl.destroy
+- API: added "setAcceleratorIsGlobal" to CDecoratableAction, allowing actions to monitor all key events of the application.
+
+[v1.1.2p19a]
+- Bugfix: when adding an action to an existing dropdown-menu, then the action was always added at the end of the menu
+- Bugfix (provided by Nicolas Roduit): properly read java version specification number of Java 9 (see "DockUI.registerColors")
+- Feature (provided by Nicolas Roduit): new and better translations for various languages
+
+[v1.1.2p19b]
+- Bugfix: memory leak fixed, that was caused by a listener created by the "AbstractTabLayoutManagerPane". The listener was never removed properly. Thanks mattbru2 for finding the bug!
+
+[v1.1.2p19c]
+- Bugfix: disabled icon of DockActions was converted to gray twice, making them hard to read and also overriding the (not gray) icon that might be set by the client. Thanks Thomas for finding this bug.
+- Bugfix: disabled icon of DockActions was not painted in drop-down-menus
+
+[v1.1.2p19d]
+! Bugfix: CControlPerspectiveBlop writeXML/write was not symmetrical with readXML/read
+- Bugfix: An ApplicationResourceManager that read some unknown resources from a file may write them back in any file that is created
+
+[v1.1.2p19e]
+! API: converted some inner interfaces to outer classes to work around https://bugs.eclipse.org/bugs/show_bug.cgi?id=527731
+
+[v1.1.2p10a]
+- API: By Zilvinas: Java9Workaround provides support for transparency when running DockingFrames in Java 9.
+- Bugfix: Java6Workaround uses reflection to load AWTUtilities. Jigsaw should no longer complain when loading this class.

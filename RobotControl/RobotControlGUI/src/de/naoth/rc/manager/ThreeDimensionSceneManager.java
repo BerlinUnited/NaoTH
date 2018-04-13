@@ -14,5 +14,5 @@ import de.naoth.rc.drawings3d.Scene;
  */
 public interface ThreeDimensionSceneManager extends ManagerPlugin<Scene>
 {
-
+    abstract void setModuleOwner(String name);
 }

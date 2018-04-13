@@ -27,21 +27,13 @@ Motion::Motion()
     theLogProvider(NULL),
     motionLogger("MotionLog")
 {
-
   REGISTER_DEBUG_COMMAND(motionLogger.getCommand(), motionLogger.getDescription(), &motionLogger);
-
-  #define ADD_LOGGER(R) motionLogger.addRepresentation(&(get##R()), #R);
-
-  ADD_LOGGER(FrameInfo);
-  ADD_LOGGER(SensorJointData);
-  ADD_LOGGER(MotorJointData);
-  ADD_LOGGER(InertialSensorData);
-  ADD_LOGGER(AccelerometerData);
-  ADD_LOGGER(GyrometerData);
-  ADD_LOGGER(FSRData);
-  ADD_LOGGER(MotionRequest);
+  registerLogableRepresentationList();
 
   DEBUG_REQUEST_REGISTER("Motion:KinematicChain:orientation_test", "", false);
+
+  DEBUG_REQUEST_REGISTER("Motion:KinematicChain:drawMotor3D", "", false);
+  DEBUG_REQUEST_REGISTER("Motion:KinematicChain:drawSensor3D", "", false);
 
   REGISTER_DEBUG_COMMAND("DebugPlot:get", "get the plots", &getDebugPlot());
 
@@ -72,11 +64,14 @@ Motion::Motion()
   theMotionEngine = registerModule<MotionEngine>("MotionEngine", true);
 
   getDebugParameterList().add(&parameter);
+
+  getWalk2018Parameters().init(getDebugParameterList());
 }
 
 Motion::~Motion()
 {
   getDebugParameterList().remove(&parameter);
+  getWalk2018Parameters().remove(getDebugParameterList());
 }
 
 void Motion::init(naoth::ProcessInterface& platformInterface, const naoth::PlatformBase& platform)
@@ -125,6 +120,7 @@ void Motion::init(naoth::ProcessInterface& platformInterface, const naoth::Platf
   platformInterface.registerOutputChanel(getBodyStatus());
   platformInterface.registerOutputChanel(getGroundContactModel());
   platformInterface.registerOutputChanel(getCollisionPercept());
+  platformInterface.registerOutputChanel(getIMUData());
 
   // messages from cognition to motion
   platformInterface.registerInputChanel(getCameraInfo());
@@ -172,6 +168,8 @@ void Motion::call()
   postProcess();
   STOPWATCH_STOP("Motion:postProcess");
 
+  DEBUG_REQUEST("Motion:KinematicChain:drawSensor3D",  drawRobot3D(getKinematicChainSensor()); );
+  DEBUG_REQUEST("Motion:KinematicChain:drawMotor3D",  drawRobot3D(getKinematicChainMotor()); );
 
   // todo: execute debug commands => find a better place for this
   getDebugMessageOut().reset();
@@ -503,3 +501,21 @@ void Motion::updateCameraMatrix()
   getCameraMatrixTop().timestamp = getSensorJointData().timestamp;
   getCameraMatrixTop().valid = true;
 }// end updateCameraMatrix
+
+void Motion::drawRobot3D(const KinematicChain& kinematicChain)
+{
+  const Kinematics::Link* theLink = kinematicChain.theLinks;
+
+  for (int i = 0; i < KinematicChain::numOfLinks; i++)
+  {
+    if ( i != KinematicChain::Neck
+      && i != KinematicChain::LShoulder 
+      && i != KinematicChain::LElbow
+      && i != KinematicChain::RShoulder 
+      && i != KinematicChain::RElbow
+      && i != KinematicChain::Hip)
+    {
+      ENTITY(KinematicChain::getLinkName((KinematicChain::LinkID)i), theLink[i].M);
+    }
+  }//end for
+}//end drawRobot3D
