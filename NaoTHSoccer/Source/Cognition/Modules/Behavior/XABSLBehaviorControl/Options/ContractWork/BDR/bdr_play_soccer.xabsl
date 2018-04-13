@@ -1,4 +1,5 @@
-option bdr_remote_autonomous{
+option bdr_play_soccer
+{
 
     common decision
 	  {
