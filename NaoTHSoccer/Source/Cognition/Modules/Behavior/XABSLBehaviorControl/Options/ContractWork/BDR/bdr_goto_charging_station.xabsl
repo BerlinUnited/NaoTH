@@ -61,7 +61,7 @@ option bdr_goto_charging_station
   state sit {
       decision {
         if(executed_motion.type == bdr_sit)
-          goto done;
+          goto wait_and_check_for_connection;
         else
           stay;
       }
@@ -69,6 +69,40 @@ option bdr_goto_charging_station
       action {
           motion.type = bdr_sit;
       }
+  }
+
+  state wait_and_check_for_connection {
+      decision {
+        //TODO: use some kind of symbol indicating that the sit motion was reached?
+        if(state_time > 10000){ 
+          if(battery.isDischarging)
+              goto stand_up_again;
+          else 
+              goto done;
+        }
+        else
+            stay;
+      }
+
+      action {
+          motion.type = bdr_sit;
+      }
+  }
+
+  state stand_up_again {
+      decision
+      {
+        if(executed_motion.type == stand && executed_motion.time > 5000)
+          goto approach_very_slowly;
+        else
+          stay;
+      }
+        
+	  action
+	  {
+	      motion.type = stand;
+	      head.control_mode = look_around;
+	  }
   }
 
   target state done {
