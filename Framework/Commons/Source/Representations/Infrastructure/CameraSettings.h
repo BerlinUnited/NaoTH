@@ -77,6 +77,20 @@ namespace naoth
     /** Set to true to query a real CameraSetting from the Nao camera */
     bool queryCameraSettings;
 
+    bool autoExposition;
+    bool autoWhiteBalancing;
+    bool backlightCompensation;
+    int brightness;
+    int cameraSelection;
+    int contrast;
+    int exposure;
+    int gain;
+    bool horizontalFlip;
+    int hue;
+    int saturation;
+    int shaprness;
+    bool verticalFlip;
+    int whiteBalance;
   };
 
   class CameraSettingsRequestTop : public CameraSettingsRequest
