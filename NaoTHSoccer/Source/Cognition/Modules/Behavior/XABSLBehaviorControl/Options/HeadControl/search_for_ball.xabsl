@@ -67,7 +67,7 @@ option search_for_ball
     }
     action
     {
-        head.point_in_world.x = 200;
+        head.point_in_world.x = 160;
         head.point_in_world.y = -200;
         head.point_in_world.z = 0;
         head.motion_type = look_at_world_point;
@@ -89,7 +89,7 @@ option search_for_ball
     }
     action
     {
-      head.point_in_world.x = 200;
+      head.point_in_world.x = 160;
       head.point_in_world.y = 200;
       head.point_in_world.z = 0;
       head.motion_type = look_at_world_point;
@@ -114,7 +114,7 @@ option search_for_ball
     }
     action
     {
-        head.point_in_world.x = 500;
+        head.point_in_world.x = 400;
         head.point_in_world.y = -500;
         head.point_in_world.z = 0;
         head.motion_type = look_at_world_point;
@@ -136,7 +136,7 @@ option search_for_ball
     }
     action
     {
-      head.point_in_world.x = 500;
+      head.point_in_world.x = 400;
       head.point_in_world.y = 500;
       head.point_in_world.z = 0;
       head.motion_type = look_at_world_point;
