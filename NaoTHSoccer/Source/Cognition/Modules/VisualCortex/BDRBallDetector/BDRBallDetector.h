@@ -27,9 +27,9 @@
 #include "Representations/Perception/BallPercept.h"
 #include "Representations/Perception/FieldColorPercept.h"
 #include "Representations/Perception/CameraMatrix.h"
-#include "Representations/Modeling/KinematicChain.h"
-#include "Representations/Perception/Histograms.h"
 #include "Representations/Perception/MultiBallPercept.h"
+
+#include "Representations/Perception/MultiChannelIntegralImage.h"
 
 // tools
 #include "Tools/DoubleCamHelpers.h"
@@ -52,12 +52,15 @@ BEGIN_DECLARE_MODULE(BDRBallDetector)
   REQUIRE(ImageTop)
   REQUIRE(CameraMatrix)
   REQUIRE(CameraMatrixTop)
-  REQUIRE(FieldPercept)
-  REQUIRE(FieldPerceptTop)
-  REQUIRE(FieldColorPercept)
-  REQUIRE(FieldColorPerceptTop)
+  //REQUIRE(FieldPercept)
+  //REQUIRE(FieldPerceptTop)
+  //REQUIRE(FieldColorPercept)
+  //REQUIRE(FieldColorPerceptTop)
   REQUIRE(FieldInfo)
   REQUIRE(FrameInfo)
+
+  REQUIRE(BallDetectorIntegralImage)
+  REQUIRE(BallDetectorIntegralImageTop)
 
   PROVIDE(MultiBallPercept)
 END_DECLARE_MODULE(BDRBallDetector)
@@ -91,7 +94,8 @@ private:
       PARAMETER_REGISTER(keyDetector.borderRadiusFactorClose) = 0.5;
       PARAMETER_REGISTER(keyDetector.borderRadiusFactorFar) = 0.8;
       
-      PARAMETER_REGISTER(contrastMinimum) = 50;
+      //PARAMETER_REGISTER(contrastMinimum) = 50;
+      PARAMETER_REGISTER(minRedInsideRatio) = 0.5;
 
       syncWithConfig();
     }
@@ -100,7 +104,8 @@ private:
     
     BallKeyPointExtractor::Parameter keyDetector;
 
-    double contrastMinimum;
+    //double contrastMinimum;
+    double minRedInsideRatio;
 
   } params;
 
@@ -120,8 +125,9 @@ private:
   // double cam stuff
   DOUBLE_CAM_REQUIRE(BDRBallDetector, Image);
   DOUBLE_CAM_REQUIRE(BDRBallDetector, CameraMatrix);
-  DOUBLE_CAM_REQUIRE(BDRBallDetector, FieldColorPercept);
-  DOUBLE_CAM_REQUIRE(BDRBallDetector, FieldPercept);
+  DOUBLE_CAM_REQUIRE(BDRBallDetector, BallDetectorIntegralImage);
+  //DOUBLE_CAM_REQUIRE(BDRBallDetector, FieldColorPercept);
+  //DOUBLE_CAM_REQUIRE(BDRBallDetector, FieldPercept);
           
 };//end class BDRBallDetector
 
