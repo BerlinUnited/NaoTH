@@ -335,6 +335,7 @@ public:
 class CameraMatrixCorrectorV2: public CameraMatrixCorrectorV2Base, public ModuleManager
 {
 public:
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
   CameraMatrixCorrectorV2();
   ~CameraMatrixCorrectorV2();
