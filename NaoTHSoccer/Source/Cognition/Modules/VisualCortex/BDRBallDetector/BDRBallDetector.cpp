@@ -12,7 +12,7 @@
 BDRBallDetector::BDRBallDetector()
 {
   DEBUG_REQUEST_REGISTER("Vision:BDRBallDetector:draw_ball_candidates", "..", false);
-  DEBUG_REQUEST_REGISTER("Vision:BDRBallDetector:draw_ball_ercepts", "draw ball percepts", false);
+  DEBUG_REQUEST_REGISTER("Vision:BDRBallDetector:draw_ball_percepts", "draw ball percepts", false);
 
   theBallKeyPointExtractor = registerModule<BallKeyPointExtractor>("BallKeyPointExtractor", true);
 
@@ -44,15 +44,24 @@ void BDRBallDetector::execute(CameraInfo::CameraID id)
   // calculate percepts
   for(BestPatchList::reverse_iterator i = best.rbegin(); i != best.rend(); ++i) {
 
-    const int patch_size = 16;
-    double contrast = calculateRedContrastIterative((*i).min.x,(*i).min.y,(*i).max.x,(*i).max.y,patch_size);
+    //const int patch_size = 16;
+    //double contrast = calculateRedContrastIterative((*i).min.x,(*i).min.y,(*i).max.x,(*i).max.y,patch_size);
     
-    if(contrast > params.contrastMinimum) {
+    const int32_t FACTOR = getBallDetectorIntegralImage().FACTOR;
+    bool checkRedInside = false;
+    int offsetY = ((*i).max.y-(*i).min.y)/FACTOR;
+    int offsetX = ((*i).max.x-(*i).min.x)/FACTOR;
+    double greenInside = getBallDetectorIntegralImage().getDensityForRect(((*i).min.x+offsetX)/FACTOR, ((*i).min.y+offsetY)/FACTOR, ((*i).max.x-offsetX)/FACTOR, ((*i).max.y-offsetY)/FACTOR, 2);
+    if(greenInside > params.minRedInsideRatio) {
+      checkRedInside = true;
+    }
+
+    if(checkRedInside) {
       addBallPercept(Vector2i(((*i).min.x + (*i).max.x)/2, ((*i).min.y + (*i).max.y)/2), ((*i).max.x - (*i).min.x)/2);
     }
   }
 
-  DEBUG_REQUEST("Vision:BDRBallDetector:draw_ball_ercepts",
+  DEBUG_REQUEST("Vision:BDRBallDetector:draw_ball_percepts",
     for(MultiBallPercept::ConstABPIterator iter = getMultiBallPercept().begin(); iter != getMultiBallPercept().end(); iter++) {
       if((*iter).cameraId == cameraID) {
         CIRCLE_PX(ColorClasses::orange, (int)((*iter).centerInImage.x+0.5), (int)((*iter).centerInImage.y+0.5), (int)((*iter).radiusInImage+0.5));
