@@ -74,7 +74,7 @@ public:
 
 private:
     template<class T>
-    Eigen::Matrix<double, Eigen::Dynamic, T::RowsAtCompileTime> determineJacobian(const ErrorFunction& errorFunction, const T& x, const T& epsilon){
+    Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> determineJacobian(const ErrorFunction& errorFunction, const T& x, const T& epsilon){
         Eigen::Matrix<double, T::RowsAtCompileTime, 1> parameterVector = Eigen::Matrix<double, T::RowsAtCompileTime, 1>::Zero();
         Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> mat(errorFunction.getNumberOfResudials(), epsilon.rows() - epsilon.array().isNaN().count());
 
