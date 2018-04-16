@@ -7,6 +7,7 @@
 package de.naoth.rc.dialogs.bdr;
 
 import de.naoth.rc.dataformats.SPLMessage;
+import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -62,6 +63,10 @@ public class RobotPanel extends javax.swing.JPanel {
     private Color colorDanger = new Color(1.0f, 0.0f, 0.0f, 0.5f);
 
     private Color chestColor = new Color(0.0f,0.0f,0.0f,0.7f);
+    
+    private Color disabledColor = Color.GRAY;
+    private Color disabledTextColor = Color.BLACK;
+    private Color disabledChestColor = new Color(0.0f,0.0f,0.0f,0.7f);
     
     public RobotPanel(String ipAddress, SPLMessage msg) {
         initComponents();
@@ -194,6 +199,9 @@ public class RobotPanel extends javax.swing.JPanel {
       g2d.translate((posX + 1), (posY + 1));
       g2d.scale(ratioW, ratioH);
 
+      if(!isEnabled()) {
+        g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, .5f));
+      }
       g2d.drawImage(nao_body, 0, 0, (int) wImg, (int) hImg, this);
       
       g2d.scale(1.0/ratioW, 1.0/ratioH);
@@ -201,11 +209,11 @@ public class RobotPanel extends javax.swing.JPanel {
       
       // player number
       
-      g2d.setColor(chestColor);
+      g2d.setColor(isEnabled() ? chestColor : disabledChestColor);
       int r = 50;
       g2d.fillOval((int)(wPanel/2)-r, (int)(hPanel*0.5)-r, 2*r, 2*r);
-      
-      g2d.setColor(Color.orange);
+
+      g2d.setColor(isEnabled() ? Color.orange : disabledColor);
       g2d.setFont(new Font("TimesRoman", Font.BOLD, 100));
       String playyerNumber = "" + currentMesage.playerNum;
       FontMetrics fm = g.getFontMetrics();
@@ -213,33 +221,41 @@ public class RobotPanel extends javax.swing.JPanel {
       int x = (int)((wPanel-fm.stringWidth(playyerNumber))/2);
       g2d.drawString(playyerNumber, x, y);
       
-      // temperature
-      if(getMessage().user.getTemperature() >= 80.0f){
-        g2d.setColor(colorDanger);
-      } else if(getMessage().user.getTemperature() >= 60.0f) {
-        g2d.setColor(colorWarning);
-      } else {
-          g2d.setColor(colorInfoBlue);
-      }
+        // temperature
+        if (isEnabled()) {
+            if (getMessage().user.getTemperature() >= 80.0f) {
+                g2d.setColor(colorDanger);
+            } else if (getMessage().user.getTemperature() >= 60.0f) {
+                g2d.setColor(colorWarning);
+            } else {
+                g2d.setColor(colorInfoBlue);
+            }
+        } else {
+            g2d.setColor(disabledColor);
+        }
       g2d.drawImage(temperatur_ico, 0, 0, (int)(wPanel*0.1), (int)(wPanel*0.1), this);
       double temperatureValue = getMessage().user.getTemperature()/100.0*hPanel;
       g2d.fillRect(0, (int)(hPanel-temperatureValue), (int)(wPanel*0.1), (int)temperatureValue);
       
-      // battery
-      if(getMessage().user.getBatteryCharge() <= 0.3f){
-        g2d.setColor(colorDanger);
-      } else if(getMessage().user.getBatteryCharge() <= 0.6f) {
-        g2d.setColor(colorWarning);
-      } else {
-        g2d.setColor(colorInfo);
-      }
+        // battery
+        if (isEnabled()) {
+            if (getMessage().user.getBatteryCharge() <= 0.3f) {
+                g2d.setColor(colorDanger);
+            } else if (getMessage().user.getBatteryCharge() <= 0.6f) {
+                g2d.setColor(colorWarning);
+            } else {
+                g2d.setColor(colorInfo);
+            }
+        } else {
+            g2d.setColor(disabledColor);
+        }
       g2d.drawImage(battery_ico, (int)(wPanel*0.9), 0, (int)(wPanel*0.1), (int)(wPanel*0.1), this);
       double batteryValue = getMessage().user.getBatteryCharge()*hPanel;
       g2d.fillRect((int)(wPanel*0.9), (int)(hPanel-batteryValue), (int)(wPanel), (int)batteryValue);
       
       g2d.translate(5, (int)hPanel / 2);
       g2d.rotate(Math.PI*0.5);
-      g2d.setColor(Color.white);
+      g2d.setColor(isEnabled() ? Color.white : disabledTextColor);
       g2d.setFont(new Font("TimesRoman", Font.PLAIN, 18));
       g2d.drawString(String.format("%3.1f °C", getMessage().user.getTemperature()), 0, 0);
       g2d.rotate(-Math.PI*0.5);
@@ -247,7 +263,7 @@ public class RobotPanel extends javax.swing.JPanel {
       
       g2d.translate((int)(wPanel - 17), (int)hPanel / 2);
       g2d.rotate(Math.PI*0.5);
-      g2d.setColor(Color.white);
+      g2d.setColor(isEnabled() ? Color.white : disabledTextColor);
       g2d.setFont(new Font("TimesRoman", Font.PLAIN, 18));
       g2d.drawString(String.format("%3.0f%%", getMessage().user.getBatteryCharge()*100), 0,0);
       g2d.rotate(-Math.PI*0.5);
