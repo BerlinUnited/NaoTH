@@ -19,8 +19,6 @@ import de.naoth.rc.drawings.FieldDrawingBDR;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
@@ -29,7 +27,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
 import java.util.TreeMap;
-import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
@@ -93,7 +90,6 @@ public class BDRMonitor extends AbstractDialog implements ActionListener, TeamCo
                 splitpane.setDividerLocation(e.getComponent().getWidth()*1/3);
                 
                 createDummies();
-                centerScoreboard();
             }
         });
         
@@ -221,16 +217,6 @@ public class BDRMonitor extends AbstractDialog implements ActionListener, TeamCo
         lblDiv.setFont(f);
         lblScore.setFont(f);
     }
-    
-    private void centerScoreboard() {
-        // only if the field is "shown"
-        if(fieldCanvas.getWidth() > 0) {
-            System.out.println(fieldCanvas.getWidth() / 2);
-            lblPanel.setLocation(0, 0);
-            lblPanel.repaint();
-        }
-        System.out.println(">> " + fieldCanvas.getWidth());
-    }
 
   /** This method is called from within the constructor to
    * initialize the form.
@@ -249,10 +235,15 @@ public class BDRMonitor extends AbstractDialog implements ActionListener, TeamCo
         splitpane = new javax.swing.JSplitPane();
         statusPanel = new javax.swing.JPanel();
         fieldCanvas = new de.naoth.rc.components.DynamicCanvasPanel();
+        jLayeredPane1 = new javax.swing.JLayeredPane();
+        jPanel2 = new javax.swing.JPanel();
         lblPanel = new javax.swing.JPanel();
         lblTime = new javax.swing.JLabel();
         lblDiv = new javax.swing.JLabel();
         lblScore = new javax.swing.JLabel();
+        jLayeredPane2 = new javax.swing.JLayeredPane();
+        jPanel1 = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
 
         miClear.setText("Clear");
         miClear.addActionListener(new java.awt.event.ActionListener() {
@@ -305,6 +296,11 @@ public class BDRMonitor extends AbstractDialog implements ActionListener, TeamCo
         fieldCanvas.setOffsetX(350.0);
         fieldCanvas.setOffsetY(200.0);
         fieldCanvas.setScale(0.07);
+        fieldCanvas.setLayout(new javax.swing.OverlayLayout(fieldCanvas));
+
+        jLayeredPane1.setLayout(new java.awt.BorderLayout());
+
+        jPanel2.setOpaque(false);
 
         lblPanel.setBorder(javax.swing.BorderFactory.createEmptyBorder(10, 10, 10, 10));
         lblPanel.setOpaque(false);
@@ -320,22 +316,28 @@ public class BDRMonitor extends AbstractDialog implements ActionListener, TeamCo
         lblScore.setText("0:0");
         lblPanel.add(lblScore);
 
-        javax.swing.GroupLayout fieldCanvasLayout = new javax.swing.GroupLayout(fieldCanvas);
-        fieldCanvas.setLayout(fieldCanvasLayout);
-        fieldCanvasLayout.setHorizontalGroup(
-            fieldCanvasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, fieldCanvasLayout.createSequentialGroup()
-                .addContainerGap(400, Short.MAX_VALUE)
-                .addComponent(lblPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
-        );
-        fieldCanvasLayout.setVerticalGroup(
-            fieldCanvasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(fieldCanvasLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(lblPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(328, Short.MAX_VALUE))
-        );
+        jPanel2.add(lblPanel);
+
+        jLayeredPane1.add(jPanel2, java.awt.BorderLayout.NORTH);
+
+        fieldCanvas.add(jLayeredPane1);
+
+        jLayeredPane2.setLayout(new java.awt.BorderLayout());
+
+        jPanel1.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 0, 50, 0));
+        jPanel1.setOpaque(false);
+
+        jLabel1.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
+        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel1.setText("Messe from a robot ...");
+        jLabel1.setBorder(javax.swing.BorderFactory.createEmptyBorder(50, 50, 50, 50));
+        jLabel1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jLabel1.setOpaque(true);
+        jPanel1.add(jLabel1);
+
+        jLayeredPane2.add(jPanel1, java.awt.BorderLayout.PAGE_END);
+
+        fieldCanvas.add(jLayeredPane2);
 
         splitpane.setRightComponent(fieldCanvas);
 
@@ -360,6 +362,11 @@ private void miClearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST
     private javax.swing.JDialog coordsPopup;
     private javax.swing.JPanel drawingPanel;
     private de.naoth.rc.components.DynamicCanvasPanel fieldCanvas;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLayeredPane jLayeredPane1;
+    private javax.swing.JLayeredPane jLayeredPane2;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
     private javax.swing.JPopupMenu jPopupMenu;
     private javax.swing.JLabel lblDiv;
     private javax.swing.JPanel lblPanel;
