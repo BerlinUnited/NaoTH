@@ -8,7 +8,7 @@
 #define _BDRBallDetector_H_
 
 #include <ModuleFramework/Module.h>
-#include <ModuleFramework/Representation.h>
+#include <ModuleFramework/ModuleManager.h>
 
 // common tools
 #include <Tools/ColorClasses.h>
@@ -33,6 +33,8 @@
 
 // tools
 #include "Tools/DoubleCamHelpers.h"
+#include "Cognition/Modules/VisualCortex/BallDetector/Tools/BallKeyPointExtractor.h"
+
 
 #include "Representations/Debug/Stopwatch.h"
 #include "Tools/Debug/DebugRequest.h"
@@ -61,7 +63,7 @@ BEGIN_DECLARE_MODULE(BDRBallDetector)
 END_DECLARE_MODULE(BDRBallDetector)
 
 
-class BDRBallDetector: private BDRBallDetectorBase
+class BDRBallDetector: private BDRBallDetectorBase, private ModuleManager
 {
 public:
   BDRBallDetector();
@@ -73,11 +75,8 @@ public:
   {
     getMultiBallPercept().reset();
     
-    cameraID = CameraInfo::Top;
-    execute(cameraID);
-
-    cameraID = CameraInfo::Bottom;
-    execute(cameraID);
+    execute(CameraInfo::Top);
+    execute(CameraInfo::Bottom);
   }
  
 private:
@@ -89,21 +88,30 @@ private:
 
     Parameters() : ParameterList("BDRBallDetector")
     {
-      PARAMETER_REGISTER(stepSize) = 2;
+      PARAMETER_REGISTER(keyDetector.borderRadiusFactorClose) = 0.5;
+      PARAMETER_REGISTER(keyDetector.borderRadiusFactorFar) = 0.8;
       
+      PARAMETER_REGISTER(contrastMinimum) = 50;
+
       syncWithConfig();
     }
 
     ~Parameters(){}
+    
+    BallKeyPointExtractor::Parameter keyDetector;
 
-	  int stepSize;
+    double contrastMinimum;
 
   } params;
 
 
 private:
+  double calculateRedContrastIterative(int x0, int y0, int x1, int y1, int size);
+  void addBallPercept(const Vector2i& center, double radius);
 
 private: //data members
+  ModuleCreator<BallKeyPointExtractor>* theBallKeyPointExtractor;
+  BestPatchList best;
 
 private:     
   
