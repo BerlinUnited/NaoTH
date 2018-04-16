@@ -1,13 +1,13 @@
 import math
-import numpy as np
 from matplotlib import pyplot as plt
 from matplotlib.patches import Circle
-from tools import action as a
-from tools import Simulation as Sim
 from naoth import math2d as m2d
 from tools import tools
 from tools import field_info as field
-import copy
+
+"""
+    Test for repeated collisions. Angle calculation does not work correctly
+"""
 
 
 def main():
@@ -16,23 +16,23 @@ def main():
     axes = plt.gca()
 
     # Create a list of line segments
-    linesegment_list = []
-    leftpoint01 = m2d.Vector2(2000, 3000)
-    rightpoint01 = m2d.Vector2(2000, -3000)
-    bouncing_border01 = m2d.LineSegment(leftpoint01, rightpoint01)
-    linesegment_list.append(bouncing_border01)
+    linesegment_list = [
+                        m2d.LineSegment(m2d.Vector2(-field.x_length / 2.0, field.y_length / 2.0),
+                                        m2d.Vector2(field.x_length / 2.0, field.y_length / 2.0)),
+                        m2d.LineSegment(m2d.Vector2(-field.x_length / 2.0, -field.y_length / 2.0),
+                                        m2d.Vector2(field.x_length / 2.0, -field.y_length / 2.0)),
 
-    leftpoint02 = m2d.Vector2(-2000, 3000)
-    rightpoint02 = m2d.Vector2(-2000, -3000)
-    bouncing_border02 = m2d.LineSegment(leftpoint02, rightpoint02)
-    linesegment_list.append(bouncing_border02)
-
+                        m2d.LineSegment(m2d.Vector2(field.x_length / 2.0, field.y_length / 2.0),
+                                        m2d.Vector2(field.x_length / 2.0, -field.y_length / 2.0)),
+                        m2d.LineSegment(m2d.Vector2(-field.x_length / 2.0, field.y_length / 2.0),
+                                        m2d.Vector2(-field.x_length / 2.0, -field.y_length / 2.0))
+    ]
     # Draw borders
-    axes.plot([leftpoint01.x, rightpoint01.x], [leftpoint01.y, rightpoint01.y], 'black')
-    axes.plot([leftpoint02.x, rightpoint02.x], [leftpoint02.y, rightpoint02.y], 'black')
+    for line in linesegment_list:
+        axes.plot([line.begin().x, line.end().x], [line.begin().y, line.end().y], 'black')
 
     ball_start = m2d.Vector2(0, 0)
-    ball_end = m2d.Vector2(-3000, 3000)  # Hack set length of shootline here
+    ball_end = m2d.Vector2(6000, 2000)
 
     # draw start position
     axes.add_artist(Circle(xy=(ball_start.x, ball_start.y), radius=100, fill=False, edgecolor='white'))

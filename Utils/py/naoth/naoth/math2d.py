@@ -45,7 +45,7 @@ class Vector2:
         if isinstance(other, Vector2):
             # interpret multiplication as other^t * self (scalar product of the vectors, where ^t means transpose)
             return self.x * other.x + self.y * other.y
-        elif isinstance(other, (int, float, long)):
+        elif isinstance(other, (int, float)):
             return Vector2(self.x * other, self.y * other)
         else:
             return NotImplemented
