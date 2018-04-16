@@ -4,7 +4,7 @@
  * Created on 09.11.2010, 23:10:57
  */
 
-package de.naoth.rc.dialogs.fieldviewer_extended;
+package de.naoth.rc.dialogs.bdr;
 
 import de.naoth.rc.dataformats.SPLMessage;
 import java.awt.Color;

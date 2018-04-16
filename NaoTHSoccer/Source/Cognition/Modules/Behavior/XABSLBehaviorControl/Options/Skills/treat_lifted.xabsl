@@ -4,7 +4,11 @@ option treat_lifted
   {
     decision
     {
-      if(!body.foot.groundcontact.left &&
+      // HACK: do not treat lifted while in bdr/naoqi behavior
+      if(executed_motion.type == bdr_entertainment
+         || executed_motion.type == bdr_sit)
+        stay;
+      else if(!body.foot.groundcontact.left &&
          !body.foot.groundcontact.right &&
           body.foot.groundcontact.statetime > 100)
         goto lifted;

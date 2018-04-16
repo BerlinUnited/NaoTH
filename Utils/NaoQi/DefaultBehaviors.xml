@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ModulePreference name="aldebaran-robotics.com@DefaultBehaviors" xmlns="http://www.aldebaran-robotics.com/ns/ALPreference" schemaLocation="ModulePreference.xsd">
+    <Preference name="DefaultBehaviors" description="List of default behaviors separated by endlines" value="naoqith_switch_naoqi_backend_behavior-3ab43e/bdr_hmi&#x0A;" type="string" />
+</ModulePreference>

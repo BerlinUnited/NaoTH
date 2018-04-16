@@ -101,6 +101,7 @@ private:
 
   // DCM --> NaoController
   SharedMemory<NaoSensorData> naoSensorData;
+  SharedMemory<BDRNaoQiStatus> naoSensorBDRNaoQiStatus;
 
   SharedMemory<int> debugSM;
 
@@ -110,6 +111,7 @@ private:
   SharedMemory<Accessor<UltraSoundSendData> > naoCommandUltraSoundSendData;
   SharedMemory<Accessor<IRSendData> > naoCommandIRSendData;
   SharedMemory<Accessor<LEDData> > naoCommandLEDData;
+  SharedMemory<Accessor<BDRNaoQiRequest> > naoCommandBDRNaoQiRequestData;
 
   // syncronize with NaoController
   sem_t* sem;

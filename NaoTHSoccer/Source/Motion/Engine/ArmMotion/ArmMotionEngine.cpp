@@ -14,7 +14,6 @@ using namespace naoth;
 using namespace std;
 
 ArmMotionEngine::ArmMotionEngine()
-  : init(false)
 {
     getDebugParameterList().add(&theArmMotionParams);
 }
@@ -26,9 +25,8 @@ ArmMotionEngine::~ArmMotionEngine()
 
 void ArmMotionEngine::execute()
 {
-  if(!init) {
+  if(getFrameInfo().getTimeSince(last_executed) > 20){
     theMotorJointDataOld = getSensorJointData();
-    init = true;
   }
 
   max_velocity_deg_in_second = getMotionRequest().armMotionRequest.max_velocity_deg_in_sec;
@@ -109,6 +107,7 @@ void ArmMotionEngine::execute()
 
   // copy the requested state
   theMotorJointDataOld = getMotorJointData();
+  last_executed = getFrameInfo();
 }//end execute 
 
 void ArmMotionEngine::setLeftShoulderPosition(double shoulderPitch, double shoulderRoll) {

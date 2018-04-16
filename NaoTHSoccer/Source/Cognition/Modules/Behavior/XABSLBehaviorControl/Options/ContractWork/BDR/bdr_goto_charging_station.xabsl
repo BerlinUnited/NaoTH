@@ -1,0 +1,118 @@
+option bdr_goto_charging_station
+{
+  initial state wait {
+      decision {
+          if(state_time < 2000)
+            stay;
+          else
+            goto approach;
+      }
+
+      action {
+          head.control_mode = look_around;
+          motion.type = stand;
+      }
+  }
+
+  state approach {
+      decision {
+        if(action_done)
+          goto wait_and_localize;
+        else
+          stay;
+      }
+
+      action {
+          head.control_mode = look_around;
+          bdr_goto_point(x = -265, y = 400, rot = -90);
+          motion.walk.style = stable;
+      }
+  }
+
+  state wait_and_localize{
+      decision {
+          if(state_time > 10000) {
+              goto approach_very_slowly;
+          }
+          else
+              stay;
+      }
+      
+      action{
+          motion.type = stand;
+          head.control_mode = look_around;
+      }
+  }
+
+  state approach_very_slowly{
+      decision{
+          if (action_done)
+              goto sit;
+          else
+              stay;
+      }
+
+      action {
+            head.control_mode = look_around;
+            bdr_align_carefully(x = -265, y = 550, rot = -90);
+      }
+  }
+
+  state sit {
+      decision {
+        if(executed_motion.type == bdr_sit)
+          goto wait_and_check_for_connection;
+        else
+          stay;
+      }
+
+      action {
+          motion.type = bdr_sit;
+      }
+  }
+
+  state wait_and_check_for_connection {
+      decision {
+        //TODO: use some kind of symbol indicating that the sit motion was reached?
+        if(state_time > 10000){ 
+          if(battery.isDischarging)
+              goto stand_up_again;
+          else 
+              goto done;
+        }
+        else
+            stay;
+      }
+
+      action {
+          motion.type = bdr_sit;
+      }
+  }
+
+  state stand_up_again {
+      decision
+      {
+        if(executed_motion.type == stand && executed_motion.time > 5000)
+          goto approach_very_slowly;
+        else
+          stay;
+      }
+        
+	  action
+	  {
+	      motion.type = stand;
+	      head.control_mode = look_around;
+	  }
+  }
+
+  target state done {
+      decision {
+        stay;
+      }
+
+      action {
+          motion.type = bdr_sit;
+      }
+  }
+
+}

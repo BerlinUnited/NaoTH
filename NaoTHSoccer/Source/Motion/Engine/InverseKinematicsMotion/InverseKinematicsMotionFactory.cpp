@@ -12,6 +12,8 @@
 #include "Motions/Dance.h"
 #include "Motions/Walk.h"
 #include "Motions/Walk2018/Walk2018.h"
+#include "Motions/NaoQiMotion.h"
+
 //#include "Motions/ProtectFalling.h"
 //#include "Motions/IKDynamicKickMotion.h"
 
@@ -46,6 +48,13 @@ Module* InverseKinematicsMotionFactory::createMotion(const MotionRequest& motion
   } else {
       REGISTER_MOTION(motion::walk, Walk);
   }
+
+  static ModuleCreator<NaoQiMotion>* NaoQiMotionCreator = registerModule<NaoQiMotion>("NaoQiMotion");
+  if(motionRequest.id == motion::bdr_entertainment || motionRequest.id == motion::bdr_sit){
+    assert(currentMotionCreator==NULL);
+    currentMotionCreator = NaoQiMotionCreator;
+  }
+  
   //REGISTER_MOTION(motion::walk2018, Walk2018);
   //REGISTER_MOTION(motion::protect_falling, ProtectFalling);
   //REGISTER_MOTION(motion::kick, IKDynamicKickMotion);

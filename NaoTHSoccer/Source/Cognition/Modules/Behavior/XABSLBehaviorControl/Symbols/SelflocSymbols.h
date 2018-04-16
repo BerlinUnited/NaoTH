@@ -23,8 +23,12 @@
 #include "Tools/Math/Geometry.h"
 #include "Tools/Debug/DebugRequest.h"
 #include "Tools/Debug/DebugDrawings.h"
+#include <Representations/Modeling/KinematicChain.h>
 
 BEGIN_DECLARE_MODULE(SelflocSymbols)
+  PROVIDE(DebugDrawings)
+  PROVIDE(DebugRequest)
+
   REQUIRE(RobotPose)
   REQUIRE(SelfLocGoalModel)
   REQUIRE(PlayerInfo)
@@ -32,8 +36,8 @@ BEGIN_DECLARE_MODULE(SelflocSymbols)
   REQUIRE(MotionStatus)
   REQUIRE(CompassDirection)
   REQUIRE(FieldInfo)
-  PROVIDE(DebugDrawings)
-  PROVIDE(DebugRequest)
+  REQUIRE(KinematicChain)
+
 END_DECLARE_MODULE(SelflocSymbols)
 
 class SelflocSymbols: public SelflocSymbolsBase
@@ -46,7 +50,10 @@ public:
     angleOnFieldPlanned(Math::toDegrees(getRobotPose().rotation))
   {
     theInstance = this;
+
+    DEBUG_REQUEST_REGISTER("SelflocSymbols:draw_global_origin", "", false);
   };
+
   virtual ~SelflocSymbols(){}
   
   /** registers the symbols at an engine */

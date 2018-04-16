@@ -1,4 +1,4 @@
-option bdr_remote_play
+option bdr_play
 {
   common decision
   {
@@ -9,9 +9,26 @@ option bdr_remote_play
   initial state idle{
     decision{
       else
-        goto transition;
+        goto localize;
     } 
     action{}
+  }
+
+  state localize
+  {
+    decision
+    {
+      else if(robot_pose.is_valid && executed_motion.time > 5000)
+        goto transition;
+      else
+        stay;
+    }
+    action
+    {
+        motion.type = stand;
+        head.control_mode = look_around;
+        situationStatusOwnHalf = last_state_was_penalized;
+    }
   }
 
   state do_nothing
@@ -42,7 +59,7 @@ option bdr_remote_play
     }
     action
     {
-        bdr_remote_autonomous();
+        bdr_play_soccer();
     }
   }
 
@@ -51,14 +68,30 @@ option bdr_remote_play
     decision
     {
       else if(remote_control.bdr_control != WARTUNG)
+        goto localize_after_wartung;
+      else
+        stay;
+    }
+    action
+    {
+        bdr_goto_charging_station();
+        //bdr_goto_exit();
+    }
+  }
+
+  state localize_after_wartung
+  {
+    decision
+    {
+      else if(executed_motion.type == stand && executed_motion.time > 5000)
         goto transition;
       else
         stay;
     }
     action
     {
-        head.control_mode = look_around;
-        go_to_point(x = -500, y = 0, rot = 0);
+        motion.type = stand;
+        head.control_mode = search_for_ball_and_look_around;
     }
   }
 

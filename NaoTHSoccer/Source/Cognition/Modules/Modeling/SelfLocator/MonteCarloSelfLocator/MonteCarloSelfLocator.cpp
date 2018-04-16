@@ -99,14 +99,16 @@ void MonteCarloSelfLocator::execute()
     state = KIDNAPPED;
   }
 
+  /*
   bool last_motion_ok = getMotionStatus().lastMotion == motion::stand ||
                         getMotionStatus().lastMotion == motion::walk;                    
+  */
 
   bool motion_ok = (getMotionStatus().currentMotion == motion::stand || 
-                    getMotionStatus().currentMotion == motion::walk)
+                    getMotionStatus().currentMotion == motion::walk);
                    // hack: give stand some time in case the last motion was not walk or stand
                    // remark: walk is only executed after walk or stand, so this condition is only relevant for stand
-                   && (last_motion_ok || getFrameInfo().getTimeSince(getMotionStatus().time) > 5000); 
+                   //&& (last_motion_ok || getFrameInfo().getTimeSince(getMotionStatus().time) > 5000); 
 
   bool body_upright = getBodyState().fall_down_state == BodyState::upright;
 
@@ -417,7 +419,7 @@ bool MonteCarloSelfLocator::updateBySensors(SampleSet& sampleSet) const
 
   if(parameters.updateByLinePoints)
   {
-    if(!getLineGraphPercept().edgels.empty()) {
+    if(!getLineGraphPercept().edgelsOnField.empty()) {
       updateByLinePoints(getLineGraphPercept(), sampleSet);
     }
   }
@@ -573,10 +575,10 @@ void MonteCarloSelfLocator::updateByLinePoints(const LineGraphPercept& lineGraph
     PEN("000000", 10);
   );
 
-  for(size_t i = 0; i < lineGraphPercept.edgels.size() && i < (size_t)parameters.linePointsMaxNumber; i++) 
+  for(size_t i = 0; i < lineGraphPercept.edgelsOnField.size() && i < (size_t)parameters.linePointsMaxNumber; i++) 
   {
-    int idx = Math::random((int)lineGraphPercept.edgels.size());
-    const Vector2d& seen_point_relative = lineGraphPercept.edgels[idx].point;
+    int idx = Math::random((int)lineGraphPercept.edgelsOnField.size());
+    const Vector2d& seen_point_relative = lineGraphPercept.edgelsOnField[idx].point;
 
     Vector2d seen_point_g = getRobotPose()*seen_point_relative;
 

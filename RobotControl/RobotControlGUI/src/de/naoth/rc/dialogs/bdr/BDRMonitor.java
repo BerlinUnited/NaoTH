@@ -3,7 +3,7 @@
  *
  * Created on 1. Mai 2008, 00:02
  */
-package de.naoth.rc.dialogs.fieldviewer_extended;
+package de.naoth.rc.dialogs.bdr;
 
 import de.naoth.rc.core.dialog.AbstractDialog;
 import de.naoth.rc.core.dialog.DialogPlugin;
@@ -11,7 +11,7 @@ import de.naoth.rc.RobotControl;
 import de.naoth.rc.components.teamcomm.TeamCommListener;
 import de.naoth.rc.components.teamcomm.TeamCommManager;
 import de.naoth.rc.components.teamcomm.TeamCommMessage;
-import de.naoth.rc.components.teamcommviewer.RobotTeamCommListener;
+import de.naoth.rc.components.teamcomm.TeamCommUDPReceiver;
 import de.naoth.rc.core.dialog.RCDialog;
 import de.naoth.rc.drawings.DrawingCollection;
 import de.naoth.rc.drawings.FieldDrawingBDR;
@@ -22,11 +22,8 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.IOException;
 import java.util.List;
 import java.util.TreeMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.Timer;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
@@ -35,17 +32,18 @@ import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
  *
  * @author  Heinrich Mellmann
  */
-public class FieldViewerExtended extends AbstractDialog implements ActionListener, TeamCommListener
+public class BDRMonitor extends AbstractDialog implements ActionListener, TeamCommListener
 {
-
-    @RCDialog(category = RCDialog.Category.View, name = "Field (extended)")
+    @RCDialog(category = RCDialog.Category.BDR, name = "Monitor")
     @PluginImplementation
-    public static class Plugin extends DialogPlugin<FieldViewerExtended> {
+    public static class Plugin extends DialogPlugin<BDRMonitor> {
 
         @InjectPlugin
         public static RobotControl parent;
         @InjectPlugin
         public static TeamCommManager teamcommManager;
+        @InjectPlugin
+        public static TeamCommUDPReceiver teamCommUDPReceiver;
     }//end Plugin
     
     private final int port = 10004;
@@ -53,14 +51,14 @@ public class FieldViewerExtended extends AbstractDialog implements ActionListene
     /**
      * The robot-TeamCommProvider for our own team.
      */
-    private final RobotTeamCommListener teamcommListener = new RobotTeamCommListener(true);
+    //private final RobotTeamCommListener teamcommListener = new RobotTeamCommListener(true);
     
     private final TreeMap<String, RobotPanel> robots = new TreeMap<>();
     
     private final Timer drawingTimer;
 
     
-    public FieldViewerExtended() {
+    public BDRMonitor() {
         initComponents();
 
         this.fieldCanvas.setBackgroundDrawing(new FieldDrawingBDR());
@@ -95,16 +93,19 @@ public class FieldViewerExtended extends AbstractDialog implements ActionListene
         this.drawingTimer = new Timer(300, this);
         this.drawingTimer.start();
 
-        connect();
+        //connect();
+        Plugin.teamCommUDPReceiver.connect(this, port);
+        Plugin.teamcommManager.addListener(this);
     }
     
+    /*
     private void connect() {
         try {
             teamcommListener.connect(port);
             // listen to TeamCommMessages
             Plugin.teamcommManager.addListener(this);
         } catch (IOException | InterruptedException ex) {
-            Logger.getLogger(FieldViewerExtended.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(BDRMonitor.class.getName()).log(Level.SEVERE, null, ex);
             // TODO: hint dialog?!
         }
     }
@@ -115,15 +116,18 @@ public class FieldViewerExtended extends AbstractDialog implements ActionListene
             // listen to TeamCommMessages
             Plugin.teamcommManager.removeListener(this);
         } catch (IOException | InterruptedException ex) {
-            Logger.getLogger(FieldViewerExtended.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(BDRMonitor.class.getName()).log(Level.SEVERE, null, ex);
             // TODO: hint dialog?!
         }
     }
-
+    */
+    
     @Override
     public void dispose() {
         // remove all the registered listeners
-        disconnect();
+        //disconnect();
+        Plugin.teamCommUDPReceiver.disconnect(this, port);
+        Plugin.teamcommManager.removeListener(this);
         if (drawingTimer.isRunning()) {
             drawingTimer.stop();
         }
@@ -141,7 +145,7 @@ public class FieldViewerExtended extends AbstractDialog implements ActionListene
         // add buffered drawings to field drawing list
         DrawingCollection drawings = new DrawingCollection();
         robots.forEach((ip, m) -> {
-            m.getMessage().draw(drawings, m.getChestColor(), true);
+            m.getMessage().draw(drawings, m.getChestColor(), false);
         });
         fieldCanvas.getDrawingList().add(drawings);
 
