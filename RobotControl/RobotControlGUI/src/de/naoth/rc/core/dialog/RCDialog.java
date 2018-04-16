@@ -44,6 +44,10 @@ public @interface RCDialog {
         Team {
             @Override
             public char mnemonic() { return 'M'; }
+        },
+        BDR {
+            @Override
+            public char mnemonic() { return 'B'; }
         }
     }
     

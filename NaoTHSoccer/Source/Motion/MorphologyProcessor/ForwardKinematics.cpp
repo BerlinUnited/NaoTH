@@ -55,10 +55,9 @@ void ForwardKinematics::setRotation(Link& link, const Vector2d& rotation)
   link.R = RotationMatrix::getRotationX(rotation.x).rotateY(rotation.y);
 }
 
-
 void ForwardKinematics::updateChest(
         KinematicChain& kinematicChain,
-        const Vector2d& theBodyRotation,
+        const RotationMatrix& theBodyRotation,
         const Vector3d& theBodyAcceleration,
         const double deltaTime)
 {
@@ -68,20 +67,18 @@ void ForwardKinematics::updateChest(
   const Vector3d O(0, 0, 0);
   chest.p = O;
 
-  // rotation from inertial sensor
-  chest.R = RotationMatrix::getRotationX(theBodyRotation.x);
-  chest.R.rotateY(theBodyRotation.y);
+  // orientation from IMU
+  chest.R = theBodyRotation;
 
   // acceleration and velocity
-  chest.dv = chest.R * ( theBodyAcceleration * 1000 );
+  chest.dv = chest.R * (theBodyAcceleration * 1000);
   chest.v += chest.dv * deltaTime;
   chest.w = O;
   chest.dw = O;
 }//end updateChest
 
-
 void ForwardKinematics::updateKinematicChainAll(
-    const Vector2d& theBodyRotation,
+    const RotationMatrix& theBodyRotation,
     const Vector3d& theBodyAcceleration,
     const double deltaTime,
     KinematicChain& theKinematicChain,
@@ -89,18 +86,18 @@ void ForwardKinematics::updateKinematicChainAll(
 {
   // set the values for the chest link
   updateChest(
-    theKinematicChain, 
-    theBodyRotation, 
-    theBodyAcceleration, 
+    theKinematicChain,
+    theBodyRotation,
+    theBodyAcceleration,
     deltaTime);
-  
+
   // propagate though the entire kinematic chain beginning from the chest
   forwardAllKinematics(theKinematicChain, KinematicChain::Torso);
 
   // transfor the FSR to the global coordinates of the kinematic chain
   // i.e., to the chest coordinates
   updateFSRPos(theKinematicChain, theFSRPos);
-  
+
   // assume the foot is on the ground and use the z-distance to the
   // lowest FSR as an estimation for the actual height of the robots chest
   double chestHeight = theFSRPos[getLowestFSR(theFSRPos)].z;

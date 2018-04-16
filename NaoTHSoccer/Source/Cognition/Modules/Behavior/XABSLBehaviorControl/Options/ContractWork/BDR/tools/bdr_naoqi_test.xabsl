@@ -1,0 +1,47 @@
+option bdr_naoqi_test
+{
+  common decision
+  {
+    if(!body.ready_to_walk || game.current_mode != playing)
+        goto idle;
+  }
+  
+  initial state idle{
+    decision{
+      else
+        goto do_naoth;
+    } 
+    action{}
+  }
+
+  state do_naoth
+  {
+    decision
+    {
+      else if(executed_motion.type == stand && executed_motion.time > 5000)
+        goto do_naoqi;
+      else
+        stay;
+    }
+    action
+    {
+      motion.type = stand;
+      arm.control_mode = normal;
+    }
+  }
+
+  state do_naoqi
+  {
+    decision
+    {
+      else if(executed_motion.type == bdr_sit && state_time > 20000)
+        goto do_naoth;
+      else
+        stay;
+    }
+    action
+    {
+        motion.type = bdr_sit;
+    }
+  }
+}

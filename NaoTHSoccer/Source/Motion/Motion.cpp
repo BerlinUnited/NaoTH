@@ -27,24 +27,14 @@ Motion::Motion()
     theLogProvider(NULL),
     motionLogger("MotionLog")
 {
-
   REGISTER_DEBUG_COMMAND(motionLogger.getCommand(), motionLogger.getDescription(), &motionLogger);
-
-  #define ADD_LOGGER(R) motionLogger.addRepresentation(&(get##R()), #R);
-
-  ADD_LOGGER(FrameInfo);
-  ADD_LOGGER(SensorJointData);
-  ADD_LOGGER(MotorJointData);
-  ADD_LOGGER(InertialSensorData);
-  ADD_LOGGER(AccelerometerData);
-  ADD_LOGGER(GyrometerData);
-  ADD_LOGGER(FSRData);
-  ADD_LOGGER(MotionRequest);
+  registerLogableRepresentationList();
 
   DEBUG_REQUEST_REGISTER("Motion:KinematicChain:orientation_test", "", false);
 
   DEBUG_REQUEST_REGISTER("Motion:KinematicChain:drawMotor3D", "", false);
   DEBUG_REQUEST_REGISTER("Motion:KinematicChain:drawSensor3D", "", false);
+  DEBUG_REQUEST_REGISTER("Motion:disable_DCM_writings", "", false);
 
   REGISTER_DEBUG_COMMAND("DebugPlot:get", "get the plots", &getDebugPlot());
 
@@ -75,11 +65,14 @@ Motion::Motion()
   theMotionEngine = registerModule<MotionEngine>("MotionEngine", true);
 
   getDebugParameterList().add(&parameter);
+
+  getWalk2018Parameters().init(getDebugParameterList());
 }
 
 Motion::~Motion()
 {
   getDebugParameterList().remove(&parameter);
+  getWalk2018Parameters().remove(getDebugParameterList());
 }
 
 void Motion::init(naoth::ProcessInterface& platformInterface, const naoth::PlatformBase& platform)
@@ -108,12 +101,14 @@ void Motion::init(naoth::ProcessInterface& platformInterface, const naoth::Platf
   REG_INPUT(FSRData);
   REG_INPUT(AccelerometerData);
   REG_INPUT(GyrometerData);
+  REG_INPUT(BDRNaoQiStatus);
 
   REG_INPUT(DebugMessageInMotion);
 
 #define REG_OUTPUT(R)                                                   \
   platformInterface.registerOutput(get##R())
 
+  REG_OUTPUT(BDRNaoQiRequest);
   REG_OUTPUT(MotorJointData);
   REG_OUTPUT(DebugMessageOut);
   //REG_OUTPUT(LEDData);
@@ -128,6 +123,7 @@ void Motion::init(naoth::ProcessInterface& platformInterface, const naoth::Platf
   platformInterface.registerOutputChanel(getBodyStatus());
   platformInterface.registerOutputChanel(getGroundContactModel());
   platformInterface.registerOutputChanel(getCollisionPercept());
+  platformInterface.registerOutputChanel(getIMUData());
 
   // messages from cognition to motion
   platformInterface.registerInputChanel(getCameraInfo());
@@ -144,6 +140,13 @@ void Motion::init(naoth::ProcessInterface& platformInterface, const naoth::Platf
 
 void Motion::call()
 {
+  DEBUG_REQUEST("Motion:disable_DCM_writings",
+    getBDRNaoQiRequest().disable_DCM_writings = true;
+  );
+
+  DEBUG_REQUEST_ON_DEACTIVE("Motion:disable_DCM_writings",
+    getBDRNaoQiRequest().disable_DCM_writings = false;
+  );
 
   STOPWATCH_START("MotionExecute");
 

@@ -167,10 +167,13 @@ void SMALModule::init()
   // init shared memory
   //const std::string naoCommandDataPath = "/nao_command_data";
   const std::string naoSensorDataPath = "/nao_sensor_data";
+  const std::string naoSensorBDRNaoQiStatusPath = "/nao_sensor_BDRNaoQiStatusPath";
   //std::cout << "Opening Shared Memory: "<<naoCommandDataPath<<std::endl;
   //naoCommandData.open(naoCommandDataPath);
   std::cout<< "Opening Shared Memory: "<<naoSensorDataPath<<std::endl;
   naoSensorData.open(naoSensorDataPath);
+  std::cout<< "Opening Shared Memory: "<<naoSensorBDRNaoQiStatusPath<<std::endl;
+  naoSensorBDRNaoQiStatus.open(naoSensorBDRNaoQiStatusPath);
 
   debugSM.open("/debug_data");
 
@@ -178,6 +181,7 @@ void SMALModule::init()
   const std::string naoCommandUltraSoundSendDataPath = "/nao_command.UltraSoundSendData";
   const std::string naoCommandIRSendDataPath = "/nao_command.IRSendData";
   const std::string naoCommandLEDDataPath = "/nao_command.LEDData";
+  const std::string naoCommandBDRNaoQiRequestDataPath = "/nao_command.BDRRequestData";
 
   std::cout << "Opening Shared Memory: " << naoCommandMotorJointDataPath << std::endl;
   naoCommandMotorJointData.open(naoCommandMotorJointDataPath);
@@ -187,6 +191,8 @@ void SMALModule::init()
   naoCommandIRSendData.open(naoCommandIRSendDataPath);
   std::cout << "Opening Shared Memory: " << naoCommandLEDDataPath << std::endl;
   naoCommandLEDData.open(naoCommandLEDDataPath);
+  std::cout << "Opening Shared Memory: " << naoCommandBDRNaoQiRequestDataPath << std::endl;
+  naoCommandBDRNaoQiRequestData.open(naoCommandBDRNaoQiRequestDataPath);
 
 
   // connect to DCM
@@ -242,6 +248,16 @@ void SMALModule::slowDcmUpdate()
     theDCMHandler.setUltraSoundSend(commandData->get(), dcmTime);
   }
 
+  if(naoCommandBDRNaoQiRequestData.swapReading())
+  {
+    const Accessor<BDRNaoQiRequest>* commandData = naoCommandBDRNaoQiRequestData.reading();
+    theDCMHandler.setBDRNaoQiRequest(commandData->get(), dcmTime);
+  }
+
+  BDRNaoQiStatus* status = naoSensorBDRNaoQiStatus.writing();
+  theDCMHandler.getBDRNaoQiStatus(status);
+  naoSensorBDRNaoQiStatus.swapWriting();
+
   slowDCMupdateCanRun = false;
 }
 
@@ -287,7 +303,8 @@ void SMALModule::motionCallbackPre()
     
     theDCMHandler.setAllPositionData(commandData->get(), dcmTime);
     //stiffness_set = 
-    theDCMHandler.setAllHardnessDataSmart(commandData->get(), dcmTime);
+    //theDCMHandler.setAllHardnessDataSmart(commandData->get(), dcmTime);
+    theDCMHandler.setAllHardnessData(commandData->get(), dcmTime);
 
     drop_count = 0;
     command_data_available = true;
@@ -447,10 +464,12 @@ void SMALModule::exit()
 
   // close the shared memory
   naoSensorData.close();
+  naoSensorBDRNaoQiStatus.close();
   naoCommandMotorJointData.close();
   naoCommandUltraSoundSendData.close();
   naoCommandIRSendData.close();
   naoCommandLEDData.close();
+  naoCommandBDRNaoQiRequestData.close();
 
   // set all stiffness to 0
   theDCMHandler.setAllHardnessData(0.0, dcmTime);

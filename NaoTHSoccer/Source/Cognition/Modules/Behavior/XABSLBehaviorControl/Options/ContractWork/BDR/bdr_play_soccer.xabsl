@@ -1,0 +1,127 @@
+option bdr_play_soccer
+{
+
+    common decision
+	  {
+	    if(!body.ready_to_walk || game.current_mode != playing)
+	      goto idle;
+	  }
+
+    initial state idle {
+	    decision {
+	      else
+	        goto goto_home_position;
+	    }
+	    action {
+	    }
+	  }
+
+    state search {
+        decision {
+            else if(state_time < 3000)
+              stay;
+            else
+              goto do_search;
+        }
+
+        action {
+            situation_abortable = true;
+            head.control_mode = search_for_ball;
+            motion.type = stand;
+        }
+    }
+
+    state do_search {
+      decision {
+        else if(action_done && ball.position.field.x < 0)
+          goto goto_ball;
+        else if(action_done || state_time > 10000)
+          goto goto_home_position;
+        else
+          stay;
+      }
+      action {
+        search_ball_simple(search_direction=ball.preview.y > 0 ? left: right);
+      }
+    }
+
+    state goto_home_position 
+    {
+      decision {
+            else if (ball.know_where_itis && ball.position.field.x < 0)
+                goto goto_ball;
+            else if(action_done && !ball.know_where_itis)
+              goto search;
+            else
+                stay;
+        }
+
+        action {
+            situation_abortable = true;
+            bdr_goto_point(x = -600, y = 0, rot = 0);
+            head.control_mode = search_for_ball;
+        }
+    }
+
+    state goto_ball {
+        decision {
+            else if(state_time < 3000)
+              stay;
+            else
+              goto do_goto_ball;
+        }
+
+        action {
+            situation_abortable = true;
+            head.control_mode = search_for_ball;
+            motion.type = stand;
+        }
+    }
+
+    state do_goto_ball {
+        decision {
+            else if(!ball.know_where_itis)
+              goto search;
+            else if(ball.position.field.x > 0)
+              goto goto_home_position;
+            else if (action_done)
+                goto kick;
+            else
+                stay;
+        }
+
+        action {
+            situation_abortable = true;
+            go_to_ball(distance = 140);
+        }
+    }
+
+    state kick {
+      decision {
+            else if (action_done)
+                goto wait;
+            else
+                stay;
+        }
+        action {
+            situation_abortable = false;
+            path_kick_short_with_approach();
+        }
+    }
+
+    
+    target state wait {
+        decision {
+            else if(state_time < 5000)
+              stay;
+            else
+              goto search;
+        }
+
+        action {
+            situation_abortable = false;
+            head.control_mode = search_for_ball;
+            motion.type = stand;
+        }
+    }
+}
