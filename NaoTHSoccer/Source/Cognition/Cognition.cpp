@@ -60,6 +60,7 @@
 #include "Modules/VisualCortex/BallDetector/BallCandidateDetector.h"
 #include "Modules/VisualCortex/BallDetector/BallDetector.h"
 #include "Modules/VisualCortex/BDRBallDetector/BDRBallDetector.h"
+#include "Modules/VisualCortex/BDRBallDetector/BDRIntegralImageProvider.h"
 #include "Modules/VisualCortex/IntegralImageProvider.h"
 
 #include "Modules/SelfAwareness/FakeCameraMatrixFinder/FakeCameraMatrixFinder.h"
@@ -163,7 +164,10 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(CameraMatrixCorrectorV2);
 
   REGISTER_MODULE(HistogramProvider);
+  
   REGISTER_MODULE(IntegralImageProvider);
+  REGISTER_MODULE(BDRIntegralImageProvider);
+
   REGISTER_MODULE(SimpleFieldColorClassifier);
   REGISTER_MODULE(FieldColorClassifier);
   REGISTER_MODULE(ScanLineEdgelDetector);
