@@ -74,7 +74,6 @@ void ActionSimulator::simulateAction(const Action& action, ActionResults& result
       DEBUG_REQUEST("Simulation:draw_goal_collisions",
       if (collisionWithOppGoal)
       {
-				std::cout << "Collision" << std::endl;
         FIELD_DRAWING_CONTEXT;
 
         PEN("000000", 10);
@@ -108,7 +107,7 @@ void ActionSimulator::simulateAction(const Action& action, ActionResults& result
     }
 
 		// always check collisions with borders
-		bool collisionFieldBorder = calculateCollision(fieldBorderLines, globalBallStartPosition, globalBallEndPosition, globalBallEndPosition);
+		bool collisionFieldBorder = calculateCollisionWithRebound(fieldBorderLines, globalBallStartPosition, globalBallEndPosition, globalBallEndPosition);
 
     // default category
     BallPositionCategory category = classifyBallPosition(globalBallEndPosition);
@@ -143,28 +142,55 @@ bool ActionSimulator::calculateCollision(const vector<Math::LineSegment>& lines,
 
 bool ActionSimulator::calculateCollisionWithRebound(const vector<Math::LineSegment>& lines, const Vector2d& start, const Vector2d& end, Vector2d& result) const
 {
-	Math::LineSegment motionLine(start, end);
-	double t_min = motionLine.getLength();
+	//FIXME angle calculation is still wrong
+	bool check_collision = true;
+	bool collision_flag = false;
 
-	bool collision = false;
-	for (const Math::LineSegment& segment : lines)
-	{
-		const double t = motionLine.Line::intersection(segment);
+	Vector2d ball_start = start;
+	Vector2d ball_end = end;
 
-		if (t >= 0 && t < t_min && segment.intersect(motionLine)) {
-			t_min = t;
-			collision = true;
+	while(check_collision){
+		Math::LineSegment motionLine(ball_start, ball_end);
+		double t_min = motionLine.getLength();
+		collision_flag = false;
+
+		for (const Math::LineSegment& segment : lines)
+		{
+			const double t = motionLine.Line::intersection(segment);
+
+			if (t >= 0 && t < t_min && segment.intersect(motionLine)) {
+				t_min = t;
+				collision_flag = true;
+			}
 		}
-	}
 
-	if (collision) {
-		result = motionLine.point(t_min - getFieldInfo().ballRadius);
-	}
-	else {
-		result = end;
-	}
+		if (collision_flag) {
+			result = motionLine.point(t_min - getFieldInfo().ballRadius);
 
-	return collision;
+			// calculate new endpoint
+			double new_motionLine_length = sqrt(Math::sqr(ball_end.x - result.x) + Math::sqr(ball_end.y - result.y));
+			double motionLine_angle = atan2(result.y - ball_start.y, result.x - ball_start.x);
+
+			Vector2d bounce = result + (Vector2d(new_motionLine_length, 0)).rotate(Math::pi - 2 * motionLine_angle);
+
+			// rotate new vector by the angle of the original shootline
+			bounce.rotate(motionLine_angle);
+
+			// set ball_start and ball_end
+			ball_start = result;
+			ball_end = bounce;
+			collision_flag = false;
+		}
+		else {
+			check_collision = false;
+			result = ball_end;
+		}
+
+	} //end while
+	
+
+
+	return collision_flag;
 }
 
 
