@@ -122,13 +122,13 @@ public class RobotPanel extends javax.swing.JPanel {
       double msgPerSecond = calculateMsgPerSecond();
       if((currentTime - lastSeen) > MAX_TIME_BEFORE_DEAD || msgPerSecond <= 0.0)
       {
-        this.jlTimestamp.setText("DEAD");
-        this.jlTimestamp.setForeground(Color.red);
+        this.jlTimestamp.setText("OFFLINE");
+        this.jlTimestamp.setForeground(Color.black);
       }
       else
       {
         this.jlTimestamp.setText(String.format("%4.2f msg/s", msgPerSecond));
-        this.jlTimestamp.setForeground(Color.black);
+        this.jlTimestamp.setForeground(Color.white);
       }
       
       //this.jlFallenTime.setText(msg.fallen == 1 ? "FALLEN" : "NOT FALLEN");
@@ -252,22 +252,21 @@ public class RobotPanel extends javax.swing.JPanel {
       g2d.drawImage(battery_ico, (int)(wPanel*0.9), 0, (int)(wPanel*0.1), (int)(wPanel*0.1), this);
       double batteryValue = getMessage().user.getBatteryCharge()*hPanel;
       g2d.fillRect((int)(wPanel*0.9), (int)(hPanel-batteryValue), (int)(wPanel), (int)batteryValue);
-      
-      g2d.translate(5, (int)hPanel / 2);
-      g2d.rotate(Math.PI*0.5);
+      g2d.translate(20, (int)hPanel / 2);
+      g2d.rotate(Math.PI*-0.5);
       g2d.setColor(isEnabled() ? Color.white : disabledTextColor);
       g2d.setFont(new Font("TimesRoman", Font.PLAIN, 18));
       g2d.drawString(String.format("%3.1f °C", getMessage().user.getTemperature()), 0, 0);
-      g2d.rotate(-Math.PI*0.5);
-      g2d.translate(-5, -(int)hPanel / 2);
-      
-      g2d.translate((int)(wPanel - 17), (int)hPanel / 2);
       g2d.rotate(Math.PI*0.5);
+      g2d.translate(-20, -(int)hPanel / 2);
+      
+      g2d.translate((int)(wPanel - 10), (int)hPanel / 2);
+      g2d.rotate(Math.PI*-0.5);
       g2d.setColor(isEnabled() ? Color.white : disabledTextColor);
       g2d.setFont(new Font("TimesRoman", Font.PLAIN, 18));
       g2d.drawString(String.format("%3.0f%%", getMessage().user.getBatteryCharge()*100), 0,0);
-      g2d.rotate(-Math.PI*0.5);
-      g2d.translate(-(int)(wPanel - 17), -(int)hPanel / 2);
+      g2d.rotate(Math.PI*0.5);
+      g2d.translate(-(int)(wPanel - 10), -(int)hPanel / 2);
     }//end paintComponent
     
     
@@ -375,7 +374,7 @@ public class RobotPanel extends javax.swing.JPanel {
         jlTimestamp.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         jlTimestamp.setForeground(new java.awt.Color(255, 255, 255));
         jlTimestamp.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/naoth/rc/res/appointment-new.png"))); // NOI18N
-        jlTimestamp.setText("DEAD");
+        jlTimestamp.setText("OFFLINE");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 1;

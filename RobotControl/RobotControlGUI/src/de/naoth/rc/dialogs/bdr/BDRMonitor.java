@@ -66,10 +66,13 @@ public class BDRMonitor extends AbstractDialog implements ActionListener, TeamCo
 
         this.fieldCanvas.setBackgroundDrawing(new FieldDrawingBDR());
         this.fieldCanvas.setToolTipText("");
-        this.fieldCanvas.setFitToViewport(true);
+        //this.fieldCanvas.setFitToViewport(true);
 
         // intialize the field
         clearField();
+        fieldCanvas.setScale(0.9);
+//        fieldCanvas.setOffsetY(500);
+//        fieldCanvas.setOffsetX(500);
         //this.fieldCanvas.setAntializing(true);
         this.fieldCanvas.repaint();
 
@@ -88,8 +91,14 @@ public class BDRMonitor extends AbstractDialog implements ActionListener, TeamCo
             @Override
             public void componentResized(ComponentEvent e) {
                 splitpane.setDividerLocation(e.getComponent().getWidth()*1/3);
-                
-                createDummies();
+                System.out.println();
+                fieldCanvas.setOffsetX(fieldCanvas.getWidth() / 2);
+                fieldCanvas.setOffsetY(fieldCanvas.getHeight()-200);
+                fieldCanvas.repaint();
+                // TODO: sync with 'newTeamCommMessages'
+//                synchronized(this) {
+//                    createDummies();
+//                }
             }
         });
         
@@ -174,14 +183,16 @@ public class BDRMonitor extends AbstractDialog implements ActionListener, TeamCo
                     p.setPreferredSize(new Dimension(displayHeight/3, displayHeight/2));
                     robots.put(m.address, p);
                     // the status panel should be ordered - remove all and readded it in order
-                    statusPanel.removeAll();
-                    robots.forEach((t, u) -> {
-                        JPanel panel = new JPanel();
-                        panel.add(u);
-                        
-                        statusPanel.add(panel);
-                    });
-                    createDummies();
+                    synchronized(this){
+                        statusPanel.removeAll();
+                        robots.forEach((t, u) -> {
+                            JPanel panel = new JPanel();
+                            panel.add(u);
+                            panel.setBackground(Color.white);
+                            statusPanel.add(panel);
+                        });
+                        createDummies();
+                    }
                     statusPanel.repaint();
                 } else {
                     robots.get(m.address).setStatus(m.timestamp, m.message);
@@ -208,6 +219,7 @@ public class BDRMonitor extends AbstractDialog implements ActionListener, TeamCo
             d.setEnabled(false);
             JPanel panel = new JPanel();
             panel.add(d);
+            panel.setBackground(Color.white);
             statusPanel.add(panel);
         }
     }
@@ -288,6 +300,7 @@ public class BDRMonitor extends AbstractDialog implements ActionListener, TeamCo
         splitpane.setDividerLocation(337);
         splitpane.setDividerSize(1);
 
+        statusPanel.setBackground(new java.awt.Color(255, 255, 255));
         statusPanel.setLayout(new java.awt.GridLayout(2, 2, 10, 10));
         splitpane.setLeftComponent(statusPanel);
 
@@ -329,7 +342,7 @@ public class BDRMonitor extends AbstractDialog implements ActionListener, TeamCo
 
         jLabel1.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel1.setText("Messe from a robot ...");
+        jLabel1.setText("Message from a robot ...");
         jLabel1.setBorder(javax.swing.BorderFactory.createEmptyBorder(50, 50, 50, 50));
         jLabel1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jLabel1.setOpaque(true);

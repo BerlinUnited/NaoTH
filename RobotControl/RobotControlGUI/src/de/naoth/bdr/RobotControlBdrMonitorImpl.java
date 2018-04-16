@@ -64,10 +64,12 @@ public class RobotControlBdrMonitorImpl extends javax.swing.JFrame implements Ro
           getContentPane().add(dialog.getPanel(), java.awt.BorderLayout.CENTER);
       }
       // for debugging:
+      /*
       if(dialog.getDisplayName().equals("Simspark")) {
           Simspark s = (Simspark) dialog.getPanel();
           s.connect();
       }
+      */
   }
 
     /**
