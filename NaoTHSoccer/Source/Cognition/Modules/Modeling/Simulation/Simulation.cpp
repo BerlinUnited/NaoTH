@@ -58,7 +58,7 @@ void Simulation::execute()
   // simulate the consequences for all actions
   STOPWATCH_START("Simulation:simulateAction");
   for (size_t i = 0; i < action_local.size(); i++) {
-    simulationModule->getModuleT()->simulateAction(action_local[i], actionsConsequences[i], 30);
+		simulationModule->getModuleT()->simulateAction(action_local[i], actionsConsequences[i], theParameters.numParticles);
   }
   STOPWATCH_STOP("Simulation:simulateAction");
 
