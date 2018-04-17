@@ -21,7 +21,8 @@ namespace bdr_symbols("BDR Symbols") {
       entertaining,
       pre_servicing,
       servicing,
-      doing_nothing
+      doing_nothing,
+      initializing
   };
   
   enum activity output bdr.activity;

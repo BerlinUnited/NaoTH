@@ -11,7 +11,9 @@ option bdr_play
       else
         goto localize;
     } 
-    action{}
+    action{
+        bdr.activity = initializing;
+    }
   }
 
   state localize
@@ -28,6 +30,7 @@ option bdr_play
         motion.type = stand;
         head.control_mode = look_around;
         situationStatusOwnHalf = last_state_was_penalized;
+        bdr.activity = initializing;
     }
   }
 
@@ -45,6 +48,7 @@ option bdr_play
       motion.type = stand;    
       motion.walk.stop_with_stand=true;        
       head.control_mode = search_for_ball_and_look_around;
+      bdr.activity = doing_nothing;
     }
   }
 
@@ -66,6 +70,7 @@ option bdr_play
     {
         bdr_play_soccer();
         bdr.reason = none;
+        bdr.activity = playing;
     }
   }
 

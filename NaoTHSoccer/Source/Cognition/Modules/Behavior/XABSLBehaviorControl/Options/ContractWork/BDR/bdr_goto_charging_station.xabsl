@@ -11,6 +11,7 @@ option bdr_goto_charging_station
       action {
           head.control_mode = look_around;
           motion.type = stand;
+          bdr.activity = pre_servicing;
       }
   }
 
@@ -112,6 +113,7 @@ option bdr_goto_charging_station
 
       action {
           motion.type = bdr_sit;
+          bdr.activity = servicing;
       }
   }
 
