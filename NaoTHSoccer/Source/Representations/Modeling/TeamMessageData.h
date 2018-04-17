@@ -79,6 +79,7 @@ public:
   // opponents ?
 
   PlayerInfo::RobotState robotState;
+  naoth::GameData::TeamColor teamColor;
 
   /** Sets the data according to the protobuf message. */
   void parseFromProto(const naothmessages::BUUserTeamMessage& userData);

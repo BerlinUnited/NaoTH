@@ -29,7 +29,7 @@ enum RobotState
   set      = 2;
   playing  = 3;
   finished = 4;
-  penalized = 11;
+  penalized = 5;
 };
 
 message Opponent {
@@ -61,7 +61,10 @@ message BUUserTeamMessage
   // only for visualizing teamball position in RC
   optional DoubleVector2 teamBall = 14;
   repeated Ntp ntpRequest = 15;
+  
   optional RobotState robotState = 16 [default=initial];
+  optional TeamColor teamColor = 17 [default=blueTeam];
+
   optional string key = 100 [default="none"];
 }
 

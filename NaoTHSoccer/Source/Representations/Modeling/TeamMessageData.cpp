@@ -152,7 +152,9 @@ TeamMessageCustom::TeamMessageCustom() :
   whistleDetected(false),
   whistleCount(0),
   // init with "invalid" position
-  teamBall(std::numeric_limits<double>::infinity(), std::numeric_limits<double>::infinity())
+  teamBall(std::numeric_limits<double>::infinity(), std::numeric_limits<double>::infinity()),
+  robotState(PlayerInfo::initial),
+  teamColor(naoth::GameData::unknown_team_color)
 {
 }
 
@@ -211,6 +213,7 @@ naothmessages::BUUserTeamMessage TeamMessageCustom::toProto() const
     }
     userMsg.set_key(key);
     userMsg.set_robotstate((naothmessages::RobotState)robotState);
+    userMsg.set_teamcolor((naothmessages::TeamColor)teamColor);
 
     return userMsg;
 }
@@ -287,5 +290,6 @@ void TeamMessageCustom::parseFromProto(const naothmessages::BUUserTeamMessage &u
     }
 
     robotState = (PlayerInfo::RobotState) userData.robotstate();
+    teamColor = (naoth::GameData::TeamColor) userData.teamcolor();
 }
 
