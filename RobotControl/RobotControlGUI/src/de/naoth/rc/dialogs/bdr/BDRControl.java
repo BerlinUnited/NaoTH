@@ -16,6 +16,7 @@ import de.naoth.rc.core.manager.SwingCommandExecutor;
 import de.naoth.rc.dataformats.SPLMessage;
 import de.naoth.rc.dialogs.RobotHealth;
 import de.naoth.rc.dialogs.TeamCommViewer;
+import de.naoth.rc.drawings.Colors;
 import de.naoth.rc.messages.BDRMessages.BDRControlCommand;
 import de.naoth.rc.messages.BDRMessages.BDRBehaviorMode;
 import de.naoth.rc.server.Command;
@@ -284,10 +285,9 @@ public class BDRControl extends AbstractDialog implements TeamCommListener {
     private void updateRoboPanel() {
         this.robotPanel.removeAll();
         int displayHeight = robotPanel.getHeight() - 20;
-        System.out.println(displayHeight/3);
         
-        for (RobotPanel robot : robotsMap.values()) {    
-            robot.setChestColor(Color.BLUE);
+        for (RobotPanel robot : robotsMap.values()) {
+            robot.setChestColor(robot.getMessage().getTeamColor());
             robot.setPreferredSize(new Dimension(displayHeight/3, displayHeight/2));
             robotPanel.add(robot);
         }

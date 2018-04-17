@@ -205,11 +205,11 @@ public class BDRMonitor extends AbstractDialog implements ActionListener, TeamCo
     private synchronized void updateRoboPanel() {
         this.statusPanel.removeAll();
         int displayHeight = statusPanel.getHeight() - 20;
-        System.out.println(displayHeight);
         
         robots.forEach((t, u) -> {
-            u.setChestColor(Color.BLUE);
+            u.setChestColor(u.getMessage().getTeamColor());
             u.setPreferredSize(new Dimension(displayHeight/3, displayHeight/2));
+            u.setHideConnectButton(true);
             
             JPanel panel = new JPanel();
             panel.add(u);

@@ -3,6 +3,7 @@ package de.naoth.bdr;
 import de.naoth.rc.RobotControl;
 import de.naoth.rc.core.dialog.Dialog;
 import de.naoth.rc.server.MessageServer;
+import java.awt.Color;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.io.File;
@@ -171,7 +172,7 @@ public class RobotControlBdrMonitorImpl extends javax.swing.JFrame implements Ro
     public Properties getConfig() {
         return null;
     }
-
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel1;
     // End of variables declaration//GEN-END:variables
