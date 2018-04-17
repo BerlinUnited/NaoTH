@@ -41,7 +41,10 @@ public:
 
   virtual void print(std::ostream& stream) const
   {
-    stream << "BDRPlayerState" << std::endl;
+    stream << "BDRPlayerState\n";
+    stream << "  activity: " << getActivityName(activity) << "\n";
+    stream << "  sitting: " << sitting << "\n";
+    stream << "  localized_on_field: " << localized_on_field << "\n";
   }
 
   static std::string getActivityName(Activity id);

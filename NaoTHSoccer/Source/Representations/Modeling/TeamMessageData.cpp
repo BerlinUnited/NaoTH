@@ -179,6 +179,11 @@ void TeamMessageCustom::print(std::ostream &stream) const
           stream << "\t\t" << request.playerNumber << ", " << request.sent << " -> " << request.received << std::endl;
       }
   }
+
+  stream << "RobotState" << PlayerInfo::toString(robotState) << "\n";
+  
+  bdrPlayerState.print(stream);
+
   stream << std::endl;
 }//end print
 
