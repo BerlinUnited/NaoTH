@@ -7,6 +7,7 @@
 package de.naoth.rc.dialogs.bdr;
 
 import de.naoth.rc.dataformats.SPLMessage;
+import de.naoth.rc.server.MessageServer;
 import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Font;
@@ -50,9 +51,10 @@ public class RobotPanel extends javax.swing.JPanel {
     public final static long MAX_TIME_BEFORE_DEAD = 5000; //ms
     private final RingBuffer timestamps = new RingBuffer(5);
     
+    private final MessageServer messageServer;
     private String ipAddress;
     private SPLMessage currentMesage;
-    
+    private boolean hideConnectButton = false;
     
     private BufferedImage nao_body;
     private BufferedImage battery_ico;
@@ -69,8 +71,13 @@ public class RobotPanel extends javax.swing.JPanel {
     private Color disabledChestColor = new Color(0.0f,0.0f,0.0f,0.7f);
     
     public RobotPanel(String ipAddress, SPLMessage msg) {
+        this(null, ipAddress, msg);
+    }
+    
+    public RobotPanel(MessageServer messageServer, String ipAddress, SPLMessage msg) {
         initComponents();
         
+        this.messageServer = messageServer;
         this.ipAddress = ipAddress;
         this.currentMesage = msg;
         this.jlAddress.setText(this.ipAddress);
@@ -173,6 +180,27 @@ public class RobotPanel extends javax.swing.JPanel {
     
     public Color getChestColor() {
         return chestColor;
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        super.setEnabled(enabled);
+        if(!hideConnectButton) {
+            connectButton.setEnabled(enabled);
+            connectButton.setVisible(enabled);
+        }
+    }
+    
+    public void setHideConnectButton(boolean hide) {
+        hideConnectButton = hide;
+        connectButton.setEnabled(!hide);
+        connectButton.setVisible(!hide);
+    }
+    
+    public void setEnableConnectButton(boolean enabled) {
+        if(!hideConnectButton) {
+            connectButton.setEnabled(enabled);
+        }
     }
     
     @Override
@@ -320,6 +348,8 @@ public class RobotPanel extends javax.swing.JPanel {
         jlAddress = new javax.swing.JLabel();
         jlTeamNumber = new javax.swing.JLabel();
         jlTimestamp = new javax.swing.JLabel();
+        buttonPanel = new javax.swing.JPanel();
+        connectButton = new javax.swing.JButton();
 
         jLabel5.setText("jLabel5");
 
@@ -383,10 +413,44 @@ public class RobotPanel extends javax.swing.JPanel {
         labelPanel.add(jlTimestamp, gridBagConstraints);
 
         add(labelPanel, java.awt.BorderLayout.NORTH);
+
+        buttonPanel.setOpaque(false);
+        buttonPanel.setLayout(new java.awt.GridLayout());
+
+        connectButton.setText("Connect");
+        connectButton.setMaximumSize(new java.awt.Dimension(50, 23));
+        connectButton.setMinimumSize(new java.awt.Dimension(50, 23));
+        connectButton.setPreferredSize(new java.awt.Dimension(50, 23));
+        connectButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                connectButtonActionPerformed(evt);
+            }
+        });
+        buttonPanel.add(connectButton);
+
+        add(buttonPanel, java.awt.BorderLayout.SOUTH);
     }// </editor-fold>//GEN-END:initComponents
+
+    private void connectButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_connectButtonActionPerformed
+        if(messageServer != null) {
+            if(!this.messageServer.isConnected()) {
+                try {
+                    this.messageServer.connect(this.ipAddress, 5401);
+                    connectButton.setText("Disconnect");
+                } catch(IOException ex) {
+                    java.util.logging.Logger.getLogger(RobotPanel.class.getName()).log(java.util.logging.Level.SEVERE, "Coult not connect.", ex);
+                }
+            } else {
+                this.messageServer.disconnect();
+                connectButton.setText("Connect");
+            }
+        }
+    }//GEN-LAST:event_connectButtonActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JPanel buttonPanel;
+    private javax.swing.JButton connectButton;
     private javax.swing.Box.Filler filler1;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JPanel jPanel1;

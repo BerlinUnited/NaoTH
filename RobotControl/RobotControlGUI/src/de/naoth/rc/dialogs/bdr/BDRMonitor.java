@@ -161,7 +161,14 @@ public class BDRMonitor extends AbstractDialog implements ActionListener, TeamCo
         // add buffered drawings to field drawing list
         DrawingCollection drawings = new DrawingCollection();
         robots.forEach((ip, m) -> {
-            m.getMessage().draw(drawings, m.getChestColor(), false);
+//            m.getMessage()
+            Color c = m.getChestColor();
+            /*
+            if(m.getMessage().user.hasIsCharging() && m.getMessage().user.getIsCharging()) {
+                c = Color.YELLOW;
+            }
+            //*/
+            m.getMessage().draw(drawings, c, false);
         });
         fieldCanvas.getDrawingList().add(drawings);
 
@@ -177,23 +184,8 @@ public class BDRMonitor extends AbstractDialog implements ActionListener, TeamCo
         if (!messages.isEmpty()) {
             messages.forEach((m) -> {
                 if (!robots.containsKey(m.address)) {
-                    RobotPanel p = new RobotPanel(m.address, m.message);
-                    p.setChestColor(Color.BLUE);
-                    int displayHeight = statusPanel.getHeight() - 20;
-                    p.setPreferredSize(new Dimension(displayHeight/3, displayHeight/2));
-                    robots.put(m.address, p);
-                    // the status panel should be ordered - remove all and readded it in order
-                    synchronized(this){
-                        statusPanel.removeAll();
-                        robots.forEach((t, u) -> {
-                            JPanel panel = new JPanel();
-                            panel.add(u);
-                            panel.setBackground(Color.white);
-                            statusPanel.add(panel);
-                        });
-                        createDummies();
-                    }
-                    statusPanel.repaint();
+                    robots.put(m.address, new RobotPanel(m.address, m.message));
+                    updateRoboPanel();
                 } else {
                     robots.get(m.address).setStatus(m.timestamp, m.message);
                 }
@@ -208,6 +200,24 @@ public class BDRMonitor extends AbstractDialog implements ActionListener, TeamCo
             this.fieldCanvas.fitToViewport();
         }
         this.fieldCanvas.repaint();
+    }
+    
+    private synchronized void updateRoboPanel() {
+        this.statusPanel.removeAll();
+        int displayHeight = statusPanel.getHeight() - 20;
+        System.out.println(displayHeight);
+        
+        robots.forEach((t, u) -> {
+            u.setChestColor(Color.BLUE);
+            u.setPreferredSize(new Dimension(displayHeight/3, displayHeight/2));
+            
+            JPanel panel = new JPanel();
+            panel.add(u);
+            panel.setBackground(Color.white);
+            statusPanel.add(panel);
+        });
+        createDummies();
+        this.statusPanel.repaint();
     }
     
     private void createDummies() {

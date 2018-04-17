@@ -2,20 +2,17 @@ package de.naoth.bdr;
 
 import de.naoth.rc.RobotControl;
 import de.naoth.rc.core.dialog.Dialog;
-import de.naoth.rc.core.dialog.DialogPlugin;
-import de.naoth.rc.dialogs.Simspark;
-import de.naoth.rc.dialogs.bdr.BDRMonitor;
 import de.naoth.rc.server.MessageServer;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.io.File;
-import java.lang.reflect.InvocationTargetException;
 import java.net.URISyntaxException;
+import java.util.Arrays;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
+import javax.swing.JPanel;
 import net.xeoh.plugins.base.PluginManager;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.events.PluginLoaded;
@@ -28,7 +25,11 @@ import net.xeoh.plugins.base.util.uri.ClassURI;
  * @author Philipp Strobel <philippstrobel@posteo.de>
  */
 @PluginImplementation
-public class RobotControlBdrMonitorImpl extends javax.swing.JFrame implements RobotControlBdrMonitor {
+public class RobotControlBdrMonitorImpl extends javax.swing.JFrame implements RobotControlBdrMonitor
+{
+    public static String panelName = "";
+    public static String panelTitle = "";
+    public static JPanel healthPanel;
 
     /**
      * Creates new form RobotControlBdrImpl
@@ -60,8 +61,10 @@ public class RobotControlBdrMonitorImpl extends javax.swing.JFrame implements Ro
 //    splashScreenMessage("Loading dialog " + dialog.getDisplayName() + "...");
 //    this.dialogRegistry.registerDialog(dialog);
       System.out.println("loaded: " + dialog.getDisplayName());
-      if(dialog.getDisplayName().equals("BDRMonitor")) {
+      if(dialog.getDisplayName().equals(panelName)) {
           getContentPane().add(dialog.getPanel(), java.awt.BorderLayout.CENTER);
+      } else if(dialog.getDisplayName().equals("RobotHealth")) {
+          healthPanel = dialog.getPanel();
       }
       // for debugging:
       /*
@@ -70,6 +73,7 @@ public class RobotControlBdrMonitorImpl extends javax.swing.JFrame implements Ro
           s.connect();
       }
       */
+      
   }
 
     /**
@@ -88,7 +92,8 @@ public class RobotControlBdrMonitorImpl extends javax.swing.JFrame implements Ro
 
         jLabel1.setFont(new java.awt.Font("Dialog", 1, 48)); // NOI18N
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel1.setText("Monitoring");
+        jLabel1.setText(panelTitle);
+        jLabel1.setToolTipText("");
         jLabel1.setBorder(javax.swing.BorderFactory.createEmptyBorder(20, 1, 20, 1));
         getContentPane().add(jLabel1, java.awt.BorderLayout.PAGE_START);
 
@@ -123,6 +128,10 @@ public class RobotControlBdrMonitorImpl extends javax.swing.JFrame implements Ro
         //</editor-fold>
         //</editor-fold>
 
+        // sets the panel, which should be loaded
+        panelName = Arrays.asList(args).contains("-m") ? "BDRMonitor" : "BDRControl";
+        panelTitle = Arrays.asList(args).contains("-m") ? "Monitoring" : "Fernwartung";
+        
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
@@ -143,7 +152,6 @@ public class RobotControlBdrMonitorImpl extends javax.swing.JFrame implements Ro
 
                 // load the robot control itself
                 pluginManager.getPlugin(RobotControlBdrMonitor.class).setVisible(true);
-                //new RobotControlBdrImpl().setVisible(true);
             }
         });
     }
