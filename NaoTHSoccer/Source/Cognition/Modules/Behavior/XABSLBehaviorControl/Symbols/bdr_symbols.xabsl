@@ -1,0 +1,33 @@
+/** symbols only used in bdr contract work*/
+namespace bdr_symbols("BDR Symbols") {
+
+  /** internal bdr symbols */
+  float internal bdr.charge_beginning;
+
+  enum reason internal
+  {
+      temperature,
+      battery_charge,
+      none
+  };
+
+  enum reason internal bdr.reason;
+
+  /** symbols for describing the state of the player */
+  enum activity {
+      pre_playing,
+      playing,
+      pre_entertaining,
+      entertaining,
+      pre_servicing,
+      servicing,
+      doing_nothing
+  };
+  
+  enum activity output bdr.activity;
+
+  bool output bdr.sitting;
+  bool output bdr.localized_on_field;
+}
+
+

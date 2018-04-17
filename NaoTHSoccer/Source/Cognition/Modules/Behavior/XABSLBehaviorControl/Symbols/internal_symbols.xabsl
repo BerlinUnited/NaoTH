@@ -67,18 +67,5 @@ namespace internal_symbols("Internal Symbols") {
   float internal search_ball.turn_stop_motion_count;
 
   /** the time we are in play-state in ms*/
-  float internal game.time_in_play;
-
-  /** internal bdr symbols */
-  float internal bdr.charge_beginning;
-
-  enum reason internal
-  {
-      temperature,
-      battery_charge,
-      none
-  };
-
-  enum reason internal bdr.reason;
-  
+  float internal game.time_in_play;  
 }

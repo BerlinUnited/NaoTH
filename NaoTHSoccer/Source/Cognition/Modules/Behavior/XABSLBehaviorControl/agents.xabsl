@@ -151,6 +151,8 @@ include "Options/ContractWork/BDR/tools/bdr_naoqi_test.xabsl";
 include "Options/ContractWork/BDR/tools/bdr_goto_point.xabsl";
 include "Options/ContractWork/BDR/tools/bdr_align_carefully.xabsl";
 
+include "Symbols/bdr_symbols.xabsl";
+
 /* Test section */
 // Test agents Head Control
 
