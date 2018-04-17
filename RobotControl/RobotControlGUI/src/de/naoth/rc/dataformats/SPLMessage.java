@@ -166,6 +166,28 @@ public class SPLMessage
         return spl;
     }
     
+    public Color getTeamColor() {
+        if (this.user == null) {
+            return Color.blue;
+        }
+        
+        switch(user.getTeamColor()) 
+        {
+            case blackTeam: return Color.black;
+            case blueTeam: return Color.blue;
+            case brownTeam: return Color.black;
+            case grayTeam: return Color.darkGray;
+            case greenTeam: return Color.green;
+            case invalidTeam: return Color.white;
+            case orangeTeam: return Color.orange;
+            case purpleTeam: return Color.red;
+            case redTeam: return Color.red;
+            case whiteTeam: return Color.white;
+            case yellowTeam: return Color.yellow;
+            default: return Color.gray;
+        }
+    }
+    
     public static SPLMessage parseFrom(ByteBuffer buffer) throws Exception {
         // check message header
         if (buffer.get() != 'S'
