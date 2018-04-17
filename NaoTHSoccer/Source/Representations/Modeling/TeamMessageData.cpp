@@ -152,7 +152,9 @@ TeamMessageCustom::TeamMessageCustom() :
   whistleDetected(false),
   whistleCount(0),
   // init with "invalid" position
-  teamBall(std::numeric_limits<double>::infinity(), std::numeric_limits<double>::infinity())
+  teamBall(std::numeric_limits<double>::infinity(), std::numeric_limits<double>::infinity()),
+  isCharging(false),
+  robotState(PlayerInfo::initial)
 {
 }
 
@@ -214,6 +216,10 @@ naothmessages::BUUserTeamMessage TeamMessageCustom::toProto() const
             msgPlayer->set_received(request.received);
           }
     }
+
+    userMsg.set_ischarging(isCharging);
+    userMsg.set_message(message);
+
     userMsg.set_key(key);
     userMsg.set_robotstate((naothmessages::RobotState)robotState);
 
@@ -294,6 +300,9 @@ void TeamMessageCustom::parseFromProto(const naothmessages::BUUserTeamMessage &u
             syncingPlayer.received = request.received();
         }
     }
+
+    isCharging = userData.ischarging();
+    message = userData.message();
 
     robotState = (PlayerInfo::RobotState) userData.robotstate();
 

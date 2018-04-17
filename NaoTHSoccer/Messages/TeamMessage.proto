@@ -30,7 +30,7 @@ enum RobotState
   set      = 2;
   playing  = 3;
   finished = 4;
-  penalized = 11;
+  penalized = 5;
 };
 
 message Opponent {
@@ -63,6 +63,10 @@ message BUUserTeamMessage
   optional DoubleVector2 teamBall = 14;
   repeated Ntp ntpRequest = 15;
   optional RobotState robotState = 16 [default=initial];
+  
+  optional bool isCharging = 17 [default=false];
+  optional string message = 18 [default=""];
+  
   optional string key = 100 [default="none"];
   
   optional BDRPlayerState bdrPlayerState = 20;

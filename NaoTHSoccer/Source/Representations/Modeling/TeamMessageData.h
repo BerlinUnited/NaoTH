@@ -80,6 +80,9 @@ public:
   std::vector<NtpRequest> ntpRequests; // ntp requests to teammates
   // opponents ?
 
+  bool isCharging;
+  std::string message;
+
   PlayerInfo::RobotState robotState;
   BDRPlayerState bdrPlayerState;
 

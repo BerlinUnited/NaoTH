@@ -23,7 +23,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='TeamMessage.proto',
   package='naothmessages',
   syntax='proto2',
-  serialized_pb=_b('\n\x11TeamMessage.proto\x12\rnaothmessages\x1a\x11\x43ommonTypes.proto\x1a\x1f\x46ramework-Representations.proto\x1a\x11\x42\x44RMessages.proto\"L\n\x08Opponent\x12\x14\n\tplayerNum\x18\x01 \x02(\x05:\x01\x30\x12*\n\x0bposeOnField\x18\x02 \x01(\x0b\x32\x15.naothmessages.Pose2D\"A\n\x03Ntp\x12\x14\n\tplayerNum\x18\x01 \x02(\x05:\x01\x30\x12\x0f\n\x04sent\x18\x02 \x01(\x04:\x01\x30\x12\x13\n\x08received\x18\x03 \x01(\x04:\x01\x30\"\xd9\x04\n\x11\x42UUserTeamMessage\x12\x17\n\x06\x62odyID\x18\x01 \x01(\t:\x07unknown\x12\x12\n\ntimeToBall\x18\x02 \x01(\r\x12\x19\n\nwasStriker\x18\x03 \x01(\x08:\x05\x66\x61lse\x12\x1e\n\x0bisPenalized\x18\x04 \x01(\x08:\x05\x66\x61lseB\x02\x18\x01\x12*\n\topponents\x18\x05 \x03(\x0b\x32\x17.naothmessages.Opponent\x12\x19\n\nteamNumber\x18\x06 \x01(\r:\x01\x30\x42\x02\x18\x01\x12\x18\n\rbatteryCharge\x18\x07 \x01(\x02:\x01\x31\x12\x16\n\x0btemperature\x18\x08 \x01(\x02:\x01\x30\x12\x14\n\ttimestamp\x18\t \x01(\x04:\x01\x30\x12\x1f\n\x10wantsToBeStriker\x18\n \x01(\x08:\x05\x66\x61lse\x12\x19\n\x0e\x63puTemperature\x18\x0b \x01(\x02:\x01\x30\x12\x1e\n\x0fwhistleDetected\x18\x0c \x01(\x08:\x05\x66\x61lse\x12\x17\n\x0cwhistleCount\x18\r \x01(\x05:\x01\x30\x12.\n\x08teamBall\x18\x0e \x01(\x0b\x32\x1c.naothmessages.DoubleVector2\x12&\n\nntpRequest\x18\x0f \x03(\x0b\x32\x12.naothmessages.Ntp\x12\x36\n\nrobotState\x18\x10 \x01(\x0e\x32\x19.naothmessages.RobotState:\x07initial\x12\x11\n\x03key\x18\x64 \x01(\t:\x04none\x12\x35\n\x0e\x62\x64rPlayerState\x18\x14 \x01(\x0b\x32\x1d.naothmessages.BDRPlayerState\"\xc3\x03\n\x0bTeamMessage\x12-\n\x04\x64\x61ta\x18\x01 \x03(\x0b\x32\x1f.naothmessages.TeamMessage.Data\x1a\x84\x03\n\x04\x44\x61ta\x12\x14\n\tplayerNum\x18\x01 \x01(\r:\x01\x30\x12\x39\n\tteamColor\x18\x0b \x01(\x0e\x32\x18.naothmessages.TeamColor:\x08\x62lueTeamB\x02\x18\x01\x12#\n\x04pose\x18\x03 \x01(\x0b\x32\x15.naothmessages.Pose2D\x12\x13\n\x07\x62\x61llAge\x18\x04 \x01(\x05:\x02-1\x12\x32\n\x0c\x62\x61llPosition\x18\x05 \x01(\x0b\x32\x1c.naothmessages.DoubleVector2\x12\x32\n\x0c\x62\x61llVelocity\x18\x06 \x01(\x0b\x32\x1c.naothmessages.DoubleVector2\x12\x15\n\x06\x66\x61llen\x18\n \x01(\x08:\x05\x66\x61lse\x12.\n\x04user\x18\x08 \x01(\x0b\x32 .naothmessages.BUUserTeamMessage\x12+\n\tframeInfo\x18\t \x01(\x0b\x32\x18.naothmessages.FrameInfo\x12\x15\n\nteamNumber\x18\x0c \x01(\r:\x01\x30*\xb2\x01\n\tTeamColor\x12\x0c\n\x08\x62lueTeam\x10\x00\x12\x0b\n\x07redTeam\x10\x01\x12\x0e\n\nyellowTeam\x10\x02\x12\r\n\tblackTeam\x10\x03\x12\r\n\twhiteTeam\x10\x04\x12\r\n\tgreenTeam\x10\x05\x12\x0e\n\norangeTeam\x10\x06\x12\x0e\n\npurpleTeam\x10\x07\x12\r\n\tbrownTeam\x10\x08\x12\x0c\n\x08grayTeam\x10\t\x12\x10\n\x0binvalidTeam\x10\xff\x01*W\n\nRobotState\x12\x0b\n\x07initial\x10\x00\x12\t\n\x05ready\x10\x01\x12\x07\n\x03set\x10\x02\x12\x0b\n\x07playing\x10\x03\x12\x0c\n\x08\x66inished\x10\x04\x12\r\n\tpenalized\x10\x0b\x42\x16\n\x14\x64\x65.naoth.rc.messages')
+  serialized_pb=_b('\n\x11TeamMessage.proto\x12\rnaothmessages\x1a\x11\x43ommonTypes.proto\x1a\x1f\x46ramework-Representations.proto\x1a\x11\x42\x44RMessages.proto\"L\n\x08Opponent\x12\x14\n\tplayerNum\x18\x01 \x02(\x05:\x01\x30\x12*\n\x0bposeOnField\x18\x02 \x01(\x0b\x32\x15.naothmessages.Pose2D\"A\n\x03Ntp\x12\x14\n\tplayerNum\x18\x01 \x02(\x05:\x01\x30\x12\x0f\n\x04sent\x18\x02 \x01(\x04:\x01\x30\x12\x13\n\x08received\x18\x03 \x01(\x04:\x01\x30\"\x87\x05\n\x11\x42UUserTeamMessage\x12\x17\n\x06\x62odyID\x18\x01 \x01(\t:\x07unknown\x12\x12\n\ntimeToBall\x18\x02 \x01(\r\x12\x19\n\nwasStriker\x18\x03 \x01(\x08:\x05\x66\x61lse\x12\x1e\n\x0bisPenalized\x18\x04 \x01(\x08:\x05\x66\x61lseB\x02\x18\x01\x12*\n\topponents\x18\x05 \x03(\x0b\x32\x17.naothmessages.Opponent\x12\x19\n\nteamNumber\x18\x06 \x01(\r:\x01\x30\x42\x02\x18\x01\x12\x18\n\rbatteryCharge\x18\x07 \x01(\x02:\x01\x31\x12\x16\n\x0btemperature\x18\x08 \x01(\x02:\x01\x30\x12\x14\n\ttimestamp\x18\t \x01(\x04:\x01\x30\x12\x1f\n\x10wantsToBeStriker\x18\n \x01(\x08:\x05\x66\x61lse\x12\x19\n\x0e\x63puTemperature\x18\x0b \x01(\x02:\x01\x30\x12\x1e\n\x0fwhistleDetected\x18\x0c \x01(\x08:\x05\x66\x61lse\x12\x17\n\x0cwhistleCount\x18\r \x01(\x05:\x01\x30\x12.\n\x08teamBall\x18\x0e \x01(\x0b\x32\x1c.naothmessages.DoubleVector2\x12&\n\nntpRequest\x18\x0f \x03(\x0b\x32\x12.naothmessages.Ntp\x12\x36\n\nrobotState\x18\x10 \x01(\x0e\x32\x19.naothmessages.RobotState:\x07initial\x12\x19\n\nisCharging\x18\x11 \x01(\x08:\x05\x66\x61lse\x12\x11\n\x07message\x18\x12 \x01(\t:\x00\x12\x11\n\x03key\x18\x64 \x01(\t:\x04none\x12\x35\n\x0e\x62\x64rPlayerState\x18\x14 \x01(\x0b\x32\x1d.naothmessages.BDRPlayerState\"\xc3\x03\n\x0bTeamMessage\x12-\n\x04\x64\x61ta\x18\x01 \x03(\x0b\x32\x1f.naothmessages.TeamMessage.Data\x1a\x84\x03\n\x04\x44\x61ta\x12\x14\n\tplayerNum\x18\x01 \x01(\r:\x01\x30\x12\x39\n\tteamColor\x18\x0b \x01(\x0e\x32\x18.naothmessages.TeamColor:\x08\x62lueTeamB\x02\x18\x01\x12#\n\x04pose\x18\x03 \x01(\x0b\x32\x15.naothmessages.Pose2D\x12\x13\n\x07\x62\x61llAge\x18\x04 \x01(\x05:\x02-1\x12\x32\n\x0c\x62\x61llPosition\x18\x05 \x01(\x0b\x32\x1c.naothmessages.DoubleVector2\x12\x32\n\x0c\x62\x61llVelocity\x18\x06 \x01(\x0b\x32\x1c.naothmessages.DoubleVector2\x12\x15\n\x06\x66\x61llen\x18\n \x01(\x08:\x05\x66\x61lse\x12.\n\x04user\x18\x08 \x01(\x0b\x32 .naothmessages.BUUserTeamMessage\x12+\n\tframeInfo\x18\t \x01(\x0b\x32\x18.naothmessages.FrameInfo\x12\x15\n\nteamNumber\x18\x0c \x01(\r:\x01\x30*\xb2\x01\n\tTeamColor\x12\x0c\n\x08\x62lueTeam\x10\x00\x12\x0b\n\x07redTeam\x10\x01\x12\x0e\n\nyellowTeam\x10\x02\x12\r\n\tblackTeam\x10\x03\x12\r\n\twhiteTeam\x10\x04\x12\r\n\tgreenTeam\x10\x05\x12\x0e\n\norangeTeam\x10\x06\x12\x0e\n\npurpleTeam\x10\x07\x12\r\n\tbrownTeam\x10\x08\x12\x0c\n\x08grayTeam\x10\t\x12\x10\n\x0binvalidTeam\x10\xff\x01*W\n\nRobotState\x12\x0b\n\x07initial\x10\x00\x12\t\n\x05ready\x10\x01\x12\x07\n\x03set\x10\x02\x12\x0b\n\x07playing\x10\x03\x12\x0c\n\x08\x66inished\x10\x04\x12\r\n\tpenalized\x10\x05\x42\x16\n\x14\x64\x65.naoth.rc.messages')
   ,
   dependencies=[CommonTypes__pb2.DESCRIPTOR,Framework__Representations__pb2.DESCRIPTOR,BDRMessages__pb2.DESCRIPTOR,])
 
@@ -80,8 +80,8 @@ _TEAMCOLOR = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=1311,
-  serialized_end=1489,
+  serialized_start=1357,
+  serialized_end=1535,
 )
 _sym_db.RegisterEnumDescriptor(_TEAMCOLOR)
 
@@ -113,14 +113,14 @@ _ROBOTSTATE = _descriptor.EnumDescriptor(
       options=None,
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='penalized', index=5, number=11,
+      name='penalized', index=5, number=5,
       options=None,
       type=None),
   ],
   containing_type=None,
   options=None,
-  serialized_start=1491,
-  serialized_end=1578,
+  serialized_start=1537,
+  serialized_end=1624,
 )
 _sym_db.RegisterEnumDescriptor(_ROBOTSTATE)
 
@@ -141,7 +141,7 @@ ready = 1
 set = 2
 playing = 3
 finished = 4
-penalized = 11
+penalized = 5
 
 
 
@@ -348,14 +348,28 @@ _BUUSERTEAMMESSAGE = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='key', full_name='naothmessages.BUUserTeamMessage.key', index=16,
+      name='isCharging', full_name='naothmessages.BUUserTeamMessage.isCharging', index=16,
+      number=17, type=8, cpp_type=7, label=1,
+      has_default_value=True, default_value=False,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='message', full_name='naothmessages.BUUserTeamMessage.message', index=17,
+      number=18, type=9, cpp_type=9, label=1,
+      has_default_value=True, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='key', full_name='naothmessages.BUUserTeamMessage.key', index=18,
       number=100, type=9, cpp_type=9, label=1,
       has_default_value=True, default_value=_b("none").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='bdrPlayerState', full_name='naothmessages.BUUserTeamMessage.bdrPlayerState', index=17,
+      name='bdrPlayerState', full_name='naothmessages.BUUserTeamMessage.bdrPlayerState', index=19,
       number=20, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
@@ -374,7 +388,7 @@ _BUUSERTEAMMESSAGE = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=253,
-  serialized_end=854,
+  serialized_end=900,
 )
 
 
@@ -467,8 +481,8 @@ _TEAMMESSAGE_DATA = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=920,
-  serialized_end=1308,
+  serialized_start=966,
+  serialized_end=1354,
 )
 
 _TEAMMESSAGE = _descriptor.Descriptor(
@@ -497,8 +511,8 @@ _TEAMMESSAGE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=857,
-  serialized_end=1308,
+  serialized_start=903,
+  serialized_end=1354,
 )
 
 _OPPONENT.fields_by_name['poseOnField'].message_type = CommonTypes__pb2._POSE2D
