@@ -16,7 +16,10 @@ class BDRPlayerState : public naoth::Printable
 public:
 
   BDRPlayerState()
-    : activity(doing_nothing)
+    : 
+      activity(doing_nothing),
+      sitting(false),
+      localized_on_field(false)
   {}
 
   enum Activity
