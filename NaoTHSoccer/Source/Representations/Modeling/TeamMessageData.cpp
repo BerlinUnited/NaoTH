@@ -154,7 +154,8 @@ TeamMessageCustom::TeamMessageCustom() :
   // init with "invalid" position
   teamBall(std::numeric_limits<double>::infinity(), std::numeric_limits<double>::infinity()),
   isCharging(false),
-  robotState(PlayerInfo::initial)
+  robotState(PlayerInfo::initial),
+  teamColor(naoth::GameData::unknown_team_color)
 {
 }
 
@@ -222,6 +223,7 @@ naothmessages::BUUserTeamMessage TeamMessageCustom::toProto() const
 
     userMsg.set_key(key);
     userMsg.set_robotstate((naothmessages::RobotState)robotState);
+    userMsg.set_teamcolor((naothmessages::TeamColor)teamColor);
 
     userMsg.mutable_bdrplayerstate()->set_activity((naothmessages::BDRPlayerState_Activity)bdrPlayerState.activity);
     userMsg.mutable_bdrplayerstate()->set_sitting(bdrPlayerState.sitting);
@@ -305,7 +307,8 @@ void TeamMessageCustom::parseFromProto(const naothmessages::BUUserTeamMessage &u
     message = userData.message();
 
     robotState = (PlayerInfo::RobotState) userData.robotstate();
-
+	teamColor = (naoth::GameData::TeamColor) userData.teamcolor();
+	
     bdrPlayerState.activity = (BDRPlayerState::Activity) userData.bdrplayerstate().activity();
     bdrPlayerState.sitting = userData.bdrplayerstate().sitting();
     bdrPlayerState.localized_on_field = userData.bdrplayerstate().localized_on_field();

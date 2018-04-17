@@ -96,6 +96,7 @@ void TeamCommSender::fillMessageBeforeSending() const
 
     msg.custom.robotState = getPlayerInfo().robotState;
     msg.custom.bdrPlayerState = getBDRPlayerState();
+    msg.custom.teamColor = getPlayerInfo().teamColor;
 
     // TODO: shall we put it into config?
     msg.custom.key = NAOTH_TEAMCOMM_MESAGE_KEY;

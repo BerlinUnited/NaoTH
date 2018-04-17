@@ -62,14 +62,17 @@ message BUUserTeamMessage
   // only for visualizing teamball position in RC
   optional DoubleVector2 teamBall = 14;
   repeated Ntp ntpRequest = 15;
+  
   optional RobotState robotState = 16 [default=initial];
+  optional TeamColor teamColor = 17 [default=blueTeam];
+
+  optional bool isCharging = 18 [default=false];
   
-  optional bool isCharging = 17 [default=false];
-  optional string message = 18 [default=""];
-  
+
   optional string key = 100 [default="none"];
   
-  optional BDRPlayerState bdrPlayerState = 20;
+  optional BDRPlayerState bdrPlayerState = 200;
+  optional string message = 201 [default=""];
 }
 
 message TeamMessage
