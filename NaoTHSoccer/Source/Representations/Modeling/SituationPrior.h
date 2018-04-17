@@ -27,6 +27,7 @@ public:
     playAfterPenalized,
     oppHalf,
     set,
+    bdrStartPosition,
     numOfPriors
   };
 

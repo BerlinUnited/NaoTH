@@ -25,6 +25,9 @@
 #include "Messages/TeamMessage.pb.h"
 #include "Representations/Infrastructure/FrameInfo.h"
 
+#include "Representations/Modeling/PlayerInfo.h"
+#include "Representations/Modeling/BDRPlayerState.h"
+
 using namespace naoth;
 
 // this key is sent with every team message to indicate that the message belongs to us
@@ -76,6 +79,12 @@ public:
   Vector2d teamBall;// global position of the team ball for visualization in RC!!
   std::vector<NtpRequest> ntpRequests; // ntp requests to teammates
   // opponents ?
+
+  bool isCharging;
+  std::string message;
+
+  PlayerInfo::RobotState robotState;
+  BDRPlayerState bdrPlayerState;
 
   /** Sets the data according to the protobuf message. */
   void parseFromProto(const naothmessages::BUUserTeamMessage& userData);

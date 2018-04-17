@@ -92,6 +92,7 @@ void SituationPriorProvider::execute()
   // HACK: for bdr
   if(getSituationStatus().ownHalf)
   {
-    getSituationPrior().currentPrior = SituationPrior::firstReady;
+    //getSituationPrior().currentPrior = SituationPrior::playAfterPenalized;
+    getSituationPrior().currentPrior = SituationPrior::bdrStartPosition;
   }
 }

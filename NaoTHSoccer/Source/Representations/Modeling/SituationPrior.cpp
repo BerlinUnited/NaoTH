@@ -12,6 +12,7 @@ std::string SituationPrior::getName(PriorId id)
     case set: return "set";
     case playAfterPenalized: return "playAfterPenalized";
     case oppHalf: return "oppHalf";
+    case bdrStartPosition: return "bdrStartPosition";
     default: return "unknown prior";
   }
 }
