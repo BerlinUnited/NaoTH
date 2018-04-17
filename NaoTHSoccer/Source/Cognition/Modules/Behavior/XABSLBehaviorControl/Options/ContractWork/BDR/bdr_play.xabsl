@@ -14,6 +14,7 @@ option bdr_play
     action{
         bdr.reason = none; // init reason
         bdr.activity = initializing;
+        bdr.localized_on_field = false;
     }
   }
 
@@ -31,7 +32,7 @@ option bdr_play
         motion.type = stand;
         head.control_mode = look_around;
         situationStatusOwnHalf = last_state_was_penalized;
-        bdr.activity = initializing;
+        bdr.activity = initializing;        
     }
   }
 
@@ -195,6 +196,7 @@ option bdr_play
         head.control_mode = search_for_ball_and_look_around;
         bdr.reason = none; // reset wartungs reason
         bdr.activity = initializing;
+        bdr.sitting = false;
     }
   }
 
@@ -241,6 +243,7 @@ option bdr_play
         head.motion_type = look_at_world_point;
 
         bdr.charge_beginning = platform.battery;
+        bdr.localized_on_field = true; // TODO: need some criteria like #Lines, error of matching after localization etc.
       }
   }
 }
