@@ -78,6 +78,8 @@ public class RemoteRobotPanel extends javax.swing.JPanel {
         this.currentMesage = msg;
         this.jlAddress.setText(this.ipAddress);
         
+        this.connectButton.setEnabled(!this.messageServer.isConnected());
+        
         this.messageServer.addConnectionStatusListener(new ConnectionStatusListener() {
 
             @Override
