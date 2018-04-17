@@ -54,7 +54,8 @@ XABSLBehaviorControl::XABSLBehaviorControl()
   REGISTER_MODULE(LineSymbols, true);
   REGISTER_MODULE(PathSymbols, true);
   REGISTER_MODULE(RemoteSymbols, true);
-  
+  REGISTER_MODULE(BDRSymbols, true);
+
 
   // load the behavior from config
   if(naoth::Platform::getInstance().theConfiguration.hasKey("agent", "agent")) {
@@ -248,6 +249,7 @@ void XABSLBehaviorControl::registerXABSLSymbols()
     XABSL_REGISTER_SYMBOLS(LineSymbols);
     XABSL_REGISTER_SYMBOLS(PathSymbols);
     XABSL_REGISTER_SYMBOLS(RemoteSymbols);
+    XABSL_REGISTER_SYMBOLS(BDRSymbols);
   }
 }//end registerXABSLSymbols
 

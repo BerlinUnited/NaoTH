@@ -47,6 +47,7 @@
 #include "Symbols/LineSymbols.h"
 #include "Symbols/PathSymbols.h"
 #include "Symbols/RemoteSymbols.h"
+#include "Symbols/BDRSymbols.h"
 
 
 // ErrorHandler
@@ -160,6 +161,7 @@ private:
   ModuleCreator<LineSymbols>* theLineSymbols;
   ModuleCreator<PathSymbols>* thePathSymbols;
   ModuleCreator<RemoteSymbols>* theRemoteSymbols;
+  ModuleCreator<BDRSymbols>* theBDRSymbols;
 };
 
 #endif  /* _XABSLBehaviorControl_H */
