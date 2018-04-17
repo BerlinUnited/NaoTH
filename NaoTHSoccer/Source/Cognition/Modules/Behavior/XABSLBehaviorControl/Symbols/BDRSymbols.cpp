@@ -22,7 +22,7 @@ void BDRSymbols::registerSymbols(xabsl::Engine& engine)
 
   engine.registerBooleanOutputSymbol("bdr.sitting",            &getBDRPlayerState().sitting);
   engine.registerBooleanOutputSymbol("bdr.localized_on_field", &getBDRPlayerState().localized_on_field);
-
+  engine.registerDecimalInputSymbol("bdr.number_of_players_in_play", &getNumberOfPlayersInPlay);
 }//end registerSymbols
 
 BDRSymbols* BDRSymbols::theInstance = NULL;
@@ -34,4 +34,8 @@ void BDRSymbols::setBDRActivity(int value) {
 
 int BDRSymbols::getBDRActivity() {
   return static_cast<int>(theInstance->getBDRPlayerState().activity);
+}
+
+double BDRSymbols::getNumberOfPlayersInPlay() {
+    return 7;
 }

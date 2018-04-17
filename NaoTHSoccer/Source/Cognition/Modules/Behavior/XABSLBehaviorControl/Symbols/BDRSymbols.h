@@ -37,6 +37,7 @@ private:
 
   static void setBDRActivity(int value);
   static int  getBDRActivity();
+  static double getNumberOfPlayersInPlay();
 
 };//end class BDRSymbols
 
