@@ -13,9 +13,11 @@
 
 // representations
 #include "Representations/Modeling/BDRPlayerState.h"
+#include "Representations/Modeling/TeamMessage.h"
 
 BEGIN_DECLARE_MODULE(BDRSymbols)
-    PROVIDE(BDRPlayerState)
+  REQUIRE(TeamMessage)
+  PROVIDE(BDRPlayerState)
 END_DECLARE_MODULE(BDRSymbols)
 
 class BDRSymbols: public BDRSymbolsBase

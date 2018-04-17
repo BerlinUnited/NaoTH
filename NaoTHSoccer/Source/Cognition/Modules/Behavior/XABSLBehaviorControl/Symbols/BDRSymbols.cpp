@@ -37,5 +37,13 @@ int BDRSymbols::getBDRActivity() {
 }
 
 double BDRSymbols::getNumberOfPlayersInPlay() {
-    return 7;
+  
+  int count = 0;
+  for (auto const& i : theInstance->getTeamMessage().data) {
+    if(i.second.custom.bdrPlayerState.activity == BDRPlayerState::playing) {
+      ++count;
+    }
+  }
+  
+  return count;
 }

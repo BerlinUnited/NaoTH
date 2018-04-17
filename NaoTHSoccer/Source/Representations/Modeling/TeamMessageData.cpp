@@ -217,7 +217,7 @@ naothmessages::BUUserTeamMessage TeamMessageCustom::toProto() const
     userMsg.set_key(key);
     userMsg.set_robotstate((naothmessages::RobotState)robotState);
 
-    userMsg.mutable_bdrplayerstate()->set_activity((BDRPlayerState::Activity)bdrPlayerState.activity);
+    userMsg.mutable_bdrplayerstate()->set_activity((naothmessages::BDRPlayerState_Activity)bdrPlayerState.activity);
     userMsg.mutable_bdrplayerstate()->set_sitting(bdrPlayerState.sitting);
     userMsg.mutable_bdrplayerstate()->set_localized_on_field(bdrPlayerState.localized_on_field);
 
