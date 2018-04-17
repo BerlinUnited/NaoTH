@@ -93,6 +93,9 @@ void TeamCommSender::fillMessageBeforeSending() const
       getTeamMessageData().custom.teamBall.x = std::numeric_limits<double>::infinity();
       getTeamMessageData().custom.teamBall.y = std::numeric_limits<double>::infinity();
     }
+
+    getTeamMessageData().custom.robotState = getPlayerInfo().robotState;
+
     // TODO: shall we put it into config?
     msg.custom.key = NAOTH_TEAMCOMM_MESAGE_KEY;
 }

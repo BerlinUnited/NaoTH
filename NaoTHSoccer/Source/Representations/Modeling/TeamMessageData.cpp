@@ -210,6 +210,8 @@ naothmessages::BUUserTeamMessage TeamMessageCustom::toProto() const
           }
     }
     userMsg.set_key(key);
+    userMsg.set_robotstate((naothmessages::RobotState)robotState);
+
     return userMsg;
 }
 
@@ -283,5 +285,7 @@ void TeamMessageCustom::parseFromProto(const naothmessages::BUUserTeamMessage &u
             syncingPlayer.received = request.received();
         }
     }
+
+    robotState = (PlayerInfo::RobotState) userData.robotstate();
 }
 
