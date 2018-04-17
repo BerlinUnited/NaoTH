@@ -278,6 +278,11 @@ public:
     return Pose2T(invRotation, (-translation).rotate(invRotation));
   }
 
+  inline Pose2T mirror() const
+  {
+    return Pose2T(Math::normalize(rotation + Math::pi), -translation);
+  }
+
   /**
    * The function creates a random pose.
    * @param x The range for x-values of the pose.
