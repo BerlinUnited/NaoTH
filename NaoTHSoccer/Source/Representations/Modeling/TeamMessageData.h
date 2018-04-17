@@ -84,6 +84,8 @@ public:
   std::string message;
 
   PlayerInfo::RobotState robotState;
+  naoth::GameData::TeamColor teamColor;
+  
   BDRPlayerState bdrPlayerState;
 
   /** Sets the data according to the protobuf message. */
