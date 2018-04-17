@@ -65,7 +65,7 @@ message BUUserTeamMessage
   optional RobotState robotState = 16 [default=initial];
   optional string key = 100 [default="none"];
   
-  optional BDRStatus bdrstatus = 20;
+  optional BDRPlayerState bdrPlayerState = 20;
 }
 
 message TeamMessage

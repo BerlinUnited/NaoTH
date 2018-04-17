@@ -24,7 +24,9 @@
 // needed by BUUserTeamMessage
 #include "Messages/TeamMessage.pb.h"
 #include "Representations/Infrastructure/FrameInfo.h"
+
 #include "Representations/Modeling/PlayerInfo.h"
+#include "Representations/Modeling/BDRPlayerState.h"
 
 using namespace naoth;
 
@@ -79,6 +81,7 @@ public:
   // opponents ?
 
   PlayerInfo::RobotState robotState;
+  BDRPlayerState bdrPlayerState;
 
   /** Sets the data according to the protobuf message. */
   void parseFromProto(const naothmessages::BUUserTeamMessage& userData);

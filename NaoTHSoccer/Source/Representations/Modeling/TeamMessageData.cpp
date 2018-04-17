@@ -212,6 +212,10 @@ naothmessages::BUUserTeamMessage TeamMessageCustom::toProto() const
     userMsg.set_key(key);
     userMsg.set_robotstate((naothmessages::RobotState)robotState);
 
+    userMsg.mutable_bdrplayerstate()->set_activity((BDRPlayerState::Activity)bdrPlayerState.activity);
+    userMsg.mutable_bdrplayerstate()->set_sitting(bdrPlayerState.sitting);
+    userMsg.mutable_bdrplayerstate()->set_localized_on_field(bdrPlayerState.localized_on_field);
+
     return userMsg;
 }
 
@@ -287,5 +291,9 @@ void TeamMessageCustom::parseFromProto(const naothmessages::BUUserTeamMessage &u
     }
 
     robotState = (PlayerInfo::RobotState) userData.robotstate();
+
+    bdrPlayerState.activity = (BDRPlayerState::Activity) userData.bdrplayerstate().activity();
+    bdrPlayerState.sitting = userData.bdrplayerstate().sitting();
+    bdrPlayerState.localized_on_field = userData.bdrplayerstate().localized_on_field();
 }
 

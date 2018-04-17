@@ -23,23 +23,26 @@ public:
   {
       pre_playing,
       playing,
+
       pre_entertaining,
       entertaining,
+
       pre_servicing,
       servicing,
+
       doing_nothing,
       initializing,
+
       num_of_activities
   } activity;
 
   bool sitting;
   bool localized_on_field;
 
-    virtual void print(std::ostream& stream) const
+  virtual void print(std::ostream& stream) const
   {
     stream << "BDRPlayerState" << std::endl;
   }
-
 
   static std::string getActivityName(Activity id);
 };
