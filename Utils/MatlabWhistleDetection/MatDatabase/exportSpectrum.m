@@ -35,9 +35,6 @@ for i=1:length(names)
         fclose(fileID);
     end
 end
-% input a category name
-% input a path where output should be stored
-
-% export audio files as wav
-
-% output nothing
+% TODO: should be a function that takes a category name and a path where
+% output should be stored as input. The function exports the spectrum to
+% the correct path

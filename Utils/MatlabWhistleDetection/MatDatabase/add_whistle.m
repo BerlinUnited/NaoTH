@@ -19,15 +19,6 @@ function data = addWhistle(data, file, numChanels, sampleRate, category)
     % calculate spectrum from raw data
     [spectrum, max_auto_corr] = calculate_spectrum(raw);
     
-    % read spectrum from dat file
-%     spectrum_filename = strcat(filename,'.dat');
-%     disp(fullfile(path_to_file,spectrum_filename))
-%     fileID = fopen (fullfile(path_to_file,spectrum_filename), 'r');
-%         spectrum = fread(fileID, 'double', 'ieee-le');
-%     fclose(fileID);
-%     calc_corr = spectrum(end);
-%     spectrum = spectrum(1:end-1); % remove correlation value from spectrum
-%     spectrum = complex(spectrum(1:2:end),spectrum(2:2:end));
     whistle.spectralData = spectrum;
     
     whistle.autocorrelation = max_auto_corr;

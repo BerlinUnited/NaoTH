@@ -2,7 +2,7 @@ import os
 import sys
 import getopt
 """
-  Extracts the audio from our game videos. This script expects that ffmpeg is installed. 
+  Extracts the audio from our game videos. This script expects that ffmpeg is installed and in the PYTHONPATH. 
 """
 
 

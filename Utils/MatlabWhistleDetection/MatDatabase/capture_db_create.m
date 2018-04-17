@@ -10,7 +10,7 @@ catch
     capture_database = struct;
 end
 %%
-gamelog_path = '../data/rc17_recordings'; % TODO rename gamelog_path
+gamelog_path = '<insert_path_here>'; % TODO rename gamelog_path
 
 % get information about the location of each raw file inside gamelog_path
 folderContents = dir(strcat(gamelog_path, '/**/*.raw'));
