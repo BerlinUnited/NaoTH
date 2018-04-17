@@ -33,7 +33,11 @@ option bdr_play_soccer
 
     state do_search {
       decision {
-        else if(action_done && ball.position.field.x < 0)
+        else if(action_done && 
+            ball.position.field.x < 0 &&
+            ball.position.field.x > field.xPosOwnGroundline &&
+            ball.position.field.y > field.yPosRightSideline &&
+            ball.position.field.y < field.yPosLeftSideline )
           goto goto_ball;
         else if(action_done || state_time > 10000)
           goto goto_home_position;
@@ -85,8 +89,14 @@ option bdr_play_soccer
             else if(ball.position.field.x > 0)
               goto goto_home_position;
             else if (action_done)
-                goto kick;
-            else
+            {
+              if (attack.best_action == sidekick_left)
+                goto sidekick_left;
+              else if(attack.best_action == sidekick_right)
+                goto sidekick_right;
+              else
+                goto short_kick;
+            } else
                 stay;
         }
 
@@ -96,7 +106,33 @@ option bdr_play_soccer
         }
     }
 
-    state kick {
+    state sidekick_left {
+	    decision {
+	      else if(action_done)
+	        goto wait;
+	      else
+	        stay;
+	    }
+	    action {
+	      situation_abortable = true;
+	      path_sidekick_left();
+	    }
+	  }
+	  state sidekick_right {
+	    decision {
+	      else if(action_done)
+	        goto wait;
+	      else
+	        stay;
+	    }
+	    action {
+	      situation_abortable = true;
+	      path_sidekick_right();
+	    }
+	  }
+
+
+    state short_kick {
       decision {
             else if (action_done)
                 goto wait;

@@ -47,7 +47,10 @@ void TeamCommSender::fillMessageBeforeSending() const
     TeamMessageData& msg = getTeamMessageData();
     msg.playerNumber = getPlayerInfo().playerNumber;
     msg.teamNumber = getPlayerInfo().teamNumber;
-    msg.pose = getRobotPose();
+
+    // NOTE: allways communicate the global pose
+    //msg.pose = getRobotPose();
+    msg.pose = getRobotPose().getGlobalPose();
 
     bool sendBallModel = getBallModel().valid;
     if(parameters.sendBallAgeDobermann) {

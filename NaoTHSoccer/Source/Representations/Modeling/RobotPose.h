@@ -15,7 +15,7 @@
 class RobotPose: public Pose2D, public naoth::Printable
 {
 public:
-  RobotPose() : isValid(false) {}
+  RobotPose() : isValid(false), globallyMirrored(false) {}
 
   RobotPose (const Pose2D& other) : isValid(false)
   {
@@ -43,11 +43,21 @@ public:
   // indicates whether the pose is valid :)
   bool isValid;
 
+  // indicates that the robots field coordinates are mirrorend with respect to the global field coordinates
+  bool globallyMirrored;
+
   // estimated principal axes of the position belief (not for angle)
   // can be used as a measure for how 'precise' the position estimation is
   Vector2d principleAxisMajor;
   Vector2d principleAxisMinor;
 
+  inline RobotPose getGlobalPose() const {
+    if(globallyMirrored) {
+      return mirror();
+    } else {
+      return *this;
+    }
+  }
 
   virtual void print(std::ostream& stream) const
   {

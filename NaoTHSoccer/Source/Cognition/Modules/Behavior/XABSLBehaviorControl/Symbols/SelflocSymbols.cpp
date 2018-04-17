@@ -39,6 +39,7 @@ void SelflocSymbols::registerSymbols(xabsl::Engine& engine)
 
 
   engine.registerBooleanInputSymbol("robot_pose.is_valid", &getRobotPose().isValid);
+  engine.registerBooleanInputSymbol("robot_pose.is_mirrored", &getRobotPose().globallyMirrored);
 
   engine.registerDecimalInputSymbol("robot_pose.x",&getRobotPose().translation.x);
   engine.registerDecimalInputSymbol("robot_pose.y",&getRobotPose().translation.y);
@@ -48,6 +49,7 @@ void SelflocSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalInputSymbol("robot_pose.planned.y",&robotPosePlanned.translation.y);
   engine.registerDecimalInputSymbol("robot_pose.planned.rotation",&angleOnFieldPlanned);
 
+  
 
   // "field_to_relative.x"
   engine.registerDecimalInputSymbol("locator.field_to_relative.x", &getFieldToRelativeX);
@@ -75,6 +77,7 @@ void SelflocSymbols::execute()
   oppGoal = Goal(oppGoalModel.leftPost, oppGoalModel.rightPost);
 
 
+  // planed pose
   robotPosePlanned = getRobotPose() + getMotionStatus().plannedMotion.hip;
   angleOnFieldPlanned = Math::toDegrees(robotPosePlanned.rotation);
 
@@ -93,9 +96,13 @@ void SelflocSymbols::execute()
   robotPosePlanned = getRobotPose() + plannedOrigin;
   angleOnFieldPlanned = Math::toDegrees(robotPosePlanned.rotation);
 
-  FIELD_DRAWING_CONTEXT;
-  PEN("FFFFFF", 20);
-  ROBOT(robotPosePlanned.translation.x, robotPosePlanned.translation.y, robotPosePlanned.rotation);
+  DEBUG_REQUEST("SelflocSymbols:draw_global_origin",
+    FIELD_DRAWING_CONTEXT;
+    //PEN("FFFFFF", 20);
+    //ROBOT(robotPosePlanned.translation.x, robotPosePlanned.translation.y, robotPosePlanned.rotation);
+    PEN("000000", 20);
+    CIRCLE(robotPosePlanned.translation.x, robotPosePlanned.translation.y, 10);
+  );
 
   // calculate the distance to the sidelines
   double distance2back = getFieldInfo().xLength/2.0 + (std::abs(getRobotPose().translation.x) * Math::sgn(getRobotPose().translation.x));
@@ -122,6 +129,7 @@ void SelflocSymbols::execute()
           (angle_front < 0 ? 0 : angle_front)* distance_factor_front +
           (angle_right < 0 ? 0 : angle_right)* distance_factor_right +
           (angle_back < 0 ? 0 : angle_back)  * distance_factor_back;
+
 }//end execute
 
 double SelflocSymbols::getFieldToRelativeX()
