@@ -1,0 +1,42 @@
+option bdr_play_soccer_synchronized
+{
+    initial state wait_for_the_other_player {
+        decision {
+            if( bdr.number_of_players_in_play == 2 )
+                goto play;
+            else
+                stay;
+        }
+        
+        action {
+            motion.type = stand;
+            head.control_mode = search_for_ball_and_look_around;
+        }
+    }
+
+    state play {
+        decision {
+            if ( bdr.number_of_players_in_play != 2
+                 || state_time > 120000 )
+                goto match_finished;
+            else
+                stay;
+        }
+
+        action {
+            bdr_play_soccer();
+        }       
+    }
+
+    target state match_finished {
+        decision {
+            stay;
+        }
+
+        action {
+            motion.type = stand;
+            head.control_mode = search_for_ball_and_look_around;
+        }
+    }
+
+}

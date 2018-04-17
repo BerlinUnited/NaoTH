@@ -12,6 +12,7 @@ option bdr_play
         goto localize;
     } 
     action{
+        bdr.reason = none; // init reason
         bdr.activity = initializing;
     }
   }
@@ -52,6 +53,61 @@ option bdr_play
     }
   }
 
+  state pre_autonomous_entertaining {
+      decision {
+          else if (action_done)
+              goto autonomous_entertaining;
+          else
+              stay;
+      }
+
+      action {
+          situation_abortable = true;
+          bdr_goto_point(x = -600, y = 0, rot = 0);
+          head.control_mode = search_for_ball_and_look_around;
+
+          bdr.activity = pre_entertaining;
+      }
+  }
+
+  state autonomous_entertaining {
+      decision {
+          else if(remote_control.bdr_control != AUTONOMOUS_PLAY)
+              goto transition;
+          else if (body.temperature.leg.left > 70
+                   || body.temperature.leg.right > 70)
+              goto set_wartungs_reason_temperature;
+          else if (platform.battery < bdr.charge_beginning - 0.02)
+              goto set_wartungs_reason_battery;
+          else if (bdr.number_of_players_in_play == 1)
+              goto transition;
+          else
+              stay;
+      }
+
+      action {
+          bdr.activity = entertaining;
+          motion.type = bdr_entertainment;
+      }
+  }
+
+  state pre_autonomous_play {
+      decision {
+          else if (action_done)
+              goto autonomous_play;
+          else
+              stay;
+      }
+
+      action {
+          situation_abortable = true;
+          bdr_goto_point(x = -600, y = 0, rot = 0);
+          head.control_mode = search_for_ball_and_look_around;
+
+          bdr.activity = pre_playing;
+      }
+  }
+
   state autonomous_play
   {
     decision
@@ -63,34 +119,40 @@ option bdr_play
           goto set_wartungs_reason_temperature;
       else if (platform.battery < bdr.charge_beginning - 0.02)
           goto set_wartungs_reason_battery;
+      else if(action_done)
+          goto transition;
       else
         stay;
     }
     action
     {
-        bdr_play_soccer();
-        bdr.reason = none;
+        bdr_play_soccer_synchronized();
         bdr.activity = playing;
+        bdr.reason = none;
     }
   }
 
   state set_wartungs_reason_temperature{
       decision {
           else
-              goto transition;
+              goto wartung;
       }
       action {
           bdr.reason = temperature;
+          bdr.charge_beginning = platform.battery;
+          bdr.activity = pre_servicing;
       }
   }
 
   state set_wartungs_reason_battery{
       decision {
           else
-              goto transition;
+              goto wartung;
       }
       action {
           bdr.reason = battery_charge;
+          bdr.charge_beginning = platform.battery;
+          bdr.activity = pre_servicing;
       }
   }
 
@@ -113,8 +175,8 @@ option bdr_play
     }
     action
     {
+        // bdr.activity = pre_servicing // is set by suboption
         bdr_goto_charging_station();
-        //bdr_goto_exit();
     }
   }
 
@@ -132,6 +194,7 @@ option bdr_play
         motion.type = stand;
         head.control_mode = search_for_ball_and_look_around;
         bdr.reason = none; // reset wartungs reason
+        bdr.activity = initializing;
     }
   }
 
@@ -146,8 +209,16 @@ option bdr_play
                 goto wartung;
             else if(remote_control.bdr_control == DO_NOTHING)
                 goto do_nothing;
-            else if(remote_control.bdr_control == AUTONOMOUS_PLAY)
-                goto autonomous_play;
+            else if(remote_control.bdr_control == AUTONOMOUS_PLAY) {
+                if(bdr.number_of_players_in_play == 1
+                   && bdr.activity != playing)
+                    goto pre_autonomous_play;
+                else if (bdr.number_of_players_in_play == 1
+                         && bdr.activity == playing)
+                    goto pre_autonomous_entertaining;
+                else
+                    goto pre_autonomous_play;
+            }
             else if(remote_control.bdr_control == WARTUNG)
                 goto wartung;
             else
