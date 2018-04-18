@@ -6,7 +6,14 @@ option bdr_agent
       // react to the game controller and handle fall down
       basic_play();
 
-      bdr_play();
+      bdr_play(min_temperature = 30,
+               max_temperature = 70,
+               inc_temperature = 10,
+               offset_max_temp_reached = 2,
+			   min_battery = 0.5,
+               max_battery = 0.9,
+			   dec_battery = 0.04,
+			   offset_min_battery_reached = 0.02);
 
       // control the arms
       arms_control();

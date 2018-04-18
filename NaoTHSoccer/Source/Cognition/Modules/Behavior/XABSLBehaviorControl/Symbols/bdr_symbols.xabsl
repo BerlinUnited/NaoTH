@@ -3,6 +3,7 @@ namespace bdr_symbols("BDR Symbols") {
 
   /** internal bdr symbols */
   float internal bdr.charge_beginning;
+  float internal bdr.temperature_beginning;
 
   enum reason internal
   {
