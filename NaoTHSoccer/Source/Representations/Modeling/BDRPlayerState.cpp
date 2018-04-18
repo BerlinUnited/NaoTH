@@ -47,3 +47,26 @@ std::string BDRPlayerState::getActivityName(Activity id)
   }
 }
 
+std::string BDRPlayerState::getMessageName(Message m){
+  switch(m)
+  {
+    case charging                  : return "charging";
+    case failed_charging           : return "failed_charging";
+    case fallen                    : return "fallen";
+    case ready                     : return "ready";
+    case too_many_players_on_field : return "too_many_players_on_field";
+    default : ASSERT(false);
+  }
+}
+
+std::string BDRPlayerState::getMessageString(Message m){
+  switch(m)
+  {
+    case charging                  : return "Der Akku wird geladen.";
+    case failed_charging           : return "Es konnte kein Kontakt zum Ladegerät hergestellt werden.";
+    case fallen                    : return "Ich bin hingefallen.";
+    case ready                     : return "Ich bin bereit.";
+    case too_many_players_on_field : return "Es sind zu viele Roboter auf dem Feld.";
+    default : ASSERT(false);
+  }
+}
