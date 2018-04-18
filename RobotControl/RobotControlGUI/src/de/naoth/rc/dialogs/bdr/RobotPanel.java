@@ -7,6 +7,8 @@
 package de.naoth.rc.dialogs.bdr;
 
 import de.naoth.rc.dataformats.SPLMessage;
+import de.naoth.rc.server.MessageServer;
+import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -49,9 +51,10 @@ public class RobotPanel extends javax.swing.JPanel {
     public final static long MAX_TIME_BEFORE_DEAD = 5000; //ms
     private final RingBuffer timestamps = new RingBuffer(5);
     
+    private final MessageServer messageServer;
     private String ipAddress;
     private SPLMessage currentMesage;
-    
+    private boolean hideConnectButton = false;
     
     private BufferedImage nao_body;
     private BufferedImage battery_ico;
@@ -63,9 +66,18 @@ public class RobotPanel extends javax.swing.JPanel {
 
     private Color chestColor = new Color(0.0f,0.0f,0.0f,0.7f);
     
+    private Color disabledColor = Color.GRAY;
+    private Color disabledTextColor = Color.BLACK;
+    private Color disabledChestColor = new Color(0.0f,0.0f,0.0f,0.7f);
+    
     public RobotPanel(String ipAddress, SPLMessage msg) {
+        this(null, ipAddress, msg);
+    }
+    
+    public RobotPanel(MessageServer messageServer, String ipAddress, SPLMessage msg) {
         initComponents();
         
+        this.messageServer = messageServer;
         this.ipAddress = ipAddress;
         this.currentMesage = msg;
         this.jlAddress.setText(this.ipAddress);
@@ -117,13 +129,13 @@ public class RobotPanel extends javax.swing.JPanel {
       double msgPerSecond = calculateMsgPerSecond();
       if((currentTime - lastSeen) > MAX_TIME_BEFORE_DEAD || msgPerSecond <= 0.0)
       {
-        this.jlTimestamp.setText("DEAD");
-        this.jlTimestamp.setForeground(Color.red);
+        this.jlTimestamp.setText("OFFLINE");
+        this.jlTimestamp.setForeground(Color.black);
       }
       else
       {
         this.jlTimestamp.setText(String.format("%4.2f msg/s", msgPerSecond));
-        this.jlTimestamp.setForeground(Color.black);
+        this.jlTimestamp.setForeground(Color.white);
       }
       
       //this.jlFallenTime.setText(msg.fallen == 1 ? "FALLEN" : "NOT FALLEN");
@@ -169,6 +181,27 @@ public class RobotPanel extends javax.swing.JPanel {
     public Color getChestColor() {
         return chestColor;
     }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        super.setEnabled(enabled);
+        if(!hideConnectButton) {
+            connectButton.setEnabled(enabled);
+            connectButton.setVisible(enabled);
+        }
+    }
+    
+    public void setHideConnectButton(boolean hide) {
+        hideConnectButton = hide;
+        connectButton.setEnabled(!hide);
+        connectButton.setVisible(!hide);
+    }
+    
+    public void setEnableConnectButton(boolean enabled) {
+        if(!hideConnectButton) {
+            connectButton.setEnabled(enabled);
+        }
+    }
     
     @Override
     public synchronized void paintComponent(Graphics g)
@@ -194,6 +227,9 @@ public class RobotPanel extends javax.swing.JPanel {
       g2d.translate((posX + 1), (posY + 1));
       g2d.scale(ratioW, ratioH);
 
+      if(!isEnabled()) {
+        g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, .5f));
+      }
       g2d.drawImage(nao_body, 0, 0, (int) wImg, (int) hImg, this);
       
       g2d.scale(1.0/ratioW, 1.0/ratioH);
@@ -201,11 +237,11 @@ public class RobotPanel extends javax.swing.JPanel {
       
       // player number
       
-      g2d.setColor(chestColor);
+      g2d.setColor(isEnabled() ? chestColor : disabledChestColor);
       int r = 50;
       g2d.fillOval((int)(wPanel/2)-r, (int)(hPanel*0.5)-r, 2*r, 2*r);
-      
-      g2d.setColor(Color.orange);
+
+      g2d.setColor(isEnabled() ? Color.orange : disabledColor);
       g2d.setFont(new Font("TimesRoman", Font.BOLD, 100));
       String playyerNumber = "" + currentMesage.playerNum;
       FontMetrics fm = g.getFontMetrics();
@@ -213,45 +249,52 @@ public class RobotPanel extends javax.swing.JPanel {
       int x = (int)((wPanel-fm.stringWidth(playyerNumber))/2);
       g2d.drawString(playyerNumber, x, y);
       
-      // temperature
-      if(getMessage().user.getTemperature() >= 80.0f){
-        g2d.setColor(colorDanger);
-      } else if(getMessage().user.getTemperature() >= 60.0f) {
-        g2d.setColor(colorWarning);
-      } else {
-          g2d.setColor(colorInfoBlue);
-      }
+        // temperature
+        if (isEnabled()) {
+            if (getMessage().user.getTemperature() >= 80.0f) {
+                g2d.setColor(colorDanger);
+            } else if (getMessage().user.getTemperature() >= 60.0f) {
+                g2d.setColor(colorWarning);
+            } else {
+                g2d.setColor(colorInfoBlue);
+            }
+        } else {
+            g2d.setColor(disabledColor);
+        }
       g2d.drawImage(temperatur_ico, 0, 0, (int)(wPanel*0.1), (int)(wPanel*0.1), this);
       double temperatureValue = getMessage().user.getTemperature()/100.0*hPanel;
       g2d.fillRect(0, (int)(hPanel-temperatureValue), (int)(wPanel*0.1), (int)temperatureValue);
       
-      // battery
-      if(getMessage().user.getBatteryCharge() <= 0.3f){
-        g2d.setColor(colorDanger);
-      } else if(getMessage().user.getBatteryCharge() <= 0.6f) {
-        g2d.setColor(colorWarning);
-      } else {
-        g2d.setColor(colorInfo);
-      }
+        // battery
+        if (isEnabled()) {
+            if (getMessage().user.getBatteryCharge() <= 0.3f) {
+                g2d.setColor(colorDanger);
+            } else if (getMessage().user.getBatteryCharge() <= 0.6f) {
+                g2d.setColor(colorWarning);
+            } else {
+                g2d.setColor(colorInfo);
+            }
+        } else {
+            g2d.setColor(disabledColor);
+        }
       g2d.drawImage(battery_ico, (int)(wPanel*0.9), 0, (int)(wPanel*0.1), (int)(wPanel*0.1), this);
       double batteryValue = getMessage().user.getBatteryCharge()*hPanel;
       g2d.fillRect((int)(wPanel*0.9), (int)(hPanel-batteryValue), (int)(wPanel), (int)batteryValue);
-      
-      g2d.translate(5, (int)hPanel / 2);
-      g2d.rotate(Math.PI*0.5);
-      g2d.setColor(Color.white);
+      g2d.translate(20, (int)hPanel / 2);
+      g2d.rotate(Math.PI*-0.5);
+      g2d.setColor(isEnabled() ? Color.white : disabledTextColor);
       g2d.setFont(new Font("TimesRoman", Font.PLAIN, 18));
       g2d.drawString(String.format("%3.1f °C", getMessage().user.getTemperature()), 0, 0);
-      g2d.rotate(-Math.PI*0.5);
-      g2d.translate(-5, -(int)hPanel / 2);
-      
-      g2d.translate((int)(wPanel - 17), (int)hPanel / 2);
       g2d.rotate(Math.PI*0.5);
-      g2d.setColor(Color.white);
+      g2d.translate(-20, -(int)hPanel / 2);
+      
+      g2d.translate((int)(wPanel - 10), (int)hPanel / 2);
+      g2d.rotate(Math.PI*-0.5);
+      g2d.setColor(isEnabled() ? Color.white : disabledTextColor);
       g2d.setFont(new Font("TimesRoman", Font.PLAIN, 18));
       g2d.drawString(String.format("%3.0f%%", getMessage().user.getBatteryCharge()*100), 0,0);
-      g2d.rotate(-Math.PI*0.5);
-      g2d.translate(-(int)(wPanel - 17), -(int)hPanel / 2);
+      g2d.rotate(Math.PI*0.5);
+      g2d.translate(-(int)(wPanel - 10), -(int)hPanel / 2);
     }//end paintComponent
     
     
@@ -305,6 +348,8 @@ public class RobotPanel extends javax.swing.JPanel {
         jlAddress = new javax.swing.JLabel();
         jlTeamNumber = new javax.swing.JLabel();
         jlTimestamp = new javax.swing.JLabel();
+        buttonPanel = new javax.swing.JPanel();
+        connectButton = new javax.swing.JButton();
 
         jLabel5.setText("jLabel5");
 
@@ -359,7 +404,7 @@ public class RobotPanel extends javax.swing.JPanel {
         jlTimestamp.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         jlTimestamp.setForeground(new java.awt.Color(255, 255, 255));
         jlTimestamp.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/naoth/rc/res/appointment-new.png"))); // NOI18N
-        jlTimestamp.setText("DEAD");
+        jlTimestamp.setText("OFFLINE");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 1;
@@ -368,10 +413,44 @@ public class RobotPanel extends javax.swing.JPanel {
         labelPanel.add(jlTimestamp, gridBagConstraints);
 
         add(labelPanel, java.awt.BorderLayout.NORTH);
+
+        buttonPanel.setOpaque(false);
+        buttonPanel.setLayout(new java.awt.GridLayout());
+
+        connectButton.setText("Connect");
+        connectButton.setMaximumSize(new java.awt.Dimension(50, 23));
+        connectButton.setMinimumSize(new java.awt.Dimension(50, 23));
+        connectButton.setPreferredSize(new java.awt.Dimension(50, 23));
+        connectButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                connectButtonActionPerformed(evt);
+            }
+        });
+        buttonPanel.add(connectButton);
+
+        add(buttonPanel, java.awt.BorderLayout.SOUTH);
     }// </editor-fold>//GEN-END:initComponents
+
+    private void connectButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_connectButtonActionPerformed
+        if(messageServer != null) {
+            if(!this.messageServer.isConnected()) {
+                try {
+                    this.messageServer.connect(this.ipAddress, 5401);
+                    connectButton.setText("Disconnect");
+                } catch(IOException ex) {
+                    java.util.logging.Logger.getLogger(RobotPanel.class.getName()).log(java.util.logging.Level.SEVERE, "Coult not connect.", ex);
+                }
+            } else {
+                this.messageServer.disconnect();
+                connectButton.setText("Connect");
+            }
+        }
+    }//GEN-LAST:event_connectButtonActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JPanel buttonPanel;
+    private javax.swing.JButton connectButton;
     private javax.swing.Box.Filler filler1;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JPanel jPanel1;
