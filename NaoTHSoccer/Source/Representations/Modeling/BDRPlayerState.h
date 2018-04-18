@@ -66,6 +66,9 @@ public:
 
   static std::string getMessageName(Message m);
   static std::string getMessageString(Message m);
+
+  inline std::string getMessageName() const { return getMessageName(message); }
+  inline std::string getMessageString() const { return getMessageString(message); };
 };
 
 /*
