@@ -31,6 +31,8 @@
 
 #include "Representations/Perception/MultiChannelIntegralImage.h"
 
+#include "Representations/Modeling/RobotPose.h"
+
 // tools
 #include "Tools/DoubleCamHelpers.h"
 #include "Cognition/Modules/VisualCortex/BallDetector/Tools/BallKeyPointExtractor.h"
@@ -61,6 +63,9 @@ BEGIN_DECLARE_MODULE(BDRBallDetector)
 
   REQUIRE(BallDetectorIntegralImage)
   REQUIRE(BallDetectorIntegralImageTop)
+
+  // needed to check if the ball is on the field
+  REQUIRE(RobotPose)
 
   PROVIDE(MultiBallPercept)
 END_DECLARE_MODULE(BDRBallDetector)
@@ -96,6 +101,7 @@ private:
       
       //PARAMETER_REGISTER(contrastMinimum) = 50;
       PARAMETER_REGISTER(minRedInsideRatio) = 0.5;
+      PARAMETER_REGISTER(verifyByGlobalPosition) = true;
 
       syncWithConfig();
     }
@@ -106,6 +112,7 @@ private:
 
     //double contrastMinimum;
     double minRedInsideRatio;
+    bool verifyByGlobalPosition;
 
   } params;
 

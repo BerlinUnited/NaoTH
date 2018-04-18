@@ -86,6 +86,12 @@ void BDRBallDetector::addBallPercept(const Vector2i& center, double radius)
     ballPercept.centerInImage = center;
     ballPercept.radiusInImage = radius;
 
+    // reject the ball
+    if (params.verifyByGlobalPosition && getRobotPose().isValid &&
+        !getFieldInfo().insideCarpet(getRobotPose()*ballPercept.positionOnField)) {
+      return;
+    }
+
     getMultiBallPercept().add(ballPercept);
     getMultiBallPercept().frameInfoWhenBallWasSeen = getFrameInfo();
   }
