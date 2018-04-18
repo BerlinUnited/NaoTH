@@ -25,7 +25,7 @@ public:
     set       = naoth::GameData::set,
     playing   = naoth::GameData::playing,
     finished  = naoth::GameData::finished,
-    penalized  // <== GameState doesn't have this :)
+    penalized = naoth::GameData::finished + 1 //5 HACK: <== GameState doesn't have this :)
   };
 
   void update(const naoth::GameData& gameData) 

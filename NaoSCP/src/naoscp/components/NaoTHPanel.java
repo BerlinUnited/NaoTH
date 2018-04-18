@@ -59,8 +59,6 @@ public class NaoTHPanel extends javax.swing.JPanel {
     private void initComponents() {
 
         jSettingsPanel = new javax.swing.JPanel();
-        jLabel3 = new javax.swing.JLabel();
-        jColorBox = new javax.swing.JComboBox();
         jLabel2 = new javax.swing.JLabel();
         jTeamNumber = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
@@ -77,16 +75,7 @@ public class NaoTHPanel extends javax.swing.JPanel {
 
         jSettingsPanel.setBackground(new java.awt.Color(204, 204, 255));
 
-        jLabel3.setText("Color:");
-
-        jColorBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "red", "blue" }));
-        jColorBox.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jColorBoxActionPerformed(evt);
-            }
-        });
-
-        jLabel2.setText("TeamNr:");
+        jLabel2.setText("Team Number:");
 
         jTeamNumber.setText("4");
         jTeamNumber.addActionListener(new java.awt.event.ActionListener() {
@@ -123,7 +112,7 @@ public class NaoTHPanel extends javax.swing.JPanel {
             }
         });
 
-        jLabel24.setText("TeamComm:");
+        jLabel24.setText("TeamComm Port:");
 
         jTeamCommPort.setColumns(10);
         jTeamCommPort.setText("10400");
@@ -136,14 +125,10 @@ public class NaoTHPanel extends javax.swing.JPanel {
                 .addContainerGap()
                 .addGroup(jSettingsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jSettingsPanelLayout.createSequentialGroup()
-                        .addGroup(jSettingsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel4)
-                            .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.TRAILING))
+                        .addComponent(jLabel4)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(jSettingsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addGroup(jSettingsPanelLayout.createSequentialGroup()
-                                .addComponent(jColorBox, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jLabel2)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jTeamNumber, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -153,8 +138,7 @@ public class NaoTHPanel extends javax.swing.JPanel {
                                 .addComponent(jTeamCommPort, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addComponent(jSchemeBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButtonRefreshData, javax.swing.GroupLayout.DEFAULT_SIZE, 80, Short.MAX_VALUE)
-                        .addGap(4, 4, 4))
+                        .addComponent(jButtonRefreshData, javax.swing.GroupLayout.DEFAULT_SIZE, 100, Short.MAX_VALUE))
                     .addGroup(jSettingsPanelLayout.createSequentialGroup()
                         .addComponent(jDirChooser, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -175,12 +159,10 @@ public class NaoTHPanel extends javax.swing.JPanel {
                             .addComponent(jSchemeBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jSettingsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jColorBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel2)
                             .addComponent(jTeamNumber, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel24)
-                            .addComponent(jTeamCommPort, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel3))
+                            .addComponent(jTeamCommPort, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addComponent(jButtonRefreshData, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
@@ -254,6 +236,10 @@ public class NaoTHPanel extends javax.swing.JPanel {
         
     }//GEN-LAST:event_cbCopyConfigItemStateChanged
 
+    private void cbCopyConfigActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbCopyConfigActionPerformed
+        setConfigEditable(this.cbCopyConfig.isSelected());
+    }//GEN-LAST:event_cbCopyConfigActionPerformed
+
     private void jDirChooserPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jDirChooserPerformed
         JFileChooser chooser = new JFileChooser();
         chooser.setCurrentDirectory(new java.io.File("."));
@@ -270,33 +256,24 @@ public class NaoTHPanel extends javax.swing.JPanel {
         updateForm(naothProjectFile);
     }//GEN-LAST:event_jButtonRefreshDataActionPerformed
 
-    private void jTeamNumberActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTeamNumberActionPerformed
-        this.jTeamCommPort.setText("10" + this.jTeamNumber.getText() + "00");
-    }//GEN-LAST:event_jTeamNumberActionPerformed
-
-    private void jColorBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jColorBoxActionPerformed
-
-    }//GEN-LAST:event_jColorBoxActionPerformed
-
     private void jSchemeBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jSchemeBoxActionPerformed
         String scheme = (String)this.jSchemeBox.getSelectedItem();
-        
+
         // store for later
         if (properties != null && scheme != null) {
             properties.setProperty("naoscp.scheme", scheme);
         }
-        
+
         updateScheme();
         this.revalidate();
     }//GEN-LAST:event_jSchemeBoxActionPerformed
 
-    private void cbCopyConfigActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbCopyConfigActionPerformed
-        setConfigEditable(this.cbCopyConfig.isSelected());
-    }//GEN-LAST:event_cbCopyConfigActionPerformed
+    private void jTeamNumberActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTeamNumberActionPerformed
+        this.jTeamCommPort.setText("10" + this.jTeamNumber.getText() + "00");
+    }//GEN-LAST:event_jTeamNumberActionPerformed
 
     private void setConfigEditable(boolean v) {
         this.jSchemeBox.setEnabled(v);
-        this.jColorBox.setEnabled(v);
         this.jTeamNumber.setEnabled(v);
         this.jTeamCommPort.setEnabled(v);
         Arrays.asList(this.playerNumberPanel.getComponents()).stream().forEach(x->((JComponent)x).setEnabled(v));
@@ -405,11 +382,6 @@ public class NaoTHPanel extends javax.swing.JPanel {
         Config playerCfg = new Config("player");
         playerCfg.readFromFile(new File(configFile, "player.cfg"));
 
-        String teamColor = playerCfg.values.get("TeamColor");
-        if(teamColor != null) {
-            jColorBox.setSelectedItem(teamColor);
-        }
-
         String teamNumber = playerCfg.values.get("TeamNumber");
         if(teamNumber != null) {
             jTeamNumber.setText(teamNumber);
@@ -423,7 +395,6 @@ public class NaoTHPanel extends javax.swing.JPanel {
   private Config getPlayerCfg()
   {
     Config cfg = new Config("player");
-    cfg.values.put("TeamColor", jColorBox.getSelectedItem().toString());
     cfg.values.put("TeamNumber", jTeamNumber.getText());
     return cfg;
   }
@@ -578,12 +549,10 @@ public class NaoTHPanel extends javax.swing.JPanel {
     private javax.swing.JCheckBox cbCopyExe;
     private javax.swing.JCheckBox cbCopyLib;
     private javax.swing.JButton jButtonRefreshData;
-    private javax.swing.JComboBox jColorBox;
     private javax.swing.JButton jDirChooser;
     private javax.swing.JLabel jDirPathLabel;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel24;
-    private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JComboBox jSchemeBox;
     private javax.swing.JPanel jSettingsPanel;

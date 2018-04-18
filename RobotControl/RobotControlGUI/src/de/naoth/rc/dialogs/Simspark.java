@@ -401,7 +401,7 @@ public class Simspark extends AbstractDialog
         } // end run
     }
     
-    private void connect() {
+    public void connect() {
         try {
             if(simspark_comm != null) {
                 simspark_comm.disconnect();
@@ -424,7 +424,7 @@ public class Simspark extends AbstractDialog
         }
     }
     
-    private void disconnect() {
+    public void disconnect() {
         try {
             if(simspark_comm != null) {
                 simspark_comm.disconnect();

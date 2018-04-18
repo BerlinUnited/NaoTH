@@ -67,5 +67,5 @@ namespace internal_symbols("Internal Symbols") {
   float internal search_ball.turn_stop_motion_count;
 
   /** the time we are in play-state in ms*/
-  float internal game.time_in_play;
+  float internal game.time_in_play;  
 }

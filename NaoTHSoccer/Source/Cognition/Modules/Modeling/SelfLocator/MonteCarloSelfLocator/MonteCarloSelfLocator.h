@@ -294,7 +294,9 @@ private: // workers
   void updateByShortLines(const LinePercept& linePercept, SampleSet& sampleSet) const;
 
   void updateByMiddleCircle(const LinePercept& linePercept, SampleSet& sampleSet) const;
+  
   // A-Priori knowledge based on the game state
+  void updateByBDRStartPositions(SampleSet& sampleSet) const;
   void updateBySidePositions(SampleSet& sampleSet) const;
   void updateByStartPositions(SampleSet& sampleSet) const;
   void updateByOwnHalfLookingForward(SampleSet& sampleSet) const;
