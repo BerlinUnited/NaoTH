@@ -18,6 +18,7 @@ public:
   BDRPlayerState()
     : 
       activity(doing_nothing),
+      message(ready),
       sitting(false),
       localized_on_field(false)
   {}
@@ -39,6 +40,16 @@ public:
       num_of_activities
   } activity;
 
+  enum Message
+  {
+      charging,
+      failed_charging,
+      fallen,
+      ready,
+      too_many_players_on_field,
+      num_of_messages
+  } message;
+
   bool sitting;
   bool localized_on_field;
 
@@ -46,11 +57,18 @@ public:
   {
     stream << "BDRPlayerState\n";
     stream << "  activity: " << getActivityName(activity) << "\n";
-    stream << "  sitting: " << sitting << "\n";
+    stream << "  message: "  << getMessageString(message) << "\n";
+    stream << "  sitting: "  << sitting << "\n";
     stream << "  localized_on_field: " << localized_on_field << "\n";
   }
 
   static std::string getActivityName(Activity id);
+
+  static std::string getMessageName(Message m);
+  static std::string getMessageString(Message m);
+
+  inline std::string getMessageName() const { return getMessageName(message); }
+  inline std::string getMessageString() const { return getMessageString(message); };
 };
 
 /*

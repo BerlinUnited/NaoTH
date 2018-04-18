@@ -121,6 +121,7 @@ option bdr_goto_charging_station
       action {
           motion.type = bdr_sit;
           bdr.activity = servicing;
+          bdr.sitting = true;
       }
   }
 
