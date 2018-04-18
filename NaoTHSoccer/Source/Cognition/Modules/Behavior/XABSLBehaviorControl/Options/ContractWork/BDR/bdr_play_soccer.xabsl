@@ -18,7 +18,7 @@ option bdr_play_soccer
 
     state search {
         decision {
-            else if(state_time < 3000)
+            else if(state_time < 1500)
               stay;
             else
               goto do_search;
@@ -69,7 +69,7 @@ option bdr_play_soccer
 
     state goto_ball {
         decision {
-            else if(state_time < 3000)
+            else if(state_time < 1500)
               stay;
             else
               goto do_goto_ball;
@@ -148,7 +148,7 @@ option bdr_play_soccer
     
     target state wait {
         decision {
-            else if(state_time < 5000)
+            else if(state_time < 1500)
               stay;
             else
               goto search;

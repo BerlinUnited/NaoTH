@@ -14,6 +14,7 @@ option bdr_play
     action{
         bdr.reason = none; // init reason
         bdr.activity = initializing;
+        bdr.localized_on_field = false;
     }
   }
 
@@ -31,7 +32,7 @@ option bdr_play
         motion.type = stand;
         head.control_mode = look_around;
         situationStatusOwnHalf = last_state_was_penalized;
-        bdr.activity = initializing;
+        bdr.activity = initializing;        
     }
   }
 
@@ -79,7 +80,9 @@ option bdr_play
               goto set_wartungs_reason_temperature;
           else if (platform.battery < bdr.charge_beginning - 0.02)
               goto set_wartungs_reason_battery;
-          else if (bdr.number_of_players_in_play == 1)
+          else if (bdr.number_of_players_in_play == 1) // other player is waiting for me
+              goto transition;
+          else if (state_time > 10000) // enough entertainment
               goto transition;
           else
               stay;
@@ -113,7 +116,7 @@ option bdr_play
     decision
     {
       else if(remote_control.bdr_control != AUTONOMOUS_PLAY)
-        goto transition;
+          goto transition;
       else if (body.temperature.leg.left > 70
                || body.temperature.leg.right > 70)
           goto set_wartungs_reason_temperature;
@@ -121,8 +124,11 @@ option bdr_play
           goto set_wartungs_reason_battery;
       else if(action_done)
           goto transition;
+      else if(bdr.number_of_players_in_play == 1
+              && state_time > 5000)
+          goto pre_autonomous_entertaining; 
       else
-        stay;
+          stay;
     }
     action
     {
@@ -195,6 +201,7 @@ option bdr_play
         head.control_mode = search_for_ball_and_look_around;
         bdr.reason = none; // reset wartungs reason
         bdr.activity = initializing;
+        bdr.sitting = false;
     }
   }
 
@@ -241,6 +248,7 @@ option bdr_play
         head.motion_type = look_at_world_point;
 
         bdr.charge_beginning = platform.battery;
+        bdr.localized_on_field = true; // TODO: need some criteria like #Lines, error of matching after localization etc.
       }
   }
 }
