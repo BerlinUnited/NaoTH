@@ -7,6 +7,7 @@
 package de.naoth.rc.dialogs.bdr;
 
 import de.naoth.rc.dataformats.SPLMessage;
+import de.naoth.rc.messages.TeamMessageOuterClass;
 import de.naoth.rc.server.MessageServer;
 import java.awt.AlphaComposite;
 import java.awt.Color;
@@ -85,15 +86,16 @@ public class RobotPanel extends javax.swing.JPanel {
         
         try {
             nao_body = ImageIO.read(getClass().getResource("/de/naoth/rc/res/nao-nice.png"));
-            battery_ico = ImageIO.read(getClass().getResource("/de/naoth/rc/res/battery-black.png"));
-            temperatur_ico = ImageIO.read(getClass().getResource("/de/naoth/rc/res/temperature.png"));
-        
+            battery_ico = ImageIO.read(getClass().getResource("/de/naoth/rc/res/battery-white.png"));
+            temperatur_ico = ImageIO.read(getClass().getResource("/de/naoth/rc/res/temperature-white.png"));
+
             Color fade_color = new Color(230,245,255,100);
             Graphics2D g2d = nao_body.createGraphics();
             g2d.setColor(fade_color);
             g2d.fillRect(0, 0, nao_body.getWidth(), nao_body.getHeight());
             
             this.setBackground(Color.black);
+            lblActivity.setVisible(false);
         } catch (IOException e) {
         }
     }
@@ -166,8 +168,16 @@ public class RobotPanel extends javax.swing.JPanel {
           batteryBar.setBackground(Color.green);
         }
         */
-          
-        this.jlTeamNumber.setText("" + msg.teamNum);
+        if(msg.user.hasRobotState()) {
+            this.jlRobotState.setText(msg.getRobotState());
+            
+            if(msg.user.getRobotState() == TeamMessageOuterClass.RobotState.playing) {
+                lblActivity.setVisible(true);
+                lblActivity.setText(msg.user.getBdrPlayerState().getActivity().name().toUpperCase());
+            } else {
+                lblActivity.setVisible(false);
+            }
+        }
       }
       
       this.repaint();
@@ -237,11 +247,12 @@ public class RobotPanel extends javax.swing.JPanel {
       
       // player number
       
-      g2d.setColor(isEnabled() ? chestColor : disabledChestColor);
+      //isEnabled() ? chestColor : disabledChestColor
+      g2d.setColor(disabledChestColor);
       int r = 50;
       g2d.fillOval((int)(wPanel/2)-r, (int)(hPanel*0.5)-r, 2*r, 2*r);
 
-      g2d.setColor(isEnabled() ? Color.orange : disabledColor);
+      g2d.setColor(isEnabled() ? chestColor : disabledColor);
       g2d.setFont(new Font("TimesRoman", Font.BOLD, 100));
       String playyerNumber = "" + currentMesage.playerNum;
       FontMetrics fm = g.getFontMetrics();
@@ -261,9 +272,9 @@ public class RobotPanel extends javax.swing.JPanel {
         } else {
             g2d.setColor(disabledColor);
         }
-      g2d.drawImage(temperatur_ico, 0, 0, (int)(wPanel*0.1), (int)(wPanel*0.1), this);
       double temperatureValue = getMessage().user.getTemperature()/100.0*hPanel;
       g2d.fillRect(0, (int)(hPanel-temperatureValue), (int)(wPanel*0.1), (int)temperatureValue);
+      g2d.drawImage(temperatur_ico, 0, 0, (int)(wPanel*0.1), (int)(wPanel*0.1), this);
       
         // battery
         if (isEnabled()) {
@@ -277,7 +288,6 @@ public class RobotPanel extends javax.swing.JPanel {
         } else {
             g2d.setColor(disabledColor);
         }
-      g2d.drawImage(battery_ico, (int)(wPanel*0.9), 0, (int)(wPanel*0.1), (int)(wPanel*0.1), this);
       double batteryValue = getMessage().user.getBatteryCharge()*hPanel;
       g2d.fillRect((int)(wPanel*0.9), (int)(hPanel-batteryValue), (int)(wPanel), (int)batteryValue);
       g2d.translate(20, (int)hPanel / 2);
@@ -292,9 +302,14 @@ public class RobotPanel extends javax.swing.JPanel {
       g2d.rotate(Math.PI*-0.5);
       g2d.setColor(isEnabled() ? Color.white : disabledTextColor);
       g2d.setFont(new Font("TimesRoman", Font.PLAIN, 18));
-      g2d.drawString(String.format("%3.0f%%", getMessage().user.getBatteryCharge()*100), 0,0);
+      if(getMessage().user.getIsCharging()) {
+        g2d.drawString(String.format("%3.0f%% (charging)", getMessage().user.getBatteryCharge()*100), 0,0);
+      } else {
+          g2d.drawString(String.format("%3.0f%%", getMessage().user.getBatteryCharge()*100), 0,0);
+      }
       g2d.rotate(Math.PI*0.5);
       g2d.translate(-(int)(wPanel - 10), -(int)hPanel / 2);
+      g2d.drawImage(battery_ico, (int)(wPanel*0.9), 0, (int)(wPanel*0.1), (int)(wPanel*0.1), this);
     }//end paintComponent
     
     
@@ -346,8 +361,10 @@ public class RobotPanel extends javax.swing.JPanel {
         labelPanel = new javax.swing.JPanel();
         filler1 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0));
         jlAddress = new javax.swing.JLabel();
-        jlTeamNumber = new javax.swing.JLabel();
+        jlRobotState = new javax.swing.JLabel();
         jlTimestamp = new javax.swing.JLabel();
+        jPanel2 = new javax.swing.JPanel();
+        lblActivity = new javax.swing.JLabel();
         buttonPanel = new javax.swing.JPanel();
         connectButton = new javax.swing.JButton();
 
@@ -388,18 +405,18 @@ public class RobotPanel extends javax.swing.JPanel {
         gridBagConstraints.weightx = 0.8;
         labelPanel.add(jlAddress, gridBagConstraints);
 
-        jlTeamNumber.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
-        jlTeamNumber.setForeground(new java.awt.Color(255, 255, 255));
-        jlTeamNumber.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/naoth/rc/res/system-users.png"))); // NOI18N
-        jlTeamNumber.setText("TN");
-        jlTeamNumber.setToolTipText("Team Number");
+        jlRobotState.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        jlRobotState.setForeground(new java.awt.Color(255, 255, 255));
+        jlRobotState.setIcon(new javax.swing.ImageIcon(getClass().getResource("/toolbarButtonGraphics/general/Information16.gif"))); // NOI18N
+        jlRobotState.setText("INITIAL");
+        jlRobotState.setToolTipText("Team Number");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 2;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.weightx = 0.8;
-        labelPanel.add(jlTeamNumber, gridBagConstraints);
+        labelPanel.add(jlRobotState, gridBagConstraints);
 
         jlTimestamp.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         jlTimestamp.setForeground(new java.awt.Color(255, 255, 255));
@@ -414,21 +431,37 @@ public class RobotPanel extends javax.swing.JPanel {
 
         add(labelPanel, java.awt.BorderLayout.NORTH);
 
+        jPanel2.setOpaque(false);
+        jPanel2.setLayout(new javax.swing.BoxLayout(jPanel2, javax.swing.BoxLayout.Y_AXIS));
+
+        lblActivity.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
+        lblActivity.setForeground(new java.awt.Color(0, 102, 51));
+        lblActivity.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lblActivity.setText("activity");
+        lblActivity.setAlignmentX(0.5F);
+        lblActivity.setBorder(javax.swing.BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        lblActivity.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        lblActivity.setOpaque(true);
+        jPanel2.add(lblActivity);
+
         buttonPanel.setOpaque(false);
-        buttonPanel.setLayout(new java.awt.GridLayout());
+        buttonPanel.setPreferredSize(new java.awt.Dimension(50, 40));
+        buttonPanel.setLayout(new java.awt.BorderLayout());
 
         connectButton.setText("Connect");
-        connectButton.setMaximumSize(new java.awt.Dimension(50, 23));
-        connectButton.setMinimumSize(new java.awt.Dimension(50, 23));
+        connectButton.setMaximumSize(new java.awt.Dimension(50, 50));
+        connectButton.setMinimumSize(new java.awt.Dimension(50, 50));
         connectButton.setPreferredSize(new java.awt.Dimension(50, 23));
         connectButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 connectButtonActionPerformed(evt);
             }
         });
-        buttonPanel.add(connectButton);
+        buttonPanel.add(connectButton, java.awt.BorderLayout.CENTER);
 
-        add(buttonPanel, java.awt.BorderLayout.SOUTH);
+        jPanel2.add(buttonPanel);
+
+        add(jPanel2, java.awt.BorderLayout.SOUTH);
     }// </editor-fold>//GEN-END:initComponents
 
     private void connectButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_connectButtonActionPerformed
@@ -454,10 +487,12 @@ public class RobotPanel extends javax.swing.JPanel {
     private javax.swing.Box.Filler filler1;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
     private javax.swing.JLabel jlAddress;
-    private javax.swing.JLabel jlTeamNumber;
+    private javax.swing.JLabel jlRobotState;
     private javax.swing.JLabel jlTimestamp;
     private javax.swing.JPanel labelPanel;
+    private javax.swing.JLabel lblActivity;
     // End of variables declaration//GEN-END:variables
 
 }

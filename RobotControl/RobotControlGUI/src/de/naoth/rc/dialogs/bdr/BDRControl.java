@@ -16,7 +16,6 @@ import de.naoth.rc.core.manager.SwingCommandExecutor;
 import de.naoth.rc.dataformats.SPLMessage;
 import de.naoth.rc.dialogs.RobotHealth;
 import de.naoth.rc.dialogs.TeamCommViewer;
-import de.naoth.rc.drawings.Colors;
 import de.naoth.rc.messages.BDRMessages.BDRControlCommand;
 import de.naoth.rc.messages.BDRMessages.BDRBehaviorMode;
 import de.naoth.rc.server.Command;
@@ -26,8 +25,8 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.util.HashMap;
 import java.util.List;
+import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
@@ -59,7 +58,7 @@ public class BDRControl extends AbstractDialog implements TeamCommListener {
 
     private final int port = 10004;
     
-    private final HashMap<String, RobotPanel> robotsMap = new HashMap<>();
+    private final TreeMap<String, RobotPanel> robotsMap = new TreeMap<>();
     
     public BDRControl() 
     {
@@ -85,6 +84,7 @@ public class BDRControl extends AbstractDialog implements TeamCommListener {
                 robotsMap.forEach((t, u) -> {
                     u.setEnableConnectButton(true);
                 });
+                layerNotConnected.setVisible(true);
             }
         });
         
@@ -95,26 +95,24 @@ public class BDRControl extends AbstractDialog implements TeamCommListener {
             RobotHealth health = (RobotHealth) RobotControlBdrMonitorImpl.healthPanel;
             health.jToolBar1.setVisible(false);
             statusPanel.add(RobotControlBdrMonitorImpl.healthPanel, java.awt.BorderLayout.CENTER);
-//            getContentPane().add(dialog.getPanel(), java.awt.BorderLayout.CENTER);
         }
         
         // set the 'correct' divider position
         this.addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
-//                System.out.println(e.getComponent().getWidth() + "/" + e.getComponent().getHeight());
-//                int robotPanelHeight = e.getComponent().getHeight() / 2;
+//                SwingUtilities.invokeLater(() -> {});
+
                 int robotPanelWidth = (robotPanel.getHeight() - 20) / 3;
                 Dimension robotPanelSize = new Dimension((robotPanelWidth + 5) * 2 + 5, robotPanel.getHeight());
                 robotPanel.setPreferredSize(robotPanelSize);
                 robotPanel.setMinimumSize(robotPanelSize);
+                robotPanel.setSize(robotPanelSize);
+                robotPanel.invalidate();
                 robotPanel.repaint();
-                
-                controlPanel.setPreferredSize(new Dimension(0, controlPanel.getHeight()));
+                updateRoboPanel();
             }
         });
-//        System.out.println(Plugin.getManager());
-        
     }
     
     @Override
@@ -139,6 +137,11 @@ public class BDRControl extends AbstractDialog implements TeamCommListener {
     private void initComponents() {
 
         robotPanel = new javax.swing.JPanel();
+        controlWrapper = new javax.swing.JPanel();
+        layerNotConnected = new javax.swing.JLayeredPane();
+        jPanel1 = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
+        layerControls = new javax.swing.JLayeredPane();
         statusPanel = new javax.swing.JPanel();
         controlPanel = new javax.swing.JPanel();
         bt_stop = new javax.swing.JToggleButton();
@@ -148,17 +151,43 @@ public class BDRControl extends AbstractDialog implements TeamCommListener {
         setLayout(new javax.swing.BoxLayout(this, javax.swing.BoxLayout.LINE_AXIS));
 
         robotPanel.setBackground(new java.awt.Color(255, 255, 255));
+        robotPanel.setMinimumSize(new java.awt.Dimension(50, 5));
+        robotPanel.setName(""); // NOI18N
+        robotPanel.setPreferredSize(new java.awt.Dimension(50, 50));
         robotPanel.setLayout(new java.awt.GridLayout(2, 2, 5, 5));
 
         robotPanel.setLayout(new de.naoth.rc.components.WrapLayout(java.awt.FlowLayout.LEFT));
 
         add(robotPanel);
 
-        statusPanel.setPreferredSize(new java.awt.Dimension(32767, 32767));
+        controlWrapper.setLayout(new javax.swing.OverlayLayout(controlWrapper));
+
+        layerNotConnected.setBackground(new java.awt.Color(255, 0, 0));
+        layerNotConnected.setForeground(new java.awt.Color(51, 255, 51));
+        layerNotConnected.setLayout(new java.awt.BorderLayout());
+
+        jPanel1.setBackground(new Color(0,0,0,125));
+        jPanel1.setLayout(new java.awt.BorderLayout());
+
+        jLabel1.setFont(new java.awt.Font("Dialog", 1, 48)); // NOI18N
+        jLabel1.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel1.setText("Not Connected ...");
+        jLabel1.setAlignmentX(0.5F);
+        jLabel1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jPanel1.add(jLabel1, java.awt.BorderLayout.CENTER);
+
+        layerNotConnected.add(jPanel1, java.awt.BorderLayout.CENTER);
+
+        controlWrapper.add(layerNotConnected);
+
+        layerControls.setLayout(new javax.swing.BoxLayout(layerControls, javax.swing.BoxLayout.LINE_AXIS));
+
         statusPanel.setLayout(new java.awt.BorderLayout());
-        add(statusPanel);
+        layerControls.add(statusPanel);
 
         controlPanel.setMinimumSize(new java.awt.Dimension(200, 72));
+        controlPanel.setPreferredSize(new java.awt.Dimension(200, 72));
         controlPanel.setLayout(new java.awt.GridLayout(3, 0));
 
         bt_stop.setText("STOP");
@@ -185,7 +214,11 @@ public class BDRControl extends AbstractDialog implements TeamCommListener {
         });
         controlPanel.add(bt_wartung);
 
-        add(controlPanel);
+        layerControls.add(controlPanel);
+
+        controlWrapper.add(layerControls);
+
+        add(controlWrapper);
     }// </editor-fold>//GEN-END:initComponents
 
     private void bt_stopActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bt_stopActionPerformed
@@ -259,6 +292,7 @@ public class BDRControl extends AbstractDialog implements TeamCommListener {
                 u.setEnableConnectButton(false);
             }
         });
+        layerNotConnected.setVisible(false);
     }
     
     private void sendBDRCommand(BDRControlCommand command) {
@@ -326,6 +360,11 @@ public class BDRControl extends AbstractDialog implements TeamCommListener {
     private javax.swing.JToggleButton bt_stop;
     private javax.swing.JToggleButton bt_wartung;
     private javax.swing.JPanel controlPanel;
+    private javax.swing.JPanel controlWrapper;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JLayeredPane layerControls;
+    private javax.swing.JLayeredPane layerNotConnected;
     private javax.swing.JPanel robotPanel;
     private javax.swing.JPanel statusPanel;
     // End of variables declaration//GEN-END:variables

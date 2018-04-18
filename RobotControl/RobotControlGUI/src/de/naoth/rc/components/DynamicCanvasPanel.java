@@ -174,10 +174,18 @@ public class DynamicCanvasPanel extends javax.swing.JPanel
         if(bb.getWidth() == 0 && bb.getHeight() == 0) {
             return;
         }
-        
         // "add" a 10px margin and calculate scale
         double scale_x = ((double) this.getWidth() - 10) / (bb.getWidth());
         double scale_y = ((double) this.getHeight() - 10) / (bb.getHeight());
+        
+        /*
+        System.out.println(
+            ">> " + bb.getHeight()
+            + " | " + getHeight()
+            + " | " + (getHeight() / 2.0)
+            + " | " + (bb.getHeight() * scale_y)
+        );*/
+        
         setScale(scale_x < scale_y ? scale_x : scale_y);
         // center drawings
         setOffsetX(getWidth() / 2.);
