@@ -16,6 +16,7 @@ import de.naoth.rc.core.dialog.RCDialog;
 import de.naoth.rc.dataformats.SPLMessage;
 import de.naoth.rc.drawings.DrawingCollection;
 import de.naoth.rc.drawings.FieldDrawingBDR;
+import de.naoth.rc.messages.TeamMessageOuterClass;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -25,6 +26,7 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.HashMap;
 import java.util.List;
 import java.util.TreeMap;
 import javax.swing.JPanel;
@@ -51,13 +53,14 @@ public class BDRMonitor extends AbstractDialog implements ActionListener, TeamCo
     }//end Plugin
     
     private final int port = 10004;
-    
+    private final int maxMessageTime = 1000;
     /**
      * The robot-TeamCommProvider for our own team.
      */
     //private final RobotTeamCommListener teamcommListener = new RobotTeamCommListener(true);
     
     private final TreeMap<String, RobotPanel> robots = new TreeMap<>();
+    private final HashMap<String, RobotMessage> robotsMsg = new HashMap<>();
     
     private final Timer drawingTimer;
     
@@ -66,14 +69,14 @@ public class BDRMonitor extends AbstractDialog implements ActionListener, TeamCo
 
         this.fieldCanvas.setBackgroundDrawing(new FieldDrawingBDR());
         this.fieldCanvas.setToolTipText("");
-        //this.fieldCanvas.setFitToViewport(true);
+        this.fieldCanvas.setFitToViewport(true);
 
         // intialize the field
         clearField();
-        fieldCanvas.setScale(0.9);
+//        fieldCanvas.setScale(0.9);
 //        fieldCanvas.setOffsetY(500);
 //        fieldCanvas.setOffsetX(500);
-        //this.fieldCanvas.setAntializing(true);
+        this.fieldCanvas.setAntializing(true);
         this.fieldCanvas.repaint();
 
         this.fieldCanvas.addMouseListener(new MouseAdapter() {
@@ -81,7 +84,11 @@ public class BDRMonitor extends AbstractDialog implements ActionListener, TeamCo
             public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() == 2 && !e.isConsumed()) {
                     e.consume();
+                    System.out.println(fieldCanvas.getOffsetY());
                     fieldCanvas.fitToViewport();
+//                    fieldCanvas.setOffsetY(580);
+//                    fieldCanvas.repaint();
+                    System.out.println(fieldCanvas.getHeight());
                 }
             }
         });
@@ -91,14 +98,13 @@ public class BDRMonitor extends AbstractDialog implements ActionListener, TeamCo
             @Override
             public void componentResized(ComponentEvent e) {
                 splitpane.setDividerLocation(e.getComponent().getWidth()*1/3);
-                System.out.println();
-                fieldCanvas.setOffsetX(fieldCanvas.getWidth() / 2);
-                fieldCanvas.setOffsetY(fieldCanvas.getHeight()-200);
-                fieldCanvas.repaint();
-                // TODO: sync with 'newTeamCommMessages'
-//                synchronized(this) {
-//                    createDummies();
-//                }
+//                fieldCanvas.setOffsetX(fieldCanvas.getWidth() / 2);
+//                fieldCanvas.setOffsetY(fieldCanvas.getHeight()-200);
+                fieldCanvas.fitToViewport();
+                
+                System.out.println(fieldCanvas.getOffsetY());
+//                fieldCanvas.repaint();
+                updateRoboPanel();
             }
         });
         
@@ -161,19 +167,38 @@ public class BDRMonitor extends AbstractDialog implements ActionListener, TeamCo
         // add buffered drawings to field drawing list
         DrawingCollection drawings = new DrawingCollection();
         robots.forEach((ip, m) -> {
+            TeamMessageOuterClass.BUUserTeamMessage umsg = m.getMessage().user;
 //            m.getMessage()
             Color c = m.getChestColor();
-            /*
-            if(m.getMessage().user.hasIsCharging() && m.getMessage().user.getIsCharging()) {
+            
+            if(umsg.hasIsCharging() && umsg.getIsCharging()) {
                 c = Color.YELLOW;
             }
             //*/
-            m.getMessage().draw(drawings, c, false);
+            
+            // only draw robot on field if he's localized
+            if(umsg.hasBdrPlayerState() && umsg.getBdrPlayerState().hasLocalizedOnField() && umsg.getBdrPlayerState().getLocalizedOnField()) {
+                m.getMessage().draw(drawings, c, false);
+            }
         });
         fieldCanvas.getDrawingList().add(drawings);
 
         // re-draw field
         fieldCanvas.repaint();
+        
+        String msg = "<html>";
+        for (RobotMessage u : robotsMsg.values()) {
+            if(!u.get().isEmpty() && u.time() + maxMessageTime > System.currentTimeMillis()) {
+                msg += "Robot #" + u.number + ": " + u.get()+ "<br>";
+            }
+        }
+        msg += "</html>";
+        if(!msg.isEmpty()) {
+            lblMessage.setText(msg);
+            lblMessage.setVisible(true);
+        } else {
+            lblMessage.setVisible(false);
+        }
     }
 
     /**
@@ -189,6 +214,13 @@ public class BDRMonitor extends AbstractDialog implements ActionListener, TeamCo
                 } else {
                     robots.get(m.address).setStatus(m.timestamp, m.message);
                 }
+                
+                if(m.message.user.hasMessage()) {
+                    if(!robotsMsg.containsKey(m.address)) {
+                        robotsMsg.put(m.address, new RobotMessage(m.message.playerNum));
+                    }
+                    robotsMsg.get(m.address).set(m.message.user.getMessage());
+                }
             });
         }
     }
@@ -203,8 +235,8 @@ public class BDRMonitor extends AbstractDialog implements ActionListener, TeamCo
     }
     
     private synchronized void updateRoboPanel() {
-        this.statusPanel.removeAll();
-        int displayHeight = statusPanel.getHeight() - 20;
+        this.robotPanel.removeAll();
+        int displayHeight = robotPanel.getHeight() - 20;
         
         robots.forEach((t, u) -> {
             u.setChestColor(u.getMessage().getTeamColor());
@@ -214,23 +246,23 @@ public class BDRMonitor extends AbstractDialog implements ActionListener, TeamCo
             JPanel panel = new JPanel();
             panel.add(u);
             panel.setBackground(Color.white);
-            statusPanel.add(panel);
+            robotPanel.add(panel);
         });
         createDummies();
-        this.statusPanel.repaint();
+        this.robotPanel.repaint();
     }
     
     private void createDummies() {
-        int displayHeight = statusPanel.getHeight() - 20;
+        int displayHeight = robotPanel.getHeight() - 20;
         if(displayHeight < 0) { return; }
-        for(int i = statusPanel.getComponentCount(); i<4; i++) {
+        for(int i = robotPanel.getComponentCount(); i<4; i++) {
             RobotPanel d = new RobotPanel("0.0.0.0", new SPLMessage());
             d.setPreferredSize(new Dimension(displayHeight/3, displayHeight/2));
             d.setEnabled(false);
             JPanel panel = new JPanel();
             panel.add(d);
             panel.setBackground(Color.white);
-            statusPanel.add(panel);
+            robotPanel.add(panel);
         }
     }
     
@@ -255,7 +287,7 @@ public class BDRMonitor extends AbstractDialog implements ActionListener, TeamCo
         coordsPopup = new javax.swing.JDialog();
         drawingPanel = new javax.swing.JPanel();
         splitpane = new javax.swing.JSplitPane();
-        statusPanel = new javax.swing.JPanel();
+        robotPanel = new javax.swing.JPanel();
         fieldCanvas = new de.naoth.rc.components.DynamicCanvasPanel();
         jLayeredPane1 = new javax.swing.JLayeredPane();
         jPanel2 = new javax.swing.JPanel();
@@ -265,7 +297,7 @@ public class BDRMonitor extends AbstractDialog implements ActionListener, TeamCo
         lblScore = new javax.swing.JLabel();
         jLayeredPane2 = new javax.swing.JLayeredPane();
         jPanel1 = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
+        lblMessage = new javax.swing.JLabel();
 
         miClear.setText("Clear");
         miClear.addActionListener(new java.awt.event.ActionListener() {
@@ -310,9 +342,9 @@ public class BDRMonitor extends AbstractDialog implements ActionListener, TeamCo
         splitpane.setDividerLocation(337);
         splitpane.setDividerSize(1);
 
-        statusPanel.setBackground(new java.awt.Color(255, 255, 255));
-        statusPanel.setLayout(new java.awt.GridLayout(2, 2, 10, 10));
-        splitpane.setLeftComponent(statusPanel);
+        robotPanel.setBackground(new java.awt.Color(255, 255, 255));
+        robotPanel.setLayout(new java.awt.GridLayout(2, 2, 5, 5));
+        splitpane.setLeftComponent(robotPanel);
 
         fieldCanvas.setBackground(new java.awt.Color(247, 247, 247));
         fieldCanvas.setComponentPopupMenu(jPopupMenu);
@@ -350,13 +382,13 @@ public class BDRMonitor extends AbstractDialog implements ActionListener, TeamCo
         jPanel1.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 0, 50, 0));
         jPanel1.setOpaque(false);
 
-        jLabel1.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
-        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel1.setText("Message from a robot ...");
-        jLabel1.setBorder(javax.swing.BorderFactory.createEmptyBorder(50, 50, 50, 50));
-        jLabel1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jLabel1.setOpaque(true);
-        jPanel1.add(jLabel1);
+        lblMessage.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
+        lblMessage.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lblMessage.setText("Message from a robot ...");
+        lblMessage.setBorder(javax.swing.BorderFactory.createEmptyBorder(25, 25, 25, 25));
+        lblMessage.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        lblMessage.setOpaque(true);
+        jPanel1.add(lblMessage);
 
         jLayeredPane2.add(jPanel1, java.awt.BorderLayout.PAGE_END);
 
@@ -385,20 +417,38 @@ private void miClearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST
     private javax.swing.JDialog coordsPopup;
     private javax.swing.JPanel drawingPanel;
     private de.naoth.rc.components.DynamicCanvasPanel fieldCanvas;
-    private javax.swing.JLabel jLabel1;
     private javax.swing.JLayeredPane jLayeredPane1;
     private javax.swing.JLayeredPane jLayeredPane2;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPopupMenu jPopupMenu;
     private javax.swing.JLabel lblDiv;
+    private javax.swing.JLabel lblMessage;
     private javax.swing.JPanel lblPanel;
     private javax.swing.JLabel lblScore;
     private javax.swing.JLabel lblTime;
     private javax.swing.JMenuItem miClear;
     private javax.swing.JMenuItem miRotateLeft;
     private javax.swing.JMenuItem miRotateRight;
+    private javax.swing.JPanel robotPanel;
     private javax.swing.JSplitPane splitpane;
-    private javax.swing.JPanel statusPanel;
     // End of variables declaration//GEN-END:variables
+
+    class RobotMessage {
+        public final int number;
+        private String msg = "";
+        private long time = System.currentTimeMillis();
+
+        public RobotMessage(int n) {
+            number = n;
+        }
+        
+        public void set(String m) {
+            this.msg = m;
+            time = System.currentTimeMillis();
+        }
+        
+        public String get() { return msg; }
+        public long time() { return time; }
+    }
 }

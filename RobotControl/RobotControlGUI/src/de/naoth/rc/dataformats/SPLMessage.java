@@ -188,6 +188,13 @@ public class SPLMessage
         }
     }
     
+    public String getRobotState() {
+        if(user == null || !user.hasRobotState()) {
+            return "UNKNOWN";
+        }
+        return user.getRobotState().name().toUpperCase();
+    }
+    
     public static SPLMessage parseFrom(ByteBuffer buffer) throws Exception {
         // check message header
         if (buffer.get() != 'S'
