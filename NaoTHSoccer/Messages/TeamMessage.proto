@@ -23,6 +23,16 @@ enum TeamColor
   invalidTeam = 255;
 }
 
+enum RobotState
+{
+  initial  = 0;
+  ready    = 1;
+  set      = 2;
+  playing  = 3;
+  finished = 4;
+  penalized = 5;
+};
+
 message Opponent {
   required int32 playerNum = 1 [default=0];
   optional Pose2D poseOnField = 2;
@@ -39,7 +49,7 @@ message BUUserTeamMessage
   optional string bodyID = 1 [default="unknown"];
   optional uint32 timeToBall = 2;
   optional bool wasStriker = 3 [default=false];
-  optional bool isPenalized = 4 [default=false];
+  optional bool isPenalized = 4 [default=false,deprecated=true];
   repeated Opponent opponents = 5;
   optional uint32 teamNumber = 6 [default=0,deprecated=true];
   optional float batteryCharge = 7 [default=1.0];
@@ -52,9 +62,17 @@ message BUUserTeamMessage
   // only for visualizing teamball position in RC
   optional DoubleVector2 teamBall = 14;
   repeated Ntp ntpRequest = 15;
+  
+  optional RobotState robotState = 16 [default=initial];
+  optional TeamColor teamColor = 17 [default=blueTeam];
+
+  optional bool isCharging = 18 [default=false];
+  
+
   optional string key = 100 [default="none"];
   
-  optional BDRStatus bdrstatus = 20;
+  optional BDRPlayerState bdrPlayerState = 200;
+  optional string message = 201 [default=""];
 }
 
 message TeamMessage
