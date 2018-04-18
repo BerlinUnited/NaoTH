@@ -84,11 +84,9 @@ public class BDRMonitor extends AbstractDialog implements ActionListener, TeamCo
             public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() == 2 && !e.isConsumed()) {
                     e.consume();
-                    System.out.println(fieldCanvas.getOffsetY());
                     fieldCanvas.fitToViewport();
 //                    fieldCanvas.setOffsetY(580);
 //                    fieldCanvas.repaint();
-                    System.out.println(fieldCanvas.getHeight());
                 }
             }
         });
@@ -101,9 +99,6 @@ public class BDRMonitor extends AbstractDialog implements ActionListener, TeamCo
 //                fieldCanvas.setOffsetX(fieldCanvas.getWidth() / 2);
 //                fieldCanvas.setOffsetY(fieldCanvas.getHeight()-200);
                 fieldCanvas.fitToViewport();
-                
-                System.out.println(fieldCanvas.getOffsetY());
-//                fieldCanvas.repaint();
                 updateRoboPanel();
             }
         });
@@ -118,6 +113,7 @@ public class BDRMonitor extends AbstractDialog implements ActionListener, TeamCo
         
         // set the font for the whole scoreboard
         setLabelFont(new java.awt.Font("Bitstream Vera Sans Mono", 1, 30));
+        fieldCanvas.fitToViewport();
     }
     
     /*
@@ -208,6 +204,7 @@ public class BDRMonitor extends AbstractDialog implements ActionListener, TeamCo
     public void newTeamCommMessages(List<TeamCommMessage> messages) {
         if (!messages.isEmpty()) {
             messages.forEach((m) -> {
+//                System.out.println(m.address + ": " + m.message.user.getIsCharging());
                 if (!robots.containsKey(m.address)) {
                     robots.put(m.address, new RobotPanel(m.address, m.message));
                     updateRoboPanel();

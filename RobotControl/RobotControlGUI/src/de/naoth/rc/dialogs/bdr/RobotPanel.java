@@ -95,6 +95,7 @@ public class RobotPanel extends javax.swing.JPanel {
             g2d.fillRect(0, 0, nao_body.getWidth(), nao_body.getHeight());
             
             this.setBackground(Color.black);
+            lblActivity.setVisible(false);
         } catch (IOException e) {
         }
     }
@@ -301,7 +302,11 @@ public class RobotPanel extends javax.swing.JPanel {
       g2d.rotate(Math.PI*-0.5);
       g2d.setColor(isEnabled() ? Color.white : disabledTextColor);
       g2d.setFont(new Font("TimesRoman", Font.PLAIN, 18));
-      g2d.drawString(String.format("%3.0f%%", getMessage().user.getBatteryCharge()*100), 0,0);
+      if(getMessage().user.getIsCharging()) {
+        g2d.drawString(String.format("%3.0f%% (charging)", getMessage().user.getBatteryCharge()*100), 0,0);
+      } else {
+          g2d.drawString(String.format("%3.0f%%", getMessage().user.getBatteryCharge()*100), 0,0);
+      }
       g2d.rotate(Math.PI*0.5);
       g2d.translate(-(int)(wPanel - 10), -(int)hPanel / 2);
       g2d.drawImage(battery_ico, (int)(wPanel*0.9), 0, (int)(wPanel*0.1), (int)(wPanel*0.1), this);
@@ -440,18 +445,19 @@ public class RobotPanel extends javax.swing.JPanel {
         jPanel2.add(lblActivity);
 
         buttonPanel.setOpaque(false);
-        buttonPanel.setLayout(new java.awt.GridLayout(1, 0));
+        buttonPanel.setPreferredSize(new java.awt.Dimension(50, 40));
+        buttonPanel.setLayout(new java.awt.BorderLayout());
 
         connectButton.setText("Connect");
-        connectButton.setMaximumSize(new java.awt.Dimension(50, 23));
-        connectButton.setMinimumSize(new java.awt.Dimension(50, 23));
+        connectButton.setMaximumSize(new java.awt.Dimension(50, 50));
+        connectButton.setMinimumSize(new java.awt.Dimension(50, 50));
         connectButton.setPreferredSize(new java.awt.Dimension(50, 23));
         connectButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 connectButtonActionPerformed(evt);
             }
         });
-        buttonPanel.add(connectButton);
+        buttonPanel.add(connectButton, java.awt.BorderLayout.CENTER);
 
         jPanel2.add(buttonPanel);
 
