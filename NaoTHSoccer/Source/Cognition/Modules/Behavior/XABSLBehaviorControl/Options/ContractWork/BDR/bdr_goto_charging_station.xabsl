@@ -1,5 +1,6 @@
 option bdr_goto_charging_station
 {
+
   initial state wait {
       decision {
           if(state_time < 2000)
@@ -12,6 +13,7 @@ option bdr_goto_charging_station
           head.control_mode = look_around;
           motion.type = stand;
           bdr.activity = pre_servicing;
+          bdr.sit_down_counter = 0;
       }
   }
 
@@ -84,7 +86,7 @@ option bdr_goto_charging_station
         //TODO: use some kind of symbol indicating that the sit motion was reached?
         if(state_time > 10000){ 
           if(battery.isDischarging)
-              goto stand_up_again;
+              goto increase_counter;
           else 
               goto done;
         }
@@ -94,6 +96,20 @@ option bdr_goto_charging_station
 
       action {
           motion.type = bdr_sit;
+      }
+  }
+
+  state increase_counter{
+      decision {
+          if(bdr.sit_down_counter > 3)
+              goto failed;
+          else
+              goto stand_up_again;
+      }
+
+      action {
+          motion.type = bdr_sit;
+          bdr.sit_down_counter = bdr.sit_down_counter + 1;
       }
   }
 
@@ -113,15 +129,29 @@ option bdr_goto_charging_station
 	  }
   }
 
+  state failed {
+      decision {
+          if(battery.isDischarging)
+              stay;
+          else
+              goto done;
+      }
+
+      action{
+          motion.type  = bdr_sit;
+          bdr.message = failed_charging;
+      }
+  }
+
   target state done {
       decision {
         stay;
       }
 
       action {
-          motion.type = bdr_sit;
           bdr.activity = servicing;
-          bdr.sitting = true;
+          bdr.sitting  = true;
+          bdr.message  = charging;
       }
   }
 
