@@ -18,7 +18,9 @@ option bdr_play
 
   common decision
   {
-    if(!body.ready_to_walk || game.current_mode != playing)
+    if(body.falling)
+        goto fallen;
+    else if(!body.ready_to_walk || game.current_mode != playing)
         goto idle;
   }
   
@@ -28,12 +30,28 @@ option bdr_play
         goto localize;
     } 
     action{
+        bdr.message = ready;
         bdr.reason = none; // init reason
         bdr.activity = initializing;
         bdr.localized_on_field = false;
     }
   }
 
+  state fallen{
+      decision{
+          else
+              stay;
+      }
+
+      action{
+          bdr.message = fallen;
+          bdr.reason = none; // init reason
+          bdr.activity = initializing;
+          bdr.localized_on_field = false;
+      }
+              
+  }
+  
   state localize
   {
     decision

@@ -47,6 +47,7 @@ option fall_down_and_stand_up
     action
     {
       body.ready_to_walk = false;
+      body.falling = true;
       motion.execute_immediately = true;
       motion.type = dead;
     }
