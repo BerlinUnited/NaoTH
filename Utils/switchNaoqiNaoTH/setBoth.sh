@@ -67,79 +67,79 @@ albodytemperature
 motion
 touch
 robotposture
-redballtracker
-facetracker
-motionrecorder
-leds
-alworldrepresentation
+#redballtracker
+#facetracker
+#motionrecorder
+#leds
+#alworldrepresentation
 #alvideodevice # need to be disabled because if active naoth can't access the cameras and an assert will fail
-colorblobdetection
-redballdetection
-facedetection
-visionrecognition
-landmarkdetection
-darknessdetection
-backlightingdetection
-photocapture
-videorecorder
-alvisualcompass
-visualspacehistory
+#colorblobdetection
+#redballdetection
+#facedetection
+#visionrecognition
+#landmarkdetection
+#darknessdetection
+#backlightingdetection
+#photocapture
+#videorecorder
+#alvisualcompass
+#visualspacehistory
 alsystem
 packagemanager
 alusersession
 
 # modularity and filters
-modularityperception
-audiofilterloader
+#modularityperception
+#audiofilterloader
 
 audiodevice
-audiorecorder
+#audiorecorder
 audioout
-speechrecognition
-voiceemotionanalysis
+#speechrecognition
+#voiceemotionanalysis
 albattery
-alchestbutton
-mecalogger
+#alchestbutton
+#mecalogger
 pythonbridge
 launcher
-allaser
+#allaser
 behaviormanager
 animatedspeech
 memorywatcher
-navigation
+#navigation
 albonjour
-infrared
+#infrared
 altelepathe
-altracker
-allocalization
-alpanoramacompass
+#altracker
+#allocalization
+#alpanoramacompass
 robothealthmonitor
 notificationreader
 
 # vision modules using modularity
-segmentation3D
-barcodereader
-movementdetection
-peopleperception
-engagementzones
-sittingpeopledetection
-gazeanalysis
-wavingdetection
-facecharacteristics
+#segmentation3D
+#barcodereader
+#movementdetection
+#peopleperception
+#engagementzones
+#sittingpeopledetection
+#gazeanalysis
+#wavingdetection
+#facecharacteristics
 #objectdetection
-closeobjectdetection
-fastpersontracking
-findpersonhead
+#closeobjectdetection
+#fastpersontracking
+#findpersonhead
 
 # audition modules using modularity
-sounddetection
-soundlocalization
+#sounddetection
+#soundlocalization
 
-basicawareness
+#basicawareness
 #autonomousblinking
 #autonomousmoves
 #autonomouslife
-dialog
+#dialog
 EOL
 
 # Set autoload.ini in home to NaoTH

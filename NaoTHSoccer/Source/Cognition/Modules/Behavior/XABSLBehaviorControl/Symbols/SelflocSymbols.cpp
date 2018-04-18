@@ -39,6 +39,7 @@ void SelflocSymbols::registerSymbols(xabsl::Engine& engine)
 
 
   engine.registerBooleanInputSymbol("robot_pose.is_valid", &getRobotPose().isValid);
+  engine.registerBooleanInputSymbol("robot_pose.is_mirrored", &getRobotPose().globallyMirrored);
 
   engine.registerDecimalInputSymbol("robot_pose.x",&getRobotPose().translation.x);
   engine.registerDecimalInputSymbol("robot_pose.y",&getRobotPose().translation.y);
@@ -48,6 +49,7 @@ void SelflocSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalInputSymbol("robot_pose.planned.y",&robotPosePlanned.translation.y);
   engine.registerDecimalInputSymbol("robot_pose.planned.rotation",&angleOnFieldPlanned);
 
+  
 
   // "field_to_relative.x"
   engine.registerDecimalInputSymbol("locator.field_to_relative.x", &getFieldToRelativeX);

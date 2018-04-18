@@ -4,6 +4,9 @@ namespace selfloc_symbols("Self-localization Symbols") {
   /** Is the robot pose valid?*/
   bool input robot_pose.is_valid;
 
+  /** indicates that the firld ccordinates of the robot are mirrored with respect to the global coordinates*/
+  bool input robot_pose.is_mirrored;
+
   /** The robot's x-position on the field*/
   float input robot_pose.x [mm];
   /** The robot's y-position on the field*/

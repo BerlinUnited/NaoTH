@@ -17,7 +17,21 @@ message BDRControlCommand
   optional BDRBehaviorMode behaviorMode = 1;
 }
 
-message BDRStatus
+message BDRPlayerState
 {
-  optional BDRBehaviorMode currentBehaviorMode = 1;
+  enum Activity
+  {
+    pre_playing = 0;
+    playing = 1;
+    pre_entertaining = 2;
+    entertaining = 3;
+    pre_servicing = 4;
+    servicing = 5;
+    doing_nothing = 6;
+    initializing = 7;
+  }
+  
+  optional Activity activity = 1 [default = doing_nothing];
+  optional bool sitting = 2 [default = false];
+  optional bool localized_on_field = 3 [default = false];
 }

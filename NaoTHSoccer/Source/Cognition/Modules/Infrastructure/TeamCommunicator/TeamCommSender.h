@@ -21,6 +21,8 @@
 #include "Representations/Modeling/KickActionModel.h"
 #include "Representations/Modeling/TeamBallModel.h"
 
+#include "Representations/Modeling/BDRPlayerState.h"
+
 #include "Tools/Debug/DebugParameterList.h"
 
 BEGIN_DECLARE_MODULE(TeamCommSender)
@@ -41,6 +43,8 @@ BEGIN_DECLARE_MODULE(TeamCommSender)
   REQUIRE(KickActionModel)
   REQUIRE(CpuData)
   REQUIRE(TeamBallModel)
+
+  REQUIRE(BDRPlayerState)
 
   PROVIDE(TeamMessageData)
   PROVIDE(TeamMessageDataOut)

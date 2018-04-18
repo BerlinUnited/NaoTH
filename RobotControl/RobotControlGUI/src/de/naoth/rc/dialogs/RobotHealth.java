@@ -522,8 +522,8 @@ public class RobotHealth extends AbstractDialog
 }//GEN-LAST:event_btReceiveDrawingsActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JToggleButton btReceiveDrawings;
+    public javax.swing.JToggleButton btReceiveDrawings;
     private javax.swing.JPanel drawingPanel;
-    private javax.swing.JToolBar jToolBar1;
+    public javax.swing.JToolBar jToolBar1;
     // End of variables declaration//GEN-END:variables
 }
