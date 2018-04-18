@@ -80,7 +80,9 @@ option bdr_play
               goto set_wartungs_reason_temperature;
           else if (platform.battery < bdr.charge_beginning - 0.02)
               goto set_wartungs_reason_battery;
-          else if (bdr.number_of_players_in_play == 1)
+          else if (bdr.number_of_players_in_play == 1) // other player is waiting for me
+              goto transition;
+          else if (state_time > 10000) // enough entertainment
               goto transition;
           else
               stay;
@@ -114,7 +116,7 @@ option bdr_play
     decision
     {
       else if(remote_control.bdr_control != AUTONOMOUS_PLAY)
-        goto transition;
+          goto transition;
       else if (body.temperature.leg.left > 70
                || body.temperature.leg.right > 70)
           goto set_wartungs_reason_temperature;
@@ -122,8 +124,11 @@ option bdr_play
           goto set_wartungs_reason_battery;
       else if(action_done)
           goto transition;
+      else if(bdr.number_of_players_in_play == 1
+              && state_time > 5000)
+          goto pre_autonomous_entertaining; 
       else
-        stay;
+          stay;
     }
     action
     {
