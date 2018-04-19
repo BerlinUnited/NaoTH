@@ -75,13 +75,10 @@ public class BDRMonitor extends AbstractDialog implements ActionListener, TeamCo
         this.fieldCanvas.setBackgroundDrawing(new FieldDrawingBDR());
         this.fieldCanvas.setToolTipText("");
         this.fieldCanvas.setFitToViewport(true);
+        this.fieldCanvas.setAntializing(true);
 
         // intialize the field
         clearField();
-//        fieldCanvas.setScale(0.9);
-//        fieldCanvas.setOffsetY(500);
-//        fieldCanvas.setOffsetX(500);
-        this.fieldCanvas.setAntializing(true);
         this.fieldCanvas.repaint();
 
         this.fieldCanvas.addMouseListener(new MouseAdapter() {
@@ -108,7 +105,6 @@ public class BDRMonitor extends AbstractDialog implements ActionListener, TeamCo
         
         // set the font for the whole scoreboard
         setLabelFont(new java.awt.Font("Bitstream Vera Sans Mono", 1, 30));
-        fieldCanvas.fitToViewport();
     }
     
     @Override
