@@ -1,0 +1,77 @@
+#! /bin/sh
+
+### BEGIN INIT INFO
+# Provides:		gopro
+# Required-Start:	$remote_fs $syslog $network
+# Required-Stop:	$remote_fs $syslog $network
+# Default-Start:	2 3 4 5
+# Default-Stop:		0 1 6
+# Short-Description:	Python-GoPro-GameController controller startup-script
+### END INIT INFO
+
+EXEC="/home/pi/GoalCount/main.py"
+PID="/tmp/pyGoalCount.lock"
+
+start_fordeground() {
+  echo "Start GoalCount"
+	if [ -x "$EXEC" ]
+  then
+    $EXEC -v -c --syslog
+	else
+		echo "Missing GoalCount script!"
+  fi
+}
+
+start_background() {
+  echo "Start GoalCount"
+	if [ -x "$EXEC" ]
+  then
+    $EXEC -b -v -c --syslog
+	else
+		echo "Missing GoPro-Controller script!"
+  fi
+}
+
+stop() {
+  echo "Stop GoalCount"
+	if [ -f "$PID" ]
+	then
+		pkill -F $PID
+	else
+		echo "GoalCount not running!"
+	fi
+}
+
+status() {
+	if [ -f "$PID" ] && $(ps -p `cat $PID` > /dev/null)
+  then
+    echo "GoalCount is running!"
+  else
+    echo "GoalCount NOT running!"
+  fi
+}
+
+case "$1" in
+  ""|'')
+    start_fordeground
+    ;;
+  start)
+    start_background
+    ;;
+  stop)
+    stop
+    ;;
+  restart)
+    echo "Restart GoalCount-Controller"
+    stop
+    start_background
+    ;;
+  status)
+    status
+    ;;
+  *)
+    echo "(start|stop|restart|status)"
+    ;;
+esac
+
+exit 0
