@@ -9,21 +9,21 @@
 # Short-Description:	Python-GoPro-GameController controller startup-script
 ### END INIT INFO
 
-EXEC="/home/pi/GoPro/main.py"
-PID="/tmp/pyGoPro.lock"
+EXEC="/home/pi/GoalCount/main.py"
+PID="/tmp/pyGoalCount.lock"
 
 start_fordeground() {
-  echo "Start GoPro-Controller"
+  echo "Start GoalCount"
 	if [ -x "$EXEC" ]
   then
     $EXEC -v -c --syslog
 	else
-		echo "Missing GoPro-Controller script!"
+		echo "Missing GoalCount script!"
   fi
 }
 
 start_background() {
-  echo "Start GoPro-Controller"
+  echo "Start GoalCount"
 	if [ -x "$EXEC" ]
   then
     $EXEC -b -v -c --syslog
@@ -33,21 +33,21 @@ start_background() {
 }
 
 stop() {
-  echo "Stop GoPro-Controller"
+  echo "Stop GoalCount"
 	if [ -f "$PID" ]
 	then
 		pkill -F $PID
 	else
-		echo "GoPro-Controller not running!"
+		echo "GoalCount not running!"
 	fi
 }
 
 status() {
 	if [ -f "$PID" ] && $(ps -p `cat $PID` > /dev/null)
   then
-    echo "GoPro-Controller is running!"
+    echo "GoalCount is running!"
   else
-    echo "GoPro-Controller NOT running!"
+    echo "GoalCount NOT running!"
   fi
 }
 
@@ -62,7 +62,7 @@ case "$1" in
     stop
     ;;
   restart)
-    echo "Restart GoPro-Controller"
+    echo "Restart GoalCount-Controller"
     stop
     start_background
     ;;

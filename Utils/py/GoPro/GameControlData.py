@@ -39,11 +39,13 @@ class GameControlData(Struct):
         """Constructor."""
         # initialize with the struct format characters as described here
         # https://docs.python.org/2/library/struct.html
-        super(GameControlData2018, self).__init__('4sH10B3H')
-        self.logger = logging.getLogger("GameControlData2018")
-        # based on the given data the message is initialized with default values or parsed from the data string
-        if data is None or self.unpack(data)[0]:
-            self.setDefaults()
+        super(GameControlData, self).__init__('4sH10B3H')
+        self.logger = logging.getLogger("GameControlData")
+
+        self.setDefaults()
+
+        if data is not None:
+            self.unpack(data)
 
     def setDefaults(self):
         self.packetNumber = 0
@@ -62,7 +64,8 @@ class GameControlData(Struct):
         self.dropInTime = -1
         self.secsRemaining = 600
         self.secondaryTime = 0
-        # INFO: ignoring data, currently not need: TeamInfo
+
+        self.team = [ TeamInfo(), TeamInfo() ]
 
     def unpack(self, data):
         # check 'data' length
@@ -97,8 +100,10 @@ class GameControlData(Struct):
         self.secsRemaining = next(it)
         self.secondaryTime = next(it)
 
-        return (True, None)
+        for i, t in enumerate(self.team):
+            t.unpack(data[self.size+i*t.size:self.size+i*t.size + t.size])
 
+        return (True, None)
 
     def pack(self):
         return Struct.pack(self,
@@ -148,7 +153,6 @@ class GameControlData(Struct):
 
         return out
 
-        
     def getName(self, names, value):
       if value in names:
         return names[value]
@@ -193,3 +197,97 @@ class GameControlData(Struct):
         self.SET_PLAY_PUSHING_FREE_KICK: "pushing free kick"
       }, self.setPlay)
 
+
+class TeamInfo(Struct):
+    """ Representation of the TeamInfo. """
+
+    MAX_NUM_PLAYERS = 6
+
+    def __init__(self, data=None):
+        super().__init__('4BH')
+
+        self.setDefaults()
+
+        if data is not None:
+            self.unpack(data)
+
+    def setDefaults(self):
+        self.teamNumber = 0
+        self.teamColor = 0
+        self.score = 0
+        self.penaltyShot = 0
+        self.singleShots = 0
+
+        self.player = [ PlayerInfo() for _ in range(self.MAX_NUM_PLAYERS) ]
+
+    @property
+    def size(self):
+        return super().size + sum([ p.size for p in self.player ])
+
+    def unpack(self, data):
+        # check 'data' length
+        if len(data) != self.size:
+            return (False, "Not well formed TeamInfo!")
+
+        msg = Struct.unpack(self, data[:super().size])
+
+        # assign data
+        it = iter(msg)
+        self.teamNumber = next(it)
+        self.teamColor = next(it)
+        self.score = next(it)
+        self.penaltyShot = next(it)
+        self.singleShots = next(it)
+
+        for i,p in enumerate(self.player):
+            p.unpack(data[super().size+i*p.size:super().size+i*p.size + p.size])
+
+        return (True, None)
+
+    def __str__(self):
+        out = "--------------------------------------\n"
+
+        out += "         teamNumber: " + str(self.teamNumber) + "\n"
+        out += "          teamColor: " + str(self.teamColor) + "\n"
+        out += "              score: " + str(self.score) + "\n"
+        out += "        penaltyShot: " + str(self.penaltyShot) + "\n"
+        out += "        singleShots: " + str(self.singleShots) + "\n"
+        for i, p in enumerate(self.player):
+            out += "          Player #" + str(i + 1) + ": " + str(p) + "\n"
+
+        return out
+
+
+class PlayerInfo(Struct):
+    """ Representation of the PlayerInfo. """
+
+    def __init__(self, data=None):
+        super().__init__('2B')
+
+        self.setDefaults()
+
+        if data is not None:
+            self.unpack(data)
+
+    def setDefaults(self):
+        self.penalty = 0
+        self.secsTillUnpenalised = 0
+
+    def unpack(self, data):
+        # check 'data' length
+        if len(data) != self.size:
+            return (False, "Not well formed PlayerInfo!")
+
+        msg = Struct.unpack(self, data)
+
+        # assign data
+        it = iter(msg)
+        self.penalty = next(it)
+        self.secsTillUnpenalised = next(it)
+
+        return (True, None)
+
+    def __str__(self):
+        out = "penalty: " + str(self.penalty)
+        out += ", secsTillUnpenalised: " + str(self.secsTillUnpenalised)
+        return out

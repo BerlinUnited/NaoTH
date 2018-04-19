@@ -168,20 +168,26 @@ public class DynamicCanvasPanel extends javax.swing.JPanel
   }
   
     public void fitToViewport() {
+        // reset everything and recalculate
+        setScale(1.0);
+        setOffsetX(0);
+        setOffsetY(0);
+        // get the bounding box of all drawings
         BoundingBox bb = new BoundingBox();
         paintDrawings(bb, offsetX, offsetY, rotation, scale, true);
         
         if(bb.getWidth() == 0 && bb.getHeight() == 0) {
             return;
         }
-        
         // "add" a 10px margin and calculate scale
         double scale_x = ((double) this.getWidth() - 10) / (bb.getWidth());
         double scale_y = ((double) this.getHeight() - 10) / (bb.getHeight());
-        setScale(scale_x < scale_y ? scale_x : scale_y);
-        // center drawings
-        setOffsetX(getWidth() / 2.);
-        setOffsetY(getHeight() / 2.);
+        // take the smaller scale
+        double newScale = scale_x < scale_y ? scale_x : scale_y;
+        setScale(newScale);
+        // calculate the 'new' center of the drawings and move it half of the panel width/height
+        setOffsetX(-bb.getX2()*newScale + (bb.getWidth()/2)*newScale + getWidth()/2);
+        setOffsetY(bb.getY()*newScale + (bb.getHeight()/2)*newScale + getHeight()/2);
         // repaint everything
         repaint();
     }
