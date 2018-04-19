@@ -57,26 +57,33 @@ public class RobotPanel extends javax.swing.JPanel {
     private SPLMessage currentMesage;
     private boolean hideConnectButton = false;
     
-    private static final BufferedImage nao_body;
-    private static final BufferedImage battery_ico;
-    private static final BufferedImage temperatur_ico;
-        
-    // load the images only once
-    static {
-        try {
-            nao_body = ImageIO.read(RobotPanel.class.getResource("/de/naoth/rc/res/nao-nice.png"));
-            battery_ico = ImageIO.read(RobotPanel.class.getResource("/de/naoth/rc/res/battery-white.png"));
-            temperatur_ico = ImageIO.read(RobotPanel.class.getResource("/de/naoth/rc/res/temperature-white.png"));
-            
-            Color fade_color = new Color(230,245,255,100);
-            Graphics2D g2d = nao_body.createGraphics();
-            g2d.setColor(fade_color);
-            g2d.fillRect(0, 0, nao_body.getWidth(), nao_body.getHeight());
-            
-        } catch (IOException ex) {
-            java.util.logging.Logger.getLogger(RobotPanel.class.getName()).log(java.util.logging.Level.SEVERE, "Coult not load images", ex);
+    static class Images {
+        private BufferedImage nao_body;
+        private BufferedImage battery_ico;
+        private BufferedImage temperatur_ico;
+
+        public Images() {
+            try {
+                nao_body = ImageIO.read(RobotPanel.class.getResource("/de/naoth/rc/res/nao-nice.png"));
+                battery_ico = ImageIO.read(RobotPanel.class.getResource("/de/naoth/rc/res/battery-white.png"));
+                temperatur_ico = ImageIO.read(RobotPanel.class.getResource("/de/naoth/rc/res/temperature-white.png"));
+
+                Color fade_color = new Color(230,245,255,100);
+                Graphics2D g2d = nao_body.createGraphics();
+                g2d.setColor(fade_color);
+                g2d.fillRect(0, 0, nao_body.getWidth(), nao_body.getHeight());
+
+            } catch (IOException ex) {
+                java.util.logging.Logger.getLogger(RobotPanel.class.getName()).log(java.util.logging.Level.SEVERE, "Coult not load images", ex);
+            }
         }
-    }
+        
+        public BufferedImage getNaoBody() { return nao_body; }
+        public BufferedImage getBatteryIco() { return battery_ico; }
+        public BufferedImage getTemperatureIco() { return temperatur_ico; }
+    };
+    
+    private static final Images IMAGES = new Images();
     
     private final Color colorInfo = new Color(0.0f, 1.0f, 0.0f, 0.5f);
     private final Color colorInfoBlue = new Color(0.1f, 0.0f, 1.0f, 0.5f);
@@ -230,8 +237,8 @@ public class RobotPanel extends javax.swing.JPanel {
       double hPanel = (double) this.getHeight() - 2;
       double wPanel = (double) this.getWidth() - 2;
       
-      double hImg = (double) nao_body.getHeight(this);
-      double wImg = (double) nao_body.getWidth(this);
+      double hImg = (double) IMAGES.getNaoBody().getHeight(this);
+      double wImg = (double) IMAGES.getNaoBody().getWidth(this);
       
       double ratioH = hPanel / hImg;
       double ratioW = wPanel / wImg;
@@ -245,7 +252,7 @@ public class RobotPanel extends javax.swing.JPanel {
       if(!isEnabled()) {
         g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, .5f));
       }
-      g2d.drawImage(nao_body, 0, 0, (int) wImg, (int) hImg, this);
+      g2d.drawImage(IMAGES.getNaoBody(), 0, 0, (int) wImg, (int) hImg, this);
       
       g2d.scale(1.0/ratioW, 1.0/ratioH);
       g2d.translate(-(posX + 1), -(posY + 1));
@@ -279,7 +286,7 @@ public class RobotPanel extends javax.swing.JPanel {
         }
       double temperatureValue = getMessage().user.getTemperature()/100.0*hPanel;
       g2d.fillRect(0, (int)(hPanel-temperatureValue), (int)(wPanel*0.1), (int)temperatureValue);
-      g2d.drawImage(temperatur_ico, 0, 0, (int)(wPanel*0.1), (int)(wPanel*0.1), this);
+      g2d.drawImage(IMAGES.getTemperatureIco(), 0, 0, (int)(wPanel*0.1), (int)(wPanel*0.1), this);
       
         // battery
         if (isEnabled()) {
@@ -314,7 +321,7 @@ public class RobotPanel extends javax.swing.JPanel {
       }
       g2d.rotate(Math.PI*0.5);
       g2d.translate(-(int)(wPanel - 10), -(int)hPanel / 2);
-      g2d.drawImage(battery_ico, (int)(wPanel*0.9), 0, (int)(wPanel*0.1), (int)(wPanel*0.1), this);
+      g2d.drawImage(IMAGES.getBatteryIco(), (int)(wPanel*0.9), 0, (int)(wPanel*0.1), (int)(wPanel*0.1), this);
     }//end paintComponent
     
     
