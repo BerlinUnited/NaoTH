@@ -57,9 +57,9 @@ public class RobotPanel extends javax.swing.JPanel {
     private SPLMessage currentMesage;
     private boolean hideConnectButton = false;
     
-    private static BufferedImage nao_body;
-    private static BufferedImage battery_ico;
-    private static BufferedImage temperatur_ico;
+    private static final BufferedImage nao_body;
+    private static final BufferedImage battery_ico;
+    private static final BufferedImage temperatur_ico;
         
     // load the images only once
     static {
@@ -78,16 +78,16 @@ public class RobotPanel extends javax.swing.JPanel {
         }
     }
     
-    private Color colorInfo = new Color(0.0f, 1.0f, 0.0f, 0.5f);
-    private Color colorInfoBlue = new Color(0.1f, 0.0f, 1.0f, 0.5f);
-    private Color colorWarning = new Color(1.0f, 1.0f, 0.0f, 0.5f);
-    private Color colorDanger = new Color(1.0f, 0.0f, 0.0f, 0.5f);
+    private final Color colorInfo = new Color(0.0f, 1.0f, 0.0f, 0.5f);
+    private final Color colorInfoBlue = new Color(0.1f, 0.0f, 1.0f, 0.5f);
+    private final Color colorWarning = new Color(1.0f, 1.0f, 0.0f, 0.5f);
+    private final Color colorDanger = new Color(1.0f, 0.0f, 0.0f, 0.5f);
 
-    private Color chestColor = new Color(0.0f,0.0f,0.0f,0.7f);
+    private final Color disabledColor = Color.GRAY;
+    private final Color disabledTextColor = Color.BLACK;
+    private final Color disabledChestColor = new Color(0.0f,0.0f,0.0f,0.7f);
     
-    private Color disabledColor = Color.GRAY;
-    private Color disabledTextColor = Color.BLACK;
-    private Color disabledChestColor = new Color(0.0f,0.0f,0.0f,0.7f);
+    private Color chestColor = new Color(0.0f,0.0f,0.0f,0.7f);
     
     public RobotPanel(String ipAddress, SPLMessage msg) {
         this(null, ipAddress, msg);
