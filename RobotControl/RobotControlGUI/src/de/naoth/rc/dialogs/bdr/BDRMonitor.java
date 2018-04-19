@@ -24,6 +24,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.HashMap;
@@ -38,7 +39,7 @@ import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
  *
  * @author  Heinrich Mellmann
  */
-public class BDRMonitor extends AbstractDialog implements ActionListener, TeamCommListener
+public class BDRMonitor extends AbstractDialog implements ActionListener, TeamCommListener, ComponentListener
 {
     @RCDialog(category = RCDialog.Category.BDR, name = "Monitor")
     @PluginImplementation
@@ -54,6 +55,10 @@ public class BDRMonitor extends AbstractDialog implements ActionListener, TeamCo
     
     private final int port = 10004;
     private final int maxMessageTime = 1000;
+    
+    private final int robotPanelGap = 5;
+    int robotPanelHeight = 300;
+    int robotPanelWidth = 200;
     /**
      * The robot-TeamCommProvider for our own team.
      */
@@ -70,13 +75,10 @@ public class BDRMonitor extends AbstractDialog implements ActionListener, TeamCo
         this.fieldCanvas.setBackgroundDrawing(new FieldDrawingBDR());
         this.fieldCanvas.setToolTipText("");
         this.fieldCanvas.setFitToViewport(true);
+        this.fieldCanvas.setAntializing(true);
 
         // intialize the field
         clearField();
-//        fieldCanvas.setScale(0.9);
-//        fieldCanvas.setOffsetY(500);
-//        fieldCanvas.setOffsetX(500);
-        this.fieldCanvas.setAntializing(true);
         this.fieldCanvas.repaint();
 
         this.fieldCanvas.addMouseListener(new MouseAdapter() {
@@ -91,17 +93,7 @@ public class BDRMonitor extends AbstractDialog implements ActionListener, TeamCo
             }
         });
         
-        // set the 'correct' divider position
-        this.addComponentListener(new ComponentAdapter() {
-            @Override
-            public void componentResized(ComponentEvent e) {
-                splitpane.setDividerLocation(e.getComponent().getWidth()*1/3);
-//                fieldCanvas.setOffsetX(fieldCanvas.getWidth() / 2);
-//                fieldCanvas.setOffsetY(fieldCanvas.getHeight()-200);
-                fieldCanvas.fitToViewport();
-                updateRoboPanel();
-            }
-        });
+        addComponentListener(this);
         
         // schedules canvas drawing at a fixed rate, should prevent "flickering"
         this.drawingTimer = new Timer(300, this);
@@ -113,8 +105,39 @@ public class BDRMonitor extends AbstractDialog implements ActionListener, TeamCo
         
         // set the font for the whole scoreboard
         setLabelFont(new java.awt.Font("Bitstream Vera Sans Mono", 1, 30));
-        fieldCanvas.fitToViewport();
     }
+    
+    @Override
+    public void componentResized(ComponentEvent e) {
+        //
+        int width = getSize().width;
+        int height = getSize().height;
+        // reduce top/bottom and subtract the gap between 2 panels
+        robotPanelHeight = (height - 2 * robotPanelGap) / 2 - robotPanelGap;
+        robotPanelWidth = robotPanelHeight * 2 / 3;
+        // determine the total width of the robot panel
+        int robotPanelTotalWidth = robotPanelGap * 3 + 2 * robotPanelWidth;
+        
+        Dimension robotPanelSize = new Dimension(robotPanelTotalWidth, height);
+        robotPanel.setPreferredSize(robotPanelSize);
+        
+        Dimension drawingPanelSize = new Dimension(width - robotPanelTotalWidth, height);
+        drawingPanel.setPreferredSize(drawingPanelSize);
+        
+        updateRoboPanel();
+
+        revalidate();
+        repaint();
+    }
+
+    @Override
+    public void componentMoved(ComponentEvent e) { /* ignore */ }
+
+    @Override
+    public void componentShown(ComponentEvent e) { /* ignore */ }
+
+    @Override
+    public void componentHidden(ComponentEvent e) { /* ignore */ }
     
     /*
     private void connect() {
@@ -189,7 +212,7 @@ public class BDRMonitor extends AbstractDialog implements ActionListener, TeamCo
             }
         }
         msg += "</html>";
-        if(!msg.isEmpty()) {
+        if(msg.length() > 13) {
             lblMessage.setText(msg);
             lblMessage.setVisible(true);
         } else {
@@ -233,33 +256,24 @@ public class BDRMonitor extends AbstractDialog implements ActionListener, TeamCo
     
     private synchronized void updateRoboPanel() {
         this.robotPanel.removeAll();
-        int displayHeight = robotPanel.getHeight() - 20;
         
         robots.forEach((t, u) -> {
             u.setChestColor(u.getMessage().getTeamColor());
-            u.setPreferredSize(new Dimension(displayHeight/3, displayHeight/2));
+            u.setPreferredSize(new Dimension(robotPanelWidth, robotPanelHeight));
             u.setHideConnectButton(true);
-            
-            JPanel panel = new JPanel();
-            panel.add(u);
-            panel.setBackground(Color.white);
-            robotPanel.add(panel);
+            robotPanel.add(u);
         });
         createDummies();
         this.robotPanel.repaint();
     }
     
     private void createDummies() {
-        int displayHeight = robotPanel.getHeight() - 20;
-        if(displayHeight < 0) { return; }
+        if(robotPanelWidth <= 0 || robotPanelHeight <= 0) { return; }
         for(int i = robotPanel.getComponentCount(); i<4; i++) {
             RobotPanel d = new RobotPanel("0.0.0.0", new SPLMessage());
-            d.setPreferredSize(new Dimension(displayHeight/3, displayHeight/2));
+            d.setPreferredSize(new Dimension(robotPanelWidth, robotPanelHeight));
             d.setEnabled(false);
-            JPanel panel = new JPanel();
-            panel.add(d);
-            panel.setBackground(Color.white);
-            robotPanel.add(panel);
+            robotPanel.add(d);
         }
     }
     
@@ -282,9 +296,8 @@ public class BDRMonitor extends AbstractDialog implements ActionListener, TeamCo
         miRotateLeft = new javax.swing.JMenuItem();
         miRotateRight = new javax.swing.JMenuItem();
         coordsPopup = new javax.swing.JDialog();
-        drawingPanel = new javax.swing.JPanel();
-        splitpane = new javax.swing.JSplitPane();
         robotPanel = new javax.swing.JPanel();
+        drawingPanel = new javax.swing.JPanel();
         fieldCanvas = new de.naoth.rc.components.DynamicCanvasPanel();
         jLayeredPane1 = new javax.swing.JLayeredPane();
         jPanel2 = new javax.swing.JPanel();
@@ -331,17 +344,14 @@ public class BDRMonitor extends AbstractDialog implements ActionListener, TeamCo
             .addGap(0, 38, Short.MAX_VALUE)
         );
 
-        setLayout(new java.awt.BorderLayout());
+        setLayout(new javax.swing.BoxLayout(this, javax.swing.BoxLayout.LINE_AXIS));
+
+        robotPanel.setBackground(new java.awt.Color(255, 255, 255));
+        robotPanel.setLayout(new java.awt.GridLayout(2, 2, robotPanelGap, robotPanelGap));
+        add(robotPanel);
 
         drawingPanel.setBackground(new java.awt.Color(247, 247, 247));
         drawingPanel.setLayout(new java.awt.BorderLayout());
-
-        splitpane.setDividerLocation(337);
-        splitpane.setDividerSize(1);
-
-        robotPanel.setBackground(new java.awt.Color(255, 255, 255));
-        robotPanel.setLayout(new java.awt.GridLayout(2, 2, 5, 5));
-        splitpane.setLeftComponent(robotPanel);
 
         fieldCanvas.setBackground(new java.awt.Color(247, 247, 247));
         fieldCanvas.setComponentPopupMenu(jPopupMenu);
@@ -391,11 +401,9 @@ public class BDRMonitor extends AbstractDialog implements ActionListener, TeamCo
 
         fieldCanvas.add(jLayeredPane2);
 
-        splitpane.setRightComponent(fieldCanvas);
+        drawingPanel.add(fieldCanvas, java.awt.BorderLayout.CENTER);
 
-        drawingPanel.add(splitpane, java.awt.BorderLayout.CENTER);
-
-        add(drawingPanel, java.awt.BorderLayout.CENTER);
+        add(drawingPanel);
     }// </editor-fold>//GEN-END:initComponents
 
 private void miClearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miClearActionPerformed
@@ -428,7 +436,6 @@ private void miClearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST
     private javax.swing.JMenuItem miRotateLeft;
     private javax.swing.JMenuItem miRotateRight;
     private javax.swing.JPanel robotPanel;
-    private javax.swing.JSplitPane splitpane;
     // End of variables declaration//GEN-END:variables
 
     class RobotMessage {
