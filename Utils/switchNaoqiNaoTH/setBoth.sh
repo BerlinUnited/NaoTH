@@ -158,7 +158,7 @@ cat > /home/nao/naoqi/preferences/autoload.ini << EOL
 
 [program]
 #the/full/path/to/your/program            # load program
-/home/nao/bin/runDefaultBehaviors.sh
+/home/nao/bin/runDefaultBehaviors
 EOL
 
 # enable deactivation possibility of fall manager
@@ -171,6 +171,65 @@ cat > /home/nao/.config/naoqi/ALMotion.xml << EOL
     <Preference name="ENABLE_DEACTIVATION_OF_FALL_MANAGER" description="If true the deactivation of Fall Manager and other critical safety reflexes is allowed" value="true" type="bool" />
 </ModulePreference>
 EOL
+
+cat > /home/nao/bin/runDefaultBehaviors << EOL
+#!/usr/bin/python 
+# -*- encoding: UTF-8 -*- 
+
+import sys
+import time
+
+from naoqi import ALProxy
+
+def runBehavior(managerProxy, behaviorName):
+  # Check that the behavior exists.
+  if (managerProxy.isBehaviorInstalled(behaviorName)):
+
+    # Check that it is not already running.
+    if (not managerProxy.isBehaviorRunning(behaviorName)):
+      # Launch behavior. This is a blocking call, use post if you do not
+      # want to wait for the behavior to finish.
+      managerProxy.post.runBehavior(behaviorName)
+    else:
+      print "Behavior is already running."
+      return True
+
+  else:
+    print "Behavior not found."
+    return False
+  
+  return False
+
+def runDefaultBehaviors():
+
+  try:
+    managerProxy = ALProxy("ALBehaviorManager", "localhost", 9559)
+  except:
+    return False
+  
+  names = managerProxy.getDefaultBehaviors()
+  print "Default behaviors:"
+  print names
+  
+  result = True
+  for name in names:
+    if not runBehavior(managerProxy, name):
+      result = False
+    
+  time.sleep(5)
+  names = managerProxy.getRunningBehaviors()
+  print "Running behaviors:"
+  print names
+  return result
+  
+
+if __name__ == "__main__":
+
+  while not runDefaultBehaviors():
+    time.sleep(5)
+EOL
+
+chmod 744 /home/nao/bin/runDefaultBehaviors;
 
 sleep 2
 
