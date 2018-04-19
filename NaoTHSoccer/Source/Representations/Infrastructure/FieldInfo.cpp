@@ -36,6 +36,12 @@ FieldInfo::FieldInfo() : ParameterList("FieldInfo")
 
   PARAMETER_REGISTER(goalBoxAsLines) = false;
 
+  PARAMETER_REGISTER(enable_arcs_at_penalty_box) = false;
+  PARAMETER_REGISTER(center_x_in_own_half) = - xLength / 2.0 + xPenaltyAreaLength; ;
+  PARAMETER_REGISTER(radius) = yPenaltyAreaLength / 4;
+  PARAMETER_REGISTER(start_angle) = -Math::pi_2;
+  PARAMETER_REGISTER(target_angle) = Math::pi_2;
+
   syncWithConfig();
 
   calculateValues();
@@ -299,6 +305,31 @@ void FieldInfo::createLinesTable()
     x1 = x0;
   }//end for
 
+  if(enable_arcs_at_penalty_box){
+      // the arcs are approximated by line segments
+      // starting from the start_angle going anti-clock-wise to the target angle
+      Vector2d center(center_x_in_own_half,0);
+      angleStep = (target_angle - start_angle)/numberOfSegments;
+
+      x0 = Vector2d(radius,0);
+      x0.rotate(start_angle);
+      x1 = x0;
+      Vector2d start, end;
+
+      for (int i = 0; i < numberOfSegments; i++)
+      {
+        x0.rotate(angleStep);
+        start = center + x1;
+        end   = center + x0;
+        fieldLinesTable.addLine(start, end);
+        // mirror for opp penalty box
+        start.x = -start.x;
+        end.x   = -end.x;
+        fieldLinesTable.addLine(start, end);
+        x1 = x0;
+      }//end for
+  }
+
   fieldLinesTable.findIntersections();
 }//end createLinesTable
 
@@ -358,6 +389,12 @@ void FieldInfo::print(std::ostream& stream) const
   stream << "goalWidth = "<< goalWidth <<"\n";
   stream << "goalHeight = "<< goalHeight <<"\n";
   stream << "goalpostRadius = "<< goalpostRadius <<"\n";
+
+  stream << "enable_arcs_at_penalty_box = " << enable_arcs_at_penalty_box << "\n";
+  stream << "center_x_in_own_half = "       << center_x_in_own_half << "\n";
+  stream << "radius = "                     << radius << "\n";
+  stream << "start_angle = "                << start_angle << "\n";
+  stream << "target_angle = "               << target_angle << "\n";
 
   stream << "/////////////// pre-calculated values from basic values //////////////\n";
   stream << "xPosHalfWayLine = "<< xPosHalfWayLine <<"\n";
