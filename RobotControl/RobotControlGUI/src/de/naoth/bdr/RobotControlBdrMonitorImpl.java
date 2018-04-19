@@ -85,32 +85,43 @@ public class RobotControlBdrMonitorImpl extends javax.swing.JFrame implements Ro
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
+        jLayeredPane1 = new javax.swing.JLayeredPane();
         jLabel1 = new javax.swing.JLabel();
+        jLayeredPane2 = new javax.swing.JLayeredPane();
         jButton1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("BDR - Monitor");
         setUndecorated(true);
 
-        jPanel1.setLayout(new java.awt.BorderLayout());
+        jPanel1.setLayout(new javax.swing.OverlayLayout(jPanel1));
+
+        jLayeredPane1.setLayout(new javax.swing.BoxLayout(jLayeredPane1, javax.swing.BoxLayout.X_AXIS));
 
         jLabel1.setFont(new java.awt.Font("Dialog", 1, 48)); // NOI18N
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setText(panelTitle);
         jLabel1.setToolTipText("");
         jLabel1.setBorder(javax.swing.BorderFactory.createEmptyBorder(20, 1, 20, 1));
-        jPanel1.add(jLabel1, java.awt.BorderLayout.CENTER);
+        jLayeredPane1.add(jLabel1);
+
+        jPanel1.add(jLayeredPane1);
+
+        jLayeredPane2.setLayout(new java.awt.BorderLayout());
 
         jButton1.setText("X");
         jButton1.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 10, 1, 10));
         jButton1.setBorderPainted(false);
         jButton1.setContentAreaFilled(false);
+        jButton1.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton1ActionPerformed(evt);
             }
         });
-        jPanel1.add(jButton1, java.awt.BorderLayout.EAST);
+        jLayeredPane2.add(jButton1, java.awt.BorderLayout.EAST);
+
+        jPanel1.add(jLayeredPane2);
 
         getContentPane().add(jPanel1, java.awt.BorderLayout.NORTH);
 
@@ -196,6 +207,8 @@ public class RobotControlBdrMonitorImpl extends javax.swing.JFrame implements Ro
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLayeredPane jLayeredPane1;
+    private javax.swing.JLayeredPane jLayeredPane2;
     private javax.swing.JPanel jPanel1;
     // End of variables declaration//GEN-END:variables
 }
