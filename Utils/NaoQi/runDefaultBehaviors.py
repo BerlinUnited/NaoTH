@@ -16,28 +16,38 @@ def runBehavior(managerProxy, behaviorName):
       managerProxy.post.runBehavior(behaviorName)
     else:
       print "Behavior is already running."
+      return True
 
   else:
     print "Behavior not found."
-    return
+    return False
+  
+  return False
 
 def runDefaultBehaviors():
 
-  managerProxy = ALProxy("ALBehaviorManager", "localhost", 9559)
+  try:
+    managerProxy = ALProxy("ALBehaviorManager", "localhost", 9559)
+  except:
+    return False
   
   names = managerProxy.getDefaultBehaviors()
   print "Default behaviors:"
   print names
   
+  result = True
   for name in names:
-    runBehavior(managerProxy, name)
+    if not runBehavior(managerProxy, name):
+      result = False
     
   time.sleep(5)
   names = managerProxy.getRunningBehaviors()
   print "Running behaviors:"
   print names
+  return result
   
 
-
 if __name__ == "__main__":
-  runDefaultBehaviors()
+
+  while not runDefaultBehaviors():
+    time.sleep(5)

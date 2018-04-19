@@ -158,6 +158,7 @@ cat > /home/nao/naoqi/preferences/autoload.ini << EOL
 
 [program]
 #the/full/path/to/your/program            # load program
+/home/nao/bin/runDefaultBehaviors.sh
 EOL
 
 # enable deactivation possibility of fall manager
