@@ -1,0 +1,10 @@
+[Unit]
+Description=Python-GoalCount-GameController controller startup-script
+After=multi-user.target
+
+[Service]
+Type=idle
+ExecStart=/usr/bin/goalcount
+
+[Install]
+WantedBy=multi-user.target
