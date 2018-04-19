@@ -160,7 +160,22 @@ class NetworkManagerIw(NetworkManager):
 
         return None
 
-
+    def getSSIDExists(self, device:str, ssid:str):
+      logger.debug("Scan for the SSID: 'iwlist %s scanning essid %s'", device, ssid)
+      result = subprocess.run(['iwlist', device, 'scanning', 'essid', ssid], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL).stdout.decode('utf-8').strip()
+      match = re.search(r'.*('+ssid+').*', result)
+      return (match is not None)
+      
+    def getAPmac(self, device:str):
+      logger.debug("Scan for the MAC: 'iwconfig %s'", device)
+      result = subprocess.run(['iwconfig', device], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL).stdout.decode('utf-8').strip()
+      #Access Point: F6:DD:9E:87:A1:63
+      match = re.search(r'.*Access Point: (..:..:..:..:..:..).*', result)
+      if match is None:
+        return None
+      else:
+        return match.group(1).replace(':', '')
+      
     def _connect(self, device:str, ssid:str, passwd:str=None):
         '''
             activate device:            ifconfig <device> up
@@ -223,3 +238,5 @@ getWifiDevices = manager.getWifiDevices
 getWifiDevice  = manager.getWifiDevice
 getCurrentSSID = manager.getCurrentSSID
 connectToSSID  = manager.connectToSSID
+getSSIDExists  = manager.getSSIDExists
+getAPmac  = manager.getAPmac
