@@ -229,7 +229,7 @@ if __name__ == "__main__":
     time.sleep(5)
 EOL
 
-chmod 744 /home/nao/bin/runDefaultBehaviors;
+chmod 755 /home/nao/bin/runDefaultBehaviors;
 
 sleep 2
 
