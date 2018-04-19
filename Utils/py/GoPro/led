@@ -1,0 +1,56 @@
+#! /bin/sh
+
+EXEC="/home/pi/GoPro/LEDServer.py"
+PID="/tmp/led.lock"
+
+start() {
+  echo "Start LEDServer"
+	if [ -x "$EXEC" ]
+  then
+    $EXEC
+    echo "$!" > $PID
+	else
+		echo "Missing LEDServer script!"
+  fi
+}
+
+stop() {
+  echo "Stop LEDServer"
+	if [ -f "$PID" ]
+	then
+		pkill -F $PID
+	else
+		echo "LEDServer not running!"
+	fi
+}
+
+status() {
+	if [ -f "$PID" ] && $(ps -p `cat $PID` > /dev/null)
+  then
+    echo "LEDServer is running!"
+  else
+    echo "LEDServer NOT running!"
+  fi
+}
+
+case "$1" in
+  ""|''|start)
+    start
+    ;;
+  stop)
+    stop
+    ;;
+  restart)
+    echo "Restart LEDServer"
+    stop
+    start_background
+    ;;
+  status)
+    status
+    ;;
+  *)
+    echo "(start|stop|restart|status)"
+    ;;
+esac
+
+exit 0
