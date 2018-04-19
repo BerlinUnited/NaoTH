@@ -57,9 +57,27 @@ public class RobotPanel extends javax.swing.JPanel {
     private SPLMessage currentMesage;
     private boolean hideConnectButton = false;
     
-    private BufferedImage nao_body;
-    private BufferedImage battery_ico;
-    private BufferedImage temperatur_ico;
+    private static BufferedImage nao_body;
+    private static BufferedImage battery_ico;
+    private static BufferedImage temperatur_ico;
+        
+    // load the images only once
+    static {
+        try {
+            nao_body = ImageIO.read(RobotPanel.class.getResource("/de/naoth/rc/res/nao-nice.png"));
+            battery_ico = ImageIO.read(RobotPanel.class.getResource("/de/naoth/rc/res/battery-white.png"));
+            temperatur_ico = ImageIO.read(RobotPanel.class.getResource("/de/naoth/rc/res/temperature-white.png"));
+            
+            Color fade_color = new Color(230,245,255,100);
+            Graphics2D g2d = nao_body.createGraphics();
+            g2d.setColor(fade_color);
+            g2d.fillRect(0, 0, nao_body.getWidth(), nao_body.getHeight());
+            
+        } catch (IOException ex) {
+            java.util.logging.Logger.getLogger(RobotPanel.class.getName()).log(java.util.logging.Level.SEVERE, "Coult not load images", ex);
+        }
+    }
+    
     private Color colorInfo = new Color(0.0f, 1.0f, 0.0f, 0.5f);
     private Color colorInfoBlue = new Color(0.1f, 0.0f, 1.0f, 0.5f);
     private Color colorWarning = new Color(1.0f, 1.0f, 0.0f, 0.5f);
@@ -82,22 +100,9 @@ public class RobotPanel extends javax.swing.JPanel {
         this.ipAddress = ipAddress;
         this.currentMesage = msg;
         this.jlAddress.setText(this.ipAddress);
-        
-        
-        try {
-            nao_body = ImageIO.read(getClass().getResource("/de/naoth/rc/res/nao-nice.png"));
-            battery_ico = ImageIO.read(getClass().getResource("/de/naoth/rc/res/battery-white.png"));
-            temperatur_ico = ImageIO.read(getClass().getResource("/de/naoth/rc/res/temperature-white.png"));
 
-            Color fade_color = new Color(230,245,255,100);
-            Graphics2D g2d = nao_body.createGraphics();
-            g2d.setColor(fade_color);
-            g2d.fillRect(0, 0, nao_body.getWidth(), nao_body.getHeight());
-            
-            this.setBackground(Color.black);
-            lblActivity.setVisible(false);
-        } catch (IOException e) {
-        }
+        this.setBackground(Color.black);
+        lblActivity.setVisible(false);
     }
     
     public SPLMessage getMessage() {
