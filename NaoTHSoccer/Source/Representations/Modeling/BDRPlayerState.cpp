@@ -45,6 +45,7 @@ std::string BDRPlayerState::getActivityName(Activity id)
     case initializing     : return "initializing";
     default : ASSERT(false);
   }
+  return "unknown activity";
 }
 
 std::string BDRPlayerState::getMessageName(Message m){
@@ -57,6 +58,7 @@ std::string BDRPlayerState::getMessageName(Message m){
     case too_many_players_on_field : return "too_many_players_on_field";
     default : ASSERT(false);
   }
+  return "unknown message name";
 }
 
 std::string BDRPlayerState::getMessageString(Message m){
@@ -69,4 +71,5 @@ std::string BDRPlayerState::getMessageString(Message m){
     case too_many_players_on_field : return "Es sind zu viele Roboter auf dem Feld.";
     default : ASSERT(false);
   }
+  return "unknown message";
 }
