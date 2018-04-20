@@ -149,13 +149,8 @@ option bdr_play
     {
       else if(remote_control.bdr_control != AUTONOMOUS_PLAY)
           goto transition;
-      else if (body.temperature.leg.left >  bdr.temperature_beginning + @inc_temperature
-               || body.temperature.leg.right >  bdr.temperature_beginning + @inc_temperature)
-          goto set_wartungs_reason_temperature;
-      else if (platform.battery < bdr.charge_beginning - @dec_battery)
-          goto set_wartungs_reason_battery;
       else if(action_done)
-          goto transition;
+          goto post_autonomous_play;
       else if(bdr.number_of_players_in_play == 1
               && state_time > 10000)
           goto pre_autonomous_entertaining; 
@@ -167,6 +162,26 @@ option bdr_play
         bdr_play_soccer_synchronized();
         bdr.activity = playing;
         bdr.reason = none;
+    }
+  }
+
+  state post_autonomous_play
+  {
+    decision
+    {
+      else if (body.temperature.leg.left >  bdr.temperature_beginning + @inc_temperature
+               || body.temperature.leg.right >  bdr.temperature_beginning + @inc_temperature)
+          goto set_wartungs_reason_temperature;
+      else if (platform.battery < bdr.charge_beginning - @dec_battery)
+          goto set_wartungs_reason_battery;
+      else
+          goto pre_autonomous_play;
+    }
+
+    action
+    {
+      motion.type = stand;
+      head.control_mode = search_for_ball_and_look_around;
     }
   }
 
@@ -262,6 +277,7 @@ option bdr_play
         bdr.reason = none; // reset wartungs reason
         bdr.activity = initializing;
         bdr.sitting = false;
+        bdr.message = ready;
     }
   }
 
