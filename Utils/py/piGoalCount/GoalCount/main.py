@@ -6,6 +6,7 @@ from daemonize import Daemonize
 from display import Display
 import os
 from time import sleep
+import time
 import random
 
 import RPi.GPIO as GPIO
