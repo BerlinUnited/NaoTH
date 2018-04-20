@@ -2,7 +2,7 @@ clear all
 % adds a raw file to the whistle reference database
 % TODO does not check if file is already inserted
 try
-    load('reference_database.mat')
+    load('../data/reference_database.mat')
     disp('INFO: using a previously created database')
 catch
     disp('INFO: no previous mat file was found')

@@ -3,6 +3,8 @@ import sys
 import getopt
 """
   Extracts the audio from our game videos. This script expects that ffmpeg is installed and in the PYTHONPATH. 
+  
+  Usage: python extract_wav.py -i <path_to_folder_where_mp4_files_are>
 """
 
 

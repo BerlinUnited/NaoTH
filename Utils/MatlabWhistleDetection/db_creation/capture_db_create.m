@@ -3,14 +3,14 @@ clc
 % adds a raw file to the whistle capture database
 % TODO does not check if file is already inserted
 try
-    load('capture_database.mat')
+    load('../data/capture_database.mat')
     disp('INFO: using a previously created database')
 catch
     disp('INFO: no previous mat file was found')
     capture_database = struct;
 end
 %%
-gamelog_path = '<insert_path_here>'; % TODO rename gamelog_path
+gamelog_path = '<insert_path_here>'; % TODO rename gamelog_path variable
 
 % get information about the location of each raw file inside gamelog_path
 folderContents = dir(strcat(gamelog_path, '/**/*.raw'));
