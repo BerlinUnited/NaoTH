@@ -27,6 +27,7 @@ goal2 = 0
 time2 = 0
 
 def updateGoal1(pin):
+  print("updateGoal1")
   global update
   global goal1
   global goal2
@@ -34,6 +35,7 @@ def updateGoal1(pin):
   update.set()
   
 def updateGoal2(pin):
+  print("updateGoal2")
   global update
   global goal1
   global goal2
@@ -44,14 +46,9 @@ def main():
   global update
   global goal1
   global goal2
-  global GPIO_INPUT_GOAL1
-  global GPIO_INPUT_GOAL2
-  
+
   print("run goal count")
   display = Display()
-  
-  GPIO.add_event_detect(GPIO_INPUT_GOAL1, GPIO.RISING, updateGoal1)
-  GPIO.add_event_detect(GPIO_INPUT_GOAL2, GPIO.RISING, updateGoal2)
   
   try:
   
@@ -65,7 +62,7 @@ def main():
     
   except (KeyboardInterrupt, SystemExit):
     display.end()
-    logger.debug("Interrupted or Exit")
+    print("Interrupted or Exit")
     print("")  # intentionally print empty line
     GPIO.cleanup()
     
@@ -74,11 +71,16 @@ def main():
 
 if __name__ == '__main__':
     print ("Starting Goal Count")
+    
+    GPIO.add_event_detect(GPIO_INPUT_GOAL1, GPIO.RISING, updateGoal1)
+    GPIO.add_event_detect(GPIO_INPUT_GOAL2, GPIO.RISING, updateGoal2)
+    
     # define vars
     tempdir = tempfile.gettempdir()
     name = 'pyGoalCount'
     # check for existing lock file and running process
     lock_file = os.path.join(tempdir, name + '.lock')
 
-    daemon = Daemonize(app=name, pid=lock_file, action=main, foreground=True)
-    daemon.start()
+    main()
+    #daemon = Daemonize(app=name, pid=lock_file, action=main, foreground=True)
+    #daemon.start()
