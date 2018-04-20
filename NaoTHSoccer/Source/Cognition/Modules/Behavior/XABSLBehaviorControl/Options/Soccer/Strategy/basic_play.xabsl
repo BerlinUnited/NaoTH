@@ -32,6 +32,9 @@ option basic_play
       
       //NOTE: can be set false by fall_down_and_stand_up and treat_lifted
       body.ready_to_walk = true;
+
+      //NOTE: can be set to true by fall_down_and_stand_up in state falling
+      body.falling = false;
       
       // this will be set in state play
       game.time_in_play = 0;
