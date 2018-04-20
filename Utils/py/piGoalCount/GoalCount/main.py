@@ -51,11 +51,19 @@ def main():
   GPIO.add_event_detect(GPIO_INPUT_GOAL1, GPIO.RISING, updateGoal1)
   GPIO.add_event_detect(GPIO_INPUT_GOAL2, GPIO.RISING, updateGoal2)
   
-  while not update.wait():
-    #display.set_score(random.randint(0, 99), random.randint(0, 99))
-    #sleep(1)
-    print ("set score: {}:{}".format(goal1, goal2))
-    display.set_score(goal1, goal2)
+  try:
+  
+    while not update.wait():
+      #display.set_score(random.randint(0, 99), random.randint(0, 99))
+      #sleep(1)
+      print ("set score: {}:{}".format(goal1, goal2))
+      display.set_score(goal1, goal2)
+    
+  except (KeyboardInterrupt, SystemExit):
+    display.end()
+    logger.debug("Interrupted or Exit")
+    print("")  # intentionally print empty line
+        
     
 
 if __name__ == '__main__':

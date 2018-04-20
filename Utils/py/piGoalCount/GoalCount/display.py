@@ -28,3 +28,6 @@ class Display:
     self.screen.blit(text, (self.width // 2 - text.get_width() // 2, self.height // 2 - text.get_height() // 2))
     
     pygame.display.flip()
+    
+  def end(self):
+    pygame.quit()
