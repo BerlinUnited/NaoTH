@@ -31,6 +31,7 @@ namespace bdr_symbols("BDR Symbols") {
 
   bool output bdr.sitting;
   bool output bdr.localized_on_field;
+  float output bdr.time_playing;
 
   float input bdr.number_of_players_in_play; 
 
