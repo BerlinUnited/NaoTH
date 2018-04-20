@@ -120,6 +120,10 @@ public class RobotPanel extends javax.swing.JPanel {
         return ipAddress;
     }
     
+    public Long getLastTimestamp() {
+        return timestamps.size() > 0 ? timestamps.get(timestamps.size()-1) : System.currentTimeMillis();
+    }
+    
     public void setStatus(long timestamp, SPLMessage msg)
     {
       this.currentMesage = msg;
