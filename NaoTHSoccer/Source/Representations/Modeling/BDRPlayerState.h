@@ -20,7 +20,8 @@ public:
       activity(doing_nothing),
       message(ready),
       sitting(false),
-      localized_on_field(false)
+      localized_on_field(false),
+      time_playing(0)
   {}
 
   enum Activity
@@ -53,6 +54,8 @@ public:
   bool sitting;
   bool localized_on_field;
 
+  double time_playing;
+
   virtual void print(std::ostream& stream) const
   {
     stream << "BDRPlayerState\n";
@@ -60,6 +63,7 @@ public:
     stream << "  message: "  << getMessageString(message) << "\n";
     stream << "  sitting: "  << sitting << "\n";
     stream << "  localized_on_field: " << localized_on_field << "\n";
+    stream << "  playing time: " << time_playing << "\n";
   }
 
   static std::string getActivityName(Activity id);
