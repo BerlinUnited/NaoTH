@@ -32,7 +32,7 @@ def updateGoal1(pin):
   global goal1
   global time1
   if time1 == 0 or time1 + 5.0 < time.time():
-    print time1
+    print (time1)
     goal1 += 1
     time1 = time.time()
     update.set()
@@ -44,7 +44,7 @@ def updateGoal2(pin):
   global time2
   
   if time2 == 0 or time2 + 5.0 < time.time():
-    print time2
+    print (time2)
     goal2 += 1
     time2 = time.time()
     update.set()
