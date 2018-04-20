@@ -22,7 +22,8 @@ if __name__ == '__main__':
 
   #GPIO.RISING
   #GPIO.BOTH
-  GPIO.add_event_detect(BTN_G, GPIO.RISING, handle)
+  GPIO.add_event_detect(GPIO_INPUT_GOAL1, GPIO.RISING, handle)
+  GPIO.add_event_detect(GPIO_INPUT_GOAL2, GPIO.RISING, handle)
 
   # dummy waiting, this will be done better
   try:
