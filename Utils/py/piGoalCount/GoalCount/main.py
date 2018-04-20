@@ -59,7 +59,7 @@ def main():
     
 
 if __name__ == '__main__':
-    
+    print ("Starting Goal Count")
     # define vars
     tempdir = tempfile.gettempdir()
     name = 'pyGoalCount'
