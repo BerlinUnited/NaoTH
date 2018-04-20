@@ -99,6 +99,20 @@ workspace "NaoTHSoccer"
     pythonOut   = path.join(NAOTH_PROJECT, "Utils/py/naoth/naoth"),
     includeDirs = {COMMONS_MESSAGES, path.join(NAOTH_PROJECT, "NaoTHSoccer/Messages/")}
   }
+  -- generate py protobuf for bdr stuff
+    makeprotoc 
+  {
+    inputFiles  = os.matchfiles(path.join(COMMONS_MESSAGES, "*.proto")),
+    pythonOut   = path.join(NAOTH_PROJECT, "Utils/py/piGoalCount/naoth"),
+    includeDirs = {COMMONS_MESSAGES}
+  }
+  
+  makeprotoc 
+  {
+    inputFiles  = os.matchfiles(path.join(NAOTH_PROJECT, "NaoTHSoccer/Messages/*.proto")),
+    pythonOut   = path.join(NAOTH_PROJECT, "Utils/py/piGoalCount/naoth"),
+    includeDirs = {COMMONS_MESSAGES, path.join(NAOTH_PROJECT, "NaoTHSoccer/Messages/")}
+  }
   
 
   filter "configurations:Debug"
