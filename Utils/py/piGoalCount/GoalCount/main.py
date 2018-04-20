@@ -55,18 +55,21 @@ def main():
   
   try:
   
-    while not update.wait():
+    #while not update.wait():
+    while True:
       #display.set_score(random.randint(0, 99), random.randint(0, 99))
       #sleep(1)
-      print ("set score: {}:{}".format(goal1, goal2))
+      #print ("set score: {}:{}".format(goal1, goal2))
       display.set_score(goal1, goal2)
-      #sleep(0.1)
+      sleep(0.1)
     
   except (KeyboardInterrupt, SystemExit):
     display.end()
     logger.debug("Interrupted or Exit")
     print("")  # intentionally print empty line
-        
+    GPIO.cleanup()
+    
+  GPIO.cleanup()
     
 
 if __name__ == '__main__':
