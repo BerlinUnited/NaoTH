@@ -148,6 +148,8 @@ void MotionSymbols::registerSymbols(xabsl::Engine& engine)
   // dribble
   engine.registerBooleanOutputSymbol("motion.dribble", &dribble, &dribbleG);
   engine.registerBooleanInputSymbol("motion.dribble.action_done", &dribbleG);
+
+  engine.registerBooleanInputSymbol("motion.enable_stand_up", &enable_stand_up);
 }//end registerSymbols
 
 void MotionSymbols::execute()
@@ -324,7 +326,7 @@ string MotionSymbols::getStepControlFootName(StepControlFoot i)
   return "unknown";
 }
 
-bool MotionSymbols::dribbleG() 
+bool MotionSymbols::dribbleG()
 {
   return ((theInstance->actionPerformed) == (int)(theInstance->getMotionStatus().stepControl.stepID));
 }

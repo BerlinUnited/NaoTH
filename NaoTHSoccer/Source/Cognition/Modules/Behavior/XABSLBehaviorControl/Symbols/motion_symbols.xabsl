@@ -149,6 +149,8 @@ namespace motion_symbols("Motion Symbols") {
   /** indicates whether the RIGHT foot is currently avaliable for the step control */
   bool input executed_motion.step_control.right_movable;
   
+  bool input motion.enable_stand_up;
+ 
   float input executed_motion.planed.target.x  "mm/s";
   float input executed_motion.planed.target.y "mm/s";
   float input executed_motion.planed.target.rotation "deg/s";
