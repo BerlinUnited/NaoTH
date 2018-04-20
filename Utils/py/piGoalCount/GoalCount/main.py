@@ -31,7 +31,7 @@ def updateGoal1(pin):
   global update
   global goal1
   global time1
-  if time1 == 0 || time1 + 5.0 < time.time():
+  if time1 == 0 or time1 + 5.0 < time.time():
     goal1 += 1
     time1 = time.time()
     update.set()
@@ -41,7 +41,7 @@ def updateGoal2(pin):
   global update
   global goal2
   global time2
-  if time2 == 0 || time2 + 5.0 < time.time():
+  if time2 == 0 or time2 + 5.0 < time.time():
     goal2 += 1
     time2 = time.time()
     update.set()
