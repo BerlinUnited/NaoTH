@@ -122,7 +122,7 @@ void ActionSimulator::simulateAction(const Action& action, ActionResults& result
     );
 
 		// check collisions with borders
-		bool collisionFieldBorder = calculateCollisionWithRebound(fieldBorderLines, globalBallStartPosition, globalBallEndPosition, globalBallEndPosition);
+		calculateCollisionWithRebound(fieldBorderLines, globalBallStartPosition, globalBallEndPosition, globalBallEndPosition);
 
     // default category
     BallPositionCategory category = classifyBallPosition(globalBallEndPosition);
