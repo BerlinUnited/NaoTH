@@ -593,7 +593,7 @@ class MyClass(GeneratedClass):
                                 </ActuatorList>
                             </Timeline>
                         </Box>
-                        <Box name="Set Fall Manager" id="18" localization="8" tooltip="Enable or disable the Fall Manager.&#x0A;&#x0A;It is automatically set to its previous state when the behavior is stopped." x="296" y="49">
+                        <Box name="Set Fall Manager" id="18" localization="8" tooltip="Enable or disable the Fall Manager.&#x0A;&#x0A;It is automatically set to its previous state when the behavior is stopped." x="328" y="179">
                             <bitmap>media/images/box/sensors/fall_manager.png</bitmap>
                             <script language="4">
                                 <content>
@@ -2974,7 +2974,6 @@ class MyClass(GeneratedClass):
                         <Link inputowner="25" indexofinput="2" outputowner="40" indexofoutput="3" />
                         <Link inputowner="40" indexofinput="2" outputowner="26" indexofoutput="4" />
                         <Link inputowner="41" indexofinput="2" outputowner="0" indexofoutput="2" />
-                        <Link inputowner="4" indexofinput="2" outputowner="2" indexofoutput="3" />
                         <Link inputowner="15" indexofinput="2" outputowner="2" indexofoutput="3" />
                         <Link inputowner="31" indexofinput="2" outputowner="24" indexofoutput="4" />
                         <Link inputowner="31" indexofinput="2" outputowner="33" indexofoutput="4" />
@@ -2985,6 +2984,8 @@ class MyClass(GeneratedClass):
                         <Link inputowner="42" indexofinput="2" outputowner="31" indexofoutput="4" />
                         <Link inputowner="19" indexofinput="2" outputowner="42" indexofoutput="5" />
                         <Link inputowner="42" indexofinput="3" outputowner="10" indexofoutput="4" />
+                        <Link inputowner="18" indexofinput="2" outputowner="2" indexofoutput="3" />
+                        <Link inputowner="4" indexofinput="2" outputowner="18" indexofoutput="3" />
                     </Diagram>
                 </BehaviorKeyframe>
             </BehaviorLayer>
