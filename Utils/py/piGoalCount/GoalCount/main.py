@@ -44,6 +44,8 @@ def main():
   global update
   global goal1
   global goal2
+  global GPIO_INPUT_GOAL1
+  global GPIO_INPUT_GOAL2
   
   print("run goal count")
   display = Display()
@@ -58,6 +60,7 @@ def main():
       #sleep(1)
       print ("set score: {}:{}".format(goal1, goal2))
       display.set_score(goal1, goal2)
+      #sleep(0.1)
     
   except (KeyboardInterrupt, SystemExit):
     display.end()
