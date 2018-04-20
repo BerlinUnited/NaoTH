@@ -10,7 +10,7 @@ GPIO_INPUT_GOAL2 = 24
 #set GPIO direction (IN / OUT)
 GPIO.setup([GPIO_INPUT_GOAL1, GPIO_INPUT_GOAL2], GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
-def handle_goal(pin):
+def handle(pin):
   if pin == GPIO_INPUT_GOAL1:
     print ("Activated: Goal 1")
   
