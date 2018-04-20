@@ -28,11 +28,15 @@ time2 = 0
 
 def updateGoal1(pin):
   global update
+  global goal1
+  global goal2
   goal1 += 1
   update.set()
   
 def updateGoal2(pin):
   global update
+  global goal1
+  global goal2
   goal2 += 1
   update.set()
 
