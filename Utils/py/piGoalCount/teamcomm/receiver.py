@@ -1,7 +1,15 @@
-import socket
+#!/usr/bin/env python3
+# -*- coding: utf8 -*-
+
+import sys, os, socket
 import threading
 from threading import Event
 import time
+
+
+naoth_path = os.path.abspath(os.path.dirname(__file__)+ '/../')
+if naoth_path not in sys.path:
+    sys.path.append(naoth_path)
 
 from naoth.SPLMessage import SPLMessage
 
@@ -24,16 +32,14 @@ class TeamCommReceiver(threading.Thread):
         self.loop_control = loop_control
 
         # creating message only once and update the data ...
-        self.msg = SPLMessage()
+        self.data = {}
 
     def run(self):
         while not self.loop_control.is_set():
             try:
                 # Send message
                 data, addr = self.socket.recvfrom(1024)  # buffer size is 1024 bytes
-                print('received from', addr)
-                msg = SPLMessage(data=data)
-                print(msg)
+                self.data[addr[0]] = SPLMessage(data=data)
 
                 # wait to send new message
                 #time.sleep(self.delay)
