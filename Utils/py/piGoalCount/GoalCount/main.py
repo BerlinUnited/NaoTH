@@ -30,17 +30,21 @@ def updateGoal1(pin):
   print("updateGoal1")
   global update
   global goal1
-  global goal2
-  goal1 += 1
-  update.set()
+  global time1
+  if time1 == 0 || time1 + 5.0 < time.time():
+    goal1 += 1
+    time1 = time.time()
+    update.set()
   
 def updateGoal2(pin):
   print("updateGoal2")
   global update
-  global goal1
   global goal2
-  goal2 += 1
-  update.set()
+  global time2
+  if time2 == 0 || time2 + 5.0 < time.time():
+    goal2 += 1
+    time2 = time.time()
+    update.set()
 
 def main():
   global update
@@ -81,6 +85,6 @@ if __name__ == '__main__':
     # check for existing lock file and running process
     lock_file = os.path.join(tempdir, name + '.lock')
 
-    main()
-    #daemon = Daemonize(app=name, pid=lock_file, action=main, foreground=True)
-    #daemon.start()
+    #main()
+    daemon = Daemonize(app=name, pid=lock_file, action=main, foreground=True)
+    daemon.start()
