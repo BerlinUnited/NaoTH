@@ -122,7 +122,7 @@ class SPLMessage(Struct):
                            #self.currentPositionConfidence,
                            #self.currentSideConfidence,
                            (self.data.ByteSize() + self._mixed.size),
-                           ) + self._mixed.pack()\
+                           ) + self._mixed.pack()
                              + self.data.SerializeToString()
 
     def unpack(self, data):
