@@ -48,17 +48,28 @@ class TeamCommSender(threading.Thread):
         while not self.loop_control.is_set():
             try:
                 # Send message
-                self.msg.data.timestamp = int(time.monotonic() * 1000)
+                #self.msg.data.timestamp = int(time.monotonic() * 1000)
                 #print('send message:', self.host, self.port)
-                self.socket.sendto(self.msg.pack(), (self.host, self.port))
+                #self.socket.sendto(self.msg.pack(), (self.host, self.port))
                 #print(self.msg.data.message)
+                self.send_score(7,11)
                 # wait to send new message
                 time.sleep(self.delay)
             except socket.error as msg:
                 print('Error Code : ' + str(msg[0]) + ' Message ' + msg[1])
                 self.running = False
 
-
+    def send_score(self, goalsLeft, goalsRight):
+      try:
+        self.msg.data.bdrPlayerState.goalsLeft = goalsLeft
+        self.msg.data.bdrPlayerState.goalsRight = goalsRight
+        
+        self.msg.data.timestamp = int(time.monotonic() * 1000)
+        self.socket.sendto(self.msg.pack(), (self.host, self.port))
+        time.sleep(self.delay)
+      except socket.error as msg:
+        print('Error Code : ' + str(msg[0]) + ' Message ' + msg[1])
+                
 if __name__ == '__main__':
     print('starting ...')
     loop_control = Event()
