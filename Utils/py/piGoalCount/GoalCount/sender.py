@@ -74,7 +74,7 @@ class TeamCommSender(threading.Thread):
 if __name__ == '__main__':
     print('starting ...')
     loop_control = Event()
-    s = TeamCommSender(loop_control, '10.0.255.255')
+    s = TeamCommSender(loop_control, '10.0.4.255')
     s.start()
     time.sleep(10)
     loop_control.set()
