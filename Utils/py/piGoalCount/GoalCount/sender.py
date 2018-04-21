@@ -74,6 +74,7 @@ if __name__ == '__main__':
     loop_control = Event()
     s = TeamCommSender('10.0.4.255')
     s.start()
+    s.set_score(7,5,374*1000)
     time.sleep(10)
     s.stop()
     print('finished')
