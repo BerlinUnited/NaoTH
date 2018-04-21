@@ -113,6 +113,7 @@ namespace naoth
 
     bool autoExposition;
     bool autoWhiteBalancing;
+    int brightness;
     int exposure;
     int gain;
     int saturation;

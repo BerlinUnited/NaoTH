@@ -126,6 +126,7 @@ CommonCameraSettingsRequest::CommonCameraSettingsRequest(string configName)
 {
   PARAMETER_REGISTER(autoExposition) = false;
   PARAMETER_REGISTER(autoWhiteBalancing) = false;
+  PARAMETER_REGISTER(brightness) = 55;
   PARAMETER_REGISTER(exposure) = 1;
   PARAMETER_REGISTER(gain) = 32;
   PARAMETER_REGISTER(saturation) = 128;

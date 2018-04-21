@@ -45,6 +45,10 @@ void CameraDebug::execute()
       settingsChanged = true;
       bottomRequest.autoWhiteBalancing = commonRequest.autoWhiteBalancing;
     }
+    if(commonRequest.brightness != bottomRequest.brightness) {
+      settingsChanged = true;
+      bottomRequest.brightness = commonRequest.brightness;
+    }
     if(commonRequest.exposure != bottomRequest.exposure) {
       settingsChanged = true;
       bottomRequest.exposure = commonRequest.exposure;
@@ -74,6 +78,10 @@ void CameraDebug::execute()
     if(commonRequest.autoWhiteBalancing != topRequest.autoWhiteBalancing) {
       settingsChanged = true;
       topRequest.autoWhiteBalancing = commonRequest.autoWhiteBalancing;
+    }
+    if(commonRequest.brightness != topRequest.brightness) {
+      settingsChanged = true;
+      topRequest.brightness = commonRequest.brightness;
     }
     if(commonRequest.exposure != topRequest.exposure) {
       settingsChanged = true;
