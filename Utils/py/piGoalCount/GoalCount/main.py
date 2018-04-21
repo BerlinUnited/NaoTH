@@ -27,6 +27,7 @@ def main():
   sender = TeamCommSender()
   sender.start()
   
+  last_time = receiver.time_playing
   try:
   
     #while not goalSensor.update.wait():
@@ -35,10 +36,15 @@ def main():
       #print ("set score: {}:{}".format(goal1, goal2))
       
     while True:
+      # a new game started
+      if last_time == 0 and receiver.time_playing > 0:
+        goalSensor.reset()
+    
       display.setValues(goalSensor.goal1, goalSensor.goal2, receiver.time_playing)
       sender.set_score(goalSensor.goal1, goalSensor.goal2, receiver.time_playing)
+      last_time = receiver.time_playing
       sleep(0.5)
-    
+      
   except (KeyboardInterrupt, SystemExit):
     display.end()
     print("Interrupted or Exit")

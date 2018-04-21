@@ -42,6 +42,12 @@ class GoalSensor:
       self.time2 = time.time()
       update.set()
       
+  def reset(self):
+    self.goal1 = 0
+    self.time1 = 0
+    self.goal2 = 0
+    self.time2 = 0
+      
   def close(self):
     GPIO.cleanup()
 
