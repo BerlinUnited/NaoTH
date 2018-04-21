@@ -32,7 +32,7 @@ def main():
       #print ("set score: {}:{}".format(goal1, goal2))
       
     while True:
-      display.set_score(goalSensor.goal1, goalSensor.goal2)
+      display.setValues(goalSensor.goal1, goalSensor.goal2, receiver.time_playing)
       sleep(0.1)
     
   except (KeyboardInterrupt, SystemExit):

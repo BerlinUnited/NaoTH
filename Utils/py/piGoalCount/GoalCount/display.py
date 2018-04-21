@@ -22,14 +22,11 @@ class Display:
     self.gameTime = 0
     self.update()
 
-  def setGameTime(self, t):
-    self.gameTime = t
-    self.update()
-    
-  def set_score(self, a, b):
+  def setValues(self, a, b, t):
     self.goalsLeft = a
     self.goalsRight = b
-    self.update()
+    self.gameTime = t
+    self.update()  
     
   def update(self):
     color_bg = (255,255,255)
