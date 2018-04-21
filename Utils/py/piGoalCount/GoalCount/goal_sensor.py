@@ -48,6 +48,7 @@ class GoalSensor:
 
 if __name__ == '__main__':
 
+  print("GoalSensor active")
   goalSensor = GoalSensor()
   
   # dummy waiting, this will be done better
