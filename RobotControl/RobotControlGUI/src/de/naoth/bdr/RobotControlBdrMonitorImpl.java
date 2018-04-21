@@ -11,6 +11,7 @@ import java.util.Arrays;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.beans.property.SimpleObjectProperty;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import net.xeoh.plugins.base.PluginManager;
@@ -29,7 +30,7 @@ public class RobotControlBdrMonitorImpl extends javax.swing.JFrame implements Ro
 {
     public static String panelName = "";
     public static String panelTitle = "";
-    public static JPanel healthPanel;
+    public static SimpleObjectProperty<JPanel> healthPanel = new SimpleObjectProperty<JPanel>();
 
     /**
      * Creates new form RobotControlBdrImpl
@@ -64,7 +65,7 @@ public class RobotControlBdrMonitorImpl extends javax.swing.JFrame implements Ro
       if(dialog.getDisplayName().equals(panelName)) {
           getContentPane().add(dialog.getPanel(), java.awt.BorderLayout.CENTER);
       } else if(dialog.getDisplayName().equals("RobotHealth")) {
-          healthPanel = dialog.getPanel();
+          healthPanel.set(dialog.getPanel());
       }
       // for debugging:
       /*

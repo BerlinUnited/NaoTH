@@ -33,6 +33,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.Timer;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
+import net.xeoh.plugins.base.annotations.events.PluginLoaded;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 
 /**
@@ -55,7 +56,6 @@ public class BDRControl extends AbstractDialog implements TeamCommListener, Comp
         public static TeamCommManager teamcommManager;
         @InjectPlugin
         public static TeamCommUDPReceiver teamCommUDPReceiver;
-        
     }//end Plugin
 
     private final int port = 10004;
@@ -86,11 +86,22 @@ public class BDRControl extends AbstractDialog implements TeamCommListener, Comp
         this.updater = new Timer(300, this);
         this.updater.start();
         
+        // add listener, if the health panel changes
+        RobotControlBdrMonitorImpl.healthPanel.addListener((o) -> {
+            setHealthPanel();
+        });
+        // if health panel loaded, set it to ui
+        if(RobotControlBdrMonitorImpl.healthPanel.get() != null) {
+            setHealthPanel();
+        }
+    }
+    
+    private void setHealthPanel() {
         // add health panel
-        if(RobotControlBdrMonitorImpl.healthPanel != null) {
-            RobotHealth health = (RobotHealth) RobotControlBdrMonitorImpl.healthPanel;
+        if(RobotControlBdrMonitorImpl.healthPanel.get() != null) {
+            RobotHealth health = (RobotHealth) RobotControlBdrMonitorImpl.healthPanel.get();
             health.jToolBar1.setVisible(false);
-            statusPanel.add(RobotControlBdrMonitorImpl.healthPanel, java.awt.BorderLayout.CENTER);
+            statusPanel.add(RobotControlBdrMonitorImpl.healthPanel.get(), java.awt.BorderLayout.CENTER);
         }
     }
     
@@ -164,7 +175,7 @@ public class BDRControl extends AbstractDialog implements TeamCommListener, Comp
         Command cmd = new Command("Cognition:representation:get").addArg("BDRControlCommand");
         Plugin.commandExecutor.executeCommand(new StatusUpdater(), cmd);
         // activate health status panel
-        ((RobotHealth) RobotControlBdrMonitorImpl.healthPanel).btReceiveDrawings.doClick();
+        ((RobotHealth) RobotControlBdrMonitorImpl.healthPanel.get()).btReceiveDrawings.doClick();
         // disable button of all 'not connected' robots
         String connectedIp = Plugin.rc.getMessageServer().getAddress().getHostName();
         robotsMap.forEach((t, u) -> {
@@ -356,6 +367,7 @@ public class BDRControl extends AbstractDialog implements TeamCommListener, Comp
         for (RobotPanel robot : robotsMap.values()) {
             robot.setChestColor(robot.getMessage().getTeamColor());
             robot.setPreferredSize(new Dimension(robotPanelWidth, robotPanelHeight));
+            robot.setMinimumSize(new Dimension(robotPanelWidth, robotPanelHeight));
             robotPanel.add(robot);
         }
         createDummies();
@@ -367,6 +379,7 @@ public class BDRControl extends AbstractDialog implements TeamCommListener, Comp
         for(int i = robotPanel.getComponentCount(); i<4; i++) {
             RobotPanel d = new RobotPanel("0.0.0.0", new SPLMessage());
             d.setPreferredSize(new Dimension(robotPanelWidth, robotPanelHeight));
+            d.setMinimumSize(new Dimension(robotPanelWidth, robotPanelHeight));
             d.setEnabled(false);
             robotPanel.add(d);
         }
