@@ -19,9 +19,21 @@ for i=1:length(go17_recordings)
     rawData = go17_recordings(i).rawData;
     
     path_to_outputfolder = fullfile('../data/capture_data_raw/go17_recordings', game_name, half, robot_name);
-    mkdir(path_to_outputfile)
+    mkdir(path_to_outputfolder)
     
-    filename = 
+    % TODO database should have the original filename, if database is
+    % changed fix this
+    filename = fullfile(path_to_outputfolder, strcat(int2str(i), '.raw'));
+    
+    fileID = fopen(filename, 'w');
+        fwrite(fileID, rawData, 'int16', 'ieee-le');
+    fclose(fileID);
+    
+    % Export samples as wav
+    filename2 = fullfile(path_to_outputfolder, strcat(int2str(i), '.wav'));
+    Fs=8000;
+    y = rawData ./ max( abs(rawData(:)) );
+    audiowrite(char(filename2),y,Fs);
 end
 
 for i=1:length(rc17_recordings)
@@ -31,6 +43,20 @@ for i=1:length(rc17_recordings)
     robot_name = rc17_recordings(i).robot_name;
     rawData = rc17_recordings(i).rawData;
     
-    path_to_outputfile = fullfile('../data/capture_data_raw/rc17_recordings', game_name, half, robot_name);
-    mkdir(path_to_outputfile)
+    path_to_outputfolder = fullfile('../data/capture_data_raw/rc17_recordings', game_name, half, robot_name);
+    mkdir(path_to_outputfolder)
+    
+    % TODO database should have the original filename, if database is
+    % changed fix this
+    filename = fullfile(path_to_outputfolder, strcat(int2str(i), '.raw'));
+    
+    fileID = fopen (filename, 'w');
+        fwrite(fileID, rawData, 'int16', 'ieee-le');
+    fclose(fileID);
+    
+    % Export samples as wav
+    filename2 = fullfile(path_to_outputfolder, strcat(int2str(i), '.wav'));
+    Fs=8000;
+    y = rawData ./ max( abs(rawData(:)) );
+    audiowrite(char(filename2),y,Fs);
 end

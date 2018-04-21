@@ -13,7 +13,7 @@ catch
 end
 %%
 gamelog_path = '<insert_path_here>'; % TODO rename gamelog_path variable
-
+gamelog_path = 'D:\Downloads\capture_recordings';
 % get information about the location of each raw file inside gamelog_path
 folderContents = dir(strcat(gamelog_path, '/**/*.raw'));
 %% Extract the necessary infos from filepath
@@ -52,6 +52,7 @@ for i=1:length(folderContents)
     
     % fill the capture whistle fields
     % TODO filename is missing
+    % TODO samplerate is missing
     capture.game_name = game_name;
     capture.half = half;
     capture.robot_name = robot_name;
@@ -71,4 +72,4 @@ end
 
 %% Save capture database
 disp('Saving Capture database');
-save('capture_database.mat','capture_database')
+save('../data/capture_database.mat','capture_database')
