@@ -2922,6 +2922,7 @@ class MyClass(GeneratedClass):
         self.should_stop = True
         if self.waiting and self.waiting.isRunning():
             self.cancelWaiting();
+            self.should_stop = False
             self.onStopped()
             self.onUnload()]]>
 </content>
