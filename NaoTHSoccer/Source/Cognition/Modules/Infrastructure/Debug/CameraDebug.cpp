@@ -49,10 +49,6 @@ void CameraDebug::execute()
       settingsChanged = true;
       bottomRequest.brightness = commonRequest.brightness;
     }
-    if(commonRequest.brightnessDark != bottomRequest.brightnessDark) {
-      settingsChanged = true;
-      bottomRequest.brightnessDark = commonRequest.brightnessDark;
-    }
     if(commonRequest.exposure != bottomRequest.exposure) {
       settingsChanged = true;
       bottomRequest.exposure = commonRequest.exposure;
@@ -86,10 +82,6 @@ void CameraDebug::execute()
     if(commonRequest.brightness != topRequest.brightness) {
       settingsChanged = true;
       topRequest.brightness = commonRequest.brightness;
-    }
-    if(commonRequest.brightnessDark != topRequest.brightnessDark) {
-      settingsChanged = true;
-      topRequest.brightnessDark = commonRequest.brightnessDark;
     }
     if(commonRequest.exposure != topRequest.exposure) {
       settingsChanged = true;
