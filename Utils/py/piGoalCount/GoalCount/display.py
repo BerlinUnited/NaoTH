@@ -35,17 +35,18 @@ class Display:
     color_bg = (255,255,255)
     color_text = (0,0,0)
     
-    offset_y = 100
+    offset_goals_y = 50
+    offset_time_y = 20
     
     self.screen.fill(color_bg)
     
     textGoals = self.fontScore.render("{:2}:{:2}".format(self.goalsLeft,self.goalsRight), True, color_text)
-    self.screen.blit(textGoals, (self.width // 2 - textGoals.get_width() // 2, self.height // 2 - textGoals.get_height() // 2 + offset_y/2))
+    self.screen.blit(textGoals, (self.width // 2 - textGoals.get_width() // 2, self.height // 2 - textGoals.get_height() // 2 + offset_goals_y))
     
     mins = self.gameTime // (1000*60)
     secs = (self.gameTime - mins*(1000*60)) // 1000
     textTime = self.fontTime.render("{}m {}s".format(mins, secs), True, color_text)
-    self.screen.blit(textTime, (self.width // 2 - textTime.get_width() // 2, offset_y))
+    self.screen.blit(textTime, (self.width // 2 - textTime.get_width() // 2, offset_time_y))
     
     pygame.display.flip()
     
