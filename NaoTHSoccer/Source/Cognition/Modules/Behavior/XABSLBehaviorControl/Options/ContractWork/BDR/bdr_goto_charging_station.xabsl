@@ -117,7 +117,8 @@ option bdr_goto_charging_station
       decision
       {
         if(executed_motion.type == stand && executed_motion.time > 5000)
-          goto approach_very_slowly;
+          //goto approach_very_slowly; // Wunsch von Olaf... die Beobachtung war, dass sie gut ausgerichtet sind nach dem ersten Setzen
+          goto sit;
         else
           stay;
       }
