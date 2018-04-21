@@ -29,6 +29,7 @@ import java.awt.event.MouseEvent;
 import java.util.HashMap;
 import java.util.List;
 import java.util.TreeMap;
+import java.util.concurrent.TimeUnit;
 import javax.swing.Timer;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
@@ -249,7 +250,20 @@ public class BDRMonitor extends AbstractDialog implements ActionListener, TeamCo
                         robotsMsg.get(m.address).set(m.message.user.getMessage());
                     }
                 } else {
-                    /* TODO: do something with 'coach' messages */
+                    // show timestamp & goals from 'coach'
+                    if(m.message.user.hasBdrPlayerState()) {
+                        if(m.message.user.getBdrPlayerState().hasTimePlaying()) {
+                            long millis = (long) m.message.user.getBdrPlayerState().getTimePlaying();
+                            lblTime.setText(String.format("%02d:%02d", 
+                                //TimeUnit.MILLISECONDS.toHours(millis),
+                                TimeUnit.MILLISECONDS.toMinutes(millis) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millis)),
+                                TimeUnit.MILLISECONDS.toSeconds(millis) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis)))
+                            );
+                        }
+                        if(m.message.user.getBdrPlayerState().hasGoalsLeft() && m.message.user.getBdrPlayerState().hasGoalsRight()) {
+                            lblScore.setText(m.message.user.getBdrPlayerState().getGoalsLeft() + ":" + m.message.user.getBdrPlayerState().getGoalsRight());
+                        }
+                    }
                 }
             });
         }
