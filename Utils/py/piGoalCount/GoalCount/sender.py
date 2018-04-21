@@ -75,6 +75,5 @@ if __name__ == '__main__':
     s = TeamCommSender('10.0.4.255')
     s.start()
     time.sleep(10)
-    loop_control.set()
-    s.join()
+    s.stop()
     print('finished')
