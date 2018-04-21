@@ -113,7 +113,9 @@ class SPLMessage(Struct):
                            #*self.walkingTo.__dict__.values(),
                            #*self.shootingTo.__dict__.values(),
                            self.ballAge,
-                           *self.ballPosition.__dict__.values(),
+                           #*self.ballPosition.__dict__.values(),
+                           self.ballPosition.x,
+                           self.ballPosition.y,
                            #*self.ballVelocity.__dict__.values(),
                            #*self.suggestion,
                            #self.intention,
@@ -121,8 +123,8 @@ class SPLMessage(Struct):
                            #self.maxKickDistance,
                            #self.currentPositionConfidence,
                            #self.currentSideConfidence,
-                           (self.data.ByteSize() + self._mixed.size),
-                           ) + self._mixed.pack()
+                           (self.data.ByteSize() + self._mixed.size)
+                           ) + self._mixed.pack()\
                              + self.data.SerializeToString()
 
     def unpack(self, data):
