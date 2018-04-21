@@ -14,7 +14,7 @@ class Display:
     self.fontScore = pygame.font.SysFont("robotocondensed", 350)
     self.fontScore.set_bold(False)
 
-    self.fontTime = pygame.font.SysFont("robotocondensed", 35)
+    self.fontTime = pygame.font.SysFont("robotocondensed", 175)
     self.fontTime.set_bold(False)
     
     self.goalsLeft = a
@@ -35,8 +35,8 @@ class Display:
     color_bg = (255,255,255)
     color_text = (0,0,0)
     
-    offset_goals_y = 50
-    offset_time_y = 20
+    offset_goals_y = 70
+    offset_time_y = -30
     
     self.screen.fill(color_bg)
     
