@@ -33,13 +33,17 @@ class TeamCommReceiver(threading.Thread):
         
         # creating message only once and update the data ...
         self.data = {}
+        
+        self.time_playing = 0
 
     def run(self):
         while not self.loop_control.is_set():
             try:
                 # Send message
                 data, addr = self.socket.recvfrom(1024)  # buffer size is 1024 bytes
-                self.data[addr[0]] = SPLMessage(data=data)
+                msg = SPLMessage(data=data)
+                self.data[addr[0]] = msg
+                self.time_playing = msg.data.bdrPlayerState.time_playing
                 
                 print("received from: " + addr[0])
                 # wait to send new message

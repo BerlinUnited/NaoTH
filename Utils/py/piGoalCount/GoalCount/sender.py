@@ -63,6 +63,7 @@ class TeamCommSender(threading.Thread):
       try:
         self.msg.data.bdrPlayerState.goalsLeft = goalsLeft
         self.msg.data.bdrPlayerState.goalsRight = goalsRight
+        self.msg.data.bdrPlayerState.time_playing = 1000*273
         
         self.msg.data.timestamp = int(time.monotonic() * 1000)
         self.socket.sendto(self.msg.pack(), (self.host, self.port))
