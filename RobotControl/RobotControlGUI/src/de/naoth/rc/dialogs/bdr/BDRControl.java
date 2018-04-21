@@ -23,12 +23,15 @@ import de.naoth.rc.server.ConnectionStatusEvent;
 import de.naoth.rc.server.ConnectionStatusListener;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.util.List;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.Timer;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 
@@ -36,7 +39,7 @@ import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
  *
  * @author Heinrich Mellmann
  */
-public class BDRControl extends AbstractDialog implements TeamCommListener, ComponentListener, ConnectionStatusListener
+public class BDRControl extends AbstractDialog implements TeamCommListener, ComponentListener, ConnectionStatusListener, ActionListener
 {
     @RCDialog(category = RCDialog.Category.BDR, name = "Control")
     @PluginImplementation
@@ -56,12 +59,15 @@ public class BDRControl extends AbstractDialog implements TeamCommListener, Comp
     }//end Plugin
 
     private final int port = 10004;
+    private final int maxTimeRobotIsDead = 2000; //ms
     
     private final TreeMap<String, RobotPanel> robotsMap = new TreeMap<>();
     
     private final int robotPanelGap = 5;
     int robotPanelHeight = 300;
     int robotPanelWidth = 200;
+    
+    Timer updater;
     
     public BDRControl() 
     {
@@ -74,6 +80,11 @@ public class BDRControl extends AbstractDialog implements TeamCommListener, Comp
         Plugin.teamcommManager.addListener(this);
         Plugin.teamCommUDPReceiver.connect(this, port);
         Plugin.rc.getMessageServer().addConnectionStatusListener(this);
+        
+        
+        // schedules canvas drawing at a fixed rate, should prevent "flickering"
+        this.updater = new Timer(300, this);
+        this.updater.start();
         
         // add health panel
         if(RobotControlBdrMonitorImpl.healthPanel != null) {
@@ -124,6 +135,14 @@ public class BDRControl extends AbstractDialog implements TeamCommListener, Comp
     @Override
     public void connected(ConnectionStatusEvent event) {
         updateStatus();
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        // remove robots & update panel, if the last message is older than 'maxTimeRobotIsDead'
+        if(robotsMap.entrySet().removeIf((t) -> { return t.getValue().getLastTimestamp() + maxTimeRobotIsDead < System.currentTimeMillis(); })) {
+            updateRoboPanel();
+        }
     }
 
     @Override
@@ -357,11 +376,15 @@ public class BDRControl extends AbstractDialog implements TeamCommListener, Comp
     public void newTeamCommMessages(List<TeamCommMessage> messages) {
         if (!messages.isEmpty()) {
             messages.forEach((m) -> {
-                if (!robotsMap.containsKey(m.address)) {
-                    robotsMap.put(m.address, new RobotPanel(Plugin.rc.getMessageServer(), m.address, m.message));
-                    updateRoboPanel();
+                if(m.message.playerNum > 0) {
+                    if (!robotsMap.containsKey(m.address)) {
+                        robotsMap.put(m.address, new RobotPanel(Plugin.rc.getMessageServer(), m.address, m.message));
+                        updateRoboPanel();
+                    } else {
+                        robotsMap.get(m.address).setStatus(System.currentTimeMillis(), m.message);
+                    }
                 } else {
-                    robotsMap.get(m.address).setStatus(m.timestamp, m.message);
+                    /* TODO: do something with 'coach' messages */
                 }
             });
         }

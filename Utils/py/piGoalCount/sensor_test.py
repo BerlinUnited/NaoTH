@@ -10,7 +10,7 @@ GPIO_INPUT_GOAL2 = 24
 #set GPIO direction (IN / OUT)
 GPIO.setup([GPIO_INPUT_GOAL1, GPIO_INPUT_GOAL2], GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
-def handle_goal(pin):
+def handle(pin):
   if pin == GPIO_INPUT_GOAL1:
     print ("Activated: Goal 1")
   
@@ -22,7 +22,8 @@ if __name__ == '__main__':
 
   #GPIO.RISING
   #GPIO.BOTH
-  GPIO.add_event_detect(BTN_G, GPIO.RISING, handle)
+  GPIO.add_event_detect(GPIO_INPUT_GOAL1, GPIO.RISING, handle)
+  GPIO.add_event_detect(GPIO_INPUT_GOAL2, GPIO.RISING, handle)
 
   # dummy waiting, this will be done better
   try:

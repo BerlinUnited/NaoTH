@@ -18,10 +18,16 @@ class Display:
   
 
   def set_score(self, a, b):
-    print("set_score")
-    text = self.font.render("{:2}:{:2}".format(a,b), True, (255,255,255))
+    color_bg = (255,255,255)
+    color_text = (0,0,0)
     
-    self.screen.fill((0,0,0))
+    #print("set_score")
+    text = self.font.render("{:2}:{:2}".format(a,b), True, color_text)
+    
+    self.screen.fill(color_bg)
     self.screen.blit(text, (self.width // 2 - text.get_width() // 2, self.height // 2 - text.get_height() // 2))
     
     pygame.display.flip()
+    
+  def end(self):
+    pygame.quit()

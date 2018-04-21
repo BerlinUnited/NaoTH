@@ -88,14 +88,18 @@ local function protocCompile(inputFiles, cppOut, javaOut, pythonOut, ipaths)
   end
   
   -- HACK: create the output directories if needed
-  os.mkdir(cppOut)
-  os.mkdir(javaOut)
+  if(cppOut ~= nil) then
+    os.mkdir(cppOut)
+  end
+  if(javaOut ~= nil) then
+    os.mkdir(javaOut)
+  end
   
   -- generate the message files
   print("INFO: (Protbuf) executing " .. cmd)
   local succ, status, returnCode = os.execute(cmd)
   
-  if returnCode == 0 then
+  if returnCode == 0 and cppOut ~= nil then
     print("NOTE: (Protbuf) supressing warnings in " .. cppOut)
     -- add few lines to suppress the conversion warnings to each of the generated *.cc files
     add_gcc_ignore_pragmas(os.matchfiles(path.join(cppOut,"**.pb.cc")))

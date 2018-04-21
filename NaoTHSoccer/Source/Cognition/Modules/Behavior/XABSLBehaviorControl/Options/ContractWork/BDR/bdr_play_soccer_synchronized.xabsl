@@ -25,6 +25,7 @@ option bdr_play_soccer_synchronized
 
         action {
             bdr_play_soccer();
+            bdr.time_playing = state_time;
         }       
     }
 
@@ -36,6 +37,7 @@ option bdr_play_soccer_synchronized
         action {
             motion.type = stand;
             head.control_mode = search_for_ball_and_look_around;
+            bdr.time_playing = 0;
         }
     }
 

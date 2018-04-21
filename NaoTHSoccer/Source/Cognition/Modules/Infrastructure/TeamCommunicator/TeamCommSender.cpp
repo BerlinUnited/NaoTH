@@ -97,8 +97,9 @@ void TeamCommSender::fillMessageBeforeSending() const
     msg.custom.isCharging = getBatteryData().current > 0;
 
     msg.custom.robotState = getPlayerInfo().robotState;
-    msg.custom.bdrPlayerState = getBDRPlayerState();
     msg.custom.teamColor = getPlayerInfo().teamColor;
+
+    msg.custom.bdrPlayerState = getBDRPlayerState();
     msg.custom.message = getBDRPlayerState().getMessageString();
 
     // TODO: shall we put it into config?

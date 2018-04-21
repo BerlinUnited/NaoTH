@@ -228,6 +228,10 @@ naothmessages::BUUserTeamMessage TeamMessageCustom::toProto() const
     userMsg.mutable_bdrplayerstate()->set_activity((naothmessages::BDRPlayerState_Activity)bdrPlayerState.activity);
     userMsg.mutable_bdrplayerstate()->set_sitting(bdrPlayerState.sitting);
     userMsg.mutable_bdrplayerstate()->set_localized_on_field(bdrPlayerState.localized_on_field);
+    
+    userMsg.mutable_bdrplayerstate()->set_time_playing(bdrPlayerState.time_playing);
+    userMsg.mutable_bdrplayerstate()->set_goalsleft(bdrPlayerState.goalsLeft);
+    userMsg.mutable_bdrplayerstate()->set_goalsright(bdrPlayerState.goalsRight);
 
     return userMsg;
 }
@@ -312,5 +316,9 @@ void TeamMessageCustom::parseFromProto(const naothmessages::BUUserTeamMessage &u
     bdrPlayerState.activity = (BDRPlayerState::Activity) userData.bdrplayerstate().activity();
     bdrPlayerState.sitting = userData.bdrplayerstate().sitting();
     bdrPlayerState.localized_on_field = userData.bdrplayerstate().localized_on_field();
+    
+    bdrPlayerState.time_playing = userData.bdrplayerstate().time_playing();
+    bdrPlayerState.goalsLeft = userData.bdrplayerstate().goalsleft();
+    bdrPlayerState.goalsRight = userData.bdrplayerstate().goalsright();
 }
 

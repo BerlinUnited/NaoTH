@@ -45,9 +45,6 @@
       </Layout>
     </Container>
     <Container class="javax.swing.JPanel" name="controlWrapper">
-      <Properties>
-        <Property name="alignmentX" type="float" value="0.5"/>
-      </Properties>
       <SubComponents>
         <Container class="javax.swing.JLayeredPane" name="layerNotConnected">
           <Properties>
