@@ -29,6 +29,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.TreeMap;
 import javax.swing.JPanel;
 import javax.swing.Timer;
@@ -55,6 +56,7 @@ public class BDRMonitor extends AbstractDialog implements ActionListener, TeamCo
     
     private final int port = 10004;
     private final int maxMessageTime = 1000;
+    private final int maxTimeRobotIsDead = 2000; //ms
     
     private final int robotPanelGap = 5;
     int robotPanelHeight = 300;
@@ -180,6 +182,11 @@ public class BDRMonitor extends AbstractDialog implements ActionListener, TeamCo
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        // remove robots & update panel, if the last message is older than 'maxTimeRobotIsDead'
+        if(robots.entrySet().removeIf((t) -> { return t.getValue().getLastTimestamp() + maxTimeRobotIsDead < System.currentTimeMillis(); })) {
+            updateRoboPanel();
+        }
+        
         // clear old field drawings
         clearField();
 
@@ -205,6 +212,7 @@ public class BDRMonitor extends AbstractDialog implements ActionListener, TeamCo
         // re-draw field
         fieldCanvas.repaint();
         
+        // collect the robot messages and show them
         String msg = "<html>";
         for (RobotMessage u : robotsMsg.values()) {
             if(!u.get().isEmpty() && u.time() + maxMessageTime > System.currentTimeMillis()) {
@@ -227,19 +235,24 @@ public class BDRMonitor extends AbstractDialog implements ActionListener, TeamCo
     public void newTeamCommMessages(List<TeamCommMessage> messages) {
         if (!messages.isEmpty()) {
             messages.forEach((m) -> {
+                // skip 'invalid' players
+                if(m.message.playerNum > 0) {
 //                System.out.println(m.address + ": " + m.message.user.getIsCharging());
-                if (!robots.containsKey(m.address)) {
-                    robots.put(m.address, new RobotPanel(m.address, m.message));
-                    updateRoboPanel();
-                } else {
-                    robots.get(m.address).setStatus(m.timestamp, m.message);
-                }
-                
-                if(m.message.user.hasMessage()) {
-                    if(!robotsMsg.containsKey(m.address)) {
-                        robotsMsg.put(m.address, new RobotMessage(m.message.playerNum));
+                    if (!robots.containsKey(m.address)) {
+                        robots.put(m.address, new RobotPanel(m.address, m.message));
+                        updateRoboPanel();
+                    } else {
+                        robots.get(m.address).setStatus(System.currentTimeMillis(), m.message);
                     }
-                    robotsMsg.get(m.address).set(m.message.user.getMessage());
+                    
+                    if(m.message.user.hasMessage()) {
+                        if(!robotsMsg.containsKey(m.address)) {
+                            robotsMsg.put(m.address, new RobotMessage(m.message.playerNum));
+                        }
+                        robotsMsg.get(m.address).set(m.message.user.getMessage());
+                    }
+                } else {
+                    /* TODO: do something with 'coach' messages */
                 }
             });
         }
