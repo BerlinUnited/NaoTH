@@ -40,7 +40,7 @@ class Display:
     
     self.screen.fill(color_bg)
     
-    textGoals = self.fontScore.render("{:2}:{:2}".format(self.goalsLeft,self.goalsRight), True, color_text)
+    textGoals = self.fontScore.render("{}:{}".format(self.goalsLeft,self.goalsRight), True, color_text)
     self.screen.blit(textGoals, (self.width // 2 - textGoals.get_width() // 2, self.height // 2 - textGoals.get_height() // 2 + offset_goals_y))
     
     mins = self.gameTime // (1000*60)
