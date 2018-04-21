@@ -1,4 +1,5 @@
-clear all
+clear variables
+clc
 % adds a raw file to the whistle reference database
 % TODO does not check if file is already inserted
 try

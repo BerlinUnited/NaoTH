@@ -1,6 +1,4 @@
-function [spectrum, max_auto_corr] = calculate_spectrum(raw_samples)
-    %CALCULATE_SPECTRUM Summary of this function goes here
-    %   Detailed explanation goes here
+function [spectrum, max_auto_corr] = calc_spectrum(raw_samples)
 
     % normalize the raw samples like the cpp implementation
     short_max = 32767;

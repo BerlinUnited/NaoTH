@@ -1,4 +1,4 @@
-clear all
+clear variables
 clc
 %% Example of how to get capture data and apply a detector
 load('../data/capture_database.mat')

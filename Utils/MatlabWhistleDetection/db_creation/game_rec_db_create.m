@@ -1,4 +1,4 @@
-clear all
+clear variables
 clc
 % adds a raw file to the whistle capture database
 % TODO does not check if file is already inserted

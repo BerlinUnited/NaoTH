@@ -1,6 +1,5 @@
-function data = addWhistle(data, file, numChanels, sampleRate, category)
-%ADDWHISTLE Summary of this function goes here
-%   Detailed explanation goes here
+function data = add_whistle(data, file, numChanels, sampleRate, category)
+
     [path_to_file,filename,~] = fileparts(file);
 
     % fill the referenceWhistle fields
@@ -13,6 +12,7 @@ function data = addWhistle(data, file, numChanels, sampleRate, category)
         raw = fread(fileID, 'int16', 'ieee-le');
     fclose(fileID);
     whistle.rawData = raw;
+    
     % TODO how to handle data from multiple channels, 
     % should each channel be saved individually?
     
