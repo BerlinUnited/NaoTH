@@ -42,7 +42,9 @@ class Display:
     textGoals = self.fontScore.render("{:2}:{:2}".format(self.goalsLeft,self.goalsRight), True, color_text)
     self.screen.blit(textGoals, (self.width // 2 - textGoals.get_width() // 2, self.height // 2 - textGoals.get_height() // 2 + offset_y/2))
     
-    textTime = self.fontTime.render("{}".format(self.gameTime), True, color_text)
+    mins = self.gameTime // (1000*60)
+    secs = (self.gameTime - mins*(1000*60)) // 1000
+    textTime = self.fontTime.render("{}m {}s".format(mins, secs), True, color_text)
     self.screen.blit(textTime, (self.width // 2 - textTime.get_width() // 2, offset_y))
     
     pygame.display.flip()
