@@ -59,7 +59,7 @@ class TeamCommReceiver(threading.Thread):
 
     def stop(self):
       self.loop_control.set()
-      self.join()
+      #self.join()
 
 if __name__ == '__main__':
     print('starting ...')
