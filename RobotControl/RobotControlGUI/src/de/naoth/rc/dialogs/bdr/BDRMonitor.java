@@ -268,7 +268,6 @@ public class BDRMonitor extends AbstractDialog implements ActionListener, TeamCo
         this.robotPanel.removeAll();
         
         robots.forEach((t, u) -> {
-            u.setChestColor(u.getMessage().getTeamColor());
             u.setPreferredSize(new Dimension(robotPanelWidth, robotPanelHeight));
             u.setMinimumSize(new Dimension(robotPanelWidth, robotPanelHeight));
             u.setHideConnectButton(true);

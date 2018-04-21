@@ -367,7 +367,6 @@ public class BDRControl extends AbstractDialog implements TeamCommListener, Comp
         this.robotPanel.removeAll();
         
         for (RobotPanel robot : robotsMap.values()) {
-            robot.setChestColor(robot.getMessage().getTeamColor());
             robot.setPreferredSize(new Dimension(robotPanelWidth, robotPanelHeight));
             robot.setMinimumSize(new Dimension(robotPanelWidth, robotPanelHeight));
             robotPanel.add(robot);
