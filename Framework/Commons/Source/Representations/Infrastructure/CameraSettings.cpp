@@ -67,7 +67,7 @@ CameraSettingsRequest::CameraSettingsRequest(string configName)
   PARAMETER_REGISTER(backlightCompensation) = false;
   PARAMETER_REGISTER(brightness) = 55;
   PARAMETER_REGISTER(cameraSelection) = 0;
-  PARAMETER_REGISTER(contrast) = 32;
+  PARAMETER_REGISTER(contrast) = 1.0;
   PARAMETER_REGISTER(exposure) = 1;
   PARAMETER_REGISTER(fadeToBlack) = false;
   PARAMETER_REGISTER(gain) = 32;
@@ -110,6 +110,7 @@ CameraSettings CameraSettingsRequest::getCameraSettings() const {
   result.data[CameraSettings::Sharpness] = Math::clamp(sharpness, -7, 7);
   result.data[CameraSettings::VerticalFlip] = verticalFlip ? 1 : 0;
   result.data[CameraSettings::WhiteBalance] = Math::clamp(whiteBalanceTemperature, 2700, 6500);
+  
 
   return result;
 }
