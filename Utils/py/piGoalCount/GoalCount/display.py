@@ -11,21 +11,39 @@ class Display:
     self.height = 480
     self.screen = pygame.display.set_mode( ( self.width, self.height ), pygame.FULLSCREEN )
 
-    self.font = pygame.font.SysFont("robotocondensed", 350)
-    self.font.set_bold(False)
+    self.fontScore = pygame.font.SysFont("robotocondensed", 350)
+    self.fontScore.set_bold(False)
 
-    self.set_score(a, b)
-  
+    self.fontTime = pygame.font.SysFont("robotocondensed", 35)
+    self.fontTime.set_bold(False)
+    
+    self.goalsLeft = a
+    self.goalsRight = b
+    self.gameTime = 0
+    self.update()
 
+  def setGameTime(self, t):
+    self.gameTime = t
+    self.update()
+    
   def set_score(self, a, b):
+    self.goalsLeft = a
+    self.goalsRight = b
+    self.update()
+    
+  def update(self):
     color_bg = (255,255,255)
     color_text = (0,0,0)
     
-    #print("set_score")
-    text = self.font.render("{:2}:{:2}".format(a,b), True, color_text)
+    offset_y = 100
     
     self.screen.fill(color_bg)
-    self.screen.blit(text, (self.width // 2 - text.get_width() // 2, self.height // 2 - text.get_height() // 2))
+    
+    textGoals = self.fontScore.render("{:2}:{:2}".format(self.goalsLeft,self.goalsRight), True, color_text)
+    self.screen.blit(textGoals, (self.width // 2 - textGoals.get_width() // 2, self.height // 2 - textGoals.get_height() // 2 + offset_y/2))
+    
+    textTime = self.fontTime.render("{}".format(self.gameTime), True, color_text)
+    self.screen.blit(textTime, (self.width // 2 - textGoals.get_width() // 2, offset_y))
     
     pygame.display.flip()
     
