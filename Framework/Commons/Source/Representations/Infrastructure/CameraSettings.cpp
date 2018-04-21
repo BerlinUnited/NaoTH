@@ -92,15 +92,15 @@ CameraSettings CameraSettingsRequest::getCameraSettings() const {
   // Convert each request to a proper setting and clamp values according to the driver documentation
   // (https://github.com/bhuman/BKernel#information-about-the-camera-driver).
   // The V4L controller might later adjust these values by the ranges reported by driver, but these
-  // might be inaccurate or less restricted.
+  // might be inaccurate or less restricted. Also, for fixed point real numbers the clipping should
+  // be performed for the real number range, not the byte-representation.
 
   result.data[CameraSettings::AutoExposition] = autoExposition ? 1 : 0;
   result.data[CameraSettings::AutoWhiteBalancing] = autoWhiteBalancing ? 1 : 0;
   result.data[CameraSettings::BacklightCompensation] = backlightCompensation ? 1 : 0;
   result.data[CameraSettings::Brightness] = Math::clamp(brightness, 0, 255);
   result.data[CameraSettings::CameraSelection] = cameraSelection;
-  // TODO: contrast is actually a fixed point floating number
-  result.data[CameraSettings::Contrast] = Math::clamp(contrast, 16, 64);
+  result.data[CameraSettings::Contrast] = Math::toFixPoint<5>((float) Math::clamp(contrast, 0.5, 2.0));
   result.data[CameraSettings::Exposure] = Math::clamp(exposure, 1, 1000);
   result.data[CameraSettings::FadeToBlack] = fadeToBlack ? 1 : 0;
   result.data[CameraSettings::Gain] = Math::clamp(gain, 0, 255);

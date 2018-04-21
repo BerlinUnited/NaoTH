@@ -82,7 +82,7 @@ namespace naoth
     bool backlightCompensation;
     int brightness;
     int cameraSelection;
-    int contrast;
+    double contrast;
     int exposure;
     bool fadeToBlack;
     int gain;
