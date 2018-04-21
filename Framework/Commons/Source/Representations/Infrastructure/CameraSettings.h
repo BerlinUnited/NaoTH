@@ -28,6 +28,7 @@ namespace naoth
         AutoWhiteBalancing,
         BacklightCompensation,
         Brightness,
+        BrightnessDark,
         CameraSelection,
         Contrast,
         Exposure,
@@ -81,6 +82,7 @@ namespace naoth
     bool autoWhiteBalancing;
     bool backlightCompensation;
     int brightness;
+    int brightnessDark;
     int cameraSelection;
     double contrast;
     int exposure;
@@ -114,6 +116,7 @@ namespace naoth
     bool autoExposition;
     bool autoWhiteBalancing;
     int brightness;
+    int brightnessDark;
     int exposure;
     int gain;
     int saturation;

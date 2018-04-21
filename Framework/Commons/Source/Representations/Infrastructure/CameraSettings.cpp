@@ -66,6 +66,7 @@ CameraSettingsRequest::CameraSettingsRequest(string configName)
   PARAMETER_REGISTER(autoWhiteBalancing) = false;
   PARAMETER_REGISTER(backlightCompensation) = false;
   PARAMETER_REGISTER(brightness) = 55;
+  PARAMETER_REGISTER(brightnessDark) = 27;
   PARAMETER_REGISTER(cameraSelection) = 0;
   PARAMETER_REGISTER(contrast) = 1.0;
   PARAMETER_REGISTER(exposure) = 1;
@@ -99,6 +100,7 @@ CameraSettings CameraSettingsRequest::getCameraSettings() const {
   result.data[CameraSettings::AutoWhiteBalancing] = autoWhiteBalancing ? 1 : 0;
   result.data[CameraSettings::BacklightCompensation] = backlightCompensation ? 1 : 0;
   result.data[CameraSettings::Brightness] = Math::clamp(brightness, 0, 255);
+  result.data[CameraSettings::BrightnessDark] = Math::clamp(brightnessDark, 0, 255);
   result.data[CameraSettings::CameraSelection] = cameraSelection;
   result.data[CameraSettings::Contrast] = Math::toFixPoint<5>((float) Math::clamp(contrast, 0.5, 2.0));
   result.data[CameraSettings::Exposure] = Math::clamp(exposure, 1, 1000);
@@ -127,6 +129,7 @@ CommonCameraSettingsRequest::CommonCameraSettingsRequest(string configName)
   PARAMETER_REGISTER(autoExposition) = false;
   PARAMETER_REGISTER(autoWhiteBalancing) = false;
   PARAMETER_REGISTER(brightness) = 55;
+  PARAMETER_REGISTER(brightnessDark) = 27;
   PARAMETER_REGISTER(exposure) = 1;
   PARAMETER_REGISTER(gain) = 32;
   PARAMETER_REGISTER(saturation) = 128;

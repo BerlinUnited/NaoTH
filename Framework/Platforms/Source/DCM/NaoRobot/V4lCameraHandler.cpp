@@ -18,6 +18,7 @@
 
 //Custom V4L control variables
 #define V4L2_MT9M114_FADE_TO_BLACK (V4L2_CID_PRIVATE_BASE) //boolean, enable or disable fade to black feature
+#define V4L2_MT9M114_BRIGHTNESS_DARK (V4L2_CID_PRIVATE_BASE+1)
 
 #define LOG "[CameraHandler " << currentCamera << "] "
 
@@ -50,7 +51,8 @@ V4lCameraHandler::V4lCameraHandler()
   settingsOrder.push_back(CameraSettings::AutoWhiteBalancing);
   settingsOrder.push_back(CameraSettings::AutoExposition);
   
-  //settingsOrder.push_back(CameraSettings::Brightness);
+  settingsOrder.push_back(CameraSettings::Brightness);
+  settingsOrder.push_back(CameraSettings::BrightnessDark);
   settingsOrder.push_back(CameraSettings::Contrast);
   settingsOrder.push_back(CameraSettings::Saturation);
   settingsOrder.push_back(CameraSettings::Hue);
@@ -122,6 +124,7 @@ void V4lCameraHandler::initIDMapping()
 
   // map the existing parameters that can be used safely
   csConst[CameraSettings::Brightness] = V4L2_CID_BRIGHTNESS;
+  csConst[CameraSettings::BrightnessDark] = V4L2_MT9M114_BRIGHTNESS_DARK;
   csConst[CameraSettings::Contrast] = V4L2_CID_CONTRAST;
   csConst[CameraSettings::Saturation] = V4L2_CID_SATURATION;
   csConst[CameraSettings::Hue] = V4L2_CID_HUE;
