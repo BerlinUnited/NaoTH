@@ -24,6 +24,9 @@ def main():
   receiver = TeamCommReceiver()
   receiver.start()
   
+  sender = TeamCommSender()
+  sender.start()
+  
   try:
   
     #while not goalSensor.update.wait():
@@ -33,7 +36,8 @@ def main():
       
     while True:
       display.setValues(goalSensor.goal1, goalSensor.goal2, receiver.time_playing)
-      sleep(0.1)
+      sender.set_score(goalSensor.goal1, goalSensor.goal2, receiver.time_playing)
+      sleep(0.5)
     
   except (KeyboardInterrupt, SystemExit):
     display.end()
@@ -41,9 +45,11 @@ def main():
     print("")  # intentionally print empty line
     GPIO.cleanup()
     receiver.stop()
+    sender.stop()
     
   GPIO.cleanup()
   receiver.stop()
+  sender.stop()
     
 
 if __name__ == '__main__':

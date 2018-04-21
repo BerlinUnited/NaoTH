@@ -17,7 +17,7 @@ from naoth.SPLMessage import SPLMessage
 
 
 class TeamCommSender(threading.Thread):
-    def __init__(self, loop_control:Event, host='localhost', port=10004, delay=0.4):
+    def __init__(self, host='localhost', port=10004, delay=0.4):
         threading.Thread.__init__(self)
 
         # create dgram udp socket
@@ -39,7 +39,7 @@ class TeamCommSender(threading.Thread):
         self.msg.data.key = "naoth"
         self.msg.data.robotState = TeamMessage_pb2.penalized
 
-        self.loop_control = loop_control
+        self.loop_control = Event()
 
     def __repr__(self):
         return "Values of the generated messages (for {}:{}):\n{}".format(self.host, self.port, str(self.msg))
@@ -48,29 +48,26 @@ class TeamCommSender(threading.Thread):
         while not self.loop_control.is_set():
             try:
                 # Send message
-                #self.msg.data.timestamp = int(time.monotonic() * 1000)
+                self.msg.data.timestamp = int(time.monotonic() * 1000)
                 #print('send message:', self.host, self.port)
-                #self.socket.sendto(self.msg.pack(), (self.host, self.port))
+                self.socket.sendto(self.msg.pack(), (self.host, self.port))
                 #print(self.msg.data.message)
-                self.send_score(7,11)
                 # wait to send new message
                 time.sleep(self.delay)
             except socket.error as msg:
                 print('Error Code : ' + str(msg[0]) + ' Message ' + msg[1])
                 self.running = False
 
-    def send_score(self, goalsLeft, goalsRight):
-      try:
+    def set_score(self, goalsLeft, goalsRight, time):
         self.msg.data.bdrPlayerState.goalsLeft = goalsLeft
         self.msg.data.bdrPlayerState.goalsRight = goalsRight
-        self.msg.data.bdrPlayerState.time_playing = 1000*273
-        
-        self.msg.data.timestamp = int(time.monotonic() * 1000)
-        self.socket.sendto(self.msg.pack(), (self.host, self.port))
-        time.sleep(self.delay)
-      except socket.error as msg:
-        print('Error Code : ' + str(msg[0]) + ' Message ' + msg[1])
+        self.msg.data.bdrPlayerState.time_playing = time     
                 
+    def stop(self):
+      self.loop_control.set()
+      self.join()
+               
+               
 if __name__ == '__main__':
     print('starting ...')
     loop_control = Event()
