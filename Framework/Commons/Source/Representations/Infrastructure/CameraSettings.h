@@ -84,13 +84,16 @@ namespace naoth
     int cameraSelection;
     int contrast;
     int exposure;
+    bool fadeToBlack;
     int gain;
     bool horizontalFlip;
     int hue;
     int saturation;
-    int shaprness;
+    int sharpness;
     bool verticalFlip;
-    int whiteBalance;
+    int whiteBalanceTemperature;
+
+    CameraSettings getCameraSettings();
   };
 
   class CameraSettingsRequestTop : public CameraSettingsRequest
