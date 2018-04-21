@@ -41,9 +41,13 @@ class TeamCommReceiver(threading.Thread):
             try:
                 # Send message
                 data, addr = self.socket.recvfrom(1024)  # buffer size is 1024 bytes
-                msg = SPLMessage(data=data)
-                self.data[addr[0]] = msg
-                self.time_playing = msg.data.bdrPlayerState.time_playing
+                self.data[addr[0]] = SPLMessage(data=data)
+             
+                # choose the maximal play time
+                self.time_playing = 0
+                for m in self.data:
+                  msg = self.data[m]
+                  self.time_playing = max(self.time_playing, msg.data.bdrPlayerState.time_playing)
                 
                 print("received from: " + addr[0])
                 # wait to send new message
