@@ -22,16 +22,13 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.TreeMap;
-import javax.swing.JPanel;
 import javax.swing.Timer;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
@@ -271,8 +268,8 @@ public class BDRMonitor extends AbstractDialog implements ActionListener, TeamCo
         this.robotPanel.removeAll();
         
         robots.forEach((t, u) -> {
-            u.setChestColor(u.getMessage().getTeamColor());
             u.setPreferredSize(new Dimension(robotPanelWidth, robotPanelHeight));
+            u.setMinimumSize(new Dimension(robotPanelWidth, robotPanelHeight));
             u.setHideConnectButton(true);
             robotPanel.add(u);
         });
@@ -285,6 +282,7 @@ public class BDRMonitor extends AbstractDialog implements ActionListener, TeamCo
         for(int i = robotPanel.getComponentCount(); i<4; i++) {
             RobotPanel d = new RobotPanel("0.0.0.0", new SPLMessage());
             d.setPreferredSize(new Dimension(robotPanelWidth, robotPanelHeight));
+            d.setMinimumSize(new Dimension(robotPanelWidth, robotPanelHeight));
             d.setEnabled(false);
             robotPanel.add(d);
         }

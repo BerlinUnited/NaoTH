@@ -66,7 +66,10 @@ option bdr_play
         motion.type = stand;
         head.control_mode = look_around;
         situationStatusOwnHalf = last_state_was_penalized;
-        bdr.activity = initializing;        
+        bdr.activity = initializing;   
+
+        bdr.charge_beginning = platform.battery;
+        bdr.temperature_beginning = max(value0 = body.temperature.leg.left, value1 = body.temperature.leg.right);
     }
   }
 
@@ -278,6 +281,9 @@ option bdr_play
         bdr.activity = initializing;
         bdr.sitting = false;
         bdr.message = ready;
+
+        bdr.charge_beginning = platform.battery;
+        bdr.temperature_beginning = max(value0 = body.temperature.leg.left, value1 = body.temperature.leg.right);
     }
   }
 
@@ -322,9 +328,6 @@ option bdr_play
         head.point_in_world.y = 0;
         head.point_in_world.z = 0;
         head.motion_type = look_at_world_point;
-
-        bdr.charge_beginning = platform.battery;
-        bdr.temperature_beginning = max(value0 = body.temperature.leg.left, value1 = body.temperature.leg.right);
 
         bdr.localized_on_field = true; // TODO: need some criteria like #Lines, error of matching after localization etc.
       }

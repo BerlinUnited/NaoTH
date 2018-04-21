@@ -196,6 +196,11 @@ public class RobotPanel extends javax.swing.JPanel {
         }
       }
       
+      // update color - in order it changed
+      if(msg.user.hasTeamColor()) {
+          setChestColor(msg.getTeamColor());
+      }
+      
       this.repaint();
     }
     

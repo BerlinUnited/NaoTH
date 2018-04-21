@@ -238,6 +238,7 @@ public class RobotHealth extends AbstractDialog
         @Override
         public void errorOccured(String cause) {
             Plugin.genericManagerFactory.getManager(getFSRDataCommand).removeListener(this);
+            Logger.getLogger(RobotHealth.class.getName()).log(Level.SEVERE, null, cause);
         }
 
         @Override
@@ -270,6 +271,7 @@ public class RobotHealth extends AbstractDialog
         @Override
         public void errorOccured(String cause) {
             Plugin.genericManagerFactory.getManager(getSensorJointDataCommand).removeListener(this);
+            Logger.getLogger(RobotHealth.class.getName()).log(Level.SEVERE, null, cause);
         }
 
         @Override
@@ -517,7 +519,11 @@ public class RobotHealth extends AbstractDialog
     }// </editor-fold>//GEN-END:initComponents
 
     private void btReceiveDrawingsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btReceiveDrawingsActionPerformed
-        if(btReceiveDrawings.isSelected()) {
+        connect(btReceiveDrawings.isSelected());
+}//GEN-LAST:event_btReceiveDrawingsActionPerformed
+
+    public void connect(boolean connect) {
+        if(connect) {
             if(Plugin.parent.checkConnected()) {
                 Plugin.genericManagerFactory.getManager(getFSRDataCommand).addListener(fSRDataListener);
                 Plugin.genericManagerFactory.getManager(getSensorJointDataCommand).addListener(sensorJointDataListener);
@@ -528,8 +534,8 @@ public class RobotHealth extends AbstractDialog
             Plugin.genericManagerFactory.getManager(getFSRDataCommand).removeListener(fSRDataListener);
             Plugin.genericManagerFactory.getManager(getSensorJointDataCommand).removeListener(sensorJointDataListener);
         }
-}//GEN-LAST:event_btReceiveDrawingsActionPerformed
-
+    }
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     public javax.swing.JToggleButton btReceiveDrawings;
     private javax.swing.JPanel drawingPanel;
