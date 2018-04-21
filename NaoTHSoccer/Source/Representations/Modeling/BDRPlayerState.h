@@ -21,7 +21,9 @@ public:
       message(ready),
       sitting(false),
       localized_on_field(false),
-      time_playing(0)
+      time_playing(0),
+      goalsLeft(0),
+      goalsRight(0)
   {}
 
   enum Activity
@@ -55,6 +57,8 @@ public:
   bool localized_on_field;
 
   double time_playing;
+  int goalsLeft;
+  int goalsRight;
 
   virtual void print(std::ostream& stream) const
   {
@@ -64,6 +68,8 @@ public:
     stream << "  sitting: "  << sitting << "\n";
     stream << "  localized_on_field: " << localized_on_field << "\n";
     stream << "  playing time: " << time_playing << "\n";
+    stream << "  goalsLeft: " << goalsLeft << "\n";
+    stream << "  goalsRight: " << goalsRight << "\n";
   }
 
   static std::string getActivityName(Activity id);

@@ -43,6 +43,9 @@ private:
   static int  getBDRMessage();
   static double getNumberOfPlayersInPlay();
 
+  static double getGoalsOwn();
+  static double getGoalsOpp();
+
 };//end class BDRSymbols
 
 #endif // _BDRSymbols_H_

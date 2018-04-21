@@ -34,4 +34,8 @@ message BDRPlayerState
   optional Activity activity = 1 [default = doing_nothing];
   optional bool sitting = 2 [default = false];
   optional bool localized_on_field = 3 [default = false];
+  optional double time_playing = 4 [default = 0];
+  
+  optional uint32 goalsLeft = 5 [default = 0];
+  optional uint32 goalsRight = 6 [default = 0];
 }
