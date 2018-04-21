@@ -2,9 +2,11 @@ clear variables
 clc
 % adds a raw file to the whistle capture database
 % TODO does not check if file is already inserted
+check_duplicates = false;
 try
     load('../data/capture_database.mat')
     disp('INFO: using a previously created database')
+    check_duplicates = true;
 catch
     disp('INFO: no previous mat file was found')
     capture_database = struct;
@@ -49,11 +51,18 @@ for i=1:length(folderContents)
     fclose(fileID);
     
     % fill the capture whistle fields
+    % TODO filename is missing
     capture.game_name = game_name;
     capture.half = half;
     capture.robot_name = robot_name;
     capture.rawData = raw_samples;
-    if isfield(capture_database, eventFolder) 
+    if isfield(capture_database, eventFolder)
+        % Check if this capture already exists
+        if(check_duplicates)
+            % TODO iterate over existing db
+        end
+        
+        % append a capture to the event struct
         capture_database.(eventFolder) = [capture_database.(eventFolder) capture];
     else
         capture_database.(eventFolder) = capture;
