@@ -44,7 +44,7 @@ class Display:
     #mins = self.gameTime // (1000*60)
     #secs = (self.gameTime - mins*(1000*60)) // 1000
     
-    d = datetime(2010, 1, 1, 0, 0, 0) + timedelta(milliseconds=t)
+    d = datetime(2010, 1, 1, 0, 0, 0) + timedelta(milliseconds=self.gameTime)
     textTime = self.fontTime.render('{:%M:%S}'.format(d), True, color_text)
     self.screen.blit(textTime, (self.width // 2 - textTime.get_width() // 2, offset_time_y))
     
