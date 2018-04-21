@@ -11,11 +11,18 @@ from daemonize import Daemonize
 from display import Display
 from goal_sensor import GoalSensor
 
+from sender import TeamCommSender
+from receiver import TeamCommReceiver
+
+
 def main():
 
   print("run goal count")
   display = Display()
   goalSensor = GoalSensor()
+  
+  receiver = TeamCommReceiver()
+  receiver.start()
   
   try:
   
@@ -33,8 +40,10 @@ def main():
     print("Interrupted or Exit")
     print("")  # intentionally print empty line
     GPIO.cleanup()
+    receiver.stop()
     
   GPIO.cleanup()
+  receiver.stop()
     
 
 if __name__ == '__main__':

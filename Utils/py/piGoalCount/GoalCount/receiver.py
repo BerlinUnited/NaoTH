@@ -16,7 +16,7 @@ from naoth.SPLMessage import SPLMessage
 
 class TeamCommReceiver(threading.Thread):
 
-    def __init__(self, loop_control:Event, host='localhost', port=10004):
+    def __init__(self, host='localhost', port=10004):
         threading.Thread.__init__(self)
 
         # create dgram udp socket
@@ -29,7 +29,7 @@ class TeamCommReceiver(threading.Thread):
         # init some vars
         self.host = host
         self.port = port
-        self.loop_control = loop_control
+        self.loop_control = Event()
         
         # creating message only once and update the data ...
         self.data = {}
@@ -52,13 +52,15 @@ class TeamCommReceiver(threading.Thread):
                 print('Error Code : ' + str(msg[0]) + ' Message ' + msg[1])
                 self.loop_control.set()
 
+    def stop(self):
+      self.loop_control.set()
+      self.join()
 
 if __name__ == '__main__':
     print('starting ...')
-    loop_control = Event()
-    r = TeamCommReceiver(loop_control)
+    r = TeamCommReceiver()
     r.start()
     time.sleep(10)
-    loop_control.set()
-    r.join()
+    r.stop()
+    #r.join()
     print('finished!')
