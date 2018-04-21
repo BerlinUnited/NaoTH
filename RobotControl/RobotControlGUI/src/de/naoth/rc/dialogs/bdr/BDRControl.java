@@ -158,6 +158,8 @@ public class BDRControl extends AbstractDialog implements TeamCommListener, Comp
 
     @Override
     public void disconnected(ConnectionStatusEvent event) {
+        // activate health status panel
+        ((RobotHealth) RobotControlBdrMonitorImpl.healthPanel.get()).connect(false);
         setButtons(false);
         robotsMap.forEach((t, u) -> {
             u.setEnableConnectButton(true);
@@ -175,7 +177,7 @@ public class BDRControl extends AbstractDialog implements TeamCommListener, Comp
         Command cmd = new Command("Cognition:representation:get").addArg("BDRControlCommand");
         Plugin.commandExecutor.executeCommand(new StatusUpdater(), cmd);
         // activate health status panel
-        ((RobotHealth) RobotControlBdrMonitorImpl.healthPanel.get()).btReceiveDrawings.doClick();
+        ((RobotHealth) RobotControlBdrMonitorImpl.healthPanel.get()).connect(true);
         // disable button of all 'not connected' robots
         String connectedIp = Plugin.rc.getMessageServer().getAddress().getHostName();
         robotsMap.forEach((t, u) -> {
