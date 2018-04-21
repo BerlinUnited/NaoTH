@@ -30,7 +30,7 @@ class TeamCommReceiver(threading.Thread):
         self.host = host
         self.port = port
         self.loop_control = loop_control
-
+        
         # creating message only once and update the data ...
         self.data = {}
 
@@ -40,7 +40,8 @@ class TeamCommReceiver(threading.Thread):
                 # Send message
                 data, addr = self.socket.recvfrom(1024)  # buffer size is 1024 bytes
                 self.data[addr[0]] = SPLMessage(data=data)
-
+                
+                print("received from: " + addr[0])
                 # wait to send new message
                 #time.sleep(self.delay)
             except socket.error as msg:
