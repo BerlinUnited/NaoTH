@@ -36,6 +36,7 @@ class TeamCommSender(threading.Thread):
         # init message
         self.msg = SPLMessage()
         self.msg.teamNumber = 4
+        self.msg.playerNumber = 0
         self.msg.data.key = "naoth"
         self.msg.data.robotState = TeamMessage_pb2.penalized
 

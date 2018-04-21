@@ -47,7 +47,8 @@ class TeamCommReceiver(threading.Thread):
                 self.time_playing = 0
                 for m in self.data:
                   msg = self.data[m]
-                  self.time_playing = max(self.time_playing, msg.data.bdrPlayerState.time_playing)
+                  if msg.playerNumber != 0:
+                    self.time_playing = max(self.time_playing, msg.data.bdrPlayerState.time_playing)
                 
                 print("received from: " + addr[0])
                 # wait to send new message
