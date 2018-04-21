@@ -50,7 +50,7 @@ class TeamCommReceiver(threading.Thread):
                   if msg.playerNumber != 0:
                     self.time_playing = max(self.time_playing, msg.data.bdrPlayerState.time_playing)
                 
-                print("received from: " + addr[0])
+                #print("received from: " + addr[0])
                 # wait to send new message
                 #time.sleep(self.delay)
             except socket.error as msg:
