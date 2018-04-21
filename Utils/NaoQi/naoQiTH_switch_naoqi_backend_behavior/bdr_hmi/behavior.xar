@@ -2911,6 +2911,7 @@ class MyClass(GeneratedClass):
         self.cancelWaiting()
         import qi
         if (self.should_stop):
+            self.should_stop = False
             self.onStopped() #activate the output of the box
             self.onUnload() #it is recommended to reuse the clean-up as the box is stopped
         else:
