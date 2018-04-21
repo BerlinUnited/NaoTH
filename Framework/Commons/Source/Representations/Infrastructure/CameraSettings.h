@@ -68,7 +68,7 @@ namespace naoth
     virtual ~CurrentCameraSettingsTop() {}
   };
 
-  class CameraSettingsRequest : public ParameterList, public CameraSettings
+  class CameraSettingsRequest : public ParameterList
   {
   public:
     CameraSettingsRequest(std::string configName="CameraSettings");
@@ -93,7 +93,7 @@ namespace naoth
     bool verticalFlip;
     int whiteBalanceTemperature;
 
-    CameraSettings getCameraSettings();
+    CameraSettings getCameraSettings() const;
   };
 
   class CameraSettingsRequestTop : public CameraSettingsRequest
@@ -105,11 +105,20 @@ namespace naoth
   };
 
   //to be used to set camera setting commonly used for both cameras
-  class CommonCameraSettingsRequest : public ParameterList, public CameraSettings
+  class CommonCameraSettingsRequest :  public ParameterList
   {
   public:
     CommonCameraSettingsRequest(std::string configName="CommonCameraSettings");
     virtual ~CommonCameraSettingsRequest() {}
+
+    bool autoExposition;
+    bool autoWhiteBalancing;
+    int exposure;
+    int gain;
+    int saturation;
+    int sharpness;
+    int whiteBalanceTemperature;
+    
 
     /** Set to true to query a real CameraSetting from the Nao camera */
     bool queryCameraSettings;

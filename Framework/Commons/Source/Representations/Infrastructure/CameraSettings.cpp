@@ -62,13 +62,26 @@ CameraSettingsRequest::CameraSettingsRequest(string configName)
 : ParameterList(configName),
   queryCameraSettings(false)
 {
-  for(int i=0;i<numOfCameraSetting;i++) {
-    registerParameter(getCameraSettingsName((CameraSettingID) i), data[i]);
-  }
+  PARAMETER_REGISTER(autoExposition) = false;
+  PARAMETER_REGISTER(autoWhiteBalancing) = false;
+  PARAMETER_REGISTER(backlightCompensation) = false;
+  PARAMETER_REGISTER(brightness) = 55;
+  PARAMETER_REGISTER(cameraSelection) = 0;
+  PARAMETER_REGISTER(contrast) = 32;
+  PARAMETER_REGISTER(exposure) = 1;
+  PARAMETER_REGISTER(fadeToBlack) = false;
+  PARAMETER_REGISTER(gain) = 32;
+  PARAMETER_REGISTER(horizontalFlip) = 0;
+  PARAMETER_REGISTER(hue) = 0;
+  PARAMETER_REGISTER(saturation) = 128;
+  PARAMETER_REGISTER(sharpness) = 128;
+  PARAMETER_REGISTER(verticalFlip) = 0;
+  PARAMETER_REGISTER(whiteBalanceTemperature) = 6500;
+
   syncWithConfig();
 }
 
-CameraSettings CameraSettingsRequest::getCameraSettings() {
+CameraSettings CameraSettingsRequest::getCameraSettings() const {
   CameraSettings result;
 
   // set some default/constant values
@@ -110,22 +123,13 @@ CommonCameraSettingsRequest::CommonCameraSettingsRequest(string configName)
 : ParameterList(configName),
   queryCameraSettings(false)
 {
-  for(int i=0;i<numOfCameraSetting;i++) 
-  {
-    CameraSettings::CameraSettingID id = (CameraSettings::CameraSettingID) i;
-    if
-    (
-      id == CameraSettings::Gain || 
-      id == CameraSettings::Exposure || 
-      id == CameraSettings::Saturation || 
-      id == CameraSettings::Sharpness ||
-      id == CameraSettings::WhiteBalance
-    )
-    {
-      registerParameter(getCameraSettingsName(id), data[i]);
-    }
-  }
-
+  PARAMETER_REGISTER(autoExposition) = false;
+  PARAMETER_REGISTER(autoWhiteBalancing) = false;
+  PARAMETER_REGISTER(exposure) = 1;
+  PARAMETER_REGISTER(gain) = 32;
+  PARAMETER_REGISTER(saturation) = 128;
+  PARAMETER_REGISTER(sharpness) = 128;
+  PARAMETER_REGISTER(whiteBalanceTemperature) = 6500;
   PARAMETER_REGISTER(isActive) = false;
 
   syncWithConfig();
