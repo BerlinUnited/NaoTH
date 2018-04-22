@@ -31,82 +31,23 @@ void CameraDebug::execute()
 {
   if(getCommonCameraSettingsRequest().isActive)
   {
-    bool settingsChanged = false;
-    const CommonCameraSettingsRequest& commonRequest = getCommonCameraSettingsRequest();
-    CameraSettingsRequest& bottomRequest = getCameraSettingsRequest();
-    CameraSettingsRequestTop& topRequest = getCameraSettingsRequestTop();
+    bool changed = false;
+    const CommonCameraSettingsRequest& common = getCommonCameraSettingsRequest();
+    CameraSettingsRequest& bottom = getCameraSettingsRequest();
+    CameraSettingsRequestTop& top = getCameraSettingsRequestTop();
 
-    // bottom
-    if(commonRequest.autoExposition != bottomRequest.autoExposition) {
-      settingsChanged = true;
-      bottomRequest.autoExposition = commonRequest.autoExposition;
-    }
-    if(commonRequest.autoWhiteBalancing != bottomRequest.autoWhiteBalancing) {
-      settingsChanged = true;
-      bottomRequest.autoWhiteBalancing = commonRequest.autoWhiteBalancing;
-    }
-    if(commonRequest.brightness != bottomRequest.brightness) {
-      settingsChanged = true;
-      bottomRequest.brightness = commonRequest.brightness;
-    }
-    if(commonRequest.exposure != bottomRequest.exposure) {
-      settingsChanged = true;
-      bottomRequest.exposure = commonRequest.exposure;
-    }
-    if(commonRequest.gain != bottomRequest.gain) {
-      settingsChanged = true;
-      bottomRequest.gain = commonRequest.gain;
-    }
-    if(commonRequest.saturation != bottomRequest.saturation) {
-      settingsChanged = true;
-      bottomRequest.saturation = commonRequest.saturation;
-    }
-    if(commonRequest.sharpness != bottomRequest.sharpness) {
-      settingsChanged = true;
-      bottomRequest.sharpness = commonRequest.sharpness;
-    }
-    if(commonRequest.whiteBalanceTemperature != bottomRequest.whiteBalanceTemperature) {
-      settingsChanged = true;
-      bottomRequest.whiteBalanceTemperature = commonRequest.whiteBalanceTemperature;
-    }
+    setCommonCameraSetting(common.autoExposition, bottom.autoExposition, top.autoExposition, changed);
+    setCommonCameraSetting(common.autoWhiteBalancing, bottom.autoWhiteBalancing, top.autoWhiteBalancing, changed);
+    setCommonCameraSetting(common.brightness, bottom.brightness, top.brightness, changed);
+    setCommonCameraSetting(common.exposure, bottom.exposure, top.exposure, changed);
+    setCommonCameraSetting(common.gain, bottom.gain, top.gain, changed);
+    setCommonCameraSetting(common.saturation, bottom.saturation, top.saturation, changed);
+    setCommonCameraSetting(common.sharpness, bottom.sharpness, top.sharpness, changed);
+    setCommonCameraSetting(common.whiteBalanceTemperature, bottom.whiteBalanceTemperature, top.whiteBalanceTemperature, changed);
 
-    // top
-    if(commonRequest.autoExposition != topRequest.autoExposition) {
-      settingsChanged = true;
-      topRequest.autoExposition = commonRequest.autoExposition;
-    }
-    if(commonRequest.autoWhiteBalancing != topRequest.autoWhiteBalancing) {
-      settingsChanged = true;
-      topRequest.autoWhiteBalancing = commonRequest.autoWhiteBalancing;
-    }
-    if(commonRequest.brightness != topRequest.brightness) {
-      settingsChanged = true;
-      topRequest.brightness = commonRequest.brightness;
-    }
-    if(commonRequest.exposure != topRequest.exposure) {
-      settingsChanged = true;
-      topRequest.exposure = commonRequest.exposure;
-    }
-    if(commonRequest.gain != topRequest.gain) {
-      settingsChanged = true;
-      topRequest.gain = commonRequest.gain;
-    }
-    if(commonRequest.saturation != topRequest.saturation) {
-      settingsChanged = true;
-      topRequest.saturation = commonRequest.saturation;
-    }
-    if(commonRequest.sharpness != topRequest.sharpness) {
-      settingsChanged = true;
-      topRequest.sharpness = commonRequest.sharpness;
-    }
-    if(commonRequest.whiteBalanceTemperature != topRequest.whiteBalanceTemperature) {
-      settingsChanged = true;
-      topRequest.whiteBalanceTemperature = commonRequest.whiteBalanceTemperature;
-    }
-    
-
-
-    if(settingsChanged)
+    setCommonCameraSetting(common.powerlineFrequency, bottom.powerlineFrequency, top.powerlineFrequency, changed);
+            
+    if(changed)
     {
       getCameraSettingsRequest().saveToConfig();
       getCameraSettingsRequestTop().saveToConfig();

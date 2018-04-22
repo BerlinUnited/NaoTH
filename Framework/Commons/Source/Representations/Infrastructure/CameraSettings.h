@@ -102,6 +102,7 @@ namespace naoth
     int sharpness;
     bool verticalFlip;
     int whiteBalanceTemperature;
+    int powerlineFrequency;
 
     CameraSettings getCameraSettings() const;
   };
@@ -129,6 +130,7 @@ namespace naoth
     int saturation;
     int sharpness;
     int whiteBalanceTemperature;
+    int powerlineFrequency;
     
 
     /** Set to true to query a real CameraSetting from the Nao camera */

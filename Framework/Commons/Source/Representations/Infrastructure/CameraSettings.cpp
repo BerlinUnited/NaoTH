@@ -85,6 +85,7 @@ CameraSettingsRequest::CameraSettingsRequest(string configName)
   PARAMETER_REGISTER(sharpness) = 128;
   PARAMETER_REGISTER(verticalFlip) = 0;
   PARAMETER_REGISTER(whiteBalanceTemperature) = 6500;
+  PARAMETER_REGISTER(powerlineFrequency) = 50;
 
   syncWithConfig();
 }
@@ -124,7 +125,8 @@ CameraSettings CameraSettingsRequest::getCameraSettings() const {
   result.data[CameraSettings::VerticalFlip] = verticalFlip ? 1 : 0;
   result.data[CameraSettings::WhiteBalance] = Math::clamp(whiteBalanceTemperature, 2700, 6500);
 
-  result.data[CameraSettings::PowerlineFrequency] = 1;
+  // use 50 Hz (val = 1) if 60 Hz (val = 2) is not explicitly requested
+  result.data[CameraSettings::PowerlineFrequency] = powerlineFrequency == 60 ? 2 : 1;
 
   return result;
 }
@@ -146,6 +148,7 @@ CommonCameraSettingsRequest::CommonCameraSettingsRequest(string configName)
   PARAMETER_REGISTER(saturation) = 128;
   PARAMETER_REGISTER(sharpness) = 128;
   PARAMETER_REGISTER(whiteBalanceTemperature) = 6500;
+  PARAMETER_REGISTER(powerlineFrequency) = 50;
   PARAMETER_REGISTER(isActive) = false;
 
   syncWithConfig();

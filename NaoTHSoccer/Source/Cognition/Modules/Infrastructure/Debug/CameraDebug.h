@@ -54,6 +54,17 @@ public:
   virtual void execute();
 
 private:
+  template<class T>
+  void setCommonCameraSetting(T value, T& bottomRequestValue, T& topRequestValue, bool& changed) {
+    if(bottomRequestValue != value) {
+      bottomRequestValue = value;
+      changed = true;
+    }
+    if(topRequestValue != value) {
+      topRequestValue = value;
+      changed = true;
+    }
+  }
 
 };
 
