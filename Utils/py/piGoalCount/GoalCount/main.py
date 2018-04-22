@@ -24,7 +24,7 @@ def main():
   receiver = TeamCommReceiver()
   receiver.start()
   
-  sender = TeamCommSender()
+  sender = TeamCommSender('10.0.4.255')
   sender.start()
   
   last_time = receiver.time_playing
