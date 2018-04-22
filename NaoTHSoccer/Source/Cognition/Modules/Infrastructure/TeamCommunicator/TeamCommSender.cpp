@@ -94,7 +94,7 @@ void TeamCommSender::fillMessageBeforeSending() const
       getTeamMessageData().custom.teamBall.y = std::numeric_limits<double>::infinity();
     }
 
-    msg.custom.isCharging = getBatteryData().current > 0;
+    msg.custom.isCharging = getBatteryData().current > 0.9;
 
     msg.custom.robotState = getPlayerInfo().robotState;
     msg.custom.teamColor = getPlayerInfo().teamColor;
