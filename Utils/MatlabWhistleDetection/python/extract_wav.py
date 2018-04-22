@@ -39,9 +39,11 @@ def extract_wav(input_path):
               The first 0 is the input file id
               The next 1 is the stream specifier - should be the audio stream, 0 is video
               The next 0 is the channel id
+              
+            -ar 8000 resamples the channel to 8kHz
             """
 
-            os.system("ffmpeg -i {0} -map_channel 0.1.0 {1}.wav".format(file, filename))
+            os.system("ffmpeg -i {0} -map_channel 0.1.0 -ar 8000{1}.wav".format(file, filename))
         else:
             continue
 
