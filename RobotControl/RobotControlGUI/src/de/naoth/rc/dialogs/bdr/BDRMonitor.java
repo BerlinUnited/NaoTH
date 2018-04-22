@@ -290,6 +290,7 @@ public class BDRMonitor extends AbstractDialog implements ActionListener, TeamCo
             robotPanel.add(u);
         });
         createDummies();
+        this.robotPanel.revalidate();
         this.robotPanel.repaint();
     }
     
@@ -300,6 +301,7 @@ public class BDRMonitor extends AbstractDialog implements ActionListener, TeamCo
             d.setPreferredSize(new Dimension(robotPanelWidth, robotPanelHeight));
             d.setMinimumSize(new Dimension(robotPanelWidth, robotPanelHeight));
             d.setEnabled(false);
+            d.setVisible(true);
             robotPanel.add(d);
         }
     }

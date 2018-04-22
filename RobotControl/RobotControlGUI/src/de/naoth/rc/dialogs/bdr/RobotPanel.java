@@ -8,6 +8,8 @@ package de.naoth.rc.dialogs.bdr;
 
 import de.naoth.rc.dataformats.SPLMessage;
 import de.naoth.rc.messages.TeamMessageOuterClass;
+import de.naoth.rc.server.ConnectionStatusEvent;
+import de.naoth.rc.server.ConnectionStatusListener;
 import de.naoth.rc.server.MessageServer;
 import java.awt.AlphaComposite;
 import java.awt.Color;
@@ -110,6 +112,27 @@ public class RobotPanel extends javax.swing.JPanel {
 
         this.setBackground(Color.black);
         lblActivity.setVisible(false);
+        
+        if(this.messageServer != null) {
+            this.messageServer.addConnectionStatusListener(new ConnectionStatusListener() {
+
+                @Override
+                public void connected(ConnectionStatusEvent event) {
+                    // my ip
+                    if(getAddress().equals(event.getAddress().getHostString())) {
+                        connectButton.setText("Disconnect");
+                    } else {
+                        setEnableConnectButton(false);
+                    }
+                }
+
+                @Override
+                public void disconnected(ConnectionStatusEvent event) {
+                    connectButton.setText("Connect");
+                    setEnableConnectButton(true);
+                }
+            });
+        }
     }
     
     public SPLMessage getMessage() {
@@ -513,13 +536,13 @@ public class RobotPanel extends javax.swing.JPanel {
             if(!this.messageServer.isConnected()) {
                 try {
                     this.messageServer.connect(this.ipAddress, 5401);
-                    connectButton.setText("Disconnect");
+                    //connectButton.setText("Disconnect");
                 } catch(IOException ex) {
                     java.util.logging.Logger.getLogger(RobotPanel.class.getName()).log(java.util.logging.Level.SEVERE, "Coult not connect.", ex);
                 }
             } else {
                 this.messageServer.disconnect();
-                connectButton.setText("Connect");
+                //connectButton.setText("Connect");
             }
         }
     }//GEN-LAST:event_connectButtonActionPerformed
