@@ -23,10 +23,24 @@ for i=1:length(ref_bhuman)
         fwrite(fileID, rawData, 'int16', 'ieee-le');
     fclose(fileID);
     
-    % TODO Export wav
+    % Export wav
+    filename2 = fullfile(path_to_outputfolder, strcat(name, '.wav'));
+    Fs = ref_bhuman(i).samplerate;
+    y = rawData ./ max( abs(rawData(:)) );
+    audiowrite(char(filename2),y,Fs);
     
-    %TODO export the spectrum as dat in the correct folder structure 
-    %for spectrum export the exportSpectrum.m script can be used
+    % Export the spectrum as dat
+    filename3 = fullfile(path_to_outputfolder, strcat(name, '.dat'));
+    fileID = fopen (filename3, 'w');
+        % unpack complex array again
+        real_part = real(ref_bhuman(i).spectralData);
+        imag_part = imag(ref_bhuman(i).spectralData);
+        % interleave the real and imaginary part for output
+        output = interleave(real_part, imag_part);
+        % append max autocorrelation to the output
+        output = [output ref_bhuman(i).autocorrelation];
+        fwrite(fileID, output, 'double', 'ieee-le');
+    fclose(fileID);
 end
 
 for i=1:length(ref_kln17)
@@ -44,10 +58,24 @@ for i=1:length(ref_kln17)
         fwrite(fileID, rawData, 'int16', 'ieee-le');
     fclose(fileID);
     
-    % TODO Export wav
+    % Export wav
+    filename2 = fullfile(path_to_outputfolder, strcat(name, '.wav'));
+    Fs = ref_kln17(i).samplerate;
+    y = rawData ./ max( abs(rawData(:)) );
+    audiowrite(char(filename2),y,Fs);
     
-    %TODO export the spectrum as dat in the correct folder structure 
-    %for spectrum export the exportSpectrum.m script can be used
+    % Export the spectrum as dat
+    filename3 = fullfile(path_to_outputfolder, strcat(name, '.dat'));
+    fileID = fopen (filename3, 'w');
+        % unpack complex array again
+        real_part = real(ref_kln17(i).spectralData);
+        imag_part = imag(ref_kln17(i).spectralData);
+        % interleave the real and imaginary part for output
+        output = interleave(real_part, imag_part);
+        % append max autocorrelation to the output
+        output = [output ref_kln17(i).autocorrelation];
+        fwrite(fileID, output, 'double', 'ieee-le');
+    fclose(fileID);
 end
 
 for i=1:length(ref_rc17)
@@ -65,8 +93,22 @@ for i=1:length(ref_rc17)
         fwrite(fileID, rawData, 'int16', 'ieee-le');
     fclose(fileID);
     
-    % TODO Export wav
+    % Export wav
+    filename2 = fullfile(path_to_outputfolder, strcat(name, '.wav'));
+    Fs = ref_rc17(i).samplerate;
+    y = rawData ./ max( abs(rawData(:)) );
+    audiowrite(char(filename2),y,Fs);
     
-    %TODO export the spectrum as dat in the correct folder structure 
-    %for spectrum export the exportSpectrum.m script can be used
+    % Export the spectrum as dat
+    filename3 = fullfile(path_to_outputfolder, strcat(name, '.dat'));
+    fileID = fopen (filename3, 'w');
+        % unpack complex array again
+        real_part = real(ref_rc17(i).spectralData);
+        imag_part = imag(ref_rc17(i).spectralData);
+        % interleave the real and imaginary part for output
+        output = interleave(real_part, imag_part);
+        % append max autocorrelation to the output
+        output = [output ref_rc17(i).autocorrelation];
+        fwrite(fileID, output, 'double', 'ieee-le');
+    fclose(fileID);
 end
