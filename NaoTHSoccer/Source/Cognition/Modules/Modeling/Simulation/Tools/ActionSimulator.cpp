@@ -188,6 +188,10 @@ bool ActionSimulator::calculateCollisionWithRebound(const vector<Math::LineSegme
       // point at which the ball reflects
 			Vector2d bounce = motionLine.point(t_min) + normal*getFieldInfo().ballRadius;
       
+      // apply collision dumping
+      const double collision_dumping = 0.5;
+      result = bounce + (result-bounce)*collision_dumping;
+
       // draw boundaries
       DEBUG_REQUEST("Simulation:draw_bound_collisions",
         PEN("000000", 1);
