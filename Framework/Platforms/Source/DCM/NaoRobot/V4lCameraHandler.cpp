@@ -897,7 +897,7 @@ void V4lCameraHandler::setAllCameraParams(const CameraSettings& data)
           currentSettings.data[CameraSettings::Exposure] = getSingleCameraParameter(csConst[CameraSettings::Exposure]);
           currentSettings.data[CameraSettings::Gain] = getSingleCameraParameter(csConst[CameraSettings::Gain]);
 
-          std::cout << LOG << "autoupdated Exposure to"  << currentSettings.data[CameraSettings::Exposure] << std::endl;
+          std::cout << LOG << "autoupdated Exposure to "  << currentSettings.data[CameraSettings::Exposure] << std::endl;
         }
 
         currentSettings.data[*it] = data.data[*it];
