@@ -36,8 +36,8 @@ namespace naoth
         FadeToBlack,
         FPS, // TODO: remove this from settings?
         Gain,
-        MinGain,
-        MaxGain,
+        MinAnalogGain,
+        MaxAnalogGain,
         TargetGain,
         HorizontalFlip,
         Hue,
@@ -98,8 +98,8 @@ namespace naoth
     bool fadeToBlack;
     int gain;
     double targetGain; 
-    double minGain;
-    double maxGain;
+    double minAnalogGain;
+    double maxAnalogGain;
     bool horizontalFlip;
     int hue;
     int saturation;

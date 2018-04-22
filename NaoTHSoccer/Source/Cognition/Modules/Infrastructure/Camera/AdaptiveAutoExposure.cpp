@@ -23,7 +23,7 @@ void AdaptiveAutoExposure::execute()
             getCameraSettingsRequest().autoExpositionAlgorithm = 1;
             getCameraSettingsRequestTop().autoExpositionAlgorithm = 1;
 
-            const std::uint8_t onVal = 255;
+            const std::uint8_t onVal = 100;
             // include all per default
             for(std::size_t i = 0; i < CameraSettings::AUTOEXPOSURE_GRID_SIZE; i++) {
                 for(std::size_t j=0; j < CameraSettings::AUTOEXPOSURE_GRID_SIZE; j++) {

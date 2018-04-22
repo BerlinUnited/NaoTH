@@ -96,7 +96,7 @@ private:
   void closeDevice();
 
   int getSingleCameraParameter(int id);
-  bool setSingleCameraParameter(int id, int value);
+  bool setSingleCameraParameter(int id, int value, std::string name);
   void setFPS(int fpsRate);
   void internalUpdateCameraSettings();
 

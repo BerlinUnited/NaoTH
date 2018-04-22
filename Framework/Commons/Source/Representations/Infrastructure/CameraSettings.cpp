@@ -22,12 +22,13 @@ string CameraSettings::getCameraSettingsName(CameraSettingID id)
   switch(id)
   {
     case Brightness: return "Brightness"; break;
+    case BrightnessDark: return "BrightnessDark"; break;
     case Contrast: return "Contrast"; break;
     case Saturation: return "Saturation"; break;
     case Hue: return "Hue"; break;
     case Gain: return "Gain"; break;
-    case MinGain: return "MinGain"; break;
-    case MaxGain: return "MaxGain"; break;
+    case MinAnalogGain: return "MinAnalogGain"; break;
+    case MaxAnalogGain: return "MaxAnalogGain"; break;
     case TargetGain: return "TargetGain"; break;
     case HorizontalFlip: return "HorizontalFlip"; break;
     case VerticalFlip: return "VerticalFlip"; break;
@@ -76,9 +77,9 @@ CameraSettingsRequest::CameraSettingsRequest(string configName)
   PARAMETER_REGISTER(exposure) = 1;
   PARAMETER_REGISTER(fadeToBlack) = false;
   PARAMETER_REGISTER(gain) = 32;
-  PARAMETER_REGISTER(targetGain) = 4.0;
-  PARAMETER_REGISTER(minGain) = 1.0;
-  PARAMETER_REGISTER(maxGain) = 8.0;
+  PARAMETER_REGISTER(targetGain) = 100.0;
+  PARAMETER_REGISTER(minAnalogGain) = 1.0;
+  PARAMETER_REGISTER(maxAnalogGain) = 8.0;
   PARAMETER_REGISTER(horizontalFlip) = 0;
   PARAMETER_REGISTER(hue) = 0;
   PARAMETER_REGISTER(saturation) = 128;
@@ -86,6 +87,13 @@ CameraSettingsRequest::CameraSettingsRequest(string configName)
   PARAMETER_REGISTER(verticalFlip) = 0;
   PARAMETER_REGISTER(whiteBalanceTemperature) = 6500;
   PARAMETER_REGISTER(powerlineFrequency) = 50;
+
+  for(std::size_t i = 0; i < CameraSettings::AUTOEXPOSURE_GRID_SIZE; i++) {
+      for(std::size_t j=0; j < CameraSettings::AUTOEXPOSURE_GRID_SIZE; j++) {
+          autoExposureWeights[i][j] = 100; 
+      }
+  }
+
 
   syncWithConfig();
 }
@@ -115,9 +123,9 @@ CameraSettings CameraSettingsRequest::getCameraSettings() const {
   result.data[CameraSettings::Exposure] = Math::clamp(exposure, 1, 1000);
   result.data[CameraSettings::FadeToBlack] = fadeToBlack ? 1 : 0;
   result.data[CameraSettings::Gain] = Math::clamp(gain, 32  , 255);
-  result.data[CameraSettings::TargetGain] = Math::toFixPoint<5>(static_cast<float>(targetGain));
-  result.data[CameraSettings::MinGain] = Math::toFixPoint<5>(static_cast<float>(minGain));
-  result.data[CameraSettings::MaxGain] = Math::toFixPoint<5>(static_cast<float>(maxGain));
+  result.data[CameraSettings::TargetGain] = Math::clamp(Math::toFixPoint<5>(static_cast<float>(targetGain)), 0, 32767);
+  result.data[CameraSettings::MinAnalogGain] = Math::clamp(Math::toFixPoint<5>(static_cast<float>(minAnalogGain)), 0, 32767);
+  result.data[CameraSettings::MaxAnalogGain] = Math::clamp(Math::toFixPoint<5>(static_cast<float>(maxAnalogGain)), 0, 32767);
   result.data[CameraSettings::HorizontalFlip] = horizontalFlip ? 1 : 0;
   result.data[CameraSettings::Hue] = Math::clamp(hue, -22, 22);
   result.data[CameraSettings::Saturation] = Math::clamp(saturation, 0, 255);
