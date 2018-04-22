@@ -32,10 +32,12 @@ public class TeamCommManagerImpl implements TeamCommManager
 
     @Override
     public void receivedMessages(List<TeamCommMessage> messages) {
-        if(!messages.isEmpty()) {
-            listeners.stream().forEach((listener) -> {
-                listener.newTeamCommMessages(Collections.unmodifiableList(messages));
-            });
+        synchronized (listeners) {
+            if(!messages.isEmpty()) {
+                listeners.stream().forEach((listener) -> {
+                    listener.newTeamCommMessages(Collections.unmodifiableList(messages));
+                });
+            }
         }
     }
 }
