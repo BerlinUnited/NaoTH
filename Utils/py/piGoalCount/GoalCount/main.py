@@ -49,11 +49,11 @@ def main():
     display.end()
     print("Interrupted or Exit")
     print("")  # intentionally print empty line
-    GPIO.cleanup()
+    goalSensor.close()
     receiver.stop()
     sender.stop()
     
-  GPIO.cleanup()
+  goalSensor.close()
   receiver.stop()
   sender.stop()
     
