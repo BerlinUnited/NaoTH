@@ -23,6 +23,8 @@ option bdr_goto_point
     action
     {
       motion.type = walk;
+      motion.walk.style = normal;
+      
       motion.walk_speed.rot = normalize(angle=atan2(y = @y - robot_pose.planned.y, x = @x - robot_pose.planned.x) - robot_pose.planned.rotation);
       motion.walk_speed.x = vector.abs(x = @x - robot_pose.planned.x, y = @y - robot_pose.planned.y) * cos(angle=motion.walk_speed.rot);
       motion.walk_speed.y = vector.abs(x = @x - robot_pose.planned.x, y = @y - robot_pose.planned.y) * sin(angle=motion.walk_speed.rot);
@@ -48,6 +50,8 @@ option bdr_goto_point
     action
     {
       motion.type = walk;
+      motion.walk.style = normal;
+      
       motion.walk_speed.rot = normalize(angle=atan2(y = @y - robot_pose.planned.y, x = @x - robot_pose.planned.x) - robot_pose.planned.rotation);
       motion.walk_speed.x = vector.abs(x = @x - robot_pose.planned.x, y = @y - robot_pose.planned.y) * cos(angle=motion.walk_speed.rot);
       motion.walk_speed.y = vector.abs(x = @x - robot_pose.planned.x, y = @y - robot_pose.planned.y) * sin(angle=motion.walk_speed.rot);
@@ -55,14 +59,44 @@ option bdr_goto_point
       motion.walk.coordinate = hip;
       motion.walk.stop_with_stand = true;
     }
+  }
 
+  state away_from_boundary 
+  {
+    decision
+    {
+      if(robot_pose.bdr.close_to_border)
+        stay;
+      else if ( vector.abs(x=robot_pose.planned.x - @x, y=robot_pose.planned.y - @y) > 300 )
+        goto far_away;
+      else if ( vector.abs(x=robot_pose.planned.x - @x, y=robot_pose.planned.y - @y) > 70 
+            || abs(value = robot_pose.planned.rotation - @rot) > 15)
+        goto turn;
+      else
+        goto stop;
+    }
+    
+    action
+    {
+      motion.type = walk;
+      motion.walk.style = stable;
+      
+      motion.walk_speed.rot = 0;
+      motion.walk_speed.x = robot_pose.bdr.close_to_border.correction.x;
+      motion.walk_speed.y = robot_pose.bdr.close_to_border.correction.y;
+      
+      motion.walk.coordinate = hip;
+      motion.walk.stop_with_stand = true;
+    }
   }
 
   initial target state stop
   {
     decision
     {
-      if ( vector.abs(x=robot_pose.planned.x - @x, y=robot_pose.planned.y - @y) > 300 )
+      if(robot_pose.bdr.close_to_border)
+        goto away_from_boundary;
+      else if ( vector.abs(x=robot_pose.planned.x - @x, y=robot_pose.planned.y - @y) > 300 )
         goto far_away;
       else if ( vector.abs(x=robot_pose.planned.x - @x, y=robot_pose.planned.y - @y) > 70 
             || abs(value = robot_pose.planned.rotation - @rot) > 15 )
