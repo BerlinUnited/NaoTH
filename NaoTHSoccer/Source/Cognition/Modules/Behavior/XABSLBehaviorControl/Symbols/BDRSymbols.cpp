@@ -51,7 +51,11 @@ int BDRSymbols::getBDRActivity() {
 
 void BDRSymbols::setBDRMessage(int value) {
   assert(value >= 0 && value < static_cast<int>(BDRPlayerState::num_of_messages));
-  theInstance->getBDRPlayerState().message = static_cast<BDRPlayerState::Message>(value);
+  BDRPlayerState::Message m = static_cast<BDRPlayerState::Message>(value);
+  if(theInstance->getBDRPlayerState().message != m){
+    theInstance->getSayRequest().setMessage(theInstance->getBDRPlayerState().getMessageString(m), theInstance->getFrameInfo());
+  }
+  theInstance->getBDRPlayerState().message = m;
 }
 
 int BDRSymbols::getBDRMessage() {

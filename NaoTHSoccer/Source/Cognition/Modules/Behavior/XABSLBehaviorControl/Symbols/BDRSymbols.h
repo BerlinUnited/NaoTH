@@ -16,11 +16,16 @@
 #include "Representations/Modeling/TeamMessage.h"
 #include "Representations/Modeling/RobotPose.h"
 
+#include "Representations/Infrastructure/FrameInfo.h"
+#include "Representations/Infrastructure/SoundData.h"
+
 
 BEGIN_DECLARE_MODULE(BDRSymbols)
+  REQUIRE(FrameInfo)
   REQUIRE(TeamMessage)
   REQUIRE(RobotPose)
   PROVIDE(BDRPlayerState)
+  PROVIDE(SayRequest)         // say the message if it has changed
 END_DECLARE_MODULE(BDRSymbols)
 
 class BDRSymbols: public BDRSymbolsBase

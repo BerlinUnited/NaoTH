@@ -67,6 +67,7 @@ BEGIN_DECLARE_MODULE(BasicTestBehavior)
   PROVIDE(BehaviorLEDRequest)
   PROVIDE(BodyStatus)
   PROVIDE(WhistleControl)
+  PROVIDE(SayRequest)
 END_DECLARE_MODULE(BasicTestBehavior)
 
 class BasicTestBehavior: public BasicTestBehaviorBase
