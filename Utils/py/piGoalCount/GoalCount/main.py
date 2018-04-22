@@ -54,8 +54,8 @@ def main():
     sender.stop()
     
   goalSensor.close()
-  receiver.stop()
-  sender.stop()
+  #receiver.stop()
+  #sender.stop()
     
 
 if __name__ == '__main__':
