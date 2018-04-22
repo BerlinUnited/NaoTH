@@ -49,6 +49,8 @@ private:
   static int  getBDRActivity();
   static void setBDRMessage(int value);
   static int  getBDRMessage();
+  static void setBDRReason(int value);
+  static int  getBDRReason();
   static double getNumberOfPlayersInPlay();
 
   static double getGoalsOwn();

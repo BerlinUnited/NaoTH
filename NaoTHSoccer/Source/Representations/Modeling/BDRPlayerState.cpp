@@ -83,3 +83,15 @@ std::string BDRPlayerState::getMessageString(Message m){
   }
   return "unknown message";
 }
+
+std::string BDRPlayerState::getReasonName(Reason id)
+{
+  switch(id)
+  {
+    case none           : return "none";
+    case temperature    : return "temperature";
+    case battery_charge : return "battery_charge";
+    default : ASSERT(false);
+  }
+  return "unknown activity";
+}

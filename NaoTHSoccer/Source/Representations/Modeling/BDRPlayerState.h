@@ -19,6 +19,8 @@ public:
     : 
       activity(doing_nothing),
       message(ready),
+      wartungs_reason(none),
+      wartung_max_target(0),
       sitting(false),
       localized_on_field(false),
       time_playing(0),
@@ -58,6 +60,16 @@ public:
       num_of_messages
   } message;
 
+  enum Reason
+  {
+      temperature,
+      battery_charge,
+      none,
+      num_of_reasons
+  } wartungs_reason;
+
+  double wartung_max_target;
+
   bool sitting;
   bool localized_on_field;
 
@@ -75,6 +87,8 @@ public:
     stream << "  playing time: " << time_playing << "\n";
     stream << "  goalsLeft: " << goalsLeft << "\n";
     stream << "  goalsRight: " << goalsRight << "\n";
+    stream << "  service reason: " << wartungs_reason << "\n";
+    stream << "  service max target: " << wartung_max_target << "\n";
   }
 
   static std::string getActivityName(Activity id);
@@ -83,7 +97,9 @@ public:
   static std::string getMessageString(Message m);
 
   inline std::string getMessageName() const { return getMessageName(message); }
-  inline std::string getMessageString() const { return getMessageString(message); };
+  inline std::string getMessageString() const { return getMessageString(message); }
+
+  static std::string getReasonName(Reason m);
 };
 
 /*

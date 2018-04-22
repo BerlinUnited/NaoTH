@@ -36,6 +36,17 @@ void BDRSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalOutputSymbol("bdr.time_playing", &getBDRPlayerState().time_playing);
   engine.registerDecimalInputSymbol("bdr.goalsOwn", &getGoalsOwn);
   engine.registerDecimalInputSymbol("bdr.goalsOpp", &getGoalsOpp);
+
+  for(int i = 0; i < BDRPlayerState::num_of_reasons; i++)
+  {
+    std::string str("reason.");
+    str.append(BDRPlayerState::getReasonName((BDRPlayerState::Reason)i));
+    engine.registerEnumElement("reason", str.c_str(), i);
+  }
+
+  engine.registerEnumeratedOutputSymbol("bdr.reason", "reason", &setBDRReason, &getBDRReason);
+
+  engine.registerDecimalOutputSymbol("bdr.wartung_max_target", &getBDRPlayerState().wartung_max_target);
 }//end registerSymbols
 
 BDRSymbols* BDRSymbols::theInstance = NULL;
@@ -60,6 +71,15 @@ void BDRSymbols::setBDRMessage(int value) {
 
 int BDRSymbols::getBDRMessage() {
   return static_cast<int>(theInstance->getBDRPlayerState().message);
+}
+
+void BDRSymbols::setBDRReason(int value) {
+  assert(value >= 0 && value < static_cast<int>(BDRPlayerState::num_of_reasons));
+  theInstance->getBDRPlayerState().wartungs_reason = static_cast<BDRPlayerState::Reason>(value);
+}
+
+int BDRSymbols::getBDRReason() {
+  return static_cast<int>(theInstance->getBDRPlayerState().wartungs_reason);
 }
 
 double BDRSymbols::getNumberOfPlayersInPlay() {
