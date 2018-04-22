@@ -1,18 +1,27 @@
 clear variables
 clc
+
+database = 'capture_database_new.mat';
+
+databasePath = '../data';
+capture_path = 'D:\Downloads\capture_recordings';
+
+% databasePath = 'L:\Experiments\whistle\WhistleData_mat';
+% capture_path = 'L:\Experiments\whistle\WhistleData_mat\capture_recordings';
+
+capture_database = struct;
+
 % adds a raw file to the whistle capture database
 % TODO does not check if file is already inserted
 check_duplicates = false;
 try
-    load('../data/capture_database.mat')
+    load([databasePath '/' database])
     disp('INFO: using a previously created database')
     check_duplicates = true;
 catch
     disp('INFO: no previous mat file was found')
-    capture_database = struct;
 end
 %%
-capture_path = 'D:\Downloads\capture_recordings';
 
 % get information about the location of each raw file inside gamelog_path
 folderContents = dir(strcat(capture_path, '/**/*.raw'));
@@ -54,25 +63,42 @@ for i=1:length(folderContents)
     fclose(fileID);
     
     % fill the capture whistle fields
+    capture = struct;
     capture.game_name = game_name;
     capture.half = half;
     capture.robot_name = robot_name;
     capture.rawData = raw_samples;
     capture.filename = filename;
-    capture.samplerate = 8000; 
-    if isfield(capture_database, event_name)
+    capture.samplerate = 8000;
+    
+    if ~isfield(capture, 'annotations')
+        capture.annotations = [];
+    end
+    showFigs = false;
+    if ~isempty(capture.annotations)
+        showFigs = true;
+    end
+    [rate, annot] = readAudacityProjectFile(filepath, capture.rawData, showFigs);
+    if rate ~= 0 && ~isempty(annot)
+        capture.samplerate = rate;
+        capture.annotations = annot;
+    end
+    clear rate annot
+    
+    if isfield(capture_database, char(event_name))
         % Check if this capture already exists
         if(check_duplicates)
             % TODO iterate over existing db
         end
         
         % append a capture to the event struct
-        capture_database.(event_name) = [capture_database.(event_name) capture];
+        capture_database.(char(event_name)) = [capture_database.(char(event_name)) capture];
     else
-        capture_database.(event_name) = capture;
+        capture_database.(char(event_name)) = capture;
     end
+%     clear capture
 end
 
 %% Save capture database
 disp('Saving Capture database');
-save('../data/capture_database.mat','capture_database')
+save([databasePath '/' database],'capture_database')
