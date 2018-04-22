@@ -26,6 +26,9 @@ string CameraSettings::getCameraSettingsName(CameraSettingID id)
     case Saturation: return "Saturation"; break;
     case Hue: return "Hue"; break;
     case Gain: return "Gain"; break;
+    case MinGain: return "MinGain"; break;
+    case MaxGain: return "MaxGain"; break;
+    case TargetGain: return "TargetGain"; break;
     case HorizontalFlip: return "HorizontalFlip"; break;
     case VerticalFlip: return "VerticalFlip"; break;
     case AutoExposition: return "AutoExposition"; break;
@@ -39,6 +42,7 @@ string CameraSettings::getCameraSettingsName(CameraSettingID id)
     case WhiteBalance: return "WhiteBalance"; break;
     case Sharpness: return "Sharpness"; break;
     case FadeToBlack: return "FadeToBlack"; break;
+    case PowerlineFrequency: return "PowerlineFrequency"; break;
     default: return "Unknown CameraSetting"; break;
   }//end switch
 }//end getCameraSettingsName
@@ -63,6 +67,7 @@ CameraSettingsRequest::CameraSettingsRequest(string configName)
   queryCameraSettings(false)
 {
   PARAMETER_REGISTER(autoExposition) = false;
+  PARAMETER_REGISTER(autoExpositionAlgorithm) = 0;
   PARAMETER_REGISTER(autoWhiteBalancing) = false;
   PARAMETER_REGISTER(backlightCompensation) = false;
   PARAMETER_REGISTER(brightness) = 55;
@@ -71,6 +76,9 @@ CameraSettingsRequest::CameraSettingsRequest(string configName)
   PARAMETER_REGISTER(exposure) = 1;
   PARAMETER_REGISTER(fadeToBlack) = false;
   PARAMETER_REGISTER(gain) = 32;
+  PARAMETER_REGISTER(targetGain) = 4.0;
+  PARAMETER_REGISTER(minGain) = 1.0;
+  PARAMETER_REGISTER(maxGain) = 8.0;
   PARAMETER_REGISTER(horizontalFlip) = 0;
   PARAMETER_REGISTER(hue) = 0;
   PARAMETER_REGISTER(saturation) = 128;
@@ -102,17 +110,21 @@ CameraSettings CameraSettingsRequest::getCameraSettings() const {
   result.data[CameraSettings::Brightness] = Math::clamp(brightness, 0, 255);
   result.data[CameraSettings::BrightnessDark] = Math::clamp(brightness, 0, 255);
   result.data[CameraSettings::CameraSelection] = cameraSelection;
-  result.data[CameraSettings::Contrast] = Math::toFixPoint<5>((float) Math::clamp(contrast, 0.5, 2.0));
+  result.data[CameraSettings::Contrast] = Math::toFixPoint<5>(static_cast<float>(Math::clamp(contrast, 0.5, 2.0)));
   result.data[CameraSettings::Exposure] = Math::clamp(exposure, 1, 1000);
   result.data[CameraSettings::FadeToBlack] = fadeToBlack ? 1 : 0;
   result.data[CameraSettings::Gain] = Math::clamp(gain, 0, 255);
+  result.data[CameraSettings::TargetGain] = Math::toFixPoint<5>(static_cast<float>(targetGain));
+  result.data[CameraSettings::MinGain] = Math::toFixPoint<5>(static_cast<float>(minGain));
+  result.data[CameraSettings::MaxGain] = Math::toFixPoint<5>(static_cast<float>(maxGain));
   result.data[CameraSettings::HorizontalFlip] = horizontalFlip ? 1 : 0;
   result.data[CameraSettings::Hue] = Math::clamp(hue, -22, 22);
   result.data[CameraSettings::Saturation] = Math::clamp(saturation, 0, 255);
   result.data[CameraSettings::Sharpness] = Math::clamp(sharpness, -7, 7);
   result.data[CameraSettings::VerticalFlip] = verticalFlip ? 1 : 0;
   result.data[CameraSettings::WhiteBalance] = Math::clamp(whiteBalanceTemperature, 2700, 6500);
-  
+
+  result.data[CameraSettings::PowerlineFrequency] = 1;
 
   return result;
 }

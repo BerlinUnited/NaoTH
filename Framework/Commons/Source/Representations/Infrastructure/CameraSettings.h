@@ -25,6 +25,7 @@ namespace naoth
       enum CameraSettingID
       {
         AutoExposition,
+        AutoExpositionAlgorithm,
         AutoWhiteBalancing,
         BacklightCompensation,
         Brightness,
@@ -35,6 +36,9 @@ namespace naoth
         FadeToBlack,
         FPS, // TODO: remove this from settings?
         Gain,
+        MinGain,
+        MaxGain,
+        TargetGain,
         HorizontalFlip,
         Hue,
         ResolutionHeight, // TODO: remove this from settings?
@@ -43,6 +47,7 @@ namespace naoth
         Sharpness,
         VerticalFlip,
         WhiteBalance,
+        PowerlineFrequency,
         numOfCameraSetting
       };
 
@@ -79,6 +84,7 @@ namespace naoth
     bool queryCameraSettings;
 
     bool autoExposition;
+    int autoExpositionAlgorithm;
     bool autoWhiteBalancing;
     bool backlightCompensation;
     int brightness;
@@ -87,6 +93,9 @@ namespace naoth
     int exposure;
     bool fadeToBlack;
     int gain;
+    double targetGain; 
+    double minGain;
+    double maxGain;
     bool horizontalFlip;
     int hue;
     int saturation;

@@ -50,6 +50,11 @@ V4lCameraHandler::V4lCameraHandler()
 
   settingsOrder.push_back(CameraSettings::AutoWhiteBalancing);
   settingsOrder.push_back(CameraSettings::AutoExposition);
+  settingsOrder.push_back(CameraSettings::AutoExpositionAlgorithm);
+  settingsOrder.push_back(CameraSettings::TargetGain);
+  settingsOrder.push_back(CameraSettings::MinGain);
+  settingsOrder.push_back(CameraSettings::MaxGain);
+  settingsOrder.push_back(CameraSettings::PowerlineFrequency);
   
   settingsOrder.push_back(CameraSettings::Brightness);
   settingsOrder.push_back(CameraSettings::BrightnessDark);
@@ -59,6 +64,7 @@ V4lCameraHandler::V4lCameraHandler()
   settingsOrder.push_back(CameraSettings::Sharpness);
   settingsOrder.push_back(CameraSettings::Exposure);
   settingsOrder.push_back(CameraSettings::Gain);
+
   settingsOrder.push_back(CameraSettings::WhiteBalance);
   // this throws errors sometimes and slows down the robot, check whats wrong before activating it
 //  settingsOrder.push_back(CameraSettings::BacklightCompensation);
@@ -140,6 +146,7 @@ void V4lCameraHandler::initIDMapping()
   csConst[CameraSettings::WhiteBalance] = V4L2_CID_WHITE_BALANCE_TEMPERATURE;
   csConst[CameraSettings::BacklightCompensation] = V4L2_CID_BACKLIGHT_COMPENSATION;
   csConst[CameraSettings::FadeToBlack] = V4L2_MT9M114_FADE_TO_BLACK;
+  csConst[CameraSettings::PowerlineFrequency] = V4L2_CID_POWER_LINE_FREQUENCY;
 
 //---------------------------------------------------------------------
 // copied from the driver for information:
