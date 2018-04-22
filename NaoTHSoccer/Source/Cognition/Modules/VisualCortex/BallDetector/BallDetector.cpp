@@ -717,8 +717,8 @@ void BallDetector::addBallPercept(const Vector2i& center, double radius)
 		  ballPercept.positionOnField))
   {
     // HACK: check the global poseition
-    Vector2d ballPositionField = getRobotPose()*ballPercept.positionOnField;
-    if(!params.heuristic.onlyOnField || (getRobotPose().isValid && getFieldInfo().carpetRect.inside(ballPositionField))) 
+    Vector2d ballPositionGlobalField = getRobotPose().getGlobalPose()*ballPercept.positionOnField;
+    if(!params.heuristic.onlyOnField || (getRobotPose().isValid && getFieldInfo().bdrCarpetRect.inside(ballPositionGlobalField))) 
     {
       ballPercept.cameraId = cameraID;
       ballPercept.centerInImage = center;

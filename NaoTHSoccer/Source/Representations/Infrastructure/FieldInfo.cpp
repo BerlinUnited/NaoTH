@@ -126,6 +126,10 @@ void FieldInfo::calculateCrossings()
   ownGoalCenter     = Vector2d(xPosOwnGoal-25, 0.0);
 
   carpetRect = Geometry::Rect2d(Vector2d(-xFieldLength*0.5, -yFieldLength*0.5), Vector2d(xFieldLength*0.5, yFieldLength*0.5));
+
+  // HACK: assymmetric field
+  bdrCarpetRect = Geometry::Rect2d(Vector2d(-xFieldLength*0.5, -yFieldLength*0.5 - 60), Vector2d(xFieldLength*0.5, yFieldLength*0.5));
+
   ownHalfRect = Geometry::Rect2d(Vector2d(-xLength*0.5, -yLength*0.5), Vector2d(0, yLength*0.5));
   fieldRect = Geometry::Rect2d(Vector2d(-xLength*0.5, -yLength*0.5), Vector2d(xLength*0.5, yLength*0.5));
   oppHalfRect = Geometry::Rect2d(Vector2d(0, -yLength*0.5), Vector2d(xLength*0.5, yLength*0.5));
