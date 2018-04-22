@@ -167,6 +167,7 @@ public class RobotControlBdrMonitorImpl extends javax.swing.JFrame implements Ro
         
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
+            @Override
             public void run() {
                 
                 final JSPFProperties props = new JSPFProperties();

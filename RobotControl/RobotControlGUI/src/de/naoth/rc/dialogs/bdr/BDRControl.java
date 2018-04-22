@@ -33,7 +33,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.Timer;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
-import net.xeoh.plugins.base.annotations.events.PluginLoaded;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 
 /**
@@ -68,6 +67,7 @@ public class BDRControl extends AbstractDialog implements TeamCommListener, Comp
     int robotPanelWidth = 200;
     
     Timer updater;
+    private final RobotHealth robotHealth = new RobotHealth();
     
     public BDRControl() 
     {
@@ -86,25 +86,10 @@ public class BDRControl extends AbstractDialog implements TeamCommListener, Comp
         this.updater = new Timer(300, this);
         this.updater.start();
         
-        // add listener, if the health panel changes
-        RobotControlBdrMonitorImpl.healthPanel.addListener((o) -> {
-            setHealthPanel();
-        });
-        // if health panel loaded, set it to ui
-        if(RobotControlBdrMonitorImpl.healthPanel.get() != null) {
-            setHealthPanel();
-        }
+        this.robotHealth.jToolBar1.setVisible(false);
+        this.statusPanel.add(robotHealth.getPanel(), java.awt.BorderLayout.CENTER);
     }
-    
-    private void setHealthPanel() {
-        // add health panel
-        if(RobotControlBdrMonitorImpl.healthPanel.get() != null) {
-            RobotHealth health = (RobotHealth) RobotControlBdrMonitorImpl.healthPanel.get();
-            health.jToolBar1.setVisible(false);
-            statusPanel.add(RobotControlBdrMonitorImpl.healthPanel.get(), java.awt.BorderLayout.CENTER);
-        }
-    }
-    
+
     @Override
     public void dispose() {
         Plugin.teamcommManager.removeListener(this);
@@ -177,7 +162,7 @@ public class BDRControl extends AbstractDialog implements TeamCommListener, Comp
         Command cmd = new Command("Cognition:representation:get").addArg("BDRControlCommand");
         Plugin.commandExecutor.executeCommand(new StatusUpdater(), cmd);
         // activate health status panel
-        ((RobotHealth) RobotControlBdrMonitorImpl.healthPanel.get()).connect(true);
+        this.robotHealth.connect(true);
         // disable button of all 'not connected' robots
         String connectedIp = Plugin.rc.getMessageServer().getAddress().getHostName();
         robotsMap.forEach((t, u) -> {
@@ -349,7 +334,7 @@ public class BDRControl extends AbstractDialog implements TeamCommListener, Comp
             @Override
             public void newObjectReceived(byte[] object) {
                 System.out.println(new String(object));
-                updateStatus();
+                //updateStatus();
             }
 
             @Override
