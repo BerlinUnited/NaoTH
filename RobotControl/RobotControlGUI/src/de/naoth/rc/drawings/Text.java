@@ -18,19 +18,24 @@ public class Text implements Drawable
   private final int y;
   private final String text;
 
-  private final Font myFont = new Font ("Courier New", Font.PLAIN, 250);
+  private Font myFont;
   
   public Text(String[] args)
   {
-    this.x = (int)(Double.parseDouble(args[1]));
-    this.y = (int)(Double.parseDouble(args[2]));
-    this.text = args[3];
+    this((int)(Double.parseDouble(args[1])),
+         (int)(Double.parseDouble(args[2])),
+         args[3]);
   }
 
   public Text(int x, int y, String text) {
+    this(x,y,text, new Font ("Courier New", Font.PLAIN, 250));
+  }
+  
+  public Text(int x, int y, String text, Font font) {
     this.x = x;
     this.y = y;
     this.text = text;
+    this.myFont = font;
   }
 
   @Override
