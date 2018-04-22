@@ -71,9 +71,26 @@ double BDRSymbols::getNumberOfPlayersInPlay() {
 }
 
 double BDRSymbols::getGoalsOwn() {
+  
+  auto const& i = theInstance->getTeamMessage().data.find(0);
+  if(i != theInstance->getTeamMessage().data.end() && theInstance->getRobotPose().isValid) {
+    if (theInstance->getRobotPose().globallyMirrored) {
+      return i->second.custom.bdrPlayerState.goalsRight;
+    } else {
+      return i->second.custom.bdrPlayerState.goalsLeft; 
+    }
+  }
   return 0;
 }
 
 double BDRSymbols::getGoalsOpp() {
+  auto const& i = theInstance->getTeamMessage().data.find(0);
+  if(i != theInstance->getTeamMessage().data.end() && theInstance->getRobotPose().isValid) {
+    if (theInstance->getRobotPose().globallyMirrored) {
+      return i->second.custom.bdrPlayerState.goalsLeft;
+    } else {
+      return i->second.custom.bdrPlayerState.goalsRight; 
+    }
+  }
   return 0;
 }
