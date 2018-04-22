@@ -857,7 +857,8 @@ void V4lCameraHandler::setAllCameraParams(const CameraSettings& data)
                 << " from " << oldValue << " to " << data.data[*it] << std::endl;
       */
 
-      if(*it == CameraSettings::Exposure && data.data[CameraSettings::AutoExposition]) {
+      if(data.data[CameraSettings::AutoExposition] && 
+        (*it == CameraSettings::Exposure || *it == CameraSettings::Gain)) {
         // ignore
       }
       // apply the single parameter setting
