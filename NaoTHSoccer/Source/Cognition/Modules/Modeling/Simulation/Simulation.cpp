@@ -58,7 +58,7 @@ void Simulation::execute()
   // simulate the consequences for all actions
   STOPWATCH_START("Simulation:simulateAction");
   for (size_t i = 0; i < action_local.size(); i++) {
-    simulationModule->getModuleT()->simulateAction(action_local[i], actionsConsequences[i], 30);
+		simulationModule->getModuleT()->simulateAction(action_local[i], actionsConsequences[i], theParameters.numParticles);
   }
   STOPWATCH_STOP("Simulation:simulateAction");
 
@@ -72,6 +72,7 @@ void Simulation::execute()
   // now decide which action to execute given their consequences
   size_t best_action = decide_smart(actionsConsequences);
   getKickActionModel().bestAction = action_local[best_action].id();
+
   //Arghhh BUG: this expected ball pos is not affected by goal boarders/ obstacles
   getKickActionModel().expectedBallPos = getRobotPose() * action_local[best_action].predict(getBallModel().positionPreview, false);
 

@@ -20,9 +20,9 @@ void StaticDebugModelProvider::execute()
 
   //Roboter
   Pose2D pose;
-  double rotation = 0;
-  pose.translation.x = 1000.0;
-  pose.translation.y = -2000.0;
+  double rotation = 90;
+  pose.translation.x = 0.0;
+  pose.translation.y = 0.0;
   MODIFY("StaticDebugModelProvider:Robotx", pose.translation.x);
   MODIFY("StaticDebugModelProvider:Roboty", pose.translation.y);
   MODIFY("StaticDebugModelProvider:Robotrot", rotation);
