@@ -1,6 +1,6 @@
 from __future__ import division
 import numpy as np
-import field_info as field
+from tools import field_info as field
 
 
 def gaussian(x, y, mu_x, mu_y, sigma_x, sigma_y):

@@ -24,6 +24,7 @@ namespace internal_symbols("Internal Symbols") {
 
   /** state of the body: false when lifted, or fallen */
   bool internal body.ready_to_walk;
+  bool internal body.falling;
 
 
   /** This is used to indicate not interruptable states */

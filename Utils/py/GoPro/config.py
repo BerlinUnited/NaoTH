@@ -3,6 +3,6 @@
 # GP26329941 / cycle9210
 # GP26297683 / epic0546
 
-ssid = 'GP26329941'
-passwd = 'cycle9210'
+ssid = 'GP26297683'
+passwd = 'epic0546'
 retries = -1

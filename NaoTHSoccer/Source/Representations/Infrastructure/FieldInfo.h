@@ -37,7 +37,7 @@ public:
   virtual void print(std::ostream& stream) const;
 
   // some tools
-  inline bool insideCarpet(const Vector2d& p) {
+  inline bool insideCarpet(const Vector2d& p) const {
     return carpetRect.inside(p);
   }
 
@@ -73,6 +73,12 @@ public:
   // white goal box is treated as lines
   bool goalBoxAsLines;
 
+  // arcs at the penalty boxes
+  bool   enable_arcs_at_penalty_box;
+  double center_x_in_own_half;
+  double radius;
+  double start_angle;
+  double target_angle;
 
   /////////////// pre-calculated values from basic values //////////////
   double xPosHalfWayLine;

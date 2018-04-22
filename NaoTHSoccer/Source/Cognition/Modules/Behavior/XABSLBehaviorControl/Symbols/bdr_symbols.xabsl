@@ -3,6 +3,8 @@ namespace bdr_symbols("BDR Symbols") {
 
   /** internal bdr symbols */
   float internal bdr.charge_beginning;
+  float internal bdr.temperature_beginning;
+  float internal bdr.sit_down_counter;
 
   enum reason internal
   {
@@ -29,6 +31,7 @@ namespace bdr_symbols("BDR Symbols") {
 
   bool output bdr.sitting;
   bool output bdr.localized_on_field;
+  float output bdr.time_playing;
 
   float input bdr.number_of_players_in_play; 
 

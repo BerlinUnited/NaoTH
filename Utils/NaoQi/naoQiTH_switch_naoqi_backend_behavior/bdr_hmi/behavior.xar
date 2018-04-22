@@ -344,7 +344,7 @@ class MyClass(GeneratedClass):
                             <Output name="output_1" type="0" type_size="1" nature="2" inner="0" tooltip="This IO has been automatically added by box. Read box tooltip for more information." id="4" />
                             <Output name="output_2" type="0" type_size="1" nature="2" inner="0" tooltip="This IO has been automatically added by box. Read box tooltip for more information." id="5" />
                         </Box>
-                        <Box name="Timer" id="15" localization="8" tooltip="Stimulate output repeatedly with the specified interval.&#x0A;Can be stopped anytime. &#x0A;Stimulating the input again restarts the timer.&#x0A;" x="291" y="964">
+                        <Box name="Timer" id="15" localization="8" tooltip="Stimulate output repeatedly with the specified interval.&#x0A;Can be stopped anytime. &#x0A;Stimulating the input again restarts the timer.&#x0A;" x="227" y="918">
                             <bitmap>media/images/box/wait.png</bitmap>
                             <script language="4">
                                 <content>
@@ -593,7 +593,7 @@ class MyClass(GeneratedClass):
                                 </ActuatorList>
                             </Timeline>
                         </Box>
-                        <Box name="Set Fall Manager" id="18" localization="8" tooltip="Enable or disable the Fall Manager.&#x0A;&#x0A;It is automatically set to its previous state when the behavior is stopped." x="226" y="209">
+                        <Box name="Set Fall Manager" id="18" localization="8" tooltip="Enable or disable the Fall Manager.&#x0A;&#x0A;It is automatically set to its previous state when the behavior is stopped." x="328" y="179">
                             <bitmap>media/images/box/sensors/fall_manager.png</bitmap>
                             <script language="4">
                                 <content>
@@ -624,137 +624,6 @@ class MyClass(GeneratedClass):
                                 <Choice value="Disable" />
                                 <Choice value="Enable" />
                             </Parameter>
-                        </Box>
-                        <Box name="Set Stiffness (3)" id="20" localization="8" tooltip="Stiffen the motors selected in parameters." x="1080" y="480">
-                            <bitmap>media/images/box/movement/stiffness.png</bitmap>
-                            <script language="4">
-                                <content>
-                                    <![CDATA[import time
-
-class MyClass(GeneratedClass):
-    def __init__(self):
-        GeneratedClass.__init__(self, False)
-
-    def onLoad(self):
-        self.bIsRunning = False
-        self.motion = ALProxy("ALMotion")
-
-    def onUnload(self):
-        self.bIsRunning = False
-
-    def setStiffness(self, stiffness):
-        self.bIsRunning = True
-        duration = self.getParameter("Duration (s)")
-        if(self.getParameter("Head")):
-            self.motion.post.stiffnessInterpolation("Head", stiffness, duration)
-        if(self.getParameter("Left arm")):
-            self.motion.post.stiffnessInterpolation("LArm", stiffness, duration)
-        if(self.getParameter("Right arm")):
-            self.motion.post.stiffnessInterpolation("RArm", stiffness, duration)
-        if(self.getParameter("Left leg")):
-            self.motion.post.stiffnessInterpolation("LLeg", stiffness, duration)
-        if(self.getParameter("Right leg")):
-            self.motion.post.stiffnessInterpolation("RLeg", stiffness, duration)
-        time.sleep(duration)
-        self.bIsRunning = False
-
-    def onInput_onSet(self):
-        if( self.bIsRunning ):
-            return
-        self.setStiffness(self.getParameter("Motors stiffness (%)")/100.)
-        self.onReady() #~ activate output of the box]]>
-</content>
-                            </script>
-                            <Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" />
-                            <Input name="onSet" type="1" type_size="1" nature="1" inner="0" tooltip="When this input is stimulated, the stiffness of the selected motors is set to&#x0A;the stiffness parameter value." id="2" />
-                            <Output name="onReady" type="1" type_size="1" nature="2" inner="0" tooltip="Signal sent when stiffness has been set." id="3" />
-                            <Parameter name="Head" inherits_from_parent="0" content_type="0" value="1" default_value="1" tooltip="Do we want to modify the head stiffness?" id="4" />
-                            <Parameter name="Left arm" inherits_from_parent="0" content_type="0" value="1" default_value="1" tooltip="Do we want to modify the left arm stiffness?" id="5" />
-                            <Parameter name="Right arm" inherits_from_parent="0" content_type="0" value="1" default_value="1" tooltip="Do we want to modify the right arm stiffness?" id="6" />
-                            <Parameter name="Left leg" inherits_from_parent="0" content_type="0" value="1" default_value="1" tooltip="Do we want to modify the left leg stiffness?" id="7" />
-                            <Parameter name="Right leg" inherits_from_parent="0" content_type="0" value="1" default_value="1" tooltip="Do we want to modify the right leg stiffness?" id="8" />
-                            <Parameter name="Motors stiffness (%)" inherits_from_parent="0" content_type="1" value="80" default_value="100" min="0" max="100" tooltip="Stiffness value the motors are set to." id="9" />
-                            <Parameter name="Duration (s)" inherits_from_parent="0" content_type="2" value="0.5" default_value="1" min="0.02" max="10" tooltip="How much time to go to the max/min stiffness in seconds." id="10" />
-                        </Box>
-                        <Box name="disable smartstiffness" id="2" localization="8" tooltip="this box disables smart stiffness" x="88" y="208">
-                            <bitmap>media/images/box/movement/stiffness.png</bitmap>
-                            <script language="4">
-                                <content>
-                                    <![CDATA[class MyClass(GeneratedClass):
-    def __init__(self):
-        GeneratedClass.__init__(self)
-
-    def onLoad(self):
-        self.motion = ALProxy("ALMotion")
-        pass
-
-    def onUnload(self):
-        #put clean-up code here
-        pass
-
-    def onInput_onStart(self):
-        self.motion.setSmartStiffnessEnabled(False)
-        self.onStopped()
-
-    def onInput_onStop(self):
-        self.onUnload() #it is recommended to reuse the clean-up as the box is stopped
-        self.onStopped() #activate the output of the box]]>
-</content>
-                            </script>
-                            <Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" />
-                            <Input name="onStart" type="1" type_size="1" nature="2" inner="0" tooltip="Box behavior starts when a signal is received on this input." id="2" />
-                            <Output name="onStopped" type="1" type_size="1" nature="1" inner="0" tooltip="Signal sent when box behavior is finished." id="3" />
-                        </Box>
-                        <Box name="stiffness off" id="3" localization="8" tooltip="Stiffen the motors selected in parameters." x="940" y="478">
-                            <bitmap>media/images/box/movement/stiffness.png</bitmap>
-                            <script language="4">
-                                <content>
-                                    <![CDATA[import time
-
-class MyClass(GeneratedClass):
-    def __init__(self):
-        GeneratedClass.__init__(self, False)
-
-    def onLoad(self):
-        self.bIsRunning = False
-        self.motion = ALProxy("ALMotion")
-
-    def onUnload(self):
-        self.bIsRunning = False
-
-    def setStiffness(self, stiffness):
-        self.bIsRunning = True
-        duration = self.getParameter("Duration (s)")
-        if(self.getParameter("Head")):
-            self.motion.post.stiffnessInterpolation("Head", stiffness, duration)
-        if(self.getParameter("Left arm")):
-            self.motion.post.stiffnessInterpolation("LArm", stiffness, duration)
-        if(self.getParameter("Right arm")):
-            self.motion.post.stiffnessInterpolation("RArm", stiffness, duration)
-        if(self.getParameter("Left leg")):
-            self.motion.post.stiffnessInterpolation("LLeg", stiffness, duration)
-        if(self.getParameter("Right leg")):
-            self.motion.post.stiffnessInterpolation("RLeg", stiffness, duration)
-        time.sleep(duration)
-        self.bIsRunning = False
-
-    def onInput_onSet(self):
-        if( self.bIsRunning ):
-            return
-        self.setStiffness(self.getParameter("Motors stiffness (%)")/100.)
-        self.onReady() #~ activate output of the box]]>
-</content>
-                            </script>
-                            <Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" />
-                            <Input name="onSet" type="1" type_size="1" nature="1" inner="0" tooltip="When this input is stimulated, the stiffness of the selected motors is set to&#x0A;the stiffness parameter value." id="2" />
-                            <Output name="onReady" type="1" type_size="1" nature="2" inner="0" tooltip="Signal sent when stiffness has been set." id="3" />
-                            <Parameter name="Head" inherits_from_parent="0" content_type="0" value="1" default_value="1" tooltip="Do we want to modify the head stiffness?" id="4" />
-                            <Parameter name="Left arm" inherits_from_parent="0" content_type="0" value="1" default_value="1" tooltip="Do we want to modify the left arm stiffness?" id="5" />
-                            <Parameter name="Right arm" inherits_from_parent="0" content_type="0" value="1" default_value="1" tooltip="Do we want to modify the right arm stiffness?" id="6" />
-                            <Parameter name="Left leg" inherits_from_parent="0" content_type="0" value="1" default_value="1" tooltip="Do we want to modify the left leg stiffness?" id="7" />
-                            <Parameter name="Right leg" inherits_from_parent="0" content_type="0" value="1" default_value="1" tooltip="Do we want to modify the right leg stiffness?" id="8" />
-                            <Parameter name="Motors stiffness (%)" inherits_from_parent="0" content_type="1" value="0" default_value="100" min="0" max="100" tooltip="Stiffness value the motors are set to." id="9" />
-                            <Parameter name="Duration (s)" inherits_from_parent="0" content_type="2" value="0.02" default_value="1" min="0.02" max="10" tooltip="How much time to go to the max/min stiffness in seconds." id="10" />
                         </Box>
                         <Box name="set BDRNaoQiStatus (2)" id="7" localization="8" tooltip="set BDRNaoQiStatus" x="1315" y="164">
                             <bitmap>media/images/box/sensors/STM.png</bitmap>
@@ -807,418 +676,7 @@ class MyClass(GeneratedClass):
                             <Input name="onStart" type="1" type_size="1" nature="1" inner="0" tooltip="To send the number on the output." id="2" />
                             <Output name="onStopped" type="2" type_size="1" nature="2" inner="0" tooltip="The number you entered." id="3" />
                         </Box>
-                        <Box name="Set Stiffness (1)" id="19" localization="8" tooltip="Stiffen the motors selected in parameters." x="1727" y="162">
-                            <bitmap>media/images/box/movement/stiffness.png</bitmap>
-                            <script language="4">
-                                <content>
-                                    <![CDATA[import time
-
-class MyClass(GeneratedClass):
-    def __init__(self):
-        GeneratedClass.__init__(self, False)
-
-    def onLoad(self):
-        self.bIsRunning = False
-        self.motion = ALProxy("ALMotion")
-
-    def onUnload(self):
-        self.bIsRunning = False
-
-    def setStiffness(self, stiffness):
-        self.bIsRunning = True
-        duration = self.getParameter("Duration (s)")
-        if(self.getParameter("Head")):
-            self.motion.post.stiffnessInterpolation("Head", stiffness, duration)
-        if(self.getParameter("Left arm")):
-            self.motion.post.stiffnessInterpolation("LArm", stiffness, duration)
-        if(self.getParameter("Right arm")):
-            self.motion.post.stiffnessInterpolation("RArm", stiffness, duration)
-        if(self.getParameter("Left leg")):
-            self.motion.post.stiffnessInterpolation("LLeg", stiffness, duration)
-        if(self.getParameter("Right leg")):
-            self.motion.post.stiffnessInterpolation("RLeg", stiffness, duration)
-        time.sleep(duration)
-        self.bIsRunning = False
-
-    def onInput_onSet(self):
-        if( self.bIsRunning ):
-            return
-        self.setStiffness(self.getParameter("Motors stiffness (%)")/100.)
-        self.onReady() #~ activate output of the box]]>
-</content>
-                            </script>
-                            <Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" />
-                            <Input name="onSet" type="1" type_size="1" nature="1" inner="0" tooltip="When this input is stimulated, the stiffness of the selected motors is set to&#x0A;the stiffness parameter value." id="2" />
-                            <Output name="onReady" type="1" type_size="1" nature="2" inner="0" tooltip="Signal sent when stiffness has been set." id="3" />
-                            <Parameter name="Head" inherits_from_parent="0" content_type="0" value="1" default_value="1" tooltip="Do we want to modify the head stiffness?" id="4" />
-                            <Parameter name="Left arm" inherits_from_parent="0" content_type="0" value="1" default_value="1" tooltip="Do we want to modify the left arm stiffness?" id="5" />
-                            <Parameter name="Right arm" inherits_from_parent="0" content_type="0" value="1" default_value="1" tooltip="Do we want to modify the right arm stiffness?" id="6" />
-                            <Parameter name="Left leg" inherits_from_parent="0" content_type="0" value="1" default_value="1" tooltip="Do we want to modify the left leg stiffness?" id="7" />
-                            <Parameter name="Right leg" inherits_from_parent="0" content_type="0" value="1" default_value="1" tooltip="Do we want to modify the right leg stiffness?" id="8" />
-                            <Parameter name="Motors stiffness (%)" inherits_from_parent="0" content_type="1" value="80" default_value="100" min="0" max="100" tooltip="Stiffness value the motors are set to." id="9" />
-                            <Parameter name="Duration (s)" inherits_from_parent="0" content_type="2" value="0.5" default_value="1" min="0.02" max="10" tooltip="How much time to go to the max/min stiffness in seconds." id="10" />
-                        </Box>
-                        <Box name="stiffness off (3)" id="21" localization="8" tooltip="Stiffen the motors selected in parameters." x="1572" y="163">
-                            <bitmap>media/images/box/movement/stiffness.png</bitmap>
-                            <script language="4">
-                                <content>
-                                    <![CDATA[import time
-
-class MyClass(GeneratedClass):
-    def __init__(self):
-        GeneratedClass.__init__(self, False)
-
-    def onLoad(self):
-        self.bIsRunning = False
-        self.motion = ALProxy("ALMotion")
-
-    def onUnload(self):
-        self.bIsRunning = False
-
-    def setStiffness(self, stiffness):
-        self.bIsRunning = True
-        duration = self.getParameter("Duration (s)")
-        if(self.getParameter("Head")):
-            self.motion.post.stiffnessInterpolation("Head", stiffness, duration)
-        if(self.getParameter("Left arm")):
-            self.motion.post.stiffnessInterpolation("LArm", stiffness, duration)
-        if(self.getParameter("Right arm")):
-            self.motion.post.stiffnessInterpolation("RArm", stiffness, duration)
-        if(self.getParameter("Left leg")):
-            self.motion.post.stiffnessInterpolation("LLeg", stiffness, duration)
-        if(self.getParameter("Right leg")):
-            self.motion.post.stiffnessInterpolation("RLeg", stiffness, duration)
-        time.sleep(duration)
-        self.bIsRunning = False
-
-    def onInput_onSet(self):
-        if( self.bIsRunning ):
-            return
-        self.setStiffness(self.getParameter("Motors stiffness (%)")/100.)
-        self.onReady() #~ activate output of the box]]>
-</content>
-                            </script>
-                            <Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" />
-                            <Input name="onSet" type="1" type_size="1" nature="1" inner="0" tooltip="When this input is stimulated, the stiffness of the selected motors is set to&#x0A;the stiffness parameter value." id="2" />
-                            <Output name="onReady" type="1" type_size="1" nature="2" inner="0" tooltip="Signal sent when stiffness has been set." id="3" />
-                            <Parameter name="Head" inherits_from_parent="0" content_type="0" value="1" default_value="1" tooltip="Do we want to modify the head stiffness?" id="4" />
-                            <Parameter name="Left arm" inherits_from_parent="0" content_type="0" value="1" default_value="1" tooltip="Do we want to modify the left arm stiffness?" id="5" />
-                            <Parameter name="Right arm" inherits_from_parent="0" content_type="0" value="1" default_value="1" tooltip="Do we want to modify the right arm stiffness?" id="6" />
-                            <Parameter name="Left leg" inherits_from_parent="0" content_type="0" value="1" default_value="1" tooltip="Do we want to modify the left leg stiffness?" id="7" />
-                            <Parameter name="Right leg" inherits_from_parent="0" content_type="0" value="1" default_value="1" tooltip="Do we want to modify the right leg stiffness?" id="8" />
-                            <Parameter name="Motors stiffness (%)" inherits_from_parent="0" content_type="1" value="0" default_value="100" min="0" max="100" tooltip="Stiffness value the motors are set to." id="9" />
-                            <Parameter name="Duration (s)" inherits_from_parent="0" content_type="2" value="0.02" default_value="1" min="0.02" max="10" tooltip="How much time to go to the max/min stiffness in seconds." id="10" />
-                        </Box>
-                        <Box name="Wipe Forehead" id="22" localization="8" tooltip="This box makes the robot wipe his forehead." x="1880" y="73">
-                            <bitmap>media/images/box/movement/move.png</bitmap>
-                            <script language="4">
-                                <content>
-                                    <![CDATA[class MyClass(GeneratedClass):
-	def __init__(self):
-		GeneratedClass.__init__(self, False)
-
-	def onUnload(self):
-		#puts code for box cleanup here
-		""
-
-	def onInput_onStart(self):
-		#self.onStopped() # activate output of the box
-		""
-
-	def onInput_onStop(self):
-		""]]>
-</content>
-                            </script>
-                            <Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when Diagram is loaded." id="1" />
-                            <Input name="onStart" type="1" type_size="1" nature="2" inner="0" tooltip="Box behavior starts when a signal is received on this Input." id="2" />
-                            <Input name="onStop" type="1" type_size="1" nature="3" inner="0" tooltip="Box behavior stops when a signal is received on this Input." id="3" />
-                            <Output name="onStopped" type="1" type_size="1" nature="1" inner="0" tooltip="Signal sent when Box behavior is finished." id="4" />
-                            <Timeline enable="1" fps="25" start_frame="1" end_frame="-1" size="127">
-                                <ActuatorList model="Nao">
-                                    <ActuatorCurve name="value" actuator="HeadYaw" recordable="1" mute="0" unit="-1">
-                                        <Key frame="24" value="-13.4498" />
-                                        <Key frame="42" value="-35.6864" />
-                                        <Key frame="82" value="-6.50639" />
-                                        <Key frame="99" value="-0.353971" />
-                                        <Key frame="113" value="-1.58446" />
-                                        <Key frame="127" value="-2.11181" />
-                                    </ActuatorCurve>
-                                    <ActuatorCurve name="value" actuator="HeadPitch" recordable="1" mute="0" unit="-1">
-                                        <Key frame="24" value="-1.49656" />
-                                        <Key frame="42" value="24.5194" />
-                                        <Key frame="82" value="17.6638" />
-                                        <Key frame="99" value="6.41369" />
-                                        <Key frame="113" value="-0.79343" />
-                                        <Key frame="127" value="3.51326" />
-                                    </ActuatorCurve>
-                                    <ActuatorCurve name="value" actuator="LShoulderPitch" recordable="1" mute="0" unit="-1">
-                                        <Key frame="20" value="49.4806" />
-                                        <Key frame="38" value="49.217" />
-                                        <Key frame="78" value="50.8869" />
-                                        <Key frame="95" value="53.26" />
-                                        <Key frame="109" value="58.2698" />
-                                        <Key frame="123" value="55.9846" />
-                                    </ActuatorCurve>
-                                    <ActuatorCurve name="value" actuator="LShoulderRoll" recordable="1" mute="0" unit="-1">
-                                        <Key frame="20" value="16.4333" />
-                                        <Key frame="38" value="13.1814" />
-                                        <Key frame="78" value="11.5993" />
-                                        <Key frame="95" value="23.2889" />
-                                        <Key frame="109" value="20.6522" />
-                                        <Key frame="123" value="18.2791" />
-                                    </ActuatorCurve>
-                                    <ActuatorCurve name="value" actuator="LElbowYaw" recordable="1" mute="0" unit="-1">
-                                        <Key frame="20" value="-54.8468" />
-                                        <Key frame="38" value="-47.2003" />
-                                        <Key frame="78" value="-57.7473" />
-                                        <Key frame="95" value="-53.0011" />
-                                        <Key frame="109" value="-71.2826" />
-                                        <Key frame="123" value="-55.0226" />
-                                    </ActuatorCurve>
-                                    <ActuatorCurve name="value" actuator="LElbowRoll" recordable="1" mute="0" unit="-1">
-                                        <Key frame="20" value="-49.6564" />
-                                        <Key frame="38" value="-49.7443" />
-                                        <Key frame="78" value="-47.1076" />
-                                        <Key frame="95" value="-56.8635" />
-                                        <Key frame="109" value="-55.3694" />
-                                        <Key frame="123" value="-56.7757" />
-                                    </ActuatorCurve>
-                                    <ActuatorCurve name="value" actuator="LWristYaw" recordable="1" mute="0" unit="-1">
-                                        <Key frame="38" value="22.1463" />
-                                        <Key frame="78" value="22.1463" />
-                                        <Key frame="95" value="22.1463" />
-                                        <Key frame="123" value="22.1463" />
-                                    </ActuatorCurve>
-                                    <ActuatorCurve name="value" actuator="LHand" recordable="1" mute="0" unit="-1">
-                                        <Key frame="38" value="0.132026" />
-                                        <Key frame="78" value="0.132026" />
-                                        <Key frame="95" value="0.132026" />
-                                        <Key frame="123" value="0.132026" />
-                                    </ActuatorCurve>
-                                    <ActuatorCurve name="value" actuator="RShoulderPitch" recordable="1" mute="0" unit="-1">
-                                        <Key frame="16" value="4.39699" />
-                                        <Key frame="34" value="-34.0996" />
-                                        <Key frame="74" value="-49.6564" />
-                                        <Key frame="91" value="-35.1543" />
-                                        <Key frame="105" value="33.4892" />
-                                        <Key frame="119" value="50.5401" />
-                                    </ActuatorCurve>
-                                    <ActuatorCurve name="value" actuator="RShoulderRoll" recordable="1" mute="0" unit="-1">
-                                        <Key frame="16" value="-1.145" />
-                                        <Key frame="34" value="-1.145" />
-                                        <Key frame="74" value="-35.247" />
-                                        <Key frame="91" value="-47.7276" />
-                                        <Key frame="105" value="-12.8346" />
-                                        <Key frame="119" value="-12.3072" />
-                                    </ActuatorCurve>
-                                    <ActuatorCurve name="value" actuator="RElbowYaw" recordable="1" mute="0" unit="-1">
-                                        <Key frame="16" value="-7.38531" />
-                                        <Key frame="34" value="-16.3503" />
-                                        <Key frame="74" value="-8.96736" />
-                                        <Key frame="91" value="43.2403" />
-                                        <Key frame="105" value="67.1469" />
-                                        <Key frame="119" value="38.8457" />
-                                    </ActuatorCurve>
-                                    <ActuatorCurve name="value" actuator="RElbowRoll" recordable="1" mute="0" unit="-1">
-                                        <Key frame="16" value="73.392" />
-                                        <Key frame="34" value="80.0718" />
-                                        <Key frame="74" value="90.0914" />
-                                        <Key frame="91" value="71.1068" />
-                                        <Key frame="105" value="70.2279" />
-                                        <Key frame="119" value="48.1671" />
-                                    </ActuatorCurve>
-                                    <ActuatorCurve name="value" actuator="RWristYaw" recordable="1" mute="0" unit="-1">
-                                        <Key frame="34" value="-3.34229" />
-                                        <Key frame="74" value="-2.99072" />
-                                        <Key frame="91" value="-3.86964" />
-                                        <Key frame="119" value="-2.1997" />
-                                    </ActuatorCurve>
-                                    <ActuatorCurve name="value" actuator="RHand" recordable="1" mute="0" unit="-1">
-                                        <Key frame="34" value="0.166571" />
-                                        <Key frame="74" value="0.166208" />
-                                        <Key frame="91" value="0.166571" />
-                                        <Key frame="119" value="0.166208" />
-                                    </ActuatorCurve>
-                                    <ActuatorCurve name="value" actuator="LHipYawPitch" recordable="1" mute="1" unit="-1" />
-                                    <ActuatorCurve name="value" actuator="LHipRoll" recordable="1" mute="1" unit="-1" />
-                                    <ActuatorCurve name="value" actuator="LHipPitch" recordable="1" mute="1" unit="-1" />
-                                    <ActuatorCurve name="value" actuator="LKneePitch" recordable="1" mute="1" unit="-1" />
-                                    <ActuatorCurve name="value" actuator="LAnklePitch" recordable="1" mute="1" unit="-1" />
-                                    <ActuatorCurve name="value" actuator="LAnkleRoll" recordable="1" mute="1" unit="-1" />
-                                    <ActuatorCurve name="value" actuator="RHipRoll" recordable="1" mute="1" unit="-1" />
-                                    <ActuatorCurve name="value" actuator="RHipPitch" recordable="1" mute="1" unit="-1" />
-                                    <ActuatorCurve name="value" actuator="RKneePitch" recordable="1" mute="1" unit="-1" />
-                                    <ActuatorCurve name="value" actuator="RAnklePitch" recordable="1" mute="1" unit="-1" />
-                                    <ActuatorCurve name="value" actuator="RAnkleRoll" recordable="1" mute="1" unit="-1" />
-                                </ActuatorList>
-                            </Timeline>
-                            <Resource name="Head" type="Lock" timeout="0" />
-                            <Resource name="Arms" type="Lock" timeout="0" />
-                        </Box>
-                        <Box name="Say" id="23" localization="8" tooltip="Say some text. Note that you must open the box to enter the text." x="1981" y="287">
-                            <bitmap>media/images/box/interaction/say.png</bitmap>
-                            <script language="4">
-                                <content>
-                                    <![CDATA[class MyClass(GeneratedClass):
-    def __init__(self):
-        GeneratedClass.__init__(self, False)
-
-    def onLoad(self):
-        self.bIsRunning = False
-
-    def onUnload(self):
-        self.bIsRunning = False
-
-    def onInput_onStart(self):
-        self.bIsRunning = True
-
-    def onInput_onStop(self):
-        if( self.bIsRunning ):
-            self.onUnload()
-            self.onStopped()]]>
-</content>
-                            </script>
-                            <Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when Diagram is loaded." id="1" />
-                            <Input name="onStart" type="1" type_size="1" nature="2" inner="0" tooltip="Box behavior starts when a signal is received on this Input." id="2" />
-                            <Input name="onStop" type="1" type_size="1" nature="3" inner="0" tooltip="Box behavior stops when a signal is received on this Input." id="3" />
-                            <Output name="onStopped" type="1" type_size="1" nature="1" inner="0" tooltip="Signal sent when box behavior is finished or stopped." id="4" />
-                            <Parameter name="Voice shaping (%)" inherits_from_parent="0" content_type="1" value="100" default_value="100" min="50" max="150" tooltip='Used to modify at runtime the voice feature (tone, speed). In a slighty&#x0A;different way than pitch and speed, it gives a kind of &quot;gender or age&#x0A;modification&quot; effect.&#x0A;&#x0A;For instance, a quite good male derivation of female voice can be&#x0A;obtained setting this parameter to 78%.&#x0A;&#x0A;Note: For a better effect, you can compensate this parameter with the&#x0A;speed parameter. For example, if you want to decrease by 20% the voice&#x0A;shaping, you will have to increase by 20% the speed to keep a constant&#x0A;average speed.&#x0A;&#x0A;!Warning! This feature is not available yet in Japanese, Chinese and Korean.' id="5" />
-                            <Parameter name="Speed (%)" inherits_from_parent="0" content_type="1" value="100" default_value="100" min="50" max="200" tooltip="Changes the speed of the voice.&#x0A;&#x0A;Note: For a better effect, you can compensate this parameter with the voice&#x0A;shaping parameter. For example, if you want to increase by 20% the speed, you&#x0A;will have to decrease by 20% the voice shaping to keep a constant average&#x0A;speed.&#x0A;&#x0A;!Warning! This feature is not available yet in Japanese, Chinese and Korean." id="6" />
-                            <Timeline enable="0">
-                                <BehaviorLayer name="behavior_layer1">
-                                    <BehaviorKeyframe name="keyframe1" index="1">
-                                        <Diagram>
-                                            <Box name="Say Text" id="2" localization="8" tooltip="Say the text received on its input." x="422" y="65">
-                                                <bitmap>media/images/box/interaction/say.png</bitmap>
-                                                <script language="4">
-                                                    <content>
-                                                        <![CDATA[import time
-
-class MyClass(GeneratedClass):
-    def __init__(self):
-        GeneratedClass.__init__(self, False)
-        self.tts = ALProxy('ALTextToSpeech')
-        self.ttsStop = ALProxy('ALTextToSpeech', True) #Create another proxy as wait is blocking if audioout is remote
-
-    def onLoad(self):
-        self.bIsRunning = False
-        self.ids = []
-
-    def onUnload(self):
-        for id in self.ids:
-            try:
-                self.ttsStop.stop(id)
-            except:
-                pass
-        while( self.bIsRunning ):
-            time.sleep( 0.2 )
-
-    def onInput_onStart(self, p):
-        self.bIsRunning = True
-        try:
-            sentence = "\RSPD="+ str( self.getParameter("Speed (%)") ) + "\ "
-            sentence += "\VCT="+ str( self.getParameter("Voice shaping (%)") ) + "\ "
-            sentence += str(p)
-            sentence +=  "\RST\ "
-            id = self.tts.post.say(str(sentence))
-            self.ids.append(id)
-            self.tts.wait(id, 0)
-        finally:
-            try:
-                self.ids.remove(id)
-            except:
-                pass
-            if( self.ids == [] ):
-                self.onStopped() # activate output of the box
-                self.bIsRunning = False
-
-    def onInput_onStop(self):
-        self.onUnload()]]>
-</content>
-                                                </script>
-                                                <Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when Diagram is loaded." id="1" />
-                                                <Input name="onStart" type="3" type_size="1" nature="2" inner="0" tooltip="Box behavior starts when a signal is received on this Input." id="2" />
-                                                <Input name="onStop" type="1" type_size="1" nature="3" inner="0" tooltip="Box behavior stops when a signal is received on this Input." id="3" />
-                                                <Output name="onStopped" type="1" type_size="1" nature="1" inner="0" tooltip="Signal sent when Box behavior is finished." id="4" />
-                                                <Parameter name="Voice shaping (%)" inherits_from_parent="1" content_type="1" value="100" default_value="100" min="50" max="150" tooltip='Used to modify at runtime the voice feature (tone, speed). In a slighty&#x0A;different way than pitch and speed, it gives a kind of &quot;gender or age&#x0A;modification&quot; effect.&#x0A;&#x0A;For instance, a quite good male derivation of female voice can be&#x0A;obtained setting this parameter to 78%.&#x0A;&#x0A;Note: For a better effect, you can compensate this parameter with the&#x0A;speed parameter. For example, if you want to decrease by 20% the voice&#x0A;shaping, you will have to increase by 20% the speed to keep a constant&#x0A;average speed.' id="5" />
-                                                <Parameter name="Speed (%)" inherits_from_parent="1" content_type="1" value="100" default_value="100" min="50" max="200" tooltip="Changes the speed of the voice.&#x0A;&#x0A;Note: For a better effect, you can compensate this parameter with the voice&#x0A;shaping parameter. For example, if you want to increase by 20% the speed, you&#x0A;will have to decrease by 20% the voice shaping to keep a constant average&#x0A;speed." id="6" />
-                                            </Box>
-                                            <Box name="Python Script" id="1" localization="8" tooltip="This box contains a basic python script and can be used to create any python script box you would like.&#x0A;&#x0A;To edit its script, double-click on it." x="185" y="57">
-                                                <bitmap>media/images/box/box-python-script.png</bitmap>
-                                                <script language="4">
-                                                    <content>
-                                                        <![CDATA[class MyClass(GeneratedClass):
-    def __init__(self):
-        GeneratedClass.__init__(self)
-
-    def onLoad(self):
-        #put initialization code here
-        self.tts = ALProxy("ALTextToSpeech")
-
-    def onUnload(self):
-        #put clean-up code here
-        pass
-
-    def onInput_onStart(self):
-        self.tts.setLanguage('German')
-        self.onStopped("Ich denke es ist Zeit für eine Runde Volleyball.")
-
-    def onInput_onStop(self):
-        self.onUnload() #it is recommended to reuse the clean-up as the box is stopped
-        self.onStopped() #activate the output of the box]]>
-</content>
-                                                </script>
-                                                <Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" />
-                                                <Input name="onStart" type="1" type_size="1" nature="2" inner="0" tooltip="Box behavior starts when a signal is received on this input." id="2" />
-                                                <Input name="onStop" type="1" type_size="1" nature="3" inner="0" tooltip="Box behavior stops when a signal is received on this input." id="3" />
-                                                <Output name="onStopped" type="3" type_size="1" nature="2" inner="0" tooltip="" id="4" />
-                                            </Box>
-                                            <Link inputowner="0" indexofinput="4" outputowner="2" indexofoutput="4" />
-                                            <Link inputowner="1" indexofinput="2" outputowner="0" indexofoutput="2" />
-                                            <Link inputowner="2" indexofinput="2" outputowner="1" indexofoutput="4" />
-                                        </Diagram>
-                                    </BehaviorKeyframe>
-                                </BehaviorLayer>
-                            </Timeline>
-                            <Resource name="Speech" type="Lock" timeout="0" />
-                        </Box>
-                        <Box name="Wait For Signals (2)" id="24" localization="8" tooltip="Wait for both inputs to be stimulated before stimulating its output." x="2046" y="115">
-                            <bitmap>media/images/box/wait.png</bitmap>
-                            <script language="4">
-                                <content>
-                                    <![CDATA[class MyClass(GeneratedClass):
-    def __init__(self):
-        GeneratedClass.__init__(self, False)
-
-    def onLoad(self):
-        self.ok = [False]*2
-
-    def onUnload(self):
-        #puts code for box cleanup here
-        ""
-
-    def onStart(self, nInput):
-        self.ok[nInput-1] = True
-        bOutput = True
-        for bOk in self.ok:
-            bOutput = bOutput and bOk
-        if( bOutput ):
-            self.ok = [False]*2
-            self.signalsReceived()
-
-    def onInput_signal1(self):
-        self.onStart(1)
-
-    def onInput_signal2(self):
-        self.onStart(2)]]>
-</content>
-                            </script>
-                            <Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when Diagram is loaded." id="1" />
-                            <Input name="signal1" type="1" type_size="1" nature="1" inner="0" tooltip="First signal to wait." id="2" />
-                            <Input name="signal2" type="1" type_size="1" nature="1" inner="0" tooltip="Second signal to wait." id="3" />
-                            <Output name="signalsReceived" type="1" type_size="1" nature="2" inner="0" tooltip="Signal sent when both inputs have been stimulated." id="4" />
-                        </Box>
-                        <Box name="NaoTH stand" id="25" localization="8" tooltip="NaoTH stand" x="1221" y="1295">
+                        <Box name="NaoTH stand" id="25" localization="8" tooltip="NaoTH stand" x="1360" y="1294">
                             <bitmap>media/images/box/movement/move.png</bitmap>
                             <script language="4">
                                 <content>
@@ -1353,55 +811,7 @@ class MyClass(GeneratedClass):
                             <Input name="signal2" type="1" type_size="1" nature="1" inner="0" tooltip="Second signal to wait." id="3" />
                             <Output name="signalsReceived" type="1" type_size="1" nature="2" inner="0" tooltip="Signal sent when both inputs have been stimulated." id="4" />
                         </Box>
-                        <Box name="Delay" id="27" localization="8" tooltip="Wait a moment before triggering the output. &#x0A;Can be stopped anytime. &#x0A;Multiple inputs will trigger multiple outputs." x="1858" y="291">
-                            <bitmap>media/images/box/wait.png</bitmap>
-                            <script language="4">
-                                <content>
-                                    <![CDATA[class MyClass(GeneratedClass):
-    def __init__(self):
-        GeneratedClass.__init__(self, False)
-
-    def onLoad(self):
-        self.delayed = []
-
-    def onUnload(self):
-        self.cancelDelays()
-
-    def cancelDelays(self):
-        cancel_list = list(self.delayed)
-        for d in cancel_list:
-            d.cancel()
-
-    def cleanDelay(self, fut, fut_ref):
-        self.delayed.remove(fut)
-
-    def triggerOutput(self):
-        self.timerOutput()
-
-    def onInput_onStart(self):
-        import qi
-        import functools
-        delay_future = qi.async(self.triggerOutput, delay=int(self.getParameter("Timeout (s)") * 1000 * 1000))
-        # keep the async operation in an array for cancel
-        # and remove it when it is finished in the callback
-        self.delayed.append(delay_future)
-        bound_clean = functools.partial(self.cleanDelay, delay_future)
-        delay_future.addCallback(bound_clean)
-
-    def onInput_onStop(self):
-        if self.getParameter("Trigger timerOutput if cancelled") and self.delayed:
-            self.timerOutput()
-        self.onUnload()]]>
-</content>
-                            </script>
-                            <Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" />
-                            <Input name="onStart" type="1" type_size="1" nature="2" inner="0" tooltip="Start the Delay box with the configured timeout value." id="2" />
-                            <Input name="onStop" type="1" type_size="1" nature="3" inner="0" tooltip="Stop the wait and stimulate the output." id="3" />
-                            <Output name="timerOutput" type="1" type_size="1" nature="1" inner="0" tooltip="Send a bang once delay set in parameters is elapsed, or if the box is stopped and the appropriate parameter is set." id="4" />
-                            <Parameter name="Timeout (s)" inherits_from_parent="0" content_type="2" value="2" default_value="1" min="0" max="5000" tooltip="Duration the box waits before stimulating the output." id="5" />
-                            <Parameter name="Trigger timerOutput if cancelled" inherits_from_parent="0" content_type="0" value="0" default_value="1" tooltip="If the box is currently delaying at least one signal and cancelled, output will be stimulated." id="6" />
-                        </Box>
-                        <Box name="stiffness off (2)" id="28" localization="8" tooltip="Stiffen the motors selected in parameters." x="1394" y="474">
+                        <Box name="stiffness off (2)" id="28" localization="8" tooltip="set stiffness to zero while sitting" x="1387" y="459">
                             <bitmap>media/images/box/movement/stiffness.png</bitmap>
                             <script language="4">
                                 <content>
@@ -1706,42 +1116,1878 @@ class MyClass(GeneratedClass):
                                 </ActuatorList>
                             </Timeline>
                         </Box>
+                        <Box name="reset stiffness" id="22" localization="8" tooltip="This box resets the stiffness for naoqi.&#x0A;First it sets the stiffness to zero in 0.02 s and then  it increases the stiffness to 0.8 in 0.5 s." x="1529" y="181">
+                            <bitmap>media/images/box/box-diagram.png</bitmap>
+                            <script language="4">
+                                <content>
+                                    <![CDATA[]]>
+</content>
+                            </script>
+                            <Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" />
+                            <Input name="onStart" type="1" type_size="1" nature="2" inner="0" tooltip="Box behavior starts when a signal is received on this input." id="2" />
+                            <Input name="onStop" type="1" type_size="1" nature="3" inner="0" tooltip="Box behavior stops when a signal is received on this input." id="3" />
+                            <Output name="onStopped" type="1" type_size="1" nature="1" inner="0" tooltip="Signal sent when box behavior is finished." id="4" />
+                            <Timeline enable="0">
+                                <BehaviorLayer name="behavior_layer1">
+                                    <BehaviorKeyframe name="keyframe1" index="1">
+                                        <Diagram>
+                                            <Box name="Set Stiffness" id="19" localization="8" tooltip="Stiffen the motors selected in parameters." x="645" y="209">
+                                                <bitmap>media/images/box/movement/stiffness.png</bitmap>
+                                                <script language="4">
+                                                    <content>
+                                                        <![CDATA[import time
+
+class MyClass(GeneratedClass):
+    def __init__(self):
+        GeneratedClass.__init__(self, False)
+
+    def onLoad(self):
+        self.bIsRunning = False
+        self.motion = ALProxy("ALMotion")
+
+    def onUnload(self):
+        self.bIsRunning = False
+
+    def setStiffness(self, stiffness):
+        self.bIsRunning = True
+        duration = self.getParameter("Duration (s)")
+        if(self.getParameter("Head")):
+            self.motion.post.stiffnessInterpolation("Head", stiffness, duration)
+        if(self.getParameter("Left arm")):
+            self.motion.post.stiffnessInterpolation("LArm", stiffness, duration)
+        if(self.getParameter("Right arm")):
+            self.motion.post.stiffnessInterpolation("RArm", stiffness, duration)
+        if(self.getParameter("Left leg")):
+            self.motion.post.stiffnessInterpolation("LLeg", stiffness, duration)
+        if(self.getParameter("Right leg")):
+            self.motion.post.stiffnessInterpolation("RLeg", stiffness, duration)
+        time.sleep(duration)
+        self.bIsRunning = False
+
+    def onInput_onSet(self):
+        if( self.bIsRunning ):
+            return
+        self.setStiffness(self.getParameter("Motors stiffness (%)")/100.)
+        self.onReady() #~ activate output of the box]]>
+</content>
+                                                </script>
+                                                <Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" />
+                                                <Input name="onSet" type="1" type_size="1" nature="1" inner="0" tooltip="When this input is stimulated, the stiffness of the selected motors is set to&#x0A;the stiffness parameter value." id="2" />
+                                                <Output name="onReady" type="1" type_size="1" nature="2" inner="0" tooltip="Signal sent when stiffness has been set." id="3" />
+                                                <Parameter name="Head" inherits_from_parent="0" content_type="0" value="1" default_value="1" tooltip="Do we want to modify the head stiffness?" id="4" />
+                                                <Parameter name="Left arm" inherits_from_parent="0" content_type="0" value="1" default_value="1" tooltip="Do we want to modify the left arm stiffness?" id="5" />
+                                                <Parameter name="Right arm" inherits_from_parent="0" content_type="0" value="1" default_value="1" tooltip="Do we want to modify the right arm stiffness?" id="6" />
+                                                <Parameter name="Left leg" inherits_from_parent="0" content_type="0" value="1" default_value="1" tooltip="Do we want to modify the left leg stiffness?" id="7" />
+                                                <Parameter name="Right leg" inherits_from_parent="0" content_type="0" value="1" default_value="1" tooltip="Do we want to modify the right leg stiffness?" id="8" />
+                                                <Parameter name="Motors stiffness (%)" inherits_from_parent="0" content_type="1" value="80" default_value="100" min="0" max="100" tooltip="Stiffness value the motors are set to." id="9" />
+                                                <Parameter name="Duration (s)" inherits_from_parent="0" content_type="2" value="0.5" default_value="1" min="0.02" max="10" tooltip="How much time to go to the max/min stiffness in seconds." id="10" />
+                                            </Box>
+                                            <Box name="stiffness off" id="21" localization="8" tooltip="Stiffen the motors selected in parameters." x="490" y="210">
+                                                <bitmap>media/images/box/movement/stiffness.png</bitmap>
+                                                <script language="4">
+                                                    <content>
+                                                        <![CDATA[import time
+
+class MyClass(GeneratedClass):
+    def __init__(self):
+        GeneratedClass.__init__(self, False)
+
+    def onLoad(self):
+        self.bIsRunning = False
+        self.motion = ALProxy("ALMotion")
+
+    def onUnload(self):
+        self.bIsRunning = False
+
+    def setStiffness(self, stiffness):
+        self.bIsRunning = True
+        duration = self.getParameter("Duration (s)")
+        if(self.getParameter("Head")):
+            self.motion.post.stiffnessInterpolation("Head", stiffness, duration)
+        if(self.getParameter("Left arm")):
+            self.motion.post.stiffnessInterpolation("LArm", stiffness, duration)
+        if(self.getParameter("Right arm")):
+            self.motion.post.stiffnessInterpolation("RArm", stiffness, duration)
+        if(self.getParameter("Left leg")):
+            self.motion.post.stiffnessInterpolation("LLeg", stiffness, duration)
+        if(self.getParameter("Right leg")):
+            self.motion.post.stiffnessInterpolation("RLeg", stiffness, duration)
+        time.sleep(duration)
+        self.bIsRunning = False
+
+    def onInput_onSet(self):
+        if( self.bIsRunning ):
+            return
+        self.setStiffness(self.getParameter("Motors stiffness (%)")/100.)
+        self.onReady() #~ activate output of the box]]>
+</content>
+                                                </script>
+                                                <Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" />
+                                                <Input name="onSet" type="1" type_size="1" nature="1" inner="0" tooltip="When this input is stimulated, the stiffness of the selected motors is set to&#x0A;the stiffness parameter value." id="2" />
+                                                <Output name="onReady" type="1" type_size="1" nature="2" inner="0" tooltip="Signal sent when stiffness has been set." id="3" />
+                                                <Parameter name="Head" inherits_from_parent="0" content_type="0" value="1" default_value="1" tooltip="Do we want to modify the head stiffness?" id="4" />
+                                                <Parameter name="Left arm" inherits_from_parent="0" content_type="0" value="1" default_value="1" tooltip="Do we want to modify the left arm stiffness?" id="5" />
+                                                <Parameter name="Right arm" inherits_from_parent="0" content_type="0" value="1" default_value="1" tooltip="Do we want to modify the right arm stiffness?" id="6" />
+                                                <Parameter name="Left leg" inherits_from_parent="0" content_type="0" value="1" default_value="1" tooltip="Do we want to modify the left leg stiffness?" id="7" />
+                                                <Parameter name="Right leg" inherits_from_parent="0" content_type="0" value="1" default_value="1" tooltip="Do we want to modify the right leg stiffness?" id="8" />
+                                                <Parameter name="Motors stiffness (%)" inherits_from_parent="0" content_type="1" value="0" default_value="100" min="0" max="100" tooltip="Stiffness value the motors are set to." id="9" />
+                                                <Parameter name="Duration (s)" inherits_from_parent="0" content_type="2" value="0.02" default_value="1" min="0.02" max="10" tooltip="How much time to go to the max/min stiffness in seconds." id="10" />
+                                            </Box>
+                                            <Link inputowner="19" indexofinput="2" outputowner="21" indexofoutput="3" />
+                                            <Link inputowner="21" indexofinput="2" outputowner="0" indexofoutput="2" />
+                                            <Link inputowner="0" indexofinput="4" outputowner="19" indexofoutput="3" />
+                                        </Diagram>
+                                    </BehaviorKeyframe>
+                                </BehaviorLayer>
+                            </Timeline>
+                        </Box>
+                        <Box name="reset stiffness (1)" id="3" localization="8" tooltip="This box resets the stiffness for naoqi.&#x0A;First it sets the stiffness to zero in 0.02 s and then  it increases the stiffness to 0.8 in 0.5 s." x="1090" y="465">
+                            <bitmap>media/images/box/box-diagram.png</bitmap>
+                            <script language="4">
+                                <content>
+                                    <![CDATA[]]>
+</content>
+                            </script>
+                            <Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" />
+                            <Input name="onStart" type="1" type_size="1" nature="2" inner="0" tooltip="Box behavior starts when a signal is received on this input." id="2" />
+                            <Input name="onStop" type="1" type_size="1" nature="3" inner="0" tooltip="Box behavior stops when a signal is received on this input." id="3" />
+                            <Output name="onStopped" type="1" type_size="1" nature="1" inner="0" tooltip="Signal sent when box behavior is finished." id="4" />
+                            <Timeline enable="0">
+                                <BehaviorLayer name="behavior_layer1">
+                                    <BehaviorKeyframe name="keyframe1" index="1">
+                                        <Diagram>
+                                            <Box name="Set Stiffness" id="19" localization="8" tooltip="Stiffen the motors selected in parameters." x="645" y="209">
+                                                <bitmap>media/images/box/movement/stiffness.png</bitmap>
+                                                <script language="4">
+                                                    <content>
+                                                        <![CDATA[import time
+
+class MyClass(GeneratedClass):
+    def __init__(self):
+        GeneratedClass.__init__(self, False)
+
+    def onLoad(self):
+        self.bIsRunning = False
+        self.motion = ALProxy("ALMotion")
+
+    def onUnload(self):
+        self.bIsRunning = False
+
+    def setStiffness(self, stiffness):
+        self.bIsRunning = True
+        duration = self.getParameter("Duration (s)")
+        if(self.getParameter("Head")):
+            self.motion.post.stiffnessInterpolation("Head", stiffness, duration)
+        if(self.getParameter("Left arm")):
+            self.motion.post.stiffnessInterpolation("LArm", stiffness, duration)
+        if(self.getParameter("Right arm")):
+            self.motion.post.stiffnessInterpolation("RArm", stiffness, duration)
+        if(self.getParameter("Left leg")):
+            self.motion.post.stiffnessInterpolation("LLeg", stiffness, duration)
+        if(self.getParameter("Right leg")):
+            self.motion.post.stiffnessInterpolation("RLeg", stiffness, duration)
+        time.sleep(duration)
+        self.bIsRunning = False
+
+    def onInput_onSet(self):
+        if( self.bIsRunning ):
+            return
+        self.setStiffness(self.getParameter("Motors stiffness (%)")/100.)
+        self.onReady() #~ activate output of the box]]>
+</content>
+                                                </script>
+                                                <Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" />
+                                                <Input name="onSet" type="1" type_size="1" nature="1" inner="0" tooltip="When this input is stimulated, the stiffness of the selected motors is set to&#x0A;the stiffness parameter value." id="2" />
+                                                <Output name="onReady" type="1" type_size="1" nature="2" inner="0" tooltip="Signal sent when stiffness has been set." id="3" />
+                                                <Parameter name="Head" inherits_from_parent="0" content_type="0" value="1" default_value="1" tooltip="Do we want to modify the head stiffness?" id="4" />
+                                                <Parameter name="Left arm" inherits_from_parent="0" content_type="0" value="1" default_value="1" tooltip="Do we want to modify the left arm stiffness?" id="5" />
+                                                <Parameter name="Right arm" inherits_from_parent="0" content_type="0" value="1" default_value="1" tooltip="Do we want to modify the right arm stiffness?" id="6" />
+                                                <Parameter name="Left leg" inherits_from_parent="0" content_type="0" value="1" default_value="1" tooltip="Do we want to modify the left leg stiffness?" id="7" />
+                                                <Parameter name="Right leg" inherits_from_parent="0" content_type="0" value="1" default_value="1" tooltip="Do we want to modify the right leg stiffness?" id="8" />
+                                                <Parameter name="Motors stiffness (%)" inherits_from_parent="0" content_type="1" value="80" default_value="100" min="0" max="100" tooltip="Stiffness value the motors are set to." id="9" />
+                                                <Parameter name="Duration (s)" inherits_from_parent="0" content_type="2" value="0.5" default_value="1" min="0.02" max="10" tooltip="How much time to go to the max/min stiffness in seconds." id="10" />
+                                            </Box>
+                                            <Box name="stiffness off" id="21" localization="8" tooltip="Stiffen the motors selected in parameters." x="490" y="210">
+                                                <bitmap>media/images/box/movement/stiffness.png</bitmap>
+                                                <script language="4">
+                                                    <content>
+                                                        <![CDATA[import time
+
+class MyClass(GeneratedClass):
+    def __init__(self):
+        GeneratedClass.__init__(self, False)
+
+    def onLoad(self):
+        self.bIsRunning = False
+        self.motion = ALProxy("ALMotion")
+
+    def onUnload(self):
+        self.bIsRunning = False
+
+    def setStiffness(self, stiffness):
+        self.bIsRunning = True
+        duration = self.getParameter("Duration (s)")
+        if(self.getParameter("Head")):
+            self.motion.post.stiffnessInterpolation("Head", stiffness, duration)
+        if(self.getParameter("Left arm")):
+            self.motion.post.stiffnessInterpolation("LArm", stiffness, duration)
+        if(self.getParameter("Right arm")):
+            self.motion.post.stiffnessInterpolation("RArm", stiffness, duration)
+        if(self.getParameter("Left leg")):
+            self.motion.post.stiffnessInterpolation("LLeg", stiffness, duration)
+        if(self.getParameter("Right leg")):
+            self.motion.post.stiffnessInterpolation("RLeg", stiffness, duration)
+        time.sleep(duration)
+        self.bIsRunning = False
+
+    def onInput_onSet(self):
+        if( self.bIsRunning ):
+            return
+        self.setStiffness(self.getParameter("Motors stiffness (%)")/100.)
+        self.onReady() #~ activate output of the box]]>
+</content>
+                                                </script>
+                                                <Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" />
+                                                <Input name="onSet" type="1" type_size="1" nature="1" inner="0" tooltip="When this input is stimulated, the stiffness of the selected motors is set to&#x0A;the stiffness parameter value." id="2" />
+                                                <Output name="onReady" type="1" type_size="1" nature="2" inner="0" tooltip="Signal sent when stiffness has been set." id="3" />
+                                                <Parameter name="Head" inherits_from_parent="0" content_type="0" value="1" default_value="1" tooltip="Do we want to modify the head stiffness?" id="4" />
+                                                <Parameter name="Left arm" inherits_from_parent="0" content_type="0" value="1" default_value="1" tooltip="Do we want to modify the left arm stiffness?" id="5" />
+                                                <Parameter name="Right arm" inherits_from_parent="0" content_type="0" value="1" default_value="1" tooltip="Do we want to modify the right arm stiffness?" id="6" />
+                                                <Parameter name="Left leg" inherits_from_parent="0" content_type="0" value="1" default_value="1" tooltip="Do we want to modify the left leg stiffness?" id="7" />
+                                                <Parameter name="Right leg" inherits_from_parent="0" content_type="0" value="1" default_value="1" tooltip="Do we want to modify the right leg stiffness?" id="8" />
+                                                <Parameter name="Motors stiffness (%)" inherits_from_parent="0" content_type="1" value="0" default_value="100" min="0" max="100" tooltip="Stiffness value the motors are set to." id="9" />
+                                                <Parameter name="Duration (s)" inherits_from_parent="0" content_type="2" value="0.02" default_value="1" min="0.02" max="10" tooltip="How much time to go to the max/min stiffness in seconds." id="10" />
+                                            </Box>
+                                            <Link inputowner="19" indexofinput="2" outputowner="21" indexofoutput="3" />
+                                            <Link inputowner="21" indexofinput="2" outputowner="0" indexofoutput="2" />
+                                            <Link inputowner="0" indexofinput="4" outputowner="19" indexofoutput="3" />
+                                        </Diagram>
+                                    </BehaviorKeyframe>
+                                </BehaviorLayer>
+                            </Timeline>
+                        </Box>
+                        <Box name="disable smartstiffness" id="2" localization="8" tooltip="this box disables smart stiffness" x="106" y="189">
+                            <bitmap>media/images/box/movement/stiffness.png</bitmap>
+                            <script language="4">
+                                <content>
+                                    <![CDATA[class MyClass(GeneratedClass):
+    def __init__(self):
+        GeneratedClass.__init__(self)
+
+    def onLoad(self):
+        self.motion = ALProxy("ALMotion")
+        pass
+
+    def onUnload(self):
+        #put clean-up code here
+        pass
+
+    def onInput_onStart(self):
+        self.motion.setSmartStiffnessEnabled(False)
+        self.onStopped()
+
+    def onInput_onStop(self):
+        self.onUnload() #it is recommended to reuse the clean-up as the box is stopped
+        self.onStopped() #activate the output of the box]]>
+</content>
+                            </script>
+                            <Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" />
+                            <Input name="onStart" type="1" type_size="1" nature="2" inner="0" tooltip="Box behavior starts when a signal is received on this input." id="2" />
+                            <Output name="onStopped" type="1" type_size="1" nature="1" inner="0" tooltip="Signal sent when box behavior is finished." id="3" />
+                        </Box>
+                        <Box name="Random Int." id="19" localization="8" tooltip="Generate a random integer between a min number and a max number set as&#x0A;parameters.&#x0A;Note that the min and max numbers are included in the range of possible values." x="1791" y="182">
+                            <bitmap>media/images/box/box-script.png</bitmap>
+                            <script language="4">
+                                <content>
+                                    <![CDATA[import random
+
+class MyClass(GeneratedClass):
+    def __init__(self):
+        GeneratedClass.__init__(self, False)
+
+    def onLoad(self):
+        # attributes needed in shuffle mode
+        self.nMax = 1
+        self.nMin = 0
+        self.nIndex = self.nMax - self.nMin
+        self.aShuffled = []
+
+    def onUnload(self):
+         #puts code for box cleanup here
+        pass
+
+    def onInput_onStart(self):
+        nMax = self.getParameter("Max value")
+        nMin = self.getParameter("Min value")
+        if( nMin > nMax ):
+            temp = nMin
+            nMin = nMax
+            nMax = temp
+        # if shuffle
+        if( self.getParameter("Shuffle") ):
+            self.nIndex += 1
+            if( self.nIndex > self.nMax - self.nMin or nMax != self.nMax or nMin != self.nMin ):
+                self.nMax = nMax
+                self.nMin = nMin
+                self.nIndex = 0
+                self.aShuffled = []
+                for i in range( nMin, nMax + 1 ):
+                    self.aShuffled.insert( random.randint(0, len(self.aShuffled)), i )
+            self.output_RandomValue( self.aShuffled[self.nIndex] )
+        # if not shuffle
+        else:
+            self.nIndex = self.nMax - self.nMin
+            self.output_RandomValue( random.randint( nMin, nMax ) )]]>
+</content>
+                            </script>
+                            <Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" />
+                            <Input name="onStart" type="1" type_size="1" nature="1" inner="0" tooltip="Generate a random integer." id="2" />
+                            <Output name="output_RandomValue" type="2" type_size="1" nature="2" inner="0" tooltip="The random value obtained." id="3" />
+                            <Parameter name="Min value" inherits_from_parent="0" content_type="1" value="0" default_value="0" min="0" max="1000" tooltip="The minimum value you can get." id="4" />
+                            <Parameter name="Max value" inherits_from_parent="0" content_type="1" value="2" default_value="10" min="0" max="1000" tooltip="The maximum number you can get." id="5" />
+                            <Parameter name="Shuffle" inherits_from_parent="0" content_type="0" value="1" default_value="0" tooltip="When this option is selected the box will give all the numbers between min and&#x0A;max before giving the same number twice." id="6" />
+                        </Box>
+                        <Box name="Switch Case (2)" id="20" localization="8" tooltip="Test input value and stimulate the output matching to this value. If there is no&#x0A;matching output, the default output (onDefault) is stimulated.&#x0A;&#x0A;You can edit a case by left double-clicking on the line. You can add a&#x0A;case by right clicking on a line and selecting &apos;Insert a row&apos;. You can delete&#x0A;a case by right clicking on a line and selecting &apos;Remove a row&apos;." plugin="dispatcher_plugin" x="1917" y="182">
+                            <bitmap>media/images/box/interaction/choice.png</bitmap>
+                            <script language="4">
+                                <content>
+                                    <![CDATA[# /!\ Generated content. Do not edit!
+class MyClass(GeneratedClass):
+	def __init__(self):
+		try: # disable autoBind
+		  GeneratedClass.__init__(self, False)
+		except TypeError: # if NAOqi < 1.14
+		  GeneratedClass.__init__( self )
+
+	def onInput_onStart(self, p):
+		p = self.typeConversion(p)
+		if(p == self.typeConversion(1)):
+			self.output_1(p)
+		elif(p == self.typeConversion(2)):
+			self.output_2(p)
+		else:
+			self.onDefault()
+
+	def typeConversion(self, p):
+		try:
+			p = float(p)
+			pint = int(p)
+			if( p == pint ):
+				p = pint
+		except:
+			p = str(p)
+		return p]]>
+</content>
+                            </script>
+                            <pluginContent>
+                                <keywords>
+                                    <keyword>1</keyword>
+                                    <keyword>2</keyword>
+                                    <keyword></keyword>
+                                </keywords>
+                            </pluginContent>
+                            <Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" />
+                            <Input name="onStart" type="0" type_size="1" nature="1" inner="0" tooltip="Value to test." id="2" />
+                            <Output name="onDefault" type="1" type_size="1" nature="2" inner="0" tooltip="If the input value does not match any value set on the box." id="3" />
+                            <Output name="output_1" type="0" type_size="1" nature="2" inner="0" tooltip="This IO has been automatically added by box. Read box tooltip for more information." id="4" />
+                            <Output name="output_2" type="0" type_size="1" nature="2" inner="0" tooltip="This IO has been automatically added by box. Read box tooltip for more information." id="5" />
+                        </Box>
+                        <Box name="Wipe Forehead" id="21" localization="8" tooltip="This box makes the robot wipe his forehead." x="2414" y="75">
+                            <bitmap>media/images/box/movement/move.png</bitmap>
+                            <script language="4">
+                                <content>
+                                    <![CDATA[class MyClass(GeneratedClass):
+	def __init__(self):
+		GeneratedClass.__init__(self, False)
+
+	def onUnload(self):
+		#puts code for box cleanup here
+		""
+
+	def onInput_onStart(self):
+		#self.onStopped() # activate output of the box
+		""
+
+	def onInput_onStop(self):
+		""]]>
+</content>
+                            </script>
+                            <Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when Diagram is loaded." id="1" />
+                            <Input name="onStart" type="1" type_size="1" nature="2" inner="0" tooltip="Box behavior starts when a signal is received on this Input." id="2" />
+                            <Input name="onStop" type="1" type_size="1" nature="3" inner="0" tooltip="Box behavior stops when a signal is received on this Input." id="3" />
+                            <Output name="onStopped" type="1" type_size="1" nature="1" inner="0" tooltip="Signal sent when Box behavior is finished." id="4" />
+                            <Timeline enable="1" fps="25" start_frame="1" end_frame="-1" size="127">
+                                <ActuatorList model="Nao">
+                                    <ActuatorCurve name="value" actuator="HeadYaw" recordable="1" mute="0" unit="-1">
+                                        <Key frame="24" value="-13.4498" />
+                                        <Key frame="42" value="-35.6864" />
+                                        <Key frame="82" value="-6.50639" />
+                                        <Key frame="99" value="-0.353971" />
+                                        <Key frame="113" value="-1.58446" />
+                                        <Key frame="127" value="-2.11181" />
+                                    </ActuatorCurve>
+                                    <ActuatorCurve name="value" actuator="HeadPitch" recordable="1" mute="0" unit="-1">
+                                        <Key frame="24" value="-1.49656" />
+                                        <Key frame="42" value="24.5194" />
+                                        <Key frame="82" value="17.6638" />
+                                        <Key frame="99" value="6.41369" />
+                                        <Key frame="113" value="-0.79343" />
+                                        <Key frame="127" value="3.51326" />
+                                    </ActuatorCurve>
+                                    <ActuatorCurve name="value" actuator="LShoulderPitch" recordable="1" mute="0" unit="-1">
+                                        <Key frame="20" value="49.4806" />
+                                        <Key frame="38" value="49.217" />
+                                        <Key frame="78" value="50.8869" />
+                                        <Key frame="95" value="53.26" />
+                                        <Key frame="109" value="58.2698" />
+                                        <Key frame="123" value="55.9846" />
+                                    </ActuatorCurve>
+                                    <ActuatorCurve name="value" actuator="LShoulderRoll" recordable="1" mute="0" unit="-1">
+                                        <Key frame="20" value="16.4333" />
+                                        <Key frame="38" value="13.1814" />
+                                        <Key frame="78" value="11.5993" />
+                                        <Key frame="95" value="23.2889" />
+                                        <Key frame="109" value="20.6522" />
+                                        <Key frame="123" value="18.2791" />
+                                    </ActuatorCurve>
+                                    <ActuatorCurve name="value" actuator="LElbowYaw" recordable="1" mute="0" unit="-1">
+                                        <Key frame="20" value="-54.8468" />
+                                        <Key frame="38" value="-47.2003" />
+                                        <Key frame="78" value="-57.7473" />
+                                        <Key frame="95" value="-53.0011" />
+                                        <Key frame="109" value="-71.2826" />
+                                        <Key frame="123" value="-55.0226" />
+                                    </ActuatorCurve>
+                                    <ActuatorCurve name="value" actuator="LElbowRoll" recordable="1" mute="0" unit="-1">
+                                        <Key frame="20" value="-49.6564" />
+                                        <Key frame="38" value="-49.7443" />
+                                        <Key frame="78" value="-47.1076" />
+                                        <Key frame="95" value="-56.8635" />
+                                        <Key frame="109" value="-55.3694" />
+                                        <Key frame="123" value="-56.7757" />
+                                    </ActuatorCurve>
+                                    <ActuatorCurve name="value" actuator="LWristYaw" recordable="1" mute="0" unit="-1">
+                                        <Key frame="38" value="22.1463" />
+                                        <Key frame="78" value="22.1463" />
+                                        <Key frame="95" value="22.1463" />
+                                        <Key frame="123" value="22.1463" />
+                                    </ActuatorCurve>
+                                    <ActuatorCurve name="value" actuator="LHand" recordable="1" mute="0" unit="-1">
+                                        <Key frame="38" value="0.132026" />
+                                        <Key frame="78" value="0.132026" />
+                                        <Key frame="95" value="0.132026" />
+                                        <Key frame="123" value="0.132026" />
+                                    </ActuatorCurve>
+                                    <ActuatorCurve name="value" actuator="RShoulderPitch" recordable="1" mute="0" unit="-1">
+                                        <Key frame="16" value="4.39699" />
+                                        <Key frame="34" value="-34.0996" />
+                                        <Key frame="74" value="-49.6564" />
+                                        <Key frame="91" value="-35.1543" />
+                                        <Key frame="105" value="33.4892" />
+                                        <Key frame="119" value="50.5401" />
+                                    </ActuatorCurve>
+                                    <ActuatorCurve name="value" actuator="RShoulderRoll" recordable="1" mute="0" unit="-1">
+                                        <Key frame="16" value="-1.145" />
+                                        <Key frame="34" value="-1.145" />
+                                        <Key frame="74" value="-35.247" />
+                                        <Key frame="91" value="-47.7276" />
+                                        <Key frame="105" value="-12.8346" />
+                                        <Key frame="119" value="-12.3072" />
+                                    </ActuatorCurve>
+                                    <ActuatorCurve name="value" actuator="RElbowYaw" recordable="1" mute="0" unit="-1">
+                                        <Key frame="16" value="-7.38531" />
+                                        <Key frame="34" value="-16.3503" />
+                                        <Key frame="74" value="-8.96736" />
+                                        <Key frame="91" value="43.2403" />
+                                        <Key frame="105" value="67.1469" />
+                                        <Key frame="119" value="38.8457" />
+                                    </ActuatorCurve>
+                                    <ActuatorCurve name="value" actuator="RElbowRoll" recordable="1" mute="0" unit="-1">
+                                        <Key frame="16" value="73.392" />
+                                        <Key frame="34" value="80.0718" />
+                                        <Key frame="74" value="90.0914" />
+                                        <Key frame="91" value="71.1068" />
+                                        <Key frame="105" value="70.2279" />
+                                        <Key frame="119" value="48.1671" />
+                                    </ActuatorCurve>
+                                    <ActuatorCurve name="value" actuator="RWristYaw" recordable="1" mute="0" unit="-1">
+                                        <Key frame="34" value="-3.34229" />
+                                        <Key frame="74" value="-2.99072" />
+                                        <Key frame="91" value="-3.86964" />
+                                        <Key frame="119" value="-2.1997" />
+                                    </ActuatorCurve>
+                                    <ActuatorCurve name="value" actuator="RHand" recordable="1" mute="0" unit="-1">
+                                        <Key frame="34" value="0.166571" />
+                                        <Key frame="74" value="0.166208" />
+                                        <Key frame="91" value="0.166571" />
+                                        <Key frame="119" value="0.166208" />
+                                    </ActuatorCurve>
+                                    <ActuatorCurve name="value" actuator="LHipYawPitch" recordable="1" mute="1" unit="-1" />
+                                    <ActuatorCurve name="value" actuator="LHipRoll" recordable="1" mute="1" unit="-1" />
+                                    <ActuatorCurve name="value" actuator="LHipPitch" recordable="1" mute="1" unit="-1" />
+                                    <ActuatorCurve name="value" actuator="LKneePitch" recordable="1" mute="1" unit="-1" />
+                                    <ActuatorCurve name="value" actuator="LAnklePitch" recordable="1" mute="1" unit="-1" />
+                                    <ActuatorCurve name="value" actuator="LAnkleRoll" recordable="1" mute="1" unit="-1" />
+                                    <ActuatorCurve name="value" actuator="RHipRoll" recordable="1" mute="1" unit="-1" />
+                                    <ActuatorCurve name="value" actuator="RHipPitch" recordable="1" mute="1" unit="-1" />
+                                    <ActuatorCurve name="value" actuator="RKneePitch" recordable="1" mute="1" unit="-1" />
+                                    <ActuatorCurve name="value" actuator="RAnklePitch" recordable="1" mute="1" unit="-1" />
+                                    <ActuatorCurve name="value" actuator="RAnkleRoll" recordable="1" mute="1" unit="-1" />
+                                </ActuatorList>
+                            </Timeline>
+                            <Resource name="Head" type="Lock" timeout="0" />
+                            <Resource name="Arms" type="Lock" timeout="0" />
+                        </Box>
+                        <Box name="Say" id="23" localization="8" tooltip="Say some text. Note that you must open the box to enter the text." x="2497" y="206">
+                            <bitmap>media/images/box/interaction/say.png</bitmap>
+                            <script language="4">
+                                <content>
+                                    <![CDATA[class MyClass(GeneratedClass):
+    def __init__(self):
+        GeneratedClass.__init__(self, False)
+
+    def onLoad(self):
+        self.bIsRunning = False
+
+    def onUnload(self):
+        self.bIsRunning = False
+
+    def onInput_onStart(self):
+        self.bIsRunning = True
+
+    def onInput_onStop(self):
+        if( self.bIsRunning ):
+            self.onUnload()
+            self.onStopped()]]>
+</content>
+                            </script>
+                            <Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when Diagram is loaded." id="1" />
+                            <Input name="onStart" type="1" type_size="1" nature="2" inner="0" tooltip="Box behavior starts when a signal is received on this Input." id="2" />
+                            <Input name="onStop" type="1" type_size="1" nature="3" inner="0" tooltip="Box behavior stops when a signal is received on this Input." id="3" />
+                            <Output name="onStopped" type="1" type_size="1" nature="1" inner="0" tooltip="Signal sent when box behavior is finished or stopped." id="4" />
+                            <Parameter name="Voice shaping (%)" inherits_from_parent="0" content_type="1" value="100" default_value="100" min="50" max="150" tooltip='Used to modify at runtime the voice feature (tone, speed). In a slighty&#x0A;different way than pitch and speed, it gives a kind of &quot;gender or age&#x0A;modification&quot; effect.&#x0A;&#x0A;For instance, a quite good male derivation of female voice can be&#x0A;obtained setting this parameter to 78%.&#x0A;&#x0A;Note: For a better effect, you can compensate this parameter with the&#x0A;speed parameter. For example, if you want to decrease by 20% the voice&#x0A;shaping, you will have to increase by 20% the speed to keep a constant&#x0A;average speed.&#x0A;&#x0A;!Warning! This feature is not available yet in Japanese, Chinese and Korean.' id="5" />
+                            <Parameter name="Speed (%)" inherits_from_parent="0" content_type="1" value="100" default_value="100" min="50" max="200" tooltip="Changes the speed of the voice.&#x0A;&#x0A;Note: For a better effect, you can compensate this parameter with the voice&#x0A;shaping parameter. For example, if you want to increase by 20% the speed, you&#x0A;will have to decrease by 20% the voice shaping to keep a constant average&#x0A;speed.&#x0A;&#x0A;!Warning! This feature is not available yet in Japanese, Chinese and Korean." id="6" />
+                            <Timeline enable="0">
+                                <BehaviorLayer name="behavior_layer1">
+                                    <BehaviorKeyframe name="keyframe1" index="1">
+                                        <Diagram>
+                                            <Box name="Say Text" id="2" localization="8" tooltip="Say the text received on its input." x="422" y="65">
+                                                <bitmap>media/images/box/interaction/say.png</bitmap>
+                                                <script language="4">
+                                                    <content>
+                                                        <![CDATA[import time
+
+class MyClass(GeneratedClass):
+    def __init__(self):
+        GeneratedClass.__init__(self, False)
+        self.tts = ALProxy('ALTextToSpeech')
+        self.ttsStop = ALProxy('ALTextToSpeech', True) #Create another proxy as wait is blocking if audioout is remote
+
+    def onLoad(self):
+        self.bIsRunning = False
+        self.ids = []
+
+    def onUnload(self):
+        for id in self.ids:
+            try:
+                self.ttsStop.stop(id)
+            except:
+                pass
+        while( self.bIsRunning ):
+            time.sleep( 0.2 )
+
+    def onInput_onStart(self, p):
+        self.bIsRunning = True
+        try:
+            sentence = "\RSPD="+ str( self.getParameter("Speed (%)") ) + "\ "
+            sentence += "\VCT="+ str( self.getParameter("Voice shaping (%)") ) + "\ "
+            sentence += str(p)
+            sentence +=  "\RST\ "
+            id = self.tts.post.say(str(sentence))
+            self.ids.append(id)
+            self.tts.wait(id, 0)
+        finally:
+            try:
+                self.ids.remove(id)
+            except:
+                pass
+            if( self.ids == [] ):
+                self.onStopped() # activate output of the box
+                self.bIsRunning = False
+
+    def onInput_onStop(self):
+        self.onUnload()]]>
+</content>
+                                                </script>
+                                                <Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when Diagram is loaded." id="1" />
+                                                <Input name="onStart" type="3" type_size="1" nature="2" inner="0" tooltip="Box behavior starts when a signal is received on this Input." id="2" />
+                                                <Input name="onStop" type="1" type_size="1" nature="3" inner="0" tooltip="Box behavior stops when a signal is received on this Input." id="3" />
+                                                <Output name="onStopped" type="1" type_size="1" nature="1" inner="0" tooltip="Signal sent when Box behavior is finished." id="4" />
+                                                <Parameter name="Voice shaping (%)" inherits_from_parent="1" content_type="1" value="100" default_value="100" min="50" max="150" tooltip='Used to modify at runtime the voice feature (tone, speed). In a slighty&#x0A;different way than pitch and speed, it gives a kind of &quot;gender or age&#x0A;modification&quot; effect.&#x0A;&#x0A;For instance, a quite good male derivation of female voice can be&#x0A;obtained setting this parameter to 78%.&#x0A;&#x0A;Note: For a better effect, you can compensate this parameter with the&#x0A;speed parameter. For example, if you want to decrease by 20% the voice&#x0A;shaping, you will have to increase by 20% the speed to keep a constant&#x0A;average speed.' id="5" />
+                                                <Parameter name="Speed (%)" inherits_from_parent="1" content_type="1" value="100" default_value="100" min="50" max="200" tooltip="Changes the speed of the voice.&#x0A;&#x0A;Note: For a better effect, you can compensate this parameter with the voice&#x0A;shaping parameter. For example, if you want to increase by 20% the speed, you&#x0A;will have to decrease by 20% the voice shaping to keep a constant average&#x0A;speed." id="6" />
+                                            </Box>
+                                            <Box name="Python Script" id="1" localization="8" tooltip="This box contains a basic python script and can be used to create any python script box you would like.&#x0A;&#x0A;To edit its script, double-click on it." x="185" y="57">
+                                                <bitmap>media/images/box/box-python-script.png</bitmap>
+                                                <script language="4">
+                                                    <content>
+                                                        <![CDATA[class MyClass(GeneratedClass):
+    def __init__(self):
+        GeneratedClass.__init__(self)
+
+    def onLoad(self):
+        #put initialization code here
+        self.tts = ALProxy("ALTextToSpeech")
+
+    def onUnload(self):
+        #put clean-up code here
+        pass
+
+    def onInput_onStart(self):
+        self.tts.setLanguage('German')
+        self.onStopped("Ich denke es ist Zeit für eine Runde Volleyball.")
+
+    def onInput_onStop(self):
+        self.onUnload() #it is recommended to reuse the clean-up as the box is stopped
+        self.onStopped() #activate the output of the box]]>
+</content>
+                                                </script>
+                                                <Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" />
+                                                <Input name="onStart" type="1" type_size="1" nature="2" inner="0" tooltip="Box behavior starts when a signal is received on this input." id="2" />
+                                                <Input name="onStop" type="1" type_size="1" nature="3" inner="0" tooltip="Box behavior stops when a signal is received on this input." id="3" />
+                                                <Output name="onStopped" type="3" type_size="1" nature="2" inner="0" tooltip="" id="4" />
+                                            </Box>
+                                            <Link inputowner="0" indexofinput="4" outputowner="2" indexofoutput="4" />
+                                            <Link inputowner="1" indexofinput="2" outputowner="0" indexofoutput="2" />
+                                            <Link inputowner="2" indexofinput="2" outputowner="1" indexofoutput="4" />
+                                        </Diagram>
+                                    </BehaviorKeyframe>
+                                </BehaviorLayer>
+                            </Timeline>
+                            <Resource name="Speech" type="Lock" timeout="0" />
+                        </Box>
+                        <Box name="Wait For Signals (2)" id="24" localization="8" tooltip="Wait for both inputs to be stimulated before stimulating its output." x="2656" y="109">
+                            <bitmap>media/images/box/wait.png</bitmap>
+                            <script language="4">
+                                <content>
+                                    <![CDATA[class MyClass(GeneratedClass):
+    def __init__(self):
+        GeneratedClass.__init__(self, False)
+
+    def onLoad(self):
+        self.ok = [False]*2
+
+    def onUnload(self):
+        #puts code for box cleanup here
+        ""
+
+    def onStart(self, nInput):
+        self.ok[nInput-1] = True
+        bOutput = True
+        for bOk in self.ok:
+            bOutput = bOutput and bOk
+        if( bOutput ):
+            self.ok = [False]*2
+            self.signalsReceived()
+
+    def onInput_signal1(self):
+        self.onStart(1)
+
+    def onInput_signal2(self):
+        self.onStart(2)]]>
+</content>
+                            </script>
+                            <Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when Diagram is loaded." id="1" />
+                            <Input name="signal1" type="1" type_size="1" nature="1" inner="0" tooltip="First signal to wait." id="2" />
+                            <Input name="signal2" type="1" type_size="1" nature="1" inner="0" tooltip="Second signal to wait." id="3" />
+                            <Output name="signalsReceived" type="1" type_size="1" nature="2" inner="0" tooltip="Signal sent when both inputs have been stimulated." id="4" />
+                        </Box>
+                        <Box name="Delay" id="27" localization="8" tooltip="Wait a moment before triggering the output. &#x0A;Can be stopped anytime. &#x0A;Multiple inputs will trigger multiple outputs." x="2374" y="210">
+                            <bitmap>media/images/box/wait.png</bitmap>
+                            <script language="4">
+                                <content>
+                                    <![CDATA[class MyClass(GeneratedClass):
+    def __init__(self):
+        GeneratedClass.__init__(self, False)
+
+    def onLoad(self):
+        self.delayed = []
+
+    def onUnload(self):
+        self.cancelDelays()
+
+    def cancelDelays(self):
+        cancel_list = list(self.delayed)
+        for d in cancel_list:
+            d.cancel()
+
+    def cleanDelay(self, fut, fut_ref):
+        self.delayed.remove(fut)
+
+    def triggerOutput(self):
+        self.timerOutput()
+
+    def onInput_onStart(self):
+        import qi
+        import functools
+        delay_future = qi.async(self.triggerOutput, delay=int(self.getParameter("Timeout (s)") * 1000 * 1000))
+        # keep the async operation in an array for cancel
+        # and remove it when it is finished in the callback
+        self.delayed.append(delay_future)
+        bound_clean = functools.partial(self.cleanDelay, delay_future)
+        delay_future.addCallback(bound_clean)
+
+    def onInput_onStop(self):
+        if self.getParameter("Trigger timerOutput if cancelled") and self.delayed:
+            self.timerOutput()
+        self.onUnload()]]>
+</content>
+                            </script>
+                            <Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" />
+                            <Input name="onStart" type="1" type_size="1" nature="2" inner="0" tooltip="Start the Delay box with the configured timeout value." id="2" />
+                            <Input name="onStop" type="1" type_size="1" nature="3" inner="0" tooltip="Stop the wait and stimulate the output." id="3" />
+                            <Output name="timerOutput" type="1" type_size="1" nature="1" inner="0" tooltip="Send a bang once delay set in parameters is elapsed, or if the box is stopped and the appropriate parameter is set." id="4" />
+                            <Parameter name="Timeout (s)" inherits_from_parent="0" content_type="2" value="2" default_value="1" min="0" max="5000" tooltip="Duration the box waits before stimulating the output." id="5" />
+                            <Parameter name="Trigger timerOutput if cancelled" inherits_from_parent="0" content_type="0" value="0" default_value="1" tooltip="If the box is currently delaying at least one signal and cancelled, output will be stimulated." id="6" />
+                        </Box>
+                        <Box name="Say (1)" id="32" localization="8" tooltip="Say some text. Note that you must open the box to enter the text." x="2460" y="516">
+                            <bitmap>media/images/box/interaction/say.png</bitmap>
+                            <script language="4">
+                                <content>
+                                    <![CDATA[class MyClass(GeneratedClass):
+    def __init__(self):
+        GeneratedClass.__init__(self, False)
+
+    def onLoad(self):
+        self.bIsRunning = False
+
+    def onUnload(self):
+        self.bIsRunning = False
+
+    def onInput_onStart(self):
+        self.bIsRunning = True
+
+    def onInput_onStop(self):
+        if( self.bIsRunning ):
+            self.onUnload()
+            self.onStopped()]]>
+</content>
+                            </script>
+                            <Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when Diagram is loaded." id="1" />
+                            <Input name="onStart" type="1" type_size="1" nature="2" inner="0" tooltip="Box behavior starts when a signal is received on this Input." id="2" />
+                            <Input name="onStop" type="1" type_size="1" nature="3" inner="0" tooltip="Box behavior stops when a signal is received on this Input." id="3" />
+                            <Output name="onStopped" type="1" type_size="1" nature="1" inner="0" tooltip="Signal sent when box behavior is finished or stopped." id="4" />
+                            <Parameter name="Voice shaping (%)" inherits_from_parent="0" content_type="1" value="100" default_value="100" min="50" max="150" tooltip='Used to modify at runtime the voice feature (tone, speed). In a slighty&#x0A;different way than pitch and speed, it gives a kind of &quot;gender or age&#x0A;modification&quot; effect.&#x0A;&#x0A;For instance, a quite good male derivation of female voice can be&#x0A;obtained setting this parameter to 78%.&#x0A;&#x0A;Note: For a better effect, you can compensate this parameter with the&#x0A;speed parameter. For example, if you want to decrease by 20% the voice&#x0A;shaping, you will have to increase by 20% the speed to keep a constant&#x0A;average speed.&#x0A;&#x0A;!Warning! This feature is not available yet in Japanese, Chinese and Korean.' id="5" />
+                            <Parameter name="Speed (%)" inherits_from_parent="0" content_type="1" value="100" default_value="100" min="50" max="200" tooltip="Changes the speed of the voice.&#x0A;&#x0A;Note: For a better effect, you can compensate this parameter with the voice&#x0A;shaping parameter. For example, if you want to increase by 20% the speed, you&#x0A;will have to decrease by 20% the voice shaping to keep a constant average&#x0A;speed.&#x0A;&#x0A;!Warning! This feature is not available yet in Japanese, Chinese and Korean." id="6" />
+                            <Timeline enable="0">
+                                <BehaviorLayer name="behavior_layer1">
+                                    <BehaviorKeyframe name="keyframe1" index="1">
+                                        <Diagram>
+                                            <Box name="Say Text" id="2" localization="8" tooltip="Say the text received on its input." x="422" y="65">
+                                                <bitmap>media/images/box/interaction/say.png</bitmap>
+                                                <script language="4">
+                                                    <content>
+                                                        <![CDATA[import time
+
+class MyClass(GeneratedClass):
+    def __init__(self):
+        GeneratedClass.__init__(self, False)
+        self.tts = ALProxy('ALTextToSpeech')
+        self.ttsStop = ALProxy('ALTextToSpeech', True) #Create another proxy as wait is blocking if audioout is remote
+
+    def onLoad(self):
+        self.bIsRunning = False
+        self.ids = []
+
+    def onUnload(self):
+        for id in self.ids:
+            try:
+                self.ttsStop.stop(id)
+            except:
+                pass
+        while( self.bIsRunning ):
+            time.sleep( 0.2 )
+
+    def onInput_onStart(self, p):
+        self.bIsRunning = True
+        try:
+            sentence = "\RSPD="+ str( self.getParameter("Speed (%)") ) + "\ "
+            sentence += "\VCT="+ str( self.getParameter("Voice shaping (%)") ) + "\ "
+            sentence += str(p)
+            sentence +=  "\RST\ "
+            id = self.tts.post.say(str(sentence))
+            self.ids.append(id)
+            self.tts.wait(id, 0)
+        finally:
+            try:
+                self.ids.remove(id)
+            except:
+                pass
+            if( self.ids == [] ):
+                self.onStopped() # activate output of the box
+                self.bIsRunning = False
+
+    def onInput_onStop(self):
+        self.onUnload()]]>
+</content>
+                                                </script>
+                                                <Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when Diagram is loaded." id="1" />
+                                                <Input name="onStart" type="3" type_size="1" nature="2" inner="0" tooltip="Box behavior starts when a signal is received on this Input." id="2" />
+                                                <Input name="onStop" type="1" type_size="1" nature="3" inner="0" tooltip="Box behavior stops when a signal is received on this Input." id="3" />
+                                                <Output name="onStopped" type="1" type_size="1" nature="1" inner="0" tooltip="Signal sent when Box behavior is finished." id="4" />
+                                                <Parameter name="Voice shaping (%)" inherits_from_parent="1" content_type="1" value="100" default_value="100" min="50" max="150" tooltip='Used to modify at runtime the voice feature (tone, speed). In a slighty&#x0A;different way than pitch and speed, it gives a kind of &quot;gender or age&#x0A;modification&quot; effect.&#x0A;&#x0A;For instance, a quite good male derivation of female voice can be&#x0A;obtained setting this parameter to 78%.&#x0A;&#x0A;Note: For a better effect, you can compensate this parameter with the&#x0A;speed parameter. For example, if you want to decrease by 20% the voice&#x0A;shaping, you will have to increase by 20% the speed to keep a constant&#x0A;average speed.' id="5" />
+                                                <Parameter name="Speed (%)" inherits_from_parent="1" content_type="1" value="100" default_value="100" min="50" max="200" tooltip="Changes the speed of the voice.&#x0A;&#x0A;Note: For a better effect, you can compensate this parameter with the voice&#x0A;shaping parameter. For example, if you want to increase by 20% the speed, you&#x0A;will have to decrease by 20% the voice shaping to keep a constant average&#x0A;speed." id="6" />
+                                            </Box>
+                                            <Box name="Python Script" id="1" localization="8" tooltip="This box contains a basic python script and can be used to create any python script box you would like.&#x0A;&#x0A;To edit its script, double-click on it." x="184" y="71">
+                                                <bitmap>media/images/box/box-python-script.png</bitmap>
+                                                <script language="4">
+                                                    <content>
+                                                        <![CDATA[class MyClass(GeneratedClass):
+    def __init__(self):
+        GeneratedClass.__init__(self)
+
+    def onLoad(self):
+        #put initialization code here
+        self.tts = ALProxy("ALTextToSpeech")
+
+    def onUnload(self):
+        #put clean-up code here
+        pass
+
+    def onInput_onStart(self):
+        self.tts.setLanguage('German')
+        self.onStopped("Herzlich willkommen auf dem Stand der Bundesdruckerei.")
+
+    def onInput_onStop(self):
+        self.onUnload()  #it is recommended to reuse the clean-up as the box is stopped
+        self.onStopped() #activate the output of the box]]>
+</content>
+                                                </script>
+                                                <Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" />
+                                                <Input name="onStart" type="1" type_size="1" nature="2" inner="0" tooltip="Box behavior starts when a signal is received on this input." id="2" />
+                                                <Input name="onStop" type="1" type_size="1" nature="3" inner="0" tooltip="Box behavior stops when a signal is received on this input." id="3" />
+                                                <Output name="onStopped" type="3" type_size="1" nature="2" inner="0" tooltip="" id="4" />
+                                            </Box>
+                                            <Link inputowner="0" indexofinput="4" outputowner="2" indexofoutput="4" />
+                                            <Link inputowner="1" indexofinput="2" outputowner="0" indexofoutput="2" />
+                                            <Link inputowner="2" indexofinput="2" outputowner="1" indexofoutput="4" />
+                                        </Diagram>
+                                    </BehaviorKeyframe>
+                                </BehaviorLayer>
+                            </Timeline>
+                            <Resource name="Speech" type="Lock" timeout="0" />
+                        </Box>
+                        <Box name="Wait For Signals (4)" id="33" localization="8" tooltip="Wait for both inputs to be stimulated before stimulating its output." x="2616" y="416">
+                            <bitmap>media/images/box/wait.png</bitmap>
+                            <script language="4">
+                                <content>
+                                    <![CDATA[class MyClass(GeneratedClass):
+    def __init__(self):
+        GeneratedClass.__init__(self, False)
+
+    def onLoad(self):
+        self.ok = [False]*2
+
+    def onUnload(self):
+        #puts code for box cleanup here
+        ""
+
+    def onStart(self, nInput):
+        self.ok[nInput-1] = True
+        bOutput = True
+        for bOk in self.ok:
+            bOutput = bOutput and bOk
+        if( bOutput ):
+            self.ok = [False]*2
+            self.signalsReceived()
+
+    def onInput_signal1(self):
+        self.onStart(1)
+
+    def onInput_signal2(self):
+        self.onStart(2)]]>
+</content>
+                            </script>
+                            <Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when Diagram is loaded." id="1" />
+                            <Input name="signal1" type="1" type_size="1" nature="1" inner="0" tooltip="First signal to wait." id="2" />
+                            <Input name="signal2" type="1" type_size="1" nature="1" inner="0" tooltip="Second signal to wait." id="3" />
+                            <Output name="signalsReceived" type="1" type_size="1" nature="2" inner="0" tooltip="Signal sent when both inputs have been stimulated." id="4" />
+                        </Box>
+                        <Box name="Delay (1)" id="34" localization="8" tooltip="Wait a moment before triggering the output. &#x0A;Can be stopped anytime. &#x0A;Multiple inputs will trigger multiple outputs." x="2286" y="514">
+                            <bitmap>media/images/box/wait.png</bitmap>
+                            <script language="4">
+                                <content>
+                                    <![CDATA[class MyClass(GeneratedClass):
+    def __init__(self):
+        GeneratedClass.__init__(self, False)
+
+    def onLoad(self):
+        self.delayed = []
+
+    def onUnload(self):
+        self.cancelDelays()
+
+    def cancelDelays(self):
+        cancel_list = list(self.delayed)
+        for d in cancel_list:
+            d.cancel()
+
+    def cleanDelay(self, fut, fut_ref):
+        self.delayed.remove(fut)
+
+    def triggerOutput(self):
+        self.timerOutput()
+
+    def onInput_onStart(self):
+        import qi
+        import functools
+        delay_future = qi.async(self.triggerOutput, delay=int(self.getParameter("Timeout (s)") * 1000 * 1000))
+        # keep the async operation in an array for cancel
+        # and remove it when it is finished in the callback
+        self.delayed.append(delay_future)
+        bound_clean = functools.partial(self.cleanDelay, delay_future)
+        delay_future.addCallback(bound_clean)
+
+    def onInput_onStop(self):
+        if self.getParameter("Trigger timerOutput if cancelled") and self.delayed:
+            self.timerOutput()
+        self.onUnload()]]>
+</content>
+                            </script>
+                            <Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" />
+                            <Input name="onStart" type="1" type_size="1" nature="2" inner="0" tooltip="Start the Delay box with the configured timeout value." id="2" />
+                            <Input name="onStop" type="1" type_size="1" nature="3" inner="0" tooltip="Stop the wait and stimulate the output." id="3" />
+                            <Output name="timerOutput" type="1" type_size="1" nature="1" inner="0" tooltip="Send a bang once delay set in parameters is elapsed, or if the box is stopped and the appropriate parameter is set." id="4" />
+                            <Parameter name="Timeout (s)" inherits_from_parent="0" content_type="2" value="2" default_value="1" min="0" max="5000" tooltip="Duration the box waits before stimulating the output." id="5" />
+                            <Parameter name="Trigger timerOutput if cancelled" inherits_from_parent="0" content_type="0" value="0" default_value="1" tooltip="If the box is currently delaying at least one signal and cancelled, output will be stimulated." id="6" />
+                        </Box>
+                        <Box name="waving" id="35" localization="8" tooltip="This box is empty (contains a single motion layer with no motor position&#x0A;defined in it) and should be used to create any animation you would like." x="2325" y="343">
+                            <bitmap>media/images/box/movement/move.png</bitmap>
+                            <script language="4">
+                                <content>
+                                    <![CDATA[]]>
+</content>
+                            </script>
+                            <Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" />
+                            <Input name="onStart" type="1" type_size="1" nature="2" inner="0" tooltip="Box behavior starts when a signal is received on this input." id="2" />
+                            <Input name="onStop" type="1" type_size="1" nature="3" inner="0" tooltip="Box behavior stops when a signal is received on this input." id="3" />
+                            <Output name="onStopped" type="1" type_size="1" nature="1" inner="0" tooltip="Signal sent when box behavior is finished." id="4" />
+                            <Timeline enable="1" fps="25" start_frame="1" end_frame="-1" size="144">
+                                <BehaviorLayer name="behavior_layer1">
+                                    <BehaviorKeyframe name="keyframe1" index="1">
+                                        <Diagram />
+                                    </BehaviorKeyframe>
+                                </BehaviorLayer>
+                                <ActuatorList model="nao">
+                                    <ActuatorCurve name="value" actuator="HeadPitch" recordable="0" mute="0" unit="0">
+                                        <Key frame="20" value="-9.23104" />
+                                        <Key frame="27" value="-9.23104" />
+                                        <Key frame="34" value="-9.23104" />
+                                        <Key frame="40" value="-9.23104" />
+                                        <Key frame="50" value="-9.23104" />
+                                        <Key frame="60" value="-9.23104" />
+                                        <Key frame="70" value="-9.23104" />
+                                        <Key frame="80" value="-9.23104" />
+                                        <Key frame="90" value="-9.23104" />
+                                        <Key frame="144" value="-9.23104" />
+                                    </ActuatorCurve>
+                                    <ActuatorCurve name="value" actuator="HeadYaw" recordable="0" mute="0" unit="0">
+                                        <Key frame="20" value="0" />
+                                        <Key frame="27" value="-0.353968" />
+                                        <Key frame="34" value="-0.353968" />
+                                        <Key frame="40" value="-0.353968" />
+                                        <Key frame="50" value="-0.353968" />
+                                        <Key frame="60" value="-0.353968" />
+                                        <Key frame="70" value="-0.353968" />
+                                        <Key frame="80" value="-0.353968" />
+                                        <Key frame="90" value="-0.353968" />
+                                        <Key frame="144" value="-0.353968" />
+                                    </ActuatorCurve>
+                                    <ActuatorCurve name="value" actuator="LAnklePitch" recordable="0" mute="0" unit="0">
+                                        <Key frame="20" value="5.00743" />
+                                        <Key frame="27" value="5.00743" />
+                                        <Key frame="34" value="5.00743" />
+                                        <Key frame="40" value="5.00743" />
+                                        <Key frame="50" value="5.00743" />
+                                        <Key frame="60" value="5.00743" />
+                                        <Key frame="70" value="5.00743" />
+                                        <Key frame="80" value="5.00743" />
+                                        <Key frame="90" value="5.00743" />
+                                        <Key frame="144" value="5.00743" />
+                                    </ActuatorCurve>
+                                    <ActuatorCurve name="value" actuator="LAnkleRoll" recordable="0" mute="0" unit="0">
+                                        <Key frame="20" value="-7.3805" />
+                                        <Key frame="27" value="-7.3805" />
+                                        <Key frame="34" value="-7.3805" />
+                                        <Key frame="40" value="-7.3805" />
+                                        <Key frame="50" value="-7.3805" />
+                                        <Key frame="60" value="-7.3805" />
+                                        <Key frame="70" value="-7.3805" />
+                                        <Key frame="80" value="-7.3805" />
+                                        <Key frame="90" value="-7.3805" />
+                                        <Key frame="144" value="-7.3805" />
+                                    </ActuatorCurve>
+                                    <ActuatorCurve name="value" actuator="LElbowRoll" recordable="0" mute="0" unit="0">
+                                        <Key frame="20" value="-21.9705" />
+                                        <Key frame="27" value="-21.9705" />
+                                        <Key frame="34" value="-21.9705" />
+                                        <Key frame="40" value="-21.9705" />
+                                        <Key frame="50" value="-21.9705" />
+                                        <Key frame="60" value="-21.9705" />
+                                        <Key frame="70" value="-21.9705" />
+                                        <Key frame="80" value="-21.9705" />
+                                        <Key frame="90" value="-21.9705" />
+                                        <Key frame="144" value="-21.9705" />
+                                    </ActuatorCurve>
+                                    <ActuatorCurve name="value" actuator="LElbowYaw" recordable="0" mute="0" unit="0">
+                                        <Key frame="20" value="-68.9095" />
+                                        <Key frame="27" value="-68.9095" />
+                                        <Key frame="34" value="-68.9095" />
+                                        <Key frame="40" value="-68.9095" />
+                                        <Key frame="50" value="-68.9095" />
+                                        <Key frame="60" value="-68.9095" />
+                                        <Key frame="70" value="-68.9095" />
+                                        <Key frame="80" value="-68.9095" />
+                                        <Key frame="90" value="-68.9095" />
+                                        <Key frame="144" value="-68.9095" />
+                                    </ActuatorCurve>
+                                    <ActuatorCurve name="value" actuator="LHand" recordable="0" mute="0" unit="1">
+                                        <Key frame="20" value="0.1816" />
+                                        <Key frame="27" value="0.1816" />
+                                        <Key frame="34" value="0.1816" />
+                                        <Key frame="40" value="0.1816" />
+                                        <Key frame="50" value="0.1816" />
+                                        <Key frame="60" value="0.1816" />
+                                        <Key frame="70" value="0.1816" />
+                                        <Key frame="80" value="0.1816" />
+                                        <Key frame="90" value="0.1816" />
+                                        <Key frame="144" value="0.1816" />
+                                    </ActuatorCurve>
+                                    <ActuatorCurve name="value" actuator="LHipPitch" recordable="0" mute="0" unit="0">
+                                        <Key frame="20" value="7.12163" />
+                                        <Key frame="27" value="7.12163" />
+                                        <Key frame="34" value="7.12163" />
+                                        <Key frame="40" value="7.12163" />
+                                        <Key frame="50" value="7.12163" />
+                                        <Key frame="60" value="7.12163" />
+                                        <Key frame="70" value="7.12163" />
+                                        <Key frame="80" value="7.12163" />
+                                        <Key frame="90" value="7.12163" />
+                                        <Key frame="144" value="7.12163" />
+                                    </ActuatorCurve>
+                                    <ActuatorCurve name="value" actuator="LHipRoll" recordable="0" mute="0" unit="0">
+                                        <Key frame="20" value="5.71537" />
+                                        <Key frame="27" value="5.71537" />
+                                        <Key frame="34" value="5.71537" />
+                                        <Key frame="40" value="5.71537" />
+                                        <Key frame="50" value="5.71537" />
+                                        <Key frame="60" value="5.71537" />
+                                        <Key frame="70" value="5.71537" />
+                                        <Key frame="80" value="5.71537" />
+                                        <Key frame="90" value="5.71537" />
+                                        <Key frame="144" value="5.71537" />
+                                    </ActuatorCurve>
+                                    <ActuatorCurve name="value" actuator="LHipYawPitch" recordable="0" mute="0" unit="0">
+                                        <Key frame="20" value="-9.40201" />
+                                        <Key frame="27" value="-9.40201" />
+                                        <Key frame="34" value="-9.40201" />
+                                        <Key frame="40" value="-9.40201" />
+                                        <Key frame="50" value="-9.40201" />
+                                        <Key frame="60" value="-9.40201" />
+                                        <Key frame="70" value="-9.40201" />
+                                        <Key frame="80" value="-9.40201" />
+                                        <Key frame="90" value="-9.40201" />
+                                        <Key frame="144" value="-9.40201" />
+                                    </ActuatorCurve>
+                                    <ActuatorCurve name="value" actuator="LKneePitch" recordable="0" mute="0" unit="0">
+                                        <Key frame="20" value="-5.01224" />
+                                        <Key frame="27" value="-5.01224" />
+                                        <Key frame="34" value="-5.01224" />
+                                        <Key frame="40" value="-5.01224" />
+                                        <Key frame="50" value="-5.01224" />
+                                        <Key frame="60" value="-5.01224" />
+                                        <Key frame="70" value="-5.01224" />
+                                        <Key frame="80" value="-5.01224" />
+                                        <Key frame="90" value="-5.01224" />
+                                        <Key frame="144" value="-5.01224" />
+                                    </ActuatorCurve>
+                                    <ActuatorCurve name="value" actuator="LShoulderPitch" recordable="0" mute="0" unit="0">
+                                        <Key frame="20" value="85.7799" />
+                                        <Key frame="27" value="85.7799" />
+                                        <Key frame="34" value="85.7799" />
+                                        <Key frame="40" value="85.7799" />
+                                        <Key frame="50" value="85.7799" />
+                                        <Key frame="60" value="85.7799" />
+                                        <Key frame="70" value="85.7799" />
+                                        <Key frame="80" value="85.7799" />
+                                        <Key frame="90" value="85.7799" />
+                                        <Key frame="144" value="85.7799" />
+                                    </ActuatorCurve>
+                                    <ActuatorCurve name="value" actuator="LShoulderRoll" recordable="0" mute="0" unit="0">
+                                        <Key frame="20" value="2.107" />
+                                        <Key frame="27" value="2.107" />
+                                        <Key frame="34" value="2.107" />
+                                        <Key frame="40" value="2.107" />
+                                        <Key frame="50" value="2.107" />
+                                        <Key frame="60" value="2.107" />
+                                        <Key frame="70" value="2.107" />
+                                        <Key frame="80" value="2.107" />
+                                        <Key frame="90" value="2.107" />
+                                        <Key frame="144" value="2.107" />
+                                    </ActuatorCurve>
+                                    <ActuatorCurve name="value" actuator="LWristYaw" recordable="0" mute="0" unit="0">
+                                        <Key frame="20" value="7.55628" />
+                                        <Key frame="27" value="7.55628" />
+                                        <Key frame="34" value="7.55628" />
+                                        <Key frame="40" value="7.55628" />
+                                        <Key frame="50" value="7.55628" />
+                                        <Key frame="60" value="7.55628" />
+                                        <Key frame="70" value="7.55628" />
+                                        <Key frame="80" value="7.55628" />
+                                        <Key frame="90" value="7.55628" />
+                                        <Key frame="144" value="7.55628" />
+                                    </ActuatorCurve>
+                                    <ActuatorCurve name="value" actuator="RAnklePitch" recordable="0" mute="0" unit="0">
+                                        <Key frame="20" value="4.74855" />
+                                        <Key frame="27" value="5.3638" />
+                                        <Key frame="34" value="5.3638" />
+                                        <Key frame="40" value="5.3638" />
+                                        <Key frame="50" value="5.3638" />
+                                        <Key frame="60" value="5.3638" />
+                                        <Key frame="70" value="5.3638" />
+                                        <Key frame="80" value="5.3638" />
+                                        <Key frame="90" value="5.3638" />
+                                        <Key frame="144" value="4.74855" />
+                                    </ActuatorCurve>
+                                    <ActuatorCurve name="value" actuator="RAnkleRoll" recordable="0" mute="0" unit="0">
+                                        <Key frame="20" value="7.29742" />
+                                        <Key frame="27" value="7.29742" />
+                                        <Key frame="34" value="7.29742" />
+                                        <Key frame="40" value="7.29742" />
+                                        <Key frame="50" value="7.29742" />
+                                        <Key frame="60" value="7.29742" />
+                                        <Key frame="70" value="7.29742" />
+                                        <Key frame="80" value="7.29742" />
+                                        <Key frame="90" value="7.29742" />
+                                        <Key frame="144" value="7.29742" />
+                                    </ActuatorCurve>
+                                    <ActuatorCurve name="value" actuator="RElbowRoll" recordable="0" mute="0" unit="0">
+                                        <Key frame="20" value="22.5906" />
+                                        <Key frame="27" value="59.2414" />
+                                        <Key frame="34" value="72.3373" />
+                                        <Key frame="40" value="70.2279" />
+                                        <Key frame="50" value="27.6883" />
+                                        <Key frame="60" value="68.3822" />
+                                        <Key frame="70" value="24.6121" />
+                                        <Key frame="80" value="35.1591" />
+                                        <Key frame="90" value="27.0731" />
+                                        <Key frame="144" value="24.2605" />
+                                    </ActuatorCurve>
+                                    <ActuatorCurve name="value" actuator="RElbowYaw" recordable="0" mute="0" unit="0">
+                                        <Key frame="20" value="69.0805" />
+                                        <Key frame="27" value="76.5513" />
+                                        <Key frame="34" value="90.2624" />
+                                        <Key frame="40" value="92.196" />
+                                        <Key frame="50" value="88.5925" />
+                                        <Key frame="60" value="47.1076" />
+                                        <Key frame="70" value="97.8211" />
+                                        <Key frame="80" value="65.389" />
+                                        <Key frame="90" value="92.4597" />
+                                        <Key frame="144" value="61.8734" />
+                                    </ActuatorCurve>
+                                    <ActuatorCurve name="value" actuator="RHand" recordable="0" mute="0" unit="1">
+                                        <Key frame="20" value="0.29" />
+                                        <Key frame="27" value="0.29" />
+                                        <Key frame="34" value="0.29" />
+                                        <Key frame="40" value="0.29" />
+                                        <Key frame="50" value="0.442" />
+                                        <Key frame="60" value="0.442" />
+                                        <Key frame="70" value="0.442" />
+                                        <Key frame="80" value="0.442" />
+                                        <Key frame="90" value="0.442" />
+                                        <Key frame="144" value="0.442" />
+                                    </ActuatorCurve>
+                                    <ActuatorCurve name="value" actuator="RHipPitch" recordable="0" mute="0" unit="0">
+                                        <Key frame="20" value="7.29261" />
+                                        <Key frame="27" value="7.29261" />
+                                        <Key frame="34" value="7.29261" />
+                                        <Key frame="40" value="7.29261" />
+                                        <Key frame="50" value="7.29261" />
+                                        <Key frame="60" value="7.29261" />
+                                        <Key frame="70" value="7.29261" />
+                                        <Key frame="80" value="7.29261" />
+                                        <Key frame="90" value="7.29261" />
+                                        <Key frame="144" value="7.29261" />
+                                    </ActuatorCurve>
+                                    <ActuatorCurve name="value" actuator="RHipRoll" recordable="0" mute="0" unit="0">
+                                        <Key frame="20" value="-5.71056" />
+                                        <Key frame="27" value="-5.71056" />
+                                        <Key frame="34" value="-5.71056" />
+                                        <Key frame="40" value="-5.71056" />
+                                        <Key frame="50" value="-5.71056" />
+                                        <Key frame="60" value="-5.71056" />
+                                        <Key frame="70" value="-5.71056" />
+                                        <Key frame="80" value="-5.71056" />
+                                        <Key frame="90" value="-5.71056" />
+                                        <Key frame="144" value="-5.71056" />
+                                    </ActuatorCurve>
+                                    <ActuatorCurve name="value" actuator="RHipYawPitch" recordable="0" mute="0" unit="0">
+                                        <Key frame="20" value="-9.40201" />
+                                        <Key frame="27" value="-9.40201" />
+                                        <Key frame="34" value="-9.40201" />
+                                        <Key frame="40" value="-9.40201" />
+                                        <Key frame="50" value="-9.40201" />
+                                        <Key frame="60" value="-9.40201" />
+                                        <Key frame="70" value="-9.40201" />
+                                        <Key frame="80" value="-9.40201" />
+                                        <Key frame="90" value="-9.40201" />
+                                        <Key frame="144" value="-9.40201" />
+                                    </ActuatorCurve>
+                                    <ActuatorCurve name="value" actuator="RKneePitch" recordable="0" mute="0" unit="0">
+                                        <Key frame="20" value="-5.2711" />
+                                        <Key frame="27" value="-5.2711" />
+                                        <Key frame="34" value="-5.2711" />
+                                        <Key frame="40" value="-5.2711" />
+                                        <Key frame="50" value="-5.2711" />
+                                        <Key frame="60" value="-5.2711" />
+                                        <Key frame="70" value="-5.2711" />
+                                        <Key frame="80" value="-5.2711" />
+                                        <Key frame="90" value="-5.2711" />
+                                        <Key frame="144" value="-5.2711" />
+                                    </ActuatorCurve>
+                                    <ActuatorCurve name="value" actuator="RShoulderPitch" recordable="0" mute="0" unit="0">
+                                        <Key frame="20" value="86.4879" />
+                                        <Key frame="27" value="73.392" />
+                                        <Key frame="34" value="50.0128" />
+                                        <Key frame="40" value="7.20952" />
+                                        <Key frame="50" value="-33.1328" />
+                                        <Key frame="60" value="-31.1992" />
+                                        <Key frame="70" value="-31.9023" />
+                                        <Key frame="80" value="-36.8242" />
+                                        <Key frame="90" value="-29.0898" />
+                                        <Key frame="144" value="81.9175" />
+                                    </ActuatorCurve>
+                                    <ActuatorCurve name="value" actuator="RShoulderRoll" recordable="0" mute="0" unit="0">
+                                        <Key frame="20" value="-9.40682" />
+                                        <Key frame="27" value="-13.9772" />
+                                        <Key frame="34" value="-31.1161" />
+                                        <Key frame="40" value="-35.4228" />
+                                        <Key frame="50" value="-34.3681" />
+                                        <Key frame="60" value="-15.6471" />
+                                        <Key frame="70" value="-25.8426" />
+                                        <Key frame="80" value="8.87466" />
+                                        <Key frame="90" value="-26.282" />
+                                        <Key frame="144" value="-2.28759" />
+                                    </ActuatorCurve>
+                                    <ActuatorCurve name="value" actuator="RWristYaw" recordable="0" mute="0" unit="0">
+                                        <Key frame="20" value="3.86484" />
+                                        <Key frame="27" value="5.88634" />
+                                        <Key frame="34" value="5.88634" />
+                                        <Key frame="40" value="-12.3073" />
+                                        <Key frame="50" value="-46.6729" />
+                                        <Key frame="60" value="-51.6827" />
+                                        <Key frame="70" value="-56.1652" />
+                                        <Key frame="80" value="-69.0853" />
+                                        <Key frame="90" value="-54.8469" />
+                                        <Key frame="144" value="-8.61579" />
+                                    </ActuatorCurve>
+                                </ActuatorList>
+                            </Timeline>
+                        </Box>
+                        <Box name="Say (2)" id="36" localization="8" tooltip="Say some text. Note that you must open the box to enter the text." x="2235" y="764">
+                            <bitmap>media/images/box/interaction/say.png</bitmap>
+                            <script language="4">
+                                <content>
+                                    <![CDATA[class MyClass(GeneratedClass):
+    def __init__(self):
+        GeneratedClass.__init__(self, False)
+
+    def onLoad(self):
+        self.bIsRunning = False
+
+    def onUnload(self):
+        self.bIsRunning = False
+
+    def onInput_onStart(self):
+        self.bIsRunning = True
+
+    def onInput_onStop(self):
+        if( self.bIsRunning ):
+            self.onUnload()
+            self.onStopped()]]>
+</content>
+                            </script>
+                            <Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when Diagram is loaded." id="1" />
+                            <Input name="onStart" type="1" type_size="1" nature="2" inner="0" tooltip="Box behavior starts when a signal is received on this Input." id="2" />
+                            <Input name="onStop" type="1" type_size="1" nature="3" inner="0" tooltip="Box behavior stops when a signal is received on this Input." id="3" />
+                            <Output name="onStopped" type="1" type_size="1" nature="1" inner="0" tooltip="Signal sent when box behavior is finished or stopped." id="4" />
+                            <Parameter name="Voice shaping (%)" inherits_from_parent="0" content_type="1" value="100" default_value="100" min="50" max="150" tooltip='Used to modify at runtime the voice feature (tone, speed). In a slighty&#x0A;different way than pitch and speed, it gives a kind of &quot;gender or age&#x0A;modification&quot; effect.&#x0A;&#x0A;For instance, a quite good male derivation of female voice can be&#x0A;obtained setting this parameter to 78%.&#x0A;&#x0A;Note: For a better effect, you can compensate this parameter with the&#x0A;speed parameter. For example, if you want to decrease by 20% the voice&#x0A;shaping, you will have to increase by 20% the speed to keep a constant&#x0A;average speed.&#x0A;&#x0A;!Warning! This feature is not available yet in Japanese, Chinese and Korean.' id="5" />
+                            <Parameter name="Speed (%)" inherits_from_parent="0" content_type="1" value="100" default_value="100" min="50" max="200" tooltip="Changes the speed of the voice.&#x0A;&#x0A;Note: For a better effect, you can compensate this parameter with the voice&#x0A;shaping parameter. For example, if you want to increase by 20% the speed, you&#x0A;will have to decrease by 20% the voice shaping to keep a constant average&#x0A;speed.&#x0A;&#x0A;!Warning! This feature is not available yet in Japanese, Chinese and Korean." id="6" />
+                            <Timeline enable="0">
+                                <BehaviorLayer name="behavior_layer1">
+                                    <BehaviorKeyframe name="keyframe1" index="1">
+                                        <Diagram>
+                                            <Box name="Say Text" id="2" localization="8" tooltip="Say the text received on its input." x="422" y="65">
+                                                <bitmap>media/images/box/interaction/say.png</bitmap>
+                                                <script language="4">
+                                                    <content>
+                                                        <![CDATA[import time
+
+class MyClass(GeneratedClass):
+    def __init__(self):
+        GeneratedClass.__init__(self, False)
+        self.tts = ALProxy('ALTextToSpeech')
+        self.ttsStop = ALProxy('ALTextToSpeech', True) #Create another proxy as wait is blocking if audioout is remote
+
+    def onLoad(self):
+        self.bIsRunning = False
+        self.ids = []
+
+    def onUnload(self):
+        for id in self.ids:
+            try:
+                self.ttsStop.stop(id)
+            except:
+                pass
+        while( self.bIsRunning ):
+            time.sleep( 0.2 )
+
+    def onInput_onStart(self, p):
+        self.bIsRunning = True
+        try:
+            sentence = "\RSPD="+ str( self.getParameter("Speed (%)") ) + "\ "
+            sentence += "\VCT="+ str( self.getParameter("Voice shaping (%)") ) + "\ "
+            sentence += str(p)
+            sentence +=  "\RST\ "
+            id = self.tts.post.say(str(sentence))
+            self.ids.append(id)
+            self.tts.wait(id, 0)
+        finally:
+            try:
+                self.ids.remove(id)
+            except:
+                pass
+            if( self.ids == [] ):
+                self.onStopped() # activate output of the box
+                self.bIsRunning = False
+
+    def onInput_onStop(self):
+        self.onUnload()]]>
+</content>
+                                                </script>
+                                                <Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when Diagram is loaded." id="1" />
+                                                <Input name="onStart" type="3" type_size="1" nature="2" inner="0" tooltip="Box behavior starts when a signal is received on this Input." id="2" />
+                                                <Input name="onStop" type="1" type_size="1" nature="3" inner="0" tooltip="Box behavior stops when a signal is received on this Input." id="3" />
+                                                <Output name="onStopped" type="1" type_size="1" nature="1" inner="0" tooltip="Signal sent when Box behavior is finished." id="4" />
+                                                <Parameter name="Voice shaping (%)" inherits_from_parent="1" content_type="1" value="100" default_value="100" min="50" max="150" tooltip='Used to modify at runtime the voice feature (tone, speed). In a slighty&#x0A;different way than pitch and speed, it gives a kind of &quot;gender or age&#x0A;modification&quot; effect.&#x0A;&#x0A;For instance, a quite good male derivation of female voice can be&#x0A;obtained setting this parameter to 78%.&#x0A;&#x0A;Note: For a better effect, you can compensate this parameter with the&#x0A;speed parameter. For example, if you want to decrease by 20% the voice&#x0A;shaping, you will have to increase by 20% the speed to keep a constant&#x0A;average speed.' id="5" />
+                                                <Parameter name="Speed (%)" inherits_from_parent="1" content_type="1" value="100" default_value="100" min="50" max="200" tooltip="Changes the speed of the voice.&#x0A;&#x0A;Note: For a better effect, you can compensate this parameter with the voice&#x0A;shaping parameter. For example, if you want to increase by 20% the speed, you&#x0A;will have to decrease by 20% the voice shaping to keep a constant average&#x0A;speed." id="6" />
+                                            </Box>
+                                            <Box name="Python Script" id="1" localization="8" tooltip="This box contains a basic python script and can be used to create any python script box you would like.&#x0A;&#x0A;To edit its script, double-click on it." x="184" y="71">
+                                                <bitmap>media/images/box/box-python-script.png</bitmap>
+                                                <script language="4">
+                                                    <content>
+                                                        <![CDATA[class MyClass(GeneratedClass):
+    def __init__(self):
+        GeneratedClass.__init__(self)
+
+    def onLoad(self):
+        #put initialization code here
+        self.tts = ALProxy("ALTextToSpeech")
+
+    def onUnload(self):
+        #put clean-up code here
+        pass
+
+    def onInput_onStart(self):
+        self.tts.setLanguage('German')
+        self.onStopped("Die Bundesdruckerei hat eine individuelle Lösung für Ihr Problem.")
+
+    def onInput_onStop(self):
+        self.onUnload()  #it is recommended to reuse the clean-up as the box is stopped
+        self.onStopped() #activate the output of the box]]>
+</content>
+                                                </script>
+                                                <Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" />
+                                                <Input name="onStart" type="1" type_size="1" nature="2" inner="0" tooltip="Box behavior starts when a signal is received on this input." id="2" />
+                                                <Input name="onStop" type="1" type_size="1" nature="3" inner="0" tooltip="Box behavior stops when a signal is received on this input." id="3" />
+                                                <Output name="onStopped" type="3" type_size="1" nature="2" inner="0" tooltip="" id="4" />
+                                            </Box>
+                                            <Link inputowner="0" indexofinput="4" outputowner="2" indexofoutput="4" />
+                                            <Link inputowner="1" indexofinput="2" outputowner="0" indexofoutput="2" />
+                                            <Link inputowner="2" indexofinput="2" outputowner="1" indexofoutput="4" />
+                                        </Diagram>
+                                    </BehaviorKeyframe>
+                                </BehaviorLayer>
+                            </Timeline>
+                            <Resource name="Speech" type="Lock" timeout="0" />
+                        </Box>
+                        <Box name="Wait For Signals (5)" id="37" localization="8" tooltip="Wait for both inputs to be stimulated before stimulating its output." x="2391" y="664">
+                            <bitmap>media/images/box/wait.png</bitmap>
+                            <script language="4">
+                                <content>
+                                    <![CDATA[class MyClass(GeneratedClass):
+    def __init__(self):
+        GeneratedClass.__init__(self, False)
+
+    def onLoad(self):
+        self.ok = [False]*2
+
+    def onUnload(self):
+        #puts code for box cleanup here
+        ""
+
+    def onStart(self, nInput):
+        self.ok[nInput-1] = True
+        bOutput = True
+        for bOk in self.ok:
+            bOutput = bOutput and bOk
+        if( bOutput ):
+            self.ok = [False]*2
+            self.signalsReceived()
+
+    def onInput_signal1(self):
+        self.onStart(1)
+
+    def onInput_signal2(self):
+        self.onStart(2)]]>
+</content>
+                            </script>
+                            <Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when Diagram is loaded." id="1" />
+                            <Input name="signal1" type="1" type_size="1" nature="1" inner="0" tooltip="First signal to wait." id="2" />
+                            <Input name="signal2" type="1" type_size="1" nature="1" inner="0" tooltip="Second signal to wait." id="3" />
+                            <Output name="signalsReceived" type="1" type_size="1" nature="2" inner="0" tooltip="Signal sent when both inputs have been stimulated." id="4" />
+                        </Box>
+                        <Box name="Delay (2)" id="38" localization="8" tooltip="Wait a moment before triggering the output. &#x0A;Can be stopped anytime. &#x0A;Multiple inputs will trigger multiple outputs." x="2066" y="756">
+                            <bitmap>media/images/box/wait.png</bitmap>
+                            <script language="4">
+                                <content>
+                                    <![CDATA[class MyClass(GeneratedClass):
+    def __init__(self):
+        GeneratedClass.__init__(self, False)
+
+    def onLoad(self):
+        self.delayed = []
+
+    def onUnload(self):
+        self.cancelDelays()
+
+    def cancelDelays(self):
+        cancel_list = list(self.delayed)
+        for d in cancel_list:
+            d.cancel()
+
+    def cleanDelay(self, fut, fut_ref):
+        self.delayed.remove(fut)
+
+    def triggerOutput(self):
+        self.timerOutput()
+
+    def onInput_onStart(self):
+        import qi
+        import functools
+        delay_future = qi.async(self.triggerOutput, delay=int(self.getParameter("Timeout (s)") * 1000 * 1000))
+        # keep the async operation in an array for cancel
+        # and remove it when it is finished in the callback
+        self.delayed.append(delay_future)
+        bound_clean = functools.partial(self.cleanDelay, delay_future)
+        delay_future.addCallback(bound_clean)
+
+    def onInput_onStop(self):
+        if self.getParameter("Trigger timerOutput if cancelled") and self.delayed:
+            self.timerOutput()
+        self.onUnload()]]>
+</content>
+                            </script>
+                            <Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" />
+                            <Input name="onStart" type="1" type_size="1" nature="2" inner="0" tooltip="Start the Delay box with the configured timeout value." id="2" />
+                            <Input name="onStop" type="1" type_size="1" nature="3" inner="0" tooltip="Stop the wait and stimulate the output." id="3" />
+                            <Output name="timerOutput" type="1" type_size="1" nature="1" inner="0" tooltip="Send a bang once delay set in parameters is elapsed, or if the box is stopped and the appropriate parameter is set." id="4" />
+                            <Parameter name="Timeout (s)" inherits_from_parent="0" content_type="2" value="2" default_value="1" min="0" max="5000" tooltip="Duration the box waits before stimulating the output." id="5" />
+                            <Parameter name="Trigger timerOutput if cancelled" inherits_from_parent="0" content_type="0" value="0" default_value="1" tooltip="If the box is currently delaying at least one signal and cancelled, output will be stimulated." id="6" />
+                        </Box>
+                        <Box name="enable smartstiffness" id="30" localization="8" tooltip="this box enables smart stiffness" x="1666" y="183">
+                            <bitmap>media/images/box/movement/stiffness.png</bitmap>
+                            <script language="4">
+                                <content>
+                                    <![CDATA[class MyClass(GeneratedClass):
+    def __init__(self):
+        GeneratedClass.__init__(self)
+
+    def onLoad(self):
+        self.motion = ALProxy("ALMotion")
+        pass
+
+    def onUnload(self):
+        #put clean-up code here
+        pass
+
+    def onInput_onStart(self):
+        self.motion.setSmartStiffnessEnabled(True)
+        self.onStopped()
+
+    def onInput_onStop(self):
+        self.onUnload() #it is recommended to reuse the clean-up as the box is stopped
+        self.onStopped() #activate the output of the box]]>
+</content>
+                            </script>
+                            <Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" />
+                            <Input name="onStart" type="1" type_size="1" nature="2" inner="0" tooltip="Box behavior starts when a signal is received on this input." id="2" />
+                            <Output name="onStopped" type="1" type_size="1" nature="1" inner="0" tooltip="Signal sent when box behavior is finished." id="3" />
+                        </Box>
+                        <Box name="disable smartstiffness (1)" id="40" localization="8" tooltip="this box disables smart stiffness" x="1227" y="1286">
+                            <bitmap>media/images/box/movement/stiffness.png</bitmap>
+                            <script language="4">
+                                <content>
+                                    <![CDATA[class MyClass(GeneratedClass):
+    def __init__(self):
+        GeneratedClass.__init__(self)
+
+    def onLoad(self):
+        self.motion = ALProxy("ALMotion")
+        pass
+
+    def onUnload(self):
+        #put clean-up code here
+        pass
+
+    def onInput_onStart(self):
+        self.motion.setSmartStiffnessEnabled(False)
+        self.onStopped()
+
+    def onInput_onStop(self):
+        self.onUnload() #it is recommended to reuse the clean-up as the box is stopped
+        self.onStopped() #activate the output of the box]]>
+</content>
+                            </script>
+                            <Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" />
+                            <Input name="onStart" type="1" type_size="1" nature="2" inner="0" tooltip="Box behavior starts when a signal is received on this input." id="2" />
+                            <Output name="onStopped" type="1" type_size="1" nature="1" inner="0" tooltip="Signal sent when box behavior is finished." id="3" />
+                        </Box>
+                        <Box name="Say (3)" id="41" localization="8" tooltip="Say some text. Note that you must open the box to enter the text." x="107" y="29">
+                            <bitmap>media/images/box/interaction/say.png</bitmap>
+                            <script language="4">
+                                <content>
+                                    <![CDATA[class MyClass(GeneratedClass):
+    def __init__(self):
+        GeneratedClass.__init__(self, False)
+
+    def onLoad(self):
+        self.bIsRunning = False
+
+    def onUnload(self):
+        self.bIsRunning = False
+
+    def onInput_onStart(self):
+        self.bIsRunning = True
+
+    def onInput_onStop(self):
+        if( self.bIsRunning ):
+            self.onUnload()
+            self.onStopped()]]>
+</content>
+                            </script>
+                            <Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when Diagram is loaded." id="1" />
+                            <Input name="onStart" type="1" type_size="1" nature="2" inner="0" tooltip="Box behavior starts when a signal is received on this Input." id="2" />
+                            <Input name="onStop" type="1" type_size="1" nature="3" inner="0" tooltip="Box behavior stops when a signal is received on this Input." id="3" />
+                            <Output name="onStopped" type="1" type_size="1" nature="1" inner="0" tooltip="Signal sent when box behavior is finished or stopped." id="4" />
+                            <Parameter name="Voice shaping (%)" inherits_from_parent="0" content_type="1" value="100" default_value="100" min="50" max="150" tooltip='Used to modify at runtime the voice feature (tone, speed). In a slighty&#x0A;different way than pitch and speed, it gives a kind of &quot;gender or age&#x0A;modification&quot; effect.&#x0A;&#x0A;For instance, a quite good male derivation of female voice can be&#x0A;obtained setting this parameter to 78%.&#x0A;&#x0A;Note: For a better effect, you can compensate this parameter with the&#x0A;speed parameter. For example, if you want to decrease by 20% the voice&#x0A;shaping, you will have to increase by 20% the speed to keep a constant&#x0A;average speed.&#x0A;&#x0A;!Warning! This feature is not available yet in Japanese, Chinese and Korean.' id="5" />
+                            <Parameter name="Speed (%)" inherits_from_parent="0" content_type="1" value="100" default_value="100" min="50" max="200" tooltip="Changes the speed of the voice.&#x0A;&#x0A;Note: For a better effect, you can compensate this parameter with the voice&#x0A;shaping parameter. For example, if you want to increase by 20% the speed, you&#x0A;will have to decrease by 20% the voice shaping to keep a constant average&#x0A;speed.&#x0A;&#x0A;!Warning! This feature is not available yet in Japanese, Chinese and Korean." id="6" />
+                            <Timeline enable="0">
+                                <BehaviorLayer name="behavior_layer1">
+                                    <BehaviorKeyframe name="keyframe1" index="1">
+                                        <Diagram>
+                                            <Box name="Say Text" id="2" localization="8" tooltip="Say the text received on its input." x="422" y="65">
+                                                <bitmap>media/images/box/interaction/say.png</bitmap>
+                                                <script language="4">
+                                                    <content>
+                                                        <![CDATA[import time
+
+class MyClass(GeneratedClass):
+    def __init__(self):
+        GeneratedClass.__init__(self, False)
+        self.tts = ALProxy('ALTextToSpeech')
+        self.ttsStop = ALProxy('ALTextToSpeech', True) #Create another proxy as wait is blocking if audioout is remote
+
+    def onLoad(self):
+        self.bIsRunning = False
+        self.ids = []
+
+    def onUnload(self):
+        for id in self.ids:
+            try:
+                self.ttsStop.stop(id)
+            except:
+                pass
+        while( self.bIsRunning ):
+            time.sleep( 0.2 )
+
+    def onInput_onStart(self, p):
+        self.bIsRunning = True
+        try:
+            sentence = "\RSPD="+ str( self.getParameter("Speed (%)") ) + "\ "
+            sentence += "\VCT="+ str( self.getParameter("Voice shaping (%)") ) + "\ "
+            sentence += str(p)
+            sentence +=  "\RST\ "
+            id = self.tts.post.say(str(sentence))
+            self.ids.append(id)
+            self.tts.wait(id, 0)
+        finally:
+            try:
+                self.ids.remove(id)
+            except:
+                pass
+            if( self.ids == [] ):
+                self.onStopped() # activate output of the box
+                self.bIsRunning = False
+
+    def onInput_onStop(self):
+        self.onUnload()]]>
+</content>
+                                                </script>
+                                                <Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when Diagram is loaded." id="1" />
+                                                <Input name="onStart" type="3" type_size="1" nature="2" inner="0" tooltip="Box behavior starts when a signal is received on this Input." id="2" />
+                                                <Input name="onStop" type="1" type_size="1" nature="3" inner="0" tooltip="Box behavior stops when a signal is received on this Input." id="3" />
+                                                <Output name="onStopped" type="1" type_size="1" nature="1" inner="0" tooltip="Signal sent when Box behavior is finished." id="4" />
+                                                <Parameter name="Voice shaping (%)" inherits_from_parent="1" content_type="1" value="100" default_value="100" min="50" max="150" tooltip='Used to modify at runtime the voice feature (tone, speed). In a slighty&#x0A;different way than pitch and speed, it gives a kind of &quot;gender or age&#x0A;modification&quot; effect.&#x0A;&#x0A;For instance, a quite good male derivation of female voice can be&#x0A;obtained setting this parameter to 78%.&#x0A;&#x0A;Note: For a better effect, you can compensate this parameter with the&#x0A;speed parameter. For example, if you want to decrease by 20% the voice&#x0A;shaping, you will have to increase by 20% the speed to keep a constant&#x0A;average speed.' id="5" />
+                                                <Parameter name="Speed (%)" inherits_from_parent="1" content_type="1" value="100" default_value="100" min="50" max="200" tooltip="Changes the speed of the voice.&#x0A;&#x0A;Note: For a better effect, you can compensate this parameter with the voice&#x0A;shaping parameter. For example, if you want to increase by 20% the speed, you&#x0A;will have to decrease by 20% the voice shaping to keep a constant average&#x0A;speed." id="6" />
+                                            </Box>
+                                            <Box name="Python Script" id="1" localization="8" tooltip="This box contains a basic python script and can be used to create any python script box you would like.&#x0A;&#x0A;To edit its script, double-click on it." x="185" y="57">
+                                                <bitmap>media/images/box/box-python-script.png</bitmap>
+                                                <script language="4">
+                                                    <content>
+                                                        <![CDATA[class MyClass(GeneratedClass):
+    def __init__(self):
+        GeneratedClass.__init__(self)
+
+    def onLoad(self):
+        #put initialization code here
+        self.tts = ALProxy("ALTextToSpeech")
+
+    def onUnload(self):
+        #put clean-up code here
+        pass
+
+    def onInput_onStart(self):
+        self.tts.setLanguage('German')
+        self.onStopped("Ich bin bereit zu spielen.")
+
+    def onInput_onStop(self):
+        self.onUnload() #it is recommended to reuse the clean-up as the box is stopped
+        self.onStopped() #activate the output of the box]]>
+</content>
+                                                </script>
+                                                <Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" />
+                                                <Input name="onStart" type="1" type_size="1" nature="2" inner="0" tooltip="Box behavior starts when a signal is received on this input." id="2" />
+                                                <Input name="onStop" type="1" type_size="1" nature="3" inner="0" tooltip="Box behavior stops when a signal is received on this input." id="3" />
+                                                <Output name="onStopped" type="3" type_size="1" nature="2" inner="0" tooltip="" id="4" />
+                                            </Box>
+                                            <Link inputowner="0" indexofinput="4" outputowner="2" indexofoutput="4" />
+                                            <Link inputowner="1" indexofinput="2" outputowner="0" indexofoutput="2" />
+                                            <Link inputowner="2" indexofinput="2" outputowner="1" indexofoutput="4" />
+                                        </Diagram>
+                                    </BehaviorKeyframe>
+                                </BehaviorLayer>
+                            </Timeline>
+                            <Resource name="Speech" type="Lock" timeout="0" />
+                        </Box>
+                        <Box name="Go to position Stand" id="31" localization="8" tooltip="Robot will go to the position Stand&lt;br/&gt;Position description : Standing position with low power consumption. " x="2902" y="535">
+                            <bitmap>media/images/positions/Stand.png</bitmap>
+                            <script language="4">
+                                <content>
+                                    <![CDATA[#~ This script was generated automatically by drang&drop from Position Library
+class MyClass(GeneratedClass):
+    def __init__(self):
+        try: # disable autoBind
+          GeneratedClass.__init__(self, False)
+        except TypeError: # if NAOqi < 1.14
+          GeneratedClass.__init__( self )
+
+    def onLoad(self):
+        self.postureProxy = None
+        try:
+            self.postureProxy = ALProxy("ALRobotPosture")
+        except:
+            self.logger.error("Module 'ALRobotPosture' not found.")
+
+    def onUnload(self):
+        if(self.postureProxy != None):
+            self.postureProxy.stopMove()
+
+    def onInput_onStart(self):
+        if(self.postureProxy != None):
+            result = self.postureProxy.goToPosture("Stand", 0.8)
+            if(result):
+                self.success()
+            else:
+                self.logger.error("Posture Stand is not a part of the standard posture library or robot cannot reach the posture")
+                self.failure()
+        else:
+            self.failure()
+
+    def onInput_onStop(self):
+        self.onUnload() #~ it is recommanded to call onUnload of this box in a onStop method,               as the code written in onUnload is used to stop the box as well
+        pass]]>
+</content>
+                            </script>
+                            <Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" />
+                            <Input name="onStart" type="1" type_size="1" nature="2" inner="0" tooltip="Box behavior starts when a signal is received on this input." id="2" />
+                            <Input name="onStop" type="1" type_size="1" nature="3" inner="0" tooltip="Box behavior stops when a signal is received on this input." id="3" />
+                            <Output name="success" type="1" type_size="1" nature="1" inner="0" tooltip="Stimulated if the posture has been reached." id="4" />
+                            <Output name="failure" type="1" type_size="1" nature="1" inner="0" tooltip="Stimulated if the posture could not be reached." id="5" />
+                            <Resource name="All motors" type="Lock" timeout="0" />
+                            <Resource name="Stiffness" type="Lock" timeout="0" />
+                        </Box>
+                        <Box name="Go to position Stand (1)" id="39" localization="8" tooltip="Robot will go to the position Stand&lt;br/&gt;Position description : Standing position with low power consumption. " x="2145" y="625">
+                            <bitmap>media/images/positions/Stand.png</bitmap>
+                            <script language="4">
+                                <content>
+                                    <![CDATA[#~ This script was generated automatically by drang&drop from Position Library
+class MyClass(GeneratedClass):
+    def __init__(self):
+        try: # disable autoBind
+          GeneratedClass.__init__(self, False)
+        except TypeError: # if NAOqi < 1.14
+          GeneratedClass.__init__( self )
+
+    def onLoad(self):
+        self.postureProxy = None
+        try:
+            self.postureProxy = ALProxy("ALRobotPosture")
+        except:
+            self.logger.error("Module 'ALRobotPosture' not found.")
+
+    def onUnload(self):
+        if(self.postureProxy != None):
+            self.postureProxy.stopMove()
+
+    def onInput_onStart(self):
+        if(self.postureProxy != None):
+            result = self.postureProxy.goToPosture("Stand", 0.8)
+            if(result):
+                self.success()
+            else:
+                self.logger.error("Posture Stand is not a part of the standard posture library or robot cannot reach the posture")
+                self.failure()
+        else:
+            self.failure()
+
+    def onInput_onStop(self):
+        self.onUnload() #~ it is recommanded to call onUnload of this box in a onStop method,               as the code written in onUnload is used to stop the box as well
+        pass]]>
+</content>
+                            </script>
+                            <Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" />
+                            <Input name="onStart" type="1" type_size="1" nature="2" inner="0" tooltip="Box behavior starts when a signal is received on this input." id="2" />
+                            <Input name="onStop" type="1" type_size="1" nature="3" inner="0" tooltip="Box behavior stops when a signal is received on this input." id="3" />
+                            <Output name="success" type="1" type_size="1" nature="1" inner="0" tooltip="Stimulated if the posture has been reached." id="4" />
+                            <Output name="failure" type="1" type_size="1" nature="1" inner="0" tooltip="Stimulated if the posture could not be reached." id="5" />
+                            <Resource name="All motors" type="Lock" timeout="0" />
+                            <Resource name="Stiffness" type="Lock" timeout="0" />
+                        </Box>
+                        <Box name="wait_and_redo" id="42" localization="8" tooltip="waits and activate output again if not stopped mean while" x="2189" y="1040">
+                            <bitmap>media/images/box/box-python-script.png</bitmap>
+                            <script language="4">
+                                <content>
+                                    <![CDATA[class MyClass(GeneratedClass):
+    def __init__(self):
+        GeneratedClass.__init__(self, False)
+
+    def onLoad(self):
+        self.waiting = None
+        self.should_stop = False
+
+    def onUnload(self):
+        self.cancelWaiting()
+
+    def triggerOutput(self):
+        if not self.should_stop:
+            self.again()
+
+    def cancelWaiting(self):
+        if self.waiting:
+            self.waiting.cancel()
+        self.waiting = None
+
+    def onInput_onStart(self):
+        self.cancelWaiting()
+        import qi
+        if (self.should_stop):
+            self.should_stop = False
+            self.onStopped() #activate the output of the box
+            self.onUnload() #it is recommended to reuse the clean-up as the box is stopped
+        else:
+            # wait 10 seconds
+            self.waiting = qi.async(self.triggerOutput, delay=int(10 * 1000 * 1000))
+
+    def onInput_onStop(self):
+        self.should_stop = True
+        if self.waiting and self.waiting.isRunning():
+            self.cancelWaiting();
+            self.should_stop = False
+            self.onStopped()
+            self.onUnload()]]>
+</content>
+                            </script>
+                            <Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" />
+                            <Input name="onStart" type="1" type_size="1" nature="2" inner="0" tooltip="Box behavior starts when a signal is received on this input." id="2" />
+                            <Input name="onStop" type="1" type_size="1" nature="3" inner="0" tooltip="Box behavior stops when a signal is received on this input." id="3" />
+                            <Output name="onStopped" type="1" type_size="1" nature="1" inner="0" tooltip="Signal sent when box behavior is finished." id="4" />
+                            <Output name="again" type="1" type_size="1" nature="2" inner="0" tooltip="" id="5" />
+                        </Box>
                         <Link inputowner="6" indexofinput="2" outputowner="4" indexofoutput="4" />
                         <Link inputowner="13" indexofinput="2" outputowner="8" indexofoutput="3" />
                         <Link inputowner="12" indexofinput="2" outputowner="14" indexofoutput="3" />
                         <Link inputowner="14" indexofinput="2" outputowner="6" indexofoutput="5" />
-                        <Link inputowner="4" indexofinput="2" outputowner="5" indexofoutput="4" />
                         <Link inputowner="5" indexofinput="3" outputowner="10" indexofoutput="3" />
                         <Link inputowner="11" indexofinput="3" outputowner="10" indexofoutput="5" />
                         <Link inputowner="10" indexofinput="2" outputowner="9" indexofoutput="4" />
                         <Link inputowner="9" indexofinput="2" outputowner="15" indexofoutput="5" />
-                        <Link inputowner="4" indexofinput="2" outputowner="18" indexofoutput="3" />
-                        <Link inputowner="15" indexofinput="2" outputowner="18" indexofoutput="3" />
                         <Link inputowner="8" indexofinput="2" outputowner="6" indexofoutput="3" />
-                        <Link inputowner="2" indexofinput="2" outputowner="0" indexofoutput="2" />
-                        <Link inputowner="18" indexofinput="2" outputowner="2" indexofoutput="3" />
-                        <Link inputowner="3" indexofinput="2" outputowner="12" indexofoutput="4" />
-                        <Link inputowner="20" indexofinput="2" outputowner="3" indexofoutput="3" />
                         <Link inputowner="5" indexofinput="2" outputowner="13" indexofoutput="4" />
-                        <Link inputowner="4" indexofinput="2" outputowner="16" indexofoutput="4" />
                         <Link inputowner="7" indexofinput="2" outputowner="17" indexofoutput="3" />
                         <Link inputowner="17" indexofinput="2" outputowner="6" indexofoutput="4" />
-                        <Link inputowner="19" indexofinput="2" outputowner="21" indexofoutput="3" />
-                        <Link inputowner="21" indexofinput="2" outputowner="7" indexofoutput="4" />
-                        <Link inputowner="22" indexofinput="2" outputowner="19" indexofoutput="3" />
-                        <Link inputowner="24" indexofinput="2" outputowner="22" indexofoutput="4" />
-                        <Link inputowner="24" indexofinput="3" outputowner="23" indexofoutput="4" />
                         <Link inputowner="26" indexofinput="3" outputowner="10" indexofoutput="4" />
-                        <Link inputowner="25" indexofinput="2" outputowner="26" indexofoutput="4" />
-                        <Link inputowner="4" indexofinput="2" outputowner="25" indexofoutput="4" />
-                        <Link inputowner="26" indexofinput="2" outputowner="24" indexofoutput="4" />
-                        <Link inputowner="27" indexofinput="2" outputowner="19" indexofoutput="3" />
-                        <Link inputowner="23" indexofinput="2" outputowner="27" indexofoutput="4" />
                         <Link inputowner="11" indexofinput="2" outputowner="28" indexofoutput="3" />
                         <Link inputowner="29" indexofinput="2" outputowner="11" indexofoutput="4" />
                         <Link inputowner="16" indexofinput="2" outputowner="29" indexofoutput="3" />
-                        <Link inputowner="1" indexofinput="2" outputowner="20" indexofoutput="3" />
                         <Link inputowner="28" indexofinput="2" outputowner="1" indexofoutput="4" />
+                        <Link inputowner="22" indexofinput="2" outputowner="7" indexofoutput="4" />
+                        <Link inputowner="1" indexofinput="2" outputowner="3" indexofoutput="4" />
+                        <Link inputowner="3" indexofinput="2" outputowner="12" indexofoutput="4" />
+                        <Link inputowner="2" indexofinput="2" outputowner="0" indexofoutput="2" />
+                        <Link inputowner="4" indexofinput="2" outputowner="5" indexofoutput="4" />
+                        <Link inputowner="4" indexofinput="2" outputowner="25" indexofoutput="4" />
+                        <Link inputowner="4" indexofinput="2" outputowner="16" indexofoutput="4" />
+                        <Link inputowner="20" indexofinput="2" outputowner="19" indexofoutput="3" />
+                        <Link inputowner="24" indexofinput="2" outputowner="21" indexofoutput="4" />
+                        <Link inputowner="24" indexofinput="3" outputowner="23" indexofoutput="4" />
+                        <Link inputowner="23" indexofinput="2" outputowner="27" indexofoutput="4" />
+                        <Link inputowner="21" indexofinput="2" outputowner="20" indexofoutput="3" />
+                        <Link inputowner="27" indexofinput="2" outputowner="20" indexofoutput="3" />
+                        <Link inputowner="33" indexofinput="3" outputowner="32" indexofoutput="4" />
+                        <Link inputowner="32" indexofinput="2" outputowner="34" indexofoutput="4" />
+                        <Link inputowner="33" indexofinput="2" outputowner="35" indexofoutput="4" />
+                        <Link inputowner="35" indexofinput="2" outputowner="20" indexofoutput="4" />
+                        <Link inputowner="34" indexofinput="2" outputowner="20" indexofoutput="4" />
+                        <Link inputowner="37" indexofinput="3" outputowner="36" indexofoutput="4" />
+                        <Link inputowner="36" indexofinput="2" outputowner="38" indexofoutput="4" />
+                        <Link inputowner="38" indexofinput="2" outputowner="20" indexofoutput="5" />
+                        <Link inputowner="30" indexofinput="2" outputowner="22" indexofoutput="4" />
+                        <Link inputowner="19" indexofinput="2" outputowner="30" indexofoutput="3" />
+                        <Link inputowner="25" indexofinput="2" outputowner="40" indexofoutput="3" />
+                        <Link inputowner="40" indexofinput="2" outputowner="26" indexofoutput="4" />
+                        <Link inputowner="41" indexofinput="2" outputowner="0" indexofoutput="2" />
+                        <Link inputowner="15" indexofinput="2" outputowner="2" indexofoutput="3" />
+                        <Link inputowner="31" indexofinput="2" outputowner="24" indexofoutput="4" />
+                        <Link inputowner="31" indexofinput="2" outputowner="33" indexofoutput="4" />
+                        <Link inputowner="31" indexofinput="2" outputowner="37" indexofoutput="4" />
+                        <Link inputowner="39" indexofinput="2" outputowner="20" indexofoutput="5" />
+                        <Link inputowner="37" indexofinput="2" outputowner="39" indexofoutput="4" />
+                        <Link inputowner="26" indexofinput="2" outputowner="42" indexofoutput="4" />
+                        <Link inputowner="42" indexofinput="2" outputowner="31" indexofoutput="4" />
+                        <Link inputowner="19" indexofinput="2" outputowner="42" indexofoutput="5" />
+                        <Link inputowner="42" indexofinput="3" outputowner="10" indexofoutput="4" />
+                        <Link inputowner="18" indexofinput="2" outputowner="2" indexofoutput="3" />
+                        <Link inputowner="4" indexofinput="2" outputowner="18" indexofoutput="3" />
                     </Diagram>
                 </BehaviorKeyframe>
             </BehaviorLayer>

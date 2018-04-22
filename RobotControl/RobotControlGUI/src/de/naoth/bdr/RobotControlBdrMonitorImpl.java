@@ -3,7 +3,6 @@ package de.naoth.bdr;
 import de.naoth.rc.RobotControl;
 import de.naoth.rc.core.dialog.Dialog;
 import de.naoth.rc.server.MessageServer;
-import java.awt.Color;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.io.File;
@@ -12,6 +11,7 @@ import java.util.Arrays;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.beans.property.SimpleObjectProperty;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import net.xeoh.plugins.base.PluginManager;
@@ -30,7 +30,7 @@ public class RobotControlBdrMonitorImpl extends javax.swing.JFrame implements Ro
 {
     public static String panelName = "";
     public static String panelTitle = "";
-    public static JPanel healthPanel;
+    public static SimpleObjectProperty<JPanel> healthPanel = new SimpleObjectProperty<JPanel>();
 
     /**
      * Creates new form RobotControlBdrImpl
@@ -65,7 +65,7 @@ public class RobotControlBdrMonitorImpl extends javax.swing.JFrame implements Ro
       if(dialog.getDisplayName().equals(panelName)) {
           getContentPane().add(dialog.getPanel(), java.awt.BorderLayout.CENTER);
       } else if(dialog.getDisplayName().equals("RobotHealth")) {
-          healthPanel = dialog.getPanel();
+          healthPanel.set(dialog.getPanel());
       }
       // for debugging:
       /*
@@ -85,21 +85,53 @@ public class RobotControlBdrMonitorImpl extends javax.swing.JFrame implements Ro
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jPanel1 = new javax.swing.JPanel();
+        jLayeredPane1 = new javax.swing.JLayeredPane();
         jLabel1 = new javax.swing.JLabel();
+        jLayeredPane2 = new javax.swing.JLayeredPane();
+        jButton1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("BDR - Monitor");
         setUndecorated(true);
+
+        jPanel1.setLayout(new javax.swing.OverlayLayout(jPanel1));
+
+        jLayeredPane1.setLayout(new javax.swing.BoxLayout(jLayeredPane1, javax.swing.BoxLayout.X_AXIS));
 
         jLabel1.setFont(new java.awt.Font("Dialog", 1, 48)); // NOI18N
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setText(panelTitle);
         jLabel1.setToolTipText("");
         jLabel1.setBorder(javax.swing.BorderFactory.createEmptyBorder(20, 1, 20, 1));
-        getContentPane().add(jLabel1, java.awt.BorderLayout.PAGE_START);
+        jLayeredPane1.add(jLabel1);
+
+        jPanel1.add(jLayeredPane1);
+
+        jLayeredPane2.setLayout(new java.awt.BorderLayout());
+
+        jButton1.setText("X");
+        jButton1.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 10, 1, 10));
+        jButton1.setBorderPainted(false);
+        jButton1.setContentAreaFilled(false);
+        jButton1.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+        jLayeredPane2.add(jButton1, java.awt.BorderLayout.EAST);
+
+        jPanel1.add(jLayeredPane2);
+
+        getContentPane().add(jPanel1, java.awt.BorderLayout.NORTH);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        System.exit(0);
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -131,7 +163,7 @@ public class RobotControlBdrMonitorImpl extends javax.swing.JFrame implements Ro
 
         // sets the panel, which should be loaded
         panelName = Arrays.asList(args).contains("-m") ? "BDRMonitor" : "BDRControl";
-        panelTitle = Arrays.asList(args).contains("-m") ? "Monitoring" : "Fernwartung";
+        panelTitle = Arrays.asList(args).contains("-m") ? "Monitoring" : "Remote Maintenance"; //Fernwartung
         
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
@@ -174,6 +206,10 @@ public class RobotControlBdrMonitorImpl extends javax.swing.JFrame implements Ro
     }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLayeredPane jLayeredPane1;
+    private javax.swing.JLayeredPane jLayeredPane2;
+    private javax.swing.JPanel jPanel1;
     // End of variables declaration//GEN-END:variables
 }

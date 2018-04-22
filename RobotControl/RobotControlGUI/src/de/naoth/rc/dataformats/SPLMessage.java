@@ -14,6 +14,7 @@ import de.naoth.rc.math.Vector2D;
 import de.naoth.rc.messages.TeamMessageOuterClass;
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Font;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Arrays;
@@ -188,6 +189,13 @@ public class SPLMessage
         }
     }
     
+    public String getRobotState() {
+        if(user == null || !user.hasRobotState()) {
+            return "UNKNOWN";
+        }
+        return user.getRobotState().name().toUpperCase();
+    }
+    
     public static SPLMessage parseFrom(ByteBuffer buffer) throws Exception {
         // check message header
         if (buffer.get() != 'S'
@@ -228,8 +236,15 @@ public class SPLMessage
         
         // number
         drawings.add(new Pen(1, Color.BLACK));
-        drawings.add(new Text((int) robotPose.translation.x, (int) robotPose.translation.y + 150, "" + playerNum));
+        Font numberFont = new Font ("Courier New", Font.BOLD | Font.CENTER_BASELINE, 100);
+        drawings.add(new Text((int) robotPose.translation.x-30, (int) robotPose.translation.y-40, "" + playerNum, numberFont));
 
+        if(this.user.getIsCharging()) {
+            Font chargingFont = new Font ("Lucida Sans Regular", Font.BOLD | Font.CENTER_BASELINE, 50);
+            drawings.add(new Text((int) robotPose.translation.x-300, (int) robotPose.translation.y+100, "[charging]", numberFont));
+            
+        }
+        
         // striker
         if (intention == 3) {
             drawings.add(new Pen(30, Color.red));
@@ -245,7 +260,7 @@ public class SPLMessage
             // add a surrounding black circle so the ball is easier to see
             drawings.add(new Pen(1, Color.black));
             drawings.add(new Circle((int) globalBall.x, (int) globalBall.y, 65));
-            
+            /*
             {
                 // show the time since the ball was last seen
                 drawings.add(new Pen(1, Color.black));
@@ -257,7 +272,7 @@ public class SPLMessage
                     Math.round(t) + "s");
                 drawings.add(text);
             }
-
+            */
             // draw a line between robot and ball
             {
                 drawings.add(new Pen(5, Color.darkGray));
@@ -268,6 +283,7 @@ public class SPLMessage
             }
             
             // if it is our striker ...
+            /*
             if(user != null && intention == 3 && shootingTo_x != 0 && shootingTo_y != 0)
             {
                 // ... draw the excpected ball position
@@ -276,8 +292,9 @@ public class SPLMessage
                 drawings.add(new Pen(Color.gray, new BasicStroke(10, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{100, 50}, 0)));
                 drawings.add(new Arrow((int) globalBall.x, (int) globalBall.y, (int) shootingTo_x, (int) shootingTo_y));
             }
+            */
         }
-        
+        /*
         // if it is our player ...
         if(user != null)
         {
@@ -290,6 +307,7 @@ public class SPLMessage
                 drawings.add(new Arrow((int) robotPose.translation.x, (int) robotPose.translation.y, (int) tb[0], (int) tb[1]));
             }
         }
+        */
     }
     
     public boolean parseCustomFromData() {

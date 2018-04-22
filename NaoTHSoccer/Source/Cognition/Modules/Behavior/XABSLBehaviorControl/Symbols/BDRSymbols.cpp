@@ -32,6 +32,10 @@ void BDRSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerBooleanOutputSymbol("bdr.sitting",            &getBDRPlayerState().sitting);
   engine.registerBooleanOutputSymbol("bdr.localized_on_field", &getBDRPlayerState().localized_on_field);
   engine.registerDecimalInputSymbol("bdr.number_of_players_in_play", &getNumberOfPlayersInPlay);
+  
+  engine.registerDecimalOutputSymbol("bdr.time_playing", &getBDRPlayerState().time_playing);
+  engine.registerDecimalInputSymbol("bdr.goalsOwn", &getGoalsOwn);
+  engine.registerDecimalInputSymbol("bdr.goalsOpp", &getGoalsOpp);
 }//end registerSymbols
 
 BDRSymbols* BDRSymbols::theInstance = NULL;
@@ -64,4 +68,29 @@ double BDRSymbols::getNumberOfPlayersInPlay() {
   }
   
   return count;
+}
+
+double BDRSymbols::getGoalsOwn() {
+  
+  auto const& i = theInstance->getTeamMessage().data.find(0);
+  if(i != theInstance->getTeamMessage().data.end() && theInstance->getRobotPose().isValid) {
+    if (theInstance->getRobotPose().globallyMirrored) {
+      return i->second.custom.bdrPlayerState.goalsRight;
+    } else {
+      return i->second.custom.bdrPlayerState.goalsLeft; 
+    }
+  }
+  return 0;
+}
+
+double BDRSymbols::getGoalsOpp() {
+  auto const& i = theInstance->getTeamMessage().data.find(0);
+  if(i != theInstance->getTeamMessage().data.end() && theInstance->getRobotPose().isValid) {
+    if (theInstance->getRobotPose().globallyMirrored) {
+      return i->second.custom.bdrPlayerState.goalsLeft;
+    } else {
+      return i->second.custom.bdrPlayerState.goalsRight; 
+    }
+  }
+  return 0;
 }

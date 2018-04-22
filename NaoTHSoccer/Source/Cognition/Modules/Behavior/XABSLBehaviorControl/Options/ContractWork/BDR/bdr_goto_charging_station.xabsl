@@ -1,5 +1,6 @@
 option bdr_goto_charging_station
 {
+
   initial state wait {
       decision {
           if(state_time < 2000)
@@ -12,6 +13,7 @@ option bdr_goto_charging_station
           head.control_mode = look_around;
           motion.type = stand;
           bdr.activity = pre_servicing;
+          bdr.sit_down_counter = 0;
       }
   }
 
@@ -27,7 +29,7 @@ option bdr_goto_charging_station
           head.control_mode = look_around;
           bdr_goto_point(
             x = -265, 
-            y = (robot_pose.is_mirrored?-400:400), 
+            y = (robot_pose.is_mirrored?-450:450), 
             rot = (robot_pose.is_mirrored?90:-90)
             );
           motion.walk.style = stable;
@@ -61,7 +63,7 @@ option bdr_goto_charging_station
             head.control_mode = look_around;
             bdr_align_carefully(
               x = -265, 
-              y = (robot_pose.is_mirrored?-550:550), 
+              y = (robot_pose.is_mirrored?-620:620), 
               rot = (robot_pose.is_mirrored?90:-90));
       }
   }
@@ -84,7 +86,7 @@ option bdr_goto_charging_station
         //TODO: use some kind of symbol indicating that the sit motion was reached?
         if(state_time > 10000){ 
           if(battery.isDischarging)
-              goto stand_up_again;
+              goto increase_counter;
           else 
               goto done;
         }
@@ -97,11 +99,26 @@ option bdr_goto_charging_station
       }
   }
 
+  state increase_counter{
+      decision {
+          if(bdr.sit_down_counter > 3)
+              goto failed;
+          else
+              goto stand_up_again;
+      }
+
+      action {
+          motion.type = bdr_sit;
+          bdr.sit_down_counter = bdr.sit_down_counter + 1;
+      }
+  }
+
   state stand_up_again {
       decision
       {
         if(executed_motion.type == stand && executed_motion.time > 5000)
-          goto approach_very_slowly;
+          //goto approach_very_slowly; // Wunsch von Olaf... die Beobachtung war, dass sie gut ausgerichtet sind nach dem ersten Setzen
+          goto sit;
         else
           stay;
       }
@@ -113,14 +130,30 @@ option bdr_goto_charging_station
 	  }
   }
 
+  state failed {
+      decision {
+          if(battery.isDischarging)
+              stay;
+          else
+              goto done;
+      }
+
+      action{
+          motion.type  = bdr_sit;
+          bdr.message = failed_charging;
+      }
+  }
+
   target state done {
       decision {
         stay;
       }
 
       action {
-          motion.type = bdr_sit;
+          motion.type  = bdr_sit;
           bdr.activity = servicing;
+          bdr.sitting  = true;
+          bdr.message  = charging;
       }
   }
 

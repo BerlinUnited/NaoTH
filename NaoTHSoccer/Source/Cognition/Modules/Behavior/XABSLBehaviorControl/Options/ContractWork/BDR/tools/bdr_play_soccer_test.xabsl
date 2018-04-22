@@ -1,0 +1,64 @@
+option bdr_play_soccer_test {
+
+    common decision
+  {
+    if(body.falling)
+        goto fallen;
+    else if(!body.ready_to_walk || game.current_mode != playing)
+        goto idle;
+  }
+  
+  initial state idle{
+    decision{
+      else
+        goto localize;
+    } 
+    action{
+
+        bdr.localized_on_field = false;
+    }
+  }
+  
+  state fallen{
+      decision{
+          else
+              stay;
+      }
+
+      action{
+          bdr.localized_on_field = false;
+      }
+              
+  }
+
+    state localize
+	  {
+	    decision
+	    {
+	      else if(robot_pose.is_valid && executed_motion.time > 5000)
+	        goto play;
+	      else
+	        stay;
+	    }
+	    action
+	    {
+	        motion.type = stand;
+	        head.control_mode = look_around;
+	        situationStatusOwnHalf = last_state_was_penalized;
+	        bdr.activity = initializing;        
+	    }
+	  }
+
+    state play {
+        decision {
+            else
+                stay;
+        }
+
+        action {
+            bdr_play_soccer();
+            bdr.localized_on_field = true;
+        }
+        
+    }
+}

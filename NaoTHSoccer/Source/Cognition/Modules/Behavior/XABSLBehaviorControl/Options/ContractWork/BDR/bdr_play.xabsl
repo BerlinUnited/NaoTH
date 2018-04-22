@@ -1,8 +1,26 @@
 option bdr_play
 {
+  /** temperature which shouldn't be exceeded */
+  float @min_temperature;
+  float @max_temperature; //[70..90] "°";
+
+  /** temperature increase until wartung */
+  float @inc_temperature; //[2 - 10] "°"
+  float @offset_max_temp_reached;
+
+  /** battery percentage which shouldn't be fallen below */
+  float @min_battery; // [0.3-0.5] "%";
+  float @max_battery;
+
+  /** battery percentage decrease until wartung */
+  float @dec_battery; //[0.02 - 0.05] "°"
+  float @offset_min_battery_reached;
+
   common decision
   {
-    if(!body.ready_to_walk || game.current_mode != playing)
+    if(body.falling)
+        goto fallen;
+    else if(!body.ready_to_walk || game.current_mode != playing)
         goto idle;
   }
   
@@ -12,11 +30,28 @@ option bdr_play
         goto localize;
     } 
     action{
+        bdr.message = ready;
         bdr.reason = none; // init reason
         bdr.activity = initializing;
+        bdr.localized_on_field = false;
     }
   }
 
+  state fallen{
+      decision{
+          else
+              stay;
+      }
+
+      action{
+          bdr.message = fallen;
+          bdr.reason = none; // init reason
+          bdr.activity = initializing;
+          bdr.localized_on_field = false;
+      }
+              
+  }
+  
   state localize
   {
     decision
@@ -31,7 +66,10 @@ option bdr_play
         motion.type = stand;
         head.control_mode = look_around;
         situationStatusOwnHalf = last_state_was_penalized;
-        bdr.activity = initializing;
+        bdr.activity = initializing;   
+
+        bdr.charge_beginning = platform.battery;
+        bdr.temperature_beginning = max(value0 = body.temperature.leg.left, value1 = body.temperature.leg.right);
     }
   }
 
@@ -74,12 +112,12 @@ option bdr_play
       decision {
           else if(remote_control.bdr_control != AUTONOMOUS_PLAY)
               goto transition;
-          else if (body.temperature.leg.left > 70
-                   || body.temperature.leg.right > 70)
+          else if (body.temperature.leg.left > bdr.temperature_beginning + @inc_temperature
+                   || body.temperature.leg.right > bdr.temperature_beginning + @inc_temperature)
               goto set_wartungs_reason_temperature;
-          else if (platform.battery < bdr.charge_beginning - 0.02)
+          else if (platform.battery < bdr.charge_beginning - @dec_battery)
               goto set_wartungs_reason_battery;
-          else if (bdr.number_of_players_in_play == 1)
+          else if (bdr.number_of_players_in_play == 1) // other player is waiting for me
               goto transition;
           else
               stay;
@@ -113,22 +151,40 @@ option bdr_play
     decision
     {
       else if(remote_control.bdr_control != AUTONOMOUS_PLAY)
-        goto transition;
-      else if (body.temperature.leg.left > 70
-               || body.temperature.leg.right > 70)
-          goto set_wartungs_reason_temperature;
-      else if (platform.battery < bdr.charge_beginning - 0.02)
-          goto set_wartungs_reason_battery;
-      else if(action_done)
           goto transition;
+      else if(action_done)
+          goto post_autonomous_play;
+      else if(bdr.number_of_players_in_play == 1
+              && state_time > 10000)
+          goto pre_autonomous_entertaining; 
       else
-        stay;
+          stay;
     }
     action
     {
         bdr_play_soccer_synchronized();
         bdr.activity = playing;
         bdr.reason = none;
+    }
+  }
+
+  state post_autonomous_play
+  {
+    decision
+    {
+      else if (body.temperature.leg.left >  bdr.temperature_beginning + @inc_temperature
+               || body.temperature.leg.right >  bdr.temperature_beginning + @inc_temperature)
+          goto set_wartungs_reason_temperature;
+      else if (platform.battery < bdr.charge_beginning - @dec_battery)
+          goto set_wartungs_reason_battery;
+      else
+          goto pre_autonomous_play;
+    }
+
+    action
+    {
+      motion.type = stand;
+      head.control_mode = search_for_ball_and_look_around;
     }
   }
 
@@ -140,6 +196,7 @@ option bdr_play
       action {
           bdr.reason = temperature;
           bdr.charge_beginning = platform.battery;
+          bdr.temperature_beginning = max(value0 = body.temperature.leg.left, value1 = body.temperature.leg.right);
           bdr.activity = pre_servicing;
       }
   }
@@ -152,6 +209,7 @@ option bdr_play
       action {
           bdr.reason = battery_charge;
           bdr.charge_beginning = platform.battery;
+          bdr.temperature_beginning = max(value0 = body.temperature.leg.left, value1 = body.temperature.leg.right);
           bdr.activity = pre_servicing;
       }
   }
@@ -162,14 +220,40 @@ option bdr_play
     {
       else if(bdr.reason == none 
               && remote_control.bdr_control != WARTUNG)
-        goto localize_after_wartung;
-      else if(bdr.reason == temperature
-              && body.temperature.leg.left < 50
-              && body.temperature.leg.right < 50)
-        goto localize_after_wartung;
-      else if(bdr.reason == battery_charge
-              && platform.battery > (bdr.charge_beginning + 0.02))
-        goto localize_after_wartung;
+          goto localize_after_wartung;
+      else if(bdr.reason == temperature){
+          if(body.temperature.leg.left < @min_temperature
+             && body.temperature.leg.right < @min_temperature){
+              goto localize_after_wartung;
+          } else if(bdr.temperature_beginning > @max_temperature){
+              if(body.temperature.leg.left < bdr.temperature_beginning - @inc_temperature - @offset_max_temp_reached
+                 && body.temperature.leg.right < bdr.temperature_beginning - @inc_temperature - @offset_max_temp_reached)
+                  goto localize_after_wartung;
+              else
+                  stay;
+          } else {
+              if(body.temperature.leg.left < bdr.temperature_beginning - @inc_temperature
+                  && body.temperature.leg.right < bdr.temperature_beginning - @inc_temperature)
+                  goto localize_after_wartung;
+              else
+                  stay;
+          }
+      }
+      else if(bdr.reason == battery_charge) {
+          if(platform.battery > @max_battery)
+              goto localize_after_wartung;
+          else if(bdr.charge_beginning < @min_battery){
+              if(platform.battery > bdr.charge_beginning + @dec_battery + @offset_min_battery_reached)
+                  goto localize_after_wartung;
+              else
+                  stay;
+          } else {
+              if(platform.battery > (bdr.charge_beginning + @dec_battery))
+                  goto localize_after_wartung;
+              else
+                  stay;
+          }
+      }
       else
         stay;
     }
@@ -195,6 +279,11 @@ option bdr_play
         head.control_mode = search_for_ball_and_look_around;
         bdr.reason = none; // reset wartungs reason
         bdr.activity = initializing;
+        bdr.sitting = false;
+        bdr.message = ready;
+
+        bdr.charge_beginning = platform.battery;
+        bdr.temperature_beginning = max(value0 = body.temperature.leg.left, value1 = body.temperature.leg.right);
     }
   }
 
@@ -240,7 +329,7 @@ option bdr_play
         head.point_in_world.z = 0;
         head.motion_type = look_at_world_point;
 
-        bdr.charge_beginning = platform.battery;
+        bdr.localized_on_field = true; // TODO: need some criteria like #Lines, error of matching after localization etc.
       }
   }
 }
