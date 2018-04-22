@@ -2,7 +2,6 @@ package de.naoth.rc.dialogs.bdr;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 import de.naoth.bdr.RobotControlBdrMonitor;
-import de.naoth.bdr.RobotControlBdrMonitorImpl;
 import de.naoth.rc.RobotControl;
 import de.naoth.rc.components.teamcomm.TeamCommListener;
 import de.naoth.rc.components.teamcomm.TeamCommManager;
@@ -144,11 +143,13 @@ public class BDRControl extends AbstractDialog implements TeamCommListener, Comp
     @Override
     public void disconnected(ConnectionStatusEvent event) {
         // activate health status panel
-        ((RobotHealth) RobotControlBdrMonitorImpl.healthPanel.get()).connect(false);
+        this.robotHealth.connect(false);
         setButtons(false);
+        /*
         robotsMap.forEach((t, u) -> {
             u.setEnableConnectButton(true);
         });
+        */
         layerNotConnected.setVisible(true);
     }
 
@@ -161,18 +162,21 @@ public class BDRControl extends AbstractDialog implements TeamCommListener, Comp
     private void updateStatus() {
         Command cmd = new Command("Cognition:representation:get").addArg("BDRControlCommand");
         Plugin.commandExecutor.executeCommand(new StatusUpdater(), cmd);
+        
         // activate health status panel
         this.robotHealth.connect(true);
         // disable button of all 'not connected' robots
-        String connectedIp = Plugin.rc.getMessageServer().getAddress().getHostName();
+        /*
+        String connectedIp = Plugin.rc.getMessageServer().getAddress().getHostString();
         robotsMap.forEach((t, u) -> {
             if(!u.getAddress().equals(connectedIp)) {
                 u.setEnableConnectButton(false);
             }
         });
+        */
         layerNotConnected.setVisible(false);
     }
-    
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -334,7 +338,7 @@ public class BDRControl extends AbstractDialog implements TeamCommListener, Comp
             @Override
             public void newObjectReceived(byte[] object) {
                 System.out.println(new String(object));
-                //updateStatus();
+                updateStatus();
             }
 
             @Override
@@ -357,6 +361,7 @@ public class BDRControl extends AbstractDialog implements TeamCommListener, Comp
             robotPanel.add(robot);
         }
         createDummies();
+        this.robotPanel.revalidate();
         this.robotPanel.repaint();
     }
     
@@ -367,6 +372,7 @@ public class BDRControl extends AbstractDialog implements TeamCommListener, Comp
             d.setPreferredSize(new Dimension(robotPanelWidth, robotPanelHeight));
             d.setMinimumSize(new Dimension(robotPanelWidth, robotPanelHeight));
             d.setEnabled(false);
+            d.setVisible(true);
             robotPanel.add(d);
         }
     }
