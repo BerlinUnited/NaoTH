@@ -96,7 +96,7 @@ namespace naoth
     double contrast;
     int exposure;
     bool fadeToBlack;
-    int gain;
+    double gain;
     double targetGain; 
     double minAnalogGain;
     double maxAnalogGain;
@@ -132,7 +132,7 @@ namespace naoth
     bool autoWhiteBalancing;
     int brightness;
     int exposure;
-    int gain;
+    double gain;
     int saturation;
     int sharpness;
     int whiteBalanceTemperature;

@@ -76,7 +76,7 @@ CameraSettingsRequest::CameraSettingsRequest(string configName)
   PARAMETER_REGISTER(contrast) = 1.0;
   PARAMETER_REGISTER(exposure) = 1;
   PARAMETER_REGISTER(fadeToBlack) = false;
-  PARAMETER_REGISTER(gain) = 32;
+  PARAMETER_REGISTER(gain) = 1.0;
   PARAMETER_REGISTER(targetGain) = 100.0;
   PARAMETER_REGISTER(minAnalogGain) = 1.0;
   PARAMETER_REGISTER(maxAnalogGain) = 8.0;
@@ -122,10 +122,16 @@ CameraSettings CameraSettingsRequest::getCameraSettings() const {
   result.data[CameraSettings::Contrast] = Math::toFixPoint<5>(static_cast<float>(Math::clamp(contrast, 0.5, 2.0)));
   result.data[CameraSettings::Exposure] = Math::clamp(exposure, 1, 1000);
   result.data[CameraSettings::FadeToBlack] = fadeToBlack ? 1 : 0;
-  result.data[CameraSettings::Gain] = Math::clamp(gain, 32  , 255);
-  result.data[CameraSettings::TargetGain] = Math::clamp(Math::toFixPoint<5>(static_cast<float>(targetGain)), 0, 32767);
   result.data[CameraSettings::MinAnalogGain] = Math::clamp(Math::toFixPoint<5>(static_cast<float>(minAnalogGain)), 0, 32767);
   result.data[CameraSettings::MaxAnalogGain] = Math::clamp(Math::toFixPoint<5>(static_cast<float>(maxAnalogGain)), 0, 32767);
+
+  // manual gain must be inside the min/max given in the other parameters and also can't be larger than 255 (as integer)
+  result.data[CameraSettings::Gain] = Math::clamp(
+    Math::toFixPoint<5>(static_cast<float>(Math::clamp(gain, minAnalogGain, maxAnalogGain))), 0, 255);
+  
+  result.data[CameraSettings::TargetGain] = Math::toFixPoint<5>(static_cast<float>(Math::clamp(targetGain, minAnalogGain, maxAnalogGain)));
+  
+
   result.data[CameraSettings::HorizontalFlip] = horizontalFlip ? 1 : 0;
   result.data[CameraSettings::Hue] = Math::clamp(hue, -22, 22);
   result.data[CameraSettings::Saturation] = Math::clamp(saturation, 0, 255);
@@ -159,7 +165,7 @@ CommonCameraSettingsRequest::CommonCameraSettingsRequest(string configName)
   PARAMETER_REGISTER(autoWhiteBalancing) = false;
   PARAMETER_REGISTER(brightness) = 55;
   PARAMETER_REGISTER(exposure) = 1;
-  PARAMETER_REGISTER(gain) = 32;
+  PARAMETER_REGISTER(gain) = 1;
   PARAMETER_REGISTER(saturation) = 128;
   PARAMETER_REGISTER(sharpness) = 128;
   PARAMETER_REGISTER(whiteBalanceTemperature) = 6500;
