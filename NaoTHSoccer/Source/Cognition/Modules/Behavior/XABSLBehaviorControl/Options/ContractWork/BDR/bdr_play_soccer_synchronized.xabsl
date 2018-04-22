@@ -18,7 +18,7 @@ option bdr_play_soccer_synchronized
         decision {
             if ( bdr.number_of_players_in_play != 2
                  || state_time > 120000 )
-                goto match_finished;
+                goto won_or_lost;
             else
                 stay;
         }
@@ -29,6 +29,66 @@ option bdr_play_soccer_synchronized
         }       
     }
 
+    state won_or_lost {
+        decision {
+            if (bdr.goalsOwn > bdr.goalsOpp)
+                goto won;
+            else if(bdr.goalsOpp > bdr.goalsOwn)
+                goto lost;
+            else
+                goto draw;
+        }
+
+        action{
+            motion.type = stand;
+            head.control_mode = look_straight_ahead;
+        }
+    }
+
+    state won{
+        decision{
+            if (state_time > 2000)
+                goto match_finished;
+            else
+                stay;
+        }
+
+        action {
+            motion.type = stand;
+            head.control_mode = look_straight_ahead;
+            bdr.message = won;
+        }
+    }
+
+    state lost{
+        decision{
+            if (state_time > 2000)
+                goto match_finished;
+            else
+                stay;
+        }
+
+        action {
+            motion.type = stand;
+            head.control_mode = look_straight_ahead;
+            bdr.message = lost;
+        }
+    }
+
+    state draw{
+        decision{
+            if (state_time > 2000)
+                goto match_finished;
+            else
+                stay;
+        }
+
+        action {
+            motion.type = stand;
+            head.control_mode = look_straight_ahead;
+        }
+    }
+   
     target state match_finished {
         decision {
             stay;

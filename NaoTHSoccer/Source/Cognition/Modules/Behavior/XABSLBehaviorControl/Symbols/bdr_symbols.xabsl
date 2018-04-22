@@ -34,13 +34,20 @@ namespace bdr_symbols("BDR Symbols") {
   float output bdr.time_playing;
 
   float input bdr.number_of_players_in_play; 
+  float input bdr.goalsOwn;
+  float input bdr.goalsOpp;
 
   enum message {
       charging,
       failed_charging,
       fallen,
       ready,
-      too_many_players_on_field
+      too_many_players_on_field,
+      cooling_down_needed,
+      charging_needed,
+      lets_play,
+      won,
+      lost
   };
   
   enum message output bdr.message;

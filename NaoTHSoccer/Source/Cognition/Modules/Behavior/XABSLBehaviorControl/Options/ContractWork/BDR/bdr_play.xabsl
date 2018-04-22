@@ -195,6 +195,7 @@ option bdr_play
       }
       action {
           bdr.reason = temperature;
+          bdr.message = cooling_down_needed;
           bdr.charge_beginning = platform.battery;
           bdr.temperature_beginning = max(value0 = body.temperature.leg.left, value1 = body.temperature.leg.right);
           bdr.activity = pre_servicing;
@@ -207,7 +208,8 @@ option bdr_play
               goto wartung;
       }
       action {
-          bdr.reason = battery_charge;
+          bdr.reason  = battery_charge;
+          bdr.message = charging_needed;
           bdr.charge_beginning = platform.battery;
           bdr.temperature_beginning = max(value0 = body.temperature.leg.left, value1 = body.temperature.leg.right);
           bdr.activity = pre_servicing;
