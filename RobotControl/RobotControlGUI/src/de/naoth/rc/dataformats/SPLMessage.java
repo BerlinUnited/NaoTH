@@ -237,12 +237,10 @@ public class SPLMessage
         // number
         drawings.add(new Pen(1, Color.BLACK));
         Font numberFont = new Font ("Courier New", Font.BOLD | Font.CENTER_BASELINE, 100);
-        drawings.add(new Text((int) robotPose.translation.x-30, (int) robotPose.translation.y-40, "" + playerNum, numberFont));
+        drawings.add(new Text((int) robotPose.translation.x, (int) robotPose.translation.y, robotPose.rotation+Math.PI/2, "" + playerNum, numberFont));
 
-        if(this.user.getIsCharging()) {
-            Font chargingFont = new Font ("Lucida Sans Regular", Font.BOLD | Font.CENTER_BASELINE, 50);
-            drawings.add(new Text((int) robotPose.translation.x-300, (int) robotPose.translation.y+100, "[charging]", numberFont));
-            
+        if(this.user.hasIsCharging() && this.user.getIsCharging()) {
+            drawings.add(new Text((int) robotPose.translation.x, (int) robotPose.translation.y+150, 0.0, "[charging]", numberFont));
         }
         
         // striker
