@@ -52,6 +52,7 @@ class GoalSensor:
   def close(self):
     if not self.closed:
       GPIO.cleanup()
+    self.closed = True
 
 
 if __name__ == '__main__':
