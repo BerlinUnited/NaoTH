@@ -66,7 +66,8 @@ class TeamCommSender(threading.Thread):
                 
     def stop(self):
       self.loop_control.set()
-      #self.join()
+      self.socket.close()
+      self.join()
                
                
 if __name__ == '__main__':
