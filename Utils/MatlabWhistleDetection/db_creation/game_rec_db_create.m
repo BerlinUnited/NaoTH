@@ -16,13 +16,13 @@ data_path = '<insert_path_here>';
 % get information about the location of each raw file inside gamelog_path
 folderContents = dir(strcat(data_path, '/**/*.wav'));
 %% Extract the necessary infos from filepath
-% The following folder structure under gamelog_path is expected:
-% data_path
+% The following folder structure under data_path is expected:
+% data_path (this is ususally the event_folder)
 % |-> game_name
 %     |-> wav files
 
 eventFolder = split(data_path, ["/","\"]);
-eventFolder = eventFolder{end}; % get last folder of gamelog_path
+eventFolder = eventFolder{end}; % get last folder of data_path
 
 for i=1:length(folderContents)
     % use the path of the first raw file
@@ -38,9 +38,7 @@ for i=1:length(folderContents)
     
     game_name = string(extractedPath_split(1));
     
-     % get wav file
-     % TODO: the wav files have two channels -> fix this in the ffmpeg
-     % script
+    % get wav file
     filepath = fullfile(folderContents(i).folder, folderContents(i).name);
     [y,Fs] = audioread(filepath);
 

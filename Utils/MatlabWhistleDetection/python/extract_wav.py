@@ -34,7 +34,14 @@ def extract_wav(input_path):
             file = os.path.join(input_path, file)
             filename = os.path.splitext(file)[0]
             print("Filename: ", filename)
-            os.system("ffmpeg -i {0} {1}.wav".format(file, filename))
+            """
+            -map_channel:
+              The first 0 is the input file id
+              The next 1 is the stream specifier - should be the audio stream, 0 is video
+              The next 0 is the channel id
+            """
+
+            os.system("ffmpeg -i {0} -map_channel 0.1.0 {1}.wav".format(file, filename))
         else:
             continue
 
