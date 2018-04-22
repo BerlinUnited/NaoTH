@@ -201,6 +201,8 @@ public class RobotPanel extends javax.swing.JPanel {
           setChestColor(msg.getTeamColor());
       }
       
+      jlCpuTemp.setText(msg.user.getCpuTemperature() + " °C");
+      
       this.repaint();
     }
     
@@ -384,6 +386,8 @@ public class RobotPanel extends javax.swing.JPanel {
         jlAddress = new javax.swing.JLabel();
         jlRobotState = new javax.swing.JLabel();
         jlTimestamp = new javax.swing.JLabel();
+        jlCpuTemp = new javax.swing.JLabel();
+        filler2 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0));
         jPanel2 = new javax.swing.JPanel();
         lblActivity = new javax.swing.JLabel();
         buttonPanel = new javax.swing.JPanel();
@@ -411,7 +415,10 @@ public class RobotPanel extends javax.swing.JPanel {
         labelPanel.setOpaque(false);
         labelPanel.setLayout(new java.awt.GridBagLayout());
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.weightx = 0.2;
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 0.4;
         labelPanel.add(filler1, gridBagConstraints);
 
         jlAddress.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
@@ -423,7 +430,7 @@ public class RobotPanel extends javax.swing.JPanel {
         gridBagConstraints.gridy = 0;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.weightx = 0.8;
+        gridBagConstraints.weightx = 0.3;
         labelPanel.add(jlAddress, gridBagConstraints);
 
         jlRobotState.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
@@ -433,10 +440,9 @@ public class RobotPanel extends javax.swing.JPanel {
         jlRobotState.setToolTipText("Team Number");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridy = 1;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.weightx = 0.8;
         labelPanel.add(jlRobotState, gridBagConstraints);
 
         jlTimestamp.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
@@ -444,11 +450,28 @@ public class RobotPanel extends javax.swing.JPanel {
         jlTimestamp.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/naoth/rc/res/appointment-new.png"))); // NOI18N
         jlTimestamp.setText("OFFLINE");
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.weightx = 0.8;
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHEAST;
+        gridBagConstraints.weightx = 0.3;
         labelPanel.add(jlTimestamp, gridBagConstraints);
+
+        jlCpuTemp.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        jlCpuTemp.setForeground(new java.awt.Color(255, 255, 255));
+        jlCpuTemp.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/naoth/rc/res/thermometer.png"))); // NOI18N
+        jlCpuTemp.setText("0.0 °C");
+        jlCpuTemp.setToolTipText("Team Number");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHEAST;
+        labelPanel.add(jlCpuTemp, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 0.3;
+        labelPanel.add(filler2, gridBagConstraints);
 
         add(labelPanel, java.awt.BorderLayout.NORTH);
 
@@ -506,10 +529,12 @@ public class RobotPanel extends javax.swing.JPanel {
     private javax.swing.JPanel buttonPanel;
     private javax.swing.JButton connectButton;
     private javax.swing.Box.Filler filler1;
+    private javax.swing.Box.Filler filler2;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JLabel jlAddress;
+    private javax.swing.JLabel jlCpuTemp;
     private javax.swing.JLabel jlRobotState;
     private javax.swing.JLabel jlTimestamp;
     private javax.swing.JPanel labelPanel;
