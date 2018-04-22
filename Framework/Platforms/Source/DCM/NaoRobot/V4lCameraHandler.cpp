@@ -872,6 +872,14 @@ void V4lCameraHandler::setAllCameraParams(const CameraSettings& data)
       // apply the single parameter setting
       else if(setSingleCameraParameter(csConst[*it], data.data[*it])) {
         lastCameraSettingTimestamp = NaoTime::getSystemTimeInMicroSeconds();
+
+        if(*it == CameraSettings::AutoExposition && currentSettings.data[*it] == 1 && data.data[*it] == 0)
+        {
+          // read back the gain and auto exposure values set by the now deactivated auto exposure
+          currentSettings.data[CameraSettings::Exposure] = getSingleCameraParameter(csConst[CameraSettings::Exposure]);
+          currentSettings.data[CameraSettings::Gain] = getSingleCameraParameter(csConst[CameraSettings::Gain]);
+        }
+
         currentSettings.data[*it] = data.data[*it];
 
         /*

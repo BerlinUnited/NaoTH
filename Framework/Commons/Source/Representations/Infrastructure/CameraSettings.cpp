@@ -114,7 +114,7 @@ CameraSettings CameraSettingsRequest::getCameraSettings() const {
   result.data[CameraSettings::Contrast] = Math::toFixPoint<5>(static_cast<float>(Math::clamp(contrast, 0.5, 2.0)));
   result.data[CameraSettings::Exposure] = Math::clamp(exposure, 1, 1000);
   result.data[CameraSettings::FadeToBlack] = fadeToBlack ? 1 : 0;
-  result.data[CameraSettings::Gain] = Math::clamp(gain, 0, 255);
+  result.data[CameraSettings::Gain] = Math::clamp(gain, 32  , 255);
   result.data[CameraSettings::TargetGain] = Math::toFixPoint<5>(static_cast<float>(targetGain));
   result.data[CameraSettings::MinGain] = Math::toFixPoint<5>(static_cast<float>(minGain));
   result.data[CameraSettings::MaxGain] = Math::toFixPoint<5>(static_cast<float>(maxGain));
