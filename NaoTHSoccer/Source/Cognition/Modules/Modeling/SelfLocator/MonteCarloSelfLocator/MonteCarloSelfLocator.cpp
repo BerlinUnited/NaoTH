@@ -99,14 +99,16 @@ void MonteCarloSelfLocator::execute()
     state = KIDNAPPED;
   }
 
+  /*
   bool last_motion_ok = getMotionStatus().lastMotion == motion::stand ||
                         getMotionStatus().lastMotion == motion::walk;                    
+  */
 
   bool motion_ok = (getMotionStatus().currentMotion == motion::stand || 
-                    getMotionStatus().currentMotion == motion::walk)
+                    getMotionStatus().currentMotion == motion::walk);
                    // hack: give stand some time in case the last motion was not walk or stand
                    // remark: walk is only executed after walk or stand, so this condition is only relevant for stand
-                   && (last_motion_ok || getFrameInfo().getTimeSince(getMotionStatus().time) > 5000); 
+                   //&& (last_motion_ok || getFrameInfo().getTimeSince(getMotionStatus().time) > 5000); 
 
   bool body_upright = getBodyState().fall_down_state == BodyState::upright;
 
@@ -209,6 +211,10 @@ void MonteCarloSelfLocator::execute()
       if(localize_time > 5000 && moments.getRawMoment(0,0) > 0.8*(double)mhBackendSet.size()) {
         theSampleSet = mhBackendSet; // todo: implement swap
         state = TRACKING;
+
+        if(getSituationPrior().currentPrior == getSituationPrior().bdrStartPosition) {
+          getRobotPose().globallyMirrored = (getRobotPose().translation.y < 0);
+        }
       }
 
       calculatePose(mhBackendSet);
@@ -357,40 +363,44 @@ void MonteCarloSelfLocator::updateByOdometry(SampleSet& sampleSet, bool noise) c
 void MonteCarloSelfLocator::updateBySituation()
 {
   if(getSituationPrior().currentPrior == getSituationPrior().firstReady)
-    {
-      updateByStartPositions(theSampleSet);
-    }
-    else if(getSituationPrior().currentPrior == getSituationPrior().positionedInSet)
-    {
-      updateByOwnHalfLookingForward(theSampleSet);
-    }
-    else if(getSituationPrior().currentPrior == getSituationPrior().goaliePenalizedInSet)
-    {
-      updateByGoalBox(theSampleSet);
-    }
-    else if(getSituationPrior().currentPrior == getSituationPrior().set)
-    {
-      updateByOwnHalf(theSampleSet);
-    }
-    else if(getSituationPrior().currentPrior == getSituationPrior().playAfterPenalized)
-    {
-      updateBySidePositions(theSampleSet);
-    }
-    else if(getSituationPrior().currentPrior == getSituationPrior().oppHalf)
-    {
-      updateByOppHalf(theSampleSet);
-    }
-    else {
-      DEBUG_REQUEST("MCSLS:draw_state",
-        FIELD_DRAWING_CONTEXT;
-        PEN("000000", 30);
-        const Vector2d& fieldMin = getFieldInfo().fieldRect.min();
-        const Vector2d& fieldMax = getFieldInfo().fieldRect.max();
-        BOX(fieldMin.x, fieldMin.y, fieldMax.x, fieldMax.y);
-        LINE(fieldMin.x, fieldMin.y, fieldMax.x, fieldMax.y);
-        LINE(fieldMin.x, fieldMax.y, fieldMax.x, fieldMin.y);
-      );
-    }
+  {
+    updateByStartPositions(theSampleSet);
+  }
+  else if(getSituationPrior().currentPrior == getSituationPrior().positionedInSet)
+  {
+    updateByOwnHalfLookingForward(theSampleSet);
+  }
+  else if(getSituationPrior().currentPrior == getSituationPrior().goaliePenalizedInSet)
+  {
+    updateByGoalBox(theSampleSet);
+  }
+  else if(getSituationPrior().currentPrior == getSituationPrior().set)
+  {
+    updateByOwnHalf(theSampleSet);
+  }
+  else if(getSituationPrior().currentPrior == getSituationPrior().playAfterPenalized)
+  {
+    updateBySidePositions(theSampleSet);
+  }
+  else if(getSituationPrior().currentPrior == getSituationPrior().oppHalf)
+  {
+    updateByOppHalf(theSampleSet);
+  }
+  else if(getSituationPrior().currentPrior == getSituationPrior().bdrStartPosition)
+  {
+    updateByBDRStartPositions(theSampleSet);
+  }
+  else {
+    DEBUG_REQUEST("MCSLS:draw_state",
+      FIELD_DRAWING_CONTEXT;
+      PEN("000000", 30);
+      const Vector2d& fieldMin = getFieldInfo().fieldRect.min();
+      const Vector2d& fieldMax = getFieldInfo().fieldRect.max();
+      BOX(fieldMin.x, fieldMin.y, fieldMax.x, fieldMax.y);
+      LINE(fieldMin.x, fieldMin.y, fieldMax.x, fieldMax.y);
+      LINE(fieldMin.x, fieldMax.y, fieldMax.x, fieldMin.y);
+    );
+  }
 }
 
 bool MonteCarloSelfLocator::updateBySensors(SampleSet& sampleSet) const
@@ -943,6 +953,33 @@ void MonteCarloSelfLocator::updateByMiddleCircle(const LinePercept& linePercept,
   }//end for
 
 }//end updateByMiddleCircle
+
+void MonteCarloSelfLocator::updateByBDRStartPositions(SampleSet& sampleSet) const
+{
+  double offserY = 0;
+  Vector2d startLeft( getFieldInfo().xPosOwnGroundline + 150, getFieldInfo().yLength/2.0 - offserY);
+  Vector2d endLeft(  -400, getFieldInfo().yLength/2.0 - offserY);
+
+  Vector2d startRight( startLeft.x,  -startLeft.y);
+  Vector2d endRight(     endLeft.x,   -endLeft.y);
+
+  LineDensity leftStartingLine( startLeft,  endLeft,  -Math::pi_2, parameters.startPositionsSigmaDistance, parameters.startPositionsSigmaAngle);
+  LineDensity rightStartingLine(startRight, endRight,  Math::pi_2, parameters.startPositionsSigmaDistance, parameters.startPositionsSigmaAngle);
+
+  for(size_t i = 0; i < sampleSet.size(); i++) {
+    if(sampleSet[i].translation.y > 0) {
+      sampleSet[i].likelihood *= leftStartingLine.update(sampleSet[i]);
+    } else {
+      sampleSet[i].likelihood *= rightStartingLine.update(sampleSet[i]);
+    }
+  }
+
+  DEBUG_REQUEST("MCSLS:draw_state",
+    FIELD_DRAWING_CONTEXT;
+    leftStartingLine.draw(getDebugDrawings());
+    rightStartingLine.draw(getDebugDrawings());
+  );
+}
 
 void MonteCarloSelfLocator::updateBySidePositions(SampleSet& sampleSet) const
 {

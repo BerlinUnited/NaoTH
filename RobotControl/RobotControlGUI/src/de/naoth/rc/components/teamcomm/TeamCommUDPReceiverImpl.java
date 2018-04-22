@@ -45,7 +45,7 @@ public class TeamCommUDPReceiverImpl implements TeamCommUDPReceiver
     
     class Receiver {
         private final List<TeamCommListener> listeners = Collections.synchronizedList(new ArrayList<TeamCommListener>());
-        private final RobotTeamCommListener teamcommListener = new RobotTeamCommListener(true);
+        private final RobotTeamCommListener teamcommListener = new RobotTeamCommListener(false);
         
         public final int port;
         public Receiver(int port) {

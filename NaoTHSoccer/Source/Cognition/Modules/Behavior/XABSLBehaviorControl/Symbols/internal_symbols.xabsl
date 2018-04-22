@@ -24,6 +24,7 @@ namespace internal_symbols("Internal Symbols") {
 
   /** state of the body: false when lifted, or fallen */
   bool internal body.ready_to_walk;
+  bool internal body.falling;
 
 
   /** This is used to indicate not interruptable states */
@@ -67,5 +68,5 @@ namespace internal_symbols("Internal Symbols") {
   float internal search_ball.turn_stop_motion_count;
 
   /** the time we are in play-state in ms*/
-  float internal game.time_in_play;
+  float internal game.time_in_play;  
 }

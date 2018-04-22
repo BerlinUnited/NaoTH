@@ -14,6 +14,9 @@
 #include "Tools/SharedMemoryIO.h"
 #include "Tools/BasicMotion.h"
 
+#include "Representations/Infrastructure/SoundData.h"
+
+
 #include <thread>
 
 #include "DCMHandler.h"
@@ -21,6 +24,8 @@
 #include <alcommon/almodule.h>
 #include <alcommon/alproxy.h>
 
+// hack
+#include <alproxies/altexttospeechproxy.h>
 
 #define SMAL_VERSION "42"
 
@@ -112,7 +117,16 @@ private:
   SharedMemory<Accessor<IRSendData> > naoCommandIRSendData;
   SharedMemory<Accessor<LEDData> > naoCommandLEDData;
   SharedMemory<Accessor<BDRNaoQiRequest> > naoCommandBDRNaoQiRequestData;
+  SharedMemory<Accessor<SayRequest> > naoCommandSayRequestData;
 
+  boost::shared_ptr<AL::ALTextToSpeechProxy> al_textToSpeech;
+  
+  // smoothness
+  MotorJointData theMotorJointDataLast;
+  MotorJointData theMotorJointDataLastLast;
+  
+  FrameInfo timeOfLastSayRequest;
+  
   // syncronize with NaoController
   sem_t* sem;
 

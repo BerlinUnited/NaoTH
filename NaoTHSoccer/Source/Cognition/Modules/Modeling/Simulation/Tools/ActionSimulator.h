@@ -175,9 +175,11 @@ public:
 private:
   const std::vector<Math::LineSegment> ownGoalBackSides;
   const std::vector<Math::LineSegment> oppGoalBackSides;
+	const std::vector<Math::LineSegment> fieldBorderLines;
 
 private:
   bool calculateCollision(const std::vector<Math::LineSegment>& lines, const Vector2d& start, const Vector2d& end, Vector2d& result) const;
+	bool calculateCollisionWithRebound(const std::vector<Math::LineSegment>& lines, const Vector2d& start, const Vector2d& end, Vector2d& result) const;
 
   BallPositionCategory classifyBallPosition( const Vector2d& ballPosition ) const;
 

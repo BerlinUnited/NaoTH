@@ -1,0 +1,104 @@
+option bdr_play_soccer_synchronized
+{
+    initial state wait_for_the_other_player {
+        decision {
+            if( bdr.number_of_players_in_play == 2 )
+                goto play;
+            else
+                stay;
+        }
+        
+        action {
+            motion.type = stand;
+            head.control_mode = search_for_ball_and_look_around;
+        }
+    }
+
+    state play {
+        decision {
+            if ( bdr.number_of_players_in_play != 2
+                 || state_time > 120000 )
+                goto won_or_lost;
+            else
+                stay;
+        }
+
+        action {
+            bdr_play_soccer();
+            bdr.time_playing = 120000 - state_time;
+        }       
+    }
+
+    state won_or_lost {
+        decision {
+            if (bdr.goalsOwn > bdr.goalsOpp)
+                goto won;
+            else if(bdr.goalsOpp > bdr.goalsOwn)
+                goto lost;
+            else
+                goto draw;
+        }
+
+        action{
+            motion.type = stand;
+            head.control_mode = look_straight_ahead;
+        }
+    }
+
+    state won{
+        decision{
+            if (state_time > 2000)
+                goto match_finished;
+            else
+                stay;
+        }
+
+        action {
+            motion.type = stand;
+            head.control_mode = look_straight_ahead;
+            bdr.message = won;
+        }
+    }
+
+    state lost{
+        decision{
+            if (state_time > 2000)
+                goto match_finished;
+            else
+                stay;
+        }
+
+        action {
+            motion.type = stand;
+            head.control_mode = look_straight_ahead;
+            bdr.message = lost;
+        }
+    }
+
+    state draw{
+        decision{
+            if (state_time > 2000)
+                goto match_finished;
+            else
+                stay;
+        }
+
+        action {
+            motion.type = stand;
+            head.control_mode = look_straight_ahead;
+        }
+    }
+   
+    target state match_finished {
+        decision {
+            stay;
+        }
+
+        action {
+            motion.type = stand;
+            head.control_mode = search_for_ball_and_look_around;
+            bdr.time_playing = 0;
+        }
+    }
+
+}

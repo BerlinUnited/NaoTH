@@ -152,7 +152,10 @@ TeamMessageCustom::TeamMessageCustom() :
   whistleDetected(false),
   whistleCount(0),
   // init with "invalid" position
-  teamBall(std::numeric_limits<double>::infinity(), std::numeric_limits<double>::infinity())
+  teamBall(std::numeric_limits<double>::infinity(), std::numeric_limits<double>::infinity()),
+  isCharging(false),
+  robotState(PlayerInfo::initial),
+  teamColor(naoth::GameData::unknown_team_color)
 {
 }
 
@@ -179,6 +182,11 @@ void TeamMessageCustom::print(std::ostream &stream) const
           stream << "\t\t" << request.playerNumber << ", " << request.sent << " -> " << request.received << std::endl;
       }
   }
+
+  stream << "RobotState" << PlayerInfo::toString(robotState) << "\n";
+  
+  bdrPlayerState.print(stream);
+
   stream << std::endl;
 }//end print
 
@@ -209,7 +217,22 @@ naothmessages::BUUserTeamMessage TeamMessageCustom::toProto() const
             msgPlayer->set_received(request.received);
           }
     }
+
+    userMsg.set_ischarging(isCharging);
+    userMsg.set_message(message);
+
     userMsg.set_key(key);
+    userMsg.set_robotstate((naothmessages::RobotState)robotState);
+    userMsg.set_teamcolor((naothmessages::TeamColor)teamColor);
+
+    userMsg.mutable_bdrplayerstate()->set_activity((naothmessages::BDRPlayerState_Activity)bdrPlayerState.activity);
+    userMsg.mutable_bdrplayerstate()->set_sitting(bdrPlayerState.sitting);
+    userMsg.mutable_bdrplayerstate()->set_localized_on_field(bdrPlayerState.localized_on_field);
+    
+    userMsg.mutable_bdrplayerstate()->set_time_playing(bdrPlayerState.time_playing);
+    userMsg.mutable_bdrplayerstate()->set_goalsleft(bdrPlayerState.goalsLeft);
+    userMsg.mutable_bdrplayerstate()->set_goalsright(bdrPlayerState.goalsRight);
+
     return userMsg;
 }
 
@@ -283,5 +306,19 @@ void TeamMessageCustom::parseFromProto(const naothmessages::BUUserTeamMessage &u
             syncingPlayer.received = request.received();
         }
     }
+
+    isCharging = userData.ischarging();
+    message = userData.message();
+
+    robotState = (PlayerInfo::RobotState) userData.robotstate();
+	teamColor = (naoth::GameData::TeamColor) userData.teamcolor();
+	
+    bdrPlayerState.activity = (BDRPlayerState::Activity) userData.bdrplayerstate().activity();
+    bdrPlayerState.sitting = userData.bdrplayerstate().sitting();
+    bdrPlayerState.localized_on_field = userData.bdrplayerstate().localized_on_field();
+    
+    bdrPlayerState.time_playing = userData.bdrplayerstate().time_playing();
+    bdrPlayerState.goalsLeft = userData.bdrplayerstate().goalsleft();
+    bdrPlayerState.goalsRight = userData.bdrplayerstate().goalsright();
 }
 

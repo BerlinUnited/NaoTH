@@ -58,6 +58,11 @@ void BallSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalInputSymbol("ball.team.position.y", &getTeamBallModel().position.y);
   engine.registerDecimalInputSymbol("ball.team.rmse", &getTeamBallModel().rmse);
 
+
+  // bdr
+  engine.registerBooleanInputSymbol("ball.inOwnHalf", &ball_in_own_half);
+
+
   DEBUG_REQUEST_REGISTER("XABSL:BallSymbols:ballLeftFoot", "draw the ball model in left foot's coordinates on field", false);
   DEBUG_REQUEST_REGISTER("XABSL:BallSymbols:ballRightFoot", "draw the ball model in right foot's coordinates on field", false);
   DEBUG_REQUEST_REGISTER("XABSL:StrategySymbols:draw_position_behind_ball", "draw the point behind the ball seen from the opp goal on field", false);
@@ -113,6 +118,19 @@ void BallSymbols::execute()
 
     // hysteresis
     ball_see_where_itis = ball_seen_filter.value() > (ball_see_where_itis?0.3:0.7);
+  }
+
+  {
+    bool ball_seen_in_own_half = false;
+    Vector2d ballPositionGlobalField = getRobotPose().getGlobalPose()*ballPerceptPos;
+    if(getRobotPose().isValid 
+      && getFieldInfo().bdrCarpetRect.inside(ballPositionGlobalField)
+      && (getRobotPose()*ballPerceptPos).x <= 0) {
+      ball_seen_in_own_half = true;
+    }
+
+    ball_in_own_half_filter.update(ball_seen_in_own_half);
+    ball_in_own_half = ball_in_own_half_filter.value() > (ball_in_own_half?0.3:0.7);
   }
 }//end update
 

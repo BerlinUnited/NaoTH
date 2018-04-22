@@ -47,7 +47,10 @@ void TeamCommSender::fillMessageBeforeSending() const
     TeamMessageData& msg = getTeamMessageData();
     msg.playerNumber = getPlayerInfo().playerNumber;
     msg.teamNumber = getPlayerInfo().teamNumber;
-    msg.pose = getRobotPose();
+
+    // NOTE: allways communicate the global pose
+    //msg.pose = getRobotPose();
+    msg.pose = getRobotPose().getGlobalPose();
 
     bool sendBallModel = getBallModel().valid;
     if(parameters.sendBallAgeDobermann) {
@@ -90,6 +93,15 @@ void TeamCommSender::fillMessageBeforeSending() const
       getTeamMessageData().custom.teamBall.x = std::numeric_limits<double>::infinity();
       getTeamMessageData().custom.teamBall.y = std::numeric_limits<double>::infinity();
     }
+
+    msg.custom.isCharging = getBatteryData().current > 0.9;
+
+    msg.custom.robotState = getPlayerInfo().robotState;
+    msg.custom.teamColor = getPlayerInfo().teamColor;
+
+    msg.custom.bdrPlayerState = getBDRPlayerState();
+    msg.custom.message = getBDRPlayerState().getMessageString();
+
     // TODO: shall we put it into config?
     msg.custom.key = NAOTH_TEAMCOMM_MESAGE_KEY;
 }

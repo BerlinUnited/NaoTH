@@ -67,12 +67,14 @@ def main():
 
     action_list = [no_action, kick_short, sidekick_left, sidekick_right]
 
+    num_particles = 30
+
     while True:
         actions_consequences = []
         # Simulate Consequences
         for action in action_list:
             single_consequence = a.ActionResults([])
-            actions_consequences.append(Sim.simulate_consequences(action, single_consequence, state, 30))
+            actions_consequences.append(Sim.simulate_consequences(action, single_consequence, state, num_particles))
 
         # actions_consequences is now a list of ActionResults
 

@@ -1,0 +1,7 @@
+# Set the default behavior, in case people don't have core.autocrlf set.
+* text=auto eol=lf
+
+# Declare files that will always have LF line endings on checkout.
+goalcount     text eol=lf
+goalcount.service   text eol=lf
+*.py      text eol=lf

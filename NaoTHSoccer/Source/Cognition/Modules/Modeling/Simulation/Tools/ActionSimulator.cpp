@@ -21,10 +21,20 @@ ActionSimulator::ActionSimulator()
       Math::LineSegment(getFieldInfo().oppGoalBackLeft      , getFieldInfo().oppGoalBackRight),
       Math::LineSegment(getFieldInfo().opponentGoalPostLeft , getFieldInfo().oppGoalBackLeft),
       Math::LineSegment(getFieldInfo().opponentGoalPostRight, getFieldInfo().oppGoalBackRight)}
-    )
+    ),
+		//field border - Test for BDR Projekt
+		fieldBorderLines({
+				Math::LineSegment(Vector2d(-getFieldInfo().xFieldLength / 2.0, getFieldInfo().yFieldLength / 2.0), Vector2d(getFieldInfo().xFieldLength / 2.0, getFieldInfo().yFieldLength / 2.0)),
+				Math::LineSegment(Vector2d(-getFieldInfo().xFieldLength / 2.0, -getFieldInfo().yFieldLength / 2.0), Vector2d(getFieldInfo().xFieldLength / 2.0, -getFieldInfo().yFieldLength / 2.0)),
 
+				Math::LineSegment(Vector2d(getFieldInfo().xFieldLength / 2.0, getFieldInfo().yFieldLength / 2.0), Vector2d(getFieldInfo().xFieldLength / 2.0, -getFieldInfo().yFieldLength / 2.0)),
+				Math::LineSegment(Vector2d(-getFieldInfo().xFieldLength / 2.0, getFieldInfo().yFieldLength / 2.0), Vector2d(-getFieldInfo().xFieldLength / 2.0, -getFieldInfo().yFieldLength / 2.0)),
+		})
+		
 {
   DEBUG_REQUEST_REGISTER("Simulation:draw_goal_collisions", "draw goal collisions", false);
+
+  DEBUG_REQUEST_REGISTER("Simulation:draw_bound_collisions", "draw goal collisions", false);
 }
 
 
@@ -54,6 +64,7 @@ void ActionSimulator::simulateAction(const Action& action, ActionResults& result
     // predict and calculate shoot line
     Vector2d globalBallEndPosition = getRobotPose() * action.predict(getBallModel().positionPreview, true);
 
+    /*
     // check if collision detection with goal has to be performed
     // if the ball start and end positions are inside of the field, you don't need to check
     if(!getFieldInfo().fieldRect.inside(globalBallEndPosition) || !getFieldInfo().fieldRect.inside(globalBallStartPosition))
@@ -61,7 +72,7 @@ void ActionSimulator::simulateAction(const Action& action, ActionResults& result
       // calculate if there is a collision with the opponent goal and where the ball would stop
       bool collisionWithOppGoal = calculateCollision(oppGoalBackSides, globalBallStartPosition, globalBallEndPosition, globalBallEndPosition);
       bool collisionWithOwnGoal = calculateCollision(ownGoalBackSides, globalBallStartPosition, globalBallEndPosition, globalBallEndPosition);
-
+			
       // draw balls and goal box if there are collisions
       DEBUG_REQUEST("Simulation:draw_goal_collisions",
       if (collisionWithOppGoal)
@@ -97,6 +108,21 @@ void ActionSimulator::simulateAction(const Action& action, ActionResults& result
       }
       );
     }
+    */
+
+
+    // draw boundaries
+    DEBUG_REQUEST("Simulation:draw_bound_collisions",
+      FIELD_DRAWING_CONTEXT;
+      PEN("000000", 1);
+      for(const Math::LineSegment& segment: fieldBorderLines) 
+      {
+        LINE(segment.begin().x, segment.begin().y, segment.end().x, segment.end().y);
+      }
+    );
+
+		// check collisions with borders
+		calculateCollisionWithRebound(fieldBorderLines, globalBallStartPosition, globalBallEndPosition, globalBallEndPosition);
 
     // default category
     BallPositionCategory category = classifyBallPosition(globalBallEndPosition);
@@ -128,6 +154,75 @@ bool ActionSimulator::calculateCollision(const vector<Math::LineSegment>& lines,
 
   return collision;
 }
+
+bool ActionSimulator::calculateCollisionWithRebound(const vector<Math::LineSegment>& lines, const Vector2d& start, const Vector2d& end, Vector2d& result) const
+{
+  Math::LineSegment motionLine(start, end);
+
+  // treat maximal 3 rebounds :)
+	for(size_t c = 0; c < 5; ++c) 
+  {
+    // find closest collision
+		double t_min = motionLine.getLength();
+    int collision_segment_idx = -1;
+
+		for (size_t i = 0; i < lines.size(); ++i)
+		{
+			const double t = motionLine.Line::intersection(lines[i]);
+
+			if (t >= 0 && t < t_min && lines[i].intersect(motionLine)) {
+				t_min = t;
+        collision_segment_idx = i;
+			}
+		}
+
+    // there is a collision
+		if (collision_segment_idx >= 0) 
+    {
+      Vector2d p = lines[collision_segment_idx].Line::projection(motionLine.end());
+      Vector2d offset = p-motionLine.end();
+      Vector2d normal(offset);
+      normal.normalize();
+      result = p + normal * (offset.abs() + getFieldInfo().ballRadius);
+
+      // point at which the ball reflects
+			Vector2d bounce = motionLine.point(t_min) + normal*getFieldInfo().ballRadius;
+      
+      // apply collision dumping
+      const double collision_dumping = 0.5;
+      result = bounce + (result-bounce)*collision_dumping;
+
+      // draw boundaries
+      DEBUG_REQUEST("Simulation:draw_bound_collisions",
+        PEN("000000", 1);
+        LINE(motionLine.begin().x, motionLine.begin().y, bounce.x, bounce.y);
+        PEN("0000FF", 1);
+        FILLOVAL(bounce.x, bounce.y, getFieldInfo().ballRadius, getFieldInfo().ballRadius);
+      );
+      
+      // create the new reflected motion line
+			motionLine = Math::LineSegment(bounce, result);
+		}
+		else 
+    {
+      break;
+		}
+
+	} //end for
+	
+  result = motionLine.end();
+
+  DEBUG_REQUEST("Simulation:draw_bound_collisions",
+    PEN("000000", 1);
+    LINE(motionLine.begin().x, motionLine.begin().y, motionLine.end().x, motionLine.end().y);
+    PEN("FF0000", 1);
+    FILLOVAL(result.x, result.y, getFieldInfo().ballRadius, getFieldInfo().ballRadius);
+  );
+
+	return true;
+}
+
+
 
 ActionSimulator::BallPositionCategory ActionSimulator::classifyBallPosition( const Vector2d& globalBallPosition ) const
 {

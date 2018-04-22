@@ -43,7 +43,8 @@ public:
     stepControlRequestTime(0),
     stepControlRequestSpeedDirection(0),
     stepControlScale(1.0),
-    actionPerformed(-1)
+    actionPerformed(-1),
+    enable_stand_up(false)
   {
     theInstance = this;
   }
@@ -137,6 +138,8 @@ private:
   double stepControlRequestSpeedDirection;
   double stepControlScale;
   int actionPerformed;
+
+  bool enable_stand_up;
 };//end class MotionSymbols
 
 #endif // _MotionSymbols_H_

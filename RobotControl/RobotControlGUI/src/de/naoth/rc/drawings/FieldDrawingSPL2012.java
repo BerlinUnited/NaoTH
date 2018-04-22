@@ -64,11 +64,11 @@ public class FieldDrawingSPL2012 implements Drawable
     }
     
     
-    private final Color fieldColor = new Color(0f, 0.8f, 0f, 0.5f);
-    private final Color goalColor = new Color(0.9f, 0.9f, 0f, 1f);
-    private final Color goalNetColorOwn = new Color(0.5f, 0.5f, 1.0f, 0.7f);
-    private final Color goalNetColorOpp = new Color(1.0f, 0.5f, 0.5f, 0.7f);
-    private final Color lineColor = Color.white;
+    protected Color fieldColor = new Color(0f, 0.8f, 0f, 0.5f);
+    protected Color goalColor = new Color(0.9f, 0.9f, 0f, 1f);
+    protected Color goalNetColorOwn = new Color(0.5f, 0.5f, 1.0f, 0.7f);
+    protected Color goalNetColorOpp = new Color(1.0f, 0.5f, 0.5f, 0.7f);
+    protected Color lineColor = Color.white;
     
     
     public FieldDrawingSPL2012()

@@ -40,7 +40,7 @@ public:
     brown  = TEAM_BROWN,
     gray   = TEAM_GRAY,
     
-    unknown_team_color
+    unknown_team_color = 255
   };
 
   enum CompetitionPhase

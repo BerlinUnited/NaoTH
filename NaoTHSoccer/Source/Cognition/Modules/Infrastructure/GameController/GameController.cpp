@@ -231,6 +231,9 @@ void GameController::handleButtons()
   // re-set team color or kickoff in initial
   if (getPlayerInfo().robotState == PlayerInfo::initial)
   {
+
+    /*
+    // TODO: do we still need this feature?
     if ( getButtonState()[ButtonState::LeftFoot] == ButtonEvent::PRESSED )
     {
       // switch team color
@@ -247,6 +250,7 @@ void GameController::handleButtons()
         getPlayerInfo().teamColor = GameData::red;
       }
     }
+    */
 
     if ( getButtonState()[ButtonState::RightFoot] == ButtonEvent::PRESSED )
     {

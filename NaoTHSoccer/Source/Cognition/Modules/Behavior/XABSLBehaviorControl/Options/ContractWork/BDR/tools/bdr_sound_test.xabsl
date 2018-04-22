@@ -1,0 +1,121 @@
+option bdr_sound_test {
+
+      initial state charging{
+          decision{
+              if (state_time > 10000)
+                  goto failed_charging;
+              else
+                  stay;
+           }
+
+           action {
+               bdr.message = charging;
+           }
+      }
+      
+      state failed_charging{
+          decision{
+              if (state_time > 10000)
+                  goto fallen;
+              else
+                  stay;
+           }
+
+           action {
+               bdr.message = failed_charging;
+           }
+      }
+      state fallen{
+          decision{
+              if (state_time > 10000)
+                  goto ready;
+              else
+                  stay;
+           }
+
+           action {
+               bdr.message = fallen;
+           }
+      }
+      state ready{
+          decision{
+              if (state_time > 10000)
+                  goto too_many_players_on_field;
+              else
+                  stay;
+           }
+
+           action {
+               bdr.message = ready;
+           }
+      }
+      state too_many_players_on_field{
+          decision{
+              if (state_time > 10000)
+                  goto cooling_down_needed;
+              else
+                  stay;
+           }
+
+           action {
+               bdr.message = too_many_players_on_field;
+           }
+      }
+      state cooling_down_needed{
+          decision{
+              if (state_time > 10000)
+                  goto charging_needed;
+              else
+                  stay;
+           }
+
+           action {
+               bdr.message = cooling_down_needed;
+           }
+      }
+      state charging_needed{
+          decision{
+              if (state_time > 10000)
+                  goto lets_play;
+              else
+                  stay;
+           }
+
+           action {
+               bdr.message = charging_needed;
+           }
+      }
+      state lets_play{
+          decision{
+              if (state_time > 10000)
+                  goto won;
+              else
+                  stay;
+           }
+
+           action {
+               bdr.message = lets_play;
+           }
+      }
+      state won{
+          decision{
+              if (state_time > 10000)
+                  goto lost;
+              else
+                  stay;
+           }
+
+           action {
+               bdr.message = won;
+           }
+      }
+      state lost{
+          decision{
+               stay;
+           }
+
+           action {
+               bdr.message = lost;
+           }
+      }
+}

@@ -68,5 +68,7 @@ namespace ball_symbols("Ball Symbols") {
   float input ball.team.position.x "mm";
   float input ball.team.position.y "mm";
   float input ball.team.rmse "mm";
+
+  bool input ball.inOwnHalf;
 }
   
