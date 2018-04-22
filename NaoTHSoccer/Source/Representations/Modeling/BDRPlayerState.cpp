@@ -56,6 +56,11 @@ std::string BDRPlayerState::getMessageName(Message m){
     case fallen                    : return "fallen";
     case ready                     : return "ready";
     case too_many_players_on_field : return "too_many_players_on_field";
+    case cooling_down_needed       : return "cooling_down_needed";
+    case charging_needed           : return "charging_needed";
+    case lets_play                 : return "lets_play";
+    case won                       : return "won";
+    case lost                      : return "lost";
     default : ASSERT(false);
   }
   return "unknown message name";
@@ -64,11 +69,16 @@ std::string BDRPlayerState::getMessageName(Message m){
 std::string BDRPlayerState::getMessageString(Message m){
   switch(m)
   {
-    case charging                  : return "Der Akku wird geladen.";
-    case failed_charging           : return "Es konnte kein Kontakt zum Ladegerät hergestellt werden.";
-    case fallen                    : return "Ich bin hingefallen.";
-    case ready                     : return "Ich bin bereit.";
-    case too_many_players_on_field : return "Es sind zu viele Roboter auf dem Feld.";
+    case charging                  : return "Der Akku wird geladen";
+    case failed_charging           : return "Es konnte kein Kontakt zum Ladegerät hergestellt werden";
+    case fallen                    : return "Ich bin hingefallen";
+    case ready                     : return "Ich bin bereit";
+    case too_many_players_on_field : return "Es sind zu viele Roboter auf dem Feld";
+    case cooling_down_needed       : return "Ich muss meine Knochen schonen";
+    case charging_needed           : return "Ich muss meinen Akku laden";
+    case lets_play                 : return "Los gehts";
+    case won                       : return "Ich habe gewonnen";
+    case lost                      : return "Oh nein";
     default : ASSERT(false);
   }
   return "unknown message";

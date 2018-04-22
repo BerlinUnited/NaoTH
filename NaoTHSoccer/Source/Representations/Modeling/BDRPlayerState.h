@@ -50,6 +50,11 @@ public:
       fallen,
       ready,
       too_many_players_on_field,
+      cooling_down_needed,
+      charging_needed,
+      lets_play,
+      won,
+      lost,
       num_of_messages
   } message;
 
