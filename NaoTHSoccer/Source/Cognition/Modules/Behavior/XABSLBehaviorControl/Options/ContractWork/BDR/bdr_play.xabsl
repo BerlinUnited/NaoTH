@@ -88,6 +88,7 @@ option bdr_play
       motion.walk.stop_with_stand=true;        
       head.control_mode = search_for_ball_and_look_around;
       bdr.activity = doing_nothing;
+      sleep = 300;
     }
   }
 
@@ -126,6 +127,9 @@ option bdr_play
       action {
           bdr.activity = entertaining;
           motion.type = bdr_entertainment;
+
+          // slow down cognition for saving energy
+          sleep = 100;
       }
   }
 

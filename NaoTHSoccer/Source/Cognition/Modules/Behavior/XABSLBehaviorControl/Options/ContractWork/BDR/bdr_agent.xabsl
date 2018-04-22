@@ -9,6 +9,9 @@ option bdr_agent
       // reset the playing time by default
       bdr.time_playing = 0;
 
+      // delay to save ressources and cool down the cpu
+      sleep = 0;
+
       bdr_play(min_temperature = 30,
                max_temperature = 70,
                inc_temperature = 10,

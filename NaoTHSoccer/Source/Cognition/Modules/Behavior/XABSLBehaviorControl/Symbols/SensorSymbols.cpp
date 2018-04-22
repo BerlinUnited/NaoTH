@@ -7,6 +7,14 @@
 
 #include "SensorSymbols.h"
 
+#ifdef  WIN32
+  #include <windows.h>
+#else
+  #include <unistd.h>
+#endif //WIN32
+
+#include <cmath>
+
 void SensorSymbols::registerSymbols(xabsl::Engine& engine)
 {
   engine.registerDecimalInputSymbol("sensor.gyro.x", &getGyrometerData().data.x);
@@ -60,6 +68,8 @@ void SensorSymbols::registerSymbols(xabsl::Engine& engine)
 
   engine.registerDecimalOutputSymbol("whistle.switch",&setWhistleSwitch, &getWhistleSwitch);
 
+  engine.registerDecimalOutputSymbol("sleep",&sleep);
+
 }//end registerSymbols
 
 SensorSymbols* SensorSymbols::theInstance = NULL;
@@ -70,6 +80,16 @@ SensorSymbols::~SensorSymbols()
 
 void SensorSymbols::execute()
 {
+
+  unsigned int sleepTime = std::max(0u,static_cast<unsigned int>(sleep));
+
+  // delay execution of cognition
+#ifdef WIN32
+    Sleep(sleepTime);
+#else
+    // suspend execution for microsecond intervals
+    usleep(sleepTime * 1000);
+#endif
 
 }//end execute
 

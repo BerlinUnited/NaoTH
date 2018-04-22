@@ -50,7 +50,7 @@ class SensorSymbols: public SensorSymbolsBase
 {
 public:
 
-  SensorSymbols()
+  SensorSymbols() : sleep(0.0)
   {
     theInstance = this;
   }
@@ -101,6 +101,8 @@ private:
 
   static bool getCollisionArmLeft();
   static bool getCollisionArmRight();
+
+  double sleep;
 };
 
 #endif  /* _SENSORSYMBOLS_H */
