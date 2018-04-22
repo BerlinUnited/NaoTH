@@ -857,8 +857,11 @@ void V4lCameraHandler::setAllCameraParams(const CameraSettings& data)
                 << " from " << oldValue << " to " << data.data[*it] << std::endl;
       */
 
+      if(*it == CameraSettings::Exposure && data.data[CameraSettings::AutoExposition]) {
+        // ignore
+      }
       // apply the single parameter setting
-      if(setSingleCameraParameter(csConst[*it], data.data[*it])) {
+      else if(setSingleCameraParameter(csConst[*it], data.data[*it])) {
         lastCameraSettingTimestamp = NaoTime::getSystemTimeInMicroSeconds();
         currentSettings.data[*it] = data.data[*it];
 

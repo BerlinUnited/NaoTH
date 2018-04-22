@@ -11,5 +11,15 @@
     "telemetry.enableCrashReporter": false,
     "cquery.cacheDirectory": "${workspaceFolder}/.vscode/cquery_cached_index/",
     "cSpell.enabled": false,
-    "C_Cpp.errorSquiggles": "Disabled"
+    "C_Cpp.errorSquiggles": "Disabled",
+    "files.associations": {
+        "*.lalrpop": "rust",
+        "array": "cpp",
+        "functional": "cpp",
+        "istream": "cpp",
+        "tuple": "cpp",
+        "utility": "cpp",
+        "typeinfo": "cpp"
+    },
+    "cquery.index.extraClangArguments": ["-DREVISION=UNKNOWN"]
 }
