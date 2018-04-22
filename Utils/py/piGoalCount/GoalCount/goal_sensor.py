@@ -27,6 +27,7 @@ class GoalSensor:
     GPIO.add_event_detect(self.GPIO_INPUT_GOAL2, GPIO.RISING, self.updateGoal2)
     
     self.update = threading.Event()
+    self.closed = False
 
   def updateGoal1(self, pin):
     print("updateGoal2")
@@ -42,12 +43,21 @@ class GoalSensor:
       self.time2 = time.time()
       update.set()
       
+  def reset(self):
+    self.goal1 = 0
+    self.time1 = 0
+    self.goal2 = 0
+    self.time2 = 0
+      
   def close(self):
-    GPIO.cleanup()
+    if not self.closed:
+      GPIO.cleanup()
+    self.closed = True
 
 
 if __name__ == '__main__':
 
+  print("GoalSensor active")
   goalSensor = GoalSensor()
   
   # dummy waiting, this will be done better

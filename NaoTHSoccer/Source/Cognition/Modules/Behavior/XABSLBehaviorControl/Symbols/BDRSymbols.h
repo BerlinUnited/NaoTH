@@ -14,9 +14,12 @@
 // representations
 #include "Representations/Modeling/BDRPlayerState.h"
 #include "Representations/Modeling/TeamMessage.h"
+#include "Representations/Modeling/RobotPose.h"
+
 
 BEGIN_DECLARE_MODULE(BDRSymbols)
   REQUIRE(TeamMessage)
+  REQUIRE(RobotPose)
   PROVIDE(BDRPlayerState)
 END_DECLARE_MODULE(BDRSymbols)
 

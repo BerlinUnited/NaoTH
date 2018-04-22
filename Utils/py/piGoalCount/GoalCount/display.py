@@ -1,5 +1,6 @@
 import pygame
-
+from datetime import timedelta
+from datetime import datetime
 
 class Display:
   def __init__(self, a = 0, b = 0):
@@ -22,14 +23,11 @@ class Display:
     self.gameTime = 0
     self.update()
 
-  def setGameTime(self, t):
-    self.gameTime = t
-    self.update()
-    
-  def set_score(self, a, b):
+  def setValues(self, a, b, t):
     self.goalsLeft = a
     self.goalsRight = b
-    self.update()
+    self.gameTime = t
+    self.update()  
     
   def update(self):
     color_bg = (255,255,255)
@@ -43,9 +41,11 @@ class Display:
     textGoals = self.fontScore.render("{}:{}".format(self.goalsLeft,self.goalsRight), True, color_text)
     self.screen.blit(textGoals, (self.width // 2 - textGoals.get_width() // 2, self.height // 2 - textGoals.get_height() // 2 + offset_goals_y))
     
-    mins = self.gameTime // (1000*60)
-    secs = (self.gameTime - mins*(1000*60)) // 1000
-    textTime = self.fontTime.render("{}m {}s".format(mins, secs), True, color_text)
+    #mins = self.gameTime // (1000*60)
+    #secs = (self.gameTime - mins*(1000*60)) // 1000
+    
+    d = datetime(2010, 1, 1, 0, 0, 0) + timedelta(milliseconds=self.gameTime)
+    textTime = self.fontTime.render('{:%M:%S}'.format(d), True, color_text)
     self.screen.blit(textTime, (self.width // 2 - textTime.get_width() // 2, offset_time_y))
     
     pygame.display.flip()
