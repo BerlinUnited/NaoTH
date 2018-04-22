@@ -146,6 +146,9 @@ include "Options/ContractWork/BDR/bdr_play_soccer.xabsl";
 include "Options/ContractWork/BDR/bdr_play_soccer_synchronized.xabsl";
 include "Options/ContractWork/BDR/bdr_goto_charging_station.xabsl";
 include "Options/ContractWork/BDR/bdr_goto_exit.xabsl";
+include "Options/ContractWork/BDR/bdr_search.xabsl";
+include "Options/ContractWork/BDR/bdr_striker.xabsl";
+
 
 include "Options/ContractWork/BDR/tools/bdr_naoqi_test.xabsl";
 include "Options/ContractWork/BDR/tools/bdr_goto_point.xabsl";
