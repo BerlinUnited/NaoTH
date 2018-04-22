@@ -53,6 +53,10 @@ namespace naoth
 
       int data[numOfCameraSetting];
 
+      static const std::size_t AUTOEXPOSURE_GRID_SIZE = 5;
+      std::uint8_t autoExposureWeights[AUTOEXPOSURE_GRID_SIZE][AUTOEXPOSURE_GRID_SIZE];
+
+
       CameraSettings();
       virtual ~CameraSettings();
       static std::string getCameraSettingsName(CameraSettingID id);
@@ -103,6 +107,8 @@ namespace naoth
     bool verticalFlip;
     int whiteBalanceTemperature;
     int powerlineFrequency;
+
+    std::uint8_t autoExposureWeights[CameraSettings::AUTOEXPOSURE_GRID_SIZE][CameraSettings::AUTOEXPOSURE_GRID_SIZE];
 
     CameraSettings getCameraSettings() const;
   };

@@ -898,6 +898,20 @@ void V4lCameraHandler::setAllCameraParams(const CameraSettings& data)
       break;
     }
   }// end for
+
+  // set the autoexposure grid parameters
+  for(std::size_t i=0; i < CameraSettings::AUTOEXPOSURE_GRID_SIZE; i++) {
+    for(std::size_t j=0; j < CameraSettings::AUTOEXPOSURE_GRID_SIZE; j++) {
+      if(data.autoExposureWeights[i][j] != currentSettings.autoExposureWeights[i][j]) {
+        std::stringstream paramName;
+        paramName << "autoExposureWeights (" << i << "," << j << ")";
+        if(setSingleCameraParameter(getAutoExposureGridID(i, j), data.autoExposureWeights[i][j])) {
+          currentSettings.autoExposureWeights[i][j] = data.autoExposureWeights[i][j];
+        }
+      }
+    }
+  }
+
 }// end setAllCameraParams
 
 void V4lCameraHandler::internalUpdateCameraSettings()

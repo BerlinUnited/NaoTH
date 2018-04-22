@@ -19,7 +19,11 @@
         "istream": "cpp",
         "tuple": "cpp",
         "utility": "cpp",
-        "typeinfo": "cpp"
+        "typeinfo": "cpp",
+        "hash_map": "cpp",
+        "hash_set": "cpp",
+        "*.tcc": "cpp",
+        "string_view": "cpp"
     },
     "cquery.index.extraClangArguments": ["-DREVISION=UNKNOWN"]
 }

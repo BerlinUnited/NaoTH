@@ -128,6 +128,13 @@ CameraSettings CameraSettingsRequest::getCameraSettings() const {
   // use 50 Hz (val = 1) if 60 Hz (val = 2) is not explicitly requested
   result.data[CameraSettings::PowerlineFrequency] = powerlineFrequency == 60 ? 2 : 1;
 
+  
+  for(std::size_t i = 0; i < CameraSettings::AUTOEXPOSURE_GRID_SIZE; i++) {
+      for(std::size_t j=0; j < CameraSettings::AUTOEXPOSURE_GRID_SIZE; j++) {
+          result.autoExposureWeights[i][j] = autoExposureWeights[i][j]; 
+      }
+  }
+
   return result;
 }
 
