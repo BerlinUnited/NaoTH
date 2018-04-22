@@ -121,6 +121,7 @@ public:
 
   Geometry::Rect2d fieldRect;
   Geometry::Rect2d carpetRect;
+  Geometry::Rect2d bdrCarpetRect;
   Geometry::Rect2d ownHalfRect;
   Geometry::Rect2d oppHalfRect;
   Geometry::Rect2d ownGoalRect;
