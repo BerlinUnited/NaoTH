@@ -195,9 +195,11 @@ public class BDRMonitor extends AbstractDialog implements ActionListener, TeamCo
 //            m.getMessage()
             Color c = m.getChestColor();
             
+            /*
             if(umsg.hasIsCharging() && umsg.getIsCharging()) {
                 c = Color.YELLOW;
             }
+            */
             //*/
             
             // only draw robot on field if he's localized
