@@ -137,6 +137,15 @@ namespace naoth
     int sharpness;
     int whiteBalanceTemperature;
     int powerlineFrequency;
+
+    /*
+    Can be either:
+      - averageY (average brightness over complete image)
+      - dortmund (weights table like Dortmund uses)
+      - centerlines3 (bottom 3 lines for top camera and top 3 lines for bottom camera)
+      - centerlines2 (bottom 2 lines for top camera and top 2 lines for bottom camera)
+    */
+    std::string autoExpositionMethod;
     
 
     /** Set to true to query a real CameraSetting from the Nao camera */

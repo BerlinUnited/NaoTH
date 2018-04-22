@@ -17,6 +17,7 @@ BEGIN_DECLARE_MODULE(AdaptiveAutoExposure)
 
     REQUIRE(Image)
     REQUIRE(ImageTop)
+    REQUIRE(CommonCameraSettingsRequest)
 
     PROVIDE(CameraSettingsRequest)
     PROVIDE(CameraSettingsRequestTop)
@@ -30,12 +31,7 @@ public:
 
     virtual void execute();
 private: 
-
-    void execute(CameraInfo::CameraID id);
-private:
-    CameraInfo::CameraID cameraID;
-
-    DOUBLE_CAM_PROVIDE(AdaptiveAutoExposure, CameraSettingsRequest);
+    void executeDebugDrawings(std::uint8_t onVal);
 };
 
 #endif // _AdaptiveAutoExposure_h_

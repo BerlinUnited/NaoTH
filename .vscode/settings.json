@@ -23,7 +23,8 @@
         "hash_map": "cpp",
         "hash_set": "cpp",
         "*.tcc": "cpp",
-        "string_view": "cpp"
+        "string_view": "cpp",
+        "thread": "cpp"
     },
     "cquery.index.extraClangArguments": ["-DREVISION=UNKNOWN"]
 }

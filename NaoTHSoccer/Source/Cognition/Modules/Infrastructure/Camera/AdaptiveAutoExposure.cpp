@@ -2,73 +2,68 @@
 
 AdaptiveAutoExposure::AdaptiveAutoExposure()
 {   
-    DEBUG_REQUEST_REGISTER("AdaptiveAutoExposure:devils", "...", true);
-
-    DEBUG_REQUEST_REGISTER("AdaptiveAutoExposure:wide_1_line", "...", false);
-    DEBUG_REQUEST_REGISTER("AdaptiveAutoExposure:wide_2_line", "...", false);
-    DEBUG_REQUEST_REGISTER("AdaptiveAutoExposure:wide_3_line", "...", false);
-
-    DEBUG_REQUEST_REGISTER("AdaptiveAutoExposure:centered_1_line", "...", false);
-    DEBUG_REQUEST_REGISTER("AdaptiveAutoExposure:centered_2_line", "...", false);
-    DEBUG_REQUEST_REGISTER("AdaptiveAutoExposure:centered_3_line", "...", false);
-
     DEBUG_REQUEST_REGISTER("AdaptiveAutoExposure:draw_weights", "Draw weight grid in image", false);
     DEBUG_REQUEST_REGISTER("AdaptiveAutoExposure:draw_weights_wrong", "Draw weight grid in image in cool/wrong fashion", false);
 }
 
 void AdaptiveAutoExposure::execute()
 {
-    execute(CameraInfo::Bottom);
-    execute(CameraInfo::Top);
-}
 
-void AdaptiveAutoExposure::execute(CameraInfo::CameraID id)
-{
-    cameraID = id;
-
-    const unsigned int onVal = 100;
-    // include all
-    for(std::size_t i = 0; i < CameraSettings::AUTOEXPOSURE_GRID_SIZE; i++) {
-      for(std::size_t j=0; j < CameraSettings::AUTOEXPOSURE_GRID_SIZE; j++) {
-          getCameraSettingsRequest().autoExposureWeights[i][j] = onVal; 
-      }
-    }
-    // only apply the non-default values if maching auto exposition algorithm is enabled
-    if (getCameraSettingsRequest().autoExposition 
-        && getCameraSettingsRequest().autoExpositionAlgorithm == 1)
+    if(getCommonCameraSettingsRequest().isActive && getCommonCameraSettingsRequest().autoExposition) 
     {
 
-        DEBUG_REQUEST("AdaptiveAutoExposure:devils",
+        if(getCommonCameraSettingsRequest().autoExpositionMethod == "averageY") 
+        {
+            getCameraSettingsRequest().autoExpositionAlgorithm = 0;
+            getCameraSettingsRequestTop().autoExpositionAlgorithm = 0;
+        }
+        else
+        {
+            // apply weight table based auto exposition
+            getCameraSettingsRequest().autoExpositionAlgorithm = 1;
+            getCameraSettingsRequestTop().autoExpositionAlgorithm = 1;
+
+            const std::uint8_t onVal = 255;
+            // include all per default
             for(std::size_t i = 0; i < CameraSettings::AUTOEXPOSURE_GRID_SIZE; i++) {
                 for(std::size_t j=0; j < CameraSettings::AUTOEXPOSURE_GRID_SIZE; j++) {
-                    getCameraSettingsRequest().autoExposureWeights[i][j] = 0; 
+                    getCameraSettingsRequest().autoExposureWeights[i][j] = onVal; 
+                    getCameraSettingsRequestTop().autoExposureWeights[i][j] = onVal;
                 }
             }
-            if(cameraID == CameraInfo::Top) {
-                getCameraSettingsRequest().autoExposureWeights[0][0] = 25;
-                getCameraSettingsRequest().autoExposureWeights[0][1] = 25;
-                getCameraSettingsRequest().autoExposureWeights[0][2] = 25;
-                getCameraSettingsRequest().autoExposureWeights[0][3] = 25;
-                getCameraSettingsRequest().autoExposureWeights[0][4] = 25;
 
-                getCameraSettingsRequest().autoExposureWeights[1][0] = 100;
-                getCameraSettingsRequest().autoExposureWeights[1][1] = 100;
-                getCameraSettingsRequest().autoExposureWeights[1][2] = 100;
-                getCameraSettingsRequest().autoExposureWeights[1][3] = 100;
-                getCameraSettingsRequest().autoExposureWeights[1][4] = 100;
+            if(getCommonCameraSettingsRequest().autoExpositionMethod == "dortmund") 
+            {
+                for(std::size_t i = 0; i < CameraSettings::AUTOEXPOSURE_GRID_SIZE; i++) {
+                    for(std::size_t j=0; j < CameraSettings::AUTOEXPOSURE_GRID_SIZE; j++) {
+                        getCameraSettingsRequest().autoExposureWeights[i][j] = 0; 
+                    }
+                }
 
-                getCameraSettingsRequest().autoExposureWeights[2][0] = 100;
-                getCameraSettingsRequest().autoExposureWeights[2][1] = 100;
-                getCameraSettingsRequest().autoExposureWeights[2][2] = 100;
-                getCameraSettingsRequest().autoExposureWeights[2][3] = 100;
-                getCameraSettingsRequest().autoExposureWeights[2][4] = 100;
+                getCameraSettingsRequestTop().autoExposureWeights[0][0] = 25;
+                getCameraSettingsRequestTop().autoExposureWeights[0][1] = 25;
+                getCameraSettingsRequestTop().autoExposureWeights[0][2] = 25;
+                getCameraSettingsRequestTop().autoExposureWeights[0][3] = 25;
+                getCameraSettingsRequestTop().autoExposureWeights[0][4] = 25;
 
-                getCameraSettingsRequest().autoExposureWeights[3][0] = 75;
-                getCameraSettingsRequest().autoExposureWeights[3][1] = 75;
-                getCameraSettingsRequest().autoExposureWeights[3][2] = 75;
-                getCameraSettingsRequest().autoExposureWeights[3][3] = 75;
-                getCameraSettingsRequest().autoExposureWeights[3][4] = 75;
-            } else {
+                getCameraSettingsRequestTop().autoExposureWeights[1][0] = 100;
+                getCameraSettingsRequestTop().autoExposureWeights[1][1] = 100;
+                getCameraSettingsRequestTop().autoExposureWeights[1][2] = 100;
+                getCameraSettingsRequestTop().autoExposureWeights[1][3] = 100;
+                getCameraSettingsRequestTop().autoExposureWeights[1][4] = 100;
+
+                getCameraSettingsRequestTop().autoExposureWeights[2][0] = 100;
+                getCameraSettingsRequestTop().autoExposureWeights[2][1] = 100;
+                getCameraSettingsRequestTop().autoExposureWeights[2][2] = 100;
+                getCameraSettingsRequestTop().autoExposureWeights[2][3] = 100;
+                getCameraSettingsRequestTop().autoExposureWeights[2][4] = 100;
+
+                getCameraSettingsRequestTop().autoExposureWeights[3][0] = 75;
+                getCameraSettingsRequestTop().autoExposureWeights[3][1] = 75;
+                getCameraSettingsRequestTop().autoExposureWeights[3][2] = 75;
+                getCameraSettingsRequestTop().autoExposureWeights[3][3] = 75;
+                getCameraSettingsRequestTop().autoExposureWeights[3][4] = 75;
+            
                 getCameraSettingsRequest().autoExposureWeights[0][0] = 25;
                 getCameraSettingsRequest().autoExposureWeights[0][1] = 25;
                 getCameraSettingsRequest().autoExposureWeights[0][2] = 25;
@@ -94,172 +89,25 @@ void AdaptiveAutoExposure::execute(CameraInfo::CameraID id)
                 getCameraSettingsRequest().autoExposureWeights[3][4] = 25;
 
             }
-
-            
-        );
-
-        DEBUG_REQUEST("AdaptiveAutoExposure:wide_1_line",
-            for(std::size_t i = 0; i < CameraSettings::AUTOEXPOSURE_GRID_SIZE; i++) {
-                for(std::size_t j=0; j < CameraSettings::AUTOEXPOSURE_GRID_SIZE; j++) {
-                    getCameraSettingsRequest().autoExposureWeights[i][j] = 0; 
+            else if(getCommonCameraSettingsRequest().autoExpositionMethod == "centerlines3") 
+            {
+                for(std::size_t i = 0; i < CameraSettings::AUTOEXPOSURE_GRID_SIZE; i++) {
+                    for(std::size_t j=0; j < CameraSettings::AUTOEXPOSURE_GRID_SIZE; j++) {
+                        getCameraSettingsRequest().autoExposureWeights[i][j] = 0; 
+                        getCameraSettingsRequestTop().autoExposureWeights[i][j] = 0; 
+                    }
                 }
-            }
-            if(cameraID == CameraInfo::Top) {
-                getCameraSettingsRequest().autoExposureWeights[4][0] = onVal;
-                getCameraSettingsRequest().autoExposureWeights[4][1] = onVal;
-                getCameraSettingsRequest().autoExposureWeights[4][2] = onVal;
-                getCameraSettingsRequest().autoExposureWeights[4][3] = onVal;
-                getCameraSettingsRequest().autoExposureWeights[4][4] = onVal;
-            } else {
-                getCameraSettingsRequest().autoExposureWeights[0][0] = onVal;
-                getCameraSettingsRequest().autoExposureWeights[0][1] = onVal;
-                getCameraSettingsRequest().autoExposureWeights[0][2] = onVal;
-                getCameraSettingsRequest().autoExposureWeights[0][3] = onVal;
-                getCameraSettingsRequest().autoExposureWeights[0][4] = onVal;
-            }
 
-            
-        );
-        DEBUG_REQUEST("AdaptiveAutoExposure:wide_2_line",
-            for(std::size_t i = 0; i < CameraSettings::AUTOEXPOSURE_GRID_SIZE; i++) {
-                for(std::size_t j=0; j < CameraSettings::AUTOEXPOSURE_GRID_SIZE; j++) {
-                    getCameraSettingsRequest().autoExposureWeights[i][j] = 0; 
-                }
-            }
-            if(cameraID == CameraInfo::Top) {
-                getCameraSettingsRequest().autoExposureWeights[4][0] = onVal;
-                getCameraSettingsRequest().autoExposureWeights[4][1] = onVal;
-                getCameraSettingsRequest().autoExposureWeights[4][2] = onVal;
-                getCameraSettingsRequest().autoExposureWeights[4][3] = onVal;
-                getCameraSettingsRequest().autoExposureWeights[4][4] = onVal;
-
-                getCameraSettingsRequest().autoExposureWeights[3][0] = onVal;
-                getCameraSettingsRequest().autoExposureWeights[3][1] = onVal;
-                getCameraSettingsRequest().autoExposureWeights[3][2] = onVal;
-                getCameraSettingsRequest().autoExposureWeights[3][3] = onVal;
-                getCameraSettingsRequest().autoExposureWeights[3][4] = onVal;
-            } else {
-                getCameraSettingsRequest().autoExposureWeights[0][0] = onVal;
-                getCameraSettingsRequest().autoExposureWeights[0][1] = onVal;
-                getCameraSettingsRequest().autoExposureWeights[0][2] = onVal;
-                getCameraSettingsRequest().autoExposureWeights[0][3] = onVal;
-                getCameraSettingsRequest().autoExposureWeights[0][4] = onVal;
-
-                getCameraSettingsRequest().autoExposureWeights[1][0] = onVal;
-                getCameraSettingsRequest().autoExposureWeights[1][1] = onVal;
-                getCameraSettingsRequest().autoExposureWeights[1][2] = onVal;
-                getCameraSettingsRequest().autoExposureWeights[1][3] = onVal;
-                getCameraSettingsRequest().autoExposureWeights[1][4] = onVal;
-            }
-
-            
-        );
-        DEBUG_REQUEST("AdaptiveAutoExposure:wide_3_line",
-            for(std::size_t i = 0; i < CameraSettings::AUTOEXPOSURE_GRID_SIZE; i++) {
-                for(std::size_t j=0; j < CameraSettings::AUTOEXPOSURE_GRID_SIZE; j++) {
-                    getCameraSettingsRequest().autoExposureWeights[i][j] = 0; 
-                }
-            }
-            if(cameraID == CameraInfo::Top) {
-                getCameraSettingsRequest().autoExposureWeights[4][0] = onVal;
-                getCameraSettingsRequest().autoExposureWeights[4][1] = onVal;
-                getCameraSettingsRequest().autoExposureWeights[4][2] = onVal;
-                getCameraSettingsRequest().autoExposureWeights[4][3] = onVal;
-                getCameraSettingsRequest().autoExposureWeights[4][4] = onVal;
-
-                getCameraSettingsRequest().autoExposureWeights[3][0] = onVal;
-                getCameraSettingsRequest().autoExposureWeights[3][1] = onVal;
-                getCameraSettingsRequest().autoExposureWeights[3][2] = onVal;
-                getCameraSettingsRequest().autoExposureWeights[3][3] = onVal;
-                getCameraSettingsRequest().autoExposureWeights[3][4] = onVal;
-
-                getCameraSettingsRequest().autoExposureWeights[2][0] = onVal;
-                getCameraSettingsRequest().autoExposureWeights[2][1] = onVal;
-                getCameraSettingsRequest().autoExposureWeights[2][2] = onVal;
-                getCameraSettingsRequest().autoExposureWeights[2][3] = onVal;
-                getCameraSettingsRequest().autoExposureWeights[2][4] = onVal;
-
-            } else {
-
-                getCameraSettingsRequest().autoExposureWeights[0][0] = onVal;
-                getCameraSettingsRequest().autoExposureWeights[0][1] = onVal;
-                getCameraSettingsRequest().autoExposureWeights[0][2] = onVal;
-                getCameraSettingsRequest().autoExposureWeights[0][3] = onVal;
-                getCameraSettingsRequest().autoExposureWeights[0][4] = onVal;
-
-                getCameraSettingsRequest().autoExposureWeights[1][0] = onVal;
-                getCameraSettingsRequest().autoExposureWeights[1][1] = onVal;
-                getCameraSettingsRequest().autoExposureWeights[1][2] = onVal;
-                getCameraSettingsRequest().autoExposureWeights[1][3] = onVal;
-                getCameraSettingsRequest().autoExposureWeights[1][4] = onVal;
-
-                getCameraSettingsRequest().autoExposureWeights[2][0] = onVal;
-                getCameraSettingsRequest().autoExposureWeights[2][1] = onVal;
-                getCameraSettingsRequest().autoExposureWeights[2][2] = onVal;
-                getCameraSettingsRequest().autoExposureWeights[2][3] = onVal;
-                getCameraSettingsRequest().autoExposureWeights[2][4] = onVal;
-            }            
-        );
-
-        DEBUG_REQUEST("AdaptiveAutoExposure:centered_1_line",
-            for(std::size_t i = 0; i < CameraSettings::AUTOEXPOSURE_GRID_SIZE; i++) {
-                for(std::size_t j=0; j < CameraSettings::AUTOEXPOSURE_GRID_SIZE; j++) {
-                    getCameraSettingsRequest().autoExposureWeights[i][j] = 0; 
-                }
-            }
-            if(cameraID == CameraInfo::Top) {
-                getCameraSettingsRequest().autoExposureWeights[4][1] = onVal;
-                getCameraSettingsRequest().autoExposureWeights[4][2] = onVal;
-                getCameraSettingsRequest().autoExposureWeights[4][3] = onVal;
-            } else {
-                getCameraSettingsRequest().autoExposureWeights[0][1] = onVal;
-                getCameraSettingsRequest().autoExposureWeights[0][2] = onVal;
-                getCameraSettingsRequest().autoExposureWeights[0][3] = onVal;
-            }
-
-            
-        );
-        DEBUG_REQUEST("AdaptiveAutoExposure:centered_2_line",
-            for(std::size_t i = 0; i < CameraSettings::AUTOEXPOSURE_GRID_SIZE; i++) {
-                for(std::size_t j=0; j < CameraSettings::AUTOEXPOSURE_GRID_SIZE; j++) {
-                    getCameraSettingsRequest().autoExposureWeights[i][j] = 0; 
-                }
-            }
-            if(cameraID == CameraInfo::Top) {
-                getCameraSettingsRequest().autoExposureWeights[4][1] = onVal;
-                getCameraSettingsRequest().autoExposureWeights[4][2] = onVal;
-                getCameraSettingsRequest().autoExposureWeights[4][3] = onVal;
-                getCameraSettingsRequest().autoExposureWeights[3][1] = onVal;
-                getCameraSettingsRequest().autoExposureWeights[3][2] = onVal;
-                getCameraSettingsRequest().autoExposureWeights[3][3] = onVal;
-            } else {
-                getCameraSettingsRequest().autoExposureWeights[0][1] = onVal;
-                getCameraSettingsRequest().autoExposureWeights[0][2] = onVal;
-                getCameraSettingsRequest().autoExposureWeights[0][3] = onVal;
-                getCameraSettingsRequest().autoExposureWeights[1][1] = onVal;
-                getCameraSettingsRequest().autoExposureWeights[1][2] = onVal;
-                getCameraSettingsRequest().autoExposureWeights[1][3] = onVal;
-            }
-
-            
-        );
-        DEBUG_REQUEST("AdaptiveAutoExposure:centered_3_line",
-            for(std::size_t i = 0; i < CameraSettings::AUTOEXPOSURE_GRID_SIZE; i++) {
-                for(std::size_t j=0; j < CameraSettings::AUTOEXPOSURE_GRID_SIZE; j++) {
-                    getCameraSettingsRequest().autoExposureWeights[i][j] = 0; 
-                }
-            }
-            if(cameraID == CameraInfo::Top) {
-                getCameraSettingsRequest().autoExposureWeights[4][1] = onVal;
-                getCameraSettingsRequest().autoExposureWeights[4][2] = onVal;
-                getCameraSettingsRequest().autoExposureWeights[4][3] = onVal;
-                getCameraSettingsRequest().autoExposureWeights[3][1] = onVal;
-                getCameraSettingsRequest().autoExposureWeights[3][2] = onVal;
-                getCameraSettingsRequest().autoExposureWeights[3][3] = onVal;
-                getCameraSettingsRequest().autoExposureWeights[2][1] = onVal;
-                getCameraSettingsRequest().autoExposureWeights[2][2] = onVal;
-                getCameraSettingsRequest().autoExposureWeights[2][3] = onVal;
-            } else {
+                getCameraSettingsRequestTop().autoExposureWeights[4][1] = onVal;
+                getCameraSettingsRequestTop().autoExposureWeights[4][2] = onVal;
+                getCameraSettingsRequestTop().autoExposureWeights[4][3] = onVal;
+                getCameraSettingsRequestTop().autoExposureWeights[3][1] = onVal;
+                getCameraSettingsRequestTop().autoExposureWeights[3][2] = onVal;
+                getCameraSettingsRequestTop().autoExposureWeights[3][3] = onVal;
+                getCameraSettingsRequestTop().autoExposureWeights[2][1] = onVal;
+                getCameraSettingsRequestTop().autoExposureWeights[2][2] = onVal;
+                getCameraSettingsRequestTop().autoExposureWeights[2][3] = onVal;
+    
                 getCameraSettingsRequest().autoExposureWeights[0][1] = onVal;
                 getCameraSettingsRequest().autoExposureWeights[0][2] = onVal;
                 getCameraSettingsRequest().autoExposureWeights[0][3] = onVal;
@@ -268,68 +116,140 @@ void AdaptiveAutoExposure::execute(CameraInfo::CameraID id)
                 getCameraSettingsRequest().autoExposureWeights[1][3] = onVal;
                 getCameraSettingsRequest().autoExposureWeights[2][1] = onVal;
                 getCameraSettingsRequest().autoExposureWeights[2][2] = onVal;
-                getCameraSettingsRequest().autoExposureWeights[2][3] = onVal;
-            }            
-        );
+                getCameraSettingsRequest().autoExposureWeights[2][3] = onVal; 
+            } 
+            else if(getCommonCameraSettingsRequest().autoExpositionMethod == "centerlines2") 
+            {
+                for(std::size_t i = 0; i < CameraSettings::AUTOEXPOSURE_GRID_SIZE; i++) {
+                    for(std::size_t j=0; j < CameraSettings::AUTOEXPOSURE_GRID_SIZE; j++) {
+                        getCameraSettingsRequest().autoExposureWeights[i][j] = 0; 
+                        getCameraSettingsRequestTop().autoExposureWeights[i][j] = 0; 
+                    }
+                }
+                getCameraSettingsRequestTop().autoExposureWeights[4][1] = onVal;
+                getCameraSettingsRequestTop().autoExposureWeights[4][2] = onVal;
+                getCameraSettingsRequestTop().autoExposureWeights[4][3] = onVal;
+                getCameraSettingsRequestTop().autoExposureWeights[3][1] = onVal;
+                getCameraSettingsRequestTop().autoExposureWeights[3][2] = onVal;
+                getCameraSettingsRequestTop().autoExposureWeights[3][3] = onVal;
+        
+                getCameraSettingsRequest().autoExposureWeights[0][1] = onVal;
+                getCameraSettingsRequest().autoExposureWeights[0][2] = onVal;
+                getCameraSettingsRequest().autoExposureWeights[0][3] = onVal;
+                getCameraSettingsRequest().autoExposureWeights[1][1] = onVal;
+                getCameraSettingsRequest().autoExposureWeights[1][2] = onVal;
+                getCameraSettingsRequest().autoExposureWeights[1][3] = onVal;
+            
+            }
+            executeDebugDrawings(onVal);
+        }
     }
+}
 
+void AdaptiveAutoExposure::executeDebugDrawings(std::uint8_t onVal)
+{
     DEBUG_REQUEST("AdaptiveAutoExposure:draw_weights",
-        IMAGE_DRAWING_CONTEXT;
-        CANVAS(((cameraID == CameraInfo::Top)?"ImageTop":"ImageBottom"));
-        int gridWidth = getImage().width() / CameraSettings::AUTOEXPOSURE_GRID_SIZE;
-        int gridHeight = getImage().height() / CameraSettings::AUTOEXPOSURE_GRID_SIZE;
-        for(std::size_t x = 0; x < CameraSettings::AUTOEXPOSURE_GRID_SIZE; x++) {
-            for(std::size_t y=0; y < CameraSettings::AUTOEXPOSURE_GRID_SIZE; y++) {
-                double val = (double) (getCameraSettingsRequest().autoExposureWeights[y][x]) / (double) onVal; 
-                PEN("FF0000", 1);
-                BOX((int) (x*gridWidth), 
-                    (int) (y*gridHeight),
-                    (int) ((x+1)*gridWidth),
-                    (int) ((y+1)*gridHeight)
-                );
+            IMAGE_DRAWING_CONTEXT;
+            int gridWidth = getImage().width() / CameraSettings::AUTOEXPOSURE_GRID_SIZE;
+            int gridHeight = getImage().height() / CameraSettings::AUTOEXPOSURE_GRID_SIZE;
+            for(std::size_t x = 0; x < CameraSettings::AUTOEXPOSURE_GRID_SIZE; x++) {
+                for(std::size_t y=0; y < CameraSettings::AUTOEXPOSURE_GRID_SIZE; y++) {
+                    double w_bottom = (double) getCameraSettingsRequest().autoExposureWeights[y][x];
+                    double w_top = (double) getCameraSettingsRequestTop().autoExposureWeights[y][x];
+                    
+                    CANVAS("ImageTop");
 
-                Color c(1.0, 0.0, 0.0, 1.0-val);
-                PEN(c.toString(), 5);
-                // draw a cross where the alpha is inverse to the wieght
-                LINE((int) (x*gridWidth), 
-                    (int) (y*gridHeight),
-                    (int) ((x+1)*gridWidth),
-                    (int) ((y+1)*gridHeight)
-                );
-                LINE((int) ((x+1)*gridWidth), 
-                    (int) (y*gridHeight),
-                    (int) (x*gridWidth),
-                    (int) ((y+1)*gridHeight)
-                );
-                
-            }
-        }        
-    );
+                    double val = w_top / (double) onVal; 
+                    PEN("FF0000", 1);
+                    BOX((int) (x*gridWidth), 
+                        (int) (y*gridHeight),
+                        (int) ((x+1)*gridWidth),
+                        (int) ((y+1)*gridHeight)
+                    );
 
-    DEBUG_REQUEST("AdaptiveAutoExposure:draw_weights_wrong",
-        IMAGE_DRAWING_CONTEXT;
-        CANVAS(((cameraID == CameraInfo::Top)?"ImageTop":"ImageBottom"));
-        int gridWidth = getImage().width() / CameraSettings::AUTOEXPOSURE_GRID_SIZE;
-        int gridHeight = getImage().height() / CameraSettings::AUTOEXPOSURE_GRID_SIZE;
-        for(std::size_t x = 0; x < CameraSettings::AUTOEXPOSURE_GRID_SIZE; x++) {
-            for(std::size_t y=0; y < CameraSettings::AUTOEXPOSURE_GRID_SIZE; y++) {
-                double val = (double) (getCameraSettingsRequest().autoExposureWeights[y][x]) / (double) onVal; 
-                PEN("000000", 1);
-                BOX((int) (x*gridWidth), 
-                    (int) (y*gridHeight),
-                    (int) ((x+1)*gridWidth),
-                    (int) ((y+1)*gridHeight)
-                );
+                    PEN(Color(1.0, 0.0, 0.0, 1.0-val).toString(), 5);
+                    // draw a cross where the alpha is inverse to the wieght
+                    LINE((int) (x*gridWidth), 
+                        (int) (y*gridHeight),
+                        (int) ((x+1)*gridWidth),
+                        (int) ((y+1)*gridHeight)
+                    );
+                    LINE((int) ((x+1)*gridWidth), 
+                        (int) (y*gridHeight),
+                        (int) (x*gridWidth),
+                        (int) ((y+1)*gridHeight)
+                    );
 
-                Color c(val, val, val, 0.5);
-                PEN(c.toString(), 1);
-                FILLBOX((int) (x*gridWidth), 
-                    (int) (y*gridHeight),
-                    (int) ((x+1)*gridWidth),
-                    (int) ((y+1)*gridHeight)
-                );
-                
-            }
-        }        
-    );
+                    CANVAS("ImageBottom");
+
+                    val = w_bottom / (double) onVal; 
+                    PEN("FF0000", 1);
+                    BOX((int) (x*gridWidth), 
+                        (int) (y*gridHeight),
+                        (int) ((x+1)*gridWidth),
+                        (int) ((y+1)*gridHeight)
+                    );
+
+                    PEN(Color(1.0, 0.0, 0.0, 1.0-val).toString(), 5);
+                    // draw a cross where the alpha is inverse to the wieght
+                    LINE((int) (x*gridWidth), 
+                        (int) (y*gridHeight),
+                        (int) ((x+1)*gridWidth),
+                        (int) ((y+1)*gridHeight)
+                    );
+                    LINE((int) ((x+1)*gridWidth), 
+                        (int) (y*gridHeight),
+                        (int) (x*gridWidth),
+                        (int) ((y+1)*gridHeight)
+                    );
+                    
+                }
+            }        
+        );
+
+        DEBUG_REQUEST("AdaptiveAutoExposure:draw_weights_wrong",
+            IMAGE_DRAWING_CONTEXT;
+            int gridWidth = getImage().width() / CameraSettings::AUTOEXPOSURE_GRID_SIZE;
+            int gridHeight = getImage().height() / CameraSettings::AUTOEXPOSURE_GRID_SIZE;
+            for(std::size_t x = 0; x < CameraSettings::AUTOEXPOSURE_GRID_SIZE; x++) {
+                for(std::size_t y=0; y < CameraSettings::AUTOEXPOSURE_GRID_SIZE; y++) {
+
+                    double w_bottom = (double) getCameraSettingsRequest().autoExposureWeights[y][x];
+                    double w_top = (double) getCameraSettingsRequestTop().autoExposureWeights[y][x];
+
+                    CANVAS("ImageTop");
+                    double val = w_top / (double) onVal; 
+                    PEN("000000", 1);
+                    BOX((int) (x*gridWidth), 
+                        (int) (y*gridHeight),
+                        (int) ((x+1)*gridWidth),
+                        (int) ((y+1)*gridHeight)
+                    );
+
+                    PEN(Color(val, val, val, 0.5).toString(), 1);
+                    FILLBOX((int) (x*gridWidth), 
+                        (int) (y*gridHeight),
+                        (int) ((x+1)*gridWidth),
+                        (int) ((y+1)*gridHeight)
+                    );
+
+                    CANVAS("ImageBottom");
+                    val = w_bottom / (double) onVal; 
+                    PEN("000000", 1);
+                    BOX((int) (x*gridWidth), 
+                        (int) (y*gridHeight),
+                        (int) ((x+1)*gridWidth),
+                        (int) ((y+1)*gridHeight)
+                    );
+
+                    PEN(Color(val, val, val, 0.5).toString(), 1);
+                    FILLBOX((int) (x*gridWidth), 
+                        (int) (y*gridHeight),
+                        (int) ((x+1)*gridWidth),
+                        (int) ((y+1)*gridHeight)
+                    );
+                    
+                }
+            }        
+        );
 }

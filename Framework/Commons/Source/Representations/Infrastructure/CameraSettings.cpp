@@ -155,6 +155,7 @@ CommonCameraSettingsRequest::CommonCameraSettingsRequest(string configName)
   PARAMETER_REGISTER(saturation) = 128;
   PARAMETER_REGISTER(sharpness) = 128;
   PARAMETER_REGISTER(whiteBalanceTemperature) = 6500;
+  PARAMETER_REGISTER(autoExpositionMethod) = "averageY";
   PARAMETER_REGISTER(powerlineFrequency) = 50;
   PARAMETER_REGISTER(isActive) = false;
 
