@@ -1,13 +1,13 @@
 clear variables
 clc
 
-database = 'capture_database_new.mat';
+database = 'capture_database.mat';
 
 % databasePath = '../data';
 % capture_path = 'D:\Downloads\capture_recordings';
 
-databasePath = 'L:\Experiments\whistle\WhistleData_mat';
-capture_path = 'L:\Experiments\whistle\WhistleData_mat\capture_recordings';
+databasePath = 'D:\Downloads\WhistleData_mat';
+capture_path = 'D:\Downloads\WhistleData_mat\capture_recordings';
 
 % adds a raw file to the whistle capture database
 try
@@ -47,10 +47,12 @@ for i=1:length(folderContents)
     
     extractedPath_split = split(extractedPath, ["/","\"]);
     event_name = string(extractedPath_split(1));
-
-    if ~isfield( capture_database.(char(event_name))(1), 'annotations')
-        dbStuctureChanged = true;
-    end 
+    
+    if isfield( capture_database, event_name)
+        if ~isfield( capture_database.(char(event_name))(1), 'annotations')
+            dbStuctureChanged = true;
+        end
+    end
 end
 if dbStuctureChanged
    capture_database = struct;
