@@ -3,25 +3,21 @@ clc
 
 database = 'capture_database_new.mat';
 
-databasePath = '../data';
-capture_path = 'D:\Downloads\capture_recordings';
+% databasePath = '../data';
+% capture_path = 'D:\Downloads\capture_recordings';
 
-% databasePath = 'L:\Experiments\whistle\WhistleData_mat';
-% capture_path = 'L:\Experiments\whistle\WhistleData_mat\capture_recordings';
-
-capture_database = struct;
+databasePath = 'L:\Experiments\whistle\WhistleData_mat';
+capture_path = 'L:\Experiments\whistle\WhistleData_mat\capture_recordings';
 
 % adds a raw file to the whistle capture database
-% TODO does not check if file is already inserted
-check_duplicates = false;
 try
     load([databasePath '/' database])
-    disp('INFO: using a previously created database')
-    check_duplicates = true;
+     disp('INFO: using a previously created database')
 catch
     disp('INFO: no previous mat file was found')
+    capture_database = struct;
 end
-%%
+
 
 % get information about the location of each raw file inside gamelog_path
 folderContents = dir(strcat(capture_path, '/**/*.raw'));
@@ -37,6 +33,31 @@ folderContents = dir(strcat(capture_path, '/**/*.raw'));
 eventFolder = split(capture_path, ["/","\"]);
 eventFolder = eventFolder{end}; % get last folder of gamelog_path
 
+%%
+dbStuctureChanged = false;
+for i=1:length(folderContents)
+    % use the path of the first raw file
+    testfolder = folderContents(i).folder;
+    extractedPath = extractAfter(testfolder,eventFolder);
+    
+    % remove slash in front
+    if strcmp(extractedPath(1), '\') || strcmp(extractedPath(1), '/')
+        extractedPath = extractedPath(2:end);
+    end
+    
+    extractedPath_split = split(extractedPath, ["/","\"]);
+    event_name = string(extractedPath_split(1));
+
+    if ~isfield( capture_database.(char(event_name))(1), 'annotations')
+        dbStuctureChanged = true;
+    end 
+end
+if dbStuctureChanged
+   capture_database = struct;
+   disp('INFO: database structure changed creating new database')
+end
+
+%%
 for i=1:length(folderContents)
     % use the path of the first raw file
     testfolder = folderContents(i).folder;
@@ -84,14 +105,8 @@ for i=1:length(folderContents)
         capture.annotations = annot;
     end
     clear rate annot
-    
-    if isfield(capture_database, char(event_name))
-        % Check if this capture already exists
-        if(check_duplicates)
-            % TODO iterate over existing db
-        end
         
-        % append a capture to the event struct
+    if isfield(capture_database, char(event_name))
         capture_database.(char(event_name)) = [capture_database.(char(event_name)) capture];
     else
         capture_database.(char(event_name)) = capture;

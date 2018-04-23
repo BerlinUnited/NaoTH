@@ -42,8 +42,8 @@ function [fs, annot] = readAudacityProjectFile(filePath, data, showFigure)
 
             annot = zeros(dataSize,2);    
             for i = 1:labelsSize
-                a = int64(str2double(labels{i, 1}) * fs);
-                b = int64(str2double(labels{i, 2}) * fs);
+                a = int64(str2double(labels{i, 1}) * fs)+1;
+                b = int64(str2double(labels{i, 2}) * fs)+1;
                 if strcmpi(labels{i, 3}, 'whistle') || isempty(labels{i, 3})
                     annot(a:b, 1) = 1;
                 else
