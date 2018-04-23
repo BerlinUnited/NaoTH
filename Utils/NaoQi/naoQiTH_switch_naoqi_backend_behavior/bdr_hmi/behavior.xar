@@ -593,38 +593,6 @@ class MyClass(GeneratedClass):
                                 </ActuatorList>
                             </Timeline>
                         </Box>
-                        <Box name="Set Fall Manager" id="18" localization="8" tooltip="Enable or disable the Fall Manager.&#x0A;&#x0A;It is automatically set to its previous state when the behavior is stopped." x="328" y="179">
-                            <bitmap>media/images/box/sensors/fall_manager.png</bitmap>
-                            <script language="4">
-                                <content>
-                                    <![CDATA[class MyClass(GeneratedClass):
-    def __init__(self):
-        GeneratedClass.__init__(self, False)
-        self.motion = ALProxy("ALMotion")
-        self.bFallManagerEnabled = True
-
-    def onLoad(self):
-        #~ puts code for box initialization here
-        pass
-
-    def onUnload(self):
-        self.motion.setFallManagerEnabled(self.bFallManagerEnabled)
-
-    def onInput_onSet(self):
-        self.bFallManagerEnabled = self.motion.getFallManagerEnabled()
-        enable = (self.getParameter("Action") == "Enable")
-        self.motion.setFallManagerEnabled(enable)
-        self.onDone()]]>
-</content>
-                            </script>
-                            <Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" />
-                            <Input name="onSet" type="1" type_size="1" nature="1" inner="0" tooltip="Box behavior starts when a signal is received on this input." id="2" />
-                            <Output name="onDone" type="1" type_size="1" nature="2" inner="0" tooltip="Signal sent when box behavior is finished." id="3" />
-                            <Parameter name="Action" inherits_from_parent="0" content_type="3" value="Disable" default_value="Enable" custom_choice="0" tooltip="Choose if you want to enable or disable the fall manager executing this box." id="4">
-                                <Choice value="Disable" />
-                                <Choice value="Enable" />
-                            </Parameter>
-                        </Box>
                         <Box name="set BDRNaoQiStatus (2)" id="7" localization="8" tooltip="set BDRNaoQiStatus" x="1315" y="164">
                             <bitmap>media/images/box/sensors/STM.png</bitmap>
                             <script language="4">
@@ -2887,7 +2855,8 @@ class MyClass(GeneratedClass):
                             <bitmap>media/images/box/box-python-script.png</bitmap>
                             <script language="4">
                                 <content>
-                                    <![CDATA[class MyClass(GeneratedClass):
+                                    <![CDATA[import qi
+class MyClass(GeneratedClass):
     def __init__(self):
         GeneratedClass.__init__(self, False)
 
@@ -2897,8 +2866,10 @@ class MyClass(GeneratedClass):
 
     def onUnload(self):
         self.cancelWaiting()
+        self.should_stop = False
 
     def triggerOutput(self):
+        self.cancelWaiting()
         if not self.should_stop:
             self.again()
 
@@ -2908,23 +2879,20 @@ class MyClass(GeneratedClass):
         self.waiting = None
 
     def onInput_onStart(self):
-        self.cancelWaiting()
-        import qi
-        if (self.should_stop):
-            self.should_stop = False
-            self.onStopped() #activate the output of the box
-            self.onUnload() #it is recommended to reuse the clean-up as the box is stopped
-        else:
-            # wait 10 seconds
-            self.waiting = qi.async(self.triggerOutput, delay=int(10 * 1000 * 1000))
-
-    def onInput_onStop(self):
-        self.should_stop = True
-        if self.waiting and self.waiting.isRunning():
-            self.cancelWaiting();
+        if self.should_stop:
             self.should_stop = False
             self.onStopped()
-            self.onUnload()]]>
+        else:
+            # wait 10 seconds
+            if (self.waiting == None):
+                self.waiting = qi.async(self.triggerOutput, delay=int(10 * 1000 * 1000))
+
+    def onInput_onStop(self):
+        if self.waiting and self.waiting.isRunning():
+            self.cancelWaiting();
+            self.onStopped()
+        else:
+            self.should_stop = True]]>
 </content>
                             </script>
                             <Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" />
@@ -2932,6 +2900,86 @@ class MyClass(GeneratedClass):
                             <Input name="onStop" type="1" type_size="1" nature="3" inner="0" tooltip="Box behavior stops when a signal is received on this input." id="3" />
                             <Output name="onStopped" type="1" type_size="1" nature="1" inner="0" tooltip="Signal sent when box behavior is finished." id="4" />
                             <Output name="again" type="1" type_size="1" nature="2" inner="0" tooltip="" id="5" />
+                        </Box>
+                        <Box name="Delay (3)" id="43" localization="8" tooltip="Wait a moment before triggering the output. &#x0A;Can be stopped anytime. &#x0A;Multiple inputs will trigger multiple outputs." x="540" y="862">
+                            <bitmap>media/images/box/wait.png</bitmap>
+                            <script language="4">
+                                <content>
+                                    <![CDATA[class MyClass(GeneratedClass):
+    def __init__(self):
+        GeneratedClass.__init__(self, False)
+
+    def onLoad(self):
+        self.delayed = []
+
+    def onUnload(self):
+        self.cancelDelays()
+
+    def cancelDelays(self):
+        cancel_list = list(self.delayed)
+        for d in cancel_list:
+            d.cancel()
+
+    def cleanDelay(self, fut, fut_ref):
+        self.delayed.remove(fut)
+
+    def triggerOutput(self):
+        self.timerOutput()
+
+    def onInput_onStart(self):
+        import qi
+        import functools
+        delay_future = qi.async(self.triggerOutput, delay=int(self.getParameter("Timeout (s)") * 1000 * 1000))
+        # keep the async operation in an array for cancel
+        # and remove it when it is finished in the callback
+        self.delayed.append(delay_future)
+        bound_clean = functools.partial(self.cleanDelay, delay_future)
+        delay_future.addCallback(bound_clean)
+
+    def onInput_onStop(self):
+        if self.getParameter("Trigger timerOutput if cancelled") and self.delayed:
+            self.timerOutput()
+        self.onUnload()]]>
+</content>
+                            </script>
+                            <Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" />
+                            <Input name="onStart" type="1" type_size="1" nature="2" inner="0" tooltip="Start the Delay box with the configured timeout value." id="2" />
+                            <Input name="onStop" type="1" type_size="1" nature="3" inner="0" tooltip="Stop the wait and stimulate the output." id="3" />
+                            <Output name="timerOutput" type="1" type_size="1" nature="1" inner="0" tooltip="Send a bang once delay set in parameters is elapsed, or if the box is stopped and the appropriate parameter is set." id="4" />
+                            <Parameter name="Timeout (s)" inherits_from_parent="0" content_type="2" value="1" default_value="1" min="0" max="5000" tooltip="Duration the box waits before stimulating the output." id="5" />
+                            <Parameter name="Trigger timerOutput if cancelled" inherits_from_parent="0" content_type="0" value="0" default_value="1" tooltip="If the box is currently delaying at least one signal and cancelled, output will be stimulated." id="6" />
+                        </Box>
+                        <Box name="Set Fall Manager" id="18" localization="8" tooltip="Enable or disable the Fall Manager.&#x0A;&#x0A;It is automatically set to its previous state when the behavior is stopped." x="362" y="182">
+                            <bitmap>media/images/box/sensors/fall_manager.png</bitmap>
+                            <script language="4">
+                                <content>
+                                    <![CDATA[class MyClass(GeneratedClass):
+    def __init__(self):
+        GeneratedClass.__init__(self, False)
+        self.motion = ALProxy("ALMotion")
+        self.bFallManagerEnabled = True
+
+    def onLoad(self):
+        #~ puts code for box initialization here
+        pass
+
+    def onUnload(self):
+        self.motion.setFallManagerEnabled(self.bFallManagerEnabled)
+
+    def onInput_onSet(self):
+        self.bFallManagerEnabled = self.motion.getFallManagerEnabled()
+        enable = (self.getParameter("Action") == "Enable")
+        self.motion.setFallManagerEnabled(enable)
+        self.onDone()]]>
+</content>
+                            </script>
+                            <Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" />
+                            <Input name="onSet" type="1" type_size="1" nature="1" inner="0" tooltip="Box behavior starts when a signal is received on this input." id="2" />
+                            <Output name="onDone" type="1" type_size="1" nature="2" inner="0" tooltip="Signal sent when box behavior is finished." id="3" />
+                            <Parameter name="Action" inherits_from_parent="0" content_type="3" value="Disable" default_value="Enable" custom_choice="0" tooltip="Choose if you want to enable or disable the fall manager executing this box." id="4">
+                                <Choice value="Disable" />
+                                <Choice value="Enable" />
+                            </Parameter>
                         </Box>
                         <Link inputowner="6" indexofinput="2" outputowner="4" indexofoutput="4" />
                         <Link inputowner="13" indexofinput="2" outputowner="8" indexofoutput="3" />
@@ -2986,8 +3034,8 @@ class MyClass(GeneratedClass):
                         <Link inputowner="42" indexofinput="2" outputowner="31" indexofoutput="4" />
                         <Link inputowner="19" indexofinput="2" outputowner="42" indexofoutput="5" />
                         <Link inputowner="42" indexofinput="3" outputowner="10" indexofoutput="4" />
-                        <Link inputowner="18" indexofinput="2" outputowner="2" indexofoutput="3" />
                         <Link inputowner="4" indexofinput="2" outputowner="18" indexofoutput="3" />
+                        <Link inputowner="18" indexofinput="2" outputowner="2" indexofoutput="3" />
                     </Diagram>
                 </BehaviorKeyframe>
             </BehaviorLayer>
