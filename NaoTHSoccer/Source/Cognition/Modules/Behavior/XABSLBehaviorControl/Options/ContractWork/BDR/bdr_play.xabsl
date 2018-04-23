@@ -14,6 +14,7 @@ option bdr_play
 
   /** battery percentage decrease until wartung */
   float @dec_battery; //[0.02 - 0.05] "°"
+  float @inc_battery; // should be more than dec_battery
   float @offset_min_battery_reached;
 
   common decision
@@ -265,12 +266,12 @@ option bdr_play
           else if(platform.battery > @max_battery)
               goto localize_after_wartung;
           else if(bdr.charge_beginning < @min_battery){
-              if(platform.battery > bdr.charge_beginning + @dec_battery + @offset_min_battery_reached)
+              if(platform.battery > bdr.charge_beginning + @inc_battery + @offset_min_battery_reached)
                   goto localize_after_wartung;
               else
                   stay;
           } else {
-              if(platform.battery > (bdr.charge_beginning + @dec_battery))
+              if(platform.battery > (bdr.charge_beginning + @inc_battery))
                   goto localize_after_wartung;
               else
                   stay;
