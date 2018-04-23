@@ -10,16 +10,16 @@
 
 
 BDRBallDetector::BDRBallDetector()
+  : bdrCarpetRectOffset(params.bdrCarpetRectOffset)
 {
   DEBUG_REQUEST_REGISTER("Vision:BDRBallDetector:draw_ball_candidates", "..", false);
   DEBUG_REQUEST_REGISTER("Vision:BDRBallDetector:draw_ball_percepts", "draw ball percepts", false);
 
   theBallKeyPointExtractor = registerModule<BallKeyPointExtractor>("BallKeyPointExtractor", true);
 
-  const double offset = 50;
   bdrCarpetRect = Geometry::Rect2d(
-    Vector2d(-getFieldInfo().xFieldLength*0.5 + offset, -getFieldInfo().yFieldLength*0.5 + offset), 
-    Vector2d(getFieldInfo().xFieldLength*0.5 - offset, getFieldInfo().yFieldLength*0.5 + 60 - offset)
+    Vector2d(-getFieldInfo().xFieldLength*0.5 + bdrCarpetRectOffset, -getFieldInfo().yFieldLength*0.5 + bdrCarpetRectOffset), 
+    Vector2d(getFieldInfo().xFieldLength*0.5 - bdrCarpetRectOffset, getFieldInfo().yFieldLength*0.5 + 60 - bdrCarpetRectOffset)
   );
 
   getDebugParameterList().add(&params);
@@ -32,6 +32,16 @@ BDRBallDetector::~BDRBallDetector()
 
 void BDRBallDetector::execute(CameraInfo::CameraID id)
 {
+  // update params
+  if(params.bdrCarpetRectOffset != bdrCarpetRectOffset) {
+    bdrCarpetRectOffset = params.bdrCarpetRectOffset;
+    
+    bdrCarpetRect = Geometry::Rect2d(
+      Vector2d(-getFieldInfo().xFieldLength*0.5 + bdrCarpetRectOffset, -getFieldInfo().yFieldLength*0.5 + bdrCarpetRectOffset), 
+      Vector2d(getFieldInfo().xFieldLength*0.5 - bdrCarpetRectOffset, getFieldInfo().yFieldLength*0.5 + 60 - bdrCarpetRectOffset)
+    );
+  }
+
   cameraID = id;
 
   best.clear();
