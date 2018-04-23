@@ -11,6 +11,7 @@
 
 #include "Tools/Debug/DebugRequest.h"
 #include <Tools/Debug/DebugImageDrawings.h>
+#include <Tools/Debug/DebugDrawings.h>
 #include <Tools/DataStructures/ParameterList.h>
 #include <Tools/Debug/DebugParameterList.h>
 #include "Tools/Debug/DebugModify.h"
@@ -21,6 +22,7 @@ BEGIN_DECLARE_MODULE(FieldAreaDetector)
   PROVIDE(DebugRequest)
   PROVIDE(DebugImageDrawings)
   PROVIDE(DebugImageDrawingsTop)
+  PROVIDE(DebugDrawings)
   PROVIDE(DebugParameterList)
 
   REQUIRE(Image)
@@ -59,11 +61,11 @@ public:
 
     Parameters() : ParameterList("FieldAreaDetector")
     {
-      PARAMETER_REGISTER(test) = 42;
+      PARAMETER_REGISTER(proportion_of_green) = 0.7;
       syncWithConfig();
     }
-    double test;
-  } theParameters;
+    double proportion_of_green;
+  } params;
 
 
 private:
