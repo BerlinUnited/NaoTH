@@ -125,6 +125,8 @@ private: //data members
   ModuleCreator<BallKeyPointExtractor>* theBallKeyPointExtractor;
   BestPatchList best;
 
+  Geometry::Rect2d bdrCarpetRect;
+
 private:     
   
   DOUBLE_CAM_PROVIDE(BDRBallDetector, DebugImageDrawings);
