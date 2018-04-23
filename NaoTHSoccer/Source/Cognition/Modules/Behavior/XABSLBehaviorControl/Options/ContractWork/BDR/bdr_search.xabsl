@@ -1,0 +1,68 @@
+option bdr_search
+{
+  initial state search {
+    decision 
+    {
+      if(state_time < 1500)
+        stay;
+      else if(robot_pose.bdr.close_to_border)
+        goto away_from_boundary_before_search;
+      else
+        goto do_search;
+    }
+
+    action {
+      head.control_mode = search_for_ball;
+      motion.type = stand;
+    }
+  }
+
+  state away_from_boundary_before_search 
+  {
+    decision
+    {
+      if(!robot_pose.bdr.close_to_border)
+        goto search;
+      else
+        stay;
+    }
+    
+    action
+    {
+      motion.type = walk;
+      motion.walk.style = stable;
+      
+      motion.walk_speed.rot = 0;
+      motion.walk_speed.x = robot_pose.bdr.close_to_border.correction.x;
+      motion.walk_speed.y = robot_pose.bdr.close_to_border.correction.y;
+      
+      motion.walk.coordinate = hip;
+      motion.walk.stop_with_stand = true;
+    }
+  }
+
+  state do_search {
+    decision 
+    {
+      if(robot_pose.bdr.close_to_border)
+        goto away_from_boundary_before_search;
+      else if(action_done)
+        goto finish;
+      else if(state_time > 5000)
+          goto search;
+      else
+        stay;
+    }
+    action {
+      search_ball_simple(search_direction=ball.preview.y > 0 ? left: right);
+    }
+  }
+
+  target state finish {
+    action{
+      motion.type = stand;
+      head.control_mode = search_for_ball;
+    }
+  }
+
+}

@@ -67,5 +67,9 @@ namespace selfloc_symbols("Self-localization Symbols") {
 
   /** a factor describing how long the robot should search for the ball in the current direction.*/
   float input look_in_direction_factor;
+
+  bool input robot_pose.bdr.close_to_border;
+  float input robot_pose.bdr.close_to_border.correction.x;
+  float input robot_pose.bdr.close_to_border.correction.y;
 }
 
