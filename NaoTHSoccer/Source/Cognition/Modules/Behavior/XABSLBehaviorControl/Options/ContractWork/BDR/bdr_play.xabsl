@@ -11,6 +11,7 @@ option bdr_play
   /** battery percentage which shouldn't be fallen below */
   float @min_battery; // [0.3-0.5] "%";
   float @max_battery;
+  bool  @reload_consumed;
 
   /** battery percentage decrease until wartung */
   float @dec_battery; //[0.02 - 0.05] "°"
@@ -252,6 +253,7 @@ option bdr_play
               goto wartung_reason_battery;
       }
       action {
+          bdr.consumed_charge = bdr.charge_beginning - platform.battery;
           bdr.reason  = battery_charge;
           bdr.message = charging_needed;
           bdr.charge_beginning = platform.battery;
@@ -265,16 +267,30 @@ option bdr_play
     {
           else if(platform.battery > @max_battery)
               goto localize_after_wartung;
-          else if(bdr.charge_beginning < @min_battery){
-              if(platform.battery > bdr.charge_beginning + @inc_battery + @offset_min_battery_reached)
-                  goto localize_after_wartung;
-              else
-                  stay;
+          else if(@reload_consumed) {
+	          if(bdr.charge_beginning < @min_battery){
+                  if(platform.battery > bdr.charge_beginning + bdr.consumed_charge + @offset_min_battery_reached)
+                      goto localize_after_wartung;
+                  else
+                      stay;
+              } else  {
+                  if(platform.battery > (bdr.charge_beginning + bdr.consumed_charge))
+                      goto localize_after_wartung;
+                  else
+                      stay;
+              }
           } else {
-              if(platform.battery > (bdr.charge_beginning + @inc_battery))
-                  goto localize_after_wartung;
-              else
-                  stay;
+              if(bdr.charge_beginning < @min_battery){
+                  if(platform.battery > bdr.charge_beginning + @inc_battery + @offset_min_battery_reached)
+                      goto localize_after_wartung;
+                  else
+                      stay;
+              } else  {
+                  if(platform.battery > (bdr.charge_beginning + @inc_battery))
+                      goto localize_after_wartung;
+                  else
+                      stay;
+              }
           }
     }
     action
