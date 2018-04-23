@@ -54,7 +54,7 @@ public:
     ballPerceptSeen(false),
     ball_seen_filter(0.01, 0.1),
     ball_see_where_itis(false),
-    ball_in_own_half_filter(0.01, 0.1),
+    ball_in_own_half_filter(0.1, 0.1),
     ball_in_own_half(false)
   {
     theInstance = this;

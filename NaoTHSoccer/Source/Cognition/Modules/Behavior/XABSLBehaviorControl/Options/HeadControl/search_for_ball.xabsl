@@ -53,7 +53,6 @@ option search_for_ball
     }
   }
 
-  
   state search_for_ball_right
   {
     decision
@@ -61,7 +60,7 @@ option search_for_ball
       if (ball.percept.was_seen)
         goto look_at_ball_percept;
       else if(head.yaw < -40)
-        goto search_for_ball_left_high;
+        goto search_for_ball_left;
       else
        stay;
     }
@@ -69,7 +68,7 @@ option search_for_ball
     {
         head.point_in_world.x = 160;
         head.point_in_world.y = -200;
-        head.point_in_world.z = 0;
+        head.point_in_world.z = (head.yaw > 10)?0:450;
         head.motion_type = look_at_world_point;
 
         head.angleVelocity = 60; // will be reseted in spl_play_soccer
@@ -91,7 +90,7 @@ option search_for_ball
     {
       head.point_in_world.x = 160;
       head.point_in_world.y = 200;
-      head.point_in_world.z = 0;
+      head.point_in_world.z = (head.yaw < -10)?0:450;
       head.motion_type = look_at_world_point;
 
       head.angleVelocity = 60; // will be reseted in spl_play_soccer
@@ -116,7 +115,7 @@ option search_for_ball
     {
         head.point_in_world.x = 400;
         head.point_in_world.y = -500;
-        head.point_in_world.z = 0;
+        head.point_in_world.z = 300;
         head.motion_type = look_at_world_point;
 
         head.angleVelocity = 60; // will be reseted in spl_play_soccer
@@ -138,7 +137,7 @@ option search_for_ball
     {
       head.point_in_world.x = 400;
       head.point_in_world.y = 500;
-      head.point_in_world.z = 0;
+      head.point_in_world.z = 300;
       head.motion_type = look_at_world_point;
 
       head.angleVelocity = 60; // will be reseted in spl_play_soccer

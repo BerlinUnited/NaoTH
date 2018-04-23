@@ -63,6 +63,11 @@ void SelflocSymbols::registerSymbols(xabsl::Engine& engine)
 
   engine.registerDecimalInputSymbol("look_in_direction_factor",&look_in_direction_factor);
 
+  engine.registerBooleanInputSymbol("robot_pose.bdr.close_to_border", &toCloseToBorder);
+  engine.registerDecimalInputSymbol("robot_pose.bdr.close_to_border.correction.x", &safePoint.x);
+  engine.registerDecimalInputSymbol("robot_pose.bdr.close_to_border.correction.y", &safePoint.y);
+
+
   DEBUG_REQUEST_REGISTER("XABSL:draw_selfloc_goal", "draw the position of the goals calculated using the selflocalization", false);
 }//end registerSymbols
 
@@ -129,6 +134,53 @@ void SelflocSymbols::execute()
           (angle_front < 0 ? 0 : angle_front)* distance_factor_front +
           (angle_right < 0 ? 0 : angle_right)* distance_factor_right +
           (angle_back < 0 ? 0 : angle_back)  * distance_factor_back;
+
+
+
+  {
+    const double margin = 350;
+
+    toCloseToBorder = false;
+
+    if(getRobotPose().isValid)
+    {
+      Pose2D global = getRobotPose().getGlobalPose() + plannedOrigin;
+      safePoint = global.translation;
+
+      double diffMinX = global.translation.x - getFieldInfo().bdrCarpetRect.min().x;
+      if(diffMinX < margin) {
+        toCloseToBorder = true;
+        safePoint.x += (margin*2.0 - diffMinX);
+      }
+
+      double diffMaxX = getFieldInfo().bdrCarpetRect.max().x - global.translation.x;
+      if(diffMaxX < margin) {
+        toCloseToBorder = true;
+        safePoint.x -= (margin*2.0 - diffMaxX);
+      }
+
+      double diffMinY = global.translation.y - getFieldInfo().bdrCarpetRect.min().y;
+      if(diffMinY < margin) {
+        toCloseToBorder = true;
+        safePoint.y += (margin*2.0 - diffMinY);
+      }
+
+      double diffMaxY = getFieldInfo().bdrCarpetRect.max().y - global.translation.y;
+      if(diffMaxY < margin) {
+        toCloseToBorder = true;
+        safePoint.y -= (margin*2.0 - diffMaxY);
+      }
+
+      DEBUG_REQUEST("SelflocSymbols:draw_global_origin",
+        FIELD_DRAWING_CONTEXT;
+        PEN("000000", 20);
+        ARROW(global.translation.x, global.translation.y, safePoint.x, safePoint.y);
+      );
+
+      // make local
+      safePoint = global / safePoint;
+    }
+  }
 
 }//end execute
 

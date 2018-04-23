@@ -47,7 +47,8 @@ public:
   SelflocSymbols()
   :
     angleOnField(Math::toDegrees(getRobotPose().rotation)),
-    angleOnFieldPlanned(Math::toDegrees(getRobotPose().rotation))
+    angleOnFieldPlanned(Math::toDegrees(getRobotPose().rotation)),
+    toCloseToBorder(false)
   {
     theInstance = this;
 
@@ -104,6 +105,9 @@ private:
   double angleOnFieldPlanned;
 
   double look_in_direction_factor;
+
+  Vector2d safePoint;
+  bool toCloseToBorder;
 };// End class SelflocSymbols
 
 
