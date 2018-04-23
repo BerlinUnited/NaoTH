@@ -16,6 +16,7 @@ option bdr_agent
 			   min_battery = 0.5,
                max_battery = 0.9,
 			   dec_battery = 0.04,
+               inc_battery = 0.06,
 			   offset_min_battery_reached = 0.02);
 
       // control the arms
