@@ -18,6 +18,8 @@ option bdr_play
   float @inc_battery; // should be more than dec_battery
   float @offset_min_battery_reached;
 
+  bool @wait_for_each_other; //wait for other player if he is in servicing 
+
   common decision
   {
     if(body.falling)
@@ -223,17 +225,17 @@ option bdr_play
       decision {
           else if(body.temperature.leg.left < @min_temperature
                   && body.temperature.leg.right < @min_temperature){
-              goto localize_after_wartung;
+              goto post_wartung;
           } else if(bdr.temperature_beginning > @max_temperature){
               if(body.temperature.leg.left < bdr.temperature_beginning - @inc_temperature - @offset_max_temp_reached
                  && body.temperature.leg.right < bdr.temperature_beginning - @inc_temperature - @offset_max_temp_reached)
-                  goto localize_after_wartung;
+                  goto post_wartung;
               else
                   stay;
           } else {
               if(body.temperature.leg.left < bdr.temperature_beginning - @inc_temperature
                   && body.temperature.leg.right < bdr.temperature_beginning - @inc_temperature)
-                  goto localize_after_wartung;
+                  goto post_wartung;
               else
                   stay;
           }
@@ -246,7 +248,7 @@ option bdr_play
                                      value1 = bdr.temperature_beginning - @inc_temperature - @offset_max_temp_reached);
       }
   }
-
+  
   state pre_wartung_reason_battery{
       decision {
           else
@@ -266,28 +268,28 @@ option bdr_play
     decision
     {
           else if(platform.battery > @max_battery)
-              goto localize_after_wartung;
+              goto post_wartung;
           else if(@reload_consumed) {
 	          if(bdr.charge_beginning < @min_battery){
                   if(platform.battery > bdr.charge_beginning + bdr.consumed_charge + @offset_min_battery_reached)
-                      goto localize_after_wartung;
+                      goto post_wartung;
                   else
                       stay;
               } else  {
                   if(platform.battery > (bdr.charge_beginning + bdr.consumed_charge))
-                      goto localize_after_wartung;
+                      goto post_wartung;
                   else
                       stay;
               }
           } else {
               if(bdr.charge_beginning < @min_battery){
                   if(platform.battery > bdr.charge_beginning + @inc_battery + @offset_min_battery_reached)
-                      goto localize_after_wartung;
+                      goto post_wartung;
                   else
                       stay;
               } else  {
                   if(platform.battery > (bdr.charge_beginning + @inc_battery))
-                      goto localize_after_wartung;
+                      goto post_wartung;
                   else
                       stay;
               }
@@ -300,6 +302,23 @@ option bdr_play
         bdr.wartung_max_target = bdr.charge_beginning + @dec_battery + @offset_min_battery_reached;
     }
   }
+
+  state post_wartung {
+      decision {
+          else if(@wait_for_each_other && bdr.number_of_players_in_servicing > 0) // wait for the other play
+              stay;
+          else
+              goto localize_after_wartung;
+      }
+
+      action {
+          motion.type  = bdr_sit;
+          bdr.activity = waiting;
+          bdr.sitting  = true;
+          bdr.message  = charging;
+      }
+  }
+
 
   state localize_after_wartung
   {

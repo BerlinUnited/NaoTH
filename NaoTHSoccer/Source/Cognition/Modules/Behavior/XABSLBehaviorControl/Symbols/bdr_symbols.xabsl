@@ -16,7 +16,8 @@ namespace bdr_symbols("BDR Symbols") {
       pre_servicing,
       servicing,
       doing_nothing,
-      initializing
+      initializing,
+      waiting
   };
   
   enum activity output bdr.activity;
@@ -25,7 +26,8 @@ namespace bdr_symbols("BDR Symbols") {
   bool output bdr.localized_on_field;
   float output bdr.time_playing;
 
-  float input bdr.number_of_players_in_play; 
+  float input bdr.number_of_players_in_play;
+  float input bdr.number_of_players_in_servicing;
   float input bdr.goalsOwn;
   float input bdr.goalsOpp;
 

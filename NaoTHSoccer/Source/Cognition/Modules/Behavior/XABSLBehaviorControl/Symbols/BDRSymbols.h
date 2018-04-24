@@ -52,6 +52,7 @@ private:
   static void setBDRReason(int value);
   static int  getBDRReason();
   static double getNumberOfPlayersInPlay();
+  static double getNumberOfPlayersInServicing();
 
   static double getGoalsOwn();
   static double getGoalsOpp();
