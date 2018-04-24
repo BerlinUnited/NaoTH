@@ -120,17 +120,16 @@ void BallSymbols::execute()
     ball_see_where_itis = ball_seen_filter.value() > (ball_see_where_itis?0.3:0.7);
   }
 
+
   {
-    bool ball_seen_in_own_half = false;
-    Vector2d ballPositionGlobalField = getRobotPose().getGlobalPose()*ballPerceptPos;
-    if(getRobotPose().isValid 
-      && getFieldInfo().bdrCarpetRect.inside(ballPositionGlobalField)
-      && (getRobotPose()*ballPerceptPos).x <= 0) {
-      ball_seen_in_own_half = true;
+    Vector2d ballPositionGlobalField = getRobotPose().getGlobalPose()*getBallModel().position;
+    Vector2d ballPositionField = getRobotPose()*getBallModel().position;
+
+    if(getRobotPose().isValid && getBallModel().knows && getFieldInfo().bdrCarpetRect.inside(ballPositionGlobalField)) 
+    {
+      ball_in_own_half = (ballPositionField.x <= parameters.own_half_margin); // margin into the opponent half
     }
 
-    ball_in_own_half_filter.update(ball_seen_in_own_half);
-    ball_in_own_half = ball_in_own_half_filter.value() > (ball_in_own_half?0.3:0.7);
   }
 }//end update
 
