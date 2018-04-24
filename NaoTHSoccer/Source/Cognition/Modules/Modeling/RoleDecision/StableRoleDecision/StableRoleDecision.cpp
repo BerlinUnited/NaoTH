@@ -29,10 +29,13 @@ void StableRoleDecision::execute()
   int secondStriker = std::numeric_limits<int>::max();
 
   bool wantsToBeStriker = true;
+
+  /*
   //Goalie is not considered
   if (getPlayerInfo().playerNumber == 1) {
     wantsToBeStriker = false; 
   }
+  */
 
   double ownTimeToBall = getSoccerStrategy().timeToBall;
   // bonus for the striker to prevent oscillations
