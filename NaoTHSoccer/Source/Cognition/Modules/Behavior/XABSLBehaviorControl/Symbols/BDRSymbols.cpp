@@ -32,7 +32,8 @@ void BDRSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerBooleanOutputSymbol("bdr.sitting",            &getBDRPlayerState().sitting);
   engine.registerBooleanOutputSymbol("bdr.localized_on_field", &getBDRPlayerState().localized_on_field);
   engine.registerDecimalInputSymbol("bdr.number_of_players_in_play", &getNumberOfPlayersInPlay);
-  
+  engine.registerDecimalInputSymbol("bdr.number_of_players_in_servicing", &getNumberOfPlayersInServicing);
+
   engine.registerDecimalOutputSymbol("bdr.time_playing", &getBDRPlayerState().time_playing);
   engine.registerDecimalInputSymbol("bdr.goalsOwn", &getGoalsOwn);
   engine.registerDecimalInputSymbol("bdr.goalsOpp", &getGoalsOpp);
@@ -91,6 +92,18 @@ double BDRSymbols::getNumberOfPlayersInPlay() {
     }
   }
   
+  return count;
+}
+
+double BDRSymbols::getNumberOfPlayersInServicing() {
+
+  int count = 0;
+  for (auto const& i : theInstance->getTeamMessage().data) {
+    if(i.second.custom.bdrPlayerState.activity == BDRPlayerState::servicing) {
+      ++count;
+    }
+  }
+
   return count;
 }
 

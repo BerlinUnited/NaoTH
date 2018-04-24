@@ -29,6 +29,7 @@ message BDRPlayerState
     servicing = 5;
     doing_nothing = 6;
     initializing = 7;
+    waiting = 8;
   }
   
   optional Activity activity = 1 [default = doing_nothing];

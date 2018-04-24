@@ -43,6 +43,7 @@ std::string BDRPlayerState::getActivityName(Activity id)
     case servicing        : return "servicing";
     case doing_nothing    : return "doing_nothing";
     case initializing     : return "initializing";
+    case waiting          : return "waiting";
     default : ASSERT(false);
   }
   return "unknown activity";

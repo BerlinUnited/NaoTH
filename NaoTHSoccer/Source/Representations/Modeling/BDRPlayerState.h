@@ -42,6 +42,8 @@ public:
       doing_nothing,
       initializing,
 
+      waiting,
+
       num_of_activities
   } activity;
 

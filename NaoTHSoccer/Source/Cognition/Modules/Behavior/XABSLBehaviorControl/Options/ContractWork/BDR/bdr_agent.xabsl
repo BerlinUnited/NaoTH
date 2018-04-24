@@ -17,8 +17,9 @@ option bdr_agent
                max_battery = 0.9,
 			   dec_battery = 0.04,
                inc_battery = 0.06,
+			   offset_min_battery_reached = 0.02,
                reload_consumed = true,
-			   offset_min_battery_reached = 0.02);
+			   wait_for_each_other = true);
 
       // control the arms
       arms_control();
