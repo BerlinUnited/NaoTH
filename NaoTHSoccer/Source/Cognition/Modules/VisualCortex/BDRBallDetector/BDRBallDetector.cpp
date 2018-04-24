@@ -10,11 +10,17 @@
 
 
 BDRBallDetector::BDRBallDetector()
+  : bdrCarpetRectOffset(params.bdrCarpetRectOffset)
 {
   DEBUG_REQUEST_REGISTER("Vision:BDRBallDetector:draw_ball_candidates", "..", false);
   DEBUG_REQUEST_REGISTER("Vision:BDRBallDetector:draw_ball_percepts", "draw ball percepts", false);
 
   theBallKeyPointExtractor = registerModule<BallKeyPointExtractor>("BallKeyPointExtractor", true);
+
+  bdrCarpetRect = Geometry::Rect2d(
+    Vector2d(-getFieldInfo().xFieldLength*0.5 + bdrCarpetRectOffset, -getFieldInfo().yFieldLength*0.5 + bdrCarpetRectOffset), 
+    Vector2d(getFieldInfo().xFieldLength*0.5 - bdrCarpetRectOffset, getFieldInfo().yFieldLength*0.5 + 60 - bdrCarpetRectOffset)
+  );
 
   getDebugParameterList().add(&params);
 }
@@ -26,6 +32,16 @@ BDRBallDetector::~BDRBallDetector()
 
 void BDRBallDetector::execute(CameraInfo::CameraID id)
 {
+  // update params
+  if(params.bdrCarpetRectOffset != bdrCarpetRectOffset) {
+    bdrCarpetRectOffset = params.bdrCarpetRectOffset;
+    
+    bdrCarpetRect = Geometry::Rect2d(
+      Vector2d(-getFieldInfo().xFieldLength*0.5 + bdrCarpetRectOffset, -getFieldInfo().yFieldLength*0.5 + bdrCarpetRectOffset), 
+      Vector2d(getFieldInfo().xFieldLength*0.5 - bdrCarpetRectOffset, getFieldInfo().yFieldLength*0.5 + 60 - bdrCarpetRectOffset)
+    );
+  }
+
   cameraID = id;
 
   best.clear();
@@ -49,8 +65,8 @@ void BDRBallDetector::execute(CameraInfo::CameraID id)
     
     const int32_t FACTOR = getBallDetectorIntegralImage().FACTOR;
     bool checkRedInside = false;
-    int offsetY = ((*i).max.y-(*i).min.y)/FACTOR;
-    int offsetX = ((*i).max.x-(*i).min.x)/FACTOR;
+    int offsetY = 0;//((*i).max.y-(*i).min.y)/FACTOR;
+    int offsetX = 0;//((*i).max.x-(*i).min.x)/FACTOR;
     double greenInside = getBallDetectorIntegralImage().getDensityForRect(((*i).min.x+offsetX)/FACTOR, ((*i).min.y+offsetY)/FACTOR, ((*i).max.x-offsetX)/FACTOR, ((*i).max.y-offsetY)/FACTOR, 2);
     if(greenInside > params.minRedInsideRatio) {
       checkRedInside = true;
@@ -87,8 +103,15 @@ void BDRBallDetector::addBallPercept(const Vector2i& center, double radius)
     ballPercept.radiusInImage = radius;
 
     // reject the ball
+    /*
     if (params.verifyByGlobalPosition && getRobotPose().isValid &&
         !getFieldInfo().insideCarpet(getRobotPose()*ballPercept.positionOnField)) {
+      return;
+    }
+    */
+
+    if (params.verifyByGlobalPosition && getRobotPose().isValid &&
+        !bdrCarpetRect.inside(getRobotPose().getGlobalPose()*ballPercept.positionOnField)) {
       return;
     }
 

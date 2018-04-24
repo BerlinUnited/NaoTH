@@ -102,6 +102,7 @@ private:
       //PARAMETER_REGISTER(contrastMinimum) = 50;
       PARAMETER_REGISTER(minRedInsideRatio) = 0.5;
       PARAMETER_REGISTER(verifyByGlobalPosition) = true;
+      PARAMETER_REGISTER(bdrCarpetRectOffset) = 0;
 
       syncWithConfig();
     }
@@ -113,6 +114,7 @@ private:
     //double contrastMinimum;
     double minRedInsideRatio;
     bool verifyByGlobalPosition;
+    double bdrCarpetRectOffset;
 
   } params;
 
@@ -124,6 +126,9 @@ private:
 private: //data members
   ModuleCreator<BallKeyPointExtractor>* theBallKeyPointExtractor;
   BestPatchList best;
+
+  double bdrCarpetRectOffset;
+  Geometry::Rect2d bdrCarpetRect;
 
 private:     
   

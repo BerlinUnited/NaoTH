@@ -30,7 +30,7 @@ public class RobotControlBdrMonitorImpl extends javax.swing.JFrame implements Ro
 {
     public static String panelName = "";
     public static String panelTitle = "";
-    public static SimpleObjectProperty<JPanel> healthPanel = new SimpleObjectProperty<JPanel>();
+    //public static SimpleObjectProperty<JPanel> healthPanel = new SimpleObjectProperty<JPanel>();
 
     /**
      * Creates new form RobotControlBdrImpl
@@ -64,9 +64,12 @@ public class RobotControlBdrMonitorImpl extends javax.swing.JFrame implements Ro
       System.out.println("loaded: " + dialog.getDisplayName());
       if(dialog.getDisplayName().equals(panelName)) {
           getContentPane().add(dialog.getPanel(), java.awt.BorderLayout.CENTER);
-      } else if(dialog.getDisplayName().equals("RobotHealth")) {
+      } 
+      /*
+      else if(dialog.getDisplayName().equals("RobotHealth")) {
           healthPanel.set(dialog.getPanel());
       }
+      */
       // for debugging:
       /*
       if(dialog.getDisplayName().equals("Simspark")) {

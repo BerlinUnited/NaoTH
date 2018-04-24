@@ -107,13 +107,11 @@ private:
     Pixel pixel;
     getImage().get_direct(point.x, point.y, pixel);
 
-    if(!getFieldColorPercept().greenHSISeparator.noColor(pixel)) {
-      if(getFieldColorPercept().greenHSISeparator.isChroma(pixel)) {
-        ++akk[1];
-      } else if(getFieldColorPercept().redHSISeparator.isChroma(pixel)) {
-        ++akk[2];
-        akk[0] += pixel.v;
-      }
+    if(getFieldColorPercept().greenHSISeparator.isColor(pixel)) {
+      ++akk[1];
+    } else if(getFieldColorPercept().redHSISeparator.isColor(pixel)) {
+      ++akk[2];
+      akk[0] += pixel.v;
     } else {
       akk[0] += pixel.v;
     }

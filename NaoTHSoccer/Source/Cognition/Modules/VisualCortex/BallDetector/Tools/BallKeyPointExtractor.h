@@ -286,11 +286,11 @@ void BallKeyPointExtractor::calculateKeyPointsFast(const ImageType& integralImag
     }
 
     // smalest ball size == 3 => ball size == FACTOR*3 == 12
-    if (point.y < radius || point.y + radius >= (int)integralImage.getHeight()) {
+    if (point.y < radius || point.y + radius+radius/2 >= (int)integralImage.getHeight()) {
       continue;
     }
     
-    for(point.x = radius; point.x + radius < (int)integralImage.getWidth(); ++point.x)
+    for(point.x = radius; point.x + radius  < (int)integralImage.getWidth(); ++point.x)
     {
       //evaluatePatch(integralImage, best, point, size, border);
 
@@ -300,18 +300,27 @@ void BallKeyPointExtractor::calculateKeyPointsFast(const ImageType& integralImag
       }
 
       int inner = integralImage.getSumForRect(point.x-radius, point.y-radius, point.x+radius, point.y+radius, 0);
-      double greeInner = integralImage.getDensityForRect(point.x-radius/2, point.y-radius/2, point.x+radius/2, point.y+radius/2, 1);
-      const int size = radius*2;
+      //double greenBelow = integralImage.getDensityForRect(point.x-radius, point.y+radius, point.x+radius, point.y+radius+radius/2, 1);
+      //double redInside = integralImage.getDensityForRect(point.x-radius, point.y-radius, point.x+radius, point.y+radius, 2);
       
-      if (inner*2 > size*size && greeInner < 0.5)
+      const int size = radius*2;
+      if (inner*2 > size*size)
       {
-        double value = ((double)inner)/((double)(size*size));
-        best.add( 
-            (point.x-radius)*integralImage.FACTOR, 
-            (point.y-radius)*integralImage.FACTOR, 
-            (point.x+radius)*integralImage.FACTOR, 
-            (point.y+radius)*integralImage.FACTOR, 
-            value);
+        double redInside = integralImage.getDensityForRect(point.x-radius, point.y-radius, point.x+radius, point.y+radius, 2);
+        if(redInside > 0.5)
+        {
+          //double greenBelow = integralImage.getDensityForRect(point.x-radius, point.y+radius, point.x+radius, point.y+radius+radius/2, 1);
+          //if(greenBelow > 0.5)
+          {
+            double value = ((double)inner)/((double)(size*size));
+            best.add( 
+                (point.x-radius)*integralImage.FACTOR, 
+                (point.y-radius)*integralImage.FACTOR, 
+                (point.x+radius)*integralImage.FACTOR, 
+                (point.y+radius)*integralImage.FACTOR, 
+                value);
+          }
+        }
       }
     }
   }
