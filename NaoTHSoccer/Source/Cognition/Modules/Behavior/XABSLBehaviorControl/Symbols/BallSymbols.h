@@ -31,7 +31,8 @@
 
 BEGIN_DECLARE_MODULE(BallSymbols)
   
-PROVIDE(BallModel) // PROVIDE so that XABSL bool can be read out
+  PROVIDE(BallModel) // PROVIDE so that XABSL bool can be read out
+
   PROVIDE(DebugRequest)
   PROVIDE(DebugPlot)
   PROVIDE(DebugDrawings)
@@ -54,7 +55,6 @@ public:
     ballPerceptSeen(false),
     ball_seen_filter(0.01, 0.1),
     ball_see_where_itis(false),
-    ball_in_own_half_filter(0.1, 0.1),
     ball_in_own_half(false)
   {
     theInstance = this;
@@ -77,6 +77,7 @@ private:
       PARAMETER_REGISTER(ball_seen_filter.g0) = 0.03;
       PARAMETER_REGISTER(ball_seen_filter.g1) = 0.1;
       
+      PARAMETER_REGISTER(own_half_margin) = 100;
       syncWithConfig();
     }
 
@@ -85,6 +86,7 @@ private:
       double g1;
     } ball_seen_filter;
     
+    double own_half_margin;
     virtual ~Parameters() {
     }
   } parameters;
@@ -134,7 +136,6 @@ private:
   AssymetricalBoolFilter ball_seen_filter;
   bool ball_see_where_itis;
 
-  AssymetricalBoolFilter ball_in_own_half_filter;
   bool ball_in_own_half;
 
 };//end class BallSymbols

@@ -19,7 +19,7 @@ option bdr_play_soccer
   state search {
     decision 
     {
-      else if(ball.know_where_itis && ball.inOwnHalf)
+      else if(ball.know_where_itis && ball.inOwnHalf && team.calc_if_is_striker)
         goto striker;
       else if(ball.know_where_itis || state_time > 10000)
         goto goto_home_position;
@@ -36,7 +36,7 @@ option bdr_play_soccer
   {
     decision 
     {
-      else if(ball.know_where_itis && ball.inOwnHalf)
+      else if(ball.know_where_itis && ball.inOwnHalf && team.calc_if_is_striker)
         goto striker;
       else if(action_done && !ball.know_where_itis)
         goto search;
@@ -62,6 +62,7 @@ option bdr_play_soccer
     }
 
     action {
+        team.is_playing_as_striker = true;
         situation_abortable = true;
         bdr_striker();
     }
