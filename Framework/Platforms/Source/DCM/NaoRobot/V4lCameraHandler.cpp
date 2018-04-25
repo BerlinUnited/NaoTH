@@ -887,6 +887,10 @@ void V4lCameraHandler::setAllCameraParams(const CameraSettings& data)
         (*it == CameraSettings::Exposure || *it == CameraSettings::Gain)) {
         // ignore
       }
+      else if(data.data[CameraSettings::AutoWhiteBalancing] && 
+        (*it == CameraSettings::WhiteBalance)) {
+        // ignore
+      }
       // apply the single parameter setting
       else if(setSingleCameraParameter(csConst[*it], data.data[*it], CameraSettings::getCameraSettingsName(*it))) {
         lastCameraSettingTimestamp = NaoTime::getSystemTimeInMicroSeconds();
@@ -899,6 +903,14 @@ void V4lCameraHandler::setAllCameraParams(const CameraSettings& data)
 
           std::cout << LOG << "autoupdated Exposure to "  << currentSettings.data[CameraSettings::Exposure] << std::endl;
         }
+        else if(*it == CameraSettings::AutoWhiteBalancing && currentSettings.data[*it] == 1 && data.data[*it] == 0)
+        {
+          // read back the white balance value set to make sure they are in sync
+          currentSettings.data[CameraSettings::WhiteBalance] = getSingleCameraParameter(csConst[CameraSettings::WhiteBalance]);
+
+          std::cout << LOG << "autoupdated ExposWhiteBalanceure to "  << currentSettings.data[CameraSettings::WhiteBalance] << std::endl;
+        }
+
 
         currentSettings.data[*it] = data.data[*it];
 
