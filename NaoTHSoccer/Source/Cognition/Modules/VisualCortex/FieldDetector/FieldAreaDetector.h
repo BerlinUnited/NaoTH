@@ -62,9 +62,13 @@ public:
     Parameters() : ParameterList("FieldAreaDetector")
     {
       PARAMETER_REGISTER(proportion_of_green) = 0.7;
+      PARAMETER_REGISTER(grid_size) = 32;
+      PARAMETER_REGISTER(green_weight) = .5;
       syncWithConfig();
     }
     double proportion_of_green;
+    int32_t grid_size;
+    double green_weight;
   } params;
 
 
