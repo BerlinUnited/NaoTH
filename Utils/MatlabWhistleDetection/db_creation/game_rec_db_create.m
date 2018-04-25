@@ -1,9 +1,14 @@
 clear variables
 clc
+%%
+database = '2018_03_Rodeo.mat';
+databasePath = 'D:\Downloads\WhistleData_mat\game_audio_recordings';
+data_path = 'D:\Downloads\WhistleData_mat\game_audio_recordings\2018_03_Rodeo';
+
 % adds a raw file to the whistle capture database
 % TODO does not check if file is already inserted
 try
-    load('../data/game_rec_database.mat')
+    load([databasePath '/' database])
     disp('INFO: using a previously created database')
 catch
     disp('INFO: no previous mat file was found')
@@ -11,7 +16,6 @@ catch
 end
 
 %%
-data_path = '<insert_path_here>';
 
 % get information about the location of each raw file inside gamelog_path
 folderContents = dir(strcat(data_path, '/**/*.wav'));
@@ -69,5 +73,4 @@ end
 
 %% Save capture database
 disp('Saving Game Recording database');
-%TODO better name based on event folder
-save('game_rec_database.mat','game_rec_database')
+save([databasePath '/' database],'game_rec_database')
