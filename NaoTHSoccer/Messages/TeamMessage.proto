@@ -51,6 +51,7 @@ message BUUserTeamMessage
   // only for visualizing teamball position in RC
   optional DoubleVector2 teamBall = 14;
   repeated Ntp ntpRequest = 15;
+  optional DoubleVector2 ballVelocity = 16; // since the SPLStandardMessage 2018, we need it here
   optional string key = 100 [default="none"];
 }
 

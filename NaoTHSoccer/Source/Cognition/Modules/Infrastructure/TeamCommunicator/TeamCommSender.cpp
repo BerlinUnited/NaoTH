@@ -59,6 +59,7 @@ void TeamCommSender::fillMessageBeforeSending() const
       // here in milliseconds (conversion to seconds is in SPLStandardMessage::createSplMessage())
       msg.ballAge = getFrameInfo().getTimeSince(getBallModel().getFrameInfoWhenBallWasSeen().getTime());
       msg.ballPosition = getBallModel().position;
+      msg.custom.ballVelocity = getBallModel().speed;
     } 
     else 
     {
@@ -66,6 +67,8 @@ void TeamCommSender::fillMessageBeforeSending() const
       msg.ballAge = -1;
       msg.ballPosition.x = std::numeric_limits<double>::max();
       msg.ballPosition.y = std::numeric_limits<double>::max();
+      msg.custom.ballVelocity.x = 0;
+      msg.custom.ballVelocity.y = 0;
     }
 
     msg.fallen = getBodyState().fall_down_state != BodyState::upright;
