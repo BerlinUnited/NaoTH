@@ -18,6 +18,7 @@
 
 #include <map>
 #include <queue>
+#include <set>
 
 #include <thread>
 #include <mutex>
@@ -84,10 +85,12 @@ private:
       }//end for
     }//end getDebugMessageIn
 
-    void clear()
+    void clear(std::set<unsigned long>& id_backlog)
     {
       while (g_async_queue_length(message_queue) > 0) {
-        delete (naoth::DebugMessageIn::Message*) g_async_queue_pop(message_queue);
+        naoth::DebugMessageIn::Message* msg = (naoth::DebugMessageIn::Message*) g_async_queue_pop(message_queue);
+        id_backlog.erase(msg->id);
+        delete msg;
       }
     }
   };
@@ -104,6 +107,7 @@ private:
   GAsyncQueue* answers; // outgoing messages
   Channel received_messages_cognition;
   Channel received_messages_motion;
+  std::set<unsigned long> id_backlog; // list of unanswered id's
 
   std::mutex m_executing;
   std::mutex m_abort;
