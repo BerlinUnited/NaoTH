@@ -166,11 +166,16 @@ CommonCameraSettingsRequest::CommonCameraSettingsRequest(string configName)
   PARAMETER_REGISTER(brightness) = 55;
   PARAMETER_REGISTER(exposure) = 1;
   PARAMETER_REGISTER(gain) = 1;
+  PARAMETER_REGISTER(targetGain) = 100.0;
+  PARAMETER_REGISTER(minAnalogGain) = 1.0;
+  PARAMETER_REGISTER(maxAnalogGain) = 8.0;
+
   PARAMETER_REGISTER(saturation) = 128;
   PARAMETER_REGISTER(sharpness) = 128;
   PARAMETER_REGISTER(whiteBalanceTemperature) = 6500;
   PARAMETER_REGISTER(autoExpositionMethod) = "averageY";
   PARAMETER_REGISTER(powerlineFrequency) = 50;
+
   PARAMETER_REGISTER(isActive) = false;
 
   syncWithConfig();
