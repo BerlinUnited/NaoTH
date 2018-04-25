@@ -2,10 +2,6 @@ clear variables
 clc
 
 database = 'capture_database.mat';
-
-% databasePath = '../data';
-% capture_path = 'D:\Downloads\capture_recordings';
-
 databasePath = 'D:\Downloads\WhistleData_mat';
 capture_path = 'D:\Downloads\WhistleData_mat\capture_recordings';
 

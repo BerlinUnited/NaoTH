@@ -1,7 +1,9 @@
 clear variables
 clc
-%% Example of how to get capture data and apply a detector
-load('../data/capture_database.mat')
+%% Example of how to get capture data
+database = 'capture_database.mat';
+databasePath = 'D:\Downloads\WhistleData_mat';
+load([databasePath '/' database])
 
 %% Get the capture categories
 go17_recordings = capture_database.go17_recordings;
