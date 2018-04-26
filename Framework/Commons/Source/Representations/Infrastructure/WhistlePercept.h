@@ -13,8 +13,17 @@ namespace naoth
   public:
     class Whistle
     {
+      public:
+
+      Whistle(const std::string& name_, const long long& positionInCapture_, const double& responseValue_)
+      :
+        name(name_),
+        positionInCapture(positionInCapture_),
+        responseValue(responseValue_)
+      {}
+
       std::string name;
-      size_t positionInCaputre;
+      long long positionInCapture;
       double responseValue;
     };
 

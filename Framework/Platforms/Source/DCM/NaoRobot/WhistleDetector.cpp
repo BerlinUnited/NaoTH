@@ -20,7 +20,8 @@ WhistleDetector::WhistleDetector()
    recording(false),
    resetting(false),
    startStopCount(0),
-   deinitCyclesCounter(0)
+   deinitCyclesCounter(0),
+   samplesRecorded(0)
 {
   std::cout << "[INFO] WhistleDetector start thread" << std::endl;
   whistleDetectorThread = std::thread([this] {this->execute();});
@@ -79,6 +80,9 @@ void WhistleDetector::get(naoth::WhistlePercept& perceptData)
   if ( lock.owns_lock() )
   {
     perceptData.counter = overallWhistleEventCounter;
+    perceptData.recognizedWhistles.clear();
+    perceptData.recognizedWhistles.assign(recognizedWhistles.begin(), recognizedWhistles.end());
+    recognizedWhistles.clear();
   }
 }
 
@@ -234,7 +238,8 @@ void WhistleDetector::execute()
       if (saveRawAudio)
       {
         outputFileStream.write((char*)(&audioReadBuffer[0]), bytesToRead);
-      }      
+      }    
+      samplesRecorded += SAMPLE_NEW_COUNT;
     }
     else
     {
@@ -427,11 +432,14 @@ bool WhistleDetector::detectWhistles(int channel)
         correlation = fabs(correlatedBuffer[j]);
       }
     }
-    if(correlation / referenceWhistleAutoCorrelationMaxima[idxWhistle] >= threshold)
+    double response = correlation / referenceWhistleAutoCorrelationMaxima[idxWhistle];
+    if(response >= threshold)
     {
       std::cout << "Whistle " << referenceWhistleNames[idxWhistle] << "(No. " << idxWhistle << ") maxCorr " << correlation << " ref corr " << referenceWhistleAutoCorrelationMaxima[idxWhistle] << std::endl;
-      std::cout << "Whistle " << referenceWhistleNames[idxWhistle] << "(No. " << idxWhistle << ") detected! " << correlation / referenceWhistleAutoCorrelationMaxima[idxWhistle] << std::endl;
+      std::cout << "Whistle " << referenceWhistleNames[idxWhistle] << "(No. " << idxWhistle << ") detected! " << response << std::endl;
       whistleDetected = true;
+      WhistlePercept::Whistle recWhistle(referenceWhistleNames[idxWhistle], samplesRecorded, response);
+      recognizedWhistles.push_back(recWhistle);
       if(!checkAllWhistles)
       {
         return true;
@@ -478,6 +486,7 @@ void WhistleDetector::initAudio()
     std::cout << "[PulseAudio] Channels: " << (int) paSampleSpec.channels <<std::endl;
     std::cout << "[PulseAudio] Buffer Size: " << BUFFER_SIZE_RX <<std::endl;
     recording = true;
+    samplesRecorded = 0;
   }
 
   if(saveRawAudio)
@@ -494,6 +503,7 @@ void WhistleDetector::initAudio()
 void WhistleDetector::deinitAudio()
 {
   recording = false;
+  samplesRecorded = 0;
   if(saveRawAudio)
   {
     outputFileStream.close();

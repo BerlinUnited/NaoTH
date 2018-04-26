@@ -69,7 +69,7 @@ protected:
   std::vector<fftw_complex*> referenceWhistleSpectra;
   std::vector<double> referenceWhistleAutoCorrelationMaxima;
   std::vector<std::string> referenceWhistleNames;
-
+  std::vector<WhistlePercept::Whistle> recognizedWhistles;
 
   int overallWhistleEventCounter;
   //unsigned long long aktFrameTime;
@@ -82,7 +82,7 @@ protected:
   std::ofstream outputFileStream;
   int startStopCount;
   int deinitCyclesCounter;
-
+  long long samplesRecorded;
 };
 
 }
