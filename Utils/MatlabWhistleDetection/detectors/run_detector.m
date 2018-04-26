@@ -12,6 +12,8 @@ capture_data = go17_recordings(1).rawData;
 
 windows_size = 1024;
 
+%% Max Peak Detector
+
 results = peak_detector(capture_data, windows_size, 768, 20000);
 
 % Plot results
@@ -23,6 +25,8 @@ for i=1:length(results.indices)
 end
 hold off
 
+%% ZCR Detector
+
 results = zcr_detector(capture_data, 1024, 768, 20000);
 
 % Plot results
@@ -33,3 +37,25 @@ for i=1:length(results.indices)
     plot([results.indices(i) results.indices(i) + windows_size - 1], [results.values(i) results.values(i)])
 end
 hold off
+
+%% Max Cross Correlation Detector
+
+fftw('planner','estimate');
+
+% fftinfo = fftw('dwisdom')
+
+results = maxcrosscorr_detector(capture_data, 1024, 768, 20000);
+
+% Plot results
+figure('name', 'max cross correlation detector results')
+hold on
+plot( results.indices, results.values )
+for i=1:length(results.indices)
+    plot([results.indices(i) results.indices(i) + windows_size - 1], [results.values(i) results.values(i)])
+end
+hold off
+
+
+
+
+
