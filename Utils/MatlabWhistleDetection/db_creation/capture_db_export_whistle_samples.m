@@ -22,6 +22,8 @@ end
 
 % get only the samples where annotation array is 1
 for k=1:length(list_of_annotated_samples)
+    
+    % BUG assumes that only on whistle per recording
     samples = go17_recordings(list_of_annotated_samples(k)).rawData;
     annotations = go17_recordings(list_of_annotated_samples(k)).annotations(:,1);
 
