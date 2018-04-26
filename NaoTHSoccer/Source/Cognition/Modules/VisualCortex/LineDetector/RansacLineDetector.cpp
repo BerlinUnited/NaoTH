@@ -107,21 +107,50 @@ void RansacLineDetector::execute()
     int bestInlierCirc = ransacEllipse(circResult);
 
     if (bestInlierCirc > 0) {
-      double c[2];
-      circResult.getCenter(c);
+      {
+        
+        double c[2];
+        circResult.getCenter(c);
 
-      double a[2];
-      circResult.axesLength(a);
+        double a[2];
+        circResult.axesLength(a);
 
-      PEN("009900", 50);
+        PEN("009900", 50);
 
-      CIRCLE(c[0], c[1], 30);
-      OVAL_ROTATED(c[0], c[1], a[0], a[1], circResult.rotationAngle());
+        //CIRCLE(c[0], c[1], 30);
+        OVAL_ROTATED(c[0], c[1], a[0], a[1], circResult.rotationAngle());
 
-      PEN("0000AA", 20);
-      for(size_t i=0; i<circResult.x_toFit.size(); i++) {
-        CIRCLE(circResult.x_toFit[i], circResult.y_toFit[i], 20);
+        PEN("0000AA", 20);
+        for(size_t i=0; i<circResult.x_toFit.size(); i++) {
+          CIRCLE(circResult.x_toFit[i], circResult.y_toFit[i], 20);
+        }
       }
+
+      {
+        Vector2d c = circResult.getCenter();
+        Vector2d a = circResult.axesLength();
+        
+        Vector2d ax(a.x,0.0); 
+        ax.rotate(circResult.rotationAngle());
+
+        Vector2d ay(0.0,a.y); 
+        ay.rotate(circResult.rotationAngle());
+
+        PEN("FF0000", 20);
+        CIRCLE(c.x, c.y, 50);
+        LINE(c.x, c.y, c.x+ax.x, c.y+ax.y);
+        LINE(c.x, c.y, c.x+ay.x, c.y+ay.y);
+
+
+        Vector2d point(500,500);
+        Vector2d p = circResult.test_project(point);
+        PEN("FF0000", 20);
+        CIRCLE(point.x, point.y, 50);
+        PEN("0000FF", 20);
+        CIRCLE(p.x, p.y, 50);
+        PEN("000000", 10);
+        LINE(point.x, point.y, p.x, p.y);
+    }
     }
   );
 }
