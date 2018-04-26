@@ -23,7 +23,7 @@ CameraMatrixCorrectorV2::CameraMatrixCorrectorV2()
 
   DEBUG_REQUEST_REGISTER("CameraMatrixV2:enable_CamMatErrorFunction_drawings", "needed to be activated for error function drawings", false);
 
-  DEBUG_REQUEST_REGISTER("CameraMatrixV2:automatic_mode","try to do automatic calibration", true);
+  DEBUG_REQUEST_REGISTER("CameraMatrixV2:automatic_mode","try to do automatic calibration", false);
 
   DEBUG_REQUEST_REGISTER("CameraMatrixV2:calibrateOnlyPos","",false);
   DEBUG_REQUEST_REGISTER("CameraMatrixV2:calibrateOnlyOffsets","",false);
