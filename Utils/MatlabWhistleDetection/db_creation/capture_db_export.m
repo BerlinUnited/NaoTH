@@ -3,6 +3,7 @@ clc
 %% Example of how to get capture data
 database = 'capture_database.mat';
 databasePath = 'D:\Downloads\WhistleData_mat';
+exportPath = fullfile(databasePath, 'capture_recordings');
 load([databasePath '/' database])
 
 %% Get the capture categories
@@ -17,7 +18,7 @@ for i=1:length(go17_recordings)
     rawData = go17_recordings(i).rawData;
     filename = go17_recordings(i).filename;
     
-    path_to_outputfolder = fullfile('../data/capture_data_raw/go17_recordings', game_name, half, robot_name);
+    path_to_outputfolder = fullfile(exportPath, 'go17_recordings', game_name, half, robot_name);
     mkdir(path_to_outputfolder)
     
     fileID = fopen(fullfile(path_to_outputfolder, filename), 'w');
@@ -40,7 +41,8 @@ for i=1:length(rc17_recordings)
     rawData = rc17_recordings(i).rawData;
     filename = rc17_recordings(i).filename;
     
-    path_to_outputfolder = fullfile('../data/capture_data_raw/rc17_recordings', game_name, half, robot_name);
+    %TODO change the path
+    path_to_outputfolder = fullfile(exportPath, 'rc17_recordings', game_name, half, robot_name);
     mkdir(path_to_outputfolder)
     
     fileID = fopen (fullfile(path_to_outputfolder, filename), 'w');
