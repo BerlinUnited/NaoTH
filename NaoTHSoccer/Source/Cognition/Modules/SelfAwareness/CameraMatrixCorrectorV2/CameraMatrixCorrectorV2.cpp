@@ -49,6 +49,8 @@ CameraMatrixCorrectorV2::CameraMatrixCorrectorV2()
   }
 
   current_target = target_points.begin();
+
+  readFromRepresentation();
 }
 
 CameraMatrixCorrectorV2::~CameraMatrixCorrectorV2()
@@ -349,6 +351,7 @@ void CameraMatrixCorrectorV2::doItAutomatically()
 {
     if(!auto_cleared_data) {
         (theCamMatErrorFunction->getModuleT())->clear();
+        readFromRepresentation();
         auto_cleared_data = true;
     }
 
@@ -398,4 +401,21 @@ void CameraMatrixCorrectorV2::writeToRepresentation()
   getCameraMatrixOffset().head_rot += Vector3d(cam_mat_offsets(2),cam_mat_offsets(3),cam_mat_offsets(4));
   getCameraMatrixOffset().cam_rot[CameraInfo::Top]    += Vector3d(cam_mat_offsets(5),cam_mat_offsets(6),cam_mat_offsets(7));
   getCameraMatrixOffset().cam_rot[CameraInfo::Bottom] += Vector3d(cam_mat_offsets(8),cam_mat_offsets(9),cam_mat_offsets(10));
+}
+
+void CameraMatrixCorrectorV2::readFromRepresentation(){
+  cam_mat_offsets << getCameraMatrixOffset().body_rot.x,
+                     getCameraMatrixOffset().body_rot.y,
+                     getCameraMatrixOffset().head_rot.x,
+                     getCameraMatrixOffset().head_rot.y,
+                     getCameraMatrixOffset().head_rot.z,
+                     getCameraMatrixOffset().cam_rot[CameraInfo::Top].x,
+                     getCameraMatrixOffset().cam_rot[CameraInfo::Top].y,
+                     getCameraMatrixOffset().cam_rot[CameraInfo::Top].z,
+                     getCameraMatrixOffset().cam_rot[CameraInfo::Bottom].x,
+                     getCameraMatrixOffset().cam_rot[CameraInfo::Bottom].y,
+                     getCameraMatrixOffset().cam_rot[CameraInfo::Bottom].z,
+                     0, //x
+                     0, //y
+                     0; //z
 }

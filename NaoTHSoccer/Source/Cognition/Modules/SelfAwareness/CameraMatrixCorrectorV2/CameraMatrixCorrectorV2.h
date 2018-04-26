@@ -360,7 +360,9 @@ private:
   bool collectingData();
   void sampling();
   void doItAutomatically();
+
   void writeToRepresentation();
+  void readFromRepresentation();
 
   ModuleCreator<CamMatErrorFunction>* theCamMatErrorFunction;
 
