@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 #include "Tools/DataStructures/Printable.h"
+#include "Tools/DataStructures/Serializer.h"
 
 namespace naoth
 {
@@ -30,11 +31,20 @@ namespace naoth
     std::vector<Whistle> recognizedWhistles;
     std::string captureFile;
     int counter;
+    int lastCounterAtSerialization;
 
     WhistlePercept();
     virtual void print(std::ostream& stream) const;
 
     virtual ~WhistlePercept();
+  };
+
+  template<>
+  class Serializer<WhistlePercept>
+  {
+  public:
+    static void serialize(const WhistlePercept& representation, std::ostream& stream);
+    static void deserialize(std::istream& stream, WhistlePercept& representation);
   };
 }
 
