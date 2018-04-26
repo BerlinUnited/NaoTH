@@ -1,5 +1,4 @@
-
-function result = peak_detector(capture_data, window_size, window_offset, threshold)
+function result = zcr_detector(capture_data, window_size, window_offset, threshold)
     %% Run Peak Detection on a single capture
     result = {};
     result.indices = [];
@@ -9,13 +8,13 @@ function result = peak_detector(capture_data, window_size, window_offset, thresh
             break
         end
         slice = capture_data(i:i + window_size - 1);
-        max_slice = max(slice);
-        
+        res_slice = zcr(slice, window_size, 256);
+
         % TODO write statistik in capture database
-        if(max_slice > threshold)
+        if(res_slice > threshold)
             disp('Whistle detected')
         end
         result.indices(end + 1) = i;
-        result.values(end + 1)  = max_slice;
+        result.values(end + 1)  = res_slice;
     end
 end
