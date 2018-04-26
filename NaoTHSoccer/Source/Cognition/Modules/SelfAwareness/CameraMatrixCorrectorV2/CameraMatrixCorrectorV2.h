@@ -343,11 +343,8 @@ public:
 
 private:
 
-  enum {initial, look_left, look_right, look_right_down, look_left_down, look_right_up, look_left_up} head_state, last_head_state;
-
-  int last_idx_yaw,last_idx_pitch;
-  double damping_cam_offsets;
-  double damping_pose;
+  std::vector<Vector2d> target_points;
+  std::vector<Vector2d>::const_iterator current_target;
 
   Eigen::Matrix<double, 14, 1> cam_mat_offsets;
 
@@ -360,10 +357,9 @@ private:
   bool calibrateOnlyOffsets();
   bool calibrateSimultaneously();
   void reset_calibration();
-  bool movingHead();
-  void collectingData();
+  bool collectingData();
+  void sampling();
   void doItAutomatically();
-
   void writeToRepresentation();
 
   ModuleCreator<CamMatErrorFunction>* theCamMatErrorFunction;
@@ -376,7 +372,6 @@ private:
   RingBufferWithSum<double, 50> derrors_offset;
   double last_error;
   FrameInfo last_frame_info;
-
 };
 
 #endif //_CameraMatrixCorrectorV2_h_

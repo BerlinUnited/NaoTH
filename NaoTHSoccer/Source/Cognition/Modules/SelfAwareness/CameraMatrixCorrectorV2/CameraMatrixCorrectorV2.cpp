@@ -5,6 +5,7 @@
 */
 
 #include "CameraMatrixCorrectorV2.h"
+#include <array>
 
 CameraMatrixCorrectorV2::CameraMatrixCorrectorV2()
 {
@@ -29,15 +30,25 @@ CameraMatrixCorrectorV2::CameraMatrixCorrectorV2()
   DEBUG_REQUEST_REGISTER("CameraMatrixV2:calibrateSimultaneously","",false);
 
   theCamMatErrorFunction = registerModule<CamMatErrorFunction>("CamMatErrorFunction", true);
-  last_idx_yaw   = 0;
-  last_idx_pitch = 0;
-
-  head_state      = look_left;
-  last_head_state = initial;
 
   auto_cleared_data = auto_collected = auto_calibrated_phase1 = auto_calibrated = false;
   play_calibrated = play_calibrating = play_collecting = true;
   last_error = 0;
+
+  // sampling coordinates
+  std::array<double,3> pitchs {-22 , 0, 10};
+  std::vector<double> yaws;
+  for (int i = -88; i <= 88; i=i+16) {
+      yaws.push_back(i);
+  }
+
+  for(double pitch : pitchs){
+      for(double yaw : yaws){
+          target_points.push_back(Vector2d(yaw, pitch));
+      }
+  }
+
+  current_target = target_points.begin();
 }
 
 CameraMatrixCorrectorV2::~CameraMatrixCorrectorV2()
@@ -79,9 +90,8 @@ void CameraMatrixCorrectorV2::execute()
     }
 
     // reset to intial
-    head_state = look_left;
-    last_head_state = initial;
     getHeadMotionRequest().id = HeadMotionRequest::hold;
+    current_target = target_points.begin();
 
     auto_cleared_data = auto_collected = auto_calibrated_phase1 = auto_calibrated = false;
     play_calibrated = play_calibrating = play_collecting = true;
@@ -109,22 +119,15 @@ void CameraMatrixCorrectorV2::execute()
         (theCamMatErrorFunction->getModuleT())->clear();
       );
 
-      bool collect_data = false;
       DEBUG_REQUEST("CameraMatrixV2:collect_calibration_data",
-        collect_data = true;
+        collectingData();
       );
 
       DEBUG_REQUEST_ON_DEACTIVE("CameraMatrixV2:collect_calibration_data",
         // reset to initial
-        head_state = look_left;
-        last_head_state = initial;
         getHeadMotionRequest().id = HeadMotionRequest::hold;
+        current_target = target_points.begin();
       );
-
-      if(collect_data){
-          movingHead();
-          collectingData();
-      }
 
       DEBUG_REQUEST("CameraMatrixV2:calibrate_camera_matrix_line_matching",
           calibrate();
@@ -283,132 +286,63 @@ bool CameraMatrixCorrectorV2::calibrateOnlyOffsets()
 }//end calibrate
 
 // returns true, if the trajectory is starting again from beginning
-bool CameraMatrixCorrectorV2::movingHead()
+bool CameraMatrixCorrectorV2::collectingData()
 {
-    double yaw = 0;
-    double pitch = 0;
-    bool   target_reached = false;
-    bool   finished = false;
-
-    switch (head_state){
-    case look_left:
-        yaw = 88;
-        pitch = 0;
-        break;
-    case look_right:
-        yaw = -88;
-        pitch = 0;
-        break;
-    case look_left_down:
-        yaw = 88;
-        pitch = 10;
-        break;
-    case look_right_down:
-        yaw = -88;
-        pitch = 10;
-        break;
-    case look_left_up:
-        yaw = 88;
-        pitch = -20;
-        break;
-    case look_right_up:
-        yaw = -88;
-        pitch = -20;
-        break;
-    default:
-        break;
-    }
-
     getHeadMotionRequest().id = HeadMotionRequest::goto_angle;
-    getHeadMotionRequest().targetJointPosition.x = Math::fromDegrees(yaw);
-    getHeadMotionRequest().targetJointPosition.y = Math::fromDegrees(pitch);
-    getHeadMotionRequest().velocity = 10;
+    getHeadMotionRequest().targetJointPosition.x = Math::fromDegrees(current_target->x);
+    getHeadMotionRequest().targetJointPosition.y = Math::fromDegrees(current_target->y);
+    getHeadMotionRequest().velocity = 20;
     MODIFY("CameraMatrixV2:collecting_velocity", getHeadMotionRequest().velocity);
 
-    // state transitions
-    target_reached =    (fabs(Math::toDegrees(getSensorJointData().position[JointData::HeadYaw]) - yaw) < 2)
-                     && (fabs(Math::toDegrees(getSensorJointData().position[JointData::HeadPitch]) - pitch) < 2);
-    if(target_reached){
-        if(head_state == look_left && last_head_state == initial){
-            head_state = look_right;
-            last_head_state = look_left;
-        } else if (head_state == look_right && last_head_state == look_left){
-            head_state = look_right_down;
-            last_head_state = look_right;
-        } else if (head_state == look_right_down && last_head_state == look_right){
-            head_state = look_right;
-            last_head_state = look_right_down;
-        } else if (head_state == look_right && last_head_state == look_right_down){
-            head_state = look_left;
-            last_head_state = look_right;
-        } else if (head_state == look_left && last_head_state == look_right){
-            head_state = look_left_down;
-            last_head_state = look_left;
-        } else if (head_state == look_left_down && last_head_state == look_left){
-            head_state = look_right_down;
-            last_head_state = look_left_down;
-        } else if (head_state == look_right_down && last_head_state == look_left_down){
-            head_state = look_left_down;
-            last_head_state = look_right_down;
-        } else if (head_state == look_left_down && last_head_state == look_right_down){
-            head_state = look_left;
-            last_head_state = look_left_down;
-        } else if (head_state == look_left && last_head_state == look_left_down){
-            head_state = look_left_up;
-            last_head_state = look_left;
-        } else if (head_state == look_left_up && last_head_state == look_left){
-            head_state = look_right_up;
-            last_head_state = look_left_up;
-        } else if (head_state == look_right_up && last_head_state == look_left_up){
-            head_state = look_right;
-            last_head_state = look_right_up;
-        } else if (head_state == look_right && last_head_state == look_right_up){
-            head_state = look_right_up;
-            last_head_state = look_right;
-        } else if (head_state == look_right_up && last_head_state == look_right){
-            head_state = look_left_up;
-            last_head_state = look_right_up;
-        } else if (head_state == look_left_up && last_head_state == look_right_up){
-            head_state = look_left;
-            last_head_state = look_left_up;
-        } else if (head_state == look_left && last_head_state == look_left_up){
-            head_state = look_right;
-            last_head_state = look_left;
-            finished = true;
-        }
+    double dt = getFrameInfo().getTimeInSeconds()-last_frame_info.getTimeInSeconds();
+    double current_yaw   = Math::toDegrees(getSensorJointData().position[JointData::HeadYaw]);
+    double current_pitch = Math::toDegrees(getSensorJointData().position[JointData::HeadPitch]);
+
+    static double last_yaw(current_yaw);
+    static double last_pitch(current_pitch);
+
+    double vel_yaw   = (last_yaw   - current_yaw)/dt;
+    double vel_pitch = (last_pitch - current_pitch)/dt;
+
+    last_yaw   = current_yaw;
+    last_pitch = current_pitch;
+
+    // state transitions and triggering sampling
+    bool target_reached =     fabs(current_yaw   - current_target->x) < 3
+                           && fabs(current_pitch - current_target->y) < 3
+                           && fabs(vel_yaw)   < 0.5
+                           && fabs(vel_pitch) < 0.5;
+
+    if(target_reached && current_target != target_points.end()){
+        sampling();
+        current_target++;
     }
-    return finished;
+
+    PLOT("CameraMatrixV2:vel_yaw",vel_yaw);
+    PLOT("CameraMatrixV2:vel_pitch", vel_pitch);
+    PLOT("CameraMatrixV2:target_reached", target_reached);
+
+    return current_target == target_points.end();
 }
 
-void CameraMatrixCorrectorV2::collectingData()
+void CameraMatrixCorrectorV2::sampling()
 {
-    if(last_head_state != initial) {
-        int current_index_yaw   = static_cast<int>((Math::toDegrees(getSensorJointData().position[JointData::HeadYaw])/15.0) + 0.5);
-        int current_index_pitch = static_cast<int>((Math::toDegrees(getSensorJointData().position[JointData::HeadPitch])/5.0) + 0.5);
+    LineGraphPercept lineGraphPercept(getLineGraphPercept());
 
-        if(last_idx_pitch != current_index_pitch || last_idx_yaw != current_index_yaw) {
-
-            LineGraphPercept lineGraphPercept(getLineGraphPercept());
-
-            // TODO: ignore upper image if the center is above the horizon
-            // HACK: ignore it if headpitch is smaller than -15
-            //if(head_state == look_right_up || head_state == look_left_up
-            //   || last_head_state == look_right_up || last_head_state == look_left_up){
-            if(Math::toDegrees(getSensorJointData().position[JointData::HeadPitch]) < -15) {
-                lineGraphPercept.edgelsInImageTop.clear();
-            }
-
-            (theCamMatErrorFunction->getModuleT())->add(CamMatErrorFunction::CalibrationDataSample(getKinematicChain().theLinks[KinematicChain::Torso].M,
-                                                                        lineGraphPercept,
-                                                                        getInertialModel(),
-                                                                        getSensorJointData().position[JointData::HeadYaw],
-                                                                        getSensorJointData().position[JointData::HeadPitch]
-                                                                       ));
-
-            last_idx_pitch = current_index_pitch;
-            last_idx_yaw   = current_index_yaw;
-        }
+    // TODO: ignore upper image if the center is above the horizon
+    // HACK: ignore it if headpitch is smaller than -15
+    //if(head_state == look_right_up || head_state == look_left_up
+    //   || last_head_state == look_right_up || last_head_state == look_left_up){
+    if(Math::toDegrees(getSensorJointData().position[JointData::HeadPitch]) < -15) {
+        lineGraphPercept.edgelsInImageTop.clear();
     }
+
+    (theCamMatErrorFunction->getModuleT())->add(CamMatErrorFunction::CalibrationDataSample(getKinematicChain().theLinks[KinematicChain::Torso].M,
+                                                                lineGraphPercept,
+                                                                getInertialModel(),
+                                                                getSensorJointData().position[JointData::HeadYaw],
+                                                                getSensorJointData().position[JointData::HeadPitch]
+                                                               ));
 }
 
 void CameraMatrixCorrectorV2::doItAutomatically()
@@ -419,8 +353,7 @@ void CameraMatrixCorrectorV2::doItAutomatically()
     }
 
     if(!auto_collected){
-        auto_collected = movingHead();
-        collectingData();
+        auto_collected = collectingData();
 
         if(play_collecting){
             getSoundPlayData().mute = false;
