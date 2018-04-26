@@ -28,6 +28,7 @@ public:
 
   void get(naoth::WhistlePercept& perceptData);
   void set(const naoth::WhistleControl& controlData);
+  void setRobotName(const std::string& name);
 
 protected:
   std::thread whistleDetectorThread;
@@ -80,6 +81,8 @@ protected:
   bool recording;
   bool resetting;
   std::ofstream outputFileStream;
+  std::string captureFileName;
+  std::string robotName;
   int startStopCount;
   int deinitCyclesCounter;
   long long samplesRecorded;

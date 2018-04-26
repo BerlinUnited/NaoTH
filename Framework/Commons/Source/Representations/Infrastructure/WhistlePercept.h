@@ -28,6 +28,7 @@ namespace naoth
     };
 
     std::vector<Whistle> recognizedWhistles;
+    std::string captureFile;
     int counter;
 
     WhistlePercept();

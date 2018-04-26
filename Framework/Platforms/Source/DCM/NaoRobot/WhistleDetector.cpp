@@ -79,10 +79,15 @@ void WhistleDetector::get(naoth::WhistlePercept& perceptData)
   std::unique_lock<std::mutex> lock(getMutex, std::try_to_lock);
   if ( lock.owns_lock() )
   {
-    perceptData.counter = overallWhistleEventCounter;
-    perceptData.recognizedWhistles.clear();
-    perceptData.recognizedWhistles.assign(recognizedWhistles.begin(), recognizedWhistles.end());
-    recognizedWhistles.clear();
+    if(recognizedWhistles.size() > 0)
+    {
+      perceptData.counter = overallWhistleEventCounter;
+      perceptData.captureFile = captureFileName;
+      perceptData.recognizedWhistles.clear();
+      std::cout << recognizedWhistles.size() << " whistles fired since last cognition cycle" << std::endl;
+      perceptData.recognizedWhistles.assign(recognizedWhistles.begin(), recognizedWhistles.end());
+      recognizedWhistles.clear();
+    }
   }
 }
 
@@ -452,9 +457,10 @@ bool WhistleDetector::detectWhistles(int channel)
     /*
     if(testFileMode)
     {
-      std::cout << " on Position " << (audioTestFile.tellg() / (sizeof(short) * NUM_CHANNELS_RX)) << std::endl;
+      std::cout << " on Position " << (audioTestFile.tellg() / (sizeof(short) * NUM_CHANNELS_RX));
     }
     */
+    std::cout << std::endl;
   }
   return whistleDetected;
 }
@@ -495,8 +501,9 @@ void WhistleDetector::initAudio()
     tm *ltm = localtime(&now);
 
     std::stringstream filePath;
-    filePath << "/tmp/capture_" << 1900+ltm->tm_year << "-" << 1 + ltm->tm_mon << "-" << ltm->tm_mday << "-" << 1 + ltm->tm_hour << "-" <<  1 + ltm->tm_min << "_" << static_cast<double>(paSampleSpec.rate) / 1000 <<  "kHz_" << (int) paSampleSpec.channels << "channels.raw";
-    outputFileStream.open(filePath.str().c_str(), std::ios_base::out | std::ios_base::binary);
+    filePath << "/tmp/capture_" << robotName << "_" << 1900+ltm->tm_year << "-" << 1 + ltm->tm_mon << "-" << ltm->tm_mday << "-" << 1 + ltm->tm_hour << "-" <<  1 + ltm->tm_min << "_" << static_cast<double>(paSampleSpec.rate) / 1000 <<  "kHz_" << (int) paSampleSpec.channels << "channels.raw";
+    captureFileName = filePath.str();
+    outputFileStream.open(captureFileName.c_str(), std::ios_base::out | std::ios_base::binary);
   }
 }
 
@@ -517,6 +524,11 @@ void WhistleDetector::deinitAudio()
       paSimple = NULL;
     }
   }
+}
+
+void WhistleDetector::setRobotName(const std::string& name)
+{
+  robotName = name;
 }
 
 
