@@ -70,7 +70,8 @@ class FeetStabilizer : private FeetStabilizerBase
         const Vector3d& gyro     = getGyrometerData().data;
 
         // HACK: small filter...
-        filteredGyro = filteredGyro*0.8 + gyro*0.2;
+        const double alpha = parameters.gyroFilterAlpha;
+        filteredGyro = filteredGyro * (1.0f - alpha) + gyro * alpha;
 
         Vector2d weight;
         weight.x =
