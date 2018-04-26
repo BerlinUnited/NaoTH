@@ -36,9 +36,9 @@ CameraMatrixCorrectorV2::CameraMatrixCorrectorV2()
   last_error = 0;
 
   // sampling coordinates
-  std::array<double,3> pitchs {-22 , 0, 10};
+  std::array<double,4> pitchs {-20, -10 , 0, 10};
   std::vector<double> yaws;
-  for (int i = -88; i <= 88; i=i+16) {
+  for (int i = -88; i <= 88; i=i+8) {
       yaws.push_back(i);
   }
 
@@ -310,8 +310,8 @@ bool CameraMatrixCorrectorV2::collectingData()
     // state transitions and triggering sampling
     bool target_reached =     fabs(current_yaw   - current_target->x) < 3
                            && fabs(current_pitch - current_target->y) < 3
-                           && fabs(vel_yaw)   < 0.5
-                           && fabs(vel_pitch) < 0.5;
+                           && fabs(vel_yaw)   < 0.2
+                           && fabs(vel_pitch) < 0.2;
 
     if(target_reached && current_target != target_points.end()){
         sampling();
