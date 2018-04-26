@@ -90,9 +90,10 @@ void Ellipse::fitPoints(Eigen::VectorXd x,  Eigen::VectorXd y) {
   axesLength(axes);
 
   double norm = (std::max(axes[0], axes[1]) /
-      sqrt(center[0]*center[0]*params[0]
+      sqrt(
+           std::fabs(center[0]*center[0]*params[0]
          + center[0]*center[1]*params[1]
-         + center[1]*center[1]*params[2]));
+         + center[1]*center[1]*params[2])));
   for(int i=0; i<6; ++i) {
     params[i] *= norm;
   }
