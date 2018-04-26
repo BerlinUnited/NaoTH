@@ -181,7 +181,8 @@ int RansacLineDetector::ransac(Math::LineSegment& result, std::vector<size_t>& i
     }
   }
 
-  if(bestInlier > 2) {
+  if(bestInlier > 2) 
+  {
     // update the outliers
     // todo: make it faster
     std::vector<size_t> newOutliers;
@@ -189,7 +190,7 @@ int RansacLineDetector::ransac(Math::LineSegment& result, std::vector<size_t>& i
     double minT = 0;
     double maxT = 0;
 
-    double mean_angle = 0;
+    Vector2d mean_direction;
 
     for(size_t i: outliers)
     {
@@ -202,22 +203,26 @@ int RansacLineDetector::ransac(Math::LineSegment& result, std::vector<size_t>& i
         maxT = std::max(t, maxT);
         inliers.push_back(i);
 
-        mean_angle += Math::toDegrees(e.direction.angle());
+        mean_direction += e.direction;
       } else {
         newOutliers.push_back(i);
       }
     }
 
-    double angle_var = 0;
+    Vector2d direction_var;
 
-    if(inliers.size()) {
-      mean_angle /= static_cast<int>(inliers.size());
+    if(!inliers.empty()) 
+    {
+      mean_direction /= static_cast<int>(inliers.size());
 
       for(size_t i : inliers) {
         const Edgel& e = getLineGraphPercept().edgels[i];
-        angle_var += std::pow(Math::toDegrees(e.direction.angle()) - mean_angle, 2);
+        Vector2d tmp(1.0,0.0);
+        tmp.rotate(std::fabs(Math::normalize(e.direction.angle() - mean_direction.angle())));
+
+        direction_var += tmp;
       }
-      angle_var /= static_cast<int>(inliers.size());
+      double angle_var = (direction_var / static_cast<int>(inliers.size())).angle();
 
       result = Math::LineSegment(bestModel.point(minT), bestModel.point(maxT));
       double line_length = result.getLength();
