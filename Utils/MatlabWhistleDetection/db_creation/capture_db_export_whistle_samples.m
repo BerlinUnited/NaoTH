@@ -33,13 +33,22 @@ for k=1:length(list_of_annotated_samples)
     % logical indexing
     annotations_idx = annotations == 1;
     whistle_samples = samples(annotations_idx);
-
-    % Export samples as wav
+    
+    %%
+    game_name = go17_recordings(k).game_name;
+    half = go17_recordings(k).half;
+    robot_name = go17_recordings(k).robot_name;
+    filename = go17_recordings(k).filename;
+    
+    % Export full whistle samples as wav
     %TODO better name
-    filename = strcat(num2str(k),'.wav');
+    path_to_outputfolder = fullfile(exportPath, 'go17_recordings', game_name, half, robot_name);
+    mkdir(path_to_outputfolder);
+    export_filename = fullfile(path_to_outputfolder, strcat(filename, '-fullwhistle', '.wav'));
+    
     Fs = go17_recordings(k).samplerate;
     y = whistle_samples ./ max( abs(whistle_samples(:)) );
-    audiowrite(char(filename),y,Fs);
+    audiowrite(char(export_filename),y,Fs);
 
     % Export references
     % use 1024 samples from whistle_samples
@@ -48,18 +57,14 @@ for k=1:length(list_of_annotated_samples)
 
     reference_samples = whistle_samples(length(ueberlaenge_front):length(ueberlaenge_front) + 1024 -1);
     
-    game_name = go17_recordings(k).game_name;
-    half = go17_recordings(k).half;
-    robot_name = go17_recordings(k).robot_name;
     path_to_outputfolder = fullfile(exportPath, 'go17_recordings', game_name, half, robot_name);
     mkdir(path_to_outputfolder);
     
     % Export new reference whistle as wav
-    % TODO better name
-    filename = fullfile(path_to_outputfolder, strcat('referencesample', '.wav'));
+    export_filename = fullfile(path_to_outputfolder, strcat(filename, '-referencewhistle', '.wav'));
     Fs = go17_recordings(k).samplerate;
     y = reference_samples ./ max( abs(reference_samples(:)) );
-    audiowrite(char(filename),y,Fs);
+    audiowrite(char(export_filename),y,Fs);
 end
     
     
