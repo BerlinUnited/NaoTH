@@ -78,7 +78,7 @@ class TorsoRotationStabilizer : private TorsoRotationStabilizerBase
         Vector2d gyro = Vector2d(theGyrometerData.data.x, theGyrometerData.data.y);
         static Vector2d filteredGyro = gyro;
 
-        const double alpha = 0.2;
+        const double alpha = parameters.gyroFilterAlpha;
         filteredGyro = filteredGyro * (1.0f - alpha) + gyro * alpha;
 
         const double observerMeasurementDelay = 40;
@@ -110,9 +110,18 @@ class TorsoRotationStabilizer : private TorsoRotationStabilizerBase
           correctionX += rotationP.x * inertial.x;
           correctionY += rotationP.y * inertial.y;
 
-          p.localInHip();
-          p.hip.rotateX(correctionX);
-          p.hip.rotateY(correctionY);
+          if(parameters.localRotationCalibration) {
+            p.localInHip();
+            p.hip.rotateX(correctionX);
+            p.hip.rotateY(correctionY);
+          } else {
+            double height = NaoInfo::ThighLength + NaoInfo::TibiaLength + NaoInfo::FootHeight;
+            p.hip.translate(0, 0, -height);
+            p.hip.rotateX(correctionX);
+            p.hip.rotateY(correctionY);
+            p.hip.translate(0, 0, height);
+          }
+          
 
           lastGyroError = error;
         }

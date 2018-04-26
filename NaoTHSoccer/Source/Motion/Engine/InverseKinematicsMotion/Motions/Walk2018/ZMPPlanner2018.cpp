@@ -100,10 +100,15 @@ void ZMPPlanner2018::execute(){
 
         if(parameters.newZMP_ON)
         {
-            zmp = Vector3d(zmp_new.x, zmp_new.y, parameters.comHeight);
             other_zmp = Vector3d(zmp_simple.x, zmp_simple.y, parameters.comHeight);
+            zmp       = Vector3d(zmp_new.x, zmp_new.y, parameters.comHeight);
+
+            // HACK:
+            if (parameters.useZMPHackForKicks && planningStep.type == Step::STEP_CONTROL && planningStep.walkRequest.stepControl.type == WalkRequest::StepControlRequest::KICKSTEP) {
+              zmp.x = other_zmp.x;
+            }
         } else {
-            zmp = Vector3d(zmp_simple.x, zmp_simple.y, parameters.comHeight);
+            zmp       = Vector3d(zmp_simple.x, zmp_simple.y, parameters.comHeight);
             other_zmp = Vector3d(zmp_new.x, zmp_new.y, parameters.comHeight);
         }
     }

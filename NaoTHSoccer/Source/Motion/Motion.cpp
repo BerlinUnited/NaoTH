@@ -260,8 +260,9 @@ void Motion::processSensorData()
 
   if(parameter.useIMUDataForRotationOdometry)
   {
-    PLOT("Motion:rotationZ", getIMUData().rotation.z);
-    getOdometryData().rotation = getIMUData().rotation.z;
+    double z_angle = RotationMatrix(getIMUData().rotation).getZAngle();
+    PLOT("Motion:rotationZ", z_angle);
+    getOdometryData().rotation = z_angle;
   }
 
   // store the MotorJointData
