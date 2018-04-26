@@ -1,8 +1,7 @@
 /**
 * @file CameraMatrixCorrectorV2.h
 *
-* @author <a href="mailto:mellmann@informatik.hu-berlin.de">Heinrich Mellmann</a>
-* Declaration of class CameraMatrixProvider
+* @author <a href="mailto:kaden@informatik.hu-berlin.de">Steffen Kaden</a>
 */
 
 #ifndef _CameraMatrixCorrectorV2_h_

@@ -1,8 +1,7 @@
 /**
-* @file CameraMatrixProvider.cpp
+* @file CameraMatrixCorrectorV2.cpp
 *
-* @author <a href="mailto:mellmann@informatik.hu-berlin.de">Heinrich Mellmann</a>
-* Implementation of class CameraMatrixProvider
+* @author <a href="mailto:kaden@informatik.hu-berlin.de">Steffen Kaden</a>
 */
 
 #include "CameraMatrixCorrectorV2.h"
@@ -416,7 +415,6 @@ void CameraMatrixCorrectorV2::doItAutomatically()
 {
     if(!auto_cleared_data) {
         (theCamMatErrorFunction->getModuleT())->clear();
-        reset_calibration();
         auto_cleared_data = true;
     }
 
