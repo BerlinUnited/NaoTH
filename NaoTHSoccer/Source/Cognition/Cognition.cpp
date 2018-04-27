@@ -44,6 +44,7 @@
 #include "Modules/SelfAwareness/BodyContourProvider/BodyContourProvider.h"
 #include "Modules/SelfAwareness/CameraMatrixCorrector/CameraMatrixCorrector.h"
 #include "Modules/SelfAwareness/CameraMatrixCorrectorV2/CameraMatrixCorrectorV2.h"
+#include "Modules/SelfAwareness/CameraMatrixCorrectorV3/CameraMatrixCorrectorV3.h"
 
 #include "Modules/VisualCortex/HistogramProvider.h"
 #include "Modules/VisualCortex/SimpleFieldColorClassifier/SimpleFieldColorClassifier.h"
@@ -219,6 +220,8 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(BasicTestBehavior);
   REGISTER_MODULE(XABSLBehaviorControl);
   REGISTER_MODULE(PathPlanner);
+
+  REGISTER_MODULE(CameraMatrixCorrectorV3);
 
   REGISTER_MODULE(TeamCommSender);
   
