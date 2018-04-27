@@ -1,11 +1,3 @@
-#ifndef EIGEN_DONT_VECTORIZE
-#define EIGEN_DONT_VECTORIZE
-#endif
-
-#ifndef EIGEN_DISABLE_UNALIGNED_ARRAY_ASSERT
-#define EIGEN_DISABLE_UNALIGNED_ARRAY_ASSERT
-#endif
-
 #ifndef MINIMIZER_H
 #define MINIMIZER_H
 
@@ -14,75 +6,116 @@
 
 #include <Tools/naoth_eigen.h>
 
-template<int numOfFunctions, int numOfParameter, class ErrorFunction>
-class GaussNewtonMinimizer
+#include <tuple>
+
+template<class ErrorFunction, int init_lambda, int init_v>
+class LevenbergMarquardtMinimizer
 {
 public:
-    GaussNewtonMinimizer();
+    LevenbergMarquardtMinimizer(){
+        lambda = init_lambda;
+        v = init_v;
+    }
 
-    Eigen::Matrix<double, numOfParameter, 1> minimizeOneStep(ErrorFunction& errorFunction, double epsilon);
+    double lambda;
+    double v;
 
-private:
-    Eigen::Matrix<double, numOfFunctions, numOfParameter> determineJacobian(ErrorFunction& errorFunction, double epsilon);
+    void reset(){
+        lambda = init_lambda;
+        v = init_v;
+    }
 
-};
+    template<class T>
+    T minimizeOneStep(const ErrorFunction& errorFunction, const T& x, const T& epsilon, double& error){
+        T zero = T::Zero();
+        Eigen::VectorXd r = errorFunction(x);
+        Eigen::MatrixXd J = determineJacobian(errorFunction, x, epsilon);
+        Eigen::MatrixXd JtJ = J.transpose()*J;
+        Eigen::MatrixXd JtJdiag = (JtJ).diagonal().asDiagonal();
+        error = r.sum();
 
-template<int numOfFunctions, int numOfParameters, class ErrorFunction>
-GaussNewtonMinimizer<numOfFunctions, numOfParameters, ErrorFunction>::GaussNewtonMinimizer()
-{
-}
+        T offset1 = mapOffsetToXDims(epsilon, (JtJ + lambda   * JtJdiag).colPivHouseholderQr().solve(-J.transpose() * r).eval());
+        T offset2 = mapOffsetToXDims(epsilon, (JtJ + lambda/v * JtJdiag).colPivHouseholderQr().solve(-J.transpose() * r).eval());
 
-template<int numOfFunctions, int numOfParameters, class ErrorFunction>
-Eigen::Matrix<double, numOfFunctions, numOfParameters> GaussNewtonMinimizer<numOfFunctions,  numOfParameters, ErrorFunction>::determineJacobian(ErrorFunction& errorFunction, double epsilon){
-
-    Eigen::Matrix<double, 1, numOfParameters> parameterVector = Eigen::Matrix<double, 1, numOfParameters>::Zero();
-    Eigen::Matrix<double, numOfFunctions, numOfParameters> mat;
-
-    for(int p = 0; p < numOfParameters; ++p){
-        if(p > 0) {
-            parameterVector(p-1) = 0;
+        if(offset1.hasNaN() || offset2.hasNaN()){
+            return zero;
         }
 
-        Eigen::Matrix<double, numOfFunctions,1> dg1,dg2;
+        double r_o1_sum = errorFunction((x + offset1).eval()).sum();
+        double r_o2_sum = errorFunction((x + offset2).eval()).sum();
 
-        parameterVector(p) = epsilon;
-        dg1 << errorFunction(parameterVector);
+        if(r_o1_sum > error && r_o2_sum > error){
+            while(true){//for( int i = 0; i < 10; i++){ // retry at most 10 times
+                lambda *= v; // didn't get a better result so increase damping and retry
+                offset1 = mapOffsetToXDims(epsilon, (JtJ + lambda * JtJdiag).colPivHouseholderQr().solve(-J.transpose() * r).eval());
 
-        parameterVector(p) = -epsilon;
-        dg2 << errorFunction(parameterVector);
+                if(offset1.hasNaN()){
+                    return zero;
+                }
 
-        mat.col(p) = (dg1-dg2) / (2*epsilon);
+                r_o1_sum = errorFunction((x + offset1).eval()).sum();
+
+                if(r_o1_sum < error){
+                    error = r_o1_sum;
+                    return offset1;
+                }
+            }
+        } else if(r_o1_sum > r_o2_sum) {
+            lambda /= v; // got better result with decreased damping
+            error = r_o2_sum;
+            return offset2;
+        } else {
+            error = r_o1_sum;
+            return offset1; // got better result with current damping
+        }
+
+        return zero;
     }
 
-    return mat;
-}
+private:
+    template<class T>
+    Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> determineJacobian(const ErrorFunction& errorFunction, const T& x, const T& epsilon){
+        Eigen::Matrix<double, T::RowsAtCompileTime, 1> parameterVector = Eigen::Matrix<double, T::RowsAtCompileTime, 1>::Zero();
+        Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> mat(errorFunction.getNumberOfResudials(), epsilon.rows() - epsilon.array().isNaN().count());
 
-template<int numOfFunctions, int numOfParameters, class ErrorFunction>
-Eigen::Matrix<double, numOfParameters, 1> GaussNewtonMinimizer<numOfFunctions, numOfParameters, ErrorFunction>::minimizeOneStep(ErrorFunction& errorFunction, double epsilon){
+        Eigen::VectorXd dg1(errorFunction.getNumberOfResudials());
+        Eigen::VectorXd dg2(errorFunction.getNumberOfResudials());
 
-    Eigen::Matrix<double, numOfParameters, 1> offset = Eigen::Matrix<double, numOfParameters, 1>::Zero();
+        int idx = 0;
+        for(int p = 0; p < T::RowsAtCompileTime; ++p){
+            if (std::isnan(epsilon(p))) continue;
 
-    Eigen::Matrix<double, numOfFunctions, numOfParameters> dg = determineJacobian(errorFunction, epsilon);
+            parameterVector(p) = epsilon(p);
+            dg1 << errorFunction((x + parameterVector).eval());
 
-    // g(x) - target
-    double w = errorFunction(offset);
+            parameterVector(p) = -epsilon(p);
+            dg2 << errorFunction((x + parameterVector).eval());
 
-    //Vector2<double> z_GN = (-((Dg.transpose()*Dg).invert()*Dg.transpose()*w));
-    Eigen::Matrix<double, numOfFunctions, numOfParameters> z_GN = -((dg*dg.transpose()).inverse()*dg*w);
+            mat.col(idx) = (dg1-dg2) / (2*epsilon(p));
+            ++idx;
 
-    //beware the inverse!
-    assert(!z_GN.hasNaN());
+            parameterVector(p) = 0;
+        }
 
-    //Vector2d z_GN = dg * (-w / (dg * dg));
-    offset += z_GN;
-
-    double lambda = 0.005;
-    //MODIFY("CameraMatrixCorrectorV2:lambda", lambda);
-    if (offset.norm() > lambda) {
-        offset = offset.normalized()*lambda;
+        return mat;
     }
 
-    return offset;
-}
+    template<class T>
+    T mapOffsetToXDims(const T& epsilon, const Eigen::Matrix<double, Eigen::Dynamic, 1>& offset){
+        T r;
+
+        int idx = 0;
+        for(int p = 0; p < T::RowsAtCompileTime; ++p){
+            if(std::isnan(epsilon(p))) {
+                r(p) = 0;
+            } else {
+                r(p) = offset(idx);
+                ++idx;
+            }
+        }
+
+        return r;
+    }
+};
 
 #endif // MINIMIZER_H

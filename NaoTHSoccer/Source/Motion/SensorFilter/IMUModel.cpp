@@ -133,13 +133,9 @@ void IMUModel::writeIMUData(){
     Eigen::Vector3d u_rot(0,0,0);
     sensor_delay_corrected_rot.predict(u_rot, 2 * getRobotInfo().getBasicTimeStepInSecond());
 
-    // convert to framework compliant x,y,z angles
-    Eigen::Vector3d temp2 = sensor_delay_corrected_rot.state.rotation();
-    Vector3d rot_vec(temp2(0),temp2(1),temp2(2));
-    RotationMatrix bodyIntoGlobalMapping(rot_vec);
-    getIMUData().rotation.x = bodyIntoGlobalMapping.getXAngle();
-    getIMUData().rotation.y = bodyIntoGlobalMapping.getYAngle();
-    getIMUData().rotation.z = bodyIntoGlobalMapping.getZAngle();
+    // store rotation in IMUData as a rotation vector
+    getIMUData().rotation = eigenVectorToVector3D(sensor_delay_corrected_rot.state.rotation());
+    RotationMatrix bodyIntoGlobalMapping(getIMUData().rotation);
 
     /*
      * Note: the following code lines use the inverse mapping, i.e. globalIntoBodyMapping, by using the third row of bodyIntoGlobalMapping's matrix representation

@@ -86,6 +86,9 @@
           </SubComponents>
         </Container>
         <Component class="javax.swing.JTextField" name="sortSymbolsTextInput">
+          <Properties>
+            <Property name="toolTipText" type="java.lang.String" value="Search for symbols (eg. &apos;.*asdf.*&apos;)"/>
+          </Properties>
           <Events>
             <EventHandler event="caretUpdate" listener="javax.swing.event.CaretListener" parameters="javax.swing.event.CaretEvent" handler="sortSymbolsTextInputCaretUpdate"/>
           </Events>

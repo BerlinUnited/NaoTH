@@ -53,6 +53,8 @@ void SimpleNetworkTimeProtocol::updateMessageStatistics()
         const TeamMessageData& data = it.second;
         // skip my own messages
         if(data.playerNumber == getPlayerInfo().playerNumber) {
+            // update myself
+            getTeamMessageTimeStatistics().getPlayer(data.playerNumber).lastUpdate = data.frameInfo;
             continue;
         }
         TeamMessageTimeStatistics::Player& player = getTeamMessageTimeStatistics().getPlayer(data.playerNumber);
