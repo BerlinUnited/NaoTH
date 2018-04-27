@@ -71,4 +71,5 @@ message TeamMessage
     optional uint32 teamNumber = 12 [default=0];
   }
   repeated Data data = 1;
+  repeated uint32 messageDrop = 2;
 }
