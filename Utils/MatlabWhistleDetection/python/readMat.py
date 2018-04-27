@@ -1,6 +1,11 @@
 from naoth import matlab_tools as mt
 
-test = mt.loadmat('MatDatabase/database.mat')
+"""
+    Example for accessing structs inside of mat files.
+"""
+
+
+test = mt.loadmat('../MatDatabase/database.mat')
 print(test)
 print(type(test['database']))
 

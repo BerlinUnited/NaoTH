@@ -5,7 +5,8 @@ GameLogger::GameLogger()
   logfileManager(true),
   lastCompleteFrameNumber(0),
   oldState(PlayerInfo::initial),
-  firstRecording(true)
+  firstRecording(true),
+  lastWhistleCounter(0)
 {
   logfileManager.openFile("/tmp/game.log");
   
@@ -88,6 +89,12 @@ void GameLogger::execute()
       }
 
       LOGSTUFF(TeamMessage);
+
+      if (lastWhistleCounter < getWhistlePercept().counter)
+      {
+        LOGSTUFF(WhistlePercept);
+        lastWhistleCounter = getWhistlePercept().counter;
+      }
 
       // record images every 1s
       if(params.logPlainImages && getFrameInfo().getTimeSince(lastTimeImageRecorded) > 2000 && imageOutFile.is_open() && !imageOutFile.fail()) {
