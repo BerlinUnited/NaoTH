@@ -44,6 +44,8 @@ void StrategySymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalInputSymbol("goalie.guardline.y", &goalieGuardPositionY);
   engine.registerDecimalInputSymbol("penalty_goalie.pos.x", &penaltyGoalieGuardPositionX);
   engine.registerDecimalInputSymbol("penalty_goalie.pos.y", &penaltyGoalieGuardPositionY);
+  engine.registerDecimalInputSymbol("goalie.defensive.x", &goalieDefensivePositionX);
+  engine.registerDecimalInputSymbol("goalie.defensive.y", &goalieDefensivePositionY);
 
   engine.registerDecimalInputSymbol("soccer_strategy.formation.x", &getSoccerStrategy().formation.x);
   engine.registerDecimalInputSymbol("soccer_strategy.formation.y", &getSoccerStrategy().formation.y);
@@ -240,6 +242,23 @@ double StrategySymbols::penaltyGoalieGuardPositionX()
 double StrategySymbols::penaltyGoalieGuardPositionY()
 {
   return theInstance->calculatePenaltyGoalieGuardPosition().y;
+}
+
+double StrategySymbols::goalieDefensivePositionX()
+{
+  /* x = sqr( (goalwidth * 0.6 * penaltybox-y-length) / (0.6 * penaltybox-y-length + m^2 * goalwidth) ) */
+//  double a = theInstance->getFieldInfo().goalWidth/2.0;
+//  double b = theInstance->getFieldInfo().yPenaltyAreaLength * 0.6;
+  const Vector2d ball = theInstance->getRobotPose()*theInstance->getBallModel().position;
+  const Vector2d goal_center(theInstance->getFieldInfo().xPosOwnGroundline, 0);
+  const Vector2d c = (goal_center - ball);
+//  double m = theInstance->getBallModel().position; // TODO
+  return c.y / c.x;//Math::sqr( (a*b) / (b+m*m*a) );
+}
+
+double StrategySymbols::goalieDefensivePositionY()
+{
+  return 0;//m * goalieDefensivePositionX();
 }
 
 bool StrategySymbols::getApproachingWithRightFoot()

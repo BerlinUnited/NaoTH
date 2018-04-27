@@ -115,6 +115,8 @@ private:
   static double goalieGuardPositionY();
   static double penaltyGoalieGuardPositionX();
   static double penaltyGoalieGuardPositionY();
+  static double goalieDefensivePositionX();
+  static double goalieDefensivePositionY();
 
   static int getBestAction();
 

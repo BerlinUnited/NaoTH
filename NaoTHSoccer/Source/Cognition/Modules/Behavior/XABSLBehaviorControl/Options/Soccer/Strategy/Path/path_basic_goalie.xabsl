@@ -23,13 +23,11 @@ option path_basic_goalie
   {
      decision 
      {
-       else if (ball.distance < 1500 && ball.time_since_last_seen < 1000
-               && ball.position.field.x <= field.xPosOwnPenaltyMark)
+       else if (ball.know_where_itis && ball.distance < 1500 && ball.position.field.x <= field.xPosOwnPenaltyMark)
          goto clear_ball;
        else if (action_done)
-       {
          goto stand_and_look_at_ball;
-       } else 
+       else 
          stay;
      }
      action {
@@ -41,9 +39,9 @@ option path_basic_goalie
 
   state stand_and_look_at_ball {
 	  decision {
-      else if (ball.distance < 1500 && ball.time_since_last_seen < 1000 && ball.position.field.x <= field.xPosOwnPenaltyMark)
+      else if (ball.know_where_itis && ball.distance < 1500 && ball.position.field.x <= field.xPosOwnPenaltyMark)
         goto clear_ball;
-      else if (ball.distance < 4000 && ball.time_since_last_seen < 1000 && (normalize(angle=atan2(y = ball.preview.y, x = ball.preview.x)) > 10))
+      else if (ball.know_where_itis && ball.distance < 4000 && (normalize(angle=atan2(y = ball.preview.y, x = ball.preview.x)) > 10))
          goto watch_ball;
       else 
         stay;
@@ -56,9 +54,9 @@ option path_basic_goalie
 
   state watch_ball {
     decision {
-      else if (ball.distance < 1500 && ball.time_since_last_seen < 1000 && ball.position.field.x <= field.xPosOwnPenaltyMark)
+      else if (ball.know_where_itis && ball.distance < 1500 && ball.position.field.x <= field.xPosOwnPenaltyMark)
         goto clear_ball;
-      else if (ball.distance >= 4000 || ball.time_since_last_seen >= 1000)
+      else if (!ball.know_where_itis || ball.distance >= 4000)
         goto go_to_strategy_point;
       else 
         stay;

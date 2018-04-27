@@ -40,6 +40,11 @@ namespace strategy("Strategy Symbols") {
   float input goalie.guardline.y;
 
   /** */
+  float input goalie.defensive.x;
+  /** */
+  float input goalie.defensive.y;
+
+  /** */
   float input penalty_goalie.pos.x;
   /** */
   float input penalty_goalie.pos.y;
