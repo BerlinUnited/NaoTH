@@ -41,7 +41,7 @@ private:
   public:
     Parameter() : ParameterList("KinematicChainProvider")
     {
-      PARAMETER_REGISTER(useIMUData) = false;
+      PARAMETER_REGISTER(useIMUData) = true;
       syncWithConfig();
     }
 

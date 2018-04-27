@@ -149,9 +149,9 @@ private:
     Parameter() : ParameterList("Motion")
     {
       PARAMETER_REGISTER(useGyroRotationOdometry) = true;
-      PARAMETER_REGISTER(letIMUModelProvideInertialModel) = false;
+      PARAMETER_REGISTER(letIMUModelProvideInertialModel) = true;
       //PARAMETER_REGISTER(useInertiaSensorCalibration) = true;
-      PARAMETER_REGISTER(useIMUDataForRotationOdometry) = false;
+      PARAMETER_REGISTER(useIMUDataForRotationOdometry) = true;
       syncWithConfig();
     }
 
