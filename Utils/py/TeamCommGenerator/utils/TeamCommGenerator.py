@@ -2,7 +2,7 @@ import sys
 import threading
 import socket
 import time
-from .SPLMessage import SPLMessage
+from naoth.SPLMessage import SPLMessage
 
 class TeamCommGenerator(threading.Thread):
     def __init__(self, host='localhost', port=10004, delay=0.4):

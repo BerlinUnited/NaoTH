@@ -14,6 +14,7 @@
 #include "Representations/Motion/Walk2018/TargetHipFeetPose.h"
 #include "Representations/Motion/Walk2018/Walk2018Parameters.h"
 #include "Representations/Infrastructure/CalibrationData.h"
+#include "Representations/Modeling/IMUData.h"
 #include "Representations/Modeling/InertialModel.h"
 #include "Representations/Infrastructure/GyrometerData.h"
 #include "Representations/Infrastructure/RobotInfo.h"
@@ -31,6 +32,7 @@ BEGIN_DECLARE_MODULE(TorsoRotationStabilizer)
     REQUIRE(FrameInfo)
     REQUIRE(CalibrationData)
     REQUIRE(InertialModel)
+    REQUIRE(IMUData)
     REQUIRE(GyrometerData)
     REQUIRE(RobotInfo)
     REQUIRE(StepBuffer)
@@ -53,8 +55,13 @@ class TorsoRotationStabilizer : private TorsoRotationStabilizerBase
         getTargetHipFeetPose().pose.localInHip();
       }
 
+
+      Vector2d inertial = getInertialModel().orientation;
+      if(parameters.useSteffensInertial) {
+        inertial = getIMUData().orientation;
+      }
       rotationStabilize(
-        getInertialModel(),
+        inertial,
         getGyrometerData(),
         getRobotInfo().getBasicTimeStepInSecond(),
         parameters.rotation.P,
@@ -67,7 +74,8 @@ class TorsoRotationStabilizer : private TorsoRotationStabilizerBase
 
   private:
       bool rotationStabilize(
-        const InertialModel& theInertialModel,
+        //const InertialModel& theInertialModel,
+        const Vector2d& inertial,
         const GyrometerData& theGyrometerData,
         const double timeDelta,
         const Vector2d&  rotationP,
@@ -106,7 +114,6 @@ class TorsoRotationStabilizer : private TorsoRotationStabilizerBase
           double correctionX =rotationVelocityP.x * error.x +
                               rotationD.x * errorDerivative.x;
 
-          const Vector2d& inertial = theInertialModel.orientation;
           correctionX += rotationP.x * inertial.x;
           correctionY += rotationP.y * inertial.y;
 

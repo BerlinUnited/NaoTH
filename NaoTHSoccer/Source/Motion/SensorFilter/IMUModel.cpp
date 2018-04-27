@@ -159,9 +159,6 @@ void IMUModel::writeIMUData(){
     PLOT("IMUModel:State:orientation:x", Math::toDegrees(getIMUData().orientation.x));
     PLOT("IMUModel:State:orientation:y", Math::toDegrees(getIMUData().orientation.y));
 
-    // only to enable transparent switching with InertiaSensorFilter
-    getInertialModel().orientation = getIMUData().orientation;
-
     getIMUData().rotational_velocity.x = ukf_rot.state.rotational_velocity()(0,0);
     getIMUData().rotational_velocity.y = ukf_rot.state.rotational_velocity()(1,0);
     getIMUData().rotational_velocity.z = ukf_rot.state.rotational_velocity()(2,0);
