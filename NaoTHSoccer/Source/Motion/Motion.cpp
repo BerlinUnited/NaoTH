@@ -224,7 +224,12 @@ void Motion::processSensorData()
   getInertialSensorData().data += getCalibrationData().inertialSensorOffset;
   getAccelerometerData().data  += getCalibrationData().accSensorOffset;
 
-  //theInertiaSensorFilterBH->execute();
+  theInertiaSensorFilterBH->execute();
+
+  // only to enable transparent switching with InertiaSensorFilter
+  if(parameter.letIMUModelProvideInertialModel) {
+      getInertialModel().orientation = getIMUData().orientation;
+  }
 
   //
   theFootGroundContactDetector->execute();
