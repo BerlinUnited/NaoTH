@@ -1,13 +1,16 @@
-clear all
+clear variables
+clc
 % adds a raw file to the whistle reference database
 % TODO does not check if file is already inserted
 try
-    load('reference_database.mat')
+    load('../data/reference_database.mat')
     disp('INFO: using a previously created database')
 catch
     disp('INFO: no previous mat file was found')
     reference_database = struct;
 end
+
+% TODO the paths to the raw reference files should be collected differently
 
 % bhuman reference whistles
 reference_database = addWhistle(reference_database, '../data/bhuman_references/andyDark_8kHz_1channels.raw', 1, 8000, 'bhuman');

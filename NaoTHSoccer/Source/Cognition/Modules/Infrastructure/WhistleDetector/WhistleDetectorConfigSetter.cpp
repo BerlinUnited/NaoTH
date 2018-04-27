@@ -15,9 +15,25 @@ void WhistleDetectorConfigSetter::execute()
   {
     getWhistleControl().whistleListFile = params.whistleListFile;
   }
+
   if(params.activeChannels != getWhistleControl().activeChannels)
   {
     getWhistleControl().activeChannels = params.activeChannels;
+  }
+
+  if(params.threshold != getWhistleControl().threshold)
+  {
+    getWhistleControl().threshold = params.threshold;
+  }
+  
+  if(params.checkAllWhistles != getWhistleControl().checkAllWhistles)
+  {
+    getWhistleControl().checkAllWhistles = params.checkAllWhistles;
+  }
+  
+  if(params.saveRawAudio != getWhistleControl().saveRawAudio)
+  {
+    getWhistleControl().saveRawAudio = params.saveRawAudio;
   }
 }
 
