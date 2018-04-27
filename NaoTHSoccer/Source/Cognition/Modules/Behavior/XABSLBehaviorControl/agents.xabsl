@@ -179,6 +179,7 @@ include "Options/Test/agent/pathplanner_test_short_kick_agent.xabsl";
 include "Options/Test/agent/pathplanner_test_long_kick_agent.xabsl";
 include "Options/Test/agent/pathplanner_test_only_shortkick_agent.xabsl";
 include "Options/Test/agent/pathplanner_test_only_sidekick_agent.xabsl";
+include "Options/Test/agent/pathplanner_test_dash_agent.xabsl";
 
 // Test Options PathPlanner
 include "Options/Test/kicks/pathplanner_sidekick.xabsl";
@@ -186,6 +187,7 @@ include "Options/Test/kicks/pathplanner_kick_short.xabsl";
 include "Options/Test/kicks/pathplanner_kick_long.xabsl";
 include "Options/Test/kicks/pathplanner_shortkick_only.xabsl";
 include "Options/Test/kicks/pathplanner_sidekick_only.xabsl";
+include "Options/Test/kicks/pathplanner_dash.xabsl";
 
 
 // Test agents (options) Behaviour Tests
@@ -294,8 +296,7 @@ agent pathplanner_test_short_kick_agent("pathplanner_test_short_kick_agent", pat
 agent pathplanner_test_long_kick_agent("pathplanner_test_long_kick_agent", pathplanner_test_long_kick_agent);
 agent pathplanner_test_only_sidekick_agent("pathplanner_test_only_sidekick_agent", pathplanner_test_only_sidekick_agent);
 agent pathplanner_test_only_shortkick_agent("pathplanner_test_only_shortkick_agent", pathplanner_test_only_shortkick_agent);
-
-
+agent pathplanner_test_dash_agent("pathplanner_test_dash_agent", pathplanner_test_dash_agent);
 
 // Test agents search
 agent search_test_agent("search_test_agent",search_test_agent);
