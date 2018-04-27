@@ -11,11 +11,12 @@ void Serializer<TeamMessage>::serialize(const TeamMessage& r, std::ostream& stre
   naothmessages::TeamMessage collection;
 
   // add message drops
-  collection.add_messagedrop(r.dropNoSplMessage);
-  collection.add_messagedrop(r.dropNotOurTeam);
-  collection.add_messagedrop(r.dropNotParseable);
-  collection.add_messagedrop(r.dropKeyFail);
-  collection.add_messagedrop(r.dropMonotonic);
+  naothmessages::Drops *d = collection.mutable_messagedrop();
+  d->set_dropnosplmessage(r.dropNoSplMessage);
+  d->set_dropnotourteam(r.dropNotOurTeam);
+  d->set_dropnotparseable(r.dropNotParseable);
+  d->set_dropkeyfail(r.dropKeyFail);
+  d->set_dropmonotonic(r.dropMonotonic);
 
   for(auto const &it : r.data)
   {
@@ -56,11 +57,14 @@ void Serializer<TeamMessage>::deserialize(std::istream& stream, TeamMessage& r)
   collection.ParseFromZeroCopyStream(&buf);
 
   // set message drop stats, if available
-  r.dropNoSplMessage = collection.messagedrop_size() > 0 ? collection.messagedrop(0) : 0;
-  r.dropNotOurTeam   = collection.messagedrop_size() > 1 ? collection.messagedrop(1) : 0;
-  r.dropNotParseable = collection.messagedrop_size() > 2 ? collection.messagedrop(2) : 0;
-  r.dropKeyFail      = collection.messagedrop_size() > 3 ? collection.messagedrop(3) : 0;
-  r.dropMonotonic    = collection.messagedrop_size() > 4 ? collection.messagedrop(4) : 0;
+  if(collection.has_messagedrop()) {
+      naothmessages::Drops d = collection.messagedrop();
+      r.dropNoSplMessage = d.has_dropnosplmessage() ? d.dropnosplmessage() : 0;
+      r.dropNotOurTeam   = d.has_dropnotourteam()   ? d.dropnotourteam()   : 0;
+      r.dropNotParseable = d.has_dropnotparseable() ? d.dropnotparseable() : 0;
+      r.dropKeyFail      = d.has_dropkeyfail()      ? d.dropkeyfail()      : 0;
+      r.dropMonotonic    = d.has_dropmonotonic()    ? d.dropmonotonic()    : 0;
+  }
 
   for(int i=0; i < collection.data_size(); i++)
   {
