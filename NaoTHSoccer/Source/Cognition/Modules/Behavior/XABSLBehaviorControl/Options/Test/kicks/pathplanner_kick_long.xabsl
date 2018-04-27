@@ -1,12 +1,11 @@
-option pathplanner_kick_long
-{
+option pathplanner_kick_long{
   common decision
   {
     if(!body.ready_to_walk || game.current_mode != playing)
       goto idle;
     else if(situation_abortable && ball.time_since_last_seen > 1500)
       goto search;
-    else if(situation_abortable && vector.abs(x=ball.preview.x, y=ball.preview.y) > 400)
+    else if(situation_abortable && vector.abs(x=ball.preview.x, y=ball.preview.y) > 300)
       goto goto_ball;
   }
 
@@ -22,10 +21,8 @@ option pathplanner_kick_long
 
   state search {
     decision {
-      else if (ball.know_where_itis && ball.preview.x > 300)
+      else if (action_done)
         goto goto_ball;
-      else if(action_done)
-        goto approach_short_kick_left;
       else
         stay;
     }
@@ -38,50 +35,34 @@ option pathplanner_kick_long
   state goto_ball {
     decision{
 
-      else if(action_done && state_time > 1000)
+      else if(ball.preview.x < 300 && abs(value = ball.preview.y) < 50)
       {
-        goto approach_short_kick_left;
+        goto long_kick;
       }
       else
         stay;
     }
     action{
       situation_abortable = true;
-      path_go_to_ball_with_USOA(distance = 300);
-      
-      //loook at percept
+      path_go_to_ball_with_USOA(distance = 190);      
+      //look at percept
       head.control_mode = look_at_ball_percept;
     }
   }
-  state approach_short_kick_left {
-    decision {
-      else if(action_done)
-        goto short_kick_left;
-      else
-        stay;
-    }
-    action {
-      path_go_to_ball_with_foot_dynamic(right = false, distance = 125, offset.y=0);
-      
-      //loook at percept
-      head.control_mode = look_at_ball_percept;
-    }
-  }
-  state short_kick_left {
+
+  state long_kick {
     decision{
       else if(action_done)
         goto done;
       else
         stay;
     }
-    action {
-      situation_abortable = false;
-      path_long_kick(foot = left);
-      
-      //loook at percept
-      head.control_mode = look_at_ball_percept;
+    action{
+      situation_abortable = true;
+      path_kick_long_with_approach();
     }
   }
+
   target state done
   {
     decision {
@@ -94,7 +75,7 @@ option pathplanner_kick_long
       //NOTE: this is synchronized with sidekick()->finished
       motion.type = stand;
 
-      //loook at percept
+      //look at percept
       head.control_mode = look_at_ball_percept;
     }
   }
