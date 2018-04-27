@@ -1,5 +1,8 @@
 option pathplanner_sidekick {
-
+  /*
+  TODO: this should test both sidekicks and actually should test the options
+  path_sidekick_left and path_sidekick_right
+  */
   common decision
   {
     if(!body.ready_to_walk || game.current_mode != playing)
@@ -23,7 +26,7 @@ option pathplanner_sidekick {
   state search {
     decision {
       else if(action_done)
-        goto approach_sidekick_to_left;
+        goto goto_ball;
       else
         stay;
     }
@@ -38,7 +41,7 @@ option pathplanner_sidekick {
 
       else if(action_done && state_time > 1000)
       {
-        goto approach_sidekick_to_left;
+        goto sidekick_left;
       }
       else
         stay;
@@ -51,36 +54,21 @@ option pathplanner_sidekick {
       head.control_mode = look_at_ball_percept;
     }
   }
-  state approach_sidekick_to_left {
+  
+  state sidekick_left {
     decision {
-      else if(action_done)
-        goto sidekick_to_left;
-      else
-        stay;
-    }
-    action {
-      //go_to_ball_with_foot(right = true, distance = 130, offset.y=-10);
-      path_go_to_ball_with_foot_dynamic(right = true, distance = 125, offset.y=-30);
-      
-      //loook at percept
-      head.control_mode = look_at_ball_percept;
-    }
-  }
-  state sidekick_to_left {
-    decision{
       else if(action_done)
         goto done;
       else
         stay;
     }
     action {
-      situation_abortable = false;
-      path_sidekick(to = left);
-      
-      //loook at percept
-      head.control_mode = look_at_ball_percept;
+      situation_abortable = true;
+      path_sidekick_left();
     }
   }
+
+  
   target state done
   {
     decision {
