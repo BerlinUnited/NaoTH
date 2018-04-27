@@ -1,5 +1,5 @@
 /** Test behavior for the PrimitiveManeuvers module */
-option pathplanner_test_sidekick {
+option pathplanner_test_sidekick_agent {
   initial state test {    
     action {
     
