@@ -1,11 +1,12 @@
-option pathplanner_test_only_shortkick {
+/** Test behavior for the PrimitiveManeuvers module */
+option pathplanner_test_long_kick_agent {
   initial state test {    
     action {
     
       // react to the game controller and handle fall down
       basic_play();
 
-      pathplanner_shortkick_only();
+      pathplanner_kick_long();
       
       // control the arms
       arms_control();
@@ -14,4 +15,4 @@ option pathplanner_test_only_shortkick {
       head_control();
     }
   }
-}
+}

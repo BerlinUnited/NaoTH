@@ -173,24 +173,23 @@ include "Options/Test/agent/obstacle_test_agent.xabsl";
 include "Options/Test/agent/dribble_test_agent.xabsl";
 include "Options/Test/agent/walk_forward_agent.xabsl";
 
-// PathPlanner Tests
+// Test agents PathPlanner
 include "Options/Test/pathplanner_test_sidekick_agent.xabsl";
-include "Options/Test/pathplanner_test_short_kick.xabsl";
-include "Options/Test/pathplanner_test_long_kick.xabsl";
+include "Options/Test/pathplanner_test_short_kick_agent.xabsl";
+include "Options/Test/pathplanner_test_long_kick_agent.xabsl";
+include "Options/Test/pathplanner_test_only_shortkick_agent.xabsl";
+include "Options/Test/pathplanner_test_only_sidekick_agent.xabsl";
+
+// Test Options PathPlanner
 include "Options/Test/pathplanner_sidekick.xabsl";
 include "Options/Test/pathplanner_kick_short.xabsl";
 include "Options/Test/pathplanner_kick_long.xabsl";
-// Kick only
-include "Options/Test/pathplanner_test_only_sidekick.xabsl";
-include "Options/Test/pathplanner_sidekick_only.xabsl";
-include "Options/Test/pathplanner_test_only_shortkick.xabsl";
 include "Options/Test/pathplanner_shortkick_only.xabsl";
-
+include "Options/Test/pathplanner_sidekick_only.xabsl";
 
 
 // Test agents (options) Behaviour Tests
 include "Options/Test/agent/role_change_test_agent.xabsl";
-
 
 
 include "Options/Test/agent/change_state_input_test_agent.xabsl";
@@ -291,11 +290,10 @@ agent dribble_test_agent("dribble_test_agent", dribble_test_agent);
 
 // PathPlanner Test Agents
 agent pathplanner_test_sidekick_agent("pathplanner_test_sidekick_agent", pathplanner_test_sidekick_agent);
-agent pathplanner_test_short_kick("pathplanner_test_short_kick", pathplanner_test_short_kick);
-agent pathplanner_test_long_kick("pathplanner_test_long_kick", pathplanner_test_long_kick);
-// Kicks only
-agent pathplanner_test_only_sidekick("pathplanner_test_only_sidekick", pathplanner_test_only_sidekick);
-agent pathplanner_test_only_shortkick("pathplanner_test_only_shortkick", pathplanner_test_only_shortkick);
+agent pathplanner_test_short_kick_agent("pathplanner_test_short_kick_agent", pathplanner_test_short_kick_agent);
+agent pathplanner_test_long_kick_agent("pathplanner_test_long_kick_agent", pathplanner_test_long_kick_agent);
+agent pathplanner_test_only_sidekick_agent("pathplanner_test_only_sidekick_agent", pathplanner_test_only_sidekick_agent);
+agent pathplanner_test_only_shortkick_agent("pathplanner_test_only_shortkick_agent", pathplanner_test_only_shortkick_agent);
 
 
 
