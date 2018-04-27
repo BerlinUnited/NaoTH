@@ -1,10 +1,9 @@
 clear variables
 clc
-%% Example of how to get capture data
-database = 'capture_database.mat';
-databasePath = 'D:\Downloads\WhistleData_mat';
-exportPath = fullfile(databasePath, 'capture_recordings');
-load([databasePath '/' database])
+%% Export Capture data
+secret() % import the custom paths
+
+load(capture_database_path)
 
 %% Get the capture categories
 go17_recordings = capture_database.go17_recordings;
@@ -18,7 +17,7 @@ for i=1:length(go17_recordings)
     rawData = go17_recordings(i).rawData;
     filename = go17_recordings(i).filename;
     
-    path_to_outputfolder = fullfile(exportPath, 'go17_recordings', game_name, half, robot_name);
+    path_to_outputfolder = fullfile(capture_export_path, 'go17_recordings', game_name, half, robot_name);
     mkdir(path_to_outputfolder)
     
     fileID = fopen(fullfile(path_to_outputfolder, filename), 'w');
@@ -33,6 +32,7 @@ for i=1:length(go17_recordings)
     audiowrite(char(filename2),y,Fs);
 end
 
+%%
 for i=1:length(rc17_recordings)
     % Export the recordings as raw in the correct folder structure
     game_name = rc17_recordings(i).game_name;
