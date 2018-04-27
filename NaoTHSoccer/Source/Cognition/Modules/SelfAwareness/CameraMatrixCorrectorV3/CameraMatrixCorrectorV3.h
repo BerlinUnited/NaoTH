@@ -39,7 +39,7 @@
 
 //////////////////// BEGIN MODULE INTERFACE DECLARATION ////////////////////
 
-BEGIN_DECLARE_MODULE(CamMatErrorFunctionV2)
+BEGIN_DECLARE_MODULE(CamMatErrorFunctionV3)
   PROVIDE(DebugRequest)
   PROVIDE(DebugDrawings)
   PROVIDE(DebugModify)
@@ -47,7 +47,7 @@ BEGIN_DECLARE_MODULE(CamMatErrorFunctionV2)
   REQUIRE(FieldInfo)
   REQUIRE(CameraInfo)
   REQUIRE(CameraInfoTop)
-END_DECLARE_MODULE(CamMatErrorFunctionV2)
+END_DECLARE_MODULE(CamMatErrorFunctionV3)
 
 BEGIN_DECLARE_MODULE(CameraMatrixCorrectorV3)
   PROVIDE(DebugRequest)
@@ -65,7 +65,7 @@ BEGIN_DECLARE_MODULE(CameraMatrixCorrectorV3)
 
   PROVIDE(HeadMotionRequest)
   PROVIDE(MotionRequest)
-  PROVIDE(CameraMatrixOffset)
+  PROVIDE(CameraMatrixOffsetV3)
   PROVIDE(SoundPlayData)
 END_DECLARE_MODULE(CameraMatrixCorrectorV3)
 
@@ -73,7 +73,7 @@ END_DECLARE_MODULE(CameraMatrixCorrectorV3)
 /// \brief The CameraMatrixCorrectorV3 class
 
 // HACK: shouldn't be a module, should be a service... wait and see what the future holds ;)
-class CamMatErrorFunctionV2 : public CamMatErrorFunctionV2Base
+class CamMatErrorFunctionV3 : public CamMatErrorFunctionV3Base
 {
 public:
     struct CalibrationDataSample {
@@ -98,9 +98,9 @@ private:
 
     const CameraInfo& getCameraInfo(int cameraID) const {
       if(cameraID == CameraInfo::Top) {
-        return CamMatErrorFunctionV2Base::getCameraInfoTop();
+        return CamMatErrorFunctionV3Base::getCameraInfoTop();
       } else {
-        return CamMatErrorFunctionV2Base::getCameraInfo();
+        return CamMatErrorFunctionV3Base::getCameraInfo();
       }
     }
 
@@ -113,11 +113,11 @@ private:
     }
 
 public:
-    CamMatErrorFunctionV2(){
-        DEBUG_REQUEST_REGISTER("CamMatErrorFunctionV2:debug_drawings:only_bottom", "", false);
-        DEBUG_REQUEST_REGISTER("CamMatErrorFunctionV2:debug_drawings:only_top", "", false);
-        DEBUG_REQUEST_REGISTER("CamMatErrorFunctionV2:debug_drawings:draw_projected_edgels", "", false);
-        DEBUG_REQUEST_REGISTER("CamMatErrorFunctionV2:debug_drawings:draw_matching_global",  "", false);
+    CamMatErrorFunctionV3(){
+        DEBUG_REQUEST_REGISTER("CamMatErrorFunctionV3:debug_drawings:only_bottom", "", false);
+        DEBUG_REQUEST_REGISTER("CamMatErrorFunctionV3:debug_drawings:only_top", "", false);
+        DEBUG_REQUEST_REGISTER("CamMatErrorFunctionV3:debug_drawings:draw_projected_edgels", "", false);
+        DEBUG_REQUEST_REGISTER("CamMatErrorFunctionV3:debug_drawings:draw_matching_global",  "", false);
     }
 
     void execute(){}
@@ -141,12 +141,12 @@ public:
 
     void plot_CalibrationData(const Eigen::Matrix<double, 14, 1>& parameter){
         bool only_bottom = false;
-        DEBUG_REQUEST("CamMatErrorFunctionV2:debug_drawings:only_bottom",
+        DEBUG_REQUEST("CamMatErrorFunctionV3:debug_drawings:only_bottom",
                       only_bottom = true;
         );
 
         bool only_top = false;
-        DEBUG_REQUEST("CamMatErrorFunctionV2:debug_drawings:only_top",
+        DEBUG_REQUEST("CamMatErrorFunctionV3:debug_drawings:only_top",
                       only_top = true;
         );
 
@@ -204,20 +204,20 @@ public:
                                 0.0,
                                 edgelProjections[i]);
 
-                    DEBUG_REQUEST("CamMatErrorFunctionV2:debug_drawings:draw_projected_edgels",
+                    DEBUG_REQUEST("CamMatErrorFunctionV3:debug_drawings:draw_projected_edgels",
                             FIELD_DRAWING_CONTEXT;
                             PEN("000000", 10);
                             CIRCLE(edgelProjections[i].x, edgelProjections[i].y, 20);
                     );
                 }
 
-                DEBUG_REQUEST("CamMatErrorFunctionV2:debug_drawings:draw_projected_edgels",
+                DEBUG_REQUEST("CamMatErrorFunctionV3:debug_drawings:draw_projected_edgels",
                         FIELD_DRAWING_CONTEXT;
                         PEN("FF0000", 10);
                         ROBOT(global_x_offset, global_y_offset, global_z_angle_offset);
                 );
 
-                DEBUG_REQUEST("CamMatErrorFunctionV2:debug_drawings:draw_matching_global",
+                DEBUG_REQUEST("CamMatErrorFunctionV3:debug_drawings:draw_matching_global",
                 // determine distance to nearst field line and the total aberration
                     for(std::vector<Vector2d>::const_iterator iter = edgelProjections.begin(); iter != edgelProjections.end(); ++iter){
 
@@ -281,7 +281,6 @@ public:
                             );
 
                 tmpCM.translation += Vector3d(global_x_offset, global_y_offset,0); // move around on field
-                //tmpCM.rotation    *= RotationMatrix::getRotationZ(globalPosition.z + global_z_angle_offset); // and rotate first around the global z axis
                 tmpCM.rotation = RotationMatrix::getRotationZ(global_z_angle_offset) * tmpCM.rotation; // why? shouldn't it be the other way around?
 
                 std::vector<Vector2d> edgelProjections;
@@ -329,7 +328,7 @@ public:
     }
 };
 
-// HACK: shouldn't be a ModuleManager but has to be because of the CamMatErrorFunctionV2... see above
+// HACK: shouldn't be a ModuleManager but has to be because of the CamMatErrorFunctionV3... see above
 class CameraMatrixCorrectorV3: public CameraMatrixCorrectorV3Base, public ModuleManager
 {
 public:
@@ -347,9 +346,9 @@ private:
 
   Eigen::Matrix<double, 14, 1> cam_mat_offsets;
 
-  LevenbergMarquardtMinimizer<CamMatErrorFunctionV2, 1, 2> lm_minimizer;
-  LevenbergMarquardtMinimizer<CamMatErrorFunctionV2, 1, 2> lm_minimizer_pos;
-  LevenbergMarquardtMinimizer<CamMatErrorFunctionV2, 1, 2> lm_minimizer_offset;
+  LevenbergMarquardtMinimizer<CamMatErrorFunctionV3, 1, 2> lm_minimizer;
+  LevenbergMarquardtMinimizer<CamMatErrorFunctionV3, 1, 2> lm_minimizer_pos;
+  LevenbergMarquardtMinimizer<CamMatErrorFunctionV3, 1, 2> lm_minimizer_offset;
 
   bool calibrate();
   bool calibrateOnlyPose();
@@ -363,7 +362,7 @@ private:
   void writeToRepresentation();
   void readFromRepresentation();
 
-  ModuleCreator<CamMatErrorFunctionV2>* theCamMatErrorFunctionV2;
+  ModuleCreator<CamMatErrorFunctionV3>* theCamMatErrorFunctionV3;
 
   // for automatic calibration
   bool auto_cleared_data, auto_collected, auto_calibrated_phase1, auto_calibrated;
