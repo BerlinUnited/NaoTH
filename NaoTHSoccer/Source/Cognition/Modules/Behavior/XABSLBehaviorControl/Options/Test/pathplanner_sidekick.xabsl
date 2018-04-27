@@ -1,8 +1,4 @@
-option pathplanner_sidekick {
-  /*
-  TODO: this should test both sidekicks and actually should test the options
-  path_sidekick_left and path_sidekick_right
-  */
+option pathplanner_sidekick{
   common decision
   {
     if(!body.ready_to_walk || game.current_mode != playing)
@@ -58,7 +54,7 @@ option pathplanner_sidekick {
   state sidekick_left {
     decision {
       else if(action_done)
-        goto done;
+        goto goto_ball_2;
       else
         stay;
     }
@@ -68,21 +64,35 @@ option pathplanner_sidekick {
     }
   }
 
+  state goto_ball_2 {
+    decision{
+
+      else if(action_done && state_time > 1000)
+      {
+        goto sidekick_right;
+      }
+      else
+        stay;
+    }
+    action{
+      situation_abortable = true;
+      path_go_to_ball_with_USOA(distance = 190);
+      
+      //loook at percept
+      head.control_mode = look_at_ball_percept;
+    }
+  }
   
-  target state done
-  {
+  state sidekick_right {
     decision {
-    else if(state_time > 100)
-      goto idle;
+      else if(action_done)
+        goto goto_ball;
       else
         stay;
     }
     action {
-      //NOTE: this is synchronized with sidekick()->finished
-      motion.type = stand;
-
-      //loook at percept
-      head.control_mode = look_at_ball_percept;
+      situation_abortable = true;
+      path_sidekick_right();
     }
   }
 }

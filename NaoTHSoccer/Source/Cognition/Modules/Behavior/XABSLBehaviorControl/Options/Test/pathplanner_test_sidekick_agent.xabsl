@@ -1,4 +1,4 @@
-/** Test behavior for the PrimitiveManeuvers module */
+/** Test behavior path_sidekick_left and path_sidekick_right */
 option pathplanner_test_sidekick_agent {
   initial state test {    
     action {
