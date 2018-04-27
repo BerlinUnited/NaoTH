@@ -12,16 +12,21 @@ namespace naoth
 {
 
 WhistleDetector::WhistleDetector()
-  :
-   command(0),
-   overallWhistleEventCounter(0),
-   audioReadBuffer(BUFFER_SIZE_RX, 0),
-   running(false),
-   recording(false),
-   resetting(false),
-   startStopCount(0),
-   deinitCyclesCounter(0),
-   samplesRecorded(0)
+:
+  command(0),
+  whistleListFile("whistles.lst"),
+  activeChannels("1010"),
+  threshold(0.25),
+  checkAllWhistles(true),
+  saveRawAudio(true),
+  overallWhistleEventCounter(0),
+  audioReadBuffer(BUFFER_SIZE_RX, 0),
+  running(false),
+  recording(false),
+  resetting(false),
+  startStopCount(0),
+  deinitCyclesCounter(0),
+  samplesRecorded(0)
 {
   std::cout << "[INFO] WhistleDetector start thread" << std::endl;
   whistleDetectorThread = std::thread([this] {this->execute();});
@@ -97,6 +102,9 @@ void WhistleDetector::set(const naoth::WhistleControl& controlData)
   if ( lock.owns_lock() )
   {
     command = controlData.onOffSwitch;
+    threshold = controlData.threshold;
+    checkAllWhistles = controlData.checkAllWhistles;
+    saveRawAudio = controlData.saveRawAudio;
 
     activeChannels = controlData.activeChannels;
     if(whistleListFile != controlData.whistleListFile)

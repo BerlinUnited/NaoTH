@@ -13,6 +13,9 @@ namespace naoth
     int onOffSwitch;
     std::string whistleListFile;
     std::string activeChannels;
+    double threshold;
+    bool checkAllWhistles;
+    bool saveRawAudio;
 
     WhistleControl();
     virtual void print(std::ostream& stream) const;

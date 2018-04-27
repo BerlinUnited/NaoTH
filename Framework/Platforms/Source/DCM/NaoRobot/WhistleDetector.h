@@ -37,12 +37,12 @@ protected:
   int command;
 
   //Parameter Substitute:
-  std::string whistleListFile = "whistles.lst";
-  std::string activeChannels = "1010";
+  std::string whistleListFile;
+  std::string activeChannels;
 
-  double threshold = 0.25;
-  bool checkAllWhistles = true;
-  bool saveRawAudio = true;
+  double threshold;
+  bool checkAllWhistles;
+  bool saveRawAudio;
 
   void initAudio();
   void clearBuffers();
