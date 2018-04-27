@@ -174,18 +174,18 @@ include "Options/Test/agent/dribble_test_agent.xabsl";
 include "Options/Test/agent/walk_forward_agent.xabsl";
 
 // Test agents PathPlanner
-include "Options/Test/pathplanner_test_sidekick_agent.xabsl";
-include "Options/Test/pathplanner_test_short_kick_agent.xabsl";
-include "Options/Test/pathplanner_test_long_kick_agent.xabsl";
-include "Options/Test/pathplanner_test_only_shortkick_agent.xabsl";
-include "Options/Test/pathplanner_test_only_sidekick_agent.xabsl";
+include "Options/Test/agent/pathplanner_test_sidekick_agent.xabsl";
+include "Options/Test/agent/pathplanner_test_short_kick_agent.xabsl";
+include "Options/Test/agent/pathplanner_test_long_kick_agent.xabsl";
+include "Options/Test/agent/pathplanner_test_only_shortkick_agent.xabsl";
+include "Options/Test/agent/pathplanner_test_only_sidekick_agent.xabsl";
 
 // Test Options PathPlanner
-include "Options/Test/pathplanner_sidekick.xabsl";
-include "Options/Test/pathplanner_kick_short.xabsl";
-include "Options/Test/pathplanner_kick_long.xabsl";
-include "Options/Test/pathplanner_shortkick_only.xabsl";
-include "Options/Test/pathplanner_sidekick_only.xabsl";
+include "Options/Test/kicks/pathplanner_sidekick.xabsl";
+include "Options/Test/kicks/pathplanner_kick_short.xabsl";
+include "Options/Test/kicks/pathplanner_kick_long.xabsl";
+include "Options/Test/kicks/pathplanner_shortkick_only.xabsl";
+include "Options/Test/kicks/pathplanner_sidekick_only.xabsl";
 
 
 // Test agents (options) Behaviour Tests
