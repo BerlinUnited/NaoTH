@@ -4,6 +4,7 @@ function result = peak_detector(capture_data, window_size, window_offset, thresh
     result = {};
     result.indices = [];
     result.values  = [];
+    result.whistle_detected = false;
     for i=1:window_offset:length(capture_data)
         if (i + window_size - 1 > length(capture_data))
             break
@@ -13,7 +14,8 @@ function result = peak_detector(capture_data, window_size, window_offset, thresh
         
         % TODO write statistik in capture database
         if(max_slice > threshold)
-            disp('Whistle detected')
+%             disp('Whistle detected by max peak')
+            result.whistle_detected = true;
         end
         result.indices(end + 1) = i;
         result.values(end + 1)  = max_slice;

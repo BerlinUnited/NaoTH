@@ -1,45 +1,36 @@
-function  result = maxcrosscorr_detector(capture_data, window_size, window_offset, threshold)
+function  results = maxcrosscorr_detector(capture_data, window_size, window_offset, threshold, ref)
 
-    %% read reference whitle spectrum
-    fileID = fopen ('../tests/andyDark_8kHz_1channels.dat', 'r');
-    spectrum = fread(fileID, 'double', 'ieee-le');
-    fclose(fileID);
-    %% Preprocess cpp Spectrum
-    spectrum_proc = zeros(2 * window_size, 1);
-    %2 * (1024 + 1)
-    spectrum_proc(1:2 * (window_size + 1)) = spectrum(1:end - 1);   
-    reference_max = spectrum(end);
-    
-    % convert array of doubles to array of complex values
-    reference_spectrum = complex(spectrum_proc(1:2:end),spectrum_proc(2:2:end));
-      
-    %% Run Max Cross Correlation Detection on a single capture
-    result = {};
-    result.indices = [];
-    result.values  = [];
-    for i=1:window_offset:length(capture_data)
-        if (i + window_size - 1 > length(capture_data))
-            break
-        end
-        slice = capture_data(i:i + window_size - 1);
-        res_slice = maxcrosscorr(slice, reference_spectrum, reference_max);
+    results = struct;
+    for r = 1:length(ref)
+        reference_spectrum = ref(r).spectralData;
+        reference_max = ref(r).autocorrelation;
+  
+        % Run Max Cross Correlation Detection on a single capture
+        result = struct;
+        result.name = ref(r).name;
+        result.indices = [];
+        result.values  = [];
+        result.whistle_detected = false;
+        for i=1:window_offset:length(capture_data)
+            if (i + window_size - 1 > length(capture_data))
+                break
+            end
+            slice = capture_data(i:i + window_size - 1);
+            res_slice = maxcrosscorr(slice(end:-1:1), reference_spectrum, reference_max);
 
-        % TODO write statistik in capture database
-        if(res_slice > threshold)
-            disp('Whistle detected')
+            % TODO write statistik in capture database
+            if(res_slice >= threshold)
+%                 disp(strcat('Whistle detected by: ', result.name))
+                result.whistle_detected = true;
+            end
+            result.indices(end + 1) = i;
+            result.values(end + 1)  = res_slice;
         end
-        result.indices(end + 1) = i;
-        result.values(end + 1)  = res_slice;
+        if r == 1
+            results = result;
+        else
+            results = [results result];
+        end
     end
-
-
-
-
-
-
-
-
-
-
 
 end
