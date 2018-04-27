@@ -1,5 +1,7 @@
 option pathplanner_sidekick_only {
-
+  /*
+    Only the sidekick to left is tested without approach to ball
+  */
   common decision
   {
     if(!body.ready_to_walk || game.current_mode != playing)
