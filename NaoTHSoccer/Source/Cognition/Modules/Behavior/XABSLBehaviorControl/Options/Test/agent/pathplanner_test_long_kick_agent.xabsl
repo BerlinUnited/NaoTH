@@ -1,4 +1,4 @@
-/** Test behavior for the PrimitiveManeuvers module */
+/** Test behavior pathplanner long kick */
 option pathplanner_test_long_kick_agent {
   initial state test {    
     action {
