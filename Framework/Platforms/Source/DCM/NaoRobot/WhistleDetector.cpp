@@ -19,7 +19,6 @@ WhistleDetector::WhistleDetector()
   threshold(0.25),
   checkAllWhistles(true),
   saveRawAudio(true),
-  overallWhistleEventCounter(0),
   audioReadBuffer(BUFFER_SIZE_RX, 0),
   running(false),
   recording(false),
@@ -28,6 +27,7 @@ WhistleDetector::WhistleDetector()
   deinitCyclesCounter(0),
   samplesRecorded(0)
 {
+  whistlePercept.counter = 0;
   std::cout << "[INFO] WhistleDetector start thread" << std::endl;
   whistleDetectorThread = std::thread([this] {this->execute();});
   ThreadUtil::setPriority(whistleDetectorThread, ThreadUtil::Priority::lowest);
@@ -84,14 +84,11 @@ void WhistleDetector::get(naoth::WhistlePercept& perceptData)
   std::unique_lock<std::mutex> lock(getMutex, std::try_to_lock);
   if ( lock.owns_lock() )
   {
-    if(recognizedWhistles.size() > 0)
+    if(whistlePercept.recognizedWhistles.size() > 0)
     {
-      perceptData.counter = overallWhistleEventCounter;
-      perceptData.captureFile = captureFileName;
-      perceptData.recognizedWhistles.clear();
-      std::cout << recognizedWhistles.size() << " whistles fired since last cognition cycle" << std::endl;
-      perceptData.recognizedWhistles.assign(recognizedWhistles.begin(), recognizedWhistles.end());
-      recognizedWhistles.clear();
+      perceptData = whistlePercept;
+      whistlePercept.reset();
+      std::cout << perceptData.recognizedWhistles.size() << " whistles fired since last cognition cycle" << std::endl;
     }
   }
 }
@@ -244,7 +241,7 @@ void WhistleDetector::execute()
 
         if(deinitCyclesCounter == 0 && activeChannels[c] == '1' && detectWhistles(c))
         {
-          overallWhistleEventCounter++;
+          whistlePercept.counter++;
         }
       }
       
@@ -450,9 +447,8 @@ bool WhistleDetector::detectWhistles(int channel)
     {
       std::cout << "Whistle " << referenceWhistleNames[idxWhistle] << "(No. " << idxWhistle << ") maxCorr " << correlation << " ref corr " << referenceWhistleAutoCorrelationMaxima[idxWhistle] << std::endl;
       std::cout << "Whistle " << referenceWhistleNames[idxWhistle] << "(No. " << idxWhistle << ") detected! " << response << std::endl;
+      whistlePercept.addWhistle(referenceWhistleNames[idxWhistle], samplesRecorded, response);
       whistleDetected = true;
-      WhistlePercept::Whistle recWhistle(referenceWhistleNames[idxWhistle], samplesRecorded, response);
-      recognizedWhistles.push_back(recWhistle);
       if(!checkAllWhistles)
       {
         return true;

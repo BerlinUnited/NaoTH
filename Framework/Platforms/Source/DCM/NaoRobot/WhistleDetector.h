@@ -70,11 +70,8 @@ protected:
   std::vector<fftw_complex*> referenceWhistleSpectra;
   std::vector<double> referenceWhistleAutoCorrelationMaxima;
   std::vector<std::string> referenceWhistleNames;
-  std::vector<WhistlePercept::Whistle> recognizedWhistles;
+  WhistlePercept whistlePercept;
 
-  int overallWhistleEventCounter;
-  //unsigned long long aktFrameTime;
-  //unsigned long long lastFrameTime;
   std::vector<short> audioReadBuffer;
 
   volatile bool running;

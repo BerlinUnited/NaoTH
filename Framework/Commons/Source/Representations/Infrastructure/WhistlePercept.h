@@ -16,11 +16,11 @@ namespace naoth
     {
       public:
 
-      Whistle(const std::string& name_, const long long& positionInCapture_, const double& responseValue_)
+      Whistle(const std::string& name, const long long& positionInCapture, const double& responseValue)
       :
-        name(name_),
-        positionInCapture(positionInCapture_),
-        responseValue(responseValue_)
+        name(name),
+        positionInCapture(positionInCapture),
+        responseValue(responseValue)
       {}
 
       std::string name;
@@ -31,12 +31,20 @@ namespace naoth
     std::vector<Whistle> recognizedWhistles;
     std::string captureFile;
     int counter;
-    int lastCounterAtSerialization;
 
     WhistlePercept();
+    virtual ~WhistlePercept();
     virtual void print(std::ostream& stream) const;
 
-    virtual ~WhistlePercept();
+    void reset()
+    {
+      recognizedWhistles.clear();
+    }
+
+    void addWhistle(const std::string& name, const long long& positionInCapture, const double& responseValue)
+    {
+      recognizedWhistles.emplace_back(name, positionInCapture, responseValue);
+    }
   };
 
   template<>

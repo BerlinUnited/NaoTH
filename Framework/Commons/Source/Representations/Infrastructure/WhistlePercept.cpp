@@ -38,7 +38,7 @@ void Serializer<WhistlePercept>::deserialize(std::istream& stream, WhistlePercep
   representation.recognizedWhistles.clear();
   for (int i = 0; i < message.recognizedwhistles_size(); i++)
   {
-    const naothmessages::Whistle& msgWhistle = message.recognizedwhistles(i);
+    const naothmessages::WhistlePercept::Whistle& msgWhistle = message.recognizedwhistles(i);
     WhistlePercept::Whistle whistle(msgWhistle.name(), msgWhistle.positionincapture(), msgWhistle.responsevalue());
     representation.recognizedWhistles.push_back(whistle);
   }
@@ -47,24 +47,20 @@ void Serializer<WhistlePercept>::deserialize(std::istream& stream, WhistlePercep
 
 void Serializer<WhistlePercept>::serialize(const WhistlePercept& representation, std::ostream& stream)
 {
-  //if (representation.lastCounterAtSerialization < representation.counter)
+  naothmessages::WhistlePercept message;
+
+  message.set_counter(representation.counter);
+  message.set_capturefile(representation.captureFile);
+
+  for (size_t i = 0; i < representation.recognizedWhistles.size(); i++)
   {
-    naothmessages::WhistlePercept message;
-
-    message.set_counter(representation.counter);
-    message.set_capturefile(representation.captureFile);
-
-    for (size_t i = 0; i < representation.recognizedWhistles.size(); i++)
-    {
-      naothmessages::Whistle* msgWhistle = message.add_recognizedwhistles();
-      msgWhistle->set_name(representation.recognizedWhistles[i].name);
-      msgWhistle->set_positionincapture(representation.recognizedWhistles[i].positionInCapture);
-      msgWhistle->set_responsevalue(representation.recognizedWhistles[i].responseValue);
-    }
-
-    google::protobuf::io::OstreamOutputStream buf(&stream);
-    message.SerializeToZeroCopyStream(&buf);
+    naothmessages::WhistlePercept::Whistle* msgWhistle = message.add_recognizedwhistles();
+    msgWhistle->set_name(representation.recognizedWhistles[i].name);
+    msgWhistle->set_positionincapture(representation.recognizedWhistles[i].positionInCapture);
+    msgWhistle->set_responsevalue(representation.recognizedWhistles[i].responseValue);
   }
-  //representation.lastCounterAtSerialization = representation.counter;
+
+  google::protobuf::io::OstreamOutputStream buf(&stream);
+  message.SerializeToZeroCopyStream(&buf);
 }//end serialize
 
