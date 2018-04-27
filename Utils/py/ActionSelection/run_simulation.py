@@ -2,10 +2,10 @@ import math
 import numpy as np
 from matplotlib import pyplot as plt
 from matplotlib.patches import Circle
-from tools import action as a
-from tools import Simulation as Sim
+import tools.action as a
+import tools.Simulation as Sim
 from naoth import math2d as m2d
-from tools import tools
+import tools.tools as tools
 
 """
 This module visualizes the samples and the decision calculated by the Simulation Based Algorithm.
@@ -61,7 +61,7 @@ def main():
     state = State()
 
     no_action = a.Action("none", 0, 0, 0, 0)
-    kick_short = a.Action("kick_short", 780, 150, 8.454482265522328, 6.992268841997358)
+    kick_short = a.Action("kick_short", 780, 150, 0, 6.992268841997358)
     sidekick_left = a.Action("sidekick_left", 750, 150, 86.170795364136380, 10.669170653645670)
     sidekick_right = a.Action("sidekick_right", 750, 150, -89.657943335302260, 10.553726275058064)
 
