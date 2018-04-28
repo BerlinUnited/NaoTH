@@ -81,9 +81,9 @@ void FieldAreaDetector::execute(CameraInfo::CameraID id)
 
       Cell upper, lower;
       int half_grid_size = split_cell(green_cell, upper, lower);
-
+      int min_green_half = params.proportion_of_green * (half_grid_size+1) * (half_grid_size+1);
       Vector2i endpoint;
-      if (upper.sum_of_green >= params.proportion_of_green * half_grid_size * half_grid_size) {
+      if (upper.sum_of_green >= min_green_half && lower.sum_of_green >= min_green_half) {
         find_endpoint(upper, endpoint);
       } else {
         find_endpoint(lower, endpoint);
@@ -94,7 +94,7 @@ void FieldAreaDetector::execute(CameraInfo::CameraID id)
 
 void FieldAreaDetector::find_endpoint(const Cell& cell, Vector2i& endpoint) {
   int y_grid_size = cell.maxY - cell.minY;
-  int pixels_per_cell = y_grid_size * y_grid_size;
+  int pixels_per_cell = (y_grid_size+1) * (y_grid_size+1);
 
   double cut = cell.sum_of_green / (double)pixels_per_cell;
   endpoint.x = ((cell.minX+cell.maxX)/2) * factor;
@@ -123,13 +123,13 @@ int32_t FieldAreaDetector::split_cell(const Cell& cell, Cell& upper, Cell& lower
 
   DEBUG_REQUEST("Vision:FieldAreaDetector:draw_split",
     ColorClasses::Color color;
-    if(upper.sum_of_green >= (half_grid_size*half_grid_size*params.proportion_of_green)) {
+    if(upper.sum_of_green >= ((half_grid_size+1)*(half_grid_size+1)*params.proportion_of_green)) {
       color = ColorClasses::green;
     } else {
       color = ColorClasses::red;
     }
     RECT_PX(color, upper.minX*factor+1, upper.minY*factor+1, upper.maxX*factor-1, upper.maxY*factor-1);
-    if(lower.sum_of_green >= (half_grid_size*half_grid_size*params.proportion_of_green)) {
+    if(lower.sum_of_green >= ((half_grid_size+1)*(half_grid_size+1)*params.proportion_of_green)) {
       color = ColorClasses::green;
     } else {
       color = ColorClasses::red;
