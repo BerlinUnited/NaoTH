@@ -149,6 +149,7 @@ void MonteCarloSelfLocator::execute()
       state = LOCALIZE;
       islocalized = false;
       lastState = KIDNAPPED;
+      getRobotPose().isValid = false;
       break;
     }
     case BLIND:
@@ -191,7 +192,7 @@ void MonteCarloSelfLocator::execute()
       if(parameters.updateBySituation) //  && lastState == KIDNAPPED
       {
         updateBySituation();
-      }//end updateBySituation
+      }
 
 
       // NOTE: statistics has to be after updates and before resampling
