@@ -41,7 +41,9 @@ option path_basic_goalie
 	  decision {
       else if (ball.know_where_itis && ball.distance < 1500 && ball.position.field.x <= field.xPosOwnPenaltyMark)
         goto clear_ball;
-      else if (ball.know_where_itis && ball.distance < 4000 && (normalize(angle=atan2(y = ball.preview.y, x = ball.preview.x)) > 10))
+      else if (ball.know_where_itis && ball.distance < 4000 
+        //&& (normalize(angle=atan2(y = ball.preview.y, x = ball.preview.x)) > 10)
+        )
          goto watch_ball;
       else 
         stay;
@@ -62,7 +64,9 @@ option path_basic_goalie
         stay;
     }
     action {
-      goalie_watch_ball();
+      //goalie_watch_ball();
+      go_to_point_with_USOA(x=goalie.defensive.x, y=goalie.defensive.y,rot=normalize(angle=atan2(y = ball.preview.y, x = ball.preview.x)));
+      head.control_mode = search_for_ball_goalie;
     }
   }
 
