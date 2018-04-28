@@ -502,12 +502,12 @@ void WhistleDetector::initAudio()
   if(saveRawAudio)
   {
     time_t now = time(0);
-    tm *ltm = localtime(&now);
+    tm* ltm = localtime(&now);
 
     std::stringstream filePath;
-    filePath << "/tmp/capture_" << robotName << "_" << 1900+ltm->tm_year << "-" << 1 + ltm->tm_mon << "-" << ltm->tm_mday << "-" << 1 + ltm->tm_hour << "-" <<  1 + ltm->tm_min << "_" << static_cast<double>(paSampleSpec.rate) / 1000 <<  "kHz_" << (int) paSampleSpec.channels << "channels.raw";
-    captureFileName = filePath.str();
-    outputFileStream.open(captureFileName.c_str(), std::ios_base::out | std::ios_base::binary);
+    filePath << "/tmp/capture_" << robotName << "_" << 1900 + ltm->tm_year << "-" << 1 + ltm->tm_mon << "-" << ltm->tm_mday << "-" << 1 + ltm->tm_hour << "-" <<  1 + ltm->tm_min << "-" <<  1 + ltm->tm_sec << "_" << static_cast<double>(paSampleSpec.rate) / 1000 <<  "kHz_" << (int) paSampleSpec.channels << "channels.raw";
+    whistlePercept.captureFile = filePath.str();
+    outputFileStream.open(whistlePercept.captureFile.c_str(), std::ios_base::out | std::ios_base::binary);
   }
 }
 
