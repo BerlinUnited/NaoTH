@@ -10,9 +10,7 @@ option search_for_ball
   {
     decision 
     {
-	    if((ball.see_where_itis || 
-@force_ball_model_check) && 
-	       abs(value=ball.angle) < 60)
+	    if((ball.see_where_itis || @force_ball_model_check) && abs(value=ball.angle) < 60)
 	      goto try_to_look_at_the_old_ball;
       else if(@use_teamball && ball.team.is_valid)
         goto look_at_teamball;
