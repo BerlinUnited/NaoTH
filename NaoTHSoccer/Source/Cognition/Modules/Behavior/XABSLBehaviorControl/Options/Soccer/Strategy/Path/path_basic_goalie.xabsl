@@ -65,7 +65,18 @@ option path_basic_goalie
     }
     action {
       //goalie_watch_ball();
-      go_to_point_with_USOA(x=goalie.defensive.x, y=goalie.defensive.y,rot=normalize(angle=atan2(y = ball.preview.y, x = ball.preview.x)));
+      /*
+      go_to_point_with_USOA(
+        x=goalie.defensive.x > field.xPosOwnGroundline + 100 ? field.xPosOwnGroundline + 100 : goalie.defensive.x,
+        y=abs(value=goalie.defensive.x) > abs(value=field.yPosLeftGoal)-100 ? sgn(value=goalie.defensive.y)*(abs(value=field.yPosLeftGoal)-100) : goalie.defensive.y,
+        rot=normalize(angle=atan2(y = ball.preview.y, x = ball.preview.x))
+      );
+      */
+      go_to_point(
+        x=goalie.defensive.x > field.xPosOwnGroundline + 100 ? field.xPosOwnGroundline + 100 : goalie.defensive.x,
+        y=abs(value=goalie.defensive.x) > abs(value=field.yPosLeftGoal)-100 ? sgn(value=goalie.defensive.y)*(abs(value=field.yPosLeftGoal)-100) : goalie.defensive.y,
+        rot=normalize(angle=atan2(y = ball.preview.y, x = ball.preview.x))
+      );
       head.control_mode = search_for_ball_goalie;
     }
   }
