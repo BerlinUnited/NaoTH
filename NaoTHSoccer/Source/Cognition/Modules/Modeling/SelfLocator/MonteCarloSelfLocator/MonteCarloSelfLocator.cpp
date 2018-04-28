@@ -140,6 +140,7 @@ void MonteCarloSelfLocator::execute()
     localize_start = getFrameInfo().getTime();
   }
 
+
   switch(state) 
   {
     case KIDNAPPED:
@@ -152,6 +153,10 @@ void MonteCarloSelfLocator::execute()
     }
     case BLIND:
     {
+      if(parameters.updateByOdometryWhenBlind) {
+        updateByOdometry(theSampleSet, parameters.motionNoise);
+      }
+
       /* do nothing */
       if(!islocalized) {
         state = LOCALIZE;
