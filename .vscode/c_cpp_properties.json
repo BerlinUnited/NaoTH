@@ -32,7 +32,7 @@
                 "${NAOTH_TOOLCHAIN_PATH}/toolchain_nao/compiler/i686-berlinunited-linux-gnu/include/c++/4.9.3/tr1",
                 "${NAOTH_TOOLCHAIN_PATH}/toolchain_nao/compiler/i686-berlinunited-linux-gnu/sysroot/usr/include/linux",
                 "${NAOTH_TOOLCHAIN_PATH}/toolchain_nao/compiler/lib/gcc/i686-berlinunited-linux-gnu/4.9.3/include/",
-                "${workspaceRoot}/NaoTHSoccer/Source", 
+                "${workspaceRoot}/NaoTHSoccer/Source",
                 "${workspaceRoot}/NaoTHSoccer/Source/Messages",
                 "${workspaceRoot}/Framework/Commons/Source",
                 "${workspaceRoot}/Framework/Commons/Source/Messages",
@@ -50,7 +50,7 @@
                     "${NAOTH_TOOLCHAIN_PATH}/toolchain_nao/compiler/i686-berlinunited-linux-gnu/include/c++/4.9.3/tr1",
                     "${NAOTH_TOOLCHAIN_PATH}/toolchain_nao/compiler/i686-berlinunited-linux-gnu/sysroot/usr/include/linux",
                     "${NAOTH_TOOLCHAIN_PATH}/toolchain_nao/compiler/lib/gcc/i686-berlinunited-linux-gnu/4.9.3/include/",
-                    "${workspaceRoot}/NaoTHSoccer/Source", 
+                    "${workspaceRoot}/NaoTHSoccer/Source",
                     "${workspaceRoot}/NaoTHSoccer/Source/Messages",
                     "${workspaceRoot}/Framework/Commons/Source",
                     "${workspaceRoot}/Framework/Commons/Source/Messages",
@@ -60,7 +60,10 @@
                 ],
                 "limitSymbolsToIncludedHeaders": true,
                 "databaseFilename": ""
-            }
+            },
+            "compilerPath": "/usr/bin/clang",
+            "cStandard": "c11",
+            "cppStandard": "c++17"
         },
         {
             "name": "Win32",

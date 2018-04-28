@@ -28,6 +28,12 @@ public:
     // container holding the last incomeing message of the teammates
     std::map<unsigned int, TeamMessageData> data;
 
+    unsigned int dropNoSplMessage = 0;
+    unsigned int dropNotOurTeam = 0;
+    unsigned int dropNotParseable = 0;
+    unsigned int dropKeyFail = 0;
+    unsigned int dropMonotonic = 0;
+
     TeamMessage() {}
 
     virtual ~TeamMessage() {}
@@ -39,7 +45,15 @@ public:
             d.print(stream);
             stream << "------------------------" << std::endl;
         }
-        stream << "active team-members: " << data.size() << std::endl;
+        stream << "active team-members: " << data.size() << "\n"
+               << "========================\n"
+               << "dropNoSplMessage = " << dropNoSplMessage << "\n"
+               << "dropNotOurTeam = "   << dropNotOurTeam   << "\n"
+               << "dropNotParseable = " << dropNotParseable << "\n"
+               << "dropKeyFail = "      << dropKeyFail      << "\n"
+               << "dropMonotonic = "    << dropMonotonic    << "\n"
+               << std::endl;
+
     }
 };
 

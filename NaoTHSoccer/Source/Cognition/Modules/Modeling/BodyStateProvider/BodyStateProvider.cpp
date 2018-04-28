@@ -12,7 +12,7 @@
 
 BodyStateProvider::BodyStateProvider()
 {
-
+  getDebugParameterList().add(&theParams);
 }
 
 void BodyStateProvider::execute()

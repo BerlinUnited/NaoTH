@@ -28,6 +28,7 @@ public:
 
   void get(naoth::WhistlePercept& perceptData);
   void set(const naoth::WhistleControl& controlData);
+  void setRobotName(const std::string& name);
 
 protected:
   std::thread whistleDetectorThread;
@@ -36,12 +37,12 @@ protected:
   int command;
 
   //Parameter Substitute:
-  std::string whistleListFile = "whistles.lst";
-  std::string activeChannels = "1010";
+  std::string whistleListFile;
+  std::string activeChannels;
 
-  double threshold = 0.25;
-  bool checkAllWhistles = true;
-  bool saveRawAudio = true;
+  double threshold;
+  bool checkAllWhistles;
+  bool saveRawAudio;
 
   void initAudio();
   void clearBuffers();
@@ -69,20 +70,18 @@ protected:
   std::vector<fftw_complex*> referenceWhistleSpectra;
   std::vector<double> referenceWhistleAutoCorrelationMaxima;
   std::vector<std::string> referenceWhistleNames;
+  WhistlePercept whistlePercept;
 
-
-  int overallWhistleEventCounter;
-  //unsigned long long aktFrameTime;
-  //unsigned long long lastFrameTime;
   std::vector<short> audioReadBuffer;
 
   volatile bool running;
   bool recording;
   bool resetting;
   std::ofstream outputFileStream;
+  std::string robotName;
   int startStopCount;
   int deinitCyclesCounter;
-
+  long long samplesRecorded;
 };
 
 }

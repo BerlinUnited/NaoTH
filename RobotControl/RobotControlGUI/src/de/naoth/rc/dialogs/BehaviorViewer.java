@@ -531,6 +531,7 @@ public class BehaviorViewer extends AbstractDialog
 
         symbolChooser.getContentPane().add(jTabbedPane1, java.awt.BorderLayout.CENTER);
 
+        sortSymbolsTextInput.setToolTipText("Search for symbols (eg. '.*asdf.*')");
         sortSymbolsTextInput.addCaretListener(new javax.swing.event.CaretListener() {
             public void caretUpdate(javax.swing.event.CaretEvent evt) {
                 sortSymbolsTextInputCaretUpdate(evt);
@@ -738,27 +739,25 @@ public class BehaviorViewer extends AbstractDialog
 
       if(currentBehavior != null)
       {
-        for(Symbol s : currentBehavior.inputSymbols.values())
-        {
-            JCheckBox checkBox = new JCheckBox(s.name);
-            checkBox.setSelected(this.symbolsToWatch.contains(s.name));
+        currentBehavior.inputSymbols.values().stream().map((t) -> { return t.name; }).sorted().forEachOrdered((t) -> {
+            JCheckBox checkBox = new JCheckBox(t);
+            checkBox.setSelected(this.symbolsToWatch.contains(t));
             checkBox.setOpaque(false);
             checkBox.setActionCommand("");
             checkBox.addActionListener(new SymbolWatchCheckBoxListener(this.symbolsToWatch, checkBox));
 
             this.inputSymbolsBoxPanel.add(checkBox);
-        }
+        });
 
-        for(Symbol s : currentBehavior.outputSymbols.values())
-        {
-            JCheckBox checkBox = new JCheckBox(s.name);
-            checkBox.setSelected(this.symbolsToWatch.contains(s.name));
+        currentBehavior.outputSymbols.values().stream().map((t) -> { return t.name; }).sorted().forEachOrdered((t) -> {
+            JCheckBox checkBox = new JCheckBox(t);
+            checkBox.setSelected(this.symbolsToWatch.contains(t));
             checkBox.setOpaque(false);
             checkBox.setActionCommand("");
             checkBox.addActionListener(new SymbolWatchCheckBoxListener(this.symbolsToWatch, checkBox));
 
             this.outputSymbolsBoxPanel.add(checkBox);
-        }
+        });
       }
     
       sortSymbols(this.sortSymbolsTextInput.getText());
