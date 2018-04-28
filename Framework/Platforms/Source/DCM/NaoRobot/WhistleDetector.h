@@ -78,7 +78,6 @@ protected:
   bool recording;
   bool resetting;
   std::ofstream outputFileStream;
-  std::string captureFileName;
   std::string robotName;
   int startStopCount;
   int deinitCyclesCounter;
