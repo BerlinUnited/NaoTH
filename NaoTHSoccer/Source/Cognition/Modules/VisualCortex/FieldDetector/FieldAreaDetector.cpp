@@ -25,8 +25,10 @@ void FieldAreaDetector::execute(CameraInfo::CameraID id)
   if(!getBallDetectorIntegralImage().isValid()) {
     return;
   }
-
   factor = getBallDetectorIntegralImage().FACTOR;
+  int horizon_height = (int) std::max(getArtificialHorizon().begin().y+1.5, getArtificialHorizon().end().y+1.5);
+  horizon_height = std::max(0, horizon_height)/factor;
+
   grid_size = params.grid_size/factor;
   int n_cells_x = getBallDetectorIntegralImage().getWidth()/grid_size;
   int offset = (getBallDetectorIntegralImage().getWidth()-(n_cells_x*grid_size))/n_cells_x;
@@ -44,7 +46,13 @@ void FieldAreaDetector::execute(CameraInfo::CameraID id)
     int start_y = std::min(getBodyContour().getFirstFreeCell(start_left).y/factor,
                            getBodyContour().getFirstFreeCell(start_right).y/factor);
     bool green_found = false;
-    for(minY = getBallDetectorIntegralImage().getHeight()-grid_size; minY >= 0; minY -= grid_size) {
+    bool complete = false;
+    for(minY = getBallDetectorIntegralImage().getHeight()-grid_size; !complete; minY -= grid_size) {
+      if(minY < horizon_height) {
+        minY = horizon_height;
+        complete = true;
+      }
+
       maxY = std::min((int)minY + grid_size, (int)getBallDetectorIntegralImage().getHeight()-1);
       if(maxY > start_y) {
         continue;
@@ -77,11 +85,11 @@ void FieldAreaDetector::execute(CameraInfo::CameraID id)
 
     if(green_found) {
       Cell green_cell(minX, last_green_grid_minY, maxX, last_green_grid_maxY);
-      refine_cell(green_cell);
+      //refine_cell(green_cell);
 
       Cell upper, lower;
       int half_grid_size = split_cell(green_cell, upper, lower);
-      int min_green_half = params.proportion_of_green * (half_grid_size+1) * (half_grid_size+1);
+      int min_green_half = (int)(params.proportion_of_green * (half_grid_size+1) * (half_grid_size+1));
       Vector2i endpoint;
       if (upper.sum_of_green >= min_green_half && lower.sum_of_green >= min_green_half) {
         find_endpoint(upper, endpoint);
