@@ -6,6 +6,10 @@
 
 package de.naoth.rc.logmanager;
 
+import de.naoth.rc.components.teamcomm.TeamCommManager;
+import de.naoth.rc.components.teamcomm.TeamCommMessage;
+import de.naoth.rc.dataformats.SPLMessage;
+import de.naoth.rc.messages.TeamMessageOuterClass;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -13,17 +17,22 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import javax.swing.SwingUtilities;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
+import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 
 /**
  *
  * @author thomas
  */
 @PluginImplementation
-public class LogFileEventManagerImpl implements LogFileEventManager {
+public class LogFileEventManagerImpl implements LogFileEventManager
+{
     private final List<LogFrameListener> listeners = new ArrayList<>();
     private final BlackBoardImpl blackBoard = new BlackBoardImpl();
     
     private final ReadWriteLock lock = new ReentrantReadWriteLock();
+    
+    @InjectPlugin
+    public static TeamCommManager teamcommManager;
     
     @Override
     public void addListener(LogFrameListener l) {
@@ -72,8 +81,25 @@ public class LogFileEventManagerImpl implements LogFileEventManager {
     
     private void internalFire(Collection<LogDataFrame> c) {
        if(c != null) {
+            List<TeamCommMessage> messages = new java.util.ArrayList<>();
             for(LogDataFrame f: c) {
                 blackBoard.add(f);
+                if(f.getName().equals("TeamMessage")) {
+                    try {
+                        TeamMessageOuterClass.TeamMessage.parseFrom(f.getData()).getDataList().stream().forEach(msg->{
+                            SPLMessage spl = SPLMessage.parseFrom(msg);
+                            messages.add(new TeamCommMessage(
+                                System.currentTimeMillis(),
+                                "10.0."+spl.teamNum+"."+spl.playerNum, // artificially set an ip
+                                spl,
+                                spl.teamNum != 4) // TOOD: can we set anywhere our team number?!?
+                            );
+                        });
+                    } catch (Exception e) {}
+                }
+            }
+            if(!messages.isEmpty()) {
+                teamcommManager.receivedMessages(messages);
             }
         }
         
@@ -89,4 +115,5 @@ public class LogFileEventManagerImpl implements LogFileEventManager {
           lock.readLock().unlock();
         }
     }
+    
 }
