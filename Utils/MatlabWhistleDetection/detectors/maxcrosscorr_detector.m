@@ -7,9 +7,11 @@ function  results = maxcrosscorr_detector(capture_data, window_size, window_offs
   
         % Run Max Cross Correlation Detection on a single capture
         result = struct;
-        result.name = ref(r).name;
-        result.indices = [];
-        result.values  = [];
+        result.name      = ref(r).name;
+        result.indices   = [];
+        result.values    = [];
+        result.positions = [];
+        result.responses = [];
         result.whistle_detected = false;
         for i=1:window_offset:length(capture_data)
             if (i + window_size - 1 > length(capture_data))
@@ -22,6 +24,8 @@ function  results = maxcrosscorr_detector(capture_data, window_size, window_offs
             if(res_slice >= threshold)
 %                 disp(strcat('Whistle detected by: ', result.name))
                 result.whistle_detected = true;
+                result.positions(end + 1) = i;
+                result.responses(end + 1) = res_slice;
             end
             result.indices(end + 1) = i;
             result.values(end + 1)  = res_slice;
