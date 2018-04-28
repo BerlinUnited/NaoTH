@@ -39,9 +39,13 @@ namespace strategy("Strategy Symbols") {
   /** */
   float input goalie.guardline.y;
 
+  /** defensive position of the goalie on a (half) ellipse in the penalty area */
+  float input goalie.defensive.x;
+  float input goalie.defensive.y;
+  float input goalie.defensive.a;
+
   /** */
   float input penalty_goalie.pos.x;
-  /** */
   float input penalty_goalie.pos.y;
 
   /** formation */
