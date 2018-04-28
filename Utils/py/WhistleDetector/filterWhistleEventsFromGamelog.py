@@ -16,7 +16,7 @@ def get_whistle_percept(frame):
 if __name__ == "__main__":
   myParser = Parser()
 
-  for msg in LogReader("L:/game.log", myParser, get_whistle_percept):
+  for msg in LogReader("\\\\nao\\rc17\\go18\\game_logs\\2018-04-28_GO_nomadz_half2\\090917-0100-Nao0225\\game.log", myParser, get_whistle_percept):
     if msg:
       print(msg)
 
