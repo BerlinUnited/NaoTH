@@ -36,7 +36,7 @@ function data = add_whistle_spectrum(data, file, numChannels, sampleRate, catego
     %% generate raw data from conjugated complex spectrum
     fftw('planner','estimate');
     mat_raw = ifft(conj(cpp_spectrum_proc), length(cpp_spectrum_proc)*2, 'symmetric');
-    whistle.raw = mat_raw(1:1025);
+    whistle.rawData = mat_raw(1:1025);
     
 %     figure
 %     plot(whistle.raw)
