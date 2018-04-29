@@ -1,4 +1,4 @@
-function  results = maxcrosscorr_detector(capture_data, window_size, window_offset, threshold, ref)
+function  results = maxcrosscorr_detector(capture_data, window_size, window_offset, threshold, ref, flip)
 
     results = struct;
     for r = 1:length(ref)
@@ -18,8 +18,11 @@ function  results = maxcrosscorr_detector(capture_data, window_size, window_offs
                 break
             end
             slice = capture_data(i:i + window_size - 1);
-            res_slice = maxcrosscorr(slice(end:-1:1), reference_spectrum, reference_max);
-
+            if flip
+                res_slice = maxcrosscorr(slice(end:-1:1), reference_spectrum, reference_max);
+            else
+                res_slice = maxcrosscorr(slice, reference_spectrum, reference_max);
+            end
             % TODO write statistik in capture database
             if(res_slice >= threshold)
 %                 disp(strcat('Whistle detected by: ', result.name))

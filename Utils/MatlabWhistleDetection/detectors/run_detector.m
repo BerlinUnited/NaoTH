@@ -33,7 +33,7 @@ run_cross = true;
 fftw('planner','estimate');
 
 % %% Get a single capture
-go17_recordings = capture_database.go17_recordings;
+% go17_recordings = capture_database.go17_recordings;
 % rc17_recordings = capture_database.rc17_recordings;
 database = capture_database;
 
@@ -42,12 +42,15 @@ create_non_detection_plots = false;
 
 %% set references whistle set to use
 % ref = reference_database.bhuman;
-ref = reference_database.kln17;
+% ref = reference_database.kln17;
 % ref = reference_database.rc17;
+% ref = reference_database.go18;
+ref = reference_database.go17;
 
 ref_stat = struct;
 for r = 1:length(ref)
     ref(r).name = strrep(ref(r).name, '-', '_');
+    ref(r).name = strrep(ref(r).name, '.', '_');
     ev  = struct;
     ev.tp = 0;
     ev.fp = 0;
@@ -99,8 +102,8 @@ for t = 1:length(recordings_names)
             end %if run_peak
             %% Max Cross Correlation Detector       
             if run_cross
-                 threshold = 0.4;
-                 results = maxcrosscorr_detector(capture_data, 1024, 768, threshold, ref);
+                 threshold = 0.25;
+                 results = maxcrosscorr_detector(capture_data, 1024, 768, threshold, ref, true);
                  for r = 1:length(results)
                     do_plots = (results(r).whistle_detected && create_detection_plots) || (~results(r).whistle_detected && create_non_detection_plots);
                     
@@ -130,7 +133,11 @@ for t = 1:length(recordings_names)
                         filepath = strcat(figure_export_path, recording_name, "/", subdir, results(r).name, "/threshold_", num2str(threshold), "/", record_name);
                         filepath = strrep(filepath,' ', '_');
                         filepath = strrep(filepath, 'raw', 'png');
-                        saveas(fig, char(filepath), 'png');
+                        try
+                            saveas(fig, char(filepath), 'png');
+                        catch
+                            disp(strcat("could not save figure for ", filepath))
+                        end
                     end
                     if results(r).whistle_detected
                         for p = 1:length(results(r).positions)
