@@ -152,7 +152,7 @@ void InertiaSensorFilter::predict(const RotationMatrix& rotationOffset)
 void InertiaSensorFilter::readingModel(const State<double>& sigmaPoint, Vector3d& reading)
 {
   reading = Vector3d(sigmaPoint.rotation[0].z, sigmaPoint.rotation[1].z, sigmaPoint.rotation[2].z);
-  reading *= -Math::g;
+  reading *= Math::g;
 }
 
 void InertiaSensorFilter::readingUpdate(const Vector3d& reading)
