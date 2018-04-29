@@ -4,3 +4,6 @@ data/*
 *.dat
 *.raw
 *.mat
+*.asv
+
+secret.m

@@ -4,7 +4,6 @@ import sys
 import argparse
 import signal
 
-from naoth import Representations_pb2
 import utils
 
 
