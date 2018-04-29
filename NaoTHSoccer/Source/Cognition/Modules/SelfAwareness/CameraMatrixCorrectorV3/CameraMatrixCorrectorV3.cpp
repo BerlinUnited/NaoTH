@@ -169,8 +169,6 @@ void CameraMatrixCorrectorV3::reset_calibration()
   getCameraMatrixOffsetV3().cam_rot[CameraInfo::Bottom] = Vector3d();
 
   cam_mat_offsets = Eigen::Matrix<double, 14, 1>::Zero();
-
-  //theCamMatErrorFunctionV3->getModuleT()->globalPosition = Vector3d();
 }
 
 bool CameraMatrixCorrectorV3::calibrate(){
@@ -291,6 +289,9 @@ bool CameraMatrixCorrectorV3::calibrateOnlyOffsets()
 // returns true, if the trajectory is starting again from beginning
 bool CameraMatrixCorrectorV3::collectingData()
 {
+    if(current_target == target_points.end())
+        return true;
+
     getHeadMotionRequest().id = HeadMotionRequest::goto_angle;
     getHeadMotionRequest().targetJointPosition.x = Math::fromDegrees(current_target->x);
     getHeadMotionRequest().targetJointPosition.y = Math::fromDegrees(current_target->y);
