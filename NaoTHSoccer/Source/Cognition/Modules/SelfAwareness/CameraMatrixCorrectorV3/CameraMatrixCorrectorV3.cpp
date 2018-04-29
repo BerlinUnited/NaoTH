@@ -25,13 +25,11 @@ CameraMatrixCorrectorV3::CameraMatrixCorrectorV3()
 
   DEBUG_REQUEST_REGISTER("CameraMatrixV3:automatic_mode","try to do automatic calibration", false);
 
-  DEBUG_REQUEST_REGISTER("CameraMatrixV3:calibrateOnlyPos","",false);
-  DEBUG_REQUEST_REGISTER("CameraMatrixV3:calibrateOnlyOffsets","",false);
-  DEBUG_REQUEST_REGISTER("CameraMatrixV3:calibrateSimultaneously","",false);
+  DEBUG_REQUEST_REGISTER("CameraMatrixV3:calibrate","",false);
 
   theCamMatErrorFunctionV3 = registerModule<CamMatErrorFunctionV3>("CamMatErrorFunctionV3", true);
 
-  auto_cleared_data = auto_collected = auto_calibrated_phase1 = auto_calibrated = false;
+  auto_cleared_data = auto_collected = auto_calibrated = false;
   play_calibrated = play_calibrating = play_collecting = true;
   last_error = 0;
 
@@ -96,21 +94,15 @@ void CameraMatrixCorrectorV3::execute()
     getHeadMotionRequest().id = HeadMotionRequest::hold;
     current_target = target_points.begin();
 
-    auto_cleared_data = auto_collected = auto_calibrated_phase1 = auto_calibrated = false;
+    auto_cleared_data = auto_collected = auto_calibrated = false;
     play_calibrated = play_calibrating = play_collecting = true;
     derrors.clear();
-    derrors_pos.clear();
-    derrors_offset.clear();
     last_error = 0;
     lm_minimizer.reset();
-    lm_minimizer_pos.reset();
-    lm_minimizer_offset.reset();
   );
 
   DEBUG_REQUEST("CameraMatrixV3:reset_lm_minimizer",
         lm_minimizer.reset();
-        lm_minimizer_pos.reset();
-        lm_minimizer_offset.reset();
   );
 
   if(use_automatic_mode){
@@ -144,11 +136,7 @@ void CameraMatrixCorrectorV3::execute()
       DEBUG_REQUEST("CameraMatrixV3:reset_calibration",
             reset_calibration();
             lm_minimizer.reset();
-            lm_minimizer_pos.reset();
-            lm_minimizer_offset.reset();
             derrors.clear();
-            derrors_offset.clear();
-            derrors_pos.clear();
             last_error = 0;
       );
 
@@ -159,7 +147,7 @@ void CameraMatrixCorrectorV3::execute()
   }
 
   last_frame_info = getFrameInfo();
-}//end execute
+}
 
 void CameraMatrixCorrectorV3::reset_calibration()
 {
@@ -168,38 +156,19 @@ void CameraMatrixCorrectorV3::reset_calibration()
   getCameraMatrixOffsetV3().cam_rot[CameraInfo::Top]    = Vector3d();
   getCameraMatrixOffsetV3().cam_rot[CameraInfo::Bottom] = Vector3d();
 
-  cam_mat_offsets = Eigen::Matrix<double, 14, 1>::Zero();
-}
-
-bool CameraMatrixCorrectorV3::calibrate(){
-    DEBUG_REQUEST("CameraMatrixV3:calibrateSimultaneously",
-                  return calibrateSimultaneously();
-                  );
-
-    DEBUG_REQUEST("CameraMatrixV3:calibrateOnlyPos",
-                  return calibrateOnlyPose();
-                  );
-
-    DEBUG_REQUEST("CameraMatrixV3:calibrateOnlyOffsets",
-                  return calibrateOnlyOffsets();
-                  );
-
-    return false;
+  cam_mat_offsets = Eigen::Matrix<double, 11, 1>::Zero();
 }
 
 // returns true if the averaged reduction per second decreases under a heuristic value
-bool CameraMatrixCorrectorV3::calibrateSimultaneously() {
+bool CameraMatrixCorrectorV3::calibrate() {
   double dt = getFrameInfo().getTimeInSeconds()-last_frame_info.getTimeInSeconds();
 
   // calibrate the camera matrix
-  Eigen::Matrix<double, 14, 1> epsilon = 1e-4*Eigen::Matrix<double, 14, 1>::Constant(1);
-  epsilon(11) = 1e2;
-  epsilon(12) = 1e2;
-  epsilon(13) = Math::pi_4/2;
+  Eigen::Matrix<double, 11, 1> epsilon = 1e-4*Eigen::Matrix<double, 11, 1>::Constant(1);
 
   double error;
 
-  Eigen::Matrix<double, 14, 1> offset = lm_minimizer.minimizeOneStep(*(theCamMatErrorFunctionV3->getModuleT()), cam_mat_offsets, epsilon, error);
+  Eigen::Matrix<double, 11, 1> offset = lm_minimizer.minimizeOneStep(*(theCamMatErrorFunctionV3->getModuleT()), cam_mat_offsets, epsilon, error);
 
   double de_dt = (error-last_error)/dt; // improvement per second
 
@@ -217,74 +186,7 @@ bool CameraMatrixCorrectorV3::calibrateSimultaneously() {
 
   return (    (derrors.getAverage() > -50) // average error decreases by less than this per second
            && derrors.isFull() );          // and we have a full history
-}//end calibrate
-
-// returns true if the averaged reduction per second decreases under a heuristic value
-bool CameraMatrixCorrectorV3::calibrateOnlyPose()
-{
-  double dt = getFrameInfo().getTimeInSeconds()-last_frame_info.getTimeInSeconds();
-
-  // calibrate the camera matrix
-  Eigen::Matrix<double, 14, 1> epsilon = Eigen::Matrix<double, 14, 1>::Constant(std::numeric_limits<double>::quiet_NaN());
-
-  double epsilon_pos = 1e2;
-  double epsilon_angle = Math::pi_4/2;
-
-  MODIFY("CameraMatrixV3:epsilon:pos", epsilon_pos);
-  MODIFY("CameraMatrixV3:epsilon:angle", epsilon_angle);
-
-  epsilon.block<3,1>(11,0) << epsilon_pos, epsilon_pos, epsilon_angle;
-  double error;
-
-  Eigen::Matrix<double, 14, 1> offset = lm_minimizer_pos.minimizeOneStep(*(theCamMatErrorFunctionV3->getModuleT()), cam_mat_offsets, epsilon, error);
-
-  double de_dt = (error-last_error)/dt; // improvement per second
-
-  if(last_error != 0){ //ignore the jump from zero to initial error value
-    derrors_pos.add(de_dt);
-  }
-  last_error = error;
-
-  PLOT("CameraMatrixV3:error", error);
-  PLOT("CameraMatrixV3:de/dt", de_dt);
-  PLOT("CameraMatrixV3:avg_derror_pose", derrors_pos.getAverage());
-
-  // update offsets
-  cam_mat_offsets += offset;
-
-  return (    (derrors_pos.getAverage() > -50) // average error decreases by less than this per second
-           && derrors_pos.isFull() );          // and we have a full history
-}//end calibrate
-
-// returns true if the averaged reduction per second decreases under a heuristic value
-bool CameraMatrixCorrectorV3::calibrateOnlyOffsets()
-{
-  double dt = getFrameInfo().getTimeInSeconds()-last_frame_info.getTimeInSeconds();
-
-  // calibrate the camera matrix
-  Eigen::Matrix<double, 14, 1> epsilon = Eigen::Matrix<double, 14, 1>::Constant(1e-4);
-  epsilon.block<3,1>(11,0) << std::numeric_limits<double>::quiet_NaN(), std::numeric_limits<double>::quiet_NaN(), std::numeric_limits<double>::quiet_NaN();
-  double error;
-
-  Eigen::Matrix<double, 14, 1> offset = lm_minimizer_offset.minimizeOneStep(*(theCamMatErrorFunctionV3->getModuleT()), cam_mat_offsets, epsilon, error);
-
-  double de_dt = (error-last_error)/dt; // improvement per second
-
-  if(last_error != 0){ //ignore the jump from zero to initial error value
-    derrors_offset.add(de_dt);
-  }
-  last_error = error;
-
-  PLOT("CameraMatrixV3:error", error);
-  PLOT("CameraMatrixV3:de/dt", de_dt);
-  PLOT("CameraMatrixV3:avg_derror_offset", derrors_offset.getAverage());
-
-  // update offsets
-  cam_mat_offsets += offset;
-
-  return (    (derrors_offset.getAverage() > -50) // average error decreases by less than this per second
-           && derrors_offset.isFull() );          // and we have a full history
-}//end calibrate
+}
 
 // returns true, if the trajectory is starting again from beginning
 bool CameraMatrixCorrectorV3::collectingData()
@@ -367,11 +269,11 @@ void CameraMatrixCorrectorV3::doItAutomatically()
         }
     }
 
-    if(auto_collected && !auto_calibrated_phase1){
-        auto_calibrated_phase1 = calibrateSimultaneously();
-        if(auto_calibrated_phase1){
-            derrors_offset.clear();
-            lm_minimizer_offset.reset();
+    if(auto_collected && !auto_calibrated){
+        auto_calibrated = calibrate();
+        if(auto_calibrated){
+            derrors.clear();
+            lm_minimizer.reset();
         }
 
         if(play_calibrating){
@@ -379,10 +281,6 @@ void CameraMatrixCorrectorV3::doItAutomatically()
             getSoundPlayData().soundFile = "calibrating.wav";
             play_calibrating = false;
         }
-    }
-
-    if(auto_calibrated_phase1 && !auto_calibrated){
-        auto_calibrated = calibrateOnlyOffsets();
     }
 
     if(auto_calibrated){
@@ -420,8 +318,5 @@ void CameraMatrixCorrectorV3::readFromRepresentation(){
                      getCameraMatrixOffsetV3().cam_rot[CameraInfo::Top].z,
                      getCameraMatrixOffsetV3().cam_rot[CameraInfo::Bottom].x,
                      getCameraMatrixOffsetV3().cam_rot[CameraInfo::Bottom].y,
-                     getCameraMatrixOffsetV3().cam_rot[CameraInfo::Bottom].z,
-                     0, //x
-                     0, //y
-                     0; //z
+                     getCameraMatrixOffsetV3().cam_rot[CameraInfo::Bottom].z;
 }

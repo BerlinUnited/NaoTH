@@ -139,7 +139,7 @@ public:
         numberOfResudials = 0;
     }
 
-    void plot_CalibrationData(const Eigen::Matrix<double, 14, 1>& parameter){
+    void plot_CalibrationData(const Eigen::Matrix<double, 11, 1>& parameter){
         bool only_bottom = false;
         DEBUG_REQUEST("CamMatErrorFunctionV3:debug_drawings:only_bottom",
                       only_bottom = true;
@@ -163,16 +163,13 @@ public:
         }
     }
 
-    void actual_plotting(const Eigen::Matrix<double, 14, 1>& parameter, CameraInfo::CameraID cameraID){
+    void actual_plotting(const Eigen::Matrix<double, 11, 1>& parameter, CameraInfo::CameraID cameraID){
         for(CalibrationData::const_iterator sample = calibrationData.begin(); sample != calibrationData.end(); ++sample){
                 Vector2d offsetBody(parameter(0),parameter(1));
                 Vector3d offsetHead(parameter(2), parameter(3),parameter(4));
                 Vector3d offsetCam[CameraInfo::numOfCamera];
                 offsetCam[CameraInfo::Top]    = Vector3d(parameter(5), parameter(6),parameter(7));
                 offsetCam[CameraInfo::Bottom] = Vector3d(parameter(8), parameter(9),parameter(10));
-                double global_x_offset = parameter(11);
-                double global_y_offset = parameter(12);
-                double global_z_angle_offset = parameter(13);
 
                 CameraMatrix tmpCM = CameraGeometry::calculateCameraMatrixFromChestPose(
                             sample->chestPose,
@@ -185,9 +182,6 @@ public:
                             sample->headPitch,
                             sample->inertialModel.orientation
                             );
-
-                tmpCM.translation += Vector3d(global_x_offset, global_y_offset, 0); // move around on field
-                tmpCM.rotation = RotationMatrix::getRotationZ(global_z_angle_offset) * tmpCM.rotation;
 
                 std::vector<Vector2d> edgelProjections;
                 edgelProjections.resize(getEdgelsInImage(sample,cameraID).size());
@@ -214,7 +208,7 @@ public:
                 DEBUG_REQUEST("CamMatErrorFunctionV3:debug_drawings:draw_projected_edgels",
                         FIELD_DRAWING_CONTEXT;
                         PEN("FF0000", 10);
-                        ROBOT(global_x_offset, global_y_offset, global_z_angle_offset);
+                        ROBOT(0,0,0);
                 );
 
                 DEBUG_REQUEST("CamMatErrorFunctionV3:debug_drawings:draw_matching_global",
@@ -241,12 +235,12 @@ public:
                     }
 
                     PEN("FF0000", 10);
-                    ROBOT(global_x_offset, global_y_offset, global_z_angle_offset);
+                    ROBOT(0,0,0);
                 );
         }
     }
 
-    Eigen::VectorXd operator()(const Eigen::Matrix<double, 14, 1>& parameter) const {
+    Eigen::VectorXd operator()(const Eigen::Matrix<double, 11, 1>& parameter) const {
         Eigen::VectorXd r(numberOfResudials);
 
         Vector2d offsetBody(parameter(0),parameter(1));
@@ -254,9 +248,6 @@ public:
         Vector3d offsetCam[CameraInfo::numOfCamera];
         offsetCam[CameraInfo::Top]    = Vector3d(parameter(5), parameter(6),parameter(7));
         offsetCam[CameraInfo::Bottom] = Vector3d(parameter(8), parameter(9),parameter(10));
-        double global_x_offset = parameter(11);
-        double global_y_offset = parameter(12);
-        double global_z_angle_offset = parameter(13);
 
         size_t idx = 0;
         size_t empty = 0;
@@ -279,9 +270,6 @@ public:
                             sample->headPitch,
                             sample->inertialModel.orientation
                             );
-
-                tmpCM.translation += Vector3d(global_x_offset, global_y_offset,0); // move around on field
-                tmpCM.rotation = RotationMatrix::getRotationZ(global_z_angle_offset) * tmpCM.rotation; // why? shouldn't it be the other way around?
 
                 std::vector<Vector2d> edgelProjections;
                 edgelProjections.resize(getEdgelsInImage(sample,cameraID).size());
@@ -344,16 +332,11 @@ private:
   std::vector<Vector2d> target_points;
   std::vector<Vector2d>::const_iterator current_target;
 
-  Eigen::Matrix<double, 14, 1> cam_mat_offsets;
+  Eigen::Matrix<double, 11, 1> cam_mat_offsets;
 
   LevenbergMarquardtMinimizer<CamMatErrorFunctionV3, 1, 2> lm_minimizer;
-  LevenbergMarquardtMinimizer<CamMatErrorFunctionV3, 1, 2> lm_minimizer_pos;
-  LevenbergMarquardtMinimizer<CamMatErrorFunctionV3, 1, 2> lm_minimizer_offset;
 
   bool calibrate();
-  bool calibrateOnlyPose();
-  bool calibrateOnlyOffsets();
-  bool calibrateSimultaneously();
   void reset_calibration();
   bool collectingData();
   void sampling();
@@ -365,11 +348,9 @@ private:
   ModuleCreator<CamMatErrorFunctionV3>* theCamMatErrorFunctionV3;
 
   // for automatic calibration
-  bool auto_cleared_data, auto_collected, auto_calibrated_phase1, auto_calibrated;
+  bool auto_cleared_data, auto_collected, auto_calibrated;
   bool play_collecting, play_calibrating, play_calibrated;
   RingBufferWithSum<double, 50> derrors;
-  RingBufferWithSum<double, 50> derrors_pos;
-  RingBufferWithSum<double, 50> derrors_offset;
   double last_error;
   FrameInfo last_frame_info;
 };
