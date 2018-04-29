@@ -1,4 +1,5 @@
-
+#ifndef _RegistrationInterface_h_
+#define _RegistrationInterface_h_
 
 
 #include "BlackBoard.h"
@@ -69,3 +70,4 @@ public:
 
   inline const RegistrationInterfaceMap& registry() { return registry_map; }
 };
+#endif // _RegistrationInterface_h_

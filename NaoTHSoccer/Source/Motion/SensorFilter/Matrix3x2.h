@@ -1,3 +1,5 @@
+#ifndef _Matrix3x2_h
+#define _Matrix3x2_h
 
 #include <Tools/Math/Vector3.h>
 
@@ -146,3 +148,5 @@ public:
 
 typedef Matrix3x2<double> Matrix3x2d;
 typedef Matrix2x3<double> Matrix2x3d;
+
+#endif // _Matrix3x2_h

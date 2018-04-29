@@ -133,13 +133,9 @@ void IMUModel::writeIMUData(){
     Eigen::Vector3d u_rot(0,0,0);
     sensor_delay_corrected_rot.predict(u_rot, 2 * getRobotInfo().getBasicTimeStepInSecond());
 
-    // convert to framework compliant x,y,z angles
-    Eigen::Vector3d temp2 = sensor_delay_corrected_rot.state.rotation();
-    Vector3d rot_vec(temp2(0),temp2(1),temp2(2));
-    RotationMatrix bodyIntoGlobalMapping(rot_vec);
-    getIMUData().rotation.x = bodyIntoGlobalMapping.getXAngle();
-    getIMUData().rotation.y = bodyIntoGlobalMapping.getYAngle();
-    getIMUData().rotation.z = bodyIntoGlobalMapping.getZAngle();
+    // store rotation in IMUData as a rotation vector
+    getIMUData().rotation = eigenVectorToVector3D(sensor_delay_corrected_rot.state.rotation());
+    RotationMatrix bodyIntoGlobalMapping(getIMUData().rotation);
 
     /*
      * Note: the following code lines use the inverse mapping, i.e. globalIntoBodyMapping, by using the third row of bodyIntoGlobalMapping's matrix representation
@@ -162,9 +158,6 @@ void IMUModel::writeIMUData(){
 
     PLOT("IMUModel:State:orientation:x", Math::toDegrees(getIMUData().orientation.x));
     PLOT("IMUModel:State:orientation:y", Math::toDegrees(getIMUData().orientation.y));
-
-    // only to enable transparent switching with InertiaSensorFilter
-    getInertialModel().orientation = getIMUData().orientation;
 
     getIMUData().rotational_velocity.x = ukf_rot.state.rotational_velocity()(0,0);
     getIMUData().rotational_velocity.y = ukf_rot.state.rotational_velocity()(1,0);
