@@ -8,7 +8,7 @@ import json
 import traceback
 
 import tempfile
-from daemonize import Daemonize
+from utils.daemonize import Daemonize
 import os
 
 class StatusMonitor():

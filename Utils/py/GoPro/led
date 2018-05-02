@@ -1,6 +1,6 @@
 #! /bin/sh
 
-EXEC="/home/pi/GoPro/LEDServer.py"
+EXEC="/home/pi/GoPro/utils/LEDServer.py"
 PID="/tmp/led.lock"
 
 start() {
