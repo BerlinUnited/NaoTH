@@ -4,39 +4,60 @@ import inspect
 class Event:
     pass
 
+######################################################
+## BEGIN Events
 
-class ConnectedNetworkEvent(Event):
+######################################################
+## Network Events
+######################################################
+
+class NetworkConnected(Event):
     pass
 
-class DisConnectedNetworkEvent(Event):
+class NetworkDisconnected(Event):
     pass
 
-class NetworkNotAvailableEvent(Event):
+class NetworkNotAvailable(Event):
     pass
 
-class ConnectedGoproEvent(Event):
-    pass
-
-class DisConnectedGoproEvent(Event):
-    pass
+######################################################
+## GameController Events
+######################################################
 
 class GameControllerTimedout(Event):
     pass
 
-class GameControllerMessageReceived(Event):
+class GameControllerMessage(Event):
     def __init__(self, msg):
         self.message = msg
 
-class GameControllerMessageReceivedInvisible(Event):
-    def __init__(self, msg):
-        self.message = msg
+######################################################
+## GoPro Events
+######################################################
+
+class GoproConnecting(Event):
+    pass
+
+class GoproConnected(Event):
+    pass
+
+class GoproDisconnected(Event):
+    pass
+
+class GoproStartRecording(Event):
+    pass
+
+class GoproStopRecording(Event):
+    pass
+
+######################################################
+## Other Events
+######################################################
 
 
-class StatusMonitorEvent(Event):
-    def __init__(self, type:str, delay:int):
-        self.type = type
-        self.delay = delay
 
+## END Events
+######################################################
 
 class Manager:
 

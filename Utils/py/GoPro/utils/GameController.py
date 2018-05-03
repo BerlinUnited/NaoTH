@@ -32,13 +32,7 @@ class GameController(threading.Thread):
                 message = GameControlData(data)
 
                 # one of the teams is invisible
-                if any([t.teamNumber == 0 for t in message.team]):
-                    Event.fire(Event.GameControllerMessageReceivedInvisible(message))
-                    #statusMonitor.setReceivedMessageFromGCWithInvisibleTeam(5)
-                else:
-                    Event.fire(Event.GameControllerMessageReceived(message))
-                    #Event.fire(Event.StatusMonitorEvent("ReceivedMessageFromGC", 5))
-                    #statusMonitor.setReceivedMessageFromGC(5)
+                Event.fire(Event.GameControllerMessage(message))
 
             except socket.timeout:
                 Event.fire(Event.GameControllerTimedout())

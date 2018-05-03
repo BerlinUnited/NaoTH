@@ -49,7 +49,7 @@ class Network(threading.Thread):
                 # check if ssid is available
                 if not self.manager.getSSIDExists(device, self.ssid):
                     logger.info("SSID not found: %s", self.ssid)
-                    Event.fire(Event.NetworkNotAvailableEvent())
+                    Event.fire(Event.NetworkNotAvailable())
                     time.sleep(1)
                 else:
                     logger.info("Waiting for connection to %s", self.ssid)
@@ -59,22 +59,26 @@ class Network(threading.Thread):
                         time.sleep(10)
                     else:
                         logger.info("Connected to %s", network)
-                        Event.fire(Event.ConnectedNetworkEvent())
+                        Event.fire(Event.NetworkConnected())
                         break
+        else:
+            Event.fire(Event.NetworkConnected())
 
     def disconnect(self):
         # TODO:
-        Event.fire(Event.DisConnectedNetworkEvent())
+        Event.fire(Event.NetworkDisconnected())
 
     def isConnected(self):
-        return self.ssid == self.manager.getCurrentSSID(self.device)
+        return self.ssid == self.manager.getCurrentSSID(self.device, False)
 
     def run(self):
+        # connect and fire connected event
+        self.connect()
         while not self.cancel.is_set():
             if self.isConnected():
                 time.sleep(10)
             else:
-                Event.fire(Event.DisConnectedNetworkEvent())
+                Event.fire(Event.NetworkDisconnected())
                 self.connect()
 
 
@@ -112,7 +116,7 @@ class NetworkManager:
             return device
         return None
 
-    def getCurrentSSID(self, device: str):
+    def getCurrentSSID(self, device: str, log=True):
         ''' Checks if the given device is currently connected and returns the SSID of the connected network otherwise returns None.
 
         :param device:  name of the device from which we want to get the current SSID
@@ -162,16 +166,18 @@ class NetworkManagerNmcli(NetworkManager):
                     wifi_devices.append(dev_state[0])
         return wifi_devices
 
-    def getCurrentSSID(self, device:str):
+    def getCurrentSSID(self, device:str, log=True):
         '''
             checking connection:        nmcli -g GENERAL.STATE device show <device>
             determine network:          nmcli -g GENERAL.CONNECTION device show <device>
         '''
-        logger.debug("Check device state: 'nmcli -g GENERAL.STATE device show %s'", device)
+        if log:
+            logger.debug("Check device state: 'nmcli -g GENERAL.STATE device show %s'", device)
         state = subprocess.run(['nmcli', '-g', 'GENERAL.STATE', 'device', 'show', device], stdout=subprocess.PIPE).stdout.decode('utf-8').strip()
         # do we have an established connection
         if state.split()[0] == '100':
-            logger.debug("Get SSID of current connection: 'nmcli -g GENERAL.CONNECTION device show %s'", device)
+            if log:
+                logger.debug("Get SSID of current connection: 'nmcli -g GENERAL.CONNECTION device show %s'", device)
             # return SSID of current connection
             return subprocess.run(['nmcli', '-g', 'GENERAL.CONNECTION', 'device', 'show', device], stdout=subprocess.PIPE).stdout.decode('utf-8').strip()
         return None
@@ -248,7 +254,7 @@ class NetworkManagerIw(NetworkManager):
                     wifi_devices.append(match.group(1))
         return wifi_devices
 
-    def getCurrentSSID(self, device:str):
+    def getCurrentSSID(self, device:str, log=True):
         '''
             determine current network:  iwgetid <device> -r
         '''

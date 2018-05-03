@@ -18,6 +18,7 @@ import threading
 import json
 import time
 
+import goprocam
 from utils import Logger, Daemonize, Network, GoPro, GameController
 # , GameController, GoPro,
 
@@ -44,14 +45,16 @@ def main():
 
     loopControl = threading.Event()
 
-    # gopro = GoPro()
-    # gopro.start()
+    gopro = GoPro(args.background or args.quiet, args.ignore, args.max_time)
+    gopro.start()
 
     gameController = GameController()
     gameController.start()
 
     network = Network(args.device, args.ssid, args.passwd, args.retries)
     network.start()
+
+    print("...")
 
     try:
         loopControl.wait()
@@ -63,7 +66,8 @@ def main():
     gameController.cancel.set()
     gameController.socket.settimeout(0)
     gameController.join()
-    #gopro.join()
+    gopro.cancel.set()
+    gopro.join()
 
 
 def checkGameController(loopControl:threading.Event):

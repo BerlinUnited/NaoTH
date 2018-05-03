@@ -11,40 +11,6 @@ import tempfile
 from utils.daemonize import Daemonize
 import os
 
-class StatusMonitor():
-  def __init__(self):
-    self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    
-  def sendMessage(self, msg):
-    self.sock.sendto(msg.encode(), ("localhost", 8000))
-    
-  def setNoGoProNetwork(self, delay = 1):
-    self.sendMessage('{{"blue":"blink", "delay":"0.1", "time":"{}"}}'.format(delay))
-    
-  def setConnectingToGoPro(self, delay = 1):
-    self.sendMessage('{{"blue":"blink", "time":"{}"}}'.format(delay))
-    
-  def setConnectedToGoPro(self, delay = 1):
-    self.sendMessage('{{"blue":"on", "time":"{}"}}'.format(delay))
-    
-  def setReceivedMessageFromGCWithInvisibleTeam(self, delay = 1):
-    self.sendMessage('{{"green":"blink", "time":"{}"}}'.format(delay))
-    
-  def setReceivedMessageFromGC(self, delay = 1):
-    self.sendMessage('{{"green":"on", "time":"{}"}}'.format(delay))
-    
-  def setDidntReceivedMessageFromGC(self, delay = 1):
-    self.sendMessage('{{"green":"off", "time":"{}"}}'.format(delay))
-    
-  def setReceivedMessageFromGC(self, delay = 1):
-    self.sendMessage('{{"green":"on", "time":"{}"}}'.format(delay))
-  
-  def setRecordingOn(self, delay = 1):
-    self.sendMessage('{{"red":"blink", "time":"{}"}}'.format(delay))
-    
-  def setRecordingOff(self, delay = 1):
-    self.sendMessage('{{"red":"off", "time":"{}"}}'.format(delay))
-  
     
 class LED():
   def __init__(self, PIN):

@@ -6,7 +6,7 @@ from .GameControlData import GameControlData
 from utils import Event, Logger
 
 # setup logger for network related logs
-logger = Logger.getLogger(__name__)
+logger = Logger.getLogger("GoPro")
 
 
 class CamStatus(threading.Thread):
@@ -32,7 +32,7 @@ class CamStatus(threading.Thread):
                 self.status['mode'] = self.cam.parse_value("mode",
                                                            js[constants.Status.Status][constants.Status.STATUS.Mode])
                 self.status['recording'] = (js[constants.Status.Status][constants.Status.STATUS.IsRecording] == 1)
-                self.cam.power_on(self.cam._mac_address)
+                #self.cam.power_on(self.cam._mac_address)
                 self.sleeper.wait(self.interval)
                 #Event.fire(Event.ConnectedGoproEvent())
                 #statusMonitor.setConnectedToGoPro(self.interval + 1.0)
@@ -51,7 +51,7 @@ class CamStatus(threading.Thread):
         print("\ntake a picture to keep the cam alive")
         self.timestamp = time.time()
         self.cam.take_photo()
-        setCamVideoMode(self.cam)
+        #setCamVideoMode(self.cam)
 
     def stop(self):
         self.running.set()
@@ -66,11 +66,18 @@ class CamStatus(threading.Thread):
 
 
 class GoPro(threading.Thread):
-    def __init__(self):
+    def __init__(self, quiet:bool, ignore:bool, max_time:int):
         super().__init__()
         Event.registerListener(self)
+
+        self.quiet = quiet
+        self.ignore = ignore
+        self.max_time = max_time
+
         self.cam = None
         self.cam_status = None
+        self.gc_data = GameControlData()
+
         self.is_connected = threading.Event()
         self.cancel = threading.Event()
 
@@ -79,34 +86,33 @@ class GoPro(threading.Thread):
         logger.info("Connecting to GoPro ...")
 
         # statusMonitor.setConnectingToGoPro(20)
-        Event.fire(Event.StatusMonitorEvent("ConnectingToGoPro", 20))
+        Event.fire(Event.GoproConnecting())
         self.cam = GoProCamera.GoPro()
 
         if self.cam.getStatusRaw():
-            Event.fire(Event.StatusMonitorEvent("ConnectedToGoPro", 10))
+            Event.fire(Event.GoproConnected())
             #statusMonitor.setConnectingToGoPro(10)
 
             # set GoPro to video mode
             self.setCamVideoMode()
 
             # status monitor and cam keep alive thread
-            self.cam_status = CamStatus(self.cam, 1)
-            self.cam_status.start()
+            #self.cam_status = CamStatus(self.cam, 1)
+            #self.cam_status.start()
 
 
     def disconnect(self):
         logger.info("Disconnecting from GoPro ...")
-        Event.fire(Event.StatusMonitorEvent("DisconnectingFromGoPro", 20))
         # reset cam
         self.cam = None
         # stop status listener
-        self.cam_status.stop()
+        #self.cam_status.stop()
+        Event.fire(Event.GoproDisconnected())
 
     def run(self):
         previous_state = GameControlData.STATE_INITIAL
         previous_output = ""
         output = ""
-        gc_data = GameControlData()
 
         while not self.cancel.is_set():
             # wait 'till connected to network
@@ -121,69 +127,58 @@ class GoPro(threading.Thread):
                     #statusMonitor.setRecordingOff(5.0)
                     pass
 
-                '''
-                try:
-                    gameController.readData(gc_data)
-                except Exception as ex:
-                    print(ex)
-                    if cam_status['recording']:
-                        logger.warning("Not connected to GameController?")
-                        stopRecording(cam)
-                    continue
-                '''
                 # check if one team is 'invisible'
-                both_teams_valid = all([t.teamNumber > 0 for t in gc_data.team])
-
-                # if not cam_status['recording'] and both_teams_valid:
-                #  statusMonitor.setRecordingOn(0.1)
+                both_teams_valid = all([t.teamNumber > 0 for t in self.gc_data.team])
 
                 # handle output
-                if not args.background and not args.quiet:
+                if not self.quiet:
                     output = "%s | %s | game state: %s |" % (
-                        self.cam_status['mode'], "RECORDING!" if self.cam_status['recording'] else "Not recording",
-                        gc_data.getGameState())
+                        self.cam_status['mode'], "RECORDING!" if self.cam_status['recording'] else "Not recording", self.gc_data.getGameState())
                     print("\r" + output + " " * (len(previous_output) - len(output)), end="", flush=True)
 
                 # handle game state changes
-                if not args.ignore and gc_data.secsRemaining < -args.max_time:
+                if not self.ignore and self.gc_data.secsRemaining < -self.max_time:
                     # only stop, if we're still recording
                     if self.cam_status['recording']:
                         self.stopRecording()
                 elif not self.cam_status['recording'] and both_teams_valid and (
-                        gc_data.gameState in [GameControlData.STATE_READY, GameControlData.STATE_SET,
+                        self.gc_data.gameState in [GameControlData.STATE_READY, GameControlData.STATE_SET,
                                               GameControlData.STATE_PLAYING]):
                     self.startRecording()
 
                 elif self.cam_status['recording'] and not (
-                        gc_data.gameState in [GameControlData.STATE_READY, GameControlData.STATE_SET,
+                        self.gc_data.gameState in [GameControlData.STATE_READY, GameControlData.STATE_SET,
                                               GameControlData.STATE_PLAYING]):
                     self.stopRecording()
 
                 # just for debugging/logging
-                if previous_state != gc_data.gameState:
-                    logger.debug("Changed game state to: %s", gc_data.getGameState())
+                if previous_state != self.gc_data.gameState:
+                    logger.debug("Changed game state to: %s", self.gc_data.getGameState())
 
                 # update loop vars
                 previous_output = output
-                previous_state = gc_data.gameState
+                previous_state = self.gc_data.gameState
             except:
                 traceback.print_exc()
                 return
 
         self.disconnect()
 
+    def __check_state(self):
+        both_teams_valid = all([t.teamNumber > 0 for t in self.gc_data.team])
 
-    def connectedNetwork(self, evt:Event.ConnectedNetworkEvent):
-        # TODO: connect to go
-        print("?!")
+        if self.is_connected.is_set() and both_teams_valid:
+
+    def connectedNetwork(self, evt:Event.NetworkConnected):
         self.connect()
         self.is_connected.set()
 
-    def disconnectedNetwork(self, evt:Event.DisConnectedNetworkEvent):
-        # TODO: ???
-        print("...")
+    def disconnectedNetwork(self, evt:Event.NetworkDisconnected):
         self.is_connected.clear()
         self.disconnect()
+
+    def receivedGC(self, evt:Event.GameControllerMessage):
+        self.gc_data = evt.message
 
     def setCamVideoMode(self):
         logger.debug("Set GoPro to 'video' mode")
@@ -196,11 +191,13 @@ class GoPro(threading.Thread):
         if self.cam_status['mode'] != "Video":
             self.setCamVideoMode()
         logger.debug("Start recording")
+        Event.fire(Event.GoproStartRecording())
         self.cam.shutter(constants.start)
         time.sleep(1)  # wait for the command to be executed
 
 
     def stopRecording(self):
         logger.debug("Stop recording")
+        Event.fire(Event.GoproStopRecording())
         self.cam.shutter(constants.stop)
         time.sleep(1)  # wait for the command to be executed
