@@ -4,7 +4,6 @@
 #include <ModuleFramework/Module.h>
 
 #include "Representations/Infrastructure/Image.h"
-#include "Representations/Perception/CameraMatrix.h"
 #include "Representations/Perception/ArtificialHorizon.h"
 #include "Representations/Perception/BodyContour.h"
 #include "Representations/Perception/MultiChannelIntegralImage.h"
@@ -28,8 +27,6 @@ BEGIN_DECLARE_MODULE(FieldAreaDetector)
 
   REQUIRE(Image)
   REQUIRE(ImageTop)
-  REQUIRE(CameraMatrix)
-  REQUIRE(CameraMatrixTop)
   REQUIRE(ArtificialHorizon)
   REQUIRE(ArtificialHorizonTop)
   REQUIRE(BodyContour)
@@ -65,11 +62,15 @@ public:
     Parameters() : ParameterList("FieldAreaDetector")
     {
       PARAMETER_REGISTER(proportion_of_green) = .5;
-      PARAMETER_REGISTER(grid_size) = 32;
+      PARAMETER_REGISTER(grid_size) = 60;
+      PARAMETER_REGISTER(refine_cell) = true;
+      PARAMETER_REGISTER(refine_point) = true;
       syncWithConfig();
     }
     double proportion_of_green;
     int32_t grid_size;
+    bool refine_cell;
+    bool refine_point;
   } params;
 
 
@@ -96,14 +97,13 @@ private:
     }
   };
 
-  void find_endpoint_in_cell(int32_t minX, int32_t minY, int32_t maxX, int32_t maxY, int best_green_sum, Vector2i& endpoint);
-  void optimize_cell_and_find_endpoint(int32_t minX, int32_t minY, int32_t maxX, int32_t maxY, Vector2i& endpoint);
-
   void find_endpoint(const Cell& cell, Vector2i& endpoint);
   void refine_cell(Cell& cell);
+  void refine_point(Vector2i& endpoint, int32_t minY);
   int32_t split_cell(const Cell& cell, Cell& upper, Cell& lower);
 
   CameraInfo::CameraID cameraID;
+  int horizon_height;
   int pixels_per_cell;
   int min_green;
   int factor;
@@ -112,7 +112,6 @@ private:
   DOUBLE_CAM_PROVIDE(FieldAreaDetector, DebugImageDrawings);
 
   // double cam interface
-  DOUBLE_CAM_REQUIRE(FieldAreaDetector, CameraMatrix);
   DOUBLE_CAM_REQUIRE(FieldAreaDetector, Image);
   DOUBLE_CAM_REQUIRE(FieldAreaDetector, ArtificialHorizon);
   DOUBLE_CAM_REQUIRE(FieldAreaDetector, BodyContour);
