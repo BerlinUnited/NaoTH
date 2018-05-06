@@ -1,6 +1,6 @@
 from matplotlib import pyplot as plt
 from matplotlib.patches import Circle
-import field_info as f
+import tools.field_info as f
 import matplotlib as mpl
 
 

@@ -155,6 +155,7 @@ class TorsoRotationStabilizerParameters: public ParameterList{
       PARAMETER_REGISTER(rotation.D.y) = 0;
 
       PARAMETER_REGISTER(localRotationCalibration) = true;
+      PARAMETER_REGISTER(useSteffensInertial) = true;
       PARAMETER_REGISTER(gyroFilterAlpha) = 0.5;
       syncWithConfig();
     }
@@ -165,6 +166,7 @@ class TorsoRotationStabilizerParameters: public ParameterList{
         Vector2d D;
     } rotation;
 
+    bool useSteffensInertial;
     bool rotationStabilize;
     bool localRotationCalibration;
     double gyroFilterAlpha;

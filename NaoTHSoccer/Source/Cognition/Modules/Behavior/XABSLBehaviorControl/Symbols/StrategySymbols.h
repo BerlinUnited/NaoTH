@@ -116,6 +116,12 @@ private:
   static double penaltyGoalieGuardPositionX();
   static double penaltyGoalieGuardPositionY();
 
+  Pose2D goalieDefensivePosition;
+  Pose2D calculateGoalieDefensivePosition();
+  static double goalieDefensivePositionX();
+  static double goalieDefensivePositionY();
+  static double goalieDefensivePositionA();
+
   static int getBestAction();
 
 };//end class StrategySymbols

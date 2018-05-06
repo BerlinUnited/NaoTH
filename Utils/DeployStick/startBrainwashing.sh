@@ -3,6 +3,13 @@
 # set volume to 88%
 sudo -u nao pactl set-sink-mute 0 false
 sudo -u nao pactl set-sink-volume 0 88%
+# also set the recording volume
+# 1. set in simple mode with alsa mixer to make sure it is in sync for all channels
+sudo -u nao amixer sset 'Capture',0 90%
+# 2. set with pulseaudio (now both channels are set) to make sure the changes are persistent
+sudo -u nao pactl set-source-mute 1 false
+sudo -u nao pactl set-source-volume 1 90%
+
 
 # play initial sound
 sudo -u nao /usr/bin/paplay /home/nao/naoqi/Media/usb_start.wav

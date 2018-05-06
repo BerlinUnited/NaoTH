@@ -43,7 +43,7 @@ option pathplanner_shortkick_only {
       //NOTE: this is synchronized with sidekick()->finished
       motion.type = stand;
 
-      //loook at percept
+      //look at percept
       head.control_mode = look_at_ball_percept;
     }
   }
