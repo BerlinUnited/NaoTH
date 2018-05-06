@@ -75,39 +75,11 @@ class GoPro(threading.Thread):
         self.max_time = max_time
 
         self.cam = None
-        self.cam_status = None
+        self.cam_status = {'recording': False, 'mode': None}
         self.gc_data = GameControlData()
 
         self.is_connected = threading.Event()
         self.cancel = threading.Event()
-
-    def connect(self):
-        # get GoPro
-        logger.info("Connecting to GoPro ...")
-
-        # statusMonitor.setConnectingToGoPro(20)
-        Event.fire(Event.GoproConnecting())
-        self.cam = GoProCamera.GoPro()
-
-        if self.cam.getStatusRaw():
-            Event.fire(Event.GoproConnected())
-            #statusMonitor.setConnectingToGoPro(10)
-
-            # set GoPro to video mode
-            self.setCamVideoMode()
-
-            # status monitor and cam keep alive thread
-            #self.cam_status = CamStatus(self.cam, 1)
-            #self.cam_status.start()
-
-
-    def disconnect(self):
-        logger.info("Disconnecting from GoPro ...")
-        # reset cam
-        self.cam = None
-        # stop status listener
-        #self.cam_status.stop()
-        Event.fire(Event.GoproDisconnected())
 
     def run(self):
         previous_state = GameControlData.STATE_INITIAL
@@ -117,6 +89,22 @@ class GoPro(threading.Thread):
         while not self.cancel.is_set():
             # wait 'till connected to network
             self.is_connected.wait()
+
+            if self.cam is not None:
+                js = json.loads(self.cam.getStatusRaw())
+                self.cam_status['mode'] = self.cam.parse_value("mode", js[constants.Status.Status][constants.Status.STATUS.Mode])
+                self.cam_status['recording'] = (js[constants.Status.Status][constants.Status.STATUS.IsRecording] == 1)
+
+                self.__check_state()
+
+                time.sleep(1)
+
+                # take a photo every 10 minutes if not recording to keep the camera alive
+                if self.cam_status['recording']:
+                    self.timestamp = time.time()
+                elif time.time() > self.timestamp + 60.0 * 5:
+                    self.keepAlivePhoto()
+
 
             try:
 
@@ -164,21 +152,48 @@ class GoPro(threading.Thread):
 
         self.disconnect()
 
+    def connect(self):
+        # get GoPro
+        logger.info("Connecting to GoPro ...")
+
+        # statusMonitor.setConnectingToGoPro(20)
+        Event.fire(Event.GoproConnecting())
+        self.cam = GoProCamera.GoPro()
+
+        if self.cam.getStatusRaw():
+            Event.fire(Event.GoproConnected())
+            # set GoPro to video mode
+            self.setCamVideoMode()
+            self.is_connected.set()
+
+
+    def disconnect(self):
+        logger.info("Disconnecting from GoPro ...")
+        self.cam = None
+        Event.fire(Event.GoproDisconnected())
+        self.is_connected.clear()
+
     def __check_state(self):
         both_teams_valid = all([t.teamNumber > 0 for t in self.gc_data.team])
+        recording_game_state = self.gc_data.gameState in [GameControlData.STATE_READY, GameControlData.STATE_SET, GameControlData.STATE_PLAYING]
 
-        if self.is_connected.is_set() and both_teams_valid:
+        if both_teams_valid and recording_game_state and not self.cam_status['recording']:
+            self.startRecording()
+        elif self.cam_status['recording'] and  (not both_teams_valid or not recording_game_state):
+            self.stopRecording()
+
 
     def connectedNetwork(self, evt:Event.NetworkConnected):
         self.connect()
-        self.is_connected.set()
 
     def disconnectedNetwork(self, evt:Event.NetworkDisconnected):
-        self.is_connected.clear()
         self.disconnect()
 
     def receivedGC(self, evt:Event.GameControllerMessage):
         self.gc_data = evt.message
+
+    def timeoutGC(self, evt:Event.GameControllerTimedout):
+        pass
 
     def setCamVideoMode(self):
         logger.debug("Set GoPro to 'video' mode")
