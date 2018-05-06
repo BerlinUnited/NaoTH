@@ -25,6 +25,7 @@ end
 
 %% config
 windows_size = 1024;
+window_offset = 786;
 
 run_zcr = false;
 run_peak = false;
@@ -70,7 +71,7 @@ for t = 1:length(recordings_names)
             record_name = strcat(recording(c).game_name, " ", recording(c).half, " ", recording(c).robot_name, " ", recording(c).filename);
             %% Max Peak Detector
             if run_zcr
-                result = peak_detector(capture_data, windows_size, 768, 20000);
+                result = peak_detector(capture_data, windows_size, window_offset, 20000);
                 if true %result.whistle_detected
                     % Plot results
                     figure('name', strcat("peak detector results on: ", record_name))
@@ -86,7 +87,7 @@ for t = 1:length(recordings_names)
             end %if run_zcr
             %% ZCR Detector
             if run_peak
-                result = zcr_detector(capture_data, 1024, 768, 0.55);
+                result = zcr_detector(capture_data, windows_size, window_offset, 0.55);
                 if true %result.whistle_detected
                     % Plot results
                     figure('name', strcat("zcr detector results on: ", record_name))
@@ -102,9 +103,16 @@ for t = 1:length(recordings_names)
             end %if run_peak
             %% Max Cross Correlation Detector       
             if run_cross
-                 threshold = 0.25;
-                 results = maxcrosscorr_detector(capture_data, 1024, 768, threshold, ref, true);
-                 for r = 1:length(results)
+                threshold = 0.25;
+                results = maxcrosscorr_detector(capture_data, windows_size, window_offset, threshold, ref, true);
+                means = [];
+                for i=1:window_offset:length(capture_data)
+                    if length(capture_data) - i >= windows_size
+                        means(end + 1) = mean(abs(capture_data(i:i + windows_size - 1)));
+                    end
+                end
+                means = means / max(means);
+                for r = 1:length(results)
                     do_plots = (results(r).whistle_detected && create_detection_plots) || (~results(r).whistle_detected && create_non_detection_plots);
                     
                     if do_plots
@@ -118,6 +126,7 @@ for t = 1:length(recordings_names)
                         plot(recording(c).annotations(:,1), 'g')
                         plot(recording(c).annotations(:,2), 'r')
                         plot(results(r).positions, results(r).responses, 'mo')
+                        plot(results(r).indices, means, 'm:')
 
                         plot([1 length(capture_data)], [0.25 0.25], 'y')
                         title(strrep(record_name, '_', '\_') )
@@ -171,22 +180,27 @@ for t = 1:length(recordings_names)
         end
         max_count = max([max(tps) max(fps)]);
         figure('name', strcat("comparison TP and FP ", recording_name, " threshold: ", num2str(threshold) ))
-            subplot(1,2,1)
-                bar(tps)
-                title('TP')
-                xtickangle(45)
-                xticks(1:length(tick_labels))
-                xticklabels(tick_labels)
-                ylabel('total event count')
-                ylim([0 max_count + 1])
-            subplot(1,2,2)
-                bar(fps)
-                title('FP')
-                xtickangle(45)
-                xticks(1:length(tick_labels))
-                xticklabels(tick_labels)
-                ylabel('total event count')
-                ylim([0 max_count + 1])                
+            if ~isempty(tps)
+                subplot(1,2,1)
+                    bar(tps)
+                    title('TP')
+                    xtickangle(45)
+                    xticks(1:length(tick_labels))
+                    xticklabels(tick_labels)
+                    ylabel('total event count')
+    %                 ylim([0 max_count + 1])
+                    ylim([0 100])
+            end
+            if ~isempty(fps)
+                subplot(1,2,2)
+                    bar(fps)
+                    title('FP')
+                    xtickangle(45)
+                    xticks(1:length(tick_labels))
+                    xticklabels(tick_labels)
+                    ylabel('total event count')
+                    ylim([0 max_count + 1])  
+            end
     
 end %for t = 1:length(capture_database)
 
