@@ -331,7 +331,7 @@ public class NaoSCP extends javax.swing.JPanel {
 
                         Scp.CommandStream shell = scp.getShell();
                         // HACK: always stop naoth before proceeding
-                        shell.run("naoth stop", "killing naoth cognition processes");
+//                        shell.run("naoth stop", "killing naoth cognition processes");
                         shell.run("su", "Password:");
                         shell.run("root");
                         shell.run("cd /home/nao/tmp/");

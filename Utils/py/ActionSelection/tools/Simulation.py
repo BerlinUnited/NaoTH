@@ -1,8 +1,8 @@
 import math
 import numpy as np
-import action as a
-import field_info as field
-import potential_field as pf
+import tools.action as a
+import tools.field_info as field
+import tools.potential_field as pf
 from naoth import math2d as m2d
 
 

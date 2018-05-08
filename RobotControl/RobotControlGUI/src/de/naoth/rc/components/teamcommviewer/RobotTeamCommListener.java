@@ -45,7 +45,7 @@ public class RobotTeamCommListener implements Runnable {
             this.isOpponent = isOpponent;
         }
 
-        boolean isConnected() {
+        public boolean isConnected() {
             return this.channel != null && this.trigger != null;
         }
 

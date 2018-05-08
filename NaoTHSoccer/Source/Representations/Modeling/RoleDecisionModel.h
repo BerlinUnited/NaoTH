@@ -10,7 +10,7 @@
 using namespace std;
 
 #include <list>
-
+#include <limits>
 
 class RoleDecisionModel: public naoth::Printable
 {

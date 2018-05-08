@@ -646,6 +646,8 @@ public class RobotControlImpl extends javax.swing.JFrame
 
       // save layout
      this.dialogRegistry.saveToFile(userLayoutFile);
+     // notify all dialogs, so they have the chance to clean up
+     this.dialogRegistry.disposeOnClose();
     }
     catch(IOException ex)
     {
