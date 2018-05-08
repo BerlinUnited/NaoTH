@@ -26,6 +26,7 @@
 #include "Representations/Infrastructure/FrameInfo.h"
 
 #include <Representations/Modeling/CameraMatrixOffset.h>
+#include <Representations/Perception/CameraMatrix.h>
 
 // debug
 #include "Tools/Debug/DebugRequest.h"
@@ -48,6 +49,7 @@ BEGIN_DECLARE_MODULE(BodyContourProvider)
   REQUIRE(CameraInfoTop)
 
   REQUIRE(CameraMatrixOffset)
+  REQUIRE(CameraMatrix)
 
   PROVIDE(BodyContour)
   PROVIDE(BodyContourTop)
@@ -109,16 +111,18 @@ private:
     return p.x >= 0 && p.x < (int)getCameraInfo().resolutionWidth && 
            p.y >= 0 && p.y < (int)getCameraInfo().resolutionHeight;
   }
-
+   
   bool clampSegment(const Vector2i& ul, const Vector2i& lr, Vector2i& a, Vector2i& b) const;
 
   CameraInfo::CameraID cameraID;
 
   // HACK: we do this because the kinematic chain may be inconsistent with the camera matrix
+  /*
   Pose3D kinematicCameraMatrix;
   const Pose3D& getCameraMatrix() const {
     return kinematicCameraMatrix;
   }
+  */
 
   DOUBLE_CAM_PROVIDE(BodyContourProvider,DebugImageDrawings);
 

@@ -95,13 +95,15 @@ void BodyContourProvider::execute(CameraInfo::CameraID id)
   getBodyContour().reset();
   getBodyContour().timestamp = getFrameInfo().getTime();
 
-  // HACK: we do this because the kinematic chain may be inconsistent with the camera mtrix
+  // HACK: we do this because the kinematic chain may be inconsistent with the camera matrix
+  /*
   kinematicCameraMatrix = getKinematicChain().theLinks[KinematicChain::Head].M;
   kinematicCameraMatrix.conc(NaoInfo::robotDimensions.cameraTransformation[cameraID]);
  
   // apply the correction
   kinematicCameraMatrix.rotateY(getCameraMatrixOffset().correctionOffset[cameraID].y) // tilt
                        .rotateX(getCameraMatrixOffset().correctionOffset[cameraID].x); // roll
+  */
   // HACK: end
 
   // calculate body contours

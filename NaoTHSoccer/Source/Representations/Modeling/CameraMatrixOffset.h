@@ -25,11 +25,6 @@ public:
 
   CameraMatrixOffset() : ParameterList("CameraMatrixOffset")
   {
-    PARAMETER_REGISTER(correctionOffset[naoth::CameraInfo::Top].x) = 0;
-    PARAMETER_REGISTER(correctionOffset[naoth::CameraInfo::Top].y) = 0;
-    PARAMETER_REGISTER(correctionOffset[naoth::CameraInfo::Bottom].x) = 0;
-    PARAMETER_REGISTER(correctionOffset[naoth::CameraInfo::Bottom].y) = 0;
-
     PARAMETER_REGISTER(body_rot.x) = 0;
     PARAMETER_REGISTER(body_rot.y) = 0;
 
@@ -54,21 +49,12 @@ public:
   Vector2d offsetByGoalModel;
   Vector2d offset;
 
-  Vector2d correctionOffset[naoth::CameraInfo::numOfCamera];
-
   Vector2d body_rot;
   Vector3d head_rot;
   Vector3d cam_rot[naoth::CameraInfo::numOfCamera];
 
   virtual void print(std::ostream& stream) const
   {
-//    stream << "x = " << offset.x << std::endl;
-//    stream << "y = " << offset.y << std::endl;
-//    stream << "Roll Offset Camera Top (x):"<< correctionOffset[naoth::CameraInfo::Top].x << " rad" << std::endl;
-//    stream << "Tilt Offset Camera Top (y):"<< correctionOffset[naoth::CameraInfo::Top].y << " rad" <<  std::endl;
-//    stream << "Roll Offset Camera Bottom (x): "<< correctionOffset[naoth::CameraInfo::Bottom].x << " rad" << std::endl;
-//    stream << "Tilt Offset Camera Bottom (y):"<< correctionOffset[naoth::CameraInfo::Bottom].y << " rad" <<  std::endl;
-
     stream << "----Offsets-------------" << std::endl;
     stream << "----Body----------------" << std::endl;
     stream << "Roll  (x): "<< body_rot.x << " rad" << std::endl;
@@ -100,7 +86,6 @@ class Serializer<CameraMatrixOffset>
   {
     naothmessages::CameraMatrixCalibration msg;
     for(int id=0; id < naoth::CameraInfo::numOfCamera; id++) {
-      naoth::DataConversion::toMessage(representation.correctionOffset[id], *msg.add_correctionoffset());
       naoth::DataConversion::toMessage(representation.cam_rot[id], *msg.add_correctionoffsetcam());
     }
 
@@ -123,7 +108,6 @@ class Serializer<CameraMatrixOffset>
     
     ASSERT(msg.correctionoffset().size() == naoth::CameraInfo::numOfCamera);
     for(int id=0; id < naoth::CameraInfo::numOfCamera; id++) {
-        naoth::DataConversion::fromMessage(msg.correctionoffset(id), representation.correctionOffset[id]);
         naoth::DataConversion::fromMessage(msg.correctionoffsetcam(id), representation.cam_rot[id]);
     }
 
