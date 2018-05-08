@@ -7,9 +7,13 @@ def clamp(x, minimum, maximum):
 
 
 class Vector2:
-    def __init__(self, x=0.0, y=0.0):
-        self.x = x
-        self.y = y
+    def __init__(self, x=0.0, y=0.0, pb_vector=None):
+        if pb_vector is not None:
+            self.x = pb_vector.x
+            self.y = pb_vector.y
+        else:
+            self.x = x
+            self.y = y
 
     def __add__(self, other):
         return Vector2(self.x + other.x, self.y + other.y)
@@ -32,7 +36,7 @@ class Vector2:
         if isinstance(other, Vector2):
             # interpret multiplication as other^t * self (scalar product of the vectors, where ^t means transpose)
             return self.x*other.x + self.y*other.y
-        elif isinstance(other, (int, float, long)):
+        elif isinstance(other, (int, float)):
             return Vector2(self.x*other, self.y*other)
         else:
             return NotImplemented
@@ -41,7 +45,7 @@ class Vector2:
         if isinstance(other, Vector2):
             # interpret multiplication as other^t * self (scalar product of the vectors, where ^t means transpose)
             return self.x * other.x + self.y * other.y
-        elif isinstance(other, (int, float, long)):
+        elif isinstance(other, (int, float)):
             return Vector2(self.x * other, self.y * other)
         else:
             return NotImplemented
@@ -49,6 +53,9 @@ class Vector2:
     # TODO python3: use __truediv__
     # https://docs.python.org/3/library/operator.html
     def __div__(self, fraction):
+        return Vector2(self.x/fraction, self.y/fraction)
+
+    def __truediv__(self, fraction):
         return Vector2(self.x/fraction, self.y/fraction)
 
     def __str__(self):
@@ -59,6 +66,14 @@ class Vector2:
             return True
         else:
             return False
+
+    def __getitem__(self, k):
+        if k == 0:
+            return self.x
+        elif k == 1:
+            return self.y
+        else:
+            raise IndexError()
 
     def normalize(self):
         if Vector2.abs(self) != 0:
@@ -82,9 +97,13 @@ class Vector2:
 
 
 class Pose2D:
-    def __init__(self, translation=Vector2(), rotation=0):
-        self.translation = translation
-        self.rotation = rotation
+    def __init__(self, translation=Vector2(), rotation=0, pb_pose=None):
+        if pb_pose is not None:
+            self.translation = Vector2(pb_vector=pb_pose.translation)
+            self.rotation = pb_pose.rotation
+        else:
+            self.translation = translation
+            self.rotation = rotation
 
     def __mul__(self, other):
         return other.rotate(self.rotation) + self.translation
@@ -95,9 +114,12 @@ class Pose2D:
         p.translation = (Vector2() - self.translation).rotate(p.rotation)
         return p
 
-    # TODO python3: use __truediv__
-    # https://docs.python.org/3/library/operator.html
+    # operator method for '/' in python2
     def __div__(self, point):
+        return (point - self.translation).rotate(-self.rotation)
+
+    # operator method for '/' in python3
+    def __truediv__(self, point):
         return (point - self.translation).rotate(-self.rotation)
 
     def __str__(self):

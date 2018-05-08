@@ -128,6 +128,7 @@ class NetworkManagerNmcli(NetworkManager):
             logger.error("Could not connect to %s, password required!", ssid)
         return None
 
+
 class NetworkManagerIw(NetworkManager):
     def getWifiDevices(self):
         '''
@@ -159,7 +160,22 @@ class NetworkManagerIw(NetworkManager):
 
         return None
 
-
+    def getSSIDExists(self, device:str, ssid:str):
+      logger.debug("Scan for the SSID: 'iwlist %s scanning essid %s'", device, ssid)
+      result = subprocess.run(['iwlist', device, 'scanning', 'essid', ssid], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL).stdout.decode('utf-8').strip()
+      match = re.search(r'.*('+ssid+').*', result)
+      return (match is not None)
+      
+    def getAPmac(self, device:str):
+      logger.debug("Scan for the MAC: 'iwconfig %s'", device)
+      result = subprocess.run(['iwconfig', device], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL).stdout.decode('utf-8').strip()
+      #Access Point: F6:DD:9E:87:A1:63
+      match = re.search(r'.*Access Point: (..:..:..:..:..:..).*', result)
+      if match is None:
+        return None
+      else:
+        return match.group(1).replace(':', '')
+      
     def _connect(self, device:str, ssid:str, passwd:str=None):
         '''
             activate device:            ifconfig <device> up
@@ -189,7 +205,7 @@ class NetworkManagerIw(NetworkManager):
             subprocess.run(['wpa_cli', '-i', device, 'select_network', str(network_id)], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
             # wait max. 10s or until connected
             it = 0
-            while self.getCurrentSSID(device) is None and it < 10:
+            while (self.getCurrentSSID(device) is None or self.getCurrentSSID(device) != ssid) and it < 10:
                 time.sleep(1)
                 it += 1
             # check if connecting was successful
@@ -222,3 +238,5 @@ getWifiDevices = manager.getWifiDevices
 getWifiDevice  = manager.getWifiDevice
 getCurrentSSID = manager.getCurrentSSID
 connectToSSID  = manager.connectToSSID
+getSSIDExists  = manager.getSSIDExists
+getAPmac  = manager.getAPmac

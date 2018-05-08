@@ -20,6 +20,7 @@ import java.lang.reflect.Field;
 import java.net.URISyntaxException;
 import java.util.Properties;
 import java.util.logging.Level;
+import java.util.logging.LogManager;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -56,11 +57,20 @@ public class RobotControlImpl extends javax.swing.JFrame
   // remember the window position and size to restore it later
   private Rectangle defaultWindowBounds = new Rectangle();
   
-  
+  private static final Logger logger = Logger.getLogger(RobotControlImpl.class.getName());
+  private static Logger getLogger() { return logger; }
   
   // HACK: set the path to the native libs
   static 
   {
+  	// load the logger properties
+    InputStream stream = RobotControlImpl.class.getResourceAsStream("logging.properties");
+    try {
+        LogManager.getLogManager().readConfiguration(stream);
+    } catch (IOException e) {
+        e.printStackTrace();
+    }
+    
     try
     {
         String separator = System.getProperty("path.separator");
@@ -89,11 +99,10 @@ public class RobotControlImpl extends javax.swing.JFrame
         fieldSysPath.setAccessible( true );
         fieldSysPath.set( null, null );
 
-        Logger.getLogger(RobotControlImpl.class.getName()).log(Level.INFO, 
+        getLogger().log(Level.INFO, 
             "Set java.library.path={0}", System.getProperty("java.library.path", "./bin" ));
     } catch(IllegalAccessException | NoSuchFieldException  ex) {
-        System.err.println("[ERROR] could not set the java.library.path");
-        ex.printStackTrace(System.err);
+        getLogger().log(Level.SEVERE, "[ERROR] could not set the java.library.path", ex);
     }
   }
   
@@ -104,6 +113,10 @@ public class RobotControlImpl extends javax.swing.JFrame
   public RobotControlImpl()
   {  
     splashScreenMessage("Welcome to RobotControl");
+    
+    // load the configuration
+    readConfigFromFile();
+    
     try
     {
       //UIManager.setLookAndFeel(new PlasticXPLookAndFeel());
@@ -113,7 +126,7 @@ public class RobotControlImpl extends javax.swing.JFrame
     }
     catch(UnsupportedLookAndFeelException ex)
     {
-      Logger.getLogger(RobotControlImpl.class.getName()).log(Level.SEVERE, null, ex);
+      getLogger().log(Level.SEVERE, null, ex);
     }
     
     // icon
@@ -123,9 +136,6 @@ public class RobotControlImpl extends javax.swing.JFrame
 
     initComponents();
 
-    // load the configuration
-    readConfigFromFile();
-    
     // restore the bounds and the state of the frame from the config
     defaultWindowBounds = getBounds();
     defaultWindowBounds.x = readValueFromConfig("frame.position.x", defaultWindowBounds.x);
@@ -485,8 +495,7 @@ public class RobotControlImpl extends javax.swing.JFrame
         // create the configlocation is not existing
         File configDir = new File(USER_CONFIG_DIR);
         if(!(configDir.exists() && configDir.isDirectory()) && !configDir.mkdirs()) {
-            Logger.getLogger(RobotControlImpl.class.getName()).log(Level.SEVERE, null, 
-                    "Could not create the configuration path: \"" + USER_CONFIG_DIR + "\".");
+            getLogger().log(Level.SEVERE, "Could not create the configuration path: \"{0}\".", USER_CONFIG_DIR);
         }
         
         final JSPFProperties props = new JSPFProperties();
@@ -558,7 +567,7 @@ public class RobotControlImpl extends javax.swing.JFrame
         }
         catch(URISyntaxException ex)
         {
-          Logger.getLogger(RobotControlImpl.class.getName()).log(Level.SEVERE, null, ex);
+          getLogger().log(Level.SEVERE, null, ex);
         }
       }
     });
@@ -617,6 +626,8 @@ public class RobotControlImpl extends javax.swing.JFrame
 
       // save layout
      this.dialogRegistry.saveToFile(userLayoutFile);
+     // notify all dialogs, so they have the chance to clean up
+     this.dialogRegistry.disposeOnClose();
     }
     catch(IOException ex)
     {
@@ -626,6 +637,7 @@ public class RobotControlImpl extends javax.swing.JFrame
 
   private void readConfigFromFile()
   {
+    splashScreenMessage("Loading config file ...");
     try {
       // load main config
       Properties mainConfig = new Properties();
@@ -639,8 +651,7 @@ public class RobotControlImpl extends javax.swing.JFrame
       }
       
     } catch(IOException ex) {
-      Logger.getLogger(RobotControlImpl.class.getName()).log(Level.INFO, 
-              "Could not open the config file. It will be created after the first execution.");
+        getLogger().info("Could not open the config file. It will be created after the first execution.");
     }
   }
 
@@ -649,7 +660,7 @@ public class RobotControlImpl extends javax.swing.JFrame
     try {
       this.dialogRegistry.loadFromFile(userLayoutFile);
     } catch(FileNotFoundException ex) {
-      Logger.getLogger(RobotControlImpl.class.getName()).log(Level.INFO, "Could not find the layout file: {0}", userLayoutFile.getAbsolutePath());
+      getLogger().log(Level.INFO, "Could not find the layout file: {0}", userLayoutFile.getAbsolutePath());
     } catch(IOException ex) {
         Helper.handleException("Error while reading the layout file.", ex);
     }
@@ -676,7 +687,8 @@ public class RobotControlImpl extends javax.swing.JFrame
   @Override
   public boolean isHighDPI() 
   {
-      return Toolkit.getDefaultToolkit().getScreenSize().width > 2000;
+      return Boolean.valueOf(this.getConfig().getProperty("useHiDPI", "true"))
+          && Toolkit.getDefaultToolkit().getScreenSize().width > 2000;
   }
   
   public void addToStatusBar(Component c) {

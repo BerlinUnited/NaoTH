@@ -23,3 +23,5 @@ iplist=\
 192.168.13.94,\
 192.168.13.95,\
 192.168.13.96
+# whether to use the HiDPI feature of RC
+useHiDPI=true
