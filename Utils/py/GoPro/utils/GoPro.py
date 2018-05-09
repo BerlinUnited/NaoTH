@@ -25,13 +25,13 @@ class GoPro(threading.Thread):
         self.gc_data = GameControlData()
 
         self.is_connected = threading.Event()
-        self.cancel = threading.Event()
+        self.__cancel = threading.Event()
 
     def run(self):
         # init game state
         previous_state = GameControlData.STATE_INITIAL
         # run until canceled
-        while not self.cancel.is_set():
+        while not self.__cancel.is_set():
             # wait 'till (re-)connected to network and gopro
             self.is_connected.wait()
             # valid cam
@@ -67,10 +67,11 @@ class GoPro(threading.Thread):
         self.is_connected.clear()
 
     def updateStatus(self):
-        js = json.loads(self.cam.getStatusRaw())
-        self.cam_status['mode'] = self.cam.parse_value("mode", js[constants.Status.Status][constants.Status.STATUS.Mode])
-        self.cam_status['recording'] = (js[constants.Status.Status][constants.Status.STATUS.IsRecording] == 1)
-        self.cam_status['lastVideo'] = self.cam.getMedia()
+        if self.cam:
+            js = json.loads(self.cam.getStatusRaw())
+            self.cam_status['mode'] = self.cam.parse_value("mode", js[constants.Status.Status][constants.Status.STATUS.Mode])
+            self.cam_status['recording'] = (js[constants.Status.Status][constants.Status.STATUS.IsRecording] == 1)
+            self.cam_status['lastVideo'] = self.cam.getMedia()
 
     def takePhoto(self):
         """ Takes a photo. """
@@ -151,3 +152,6 @@ class GoPro(threading.Thread):
         Event.fire(Event.GoproStopRecording())
         self.cam.shutter(constants.stop)
         time.sleep(1)  # wait for the command to be executed
+
+    def cancel(self):
+        self.__cancel.set()

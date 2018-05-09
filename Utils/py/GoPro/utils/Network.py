@@ -25,18 +25,21 @@ class Network(threading.Thread):
         self.passwd = passwd
         self.retries = retries
 
-        self.cancel = threading.Event()
+        self.__cancel = threading.Event()
+        self.__timer = threading.Condition()
 
     def setConfig(self, device:str, ssid:str, passwd:str, retries:int):
-
-        self.device = device
+        # set the new params
+        self.device = self.manager.getWifiDevice(device)
         self.ssid = ssid
         self.passwd = passwd
         self.retries = retries
-
-        if self.isConnected():
-            # TODO: diconnect and reconnect with new params
+        # NOTE: auto-reconnects on the next 'isConnected' check
+        try:
+            self.__timer.notify_all()
+        except:
             pass
+
 
     def connect(self):
         logger.info("Setting up network")
@@ -46,7 +49,7 @@ class Network(threading.Thread):
             logger.info("Using device %s", device)
 
             # wait for connection
-            while not self.cancel.is_set():
+            while not self.__cancel.is_set():
                 # check if ssid is available
                 if not self.manager.getSSIDExists(device, self.ssid):
                     logger.info("SSID not found: %s", self.ssid)
@@ -75,12 +78,20 @@ class Network(threading.Thread):
     def run(self):
         # connect and fire connected event
         self.connect()
-        while not self.cancel.is_set():
+        while not self.__cancel.is_set():
             if self.isConnected():
-                time.sleep(10)
+                with self.__timer:
+                    self.__timer.wait(10)
             else:
                 Event.fire(Event.NetworkDisconnected())
                 self.connect()
+
+    def cancel(self):
+        self.__cancel.set()
+        try:
+            self.__timer.notify_all()
+        except:
+            pass
 
 
 class NetworkManager:

@@ -17,6 +17,8 @@ import logging.handlers
 import threading
 import json
 import time
+import importlib
+import importlib.util
 
 import goprocam
 from utils import Logger, Daemonize, Network, GoPro, GameController
@@ -42,8 +44,7 @@ def parseArguments():
     return parser.parse_args()
 
 def main():
-
-    loopControl = threading.Event()
+    config_timestamp = 0 if not args.config else os.stat(importlib.util.find_spec("config").origin).st_mtime
 
     gopro = GoPro(args.background or args.quiet, args.ignore, args.max_time)
     gopro.start()
@@ -54,20 +55,33 @@ def main():
     network = Network(args.device, args.ssid, args.passwd, args.retries)
     network.start()
 
-    print("...")
-
     try:
-        loopControl.wait()
+        while True:
+            # if config was loaded from file and file was modified since last checked
+            if args.config and config_timestamp != os.stat(importlib.util.find_spec("config").origin).st_mtime:
+                config_timestamp = os.stat(importlib.util.find_spec("config").origin).st_mtime
+                try:
+                    # reload config from file
+                    importlib.reload(config)
+                    Logger.info("Reloaded modified config")
+                    network.setConfig(None, config.ssid, config.passwd, config.retries)
+                except Exception as e:
+                    Logger.error("Invalid config! " + str(e))
+            else:
+                # do nothing
+                time.sleep(1)
     except KeyboardInterrupt as e:
-        print("Exit.")
-
-    network.cancel.set()
-    network.join()
-    gameController.cancel.set()
-    gameController.socket.settimeout(0)
-    gameController.join()
-    gopro.cancel.set()
+        print("Shutting down ...")
+    # cancel threads
+    gopro.cancel()
+    gameController.cancel()
+    network.cancel()
+    # wait for finished threads
     gopro.join()
+    gameController.join()
+    network.join()
+
+    print("Bye")
 
 
 def checkGameController(loopControl:threading.Event):

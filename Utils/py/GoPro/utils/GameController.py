@@ -14,7 +14,7 @@ class GameController(threading.Thread):
     def __init__(self):
         super().__init__()
 
-        self.cancel = threading.Event()
+        self.__cancel = threading.Event()
 
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -25,7 +25,7 @@ class GameController(threading.Thread):
 
     def run(self):
         logger.info("Listen to GameController")
-        while not self.cancel.is_set():
+        while not self.__cancel.is_set():
             try:
                 # receive GC data
                 data, address = self.socket.recvfrom(8192)
@@ -44,3 +44,7 @@ class GameController(threading.Thread):
                 self.message = None
                 print(ex)
                 continue
+
+    def cancel(self):
+        self.__cancel.set()
+        self.socket.settimeout(0)
