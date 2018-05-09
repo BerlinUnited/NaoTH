@@ -13,10 +13,11 @@ logger = Logger.getLogger("Network")
 
 
 class Network(threading.Thread):
+    """ Handles the connection to the GoPro wifi network."""
 
     def __init__(self, device:str, ssid:str, passwd:str, retries:int):
         super().__init__()
-
+        # creates a appropriate manager, based on the available network applications
         self.manager = NetworkManagerNmcli() if shutil.which('nmcli') is not None else NetworkManagerIw()
 
         self.device = self.manager.getWifiDevice(device)
