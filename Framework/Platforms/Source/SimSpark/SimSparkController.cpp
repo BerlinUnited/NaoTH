@@ -24,7 +24,7 @@
 using namespace std;
 
 SimSparkController::SimSparkController(const std::string& name)
-: PlatformInterface(name, 20),
+: PlatformInterface(name, 10),
   theTeamMessageReceiveBuffer(NULL),
   theImageData(NULL),
   theImageSize(0),
