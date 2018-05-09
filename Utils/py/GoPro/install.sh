@@ -185,6 +185,15 @@ uninstall() {
 	echo "finished!"
 }
 
+help() {
+	echo "Install script for the GoPro-Recorder"
+	echo -e "\t install \t installs everything needed to for running the GoPro-Recorder permanently"
+	echo -e "\t uninstall \t uninstalls everything"
+	echo -e "\t check \t\t checks the required dependencies"
+	echo -e "\t ip \t\t setups the static ip configuration only"
+	echo -e "\t help \t\t shows this help"
+}
+
 ############################################################################################
 # MAIN
 ############################################################################################
@@ -206,8 +215,12 @@ case "$1" in
 	echo "Setup static ip."
     setup_static_ip
     ;;
+  help)
+	help
+    ;;
   *)
-    echo "(install|uninstall|ip)"
+    echo -e "$0 (install|uninstall|check|ip|help)\n"
+    help
     ;;
 esac
 
