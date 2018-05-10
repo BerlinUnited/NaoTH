@@ -9,6 +9,8 @@
 #include "Representations/Perception/MultiChannelIntegralImage.h"
 #include "Representations/Perception/FieldColorPercept.h"
 
+#include "Representations/Perception/FieldPercept.h"
+
 #include "Tools/Debug/DebugRequest.h"
 #include <Tools/Debug/DebugImageDrawings.h>
 #include <Tools/Debug/DebugDrawings.h>
@@ -49,8 +51,8 @@ public:
 
   void execute()
   {
-    execute(CameraInfo::Bottom);
     execute(CameraInfo::Top);
+    execute(CameraInfo::Bottom);
   }
 
   void execute(CameraInfo::CameraID id);
@@ -62,7 +64,7 @@ public:
     Parameters() : ParameterList("FieldAreaDetector")
     {
       PARAMETER_REGISTER(proportion_of_green) = .5;
-      PARAMETER_REGISTER(grid_size) = 60;
+      PARAMETER_REGISTER(grid_size) = 30;
       PARAMETER_REGISTER(refine_cell) = true;
       PARAMETER_REGISTER(refine_point) = true;
       syncWithConfig();
@@ -72,7 +74,6 @@ public:
     bool refine_cell;
     bool refine_point;
   } params;
-
 
 private:
   struct Cell
@@ -97,10 +98,18 @@ private:
     }
   };
 
-  void find_endpoint(const Cell& cell, Vector2i& endpoint);
+  struct Endpoint
+  {
+    CameraInfo::CameraID cameraID;
+    Vector2i pos;
+  };
+
+  void find_endpoint(const Cell& cell, Endpoint& endpoint);
   void refine_cell(Cell& cell);
-  void refine_point(Vector2i& endpoint, int32_t minY);
+  void refine_point(Endpoint& endpoint, int32_t minY);
   int32_t split_cell(const Cell& cell, Cell& upper, Cell& lower);
+
+  void create_field();
 
   CameraInfo::CameraID cameraID;
   int horizon_height;
@@ -108,6 +117,8 @@ private:
   int min_green;
   int factor;
   int32_t grid_size;
+
+  std::vector<Endpoint> endpoints;
 
   DOUBLE_CAM_PROVIDE(FieldAreaDetector, DebugImageDrawings);
 
