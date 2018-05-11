@@ -1,4 +1,4 @@
-import threading, time, json, traceback
+import threading, time, json, inspect
 
 from goprocam import GoProCamera, constants
 from .GameControlData import GameControlData
@@ -22,10 +22,17 @@ class GoPro(threading.Thread):
 
         self.cam = None
         self.cam_status = { 'recording': False, 'mode': None, 'lastVideo': None }
+        self.cam_settings = {}
+        self.user_settings = {}
         self.gc_data = GameControlData()
 
         self.is_connected = threading.Event()
         self.__cancel = threading.Event()
+
+    def setUserSettings(self, settings):
+        self.user_settings = settings
+        if self.cam:
+            self.__updateUserSettings()
 
     def run(self):
         # init game state
@@ -54,10 +61,11 @@ class GoPro(threading.Thread):
         Event.fire(Event.GoproConnecting())
         self.cam = GoProCamera.GoPro()
 
-        if self.cam.getStatusRaw():
+        if self.updateStatus():
             Event.fire(Event.GoproConnected())
             # set GoPro to video mode
             self.setCamVideoMode()
+            self.__updateUserSettings()
             self.is_connected.set()
 
     def disconnect(self):
@@ -72,6 +80,12 @@ class GoPro(threading.Thread):
             self.cam_status['mode'] = self.cam.parse_value("mode", js[constants.Status.Status][constants.Status.STATUS.Mode])
             self.cam_status['recording'] = (js[constants.Status.Status][constants.Status.STATUS.IsRecording] == 1)
             self.cam_status['lastVideo'] = self.cam.getMedia()
+            # update video settings
+            for var, val in vars(constants.Video).items():
+                if not var.startswith("_") and not inspect.isclass(val) and val in js[constants.Status.Settings]:
+                    self.cam_settings[var] = (val, js[constants.Status.Settings][val])
+            return True
+        return False
 
     def takePhoto(self):
         """ Takes a photo. """
@@ -141,6 +155,7 @@ class GoPro(threading.Thread):
     def startRecording(self):
         if self.cam_status['mode'] != "Video":
             self.setCamVideoMode()
+        self.__updateUserSettings()
         logger.debug("Start recording")
         Event.fire(Event.GoproStartRecording())
         self.cam.shutter(constants.start)
@@ -155,3 +170,21 @@ class GoPro(threading.Thread):
 
     def cancel(self):
         self.__cancel.set()
+
+    def __updateUserSettings(self):
+        logger.debug("Set user video settings")
+
+        for s in self.user_settings:
+            # is setting 'valid'
+            if s in self.cam_settings:
+                # is setting is set and is cam setting different from user settings?
+                if self.user_settings[s] is not None and self.user_settings[s] != "" and self.cam_settings[s][1] != int(self.user_settings[s]):
+                    # try to set the user setting on the cam
+                    res = self.cam.gpControlSet(str(self.cam_settings[s][0]), str(self.user_settings[s]))
+                    if len(res) == 0:
+                        logger.warning("The following setting can not be set for this cam: '"+s+"'")
+                        # remove from user settings
+                        self.user_settings[s] = None
+            else:
+                logger.warning("Unknown video setting: '"+s+"'")
+

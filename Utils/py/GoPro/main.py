@@ -12,17 +12,12 @@ import tempfile
 import socket
 import traceback
 import argparse
-import logging
-import logging.handlers
 import threading
-import json
 import time
 import importlib
 import importlib.util
 
-import goprocam
 from utils import Logger, Daemonize, Network, GoPro, GameController
-# , GameController, GoPro,
 
 
 def parseArguments():
@@ -47,6 +42,12 @@ def main():
     config_timestamp = 0 if not args.config else os.stat(importlib.util.find_spec("config").origin).st_mtime
 
     gopro = GoPro(args.background or args.quiet, args.ignore, args.max_time)
+    if args.config:
+        gopro.setUserSettings({
+            'FRAME_RATE': config.fps if 'fps' in vars(config) else None,
+            'FOV': config.fov if 'fov' in vars(config) else None,
+            'RESOLUTION': config.resolution if 'resolution' in vars(config) else None,
+        })
     gopro.start()
 
     gameController = GameController()
@@ -65,6 +66,11 @@ def main():
                     importlib.reload(config)
                     Logger.info("Reloaded modified config")
                     network.setConfig(None, config.ssid, config.passwd, config.retries)
+                    gopro.setUserSettings({
+                        'FRAME_RATE': config.fps if 'fps' in vars(config) else None,
+                        'FOV': config.fov if 'fov' in vars(config) else None,
+                        'RESOLUTION': config.resolution if 'resolution' in vars(config) else None,
+                    })
                 except Exception as e:
                     Logger.error("Invalid config! " + str(e))
             else:
