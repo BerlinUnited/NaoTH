@@ -17,7 +17,7 @@ import time
 import importlib
 import importlib.util
 
-from utils import Logger, Daemonize, Network, GoPro, GameController
+from utils import Logger, Daemonize, Network, GoPro, GameController, GameLoggerSql
 
 
 def parseArguments():
@@ -50,6 +50,10 @@ def main():
         })
     gopro.start()
 
+    teams = config.teams if args.config and  'teams' in vars(config) else None
+    gameLogger = GameLoggerSql(os.path.join(os.path.dirname(__file__), 'game.db'), teams)
+    gameLogger.start()
+
     gameController = GameController()
     gameController.start()
 
@@ -80,10 +84,12 @@ def main():
         print("Shutting down ...")
     # cancel threads
     gopro.cancel()
+    gameLogger.cancel()
     gameController.cancel()
     network.cancel()
     # wait for finished threads
     gopro.join()
+    gameLogger.join()
     gameController.join()
     network.join()
 
