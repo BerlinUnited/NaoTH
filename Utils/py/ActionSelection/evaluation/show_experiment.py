@@ -212,14 +212,15 @@ if __name__ == "__main__":
     # print("read file: " + file)
     
     
-    #experiment = pickle.load(open(data_prefix + 'simulation_1.pickle', "rb"))
+    experiment = pickle.load(open(data_prefix + 'simulation_10.pickle', "rb"))
+    '''
     experiment = pickle.load(open(data_prefix + "simulation_6.pickle", "rb"))
     experiment2 = pickle.load(open(data_prefix + "simulation_7.pickle", "rb"))
     experiment3 = pickle.load(open(data_prefix + "simulation_8.pickle", "rb"))
     experiment['frames'] += experiment2['frames']
     experiment['frames'] += experiment3['frames']
-    
-    print len(experiment['frames'])
+    '''
+    print (len(experiment['frames']))
 
     # plot_start_positions(experiment)
 
