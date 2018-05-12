@@ -52,7 +52,7 @@ simulations = {
 }
 
 
-def make_run((idx, pose)):
+def make_run(pose):
 
     run = {'pose': pose, 'sim': {}}
 
@@ -85,7 +85,7 @@ def main():
       'frames': []
     }
     
-    positions = [(idx, m2d.Pose2D(m2d.Vector2(x, y), r)) for idx, (x, y, r) in enumerate(zip(random_x, random_y, random_r))]
+    positions = [m2d.Pose2D(m2d.Vector2(x, y), r) for (x, y, r) in zip(random_x, random_y, random_r)]
     
     counter = mp.Value('i', 0)
 
