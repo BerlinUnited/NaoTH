@@ -226,10 +226,10 @@ def decide_minimal(actions_consequences, state):
         goal_likelihood = results.likelihood(Category.OPPGOAL)
 
         if best_goal_idx is None:
-            best_goal_idx, best_goal_value = i, value
+            best_goal_idx, best_goal_value, best_goal_likelihood = i, value, goal_likelihood
 
-        if ((goal_likelihood > best_goal_likelihood or
-           (goal_likelihood == best_goal_likelihood and value > best_goal_value))):
+        if (goal_likelihood > best_goal_likelihood or
+           (goal_likelihood == best_goal_likelihood and value > best_goal_value)):
             best_goal_idx, best_goal_value, best_goal_likelihood = i, value, goal_likelihood
 
     if best_goal_idx is not None:
