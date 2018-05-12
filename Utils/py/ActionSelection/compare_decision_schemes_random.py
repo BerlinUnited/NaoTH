@@ -97,7 +97,7 @@ def main():
     #       http://xcodest.me/interrupt-the-python-multiprocessing-pool-in-graceful-way.html
     while not runner.ready():
       try:
-          experiment['frames'] = runner.get(1e+4) # a very long timeout
+          experiment['frames'] = runner.get(1) # a very long timeout
       except mp.TimeoutError as ex:
         pass
       
