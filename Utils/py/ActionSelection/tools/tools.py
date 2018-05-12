@@ -1,8 +1,10 @@
+
+import matplotlib as mpl
 from matplotlib import pyplot as plt
 from matplotlib.patches import Circle
 import matplotlib.patches as patches
-import field_info as f
-import matplotlib as mpl
+
+from . import field_info as f
 
 
 def draw_field(axis=plt.gca()):

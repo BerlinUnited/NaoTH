@@ -1,15 +1,20 @@
 from __future__ import division
-import numpy as np
-import field_info as field
-import pickle
-# from evaluation.potentialfield_generated_plot import cleanup_nan_values
-from action import Category
 
-import Simulation as Sim
-import action as a
-from naoth import math2d as m2d
+import numpy as np
+import pickle
 import copy
 
+# from evaluation.potentialfield_generated_plot import cleanup_nan_values
+
+from . import field_info as field
+from .action import Category
+from .action import ActionResults
+
+# BUG: this is a cyclic inclusion
+# NOTE: without this the funuction evaluate_action_with_robots will not work
+#from . import Simulation as Sim
+
+from naoth import math2d as m2d
 
 """ General Functions """
 gen_field = []
@@ -91,7 +96,7 @@ def evaluate_action_with_robots(results, state):
     actions_consequences = []
     # Simulate Consequences
     for action in new_state.actions:  # new_state.actions includes the possible kicks
-        single_consequence = a.ActionResults([])
+        single_consequence = ActionResults([])
         actions_consequences.append(Sim.simulate_consequences(action, single_consequence, new_state, 30))
 
     best_action_with_team = Sim.decide_smart(actions_consequences, state)

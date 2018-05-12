@@ -1,9 +1,11 @@
 import numpy as np
-from action import Category
-from action import ActionResults
 
-import field_info as field
-import potential_field as pf
+from . import field_info as field
+from . import potential_field as pf
+from .action import Category
+from .action import ActionResults
+
+
 from naoth import math2d as m2d
 
 good_threshold_percentage = 0.85
