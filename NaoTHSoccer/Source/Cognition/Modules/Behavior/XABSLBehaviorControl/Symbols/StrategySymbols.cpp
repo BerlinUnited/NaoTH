@@ -77,7 +77,7 @@ void StrategySymbols::registerSymbols(xabsl::Engine& engine)
 
   engine.registerEnumeratedInputSymbol("attack.best_action", "attack.action_type", &getBestAction);
   
-  engine.registerDecimalInputSymbol("attack.best_action.direction", &(getKickActionModel().rotation));
+  //engine.registerDecimalInputSymbol("attack.best_action.direction", &(getKickActionModel().rotation));
 
   DEBUG_REQUEST_REGISTER("XABSL:StrategySymbols:draw_attack_direction","draw the attack direction", false);
   DEBUG_REQUEST_REGISTER("XABSL:StrategySymbols:draw_simpleDefenderPose","draw the position of the defender", false);
