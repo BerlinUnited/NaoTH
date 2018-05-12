@@ -62,7 +62,7 @@ def plot_start_positions(exp):
 def extract_values(exp, strategy, get_value):
     # NOTE: we ignore the last element here
     # for extraction of 'rotation' and 'walk_dist' the last element should included.
-    return [get_value(e) for frame in exp['frames'] for e in frame['sim'][strategy][1:-1] if getValue(e) != 0] #if np.abs(get_value(e)) > np.radians(10)
+    return [get_value(e) for frame in exp['frames'] for e in frame['sim'][strategy][1:-1] if get_value(e) != 0] #if np.abs(get_value(e)) > np.radians(10)
 
 
 def plot_histogram(exp):
@@ -212,14 +212,13 @@ if __name__ == "__main__":
     # print("read file: " + file)
     
     
-    experiment = pickle.load(open(data_prefix + 'simulation_1.pickle', "rb"))
-    '''
+    #experiment = pickle.load(open(data_prefix + 'simulation_1.pickle', "rb"))
     experiment = pickle.load(open(data_prefix + "simulation_6.pickle", "rb"))
     experiment2 = pickle.load(open(data_prefix + "simulation_7.pickle", "rb"))
     experiment3 = pickle.load(open(data_prefix + "simulation_8.pickle", "rb"))
     experiment['frames'] += experiment2['frames']
     experiment['frames'] += experiment3['frames']
-    '''
+    
     print len(experiment['frames'])
 
     # plot_start_positions(experiment)
