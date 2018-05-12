@@ -42,7 +42,7 @@ def minimal_rotation(state, action, turn_direction):
             # decide on rotation direction once
             if turn_direction == 0:
                 attack_direction = attack_dir.get_attack_direction(state)
-                turn_direction = np.sign(attack_direction)  # "> 0" => left, "< 0" => right
+                turn_direction = np.sign(attack_direction.angle())  # "> 0" => left, "< 0" => right
 
             # set motion request
             action_dir += turn_direction*turn_speed
@@ -130,7 +130,7 @@ def direct_kick_strategy(state, action_list):
             # decide on rotation direction once
             if turn_direction == 0:
                 attack_direction = attack_dir.get_attack_direction(state)
-                turn_direction = np.sign(attack_direction)  # "> 0" => left, "< 0" => right
+                turn_direction = np.sign(attack_direction.angle())  # "> 0" => left, "< 0" => right
 
             # set motion request
             action_dir += turn_direction*turn_speed
