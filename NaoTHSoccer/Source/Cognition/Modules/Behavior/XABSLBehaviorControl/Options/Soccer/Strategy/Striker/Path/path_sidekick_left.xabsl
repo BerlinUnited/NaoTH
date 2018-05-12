@@ -1,18 +1,6 @@
 option path_sidekick_left
 {
- initial state finish_turning {
-  decision {
-      if(action_done)
-        goto approach_sidekick_to_left;
-      else
-        stay;
-    }
-    action{
-      situation_abortable = false;
-      path_turn_to_attack_direction();
-    }
- }
- state approach_sidekick_to_left {
+ initial state approach_sidekick_to_left {
     decision {
       if(action_done)
         goto sidekick_to_left;

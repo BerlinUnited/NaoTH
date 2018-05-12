@@ -1,19 +1,7 @@
 /** path_dash */
 option path_dash {
 
-	initial state finish_turning {
-	decision {
-	    if(action_done)
-	      goto decide;
-	    else
-	      stay;
-	  }
-	  action{
-	    situation_abortable = false;
-	    path_turn_to_attack_direction();
-	  }
-	}
-  state decide
+  initial state decide
   {
     decision {
       if(ball.preview.y > 0)
