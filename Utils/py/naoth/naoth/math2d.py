@@ -1,5 +1,5 @@
 import math
-
+import numbers
 
 def clamp(x, minimum, maximum):
     # function f where f(x)=x if min<= x <= max, f(x) = minimum if x < minimum, f(x) = maximum if x > maximum
@@ -36,7 +36,7 @@ class Vector2:
         if isinstance(other, Vector2):
             # interpret multiplication as other^t * self (scalar product of the vectors, where ^t means transpose)
             return self.x*other.x + self.y*other.y
-        elif isinstance(other, (int, float, long)):
+        elif isinstance(other, numbers.Number):
             return Vector2(self.x*other, self.y*other)
         else:
             return NotImplemented
@@ -45,7 +45,7 @@ class Vector2:
         if isinstance(other, Vector2):
             # interpret multiplication as other^t * self (scalar product of the vectors, where ^t means transpose)
             return self.x * other.x + self.y * other.y
-        elif isinstance(other, (int, float, long)):
+        elif isinstance(other, numbers.Number):
             return Vector2(self.x * other, self.y * other)
         else:
             return NotImplemented
@@ -131,14 +131,14 @@ class Pose2D:
 
     # operator method for '/' in python2
     def __div__(self, point):
-        if isinstance(other, Vector2):
+        if isinstance(point, Vector2):
             return (point - self.translation).rotate(-self.rotation)
         else:
             return NotImplemented
 
     # operator method for '/' in python3
     def __truediv__(self, point):
-        if isinstance(other, Vector2):
+        if isinstance(point, Vector2):
             return (point - self.translation).rotate(-self.rotation)
         else:
             return NotImplemented
