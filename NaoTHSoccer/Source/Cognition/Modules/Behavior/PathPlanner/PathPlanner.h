@@ -66,6 +66,7 @@ private:
       PARAMETER_REGISTER(kick_time) = 300;
       PARAMETER_REGISTER(approach_ball_adapt_control) = true;
       PARAMETER_REGISTER(approach_ball_adapt_threshold) = 10;
+      PARAMETER_REGISTER(approach_ball_slow_distance) = 50;
 
       syncWithConfig();
     }
@@ -75,6 +76,7 @@ private:
     int kick_time;
     bool approach_ball_adapt_control;
     int approach_ball_adapt_threshold;
+    int approach_ball_slow_distance;
   } params;
 
   // NONE means hip

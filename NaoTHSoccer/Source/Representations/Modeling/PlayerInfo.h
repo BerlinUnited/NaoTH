@@ -35,14 +35,14 @@ public:
 
     naoth::GameData::RobotInfo penaltyInfo = gameData.getOwnRobotInfo(playerNumber);
 
-    if(penaltyInfo.penalty != naoth::GameData::none) {
+    if(penaltyInfo.penalty != naoth::GameData::penalty_none) {
       robotState = penalized;
     } else {
       robotState = (RobotState)gameData.gameState;
     }
 
-    teamColor = gameData.ownTeam.teamColour;
-    kickoff = (gameData.kickOffTeam == teamNumber);
+    teamColor = gameData.ownTeam.teamColor;
+    kickoff = (gameData.kickingTeam == teamNumber);
     playersPerTeam = gameData.playersPerTeam;
   }
 
@@ -63,6 +63,9 @@ public:
   // TODO: move somewhere else (it's a strategic decision)?
   /** Whether the behavior decided to play as striker */
   bool isPlayingStriker;
+
+  /** the currently used scheme. */
+  std::string scheme;
 
   bool isGoalie() const {
       return playerNumber == 1;

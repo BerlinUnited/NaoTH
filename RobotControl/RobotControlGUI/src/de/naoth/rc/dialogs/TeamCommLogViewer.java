@@ -48,7 +48,7 @@ import java.util.List;
  */
 public class TeamCommLogViewer extends AbstractDialog
 {
-    @RCDialog(category = RCDialog.Category.Team, name = "LogfilePlayer")
+    @RCDialog(category = RCDialog.Category.Team, name = "TeamCommLogViewer")
     @PluginImplementation
     public static class Plugin extends DialogPlugin<TeamCommLogViewer> {
         @InjectPlugin
@@ -361,7 +361,7 @@ public class TeamCommLogViewer extends AbstractDialog
         timestampList.addListSelectionListener(new SelectionListener());
         
         // add all messages to list (if available)
-        if(messages == null || messages.size() == 0) {
+        if(messages == null || messages.isEmpty()) {
             JOptionPane.showMessageDialog(null, "No messeges read ...", "No messages", JOptionPane.INFORMATION_MESSAGE);
         } else {
             for (Map.Entry<Long, Timestamp> entry : messages.entrySet()) {
@@ -369,12 +369,12 @@ public class TeamCommLogViewer extends AbstractDialog
             }
         }
     }
-    
+
     /**
      * Updates the tree component and shows the TeamCommMessages of the timestamp.
      * @param ts 
      */
-    public void updateTree(Timestamp ts) {
+    private void updateTree(Timestamp ts) {
         // clear previous message tree
         treeRootNode.removeAllChildren();
         

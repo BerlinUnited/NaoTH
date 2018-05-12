@@ -1,0 +1,83 @@
+syntax = "proto2";
+package naothmessages;
+option java_package= "de.naoth.rc.messages";
+
+import "CommonTypes.proto";
+import "Framework-Representations.proto";
+
+enum TeamColor
+{
+  blueTeam = 0; 
+  redTeam = 1; 
+  yellowTeam = 2; 
+  blackTeam = 3; 
+  
+  whiteTeam = 4;
+  greenTeam = 5;
+  orangeTeam = 6;
+  purpleTeam = 7;
+  brownTeam = 8;
+  grayTeam = 9;
+  
+  invalidTeam = 255;
+}
+
+message Opponent {
+  required int32 playerNum = 1 [default=0];
+  optional Pose2D poseOnField = 2;
+}
+
+message Ntp {
+  required int32 playerNum = 1 [default=0];
+  optional uint64 sent = 2 [default=0];
+  optional uint64 received = 3 [default=0];
+}
+
+message Drops {
+  optional uint32 dropNoSplMessage = 1 [default=0];
+  optional uint32 dropNotOurTeam = 2 [default=0];
+  optional uint32 dropNotParseable = 3 [default=0];
+  optional uint32 dropKeyFail = 4 [default=0];
+  optional uint32 dropMonotonic = 5 [default=0];
+}
+
+message BUUserTeamMessage
+{
+  optional string bodyID = 1 [default="unknown"];
+  optional uint32 timeToBall = 2;
+  optional bool wasStriker = 3 [default=false];
+  optional bool isPenalized = 4 [default=false];
+  repeated Opponent opponents = 5;
+  optional uint32 teamNumber = 6 [default=0,deprecated=true];
+  optional float batteryCharge = 7 [default=1.0];
+  optional float temperature = 8 [default=0.0];
+  optional uint64 timestamp = 9 [default=0];
+  optional bool wantsToBeStriker = 10 [default=false];
+  optional float cpuTemperature = 11 [default=0.0];
+  optional bool whistleDetected = 12 [default=false];
+  optional int32 whistleCount = 13 [default=0];
+  // only for visualizing teamball position in RC
+  optional DoubleVector2 teamBall = 14;
+  repeated Ntp ntpRequest = 15;
+  optional DoubleVector2 ballVelocity = 16; // since the SPLStandardMessage 2018, we need it here
+  optional string key = 100 [default="none"];
+}
+
+message TeamMessage
+{
+  message Data
+  {
+    optional uint32 playerNum = 1 [default=0];
+    optional TeamColor teamColor = 11 [default=blueTeam,deprecated=true];
+    optional Pose2D pose = 3;
+    optional int32 ballAge = 4 [default=-1];
+    optional DoubleVector2 ballPosition = 5;
+    optional DoubleVector2 ballVelocity = 6;
+    optional bool fallen = 10 [default=false];
+    optional BUUserTeamMessage user = 8;
+    optional FrameInfo frameInfo = 9;
+    optional uint32 teamNumber = 12 [default=0];
+  }
+  repeated Data data = 1;
+  optional Drops messageDrop = 2;
+}
