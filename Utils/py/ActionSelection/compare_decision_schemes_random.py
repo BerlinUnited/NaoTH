@@ -59,7 +59,7 @@ def make_run(pose):
     origin = State()
     origin.pose = pose
     
-    for name, s in simulations.iteritems():
+    for name, s in simulations.items():
         run['sim'][name] = s(origin)
       
     global counter
@@ -90,7 +90,17 @@ def main():
     counter = mp.Value('i', 0)
 
     pool = mp.Pool(initializer=init, initargs=(counter, ), processes=4)
-    experiment['frames'] = pool.map(make_run, positions)
+    experiment['frames'] = pool.map_async(make_run, positions)
+    
+    #wait until done
+    # NOTE: this has to be done this way, so the programm can be interrupted by keyboard
+    #       http://xcodest.me/interrupt-the-python-multiprocessing-pool-in-graceful-way.html
+    while not experiment['frames'].ready():
+      try:
+          experiment['frames'].get(1e+4) # a very long timeout
+      except mp.TimeoutError as ex:
+        pass
+      
     pool.close()
     
     # make sure not to overwrite anything
