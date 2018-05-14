@@ -164,9 +164,10 @@ class GoPro(threading.Thread):
 
     def stopRecording(self):
         logger.debug("Stop recording")
-        Event.fire(Event.GoproStopRecording())
         self.cam.shutter(constants.stop)
+        self.updateStatus()
         time.sleep(1)  # wait for the command to be executed
+        Event.fire(Event.GoproStopRecording(self.cam_status['lastVideo']))
 
     def cancel(self):
         self.__cancel.set()

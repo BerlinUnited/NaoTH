@@ -48,7 +48,8 @@ class GoproStartRecording(Event):
     pass
 
 class GoproStopRecording(Event):
-    pass
+    def __init__(self, file):
+        self.file = file
 
 ######################################################
 ## Other Events

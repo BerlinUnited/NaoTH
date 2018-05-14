@@ -51,7 +51,7 @@ def main():
     gopro.start()
 
     teams = config.teams if args.config and  'teams' in vars(config) else None
-    gameLogger = GameLoggerSql(os.path.join(os.path.dirname(__file__), 'game.db'), teams)
+    gameLogger = GameLoggerSql(os.path.join(os.path.dirname(__file__), 'logs/game.db'), teams)
     gameLogger.start()
 
     gameController = GameController()
