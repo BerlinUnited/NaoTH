@@ -5,3 +5,4 @@ from .GameControlData import GameControlData
 from .GoPro import GoPro
 from .daemonize import Daemonize
 from .GameLoggerSql import GameLoggerSql
+from .GameLoggerLog import GameLoggerLog
