@@ -4,6 +4,7 @@ import sys
 import getopt
 import numpy as np
 import json
+import naoth
 import cv2
 import patchReader as patchReader
 
@@ -12,25 +13,25 @@ patch_size = (24, 24)  # width, height
 
 def parse_arguments(argv):
     input_file = ''
-    flag = ''
+    all = False
     try:
-        opts, args = getopt.getopt(argv, "hi:f:", ["ifile=", "flag"])
+        opts, args = getopt.getopt(argv, "hi:", ["ifile=", "all"])
     except getopt.GetoptError:
-        print('patch_export.py -i <input file>')
+        print('python patch_export.py -i <logfile> [--all]')
         sys.exit(2)
     if opts == []:
-        print('patch_export.py -i <input file>')
+        print('python patch_export.py -i <logfile> [--all]')
         sys.exit(2)
     for opt, arg in opts:
         if opt == '-h':
-            print('patch_export.py -i <input file>')
+            print('python patch_export.py -i <logfile> [--all]')
             sys.exit()
-        elif opt in ("-f", "--flag"):
-            flag = arg
+        elif opt == "--all":
+            all = True
         elif opt in ("-i", "--ifile"):
             input_file = arg
 
-    return input_file, flag
+    return input_file, all
 
 
 def load_labels(file):
@@ -49,7 +50,10 @@ def load_labels(file):
             
         tmp_labels[ball_labels["ball"]] = 1
         
-    return tmp_labels, ["noball", "ball"]
+        return tmp_labels, ["noball", "ball"]
+    else:
+        print('Label file does not exist. To export the patches regardless run this file with the --all option')
+        sys.exit(-1)
 
 
 def exportPatches(patchdata, labels, label_names, target_path):
@@ -126,7 +130,7 @@ def exportPatchesAll(patchdata, target_path):
             a = np.transpose(np.reshape(a, patch_size))
 
         file_path = os.path.join(export_path, str(i)+".png")
-        print file_path
+        print(file_path)
 
         # rgba
         '''
@@ -154,10 +158,11 @@ def exportPatchesAll(patchdata, target_path):
         # a = np.multiply(np.not_equal(b, 7), a)
 
         cv2.imwrite(file_path, a)
-        
+
+
 '''
 USAGE:
-    python ball_patch_label.py ./data/ball-move-around-patches.log -f all
+    python patch_export.py -i <logfile> [--all]
 '''
 
 if __name__ == "__main__":
@@ -169,12 +174,17 @@ if __name__ == "__main__":
     # load the label file
     base_file, file_extension = os.path.splitext(logFilePath)
 
-    # create an export directory
-    if not os.path.exists(base_file):
-        os.makedirs(base_file)
-    if flag == 'all':
+    if flag:
+        # create an export directory
+        if not os.path.exists(base_file):
+            os.makedirs(base_file)
         exportPatchesAll(patchdata, base_file)
     else:
         label_file = base_file + '.json'
         labels, label_names = load_labels(label_file)
+
+        # create an export directory
+        if not os.path.exists(base_file):
+          os.makedirs(base_file)
+
         exportPatches(patchdata, labels, label_names, base_file)

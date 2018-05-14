@@ -35,7 +35,7 @@
 //in runtime as constant defined width and heigth of the input image
 #include "Representations/Infrastructure/CameraInfoConstants.h"
 
-#include "LogFileScanner.h"
+#include <Tools/Logfile/LogFileScanner.h>
 #include "LogProviderModule.h"
 #include <google/protobuf/io/zero_copy_stream_impl.h>
 
@@ -52,7 +52,7 @@ public:
   virtual std::string getHeadNickName() const {return "naoth"; }
   virtual std::string getRobotName() const { return "naoth-logsimulator"; }
 
-  void main();
+  void main(bool start = false);
 
   void printRepresentations();
   void printHelp();

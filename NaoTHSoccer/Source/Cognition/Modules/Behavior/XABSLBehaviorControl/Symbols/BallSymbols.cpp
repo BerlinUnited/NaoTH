@@ -53,21 +53,16 @@ void BallSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalInputSymbol("ball.position.field.y", &ballPositionField.y);
 
   // team
-  engine.registerDecimalInputSymbol("ball.team.time_since_last_update", &getTeamBallTimeSinceLastUpdate);
+  engine.registerBooleanInputSymbol("ball.team.is_valid", &getTeamBallModel().valid);
   engine.registerDecimalInputSymbol("ball.team.position.x", &getTeamBallModel().position.x);
   engine.registerDecimalInputSymbol("ball.team.position.y", &getTeamBallModel().position.y);
-
-  engine.registerDecimalInputSymbol("ball.team.goalie.time_since_last_update", &getTeamBallGoalieTimeSinceLastUpdate);
-  engine.registerDecimalInputSymbol("ball.team.goalie.position.x", &getTeamBallModel().goaliePosition.x);
-  engine.registerDecimalInputSymbol("ball.team.goalie.position.y", &getTeamBallModel().goaliePosition.y);
-
-  engine.registerDecimalInputSymbol("ball.team.striker.time_since_last_update", &getTeamBallStrikerTimeSinceLastUpdate);
-  engine.registerDecimalInputSymbol("ball.team.striker.position.x", &getTeamBallModel().strikerPosition.x);
-  engine.registerDecimalInputSymbol("ball.team.striker.position.y", &getTeamBallModel().strikerPosition.y);
+  engine.registerDecimalInputSymbol("ball.team.rmse", &getTeamBallModel().rmse);
 
   DEBUG_REQUEST_REGISTER("XABSL:BallSymbols:ballLeftFoot", "draw the ball model in left foot's coordinates on field", false);
   DEBUG_REQUEST_REGISTER("XABSL:BallSymbols:ballRightFoot", "draw the ball model in right foot's coordinates on field", false);
   DEBUG_REQUEST_REGISTER("XABSL:StrategySymbols:draw_position_behind_ball", "draw the point behind the ball seen from the opp goal on field", false);
+
+  DEBUG_REQUEST_REGISTER("XABSL:BallSymbols:ballPerceptPropagated", "draw propagated ball percept", false);
 
 }//end registerSymbols
 
@@ -107,10 +102,20 @@ void BallSymbols::execute()
   ballPerceptSeen = false;
 
   if(theInstance->getMultiBallPercept().wasSeen()) {
-    ballPerceptPos = theInstance->getMultiBallPercept().begin()->positionOnField; //getBallModel().position; //HACK
+    //HACK: look at the first ball percept in the list
+    ballPerceptPos = theInstance->getMultiBallPercept().begin()->positionOnField; 
     ballPerceptSeen = true;
+  } else {
+    // propagate the ball percept with the odometry
+    Pose2D odometryDelta = lastRobotOdometry - getOdometryData();
+    ballPerceptPos = odometryDelta*ballPerceptPos;
   }
 
+  DEBUG_REQUEST("XABSL:BallSymbols:ballPerceptPropagated", 
+    FIELD_DRAWING_CONTEXT;
+    PEN("0000FF", 20);
+    CIRCLE(ballPerceptPos.x, ballPerceptPos.y, 50);
+  );
 
   {
     ball_seen_filter.setParameter(parameters.ball_seen_filter.g0, parameters.ball_seen_filter.g1);
@@ -121,11 +126,12 @@ void BallSymbols::execute()
     // hysteresis
     ball_see_where_itis = ball_seen_filter.value() > (ball_see_where_itis?0.3:0.7);
   }
-}//end update
+
+  lastRobotOdometry = getOdometryData();
+}//end execute
 
 
 BallSymbols* BallSymbols::theInstance = NULL;
-
 
 
 double BallSymbols::getBallDistance() {
@@ -143,17 +149,3 @@ double BallSymbols::getBallTimeSinceLastSeen() {
 double BallSymbols::getBallTimeSeen() {
   return theInstance->getBallModel().getTimeBallIsSeen();
 }
-
-double BallSymbols::getTeamBallTimeSinceLastUpdate() {
-  return theInstance->getFrameInfo().getTimeSince(theInstance->getTeamBallModel().time);
-}
-
-double BallSymbols::getTeamBallGoalieTimeSinceLastUpdate() {
-  return theInstance->getFrameInfo().getTimeSince(theInstance->getTeamBallModel().goalieTime);
-}
-
-double BallSymbols::getTeamBallStrikerTimeSinceLastUpdate() {
-  return theInstance->getFrameInfo().getTimeSince(theInstance->getTeamBallModel().strikerTime);
-}
-
-

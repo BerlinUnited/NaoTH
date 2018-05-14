@@ -23,7 +23,6 @@ import de.naoth.rc.drawings.LocalFieldDrawing;
 import de.naoth.rc.drawings.RadarDrawing;
 import de.naoth.rc.drawings.StrokePlot;
 import de.naoth.rc.drawingmanager.DrawingEventManager;
-import de.naoth.rc.drawingmanager.DrawingListener;
 import de.naoth.rc.manager.DebugDrawingManager;
 import de.naoth.rc.manager.ImageManagerBottom;
 import de.naoth.rc.core.manager.ObjectListener;
@@ -36,13 +35,17 @@ import de.naoth.rc.messages.Messages.PlotItem;
 import de.naoth.rc.messages.Messages.Plots;
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.ConcurrentHashMap;
 import javax.imageio.ImageIO;
 import javax.swing.SwingUtilities;
+import javax.swing.Timer;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 import org.freehep.graphicsio.emf.EMFExportFileType;
@@ -55,7 +58,7 @@ import org.freehep.util.export.ExportDialog;
  *
  * @author  Heinrich Mellmann
  */
-public class FieldViewer extends AbstractDialog
+public class FieldViewer extends AbstractDialog implements ActionListener
 {
 
     @RCDialog(category = RCDialog.Category.View, name = "Field")
@@ -77,14 +80,19 @@ public class FieldViewer extends AbstractDialog
         @InjectPlugin
         public static LogFileEventManager logFileEventManager;
     }//end Plugin
-  
-  private DrawingBuffer drawingBuffer = new DrawingBuffer(100);
-  private DrawingBuffer drawingEventBuffer = new DrawingBuffer(100);
+
+  private final Timer drawingTimer;
+  // drawing buffer for concurrent access; every "source" gets its own "buffer"
+  private ConcurrentHashMap<Class<?>, Drawable> drawingBuffers = new ConcurrentHashMap<>();
 
   private final PlotDataListener plotDataListener;
   private final StrokePlot strokePlot;
 
-  private final DrawingsListener drawingsListener = new DrawingsListener();
+  // create new classes, so the received drawings are stored into different buffers
+  private class DrawingsListenerMotion extends DrawingsListener{}
+  private class DrawingsListenerCognition extends DrawingsListener{}
+  private final DrawingsListenerMotion drawingsListenerMotion = new DrawingsListenerMotion();
+  private final DrawingsListenerCognition drawingsListenerCognition = new DrawingsListenerCognition();
   
   // this is ued as an exportbuffer when the field issaved as image
   private BufferedImage exportBuffer = null;
@@ -120,19 +128,9 @@ public class FieldViewer extends AbstractDialog
     this.fieldCanvas.setFitToViewport(this.btFitToView.isSelected());
     canvasExport = this.fieldCanvas;
     
-    Plugin.drawingEventManager.addListener(new DrawingListener() {
-        @Override
-        public void newDrawing(Drawable drawing) {
-            if(drawing != null)
-            {
-              if(!btCollectDrawings.isSelected()) {
-                drawingEventBuffer.clear();
-              }
-              
-              drawingEventBuffer.add(drawing);
-              fieldCanvas.repaint();
-            }
-        }
+    Plugin.drawingEventManager.addListener((Drawable drawing, Object src) -> {
+        // add drawing of the source to the drawing buffer
+        drawingBuffers.put(src.getClass(), drawing);
     });
     
     // intialize the field
@@ -152,6 +150,9 @@ public class FieldViewer extends AbstractDialog
     });
 
     this.strokePlot = new StrokePlot(300);
+    // schedules canvas drawing at a fixed rate, should prevent "flickering"
+    this.drawingTimer = new Timer(300, this);
+    this.drawingTimer.start();
   }
 
 
@@ -341,8 +342,8 @@ public class FieldViewer extends AbstractDialog
       {
         if(Plugin.parent.checkConnected())
         {
-          Plugin.debugDrawingManager.addListener(drawingsListener);
-          Plugin.debugDrawingManagerMotion.addListener(drawingsListener);
+          Plugin.debugDrawingManager.addListener(drawingsListenerCognition);
+          Plugin.debugDrawingManagerMotion.addListener(drawingsListenerMotion);
           Plugin.plotDataManager.addListener(plotDataListener);
         }
         else
@@ -352,8 +353,8 @@ public class FieldViewer extends AbstractDialog
       }
       else
       {
-        Plugin.debugDrawingManager.removeListener(drawingsListener);
-        Plugin.debugDrawingManagerMotion.removeListener(drawingsListener);
+        Plugin.debugDrawingManager.removeListener(drawingsListenerCognition);
+        Plugin.debugDrawingManagerMotion.removeListener(drawingsListenerMotion);
         Plugin.plotDataManager.removeListener(plotDataListener);
       }
     }//GEN-LAST:event_btReceiveDrawingsActionPerformed
@@ -428,10 +429,7 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
         this.fieldCanvas.getDrawingList().add(this.strokePlot);
     }
     
-    this.drawingBuffer.clear();
-    this.fieldCanvas.getDrawingList().add(drawingBuffer);
-    this.drawingEventBuffer.clear();
-    this.fieldCanvas.getDrawingList().add(drawingEventBuffer);
+    drawingBuffers.clear();
   }//end resetView
 
   private void exportCanvasToPNG() {
@@ -463,14 +461,10 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
         if(drawingCollection == null || drawingCollection.isEmpty()) {
             return;
         }
-
-        if(!btCollectDrawings.isSelected()) {
-          drawingBuffer.clear();
-        }
-
-        drawingBuffer.add(drawingCollection);
-        fieldCanvas.repaint();
         
+        // add received drawings to buffer
+        drawingBuffers.put(this.getClass(), drawingCollection);
+
         if(cbExportOnDrawing.isSelected()) {
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
@@ -489,6 +483,8 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
       Plugin.debugDrawingManagerMotion.removeListener(this);
     }
   }
+  
+  
 
   class PlotDataListener implements ObjectListener<Plots>
   {
@@ -546,10 +542,27 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
   public void dispose()
   {
     // remove all the registered listeners
-    Plugin.debugDrawingManager.removeListener(drawingsListener);
-    Plugin.debugDrawingManagerMotion.removeListener(drawingsListener);
+    Plugin.debugDrawingManager.removeListener(drawingsListenerCognition);
+    Plugin.debugDrawingManagerMotion.removeListener(drawingsListenerMotion);
     Plugin.plotDataManager.removeListener(plotDataListener);
   }
+  
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        // clear old field drawings
+        if(!btCollectDrawings.isSelected()) {
+            fieldCanvas.getDrawingList().clear();
+            // removed it! in order to continue drawing strokes, we have to "re-add" it
+            if(btTrace.isSelected()) {
+                this.fieldCanvas.getDrawingList().add(this.strokePlot);
+            }
+        }
+        // add buffered drawings to field drawing list
+        drawingBuffers.forEach((s,b)->{fieldCanvas.getDrawingList().add(b);});
+        // re-draw field
+        fieldCanvas.repaint();
+    }
+
   
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JCheckBox btAntializing;

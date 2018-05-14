@@ -14,14 +14,15 @@
 #include "Tools/Math/Pose2D.h"
 
 // representations
-#include "Representations/Modeling/BallModel.h"
-#include "Representations/Perception/MultiBallPercept.h"
-#include "Representations/Modeling/TeamBallModel.h"
 #include "Representations/Infrastructure/FrameInfo.h"
 #include "Representations/Infrastructure/FieldInfo.h"
+
+#include "Representations/Perception/MultiBallPercept.h"
+#include "Representations/Modeling/BallModel.h"
 #include "Representations/Modeling/RobotPose.h"
 #include "Representations/Modeling/KinematicChain.h"
-#include "Representations/Modeling/SoccerStrategy.h"
+#include "Representations/Modeling/TeamBallModel.h"
+#include "Representations/Modeling/OdometryData.h"
 
 #include <Tools/DataStructures/ParameterList.h>
 #include "Tools/Debug/DebugParameterList.h"
@@ -30,18 +31,21 @@
 #include "Tools/Debug/DebugPlot.h"
 
 BEGIN_DECLARE_MODULE(BallSymbols)
-  PROVIDE(BallModel) // PROVIDE so that XABSL bool can be read out
-  REQUIRE(MultiBallPercept)
-  REQUIRE(FrameInfo)
-  REQUIRE(RobotPose)
-  REQUIRE(TeamBallModel)
-  REQUIRE(FieldInfo)
-  REQUIRE(KinematicChain)
-  REQUIRE(SoccerStrategy)
+  
+PROVIDE(BallModel) // PROVIDE so that XABSL bool can be read out
   PROVIDE(DebugRequest)
   PROVIDE(DebugPlot)
   PROVIDE(DebugDrawings)
   PROVIDE(DebugParameterList)
+
+  REQUIRE(FrameInfo)
+  REQUIRE(FieldInfo)
+  REQUIRE(MultiBallPercept)
+  REQUIRE(TeamBallModel)
+  REQUIRE(RobotPose)
+  REQUIRE(OdometryData)
+
+  REQUIRE(KinematicChain)
 END_DECLARE_MODULE(BallSymbols)
 
 class BallSymbols: public BallSymbolsBase
@@ -93,9 +97,6 @@ private:
   static double getBallAngle();
   static double getBallTimeSinceLastSeen();
   static double getBallTimeSeen();
-  static double getTeamBallTimeSinceLastUpdate();
-  static double getTeamBallGoalieTimeSinceLastUpdate();
-  static double getTeamBallStrikerTimeSinceLastUpdate();
 
   // some local members
   Vector2d ballPositionField;
@@ -133,6 +134,7 @@ private:
   AssymetricalBoolFilter ball_seen_filter;
   bool ball_see_where_itis;
 
+  Pose2D lastRobotOdometry;
 };//end class BallSymbols
 
 #endif // _BallSymbols_H_

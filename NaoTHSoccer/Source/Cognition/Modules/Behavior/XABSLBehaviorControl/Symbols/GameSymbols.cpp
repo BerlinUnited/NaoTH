@@ -24,20 +24,6 @@ void GameSymbols::registerSymbols(xabsl::Engine& engine)
   // current game state
   engine.registerEnumeratedInputSymbol("game.state", "game.state", &getGameState);
 
-
-  // enum type for play mode (simulation)
-  /*
-  for(int i = 0; i < GameData::numOfPlayMode; i++)
-  {
-    string str("game.playmode.");
-    str.append(GameData::playModeToString((GameData::PlayMode)i));
-    engine.registerEnumElement("game.playmode", str.c_str(), i);
-  }*/
-
-  // register the play mode
-  // (int*)&playerInfo.playMode
-  //engine.registerEnumeratedInputSymbol("game.playmode", "game.playmode", &getPlayMode);
-
   engine.registerDecimalInputSymbol("game.player_number", &getPlayerNumber);
   engine.registerDecimalInputSymbol("game.msecsRemaining", &getMsecsRemaining);
   engine.registerBooleanInputSymbol("game.own_kickoff", &getOwnKickOff);
@@ -46,6 +32,13 @@ void GameSymbols::registerSymbols(xabsl::Engine& engine)
   //       we assume this message comes with a delay of >10s
   //       it's used to prevent waiting of additional 10s in case it's opponents kickoff
   engine.registerBooleanInputSymbol("game.state.playing_is_set_by_game_controller", &getPlayingIsSetByGameController);
+
+
+  engine.registerEnumElement("game.set_play","game.set_play.none", GameData::set_none);
+  engine.registerEnumElement("game.set_play","game.set_play.goal_free_kick", GameData::goal_free_kick);
+  engine.registerEnumElement("game.set_play","game.set_play.pushing_free_kick", GameData::pushing_free_kick);
+
+  engine.registerEnumeratedInputSymbol("game.set_play", "game.set_play", &getSetPlay);
 
 }//end registerSymbols
 
@@ -71,7 +64,6 @@ int GameSymbols::getGameState() {
   return theInstance->getPlayerInfo().robotState;
 }
 
-/*
-int GameSymbols::getPlayMode() {
-  return theInstance->getPlayerInfo().gameData.playMode;
-}*/
+int GameSymbols::getSetPlay() {
+  return theInstance->getGameData().setPlay;
+}

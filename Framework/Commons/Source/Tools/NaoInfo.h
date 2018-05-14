@@ -14,6 +14,7 @@
 #include <Representations/Infrastructure/FSRData.h>
 #include <Representations/Infrastructure/CameraInfo.h>
 #include <Tools/DataStructures/ParameterList.h>
+#include <Tools/Math/Pose3D.h>
 
 class NaoInfo
 {

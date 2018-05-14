@@ -11,8 +11,10 @@
 #include <string>
 #include <Tools/Math/Pose2D.h>
 #include <Tools/DataStructures/Printable.h>
-#include <Messages/Representations.pb.h>
 #include <Tools/DataStructures/Serializer.h>
+
+// NOTE: this has to be here because of the special serialize methods
+#include <Messages/Representations.pb.h>
 
 /**
 * This describes the WalkRequest
@@ -55,7 +57,10 @@ public:
       moveLeftFoot(false),
       time(0),
       speedDirection(0),
-      scale(1.0)
+      scale(1.0),
+      restriction(RestrictionMode::HARD),   
+      isProtected(false),
+      stepRequestID(0)
     {}
 
     enum StepType {
@@ -74,6 +79,11 @@ public:
     // time scale for the step trajectory (0..1], 
     // e.g., scale = 1 => normal step trajectory, scale < 1 => faster step
     double scale;
+
+    enum RestrictionMode { HARD, SOFT };
+    RestrictionMode restriction; // additionally to restrictStepSize use restrictStepChange ?
+    bool isProtected;            // determine if the request is protected from stabilization of any sort
+    unsigned int stepRequestID;  // this ID is for stepControl request PathPlanning
   };
 
   // indicates speed and stability, in range [0, 1]

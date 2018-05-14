@@ -29,7 +29,6 @@ import javax.media.j3d.BoundingSphere;
 import javax.media.j3d.BranchGroup;
 import javax.media.j3d.GraphicsConfigTemplate3D;
 import javax.media.j3d.ImageComponent2D;
-import javax.media.j3d.LineArray;
 import javax.media.j3d.PhysicalBody;
 import javax.media.j3d.PhysicalEnvironment;
 import javax.media.j3d.QuadArray;
@@ -118,6 +117,7 @@ public class ThreeDimensionViewer extends AbstractDialog
         jPanelCanvas = new javax.swing.JPanel();
         jToolBar = new javax.swing.JToolBar();
         jToggleButtonUpdate = new javax.swing.JToggleButton();
+        cbProcess = new javax.swing.JComboBox<>();
         jCheckBoxField = new javax.swing.JCheckBox();
         jCheckBoxGrid = new javax.swing.JCheckBox();
         jCheckBoxImage = new javax.swing.JCheckBox();
@@ -148,6 +148,14 @@ public class ThreeDimensionViewer extends AbstractDialog
             }
         });
         jToolBar.add(jToggleButtonUpdate);
+
+        cbProcess.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Cognition", "Motion" }));
+        cbProcess.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cbProcessActionPerformed(evt);
+            }
+        });
+        jToolBar.add(cbProcess);
 
         jCheckBoxField.setSelected(true);
         jCheckBoxField.setText("Field");
@@ -252,6 +260,11 @@ public class ThreeDimensionViewer extends AbstractDialog
     private void jCheckBoxGridActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxGridActionPerformed
         vw.enableCoordinates(jCheckBoxGrid.isSelected());
     }//GEN-LAST:event_jCheckBoxGridActionPerformed
+
+    private void cbProcessActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbProcessActionPerformed
+        String process = (String) cbProcess.getSelectedItem();
+        Plugin.threeDimensionSceneManager.setModuleOwner(process);
+    }//GEN-LAST:event_cbProcessActionPerformed
 
   @Override
   public void init()
@@ -360,6 +373,7 @@ public class ThreeDimensionViewer extends AbstractDialog
     vw.add(viewBranch);
   }
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JComboBox<String> cbProcess;
     private javax.swing.JCheckBox cbUseFieldViewer;
     private javax.swing.JCheckBox jCheckBoxField;
     private javax.swing.JCheckBox jCheckBoxGrid;

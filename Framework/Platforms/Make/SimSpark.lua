@@ -23,5 +23,3 @@ project "SimSpark"
    }
   
   targetname "naoth-simspark"
-
--- END SimSpark

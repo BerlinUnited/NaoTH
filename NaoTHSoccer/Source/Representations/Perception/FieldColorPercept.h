@@ -9,8 +9,10 @@
 #define FIELDCOLORPERCEPT_H
 
 #include <algorithm>
-#include <Tools/DataStructures/Printable.h>
 #include <Tools/Math/Common.h>
+#include <Tools/Math/Vector2.h>
+
+#include <Tools/DataStructures/Printable.h>
 #include <Representations/Infrastructure/FrameInfo.h>
 
 using namespace naoth;
@@ -84,6 +86,16 @@ public:
     };
 
   public:
+
+    HSISeparatorOptimized()
+      : distMin(0), distMax(0)
+    {
+      // initialize the array
+      for(size_t i=0; i < 256; i++)
+      {
+        brightnessThreshold[i] = 0;
+      }
+    }
 
     void set(const Parameter& p) {
       setColor(p.colorAngleCenter, p.colorAngleWith);

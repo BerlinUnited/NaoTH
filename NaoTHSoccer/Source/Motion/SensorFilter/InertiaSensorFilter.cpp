@@ -83,10 +83,10 @@ void InertiaSensorFilter::execute()
     // use a modeled acceleration, if the feet are on the ground
 
     RotationMatrix calculatedRotation = 
-      Kinematics::ForwardKinematics::calcChestFeetRotation(getKinematicChainSensor());
+      Kinematics::ForwardKinematics::calcChestToFeetRotation(getKinematicChainSensor());
 
     Vector3d accGravOnly(calculatedRotation[0].z, calculatedRotation[1].z, calculatedRotation[2].z);
-    accGravOnly *= -Math::g;
+    accGravOnly *= Math::g;
 
 
     PLOT("InertiaSensorFilter:accGravOnly:x", accGravOnly.x);
@@ -152,7 +152,7 @@ void InertiaSensorFilter::predict(const RotationMatrix& rotationOffset)
 void InertiaSensorFilter::readingModel(const State<double>& sigmaPoint, Vector3d& reading)
 {
   reading = Vector3d(sigmaPoint.rotation[0].z, sigmaPoint.rotation[1].z, sigmaPoint.rotation[2].z);
-  reading *= -Math::g;
+  reading *= Math::g;
 }
 
 void InertiaSensorFilter::readingUpdate(const Vector3d& reading)

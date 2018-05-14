@@ -32,8 +32,10 @@
 // local tools
 #include "Tools/BestPatchList.h"
 #include "Tools/BallKeyPointExtractor.h"
-#include "Tools/CVHaarClassifier.h"
 #include "Tools/BlackSpotExtractor.h"
+#include "Tools/DataStructures/RingBufferWithSum.h"
+
+#include "Classifier/AbstractCNNClassifier.h"
 
 // debug
 #include "Representations/Debug/Stopwatch.h"
@@ -42,6 +44,9 @@
 #include "Tools/Debug/DebugParameterList.h"
 #include "Tools/Debug/DebugModify.h"
 #include "Tools/Debug/DebugDrawings.h"
+#include "Tools/Debug/DebugPlot.h"
+
+#include <memory>
 
 BEGIN_DECLARE_MODULE(BallCandidateDetector)
   PROVIDE(DebugRequest)
@@ -50,6 +55,7 @@ BEGIN_DECLARE_MODULE(BallCandidateDetector)
   PROVIDE(DebugImageDrawingsTop)
   PROVIDE(DebugParameterList)
   PROVIDE(DebugModify)
+  PROVIDE(DebugPlot)
   PROVIDE(StopwatchManager)
 
   REQUIRE(FrameInfo)
@@ -90,10 +96,29 @@ public:
   virtual void execute()
   {
     getMultiBallPercept().reset();
+
+    stopwatch_values.clear();
+
     execute(CameraInfo::Bottom);
     execute(CameraInfo::Top);
+
+    double mean = 0;
+    if(!stopwatch_values.empty()){
+        for (auto i = stopwatch_values.begin(); i < stopwatch_values.end(); ++i){
+            mean += *i;
+        }
+        mean /= static_cast<double>(stopwatch_values.size());
+    }
+    mean_of_means.add(mean);
+    double average_mean = mean_of_means.getAverage();
+
+    PLOT("BallCandidateDetector:mean",mean);
+    PLOT("BallCandidateDetector:mean_of_means",average_mean);
   }
- 
+
+  static std::map<std::string, std::shared_ptr<AbstractCNNClassifier>> createCNNMap();
+
+
 private:
   struct Parameters: public ParameterList
   {
@@ -108,10 +133,7 @@ private:
       PARAMETER_REGISTER(heuristic.blackDotsMinCount) = 1;
       PARAMETER_REGISTER(heuristic.minBlackDetectionSize) = 20;
 
-      PARAMETER_REGISTER(haarDetector.execute) = true;
-      PARAMETER_REGISTER(haarDetector.minNeighbors) = 0;
-      PARAMETER_REGISTER(haarDetector.windowSize) = 12;
-      PARAMETER_REGISTER(haarDetector.model_file) = "lbp1.xml";
+      PARAMETER_REGISTER(cnn.threshold) = 0.0;
 
       PARAMETER_REGISTER(maxNumberOfKeys) = 4;
       PARAMETER_REGISTER(numberOfExportBestPatches) = 2;
@@ -127,6 +149,8 @@ private:
       PARAMETER_REGISTER(blackKeysCheck.enable) = false;
       PARAMETER_REGISTER(blackKeysCheck.minSizeToCheck) = 60;
       PARAMETER_REGISTER(blackKeysCheck.minValue) = 20;
+
+      PARAMETER_REGISTER(classifier) = "dortmund";
       
       syncWithConfig();
     }
@@ -142,18 +166,15 @@ private:
       int minBlackDetectionSize;
     } heuristic;
 
-    struct HaarDetector {
-      bool execute;
-      int minNeighbors;
-      int windowSize;
-      std::string model_file;
-    } haarDetector;
-
     struct BlackKeysCheck {
       bool enable;
       int minSizeToCheck;
       int minValue;
     } blackKeysCheck;
+
+    struct CNN {
+      double threshold;
+    } cnn;
 
     int maxNumberOfKeys;
     int numberOfExportBestPatches;
@@ -164,6 +185,8 @@ private:
     bool contrastUse;
     int contrastVariant;
     double contrastMinimum;
+
+    std::string classifier;
 
   } params;
 
@@ -185,7 +208,10 @@ private:
   }
 
 private:
-  CVHaarClassifier cvHaarClassifier;
+
+  std::shared_ptr<AbstractCNNClassifier> currentCNNClassifier;
+  std::map<std::string, std::shared_ptr<AbstractCNNClassifier> > cnnMap;
+
   ModuleCreator<BallKeyPointExtractor>* theBallKeyPointExtractor;
   BestPatchList best;
 
@@ -197,6 +223,11 @@ private:
   double calculateContrastIterative(const Image& image,  const FieldColorPercept& fielColorPercept, int x0, int y0, int x1, int y1, int size);
   double calculateContrastIterative2nd(const Image& image,  const FieldColorPercept& fielColorPercept, int x0, int y0, int x1, int y1, int size);
   
+private: // for debugging
+  Stopwatch stopwatch;
+  std::vector<double> stopwatch_values;
+  RingBufferWithSum<double, 100> mean_of_means;
+
 private:
   CameraInfo::CameraID cameraID;
 

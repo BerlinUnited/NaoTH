@@ -20,6 +20,7 @@ naoth.egg-info*
 trace.dump.*
 projectconfig.user.lua
 *~
+compile_commands.json
 
 #messages
 RobotControl/RobotConnector/src/de/naoth/rc/messages
@@ -28,3 +29,6 @@ Framework/Commons/Source/Messages
 
 #particular files
 behavior-ic.dat
+
+#vim swap files
+.*.swp

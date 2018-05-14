@@ -8,10 +8,12 @@ option search_for_goal
 
   initial state look_straight_ahead {
     decision {
-      if (state_time > 1000)
+      if (state_time < 1000)
+        stay;
+      else if (goal.own.time_since_seen < 5000 || goal.opp.time_since_seen < 5000)
         goto try_to_look_at_the_old_goal;
       else
-        stay;
+        goto search_for_goal_right;
     }
     action {
       head.motion_type = look_straight_ahead;

@@ -30,9 +30,11 @@
 
 #include "Modules/Infrastructure/TeamCommunicator/TeamCommReceiver.h"
 #include "Modules/Infrastructure/TeamCommunicator/TeamCommSender.h"
+#include "Modules/Infrastructure/TeamCommunicator/SimpleNetworkTimeProtocol.h"
 
 #include "Modules/Infrastructure/Debug/CameraDebug.h"
 #include "Modules/Infrastructure/Camera/CameraInfoSetter.h"
+#include "Modules/Infrastructure/WhistleDetector/WhistleDetectorConfigSetter.h"
 #include "Modules/Infrastructure/GameLogger/GameLogger.h"
 
 // perception
@@ -65,6 +67,11 @@
 #include "Modules/Perception/VirtualVisionProcessor/VirtualVisionProcessor.h"
 #include "Modules/Perception/PerceptionsVisualizer/PerceptionsVisualizer.h"
 
+#include "Modules/VisualCortex/LineDetector/RansacLineDetector.h"
+#include "Modules/VisualCortex/LineDetector/RansacLineDetectorOnGraphs.h"
+
+#include "Modules/Modeling/CompassProvider/CompassProvider.h"
+
 // modeling
 #include "Modules/Modeling/BodyStateProvider/BodyStateProvider.h"
 #include "Modules/Modeling/FieldCompass/FieldCompass.h"
@@ -81,12 +88,15 @@
 #include "Modules/Modeling/SelfLocator/OdometrySelfLocator/OdometrySelfLocator.h"
 #include "Modules/Modeling/GoalModel/DummyActiveGoalLocator/DummyActiveGoalLocator.h"
 #include "Modules/Modeling/GoalModel/WholeGoalLocator/WholeGoalLocator.h"
-#include "Modules/Modeling/BallLocator/KalmanFilterBallLocator/KalmanFilterBallLocator.h"
+
+#include "Modules/Modeling/BallLocator/TeamBallLocator/TeamBallLocator.h"
 #include "Modules/Modeling/BallLocator/MultiKalmanBallLocator/MultiKalmanBallLocator.h"
 #include "Modules/Modeling/StaticDebugModelProvider/StaticDebugModelProvider.h"
 
 #include "Modules/Modeling/Simulation/SimulationTest.h"
 #include "Modules/Modeling/Simulation/Simulation.h"
+#include "Modules/Modeling/Simulation/SimulationOLD.h"
+#include "Modules/Modeling/Simulation/KickDirectionSimulator.h"
 #include "Modules/Modeling/SelfLocator/SituationPriorProvider/SituationPriorProvider.h"
 
 
@@ -132,6 +142,7 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
 
   // infrastructure
   REGISTER_MODULE(TeamCommReceiver);
+  REGISTER_MODULE(SimpleNetworkTimeProtocol);
   REGISTER_MODULE(GameController);
   REGISTER_MODULE(BatteryAlert);
   REGISTER_MODULE(ButtonEventMonitor);
@@ -140,6 +151,7 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
 
   REGISTER_MODULE(CameraDebug);
   REGISTER_MODULE(CameraInfoSetter);
+  REGISTER_MODULE(WhistleDetectorConfigSetter);
 
   // perception
   REGISTER_MODULE(CameraMatrixFinder);
@@ -172,6 +184,11 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(VirtualVisionProcessor);
   REGISTER_MODULE(PerceptionsVisualizer);
 
+  REGISTER_MODULE(RansacLineDetector);
+  REGISTER_MODULE(RansacLineDetectorOnGraphs);
+
+  REGISTER_MODULE(CompassProvider);
+
   // modeling
   REGISTER_MODULE(SituationPriorProvider);
   REGISTER_MODULE(BodyStateProvider);
@@ -189,9 +206,12 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(OdometrySelfLocator);
   REGISTER_MODULE(WholeGoalLocator);
   REGISTER_MODULE(DummyActiveGoalLocator);
-  REGISTER_MODULE(KalmanFilterBallLocator);
+  REGISTER_MODULE(TeamBallLocator);
   REGISTER_MODULE(MultiKalmanBallLocator);
+
+  REGISTER_MODULE(KickDirectionSimulator);
   REGISTER_MODULE(Simulation);
+  REGISTER_MODULE(SimulationOLD);
   REGISTER_MODULE(SimulationTest);
   REGISTER_MODULE(StaticDebugModelProvider);
 
