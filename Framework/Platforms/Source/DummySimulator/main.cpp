@@ -62,7 +62,7 @@ int main(int argc, char** argv)
 
   //init_agent(sim);
   Cognition* theCognition = createCognition();
-  //Motion* theMotion = createMotion(); // crashes at inversekinematics
+  Motion* theMotion = createMotion(); // crashes at inversekinematics
 
   // ACHTUNG: C-Cast (!)
   ModuleManager* theCognitionManager = getModuleManager(theCognition);
@@ -74,13 +74,13 @@ int main(int argc, char** argv)
 
   // register processes
   sim.registerCognition((naoth::Callable*)(theCognition));
-  //sim.registerMotion((naoth::Callable*)(theMotion));
+  sim.registerMotion((naoth::Callable*)(theMotion));
 
   // start the execution
   sim.main();
 
   deleteCognition(theCognition);
-  //deleteMotion(theMotion);
+  deleteMotion(theMotion);
 
   return (EXIT_SUCCESS);
 }

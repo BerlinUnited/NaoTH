@@ -122,5 +122,5 @@ void DummySimulator::play()
 void DummySimulator::executeFrame()
 {
   runCognition();
-  //runMotion();
+  runMotion();
 }
