@@ -423,7 +423,7 @@ bool MonteCarloSelfLocator::updateBySensors(SampleSet& sampleSet) const
 
   if(parameters.updateByLinePoints)
   {
-    if(!getLineGraphPercept().edgels.empty()) {
+    if(!getLineGraphPercept().edgelsOnField.empty()) {
       updateByLinePoints(getLineGraphPercept(), sampleSet);
     }
   }
@@ -579,10 +579,10 @@ void MonteCarloSelfLocator::updateByLinePoints(const LineGraphPercept& lineGraph
     PEN("000000", 10);
   );
 
-  for(size_t i = 0; i < lineGraphPercept.edgels.size() && i < (size_t)parameters.linePointsMaxNumber; i++) 
+  for(size_t i = 0; i < lineGraphPercept.edgelsOnField.size() && i < (size_t)parameters.linePointsMaxNumber; i++) 
   {
-    int idx = Math::random((int)lineGraphPercept.edgels.size());
-    const Vector2d& seen_point_relative = lineGraphPercept.edgels[idx].point;
+    int idx = Math::random((int)lineGraphPercept.edgelsOnField.size());
+    const Vector2d& seen_point_relative = lineGraphPercept.edgelsOnField[idx].point;
 
     Vector2d seen_point_g = getRobotPose()*seen_point_relative;
 
