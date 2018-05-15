@@ -29,10 +29,11 @@ class GameController(threading.Thread):
             try:
                 # receive GC data
                 data, address = self.socket.recvfrom(8192)
-                message = GameControlData(data)
 
-                # one of the teams is invisible
-                Event.fire(Event.GameControllerMessage(message))
+                if len(data) > 0:
+                    message = GameControlData(data)
+                    # one of the teams is invisible
+                    Event.fire(Event.GameControllerMessage(message))
 
             except socket.timeout:
                 Event.fire(Event.GameControllerTimedout())
@@ -45,6 +46,10 @@ class GameController(threading.Thread):
                 print(ex)
                 continue
 
+        self.socket.close()
+
     def cancel(self):
         self.__cancel.set()
         self.socket.settimeout(0)
+        # send dummy in order to 'interrupt' receiving socket
+        self.socket.sendto(b'', ('', GAME_CONTROLLER_PORT))

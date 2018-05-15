@@ -9,15 +9,13 @@
 import sys
 import os
 import tempfile
-import socket
-import traceback
 import argparse
 import threading
 import time
 import importlib
 import importlib.util
 
-from utils import Logger, Daemonize, Network, GoPro, GameController, GameLoggerSql, GameLoggerLog, GameLoggerLog
+from utils import Logger, Daemonize, Network, GoPro, GameController, GameLoggerSql, GameLoggerLog, Event
 
 
 def parseArguments():
@@ -97,44 +95,29 @@ def main():
     print("Bye")
 
 
-def checkGameController(loopControl:threading.Event):
-    # listen to gamecontroller
-    logger.info("Listen to GameController")
-    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-    s.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
-    s.bind(('', 3838))
-    s.settimeout(5)  # in sec
+class CheckGameController:
+    def __init__(self, loopControl:threading.Event):
+        Event.registerListener(self)
 
-    gc_data = GameControlData()
+        gameController = GameController()
+        gameController.start()
 
-    while not loopControl.is_set():
         try:
-            try:
-                # receive GC data
-                message, address = s.recvfrom(8192)
-                gc_data.unpack(message)
-            except socket.timeout:
-                logger.warning("Not connected to GameController?")
-                continue
-            except Exception as ex:
-              print(ex)
-              continue
-
-            print(gc_data)
-            # check if one team is 'invisible'
-            if any([t.teamNumber == 0 for t in gc_data.team]):
-                print("-- INVISIBLES are playing! --\n")
-
-            previous_state = gc_data.gameState
+            loopControl.wait()
         except (KeyboardInterrupt, SystemExit):
-            logger.debug("Interrupted or Exit")
-            print("")  # intentionally print empty line
             loopControl.set()
-        except:
-            traceback.print_exc()
-    # close socket
-    s.close()
+
+        gameController.cancel()
+        gameController.join()
+
+
+    def receivedGC(self, evt:Event.GameControllerMessage):
+        """ Is called, when a new GameController message was received. """
+        gc_data = evt.message
+        print(gc_data)
+        # check if one team is 'invisible'
+        if any([t.teamNumber == 0 for t in gc_data.team]):
+            print("-- INVISIBLES are playing! --\n")
 
 
 if __name__ == '__main__':
@@ -155,7 +138,7 @@ if __name__ == '__main__':
 
     if args.check_gc:
         loopControl = threading.Event()
-        checkGameController(loopControl)
+        CheckGameController(loopControl)
     else:
         # use config for network setup
         if args.config:

@@ -44,6 +44,7 @@ class LogFormatter(logging.Formatter):
 
 # make methods public
 error = logger.error
+warning = logger.warning
 info = logger.info
 debug = logger.debug
 log = logger.log
