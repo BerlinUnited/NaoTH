@@ -26,7 +26,7 @@ class Network(threading.Thread):
         self.retries = retries
 
         self.__cancel = threading.Event()
-        self.__timer = threading.Condition()
+        self.__timer = threading.Event()
 
     def setConfig(self, device:str, ssid:str, passwd:str, retries:int):
         # set the new params
@@ -36,7 +36,7 @@ class Network(threading.Thread):
         self.retries = retries
         # NOTE: auto-reconnects on the next 'isConnected' check
         try:
-            self.__timer.notify_all()
+            self.__timer.set()
         except:
             pass
 
@@ -80,17 +80,18 @@ class Network(threading.Thread):
         self.connect()
         while not self.__cancel.is_set():
             if self.isConnected():
-                with self.__timer:
-                    self.__timer.wait(10)
+                self.__timer.wait(10)
             else:
                 Event.fire(Event.NetworkDisconnected())
                 self.connect()
+            self.__timer.clear()
 
     def cancel(self):
         self.__cancel.set()
         try:
-            self.__timer.notify_all()
-        except:
+            self.__timer.set()
+        except Exception as e:
+            # ignore un-acquired locks
             pass
 
 

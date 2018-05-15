@@ -152,5 +152,5 @@ if __name__ == '__main__':
                 Logger.error("No config available OR invalid config!")
                 exit(2)
 
-        daemon = Daemonize(app=name, pid=lock_file, action=main, logger=Logger.logger, foreground=not args.background)
+        daemon = Daemonize(app=name, pid=lock_file, action=main, logger=Logger.logger, foreground=not args.background, chdir='.')
         daemon.start()

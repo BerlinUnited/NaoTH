@@ -1,3 +1,4 @@
+import os
 import queue
 import threading
 
@@ -34,7 +35,7 @@ class GameLoggerLog(threading.Thread):
                 # got a videofile, add it to the game
                 self.last_file.write(msg + self.separator)
                 self.last_file.flush()
-            else:
+            elif msg is not None:
                 t1 = self.teams[msg.team[0].teamNumber] if msg.team[0].teamNumber in self.teams else msg.team[0].teamNumber
                 t2 = self.teams[msg.team[1].teamNumber] if msg.team[1].teamNumber in self.teams else msg.team[1].teamNumber
                 h = '1stHalf' if msg.firstHalf else '2ndHalf'
@@ -44,7 +45,13 @@ class GameLoggerLog(threading.Thread):
                     if self.last_file is not None:
                         self.last_file.close()
                     # open new game file
-                    self.last_file = open(self.folder + "_".join([time.strftime("%Y-%m-%d_%H-%M-%S", ts), t1, t2, h]) + self.extension, 'a')
+                    file = self.folder + "_".join([time.strftime("%Y-%m-%d_%H-%M-%S", ts), t1, t2, h]) + self.extension
+                    # append, if already exists
+                    self.last_file = open(file, 'a')
+                    if self.last_file:
+                        # make sure everybody can read/write the file
+                        os.chmod(self.last_file.name, 0o666)
+                    # remember current state
                     self.state = { 'ts': ts, 't1': t1, 't2': t2, 'h': h }
 
             self.messages.task_done()
@@ -53,6 +60,8 @@ class GameLoggerLog(threading.Thread):
         if self.last_file is not None:
             self.last_file.close()
         self.__cancel.set()
+        # add dummy to queue in order to 'interrupt' waiting thread
+        self.messages.put_nowait((None, None))
         self.messages.join()
 
     def receivedGC(self, evt:Event.GameControllerMessage):

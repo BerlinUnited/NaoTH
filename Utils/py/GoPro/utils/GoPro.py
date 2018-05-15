@@ -171,6 +171,9 @@ class GoPro(threading.Thread):
 
     def cancel(self):
         self.__cancel.set()
+        # if cam is still waiting for the network, 'release' the lock
+        if not self.is_connected.is_set():
+            self.is_connected.set()
 
     def __updateUserSettings(self):
         logger.debug("Set user video settings")
