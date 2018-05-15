@@ -15,7 +15,7 @@ import time
 import importlib
 import importlib.util
 
-from utils import Logger, Daemonize, Network, GoPro, GameController, GameLoggerSql, GameLoggerLog, Event
+from utils import Logger, Daemonize, Network, GoPro, GameController, GameLoggerSql, GameLoggerLog, Event, LedStatusMonitor
 
 
 def parseArguments():
@@ -38,6 +38,9 @@ def parseArguments():
 
 def main():
     config_timestamp = 0 if not args.config else os.stat(importlib.util.find_spec("config").origin).st_mtime
+
+    led = LedStatusMonitor()
+    led.start()
 
     gopro = GoPro(args.background or args.quiet, args.ignore, args.max_time)
     if args.config:
@@ -82,11 +85,13 @@ def main():
     except KeyboardInterrupt as e:
         print("Shutting down ...")
     # cancel threads
+    led.cancel()
     gopro.cancel()
     gameLogger.cancel()
     gameController.cancel()
     network.cancel()
     # wait for finished threads
+    led.join()
     gopro.join()
     gameLogger.join()
     gameController.join()

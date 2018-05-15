@@ -8,7 +8,8 @@ import json
 import traceback
 
 import tempfile
-from utils.daemonize import Daemonize
+
+from utils import Logger, Daemonize
 import os
 
     
@@ -140,7 +141,7 @@ class LEDServer():
       except socket.timeout:
         pass
       except (KeyboardInterrupt, SystemExit):
-        logger.debug("Interrupted or Exit")
+        Logger.debug("Interrupted or Exit")
         break
       except:
         traceback.print_exc()
@@ -150,17 +151,14 @@ class LEDServer():
 def main():
   server = LEDServer()
   server.run()
-      
-statusMonitor = StatusMonitor()
+  print("???")
 
 if __name__ == "__main__":
-  
   # define vars
   tempdir = tempfile.gettempdir()
   name = 'led'  # os.path.basename(sys.argv[0])
   # check for existing lock file and running process
   lock_file = os.path.join(tempdir, name + '.lock')
-  
+
   daemon = Daemonize(app=name, pid=lock_file, action=main, foreground=True)
   daemon.start()
-  

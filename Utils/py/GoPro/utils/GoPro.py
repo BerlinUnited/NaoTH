@@ -76,15 +76,17 @@ class GoPro(threading.Thread):
 
     def updateStatus(self):
         if self.cam:
-            js = json.loads(self.cam.getStatusRaw())
-            self.cam_status['mode'] = self.cam.parse_value("mode", js[constants.Status.Status][constants.Status.STATUS.Mode])
-            self.cam_status['recording'] = (js[constants.Status.Status][constants.Status.STATUS.IsRecording] == 1)
-            self.cam_status['lastVideo'] = self.cam.getMedia()
-            # update video settings
-            for var, val in vars(constants.Video).items():
-                if not var.startswith("_") and not inspect.isclass(val) and val in js[constants.Status.Settings]:
-                    self.cam_settings[var] = (val, js[constants.Status.Settings][val])
-            return True
+            raw = self.cam.getStatusRaw()
+            if raw:
+                js = json.loads(raw)
+                self.cam_status['mode'] = self.cam.parse_value("mode", js[constants.Status.Status][constants.Status.STATUS.Mode])
+                self.cam_status['recording'] = (js[constants.Status.Status][constants.Status.STATUS.IsRecording] == 1)
+                self.cam_status['lastVideo'] = self.cam.getMedia()
+                # update video settings
+                for var, val in vars(constants.Video).items():
+                    if not var.startswith("_") and not inspect.isclass(val) and val in js[constants.Status.Settings]:
+                        self.cam_settings[var] = (val, js[constants.Status.Settings][val])
+                return True
         return False
 
     def takePhoto(self):
@@ -93,10 +95,13 @@ class GoPro(threading.Thread):
             self.timestamp = time.time()
         else:
             logger.debug("Take a picture")
-            self.timestamp = time.time()
-            self.cam.take_photo()
-            # reset to video mode
-            self.setCamVideoMode()
+            if self.cam is not None:
+                self.timestamp = time.time()
+                self.cam.take_photo()
+                # reset to video mode
+                self.setCamVideoMode()
+            else:
+                logger.error("Not connected to cam!?")
 
     def handleRecording(self, previous_state):
         # check if one team is 'invisible'
