@@ -15,14 +15,23 @@ import time
 import importlib
 import importlib.util
 
-from utils import Logger, Daemonize, Network, GoPro, GameController, GameLoggerSql, GameLoggerLog, LedStatusMonitor, CheckGameController
+from utils import Logger, Daemonize, Network, GoPro, GameController, GameLoggerSql, GameLoggerLog, LedStatusMonitor, CheckGameController, rename
 
 
 def parseArguments():
-    use_config = '-c' in sys.argv or '--config' in sys.argv
-    parser = argparse.ArgumentParser(description='Starts a GoPro controller (on linux!)', epilog="Example: {} -n 10.0.4.255 -p 10004".format(sys.argv[0]))
+    use_config = any([ o in sys.argv for o in ['-c', '--config', '-gc', '--check-gc', '-n', '--rename'] ])
+    parser = argparse.ArgumentParser(
+        description='Starts a GoPro controller (on linux!)',
+        epilog= "Example:\n"
+                "\t{0} -n 10.0.4.255 -p 10004\n"
+                "\t{0} -c -v\n"
+                "\t{0} -gc\n"
+                "\t{0} -n /path/to/video/files /path/to/log/files\n"
+                "".format(os.path.basename(__file__)),
+        formatter_class=argparse.RawDescriptionHelpFormatter
+    )
     parser.add_argument('-v', '--verbose', action='store_true', help='activate verbose mode')
-    parser.add_argument('-c', '--config', action='store_true', help='use config for network setup')
+    parser.add_argument('-c', '--config', action='store_true', help='use config file')
     parser.add_argument('-q', '--quiet', action='store_true', help="doesn\'t print out anything, except errors; '-v' is ignored!")
     parser.add_argument('-b', '--background', action='store_true', help='autom. forks to background, no "status" will be printed out')
     parser.add_argument('-d', '--device', action='store', help='the device used to connect to the GoPro wifi network (eg. "wifi0")')
@@ -33,7 +42,12 @@ def parseArguments():
     parser.add_argument('-m', '--max-time', action='store', type=int, default=600, help='How many seconds should be continued to record, after playing time expired and "finished" state wasn\'t set. (precaution to prevent endless recording!; default: 600s)')
     parser.add_argument('-i', '--ignore', action='store_true', help='Ignores the "max time" option - possible infinity recording, if "finished" state isn\'t set.')
     parser.add_argument('-gc', '--check-gc', action='store_true', help='Tries to listen to GameController and print its state (for debugging).')
-    parser.add_argument('-n', '--rename', action='store_true', help='Renames the video files based on the given entries in the log files.')
+    use_rename = any([ o in sys.argv for o in ['-n', '--rename'] ])
+    rename = parser.add_argument_group()
+    rename.add_argument('-n', '--rename', action='store_true', help='Renames the video files based on the given entries in the log files.')
+    rename.add_argument('videos', nargs=1 if use_rename else '?', help='Path to the video files, which should be renamed.')
+    rename.add_argument('logs', nargs=1 if use_rename else '?', help='Path to the log files, on which the video files should be renamed too.')
+
 
     return parser.parse_args()
 
@@ -100,7 +114,6 @@ def main():
 
     print("Bye")
 
-
 if __name__ == '__main__':
     if not sys.platform.startswith('linux'):
         sys.stderr.write("Only linux based systems are currently supported!")
@@ -121,7 +134,7 @@ if __name__ == '__main__':
         loopControl = threading.Event()
         CheckGameController(loopControl)
     elif args.rename:
-        print("renaming!")
+        rename(args.videos[0], args.logs[0])
     else:
         # use config for network setup
         if args.config:
