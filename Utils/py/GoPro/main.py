@@ -82,7 +82,7 @@ def main():
             else:
                 # do nothing
                 time.sleep(1)
-    except KeyboardInterrupt as e:
+    except (KeyboardInterrupt, SystemExit) as e:
         print("Shutting down ...")
     # cancel threads
     led.cancel()
