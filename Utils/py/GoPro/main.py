@@ -15,7 +15,7 @@ import time
 import importlib
 import importlib.util
 
-from utils import Logger, Daemonize, Network, GoPro, GameController, GameLoggerSql, GameLoggerLog, Event, LedStatusMonitor
+from utils import Logger, Daemonize, Network, GoPro, GameController, GameLoggerSql, GameLoggerLog, LedStatusMonitor, CheckGameController
 
 
 def parseArguments():
@@ -33,6 +33,7 @@ def parseArguments():
     parser.add_argument('-m', '--max-time', action='store', type=int, default=600, help='How many seconds should be continued to record, after playing time expired and "finished" state wasn\'t set. (precaution to prevent endless recording!; default: 600s)')
     parser.add_argument('-i', '--ignore', action='store_true', help='Ignores the "max time" option - possible infinity recording, if "finished" state isn\'t set.')
     parser.add_argument('-gc', '--check-gc', action='store_true', help='Tries to listen to GameController and print its state (for debugging).')
+    parser.add_argument('-n', '--rename', action='store_true', help='Renames the video files based on the given entries in the log files.')
 
     return parser.parse_args()
 
@@ -82,7 +83,7 @@ def main():
             else:
                 # do nothing
                 time.sleep(1)
-    except (KeyboardInterrupt, SystemExit) as e:
+    except (KeyboardInterrupt, SystemExit):
         print("Shutting down ...")
     # cancel threads
     led.cancel()
@@ -98,31 +99,6 @@ def main():
     network.join()
 
     print("Bye")
-
-
-class CheckGameController:
-    def __init__(self, loopControl:threading.Event):
-        Event.registerListener(self)
-
-        gameController = GameController()
-        gameController.start()
-
-        try:
-            loopControl.wait()
-        except (KeyboardInterrupt, SystemExit):
-            loopControl.set()
-
-        gameController.cancel()
-        gameController.join()
-
-
-    def receivedGC(self, evt:Event.GameControllerMessage):
-        """ Is called, when a new GameController message was received. """
-        gc_data = evt.message
-        print(gc_data)
-        # check if one team is 'invisible'
-        if any([t.teamNumber == 0 for t in gc_data.team]):
-            print("-- INVISIBLES are playing! --\n")
 
 
 if __name__ == '__main__':
@@ -144,6 +120,8 @@ if __name__ == '__main__':
     if args.check_gc:
         loopControl = threading.Event()
         CheckGameController(loopControl)
+    elif args.rename:
+        print("renaming!")
     else:
         # use config for network setup
         if args.config:
