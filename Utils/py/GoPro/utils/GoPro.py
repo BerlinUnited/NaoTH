@@ -21,7 +21,7 @@ class GoPro(threading.Thread):
         self.take_photo_timestamp = 0
 
         self.cam = None
-        self.cam_status = { 'recording': False, 'mode': None, 'lastVideo': None }
+        self.cam_status = { 'recording': False, 'mode': None, 'lastVideo': None, 'sd_card': False }
         self.cam_settings = {}
         self.user_settings = {}
         self.gc_data = GameControlData()
@@ -36,7 +36,7 @@ class GoPro(threading.Thread):
 
     def run(self):
         # init game state
-        previous_state = GameControlData.STATE_INITIAL
+        previous_state = { 'game': GameControlData.STATE_INITIAL, 'card': True }
         # run until canceled
         while not self.__cancel.is_set():
             # wait 'till (re-)connected to network and gopro
@@ -46,10 +46,16 @@ class GoPro(threading.Thread):
                 # update internal cam status
                 self.updateStatus()
                 # handling recording state
-                previous_state = self.handleRecording(previous_state)
+                previous_state['game'] = self.handleRecording(previous_state['game'])
                 # take "keep alive" photo;
                 if self.take_photo_when_idle > 0 and self.take_photo_timestamp + self.take_photo_when_idle < time.time():
                     self.takePhoto()
+                # notify listeners on the sd card status
+                if previous_state['card'] == True and self.cam_status['sd_card'] == False:
+                    Event.fire(Event.GoproNoSdcard())
+                elif previous_state['card'] == False and self.cam_status['sd_card'] == True:
+                    Event.fire(Event.GoproSdcardInserted())
+                previous_state['card'] = self.cam_status['sd_card']
         # if canceled, at least fire the disconnect event
         self.disconnect()
 
@@ -81,6 +87,7 @@ class GoPro(threading.Thread):
                 js = json.loads(raw)
                 self.cam_status['mode'] = self.cam.parse_value("mode", js[constants.Status.Status][constants.Status.STATUS.Mode])
                 self.cam_status['recording'] = (js[constants.Status.Status][constants.Status.STATUS.IsRecording] == 1)
+                self.cam_status['sd_card'] = (js[constants.Status.Status][constants.Status.STATUS.SdCardInserted] == 0)
                 self.cam_status['lastVideo'] = self.cam.getMedia()
                 # update video settings
                 for var, val in vars(constants.Video).items():
@@ -119,7 +126,7 @@ class GoPro(threading.Thread):
             # only stop, if we're still recording
             if self.cam_status['recording']:
                 self.stopRecording()
-        elif not self.cam_status['recording'] and both_teams_valid and (
+        elif self.cam_status['sd_card'] and not self.cam_status['recording'] and both_teams_valid and (
                 self.gc_data.gameState in [GameControlData.STATE_READY, GameControlData.STATE_SET,
                                            GameControlData.STATE_PLAYING]):
             self.startRecording()

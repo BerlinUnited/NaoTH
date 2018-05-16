@@ -51,6 +51,12 @@ class GoproStopRecording(Event):
     def __init__(self, file):
         self.file = file
 
+class GoproNoSdcard(Event):
+    pass
+
+class GoproSdcardInserted(Event):
+    pass
+
 ######################################################
 ## Other Events
 ######################################################

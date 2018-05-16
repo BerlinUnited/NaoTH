@@ -33,7 +33,12 @@ class LedStatusMonitor(threading.Thread):
                     self.sendMessage('{{"blue":"blink", "time":"{}"}}'.format(1))
                 elif self.gopro >= 2:
                     # ... and connected to the gopro
-                    self.sendMessage('{{"blue":"on", "time":"{}"}}'.format(1))
+                    if self.gopro == 3:
+                        # ..., but gopro has no sdcard
+                        self.sendMessage('{{"blue":"blink", "time":"{}"}}'.format(1))
+                    else:
+                        # ... and is ready to record
+                        self.sendMessage('{{"blue":"on", "time":"{}"}}'.format(1))
 
             # handle the green led
             if self.gc == 0:
@@ -49,6 +54,9 @@ class LedStatusMonitor(threading.Thread):
             # handle the red led
             if self.gopro == 4:
                 # gopro is recording
+                self.sendMessage('{{"red":"blink", "time":"{}"}}'.format(1))
+            elif self.gopro == 3:
+                # gopro has no sdcard!
                 self.sendMessage('{{"red":"blink", "time":"{}"}}'.format(1))
             else:
                 # gopro is NOT recording
@@ -83,6 +91,12 @@ class LedStatusMonitor(threading.Thread):
         self.gopro = 4
 
     def gopro_stopped(self, evt:Event.GoproStopRecording):
+        self.gopro = 2
+
+    def gopro_nocard(self, evt:Event.GoproNoSdcard):
+        self.gopro = 3
+
+    def gopro_card_inserted(self, evt:Event.GoproSdcardInserted):
         self.gopro = 2
 
     def gc_message(self, evt:Event.GameControllerMessage):
