@@ -12,16 +12,22 @@ namespace naoth
 {
 
 WhistleDetector::WhistleDetector()
-  :
-   command(0),
-   overallWhistleEventCounter(0),
-   audioReadBuffer(BUFFER_SIZE_RX, 0),
-   running(false),
-   recording(false),
-   resetting(false),
-   startStopCount(0),
-   deinitCyclesCounter(0)
+:
+  command(0),
+  whistleListFile("whistles.lst"),
+  activeChannels("1010"),
+  threshold(0.25),
+  checkAllWhistles(true),
+  saveRawAudio(true),
+  audioReadBuffer(BUFFER_SIZE_RX, 0),
+  running(false),
+  recording(false),
+  resetting(false),
+  startStopCount(0),
+  deinitCyclesCounter(0),
+  samplesRecorded(0)
 {
+  whistlePercept.counter = 0;
   std::cout << "[INFO] WhistleDetector start thread" << std::endl;
   whistleDetectorThread = std::thread([this] {this->execute();});
   ThreadUtil::setPriority(whistleDetectorThread, ThreadUtil::Priority::lowest);
@@ -78,7 +84,12 @@ void WhistleDetector::get(naoth::WhistlePercept& perceptData)
   std::unique_lock<std::mutex> lock(getMutex, std::try_to_lock);
   if ( lock.owns_lock() )
   {
-    perceptData.counter = overallWhistleEventCounter;
+    if(whistlePercept.recognizedWhistles.size() > 0)
+    {
+      perceptData = whistlePercept;
+      whistlePercept.reset();
+      std::cout << perceptData.recognizedWhistles.size() << " whistles fired since last cognition cycle" << std::endl;
+    }
   }
 }
 
@@ -88,6 +99,9 @@ void WhistleDetector::set(const naoth::WhistleControl& controlData)
   if ( lock.owns_lock() )
   {
     command = controlData.onOffSwitch;
+    threshold = controlData.threshold;
+    checkAllWhistles = controlData.checkAllWhistles;
+    saveRawAudio = controlData.saveRawAudio;
 
     activeChannels = controlData.activeChannels;
     if(whistleListFile != controlData.whistleListFile)
@@ -227,14 +241,15 @@ void WhistleDetector::execute()
 
         if(deinitCyclesCounter == 0 && activeChannels[c] == '1' && detectWhistles(c))
         {
-          overallWhistleEventCounter++;
+          whistlePercept.counter++;
         }
       }
       
       if (saveRawAudio)
       {
         outputFileStream.write((char*)(&audioReadBuffer[0]), bytesToRead);
-      }      
+      }    
+      samplesRecorded += SAMPLE_NEW_COUNT;
     }
     else
     {
@@ -427,10 +442,12 @@ bool WhistleDetector::detectWhistles(int channel)
         correlation = fabs(correlatedBuffer[j]);
       }
     }
-    if(correlation / referenceWhistleAutoCorrelationMaxima[idxWhistle] >= threshold)
+    double response = correlation / referenceWhistleAutoCorrelationMaxima[idxWhistle];
+    if(response >= threshold)
     {
       std::cout << "Whistle " << referenceWhistleNames[idxWhistle] << "(No. " << idxWhistle << ") maxCorr " << correlation << " ref corr " << referenceWhistleAutoCorrelationMaxima[idxWhistle] << std::endl;
-      std::cout << "Whistle " << referenceWhistleNames[idxWhistle] << "(No. " << idxWhistle << ") detected! " << correlation / referenceWhistleAutoCorrelationMaxima[idxWhistle] << std::endl;
+      std::cout << "Whistle " << referenceWhistleNames[idxWhistle] << "(No. " << idxWhistle << ") detected! " << response << std::endl;
+      whistlePercept.addWhistle(referenceWhistleNames[idxWhistle], samplesRecorded, response);
       whistleDetected = true;
       if(!checkAllWhistles)
       {
@@ -444,9 +461,10 @@ bool WhistleDetector::detectWhistles(int channel)
     /*
     if(testFileMode)
     {
-      std::cout << " on Position " << (audioTestFile.tellg() / (sizeof(short) * NUM_CHANNELS_RX)) << std::endl;
+      std::cout << " on Position " << (audioTestFile.tellg() / (sizeof(short) * NUM_CHANNELS_RX));
     }
     */
+    std::cout << std::endl;
   }
   return whistleDetected;
 }
@@ -478,22 +496,25 @@ void WhistleDetector::initAudio()
     std::cout << "[PulseAudio] Channels: " << (int) paSampleSpec.channels <<std::endl;
     std::cout << "[PulseAudio] Buffer Size: " << BUFFER_SIZE_RX <<std::endl;
     recording = true;
+    samplesRecorded = 0;
   }
 
   if(saveRawAudio)
   {
     time_t now = time(0);
-    tm *ltm = localtime(&now);
+    tm* ltm = localtime(&now);
 
     std::stringstream filePath;
-    filePath << "/tmp/capture_" << 1900+ltm->tm_year << "-" << 1 + ltm->tm_mon << "-" << ltm->tm_mday << "-" << 1 + ltm->tm_hour << "-" <<  1 + ltm->tm_min << "_" << static_cast<double>(paSampleSpec.rate) / 1000 <<  "kHz_" << (int) paSampleSpec.channels << "channels.raw";
-    outputFileStream.open(filePath.str().c_str(), std::ios_base::out | std::ios_base::binary);
+    filePath << "/tmp/capture_" << robotName << "_" << 1900 + ltm->tm_year << "-" << 1 + ltm->tm_mon << "-" << ltm->tm_mday << "-" << 1 + ltm->tm_hour << "-" <<  1 + ltm->tm_min << "-" <<  1 + ltm->tm_sec << "_" << static_cast<double>(paSampleSpec.rate) / 1000 <<  "kHz_" << (int) paSampleSpec.channels << "channels.raw";
+    whistlePercept.captureFile = filePath.str();
+    outputFileStream.open(whistlePercept.captureFile.c_str(), std::ios_base::out | std::ios_base::binary);
   }
 }
 
 void WhistleDetector::deinitAudio()
 {
   recording = false;
+  samplesRecorded = 0;
   if(saveRawAudio)
   {
     outputFileStream.close();
@@ -507,6 +528,11 @@ void WhistleDetector::deinitAudio()
       paSimple = NULL;
     }
   }
+}
+
+void WhistleDetector::setRobotName(const std::string& name)
+{
+  robotName = name;
 }
 
 

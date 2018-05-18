@@ -101,7 +101,8 @@ public:
       PARAMETER_REGISTER(obstacleFilter.g1) = 0.1;
 
       //KickDirection Stuff
-      PARAMETER_REGISTER(num_angle_particle) = 30;
+      //Warum keine uniforme verteilung? damit wird gesichert das jede richtung mindestens ein sample bekomt
+      PARAMETER_REGISTER(num_angle_particle) = 60;
       PARAMETER_REGISTER(iterations) = 10;
 
       syncWithConfig();
