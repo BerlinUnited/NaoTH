@@ -13,7 +13,8 @@ class PathModel : public naoth::Printable
 {
 public:
    PathModel() :
-     path_routine(NONE),
+     path_routine(PathRoutine::NONE),
+     path2018_routine(PathPlanner2018Routine::NONE),
      distance(0.0),
      yOffset(0.0),
      direction(0.0),
@@ -22,7 +23,7 @@ public:
    {}
   ~PathModel() {}
 
-  enum PathRoutine
+  enum class PathRoutine
   {
     NONE,
     GO_TO_BALL_FAST,
@@ -38,7 +39,14 @@ public:
     SIDEKICK_LEFT
   };
 
+  enum class PathPlanner2018Routine
+  {
+    NONE,
+    GO
+  };
+
   PathRoutine path_routine;
+  PathPlanner2018Routine path2018_routine;
 
   // distance and yOffset parameters (set by XABSL)
   double distance;
@@ -55,40 +63,40 @@ public:
     std::string path_type;
     switch (path_routine)
     {
-    case NONE:
+    case PathRoutine::NONE:
       path_type = "none";
       break;
-    case GO_TO_BALL_FAST:
+    case PathRoutine::GO_TO_BALL_FAST:
       path_type = "go_to_ball_fast";
       break;
-    case GO_TO_BALL_SLOW:
+    case PathRoutine::GO_TO_BALL_SLOW:
       path_type = "go_to_ball_slow";
       break;
-    case APPROACH_BALL_LEFT:
+    case PathRoutine::APPROACH_BALL_LEFT:
       path_type = "approach_ball_left";
       break;
-    case APPROACH_BALL_RIGHT:
+    case PathRoutine::APPROACH_BALL_RIGHT:
       path_type = "approach_ball_right";
       break;
-    case MOVE_AROUND_BALL:
+    case PathRoutine::MOVE_AROUND_BALL:
       path_type = "move_around_ball";
       break;
-    case SHORT_KICK_LEFT:
+    case PathRoutine::SHORT_KICK_LEFT:
       path_type = "short_kick_left";
       break;
-    case SHORT_KICK_RIGHT:
+    case PathRoutine::SHORT_KICK_RIGHT:
       path_type = "short_kick_right";
       break;
-    case LONG_KICK_LEFT:
+    case PathRoutine::LONG_KICK_LEFT:
       path_type = "long_kick_left";
       break;
-    case LONG_KICK_RIGHT:
+    case PathRoutine::LONG_KICK_RIGHT:
       path_type = "long_kick_right";
       break;
-    case SIDEKICK_LEFT:
+    case PathRoutine::SIDEKICK_LEFT:
       path_type = "sidekick_left";
       break;
-    case SIDEKICK_RIGHT:
+    case PathRoutine::SIDEKICK_RIGHT:
       path_type = "sidekick_right";
       break;
     }

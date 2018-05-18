@@ -93,20 +93,9 @@ private:
   };
   typedef WalkRequest::StepControlRequest::StepType StepType;
 
-  // XABSL go_to_ball_with_USOA
-  void walk_to_ball(const Foot foot, const bool go_fast = false);
-  // XABSL move_around_ball
-  void move_around_ball(const double direction, const double radius);
-  // XABSL go_to_ball_with_foot_dynamic
-  void approach_ball(const Foot foot);
-  // XABSL fast_forward_kick
-  void short_kick(const Foot foot);
-  // XABSL kick_with_foot
-  void long_kick(const Foot foot);
-  // XABSL sidekick (with foot == Foot::LEFT kicks to the left, and foot == FOOT::RIGHT to the right)
-  void sidekick(const Foot foot);
-
-  void control_ball(const Foot foot);
+  bool acquire_ball_control();
+  void maintain_ball_control();
+  bool execute_action();
 
   // Stepcontrol
   struct Step_Buffer_Element {
