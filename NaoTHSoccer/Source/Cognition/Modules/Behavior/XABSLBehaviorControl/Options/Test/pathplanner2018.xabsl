@@ -1,0 +1,13 @@
+option pathplanner2018
+{
+  initial state idle 
+  {
+    decision {
+      stay;
+    }
+    action 
+    {
+      situation_abortable = true;
+    }
+  }
+}
