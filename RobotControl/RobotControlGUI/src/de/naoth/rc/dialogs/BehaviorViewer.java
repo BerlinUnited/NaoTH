@@ -103,9 +103,9 @@ public class BehaviorViewer extends AbstractDialog
   ArrayList<XABSLBehaviorFrame> behaviorBuffer;
   private XABSLBehavior currentBehavior;
   public static final Color DARK_GREEN = new Color(0, 128, 0);
-  public static final Font PLAIN_FONT = new Font("Sans Serif", Font.PLAIN, Plugin.parent.isHighDPI() ? 18 : 11);
-  public static final Font BOLD_FONT = new Font("Sans Serif", Font.BOLD, Plugin.parent.isHighDPI() ? 18 : 11);
-  public static final Font ITALIC_FONT = new Font("Sans Serif", Font.ITALIC, Plugin.parent.isHighDPI() ? 18 : 11);
+  public static final Font PLAIN_FONT = new Font("Sans Serif", Font.PLAIN, Plugin.parent.getFontSize());
+  public static final Font BOLD_FONT = new Font("Sans Serif", Font.BOLD, Plugin.parent.getFontSize());
+  public static final Font ITALIC_FONT = new Font("Sans Serif", Font.ITALIC, Plugin.parent.getFontSize());
   final private String behaviorConfKey = "behavior";
   final private String defaultBehavior = "../NaoController/Config/behavior/behavior-ic.dat";
 
