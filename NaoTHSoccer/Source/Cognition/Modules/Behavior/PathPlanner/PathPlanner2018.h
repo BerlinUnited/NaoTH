@@ -62,6 +62,9 @@ private:
   public:
     Parameters() : ParameterList("PathPlanner2018")
     {
+      PARAMETER_REGISTER(acquire_ball_control_x_threshold) = 170;
+      PARAMETER_REGISTER(acquire_ball_control_y_threshold) = 40;
+
       /*PARAMETER_REGISTER(sidekick_scale) = 1.0;
       PARAMETER_REGISTER(short_kick_time) = 300;
       PARAMETER_REGISTER(long_kick_time) = 300;
@@ -75,13 +78,15 @@ private:
     }
     virtual ~Parameters(){}
 
-    double sidekick_scale;
+    double acquire_ball_control_x_threshold;
+    double acquire_ball_control_y_threshold;
+    /*double sidekick_scale;
     int short_kick_time;
     int long_kick_time;
     int sidekick_time;
     bool approach_ball_adapt_control;
     int approach_ball_adapt_threshold;
-    int approach_ball_slow_distance;
+    int approach_ball_slow_distance;*/
   } params;
 
   // NONE means hip
@@ -94,8 +99,9 @@ private:
   typedef WalkRequest::StepControlRequest::StepType StepType;
 
   bool acquire_ball_control();
-  void maintain_ball_control();
   bool execute_action();
+
+  void short_kick(const Foot foot);
 
   // Stepcontrol
   struct Step_Buffer_Element {
@@ -136,6 +142,7 @@ private:
 
 private:
   bool kick_planned;
+  bool steps_planned;
 };
 
 #endif // _PathPlanner2018_H_

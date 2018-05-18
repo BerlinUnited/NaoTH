@@ -5,6 +5,9 @@ option pathplanner2018
   {
     if (!body.ready_to_walk || game.current_mode != playing)
       goto idle;
+    else if(situation_abortable && ball.time_since_last_seen > 1500)
+      goto search;
+
   }
 
   initial state idle 
@@ -18,9 +21,26 @@ option pathplanner2018
     }
     action 
     {
+      head.control_mode = look_at_ball_percept;
+
       path2018.routine = path2018.routine.none;
     }
   }
+  
+  state search {
+    decision {
+      else if (action_done)
+        goto pathplanner_go;
+      else
+        stay;
+    }
+    action{
+      situation_abortable = true;
+      path2018.routine = path2018.routine.none;
+      search_ball();
+    }
+  }
+
   
   state pathplanner_go 
   {
@@ -30,6 +50,8 @@ option pathplanner2018
     }
     action 
     {
+      head.control_mode = look_at_ball_percept;
+
       path2018.routine = path2018.routine.go;
     }
   }

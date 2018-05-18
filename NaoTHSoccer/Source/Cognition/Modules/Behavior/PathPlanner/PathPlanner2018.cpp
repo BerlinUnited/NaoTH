@@ -12,7 +12,8 @@ PathPlanner2018::PathPlanner2018()
   step_buffer({}),
   foot_to_use(Foot::RIGHT),
   last_stepRequestID(getMotionStatus().stepControl.stepRequestID + 1),      // WalkRequest stepRequestID starts at 0, we have to start at 1
-  kick_planned(false)
+  kick_planned(false),
+  steps_planned(false)
 {
   //DEBUG_REQUEST_REGISTER("PathPlanner2018:walk_to_ball", "Walks to the ball from far.", false);
 
@@ -68,7 +69,7 @@ void PathPlanner2018::execute()
   case PathModel::PathPlanner2018Routine::GO:
     if (acquire_ball_control())
     {
-      maintain_ball_control();
+      execute_action();
     }
     break;
   }
@@ -81,28 +82,35 @@ void PathPlanner2018::execute()
 // we want to approach the ball and acquire control over it
 bool PathPlanner2018::acquire_ball_control()
 {
-  Vector2d ball_pos                   = getBallModel().positionPreview;
-  WalkRequest::Coordinate coordinate = WalkRequest::Hip;
+  Vector2d ball_pos                  = getBallModel().positionPreviewInRFoot;
+  WalkRequest::Coordinate coordinate = WalkRequest::RFoot;
   double step_x                      = 0.0;
   double step_y                      = 0.0;
-  const double ball_radius            = getFieldInfo().ballRadius;
-
-  double rotation_to_ball = ball_pos.abs() > 250 ? ball_pos.angle() : 0;
+  const double ball_radius           = getFieldInfo().ballRadius;
+  double rotation_to_ball            = 0;
 
   Pose2D pose = { 0.0, 0.0, 0.0 };
 
-  if (ball_pos.abs() > 100)
+  std::cout << "x: " << ball_pos.x << " - " << ball_radius << " = " << ball_pos.x - ball_radius << " > " << params.acquire_ball_control_x_threshold << std::endl;
+  std::cout << "y: " << std::abs(ball_pos.y) << " > " << params.acquire_ball_control_y_threshold << std::endl;
+
+  if (ball_pos.x - ball_radius > params.acquire_ball_control_x_threshold
+    || std::abs(ball_pos.y) > params.acquire_ball_control_y_threshold)
   {
+    rotation_to_ball = ball_pos.angle();
     step_x = ball_pos.x;
     step_y = ball_pos.y;
     pose = { rotation_to_ball, step_x, step_y };
+
+    steps_planned = true;
   }
   else
   {
+    steps_planned = false;
     return true;
   }
 
-  if (step_buffer.empty())
+  if (step_buffer.empty() && steps_planned)
   {
     StepType type          = StepType::WALKSTEP;
     double scale           = 1.0;
@@ -110,23 +118,65 @@ bool PathPlanner2018::acquire_ball_control()
     double character       = 0.7;
     add_step(pose, type, coordinate, character, Foot::NONE, scale, speed_direction, WalkRequest::StepControlRequest::HARD, false, 300);
   }
+  else if (steps_planned)
+  {
+    update_step(pose);
+  }
 
   return false;
 }
 
-// STEP 2: If we have control over the ball,
-// we want to maintain it; if it moves, we move with it
-// and stay close enough to it
-void PathPlanner2018::maintain_ball_control()
-{
-
-}
-
-// STEP 3: If we have control over the ball,
-// we want to interact with it
+// STEP 2: Once we have ball control we can execute an action
+// meaning interact with the ball (kicks for example)
 bool PathPlanner2018::execute_action()
 {
+  short_kick(Foot::RIGHT);
+
   return false;
+}
+
+void PathPlanner2018::short_kick(const Foot foot)
+{
+  steps_planned = false;
+  if (!kick_planned)
+  {
+    WalkRequest::Coordinate coordinate = WalkRequest::Hip;
+
+    switch (foot) {
+    case Foot::LEFT:
+      coordinate = WalkRequest::RFoot;
+      break;
+    case Foot::RIGHT:
+      coordinate = WalkRequest::LFoot;
+      break;
+    case Foot::NONE:
+      ASSERT(false);
+    }
+
+    if (step_buffer.empty())
+    {
+      Pose2D pose = { 0.0, 500, 0.0 };
+      StepType type = StepType::KICKSTEP;
+      double character = 1.0;
+      double scale = 0.7;
+      double speed_direction = Math::fromDegrees(0.0);
+      int kick_time = 300;
+      add_step(pose, type, coordinate, character, foot, scale, speed_direction, WalkRequest::StepControlRequest::SOFT, true, kick_time);
+
+      type = StepType::ZEROSTEP;
+      kick_time = 250;
+      add_step(pose, type, coordinate, character, foot, scale, speed_direction, WalkRequest::StepControlRequest::SOFT, true, kick_time);
+      step_buffer.back().time = 100;
+
+      pose = { 0.0, 0.0, 0.0 };
+      type = StepType::WALKSTEP;
+      kick_time = 250;
+      add_step(pose, type, coordinate, character, foot, scale, speed_direction, WalkRequest::StepControlRequest::HARD, true, kick_time);
+
+      kick_planned  = true;
+      steps_planned = true;
+    }
+  }
 }
 
 
@@ -169,7 +219,8 @@ void PathPlanner2018::execute_step_buffer()
 {
   STOPWATCH_START("PathPlanner2018:execute_steplist");
 
-  if (step_buffer.empty()) {
+  if (step_buffer.empty()
+    || !steps_planned) {
     return;
   }
 

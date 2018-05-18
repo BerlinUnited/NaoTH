@@ -303,6 +303,8 @@ agent pathplanner_test_long_kick_agent("pathplanner_test_long_kick_agent", pathp
 agent pathplanner_test_only_sidekick_agent("pathplanner_test_only_sidekick_agent", pathplanner_test_only_sidekick_agent);
 agent pathplanner_test_only_shortkick_agent("pathplanner_test_only_shortkick_agent", pathplanner_test_only_shortkick_agent);
 agent pathplanner_test_dash_agent("pathplanner_test_dash_agent", pathplanner_test_dash_agent);
+agent pathplanner2018_agent("pathplanner2018_agent", pathplanner2018_agent);
+
 
 // Test agents search
 agent search_test_agent("search_test_agent",search_test_agent);
