@@ -52,9 +52,9 @@ void PathPlanner2018::execute()
 
   }
 
-  switch (getPathModel().path_routine)
+  switch (getPathModel().path2018_routine)
   {
-  case PathModel::PathRoutine::NONE:
+  case PathModel::PathPlanner2018Routine::NONE:
     // There is no kick planned, since the kick has been executed
     // and XABSL is in a different state now
     if (kick_planned) {
@@ -66,7 +66,10 @@ void PathPlanner2018::execute()
     }
     break;
   case PathModel::PathPlanner2018Routine::GO:
-    acquire_ball_control();
+    if (acquire_ball_control())
+    {
+      maintain_ball_control();
+    }
     break;
   }
 
@@ -78,6 +81,36 @@ void PathPlanner2018::execute()
 // we want to approach the ball and acquire control over it
 bool PathPlanner2018::acquire_ball_control()
 {
+  Vector2d ball_pos                   = getBallModel().positionPreview;
+  WalkRequest::Coordinate coordinate = WalkRequest::Hip;
+  double step_x                      = 0.0;
+  double step_y                      = 0.0;
+  const double ball_radius            = getFieldInfo().ballRadius;
+
+  double rotation_to_ball = ball_pos.abs() > 250 ? ball_pos.angle() : 0;
+
+  Pose2D pose = { 0.0, 0.0, 0.0 };
+
+  if (ball_pos.abs() > 100)
+  {
+    step_x = ball_pos.x;
+    step_y = ball_pos.y;
+    pose = { rotation_to_ball, step_x, step_y };
+  }
+  else
+  {
+    return true;
+  }
+
+  if (step_buffer.empty())
+  {
+    StepType type          = StepType::WALKSTEP;
+    double scale           = 1.0;
+    double speed_direction = Math::fromDegrees(0.0);
+    double character       = 0.7;
+    add_step(pose, type, coordinate, character, Foot::NONE, scale, speed_direction, WalkRequest::StepControlRequest::HARD, false, 300);
+  }
+
   return false;
 }
 

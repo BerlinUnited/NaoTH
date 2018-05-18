@@ -180,6 +180,9 @@ include "Options/Test/pathplanner_test_long_kick.xabsl";
 include "Options/Test/pathplanner_sidekick.xabsl";
 include "Options/Test/pathplanner_kick_short.xabsl";
 include "Options/Test/pathplanner_kick_long.xabsl";
+include "Options/Test/pathplanner2018.xabsl";
+include "Options/Test/pathplanner2018_agent.xabsl";
+
 // Kick only
 include "Options/Test/pathplanner_test_only_sidekick.xabsl";
 include "Options/Test/pathplanner_sidekick_only.xabsl";
@@ -293,6 +296,8 @@ agent dribble_test_agent("dribble_test_agent", dribble_test_agent);
 agent pathplanner_test_sidekick("pathplanner_test_sidekick", pathplanner_test_sidekick);
 agent pathplanner_test_short_kick("pathplanner_test_short_kick", pathplanner_test_short_kick);
 agent pathplanner_test_long_kick("pathplanner_test_long_kick", pathplanner_test_long_kick);
+agent pathplanner2018_agent("pathplanner2018_agent", pathplanner2018_agent);
+
 // Kicks only
 agent pathplanner_test_only_sidekick("pathplanner_test_only_sidekick", pathplanner_test_only_sidekick);
 agent pathplanner_test_only_shortkick("pathplanner_test_only_shortkick", pathplanner_test_only_shortkick);
