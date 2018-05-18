@@ -705,10 +705,10 @@ public class RobotControlImpl extends javax.swing.JFrame
   }
   
   @Override
-  public boolean isHighDPI() 
+  public int getFontSize() 
   {
-      return Boolean.valueOf(this.getConfig().getProperty("useHiDPI", "true"))
-          && Toolkit.getDefaultToolkit().getScreenSize().width > 2000;
+      int size = UIManager.getDefaults().getFont("defaultFont") != null ? UIManager.getDefaults().getFont("defaultFont").getSize() : 12;
+      return Integer.parseInt(this.getConfig().getProperty("fontSize", String.valueOf(size)));
   }
   
   public void addToStatusBar(Component c) {
