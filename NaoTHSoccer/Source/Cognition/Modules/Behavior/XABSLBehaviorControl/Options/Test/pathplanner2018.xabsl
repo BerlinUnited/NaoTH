@@ -1,13 +1,37 @@
 option pathplanner2018
 {
+
+  common decision
+  {
+    if (!body.ready_to_walk || game.current_mode != playing)
+      goto idle;
+  }
+
   initial state idle 
   {
-    decision {
-      stay;
+    decision 
+    {
+      else if (body.ready_to_walk && game.current_mode == playing && state_time > 500)
+        goto pathplanner_go;
+      else
+        stay;
     }
     action 
     {
-      situation_abortable = true;
+      path2018.routine = path2018.routine.none;
     }
   }
+  
+  state pathplanner_go 
+  {
+    decision {
+      else
+        stay;
+    }
+    action 
+    {
+      path2018.routine = path2018.routine.go;
+    }
+  }
+
 }
