@@ -82,10 +82,12 @@ Moreover, logs of the recorded games are created in the `/home/pi/GoPro/logs/` d
 
 #### TESTS
 Some tests to check the functionality of the GoPro setup
-- normal: run a complete game with 2 teams; the camera should record both halfs and a game log should be written
-- normal invisible: run a complete game with only one team; nothing should be recorded
+- normal: run a complete game with 2 teams; the camera should record both halfs and a video log should be written
+- normal invisible: run a complete game with only one team; no video should be recorded, but an empty video log is still created
 - missing GameController: the leds should indicate that the GameController is missing
-- missing wifi: the leds should indicate that the wifi network is missing
+- missing wifi: the leds should indicate that
+     - ... the wifi network is missing
+     - ... the raspi can not log in to the network (not implemented!)
 - loosing wifi:
     - not in game / recording
     - while recording
