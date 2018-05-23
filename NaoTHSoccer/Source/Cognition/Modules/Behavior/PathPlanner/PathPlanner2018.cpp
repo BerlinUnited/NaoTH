@@ -9,14 +9,13 @@
 
 PathPlanner2018::PathPlanner2018()
   :
-  step_buffer({}),
-  foot_to_use(Foot::RIGHT),
-  last_stepRequestID(getMotionStatus().stepControl.stepRequestID + 1),      // WalkRequest stepRequestID starts at 0, we have to start at 1
-  kick_planned(false),
-  steps_planned(false)
+  stepBuffer({}),
+  footToUse(Foot::RIGHT),
+  lastStepRequestID(getMotionStatus().stepControl.stepRequestID + 1),      // WalkRequest stepRequestID starts at 0, we have to start at 1
+  numStepsGeometric(0),
+  numStepsCorrection(0),
+  numStepsPlanned(0)
 {
-  //DEBUG_REQUEST_REGISTER("PathPlanner2018:walk_to_ball", "Walks to the ball from far.", false);
-
   getDebugParameterList().add(&params);
 }
 
@@ -27,247 +26,259 @@ PathPlanner2018::~PathPlanner2018()
 
 void PathPlanner2018::execute()
 {
-  // --- DEBUG REQUESTS ---
-  /*DEBUG_REQUEST("PathPlanner2018:walk_to_ball",
-    if (getBallModel().positionPreview.x > 250) {
-      walk_to_ball(Foot::NONE);
-    }
-  );*/
-  // --- DEBUG REQUESTS ---
 
   getPathModel().kick_executed = false;
 
   // Always executed first
-  manage_step_buffer();
-
-  // The kick has been executed
-  // Tells XABSL to jump into next state
-  if (kick_planned && step_buffer.empty()) {
-    getPathModel().kick_executed = true;
-  }
+  manageStepBuffer();
 
   // HACK: xabsl set a forced motion request => clear everything
   if (getPathModel().path_routine == PathModel::PathRoutine::NONE && getMotionRequest().forced) {
-    step_buffer.clear();
+    stepBuffer.clear();
     return;
-
   }
 
   switch (getPathModel().path2018_routine)
   {
   case PathModel::PathPlanner2018Routine::NONE:
-    // There is no kick planned, since the kick has been executed
-    // and XABSL is in a different state now
-    if (kick_planned) {
-      kick_planned = false;
-    }
-
-    if (step_buffer.empty()) {
+    // TODO: should the stepBuffer just be cleared here no matter what?
+    if (stepBuffer.empty()) 
+    {
+      numStepsGeometric  = 0;
+      numStepsCorrection = 0;
       return;
     }
     break;
   case PathModel::PathPlanner2018Routine::GO:
-    if (acquire_ball_control())
+    // Calculate the number of geometrically possible steps towards the ball
+
+    // ASSUMPTION: the limiting of a step translation regarding the step rotation
+    // is a sphere (this is wrong, it actually is an ellipse)
+    // TODO: Calculate this in a more realistic way (is this necessary?)
+    // ASSUMPTION 2: Calculating this with hip coordinates will be accurate enough
+    // TODO: Check assumption 2 and if this isn't the case, fix this!
+    // ASSUMPTION 3: No matter what, the last 3 steps will be a kick, a zero step and then a retracting walk step
+    numStepsGeometric = Math::clamp(static_cast<int>(getBallModel().positionPreview.abs() / params.stepLength), 0, 10) + 2;
+
+    // This variable is only for convenience right now
+    numStepsPlanned = numStepsGeometric + numStepsCorrection;
+
+    if (forwardKick())
     {
-      execute_action();
+      // TODO: forward kick is done, what now?
     }
     break;
   }
 
   // Always executed last
-  execute_step_buffer();
+  executeStepBuffer();
 }
 
-// STEP 1: If too far away from the ball,
-// we want to approach the ball and acquire control over it
-bool PathPlanner2018::acquire_ball_control()
+bool PathPlanner2018::forwardKick()
 {
-  Vector2d ball_pos                  = getBallModel().positionPreviewInRFoot;
-  WalkRequest::Coordinate coordinate = WalkRequest::RFoot;
-  double step_x                      = 0.0;
-  double step_y                      = 0.0;
-  const double ball_radius           = getFieldInfo().ballRadius;
-  double rotation_to_ball            = 0;
+  Vector2d ball_pos        = getBallModel().positionPreviewInRFoot;
+  const double ball_radius = getFieldInfo().ballRadius;
 
-  Pose2D pose = { 0.0, 0.0, 0.0 };
-
-  std::cout << "x: " << ball_pos.x << " - " << ball_radius << " = " << ball_pos.x - ball_radius << " > " << params.acquire_ball_control_x_threshold << std::endl;
-  std::cout << "y: " << std::abs(ball_pos.y) << " > " << params.acquire_ball_control_y_threshold << std::endl;
-
-  if (ball_pos.x - ball_radius > params.acquire_ball_control_x_threshold
-    || std::abs(ball_pos.y) > params.acquire_ball_control_y_threshold)
+  if (stepBuffer.size() > numStepsPlanned)
   {
-    rotation_to_ball = ball_pos.angle();
-    step_x = ball_pos.x;
-    step_y = ball_pos.y;
-    pose = { rotation_to_ball, step_x, step_y };
+    stepBuffer.clear();
+  }
 
-    steps_planned = true;
+  if (numStepsPlanned > 0)
+  {
+    double translation_x = std::min(std::abs(ball_pos.x), params.stepLength) * (ball_pos.x < 0 ? -1 : 1);
+    double translation_y = std::min(std::abs(ball_pos.y), params.stepLength) * (ball_pos.y < 0 ? -1 : 1);
+    double rotation = ball_pos.angle();
+
+    Pose2D pose = { rotation, translation_x, translation_y };
+
+    // Mechanism to make sure that the right foot executes the kick
+    // This has to come after clearing the step buffer if buffer size > num_steps so it doesn't get deleted!
+    // When we are 6 steps away from a kick we check that the right foot is movable
+    // TODO: make this generic for right and left foot
+    if (getMotionStatus().stepControl.moveableFoot == MotionStatus::StepControlStatus::RIGHT
+      && numStepsGeometric == 6
+      && numStepsCorrection == 0)
+    {
+      Pose2D correction_pose = { rotation, translation_x / 2, translation_y / 2 };
+
+      StepBufferElement correction_step;
+      correction_step.setPose(correction_pose);
+      correction_step.setStepType(StepType::WALKSTEP);
+      correction_step.setCharacter(0.7);
+      correction_step.setScale(1.0);
+      correction_step.setCoordinate(WalkRequest::RFoot);
+      correction_step.setFoot(Foot::LEFT);
+      correction_step.setSpeedDirection(Math::fromDegrees(0.0));
+      correction_step.setRestriction(WalkRequest::StepControlRequest::HARD);
+      correction_step.setProtected(false);
+      correction_step.setTime(300);
+
+      addStep(correction_step);
+
+      correction_step.setFoot(Foot::LEFT);
+
+      addStep(correction_step);
+
+      numStepsCorrection = numStepsCorrection + 2;
+    }
+    else
+    {
+      numStepsCorrection = 0;
+    }
+
+    // TODO: Is this kind of comment overkill? - y030
+    //                             { ------------------------------------ numStepsPlanned -------------------------------- }
+    //                             { ----- numStepsCorrection ------ }  { ------------ numStepsGeometric ----------------- }
+    // The buffer looks like this: ( correction step, correction step), [geometric, ... x9, kick step, zero step, walk step]
+    // We only want to loop over the second part in square brackets and leave the first part in brackets alone
+    // That is why we start with numStepsCorrection - 1
+    for (unsigned int i = numStepsCorrection - 1; i < numStepsPlanned; ++i)
+    {
+      StepBufferElement new_step;
+      new_step.setPose(pose);
+      new_step.setStepType(StepType::WALKSTEP);
+      new_step.setCharacter(0.7);
+      new_step.setScale(1.0);
+      new_step.setCoordinate(WalkRequest::RFoot);
+      new_step.setFoot(Foot::NONE);
+      new_step.setSpeedDirection(Math::fromDegrees(0.0));
+      new_step.setRestriction(WalkRequest::StepControlRequest::HARD);
+      new_step.setProtected(false);
+      new_step.setTime(300);
+
+      if (i == numStepsPlanned - 3) // last three steps are kickstep -> zerostep -> retracting walkstep
+      {
+        pose = { 0.0, 500.0, 0.0 };
+        new_step.setPose(pose);
+        new_step.setStepType(StepType::KICKSTEP);
+        new_step.setFoot(Foot::RIGHT);
+        new_step.setCharacter(0.7);
+        new_step.setScale(1.0);
+        new_step.setRestriction(WalkRequest::StepControlRequest::SOFT);
+        new_step.setProtected(true);
+      }
+      else if (i == numStepsPlanned - 2)
+      {
+        new_step.setStepType(StepType::ZEROSTEP);
+        new_step.setFoot(Foot::RIGHT);
+      }
+      else if (i == numStepsPlanned - 1)
+      {
+        pose = { 0.0, 0.0, 0.0 };
+        new_step.setPose(pose);
+        new_step.setStepType(StepType::WALKSTEP);
+        new_step.setFoot(Foot::RIGHT);
+      }
+
+      // We either fill the stepBuffer up till we have numStepsPlanned steps
+      // or we update the steps inside stepBuffer
+      if (stepBuffer.empty() || stepBuffer.size() <= i)
+      {
+        addStep(new_step);
+      }
+      // We do not want to update the correction steps
+      // TODO: Do we really not want to ?
+      else if (stepBuffer.size() > i && i >= numStepsCorrection)
+      {
+        updateSpecificStep(i, new_step);
+      }
+    }
   }
   else
   {
-    steps_planned = false;
+    stepBuffer.clear();
     return true;
   }
 
-  if (step_buffer.empty() && steps_planned)
-  {
-    StepType type          = StepType::WALKSTEP;
-    double scale           = 1.0;
-    double speed_direction = Math::fromDegrees(0.0);
-    double character       = 0.7;
-    add_step(pose, type, coordinate, character, Foot::NONE, scale, speed_direction, WalkRequest::StepControlRequest::HARD, false, 300);
-  }
-  else if (steps_planned)
-  {
-    update_step(pose);
-  }
-
   return false;
 }
-
-// STEP 2: Once we have ball control we can execute an action
-// meaning interact with the ball (kicks for example)
-bool PathPlanner2018::execute_action()
-{
-  short_kick(Foot::RIGHT);
-
-  return false;
-}
-
-void PathPlanner2018::short_kick(const Foot foot)
-{
-  steps_planned = false;
-  if (!kick_planned)
-  {
-    WalkRequest::Coordinate coordinate = WalkRequest::Hip;
-
-    switch (foot) {
-    case Foot::LEFT:
-      coordinate = WalkRequest::RFoot;
-      break;
-    case Foot::RIGHT:
-      coordinate = WalkRequest::LFoot;
-      break;
-    case Foot::NONE:
-      ASSERT(false);
-    }
-
-    if (step_buffer.empty())
-    {
-      Pose2D pose = { 0.0, 500, 0.0 };
-      StepType type = StepType::KICKSTEP;
-      double character = 1.0;
-      double scale = 0.7;
-      double speed_direction = Math::fromDegrees(0.0);
-      int kick_time = 300;
-      add_step(pose, type, coordinate, character, foot, scale, speed_direction, WalkRequest::StepControlRequest::SOFT, true, kick_time);
-
-      type = StepType::ZEROSTEP;
-      kick_time = 250;
-      add_step(pose, type, coordinate, character, foot, scale, speed_direction, WalkRequest::StepControlRequest::SOFT, true, kick_time);
-      step_buffer.back().time = 100;
-
-      pose = { 0.0, 0.0, 0.0 };
-      type = StepType::WALKSTEP;
-      kick_time = 250;
-      add_step(pose, type, coordinate, character, foot, scale, speed_direction, WalkRequest::StepControlRequest::HARD, true, kick_time);
-
-      kick_planned  = true;
-      steps_planned = true;
-    }
-  }
-}
-
 
 // Stepcontrol
-void PathPlanner2018::add_step(Pose2D &pose, const StepType &type, const WalkRequest::Coordinate &coordinate, const double character, const Foot foot, const double scale, const double speedDirection, const WalkRequest::StepControlRequest::RestrictionMode restriction, bool isProtected, int kick_time)
+void PathPlanner2018::addStep(const StepBufferElement& new_step)
 {
-  step_buffer.push_back(Step_Buffer_Element({ pose,
-    speedDirection,
-    type,
-    kick_time,
-    character,
-    scale,
-    foot,
-    coordinate,
-    restriction,
-    isProtected }));
+  stepBuffer.push_back(new_step);
 }
-void PathPlanner2018::update_step(Pose2D &pose)
+void PathPlanner2018::updateSpecificStep(const unsigned int index, StepBufferElement& step)
 {
-  ASSERT(step_buffer.size() > 0);
+  ASSERT(stepBuffer.size() > 0);
+  ASSERT(stepBuffer.size() >= index);
 
-  step_buffer.front().pose = pose;
+  stepBuffer[index] = step;
 }
 
-void PathPlanner2018::manage_step_buffer()
+// TODO: This mechanism has become obsolete (has it?)
+//       since steps get erased from the buffer when buffer size is bigger than
+//       number of steps possible geometrically and added handcrafted ones
+//       but we still have to update last_stepRequestID
+//       ---!!! THIS HAS TO BE THOUGHT THROUGH AGAIN !!!---
+void PathPlanner2018::manageStepBuffer()
 {
-  if (step_buffer.empty()) {
+  if (stepBuffer.empty()) 
+  {
     return;
   }
 
   // requested step has been accepted
-  if (last_stepRequestID == getMotionStatus().stepControl.stepRequestID)
+  if (lastStepRequestID == getMotionStatus().stepControl.stepRequestID)
   {
-    step_buffer.erase(step_buffer.begin());
-    last_stepRequestID = getMotionStatus().stepControl.stepRequestID + 1;
+    lastStepRequestID = getMotionStatus().stepControl.stepRequestID + 1;
   }
 }
 
-void PathPlanner2018::execute_step_buffer()
+void PathPlanner2018::executeStepBuffer()
 {
   STOPWATCH_START("PathPlanner2018:execute_steplist");
 
-  if (step_buffer.empty()
-    || !steps_planned) {
+  if (stepBuffer.empty()) 
+  {
     return;
   }
 
-  getMotionRequest().id = motion::walk;
-  getMotionRequest().walkRequest.coordinate = step_buffer.front().coordinate;
-  getMotionRequest().walkRequest.character = step_buffer.front().character;
-  getMotionRequest().walkRequest.stepControl.scale = step_buffer.front().scale;
-  getMotionRequest().walkRequest.stepControl.stepID = getMotionStatus().stepControl.stepID;
-  getMotionRequest().walkRequest.stepControl.type = step_buffer.front().type;
-  getMotionRequest().walkRequest.stepControl.time = step_buffer.front().time;
-  getMotionRequest().walkRequest.stepControl.speedDirection = step_buffer.front().speedDirection;
-  getMotionRequest().walkRequest.stepControl.target = step_buffer.front().pose;
-  getMotionRequest().walkRequest.stepControl.restriction = step_buffer.front().restriction;
-  getMotionRequest().walkRequest.stepControl.isProtected = step_buffer.front().isProtected;
-  getMotionRequest().walkRequest.stepControl.stepRequestID = last_stepRequestID;
+  getMotionRequest().id                                     = motion::walk;
+  getMotionRequest().walkRequest.coordinate                 = stepBuffer.front().coordinate;
+  getMotionRequest().walkRequest.character                  = stepBuffer.front().character;
+  getMotionRequest().walkRequest.stepControl.scale          = stepBuffer.front().scale;
+  getMotionRequest().walkRequest.stepControl.stepID         = getMotionStatus().stepControl.stepID;
+  getMotionRequest().walkRequest.stepControl.type           = stepBuffer.front().type;
+  getMotionRequest().walkRequest.stepControl.time           = stepBuffer.front().time;
+  getMotionRequest().walkRequest.stepControl.speedDirection = stepBuffer.front().speedDirection;
+  getMotionRequest().walkRequest.stepControl.target         = stepBuffer.front().pose;
+  getMotionRequest().walkRequest.stepControl.restriction    = stepBuffer.front().restriction;
+  getMotionRequest().walkRequest.stepControl.isProtected    = stepBuffer.front().isProtected;
+  getMotionRequest().walkRequest.stepControl.stepRequestID  = lastStepRequestID;
 
   // normal walking WALKSTEPs use Foot::NONE, for KICKSTEPs the foot to use has to be specified
-  if (step_buffer.front().foot == Foot::NONE)
+  if (stepBuffer.front().foot == Foot::NONE)
   {
     switch (getMotionStatus().stepControl.moveableFoot)
     {
     case MotionStatus::StepControlStatus::LEFT:
-      foot_to_use = Foot::LEFT;
+      footToUse = Foot::LEFT;
       break;
     case MotionStatus::StepControlStatus::RIGHT:
-      foot_to_use = Foot::RIGHT;
+      footToUse = Foot::RIGHT;
       break;
     case MotionStatus::StepControlStatus::BOTH:
-      if (step_buffer.front().pose.translation.y > 0.0f || step_buffer.front().pose.rotation > 0.0f)
+      if (stepBuffer.front().pose.translation.y > 0.0f || stepBuffer.front().pose.rotation > 0.0f)
       {
-        foot_to_use = Foot::LEFT;
+        footToUse = Foot::LEFT;
       }
       else
       {
-        foot_to_use = Foot::RIGHT;
+        footToUse = Foot::RIGHT;
       }
       break;
     case MotionStatus::StepControlStatus::NONE:
-      foot_to_use = Foot::RIGHT;
+      footToUse = Foot::RIGHT;
       break;
     }
   }
   else
   {
-    foot_to_use = step_buffer.front().foot;
+    footToUse = stepBuffer.front().foot;
   }
   // false means right foot
-  getMotionRequest().walkRequest.stepControl.moveLeftFoot = (foot_to_use != Foot::RIGHT);
+  getMotionRequest().walkRequest.stepControl.moveLeftFoot = (footToUse != Foot::RIGHT);
   STOPWATCH_STOP("PathPlanner2018:execute_steplist");
 }

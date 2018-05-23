@@ -62,31 +62,13 @@ private:
   public:
     Parameters() : ParameterList("PathPlanner2018")
     {
-      PARAMETER_REGISTER(acquire_ball_control_x_threshold) = 170;
-      PARAMETER_REGISTER(acquire_ball_control_y_threshold) = 40;
-
-      /*PARAMETER_REGISTER(sidekick_scale) = 1.0;
-      PARAMETER_REGISTER(short_kick_time) = 300;
-      PARAMETER_REGISTER(long_kick_time) = 300;
-      PARAMETER_REGISTER(sidekick_time) = 300;
-
-      PARAMETER_REGISTER(approach_ball_adapt_control) = true;
-      PARAMETER_REGISTER(approach_ball_adapt_threshold) = 10;
-      PARAMETER_REGISTER(approach_ball_slow_distance) = 50;*/
+      PARAMETER_REGISTER(stepLength) = 80;
 
       syncWithConfig();
     }
     virtual ~Parameters(){}
 
-    double acquire_ball_control_x_threshold;
-    double acquire_ball_control_y_threshold;
-    /*double sidekick_scale;
-    int short_kick_time;
-    int long_kick_time;
-    int sidekick_time;
-    bool approach_ball_adapt_control;
-    int approach_ball_adapt_threshold;
-    int approach_ball_slow_distance;*/
+    double stepLength;
   } params;
 
   // NONE means hip
@@ -98,13 +80,51 @@ private:
   };
   typedef WalkRequest::StepControlRequest::StepType StepType;
 
-  bool acquire_ball_control();
-  bool execute_action();
-
-  void short_kick(const Foot foot);
+  bool forwardKick();
 
   // Stepcontrol
-  struct Step_Buffer_Element {
+  struct StepBufferElement 
+  {
+    void setPose(const Pose2D& p)
+    {
+      pose = p;
+    }
+    void setSpeedDirection(const double s)
+    {
+      speedDirection = s;
+    }
+    void setStepType(const StepType& t)
+    {
+      type = t;
+    }
+    void setTime(const int t)
+    {
+      time = t;
+    }
+    void setCharacter(const double c)
+    {
+      character = c;
+    }
+    void setScale(const double s)
+    {
+      scale = s;
+    }
+    void setFoot(const Foot& f)
+    {
+      foot = f;
+    }
+    void setCoordinate(const WalkRequest::Coordinate& c)
+    {
+      coordinate = c;
+    }
+    void setRestriction(const WalkRequest::StepControlRequest::RestrictionMode& r)
+    {
+      restriction = r;
+    }
+    void setProtected(const bool p)
+    {
+      isProtected = p;
+    }
     Pose2D pose;
     double speedDirection;
     StepType type;
@@ -116,33 +136,25 @@ private:
     WalkRequest::StepControlRequest::RestrictionMode restriction;
     bool isProtected;
   };
-  std::vector<Step_Buffer_Element> step_buffer;
+  std::vector<StepBufferElement> stepBuffer;
 
   // Used to alternate between left and right foot
   // or to specify which foot to use
-  Foot foot_to_use;
+  Foot footToUse;
 
   // Used to synchronize stepIDs of WalkEngine to take control
-  unsigned int last_stepRequestID;
+  unsigned int lastStepRequestID;
 
-  void add_step(Pose2D &pose,
-    const StepType &type,
-    const WalkRequest::Coordinate &coordinate,
-    const double character,
-    const Foot foot,
-    const double scale,
-    const double speedDirection,
-    const WalkRequest::StepControlRequest::RestrictionMode restriction,
-    const bool isProtected,
-    int kick_time);
-  void update_step(Pose2D &pose);
-  void manage_step_buffer();
-  void execute_step_buffer();
+  void addStep(const StepBufferElement& newStep);
+  void updateSpecificStep(const unsigned int index, StepBufferElement& step);
+  void manageStepBuffer();
+  void executeStepBuffer();
 
 
 private:
-  bool kick_planned;
-  bool steps_planned;
+  unsigned int numStepsGeometric;
+  unsigned int numStepsCorrection;
+  unsigned int numStepsPlanned;
 };
 
 #endif // _PathPlanner2018_H_
