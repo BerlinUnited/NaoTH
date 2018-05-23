@@ -19,14 +19,11 @@
 #include "Tools/ColorClasses.h"
 
 //Representations
+#include "Representations/Infrastructure/FrameInfo.h"
+#include "Representations/Infrastructure/CameraInfo.h"
 #include "Representations/Perception/BodyContour.h"
 #include "Representations/Perception/CameraMatrix.h"
 #include "Representations/Modeling/KinematicChain.h"
-#include "Representations/Infrastructure/CameraInfo.h"
-#include "Representations/Infrastructure/FrameInfo.h"
-
-#include <Representations/Modeling/CameraMatrixOffset.h>
-#include <Representations/Perception/CameraMatrix.h>
 
 // debug
 #include "Tools/Debug/DebugRequest.h"
@@ -44,13 +41,11 @@ BEGIN_DECLARE_MODULE(BodyContourProvider)
   PROVIDE(DebugImageDrawingsTop)
 
   REQUIRE(FrameInfo)
-  REQUIRE(KinematicChain)
   REQUIRE(CameraInfo)
   REQUIRE(CameraInfoTop)
-
-  REQUIRE(CameraMatrixOffset)
   REQUIRE(CameraMatrix)
   REQUIRE(CameraMatrixTop)
+  REQUIRE(KinematicChain)
 
   PROVIDE(BodyContour)
   PROVIDE(BodyContourTop)
@@ -90,7 +85,6 @@ private:
                             foot; // the contour of the foot
   } bodyparts;
 
-  
   /** 
   * add a line to BodyContour:
   * take the Position of a robot's limb (Pose3d) and multiply it
@@ -102,7 +96,6 @@ private:
   * updates the grid of the BodyContour representation based on the segment p1--p2
   */
   void updateBodyContour(const Vector2i& p1, const Vector2i& p2, BodyContour::BodyPartID id);
-
 
   void debug() const;
   void drawContur3D(const Pose3D& origin, const std::vector<Vector3d>& c, double sign, ColorClasses::Color color) const;
@@ -117,18 +110,10 @@ private:
 
   CameraInfo::CameraID cameraID;
 
-  // HACK: we do this because the kinematic chain may be inconsistent with the camera matrix
-  /*
-  Pose3D kinematicCameraMatrix;
-  const Pose3D& getCameraMatrix() const {
-    return kinematicCameraMatrix;
-  }
-  */
-
-  DOUBLE_CAM_PROVIDE(BodyContourProvider,DebugImageDrawings);
-
   DOUBLE_CAM_REQUIRE(BodyContourProvider,CameraInfo);
   DOUBLE_CAM_REQUIRE(BodyContourProvider,CameraMatrix);
+
+  DOUBLE_CAM_PROVIDE(BodyContourProvider,DebugImageDrawings);
   DOUBLE_CAM_PROVIDE(BodyContourProvider,BodyContour);
 
 };// end class BodyContourProvider
