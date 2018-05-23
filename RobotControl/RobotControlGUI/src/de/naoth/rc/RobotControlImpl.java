@@ -88,9 +88,12 @@ public class RobotControlImpl extends javax.swing.JFrame
                 path += separator + "./bin/linux32";
             }
         } else {
-            path += separator + "./bin/win32"
-                  + separator + "./bin/win64"
-                  + separator + "./bin/macos";
+            if("amd64".equals(arch)) {
+                path += separator + "./bin/win64";
+            } else {
+                path += separator + "./bin/win32";
+            }
+            path += separator + "./bin/macos";
         }
         
         System.setProperty("java.library.path", path );
@@ -705,10 +708,10 @@ public class RobotControlImpl extends javax.swing.JFrame
   }
   
   @Override
-  public boolean isHighDPI() 
+  public int getFontSize() 
   {
-      return Boolean.valueOf(this.getConfig().getProperty("useHiDPI", "true"))
-          && Toolkit.getDefaultToolkit().getScreenSize().width > 2000;
+      int size = UIManager.getDefaults().getFont("defaultFont") != null ? UIManager.getDefaults().getFont("defaultFont").getSize() : 12;
+      return Integer.parseInt(this.getConfig().getProperty("fontSize", String.valueOf(size)));
   }
   
   public void addToStatusBar(Component c) {
