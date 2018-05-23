@@ -9,11 +9,7 @@
 
 #include "BodyContourProvider.h"
 
-#include "Tools/Math/Geometry.h"
 #include "Tools/CameraGeometry.h"
-#include <Tools/Debug/DebugImageDrawings.h>
-#include <Tools/Debug/DebugDrawings3D.h>
-#include <Tools/Debug/DebugDrawings.h>
 #include "Tools/ImageProcessing/BresenhamLineScan.h"
 
 using namespace std;
@@ -85,7 +81,6 @@ BodyContourProvider::BodyContourProvider()
 
   DEBUG_REQUEST_REGISTER("BodyContourProvider:draw_projected_contour_lines", "draw body contour on the image based on lines", false);
   DEBUG_REQUEST_REGISTER("BodyContourProvider:draw_activated_cells", "draws activated cells", false);
-
 }
 
 void BodyContourProvider::execute(CameraInfo::CameraID id)
@@ -94,15 +89,6 @@ void BodyContourProvider::execute(CameraInfo::CameraID id)
 
   getBodyContour().reset();
   getBodyContour().timestamp = getFrameInfo().getTime();
-
-  // HACK: we do this because the kinematic chain may be inconsistent with the camera mtrix
-  kinematicCameraMatrix = getKinematicChain().theLinks[KinematicChain::Head].M;
-  kinematicCameraMatrix.conc(NaoInfo::robotDimensions.cameraTransformation[cameraID]);
- 
-  // apply the correction
-  kinematicCameraMatrix.rotateY(getCameraMatrixOffset().correctionOffset[cameraID].y) // tilt
-                       .rotateX(getCameraMatrixOffset().correctionOffset[cameraID].x); // roll
-  // HACK: end
 
   // calculate body contours
   add(getKinematicChain().theLinks[KinematicChain::Torso].M,    bodyparts.torso,     1, BodyContour::Torso);
@@ -243,10 +229,8 @@ bool BodyContourProvider::clampSegment(const Vector2i& ul, const Vector2i& lr, V
   return true;
 }//end clampSegment
 
-
- void BodyContourProvider::debug() const
- {
-
+void BodyContourProvider::debug() const
+{
   DEBUG_REQUEST("BodyContourProvider:draw_activated_cells",
     for(int i = 0; i < getBodyContour().gridWidth(); i++) {
       for (int j = 0; j < getBodyContour().gridHeight(); j++) {
@@ -263,6 +247,7 @@ bool BodyContourProvider::clampSegment(const Vector2i& ul, const Vector2i& lr, V
     drawContur3D(getKinematicChain().theLinks[KinematicChain::LFoot].M, bodyparts.foot,  1, ColorClasses::red);
     drawContur3D(getKinematicChain().theLinks[KinematicChain::RFoot].M, bodyparts.foot, -1, ColorClasses::red);
   );
+
   DEBUG_REQUEST("BodyContourProvider:draw_3d:legs",
     drawContur3D(getKinematicChain().theLinks[KinematicChain::LThigh].M, bodyparts.upperLeg,  1, ColorClasses::blue);
     drawContur3D(getKinematicChain().theLinks[KinematicChain::RThigh].M, bodyparts.upperLeg, -1, ColorClasses::blue);
@@ -270,13 +255,16 @@ bool BodyContourProvider::clampSegment(const Vector2i& ul, const Vector2i& lr, V
     drawContur3D(getKinematicChain().theLinks[KinematicChain::LThigh].M, bodyparts.lowerLeg,  1, ColorClasses::blue);
     drawContur3D(getKinematicChain().theLinks[KinematicChain::RThigh].M, bodyparts.lowerLeg, -1, ColorClasses::blue);
   );
+
   DEBUG_REQUEST("BodyContourProvider:draw_3d:torso",
     drawContur3D(getKinematicChain().theLinks[KinematicChain::Torso].M, bodyparts.torso,  1, ColorClasses::green);
   );
+
   DEBUG_REQUEST("BodyContourProvider:draw_3d:shoulders",
     drawContur3D(getKinematicChain().theLinks[KinematicChain::LBicep].M, bodyparts.upperArm,  1, ColorClasses::yellow);
     drawContur3D(getKinematicChain().theLinks[KinematicChain::RBicep].M, bodyparts.upperArm, -1, ColorClasses::yellow);
   );
+
   DEBUG_REQUEST("BodyContourProvider:draw_3d:forearms",
     drawContur3D(getKinematicChain().theLinks[KinematicChain::LForeArm].M, bodyparts.lowerArm,  1, ColorClasses::orange);
     drawContur3D(getKinematicChain().theLinks[KinematicChain::RForeArm].M, bodyparts.lowerArm, -1, ColorClasses::orange);
