@@ -1,0 +1,9 @@
+data/*
+
+# ignore the whistle data 
+*.dat
+*.raw
+*.mat
+*.asv
+
+secret.m

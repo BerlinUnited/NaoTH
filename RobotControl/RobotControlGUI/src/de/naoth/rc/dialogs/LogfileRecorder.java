@@ -23,10 +23,8 @@ import de.naoth.rc.server.Command;
 import java.io.FileOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import javax.swing.DefaultComboBoxModel;
@@ -55,10 +53,9 @@ public class LogfileRecorder extends AbstractDialog
     public static GenericManagerFactory genericManagerFactory;
   }
   
-  //private MessageServer server;
   private LoggerItem selectedLog;
   
-  Map<String, List<String>> selectionLists = new TreeMap<String, List<String>>();
+  Map<String, Collection<String>> selectionLists = new TreeMap<String, Collection<String>>();
   
   StatusApdateHandler statusUpdateHandler = new StatusApdateHandler();
   
@@ -130,7 +127,9 @@ public class LogfileRecorder extends AbstractDialog
       }
       
       public void removeStatusListener(StatusApdateHandler listener) {
-        statusUpdateManager.removeListener(listener);
+        if (statusUpdateManager != null) {
+            statusUpdateManager.removeListener(listener);
+        }
       }
   }
 
@@ -160,8 +159,7 @@ public class LogfileRecorder extends AbstractDialog
     public void newObjectReceived(final byte[] result)
     {
         // remember selected stuff
-        ArrayList<String> selectedOptions = 
-                new ArrayList<String>(stringSelectionPanel.getSelection());
+        Collection<String> selectedOptions = stringSelectionPanel.getSelection();
         stringSelectionPanel.clear();
         String[] strings = (new String(result)).split(" ");
         stringSelectionPanel.addOptions(strings);
@@ -188,17 +186,14 @@ public class LogfileRecorder extends AbstractDialog
     txtTempFile.setEnabled(true);
     cbLogName.setEnabled(true);
 
-    Command cmdOff = selectedLog.getCommand()
-      .addArg("off");
+    if (Plugin.parent.getMessageServer().isConnected()) {
+        Command cmdOff = selectedLog.getCommand().addArg("off");
+        Plugin.commandExecutor.executeCommand(new DefaultHandler(), cmdOff);
 
-    //server.executeSingleCommand(this, cmdOff);
-    Plugin.commandExecutor.executeCommand(new DefaultHandler(), cmdOff);
-    
-    // close file on robot
-    Command cmdClose = selectedLog.getCommand()
-      .addArg("close");
-    //server.executeSingleCommand(this, cmdClose);
-    Plugin.commandExecutor.executeCommand(new DefaultHandler(), cmdClose);
+        // close file on robot
+        Command cmdClose = selectedLog.getCommand().addArg("close");
+        Plugin.commandExecutor.executeCommand(new DefaultHandler(), cmdClose);
+    }
     
     selectedLog.removeStatusListener(statusUpdateHandler);
   }
@@ -369,10 +364,7 @@ public class LogfileRecorder extends AbstractDialog
 
       if(Plugin.parent.checkConnected())
       {
-        Command openCMD = selectedLog.getCommand()
-          .addArg("open", txtTempFile.getText());
-        
-        //server.executeSingleCommand(this, openCMD);
+        Command openCMD = selectedLog.getCommand().addArg("open", txtTempFile.getText());
         Plugin.commandExecutor.executeCommand(new UpdateLogListHandler(), openCMD);
         
         btNew.setEnabled(false);
@@ -406,28 +398,22 @@ public class LogfileRecorder extends AbstractDialog
           for(String item: remaining)
           {
               Command cmdActivate = selectedLog.getCommand().addArg("deactive", item);
-              //server.executeSingleCommand(this, cmdActivate);
               Plugin.commandExecutor.executeCommand(new DefaultHandler(), cmdActivate);
           }
 
           // active all selected items
           Collection<String> selected = stringSelectionPanel.getSelection();
-          for(String item: selected)
-          {
+          for(String item: selected) {
               Command cmdActivate = selectedLog.getCommand().addArg("activate", item);
-              //server.executeSingleCommand(this, cmdActivate);
               Plugin.commandExecutor.executeCommand(new DefaultHandler(), cmdActivate);
           }
           
           // remember selected stuff
-          ArrayList<String> selectedOptions = 
-            new ArrayList<String>(stringSelectionPanel.getSelection());
-          selectionLists.put("Last Record", selectedOptions);
+          selectionLists.put("Last Record", stringSelectionPanel.getSelection());
         }
         
         // activate permantent logging
-        Command cmdOnOff = selectedLog.getCommand()
-          .addArg((btRecord.isSelected() ? "on" : "off"));
+        Command cmdOnOff = selectedLog.getCommand().addArg((btRecord.isSelected() ? "on" : "off"));
         //server.executeSingleCommand(this, cmdOnOff);
         Plugin.commandExecutor.executeCommand(new DefaultHandler(), cmdOnOff);
         
@@ -505,7 +491,7 @@ public class LogfileRecorder extends AbstractDialog
 
     private void cbSelectionSchemeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbSelectionSchemeActionPerformed
         stringSelectionPanel.clearSelection();
-        List<String> selection = selectionLists.get((String)cbSelectionScheme.getSelectedItem());
+        Collection<String> selection = selectionLists.get((String)cbSelectionScheme.getSelectedItem());
         stringSelectionPanel.select(selection);
     }//GEN-LAST:event_cbSelectionSchemeActionPerformed
 
@@ -619,9 +605,8 @@ public class LogfileRecorder extends AbstractDialog
   @Override
   public void dispose()
   {
-    // stop recording
+    // stop recording if necessary
     close();
-    //System.out.println("Dispose is not implemented for: " + this.getClass().getName());
   }
 
 }//end class

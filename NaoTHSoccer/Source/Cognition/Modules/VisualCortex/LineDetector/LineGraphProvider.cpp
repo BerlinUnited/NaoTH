@@ -116,7 +116,7 @@ void LineGraphProvider::execute(CameraInfo::CameraID id)
     //const ScanLineEdgelPercept::EdgelPair& er = getScanLineEdgelPercept().pairs[edgelPair.right];
 
     if(projectedWidthLeft > parameters.maximalProjectedLineWidth && projectedWidthRight > parameters.maximalProjectedLineWidth) {
-      getLineGraphPercept().edgels.push_back(edgel);
+      getLineGraphPercept().edgelsOnField.push_back(edgel);
         
       DEBUG_REQUEST("Vision:LineGraphProvider:draw_line_graph",
         FIELD_DRAWING_CONTEXT;

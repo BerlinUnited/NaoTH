@@ -40,7 +40,7 @@ public:
   double getRotation();
 
   ActionId bestAction;
-  double rotation;
+  //double rotation;
   Vector2d expectedBallPos;
 
   virtual void print(std::ostream& stream) const
@@ -48,7 +48,7 @@ public:
 	  stream << "expectedBallPos.x = " << expectedBallPos.x << std::endl;
 	  stream << "expectedBallPos.y = " << expectedBallPos.y << std::endl;
     stream << "bestAction = " << getName(bestAction) << std::endl;
-    stream << "rotation for bestAction = " << Math::toDegrees(rotation) << std::endl;
+    //stream << "rotation for bestAction = " << Math::toDegrees(rotation) << std::endl;
   }
 };
 

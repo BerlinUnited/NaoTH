@@ -75,12 +75,7 @@ void LogFileScanner::scanFile()
 
     // read the representation name
     std::string currentName;
-    char c = '\0';
-    logFile.read(&c, 1);
-    while(c != '\0') {
-      currentName += c;
-      logFile.read(&c, 1);
-    }
+    std::getline( logFile, currentName, '\0' );
 
     if(currentName.size() == 0) {
       std::cerr << "[LogFileScanner] Frame " << currentFrameNumber << ": "
@@ -141,12 +136,7 @@ void LogFileScanner::readFrame(unsigned int currentFrame, Frame& frame)
 
     // read the name of the representation
     std::string name;
-    char c = '\0';
-    logFile.read(&c, 1);
-    while(c != '\0') {
-      name += c;
-      logFile.read(&c, 1);
-    }
+    std::getline( logFile, name, '\0' );
 
     // read the size of the data
     unsigned int dataSize = 0;

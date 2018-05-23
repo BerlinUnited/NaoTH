@@ -173,12 +173,13 @@ ScanLineEdgelPercept::EndPoint ScanLineEdgelDetector::scanForEdgels(int scan_id,
   MaximumScan<int,int> positiveScan(peak_point_max.y, t_edge);
   MaximumScan<int,int> negativeScan(peak_point_min.y, t_edge);
 
+  Pixel pixel;
   int f_last = getImage().getY(point.x, point.y); // scan the first point
   // just go up
   for(;point.y >= end.y + step; point.y -= step)
   {
     // get the brightness chanel
-    Pixel pixel = getImage().get(point.x, point.y);
+    getImage().get(point.x, point.y, pixel);
     //int f_y = getImage().getY(point.x, point.y);
     int f_y = pixel.y;
     int g = f_y - f_last;
@@ -244,8 +245,7 @@ ScanLineEdgelPercept::EndPoint ScanLineEdgelDetector::scanForEdgels(int scan_id,
     // HACK
     if(getFieldColorPercept().isFieldColor(pixel.a, pixel.b, pixel.c))
     {
-      double greenDensity = movingWindow.getSum()/movingWindow.size();
-      if(greenDensity > theParameters.minEndPointGreenDensity)
+      if(movingWindow.getAverage() > theParameters.minEndPointGreenDensity)
       {
         lastGreenPoint = point;
         endPoint.greenFound = true;
@@ -328,17 +328,25 @@ bool ScanLineEdgelDetector::validDistance(const Vector2i& pointOne, const Vector
 
 ColorClasses::Color ScanLineEdgelDetector::estimateColorOfSegment(const Vector2i& begin, const Vector2i& end) const
 {
-  ASSERT(begin.x == end.x && end.y <= begin.y);
+  ASSERT(begin.x == end.x);
+
+  // switch if necessary
+  int beginY = begin.y;
+  int endY = end.y;
+  if(end.y > begin.y) {
+    beginY = end.y;
+    endY = begin.y;
+  }
 
   const int numberOfSamples = theParameters.green_sampling_points;
-  int length = begin.y - end.y;
+  int length = beginY - endY; //begin.y - end.y;
   int numberOfGreen = 0;
-  Vector2i point(begin);
+  Vector2i point(begin.x, beginY);
   Pixel pixel;
 
   if(numberOfSamples >= length) 
   {
-    for(; point.y > end.y; point.y--)
+    for(; point.y > endY; --point.y)
     {
       getImage().get(point.x, point.y, pixel);
       numberOfGreen += getFieldColorPercept().isFieldColor(pixel.a, pixel.b, pixel.c);
@@ -349,10 +357,10 @@ ColorClasses::Color ScanLineEdgelDetector::estimateColorOfSegment(const Vector2i
     int step = length / numberOfSamples;
     int offset = Math::random(length); // number in [0,length-1]
 
-    for(int i = 0; i < numberOfSamples; i++)
+    for(int i = 0; i < numberOfSamples; ++i)
     {
       int k = (offset + i*step) % length;
-      point.y = end.y + k;
+      point.y = endY + k;
       getImage().get(point.x, point.y, pixel);
       numberOfGreen += getFieldColorPercept().isFieldColor(pixel.a, pixel.b, pixel.c);
     }
@@ -382,22 +390,31 @@ Vector2d ScanLineEdgelDetector::calculateGradient(const Vector2i& point) const
   //apply Sobel Operator on (pointX, pointY)
   //and calculate gradient in x and y direction by that means
   
+  const int x0 = point.x-offset;
+  const int y0 = point.y-offset;
+  const int x1 = point.x+offset;
+  const int y1 = point.y+offset;
+
+  // NOTE: char type is converted to int before doing the actual calculations
+  //       so we don't need cast here
   gradient.x =
-       getImage().getY_direct(point.x-offset, point.y+offset)
-    +2*getImage().getY_direct(point.x       , point.y+offset)
-    +  getImage().getY_direct(point.x+offset, point.y+offset)
-    -  getImage().getY_direct(point.x-offset, point.y-offset)
-    -2*getImage().getY_direct(point.x       , point.y-offset)
-    -  getImage().getY_direct(point.x+offset, point.y-offset);
+       getImage().getY_direct(x0, y1)
+    +2*getImage().getY_direct(point.x, y1)
+    +  getImage().getY_direct(x1, y1)
+    -  getImage().getY_direct(x0, y0)
+    -2*getImage().getY_direct(point.x, y0)
+    -  getImage().getY_direct(x1, y0);
 
   gradient.y =
-       getImage().getY_direct(point.x-offset, point.y-offset)
-    +2*getImage().getY_direct(point.x-offset, point.y       )
-    +  getImage().getY_direct(point.x-offset, point.y+offset)
-    -  getImage().getY_direct(point.x+offset, point.y-offset)
-    -2*getImage().getY_direct(point.x+offset, point.y       )
-    -  getImage().getY_direct(point.x+offset, point.y+offset);
+       getImage().getY_direct(x0, y0)
+    +2*getImage().getY_direct(x0, point.y)
+    +  getImage().getY_direct(x0, y1)
+    -  getImage().getY_direct(x1, y0)
+    -2*getImage().getY_direct(x1, point.y)
+    -  getImage().getY_direct(x1, y1);
+
 
   //calculate the angle of the gradient
   return gradient.normalize();
 }//end calculateGradient
+

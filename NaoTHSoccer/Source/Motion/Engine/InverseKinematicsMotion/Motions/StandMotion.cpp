@@ -64,7 +64,7 @@ void StandMotion::execute()
     jointMonitors[i].updateMonitor(getMotorJointData().position[i] + jointOffsets[i], getSensorJointData().position[i],getSensorJointData().electricCurrent[i]);
   }
 
-  PLOT("StandMotion:State",state);
+  PLOT("StandMotion:State",(int)state);
 
   switch(state)
   {

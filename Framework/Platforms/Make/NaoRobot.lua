@@ -9,23 +9,40 @@ project "NaoRobot"
   }
   
   files {
-  "../Source/DCM/NaoRobot/**.cpp", 
-  "../Source/DCM/NaoRobot/**.h",
-  "../Source/DCM/Tools/**.cpp", 
-  "../Source/DCM/Tools/**.h"
+    "../Source/DCM/NaoRobot/**.cpp", 
+    "../Source/DCM/NaoRobot/**.h",
+    "../Source/DCM/Tools/**.cpp", 
+    "../Source/DCM/Tools/**.h"
   }
   
   links {
     "rt",
+    "z",
     "gthread-2.0",
     "glib-2.0",
     "gio-2.0",
-    "z",
     "gmodule-2.0",
     "gobject-2.0",
     "protobuf",
     "asound",
-    "pthread"
+    "pthread",
+    -- Whistledetector stuff
+    "fftw3",
+    "pulse-simple",
+    "pulse",
+    "pulsecommon-3.99",
+    "json",
+    "dbus-1",
+    "sndfile",
+    "asyncns",
+    "FLAC",
+    "gdbm",
+    "vorbis",
+    "vorbisenc",
+    "ogg",
+    "cap",
+    "attr",
+    "wrap"
   }
 
   targetname "naoth"

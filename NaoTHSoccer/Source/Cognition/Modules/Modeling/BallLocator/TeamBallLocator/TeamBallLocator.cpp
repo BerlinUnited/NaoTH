@@ -16,8 +16,14 @@ TeamBallLocator::TeamBallLocator()
   getDebugParameterList().add(&theParameters);
 }
 
+TeamBallLocator::~TeamBallLocator()
+{
+	getDebugParameterList().remove(&theParameters);
+}
+
 void TeamBallLocator::execute()
 {
+  // collect all balls seen by teammates and myself
   for (auto const& it: getTeamMessage().data) {
     if(it.first != getPlayerInfo().playerNumber)
     {
@@ -32,14 +38,15 @@ void TeamBallLocator::execute()
       // inactive robots
       if(isRobotInactive) { continue; }
       
-      // -1 means invalid ball
+      // -1 means "ball never seen" and only "new" messages
       if(msg.ballAge >= 0 && lastMessages[playerNumber] < msg.frameInfo.getTime())
       {
         lastMessages[playerNumber] = msg.frameInfo.getTime();
-        // collect messages
+        // global position of the ball and time last seen
         Vector2dTS ballPosTS;
         ballPosTS.vec = msg.pose * msg.ballPosition;
         ballPosTS.t = msg.frameInfo.getTime() - static_cast<int>(msg.ballAge);
+        // collect balls
         ballPosHist.push_back(ballPosTS);
 
         // set time to the latest received message
@@ -48,25 +55,26 @@ void TeamBallLocator::execute()
           getTeamBallModel().time = msg.frameInfo.getTime();
         }
       }
-    } else
-    {
+    } else {
+      // me myself and only "new" messages
       const unsigned int& playerNumber = it.first;
       const TeamMessageData& msg = it.second;
       
-      // -1 means invalid ball
+      // -1 means "ball never seen"
       if(msg.ballAge >= 0 && lastMessages[playerNumber] < msg.frameInfo.getTime())
       {
         lastMessages[playerNumber] = msg.frameInfo.getTime();
-        // collect messages
+        // global position of the ball and time last seen
         Vector2dTS ballPosTS;
         ballPosTS.vec = msg.pose * msg.ballPosition;
         ballPosTS.t = msg.frameInfo.getTime() - static_cast<int>(msg.ballAge);
+        // collect balls
         ownballPosHist.push_back(ballPosTS);
       }
     }
   }
 
-  // find oldest messages and erase them
+  // find oldest balls and erase the ones, which ar older than 'maxTimeOffset'
   sort(ballPosHist.begin(), ballPosHist.end());
   std::vector<Vector2dTS>::iterator cutOff;
   // we are iterating through the sorted array from small (old) to high (new) times
@@ -80,7 +88,7 @@ void TeamBallLocator::execute()
 
   ballPosHist.erase(ballPosHist.begin(), cutOff);
   
-  // find oldest messages and erase them
+  // find oldest balls and erase the ones, which ar older than 'maxTimeOffset'
   sort(ownballPosHist.begin(), ownballPosHist.end());
   // we are iterating through the sorted array from small (old) to high (new) times
   for(cutOff = ownballPosHist.begin(); cutOff != ownballPosHist.end(); cutOff++)
