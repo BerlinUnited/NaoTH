@@ -27,6 +27,9 @@ class LedStatusMonitor(threading.Thread):
                 # not connected to (gopro) network
                 self.sendMessage('{{"blue":"blink", "delay":"0.1", "time":"{}"}}'.format(1))
             elif self.network == 2:
+                # connecting to (gopro) network
+                self.sendMessage('{{"blue":"blink", "delay":"0.5", "time":"{}"}}'.format(1))
+            elif self.network == 3:
                 # connected to (gopro) network ...
                 if self.gopro <= 1:
                     # ... but not to the gopro itself
@@ -69,8 +72,11 @@ class LedStatusMonitor(threading.Thread):
         self.__cancel.set()
         Event.unregisterListener(self)
 
-    def network_connected(self, evt:Event.NetworkConnected):
+    def network_connecting(self, evt:Event.NetworkConnecting):
         self.network = 2
+
+    def network_connected(self, evt:Event.NetworkConnected):
+        self.network = 3
 
     def network_disconnected(self, evt:Event.NetworkDisconnected):
         self.network = 1

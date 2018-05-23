@@ -57,10 +57,11 @@ class Network(threading.Thread):
                     time.sleep(1)
                 else:
                     logger.info("Waiting for connection to %s", self.ssid)
+                    Event.fire(Event.NetworkConnecting())
                     network = self.manager.connectToSSID(device, self.ssid, self.passwd)
 
                     if network is None:
-                        time.sleep(10)
+                        self.__timer.wait(10)
                     else:
                         logger.info("Connected to %s", network)
                         Event.fire(Event.NetworkConnected())
@@ -88,6 +89,7 @@ class Network(threading.Thread):
 
     def cancel(self):
         self.__cancel.set()
+        self.manager.cancel()
         try:
             self.__timer.set()
         except Exception as e:
@@ -97,7 +99,7 @@ class Network(threading.Thread):
 
 class NetworkManager:
     def __init__(self):
-        pass
+        self._cancel = threading.Event()
 
     def getWifiDevices(self):
         ''' Retrieves all wifi devices.
@@ -160,6 +162,9 @@ class NetworkManager:
 
     def getAPmac(self, device: str):
         return None
+
+    def cancel(self):
+        self._cancel.set()
 
 
 class NetworkManagerNmcli(NetworkManager):
@@ -271,13 +276,15 @@ class NetworkManagerIw(NetworkManager):
         '''
             determine current network:  iwgetid <device> -r
         '''
+        # old: iwgetid %s -r / wpa_cli -i %s status
 
-        logger.debug("Get current wifi SSID: 'iwgetid %s -r'", device)
-        result = subprocess.run(['iwgetid', device, '-r'], stdout=subprocess.PIPE)
+        logger.debug("Get current wifi SSID: 'iwconfig %s'", device)
+        result = subprocess.run(['iwconfig', device], stdout=subprocess.PIPE)
+        search = re.search(r'ESSID:(\S+)', result.stdout.decode('utf-8').strip(), re.M)
         # do we have an established connection
-        if result.returncode == 0:
+        if search:
             # return SSID of current connection
-            return result.stdout.decode('utf-8').strip()
+            return search.group(1).strip()
 
         return None
 
@@ -326,7 +333,7 @@ class NetworkManagerIw(NetworkManager):
             subprocess.run(['wpa_cli', '-i', device, 'select_network', str(network_id)], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
             # wait max. 10s or until connected
             it = 0
-            while (self.getCurrentSSID(device) is None or self.getCurrentSSID(device) != ssid) and it < 10:
+            while (self.getCurrentSSID(device) is None or self.getCurrentSSID(device) != ssid) and it < 10 and not self._cancel.is_set():
                 time.sleep(1)
                 it += 1
             # check if connecting was successful
