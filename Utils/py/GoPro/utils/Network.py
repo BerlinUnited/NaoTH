@@ -61,6 +61,8 @@ class Network(threading.Thread):
                     network = self.manager.connectToSSID(device, self.ssid, self.passwd)
 
                     if network is None:
+                        logger.error("Couldn't connect to network '%s' with device '%s'!", self.ssid, self.device)
+                        Event.fire(Event.NetworkDisconnected())
                         self.__timer.wait(10)
                     else:
                         logger.info("Connected to %s", network)
@@ -280,7 +282,7 @@ class NetworkManagerIw(NetworkManager):
 
         logger.debug("Get current wifi SSID: 'iwconfig %s'", device)
         result = subprocess.run(['iwconfig', device], stdout=subprocess.PIPE)
-        search = re.search(r'ESSID:(\S+)', result.stdout.decode('utf-8').strip(), re.M)
+        search = re.search(r'ESSID:"(\S+)"', result.stdout.decode('utf-8').strip(), re.M)
         # do we have an established connection
         if search:
             # return SSID of current connection
@@ -311,50 +313,43 @@ class NetworkManagerIw(NetworkManager):
             connect to network:         wpa_cli -i <device> select_network <network_id>
             configure new network:      wpa_cli -i <device> reconfigure
         '''
-
         # make sure the device is up
         logger.debug("Bringing device up: 'ifconfig %s up'", device)
         subprocess.run(['ifconfig', device, 'up'], stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
 
-        # get all configured wifi networks
-        network_id = -1
-        logger.debug("Check if wifi network profile already exists: 'wpa_cli -i %s list_networks'", device)
-        result = subprocess.run(['wpa_cli', '-i', device, 'list_networks'], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL).stdout.decode('utf-8').strip()
-        # ... and find network ID of configured wpa network, which is the given one
-        for networks in result.split('\n'):
-            match = re.search('(\d+)\s+(\w+)\s+(\w+)', networks.strip())
-            if match and match.group(2) == ssid:
-                network_id = int(match.group(1))
+        # stop running wpa_supplicant instance
+        subprocess.run(['wpa_cli', '-i', device, 'terminate'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
-        # exists a saved wifi network with the given SSID?
-        if network_id >= 0:
-            logger.debug("Connect to existing wifi network profile: 'wpa_cli -i %s select_network %d'", device, network_id)
-            # try to activate the saved wifi network with the given SSID
-            subprocess.run(['wpa_cli', '-i', device, 'select_network', str(network_id)], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        wpa_file = "/tmp/wpa_gopro.conf"
+        logger.debug("Create a new wifi network profile in '%s'", wpa_file)
+        try:
+            f = open(wpa_file, "w")
+            f.writelines([
+                'ctrl_interface=/run/wpa_supplicant\n'
+                'update_config=1\n\n'
+                'network={\n',
+                '\tssid="' + str(ssid) + '"\n',
+                '\tpsk="' + str(passwd) + '"\n',
+                '}\n'
+            ])
+            #f.writelines(['network={\n', 'ssid="' + ssid + '"\n', 'psk="' + passwd + '"\n', '}\n'])
+            f.close()
+
+            # (re-)start the wpa_supplicant deamon
+            logger.debug("Start wpa_supplicant with config: '%s'", wpa_file)
+            subprocess.run(['wpa_supplicant', '-B', '-i', device, '-c', wpa_file], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+
             # wait max. 10s or until connected
             it = 0
             while (self.getCurrentSSID(device) is None or self.getCurrentSSID(device) != ssid) and it < 10 and not self._cancel.is_set():
                 time.sleep(1)
                 it += 1
-            # check if connecting was successful
-            if ssid == self.getCurrentSSID(device):
+            # check if connection was successful and return
+            if self.getCurrentSSID(device) == ssid:
                 return ssid
-            logger.error("Couldn't connect to network '%s' with device '%s'!", ssid, device)
-        # ... else create new connection - if password given
-        elif passwd is not None:
-            logger.debug("Create a new wifi network profile in '/etc/wpa_supplicant/wpa_supplicant.conf'")
-            try:
-                f = open("/etc/wpa_supplicant/wpa_supplicant.conf", "a")
-                f.writelines(['network={\n', 'ssid="'+ssid+'"\n', 'psk="'+passwd+'"\n','}\n'])
-                f.close()
-                logger.debug("Update network config: 'wpa_cli -i %s reconfigure'", device)
-                subprocess.run(['wpa_cli', '-i', device, 'reconfigure'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-                # don't provide passwd, otherwise we could write 'new' config multiple time!
-                return self._connect(device,ssid)
-            except:
-                logger.critical("Root permission needed to add wifi network!")
-        else:
-            logger.error("Could not connect to %s, password required!", ssid)
+        except:
+            logger.critical("Error creating wifi network config file ({})!".format(wpa_file))
+
         return None
 
 '''

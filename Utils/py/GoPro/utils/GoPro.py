@@ -83,7 +83,7 @@ class GoPro(threading.Thread):
     def updateStatus(self):
         if self.cam:
             raw = self.cam.getStatusRaw()
-            if raw:
+            if raw and self.cam:
                 js = json.loads(raw)
                 self.cam_status['mode'] = self.cam.parse_value("mode", js[constants.Status.Status][constants.Status.STATUS.Mode])
                 self.cam_status['recording'] = (js[constants.Status.Status][constants.Status.STATUS.IsRecording] == 1)
