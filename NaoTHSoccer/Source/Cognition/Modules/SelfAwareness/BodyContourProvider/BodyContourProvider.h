@@ -50,6 +50,7 @@ BEGIN_DECLARE_MODULE(BodyContourProvider)
 
   REQUIRE(CameraMatrixOffset)
   REQUIRE(CameraMatrix)
+  REQUIRE(CameraMatrixTop)
 
   PROVIDE(BodyContour)
   PROVIDE(BodyContourTop)
@@ -127,7 +128,7 @@ private:
   DOUBLE_CAM_PROVIDE(BodyContourProvider,DebugImageDrawings);
 
   DOUBLE_CAM_REQUIRE(BodyContourProvider,CameraInfo);
-  //DOUBLE_CAM_REQUIRE(BodyContourProvider,CameraMatrix);
+  DOUBLE_CAM_REQUIRE(BodyContourProvider,CameraMatrix);
   DOUBLE_CAM_PROVIDE(BodyContourProvider,BodyContour);
 
 };// end class BodyContourProvider

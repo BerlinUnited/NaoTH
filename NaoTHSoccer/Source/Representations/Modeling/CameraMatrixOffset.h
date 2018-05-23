@@ -67,7 +67,6 @@ public:
     stream << "Roll  (x): "<< cam_rot[naoth::CameraInfo::Top].x  << " rad" << std::endl;
     stream << "Pitch (y): "<< cam_rot[naoth::CameraInfo::Top].y  << " rad" << std::endl;
     stream << "Yaw   (z): "<< cam_rot[naoth::CameraInfo::Top].z  << " rad" << std::endl;
-
     stream << "----BottomCam-----------" << std::endl;
     stream << "Roll  (x): "<< cam_rot[naoth::CameraInfo::Bottom].x  << " rad" << std::endl;
     stream << "Pitch (y): "<< cam_rot[naoth::CameraInfo::Bottom].y  << " rad" << std::endl;
@@ -106,7 +105,6 @@ class Serializer<CameraMatrixOffset>
     google::protobuf::io::IstreamInputStream buf(&stream);
     msg.ParseFromZeroCopyStream(&buf);
     
-    ASSERT(msg.correctionoffset().size() == naoth::CameraInfo::numOfCamera);
     for(int id=0; id < naoth::CameraInfo::numOfCamera; id++) {
         naoth::DataConversion::fromMessage(msg.correctionoffsetcam(id), representation.cam_rot[id]);
     }
