@@ -8,7 +8,7 @@ secret()
 % adds a raw file to the whistle capture database
 try
     load(capture_database_path)
-     disp('INFO: using a previously created database')
+    disp('INFO: using a previously created database')
 catch
     disp('INFO: no previous mat file was found')
     capture_database = struct;
@@ -96,15 +96,30 @@ for i=1:length(folderContents)
         capture.annotations = annot;
     end
     clear rate annot
-        
+    
+    % checks if an event struct exists in the database
     if isfield(capture_database, char(event_name))
+        % check if entry is already there via rawData comparision
+        % -> disabled because it takes too long
+%         event_struct = capture_database.(char(event_name));
+%         for j=1:length(event_struct)
+%             test_raw_data = event_struct(j).rawData;
+%             if(isequal(test_raw_data, capture.rawData))
+%                 break
+%             else
+%                 % append capture to event struct
+%                 capture_database.(char(event_name)) = [capture_database.(char(event_name)) capture];
+%             end
+%         end
+        % append capture to event struct
         capture_database.(char(event_name)) = [capture_database.(char(event_name)) capture];
     else
+        % create new event struct
         capture_database.(char(event_name)) = capture;
     end
-%     clear capture
+
 end
 
 %% Save capture database
 disp('Saving Capture database');
-save(capture_database_path, 'capture_database')
+save(capture_database_path, 'capture_database','-v7.3')
