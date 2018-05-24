@@ -78,11 +78,14 @@ private:
     LEFT,
     NONE
   };
-  typedef WalkRequest::StepControlRequest::StepType StepType;
 
+  typedef WalkRequest::StepControlRequest::StepType StepType;
+  typedef WalkRequest::StepControlRequest::RestrictionMode RestrictionMode;
+  typedef WalkRequest::Coordinate Coordinate;
+
+  bool acquireBallControl(const Foot& foot);
   void forwardKick(const Foot& foot);
 
-  // Stepcontrol
   struct StepBufferElement 
   {
     void setPose(const Pose2D& p)
@@ -117,7 +120,7 @@ private:
     {
       coordinate = c;
     }
-    void setRestriction(const WalkRequest::StepControlRequest::RestrictionMode& r)
+    void setRestriction(const RestrictionMode& r)
     {
       restriction = r;
     }
@@ -133,7 +136,7 @@ private:
     double scale;
     Foot foot;
     WalkRequest::Coordinate coordinate;
-    WalkRequest::StepControlRequest::RestrictionMode restriction;
+    RestrictionMode restriction;
     bool isProtected;
   };
   std::vector<StepBufferElement> stepBuffer;

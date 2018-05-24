@@ -50,7 +50,10 @@ void PathPlanner2018::execute()
     }
     break;
   case PathModel::PathPlanner2018Routine::GO:
-    forwardKick(Foot::LEFT);
+    if (acquireBallControl(Foot::LEFT))
+    {
+      forwardKick(Foot::LEFT);
+    }
     break;
   }
 
@@ -58,42 +61,42 @@ void PathPlanner2018::execute()
   executeStepBuffer();
 }
 
-void PathPlanner2018::forwardKick(const Foot& foot)
+bool PathPlanner2018::acquireBallControl(const Foot& foot)
 {
-  Vector2d ball_pos;
-  WalkRequest::Coordinate coordinate;
-  if (foot == Foot::RIGHT)
-  {
-    ball_pos = getBallModel().positionPreviewInRFoot;
-    coordinate = WalkRequest::RFoot;
-  }
-  else if (foot == Foot::LEFT)
-  {
-    coordinate = WalkRequest::LFoot;
-    ball_pos = getBallModel().positionPreviewInLFoot;
-  }
-  const double ball_radius = getFieldInfo().ballRadius;
-  const double ball_rot    = ball_pos.angle();
-
-  // TODO: Right now this is a very simple path planned to do step coordination
-  //       we want to replace this with more sophisticated ways of acquiring a path
-  double numEquidistanSteps = ball_pos.abs() / params.stepLength;
-
   // I always execute the steps that were planned before planning new steps
   // TODO: when do I want to flush this if I ever want to?
   if (stepBuffer.empty())
   {
+    Vector2d ball_pos;
+    Coordinate coordinate;
+
+    if (foot == Foot::RIGHT)
+    {
+      ball_pos   = getBallModel().positionPreviewInRFoot;
+      coordinate = Coordinate::RFoot;
+    }
+    else if (foot == Foot::LEFT)
+    {
+      coordinate = Coordinate::LFoot;
+      ball_pos   = getBallModel().positionPreviewInLFoot;
+    }
+    const double ball_radius = getFieldInfo().ballRadius;
+    const double ball_rot    = ball_pos.angle();
+
+    // TODO: Right now this is a very simple path planned to do step coordination
+    //       we want to replace this with more sophisticated ways of acquiring a path
+    double numEquidistanSteps = ball_pos.abs() / params.stepLength;
+
     // Am I ready for a kick or still walking to the ball?
-    // In other words: Can I only perform one step before touching the ball or more?
+    // In other words: Can I only perform one step before touching the ball or more steps?
     if (numEquidistanSteps > 1 + ball_radius / params.stepLength)
     {
-      // If the number of possible steps is even but the foot that is moveable
+      // If the number of possible steps is even but the foot that is movable
       // is the foot that is supposed to kick we need to make a correction step first
-      if (ball_pos.abs() < 400 
-        && getMotionStatus().stepControl.moveableFoot == foot 
+      if (ball_pos.abs() < 400
+        && getMotionStatus().stepControl.moveableFoot == foot
         && static_cast<int>(std::ceil(numEquidistanSteps)) % 2 == 0)
       {
-        std::cout << "Correction Step!" << std::endl;
         const double translation_xy = params.stepLength * 0.75;
         StepBufferElement correction_step;
         correction_step.setPose({ ball_rot, std::min(translation_xy, ball_pos.x), std::min(translation_xy, ball_pos.y) });
@@ -103,7 +106,7 @@ void PathPlanner2018::forwardKick(const Foot& foot)
         correction_step.setCoordinate(coordinate);
         correction_step.setFoot(foot);
         correction_step.setSpeedDirection(Math::fromDegrees(0.0));
-        correction_step.setRestriction(WalkRequest::StepControlRequest::HARD);
+        correction_step.setRestriction(RestrictionMode::HARD);
         correction_step.setProtected(false);
         correction_step.setTime(250);
 
@@ -111,7 +114,6 @@ void PathPlanner2018::forwardKick(const Foot& foot)
       }
       else
       {
-        std::cout << "Walk to ball" << std::endl;
         const double translation_xy = params.stepLength;
         StepBufferElement new_step;
         new_step.setPose({ ball_rot, std::min(translation_xy, ball_pos.x), std::min(translation_xy, ball_pos.y) });
@@ -121,56 +123,74 @@ void PathPlanner2018::forwardKick(const Foot& foot)
         new_step.setCoordinate(coordinate);
         new_step.setFoot(Foot::NONE);
         new_step.setSpeedDirection(Math::fromDegrees(0.0));
-        new_step.setRestriction(WalkRequest::StepControlRequest::HARD);
+        new_step.setRestriction(RestrictionMode::HARD);
         new_step.setProtected(false);
         new_step.setTime(250);
 
         addStep(new_step);
       }
     }
-    // I am kicking
     else
     {
-      switch (foot) 
-      {
-      case Foot::LEFT:
-        coordinate = WalkRequest::RFoot;
-        break;
-      case Foot::RIGHT:
-        coordinate = WalkRequest::LFoot;
-        break;
-      case Foot::NONE:
-        ASSERT(false);
-      }
-
-      // The kick
-      StepBufferElement new_step;
-      new_step.setPose({ 0.0, 500.0, 0.0 });
-      new_step.setStepType(StepType::KICKSTEP);
-      new_step.setCharacter(1.0);
-      new_step.setScale(0.7);
-      new_step.setCoordinate(coordinate);
-      new_step.setFoot(foot);
-      new_step.setSpeedDirection(Math::fromDegrees(0.0));
-      new_step.setRestriction(WalkRequest::StepControlRequest::SOFT);
-      new_step.setProtected(true);
-      new_step.setTime(300);
-
-      addStep(new_step);
-
-      // The zero step
-      new_step.setStepType(StepType::ZEROSTEP);
-      addStep(new_step);
-
-      // The retracting walk step
-      new_step.setPose({ 0.0, 0.0, 0.0 });
-      new_step.setStepType(StepType::WALKSTEP);
-      addStep(new_step);
+      return true;
     }
+  }
+
+  return false;
+}
+
+void PathPlanner2018::forwardKick(const Foot& foot)
+{
+  if (stepBuffer.empty())
+  {
+    Coordinate coordinate;
+    if (foot == Foot::RIGHT)
+    {
+      coordinate = Coordinate::RFoot;
+    }
+    else if (foot == Foot::LEFT)
+    {
+      coordinate = Coordinate::LFoot;
+    }
+
+    switch (foot)
+    {
+    case Foot::LEFT:
+      coordinate = Coordinate::RFoot;
+      break;
+    case Foot::RIGHT:
+      coordinate = Coordinate::LFoot;
+      break;
+    case Foot::NONE:
+      ASSERT(false);
+    }
+
+    // The kick
+    StepBufferElement new_step;
+    new_step.setPose({ 0.0, 500.0, 0.0 });
+    new_step.setStepType(StepType::KICKSTEP);
+    new_step.setCharacter(1.0);
+    new_step.setScale(0.7);
+    new_step.setCoordinate(coordinate);
+    new_step.setFoot(foot);
+    new_step.setSpeedDirection(Math::fromDegrees(0.0));
+    new_step.setRestriction(RestrictionMode::SOFT);
+    new_step.setProtected(true);
+    new_step.setTime(300);
+
+    addStep(new_step);
+
+    // The zero step
+    new_step.setStepType(StepType::ZEROSTEP);
+    addStep(new_step);
+
+    // The retracting walk step
+    new_step.setPose({ 0.0, 0.0, 0.0 });
+    new_step.setStepType(StepType::WALKSTEP);
+    addStep(new_step);
   }
 }
 
-// Stepcontrol
 void PathPlanner2018::addStep(const StepBufferElement& new_step)
 {
   stepBuffer.push_back(new_step);
