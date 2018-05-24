@@ -1,6 +1,5 @@
-clear all
+clear variables
 clc
-
 %% init defaults
 addpath('../common')
 secret()
@@ -9,19 +8,24 @@ databases = struct;
 % load databases
 try
     load(capture_database_path)
-%     databases = [databases capture_database];
 catch
+    disp('ERROR: Could not load capture database')
+    return
 end
+
 try
     load(reference_database_path)
-%     databases = [databases reference_database];
 catch
+    disp('ERROR: Could not load reference database')
+    return
 end
-try
-    load(tests_database_path)
-%     databases = [databases tests_database];
-catch
-end
+
+% try
+%     load(tests_database_path)
+% catch
+%     disp('ERROR: Could not load test database')
+%     return
+% end
 
 %% config
 windows_size = 1024;
@@ -33,9 +37,6 @@ run_cross = true;
 
 fftw('planner','estimate');
 
-% %% Get a single capture
-% go17_recordings = capture_database.go17_recordings;
-% rc17_recordings = capture_database.rc17_recordings;
 database = capture_database;
 
 create_detection_plots = true;
@@ -50,15 +51,17 @@ ref = reference_database.go17;
 
 ref_stat = struct;
 for r = 1:length(ref)
+    % replace points and minus signs with underscore
     ref(r).name = strrep(ref(r).name, '-', '_');
     ref(r).name = strrep(ref(r).name, '.', '_');
+    
     ev  = struct;
     ev.tp = 0;
     ev.fp = 0;
     ref_stat.(char(ref(r).name)) = ev;
 end
                 
-
+%%
 
 recordings_names = fieldnames(database);
 for t = 1:length(recordings_names)
@@ -70,7 +73,7 @@ for t = 1:length(recordings_names)
             capture_data = recording(c).rawData;
             record_name = strcat(recording(c).game_name, " ", recording(c).half, " ", recording(c).robot_name, " ", recording(c).filename);
             %% Max Peak Detector
-            if run_zcr
+            if run_peak
                 result = peak_detector(capture_data, windows_size, window_offset, 20000);
                 if true %result.whistle_detected
                     % Plot results
@@ -86,7 +89,7 @@ for t = 1:length(recordings_names)
                 end
             end %if run_zcr
             %% ZCR Detector
-            if run_peak
+            if run_zcr
                 result = zcr_detector(capture_data, windows_size, window_offset, 0.55);
                 if true %result.whistle_detected
                     % Plot results
