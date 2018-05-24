@@ -7,6 +7,7 @@ import time
 
 from utils import Event, Logger
 
+from gopro_bluetooth import bluetooth
 
 # setup logger for network related logs
 logger = Logger.getLogger("Network")
@@ -15,7 +16,7 @@ logger = Logger.getLogger("Network")
 class Network(threading.Thread):
     """ Handles the connection to the GoPro wifi network."""
 
-    def __init__(self, device:str, ssid:str, passwd:str, retries:int):
+    def __init__(self, device:str, ssid:str, passwd:str, retries:int, mac:str = None):
         super().__init__()
         # creates a appropriate manager, based on the available network applications
         self.manager = NetworkManagerNmcli() if shutil.which('nmcli') is not None else NetworkManagerIw()
@@ -23,16 +24,18 @@ class Network(threading.Thread):
         self.device = self.manager.getWifiDevice(device)
         self.ssid = ssid
         self.passwd = passwd
+        self.mac = mac
         self.retries = retries
 
         self.__cancel = threading.Event()
         self.__timer = threading.Event()
 
-    def setConfig(self, device:str, ssid:str, passwd:str, retries:int):
+    def setConfig(self, device:str, ssid:str, passwd:str, retries:int, mac:str = None):
         # set the new params
         self.device = self.manager.getWifiDevice(device)
         self.ssid = ssid
         self.passwd = passwd
+        self.mac = mac
         self.retries = retries
         # NOTE: auto-reconnects on the next 'isConnected' check
         try:
@@ -55,6 +58,7 @@ class Network(threading.Thread):
                     logger.info("SSID not found: %s", self.ssid)
                     Event.fire(Event.NetworkNotAvailable())
                     time.sleep(1)
+                    self.wakeGoProWLAN()
                 else:
                     logger.info("Waiting for connection to %s", self.ssid)
                     network = self.manager.connectToSSID(device, self.ssid, self.passwd)
@@ -75,10 +79,18 @@ class Network(threading.Thread):
     def isConnected(self):
         return self.ssid == self.manager.getCurrentSSID(self.device, False)
 
+    def wakeGoProWLAN(self):
+      if self.mac is not None:
+        print ("bluetooth setWifiOn")
+        bluetooth.setWifiOn(self.mac)
+      else:
+        print ("bluetooth setWifiOn: mac is None")
+        
     def run(self):
         # connect and fire connected event
         self.connect()
         while not self.__cancel.is_set():
+            self.wakeGoProWLAN()
             if self.isConnected():
                 self.__timer.wait(10)
             else:
