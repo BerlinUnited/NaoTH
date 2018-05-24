@@ -1,6 +1,5 @@
 clear variables
 clc
-
 %% init defaults
 addpath('../common')
 secret()
@@ -14,43 +13,27 @@ catch
     disp('INFO: no previous mat file was found')
     reference_database = struct;
 end
+%%
+% get subfolders that hold the audio recordings from different events
+d = dir(reference_import_path);
+isub = [d(:).isdir]; %# returns logical vector
+categorie_names = {d(isub).name}';
+%remove . and ..
+categorie_names(ismember(categorie_names,{'.','..'})) = [];
 
-% % TODO the paths to the raw reference files should be collected differently
-
-% go 17 whistles
-folderContents = dir(strcat(reference_import_path, 'go17/', '/**/*.dat'));
-for d = 1:length(folderContents)
-    reference_database = add_whistle_spectrum(reference_database, [folderContents(d).folder '/' folderContents(d).name], 1, 8000, 'go17');
+%% iterate over each reference categorie
+for m=1:length(categorie_names)
+    
+    folderblabla = strcat(reference_import_path, '\', categorie_names(m));
+    
+    folderContents = dir(strcat(string(folderblabla), '/**/*.dat'));
+    
+    for d = 1:length(folderContents)
+        reference_database = add_whistle_spectrum(reference_database, ...
+        [folderContents(d).folder '/' folderContents(d).name], 1, 8000, cell2mat(categorie_names(m)));
+    end
+    
 end
-
-% % go 18 whistles
-folderContents = dir(strcat(reference_import_path, 'go18/', '/**/*.dat'));
-for d = 1:length(folderContents)
-    reference_database = add_whistle_spectrum(reference_database, [folderContents(d).folder '/' folderContents(d).name], 1, 8000, 'go18');
-end
-
-% bhuman reference whistles
-folderContents = dir(strcat(reference_import_path, 'bhuman_references/', '/**/*.dat'));
-for d = 1:length(folderContents)
-    reference_database = add_whistle(reference_database, [folderContents(d).folder '/' folderContents(d).name], 1, 8000, 'bhuman');
-end
-
-% kln17 reference whistles
-folderContents = dir(strcat(reference_import_path, 'kln17_references/', '/**/*.dat'));
-for d = 1:length(folderContents)
-    reference_database = add_whistle(reference_database, [folderContents(d).folder '/' folderContents(d).name], 1, 8000, 'kln17');
-end
-
-folderContents = dir(strcat(reference_import_path, 'kln17_references/', '/**/*.dat'));
-for d = 1:length(folderContents)
-    reference_database = add_whistle(reference_database, [folderContents(d).folder '/' folderContents(d).name], 1, 8000, 'kln17');
-end
-
-% rc17 reference whistles
-folderContents = dir(strcat(reference_import_path, 'rc17_references/', '/**/*.dat'));
-for d = 1:length(folderContents)
-    reference_database = add_whistle(reference_database, [folderContents(d).folder '/' folderContents(d).name], 1, 8000, 'rc17');
-end
-
+%%
 disp('Saving Whistle database');
-save(reference_database_path, 'reference_database')
+save(reference_database_path, 'reference_database','-v7.3')

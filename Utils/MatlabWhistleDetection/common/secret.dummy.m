@@ -41,6 +41,8 @@ function secret()
     assignin('base','capture_export_path', '<path_to_export_folder_for_captures>')
     assignin('base','figure_export_path', '<path_to_export_folder_for_figures>')
     
+    assignin('base','reference_export_path', '<path_to_export_folder_for_references>')
+    
     assignin('base','game_export_path', '<path_to_export_folder_for_game_recordings>')
 end
 
