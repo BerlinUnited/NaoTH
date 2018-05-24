@@ -256,7 +256,7 @@ message InertialModel
 
 message CameraMatrixCalibration
 {
-  repeated DoubleVector2 correctionOffset = 1;
+  repeated DoubleVector2 correctionOffset = 1 [deprecated=true];
   optional DoubleVector2 correctionOffsetBody = 2;
   optional DoubleVector3 correctionOffsetHead = 3;
   repeated DoubleVector3 correctionOffsetCam  = 4;
