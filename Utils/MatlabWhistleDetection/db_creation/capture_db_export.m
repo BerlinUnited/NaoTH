@@ -10,6 +10,7 @@ try
     disp('Loading the capture database')
 catch
     disp('ERROR: No capture database was found')
+    return;
 end
 
 %% Get the capture categories

@@ -33,11 +33,14 @@ function secret()
     % TODO beschreiben wie import reference subfolder structure aussieht
     assignin('base','reference_import_path', char(strcat(databases_path, "<subdir_to_import_reference_whistles>")))   
     
-    % TODO add game recordings import dir
+    % TODO beschreiben wie game_import_path subfolder structure aussieht
+    assignin('base','game_import_path', char(strcat(databases_path, "<subdir_to_import_reference_whistles>")))
+    
     
     %% Paths for exporting the data from the databases
     assignin('base','capture_export_path', '<path_to_export_folder_for_captures>')
     assignin('base','figure_export_path', '<path_to_export_folder_for_figures>')
-
+    
+    assignin('base','game_export_path', '<path_to_export_folder_for_game_recordings>')
 end
 
