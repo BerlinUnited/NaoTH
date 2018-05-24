@@ -80,7 +80,7 @@ private:
   };
   typedef WalkRequest::StepControlRequest::StepType StepType;
 
-  bool forwardKick();
+  void forwardKick(const Foot& foot);
 
   // Stepcontrol
   struct StepBufferElement 

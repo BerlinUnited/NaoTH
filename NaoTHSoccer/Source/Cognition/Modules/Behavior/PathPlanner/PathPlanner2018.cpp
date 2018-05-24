@@ -50,23 +50,7 @@ void PathPlanner2018::execute()
     }
     break;
   case PathModel::PathPlanner2018Routine::GO:
-    // Calculate the number of geometrically possible steps towards the ball
-
-    // ASSUMPTION: the limiting of a step translation regarding the step rotation
-    // is a sphere (this is wrong, it actually is an ellipse)
-    // TODO: Calculate this in a more realistic way (is this necessary?)
-    // ASSUMPTION 2: Calculating this with hip coordinates will be accurate enough
-    // TODO: Check assumption 2 and if this isn't the case, fix this!
-    // ASSUMPTION 3: No matter what, the last 3 steps will be a kick, a zero step and then a retracting walk step
-    numStepsGeometric = Math::clamp(static_cast<int>(getBallModel().positionPreview.abs() / params.stepLength), 0, 10) + 2;
-
-    // This variable is only for convenience right now
-    numStepsPlanned = numStepsGeometric + numStepsCorrection;
-
-    if (forwardKick())
-    {
-      // TODO: forward kick is done, what now?
-    }
+    forwardKick(Foot::LEFT);
     break;
   }
 
@@ -74,124 +58,116 @@ void PathPlanner2018::execute()
   executeStepBuffer();
 }
 
-bool PathPlanner2018::forwardKick()
+void PathPlanner2018::forwardKick(const Foot& foot)
 {
-  Vector2d ball_pos        = getBallModel().positionPreviewInRFoot;
-  const double ball_radius = getFieldInfo().ballRadius;
-
-  if (stepBuffer.size() > numStepsPlanned)
+  Vector2d ball_pos;
+  WalkRequest::Coordinate coordinate;
+  if (foot == Foot::RIGHT)
   {
-    stepBuffer.clear();
+    ball_pos = getBallModel().positionPreviewInRFoot;
+    coordinate = WalkRequest::RFoot;
   }
-
-  if (numStepsPlanned > 0)
+  else if (foot == Foot::LEFT)
   {
-    double translation_x = std::min(std::abs(ball_pos.x), params.stepLength) * (ball_pos.x < 0 ? -1 : 1);
-    double translation_y = std::min(std::abs(ball_pos.y), params.stepLength) * (ball_pos.y < 0 ? -1 : 1);
-    double rotation = ball_pos.angle();
+    coordinate = WalkRequest::LFoot;
+    ball_pos = getBallModel().positionPreviewInLFoot;
+  }
+  const double ball_radius = getFieldInfo().ballRadius;
+  const double ball_rot    = ball_pos.angle();
 
-    Pose2D pose = { rotation, translation_x, translation_y };
+  // TODO: Right now this is a very simple path planned to do step coordination
+  //       we want to replace this with more sophisticated ways of acquiring a path
+  double numEquidistanSteps = ball_pos.abs() / params.stepLength;
 
-    // Mechanism to make sure that the right foot executes the kick
-    // This has to come after clearing the step buffer if buffer size > num_steps so it doesn't get deleted!
-    // When we are 6 steps away from a kick we check that the right foot is movable
-    // TODO: make this generic for right and left foot
-    if (getMotionStatus().stepControl.moveableFoot == MotionStatus::StepControlStatus::RIGHT
-      && numStepsGeometric == 6
-      && numStepsCorrection == 0)
+  // I always execute the steps that were planned before planning new steps
+  // TODO: when do I want to flush this if I ever want to?
+  if (stepBuffer.empty())
+  {
+    // Am I ready for a kick or still walking to the ball?
+    // In other words: Can I only perform one step before touching the ball or more?
+    if (numEquidistanSteps > 1 + ball_radius / params.stepLength)
     {
-      Pose2D correction_pose = { rotation, translation_x / 2, translation_y / 2 };
-
-      StepBufferElement correction_step;
-      correction_step.setPose(correction_pose);
-      correction_step.setStepType(StepType::WALKSTEP);
-      correction_step.setCharacter(0.7);
-      correction_step.setScale(1.0);
-      correction_step.setCoordinate(WalkRequest::RFoot);
-      correction_step.setFoot(Foot::LEFT);
-      correction_step.setSpeedDirection(Math::fromDegrees(0.0));
-      correction_step.setRestriction(WalkRequest::StepControlRequest::HARD);
-      correction_step.setProtected(false);
-      correction_step.setTime(300);
-
-      addStep(correction_step);
-
-      correction_step.setFoot(Foot::LEFT);
-
-      addStep(correction_step);
-
-      numStepsCorrection = numStepsCorrection + 2;
-    }
-    else
-    {
-      numStepsCorrection = 0;
-    }
-
-    // TODO: Is this kind of comment overkill? - y030
-    //                             { ------------------------------------ numStepsPlanned -------------------------------- }
-    //                             { ----- numStepsCorrection ------ }  { ------------ numStepsGeometric ----------------- }
-    // The buffer looks like this: ( correction step, correction step), [geometric, ... x9, kick step, zero step, walk step]
-    // We only want to loop over the second part in square brackets and leave the first part in brackets alone
-    // That is why we start with numStepsCorrection - 1
-    for (unsigned int i = numStepsCorrection - 1; i < numStepsPlanned; ++i)
-    {
-      StepBufferElement new_step;
-      new_step.setPose(pose);
-      new_step.setStepType(StepType::WALKSTEP);
-      new_step.setCharacter(0.7);
-      new_step.setScale(1.0);
-      new_step.setCoordinate(WalkRequest::RFoot);
-      new_step.setFoot(Foot::NONE);
-      new_step.setSpeedDirection(Math::fromDegrees(0.0));
-      new_step.setRestriction(WalkRequest::StepControlRequest::HARD);
-      new_step.setProtected(false);
-      new_step.setTime(300);
-
-      if (i == numStepsPlanned - 3) // last three steps are kickstep -> zerostep -> retracting walkstep
+      // If the number of possible steps is even but the foot that is moveable
+      // is the foot that is supposed to kick we need to make a correction step first
+      if (ball_pos.abs() < 400 
+        && getMotionStatus().stepControl.moveableFoot == foot 
+        && static_cast<int>(std::ceil(numEquidistanSteps)) % 2 == 0)
       {
-        pose = { 0.0, 500.0, 0.0 };
-        new_step.setPose(pose);
-        new_step.setStepType(StepType::KICKSTEP);
-        new_step.setFoot(Foot::RIGHT);
+        std::cout << "Correction Step!" << std::endl;
+        const double translation_xy = params.stepLength * 0.75;
+        StepBufferElement correction_step;
+        correction_step.setPose({ ball_rot, std::min(translation_xy, ball_pos.x), std::min(translation_xy, ball_pos.y) });
+        correction_step.setStepType(StepType::WALKSTEP);
+        correction_step.setCharacter(0.7);
+        correction_step.setScale(1.0);
+        correction_step.setCoordinate(coordinate);
+        correction_step.setFoot(foot);
+        correction_step.setSpeedDirection(Math::fromDegrees(0.0));
+        correction_step.setRestriction(WalkRequest::StepControlRequest::HARD);
+        correction_step.setProtected(false);
+        correction_step.setTime(250);
+
+        addStep(correction_step);
+      }
+      else
+      {
+        std::cout << "Walk to ball" << std::endl;
+        const double translation_xy = params.stepLength;
+        StepBufferElement new_step;
+        new_step.setPose({ ball_rot, std::min(translation_xy, ball_pos.x), std::min(translation_xy, ball_pos.y) });
+        new_step.setStepType(StepType::WALKSTEP);
         new_step.setCharacter(0.7);
         new_step.setScale(1.0);
-        new_step.setRestriction(WalkRequest::StepControlRequest::SOFT);
-        new_step.setProtected(true);
-      }
-      else if (i == numStepsPlanned - 2)
-      {
-        new_step.setStepType(StepType::ZEROSTEP);
-        new_step.setFoot(Foot::RIGHT);
-      }
-      else if (i == numStepsPlanned - 1)
-      {
-        pose = { 0.0, 0.0, 0.0 };
-        new_step.setPose(pose);
-        new_step.setStepType(StepType::WALKSTEP);
-        new_step.setFoot(Foot::RIGHT);
-      }
+        new_step.setCoordinate(coordinate);
+        new_step.setFoot(Foot::NONE);
+        new_step.setSpeedDirection(Math::fromDegrees(0.0));
+        new_step.setRestriction(WalkRequest::StepControlRequest::HARD);
+        new_step.setProtected(false);
+        new_step.setTime(250);
 
-      // We either fill the stepBuffer up till we have numStepsPlanned steps
-      // or we update the steps inside stepBuffer
-      if (stepBuffer.empty() || stepBuffer.size() <= i)
-      {
         addStep(new_step);
       }
-      // We do not want to update the correction steps
-      // TODO: Do we really not want to ?
-      else if (stepBuffer.size() > i && i >= numStepsCorrection)
+    }
+    // I am kicking
+    else
+    {
+      switch (foot) 
       {
-        updateSpecificStep(i, new_step);
+      case Foot::LEFT:
+        coordinate = WalkRequest::RFoot;
+        break;
+      case Foot::RIGHT:
+        coordinate = WalkRequest::LFoot;
+        break;
+      case Foot::NONE:
+        ASSERT(false);
       }
+
+      // The kick
+      StepBufferElement new_step;
+      new_step.setPose({ 0.0, 500.0, 0.0 });
+      new_step.setStepType(StepType::KICKSTEP);
+      new_step.setCharacter(1.0);
+      new_step.setScale(0.7);
+      new_step.setCoordinate(coordinate);
+      new_step.setFoot(foot);
+      new_step.setSpeedDirection(Math::fromDegrees(0.0));
+      new_step.setRestriction(WalkRequest::StepControlRequest::SOFT);
+      new_step.setProtected(true);
+      new_step.setTime(300);
+
+      addStep(new_step);
+
+      // The zero step
+      new_step.setStepType(StepType::ZEROSTEP);
+      addStep(new_step);
+
+      // The retracting walk step
+      new_step.setPose({ 0.0, 0.0, 0.0 });
+      new_step.setStepType(StepType::WALKSTEP);
+      addStep(new_step);
     }
   }
-  else
-  {
-    stepBuffer.clear();
-    return true;
-  }
-
-  return false;
 }
 
 // Stepcontrol
@@ -207,11 +183,6 @@ void PathPlanner2018::updateSpecificStep(const unsigned int index, StepBufferEle
   stepBuffer[index] = step;
 }
 
-// TODO: This mechanism has become obsolete (has it?)
-//       since steps get erased from the buffer when buffer size is bigger than
-//       number of steps possible geometrically and added handcrafted ones
-//       but we still have to update last_stepRequestID
-//       ---!!! THIS HAS TO BE THOUGHT THROUGH AGAIN !!!---
 void PathPlanner2018::manageStepBuffer()
 {
   if (stepBuffer.empty()) 
@@ -222,6 +193,7 @@ void PathPlanner2018::manageStepBuffer()
   // requested step has been accepted
   if (lastStepRequestID == getMotionStatus().stepControl.stepRequestID)
   {
+    stepBuffer.erase(stepBuffer.begin());
     lastStepRequestID = getMotionStatus().stepControl.stepRequestID + 1;
   }
 }
