@@ -24,6 +24,6 @@ fi
 
 sudo -u nao cp ./DefaultBehaviors.xml $default_config
 
-nao restart
+/etc/init.d/naoqi restart
 
 echo "Done"
