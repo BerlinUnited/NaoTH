@@ -62,13 +62,17 @@ private:
   public:
     Parameters() : ParameterList("PathPlanner2018")
     {
-      PARAMETER_REGISTER(stepLength) = 80;
+      PARAMETER_REGISTER(stepLength) = 80.0;
+      PARAMETER_REGISTER(readyForKickThreshold) = 2.5;
+      PARAMETER_REGISTER(rotationLength) = 30.0;
 
       syncWithConfig();
     }
     virtual ~Parameters(){}
 
     double stepLength;
+    double readyForKickThreshold;
+    double rotationLength;
   } params;
 
   // NONE means hip
@@ -155,9 +159,8 @@ private:
 
 
 private:
-  unsigned int numStepsGeometric;
-  unsigned int numStepsCorrection;
-  unsigned int numStepsPlanned;
+  bool kickPlanned;
+  double numPossibleSteps;
 };
 
 #endif // _PathPlanner2018_H_
