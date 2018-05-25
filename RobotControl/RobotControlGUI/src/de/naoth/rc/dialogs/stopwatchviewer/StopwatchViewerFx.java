@@ -13,6 +13,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
@@ -113,6 +115,9 @@ public class StopwatchViewerFx extends AbstractJFXDialog {
         stopwatchTable.getColumns().addAll(cols);
         stopwatchTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         
+        stopwatchType.getItems().addAll("Cognition", "Motion");
+        stopwatchType.getSelectionModel().selectFirst();
+        
         // (empty) table data
         //statusTable.setItems(robots);
     } // initStatusTable
@@ -163,11 +168,17 @@ public class StopwatchViewerFx extends AbstractJFXDialog {
     class StopWatch
     {
         private final StringProperty name = new SimpleStringProperty("");
+        private final DoubleProperty value = new SimpleDoubleProperty(0.0);
+        private final DoubleProperty avg = new SimpleDoubleProperty(0.0);
+        private final DoubleProperty min = new SimpleDoubleProperty(0.0);
+        private final DoubleProperty max = new SimpleDoubleProperty(0.0);
         //Name
         //Value
         //Average
         //Min
         //Max
+        public void setName(String n) {
+        }
     } // END StopWatch
     
     class StopWatchListener implements ObjectListener<byte[]>
