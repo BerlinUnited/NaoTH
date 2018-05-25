@@ -71,91 +71,64 @@ void PathPlanner2018::execute()
 bool PathPlanner2018::acquireBallControl(const Foot& foot)
 {
   // I always execute the steps that were planned before planning new steps
-  // TODO: when do I want to flush this if I ever want to?
   if (stepBuffer.empty())
   {
-    Vector2d ball_pos;
+    Vector2d ballPos;
     Coordinate coordinate = Coordinate::Hip;
 
     if (foot == Foot::RIGHT)
     {
-      ball_pos   = getBallModel().positionPreviewInRFoot;
+      ballPos   = getBallModel().positionPreviewInRFoot;
       coordinate = Coordinate::RFoot;
     }
     else if (foot == Foot::LEFT)
     {
       coordinate = Coordinate::LFoot;
-      ball_pos   = getBallModel().positionPreviewInLFoot;
+      ballPos   = getBallModel().positionPreviewInLFoot;
     }
     else
     {
       ASSERT(false);
     }
-    //const double ballRadius = getFieldInfo().ballRadius;
-    const double ballRot    = ball_pos.angle();
+    const double ballRot = ballPos.angle();
 
-    // TODO: Right now this is a very simple path planned to do step coordination
-    //       we want to replace this with more sophisticated ways of acquiring a path
-    numPossibleSteps = ball_pos.abs() / params.stepLength;
-    //double numRotationsNecessary = ballRot / params.rotationLength;
+    // TODO: Are there better ways to calculate this?
+    numPossibleSteps = ballPos.abs() / params.stepLength;
+    double numRotationsNecessary = ballRot / params.rotationLength;
 
     // Am I ready for a kick or still walking to the ball?
     // In other words: Can I only perform one step before touching the ball or more steps?
-    if (numPossibleSteps > params.readyForKickThreshold)// + ballRadius / params.stepLength
-      //|| numPossibleSteps < numRotationsNecessary)
+    if (numPossibleSteps > params.readyForKickThreshold
+      || numRotationsNecessary > numPossibleSteps)
     {
-      // If the number of possible steps is even but the foot that is movable
-      // is the foot that is supposed to kick we need to make a correction step first
-      if (false)//if (ball_pos.abs() < 400
-      //  && getMotionStatus().stepControl.moveableFoot == (foot == Foot::RIGHT ? MotionStatus::StepControlStatus::RIGHT : MotionStatus::StepControlStatus::LEFT)
-      //  && static_cast<int>(std::ceil(numEquidistanSteps)) % 2 == 0)
+      double translation_xy = params.stepLength;
+      // TODO: Are there better ways to incorporate the rotation?
+      if (numRotationsNecessary > numPossibleSteps)
       {
-        const double translation_xy = params.stepLength * 0.5;
-        StepBufferElement correction_step;
-        correction_step.setPose({ ballRot, std::min(translation_xy, ball_pos.x), std::min(translation_xy, ball_pos.y) });
-        correction_step.setStepType(StepType::WALKSTEP);
-        correction_step.setCharacter(0.7);
-        correction_step.setScale(1.0);
-        correction_step.setCoordinate(coordinate);
-        correction_step.setFoot(foot);
-        correction_step.setSpeedDirection(Math::fromDegrees(0.0));
-        correction_step.setRestriction(RestrictionMode::HARD);
-        correction_step.setProtected(false);
-        correction_step.setTime(250);
-
-        addStep(correction_step);
+        translation_xy = 0.0;
       }
-      else
-      {
-        double translation_xy = params.stepLength;
+      StepBufferElement new_step;
+      new_step.setPose({ ballRot, std::min(translation_xy, ballPos.x), std::min(translation_xy, ballPos.y) });
+      new_step.setStepType(StepType::WALKSTEP);
+      new_step.setCharacter(0.7);
+      new_step.setScale(1.0);
+      new_step.setCoordinate(coordinate);
+      new_step.setFoot(Foot::NONE);
+      new_step.setSpeedDirection(Math::fromDegrees(0.0));
+      new_step.setRestriction(RestrictionMode::HARD);
+      new_step.setProtected(false);
+      new_step.setTime(250);
 
-        if (false)//(numPossibleSteps < numRotationsNecessary)
-        {
-          translation_xy = 0.0;
-        }
-        StepBufferElement new_step;
-        new_step.setPose({ ballRot, std::min(translation_xy, ball_pos.x), std::min(translation_xy, ball_pos.y) });
-        new_step.setStepType(StepType::WALKSTEP);
-        new_step.setCharacter(0.7);
-        new_step.setScale(1.0);
-        new_step.setCoordinate(coordinate);
-        new_step.setFoot(Foot::NONE);
-        new_step.setSpeedDirection(Math::fromDegrees(0.0));
-        new_step.setRestriction(RestrictionMode::HARD);
-        new_step.setProtected(false);
-        new_step.setTime(250);
-
-        addStep(new_step);
-      }
+      addStep(new_step);
     }
     else
     {
-      //std::cout << (getMotionStatus().stepControl.moveableFoot == (foot == Foot::RIGHT ? MotionStatus::StepControlStatus::RIGHT : MotionStatus::StepControlStatus::LEFT) ? "SAME FOOT" : "DIFFERENT FOOT") << std::endl;
+      // Correction step if the movable foot is different from the foot that is supposed to kick
       if (getMotionStatus().stepControl.moveableFoot != (foot == Foot::RIGHT ? MotionStatus::StepControlStatus::RIGHT : MotionStatus::StepControlStatus::LEFT))
       {
         const double translation_xy = params.stepLength;
         StepBufferElement correction_step;
-        correction_step.setPose({ ballRot, std::min(translation_xy, ball_pos.x), std::min(translation_xy, ball_pos.y) });
+        correction_step.setPose({ ballRot, std::min(translation_xy, ballPos.x), std::min(translation_xy, ballPos.y) });
         correction_step.setStepType(StepType::WALKSTEP);
         correction_step.setCharacter(0.7);
         correction_step.setScale(1.0);
