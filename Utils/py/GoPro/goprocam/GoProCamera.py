@@ -235,7 +235,7 @@ class GoPro:
           return ""
           print("HTTP Timeout\nMake sure the connection to the WiFi camera is still active.")
       else:
-        print("Error, camera not defined.")
+        print("Error, camera not defined?")
 
     def infoCamera(self, option=""):
       if self.whichCam() == "gpcontrol":

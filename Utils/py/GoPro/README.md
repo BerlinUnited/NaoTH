@@ -59,17 +59,17 @@ or without config file
 
 #### LED States
 |  blue | green | red   | Description                                           |
-|:-----:|:-----:|:-----:|-------------------------------------------------------|
-|  Off  |       |       | Wifi network is not available/visible                 |
-| blink |       |       | Currently not connected to network / GoPro            |
-| blink |       | blink | Connect to GoPro, but no sd card available            |
-|   On  |       |       | Connected to GoPro and ready for recording            |
-|       | Off   |       | No GameController available                           |
-|       | blink |       | A game vs. INVISIBLES                                 |
-|       | On    |       | A game with two teams - GameController is 'connected' |
-|       |       | blink | Camera is recording                                   |
-|       |       | Off   | Camera is NOT recording                               |
-| Off   | Off   | Off   | Raspi is not powered or isn't connected to anything   |
+|:-------------:|:-----:|:-----:|-------------------------------------------------------|
+| blink (short) |       |       | Wifi network is not available/visible                 |
+| blink (1/2s)  |       |       | Currently not connected to network / GoPro            |
+| blink (~1s))  |       | blink | Connect to GoPro, but no sd card available            |
+|      On       |       |       | Connected to GoPro and ready for recording            |
+|               | Off   |       | No GameController available                           |
+|               | blink |       | A game vs. INVISIBLES                                 |
+|               | On    |       | A game with two teams - GameController is 'connected' |
+|               |       | blink | Camera is recording                                   |
+|               |       | Off   | Camera is NOT recording                               |
+|     Off       | Off   | Off   | Raspi is not powered or isn't connected to anything   |
 
 #### Logging
 
@@ -89,20 +89,20 @@ Some tests to check the functionality of the GoPro setup
      - ... the wifi network is missing
      - ... the raspi can not log in to the network (not implemented!)
 - loosing wifi:
-    - not in game / recording
-    - while recording
+    - not in game / recording: the leds should indicate that
+    - while recording: the leds should indicate this, and when the network is back, it should reconnect
 - raspi loosing power:
     - not in game / recording
-        - and comes back when not in game
-        - and comes back when in game
-        - and comes back and no GameController available
+        - and comes back when not in game: raspi should reconnect
+        - and comes back when in game: raspi should reconnect and start the recording
+        - and comes back and no GameController available: the leds should indicate this
     - while recording
-        - and comes back while still in game
-        - and comes back while not any more in game
-        - and comes back and no GameController available
+        - and comes back while still in game: raspi should reconnect and continue recording
+        - and comes back while not any more in game (GC in finish): raspi should reconnect and stop recording
+        - and comes back and no GameController available: raspi should reconnect and stop recording
 - manual recording: ???
 - camera has no card: the leds should indicate that the card is missing
 - long run:
-        - normal run, but never press "FINISH"
-        - normal run, but never press "PLAY"
+        - normal run, but never press "FINISH": after a certain time, the raspi should stop recording
+        - normal run, but never press "PLAY": after a certain time, the raspi should stop recording
 

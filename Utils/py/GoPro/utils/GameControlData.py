@@ -39,7 +39,7 @@ class GameControlData(Struct):
         """Constructor."""
         # initialize with the struct format characters as described here
         # https://docs.python.org/2/library/struct.html
-        super(GameControlData, self).__init__('4sH10B3H')
+        super(GameControlData, self).__init__('4sH10B3h')
         self.logger = logging.getLogger("GameControlData")
 
         self.setDefaults()
