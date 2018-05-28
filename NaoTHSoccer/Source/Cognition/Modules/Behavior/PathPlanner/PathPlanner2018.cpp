@@ -34,6 +34,7 @@ void PathPlanner2018::execute()
   // Tells XABSL to jump into next state
   if (kickPlanned && stepBuffer.empty()) {
     getPathModel().kick_executed = true;
+    kickPlanned                  = false;
   }
 
   // HACK: xabsl set a forced motion request => clear everything
