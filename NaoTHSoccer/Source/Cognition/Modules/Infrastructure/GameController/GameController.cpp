@@ -70,6 +70,8 @@ GameController::GameController()
 
   // set whistle count on init; otherwise we're detecting a whistle on startup!
   lastWhistleCount = getWhistlePercept().counter;
+  // print out the "final" player number for loggin purposes
+  std::cout << "[PlayerInfo] " << "playerNumber: " << getPlayerInfo().playerNumber << std::endl;
 }
 
 void GameController::execute()
