@@ -1,5 +1,4 @@
 import subprocess
-import logging
 import shutil
 import re
 import threading
@@ -291,6 +290,8 @@ class NetworkManagerIw(NetworkManager):
         return None
 
     def getSSIDExists(self, device:str, ssid:str):
+      # make sure the device is up
+      self.__checkDeviceState(device)
       logger.debug("Scan for the SSID: 'iwlist %s scanning essid %s'", device, ssid)
       result = subprocess.run(['iwlist', device, 'scanning', 'essid', ssid], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL).stdout.decode('utf-8').strip()
       match = re.search(r'.*('+ssid+').*', result)
@@ -314,8 +315,7 @@ class NetworkManagerIw(NetworkManager):
             configure new network:      wpa_cli -i <device> reconfigure
         '''
         # make sure the device is up
-        logger.debug("Bringing device up: 'ifconfig %s up'", device)
-        subprocess.run(['ifconfig', device, 'up'], stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
+        self.__checkDeviceState(device)
 
         # stop running wpa_supplicant instance
         subprocess.run(['wpa_cli', '-i', device, 'terminate'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
@@ -352,14 +352,6 @@ class NetworkManagerIw(NetworkManager):
 
         return None
 
-'''
-manager = NetworkManagerNmcli() if shutil.which('nmcli') is not None else NetworkManagerIw()
-
-# make object methods 'public'
-getWifiDevices = manager.getWifiDevices
-getWifiDevice  = manager.getWifiDevice
-getCurrentSSID = manager.getCurrentSSID
-connectToSSID  = manager.connectToSSID
-getSSIDExists  = manager.getSSIDExists
-getAPmac  = manager.getAPmac
-'''
+    def __checkDeviceState(self, device):
+        logger.debug("Bringing device up: 'ifconfig %s up'", device)
+        subprocess.run(['ifconfig', device, 'up'], stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)

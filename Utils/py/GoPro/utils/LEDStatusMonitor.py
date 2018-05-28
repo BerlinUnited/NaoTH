@@ -22,13 +22,13 @@ class LedStatusMonitor(threading.Thread):
             # handle the blue led
             if self.network == 0:
                 # (gopro) network not available/visible
-                self.sendMessage('{{"blue":"off", "time":"{}"}}'.format(1))
+                self.sendMessage('{{"blue":"blink", "delay":"0.1", "time":"{}"}}'.format(1))
             elif self.network == 1:
                 # not connected to (gopro) network
-                self.sendMessage('{{"blue":"blink", "delay":"0.1", "time":"{}"}}'.format(1))
+                self.sendMessage('{{"blue":"blink", "delay":"0.4", "time":"{}"}}'.format(1))
             elif self.network == 2:
                 # connecting to (gopro) network
-                self.sendMessage('{{"blue":"blink", "delay":"0.5", "time":"{}"}}'.format(1))
+                self.sendMessage('{{"blue":"blink", "delay":"0.8", "time":"{}"}}'.format(1))
             elif self.network == 3:
                 # connected to (gopro) network ...
                 if self.gopro <= 1:
