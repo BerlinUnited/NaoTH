@@ -65,6 +65,7 @@ private:
       PARAMETER_REGISTER(stepLength) = 80.0;
       PARAMETER_REGISTER(readyForKickThreshold) = 2.5;
       PARAMETER_REGISTER(rotationLength) = 30.0;
+      PARAMETER_REGISTER(sidekickOffsetY) = 40.0;
 
       syncWithConfig();
     }
@@ -73,6 +74,7 @@ private:
     double stepLength;
     double readyForKickThreshold;
     double rotationLength;
+    double sidekickOffsetY;
   } params;
 
   // NONE means hip
@@ -87,8 +89,9 @@ private:
   typedef WalkRequest::StepControlRequest::RestrictionMode RestrictionMode;
   typedef WalkRequest::Coordinate Coordinate;
 
-  bool acquireBallControl(const Foot& foot);
+  bool acquireBallControl(const Foot& foot, const double offsetX, const double offsetY);
   void forwardKick(const Foot& foot);
+  void sideKick(const Foot& foot);
 
   struct StepBufferElement 
   {
@@ -161,6 +164,7 @@ private:
 private:
   bool kickPlanned;
   double numPossibleSteps;
+  double numRotationStepsNecessary;
 };
 
 #endif // _PathPlanner2018_H_

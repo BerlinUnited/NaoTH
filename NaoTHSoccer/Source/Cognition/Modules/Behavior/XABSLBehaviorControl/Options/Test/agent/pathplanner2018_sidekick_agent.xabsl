@@ -1,4 +1,4 @@
-option pathplanner2018_agent
+option pathplanner2018_sidekick_agent
  {
   initial state test {    
     action {
@@ -6,7 +6,7 @@ option pathplanner2018_agent
       // react to the game controller and handle fall down
       basic_play();
 
-      pathplanner2018();
+      pathplanner2018_sidekick();
       
       // control the arms
       arms_control();

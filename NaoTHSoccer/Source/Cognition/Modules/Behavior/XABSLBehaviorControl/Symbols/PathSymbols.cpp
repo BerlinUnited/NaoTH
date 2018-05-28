@@ -24,8 +24,11 @@ void PathSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerEnumElement("path.routine", "path.routine.sidekick_left",       static_cast<int>(PathModel::PathRoutine::SIDEKICK_LEFT));
 
   // PathPlanner2018Routine
-  engine.registerEnumElement("path2018.routine", "path2018.routine.none", static_cast<int>(PathModel::PathPlanner2018Routine::NONE));
-  engine.registerEnumElement("path2018.routine", "path2018.routine.go", static_cast<int>(PathModel::PathPlanner2018Routine::GO));
+  engine.registerEnumElement("path2018.routine", "path2018.routine.none",              static_cast<int>(PathModel::PathPlanner2018Routine::NONE));
+  engine.registerEnumElement("path2018.routine", "path2018.routine.forwardkick_left",  static_cast<int>(PathModel::PathPlanner2018Routine::FORWARDKICK_LEFT));
+  engine.registerEnumElement("path2018.routine", "path2018.routine.forwardkick_right", static_cast<int>(PathModel::PathPlanner2018Routine::FORWARDKICK_RIGHT));
+  engine.registerEnumElement("path2018.routine", "path2018.routine.sidekick_left",     static_cast<int>(PathModel::PathPlanner2018Routine::SIDEKICK_LEFT));
+  engine.registerEnumElement("path2018.routine", "path2018.routine.sidekick_right",    static_cast<int>(PathModel::PathPlanner2018Routine::SIDEKICK_RIGHT));
 
   engine.registerEnumeratedOutputSymbol("path.routine", "path.routine", (int*)&getPathModel().path_routine);
   engine.registerEnumeratedOutputSymbol("path2018.routine", "path2018.routine", (int*)&getPathModel().path2018_routine);

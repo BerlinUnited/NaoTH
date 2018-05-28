@@ -19,7 +19,10 @@ namespace path_symbols("PathPlanner Symbols") {
   enum path2018.routine
   {
     none,
-    go
+    forwardkick_left,
+    forwardkick_right,
+    sidekick_left,
+    sidekick_right
   };
 
 

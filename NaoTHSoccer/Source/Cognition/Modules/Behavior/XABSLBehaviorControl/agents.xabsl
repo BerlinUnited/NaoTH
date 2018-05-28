@@ -181,8 +181,10 @@ include "Options/Test/agent/pathplanner_test_long_kick_agent.xabsl";
 include "Options/Test/agent/pathplanner_test_only_shortkick_agent.xabsl";
 include "Options/Test/agent/pathplanner_test_only_sidekick_agent.xabsl";
 include "Options/Test/agent/pathplanner_test_dash_agent.xabsl";
-include "Options/Test/agent/pathplanner2018_agent.xabsl";
-include "Options/Test/pathplanner2018.xabsl";
+include "Options/Test/agent/pathplanner2018_forwardkick_agent.xabsl";
+include "Options/Test/pathplanner2018_forwardkick.xabsl";
+include "Options/Test/agent/pathplanner2018_sidekick_agent.xabsl";
+include "Options/Test/pathplanner2018_sidekick.xabsl";
 
 
 
@@ -303,7 +305,8 @@ agent pathplanner_test_long_kick_agent("pathplanner_test_long_kick_agent", pathp
 agent pathplanner_test_only_sidekick_agent("pathplanner_test_only_sidekick_agent", pathplanner_test_only_sidekick_agent);
 agent pathplanner_test_only_shortkick_agent("pathplanner_test_only_shortkick_agent", pathplanner_test_only_shortkick_agent);
 agent pathplanner_test_dash_agent("pathplanner_test_dash_agent", pathplanner_test_dash_agent);
-agent pathplanner2018_agent("pathplanner2018_agent", pathplanner2018_agent);
+agent pathplanner2018_forwardkick_agent("pathplanner2018_forwardkick_agent", pathplanner2018_forwardkick_agent);
+agent pathplanner2018_sidekick_agent("pathplanner2018_sidekick_agent", pathplanner2018_sidekick_agent);
 
 
 // Test agents search

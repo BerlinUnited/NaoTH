@@ -42,7 +42,10 @@ public:
   enum class PathPlanner2018Routine
   {
     NONE,
-    GO
+    FORWARDKICK_LEFT,
+    FORWARDKICK_RIGHT,
+    SIDEKICK_LEFT,
+    SIDEKICK_RIGHT
   };
 
   PathRoutine path_routine;

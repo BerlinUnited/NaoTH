@@ -13,7 +13,8 @@ PathPlanner2018::PathPlanner2018()
   footToUse(Foot::RIGHT),
   lastStepRequestID(getMotionStatus().stepControl.stepRequestID + 1),      // WalkRequest stepRequestID starts at 0, we have to start at 1
   kickPlanned(false),
-  numPossibleSteps(0.0)
+  numPossibleSteps(0.0),
+  numRotationStepsNecessary(0.0)
 {
   getDebugParameterList().add(&params);
 }
@@ -32,7 +33,8 @@ void PathPlanner2018::execute()
 
   // The kick has been executed
   // Tells XABSL to jump into next state
-  if (kickPlanned && stepBuffer.empty()) {
+  if (kickPlanned && stepBuffer.empty()) 
+  {
     getPathModel().kick_executed = true;
     kickPlanned                  = false;
   }
@@ -57,10 +59,28 @@ void PathPlanner2018::execute()
       return;
     }
     break;
-  case PathModel::PathPlanner2018Routine::GO:
-    if (acquireBallControl(Foot::LEFT))
+  case PathModel::PathPlanner2018Routine::FORWARDKICK_LEFT:
+    if (acquireBallControl(Foot::LEFT, 0.0, 0.0))
     {
       forwardKick(Foot::LEFT);
+    }
+    break;
+  case PathModel::PathPlanner2018Routine::FORWARDKICK_RIGHT:
+    if (acquireBallControl(Foot::RIGHT, 0.0, 0.0))
+    {
+      forwardKick(Foot::RIGHT);
+    }
+    break;
+  case PathModel::PathPlanner2018Routine::SIDEKICK_LEFT:
+    if (acquireBallControl(Foot::RIGHT, 0.0, -1 * params.sidekickOffsetY))
+    {
+      sideKick(Foot::LEFT);
+    }
+    break;
+  case PathModel::PathPlanner2018Routine::SIDEKICK_RIGHT:
+    if (acquireBallControl(Foot::LEFT, 0.0, params.sidekickOffsetY))
+    {
+      sideKick(Foot::RIGHT);
     }
     break;
   }
@@ -69,7 +89,7 @@ void PathPlanner2018::execute()
   executeStepBuffer();
 }
 
-bool PathPlanner2018::acquireBallControl(const Foot& foot)
+bool PathPlanner2018::acquireBallControl(const Foot& foot, const double offsetX, const double offsetY)
 {
   // I always execute the steps that were planned before planning new steps
   if (stepBuffer.empty())
@@ -91,20 +111,24 @@ bool PathPlanner2018::acquireBallControl(const Foot& foot)
     {
       ASSERT(false);
     }
+    // add the desired offset
+    ballPos.x += offsetX;
+    ballPos.y += offsetY;
+
     const double ballRot = ballPos.angle();
 
     // TODO: Are there better ways to calculate this?
-    numPossibleSteps = ballPos.abs() / params.stepLength;
-    double numRotationsNecessary = ballRot / params.rotationLength;
+    numPossibleSteps          = ballPos.abs() / params.stepLength;
+    numRotationStepsNecessary = ballRot / params.rotationLength;
 
     // Am I ready for a kick or still walking to the ball?
     // In other words: Can I only perform one step before touching the ball or more steps?
     if (numPossibleSteps > params.readyForKickThreshold
-      || numRotationsNecessary > numPossibleSteps)
+      || numRotationStepsNecessary > numPossibleSteps)
     {
       double translation_xy = params.stepLength;
       // TODO: Are there better ways to incorporate the rotation?
-      if (numRotationsNecessary > numPossibleSteps)
+      if (numRotationStepsNecessary > numPossibleSteps)
       {
         translation_xy = 0.0;
       }
@@ -203,6 +227,67 @@ void PathPlanner2018::forwardKick(const Foot& foot)
   }
 }
 
+// Foot == RIGHT means that we want to kick with the right foot
+void PathPlanner2018::sideKick(const Foot& foot)
+{
+  if (stepBuffer.empty() && !kickPlanned)
+  {
+    Coordinate coordinate = Coordinate::Hip;
+    double stepY = 0.0;
+    double speedDirection = 0.0;
+    if (foot == Foot::RIGHT)
+    {
+      coordinate     = Coordinate::RFoot;
+      stepY          = -100.0;
+      speedDirection = Math::fromDegrees(90);
+    }
+    else if (foot == Foot::LEFT)
+    {
+      coordinate     = Coordinate::LFoot;
+      stepY          = 100.0;
+      speedDirection = Math::fromDegrees(-90);
+    }
+
+    switch (foot)
+    {
+    case Foot::LEFT:
+      coordinate = Coordinate::RFoot;
+      break;
+    case Foot::RIGHT:
+      coordinate = Coordinate::LFoot;
+      break;
+    case Foot::NONE:
+      ASSERT(false);
+    }
+
+    // The kick
+    StepBufferElement new_step;
+    new_step.setPose({ 0.0, 500.0, stepY });
+    new_step.setStepType(StepType::KICKSTEP);
+    new_step.setCharacter(1.0);
+    new_step.setScale(0.7);
+    new_step.setCoordinate(coordinate);
+    new_step.setFoot(foot);
+    new_step.setSpeedDirection(Math::fromDegrees(speedDirection));
+    new_step.setRestriction(RestrictionMode::SOFT);
+    new_step.setProtected(true);
+    new_step.setTime(300);
+
+    addStep(new_step);
+
+    // The zero step
+    new_step.setStepType(StepType::ZEROSTEP);
+    addStep(new_step);
+
+    // The retracting walk step
+    new_step.setPose({ 0.0, 0.0, 0.0 });
+    new_step.setStepType(StepType::WALKSTEP);
+    addStep(new_step);
+
+    kickPlanned = true;
+  }
+}
+
 void PathPlanner2018::addStep(const StepBufferElement& new_step)
 {
   stepBuffer.push_back(new_step);
@@ -239,7 +324,7 @@ void PathPlanner2018::manageStepBuffer()
       lastStepType = "ZEROSTEP";
     }
     
-    std::cout << "Last executed step: " << lastStepType << " -- " << numPossibleSteps << " > " << params.readyForKickThreshold + getFieldInfo().ballRadius / params.stepLength << std::endl;
+    std::cout << "Last executed step: " << lastStepType << " -- " << numPossibleSteps << " > " << params.readyForKickThreshold << " or " << numRotationStepsNecessary << " > " << numPossibleSteps << std::endl;
     */
 
     stepBuffer.erase(stepBuffer.begin());

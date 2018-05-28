@@ -1,4 +1,4 @@
-option pathplanner2018
+option pathplanner2018_forwardkick
 {
 
   common decision
@@ -22,8 +22,6 @@ option pathplanner2018
     }
     action 
     {
-      head.control_mode = look_at_ball_percept;
-
       path2018.routine = path2018.routine.none;
       situation_abortable = true;
     }
@@ -58,7 +56,7 @@ option pathplanner2018
     {
       head.control_mode = look_at_ball_percept;
 
-      path2018.routine = path2018.routine.go;
+      path2018.routine = path2018.routine.forwardkick_left;
     }
   }
   
