@@ -16,8 +16,10 @@ import de.naoth.rc.core.dialog.DialogPlugin;
 import de.naoth.rc.core.dialog.RCDialog;
 import de.naoth.rc.core.manager.ObjectListener;
 import de.naoth.rc.core.manager.SwingCommandExecutor;
+import de.naoth.rc.dataformats.ModuleConfiguration;
 import de.naoth.rc.manager.GenericManager;
 import de.naoth.rc.manager.GenericManagerFactory;
+import de.naoth.rc.manager.ModuleConfigurationManager;
 import de.naoth.rc.scp.Scp;
 import de.naoth.rc.server.Command;
 import java.io.FileOutputStream;
@@ -26,8 +28,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
@@ -41,7 +45,7 @@ import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
  *
  * @author thomas
  */
-public class LogfileRecorder extends AbstractDialog
+public class LogfileRecorder extends AbstractDialog implements ObjectListener<ModuleConfiguration>
 {
   @RCDialog(category = RCDialog.Category.Log, name = "Recorder")
   @PluginImplementation
@@ -52,11 +56,16 @@ public class LogfileRecorder extends AbstractDialog
     static public SwingCommandExecutor commandExecutor;
     @InjectPlugin
     public static GenericManagerFactory genericManagerFactory;
+    @InjectPlugin
+    public static ModuleConfigurationManager moduleConfigurationManager;
   }
   
   private LoggerItem selectedLog;
   
   Map<String, Collection<String>> selectionLists = new TreeMap<String, Collection<String>>();
+  // todo: load from config
+  List<String> defaultSelectionSchemes = Arrays.asList("none","Basic Perception", "Last Record", "-----------");
+  List<String> ignoreModulesRepresentations = Arrays.asList();
   
   StatusApdateHandler statusUpdateHandler = new StatusApdateHandler();
   
@@ -81,12 +90,7 @@ public class LogfileRecorder extends AbstractDialog
                 "InertialModel")
     );
     
-    // todo: load from config
-    DefaultComboBoxModel m = new DefaultComboBoxModel();
-    m.addElement("none");
-    m.addElement("Basic Perception");
-    m.addElement("Last Record");
-    cbSelectionScheme.setModel(m);
+    defaultSelectionSchemes.forEach((item) -> { cbSelectionScheme.addItem(item); });
     
     DefaultComboBoxModel loggerListModel = new DefaultComboBoxModel();
     loggerListModel.addElement(new LoggerItem("CognitionLog", "Cognition:CognitionLog"));
@@ -376,6 +380,8 @@ public class LogfileRecorder extends AbstractDialog
         cbLogName.setEnabled(false);
         stringSelectionPanel.setEnabled(true);
         cbSelectionScheme.setEnabled(true);
+
+        Plugin.moduleConfigurationManager.addListener(this);
       }
     }//GEN-LAST:event_btNewActionPerformed
 
@@ -492,8 +498,10 @@ public class LogfileRecorder extends AbstractDialog
 
     private void cbSelectionSchemeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbSelectionSchemeActionPerformed
         stringSelectionPanel.clearSelection();
-        Collection<String> selection = selectionLists.get((String)cbSelectionScheme.getSelectedItem());
-        stringSelectionPanel.select(selection);
+        if(cbSelectionScheme.getSelectedItem() != null) {
+            Collection<String> selection = selectionLists.get((String)cbSelectionScheme.getSelectedItem());
+            stringSelectionPanel.select(selection);
+        }
     }//GEN-LAST:event_cbSelectionSchemeActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -610,4 +618,35 @@ public class LogfileRecorder extends AbstractDialog
     close();
   }
 
+    @Override
+    public void newObjectReceived(ModuleConfiguration modules) {
+        // retrieve modules only once
+        Plugin.moduleConfigurationManager.removeListener(this);
+        // remove "old" modules from scheme selection list and re-add the default ones
+        cbSelectionScheme.removeAllItems();
+        defaultSelectionSchemes.forEach((item) -> { cbSelectionScheme.addItem(item); });
+        // get available representations
+        Collection<String> available = stringSelectionPanel.getOptions();
+        // get modules
+        ArrayList<ModuleConfiguration.Node> nodes = modules.getNodeList();
+        for (ModuleConfiguration.Node node : nodes) {
+            // only providing modules
+            if (node.getType() == ModuleConfiguration.NodeType.Module && !node.require.isEmpty()) {
+                // filter for available representations
+                List<String> list = node.require.stream().map((t) -> { return t.getName(); })
+                                                         .filter((t) -> { return available.contains(t) && !ignoreModulesRepresentations.contains(t); })
+                                                         .collect(Collectors.toList());
+                // only add modules which provide and where representation is available
+                if(!list.isEmpty()) {
+                    selectionLists.put(node.getName(), list);
+                    cbSelectionScheme.addItem(node.getName());
+                }
+            }
+        }
+    }
+
+    @Override
+    public void errorOccured(String cause) {
+        Plugin.moduleConfigurationManager.removeListener(this);
+    }
 }//end class
