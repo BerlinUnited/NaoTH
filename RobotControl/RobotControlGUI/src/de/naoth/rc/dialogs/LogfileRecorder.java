@@ -23,6 +23,7 @@ import de.naoth.rc.server.Command;
 import java.io.FileOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
@@ -409,7 +410,7 @@ public class LogfileRecorder extends AbstractDialog
           }
           
           // remember selected stuff
-          selectionLists.put("Last Record", stringSelectionPanel.getSelection());
+          selectionLists.put("Last Record", new ArrayList<>(stringSelectionPanel.getSelection()));
         }
         
         // activate permantent logging
