@@ -1,4 +1,5 @@
 import os
+import re
 import queue
 import threading
 
@@ -36,8 +37,9 @@ class GameLoggerLog(threading.Thread):
                 self.last_file.write(msg + self.separator)
                 self.last_file.flush()
             elif msg is not None:
-                t1 = self.teams[msg.team[0].teamNumber] if msg.team[0].teamNumber in self.teams else msg.team[0].teamNumber
-                t2 = self.teams[msg.team[1].teamNumber] if msg.team[1].teamNumber in self.teams else msg.team[1].teamNumber
+                # replace whitespaces with underscore
+                t1 = re.sub("\s+", "_", str(self.teams[msg.team[0].teamNumber] if msg.team[0].teamNumber in self.teams else msg.team[0].teamNumber))
+                t2 = re.sub("\s+", "_", str(self.teams[msg.team[1].teamNumber] if msg.team[1].teamNumber in self.teams else msg.team[1].teamNumber))
                 h = '1stHalf' if msg.firstHalf else '2ndHalf'
                 # check game file - did something changed in the game state?
                 if self.last_file is None or self.state['t1'] != t1 or self.state['t2'] != t2 or self.state['h'] != h:
