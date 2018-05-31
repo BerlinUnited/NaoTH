@@ -138,6 +138,14 @@ public class LogfileRecorder extends AbstractDialog implements ObjectListener<Mo
       }
   }
 
+  private String getLogType() {
+      switch(cbLogName.getSelectedItem().toString()) {
+          case "CognitionLog": return "Cognition";
+          case "MotionLog": return "Motion";
+      }
+      return null;
+  }
+
   class DefaultHandler implements ObjectListener<byte[]>
   {
     @Override
@@ -308,6 +316,7 @@ public class LogfileRecorder extends AbstractDialog implements ObjectListener<Mo
         stringSelectionPanel.setEnabled(false);
 
         cbSelectionScheme.setEnabled(false);
+        cbSelectionScheme.setPrototypeDisplayValue("BallDetectorIntegralImageTop");
         cbSelectionScheme.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cbSelectionSchemeActionPerformed(evt);
@@ -333,10 +342,10 @@ public class LogfileRecorder extends AbstractDialog implements ObjectListener<Mo
                     .addComponent(txtTempFile, javax.swing.GroupLayout.DEFAULT_SIZE, 507, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel2)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 45, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 148, Short.MAX_VALUE)
                         .addComponent(jLabel3)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(cbSelectionScheme, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(cbSelectionScheme, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jProgressBar, javax.swing.GroupLayout.DEFAULT_SIZE, 507, Short.MAX_VALUE)
                     .addComponent(stringSelectionPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 511, Short.MAX_VALUE))
                 .addContainerGap())
@@ -380,7 +389,7 @@ public class LogfileRecorder extends AbstractDialog implements ObjectListener<Mo
         cbLogName.setEnabled(false);
         stringSelectionPanel.setEnabled(true);
         cbSelectionScheme.setEnabled(true);
-
+        Plugin.moduleConfigurationManager.setModuleOwner(getLogType());
         Plugin.moduleConfigurationManager.addListener(this);
       }
     }//GEN-LAST:event_btNewActionPerformed
@@ -622,9 +631,7 @@ public class LogfileRecorder extends AbstractDialog implements ObjectListener<Mo
     public void newObjectReceived(ModuleConfiguration modules) {
         // retrieve modules only once
         Plugin.moduleConfigurationManager.removeListener(this);
-        // remove "old" modules from scheme selection list and re-add the default ones
-        cbSelectionScheme.removeAllItems();
-        defaultSelectionSchemes.forEach((item) -> { cbSelectionScheme.addItem(item); });
+        ArrayList<String> newModules = new ArrayList<>();
         // get available representations
         Collection<String> available = stringSelectionPanel.getOptions();
         // get modules
@@ -639,10 +646,14 @@ public class LogfileRecorder extends AbstractDialog implements ObjectListener<Mo
                 // only add modules which provide and where representation is available
                 if(!list.isEmpty()) {
                     selectionLists.put(node.getName(), list);
-                    cbSelectionScheme.addItem(node.getName());
+                    newModules.add(node.getName());
                 }
             }
         }
+        // remove "old" modules from scheme selection list and re-add the default ones
+        cbSelectionScheme.removeAllItems();
+        defaultSelectionSchemes.forEach((item) -> { cbSelectionScheme.addItem(item); });
+        newModules.stream().sorted().forEach((m) -> { cbSelectionScheme.addItem(m); });
     }
 
     @Override
