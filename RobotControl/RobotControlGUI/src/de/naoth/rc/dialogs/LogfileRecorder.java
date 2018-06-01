@@ -631,62 +631,85 @@ public class LogfileRecorder extends AbstractDialog implements ObjectListener<Mo
   }
 
     @Override
-    public void newObjectReceived(ModuleConfiguration modules) {
-        // retrieve modules only once
+    public void newObjectReceived(ModuleConfiguration moduleConfiguration) {
+        // retrieve modules/representations only once
         Plugin.moduleConfigurationManager.removeListener(this);
-        ArrayList<String> newModules = new ArrayList<>();
-        HashMap<String, Set<String>> modulez = new HashMap<>();
-        HashMap<String, Set<String>> representationz = new HashMap<>();
-        
-        // get available representations
-        Collection<String> available = stringSelectionPanel.getOptions();
-        // get modules
-        ArrayList<ModuleConfiguration.Node> nodes = modules.getNodeList();
-        for (ModuleConfiguration.Node node : nodes) {
-            // only providing modules
+        // mapping from modules to required representations
+        HashMap<String, Set<String>> modules = new HashMap<>();
+        // mapping from representations to providing modules
+        HashMap<String, Set<String>> representations = new HashMap<>();
+        // iterate through modules
+        for (ModuleConfiguration.Node node : moduleConfiguration.getNodeList()) {
+            // only modules
             if (node.getType() == ModuleConfiguration.NodeType.Module) {
+                // generate the mapping from modules to required representations
                 if(!node.require.isEmpty()) {
-                    // add required representations
-                    modulez.put(node.getName(), new HashSet<>(node.require.stream().map((t) -> {
+                    modules.put(node.getName(), new HashSet<>(node.require.stream().map((t) -> {
                         return t.getName();
                     }).collect(Collectors.toList())));
                 }
+                // generate the mapping from representations to providing modules
                 if(!node.provide.isEmpty()) {
-                    // add provided representations
                     node.provide.stream().forEach((n) -> {
-                        if(!representationz.containsKey(n.getName())) {
-                            representationz.put(n.getName(), new HashSet<>());
+                        // create set, if not exists
+                        if(!representations.containsKey(n.getName())) {
+                            representations.put(n.getName(), new HashSet<>());
                         }
-                        representationz.get(n.getName()).add(node.getName());
+                        representations.get(n.getName()).add(node.getName());
                     });
-//                    representationz.containsKey()
                 }
             }
         }
         
-        HashMap<String, Set<String>> newModulez = new HashMap<>();
-        for (Map.Entry<String, Set<String>> entry : modulez.entrySet()) {
+        ArrayList<String> newModules = new ArrayList<>();
+        HashMap<String, Set<String>> dependend_representations = new HashMap<>();
+        
+        // for all modules collect all dependend modules
+        for (String m : modules.keySet()) {
+            dependend_representations.put(m, new HashSet<>());
+            // the module depends on itself
+            dependend_representations.get(m).add(m);
+            // as long as new/dependend modules are added continue adding modules
+            while (true) {
+                HashSet<String> subs = new HashSet<>();
+                // check for each depended module, if it got another dependency
+                for (String submodule : dependend_representations.get(m)) {
+                    // do we know the dependent module
+                    if(modules.containsKey(submodule)) {
+                        // add all available & dependable representations
+                        modules.get(submodule).stream().filter((r) -> {
+                            return representations.containsKey(r);
+                        }).forEach((r) -> {
+                            subs.addAll(representations.get(r));
+                        });
+                    }
+                }
+                // add dependend modules and check if something new was added
+                int size = dependend_representations.get(m).size();
+                dependend_representations.get(m).addAll(subs);
+                if(dependend_representations.get(m).size() == size) {
+                    // nothing new added, 'finish'
+                    break;
+                }
+            }
             
-            newModulez.put(entry.getKey(), entry.getValue());
-            for (String r : entry.getValue()) {
-//                rm = new 
-                if(representationz.containsKey(r)) {
-                    
+            List<String> module_representations = new ArrayList<>();
+            // only add modules which provide and where representation is available
+            for (String string : dependend_representations.get(m)) {
+                if(modules.containsKey(string)) {
+                    module_representations.addAll(modules.get(string).stream().filter((t) -> {
+                        return stringSelectionPanel.getOptions().contains(t) && !ignoreModulesRepresentations.contains(t);
+                    }).collect(Collectors.toList()));
                 }
             }
+            
+            // add module to selection list
+            if(!module_representations.isEmpty()) {
+                selectionLists.put(m, module_representations);
+                newModules.add(m);
+            }
         }
-        /*TOOL_TIP_TEXT_KEY
         
-                // filter for available representations
-                List<String> list = node.require.stream().map((t) -> { return t.getName(); })
-                                                         .filter((t) -> { return available.contains(t) && !ignoreModulesRepresentations.contains(t); })
-                                                         .collect(Collectors.toList());
-                // only add modules which provide and where representation is available
-                if(!list.isEmpty()) {
-                    selectionLists.put(node.getName(), list);
-                    newModules.add(node.getName());
-                }
-        */
         // remove "old" modules from scheme selection list and re-add the default ones
         cbSelectionScheme.removeAllItems();
         defaultSelectionSchemes.forEach((item) -> { cbSelectionScheme.addItem(item); });
