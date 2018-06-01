@@ -7,16 +7,14 @@ option pathplanner2018_sidekick
       goto idle;
     else if(situation_abortable && !ball.know_where_itis)
       goto search;
-    else if (body.ready_to_walk && game.current_mode == playing && state_time > 500)
-      goto pathplanner_go;
-
-
   }
 
   initial state idle 
   {
     decision 
     {
+      else if (body.ready_to_walk && game.current_mode == playing && state_time > 500)
+        goto pathplanner_go;
       else
         goto search;
     }

@@ -104,7 +104,28 @@ public:
       break;
     }
 
+    std::string path_type2018;
+    switch (path2018_routine)
+    {
+    case PathPlanner2018Routine::NONE:
+        path_type2018 = "none";
+        break;
+    case PathPlanner2018Routine::SIDEKICK_LEFT:
+      path_type2018 = "sidekick_left";
+      break;
+    case PathPlanner2018Routine::SIDEKICK_RIGHT:
+      path_type2018 = "sidekick_right";
+      break;
+    case PathPlanner2018Routine::FORWARDKICK_LEFT:
+      path_type2018 = "forwardkick_left";
+      break;
+    case PathPlanner2018Routine::FORWARDKICK_RIGHT:
+      path_type2018 = "forwardkick_right";
+      break;
+    }
+
     stream << "path_type = " << path_type << std::endl;
+    stream << "path_type2018 = " << path_type2018 << std::endl;
     stream << "distance = " << distance << std::endl;
     stream << "yOffset = " << yOffset << std::endl;
     stream << "direction = " << direction << std::endl;

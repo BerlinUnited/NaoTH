@@ -62,10 +62,12 @@ private:
   public:
     Parameters() : ParameterList("PathPlanner2018")
     {
-      PARAMETER_REGISTER(stepLength) = 80.0;
-      PARAMETER_REGISTER(readyForKickThreshold) = 2.5;
-      PARAMETER_REGISTER(rotationLength) = 30.0;
-      PARAMETER_REGISTER(sidekickOffsetY) = 40.0;
+      PARAMETER_REGISTER(stepLength)            = 80.0;
+      PARAMETER_REGISTER(readyForKickThreshold) = 3.0;
+      PARAMETER_REGISTER(rotationLength)        = 30.0;
+      PARAMETER_REGISTER(sidekickOffsetY)       = 40.0;
+      PARAMETER_REGISTER(forwardKickTime)       = 300;
+      PARAMETER_REGISTER(sideKickTime)          = 300;
 
       syncWithConfig();
     }
@@ -75,6 +77,8 @@ private:
     double readyForKickThreshold;
     double rotationLength;
     double sidekickOffsetY;
+    int forwardKickTime;
+    int sideKickTime;
   } params;
 
   // NONE means hip
@@ -89,7 +93,10 @@ private:
   typedef WalkRequest::StepControlRequest::RestrictionMode RestrictionMode;
   typedef WalkRequest::Coordinate Coordinate;
 
-  bool acquireBallControl(const Foot& foot, const double offsetX, const double offsetY);
+  // goToBall is split up between sideKick and forwardKick so that changing things in upcoming RoboCup 2018
+  // won't be so complex as to introduce bugs easily
+  bool goToBall_forwardKick(const Foot& foot, const double offsetX, const double offsetY);
+  bool goToBall_sideKick(const Foot& foot, const double offsetX, const double offsetY);
   void forwardKick(const Foot& foot);
   void sideKick(const Foot& foot);
 
