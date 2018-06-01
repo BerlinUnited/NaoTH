@@ -14,6 +14,8 @@ PathPlanner2018::PathPlanner2018()
   lastStepRequestID(getMotionStatus().stepControl.stepRequestID + 1),      // WalkRequest stepRequestID starts at 0, we have to start at 1
   kickPlanned(false),
   numPossibleSteps(0.0),
+  numPossibleStepsX(0.0),
+  numPossibleStepsY(0.0),
   numRotationStepsNecessary(0.0)
 {
   getDebugParameterList().add(&params);
@@ -59,15 +61,21 @@ void PathPlanner2018::execute()
     }
     break;
   case PathModel::PathPlanner2018Routine::FORWARDKICK_LEFT:
-    if (goToBall_forwardKick(Foot::LEFT, 0.0, 0.0))
+    if (farApproach())
     {
-      forwardKick(Foot::LEFT);
+      if (nearApproach_forwardKick(Foot::LEFT, 0.0, 0.0))
+      {
+        forwardKick(Foot::LEFT);
+      }
     }
     break;
   case PathModel::PathPlanner2018Routine::FORWARDKICK_RIGHT:
-    if (goToBall_forwardKick(Foot::RIGHT, 0.0, 0.0))
+    if (farApproach())
     {
-      forwardKick(Foot::RIGHT);
+      if (nearApproach_forwardKick(Foot::RIGHT, 0.0, 0.0))
+      {
+        forwardKick(Foot::RIGHT);
+      }
     }
     break;
   case PathModel::PathPlanner2018Routine::SIDEKICK_LEFT:
@@ -88,7 +96,41 @@ void PathPlanner2018::execute()
   executeStepBuffer();
 }
 
-bool PathPlanner2018::goToBall_forwardKick(const Foot& foot, const double offsetX, const double offsetY)
+bool PathPlanner2018::farApproach()
+{
+  if (stepBuffer.empty())
+  {
+    Vector2d ballPos = getBallModel().positionPreview;
+    numPossibleSteps = ballPos.abs() / params.stepLength;
+
+    if (numPossibleSteps > params.farToNearApproachThreshold)
+    {
+      double translation_xy = params.stepLength;
+
+      StepBufferElement new_step;
+      new_step.setPose({ ballPos.angle(), translation_xy, std::min(translation_xy, std::abs(ballPos.y)) * (ballPos.y < 0 ? -1 : 1) });
+      new_step.setStepType(StepType::WALKSTEP);
+      new_step.setCharacter(0.7);
+      new_step.setScale(1.0);
+      new_step.setCoordinate(Coordinate::Hip);
+      new_step.setFoot(Foot::NONE);
+      new_step.setSpeedDirection(Math::fromDegrees(0.0));
+      new_step.setRestriction(RestrictionMode::HARD);
+      new_step.setProtected(false);
+      new_step.setTime(250);
+
+      addStep(new_step);
+    }
+    else
+    {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+bool PathPlanner2018::nearApproach_forwardKick(const Foot& foot, const double offsetX, const double offsetY)
 {
   // Always execute the steps that were planned before planning new steps
   if (stepBuffer.empty())
@@ -98,13 +140,13 @@ bool PathPlanner2018::goToBall_forwardKick(const Foot& foot, const double offset
 
     if (foot == Foot::RIGHT)
     {
-      ballPos   = getBallModel().positionPreviewInRFoot;
+      ballPos    = getBallModel().positionPreviewInRFoot;
       coordinate = Coordinate::RFoot;
     }
     else if (foot == Foot::LEFT)
     {
       coordinate = Coordinate::LFoot;
-      ballPos   = getBallModel().positionPreviewInLFoot;
+      ballPos    = getBallModel().positionPreviewInLFoot;
     }
     else
     {
@@ -114,25 +156,19 @@ bool PathPlanner2018::goToBall_forwardKick(const Foot& foot, const double offset
     ballPos.x += offsetX;
     ballPos.y += offsetY;
 
-    const double ballRot = ballPos.angle();
-
     // TODO: Are there better ways to calculate this?
-    numPossibleSteps          = ballPos.abs() / params.stepLength;
-    numRotationStepsNecessary = ballRot / params.rotationLength;
+    numPossibleStepsX = std::abs(ballPos.x) / params.stepLength;
+    numPossibleStepsY = std::abs(ballPos.y) / params.stepLength;
 
     // Am I ready for a kick or still walking to the ball?
     // In other words: Can I only perform one step before touching the ball or more steps?
-    if (numPossibleSteps > params.readyForKickThreshold
-      || numRotationStepsNecessary > numPossibleSteps)
+    if (numPossibleStepsX > params.readyForKickThresholdX
+      || numPossibleStepsY > params.readyForKickThresholdY)
     {
       double translation_xy = params.stepLength;
-      // TODO: Are there better ways to incorporate the rotation?
-      if (numRotationStepsNecessary > numPossibleSteps)
-      {
-        translation_xy = 0.0;
-      }
+
       StepBufferElement new_step;
-      new_step.setPose({ ballRot, std::min(translation_xy, ballPos.x), std::min(translation_xy, ballPos.y) });
+      new_step.setPose({ 0.0, std::min(translation_xy, ballPos.x - getFieldInfo().ballRadius - params.nearApproachBallPosOffsetX), std::min(translation_xy, std::abs(ballPos.y)) * (ballPos.y < 0 ? -1 : 1) });
       new_step.setStepType(StepType::WALKSTEP);
       new_step.setCharacter(0.7);
       new_step.setScale(1.0);
@@ -150,10 +186,9 @@ bool PathPlanner2018::goToBall_forwardKick(const Foot& foot, const double offset
       // Correction step if the movable foot is different from the foot that is supposed to kick
       if (getMotionStatus().stepControl.moveableFoot != (foot == Foot::RIGHT ? MotionStatus::StepControlStatus::RIGHT : MotionStatus::StepControlStatus::LEFT))
       {
-        std::cout << "CORRECTION STEP" << std::endl;
         const double translation_xy = params.stepLength;
         StepBufferElement correction_step;
-        correction_step.setPose({ ballRot, /*std::min(translation_xy,*/ ballPos.x, std::min(translation_xy, ballPos.y) });
+        correction_step.setPose({ 0.0, ballPos.x, std::min(translation_xy, ballPos.y) });
         correction_step.setStepType(StepType::WALKSTEP);
         correction_step.setCharacter(0.7);
         correction_step.setScale(1.0);
@@ -173,6 +208,7 @@ bool PathPlanner2018::goToBall_forwardKick(const Foot& foot, const double offset
   return false;
 }
 
+// TODO: Has to work without rotation (like nearApproach_forwardKick)
 bool PathPlanner2018::goToBall_sideKick(const Foot& foot, const double offsetX, const double offsetY)
 {
   // Always execute the steps that were planned before planning new steps
@@ -202,7 +238,7 @@ bool PathPlanner2018::goToBall_sideKick(const Foot& foot, const double offsetX, 
     const double ballRot = ballPos.angle();
 
     // TODO: Are there better ways to calculate this?
-    numPossibleSteps = ballPos.abs() / params.stepLength;
+    numPossibleSteps          = ballPos.abs() / params.stepLength;
     numRotationStepsNecessary = ballRot / params.rotationLength;
 
     // Am I ready for a kick or still walking to the ball?

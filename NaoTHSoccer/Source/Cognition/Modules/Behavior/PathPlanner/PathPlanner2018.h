@@ -62,12 +62,16 @@ private:
   public:
     Parameters() : ParameterList("PathPlanner2018")
     {
-      PARAMETER_REGISTER(stepLength)            = 80.0;
-      PARAMETER_REGISTER(readyForKickThreshold) = 3.0;
-      PARAMETER_REGISTER(rotationLength)        = 30.0;
-      PARAMETER_REGISTER(sidekickOffsetY)       = 40.0;
-      PARAMETER_REGISTER(forwardKickTime)       = 300;
-      PARAMETER_REGISTER(sideKickTime)          = 300;
+      PARAMETER_REGISTER(stepLength)                 = 80.0;
+      PARAMETER_REGISTER(readyForKickThreshold)      = 4.0;
+      PARAMETER_REGISTER(readyForKickThresholdX)     = 4.0;
+      PARAMETER_REGISTER(readyForKickThresholdY)     = 0.5;
+      PARAMETER_REGISTER(nearApproachBallPosOffsetX) = 100;
+      PARAMETER_REGISTER(farToNearApproachThreshold) = 10.0;
+      PARAMETER_REGISTER(rotationLength)             = 30.0;
+      PARAMETER_REGISTER(sidekickOffsetY)            = 40.0;
+      PARAMETER_REGISTER(forwardKickTime)            = 300;
+      PARAMETER_REGISTER(sideKickTime)               = 300;
 
       syncWithConfig();
     }
@@ -75,6 +79,10 @@ private:
 
     double stepLength;
     double readyForKickThreshold;
+    double readyForKickThresholdX;
+    double readyForKickThresholdY;
+    double nearApproachBallPosOffsetX;
+    double farToNearApproachThreshold;
     double rotationLength;
     double sidekickOffsetY;
     int forwardKickTime;
@@ -95,7 +103,8 @@ private:
 
   // goToBall is split up between sideKick and forwardKick so that changing things in upcoming RoboCup 2018
   // won't be so complex as to introduce bugs easily
-  bool goToBall_forwardKick(const Foot& foot, const double offsetX, const double offsetY);
+  bool farApproach();
+  bool nearApproach_forwardKick(const Foot& foot, const double offsetX, const double offsetY);
   bool goToBall_sideKick(const Foot& foot, const double offsetX, const double offsetY);
   void forwardKick(const Foot& foot);
   void sideKick(const Foot& foot);
@@ -171,6 +180,8 @@ private:
 private:
   bool kickPlanned;
   double numPossibleSteps;
+  double numPossibleStepsX;
+  double numPossibleStepsY;
   double numRotationStepsNecessary;
 };
 
