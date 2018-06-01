@@ -25,14 +25,13 @@ categorie_names(ismember(categorie_names,{'.','..'})) = [];
 for m=1:length(categorie_names)
     
     folderblabla = strcat(reference_import_path, '\', categorie_names(m));
-    
-    folderContents = dir(strcat(string(folderblabla), '/**/*.dat'));
+    folderContents = dir(strcat(string(folderblabla), '/**/*.raw'));
     
     for d = 1:length(folderContents)
-        reference_database = add_whistle_spectrum(reference_database, ...
+        
+        reference_database = add_whistle(reference_database, ...
         [folderContents(d).folder '/' folderContents(d).name], 1, 8000, cell2mat(categorie_names(m)));
     end
-    
 end
 %%
 disp('Saving Whistle database');

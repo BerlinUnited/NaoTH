@@ -1,3 +1,4 @@
+%deprecated - do not use!!!
 function data = add_whistle_spectrum(data, file, numChannels, sampleRate, category)
 
     [~,filename,~] = fileparts(file);

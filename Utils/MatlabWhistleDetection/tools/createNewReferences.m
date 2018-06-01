@@ -60,7 +60,7 @@ for t = 1:length(event_names)
             end        
 
             % export whistle data as raw
-            path_to_outputfolder = fullfile(reference_export_path,char(event_name));
+            path_to_outputfolder = fullfile(reference_export_path,strcat('gen_from_', char(event_name)));
             mkdir(path_to_outputfolder);
 
             record_name = strcat(an.game_name, "_", an.half, "_", an.robot_name, "_", an.filename);
