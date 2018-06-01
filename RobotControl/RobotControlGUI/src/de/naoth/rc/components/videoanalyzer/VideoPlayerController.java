@@ -5,6 +5,8 @@ import java.io.File;
 import java.net.URL;
 import java.util.Objects;
 import java.util.ResourceBundle;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javafx.application.Platform;
@@ -76,6 +78,8 @@ public class VideoPlayerController implements Initializable
   
   private Media media;
   private MediaPlayer player;
+  private TimeSetterService timeSetterService = new TimeSetterService();
+
 
   private VideoAnalyzerController analyzer;
 
@@ -129,7 +133,6 @@ public class VideoPlayerController implements Initializable
     mediaView.setPreserveRatio(true);
     
     resetZoomButton.disableProperty().bind(zoomedProperty.not());
-    
   }
 
   public void togglePlay()
@@ -254,12 +257,13 @@ public class VideoPlayerController implements Initializable
 
     public void setTime(final double newTimeSeconds) {
         if (player != null) {
-            Service<Boolean> background = new TimeSetterService(newTimeSeconds);
-
-            background.setOnSucceeded((WorkerStateEvent event) -> {
-                updateGUIForTimeCode(Duration.seconds(newTimeSeconds));
+            timeSetterService.cancel();
+            
+            timeSetterService.setNewTimeSeconds(newTimeSeconds);    
+                timeSetterService.setOnSucceeded((WorkerStateEvent event) -> {
+                    updateGUIForTimeCode(Duration.seconds(newTimeSeconds));
             });
-            background.start();
+            timeSetterService.restart();
         }
     }
 
@@ -558,21 +562,46 @@ public class VideoPlayerController implements Initializable
     
   }
 
-    private class TimeSetterService extends Service<Boolean> {
+    private class TimeSetterService extends Service<Double> {
 
-        private final double newTimeSeconds;
-
-        public TimeSetterService(double newTimeSeconds) {
-            this.newTimeSeconds = newTimeSeconds;
+        private final Lock newTimeSecondsLock = new ReentrantLock();
+        private double newTimeSeconds;
+        
+        public TimeSetterService() {
+            this.newTimeSeconds = 0.0;
         }
 
+        public double getNewTimeSeconds() {
+            try
+            {
+                newTimeSecondsLock.lock();
+                return this.newTimeSeconds;
+            }
+            finally {
+                newTimeSecondsLock.unlock();
+            }
+        }
+
+        public void setNewTimeSeconds(double newTimeSeconds) {
+            try
+            {
+                newTimeSecondsLock.lock();
+                this.newTimeSeconds = newTimeSeconds;
+            }
+            finally {
+                newTimeSecondsLock.unlock();
+            }
+        }
+        
+        
         @Override
-        protected Task<Boolean> createTask() {
-            return new Task<Boolean>() {
+        protected Task<Double> createTask() {
+            return new Task<Double>() {
                 @Override
-                protected Boolean call() throws Exception {
-                    pauseAndSeek(Duration.seconds(newTimeSeconds));
-                    return true;
+                protected Double call() throws Exception {
+                    double newTimeSecondsCopy = getNewTimeSeconds();
+                    pauseAndSeek(Duration.seconds(newTimeSecondsCopy));
+                    return newTimeSecondsCopy;
                 }
             };
         }
