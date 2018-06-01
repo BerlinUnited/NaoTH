@@ -12,7 +12,11 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.concurrent.Service;
+import javafx.concurrent.Task;
+import javafx.concurrent.WorkerStateEvent;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Point2D;
@@ -248,14 +252,16 @@ public class VideoPlayerController implements Initializable
   }
   
 
-  public void setTime(double newTimeSeconds)
-  {
-    if (player != null)
-    {
-      pauseAndSeek(Duration.seconds(newTimeSeconds));
-      updateGUIForTimeCode(Duration.seconds(newTimeSeconds));
+    public void setTime(final double newTimeSeconds) {
+        if (player != null) {
+            Service<Boolean> background = new TimeSetterService(newTimeSeconds);
+
+            background.setOnSucceeded((WorkerStateEvent event) -> {
+                updateGUIForTimeCode(Duration.seconds(newTimeSeconds));
+            });
+            background.start();
+        }
     }
-  }
 
   public void setAnalyzer(VideoAnalyzerController analyzer)
   {
@@ -551,4 +557,24 @@ public class VideoPlayerController implements Initializable
     }
     
   }
+
+    private class TimeSetterService extends Service<Boolean> {
+
+        private final double newTimeSeconds;
+
+        public TimeSetterService(double newTimeSeconds) {
+            this.newTimeSeconds = newTimeSeconds;
+        }
+
+        @Override
+        protected Task<Boolean> createTask() {
+            return new Task<Boolean>() {
+                @Override
+                protected Boolean call() throws Exception {
+                    pauseAndSeek(Duration.seconds(newTimeSeconds));
+                    return true;
+                }
+            };
+        }
+    }
 }
