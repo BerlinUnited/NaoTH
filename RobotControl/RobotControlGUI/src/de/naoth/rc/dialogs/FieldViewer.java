@@ -5,6 +5,7 @@
  */
 package de.naoth.rc.dialogs;
 
+import com.google.protobuf.InvalidProtocolBufferException;
 import de.naoth.rc.core.dialog.AbstractDialog;
 import de.naoth.rc.core.dialog.DialogPlugin;
 import de.naoth.rc.RobotControl;
@@ -26,13 +27,21 @@ import de.naoth.rc.drawingmanager.DrawingEventManager;
 import de.naoth.rc.manager.DebugDrawingManager;
 import de.naoth.rc.manager.ImageManagerBottom;
 import de.naoth.rc.core.manager.ObjectListener;
+import de.naoth.rc.drawings.Circle;
 import de.naoth.rc.drawings.FieldDrawingSPL3x4;
+import de.naoth.rc.drawings.Robot;
+import de.naoth.rc.drawings.Text;
+import de.naoth.rc.logmanager.BlackBoard;
+import de.naoth.rc.logmanager.LogDataFrame;
 import de.naoth.rc.logmanager.LogFileEventManager;
+import de.naoth.rc.logmanager.LogFrameListener;
 import de.naoth.rc.manager.DebugDrawingManagerMotion;
 import de.naoth.rc.manager.PlotDataManager;
 import de.naoth.rc.math.Vector2D;
 import de.naoth.rc.messages.Messages.PlotItem;
 import de.naoth.rc.messages.Messages.Plots;
+import de.naoth.rc.messages.TeamMessageOuterClass;
+import de.naoth.rc.messages.TeamMessageOuterClass.TeamMessage;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
@@ -43,6 +52,8 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
@@ -87,6 +98,8 @@ public class FieldViewer extends AbstractDialog implements ActionListener
 
   private final PlotDataListener plotDataListener;
   private final StrokePlot strokePlot;
+  
+  private final LogFrameListener logFrameListener;
 
   // create new classes, so the received drawings are stored into different buffers
   private class DrawingsListenerMotion extends DrawingsListener{}
@@ -122,6 +135,8 @@ public class FieldViewer extends AbstractDialog implements ActionListener
     ));
     
     this.plotDataListener = new PlotDataListener();
+    
+    this.logFrameListener = new LogFrameDrawer();
     
     this.fieldCanvas.setBackgroundDrawing((Drawable)this.cbBackground.getSelectedItem());
     this.fieldCanvas.setToolTipText("");
@@ -169,6 +184,7 @@ public class FieldViewer extends AbstractDialog implements ActionListener
         coordsPopup = new javax.swing.JDialog();
         jToolBar1 = new javax.swing.JToolBar();
         btReceiveDrawings = new javax.swing.JToggleButton();
+        btLog = new javax.swing.JToggleButton();
         btClean = new javax.swing.JButton();
         cbBackground = new javax.swing.JComboBox();
         btRotate = new javax.swing.JButton();
@@ -213,6 +229,17 @@ public class FieldViewer extends AbstractDialog implements ActionListener
             }
         });
         jToolBar1.add(btReceiveDrawings);
+
+        btLog.setText("Log");
+        btLog.setFocusable(false);
+        btLog.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btLog.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btLog.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btLogActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(btLog);
 
         btClean.setText("Clean");
         btClean.setFocusable(false);
@@ -421,6 +448,17 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
         fieldCanvas.setFitToViewport(this.btFitToView.isSelected());
     }//GEN-LAST:event_btFitToViewActionPerformed
 
+    private void btLogActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btLogActionPerformed
+        if(btLog.isSelected())
+        {
+            Plugin.logFileEventManager.addListener(logFrameListener);
+        }
+        else
+        {
+            Plugin.logFileEventManager.removeListener(logFrameListener);
+        }
+    }//GEN-LAST:event_btLogActionPerformed
+
   
   final void resetView()
   {
@@ -484,7 +522,40 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
     }
   }
   
-  
+  class LogFrameDrawer implements LogFrameListener
+  {
+        private void drawTeamRobot(TeamMessage.Data teamMsg, DrawingCollection dc)
+        {
+            Robot robot = new Robot(teamMsg.getPose().getTranslation().getX(), 
+                teamMsg.getPose().getTranslation().getY(), teamMsg.getPose().getRotation());
+            dc.add(robot);
+            Text playerNum = new Text((int) teamMsg.getPose().getTranslation().getX() + 100, 
+                (int) teamMsg.getPose().getTranslation().getY() + 100, "" + teamMsg.getPlayerNum());
+            dc.add(playerNum);
+        }
+        @Override
+        public void newFrame(BlackBoard b) 
+        {
+            DrawingCollection dc = new DrawingCollection();
+            
+            LogDataFrame teamMessageFrame = b.get("TeamMessage");
+            if(teamMessageFrame != null)
+            {
+                try {
+                    TeamMessage teamMessage = TeamMessage.parseFrom(teamMessageFrame.getData());
+                    for(int i=0; i < teamMessage.getDataCount(); i++) {
+                        TeamMessage.Data robotMsg = teamMessage.getData(i);
+                        drawTeamRobot(robotMsg, dc);
+                        
+                    }
+                } catch (InvalidProtocolBufferException ex) {
+                    Logger.getLogger(FieldViewer.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            drawingBuffers.put(this.getClass(), dc);
+            
+        }
+  }
 
   class PlotDataListener implements ObjectListener<Plots>
   {
@@ -569,6 +640,7 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
     private javax.swing.JButton btClean;
     private javax.swing.JCheckBox btCollectDrawings;
     private javax.swing.JToggleButton btFitToView;
+    private javax.swing.JToggleButton btLog;
     private javax.swing.JToggleButton btReceiveDrawings;
     private javax.swing.JButton btRotate;
     private javax.swing.JCheckBox btTrace;
