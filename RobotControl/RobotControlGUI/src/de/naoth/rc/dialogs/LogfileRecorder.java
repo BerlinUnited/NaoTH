@@ -28,8 +28,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 import javax.swing.DefaultComboBoxModel;
@@ -632,13 +635,48 @@ public class LogfileRecorder extends AbstractDialog implements ObjectListener<Mo
         // retrieve modules only once
         Plugin.moduleConfigurationManager.removeListener(this);
         ArrayList<String> newModules = new ArrayList<>();
+        HashMap<String, Set<String>> modulez = new HashMap<>();
+        HashMap<String, Set<String>> representationz = new HashMap<>();
+        
         // get available representations
         Collection<String> available = stringSelectionPanel.getOptions();
         // get modules
         ArrayList<ModuleConfiguration.Node> nodes = modules.getNodeList();
         for (ModuleConfiguration.Node node : nodes) {
             // only providing modules
-            if (node.getType() == ModuleConfiguration.NodeType.Module && !node.require.isEmpty()) {
+            if (node.getType() == ModuleConfiguration.NodeType.Module) {
+                if(!node.require.isEmpty()) {
+                    // add required representations
+                    modulez.put(node.getName(), new HashSet<>(node.require.stream().map((t) -> {
+                        return t.getName();
+                    }).collect(Collectors.toList())));
+                }
+                if(!node.provide.isEmpty()) {
+                    // add provided representations
+                    node.provide.stream().forEach((n) -> {
+                        if(!representationz.containsKey(n.getName())) {
+                            representationz.put(n.getName(), new HashSet<>());
+                        }
+                        representationz.get(n.getName()).add(node.getName());
+                    });
+//                    representationz.containsKey()
+                }
+            }
+        }
+        
+        HashMap<String, Set<String>> newModulez = new HashMap<>();
+        for (Map.Entry<String, Set<String>> entry : modulez.entrySet()) {
+            
+            newModulez.put(entry.getKey(), entry.getValue());
+            for (String r : entry.getValue()) {
+//                rm = new 
+                if(representationz.containsKey(r)) {
+                    
+                }
+            }
+        }
+        /*TOOL_TIP_TEXT_KEY
+        
                 // filter for available representations
                 List<String> list = node.require.stream().map((t) -> { return t.getName(); })
                                                          .filter((t) -> { return available.contains(t) && !ignoreModulesRepresentations.contains(t); })
@@ -648,8 +686,7 @@ public class LogfileRecorder extends AbstractDialog implements ObjectListener<Mo
                     selectionLists.put(node.getName(), list);
                     newModules.add(node.getName());
                 }
-            }
-        }
+        */
         // remove "old" modules from scheme selection list and re-add the default ones
         cbSelectionScheme.removeAllItems();
         defaultSelectionSchemes.forEach((item) -> { cbSelectionScheme.addItem(item); });
