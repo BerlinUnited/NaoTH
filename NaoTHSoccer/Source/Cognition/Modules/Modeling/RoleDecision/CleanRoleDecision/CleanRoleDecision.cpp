@@ -156,9 +156,10 @@ void CleanRoleDecision::strikerSelectionByTimeExceptGoalie(std::map<unsigned int
 
     // NOTE: if the goalie is one of the "possible striker", it gets set as first strike! (sorted map!)
     //       and doesn't change, even if someone is faster (condition!)
+    // ATTENTION: we're iterating from the smallest player number to the highest!
     for (auto it = possible_striker.cbegin(); it != possible_striker.cend(); ++it) {
-        // current player faster?
-        if(it->second < stFastest && getRoleDecisionModel().firstStriker != 1) {
+        // is current player clearly faster?
+        if(it->second < stFastest && (stFastest - it->second) > parameters.strikerSelectionDiffThreshold && getRoleDecisionModel().firstStriker != 1) {
             // is there already a "fastest" striker ... but the current player is faster
             if(getRoleDecisionModel().firstStriker != std::numeric_limits<int>::max()) {
                 // make the previous player the "second fastest" player
@@ -168,8 +169,8 @@ void CleanRoleDecision::strikerSelectionByTimeExceptGoalie(std::map<unsigned int
             // set the fastest player
             getRoleDecisionModel().firstStriker = it->first;
             stFastest = it->second;
-        } else if (it->second < ndFastest) {
-            // set the second fastest player
+        } else if (it->second < ndFastest && (ndFastest - it->second) > parameters.strikerSelectionDiffThreshold) {
+            // set the second (clearly) fastest player
             getRoleDecisionModel().secondStriker = it->first;
             ndFastest = it->second;
         }
@@ -178,5 +179,4 @@ void CleanRoleDecision::strikerSelectionByTimeExceptGoalie(std::map<unsigned int
             getRoleDecisionModel().wantsToBeStriker = false;
         }
     }
-
 }

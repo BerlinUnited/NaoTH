@@ -92,7 +92,8 @@ protected:
   /**
    * @brief Selects the first/second striker out of the possible striker based on their time to the ball.
    *        The fastest player to the ball gets the first striker role and the seceond fastest gets the second striker role.
-   *        BUT, if the goalie is one of the possible striker, he's set to the first striker!
+   *        BUT, if the goalie is one of the possible striker, he is set to the first striker! And if someone is faster just
+   *        for a small threshold (strikerSelectionDiffThreshold), the one with the smaller number is prefered.
    *        If theres someone faster to the ball, this player dont "wantsToBeStriker".
    * @param possible_striker map of player number and their time to ball
    * @param ownTimeToBall the time to ball of this player
@@ -109,6 +110,7 @@ protected:
       PARAMETER_REGISTER(maxBallLostTime) = 1000;
       PARAMETER_REGISTER(minFailureProbability) = 0.85;
       PARAMETER_REGISTER(strikerSelection) = 2;
+      PARAMETER_REGISTER(strikerSelectionDiffThreshold) = 500; // ms
       
       // load from the file after registering all parameters
       syncWithConfig();
@@ -119,6 +121,7 @@ protected:
     int maxBallLostTime;
     double minFailureProbability;
     int strikerSelection;
+    int strikerSelectionDiffThreshold;
     
     virtual ~Parameters() {}
   } parameters;
