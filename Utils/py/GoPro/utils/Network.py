@@ -2,7 +2,98 @@ import subprocess
 import logging
 import shutil
 import re
+import threading
 import time
+
+from utils import Event, Logger
+
+
+# setup logger for network related logs
+logger = Logger.getLogger("Network")
+
+
+class Network(threading.Thread):
+    """ Handles the connection to the GoPro wifi network."""
+
+    def __init__(self, device:str, ssid:str, passwd:str, retries:int):
+        super().__init__()
+        # creates a appropriate manager, based on the available network applications
+        self.manager = NetworkManagerNmcli() if shutil.which('nmcli') is not None else NetworkManagerIw()
+
+        self.device = self.manager.getWifiDevice(device)
+        self.ssid = ssid
+        self.passwd = passwd
+        self.retries = retries
+
+        self.__cancel = threading.Event()
+        self.__timer = threading.Event()
+
+    def setConfig(self, device:str, ssid:str, passwd:str, retries:int):
+        # set the new params
+        self.device = self.manager.getWifiDevice(device)
+        self.ssid = ssid
+        self.passwd = passwd
+        self.retries = retries
+        # NOTE: auto-reconnects on the next 'isConnected' check
+        try:
+            self.__timer.set()
+        except:
+            pass
+
+
+    def connect(self):
+        logger.info("Setting up network")
+        if not self.isConnected():
+            # check wifi device
+            device = self.manager.getWifiDevice(self.device)
+            logger.info("Using device %s", device)
+
+            # wait for connection
+            while not self.__cancel.is_set():
+                # check if ssid is available
+                if not self.manager.getSSIDExists(device, self.ssid):
+                    logger.info("SSID not found: %s", self.ssid)
+                    Event.fire(Event.NetworkNotAvailable())
+                    time.sleep(1)
+                else:
+                    logger.info("Waiting for connection to %s", self.ssid)
+                    network = self.manager.connectToSSID(device, self.ssid, self.passwd)
+
+                    if network is None:
+                        time.sleep(10)
+                    else:
+                        logger.info("Connected to %s", network)
+                        Event.fire(Event.NetworkConnected())
+                        break
+        else:
+            Event.fire(Event.NetworkConnected())
+
+    def disconnect(self):
+        # TODO:
+        Event.fire(Event.NetworkDisconnected())
+
+    def isConnected(self):
+        return self.ssid == self.manager.getCurrentSSID(self.device, False)
+
+    def run(self):
+        # connect and fire connected event
+        self.connect()
+        while not self.__cancel.is_set():
+            if self.isConnected():
+                self.__timer.wait(10)
+            else:
+                Event.fire(Event.NetworkDisconnected())
+                self.connect()
+            self.__timer.clear()
+
+    def cancel(self):
+        self.__cancel.set()
+        try:
+            self.__timer.set()
+        except Exception as e:
+            # ignore un-acquired locks
+            pass
+
 
 class NetworkManager:
     def __init__(self):
@@ -38,7 +129,7 @@ class NetworkManager:
             return device
         return None
 
-    def getCurrentSSID(self, device: str):
+    def getCurrentSSID(self, device: str, log=True):
         ''' Checks if the given device is currently connected and returns the SSID of the connected network otherwise returns None.
 
         :param device:  name of the device from which we want to get the current SSID
@@ -46,6 +137,9 @@ class NetworkManager:
         '''
 
         return None
+
+    def getSSIDExists(self, device:str, ssid:str):
+        return False
 
     def connectToSSID(self, device:str, ssid:str, passwd:str=None):
         ''' Connects the given device to the given SSID with the provided password.
@@ -64,7 +158,12 @@ class NetworkManager:
     def _connect(self, device: str, ssid: str, passwd: str = None):
         return None
 
+    def getAPmac(self, device: str):
+        return None
+
+
 class NetworkManagerNmcli(NetworkManager):
+
     def getWifiDevices(self):
         '''
             getting available devices:  nmcli -t device
@@ -80,19 +179,41 @@ class NetworkManagerNmcli(NetworkManager):
                     wifi_devices.append(dev_state[0])
         return wifi_devices
 
-    def getCurrentSSID(self, device:str):
+    def getCurrentSSID(self, device:str, log=True):
         '''
             checking connection:        nmcli -g GENERAL.STATE device show <device>
             determine network:          nmcli -g GENERAL.CONNECTION device show <device>
         '''
-        logger.debug("Check device state: 'nmcli -g GENERAL.STATE device show %s'", device)
+        if log:
+            logger.debug("Check device state: 'nmcli -g GENERAL.STATE device show %s'", device)
         state = subprocess.run(['nmcli', '-g', 'GENERAL.STATE', 'device', 'show', device], stdout=subprocess.PIPE).stdout.decode('utf-8').strip()
         # do we have an established connection
         if state.split()[0] == '100':
-            logger.debug("Get SSID of current connection: 'nmcli -g GENERAL.CONNECTION device show %s'", device)
+            if log:
+                logger.debug("Get SSID of current connection: 'nmcli -g GENERAL.CONNECTION device show %s'", device)
             # return SSID of current connection
             return subprocess.run(['nmcli', '-g', 'GENERAL.CONNECTION', 'device', 'show', device], stdout=subprocess.PIPE).stdout.decode('utf-8').strip()
         return None
+
+    def getSSIDExists(self, device: str, ssid: str):
+        logger.debug("Scan for the SSID: 'nmcli device wifi rescan ifname %s'", device)
+        subprocess.run(['nmcli', 'device', 'wifi', 'rescan', 'ifname', device], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL).stdout.decode('utf-8').strip()
+        logger.debug("Check SSID: 'nmcli device wifi list ifname %s'", device)
+        result = subprocess.run(['nmcli', 'device', 'wifi', 'list', 'ifname', device], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL).stdout.decode('utf-8').strip()
+        match = re.search(r'.*\s+' + ssid + '\s+.*', result)
+        return (match is not None)
+
+    def getAPmac(self, device: str):
+        # TODO: !
+        logger.debug("Scan for the MAC: 'iwconfig %s'", device)
+        result = subprocess.run(['iwconfig', device], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL).stdout.decode(
+            'utf-8').strip()
+        # Access Point: F6:DD:9E:87:A1:63
+        match = re.search(r'.*Access Point: (..:..:..:..:..:..).*', result)
+        if match is None:
+            return None
+        else:
+            return match.group(1).replace(':', '')
 
     def _connect(self, device:str, ssid:str, passwd:str=None):
         '''
@@ -146,7 +267,7 @@ class NetworkManagerIw(NetworkManager):
                     wifi_devices.append(match.group(1))
         return wifi_devices
 
-    def getCurrentSSID(self, device:str):
+    def getCurrentSSID(self, device:str, log=True):
         '''
             determine current network:  iwgetid <device> -r
         '''
@@ -229,8 +350,7 @@ class NetworkManagerIw(NetworkManager):
             logger.error("Could not connect to %s, password required!", ssid)
         return None
 
-
-logger = logging.getLogger("Network")
+'''
 manager = NetworkManagerNmcli() if shutil.which('nmcli') is not None else NetworkManagerIw()
 
 # make object methods 'public'
@@ -240,3 +360,4 @@ getCurrentSSID = manager.getCurrentSSID
 connectToSSID  = manager.connectToSSID
 getSSIDExists  = manager.getSSIDExists
 getAPmac  = manager.getAPmac
+'''

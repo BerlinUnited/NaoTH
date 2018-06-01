@@ -88,9 +88,12 @@ public class RobotControlImpl extends javax.swing.JFrame
                 path += separator + "./bin/linux32";
             }
         } else {
-            path += separator + "./bin/win32"
-                  + separator + "./bin/win64"
-                  + separator + "./bin/macos";
+            if("amd64".equals(arch)) {
+                path += separator + "./bin/win64";
+            } else {
+                path += separator + "./bin/win32";
+            }
+            path += separator + "./bin/macos";
         }
         
         System.setProperty("java.library.path", path );

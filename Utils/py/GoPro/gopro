@@ -34,6 +34,13 @@ start_background() {
 
 stop() {
   echo "Stop GoPro-Controller"
+
+  PUID=$(ps --no-headers -o uid `cat $PID` | awk '{print $1}')
+  if [ $PUID -eq 0 -a "$(id -u)" -ne 0 ]; then
+      echo "This script was started by root and must be stopped by root!"
+      exit 1
+  fi
+
 	if [ -f "$PID" ]
 	then
 		pkill -F $PID
