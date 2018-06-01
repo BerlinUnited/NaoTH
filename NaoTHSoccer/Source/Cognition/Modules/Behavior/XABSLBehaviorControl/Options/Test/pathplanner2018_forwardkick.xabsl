@@ -24,7 +24,6 @@ option pathplanner2018_forwardkick
     {
       path2018.routine = path2018.routine.none;
       situation_abortable = true;
-      motion.type = stand;
     }
   }
   
