@@ -88,7 +88,11 @@ public class FieldViewer extends AbstractDialog implements ActionListener
   private final PlotDataListener plotDataListener;
   private final StrokePlot strokePlot;
 
-  private final DrawingsListener drawingsListener = new DrawingsListener();
+  // create new classes, so the received drawings are stored into different buffers
+  private class DrawingsListenerMotion extends DrawingsListener{}
+  private class DrawingsListenerCognition extends DrawingsListener{}
+  private final DrawingsListenerMotion drawingsListenerMotion = new DrawingsListenerMotion();
+  private final DrawingsListenerCognition drawingsListenerCognition = new DrawingsListenerCognition();
   
   // this is ued as an exportbuffer when the field issaved as image
   private BufferedImage exportBuffer = null;
@@ -338,8 +342,8 @@ public class FieldViewer extends AbstractDialog implements ActionListener
       {
         if(Plugin.parent.checkConnected())
         {
-          Plugin.debugDrawingManager.addListener(drawingsListener);
-          Plugin.debugDrawingManagerMotion.addListener(drawingsListener);
+          Plugin.debugDrawingManager.addListener(drawingsListenerCognition);
+          Plugin.debugDrawingManagerMotion.addListener(drawingsListenerMotion);
           Plugin.plotDataManager.addListener(plotDataListener);
         }
         else
@@ -349,8 +353,8 @@ public class FieldViewer extends AbstractDialog implements ActionListener
       }
       else
       {
-        Plugin.debugDrawingManager.removeListener(drawingsListener);
-        Plugin.debugDrawingManagerMotion.removeListener(drawingsListener);
+        Plugin.debugDrawingManager.removeListener(drawingsListenerCognition);
+        Plugin.debugDrawingManagerMotion.removeListener(drawingsListenerMotion);
         Plugin.plotDataManager.removeListener(plotDataListener);
       }
     }//GEN-LAST:event_btReceiveDrawingsActionPerformed
@@ -479,6 +483,8 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
       Plugin.debugDrawingManagerMotion.removeListener(this);
     }
   }
+  
+  
 
   class PlotDataListener implements ObjectListener<Plots>
   {
@@ -536,8 +542,8 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
   public void dispose()
   {
     // remove all the registered listeners
-    Plugin.debugDrawingManager.removeListener(drawingsListener);
-    Plugin.debugDrawingManagerMotion.removeListener(drawingsListener);
+    Plugin.debugDrawingManager.removeListener(drawingsListenerCognition);
+    Plugin.debugDrawingManagerMotion.removeListener(drawingsListenerMotion);
     Plugin.plotDataManager.removeListener(plotDataListener);
   }
   

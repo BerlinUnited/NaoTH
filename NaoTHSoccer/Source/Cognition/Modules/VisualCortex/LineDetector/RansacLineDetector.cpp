@@ -19,29 +19,15 @@ void RansacLineDetector::execute()
 {
   getLinePercept().reset();
 
-  DEBUG_REQUEST("Vision:RansacLineDetector:draw_edgels_field",
-    FIELD_DRAWING_CONTEXT;
-
-    for(const Edgel& e: getLineGraphPercept().edgels)
-    {
-      PEN("FF0000",2);
-
-      if(e.point.x > 0 || e.point.y > 0) {
-        CIRCLE(e.point.x, e.point.y, 25);
-      }
-      PEN("000000",0.1);
-      LINE(e.point.x, e.point.y, e.point.x + e.direction.x*100.0, e.point.y + e.direction.y*100.0);
-    }
-  );
-
-
   // copy the edgels
   // todo: can this be optimized?
   //outliers.assign(getLineGraphPercept().edgels.begin(), getLineGraphPercept().edgels.end());
-  outliers.resize(getLineGraphPercept().edgels.size());
+  outliers.resize(getLineGraphPercept().edgelsOnField.size());
+  getLinePercept().edgelLineIDs.resize(getLineGraphPercept().edgelsOnField.size());
 
-  for(size_t i = 0; i < getLineGraphPercept().edgels.size(); ++i) {
+  for(size_t i = 0; i < getLineGraphPercept().edgelsOnField.size(); ++i) {
     outliers[i] = i;
+    getLinePercept().edgelLineIDs[i] = -1;
   }
 
   bool foundLines = false;
@@ -64,18 +50,53 @@ void RansacLineDetector::execute()
     inliers.clear();
   }
 
+  DEBUG_REQUEST("Vision:RansacLineDetector:draw_edgels_field",
+    FIELD_DRAWING_CONTEXT;
+
+    for(size_t i=0; i<getLineGraphPercept().edgelsOnField.size(); i++)
+    {
+      const Edgel& e = getLineGraphPercept().edgelsOnField[i];
+
+      if(getLinePercept().edgelLineIDs[i] > -1) {
+        std::string color;
+        switch(getLinePercept().edgelLineIDs[i]%3) {
+          case 0: color = "00FF00"; break;
+          case 1: color = "0000FF"; break;
+          default: color = "00FFFF"; break;
+        }
+        PEN(color,2);
+      } else {
+        PEN("FF0000",2);
+      }
+
+      if(e.point.x > 0 || e.point.y > 0) {
+        CIRCLE(e.point.x, e.point.y, 25);
+      }
+      PEN("000000",0.1);
+      LINE(e.point.x, e.point.y, e.point.x + e.direction.x*100.0, e.point.y + e.direction.y*100.0);
+    }
+
+  );
+
   DEBUG_REQUEST("Vision:RansacLineDetector:draw_lines_field",
     FIELD_DRAWING_CONTEXT;
 
     if (foundLines) {
-      for(const LinePercept::FieldLineSegment& line: getLinePercept().lines)
+      for(size_t i=0; i<getLinePercept().lines.size(); i++)
       {
-        PEN("999999", 50);
+        std::string color;
+        switch(i%3) {
+          case 0: color = "00FF00"; break;
+          case 1: color = "0000FF"; break;
+          default: color = "00FFFF"; break;
+        }
+        PEN(color, 50);
         LINE(
-          line.lineOnField.begin().x, line.lineOnField.begin().y,
-          line.lineOnField.end().x, line.lineOnField.end().y);
+          getLinePercept().lines[i].lineOnField.begin().x, getLinePercept().lines[i].lineOnField.begin().y,
+          getLinePercept().lines[i].lineOnField.end().x, getLinePercept().lines[i].lineOnField.end().y);
       }
     }
+
   );
 
   DEBUG_REQUEST("Vision:RansacLineDetector:fit_and_draw_circle_field",
@@ -125,8 +146,8 @@ int RansacLineDetector::ransac(Math::LineSegment& result, std::vector<size_t>& i
       continue;
     }
 
-    const Edgel& a = getLineGraphPercept().edgels[outliers[i0]];
-    const Edgel& b = getLineGraphPercept().edgels[outliers[i1]];
+    const Edgel& a = getLineGraphPercept().edgelsOnField[outliers[i0]];
+    const Edgel& b = getLineGraphPercept().edgelsOnField[outliers[i1]];
 
     //double x = a.sim(b);
     if(a.sim(b) < params.directionSimilarity) {
@@ -142,7 +163,7 @@ int RansacLineDetector::ransac(Math::LineSegment& result, std::vector<size_t>& i
     int inlier = 0;
     for(size_t i: outliers) 
     {
-      const Edgel& e = getLineGraphPercept().edgels[i];
+      const Edgel& e = getLineGraphPercept().edgelsOnField[i];
       double d = model.minDistance(e.point);
 
       // inlier
@@ -172,7 +193,7 @@ int RansacLineDetector::ransac(Math::LineSegment& result, std::vector<size_t>& i
 
     for(size_t i: outliers)
     {
-      const Edgel& e = getLineGraphPercept().edgels[i];
+      const Edgel& e = getLineGraphPercept().edgelsOnField[i];
       double d = bestModel.minDistance(e.point);
 
       if(d < params.outlierThreshold && sim(bestModel, e) > params.directionSimilarity) {
@@ -193,7 +214,7 @@ int RansacLineDetector::ransac(Math::LineSegment& result, std::vector<size_t>& i
       mean_angle /= static_cast<int>(inliers.size());
 
       for(size_t i : inliers) {
-        const Edgel& e = getLineGraphPercept().edgels[i];
+        const Edgel& e = getLineGraphPercept().edgelsOnField[i];
         angle_var += std::pow(Math::toDegrees(e.direction.angle()) - mean_angle, 2);
       }
       angle_var /= static_cast<int>(inliers.size());
@@ -207,6 +228,9 @@ int RansacLineDetector::ransac(Math::LineSegment& result, std::vector<size_t>& i
         return 0;
       } else {
         outliers = newOutliers;
+        for(size_t i : inliers) {
+          getLinePercept().edgelLineIDs[i] = static_cast<int>(getLinePercept().lines.size());
+        }
       }
     }
   }
@@ -235,7 +259,7 @@ int RansacLineDetector::ransacEllipse(Ellipse& result)
     y.reserve(5);
     for(int t=0; t<5; t++) {
       size_t r = swap_random(outliers, (int) outliers.size()-(t+1));
-      const Edgel& e = getLineGraphPercept().edgels[r];
+      const Edgel& e = getLineGraphPercept().edgelsOnField[r];
 
       x.push_back(e.point.x);
       y.push_back(e.point.y);
@@ -249,7 +273,7 @@ int RansacLineDetector::ransacEllipse(Ellipse& result)
 
     for(size_t i: outliers)
     {
-      const Edgel& e = getLineGraphPercept().edgels[i];
+      const Edgel& e = getLineGraphPercept().edgelsOnField[i];
       double d = ellipse.error_to(e.point.x, e.point.y);
 
       if(d <= params.circle_outlierThreshold) {
@@ -277,7 +301,7 @@ int RansacLineDetector::ransacEllipse(Ellipse& result)
 
     for(size_t i: outliers)
     {
-      const Edgel& e = getLineGraphPercept().edgels[i];
+      const Edgel& e = getLineGraphPercept().edgelsOnField[i];
       double d = bestModel.error_to(e.point.x, e.point.y);
 
       if(d > params.circle_outlierThreshold) {

@@ -88,7 +88,16 @@ def improved_fitEllipse(x,y):
     A[4] = A4
     A[5] = A5
 
-    A = A/la.norm(A)
+
+    R = max(ellipse_axis_length(A))
+    center = ellipse_center(A)
+
+    r = center[0]*center[0]*A[0] + center[0]*center[1]*A[1] + center[1]*center[1]*A[2]
+
+    A = A * R/np.sqrt(r)
+
+    #A = A / A[0]
+    #A = A/la.norm(A)
 
     return A
 
@@ -122,19 +131,30 @@ def ellipse_axis_length(a):
 
     return np.array( [np.sqrt(num/den1), np.sqrt(num/den2)] )
 
+def mahalanobis_radius(a, center):
+    #A = np.array([[a[0],a[1]/2],[a[1]/2, a[2]]])
+    #r = np.dot(np.dot(center, A), center)
+    r = center[0]*center[0]*a[0] + center[0]*center[1]*a[1] + center[1]*center[1]*a[2]
+    return r - a[5]
+
+def mahalanobis_distance(a, x, y, center):
+    #A = np.array([[a[0],a[1]/2],[a[1]/2, a[2]]])
+    p = np.array([x, y]) - center
+    #d = np.dot(np.dot((p - center), A), (p - center))
+    d = p[0]*p[0]*a[0] + p[0]*p[1]*a[1] + p[1]*p[1]*a[2]
+    return d
+
 def error_to(a, x, y, center):
-    A = np.array([[a[0],a[1]/2],[a[1]/2, a[2]]])
-    ff = np.dot(np.dot(center, A), center)
+    r = mahalanobis_radius(a, center)
+    #print("RAD:", r)
 
-    rad = abs(a[5]) + abs(ff)
+    d = mahalanobis_distance(a, x, y, center)
+    #print("DIS:", d)
 
-    p1 = np.array([x, y])
+    e = abs(d - r)
+    #print("ERR:", e)
 
-    ds = np.dot(np.dot((p1 - center), A), (p1 - center))
-
-    d = abs(abs(ds) - rad)
-
-    return d, (d/rad)
+    return e, np.sqrt(e)
 
 def ellipse_angle_of_rotation(a):
     A = a[0]
@@ -160,17 +180,27 @@ def ellipse_angle_of_rotation(a):
 
 if __name__ == '__main__':
     
-    x = np.array([-20.1 ,2.5, 3, 4,  5])
-    y = np.array([1 ,2  ,-1, 2, 0.5])
+    #x = np.array([-20.1 ,2.5, 3, 4,  -5, 2.2]) * 100
+    #y = np.array([1 ,2  ,-1, 2, 0.5, 0.2]) * 100
+    #x = [3399.73, 3070.88, 2763.85, 2503.19, 2296.22]
+    #y = [-621.92, -674.54, -712.061, -743.485, -775.087]
+    
+    x = [3399.73, 3070.88, 2763.85, 2503.19, 2296.22, 2116.13, 1956.95, 1877.82, 1868.99, 1867.03, 1875.7, 1884.6]
+    y = [-621.92, -674.54, -712.061, 743.485, -775.087, -802.725, -827.03, -878.736, -960.967, -1049.74, -1148.71, -1252.38]
+    
+    #x = np.array(x) - 2698, 
+    #y = np.array(y) + 946
     #x = np.array([2.5, 3, 4,  5])
     #y = np.array([2  ,-1, 2, 0.5])
 
     #a = fitEllipse(x,y)
     a = improved_fitEllipse(x,y)
+    #a = -1*a
     #a = [-0.00819266, 0.0416844, -0.198772, -0.163809, 0.0892647, 0.961189]
     #a = [-0.0403062, 0.205078, -0.977915, -0.805908, 0.439164, 4.72885]
     #a = np.array(a)/a[0]
     print("PARAMS:", a)
+    print(la.norm(a))
     center = ellipse_center(a)
     phi = ellipse_angle_of_rotation(a)
     axes = ellipse_axis_length(a)
@@ -178,25 +208,30 @@ if __name__ == '__main__':
     #xt = np.array([-1, 0, 1, 2, 3, 4, 5 ,6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17])
     #yt = np.array([0, 0, 0, 0, 0, 0, 0 , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
 
-    xt = np.array([random.uniform(-40, 10) for i in range(10000)])
-    yt = np.array([random.uniform(-5, 3) for i in range(10000)])
+    xt = np.array([random.uniform(min(x), 2* max(x)) for i in range(1000)])
+    yt = np.array([random.uniform(min(y), 2* max(y)) for i in range(1000)])
 
-    x= np.append(x, [0])
-    y= np.append(y, [0])
+    #x= np.append(x, [0])
+    #y= np.append(y, [0])
 
     xr = []
     yr = []
     xb = []
     yb = []
+    xc = []
+    yc = []
 
     print("ABS")
     for c in range(len(xt)):
-        d = error_to(a, xt[c], yt[c], center)
-        print(d)
-        d = d[1]
-        if d < 0.2:
+        e = error_to(a, xt[c], yt[c], center)
+        #print(e)
+        e = e[1]
+        if e < 250:
             xb.append(xt[c])
             yb.append(yt[c])
+        elif mahalanobis_distance(a, xt[c], yt[c], center) < mahalanobis_radius(a, center):
+            xc.append(xt[c])
+            yc.append(yt[c])
         else:
             xr.append(xt[c])
             yr.append(yt[c])
@@ -217,6 +252,7 @@ if __name__ == '__main__':
     plt.scatter(x,y)
     plt.scatter(xr,yr)
     plt.scatter(xb,yb)
+    plt.scatter(xc,yc)
     plt.scatter(center[0], center[1], marker='x', color = 'red')
 
     plt.plot(xx,yy, color = 'red')

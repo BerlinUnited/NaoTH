@@ -1,3 +1,4 @@
+syntax = "proto2";
 package naothmessages;
 option java_package= "de.naoth.rc.messages";
 
@@ -78,7 +79,7 @@ message StepControlRequest
 	KICKSTEP = 1;
 	ZEROSTEP = 2;
   };
-  
+
   required uint32 stepID = 1;
   required bool moveLeftFoot = 2;
   required Pose2D target = 3;
@@ -252,56 +253,10 @@ message InertialModel
   optional DoubleVector2 orientation = 1;
 }
 
-enum TeamColor
-{
-  blueTeam = 0; redTeam = 1; yellowTeam = 2; blackTeam = 3; invalidTeam = 255;
-}
-
-message TeamMessage
-{
-  message Data
-  {
-    optional uint32 playerNum = 1 [default=0];
-    optional TeamColor teamColor = 11 [default=blueTeam,deprecated=true];
-    optional Pose2D pose = 3;
-    optional int32 ballAge = 4 [default=-1];
-    optional DoubleVector2 ballPosition = 5;
-    optional DoubleVector2 ballVelocity = 6;
-    optional bool fallen = 10 [default=false];
-    optional BUUserTeamMessage user = 8;
-    optional FrameInfo frameInfo = 9;
-    optional uint32 teamNumber = 12 [default=0];
-  }
-  repeated Data data = 1;
-}
-
-message BUUserTeamMessage
-{
-  optional string bodyID = 1 [default="unknown"];
-  optional uint32 timeToBall = 2;
-  optional bool wasStriker = 3 [default=false];
-  optional bool isPenalized = 4 [default=false];
-  repeated Opponent opponents = 5;
-  optional uint32 teamNumber = 6 [default=0,deprecated=true];
-  optional float batteryCharge = 7 [default=1.0];
-  optional float temperature = 8 [default=0.0];
-  optional uint64 timestamp = 9 [default=0];
-  optional bool wantsToBeStriker = 10 [default=false];
-  optional float cpuTemperature = 11 [default=0.0];
-  optional bool whistleDetected = 12 [default=false];
-  optional int32 whistleCount = 13 [default=0];
-  optional string key = 100 [default="none"];
-}
-
-message Opponent {
-  required int32 playerNum = 1 [default=0];
-  optional Pose2D poseOnField = 2;
-}
-
 
 message CameraMatrixCalibration
 {
-  repeated DoubleVector2 correctionOffset = 1;
+  repeated DoubleVector2 correctionOffset = 1 [deprecated=true];
   optional DoubleVector2 correctionOffsetBody = 2;
   optional DoubleVector3 correctionOffsetHead = 3;
   repeated DoubleVector3 correctionOffsetCam  = 4;
@@ -372,4 +327,18 @@ message GroundContactModel {
 message CollisionPercept {
   required uint32 timeCollisionArmLeft = 1;
   required uint32 timeCollisionArmRight = 2;
+}
+
+message IMUData
+{
+ required DoubleVector3 location = 1;
+ required DoubleVector3 velocity = 2;
+ required DoubleVector3 acceleration = 3;
+ optional DoubleVector3 acceleration_sensor = 4;
+
+ required DoubleVector3 rotation = 5;
+ required DoubleVector3 rotational_velocity = 6;
+ optional DoubleVector3 rotational_velocity_sensor = 7;
+ required DoubleVector2 orientation = 8;
+ required DoubleVector3 orientation_rotvec = 9;
 }

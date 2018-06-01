@@ -22,8 +22,8 @@ KickDirectionSimulator::KickDirectionSimulator()
   
   action_local.reserve(KickActionModel::numOfActions); // here we dont simulate the none action so it could be numOfActions-1
   action_local.push_back(ActionSimulator::Action(KickActionModel::kick_short, theParameters.kick_short, theParameters.friction)); // short
-//  action_local.push_back(ActionSimulator::Action(KickActionModel::sidekick_left, theParameters.sidekick_left, theParameters.friction)); // left
-//  action_local.push_back(ActionSimulator::Action(KickActionModel::sidekick_right, theParameters.sidekick_right, theParameters.friction)); // right
+  action_local.push_back(ActionSimulator::Action(KickActionModel::sidekick_left, theParameters.sidekick_left, theParameters.friction)); // left
+  action_local.push_back(ActionSimulator::Action(KickActionModel::sidekick_right, theParameters.sidekick_right, theParameters.friction)); // right
 
   actionsConsequences.resize(action_local.size()); 
   actionsConsequencesAbs.resize(action_local.size());
@@ -35,14 +35,14 @@ KickDirectionSimulator::~KickDirectionSimulator(){}
 void KickDirectionSimulator::execute()
 {
   //int bestID = 0;
-  //double smalestAngle = 0;
+  //double smallestAngle = 0;
   for (size_t i = 0; i < action_local.size(); i++) {
     resetSamples(samples, theParameters.num_angle_particle);
     actionsConsequences[i] = calculate_best_direction(action_local[i]);
     actionsConsequencesAbs[i] = abs(actionsConsequences[i]);
     /*
-    if (i == 0 || actionsConsequencesAbs[i] < smalestAngle) {
-      smalestAngle = actionsConsequencesAbs[i];
+    if (i == 0 || actionsConsequencesAbs[i] < smallestAngle) {
+      smallestAngle = actionsConsequencesAbs[i];
       bestID = i;
     }
     */
@@ -54,10 +54,12 @@ void KickDirectionSimulator::execute()
   if (fabs(actionsConsequences[bestActionID]) < Math::fromDegrees(5.0)) {
     getKickActionModel().bestAction = action_local[bestActionID].id();
   }
-  
+  // if the robot is not already rotated close enough to the optimized rotation of the chosen
+  // kick calculate the attackDirection and leave Action to none
   Vector2d attackDirection(1.0,0.0);
   attackDirection.rotate(actionsConsequences[bestActionID]);
   getSoccerStrategy().attackDirection = attackDirection;
+
   //getKickActionModel().rotation = actionsConsequences[bestActionID];
   //std::cout << "Best Action: " << action_local[bestActionID].name() << std::endl;
   /*

@@ -3,6 +3,7 @@
 
 //#include "MeasurementFunctions.h"
 #include "BallHypothesis.h"
+#include <Tools/Math/Common.h>
 
 struct UpdateAssociationFunction{
     protected:
@@ -90,7 +91,7 @@ struct LikelihoodUAF : UpdateAssociationFunction
         Eigen::Matrix2d covariance = filter.getStateCovarianceInMeasurementSpace(h);
 
         double exponent = -0.5*(diff.transpose() * covariance.inverse() * diff)(0,0);
-        double factor   = 1/std::sqrt(4*M_PI*M_PI*covariance.determinant());
+        double factor   = 1.0 / (Math::pi2 * std::sqrt(covariance.determinant()));
 
         return factor * std::exp(exponent);
     }

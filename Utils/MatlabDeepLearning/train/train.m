@@ -21,7 +21,7 @@ dataSetPath = {...
 addpath('../generatorFunctions');
 
 % create result output directory and fail if output directory already exists
-resultFolder =  'result_' + netName;
+resultFolder =  '../generated/result_' + netName;
 [~, errorMsg, ~] = mkdir(char(resultFolder));
 if ~isempty(errorMsg)
     error('Aborting because output directory "%s" already exists!', resultFolder)
@@ -106,3 +106,10 @@ createCppFile(convnet, char(resultFolder + '/' + netName));
 
 % save the current train file as backup and "documentation"
 copyfile('train.m', char(resultFolder + '/train.m'));
+
+dataTestsetPath = {...
+    '..\data\tk-test-complete\'
+    };
+
+% check quality and create confusion matrix
+quality(convnet, netName, dataTestsetPath)

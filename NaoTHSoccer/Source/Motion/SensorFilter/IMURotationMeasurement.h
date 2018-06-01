@@ -1,9 +1,10 @@
 #ifndef IMUROTATIONMEASUREMENT_H
 #define IMUROTATIONMEASUREMENT_H
 
-#include "Tools/Filters/KalmanFilter/UnscentedKalmanFilter/UKFStateRotationBase.h"
+#include <Tools/naoth_eigen.h>
 
 // TODO: remove pragma
+/*
 #if defined(__GNUC__)
 #pragma GCC diagnostic ignored "-Wconversion"
 #endif
@@ -12,6 +13,7 @@
 #if defined(__GNUC__)
 #pragma GCC diagnostic pop
 #endif
+*/
 
 // measurement vectors which are elements of a euclidean vector space, e.g. velocity, accelerations
 template <int dim>

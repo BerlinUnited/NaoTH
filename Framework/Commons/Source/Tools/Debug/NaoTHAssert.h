@@ -20,6 +20,7 @@
 #include "Trace.h"
 
 #undef ASSERT
+#undef ASSERT_MSG
 #undef VERIFY
 #undef THROW
 
@@ -46,6 +47,9 @@
 #else
 #define ASSERT(cond) if(!(cond)) {Trace::getInstance().dump(); assert(false);}
 #endif
+
+#define ASSERT_MSG(cond, msg) if(!(cond)) { std::cerr << "ERROR: " << msg << std::endl; Trace::getInstance().dump(); assert(false);}
+
 /**
  * VERIFY prints a message if cond is false and DEBUG is defined.
  * VERIFY does evaluate cond even if DEBUG is not defined.
@@ -62,6 +66,7 @@
 #else //DEBUG
 /* ((void)0) - that's a do-nothing statement */
 #define ASSERT(cond) ((void)0)
+#define ASSERT_MSG(cond, msg) ((void)0)
 #define VERIFY(cond) ((void)(cond))
 #define THROW(msg) { std::cerr<<msg<<std::endl; }
 #endif //DEBUG

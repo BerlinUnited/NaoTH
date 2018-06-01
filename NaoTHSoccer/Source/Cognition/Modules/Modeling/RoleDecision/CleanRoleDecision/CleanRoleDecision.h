@@ -8,7 +8,6 @@
 #define _CleanRoleDecision_h_
 
 #include <ModuleFramework/Module.h>
-#include <XabslEngine/XabslEngine.h>
 
 #include "Representations/Modeling/TeamMessage.h"
 #include "Representations/Infrastructure/FrameInfo.h"

@@ -25,4 +25,13 @@ namespace game_symbols("Game Control Symbols")
   float input game.msecsRemaining;
 
   bool input game.state.playing_is_set_by_game_controller;
+
+  enum game.set_play
+  {
+    none,
+	goal_free_kick,
+	pushing_free_kick
+  };
+
+  enum game.set_play input game.set_play;
 }

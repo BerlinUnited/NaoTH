@@ -176,6 +176,10 @@ private:
 
 
 private: // stabilization
+
+  // this is updated by feetStabilize()
+  mutable Vector3d filteredGyro;
+
   // observe the com error
   RingBufferWithSum<double, 100> com_errors;
   Vector3d currentComError;
@@ -185,6 +189,8 @@ private: // stabilization
   // needed by stabilization
   RingBuffer<InverseKinematic::CoMFeetPose, 10> commandPoseBuffer;
   RingBuffer<FootStep::Foot, 10> commandFootIdBuffer;
+
+  unsigned int emergencyCounter;
 
   void adaptStepSize(FootStep& step) const;
   void calculateError();

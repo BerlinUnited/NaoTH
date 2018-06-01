@@ -167,6 +167,10 @@ public:
 
   // seen lines
   std::vector<FieldLineSegment> lines;
+  std::vector<FieldLineSegment> short_lines;
+  std::vector<FieldLineSegment> extended_lines;
+  std::vector<int> edgelLineIDs;
+
   // seen corners
   std::vector<Intersection> intersections;
   // seen flags (only S3D)
@@ -210,6 +214,8 @@ public:
   void reset()
   {
     lines.clear();
+    short_lines.clear();
+    extended_lines.clear();
     //lines.reserve(INITIAL_NUMBER_OF_LINES);
 
     intersections.clear();

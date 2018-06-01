@@ -11,10 +11,16 @@ option passive_ball_not_seen
   {
     decision {
       else if(state_time > 1000){
-          if(atan2(y=ball.preview.y,x=ball.preview.x) < 0)
-            goto turn_to_right;
-          else
-            goto turn_to_left;
+          if (ball.team.is_valid) {
+            // if we got a 'valid' team ball - turn to and look at
+            goto look_at_team_ball;
+          } else {
+            // TODO: using ball.team.rmse might be beneficial
+            if(atan2(y=ball.preview.y,x=ball.preview.x) < 0)
+	            goto turn_to_right;
+	          else
+	            goto turn_to_left;
+          }
       }
       else
         stay;
@@ -22,22 +28,45 @@ option passive_ball_not_seen
     action {
       head.control_mode = search_for_ball;
       motion.type = stand;
+      // reset the state-change-counter
+      search_ball.turn_stop_motion_count = 0;
     }
+  }
+
+  state look_at_team_ball
+  {
+	  decision
+	  {
+      else if(action_done){
+        // turn in same direction if the ball wasn't seen
+        if(atan2(y=ball.team.position.y, x=ball.team.position.x) > 0)
+          goto turn_to_left;
+        else
+          goto turn_to_right;
+      } else 
+        stay;
+	  }
+	  
+	  action
+	  {
+      passive_look_at_team_ball();
+	  }
   }
 
   state turn_to_left {
     decision {
       /* stop turning, if robot should at least look around for more than 1s */
-      else if(state_time > 2500 &&(look_in_direction_factor * 10000) > 1000)
-        goto look_around_left;
-      else
+      else if(state_time > 2500 &&(look_in_direction_factor * 10000) > 1000) {
+        //goto look_around_left;
+        goto state_change_left;
+      } else
         stay;
     }
     action {
       motion.type=walk;
       motion.walk_speed.x=0;
       motion.walk_speed.y=0;
-      motion.walk_speed.rot= 20; //90
+      motion.walk_speed.rot= 20; //90
       head.control_mode = search_for_ball;      
     }
   }
@@ -45,17 +74,45 @@ option passive_ball_not_seen
   state turn_to_right {
     decision {
       /* stop turning, if robot should at least look around for more than 1s */
-      else if(state_time > 2500 && (look_in_direction_factor * 10000) > 1000)
-        goto look_around_right;
-      else
+      else if(state_time > 2500 && (look_in_direction_factor * 10000) > 1000) {
+       //goto look_around_right;
+        goto state_change_right;
+      } else
         stay;
     }
     action {
       motion.type=walk;
       motion.walk_speed.x=0;
       motion.walk_speed.y=0;
-      motion.walk_speed.rot= -20; //-90
+      motion.walk_speed.rot= -20;
+ //-90
       head.control_mode = search_for_ball;      
+    }
+  }
+
+  state state_change_right {
+    decision {
+      else if(search_ball.turn_stop_motion_count >= 4)
+        goto look_around;
+      else
+        goto look_around_right;
+    }
+    action {
+      // update counter
+      search_ball.turn_stop_motion_count = search_ball.turn_stop_motion_count + 1;
+    }
+  }
+  
+  state state_change_left {
+    decision {
+      else if(search_ball.turn_stop_motion_count >= 4)
+        goto look_around;
+      else
+        goto look_around_left;
+    }
+    action {
+      // update counter
+      search_ball.turn_stop_motion_count = search_ball.turn_stop_motion_count + 1;
     }
   }
 

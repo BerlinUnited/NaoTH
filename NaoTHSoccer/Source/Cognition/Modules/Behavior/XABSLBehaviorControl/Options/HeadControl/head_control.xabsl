@@ -25,6 +25,8 @@ option head_control
       goto look_at_ball_percept;
     else if(head.control_mode == search_for_ball_and_look_around)
       goto search_for_ball_and_look_around;
+    else if(head.control_mode == look_at_team_ball)
+      goto look_at_team_ball;
   }
 
   initial state none
@@ -76,7 +78,7 @@ option head_control
     action
     {
       head.camera.id = Bottom;
-      search_for_ball(force_ball_model_check = false, look_around=true, look_at_ball_when_distance=4000);
+      search_for_ball(force_ball_model_check = false, look_around=true, look_at_ball_when_distance=4000, use_teamball=true);
     }
   }
 
@@ -129,5 +131,13 @@ option head_control
 	  }
 	}
 
+  state look_at_team_ball
+  {
+    action 
+    {
+      head.camera.id = Top;
+      look_at_team_ball();
+    }
+  }
 }
   

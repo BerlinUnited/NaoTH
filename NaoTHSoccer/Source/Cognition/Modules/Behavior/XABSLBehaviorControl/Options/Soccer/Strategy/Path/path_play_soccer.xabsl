@@ -28,7 +28,10 @@ option path_play_soccer
     decision
     {
       else if(sensor.inertial.calibrated)
-        if(last_state_was_penalized && game.player_number != 1 ) // the goalie has no passive position
+        if(last_state_was_penalized 
+        && game.player_number != 1 // the goalie has no passive position
+        && game.current_mode == playing // don't walk around in ready
+        ) 
           goto localize_after_penalized; // always localize after penalized!!!)
         else
           goto localize;
@@ -48,8 +51,7 @@ option path_play_soccer
   {
     decision
     {
-      else if((robot_pose.is_valid && state_time > 6000) || 
-        state_time>12000)
+      else if(robot_pose.is_valid || state_time>12000)
       {
         if(game.current_mode == playing)
           goto play;
@@ -163,6 +165,8 @@ option path_play_soccer
     {
       else if (game.current_mode != playing)
         goto idle;
+      else if (game.set_play != none && !game.own_kickoff)
+        goto free_kick;
       else 
         stay;
     }
@@ -170,6 +174,25 @@ option path_play_soccer
     {
       last_state_was_penalized = false; // important!!!
       path_decide_role();
+    }
+  }
+
+  state free_kick
+  {
+    decision
+    {
+      else if (game.current_mode != playing)
+        goto idle;
+      else if (game.set_play == none)
+        goto play;
+      else 
+        stay;
+    }
+    action 
+    {
+      last_state_was_penalized = false; // important!!!
+      head.control_mode = search_for_ball;
+      motion.type = stand;
     }
   }
 

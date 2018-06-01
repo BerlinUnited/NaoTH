@@ -4,8 +4,6 @@
 
 #include <Tools/NaoTime.h>
 
-#include <Tools/DoberMannTime.h>
-
 using namespace std;
 
 TeamCommSender::TeamCommSender()
@@ -17,7 +15,14 @@ TeamCommSender::TeamCommSender()
   {
     send_interval = config.getInt("teamcomm", "send_interval");
   }
+
+  getDebugParameterList().add(&parameters);
 }
+
+TeamCommSender::~TeamCommSender() {
+  getDebugParameterList().remove(&parameters);
+}
+
 
 void TeamCommSender::execute()
 {
@@ -43,31 +48,30 @@ void TeamCommSender::fillMessageBeforeSending() const
     msg.playerNumber = getPlayerInfo().playerNumber;
     msg.teamNumber = getPlayerInfo().teamNumber;
     msg.pose = getRobotPose();
-    msg.intention = getPlayerInfo().isPlayingStriker ? 3 : (getPlayerInfo().playerNumber == 1 ? 1 : 0);
-    msg.positionConfidence = 100;
-    msg.sideConfidence = 100;
 
-    // if(getBallModel().valid)
-    if (getBallModel().getFrameInfoWhenBallWasSeen().getTime() > 0)
+    bool sendBallModel = getBallModel().valid;
+    if(parameters.sendBallAgeDobermann) {
+      sendBallModel = (getBallModel().getFrameInfoWhenBallWasSeen().getTime() > 0);
+    }
+
+    if(sendBallModel)
     {
       // here in milliseconds (conversion to seconds is in SPLStandardMessage::createSplMessage())
       msg.ballAge = getFrameInfo().getTimeSince(getBallModel().getFrameInfoWhenBallWasSeen().getTime());
       msg.ballPosition = getBallModel().position;
-      msg.ballVelocity = getBallModel().speed;
+      msg.custom.ballVelocity = getBallModel().speed;
     } 
     else 
     {
       // only sent these values if the ball was never seen
       msg.ballAge = -1;
-      msg.ballPosition.x = std::numeric_limits<double>::max();
-      msg.ballPosition.y = std::numeric_limits<double>::max();
-      msg.ballVelocity.x = 0;
-      msg.ballVelocity.y = 0;
+      msg.ballPosition.x = std::numeric_limits<double>::infinity();
+      msg.ballPosition.y = std::numeric_limits<double>::infinity();
+      msg.custom.ballVelocity.x = 0;
+      msg.custom.ballVelocity.y = 0;
     }
 
     msg.fallen = getBodyState().fall_down_state != BodyState::upright;
-    msg.walkingTo = getRobotPose().translation;
-    msg.shootingTo = getPlayerInfo().isPlayingStriker ? getKickActionModel().expectedBallPos : getRobotPose().translation;
 
     // TODO: can we make it more separate?
     msg.custom.timestamp = naoth::NaoTime::getSystemTimeInMilliSeconds();
@@ -81,6 +85,14 @@ void TeamCommSender::fillMessageBeforeSending() const
     msg.custom.batteryCharge = getBatteryData().charge;
     msg.custom.temperature = std::max(getBodyState().temperatureLeftLeg, getBodyState().temperatureRightLeg);
     msg.custom.cpuTemperature = getCpuData().temperature;
+    // update teamball in teamcomm
+    if(getTeamBallModel().valid) {
+      getTeamMessageData().custom.teamBall = getTeamBallModel().positionOnField;
+    } else {
+      // set teamball in teamcomm to an invalid value
+      getTeamMessageData().custom.teamBall.x = std::numeric_limits<double>::infinity();
+      getTeamMessageData().custom.teamBall.y = std::numeric_limits<double>::infinity();
+    }
     // TODO: shall we put it into config?
     msg.custom.key = NAOTH_TEAMCOMM_MESAGE_KEY;
 }

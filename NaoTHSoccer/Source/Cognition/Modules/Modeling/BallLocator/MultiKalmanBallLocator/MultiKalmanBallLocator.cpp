@@ -1,6 +1,6 @@
 #include "MultiKalmanBallLocator.h"
 
-#include <Eigen/Eigenvalues>
+#include <Tools/naoth_eigen.h>
 #include "Tools/Association.h"
 
 MultiKalmanBallLocator::MultiKalmanBallLocator():
@@ -31,7 +31,7 @@ MultiKalmanBallLocator::MultiKalmanBallLocator():
 
     DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:draw_trust_the_ball", "..", false);
 
-    h.ball_height = 32.5;
+    h.ballRadius = getFieldInfo().ballRadius;
 
     updateAssociationFunction = &likelihood;
 
@@ -64,7 +64,7 @@ void MultiKalmanBallLocator::execute()
     if(filter.size() > 1) {
         Filters::iterator iter = filter.begin();
         while(iter != filter.end() && filter.size() > 1) {
-          if(!iter->ballSeenFilter.value() && (*iter).getEllipseLocation().major * (*iter).getEllipseLocation().minor * M_PI > area95Threshold){
+          if(!iter->ballSeenFilter.value() && (*iter).getEllipseLocation().major * (*iter).getEllipseLocation().minor * Math::pi > area95Threshold){
                 iter = filter.erase(iter);
             } else {
                 ++iter;
@@ -386,11 +386,11 @@ MultiKalmanBallLocator::Filters::const_iterator MultiKalmanBallLocator::selectBe
   {
       // find best model
       Filters::const_iterator bestModel = filter.begin();
-      double evalue = (*bestModel).getEllipseLocation().major * (*bestModel).getEllipseLocation().minor *M_PI;
+      double evalue = (*bestModel).getEllipseLocation().major * (*bestModel).getEllipseLocation().minor *Math::pi;
 
       for(std::vector<ExtendedKalmanFilter4d>::const_iterator iter = ++filter.begin(); iter != filter.end(); ++iter){
           if(getFrameInfo().getTimeSince(iter->getFrameOfCreation().getTime()) > 300) {
-            double temp = (*iter).getEllipseLocation().major * (*iter).getEllipseLocation().minor * M_PI;
+            double temp = (*iter).getEllipseLocation().major * (*iter).getEllipseLocation().minor * Math::pi;
             if(temp < evalue) {
                 evalue = temp;
                 bestModel = iter;

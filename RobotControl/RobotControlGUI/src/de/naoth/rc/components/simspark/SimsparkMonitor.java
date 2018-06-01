@@ -5,6 +5,7 @@ import de.naoth.rc.components.teamcomm.TeamCommMessage;
 import de.naoth.rc.dataformats.SPLMessage;
 import de.naoth.rc.dataformats.Sexp;
 import de.naoth.rc.dataformats.SimsparkState;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
@@ -46,11 +47,18 @@ public class SimsparkMonitor extends Simspark {
         }
         ExecutorService s = Executors.newSingleThreadExecutor();
         
-        while (isRunning) {
-            final String msg = getServerMessage();
-            if (msg != null) {
-                // parse message in another thread
-                s.submit(new SimsparkMonitorMessageParser(msg));
+        while (isConnected.get()) {
+            try {
+                final String msg;
+                msg = receiveMessage();
+
+                if (msg != null) {
+                    // parse message in another thread
+                    s.submit(new SimsparkMonitorMessageParser(msg));
+                }
+            } catch (IOException ex) {
+                // NOTE: is there a way to notiy the user?!
+                checkConnection();
             }
         }
     }
@@ -107,7 +115,7 @@ public class SimsparkMonitor extends Simspark {
         
         private void broadcastTeamCommMessages(List<Object> messages) {
             List<TeamCommMessage> c = new ArrayList<>();
-            ByteBuffer readBuffer = ByteBuffer.allocateDirect(SPLMessage.SPL_STANDARD_MESSAGE_SIZE);
+            ByteBuffer readBuffer = ByteBuffer.allocateDirect(SPLMessage.size());
             readBuffer.order(ByteOrder.LITTLE_ENDIAN);
             // iterate over available messages
             for (Object object : messages) {
@@ -127,13 +135,13 @@ public class SimsparkMonitor extends Simspark {
                     readBuffer.clear();
                     readBuffer.put(b);
                     readBuffer.flip();
-                    SPLMessage spl = new SPLMessage(readBuffer);
+                    SPLMessage spl = SPLMessage.parseFrom(readBuffer);
                     c.add(new TeamCommMessage(
                         System.currentTimeMillis(),
                         // see SimSparkController.cpp, ~line: 280, "calculate debug communicaiton port"
                         String.format("%s:%d", ip, ((side==1?5400:5500)+spl.playerNum)),
                         spl,
-                        spl.teamNum == 4) // TOOD: can we set anywhere our team number?!?
+                        ((int)spl.teamNum) != 4) // TOOD: can we set anywhere our team number?!?
                     );
                 } catch (Exception ex) {
                     Logger.getLogger(SimsparkMonitor.class.getName()).log(Level.SEVERE, null, ex);

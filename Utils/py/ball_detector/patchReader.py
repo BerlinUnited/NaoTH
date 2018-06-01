@@ -15,12 +15,12 @@ def parse_arguments(argv):
     try:
         opts, args = getopt.getopt(argv, "hi:", ["ifile="])
     except getopt.GetoptError:
-        print 'ExportTopImages.py -i <input file>'
+        print('ExportTopImages.py -i <input file>')
         sys.exit(2)
         
     for opt, arg in opts:
         if opt == '-h':
-            print 'ExportTopImages.py -i <input file>'
+            print('ExportTopImages.py -i <input file>')
             sys.exit()
         elif opt in ("-i", "--ifile"):
             input_file = arg
@@ -99,7 +99,7 @@ def read_all_patches_from_log(fileName, type=0):
 if __name__ == "__main__":
 
     fileName = parse_arguments(sys.argv[1:])
-    print fileName
+    print(fileName)
     
     patches = read_all_patches_from_log(fileName)
-    print len(patches)
+    print(len(patches))

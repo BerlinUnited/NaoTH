@@ -130,7 +130,7 @@ private:
 
             //PARAMETER_REGISTER(ballMass) = 0.026;
             PARAMETER_REGISTER(c_RR) = 0.0245;
-            PARAMETER_REGISTER(area95Threshold) = 1000*1000*M_PI;
+            PARAMETER_REGISTER(area95Threshold) = 1000*1000*Math::pi;
 
             //thresholds for association functions
             PARAMETER_REGISTER(euclidThreshold) = Math::fromDegrees(10);
