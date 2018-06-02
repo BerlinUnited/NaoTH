@@ -16,6 +16,11 @@ TeamBallLocator::TeamBallLocator()
   getDebugParameterList().add(&theParameters);
 }
 
+TeamBallLocator::~TeamBallLocator()
+{
+	getDebugParameterList().remove(&theParameters);
+}
+
 void TeamBallLocator::execute()
 {
   // collect all balls seen by teammates and myself

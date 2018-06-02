@@ -1,4 +1,7 @@
 from __future__ import division
+import os
+from matplotlib import pyplot as plt
+import numpy as np
 import pickle
 
 """
@@ -10,50 +13,122 @@ Example:
         $ python evaluate_every_pos.py
 """
 
+
+def check_equality(lst):
+    return not lst or [lst[0]] * len(lst) == lst
+
+
 # Dummy List for appending all pickle files
 dumped_decisions = ([])
+sample_list = ([])
 
-# one pickle file encodes a decision histogram(size 100) for each position
-dumped_decisions.append(pickle.load(open("../data/decision-simulate_every_pos-1-100.pickle", "rb")))
-dumped_decisions.append(pickle.load(open("../data/decision-simulate_every_pos-2-100.pickle", "rb")))
-dumped_decisions.append(pickle.load(open("../data/decision-simulate_every_pos-3-100.pickle", "rb")))
-dumped_decisions.append(pickle.load(open("../data/decision-simulate_every_pos-4-100.pickle", "rb")))
-dumped_decisions.append(pickle.load(open("../data/decision-simulate_every_pos-5-100.pickle", "rb")))
-dumped_decisions.append(pickle.load(open("../data/decision-simulate_every_pos-6-100.pickle", "rb")))
-dumped_decisions.append(pickle.load(open("../data/decision-simulate_every_pos-7-100.pickle", "rb")))
-dumped_decisions.append(pickle.load(open("../data/decision-simulate_every_pos-8-100.pickle", "rb")))
-dumped_decisions.append(pickle.load(open("../data/decision-simulate_every_pos-9-100.pickle", "rb")))
-dumped_decisions.append(pickle.load(open("../data/decision-simulate_every_pos-10-100.pickle", "rb")))
-dumped_decisions.append(pickle.load(open("../data/decision-simulate_every_pos-11-100.pickle", "rb")))
-dumped_decisions.append(pickle.load(open("../data/decision-simulate_every_pos-20-100.pickle", "rb")))
-dumped_decisions.append(pickle.load(open("../data/decision-simulate_every_pos-30-100.pickle", "rb")))
-dumped_decisions.append(pickle.load(open("../data/decision-simulate_every_pos-40-100.pickle", "rb")))
-dumped_decisions.append(pickle.load(open("../data/decision-simulate_every_pos-50-100.pickle", "rb")))
-dumped_decisions.append(pickle.load(open("../data/decision-simulate_every_pos-60-100.pickle", "rb")))
-dumped_decisions.append(pickle.load(open("../data/decision-simulate_every_pos-70-100.pickle", "rb")))
-dumped_decisions.append(pickle.load(open("../data/decision-simulate_every_pos-80-100.pickle", "rb")))
-dumped_decisions.append(pickle.load(open("../data/decision-simulate_every_pos-90-100.pickle", "rb")))
-dumped_decisions.append(pickle.load(open("../data/decision-simulate_every_pos-100-100.pickle", "rb")))
-dumped_decisions.append(pickle.load(open("../data/decision-simulate_every_pos-200-100.pickle", "rb")))
-dumped_decisions.append(pickle.load(open("../data/decision-simulate_every_pos-300-100.pickle", "rb")))
-dumped_decisions.append(pickle.load(open("../data/decision-simulate_every_pos-400-100.pickle", "rb")))
-dumped_decisions.append(pickle.load(open("../data/decision-simulate_every_pos-500-100.pickle", "rb")))
-dumped_decisions.append(pickle.load(open("../data/decision-simulate_every_pos-600-100.pickle", "rb")))
-dumped_decisions.append(pickle.load(open("../data/decision-simulate_every_pos-700-100.pickle", "rb")))
-dumped_decisions.append(pickle.load(open("../data/decision-simulate_every_pos-800-100.pickle", "rb")))
-dumped_decisions.append(pickle.load(open("../data/decision-simulate_every_pos-100-100.pickle", "rb")))
-dumped_decisions.append(pickle.load(open("../data/decision-simulate_every_pos-1000-100.pickle", "rb")))
-for decisions in dumped_decisions:
-    confidence_vector = []
 
-    for pos_dump in decisions:
-        new_x, new_y, new_rot, new_decision_histogram = pos_dump
-        # print(new_x, new_y, new_rot, new_decision_histogram)
+def load_bachelor_decisions():
+    # the data con be downloaded from https://www2.informatik.hu-berlin.de/~schlottb/ressources/ActionSelectionBA_data.zip
+    # define prefix for data
+    data_prefix = "D:/RoboCup/Paper-Repos/Bachelor-Schlotter/data/"
 
-        # if not a totally clear decision
-        confidence_vector.append(max(new_decision_histogram) / 100)
+    sample_list.extend([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 20, 30, 40, 50, 60, 70, 80, 90, 100, 200, 300])
+    sample_list.extend([400, 500, 600, 700, 800, 900, 1000])
 
-        # Evaluate the histogram here - percentage not in main column
+    for i in sample_list:
+        filename = '{}{:d}{}'.format(str(data_prefix) + "simulate_every_pos-", i, "-100.pickle")
+        dumped_decisions.append(pickle.load(open(filename, "rb")))
 
-    x = [i for i in confidence_vector if i <= 0.5]
-    print(len(x))
+
+def load_humanoids_decision():
+    # the data con be downloaded from https://www2.informatik.hu-berlin.de/~schlottb/ressources/HumanoidsData/
+    # define prefix for data
+    data_prefix = "D:/RoboCup/Paper-Repos/2017-humanoids-action-selection/data/"
+
+    sample_list.extend([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+                        21, 22, 23, 24, 25, 30, 40, 50, 60, 70, 80, 90, 100, 110])
+    for i in sample_list:
+        filename = '{}{:d}{}'.format(str(data_prefix) + "simulate_every_pos-", i, "-100-v0.pickle")
+        dumped_decisions.append(pickle.load(open(filename, "rb")))
+
+
+def check_data_consistency():
+    # check if the number of states is the same for all experiments
+    counts = []
+    for decisions in dumped_decisions:
+        counts.append(len(decisions))
+
+    print("Number of states in each experiment: ")
+    print(counts)
+    if not check_equality(counts):
+        print("the numbers are not equal - the following analysis can not be valid")
+
+
+def calculate_uncertainties():
+    # Calculate the uncertainty of the decisions
+    file_idx = 0
+
+    uncertainty_threshold = 0.8
+
+    # check if file already exists
+    while os.path.exists("../data/uncertainties_below_" + str(uncertainty_threshold*100) + "_v" + str(file_idx) + ".txt"):
+        file_idx += 1
+
+    with open("../data/uncertainties_below_" + str(uncertainty_threshold*100) + "_v" + str(file_idx) + ".txt", "w") as f:
+        print("Number of states with too uncertain decisions / total number of states")
+        for count, decisions in enumerate(dumped_decisions):
+            confidence_vector = []
+
+            for pos_dump in decisions:
+                new_x, new_y, new_rot, new_decision_histogram = pos_dump
+
+                # calculate how many times out of 100 the same best decision was chosen
+                confidence_vector.append(max(new_decision_histogram) / 100)
+
+            # filter the states where the decision was too uncertain
+            x = [i for i in confidence_vector if i <= uncertainty_threshold]
+            print(len(x) / len(confidence_vector))  # len(confidence_vector) = number of states
+            f.write(str(sample_list[count]) + "\t" + str(len(x) / len(confidence_vector)) + "\n")
+
+
+def plot_uncertainties():  # Plot the uncertainties in a scalar plot
+    fixed_rotation = 0
+    # load single decision file
+    data_prefix = "D:/RoboCup/Paper-Repos/2017-humanoids-action-selection/data/"
+    decisions = pickle.load(open(str(data_prefix) + "simulate_every_pos-30-100-v0.pickle", "rb"))
+
+    #
+    nx = {}
+    ny = {}
+    for pos in decisions:
+        x, y, rotation, new_decision_histogram = pos
+        if rotation == fixed_rotation:
+            nx[x] = x
+            ny[y] = y
+
+    nxi = np.array(sorted(nx.keys()))
+    nyi = np.array(sorted(ny.keys()))
+
+    for i, v in enumerate(nxi):
+        nx[v] = i
+
+    for i, v in enumerate(nyi):
+        ny[v] = i
+
+    f = np.zeros((len(ny), len(nx)))
+
+    #
+    for pos in decisions:
+        x, y, rotation, new_decision_histogram = pos
+        if rotation == fixed_rotation:
+            f[ny[y], nx[x]] = max(new_decision_histogram) / 100
+
+    #
+    plt.pcolor(nxi, nyi, f)
+    plt.colorbar()
+    plt.show()
+
+
+if __name__ == "__main__":
+    # load_bachelor_decisions()
+    # load_humanoids_decision()
+
+    # check_data_consistency()
+    # calculate_uncertainties()
+    plot_uncertainties()

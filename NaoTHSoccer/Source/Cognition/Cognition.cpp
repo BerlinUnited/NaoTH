@@ -34,6 +34,7 @@
 
 #include "Modules/Infrastructure/Debug/CameraDebug.h"
 #include "Modules/Infrastructure/Camera/CameraInfoSetter.h"
+#include "Modules/Infrastructure/WhistleDetector/WhistleDetectorConfigSetter.h"
 #include "Modules/Infrastructure/GameLogger/GameLogger.h"
 
 // perception
@@ -41,7 +42,6 @@
 #include "Modules/SelfAwareness/KinematicChainProvider/KinematicChainProvider.h"
 #include "Modules/SelfAwareness/ArtificialHorizonCalculator/ArtificialHorizonCalculator.h"
 #include "Modules/SelfAwareness/BodyContourProvider/BodyContourProvider.h"
-#include "Modules/SelfAwareness/CameraMatrixCorrector/CameraMatrixCorrector.h"
 #include "Modules/SelfAwareness/CameraMatrixCorrectorV2/CameraMatrixCorrectorV2.h"
 
 #include "Modules/VisualCortex/HistogramProvider.h"
@@ -150,13 +150,13 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
 
   REGISTER_MODULE(CameraDebug);
   REGISTER_MODULE(CameraInfoSetter);
+  REGISTER_MODULE(WhistleDetectorConfigSetter);
 
   // perception
   REGISTER_MODULE(CameraMatrixFinder);
   REGISTER_MODULE(KinematicChainProvider);
   REGISTER_MODULE(ArtificialHorizonCalculator);
   REGISTER_MODULE(BodyContourProvider);
-  REGISTER_MODULE(CameraMatrixCorrector);
   REGISTER_MODULE(CameraMatrixCorrectorV2);
 
   REGISTER_MODULE(HistogramProvider);

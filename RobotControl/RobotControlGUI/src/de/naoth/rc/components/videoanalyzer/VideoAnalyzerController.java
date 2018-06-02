@@ -220,7 +220,7 @@ public class VideoAnalyzerController implements Initializable
     frameSlider.valueProperty().removeListener(frameChangeListener);
 
     if (this.logfile == null) {
-      messageLabel.setText("Nothing lodaded");
+      messageLabel.setText("Nothing loaded");
     } else {
       messageLabel.setText(logfile.getOriginalFile().getAbsolutePath());
       frameSlider.setMin(0.0);

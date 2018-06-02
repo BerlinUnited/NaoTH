@@ -66,15 +66,16 @@ public:
   std::string bodyID;         // the body ID of the robot
   bool wasStriker;
   bool wantsToBeStriker;
-  unsigned int timeToBall;          // the shorest time, in which the robot can reach the ball [ms]
+  unsigned int timeToBall;    // the shorest time, in which the robot can reach the ball [ms]
   bool isPenalized;           // whether the robot is penalized, or not
   double batteryCharge;       // the battery charge
   double temperature;         // the max. temperature of the left or right leg!
   double cpuTemperature;      // the temperature of the cpu
   bool whistleDetected;       // whether the robot heard/detected the whistle
   int whistleCount;           // who many whistle the robot detected
-  Vector2d teamBall;// global position of the team ball for visualization in RC!!
+  Vector2d teamBall;          // global position of the team ball for visualization in RC!!
   std::vector<NtpRequest> ntpRequests; // ntp requests to teammates
+  Vector2d ballVelocity;      // velocity of the ball
   // opponents ?
 
   /** Sets the data according to the protobuf message. */

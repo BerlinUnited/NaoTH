@@ -16,8 +16,9 @@ class IKParameters : public ParameterList
 {
 public:
 
-  // TODO: what are those parameters?
   double footOffsetY;
+
+  bool useWalk2018;
   
   struct Stand 
   {

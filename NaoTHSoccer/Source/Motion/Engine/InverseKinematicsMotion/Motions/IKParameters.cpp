@@ -12,7 +12,8 @@ IKParameters::IKParameters()
 :ParameterList("IKParameters")
 {
   PARAMETER_REGISTER(footOffsetY) = 0;
-  
+  PARAMETER_REGISTER(useWalk2018) = true;
+
   // stand parameter
   PARAMETER_REGISTER(stand.speed) = 0.04;
   PARAMETER_REGISTER(stand.enableStabilization) = true;

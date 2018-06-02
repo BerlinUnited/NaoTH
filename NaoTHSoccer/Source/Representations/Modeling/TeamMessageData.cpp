@@ -2,6 +2,7 @@
 #include <Tools/DataConversion.h>
 
 #include <limits>
+#include <iomanip>
 
 using namespace naoth;
 
@@ -171,6 +172,9 @@ void TeamMessageCustom::print(std::ostream &stream) const
     << "\t" << "CPU: " << cpuTemperature << "°C\n"
     << "\t" << "whistleDetected: " << (whistleDetected ? "yes" : "no") << "\n"
     << "\t" << "whistleCount: " << whistleCount << "\n"
+    << "\t" << "ball velocity: " << std::fixed << std::setprecision(4)
+            << std::setw(9) << ballVelocity.x << ", "
+            << std::setw(9) << ballVelocity.y << "\n"
     << "\t" << "teamball position: "
         << teamBall.x << "/" << teamBall.y << "\n";
   if(!ntpRequests.empty()) {
@@ -209,6 +213,7 @@ naothmessages::BUUserTeamMessage TeamMessageCustom::toProto() const
             msgPlayer->set_received(request.received);
           }
     }
+    DataConversion::toMessage(ballVelocity, *(userMsg.mutable_ballvelocity()));
     userMsg.set_key(key);
     return userMsg;
 }
@@ -282,6 +287,12 @@ void TeamMessageCustom::parseFromProto(const naothmessages::BUUserTeamMessage &u
             syncingPlayer.sent = request.sent();
             syncingPlayer.received = request.received();
         }
+    }
+    if(userData.has_ballvelocity()) {
+        DataConversion::fromMessage(userData.ballvelocity(),ballVelocity);
+    } else {
+        ballVelocity.x = 0;
+        ballVelocity.y = 0;
     }
 }
 

@@ -1,6 +1,7 @@
 #include "StrategySymbols.h"
 
 #include "Tools/Debug/DebugModify.h"
+#include <cmath>
 
 
 using namespace std;
@@ -44,6 +45,9 @@ void StrategySymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalInputSymbol("goalie.guardline.y", &goalieGuardPositionY);
   engine.registerDecimalInputSymbol("penalty_goalie.pos.x", &penaltyGoalieGuardPositionX);
   engine.registerDecimalInputSymbol("penalty_goalie.pos.y", &penaltyGoalieGuardPositionY);
+  engine.registerDecimalInputSymbol("goalie.defensive.x", &goalieDefensivePositionX);
+  engine.registerDecimalInputSymbol("goalie.defensive.y", &goalieDefensivePositionY);
+  engine.registerDecimalInputSymbol("goalie.defensive.a", &goalieDefensivePositionA);
 
   engine.registerDecimalInputSymbol("soccer_strategy.formation.x", &getSoccerStrategy().formation.x);
   engine.registerDecimalInputSymbol("soccer_strategy.formation.y", &getSoccerStrategy().formation.y);
@@ -73,10 +77,11 @@ void StrategySymbols::registerSymbols(xabsl::Engine& engine)
 
   engine.registerEnumeratedInputSymbol("attack.best_action", "attack.action_type", &getBestAction);
   
-  engine.registerDecimalInputSymbol("attack.best_action.direction", &(getKickActionModel().rotation));
+  //engine.registerDecimalInputSymbol("attack.best_action.direction", &(getKickActionModel().rotation));
 
   DEBUG_REQUEST_REGISTER("XABSL:StrategySymbols:draw_attack_direction","draw the attack direction", false);
   DEBUG_REQUEST_REGISTER("XABSL:StrategySymbols:draw_simpleDefenderPose","draw the position of the defender", false);
+  DEBUG_REQUEST_REGISTER("XABSL:StrategySymbols:draw_goalie_defensive_pos","draw the position of the goalie", false);
 
 }//end registerSymbols
 
@@ -121,6 +126,13 @@ void StrategySymbols::execute()
     PEN("FF0000", 50);
     CIRCLE(simpleDefenderPose.translation.x, simpleDefenderPose.translation.y, 30);
   );
+
+    goalieDefensivePosition = calculateGoalieDefensivePosition();
+    DEBUG_REQUEST("XABSL:StrategySymbols:draw_goalie_defensive_pos",
+      FIELD_DRAWING_CONTEXT;
+      PEN("FF0000", 50);
+      CIRCLE(goalieDefensivePosition.translation.x, goalieDefensivePosition.translation.y, 30);
+    );
 
 }//end execute
 
@@ -240,6 +252,45 @@ double StrategySymbols::penaltyGoalieGuardPositionX()
 double StrategySymbols::penaltyGoalieGuardPositionY()
 {
   return theInstance->calculatePenaltyGoalieGuardPosition().y;
+}
+
+Pose2D StrategySymbols::calculateGoalieDefensivePosition()
+{
+    // Calculates the defensive position of the goalie
+    // The position is on an ellipse within the penalty area.
+    // The position is calculated in such a way, that a direct shot to the middle of the goal is prevented
+    const Vector2d ball = theInstance->getRobotPose()*theInstance->getBallModel().position;
+    const Vector2d c(ball.x - theInstance->getFieldInfo().xPosOwnGroundline, ball.y);
+    // ball is "out"
+    if(ball.x <= theInstance->getFieldInfo().xPosOwnGroundline || c.x == 0) {
+        return Vector2d(theInstance->getFieldInfo().xPosOwnGroundline, 0);
+    }
+    // direct line from goal center to the ball: f(x) = mx
+    double m = c.y / c.x;
+
+    double a = theInstance->getFieldInfo().xPosOwnPenaltyArea - theInstance->getFieldInfo().xPosOwnGroundline;
+    double b = theInstance->getFieldInfo().goalWidth / 2.0;
+    // position on the ellipse: x = \frac{ab}{\sqrt{b^2 + m^2 a^2}}
+    double x = (a*b) / std::sqrt(b*b + m*m * a*a);
+    // y = m*x
+    double y = m*x;
+    //std::cout << "a="<<a<<" w="<<std::atan(a)<<" r="<
+    return Pose2D(std::atan2(y,x),x + theInstance->getFieldInfo().xPosOwnGroundline, y);
+}
+
+double StrategySymbols::goalieDefensivePositionX()
+{
+    return theInstance->goalieDefensivePosition.translation.x;
+}
+
+double StrategySymbols::goalieDefensivePositionY()
+{
+    return theInstance->goalieDefensivePosition.translation.y;
+}
+
+double StrategySymbols::goalieDefensivePositionA()
+{
+    return theInstance->goalieDefensivePosition.rotation;
 }
 
 bool StrategySymbols::getApproachingWithRightFoot()

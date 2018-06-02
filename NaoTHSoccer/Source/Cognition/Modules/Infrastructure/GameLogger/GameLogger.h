@@ -22,6 +22,8 @@
 #include "Representations/Perception/BallCandidates.h"
 #include "Representations/Perception/MultiBallPercept.h"
 
+#include "Representations/Infrastructure/WhistlePercept.h"
+
 // tools
 #include "Tools/Debug/DebugParameterList.h"
 
@@ -57,7 +59,9 @@ BEGIN_DECLARE_MODULE(GameLogger)
   REQUIRE(BallCandidatesTop)
 
   REQUIRE(TeamMessage)
-END_DECLARE_MODULE(GameLogger)
+
+  REQUIRE(WhistlePercept)
+  END_DECLARE_MODULE(GameLogger)
 
 class GameLogger : public GameLoggerBase
 {
@@ -95,6 +99,7 @@ private:
   
   PlayerInfo::RobotState oldState;
   bool firstRecording;
+  int lastWhistleCounter;
 };
 
 #endif // GAMELOGGER_H
