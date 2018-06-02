@@ -39,6 +39,8 @@ import de.naoth.rc.logmanager.LogFrameListener;
 import de.naoth.rc.manager.DebugDrawingManagerMotion;
 import de.naoth.rc.manager.PlotDataManager;
 import de.naoth.rc.math.Vector2D;
+import de.naoth.rc.messages.FrameworkRepresentations;
+import de.naoth.rc.messages.FrameworkRepresentations.RobotInfo;
 import de.naoth.rc.messages.Messages.PlotItem;
 import de.naoth.rc.messages.Messages.Plots;
 import de.naoth.rc.messages.TeamMessageOuterClass;
@@ -52,6 +54,7 @@ import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -525,15 +528,9 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
   
   class LogFrameDrawer implements LogFrameListener
   {
-        private void drawTeamRobot(TeamMessage.Data teamMsg, DrawingCollection dc)
-        {
-            SPLMessage splMsg = SPLMessage.parseFrom(teamMsg);
-            splMsg.draw(dc, Color.black, false);
-        }
-        @Override
-        public void newFrame(BlackBoard b) 
-        {
-            DrawingCollection dc = new DrawingCollection();
+        private void drawTeamMessages(BlackBoard b, DrawingCollection dc)
+        {   
+            Optional<String> ownBodyID = getOwnBodyID(b);
             
             LogDataFrame teamMessageFrame = b.get("TeamMessage");
             if(teamMessageFrame != null)
@@ -541,14 +538,47 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
                 try {
                     TeamMessage teamMessage = TeamMessage.parseFrom(teamMessageFrame.getData());
                     for(int i=0; i < teamMessage.getDataCount(); i++) {
-                        TeamMessage.Data robotMsg = teamMessage.getData(i);
-                        drawTeamRobot(robotMsg, dc);
+                       TeamMessage.Data robotMsg = teamMessage.getData(i);
+                        
+                       SPLMessage splMsg = SPLMessage.parseFrom(robotMsg);
+                       
+                       boolean isOwnMsg = false;
+                       if(ownBodyID.isPresent())
+                       {
+                           isOwnMsg = ownBodyID.get().equals(splMsg.user.getBodyID());
+                       }
+                       
+                       splMsg.draw(dc, isOwnMsg ? Color.red : Color.black, false);
                         
                     }
                 } catch (InvalidProtocolBufferException ex) {
                     Logger.getLogger(FieldViewer.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
+            
+        }
+        
+        private Optional<String> getOwnBodyID(BlackBoard b)
+        {
+            LogDataFrame robotInfoFrame = b.get("RobotInfo");
+            if(robotInfoFrame != null)
+            {
+                try {
+                    RobotInfo robotInfo = RobotInfo.parseFrom(robotInfoFrame.getData());
+                    return Optional.of(robotInfo.getBodyID());
+                    
+                } catch (InvalidProtocolBufferException ex) {
+                    Logger.getLogger(FieldViewer.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            return Optional.empty();
+        }
+        
+        @Override
+        public void newFrame(BlackBoard b) 
+        {
+            DrawingCollection dc = new DrawingCollection();
+            drawTeamMessages(b, dc);
             drawingBuffers.put(this.getClass(), dc);
             
         }
