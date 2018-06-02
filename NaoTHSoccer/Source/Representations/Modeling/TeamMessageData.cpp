@@ -38,15 +38,18 @@ SPLStandardMessage TeamMessageData::createSplMessage() const
 
     // user defined data, this includes our own data and the DoBerMan mixed team common header
     naothmessages::BUUserTeamMessage userMsgBU = custom.toProto();
-    std::string userMsgDoBer = custom.toDoBerManHeader();
+    
+    TeamMessageCustom::DoBerManHeader userMsgDoBer;
+    custom.toDoBerManHeader(userMsgDoBer);
+
     size_t buUserSize = userMsgBU.ByteSize();
-    size_t doberUserSize = userMsgDoBer.size();
+    size_t doberUserSize = sizeof(userMsgDoBer);
     size_t userSize = buUserSize + doberUserSize;
     if (userSize < SPL_STANDARD_MESSAGE_DATA_SIZE) {
         spl.numOfDataBytes = static_cast<uint16_t>(userSize);
 
         // 1. write custom data as DoBerMan header
-        memcpy(spl.data, userMsgDoBer.c_str(), doberUserSize);
+        memcpy(spl.data, (char*)&userMsgDoBer, doberUserSize);
 
         // 2. write custom data in BerlinUnited format
         userMsgBU.SerializeToArray(spl.data + doberUserSize, static_cast<int>(userSize));
@@ -230,24 +233,23 @@ void TeamMessageCustom::parseFromDoBerManHeader(const uint8_t* rawHeader, size_t
   timestamp = header.timestamp;
   isPenalized = (header.isPenalized > 0);
   whistleDetected = (header.whistleDetected > 0);
+
+  wantsToBeStriker = (header.intention == 3);
+  wasStriker = wantsToBeStriker;
+
+  key = std::to_string(header.teamID);
 }
 
-std::string TeamMessageCustom::toDoBerManHeader() const
+void TeamMessageCustom::toDoBerManHeader(DoBerManHeader& header) const
 {
   // copy the information into an internal struct
-  DoBerManHeader header;
   header.timestamp = timestamp;
   // TODO: make the DoBerMan team ID configurable, now it is fixed to 4
   header.teamID = 4;
   header.isPenalized = isPenalized;
   header.whistleDetected = whistleDetected;
 
-  // create the result byte array by mapping the header struct
-  std::string result;
-  result.assign((char*)&header, sizeof(DoBerManHeader));
-
-  // we don't need any of this data anymore, move it
-  return std::move(result);
+  header.intention = wantsToBeStriker ? 3 : 0;
 }
 
 void TeamMessageCustom::parseFromProto(const naothmessages::BUUserTeamMessage &userData)
