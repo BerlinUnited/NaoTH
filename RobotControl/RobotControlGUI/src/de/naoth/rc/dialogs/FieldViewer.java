@@ -27,6 +27,7 @@ import de.naoth.rc.drawingmanager.DrawingEventManager;
 import de.naoth.rc.manager.DebugDrawingManager;
 import de.naoth.rc.manager.ImageManagerBottom;
 import de.naoth.rc.core.manager.ObjectListener;
+import de.naoth.rc.dataformats.SPLMessage;
 import de.naoth.rc.drawings.Circle;
 import de.naoth.rc.drawings.FieldDrawingSPL3x4;
 import de.naoth.rc.drawings.Robot;
@@ -526,12 +527,8 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
   {
         private void drawTeamRobot(TeamMessage.Data teamMsg, DrawingCollection dc)
         {
-            Robot robot = new Robot(teamMsg.getPose().getTranslation().getX(), 
-                teamMsg.getPose().getTranslation().getY(), teamMsg.getPose().getRotation());
-            dc.add(robot);
-            Text playerNum = new Text((int) teamMsg.getPose().getTranslation().getX() + 100, 
-                (int) teamMsg.getPose().getTranslation().getY() + 100, "" + teamMsg.getPlayerNum());
-            dc.add(playerNum);
+            SPLMessage splMsg = SPLMessage.parseFrom(teamMsg);
+            splMsg.draw(dc, Color.black, false);
         }
         @Override
         public void newFrame(BlackBoard b) 
