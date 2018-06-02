@@ -14,10 +14,6 @@ option path_decide_role
     {
       goto striker;
     }
-    else if (team.calc_if_is_secondstriker) {
-      goto secondstriker;
-    }
-    
     else if(true)
     {
       goto passive;

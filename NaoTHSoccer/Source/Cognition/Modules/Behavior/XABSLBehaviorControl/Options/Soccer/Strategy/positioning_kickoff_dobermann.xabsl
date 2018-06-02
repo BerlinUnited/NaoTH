@@ -31,8 +31,8 @@ option positioning_kickoff_dobermann
     action
     {
       go_to_point_with_USOA(
-        x=-700, 
-        y=field.yPosLeftGoal-500,
+        x=-1500, 
+        y=field.yPosLeftGoal+500,
         rot=0);
 
       head.control_mode = look_around;
@@ -51,7 +51,7 @@ option positioning_kickoff_dobermann
     {
       go_to_point_with_USOA(
         x=(field.xPosOwnPenaltyArea+field.xPosOwnPenaltyMark)/2, 
-        y=field.yPosRightGoal+500, 
+        y=field.yPosRightGoal, 
         rot=0);
 
       head.control_mode = look_around;
@@ -69,8 +69,8 @@ option positioning_kickoff_dobermann
     action
     {
       go_to_point_with_USOA(
-         x=(field.xPosOwnPenaltyMark + 500)/2, 
-         y=field.yPosRightGoal-500, 
+         x=(field.xPosOwnPenaltyMark - 700)/2, 
+         y=field.yPosLeftGoal, 
          rot=0);
 
       head.control_mode = look_around;
