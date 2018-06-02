@@ -23,8 +23,8 @@ option decide_and_go_to_passive_position_dobermann_no_search
     action
     {
       go_to_and_keep_passive_position(
-        x=1000, 
-        y=field.yPosLeftGoal-500,
+        x=-500, 
+        y=field.yPosLeftGoal,
         rot=0);
 
       head.control_mode = look_around;
@@ -36,8 +36,8 @@ option decide_and_go_to_passive_position_dobermann_no_search
     action
     {
       go_to_and_keep_passive_position(
-        x=(field.xPosOwnPenaltyArea+field.xPosOwnPenaltyMark)/2, 
-        y=field.yPosRightGoal+500, 
+        x = field.xPosOwnPenaltyMark, 
+        y = field.yPosRightGoal - 400, 
         rot=0);
 
       head.control_mode = look_around;
@@ -48,13 +48,14 @@ option decide_and_go_to_passive_position_dobermann_no_search
   {
     action
     {
-      go_to_and_keep_passive_position(
-         x=(field.xPosOwnPenaltyMark + 500)/2, 
-         y=field.yPosRightGoal-500, 
+      go_to_point_with_USOA(
+         x=field.xPosOwnPenaltyMark + 500, 
+         y=field.yPosLeftGoal, 
          rot=0);
 
       head.control_mode = look_around;
     }
   }
+
  
 }
