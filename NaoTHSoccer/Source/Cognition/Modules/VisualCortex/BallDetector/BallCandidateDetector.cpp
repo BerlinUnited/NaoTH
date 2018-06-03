@@ -13,6 +13,7 @@
 
 #include "Classifier/DortmundCNN/CNN_dortmund.h"
 #include "Classifier/DortmundCNN/CNN_dortmund2018.h"
+#include "Classifier/DortmundCNN/CNN_dortmund2018_keras.h"
 
 using namespace std;
 
@@ -113,7 +114,8 @@ std::map<string, std::shared_ptr<AbstractCNNClassifier> > BallCandidateDetector:
   std::map<string, std::shared_ptr<AbstractCNNClassifier> > result;
 
   result.insert({"dortmund", std::make_shared<CNN_dortmund>()});
-  result.insert({ "dortmund2018", std::make_shared<CNN_dortmund2018>() });
+  //result.insert({ "dortmund2018", std::make_shared<CNN_dortmund2018>() });
+  result.insert({ "dortmund2018_keras", std::make_shared<CNN_dortmund2018_keras>() });
 
   return std::move(result);
 }
