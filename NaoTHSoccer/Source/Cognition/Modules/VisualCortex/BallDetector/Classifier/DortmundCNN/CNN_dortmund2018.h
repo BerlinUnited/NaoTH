@@ -27,7 +27,6 @@ private:
 
 
 private:
-	int test(float x0[16][16][1]);
 	int cnn(float x0[16][16][1]);
 };
 
