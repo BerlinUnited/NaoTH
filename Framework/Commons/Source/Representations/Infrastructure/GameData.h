@@ -192,9 +192,10 @@ public:
 
   enum Message
   {
-    manual_penalise   = GAMECONTROLLER_RETURN_MSG_MAN_PENALISE,
-    manual_unpenalise = GAMECONTROLLER_RETURN_MSG_MAN_UNPENALISE,
-    alive             = GAMECONTROLLER_RETURN_MSG_ALIVE
+    alive             = GAMECONTROLLER_RETURN_MSG_ALIVE,
+    //FIXME DIRTY Hack
+    manual_penalise   = 1, //GAMECONTROLLER_RETURN_MSG_MAN_PENALISE,
+    manual_unpenalise = 2, //GAMECONTROLLER_RETURN_MSG_MAN_UNPENALISE,
   };
 
   static std::string toString(Message value);
