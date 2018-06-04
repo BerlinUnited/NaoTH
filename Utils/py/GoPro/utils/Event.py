@@ -20,6 +20,9 @@ class NetworkDisconnected(Event):
 class NetworkNotAvailable(Event):
     pass
 
+class NetworkConnecting(Event):
+    pass
+
 ######################################################
 ## GameController Events
 ######################################################

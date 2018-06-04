@@ -77,6 +77,7 @@ def main():
     network = Network(args.device, args.ssid, args.passwd, args.retries, args.mac)
     network.start()
 
+    threads = [ led, gopro, gameLogger, gameController, network ]
     try:
         while True:
             # if config was loaded from file and file was modified since last checked
@@ -97,6 +98,9 @@ def main():
             else:
                 # do nothing
                 time.sleep(1)
+                for t in threads:
+                    if not t.is_alive():
+                        Logger.error("Thread %s is not running (anymore)!", str(t.__class__.__name__))
     except (KeyboardInterrupt, SystemExit):
         print("Shutting down ...")
     # cancel threads
