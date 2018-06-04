@@ -13,6 +13,9 @@ IMUModel::IMUModel():
     DEBUG_REQUEST_REGISTER("IMUModel:reloadParameters", "", false);
     DEBUG_REQUEST_REGISTER("IMUModel:enableFilterWhileWalking", "enables filter update while walking", false);
 
+    DEBUG_REQUEST_REGISTER("IMUModel:drawOnlyOrientation","if activated it only draws the orientation (x,y)",false);
+    DEBUG_REQUEST_REGISTER("IMUModel:enablePlotsAndDrawings", "enables plots and the drawings in 3d viewer", false);
+
     ukf_acc_global.P = Eigen::Matrix<double,3,3>::Identity(); // covariance matrix of current state
     ukf_rot.P        = Eigen::Matrix<double,6,6>::Identity(); // covariance matrix of current state
 
@@ -102,7 +105,9 @@ void IMUModel::execute(){
 
     writeIMUData();
 
-    plots();
+    DEBUG_REQUEST("IMUModel:enablePlotsAndDrawings",
+        plots();
+    );
 
     lastFrameInfo = getFrameInfo();
 }
@@ -117,24 +122,42 @@ void IMUModel::writeIMUData(){
     // TODO: prediction or state?
     getIMUData().acceleration.x = ukf_acc_global.state.acceleration()(0,0);
     getIMUData().acceleration.y = ukf_acc_global.state.acceleration()(1,0);
-    getIMUData().acceleration.z = ukf_acc_global.state.acceleration()(2,0) + 9.81; //Math::g
+    getIMUData().acceleration.z = ukf_acc_global.state.acceleration()(2,0) - 9.81; //Math::g
 
     getIMUData().location += getIMUData().velocity * getRobotInfo().getBasicTimeStepInSecond() + getIMUData().acceleration * getRobotInfo().getBasicTimeStepInSecond() * getRobotInfo().getBasicTimeStepInSecond() * 0.5;
     getIMUData().velocity += getIMUData().acceleration * getRobotInfo().getBasicTimeStepInSecond();
 
-    // convert to framework compliant x,y,z angles
-    Eigen::Vector3d temp2 = ukf_rot.state.rotation();
-    Vector3d rot_vec(temp2(0),temp2(1),temp2(2));
-    RotationMatrix rot(rot_vec);
-    getIMUData().rotation.x = rot.getXAngle();
-    getIMUData().rotation.y = rot.getYAngle();
-    getIMUData().rotation.z = rot.getZAngle();
+    // the state we are estimating in ukf_rot is 20 ms in the past. so predict 20 ms as estimate for the real current state
+    UKF<RotationState<Measurement<6>,6> > sensor_delay_corrected_rot = ukf_rot;
+    sensor_delay_corrected_rot.generateSigmaPoints();
+    Eigen::Vector3d u_rot(0,0,0);
+    sensor_delay_corrected_rot.predict(u_rot, 2 * getRobotInfo().getBasicTimeStepInSecond());
 
-    getIMUData().orientation = Vector2d(atan2( rot[1].z, rot[2].z),
-                                        atan2(-rot[0].z, rot[2].z));
+    // store rotation in IMUData as a rotation vector
+    getIMUData().rotation = eigenVectorToVector3D(sensor_delay_corrected_rot.state.rotation());
+    RotationMatrix bodyIntoGlobalMapping(getIMUData().rotation);
 
-    // only to enable transparent switching with InertiaSensorFilter
-    getInertialModel().orientation = getIMUData().orientation;
+    /*
+     * Note: the following code lines use the inverse mapping, i.e. globalIntoBodyMapping, by using the third row of bodyIntoGlobalMapping's matrix representation
+     * Note: The negative of the determined angles is the correct solution in this case because the projected "global" z axis is not pointing upwards in the torso's coordinate system.
+     * The projected "global" z axis in the Body frame is NOT (0,0,1)!
+     * So actually we want the inverse mapping.
+     * Inverting the angle is sufficient because it's basically only a 2D rotation in the XZ or YZ plane
+     * Note: using bodyIntoGlobalMapping would be wrong because the global frame can be rotated around z regarding the body
+     * this would result in a redistribution of the inclination on the x,y axis.
+     * (e.g. z rotation about 90° -> a rotation about the body's y axis becomes a rotation about the global x axis)
+     * Note: don't use the y axis to determine the inclination in YZ plane because it might be mapped onto the x axis (a rotation about 90° around z)
+     * this results in huge devation of the angles determined by atan2 because the projected y axis might end up in the second or third quadrant of the YZ plane
+     */
+
+    getIMUData().orientation = Vector2d(-atan2(-bodyIntoGlobalMapping[1].z, bodyIntoGlobalMapping[2].z),
+                                        -atan2(bodyIntoGlobalMapping[0].z,  bodyIntoGlobalMapping[2].z));
+
+    Eigen::Vector3d global_Z_in_body(bodyIntoGlobalMapping[0].z, bodyIntoGlobalMapping[1].z, bodyIntoGlobalMapping[2].z);
+    getIMUData().orientation_rotvec = quaternionToVector3D(Eigen::Quaterniond::FromTwoVectors(global_Z_in_body, Eigen::Vector3d(0,0,1)));
+
+    PLOT("IMUModel:State:orientation:x", Math::toDegrees(getIMUData().orientation.x));
+    PLOT("IMUModel:State:orientation:y", Math::toDegrees(getIMUData().orientation.y));
 
     getIMUData().rotational_velocity.x = ukf_rot.state.rotational_velocity()(0,0);
     getIMUData().rotational_velocity.y = ukf_rot.state.rotational_velocity()(1,0);
@@ -162,6 +185,11 @@ void IMUModel::plots(){
     Eigen::Vector3d temp2 = ukf_rot.state.rotation();
     Vector3d rot_vec(temp2(0),temp2(1),temp2(2));
     RotationMatrix rot(rot_vec);
+
+    DEBUG_REQUEST("IMUModel:drawOnlyOrientation",
+        rot = RotationMatrix(getIMUData().orientation_rotvec);
+    );
+
     Pose3D pose(rot);
     pose.translation = Vector3d(0,0,250);
 
@@ -177,6 +205,9 @@ void IMUModel::plots(){
     PLOT("IMUModel:Measurement:rotational_velocity:x", getGyrometerData().data.x);
     PLOT("IMUModel:Measurement:rotational_velocity:y", getGyrometerData().data.y);
     PLOT("IMUModel:Measurement:rotational_velocity:z", getGyrometerData().data.z);
+
+    PLOT("IMUModel:State:orientation:x", Math::toDegrees(getIMUData().orientation.x));
+    PLOT("IMUModel:State:orientation:y", Math::toDegrees(getIMUData().orientation.y));
 }
 
 void IMUModel::reloadParameters()

@@ -40,7 +40,6 @@ BEGIN_DECLARE_MODULE(IMUModel)
     REQUIRE(MotionStatus)
 
     PROVIDE(IMUData)
-    PROVIDE(InertialModel) // only to enable transparent switching with InertiaSensorFilter
 END_DECLARE_MODULE(IMUModel)
 
 class IMUModel: private IMUModelBase

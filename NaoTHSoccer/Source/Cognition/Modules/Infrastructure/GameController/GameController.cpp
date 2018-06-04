@@ -70,6 +70,8 @@ GameController::GameController()
 
   // set whistle count on init; otherwise we're detecting a whistle on startup!
   lastWhistleCount = getWhistlePercept().counter;
+  // print out the "final" player number for loggin purposes
+  std::cout << "[PlayerInfo] " << "playerNumber: " << getPlayerInfo().playerNumber << std::endl;
 }
 
 void GameController::execute()
@@ -89,12 +91,12 @@ void GameController::execute()
 
     // reset return message if old message was accepted
     if( returnMessage == GameReturnData::manual_penalise
-        && getGameData().getOwnRobotInfo(getPlayerInfo().playerNumber).penalty != GameData::none)
+        && getGameData().getOwnRobotInfo(getPlayerInfo().playerNumber).penalty != GameData::penalty_none)
     {
       returnMessage = GameReturnData::alive;
     }
     else if(returnMessage == GameReturnData::manual_unpenalise
-            && getGameData().getOwnRobotInfo(getPlayerInfo().playerNumber).penalty == GameData::none)
+            && getGameData().getOwnRobotInfo(getPlayerInfo().playerNumber).penalty == GameData::penalty_none)
     {
       returnMessage = GameReturnData::alive;
     }

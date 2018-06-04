@@ -1,6 +1,12 @@
 import struct
 import os
+import io
 
+from CommonTypes_pb2 import *
+from Framework_Representations_pb2 import *
+from Messages_pb2 import *
+from Representations_pb2 import *
+from google.protobuf import text_format
 
 class Parser:
     def __init__(self):
@@ -22,7 +28,7 @@ class Parser:
             message.ParseFromString(data)
 
         return message
-    
+
 
 class LogReader:
     class Frame:
@@ -43,26 +49,13 @@ class LogReader:
             self.reader.log.seek(position)
             data = self.reader.readBytes(size)
 
-            message = self.reader.parser.parse(name, data)
+            message = self.reader.parser.parse(name, str.encode(data) if isinstance(data, str) else data)
             self.messages[name] = (position, size, message)
             return message
 
-    class Iterator:
-        def __init__(self, reader):
-            self.idx = -1
-            self.reader = reader
-
-        def __iter__(self):
-            return self
-
-        def next(self):
-            self.idx += 1
-            return self.reader[self.idx]
-
     def __init__(self, path, parser=Parser(), filter=lambda x: x):
-        statinfo = os.stat(path)
-        self.size = statinfo.st_size
-        self.log = open(path, "rb")
+        self.__open(path)
+        self.log_file = self.log.name
         self.parser = parser
         self.filter = filter
 
@@ -73,8 +66,31 @@ class LogReader:
         # get the first frame
         self.__scanFrame()
 
-    def __iter__(self):
-        return LogReader.Iterator(self)
+    def __open(self, path):
+        if isinstance(path, io.IOBase):
+            self.size = os.stat(path.name).st_size
+            if path.mode != "rb":
+                raise Exception("File opened with the wrong mode! is {}, should be 'rb'".format(path.mode))
+            self.log = path
+        else:
+            statinfo = os.stat(path)
+            self.size = statinfo.st_size
+            self.log = open(path, "rb")
+
+    def __getstate__(self):
+        """ This is called before pickling. """
+        state = self.__dict__.copy()
+        del state['log']
+        # NOTE: currently its not possible to preserve the filter
+        del state['filter']
+        return state
+
+    def __setstate__(self, state):
+        """ This is called while unpickling. """
+        self.__dict__.update(state)
+        self.__open(self.log_file)
+        # NOTE: currently its not possible to restore the filter
+        self.filter = lambda x: x
 
     def __scan(self):
         try:
@@ -85,7 +101,7 @@ class LogReader:
                 #  self.names.append(name)
 
         except StopIteration as ex:
-            print ex
+            print(ex)
 
     def __scanFrame(self):
         if self.scanPosition == -1:
@@ -96,7 +112,7 @@ class LogReader:
         # if self.idx > 30*100:
         #  return False
 
-        last = (self.scanPosition*100) / self.size
+        last = (self.scanPosition * 100) / self.size
 
         try:
             currentFrame = None
@@ -108,7 +124,7 @@ class LogReader:
                     currentFrame = LogReader.Frame(self, frameNumber)
 
                 if currentFrame.number != frameNumber:
-                    self.log.seek(-4,1)
+                    self.log.seek(-4, 1)
                     self.scanPosition = self.log.tell()
                     self.frames.append(currentFrame)
                     break
@@ -118,15 +134,15 @@ class LogReader:
 
                 currentFrame.messages[name] = (self.log.tell(), message_size, None)
                 # skip message data
-                self.log.seek(message_size,1)
+                self.log.seek(message_size, 1)
 
                 # todo: make it more efficient
                 if name not in self.names:
                     self.names.append(name)
 
-            new = (self.scanPosition*100) / self.size
+            new = (self.scanPosition * 100) / self.size
             # if new > last:
-              # print new
+            # print new
 
             # if new > 3:
             #  raise StopIteration
@@ -142,10 +158,10 @@ class LogReader:
             raise StopIteration
 
         if bytes == 0:
-            return []
+            return ''
 
         data = self.log.read(bytes)
-        if data == '':
+        if len(data) != bytes:
             raise StopIteration
 
         return data
@@ -159,10 +175,10 @@ class LogReader:
     # read a '\0' terminated string
     def readString(self):
         str = ''
-        c = self.readChar()
+        c = self.readChar().decode("utf-8")
         while c != "\0":
             str += c
-            c = self.readChar()
+            c = self.readChar().decode("utf-8")
         return str
 
     def __getitem__(self, i):
@@ -174,7 +190,7 @@ class LogReader:
             return self.filter(self.frames[i])
         else:
             raise StopIteration
-     
+
 
 if __name__ == "__main__":
 
@@ -182,4 +198,4 @@ if __name__ == "__main__":
     myParser.register("CameraMatrixTop", "CameraMatrix")
 
     for i in LogReader("./cognition.log", myParser):
-      print i.frameNumber, i.name
+        print(i.frameNumber, i.name)

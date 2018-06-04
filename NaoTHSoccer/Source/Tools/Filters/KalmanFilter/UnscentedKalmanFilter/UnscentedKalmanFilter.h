@@ -45,21 +45,19 @@ class UKF {
             S mean = S::calcMean(sigmaPoints);
 
             // calculate new process covariance
-            Eigen::Matrix<double, S::size, S::size> cov = Eigen::Matrix<double, S::size, S::size>::Zero();
-            S temp;
-
-            for(typename std::vector<S, Eigen::aligned_allocator<S> >::iterator i = sigmaPoints.begin(); i != sigmaPoints.end(); ++i){
-                temp = (*i) - mean;
-                cov += 1.0 / static_cast<double>(sigmaPoints.size()) * (temp)*(temp).transpose();
+            Eigen::Matrix<double, S::size, 2*S::size + 1> temp;
+            for(size_t idx = 0; idx < sigmaPoints.size(); ++idx){
+               temp.col(idx) = sigmaPoints[idx] - mean;
             }
 
             state = mean;
-            P     = cov/* + Q*/; // process covariance is applied before the process model (while generating the sigma points)
+            P     =  1.0 / static_cast<double>(sigmaPoints.size()) * (temp)*(temp).transpose() /* + Q*/; // process covariance is applied before the process model (while generating the sigma points)
         }
 
         template<typename M, typename Derived>
         void update(const M& z, const Eigen::MatrixBase<Derived>& R){
             std::vector<M, Eigen::aligned_allocator<M> > sigmaMeasurements;
+            sigmaMeasurements.reserve(2*S::size+1);
 
             // map sigma points to measurement space
             for (typename std::vector<S, Eigen::aligned_allocator<S> >::iterator i = sigmaPoints.begin(); i != sigmaPoints.end(); i++){
@@ -70,29 +68,21 @@ class UKF {
             M predicted_z = M::calcMean(sigmaMeasurements);
 
             // calculate current measurement covariance
-            Eigen::Matrix<double,M::size,M::size> Pzz(Eigen::Matrix<double, M::size,M::size>::Zero());
-            M temp;
-
-            for(typename std::vector<M, Eigen::aligned_allocator<M> >::iterator i = sigmaMeasurements.begin(); i != sigmaMeasurements.end(); ++i){
-                temp = (*i) - predicted_z;
-                Pzz += 1.0 / static_cast<double>(sigmaPoints.size()) * (temp)*(temp).transpose();
+            Eigen::Matrix<double, M::size, 2*S::size+1> temp;
+            for(size_t idx = 0; idx < sigmaMeasurements.size(); ++idx){
+                temp.col(idx) = sigmaMeasurements[idx] - predicted_z;
             }
+            Eigen::Matrix<double,M::size,M::size> Pzz(1.0 / static_cast<double>(sigmaPoints.size()) * temp * (temp).transpose());
+
+            // calculate state-measurement cross-covariance
+            Eigen::Matrix<double, S::size, 2*S::size + 1> temp2;
+            for(size_t idx = 0; idx < sigmaPoints.size(); ++idx){
+               temp2.col(idx) = sigmaPoints[idx] - state;
+            }
+            Eigen::Matrix<double,S::size,M::size> Pxz(1.0 / static_cast<double>(sigmaPoints.size()) * temp2 * (temp).transpose());
 
             // apply measurement noise covariance
             Eigen::Matrix<double,M::size,M::size> Pvv = Pzz + R;
-
-            // calculate state-measurement cross-covariance
-            Eigen::Matrix<double,S::size,M::size> Pxz(Eigen::Matrix<double,S::size,M::size>::Zero());
-            S temp1;
-            M temp2;
-
-            for(unsigned int i = 0; i < sigmaPoints.size(); i++){
-                temp1 = sigmaPoints[i] - state;
-                temp2 = sigmaMeasurements[i] - predicted_z;
-
-                Pxz += 1.0 / static_cast<double>(sigmaPoints.size()) * (temp1) * (temp2).transpose();
-            }
-
             // calculate kalman gain
             Eigen::Matrix<double,S::size,M::size> K = Pxz*Pvv.inverse();
 
@@ -103,10 +93,7 @@ class UKF {
 
             state = state_innovation + state;
 
-            Eigen::Matrix<double,S::size,S::size> P_wiki;
-            P_wiki   = P - K*Pzz*K.transpose(); // https://en.m.wikipedia.org/wiki/Kalman_filter
-
-            P = P_wiki;
+            P -= K*Pzz*K.transpose(); // https://en.m.wikipedia.org/wiki/Kalman_filter
         }
 
     private:
@@ -117,6 +104,9 @@ class UKF {
 
         std::vector<S, Eigen::aligned_allocator<S> > sigmaPoints;
 
+        // decomposition object just need to be constructed once
+        Eigen::LLT<Eigen::Matrix<double,S::size,S::size> > choleskyDecompositionOfCov; // apply Q befor the process model
+
     public:
         S state;
 
@@ -125,7 +115,7 @@ class UKF {
 
             sigmaPoints[2*S::size] = state;
 
-            Eigen::LLT<Eigen::Matrix<double,S::size,S::size> > choleskyDecompositionOfCov(P+Q); // apply Q befor the process model
+            choleskyDecompositionOfCov.compute(P+Q);
             Eigen::Matrix<double,S::size,S::size> L = choleskyDecompositionOfCov.matrixL();
 
             for(int i = 0; i < S::size; i++){
@@ -139,7 +129,6 @@ class UKF {
                 sigmaPoints[i + S::size] += state;
             }
         }
-
 };
 
 #if defined(__GNUC__)

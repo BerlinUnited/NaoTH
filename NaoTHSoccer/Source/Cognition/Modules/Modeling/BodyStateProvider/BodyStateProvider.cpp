@@ -12,7 +12,7 @@
 
 BodyStateProvider::BodyStateProvider()
 {
-
+  getDebugParameterList().add(&theParams);
 }
 
 void BodyStateProvider::execute()
@@ -62,20 +62,18 @@ void BodyStateProvider::updateTheFallDownState()
   inertialBuffer.add(getInertialSensorData().data);
 
   Vector2d avg = inertialBuffer.getAverage();
-  double inertialXaverage = avg.x;
-  double inertialYaverage = avg.y;
 
   getBodyState().fall_down_state = BodyState::upright;
 
-  if(inertialXaverage < -theParams.getup_threshold) {
+  if(avg.x < -theParams.getup_threshold) {
     getBodyState().fall_down_state = BodyState::lying_on_left_side;
-  } else if(inertialXaverage > theParams.getup_threshold) {
+  } else if(avg.x > theParams.getup_threshold) {
     getBodyState().fall_down_state = BodyState::lying_on_right_side;
   }
 
-  if(inertialYaverage < -theParams.getup_threshold) {
+  if(avg.y < -theParams.getup_threshold) {
     getBodyState().fall_down_state = BodyState::lying_on_back;
-  } else if(inertialYaverage > theParams.getup_threshold) {
+  } else if(avg.y > theParams.getup_threshold) {
     getBodyState().fall_down_state = BodyState::lying_on_front;
   }
 

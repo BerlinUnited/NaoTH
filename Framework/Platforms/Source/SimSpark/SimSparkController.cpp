@@ -17,6 +17,7 @@
 #include <DebugCommunication/DebugCommandManager.h>
 #include <Tools/NaoTime.h>
 #include <Tools/NaoInfo.h>
+#include <Tools/Math/Common.h>
 
 #include <Tools/Communication/ASCIIEncoder.h>
 
@@ -810,7 +811,7 @@ bool SimSparkController::updateHingeJoint(const sexp_t* sexp)
     ax *= -1;
   }
 
-  theSensorJointData.dp[jid] = Math::clamp(Math::normalizeAngle(ax - theSensorJointData.position[jid]) / theStepTime,
+  theSensorJointData.dp[jid] = Math::clamp(Math::normalize(ax - theSensorJointData.position[jid]) / theStepTime,
     -maxJointAbsSpeed, maxJointAbsSpeed);
   theSensorJointData.position[jid] = ax;
   return true;
@@ -1314,7 +1315,7 @@ void SimSparkController::get(GameData& data)
     data.newPlayerNumber = theGameInfo.playerNumber;
 
     data.ownTeam.teamNumber = theGameInfo.getTeamNumber();
-    data.ownTeam.teamColour = theGameInfo.getTeamColor();
+    data.ownTeam.teamColor = theGameInfo.getTeamColor();
     data.ownTeam.players.resize(theGameInfo.playersPerTeam);
 
     // todo set opponent team info

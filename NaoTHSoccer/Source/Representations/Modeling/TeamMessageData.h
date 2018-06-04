@@ -22,19 +22,31 @@
 #include "MessagesSPL/SPLStandardMessage.h"
 
 // needed by BUUserTeamMessage
-#include "Messages/Representations.pb.h"
+#include "Messages/TeamMessage.pb.h"
 #include "Representations/Infrastructure/FrameInfo.h"
 
 using namespace naoth;
 
 // this key is sent with every team message to indicate that the message belongs to us
 #define NAOTH_TEAMCOMM_MESAGE_KEY "naoth"
+#define DOBERMAN_TEAMCOMM_MESAGE_KEY "12" // HACK: fixed team number for NaoDevils
+
+/** Contains data for a NTP request. */
+struct NtpRequest
+{
+    NtpRequest(unsigned int p = 0, unsigned long long s = 0, unsigned long long r = 0)
+        : playerNumber(p), sent(s), received(r)
+    {}
+    unsigned int playerNumber;
+    unsigned long long sent;
+    unsigned long long received;
+};
 
 // this message is communicated as the user part of the standard spl message
 class TeamMessageCustom : public naoth::Printable 
 {
 
-private:
+public:
 
   // we define this struct private because no one else needs to know about the internals of the DoBerManHeader
   struct DoBerManHeader
@@ -43,7 +55,7 @@ private:
     int8_t teamID;
     int8_t isPenalized;
     int8_t whistleDetected;
-    int8_t dummy;
+    int8_t intention;
   };
 
 public:
@@ -55,14 +67,16 @@ public:
   std::string bodyID;         // the body ID of the robot
   bool wasStriker;
   bool wantsToBeStriker;
-  unsigned int timeToBall;          // the shorest time, in which the robot can reach the ball [ms]
+  unsigned int timeToBall;    // the shorest time, in which the robot can reach the ball [ms]
   bool isPenalized;           // whether the robot is penalized, or not
   double batteryCharge;       // the battery charge
   double temperature;         // the max. temperature of the left or right leg!
   double cpuTemperature;      // the temperature of the cpu
   bool whistleDetected;       // whether the robot heard/detected the whistle
   int whistleCount;           // who many whistle the robot detected
-  Vector2d teamBall;// global position of the team ball for visualization in RC!!
+  Vector2d teamBall;          // global position of the team ball for visualization in RC!!
+  std::vector<NtpRequest> ntpRequests; // ntp requests to teammates
+  Vector2d ballVelocity;      // velocity of the ball
   // opponents ?
 
   /** Sets the data according to the protobuf message. */
@@ -75,7 +89,7 @@ public:
   void parseFromDoBerManHeader(const uint8_t *rawHeader, size_t headerSize);
 
   /** Creates a binary array containing some of the registered data in the DoBerMan header "format" */
-  std::string toDoBerManHeader() const;
+  void toDoBerManHeader(DoBerManHeader& header) const;
 
   static size_t getCustomOffset() {return sizeof(DoBerManHeader);}
 
@@ -86,6 +100,7 @@ class TeamMessageData : public naoth::Printable
 {
 public:
     FrameInfo frameInfo;
+    unsigned long long timestampParsed; //Timestamp when the message was parsed.
     /*** BEGIN +++ TEAMMESSAGEFIELDS *****************************************/
     /*************************************************************************/
     /* SPL-Message-Fields ****************************************************/
@@ -94,21 +109,15 @@ public:
     unsigned int teamNumber;    // the number of the team
     bool fallen;                // true means that the robot is fallen, false means that the robot can play
     Pose2D pose;                // robot pose
-    Vector2d walkingTo;         // the robot's target position on the field
-    Vector2d shootingTo;        // the target position of the next shot (either pass or goal shot)
     double ballAge;             // milliseconds since this robot last saw the ball. -1 if we haven't seen it
     Vector2d ballPosition;      // position of ball relative to the robot coordinates in millimeters; 0,0 is in centre of the robot
-    Vector2d ballVelocity;      // velocity of the ball
-    std::vector<int> suggestion;// what should the teammates do (0-4)
-    int intention;
-    int averageWalkSpeed;       // the average speed that the robot has (mm/s)
-    int maxKickDistance;        // the maximum distance that the ball rolls after a strong kick by the robot (mm)
-    unsigned int positionConfidence; // current confidence of a robot about its self-location (0-100%); dummy value: currently always 100%
-    unsigned int sideConfidence; // current confidence of a robot about playing in the right direction (0-100%); dummy value: currently always 100%
     
     // custom BU-Message-Fields
     TeamMessageCustom custom;
     /*** END +++ TEAMMESSAGEFIELDS *******************************************/
+
+    bool isBerlinUnitedMessage() { return custom.key == NAOTH_TEAMCOMM_MESAGE_KEY; }
+    bool isDoBerManMessage() { return custom.key == DOBERMAN_TEAMCOMM_MESAGE_KEY; }
 
     TeamMessageData();
     TeamMessageData(FrameInfo fi);

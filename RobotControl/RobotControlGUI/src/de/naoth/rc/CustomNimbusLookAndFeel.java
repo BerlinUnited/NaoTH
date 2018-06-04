@@ -25,9 +25,9 @@ public class CustomNimbusLookAndFeel extends NimbusLookAndFeel
     public UIDefaults getDefaults()
     {
       UIDefaults defaults = super.getDefaults();
-      if(parent != null && parent.isHighDPI())
+      if(parent != null)
       {
-        defaults.put("defaultFont", new Font(Font.SANS_SERIF, Font.PLAIN, 18));
+        defaults.put("defaultFont", new Font(Font.SANS_SERIF, Font.PLAIN, parent.getFontSize()));
       }
       return defaults;
     }

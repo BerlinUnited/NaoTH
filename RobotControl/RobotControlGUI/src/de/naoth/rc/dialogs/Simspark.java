@@ -7,12 +7,17 @@ import de.naoth.rc.core.dialog.DialogPlugin;
 import de.naoth.rc.core.dialog.RCDialog;
 import de.naoth.rc.dataformats.SimsparkState;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.beans.property.BooleanProperty;
 import javax.swing.ImageIcon;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JSeparator;
 import javax.swing.table.TableModel;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
@@ -44,6 +49,7 @@ public class Simspark extends AbstractDialog
     public Simspark() {
         initComponents();
         addTableContent();
+        createCommandButtons();
         jTable1.getColumnModel().getColumn(0).setWidth(20);
         jTable1.getColumnModel().getColumn(0).setPreferredWidth(20);
     }
@@ -57,17 +63,19 @@ public class Simspark extends AbstractDialog
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        monitorPredfinedCommands = new javax.swing.JPopupMenu();
         simspark_toolbar = new javax.swing.JToolBar();
         tb_monitor = new javax.swing.JToggleButton();
         tb_agent = new javax.swing.JToggleButton();
         layer = new javax.swing.JLayeredPane();
         monitorPanel = new javax.swing.JPanel();
-        jPanel5 = new javax.swing.JPanel();
-        btnConnect = new javax.swing.JToggleButton();
+        monitorHeaderPanel = new javax.swing.JPanel();
         input_panel = new javax.swing.JPanel();
+        btnConnect = new javax.swing.JToggleButton();
         tf_monitor_ip = new javax.swing.JTextField(host);
         jLabel10 = new javax.swing.JLabel();
         tf_monitor_port = new javax.swing.JTextField(String.valueOf(port_monitor));
+        btnPredefinedCmds = new javax.swing.JToggleButton();
         jScrollPane2 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
         jPanel6 = new javax.swing.JPanel();
@@ -75,6 +83,16 @@ public class Simspark extends AbstractDialog
         cmd = new javax.swing.JComboBox<>();
         agentPanel = new javax.swing.JPanel();
         lbl_todo = new javax.swing.JLabel();
+
+        monitorPredfinedCommands.addPopupMenuListener(new javax.swing.event.PopupMenuListener() {
+            public void popupMenuWillBecomeVisible(javax.swing.event.PopupMenuEvent evt) {
+            }
+            public void popupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {
+                monitorPredfinedCommandsPopupMenuWillBecomeInvisible(evt);
+            }
+            public void popupMenuCanceled(javax.swing.event.PopupMenuEvent evt) {
+            }
+        });
 
         setLayout(new java.awt.BorderLayout());
 
@@ -109,7 +127,11 @@ public class Simspark extends AbstractDialog
 
         monitorPanel.setLayout(new java.awt.BorderLayout());
 
-        jPanel5.setPreferredSize(new java.awt.Dimension(711, 25));
+        monitorHeaderPanel.setName(""); // NOI18N
+        monitorHeaderPanel.setPreferredSize(new java.awt.Dimension(124, 24));
+        monitorHeaderPanel.setLayout(new java.awt.BorderLayout());
+
+        input_panel.setLayout(new javax.swing.BoxLayout(input_panel, javax.swing.BoxLayout.LINE_AXIS));
 
         btnConnect.setText("Connect");
         btnConnect.setFocusable(false);
@@ -120,8 +142,7 @@ public class Simspark extends AbstractDialog
                 btnConnectActionPerformed(evt);
             }
         });
-
-        input_panel.setLayout(new javax.swing.BoxLayout(input_panel, javax.swing.BoxLayout.LINE_AXIS));
+        input_panel.add(btnConnect);
 
         tf_monitor_ip.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         tf_monitor_ip.setPreferredSize(new java.awt.Dimension(200, 19));
@@ -146,26 +167,17 @@ public class Simspark extends AbstractDialog
         });
         input_panel.add(tf_monitor_port);
 
-        javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
-        jPanel5.setLayout(jPanel5Layout);
-        jPanel5Layout.setHorizontalGroup(
-            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel5Layout.createSequentialGroup()
-                .addComponent(btnConnect)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(input_panel, javax.swing.GroupLayout.DEFAULT_SIZE, 630, Short.MAX_VALUE)
-                .addContainerGap())
-        );
-        jPanel5Layout.setVerticalGroup(
-            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel5Layout.createSequentialGroup()
-                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(btnConnect, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(input_panel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
+        btnPredefinedCmds.setText("Commands");
+        btnPredefinedCmds.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnPredefinedCmdsActionPerformed(evt);
+            }
+        });
+        input_panel.add(btnPredefinedCmds);
 
-        monitorPanel.add(jPanel5, java.awt.BorderLayout.NORTH);
+        monitorHeaderPanel.add(input_panel, java.awt.BorderLayout.CENTER);
+
+        monitorPanel.add(monitorHeaderPanel, java.awt.BorderLayout.NORTH);
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -279,24 +291,14 @@ public class Simspark extends AbstractDialog
     private void btnSendCommandActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSendCommandActionPerformed
         if(((String)cmd.getSelectedItem()).isEmpty()) {
             JOptionPane.showMessageDialog(this, "Please enter a (valid) command.", "Empty command", JOptionPane.WARNING_MESSAGE);
-        } else if(simspark_comm == null || !simspark_comm.isAlive()) {
-            JOptionPane.showMessageDialog(this, "Not connected to simspark!", "Not connected", JOptionPane.ERROR_MESSAGE);
         } else {
-            simspark_comm.sendAgentMessage(((String)cmd.getEditor().getItem()).trim());
+            sendCommand(((String)cmd.getEditor().getItem()).trim());
         }
     }//GEN-LAST:event_btnSendCommandActionPerformed
 
-    private void btnConnectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConnectActionPerformed
-        if (btnConnect.isSelected()) {
-            connect();
-        } else {
-            disconnect();
-        }
-    }//GEN-LAST:event_btnConnectActionPerformed
-
     private void cmdActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdActionPerformed
         if(evt.getActionCommand().equals("comboBoxEdited")) {
-            // "click the connect button"
+            // "click the send button"
             btnSendCommand.doClick();
         }
     }//GEN-LAST:event_cmdActionPerformed
@@ -321,15 +323,35 @@ public class Simspark extends AbstractDialog
         }
     }//GEN-LAST:event_tb_agentActionPerformed
 
-    private void tf_monitor_ipActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tf_monitor_ipActionPerformed
-        // "click the connect button"
-        btnConnect.doClick();
-    }//GEN-LAST:event_tf_monitor_ipActionPerformed
+    private void btnConnectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConnectActionPerformed
+        if (btnConnect.isSelected()) {
+            this.connect();
+            if(!simspark_comm.checkConnection()) { btnConnect.setSelected(false); }
+        } else {
+            this.disconnect();
+        }
+    }//GEN-LAST:event_btnConnectActionPerformed
 
     private void tf_monitor_portActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tf_monitor_portActionPerformed
-        // "click the connect button"
-        btnConnect.doClick();
+        // pressed enter/return in monitor port textfield
+        this.connect();
     }//GEN-LAST:event_tf_monitor_portActionPerformed
+
+    private void tf_monitor_ipActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tf_monitor_ipActionPerformed
+        // pressed enter/return in monitor ip textfield
+        this.connect();
+    }//GEN-LAST:event_tf_monitor_ipActionPerformed
+
+    private void btnPredefinedCmdsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPredefinedCmdsActionPerformed
+        // show popup menu
+        if(btnPredefinedCmds.isSelected()) {
+            monitorPredfinedCommands.show(btnPredefinedCmds, 0, btnPredefinedCmds.getHeight());
+        }
+    }//GEN-LAST:event_btnPredefinedCmdsActionPerformed
+
+    private void monitorPredfinedCommandsPopupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {//GEN-FIRST:event_monitorPredfinedCommandsPopupMenuWillBecomeInvisible
+        btnPredefinedCmds.setSelected(false);
+    }//GEN-LAST:event_monitorPredfinedCommandsPopupMenuWillBecomeInvisible
 
     private void addTableContent() {
         TableModel model = jTable1.getModel();
@@ -364,54 +386,6 @@ public class Simspark extends AbstractDialog
         return default_val;
     }
     
-    private void connect() {
-        if (simspark_comm != null) {
-            try {
-                simspark_comm.disconnect();
-            } catch (IOException | InterruptedException ex) {
-                Logger.getLogger(Simspark.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-        try {
-            simspark_comm = new SimsparkMonitor();
-            simspark_comm.connect(tf_monitor_ip.getText().trim(), Integer.parseInt(tf_monitor_port.getText().trim()));
-
-            // start/schedule UI-updater
-            this.timerUpdater = new Timer();
-            this.timerUpdater.scheduleAtFixedRate(new UpdateTableTask(simspark_comm.state), 100, 33);
-
-            // update UI
-            tb_monitor.setIcon(connectionIcon);
-            tf_monitor_ip.setEnabled(false);
-            tf_monitor_port.setEnabled(false);
-        } catch (IOException ex) {
-            JOptionPane.showMessageDialog(null, "Couldn't connect!", "Couldn't connect", JOptionPane.WARNING_MESSAGE);
-            simspark_comm = null;
-            btnConnect.setSelected(false);
-        }
-    }
-    
-    private void disconnect() {
-        if (simspark_comm != null) {
-            try {
-                simspark_comm.disconnect();
-            } catch (IOException | InterruptedException ex) {
-                Logger.getLogger(Simspark.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-        if(timerUpdater != null) {
-            timerUpdater.cancel();
-        }
-        simspark_comm = null;
-        timerUpdater = null;
-        
-        // update UI
-        tb_monitor.setIcon(null);
-        tf_monitor_ip.setEnabled(true);
-        tf_monitor_port.setEnabled(true);
-        btnConnect.setSelected(false);
-    }
-    
     private class UpdateTableTask extends TimerTask {
         SimsparkState state;
         public UpdateTableTask(SimsparkState state) {
@@ -420,31 +394,130 @@ public class Simspark extends AbstractDialog
             
         @Override
         public void run() {
-            if(simspark_comm != null && simspark_comm.isAlive()) {
-                TableModel model = jTable1.getModel();
-                for (int i = 0; i < model.getRowCount(); i++) {
-                    model.setValueAt(state.get(model.getValueAt(i, 0)), i, 1);
-                }
-            } else {
-                disconnect();
+            TableModel model = jTable1.getModel();
+            for (int i = 0; i < model.getRowCount(); i++) {
+                model.setValueAt(state.get(model.getValueAt(i, 0)), i, 1);
             }
         } // end run
+    }
+    
+    private void connect() {
+        try {
+            if(simspark_comm != null) {
+                simspark_comm.disconnect();
+            }
+            simspark_comm = new SimsparkMonitor();
+            // register connection listener
+            simspark_comm.isConnected.addListener((o) -> {
+                if(((BooleanProperty)o).get()) {
+                    btnConnect.setSelected(true);
+                    this.onConnect();
+                } else {
+                    btnConnect.setSelected(false);
+                    disconnect();
+                    onDisconnect();
+                }
+            });
+            simspark_comm.connect(tf_monitor_ip.getText().trim(), Integer.parseInt(tf_monitor_port.getText().trim()));
+        } catch (IOException | InterruptedException ex) {
+            JOptionPane.showMessageDialog(null, "Couldn't connect!", "Couldn't connect", JOptionPane.WARNING_MESSAGE);
+        }
+    }
+    
+    private void disconnect() {
+        try {
+            if(simspark_comm != null) {
+                simspark_comm.disconnect();
+            }
+            simspark_comm = null;
+        } catch (IOException | InterruptedException ex) {
+            Logger.getLogger(Simspark.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    private void onConnect() {
+        // start/schedule UI-updater
+        this.timerUpdater = new Timer();
+        this.timerUpdater.scheduleAtFixedRate(new UpdateTableTask(simspark_comm.state), 100, 33);
+
+        // update UI
+        tb_monitor.setIcon(connectionIcon);
+        tf_monitor_ip.setEnabled(false);
+        tf_monitor_port.setEnabled(false);
+        btnPredefinedCmds.setVisible(true);
+    }
+    
+    private void onDisconnect() {
+        tb_monitor.setIcon(null);
+        tf_monitor_ip.setEnabled(true);
+        tf_monitor_port.setEnabled(true);
+        timerUpdater.cancel();
+        btnPredefinedCmds.setVisible(false);
+    }
+    
+    private void createCommandButtons() {
+        // NOTE: the position values refering to the SPL2013 field!
+        // command map
+        List<String[]> commands = new ArrayList<>();
+        commands.add(new String[]{"DropBall",               "(dropBall)"});
+        commands.add(new String[]{"KickOff",                "(kickOff None)"});
+        commands.add(new String[]{"KickOff Left",           "(kickOff Left)"});
+        commands.add(new String[]{"KickOff Right",          "(kickOff Right)"});
+        commands.add(new String[]{"Ball Center Circle",     "(ball (pos 0 0 0))"});
+        commands.add(new String[]{"Ball Right Lower Corner","(ball (pos 4.5 -3 0))"});
+        commands.add(new String[]{"Ball Right Upper Corner","(ball (pos 4.5 3 0))"});
+        commands.add(new String[]{"Ball Left Lower Corner", "(ball (pos -4.5 -3 0))"});
+        commands.add(new String[]{"Ball Left Upper Corner", "(ball (pos -4.5 3 0))"});
+        commands.add(new String[]{"---",                    "---"});
+        commands.add(new String[]{"Close Simspark",         "(killsim)"});
+
+        // create relevant command buttons
+        commands.forEach((cmd) -> {
+            if("---".equals(cmd[0])) {
+                monitorPredfinedCommands.add(new JSeparator());
+            } else {
+                JMenuItem menuItem = new JMenuItem(cmd[0]);
+                menuItem.setToolTipText(cmd[1]);
+                menuItem.setActionCommand(cmd[1]);
+                menuItem.addActionListener((e) -> {
+                    sendCommand(menuItem.getActionCommand());
+                });
+                monitorPredfinedCommands.add(menuItem);
+            }
+        });
+        btnPredefinedCmds.setVisible(false);
+    }
+    
+    private void sendCommand(String cmd) {
+        if(simspark_comm == null || !simspark_comm.isAlive()) {
+            JOptionPane.showMessageDialog(this, "Not connected to simspark!", "Not connected", JOptionPane.ERROR_MESSAGE);
+        } else {
+            try {
+                simspark_comm.sendMessage(cmd);
+            } catch (IOException ex) {
+                if(!simspark_comm.checkConnection()) {
+                    JOptionPane.showMessageDialog(null, "Connection to server lost!\nStill running?", "Lost connection", JOptionPane.WARNING_MESSAGE);
+                }
+            }
+        }
     }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel agentPanel;
     private javax.swing.JToggleButton btnConnect;
+    private javax.swing.JToggleButton btnPredefinedCmds;
     private javax.swing.JButton btnSendCommand;
     private javax.swing.JComboBox<String> cmd;
     private javax.swing.JPanel input_panel;
     private javax.swing.JLabel jLabel10;
-    private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTable jTable1;
     private javax.swing.JLayeredPane layer;
     private javax.swing.JLabel lbl_todo;
+    private javax.swing.JPanel monitorHeaderPanel;
     private javax.swing.JPanel monitorPanel;
+    private javax.swing.JPopupMenu monitorPredfinedCommands;
     private javax.swing.JToolBar simspark_toolbar;
     private javax.swing.JToggleButton tb_agent;
     private javax.swing.JToggleButton tb_monitor;

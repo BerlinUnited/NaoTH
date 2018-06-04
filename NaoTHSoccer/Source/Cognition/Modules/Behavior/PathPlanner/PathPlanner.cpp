@@ -36,7 +36,6 @@ void PathPlanner::execute()
 
   getPathModel().kick_executed = false;
 
-  STOPWATCH_START("PathPlanner");
   // Always executed first
   manage_step_buffer();
 
@@ -102,8 +101,6 @@ void PathPlanner::execute()
 
   // Always executed last
   execute_step_buffer();
-
-  STOPWATCH_STOP("PathPlanner");
 }
 
 void PathPlanner::walk_to_ball(const Foot foot, const bool go_fast)
@@ -134,16 +131,16 @@ void PathPlanner::walk_to_ball(const Foot foot, const bool go_fast)
     StepType type         = StepType::WALKSTEP;
     double scale          = 1.0;
     double speed_direction = Math::fromDegrees(0.0);
-
+		int kick_time = 250;
     if (go_fast)
     {
       double character = 1.0;
-      add_step(pose, type, coordinate, character, foot, scale, speed_direction, WalkRequest::StepControlRequest::HARD, false);
+      add_step(pose, type, coordinate, character, foot, scale, speed_direction, WalkRequest::StepControlRequest::HARD, false, kick_time);
     }
     else
     {
       double character = 0.3;
-      add_step(pose, type, coordinate, character, foot, scale, speed_direction, WalkRequest::StepControlRequest::HARD, false);
+      add_step(pose, type, coordinate, character, foot, scale, speed_direction, WalkRequest::StepControlRequest::HARD, false, kick_time);
     }
   }
   else
@@ -189,7 +186,8 @@ void PathPlanner::move_around_ball(const double direction, const double radius)
     Foot foot              = Foot::NONE;
     double scale           = 1.0;
     double speed_direction = Math::fromDegrees(0.0);
-    add_step(pose, type, coordinate, character, foot, scale, speed_direction, WalkRequest::StepControlRequest::HARD, false);
+		int kick_time = 250;
+		add_step(pose, type, coordinate, character, foot, scale, speed_direction, WalkRequest::StepControlRequest::HARD, false, kick_time);
   }
   else
   {
@@ -203,9 +201,8 @@ void PathPlanner::approach_ball(const Foot foot)
   WalkRequest::Coordinate coordinate = WalkRequest::Hip;
   double stepX                       = 0.0;
   double stepY                       = 0.0;
-  double ballRadius                  = getFieldInfo().ballRadius;
-  double stepRotation                = ballPos.abs() > 250 ? ballPos.angle() : 0;
-
+  const double ballRadius            = getFieldInfo().ballRadius;
+  
   switch (foot) {
   case Foot::LEFT:
     ballPos    = getBallModel().positionPreviewInLFoot;
@@ -223,31 +220,37 @@ void PathPlanner::approach_ball(const Foot foot)
     ASSERT(false);
   }
 
+  // don't rotate close to the ball
+  double stepRotation = ballPos.abs() > 250 ? ballPos.angle() : 0;
+
   //if (ballPos.x < getPathModel().distance + 30 && ballPos.x > getPathModel().distance - 30)
-  if (stepX < 0 && ballPos.x > getPathModel().distance + 30)
-  {
+  if (stepX < 0 && ballPos.x > getPathModel().distance + 30) {
     stepX = 0;
   }
 
+  Pose2D pose = { stepRotation, stepX, stepY };
+
+  // damp the steps while aproaching
+  // params.approach_ball_adapt_threshold defines a small circle around the ball without damping
   const double slow_down_factor = 0.7;
-  Pose2D pose;
-  if (   params.approach_ball_adapt_control
-      && Vector2d(stepX, stepY).abs() < params.approach_ball_adapt_threshold)
-  {
-    pose = { stepRotation, stepX, stepY };
+  if (params.approach_ball_adapt_control && Vector2d(stepX, stepY).abs() > params.approach_ball_adapt_threshold) {
+    pose.translation *= slow_down_factor;
   }
-  else
-  {
-    pose = { stepRotation, slow_down_factor * stepX, slow_down_factor * stepY };
+
+  // approach the ball slowly
+  double character = 0.7;
+  if (Vector2d(stepX, stepY).abs() < params.approach_ball_slow_distance) {
+    character = 0.3;
   }
 
   if (step_buffer.empty())
   {
     StepType type          = StepType::WALKSTEP;
-    double character       = 0.7;
+    //double character       = 0.7;
     double scale           = 1.0;
     double speed_direction = Math::fromDegrees(0.0);
-    add_step(pose, type, coordinate, character, Foot::NONE, scale, speed_direction, WalkRequest::StepControlRequest::HARD, false);
+		int kick_time = 250; 
+		add_step(pose, type, coordinate, character, Foot::NONE, scale, speed_direction, WalkRequest::StepControlRequest::HARD, false, kick_time);
   }
   else
   {
@@ -279,14 +282,18 @@ void PathPlanner::short_kick(const Foot foot)
       double character       = 1.0;
       double scale           = 0.7;
       double speed_direction = Math::fromDegrees(0.0);
-      add_step(pose, type, coordinate, character, foot, scale, speed_direction, WalkRequest::StepControlRequest::SOFT, true);
+			int kick_time = params.short_kick_time;
+			add_step(pose, type, coordinate, character, foot, scale, speed_direction, WalkRequest::StepControlRequest::SOFT, true, kick_time);
 
       type = StepType::ZEROSTEP;
-      add_step(pose, type, coordinate, character, foot, scale, speed_direction, WalkRequest::StepControlRequest::SOFT, true);
+			kick_time = 250;
+			add_step(pose, type, coordinate, character, foot, scale, speed_direction, WalkRequest::StepControlRequest::SOFT, true, kick_time);
+      step_buffer.back().time = 100;
 
       pose = { 0.0, 0.0, 0.0 };
       type = StepType::WALKSTEP;
-      add_step(pose, type, coordinate, character, foot, scale, speed_direction, WalkRequest::StepControlRequest::HARD, true);
+			kick_time = 250;
+			add_step(pose, type, coordinate, character, foot, scale, speed_direction, WalkRequest::StepControlRequest::HARD, true, kick_time);
 
       kick_planned = true;
     }
@@ -317,14 +324,17 @@ void PathPlanner::long_kick(const Foot foot)
       double character       = 1.0;
       double scale           = 0.7;
       double speed_direction = Math::fromDegrees(0.0);
-      add_step(pose, type, coordinate, character, foot, scale, speed_direction, WalkRequest::StepControlRequest::SOFT, true);
+			int kick_time = params.long_kick_time;
+			add_step(pose, type, coordinate, character, foot, scale, speed_direction, WalkRequest::StepControlRequest::SOFT, true, kick_time);
 
       type = StepType::ZEROSTEP;
-      add_step(pose, type, coordinate, character, foot, scale, speed_direction, WalkRequest::StepControlRequest::SOFT, true);
+			kick_time = 250;
+			add_step(pose, type, coordinate, character, foot, scale, speed_direction, WalkRequest::StepControlRequest::SOFT, true, kick_time);
 
       pose = { 0.0, 0.0, 0.0 };
       type = StepType::WALKSTEP;
-      add_step(pose, type, coordinate, character, foot, scale, speed_direction, WalkRequest::StepControlRequest::HARD, true);
+			kick_time = 250;
+			add_step(pose, type, coordinate, character, foot, scale, speed_direction, WalkRequest::StepControlRequest::HARD, true, kick_time);
 
       kick_planned = true;
     }
@@ -362,14 +372,18 @@ void PathPlanner::sidekick(const Foot foot)
       Foot step_foot = foot == Foot::RIGHT ? Foot::LEFT : Foot::RIGHT;
       double scale = params.sidekick_scale;
 
-      add_step(pose, type, coordinate, character, step_foot, scale, speed_direction, WalkRequest::StepControlRequest::SOFT, true);
+			int kick_time = 250;
+			add_step(pose, type, coordinate, character, step_foot, scale, speed_direction, WalkRequest::StepControlRequest::SOFT, true, kick_time);
 
       type = StepType::ZEROSTEP;
-      add_step(pose, type, coordinate, character, step_foot, scale, speed_direction, WalkRequest::StepControlRequest::SOFT, true);
+			kick_time = 250;
+			add_step(pose, type, coordinate, character, step_foot, scale, speed_direction, WalkRequest::StepControlRequest::SOFT, true, kick_time);
+      step_buffer.back().time = 100;
 
       pose = { 0.0, 0.0, 0.0 };
       type = StepType::WALKSTEP;
-      add_step(pose, type, coordinate, character, step_foot, scale, speed_direction, WalkRequest::StepControlRequest::HARD, true);
+			kick_time = 250;
+			add_step(pose, type, coordinate, character, step_foot, scale, speed_direction, WalkRequest::StepControlRequest::HARD, true, kick_time);
 
       kick_planned = true;
     }
@@ -377,12 +391,12 @@ void PathPlanner::sidekick(const Foot foot)
 }
 
 // Stepcontrol
-void PathPlanner::add_step(Pose2D &pose, const StepType &type, const WalkRequest::Coordinate &coordinate, const double character, const Foot foot, const double scale, const double speedDirection, const WalkRequest::StepControlRequest::RestrictionMode restriction, bool isProtected)
+void PathPlanner::add_step(Pose2D &pose, const StepType &type, const WalkRequest::Coordinate &coordinate, const double character, const Foot foot, const double scale, const double speedDirection, const WalkRequest::StepControlRequest::RestrictionMode restriction, bool isProtected, int kick_time)
 {
   step_buffer.push_back(Step_Buffer_Element({ pose,
                                               speedDirection,
                                               type,
-                                              type == StepType::KICKSTEP ? params.kick_time : 250,
+																							kick_time,
                                               character,
                                               scale,
                                               foot,

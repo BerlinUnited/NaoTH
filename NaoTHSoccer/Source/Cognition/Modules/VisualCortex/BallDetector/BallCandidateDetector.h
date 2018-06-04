@@ -32,9 +32,10 @@
 // local tools
 #include "Tools/BestPatchList.h"
 #include "Tools/BallKeyPointExtractor.h"
-#include "Tools/CVHaarClassifier.h"
 #include "Tools/BlackSpotExtractor.h"
 #include "Tools/DataStructures/RingBufferWithSum.h"
+
+#include "Classifier/AbstractCNNClassifier.h"
 
 // debug
 #include "Representations/Debug/Stopwatch.h"
@@ -132,11 +133,6 @@ private:
       PARAMETER_REGISTER(heuristic.blackDotsMinCount) = 1;
       PARAMETER_REGISTER(heuristic.minBlackDetectionSize) = 20;
 
-      PARAMETER_REGISTER(haarDetector.execute) = true;
-      PARAMETER_REGISTER(haarDetector.minNeighbors) = 0;
-      PARAMETER_REGISTER(haarDetector.windowSize) = 12;
-      PARAMETER_REGISTER(haarDetector.model_file) = "lbp1.xml";
-
       PARAMETER_REGISTER(cnn.threshold) = 0.0;
 
       PARAMETER_REGISTER(maxNumberOfKeys) = 4;
@@ -154,9 +150,7 @@ private:
       PARAMETER_REGISTER(blackKeysCheck.minSizeToCheck) = 60;
       PARAMETER_REGISTER(blackKeysCheck.minValue) = 20;
 
-
-
-      PARAMETER_REGISTER(classifier) = "aug1";
+      PARAMETER_REGISTER(classifier) = "dortmund";
       
       syncWithConfig();
     }
@@ -171,13 +165,6 @@ private:
       int blackDotsMinCount;
       int minBlackDetectionSize;
     } heuristic;
-
-    struct HaarDetector {
-      bool execute;
-      int minNeighbors;
-      int windowSize;
-      std::string model_file;
-    } haarDetector;
 
     struct BlackKeysCheck {
       bool enable;
@@ -221,7 +208,6 @@ private:
   }
 
 private:
-  CVHaarClassifier cvHaarClassifier;
 
   std::shared_ptr<AbstractCNNClassifier> currentCNNClassifier;
   std::map<std::string, std::shared_ptr<AbstractCNNClassifier> > cnnMap;

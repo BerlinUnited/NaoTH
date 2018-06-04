@@ -5,10 +5,6 @@ package de.naoth.rc.components.behaviorviewer;
 
 import de.naoth.rc.components.behaviorviewer.model.EnumType;
 import de.naoth.rc.components.behaviorviewer.model.Symbol;
-import static de.naoth.rc.dialogs.BehaviorViewer.BOLD_FONT;
-import static de.naoth.rc.dialogs.BehaviorViewer.DARK_GREEN;
-import static de.naoth.rc.dialogs.BehaviorViewer.ITALIC_FONT;
-import static de.naoth.rc.dialogs.BehaviorViewer.PLAIN_FONT;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
@@ -25,6 +21,18 @@ public class XABSLActionSparseTreeCellRenderer implements TreeCellRenderer {
 
     JLabel label = new JLabel("null");
     StringBuilder text = new StringBuilder();
+    
+    private static final Color DARK_GREEN = new Color(0, 128, 0);
+    
+    private final Font PLAIN_FONT;
+    private final Font BOLD_FONT;
+    private final Font ITALIC_FONT;
+    
+    public XABSLActionSparseTreeCellRenderer(int fontSize) {
+        this.PLAIN_FONT = new Font("Sans Serif", Font.PLAIN, fontSize);
+        this.BOLD_FONT = new Font("Sans Serif", Font.BOLD, fontSize);
+        this.ITALIC_FONT = new Font("Sans Serif", Font.ITALIC, fontSize);
+    }
     
     private Component makeCellRenderer(Color color, Font font, String text) {
         label.setText(text);

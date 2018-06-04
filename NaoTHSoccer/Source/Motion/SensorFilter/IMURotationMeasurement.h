@@ -1,7 +1,6 @@
 #ifndef IMUROTATIONMEASUREMENT_H
 #define IMUROTATIONMEASUREMENT_H
 
-#include "Tools/Filters/KalmanFilter/UnscentedKalmanFilter/UKFStateRotationBase.h"
 #include <Tools/naoth_eigen.h>
 
 // TODO: remove pragma

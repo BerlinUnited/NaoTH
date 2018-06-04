@@ -5,10 +5,24 @@ option path_striker
   {
     if(!body.ready_to_walk || game.current_mode != playing)
       goto idle;
+    else if(!game.state.playing_is_set_by_game_controller &&
+           !game.own_kickoff && game.time_in_play < 10000)
+      goto wait_for_ball_free;
     else if(situation_abortable && !ball.know_where_itis)//ball.time_since_last_seen > 1500)
       goto search;
     else if(situation_abortable && vector.abs(x=ball.preview.x, y=ball.preview.y) > 300)
       goto goto_ball;
+  }
+
+  state wait_for_ball_free {
+    decision {
+      else
+        goto search;
+    }
+    action {
+      motion.type = stand;
+      head.control_mode = search_for_ball;
+    }
   }
 
   initial state idle {
@@ -18,6 +32,7 @@ option path_striker
     }
     action {
       situation_abortable = true;
+      team.is_playing_as_striker = false;
     }
   }
 

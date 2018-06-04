@@ -6,10 +6,14 @@ package naoscp;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.SftpException;
 import java.awt.Font;
+import java.awt.Frame;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.io.*;
 import java.net.InetAddress;
 import java.net.URLDecoder;
 import java.net.UnknownHostException;
+import java.nio.file.Files;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -30,8 +34,10 @@ import naoscp.tools.*;
  *
  * @author Henrich Mellmann
  */
-public class NaoSCP extends javax.swing.JFrame {
+public class NaoSCP extends javax.swing.JPanel {
 
+    public static final String VERSION = "1.1";
+    
     private final DateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
     
     private final String projectPath = getBasePath();
@@ -43,12 +49,12 @@ public class NaoSCP extends javax.swing.JFrame {
     private final File configPath = new File(configlocation, "config");
 
     private final Properties config = new Properties();
+    private Frame parentFrame = null;
 
     /**
      * Creates new form NaoSCP
      */
     public NaoSCP() {
-      
       boolean configLoaded = false;
       try {
         config.load(new FileReader(configPath));
@@ -153,131 +159,139 @@ public class NaoSCP extends javax.swing.JFrame {
 
         netwokPanel = new naoscp.components.NetwokPanel();
         naoTHPanel = new naoscp.components.NaoTHPanel();
+        statusBarPanel = new javax.swing.JPanel();
+        txtRobotNumber = new javax.swing.JFormattedTextField();
         btDeploy = new javax.swing.JButton();
-        logTextPanel = new naoscp.components.LogTextPanel();
+        txtDeployTag = new javax.swing.JTextField();
         btWriteToStick = new javax.swing.JButton();
-        jProgressBar = new javax.swing.JProgressBar();
         btSetNetwork = new javax.swing.JButton();
         btInintRobot = new javax.swing.JButton();
-        txtRobotNumber = new javax.swing.JFormattedTextField();
-        txtDeployTag = new javax.swing.JTextField();
+        logPanel = new javax.swing.JPanel();
+        logTextPanel = new naoscp.components.LogTextPanel();
+        jProgressBar = new javax.swing.JProgressBar();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("NaoSCP 1.0");
-        setLocationByPlatform(true);
-        setMinimumSize(new java.awt.Dimension(0, 495));
-        addWindowListener(new java.awt.event.WindowAdapter() {
-            public void windowClosing(java.awt.event.WindowEvent evt) {
-                formWindowClosing(evt);
+        addComponentListener(new java.awt.event.ComponentAdapter() {
+            public void componentResized(java.awt.event.ComponentEvent evt) {
+                formComponentResized(evt);
             }
         });
-        getContentPane().setLayout(new java.awt.GridBagLayout());
+        setLayout(new java.awt.GridBagLayout());
 
         netwokPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Network"));
+        netwokPanel.setMinimumSize(new java.awt.Dimension(410, 245));
+        netwokPanel.setName(""); // NOI18N
+        netwokPanel.setPreferredSize(new java.awt.Dimension(410, 245));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
-        gridBagConstraints.gridwidth = 7;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        getContentPane().add(netwokPanel, gridBagConstraints);
+        add(netwokPanel, gridBagConstraints);
 
         naoTHPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("NaoTH"));
+        naoTHPanel.setMaximumSize(new java.awt.Dimension(32777, 32777));
+        naoTHPanel.setMinimumSize(new java.awt.Dimension(539, 270));
+        naoTHPanel.setPreferredSize(new java.awt.Dimension(539, 270));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
-        gridBagConstraints.gridwidth = 7;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        getContentPane().add(naoTHPanel, gridBagConstraints);
+        add(naoTHPanel, gridBagConstraints);
 
-        btDeploy.setText("Send toRobot");
+        statusBarPanel.setMinimumSize(new java.awt.Dimension(550, 24));
+        statusBarPanel.setPreferredSize(new java.awt.Dimension(550, 24));
+        statusBarPanel.setLayout(new javax.swing.BoxLayout(statusBarPanel, javax.swing.BoxLayout.X_AXIS));
+
+        txtRobotNumber.setColumns(3);
+        txtRobotNumber.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0"))));
+        txtRobotNumber.setToolTipText("Last octet of the robots ip address.");
+        txtRobotNumber.setMinimumSize(new java.awt.Dimension(40, 18));
+        statusBarPanel.add(txtRobotNumber);
+
+        btDeploy.setText("Send to Robot");
+        btDeploy.setToolTipText("Send to Robot");
+        btDeploy.setMinimumSize(new java.awt.Dimension(114, 24));
         btDeploy.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btDeployActionPerformed(evt);
             }
         });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 3;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        getContentPane().add(btDeploy, gridBagConstraints);
+        statusBarPanel.add(btDeploy);
 
-        logTextPanel.setPreferredSize(new java.awt.Dimension(400, 22));
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 7;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.gridheight = 3;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
-        getContentPane().add(logTextPanel, gridBagConstraints);
+        txtDeployTag.setColumns(10);
+        txtDeployTag.setToolTipText("Small description of the deploying binary / test case.");
+        txtDeployTag.setMinimumSize(new java.awt.Dimension(40, 18));
+        statusBarPanel.add(txtDeployTag);
 
         btWriteToStick.setText("Write to Stick");
+        btWriteToStick.setToolTipText("Write to Stick");
         btWriteToStick.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btWriteToStickActionPerformed(evt);
             }
         });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 3;
-        gridBagConstraints.gridy = 3;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        getContentPane().add(btWriteToStick, gridBagConstraints);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 7;
-        gridBagConstraints.gridy = 3;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        getContentPane().add(jProgressBar, gridBagConstraints);
+        statusBarPanel.add(btWriteToStick);
 
         btSetNetwork.setText("Set Network");
+        btSetNetwork.setToolTipText("Set Network");
         btSetNetwork.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btSetNetworkActionPerformed(evt);
             }
         });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 4;
-        gridBagConstraints.gridy = 3;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        getContentPane().add(btSetNetwork, gridBagConstraints);
+        statusBarPanel.add(btSetNetwork);
 
         btInintRobot.setText("Initialize Robot");
+        btInintRobot.setToolTipText("Initialize Robot");
         btInintRobot.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btInintRobotActionPerformed(evt);
             }
         });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 5;
-        gridBagConstraints.gridy = 3;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        getContentPane().add(btInintRobot, gridBagConstraints);
+        statusBarPanel.add(btInintRobot);
 
-        txtRobotNumber.setColumns(3);
-        txtRobotNumber.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0"))));
-        txtRobotNumber.setToolTipText("");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 3;
-        getContentPane().add(txtRobotNumber, gridBagConstraints);
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTHWEST;
+        add(statusBarPanel, gridBagConstraints);
 
-        txtDeployTag.setColumns(10);
-        txtDeployTag.setToolTipText("");
+        logPanel.setMinimumSize(new java.awt.Dimension(22, 0));
+        logPanel.setPreferredSize(new java.awt.Dimension(550, 46));
+        logPanel.setLayout(new java.awt.BorderLayout());
+
+        logTextPanel.setPreferredSize(new java.awt.Dimension(400, 22));
+        logPanel.add(logTextPanel, java.awt.BorderLayout.CENTER);
+
+        jProgressBar.setMinimumSize(new java.awt.Dimension(10, 24));
+        jProgressBar.setPreferredSize(new java.awt.Dimension(10, 24));
+        logPanel.add(jProgressBar, java.awt.BorderLayout.SOUTH);
+
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 2;
-        gridBagConstraints.gridy = 3;
-        getContentPane().add(txtDeployTag, gridBagConstraints);
-
-        pack();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.gridheight = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        add(logPanel, gridBagConstraints);
     }// </editor-fold>//GEN-END:initComponents
 
     private void btDeployActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btDeployActionPerformed
         this.logTextPanel.clear();
 
-        final File targetDir = new File("./tmp");
+        if(txtRobotNumber.getText().trim().isEmpty()) {
+            Logger.getGlobal().log(Level.WARNING, "Missing robot number!");
+            return;
+        }
+
+        // create deploy directory in systems 'temp' directory
+        final File targetDir = createTemporaryDirectory("nao_scp_deploy_");
+        if(targetDir == null) {return;}
 
         new Thread(new Runnable() {
             @Override
@@ -317,7 +331,7 @@ public class NaoSCP extends javax.swing.JFrame {
 
                         Scp.CommandStream shell = scp.getShell();
                         // HACK: always stop naoth before proceeding
-                        shell.run("naoth stop", "killing naoth cognition processes");
+//                        shell.run("naoth stop", "killing naoth cognition processes");
                         shell.run("su", "Password:");
                         shell.run("root");
                         shell.run("cd /home/nao/tmp/");
@@ -376,7 +390,7 @@ public class NaoSCP extends javax.swing.JFrame {
           
         this.logTextPanel.clear();
         
-        final DeployDialog deployDialog = new DeployDialog(this);
+        final DeployDialog deployDialog = new DeployDialog(getParentFrame());
 
         if (deployDialog.showOpenDialog(this) == DeployDialog.OPTION.APPROVE) {
             
@@ -475,12 +489,14 @@ public class NaoSCP extends javax.swing.JFrame {
                 return;
             }
             config.setProperty("naoscp.libpath", libDir.getAbsolutePath());
+            
+            final File tmpDir = createTemporaryDirectory("nao_scp_init_");
+            if(tmpDir == null) {return;}
 
             new Thread(new Runnable() {
                 @Override
                 public void run() {
                     try {
-                        File tmpDir = new File("./tmp");
                         File setupDir = new File(tmpDir, "setup");
 
                         if (setupDir.isDirectory()) {
@@ -592,19 +608,26 @@ public class NaoSCP extends javax.swing.JFrame {
          */
 
         String robotNumberRaw = JOptionPane.showInputDialog(NaoSCP.this, "Robot number");
-        int robotNr = 0;
+        // dialog canceled ...
+        if(robotNumberRaw == null || robotNumberRaw.trim().isEmpty()) {
+            Logger.getGlobal().log(Level.INFO, "Canceled.");
+            return;
+        }
+        // default number
+        int robotNr = 100;
         try {
             robotNr = Integer.parseInt(robotNumberRaw.trim());
         } catch (NullPointerException | NumberFormatException ex) {
             JOptionPane.showMessageDialog(NaoSCP.this, "Could not parse robot number, defaulting to 100");
         }
         final int robotNrFinal = robotNr;
+        final File tmpDir = createTemporaryDirectory("nao_scp_setup_");
+        if(tmpDir == null){return;}
 
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
-                    File tmpDir = new File("./tmp");
                     File setupDir = new File(tmpDir, "setup");
 
                     if (setupDir.isDirectory()) {
@@ -621,7 +644,11 @@ public class NaoSCP extends javax.swing.JFrame {
                         FileUtils.copyFiles(new File(utilsPath, "/NaoConfigFiles/init_net.sh"), setupDir);
 
                         // copy to robot
-                        String ip = JOptionPane.showInputDialog(this, "Robot ip address");
+                        String ip = JOptionPane.showInputDialog(NaoSCP.this, "Robot ip address");
+                        if(ip == null || ip.trim().isEmpty()) {
+                            Logger.getGlobal().log(Level.INFO, "Canceled.");
+                            return;
+                        }
                         Scp scp = new Scp(ip, "nao", "nao");
                         scp.setProgressMonitor(new BarProgressMonitor(jProgressBar));
 
@@ -649,7 +676,35 @@ public class NaoSCP extends javax.swing.JFrame {
 
     }//GEN-LAST:event_btSetNetworkActionPerformed
 
-    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+    private boolean isExtended = true;
+    private void formComponentResized(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_formComponentResized
+        // switch layout between different widths and prevent multiple 're-layouts'
+        if(isExtended && getWidth() < 750) {
+            isExtended = false;
+            GridBagLayout l = (GridBagLayout)getLayout();
+            GridBagConstraints c = l.getConstraints(logPanel);
+            c.gridx = 0;
+            c.gridy = 2;
+            c.gridwidth  = 1;
+            c.gridheight = 1;
+            l.setConstraints(logPanel, c);
+            revalidate();
+            repaint();
+        } else if(!isExtended && getWidth() >= 750) {
+            isExtended = true;
+            GridBagLayout l = (GridBagLayout)getLayout();
+            GridBagConstraints c = l.getConstraints(logPanel);
+            c.gridx = 1;
+            c.gridy = 0;
+            c.gridwidth  = GridBagConstraints.REMAINDER;
+            c.gridheight = GridBagConstraints.REMAINDER;
+            l.setConstraints(logPanel, c);
+            revalidate();
+            repaint();
+        }
+    }//GEN-LAST:event_formComponentResized
+
+    public void formWindowClosing() {
         try {
             // save configuration to file
             new File(configlocation).mkdirs();
@@ -657,41 +712,37 @@ public class NaoSCP extends javax.swing.JFrame {
         } catch (IOException ex) {
             Logger.getGlobal().log(Level.SEVERE, "Could not write config file.", ex);
         }
-    }//GEN-LAST:event_formWindowClosing
-
+    }
+    
     /**
-     * @param args the command line arguments
+     * Returns the Frame this panel belongs to.
+     * If the parent container isn't a Frame and there wasn't set any parent frame, then 'null' is returned.
+     * @return the parent frame or null
      */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
+    public Frame getParentFrame() {
+        return parentFrame==null?((getParent() instanceof Frame)?(Frame)getParent():null):parentFrame;
+    }
+    
+    /**
+     * Sets the parent frame of this panel.
+     * @param f the frame this panel should belong to
+     */
+    public void setParentFrame(Frame f) {
+        parentFrame = f;
+    }
+    
+    /**
+     * Creates a temporary directory in systems 'temp' folder with the given prefix.
+     * @param prefix the temporary directory should prepend with.
+     * @return a File object to the temporary directory
+     */
+    private File createTemporaryDirectory(String prefix) {
         try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(NaoSCP.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(NaoSCP.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(NaoSCP.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(NaoSCP.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            return Files.createTempDirectory(prefix).toFile();
+        } catch (IOException ex) {
+            Logger.getGlobal().log(Level.SEVERE, "Can not create temporary directory in systems temp directory.");
         }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new NaoSCP().setVisible(true);
-            }
-        });
+        return null; 
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -700,9 +751,11 @@ public class NaoSCP extends javax.swing.JFrame {
     private javax.swing.JButton btSetNetwork;
     private javax.swing.JButton btWriteToStick;
     private javax.swing.JProgressBar jProgressBar;
+    private javax.swing.JPanel logPanel;
     private naoscp.components.LogTextPanel logTextPanel;
     private naoscp.components.NaoTHPanel naoTHPanel;
     private naoscp.components.NetwokPanel netwokPanel;
+    private javax.swing.JPanel statusBarPanel;
     private javax.swing.JTextField txtDeployTag;
     private javax.swing.JFormattedTextField txtRobotNumber;
     // End of variables declaration//GEN-END:variables

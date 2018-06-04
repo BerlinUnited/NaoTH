@@ -69,8 +69,19 @@ void NaoSensorData::get(AccelerometerData& data) const
   //0.1532289 = 9.80665/64
   //data.data = data.rawData * scale_acc;//* 0.1532289;
 
-  //TODO: why?
-  data.data.y *= -1;
+  // measure acceleration relative to a falling body or measure the acceleration of the robots torso
+  // e.g. z"=0    => robot is falling
+  //      z"=9.81 => robot is at rest relative to the earth or accelerated opposite to the gravitational force relative to a falling body
+  // y axis seems to be in other direction... how? it's an integrated circuit 3d accelerometer...
+  // possible explanation:
+  // the sensor's x axis shows to the head, the z axis infront of the robot and y axis to the right arm
+  // now aldebaran switches the "naming"/interpretation of x and z axis (so z becomes their x and x becomes their z)
+  // we now have some kind of left handed coordinate system
+  // to get a right handed coordinate system back we have to negate y in respect to x and z
+
+  data.data.x *= -1;
+  //data.data.y *= 1;
+  data.data.z *= -1;
 }//end AccelerometerData
 
 void NaoSensorData::get(GyrometerData& data) const

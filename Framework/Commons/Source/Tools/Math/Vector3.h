@@ -6,14 +6,13 @@
  * @author Max Risler
  */
 
-#ifndef __Vector3_h__
-#define __Vector3_h__
+#ifndef _Vector3_h_
+#define _Vector3_h_
 
 #include <math.h>
 #include <ostream>
 #include <istream>
 
-#include "Common.h"
 
 /** This class represents a 3-vector */
 template <class V> class Vector3
@@ -183,7 +182,7 @@ template <class V> class Vector3
   *\return A new object that contains the result of the calculation.
   */
   Vector3<V> operator^(const Vector3<V>& other) const
-    {return Vector3<V>(y * other.z - z * other.y, 
+  {return Vector3<V>(y * other.z - z * other.y, 
                     z * other.x - x * other.z, 
                     x * other.y - y * other.x);}
 
@@ -192,7 +191,7 @@ template <class V> class Vector3
   *\return A reference to this object after the calculation.
   */
   Vector3<V>& operator^=(const Vector3<V>& other)
-    {*this = *this ^ other; return *this;}
+  {*this = *this ^ other; return *this;}
 
   /** normalize this vector.
   *\param len The length, the vector should be normalized to, default=1.
@@ -203,14 +202,14 @@ template <class V> class Vector3
     V lenghtOfVector = abs();
     if (lenghtOfVector == 0) return *this;
     return *this = (*this * len) / lenghtOfVector;
-   }
+  }
 
  /** normalize this vector.
   *\return the normalized vector.
   */
   Vector3<V> normalize()
   {
-   return normalize(static_cast<V>(1));
+    return normalize(static_cast<V>(1));
   }
 
   // some prefefined vectors for convenience
@@ -270,19 +269,16 @@ template <typename DATATYPE>
 Vector3<DATATYPE> pol2xyz(const Vector3<DATATYPE> & v)
 {
   DATATYPE cz = cos(v.z);
-  return Vector3<DATATYPE>
-    (
+  return Vector3<DATATYPE> (
     v.x * cos(v.y) * cz,
-
     v.x * sin(v.y) * cz,
-
     v.x * sin(v.z)
-    );
+  );
 }
 
 typedef Vector3<float> Vector3f;
 typedef Vector3<double> Vector3d;
 typedef Vector3<double> Vector3i;
 
-#endif // __Vector3_h__
+#endif // _Vector3_h_
 

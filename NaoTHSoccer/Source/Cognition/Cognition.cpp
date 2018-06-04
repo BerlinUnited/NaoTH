@@ -30,9 +30,11 @@
 
 #include "Modules/Infrastructure/TeamCommunicator/TeamCommReceiver.h"
 #include "Modules/Infrastructure/TeamCommunicator/TeamCommSender.h"
+#include "Modules/Infrastructure/TeamCommunicator/SimpleNetworkTimeProtocol.h"
 
 #include "Modules/Infrastructure/Debug/CameraDebug.h"
 #include "Modules/Infrastructure/Camera/CameraInfoSetter.h"
+#include "Modules/Infrastructure/WhistleDetector/WhistleDetectorConfigSetter.h"
 #include "Modules/Infrastructure/GameLogger/GameLogger.h"
 
 // perception
@@ -40,7 +42,6 @@
 #include "Modules/SelfAwareness/KinematicChainProvider/KinematicChainProvider.h"
 #include "Modules/SelfAwareness/ArtificialHorizonCalculator/ArtificialHorizonCalculator.h"
 #include "Modules/SelfAwareness/BodyContourProvider/BodyContourProvider.h"
-#include "Modules/SelfAwareness/CameraMatrixCorrector/CameraMatrixCorrector.h"
 #include "Modules/SelfAwareness/CameraMatrixCorrectorV2/CameraMatrixCorrectorV2.h"
 
 #include "Modules/VisualCortex/HistogramProvider.h"
@@ -86,7 +87,6 @@
 #include "Modules/Modeling/SelfLocator/OdometrySelfLocator/OdometrySelfLocator.h"
 #include "Modules/Modeling/GoalModel/DummyActiveGoalLocator/DummyActiveGoalLocator.h"
 #include "Modules/Modeling/GoalModel/WholeGoalLocator/WholeGoalLocator.h"
-#include "Modules/Modeling/BallLocator/KalmanFilterBallLocator/KalmanFilterBallLocator.h"
 
 #include "Modules/Modeling/BallLocator/TeamBallLocator/TeamBallLocator.h"
 #include "Modules/Modeling/BallLocator/MultiKalmanBallLocator/MultiKalmanBallLocator.h"
@@ -141,6 +141,7 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
 
   // infrastructure
   REGISTER_MODULE(TeamCommReceiver);
+  REGISTER_MODULE(SimpleNetworkTimeProtocol);
   REGISTER_MODULE(GameController);
   REGISTER_MODULE(BatteryAlert);
   REGISTER_MODULE(ButtonEventMonitor);
@@ -149,13 +150,13 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
 
   REGISTER_MODULE(CameraDebug);
   REGISTER_MODULE(CameraInfoSetter);
+  REGISTER_MODULE(WhistleDetectorConfigSetter);
 
   // perception
   REGISTER_MODULE(CameraMatrixFinder);
   REGISTER_MODULE(KinematicChainProvider);
   REGISTER_MODULE(ArtificialHorizonCalculator);
   REGISTER_MODULE(BodyContourProvider);
-  REGISTER_MODULE(CameraMatrixCorrector);
   REGISTER_MODULE(CameraMatrixCorrectorV2);
 
   REGISTER_MODULE(HistogramProvider);
@@ -203,7 +204,6 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(OdometrySelfLocator);
   REGISTER_MODULE(WholeGoalLocator);
   REGISTER_MODULE(DummyActiveGoalLocator);
-  REGISTER_MODULE(KalmanFilterBallLocator);
   REGISTER_MODULE(TeamBallLocator);
   REGISTER_MODULE(MultiKalmanBallLocator);
 

@@ -12,7 +12,8 @@ IKParameters::IKParameters()
 :ParameterList("IKParameters")
 {
   PARAMETER_REGISTER(footOffsetY) = 0;
-  
+  PARAMETER_REGISTER(useWalk2018) = true;
+
   // stand parameter
   PARAMETER_REGISTER(stand.speed) = 0.04;
   PARAMETER_REGISTER(stand.enableStabilization) = true;
@@ -145,10 +146,10 @@ IKParameters::IKParameters()
   PARAMETER_REGISTER(walk.stabilization.rotationNewIMU.VelocityP.y) = 0.03;
 
   PARAMETER_REGISTER(walk.stabilization.stabilizeFeet) = true;
-  PARAMETER_REGISTER(walk.stabilization.stabilizeFeetP.x) = 0.04;
-  PARAMETER_REGISTER(walk.stabilization.stabilizeFeetP.y) = 0.035;
-  PARAMETER_REGISTER(walk.stabilization.stabilizeFeetD.x) = -0.4;
-  PARAMETER_REGISTER(walk.stabilization.stabilizeFeetD.y) = -0.3;
+  PARAMETER_REGISTER(walk.stabilization.stabilizeFeetP.x) = -0.1;
+  PARAMETER_REGISTER(walk.stabilization.stabilizeFeetP.y) = -0.1;
+  PARAMETER_REGISTER(walk.stabilization.stabilizeFeetD.x) = 0.01;
+  PARAMETER_REGISTER(walk.stabilization.stabilizeFeetD.y) = 0.01;
 
   PARAMETER_REGISTER(walk.stabilization.dynamicStepsize) = true;
   PARAMETER_REGISTER(walk.stabilization.dynamicStepsizeP) = -1;

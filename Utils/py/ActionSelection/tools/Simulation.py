@@ -1,9 +1,11 @@
 import numpy as np
-from action import Category
-from action import ActionResults
 
-import field_info as field
-import potential_field as pf
+from . import field_info as field
+from . import potential_field as pf
+from .action import Category
+from .action import ActionResults
+
+
 from naoth import math2d as m2d
 
 good_threshold_percentage = 0.85
@@ -224,10 +226,10 @@ def decide_minimal(actions_consequences, state):
         goal_likelihood = results.likelihood(Category.OPPGOAL)
 
         if best_goal_idx is None:
-            best_goal_idx, best_goal_value = i, value
+            best_goal_idx, best_goal_value, best_goal_likelihood = i, value, goal_likelihood
 
-        if ((goal_likelihood > best_goal_likelihood or
-           (goal_likelihood == best_goal_likelihood and value > best_goal_value))):
+        if (goal_likelihood > best_goal_likelihood or
+           (goal_likelihood == best_goal_likelihood and value > best_goal_value)):
             best_goal_idx, best_goal_value, best_goal_likelihood = i, value, goal_likelihood
 
     if best_goal_idx is not None:

@@ -2,6 +2,7 @@
 #include <Tools/DataConversion.h>
 
 #include <limits>
+#include <iomanip>
 
 using namespace naoth;
 
@@ -14,13 +15,7 @@ TeamMessageData::TeamMessageData(FrameInfo fi):
     playerNumber(0),
     teamNumber(0),
     fallen(false),
-    ballAge(-1),
-    suggestion(SPL_STANDARD_MESSAGE_MAX_NUM_OF_PLAYERS, 0),
-    intention(0),
-    averageWalkSpeed(160),
-    maxKickDistance(3000),
-    positionConfidence(0),
-    sideConfidence(0)
+    ballAge(-1)
 {}
 
 SPLStandardMessage TeamMessageData::createSplMessage() const
@@ -34,45 +29,27 @@ SPLStandardMessage TeamMessageData::createSplMessage() const
     spl.pose[1] = (float) pose.translation.y;
     spl.pose[2] = (float) pose.rotation;
 
-    spl.currentPositionConfidence = (uint8_t) positionConfidence;
-    spl.currentSideConfidence = (uint8_t) sideConfidence;
-
-    // in seconds!
-    spl.ballAge = (float) (ballAge / 1000.0);
+    // in seconds (only if positive)!
+    spl.ballAge = (float) ((ballAge < 0)? ballAge : ballAge / 1000.0);
     spl.ball[0] = (float) ballPosition.x;
     spl.ball[1] = (float) ballPosition.y;
-    spl.ballVel[0] = (float) ballVelocity.x;
-    spl.ballVel[1] = (float) ballVelocity.y;
 
     spl.fallen = (uint8_t) fallen;
 
-    spl.walkingTo[0] = (float) walkingTo.x;
-    spl.walkingTo[1] = (float) walkingTo.y;
-
-    spl.shootingTo[0] = (float) shootingTo.x;
-    spl.shootingTo[1] = (float) shootingTo.y;
-
-    ASSERT(suggestion.size() == SPL_STANDARD_MESSAGE_MAX_NUM_OF_PLAYERS);
-    for(int i = 0; i < SPL_STANDARD_MESSAGE_MAX_NUM_OF_PLAYERS; ++i) {
-        spl.suggestion[i] = (int8_t) suggestion[i];
-    }
-
-    spl.intention = (uint8_t) intention;
-
-    spl.averageWalkSpeed = (int16_t) averageWalkSpeed;
-    spl.maxKickDistance = (int16_t) maxKickDistance;
-
     // user defined data, this includes our own data and the DoBerMan mixed team common header
     naothmessages::BUUserTeamMessage userMsgBU = custom.toProto();
-    std::string userMsgDoBer = custom.toDoBerManHeader();
+    
+    TeamMessageCustom::DoBerManHeader userMsgDoBer;
+    custom.toDoBerManHeader(userMsgDoBer);
+
     size_t buUserSize = userMsgBU.ByteSize();
-    size_t doberUserSize = userMsgDoBer.size();
+    size_t doberUserSize = sizeof(userMsgDoBer);
     size_t userSize = buUserSize + doberUserSize;
     if (userSize < SPL_STANDARD_MESSAGE_DATA_SIZE) {
         spl.numOfDataBytes = static_cast<uint16_t>(userSize);
 
         // 1. write custom data as DoBerMan header
-        memcpy(spl.data, userMsgDoBer.c_str(), doberUserSize);
+        memcpy(spl.data, (char*)&userMsgDoBer, doberUserSize);
 
         // 2. write custom data in BerlinUnited format
         userMsgBU.SerializeToArray(spl.data + doberUserSize, static_cast<int>(userSize));
@@ -107,25 +84,7 @@ bool TeamMessageData::parseFromSplMessage(const SPLStandardMessage &spl)
     ballAge = spl.ballAge * 1000.0f;
     ballPosition.x = spl.ball[0];
     ballPosition.y = spl.ball[1];
-    ballVelocity.x = spl.ballVel[0];
-    ballVelocity.y = spl.ballVel[1];
-
     fallen = (spl.fallen == 1);
-
-    walkingTo.x = spl.walkingTo[0];
-    walkingTo.y = spl.walkingTo[1];
-
-    shootingTo.x = spl.shootingTo[0];
-    shootingTo.y = spl.shootingTo[1];
-
-    suggestion.assign(spl.suggestion, spl.suggestion+SPL_STANDARD_MESSAGE_MAX_NUM_OF_PLAYERS);
-    intention = spl.intention;
-
-    averageWalkSpeed = spl.averageWalkSpeed;
-    maxKickDistance = spl.maxKickDistance;
-
-    positionConfidence = spl.currentPositionConfidence;
-    sideConfidence = spl.currentSideConfidence;
 
     // parses the user-defined part of a SplMessage
     ASSERT(spl.numOfDataBytes <= SPL_STANDARD_MESSAGE_DATA_SIZE);
@@ -167,6 +126,7 @@ void TeamMessageData::print(std::ostream &stream) const
     stream << "\t" << "last received = "
                    << frameInfo.getFrameNumber()
                    << " @ " << frameInfo.getTime() << "\n"
+                   << "Parsed at: " << timestampParsed << "\n"
            << "\t" << "Pos (x; y; rotation) = "
                    << pose.translation.x << "; "
                    << pose.translation.y << "; "
@@ -177,11 +137,7 @@ void TeamMessageData::print(std::ostream &stream) const
            << "\t" << "TimeSinceBallwasSeen: " << ballAge <<"\n"
            << "\t" << "fallenDown: " << (fallen ? "yes" : "no") <<"\n"
            << "\t" << "team number: " << teamNumber <<"\n"
-           << "\t" << "expectedBallPos (x; y) = "
-                   << shootingTo.x << "; "
-                   << shootingTo.y <<"\n"
           ;
-    stream << "\t" << "intention: " << intention << "\n";
     
     custom.print(stream);
 }//end print
@@ -219,8 +175,17 @@ void TeamMessageCustom::print(std::ostream &stream) const
     << "\t" << "CPU: " << cpuTemperature << "°C\n"
     << "\t" << "whistleDetected: " << (whistleDetected ? "yes" : "no") << "\n"
     << "\t" << "whistleCount: " << whistleCount << "\n"
+    << "\t" << "ball velocity: " << std::fixed << std::setprecision(4)
+            << std::setw(9) << ballVelocity.x << ", "
+            << std::setw(9) << ballVelocity.y << "\n"
     << "\t" << "teamball position: "
         << teamBall.x << "/" << teamBall.y << "\n";
+  if(!ntpRequests.empty()) {
+      stream << "\t" << "ntp request for: \n";
+      for(auto const& request : ntpRequests) {
+          stream << "\t\t" << request.playerNumber << ", " << request.sent << " -> " << request.received << std::endl;
+      }
+  }
   stream << std::endl;
 }//end print
 
@@ -240,6 +205,18 @@ naothmessages::BUUserTeamMessage TeamMessageCustom::toProto() const
     userMsg.set_whistledetected(whistleDetected);
     userMsg.set_whistlecount(whistleCount);
     DataConversion::toMessage(teamBall, *(userMsg.mutable_teamball()));
+    // only if any sync data is set
+    if(ntpRequests.size() > 0)
+    {
+        // ... set the time syncing info
+        for(auto const& request: ntpRequests) {
+            auto msgPlayer = userMsg.add_ntprequest();
+            msgPlayer->set_playernum(request.playerNumber);
+            msgPlayer->set_sent(request.sent);
+            msgPlayer->set_received(request.received);
+          }
+    }
+    DataConversion::toMessage(ballVelocity, *(userMsg.mutable_ballvelocity()));
     userMsg.set_key(key);
     return userMsg;
 }
@@ -256,24 +233,23 @@ void TeamMessageCustom::parseFromDoBerManHeader(const uint8_t* rawHeader, size_t
   timestamp = header.timestamp;
   isPenalized = (header.isPenalized > 0);
   whistleDetected = (header.whistleDetected > 0);
+
+  wantsToBeStriker = (header.intention == 3);
+  wasStriker = wantsToBeStriker;
+
+  key = std::to_string(header.teamID);
 }
 
-std::string TeamMessageCustom::toDoBerManHeader() const
+void TeamMessageCustom::toDoBerManHeader(DoBerManHeader& header) const
 {
   // copy the information into an internal struct
-  DoBerManHeader header;
   header.timestamp = timestamp;
   // TODO: make the DoBerMan team ID configurable, now it is fixed to 4
   header.teamID = 4;
   header.isPenalized = isPenalized;
   header.whistleDetected = whistleDetected;
 
-  // create the result byte array by mapping the header struct
-  std::string result;
-  result.assign((char*)&header, sizeof(DoBerManHeader));
-
-  // we don't need any of this data anymore, move it
-  return std::move(result);
+  header.intention = wantsToBeStriker ? 3 : 0;
 }
 
 void TeamMessageCustom::parseFromProto(const naothmessages::BUUserTeamMessage &userData)
@@ -302,6 +278,23 @@ void TeamMessageCustom::parseFromProto(const naothmessages::BUUserTeamMessage &u
     } else {
         teamBall.x = std::numeric_limits<double>::infinity();
         teamBall.y = std::numeric_limits<double>::infinity();
+    }
+
+    ntpRequests = std::vector<NtpRequest>(userData.ntprequest_size());
+    if(userData.ntprequest_size() > 0) {
+        for(int i=0; i < userData.ntprequest_size(); i++) {
+            auto& request = userData.ntprequest((int)i);
+            auto& syncingPlayer = ntpRequests[i];
+            syncingPlayer.playerNumber = request.playernum();
+            syncingPlayer.sent = request.sent();
+            syncingPlayer.received = request.received();
+        }
+    }
+    if(userData.has_ballvelocity()) {
+        DataConversion::fromMessage(userData.ballvelocity(),ballVelocity);
+    } else {
+        ballVelocity.x = 0;
+        ballVelocity.y = 0;
     }
 }
 

@@ -169,6 +169,8 @@ private: // local types
 
       PARAMETER_REGISTER(maxAcceptedGoalErrorWhileTracking) = 0;
 
+      PARAMETER_REGISTER(updateByOdometryWhenBlind) = true;
+
       // load from the file after registering all parameters
       syncWithConfig();
     }
@@ -219,6 +221,8 @@ private: // local types
     bool resampleGT07;
 
     double maxAcceptedGoalErrorWhileTracking;
+
+    bool updateByOdometryWhenBlind;
   } parameters;
 
   class LineDensity {

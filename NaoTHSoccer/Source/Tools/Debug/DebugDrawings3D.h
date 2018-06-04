@@ -3,7 +3,7 @@
  */
 
 #ifndef _DEBUGDRAWINGS3D_H
-#define  _DEBUGDRAWINGS3D_H
+#define _DEBUGDRAWINGS3D_H
 
 #include "Tools/DataStructures/Serializer.h"
 #include <Tools/ColorClasses.h>

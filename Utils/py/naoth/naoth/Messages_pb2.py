@@ -13,16 +13,16 @@ from google.protobuf import descriptor_pb2
 _sym_db = _symbol_database.Default()
 
 
-import CommonTypes_pb2
+import CommonTypes_pb2 as CommonTypes__pb2
 
 
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='Messages.proto',
   package='naothmessages',
+  syntax='proto2',
   serialized_pb=_b('\n\x0eMessages.proto\x12\rnaothmessages\x1a\x11\x43ommonTypes.proto\"%\n\x06\x43MDArg\x12\x0c\n\x04name\x18\x01 \x02(\t\x12\r\n\x05\x62ytes\x18\x03 \x01(\x0c\"8\n\x03\x43MD\x12\x0c\n\x04name\x18\x01 \x02(\t\x12#\n\x04\x61rgs\x18\x02 \x03(\x0b\x32\x15.naothmessages.CMDArg\"+\n\rStopwatchItem\x12\x0c\n\x04name\x18\x01 \x02(\t\x12\x0c\n\x04time\x18\x02 \x02(\x05\"@\n\x0bStopwatches\x12\x31\n\x0bstopwatches\x18\x01 \x03(\x0b\x32\x1c.naothmessages.StopwatchItem\"\xb2\x01\n\x08PlotItem\x12.\n\x04type\x18\x01 \x02(\x0e\x32 .naothmessages.PlotItem.PlotType\x12\x0c\n\x04name\x18\x02 \x02(\t\x12\r\n\x05value\x18\x03 \x01(\x01\x12\t\n\x01x\x18\x04 \x01(\x01\x12\t\n\x01y\x18\x05 \x01(\x01\x12\x10\n\x08rotation\x18\x06 \x01(\x01\"1\n\x08PlotType\x12\x0b\n\x07\x44\x65\x66\x61ult\x10\x01\x12\n\n\x06Plot2D\x10\x02\x12\x0c\n\x08Origin2D\x10\x03\"J\n\x0cPlotStroke2D\x12\x0c\n\x04name\x18\x02 \x02(\t\x12,\n\x06points\x18\x01 \x03(\x0b\x32\x1c.naothmessages.DoubleVector2\"a\n\x05Plots\x12&\n\x05plots\x18\x01 \x03(\x0b\x32\x17.naothmessages.PlotItem\x12\x30\n\x0bplotstrokes\x18\x02 \x03(\x0b\x32\x1b.naothmessages.PlotStroke2D\"\xf8\x01\n\x0bXABSLSymbol\x12\x0e\n\x02id\x18\x01 \x02(\x05:\x02-1\x12<\n\x04type\x18\x02 \x02(\x0e\x32%.naothmessages.XABSLSymbol.SymbolType:\x07Unknown\x12\x0c\n\x04name\x18\x03 \x01(\t\x12\x14\n\x0c\x64\x65\x63imalValue\x18\x0b \x01(\x01\x12\x11\n\tboolValue\x18\x0c \x01(\x08\x12\x11\n\tenumValue\x18\r \x01(\x05\x12\x12\n\nenumTypeId\x18\x0e \x01(\x05\"=\n\nSymbolType\x12\x0b\n\x07\x44\x65\x63imal\x10\x00\x12\x0b\n\x07\x42oolean\x10\x01\x12\x08\n\x04\x45num\x10\x02\x12\x0b\n\x07Unknown\x10\x03\"\xfd\x01\n\x17XABSLActiveOptionSparse\x12\x0e\n\x02id\x18\x01 \x02(\x05:\x02-1\x12\x1a\n\x0ftimeOfExecution\x18\x03 \x01(\x03:\x01\x30\x12\x13\n\x0b\x61\x63tiveState\x18\x04 \x01(\x05\x12\x11\n\tstateTime\x18\x05 \x01(\x03\x12\x19\n\x11\x64\x65\x63imalParameters\x18\x06 \x03(\x01\x12\x19\n\x11\x62ooleanParameters\x18\x07 \x03(\x08\x12\x1c\n\x14\x65numeratedParameters\x18\x08 \x03(\x05\x12:\n\x10\x61\x63tiveSubActions\x18\t \x03(\x0b\x32 .naothmessages.XABSLActionSparse\"\x8c\x02\n\x11XABSLActionSparse\x12\x42\n\x04type\x18\x02 \x02(\x0e\x32+.naothmessages.XABSLActionSparse.ActionType:\x07Unknown\x12*\n\x06symbol\x18\x03 \x01(\x0b\x32\x1a.naothmessages.XABSLSymbol\x12\x36\n\x06option\x18\x04 \x01(\x0b\x32&.naothmessages.XABSLActiveOptionSparse\"O\n\nActionType\x12\n\n\x06Option\x10\x00\x12\x11\n\rBasicBehavior\x10\x01\x12\x15\n\x11SymbolAssignement\x10\x02\x12\x0b\n\x07Unknown\x10\x03\"\x93\x03\n\x0fSymbolValueList\x12<\n\x07\x64\x65\x63imal\x18\x01 \x03(\x0b\x32+.naothmessages.SymbolValueList.DoubleSymbol\x12=\n\x07\x62oolean\x18\x02 \x03(\x0b\x32,.naothmessages.SymbolValueList.BooleanSymbol\x12=\n\nenumerated\x18\x03 \x03(\x0b\x32).naothmessages.SymbolValueList.EnumSymbol\x1a;\n\x0c\x44oubleSymbol\x12\x0e\n\x02id\x18\x01 \x02(\x05:\x02-1\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\r\n\x05value\x18\x03 \x01(\x01\x1a<\n\rBooleanSymbol\x12\x0e\n\x02id\x18\x01 \x02(\x05:\x02-1\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\r\n\x05value\x18\x03 \x01(\x08\x1aI\n\nEnumSymbol\x12\x0e\n\x02id\x18\x01 \x02(\x05:\x02-1\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\r\n\x05value\x18\r \x01(\x05\x12\x0e\n\x06typeId\x18\x0e \x01(\x05\"\xff\x01\n\x13\x42\x65haviorStateSparse\x12\r\n\x05\x61gent\x18\x01 \x01(\t\x12;\n\x11\x61\x63tiveRootActions\x18\x02 \x03(\x0b\x32 .naothmessages.XABSLActionSparse\x12\x37\n\x0finputSymbolList\x18\n \x01(\x0b\x32\x1e.naothmessages.SymbolValueList\x12\x38\n\x10outputSymbolList\x18\x0b \x01(\x0b\x32\x1e.naothmessages.SymbolValueList\x12\x13\n\x0b\x66rameNumber\x18\x05 \x01(\r\x12\x14\n\x0c\x65rrorMessage\x18\x06 \x01(\t\"\xc8\x05\n\x15\x42\x65haviorStateComplete\x12\x43\n\x0c\x65numerations\x18\n \x03(\x0b\x32-.naothmessages.BehaviorStateComplete.EnumType\x12<\n\x07options\x18\x0b \x03(\x0b\x32+.naothmessages.BehaviorStateComplete.Option\x12:\n\x06\x61gents\x18\x0c \x03(\x0b\x32*.naothmessages.BehaviorStateComplete.Agent\x12\x37\n\x0finputSymbolList\x18\r \x01(\x0b\x32\x1e.naothmessages.SymbolValueList\x12\x38\n\x10outputSymbolList\x18\x0e \x01(\x0b\x32\x1e.naothmessages.SymbolValueList\x12\x13\n\x0b\x66rameNumber\x18\x0f \x01(\r\x1a\x89\x01\n\x08\x45numType\x12\x0c\n\x04name\x18\x01 \x02(\t\x12G\n\x08\x65lements\x18\x02 \x03(\x0b\x32\x35.naothmessages.BehaviorStateComplete.EnumType.Element\x1a&\n\x07\x45lement\x12\r\n\x05value\x18\x01 \x02(\x05\x12\x0c\n\x04name\x18\x02 \x02(\t\x1a\xb0\x01\n\x06Option\x12\x0c\n\x04name\x18\x01 \x02(\t\x12\x41\n\x06states\x18\x03 \x03(\x0b\x32\x31.naothmessages.BehaviorStateComplete.Option.State\x12.\n\nparameters\x18\x02 \x03(\x0b\x32\x1a.naothmessages.XABSLSymbol\x1a%\n\x05State\x12\x0c\n\x04name\x18\x01 \x02(\t\x12\x0e\n\x06target\x18\x02 \x01(\x08\x1a)\n\x05\x41gent\x12\x0c\n\x04name\x18\x01 \x02(\t\x12\x12\n\nrootOption\x18\x02 \x02(\t\"k\n\x06Module\x12\x0c\n\x04name\x18\x01 \x02(\t\x12\x1b\n\x13usedRepresentations\x18\x02 \x03(\t\x12\x1f\n\x17providedRepresentations\x18\x03 \x03(\t\x12\x15\n\x06\x61\x63tive\x18\x04 \x01(\x08:\x05\x66\x61lse\"4\n\nModuleList\x12&\n\x07modules\x18\x01 \x03(\x0b\x32\x15.naothmessages.Module\"\x83\x01\n\x0c\x44\x65\x62ugRequest\x12\x32\n\x08requests\x18\x01 \x03(\x0b\x32 .naothmessages.DebugRequest.Item\x1a?\n\x04Item\x12\x0c\n\x04name\x18\x01 \x02(\t\x12\x13\n\x0b\x64\x65scription\x18\x02 \x01(\t\x12\x14\n\x05value\x18\x04 \x02(\x08:\x05\x66\x61lse\"\x8b\x01\n\x0f\x46\x65\x61tureKeyPoint\x12\'\n\x02pt\x18\x01 \x02(\x0b\x32\x1b.naothmessages.FloatVector2\x12\x0c\n\x04size\x18\x02 \x02(\x02\x12\r\n\x05\x61ngle\x18\x03 \x02(\x02\x12\x10\n\x08response\x18\x04 \x02(\x02\x12\x0e\n\x06octave\x18\x05 \x02(\x05\x12\x10\n\x08\x63lass_id\x18\x06 \x02(\x05\"\xd9\x01\n\x16\x46\x65\x61tureDetectionResult\x12\x16\n\x0egrayScaleImage\x18\x01 \x02(\x0c\x12\x31\n\tkeyPoints\x18\x02 \x03(\x0b\x32\x1e.naothmessages.FeatureKeyPoint\x12\x34\n\x0b\x64\x65scriptors\x18\x03 \x03(\x0b\x32\x1f.naothmessages.SingleDescriptor\x12\x19\n\x11namesForKeyPoints\x18\x04 \x03(\t\x12#\n\x17numberOfFeatureElements\x18\x05 \x01(\x05:\x02\x36\x34\"\x1d\n\x10SingleDescriptor\x12\t\n\x01\x64\x18\x01 \x03(\x02\"d\n\x0c\x46\x65\x61tureClass\x12\x0c\n\x04name\x18\x01 \x02(\t\x12\x30\n\x07samples\x18\x02 \x03(\x0b\x32\x1f.naothmessages.SingleDescriptor\x12\x14\n\x0cobjectHeight\x18\x03 \x01(\x01\"a\n\x0c\x46\x65\x61tureTable\x12,\n\x07\x63lasses\x18\x01 \x03(\x0b\x32\x1b.naothmessages.FeatureClass\x12#\n\x17numberOfFeatureElements\x18\x02 \x01(\x05:\x02\x36\x34\x42\x16\n\x14\x64\x65.naoth.rc.messages')
   ,
-  dependencies=[CommonTypes_pb2.DESCRIPTOR,])
-_sym_db.RegisterFileDescriptor(DESCRIPTOR)
+  dependencies=[CommonTypes__pb2.DESCRIPTOR,])
 
 
 
@@ -142,6 +142,7 @@ _CMDARG = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
   oneofs=[
   ],
@@ -179,6 +180,7 @@ _CMD = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
   oneofs=[
   ],
@@ -216,6 +218,7 @@ _STOPWATCHITEM = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
   oneofs=[
   ],
@@ -246,6 +249,7 @@ _STOPWATCHES = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
   oneofs=[
   ],
@@ -278,28 +282,28 @@ _PLOTITEM = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='value', full_name='naothmessages.PlotItem.value', index=2,
       number=3, type=1, cpp_type=5, label=1,
-      has_default_value=False, default_value=0,
+      has_default_value=False, default_value=float(0),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
       name='x', full_name='naothmessages.PlotItem.x', index=3,
       number=4, type=1, cpp_type=5, label=1,
-      has_default_value=False, default_value=0,
+      has_default_value=False, default_value=float(0),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
       name='y', full_name='naothmessages.PlotItem.y', index=4,
       number=5, type=1, cpp_type=5, label=1,
-      has_default_value=False, default_value=0,
+      has_default_value=False, default_value=float(0),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
       name='rotation', full_name='naothmessages.PlotItem.rotation', index=5,
       number=6, type=1, cpp_type=5, label=1,
-      has_default_value=False, default_value=0,
+      has_default_value=False, default_value=float(0),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -312,6 +316,7 @@ _PLOTITEM = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
   oneofs=[
   ],
@@ -349,6 +354,7 @@ _PLOTSTROKE2D = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
   oneofs=[
   ],
@@ -386,6 +392,7 @@ _PLOTS = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
   oneofs=[
   ],
@@ -425,7 +432,7 @@ _XABSLSYMBOL = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='decimalValue', full_name='naothmessages.XABSLSymbol.decimalValue', index=3,
       number=11, type=1, cpp_type=5, label=1,
-      has_default_value=False, default_value=0,
+      has_default_value=False, default_value=float(0),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -459,6 +466,7 @@ _XABSLSYMBOL = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
   oneofs=[
   ],
@@ -538,6 +546,7 @@ _XABSLACTIVEOPTIONSPARSE = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
   oneofs=[
   ],
@@ -583,6 +592,7 @@ _XABSLACTIONSPARSE = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
   oneofs=[
   ],
@@ -615,7 +625,7 @@ _SYMBOLVALUELIST_DOUBLESYMBOL = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='value', full_name='naothmessages.SymbolValueList.DoubleSymbol.value', index=2,
       number=3, type=1, cpp_type=5, label=1,
-      has_default_value=False, default_value=0,
+      has_default_value=False, default_value=float(0),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -627,6 +637,7 @@ _SYMBOLVALUELIST_DOUBLESYMBOL = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
   oneofs=[
   ],
@@ -670,6 +681,7 @@ _SYMBOLVALUELIST_BOOLEANSYMBOL = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
   oneofs=[
   ],
@@ -720,6 +732,7 @@ _SYMBOLVALUELIST_ENUMSYMBOL = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
   oneofs=[
   ],
@@ -763,6 +776,7 @@ _SYMBOLVALUELIST = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
   oneofs=[
   ],
@@ -828,6 +842,7 @@ _BEHAVIORSTATESPARSE = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
   oneofs=[
   ],
@@ -865,6 +880,7 @@ _BEHAVIORSTATECOMPLETE_ENUMTYPE_ELEMENT = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
   oneofs=[
   ],
@@ -901,6 +917,7 @@ _BEHAVIORSTATECOMPLETE_ENUMTYPE = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
   oneofs=[
   ],
@@ -937,6 +954,7 @@ _BEHAVIORSTATECOMPLETE_OPTION_STATE = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
   oneofs=[
   ],
@@ -980,6 +998,7 @@ _BEHAVIORSTATECOMPLETE_OPTION = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
   oneofs=[
   ],
@@ -1016,6 +1035,7 @@ _BEHAVIORSTATECOMPLETE_AGENT = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
   oneofs=[
   ],
@@ -1080,6 +1100,7 @@ _BEHAVIORSTATECOMPLETE = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
   oneofs=[
   ],
@@ -1131,6 +1152,7 @@ _MODULE = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
   oneofs=[
   ],
@@ -1161,6 +1183,7 @@ _MODULELIST = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
   oneofs=[
   ],
@@ -1205,6 +1228,7 @@ _DEBUGREQUEST_ITEM = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
   oneofs=[
   ],
@@ -1234,6 +1258,7 @@ _DEBUGREQUEST = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
   oneofs=[
   ],
@@ -1259,21 +1284,21 @@ _FEATUREKEYPOINT = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='size', full_name='naothmessages.FeatureKeyPoint.size', index=1,
       number=2, type=2, cpp_type=6, label=2,
-      has_default_value=False, default_value=0,
+      has_default_value=False, default_value=float(0),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
       name='angle', full_name='naothmessages.FeatureKeyPoint.angle', index=2,
       number=3, type=2, cpp_type=6, label=2,
-      has_default_value=False, default_value=0,
+      has_default_value=False, default_value=float(0),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
       name='response', full_name='naothmessages.FeatureKeyPoint.response', index=3,
       number=4, type=2, cpp_type=6, label=2,
-      has_default_value=False, default_value=0,
+      has_default_value=False, default_value=float(0),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -1299,6 +1324,7 @@ _FEATUREKEYPOINT = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
   oneofs=[
   ],
@@ -1357,6 +1383,7 @@ _FEATUREDETECTIONRESULT = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
   oneofs=[
   ],
@@ -1387,6 +1414,7 @@ _SINGLEDESCRIPTOR = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
   oneofs=[
   ],
@@ -1419,7 +1447,7 @@ _FEATURECLASS = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='objectHeight', full_name='naothmessages.FeatureClass.objectHeight', index=2,
       number=3, type=1, cpp_type=5, label=1,
-      has_default_value=False, default_value=0,
+      has_default_value=False, default_value=float(0),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -1431,6 +1459,7 @@ _FEATURECLASS = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
   oneofs=[
   ],
@@ -1468,6 +1497,7 @@ _FEATURETABLE = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
   oneofs=[
   ],
@@ -1479,7 +1509,7 @@ _CMD.fields_by_name['args'].message_type = _CMDARG
 _STOPWATCHES.fields_by_name['stopwatches'].message_type = _STOPWATCHITEM
 _PLOTITEM.fields_by_name['type'].enum_type = _PLOTITEM_PLOTTYPE
 _PLOTITEM_PLOTTYPE.containing_type = _PLOTITEM
-_PLOTSTROKE2D.fields_by_name['points'].message_type = CommonTypes_pb2._DOUBLEVECTOR2
+_PLOTSTROKE2D.fields_by_name['points'].message_type = CommonTypes__pb2._DOUBLEVECTOR2
 _PLOTS.fields_by_name['plots'].message_type = _PLOTITEM
 _PLOTS.fields_by_name['plotstrokes'].message_type = _PLOTSTROKE2D
 _XABSLSYMBOL.fields_by_name['type'].enum_type = _XABSLSYMBOL_SYMBOLTYPE
@@ -1514,7 +1544,7 @@ _BEHAVIORSTATECOMPLETE.fields_by_name['outputSymbolList'].message_type = _SYMBOL
 _MODULELIST.fields_by_name['modules'].message_type = _MODULE
 _DEBUGREQUEST_ITEM.containing_type = _DEBUGREQUEST
 _DEBUGREQUEST.fields_by_name['requests'].message_type = _DEBUGREQUEST_ITEM
-_FEATUREKEYPOINT.fields_by_name['pt'].message_type = CommonTypes_pb2._FLOATVECTOR2
+_FEATUREKEYPOINT.fields_by_name['pt'].message_type = CommonTypes__pb2._FLOATVECTOR2
 _FEATUREDETECTIONRESULT.fields_by_name['keyPoints'].message_type = _FEATUREKEYPOINT
 _FEATUREDETECTIONRESULT.fields_by_name['descriptors'].message_type = _SINGLEDESCRIPTOR
 _FEATURECLASS.fields_by_name['samples'].message_type = _SINGLEDESCRIPTOR
@@ -1540,6 +1570,7 @@ DESCRIPTOR.message_types_by_name['FeatureDetectionResult'] = _FEATUREDETECTIONRE
 DESCRIPTOR.message_types_by_name['SingleDescriptor'] = _SINGLEDESCRIPTOR
 DESCRIPTOR.message_types_by_name['FeatureClass'] = _FEATURECLASS
 DESCRIPTOR.message_types_by_name['FeatureTable'] = _FEATURETABLE
+_sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 CMDArg = _reflection.GeneratedProtocolMessageType('CMDArg', (_message.Message,), dict(
   DESCRIPTOR = _CMDARG,

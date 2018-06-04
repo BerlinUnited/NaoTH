@@ -10,18 +10,6 @@ import matplotlib
 import json
 import patchReader as patchReader
 
-# todo make class
-patchdata = None
-labels = None
-window_idx = 0
-
-fig = plt.figure()
-image_canvas = None
-
-show_size = (10, 10)    # width, height
-patch_size = (24, 24)    # width, height
-fullscreen = False
-
 
 def parse_arguments(argv):
     input_file = ''
@@ -30,7 +18,7 @@ def parse_arguments(argv):
     except getopt.GetoptError:
         print('ball_patch_label.py -i <input file>')
         sys.exit(2)
-    if opts == []:
+    if opts is []:
         print('ball_patch_label.py -i <input file>')
         sys.exit(2)
     for opt, arg in opts:
@@ -43,148 +31,176 @@ def parse_arguments(argv):
     return input_file
 
 
-def patch_pos(x, y):
-    return x*(patch_size[0]+1)-1, y*(patch_size[1]+1)-1
+class PatchLabeling:
+    def __init__(self):
+        self.shift_is_held = False
+        self.patchdata = None
+        self.image_canvas = None
+        self.fullscreen = False
+        self.window_idx = 0
+        self.labels = None
+        self.patches = []
+        self.selected = []
+        self.invalid = []
+        self.invalid_selected = []
+        self.show_size = (10, 10)  # width, height
+        self.patch_size = (24, 24)  # width, height
+        for i in range(0, self.show_size[0] * self.show_size[1]):
+            y = i // self.show_size[0]
+            x = i % self.show_size[0]
+            self.patches.append(ptc.Rectangle(self.patch_pos(x, y), width=self.patch_size[0] + 1, height=self.patch_size[1] + 1, alpha=0.3))
+            self.invalid.append(ptc.Rectangle(self.patch_pos(x, y), width=self.patch_size[0] + 1, height=self.patch_size[1] + 1, color="Red", alpha=0.3))
+            self.selected.append(False)
+            self.invalid_selected.append(False)
 
-patches = []
-selected = []
-for i in range(0, show_size[0]*show_size[1]):
-    y = i // show_size[0]
-    x = i % show_size[0]
-    patches.append(ptc.Rectangle(patch_pos(x, y), width=patch_size[0]+1, height=patch_size[1]+1, alpha=0.3))
-    selected.append(False)
+    def patch_pos(self, x, y):
+        return x*(self.patch_size[0]+1)-1, y*(self.patch_size[1]+1)-1
 
+    def set_marker(self, i, v):
+        if v == 0 and self.selected[i]:
+            self.patches[i].remove()
+            self.selected[i] = False
+        elif v == 1 and not self.selected[i]:
+            ax = plt.gca()
+            ax.add_patch(self.patches[i])
+            self.selected[i] = True
+        elif v == 0 and self.invalid_selected[i]:
+            self.invalid[i].remove()
+            self.invalid_selected[i] = False
+        elif v == 2 and not self.invalid_selected[i]:
+            ax = plt.gca()
+            ax.add_patch(self.invalid[i])
+            self.invalid_selected[i] = True
 
-def set_marker(i, v):
-    if v == 0 and selected[i]:
-        patches[i].remove()
-        selected[i] = False
-    elif v == 1 and not selected[i]:
-        ax = plt.gca()
-        ax.add_patch(patches[i])
-        selected[i] = True
-    
-    
-def on_click(event):
+    def on_click(self, event):
 
-    if event.xdata is not None and event.ydata is not None:
-        y = int(event.ydata+0.5) / (patch_size[1]+1)
-        x = int(event.xdata+0.5) / (patch_size[0]+1)
-        
-        if 0 <= y < show_size[1] and 0 <= x < show_size[0]:
-            i = show_size[0]*y + x
-            
-            if labels[window_idx+i] <= 0:
-                labels[window_idx+i] = 1
+        if event.xdata is not None and event.ydata is not None:
+            y = int(event.ydata+0.5) / (self.patch_size[1]+1)
+            x = int(event.xdata+0.5) / (self.patch_size[0]+1)
+
+            if 0 <= y < self.show_size[1] and 0 <= x < self.show_size[0]:
+                i = self.show_size[0]*y + x
+                if self.labels[self.window_idx+i] <= 0 and not self.shift_is_held:
+                    self.labels[self.window_idx+i] = 1
+                elif self.labels[self.window_idx+i] <= 0 and self.shift_is_held:
+                    self.labels[self.window_idx+i] = 2
+                else:
+                    self.labels[self.window_idx+i] = 0
+
+                self.set_marker(i, self.labels[self.window_idx + i])
+                plt.draw()
+
+    def key_pressed(self, event):
+        for i in range(self.show_size[0]*self.show_size[1]):
+                self.set_marker(i, 0)
+
+        if event.key == 'enter' or event.key == ' ' \
+                or event.key == 'w' or event.key == 'a' or event.key == 'd' \
+                or event.key == 'c' or event.key == 'y' \
+                or event.key == '+' or event.key == '-' \
+                or event.key == 'shift':
+
+            self.save_labels(label_file)
+
+            idx_step = self.show_size[0]*self.show_size[1]
+
+            if event.key == 'w':
+                self.window_idx = 0
+            elif event.key == 'a':
+                if self.window_idx > 0:
+                    self.window_idx -= idx_step
+            elif event.key == 'c':
+                self.window_idx += idx_step*10
+            elif event.key == 'y':
+                if self.window_idx - (idx_step*10) >= 0:
+                    self.window_idx -= idx_step*10
+            elif event.key == '+':  # select all
+                end_idx = min(idx_step, len(self.labels) - self.window_idx)
+                self.labels[self.window_idx:self.window_idx+end_idx] = 1
+            elif event.key == '-':  # deselect all
+                end_idx = min(idx_step, len(self.labels) - self.window_idx)
+                self.labels[self.window_idx:self.window_idx+end_idx] = 0
+            elif event.key == 'shift':  # set invalid label
+                self.shift_is_held = True
             else:
-                labels[window_idx+i] = 0
-                
-            set_marker(i, labels[window_idx + i])
-            plt.draw()
-        
- 
-def key_pressed(event):
-    
-    for i in range(show_size[0]*show_size[1]):
-            set_marker(i, 0)
-            
-    if event.key == 'enter' or event.key == ' ' \
-            or event.key == 'w' or event.key == 'a' or event.key == 'd' \
-            or event.key == 'c' or event.key == 'y' \
-            or event.key == '+' or event.key == '-':
-            
-        save_labels(label_file)
-        global window_idx
-        
-        idx_step = show_size[0]*show_size[1]
-        
-        if event.key == 'w':
-            window_idx = 0
-        elif event.key == 'a':
-            if window_idx > 0:
-                window_idx -= idx_step
-        elif event.key == 'c':
-            window_idx += idx_step*10
-        elif event.key == 'y':
-            if window_idx - (idx_step*10) >= 0:
-                window_idx -= idx_step*10
-        elif event.key == '+':  # select all
-            end_idx = min(idx_step, len(labels) - window_idx)
-            labels[window_idx:window_idx+end_idx] = 1
-        elif event.key == '-':  # deselect all
-            end_idx = min(idx_step, len(labels) - window_idx)
-            labels[window_idx:window_idx+end_idx] = 0
+                self.window_idx += idx_step
+            self.show_patches()
+        elif event.key == 'escape' or event.key == 'q':
+            exit(0)
+
+    def key_release(self, event):
+        if event.key == 'shift':
+            self.shift_is_held = False
+
+    def save_labels(self, json_file):
+        ball = []
+        noball = []
+        inval = []
+        for i, val in enumerate(self.labels):
+            if val == 1:
+                ball.append(i)
+            elif val == 2:
+              inval.append(i)
+            elif val == 0:
+                noball.append(i)
+
+        with open(json_file, 'w') as outfile:
+                    json.dump({"ball": ball, "noball": noball, "invalid": inval}, outfile)
+
+    def load_labels(self, json_file):
+        # init with invalid label
+        # TODO why init with -1 and later in the else branch set everything else to 0?
+        tmp_labels = np.negative(np.ones((len(self.patchdata),)))
+
+        if os.path.isfile(json_file):
+            with open(json_file, 'r') as data_file:
+                ball_labels = json.load(data_file)
+            tmp_labels[ball_labels["ball"]] = 1
+            if "noball" in ball_labels:
+                tmp_labels[ball_labels["noball"]] = 0
+            if "invalid" in ball_labels:
+                tmp_labels[ball_labels["invalid"]] = 2
+            else:
+                # set all values to 0 since we have to assume everything unmarked is no ball
+                tmp_labels = np.zeros((len(self.patchdata),))
+
+            # TODO this seems unnecessary
+            tmp_labels[ball_labels["ball"]] = 1
+
+        return tmp_labels
+
+    def show_patches(self):
+        image = np.zeros(((self.patch_size[1]+1)*self.show_size[1], (self.patch_size[0]+1)*self.show_size[0]))
+
+        for i in range(self.show_size[0]*self.show_size[1]):
+            if self.window_idx+i+1 > len(self.patchdata):
+                break
+
+            p = self.patchdata[self.window_idx+i]
+            if len(p) == 4*self.patch_size[0]*self.patch_size[1]:
+                a = np.array(p[0::4]).astype(float)
+                a = np.transpose(np.reshape(a, self.patch_size))
+            else:
+                a = np.array(p).astype(float)
+                a = np.transpose(np.reshape(a, self.patch_size))
+
+            y = i // self.show_size[0]
+            x = i % self.show_size[0]
+            image[y*(self.patch_size[1]+1):y*(self.patch_size[1]+1)+self.patch_size[1], x*(self.patch_size[0]+1):x*(self.patch_size[0]+1)+self.patch_size[0]] = a
+
+            if self.labels[self.window_idx+i] < 0:
+                # remember this former invalid column as seen
+                self.labels[self.window_idx+i] = 0
+            self.set_marker(i, self.labels[self.window_idx + i])
+
+        if self.image_canvas is None:
+            self.image_canvas = fig.gca().imshow(image, cmap=plt.get_cmap('gray'), interpolation='nearest')
         else:
-            window_idx += idx_step
-        show_patches()
-    elif event.key == 'escape' or event.key == 'q':
-        exit(0)
+            self.image_canvas.set_data(image)
 
+        fig.suptitle(str(self.window_idx)+' - '+str(self.window_idx+self.show_size[0]*self.show_size[1])+' / '+str(len(self.patchdata)), fontsize=20)
+        fig.canvas.draw()
 
-def save_labels(json_file):
-    l = []
-    noball = []
-    for i, val in enumerate(labels):
-        if val == 1:
-            l.append(i)
-        elif val == 0:
-            noball.append(i)
-        
-    with open(json_file, 'w') as outfile:
-                json.dump({"ball": l, "noball": noball}, outfile)
-
-
-def load_labels(json_file):
-    # init with invalid label
-    tmp_labels = np.negative(np.ones((len(patchdata),)))
-    
-    if os.path.isfile(json_file):
-        with open(json_file, 'r') as data_file:
-            ball_labels = json.load(data_file)
-        tmp_labels[ball_labels["ball"]] = 1
-        if "noball" in ball_labels:
-            tmp_labels[ball_labels["noball"]] = 0
-        else:
-            # set all values to 0 since we have to assume everything unmarked is no ball
-            tmp_labels = np.zeros((len(patchdata),))
-            
-        tmp_labels[ball_labels["ball"]] = 1
-        
-    return tmp_labels
-    
-        
-def show_patches():
-    image = np.zeros(((patch_size[1]+1)*show_size[1], (patch_size[0]+1)*show_size[0]))
-        
-    for i in range(show_size[0]*show_size[1]):
-        if window_idx+i+1 > len(patchdata):
-            break
-        
-        p = patchdata[window_idx+i]
-        if len(p) == 4*patch_size[0]*patch_size[1]:
-            a = np.array(p[0::4]).astype(float)
-            a = np.transpose(np.reshape(a, patch_size))
-        else:
-            a = np.array(p).astype(float)
-            a = np.transpose(np.reshape(a, patch_size))
-
-        y = i // show_size[0]
-        x = i % show_size[0]
-        image[y*(patch_size[1]+1):y*(patch_size[1]+1)+patch_size[1], x*(patch_size[0]+1):x*(patch_size[0]+1)+patch_size[0]] = a
-        if labels[window_idx+i] < 0:
-            # remember this former invalid column as seen
-            labels[window_idx+i] = 0
-        set_marker(i, labels[window_idx + i])
-        
-    global image_canvas
-    if image_canvas is None:
-        image_canvas = fig.gca().imshow(image, cmap=plt.get_cmap('gray'), interpolation='nearest')
-    else:
-        image_canvas.set_data(image)
-    
-    fig.suptitle(str(window_idx)+' - '+str(window_idx+show_size[0]*show_size[1])+' / '+str(len(patchdata)), fontsize=20)
-    fig.canvas.draw()
-        
 
 '''
 
@@ -193,20 +209,23 @@ USAGE:
 
 '''
 if __name__ == "__main__":
+    fig = plt.figure()
+
+    bla = PatchLabeling()
     logFilePath = parse_arguments(sys.argv[1:])
 
-    # type: 0-'Y', 1-'YUV', 2-'YUVC'
-    patchdata, _ = patchReader.read_all_patches_from_log(logFilePath, type=2)
+    # type : 0-'Y', 1-'YUV', 2-'YUVC'
+    bla.patchdata, _ = patchReader.read_all_patches_from_log(logFilePath, type=2)
 
     # load the label file
     base_file, file_extension = os.path.splitext(logFilePath)
     label_file = base_file+'.json'
-    labels = load_labels(label_file)
+    bla.labels = bla.load_labels(label_file)
 
-    window_idx = 0
-    show_patches()
-    plt.connect('button_press_event', on_click)
-    plt.connect("key_press_event", key_pressed)
+    bla.show_patches()
+    plt.connect('button_press_event', bla.on_click)
+    plt.connect("key_press_event", bla.key_pressed)
+    plt.connect('key_release_event', bla.key_release)
 
     # fig.gca().xticks(())
     # fig.gca().yticks(())
@@ -214,7 +233,7 @@ if __name__ == "__main__":
     if matplotlib.get_backend() == 'Qt4Agg':
         f_manager = plt.get_current_fig_manager()
         f_manager.window.move(0, 0)
-        if fullscreen:
+        if bla.fullscreen:
             f_manager.window.showMaximized()
 
     plt.show()
