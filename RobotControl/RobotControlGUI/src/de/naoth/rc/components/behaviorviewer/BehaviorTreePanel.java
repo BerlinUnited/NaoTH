@@ -106,7 +106,7 @@ public class BehaviorTreePanel extends javax.swing.JScrollPane {
         
         
         newTree.setDoubleBuffered(false);
-        newTree.setCellRenderer(new XABSLActionSparseTreeCellRenderer());
+        newTree.setCellRenderer(new XABSLActionSparseTreeCellRenderer(getFont().getSize()));
         newTree.setVisible(true);
         
         //TODO: this are preparation for jumping to the sourse, when an option is clicked

@@ -43,6 +43,15 @@ if [ -d "./deploy/home/nao/naoqi/Config" ]; then
   sudo -u nao cp -r ./deploy/home/nao/naoqi/Config/* /home/nao/Config/
 fi
 
+# md5 hashes from the autoload.ini in the repository and the current autoload.ini on the robot
+hash1='fd2a49e4ad1e6583be697444bbd8e746'
+hash2=`md5sum /etc/naoqi/autoload.ini | awk '{print $1}'`
+
+if [[ $hash1 != $hash2 ]]; then
+  # The MD5 sum didn't match
+  sudo -u nao /usr/bin/paplay /home/nao/naoqi/Media/modified_autoload_ini.wav
+fi
+
 # copy binaries and start naoqi/naoth again
 if [ -f "./deploy/home/nao/bin/libnaosmal.so" ]; then
   rm -f /home/nao/bin/libnaosmal.so

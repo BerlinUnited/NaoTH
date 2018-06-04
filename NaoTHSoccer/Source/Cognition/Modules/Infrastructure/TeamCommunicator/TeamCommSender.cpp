@@ -65,8 +65,8 @@ void TeamCommSender::fillMessageBeforeSending() const
     {
       // only sent these values if the ball was never seen
       msg.ballAge = -1;
-      msg.ballPosition.x = std::numeric_limits<double>::max();
-      msg.ballPosition.y = std::numeric_limits<double>::max();
+      msg.ballPosition.x = std::numeric_limits<double>::infinity();
+      msg.ballPosition.y = std::numeric_limits<double>::infinity();
       msg.custom.ballVelocity.x = 0;
       msg.custom.ballVelocity.y = 0;
     }

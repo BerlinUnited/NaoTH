@@ -366,6 +366,7 @@ void Simulator::adjust_frame_time()
   string result = f.SerializeAsString();
   frameData.data.resize(result.size());
   std::copy ( result.begin(), result.end(), frameData.data.begin() );
+  frameData.valid = true;
 }//end adjust_frame_time
 
 

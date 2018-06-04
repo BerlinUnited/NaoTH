@@ -49,7 +49,7 @@ class LogReader:
             self.reader.log.seek(position)
             data = self.reader.readBytes(size)
 
-            message = self.reader.parser.parse(name, data)
+            message = self.reader.parser.parse(name, str.encode(data) if isinstance(data, str) else data)
             self.messages[name] = (position, size, message)
             return message
 
