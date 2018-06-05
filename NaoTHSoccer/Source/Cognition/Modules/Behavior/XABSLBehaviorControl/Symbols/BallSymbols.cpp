@@ -143,7 +143,6 @@ void BallSymbols::execute()
     }
 
   }
-}//end update
 
   lastRobotOdometry = getOdometryData();
 }//end execute

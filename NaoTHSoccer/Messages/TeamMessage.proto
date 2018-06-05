@@ -70,14 +70,14 @@ message BUUserTeamMessage
   // only for visualizing teamball position in RC
   optional DoubleVector2 teamBall = 14;
   repeated Ntp ntpRequest = 15;
-  
-  optional RobotState robotState = 16 [default=initial];
-  optional TeamColor teamColor = 17 [default=blueTeam];
-
-  optional bool isCharging = 18 [default=false];
-  
 
   optional DoubleVector2 ballVelocity = 16; // since the SPLStandardMessage 2018, we need it here
+  
+  optional RobotState robotState = 17 [default=initial];
+  optional TeamColor teamColor = 18 [default=blueTeam];
+
+  optional bool isCharging = 19 [default=false];
+  
   optional string key = 100 [default="none"];
   
   optional BDRPlayerState bdrPlayerState = 200;
