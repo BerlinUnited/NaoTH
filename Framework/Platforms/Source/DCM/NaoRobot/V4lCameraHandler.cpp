@@ -18,6 +18,12 @@
 
 //Custom V4L control variables
 #define V4L2_MT9M114_FADE_TO_BLACK (V4L2_CID_PRIVATE_BASE) //boolean, enable or disable fade to black feature
+#define V4L2_MT9M114_BRIGHTNESS_DARK (V4L2_CID_PRIVATE_BASE+1)
+#define V4L2_MT9M114_AE_TARGET_GAIN (V4L2_CID_PRIVATE_BASE+2)
+#define V4L2_MT9M114_AE_MIN_VIRT_AGAIN (V4L2_CID_PRIVATE_BASE+3)
+#define V4L2_MT9M114_AE_MAX_VIRT_AGAIN (V4L2_CID_PRIVATE_BASE+4)
+#define V4L2_MT9M114_AE_MIN_VIRT_DGAIN (V4L2_CID_PRIVATE_BASE+5)
+#define V4L2_MT9M114_AE_MAX_VIRT_DGAIN (V4L2_CID_PRIVATE_BASE+6)
 
 #define LOG "[CameraHandler " << currentCamera << "] "
 
@@ -47,18 +53,32 @@ V4lCameraHandler::V4lCameraHandler()
   settingsOrder.push_back(CameraSettings::VerticalFlip);
   settingsOrder.push_back(CameraSettings::HorizontalFlip);
 
-  settingsOrder.push_back(CameraSettings::AutoWhiteBalancing);
+
   settingsOrder.push_back(CameraSettings::AutoExposition);
+  settingsOrder.push_back(CameraSettings::AutoExpositionAlgorithm);
+  settingsOrder.push_back(CameraSettings::Brightness);
+//  settingsOrder.push_back(CameraSettings::BrightnessDark);
+  settingsOrder.push_back(CameraSettings::MinAnalogGain);
+  settingsOrder.push_back(CameraSettings::MaxAnalogGain);
+  settingsOrder.push_back(CameraSettings::TargetGain);
+
+
+  settingsOrder.push_back(CameraSettings::AutoWhiteBalancing);
+
+  settingsOrder.push_back(CameraSettings::PowerlineFrequency);
   
-  //settingsOrder.push_back(CameraSettings::Brightness);
+
+
   settingsOrder.push_back(CameraSettings::Contrast);
   settingsOrder.push_back(CameraSettings::Saturation);
   settingsOrder.push_back(CameraSettings::Hue);
   settingsOrder.push_back(CameraSettings::Sharpness);
   settingsOrder.push_back(CameraSettings::Exposure);
   settingsOrder.push_back(CameraSettings::Gain);
+
   settingsOrder.push_back(CameraSettings::WhiteBalance);
-  //settingsOrder.push_back(CameraSettings::BacklightCompensation);
+  // this throws errors sometimes and slows down the robot, check whats wrong before activating it
+//  settingsOrder.push_back(CameraSettings::BacklightCompensation);
   settingsOrder.push_back(CameraSettings::FadeToBlack);
   
 
@@ -95,11 +115,11 @@ void V4lCameraHandler::init(std::string camDevice, CameraInfo::CameraID camID, b
 
   // HACK (exposure): force change of the exposure
   if(currentSettings.data[CameraSettings::Exposure] == 40) {
-    setSingleCameraParameter(csConst[CameraSettings::Exposure], 41);
+    setSingleCameraParameter(csConst[CameraSettings::Exposure], 41, "Exposure");
   } else {
-    setSingleCameraParameter(csConst[CameraSettings::Exposure], 40);
+    setSingleCameraParameter(csConst[CameraSettings::Exposure], 40, "Exposure");
   }
-  setSingleCameraParameter(csConst[CameraSettings::Exposure], currentSettings.data[CameraSettings::Exposure]);
+  setSingleCameraParameter(csConst[CameraSettings::Exposure], currentSettings.data[CameraSettings::Exposure], "Exposure");
 
   // print the retrieved settings
   for (int i = 0; i < CameraSettings::numOfCameraSetting; i++) {
@@ -122,6 +142,7 @@ void V4lCameraHandler::initIDMapping()
 
   // map the existing parameters that can be used safely
   csConst[CameraSettings::Brightness] = V4L2_CID_BRIGHTNESS;
+  csConst[CameraSettings::BrightnessDark] = V4L2_MT9M114_BRIGHTNESS_DARK;
   csConst[CameraSettings::Contrast] = V4L2_CID_CONTRAST;
   csConst[CameraSettings::Saturation] = V4L2_CID_SATURATION;
   csConst[CameraSettings::Hue] = V4L2_CID_HUE;
@@ -131,11 +152,16 @@ void V4lCameraHandler::initIDMapping()
   csConst[CameraSettings::AutoExposition] = V4L2_CID_EXPOSURE_AUTO;
   csConst[CameraSettings::AutoWhiteBalancing] = V4L2_CID_AUTO_WHITE_BALANCE;
   csConst[CameraSettings::Gain] = V4L2_CID_GAIN;
+  csConst[CameraSettings::MinAnalogGain] = V4L2_MT9M114_AE_MIN_VIRT_AGAIN;
+  csConst[CameraSettings::MaxAnalogGain] = V4L2_MT9M114_AE_MAX_VIRT_AGAIN;
+  csConst[CameraSettings::TargetGain] = V4L2_MT9M114_AE_TARGET_GAIN;
+  
   csConst[CameraSettings::Exposure] = V4L2_CID_EXPOSURE;
   //csConst[CameraSettings::WhiteBalance] = V4L2_CID_DO_WHITE_BALANCE;
   csConst[CameraSettings::WhiteBalance] = V4L2_CID_WHITE_BALANCE_TEMPERATURE;
   csConst[CameraSettings::BacklightCompensation] = V4L2_CID_BACKLIGHT_COMPENSATION;
   csConst[CameraSettings::FadeToBlack] = V4L2_MT9M114_FADE_TO_BLACK;
+  csConst[CameraSettings::PowerlineFrequency] = V4L2_CID_POWER_LINE_FREQUENCY;
 
 //---------------------------------------------------------------------
 // copied from the driver for information:
@@ -786,8 +812,11 @@ int V4lCameraHandler::getSingleCameraParameter(int id)
   return -1;
 }
 
-bool V4lCameraHandler::setSingleCameraParameter(int id, int value)
+bool V4lCameraHandler::setSingleCameraParameter(int id, int value, std::string name)
 {
+  if(id < 0 ) {
+    return false;
+  }
   struct v4l2_queryctrl queryctrl;
   memset (&queryctrl, 0, sizeof (queryctrl));
   queryctrl.id = id;
@@ -810,11 +839,11 @@ bool V4lCameraHandler::setSingleCameraParameter(int id, int value)
 
   // clip value
   if (value < queryctrl.minimum) {
-    std::cout << LOG << "Clipping control value. ID: " << id << " from " << value << " to " << queryctrl.minimum << std::endl;
+    std::cout << LOG << "Clipping control value  " << name << " from " << value << " to " << queryctrl.minimum << std::endl;
     value = queryctrl.minimum;
   }
   if (value > queryctrl.maximum) {
-    std::cout << LOG << "Clipping control value. ID: " << id << " from " << value << " to " << queryctrl.maximum << std::endl;
+    std::cout << LOG << "Clipping control value " << name << " from " << value << " to " << queryctrl.maximum << std::endl;
     value = queryctrl.maximum;
   }
   //std::cout << "  -  (" << queryctrl.minimum << ", " << queryctrl.default_value << ", " << queryctrl.maximum << ")" << std::endl;
@@ -854,9 +883,35 @@ void V4lCameraHandler::setAllCameraParams(const CameraSettings& data)
                 << " from " << oldValue << " to " << data.data[*it] << std::endl;
       */
 
+      if(data.data[CameraSettings::AutoExposition] && 
+        (*it == CameraSettings::Exposure || *it == CameraSettings::Gain)) {
+        // ignore
+      }
+      else if(data.data[CameraSettings::AutoWhiteBalancing] && 
+        (*it == CameraSettings::WhiteBalance)) {
+        // ignore
+      }
       // apply the single parameter setting
-      if(setSingleCameraParameter(csConst[*it], data.data[*it])) {
+      else if(setSingleCameraParameter(csConst[*it], data.data[*it], CameraSettings::getCameraSettingsName(*it))) {
         lastCameraSettingTimestamp = NaoTime::getSystemTimeInMicroSeconds();
+
+        if(*it == CameraSettings::AutoExposition && currentSettings.data[*it] == 1 && data.data[*it] == 0)
+        {
+          // read back the gain and auto exposure values set by the now deactivated auto exposure
+          currentSettings.data[CameraSettings::Exposure] = getSingleCameraParameter(csConst[CameraSettings::Exposure]);
+          currentSettings.data[CameraSettings::Gain] = getSingleCameraParameter(csConst[CameraSettings::Gain]);
+
+          std::cout << LOG << "autoupdated Exposure to "  << currentSettings.data[CameraSettings::Exposure] << std::endl;
+        }
+        else if(*it == CameraSettings::AutoWhiteBalancing && currentSettings.data[*it] == 1 && data.data[*it] == 0)
+        {
+          // read back the white balance value set to make sure they are in sync
+          currentSettings.data[CameraSettings::WhiteBalance] = getSingleCameraParameter(csConst[CameraSettings::WhiteBalance]);
+
+          std::cout << LOG << "autoupdated ExposWhiteBalanceure to "  << currentSettings.data[CameraSettings::WhiteBalance] << std::endl;
+        }
+
+
         currentSettings.data[*it] = data.data[*it];
 
         /*
@@ -875,6 +930,20 @@ void V4lCameraHandler::setAllCameraParams(const CameraSettings& data)
       break;
     }
   }// end for
+
+  // set the autoexposure grid parameters
+  for(std::size_t i=0; i < CameraSettings::AUTOEXPOSURE_GRID_SIZE; i++) {
+    for(std::size_t j=0; j < CameraSettings::AUTOEXPOSURE_GRID_SIZE; j++) {
+      if(data.autoExposureWeights[i][j] != currentSettings.autoExposureWeights[i][j]) {
+        std::stringstream paramName;
+        paramName << "autoExposureWeights (" << i << "," << j << ")";
+        if(setSingleCameraParameter(getAutoExposureGridID(i, j), data.autoExposureWeights[i][j], paramName.str())) {
+          currentSettings.autoExposureWeights[i][j] = data.autoExposureWeights[i][j];
+        }
+      }
+    }
+  }
+
 }// end setAllCameraParams
 
 void V4lCameraHandler::internalUpdateCameraSettings()
