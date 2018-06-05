@@ -74,7 +74,7 @@ def main():
     gameController = GameController()
     gameController.start()
 
-    network = Network(args.device, args.ssid, args.passwd, args.retries)
+    network = Network(args.device, args.ssid, args.passwd, args.retries, args.mac)
     network.start()
 
     threads = [ led, gopro, gameLogger, gameController, network ]
@@ -87,7 +87,7 @@ def main():
                     # reload config from file
                     importlib.reload(config)
                     Logger.info("Reloaded modified config")
-                    network.setConfig(None, config.ssid, config.passwd, config.retries)
+                    network.setConfig(None, config.ssid, config.passwd, config.retries, config.mac)
                     gopro.setUserSettings({
                         'FRAME_RATE': config.fps if 'fps' in vars(config) else None,
                         'FOV': config.fov if 'fov' in vars(config) else None,
@@ -147,6 +147,7 @@ if __name__ == '__main__':
                 args.ssid = config.ssid
                 args.passwd = config.passwd
                 args.retries = config.retries
+                args.mac = config.mac
             except:
                 # no config available!
                 Logger.error("No config available OR invalid config!")

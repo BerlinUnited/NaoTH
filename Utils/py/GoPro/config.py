@@ -2,11 +2,13 @@ from goprocam.constants import *
 
 # NaoCam / a1b0a1b0a1
 # NAOCAM_2 / a1b0a1b0a1
-# GP26329941 / cycle9210
-# GP26297683 / epic0546
+# GP26329941 / family3887 / D6:B9:D4:D7:B7:40
+# GP26297683 / epic0546 / F8:D2:E9:F0:AC:0B
 
-ssid = 'NAOCAM_2'
-passwd = 'a1b0a1b0a1'
+ssid = 'GP26329941'
+passwd = 'family3887'
+mac = 'D6:B9:D4:D7:B7:40'
+
 retries = -1
 
 # if the following configs are set, the cam tries to set them before starting recording
