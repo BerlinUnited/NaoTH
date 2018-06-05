@@ -669,7 +669,7 @@ public class LogfileRecorder extends AbstractDialog implements ObjectListener<Mo
             dependend_representations.put(m, new HashSet<>());
             // the module depends on itself
             dependend_representations.get(m).add(m);
-            // as long as new/dependend modules are added continue adding modules
+            // as long as new/dependend modules are added, continue adding modules
             while (true) {
                 HashSet<String> subs = new HashSet<>();
                 // check for each depended module, if it got another dependency
@@ -680,7 +680,9 @@ public class LogfileRecorder extends AbstractDialog implements ObjectListener<Mo
                         modules.get(submodule).stream().filter((r) -> {
                             return representations.containsKey(r);
                         }).forEach((r) -> {
-                            subs.addAll(representations.get(r));
+                            // only select modules, which representations can not directly recorded
+                            if(!stringSelectionPanel.getOptions().contains(r))
+                                subs.addAll(representations.get(r));
                         });
                     }
                 }
