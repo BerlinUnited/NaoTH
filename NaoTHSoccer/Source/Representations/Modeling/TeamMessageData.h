@@ -32,6 +32,7 @@ using namespace naoth;
 
 // this key is sent with every team message to indicate that the message belongs to us
 #define NAOTH_TEAMCOMM_MESAGE_KEY "naoth"
+#define DOBERMAN_TEAMCOMM_MESAGE_KEY "12" // HACK: fixed team number for NaoDevils
 
 /** Contains data for a NTP request. */
 struct NtpRequest
@@ -48,7 +49,7 @@ struct NtpRequest
 class TeamMessageCustom : public naoth::Printable 
 {
 
-private:
+public:
 
   // we define this struct private because no one else needs to know about the internals of the DoBerManHeader
   struct DoBerManHeader
@@ -57,7 +58,7 @@ private:
     int8_t teamID;
     int8_t isPenalized;
     int8_t whistleDetected;
-    int8_t dummy;
+    int8_t intention;
   };
 
 public:
@@ -69,15 +70,16 @@ public:
   std::string bodyID;         // the body ID of the robot
   bool wasStriker;
   bool wantsToBeStriker;
-  unsigned int timeToBall;          // the shorest time, in which the robot can reach the ball [ms]
+  unsigned int timeToBall;    // the shorest time, in which the robot can reach the ball [ms]
   bool isPenalized;           // whether the robot is penalized, or not
   double batteryCharge;       // the battery charge
   double temperature;         // the max. temperature of the left or right leg!
   double cpuTemperature;      // the temperature of the cpu
   bool whistleDetected;       // whether the robot heard/detected the whistle
   int whistleCount;           // who many whistle the robot detected
-  Vector2d teamBall;// global position of the team ball for visualization in RC!!
+  Vector2d teamBall;          // global position of the team ball for visualization in RC!!
   std::vector<NtpRequest> ntpRequests; // ntp requests to teammates
+  Vector2d ballVelocity;      // velocity of the ball
   // opponents ?
 
   bool isCharging;
@@ -98,7 +100,7 @@ public:
   void parseFromDoBerManHeader(const uint8_t *rawHeader, size_t headerSize);
 
   /** Creates a binary array containing some of the registered data in the DoBerMan header "format" */
-  std::string toDoBerManHeader() const;
+  void toDoBerManHeader(DoBerManHeader& header) const;
 
   static size_t getCustomOffset() {return sizeof(DoBerManHeader);}
 
@@ -124,6 +126,9 @@ public:
     // custom BU-Message-Fields
     TeamMessageCustom custom;
     /*** END +++ TEAMMESSAGEFIELDS *******************************************/
+
+    bool isBerlinUnitedMessage() { return custom.key == NAOTH_TEAMCOMM_MESAGE_KEY; }
+    bool isDoBerManMessage() { return custom.key == DOBERMAN_TEAMCOMM_MESAGE_KEY; }
 
     TeamMessageData();
     TeamMessageData(FrameInfo fi);

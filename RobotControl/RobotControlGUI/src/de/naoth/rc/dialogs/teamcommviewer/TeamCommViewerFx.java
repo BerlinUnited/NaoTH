@@ -23,6 +23,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -198,6 +199,7 @@ public class TeamCommViewerFx extends AbstractJFXDialog
             int tn = statusTable.getSelectionModel().getSelectedItem().getTeamNum();
             Platform.runLater(() -> {
                 robots.stream().filter((rs) -> { return rs.getTeamNum() == tn;}).forEach((rs) -> { rs.robotColor.set(teamColorPicker.getValue()); });
+                statusTable.refresh();
             });
         });
         
@@ -526,7 +528,7 @@ public class TeamCommViewerFx extends AbstractJFXDialog
                 }
 //                setStyle("-fx-background-color: red|yellow|green");
                 setStyle("-fx-background-color: rgba("+c.getRed()+","+c.getGreen()+","+c.getBlue()+","+c.getTransparency()+");");
-                setText(bat == -1 ? "?" : String.format("%3.1f%%", bat));
+                setText(bat == -1 ? "?" : String.format("%3.1f%%", bat*100.0));
             }
         }
     }
@@ -564,16 +566,20 @@ public class TeamCommViewerFx extends AbstractJFXDialog
      * Therefor a color binding is created once and changes were immediatly applied.
      */
     private class ColoredTableCell extends TableCell {
+        HashMap<Integer, Background> teamColors = new HashMap<>();
+        
         @Override
         protected void updateItem(Object item, boolean empty) {
             super.updateItem(item, empty);
             if(!empty && item != null) {
                 RobotStatus rs = (RobotStatus) this.getTableRow().getItem();
-                // create background binding with robot color
-                if(rs != null && !backgroundProperty().isBound()) {
-                    backgroundProperty().bind(Bindings.createObjectBinding(() -> {
-                        return new Background(new BackgroundFill(rs.robotColor.get(), CornerRadii.EMPTY, Insets.EMPTY));
-                    }, rs.robotColor));
+                if(rs != null) {
+                    // save team color, if not set
+                    if(!teamColors.containsKey(rs.teamNumProperty().get())) {
+                        teamColors.put(rs.teamNumProperty().get(), new Background(new BackgroundFill(rs.robotColor.get(), CornerRadii.EMPTY, Insets.EMPTY)));
+                    }
+                    // update team color, if (eg.) ordering changed
+                    setBackground(teamColors.get(rs.teamNumProperty().get()));
                 }
                 setText(item.toString());
             }

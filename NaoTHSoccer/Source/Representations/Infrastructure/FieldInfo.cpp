@@ -34,7 +34,7 @@ FieldInfo::FieldInfo() : ParameterList("FieldInfo")
   PARAMETER_REGISTER(goalpostRadius) = 50;
   PARAMETER_REGISTER(xPenaltyMarkDistance) = 1300;
 
-  PARAMETER_REGISTER(goalBoxAsLines) = false;
+  PARAMETER_REGISTER(goalBoxAsLines) = true;
 
   PARAMETER_REGISTER(enable_arcs_at_penalty_box) = false;
   PARAMETER_REGISTER(center_x_in_own_half) = - xLength / 2.0 + xPenaltyAreaLength; ;

@@ -54,13 +54,18 @@ class SPLMessage(Struct):
     """Representation of the standard SPLMessage."""
 
     SPL_STANDARD_MESSAGE_STRUCT_HEADER = b'SPL '
-    SPL_STANDARD_MESSAGE_STRUCT_VERSION = 6
-    SPL_STANDARD_MESSAGE_DATA_SIZE = 780
-    SPL_STANDARD_MESSAGE_MAX_NUM_OF_PLAYERS = 5
+    SPL_STANDARD_MESSAGE_STRUCT_VERSION = 7
+    SPL_STANDARD_MESSAGE_DATA_SIZE = 474
+    SPL_STANDARD_MESSAGE_MAX_NUM_OF_PLAYERS = 6
 
     def __init__(self, teamnumber:int=0, playernumber:int=0, data=None):
         """Constructor."""
-        super(SPLMessage, self).__init__('4s3b?12f6B2h2bh')
+        # 4s    header +
+        # 3b    version + playernumber + teamnumber
+        # ?     fallen
+        # 6f    pose_x, pose_y, pose_r, ballage, ball_x, ball_y
+        # h     size
+        super(SPLMessage, self).__init__('4s3b?6fh')
         # based on the given data the message is initialized with default values or parsed from the data string
         if data is not None:
             self.unpack(data)
@@ -73,17 +78,17 @@ class SPLMessage(Struct):
         self.teamNumber = teamnumber
         self.fallen = False
         self.pose = Pose2D(Vector2(0.0, 0.0), 0.0)  # x, y, r | +/-4500, +/-3000
-        self.walkingTo = Vector2(0.0, 0.0)
-        self.shootingTo = Vector2(0.0, 0.0)
+        #self.walkingTo = Vector2(0.0, 0.0)
+        #self.shootingTo = Vector2(0.0, 0.0)
         self.ballAge = -1
         self.ballPosition = Vector2(0.0, 0.0)
-        self.ballVelocity = Vector2(0.0, 0.0)
-        self.suggestion = [0 for x in range(self.SPL_STANDARD_MESSAGE_MAX_NUM_OF_PLAYERS)]
-        self.intention = 0
-        self.averageWalkSpeed = 200  # see TeamCommSender
-        self.maxKickDistance = 3000  # see TeamCommSender
-        self.currentPositionConfidence = 100
-        self.currentSideConfidence = 100
+        #self.ballVelocity = Vector2(0.0, 0.0)
+        #self.suggestion = [0 for x in range(self.SPL_STANDARD_MESSAGE_MAX_NUM_OF_PLAYERS)]
+        #self.intention = 0
+        #self.averageWalkSpeed = 200  # see TeamCommSender
+        #self.maxKickDistance = 3000  # see TeamCommSender
+        #self.currentPositionConfidence = 100
+        #self.currentSideConfidence = 100
 
         self._mixed = MixedTeamMessage()
 
@@ -97,25 +102,28 @@ class SPLMessage(Struct):
         self.numOfDataBytes = self.data.ByteSize() + self._mixed.size
 
     def pack(self):
+
         return Struct.pack(self,
                            self.SPL_STANDARD_MESSAGE_STRUCT_HEADER,
                            self.SPL_STANDARD_MESSAGE_STRUCT_VERSION,
                            self.playerNumber,
                            self.teamNumber,
                            self.fallen,
-                           *self.pose.__dict__.values(),     # same as 'self.pose.x, self.pose.y, self.pose.r'
-                           *self.walkingTo.__dict__.values(),
-                           *self.shootingTo.__dict__.values(),
+                           self.pose.translation.x, self.pose.translation.y, self.pose.rotation,
+                           #*self.walkingTo.__dict__.values(),
+                           #*self.shootingTo.__dict__.values(),
                            self.ballAge,
-                           *self.ballPosition.__dict__.values(),
-                           *self.ballVelocity.__dict__.values(),
-                           *self.suggestion,
-                           self.intention,
-                           self.averageWalkSpeed,
-                           self.maxKickDistance,
-                           self.currentPositionConfidence,
-                           self.currentSideConfidence,
-                           (self.data.ByteSize() + self._mixed.size),
+                           #*self.ballPosition.__dict__.values(),
+                           self.ballPosition.x,
+                           self.ballPosition.y,
+                           #*self.ballVelocity.__dict__.values(),
+                           #*self.suggestion,
+                           #self.intention,
+                           #self.averageWalkSpeed,
+                           #self.maxKickDistance,
+                           #self.currentPositionConfidence,
+                           #self.currentSideConfidence,
+                           (self.data.ByteSize() + self._mixed.size)
                            ) + self._mixed.pack()\
                              + self.data.SerializeToString()
 
@@ -132,7 +140,7 @@ class SPLMessage(Struct):
 
         # check spl message version
         if msg[1] != self.SPL_STANDARD_MESSAGE_STRUCT_VERSION:
-            raise WrongSplMessageVersion("Wrong version: received " + msg[1] + ", but expected " + self.SPL_STANDARD_MESSAGE_STRUCT_VERSION)
+            raise WrongSplMessageVersion("Wrong version: received " + str(msg[1]) + ", but expected " + str(self.SPL_STANDARD_MESSAGE_STRUCT_VERSION))
 
         # assign data
         it = iter(msg[2:])
@@ -140,17 +148,17 @@ class SPLMessage(Struct):
         self.teamNumber = next(it)
         self.fallen = next(it)
         self.pose = Pose2D( Vector2(next(it), next(it)), next(it) )
-        self.walkingTo = Vector2( next(it), next(it) )
-        self.shootingTo = Vector2( next(it), next(it) )
+        #self.walkingTo = Vector2( next(it), next(it) )
+        #self.shootingTo = Vector2( next(it), next(it) )
         self.ballAge = next(it)
         self.ballPosition = Vector2( next(it), next(it) )
-        self.ballVelocity = Vector2( next(it), next(it) )
-        self.suggestion = [ next(it) for i in range(self.SPL_STANDARD_MESSAGE_MAX_NUM_OF_PLAYERS) ]
-        self.intention = next(it)
-        self.averageWalkSpeed = next(it)
-        self.maxKickDistance = next(it)
-        self.currentPositionConfidence = next(it)
-        self.currentSideConfidence = next(it)
+        #self.ballVelocity = Vector2( next(it), next(it) )
+        #self.suggestion = [ next(it) for i in range(self.SPL_STANDARD_MESSAGE_MAX_NUM_OF_PLAYERS) ]
+        #self.intention = next(it)
+        #self.averageWalkSpeed = next(it)
+        #self.maxKickDistance = next(it)
+        #self.currentPositionConfidence = next(it)
+        #self.currentSideConfidence = next(it)
         self.numOfDataBytes = next(it)
         self.data = data[self.size:self.size+self.numOfDataBytes]
 

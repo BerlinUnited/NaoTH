@@ -86,6 +86,9 @@
           </SubComponents>
         </Container>
         <Component class="javax.swing.JTextField" name="sortSymbolsTextInput">
+          <Properties>
+            <Property name="toolTipText" type="java.lang.String" value="Search for symbols (eg. &apos;.*asdf.*&apos;)"/>
+          </Properties>
           <Events>
             <EventHandler event="caretUpdate" listener="javax.swing.event.CaretListener" parameters="javax.swing.event.CaretEvent" handler="sortSymbolsTextInputCaretUpdate"/>
           </Events>
@@ -172,6 +175,7 @@
         </Component>
         <Component class="javax.swing.JComboBox" name="cbAgents">
           <Properties>
+            <Property name="maximumRowCount" type="int" value="20"/>
             <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
               <StringArray count="1">
                 <StringItem index="0" value="no agents"/>
@@ -179,8 +183,8 @@
             </Property>
           </Properties>
           <Events>
-            <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="cbAgentsMouseClicked"/>
             <EventHandler event="itemStateChanged" listener="java.awt.event.ItemListener" parameters="java.awt.event.ItemEvent" handler="cbAgentsItemStateChanged"/>
+            <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="cbAgentsMouseClicked"/>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="cbAgentsActionPerformed"/>
           </Events>
         </Component>

@@ -27,7 +27,7 @@ public:
         long long latency = 0;
         long long offset = 0;
         /** Returns the (estimated) timestamp of the player */
-        long long getTimeInMilliSeconds() {
+        long long getTimeInMilliSeconds() const {
             return naoth::NaoTime::getSystemTimeInMilliSeconds() - offset;
         }
     };
@@ -70,6 +70,20 @@ public:
             ply.number = number;
         }
         return ply;
+    }
+
+    /**
+     * @brief Returns the (estimated) timestamp of the player with the given number.
+     *        If no information for the number is available, zero is returned.
+     * @param number
+     * @return timestamp of the player
+     */
+    long long getPlayersTimeInMilliSeconds(const unsigned int& number) const {
+        const auto& it = data.find(number);
+        if(it != data.cend()) {
+            return it->second.getTimeInMilliSeconds();
+        }
+        return 0L;
     }
 };
 

@@ -97,7 +97,6 @@ public class DialogRegistry {
         
         public void dispose()
         {
-            this.dialog.dispose();
             this.dialog.destroy();
             this.getContentPane().removeAll();
             this.getControl().removeSingleDockable(this.getTitleText());
@@ -160,6 +159,10 @@ public class DialogRegistry {
         this.control.getController().setFocusedDockable(dockableDialog.intern(), true);
     }//dockDialog
 
+    protected void disposeOnClose() {
+        this.control.destroy();
+    }
+    
     public class HelpAction implements ActionListener {
 
         private HelpDialog dlg = null;

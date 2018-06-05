@@ -77,7 +77,7 @@ BEGIN_DECLARE_MODULE(Motion)
 
   REQUIRE(MotionStatus)
   PROVIDE(OdometryData) // hack
-  REQUIRE(InertialModel)
+  PROVIDE(InertialModel) // need to overwrite the old filter value by IMUModel
   REQUIRE(CalibrationData)
   REQUIRE(IMUData)
 
@@ -152,14 +152,14 @@ private:
     Parameter() : ParameterList("Motion")
     {
       PARAMETER_REGISTER(useGyroRotationOdometry) = true;
-      //PARAMETER_REGISTER(useIMUModel) = false;
+      PARAMETER_REGISTER(letIMUModelProvideInertialModel) = true;
       //PARAMETER_REGISTER(useInertiaSensorCalibration) = true;
-      PARAMETER_REGISTER(useIMUDataForRotationOdometry) = false;
+      PARAMETER_REGISTER(useIMUDataForRotationOdometry) = true;
       syncWithConfig();
     }
 
     bool useGyroRotationOdometry;
-    //bool useIMUModel;
+    bool letIMUModelProvideInertialModel;
     //bool useInertiaSensorCalibration;
     bool useIMUDataForRotationOdometry;
 

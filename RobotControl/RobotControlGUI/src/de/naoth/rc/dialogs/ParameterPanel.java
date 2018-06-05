@@ -23,7 +23,6 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListModel;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
@@ -422,10 +421,14 @@ private void jToggleButtonListActionPerformed(java.awt.event.ActionEvent evt)//G
         try {
             BufferedWriter bf = new BufferedWriter(new FileWriter(f));
             bf.write("["+p.name+"]");
-            bf.newLine();
+            //NOTE: we also could set the global property 'line.separator'
+            //bf.newLine();
+            // NOTE: we explicitely need '\n'
+            bf.write('\n');
             for (Map.Entry<String, String> cfg : this.getText().entrySet()) {
                 bf.write(cfg.getKey() + "=" + cfg.getValue());
-                bf.newLine();
+                //bf.newLine();
+                bf.write('\n');
             }
             bf.close();
             return true;
@@ -488,7 +491,8 @@ private void jToggleButtonListActionPerformed(java.awt.event.ActionEvent evt)//G
         try {
             BufferedWriter bf = new BufferedWriter(new FileWriter(f));
             bf.write("["+item.name+"]");
-            bf.newLine();
+            //bf.newLine();
+            bf.write('\n');
             bf.write(new String(object));
             bf.close();
         } catch (IOException ex) {

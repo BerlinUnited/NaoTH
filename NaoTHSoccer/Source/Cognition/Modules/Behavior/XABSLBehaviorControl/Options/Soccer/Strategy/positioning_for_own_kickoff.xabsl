@@ -21,7 +21,8 @@ option positioning_for_own_kickoff
       motion.type = stand;
     }
   }
-
+  
+  // Number 1
   state goto_own_kickoff_position_goalie
   {
     decision {
@@ -31,8 +32,8 @@ option positioning_for_own_kickoff
         stay;
     }
     action {
-     //go_to_point_with_USOA(x=-4400, y=0, rot=0);
-     //x=field.xPosOwnGroundline+Z? da sonst genau auf der Linie steht
+      //go_to_point_with_USOA(x=-4400, y=0, rot=0);
+      //x=field.xPosOwnGroundline+Z? da sonst genau auf der Linie steht
       //und das eher so semi cool ist, aber dann sieht er vielleicht nicht ein ball
       //der genau auf der Linie ist
       go_to_point_with_USOA(x=field.xPosOwnGroundline + 200, y=0, rot=0);
@@ -41,7 +42,8 @@ option positioning_for_own_kickoff
       motion.walk.style = stable;
     }
   }
-
+  
+  // Number 2
   state goto_own_kickoff_position_supporter2
   {
     decision {
@@ -53,15 +55,16 @@ option positioning_for_own_kickoff
     action
     {
       
-//go_to_point_with_USOA(x=-2500, y=-900, rot=0);
+      //go_to_point_with_USOA(x=-2500, y=-900, rot=0);
       go_to_point_with_USOA(
         x=field.xPosOwnPenaltyMark + 500, 
-        y=field.yPosLeftGoal-400,
+        y=field.yPosLeftGoal-100,
         rot=0);
       head.control_mode = look_around;
     }
   }
   
+  // Number 3
   state goto_own_kickoff_position_striker
   {
     decision {
@@ -78,7 +81,8 @@ option positioning_for_own_kickoff
       head.control_mode = look_around;
     }
   }
-
+  
+  // Number 4
   state goto_own_kickoff_position_defender
   {
     decision {
@@ -92,13 +96,14 @@ option positioning_for_own_kickoff
       //go_to_point_with_USOA(x=-1000, y=-2000, rot=10);
       go_to_point_with_USOA(
         x=field.xPosOwnPenaltyMark, 
-        y=field.yPosRightGoal+400, 
+        y=field.yPosRightGoal+100, 
         rot=0);
       head.control_mode = look_around;
 
     }
   }
-
+  
+  // Number 5
   state goto_own_kickoff_position_supporter
   {
     decision {
@@ -109,7 +114,7 @@ option positioning_for_own_kickoff
     }
     action
     {
-      //go_to_point_with_USOA(x=-2500, y=900, rot=0);
+       //go_to_point_with_USOA(x=-2500, y=900, rot=0);
        go_to_point_with_USOA(
          x=(field.xPosOwnPenaltyMark-field.centerCircleRadius)/2, 
          y=-field.centerCircleRadius, 

@@ -22,6 +22,7 @@
 #include "Representations/Modeling/RobotPose.h"
 #include "Representations/Modeling/KinematicChain.h"
 #include "Representations/Modeling/TeamBallModel.h"
+#include "Representations/Modeling/OdometryData.h"
 
 #include <Tools/DataStructures/ParameterList.h>
 #include "Tools/Debug/DebugParameterList.h"
@@ -43,6 +44,7 @@ BEGIN_DECLARE_MODULE(BallSymbols)
   REQUIRE(MultiBallPercept)
   REQUIRE(TeamBallModel)
   REQUIRE(RobotPose)
+  REQUIRE(OdometryData)
 
   REQUIRE(KinematicChain)
 END_DECLARE_MODULE(BallSymbols)
@@ -138,6 +140,7 @@ private:
 
   bool ball_in_own_half;
 
+  Pose2D lastRobotOdometry;
 };//end class BallSymbols
 
 #endif // _BallSymbols_H_

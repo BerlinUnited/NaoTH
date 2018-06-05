@@ -8,43 +8,10 @@ import json
 import traceback
 
 import tempfile
-from daemonize import Daemonize
+
+from utils import Logger, Daemonize
 import os
 
-class StatusMonitor():
-  def __init__(self):
-    self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    
-  def sendMessage(self, msg):
-    self.sock.sendto(msg.encode(), ("localhost", 8000))
-    
-  def setNoGoProNetwork(self, delay = 1):
-    self.sendMessage('{{"blue":"blink", "delay":"0.1", "time":"{}"}}'.format(delay))
-    
-  def setConnectingToGoPro(self, delay = 1):
-    self.sendMessage('{{"blue":"blink", "time":"{}"}}'.format(delay))
-    
-  def setConnectedToGoPro(self, delay = 1):
-    self.sendMessage('{{"blue":"on", "time":"{}"}}'.format(delay))
-    
-  def setReceivedMessageFromGCWithInvisibleTeam(self, delay = 1):
-    self.sendMessage('{{"green":"blink", "time":"{}"}}'.format(delay))
-    
-  def setReceivedMessageFromGC(self, delay = 1):
-    self.sendMessage('{{"green":"on", "time":"{}"}}'.format(delay))
-    
-  def setDidntReceivedMessageFromGC(self, delay = 1):
-    self.sendMessage('{{"green":"off", "time":"{}"}}'.format(delay))
-    
-  def setReceivedMessageFromGC(self, delay = 1):
-    self.sendMessage('{{"green":"on", "time":"{}"}}'.format(delay))
-  
-  def setRecordingOn(self, delay = 1):
-    self.sendMessage('{{"red":"blink", "time":"{}"}}'.format(delay))
-    
-  def setRecordingOff(self, delay = 1):
-    self.sendMessage('{{"red":"off", "time":"{}"}}'.format(delay))
-  
     
 class LED():
   def __init__(self, PIN):
@@ -174,7 +141,7 @@ class LEDServer():
       except socket.timeout:
         pass
       except (KeyboardInterrupt, SystemExit):
-        logger.debug("Interrupted or Exit")
+        Logger.debug("Interrupted or Exit")
         break
       except:
         traceback.print_exc()
@@ -184,17 +151,14 @@ class LEDServer():
 def main():
   server = LEDServer()
   server.run()
-      
-statusMonitor = StatusMonitor()
+  print("???")
 
 if __name__ == "__main__":
-  
   # define vars
   tempdir = tempfile.gettempdir()
   name = 'led'  # os.path.basename(sys.argv[0])
   # check for existing lock file and running process
   lock_file = os.path.join(tempdir, name + '.lock')
-  
+
   daemon = Daemonize(app=name, pid=lock_file, action=main, foreground=True)
   daemon.start()
-  

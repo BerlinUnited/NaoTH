@@ -8,12 +8,7 @@
 
 using namespace std;
 
-TeamCommReceiver::TeamCommReceiver():
-    dropNoSplMessage(0),
-    dropNotOurTeam(0),
-    dropNotParseable(0),
-    dropKeyFail(0),
-    dropMonotonic(0)
+TeamCommReceiver::TeamCommReceiver()
 {
   DEBUG_REQUEST_REGISTER("TeamCommReceiver:artificial_delay",
                          "Add an artificial delay to all team comm messages", false );
@@ -67,11 +62,11 @@ void TeamCommReceiver::execute()
   getTeamMessageData().frameInfo = getFrameInfo();
   // TODO: should we clear the old state?!? (see TeamMessageData::clear())
 
-  PLOT("TeamCommReceiver:dropNoSplMessage", dropNoSplMessage);
-  PLOT("TeamCommReceiver:dropNotOurTeam",   dropNotOurTeam);
-  PLOT("TeamCommReceiver:dropNotParseable", dropNotParseable);
-  PLOT("TeamCommReceiver:dropKeyFail",      dropKeyFail);
-  PLOT("TeamCommReceiver:dropMonotonic",    dropMonotonic);
+  PLOT("TeamCommReceiver:dropNoSplMessage", getTeamMessage().dropNoSplMessage);
+  PLOT("TeamCommReceiver:dropNotOurTeam",   getTeamMessage().dropNotOurTeam);
+  PLOT("TeamCommReceiver:dropNotParseable", getTeamMessage().dropNotParseable);
+  PLOT("TeamCommReceiver:dropKeyFail",      getTeamMessage().dropKeyFail);
+  PLOT("TeamCommReceiver:dropMonotonic",    getTeamMessage().dropMonotonic);
 }
 
 void TeamCommReceiver::handleMessage(const std::string& data)
@@ -79,13 +74,13 @@ void TeamCommReceiver::handleMessage(const std::string& data)
   SPLStandardMessage spl;
   // only legal SPL messages
   if (!parseFromSplMessageString(data, spl)) {
-    dropNoSplMessage++;
+    getTeamMessage().dropNoSplMessage++;
     return;
   }
 
   // only messages from own "team"
   if (spl.teamNum != (int)getPlayerInfo().teamNumber) {
-    dropNotOurTeam++;
+    getTeamMessage().dropNotOurTeam++;
     return;
   }
 
@@ -98,28 +93,26 @@ void TeamCommReceiver::handleMessage(const std::string& data)
   TeamMessageData msg(getFrameInfo());
   // current timestamp as parsing time
   msg.timestampParsed = naoth::NaoTime::getSystemTimeInMilliSeconds();
-  // parse data to message
+
+  //accept own message
   if (msg.parseFromSplMessage(spl))
   {
     // make sure it's really our message
-    if (msg.custom.key != NAOTH_TEAMCOMM_MESAGE_KEY) {
-      dropKeyFail++;
+    if (!msg.isBerlinUnitedMessage()) {
+      getTeamMessage().dropKeyFail++;
       return;
     }
 
     // make sure the time step is monotonically rising
     if (parameters.monotonicTimestampCheck && !monotonicTimeStamp(msg)) {
-      dropMonotonic++;
+      getTeamMessage().dropMonotonic++;
       return;
     }
   }
-  else if (parameters.acceptMixedTeamMessages)
+  else if (parameters.acceptMixedTeamMessages && msg.isDoBerManMessage())
   {
     // TODO: this needs to be fixed vefore mixed team comm can be used again
     //       see: https://gitlab.informatik.hu-berlin.de/berlinunited/NaoTH-2018/issues/36
-    ASSERT(false);
-    //msg.custom.wantsToBeStriker = (msg.intention == 3);
-    //msg.custom.wasStriker = (msg.intention == 3);
     
     // estimate time to ball for dortmund guys
     const double stepTime = 200; //ms
@@ -132,7 +125,7 @@ void TeamCommReceiver::handleMessage(const std::string& data)
   }
   else
   {
-    dropNotParseable++;
+    getTeamMessage().dropNotParseable++;
     return;
   }
 

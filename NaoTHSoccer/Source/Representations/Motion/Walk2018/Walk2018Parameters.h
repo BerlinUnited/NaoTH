@@ -23,6 +23,8 @@ class FeetStabilizerParameters: public ParameterList{
           PARAMETER_REGISTER(D.x) = 0.01;
           PARAMETER_REGISTER(D.y) = 0.01;
 
+          PARAMETER_REGISTER(gyroFilterAlpha) = 0.2;
+
           syncWithConfig();
         }
 
@@ -30,6 +32,7 @@ class FeetStabilizerParameters: public ParameterList{
         Vector2d D;
 
         bool stabilizeFeet;
+        double gyroFilterAlpha;
 };
 
 class FootStepPlanner2018Parameters: public ParameterList{
@@ -151,6 +154,9 @@ class TorsoRotationStabilizerParameters: public ParameterList{
       PARAMETER_REGISTER(rotation.D.x) = 0;
       PARAMETER_REGISTER(rotation.D.y) = 0;
 
+      PARAMETER_REGISTER(localRotationCalibration) = true;
+      PARAMETER_REGISTER(useSteffensInertial) = true;
+      PARAMETER_REGISTER(gyroFilterAlpha) = 0.5;
       syncWithConfig();
     }
 
@@ -160,7 +166,10 @@ class TorsoRotationStabilizerParameters: public ParameterList{
         Vector2d D;
     } rotation;
 
+    bool useSteffensInertial;
     bool rotationStabilize;
+    bool localRotationCalibration;
+    double gyroFilterAlpha;
 };
 
 class ZMPPlanner2018Parameters: public ParameterList{
@@ -182,6 +191,7 @@ public:
       PARAMETER_REGISTER(comHeight) = 260;
       PARAMETER_REGISTER(ZMPOffsetYByCharacter) = 0;
       PARAMETER_REGISTER(newZMP_ON) = true;
+      PARAMETER_REGISTER(useZMPHackForKicks) = false;
 
       PARAMETER_REGISTER(stabilization.maxHipOffsetBasedOnStepLength.x) = 5;
       PARAMETER_REGISTER(stabilization.maxHipOffsetBasedOnStepLength.y) = 0;
@@ -214,6 +224,7 @@ public:
   } stabilization;
 
   bool newZMP_ON;
+  bool useZMPHackForKicks;
 
   double comHeight;
   double ZMPOffsetYByCharacter;

@@ -96,7 +96,7 @@ void CompassProvider::execute()
       {
         double v = getProbabilisticQuadCompas()[x];
         Vector2d a(offset + v*scale, 0.0);
-        a.rotate(Math::fromDegrees(x*5));
+        a.rotate(Math::fromDegrees(((double)x)*5.0));
         if(x > 0) {
 
           double d = Math::clamp(std::min(v, last_v)/0.1, 0.0, 1.0);

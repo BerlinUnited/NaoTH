@@ -44,6 +44,14 @@ message Ntp {
   optional uint64 received = 3 [default=0];
 }
 
+message Drops {
+  optional uint32 dropNoSplMessage = 1 [default=0];
+  optional uint32 dropNotOurTeam = 2 [default=0];
+  optional uint32 dropNotParseable = 3 [default=0];
+  optional uint32 dropKeyFail = 4 [default=0];
+  optional uint32 dropMonotonic = 5 [default=0];
+}
+
 message BUUserTeamMessage
 {
   optional string bodyID = 1 [default="unknown"];
@@ -69,6 +77,7 @@ message BUUserTeamMessage
   optional bool isCharging = 18 [default=false];
   
 
+  optional DoubleVector2 ballVelocity = 16; // since the SPLStandardMessage 2018, we need it here
   optional string key = 100 [default="none"];
   
   optional BDRPlayerState bdrPlayerState = 200;
@@ -91,4 +100,5 @@ message TeamMessage
     optional uint32 teamNumber = 12 [default=0];
   }
   repeated Data data = 1;
+  optional Drops messageDrop = 2;
 }
