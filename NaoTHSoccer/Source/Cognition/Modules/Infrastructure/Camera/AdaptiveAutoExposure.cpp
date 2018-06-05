@@ -25,20 +25,13 @@ void AdaptiveAutoExposure::execute()
 
             const std::uint8_t onVal = 100;
             // include all per default
-            for(std::size_t i = 0; i < CameraSettings::AUTOEXPOSURE_GRID_SIZE; i++) {
-                for(std::size_t j=0; j < CameraSettings::AUTOEXPOSURE_GRID_SIZE; j++) {
-                    getCameraSettingsRequest().autoExposureWeights[i][j] = onVal; 
-                    getCameraSettingsRequestTop().autoExposureWeights[i][j] = onVal;
-                }
-            }
+            getCameraSettingsRequest().setAutoExposureWeights(onVal);
+            getCameraSettingsRequestTop().setAutoExposureWeights(onVal);
 
             if(getCommonCameraSettingsRequest().autoExpositionMethod == "dortmund") 
             {
-                for(std::size_t i = 0; i < CameraSettings::AUTOEXPOSURE_GRID_SIZE; i++) {
-                    for(std::size_t j=0; j < CameraSettings::AUTOEXPOSURE_GRID_SIZE; j++) {
-                        getCameraSettingsRequest().autoExposureWeights[i][j] = 0; 
-                    }
-                }
+                getCameraSettingsRequest().reset();
+                getCameraSettingsRequestTop().reset();
 
                 getCameraSettingsRequestTop().autoExposureWeights[0][0] = 25;
                 getCameraSettingsRequestTop().autoExposureWeights[0][1] = 25;
@@ -91,12 +84,8 @@ void AdaptiveAutoExposure::execute()
             }
             else if(getCommonCameraSettingsRequest().autoExpositionMethod == "centerlines3") 
             {
-                for(std::size_t i = 0; i < CameraSettings::AUTOEXPOSURE_GRID_SIZE; i++) {
-                    for(std::size_t j=0; j < CameraSettings::AUTOEXPOSURE_GRID_SIZE; j++) {
-                        getCameraSettingsRequest().autoExposureWeights[i][j] = 0; 
-                        getCameraSettingsRequestTop().autoExposureWeights[i][j] = 0; 
-                    }
-                }
+                getCameraSettingsRequest().reset();
+                getCameraSettingsRequestTop().reset();
 
                 getCameraSettingsRequestTop().autoExposureWeights[4][1] = onVal;
                 getCameraSettingsRequestTop().autoExposureWeights[4][2] = onVal;
@@ -120,12 +109,9 @@ void AdaptiveAutoExposure::execute()
             } 
             else if(getCommonCameraSettingsRequest().autoExpositionMethod == "centerlines2") 
             {
-                for(std::size_t i = 0; i < CameraSettings::AUTOEXPOSURE_GRID_SIZE; i++) {
-                    for(std::size_t j=0; j < CameraSettings::AUTOEXPOSURE_GRID_SIZE; j++) {
-                        getCameraSettingsRequest().autoExposureWeights[i][j] = 0; 
-                        getCameraSettingsRequestTop().autoExposureWeights[i][j] = 0; 
-                    }
-                }
+                getCameraSettingsRequest().reset();
+                getCameraSettingsRequestTop().reset();
+
                 getCameraSettingsRequestTop().autoExposureWeights[4][1] = onVal;
                 getCameraSettingsRequestTop().autoExposureWeights[4][2] = onVal;
                 getCameraSettingsRequestTop().autoExposureWeights[4][3] = onVal;

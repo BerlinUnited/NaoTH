@@ -109,6 +109,9 @@ public:
 
   std::uint8_t autoExposureWeights[CameraSettings::AUTOEXPOSURE_GRID_SIZE][CameraSettings::AUTOEXPOSURE_GRID_SIZE];
 
+  void reset();
+  void setAutoExposureWeights(std::uint8_t w);
+
   CameraSettings getCameraSettings() const;
 };
 

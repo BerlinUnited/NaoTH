@@ -48,7 +48,6 @@ string CameraSettings::getCameraSettingsName(CameraSettingID id)
   }//end switch
 }//end getCameraSettingsName
 
-
 void CameraSettings::print(ostream& stream) const
 {
   for(int i = 0; i < numOfCameraSetting; i++) {
@@ -88,17 +87,25 @@ CameraSettingsRequest::CameraSettingsRequest(string configName)
   PARAMETER_REGISTER(whiteBalanceTemperature) = 6500;
   PARAMETER_REGISTER(powerlineFrequency) = 50;
 
-  for(std::size_t i = 0; i < CameraSettings::AUTOEXPOSURE_GRID_SIZE; i++) {
-      for(std::size_t j=0; j < CameraSettings::AUTOEXPOSURE_GRID_SIZE; j++) {
-          autoExposureWeights[i][j] = 100; 
-      }
-  }
-
+  setAutoExposureWeights(100);
 
   syncWithConfig();
 }
 
-CameraSettings CameraSettingsRequest::getCameraSettings() const {
+void CameraSettingsRequest::reset() {
+  setAutoExposureWeights(0);
+}
+
+void CameraSettingsRequest::setAutoExposureWeights(std::uint8_t w) {
+  for(std::size_t i = 0; i < CameraSettings::AUTOEXPOSURE_GRID_SIZE; i++) {
+      for(std::size_t j=0; j < CameraSettings::AUTOEXPOSURE_GRID_SIZE; j++) {
+          autoExposureWeights[i][j] = w; 
+      }
+  }
+}
+
+CameraSettings CameraSettingsRequest::getCameraSettings() const 
+{
   CameraSettings result;
 
   // set some default/constant values
