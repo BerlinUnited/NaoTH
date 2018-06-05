@@ -19,6 +19,7 @@ def setBeepOff(mac):
   
 if __name__ == '__main__':
   mac = 'F8:D2:E9:F0:AC:0B'
+  mac = 'D6:B9:D4:D7:B7:40'
   #setWifiOn(mac)
   setBeepOn(mac)
   sleep(3)
