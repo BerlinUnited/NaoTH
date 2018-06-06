@@ -186,6 +186,11 @@ void MonteCarloSelfLocator::execute()
         }
       }
 
+      // update by the compas only while localizing
+      if(parameters.updateByCompas && getProbabilisticQuadCompas().isValid()) {
+        updateByCompas(theSampleSet);
+      }
+
       updateBySensors(theSampleSet);
 
       // use prior knowledge
@@ -407,9 +412,11 @@ bool MonteCarloSelfLocator::updateBySensors(SampleSet& sampleSet) const
     updateByMiddleCircle(getLinePercept(), sampleSet);
   }
 
+  /*
   if(parameters.updateByCompas && getProbabilisticQuadCompas().isValid()) {
     updateByCompas(sampleSet);
   }
+  */
 
   if(parameters.updateByLinePoints)
   {
