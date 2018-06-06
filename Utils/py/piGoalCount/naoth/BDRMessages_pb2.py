@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='BDRMessages.proto',
   package='naothmessages',
   syntax='proto2',
-  serialized_pb=_b('\n\x11\x42\x44RMessages.proto\x12\rnaothmessages\"I\n\x11\x42\x44RControlCommand\x12\x34\n\x0c\x62\x65haviorMode\x18\x01 \x01(\x0e\x32\x1e.naothmessages.BDRBehaviorMode\"\xae\x02\n\x0e\x42\x44RPlayerState\x12G\n\x08\x61\x63tivity\x18\x01 \x01(\x0e\x32&.naothmessages.BDRPlayerState.Activity:\rdoing_nothing\x12\x16\n\x07sitting\x18\x02 \x01(\x08:\x05\x66\x61lse\x12!\n\x12localized_on_field\x18\x03 \x01(\x08:\x05\x66\x61lse\"\x97\x01\n\x08\x41\x63tivity\x12\x0f\n\x0bpre_playing\x10\x00\x12\x0b\n\x07playing\x10\x01\x12\x14\n\x10pre_entertaining\x10\x02\x12\x10\n\x0c\x65ntertaining\x10\x03\x12\x11\n\rpre_servicing\x10\x04\x12\r\n\tservicing\x10\x05\x12\x11\n\rdoing_nothing\x10\x06\x12\x10\n\x0cinitializing\x10\x07*C\n\x0f\x42\x44RBehaviorMode\x12\x0e\n\nDO_NOTHING\x10\x00\x12\x13\n\x0f\x41UTONOMOUS_PLAY\x10\x01\x12\x0b\n\x07WARTUNG\x10\x02\x42\x16\n\x14\x64\x65.naoth.rc.messages')
+  serialized_pb=_b('\n\x11\x42\x44RMessages.proto\x12\rnaothmessages\"I\n\x11\x42\x44RControlCommand\x12\x34\n\x0c\x62\x65haviorMode\x18\x01 \x01(\x0e\x32\x1e.naothmessages.BDRBehaviorMode\"\x81\x03\n\x0e\x42\x44RPlayerState\x12G\n\x08\x61\x63tivity\x18\x01 \x01(\x0e\x32&.naothmessages.BDRPlayerState.Activity:\rdoing_nothing\x12\x16\n\x07sitting\x18\x02 \x01(\x08:\x05\x66\x61lse\x12!\n\x12localized_on_field\x18\x03 \x01(\x08:\x05\x66\x61lse\x12\x17\n\x0ctime_playing\x18\x04 \x01(\x01:\x01\x30\x12\x14\n\tgoalsLeft\x18\x05 \x01(\r:\x01\x30\x12\x15\n\ngoalsRight\x18\x06 \x01(\r:\x01\x30\"\xa4\x01\n\x08\x41\x63tivity\x12\x0f\n\x0bpre_playing\x10\x00\x12\x0b\n\x07playing\x10\x01\x12\x14\n\x10pre_entertaining\x10\x02\x12\x10\n\x0c\x65ntertaining\x10\x03\x12\x11\n\rpre_servicing\x10\x04\x12\r\n\tservicing\x10\x05\x12\x11\n\rdoing_nothing\x10\x06\x12\x10\n\x0cinitializing\x10\x07\x12\x0b\n\x07waiting\x10\x08*C\n\x0f\x42\x44RBehaviorMode\x12\x0e\n\nDO_NOTHING\x10\x00\x12\x13\n\x0f\x41UTONOMOUS_PLAY\x10\x01\x12\x0b\n\x07WARTUNG\x10\x02\x42\x16\n\x14\x64\x65.naoth.rc.messages')
 )
 
 _BDRBEHAVIORMODE = _descriptor.EnumDescriptor(
@@ -44,8 +44,8 @@ _BDRBEHAVIORMODE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=416,
-  serialized_end=483,
+  serialized_start=499,
+  serialized_end=566,
 )
 _sym_db.RegisterEnumDescriptor(_BDRBEHAVIORMODE)
 
@@ -93,11 +93,15 @@ _BDRPLAYERSTATE_ACTIVITY = _descriptor.EnumDescriptor(
       name='initializing', index=7, number=7,
       options=None,
       type=None),
+    _descriptor.EnumValueDescriptor(
+      name='waiting', index=8, number=8,
+      options=None,
+      type=None),
   ],
   containing_type=None,
   options=None,
-  serialized_start=263,
-  serialized_end=414,
+  serialized_start=333,
+  serialized_end=497,
 )
 _sym_db.RegisterEnumDescriptor(_BDRPLAYERSTATE_ACTIVITY)
 
@@ -161,6 +165,27 @@ _BDRPLAYERSTATE = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
+    _descriptor.FieldDescriptor(
+      name='time_playing', full_name='naothmessages.BDRPlayerState.time_playing', index=3,
+      number=4, type=1, cpp_type=5, label=1,
+      has_default_value=True, default_value=float(0),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='goalsLeft', full_name='naothmessages.BDRPlayerState.goalsLeft', index=4,
+      number=5, type=13, cpp_type=3, label=1,
+      has_default_value=True, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='goalsRight', full_name='naothmessages.BDRPlayerState.goalsRight', index=5,
+      number=6, type=13, cpp_type=3, label=1,
+      has_default_value=True, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
   ],
   extensions=[
   ],
@@ -175,7 +200,7 @@ _BDRPLAYERSTATE = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=112,
-  serialized_end=414,
+  serialized_end=497,
 )
 
 _BDRCONTROLCOMMAND.fields_by_name['behaviorMode'].enum_type = _BDRBEHAVIORMODE
