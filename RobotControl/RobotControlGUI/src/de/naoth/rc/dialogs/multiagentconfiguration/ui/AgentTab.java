@@ -23,6 +23,7 @@ import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
@@ -44,31 +45,35 @@ public class AgentTab extends Tab implements ConnectionStatusListener, ResponseL
 {
     private MessageServer server = new MessageServer();
     
-    private final Command cmd_cognition = new Command("Cognition:representation:get").addArg("DebugRequest");
+    private final Command cmd_debug_cognition = new Command("Cognition:representation:get").addArg("DebugRequest");
     
-    private final Command cmd_motion = new Command("Motion:representation:get").addArg("DebugRequest");
+    private final Command cmd_debug_motion = new Command("Motion:representation:get").addArg("DebugRequest");
     
-    private final Command cmd_cognition_modules = new Command("Cognition:modules:list");
-    
-    private final Command cmd_motion_modules = new Command("Motion:modules:list");
+    private final Command cmd_modules_cognition = new Command("Cognition:modules:list");
+    private final Command cmd_modules_cognition_store = new Command("Cognition:modules:store");
+    private final Command cmd_modules_motion = new Command("Motion:modules:list");
+    private final Command cmd_modules_motion_store = new Command("Motion:modules:store");
     
     private final Command cmd_agent_list = new Command("Cognition:behavior:list_agents");
-    private List<String> agent_list = new ArrayList<>();
     
     private final Command cmd_agent = new Command("Cognition:behavior:get_agent");
-    private String agent = "";
     
     private final Command cmd_agent_set = new Command("Cognition:behavior:set_agent");
     
-    private final Command cmd_cognition_parameter = new Command("Cognition:ParameterList:list");
+    private final Command cmd_parameter_cognition = new Command("Cognition:ParameterList:list");
     
-    private final Command cmd_motion_parameter = new Command("Motion:ParameterList:list");
+    private final Command cmd_parameter_motion = new Command("Motion:ParameterList:list");
     
-    private final String cmd_cognition_parameter_get = "Cognition:ParameterList:get";
-    private final String cmd_motion_parameter_get = "Motion:ParameterList:get";
+    private final String cmd_parameter_cognition_get = "Cognition:ParameterList:get";
     
+    private final String cmd_parameter_motion_get = "Motion:ParameterList:get";
+    
+    
+    private String agent = "";
+    private List<String> agent_list = new ArrayList<>();
     private final TreeMap<String, TreeItem<Parameter>> cognitionParameter = new TreeMap<>();
     private final TreeMap<String, TreeItem<Parameter>> motionParameter = new TreeMap<>();
+    
     
     private ChangeListener cognitionDebugRequest = (ChangeListener) (ObservableValue o, Object v, Object n) -> {
         request("Cognition:debugrequest:set", o, (boolean) n);
@@ -106,6 +111,15 @@ public class AgentTab extends Tab implements ConnectionStatusListener, ResponseL
     
     @FXML
     protected Button btnUpdateModules;
+    
+    @FXML
+    protected Button btnUpdateParameters;
+    
+    @FXML
+    protected Button btnSaveParameters;
+    
+    @FXML
+    protected Button btnSendBehavior;
     
     @FXML
     protected ComboBox<String> agentList;
@@ -158,9 +172,14 @@ public class AgentTab extends Tab implements ConnectionStatusListener, ResponseL
             evt.getRowValue().getValue().setValue(evt.getNewValue());
         });
 
-        btnSaveModules.setTooltip(new Tooltip("Save module configuration on robot."));
+        // set some tooltips
+        btnSaveModules.setTooltip(new Tooltip("Save module configuration on robot(s)."));
+        btnSaveParameters.setTooltip(new Tooltip("Save parameters locally."));
         btnUpdateDebug.setTooltip(new Tooltip("Update debug requests."));
         btnUpdateModules.setTooltip(new Tooltip("Update modules."));
+        btnUpdateParameters.setTooltip(new Tooltip("Update parameters."));
+        btnSendBehavior.setTooltip(new Tooltip("Sends a new behavior file to the robot(s)."));
+        agentList.setTooltip(new Tooltip("Select executing agent."));
     }
     
     public AgentTab(String host, int port)  {
@@ -189,15 +208,43 @@ public class AgentTab extends Tab implements ConnectionStatusListener, ResponseL
                 server.executeCommand(this, cmd_agent_set);
             }
         });
-        
-        server.executeCommand(this, cmd_cognition);
-        server.executeCommand(this, cmd_motion);
-        server.executeCommand(this, cmd_cognition_modules);
-        server.executeCommand(this, cmd_motion_modules);
+
+        updateModules();
+        updateDebugRequests();
+        updateParameters();
         server.executeCommand(this, cmd_agent_list);
         server.executeCommand(this, cmd_agent);
-        server.executeCommand(this, cmd_cognition_parameter);
-        server.executeCommand(this, cmd_motion_parameter);
+    }
+    
+    @FXML
+    protected void updateParameters() {
+        server.executeCommand(this, cmd_parameter_cognition);
+        server.executeCommand(this, cmd_parameter_motion);
+    }
+    
+    @FXML
+    protected void updateModules() {
+        moduleTree.getRoot().getChildren().clear();
+        server.executeCommand(this, cmd_modules_cognition);
+        server.executeCommand(this, cmd_modules_motion);
+    }
+    
+    @FXML
+    protected void updateDebugRequests() {
+        debugTree.getRoot().getChildren().clear();
+        server.executeCommand(this, cmd_debug_cognition);
+        server.executeCommand(this, cmd_debug_motion);
+    }
+    
+    @FXML
+    protected void saveModules() {
+        server.executeCommand(this, cmd_modules_cognition_store);
+        server.executeCommand(this, cmd_modules_motion_store);
+    }
+    
+    @FXML
+    protected void saveParameters() {
+        System.out.println("saveParameters");
     }
     
     public void requestClose() {
@@ -226,13 +273,13 @@ public class AgentTab extends Tab implements ConnectionStatusListener, ResponseL
     @Override
     public void handleResponse(byte[] result, Command command) {
         Platform.runLater(() -> {
-            if(command.equals(cmd_cognition)) {
-                handleCognitionResponse(result);
-            } else if(command.equals(cmd_motion)) {
-                handleMotionResponse(result);
-            } else if(command.equals(cmd_cognition_modules)) {
+            if(command.equals(cmd_debug_cognition)) {
+                handleCognitionDebugResponse(result);
+            } else if(command.equals(cmd_debug_motion)) {
+                handleMotionDebugResponse(result);
+            } else if(command.equals(cmd_modules_cognition)) {
                 handleCognitionModulesResponse(result);
-            } else if(command.equals(cmd_motion_modules)) {
+            } else if(command.equals(cmd_modules_motion)) {
                 handleMotionModulesResponse(result);
             } else if(command.equals(cmd_agent_list)) {
                 handleAgentListResponse(result);
@@ -244,16 +291,19 @@ public class AgentTab extends Tab implements ConnectionStatusListener, ResponseL
                 } else {
                     agentList.getSelectionModel().select(agent);
                 }
-            } else if(command.equals(cmd_cognition_parameter)) {
+            } else if(command.equals(cmd_parameter_cognition)) {
                 handleCognitionParameterResponse(result);
-            } else if(command.equals(cmd_motion_parameter)) {
+            } else if(command.equals(cmd_parameter_motion)) {
                 handleMotionParameterResponse(result);
-            } else if(command.getName().equals(cmd_cognition_parameter_get)) {
+            } else if(command.getName().equals(cmd_parameter_cognition_get)) {
                 handleCognitionParameterGetResponse(new String(command.getArguments().get("<name>")), result);
-            } else if(command.getName().equals(cmd_motion_parameter_get)) {
+            } else if(command.getName().equals(cmd_parameter_motion_get)) {
                 handleMotionParameterGetResponse(new String(command.getArguments().get("<name>")), result);
+            } else if(command.equals(cmd_modules_cognition_store) || command.equals(cmd_modules_motion_store)) {
+                // currently do nothing ...
+                System.out.println(command.getName() + ": " + new String(result));
             } else {
-                System.out.println(command + ": " + new String(result));
+                System.out.println(command.getName() + ": " + new String(result));
             }
         });
     }
@@ -263,7 +313,7 @@ public class AgentTab extends Tab implements ConnectionStatusListener, ResponseL
         System.out.println("ERROR: " + code);
     }
     
-    private void handleCognitionResponse(byte[] result) {
+    private void handleCognitionDebugResponse(byte[] result) {
         try {
             Messages.DebugRequest request = Messages.DebugRequest.parseFrom(result);
             debugTree.getRoot().getChildren().add(Utils.createDebugRequestCognition(request, cognitionDebugRequest));
@@ -272,7 +322,7 @@ public class AgentTab extends Tab implements ConnectionStatusListener, ResponseL
         }
     }
     
-    private void handleMotionResponse(byte[] result) {
+    private void handleMotionDebugResponse(byte[] result) {
         try {
             Messages.DebugRequest request = Messages.DebugRequest.parseFrom(result);
             debugTree.getRoot().getChildren().add(0, Utils.createDebugRequestMotion(request, motionDebugRequest));
@@ -320,7 +370,7 @@ public class AgentTab extends Tab implements ConnectionStatusListener, ResponseL
             TreeItem<Parameter> parameter = new TreeItem<>(new Parameter(p, null));
             cognitionParameter.put(p, parameter);
             root.getChildren().add(parameter);
-            server.executeCommand(this, new Command(cmd_cognition_parameter_get).addArg("<name>", p));
+            server.executeCommand(this, new Command(cmd_parameter_cognition_get).addArg("<name>", p));
         });
     }
     
@@ -332,7 +382,7 @@ public class AgentTab extends Tab implements ConnectionStatusListener, ResponseL
             TreeItem<Parameter> parameter = new TreeItem<>(new Parameter(p, null));
             motionParameter.put(p, parameter);
             root.getChildren().add(parameter);
-            server.executeCommand(this, new Command(cmd_motion_parameter_get).addArg("<name>", p));
+            server.executeCommand(this, new Command(cmd_parameter_motion_get).addArg("<name>", p));
         });
     }
     
@@ -382,5 +432,12 @@ public class AgentTab extends Tab implements ConnectionStatusListener, ResponseL
         other.agentList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             agentList.getSelectionModel().select(newValue);
         });
+    }
+    
+    public void connectButtons(AgentTab other) {
+        other.btnUpdateDebug.addEventHandler(ActionEvent.ACTION, (e) -> { btnUpdateDebug.fire(); });
+        other.btnUpdateModules.addEventHandler(ActionEvent.ACTION, (e) -> { btnUpdateModules.fire(); });
+        other.btnUpdateParameters.addEventHandler(ActionEvent.ACTION, (e) -> { btnUpdateParameters.fire(); });
+        other.btnSaveModules.addEventHandler(ActionEvent.ACTION, (e) -> { btnSaveModules.fire(); });
     }
 }

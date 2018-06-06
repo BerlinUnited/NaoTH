@@ -4,11 +4,15 @@
 */
 
 .save_button {
-    -fx-graphic: url("/de/naoth/rc/res/arrowdown.png");
+    -fx-graphic: url("../../../res/arrowdown.png");
     -fx-padding: 0.5em;
 }
 
 .refresh_button {
-    -fx-graphic: url("/de/naoth/rc/res/reload.png");
+    -fx-graphic: url("../../../res/reload.png");
     -fx-padding: 0.5em;
+}
+
+#btnSaveModules {
+  -fx-graphic: url("../../../res/arrowup.png");
 }

@@ -4,6 +4,7 @@ import de.naoth.rc.core.dialog.AbstractJFXDialog;
 import de.naoth.rc.core.dialog.DialogPlugin;
 import de.naoth.rc.core.dialog.RCDialog;
 import de.naoth.rc.dialogs.multiagentconfiguration.ui.AgentTab;
+import de.naoth.rc.dialogs.multiagentconfiguration.ui.AgentTabGlobal;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Arrays;
@@ -59,7 +60,7 @@ public class MultiAgentConfigurationFx extends AbstractJFXDialog
     @FXML
     private TabPane tabpane;
     
-    private final AgentTabAll allTab = new AgentTabAll();
+    private final AgentTabGlobal allTab = new AgentTabGlobal();
     
     @Override
     protected boolean isSelfController() {
@@ -128,6 +129,7 @@ public class MultiAgentConfigurationFx extends AbstractJFXDialog
                 AgentTab tab = new AgentTab(ip, port);
                 tab.connectDivider(allTab);
                 tab.connectAgentList(allTab);
+                tab.connectButtons(allTab);
                 tabpane.getTabs().add(tab);
             }
         }
@@ -149,42 +151,18 @@ public class MultiAgentConfigurationFx extends AbstractJFXDialog
         System.out.println("disconnect: " + tabpane.getTabs());
     }
     
-    class AgentTabAll extends AgentTab
-    {
-        public AgentTabAll() {
-            super();
-            
-            setText("All");
-            
-            CheckBoxTreeItem<String> motion_root = new CheckBoxTreeItem<>("Motion");
-            motion_root.setExpanded(true);
-            debugTree.getRoot().getChildren().add(motion_root);
-            Utils.global_debug_requests.put(motion_root.getValue(), motion_root);
-            
-            CheckBoxTreeItem<String> cognition_root = new CheckBoxTreeItem<>("Cognition");
-            cognition_root.setExpanded(true);
-            debugTree.getRoot().getChildren().add(cognition_root);
-            Utils.global_debug_requests.put(cognition_root.getValue(), cognition_root);
-            
-            CheckBoxTreeItem<String> motion_modules_root = new CheckBoxTreeItem<>("Motion");
-            motion_modules_root.setExpanded(true);
-            System.out.println(moduleTree);
-            moduleTree.getRoot().getChildren().add(motion_modules_root);
-            Utils.global_modules.put(motion_modules_root.getValue(), motion_modules_root);
-
-            CheckBoxTreeItem<String> cognition_modules_root = new CheckBoxTreeItem<>("Cognition");
-            cognition_modules_root.setExpanded(true);
-            moduleTree.getRoot().getChildren().add(cognition_modules_root);
-            Utils.global_modules.put(cognition_modules_root.getValue(), cognition_modules_root);
-            
-            agentList.setItems(Utils.global_agent_list);
-        }
-    }
-    
+    /**
+     * Start method for the standalone MultiAgentConfigurationFx application.
+     * 
+     * @param args 
+     */
     public static void main(String[] args) {
         launch(MultiAgentConfigurationFxMain.class, args);
     }
     
+    /**
+     * The standalone MultiAgentConfigurationFx application class.
+     */
     public static class MultiAgentConfigurationFxMain extends Application
     {
         @Override

@@ -22,9 +22,10 @@
                   <ToolBar prefHeight="40.0" prefWidth="200.0">
                     <items>
                         <ComboBox fx:id="agentList" promptText="- Agents -" />
+                        <Button fx:id="btnSendBehavior" mnemonicParsing="false" text="Send behavior" />
                         <Pane opacity="0.0" HBox.hgrow="ALWAYS" />
-                        <Button contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" styleClass="refresh_button" text="Update" />
-                        <Button contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" styleClass="save_button" text="Save" />
+                        <Button fx:id="btnSaveParameters" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#saveParameters" styleClass="save_button" text="Save" />
+                        <Button fx:id="btnUpdateParameters" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#updateParameters" styleClass="refresh_button" text="Update" />
                     </items>
                   </ToolBar>
                   <TreeTableView fx:id="parameterTree" editable="true" prefHeight="417.0" prefWidth="673.0" showRoot="false" tableMenuButtonVisible="true" VBox.vgrow="ALWAYS">
@@ -44,11 +45,11 @@
                      <items>
                         <Label alignment="CENTER" text="Modules" />
                         <Pane opacity="0.0" HBox.hgrow="ALWAYS" />
-                        <Button fx:id="btnSaveModules" contentDisplay="GRAPHIC_ONLY" graphicTextGap="0.0" mnemonicParsing="false" styleClass="save_button" text="Save">
+                        <Button fx:id="btnSaveModules" contentDisplay="GRAPHIC_ONLY" graphicTextGap="0.0" mnemonicParsing="false" onAction="#saveModules" styleClass="save_button" text="Save">
                            <font>
                               <Font name="Font Awesome 5 Free Regular" size="13.0" />
                            </font></Button>
-                        <Button fx:id="btnUpdateModules" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" styleClass="refresh_button" text="Update" />
+                        <Button fx:id="btnUpdateModules" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#updateModules" styleClass="refresh_button" text="Update" />
                      </items>
                   </ToolBar>
                   <TreeView fx:id="moduleTree" prefWidth="200.0" VBox.vgrow="ALWAYS" />
@@ -60,7 +61,7 @@
                      <items>
                         <Label text="DebugRequests" />
                         <Pane opacity="0.0" HBox.hgrow="ALWAYS" />
-                        <Button fx:id="btnUpdateDebug" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" styleClass="refresh_button" text="Update" />
+                        <Button fx:id="btnUpdateDebug" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#updateDebugRequests" styleClass="refresh_button" text="Update" />
                      </items>
                   </ToolBar>
                   <TreeView fx:id="debugTree" prefWidth="200.0" showRoot="false" VBox.vgrow="ALWAYS" />
