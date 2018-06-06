@@ -132,16 +132,36 @@ option bdr_goto_charging_station
 
   state failed {
       decision {
-          if(battery.isDischarging)
-              stay;
-          else
+          if(!battery.isDischarging)
               goto done;
+          else if (state_time > 7000)
+              goto stand_up_before_reapproach;
+          else 
+              stay;
       }
 
       action{
           motion.type  = bdr_sit;
           bdr.message = failed_charging;
+          bdr.sit_down_counter = 0;
       }
+  }
+
+  state stand_up_before_reapproach {
+    decision
+    {
+      if(executed_motion.type == stand && executed_motion.time > 5000)
+        //goto approach_very_slowly; // Wunsch von Olaf... die Beobachtung war, dass sie gut ausgerichtet sind nach dem ersten Setzen
+        goto approach;
+      else
+        stay;
+    }
+        
+    action
+    {
+        motion.type = stand;
+        head.control_mode = look_around;
+    }
   }
 
   target state done {
