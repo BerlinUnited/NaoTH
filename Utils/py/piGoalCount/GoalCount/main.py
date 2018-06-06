@@ -74,6 +74,6 @@ if __name__ == '__main__':
     # check for existing lock file and running process
     lock_file = os.path.join(tempdir, name + '.lock')
 
-    main()
-    #daemon = Daemonize(app=name, pid=lock_file, action=main, foreground=True)
-    #daemon.start()
+    #main()
+    daemon = Daemonize(app=name, pid=lock_file, action=main, foreground=True)
+    daemon.start()

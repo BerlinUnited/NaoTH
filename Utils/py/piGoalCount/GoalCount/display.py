@@ -5,6 +5,7 @@ from time import sleep
 from os import listdir
 from os.path import isfile, join
 import random
+import os
 
 class Display:
   def __init__(self, a = 0, b = 0):
@@ -29,7 +30,9 @@ class Display:
     
     self.imgs = []
     self.currentImage = 0
-    img_path = "./img"
+    
+    img_path = join(os.path.dirname(os.path.realpath(__file__)), "./img")
+    
     for f in listdir(img_path):
       p = join(img_path, f)
       print(p)
