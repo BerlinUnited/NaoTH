@@ -371,7 +371,8 @@ void MonteCarloSelfLocator::updateBySituation()
     }
     else if(getSituationPrior().currentPrior == getSituationPrior().set)
     {
-      updateByOwnHalf(theSampleSet);
+      //updateByOwnHalf(theSampleSet);
+      updateByOwnHalfLookingForward(theSampleSet);
     }
     else if(getSituationPrior().currentPrior == getSituationPrior().playAfterPenalized)
     {
