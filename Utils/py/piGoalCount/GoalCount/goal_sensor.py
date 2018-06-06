@@ -30,18 +30,22 @@ class GoalSensor:
     self.closed = False
 
   def updateGoal1(self, pin):
-    print("updateGoal2")
     if self.time1 == 0 or self.time1 + self.time_delay < time.time():
       self.goal1 += 1
       self.time1 = time.time()
-      update.set()
+      self.update.set()
+      print("updateGoal1 - count: {}".format(self.goal1))
+    else:
+      print("updateGoal1 - skip")
     
   def updateGoal2(self, pin):
-    print("updateGoal2")
     if self.time2 == 0 or self.time2 + self.time_delay < time.time():
       self.goal2 += 1
       self.time2 = time.time()
-      update.set()
+      self.update.set()
+      print("updateGoal2 - count: {}".format(self.goal2))
+    else:
+      print("updateGoal2 - skip")
       
   def reset(self):
     self.goal1 = 0
