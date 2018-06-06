@@ -2,6 +2,9 @@ import pygame
 from datetime import timedelta
 from datetime import datetime
 from time import sleep
+from os import listdir
+from os.path import isfile, join
+import random
 
 class Display:
   def __init__(self, a = 0, b = 0):
@@ -23,6 +26,16 @@ class Display:
     self.goalsRight = b
     self.gameTime = 0
     self.updateText()
+    
+    self.imgs = []
+    self.currentImage = 0
+    img_path = "./img"
+    for f in listdir(img_path):
+      p = join(img_path, f)
+      print(p)
+      if isfile(p) and (p.endswith(".png") or p.endswith(".jpg")):
+        print("load image: {}".format(p))
+        self.imgs += [pygame.image.load(p).convert()]
 
   def setValues(self, a, b, t):
     self.goalsLeft = a
@@ -54,17 +67,26 @@ class Display:
     
     pygame.display.flip()
     
-    
+  def showRandomImage(self):
+    if len(self.imgs) > 0:
+      self.updateImage(random.randint(0,len(self.imgs)-1))
+      
+  def showNextImage(self):
+    if len(self.imgs) > 0:
+      self.updateImage(self.currentImage)
+      self.currentImage += 1
+      if self.currentImage >= len(self.imgs):
+        self.currentImage = 0
+
   def updateImage(self, i):
+    if(i < 0 or i >= len(self.imgs) ):
+      print("Error in updateImage: no image with id {}".format(i))
+      return
+    
+    print("show image {}".format(i))
     self.clear()
-    
-    imgs = [
-      pygame.image.load("./img/bdr-500.png").convert(),
-      pygame.image.load("./img/bu-500.png").convert(),
-    ]
-    
-    im = imgs[i]
-    self.screen.blit(im, (self.width // 2 - im.get_width() // 2, self.height // 2 - im.get_height() // 2))
+    img = self.imgs[i]
+    self.screen.blit(img, (self.width // 2 - img.get_width() // 2, self.height // 2 - img.get_height() // 2))
     pygame.display.flip()
     
     
@@ -79,7 +101,8 @@ if __name__ == '__main__':
   i = 0
   while True:
     #display.setValues(2,7,142)
-    display.updateImage(i)
+    #display.updateImage(i)
+    display.showRandomImage()
     i += 1
     if i > 1:
       i = 0

@@ -40,10 +40,17 @@ def main():
       if last_time == 0 and receiver.time_playing > 0:
         goalSensor.reset()
     
-      display.setValues(goalSensor.goal1, goalSensor.goal2, receiver.time_playing)
-      sender.set_score(goalSensor.goal1, goalSensor.goal2, receiver.time_playing)
+      if receiver.time_playing > 0:
+        display.setValues(goalSensor.goal1, goalSensor.goal2, receiver.time_playing)
+        sender.set_score(goalSensor.goal1, goalSensor.goal2, receiver.time_playing)
+        sleep(0.5)
+      else:
+        #display.showRandomImage()
+        display.showNextImage()
+        sleep(2)
+        
       last_time = receiver.time_playing
-      sleep(0.5)
+      
       
   except (KeyboardInterrupt, SystemExit):
     display.end()
@@ -67,6 +74,6 @@ if __name__ == '__main__':
     # check for existing lock file and running process
     lock_file = os.path.join(tempdir, name + '.lock')
 
-    #main()
-    daemon = Daemonize(app=name, pid=lock_file, action=main, foreground=True)
-    daemon.start()
+    main()
+    #daemon = Daemonize(app=name, pid=lock_file, action=main, foreground=True)
+    #daemon.start()
