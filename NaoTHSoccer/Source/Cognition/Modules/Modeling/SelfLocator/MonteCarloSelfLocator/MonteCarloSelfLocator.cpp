@@ -249,16 +249,6 @@ void MonteCarloSelfLocator::execute()
 
       updateBySensors(theSampleSet);
 
-
-      //HACK
-      if(parameters.updateBySituation) {
-        if(getPlayerInfo().robotState == PlayerInfo::set) 
-        {
-          updateByOwnHalf(theSampleSet);
-        }
-      }
-
-
       // NOTE: statistics has to be after updates and before resampling
       // NOTE: normalizes the likelihood
       updateStatistics(theSampleSet);
