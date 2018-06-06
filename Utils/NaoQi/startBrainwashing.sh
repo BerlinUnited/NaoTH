@@ -24,6 +24,15 @@ fi
 
 sudo -u nao cp ./DefaultBehaviors.xml $default_config
 
+bin_folder="/home/nao/bin"
+
+if [ -f $bin_folder ]; then
+    rm -f $bin_folder
+fi
+
+sudo -u nao cp ./runDefaultBehaviors $bin_folder
+sudo -u nao chmod +x $bin_folder'/runDefaultBehaviors'
+
 /etc/init.d/naoqi restart
 
 echo "Done"
