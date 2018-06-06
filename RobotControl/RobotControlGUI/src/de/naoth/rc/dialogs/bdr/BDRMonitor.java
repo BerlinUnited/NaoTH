@@ -16,6 +16,7 @@ import de.naoth.rc.core.dialog.RCDialog;
 import de.naoth.rc.dataformats.SPLMessage;
 import de.naoth.rc.drawings.DrawingCollection;
 import de.naoth.rc.drawings.FieldDrawingBDR;
+import de.naoth.rc.messages.BDRMessages;
 import de.naoth.rc.messages.TeamMessageOuterClass;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -192,18 +193,21 @@ public class BDRMonitor extends AbstractDialog implements ActionListener, TeamCo
         DrawingCollection drawings = new DrawingCollection();
         robots.forEach((ip, m) -> {
             TeamMessageOuterClass.BUUserTeamMessage umsg = m.getMessage().user;
-//            m.getMessage()
-            Color c = m.getChestColor();
+
+            // 
+            boolean bdrRobotIsLocalized = 
+                umsg.hasBdrPlayerState() && 
+                umsg.getBdrPlayerState().hasLocalizedOnField() && 
+                umsg.getBdrPlayerState().getLocalizedOnField();
             
-            /*
-            if(umsg.hasIsCharging() && umsg.getIsCharging()) {
-                c = Color.YELLOW;
+            // color
+            Color c = Color.lightGray; 
+            if(bdrRobotIsLocalized) {
+                c = m.getChestColor();
             }
-            */
-            //*/
             
             // only draw robot on field if he's localized
-            if(umsg.hasBdrPlayerState() && umsg.getBdrPlayerState().hasLocalizedOnField() && umsg.getBdrPlayerState().getLocalizedOnField()) {
+            if( bdrRobotIsLocalized || umsg.getRobotState() == TeamMessageOuterClass.RobotState.playing ) {
                 m.getMessage().draw(drawings, c, false);
             }
         });

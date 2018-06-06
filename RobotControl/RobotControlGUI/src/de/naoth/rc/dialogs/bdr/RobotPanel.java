@@ -351,7 +351,7 @@ public class RobotPanel extends javax.swing.JPanel {
       if(getMessage().user.getIsCharging()) {
         g2d.drawString(String.format("%3.0f%% (charging)", getMessage().user.getBatteryCharge()*100), 0,0);
       } else {
-          g2d.drawString(String.format("%3.0f%%", getMessage().user.getBatteryCharge()*100), 0,0);
+        g2d.drawString(String.format("%3.0f%%", getMessage().user.getBatteryCharge()*100), 0,0);
       }
       g2d.rotate(Math.PI*0.5);
       g2d.translate(-(int)(wPanel - 10), -(int)hPanel / 2);

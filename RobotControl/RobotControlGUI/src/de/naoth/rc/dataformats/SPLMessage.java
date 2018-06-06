@@ -1,7 +1,6 @@
 package de.naoth.rc.dataformats;
 
 import com.google.protobuf.InvalidProtocolBufferException;
-import de.naoth.rc.drawings.Arrow;
 import de.naoth.rc.drawings.Circle;
 import de.naoth.rc.drawings.DrawingCollection;
 import de.naoth.rc.drawings.FillOval;
@@ -12,7 +11,6 @@ import de.naoth.rc.drawings.Text;
 import de.naoth.rc.math.Pose2D;
 import de.naoth.rc.math.Vector2D;
 import de.naoth.rc.messages.TeamMessageOuterClass;
-import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
 import java.nio.ByteBuffer;
