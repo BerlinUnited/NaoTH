@@ -1,0 +1,14 @@
+/* 
+    Created on : 05.06.2018, 18:46:24
+    Author     : Philipp Strobel <philippstrobel@posteo.de>
+*/
+
+.save_button {
+    -fx-graphic: url("/de/naoth/rc/res/arrowdown.png");
+    -fx-padding: 0.5em;
+}
+
+.refresh_button {
+    -fx-graphic: url("/de/naoth/rc/res/reload.png");
+    -fx-padding: 0.5em;
+}
