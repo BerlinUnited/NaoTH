@@ -18,6 +18,8 @@
 #include "Representations/Perception/ArtificialHorizon.h"
 #include "Representations/Perception/BodyContour.h"
 #include "Representations/Perception/ScanLineEdgelPercept.h"
+#include "Representations/Modeling/RobotPose.h"
+#include "Representations/Infrastructure/FieldInfo.h"
 
 // Tools
 #include "Tools/DoubleCamHelpers.h"
@@ -58,6 +60,9 @@ BEGIN_DECLARE_MODULE(ScanLineEdgelDetector)
   REQUIRE(BodyContour)
   REQUIRE(BodyContourTop)
 
+  REQUIRE(RobotPose)
+  REQUIRE(FieldInfo)
+
   PROVIDE(ScanLineEdgelPercept)
   PROVIDE(ScanLineEdgelPerceptTop)
 END_DECLARE_MODULE(ScanLineEdgelDetector)
@@ -90,6 +95,8 @@ public:
       PARAMETER_REGISTER(double_edgel_angle_threshold) = 0.2;
       PARAMETER_REGISTER(minEndPointGreenDensity) = 0.3;
 
+      PARAMETER_REGISTER(checkSelfloc) = true;
+
       syncWithConfig();
       //DebugParameterList::getInstance().add(this);
     }
@@ -106,6 +113,8 @@ public:
 
     double double_edgel_angle_threshold;
     double minEndPointGreenDensity;
+
+    bool checkSelfloc;
   } theParameters;
 
 private:
@@ -148,6 +157,7 @@ private:
   ColorClasses::Color estimateColorOfSegment(const Vector2i& begin, const Vector2i& end) const;
 
   bool validDistance(const Vector2i& pointOne, const Vector2i& pointTwo) const;
+  bool onTheField(const Vector2i& point) const;
 
   /** Estimates the gradient of the gray-gradient at the point by a Sobel Operator. */
   Vector2d calculateGradient(const Vector2i& point) const;
