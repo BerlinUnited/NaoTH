@@ -223,6 +223,8 @@ option bdr_play
   
   state wartung_reason_temperature{
       decision {
+          else if(remote_control.bdr_control != AUTONOMOUS_PLAY)
+                goto wartung_by_operator;
           else if(body.temperature.leg.left < @min_temperature
                   && body.temperature.leg.right < @min_temperature){
               goto post_wartung;
@@ -267,6 +269,8 @@ option bdr_play
   state wartung_reason_battery{
     decision
     {
+          else if(remote_control.bdr_control != AUTONOMOUS_PLAY)
+              goto wartung_by_operator;
           else if(platform.battery > @max_battery)
               goto post_wartung;
           else if(@reload_consumed) {
@@ -347,8 +351,7 @@ option bdr_play
   {
       decision
       {
-          else if(executed_motion.type == stand
-                  || state_time > 1000)
+          else if(executed_motion.type == stand || state_time > 1000)
           {
             if(bdr.reason == battery_charge)
                 goto pre_wartung_reason_battery;
@@ -356,7 +359,8 @@ option bdr_play
                 goto pre_wartung_reason_temperature;
             else if(remote_control.bdr_control == DO_NOTHING)
                 goto do_nothing;
-            else if(remote_control.bdr_control == AUTONOMOUS_PLAY) {
+            else if(remote_control.bdr_control == AUTONOMOUS_PLAY) 
+            {
                 if(bdr.number_of_players_in_play == 1
                    && bdr.activity != playing)
                     goto pre_autonomous_play;
