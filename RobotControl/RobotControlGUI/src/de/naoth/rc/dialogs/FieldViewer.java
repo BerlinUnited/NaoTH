@@ -542,13 +542,15 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
                         
                        SPLMessage splMsg = SPLMessage.parseFrom(robotMsg);
                        
-                       boolean isOwnMsg = false;
-                       if(ownBodyID.isPresent())
-                       {
-                           isOwnMsg = ownBodyID.get().equals(splMsg.user.getBodyID());
+                       if(!splMsg.user.getIsPenalized()) {
+                            boolean isOwnMsg = false;
+                            if(ownBodyID.isPresent())
+                            {
+                                isOwnMsg = ownBodyID.get().equals(splMsg.user.getBodyID());
+                            }
+
+                            splMsg.draw(dc, isOwnMsg ? Color.red : Color.black, false);
                        }
-                       
-                       splMsg.draw(dc, isOwnMsg ? Color.red : Color.black, false);
                         
                     }
                 } catch (InvalidProtocolBufferException ex) {
