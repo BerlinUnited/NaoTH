@@ -6,7 +6,6 @@ option fall_down_and_stand_up
     {
       // HACK: no standup in init or bdr/naoqi behavior
       if(executed_motion.type == init
-         || executed_motion.type == bdr_entertainment
          || executed_motion.type == bdr_sit)
         stay;
       else if(abs(value=sensor.inertial.y)>30
@@ -29,7 +28,8 @@ option fall_down_and_stand_up
   {
     decision
     {
-      if(motion.enable_stand_up)
+      if(abs(value = robot_pose.x) < 693
+         && abs(value = robot_pose.y) < 346)
       {
 	      if (fall_down_state != upright)
 	        goto wait_before_stand_up;
