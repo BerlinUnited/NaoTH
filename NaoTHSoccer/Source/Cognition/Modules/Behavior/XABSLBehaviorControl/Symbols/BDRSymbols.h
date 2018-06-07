@@ -25,7 +25,8 @@ BEGIN_DECLARE_MODULE(BDRSymbols)
   REQUIRE(TeamMessage)
   REQUIRE(RobotPose)
   PROVIDE(BDRPlayerState)
-  PROVIDE(SayRequest)         // say the message if it has changed
+  //PROVIDE(SayRequest)         // say the message if it has changed
+  PROVIDE(SoundPlayData)
 END_DECLARE_MODULE(BDRSymbols)
 
 class BDRSymbols: public BDRSymbolsBase
