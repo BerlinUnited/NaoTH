@@ -7,6 +7,8 @@ option bdr_search
         stay;
       else if(robot_pose.bdr.close_to_border)
         goto away_from_boundary_before_search;
+      else if (ball.team.is_valid)
+        goto look_to_team_ball;
       else
         goto do_search;
     }
@@ -38,6 +40,31 @@ option bdr_search
       
       motion.walk.coordinate = hip;
       motion.walk.stop_with_stand = true;
+    }
+  }
+
+  state look_to_team_ball {
+    decision 
+    {
+      if(robot_pose.bdr.close_to_border)
+        goto away_from_boundary_before_search;
+      else if(state_time > 3000)
+          goto do_search;
+      else
+        stay;
+    }
+    action {
+      head.control_mode = look_at_team_ball;
+      
+      motion.type = walk;
+      motion.walk.style = stable;
+      motion.walk_speed.x = 0; // mm
+      motion.walk_speed.y = 0; // mm
+      
+      motion.walk_speed.rot = atan2(y = ball.team.position.y, x = ball.team.position.x); //deg
+      motion.walk_speed.rot = abs(value=motion.walk_speed.rot) > 10?motion.walk_speed.rot:0;
+
+      motion.type = motion.walk_speed.rot != 0?walk:stand;
     }
   }
 
