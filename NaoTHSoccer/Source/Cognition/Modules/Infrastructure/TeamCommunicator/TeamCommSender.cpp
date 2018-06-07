@@ -85,7 +85,7 @@ void TeamCommSender::fillMessageBeforeSending() const
     ASSERT(getSoccerStrategy().timeToBall >= 0);
     msg.custom.timeToBall = (unsigned int)getSoccerStrategy().timeToBall;
     msg.custom.isPenalized = getPlayerInfo().robotState == PlayerInfo::penalized;
-    msg.custom.batteryCharge = getBatteryData().charge;
+    msg.custom.batteryCharge = getBodyState().batteryCharge; //getBatteryData().charge;
     msg.custom.temperature = std::max(getBodyState().temperatureLeftLeg, getBodyState().temperatureRightLeg);
     msg.custom.cpuTemperature = getCpuData().temperature;
     // update teamball in teamcomm
@@ -97,7 +97,7 @@ void TeamCommSender::fillMessageBeforeSending() const
       getTeamMessageData().custom.teamBall.y = std::numeric_limits<double>::infinity();
     }
 
-    msg.custom.isCharging = getBatteryData().current > 0.9;
+    msg.custom.isCharging = getBodyState().isCharging; //getBatteryData().current > 0.9;
 
     msg.custom.robotState = getPlayerInfo().robotState;
     msg.custom.teamColor = getPlayerInfo().teamColor;

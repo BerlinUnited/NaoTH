@@ -5,19 +5,22 @@
 
 using namespace naoth;
 
- void Serializer<BodyState>::serialize(const BodyState& representation, std::ostream& stream){
-        naothmessages::BodyState message;
+ void Serializer<BodyState>::serialize(const BodyState& representation, std::ostream& stream)
+ {
+    naothmessages::BodyState message;
 
-        message.set_isliftedup(representation.isLiftedUp);
+    message.set_isliftedup(representation.isLiftedUp);
 
-        google::protobuf::io::OstreamOutputStream buf(&stream);
-        message.SerializePartialToZeroCopyStream(&buf);
-    }
+    google::protobuf::io::OstreamOutputStream buf(&stream);
+    message.SerializePartialToZeroCopyStream(&buf);
+}
 
-void Serializer<BodyState>::deserialize(std::istream& stream, BodyState& representation){
-        naothmessages::BodyState message;
-        google::protobuf::io::IstreamInputStream buf(&stream);
-        message.ParseFromZeroCopyStream(&buf);
-        representation.isLiftedUp = message.isliftedup();
-    }
+void Serializer<BodyState>::deserialize(std::istream& stream, BodyState& representation)
+{
+    naothmessages::BodyState message;
+    google::protobuf::io::IstreamInputStream buf(&stream);
+    message.ParseFromZeroCopyStream(&buf);
+
+    representation.isLiftedUp = message.isliftedup();
+}
 

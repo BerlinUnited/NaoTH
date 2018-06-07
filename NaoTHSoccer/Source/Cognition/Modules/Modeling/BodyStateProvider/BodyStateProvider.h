@@ -69,6 +69,7 @@ private:
     {
       PARAMETER_REGISTER(getup_threshold) = 1.2;
       PARAMETER_REGISTER(maxTimeForLiftUp) = 500;
+      PARAMETER_REGISTER(batteryChargingThreshold) = 0.8;
       syncWithConfig();
     }
 
@@ -78,6 +79,7 @@ private:
 
     double getup_threshold;
     double maxTimeForLiftUp;
+    double batteryChargingThreshold;
   } theParams;
 
 
@@ -92,6 +94,8 @@ private:
   // internal data
   RingBufferWithSum<Vector2<double>, 10> inertialBuffer;
 
+  // filter the battery state
+  RingBufferWithSum<double, 1000> batteryChargeBuffer;
 };
 
 #endif //__BodyStateProvider_h_
