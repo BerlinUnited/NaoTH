@@ -13,6 +13,8 @@ option bdr_striker
         {
             else if(ball.know_where_itis && ball.inOwnHalf && state_time > 1500)
               goto goto_ball;
+            else if(ball.know_where_itis && abs(value=atan2(y = ball.preview.y, x = ball.preview.x)) > 50)
+              goto turn_to_ball;
             else 
               stay;
         }
@@ -21,6 +23,27 @@ option bdr_striker
             situation_abortable = true;
             head.control_mode = search_for_ball;
             motion.type = stand;
+        }
+    }
+
+    state turn_to_ball {
+        decision 
+        {
+            else if(abs(value=atan2(y = ball.preview.y, x = ball.preview.x)) < 30 || state_time > 1500)
+              goto search;
+            else 
+              stay;
+        }
+
+        action {
+            situation_abortable = true;
+            head.control_mode = search_for_ball;
+      
+            motion.type = walk;
+            motion.walk.style = stable;
+            motion.walk_speed.x = 0; // mm
+            motion.walk_speed.y = 0; // mm
+            motion.walk_speed.rot = atan2(y = ball.preview.y, x = ball.preview.x); //deg
         }
     }
 
