@@ -10,9 +10,6 @@
 
 #include <string>
 #include <iostream>
-
-#include <Representations/Infrastructure/FrameInfo.h>
-
 #include "Tools/DataStructures/Printable.h"
 #include "Tools/DataStructures/RingBuffer.h"
 
@@ -75,45 +72,6 @@ namespace naoth
     ~SoundCaptureData();
 
     virtual void print(std::ostream& stream) const;
-  };
-
-  class SayRequest : public Printable
-  {
-  public:
-
-    SayRequest() : message_len(0) {}
-
-    const std::string getMessage() const {
-      return std::string(message,message_len);
-    }
-
-    const FrameInfo& getUpdateTime() const {
-      return updateTime;
-    }
-    
-    void setMessage(const std::string& message, const FrameInfo& updateTime) {
-      if (message.size() < 1024) {
-        strcpy(this->message, message.c_str());
-        message_len = message.size();
-      }
-      this->updateTime = updateTime;
-    }
-
-    virtual void print(std::ostream& stream) const {
-      if(message_len == 0) {
-        stream << "nothing to say\n";
-      } else {
-        stream << "last message: " << getMessage() << "\n";
-      }
-    }
-
-  private:
-    FrameInfo updateTime;
-
-    // HACK: this is needed for shared memory
-    char message[1024];
-    size_t message_len;
-
   };
 }
 

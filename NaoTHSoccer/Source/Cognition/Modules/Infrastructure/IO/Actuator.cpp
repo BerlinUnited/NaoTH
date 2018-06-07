@@ -30,7 +30,6 @@ void Actuator::init(naoth::ProcessInterface& platformInterface, const naoth::Pla
   REG_OUTPUT(GameReturnData);
 
   REG_OUTPUT(WhistleControl);
-  REG_OUTPUT(SayRequest);
 
   platformInterface.registerOutputChanel(getCameraInfo());
   platformInterface.registerOutputChanel(getCameraInfoTop());

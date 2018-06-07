@@ -12,7 +12,7 @@ using namespace std;
 
 PlayerInfo::PlayerInfo() 
 :
-  playersPerTeam(11),
+  playersPerTeam(0),
   playerNumber(0),
   teamNumber(0),
   teamColor(naoth::GameData::unknown_team_color),

@@ -117,7 +117,7 @@ public:
   void set(const UltraSoundSendData& data) { naoCommandUltraSoundSendData.set(data); }
   void set(const WhistleControl& data) { theWhistleDetector.set(data); }
   void set(const BDRNaoQiRequest& data) {naoCommandBDRNaoQiRequestData.set(data); }
-  void set(const SayRequest& data) {naoCommandSayRequestData.set(data); }
+
 
   virtual void getMotionInput()
   {
@@ -179,9 +179,7 @@ protected:
   SharedMemoryWriter<Accessor<UltraSoundSendData> > naoCommandUltraSoundSendData;
   SharedMemoryWriter<Accessor<IRSendData> > naoCommandIRSendData;
   SharedMemoryWriter<Accessor<LEDData> > naoCommandLEDData;
-  
   SharedMemoryWriter<Accessor<BDRNaoQiRequest> > naoCommandBDRNaoQiRequestData;
-  SharedMemoryWriter<Accessor<SayRequest> > naoCommandSayRequestData;
   // -- end -- shared memory access --
 
   //

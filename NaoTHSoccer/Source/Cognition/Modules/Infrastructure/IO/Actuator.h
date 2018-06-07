@@ -51,7 +51,6 @@ BEGIN_DECLARE_MODULE(Actuator)
   REQUIRE(GameReturnData)
   REQUIRE(BodyState)
   REQUIRE(WhistleControl)
-  REQUIRE(SayRequest)
 
   // HACK: needed to transform the HeadMotionRequest
   REQUIRE(KinematicChain)
