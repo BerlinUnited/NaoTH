@@ -36,7 +36,7 @@ stop() {
   echo "Stop GoalCount"
 	if [ -f "$PID" ]
 	then
-		pkill -F $PID
+		kill `cat $PID`
 	else
 		echo "GoalCount not running!"
 	fi
