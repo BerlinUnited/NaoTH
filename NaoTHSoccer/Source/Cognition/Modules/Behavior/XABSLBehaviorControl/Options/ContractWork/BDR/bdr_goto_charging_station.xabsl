@@ -54,7 +54,7 @@ option bdr_goto_charging_station
       decision{
           if (action_done)
               goto sit;
-          else if(state_time > 5000)
+          else if(state_time > 10000)
             goto approach;
           else
               stay;
