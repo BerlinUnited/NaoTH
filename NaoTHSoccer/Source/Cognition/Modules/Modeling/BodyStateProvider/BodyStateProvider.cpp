@@ -30,7 +30,7 @@ void BodyStateProvider::execute()
   updateTheLegTemperature();
   updateIsLiftedUp();
   
-  if(getBatteryData().current < -0.5){
+  if(getBatteryData().current < -0.5) {
     getBodyState().isDischarging = true;
   }else{
     getBodyState().isDischarging = false;
@@ -117,10 +117,15 @@ void BodyStateProvider::updateTheLegTemperature()
 }//end updateTheLegTemperature
 
 void BodyStateProvider::updateIsLiftedUp(){
+  double maxTimeForLiftUp = theParams.maxTimeForLiftUpStand;
+  if (getMotionStatus().currentMotion == motion::walk) {
+    maxTimeForLiftUp = theParams.maxTimeForLiftUpWalk;
+  }
+
    getBodyState().isLiftedUp =  getBodyState().fall_down_state == BodyState::upright && 
                       !getBodyState().standByLeftFoot && 
                       !getBodyState().standByRightFoot && // no foot is on the ground
-                       getFrameInfo().getTimeSince(getBodyState().foot_state_time) > theParams.maxTimeForLiftUp;
+                       getFrameInfo().getTimeSince(getBodyState().foot_state_time) > maxTimeForLiftUp;
 
  
 }
