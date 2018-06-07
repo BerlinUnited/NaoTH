@@ -85,7 +85,7 @@ option bdr_goto_charging_station
       decision {
         //TODO: use some kind of symbol indicating that the sit motion was reached?
         if(state_time > 10000){ 
-          if(battery.isDischarging)
+          if(!battery.isCharging)
               goto increase_counter;
           else 
               goto done;
@@ -132,7 +132,7 @@ option bdr_goto_charging_station
 
   state failed {
       decision {
-          if(!battery.isDischarging)
+          if(battery.isCharging)
               goto done;
           else if (state_time > 7000)
               goto stand_up_before_reapproach;
