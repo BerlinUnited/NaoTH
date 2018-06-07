@@ -24,10 +24,12 @@
 #include "Tools/Debug/DebugRequest.h"
 #include "Tools/Debug/DebugDrawings.h"
 #include <Representations/Modeling/KinematicChain.h>
+#include "Tools/Debug/DebugParameterList.h"
 
 BEGIN_DECLARE_MODULE(SelflocSymbols)
   PROVIDE(DebugDrawings)
   PROVIDE(DebugRequest)
+  PROVIDE(DebugParameterList)
 
   REQUIRE(RobotPose)
   REQUIRE(SelfLocGoalModel)
@@ -48,14 +50,36 @@ public:
   :
     angleOnField(Math::toDegrees(getRobotPose().rotation)),
     angleOnFieldPlanned(Math::toDegrees(getRobotPose().rotation)),
-    toCloseToBorder(false)
+    toCloseToBorder(false),
+    targetLocalRotation(0)
   {
     theInstance = this;
 
     DEBUG_REQUEST_REGISTER("SelflocSymbols:draw_global_origin", "", false);
+
+    getDebugParameterList().add(&parameters);
   };
 
-  virtual ~SelflocSymbols(){}
+  virtual ~SelflocSymbols() 
+  {
+    getDebugParameterList().remove(&parameters);
+  }
+
+  class Parameters: public ParameterList
+  {
+  public: 
+    Parameters(): ParameterList("SelflocSymbols")
+    {
+      PARAMETER_REGISTER(targetPose.translation.x) = -265;
+      PARAMETER_REGISTER(targetPose.translation.y) = 620;
+      PARAMETER_ANGLE_REGISTER(targetPose.rotation) = -90;
+
+      // load from the file after registering all parameters
+      syncWithConfig();
+    }
+
+    Pose2D targetPose;
+  } parameters;
   
   /** registers the symbols at an engine */
   void registerSymbols(xabsl::Engine& engine);
@@ -108,6 +132,9 @@ private:
 
   Vector2d safePoint;
   bool toCloseToBorder;
+
+  Pose2D targetLocal;
+  double targetLocalRotation;
 };// End class SelflocSymbols
 
 

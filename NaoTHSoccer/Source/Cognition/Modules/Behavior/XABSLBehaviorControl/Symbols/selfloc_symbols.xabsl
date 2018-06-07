@@ -65,6 +65,10 @@ namespace selfloc_symbols("Self-localization Symbols") {
   float input goal.own.right_post.x [mm];
   float input goal.own.right_post.y [mm];
 
+  float input robot_pose.charging_target.x;
+  float input robot_pose.charging_target.y;
+  float input robot_pose.charging_target.rotation;
+
   /** a factor describing how long the robot should search for the ball in the current direction.*/
   float input look_in_direction_factor;
 
