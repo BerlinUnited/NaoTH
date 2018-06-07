@@ -188,6 +188,11 @@ void MonteCarloSelfLocator::execute()
         }
       }
 
+      // update by the compas only while localizing
+      if(parameters.updateByCompas && getProbabilisticQuadCompas().isValid()) {
+        updateByCompas(theSampleSet);
+      }
+
       updateBySensors(theSampleSet);
 
       // use prior knowledge
@@ -254,16 +259,6 @@ void MonteCarloSelfLocator::execute()
       }
 
       updateBySensors(theSampleSet);
-
-
-      //HACK
-      if(parameters.updateBySituation) {
-        if(getPlayerInfo().robotState == PlayerInfo::set) 
-        {
-          updateByOwnHalf(theSampleSet);
-        }
-      }
-
 
       // NOTE: statistics has to be after updates and before resampling
       // NOTE: normalizes the likelihood
@@ -382,7 +377,8 @@ void MonteCarloSelfLocator::updateBySituation()
   }
   else if(getSituationPrior().currentPrior == getSituationPrior().set)
   {
-    updateByOwnHalf(theSampleSet);
+    //updateByOwnHalf(theSampleSet);
+    updateByOwnHalfLookingForward(theSampleSet);
   }
   else if(getSituationPrior().currentPrior == getSituationPrior().playAfterPenalized)
   {
@@ -427,9 +423,11 @@ bool MonteCarloSelfLocator::updateBySensors(SampleSet& sampleSet) const
     updateByMiddleCircle(getLinePercept(), sampleSet);
   }
 
+  /*
   if(parameters.updateByCompas && getProbabilisticQuadCompas().isValid()) {
     updateByCompas(sampleSet);
   }
+  */
 
   if(parameters.updateByLinePoints)
   {
