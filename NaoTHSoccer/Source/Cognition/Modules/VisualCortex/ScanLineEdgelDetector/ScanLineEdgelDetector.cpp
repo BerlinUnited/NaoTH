@@ -200,7 +200,8 @@ ScanLineEdgelPercept::EndPoint ScanLineEdgelDetector::scanForEdgels(int scan_id,
         //endPoint.color = ColorClasses::green;
         //endPoint.posInImage = peak_point_max;
         //lastGreenPoint = peak_point_max;
-      } else if (!validDistance(lastGreenPoint, peak_point_max)) {
+        if(!onTheField(peak_point_min)) break;
+      } else if (!validDistance(lastGreenPoint, peak_point_max) || !onTheField(peak_point_max)) {
         break;
       }
 
@@ -225,7 +226,10 @@ ScanLineEdgelPercept::EndPoint ScanLineEdgelDetector::scanForEdgels(int scan_id,
         //endPoint.color = ColorClasses::green;
         //endPoint.posInImage = peak_point_min;
         //lastGreenPoint = peak_point_min;
-      } else if (!validDistance(lastGreenPoint, peak_point_min)) {
+
+        if(!onTheField(peak_point_min)) break;
+
+      } else if (!validDistance(lastGreenPoint, peak_point_min) || !onTheField(peak_point_min)) {
         break;
       }
 
@@ -325,6 +329,34 @@ bool ScanLineEdgelDetector::validDistance(const Vector2i& pointOne, const Vector
   return true;
 }
 
+
+bool ScanLineEdgelDetector::onTheField(const Vector2i& point) const
+{
+  if(!theParameters.checkSelfloc) {
+    return true;
+  }
+
+  if (!getRobotPose().isValid) {
+    return true;
+  }
+
+  Vector2d beginOnTheGround;
+  if(CameraGeometry::imagePixelToFieldCoord(
+    getCameraMatrix(),
+    getCameraInfo(),
+    point.x,
+    point.y,
+    0.0,
+    beginOnTheGround))
+  {
+    Vector2d pointGlobal = getRobotPose()*beginOnTheGround;
+    if(getFieldInfo().carpetRect.inside(pointGlobal)) {
+      return true;
+    }
+  }
+
+  return false;
+}
 
 ColorClasses::Color ScanLineEdgelDetector::estimateColorOfSegment(const Vector2i& begin, const Vector2i& end) const
 {

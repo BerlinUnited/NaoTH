@@ -49,6 +49,10 @@ void SelflocSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalInputSymbol("robot_pose.planned.y",&robotPosePlanned.translation.y);
   engine.registerDecimalInputSymbol("robot_pose.planned.rotation",&angleOnFieldPlanned);
 
+
+  engine.registerDecimalInputSymbol("robot_pose.charging_target.x",&targetLocal.translation.x);
+  engine.registerDecimalInputSymbol("robot_pose.charging_target.y",&targetLocal.translation.y);
+  engine.registerDecimalInputSymbol("robot_pose.charging_target.rotation",&targetLocalRotation);
   
 
   // "field_to_relative.x"
@@ -86,7 +90,6 @@ void SelflocSymbols::execute()
   robotPosePlanned = getRobotPose() + getMotionStatus().plannedMotion.hip;
   angleOnFieldPlanned = Math::toDegrees(robotPosePlanned.rotation);
 
-  
   const Pose3D& hip = getKinematicChain().getLink(KinematicChain::Hip).M;
   
   // feet in local coordinates
@@ -101,12 +104,34 @@ void SelflocSymbols::execute()
   robotPosePlanned = getRobotPose() + plannedOrigin;
   angleOnFieldPlanned = Math::toDegrees(robotPosePlanned.rotation);
 
+  // TODO: das soll in die BDR symbols
+  Pose2D targetGlobal = parameters.targetPose;
+  if (getRobotPose().globallyMirrored) {
+    targetGlobal.rotation *= -1;
+    targetGlobal.translation.y *= -1;
+  }
+
+  targetLocal = robotPosePlanned.invert()*targetGlobal;
+  targetLocalRotation = Math::toDegrees(targetLocal.rotation);
+
   DEBUG_REQUEST("SelflocSymbols:draw_global_origin",
     FIELD_DRAWING_CONTEXT;
     //PEN("FFFFFF", 20);
     //ROBOT(robotPosePlanned.translation.x, robotPosePlanned.translation.y, robotPosePlanned.rotation);
     PEN("000000", 20);
     CIRCLE(robotPosePlanned.translation.x, robotPosePlanned.translation.y, 10);
+
+    PEN("FF0000", 20);
+    CIRCLE(targetLocal.translation.x, targetLocal.translation.y, 10);
+    ARROW(targetLocal.translation.x, targetLocal.translation.y, 
+          targetLocal.translation.x + 100*cos(targetLocal.rotation), 
+          targetLocal.translation.y + 100*sin(targetLocal.rotation));
+
+    PEN("0000FF", 20);
+    CIRCLE(targetGlobal.translation.x, targetGlobal.translation.y, 10);
+    ARROW(targetGlobal.translation.x, targetGlobal.translation.y, 
+          targetGlobal.translation.x + 100*cos(targetGlobal.rotation), 
+          targetGlobal.translation.y + 100*sin(targetGlobal.rotation));
   );
 
   // calculate the distance to the sidelines

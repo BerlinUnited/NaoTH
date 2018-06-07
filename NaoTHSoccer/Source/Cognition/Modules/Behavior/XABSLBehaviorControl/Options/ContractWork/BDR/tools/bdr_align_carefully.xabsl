@@ -26,10 +26,9 @@ option bdr_align_carefully
     {
       motion.type = walk;
       motion.walk.style = stable;
-      motion.walk_speed.rot = normalize(angle=atan2(y = @y - robot_pose.planned.y, x = @x - robot_pose.planned.x) - robot_pose.planned.rotation);
-      motion.walk_speed.x = vector.abs(x = @x - robot_pose.planned.x, y = @y - robot_pose.planned.y) * cos(angle=motion.walk_speed.rot);
-      motion.walk_speed.y = vector.abs(x = @x - robot_pose.planned.x, y = @y - robot_pose.planned.y) * sin(angle=motion.walk_speed.rot);
-      motion.walk_speed.rot = normalize(angle=(@rot - robot_pose.planned.rotation));
+      motion.walk_speed.x = robot_pose.charging_target.x;
+      motion.walk_speed.y = robot_pose.charging_target.y;
+      motion.walk_speed.rot = robot_pose.charging_target.rotation;
       motion.walk.coordinate = hip;
       motion.walk.stop_with_stand = true;
     }

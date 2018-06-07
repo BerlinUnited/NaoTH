@@ -60,7 +60,28 @@ option bdr_play
   {
     decision
     {
-      else if(robot_pose.is_valid && executed_motion.time > 5000)
+      else if(robot_pose.is_valid)
+        goto wait_after_localize;
+      else
+        stay;
+    }
+    action
+    {
+        motion.type = stand;
+        head.control_mode = look_around;
+        situationStatusOwnHalf = last_state_was_penalized;
+        bdr.activity = initializing;   
+
+        bdr.charge_beginning = platform.battery;
+        bdr.temperature_beginning = max(value0 = body.temperature.leg.left, value1 = body.temperature.leg.right);
+    }
+  }
+
+  state wait_after_localize
+  {
+    decision
+    {
+      else if(state_time > 3000)
         goto transition;
       else
         stay;
@@ -76,6 +97,7 @@ option bdr_play
         bdr.temperature_beginning = max(value0 = body.temperature.leg.left, value1 = body.temperature.leg.right);
     }
   }
+
 
   state do_nothing
   {
