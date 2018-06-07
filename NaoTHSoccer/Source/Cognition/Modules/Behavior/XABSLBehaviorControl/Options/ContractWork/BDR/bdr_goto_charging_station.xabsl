@@ -38,9 +38,8 @@ option bdr_goto_charging_station
 
   state wait_and_localize{
       decision {
-          if(state_time > 10000) {
+          if(state_time > 10000)
               goto approach_very_slowly;
-          }
           else
               stay;
       }
@@ -55,6 +54,8 @@ option bdr_goto_charging_station
       decision{
           if (action_done)
               goto sit;
+          else if(state_time > 5000)
+            goto approach;
           else
               stay;
       }
