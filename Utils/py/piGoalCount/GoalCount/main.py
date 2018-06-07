@@ -40,7 +40,6 @@ class GoalConter:
     robots_are_playing = False
     time_of_state_change = time.time()
     
-    last_time = receiver.time_playing
     try:
     
       #while not goalSensor.update.wait():
@@ -49,28 +48,33 @@ class GoalConter:
         #print ("set score: {}:{}".format(goal1, goal2))
         
       while self.running:
-        # a new game started
-        if last_time == 0 and receiver.time_playing > 0:
-          goalSensor.reset()
-      
+
         # track the state change
         last_state = robots_are_playing
         robots_are_playing = receiver.time_playing > 0
         if robots_are_playing != last_state:
           time_of_state_change = time.time()
+          if robots_are_playing:
+            goalSensor.reset()
         
-        if robots_are_playing or (time.time() - time_of_state_change) < 10:
+        #robots_are_playing = True
+        
+        if robots_are_playing:
           display.setValues(goalSensor.goal1, goalSensor.goal2, receiver.time_playing)
           sender.set_score(goalSensor.goal1, goalSensor.goal2, receiver.time_playing)
           sleep(0.5)
-        else:
+        elif time.time() > time_of_state_change + 10:
           #display.showRandomImage()
           display.showNextImage()
           sleep(2)
-          
-        last_time = receiver.time_playing
+        else:
+          sleep(0.5)
         
-        
+      display.end()
+      goalSensor.close()
+      receiver.stop()
+      sender.stop()
+
     except (KeyboardInterrupt, SystemExit):
       display.end()
       print("Interrupted or Exit")
@@ -79,7 +83,7 @@ class GoalConter:
       receiver.stop()
       sender.stop()
       
-    goalSensor.close()
+    #goalSensor.close()
     #receiver.stop()
     #sender.stop()
     
