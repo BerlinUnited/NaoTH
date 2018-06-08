@@ -16,13 +16,16 @@ public:
     NONE,
     PRESSED,
     RELEASED,
-    CLICKED  // button is pressed not longer than 1s
+    CLICKED,  // button is pressed not longer than 1s
+    DOUBLE_CLICKED
   } eventState;
 
   unsigned int timeOfLastEvent;
+  unsigned int timeOfLastClick;
+  bool clickNeedsProcessing;
   bool isPressed;
 
-  ButtonEvent() : eventState(NONE), timeOfLastEvent(0), isPressed(false) {}
+  ButtonEvent() : eventState(NONE), timeOfLastEvent(0), timeOfLastClick(0), clickNeedsProcessing(false), isPressed(false) {}
   void operator=(EventType id) { eventState = id; }
   bool operator==(EventType id) const { return this->eventState == id; }
 
@@ -32,6 +35,7 @@ public:
       case PRESSED: return "PRESSED";
       case RELEASED: return "RELEASED";
       case CLICKED: return "CLICKED";
+      case DOUBLE_CLICKED: return "DOUBLE_CLICKED";
       default: return "NONE";
     }
   }
