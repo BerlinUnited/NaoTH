@@ -90,6 +90,10 @@ void GameController::execute()
     getPlayerInfo().update(getGameData());
   }
   
+  // reset any old sound request
+  getSoundPlayData().mute = true;
+  getSoundPlayData().soundFile = "";
+
   handleButtons();
   handleHeadButtons();
   handleDebugRequest();  
@@ -186,7 +190,8 @@ void GameController::handleButtons()
       if(getButtonState()[ButtonState::Chest].clicksInSequence >= 2) {
         // double clickk triggers a manual penalize that can't be overriden by the GameController
         isManualPenalized = true;
-        std::cout << "manual penalize was set" << std::endl;
+        getSoundPlayData().mute = false;
+        getSoundPlayData().soundFile = "penalized.wav";
       } else {
         // switch back to play and unset the manual penalized flag
         getPlayerInfo().robotState = PlayerInfo::playing;
@@ -243,11 +248,7 @@ void GameController::handleButtons()
 
 void GameController::handleHeadButtons()
 {
-  getSoundPlayData().mute = true;
-  getSoundPlayData().soundFile = "";
-
-
-  if(   getButtonState().buttons[ButtonState::HeadMiddle] == ButtonEvent::CLICKED
+  if(getButtonState().buttons[ButtonState::HeadMiddle] == ButtonEvent::CLICKED
      && getPlayerInfo().robotState == PlayerInfo::initial)
   {
     int playerNumber = getPlayerInfo().playerNumber;
