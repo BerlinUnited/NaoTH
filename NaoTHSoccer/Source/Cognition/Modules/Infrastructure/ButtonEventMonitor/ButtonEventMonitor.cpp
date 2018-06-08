@@ -20,9 +20,6 @@ void ButtonEventMonitor::execute()
 
 void ButtonEventMonitor::update(ButtonEvent& buttonEvent, bool pressed)
 {
-  const unsigned int doubleClickWaitTime = 300;
-
-
   buttonEvent = ButtonEvent::NONE;
 
   // detect change in the status of the button
@@ -34,24 +31,10 @@ void ButtonEventMonitor::update(ButtonEvent& buttonEvent, bool pressed)
 
   // button is pressed not longer than 1s
   if(buttonEvent == ButtonEvent::RELEASED && getFrameInfo().getTime() < buttonEvent.timeOfLastEvent + 1000) {
-    if(buttonEvent.lastEventWasClick && getFrameInfo().getTime() < buttonEvent.timeOfLastEvent + doubleClickWaitTime) {
-      // double click occured
-      buttonEvent.lastEventWasClick = false;
-      buttonEvent = ButtonEvent::DOUBLE_CLICKED;
-    } else {
-      // remember that there was a click in this frame and make sure this event is process later
-      buttonEvent.lastEventWasClick = true;
-    }
+    buttonEvent = ButtonEvent::CLICKED;
   }
 
-
-  if(buttonEvent == ButtonEvent::NONE) {
-    // check if we have to process an old click event after waiting long enough for a potential double click
-    if(buttonEvent.lastEventWasClick && getFrameInfo().getTime() < buttonEvent.timeOfLastEvent + doubleClickWaitTime) {
-      buttonEvent.lastEventWasClick = false;
-      buttonEvent = ButtonEvent::CLICKED;
-    }
-  } else {
+  if(!(buttonEvent == ButtonEvent::NONE)) {
     buttonEvent.timeOfLastEvent = getFrameInfo().getTime();
   }
 }
