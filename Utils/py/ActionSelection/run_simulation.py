@@ -55,7 +55,6 @@ def main():
 
     action_list = [no_action, kick_short, sidekick_left, sidekick_right]
 
-    #while True:
     while plt.get_fignums():
         actions_consequences = []
         # Simulate Consequences

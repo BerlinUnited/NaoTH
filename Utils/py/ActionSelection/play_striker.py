@@ -12,26 +12,26 @@ from state import State
 from run_simulation_with_particleFilter import calculate_best_direction as heinrich_test
 
 
-def minimal_rotation(state, action, turn_direction):
+def minimal_rotation(s, action, turn_direction):
   
     turn_speed = math.radians(5.0)
     action_dir = 0
 
     none = a.Action("none", 0, 0, 0, 0)
-    none_actions_consequences = Sim.simulateAction(none, state, num_particles=30)
+    none_actions_consequences = Sim.simulateAction(none, s, num_particles=30)
 
     while True:
         # turn towards the direction of the action
-        state.pose.rotate(action_dir)
+        s.pose.rotate(action_dir)
 
         # Simulate Consequences
-        actions_consequences = Sim.simulateAction(action, state, num_particles=30)
+        actions_consequences = Sim.simulateAction(action, s, num_particles=30)
 
         # Decide best action
-        selected_action_idx = Sim.decide_minimal([none_actions_consequences, actions_consequences], state)
+        selected_action_idx = Sim.decide_minimal([none_actions_consequences, actions_consequences], s)
 
         # restore the previous orientation
-        state.pose.rotate(-action_dir)
+        s.pose.rotate(-action_dir)
 
         if selected_action_idx != 0:
             break
@@ -41,7 +41,7 @@ def minimal_rotation(state, action, turn_direction):
         else:
             # decide on rotation direction once
             if turn_direction == 0:
-                attack_direction = attack_dir.get_attack_direction(state)
+                attack_direction = attack_dir.get_attack_direction(s)
                 turn_direction = np.sign(attack_direction.angle())  # "> 0" => left, "< 0" => right
 
             # set motion request
@@ -50,11 +50,11 @@ def minimal_rotation(state, action, turn_direction):
     return action_dir
 
 
-def direct_kick_strategy_cool_best(state, action_list):
-    return direct_kick_strategy_cool(state, action_list, True)
+def direct_kick_strategy_cool_best(s, action_list):
+    return direct_kick_strategy_cool(s, action_list, True)
 
 
-def direct_kick_strategy_cool(state, action_list, take_best=False):
+def direct_kick_strategy_cool(s, action_list, take_best=False):
   
     actions_consequences = []
     rotations = []
@@ -68,8 +68,8 @@ def direct_kick_strategy_cool(state, action_list, take_best=False):
             rotation = 0
         else:
             # optimize action
-            a0 = minimal_rotation(state, action, 1)
-            a1 = minimal_rotation(state, action, -1)
+            a0 = minimal_rotation(s, action, 1)
+            a1 = minimal_rotation(s, action, -1)
             if np.abs(a0) < np.abs(a1):
                 rotation = a0
             else:
@@ -81,12 +81,12 @@ def direct_kick_strategy_cool(state, action_list, take_best=False):
         rotations += [rotation]
         
         # apply optimized rotation
-        state.pose.rotate(rotation)
+        s.pose.rotate(rotation)
         
-        actions_consequences.append(Sim.simulateAction(action, state, num_particles=30))
+        actions_consequences.append(Sim.simulateAction(action, s, num_particles=30))
         
         # restore previous rotation
-        state.pose.rotate(-rotation)
+        s.pose.rotate(-rotation)
         
         if action.name is not "none":
             if fastest_action_dir is None or np.abs(rotation) < np.abs(fastest_action_dir):
@@ -95,14 +95,14 @@ def direct_kick_strategy_cool(state, action_list, take_best=False):
         
     # Decide best action
     if take_best:
-        selected_action_idx = Sim.decide_minimal(actions_consequences, state)
+        selected_action_idx = Sim.decide_minimal(actions_consequences, s)
         return selected_action_idx, rotations[selected_action_idx]
     else:
         # print fastest_action_idx, selected_action_idx
         return fastest_action_idx, fastest_action_dir
 
 
-def direct_kick_strategy(state, action_list):
+def direct_kick_strategy(s, action_list):
   
     turn_speed = math.radians(5.0)
     action_dir = 0
@@ -110,26 +110,26 @@ def direct_kick_strategy(state, action_list):
 
     while True:
         # turn towards the direction of the action
-        state.pose.rotate(action_dir)
+        s.pose.rotate(action_dir)
 
         # Simulate Consequences
-        actions_consequences = [Sim.simulateAction(action, state, num_particles=30) for action in action_list]
+        actions_consequences = [Sim.simulateAction(action, s, num_particles=30) for action in action_list]
 
         # Decide best action
-        selected_action_idx = Sim.decide_minimal(actions_consequences, state)
+        selected_action_idx = Sim.decide_minimal(actions_consequences, s)
         
         # restore the previous orientation
-        state.pose.rotate(-action_dir)
+        s.pose.rotate(-action_dir)
 
         if selected_action_idx != 0:
             break
         elif np.abs(action_dir) > math.pi:
-            print ("WARNING: in direct_kick_strategy no kick found after rotation {0}.".format(action_dir))
+            print("WARNING: in direct_kick_strategy no kick found after rotation {0}.".format(action_dir))
             break
         else:
             # decide on rotation direction once
             if turn_direction == 0:
-                attack_direction = attack_dir.get_attack_direction(state)
+                attack_direction = attack_dir.get_attack_direction(s)
                 turn_direction = np.sign(attack_direction.angle())  # "> 0" => left, "< 0" => right
 
             # set motion request
@@ -138,7 +138,7 @@ def direct_kick_strategy(state, action_list):
     return selected_action_idx, action_dir
 
 
-def optimal_kick_strategy(state, action_list):
+def optimal_kick_strategy(s, action_list):
   
     action_dir = None
     selected_action_idx = 0
@@ -147,7 +147,7 @@ def optimal_kick_strategy(state, action_list):
         if action.name is "none":
             continue
 
-        rotation, _ = heinrich_test(state, action, False, iterations=20)
+        rotation, _ = heinrich_test(s, action, False, iterations=20)
 
         if action_dir is None or np.abs(rotation) < np.abs(action_dir):
             action_dir = rotation
@@ -156,7 +156,7 @@ def optimal_kick_strategy(state, action_list):
     return selected_action_idx, action_dir
 
     
-def optimal_value_strategy(state, action_list):
+def optimal_value_strategy(s, action_list):
   
     actions_consequences = []
     rotations = []
@@ -166,27 +166,27 @@ def optimal_value_strategy(state, action_list):
             rotation = 0
         else:
             # optimize action
-            rotation, _ = heinrich_test(state, action, False, iterations=20)
+            rotation, _ = heinrich_test(s, action, False, iterations=20)
         
         rotations += [rotation]
         
         # apply optimized rotation
-        state.pose.rotate(rotation)
+        s.pose.rotate(rotation)
         
-        actions_consequences.append(Sim.simulateAction(action, state, num_particles=30))
+        actions_consequences.append(Sim.simulateAction(action, s, num_particles=30))
         
         # restore previous rotation
-        state.pose.rotate(-rotation)
+        s.pose.rotate(-rotation)
 
     # Decide best action
-    selected_action_idx = Sim.decide_minimal(actions_consequences, state)
+    selected_action_idx = Sim.decide_minimal(actions_consequences, s)
 
     return selected_action_idx, rotations[selected_action_idx]    
 
     
 class Simulator:
-    def __init__(self, state, strategy, action_list):
-        self.state = state
+    def __init__(self, s, strategy, action_list):
+        self.state = s
         self.strategy = strategy
         self.action_list = action_list
 
@@ -252,10 +252,10 @@ class Simulator:
             self.state.ball_position = new_ball_position.pos()
     
     
-def run_experiment(origin, strategy, action_list, max_iterations=30):
+def run_experiment(original_state, strategy, action_list, max_iterations=30):
   
-    state = copy.deepcopy(origin)
-    simulator = Simulator(state, strategy, action_list)
+    s = copy.deepcopy(original_state)
+    simulator = Simulator(s, strategy, action_list)
 
     # record the state of the simulator
     history = [copy.deepcopy(simulator)]
@@ -280,8 +280,8 @@ def run_experiment(origin, strategy, action_list, max_iterations=30):
     return history
 
   
-def select(actions, ids):
-    return [actions[x] for x in ids]
+def select(selected_actions, ids):
+    return [selected_actions[x] for x in ids]
 
 
 if __name__ == "__main__":
@@ -345,7 +345,7 @@ if __name__ == "__main__":
         history3 = run_experiment(state, direct_kick_strategy_cool, all_actions)
         
         print([np.degrees(h.turn_around_ball) for h in history3[0:-1]])
-        print ([h.selected_action_idx for h in history3[0:-1]])
+        print([h.selected_action_idx for h in history3[0:-1]])
         
         h3 = np.array([[h.state.pose.translation.x, h.state.pose.translation.y] for h in history3])
         v3 = np.array([[np.cos(h.state.pose.rotation), np.sin(h.state.pose.rotation)] for h in history3])*200
