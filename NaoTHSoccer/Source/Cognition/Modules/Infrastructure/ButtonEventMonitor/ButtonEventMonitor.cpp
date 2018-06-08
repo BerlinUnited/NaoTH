@@ -20,7 +20,7 @@ void ButtonEventMonitor::execute()
 
 void ButtonEventMonitor::update(ButtonEvent& buttonEvent, bool pressed)
 {
-  const unsigned int maxSequenceLength = 800;
+  const unsigned int maxSequenceLength = 350;
 
   buttonEvent = ButtonEvent::NONE;
 
