@@ -2,6 +2,7 @@ from goprocam.constants import *
 
 # NaoCam / a1b0a1b0a1
 # NAOCAM_2 / a1b0a1b0a1
+# NAOCAM_3 / a1b0a1b0a1
 # GP26329941 / family3887 / D6:B9:D4:D7:B7:40
 # GP26297683 / epic0546 / F8:D2:E9:F0:AC:0B
 
