@@ -190,12 +190,13 @@ public:
     message(alive)
   {}
 
+  /*
+  This is a enum because there used to be other game controller return message states like "manual penalize".
+  In case these will be re-introduced it is easier to keep this as enum for a while.
+  */
   enum Message
   {
     alive             = GAMECONTROLLER_RETURN_MSG_ALIVE,
-    //FIXME DIRTY Hack
-    manual_penalise   = 1, //GAMECONTROLLER_RETURN_MSG_MAN_PENALISE,
-    manual_unpenalise = 2, //GAMECONTROLLER_RETURN_MSG_MAN_UNPENALISE,
   };
 
   static std::string toString(Message value);

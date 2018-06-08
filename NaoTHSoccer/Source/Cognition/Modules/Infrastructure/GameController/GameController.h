@@ -47,7 +47,6 @@ private:
 private:
   int lastWhistleCount;
   GameData::GameState lastGameState;
-  GameReturnData::Message returnMessage;
 };
 
 #endif // GAMECONTROLLER_H
