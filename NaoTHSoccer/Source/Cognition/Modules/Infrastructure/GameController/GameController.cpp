@@ -191,11 +191,14 @@ void GameController::handleButtons()
         // double clickk triggers a manual penalize that can't be overriden by the GameController
         isManualPenalized = true;
         getSoundPlayData().mute = false;
-        getSoundPlayData().soundFile = "penalized.wav";
+        getSoundPlayData().soundFile = "manual_penalize.wav";
       } else {
         // switch back to play and unset the manual penalized flag
         getPlayerInfo().robotState = PlayerInfo::playing;
+
         isManualPenalized = false;
+        getSoundPlayData().mute = false;
+        getSoundPlayData().soundFile = "listening_to_gamecontroller.wav";
       }
       break;
     }
