@@ -20,8 +20,7 @@ void ButtonEventMonitor::execute()
 
 void ButtonEventMonitor::update(ButtonEvent& buttonEvent, bool pressed)
 {
-  const unsigned int doubleClickWaitTime = 300;
-
+  const unsigned int maxSequenceLength = 800;
 
   buttonEvent = ButtonEvent::NONE;
 
@@ -34,25 +33,20 @@ void ButtonEventMonitor::update(ButtonEvent& buttonEvent, bool pressed)
 
   // button is pressed not longer than 1s
   if(buttonEvent == ButtonEvent::RELEASED && getFrameInfo().getTime() < buttonEvent.timeOfLastEvent + 1000) {
-    if(buttonEvent.clickNeedsProcessing && getFrameInfo().getTime() < buttonEvent.timeOfLastClick + doubleClickWaitTime) {
-      // double click occured
-      buttonEvent.clickNeedsProcessing = false;
-      buttonEvent = ButtonEvent::DOUBLE_CLICKED;
+    buttonEvent = ButtonEvent::CLICKED;
+    
+    if(buttonEvent.clicksInSequence > 0  && getFrameInfo().getTime() < buttonEvent.timeOfLastClick + maxSequenceLength) {
+      // additional click inside same sequence occured
+      buttonEvent.clicksInSequence += 1;
     } else {
-      // remember that there was a click in this frame and make sure this event is process later
-      buttonEvent.clickNeedsProcessing = true;
-      buttonEvent.timeOfLastClick = getFrameInfo().getTime();
+      // start a click sequence with an initial click
+      buttonEvent.clicksInSequence = 1;
     }
   }
 
-
-  if(buttonEvent == ButtonEvent::NONE) {
-    // check if we have to process an old click event after waiting long enough for a potential double click
-    unsigned int clickSequenceTime = getFrameInfo().getTime() - buttonEvent.timeOfLastClick;
-    if(buttonEvent.clickNeedsProcessing && clickSequenceTime > doubleClickWaitTime) {
-      buttonEvent.clickNeedsProcessing = false;
-      buttonEvent = ButtonEvent::CLICKED;
-    }
+  if(buttonEvent == ButtonEvent::CLICKED) {
+//    std::cout << "click sequence with " << buttonEvent.clicksInSequence << " clicks" << std::endl;
+    buttonEvent.timeOfLastClick = getFrameInfo().getTime();
   }
 
   if(!(buttonEvent == ButtonEvent::NONE)) {
