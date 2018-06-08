@@ -73,6 +73,7 @@ public class AgentTab extends Tab implements ConnectionStatusListener, ResponseL
     private List<String> agent_list = new ArrayList<>();
     private final TreeMap<String, TreeItem<Parameter>> cognitionParameter = new TreeMap<>();
     private final TreeMap<String, TreeItem<Parameter>> motionParameter = new TreeMap<>();
+    private final TreeMap<String, TreeItem<Parameter>> parameter = new TreeMap<>();
     
     
     private ChangeListener cognitionDebugRequest = (ChangeListener) (ObservableValue o, Object v, Object n) -> {
@@ -154,7 +155,7 @@ public class AgentTab extends Tab implements ConnectionStatusListener, ResponseL
         parameterTree.setShowRoot(false);
         
         TreeItem<Parameter> parameterTreeRoot = new TreeItem<>(new Parameter("root", null));
-        parameterTreeRoot.getChildren().addAll(new TreeItem<>(new Parameter("Motion", null)), new TreeItem<>(new Parameter("Cognition", null)));
+//        parameterTreeRoot.getChildren().addAll(new TreeItem<>(new Parameter("Motion", null)), new TreeItem<>(new Parameter("Cognition", null)));
         
         parameterTree.setRoot(parameterTreeRoot);
         parameterTree.getRoot().setExpanded(true);
@@ -205,41 +206,50 @@ public class AgentTab extends Tab implements ConnectionStatusListener, ResponseL
                     cmd_agent_set.getArguments().clear();
                 }
                 cmd_agent_set.addArg("agent", newValue);
-                server.executeCommand(this, cmd_agent_set);
+                sendCommand(cmd_agent_set);
             }
         });
 
         updateModules();
         updateDebugRequests();
         updateParameters();
-        server.executeCommand(this, cmd_agent_list);
-        server.executeCommand(this, cmd_agent);
+        sendCommand(cmd_agent_list);
+        sendCommand(cmd_agent);
+    }
+    
+    private boolean sendCommand(Command cmd) {
+        if(server.isConnected()) {
+            server.executeCommand(this, cmd);
+            return true;
+        }
+        return false;
     }
     
     @FXML
     protected void updateParameters() {
-        server.executeCommand(this, cmd_parameter_cognition);
-        server.executeCommand(this, cmd_parameter_motion);
+        parameterTree.getRoot().getChildren().clear();
+        sendCommand(cmd_parameter_cognition);
+        sendCommand(cmd_parameter_motion);
     }
     
     @FXML
     protected void updateModules() {
         moduleTree.getRoot().getChildren().clear();
-        server.executeCommand(this, cmd_modules_cognition);
-        server.executeCommand(this, cmd_modules_motion);
+        sendCommand(cmd_modules_cognition);
+        sendCommand(cmd_modules_motion);
     }
     
     @FXML
     protected void updateDebugRequests() {
         debugTree.getRoot().getChildren().clear();
-        server.executeCommand(this, cmd_debug_cognition);
-        server.executeCommand(this, cmd_debug_motion);
+        sendCommand(cmd_debug_cognition);
+        sendCommand(cmd_debug_motion);
     }
     
     @FXML
     protected void saveModules() {
-        server.executeCommand(this, cmd_modules_cognition_store);
-        server.executeCommand(this, cmd_modules_motion_store);
+        sendCommand(cmd_modules_cognition_store);
+        sendCommand(cmd_modules_motion_store);
     }
     
     @FXML
@@ -363,62 +373,75 @@ public class AgentTab extends Tab implements ConnectionStatusListener, ResponseL
     }
     
     private void handleCognitionParameterResponse(byte[] result) {
-        TreeItem<Parameter> root = parameterTree.getRoot().getChildren().get(1);
-        root.getChildren().clear();
-        root.setExpanded(true);
-        Arrays.asList(new String(result).split("\n")).forEach((p) -> {
-            TreeItem<Parameter> parameter = new TreeItem<>(new Parameter(p, null));
-            cognitionParameter.put(p, parameter);
-            root.getChildren().add(parameter);
-            server.executeCommand(this, new Command(cmd_parameter_cognition_get).addArg("<name>", p));
-        });
+        handleParameterResponse("Cognition", cmd_parameter_cognition_get, result);
     }
     
     private void handleMotionParameterResponse(byte[] result) {
-        TreeItem<Parameter> root = parameterTree.getRoot().getChildren().get(0);
-        root.getChildren().clear();
-        root.setExpanded(true);
+        handleParameterResponse("Motion", cmd_parameter_motion_get, result);
+    }
+    
+    private void handleParameterResponse(String type, String cmd, byte[] result) {
+        TreeItem<Parameter> root_item = new TreeItem<>(new Parameter(type, null));
+        root_item.setExpanded(true);
+        parameterTree.getRoot().getChildren().add(0, root_item);
+        
+        TreeItem<Parameter> root_global = Utils.global_parameters.get(type);
+        
         Arrays.asList(new String(result).split("\n")).forEach((p) -> {
+            // an identifier for the parameter
+            String parameterId = type+":"+p;
+            // check if the global parameter list contains the parameter
+            if(!Utils.global_parameters.containsKey(parameterId)) {
+                TreeItem<Parameter> global_parameter = new TreeItem<>(new Parameter(p, null));
+                root_global.getChildren().add(global_parameter);
+                Utils.global_parameters.put(parameterId, global_parameter);
+            }
+            
             TreeItem<Parameter> parameter = new TreeItem<>(new Parameter(p, null));
-            motionParameter.put(p, parameter);
-            root.getChildren().add(parameter);
-            server.executeCommand(this, new Command(cmd_parameter_motion_get).addArg("<name>", p));
+            this.parameter.put(parameterId, parameter);
+            root_item.getChildren().add(parameter);
+            
+            sendCommand(new Command(cmd).addArg("<name>", p));
         });
     }
     
     private void handleCognitionParameterGetResponse(String param, byte[] result) {
-        TreeItem<Parameter> treeItem = cognitionParameter.get(param);
-        if(treeItem != null) {
-            Arrays.asList(new String(result).split("\n")).forEach((p) -> {
-                String[] parts = p.split("=");
-                if(parts.length == 2) {
-                    treeItem.getChildren().add(new TreeItem<>(new Parameter(parts[0], parts[1])));
-                } else {
-                    System.err.println("Invalid cognition parameter: " +Arrays.asList(parts));
-                }
-            });
-        }
+        handleParameterGetResponse("Cognition", param, result);
     }
     
     private void handleMotionParameterGetResponse(String param, byte[] result) {
-        TreeItem<Parameter> treeItem = motionParameter.get(param);
+        handleParameterGetResponse("Motion", param, result);
+    }
+    
+    private void handleParameterGetResponse(String type, String param, byte[] result) {
+        String parameterId = type + ":" + param;
+        TreeItem<Parameter> treeItem = this.parameter.get(parameterId);
+        TreeItem<Parameter> treeItem_global = Utils.global_parameters.get(parameterId);
         if(treeItem != null) {
             Arrays.asList(new String(result).split("\n")).forEach((p) -> {
                 String[] parts = p.split("=");
                 if(parts.length == 2) {
-                    treeItem.getChildren().add(new TreeItem<>(new Parameter(parts[0], parts[1])));
+                    // create parameter objects (local, global)
+                    Parameter pl = new Parameter(parts[0], parts[1]);
+                    Parameter pg = new Parameter(parts[0], parts[1]);
+                    // add listener to global parameter (changes the local)
+                    pg.valueProperty().addListener((o, v1, v2) -> { pl.setValue(v2); });
+                    // add to respective parameter tree
+                    treeItem.getChildren().add(new TreeItem<>(pl));
+                    treeItem_global.getChildren().add(new TreeItem<>(pg));
                 } else {
                     System.err.println("Invalid motion parameter: " + Arrays.asList(parts));
                 }
             });
         }
+        
     }
     
     private void request(String cmd, ObservableValue o, boolean state) {
         Object i = ((BooleanProperty)o).getBean();
         if(i instanceof RequestTreeItem && ((RequestTreeItem)i).getRequest() != null && server.isConnected()) {
             Command command = new Command(cmd).addArg(((RequestTreeItem)i).getRequest(), state ? "on" : "off");
-            server.executeCommand(this, command);
+            sendCommand(command);
         }
     }
     

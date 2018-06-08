@@ -21,6 +21,7 @@ public class Utils
     public static TreeMap<String, TreeItem> global_debug_requests = new TreeMap<>();
     public static TreeMap<String, TreeItem> global_modules = new TreeMap<>();
     public static ObservableList<String> global_agent_list = FXCollections.observableArrayList();
+    public static TreeMap<String, TreeItem<Parameter>> global_parameters = new TreeMap<>();
     
     
     public static void createDebugRequestTree(Messages.DebugRequest request, TreeItem root, ChangeListener debugRequest) {
@@ -193,4 +194,5 @@ public class Utils
         return motion_root;
     }
     
+//    public static TreeItem createParameterTree()
 }

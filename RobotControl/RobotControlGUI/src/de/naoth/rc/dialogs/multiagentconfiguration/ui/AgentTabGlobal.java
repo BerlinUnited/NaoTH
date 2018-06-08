@@ -1,7 +1,9 @@
 package de.naoth.rc.dialogs.multiagentconfiguration.ui;
 
+import de.naoth.rc.dialogs.multiagentconfiguration.Parameter;
 import de.naoth.rc.dialogs.multiagentconfiguration.Utils;
 import javafx.scene.control.CheckBoxTreeItem;
+import javafx.scene.control.TreeItem;
 
 /**
  *
@@ -36,6 +38,16 @@ public class AgentTabGlobal extends AgentTab
         Utils.global_modules.put(cognition_modules_root.getValue(), cognition_modules_root);
 
         agentList.setItems(Utils.global_agent_list);
+        TreeItem<Parameter> motion_params = new TreeItem<>(new Parameter("Motion", null));
+        motion_params.setExpanded(true);
+        parameterTree.getRoot().getChildren().add(motion_params);
+        Utils.global_parameters.put(motion_params.getValue().getName(), motion_params);
+        
+        TreeItem<Parameter> cognition_params = new TreeItem<>(new Parameter("Cognition", null));
+        cognition_params.setExpanded(true);
+        parameterTree.getRoot().getChildren().add(cognition_params);
+        Utils.global_parameters.put(cognition_params.getValue().getName(), cognition_params);
+        
     }
 
     @Override
