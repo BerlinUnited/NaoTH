@@ -15,6 +15,7 @@ using namespace naoth;
 BEGIN_DECLARE_MODULE(WifiModeSetter)
   REQUIRE(FrameInfo)
   REQUIRE(ButtonState)
+  REQUIRE(LEDData)
 
   PROVIDE(WifiMode)
   PROVIDE(WifiModeSetterLEDRequest)
@@ -24,12 +25,14 @@ END_DECLARE_MODULE(WifiModeSetter)
 class WifiModeSetter : public WifiModeSetterBase
 {
 public:
-  WifiModeSetter(){}
+  WifiModeSetter() : frameWhenColorChanged(0) {}
   virtual ~WifiModeSetter(){}
 
   virtual void execute();
 
 private:
+
+  unsigned int frameWhenColorChanged;
 };
 
 #endif  /* _WifiModeSetter_H */
