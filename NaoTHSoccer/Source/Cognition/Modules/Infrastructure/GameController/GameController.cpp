@@ -88,10 +88,6 @@ void GameController::execute()
 
     getPlayerInfo().update(getGameData());
   }
-  
-  // reset any old sound request
-  getSoundPlayData().mute = true;
-  getSoundPlayData().soundFile = "";
 
   handleButtons();
   handleHeadButtons();

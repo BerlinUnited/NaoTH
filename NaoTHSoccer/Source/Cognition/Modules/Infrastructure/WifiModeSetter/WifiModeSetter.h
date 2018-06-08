@@ -9,6 +9,7 @@
 #include "Representations/Infrastructure/ButtonState.h"
 #include "Representations/Infrastructure/WifiMode.h"
 #include <Representations/Infrastructure/LEDRequest.h>
+#include "Representations/Infrastructure/SoundData.h"
 
 using namespace naoth;
 
@@ -19,6 +20,7 @@ BEGIN_DECLARE_MODULE(WifiModeSetter)
 
   PROVIDE(WifiMode)
   PROVIDE(WifiModeSetterLEDRequest)
+  PROVIDE(SoundPlayData)
 
 END_DECLARE_MODULE(WifiModeSetter)
 

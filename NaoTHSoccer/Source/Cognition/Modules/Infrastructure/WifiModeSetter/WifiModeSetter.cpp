@@ -3,10 +3,19 @@
 using namespace naoth;
 
 void WifiModeSetter::execute() {
+
+    // reset any old sound request
+    getSoundPlayData().mute = true;
+    getSoundPlayData().soundFile = "";
+    
+
     const ButtonEvent& chest = getButtonState()[ButtonState::Chest];
     if(chest.isDoubleClick()) {
         // switch state
         getWifiMode().wifiEnabled = !getWifiMode().wifiEnabled;
+        // play sound so the handler knows something changed
+        getSoundPlayData().mute = false;
+        getSoundPlayData().soundFile = getWifiMode().wifiEnabled ? "wifi_enabled.wav" : "wifi_disabled.wav";
     }
 
     // if Wifi is disabled, show a blinking chest button to get the attention of the robot handler
