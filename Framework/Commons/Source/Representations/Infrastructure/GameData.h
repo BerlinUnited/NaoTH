@@ -190,13 +190,10 @@ public:
     message(alive)
   {}
 
-  /*
-  This is a enum because there used to be other game controller return message states like "manual penalize".
-  In case these will be re-introduced it is easier to keep this as enum for a while.
-  */
   enum Message
   {
     alive             = GAMECONTROLLER_RETURN_MSG_ALIVE,
+    dead              = 100
   };
 
   static std::string toString(Message value);

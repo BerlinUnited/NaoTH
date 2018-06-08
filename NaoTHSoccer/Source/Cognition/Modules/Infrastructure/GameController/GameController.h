@@ -13,6 +13,7 @@
 #include "Representations/Infrastructure/WhistlePercept.h"
 #include "Representations/Infrastructure/GameData.h"
 #include "Representations/Modeling/TeamMessageData.h"
+#include "Representations/Infrastructure/WifiMode.h"
 
 using namespace naoth;
 
@@ -23,6 +24,7 @@ BEGIN_DECLARE_MODULE(GameController)
   REQUIRE(GameData)
   REQUIRE(FrameInfo)
   REQUIRE(WhistlePercept)
+  REQUIRE(WifiMode)
 
   PROVIDE(TeamMessageData)
   PROVIDE(GameReturnData)
@@ -47,7 +49,6 @@ private:
 private:
   int lastWhistleCount;
   GameData::GameState lastGameState;
-  bool isManualPenalized;
 };
 
 #endif // GAMECONTROLLER_H

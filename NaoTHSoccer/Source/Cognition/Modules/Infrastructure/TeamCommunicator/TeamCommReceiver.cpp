@@ -28,12 +28,14 @@ void TeamCommReceiver::execute()
     usingDelayBuffer = true;
   );
 
-  // process all incomming messages
-  for (auto const &it : getTeamMessageDataIn().data) {
-    if(usingDelayBuffer) {
-      delayBuffer.add(it); // can be used for debugging
-    } else {
-      handleMessage(it);
+  if(getWifiMode().wifiEnabled) {
+    // process all incomming messages
+    for (auto const &it : getTeamMessageDataIn().data) {
+      if(usingDelayBuffer) {
+        delayBuffer.add(it); // can be used for debugging
+      } else {
+        handleMessage(it);
+      }
     }
   }
 

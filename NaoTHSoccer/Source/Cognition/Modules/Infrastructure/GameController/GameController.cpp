@@ -6,8 +6,7 @@
 GameController::GameController()
   : 
   lastWhistleCount(0),
-  lastGameState(GameData::GameState::unknown_game_state),
-  isManualPenalized(false)
+  lastGameState(GameData::GameState::unknown_game_state)
 {
   DEBUG_REQUEST_REGISTER("gamecontroller:play", "force the play state", false);
   DEBUG_REQUEST_REGISTER("gamecontroller:penalized", "force the penalized state", false);
@@ -80,7 +79,7 @@ void GameController::execute()
   GameData::TeamColor oldTeamColor = getPlayerInfo().teamColor;
 
   // try update from the game controller message if not manually overwritten
-  if ( getGameData().valid && !isManualPenalized ) 
+  if ( getGameData().valid && getWifiMode().wifiEnabled ) 
   {
     // HACK: needed by SimSpark - overide the player number
     if(getGameData().newPlayerNumber > 0) {
@@ -129,7 +128,7 @@ void GameController::execute()
   // provide the return message
   getGameReturnData().team = getPlayerInfo().teamNumber;
   getGameReturnData().player = getPlayerInfo().playerNumber;
-  getGameReturnData().message = GameReturnData::alive;
+  getGameReturnData().message = getWifiMode().wifiEnabled ? GameReturnData::alive : GameReturnData::dead;
 } // end execute
 
 
@@ -187,19 +186,7 @@ void GameController::handleButtons()
     }
     case PlayerInfo::penalized:
     {
-      if(getButtonState()[ButtonState::Chest].clicksInSequence >= 2) {
-        // double clickk triggers a manual penalize that can't be overriden by the GameController
-        isManualPenalized = true;
-        getSoundPlayData().mute = false;
-        getSoundPlayData().soundFile = "manual_penalize.wav";
-      } else {
-        // switch back to play and unset the manual penalized flag
-        getPlayerInfo().robotState = PlayerInfo::playing;
-
-        isManualPenalized = false;
-        getSoundPlayData().mute = false;
-        getSoundPlayData().soundFile = "listening_to_gamecontroller.wav";
-      }
+      getPlayerInfo().robotState = PlayerInfo::playing;
       break;
     }
     default:
