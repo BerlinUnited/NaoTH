@@ -100,15 +100,21 @@ void SPLGameController::get(GameData& gameData)
 
 void SPLGameController::set(const naoth::GameReturnData& data)
 {
-  if(data.message != GameReturnData::dead) {
-    std::unique_lock<std::mutex> lock(returnDataMutex, std::try_to_lock);
-    if ( lock.owns_lock() )
-    {
+  std::unique_lock<std::mutex> lock(returnDataMutex, std::try_to_lock);
+  if ( lock.owns_lock() )
+  {
+    if(data.message == GameReturnData::dead) {
+      // set to invalid data to avoid sending the message
+      dataOut.player = 0;
+      dataOut.team = 0;
+      dataOut.message = data.message;
+    } else {
       dataOut.player = (uint8_t)data.player;
       dataOut.team = (uint8_t)data.team;
       dataOut.message = data.message;
     }
   }
+
 }
 
 SPLGameController::~SPLGameController()
