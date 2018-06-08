@@ -28,6 +28,14 @@ public:
   void operator=(EventType id) { eventState = id; }
   bool operator==(EventType id) const { return this->eventState == id; }
 
+  bool isSingleClick() const {
+    return eventState == CLICKED && clicksInSequence == 1;
+  }
+
+  bool isDoubleClick() const {
+    return eventState == CLICKED && clicksInSequence == 2;
+  }
+
   std::string print() const
   {
     switch(eventState) {

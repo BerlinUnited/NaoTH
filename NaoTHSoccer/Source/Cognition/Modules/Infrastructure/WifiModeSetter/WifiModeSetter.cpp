@@ -4,7 +4,7 @@ using namespace naoth;
 
 void WifiModeSetter::execute() {
     const ButtonEvent& chest = getButtonState()[ButtonState::Chest];
-    if(chest.eventState == ButtonEvent::CLICKED && chest.clicksInSequence == 2) {
+    if(chest.isDoubleClick()) {
         // switch state
         getWifiMode().wifiEnabled = !getWifiMode().wifiEnabled;
     }

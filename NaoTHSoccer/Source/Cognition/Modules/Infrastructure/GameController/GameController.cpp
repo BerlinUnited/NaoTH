@@ -171,7 +171,7 @@ void GameController::handleDebugRequest()
 void GameController::handleButtons()
 {
 
-  if (getButtonState()[ButtonState::Chest] == ButtonEvent::CLICKED)
+  if (getButtonState()[ButtonState::Chest].isSingleClick())
   {
     switch (getPlayerInfo().robotState)
     {
