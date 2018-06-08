@@ -6,7 +6,8 @@
 GameController::GameController()
   : 
   lastWhistleCount(0),
-  lastGameState(GameData::GameState::unknown_game_state)
+  lastGameState(GameData::GameState::unknown_game_state),
+  isManualPenalized(false)
 {
   DEBUG_REQUEST_REGISTER("gamecontroller:play", "force the play state", false);
   DEBUG_REQUEST_REGISTER("gamecontroller:penalized", "force the penalized state", false);
@@ -78,8 +79,8 @@ void GameController::execute()
   PlayerInfo::RobotState oldRobotState = getPlayerInfo().robotState;
   GameData::TeamColor oldTeamColor = getPlayerInfo().teamColor;
 
-  // try update from the game controller message
-  if ( getGameData().valid ) 
+  // try update from the game controller message if not manually overwritten
+  if ( getGameData().valid && !isManualPenalized ) 
   {
     // HACK: needed by SimSpark - overide the player number
     if(getGameData().newPlayerNumber > 0) {
@@ -166,6 +167,7 @@ void GameController::handleDebugRequest()
 
 void GameController::handleButtons()
 {
+
   if (getButtonState()[ButtonState::Chest] == ButtonEvent::CLICKED)
   {
     switch (getPlayerInfo().robotState)
@@ -181,7 +183,15 @@ void GameController::handleButtons()
     }
     case PlayerInfo::penalized:
     {
-      getPlayerInfo().robotState = PlayerInfo::playing;
+      if(getButtonState()[ButtonState::Chest].clicksInSequence >= 2) {
+        // double clickk triggers a manual penalize that can't be overriden by the GameController
+        isManualPenalized = true;
+        std::cout << "manual penalize was set" << std::endl;
+      } else {
+        // switch back to play and unset the manual penalized flag
+        getPlayerInfo().robotState = PlayerInfo::playing;
+        isManualPenalized = false;
+      }
       break;
     }
     default:

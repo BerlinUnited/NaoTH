@@ -47,6 +47,7 @@ private:
 private:
   int lastWhistleCount;
   GameData::GameState lastGameState;
+  bool isManualPenalized;
 };
 
 #endif // GAMECONTROLLER_H
