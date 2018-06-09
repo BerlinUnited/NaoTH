@@ -22,7 +22,7 @@
                   <ToolBar prefHeight="40.0" prefWidth="200.0">
                     <items>
                         <ComboBox fx:id="agentList" promptText="- Agents -" />
-                        <Button fx:id="btnSendBehavior" mnemonicParsing="false" text="Send behavior" />
+                        <Button fx:id="btnSendBehavior" mnemonicParsing="false" onAction="#selectBehaviorFile" text="Send behavior" />
                         <Pane opacity="0.0" HBox.hgrow="ALWAYS" />
                         <Button fx:id="btnSaveParameters" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#saveParameters" styleClass="save_button" text="Save" />
                         <Button fx:id="btnUpdateParameters" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#updateParameters" styleClass="refresh_button" text="Update" />

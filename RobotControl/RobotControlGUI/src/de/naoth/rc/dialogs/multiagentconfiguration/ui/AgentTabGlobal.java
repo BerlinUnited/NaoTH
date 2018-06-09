@@ -77,4 +77,9 @@ public class AgentTabGlobal extends AgentTab
     protected void saveParameters() {
         // the global tab doesn't update any parameters directly!
     }
+
+    @Override
+    protected void sendBehaviorFile() {
+        // the global tab doesn't update any parameters directly!
+    }
 }

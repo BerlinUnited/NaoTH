@@ -12,15 +12,22 @@ import de.naoth.rc.server.MessageServer;
 import de.naoth.rc.server.ResponseListener;
 import de.naoth.rc.dialogs.multiagentconfiguration.Parameter;
 import de.naoth.rc.dialogs.multiagentconfiguration.Utils;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -36,6 +43,8 @@ import javafx.scene.control.TreeTableColumn;
 import javafx.scene.control.TreeTableView;
 import javafx.scene.control.TreeView;
 import javafx.scene.control.cell.TreeItemPropertyValueFactory;
+import javafx.stage.FileChooser;
+import javafx.stage.FileChooser.ExtensionFilter;
 
 /**
  *
@@ -68,12 +77,13 @@ public class AgentTab extends Tab implements ConnectionStatusListener, ResponseL
     
     private final String cmd_parameter_motion_get = "Motion:ParameterList:get";
     
+    private final String cmd_write_behavior = "Cognition:file::write";
+    private final String behaviorPath = "Config/behavior-ic.dat";
     
     private String agent = "";
     private List<String> agent_list = new ArrayList<>();
-    private final TreeMap<String, TreeItem<Parameter>> cognitionParameter = new TreeMap<>();
-    private final TreeMap<String, TreeItem<Parameter>> motionParameter = new TreeMap<>();
     private final TreeMap<String, TreeItem<Parameter>> parameter = new TreeMap<>();
+    private final SimpleObjectProperty<File> behaviorFile = new SimpleObjectProperty<>(null);
     
     
     private ChangeListener cognitionDebugRequest = (ChangeListener) (ObservableValue o, Object v, Object n) -> {
@@ -90,6 +100,14 @@ public class AgentTab extends Tab implements ConnectionStatusListener, ResponseL
     
     private ChangeListener motionModuleRequest = (ChangeListener) (ObservableValue o, Object v, Object n) -> {
         request("Motion:modules:set", o, (boolean) n);
+    };
+    
+    private ChangeListener parameterRequest = (ChangeListener) (ObservableValue o, Object v, Object n) -> {
+        Parameter p = (Parameter) ((StringProperty)o).getBean();
+        Map<String, byte[]> args = new HashMap<>();
+        args.put("<name>", p.getModule().getBytes());
+        args.put(p.getName(), p.getValue().getBytes());
+        request(p.getType()+":ParameterList:set", args);
     };
     
     @FXML
@@ -155,7 +173,6 @@ public class AgentTab extends Tab implements ConnectionStatusListener, ResponseL
         parameterTree.setShowRoot(false);
         
         TreeItem<Parameter> parameterTreeRoot = new TreeItem<>(new Parameter("root", null));
-//        parameterTreeRoot.getChildren().addAll(new TreeItem<>(new Parameter("Motion", null)), new TreeItem<>(new Parameter("Cognition", null)));
         
         parameterTree.setRoot(parameterTreeRoot);
         parameterTree.getRoot().setExpanded(true);
@@ -172,6 +189,8 @@ public class AgentTab extends Tab implements ConnectionStatusListener, ResponseL
             }
             evt.getRowValue().getValue().setValue(evt.getNewValue());
         });
+        
+        behaviorFile.addListener((o, v, f) -> { sendBehaviorFile(); });
 
         // set some tooltips
         btnSaveModules.setTooltip(new Tooltip("Save module configuration on robot(s)."));
@@ -255,6 +274,44 @@ public class AgentTab extends Tab implements ConnectionStatusListener, ResponseL
     @FXML
     protected void saveParameters() {
         System.out.println("saveParameters");
+    }
+    
+    @FXML
+    protected void selectBehaviorFile() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Open Behavior File");
+        fileChooser.setInitialFileName("behavior-ic.dat");
+        fileChooser.setInitialDirectory(new File("../../NaoTHSoccer/Config/"));
+        fileChooser.getExtensionFilters().addAll(
+                new ExtensionFilter("Behavior Files", "*.dat"),
+                new ExtensionFilter("All Files", "*.*"));
+        File selectedFile = fileChooser.showOpenDialog(getTabPane().getScene().getWindow());
+        if (selectedFile != null) {
+            behaviorFile.set(selectedFile);
+        }
+    }
+    
+    protected void sendBehaviorFile() {
+        if (behaviorFile.get() != null) {
+            try (FileReader fileReader = new FileReader(behaviorFile.get())) {
+                StringBuilder buffer = new StringBuilder();
+                int c = fileReader.read();
+                while (c != -1) {
+                    buffer.append((char) c);
+                    c = fileReader.read();
+                }//end while
+                HashMap<String, byte[]> args = new HashMap<>();
+                args.put("path", behaviorPath.getBytes());
+                args.put("content", buffer.toString().getBytes());
+                request(cmd_write_behavior, args);
+            } catch (FileNotFoundException ex) {
+                Logger.getLogger(AgentTab.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (IOException ex) {
+                Logger.getLogger(AgentTab.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            // reset behavior file, in order to be able to select file again
+            behaviorFile.set(null);
+        }
     }
     
     public void requestClose() {
@@ -373,23 +430,27 @@ public class AgentTab extends Tab implements ConnectionStatusListener, ResponseL
     }
     
     private void handleCognitionParameterResponse(byte[] result) {
-        handleParameterResponse("Cognition", cmd_parameter_cognition_get, result);
+        TreeItem<Parameter> root_item = new TreeItem<>(new Parameter("Cognition", null));
+        root_item.setExpanded(true);
+        parameterTree.getRoot().getChildren().add(root_item);
+        
+        handleParameterResponse(root_item, cmd_parameter_cognition_get, result);
     }
     
     private void handleMotionParameterResponse(byte[] result) {
-        handleParameterResponse("Motion", cmd_parameter_motion_get, result);
-    }
-    
-    private void handleParameterResponse(String type, String cmd, byte[] result) {
-        TreeItem<Parameter> root_item = new TreeItem<>(new Parameter(type, null));
+        TreeItem<Parameter> root_item = new TreeItem<>(new Parameter("Motion", null));
         root_item.setExpanded(true);
         parameterTree.getRoot().getChildren().add(0, root_item);
         
-        TreeItem<Parameter> root_global = Utils.global_parameters.get(type);
+        handleParameterResponse(root_item, cmd_parameter_motion_get, result);
+    }
+    
+    private void handleParameterResponse(TreeItem<Parameter> root_item, String cmd, byte[] result) {
+        TreeItem<Parameter> root_global = Utils.global_parameters.get(root_item.getValue().getName());
         
         Arrays.asList(new String(result).split("\n")).forEach((p) -> {
             // an identifier for the parameter
-            String parameterId = type+":"+p;
+            String parameterId = root_item.getValue().getName()+":"+p;
             // check if the global parameter list contains the parameter
             if(!Utils.global_parameters.containsKey(parameterId)) {
                 TreeItem<Parameter> global_parameter = new TreeItem<>(new Parameter(p, null));
@@ -422,10 +483,11 @@ public class AgentTab extends Tab implements ConnectionStatusListener, ResponseL
                 String[] parts = p.split("=");
                 if(parts.length == 2) {
                     // create parameter objects (local, global)
-                    Parameter pl = new Parameter(parts[0], parts[1]);
-                    Parameter pg = new Parameter(parts[0], parts[1]);
+                    Parameter pl = new Parameter(type, param, parts[0], parts[1]);
+                    Parameter pg = new Parameter(type, param, parts[0], parts[1]);
                     // add listener to global parameter (changes the local)
                     pg.valueProperty().addListener((o, v1, v2) -> { pl.setValue(v2); });
+                    pl.valueProperty().addListener(parameterRequest);
                     // add to respective parameter tree
                     treeItem.getChildren().add(new TreeItem<>(pl));
                     treeItem_global.getChildren().add(new TreeItem<>(pg));
@@ -445,6 +507,12 @@ public class AgentTab extends Tab implements ConnectionStatusListener, ResponseL
         }
     }
     
+    private void request(String cmd, Map<String, byte[]> args) {
+        Command command = new Command(cmd);
+        command.setArguments(args);
+        sendCommand(command);
+    }
+    
     public void connectDivider(AgentTab other) {
         for (int i = 0; i < splitPane.getDividers().size(); i++) {
             other.splitPane.getDividers().get(i).positionProperty().bindBidirectional(splitPane.getDividers().get(i).positionProperty());
@@ -462,5 +530,6 @@ public class AgentTab extends Tab implements ConnectionStatusListener, ResponseL
         other.btnUpdateModules.addEventHandler(ActionEvent.ACTION, (e) -> { btnUpdateModules.fire(); });
         other.btnUpdateParameters.addEventHandler(ActionEvent.ACTION, (e) -> { btnUpdateParameters.fire(); });
         other.btnSaveModules.addEventHandler(ActionEvent.ACTION, (e) -> { btnSaveModules.fire(); });
+        other.behaviorFile.addListener((o, v, f) -> { behaviorFile.set(f); });
     }
 }
